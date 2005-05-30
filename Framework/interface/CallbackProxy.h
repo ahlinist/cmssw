@@ -58,8 +58,7 @@ template<class CallbackT, class RecordT, class DataT>
          return &(*data_) ;
       }
       void invalidateCache() {
-         DataT temp;
-         data_ = temp;
+         data_ = DataT();
          callback_->newRecordComing();
       }
    private:
