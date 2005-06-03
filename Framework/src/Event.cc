@@ -96,9 +96,9 @@ namespace edm {
   }
 
   Event::BasicHandle
-  Event::get_(TypeID id, EDP_ID oid) const
+  Event::get_(EDP_ID oid) const
   {
-    return ep_.get(id, oid);
+    return ep_.get(oid);
   }
 
   Event::BasicHandle

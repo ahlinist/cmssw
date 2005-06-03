@@ -79,7 +79,7 @@ namespace edm {
     // from the EventPrincipal class.
 
     BasicHandle 
-    get_(TypeID id, EDP_ID oid) const;
+    get_(EDP_ID oid) const;
 
     BasicHandle 
     get_(TypeID id, const Selector&) const;
