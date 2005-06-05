@@ -14,8 +14,6 @@ do_or_die TypeID_t
 do_or_die EventPrincipal_t
 do_or_die maker_t
 do_or_die maker2_t
-do_or_die test_1
-do_or_die test_2
 do_or_die EventProcessor_t
 do_or_die EventProcessor2_t
 do_or_die ScheduleExecutorFromPSet_t
