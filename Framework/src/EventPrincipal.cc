@@ -7,7 +7,6 @@ $Id$
 #include <stdexcept>
 
 #include "FWCore/CoreFramework/interface/EventPrincipal.h"
-#include "FWCore/CoreFramework/interface/EventRegistry.h" // KLUDGE HACK (see destructor)
 using namespace std;
 
 namespace
@@ -41,10 +40,6 @@ namespace edm {
   
   EventPrincipal::~EventPrincipal()
   {
-    // This is a temporary expedient.
-    // The removal of the Event from the registry should be done in
-    // the EventProcessor class in the Framework.  This class does not exist yet.
-    EventRegistry::instance()->removeEvent(ID()); // KLUDGE HACK
   }
 
   CollisionID
