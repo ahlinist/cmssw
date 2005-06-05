@@ -37,7 +37,7 @@ namespace edm {
     aux_.process_history_ = nl;
     groups_.reserve(initial_size);
   }
-  
+ 
   EventPrincipal::~EventPrincipal()
   {
   }
