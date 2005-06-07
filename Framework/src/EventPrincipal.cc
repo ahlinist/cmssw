@@ -51,6 +51,7 @@ namespace edm {
   void 
   EventPrincipal::addGroup(auto_ptr<Group> group)
   {
+    assert (!group->provenance()->full_product_type_name.empty());
     assert (!group->provenance()->friendly_product_type_name.empty());
     assert (!group->provenance()->module.module_label.empty());
     assert (!group->provenance()->module.process_name.empty());
