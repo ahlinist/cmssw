@@ -10,10 +10,9 @@ $Id$
 
 ----------------------------------------------------------------------*/
 
-#include "FWCore/CoreFramework/interface/EventPrincipal.h"
-
 namespace edm
 {
+  class EventPrincipal;
   class OutputModule
   {
   public:
