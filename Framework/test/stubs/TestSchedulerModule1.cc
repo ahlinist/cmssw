@@ -15,7 +15,7 @@
 
 #include "FWCore/CoreFramework/interface/EventSetup.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/CoreFramework/test/stubs/DummyProduct.h"
+#include "FWCore/CoreFramework/src/ToyProducts.h"
 #include <memory>
 #include <string>
 
@@ -39,8 +39,7 @@ void TestSchedulerModule1::produce(Event& e, EventSetup const&)
 {
 
   std::string myname = pset_.getString("module_name");
-  std::auto_ptr<edmtest::DummyProduct> product(new edmtest::DummyProduct);
-  product->setName(myname);
+  std::auto_ptr<edmtest::StringProduct> product(new edmtest::StringProduct(myname)); 
   e.put(product);
 }
 
