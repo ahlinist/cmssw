@@ -15,8 +15,9 @@
 
 #include "FWCore/CoreFramework/interface/EventSetup.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-
-#include <iostream>
+#include "FWCore/CoreFramework/test/stubs/DummyProduct.h"
+#include <memory>
+#include <string>
 
 using namespace edm;
 
@@ -25,22 +26,22 @@ static const char CVSId[] = "$Id$";
 class TestSchedulerModule1 : public EDProducer
 {
  public:
-  explicit TestSchedulerModule1(ParameterSet const& p);
+  explicit TestSchedulerModule1(ParameterSet const& p):pset_(p){}
 
   void produce(Event& e, EventSetup const&);
+
+private:
+  ParameterSet pset_;
 };
 
-TestSchedulerModule1::TestSchedulerModule1(ParameterSet const& p)
-{
-  std::cerr << "TestSchedulerModule1 instance created: " << p.getString("module_label")
-            << std::endl;
-}
 
 void TestSchedulerModule1::produce(Event& e, EventSetup const&)
 {
 
-  std::cout << "TestSchedulerModule1 Producing ..." << std::endl;
-
+  std::string myname = pset_.getString("module_name");
+  std::auto_ptr<edmtest::DummyProduct> product(new edmtest::DummyProduct);
+  product->setName(myname);
+  e.put(product);
 }
 
 DEFINE_FWK_MODULE(TestSchedulerModule1)
