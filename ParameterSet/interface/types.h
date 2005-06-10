@@ -75,10 +75,6 @@ namespace edm
   bool  decode( std::vector<ParameterSet> &, std::string               const& );
   bool  encode( std::string               &, std::vector<ParameterSet> const& );
 
-  // Path
-  bool  decode( Path        &, std::string  const& );
-  bool  encode( std::string &, Path         const& );
-
 }  // namespace edm
 
 
