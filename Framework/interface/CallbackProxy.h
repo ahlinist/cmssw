@@ -20,6 +20,7 @@
 //
 
 // system include files
+#include "boost/shared_ptr.hpp"
 
 // user include files
 #include "FWCore/CoreFramework/interface/DataProxyTemplate.h"
