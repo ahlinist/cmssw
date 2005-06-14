@@ -47,13 +47,13 @@ class ComponentFactory : public seal::PluginFactory< ComponentMakerBase<T>* ()>
    typedef std::map<std::string, boost::shared_ptr<Maker> > MakerMap;
       // ---------- const member functions ---------------------
       void addTo( EventSetupProvider& iProvider,
-                  ParameterSet const& iConfiguration,
+                  edm::ParameterSet const& iConfiguration,
                   std::string const& iProcessName,
                   unsigned long iVersion,
                   unsigned long iPass ) const
       {
          using namespace std;
-         string modtype = getP<string>(iConfiguration, "module_type");
+         string modtype = getParameter<string>(iConfiguration, "module_type");
          //cerr << "Factory: module_type = " << modtype << endl;
          typename MakerMap::iterator it = makers_.find(modtype);
          
