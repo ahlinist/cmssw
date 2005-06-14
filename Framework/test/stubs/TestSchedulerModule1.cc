@@ -38,7 +38,7 @@ private:
 void TestSchedulerModule1::produce(Event& e, EventSetup const&)
 {
 
-  std::string myname = pset_.getString("module_name");
+  std::string myname = getP<std::string>(pset_, "module_name");
   std::auto_ptr<edmtest::StringProduct> product(new edmtest::StringProduct(myname)); 
   e.put(product);
 }

@@ -10,7 +10,6 @@
 // ----------------------------------------------------------------------
 
 #include "FWCore/ParameterSet/interface/Entry.h"
-#include "FWCore/ParameterSet/interface/Entry.icc"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ParameterSet/interface/types.h"
