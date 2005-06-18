@@ -10,6 +10,7 @@ $Id$
 
 ----------------------------------------------------------------------*/
 #include <cassert>
+#include <memory>
 
 #include "boost/shared_ptr.hpp"
 
