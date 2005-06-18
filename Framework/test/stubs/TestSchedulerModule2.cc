@@ -38,7 +38,7 @@ namespace edm{
   void TestSchedulerModule2::produce(Event& e, EventSetup const&)
   {
 
-    std::string myname = getParameter<std::string>(pset_, "module_name");
+    std::string myname = pset_.getParameter<std::string>("module_name");
     std::auto_ptr<edmtest::StringProduct> product(new edmtest::StringProduct(myname));
     e.put(product);
     
