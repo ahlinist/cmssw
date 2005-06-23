@@ -45,9 +45,9 @@ class ProxyFactoryBase
       // ---------- member functions ---------------------------
 
    private:
-      ProxyFactoryBase( const ProxyFactoryBase& ); // stop default
+      ProxyFactoryBase(const ProxyFactoryBase&); // stop default
 
-      const ProxyFactoryBase& operator=( const ProxyFactoryBase& ); // stop default
+      const ProxyFactoryBase& operator=(const ProxyFactoryBase&); // stop default
 
       // ---------- member data --------------------------------
 

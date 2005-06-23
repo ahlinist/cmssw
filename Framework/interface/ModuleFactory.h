@@ -33,7 +33,7 @@ namespace edm {
 
       struct ModuleMakerTraits {
          static std::string name();
-         static void addTo( EventSetupProvider& iProvider, boost::shared_ptr<DataProxyProvider> iComponent) ;
+         static void addTo(EventSetupProvider& iProvider, boost::shared_ptr<DataProxyProvider> iComponent) ;
       };
       template< class TType>
          struct ModuleMaker : public ComponentMaker<edm::eventsetup::ModuleMakerTraits,TType> {};

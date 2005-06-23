@@ -34,11 +34,11 @@ namespace edm {
       namespace test {
 class WorkingDummyProxy : public edm::eventsetup::DataProxyTemplate<DummyRecord, DummyData> {
 public:
-   WorkingDummyProxy( const DummyData* iDummy ) : data_(iDummy) {}
+   WorkingDummyProxy(const DummyData* iDummy) : data_(iDummy) {}
    
 protected:
    
-   const value_type* make( const record_type&, const DataKey&) {
+   const value_type* make(const record_type&, const DataKey&) {
       return data_ ;
    }
    void invalidateCache() {
@@ -54,15 +54,15 @@ public:
       //std::cout <<"constructed provider"<<std::endl;
       usingRecord<DummyRecord>();
    }
-   void newInterval( const eventsetup::EventSetupRecordKey& iRecordType,
-                     const ValidityInterval& iInterval ) {
+   void newInterval(const eventsetup::EventSetupRecordKey& iRecordType,
+                     const ValidityInterval& iInterval) {
       //do nothing
    }
 protected:
-   void registerProxies( const eventsetup::EventSetupRecordKey&, KeyedProxies& iProxies ) {
+   void registerProxies(const eventsetup::EventSetupRecordKey&, KeyedProxies& iProxies) {
       //std::cout <<"registered proxy"<<std::endl;
       
-      boost::shared_ptr<WorkingDummyProxy> pProxy( new WorkingDummyProxy(&dummy_) );
+      boost::shared_ptr<WorkingDummyProxy> pProxy(new WorkingDummyProxy(&dummy_));
       insertProxy(iProxies, pProxy);
    }
    

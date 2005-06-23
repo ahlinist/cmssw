@@ -41,10 +41,10 @@ class NoProxyException : public NoDataException<T>
       // ---------- constants, enums and typedefs --------------
 
       // ---------- Constructors and destructor ----------------
-      NoProxyException( const EventSetupRecord& iRecord,
-			  const DataKey& iDataKey ) :
+      NoProxyException(const EventSetupRecord& iRecord,
+			  const DataKey& iDataKey) :
 	 NoDataException<T>(iRecord.key(), iDataKey), 
-	 record_( iRecord ),
+	 record_(iRecord),
 	 message_() {}
       virtual ~NoProxyException() throw() {}
 
@@ -61,9 +61,9 @@ class NoProxyException : public NoDataException<T>
         Frame::const_iterator fIter = iFrame.begin();
         Frame::const_iterator fIEnd = iFrame.end();
         std::string o_record_proxy = "";
-        while( fIter != fIEnd ) 
+        while(fIter != fIEnd) 
         { // loop over all records in current frame
-          if( fIter->find( this->dataKey() ) )
+          if(fIter->find(this->dataKey()))
           { // search if proxy exist in other record
             o_record_proxy = "However this data has been found in ";
              m_stream1 << fIter->stream() << " record." << "\0" << std::flush;
@@ -76,13 +76,13 @@ class NoProxyException : public NoDataException<T>
         Record::const_key_iterator pIter = record_.begin_key();
         Record::const_key_iterator iEnd  = record_.end_key();
         std::string sametype_proxy = "";
-        while( pIter != iEnd )
+        while(pIter != iEnd)
         {
-          if( pIter->type()  > this->dataKey().type() ) 
+          if(pIter->type()  > this->dataKey().type()) 
           {
             break;
           }
-          if( pIter->type() == this->dataKey().type() ) 
+          if(pIter->type() == this->dataKey().type()) 
           {
             if(!sametype_proxy.size())
             {
@@ -97,7 +97,7 @@ class NoProxyException : public NoDataException<T>
           pIter++;
         }
         */
-        if( message_.size() == 0 ) {
+        if(message_.size() == 0) {
           message_ = this->dataTypeMessage();
           /*
           if(o_record_proxy.size()) {
@@ -121,9 +121,9 @@ class NoProxyException : public NoDataException<T>
 
    private:
       // ---------- Constructors and destructor ----------------
-      //NoProxyException( const NoProxyException& ) ; //allow default
+      //NoProxyException(const NoProxyException&) ; //allow default
 
-      //const NoProxyException& operator=( const NoProxyException& ); // allow default
+      //const NoProxyException& operator=(const NoProxyException&); // allow default
 
       // ---------- data members -------------------------------
       const EventSetupRecord& record_;

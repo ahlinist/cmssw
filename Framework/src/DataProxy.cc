@@ -34,7 +34,7 @@ DataProxy::DataProxy() :
 {
 }
 
-// DataProxy::DataProxy( const DataProxy& rhs )
+// DataProxy::DataProxy(const DataProxy& rhs)
 // {
 //    // do actual copying here;
 // }
@@ -46,11 +46,11 @@ DataProxy::~DataProxy()
 //
 // assignment operators
 //
-// const DataProxy& DataProxy::operator=( const DataProxy& rhs )
+// const DataProxy& DataProxy::operator=(const DataProxy& rhs)
 // {
 //   //An exception safe implementation is
 //   DataProxy temp(rhs);
-//   swap( rhs );
+//   swap(rhs);
 //
 //   return *this;
 // }

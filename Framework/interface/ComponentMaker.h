@@ -35,11 +35,11 @@ namespace edm {
 template <class T>
       class ComponentMakerBase {
 public:
-         virtual void addTo( EventSetupProvider& iProvider,
+         virtual void addTo(EventSetupProvider& iProvider,
                      ParameterSet const& iConfiguration,
                      std::string const& iProcessName,
                      unsigned long iVersion,
-                     unsigned long iPass ) const = 0;
+                     unsigned long iPass) const = 0;
       };
       
 template <class T, class TComponent>
@@ -51,20 +51,20 @@ template <class T, class TComponent>
       //virtual ~ComponentMaker();
 
       // ---------- const member functions ---------------------
-   virtual void addTo( EventSetupProvider& iProvider,
+   virtual void addTo(EventSetupProvider& iProvider,
                        ParameterSet const& iConfiguration,
                        std::string const& iProcessName,
                        unsigned long iVersion,
-                       unsigned long iPass ) const;
+                       unsigned long iPass) const;
    
       // ---------- static member functions --------------------
 
       // ---------- member functions ---------------------------
 
    private:
-      ComponentMaker( const ComponentMaker& ); // stop default
+      ComponentMaker(const ComponentMaker&); // stop default
 
-      const ComponentMaker& operator=( const ComponentMaker& ); // stop default
+      const ComponentMaker& operator=(const ComponentMaker&); // stop default
 
       // ---------- member data --------------------------------
 
@@ -72,15 +72,15 @@ template <class T, class TComponent>
 
 template< class T, class TComponent>
 void
-ComponentMaker<T,TComponent>:: addTo( EventSetupProvider& iProvider,
+ComponentMaker<T,TComponent>:: addTo(EventSetupProvider& iProvider,
                                         ParameterSet const& iConfiguration,
                                         std::string const& iProcessName,
                                         unsigned long iVersion,
-                                        unsigned long iPass ) const 
+                                        unsigned long iPass) const 
 {
-   boost::shared_ptr<TComponent> component( new TComponent(iConfiguration) );
+   boost::shared_ptr<TComponent> component(new TComponent(iConfiguration));
    
-   T::addTo( iProvider, component);
+   T::addTo(iProvider, component);
 }
    }
 }

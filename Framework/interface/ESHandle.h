@@ -34,7 +34,7 @@ class ESHandle
       typedef T value_type;
    
       ESHandle() : data_(0) {}
-      ESHandle(const T* iData ) : data_(iData) {}
+      ESHandle(const T* iData) : data_(iData) {}
       //virtual ~ESHandle();
 
       // ---------- const member functions ---------------------
@@ -46,14 +46,14 @@ class ESHandle
       // ---------- static member functions --------------------
 
       // ---------- member functions ---------------------------
-      void swap( ESHandle<T>& iOther) {
-         std::swap(data_, iOther.data_ );
+      void swap(ESHandle<T>& iOther) {
+         std::swap(data_, iOther.data_);
       }
       
    private:
-      //ESHandle( const ESHandle& ); // stop default
+      //ESHandle(const ESHandle&); // stop default
 
-      //const ESHandle& operator=( const ESHandle& ); // stop default
+      //const ESHandle& operator=(const ESHandle&); // stop default
 
       // ---------- member data --------------------------------
          const T* data_; 

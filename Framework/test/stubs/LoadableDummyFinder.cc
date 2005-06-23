@@ -22,7 +22,7 @@ namespace edm {
 }
 class LoadableDummyFinder : public DummyFinder {
 public:
-   LoadableDummyFinder( const edm::ParameterSet& ) {}
+   LoadableDummyFinder(const edm::ParameterSet&) {}
 };
 
 DEFINE_FWK_EVENTSETUP_SOURCE(LoadableDummyFinder)

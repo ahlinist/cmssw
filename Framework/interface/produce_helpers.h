@@ -89,7 +89,7 @@ namespace edm {
             enum {value = find_index_impl<typename container_type::head_type, typename container_type::tail_type, FindT>::value };
          };
          namespace test {
-            template<typename T> const char* name(const T* );
+            template<typename T> const char* name(const T*);
          }
          
       }

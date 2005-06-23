@@ -17,7 +17,7 @@
   from the EventSetup
 
   ESHandle<MyData> pMyData;
-  eventSetup.getData( pMyData );
+  eventSetup.getData(pMyData);
 
   which is just a short hand for
 

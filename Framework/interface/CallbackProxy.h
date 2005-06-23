@@ -44,18 +44,18 @@ template<class CallbackT, class RecordT, class DataT>
       //The callback fills the data directly.  This is done so that the callback does not have to
       //  hold onto a temporary copy of the result of the callback since the callback is allowed
       //  to return multiple items where only one item is needed by this Proxy
-      iCallback->holdOntoPointer( &data_ ) ; }
+      iCallback->holdOntoPointer(&data_) ; }
       virtual ~CallbackProxy() {
          DataT* dummy(0);
-         callback_->holdOntoPointer( dummy ) ;
+         callback_->holdOntoPointer(dummy) ;
       }
       // ---------- const member functions ---------------------
    
       // ---------- static member functions --------------------
 
       // ---------- member functions ---------------------------
-      const value_type* make( const record_type& iRecord, const DataKey&) {
-         (*callback_)( iRecord);
+      const value_type* make(const record_type& iRecord, const DataKey&) {
+         (*callback_)(iRecord);
          return &(*data_) ;
       }
       void invalidateCache() {
@@ -63,9 +63,9 @@ template<class CallbackT, class RecordT, class DataT>
          callback_->newRecordComing();
       }
    private:
-      CallbackProxy( const CallbackProxy& ); // stop default
+      CallbackProxy(const CallbackProxy&); // stop default
 
-      const CallbackProxy& operator=( const CallbackProxy& ); // stop default
+      const CallbackProxy& operator=(const CallbackProxy&); // stop default
 
       // ---------- member data --------------------------------
       DataT data_;

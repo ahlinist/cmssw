@@ -34,10 +34,10 @@ namespace edm {
       
       class SimpleStringTag {
         public:
-         SimpleStringTag( const char* iString ) : tag_(iString ) {}
+         SimpleStringTag(const char* iString) : tag_(iString) {}
          SimpleStringTag() : tag_("") {}
-         bool operator==( const SimpleStringTag& iRHS ) const ;
-         bool operator<( const SimpleStringTag& iRHS ) const ;
+         bool operator==(const SimpleStringTag& iRHS) const ;
+         bool operator<(const SimpleStringTag& iRHS) const ;
          
          const char* value() const { return tag_; }
          
@@ -47,7 +47,7 @@ namespace edm {
 
       class NameTag : public SimpleStringTag {
        public:
-         NameTag( const char* iUsage ) : SimpleStringTag(iUsage) {}
+         NameTag(const char* iUsage) : SimpleStringTag(iUsage) {}
          NameTag() : SimpleStringTag() {}
       };
       

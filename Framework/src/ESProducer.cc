@@ -33,7 +33,7 @@ ESProducer::ESProducer()
 {
 }
 
-// ESProducer::ESProducer( const ESProducer& rhs )
+// ESProducer::ESProducer(const ESProducer& rhs)
 // {
 //    // do actual copying here;
 // }
@@ -45,11 +45,11 @@ ESProducer::~ESProducer()
 //
 // assignment operators
 //
-// const ESProducer& ESProducer::operator=( const ESProducer& rhs )
+// const ESProducer& ESProducer::operator=(const ESProducer& rhs)
 // {
 //   //An exception safe implementation is
 //   ESProducer temp(rhs);
-//   swap( rhs );
+//   swap(rhs);
 //
 //   return *this;
 // }

@@ -33,11 +33,11 @@ namespace edm {
 //
 // assignment operators
 //
-// const DataKeyTags& DataKeyTags::operator=( const DataKeyTags& rhs )
+// const DataKeyTags& DataKeyTags::operator=(const DataKeyTags& rhs)
 // {
 //   //An exception safe implementation is
 //   DataKeyTags temp(rhs);
-//   swap( rhs );
+//   swap(rhs);
 //
 //   return *this;
 // }
@@ -50,15 +50,15 @@ namespace edm {
 // const member functions
 //
 bool
-SimpleStringTag::operator==( const SimpleStringTag& iRHS ) const
+SimpleStringTag::operator==(const SimpleStringTag& iRHS) const
 {
-   return ( 0 == std::strcmp( tag_, iRHS.tag_ ) );
+   return (0 == std::strcmp(tag_, iRHS.tag_));
 }
 
 bool
-SimpleStringTag::operator<( const SimpleStringTag& iRHS ) const
+SimpleStringTag::operator<(const SimpleStringTag& iRHS) const
 {
-   return ( 0 > std::strcmp( tag_, iRHS.tag_ ) );
+   return (0 > std::strcmp(tag_, iRHS.tag_));
 }
 
 //

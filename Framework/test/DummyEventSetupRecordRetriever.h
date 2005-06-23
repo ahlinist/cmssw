@@ -41,23 +41,23 @@ namespace edm {
          setWhatProduced(this);
       }
       
-      std::auto_ptr<DummyEventSetupData> produce( const DummyEventSetupRecord& ) {
-         std::auto_ptr<DummyEventSetupData> data( new DummyEventSetupData(1) );
+      std::auto_ptr<DummyEventSetupData> produce(const DummyEventSetupRecord&) {
+         std::auto_ptr<DummyEventSetupData> data(new DummyEventSetupData(1));
          return data;
       }
    protected:
 
-      virtual void setIntervalFor( const edm::eventsetup::EventSetupRecordKey&,
+      virtual void setIntervalFor(const edm::eventsetup::EventSetupRecordKey&,
                                    const edm::Timestamp& iTime, 
                                    edm::ValidityInterval& iInterval) {
-         iInterval = edm::ValidityInterval( Timestamp(1),
-                                            Timestamp::endOfTime() );
+         iInterval = edm::ValidityInterval(Timestamp(1),
+                                            Timestamp::endOfTime());
       }
 
    private:
-      DummyEventSetupRecordRetriever( const DummyEventSetupRecordRetriever& ); // stop default
+      DummyEventSetupRecordRetriever(const DummyEventSetupRecordRetriever&); // stop default
 
-      const DummyEventSetupRecordRetriever& operator=( const DummyEventSetupRecordRetriever& ); // stop default
+      const DummyEventSetupRecordRetriever& operator=(const DummyEventSetupRecordRetriever&); // stop default
 
       // ---------- member data --------------------------------
 

@@ -24,7 +24,7 @@ namespace edm {
 }
 class LoadableDummyProvider : public edm::eventsetup::test::DummyProxyProvider {
 public:
-   LoadableDummyProvider( const edm::ParameterSet& ) {}
+   LoadableDummyProvider(const edm::ParameterSet&) {}
 };
 
 DEFINE_FWK_EVENTSETUP_MODULE(LoadableDummyProvider)

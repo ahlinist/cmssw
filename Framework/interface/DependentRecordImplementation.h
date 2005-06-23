@@ -49,12 +49,12 @@ class DependentRecordImplementation : public EventSetupRecordImplementation<Reco
             //Make sure that DepRecordT is a type in ListT
             typedef typename boost::mpl::end< ListT >::type EndItrT;
             typedef typename boost::mpl::find< ListT, DepRecordT>::type FoundItrT; 
-            BOOST_STATIC_ASSERT( ( ! boost::is_same<FoundItrT, EndItrT>::value ) );
+            BOOST_STATIC_ASSERT((! boost::is_same<FoundItrT, EndItrT>::value));
             EventSetup const& eventSetupT = this->eventSetup();
             //can't do the following because of a compiler error in gcc 3.*
             // return eventSetupT.get<DepRecordT>();
             const DepRecordT* temp;
-            eventSetupT.getAvoidCompilerBug( temp );
+            eventSetupT.getAvoidCompilerBug(temp);
             return *temp;
          }
       
@@ -63,9 +63,9 @@ class DependentRecordImplementation : public EventSetupRecordImplementation<Reco
       // ---------- member functions ---------------------------
 
    private:
-      DependentRecordImplementation( const DependentRecordImplementation& ); // stop default
+      DependentRecordImplementation(const DependentRecordImplementation&); // stop default
 
-      const DependentRecordImplementation& operator=( const DependentRecordImplementation& ); // stop default
+      const DependentRecordImplementation& operator=(const DependentRecordImplementation&); // stop default
 
       // ---------- member data --------------------------------
 

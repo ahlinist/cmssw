@@ -41,11 +41,11 @@ class ProxyArgumentFactoryTemplate : public ProxyFactoryBase
 
       // ---------- const member functions ---------------------
       virtual std::auto_ptr<DataProxy> makeProxy() const {
-         return std::auto_ptr<DataProxy>(new T(arg_) );
+         return std::auto_ptr<DataProxy>(new T(arg_));
       }
             
       virtual DataKey makeKey(const std::string& iName) const {
-         return DataKey(DataKey::makeTypeTag< typename T::value_type>(),iName.c_str() );
+         return DataKey(DataKey::makeTypeTag< typename T::value_type>(),iName.c_str());
       }
       
       // ---------- static member functions --------------------
@@ -53,9 +53,9 @@ class ProxyArgumentFactoryTemplate : public ProxyFactoryBase
       // ---------- member functions ---------------------------
 
    private:
-      ProxyArgumentFactoryTemplate( const ProxyArgumentFactoryTemplate& ); // stop default
+      ProxyArgumentFactoryTemplate(const ProxyArgumentFactoryTemplate&); // stop default
 
-      const ProxyArgumentFactoryTemplate& operator=( const ProxyArgumentFactoryTemplate& ); // stop default
+      const ProxyArgumentFactoryTemplate& operator=(const ProxyArgumentFactoryTemplate&); // stop default
 
       // ---------- member data --------------------------------
       mutable ArgT arg_;

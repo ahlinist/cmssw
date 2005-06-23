@@ -215,11 +215,11 @@ namespace edm {
     BasicHandleVec::const_iterator it = bhv.begin();
     BasicHandleVec::const_iterator end = bhv.end();
 
-    while ( it != end )
+    while (it != end)
       {
 	got_product_ids_.push_back((*it)->id());
 	Handle<PROD> result;
-	convert_handle( *it, result);  // thrown on conversion error
+	convert_handle(*it, result);  // thrown on conversion error
 	products.push_back(result);
 	++it;
       }

@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
     edm::EventProcessor app(argc, argv);
     return app.run();
   }
-  catch ( ... )
+  catch (...)
   {
     std::cerr << "Failed to create framework object\n";
   }

@@ -28,4 +28,4 @@ namespace edm {
    }
 }
 
-COMPONENTFACTORY_GET( edm::eventsetup::SourceMakerTraits )
+COMPONENTFACTORY_GET(edm::eventsetup::SourceMakerTraits)

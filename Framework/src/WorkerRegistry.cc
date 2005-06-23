@@ -34,7 +34,7 @@ WorkerRegistry* WorkerRegistry::get(){
 
 WorkerRegistry:: ~WorkerRegistry(){
 
-  for ( WorkerMap::iterator workerIt = m_workerMap.begin();
+  for (WorkerMap::iterator workerIt = m_workerMap.begin();
 	 workerIt != m_workerMap.end() ; ++ workerIt)
     delete workerIt->second;
 
@@ -47,7 +47,7 @@ Worker* WorkerRegistry::getWorker(ParameterSet const& parameterSet,
 				  unsigned long pass){
 
   string workerid= 
-    mangleWorkerParameters( parameterSet, processName,versionNumber,pass);
+    mangleWorkerParameters(parameterSet, processName,versionNumber,pass);
 
   WorkerMap::iterator workerIt = m_workerMap.find(workerid);
   

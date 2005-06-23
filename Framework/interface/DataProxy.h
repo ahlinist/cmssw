@@ -55,9 +55,9 @@ class DataProxy
       void clearCacheIsValid() { cacheIsValid_ = false; }
       
    private:
-      DataProxy( const DataProxy& ); // stop default
+      DataProxy(const DataProxy&); // stop default
 
-      const DataProxy& operator=( const DataProxy& ); // stop default
+      const DataProxy& operator=(const DataProxy&); // stop default
 
       // ---------- member data --------------------------------
       bool cacheIsValid_;

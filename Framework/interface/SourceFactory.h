@@ -34,13 +34,13 @@ namespace edm {
       class EventSetupRecordIntervalFinder;
       
       template<class T>
-         void addProviderTo( EventSetupProvider& iProvider, boost::shared_ptr<T> iComponent, const DataProxyProvider*) 
+         void addProviderTo(EventSetupProvider& iProvider, boost::shared_ptr<T> iComponent, const DataProxyProvider*) 
       {
-            boost::shared_ptr<DataProxyProvider> pProvider( iComponent );
-            iProvider.add( pProvider );
+            boost::shared_ptr<DataProxyProvider> pProvider(iComponent);
+            iProvider.add(pProvider);
       }
       template<class T>
-         void addProviderTo( EventSetupProvider& iProvider, boost::shared_ptr<T> iComponent, const void*) 
+         void addProviderTo(EventSetupProvider& iProvider, boost::shared_ptr<T> iComponent, const void*) 
       {
             //do nothing
       }
@@ -48,12 +48,12 @@ namespace edm {
       struct SourceMakerTraits {
          static std::string name();
          template<class T>
-            static void addTo( EventSetupProvider& iProvider, boost::shared_ptr<T> iComponent )
+            static void addTo(EventSetupProvider& iProvider, boost::shared_ptr<T> iComponent)
             {
                //a source does not always have to be a provider
-               addProviderTo( iProvider, iComponent, static_cast<const T*>(0) );
-               boost::shared_ptr<EventSetupRecordIntervalFinder> pFinder( iComponent );
-               iProvider.add( pFinder );
+               addProviderTo(iProvider, iComponent, static_cast<const T*>(0));
+               boost::shared_ptr<EventSetupRecordIntervalFinder> pFinder(iComponent);
+               iProvider.add(pFinder);
             }
                
       };
