@@ -62,9 +62,9 @@ namespace edm {
   }
 
   CollisionID
-  Event::ID() const
+  Event::id() const
   {
-    return ep_.ID();
+    return ep_.id();
   }
 
   void 

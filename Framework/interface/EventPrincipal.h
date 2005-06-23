@@ -56,7 +56,7 @@ namespace edm {
     EventPrincipal(const CollisionID& id, Retriever& r, const ProcessNameList& nl = ProcessNameList());
     ~EventPrincipal();
 
-    CollisionID ID() const;
+    CollisionID id() const;
 
     // next two will not be available for a little while...
     //      const Run& getRun() const; 

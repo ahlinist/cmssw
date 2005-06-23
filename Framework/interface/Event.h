@@ -31,7 +31,7 @@ namespace edm {
     ~Event();
 
     // these must come from the ep.
-    CollisionID ID() const;
+    CollisionID id() const;
 
     // How do these get set in the first place?
     const LuminositySection& getLuminositySection() const;
@@ -165,7 +165,7 @@ namespace edm {
   Event::get(EDP_ID id, Handle<PROD>& result) const
   {
     BasicHandle bh = this->get_(TypeID(typeid(PROD)), id);
-    got_product_ids_.push_back(bh->ID());
+    got_product_ids_.push_back(bh->id());
     convert_handle(bh, result);  // thrown on conversion error
   }
 
@@ -175,7 +175,7 @@ namespace edm {
 	     Handle<PROD>& result) const
   {
     BasicHandle bh = this->get_(TypeID(typeid(PROD)),sel);
-    got_product_ids_.push_back(bh->ID());
+    got_product_ids_.push_back(bh->id());
     convert_handle(bh, result);  // thrown on conversion error
   }
   
@@ -185,7 +185,7 @@ namespace edm {
 		    Handle<PROD>& result) const
   {
     BasicHandle bh = this->getByLabel_(TypeID(typeid(PROD)), label);
-    got_product_ids_.push_back(bh->ID());
+    got_product_ids_.push_back(bh->id());
     convert_handle(bh, result);  // thrown on conversion error
   }
 
@@ -217,7 +217,7 @@ namespace edm {
 
     while ( it != end )
       {
-	got_product_ids_.push_back((*it)->ID());
+	got_product_ids_.push_back((*it)->id());
 	Handle<PROD> result;
 	convert_handle( *it, result);  // thrown on conversion error
 	products.push_back(result);

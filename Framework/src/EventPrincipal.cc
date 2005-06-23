@@ -43,7 +43,7 @@ namespace edm {
   }
 
   CollisionID
-  EventPrincipal::ID() const
+  EventPrincipal::id() const
   {
     return aux_.id_;
   }
