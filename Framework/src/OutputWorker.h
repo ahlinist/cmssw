@@ -43,7 +43,7 @@ namespace edm
   template <> 
   struct WorkerType<OutputModule>
   {
-    typedef OutputModule module_type;
+    typedef OutputModule ModuleType;
     typedef OutputWorker worker_type;
   };
 }

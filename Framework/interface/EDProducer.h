@@ -17,7 +17,7 @@ namespace edm
   class EDProducer
   {
   public:
-    typedef EDProducer module_type;
+    typedef EDProducer ModuleType;
 
     virtual ~EDProducer();
     virtual void produce(Event& e, EventSetup const& c) = 0;

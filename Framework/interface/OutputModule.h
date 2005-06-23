@@ -19,7 +19,7 @@ namespace edm
   class OutputModule
   {
   public:
-    typedef OutputModule module_type;
+    typedef OutputModule ModuleType;
 
     explicit OutputModule(ParameterSet const& pset) : groupSelector_(pset) {}
     virtual ~OutputModule();

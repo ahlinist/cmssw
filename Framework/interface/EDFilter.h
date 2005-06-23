@@ -18,7 +18,7 @@ namespace edm
   class EDFilter
     {
     public:
-      typedef EDFilter module_type;
+      typedef EDFilter ModuleType;
 
       virtual ~EDFilter();
       virtual bool filter(Event const& e, EventSetup const& c) = 0;
