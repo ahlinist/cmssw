@@ -94,7 +94,7 @@ class NoDataException : public std::exception
 
       // ---------- const member functions ---------------------
       const DataKey& dataKey() const { return dataKey_; }
-      virtual const char* what () const throw() { 
+      virtual const char* what() const throw() { 
         if(message_.size() == 0) {
           message_ = dataTypeMessage();
            message_+= std::string(" \n ")

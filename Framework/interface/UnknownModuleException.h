@@ -36,7 +36,7 @@ namespace edm {
 	              "of available Plugins\n";
     }
     ~UnknownModuleException() throw(){}
-    const char* what () const throw() { return error_.c_str();}
+    const char* what() const throw() { return error_.c_str();}
   private:
     std::string error_;
 

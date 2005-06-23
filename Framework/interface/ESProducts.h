@@ -76,7 +76,7 @@ namespace edm {
             }
          template< typename T, typename U, typename V>
             MultiHolder< MultiHolder<T, U>, V >
-            operator<< (const MultiHolder<T,U>& iHolder, const V& iValue) {
+            operator<<(const MultiHolder<T,U>& iHolder, const V& iValue) {
                return MultiHolder< MultiHolder<T, U>, V> (iHolder, iValue);
             }
          

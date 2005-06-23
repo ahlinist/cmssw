@@ -68,7 +68,7 @@ namespace edm {
       DependsOnCaller(T* iCallee, void(T::* iMethod)(const TDependsOnRecord&) , const TCallerChain& iChain) : 
       callee_(iCallee), method_(iMethod), chain_(iChain), time_(Timestamp::invalidTimestamp()) {}
       
-      void operator() (const TRecord& iRecord) {
+      void operator()(const TRecord& iRecord) {
          const TDependsOnRecord& record = iRecord.template getRecord<TDependsOnRecord>();
          if(record.validityInterval().first() != time_) {
             (callee_->*method_)(record);

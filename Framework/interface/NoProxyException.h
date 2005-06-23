@@ -51,7 +51,7 @@ class NoProxyException : public NoDataException<T>
       // ---------- member functions ---------------------------
 
       // ---------- const member functions ---------------------
-      virtual const char* what () const throw() { 
+      virtual const char* what()const throw() { 
          /*
          std::stringstream m_stream1, m_stream2;
         // Evaluate more precisely what is going on with thrown exception
