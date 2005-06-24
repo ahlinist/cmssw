@@ -54,9 +54,6 @@ namespace edm {
      
     WorkerRegistry(){}
   
-    /// single instance
-    static WorkerRegistry*  m_singleInstance;
-
     /// Get a unique name for the worker
     /** Form a string to be used as a key in the map of workers */
     std::string mangleWorkerParameters(ParameterSet const& parameterSet,

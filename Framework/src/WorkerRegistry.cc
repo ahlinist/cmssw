@@ -20,15 +20,9 @@ static const char CVSId[] = "$Id$";
 using namespace std;
 using namespace edm;
 
-WorkerRegistry* WorkerRegistry::m_singleInstance=0;
-
 WorkerRegistry* WorkerRegistry::get(){
-
-  if (!m_singleInstance){
-    m_singleInstance= new WorkerRegistry;
-  }
-  return m_singleInstance;
-
+  static WorkerRegistry m_singleInstance;
+  return & m_singleInstance;
 }
 
 
@@ -37,7 +31,6 @@ WorkerRegistry:: ~WorkerRegistry(){
   for (WorkerMap::iterator workerIt = m_workerMap.begin();
 	 workerIt != m_workerMap.end() ; ++ workerIt)
     delete workerIt->second;
-
 }
 
 
