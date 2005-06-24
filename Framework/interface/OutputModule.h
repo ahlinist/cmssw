@@ -24,7 +24,7 @@ namespace edm
     explicit OutputModule(ParameterSet const& pset) : groupSelector_(pset) {}
     virtual ~OutputModule();
     virtual void write(const EventPrincipal& e) = 0;
-    bool selected(std::string const& label) const {return groupSelector_.selected(label);}
+    bool selected(Provenance const& prov) const {return groupSelector_.selected(prov);}
   private:
     GroupSelector groupSelector_;
   };
