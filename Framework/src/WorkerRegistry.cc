@@ -20,10 +20,7 @@ static const char CVSId[] = "$Id$";
 using namespace std;
 using namespace edm;
 
-WorkerRegistry* WorkerRegistry::get(){
-  static WorkerRegistry m_singleInstance;
-  return & m_singleInstance;
-}
+
 
 
 WorkerRegistry:: ~WorkerRegistry(){

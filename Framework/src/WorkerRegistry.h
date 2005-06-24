@@ -35,10 +35,7 @@ namespace edm {
   class WorkerRegistry {
 
   public:
-    
-    /// retrieve the single instance
-    static WorkerRegistry* get();
-
+ 
     ~WorkerRegistry();
         
     /// Retrieve the particular instance of the worker
@@ -52,7 +49,6 @@ namespace edm {
     
   private:
      
-    WorkerRegistry(){}
   
     /// Get a unique name for the worker
     /** Form a string to be used as a key in the map of workers */
