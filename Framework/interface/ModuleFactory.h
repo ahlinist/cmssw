@@ -7,10 +7,10 @@
 // 
 /**\class ModuleFactory ModuleFactory.h Core/CoreFramework/interface/ModuleFactory.h
 
- Description: <one line class summary>
+ Description: Factory which is dynamically loadable and used to create an eventstore module
 
  Usage:
-    <usage>
+    Used by the SEAL plugin-manager
 
 */
 //
@@ -45,4 +45,9 @@ namespace edm {
 #define DEFINE_FWK_EVENTSETUP_MODULE(type) \
 DEFINE_SEAL_MODULE (); \
 DEFINE_SEAL_PLUGIN (edm::eventsetup::ModuleFactory,edm::eventsetup::ModuleMaker<type>,#type);
+
+#define DEFINE_ANOTHER_FWK_EVENTSETUP_MODULE(type) \
+DEFINE_SEAL_PLUGIN (edm::eventsetup::ModuleFactory,edm::eventsetup::ModuleMaker<type>,#type);
+
 #endif /* EVENTSETUP_MODULEFACTORY_H */
+
