@@ -26,6 +26,8 @@
 // forward declarations
 namespace edm {
    namespace eventsetup {
+      class EventSetupRecord;
+      class DataKey;
       
 class DataProxy
 {
@@ -37,6 +39,7 @@ class DataProxy
       // ---------- const member functions ---------------------
       bool cacheIsValid() const { return cacheIsValid_; }
       
+      virtual void doGet( const EventSetupRecord& iRecord, const DataKey& iKey) const = 0;
       // ---------- static member functions --------------------
 
       // ---------- member functions ---------------------------

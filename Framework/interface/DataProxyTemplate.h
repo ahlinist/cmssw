@@ -20,6 +20,7 @@
 //
 
 // system include files
+#include <cassert>
 
 // user include files
 #include "FWCore/CoreFramework/interface/DataProxy.h"
@@ -57,6 +58,10 @@ class DataProxyTemplate : public DataProxy
          return cache_;
       }
       
+      void doGet( const EventSetupRecord& iRecord, const DataKey& iKey) const {
+         assert( iRecord.key() == RecordT::keyForClass() );
+         get(static_cast<const RecordT&>(iRecord), iKey );
+      }
    protected:
       virtual const DataT* make(const RecordT&, const DataKey&) = 0;
       

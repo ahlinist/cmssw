@@ -56,7 +56,16 @@ class EventSetupRecordImplementation : public EventSetupRecord
    virtual EventSetupRecordKey key() const {
       return EventSetupRecordKey::makeKey<T>();
    }
-      // ---------- static member functions --------------------
+
+   virtual bool doGet(const DataKey& aKey) const {
+      const DataProxy* proxy = find(aKey);
+      if( 0 != proxy ) {
+         proxy->doGet( *this, aKey );
+      }
+      return 0 != proxy;
+   }
+   
+   // ---------- static member functions --------------------
    static EventSetupRecordKey keyForClass()  {
       return EventSetupRecordKey::makeKey<T>();
    }
