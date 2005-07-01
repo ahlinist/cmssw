@@ -12,7 +12,7 @@ contains an EDProduct and its associated Provenance, along with
 ancillary transient information regarding the two. Groups are handled
 through shared pointers.
 
-The EventPrincipal returns Handle<EDProduct>, rather than a shared
+The EventPrincipal returns BasicHandle, rather than a shared
 pointer to a Group, when queried.
 
 $Id$
@@ -31,7 +31,7 @@ $Id$
 #include "FWCore/EDProduct/interface/EDP_ID.h"
 #include "FWCore/EDProduct/interface/EDProduct.h"
 #include "FWCore/CoreFramework/interface/EventAux.h"
-#include "FWCore/CoreFramework/interface/Handle.h"
+#include "FWCore/CoreFramework/interface/BasicHandle.h"
 #include "FWCore/CoreFramework/interface/ProcessNameList.h"
 #include "FWCore/CoreFramework/interface/Retriever.h"
 #include "FWCore/CoreFramework/interface/Selector.h"
@@ -49,7 +49,6 @@ namespace edm {
     typedef std::vector<std::string>               ProcessNameList;
     typedef ProcessNameList::const_iterator        process_name_const_iterator;
     typedef boost::shared_ptr<Group>               SharedGroupPtr;
-    typedef Handle<EDProduct>                      BasicHandle;
     typedef std::vector<BasicHandle>               BasicHandleVec;
     
     EventPrincipal();

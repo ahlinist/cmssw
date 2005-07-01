@@ -15,9 +15,11 @@ $Id$
 #include "boost/shared_ptr.hpp"
 
 #include "FWCore/CoreFramework/interface/CoreFrameworkfwd.h"
+#include "FWCore/EDProduct/interface/Wrapper.h"
 
 #include "FWCore/EDProduct/interface/CollisionID.h"
 #include "FWCore/CoreFramework/interface/Handle.h"
+#include "FWCore/CoreFramework/interface/BasicHandle.h"
 
 #include "FWCore/CoreFramework/src/Group.h"
 #include "FWCore/CoreFramework/src/TypeID.h"
@@ -63,7 +65,6 @@ namespace edm {
     typedef std::vector<EDP_ID>       EDP_IDVec;
     //typedef std::vector<const Group*> GroupPtrVec;
     typedef std::vector<EDProduct*>   ProductPtrVec;
-    typedef Handle<EDProduct>         BasicHandle;
     typedef std::vector<BasicHandle>  BasicHandleVec;    
 
     //------------------------------------------------------------
@@ -156,7 +157,8 @@ namespace edm {
   {
     PROD* p = product.get();
     assert (p);                // null pointer is illegal
-    put_products_.push_back(p);
+    edm::Wrapper<PROD> *wp(new Wrapper<PROD>(*p));
+    put_products_.push_back(wp);
     product.release();
   }
 
@@ -185,7 +187,7 @@ namespace edm {
 		    Handle<PROD>& result) const
   {
     BasicHandle bh = this->getByLabel_(TypeID(typeid(PROD)), label);
-    got_product_ids_.push_back(bh->id());
+    got_product_ids_.push_back(bh.id());
     convert_handle(bh, result);  // thrown on conversion error
   }
 

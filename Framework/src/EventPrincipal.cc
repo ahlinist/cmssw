@@ -120,7 +120,7 @@ namespace edm {
     this->addGroup(g);
   }
 
-  EventPrincipal::BasicHandle
+  BasicHandle
   EventPrincipal::get(EDP_ID oid) const
   {
     if (oid == EDP_ID())
@@ -138,7 +138,7 @@ namespace edm {
     return BasicHandle(g->product(), g->provenance());
   }
 
-  EventPrincipal::BasicHandle
+  BasicHandle
   EventPrincipal::getBySelector(TypeID id, 
 				const Selector& sel) const
   {
@@ -222,7 +222,7 @@ namespace edm {
   }
 
     
-  EventPrincipal::BasicHandle
+  BasicHandle
   EventPrincipal::getByLabel(TypeID id, 
 			     const string& label) const
   {
