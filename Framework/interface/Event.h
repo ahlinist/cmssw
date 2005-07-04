@@ -219,7 +219,7 @@ namespace edm {
 
     while (it != end)
       {
-	got_product_ids_.push_back((*it)->id());
+	got_product_ids_.push_back((*it).id());
 	Handle<PROD> result;
 	convert_handle(*it, result);  // thrown on conversion error
 	products.push_back(result);
