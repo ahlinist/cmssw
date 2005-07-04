@@ -167,7 +167,7 @@ namespace edm {
   Event::get(EDP_ID id, Handle<PROD>& result) const
   {
     BasicHandle bh = this->get_(TypeID(typeid(PROD)), id);
-    got_product_ids_.push_back(bh->id());
+    got_product_ids_.push_back(bh.id());
     convert_handle(bh, result);  // thrown on conversion error
   }
 
@@ -177,7 +177,7 @@ namespace edm {
 	     Handle<PROD>& result) const
   {
     BasicHandle bh = this->get_(TypeID(typeid(PROD)),sel);
-    got_product_ids_.push_back(bh->id());
+    got_product_ids_.push_back(bh.id());
     convert_handle(bh, result);  // thrown on conversion error
   }
   
