@@ -15,6 +15,8 @@ do_or_die Exception_t
 do_or_die ExceptionDerived_t
 do_or_die CodedException_t
 do_or_die EDMException_t
+do_or_die Digest_t
+
 
 
 
