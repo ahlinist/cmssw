@@ -18,7 +18,7 @@ $Id$
 
 #include "FWCore/CoreFramework/interface/CoreFrameworkfwd.h"
 #include "FWCore/CoreFramework/interface/OutputModule.h"
-#include "FWCore/CoreFramework/interface/Provenance.h"
+#include "FWCore/CoreFramework/interface/ModuleDescription.h"
 
 #include "FWCore/CoreFramework/src/Worker.h"
 
