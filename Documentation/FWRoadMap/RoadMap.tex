@@ -1,7 +1,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% 
 %%
-%% $Id: RoadMap.tex,v 1.30 2005/07/07 16:33:50 wmtan Exp $
+%% $Id: RoadMap.tex,v 1.31 2005/07/07 16:33:59 wmtan Exp $
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -20,7 +20,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Document revision number, traced by using RCS revision number.
 %
-\RCS $Revision: 1.30 $
+\RCS $Revision: 1.31 $
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Special macros for this document
@@ -657,19 +657,23 @@ and a ``wrapper'' template that inherits from it,
 to form heterogeneous containers.
 This wrapper would appear as another level of indirection
 in the \Root output files,
-at would be an (admittedly minor) annoyance to the user of the \Root prompt.
+and would be an (admittedly minor) annoyance to the user of the \Root prompt.
 
-Solution two might allow use of simple things 
-like \cppcode{std::vector<CaloJet>}
-directly as an \EDProduct---except for the restriction noted below.
+Solution two would allow the use of simple things 
+like \cppcode{std::vector<CaloJet>} directly as an \EDProduct.
 Solution one requires writing a class that could \emph{contain}
-a \cppcode{std::vector<CaloJet>}.
+a \cppcode{std::vector<CaloJet>}.  This container would appear as another level
+of indirection in the \Root output files,
+and would be an (admittedly minor) annoyance to the user of the \Root prompt.
 
 We want every \EDProduct to know the \EDPid it is assigned.
 Solution one allows this functionality to be supplied by the base class.
-Solution two would require the \emph{concept} of \EDProduct to include
-``getting'' and ``setting'' of \EDPid{}s;
-thus \cppcode{std::vector<CaloJet>} would not be a suitable \EDProduct.
+In Solution two, the ``wrapped'' \EDProduct has this functionality, but
+the ``bare'' \EDProduct does not.
+
+The initial implementation of \EDProduct used a base class.  However,
+a decision subsequently was made to use wrappers, and an implementation
+using wrappers has supplanted the original implementation.
 
 \section{Lifetime Management of \EDProduct{}s}
 
@@ -2032,8 +2036,10 @@ All classes used as an \EDProduct or as a non-transient component of an \EDProdu
 		\item If a non-transient T* is used, all the rules for components of an \EDProduct apply to the class T and to the actual class of the pointed to object.
 	\end{enumerate}
 There are two reasons that the user might wish to use a pointer to an object rather than to the object itself:
+	\begin{enumerate}
                 \item If the object need not be present, a zero pointer can be used to indicate that no object is present.
 		\item To implement polymorphism. However, polymorphism destroys browsability in that only the portion of the pointed to object corresponding to the declared pointer type may be browsed by \Root. For this reason, we strongly discourage designs that use polymorphism in persistence capable objects.
+	\end{enumerate}
 
 	\item \emph{reproducibility} \emph{browsability}; A \emph{persistence capable EDM compliant class} may not contain an \cppcode{std::auto_ptr}, \cppcode{boost::shared_ptr}, \cppcode{pool::Ref}, \Root \cppcode{TRef}, or any other "smart" pointer, with the following exception:
 		\begin{enumerate}
