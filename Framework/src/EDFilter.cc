@@ -11,5 +11,11 @@ namespace edm
   EDFilter::~EDFilter()
   { }
 
+  void EDFilter::beginJob( EventSetup const& ) 
+  { }
+   
+  void EDFilter::endJob()
+  { }
+   
 }
   

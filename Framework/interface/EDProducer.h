@@ -21,6 +21,9 @@ namespace edm
 
     virtual ~EDProducer();
     virtual void produce(Event& e, EventSetup const& c) = 0;
+    virtual void beginJob( EventSetup const& ) ;
+    virtual void endJob() ;
+    
   };
 }
 

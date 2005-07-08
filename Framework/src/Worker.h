@@ -19,6 +19,8 @@ namespace edm {
   public:
     virtual ~Worker();
     virtual bool doWork(EventPrincipal&, EventSetup const& c) = 0;
+    virtual void beginJob( EventSetup const& ) = 0;
+    virtual void endJob() = 0;
   };
 
   template <class WT>

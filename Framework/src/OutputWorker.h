@@ -36,6 +36,9 @@ namespace edm
   private:
     virtual bool doWork(EventPrincipal& e, EventSetup const& c);
 
+    virtual void beginJob( EventSetup const& ) ;
+    virtual void endJob() ;
+    
     ModuleDescription               md_;
     boost::shared_ptr<OutputModule> mod_;
   };

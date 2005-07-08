@@ -30,4 +30,15 @@ namespace edm
     mod_->write(ep);
     return true;
   }
+
+  void 
+  OutputWorker::beginJob( EventSetup const& ) 
+  {
+  }
+
+  void 
+  OutputWorker::endJob() 
+  {
+  }
+   
 }

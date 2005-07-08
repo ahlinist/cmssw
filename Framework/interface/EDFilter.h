@@ -22,6 +22,10 @@ namespace edm
 
       virtual ~EDFilter();
       virtual bool filter(Event const& e, EventSetup const& c) = 0;
+      virtual void beginJob( EventSetup const& ) ;
+      virtual void endJob() ;
+      
+      
     };
 }
 
