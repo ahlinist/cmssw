@@ -69,7 +69,8 @@ namespace edm {
     BasicHandle  getBySelector(TypeID id, const Selector& s) const;
 
     BasicHandle  getByLabel(TypeID id,
-			    const std::string& label) const;
+			    const std::string& label,
+                            const std::string& productInstanceName) const;
 
     void getMany(TypeID id, 
 		 const Selector&,

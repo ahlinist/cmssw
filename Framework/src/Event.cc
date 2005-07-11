@@ -112,9 +112,10 @@ namespace edm {
     
   BasicHandle
   Event::getByLabel_(TypeID id,
-		     const string& label) const
+		     const string& label,
+                     const string& productInstanceName) const
   {
-    return ep_.getByLabel(id, label);
+    return ep_.getByLabel(id, label, productInstanceName);
   }
 
   void 
