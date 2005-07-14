@@ -2,10 +2,10 @@
 #define EVENTSETUP_EVENTSETUPRECORD_REGISTRATION_MACRO_H
 // -*- C++ -*-
 //
-// Package:     CoreFramework
+// Package:     Framework
 // Class  :     eventsetuprecord_registration_macro
 // 
-/**\class eventsetuprecord_registration_macro eventsetuprecord_registration_macro.h Core/CoreFramework/interface/eventsetuprecord_registration_macro.h
+/**\class eventsetuprecord_registration_macro eventsetuprecord_registration_macro.h FWCore/Framework/interface/eventsetuprecord_registration_macro.h
 
  Description: CPP macro used to register a new EventSetupRecord into the system
 
@@ -29,11 +29,11 @@ macro EVENTSETUP_RECORD_REG is used to create that code.
 // system include files
 
 // user include files
-#include "FWCore/CoreFramework/interface/HCTypeTagTemplate.icc"
-#include "FWCore/CoreFramework/interface/HCMethods.icc"
-#include "FWCore/CoreFramework/interface/eventSetupGetImplementation.icc"
+#include "FWCore/Framework/interface/HCTypeTagTemplate.icc"
+#include "FWCore/Framework/interface/HCMethods.icc"
+#include "FWCore/Framework/interface/eventSetupGetImplementation.icc"
 
-#include "FWCore/CoreFramework/interface/EventSetupRecordProviderFactoryTemplate.h"
+#include "FWCore/Framework/interface/EventSetupRecordProviderFactoryTemplate.h"
 
 #define EVENTSETUP_RECORD_NAME2(_a_, _b_) EVENTSETUP_RECORD_NAME2_HIDDEN(_a_,_b_)
 #define EVENTSETUP_RECORD_NAME2_HIDDEN(_a_,_b_) _a_ ## _b_

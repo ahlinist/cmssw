@@ -9,9 +9,9 @@ processing in a processing path.
 $Id$
 
 ----------------------------------------------------------------------*/
-#include "FWCore/CoreFramework/interface/Event.h"
+#include "FWCore/Framework/interface/Event.h"
 
-#include "FWCore/CoreFramework/interface/EventSetup.h"
+#include "FWCore/Framework/interface/EventSetup.h"
 
 namespace edm
   {

@@ -1,6 +1,6 @@
 // -*- C++ -*-
 //
-// Package:     CoreFramework
+// Package:     Framework
 // Class  :     eventsetup_plugin_t
 // 
 // Implementation:
@@ -16,9 +16,9 @@
 #include <cppunit/extensions/HelperMacros.h>
 // user include files
 #include "PluginManager/PluginManager.h"
-#include "FWCore/CoreFramework/interface/SourceFactory.h"
-#include "FWCore/CoreFramework/interface/ModuleFactory.h"
-#include "FWCore/CoreFramework/interface/EventSetupProvider.h"
+#include "FWCore/Framework/interface/SourceFactory.h"
+#include "FWCore/Framework/interface/ModuleFactory.h"
+#include "FWCore/Framework/interface/EventSetupProvider.h"
 
 using namespace edm::eventsetup;
 

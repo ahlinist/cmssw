@@ -1,6 +1,6 @@
 // -*- C++ -*-
 //
-// Package:     CoreFramework
+// Package:     Framework
 // Class  :     DepRecord
 // 
 // Implementation:
@@ -14,9 +14,9 @@
 // system include files
 
 // user include files
-#include "FWCore/CoreFramework/test/DepRecord.h"
+#include "FWCore/Framework/test/DepRecord.h"
 
-#include "FWCore/CoreFramework/interface/eventsetuprecord_registration_macro.h"
+#include "FWCore/Framework/interface/eventsetuprecord_registration_macro.h"
 
 EVENTSETUP_RECORD_REG(DepRecord);
 

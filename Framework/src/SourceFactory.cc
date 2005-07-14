@@ -1,6 +1,6 @@
 // -*- C++ -*-
 //
-// Package:     CoreFramework
+// Package:     Framework
 // Class  :     SourceFactory
 // 
 // Implementation:
@@ -14,8 +14,8 @@
 // system include files
 
 // user include files
-#include "FWCore/CoreFramework/interface/SourceFactory.h"
-#include "FWCore/CoreFramework/interface/EventSetupProvider.h"
+#include "FWCore/Framework/interface/SourceFactory.h"
+#include "FWCore/Framework/interface/EventSetupProvider.h"
 
 
 //

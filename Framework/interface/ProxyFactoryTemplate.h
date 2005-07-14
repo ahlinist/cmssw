@@ -2,10 +2,10 @@
 #define EVENTSETUPPRODUCER_PROXYFACTORYTEMPLATE_H
 // -*- C++ -*-
 //
-// Package:     CoreFramework
+// Package:     Framework
 // Class  :     ProxyFactoryTemplate
 // 
-/**\class ProxyFactoryTemplate ProxyFactoryTemplate.h Core/CoreFramework/interface/ProxyFactoryTemplate.h
+/**\class ProxyFactoryTemplate ProxyFactoryTemplate.h FWCore/Framework/interface/ProxyFactoryTemplate.h
 
  Description: <one line class summary>
 
@@ -22,8 +22,8 @@
 // system include files
 
 // user include files
-#include "FWCore/CoreFramework/interface/ProxyFactoryBase.h"
-#include "FWCore/CoreFramework/interface/DataKey.h"
+#include "FWCore/Framework/interface/ProxyFactoryBase.h"
+#include "FWCore/Framework/interface/DataKey.h"
 
 // forward declarations
 namespace edm {

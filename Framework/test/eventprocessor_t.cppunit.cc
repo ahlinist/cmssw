@@ -9,8 +9,8 @@ $Id$
 #include <iostream>
 #include <string>
 
-#include "FWCore/CoreFramework/interface/EventProcessor.h"
-#include "FWCore/FWUtilities/interface/Exception.h"
+#include "FWCore/Framework/interface/EventProcessor.h"
+#include "FWCore/Utilities/interface/Exception.h"
 
 #include <cppunit/extensions/HelperMacros.h>
 

@@ -8,14 +8,14 @@
 */
 
 
-#include "FWCore/CoreFramework/interface/EDProducer.h"
-#include "FWCore/CoreFramework/interface/Event.h"
-#include "FWCore/CoreFramework/interface/Handle.h"
-#include "FWCore/CoreFramework/interface/MakerMacros.h"
+#include "FWCore/Framework/interface/EDProducer.h"
+#include "FWCore/Framework/interface/Event.h"
+#include "FWCore/Framework/interface/Handle.h"
+#include "FWCore/Framework/interface/MakerMacros.h"
 
-#include "FWCore/CoreFramework/interface/EventSetup.h"
+#include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/CoreFramework/src/ToyProducts.h"
+#include "FWCore/Framework/src/ToyProducts.h"
 #include <memory>
 #include <string>
 

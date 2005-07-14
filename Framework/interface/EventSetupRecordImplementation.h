@@ -2,10 +2,10 @@
 #define EVENTSETUP_EVENTSETUPRECORDIMPLEMENTATION_H
 // -*- C++ -*-
 //
-// Package:     CoreFramework
+// Package:     Framework
 // Class  :     EventSetupRecordImplementation
 // 
-/**\class EventSetupRecordImplementation EventSetupRecordImplementation.h Core/CoreFramework/interface/EventSetupRecordImplementation.h
+/**\class EventSetupRecordImplementation EventSetupRecordImplementation.h FWCore/Framework/interface/EventSetupRecordImplementation.h
 
  Description: <one line class summary>
 
@@ -23,11 +23,11 @@
 #include <string>
 
 // user include files
-#include "FWCore/CoreFramework/interface/EventSetupRecord.h"
-#include "FWCore/CoreFramework/interface/EventSetupRecordKey.h"
-//#include "FWCore/CoreFramework/interface/DataKey.h"
-//#include "FWCore/CoreFramework/interface/DataProxyTemplate.h"
-//#include "FWCore/CoreFramework/interface/NoProxyException.h"
+#include "FWCore/Framework/interface/EventSetupRecord.h"
+#include "FWCore/Framework/interface/EventSetupRecordKey.h"
+//#include "FWCore/Framework/interface/DataKey.h"
+//#include "FWCore/Framework/interface/DataProxyTemplate.h"
+//#include "FWCore/Framework/interface/NoProxyException.h"
 
 // forward declarations
 namespace edm {
@@ -143,6 +143,6 @@ EventSetupRecordImplementation<T>::getImplementation(DataT const *& iData ,
 */
    }
 }
-#include "FWCore/CoreFramework/interface/recordGetImplementation.icc"
+#include "FWCore/Framework/interface/recordGetImplementation.icc"
 
 #endif /* EVENTSETUP_EVENTSETUPRECORDIMPLEMENTATION_H */

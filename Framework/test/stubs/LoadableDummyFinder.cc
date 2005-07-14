@@ -14,8 +14,8 @@
 // system include files
 
 // user include files
-#include "FWCore/CoreFramework/test/DummyFinder.h"
-#include "FWCore/CoreFramework/interface/SourceFactory.h"
+#include "FWCore/Framework/test/DummyFinder.h"
+#include "FWCore/Framework/interface/SourceFactory.h"
 
 namespace edm {
    class ParameterSet;

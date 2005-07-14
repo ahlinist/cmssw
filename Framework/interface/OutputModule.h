@@ -10,7 +10,7 @@ $Id$
 
 ----------------------------------------------------------------------*/
 
-#include "FWCore/CoreFramework/interface/GroupSelector.h"
+#include "FWCore/Framework/interface/GroupSelector.h"
 
 namespace edm
 {

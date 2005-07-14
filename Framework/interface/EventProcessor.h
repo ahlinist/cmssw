@@ -23,7 +23,7 @@ creation.
 
 The simplest 'main' that uses this should look like:
 
-#include "FWCore/CoreFramework/interface/EventProcessor.h"
+#include "FWCore/Framework/interface/EventProcessor.h"
 int main(int argc, char* argv[])
 {
   edm::EventProcessor app(argc, argv);
@@ -35,7 +35,7 @@ thrown by the constructor, for this simple version of main.
 More friendly is:
 
 #include <iostream>
-#include "FWCore/CoreFramework/interface/EventProcessor.h"
+#include "FWCore/Framework/interface/EventProcessor.h"
 int main(int argc, char* argv[])
 {
   try 

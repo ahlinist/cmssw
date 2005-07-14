@@ -14,15 +14,15 @@ $Id$
 
 #include "boost/shared_ptr.hpp"
 
-#include "FWCore/CoreFramework/interface/CoreFrameworkfwd.h"
+#include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/EDProduct/interface/Wrapper.h"
 
 #include "FWCore/EDProduct/interface/CollisionID.h"
-#include "FWCore/CoreFramework/interface/Handle.h"
-#include "FWCore/CoreFramework/interface/BasicHandle.h"
+#include "FWCore/Framework/interface/Handle.h"
+#include "FWCore/Framework/interface/BasicHandle.h"
 
-#include "FWCore/CoreFramework/src/Group.h"
-#include "FWCore/CoreFramework/src/TypeID.h"
+#include "FWCore/Framework/src/Group.h"
+#include "FWCore/Framework/src/TypeID.h"
 
 namespace edm {
 

@@ -2,10 +2,10 @@
 #define EVENTSETUPPRODUCER_CALLBACKPROXY_H
 // -*- C++ -*-
 //
-// Package:     CoreFramework
+// Package:     Framework
 // Class  :     CallbackProxy
 // 
-/**\class CallbackProxy CallbackProxy.h Core/CoreFramework/interface/CallbackProxy.h
+/**\class CallbackProxy CallbackProxy.h FWCore/Framework/interface/CallbackProxy.h
 
  Description: <one line class summary>
 
@@ -23,9 +23,9 @@
 #include "boost/shared_ptr.hpp"
 
 // user include files
-#include "FWCore/CoreFramework/interface/DataProxyTemplate.h"
+#include "FWCore/Framework/interface/DataProxyTemplate.h"
 
-#include "FWCore/CoreFramework/interface/produce_helpers.h"
+#include "FWCore/Framework/interface/produce_helpers.h"
 
 // forward declarations
 namespace edm {

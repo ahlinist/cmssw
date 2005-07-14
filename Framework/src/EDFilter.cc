@@ -4,7 +4,7 @@ $Id$
 
 ----------------------------------------------------------------------*/
 
-#include "FWCore/CoreFramework/interface/EDFilter.h"
+#include "FWCore/Framework/interface/EDFilter.h"
 
 namespace edm
 {

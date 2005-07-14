@@ -2,10 +2,10 @@
 #define EVENTSETUP_DATAKEY_H
 // -*- C++ -*-
 //
-// Package:     CoreFramework
+// Package:     Framework
 // Class  :     DataKey
 // 
-/**\class DataKey DataKey.h Core/CoreFramework/interface/DataKey.h
+/**\class DataKey DataKey.h FWCore/Framework/interface/DataKey.h
 
  Description: Key used to identify data within a EventSetupRecord
 
@@ -22,8 +22,8 @@
 // system include files
 
 // user include files
-#include "FWCore/CoreFramework/interface/DataKeyTags.h"
-#include "FWCore/CoreFramework/interface/HCTypeTagTemplate.h"
+#include "FWCore/Framework/interface/DataKeyTags.h"
+#include "FWCore/Framework/interface/HCTypeTagTemplate.h"
 
 // forward declarations
 namespace edm {

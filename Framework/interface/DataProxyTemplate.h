@@ -2,10 +2,10 @@
 #define EVENTSETUP_DATAPROXYTEMPLATE_H
 // -*- C++ -*-
 //
-// Package:     CoreFramework
+// Package:     Framework
 // Class  :     DataProxyTemplate
 // 
-/**\class DataProxyTemplate DataProxyTemplate.h Core/CoreFramework/interface/DataProxyTemplate.h
+/**\class DataProxyTemplate DataProxyTemplate.h FWCore/Framework/interface/DataProxyTemplate.h
 
  Description: <one line class summary>
 
@@ -23,8 +23,8 @@
 #include <cassert>
 
 // user include files
-#include "FWCore/CoreFramework/interface/DataProxy.h"
-#include "FWCore/CoreFramework/interface/MakeDataException.h"
+#include "FWCore/Framework/interface/DataProxy.h"
+#include "FWCore/Framework/interface/MakeDataException.h"
 
 // forward declarations
 

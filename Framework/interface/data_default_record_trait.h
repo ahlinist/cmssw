@@ -2,10 +2,10 @@
 #define EVENTSETUP_DATA_DEFAULT_RECORD_TRAIT_H
 // -*- C++ -*-
 //
-// Package:     CoreFramework
+// Package:     Framework
 // Class  :     data_default_record_trait
 // 
-/**\class data_default_record_trait data_default_record_trait.h Core/CoreFramework/interface/data_default_record_trait.h
+/**\class data_default_record_trait data_default_record_trait.h FWCore/Framework/interface/data_default_record_trait.h
 
  Description: trait class that assigns a default EventSetup Record to a particular data type
 

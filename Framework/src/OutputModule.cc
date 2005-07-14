@@ -2,7 +2,7 @@
 $Id$
 ----------------------------------------------------------------------*/
 
-#include "FWCore/CoreFramework/interface/OutputModule.h"
+#include "FWCore/Framework/interface/OutputModule.h"
 
 namespace edm
 {

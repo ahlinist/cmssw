@@ -4,7 +4,7 @@ $Id$
 ----------------------------------------------------------------------*/
 
 
-#include "FWCore/CoreFramework/src/Worker.h"
+#include "FWCore/Framework/src/Worker.h"
 
 namespace edm
 {

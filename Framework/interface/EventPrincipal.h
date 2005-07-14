@@ -26,18 +26,18 @@ $Id$
 
 #include "boost/shared_ptr.hpp"
 
-#include "FWCore/CoreFramework/interface/BranchKey.h"
+#include "FWCore/Framework/interface/BranchKey.h"
 #include "FWCore/EDProduct/interface/CollisionID.h"
 #include "FWCore/EDProduct/interface/EDP_ID.h"
 #include "FWCore/EDProduct/interface/EDProduct.h"
-#include "FWCore/CoreFramework/interface/EventAux.h"
-#include "FWCore/CoreFramework/interface/BasicHandle.h"
-#include "FWCore/CoreFramework/interface/ProcessNameList.h"
-#include "FWCore/CoreFramework/interface/Retriever.h"
-#include "FWCore/CoreFramework/interface/Selector.h"
+#include "FWCore/Framework/interface/EventAux.h"
+#include "FWCore/Framework/interface/BasicHandle.h"
+#include "FWCore/Framework/interface/ProcessNameList.h"
+#include "FWCore/Framework/interface/Retriever.h"
+#include "FWCore/Framework/interface/Selector.h"
 
-#include "FWCore/CoreFramework/src/Group.h"
-#include "FWCore/CoreFramework/src/TypeID.h"
+#include "FWCore/Framework/src/Group.h"
+#include "FWCore/Framework/src/TypeID.h"
 
 namespace edm {
     

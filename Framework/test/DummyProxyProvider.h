@@ -2,10 +2,10 @@
 #define EVENTSETUP_DUMMYPROVIDER_H
 // -*- C++ -*-
 //
-// Package:     CoreFramework
+// Package:     Framework
 // Class  :     DummyProvider
 // 
-/**\class DummyProvider DummyProvider.h Core/CoreFramework/interface/DummyProvider.h
+/**\class DummyProvider DummyProvider.h FWCore/Framework/interface/DummyProvider.h
 
  Description: <one line class summary>
 
@@ -22,11 +22,11 @@
 // system include files
 
 // user include files
-#include "FWCore/CoreFramework/test/DummyRecord.h"
-#include "FWCore/CoreFramework/test/DummyData.h"
+#include "FWCore/Framework/test/DummyRecord.h"
+#include "FWCore/Framework/test/DummyData.h"
 
-#include "FWCore/CoreFramework/interface/DataProxyTemplate.h"
-#include "FWCore/CoreFramework/interface/DataProxyProvider.h"
+#include "FWCore/Framework/interface/DataProxyTemplate.h"
+#include "FWCore/Framework/interface/DataProxyProvider.h"
 
 // forward declarations
 namespace edm {

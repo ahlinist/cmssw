@@ -6,10 +6,10 @@ $Id$
 #include <vector>
 #include <algorithm>
 
-#include "FWCore/CoreFramework/interface/Event.h"
+#include "FWCore/Framework/interface/Event.h"
 #include "FWCore/EDProduct/interface/EDP_ID.h"
-#include "FWCore/CoreFramework/interface/EventPrincipal.h"
-#include "FWCore/CoreFramework/src/Group.h"
+#include "FWCore/Framework/interface/EventPrincipal.h"
+#include "FWCore/Framework/src/Group.h"
 
 using namespace std;
 

@@ -2,10 +2,10 @@
 #define EVENTSETUPPRODUCER_ESPRODUCTS_H
 // -*- C++ -*-
 //
-// Package:     CoreFramework
+// Package:     Framework
 // Class  :     ESProducts
 // 
-/**\class ESProducts ESProducts.h Core/CoreFramework/interface/ESProducts.h
+/**\class ESProducts ESProducts.h FWCore/Framework/interface/ESProducts.h
 
  Description: <one line class summary>
 
@@ -22,7 +22,7 @@
 // system include files
 
 // user include files
-#include "FWCore/CoreFramework/interface/produce_helpers.h"
+#include "FWCore/Framework/interface/produce_helpers.h"
 
 // forward declarations
 namespace edm {

@@ -2,10 +2,10 @@
 #define EVENTSETUP_DATAKEYTAGS_H
 // -*- C++ -*-
 //
-// Package:     CoreFramework
+// Package:     Framework
 // Class  :     DataKeyTags
 // 
-/**\class DataKeyTags DataKeyTags.h Core/CoreFramework/interface/DataKeyTags.h
+/**\class DataKeyTags DataKeyTags.h FWCore/Framework/interface/DataKeyTags.h
 
  Description: <one line class summary>
 
@@ -22,7 +22,7 @@
 // system include files
 
 // user include files
-#include "FWCore/CoreFramework/interface/HCTypeTag.h"
+#include "FWCore/Framework/interface/HCTypeTag.h"
 
 // forward declarations
 namespace edm {

@@ -1,6 +1,6 @@
 // -*- C++ -*-
 //
-// Package:     CoreFramework
+// Package:     Framework
 // Class  :     ESProducer
 // 
 // Implementation:
@@ -14,7 +14,7 @@
 // system include files
 
 // user include files
-#include "FWCore/CoreFramework/interface/ESProducer.h"
+#include "FWCore/Framework/interface/ESProducer.h"
 
 
 //

@@ -16,11 +16,11 @@ $Id$
 
 #include "boost/shared_ptr.hpp"
 
-#include "FWCore/CoreFramework/interface/CoreFrameworkfwd.h"
-#include "FWCore/CoreFramework/interface/OutputModule.h"
-#include "FWCore/CoreFramework/interface/ModuleDescription.h"
+#include "FWCore/Framework/interface/Frameworkfwd.h"
+#include "FWCore/Framework/interface/OutputModule.h"
+#include "FWCore/Framework/interface/ModuleDescription.h"
 
-#include "FWCore/CoreFramework/src/Worker.h"
+#include "FWCore/Framework/src/Worker.h"
 
 namespace edm
 {

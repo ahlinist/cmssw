@@ -4,7 +4,7 @@ $Id$
 
 ----------------------------------------------------------------------*/
 
-#include "FWCore/CoreFramework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/EDAnalyzer.h"
 
 namespace edm
 {

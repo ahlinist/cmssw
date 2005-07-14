@@ -1,6 +1,6 @@
 // -*- C++ -*-
 //
-// Package:     CoreFramework
+// Package:     Framework
 // Class  :     DependentRecordIntervalFinder
 // 
 // Implementation:
@@ -14,8 +14,8 @@
 // system include files
 
 // user include files
-#include "FWCore/CoreFramework/interface/DependentRecordIntervalFinder.h"
-#include "FWCore/CoreFramework/interface/EventSetupRecordProvider.h"
+#include "FWCore/Framework/interface/DependentRecordIntervalFinder.h"
+#include "FWCore/Framework/interface/EventSetupRecordProvider.h"
 
 
 //

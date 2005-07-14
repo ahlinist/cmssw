@@ -2,10 +2,10 @@
 #define COREFRAMEWORK_ESPREFUNCTORDECORATOR_H
 // -*- C++ -*-
 //
-// Package:     CoreFramework
+// Package:     Framework
 // Class  :     ESPreFunctorDecorator
 // 
-/**\class ESPreFunctorDecorator ESPreFunctorDecorator.h FWCore/CoreFramework/interface/ESPreFunctorDecorator.h
+/**\class ESPreFunctorDecorator ESPreFunctorDecorator.h FWCore/Framework/interface/ESPreFunctorDecorator.h
 
  Description: A Decorator that works as a adapter to call a Functor before each call to the decorated method
 

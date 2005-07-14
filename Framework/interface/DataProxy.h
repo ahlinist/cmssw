@@ -2,10 +2,10 @@
 #define EVENTSETUP_DATAPROXY_H
 // -*- C++ -*-
 //
-// Package:     CoreFramework
+// Package:     Framework
 // Class  :     DataProxy
 // 
-/**\class DataProxy DataProxy.h Core/CoreFramework/interface/DataProxy.h
+/**\class DataProxy DataProxy.h FWCore/Framework/interface/DataProxy.h
 
  Description: Base class for data Proxies held by a EventSetupRecord
 

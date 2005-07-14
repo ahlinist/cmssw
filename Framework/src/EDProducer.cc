@@ -4,7 +4,7 @@ $Id$
 
 ----------------------------------------------------------------------*/
 
-#include "FWCore/CoreFramework/interface/EDProducer.h"
+#include "FWCore/Framework/interface/EDProducer.h"
 
 namespace edm
 {

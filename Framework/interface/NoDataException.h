@@ -2,7 +2,7 @@
 #define EVENTSETUP_NODATAEXCEPTION_H
 // -*- C++ -*-
 //
-// Package:     CoreFramework
+// Package:     Framework
 // Module:      NoDataException
 // 
 /**\class NoDataException NoDataException.h Exception/interface/NoDataException.h
@@ -68,9 +68,9 @@
 #include <exception>
 
 // user include files
-#include "FWCore/CoreFramework/interface/DataKey.h"
-#include "FWCore/CoreFramework/interface/EventSetupRecordKey.h"
-#include "FWCore/CoreFramework/interface/HCTypeTagTemplate.h"
+#include "FWCore/Framework/interface/DataKey.h"
+#include "FWCore/Framework/interface/EventSetupRecordKey.h"
+#include "FWCore/Framework/interface/HCTypeTagTemplate.h"
 
 // forward declarations
 namespace edm {

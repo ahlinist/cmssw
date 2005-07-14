@@ -6,8 +6,8 @@ $Id$
 #include <sstream>
 #include <stdexcept>
 
-#include "FWCore/CoreFramework/interface/EventPrincipal.h"
-#include "FWCore/FWUtilities/interface/EDMException.h"
+#include "FWCore/Framework/interface/EventPrincipal.h"
+#include "FWCore/Utilities/interface/EDMException.h"
 using namespace std;
 
 namespace

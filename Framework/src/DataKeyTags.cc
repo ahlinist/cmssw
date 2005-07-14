@@ -1,6 +1,6 @@
 // -*- C++ -*-
 //
-// Package:     CoreFramework
+// Package:     Framework
 // Class  :     DataKeyTags
 // 
 // Implementation:
@@ -15,7 +15,7 @@
 #include <cstring>
 
 // user include files
-#include "FWCore/CoreFramework/interface/DataKeyTags.h"
+#include "FWCore/Framework/interface/DataKeyTags.h"
 
 
 //

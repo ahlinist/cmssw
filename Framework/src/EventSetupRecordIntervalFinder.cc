@@ -1,6 +1,6 @@
 // -*- C++ -*-
 //
-// Package:     CoreFramework
+// Package:     Framework
 // Class  :     EventSetupRecordIntervalFinder
 // 
 // Implementation:
@@ -14,7 +14,7 @@
 // system include files
 
 // user include files
-#include "FWCore/CoreFramework/interface/EventSetupRecordIntervalFinder.h"
+#include "FWCore/Framework/interface/EventSetupRecordIntervalFinder.h"
 
 
 //

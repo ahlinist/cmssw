@@ -2,10 +2,10 @@
 #define COREFRAMEWORK_DEPRECORD_H
 // -*- C++ -*-
 //
-// Package:     CoreFramework
+// Package:     Framework
 // Class  :     DepRecord
 // 
-/**\class DepRecord DepRecord.h FWCore/CoreFramework/test/DepRecord.h
+/**\class DepRecord DepRecord.h FWCore/Framework/test/DepRecord.h
 
  Description: A test Record that is dependent on DummyRecord
 
@@ -25,8 +25,8 @@
 // user include files
 
 // forward declarations
-#include "FWCore/CoreFramework/interface/DependentRecordImplementation.h"
-#include "FWCore/CoreFramework/test/DummyRecord.h"
+#include "FWCore/Framework/interface/DependentRecordImplementation.h"
+#include "FWCore/Framework/test/DummyRecord.h"
 
 class DepRecord 
 : public edm::eventsetup::DependentRecordImplementation<DepRecord, boost::mpl::vector<DummyRecord> >

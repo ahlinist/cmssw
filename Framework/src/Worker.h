@@ -10,7 +10,7 @@ $Id$
 
 ----------------------------------------------------------------------*/
 
-#include "FWCore/CoreFramework/interface/CoreFrameworkfwd.h"
+#include "FWCore/Framework/interface/Frameworkfwd.h"
 
 namespace edm {
 

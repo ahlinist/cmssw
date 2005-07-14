@@ -1,6 +1,6 @@
 // -*- C++ -*-
 //
-// Package:     CoreFramework
+// Package:     Framework
 // Class  :     ESProducts
 // 
 // Implementation:
@@ -14,7 +14,7 @@
 // system include files
 
 // user include files
-#include "FWCore/CoreFramework/interface/ESProducts.h"
+#include "FWCore/Framework/interface/ESProducts.h"
 
 namespace edm {
    namespace eventsetup {      

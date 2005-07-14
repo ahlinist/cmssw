@@ -3,11 +3,11 @@
 $Id$
 ----------------------------------------------------------------------*/
 
-#include "FWCore/CoreFramework/interface/EventPrincipal.h"
-#include "FWCore/CoreFramework/interface/Event.h"
-#include "FWCore/CoreFramework/interface/OutputModule.h"
+#include "FWCore/Framework/interface/EventPrincipal.h"
+#include "FWCore/Framework/interface/Event.h"
+#include "FWCore/Framework/interface/OutputModule.h"
 
-#include "FWCore/CoreFramework/src/OutputWorker.h"
+#include "FWCore/Framework/src/OutputWorker.h"
 
 namespace edm
 {

@@ -1,6 +1,6 @@
 // -*- C++ -*-
 //
-// Package:     CoreFramework
+// Package:     Framework
 // Class  :     ModuleFactory
 // 
 // Implementation:
@@ -14,8 +14,8 @@
 // system include files
 
 // user include files
-#include "FWCore/CoreFramework/interface/ModuleFactory.h"
-#include "FWCore/CoreFramework/interface/EventSetupProvider.h"
+#include "FWCore/Framework/interface/ModuleFactory.h"
+#include "FWCore/Framework/interface/EventSetupProvider.h"
 
 //
 // constants, enums and typedefs

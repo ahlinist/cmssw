@@ -10,9 +10,9 @@
 static const char CVSId[] = "$Id$";
 
 
-#include "FWCore/CoreFramework/src/WorkerRegistry.h"
-#include "FWCore/CoreFramework/src/Worker.h"
-#include "FWCore/CoreFramework/src/Factory.h"
+#include "FWCore/Framework/src/WorkerRegistry.h"
+#include "FWCore/Framework/src/Worker.h"
+#include "FWCore/Framework/src/Factory.h"
 
 #include <iostream>
 #include <sstream>

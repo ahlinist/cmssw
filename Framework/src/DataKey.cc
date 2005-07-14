@@ -1,6 +1,6 @@
 // -*- C++ -*-
 //
-// Package:     CoreFramework
+// Package:     Framework
 // Class  :     DataKey
 // 
 // Implementation:
@@ -15,7 +15,7 @@
 #include <memory>
 
 // user include files
-#include "FWCore/CoreFramework/interface/DataKey.h"
+#include "FWCore/Framework/interface/DataKey.h"
 
 
 //
@@ -129,5 +129,5 @@ DataKey::operator<(const DataKey& iRHS) const
    }
 }
 
-#include "FWCore/CoreFramework/interface/HCTypeTag.icc"
+#include "FWCore/Framework/interface/HCTypeTag.icc"
 template class edm::eventsetup::heterocontainer::HCTypeTag<edm::eventsetup::DataKey>;

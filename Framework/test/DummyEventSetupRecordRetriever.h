@@ -2,10 +2,10 @@
 #define COREFRAMEWORK_DUMMYEVENTSETUPRECORDRETRIEVER_H
 // -*- C++ -*-
 //
-// Package:     CoreFramework
+// Package:     Framework
 // Class  :     DummyEventSetupRecordRetriever
 // 
-/**\class DummyEventSetupRecordRetriever DummyEventSetupRecordRetriever.h FWCore/CoreFramework/interface/DummyEventSetupRecordRetriever.h
+/**\class DummyEventSetupRecordRetriever DummyEventSetupRecordRetriever.h FWCore/Framework/interface/DummyEventSetupRecordRetriever.h
 
  Description: <one line class summary>
 
@@ -22,11 +22,11 @@
 // system include files
 
 // user include files
-#include "FWCore/CoreFramework/interface/EventSetupRecordIntervalFinder.h"
-#include "FWCore/CoreFramework/interface/ESProducer.h"
+#include "FWCore/Framework/interface/EventSetupRecordIntervalFinder.h"
+#include "FWCore/Framework/interface/ESProducer.h"
 
-#include "FWCore/CoreFramework/test/DummyEventSetupRecord.h"
-#include "FWCore/CoreFramework/test/DummyEventSetupData.h"
+#include "FWCore/Framework/test/DummyEventSetupRecord.h"
+#include "FWCore/Framework/test/DummyEventSetupData.h"
 
 // forward declarations
 namespace edm {

@@ -14,10 +14,10 @@
 // system include files
 
 // user include files
-#include "FWCore/CoreFramework/test/DummyProxyProvider.h"
+#include "FWCore/Framework/test/DummyProxyProvider.h"
 
-#include "FWCore/CoreFramework/test/DummyFinder.h"
-#include "FWCore/CoreFramework/interface/ModuleFactory.h"
+#include "FWCore/Framework/test/DummyFinder.h"
+#include "FWCore/Framework/interface/ModuleFactory.h"
 
 namespace edm {
    class ParameterSet;
