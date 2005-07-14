@@ -23,13 +23,13 @@
 #include "boost/shared_ptr.hpp"
 
 // user include files
-#include "FWCore/CoreFramework/interface/ModuleFactory.h"
-#include "FWCore/CoreFramework/interface/ESProducer.h"
-#include "FWCore/CoreFramework/interface/ESHandle.h"
+#include "FWCore/Framework/interface/ModuleFactory.h"
+#include "FWCore/Framework/interface/ESProducer.h"
+#include "FWCore/Framework/interface/ESHandle.h"
 
-#include "FWCore/FWCoreIntegration/src/WhatsIt.h"
-#include "FWCore/FWCoreIntegration/src/Doodad.h"
-#include "FWCore/FWCoreIntegration/src/GadgetRcd.h"
+#include "FWCore/Integration/src/WhatsIt.h"
+#include "FWCore/Integration/src/Doodad.h"
+#include "FWCore/Integration/src/GadgetRcd.h"
 
 
 //
