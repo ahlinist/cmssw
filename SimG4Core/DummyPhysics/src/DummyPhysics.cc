@@ -2,11 +2,11 @@
 #include "SimG4Core/DummyPhysics/interface/GeneralPhysics.h"
 #include "SimG4Core/DummyPhysics/interface/DummyEMPhysics.h"
 
-DummyPhysics::DummyPhysics() : PhysicsList()
+DummyPhysics::DummyPhysics(const edm::ParameterSet & p) : PhysicsList(p)
 { 
     RegisterPhysics(new GeneralPhysics("general"));
-    bool dummyEMPhysics = true;    
-    if (dummyEMPhysics) RegisterPhysics(new DummyEMPhysics("dummyEM"));
+    if (p.getParameter<bool>("DummyEMPhysics")) 
+	RegisterPhysics(new DummyEMPhysics("dummyEM"));
     std::cout << " DummyPhysics constructed " << std::endl;
 }
 

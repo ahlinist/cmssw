@@ -3,10 +3,12 @@
 
 #include "SimG4Core/Physics/interface/PhysicsList.h"
  
+#include "FWCore/ParameterSet/interface/ParameterSet.h"
+
 class DummyPhysics : public PhysicsList
 {
 public:
-    DummyPhysics();
+    DummyPhysics(const edm::ParameterSet & p);
     virtual ~DummyPhysics();
 };
  
