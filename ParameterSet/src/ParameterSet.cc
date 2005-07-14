@@ -13,6 +13,8 @@
 
 #include "FWCore/ParameterSet/interface/split.h"
 #include "FWCore/ParameterSet/interface/types.h"
+#include "FWCore/Utilities/interface/EDMException.h"
+
 #include <algorithm>
 #include <utility>
 
@@ -36,7 +38,11 @@ namespace edm {
   
   ParameterSet::ParameterSet(std::string const& code) : tbl() {
     if(! fromString(code))
-      throw ParameterSetError("bad encoded ParameterSet string " + code);
+      throw edm::Exception(errors::Configuration,"InvalidInput")
+	<< "The encoded configuration string "
+	<< "passed to a ParameterSet during construction is invalid:\n"
+	<< code;
+
     validate();
   }
   
@@ -50,10 +56,14 @@ namespace edm {
     if(it == tbl.end()) {
       it = tbl.find("label");
       if(it == tbl.end())
-        throw ParameterSetError("'" + name + "' is not known in this anonymous ParameterSet");
+        throw edm::Exception(errors::Configuration,"InvalidName")
+	  << "The name '" << name 
+	  << "' is not known in an anonymous ParameterSet";
       else
-        throw ParameterSetError("'" + name + "' is not known in ParameterSet '"
-                        + it->second.getString() + "'");
+        throw edm::Exception(errors::Configuration,"InvalidName")
+	  << "The name '" << name
+	  << "' is not known in ParameterSet '"
+	  << it->second.getString() << "'";
     }
     return it->second;
   }  // retrieve()
@@ -75,7 +85,9 @@ namespace edm {
   
     if(it == tbl.end())  {
       if(! tbl.insert(std::make_pair(name, value)).second)
-        throw ParameterSetError("can't insert" + name);
+        throw edm::Exception(errors::Configuration,"InsertFailure")
+	  << "cannot insert " << name
+	  << " into a ParmeterSet";
     }
     else if(okay_to_replace)  {
       it->second = value;
