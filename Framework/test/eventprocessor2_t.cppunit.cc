@@ -46,7 +46,7 @@ void testeventprocessor2::eventprocessor2Test()
 //int main()
 {
   int rc = -1;                // we should never return this value!
-  try { work(); rc = 0;}
+  /*try { work(); rc = 0;}
   catch (seal::Error& e)
     {
       std::cerr << "Application exception caught: "
@@ -64,5 +64,5 @@ void testeventprocessor2::eventprocessor2Test()
       std::cerr << "Unknown exception caught" << std::endl;
       rc = 2;
     }
-//  return rc;
+  return rc;*/
 }
