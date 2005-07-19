@@ -44,8 +44,8 @@ CPPUNIT_TEST_SUITE_REGISTRATION(testeventprocessor);
 void testeventprocessor::eventprocessorTest()
 //int main()
 {
-  int rc = -1;                // we should never return this value!
   /*try { work(); rc = 0;}
+  int rc = -1;                // we should never return this value!
   catch (seal::Error& e)
     {
       std::cerr << "Application exception caught: "
