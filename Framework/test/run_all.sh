@@ -4,11 +4,15 @@
 # $Id$
 #----------------------------------------------------------------------
 
+# no way to easily locate the test directory and the architecture/compiler
+# from environment variables.  hardcoded for now
+DIR=../../../../test/slc3_ia32_gcc323
+
 # Pass in name and status
 function die { echo $1: status $2 ;  exit $2; }
 
 # Pass in name
-function do_or_die { echo ===== Running $1 ===== && $1 && echo ===== $1 OK ===== || die ">>>>> $1 failed <<<<<" $?; }
+function do_or_die { echo ===== Running $1 ===== && ${DIR}/$1 && echo ===== $1 OK ===== || die ">>>>> $1 failed <<<<<" $?; }
 
 do_or_die TypeID_t
 do_or_die EventPrincipal_t

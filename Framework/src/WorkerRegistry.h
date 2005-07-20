@@ -13,6 +13,7 @@
 static const char CVSId_edm_ModuleRegistry[] = "$Id$";
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "FWCore/Framework/src/WorkerParams.h"
 #include <map>
 #include <string>
 
@@ -42,10 +43,7 @@ namespace edm {
     /** If the worker with that set of parameters does not exist,
         create it
         @note Workers are owned by this class, do not delete them*/
-    Worker*  getWorker(ParameterSet const& parameterSet,
-		       std::string const& processName,
-		       unsigned long versionNumber,
-		       unsigned long pass);
+    Worker*  getWorker(const WorkerParams&);
     
   private:
      

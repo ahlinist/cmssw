@@ -24,12 +24,15 @@ $Id$
 
 namespace edm
 {
+  class WorkerParams;
+  class ActionTable;
 
   class OutputWorker : public Worker
   {
   public:
     OutputWorker(std::auto_ptr<OutputModule> mod, 
-		 const ModuleDescription&);
+		 const ModuleDescription&,
+		 const WorkerParams&);
 
     virtual ~OutputWorker();
 
@@ -41,6 +44,7 @@ namespace edm
     
     ModuleDescription               md_;
     boost::shared_ptr<OutputModule> mod_;
+    const ActionTable* actions_; // memory assumed to be managed elsewhere
   };
 
   template <> 

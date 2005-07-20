@@ -40,26 +40,34 @@ if(outOfBoundsValue) {
 #include "FWCore/Framework/interface/HCTypeTagTemplate.h"
 #include "FWCore/Framework/interface/DataKey.h"
 #include "FWCore/Framework/interface/EventSetupRecordKey.h"
+#include "FWCore/Utilities/interface/Exception.h"
 
 // forward declarations
 namespace edm {
    namespace eventsetup {
 template< class RecordT, class DataT>
-class MakeDataException : public std::exception
+class MakeDataException : public cms::Exception
 {
 
    public:
       MakeDataException(const DataKey& iKey) : 
-        message_(standardMessage(iKey)){}
+	cms::Exception("MakeDataException"),
+        message_(standardMessage(iKey))
+      {
+	this->append(myMessage());
+      }
 
       MakeDataException(const std::string& iAdditionalInfo,
                      const DataKey& iKey) : 
-        message_(messageWithInfo(iKey, iAdditionalInfo)){}
+        message_(messageWithInfo(iKey, iAdditionalInfo))
+      {
+	this->append(this->myMessage());
+      }
 
       ~MakeDataException() throw() {}
 
       // ---------- const member functions ---------------------
-      const char* what() const throw() {
+      const char* myMessage() const throw() {
          return message_.c_str();
       }
    
