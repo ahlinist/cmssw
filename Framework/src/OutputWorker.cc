@@ -45,7 +45,7 @@ namespace edm
     catch(cms::Exception& e)
       {
 	e << "A cms::Exception is going through OutputModule:\n"
-	  << mod_;
+	  << md_;
 
 	switch(actions_->find(e.rootCause()))
 	  {
@@ -71,14 +71,14 @@ namespace edm
     catch(seal::Error& e)
       {
 	cerr << "A seal::Error is going through OutputModule:\n"
-	     << mod_
+	     << md_
 	     << endl;
 	throw;
       }
     catch(std::exception& e)
       {
 	cerr << "An std::exception is going through OutputModule:\n"
-	     << mod_
+	     << md_
 	     << endl;
 	throw;
       }
@@ -86,17 +86,17 @@ namespace edm
       {
 	throw cms::Exception("BadExceptionType","std::string") 
 	  << "string = " << s << "\n"
-	  << mod_ ;
+	  << md_ ;
       }
     catch(const char* c)
       {
 	throw cms::Exception("BadExceptionType","const char*") 
 	  << "cstring = " << c << "\n"
-	  << mod_ ;
+	  << md_ ;
       }
     catch(...)
       {
-	cerr << "An unknown Exception occured in\n" << mod_;
+	cerr << "An unknown Exception occured in\n" << md_;
 	throw;
       }
 
