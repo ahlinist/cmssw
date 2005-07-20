@@ -6,7 +6,7 @@
 
 # no way to easily locate the test directory and the architecture/compiler
 # from environment variables.  hardcoded for now
-DIR=../../../../test/slc3_ia32_gcc323_dbg
+DIR=../../../../test/slc3_ia32_gcc323
 
 # Pass in name and status
 function die { echo $1: status $2 ;  exit $2; }
