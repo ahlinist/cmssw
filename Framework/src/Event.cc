@@ -84,9 +84,9 @@ namespace edm {
 	// set parts of provenance
 	pv->cid = 0; // TODO: what is this supposed to be?
 	// TODO: what is this supposed to be? this is a disgusting string.
-	pv->full_product_type_name = TypeID(*pr).userClassName();
-	pv->friendly_product_type_name = TypeID(*pr).friendlyClassName();
-	pv->product_instance_name = pit->second;
+	pv->product.full_product_type_name = TypeID(*pr).userClassName();
+	pv->product.friendly_product_type_name = TypeID(*pr).friendlyClassName();
+	pv->product.product_instance_name = pit->second;
 	pv->status = Provenance::Success;
 	pv->parents = got_product_ids_;
 
