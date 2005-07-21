@@ -16,5 +16,8 @@ namespace edm
 
   void EDProducer::endJob()
   { }
+  const EDProducer::TypeLabelList& EDProducer::getTypeLabelList() const{
+    return productList_;
+  }
 }
   
