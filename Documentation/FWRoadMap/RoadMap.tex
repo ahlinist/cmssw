@@ -1,7 +1,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% 
 %%
-%% $Id: RoadMap.tex,v 1.31 2005/07/07 16:33:59 wmtan Exp $
+%% $Id: RoadMap.tex,v 1.32 2005/07/07 23:42:02 wmtan Exp $
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -20,7 +20,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Document revision number, traced by using RCS revision number.
 %
-\RCS $Revision: 1.31 $
+\RCS $Revision: 1.32 $
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Special macros for this document
@@ -36,13 +36,17 @@
 \newcommand{\EDProducer}{\classname{ED\-Producer}}
 \newcommand{\EDProduct}{\classname{ED\-Product}}
 \newcommand{\EDPid}{\classname{EDP\_id}}
+\newcommand{\ESSource}{\classname{ES\-Source}}
+\newcommand{\ESProducer}{\classname{ES\-Producer}}
 \newcommand{\Event}{\classname{Event}}
 \newcommand{\EventPrincipal}{\classname{Event\-Principal}}
 \newcommand{\EventProcessor}{\classname{Event\-Processor}}
+\newcommand{\EventSetup}{\classname{Event\-Setup}}
 \newcommand{\FilterModule}{\classname{Filter\-Module}}
 \newcommand{\FilterWorker}{\classname{Filter\-Worker}}
 \newcommand{\Framework}{\classname{Frame\-work}}
 \newcommand{\Getter}{\classname{Getter}}
+\newcommand{\IOV}{\classname{IOV}}
 \newcommand{\Mixer}{\classname{Mixer}}
 \newcommand{\Module}{\classname{Module}}
 \newcommand{\ModuleFactory}{\classname{Module\-Factory}}
@@ -58,6 +62,7 @@
 \newcommand{\RecAlgorithm}{\classname{Rec\-Al\-gor\-ithm}}
 \newcommand{\RecCalibrationSet}{\classname{Rec\-Calibration\-Set}}
 \newcommand{\RecConfig}{\classname{Rec\-Config}}
+\newcommand{\Record}{\classname{Record}}
 \newcommand{\ScheduleBuilder}{\classname{Schedule\-Builder}}
 \newcommand{\ScheduleExecutor}{\classname{Schedule\-Exe\-cu\-tor}}
 \newcommand{\Selector}{\classname{Selector}}
@@ -3009,10 +3014,90 @@ allow requests for reconfiguration of modules in a schedule.
 \section{The \EventProcessor}
 
 \section{Non-Event Data}
+The Non-Event data is data whose 'interval of validity' (\IOV{}) is longer than one Event.  We have
+two types of \IOV{}s which are distinguished by whether or not the DAQ system initiated the interval of validity transition.  \IOV{}s initiated by DAQ (such as the Event or a Run transition) are to be handled by
+the Event system.  All other \IOV{}s are handled by the \EventSetup{} System.
 
-\begin{fixme}
-To be filled in later.
-\end{fixme}
+\subsection{\EventSetup{} System }
+
+\begin{figure}[h]
+\includegraphics[width=\textwidth]{EventSetup_Diagram.eps}
+\caption{%
+The \EventSetup{} is formed from the Records that have an \IOV{} that overlaps with the moment in time that is being studied.}\label{fig:eventsetup_diagram}
+\end{figure}
+
+The \EventSetup{} provides a uniform access mechanism to all data/services constrained by an \IOV{}.  The main concepts for the \EventSetup{} are:
+\begin{enumerate}
+\item
+Record: holds data and services which have identical \IOV{}s.
+\item
+\EventSetup{}: holds all Records that have an \IOV{} which overlap with the 'time' of the Event being studied.
+
+\end{enumerate}
+
+
+\subsection{\EventSetup{} }
+The \EventSetup{} class provides type-safe access to the various \Record{}s it contains.  This access is done through the \EventSetup{}'s \cppcode{get<RecordT>()} method. If the requested Record is not available, an exception will be thrown.  There is also an interface to get data directly from an \EventSetup{} instead of from a \Record{} for the case where the data type has  been assigned a 'default' \Record{}.  The direct data access interface is discussed in a section~\vref{sec:recordcontent}.
+
+In addition to access to \Record{}s, the \EventSetup{} has a method \cppcode{timestamp()} which return information about the 'instance in time' for which the \EventSetup{} is describing.
+
+\subsection{\Record{}s}
+\Record{}s provide type-safe access to the objects it contains.    The access is handled through the \Record{}'s \cppcode{get(ESHandle<T>& )} method.  This is analogous to data access from the \Event{}.
+
+A \Record{} also provides access to its interval of validity ( \IOV{} ) through its \cppcode{validityInterval()} method.
+
+\subsection{Contents of a \Record{}}\label{sec:recordcontent}
+
+The \EventSetup{} system sets no requirements on the C++ class type of an object which may be placed in a \Record{}.  The only restriction is the lifetime of the objects within a \Record{} is only guaranteed to be as long as the \IOV{} for which the \Record{} is appropriate.  This does not mean that an object within a \Record{} can not be reused across an \IOV{} transition, it only means code that reads the object from a \Record{} should not assume that it will be reused.
+
+In the case where a data/service C++ type is only meant to come from one Record type, then the 'default' Record type can be declared at compile time.  If a 'default' Record has been declared for a data type, then users can access that data directly from the \EventSetup{} via the \cppcode{get(ESHandle<T>& )}. 
+ 
+
+\subsection{\EventSetup{} System Components}
+
+The \EventSetup{} system design, shown in figure~\vref{fig:eventsetup_design}, uses two categories of components to do its work: \ESSource{} and \ESProducer{}.  These categories are 'high-level abstractions' built on top of low-level interfaces.
+
+\begin{figure}[h]
+\includegraphics[width=\textwidth]{eventsetup_design.eps}
+\caption{%
+The \EventSetup{} system design.}\label{fig:eventsetup_design}
+\end{figure}
+
+\subsubsection{Low-level Interfaces}
+
+\emph{DataProxies}: When a \cppcode{get} call is made to a \Record{}, a DataProxy is looked-up in the \Record{} and then that DataProxy is asked to handle the request.
+
+\emph{DataProxyProvider}: A container of related DataProxies.  Advertises what \Record{}s it has DataProxies for and is capable of creating those DataProxies on request.  The DataProxyProviders are given to the EventSetupProvider who hands them off to the proper EventSetupRecordProvider.  The EventSetupRecordProvider then insert the DataProxies from the DataProxyProvider into the proper \Record{} instance.
+
+\emph{ProxyFactoryProducer}: A DataProxyProvider which uses pre-registered Proxy factories to create
+the necessary DataProxies.  This is a convenience class for developers who need to be able to write their own DataProxies.
+
+\emph{ESProducer}: The easiest to implement DataProxyProvider.  Simply by writing a \cppcode{produce} method, the \ESProducer{} will use the argument to the method to determine the \Record{} the algorithm is dependent upon and will use the return value to determine the type of data/service being created.  This deduction is done by calling the \cppcode{setWhatProduced(this)} from the class' constructor.
+
+\emph{EventSetupRecordIntervalFinder}: Interface for determining the proper \IOV{} of a \Record{}, or a group of \Record{}s.    The EventSetupRecordIntervalFinders are given to the EventSetupProvider who hands them off to the proper EventSetupRecordProvider.  The EventSetupRecordProvider uses its EventSetupRecordIntervalFinder to set the proper \IOV{} of its \Record{}.
+
+
+\subsubsection{EventSetup Source }
+An \ESSource{} is responsible for determining the \IOV{} of a \Record{} (or a set of set of \Record{}s).  The \ESSource{} may also deliver data/services.  An \ESSource{} must inherit from EventSetupRecordIntervalFinder and if it is delivering data/services it must also inherit (possibly indirectly) from DataProxyProvider.
+
+An \ESSource{} normally reads its information from a 'persistent store' (e.g., a database) although it is not required to do so.
+
+\subsubsection{ EventSetup Producer }
+
+Conceptually, an EventSetup Producer is an algorithm whose inputs to its algorithm are dependent on data with  \IOV{}s.  From an implementation stand-point, an EventSetup Producer must inherit from DataProxyProvider.
+
+\subsection{Dependent Records}
+
+Sometimes an algorithm in the \EventSetup{} is dependent on data coming from more than one \Record{}.  For example, the tracking geometry is dependent on the 'ideal geometry' and on the tracking alignment values.  In such a case the \Record{} used by that algorithm needs to be declared 'dependent' on the other \Record{}s.  This dependency declaration is accomplished by having the dependent \Record{} inherit from \cppcode{DependentRecordImplementation<T,List>}.  The template parameter \cppcode{List} is a compile time list of the \Record{}s upon which this \Record{} is dependent.
+
+Dependent \Record{}s allow access to the \Record{}s to which they are dependent via the \cppcode{getRecord<T>()} method.
+
+The \IOV{} of a dependent \Record{} is the intersection of the \IOV{} of all the \Record{}s to which it depends.  The \EventSetup{} system guarantees that the proper relationships between the \IOV{}s is preserved.
+
+\subsection{\EventSetup{} configuration}
+
+\EventSetup{} components are configured using the same configuration mechanism as their \Event{} counterparts, i.e., via the \ParameterSet{} system.  Two additional keywords were added to the configuration language to allow the configuration of the \EventSetup{}:   \cppcode{es_source} and \cppcode{es_module}.
+
 
 \section{Data Management}
 \begin{signednote}{Luca Lista}
