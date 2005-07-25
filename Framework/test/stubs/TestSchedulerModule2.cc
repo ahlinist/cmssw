@@ -26,7 +26,9 @@ namespace edm{
   class TestSchedulerModule2 : public EDProducer
   {
   public:
-    explicit TestSchedulerModule2(ParameterSet const& p):pset_(p){}
+    explicit TestSchedulerModule2(ParameterSet const& p):pset_(p){
+       produces<edmtest::StringProduct>();
+    }
 
     void produce(Event& e, EventSetup const&);
 
