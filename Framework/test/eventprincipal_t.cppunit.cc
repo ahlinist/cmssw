@@ -158,6 +158,7 @@ void testeventprincipal::failgetbyInvalidIdTest()
   pprov->product.friendly_product_type_name = className;
   pprov->product.module.module_label = label;
   pprov->product.module.process_name = processName;
+  pprov->product.init();
   ep.put(pprod, pprov);
   edm::EDP_ID id(1);
 
@@ -198,6 +199,7 @@ void testeventprincipal::getbyIdTest()
   pprov->product.friendly_product_type_name = className;
   pprov->product.module.module_label = label;
   pprov->product.module.process_name = processName;
+  pprov->product.init();
   ep.put(pprod, pprov);
 
   edm::EDP_ID id(1);
@@ -245,6 +247,7 @@ void testeventprincipal::getbyLabelTest()
   pprov->product.module.module_label = label;
   pprov->product.product_instance_name = productInstanceName;
   pprov->product.module.process_name = processName;
+  pprov->product.init();
   ep.put(pprod, pprov);
   
   try
@@ -292,6 +295,7 @@ void testeventprincipal::getbySelectorTest()
 
   pprov->product.module.module_label = label;
   pprov->product.module.process_name = processName;
+  pprov->product.init();
   ep.put(pprod, pprov);
 
   try
