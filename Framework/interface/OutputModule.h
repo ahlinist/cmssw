@@ -23,7 +23,7 @@ namespace edm {
     explicit OutputModule(ParameterSet const& pset) : groupSelector_(pset) {}
     virtual ~OutputModule();
     virtual void write(EventPrincipal const& e) = 0;
-    bool selected(Provenance const& prov) const {return groupSelector_.selected(prov);}
+    bool selected(ProductDescription const& desc) const {return groupSelector_.selected(desc);}
     ProductRegistry const& productRegistry() const {return *preg_;}
     void setProductRegistry(ProductRegistry const* reg_) {preg_ = reg_;}
   private:
