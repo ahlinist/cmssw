@@ -31,6 +31,8 @@ namespace edm
   class OutputModule;
   class ParameterSet;
   class ProcessNameSelector;
+  class ProductDescription;
+  class ProductRegistry;
   class Provenance;
   class PS_ID;
   class RefBase;
