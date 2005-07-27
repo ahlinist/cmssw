@@ -1,7 +1,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% 
 %%
-%% $Id: RoadMap.tex,v 1.32 2005/07/07 23:42:02 wmtan Exp $
+%% $Id: RoadMap.tex,v 1.33 2005/07/25 20:14:27 chrjones Exp $
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -20,7 +20,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Document revision number, traced by using RCS revision number.
 %
-\RCS $Revision: 1.32 $
+\RCS $Revision: 1.33 $
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Special macros for this document
@@ -942,73 +942,169 @@ a \emph{mixing module} could invoke
 an additional input service or services.
 
 \section{Event mixing module}
+\subsection{ Use cases }
 
-\subsection{Use cases}
-
-\subsubsection {Use case 1}
+\subsubsection { Use case 1}
 
 Merge Hits from a number of pileup simulated events to a signal simulated event.
 
 The number of pileup events to be merged is a function of the machine luminosity.
-Out of time pileup must be considered in addition to in-time pileup. The number of crossings before and after the nominal one to be considered is sub detector dependent.
+Out of time pileup must be considered in addition to in-time pileup, the number of crossings before and after the nominal one to be considered is sub detector dependent.
 
-This is the main use case, and is needed for the digitization of simulated data in the new framework.
-This use case has a production flavor.
-\subsubsection {Use case 2}
+This is the main use case, as is needed for the digitisation of simulated data in the new framework.
+This usecase has a production flavour.
+\subsubsection { Use case 2}
 
-Merge a signal event to another signal event, to simulate more complicated events.
+The framework should also be able to support, with a minor priority, the merging of a real data  event to another real data event, to simulate more complicated events.
 
-Ex. merge single electron event on top of a jet QCD event to study electron id,..This is a use case with analysis flavor. \\
-Do we need here to consider also the case of mixing events from real data?
+The merging of real data implies merging at the digi level, in contrast to 
+the main use case. As the digitisation will have occurred in both data streams,
+the digi values cannot be added without an approximation or without full 
+deconvolution of the digitisation followed by redigitisation. \\
 
-\subsection {Requirements}
+
+\subsection { Requirements }
 \begin {itemize}
-\item
-the software must fit into the new EDM requirements
 
 \item
-there is an I/O efficiency requirement, at least for us ecase 1. Considering out-of-time pileup from -5 bunch crossings and up to +3 bunch crossings and the highest luminosity giving ~17.5 pileup events in average per crossing, this gives a number of ~160 pileup events as input to be merged to a single signal event. Typical size of pileup events at Hit level is ~150kB, and ~500kB for signal events.
-That means that the mixing module must be able to handle ~25MB of input and 0.5MB of output in a 
+there is an I/O efficiency requirement, at least for usecase 1. 
+Considering out-of-time pileup from -5 bunch crossings and up to +3 bunch 
+crossings and the highest luminosity giving ~17.5 pileup events in average 
+per crossing, this gives a number of ~160 pileup events as input to be merged 
+to a single signal event. Typical size of pileup events at Hit level is ~150kB, and ~500kB for signal events.
+That means that the mixing module must be able to handle ~25MB of input and 
+0.5MB of output in a 
 very short processing time.
 \item
-Fixed, HIC and Poisson are different possibilities to define the number of pileup events to mix. All of these should be implemented.
+Fixed and Poissonian are different possibilities of calculating the number of 
+pileup events to merge, all of them should be implemented.
 \item
-configurability: things like the number of bunch crossings to be considered must be configurable differently for each subdetector. But for use case 1, flexibility may be very limited, whereas for use case 2 more configurability might be needed.
-\item
-MC true information must be accumulated. A minimum requirement is that entering particles are kept, and that a distinction between signal and pileup is made.  More requirements may be desirable.
+Merging of MC true information must be considered. A minimum here is to 
+combine the MC truth at particle level, keeping track of which particles
+come from the primary stream (signal) and which come from the secondary stream
+ (pileup or secondary signal).
 
-\item
-Do we need to maintain/ensure consistency between the mixed events? Is it allowed/useful to mix any event with any other?
 
 \end {itemize}
+\subsection {Tasks of the mixing module} 
+The mixing module closely collaborates with a specialised secondary input service in order to fulfill the following 2 tasks: 
+\subsubsection {Event mixing}
+The mixing module superposes events, it does not perform the digitisation but 
+delivers superposed events to the detector dependent digitisation modules.\\
+It calculates the number of events requested 
+from its own configuration (Poisson random or fixed, number of bunch crossings 
+before and after) and asks the secondary input service to deliver them. The 
+digitisation modules will have to verify that the range of delivered 
+bunchcrossings satisfy their needs (they might throw an exception otherwise). \\The way the events are superposed depends on the data tier that is treated:
+\begin{itemize}
+\item
+on the hit level the hits from the superposed events are simply added 
+to the list of hits of the main event.
+\item
+at the particle level (MC true information) it is a simple cumulation as for the hits.
+\item
+At the digi level (analysis use case), the mixing means that the digis of the 
+secondary stream are added to the list if they do not already exist, or produce a modified digi if a corresponding one already exists from the primary stream.
+\end{itemize}
+\subsubsection{Access to the mixing information}
+The clients (digitisation modules in the main use case) will need to be able to identify for each hit if it comes from the pileup or from the signal event, and to which bunch crossing it belongs.\\
 
-\subsection {Random sequence for pileup mixing}
+\subsection {Configuration}
+Configurable parameter names are suggestions, they must be coherent with 
+configuration general naming.
 
-We assume that pileup events have been randomly generated. Since the pileup 
-sample has finite statistics, one has to generate many sequences of 
-(up to ~160) pileup events from a finite collection of events in order to 
-produce as many independant sequences as possible. Since the event collection 
-is finite, events have to be reused in several sequences (for a 1M pileup 
-event size and for high luminosity, events will be reused starting in 
-average from at most the 57143th sequence). In addition, for efficiency 
-reasons, it is highly desirable to limit as much as possible jumps into new files.
+\subsubsection {Configuration of the mixing module}
 
-\subsection {Mixing module in new framework ({to be completed})}.
+\begin{verbatim}
+string type = "poissonian", "fixed" (default is poissonian)
+double average_number  (default is 17.5)
+int32 min_bunch (default is -5)
+int32 max_bunch (defauls is +3)
+\end{verbatim}
+\subsection {Configuration of the secondary input service}
+It is assumed that the secondary input service is able to provide randomly 
+selected events from the secondary stream. It might be useful for debugging 
+purposes to be able to ask for events selected sequentially. It might also 
+be useful while asking for a random sequence of events to be able to forbid 
+that 
+an event be selected twice. Hence configuration should look like:
 
-Since the mixing module producing products for writing to the EventStore, it will
-be a EDProducer.  But it is different from normal Event processing modules because it is 
-not driven by a single source of events, but by two input streams.
+\begin{verbatim}
+bool random (default is true)
+bool no_reuse (default is true)
+\end{verbatim}
 
-\subsubsection {Demands on the input service}
-A specific method of the input service will be needed, allowing to get a vector of events 
-the length of which has been specified by the caller. Depending on the possibilities of 
-randomness desired when selecting pileup events, it might also be necessary to specify 
-in detail how and with which configuration the pileup events are selected.
 
+
+\subsection { Mixing module in new framework }
+
+Since the  mixing module is writing to the EventStore, it will be a EDProducer.
+As for the other modules, input and the output of the mixing module is the main event, and the result of the mixing module will be a EDProduct added into 
+the main event. 
+
+\subsubsection {EDProduct}
+The result of the mixing module is an object of type CrossingFrame. This object contains
+\begin{verbatim}
+  int RunID;
+  int EventID;
+  std::vector<SimHit> signal;
+  std::vector<std::vector<SimHit> > bunchcrossings;
+  int firstcrossing;  //=min_bunch
+\end{verbatim}
 \begin{fixme}
-This list is very incomplete.
-Please add additional items you think are needed.
+This is a first proposition, not yet finalised.
 \end{fixme}
+
+\subsubsection {Architecture of the Mixing module}
+ The mixing module is somewhat special since it is 
+not driven by a single source of events, but by 2 input streams.There will 
+always be a distinction between the main event stream, delivering one event 
+after the other, and the secondary input stream delivering events randomly on request.\\
+The mixing module  creates and manages itself the secondary input stream, not 
+known to the other modules.
+
+\subsubsection {Demands on the secondary input service}
+\begin{itemize}
+\item
+A specific method of the input service will be needed, allowing to get a 
+vector of events 
+the length of which has been specified by the caller. 
+\item
+The events delivered must be selected inside the finite statistics of the pileup sample.
+If not specified otherwise, the secondary input service delivers events randomly, it is its own task to guarantee maximum 
+efficiency for this.
+
+\end{itemize}
+ \subsubsection {Example of a corresponding Parameter Set} 
+\begin{verbatim}
+process PROD  = {
+
+        source = PoolInputService {
+                string fileName = "main.root"
+                int32 MaxEvents = 2
+        }
+
+        source minbias = PoolInputService {
+                string fileName = "pileup.root"
+        }
+
+        module out = PoolOutputModule {
+                string fileName = "CumHits.root"
+        }
+
+        module mix = MixingModule {
+          source input=minbias
+          string type = ``fixed''
+          double average_number = 14.3
+          int32 min_bunch = -5
+          int32 max_bunch = 3
+        }
+
+        path p = { mix, out }
+}
+\end{verbatim}
+
+
 
 \section{Schedule Specifications for the HLT}
 
