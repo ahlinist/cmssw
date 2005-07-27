@@ -23,7 +23,7 @@ namespace edm {
       mod_(mod),
       actions_(wp.actions_) {
     assert(wp.reg_ != 0);
-    mod_->setProductRegistry(wp.reg_);
+    mod_->setProductRegistry(*wp.reg_);
   }
 
   OutputWorker::~OutputWorker() {
