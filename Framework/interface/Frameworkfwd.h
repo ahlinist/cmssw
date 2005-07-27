@@ -23,6 +23,7 @@ namespace edm
   class EventProvenance;
   class EventRegistry;
   class EventSetup;
+  class Group;
   class InputService;
   class InputServiceDescription;
   class LuminositySection;
