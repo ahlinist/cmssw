@@ -2,7 +2,10 @@
 #include "SimG4Core/DummyPhysics/interface/GeneralPhysics.h"
 #include "SimG4Core/DummyPhysics/interface/DummyEMPhysics.h"
 
-DummyPhysics::DummyPhysics(const edm::ParameterSet & p) : PhysicsList(p)
+DEFINE_SEAL_COMPONENT (DummyPhysics, "SimG4Core/Physics/DummyPhysics");
+ 
+DummyPhysics::DummyPhysics(seal::Context * c, const edm::ParameterSet & p) 
+    : PhysicsList(c,p)
 { 
     RegisterPhysics(new GeneralPhysics("general"));
     if (p.getParameter<bool>("DummyEMPhysics")) 

@@ -1,11 +1,12 @@
+<Flags SEAL_PLUGIN_NAME="SimG4CoreDummyPhysics">
 <export>
- <use name=FWCore/CoreFramework>
+ <use name=FWCore/Framework>
  <use name=Framework/SealKernel>
  <use name=SimG4Core/Physics>
  <lib name=SimG4CoreDummyPhysics>
 </export>
  
-<use name=FWCore/CoreFramework>
+<use name=FWCore/Framework>
 <use name=Framework/SealKernel>
 <use name=SimG4Core/Physics>
 <use name=geant4>
