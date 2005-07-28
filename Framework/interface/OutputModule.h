@@ -23,13 +23,12 @@ namespace edm {
   public:
     typedef OutputModule ModuleType;
 
-    explicit OutputModule(ParameterSet const& pset) : preg_(), descVec_(), groupSelector_(pset) {}
+    explicit OutputModule(ParameterSet const& pset, ProductRegistry const& reg);
     virtual ~OutputModule();
     virtual void write(EventPrincipal const& e) = 0;
     bool selected(ProductDescription const& desc) const {return groupSelector_.selected(desc);}
-    void setProductRegistry(ProductRegistry & reg_);
   protected:
-    ProductRegistry *preg_;
+    ProductRegistry const* const preg_;
     std::vector<ProductDescription const *> descVec_;
   private:
     GroupSelector groupSelector_;
