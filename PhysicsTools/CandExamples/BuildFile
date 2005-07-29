@@ -1,0 +1,8 @@
+<flags SEAL_PLUGIN_NAME="PhysicsToolsCandExamples">
+<use name=PhysicsTools/CandAlgos>
+<use name=root>
+<export>
+  <lib name=PhysicsToolsCandAlgos>
+  <use name=PhysicsTools/CandAlgos>
+  <use name=root>
+</export>
