@@ -34,8 +34,8 @@ WorkerRegistry:: ~WorkerRegistry(){
 Worker* WorkerRegistry::getWorker(const WorkerParams& p) {
 
   string workerid= 
-    mangleWorkerParameters(*p.pset_, p.process_name_,
-			   p.version_number_,p.pass_);
+    mangleWorkerParameters(*p.pset_, p.processName_,
+			   p.versionNumber__,p.pass_);
 
   WorkerMap::iterator workerIt = m_workerMap.find(workerid);
   

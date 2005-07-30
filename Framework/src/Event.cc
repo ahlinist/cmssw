@@ -48,8 +48,8 @@ namespace edm {
       // set parts of provenance
       pv->cid = 0; // what is this supposed to be?
       // what is this supposed to be? this is a disgusting string.
-      pv->full_product_type_name = TypeID(*pr).userClassName();
-      pv->friendly_product_type_name = TypeID(*pr).friendlyClassName();
+      pv->fullClassName_ = TypeID(*pr).userClassName();
+      pv->friendlyClassName_ = TypeID(*pr).friendlyClassName();
       pv->status = Provenance::Success;
       pv->parents = idlist;
 
@@ -86,7 +86,7 @@ namespace edm {
 	// set parts of provenance
 	pv->cid = 0; // TODO: what is this supposed to be?
 	pv->status = Provenance::Success;
-	pv->parents = got_product_ids_;
+	pv->parents = gotProductIDs_;
 
 	ep_.put(pr,pv);
 	++pit;
