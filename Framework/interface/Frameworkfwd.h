@@ -33,6 +33,7 @@ namespace edm
   class ParameterSet;
   class ProcessNameSelector;
   class ProductDescription;
+  class ProductID;
   class ProductRegistry;
   class Provenance;
   class PS_ID;
@@ -53,7 +54,6 @@ namespace edm
 // The following are trivial enough so that the real headers can be included.
 #include "FWCore/EDProduct/interface/CollisionID.h"
 #include "FWCore/Framework/interface/ConditionsID.h"
-#include "FWCore/EDProduct/interface/EDP_ID.h"
 #include "FWCore/Framework/interface/PassID.h"
 #include "FWCore/Framework/interface/VersionNumber.h"
 
