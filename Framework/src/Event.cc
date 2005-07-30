@@ -7,7 +7,7 @@ $Id$
 #include <algorithm>
 
 #include "FWCore/Framework/interface/Event.h"
-#include "FWCore/EDProduct/interface/EDP_ID.h"
+#include "FWCore/EDProduct/interface/ProductID.h"
 #include "FWCore/Framework/interface/EventPrincipal.h"
 #include "FWCore/Framework/interface/ProductDescription.h"
 #include "FWCore/Framework/src/Group.h"
@@ -97,7 +97,7 @@ namespace edm {
   }
 
   BasicHandle
-  Event::get_(EDP_ID oid) const
+  Event::get_(ProductID oid) const
   {
     return ep_.get(oid);
   }
