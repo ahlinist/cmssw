@@ -58,12 +58,12 @@ namespace edm {
       if(it == tbl.end())
         throw edm::Exception(errors::Configuration,"InvalidName")
 	  << "The name '" << name 
-	  << "' is not known in an anonymous ParameterSet";
+	  << "' is not known in an anonymous ParameterSet.\n";
       else
         throw edm::Exception(errors::Configuration,"InvalidName")
 	  << "The name '" << name
 	  << "' is not known in ParameterSet '"
-	  << it->second.getString() << "'";
+	  << it->second.getString() << "'\n";
     }
     return it->second;
   }  // retrieve()
@@ -87,7 +87,7 @@ namespace edm {
       if(! tbl.insert(std::make_pair(name, value)).second)
         throw edm::Exception(errors::Configuration,"InsertFailure")
 	  << "cannot insert " << name
-	  << " into a ParmeterSet";
+	  << " into a ParmeterSet\n";
     }
     else if(okay_to_replace)  {
       it->second = value;

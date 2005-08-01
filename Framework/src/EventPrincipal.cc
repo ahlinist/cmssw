@@ -66,7 +66,7 @@ namespace edm {
           << bk.moduleLabel_ << ","
           << bk.productInstanceName_ << ","
           << bk.processName_
-	  << ")";
+	  << ")\n";
     }
 
     // a memory allocation failure in modifying the product
@@ -113,7 +113,7 @@ namespace edm {
           << bk.moduleLabel_ << ","
           << bk.productInstanceName_ << ","
           << bk.processName_
-	  << ")";
+	  << ")\n";
     }
     prov->product.productID_ = it->second.productID_;
     ProductID id = it->second.productID_;
@@ -127,12 +127,12 @@ namespace edm {
   EventPrincipal::get(ProductID oid) const {
     if (oid == ProductID())
       throw edm::Exception(edm::errors::ProductNotFound,"InvalidID")
-	<< "Event::get by product ID: invalid ProductID supplied";
+	<< "Event::get by product ID: invalid ProductID supplied\n";
 
     ProductDict::const_iterator i = productDict_.find(oid);
     if (i == productDict_.end()) {
       throw edm::Exception(edm::errors::ProductNotFound,"InvalidID")
-	<< "Event::get by product ID: no product with given id";
+	<< "Event::get by product ID: no product with given id\n";
     }
 
     unsigned long slotNumber = i->second;
@@ -251,7 +251,7 @@ namespace edm {
     throw edm::Exception(errors::ProductNotFound,"NoMatch")
       << "getByLabel: could not find a required product " << label
       << "\nof type " << id
-      << " with user tag " << (productInstanceName.empty() ? "\"\"" : productInstanceName);
+      << " with user tag " << (productInstanceName.empty() ? "\"\"" : productInstanceName) << '\n';
   }
 
   void 
@@ -265,7 +265,7 @@ namespace edm {
 
     if(i==typeDict_.end()) {
 	throw edm::Exception(errors::ProductNotFound,"NoMatch")
-	  << "getMany: no products found of correct type " << id;
+	  << "getMany: no products found of correct type\n" << id;
     }
 
     vector<int> const& vint = i->second;
