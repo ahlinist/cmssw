@@ -1,0 +1,12 @@
+#!/bin/zsh
+pwd
+G4SHARE=`scramv1 tool tag geant4 GEANT4_SHARE_BASE`
+G4Packaging=${G4SHARE}/physics_lists/hadronic/Packaging
+G4THISLIB=G4packaging
+cp -rp ${G4Packaging} ${G4THISLIB}
+mv ${G4THISLIB}/include/*.* ${G4THISLIB}/src
+cp -p `pwd`/src/*.* ${G4THISLIB}/src
+mv ${G4THISLIB}/src/*.* `pwd`/src
+rm -fr ${G4THISLIB} 
+(scramv1 b CXXUSERFLAGS="-DG4VERBOSE")
+
