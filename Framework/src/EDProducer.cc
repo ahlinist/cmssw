@@ -4,20 +4,21 @@ $Id$
 
 ----------------------------------------------------------------------*/
 
+#include "FWCore/EDProduct/interface/EDProduct.h"
 #include "FWCore/Framework/interface/EDProducer.h"
 
 namespace edm
 {
-  EDProducer::~EDProducer()
-  { }
+  EDProducer::~EDProducer() { }
 
-  void EDProducer::beginJob( EventSetup const& ) 
-  { }
+  void EDProducer::beginJob(EventSetup const&) {
+  }
 
-  void EDProducer::endJob()
-  { }
-  const EDProducer::TypeLabelList& EDProducer::getTypeLabelList() const{
-    return productList_;
+  void EDProducer::endJob() {
+  }
+
+  EDProducer::TypeLabelList EDProducer::typeLabelList() const {
+    return typeLabelList_;
   }
 }
   
