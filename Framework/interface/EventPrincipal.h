@@ -42,6 +42,7 @@ $Id$
 namespace edm {
     
   class EventPrincipal {
+  friend class PoolOutputModule;
   public:
     typedef std::vector<boost::shared_ptr<Group> > GroupVec;
     typedef GroupVec::const_iterator               const_iterator;
