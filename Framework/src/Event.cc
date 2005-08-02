@@ -79,7 +79,8 @@ namespace edm {
 	ProductDescription desc(md_,
 			TypeID(*pr).userClassName(),
 			TypeID(*pr).friendlyClassName(),
-			pit->second);
+			pit->second,
+			pr.get());
 
 	auto_ptr<Provenance> pv(new Provenance(desc));
 
