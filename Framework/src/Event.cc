@@ -80,14 +80,14 @@ namespace edm {
 			TypeID(*pr).userClassName(),
 			TypeID(*pr).friendlyClassName(),
 			pit->second,
-			pr.get());
+			0);
 
 	auto_ptr<Provenance> pv(new Provenance(desc));
 
 	// set parts of provenance
-	pv->cid = 0; // TODO: what is this supposed to be?
-	pv->status = Provenance::Success;
-	pv->parents = gotProductIDs_;
+	pv->event.cid = 0; // TODO: what is this supposed to be?
+	pv->event.status = EventProductDescription::Success;
+	pv->event.parents = gotProductIDs_;
 
 	ep_.put(pr,pv);
 	++pit;
