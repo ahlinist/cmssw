@@ -51,7 +51,7 @@
 
 // user include files
 #include "FWCore/Framework/interface/ESPreFunctorDecorator.h"
-#include "FWCore/Framework/interface/Timestamp.h"
+#include "FWCore/Framework/interface/IOVSyncValue.h"
 
 // forward declarations
 
@@ -66,7 +66,7 @@ namespace edm {
       struct DependsOnCaller
    {
       DependsOnCaller(T* iCallee, void(T::* iMethod)(const TDependsOnRecord&) , const TCallerChain& iChain) : 
-      callee_(iCallee), method_(iMethod), chain_(iChain), time_(Timestamp::invalidTimestamp()) {}
+      callee_(iCallee), method_(iMethod), chain_(iChain), time_(IOVSyncValue::invalidIOVSyncValue()) {}
       
       void operator()(const TRecord& iRecord) {
          const TDependsOnRecord& record = iRecord.template getRecord<TDependsOnRecord>();
@@ -81,7 +81,7 @@ private:
       T* callee_;
       void (T::*method_)(const TDependsOnRecord&);
       TCallerChain chain_;
-      Timestamp time_;
+      IOVSyncValue time_;
    };
 
       //helper function to help create a DependsOnCaller

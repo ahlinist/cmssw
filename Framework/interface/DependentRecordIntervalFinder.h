@@ -12,7 +12,7 @@
  Usage:
     This class is used internally to a EventSetupRecordProvider which delivers a Record that is dependent on other Records.
 
-    If no Providers are given, then Finder will always report an invalid ValidityInterval for all Timestamps
+    If no Providers are given, then Finder will always report an invalid ValidityInterval for all IOVSyncValues
 
 */
 //
@@ -49,7 +49,7 @@ class DependentRecordIntervalFinder : public EventSetupRecordIntervalFinder
       
    protected:
       virtual void setIntervalFor(const EventSetupRecordKey&,
-                                   const Timestamp& , 
+                                   const IOVSyncValue& , 
                                    ValidityInterval&);
       
    private:

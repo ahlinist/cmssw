@@ -38,13 +38,13 @@ public:
    }
 protected:
    virtual void setIntervalFor(const edm::eventsetup::EventSetupRecordKey&,
-                                const edm::Timestamp& iTime, 
+                                const edm::IOVSyncValue& iTime, 
                                 edm::ValidityInterval& iInterval) {
       if(interval_.validFor(iTime)) {
          iInterval = interval_;
       } else {
-         if(interval_.last() == edm::Timestamp::invalidTimestamp() &&
-             interval_.first() != edm::Timestamp::invalidTimestamp() &&
+         if(interval_.last() == edm::IOVSyncValue::invalidIOVSyncValue() &&
+             interval_.first() != edm::IOVSyncValue::invalidIOVSyncValue() &&
              interval_.first() <= iTime) {
             iInterval = interval_;
          }else {

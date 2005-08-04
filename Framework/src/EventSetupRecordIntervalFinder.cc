@@ -59,7 +59,7 @@ EventSetupRecordIntervalFinder::~EventSetupRecordIntervalFinder()
 //
 const ValidityInterval& 
 EventSetupRecordIntervalFinder::findIntervalFor(const EventSetupRecordKey& iKey,
-                                              const Timestamp& iInstance)
+                                              const IOVSyncValue& iInstance)
 {
    Intervals::iterator itFound = intervals_.find(iKey);
    assert(itFound != intervals_.end()) ;
