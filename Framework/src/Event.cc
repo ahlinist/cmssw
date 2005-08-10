@@ -60,10 +60,16 @@ namespace edm {
 #endif
   }
 
-  CollisionID
+  EventID
   Event::id() const
   {
     return ep_.id();
+  }
+
+  Timestamp
+  Event::time() const
+  {
+    return ep_.time();
   }
 
   void 

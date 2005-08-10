@@ -27,7 +27,8 @@ $Id$
 #include "boost/shared_ptr.hpp"
 
 #include "FWCore/Framework/interface/BranchKey.h"
-#include "FWCore/EDProduct/interface/CollisionID.h"
+#include "FWCore/EDProduct/interface/EventID.h"
+#include "FWCore/EDProduct/interface/Timestamp.h"
 #include "FWCore/EDProduct/interface/ProductID.h"
 #include "FWCore/EDProduct/interface/EDProduct.h"
 #include "FWCore/Framework/interface/EventAux.h"
@@ -52,12 +53,19 @@ namespace edm {
     typedef std::vector<BasicHandle>               BasicHandleVec;
     
     EventPrincipal();
-    EventPrincipal(CollisionID const& id, Retriever& r, ProductRegistry const& reg,
+    //FIXME: Here for short-term backwards compatibility
+    EventPrincipal(EventID const& id, Retriever& r, ProductRegistry const& reg,
       ProcessNameList const& nl = ProcessNameList());
+    EventPrincipal(EventID const& id,
+                   Timestamp const & time,
+                   Retriever& r, 
+                   ProductRegistry const& reg,
+                   ProcessNameList const& nl = ProcessNameList());
     ~EventPrincipal();
 
-    CollisionID id() const;
-
+    EventID id() const;
+    Timestamp time() const;
+    
     // next two will not be available for a little while...
     //      const Run& getRun() const; 
     //      const LuminositySection& getLuminositySection() const; 
