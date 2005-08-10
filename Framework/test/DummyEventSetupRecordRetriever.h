@@ -50,7 +50,7 @@ namespace edm {
       virtual void setIntervalFor(const edm::eventsetup::EventSetupRecordKey&,
                                    const edm::IOVSyncValue& iTime, 
                                    edm::ValidityInterval& iInterval) {
-         iInterval = edm::ValidityInterval(IOVSyncValue(1),
+         iInterval = edm::ValidityInterval(IOVSyncValue::beginOfTime(),
                                             IOVSyncValue::endOfTime());
       }
 
