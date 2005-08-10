@@ -17,7 +17,8 @@ $Id$
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/EDProduct/interface/Wrapper.h"
 
-#include "FWCore/EDProduct/interface/CollisionID.h"
+#include "FWCore/EDProduct/interface/EventID.h"
+#include "FWCore/EDProduct/interface/Timestamp.h"
 #include "FWCore/Framework/interface/Handle.h"
 #include "FWCore/Framework/interface/BasicHandle.h"
 
@@ -33,8 +34,9 @@ namespace edm {
     ~Event();
 
     // these must come from the ep.
-    CollisionID id() const;
-
+    EventID id() const;
+    Timestamp time() const;
+    
     // How do these get set in the first place?
     const LuminositySection& getLuminositySection() const;
     const Run& getRun() const;
