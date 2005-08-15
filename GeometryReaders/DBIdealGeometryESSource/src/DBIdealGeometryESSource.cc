@@ -8,7 +8,7 @@
 #include "DetectorDescription/Parser/interface/DDLConfiguration.h"
 #include "DetectorDescription/Algorithm/src/AlgoInit.h"
 
-#include "FWCore/ParameterSet/interface/ParameterSet.h"
+//#include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include "CondCore/MetaDataService/interface/MetaData.h"
 
@@ -58,11 +58,11 @@ const DDCompactView *
 DBIdealGeometryESSource::produce(const IdealGeometryRecord &)
 { return new DDCompactView(); }
 
-void DBIdealGeometryESSource::setIntervalFor(const EventSetupRecordKey &,
-					       const edm::Timestamp &, 
-					       edm::ValidityInterval & oValidity)
+void XMLIdealGeometryESSource::setIntervalFor(const EventSetupRecordKey &,
+                                               const edm::IOVSyncValue &,
+                                               edm::ValidityInterval & oValidity)
 {
-   edm::ValidityInterval infinity(edm::Timestamp(1), edm::Timestamp::endOfTime());
+   edm::ValidityInterval infinity(edm::IOVSyncValue(1), edm::IOVSyncValue::endOfTime());
    oValidity = infinity;
 }
 
