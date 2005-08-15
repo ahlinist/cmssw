@@ -23,7 +23,7 @@
 //
 namespace edm {
    namespace eventsetup {
-      std::string SourceMakerTraits::name() { return "EventSetupSourceFactory"; }
+      std::string SourceMakerTraits::name() { return "CMS EDM Framework ESSource"; }
       
    }
 }

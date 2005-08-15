@@ -26,7 +26,7 @@ namespace edm {
 //
 // static member functions
 //
-       std::string ModuleMakerTraits::name() { return "EventSetupModuleFactory"; }
+       std::string ModuleMakerTraits::name() { return "CMS EDM Framework ESModule"; }
       void ModuleMakerTraits::addTo(EventSetupProvider& iProvider, boost::shared_ptr<DataProxyProvider> iComponent) 
       {
          iProvider.add(iComponent);
