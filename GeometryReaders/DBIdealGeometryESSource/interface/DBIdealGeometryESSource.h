@@ -19,8 +19,8 @@ public:
     const DDCompactView * produce(const IdealGeometryRecord &);
 protected:
     virtual void setIntervalFor(const edm::eventsetup::EventSetupRecordKey &,
-				const edm::Timestamp &,edm::ValidityInterval &);
-private:
+				const edm::IOVSyncValue &,edm::ValidityInterval &);
+ private:
     DBIdealGeometryESSource(const DBIdealGeometryESSource &);
     const DBIdealGeometryESSource & operator=(const DBIdealGeometryESSource &);
 };
