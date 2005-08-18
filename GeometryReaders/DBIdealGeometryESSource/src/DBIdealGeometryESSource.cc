@@ -1,6 +1,6 @@
 #include "GeometryReaders/DBIdealGeometryESSource/interface/DBIdealGeometryESSource.h"
 
-#include "DetectorDescription/Core/interface/DDdebug.h"
+#include "DetectorDescription/Base/interface/DDdebug.h"
 #include "DetectorDescription/Parser/interface/DDLParser.h"
 #include "DetectorDescription/DBReader/interface/DDORAReader.h"
 #include "DetectorDescription/Core/interface/DDCompactView.h"
@@ -35,17 +35,20 @@ DBIdealGeometryESSource::DBIdealGeometryESSource(const edm::ParameterSet & pset)
 		      pset.getParameter<std::string>("dbUser"), 
 		      pset.getParameter<std::string>("dbPass"),
 		      dbConn ); 
-  ddorar.readDB();
+  if ( ddorar.readDB() ) {
   
-  // MEC: FIX! Specs should NOT come from XML?
-   DDLParser * parser = DDLParser::instance();
-//   DDLParser::setInstance( new DDLParser );
-//   DDLParser* parser = DDLParser::instance();     
-  DDLConfiguration dp;
-  int result1 = dp.readConfig( pset.getParameter<std::string>("specsConf") );
-  if ( result1 != 0 ) throw DDException ("DDLConfiguration: readConfig failed!");
-  result1 = parser->parse( dp );
-  if ( result1 != 0 ) throw DDException ("DetectorDescription: Parsing failed!");
+    // MEC: FIX! Specs should NOT come from XML?
+    DDLParser * parser = DDLParser::instance();
+    //   DDLParser::setInstance( new DDLParser );
+    //   DDLParser* parser = DDLParser::instance();     
+    DDLConfiguration dp;
+    int result1 = dp.readConfig( pset.getParameter<std::string>("specsConf") );
+    if ( result1 != 0 ) throw DDException ("DDLConfiguration: readConfig failed!");
+    result1 = parser->parse( dp );
+    if ( result1 != 0 ) throw DDException ("DetectorDescription: Parsing failed!");
+  } else {
+    cout << "WARNING: DBIdealGeometryESSource could not make a geometry.  Should this throw?" << endl;
+  }
   //Tell Producer what we produce
   setWhatProduced(this);
   //Tell Finder what records we find
@@ -58,12 +61,13 @@ const DDCompactView *
 DBIdealGeometryESSource::produce(const IdealGeometryRecord &)
 { return new DDCompactView(); }
 
-void DBIdealGeometryESSource::setIntervalFor(const EventSetupRecordKey &,
-                                               const edm::IOVSyncValue &,
-                                               edm::ValidityInterval & oValidity)
+void DBIdealGeometryESSource::setIntervalFor(const EventSetupRecordKey & ,
+					     const edm::IOVSyncValue & iosv,
+					     edm::ValidityInterval & oValidity)
 {
-   edm::ValidityInterval infinity(edm::IOVSyncValue(1), edm::IOVSyncValue::endOfTime());
-   oValidity = infinity;
+  // mec: not sure of this next line, to force IOVSyncValue to use
+  edm::ValidityInterval infinity(iosv.beginOfTime(), iosv.endOfTime());
+  oValidity = infinity;
 }
 
 
