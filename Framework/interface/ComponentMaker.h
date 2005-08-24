@@ -74,9 +74,9 @@ template< class T, class TComponent>
 void
 ComponentMaker<T,TComponent>:: addTo(EventSetupProvider& iProvider,
                                         ParameterSet const& iConfiguration,
-                                        std::string const& iProcessName,
-                                        unsigned long iVersion,
-                                        unsigned long iPass) const 
+                                        std::string const& /*iProcessName*/,
+                                        unsigned long /*iVersion*/,
+                                        unsigned long /*iPass*/) const 
 {
    boost::shared_ptr<TComponent> component(new TComponent(iConfiguration));
    

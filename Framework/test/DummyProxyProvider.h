@@ -54,8 +54,8 @@ public:
       //std::cout <<"constructed provider"<<std::endl;
       usingRecord<DummyRecord>();
    }
-   void newInterval(const eventsetup::EventSetupRecordKey& iRecordType,
-                     const ValidityInterval& iInterval) {
+   void newInterval(const eventsetup::EventSetupRecordKey& /*iRecordType*/,
+                     const ValidityInterval& /*iInterval*/) {
       //do nothing
    }
 protected:

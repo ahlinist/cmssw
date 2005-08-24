@@ -60,7 +60,7 @@ class WhatsItESProducer : public edm::eventsetup::ESProducer {
 //
 // constructors and destructor
 //
-WhatsItESProducer::WhatsItESProducer( const edm::ParameterSet& iConfig )
+WhatsItESProducer::WhatsItESProducer( const edm::ParameterSet& /*iConfig*/ )
 {
    //the following line is needed to tell the framework what
    // data is being produced
