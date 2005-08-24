@@ -66,10 +66,13 @@ $Id$
 ----------------------------------------------------------------------*/
 
 #include <string>
+#include "boost/signal.hpp"
 
 namespace edm {
 
   class FwkImpl;
+  class Event;
+  class EventSetup;
 
   class EventProcessor
   {
@@ -105,6 +108,9 @@ namespace edm {
     // sources are exhausted.
     StatusCode run(unsigned long numberToProcess = 0);
 
+    boost::signal<void (const Event&, const EventSetup&)> preProcessEventSignal;
+    boost::signal<void (const Event&, const EventSetup&)> postProcessEventSignal;
+    
   private:
     FwkImpl* impl_;
   };
