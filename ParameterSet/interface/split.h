@@ -70,7 +70,7 @@ FwdIter
 template< class FwdIter >
 FwdIter
   edm::contextual_find_not(FwdIter b, FwdIter e
-                          , char first, char sep, char last)
+                          , char /* first */ , char sep, char /* last */)
 {
   for(;  b != e;  ++b)  {
     if(*b != sep)
