@@ -90,11 +90,13 @@ namespace edm {
   }
 
   void 
-  OutputWorker::beginJob(EventSetup const&) {
+  OutputWorker::beginJob(EventSetup const& es) {
+    mod_->beginJob(es);
   }
 
   void 
   OutputWorker::endJob() {
+    mod_->endJob();
   }
    
 }

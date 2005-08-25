@@ -18,4 +18,9 @@ namespace edm {
   OutputModule::~OutputModule() {
   }
 
+  void OutputModule::beginJob(EventSetup const&) {
+  }
+
+  void OutputModule::endJob() {
+  }
 }
