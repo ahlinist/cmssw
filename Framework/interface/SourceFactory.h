@@ -40,7 +40,7 @@ namespace edm {
             iProvider.add(pProvider);
       }
       template<class T>
-         void addProviderTo(EventSetupProvider& iProvider, boost::shared_ptr<T> /*iComponent*/, const void*) 
+         void addProviderTo(EventSetupProvider& /* iProvider */, boost::shared_ptr<T> /*iComponent*/, const void*) 
       {
             //do nothing
       }
