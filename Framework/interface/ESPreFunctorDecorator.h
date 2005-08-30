@@ -48,7 +48,7 @@ class ESPreFunctorDecorator
          caller_(iRecord);
       }
    
-      void post(const TRecord& iRecord) {
+      void post(const TRecord&) {
       }
    
    private:
