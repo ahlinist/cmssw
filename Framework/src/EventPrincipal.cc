@@ -388,7 +388,7 @@ namespace edm {
   }
 
   void
-  EventPrincipal::getAllProvenance(std::vector<Provenance const*> provenances) const {
+  EventPrincipal::getAllProvenance(std::vector<Provenance const*> & provenances) const {
     provenances.clear();
     for (EventPrincipal::const_iterator i = groups_.begin(); i != groups_.end(); ++i) {
       provenances.push_back(&(*i)->provenance());

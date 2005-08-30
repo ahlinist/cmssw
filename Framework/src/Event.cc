@@ -122,7 +122,7 @@ namespace edm {
   }
 
   void
-  Event::getAllProvenance(std::vector<Provenance const*> provenances) const
+  Event::getAllProvenance(std::vector<Provenance const*> & provenances) const
   {
     ep_.getAllProvenance(provenances);
   }

@@ -81,7 +81,7 @@ namespace edm {
     getProvenance(ProductID id) const;
 
     void
-    getAllProvenance(std::vector<Provenance const*> provenances) const;
+    getAllProvenance(std::vector<Provenance const*> &provenances) const;
 
   private:
     typedef std::vector<ProductID>       ProductIDVec;

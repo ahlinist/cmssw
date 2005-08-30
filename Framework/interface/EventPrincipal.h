@@ -94,7 +94,7 @@ namespace edm {
     getProvenance(ProductID oid) const;
 
     void
-    getAllProvenance(std::vector<Provenance const *> provenances) const;
+    getAllProvenance(std::vector<Provenance const *> & provenances) const;
 
     // ----- access to all products
 
