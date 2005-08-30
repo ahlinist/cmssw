@@ -196,7 +196,7 @@ class ESProducer : public ProxyFactoryProducer
       
       
       template<typename T, typename TProduct, typename TRecord>
-         void registerProduct(boost::shared_ptr<T> iCallback, const TProduct* iProd, const TRecord*) {
+         void registerProduct(boost::shared_ptr<T> iCallback, const TProduct*, const TRecord*) {
             registerFactory(new ProxyArgumentFactoryTemplate<
                              CallbackProxy<T, TRecord, TProduct>, boost::shared_ptr<T> >(iCallback));
          };
