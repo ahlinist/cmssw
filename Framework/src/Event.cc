@@ -115,4 +115,15 @@ namespace edm {
     ep_.getManyByType(id, results);
   }
 
+  Provenance const&
+  Event::getProvenance(ProductID oid) const
+  {
+    return ep_.getProvenance(oid);
+  }
+
+  void
+  Event::getAllProvenance(std::vector<Provenance const*> provenances) const
+  {
+    ep_.getAllProvenance(provenances);
+  }
 }

@@ -90,6 +90,12 @@ namespace edm {
     void getManyByType(TypeID id, 
 		 BasicHandleVec& results) const;
 
+    Provenance const&
+    getProvenance(ProductID oid) const;
+
+    void
+    getAllProvenance(std::vector<Provenance const *> provenances) const;
+
     // ----- access to all products
 
     const_iterator begin() const { return groups_.begin(); }

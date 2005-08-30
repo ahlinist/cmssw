@@ -77,7 +77,11 @@ namespace edm {
     void 
     getManyByType(const Selector&, std::vector<Handle<PROD> >& results) const;
 
-    // const Provenance* get(ProductID id) const;
+    Provenance const&
+    getProvenance(ProductID id) const;
+
+    void
+    getAllProvenance(std::vector<Provenance const*> provenances) const;
 
   private:
     typedef std::vector<ProductID>       ProductIDVec;
