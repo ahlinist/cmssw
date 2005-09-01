@@ -1,5 +1,5 @@
-#ifndef EVENTSETUPPRODUCER_PRODUCE_HELPERS_H
-#define EVENTSETUPPRODUCER_PRODUCE_HELPERS_H
+#ifndef Framework_produce_helpers_h
+#define Framework_produce_helpers_h
 // -*- C++ -*-
 //
 // Package:     Framework
@@ -96,4 +96,4 @@ namespace edm {
    }
 }
 
-#endif /* EVENTSETUPPRODUCER_PRODUCE_HELPERS_H */
+#endif /* Framework_produce_helpers_h */
