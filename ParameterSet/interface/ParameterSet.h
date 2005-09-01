@@ -1,3 +1,6 @@
+#ifndef  ParameterSet_ParameterSet_h
+#define  ParameterSet_ParameterSet_h
+
 // ----------------------------------------------------------------------
 // $Id$
 //
@@ -7,10 +10,6 @@
 
 // ----------------------------------------------------------------------
 // prolog
-
-#ifndef  PARAMETERSET_H
-#define  PARAMETERSET_H
-
 
 // ----------------------------------------------------------------------
 // prerequisite source files and headers
@@ -409,4 +408,4 @@ private:
 
 // epilog
 
-#endif  // PARAMETERSET_H
+#endif  // ParameterSet_ParameterSet_h
