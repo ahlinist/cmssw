@@ -1,5 +1,5 @@
-#ifndef EVENTSETUP_DUMMYPROVIDER_H
-#define EVENTSETUP_DUMMYPROVIDER_H
+#ifndef Framework_DummyProvider_h
+#define Framework_DummyProvider_h
 // -*- C++ -*-
 //
 // Package:     Framework
@@ -73,4 +73,4 @@ private:
       }
    }
 }
-#endif /* EVENTSETUP_DUMMYPROVIDER_H */
+#endif /* EventSetup_DummyProvider_h */

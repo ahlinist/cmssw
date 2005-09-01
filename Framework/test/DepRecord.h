@@ -1,5 +1,5 @@
-#ifndef COREFRAMEWORK_DEPRECORD_H
-#define COREFRAMEWORK_DEPRECORD_H
+#ifndef Framework_DEPRecord_h
+#define Framework_DEPRecord_h
 // -*- C++ -*-
 //
 // Package:     Framework
@@ -33,4 +33,4 @@ class DepRecord
 {
 };
 
-#endif /* COREFRAMEWORK_DEPRECORD_H */
+#endif /* Framework_DEPRecord_h */

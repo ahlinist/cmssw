@@ -1,5 +1,5 @@
-#ifndef COREFRAMEWORK_DUMMYEVENTSETUPRECORDRETRIEVER_H
-#define COREFRAMEWORK_DUMMYEVENTSETUPRECORDRETRIEVER_H
+#ifndef Framework_DummyEventSetupRecordRETRIEVER_h
+#define Framework_DummyEventSetupRecordRETRIEVER_h
 // -*- C++ -*-
 //
 // Package:     Framework
@@ -63,4 +63,4 @@ namespace edm {
 
 };
 }
-#endif /* COREFRAMEWORK_DUMMYEVENTSETUPRECORDRETRIEVER_H */
+#endif /* Framework_DummyEventSetupRecordRETRIEVER_h */
