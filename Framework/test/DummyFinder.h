@@ -1,5 +1,5 @@
-#ifndef Framework_DummyDinder_h
-#define Framework_DummyDinder_h
+#ifndef Framework_DummyFinder_h
+#define Framework_DummyFinder_h
 // -*- C++ -*-
 //
 // Package:     Framework
@@ -57,4 +57,4 @@ private:
 };
 
 
-#endif /* EventSetup_DummyDinder_h */
+#endif /* EventSetup_DummyFinder_h */

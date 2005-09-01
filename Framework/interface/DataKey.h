@@ -1,5 +1,5 @@
-#ifndef EVENTSETUP_DATAKEY_H
-#define EVENTSETUP_DATAKEY_H
+#ifndef Framework_DataKey_h
+#define Framework_DataKey_h
 // -*- C++ -*-
 //
 // Package:     Framework
@@ -91,4 +91,4 @@ class DataKey
 
    }
 }
-#endif /* EVENTSETUP_DATAKEY_H */
+#endif /* Framework_DataKey_h */

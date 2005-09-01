@@ -1,5 +1,5 @@
-#ifndef EVENTSETUP_COMPONENTFACTORY_H
-#define EVENTSETUP_COMPONENTFACTORY_H
+#ifndef Framework_ComponentFactory_h
+#define Framework_ComponentFactory_h
 // -*- C++ -*-
 //
 // Package:     Framework
@@ -99,4 +99,4 @@ class ComponentFactory : public seal::PluginFactory< ComponentMakerBase<T>* ()>
 }
 #define COMPONENTFACTORY_GET(_type_) static edm::eventsetup::ComponentFactory<_type_> s_dummyfactory; template<> edm::eventsetup::ComponentFactory<_type_>* edm::eventsetup::ComponentFactory<_type_>::get() { return &s_dummyfactory; }
 
-#endif /* EVENTSETUP_COMPONENTFACTORY_H */
+#endif /* Framework_ComponentFactory_h */

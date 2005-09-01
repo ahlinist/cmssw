@@ -1,5 +1,5 @@
-#ifndef EDM_EVENTPROC_H
-#define EDM_EVENTPROC_H
+#ifndef Framework_EventProcessor_h
+#define Framework_EventProcessor_h
 
 /*----------------------------------------------------------------------
 

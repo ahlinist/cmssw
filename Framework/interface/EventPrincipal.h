@@ -1,5 +1,5 @@
-#ifndef EDM_EVENT_PRINCIPAL_HH
-#define EDM_EVENT_PRINCIPAL_HH
+#ifndef Framework_EventPrincipal_h
+#define Framework_EventPrincipal_h
 
 /*----------------------------------------------------------------------
   

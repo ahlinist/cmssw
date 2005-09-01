@@ -1,5 +1,5 @@
-#ifndef EVENTSETUP_DEPENDENTRECORDIMPLEMENTATION_H
-#define EVENTSETUP_DEPENDENTRECORDIMPLEMENTATION_H
+#ifndef Framework_DependentRecordImplementation_h
+#define Framework_DependentRecordImplementation_h
 // -*- C++ -*-
 //
 // Package:     Framework
@@ -74,4 +74,4 @@ class DependentRecordImplementation : public EventSetupRecordImplementation<Reco
   }
 }
 
-#endif /* EVENTSETUP_DEPENDENTRECORDIMPLEMENTATION_H */
+#endif /* Framework_DependentRecordImplementation_h */

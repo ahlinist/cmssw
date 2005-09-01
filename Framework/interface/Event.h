@@ -1,5 +1,5 @@
-#ifndef EDM_EVENT_HH
-#define EDM_EVENT_HH
+#ifndef Framework_Event_h
+#define Framework_Event_h
 
 /*----------------------------------------------------------------------
 

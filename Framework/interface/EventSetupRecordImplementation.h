@@ -1,5 +1,5 @@
-#ifndef EVENTSETUP_EVENTSETUPRECORDIMPLEMENTATION_H
-#define EVENTSETUP_EVENTSETUPRECORDIMPLEMENTATION_H
+#ifndef Framework_EventSetupRecordImplementation_h
+#define Framework_EventSetupRecordImplementation_h
 // -*- C++ -*-
 //
 // Package:     Framework
@@ -61,8 +61,8 @@ class EventSetupRecordImplementation : public EventSetupRecord
 
    virtual bool doGet(const DataKey& aKey) const {
       const DataProxy* proxy = find(aKey);
-      if( 0 != proxy ) {
-         proxy->doGet( *this, aKey );
+      if(0 != proxy) {
+         proxy->doGet(*this, aKey);
       }
       return 0 != proxy;
    }
@@ -145,4 +145,4 @@ EventSetupRecordImplementation<T>::getImplementation(DataT const *& iData ,
 }
 #include "FWCore/Framework/interface/recordGetImplementation.icc"
 
-#endif /* EVENTSETUP_EVENTSETUPRECORDIMPLEMENTATION_H */
+#endif /* Framework_EventSetupRecordImplementation_h */

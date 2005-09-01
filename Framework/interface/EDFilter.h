@@ -1,5 +1,5 @@
-#ifndef EDM_EDFILTER_INCLUDED
-#define EDM_EDFILTER_INCLUDED
+#ifndef Framework_EDFilter_h
+#define Framework_EDFilter_h
 
 /*----------------------------------------------------------------------
   
@@ -22,7 +22,7 @@ namespace edm
 
       virtual ~EDFilter();
       virtual bool filter(Event const& e, EventSetup const& c) = 0;
-      virtual void beginJob( EventSetup const& ) ;
+      virtual void beginJob(EventSetup const&) ;
       virtual void endJob() ;
       
       

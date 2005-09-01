@@ -1,5 +1,5 @@
-#ifndef EVENTSETUPPRODUCER_ESPRODUCER_H
-#define EVENTSETUPPRODUCER_ESPRODUCER_H
+#ifndef Framework_ESProducer_h
+#define Framework_ESProducer_h
 // -*- C++ -*-
 //
 // Package:     Framework
@@ -208,4 +208,4 @@ class ESProducer : public ProxyFactoryProducer
 };
    }
 }
-#endif /* EVENTSETUPPRODUCER_ESPRODUCER_H */
+#endif /* Framework_ESProducer_h */

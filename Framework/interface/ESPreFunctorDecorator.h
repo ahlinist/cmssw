@@ -1,5 +1,5 @@
-#ifndef COREFRAMEWORK_ESPREFUNCTORDECORATOR_H
-#define COREFRAMEWORK_ESPREFUNCTORDECORATOR_H
+#ifndef Framework_ESPreFunctorDecorator_h
+#define Framework_ESPreFunctorDecorator_h
 // -*- C++ -*-
 //
 // Package:     Framework
@@ -63,4 +63,4 @@ class ESPreFunctorDecorator
    }
 }
 
-#endif /* COREFRAMEWORK_ESPREFUNCTORDECORATOR_H */
+#endif /* Framework_ESPreFunctorDecorator_h */

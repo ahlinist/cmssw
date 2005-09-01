@@ -1,5 +1,5 @@
-#ifndef EVENTSETUP_COMPONENTMAKER_H
-#define EVENTSETUP_COMPONENTMAKER_H
+#ifndef Framework_ComponentMaker_h
+#define Framework_ComponentMaker_h
 // -*- C++ -*-
 //
 // Package:     Framework
@@ -84,4 +84,4 @@ ComponentMaker<T,TComponent>:: addTo(EventSetupProvider& iProvider,
 }
    }
 }
-#endif /* EVENTSETUP_COMPONENTMAKER_H */
+#endif /* Framework_ComponentMaker_h */

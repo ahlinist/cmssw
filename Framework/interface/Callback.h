@@ -1,5 +1,5 @@
-#ifndef EVENTSETUP_CALLBACK_H
-#define EVENTSETUP_CALLBACK_H
+#ifndef Framework_Callback_h
+#define Framework_Callback_h
 // -*- C++ -*-
 //
 // Package:     Framework
@@ -117,4 +117,4 @@ namespace edm {
    }
 }
 
-#endif /* EVENTSETUP_CALLBACK_H */
+#endif /* Framework_Callback_h */

@@ -1,5 +1,5 @@
-#ifndef EVENTSETUPPRODUCER_CALLBACKPROXY_H
-#define EVENTSETUPPRODUCER_CALLBACKPROXY_H
+#ifndef Framework_CallbackProxy_h
+#define Framework_CallbackProxy_h
 // -*- C++ -*-
 //
 // Package:     Framework
@@ -75,4 +75,4 @@ template<class CallbackT, class RecordT, class DataT>
    }
 }
 
-#endif /* EVENTSETUPPRODUCER_CALLBACKPROXY_H */
+#endif

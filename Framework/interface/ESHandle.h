@@ -1,5 +1,5 @@
-#ifndef EVENTSETUP_ESHANDLE_H
-#define EVENTSETUP_ESHANDLE_H
+#ifndef Framework_ESHandle_h
+#define Framework_ESHandle_h
 // -*- C++ -*-
 //
 // Package:     Framework
@@ -61,4 +61,4 @@ class ESHandle
 
    }
 }
-#endif /* EVENTSETUP_ESHANDLE_H */
+#endif /* Framework_ESHandle_h */

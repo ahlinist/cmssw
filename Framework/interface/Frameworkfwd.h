@@ -1,5 +1,5 @@
-#ifndef EDM_FWD_H
-#define EDM_FWD_H
+#ifndef Frameworkfwd_h
+#define Frameworkfwd_h
 
 /*----------------------------------------------------------------------
   

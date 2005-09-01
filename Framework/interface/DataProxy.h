@@ -1,5 +1,5 @@
-#ifndef EVENTSETUP_DATAPROXY_H
-#define EVENTSETUP_DATAPROXY_H
+#ifndef Framework_DataProxy_h
+#define Framework_DataProxy_h
 // -*- C++ -*-
 //
 // Package:     Framework
@@ -39,7 +39,7 @@ class DataProxy
       // ---------- const member functions ---------------------
       bool cacheIsValid() const { return cacheIsValid_; }
       
-      virtual void doGet( const EventSetupRecord& iRecord, const DataKey& iKey) const = 0;
+      virtual void doGet(const EventSetupRecord& iRecord, const DataKey& iKey) const = 0;
       // ---------- static member functions --------------------
 
       // ---------- member functions ---------------------------
@@ -67,4 +67,4 @@ class DataProxy
 };
    }
 }
-#endif /* EVENTSETUP_DATAPROXY_H */
+#endif /* Framework_DataProxy_h */

@@ -1,5 +1,5 @@
-#ifndef EVENTSETUP_DEPENDENTRECORDINTERVALFINDER_H
-#define EVENTSETUP_DEPENDENTRECORDINTERVALFINDER_H
+#ifndef Framework_DependentRecordIntervalFinder_h
+#define Framework_DependentRecordIntervalFinder_h
 // -*- C++ -*-
 //
 // Package:     Framework
@@ -64,4 +64,4 @@ class DependentRecordIntervalFinder : public EventSetupRecordIntervalFinder
 
    }
 }
-#endif /* EVENTSETUP_DEPENDENTRECORDINTERVALFINDER_H */
+#endif /* Framework_DependentRecordIntervalFinder_h */

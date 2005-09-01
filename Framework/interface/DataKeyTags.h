@@ -1,5 +1,5 @@
-#ifndef EVENTSETUP_DATAKEYTAGS_H
-#define EVENTSETUP_DATAKEYTAGS_H
+#ifndef Framework_DataKeyTags_h
+#define Framework_DataKeyTags_h
 // -*- C++ -*-
 //
 // Package:     Framework
@@ -54,4 +54,4 @@ namespace edm {
       typedef NameTag IdTags;
    }
 }
-#endif /* EVENTSETUP_DATAKEYTAGS_H */
+#endif /* Framework_DataKeyTags_h */

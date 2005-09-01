@@ -1,5 +1,5 @@
-#ifndef EVENTSETUP_EVENTSETUPRECORDINTERVALFINDER_H
-#define EVENTSETUP_EVENTSETUPRECORDINTERVALFINDER_H
+#ifndef Framework_EventSetupRecordIntervalFinder_h
+#define Framework_EventSetupRecordIntervalFinder_h
 // -*- C++ -*-
 //
 // Package:     Framework
@@ -75,4 +75,4 @@ class EventSetupRecordIntervalFinder
 
    }
 }
-#endif /* EVENTSETUP_EVENTSETUPRECORDINTERVALFINDER_H */
+#endif /* Framework_EventSetupRecordIntervalFinder_h */

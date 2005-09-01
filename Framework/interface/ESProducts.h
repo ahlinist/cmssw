@@ -1,5 +1,5 @@
-#ifndef EVENTSETUPPRODUCER_ESPRODUCTS_H
-#define EVENTSETUPPRODUCER_ESPRODUCTS_H
+#ifndef Framework_ESProducts_h
+#define Framework_ESProducts_h
 // -*- C++ -*-
 //
 // Package:     Framework
@@ -170,4 +170,4 @@ namespace edm {
 }
 
 
-#endif /* EVENTSETUPPRODUCER_PRODUCTS_H */
+#endif /* Framework_ESProducts_h */
