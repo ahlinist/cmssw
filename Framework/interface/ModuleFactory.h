@@ -1,5 +1,5 @@
-#ifndef EVENTSETUP_MODULEFACTORY_H
-#define EVENTSETUP_MODULEFACTORY_H
+#ifndef Framework_ModuleFactory_h
+#define Framework_ModuleFactory_h
 // -*- C++ -*-
 //
 // Package:     Framework
@@ -49,5 +49,5 @@ DEFINE_SEAL_PLUGIN (edm::eventsetup::ModuleFactory,edm::eventsetup::ModuleMaker<
 #define DEFINE_ANOTHER_FWK_EVENTSETUP_MODULE(type) \
 DEFINE_SEAL_PLUGIN (edm::eventsetup::ModuleFactory,edm::eventsetup::ModuleMaker<type>,#type);
 
-#endif /* EVENTSETUP_MODULEFACTORY_H */
+#endif /* Framework_ModuleFactory_h */
 

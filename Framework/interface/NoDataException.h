@@ -1,5 +1,5 @@
-#if !defined(EVENTSETUP_NODATAEXCEPTION_H)
-#define EVENTSETUP_NODATAEXCEPTION_H
+#ifndef Framework_NoDataException_h
+#define Framework_NoDataException_h
 // -*- C++ -*-
 //
 // Package:     Framework
@@ -149,4 +149,4 @@ template <class T>
 
    }
 }
-#endif /* EVENTSETUP_NODATAEXCEPTION_H */
+#endif /* Framework_NoDataException_h */

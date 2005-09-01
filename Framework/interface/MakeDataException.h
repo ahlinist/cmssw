@@ -1,5 +1,5 @@
-#ifndef EVENTSETUP_MAKEDATAEXCEPTION_H
-#define EVENTSETUP_MAKEDATAEXCEPTION_H
+#ifndef Framework_MakeDataException_h
+#define Framework_MakeDataException_h
 // -*- C++ -*-
 //
 // Package:     Framework
@@ -103,4 +103,4 @@ class MakeDataException : public cms::Exception
 
    }
 }
-#endif /* EVENTSETUP_MAKEDATAEXCEPTION_H */
+#endif /* Framework_MakeDataException_h */

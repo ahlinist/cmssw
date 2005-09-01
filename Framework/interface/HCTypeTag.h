@@ -1,5 +1,5 @@
-#if !defined(HETEROCONTAINER_HCTYPETAG_H)
-#define HETEROCONTAINER_HCTYPETAG_H
+#ifndef Framework_HCTypeTag_h
+#define Framework_HCTypeTag_h
 // -*- C++ -*-
 //
 // Package:     HeteroContainer
@@ -93,4 +93,4 @@ class HCTypeTag
       }
    }
 }
-#endif /* HETEROCONTAINER_HCTYPETAG_H */
+#endif /* Framework_HCTypeTag_h */
