@@ -43,11 +43,11 @@ namespace edmreftest {
 
 class WhatsItAnalyzer : public edm::EDAnalyzer {
    public:
-      explicit WhatsItAnalyzer( const edm::ParameterSet& );
+      explicit WhatsItAnalyzer(const edm::ParameterSet&);
       ~WhatsItAnalyzer();
 
 
-      virtual void analyze( const edm::Event&, const edm::EventSetup& );
+      virtual void analyze(const edm::Event&, const edm::EventSetup&);
    private:
       // ----------member data ---------------------------
 };
@@ -63,7 +63,7 @@ class WhatsItAnalyzer : public edm::EDAnalyzer {
 //
 // constructors and destructor
 //
-WhatsItAnalyzer::WhatsItAnalyzer( const edm::ParameterSet& /*iConfig*/ )
+WhatsItAnalyzer::WhatsItAnalyzer(const edm::ParameterSet& /*iConfig*/)
 {
    //now do what ever initialization is needed
 
@@ -85,11 +85,11 @@ WhatsItAnalyzer::~WhatsItAnalyzer()
 
 // ------------ method called to produce the data  ------------
 void
-WhatsItAnalyzer::analyze( const edm::Event& /*iEvent*/, const edm::EventSetup& iSetup )
+WhatsItAnalyzer::analyze(const edm::Event& /*iEvent*/, const edm::EventSetup& iSetup)
 {
    using namespace edm;
    eventsetup::ESHandle<WhatsIt> pSetup;
-   iSetup.get<GadgetRcd>().get( pSetup );
+   iSetup.get<GadgetRcd>().get(pSetup);
 }
 
 }
