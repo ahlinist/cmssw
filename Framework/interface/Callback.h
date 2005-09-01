@@ -117,4 +117,4 @@ namespace edm {
    }
 }
 
-#endif /* Framework_Callback_h */
+#endif

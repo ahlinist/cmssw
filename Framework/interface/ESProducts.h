@@ -170,4 +170,4 @@ namespace edm {
 }
 
 
-#endif /* Framework_ESProducts_h */
+#endif

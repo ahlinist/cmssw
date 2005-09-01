@@ -1,3 +1,6 @@
+#ifndef Framework_UnknownModuleException_h
+#define Framework_UnknownModuleException_h
+
 /**
    \file
    Declaration
@@ -6,11 +9,6 @@
    \version $Id$
    \date 02 Jun 2005
 */
-
-#ifndef _edm_UnknownModuleException_h_
-#define _edm_UnknownModuleException_h_
-
-static const char CVSId_edm_UnknownModuleException[] = "$Id$";
 
 #include "FWCore/Utilities/interface/Exception.h"
 
@@ -45,11 +43,4 @@ namespace edm {
 
 } // edm
 
-
-#endif // _edm_UnknownModuleException_h_
-
-// Configure (x)emacs for this file ...
-// Local Variables:
-// mode:c++
-// compile-command: "make -C .. -k"
-// End:
+#endif

@@ -145,4 +145,4 @@ EventSetupRecordImplementation<T>::getImplementation(DataT const *& iData ,
 }
 #include "FWCore/Framework/interface/recordGetImplementation.icc"
 
-#endif /* Framework_EventSetupRecordImplementation_h */
+#endif

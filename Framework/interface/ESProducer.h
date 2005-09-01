@@ -208,4 +208,4 @@ class ESProducer : public ProxyFactoryProducer
 };
    }
 }
-#endif /* Framework_ESProducer_h */
+#endif

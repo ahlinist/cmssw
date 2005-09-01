@@ -54,4 +54,4 @@ namespace edm {
       typedef NameTag IdTags;
    }
 }
-#endif /* Framework_DataKeyTags_h */
+#endif

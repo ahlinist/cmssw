@@ -143,4 +143,4 @@ class NoProxyException : public NoDataException<T>
 }
 // inline function definitions
 
-#endif /* Framework_NoProxyException_h */
+#endif

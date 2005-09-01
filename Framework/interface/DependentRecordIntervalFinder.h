@@ -64,4 +64,4 @@ class DependentRecordIntervalFinder : public EventSetupRecordIntervalFinder
 
    }
 }
-#endif /* Framework_DependentRecordIntervalFinder_h */
+#endif

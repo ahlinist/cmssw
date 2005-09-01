@@ -74,4 +74,4 @@ class DependentRecordImplementation : public EventSetupRecordImplementation<Reco
   }
 }
 
-#endif /* Framework_DependentRecordImplementation_h */
+#endif

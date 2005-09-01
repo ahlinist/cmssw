@@ -57,4 +57,4 @@ private:
 };
 
 
-#endif /* EventSetup_DummyFinder_h */
+#endif

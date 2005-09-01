@@ -1,5 +1,5 @@
-#ifndef  ParameterSet_split_h
-#define  ParameterSet_split_h
+#ifndef ParameterSet_split_h
+#define ParameterSet_split_h
 
 // ----------------------------------------------------------------------
 // $Id$
@@ -124,4 +124,4 @@ bool
 // ----------------------------------------------------------------------
 // epilog
 
-#endif  // ParameterSet_Split_h
+#endif

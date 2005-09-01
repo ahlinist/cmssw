@@ -1,5 +1,5 @@
-#ifndef  ParameterSet_ParameterSet_h
-#define  ParameterSet_ParameterSet_h
+#ifndef ParameterSet_ParameterSet_h
+#define ParameterSet_ParameterSet_h
 
 // ----------------------------------------------------------------------
 // $Id$
@@ -408,4 +408,4 @@ private:
 
 // epilog
 
-#endif  // ParameterSet_ParameterSet_h
+#endif

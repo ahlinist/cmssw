@@ -49,5 +49,5 @@ DEFINE_SEAL_PLUGIN (edm::eventsetup::ModuleFactory,edm::eventsetup::ModuleMaker<
 #define DEFINE_ANOTHER_FWK_EVENTSETUP_MODULE(type) \
 DEFINE_SEAL_PLUGIN (edm::eventsetup::ModuleFactory,edm::eventsetup::ModuleMaker<type>,#type);
 
-#endif /* Framework_ModuleFactory_h */
+#endif
 

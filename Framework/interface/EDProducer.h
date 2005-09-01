@@ -65,4 +65,4 @@ namespace edm {
 
 }
 
-#endif // Framework_EDProducer_h
+#endif

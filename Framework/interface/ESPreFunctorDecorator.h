@@ -63,4 +63,4 @@ class ESPreFunctorDecorator
    }
 }
 
-#endif /* Framework_ESPreFunctorDecorator_h */
+#endif

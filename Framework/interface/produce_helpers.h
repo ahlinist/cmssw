@@ -96,4 +96,4 @@ namespace edm {
    }
 }
 
-#endif /* Framework_produce_helpers_h */
+#endif

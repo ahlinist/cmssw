@@ -70,4 +70,4 @@ DEFINE_SEAL_PLUGIN (edm::eventsetup::SourceFactory,edm::eventsetup::SourceMaker<
 #define DEFINE_ANOTHER_FWK_EVENTSETUP_SOURCE(type) \
 DEFINE_SEAL_PLUGIN (edm::eventsetup::SourceFactory,edm::eventsetup::SourceMaker<type>,#type);
 
-#endif /* Framework_SourceFactory_h */
+#endif

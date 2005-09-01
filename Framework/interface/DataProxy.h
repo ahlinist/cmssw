@@ -67,4 +67,4 @@ class DataProxy
 };
    }
 }
-#endif /* Framework_DataProxy_h */
+#endif

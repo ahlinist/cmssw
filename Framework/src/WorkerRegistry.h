@@ -1,3 +1,6 @@
+#ifndef Framework_WorkerRegistry_h
+#define Framework_WorkerRegistry_h
+
 /**
    \file
    Declaration of class ModuleRegistry
@@ -6,11 +9,6 @@
    \version $Id$
    \date 18 May 2005
 */
-
-#ifndef _edm_ModuleRegistry_h_
-#define _edm_ModuleRegistry_h_
-
-static const char CVSId_edm_ModuleRegistry[] = "$Id$";
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Framework/src/WorkerParams.h"
@@ -67,5 +65,4 @@ namespace edm {
 } // edm
 
 
-#endif // _edm_WorkerRegistry_h_
-
+#endif

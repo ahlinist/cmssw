@@ -99,4 +99,4 @@ class ComponentFactory : public seal::PluginFactory< ComponentMakerBase<T>* ()>
 }
 #define COMPONENTFACTORY_GET(_type_) static edm::eventsetup::ComponentFactory<_type_> s_dummyfactory; template<> edm::eventsetup::ComponentFactory<_type_>* edm::eventsetup::ComponentFactory<_type_>::get() { return &s_dummyfactory; }
 
-#endif /* Framework_ComponentFactory_h */
+#endif

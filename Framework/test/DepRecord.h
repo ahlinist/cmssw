@@ -1,5 +1,5 @@
-#ifndef Framework_DEPRecord_h
-#define Framework_DEPRecord_h
+#ifndef Framework_DepRecord_h
+#define Framework_DepRecord_h
 // -*- C++ -*-
 //
 // Package:     Framework
@@ -33,4 +33,4 @@ class DepRecord
 {
 };
 
-#endif /* Framework_DEPRecord_h */
+#endif

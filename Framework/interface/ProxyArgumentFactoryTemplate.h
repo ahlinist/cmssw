@@ -63,4 +63,4 @@ class ProxyArgumentFactoryTemplate : public ProxyFactoryBase
 
    }
 }
-#endif /* Framework_ProxyArgumentFactoryTemplate_h */
+#endif

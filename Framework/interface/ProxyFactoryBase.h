@@ -56,4 +56,4 @@ class ProxyFactoryBase
    }
 }
 
-#endif /* Framework_ProxyFactoryBase_h */
+#endif

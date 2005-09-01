@@ -84,4 +84,4 @@ ComponentMaker<T,TComponent>:: addTo(EventSetupProvider& iProvider,
 }
    }
 }
-#endif /* Framework_ComponentMaker_h */
+#endif

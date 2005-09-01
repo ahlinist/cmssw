@@ -93,4 +93,4 @@ class HCTypeTag
       }
    }
 }
-#endif /* Framework_HCTypeTag_h */
+#endif

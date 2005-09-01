@@ -8,8 +8,8 @@
 // ----------------------------------------------------------------------
 // prolog
 
-#ifndef  ParameterSet_types_h
-#define  ParameterSet_types_h
+#ifndef ParameterSet_types_h
+#define ParameterSet_types_h
 
 
 // ----------------------------------------------------------------------
@@ -81,4 +81,4 @@ namespace edm
 // ----------------------------------------------------------------------
 // epilog
 
-#endif  // ParameterSet_types_h
+#endif

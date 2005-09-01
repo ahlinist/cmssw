@@ -103,4 +103,4 @@ class MakeDataException : public cms::Exception
 
    }
 }
-#endif /* Framework_MakeDataException_h */
+#endif

@@ -98,4 +98,4 @@ class IOVSyncValue
 
 }
 
-#endif /* Framework_IOVSyncValue_h */
+#endif

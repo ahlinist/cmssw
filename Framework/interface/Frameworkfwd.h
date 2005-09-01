@@ -1,5 +1,5 @@
-#ifndef Frameworkfwd_h
-#define Frameworkfwd_h
+#ifndef Framework_Frameworkfwd_h
+#define Framework_Frameworkfwd_h
 
 /*----------------------------------------------------------------------
   

@@ -81,4 +81,4 @@ class DataProxyTemplate : public DataProxy
 
    }
 }
-#endif /* Framework_DataProxyTemplate_h */
+#endif

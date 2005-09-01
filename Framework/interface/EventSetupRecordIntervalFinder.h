@@ -75,4 +75,4 @@ class EventSetupRecordIntervalFinder
 
    }
 }
-#endif /* Framework_EventSetupRecordIntervalFinder_h */
+#endif

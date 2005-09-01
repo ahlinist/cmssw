@@ -73,4 +73,4 @@ private:
       }
    }
 }
-#endif /* EventSetup_DummyProvider_h */
+#endif
