@@ -1,5 +1,5 @@
-#ifndef EDM_EDOUTPUTWORKED_INCLUDED
-#define EDM_EDOUTPUTWORKED_INCLUDED
+#ifndef Framework_OutputWorker_h
+#define Framework_OutputWorker_h
 
 /*----------------------------------------------------------------------
   

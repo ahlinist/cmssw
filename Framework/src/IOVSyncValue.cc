@@ -51,7 +51,7 @@ haveID_(true), haveTime_(true)
 {
 }
 
-// IOVSyncValue::IOVSyncValue( const IOVSyncValue& rhs )
+// IOVSyncValue::IOVSyncValue(const IOVSyncValue& rhs)
 // {
 //    // do actual copying here;
 // }
@@ -63,11 +63,11 @@ haveID_(true), haveTime_(true)
 //
 // assignment operators
 //
-// const IOVSyncValue& IOVSyncValue::operator=( const IOVSyncValue& rhs )
+// const IOVSyncValue& IOVSyncValue::operator=(const IOVSyncValue& rhs)
 // {
 //   //An exception safe implementation is
 //   IOVSyncValue temp(rhs);
-//   swap( rhs );
+//   swap(rhs);
 //
 //   return *this;
 // }
@@ -91,12 +91,12 @@ IOVSyncValue::invalidIOVSyncValue() {
 const IOVSyncValue&
 IOVSyncValue::endOfTime() {
    static IOVSyncValue s_endOfTime(EventID(0xFFFFFFFFUL, EventID::maxEventNumber()),
-                                   Timestamp::endOfTime() );
+                                   Timestamp::endOfTime());
    return s_endOfTime;
 }
 const IOVSyncValue&
 IOVSyncValue::beginOfTime() {
-   static IOVSyncValue s_beginOfTime( EventID(1,0), Timestamp::beginOfTime() );
+   static IOVSyncValue s_beginOfTime(EventID(1,0), Timestamp::beginOfTime());
    return s_beginOfTime;
 }
    }
