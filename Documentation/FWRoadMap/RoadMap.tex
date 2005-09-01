@@ -1,7 +1,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% 
 %%
-%% $Id: RoadMap.tex,v 1.33 2005/07/25 20:14:27 chrjones Exp $
+%% $Id: RoadMap.tex,v 1.34 2005/07/27 13:51:28 uberthon Exp $
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -20,7 +20,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Document revision number, traced by using RCS revision number.
 %
-\RCS $Revision: 1.33 $
+\RCS $Revision: 1.34 $
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Special macros for this document
@@ -1514,7 +1514,7 @@ Each is parameterized on the type of the \EDProduct to be retrieved.
 \begin{enumerate}
 
 \item 
-\cppcode{get} takes a \Selector object
+\cppcode{getBySelector} takes a \Selector object
 and returns the single \EDProduct
 that has \Provenance
 that matches the \Selector.
@@ -1532,12 +1532,23 @@ this \cppcode{get}
 throws an appropriate exception.
 
 \item
+\cppcode{getByType} returns the unique \EDProduct
+of the appropriate type.
+If there is not exactly one such match
+this \cppcode{get}
+throws an appropriate exception.
+
+\item
 \cppcode{getMany} takes an optional \Selector
 and returns all the \EDProduct instances
 of the appropriate type
-that match the \Selector,
-or all the ones of the appropriate type if no \Selector is specified.
+that match the \Selector.
 \EDProducer{}s shall not use \cppcode{getMany}.
+
+\item
+\cppcode{getManyByType} returns all the \EDProduct instances
+of the appropriate type.
+\EDProducer{}s shall not use \cppcode{getManyByType}.
 
 \end{enumerate}
 
