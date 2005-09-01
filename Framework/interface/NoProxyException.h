@@ -1,5 +1,5 @@
-#if !defined(EVENTSETUP_NOPROXYEXCEPTION_H)
-#define EVENTSETUP_NOPROXYEXCEPTION_H
+#ifndef Framework_NoProxyException_h
+#define Framework_NoProxyException_h
 // -*- C++ -*-
 //
 // Package:     Framework
@@ -143,4 +143,4 @@ class NoProxyException : public NoDataException<T>
 }
 // inline function definitions
 
-#endif /* EVENTSETUP_NOPROXYEXCEPTION_H */
+#endif /* Framework_NoProxyException_h */

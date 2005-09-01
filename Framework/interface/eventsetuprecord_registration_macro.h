@@ -1,5 +1,5 @@
-#ifndef EVENTSETUP_EVENTSETUPRECORD_REGISTRATION_MACRO_H
-#define EVENTSETUP_EVENTSETUPRECORD_REGISTRATION_MACRO_H
+#ifndef Framework_eventsetuprecord_registration_macro_h
+#define Framework_eventsetuprecord_registration_macro_h
 // -*- C++ -*-
 //
 // Package:     Framework
@@ -47,4 +47,4 @@ template  edm::eventsetup::EventSetupRecordKey edm::eventsetup::heterocontainer:
 template class edm::eventsetup::heterocontainer::HCTypeTagTemplate<_recordclassname_, edm::eventsetup::EventSetupRecordKey>;
 
 
-#endif /* EVENTSETUP_EVENTSETUPRECORD_REGISTRATION_MACRO_H */
+#endif

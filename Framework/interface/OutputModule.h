@@ -1,5 +1,5 @@
-#ifndef EDM_OUTPUTMODULE_H
-#define EDM_OUTPUTMODULE_H
+#ifndef Framework_OutputModule_h
+#define Framework_OutputModule_h
 
 /*----------------------------------------------------------------------
   

@@ -1,5 +1,5 @@
-#ifndef EVENTSETUPPRODUCER_PROXYFACTORYTEMPLATE_H
-#define EVENTSETUPPRODUCER_PROXYFACTORYTEMPLATE_H
+#ifndef Framework_ProxyFactoryTemplate_h
+#define Framework_ProxyFactoryTemplate_h
 // -*- C++ -*-
 //
 // Package:     Framework
@@ -65,4 +65,4 @@ class ProxyFactoryTemplate : public ProxyFactoryBase
    }
 }
 
-#endif /* EVENTSETUPPRODUCER_PROXYFACTORYTEMPLATE_H */
+#endif

@@ -1,5 +1,5 @@
-#ifndef COREFRAMEWORK_EVENTSETUP_DEPENDSON_H
-#define COREFRAMEWORK_EVENTSETUP_DEPENDSON_H
+#ifndef Framework_eventsetup_dependsOn_h
+#define Framework_eventsetup_dependsOn_h
 // -*- C++ -*-
 //
 // Package:     Framework
@@ -202,4 +202,4 @@ private:
    }
 }
 
-#endif /* COREFRAMEWORK_EVENTSETUP_DEPENDSON_H */
+#endif

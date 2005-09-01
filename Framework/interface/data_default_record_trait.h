@@ -1,5 +1,5 @@
-#ifndef EVENTSETUP_DATA_DEFAULT_RECORD_TRAIT_H
-#define EVENTSETUP_DATA_DEFAULT_RECORD_TRAIT_H
+#ifndef Framework_data_default_record_trait_h
+#define Framework_data_default_record_trait_h
 // -*- C++ -*-
 //
 // Package:     Framework
@@ -63,4 +63,4 @@ namespace edm {
 #define EVENTSETUP_DATA_DEFAULT_RECORD(_data_, _record_) \
 namespace edm { namespace eventsetup { template<> struct data_default_record_trait<_data_>{ typedef _record_ type; }; } }
 
-#endif /* EVENTSETUP_DATA_DEFAULT_RECORD_TRAIT_H */
+#endif
