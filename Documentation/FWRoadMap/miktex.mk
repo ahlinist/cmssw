@@ -5,7 +5,7 @@
 # This is not a very clever makefile; if you have an installation of
 # MiKTeX, use 'makefile' instead
 #
-# $Id: miktex.mk,v 1.2 2005/05/09 13:25:20 paterno Exp $
+# $Id: miktex.mk,v 1.1 2005/07/07 14:03:01 wmtan Exp $
 #
 #
 ############################################################
@@ -18,14 +18,14 @@ view: RoadMap.pdf
 RoadMap.dvi: RoadMap.tex GNUmakefile memarticle.cls
 	texify --silent RoadMap.tex
 
-#RoadMap.ps: RoadMap.dvi
-#	dvips  -o RoadMap.ps -Ppdf RoadMap.dvi
+RoadMap.ps: RoadMap.dvi
+	dvips  -o RoadMap.ps -Ppdf RoadMap.dvi
 
-#RoadMap.pdf: RoadMap.ps
-#	ps2pdf RoadMap.ps
+RoadMap.pdf: RoadMap.ps
+	ps2pdf14 RoadMap.ps
 
-RoadMap.pdf: RoadMap.dvi
-	dvipdfm RoadMap.dvi
+%RoadMap.pdf: RoadMap.dvi
+%	dvipdfm RoadMap.dvi
 
 clean:
 	rm -f RoadMap.out RoadMap.toc RoadMap.qst RoadMap.aux RoadMap.log RoadMap.dvi RoadMap.ps RoadMap.tex.bak RoadMap.tex~ GNUmakefile~

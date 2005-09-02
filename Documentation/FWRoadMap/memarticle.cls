@@ -45,8 +45,8 @@
 \usepackage%
     [ pdfpagelabels%
 %    , pdftex%
-    , dvipdfm%
-%    , dvips
+%    , dvipdfm%
+    , dvips
     , pdfstartview={FitV}%
     , pdfpagemode={None}%
     , pdfpagelayout=Facing%
