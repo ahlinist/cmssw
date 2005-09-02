@@ -75,7 +75,7 @@ namespace edm {
 
     template <class PROD>
     void 
-    getManyByType(Selector const&, std::vector<Handle<PROD> >& results) const;
+    getManyByType(std::vector<Handle<PROD> >& results) const;
 
     Provenance const&
     getProvenance(ProductID const& id) const;
@@ -286,8 +286,7 @@ namespace edm {
 
   template <class PROD>
   void 
-  Event::getManyByType(Selector const& sel,
-		 std::vector<Handle<PROD> >& results) const
+  Event::getManyByType(std::vector<Handle<PROD> >& results) const
   { 
     BasicHandleVec bhv;
     this->getManyByType_(TypeID(typeid(PROD)), bhv);
