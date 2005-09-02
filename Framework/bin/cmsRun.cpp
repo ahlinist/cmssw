@@ -32,8 +32,13 @@ int main(int argc, char* argv[])
   try
     {
       edm::EventProcessor proc(argc,argv);
+      proc.beginJob();
       proc.run();
-      rc = 0;
+      if(proc.endJob()) {
+        rc = 0;
+      } else {
+        rc = 1;
+      }
     }
   catch (seal::Error& e)
     {
