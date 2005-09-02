@@ -38,8 +38,9 @@ void work()
                     "path p1 = { m1,m2,out }\n"
 		    "}\n");
   edm::EventProcessor proc(configuration);
-
+  proc.beginJob();
   proc.run(0);
+  proc.endJob();
 }
 
 void testeventprocessor2::eventprocessor2Test()
