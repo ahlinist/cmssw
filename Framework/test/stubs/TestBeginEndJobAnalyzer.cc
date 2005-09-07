@@ -47,7 +47,7 @@
 //
 // constructors and destructor
 //
-TestBeginEndJobAnalyzer::TestBeginEndJobAnalyzer(const edm::ParameterSet& iConfig)
+TestBeginEndJobAnalyzer::TestBeginEndJobAnalyzer(const edm::ParameterSet& /* iConfig */)
 {
    //now do what ever initialization is needed
 
@@ -87,7 +87,7 @@ TestBeginEndJobAnalyzer::endJob()
 
 
 void
-TestBeginEndJobAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
+TestBeginEndJobAnalyzer::analyze(const edm::Event& /* iEvent */, const edm::EventSetup& /* iSetup */)
 {
 }
 
