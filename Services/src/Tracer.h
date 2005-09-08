@@ -43,6 +43,9 @@ public:
          
          void preModule(const ModuleDescription&);
          void postModule(const ModuleDescription&);
+private:
+         std::string indention_;
+         
       };
    }
 }
