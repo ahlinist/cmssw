@@ -29,6 +29,7 @@
 // forward declarations
 namespace edm {
    class ServiceRegistry;
+   class ActivityRegistry;
    
    namespace serviceregistry {
       class ServicesManager;
@@ -47,7 +48,8 @@ namespace edm {
       // ---------- static member functions --------------------
 
       // ---------- member functions ---------------------------
-
+      void connectTo(ActivityRegistry&);
+      
     private:
       ServiceToken(boost::shared_ptr<edm::serviceregistry::ServicesManager>  iManager):
       manager_(iManager) {}
