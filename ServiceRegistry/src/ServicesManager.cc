@@ -229,7 +229,7 @@ ServicesManager::createServices()
    }
    
    //No longer need the makers
-   type2Maker_.release();
+   type2Maker_.reset();
    
 }   
 //
