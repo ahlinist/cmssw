@@ -58,6 +58,14 @@
 void 
 edm::ActivityRegistry::connect(ActivityRegistry& iOther)
 {
+   postBeginJobSignal_.connect(iOther.postBeginJobSignal_);
+   postEndJobSignal_.connect(iOther.postEndJobSignal_);
+
+   preProcessEventSignal_.connect(iOther.preProcessEventSignal_);
+   postProcessEventSignal_.connect(iOther.postProcessEventSignal_);
+
+   preModuleSignal_.connect(iOther.preModuleSignal_);
+   postModuleSignal_.connect(iOther.postModuleSignal_);
 }
 
 //
