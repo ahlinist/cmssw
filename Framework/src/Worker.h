@@ -11,16 +11,22 @@ $Id$
 ----------------------------------------------------------------------*/
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
+#include "FWCore/Framework/interface/ModuleDescription.h"
 
 namespace edm {
 
   class Worker
   {
   public:
+    Worker(const ModuleDescription& iMD): md_(iMD) {}
     virtual ~Worker();
     virtual bool doWork(EventPrincipal&, EventSetup const& c) = 0;
     virtual void beginJob(EventSetup const&) = 0;
     virtual void endJob() = 0;
+    
+    const ModuleDescription& description() const {return md_;}
+  private:
+    ModuleDescription md_;
   };
 
   template <class WT>

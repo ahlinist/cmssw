@@ -45,7 +45,6 @@ namespace edm
     virtual void beginJob(EventSetup const&) ;
     virtual void endJob() ;
     
-    ModuleDescription               md_;
     boost::shared_ptr<OutputModule> mod_;
     const ActionTable* actions_; // memory assumed to be managed elsewhere
   };
