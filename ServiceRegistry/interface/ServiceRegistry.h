@@ -27,7 +27,7 @@
 
 // forward declarations
 namespace edm {
-   class EventProcessor;
+   class FwkImpl;
    class ServiceRegistry
    {
 
@@ -49,7 +49,7 @@ namespace edm {
          ServiceToken oldToken_;
       };
       
-      friend class edm::EventProcessor;
+      friend class edm::FwkImpl;
       friend int main(int argc, char* argv[]);
       friend class Operate;
 
