@@ -90,6 +90,15 @@ edm::ServiceRegistry::createSet(const std::vector<ParameterSet>& iPS)
    boost::shared_ptr<ServicesManager> returnValue(new ServicesManager(iPS));
    return edm::ServiceToken(returnValue);
 }
+edm::ServiceToken 
+edm::ServiceRegistry::createSet(const std::vector<ParameterSet>& iPS,
+                                ServiceToken iToken,
+                                serviceregistry::ServiceLegacy iLegacy)
+{
+   using namespace edm::serviceregistry;
+   boost::shared_ptr<ServicesManager> returnValue(new ServicesManager(iToken,iLegacy,iPS));
+   return edm::ServiceToken(returnValue);
+}
 
 edm::ServiceRegistry& 
 edm::ServiceRegistry::instance()

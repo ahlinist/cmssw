@@ -23,6 +23,7 @@
 
 // user include files
 #include "FWCore/ServiceRegistry/interface/ServiceToken.h"
+#include "FWCore/ServiceRegistry/interface/ServiceLegacy.h"
 #include "FWCore/ServiceRegistry/interface/ServicesManager.h"
 
 // forward declarations
@@ -78,6 +79,8 @@ namespace edm {
    private:
 
       static ServiceToken createSet(const std::vector<ParameterSet>&);
+      static ServiceToken createSet(const std::vector<ParameterSet>&,
+                                    ServiceToken,serviceregistry::ServiceLegacy);
       
       //returns old token
       ServiceToken setContext(const ServiceToken& iNewToken);

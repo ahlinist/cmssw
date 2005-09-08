@@ -67,6 +67,7 @@ $Id$
 
 #include <string>
 #include "boost/signal.hpp"
+#include "FWCore/ServiceRegistry/interface/ServiceLegacy.h"
 
 namespace edm {
 
@@ -75,6 +76,7 @@ namespace edm {
   class EventSetup;
   class EventID;
   class Timestamp;
+  class ServiceToken;
   
   class EventProcessor
   {
@@ -100,6 +102,15 @@ namespace edm {
     // This constructor combines the effect of the two above.
     EventProcessor(int argc, char* argv[], const std::string& config);
 
+    //Same as previous constructors except allow attachement of services
+    EventProcessor(int argc, char* argv[], 
+                   const ServiceToken&,serviceregistry::ServiceLegacy);
+    EventProcessor(const std::string& config,
+                   const ServiceToken&,serviceregistry::ServiceLegacy);
+    EventProcessor(int argc, char* argv[], const std::string& config,
+                   const ServiceToken&,serviceregistry::ServiceLegacy);
+    
+    
     ~EventProcessor();
 
     /**This should be called before the first call to 'run'
