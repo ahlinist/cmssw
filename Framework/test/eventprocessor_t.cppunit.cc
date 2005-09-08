@@ -72,7 +72,7 @@ void testeventprocessor::parseTest()
 static int g_pre = 0;
 static int g_post = 0;
 static
-void doPre(const edm::Event&, const edm::EventSetup&) 
+void doPre(const edm::EventID&, const edm::Timestamp&) 
 {
    ++g_pre;
 }
