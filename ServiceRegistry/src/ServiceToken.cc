@@ -64,7 +64,14 @@ edm::ServiceToken::connectTo(edm::ActivityRegistry& iConnectTo)
       manager_->connectTo(iConnectTo);
    }
 }
-   
+void
+edm::ServiceToken::connect(edm::ActivityRegistry& iConnectTo)
+{
+   if(0!=manager_.get()){
+      manager_->connect(iConnectTo);
+   }
+}
+
 //
 // const member functions
 //
