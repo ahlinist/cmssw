@@ -14,7 +14,7 @@ $Id$
 #include <vector>
 
 #include "FWCore/Framework/interface/EventProcessor.h"
-#include "FWCore/Framework/interface/ProblemTracker.h"
+#include "FWCore/Utilities/interface/ProblemTracker.h"
 #include "FWCore/Utilities/interface/Exception.h"
 
 using namespace std;
