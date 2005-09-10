@@ -36,8 +36,8 @@ namespace edm {
       {
 
 public:
-         ServiceWrapper(std::auto_ptr<T> iService ) :
-         service_( iService ) {}
+         ServiceWrapper(std::auto_ptr<T> iService) :
+         service_(iService) {}
          //virtual ~ServiceWrapper();
          
          // ---------- const member functions ---------------------

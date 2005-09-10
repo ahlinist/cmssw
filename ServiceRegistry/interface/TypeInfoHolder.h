@@ -33,7 +33,7 @@ namespace edm {
          const std::type_info& info() const { return m_info;}
          
          bool operator<(const TypeInfoHolder& iRHS) const {
-            return m_info.before( iRHS.m_info ) ;
+            return m_info.before(iRHS.m_info) ;
          }
         private:
          const std::type_info& m_info;

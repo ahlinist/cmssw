@@ -33,7 +33,7 @@ using namespace edm::service;
 // constructors and destructor
 //
 Tracer::Tracer(const ParameterSet& iPS, ActivityRegistry&iRegistry):
-indention_( iPS.getUntrackedParameter<std::string>("indention","++") )
+indention_(iPS.getUntrackedParameter<std::string>("indention","++"))
 {
    iRegistry.watchPostBeginJob(this,&Tracer::postBeginJob);
    iRegistry.watchPostEndJob(this,&Tracer::postEndJob);

@@ -45,7 +45,7 @@ public:
       
          virtual bool make(const edm::ParameterSet&,
                            edm::ActivityRegistry&,
-                           ServicesManager& ) const = 0;
+                           ServicesManager&) const = 0;
 
          // ---------- static member functions --------------------
          

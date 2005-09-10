@@ -60,7 +60,7 @@ edm::ServiceRegistry::~ServiceRegistry()
 edm::ServiceToken 
 edm::ServiceRegistry::setContext(const edm::ServiceToken& iNewToken)
 {
-   edm::ServiceToken returnValue( manager_ );
+   edm::ServiceToken returnValue(manager_);
    manager_ = iNewToken.manager_;
    return returnValue;
 }
@@ -105,7 +105,7 @@ edm::ServiceRegistry::instance()
 {
    static boost::thread_specific_ptr<ServiceRegistry> s_registry;
    if(0 == s_registry.get()){
-      s_registry.reset( new ServiceRegistry );
+      s_registry.reset(new ServiceRegistry);
    }
    return *s_registry;
 }

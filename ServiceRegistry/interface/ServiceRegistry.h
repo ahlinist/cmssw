@@ -37,16 +37,16 @@ namespace edm {
       class Operate {
         public:
          Operate(const ServiceToken& iToken) : 
-         oldToken_( ServiceRegistry::instance().setContext( iToken ) )
+         oldToken_(ServiceRegistry::instance().setContext(iToken))
          {}
          ~Operate() {
-            ServiceRegistry::instance().unsetContext( oldToken_ );
+            ServiceRegistry::instance().unsetContext(oldToken_);
          }
          
          //override operator new to stop use on heap?
         private:
          Operate(const Operate&); //stop default
-         const Operate& operator=( const Operate&); //stop default
+         const Operate& operator=(const Operate&); //stop default
          ServiceToken oldToken_;
       };
       
