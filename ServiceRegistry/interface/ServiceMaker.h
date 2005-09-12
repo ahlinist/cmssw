@@ -55,7 +55,7 @@ namespace edm {
       template< class T, class TConcrete = T>
       struct ParameterSetMaker : public MakerBase<T,TConcrete> {
          std::auto_ptr<T> make(const edm::ParameterSet& iPS,
-                               edm::ActivityRegistry& iAR) const 
+                               edm::ActivityRegistry& /* iAR */) const 
          {
             return std::auto_ptr<T>(new TConcrete(iPS));
          }
@@ -63,8 +63,8 @@ namespace edm {
 
       template< class T, class TConcrete = T>
       struct NoArgsMaker : public MakerBase<T,TConcrete> {
-         std::auto_ptr<T> make(const edm::ParameterSet& iPS,
-                               edm::ActivityRegistry& iAR) const 
+         std::auto_ptr<T> make(const edm::ParameterSet& /* iPS */,
+                               edm::ActivityRegistry& /* iAR */) const 
          {
             return std::auto_ptr<T>(new TConcrete());
          }
