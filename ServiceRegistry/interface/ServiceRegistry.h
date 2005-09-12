@@ -66,6 +66,14 @@ namespace edm {
             return manager_-> template get<T>();
          }
       
+      template<class T>
+         bool isAvailable() const {
+            if(0 == manager_.get()) {
+               throw edm::Exception(edm::errors::NotFound,"Service")
+               <<" no ServiceRegistry has been set for this thread";
+            }
+            return manager_-> template isAvailable<T>();
+         }
       /** The token can be passed to another thread in order to have the
          same services available in the other thread.
          */
