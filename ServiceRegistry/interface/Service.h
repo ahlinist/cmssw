@@ -43,6 +43,15 @@ namespace edm {
    T& operator*() const {
       return ServiceRegistry::instance().template get<T>();
    }
+   
+   bool isAvailable() const {
+      return ServiceRegistry::instance().template isAvailable<T>();
+   }
+   
+   operator bool() const {
+      return isAvailable();
+   }
+   
    // ---------- static member functions --------------------
    
    // ---------- member functions ---------------------------
