@@ -19,15 +19,15 @@ using namespace edm::eventsetup;
 
 DBIdealGeometryESSource::DBIdealGeometryESSource(const edm::ParameterSet & pset) 
 {
-  string startNode = pset.getParameter<std::string>("startNode") == ""? string("cms:OCMS"):pset.getParameter<std::string>("startNode");
-  string dbConn = pset.getParameter<std::string>("dbConn");
-  string dbID = pset.getParameter<std::string>("dbID");
+  std::string startNode = pset.getParameter<std::string>("startNode") == ""? std::string("cms:OCMS"):pset.getParameter<std::string>("startNode");
+  std::string dbConn = pset.getParameter<std::string>("dbConn");
+  std::string dbID = pset.getParameter<std::string>("dbID");
  
   MetaData meta( dbConn );
 
-  cout << "Looking for: " << dbID << endl;
+  std::cout << "Looking for: " << dbID << std::endl;
   std::string aToken= meta.getToken( dbID );
-  cout << "Found token: " << aToken << endl;
+  std::cout << "Found token: " << aToken << std::endl;
 
 
   DDORAReader ddorar( startNode, 
@@ -47,7 +47,7 @@ DBIdealGeometryESSource::DBIdealGeometryESSource(const edm::ParameterSet & pset)
     result1 = parser->parse( dp );
     if ( result1 != 0 ) throw DDException ("DetectorDescription: Parsing failed!");
   } else {
-    cout << "WARNING: DBIdealGeometryESSource could not make a geometry.  Should this throw?" << endl;
+    std::cout << "WARNING: DBIdealGeometryESSource could not make a geometry.  Should this throw?" << std::endl;
   }
   //Tell Producer what we produce
   setWhatProduced(this);
