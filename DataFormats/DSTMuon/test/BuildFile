@@ -1,5 +1,5 @@
 <use name=DataFormats/DSTMuon>
 
-<bin name="testDSTMuon"t file="testMuon.cc,testRunner.cpp">
+<bin name="testDSTMuon" file="testMuon.cc,testRunner.cpp">
  <use name=cppunit>
 </bin>
