@@ -54,7 +54,7 @@ class ComponentFactory : public seal::PluginFactory< ComponentMakerBase<T>* ()>
                   unsigned long iPass) const
       {
          using namespace std;
-         string modtype = iConfiguration.template getParameter<string>("module_type");
+         string modtype = iConfiguration.template getParameter<string>("@module_type");
          //cerr << "Factory: module_type = " << modtype << endl;
          typename MakerMap::iterator it = makers_.find(modtype);
          

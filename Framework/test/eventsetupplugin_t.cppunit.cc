@@ -55,13 +55,13 @@ void testEventsetupplugin::finderTest()
    EventSetupProvider provider;
    
    edm::ParameterSet dummyFinderPSet;
-   dummyFinderPSet.insert(true, "module_type", edm::Entry(std::string("LoadableDummyFinder"), true));
-   dummyFinderPSet.insert(true, "module_label", edm::Entry(std::string(""), true));
+   dummyFinderPSet.insert(true, "@module_type", edm::Entry(std::string("LoadableDummyFinder"), true));
+   dummyFinderPSet.insert(true, "@module_label", edm::Entry(std::string(""), true));
    SourceFactory::get()->addTo(provider, dummyFinderPSet, "RECO", 1, 1);
    
    edm::ParameterSet dummyProviderPSet;
-   dummyProviderPSet.insert(true, "module_type", edm::Entry(std::string("LoadableDummyProvider"), true));
-   dummyProviderPSet.insert(true, "module_label", edm::Entry(std::string(""), true));
+   dummyProviderPSet.insert(true, "@module_type", edm::Entry(std::string("LoadableDummyProvider"), true));
+   dummyProviderPSet.insert(true, "@module_label", edm::Entry(std::string(""), true));
    ModuleFactory::get()->addTo(provider, dummyProviderPSet, "RECO", 1, 1);
    
 }
