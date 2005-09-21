@@ -25,12 +25,13 @@
 
 // forward declarations
 namespace edm {
+   class ParameterSet;
    namespace service {
       class LoadAllDictionaries
    {
       
    public:
-      LoadAllDictionaries();
+      LoadAllDictionaries(const edm::ParameterSet&);
       //virtual ~LoadAllDictionaries();
 
       // ---------- const member functions ---------------------
