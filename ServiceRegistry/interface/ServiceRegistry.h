@@ -104,11 +104,35 @@ namespace edm {
             manager->put(wrapper);
             return manager;
          }
+      template<class T>
+         static ServiceToken createContaining(std::auto_ptr<T> iService,
+                                              ServiceToken iToken,
+                                              serviceregistry::ServiceLegacy iLegacy){
+            std::vector<edm::ParameterSet> config;
+            boost::shared_ptr<serviceregistry::ServicesManager> manager( new serviceregistry::ServicesManager(iToken,
+                                                                                                              iLegacy,
+                                                                                                              config) );
+            boost::shared_ptr<serviceregistry::ServiceWrapper<T> >
+            wrapper(new serviceregistry::ServiceWrapper<T>(iService));
+            manager->put(wrapper);
+            return manager;
+         }
       /// create a service token that holds the service held by iWrapper
       template<class T>
          static ServiceToken createContaining(boost::shared_ptr<serviceregistry::ServiceWrapper<T> > iWrapper) {
             std::vector<edm::ParameterSet> config;
             boost::shared_ptr<serviceregistry::ServicesManager> manager( new serviceregistry::ServicesManager(config) );
+            manager->put(iWrapper);
+            return manager;
+         }
+      template<class T>
+         static ServiceToken createContaining(boost::shared_ptr<serviceregistry::ServiceWrapper<T> > iWrapper,
+                                              ServiceToken iToken,
+                                              serviceregistry::ServiceLegacy iLegacy){
+            std::vector<edm::ParameterSet> config;
+            boost::shared_ptr<serviceregistry::ServicesManager> manager( new serviceregistry::ServicesManager(iToken,
+                                                                                                              iLegacy,
+                                                                                                              config) );
             manager->put(iWrapper);
             return manager;
          }
