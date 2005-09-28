@@ -31,7 +31,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION(testeventprocessor2);
 void work()
 {
   std::string configuration("process PROD = {\n"
-		    "source = EmptyInputService { untracked int32 maxEvents = 5 }\n"
+		    "source = EmptySource { untracked int32 maxEvents = 5 }\n"
 		    "module m1 = IntProducer { int32 ivalue = 10 }\n"
 		    "module m2 = DoubleProducer { double dvalue = 3.3 }\n"
 		    "module out = AsciiOutputModule { }\n"
