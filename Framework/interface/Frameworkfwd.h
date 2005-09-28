@@ -13,6 +13,7 @@ namespace edm
 {
   class BasicHandle;
   class BranchKey;
+  class DelayedReader;
   class EDAnalyzer;
   class EDFilter;
   class EDProducer;
@@ -24,8 +25,8 @@ namespace edm
   class EventRegistry;
   class EventSetup;
   class Group;
-  class InputService;
-  class InputServiceDescription;
+  class InputSource;
+  class InputSourceDescription;
   class LuminositySection;
   class ModuleDescription;
   class ModuleDescriptionSelector;
@@ -37,11 +38,12 @@ namespace edm
   class ProductRegistry;
   class Provenance;
   class PS_ID;
+  class RandomAccessInputSource;
   class RefBase;
   class RefVectorBase;
-  class Retriever;
   class Run;
   class RunHandler;
+  class SecondaryInputSource;
   class Selector;
 
   template <class T> class Wrapper;
