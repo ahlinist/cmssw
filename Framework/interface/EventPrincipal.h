@@ -33,8 +33,9 @@ $Id$
 #include "FWCore/EDProduct/interface/EDProduct.h"
 #include "FWCore/Framework/interface/EventAux.h"
 #include "FWCore/Framework/interface/BasicHandle.h"
+#include "FWCore/Framework/interface/NoDelayedReader.h"
 #include "FWCore/Framework/interface/ProcessNameList.h"
-#include "FWCore/Framework/interface/Retriever.h"
+#include "FWCore/Framework/interface/DelayedReader.h"
 #include "FWCore/Framework/interface/Selector.h"
 
 #include "FWCore/Framework/src/Group.h"
@@ -53,14 +54,13 @@ namespace edm {
     typedef std::vector<BasicHandle>               BasicHandleVec;
     
     EventPrincipal();
-    //FIXME: Here for short-term backwards compatibility
-    EventPrincipal(EventID const& id, Retriever& r, ProductRegistry const& reg,
-      ProcessNameList const& nl = ProcessNameList());
+
     EventPrincipal(EventID const& id,
-                   Timestamp const & time,
-                   Retriever& r, 
+                   Timestamp const& time,
                    ProductRegistry const& reg,
-                   ProcessNameList const& nl = ProcessNameList());
+                   ProcessNameList const& nl = ProcessNameList(),
+                   boost::shared_ptr<DelayedReader> rtrv = boost::shared_ptr<DelayedReader>(new NoDelayedReader));
+
     ~EventPrincipal();
 
     EventID id() const;
@@ -166,15 +166,15 @@ namespace edm {
     // What goes into the event header(s)? Which need to be persistent?
 
 
-    // Pointer to the 'service' that will be used to obtain EDProducts
-    // from the persistent store.
-    Retriever* store_;
-
     // Pointer to the product registry. There is one entry in the registry
     // for each EDProduct in the event.
     ProductRegistry const* preg_;
 
-    // Make my Retriever get the EDProduct for a Group.  The Group is
+    // Pointer to the 'source' that will be used to obtain EDProducts
+    // from the persistent store.
+    boost::shared_ptr<DelayedReader> store_;
+
+    // Make my DelayedReader get the EDProduct for a Group.  The Group is
     // a cache, and so can be modified through the const reference.
     // We do not change the *number* of groups through this call, and so
     // *this is const.
