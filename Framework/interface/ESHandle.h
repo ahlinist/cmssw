@@ -25,7 +25,6 @@
 
 // forward declarations
 namespace edm {
-   namespace eventsetup {
 template< class T>
 class ESHandle
 {
@@ -59,6 +58,5 @@ class ESHandle
          const T* data_; 
 };
 
-   }
 }
 #endif

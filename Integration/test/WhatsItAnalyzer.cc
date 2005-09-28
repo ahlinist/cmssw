@@ -88,7 +88,7 @@ void
 WhatsItAnalyzer::analyze(const edm::Event& /*iEvent*/, const edm::EventSetup& iSetup)
 {
    using namespace edm;
-   eventsetup::ESHandle<WhatsIt> pSetup;
+   ESHandle<WhatsIt> pSetup;
    iSetup.get<GadgetRcd>().get(pSetup);
 }
 

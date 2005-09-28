@@ -87,10 +87,9 @@ WhatsItESProducer::~WhatsItESProducer()
 WhatsItESProducer::ReturnType
 WhatsItESProducer::produce(const GadgetRcd& iRecord)
 {
-   using namespace edm::eventsetup;
    using namespace edmreftest;
 
-   ESHandle<Doodad> doodad;
+   edm::ESHandle<Doodad> doodad;
    iRecord.get(doodad);
    
    std::auto_ptr<WhatsIt> pWhatsIt(new WhatsIt) ;
