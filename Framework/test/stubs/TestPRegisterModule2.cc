@@ -10,12 +10,11 @@
 static const char CVSId[] = "$Id$";
 
 
-#include "FWCore/Framework/interface/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/Handle.h"
-#include "FWCore/Framework/interface/MakerMacros.h"
 
 #include "FWCore/Framework/interface/EventSetup.h"
+#include "FWCore/Framework/test/stubs/TestPRegisterModule2.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Framework/src/ToyProducts.h"
 #include <cppunit/extensions/HelperMacros.h>
@@ -24,31 +23,39 @@ static const char CVSId[] = "$Id$";
 
 using namespace edm;
 
-  class TestPRegisterModule2 : public EDProducer
-  {
-  public:
-    explicit TestPRegisterModule2(ParameterSet const& p):pset_(p){
-      produces<edmtest::DoubleProduct>();
-    }
-
-    void produce(Event& e, EventSetup const&);
-
-  private:
-    ParameterSet pset_;
-  };
-
+TestPRegisterModule2::TestPRegisterModule2(edm::ParameterSet const& p){
+   produces<edmtest::DoubleProduct>();
+}
 
   void TestPRegisterModule2::produce(Event& e, EventSetup const&)
   {
+     std::vector<edm::Provenance const*> plist;
+     e.getAllProvenance(plist);
 
+     std::vector<edm::Provenance const*>::const_iterator pd = plist.begin();
+     
+     CPPUNIT_ASSERT(0 !=plist.size());
+     CPPUNIT_ASSERT(2 ==plist.size());
+     CPPUNIT_ASSERT(pd != plist.end());
+     edmtest::StringProduct stringprod;
+     edm::TypeID stringID(stringprod);
+     CPPUNIT_ASSERT(stringID.friendlyClassName() == 
+                    (*pd)->product.friendlyClassName_);
+     CPPUNIT_ASSERT((*pd)->product.module.moduleLabel_=="m1");
+     
+     ++pd;
+     CPPUNIT_ASSERT(pd != plist.end());
+     
+     edmtest::DoubleProduct dprod;
+     edm::TypeID dID(dprod);
+     CPPUNIT_ASSERT(dID.friendlyClassName() == 
+                    (*pd)->product.friendlyClassName_);
+     CPPUNIT_ASSERT((*pd)->product.module.moduleLabel_=="m2");
+     
     Handle<edmtest::StringProduct> stringp;
     e.getByLabel("m2",stringp);
     CPPUNIT_ASSERT(stringp->name_=="m1");
 
      std::auto_ptr<edmtest::DoubleProduct> product(new edmtest::DoubleProduct);
      e.put(product);
-    
   }
- 
-
-DEFINE_FWK_MODULE(TestPRegisterModule2)
