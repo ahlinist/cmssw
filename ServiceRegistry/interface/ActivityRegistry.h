@@ -61,7 +61,7 @@ namespace edm {
 
       
       typedef boost::signal<void (const edm::EventID&, const edm::Timestamp&)> PreProcessEvent;
-      /// signal is emitted after the Event has been created by the InputService but before any modules have seen the Event
+      /// signal is emitted after the Event has been created by the InputSource but before any modules have seen the Event
       PreProcessEvent preProcessEventSignal_;
       void watchPreProcessEvent(const PreProcessEvent::slot_type& iSlot) {
          preProcessEventSignal_.connect(iSlot);
