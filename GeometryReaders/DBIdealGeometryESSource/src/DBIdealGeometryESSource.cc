@@ -1,6 +1,7 @@
 #include "GeometryReaders/DBIdealGeometryESSource/interface/DBIdealGeometryESSource.h"
 
 #include "DetectorDescription/Base/interface/DDdebug.h"
+#include "DetectorDescription/Base/interface/DDException.h"
 #include "DetectorDescription/Parser/interface/DDLParser.h"
 #include "DetectorDescription/DBReader/interface/DDORAReader.h"
 #include "DetectorDescription/Core/interface/DDCompactView.h"
