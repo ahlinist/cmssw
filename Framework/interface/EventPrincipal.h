@@ -52,9 +52,12 @@ namespace edm {
     typedef ProcessNameList::const_iterator        ProcessNameConstIterator;
     typedef boost::shared_ptr<Group>               SharedGroupPtr;
     typedef std::vector<BasicHandle>               BasicHandleVec;
-    
-    EventPrincipal();
 
+    // This default constructor should go away, because a default
+    // constructed EventPrincipal does not behave correctly. Test use
+    // it, and those tests must be modified.
+    EventPrincipal();
+    
     EventPrincipal(EventID const& id,
                    Timestamp const& time,
                    ProductRegistry const& reg,
@@ -65,6 +68,9 @@ namespace edm {
 
     EventID id() const;
     Timestamp time() const;
+
+    // Return the number of EDProducts contained.
+    unsigned long numEDProducts() const;
     
     // next two will not be available for a little while...
     //      const Run& getRun() const; 

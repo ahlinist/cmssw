@@ -21,8 +21,8 @@ namespace edm {
     typeDict_(),
     preg_(0),
     store_()
-  {
-  }
+  { }
+
 
   EventPrincipal::EventPrincipal(EventID const& id,
 				 Timestamp const& time,
@@ -51,6 +51,11 @@ namespace edm {
   Timestamp
   EventPrincipal::time() const {
     return aux_.time_;
+  }
+
+  unsigned long
+  EventPrincipal::numEDProducts() const {
+    return groups_.size();
   }
    
   void 
