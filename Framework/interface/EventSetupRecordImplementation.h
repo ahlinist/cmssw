@@ -42,14 +42,20 @@ class EventSetupRecordImplementation : public EventSetupRecord
 
       // ---------- const member functions ---------------------
       template< typename HolderT>
-         void get(HolderT& iHolder, const char* iName = "") const {
+         void get(HolderT& iHolder) const {
             const typename HolderT::value_type* value;
-            this->getImplementation(value, iName);
+            this->getImplementation(value, "");
             iHolder = HolderT(value);
          }
 
    template< typename HolderT>
-   void get(HolderT& iHolder, const std::string& iName) const {
+   void get(const char* iName, HolderT& iHolder) const {
+      const typename HolderT::value_type* value;
+      this->getImplementation(value, iName);
+      iHolder = HolderT(value);
+   }
+   template< typename HolderT>
+   void get(const std::string& iName, HolderT& iHolder) const {
       const typename HolderT::value_type* value;
       this->getImplementation(value, iName.c_str());
       iHolder = HolderT(value);
