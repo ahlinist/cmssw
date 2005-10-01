@@ -21,7 +21,6 @@
 // constants, enums and typedefs
 //
 namespace edm {
-   namespace eventsetup {
 //
 // static data member definitions
 //
@@ -65,5 +64,4 @@ ESProducer::~ESProducer()
 //
 // static member functions
 //
-   }
 }
