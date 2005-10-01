@@ -37,7 +37,7 @@
 //
 namespace edmreftest {
 
-class WhatsItESProducer : public edm::eventsetup::ESProducer {
+class WhatsItESProducer : public edm::ESProducer {
    public:
       WhatsItESProducer(const edm::ParameterSet&);
       ~WhatsItESProducer();

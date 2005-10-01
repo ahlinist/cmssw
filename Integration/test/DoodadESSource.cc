@@ -25,7 +25,7 @@
 namespace edmreftest {
 class DoodadESSource :
    public edm::eventsetup::EventSetupRecordIntervalFinder, 
-   public edm::eventsetup::ESProducer
+   public edm::ESProducer
 {
    
 public:

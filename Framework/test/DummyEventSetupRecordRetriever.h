@@ -32,7 +32,7 @@
 namespace edm {
    class DummyEventSetupRecordRetriever :
      public eventsetup::EventSetupRecordIntervalFinder, 
-     public eventsetup::ESProducer
+     public ESProducer
    {
    
    public:
