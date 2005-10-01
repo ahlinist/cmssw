@@ -17,9 +17,7 @@
 #include "FWCore/Framework/interface/ESProducts.h"
 
 namespace edm {
-   namespace eventsetup {      
-      namespace produce {
-         Produce produced;
-      }
+   namespace es {
+      eventsetup::produce::Produce produced;
    }
 }
