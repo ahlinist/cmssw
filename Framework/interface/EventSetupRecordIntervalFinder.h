@@ -29,7 +29,6 @@
 
 // forward declarations
 namespace edm {
-   namespace eventsetup {
 
 class EventSetupRecordIntervalFinder
 {
@@ -39,7 +38,7 @@ class EventSetupRecordIntervalFinder
       virtual ~EventSetupRecordIntervalFinder();
 
       // ---------- const member functions ---------------------
-      std::set<EventSetupRecordKey> findingForRecords() const ;
+      std::set<eventsetup::EventSetupRecordKey> findingForRecords() const ;
    
       // ---------- static member functions --------------------
 
@@ -47,20 +46,20 @@ class EventSetupRecordIntervalFinder
    /**returns the 'default constructed' ValidityInterval if no valid interval.
    If upperbound is not known, it should be set to IOVSyncValue::invalidIOVSyncValue()
    */
-   const ValidityInterval& findIntervalFor(const EventSetupRecordKey&,
+   const ValidityInterval& findIntervalFor(const eventsetup::EventSetupRecordKey&,
                                             const IOVSyncValue&);
    
    protected:
-      virtual void setIntervalFor(const EventSetupRecordKey&,
+      virtual void setIntervalFor(const eventsetup::EventSetupRecordKey&,
                                    const IOVSyncValue& , 
                                    ValidityInterval&) = 0;
 
       template< class T>
          void findingRecord() {
-            findingRecordWithKey(EventSetupRecordKey::makeKey<T>());
+            findingRecordWithKey(eventsetup::EventSetupRecordKey::makeKey<T>());
          }
       
-      void findingRecordWithKey(const EventSetupRecordKey&);
+      void findingRecordWithKey(const eventsetup::EventSetupRecordKey&);
       
    private:
       EventSetupRecordIntervalFinder(const EventSetupRecordIntervalFinder&); // stop default
@@ -68,11 +67,10 @@ class EventSetupRecordIntervalFinder
       const EventSetupRecordIntervalFinder& operator=(const EventSetupRecordIntervalFinder&); // stop default
 
       // ---------- member data --------------------------------
-      typedef  std::map<EventSetupRecordKey,ValidityInterval> Intervals;
+      typedef  std::map<eventsetup::EventSetupRecordKey,ValidityInterval> Intervals;
       Intervals intervals_;
       
 };
 
-   }
 }
 #endif

@@ -29,9 +29,10 @@
 // forward declarations
 
 namespace edm {
+   class EventSetupRecordIntervalFinder;
+
    namespace eventsetup {
       class DataProxyProvider;
-      class EventSetupRecordIntervalFinder;
       
       template<class T>
          void addProviderTo(EventSetupProvider& iProvider, boost::shared_ptr<T> iComponent, const DataProxyProvider*) 

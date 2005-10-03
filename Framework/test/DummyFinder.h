@@ -27,7 +27,7 @@
 
 // forward declarations
 
-class DummyFinder : public edm::eventsetup::EventSetupRecordIntervalFinder {
+class DummyFinder : public edm::EventSetupRecordIntervalFinder {
 public:
    DummyFinder() {
       this->findingRecord<DummyRecord>();

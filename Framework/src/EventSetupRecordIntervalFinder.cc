@@ -20,8 +20,8 @@
 //
 // constants, enums and typedefs
 //
+using namespace edm::eventsetup;
 namespace edm {
-   namespace eventsetup {
 //
 // static data member definitions
 //
@@ -94,5 +94,4 @@ EventSetupRecordIntervalFinder::findingForRecords() const
 //
 // static member functions
 //
-   }
 }

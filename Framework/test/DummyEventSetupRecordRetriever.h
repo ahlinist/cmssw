@@ -31,7 +31,7 @@
 // forward declarations
 namespace edm {
    class DummyEventSetupRecordRetriever :
-     public eventsetup::EventSetupRecordIntervalFinder, 
+     public EventSetupRecordIntervalFinder, 
      public ESProducer
    {
    
