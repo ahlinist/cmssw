@@ -16,7 +16,7 @@ $Id$
 #include "FWCore/EDProduct/interface/ProductID.h"
 #include "FWCore/Framework/interface/BasicHandle.h"
 #include "FWCore/Framework/interface/ProductRegistry.h"
-#include "FWCore/Framework/interface/ProductDescription.h"
+#include "FWCore/Framework/interface/BranchDescription.h"
 #include "FWCore/EDProduct/interface/Timestamp.h"
 #include "FWCore/EDProduct/interface/Wrapper.h"
 #include "FWCore/Framework/interface/Selector.h"

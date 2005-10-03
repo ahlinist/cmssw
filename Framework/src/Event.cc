@@ -9,7 +9,7 @@ $Id$
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/EDProduct/interface/ProductID.h"
 #include "FWCore/Framework/interface/EventPrincipal.h"
-#include "FWCore/Framework/interface/ProductDescription.h"
+#include "FWCore/Framework/interface/BranchDescription.h"
 #include "FWCore/Framework/src/Group.h"
 
 using namespace std;
@@ -53,7 +53,7 @@ namespace edm {
 	auto_ptr<EDProduct> pr(pit->first);
 	// note: ownership has been passed - so clear the pointer!
 	pit->first = 0;
-	ProductDescription desc(md_,
+	BranchDescription desc(md_,
 			TypeID(*pr).userClassName(),
 			TypeID(*pr).friendlyClassName(),
 			pit->second,

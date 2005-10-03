@@ -33,7 +33,7 @@ namespace edm
   class OutputModule;
   class ParameterSet;
   class ProcessNameSelector;
-  class ProductDescription;
+  class BranchDescription;
   class ProductID;
   class ProductRegistry;
   class Provenance;
