@@ -1,0 +1,10 @@
+<use name=Dictionary/Reflex>
+<use name=FWCore/EDProduct>
+<use name=clhep> 
+<export>
+ <lib name=SimDataFormatsHepMCProduct>
+ <use name=Dictionary/Reflex>
+ <use name=FWCore/EDProduct>
+ <use name=clhep> 
+</export>
+
