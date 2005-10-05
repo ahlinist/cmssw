@@ -6,8 +6,7 @@
   
 InputSource: Abstract interface for all primary input sources. Input
 sources are responsible for creating an EventPrincipal, using data
-from some source controlled by the service, and external to the
-EventPrincipal itself.
+controlled by the source, and external to the EventPrincipal itself.
 
 The InputSource is also responsible for dealing with the "process
 name list" contained within the EventPrincipal. Each InputSource has
@@ -34,7 +33,7 @@ Some examples of InputSource subclasses may be:
 
  1) EmptySource: creates EventPrincipals which contain no EDProducts.
  2) PoolSource: creates EventPrincipals which "contain" the data
-    read from a POOL file. This service should provide for delayed loading
+    read from a POOL file. This source should provide for delayed loading
     of data, thus the quotation marks around contain.
  3) DAQInputSource: creats EventPrincipals which contain raw data, as
     delivered by the L1 trigger and event builder. 
