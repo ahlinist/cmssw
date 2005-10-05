@@ -89,11 +89,12 @@ namespace edm {
       
    
    private:
-
+   public: // Made public (temporarily) at the request of Emilio Meschi.
       static ServiceToken createSet(const std::vector<ParameterSet>&);
       static ServiceToken createSet(const std::vector<ParameterSet>&,
                                     ServiceToken,
                                     serviceregistry::ServiceLegacy);
+   private:
       /// create a service token that holds the service defined by iService
       template<class T>
          static ServiceToken createContaining(std::auto_ptr<T> iService){
