@@ -16,7 +16,6 @@
 #include <memory>
 
 using cond::MetaData;
-using namespace edm::eventsetup;
 
 DBIdealGeometryESSource::DBIdealGeometryESSource(const edm::ParameterSet & pset) 
 {
@@ -62,7 +61,7 @@ const DDCompactView *
 DBIdealGeometryESSource::produce(const IdealGeometryRecord &)
 { return new DDCompactView(); }
 
-void DBIdealGeometryESSource::setIntervalFor(const EventSetupRecordKey & ,
+void DBIdealGeometryESSource::setIntervalFor(const edm::eventsetup::EventSetupRecordKey & ,
 					     const edm::IOVSyncValue & iosv,
 					     edm::ValidityInterval & oValidity)
 {

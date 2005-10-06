@@ -10,8 +10,8 @@
 
 #include <string>
 
-class DBIdealGeometryESSource : public edm::eventsetup::ESProducer, 
-                                  public edm::eventsetup::EventSetupRecordIntervalFinder
+class DBIdealGeometryESSource : public edm::ESProducer, 
+                                  public edm::EventSetupRecordIntervalFinder
 {
 public:
     DBIdealGeometryESSource(const edm::ParameterSet & pset);
@@ -19,7 +19,7 @@ public:
     const DDCompactView * produce(const IdealGeometryRecord &);
 protected:
     virtual void setIntervalFor(const edm::eventsetup::EventSetupRecordKey &,
-				const edm::IOVSyncValue &,edm::ValidityInterval &);
+				const edm::IOVSyncValue &, edm::ValidityInterval &);
  private:
     DBIdealGeometryESSource(const DBIdealGeometryESSource &);
     const DBIdealGeometryESSource & operator=(const DBIdealGeometryESSource &);
