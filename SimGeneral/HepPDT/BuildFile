@@ -1,0 +1,9 @@
+
+<use name=clhep>
+<use name=Utilities/General>
+
+<export>
+ <lib name=SimGeneralHepPDT>
+ <use name=clhep>
+ <use name=Utilities/General>
+</export>
