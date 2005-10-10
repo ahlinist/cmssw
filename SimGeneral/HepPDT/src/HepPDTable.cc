@@ -1,8 +1,8 @@
 // -----------------------------------------------------------------------------
 //  24.02.99 taken from http://www.thep.lu.se/~leif/CLHEP-PDT/
 // -----------------------------------------------------------------------------
-//  $Date: 2005/10/10 10:22:02 $
-//  $Revision: 1.1 $
+//  $Date: 2005/10/10 14:28:25 $
+//  $Revision: 1.2 $
 // -----------------------------------------------------------------------------
 // These are the implementations of the non-inlined memberfunctions
 // of class HepPDTable.
@@ -16,9 +16,10 @@
 #include "SimGeneral/HepPDT/interface/HepCombinedMatcher.h"
 #include "SimGeneral/HepPDT/interface/HepNotMatcher.h"
 #include "SimGeneral/HepPDT/interface/HepJetsetDummyHandler.h"
+#include "Utilities/General/interface/CMSexception.h"
 #include "Utilities/General/interface/ConfigurationDictionary.h"
 #include "Utilities/General/interface/FileInPath.h"
-#include "Utilities/General/interface/pidInfo.h"
+#include "Utilities/Notification/interface/pidInfo.h"
 
 #ifdef HEP_DEBUG_INLINE
 #include "SimGeneral/HepPDT/interface/HepPDTable.icc"
@@ -123,9 +124,9 @@ HepPDTable::HepPDTable() {
   add(*(new HepMesonMatcher));
   add(*(new HepLeptonMatcher));
   add(*(new HepNotMatcher<HepLeptonMatcher>("NotLepton")));
-  add(*(new HepCombinedMatcher<HepMesonMatcher,logical_and<HepBoolean>,
+  add(*(new HepCombinedMatcher<HepMesonMatcher,std::logical_and<HepBoolean>,
 	HepChargedParticleMatcher>("ChargedMeson")));
-  add(*(new HepCombinedMatcher<HepMesonMatcher,logical_or<HepBoolean>,
+  add(*(new HepCombinedMatcher<HepMesonMatcher,std::logical_or<HepBoolean>,
 	HepBaryonMatcher>("Hadron")));
   //  add(*(new HepMeVMassRangeMatcher<4500,5500>("MassRange4500-5500")));
   //  temporarily removed because of g++ compiler problems

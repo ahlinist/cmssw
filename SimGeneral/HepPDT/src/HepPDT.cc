@@ -1,7 +1,7 @@
 // -----------------------------------------------------------------------------
 //  24.02.99 taken from http://www.thep.lu.se/~leif/CLHEP-PDT/
 // -----------------------------------------------------------------------------
-//  $Date: 2001/04/11 08:30:52 $
+//  $Date: 2005/10/10 10:22:02 $
 //  $Revision: 1.1 $
 // -----------------------------------------------------------------------------
 // These are the implementations of the non-inlined memberfunctions
@@ -24,7 +24,7 @@ std::istream & HepPDT::read(std::istream & is) {
   return theTable().read(is);
 }
 
-void HepPDT::readPDGFormat(istream & is) {
+void HepPDT::readPDGFormat(std::istream & is) {
   theTable().readPDGFormat(is);
 }
 
