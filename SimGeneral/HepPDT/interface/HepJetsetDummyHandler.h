@@ -1,8 +1,8 @@
 // -----------------------------------------------------------------------------
 //  24.02.99 taken from http://www.thep.lu.se/~leif/CLHEP-PDT/
 // -----------------------------------------------------------------------------
-//  $Date: 2003/01/06 13:01:52 $
-//  $Revision: 1.2 $
+//  $Date: 2005/10/10 10:22:01 $
+//  $Revision: 1.1 $
 // -----------------------------------------------------------------------------
 // -*- C++ -*-
 //
@@ -46,7 +46,7 @@ class HepJetsetDummyHandler: public HepPackageHandler {
 
 public:
 
-  typedef map<HepString, HepJetsetLUDECYDummy *, less<HepString> > ModelMap;
+  typedef std::map<HepString, HepJetsetLUDECYDummy *, std::less<HepString> > ModelMap;
 
 public:
   HepJetsetDummyHandler(): theName("JETSET") {

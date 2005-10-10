@@ -1,17 +1,16 @@
 // -----------------------------------------------------------------------------
 //  24.02.99 taken from http://www.thep.lu.se/~leif/CLHEP-PDT/
 // -----------------------------------------------------------------------------
-//  $Date: 2001/04/11 08:30:53 $
+//  $Date: 2005/10/10 10:22:02 $
 //  $Revision: 1.1 $
 // -----------------------------------------------------------------------------
 // These are the implementations of the non-inlined memberfunctions
 // of class HepParticleMatcher.
 
-#include "Utilities/Configuration/interface/Architecture.h"
-#include "GeneratorInterface/HepPDT/interface/HepParticleMatcher.h"
+#include "SimGeneral/HepPDT/interface/HepParticleMatcher.h"
 
 #ifdef HEP_DEBUG_INLINE
-#include "GeneratorInterface/HepPDT/interface/HepParticleMatcher.icc"
+#include "SimGeneral/HepPDT/interface/HepParticleMatcher.icc"
 #endif
 
 void HepParticleMatcher::addIfMatch(const HepParticleMatcher & pm) {

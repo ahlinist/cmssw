@@ -1,7 +1,7 @@
 // -----------------------------------------------------------------------------
 //  24.02.99 taken from http://www.thep.lu.se/~leif/CLHEP-PDT/
 // -----------------------------------------------------------------------------
-//  $Date: 2001/04/11 08:30:51 $
+//  $Date: 2005/10/10 10:22:02 $
 //  $Revision: 1.1 $
 // -----------------------------------------------------------------------------
 // These are the implementations of the inlined memberfunctions of
@@ -118,7 +118,7 @@ HepParticleMatcher::find(const HepParticleData * pd) const {
   return matchingParticles.find(pd);
 }
 
-HepBoolean less<const HepParticleMatcher *>::
+HepBoolean std::less<const HepParticleMatcher *>::
 operator()(const HepParticleMatcher * x, const HepParticleMatcher * y) const {
   return x->name() < y->name();
 }

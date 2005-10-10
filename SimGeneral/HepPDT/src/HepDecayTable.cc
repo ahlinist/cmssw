@@ -1,18 +1,17 @@
 // -----------------------------------------------------------------------------
 //  24.02.99 taken from http://www.thep.lu.se/~leif/CLHEP-PDT/
 // -----------------------------------------------------------------------------
-//  $Date: 2001/04/11 08:30:52 $
+//  $Date: 2005/10/10 10:22:02 $
 //  $Revision: 1.1 $
 // -----------------------------------------------------------------------------
 // These are the implementations of the non-inlined memberfunctions
 // of class HepDecayTable.
 
-#include "Utilities/Configuration/interface/Architecture.h"
-#include "GeneratorInterface/HepPDT/interface/HepDecayTable.h"
-#include "GeneratorInterface/HepPDT/interface/HepDecayMode.h"
+#include "SimGeneral/HepPDT/interface/HepDecayTable.h"
+#include "SimGeneral/HepPDT/interface/HepDecayMode.h"
 
 #ifdef HEP_DEBUG_INLINE
-#include "GeneratorInterface/HepPDT/interface/HepDecayTable.icc"
+#include "SimGeneral/HepPDT/interface/HepDecayTable.icc"
 #endif
 
 void HepDecayTable::init() {
@@ -28,10 +27,10 @@ void HepDecayTable::init() {
     }
     HepDecayMode::ModelMap::const_iterator mit = (*it).second->models.begin();
     while ( mit != (*it).second->models.end() )
-      npac = max(npac, (*mit++).first);
+      npac = std::max(npac, (*mit++).first);
     ++it;
   }
-  sumFractions = vector<HepDouble>(npac+1, 0.0);
+  sumFractions = std::vector<HepDouble>(npac+1, 0.0);
   sumTree = SumMap(npac+1, DoubleDecayMap());
   it = basemap::begin();
   while ( it != basemap::end() ) {

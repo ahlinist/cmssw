@@ -1,8 +1,8 @@
 // -----------------------------------------------------------------------------
 //  24.02.99 taken from http://www.thep.lu.se/~leif/CLHEP-PDT/
 // -----------------------------------------------------------------------------
-//  $Date: 2002/01/10 08:49:21 $
-//  $Revision: 1.2 $
+//  $Date: 2005/10/10 10:22:02 $
+//  $Revision: 1.1 $
 // -----------------------------------------------------------------------------
 // These are the implementations of the non-inlined memberfunctions
 // of class HepPDTable.
@@ -64,7 +64,7 @@ HepDecayMode * HepPDTable::constructDecayMode(HepString & tag) {
       break;
     case '?':
       {
-	next = min(tag.find(','), tag.find(';'));
+	next = std::min(tag.find(','), tag.find(';'));
 	HepParticleMatcher * pm = getParticleMatcher(tag.substr(1,next-1));
 	if ( pm ) dm->addProductMatcher(*pm);
 	else error = true;
@@ -72,7 +72,7 @@ HepDecayMode * HepPDTable::constructDecayMode(HepString & tag) {
       } break;
     case '!':
       {
-	next = min(tag.find(','), tag.find(';'));
+	next = std::min(tag.find(','), tag.find(';'));
 	HepParticleData * pd = getParticleData(tag.substr(1,next-1));
 	if ( pd ) dm->addExcluded(*pd);
 	else error = true;
@@ -80,7 +80,7 @@ HepDecayMode * HepPDTable::constructDecayMode(HepString & tag) {
       } break;
     case '*':
       {
-	next = min(tag.find(','), tag.find(';'));
+	next = std::min(tag.find(','), tag.find(';'));
 	HepParticleMatcher * pm = getParticleMatcher(tag.substr(1,next-1));
 	if ( pm ) dm->setWildMatcher(*pm);
 	else error = true;
@@ -88,7 +88,7 @@ HepDecayMode * HepPDTable::constructDecayMode(HepString & tag) {
       } break;
     default:
       {
-	next = min(tag.find(','), tag.find(';'));
+	next = std::min(tag.find(','), tag.find(';'));
 	HepParticleData * pdp = getParticleData(tag.substr(0,next));
 	if ( pdp ) dm->addProduct(*pdp);
 	else error = true;

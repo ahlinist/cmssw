@@ -1,23 +1,22 @@
 // -----------------------------------------------------------------------------
 //  24.02.99 taken from http://www.thep.lu.se/~leif/CLHEP-PDT/
 // -----------------------------------------------------------------------------
-//  $Date: 2001/04/11 08:30:52 $
+//  $Date: 2005/10/10 10:22:02 $
 //  $Revision: 1.1 $
 // -----------------------------------------------------------------------------
 // These are the implementations of the non-inlined memberfunctions
 // of class HepDecayMode.
 
-#include "Utilities/Configuration/interface/Architecture.h"
-#include "GeneratorInterface/HepPDT/interface/HepDecayMode.h"
+#include "SimGeneral/HepPDT/interface/HepDecayMode.h"
 
 #ifdef HEP_DEBUG_INLINE
-#include "GeneratorInterface/HepPDT/interface/HepDecayMode.icc"
+#include "SimGeneral/HepPDT/interface/HepDecayMode.icc"
 #endif
 
 HepBoolean HepDecayMode::addOverlap(const HepDecayMode & d) {
   HepBoolean inc = includes(d);
   if ( !inc ) return false;
-  vector<const HepDecayMode *>::iterator it = overlappingModes.begin();
+  std::vector<const HepDecayMode *>::iterator it = overlappingModes.begin();
   while ( it != overlappingModes.end() ) if ( *it++ == &d ) return true;
   overlappingModes.push_back(&d);
   return true;

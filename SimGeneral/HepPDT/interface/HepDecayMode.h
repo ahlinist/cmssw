@@ -1,8 +1,8 @@
 // -----------------------------------------------------------------------------
 //  24.02.99 taken from http://www.thep.lu.se/~leif/CLHEP-PDT/
 // -----------------------------------------------------------------------------
-//  $Date: 2003/07/21 08:52:18 $
-//  $Revision: 1.5 $
+//  $Date: 2005/10/10 10:22:01 $
+//  $Revision: 1.1 $
 // -----------------------------------------------------------------------------
 // -*- C++ -*-
 //
@@ -114,7 +114,7 @@ class HepDecayMode {
 
 public:
 
-  typedef std::map<HepPkg, pair<HepDecayModel *, HepDouble>,
+  typedef std::map<HepPkg, std::pair<HepDecayModel *, HepDouble>,
     std::less<HepPkg> > ModelMap;
   typedef std::multiset<const HepParticleData *,
     std::less<const HepParticleData *> > ParticleSet;

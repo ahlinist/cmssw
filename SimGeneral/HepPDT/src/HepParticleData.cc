@@ -1,18 +1,17 @@
 // -----------------------------------------------------------------------------
 //  24.02.99 taken from http://www.thep.lu.se/~leif/CLHEP-PDT/
 // -----------------------------------------------------------------------------
-//  $Date: 2001/04/11 08:30:52 $
+//  $Date: 2005/10/10 10:22:02 $
 //  $Revision: 1.1 $
 // -----------------------------------------------------------------------------
 // These are the implementations of the non-inlined memberfunctions
 // of class HepParticleData.
 
-#include "Utilities/Configuration/interface/Architecture.h"
-#include "GeneratorInterface/HepPDT/interface/HepParticleData.h"
-#include "GeneratorInterface/HepPDT/interface/HepDecayMode.h"
+#include "SimGeneral/HepPDT/interface/HepParticleData.h"
+#include "SimGeneral/HepPDT/interface/HepDecayMode.h"
 
 #ifdef HEP_DEBUG_INLINE
-#include "GeneratorInterface/HepPDT/interface/HepParticleData.icc"
+#include "SimGeneral/HepPDT/interface/HepParticleData.icc"
 #endif
 
 void HepParticleData::addDecayMode(HepDecayMode & dm) {

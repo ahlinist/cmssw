@@ -1,7 +1,7 @@
 // -----------------------------------------------------------------------------
 //  24.02.99 taken from http://www.thep.lu.se/~leif/CLHEP-PDT/
 // -----------------------------------------------------------------------------
-//  $Date: 2001/04/11 08:30:48 $
+//  $Date: 2005/10/10 10:22:01 $
 //  $Revision: 1.1 $
 // -----------------------------------------------------------------------------
 // These are the implementations of the inlined memberfunctions of
@@ -49,13 +49,13 @@ inline HepDouble HepDecayMode::bRatio(HepPkg package, HepDouble exc) {
   ModelMap::iterator it = models.find(package);
   if ( it == models.end() ) return 0.0;
   (*it).second.second = exc;
-  return max(exc, 0.0);
+  return std::max(exc, 0.0);
 }
 
 inline HepDouble HepDecayMode::bRatio(HepPkg package) const {
   if ( package == HepPkgDefault ) package = defmod;
   ModelMap::const_iterator it = models.find(package);
-  return ( it == models.end() )? 0.0: max((*it).second.second, 0.0);
+  return ( it == models.end() )? 0.0: std::max((*it).second.second, 0.0);
 }
 
 inline void HepDecayMode::switchOn(HepPkg package) {
@@ -88,7 +88,7 @@ inline void HepDecayMode::
 addModel(HepPkg package, HepDecayModel & dm, HepDouble exc) {
   ModelMap::iterator mod = models.find(package);
   if ( mod == models.end() )
-    models[package] = std::pair<HepDecayModel *, HepDouble>(&dm, max(exc,0.0));
+    models[package] = std::pair<HepDecayModel *, HepDouble>(&dm, std::max(exc,0.0));
   else {
     (*mod).second.first = &dm;
     if ( exc >= 0.0 ) (*mod).second.second = exc;
@@ -155,7 +155,7 @@ inline HepPkg HepDecayMode::defaultModel() const {
   return defmod;
 }
 
-inline HepBoolean less<const HepDecayMode *>::
+inline HepBoolean std::less<const HepDecayMode *>::
 operator () (const HepDecayMode * dm1, const HepDecayMode * dm2) const {
   return dm1->tag() < dm2->tag();
 }
