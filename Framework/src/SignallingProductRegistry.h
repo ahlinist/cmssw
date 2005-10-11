@@ -21,6 +21,8 @@
 
 // system include files
 #include "boost/signal.hpp"
+#include <map>
+#include <string>
 
 // user include files
 #include "FWCore/Framework/interface/ProductRegistry.h"
@@ -39,9 +41,9 @@ namespace edm {
 
       const SignallingProductRegistry& operator=(const SignallingProductRegistry&); // stop default
 
-      virtual void addCalled(BranchDescription const&);
+      virtual void addCalled(BranchDescription const&, bool);
       // ---------- member data --------------------------------
-
+      std::map<std::string, unsigned int> typeAddedStack_;
    };
 }
 
