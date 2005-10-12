@@ -291,7 +291,8 @@ namespace edm {
 
     edm::Wrapper<PROD> *wp(new Wrapper<PROD>(*p));
     put_products_.push_back(std::make_pair(wp, productInstanceName));
-    product.release();
+    // product.release(); // The object has been copied into the Wrapper.
+    // The old copy must be deleted, so we cannot release ownership.
   }
 
   template <class PROD>
