@@ -22,7 +22,6 @@ namespace edm {
       Worker(md),
       mod_(mod),
       actions_(wp.actions_) {
-    assert(wp.reg_ != 0);
   }
 
   OutputWorker::~OutputWorker() {

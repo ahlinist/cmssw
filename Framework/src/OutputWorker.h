@@ -60,7 +60,7 @@ namespace edm
   std::auto_ptr<OutputModule> OutputWorker::makeOne(const ModuleDescription&,
 						    const WorkerParams& wp)
   {
-    return std::auto_ptr<OutputModule>(new ModType(*wp.pset_, *wp.reg_));
+    return std::auto_ptr<OutputModule>(new ModType(*wp.pset_));
   }
 
 }

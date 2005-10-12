@@ -15,8 +15,8 @@ $Id$
 
 namespace edm {
 
-  AsciiOutputModule::AsciiOutputModule(ParameterSet const& pset, ProductRegistry const& reg, std::ostream* os) :
-    OutputModule(pset.getUntrackedParameter("select", ParameterSet()), reg),
+  AsciiOutputModule::AsciiOutputModule(ParameterSet const& pset, std::ostream* os) :
+    OutputModule(pset.getUntrackedParameter("select", ParameterSet())),
     prescale_(pset.getUntrackedParameter("prescale", 1U)),
     verbosity_(pset.getUntrackedParameter("verbosity", 1U)),
     counter_(0),
