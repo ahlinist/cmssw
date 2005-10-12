@@ -3,12 +3,16 @@ $Id$
 ----------------------------------------------------------------------*/
 
 #include "FWCore/Framework/interface/OutputModule.h"
-#include "FWCore/Framework/interface/ProductRegistry.h"
+#include "FWCore/Framework/interface/ConstProductRegistry.h"
+#include "FWCore/ServiceRegistry/interface/Service.h"
 
 namespace edm {
-  OutputModule::OutputModule(ParameterSet const& pset, ProductRegistry const& reg) : preg_(&reg), descVec_(), groupSelector_(pset) {
-    for (ProductRegistry::ProductList::const_iterator it = reg.productList().begin();
-          it != reg.productList().end(); ++it) {
+  OutputModule::OutputModule(ParameterSet const& pset) : nextID_(), descVec_(), groupSelector_(pset) {
+    Service<ConstProductRegistry> reg;
+    nextID_ = reg->nextID();
+     
+    for (ProductRegistry::ProductList::const_iterator it = reg->productList().begin();
+          it != reg->productList().end(); ++it) {
       if (selected(it->second)) {
         descVec_.push_back(&it->second);
       }

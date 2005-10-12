@@ -19,20 +19,19 @@ namespace edm {
   class EventPrincipal;
   class EventSetup;
   class BranchDescription;
-  class ProductRegistry;
   class OutputModule {
   public:
     typedef OutputModule ModuleType;
     typedef std::vector<BranchDescription const *> Selections;
 
-    explicit OutputModule(ParameterSet const& pset, ProductRegistry const& reg);
+    explicit OutputModule(ParameterSet const& pset);
     virtual ~OutputModule();
     virtual void beginJob(EventSetup const&);
     virtual void endJob();
     virtual void write(EventPrincipal const& e) = 0;
     bool selected(BranchDescription const& desc) const {return groupSelector_.selected(desc);}
   protected:
-    ProductRegistry const* const preg_;
+    unsigned long nextID_;
     Selections descVec_;
   private:
     GroupSelector groupSelector_;
