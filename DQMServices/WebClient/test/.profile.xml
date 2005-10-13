@@ -1,0 +1,64 @@
+<?xml version='1.0'?>
+<!-- Order of specification will determine the sequence of installation. all modules are loaded prior instantiation of plugins -->
+<xp:Profile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:xp="http://xdaq.web.cern.ch/xdaq/xsd/2005/XMLProfile-10">
+	
+	<!-- XAccess required Power Pack installation
+	<xp:Application class="XAccess" id="7"  network="local"/>
+	<xp:Module>${XDAQ_ROOT}/lib/linux/x86/libxaccess.so</xp:Module>
+	-->
+
+	<!-- Compulsory  Plugins -->
+	<xp:Application class="Executive" id="0"  network="local">
+		<properties xmlns="urn:xdaq-application:Executive" xsi:type="soapenc:Struct">
+                	<!-- logUrl xsi:type="xsd:string">udp://lxcmd103:50000</logUrl -->
+                	<!-- logLevel xsi:type="xsd:string">INFO</logLevel -->
+                </properties>
+
+	</xp:Application>
+	<xp:Module>${XDAQ_ROOT}/lib/linux/x86/libexecutive.so</xp:Module>
+	
+	<xp:Application class="PeerTransportHTTP" id="1"  network="local">
+		 <properties xmlns="urn:xdaq-application:PeerTransportHTTP" xsi:type="soapenc:Struct">
+                        <aliasName xsi:type="xsd:string">temporary</aliasName>
+                        <aliasPath xsi:type="xsd:string">.pwd</aliasPath>
+                </properties>
+	</xp:Application>
+	<xp:Module> ${XDAQ_ROOT}/lib/linux/x86/libpthttp.so </xp:Module>
+
+	<xp:Application class="PeerTransportFifo" id="8"  network="local"/>
+	<xp:Module>${XDAQ_ROOT}/lib/linux/x86/libptfifo.so</xp:Module>
+	
+	<!-- XRelay -->
+	<xp:Application class="XRelay" id="4"  network="local"/>
+	<xp:Module>${XDAQ_ROOT}/lib/linux/x86/libxr.so</xp:Module>
+	
+	<!-- HyperDAQ -->
+	<xp:Application class="HyperDAQ" id="3"  network="local"/>
+	<xp:Module>${XDAQ_ROOT}/lib/linux/x86/libhyperdaq.so</xp:Module>
+	
+	<!-- XPlore requires the installation of Power Pack 
+	<xp:Application class="XPlore" id="4"  network="local"/>
+	<xp:Module>${XDAQ_ROOT}/lib/libslp.so</xp:Module>
+	<xp:Module>${XDAQ_ROOT}/lib/linux/x86/libxp.so</xp:Module>
+	<xp:Module>${XDAQ_ROOT}/lib/linux/x86/libxslp.so</xp:Module>
+	<xp:Module>${XDAQ_ROOT}/lib/linux/x86/libxplore.so</xp:Module>
+	-->
+  		
+	<!-- XMem requires the installation of Power Pack -->
+	<!-- xp:Application class="XMem" id="5"  network="local"/>
+	<xp:Module>${XDAQ_ROOT}/lib/linux/x86/libxmem.so</xp:Module -->
+	
+	<!-- Sentinel requires the installation of Power Pack 
+	<xp:Application class="Sentinel" id="6"  network="local"/>
+	<xp:Module>${XDAQ_ROOT}/lib/linux/x86/libsentinel.so</xp:Module>
+	-->
+	
+	<!-- Monitor requires the installation of Power Pack 
+	<xp:Application class="Monitor" id="9"  network="local">
+		 <properties xmlns="urn:xdaq-application:Monitor" xsi:type="soapenc:Struct">
+                        <inprofile xsi:type="xsd:string">${XDAQ_ROOT}/daq/monitor/etc/profile.xml</inprofile>
+                </properties>
+        </xp:Application>
+	<xp:Module>${XDAQ_ROOT}/lib/linux/x86/libmonitor.so</xp:Module>
+	-->
+</xp:Profile>
