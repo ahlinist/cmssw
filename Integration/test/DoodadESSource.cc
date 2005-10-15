@@ -19,8 +19,8 @@
 #include "FWCore/Framework/interface/SourceFactory.h"
 
 
-#include "FWCore/Integration/src/GadgetRcd.h"
-#include "FWCore/Integration/src/Doodad.h"
+#include "FWCore/Integration/test/GadgetRcd.h"
+#include "FWCore/Integration/test/Doodad.h"
 
 namespace edmreftest {
 class DoodadESSource :

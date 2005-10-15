@@ -27,9 +27,9 @@
 #include "FWCore/Framework/interface/ESProducer.h"
 #include "FWCore/Framework/interface/ESHandle.h"
 
-#include "FWCore/Integration/src/WhatsIt.h"
-#include "FWCore/Integration/src/Doodad.h"
-#include "FWCore/Integration/src/GadgetRcd.h"
+#include "FWCore/Integration/test/WhatsIt.h"
+#include "FWCore/Integration/test/Doodad.h"
+#include "FWCore/Integration/test/GadgetRcd.h"
 
 
 //
