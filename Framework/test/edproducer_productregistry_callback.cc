@@ -238,7 +238,7 @@ void  testEDProducerProductRegistryCallback::testCircularRef2(){
    //Would be 10 products
    // 1 from the module 't1'
    //    1 from 'l1' in response
-   //       1 from 'l2' in response to 'l1' <-- circular \ 
+   //       1 from 'l2' in response to 'l1' <-- circular 
    //    1 from 'l2' in response to 't1'                  | 
    //       1 from 'l1' in response to 'l2' <-- circular / 
    // 1 from the module 't2'
