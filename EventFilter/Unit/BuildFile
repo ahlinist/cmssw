@@ -1,0 +1,10 @@
+<export>
+<lib name=EventFilterUnit>
+</export>
+<use name=XDAQ>
+<use name=xerces-c>
+<use name=boost>
+<use name=root>
+<use name=EventFilter/Utilities>
+<group name=XdaqCore>
+<flags SEAL_PLUGIN_NAME="EventFilterUnit">
