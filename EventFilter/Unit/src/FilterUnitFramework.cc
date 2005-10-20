@@ -7,6 +7,9 @@
 //
 //  Modification history:
 //    $Log: FilterUnitFramework.cc,v $
+//    Revision 1.1  2005/10/19 09:10:35  meschi
+//    first import from COSINE
+//
 //    Revision 1.14  2005/10/07 15:35:51  meschi
 //    flush logic
 //
@@ -66,31 +69,24 @@
 #include <time.h>
 
 FilterUnitFramework::FilterUnitFramework(xdaq::ApplicationStub *s) : FUAdapter(s),
-								     stateName_("Unknown"),
-								     flush_(false)
+								     nbEvents_(0),
+								     flush_(false),
+								     fsm_(0)
 {
   cout << "Entered constructor " << endl;
 
   mutex_ = new BSem(BSem::FULL);
 
-  bindFSMSoapCallbacks();
+  fsm_ = new evf::EPStateMachine(getApplicationLogger());
+  fsm_->init<FilterUnitFramework>(this);
+
   xoap::bind(this, &FilterUnitFramework::getStateMsg,"getState",XDAQ_NS_URI);
 
   exportParams();
-  try
-    {
-      defineFSM();
-    }
-  catch(xcept::Exception e)
-    {
-      LOG4CPLUS_FATAL(this->getApplicationLogger(),
-		      "Failed to define FSM "
-		      << xcept::stdformat_exception_history(e));
-      return;
-    }
   
-  // Bind default web page
-  xgi::bind(this, &FilterUnitFramework::defaultWebPage, "Default");
+  // Bind web interface
+   xgi::bind(this, &FilterUnitFramework::css           , "styles.css");
+   xgi::bind(this, &FilterUnitFramework::defaultWebPage, "Default");
   
   LOG4CPLUS_INFO(this->getApplicationLogger(),
 		 xmlClass_ << instance_ << " constructor");
@@ -109,7 +105,6 @@ void FilterUnitFramework::exportParams()
   // default configuration
   buInstance_     = 0;
   queueSize_ = 16;
-  nTask_     = 1;
   add_ = "localhost";
   port_ = 9090;
   del_ = 5000000;
@@ -117,23 +112,20 @@ void FilterUnitFramework::exportParams()
   instance_ = getApplicationDescriptor()->getInstance();
   ns << "FU" << instance_;
   nam_ = ns.str();
-  runActive_ = true;
+  runActive_ = false;
   runNumber_ = 1;
-  dataSet_ ="Unknown";
   s->fireItemAvailable("buInstance",&buInstance_);
 
   // additional configuration specific to parametric FU
 
   s->fireItemAvailable("queueSize",&queueSize_);
-  s->fireItemAvailable("nTask",&nTask_);
-  s->fireItemAvailable("stateName",&stateName_);
+  s->fireItemAvailable("stateName",&fsm_->stateName_);
   s->fireItemAvailable("collectorAddr",&add_);
   s->fireItemAvailable("collectorPort",&port_);
   s->fireItemAvailable("collSendUs",&del_);
   s->fireItemAvailable("monSourceName",&nam_);
   s->fireItemAvailable("runActive",&runActive_);
   s->fireItemAvailable("runNumber",&runNumber_);
-  s->fireItemAvailable("dataSet",&dataSet_);
 }
 
 FilterUnitFramework::~FilterUnitFramework()
@@ -150,6 +142,7 @@ FilterUnitFramework::~FilterUnitFramework()
 
 void FilterUnitFramework::configureAction(toolbox::Event::Reference e) throw (toolbox::fsm::exception::Exception)
 {
+  if(!runActive_) findOrCreateMemoryPool();
 
   char *workdir = getenv("PWD");
   if(workdir != 0)
@@ -157,14 +150,12 @@ void FilterUnitFramework::configureAction(toolbox::Event::Reference e) throw (to
   LOG4CPLUS_INFO(this->getApplicationLogger(),"FU Working Directory set to" << workdir);
 
   createBUArray();
-
-  stateName_ = fsm_.stateName_.toString();  
 }
 
 void FilterUnitFramework::enableAction(toolbox::Event::Reference e) throw (toolbox::fsm::exception::Exception)
 {
   cout<<"FilterUnitFramework::Enable()"<<endl;
-
+  runActive_ = true;
   birth_.start(0); // start timer before sending allocate
 
   //
@@ -180,7 +171,6 @@ void FilterUnitFramework::enableAction(toolbox::Event::Reference e) throw (toolb
   
   mutex_->take();
   LOG4CPLUS_INFO(this->getApplicationLogger(),"Run Paused...");
-  stateName_ = fsm_.stateName_.toString();
   mutex_->give();
 
   pthread_mutex_lock(&lock_);
@@ -195,7 +185,6 @@ void FilterUnitFramework::suspendAction(toolbox::Event::Reference e) throw (tool
   //  pthread_t ttid = pthread_self();
 
   mutex_->take();
-  stateName_ = fsm_.stateName_.toString();
   LOG4CPLUS_INFO(this->getApplicationLogger(),"Run Paused...");
 }
 
@@ -204,7 +193,6 @@ void FilterUnitFramework::resumeAction(toolbox::Event::Reference e) throw (toolb
   //  pthread_t ttid = pthread_self();
 
   mutex_->give();
-  stateName_ = fsm_.stateName_.toString();
   LOG4CPLUS_INFO(this->getApplicationLogger(),"Run Resumed...");
 }  
 
@@ -213,12 +201,7 @@ void FilterUnitFramework::resumeAction(toolbox::Event::Reference e) throw (toolb
 #include <signal.h>
 void FilterUnitFramework::haltAction(toolbox::Event::Reference e) throw (toolbox::fsm::exception::Exception)
 {
-  // this will cause cobra to shut down
-  //  system("touch CARF.stop");
 
-  // should do more than this ? Maybe I need more states to comply with 
-  // the definitions of Stop and Suspend... 
-  stateName_ = fsm_.stateName_.toString();
 }
 
 
@@ -246,42 +229,10 @@ xoap::MessageReference FilterUnitFramework::getStateMsg(xoap::MessageReference m
   xoap::SOAPName stateTypeName = envelope.createName("type", "xsi",
 						     "http://www.w3.org/2001/XMLSchema-instance");
   stateElement.addAttribute(stateTypeName, "xsd:string");
-  stateElement.addTextNode(fsm_.stateName_);
+  stateElement.addTextNode(fsm_->stateName_);
   
   return responseMsg;
 }
-
-xoap::MessageReference FilterUnitFramework::createFSMReplyMsg(const string cmd, const string state)
-{
-  stateName_ = fsm_.stateName_.toString();
-  xoap::MessageReference msg = xoap::createMessage();
-  xoap::SOAPEnvelope     env   = msg->getSOAPPart().getEnvelope();
-  xoap::SOAPBody         body  = env.getBody();
-  string                 rStr  = cmd + "Response";
-  xoap::SOAPName         rName = env.createName(rStr,"xdaq",XDAQ_NS_URI);
-  xoap::SOAPBodyElement  rElem = body.addBodyElement(rName);
-  xoap::SOAPName       sName = env.createName("state","xdaq",XDAQ_NS_URI);
-  xoap::SOAPElement      sElem = rElem.addChildElement(sName);
-  xoap::SOAPName   aName = env.createName("stateName","xdaq",XDAQ_NS_URI);
-  
-  
-  sElem.addAttribute(aName, state);
-  
-  return msg;
-}
-
-void FilterUnitFramework::bindFSMSoapCallbacks()
-{
-  xoap::bind(this,&FilterUnitFramework::fireEvent,"Configure", XDAQ_NS_URI);
-  xoap::bind(this,&FilterUnitFramework::fireEvent,"Enable"   , XDAQ_NS_URI);
-  xoap::bind(this,&FilterUnitFramework::fireEvent,"Suspend"  , XDAQ_NS_URI);
-  xoap::bind(this,&FilterUnitFramework::fireEvent,"Resume"   , XDAQ_NS_URI);
-  xoap::bind(this,&FilterUnitFramework::fireEvent,"Halt"     , XDAQ_NS_URI);
-  xoap::bind(this,&FilterUnitFramework::fireEvent,"Disable"  , XDAQ_NS_URI); 
-  xoap::bind(this,&FilterUnitFramework::fireEvent,"Fail"     , XDAQ_NS_URI); 
-}
-
-
 
 
 #include "i2o/utils/include/i2o/utils/AddressMap.h"
@@ -298,122 +249,198 @@ void FilterUnitFramework::defaultWebPage(xgi::Input *in, xgi::Output *out)
   throw (xgi::exception::Exception)
 {
   
-  cgicc::Cgicc cgi(in);
-  string stateName   = fsm_.stateName_.toString();  
-  bool configured = (stateName=="Ready" || stateName=="Enabled");
-  std::string url = "/";
-  url += getApplicationDescriptor()->getURN();
-
-        string stateColour = (stateName == "Failed") ? "#FF4040" : "#AFECF7";
-	int tid            = i2o::utils::getAddressMap()->getTid(getApplicationDescriptor());
-
-	*out << HTMLDoctype(HTMLDoctype::eStrict)                 << std::endl;
-
-        *out << "<html>"                                          << std::endl;
-
-        *out << "<head>"                                          << std::endl;
-        *out << "<title>" << xmlClass_ << instance_ << "</title>" << std::endl;
-        *out << "</head>"                                         << std::endl;
-
-        *out << "<body bgcolor=\"#007F7F\">"                      << std::endl;
-
-        *out << "<table border=1 bgcolor=\"#CFCFCF\">"            << std::endl;
-
-        *out << "<tr>"                                            << std::endl;
-        *out << "  <td>"                                          << std::endl;
-        *out << "    <b>"                                         << std::endl;
-        *out << "      ";
-        *out << xmlClass_ << instance_ << " tid:" << tid          << std::endl;
-        *out << "    </b>"                                        << std::endl;
-        *out << "  </td>"                                         << std::endl;
-        *out << "  <td bgcolor=\"" << stateColour << "\">"        << std::endl;
-        *out << "    " << stateName                               << std::endl;
-        *out << "  </td>"                                         << std::endl;
-	*out << "  <td bgcolor=\"" << "#aaaaaa" << "\">"          << std::endl;
-	*out << " Run " << runNumber_ << "</td>"                  << std::endl;
-	if(runActive_ && configured)
-	  {
-	    *out << "  <td bgcolor=\"" << stateColour << "\">"    << std::endl;
-	    *out << "    " << "active"                            << std::endl;
-	  }
-	else if(configured)
-	  {
-	    *out << "  <td bgcolor=\"" << "#FF4040" << "\">"      << std::endl;
-	    *out << "    " << "stopped"                           << std::endl;
-	  }
-        *out << "  </td>"                                         << std::endl;
-	*out << "  <td bgcolor=\"" << "#aaaaaa" << "\">"          << std::endl;
-	*out << " DataSet " << dataSet_.value_ << "</td>"          << std::endl;
-
-        *out << "</tr>"                                           << std::endl;
-
-        *out << "</table>"                                        << std::endl;
-        *out << "<table border=1 bgcolor=\"#CFCFCF\">" << std::endl;
-
-        *out << "<tr>" << std::endl;
-        *out << "<td bgcolor=\"#F2F458\">" << std::endl;
-        *out << "buInstance" << std::endl;
-        *out << "</td>" << std::endl;
-        *out << "<td bgcolor=\"#AFECF7\">" << std::endl;
-        *out << buInstance_ << std::endl;
-        *out << "</td>" << std::endl;
-        *out << "<td bgcolor=\"#F2F458\">" << std::endl;
-        *out << "doDump" << std::endl;
-        *out << "</td>" << std::endl;
-        *out << "<td bgcolor=\"#AFECF7\">" << std::endl;
-        *out << doDumpFragments_ << std::endl;
-        *out << "</td>" << std::endl;
-        *out << "<td bgcolor=\"#F2F458\">" << std::endl;
-        *out << "queueSize" << std::endl;
-        *out << "</td>" << std::endl;
-        *out << "<td bgcolor=\"#AFECF7\">" << std::endl;
-        *out << queueSize_ << std::endl;
-        *out << "</td>" << std::endl;
-        *out << "</tr>" << std::endl;
-
-        *out << "<tr>" << std::endl;
-        *out << "<td bgcolor=\"#F2F458\">" << std::endl;
-        *out << "EventsProcessed" << std::endl;
-        *out << "</td>" << std::endl;
-        *out << "<td bgcolor=\"#AFECF7\">" << std::endl;
-        *out << nbEvents_ << std::endl;
-        *out << "</td>" << std::endl;
-        *out << "<td bgcolor=\"#F2F458\">" << std::endl;
-        *out << "EventsReceived" << std::endl;
-        *out << "</td>" << std::endl;
-        *out << "<td bgcolor=\"#AFECF7\">" << std::endl;
-        *out << nbReceivedEvents_ << std::endl;
-        *out << "</td>" << std::endl;
-        *out << "<td bgcolor=\"#F2F458\">" << std::endl;
-        *out << "FragmentsReceived" << std::endl;
-        *out << "</td>" << std::endl;
-        *out << "<td bgcolor=\"#AFECF7\">" << std::endl;
-        *out << nbReceivedFragments_ << std::endl;
-        *out << "</td>" << std::endl;
-        *out << "<td bgcolor=\"#F2F458\">" << std::endl;
-        *out << "PendingRequests" << std::endl;
-        *out << "</td>" << std::endl;
-        *out << "<td bgcolor=\"#AFECF7\">" << std::endl;
-        *out << pendingRequests_ << std::endl;
-        *out << "</td>" << std::endl;
-        *out << "</tr>" << std::endl;
-
-        *out << "<tr>" << std::endl;
-        *out << "<td bgcolor=\"#F2F458\">" << std::endl;
-        *out << "DataErrors" << std::endl;
-        *out << "</td>" << std::endl;
-        *out << "<td bgcolor=\"#AFECF7\">" << std::endl;
-        *out << nbDataErrors_ << std::endl;
-        *out << "</td>" << std::endl;
-        *out << "</tr>" << std::endl;
-
-	*out << "</table>" << std::endl;
-        *out << "</body>"                                         << std::endl;
-        *out << "</html>"                                         << std::endl;
+  *out << "<html>"                                                   << endl;
+  *out << "<head>"                                                   << endl;
+  *out << "<link type=\"text/css\" rel=\"stylesheet\"";
+  *out << " href=\"/" <<  getApplicationDescriptor()->getURN()
+       << "/styles.css\"/>"                                          << endl;
+  *out << "<title>" << getApplicationDescriptor()->getClassName() 
+       << getApplicationDescriptor()->getInstance() 
+       << " MAIN</title>"                                            << endl;
+  *out << "</head>"                                                  << endl;
+  *out << "<body>"                                                   << endl;
+  *out << "<table border=\"0\" width=\"100%\">"                      << endl;
+  *out << "<tr>"                                                     << endl;
+  *out << "  <td align=\"left\">"                                    << endl;
+  *out << "    <img"                                                 << endl;
+  *out << "     align=\"middle\""                                    << endl;
+  *out << "     src=\"/daq/evb/examples/fu/images/fu64x64.gif\""     << endl;
+  *out << "     alt=\"main\""                                        << endl;
+  *out << "     width=\"64\""                                        << endl;
+  *out << "     height=\"64\""                                       << endl;
+  *out << "     border=\"\"/>"                                       << endl;
+  *out << "    <b>"                                                  << endl;
+  *out << getApplicationDescriptor()->getClassName() 
+       << getApplicationDescriptor()->getInstance()                  << endl;
+  *out << "      " << fsm_->stateName_.toString()                    << endl;
+  *out << "    </b>"                                                 << endl;
+  *out << "  </td>"                                                  << endl;
+  *out << "  <td width=\"32\">"                                      << endl;
+  *out << "    <a href=\"/urn:xdaq-application:lid=3\">"             << endl;
+  *out << "      <img"                                               << endl;
+  *out << "       align=\"middle\""                                  << endl;
+  *out << "       src=\"/daq/xdaq/hyperdaq/images/HyperDAQ.jpg\""    << endl;
+  *out << "       alt=\"HyperDAQ\""                                  << endl;
+  *out << "       width=\"32\""                                      << endl;
+  *out << "       height=\"32\""                                      << endl;
+  *out << "       border=\"\"/>"                                     << endl;
+  *out << "    </a>"                                                 << endl;
+  *out << "  </td>"                                                  << endl;
+  *out << "  <td width=\"32\">"                                      << endl;
+  *out << "  </td>"                                                  << endl;
+  *out << "  <td width=\"32\">"                                      << endl;
+  *out << "    <a href=\"/" << getApplicationDescriptor()->getURN() 
+       << "/debug\">"                   << endl;
+  *out << "      <img"                                               << endl;
+  *out << "       align=\"middle\""                                  << endl;
+  *out << "       src=\"/daq/evb/bu/images/debug32x32.gif\""         << endl;
+  *out << "       alt=\"debug\""                                     << endl;
+  *out << "       width=\"32\""                                      << endl;
+  *out << "       height=\"32\""                                     << endl;
+  *out << "       border=\"\"/>"                                     << endl;
+  *out << "    </a>"                                                 << endl;
+  *out << "  </td>"                                                  << endl;
+  *out << "</tr>"                                                    << endl;
+  *out << "</table>"                                                 << endl;
+  
+  *out << "<hr/>"                                                    << endl;
+  *out << "<table>"                                                  << endl;
+  *out << "<tr valign=\"top\">"                                      << endl;
+  *out << "  <td>"                                                   << endl;
+  parameterTables(in,out); //fill tables
+  *out << "  <td>"                                                   << endl;
+  *out << "</table>"                                        << std::endl;
+  *out << "</body>"                                         << std::endl;
+  *out << "</html>"                                         << std::endl;
 
 }
 
-// leave out for now
+void FilterUnitFramework::parameterTables(xgi::Input *in, xgi::Output *out)
+{
+  //configuration parameter table
+
+  *out << "<table frame=\"void\" rules=\"groups\" class=\"states\">" << std::endl;
+  *out << "<colgroup> <colgroup align=\"rigth\">"                    << std::endl;
+  //title
+  {
+    *out << "  <tr>"                                                   << endl;
+    *out << "    <th colspan=2>"                                       << endl;
+    *out << "      " << "Configuration"                                << endl;
+    *out << "    </th>"                                                << endl;
+    *out << "  </tr>"                                                  << endl;
+  }
+  //headers
+  {
+    *out << "<tr>" << std::endl;
+    *out << "<th >" << std::endl;
+    *out << "Parameter" << std::endl;
+    *out << "</th>" << std::endl;
+    *out << "<th>" << std::endl;
+    *out << "Value" << std::endl;
+    *out << "</th>" << std::endl;
+    *out << "</tr>" << std::endl;
+  }
+  *out << "<tr>" << std::endl;
+  *out << "<td>" << std::endl;
+  *out << "buInstance" << std::endl;
+  *out << "</td>" << std::endl;
+  *out << "<td>" << std::endl;
+  *out << buInstance_ << std::endl;
+  *out << "</td>" << std::endl;
+  *out << "</tr>" << std::endl;
+  *out << "<tr>" << std::endl;
+  *out << "<td>" << std::endl;
+  *out << "doDump" << std::endl;
+  *out << "</td>" << std::endl;
+  *out << "<td>" << std::endl;
+  *out << doDumpFragments_ << std::endl;
+  *out << "</td>" << std::endl;
+  *out << "</tr>" << std::endl;
+  *out << "<tr>" << std::endl;
+  *out << "<td>" << std::endl;
+  *out << "doDrop" << std::endl;
+  *out << "</td>" << std::endl;
+  *out << "<td>" << std::endl;
+  *out << doDropFragments_ << std::endl;
+  *out << "</td>" << std::endl;
+  *out << "</tr>" << std::endl;
+  *out << "<tr>" << std::endl;
+  *out << "<td>" << std::endl;
+  *out << "queueSize" << std::endl;
+  *out << "</td>" << std::endl;
+  *out << "<td>" << std::endl;
+  *out << queueSize_ << std::endl;
+  *out << "</td>" << std::endl;
+  *out << "</tr>" << std::endl;
+  *out << "</table>" << std::endl;
+
+
+  *out << "<table frame=\"void\" rules=\"rows\" class=\"modules\">" << std::endl;
+  //title
+  {
+    *out << "  <tr>"                                                   << endl;
+    *out << "    <th colspan=2>"                                       << endl;
+    *out << "      " << "Application State"                            << endl;
+    *out << "    </th>"                                                << endl;
+    *out << "  </tr>"                                                  << endl;
+  }
+  //headers
+  {
+    *out << "<tr >" << std::endl;
+    *out << "<th >" << std::endl;
+    *out << "Parameter" << std::endl;
+    *out << "</th>" << std::endl;
+    *out << "<th >" << std::endl;
+    *out << "Value" << std::endl;
+    *out << "</th>" << std::endl;
+    *out << "</tr>" << std::endl;
+  }
+  *out << "<tr>" << std::endl;
+  *out << "<td>" << std::endl;
+  *out << "EventsProcessed" << std::endl;
+  *out << "</td>" << std::endl;
+  *out << "<td>" << std::endl;
+  *out << nbEvents_ << std::endl;
+  *out << "</td>" << std::endl;
+  *out << "</tr>" << std::endl;
+  *out << "<tr>" << std::endl;
+  *out << "<td>" << std::endl;
+  *out << "EventsReceived" << std::endl;
+  *out << "</td>" << std::endl;
+  *out << "<td>" << std::endl;
+  *out << nbReceivedEvents_ << std::endl;
+  *out << "</td>" << std::endl;
+  *out << "</tr>" << std::endl;
+  *out << "<tr>" << std::endl;
+  *out << "<td>" << std::endl;
+  *out << "FragmentsReceived" << std::endl;
+  *out << "</td>" << std::endl;
+  *out << "<td>" << std::endl;
+  *out << nbReceivedFragments_ << std::endl;
+  *out << "</td>" << std::endl;
+  *out << "</tr>" << std::endl;
+  *out << "<tr>" << std::endl;
+  *out << "<td>" << std::endl;
+  *out << "PendingRequests" << std::endl;
+  *out << "</td>" << std::endl;
+  *out << "<td>" << std::endl;
+  *out << pendingRequests_ << std::endl;
+  *out << "</td>" << std::endl;
+  *out << "</tr>" << std::endl;
+  
+  *out << "<tr>" << std::endl;
+  *out << "<td>" << std::endl;
+  *out << "DataErrors" << std::endl;
+  *out << "</td>" << std::endl;
+  *out << "<td>" << std::endl;
+  *out << nbDataErrors_ << std::endl;
+  *out << "</td>" << std::endl;
+  *out << "</tr>" << std::endl;
+  
+
+  *out << "</table>"                                        << endl;
+
+}
 
 FURawEvent * FilterUnitFramework::rqstEvent()
 {

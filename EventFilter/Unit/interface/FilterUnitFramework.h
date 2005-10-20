@@ -9,6 +9,9 @@
 //
 //  Modification history:
 //    $Log: FilterUnitFramework.h,v $
+//    Revision 1.1  2005/10/19 09:10:35  meschi
+//    first import from COSINE
+//
 //    Revision 1.9  2005/10/07 15:32:33  meschi
 //    flush logic
 //
@@ -75,11 +78,11 @@ class FilterUnitFramework : public FUAdapter/*,
 			    public xdaqApplication */
 {
 public:
-  
+
+  //macro used by xdaq to register the plugin hook  
   XDAQ_INSTANTIATOR();
 
   // constructor
-  
   FilterUnitFramework(xdaq::ApplicationStub *s);
 
   virtual ~FilterUnitFramework();
@@ -110,7 +113,6 @@ private:
   // exported (monitor) variables
 
   xdata::UnsignedLong nbEvents_;		
-  xdata::String stateName_;
 
   // monitor thread configuration
   xdata::String add_;
@@ -147,7 +149,7 @@ private:
   /**
    * State Machine and related methods
    */
-  EPStateMachine *fsm_;
+  evf::EPStateMachine *fsm_;
 
   /**
    * Non trivial state-change actions
@@ -159,11 +161,16 @@ private:
   virtual void resumeAction(toolbox::Event::Reference e) throw (toolbox::fsm::exception::Exception);
   virtual void haltAction(toolbox::Event::Reference e) throw (toolbox::fsm::exception::Exception);
 
+  /**
+   * Web interface member data and functions
+   */
+  evf::Css css_;
   void defaultWebPage(xgi::Input *in, xgi::Output *out) throw (xgi::exception::Exception);
+  void parameterTables(xgi::Input *in, xgi::Output *out);
+  void css(xgi::Input  *in,
+	   xgi::Output *out) throw (xgi::exception::Exception)
+    {css_.css(in,out);}  
   xoap::MessageReference getStateMsg(xoap::MessageReference msg) throw (xoap::exception::Exception);
-  xoap::MessageReference createFSMReplyMsg(const string cmd, const string state);
-
-  void bindFSMSoapCallbacks();
 
   /**
    * SOAP Callback used to trigger state change.
@@ -205,7 +212,7 @@ private:
   
   virtual void failAction(toolbox::Event::Reference e)
     throw (toolbox::fsm::exception::Exception) {}
-
+  friend class evf::EPStateMachine;
 
 };
 
