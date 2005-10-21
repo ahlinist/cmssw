@@ -7,6 +7,9 @@
 //
 //  MODIFICATION:
 //  $Log: FUAdapter.h,v $
+//  Revision 1.1  2005/10/19 09:10:35  meschi
+//  first import from COSINE
+//
 //  Revision 1.10  2005/04/29 16:28:10  meschi
 //  fixes for XDAQ_3_01
 //
@@ -47,9 +50,6 @@
 
 #include "interface/evb/include/i2oEVBMsgs.h"
 #include "toolbox/include/BSem.h"
-#include "toolbox/include/toolbox/net/URN.h"
-#include "toolbox/include/toolbox/mem/MemoryPoolFactory.h"
-#include "toolbox/include/toolbox/mem/HeapAllocator.h"
 #include "xdata/include/xdata/String.h"
 #include "xdata/include/xdata/Integer.h"
 #include "xdata/include/xdata/Boolean.h"
@@ -184,60 +184,8 @@ class FUAdapter: public xdaq::Application
 
 
   
-  void findOrCreateMemoryPool()
-    throw (xcept::Exception)
-    {
-      // If a pool name has been given
-      if(poolName_ != "")
-        {
-	  // Find the memory pool with the given name
-	  try
-            {
-	      toolbox::net::URN urn("toolbox-mem-pool", poolName_);
-	      
-	      pool_ = toolbox::mem::getMemoryPoolFactory()->findPool(urn);
-	      
-	      LOG4CPLUS_INFO(getApplicationLogger(),
-			     "Found memory pool: " << poolName_.toString());
-            }
-	  catch(toolbox::mem::exception::MemoryPoolNotFound &e)
-            {
-	      string s = "Failed to find pool: " + poolName_.toString();
-	      
-	      LOG4CPLUS_FATAL(getApplicationLogger(), s);
-	      XCEPT_RETHROW(xcept::Exception, s, e);
-            }
-	}
-      else // Else no pool name has been given
-        {
-	  stringstream oss;
-	  string poolName;
-	  
-	  oss << xmlClass_ << instance_ << "/heap";
-	  poolName = oss.str();
-	  
-	  // Create a memory pool
-	  try
-            {
-	      toolbox::mem::HeapAllocator *allocator = new toolbox::mem::HeapAllocator();
-	      toolbox::net::URN urn("toolbox-mem-pool", poolName);
-	      toolbox::mem::MemoryPoolFactory *poolFactory =
-		toolbox::mem::getMemoryPoolFactory();
-	      
-	      pool_ = poolFactory->createPool(urn, allocator);
-	      
-                LOG4CPLUS_INFO(getApplicationLogger(),
-                               "Created memory pool: " << poolName);
-            }
-	  catch (toolbox::mem::exception::Exception& e)
-            {
-	      string s = "Failed to create pool: " + poolName;
+  void findOrCreateMemoryPool() throw (xcept::Exception);
 
-	      LOG4CPLUS_FATAL(getApplicationLogger(), s);
-	      XCEPT_RETHROW(xcept::Exception, s, e);
-            }
-        }
-    }
   EventSink             *sink_;  
 };
 

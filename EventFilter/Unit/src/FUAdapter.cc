@@ -260,3 +260,61 @@ void FUAdapter::sendDiscard(unsigned long buInstance, FURawEvent *event)
   bSem_.give();
   //event is recycled by factory after issuing a discard
 }
+
+#include "toolbox/include/toolbox/net/URN.h"
+#include "toolbox/include/toolbox/mem/MemoryPoolFactory.h"
+#include "toolbox/include/toolbox/mem/HeapAllocator.h"
+
+void FUAdapter::findOrCreateMemoryPool() throw (xcept::Exception)
+{
+  // If a pool name has been given
+  if(poolName_ != "")
+    {
+      // Find the memory pool with the given name
+      try
+	{
+	  toolbox::net::URN urn("toolbox-mem-pool", poolName_);
+	  
+	  pool_ = toolbox::mem::getMemoryPoolFactory()->findPool(urn);
+	  
+	  LOG4CPLUS_INFO(getApplicationLogger(),
+			 "Found memory pool: " << poolName_.toString());
+	}
+      catch(toolbox::mem::exception::MemoryPoolNotFound &e)
+	{
+	  string s = "Failed to find pool: " + poolName_.toString();
+	  
+	  LOG4CPLUS_FATAL(getApplicationLogger(), s);
+	  XCEPT_RETHROW(xcept::Exception, s, e);
+	}
+    }
+  else // Else no pool name has been given
+    {
+      stringstream oss;
+      string poolName;
+      
+      oss << xmlClass_ << instance_ << "/heap";
+      poolName = oss.str();
+      
+	  // Create a memory pool
+      try
+	{
+	  toolbox::mem::HeapAllocator *allocator = new toolbox::mem::HeapAllocator();
+	  toolbox::net::URN urn("toolbox-mem-pool", poolName);
+	  toolbox::mem::MemoryPoolFactory *poolFactory =
+	    toolbox::mem::getMemoryPoolFactory();
+	  
+	  pool_ = poolFactory->createPool(urn, allocator);
+	  
+	  LOG4CPLUS_INFO(getApplicationLogger(),
+			 "Created memory pool: " << poolName);
+	}
+      catch (toolbox::mem::exception::Exception& e)
+	{
+	  string s = "Failed to create pool: " + poolName;
+	  
+	  LOG4CPLUS_FATAL(getApplicationLogger(), s);
+	      XCEPT_RETHROW(xcept::Exception, s, e);
+	}
+    }
+}

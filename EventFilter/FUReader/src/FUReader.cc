@@ -1,7 +1,7 @@
 /** \file
  *
- *  $Date:$
- *  $Revision:$
+ *  $Date: 2005/10/19 19:11:15 $
+ *  $Revision: 1.1 $
  *  \author E. Meschi - CERN PH/CMD
  */
 
@@ -13,8 +13,7 @@
 #include <DataFormats/FEDRawData/interface/FEDRawData.h>
 #include <DataFormats/FEDRawData/interface/FEDRawDataCollection.h>
 
-
-
+#include "EventFilter/Unit/interface/FUAdapter.h"
 #include <FWCore/ParameterSet/interface/ParameterSet.h>
 
 using namespace std;

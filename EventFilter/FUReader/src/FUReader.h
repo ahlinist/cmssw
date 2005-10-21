@@ -2,11 +2,10 @@
 #define DaqSource_FUReader_h
 
 /** \class FUReader
- *  $Date:$
- *  $Revision:$
+ *  $Date: 2005/10/19 19:11:15 $
+ *  $Revision: 1.1 $
  *  \author E. Meschi - CERN PH/CMD
  */
-#include "EventFilter/Unit/interface/FUAdapter.h"
 #include "EventFilter/Unit/interface/FURawEvent.h"
 #include "EventFilter/Unit/interface/EventSink.h"
 #include <IORawData/DaqSource/interface/DaqBaseReader.h>

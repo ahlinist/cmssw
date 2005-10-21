@@ -1,5 +1,7 @@
 <export>
 <lib name=EventFilterUnit>
+<use name=xerces-c>
+<use name=xdaq>
 </export>
 <use name=xerces-c>
 <use name=boost>
