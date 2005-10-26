@@ -17,6 +17,7 @@
 #include "FWCore/EDProduct/interface/EventID.h"
 #include <map>
 #include <string>
+#include "CLHEP/HepMC/GenEvent.h"
 
 class HepMCFileReader;
 
@@ -50,7 +51,6 @@ namespace edm
     // **************
 
     EventID nextID_;
-    
     
     HepMC::GenEvent  *evt;
     
