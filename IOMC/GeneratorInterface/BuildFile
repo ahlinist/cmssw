@@ -1,0 +1,23 @@
+<use name=boost>
+<use name=FWCore/Framework>
+<use name=SimDataFormats/HepMCProduct>
+<use name=clhep> 
+<use name=cmkin> 
+<flags SEAL_PLUGIN_NAME="IOMCGeneratorInput">
+<export>
+ <lib name=GeneratorInput>
+ <use name=boost>
+ <use name=FWCore/Framework>
+ <use name=SimDataFormats/HepMCProduct>
+ <use name=clhep> 
+ <use name=cmkin> 
+</export>
+
+ <lib name=g2c></lib>
+ <lib name=m></lib>
+
+ <lib name=kine_d</lib>
+ <lib name=util_d</lib>
+ <lib name=stdhep</lib>
+ <lib name=comphep126</lib>
+ <lib name=pythia6324</lib>
