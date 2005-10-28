@@ -77,7 +77,14 @@ class ComponentFactory : public seal::PluginFactory< ComponentMakerBase<T>* ()>
             it = ret.first;
          }
          
-         it->second->addTo(iProvider,iConfiguration,iProcessName,iVersion,iPass);
+         try {
+            it->second->addTo(iProvider,iConfiguration,iProcessName,iVersion,iPass);
+         } catch(cms::Exception& iException) {
+            edm::Exception toThrow(edm::errors::Configuration,"Error occured while creating ");
+            toThrow<<modtype<<"\n";
+            toThrow.append(iException);
+            throw toThrow;
+         }
       }
    
       // ---------- static member functions --------------------
