@@ -227,7 +227,14 @@ ServicesManager::createServices()
    for(Type2Maker::iterator itMaker = type2Maker_->begin();
         itMaker != type2Maker_->end();
         ++itMaker) {
-      itMaker->second.add(*this);
+      try{
+         itMaker->second.add(*this);
+      }catch(cms::Exception& iException){
+         edm::Exception toThrow(edm::errors::Configuration,"Error occured while creating ");
+         toThrow<<itMaker->second.pset_->getParameter<std::string>("@service_type")<<"\n";
+         toThrow.append(iException);
+         throw toThrow;
+      }
    }
    
    //No longer need the makers
