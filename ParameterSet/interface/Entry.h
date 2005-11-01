@@ -24,6 +24,7 @@
 #include <map>
 
 #include "FWCore/Utilities/interface/Exception.h"
+#include "FWCore/ParameterSet/interface/FileInPath.h"
 
 // ----------------------------------------------------------------------
 // contents
@@ -99,6 +100,10 @@ namespace edm {
     // vString
     Entry(std::vector<std::string> const& val, bool is_tracked);
     std::vector<std::string>  getVString() const;
+
+    // FileInPath
+    Entry(edm::FileInPath const& val, bool is_tracked);
+    edm::FileInPath getFileInPath() const;
   
     // ParameterSet
     Entry(ParameterSet const& val, bool is_tracked);

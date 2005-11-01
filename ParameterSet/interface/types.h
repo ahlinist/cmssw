@@ -15,10 +15,11 @@
 // ----------------------------------------------------------------------
 // prerequisite source files and headers
 
-#include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include <string>
 #include <vector>
 
+#include "FWCore/ParameterSet/interface/ParameterSetfwd.h"
+#include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 // ----------------------------------------------------------------------
 // contents
@@ -66,6 +67,11 @@ namespace edm
   // vString
   bool  decode(std::vector<std::string> &, std::string              const&);
   bool  encode(std::string              &, std::vector<std::string> const&);
+
+  // FileInPath
+  bool  decode(edm::FileInPath &, std::string const&);
+  bool  encode(std::string &, edm::FileInPath const&);
+
 
   // ParameterSet
   bool  decode(ParameterSet &, std::string  const&);

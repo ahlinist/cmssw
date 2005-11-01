@@ -16,6 +16,7 @@
 
 #include "FWCore/EDProduct/interface/ParameterSetID.h"
 #include "FWCore/ParameterSet/interface/Entry.h"
+#include "FWCore/ParameterSet/interface/FileInPath.h"
 #include <string>
 #include <map>
 #include <stdexcept>
@@ -195,6 +196,16 @@ private:
   std::vector<std::string>
   ParameterSet::getParameter<std::vector<std::string> >(std::string const& name) const {
     return retrieve(name).getVString();
+  }
+
+  // ----------------------------------------------------------------------
+  // FileInPath
+
+  template <>
+  inline
+  edm::FileInPath
+  ParameterSet::getParameter<edm::FileInPath>(std::string const& name) const {
+    return retrieve(name).getFileInPath();
   }
   
   // ----------------------------------------------------------------------
