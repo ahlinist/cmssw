@@ -1,5 +1,5 @@
 /*
- *  $Date: 2005/10/05 04:45:33 $
+ *  $Date: 2005/10/26 13:57:04 $
  *  $Revision: 1.1 $
  *  \author N. Amapane - S. Argiro'
  *  Modified by Filip Moorgat & Hector Naves 
@@ -119,7 +119,7 @@ auto_ptr<EventPrincipal> PythiaSource::read() {
   if (remainingEvents_-- != 0) {
   
     result = auto_ptr<EventPrincipal>(new EventPrincipal(nextID_, Timestamp(nextTime_), *preg_));
-    HepMCProduct *bare_product = new HepMCProduct();  
+    auto_ptr<HepMCProduct> bare_product(new HepMCProduct());  
     cout << "PythiaSource: Start generating ...  " << endl;
 
 
@@ -139,7 +139,7 @@ auto_ptr<EventPrincipal> PythiaSource::read() {
 
     if(evt)  bare_product->addHepMCData(evt );
     edm::Wrapper<HepMCProduct> *wrapped_product = 
-      new edm::Wrapper<HepMCProduct> (*bare_product); 
+      new edm::Wrapper<HepMCProduct>(bare_product); 
     auto_ptr<EDProduct>  prod(wrapped_product);
     auto_ptr<Provenance> prov(new Provenance(branchDesc_));
 
