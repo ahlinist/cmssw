@@ -289,7 +289,7 @@ namespace edm {
                               DoNothing<PROD> >::type maybe_inserter;
     maybe_inserter(p);
 
-    edm::Wrapper<PROD> *wp(new Wrapper<PROD>(*p));
+    edm::Wrapper<PROD> *wp(new Wrapper<PROD>(product));
     put_products_.push_back(std::make_pair(wp, productInstanceName));
     // product.release(); // The object has been copied into the Wrapper.
     // The old copy must be deleted, so we cannot release ownership.
