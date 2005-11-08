@@ -18,7 +18,7 @@ else
 fi
 
 MWC_LIB=$(echo "$MWC_LIB1" | sed 's/\//\\\//g')
-echo $MWC_LIB
+echo $MWC_LIB1
 
 if [ -e profile.xml ]; then
     rm profile.xml
