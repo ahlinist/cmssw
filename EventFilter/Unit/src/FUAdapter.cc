@@ -26,7 +26,9 @@ FUAdapter::FUAdapter(xdaq::ApplicationStub *s, string buClassName,
   exportCommonParameters();
   xmlClass_ = getApplicationDescriptor()->getClassName();
   instance_ = getApplicationDescriptor()->getInstance();
-
+  ostringstream sourcename;
+  sourcename << xmlClass_ << "_" << instance_;
+  sourceId_ = sourcename.str();
   FURawEventFactory::adapter_ = this;
   factory_ = new FURawEventFactory();
 
@@ -229,6 +231,8 @@ void FUAdapter::sendAllocate(unsigned long buInstance,
     LOG4CPLUS_ERROR(this->getApplicationLogger(),
 		    "sendAllocate failed.buInstance: "
 		    << buInstance << " Not accessible ");
+  LOG4CPLUS_DEBUG(this->getApplicationLogger(),
+		  "FUAdapter::allocate sent to BU #" << buInstance);
     
   bSem_.give();
 }
