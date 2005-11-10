@@ -7,6 +7,9 @@
 //
 //  MODIFICATION:
 //  $Log: FUAdapter.h,v $
+//  Revision 1.2  2005/10/21 14:44:09  meschi
+//  fixes to make it build
+//
 //  Revision 1.1  2005/10/19 09:10:35  meschi
 //  first import from COSINE
 //
@@ -54,6 +57,7 @@
 #include "xdata/include/xdata/Integer.h"
 #include "xdata/include/xdata/Boolean.h"
 #include "xdaq/include/xdaq/Application.h"
+#include "EventFilter/Utilities/interface/RunBase.h"
 
 #include <vector>
 #include <string>
@@ -64,7 +68,7 @@ class FURawEventFactory;
 class EventSink;
 class toolbox::mem::Reference;
 
-class FUAdapter: public xdaq::Application
+class FUAdapter: public xdaq::Application, public evf::RunBase
 {
  public:
   
@@ -89,6 +93,9 @@ class FUAdapter: public xdaq::Application
 
   /** interface to event sink */
   virtual FURawEvent *rqstEvent()=0;
+
+  /** interface to event sink */
+  unsigned long getRunNumber() const { return runNumber_.value_;}
 
  protected:
   
