@@ -7,6 +7,9 @@
 //
 //  Modification history:
 //    $Log: FilterUnitFramework.cc,v $
+//    Revision 1.2  2005/10/20 11:52:58  meschi
+//    use of Utilities
+//
 //    Revision 1.1  2005/10/19 09:10:35  meschi
 //    first import from COSINE
 //
@@ -168,15 +171,6 @@ void FilterUnitFramework::enableAction(toolbox::Event::Reference e) throw (toolb
   sendAllocate(buInstance_, queueSize_, allocfset);
 
   nbEvents_ = 0;       	  
-  
-  mutex_->take();
-  LOG4CPLUS_INFO(this->getApplicationLogger(),"Run Paused...");
-  mutex_->give();
-
-  pthread_mutex_lock(&lock_);
-  pthread_cond_wait(&ready_,&lock_);
-  pthread_mutex_unlock(&lock_);
-
   LOG4CPLUS_INFO(this->getApplicationLogger(),"Run Started...");
 }
 
@@ -444,9 +438,6 @@ void FilterUnitFramework::parameterTables(xgi::Input *in, xgi::Output *out)
 
 FURawEvent * FilterUnitFramework::rqstEvent()
 {
-  pthread_mutex_lock(&lock_);
-  pthread_cond_signal(&ready_);
-  pthread_mutex_unlock(&lock_);
   mutex_->take(); //this is used to atomically suspend the FU on next event
   //  cout << "FF::rqstEvent, queue size=" << factory_->queueSize() << "pending requests "
   //       << pendingRequests_ << endl;
