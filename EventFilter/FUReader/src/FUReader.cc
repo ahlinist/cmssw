@@ -1,7 +1,7 @@
 /** \file
  *
- *  $Date: 2005/10/19 19:11:15 $
- *  $Revision: 1.1 $
+ *  $Date: 2005/10/21 14:43:46 $
+ *  $Revision: 1.2 $
  *  \author E. Meschi - CERN PH/CMD
  */
 
@@ -22,6 +22,7 @@ using namespace edm;
 
 FUReader::FUReader(const edm::ParameterSet& pset) : 
   runNum(1), eventNum(0) {
+  cout << "FUReader constructor " << endl;
   // mean = pset.getParameter<float>("mean");
 }
 
@@ -39,7 +40,7 @@ bool FUReader::fillRawData(EventID& eID,
       exit(-1);
     }
   FURawEvent *event = fwk_->rqstEvent();
-
+  runNum = fwk_->getRunNumber();
   eID = EventID(runNum,eventNum);
   eventNum++;
 
