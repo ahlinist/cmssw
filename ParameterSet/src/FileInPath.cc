@@ -100,8 +100,8 @@ namespace edm
   FileInPath::FileInPath(const char* r) :
     relativePath_( r ?
 		   r :
-		   (throw edm::Exception(edm::errors::FileInPathError)
-		    << "Relative path may not be null\n"), r),
+		   ((throw edm::Exception(edm::errors::FileInPathError)
+		    << "Relative path may not be null\n"), r)),
     canonicalFilename_(),
     isLocal_(false)
   {
