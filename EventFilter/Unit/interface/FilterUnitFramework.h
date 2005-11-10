@@ -9,6 +9,9 @@
 //
 //  Modification history:
 //    $Log: FilterUnitFramework.h,v $
+//    Revision 1.2  2005/10/20 11:52:48  meschi
+//    use of Utilities
+//
 //    Revision 1.1  2005/10/19 09:10:35  meschi
 //    first import from COSINE
 //
@@ -108,7 +111,6 @@ private:
   // config hlt
 
   xdata::Boolean runActive_;
-  xdata::Integer runNumber_;
 
   // exported (monitor) variables
 
