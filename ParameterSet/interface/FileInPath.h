@@ -100,7 +100,7 @@ namespace edm
 
 
   inline  std::ostream& 
-  operator<< (std::ostream& os, const FileInPath& fip)
+  operator<< (std::ostream& os, const edm::FileInPath& fip)
   {
     fip.write(os);
     return os;
@@ -111,6 +111,13 @@ namespace edm
   {
     fip.read(is);
     return is;
+  }
+
+  inline bool
+  operator== (edm::FileInPath const& a,
+	      edm::FileInPath const& b)
+  {
+    return a.isLocal() == b.isLocal() && a.relativePath() == b.relativePath();      
   }
 
 }

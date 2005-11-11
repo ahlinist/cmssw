@@ -233,6 +233,26 @@ namespace edm {
   
     return true;
   }  // from_string()
+
+  std::vector<edm::FileInPath>::size_type
+  ParameterSet::getAllFileInPaths(std::vector<edm::FileInPath>& output) const
+  {
+    std::vector<edm::FileInPath>::size_type count = 0;
+    table::const_iterator it = tbl_.begin();
+    table::const_iterator end = tbl_.end();
+    while ( it != end )
+      {
+	const Entry& e = it->second;
+	if ( e.typeCode() == 'F' ) 
+	  {
+	    ++count;
+	    output.push_back(e.getFileInPath());
+	  }
+	++it;
+      }
+    return count;
+  }
+
   
 } // namespace edm
 // ----------------------------------------------------------------------

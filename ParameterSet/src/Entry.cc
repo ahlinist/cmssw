@@ -30,9 +30,6 @@ namespace edm {
       std::map< std::string, char> type2Code_; 
     };
       
-    // WARNING: The corresponding strings in Lexeme.cc are all lower case.
-    // These strings do not in general match those.
-    // This may or may not cause problems.
     TypeTrans::TypeTrans():table_(255) {
       table_['b'] = "vBool";
       table_['B'] = "bool";
