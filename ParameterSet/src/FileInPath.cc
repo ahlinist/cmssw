@@ -22,7 +22,6 @@
 #include "FWCore/ParameterSet/interface/FileInPath.h"
 #include "FWCore/Utilities/interface/EDMException.h"
 
-
 namespace bf = boost::filesystem;
 
 namespace 
@@ -109,7 +108,29 @@ namespace edm
     initialize_();    
   }
 
-  std::string const&
+  FileInPath::FileInPath( FileInPath const& other) :
+    relativePath_(other.relativePath_),
+    canonicalFilename_(other.canonicalFilename_),
+    isLocal_(other.isLocal_)
+  {  }
+
+  FileInPath&
+  FileInPath::operator= (FileInPath const& other)
+  {
+    FileInPath temp(other);
+    this->swap(temp);
+    return *this;
+  }
+
+  void
+  FileInPath::swap(FileInPath& other)
+  {
+    relativePath_.swap(other.relativePath_);
+    canonicalFilename_.swap(other.canonicalFilename_);
+    std::swap(isLocal_, other.isLocal_);
+  }
+
+  std::string
   FileInPath::relativePath() const
   {
     return relativePath_;
@@ -122,7 +143,7 @@ namespace edm
     return isLocal_;
   }
 
-  std::string const&
+  std::string
   FileInPath::fullPath() const
   {
     return canonicalFilename_;
@@ -144,6 +165,7 @@ namespace edm
     if (!is) return;
     relativePath_ = relname;
     isLocal_ = local;
+    initialize_();
   }
 
   //------------------------------------------------------------
@@ -222,6 +244,12 @@ namespace edm
 	    // Save the absolute path.
 	    canonicalFilename_ = bf::complete(relativePath_, 
 					      pathPrefix ).string();
+	    if (canonicalFilename_.empty() )
+	      throw edm::Exception(edm::errors::FileInPathError)
+		<< "fullPath is empty"
+		<< "\nrelativePath() is: " << relativePath_
+		<< "\npath prefix is: " << pathPrefix.string()
+		<< '\n';
 
 	    // Remember if the file was local.
 	    isLocal_ = ( (*it == ".") || 
