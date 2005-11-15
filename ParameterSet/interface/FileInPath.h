@@ -11,10 +11,10 @@
 /// non-event-data file searching mechanism".
 ///
 /// The mechanism using the environment variables:
-///    CMS_SEARCH_PATH: may be set by the end-user
-///    CMSDATA:         should be set by a site administrator
+///    CMSSW_SEARCH_PATH: may be set by the end-user
+///    CMSSW_DATA_PATH:         should be set by a site administrator
 ///
-///  CMS_SEARCH_PATH is a 'search path' limited to either 1 or 2
+///  CMSSW_SEARCH_PATH is a 'search path' limited to either 1 or 2
 ///  components. The legal values are:
 ///
 ///
@@ -22,11 +22,11 @@
 ///            the top level of the "local working area", which is
 ///            defined as ${SCRAMRT_LOCALRT}/src
 ///
-///       "CMSDATA", which means search the "official place",
-///             defined by the value of the CMSDATA environment
+///       "CMSSW_DATA_PATH", which means search the "official place",
+///             defined by the value of the CMSSW_DATA_PATH environment
 ///             variable, for files.
 ///
-///       ".:CMSDATA" or "LOCAL:CMSDATA",
+///       ".:CMSSW_DATA_PATH" or "LOCAL:CMSSW_DATA_PATH",
 ///              which means look first in the current working
 ///              directory, then in the "official place", for files.
 ///
