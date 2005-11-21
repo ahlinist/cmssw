@@ -79,7 +79,11 @@ int ptomaine(int argc, char* argv[])
   std::cerr << "shell is: " << shell << '\n';
 
   std::cout << "Current directory is: " << currentPath.native_directory_string() << '\n';
+  // It is unclear about which of these environment variables should
+  // be used.
   const char* topdir  = getenv("SCRAMRT_LOCALRT");
+  if (!topdir) topdir = getenv("LOCALRT");
+
   const char* arch    = getenv("SCRAM_ARCH");
 
   if ( !arch )
@@ -98,7 +102,7 @@ int ptomaine(int argc, char* argv[])
 
   if (!topdir)
     {
-      std::cout << "SCRAMRT_LOCALRT is not defined" << std::endl;;
+      std::cout << "Neither SCRAMRT_LOCALRT nor LOCALRT is not defined" << std::endl;;
       return -1;
     }
 
