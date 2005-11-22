@@ -7,6 +7,9 @@
 //
 //  MODIFICATION:
 //  $Log: FUAdapter.h,v $
+//  Revision 1.3  2005/11/10 14:38:13  meschi
+//  run number access function
+//
 //  Revision 1.2  2005/10/21 14:44:09  meschi
 //  fixes to make it build
 //
@@ -77,7 +80,7 @@ class FUAdapter: public xdaq::Application, public evf::RunBase
 	    unsigned long outsize=1024);
 
   /** destructor */
-  virtual ~FUAdapter(){}
+  virtual ~FUAdapter();
 
   /** implement listener callback */
   void realTake(toolbox::mem::Reference *ref);
@@ -106,6 +109,8 @@ class FUAdapter: public xdaq::Application, public evf::RunBase
   /** create the bu array */
   void createBUArray();
 
+  /** clear the bu array */
+  void clearBUArray();
 
   FURawEventFactory *factory_; //factory is accessible to derived fu class
 
