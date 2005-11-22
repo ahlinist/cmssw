@@ -7,6 +7,9 @@
 //
 //  Modification history:
 //    $Log: FilterUnitFramework.cc,v $
+//    Revision 1.3  2005/11/10 14:44:54  meschi
+//    simplified synchro out of COBRA
+//
 //    Revision 1.2  2005/10/20 11:52:58  meschi
 //    use of Utilities
 //
@@ -146,7 +149,7 @@ FilterUnitFramework::~FilterUnitFramework()
 void FilterUnitFramework::configureAction(toolbox::Event::Reference e) throw (toolbox::fsm::exception::Exception)
 {
   if(!runActive_) findOrCreateMemoryPool();
-
+  runActive_ = true;
   char *workdir = getenv("PWD");
   if(workdir != 0)
     chdir(workdir);
@@ -158,7 +161,7 @@ void FilterUnitFramework::configureAction(toolbox::Event::Reference e) throw (to
 void FilterUnitFramework::enableAction(toolbox::Event::Reference e) throw (toolbox::fsm::exception::Exception)
 {
   cout<<"FilterUnitFramework::Enable()"<<endl;
-  runActive_ = true;
+
   birth_.start(0); // start timer before sending allocate
 
   //
@@ -195,7 +198,7 @@ void FilterUnitFramework::resumeAction(toolbox::Event::Reference e) throw (toolb
 #include <signal.h>
 void FilterUnitFramework::haltAction(toolbox::Event::Reference e) throw (toolbox::fsm::exception::Exception)
 {
-
+  clearBUArray();
 }
 
 
