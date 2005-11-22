@@ -1,7 +1,7 @@
 /** \file
  *
- *  $Date: 2005/10/21 14:43:46 $
- *  $Revision: 1.2 $
+ *  $Date: 2005/11/10 14:36:36 $
+ *  $Revision: 1.3 $
  *  \author E. Meschi - CERN PH/CMD
  */
 
@@ -24,6 +24,8 @@ FUReader::FUReader(const edm::ParameterSet& pset) :
   runNum(1), eventNum(0) {
   cout << "FUReader constructor " << endl;
   // mean = pset.getParameter<float>("mean");
+  pthread_mutex_init(&lock_,0);
+  pthread_cond_init(&ready_,0);
 }
 
 
@@ -34,6 +36,13 @@ bool FUReader::fillRawData(EventID& eID,
 			   Timestamp& tstamp, 
 			   FEDRawDataCollection& data){
   //EM FIXME: use logging + exception
+  if(sinking_)
+    {
+      pthread_mutex_lock(&lock_);
+      pthread_cond_wait(&ready_,&lock_);
+      pthread_mutex_unlock(&lock_);
+    }      
+
   if(fwk_==0)
     {
       cerr << "FUReader::Error:Fatal no factory registered yet" << endl;
@@ -63,7 +72,6 @@ void FUReader::fillFEDs(const pair<int,int>& fedRange,
 			     FEDRawDataCollection& data,
 			     FURawEvent &event)
 {
-
   // Fill the EventID
 
   for (int fedId = fedRange.first; fedId <= fedRange.second; ++fedId ) 

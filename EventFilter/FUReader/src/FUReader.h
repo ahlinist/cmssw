@@ -2,8 +2,8 @@
 #define DaqSource_FUReader_h
 
 /** \class FUReader
- *  $Date: 2005/10/19 19:11:15 $
- *  $Revision: 1.1 $
+ *  $Date: 2005/10/21 14:43:46 $
+ *  $Revision: 1.2 $
  *  \author E. Meschi - CERN PH/CMD
  */
 #include "EventFilter/Unit/interface/FURawEvent.h"
@@ -11,7 +11,7 @@
 #include <IORawData/DaqSource/interface/DaqBaseReader.h>
 #include <FWCore/EDProduct/interface/EventID.h>
 #include <algorithm>
-
+#include <pthread.h>
 
 class FUReader : public DaqBaseReader, public EventSink {
  public:
@@ -34,7 +34,8 @@ class FUReader : public DaqBaseReader, public EventSink {
 
   edm::RunNumber_t runNum;
   edm::EventNumber_t eventNum;
-
+  pthread_cond_t ready_;
+  pthread_mutex_t lock_;
 };
 #endif
 
