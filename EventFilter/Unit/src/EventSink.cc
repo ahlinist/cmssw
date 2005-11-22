@@ -3,6 +3,7 @@
 #include "EventFilter/Unit/interface/FURawEvent.h"
 
 FUAdapter *EventSink::fwk_ = 0;
+bool EventSink::sinking_ = false;
 
 using namespace std;
 
