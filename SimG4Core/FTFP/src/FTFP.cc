@@ -7,9 +7,7 @@
 #include "SimG4Core/Packaging/src/IonPhysics.hh"
 #include "SimG4Core/Packaging/src/G4DataQuestionaire.hh"
 
-DEFINE_SEAL_COMPONENT (FTFP, "SimG4Core/Physics/FTFP");
-
-FTFP::FTFP(seal::Context * c, const edm::ParameterSet & p) : PhysicsList(c,p)
+FTFP::FTFP(const edm::ParameterSet & p) : PhysicsList(p)
 {
     G4DataQuestionaire it(photon);
     std::cout << "You are using the simulation engine: FTFP 2.8" << std::endl;
@@ -20,6 +18,4 @@ FTFP::FTFP(seal::Context * c, const edm::ParameterSet & p) : PhysicsList(c,p)
     RegisterPhysics(new HadronPhysicsFTFP("hadron"));
     RegisterPhysics(new IonPhysics("ion"));
 }
-
-FTFP::~FTFP() {}
 

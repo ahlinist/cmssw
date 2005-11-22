@@ -4,5 +4,5 @@
 #include "PluginManager/ModuleDef.h"
 
 DEFINE_SEAL_MODULE ();
-DEFINE_SEAL_PLUGIN (PhysicsListFactory, 
-		    DummyPhysics,DummyPhysics::classContextLabel ());
+DEFINE_PHYSICSLIST (DummyPhysics);
+

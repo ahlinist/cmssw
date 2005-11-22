@@ -4,5 +4,4 @@
 #include "PluginManager/ModuleDef.h"
 
 DEFINE_SEAL_MODULE ();
-DEFINE_SEAL_PLUGIN (PhysicsListFactory, 
-		    QGSC,QGSC::classContextLabel ());
+DEFINE_PHYSICSLIST(QGSC);

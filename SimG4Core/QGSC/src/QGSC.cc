@@ -7,10 +7,8 @@
 #include "SimG4Core/Packaging/src/IonPhysics.hh"
 #include "SimG4Core/Packaging/src/G4DataQuestionaire.hh"
 
-DEFINE_SEAL_COMPONENT (QGSC, "SimG4Core/Physics/QGSC");
-
-QGSC::QGSC(seal::Context * c, const edm::ParameterSet & p) 
-    : PhysicsList(c,p)
+QGSC::QGSC(const edm::ParameterSet & p) 
+    : PhysicsList(p)
 {
     G4DataQuestionaire it(photon);
     std::cout << "You are using the simulation engine: QGSC 2.8" << std::endl;
@@ -22,4 +20,3 @@ QGSC::QGSC(seal::Context * c, const edm::ParameterSet & p)
     RegisterPhysics(new IonPhysics("ion"));
 }
 
-QGSC::~QGSC() {}
