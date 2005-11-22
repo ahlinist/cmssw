@@ -14,7 +14,7 @@
 // system include files
 
 // user include files
-#include "FWCore/MessageLogger/src/MessageLogger.h"
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/MessageLogger/interface/MessageSender.h"
 #include "FWCore/MessageLogger/interface/MessageLoggerQ.h"
 
@@ -78,12 +78,12 @@ MessageLogger::MessageLogger( ParameterSet const & iPS
 void
 MessageLogger::postBeginJob()
 {
-  LogInfo("postBeginJob") << "Job started";
+  edm::LogInfo("postBeginJob") << "Job started";
 }
 void
 MessageLogger::postEndJob()
 {
-  LogInfo("postEndJob") << "Job ended";
+  edm::LogInfo("postEndJob") << "Job ended";
 }
 
 void
@@ -91,13 +91,13 @@ MessageLogger::preEventProcessing( const edm::EventID& iID
                                  , const edm::Timestamp& iTime
                                  )
 {
-  LogInfo("preEventProcessing") << "Processing event: " << iID
-                                <<" time: " << iTime.value();
+  edm::LogInfo("preEventProcessing") << "Processing event: " << iID
+                                     << " time: " << iTime.value();
 }
 void
 MessageLogger::postEventProcessing(const Event&, const EventSetup&)
 {
-  LogInfo("postEventProcessing") << "Finished event";
+  edm::LogInfo("postEventProcessing") << "Finished event";
 }
 
 void
@@ -110,7 +110,7 @@ void
 MessageLogger::postModule(const ModuleDescription& iDescription)
 {
   LogInfo("postModule") << "Module:" << iDescription.moduleLabel_
-			<< " finished";
+                        << " finished";
 }
 
 //
