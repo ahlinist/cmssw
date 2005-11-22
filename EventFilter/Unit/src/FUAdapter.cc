@@ -34,6 +34,27 @@ FUAdapter::FUAdapter(xdaq::ApplicationStub *s, string buClassName,
 
 }
 
+FUAdapter::~FUAdapter()
+{
+  if(factory_) delete factory_;
+  if(sink_) delete sink_;
+  for(unsigned int i = 0; i < bu_.size(); i++)
+    {
+      delete bu_[i];
+    }
+  bu_.clear();
+}
+
+void FUAdapter::clearBUArray()
+{
+  for(unsigned int i = 0; i < bu_.size(); i++)
+    {
+      delete bu_[i];
+    }
+  bu_.clear();
+}
+
+
 void FUAdapter::createBUArray()
   {
     vector<xdaq::ApplicationDescriptor*> buDescs;
@@ -79,8 +100,14 @@ void FUAdapter::createBUArray()
     LOG4CPLUS_INFO(this->getApplicationLogger(),"Connected " << buinstance
 		   << " Builder Units ");
 
+    if(sink_) delete sink_; sink_ = 0;
     if(doDropFragments_ && (sink_==0))
-      sink_ = new EventSink();
+      {
+	LOG4CPLUS_INFO(this->getApplicationLogger(),
+		       "FU Running in drop mode");
+	sink_ = new EventSink();
+	EventSink::sinking_ = true;
+      }
 
     EventSink::setFwk(this);
     
@@ -111,7 +138,6 @@ void FUAdapter::realTake(toolbox::mem::Reference *bufRef)
 	(I2O_MESSAGE_FRAME*)bufRef->getDataLocation();
       I2O_EVENT_DATA_BLOCK_MESSAGE_FRAME *msg    = 
 	(I2O_EVENT_DATA_BLOCK_MESSAGE_FRAME*)stdMsg;
-
       LOG4CPLUS_DEBUG(this->getApplicationLogger(),
 		      "Take received for transaction: "
 		      << msg->fuTransactionId << " Fragment is " 
