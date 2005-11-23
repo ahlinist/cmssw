@@ -18,6 +18,7 @@ $Id$
 #include "FWCore/Framework/interface/EventProcessor.h"
 #include "FWCore/Utilities/interface/ProblemTracker.h"
 #include "FWCore/Utilities/interface/Exception.h"
+#include "FWCore/MessageLogger/interface/MessageLoggerSpigot.h"
 
 using namespace std;
 static const char* const kParameterSetOpt = "parameter-set";
@@ -29,6 +30,8 @@ static const char* const kHelpCommandOpt = "help,h";
 
 int main(int argc, char* argv[])
 {
+  edm::MessageLoggerSpigot theMessageLoggerSpigot;
+
   using namespace boost::program_options;
   std::string descString(argv[0]);
   descString += " [options] [--";
