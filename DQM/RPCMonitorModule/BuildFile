@@ -1,0 +1,28 @@
+<flags SEAL_PLUGIN_NAME="DQMRPCMonitorModule">
+<use name=FWCore/Framework>
+<use name=DQMServices/CoreROOT>
+<use name=root>
+<use name=boost>
+<use name=DQMServices/Daemon>
+<use name=FWCore/ParameterSet>
+<use name=Utilities/Threads>
+<use name=DQMServices/NodeROOT>
+<use name=DQMServices/CoreROOT>
+<use name=FWCore/Framework>
+<use name=EventFilter/RPCRawToDigi>
+
+<export>
+<lib name=DQMRPCMonitorModule>
+<use name=FWCore/Framework>
+<use name=DQMServices/CoreROOT>
+<use name=root>
+<use name=boost>
+<use name=DQMServices/Daemon>
+<use name=FWCore/ParameterSet>
+<use name=Utilities/Threads>
+<use name=DQMServices/NodeROOT>
+<use name=DQMServices/CoreROOT>
+<use name=FWCore/Framework>
+<use name=EventFilter/RPCRawToDigi>
+</export>
+
