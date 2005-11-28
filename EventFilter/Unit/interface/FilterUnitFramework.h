@@ -9,6 +9,9 @@
 //
 //  Modification history:
 //    $Log: FilterUnitFramework.h,v $
+//    Revision 1.3  2005/11/10 14:41:16  meschi
+//    run number now in Utilities/RunBase
+//
 //    Revision 1.2  2005/10/20 11:52:48  meschi
 //    use of Utilities
 //
@@ -111,6 +114,7 @@ private:
   // config hlt
 
   xdata::Boolean runActive_;
+  xdata::String  workDir_;
 
   // exported (monitor) variables
 
@@ -168,6 +172,9 @@ private:
    */
   evf::Css css_;
   void defaultWebPage(xgi::Input *in, xgi::Output *out) throw (xgi::exception::Exception);
+  void debugWebPage(xgi::Input *in, xgi::Output *out) throw (xgi::exception::Exception);
+  unsigned char *dump_;
+  int fed_id;
   void parameterTables(xgi::Input *in, xgi::Output *out);
   void css(xgi::Input  *in,
 	   xgi::Output *out) throw (xgi::exception::Exception)

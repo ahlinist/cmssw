@@ -93,6 +93,7 @@ FilterUnitFramework::FilterUnitFramework(xdaq::ApplicationStub *s) : FUAdapter(s
   // Bind web interface
    xgi::bind(this, &FilterUnitFramework::css           , "styles.css");
    xgi::bind(this, &FilterUnitFramework::defaultWebPage, "Default");
+   xgi::bind(this, &FilterUnitFramework::debugWebPage, "debug");
   
   LOG4CPLUS_INFO(this->getApplicationLogger(),
 		 xmlClass_ << instance_ << " constructor");
@@ -100,8 +101,8 @@ FilterUnitFramework::FilterUnitFramework(xdaq::ApplicationStub *s) : FUAdapter(s
   cout << xmlClass_ << instance_ << " constructor" << endl;
   pthread_mutex_init(&lock_,0);
   pthread_cond_init(&ready_,0);
-
-
+  dump_ = new unsigned char[128000];
+  fed_id = -1;
 }
 
 
@@ -119,6 +120,7 @@ void FilterUnitFramework::exportParams()
   ns << "FU" << instance_;
   nam_ = ns.str();
   runActive_ = false;
+  workDir_ = "/tmp/evf";
   runNumber_ = 1;
   s->fireItemAvailable("buInstance",&buInstance_);
 
@@ -132,13 +134,14 @@ void FilterUnitFramework::exportParams()
   s->fireItemAvailable("monSourceName",&nam_);
   s->fireItemAvailable("runActive",&runActive_);
   s->fireItemAvailable("runNumber",&runNumber_);
+  s->fireItemAvailable("workDir",&workDir_);
 }
 
 FilterUnitFramework::~FilterUnitFramework()
 {
   
   delete factory_;
-
+  delete dump_;
 }
 
 #include <typeinfo>
@@ -149,8 +152,11 @@ FilterUnitFramework::~FilterUnitFramework()
 void FilterUnitFramework::configureAction(toolbox::Event::Reference e) throw (toolbox::fsm::exception::Exception)
 {
   if(!runActive_) findOrCreateMemoryPool();
-  runActive_ = true;
-  char *workdir = getenv("PWD");
+  const char *workdir = 0;
+  if(workDir_.value_=="")
+    workdir = getenv("PWD");
+  else
+    workdir = workDir_.value_.c_str();
   if(workdir != 0)
     chdir(workdir);
   LOG4CPLUS_INFO(this->getApplicationLogger(),"FU Working Directory set to" << workdir);
@@ -161,7 +167,7 @@ void FilterUnitFramework::configureAction(toolbox::Event::Reference e) throw (to
 void FilterUnitFramework::enableAction(toolbox::Event::Reference e) throw (toolbox::fsm::exception::Exception)
 {
   cout<<"FilterUnitFramework::Enable()"<<endl;
-
+  runActive_ = true;
   birth_.start(0); // start timer before sending allocate
 
   //
@@ -198,7 +204,7 @@ void FilterUnitFramework::resumeAction(toolbox::Event::Reference e) throw (toolb
 #include <signal.h>
 void FilterUnitFramework::haltAction(toolbox::Event::Reference e) throw (toolbox::fsm::exception::Exception)
 {
-  clearBUArray();
+
 }
 
 
@@ -312,6 +318,114 @@ void FilterUnitFramework::defaultWebPage(xgi::Input *in, xgi::Output *out)
 
 }
 
+#include "extern/cgicc/linuxx86/include/cgicc/CgiDefs.h"
+#include "extern/cgicc/linuxx86/include/cgicc/Cgicc.h"
+#include "EventFilter/Utilities/interface/DebugUtils.h"
+#include "extern/cgicc/linuxx86/include/cgicc/FormEntry.h"
+#include "extern/cgicc/linuxx86/include/cgicc/HTMLClasses.h"
+
+void FilterUnitFramework::debugWebPage(xgi::Input *in, xgi::Output *out) 
+  throw (xgi::exception::Exception)
+{
+  std::string url = "/";
+  url += getApplicationDescriptor()->getURN();
+  url += "/debug";
+  cgicc::Cgicc cgi(in);
+  if(runActive_)
+    {
+      vector<cgicc::FormEntry> el1;
+      cgi.getElement("FedFragment",el1);
+      if(el1.size()!=0)
+	{
+	  string fn;
+	  fn = el1[0].getValue();
+	  fed_id = atoi(fn.data());
+	}
+    }
+  *out << "<html>"                                                   << endl;
+  *out << "<head>"                                                   << endl;
+  *out << "<link type=\"text/css\" rel=\"stylesheet\"";
+  *out << " href=\"/" <<  getApplicationDescriptor()->getURN()
+       << "/styles.css\"/>"                                          << endl;
+  *out << "<title>" << getApplicationDescriptor()->getClassName() 
+       << getApplicationDescriptor()->getInstance() 
+       << " MAIN</title>"                                            << endl;
+  *out << "</head>"                                                  << endl;
+  *out << "<body>"                                                   << endl;
+  *out << "<table border=\"0\" width=\"100%\">"                      << endl;
+  *out << "<tr>"                                                     << endl;
+  *out << "  <td align=\"left\">"                                    << endl;
+  *out << "    <img"                                                 << endl;
+  *out << "     align=\"middle\""                                    << endl;
+  *out << "     src=\"/daq/evb/bu/images/debug64x64.gif\""     << endl;
+  *out << "     alt=\"main\""                                        << endl;
+  *out << "     width=\"64\""                                        << endl;
+  *out << "     height=\"64\""                                       << endl;
+  *out << "     border=\"\"/>"                                       << endl;
+  *out << "    <b>"                                                  << endl;
+  *out << getApplicationDescriptor()->getClassName() 
+       << getApplicationDescriptor()->getInstance()                  << endl;
+  *out << "      " << fsm_->stateName_.toString()                    << endl;
+  *out << "    </b>"                                                 << endl;
+  *out << "  </td>"                                                  << endl;
+  *out << "  <td width=\"32\">"                                      << endl;
+  *out << "    <a href=\"/urn:xdaq-application:lid=3\">"             << endl;
+  *out << "      <img"                                               << endl;
+  *out << "       align=\"middle\""                                  << endl;
+  *out << "       src=\"/daq/xdaq/hyperdaq/images/HyperDAQ.jpg\""    << endl;
+  *out << "       alt=\"HyperDAQ\""                                  << endl;
+  *out << "       width=\"32\""                                      << endl;
+  *out << "       height=\"32\""                                      << endl;
+  *out << "       border=\"\"/>"                                     << endl;
+  *out << "    </a>"                                                 << endl;
+  *out << "  </td>"                                                  << endl;
+  *out << "  <td width=\"32\">"                                      << endl;
+  *out << "  </td>"                                                  << endl;
+  *out << "  <td width=\"32\">"                                      << endl;
+  *out << "    <a href=\"/" << getApplicationDescriptor()->getURN() 
+       << "/Default\">"                   << endl;
+  *out << "      <img"                                               << endl;
+  *out << "       align=\"middle\""                                  << endl;
+  *out << "       src=\"/daq/evb/examples/fu/images/fu32x32.gif\""   << endl;
+  *out << "       alt=\"Default\""                                   << endl;
+  *out << "       width=\"32\""                                      << endl;
+  *out << "       height=\"32\""                                     << endl;
+  *out << "       border=\"\"/>"                                     << endl;
+  *out << "    </a>"                                                 << endl;
+  *out << "  </td>"                                                  << endl;
+  *out << "</tr>"                                                    << endl;
+  *out << "</table>"                                                 << endl;
+  
+  *out << "<hr/>"                                                    << endl;
+  *out << "<table>"                                                  << endl;
+  *out << "<tr valign=\"top\">"                                      << endl;
+  *out << "  <td>"                                                   << endl;
+  *out << "  <td>"                                                   << endl;
+  if(runActive_)
+    {
+      ostringstream os;
+      os << fed_id;
+      *out << cgicc::form().set("method","get").set("action", url).set("enctype","multipart/form-data") << std::endl;
+      *out << cgicc::input().set("type","text").set("name","FedFragment").set("value",os.str()).set("active","true") << std::endl;
+      *out << cgicc::input().set("type","submit").set("value","FedDump") << std::endl;         
+      *out << cgicc::form() << std::endl;
+    }
+  *out << "  </td>"                                                   << endl;
+  if(fed_id >= 0)
+    {
+      unsigned int fid = unsigned(fed_id);
+      unsigned int size = factory_->spyBuiltEvent(fid,dump_);
+      string sdump = evf::dumpFrame(dump_, size);
+      *out << "<textarea rows=" << 10 << " cols=40 scroll=yes>"          << endl;
+      *out << sdump;
+    }
+  *out << "</textarea><P>"                                           << endl;
+  *out << "  </td>"                                                   << endl;
+  *out << "</table>"                                        << std::endl;
+  *out << "</body>"                                         << std::endl;
+  *out << "</html>"                                         << std::endl;
+}
+
 void FilterUnitFramework::parameterTables(xgi::Input *in, xgi::Output *out)
 {
   //configuration parameter table
@@ -343,6 +457,22 @@ void FilterUnitFramework::parameterTables(xgi::Input *in, xgi::Output *out)
   *out << "</td>" << std::endl;
   *out << "<td>" << std::endl;
   *out << buInstance_ << std::endl;
+  *out << "</td>" << std::endl;
+  *out << "</tr>" << std::endl;
+  *out << "<tr>" << std::endl;
+  *out << "<td>" << std::endl;
+  *out << "runNumber" << std::endl;
+  *out << "</td>" << std::endl;
+  *out << "<td>" << std::endl;
+  *out << runNumber_ << std::endl;
+  *out << "</td>" << std::endl;
+  *out << "</tr>" << std::endl;
+  *out << "<tr>" << std::endl;
+  *out << "<td>" << std::endl;
+  *out << "workDir" << std::endl;
+  *out << "</td>" << std::endl;
+  *out << "<td>" << std::endl;
+  *out << workDir_.value_ << std::endl;
   *out << "</td>" << std::endl;
   *out << "</tr>" << std::endl;
   *out << "<tr>" << std::endl;
