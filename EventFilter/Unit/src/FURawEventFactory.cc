@@ -70,6 +70,22 @@ FURawEvent *FURawEventFactory::getBuiltEvent()
   return resources_[res];
 }
 
+unsigned int FURawEventFactory::spyBuiltEvent(unsigned int fedid, unsigned char *dest)
+{
+
+  int ret = sem_wait(&empty_); // wait for an event if queue is empty
+  if(ret!=0) std::cerr << "FURawEventFactory::error waiting for built resource" << std::endl;
+  pthread_mutex_lock(&mutex_);
+  int res = builtRes_.top();
+  unsigned int siz = (*resources_[res])[fedid]->size_;
+  memcpy(dest, (*resources_[res])[fedid]->data_,siz);  
+  ret = sem_post(&empty_); // wait for an event if queue is empty
+  if(ret!=0) std::cerr << "FURawEventFactory::error giving back resource" << std::endl;  
+  pthread_mutex_unlock(&mutex_);
+  return siz;
+}
+
+
 unsigned int FURawEventFactory::queueSize() const
 {
   return builtRes_.size();

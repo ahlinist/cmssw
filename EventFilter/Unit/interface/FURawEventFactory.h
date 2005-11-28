@@ -26,6 +26,9 @@ class FURawEventFactory
   /** get a built event */
   FURawEvent *getBuiltEvent();
 
+  /** spy a built event */
+  unsigned int spyBuiltEvent(unsigned int, unsigned char *);
+
   /** set minimum events in queue */
   void setMinQueueSize(int min)
     {
