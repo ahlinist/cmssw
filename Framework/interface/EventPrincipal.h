@@ -31,6 +31,7 @@ $Id$
 #include "FWCore/EDProduct/interface/Timestamp.h"
 #include "FWCore/EDProduct/interface/ProductID.h"
 #include "FWCore/EDProduct/interface/EDProduct.h"
+#include "FWCore/EDProduct/interface/EDProductGetter.h"
 #include "FWCore/Framework/interface/EventAux.h"
 #include "FWCore/Framework/interface/BasicHandle.h"
 #include "FWCore/Framework/interface/NoDelayedReader.h"
@@ -43,7 +44,7 @@ $Id$
 
 namespace edm {
     
-  class EventPrincipal {
+  class EventPrincipal : public EDProductGetter {
   public:
     typedef std::vector<boost::shared_ptr<Group> > GroupVec;
     typedef GroupVec::const_iterator               const_iterator;
@@ -63,7 +64,7 @@ namespace edm {
                    ProcessNameList const& nl = ProcessNameList(),
                    boost::shared_ptr<DelayedReader> rtrv = boost::shared_ptr<DelayedReader>(new NoDelayedReader));
 
-    ~EventPrincipal();
+    virtual ~EventPrincipal();
 
     EventID id() const;
     Timestamp time() const;
@@ -135,6 +136,8 @@ namespace edm {
     // We do not change the *number* of groups through this call, and so
     // *this is const.
     void resolve_(Group const& g) const;
+
+    virtual EDProduct const* getIt(ProductID const& oid) const;
 
   private:
     EventAux aux_;	// persistent

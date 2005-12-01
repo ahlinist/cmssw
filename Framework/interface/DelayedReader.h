@@ -12,18 +12,17 @@ $Id$
 
 #include <memory>
 
-#include "FWCore/Framework/interface/BranchKey.h"
 #include "FWCore/EDProduct/interface/EDProduct.h"
 
 
-namespace edm
-{
-  class DelayedReader
-  {
+namespace edm {
+  class BranchKey;
+  class EventPrincipal;
+  class DelayedReader {
   public:
     virtual ~DelayedReader();
 
-    virtual std::auto_ptr<EDProduct> get(BranchKey const& k) const = 0;
+    virtual std::auto_ptr<EDProduct> get(BranchKey const& k, EventPrincipal const* ep) const = 0;
   };
 }
 
