@@ -8,6 +8,9 @@ gSystem->Load("libDataFormatsTrackReco");
 cout << "Loading VertexReco..." << endl;
 gSystem->Load("libDataFormatsVertexReco");
 
+cout << "Loading EGammaReco..." << endl;
+gSystem->Load("libDataFormatsEGammaReco");
+
 cout << "Cintex init..." << endl;
 Cintex::enable();
 
