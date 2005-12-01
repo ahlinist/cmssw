@@ -1,0 +1,7 @@
+<bin name="testBatchRoot" file="testBatchRoot.cpp">
+ <use name=DataFormats/VertexReco>
+ <use name=DataFormats/TrackReco>
+ <use name=root>
+ <use name=seal>
+ <lib name="lcg_Cintex">
+</bin>
