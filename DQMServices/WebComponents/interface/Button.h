@@ -12,8 +12,7 @@
 
 #include "xgi/Method.h"
 #include "cgicc/HTMLClasses.h"
-#include "DQMServices/SimpleWebForm/interface/SimpleWebForm.h"
-#include "DQMServices/SimpleWebForm/interface/WebElement.h"
+#include "DQMServices/WebComponents/interface/WebElement.h"
 
 
 class Button : public WebElement
