@@ -52,7 +52,7 @@ void ConfigBox::printHTML(xgi::Output * out)
        << cgicc::td() << cgicc::input().set("type", "text").set("name", "Name") << cgicc::td()
        << cgicc::tr() << endl;
 
-  string js_command = "submitConfigure('" + get_url() + "', form)";
+  std::string js_command = "submitConfigure('" + get_url() + "', form)";
   *out << cgicc::tr() 
        << cgicc::td() << cgicc::input().set("type", "button").set("value", "(Re)configure!").set("onClick", js_command) << cgicc::td()
        << cgicc::tr() << endl;
