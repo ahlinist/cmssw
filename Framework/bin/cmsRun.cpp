@@ -79,12 +79,18 @@ int main(int argc, char* argv[])
 			      << vm[kParameterSetOpt].as<std::string>();
     return 1;
   }
-  
+
+
+  // Create the several parameter sets that will be used to configure
+  // the program.
   string configstring;
   string line;
-  
+
   while(std::getline(configFile,line)) { configstring+=line; configstring+="\n"; }
   
+  edm::ParameterSet main;
+  std::vector<edm::ParameterSet> serviceparams;
+
   edm::AssertHandler ah;
 
   int rc = -1; // we should never return this value!
