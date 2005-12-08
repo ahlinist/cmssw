@@ -94,22 +94,32 @@ namespace edm {
 
     // This accepts the argc, argv from main(). Only 'switches' and
     // 'options' are expected. 
-    EventProcessor(int argc, char* argv[]);
+    //EventProcessor(int argc, char* argv[]);
 
     // The input string contains the entire contents of a
     // configuration file.    
     explicit EventProcessor(const std::string& config);
 
     // This constructor combines the effect of the two above.
-    EventProcessor(int argc, char* argv[], const std::string& config);
+//     EventProcessor(int argc, 
+// 		   char* argv[], 
+// 		   const std::string& config);
 
     //Same as previous constructors except allow attachement of services
-    EventProcessor(int argc, char* argv[], 
-                   const ServiceToken&,serviceregistry::ServiceLegacy);
-    EventProcessor(const std::string& config,
-                   const ServiceToken&,serviceregistry::ServiceLegacy);
-    EventProcessor(int argc, char* argv[], const std::string& config,
-                   const ServiceToken&,serviceregistry::ServiceLegacy);
+//     EventProcessor(int argc, 
+// 		   char* argv[], 
+// 		   const ServiceToken&,
+// 		   serviceregistry::ServiceLegacy);
+
+     EventProcessor(const std::string& config,
+                    const ServiceToken&,
+		    serviceregistry::ServiceLegacy);
+
+//      EventProcessor(int argc, 
+// 		    char* argv[], 
+// 		    const std::string& config,
+//                     const ServiceToken&,
+// 		    serviceregistry::ServiceLegacy);
     
     
     ~EventProcessor();
