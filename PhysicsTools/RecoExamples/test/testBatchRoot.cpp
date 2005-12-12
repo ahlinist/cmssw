@@ -41,7 +41,7 @@ int main() {
   gROOT->SetStyle("Plain");
   TCanvas c;
   histo.Draw();
-  c.SaveAs( "hits.gif" );
+  c.SaveAs( "hits.jpg" );
 
   return 0;
 }
