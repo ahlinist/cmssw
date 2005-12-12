@@ -1,14 +1,15 @@
 <bin name="higgsPlots" file="higgsPlots.cpp">
  <use name=PhysicsTools/RecoCandidate>
  <use name=root>
- <use name=seal>
  <lib name="lcg_Cintex">
 </bin>
 
 <bin name="candPlots" file="candPlots.cpp">
  <use name=PhysicsTools/RecoCandidate>
  <use name=root>
- <use name=seal>
  <lib name="lcg_Cintex">
 </bin>
 
+<bin name="branchList" file="branchList.cpp">
+  <use name=PhysicsTools/FWLite>
+</bin>
