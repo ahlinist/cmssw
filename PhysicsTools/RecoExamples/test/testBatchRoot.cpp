@@ -10,7 +10,7 @@
 #include <vector>
 #include "DataFormats/TrackReco/interface/TrackExtra.h"
 using namespace std;
-
+using namespace reco;
 int main() {
   seal::cintex::Cintex::enable();
 
@@ -20,16 +20,16 @@ int main() {
   TBranch * branch = events->GetBranch( "TrackExtra_AllTrackExtras__ORCA.obj" );
   assert( branch != 0 );
 
-  vector<reco::TrackExtra> * trkExtra = new vector<reco::TrackExtra>();
-  branch->SetAddress( trkExtra );
+  TrackExtraCollection trkExtra;
+  branch->SetAddress( & trkExtra );
 
   TH1F histo( "nofhits", "Number of hits", 21, -0.5, 20.5 );
 
   int nev = events->GetEntries();
   for( int ev = 0; ev < nev; ++ ev ) {
     branch->GetEntry( ev );
-    for( size_t i = 0; i < trkExtra->size(); ++i ) {
-      histo.Fill( ( * trkExtra )[ i ].recHitsSize() );
+    for( size_t i = 0; i < trkExtra.size(); ++i ) {
+      histo.Fill( trkExtra[ i ].recHitsSize() );
     }
   }
   file.Close();
@@ -43,6 +43,5 @@ int main() {
   histo.Draw();
   c.SaveAs( "hits.gif" );
 
-  delete trkExtra;
   return 0;
 }
