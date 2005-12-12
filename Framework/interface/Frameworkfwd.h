@@ -37,7 +37,6 @@ namespace edm
   class ProductID;
   class ProductRegistry;
   class Provenance;
-  class PS_ID;
   class RandomAccessInputSource;
   class RefBase;
   class RefVectorBase;
