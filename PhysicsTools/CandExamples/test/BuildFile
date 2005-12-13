@@ -10,6 +10,10 @@
  <lib name="lcg_Cintex">
 </bin>
 
-<bin name="branchList" file="branchList.cpp">
-  <use name=PhysicsTools/FWLite>
+<bin file=candPlots_pool.cpp>
+  <use name=PhysicsTools/RecoCandidate>
+  <use name=root>
+  <use name=DataSvc>
+  <use name=Dictionary/Reflex>
+  <use name=Collection>
 </bin>
