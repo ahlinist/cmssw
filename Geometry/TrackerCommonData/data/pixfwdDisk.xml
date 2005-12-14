@@ -1,0 +1,352 @@
+<?xml version="1.0"?>
+<DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../DetectorDescription/Schema/DDLSchema.xsd">
+    
+<!-- 
+== CMS Forward Pixels Geometry ==
+
+ @version 2.01.01 Dec 06, 2005
+ @created Dmitry Onoprienko
+
+== COMPONENT DEFINED BY THIS FILE: ==
+
+  Forward Pixels disk : +Z (PixelForwardDiskZPlus) and -Z(PixelForwardDiskZMinus) versions
+
+== Comments : ==
+
+ Reference frame of the root volume:
+ 
+ X horizontal
+ Y vertical pointing up
+ Z along the beam line perpendicular to the disk plane, points away from IP
+ -->
+
+
+<ConstantsSection label="Input" eval="true">
+  
+  <Constant name="InnerRingREdge"       value="49.16*mm"/>
+  <Constant name="InnerRingRMin"        value="50.16*mm"/>
+  <Constant name="InnerRingRMax"        value="51.16*mm"/>
+  <Constant name="InnerRingEdge"        value= "1.00*mm"/>
+  <Constant name="InnerRingHalfWidth"   value="29.50*mm"/>
+
+  <Constant name="OuterRingRMin"        value="157.5*mm"/>
+  <Constant name="OuterRingRMax"        value="158.5*mm"/>
+  <Constant name="OuterRingREdge"       value="159.5*mm"/>
+  <Constant name="OuterRingEdge"        value= "1.00*mm"/>
+  <Constant name="OuterRingHalfWidth"   value="29.50*mm"/>
+  
+  <Constant name="BladeAngle"       value="20.*deg"/>
+  <Constant name="BladeZShift"      value="5.0*mm"/>
+
+<!--   "L" - left, "R" - right, "-" - no panel : 000000000111111111122222   -->
+<!--                                                 123456789012345678901234   -->
+<!--  <Constant name="PanelLayoutZPlus3"      value="RLLLLRLLLLLRRLLLLRLLLLLR" />-->
+<!--  <Constant name="PanelLayoutZPlus4"      value="LLLLLLRLLLLRLLLLLLRLLLLR" />-->
+<!--  <Constant name="PanelLayoutZMinus3"     value="LRRRRLRRRRRLLRRRRLRRRRRL" />-->
+<!--  <Constant name="PanelLayoutZMinus4"     value="RRRRRRLRRRRLRRRRRRLRRRRL" />-->
+
+<!-- Oops! DDL does not support string constants... -->
+  
+  <Constant name="PanelAncorRadius"   value="54.631"/>
+  
+</ConstantsSection>
+
+<!-- Disk root -->
+
+<ConstantsSection label="Root" eval="true">
+ <Constant name="DiskRmin"         value="[InnerRingREdge]"/>
+ <Constant name="DiskRmax"         value="[OuterRingREdge]"/>
+ <Constant name="DiskHalfWidth"    value="[OuterRingHalfWidth]"/> 
+</ConstantsSection>
+ 
+<SolidSection label="Root">
+ <Tubs name="PixelForwardDisk" rMin="[DiskRmin]" rMax="[DiskRmax]" dz="[DiskHalfWidth]" startPhi="0." deltaPhi="360*deg" />
+</SolidSection>
+ 
+<LogicalPartSection label="Root">
+ <LogicalPart name="PixelForwardDiskZPlus" category="envelope">
+  <rSolid name="PixelForwardDisk"/>
+  <rMaterial name="materials:Air"/>
+ </LogicalPart>
+ <LogicalPart name="PixelForwardDiskZMinus" category="envelope">
+  <rSolid name="PixelForwardDisk"/>
+  <rMaterial name="materials:Air"/>
+ </LogicalPart>
+</LogicalPartSection>
+
+<!-- Support rings -->
+ 
+<SolidSection label="Rings">
+  <Tubs name="PixelForwardDiskInnerRing" rMin="[InnerRingRMin]" rMax="[InnerRingRMax]" dz="[InnerRingHalfWidth]" startPhi="0." deltaPhi="360*deg" />
+  <Tubs name="PixelForwardDiskInnerRingEdge" rMin="[InnerRingREdge]" rMax="[InnerRingRMin]" dz="[InnerRingEdge]/2." startPhi="0." deltaPhi="360*deg" />
+  <Tubs name="PixelForwardDiskOuterRing" rMin="[OuterRingRMin]" rMax="[OuterRingRMax]" dz="[OuterRingHalfWidth]" startPhi="0." deltaPhi="360*deg" />
+  <Tubs name="PixelForwardDiskOuterRingEdge" rMin="[OuterRingRMax]" rMax="[OuterRingREdge]" dz="[OuterRingEdge]/2." startPhi="0." deltaPhi="360*deg" />
+</SolidSection>
+ 
+<LogicalPartSection label="Rings">
+
+  <LogicalPart name="PixelForwardDiskInnerRing" category="support">
+    <rSolid name="PixelForwardDiskInnerRing"/>
+    <rMaterial name="materials:Aluminium"/>
+  </LogicalPart>
+  
+  <LogicalPart name="PixelForwardDiskInnerRingEdge" category="support">
+    <rSolid name="PixelForwardDiskInnerRingEdge"/>
+    <rMaterial name="materials:Aluminium"/>
+  </LogicalPart>
+  
+  <LogicalPart name="PixelForwardDiskOuterRing" category="support">
+    <rSolid name="PixelForwardDiskOuterRing"/>
+    <rMaterial name="materials:Aluminium"/>
+  </LogicalPart>
+  
+  <LogicalPart name="PixelForwardDiskOuterRingEdge" category="support">
+    <rSolid name="PixelForwardDiskOuterRingEdge"/>
+    <rMaterial name="materials:Aluminium"/>
+  </LogicalPart>
+  
+</LogicalPartSection>
+
+
+<PosPartSection label="Rings">
+
+  <!-- Z Plus Disk -->
+
+  <PosPart copyNumber="1">
+    <rParent name="PixelForwardDiskZPlus"/>
+    <rChild name="PixelForwardDiskInnerRing"/>
+  </PosPart>
+ 
+  <PosPart copyNumber="1">
+    <rParent name="PixelForwardDiskZPlus"/>
+    <rChild name="PixelForwardDiskInnerRingEdge"/>
+    <Translation x="0." y="0." z="-[InnerRingHalfWidth]-[InnerRingEdge]/2." />
+  </PosPart>
+ 
+  <PosPart copyNumber="2">
+    <rParent name="PixelForwardDiskZPlus"/>
+    <rChild name="PixelForwardDiskInnerRingEdge"/>
+    <Translation x="0." y="0." z="[InnerRingHalfWidth]+[InnerRingEdge]/2." />
+  </PosPart>
+ 
+  <PosPart copyNumber="1">
+    <rParent name="PixelForwardDiskZPlus"/>
+    <rChild name="PixelForwardDiskOuterRing"/>
+  </PosPart>
+ 
+  <PosPart copyNumber="1">
+    <rParent name="PixelForwardDiskZPlus"/>
+    <rChild name="PixelForwardDiskOuterRingEdge"/>
+    <Translation x="0." y="0." z="-[OuterRingHalfWidth]-[OuterRingEdge]/2." />
+  </PosPart>
+ 
+  <PosPart copyNumber="2">
+    <rParent name="PixelForwardDiskZPlus"/>
+    <rChild name="PixelForwardDiskOuterRingEdge"/>
+    <Translation x="0." y="0." z="[OuterRingHalfWidth]+[OuterRingEdge]/2." />
+  </PosPart>
+ 
+
+  <!-- Z Minus Disk -->
+
+  <PosPart copyNumber="1">
+    <rParent name="PixelForwardDiskZMinus"/>
+    <rChild name="PixelForwardDiskInnerRing"/>
+  </PosPart>
+ 
+  <PosPart copyNumber="1">
+    <rParent name="PixelForwardDiskZMinus"/>
+    <rChild name="PixelForwardDiskInnerRingEdge"/>
+    <Translation x="0." y="0." z="-[InnerRingHalfWidth]-[InnerRingEdge]/2." />
+  </PosPart>
+ 
+  <PosPart copyNumber="2">
+    <rParent name="PixelForwardDiskZMinus"/>
+    <rChild name="PixelForwardDiskInnerRingEdge"/>
+    <Translation x="0." y="0." z="[InnerRingHalfWidth]+[InnerRingEdge]/2." />
+  </PosPart>
+ 
+  <PosPart copyNumber="1">
+    <rParent name="PixelForwardDiskZMinus"/>
+    <rChild name="PixelForwardDiskOuterRing"/>
+  </PosPart>
+ 
+  <PosPart copyNumber="1">
+    <rParent name="PixelForwardDiskZMinus"/>
+    <rChild name="PixelForwardDiskOuterRingEdge"/>
+    <Translation x="0." y="0." z="-[OuterRingHalfWidth]-[OuterRingEdge]/2." />
+  </PosPart>
+ 
+  <PosPart copyNumber="2">
+    <rParent name="PixelForwardDiskZMinus"/>
+    <rChild name="PixelForwardDiskOuterRingEdge"/>
+    <Translation x="0." y="0." z="[OuterRingHalfWidth]+[OuterRingEdge]/2." />
+  </PosPart>
+ 
+</PosPartSection>
+
+<!-- Blades -->
+
+<ConstantsSection label="Blades" eval="true">
+  <Constant name="radiusBlade"      value="[PanelAncorRadius]-[pixfwdBlade:AncorY]"/>
+</ConstantsSection>
+
+<RotationSection label="Blades">
+  <ReflectionRotation name="ReflectionX"  phiX="180.*deg"  thetaX="90.*deg" 
+                                          phiY= "90.*deg"  thetaY="90.*deg" 
+                                          phiZ=  "0.*deg"  thetaZ= "0.*deg" />
+</RotationSection>
+
+  <!-- Z Plus Disk -->
+
+<Algorithm name="track:DDPixFwdBlades">
+  <rParent name="pixfwdDisk:PixelForwardDiskZPlus"/>
+  <Numeric name="BladeAngle"   value="[BladeAngle]" />
+  <Numeric name="ZPlane"   value="0." />
+  <Numeric name="BladeZShift"  value="[BladeZShift]" />
+  <String  name="Child"    value="pixfwdBlade:PixelForwardBlade"/>
+  <Numeric name="ChildX"    value="0."/>
+  <Numeric name="ChildY"    value="[radiusBlade]"/>
+  <Numeric name="ChildZ"    value="0."/>
+</Algorithm>
+
+  <!-- Z Minus Disk -->
+
+<Algorithm name="track:DDPixFwdBlades">
+  <rParent name="pixfwdDisk:PixelForwardDiskZMinus"/>
+  <Numeric name="BladeAngle"   value="-[BladeAngle]" />
+  <Numeric name="ZPlane"   value="0." />
+  <Numeric name="BladeZShift"  value="-[BladeZShift]" />
+  <String  name="Child"    value="pixfwdBlade:PixelForwardBlade"/>
+  <Numeric name="ChildX"    value="0."/>
+  <Numeric name="ChildY"    value="[radiusBlade]"/>
+  <Numeric name="ChildZ"    value="0."/>
+  <String  name="ChildRotation"    value="pixfwdDisk:ReflectionX"/>
+</Algorithm>
+
+<!-- Panels -->
+
+<ConstantsSection label="Panels" eval="true">
+  <Constant name="zPanel"       value="[pixfwdBlade:RootHalfThickness]+[pixfwdPanel:RootHalfThickness]"/>
+  <Constant name="radiusPanel"  value="[PanelAncorRadius]-[pixfwdPanel:AncorY]"/>
+</ConstantsSection>
+
+<RotationSection label="Panels">
+  <Rotation name="Y180"  phiX="180.*deg"  thetaX=  "90.*deg" 
+                         phiY= "90.*deg"  thetaY=  "90.*deg" 
+                         phiZ=  "0.*deg"  thetaZ= "180.*deg" />
+</RotationSection>
+
+  <!-- Z Plus Disk -->
+
+<Algorithm name="track:DDPixFwdBlades">
+  <rParent name="pixfwdDisk:PixelForwardDiskZPlus"/>
+  <Numeric name="BladeAngle"    value="[BladeAngle]" />
+  <Numeric name="ZPlane"        value="0." />
+  <Numeric name="BladeZShift"   value="[BladeZShift]" />
+  <String  name="Child"         value="pixfwdPanel:PixelForwardPanel3Right"/>
+  <Numeric name="ChildX"        value="0."/>
+  <Numeric name="ChildY"        value="[radiusPanel]"/>
+  <Numeric name="ChildZ"        value="[zPanel]"/>
+  <String  name="FlagString"    value="RLLLLRLLLLLRRLLLLRLLLLLR" /> <!-- Panel Layout ZPlus 3 -->
+  <String  name="FlagSelector"  value="R" />
+</Algorithm>
+
+<Algorithm name="track:DDPixFwdBlades">
+  <rParent name="pixfwdDisk:PixelForwardDiskZPlus"/>
+  <Numeric name="BladeAngle"    value="[BladeAngle]" />
+  <Numeric name="ZPlane"        value="0." />
+  <Numeric name="BladeZShift"   value="[BladeZShift]" />
+  <String  name="Child"         value="pixfwdPanel:PixelForwardPanel3Left"/>
+  <Numeric name="ChildX"        value="0."/>
+  <Numeric name="ChildY"        value="[radiusPanel]"/>
+  <Numeric name="ChildZ"        value="[zPanel]"/>
+  <String  name="FlagString"    value="RLLLLRLLLLLRRLLLLRLLLLLR" /> <!-- Panel Layout ZPlus 3 -->
+  <String  name="FlagSelector"  value="L" />
+</Algorithm>
+
+<Algorithm name="track:DDPixFwdBlades">
+  <rParent name="pixfwdDisk:PixelForwardDiskZPlus"/>
+  <Numeric name="BladeAngle"    value="[BladeAngle]" />
+  <Numeric name="ZPlane"        value="0." />
+  <Numeric name="BladeZShift"   value="[BladeZShift]" />
+  <String  name="Child"         value="pixfwdPanel:PixelForwardPanel4Right"/>
+  <Numeric name="ChildX"        value="0."/>
+  <Numeric name="ChildY"        value="[radiusPanel]"/>
+  <Numeric name="ChildZ"        value="-[zPanel]"/>
+  <String  name="ChildRotation" value="pixfwdDisk:Y180"/>
+  <String  name="FlagString"    value="LLLLLLRLLLLRLLLLLLRLLLLR" /> <!-- Panel Layout ZPlus 4 -->
+  <String  name="FlagSelector"  value="R" />
+</Algorithm>
+
+<Algorithm name="track:DDPixFwdBlades">
+  <rParent name="pixfwdDisk:PixelForwardDiskZPlus"/>
+  <Numeric name="BladeAngle"    value="[BladeAngle]" />
+  <Numeric name="ZPlane"        value="0." />
+  <Numeric name="BladeZShift"   value="[BladeZShift]" />
+  <String  name="Child"         value="pixfwdPanel:PixelForwardPanel4Left"/>
+  <Numeric name="ChildX"        value="0."/>
+  <Numeric name="ChildY"        value="[radiusPanel]"/>
+  <Numeric name="ChildZ"        value="-[zPanel]"/>
+  <String  name="ChildRotation" value="pixfwdDisk:Y180"/>
+  <String  name="FlagString"    value="LLLLLLRLLLLRLLLLLLRLLLLR" /> <!-- Panel Layout ZPlus 4 -->
+  <String  name="FlagSelector"  value="L" />
+</Algorithm>
+
+  <!-- Z Minus Disk -->
+
+<Algorithm name="track:DDPixFwdBlades">
+  <rParent name="pixfwdDisk:PixelForwardDiskZMinus"/>
+  <Numeric name="BladeAngle"    value="-[BladeAngle]" />
+  <Numeric name="ZPlane"        value="0." />
+  <Numeric name="BladeZShift"   value="-[BladeZShift]" />
+  <String  name="Child"         value="pixfwdPanel:PixelForwardPanel3Right"/>
+  <Numeric name="ChildX"        value="0."/>
+  <Numeric name="ChildY"        value="[radiusPanel]"/>
+  <Numeric name="ChildZ"        value="[zPanel]"/>
+  <String  name="FlagString"    value="LRRRRLRRRRRLLRRRRLRRRRRL" /> <!-- Panel Layout ZMinus 3 -->
+  <String  name="FlagSelector"  value="R" />
+</Algorithm>
+
+<Algorithm name="track:DDPixFwdBlades">
+  <rParent name="pixfwdDisk:PixelForwardDiskZMinus"/>
+  <Numeric name="BladeAngle"    value="-[BladeAngle]" />
+  <Numeric name="ZPlane"        value="0." />
+  <Numeric name="BladeZShift"   value="-[BladeZShift]" />
+  <String  name="Child"         value="pixfwdPanel:PixelForwardPanel3Left"/>
+  <Numeric name="ChildX"        value="0."/>
+  <Numeric name="ChildY"        value="[radiusPanel]"/>
+  <Numeric name="ChildZ"        value="[zPanel]"/>
+  <String  name="FlagString"    value="LRRRRLRRRRRLLRRRRLRRRRRL" /> <!-- Panel Layout ZMinus 3 -->
+  <String  name="FlagSelector"  value="L" />
+</Algorithm>
+
+<Algorithm name="track:DDPixFwdBlades">
+  <rParent name="pixfwdDisk:PixelForwardDiskZMinus"/>
+  <Numeric name="BladeAngle"    value="-[BladeAngle]" />
+  <Numeric name="ZPlane"        value="0." />
+  <Numeric name="BladeZShift"   value="-[BladeZShift]" />
+  <String  name="Child"         value="pixfwdPanel:PixelForwardPanel4Right"/>
+  <Numeric name="ChildX"        value="0."/>
+  <Numeric name="ChildY"        value="[radiusPanel]"/>
+  <Numeric name="ChildZ"        value="-[zPanel]"/>
+  <String  name="ChildRotation" value="pixfwdDisk:Y180"/>
+  <String  name="FlagString"    value="RRRRRRLRRRRLRRRRRRLRRRRL" /> <!-- Panel Layout ZMinus 4 -->
+  <String  name="FlagSelector"  value="R" />
+</Algorithm>
+
+<Algorithm name="track:DDPixFwdBlades">
+  <rParent name="pixfwdDisk:PixelForwardDiskZMinus"/>
+  <Numeric name="BladeAngle"    value="-[BladeAngle]" />
+  <Numeric name="ZPlane"        value="0." />
+  <Numeric name="BladeZShift"   value="-[BladeZShift]" />
+  <String  name="Child"         value="pixfwdPanel:PixelForwardPanel4Left"/>
+  <Numeric name="ChildX"        value="0."/>
+  <Numeric name="ChildY"        value="[radiusPanel]"/>
+  <Numeric name="ChildZ"        value="-[zPanel]"/>
+  <String  name="ChildRotation" value="pixfwdDisk:Y180"/>
+  <String  name="FlagString"    value="RRRRRRLRRRRLRRRRRRLRRRRL" /> <!-- Panel Layout ZMinus 4 -->
+  <String  name="FlagSelector"  value="L" />
+</Algorithm>
+
+</DDDefinition>
