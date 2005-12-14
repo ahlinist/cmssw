@@ -1,0 +1,119 @@
+<?xml version="1.0"?>
+<DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../DetectorDescription/Schema/DDLSchema.xsd">
+    
+<!-- 
+== CMS Forward Pixels Geometry ==
+
+ @version 2.01.01 Dec 06, 2005
+ @created Dmitry Onoprienko
+
+== COMPONENT DEFINED BY THIS FILE: ==
+
+  Root volumes for forward pixels. 
+  "PixelForwardZPlus" is +Z half of the detector,
+  "PixelForwardZMinus" is -Z half of the detector.
+
+== Comments : ==
+
+ Reference frame of the root volumes:
+ X horizontal, Y vertical, Z along the beam line, pointing away from IP.
+ 
+ This is true for both endcaps, meaning that "PixelForwardZMinus" has to be positioned with "ZMinusRootRotation"
+ also defined in this file. See pixfwdTest.xml for the example of placement.
+ -->
+
+<!-- Root volumes -->
+
+<ConstantsSection label="Root" eval="true">
+
+ <Constant name="RootRadius"       value="[pixfwdCylinder:CylindersOuterRmax]"/>
+ <Constant name="RootHalfLength"   value="[pixfwdCylinder:CylindersOuterLength]/2."/>
+ 
+</ConstantsSection>
+
+<RotationSection label="Root">
+  <Rotation name="ZMinusRootRotation"  phiX="180.*deg"  thetaX=  "90.*deg" 
+                                       phiY= "90.*deg"  thetaY=  "90.*deg" 
+                                       phiZ=  "0.*deg"  thetaZ= "180.*deg" />
+</RotationSection>
+
+<SolidSection label="Root">
+ <Tubs name="PixelForward" rMin="0." rMax="[RootRadius]" dz="[RootHalfLength]" startPhi="0." deltaPhi="360*deg" />
+</SolidSection>
+ 
+<LogicalPartSection label="Root">
+ <LogicalPart name="PixelForwardZPlus" category="envelope">
+  <rSolid name="PixelForward"/>
+  <rMaterial name="materials:Air"/>
+ </LogicalPart>
+ <LogicalPart name="PixelForwardZMinus" category="envelope">
+  <rSolid name="PixelForward"/>
+  <rMaterial name="materials:Air"/>
+ </LogicalPart>
+</LogicalPartSection>
+
+
+<!-- Position disks inside root -->
+
+<ConstantsSection label="Disks" eval="true"> <!-- Distances from IP-side edge of PixelForwardRoot to disk centers -->
+ <Constant name="Disk1Z"      value= "30*mm"/>
+ <Constant name="Disk2Z"      value="160*mm"/>
+ <Constant name="Disk3Z"      value="290*mm"/>
+</ConstantsSection>
+ 
+<PosPartSection label="Disks">
+
+  <!-- +Z endcap -->
+
+  <PosPart copyNumber="1">
+    <rParent name="PixelForwardZPlus"/>
+    <rChild name="pixfwdDisk:PixelForwardDiskZPlus"/>
+    <Translation x="0." y="0." z="-[RootHalfLength] + [Disk1Z]" />
+  </PosPart>
+  
+  <PosPart copyNumber="2">
+    <rParent name="PixelForwardZPlus"/>
+    <rChild name="pixfwdDisk:PixelForwardDiskZPlus"/>
+    <Translation x="0." y="0." z="-[RootHalfLength] + [Disk2Z]" />
+  </PosPart>
+  
+  <PosPart copyNumber="3">
+    <rParent name="PixelForwardZPlus"/>
+    <rChild name="pixfwdDisk:PixelForwardDiskZPlus"/>
+    <Translation x="0." y="0." z="-[RootHalfLength] + [Disk3Z]" />
+  </PosPart>
+
+  <!-- -Z endcap -->
+
+  <PosPart copyNumber="1">
+    <rParent name="PixelForwardZMinus"/>
+    <rChild name="pixfwdDisk:PixelForwardDiskZMinus"/>
+    <Translation x="0." y="0." z="-[RootHalfLength] + [Disk1Z]" />
+  </PosPart>
+  
+  <PosPart copyNumber="2">
+    <rParent name="PixelForwardZMinus"/>
+    <rChild name="pixfwdDisk:PixelForwardDiskZMinus"/>
+    <Translation x="0." y="0." z="-[RootHalfLength] + [Disk2Z]" />
+  </PosPart>
+  
+  <PosPart copyNumber="3">
+    <rParent name="PixelForwardZMinus"/>
+    <rChild name="pixfwdDisk:PixelForwardDiskZMinus"/>
+    <Translation x="0." y="0." z="-[RootHalfLength] + [Disk3Z]" />
+  </PosPart>
+
+</PosPartSection>
+
+
+<!-- Position service cylinders inside root.
+  Since shapeless volumes are not useable at the moment, 
+  PixelForwardCylinder.xml does the actual positioning, we just tell it where to place the
+  cylinders by defining Z position of IP-side edge of service cylinder in PixelForward frame:
+-->
+
+<ConstantsSection label="ServiceCylinder" eval="true">
+  <Constant name="ZCylinder"   value="-[RootHalfLength]"/>
+</ConstantsSection>
+    
+</DDDefinition>

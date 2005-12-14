@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+<DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../DetectorDescription/Schema/DDLSchema.xsd">
+    
+<!-- 
+== CMS Forward Pixels Geometry ==
+
+ @version 2.01.01 Dec 06, 2005
+ @created Dmitry Onoprienko
+
+== COMPONENT DEFINED BY THIS FILE: ==
+
+  Service cylinders.
+  
+== Comments : ==
+
+  Currently, only three graphite cylinders are described. 
+  No ribs, cables, circuit boards, etc.
+-->
+
+<ConstantsSection label="Cylinders" eval="true">
+ <Constant name="CylindersOuterRmin"      value="169.49*mm"/>
+ <Constant name="CylindersOuterRmax"      value="170.00*mm"/>
+ <Constant name="CylindersOuterLength"    value="2225*mm"/> 
+ <Constant name="CylindersFrontRmin"      value="164.99*mm"/>
+ <Constant name="CylindersFrontRmax"      value="165.50*mm"/>
+ <Constant name="CylindersFrontLength"    value="450*mm"/> 
+ <Constant name="CylindersBackRmin"       value="160.00*mm"/>
+ <Constant name="CylindersBackRmax"       value="160.51*mm"/>
+ <Constant name="CylinderBackLength"      value="1783*mm"/> 
+</ConstantsSection>
+ 
+<SolidSection label="Cylinders">
+ <Tubs name="PixelForwardCylinderOuterCyl" rMin="[CylindersOuterRmin]" rMax="[CylindersOuterRmax]" dz="[CylindersOuterLength]/2." startPhi="0." deltaPhi="360*deg" />
+ <Tubs name="PixelForwardCylinderFrontCyl" rMin="[CylindersFrontRmin]" rMax="[CylindersFrontRmax]" dz="[CylindersFrontLength]/2." startPhi="0." deltaPhi="360*deg" />
+ <Tubs name="PixelForwardCylinderBackCyl" rMin="[CylindersBackRmin]" rMax="[CylindersBackRmax]" dz="[CylinderBackLength]/2." startPhi="0." deltaPhi="360*deg" />
+</SolidSection>
+ 
+<LogicalPartSection label="Cylinders">
+ <LogicalPart name="PixelForwardCylinderOuterCyl" category="support">
+   <rSolid name="PixelForwardCylinderOuterCyl"/>
+   <rMaterial name="materials:Carbon"/>
+ </LogicalPart>
+ <LogicalPart name="PixelForwardCylinderFrontCyl" category="support">
+   <rSolid name="PixelForwardCylinderFrontCyl"/>
+   <rMaterial name="materials:Carbon"/>
+ </LogicalPart>
+ <LogicalPart name="PixelForwardCylinderBackCyl" category="support">
+   <rSolid name="PixelForwardCylinderBackCyl"/>
+   <rMaterial name="materials:Carbon"/>
+ </LogicalPart>
+</LogicalPartSection>
+
+<PosPartSection label="Cylinders">
+
+  <!-- +Z endcap -->
+
+  <PosPart copyNumber="1">
+    <rParent name="pixfwd:PixelForwardZPlus"/>
+    <rChild name="PixelForwardCylinderOuterCyl"/>
+    <Translation x="0." y="0." z="[pixfwd:ZCylinder]+[CylindersOuterLength]/2." />
+  </PosPart>
+
+  <PosPart copyNumber="1">
+    <rParent name="pixfwd:PixelForwardZPlus"/>
+    <rChild name="PixelForwardCylinderFrontCyl"/>
+    <Translation x="0." y="0." z="[pixfwd:ZCylinder]+[CylindersFrontLength]/2." />
+  </PosPart>
+
+  <PosPart copyNumber="1">
+    <rParent name="pixfwd:PixelForwardZPlus"/>
+    <rChild name="PixelForwardCylinderBackCyl"/>
+    <Translation x="0." y="0." z="[pixfwd:ZCylinder]+[CylindersFrontLength]+[CylinderBackLength]/2." />
+  </PosPart>
+
+  <!-- -Z endcap -->
+
+  <PosPart copyNumber="1">
+    <rParent name="pixfwd:PixelForwardZMinus"/>
+    <rChild name="PixelForwardCylinderOuterCyl"/>
+    <Translation x="0." y="0." z="[pixfwd:ZCylinder]+[CylindersOuterLength]/2." />
+  </PosPart>
+
+  <PosPart copyNumber="1">
+    <rParent name="pixfwd:PixelForwardZMinus"/>
+    <rChild name="PixelForwardCylinderFrontCyl"/>
+    <Translation x="0." y="0." z="[pixfwd:ZCylinder]+[CylindersFrontLength]/2." />
+  </PosPart>
+
+  <PosPart copyNumber="1">
+    <rParent name="pixfwd:PixelForwardZMinus"/>
+    <rChild name="PixelForwardCylinderBackCyl"/>
+    <Translation x="0." y="0." z="[pixfwd:ZCylinder]+[CylindersFrontLength]+[CylinderBackLength]/2." />
+  </PosPart>
+
+</PosPartSection>
+
+</DDDefinition>
