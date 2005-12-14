@@ -12,21 +12,31 @@ $Id$
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/ModuleDescription.h"
+#include "FWCore/Framework/src/WorkerParams.h"
 
 namespace edm {
+  class ActionTable;
 
   class Worker
   {
   public:
-    Worker(const ModuleDescription& iMD): md_(iMD) {}
+    Worker(const ModuleDescription& iMD, const WorkerParams& iWP): md_(iMD),actions_(iWP.actions_) {}
     virtual ~Worker();
-    virtual bool doWork(EventPrincipal&, EventSetup const& c) = 0;
-    virtual void beginJob(EventSetup const&) = 0;
-    virtual void endJob() = 0;
+    bool doWork(EventPrincipal&, EventSetup const& c) ;
+    void beginJob(EventSetup const&) ;
+    void endJob();
     
     const ModuleDescription& description() const {return md_;}
+   
+  protected:
+    virtual std::string workerType() const = 0;
+    virtual bool implDoWork(EventPrincipal&, EventSetup const& c) = 0;
+    virtual void implBeginJob(EventSetup const&) = 0;
+    virtual void implEndJob() = 0;
+    
   private:
     ModuleDescription md_;
+    const ActionTable* actions_; // memory assumed to be managed elsewhere
   };
 
   template <class WT>

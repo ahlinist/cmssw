@@ -40,13 +40,13 @@ namespace edm
     static std::auto_ptr<OutputModule> makeOne(const ModuleDescription& md,
 					const WorkerParams& wp);
   private:
-    virtual bool doWork(EventPrincipal& e, EventSetup const& c);
+    virtual bool implDoWork(EventPrincipal& e, EventSetup const& c);
 
-    virtual void beginJob(EventSetup const&) ;
-    virtual void endJob() ;
+    virtual void implBeginJob(EventSetup const&) ;
+    virtual void implEndJob() ;
+    virtual std::string workerType() const;
     
     boost::shared_ptr<OutputModule> mod_;
-    const ActionTable* actions_; // memory assumed to be managed elsewhere
   };
 
   template <> 
