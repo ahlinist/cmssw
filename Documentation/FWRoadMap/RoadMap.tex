@@ -1,7 +1,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% 
 %%
-%% $Id: RoadMap.tex,v 1.34 2005/07/27 13:51:28 uberthon Exp $
+%% $Id: RoadMap.tex,v 1.35 2005/09/01 16:35:02 wmtan Exp $
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -20,7 +20,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Document revision number, traced by using RCS revision number.
 %
-\RCS $Revision: 1.34 $
+\RCS $Revision: 1.35 $
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Special macros for this document
@@ -931,15 +931,15 @@ The input still appears to the event processing application
 as a single stream of events.
 
 For these reasons,
-we see the need for an \emph{input service},
+we see the need for an \emph{input source},
 which is not a module,
 and for \emph{output modules}.
 
 In general,
-the framework will invoke the appropriate input service.
+the framework will invoke the appropriate input source.
 As a special case,
 a \emph{mixing module} could invoke
-an additional input service or services.
+an additional input source or sources.
 
 \section{Event mixing module}
 \subsection{ Use cases }
@@ -987,13 +987,13 @@ come from the primary stream (signal) and which come from the secondary stream
 
 \end {itemize}
 \subsection {Tasks of the mixing module} 
-The mixing module closely collaborates with a specialised secondary input service in order to fulfill the following 2 tasks: 
+The mixing module closely collaborates with a specialised secondary input source in order to fulfill the following 2 tasks: 
 \subsubsection {Event mixing}
 The mixing module superposes events, it does not perform the digitisation but 
 delivers superposed events to the detector dependent digitisation modules.\\
 It calculates the number of events requested 
 from its own configuration (Poisson random or fixed, number of bunch crossings 
-before and after) and asks the secondary input service to deliver them. The 
+before and after) and asks the secondary input source to deliver them. The 
 digitisation modules will have to verify that the range of delivered 
 bunchcrossings satisfy their needs (they might throw an exception otherwise). \\The way the events are superposed depends on the data tier that is treated:
 \begin{itemize}
@@ -1021,8 +1021,8 @@ double average_number  (default is 17.5)
 int32 min_bunch (default is -5)
 int32 max_bunch (defauls is +3)
 \end{verbatim}
-\subsection {Configuration of the secondary input service}
-It is assumed that the secondary input service is able to provide randomly 
+\subsection {Configuration of the secondary input source}
+It is assumed that the secondary input source is able to provide randomly 
 selected events from the secondary stream. It might be useful for debugging 
 purposes to be able to ask for events selected sequentially. It might also 
 be useful while asking for a random sequence of events to be able to forbid 
@@ -1063,15 +1063,15 @@ after the other, and the secondary input stream delivering events randomly on re
 The mixing module  creates and manages itself the secondary input stream, not 
 known to the other modules.
 
-\subsubsection {Demands on the secondary input service}
+\subsubsection {Demands on the secondary input source}
 \begin{itemize}
 \item
-A specific method of the input service will be needed, allowing to get a 
+A specific method of the input source will be needed, allowing to get a 
 vector of events 
 the length of which has been specified by the caller. 
 \item
 The events delivered must be selected inside the finite statistics of the pileup sample.
-If not specified otherwise, the secondary input service delivers events randomly, it is its own task to guarantee maximum 
+If not specified otherwise, the secondary input source delivers events randomly, it is its own task to guarantee maximum 
 efficiency for this.
 
 \end{itemize}
@@ -1079,12 +1079,12 @@ efficiency for this.
 \begin{verbatim}
 process PROD  = {
 
-        source = PoolInputService {
+        source = PoolSource {
                 string fileName = "main.root"
                 int32 MaxEvents = 2
         }
 
-        source minbias = PoolInputService {
+        source minbias = SecondaryInputSource {
                 string fileName = "pileup.root"
         }
 
@@ -2349,7 +2349,7 @@ Here is a (possibly non-exhaustive) list of framework module types:
   \item analyzers (read-only)
 \end{itemize}
 
-Note that \emph{input} provided by a service,
+Note that \emph{input} provided by a source,
 not by a module---see~\vref{sec:inputoutput}.
 
 \subsection{\EDProducer{}s}\label{sec:edproducers}
@@ -2380,8 +2380,8 @@ for the execution of a single \EDProducer object.
 }\label{fig:executor}
 \end{figure}
 
-The only service of an \EDProducer is to produce \EDProduct instances
-and placing them in an \Event.  This service is
+The only function of an \EDProducer is to produce \EDProduct instances
+and placing them in an \Event.  This function is
 performed by its \cppcode{produce(Event& ev)} method.
 
 On invocation a transaction is started.
@@ -2611,7 +2611,7 @@ in the configuration language.
 \begin{figure}[!htb]
 \begin{verbatim}
  process myjob = {
-   source = FileBasedInputService{
+   source = FileBasedInputSource{
      untracked string fileName = ``myFile'';
      untracked bool buffered = true;
    }
@@ -2767,7 +2767,7 @@ parameter set language.
 \begin{figure}[!htb]
 \begin{verbatim}
    // initial specification
-   source = FileBasedInputService {
+   source = FileBasedInputSource {
      untracked string fileName = ``myFile'';
      untracked bool buffered = true;
    }
@@ -2775,7 +2775,7 @@ parameter set language.
    // maps to
    ParameterSet main_input = { /* jbk - is this pset name correct? */
      string module_label = ``main_input'';
-     string module_type = ``FileBasedInputService'';
+     string module_type = ``FileBasedInputSource'';
      untracked string fileName = ``myFile'';
      untracked bool buffered = true;
    }
@@ -2788,7 +2788,7 @@ parameter set language.
 \begin{verbatim}
    // initial specification
    process myjob = {
-     source = FileBasedInputService {...}
+     source = FileBasedInputSource {...}
      block Common = { .. } // note this does not appear below
      module cone5 = MidpointJetProducer {...}
      module cone7 = MidpointJetProducer {...}
