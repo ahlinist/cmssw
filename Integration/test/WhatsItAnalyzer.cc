@@ -20,6 +20,7 @@
 
 // system include files
 #include <memory>
+#include <iostream>
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -90,6 +91,8 @@ WhatsItAnalyzer::analyze(const edm::Event& /*iEvent*/, const edm::EventSetup& iS
    using namespace edm;
    ESHandle<WhatsIt> pSetup;
    iSetup.get<GadgetRcd>().get(pSetup);
+
+   std::cout <<"WhatsIt "<<pSetup->a<<std::endl;
 }
 
 }
