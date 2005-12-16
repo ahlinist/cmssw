@@ -38,6 +38,9 @@ namespace edm {
          void addProviderTo(EventSetupProvider& iProvider, boost::shared_ptr<T> iComponent, const DataProxyProvider*) 
       {
             boost::shared_ptr<DataProxyProvider> pProvider(iComponent);
+            DataProxyProvider::Description description = pProvider->description();
+            description.isSource_=true;
+            pProvider->setDescription(description);
             iProvider.add(pProvider);
       }
       template<class T>
