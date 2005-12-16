@@ -30,7 +30,8 @@ namespace edm {
 // constructors and destructor
 //
 DataProxy::DataProxy() :
-   cacheIsValid_(false)
+   cacheIsValid_(false),
+   description_(0)
 {
 }
 

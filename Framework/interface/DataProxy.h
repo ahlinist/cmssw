@@ -28,6 +28,7 @@ namespace edm {
    namespace eventsetup {
       class EventSetupRecord;
       class DataKey;
+      class ComponentDescription;
       
 class DataProxy
 {
@@ -40,6 +41,11 @@ class DataProxy
       bool cacheIsValid() const { return cacheIsValid_; }
       
       virtual void doGet(const EventSetupRecord& iRecord, const DataKey& iKey) const = 0;
+
+      ///returns the description of the DataProxyProvider which owns this Proxy
+      const ComponentDescription* providerDescription() const {
+         return description_;
+      }
       // ---------- static member functions --------------------
 
       // ---------- member functions ---------------------------
@@ -48,6 +54,9 @@ class DataProxy
          invalidateCache();
       }
 
+      void setProviderDescription(const ComponentDescription* iDesc) {
+         description_ = iDesc;
+      }
    protected:
       /** indicates that the Proxy should invalidate any cached information
            as that information has 'expired'
@@ -64,6 +73,7 @@ class DataProxy
 
       // ---------- member data --------------------------------
       bool cacheIsValid_;
+      const ComponentDescription* description_;
 };
    }
 }
