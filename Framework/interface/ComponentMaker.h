@@ -24,7 +24,7 @@
 #include "boost/shared_ptr.hpp"
 
 // user include files
-#include "FWCore/Framework/interface/DataProxyProvider.h"
+#include "FWCore/Framework/interface/ComponentDescription.h"
 
 // forward declarations
 
@@ -32,7 +32,8 @@ namespace edm {
    class ParameterSet;
    namespace eventsetup {
       class EventSetupProvider;
-      
+      class DataProxyProvider;
+     
 template <class T>
       class ComponentMakerBase {
 public:
@@ -86,7 +87,7 @@ ComponentMaker<T,TComponent>:: addTo(EventSetupProvider& iProvider,
 {
    boost::shared_ptr<TComponent> component(new TComponent(iConfiguration));
    
-   DataProxyProvider::Description description;
+   ComponentDescription description;
    description.type_ = iConfiguration.template getParameter<std::string>("@module_type");
    description.label_ = iConfiguration.template getParameter<std::string>("@module_label");
    setDescription(component.get(),description);
