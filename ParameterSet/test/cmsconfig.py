@@ -75,6 +75,12 @@ class printable_parameter:
 
         if self.type == "PSet":
             self.value = pset_dict_to_string(self.value)
+        if self.type == "VPSet":
+            temp = '{'
+            tup = [ pset_dict_to_string(x) for x in self.value ]
+            temp += ", ".join( tup )
+            temp += '}'
+            self.value = temp
 
     def __str__(self):
         """Print this parameter in the right format for a
