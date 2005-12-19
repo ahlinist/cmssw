@@ -50,7 +50,7 @@ private:
 
 class DummyProxyProvider : public edm::eventsetup::DataProxyProvider {
 public:
-   DummyProxyProvider() {
+   DummyProxyProvider(const DummyData& iData=DummyData()): dummy_(iData) {
       //std::cout <<"constructed provider"<<std::endl;
       usingRecord<DummyRecord>();
    }
