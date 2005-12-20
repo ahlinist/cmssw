@@ -7,3 +7,13 @@
  <use name=seal>
  <lib name="lcg_Cintex">
 </bin>
+
+<bin file=trackPlots_pool.cpp>
+  <use name=DataFormats/TrackReco>
+  <use name=PhysicsTools/FWLite>
+  <use name=FWCore/Framework>
+  <use name=root>
+  <use name=DataSvc>
+  <use name=Dictionary/Reflex>
+  <use name=Collection>
+</bin>
