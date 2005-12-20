@@ -12,6 +12,8 @@
 
 <bin file=candPlots_pool.cpp>
   <use name=PhysicsTools/RecoCandidate>
+  <use name=PhysicsTools/FWLite>
+  <use name=FWCore/Framework>
   <use name=root>
   <use name=DataSvc>
   <use name=Dictionary/Reflex>
