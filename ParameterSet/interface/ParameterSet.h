@@ -76,6 +76,8 @@ namespace edm {
     std::vector<edm::FileInPath>::size_type
     getAllFileInPaths(std::vector<edm::FileInPath>& output) const;
 
+    std::vector<std::string> getParameterNames()const;
+    
     template <class T>
     void
     addUntrackedParameter(std::string const& name, T value)

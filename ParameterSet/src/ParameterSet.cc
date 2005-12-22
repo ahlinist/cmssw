@@ -17,6 +17,8 @@
 #include "FWCore/ParameterSet/interface/types.h"
 #include "FWCore/Utilities/interface/EDMException.h"
 
+#include "boost/bind.hpp"
+
 #include <algorithm>
 #include <utility>
 
@@ -253,6 +255,13 @@ namespace edm {
     return count;
   }
 
+   std::vector<std::string>
+   ParameterSet::getParameterNames() const {
+      std::vector<std::string> returnValue(tbl_.size());
+      std::transform(tbl_.begin(), tbl_.end(),returnValue.begin(),
+                     boost::bind(&std::pair<const std::string, Entry>::first,_1));
+      return returnValue;
+   }
   
 } // namespace edm
 // ----------------------------------------------------------------------
