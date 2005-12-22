@@ -29,9 +29,11 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ServiceRegistry/interface/ActivityRegistry.h"
 #include "FWCore/MessageLogger/interface/MessageSender.h"
+#include "FWCore/MessageLogger/interface/ErrorObj.h"
+#include "FWCore/EDProduct/interface/EventID.h"
 
 #include <memory>
-
+#include <string>
 
 namespace edm  {
 namespace service  {
@@ -51,8 +53,13 @@ public:
   void  preModule ( ModuleDescription const & );
   void  postModule( ModuleDescription const & );
 
+  void  fillErrorObj(edm::ErrorObj& obj) const;
+
 private:
   // put an ErrorLog object here, and maybe more
+
+  edm::EventID curr_event_;
+  std::string curr_module_;
 
 };  // MessageLogger
 
