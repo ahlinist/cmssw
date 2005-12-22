@@ -27,7 +27,11 @@ namespace edm {
 class LoadableDummyESSource : public edm::eventsetup::test::DummyProxyProvider, public DummyFinder
 {
 public:
-   LoadableDummyESSource(const edm::ParameterSet&) {}
+   LoadableDummyESSource(const edm::ParameterSet& iPSet)
+   : DummyProxyProvider( edm::eventsetup::test::DummyData(iPSet.getUntrackedParameter<int>("value",2))){
+      setInterval(edm::ValidityInterval(edm::IOVSyncValue::beginOfTime(),
+                                        edm::IOVSyncValue::endOfTime()));
+   }
 };
 
 DEFINE_FWK_EVENTSETUP_SOURCE(LoadableDummyESSource)
