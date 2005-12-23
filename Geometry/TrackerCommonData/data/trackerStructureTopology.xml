@@ -33,6 +33,37 @@
       <Parameter name="TkDDDStructure" value="PixelBarrelDet"/>
     </SpecPar>
 
+   <SpecPar name="PixelEndcapSubDetPar">
+      <PartSelector path="//PixelForwardZPlus" />
+      <PartSelector path="//PixelForwardZMinus" />
+      <Parameter name="TkDDDStructure" value="PixelEndcapSubDet"/>
+    </SpecPar>
+
+    <SpecPar name="PixelEndcapDiskPar">
+      <PartSelector path="//PixelForwardDiskZMinus" />
+      <PartSelector path="//PixelForwardDiskZPlus" />
+      <Parameter name="TkDDDStructure" value="PixelEndcapDisk"/>
+    </SpecPar>
+
+     <SpecPar name="PixelEndcapPanelPar">
+      <PartSelector path="//PixelForwardPanel3Left" />
+      <PartSelector path="//PixelForwardPanel3Right" />
+      <PartSelector path="//PixelForwardPanel4Right" />
+      <PartSelector path="//PixelForwardPanel4Left" />
+      <Parameter name="TkDDDStructure" value="PixelEndcapPanel"/>
+    </SpecPar>
+
+    <SpecPar name="PixelEndcapDetPar">
+      <PartSelector path="//PixelForwardActive1x2Right" />
+      <PartSelector path="//PixelForwardActive1x2Left" />
+      <PartSelector path="//PixelForwardActive1x5Right" />
+      <PartSelector path="//PixelForwardActive1x5Left" />
+      <PartSelector path="//PixelForwardActive2x3" />
+      <PartSelector path="//PixelForwardActive2x4" />
+      <PartSelector path="//PixelForwardActive2x5" />
+      <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
+    </SpecPar>
+
 
     <SpecPar name="TIBSubDetPar">
       <PartSelector path="//TIB" />
@@ -275,17 +306,38 @@ definire plus e minus
   <SpecPar name="PixelROCRowsPar">
       <PartSelector path="//PixelBarrelActiveFull" />
       <PartSelector path="//PixelBarrelActiveHalf" />
+      <PartSelector path="//PixelForwardActive1x2Right" />
+      <PartSelector path="//PixelForwardActive1x2Left" />
+      <PartSelector path="//PixelForwardActive1x5Right" />
+      <PartSelector path="//PixelForwardActive1x5Left" />
+      <PartSelector path="//PixelForwardActive2x3" />
+      <PartSelector path="//PixelForwardActive2x4" />
+      <PartSelector path="//PixelForwardActive2x5" />
       <Parameter name="PixelROCRows" value="80"/>
   </SpecPar>
 
   <SpecPar name="PixelROCColsPar">
       <PartSelector path="//PixelBarrelActiveFull" />
       <PartSelector path="//PixelBarrelActiveHalf" />
+      <PartSelector path="//PixelForwardActive1x2Right" />
+      <PartSelector path="//PixelForwardActive1x2Left" />
+      <PartSelector path="//PixelForwardActive1x5Right" />
+      <PartSelector path="//PixelForwardActive1x5Left" />
+      <PartSelector path="//PixelForwardActive2x3" />
+      <PartSelector path="//PixelForwardActive2x4" />
+      <PartSelector path="//PixelForwardActive2x5" />
       <Parameter name="PixelROCCols" value="52"/>
   </SpecPar>
 
   <SpecPar name="PixelROC_XPar">
       <PartSelector path="//PixelBarrelActiveFull" />
+      <PartSelector path="//PixelForwardActive1x2Right" />
+      <PartSelector path="//PixelForwardActive1x2Left" />
+      <PartSelector path="//PixelForwardActive1x5Right" />
+      <PartSelector path="//PixelForwardActive1x5Left" />
+      <PartSelector path="//PixelForwardActive2x3" />
+      <PartSelector path="//PixelForwardActive2x4" />
+      <PartSelector path="//PixelForwardActive2x5" />
       <Parameter name="PixelROC_X" value="2"/>
   </SpecPar>
 
@@ -297,6 +349,13 @@ definire plus e minus
   <SpecPar name="PixelROC_YPar">
       <PartSelector path="//PixelBarrelActiveFull" />
       <PartSelector path="//PixelBarrelActiveHalf" />
+      <PartSelector path="//PixelForwardActive1x2Right" />
+      <PartSelector path="//PixelForwardActive1x2Left" />
+      <PartSelector path="//PixelForwardActive1x5Right" />
+      <PartSelector path="//PixelForwardActive1x5Left" />
+      <PartSelector path="//PixelForwardActive2x3" />
+      <PartSelector path="//PixelForwardActive2x4" />
+      <PartSelector path="//PixelForwardActive2x5" />
       <Parameter name="PixelROC_Y" value="8"/>
   </SpecPar>
 
