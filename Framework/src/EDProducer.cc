@@ -4,11 +4,9 @@ $Id$
 
 ----------------------------------------------------------------------*/
 
-#include "FWCore/EDProduct/interface/EDProduct.h"
 #include "FWCore/Framework/interface/EDProducer.h"
 
-namespace edm
-{
+namespace edm {
   EDProducer::~EDProducer() { }
 
   void EDProducer::beginJob(EventSetup const&) {
@@ -20,6 +18,4 @@ namespace edm
    boost::function<void(const BranchDescription&)> EDProducer::registrationCallback() const {
       return callWhenNewProductsRegistered_;
    }
-
 }
-  

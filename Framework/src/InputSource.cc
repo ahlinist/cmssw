@@ -20,8 +20,7 @@ namespace edm {
 
   std::auto_ptr<EventPrincipal>
   InputSource::readEvent() {
-    // Do we need any error handling (e.g. exception translation)
-    // here?
+    // Do we need any error handling (e.g. exception translation) here?
     std::auto_ptr<EventPrincipal> ep(this->read());
     if (ep.get()) {
 	ep->addToProcessHistory(process_);
