@@ -26,6 +26,12 @@
 
 // forward declarations
 
+namespace edm {
+  class Event;
+  class EventSetup;
+  class ParameterSet;
+}
+
 class TestPRegisterModule2 : public edm::EDProducer
 {
 public:

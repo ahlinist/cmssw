@@ -150,7 +150,7 @@ void  testProductRegistry:: testProductRegistration(){
       "module m1 = TestPRegisterModule1{ } \n"
       "module m2 = TestPRegisterModule2{ } \n" 
       "path p = {m1,m2}\n"
-      "source = TestInputSource4ProductRegistry{ }\n"
+      "source = DummySource{ untracked int32 maxEvents = 1 }\n"
     "}\n";
 
   try {
