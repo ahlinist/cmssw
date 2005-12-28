@@ -17,7 +17,8 @@ namespace edm {
   EmptySource::~EmptySource() {
   }
 
-  void
+  bool
   EmptySource::produce(edm::Event &) {
+    return true;
   }
 }
