@@ -9,14 +9,12 @@ processing in a processing path.
 $Id$
 
 ----------------------------------------------------------------------*/
-#include "FWCore/Framework/interface/Event.h"
 
-#include "FWCore/Framework/interface/EventSetup.h"
-
-namespace edm
-  {
-  class EDFilter
-    {
+namespace edm {
+  class Event;
+  class EventSetup;
+  class ParameterSet;
+  class EDFilter {
     public:
       typedef EDFilter ModuleType;
 
@@ -24,9 +22,7 @@ namespace edm
       virtual bool filter(Event const& e, EventSetup const& c) = 0;
       virtual void beginJob(EventSetup const&) ;
       virtual void endJob() ;
-      
-      
-    };
+  };
 }
 
 #endif
