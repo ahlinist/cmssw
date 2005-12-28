@@ -16,16 +16,15 @@ $Id$
 
 #include "boost/shared_ptr.hpp"
 
-#include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/OutputModule.h"
-#include "FWCore/Framework/interface/ModuleDescription.h"
 #include "FWCore/Framework/src/Worker.h"
-#include "FWCore/Framework/src/WorkerParams.h"
 
 namespace edm
 {
-  class ParameterSet;
   class ActionTable;
+  class ModuleDescription;
+  class OutputModule;
+  class ParameterSet;
+  class WorkerParams;
 
   class OutputWorker : public Worker
   {

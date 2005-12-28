@@ -10,12 +10,13 @@ $Id$
 
 ----------------------------------------------------------------------*/
 
-#include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/ModuleDescription.h"
 #include "FWCore/Framework/src/WorkerParams.h"
 
 namespace edm {
   class ActionTable;
+  class EventPrincipal;
+  class EventSetup;
 
   class Worker
   {
