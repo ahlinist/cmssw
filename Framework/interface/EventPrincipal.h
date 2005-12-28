@@ -44,6 +44,7 @@ $Id$
 
 namespace edm {
     
+  class ProductRegistry;
   class EventPrincipal : public EDProductGetter {
   public:
     typedef std::vector<boost::shared_ptr<Group> > GroupVec;

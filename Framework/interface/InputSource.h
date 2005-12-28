@@ -49,6 +49,7 @@ namespace edm {
   class EventPrincipal;
   class ProductRegistry;
   class InputSourceDescription;
+  class ModuleDescription;
   class InputSource {
   public:
     explicit InputSource(InputSourceDescription const&);
@@ -57,6 +58,10 @@ namespace edm {
     // Indicate inability to get a new event by returning a null
     // auto_ptr.
     std::auto_ptr<EventPrincipal> readEvent();
+
+    void addToRegistry(ModuleDescription const& md) {
+      this->addToReg(md);
+    }
 
     ProductRegistry & productRegistry() const {return *preg_;}
     
@@ -71,6 +76,8 @@ namespace edm {
     // Indicate inability to get a new event by returning a null
     // auto_ptr.
     virtual std::auto_ptr<EventPrincipal> read() = 0;
+
+    virtual void addToReg(ModuleDescription const&);
   };
 }
 

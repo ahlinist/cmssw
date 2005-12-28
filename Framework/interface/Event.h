@@ -14,7 +14,6 @@ $Id$
 
 #include "boost/shared_ptr.hpp"
 
-#include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/EDProduct/interface/Wrapper.h"
 
 #include "FWCore/EDProduct/interface/EventID.h"
@@ -29,6 +28,12 @@ $Id$
 #include "FWCore/Framework/src/TypeID.h"
 
 namespace edm {
+  class EventPrincipal;
+  class LuminositySection;
+  class ModuleDescription;
+  class Provenance;
+  class Run;
+  class Selector;
 
   class Event
   {
@@ -97,10 +102,11 @@ namespace edm {
     //
     // commit() is called to complete the transaction represented by
     // this Event. The friendship required seems gross, but any
-    // alternative is not great either.  and putting it into the
+    // alternative is not great either.  Putting it into the
     // public interface is asking for trouble
     void commit_();
     friend class ProducerWorker;
+    friend class GenericInputSource;
 
     // The following 'get' functions serve to isolate the Event class
     // from the EventPrincipal class.
