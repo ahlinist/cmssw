@@ -23,6 +23,9 @@ namespace edm {
   class EventPrincipal;
   class EventProvenance;
   class EventSetup;
+  class ExternalInputSource;
+  class GeneratedInputSource;
+  class GenericInputSource;
   class Group;
   class InputSource;
   class InputSourceDescription;
@@ -34,6 +37,7 @@ namespace edm {
   class ProcessNameSelector;
   class BranchDescription;
   class ProductRegistry;
+  class ProductRegistryHelper;
   class Provenance;
   class RandomAccessInputSource;
   class Run;
