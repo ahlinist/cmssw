@@ -17,10 +17,6 @@ namespace edm
   void EDProducer::endJob() {
   }
 
-  EDProducer::TypeLabelList EDProducer::typeLabelList() const {
-    return typeLabelList_;
-  }
-
    boost::function<void(const BranchDescription&)> EDProducer::registrationCallback() const {
       return callWhenNewProductsRegistered_;
    }

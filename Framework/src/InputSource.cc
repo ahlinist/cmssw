@@ -28,4 +28,7 @@ namespace edm {
     }
     return ep;
   }
+
+  void
+  InputSource::addToReg(ModuleDescription const&) {}
 }
