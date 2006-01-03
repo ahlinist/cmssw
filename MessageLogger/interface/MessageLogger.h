@@ -134,6 +134,10 @@ private:
 
 };  // LogDebug_
 
+inline bool ProbeLogError   ( ELstring const & id ) { return true; }
+inline bool ProbeLogWarning ( ELstring const & id ) { return true; }
+inline bool ProbeLogInfo    ( ELstring const & id ) { return true; }
+inline bool ProbeLogDebug   ( ELstring const & id ) { return true; }
 
 }  // namespace edm
 
