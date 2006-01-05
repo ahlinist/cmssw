@@ -27,4 +27,8 @@ namespace edm {
 
   void OutputModule::endJob() {
   }
+
+  unsigned long OutputModule::nextID() const {
+    return nextID_;
+  }
 }

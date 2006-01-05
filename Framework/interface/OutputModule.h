@@ -30,8 +30,11 @@ namespace edm {
     virtual void endJob();
     virtual void write(EventPrincipal const& e) = 0;
     bool selected(BranchDescription const& desc) const {return groupSelector_.selected(desc);}
-  protected:
+
+    unsigned long nextID() const;
+  private:
     unsigned long nextID_;
+  protected:
     Selections descVec_;
   private:
     GroupSelector groupSelector_;
