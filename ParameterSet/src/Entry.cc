@@ -447,7 +447,7 @@ namespace edm {
 
   std::vector<double>
   Entry::getVDouble() const {
-    if(type != 'u')
+    if(type != 'd')
       throw ValueError("value's type is not vDouble");
     std::vector<double>  val;
     if(!decode(val, rep))
