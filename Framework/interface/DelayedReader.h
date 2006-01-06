@@ -17,12 +17,12 @@ $Id$
 
 namespace edm {
   class BranchKey;
-  class EventPrincipal;
+  class EDProductGetter;
   class DelayedReader {
   public:
     virtual ~DelayedReader();
 
-    virtual std::auto_ptr<EDProduct> get(BranchKey const& k, EventPrincipal const* ep) const = 0;
+    virtual std::auto_ptr<EDProduct> get(BranchKey const& k, EDProductGetter const* ep) const = 0;
   };
 }
 
