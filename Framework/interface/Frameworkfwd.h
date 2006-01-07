@@ -39,7 +39,6 @@ namespace edm {
   class ProductRegistry;
   class ProductRegistryHelper;
   class Provenance;
-  class RandomAccessInputSource;
   class Run;
   class RunHandler;
   class SecondaryInputSource;

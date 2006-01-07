@@ -50,6 +50,7 @@ namespace edm {
   class ProductRegistry;
   class InputSourceDescription;
   class ModuleDescription;
+  class EventID;
   class InputSource {
   public:
     explicit InputSource(InputSourceDescription const&);
@@ -59,25 +60,36 @@ namespace edm {
     // auto_ptr.
     std::auto_ptr<EventPrincipal> readEvent();
 
+    std::auto_ptr<EventPrincipal> readEvent(EventID const&);
+
     void addToRegistry(ModuleDescription const& md) {
       this->addToReg(md);
     }
 
     ProductRegistry & productRegistry() const {return *preg_;}
     
-  protected:
+    void skipEvents(int offset);
+
+  protected: // FIX: Make this private in next release
+
     // A pointer to the ProductRegistry;
     ProductRegistry * preg_;
 
+  private:
     // The process name we add to each EventPrincipal.
     std::string const process_;
 
-  private:
     // Indicate inability to get a new event by returning a null
     // auto_ptr.
     virtual std::auto_ptr<EventPrincipal> read() = 0;
 
     virtual void addToReg(ModuleDescription const&);
+
+    // FIX: Make this = 0 in next release
+    virtual std::auto_ptr<EventPrincipal> read(EventID const&) {assert(0);}
+
+    // FIX: Make this = 0 in next release
+    virtual void skip(int) {assert(0);}
   };
 }
 

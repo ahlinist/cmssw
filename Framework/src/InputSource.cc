@@ -28,6 +28,21 @@ namespace edm {
     return ep;
   }
 
+  std::auto_ptr<EventPrincipal>
+  InputSource::readEvent(EventID const& eventID) {
+    // Do we need any error handling (e.g. exception translation) here?
+    std::auto_ptr<EventPrincipal> ep(this->read(eventID));
+    if (ep.get()) {
+	ep->addToProcessHistory(process_);
+    }
+    return ep;
+  }
+
   void
   InputSource::addToReg(ModuleDescription const&) {}
+
+  void
+  InputSource::skipEvents(int offset) {
+    this->skip(offset);
+  }
 }
