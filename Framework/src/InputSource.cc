@@ -12,8 +12,10 @@ namespace edm {
   InputSource::InputSource(InputSourceDescription const& desc) :
       preg_(desc.preg_),
       process_(desc.processName_) {
-    assert(preg_ != 0);
-    assert(!process_.empty());
+    // Secondary input sources currently do not have a product registry or a process name.
+    // So, these asserts are commented out. for now.
+    // assert(preg_ != 0);
+    // assert(!process_.empty());
   }
 
   InputSource::~InputSource() {}
