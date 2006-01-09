@@ -1,7 +1,8 @@
 #include "DQMServices/WebComponents/interface/WebPage.h"
 
-WebPage::WebPage()
+WebPage::WebPage(std::string the_url)
 {
+  url = the_url;
 }
 
 void WebPage::add(std::string name, WebElement * element_p)
@@ -26,8 +27,13 @@ void WebPage::clear()
 void WebPage::printHTML(xgi::Output * out)
 {
   std::map<std::string, WebElement *>::iterator it;
+
+   *out << cgicc::body() << std::endl;
+
   for (it = element_map.begin(); it != element_map.end(); it++)
     {
       it->second->printHTML(out);
     }
+
+  *out << cgicc::body() << std::endl;
 }
