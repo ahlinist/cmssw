@@ -12,8 +12,22 @@
   <use name=DataFormats/TrackReco>
   <use name=PhysicsTools/FWLite>
   <use name=FWCore/Framework>
-  <use name=root>
   <use name=DataSvc>
   <use name=Dictionary/Reflex>
   <use name=Collection>
+  <use name=root>
+</bin>
+
+<bin file=recoPlots_pool.cpp>
+  <use name=DataFormats/TrackReco>
+  <use name=DataFormats/MuonReco>
+  <use name=DataFormats/VertexReco>
+  <use name=DataFormats/EGammaReco>
+  <use name=PhysicsTools/FWLite>
+  <use name=FWCore/Framework>
+  <use name=DataSvc>
+  <use name=Dictionary/Reflex>
+  <use name=Collection>
+  <use name=root>
+  <use name=boost>
 </bin>
