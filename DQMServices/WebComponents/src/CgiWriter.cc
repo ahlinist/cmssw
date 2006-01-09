@@ -11,10 +11,19 @@ void CgiWriter::output_preamble()
 
 void CgiWriter::output_head()
 {
-  std::string js_file_url = contextURL + "/temporary/WebLib.js";
-  std::cout << "javascript file url: " << js_file_url << std::endl;
-  *out << cgicc::head() << std::endl;
-  *out << cgicc::script().set("src", js_file_url.c_str()) << std::endl;
+  std::string js_file_url  = contextURL + "/temporary/WebLib.js";
+  std::string css_file_url = contextURL + "/temporary/style.css";
+
   *out << cgicc::head() << std::endl;
 
+  *out << cgicc::script().set("src", js_file_url.c_str()) << std::endl;
+
+  *out << cgicc::link().set("type", "text/css").set("href", css_file_url.c_str()).set("rel", "stylesheet") << std::endl;
+
+  *out << cgicc::head() << std::endl;
+}
+
+void CgiWriter::output_finish()
+{
+  *out << "</html>" << std::endl;
 }

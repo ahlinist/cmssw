@@ -11,13 +11,14 @@ class WebPage
 {
  private:
 
+  std::string url;
   std::map<std::string, WebElement *> element_map;
 
  protected:
 
  public:
 
-  WebPage();
+  WebPage(std::string the_url);
 
   void add(std::string, WebElement *);
   void remove(std::string);

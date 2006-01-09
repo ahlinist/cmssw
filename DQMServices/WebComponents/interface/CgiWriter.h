@@ -22,4 +22,5 @@ class CgiWriter
 
   void output_preamble();
   void output_head();
+  void output_finish();
 };
