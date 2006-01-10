@@ -43,6 +43,7 @@ namespace edm {
   class RunHandler;
   class SecondaryInputSource;
   class Selector;
+  class VectorInputSource;
 
   template <typename T> class Handle;
 }
