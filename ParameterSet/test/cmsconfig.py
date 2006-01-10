@@ -210,6 +210,13 @@ class cmsconfig:
         
         return result
 
+    def asPythonString(self):
+       """Return a string containing the python psdata source of
+       this object to facilitate saving and loading of python format"""
+       result = "#!/usr/bin/env python\n"
+       result += str(self.psdata)
+       return result 
+
     def __write_self_to_stream(self, fileobj):
         """Private method.
         Return None.
