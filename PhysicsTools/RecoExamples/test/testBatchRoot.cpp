@@ -17,7 +17,7 @@ int main() {
   TFile file("reco.root");
   TTree * events = dynamic_cast<TTree*>( file.Get( "Events" ) );
   assert( events != 0 );
-  TBranch * branch = events->GetBranch( "TrackExtra_AllTrackExtras.obj" );
+  TBranch * branch = events->GetBranch( "TrackExtra_TrackExtras.obj" );
   assert( branch != 0 );
 
   TrackExtraCollection trkExtra;
