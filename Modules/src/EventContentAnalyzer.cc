@@ -194,7 +194,7 @@ static void printObject(const edm::Event& iEvent,
 EventContentAnalyzer::EventContentAnalyzer(const edm::ParameterSet& iConfig) :
   indentation_(iConfig.getUntrackedParameter("indentation",std::string("++"))),
   verboseIndentation_(iConfig.getUntrackedParameter("verboseIndention",std::string("  "))),
-  moduleLabels_(iConfig.getUntrackedParameter("verboseLabels",std::vector<std::string>())),
+  moduleLabels_(iConfig.getUntrackedParameter("verboseForModuleLabels",std::vector<std::string>())),
   verbose_(iConfig.getUntrackedParameter("verbose",false) || moduleLabels_.size()>0),
   evno_(0)
 {
