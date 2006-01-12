@@ -45,7 +45,8 @@ bool MessageLogger::everyDebugEnabled_ = false;
 MessageLogger::MessageLogger( ParameterSet const & iPS
                             , ActivityRegistry   & iRegistry
                             )
-			    : debugEnabled_(false)
+			    : curr_module_("BeginningJob"),
+			      debugEnabled_(false)
 {
   typedef std::vector<std::string>  vString;
    vString  empty_vString;
@@ -153,7 +154,7 @@ MessageLogger::preModule(const ModuleDescription& desc)
   if (!anyDebugEnabled_) {
     debugEnabled_ = false;
   } else if (everyDebugEnabled_) {
-    debugEnabled_ = false;
+    debugEnabled_ = true;
   } else {
     debugEnabled_ = debugEnabledModules_.count(desc.moduleLabel_);
   }
