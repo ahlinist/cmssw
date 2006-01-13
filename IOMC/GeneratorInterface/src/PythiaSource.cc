@@ -1,6 +1,6 @@
 /*
- *  $Date: 2005/10/26 13:57:04 $
- *  $Revision: 1.1 $
+ *  $Date: 2005/11/02 15:01:36 $
+ *  $Revision: 1.2 $
  *  \author N. Amapane - S. Argiro'
  *  Modified by Filip Moorgat & Hector Naves 
  *   for the Generator Interface. 26/10/05
@@ -95,7 +95,7 @@ PythiaSource::PythiaSource( const ParameterSet & pset, InputSourceDescription co
   modDesc_.pass = 1UL;  
     
   branchDesc_.module = modDesc_;   
-  branchDesc_.fullClassName_= "HepMCProduct";
+  branchDesc_.fullClassName_= "edm::HepMCProduct";
   branchDesc_.friendlyClassName_ = "HepMCProduct";   
   preg_->addProduct(branchDesc_);
  }
@@ -144,6 +144,7 @@ auto_ptr<EventPrincipal> PythiaSource::read() {
     auto_ptr<Provenance> prov(new Provenance(branchDesc_));
 
     result->put(prod, prov);
+    result->addToProcessHistory("HepMC");
     cout << "PythiaSource: Generation done " << endl;
     if( ++numberEventsInThisRun_ < numberEventsInRun_ ) {
         nextID_ = nextID_.next();
