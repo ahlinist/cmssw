@@ -1,9 +1,9 @@
 # include "DQMServices/WebComponents/interface/CgiReader.h"
 
 /************************************************/
-// Read any form and return a map of the elements
+// Read any form and return a multimap with the elements
 
-void CgiReader::read_form(std::map<std::string, std::string> &form_info)
+void CgiReader::read_form(std::multimap<std::string, std::string> &form_info)
 {
   cgicc::Cgicc reader(in);
 
