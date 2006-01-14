@@ -32,7 +32,7 @@ class CgiReader
 
   ~CgiReader(){}
 
-  void read_form(std::map<std::string, std::string> &form_info);
+  void read_form(std::multimap<std::string, std::string> &form_info);
   std::string read_cookie(std::string name);
 
 };
