@@ -79,9 +79,11 @@ static bool printAsBuiltin(const std::string& iName,
    static TypeToPrintMap s_map;
    static bool isFirst = true;
    if(isFirst){
+      addToMap<char>(s_map);
       addToMap<short>(s_map);
       addToMap<int>(s_map);
       addToMap<long>(s_map);
+      addToMap<unsigned char>(s_map);
       addToMap<unsigned short>(s_map);
       addToMap<unsigned int>(s_map);
       addToMap<unsigned long>(s_map);
