@@ -153,10 +153,14 @@ static void printObject(const std::string& iName,
        itMember != objectToPrint.type().dataMember_end();
        ++itMember){
       //std::cout <<"     debug "<<itMember->name()<<" "<<itMember->type().name()<<"\n";
-      printObject( itMember->name(),
-                   itMember->get( iObject),
-                   indent,
-                   iIndentDelta);
+      try {
+         printObject( itMember->name(),
+                      itMember->get( iObject),
+                      indent,
+                      iIndentDelta);
+      }catch(...) {
+         std::cout <<indent<<"<exception caught>"<<"\n";
+      }
    }
 };
 
