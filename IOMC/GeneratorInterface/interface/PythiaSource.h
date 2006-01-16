@@ -9,12 +9,7 @@
  *   for the Generator Interface. 26/10/05             
  ***************************************/
 
-#include "FWCore/Framework/interface/InputSource.h"
-#include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/Framework/interface/InputSourceDescription.h"
-#include "FWCore/Framework/interface/ProductRegistry.h"
-#include "FWCore/Framework/interface/BranchDescription.h"
-#include "FWCore/EDProduct/interface/EventID.h"
+#include "FWCore/Framework/interface/GeneratedInputSource.h"
 #include <map>
 #include <string>
 #include "CLHEP/HepMC/GenEvent.h"
@@ -23,24 +18,17 @@ class HepMCFileReader;
 
 namespace edm
 {
-  class PythiaSource : public InputSource {
+  class PythiaSource : public GeneratedInputSource {
   public:
-    PythiaSource(const ParameterSet &, const InputSourceDescription &  );
+    PythiaSource(const ParameterSet &, const InputSourceDescription &);
    virtual ~PythiaSource();
 
 
   private:
    
-   virtual std::auto_ptr<EventPrincipal> read();
+   virtual bool produce(Event & e);
     void clear();
     
-    int remainingEvents_;
-    unsigned long numberEventsInRun_;
-    unsigned long presentRun_;
-    unsigned long nextTime_;
-    unsigned long timeBetweenEvents_;
-    unsigned long numberEventsInThisRun_;
-
     // **************
     // Pythia modificators
     int pysubs_msel_;
@@ -50,13 +38,7 @@ namespace edm
     int pydat2_pmas_;
     // **************
 
-    EventID nextID_;
-    
     HepMC::GenEvent  *evt;
-    
-    std::string filename_;
-    BranchDescription branchDesc_;
-	
     
     	
   };
