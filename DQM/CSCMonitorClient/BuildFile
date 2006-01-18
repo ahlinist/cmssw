@@ -1,0 +1,5 @@
+<export>
+<use name=DQMServices/WebComponents>
+</export>
+<lib name=DQMCSCMonitorClient>
+<use name=DQMServices/WebComponents>
