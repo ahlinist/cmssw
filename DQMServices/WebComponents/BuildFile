@@ -16,7 +16,7 @@
 <lib name=mimetic>
 <lib name=xmlappender>
 <export>
- <lib name=WebTest>
+ <lib name=DQMServicesWebComponents>
  <use name=root>
  <use name=boost>
  <use name=DQMServices/Core>
