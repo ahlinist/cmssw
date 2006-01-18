@@ -124,6 +124,7 @@ void
 MessageLogger::postEndJob()
 {
   edm::LogInfo("postEndJob") << "Job ended";
+  MessageLoggerQ::SUM ( ); // trigger summary info.
 }
 
 void
