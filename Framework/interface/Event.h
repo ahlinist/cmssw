@@ -106,7 +106,8 @@ namespace edm {
     // public interface is asking for trouble
     void commit_();
     friend class ProducerWorker;
-    friend class GenericInputSource;
+    friend class ConfigurableInputSource;
+    friend class RawInputSource;
 
     // The following 'get' functions serve to isolate the Event class
     // from the EventPrincipal class.
