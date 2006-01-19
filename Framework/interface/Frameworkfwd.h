@@ -13,7 +13,9 @@ $Id$
 
 namespace edm {
   class BasicHandle;
+  class BranchDescription;
   class BranchKey;
+  class ConfigurableInputSource;
   class DelayedReader;
   class EDAnalyzer;
   class EDFilter;
@@ -35,14 +37,14 @@ namespace edm {
   class OutputModule;
   class ParameterSet;
   class ProcessNameSelector;
-  class BranchDescription;
   class ProductRegistry;
   class ProductRegistryHelper;
   class Provenance;
+  class RawInputSource;
   class Run;
   class RunHandler;
-  class SecondaryInputSource;
   class Selector;
+  class TypeID;
   class VectorInputSource;
 
   template <typename T> class Handle;
