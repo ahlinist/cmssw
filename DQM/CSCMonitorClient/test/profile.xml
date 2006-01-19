@@ -5,17 +5,20 @@
 	<!-- Compulsory  Plugins -->
 	<xp:Application class="Executive" id="0"  service="executive" network="local">
 		<properties xmlns="urn:xdaq-application:Executive" xsi:type="soapenc:Struct">
+                	<!-- logUrl xsi:type="xsd:string">udp://lxcmd103:50000</logUrl -->
+                	<!-- logLevel xsi:type="xsd:string">INFO</logLevel -->
                 </properties>
-
 	</xp:Application>
+
 	<xp:Module>${XDAQ_ROOT}/lib/linux/x86/libexecutive.so</xp:Module>
 	
 	<xp:Application class="PeerTransportHTTP" id="1"  network="local">
 		 <properties xmlns="urn:xdaq-application:PeerTransportHTTP" xsi:type="soapenc:Struct">
                         <aliasName xsi:type="xsd:string">temporary</aliasName>
-                        <aliasPath xsi:type="xsd:string">/afs/cern.ch/user/s/segoni/scratch0/CMSSW_0_4_0_pre1/src/DQM/CSCMonitorClient/test</aliasPath>
+                        <aliasPath xsi:type="xsd:string">/afs/cern.ch/user/s/segoni/scratch0/CMSSW_2006-01-18/src/DQM/CSCMonitorClient/test</aliasPath>
                 </properties>
 	</xp:Application>
+
 	<xp:Module> ${XDAQ_ROOT}/lib/linux/x86/libpthttp.so </xp:Module>
 
 	<xp:Application class="PeerTransportFifo" id="8"  network="local"/>
@@ -29,4 +32,5 @@
 	<xp:Application class="HyperDAQ" id="3"  service="hyperdaq" network="local"/>
 	<xp:Module>${XDAQ_ROOT}/lib/linux/x86/libhyperdaq.so</xp:Module>
 	
+
 </xp:Profile>
