@@ -101,6 +101,15 @@ MessageLogger::MessageLogger( ParameterSet const & iPS
 // }
 
 //
+// free funtions
+//
+
+void edm::LogStatistics() {
+  edm::MessageLoggerQ::SUM ( ); // trigger summary info.
+}
+
+
+//
 // member functions
 //
 

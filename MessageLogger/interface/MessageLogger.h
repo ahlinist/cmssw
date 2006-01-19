@@ -137,6 +137,8 @@ onlyLowestDirectory(const std::string & file) {
   return file.substr(lastSlash+1, file.size()-lastSlash-1);
 }
 
+void LogStatistics(); 
+
 class LogDebug_
 {
 public:
