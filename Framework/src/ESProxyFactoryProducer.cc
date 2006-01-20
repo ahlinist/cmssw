@@ -12,13 +12,14 @@
 //
 
 // system include files
-
+#include "boost/bind.hpp"
 // user include files
 #include "FWCore/Framework/interface/ESProxyFactoryProducer.h"
 #include "FWCore/Framework/interface/ProxyFactoryBase.h"
 
 #include "FWCore/Framework/interface/DataProxy.h"
 
+#include "FWCore/Utilities/interface/Exception.h"
 //
 // constants, enums and typedefs
 //
@@ -94,6 +95,20 @@ ESProxyFactoryProducer::registerFactoryWithKey(const EventSetupRecordKey& iRecor
    FactoryInfo info(temp->makeKey(iLabel),
                     temp);
    
+   //has this already been registered?
+   std::pair<Record2Factories::const_iterator,Record2Factories::const_iterator> range =
+      record2Factories_.equal_range(iRecord);
+   if(range.second != std::find_if(range.first,range.second,
+                                   boost::bind(std::equal_to<DataKey>(),
+                                               boost::bind(&FactoryInfo::key_,
+                                                           boost::bind(&Record2Factories::value_type::second,
+                                                                       _1)),
+                                               info.key_)
+                                   ) ) {
+      throw cms::Exception("IdenticalProducts")<<"Producer has been asked to produce "<<info.key_.type().name()
+      <<" \""<<info.key_.name().value()<<"\" multiple times.\n Please modify the code.";
+   }
+                                               
    record2Factories_.insert(Record2Factories::value_type(iRecord,
                                                          info));
 }
