@@ -8,3 +8,8 @@
  <use name=seal>
  <lib name="lcg_Cintex">
 </bin>
+
+<bin name="testBatchPlot" file="testBatchPlot.cpp">
+ <use name=PhysicsTools/FWLite>
+ <use name=root>
+</bin>
