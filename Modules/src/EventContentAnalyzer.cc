@@ -136,11 +136,16 @@ static void printObject(const std::string& iName,
          iObject.address()==0) {
          return;
       }
+      return;
+      /*
+       This code causes seg-faults.  Needs further work before deployment.
+       
       //have the code that follows print the contents of the data to which the pointer points
       objectToPrint = seal::reflex::Object(pointedType, *reinterpret_cast<void**>(iObject.address()));
       objectToPrint = Object(objectToPrint.castObject(objectToPrint.dynamicType()));
       printName = std::string("*")+iName;
       indent +=iIndentDelta;
+       */
    }
    std::string typeName(objectToPrint.type().name());
    if(typeName.empty()){
