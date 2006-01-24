@@ -253,7 +253,7 @@ namespace edm {
     ProcessNameList::const_reverse_iterator eproc = aux_.process_history_.rend();
     while (iproc != eproc) {
 	string const& processName_ = *iproc;
-	BranchKey bk(id, label, productInstanceName, processName_);
+	BranchKey bk(id.friendlyClassName(), label, productInstanceName, processName_);
 	BranchDict::const_iterator i = branchDict_.find(bk);
 
 	if (i != branchDict_.end()) {
