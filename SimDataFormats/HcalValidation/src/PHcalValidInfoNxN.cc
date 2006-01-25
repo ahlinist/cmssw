@@ -2,7 +2,7 @@
 // File: PHcalValidInfoNxN.cc
 // Description: Persistent NxN analysis informaion for SimG4HcalValidation
 ///////////////////////////////////////////////////////////////////////////////
-#include "SimG4Validation/Hcal/interface/PHcalValidInfoNxN.h"
+#include "SimDataFormats/HcalValidation/interface/PHcalValidInfoNxN.h"
 
 #include <cmath>
 

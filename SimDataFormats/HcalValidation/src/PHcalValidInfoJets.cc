@@ -2,7 +2,7 @@
 // File: PHcalValidInfoJets.cc
 // Description: Persistent Jet analysis informaion for SimG4HcalValidation
 ///////////////////////////////////////////////////////////////////////////////
-#include "SimG4Validation/Hcal/interface/PHcalValidInfoJets.h"
+#include "SimDataFormats/HcalValidation/interface/PHcalValidInfoJets.h"
 
 #include <cmath>
 
