@@ -1,6 +1,6 @@
-#include "SimG4Validation/Hcal/interface/PHcalValidInfoLayer.h"
-#include "SimG4Validation/Hcal/interface/PHcalValidInfoNxN.h"
-#include "SimG4Validation/Hcal/interface/PHcalValidInfoJets.h"
+#include "SimDataFormats/HcalValidation/interface/PHcalValidInfoLayer.h"
+#include "SimDataFormats/HcalValidation/interface/PHcalValidInfoNxN.h"
+#include "SimDataFormats/HcalValidation/interface/PHcalValidInfoJets.h"
 #include "FWCore/EDProduct/interface/Wrapper.h"
 #include <vector>
 

@@ -2,7 +2,7 @@
 // File: PHcalValidInfoLayer.cc
 // Description: Persistent Layer and Hit informaion for SimG4HcalValidation
 ///////////////////////////////////////////////////////////////////////////////
-#include "SimG4Validation/Hcal/interface/PHcalValidInfoLayer.h"
+#include "SimDataFormats/HcalValidation/interface/PHcalValidInfoLayer.h"
 #include "SimG4CMS/Calo/interface/HcalTestNumberingScheme.h"
 
 #include <iostream>
