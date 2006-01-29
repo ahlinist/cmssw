@@ -284,8 +284,10 @@ namespace edm {
     TypeDict::const_iterator i = typeDict_.find(id.friendlyClassName());
 
     if(i==typeDict_.end()) {
-	throw edm::Exception(errors::ProductNotFound,"NoMatch")
-	  << "getMany: no products found of correct type\n" << id;
+	return;
+	// it is not an error to return no items
+	// throw edm::Exception(errors::ProductNotFound,"NoMatch")
+	//   << "getMany: no products found of correct type\n" << id;
     }
 
     vector<int> const& vint = i->second;
@@ -348,8 +350,10 @@ namespace edm {
     TypeDict::const_iterator i = typeDict_.find(id.friendlyClassName());
 
     if(i==typeDict_.end()) {
-      throw edm::Exception(errors::ProductNotFound,"NoMatch")
-        << "getManyByType: no products found of correct type\n" << id;
+		return;
+      // it is not an error to find no match
+      // throw edm::Exception(errors::ProductNotFound,"NoMatch")
+      //   << "getManyByType: no products found of correct type\n" << id;
     }
 
     vector<int> const& vint = i->second;

@@ -12,6 +12,10 @@
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Framework/src/WorkerParams.h"
+#include "FWCore/ServiceRegistry/interface/ActivityRegistry.h"
+
+#include "boost/shared_ptr.hpp"
+
 #include <map>
 #include <string>
 
@@ -34,7 +38,9 @@ namespace edm {
   class WorkerRegistry {
 
   public:
- 
+
+    WorkerRegistry();
+    explicit WorkerRegistry(boost::shared_ptr<ActivityRegistry> areg);
     ~WorkerRegistry();
         
     /// Retrieve the particular instance of the worker
@@ -58,6 +64,7 @@ namespace edm {
 
     /// internal map of registered workers (owned). 
     WorkerMap m_workerMap;
+    boost::shared_ptr<ActivityRegistry> act_reg_;
      
   }; // WorkerRegistry
 

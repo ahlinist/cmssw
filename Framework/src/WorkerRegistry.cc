@@ -20,8 +20,15 @@ static const char CVSId[] = "$Id$";
 using namespace std;
 using namespace edm;
 
+WorkerRegistry::WorkerRegistry():
+  act_reg_(new ActivityRegistry)
+{
+}
 
-
+WorkerRegistry::WorkerRegistry(boost::shared_ptr<ActivityRegistry> areg):
+  act_reg_(areg)
+{
+}
 
 WorkerRegistry:: ~WorkerRegistry(){
 
@@ -45,8 +52,11 @@ Worker* WorkerRegistry::getWorker(const WorkerParams& p) {
     std::auto_ptr<Worker> workerPtr=
       Factory::get()->makeWorker(p);
     
-    Worker* w =  workerPtr.release(); // take ownership
+    workerPtr->connect(act_reg_->preModuleSignal_,act_reg_->postModuleSignal_);
+
+    Worker* w =  workerPtr.get(); // take ownership
     m_workerMap[workerid] = w;
+    workerPtr.release();
     return w;
     
   } 
