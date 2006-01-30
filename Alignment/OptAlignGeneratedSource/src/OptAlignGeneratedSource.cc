@@ -71,6 +71,13 @@ bool OptAlignGeneratedSource::produce ( edm::Event& e ) {
     oainfo.objectType_ = "plate";
     oainfo.objectID_ = i;
 
+    // fill in one BS. entry for the ExtraEntries.
+    temp.value_  = RandFlat::shoot(1.0, 10.0);
+    temp.error_  = temp.value_ / 20;
+    temp.iState_ = 'f';
+    oainfo.extraEntries_.push_back(temp);
+    oainfo.extraEntries_.push_back(temp);
+
     result->opticalAlignments_.push_back(oainfo);
 
   }
