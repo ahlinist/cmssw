@@ -79,7 +79,7 @@ bool OptAlignGeneratedSource::produce ( edm::Event& e ) {
     oainfo.extraEntries_.push_back(temp);
 
     result->opticalAlignments_.push_back(oainfo);
-
+    oainfo.extraEntries_.clear();
   }
 
   e.put(result);
