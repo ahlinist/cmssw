@@ -204,6 +204,7 @@ namespace edm {
     void SimpleMemoryCheck::postEventProcessing(const Event& e,
 						const EventSetup&)
     {
+	  ++count_;
     }
 
     void SimpleMemoryCheck::preModule(const ModuleDescription& md)
@@ -230,7 +231,6 @@ namespace edm {
 	  
 	  max_ = *current_;
 	}
-	  ++count_;
 
     }
 
