@@ -212,13 +212,12 @@ namespace edm {
 
     void SimpleMemoryCheck::postModule(const ModuleDescription& md)
     {
-      if(++count_ < num_to_skip_) return;
-
       swap(current_,previous_);
       *current_ = fetch();
 
       if(*current_ > max_)
 	{
+	  if(count_ >= num_to_skip_)
 	  LogWarning("MemoryIncrease")
 	    << "Memory increased from "
 	    << "VSIZE=" << max_.vsize << "MB "
@@ -231,6 +230,8 @@ namespace edm {
 	  
 	  max_ = *current_;
 	}
+	  ++count_;
+
     }
 
   }
