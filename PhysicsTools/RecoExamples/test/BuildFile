@@ -6,7 +6,7 @@
  <use name=FWCore/Framework>
  <use name=root>
  <use name=seal>
- <lib name="lcg_Cintex">
+ <lib name="Cintex">
 </bin>
 
 <bin name="testBatchPlot" file="testBatchPlot.cpp">
