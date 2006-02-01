@@ -8,7 +8,7 @@
  <Constant name="SideRailY"  value="-0.061*cm"/>
  <Constant name="LedgeDz"    value="0.450*cm"/>
  <Constant name="LedgeY"     value="-0.086*cm"/>
- <Constant name="LedgeZ"     value="-7.700*cm"/>
+ <Constant name="LedgeZ"     value="7.700*cm"/>
  <Constant name="ModCoolY"   value="-0.112*cm"/>
  <Constant name="WaferY"     value="-0.001*cm"/>
 </ConstantsSection>
