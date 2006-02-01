@@ -12,7 +12,7 @@
 using namespace std;
 using namespace reco;
 int main() {
-  seal::cintex::Cintex::enable();
+  ROOT::Cintex::Cintex::Enable();
 
   TFile file("reco.root");
   TTree * events = dynamic_cast<TTree*>( file.Get( "Events" ) );
