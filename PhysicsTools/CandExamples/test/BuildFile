@@ -1,13 +1,13 @@
 <bin name="higgsPlots" file="higgsPlots.cpp">
  <use name=PhysicsTools/RecoCandidate>
  <use name=root>
- <lib name="lcg_Cintex">
+ <lib name="Cintex">
 </bin>
 
 <bin name="candPlots" file="candPlots.cpp">
  <use name=PhysicsTools/RecoCandidate>
  <use name=root>
- <lib name="lcg_Cintex">
+ <lib name="Cintex">
 </bin>
 
 <bin file=candPlots_pool.cpp>
@@ -16,6 +16,6 @@
   <use name=FWCore/Framework>
   <use name=root>
   <use name=DataSvc>
-  <use name=Dictionary/Reflex>
+  <use name=rootrflx>
   <use name=Collection>
 </bin>
