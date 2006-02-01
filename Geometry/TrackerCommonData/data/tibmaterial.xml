@@ -2,6 +2,71 @@
 <DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../DetectorDescription/Schema/DDLSchema.xsd">
 
 <MaterialSection label="tibmaterial.xml">
+  <CompositeMaterial name="TIB_DOHM_cable" density="2.925*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="0.42441">
+      <rMaterial name="materials:T_Kapton"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.57559">
+      <rMaterial name="materials:Copper"/>
+    </MaterialFraction>
+  </CompositeMaterial>
+  <CompositeMaterial name="TIB_DOHM_carrier" density="1.811*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="0.83436">
+      <rMaterial name="materials:T_FR4"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.16564">
+      <rMaterial name="materials:Aluminium"/>
+    </MaterialFraction>
+  </CompositeMaterial>
+  <CompositeMaterial name="TIB_DOHM_AUX" density="2.060*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="0.65491">
+      <rMaterial name="materials:T_FR4"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.17945">
+      <rMaterial name="materials:Copper"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.09911">
+      <rMaterial name="materials:T_Kapton"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.03529">
+      <rMaterial name="materials:T_Bronze"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.00349">
+      <rMaterial name="materials:Carbon"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.00678">
+      <rMaterial name="materials:Alumina"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.02097">
+      <rMaterial name="materials:SMD_metal"/>
+    </MaterialFraction>
+  </CompositeMaterial>
+  <CompositeMaterial name="TIB_DOHM_PRIM" density="1.923*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="0.61593">
+      <rMaterial name="materials:T_FR4"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.16774">
+      <rMaterial name="materials:Copper"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.06395">
+      <rMaterial name="materials:T_Kapton"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.02400">
+      <rMaterial name="materials:T_Bronze"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.00157">
+      <rMaterial name="materials:Carbon"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.00400">
+      <rMaterial name="materials:Alumina"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.02593">
+      <rMaterial name="materials:SMD_metal"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.09687">
+      <rMaterial name="tibmaterial:TIB_CCUM"/>
+    </MaterialFraction>
+  </CompositeMaterial>
   <CompositeMaterial name="TIB_CCUM" density="1.124*g/cm3" symbol=" " method="mixture by weight">
     <MaterialFraction fraction="0.054799792">
       <rMaterial name="materials:Silicon"/>
