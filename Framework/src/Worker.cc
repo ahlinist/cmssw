@@ -65,7 +65,7 @@ namespace edm
     switch(state_)
       {
       case Ready: break;
-      case Pass: break;
+      case Pass: return true;
       case Fail: return false;
       case Exception:
 	{
