@@ -5,8 +5,8 @@
  * *
  *  Class that handles the CSC Quality Tests
  * 
- *  $Date: 2006/01/18 16:54:23 $
- *  $Revision: 1.2 $
+ *  $Date: 2006/01/25 16:28:17 $
+ *  $Revision: 1.1 $
  *  \author Ilaria Segoni
   */
 
@@ -14,6 +14,7 @@
 #include<string>
 #include<vector>
 #include <fstream>
+#include <map>
 
 class CSCQualityTester
 {
@@ -28,16 +29,18 @@ class CSCQualityTester
   /// Set up Quality Tests
   void SetupTests(MonitorUserInterface * mui) ;
 
-  /// Attaches Quality Tests to ME's
-  void AttachTests(MonitorUserInterface * mui) ;
-  
   /// Set up Quality Tests from Db and Sterts tests configuration
-  void GetTestsFromDB(MonitorUserInterface * mui) ;
+  void SetupTestsFromTextFile(MonitorUserInterface * mui) ;
  
-  /// Configures Tets
+  /// Fills map<QTestName,MonitorElement>
+  void LinkTeststoME() ;
+ 
+  /// Attaches Quality Tests to ME's
+  void AttachRunTests(MonitorUserInterface * mui) ;
+  
+  /// Configures Test of type ContentsXRangeROOT 
   void SetContentsXRangeROOTTest(MonitorUserInterface * mui,char[20] , float , float[5] ) ;
-  
-  
+
   /// Check Status of Quality Tests
   void CheckTests(MonitorUserInterface * mui);
   
@@ -46,8 +49,8 @@ class CSCQualityTester
   
   
   bool printout;
-  std::string qtest1;
   std::vector<std::string> qTests;
+  std::map< std::string , std::vector<std::string> > qTestToMEMap;
   std::ofstream logFile;
   
 };
