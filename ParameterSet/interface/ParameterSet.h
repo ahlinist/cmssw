@@ -83,8 +83,15 @@ namespace edm {
     addUntrackedParameter(std::string const& name, T value)
     {
       // No need to invalidate: this is modifying an untracked parameter!
+      // The 2nd argument to the c'tor of Entry should be *false*!!!
       insert(true, name, Entry(value, true));
     }
+
+    bool empty() const
+    {
+      return tbl_.empty();
+    }
+
 
 private:
     typedef std::map<std::string, Entry> table;
