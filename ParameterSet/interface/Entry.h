@@ -12,11 +12,6 @@
 //
 // ----------------------------------------------------------------------
 
-// ----------------------------------------------------------------------
-// prolog
-
-// ----------------------------------------------------------------------
-// prerequisite source files and headers
 
 #include <string>
 #include <stdexcept>
@@ -36,7 +31,8 @@ namespace edm {
   // ----------------------------------------------------------------------
   // EntryError
   
-  class EntryError : public cms::Exception {
+  class EntryError : public cms::Exception 
+  {
   public:
     explicit EntryError(std::string const& mesg)
       : cms::Exception("EntryError",mesg) {}
@@ -48,22 +44,23 @@ namespace edm {
   // ----------------------------------------------------------------------
   // ValueError
   
-  class ValueError : public cms::Exception {
+  class ValueError : public cms::Exception 
+  {
   public:
     explicit ValueError(std::string const& mesg)
       : cms::Exception("ValueError",mesg) {}
   
     virtual ~ValueError() throw() {}
-  
   };  // ValueError
   
   // ----------------------------------------------------------------------
   // Entry
   
-  class Entry {
+  class Entry 
+  {
   public:
     // default
-    Entry() : rep(), type('?'), tracked('?') {}
+    //    Entry() : rep(), type('?'), tracked('?') {}
   
     // Bool
     Entry(bool val, bool is_tracked);
@@ -149,7 +146,6 @@ namespace edm {
     return !(a == b);
   }
 } // namespace edm
-  // ----------------------------------------------------------------------
-  // epilog
+
   
 #endif
