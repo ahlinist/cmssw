@@ -20,7 +20,7 @@ CosMuoGenSource::CosMuoGenSource( const ParameterSet & pset, InputSourceDescript
   MinS(pset.getUntrackedParameter<double>("MinT0", 1)),
   MaxS(pset.getUntrackedParameter<double>("MaxT0", 1)),
   ELSF(pset.getUntrackedParameter<double>("ElossScaleFactor", 1)),
-  cmVerbosity_(pset.getUntrackedParameter<bool>("Verbosity", true))
+  cmVerbosity_(pset.getUntrackedParameter<bool>("Verbosity", false))
   {
    // set up the generator
     CosMuoGen = new CosmicMuonGenerator();
