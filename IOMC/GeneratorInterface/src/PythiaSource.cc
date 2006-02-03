@@ -1,6 +1,6 @@
 /*
- *  $Date: 2005/11/02 15:01:36 $
- *  $Revision: 1.2 $
+ *  $Date: 2006/01/16 15:41:39 $
+ *  $Revision: 1.4 $
  *  \author N. Amapane - S. Argiro'
  *  Modified by Filip Moorgat & Hector Naves 
  *   for the Generator Interface. 26/10/05
@@ -41,7 +41,9 @@ PythiaSource::PythiaSource( const ParameterSet & pset, InputSourceDescription co
   pysubs_msub_(pset.getUntrackedParameter<int>("pysubsMsub", 1)),
   pydatr_mrpy_(pset.getUntrackedParameter<int>("pydatrMrpy", 1)),
   pypars_mstp_(pset.getUntrackedParameter<int>("pyparsMstp", 1)),
-  pydat2_pmas_(pset.getUntrackedParameter<int>("pydat2Pmas", 1)) {
+  pydat2_pmas_(pset.getUntrackedParameter<int>("pydat2Pmas", 1)),
+  pythiaVerbosity_(pset.getUntrackedParameter<bool>("pythiaVerbosity", 
+  false)) {
 
 
   //********
@@ -87,7 +89,7 @@ void PythiaSource::clear() {
 bool PythiaSource::produce(Event & e) {
 
     auto_ptr<HepMCProduct> bare_product(new HepMCProduct());  
-    cout << "PythiaSource: Start generating ...  " << endl;
+    cout << "PythiaSource: Generating event ...  " << endl;
 
     //********                                         
     //
@@ -98,7 +100,7 @@ bool PythiaSource::produce(Event & e) {
     evt->set_signal_process_id(pysubs_msub_);
     evt->set_event_number(numberEventsInRun() - remainingEvents() - 1);
     
-    evt->print();
+    if (pythiaVerbosity_) evt->print();
 
     //evt = reader_->fillCurrentEventData(); 
     //********                                      
