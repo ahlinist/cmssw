@@ -19,7 +19,9 @@ using namespace std;
 namespace edm {
   namespace service {
 
-    TriggerNamesService::TriggerNamesService(const ParameterSet& pset)
+    TriggerNamesService::TriggerNamesService(const ParameterSet& pset,
+					     const string& pname):
+      process_name_(pname)
     {
       names_ = pset.getParameter<Strings>("@paths");
       for(unsigned int i=0;i<names_.size();++i) pos_[names_[i]] = i;

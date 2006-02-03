@@ -33,7 +33,7 @@ namespace edm {
     // OutputModule?
     bool rc = false;
 
-    mod_->write(ep);
+    mod_->writeEvent(ep,description());
     rc=true;
     return rc;
   }
