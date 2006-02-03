@@ -1,9 +1,9 @@
 /*
- *  $Date: 2006/01/16 15:41:39 $
- *  $Revision: 1.4 $
- *  \author N. Amapane - S. Argiro'
- *  Modified by Filip Moorgat & Hector Naves 
- *   for the Generator Interface. 26/10/05
+ *  $Date: 2006/02/03 09:02:51 $
+ *  $Revision: 1.5 $
+ *  
+ *  Filip Moorgat & Hector Naves 
+ *  26/10/05
  */
 
 
@@ -59,7 +59,7 @@ PythiaSource::PythiaSource( const ParameterSet & pset, InputSourceDescription co
   cout << endl;
   //********
 
-
+  cout << "PythiaSource: initializing Pythia. " << endl;
   // Pythia event selection
   //********
   pysubs.msel = pysubs_msel_;
@@ -72,12 +72,13 @@ PythiaSource::PythiaSource( const ParameterSet & pset, InputSourceDescription co
   //********                                      
 
 
-  cout << "PythiaSource: initializing Pythia. " << endl;
   produces<HepMCProduct>();
+  cout << "PythiaSource: starting event generation ... " << endl;
  }
 
 
 PythiaSource::~PythiaSource(){
+  cout << "PythiaSource: event generation done. " << endl;
   clear();
 }
 
@@ -89,7 +90,7 @@ void PythiaSource::clear() {
 bool PythiaSource::produce(Event & e) {
 
     auto_ptr<HepMCProduct> bare_product(new HepMCProduct());  
-    cout << "PythiaSource: Generating event ...  " << endl;
+    //cout << "PythiaSource: Generating event ...  " << endl;
 
     //********                                         
     //
