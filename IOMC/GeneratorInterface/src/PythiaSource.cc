@@ -1,6 +1,6 @@
 /*
- *  $Date: 2006/02/03 09:02:51 $
- *  $Revision: 1.5 $
+ *  $Date: 2006/02/03 09:13:39 $
+ *  $Revision: 1.6 $
  *  
  *  Filip Moorgat & Hector Naves 
  *  26/10/05
@@ -90,8 +90,10 @@ void PythiaSource::clear() {
 bool PythiaSource::produce(Event & e) {
 
     auto_ptr<HepMCProduct> bare_product(new HepMCProduct());  
-    //cout << "PythiaSource: Generating event ...  " << endl;
-
+    if (pythiaVerbosity_) {
+      cout << "PythiaSource: Generating event number " 
+       <<  numberEventsInRun() - remainingEvents()    <<". " << endl;
+    }
     //********                                         
     //
     call_pyevnt();      // generate one event with Pythia
@@ -99,7 +101,7 @@ bool PythiaSource::produce(Event & e) {
     
     HepMC::GenEvent* evt = conv.getGenEventfromHEPEVT();
     evt->set_signal_process_id(pysubs_msub_);
-    evt->set_event_number(numberEventsInRun() - remainingEvents() - 1);
+    evt->set_event_number(numberEventsInRun() - remainingEvents());
     
     if (pythiaVerbosity_) evt->print();
 
