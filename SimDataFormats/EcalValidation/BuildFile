@@ -1,0 +1,21 @@
+<flags LCGDICT_ARGS="--deep">
+<export>
+ <lib name=SimDataFormatsEcalValidation>
+ <use name=FWCore/EDProduct>
+ <use name=root>
+ <use name=geant4>
+ <use name=boost>
+ <use name=FWCore/ParameterSet>
+ <use name=SimG4Core/Notification>
+ <use name=SimG4Core/Watcher>
+ <use name=SimG4CMS/Calo>
+</export>
+
+<use name=FWCore/EDProduct>
+<use name=root>
+<use name=geant4>
+<use name=boost>
+<use name=FWCore/ParameterSet>
+<use name=SimG4Core/Notification>
+<use name=SimG4Core/Watcher>
+<use name=SimG4CMS/Calo>
