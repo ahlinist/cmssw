@@ -40,7 +40,7 @@ namespace edm
 
     HepMC::GenEvent  *evt;
     
-    	
+    bool pythiaVerbosity_;    	
   };
 } 
 
