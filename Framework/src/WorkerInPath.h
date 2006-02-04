@@ -36,6 +36,8 @@ namespace edm
     int timesFailed() const { return timesFailed_; }
     int timesExcept() const { return timesExcept_; }
 
+    Worker* getWorker() { return worker_; }
+
   private:
     int timesVisited_;
     int timesPassed_;
