@@ -4,11 +4,15 @@
 // CosmicMuonGenerator by droll (01/FEB/2006)
 //
 #include "IOMC/CosmicMuonGenerator/interface/CosmicMuonGenerator.h"
+#include "CLHEP/HepMC/GenEvent.h"
+#include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
 #include "FWCore/Framework/interface/EventPrincipal.h"
 #include "FWCore/Framework/interface/GeneratedInputSource.h"
 #include "FWCore/Framework/interface/InputSourceDescription.h"
+#include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "CLHEP/HepMC/GenEvent.h"
+#include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "FWCore/Utilities/interface/Exception.h"
 
 using namespace edm;
 using namespace std;
@@ -25,7 +29,6 @@ namespace edm
     
     void clear();
     // define the configurable generator parameters
-    //unsigned int NOEV; // number of events to be generated
     unsigned int RanS; // seed of random number generator
     double       MinE; // min. E     [GeV]
     double       MaxE; // max. E     [GeV]

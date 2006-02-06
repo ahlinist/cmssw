@@ -1,7 +1,7 @@
 #ifndef SingleParticleEvent_h
 #define SingleParticleEvent_h
 //
-// SingleParticleEvent by droll (23/12/2005)
+// SingleParticleEvent by droll (23/DEC/2005)
 //
 
 // include files

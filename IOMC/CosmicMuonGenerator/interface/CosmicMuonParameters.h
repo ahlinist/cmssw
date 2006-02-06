@@ -1,7 +1,7 @@
 #ifndef CosmicMuonParameters_h
 #define CosmicMuonParameters_h
 //
-// Parameters for CosmicMuonGenerator by droll (05/12/2005)
+// Parameters for CosmicMuonGenerator by droll (05/DEC/2005)
 //
 #include "TMath.h"
 
