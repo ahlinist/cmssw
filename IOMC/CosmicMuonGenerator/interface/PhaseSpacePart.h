@@ -1,7 +1,7 @@
 #ifndef PhaseSpacePart_h
 #define PhaseSpacePart_h
 //
-// PhaseSpacePart by droll (10/12/2005)
+// PhaseSpacePart by droll (10/DEC/2005)
 //
 
 // include files
