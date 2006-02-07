@@ -12,7 +12,7 @@ $Id$
 
 #include <memory>
 
-#include "FWCore/EDProduct/interface/EDProduct.h"
+#include "DataFormats/Common/interface/EDProduct.h"
 
 
 namespace edm {

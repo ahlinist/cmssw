@@ -7,7 +7,7 @@ $Id$
 #include <algorithm>
 
 #include "FWCore/Framework/interface/Event.h"
-#include "FWCore/EDProduct/interface/ProductID.h"
+#include "DataFormats/Common/interface/ProductID.h"
 #include "FWCore/Framework/interface/EventPrincipal.h"
 #include "FWCore/Framework/interface/BranchDescription.h"
 #include "FWCore/Framework/src/Group.h"

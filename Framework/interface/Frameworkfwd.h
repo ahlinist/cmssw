@@ -9,7 +9,7 @@ $Id$
 
 ----------------------------------------------------------------------*/
 
-#include "FWCore/EDProduct/interface/EDProductfwd.h"
+#include "DataFormats/Common/interface/EDProductfwd.h"
 
 namespace edm {
   class BasicHandle;

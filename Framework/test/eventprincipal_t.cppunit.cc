@@ -13,12 +13,12 @@ $Id$
 #include <typeinfo>
 
 #include "FWCore/Utilities/interface/EDMException.h"
-#include "FWCore/EDProduct/interface/ProductID.h"
+#include "DataFormats/Common/interface/ProductID.h"
 #include "FWCore/Framework/interface/BasicHandle.h"
 #include "FWCore/Framework/interface/ProductRegistry.h"
 #include "FWCore/Framework/interface/BranchDescription.h"
-#include "FWCore/EDProduct/interface/Timestamp.h"
-#include "FWCore/EDProduct/interface/Wrapper.h"
+#include "DataFormats/Common/interface/Timestamp.h"
+#include "DataFormats/Common/interface/Wrapper.h"
 #include "FWCore/Framework/interface/Selector.h"
 #include "FWCore/Framework/src/TypeID.h"
 #include "FWCore/Framework/src/ToyProducts.h"
