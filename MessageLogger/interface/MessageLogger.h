@@ -35,7 +35,7 @@
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "FWCore/MessageLogger/interface/MessageSender.h"
 #include "FWCore/MessageLogger/interface/ErrorObj.h"
-#include "FWCore/EDProduct/interface/EventID.h"
+#include "DataFormats/Common/interface/EventID.h"
 
 namespace edm  {
 namespace service  {

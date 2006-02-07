@@ -21,8 +21,8 @@
 
 #include "FWCore/Framework/interface/ModuleDescription.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
-#include "FWCore/EDProduct/interface/EventID.h"
-#include "FWCore/EDProduct/interface/Timestamp.h"
+#include "DataFormats/Common/interface/EventID.h"
+#include "DataFormats/Common/interface/Timestamp.h"
 
 #include <sstream>
 
