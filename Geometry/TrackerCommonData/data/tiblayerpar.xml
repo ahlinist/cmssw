@@ -16,7 +16,7 @@
  <Constant name="RadiusLo2"      value="40.25*cm"/>
  <Constant name="RadiusLo3"      value="48.20*cm"/>
  <Constant name="DRUpLo"         value="3.20*cm"/>
- <Constant name="DOHMCarrierW"   value="24.0*cm"/>
+ <Constant name="DOHMCarrierW"   value="29.0*cm"/>
  <Constant name="DOHMCarrierT"   value="1.15*mm"/>
  <Constant name="DOHM_PRIM_W"    value="5.0*cm"/>
  <Constant name="DOHM_PRIM_L"    value="28.5*cm"/>
