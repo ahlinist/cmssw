@@ -88,7 +88,7 @@
 */
 
 #include "FWCore/ServiceRegistry/interface/ActivityRegistry.h"
-#include "FWCore/Framework/interface/TriggerResults.h"
+#include "DataFormats/Common/interface/TriggerResults.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Framework/src/Worker.h"
 #include "FWCore/Framework/src/WorkerInPath.h"
@@ -96,7 +96,7 @@
 #include "FWCore/Framework/interface/Actions.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/Framework/interface/EventPrincipal.h"
-#include "FWCore/Framework/interface/ProductRegistry.h"
+#include "DataFormats/Common/interface/ProductRegistry.h"
 #include "FWCore/Framework/src/WorkerRegistry.h"
 
 #include "boost/shared_ptr.hpp"

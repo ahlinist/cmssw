@@ -16,7 +16,7 @@
 // user include files
 #include "FWCore/Services/src/Tracer.h"
 
-#include "FWCore/Framework/interface/ModuleDescription.h"
+#include "DataFormats/Common/interface/ModuleDescription.h"
 #include "DataFormats/Common/interface/EventID.h"
 #include "DataFormats/Common/interface/Timestamp.h"
 

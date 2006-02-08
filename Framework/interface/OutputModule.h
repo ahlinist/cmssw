@@ -12,9 +12,9 @@ $Id$
 
 #include "FWCore/Framework/interface/GroupSelector.h"
 #include "FWCore/Framework/interface/EventSelector.h"
-#include "FWCore/Framework/interface/BranchDescription.h"
-#include "FWCore/Framework/interface/ModuleDescription.h"
-#include "FWCore/Framework/interface/Provenance.h"
+#include "DataFormats/Common/interface/BranchDescription.h"
+#include "DataFormats/Common/interface/ModuleDescription.h"
+#include "DataFormats/Common/interface/Provenance.h"
 #include "FWCore/Framework/interface/Selector.h"
 
 #include <vector>

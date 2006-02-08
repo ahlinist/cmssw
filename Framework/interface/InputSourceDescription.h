@@ -9,7 +9,7 @@ input source that does not come in through the ParameterSet
 $Id$
 ----------------------------------------------------------------------*/
 #include <string>
-#include "FWCore/Framework/interface/PassID.h"
+#include "DataFormats/Common/interface/PassID.h"
 
 namespace edm {
   class ProductRegistry;

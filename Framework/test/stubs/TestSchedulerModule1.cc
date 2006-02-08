@@ -15,7 +15,7 @@
 
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/Framework/src/ToyProducts.h"
+#include "DataFormats/Common/interface/ToyProducts.h"
 #include <memory>
 #include <string>
 

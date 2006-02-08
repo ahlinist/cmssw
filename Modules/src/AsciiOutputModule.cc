@@ -10,7 +10,7 @@ $Id$
 #include "FWCore/Modules/src/AsciiOutputModule.h"
 #include "FWCore/Framework/interface/EventPrincipal.h"
 #include "FWCore/Framework/interface/OutputModule.h"
-#include "FWCore/Framework/interface/ProductRegistry.h"
+#include "DataFormats/Common/interface/ProductRegistry.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 namespace edm {

@@ -23,7 +23,7 @@
 #include <map>
 #include <vector>
 
-#include "FWCore/Framework/interface/TriggerResults.h"
+#include "DataFormats/Common/interface/TriggerResults.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 namespace edm {

@@ -26,13 +26,13 @@ $Id$
 
 #include "boost/shared_ptr.hpp"
 
-#include "FWCore/Framework/interface/BranchKey.h"
+#include "DataFormats/Common/interface/BranchKey.h"
 #include "DataFormats/Common/interface/EventID.h"
 #include "DataFormats/Common/interface/Timestamp.h"
 #include "DataFormats/Common/interface/ProductID.h"
 #include "DataFormats/Common/interface/EDProduct.h"
 #include "DataFormats/Common/interface/EDProductGetter.h"
-#include "FWCore/Framework/interface/EventAux.h"
+#include "DataFormats/Common/interface/EventAux.h"
 #include "FWCore/Framework/interface/BasicHandle.h"
 #include "FWCore/Framework/interface/NoDelayedReader.h"
 #include "FWCore/Framework/interface/ProcessNameList.h"

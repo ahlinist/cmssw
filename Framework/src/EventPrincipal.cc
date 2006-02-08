@@ -8,7 +8,7 @@ $Id$
 #include <algorithm>
 
 #include "FWCore/Framework/interface/EventPrincipal.h"
-#include "FWCore/Framework/interface/ProductRegistry.h"
+#include "DataFormats/Common/interface/ProductRegistry.h"
 #include "FWCore/Utilities/interface/EDMException.h"
 using namespace std;
 

@@ -15,7 +15,7 @@
 
 #include "FWCore/Framework/src/SignallingProductRegistry.h"
 #include "FWCore/Framework/interface/ConstProductRegistry.h"
-#include "FWCore/Framework/interface/ModuleDescription.h"
+#include "DataFormats/Common/interface/ModuleDescription.h"
 #include "FWCore/Utilities/interface/ProblemTracker.h"
 
 

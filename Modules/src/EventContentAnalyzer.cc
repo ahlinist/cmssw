@@ -28,8 +28,8 @@
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 
 #include "FWCore/Framework/interface/Event.h"
-#include "FWCore/Framework/interface/BranchDescription.h"
-#include "FWCore/Framework/interface/Provenance.h"
+#include "DataFormats/Common/interface/BranchDescription.h"
+#include "DataFormats/Common/interface/Provenance.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 

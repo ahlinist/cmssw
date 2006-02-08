@@ -6,8 +6,8 @@
 // $Id$
 //
 
-#include "FWCore/Framework/interface/ModuleDescription.h"
-#include "FWCore/Framework/interface/TriggerResults.h"
+#include "DataFormats/Common/interface/ModuleDescription.h"
+#include "DataFormats/Common/interface/TriggerResults.h"
 #include "FWCore/Framework/interface/TriggerNamesService.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/Utilities/interface/Exception.h"

@@ -18,7 +18,7 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Framework/src/WorkerInPath.h"
 #include "FWCore/Framework/src/Worker.h"
-#include "FWCore/Framework/interface/TriggerResults.h"
+#include "DataFormats/Common/interface/TriggerResults.h"
 
 #include "boost/shared_ptr.hpp"
 #include "boost/signal.hpp"

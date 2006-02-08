@@ -5,8 +5,8 @@ $Id$
 ----------------------------------------------------------------------*/
 
 #include "FWCore/Framework/interface/ProductRegistryHelper.h"
-#include "FWCore/Framework/interface/ProductRegistry.h"
-#include "FWCore/Framework/interface/BranchDescription.h"
+#include "DataFormats/Common/interface/ProductRegistry.h"
+#include "DataFormats/Common/interface/BranchDescription.h"
 
 namespace edm {
   ProductRegistryHelper::~ProductRegistryHelper() { }

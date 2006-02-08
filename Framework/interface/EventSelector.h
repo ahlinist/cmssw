@@ -8,7 +8,7 @@
  */
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/Framework/interface/TriggerResults.h"
+#include "DataFormats/Common/interface/TriggerResults.h"
 
 #include <vector>
 #include <string>

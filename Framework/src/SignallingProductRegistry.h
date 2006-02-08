@@ -25,7 +25,7 @@
 #include <string>
 
 // user include files
-#include "FWCore/Framework/interface/ProductRegistry.h"
+#include "DataFormats/Common/interface/ProductRegistry.h"
 
 // forward declarations
 namespace edm {

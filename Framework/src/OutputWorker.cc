@@ -7,7 +7,7 @@ $Id$
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/OutputModule.h"
 #include "FWCore/Framework/interface/Actions.h"
-#include "FWCore/Framework/interface/ModuleDescription.h"
+#include "DataFormats/Common/interface/ModuleDescription.h"
 #include "FWCore/Framework/src/WorkerParams.h"
 #include "FWCore/Framework/src/OutputWorker.h"
 #include "FWCore/Utilities/interface/Exception.h"

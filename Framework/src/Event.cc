@@ -9,7 +9,7 @@ $Id$
 #include "FWCore/Framework/interface/Event.h"
 #include "DataFormats/Common/interface/ProductID.h"
 #include "FWCore/Framework/interface/EventPrincipal.h"
-#include "FWCore/Framework/interface/BranchDescription.h"
+#include "DataFormats/Common/interface/BranchDescription.h"
 #include "FWCore/Framework/src/Group.h"
 
 using namespace std;

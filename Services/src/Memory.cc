@@ -10,7 +10,7 @@
 //
 
 #include "FWCore/Services/src/Memory.h"
-#include "FWCore/Framework/interface/ModuleDescription.h"
+#include "DataFormats/Common/interface/ModuleDescription.h"
 #include "DataFormats/Common/interface/EventID.h"
 #include "DataFormats/Common/interface/Timestamp.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
