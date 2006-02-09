@@ -1,16 +1,5 @@
 <export>
  <lib name=SimDataFormatsHcalValidation>
  <use name=FWCore/EDProduct>
- <use name=geant4>
- <use name=boost>
- <use name=FWCore/ParameterSet>
- <use name=SimG4Core/Notification>
- <use name=SimG4Core/Watcher>
 </export>
-
- <use name=FWCore/EDProduct>
- <use name=geant4>
- <use name=boost>
- <use name=FWCore/ParameterSet>
- <use name=SimG4Core/Notification>
- <use name=SimG4Core/Watcher>
+<use name=FWCore/EDProduct>
