@@ -5,8 +5,6 @@
 #ifndef  PHcalValidInfoLayer_H
 #define  PHcalValidInfoLayer_H
 
-#include "SimG4CMS/Calo/interface/CaloHit.h"
-
 #include <string>
 #include <vector>
 #include <memory>
@@ -21,7 +19,8 @@ public:
 
   void fillLayers (double el[], double ed[], double ho, double hbhe);
   void fillHF     (double fibl, double fibs, double enec, double enhc);
-  void fillHits   (int, std::vector<CaloHit>);
+  void fillHits   (int Nhits, int lay, int unitID, double eta, double phi, 
+		   double ehit, double t); 
 
   struct Hit {
     Hit() {}
