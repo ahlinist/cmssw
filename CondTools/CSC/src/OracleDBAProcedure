@@ -36,3 +36,5 @@ clean up CSCschema.debug and replace CMS_XIEZHEN_DEV by CSC schema name
 also change the GRANT SELECT according to setup
 
 add extra TIME column to the payload tables
+sqlplus cms_xiezhen_dev@devdb10/xiezhen123 < addCSCPayloadTime.sql
+
