@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding="UTF-8"?>
 <!DOCTYPE Mapping SYSTEM "InMemory">
-<Mapping version="1.0" >
+<Mapping version="CSCCROSSTALK-1.0" >
   <Class table="CSCCROSSTALK" id_columns="IOV_VALUE_ID" name="CSCcrosstalk" >
-    <Container table="CSCCROSSTALK_CROSS_1" id_columns="IOV_VALUE_ID" name="crosstalk" position_column="POS" >
-      <Object table="CSCCROSSTALK_CROSS_1" id_columns="POS IOV_VALUE_ID" name="CSCcrosstalk::Item" >
-        <Primitive column="CROSSTALK_CSCCROSSTALK_ITEM__1" name="intercept" />
-        <Primitive column="CROSSTALK_CSCCROSSTALK_ITEM__2" name="slope" />
+    <Container table="CSCCROSSTALK_DATA" id_columns="IOV_VALUE_ID" name="crosstalk" position_column="POS" >
+      <Object table="CSCCROSSTALK_DATA" id_columns="POS IOV_VALUE_ID" name="CSCcrosstalk::Item" >
+        <Primitive column="CROSSTALK_INTERCEPT" name="intercept" />
+        <Primitive column="CROSSTALK_SLOPE" name="slope" />
       </Object >
     </Container >
   </Class >
