@@ -1,5 +1,6 @@
 <flags SEAL_PLUGIN_NAME="DQMRPCMonitorModule">
 <use name=FWCore/Framework>
+<use name=FWCore/MessageLogger>
 <use name=root>
 <use name=boost>
 <use name=DQMServices/Daemon>
@@ -14,6 +15,7 @@
 <export>
 <lib name=DQMRPCMonitorModule>
 <use name=FWCore/Framework>
+<use name=FWCore/MessageLogger>
 <use name=root>
 <use name=boost>
 <use name=DQMServices/Daemon>
