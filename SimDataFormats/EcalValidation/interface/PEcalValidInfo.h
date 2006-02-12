@@ -23,6 +23,7 @@ class EcalTestAnalysis;
 class PEcalValidInfo 
 {
    friend  class   EcalTestAnalysis;
+   friend  class   PreshowerTestAnalysis;
    typedef  std::vector<float>   FloatVector;
 
 public:
@@ -31,11 +32,7 @@ public:
    totalEInEE(0.0), totalEInEB(0.0), totalEInES(0.0),
    totalHits(0), nHitsInEE(0),nHitsInEB(0),nHitsInES(0)
 {
-    eBX0.clear();
-    eEX0.clear();
-    phiOfCaloG4Hit.clear();
-    tOfCaloG4Hit.clear();
-    eOfCaloG4Hit.clear();
+
  }
 
 
@@ -59,11 +56,24 @@ public:
        
    FloatVector  bX0() const { return eBX0; }
    FloatVector  eX0() const { return eEX0; }
-   FloatVector  phiOfHits() const { return phiOfCaloG4Hit; }
-   FloatVector  etaOfHits() const { return etaOfCaloG4Hit; }
-   FloatVector  tOfHits()   const { return tOfCaloG4Hit;   }
-   FloatVector  eOfHits()   const { return eOfCaloG4Hit;   }
 
+   FloatVector  phiOfEEHits() const { return phiOfEECaloG4Hit; }
+   FloatVector  etaOfEEHits() const { return etaOfEECaloG4Hit; }
+   FloatVector  tOfEEHits()   const { return tOfEECaloG4Hit;   }
+   FloatVector  eOfEEHits()   const { return eOfEECaloG4Hit;   }
+
+   FloatVector  phiOfEBHits() const { return phiOfEBCaloG4Hit; }
+   FloatVector  etaOfEBHits() const { return etaOfEBCaloG4Hit; }
+   FloatVector  tOfEBHits()   const { return tOfEBCaloG4Hit;   }
+   FloatVector  eOfEBHits()   const { return eOfEBCaloG4Hit;   }
+
+   FloatVector  phiOfiESHits() const { return phiOfESCaloG4Hit; }
+   FloatVector  etaOfESHits() const { return etaOfESCaloG4Hit; }
+   FloatVector  tOfESHits()   const { return tOfESCaloG4Hit;   }
+   FloatVector  eOfESHits()   const { return eOfESCaloG4Hit;   }
+
+   HepLorentzVector  momentum() const { return theMomentum; }
+   HepLorentzVector  vertex() const  { return theVertex; }
    
 
 private:
@@ -88,10 +98,22 @@ private:
    FloatVector eBX0;       // longitudinal Energy deposition In EB.
    FloatVector eEX0;       // longitudinal Energy deposition In EE.
     
-   FloatVector  phiOfCaloG4Hit;    // Phi of Hits.
-   FloatVector  etaOfCaloG4Hit;    // Eta of Hits.
-   FloatVector  tOfCaloG4Hit;      // Tof of Hits.
-   FloatVector  eOfCaloG4Hit;      // Energy depostion of Hits.
+   FloatVector  phiOfEECaloG4Hit;    // Phi of Hits.
+   FloatVector  etaOfEECaloG4Hit;    // Eta of Hits.
+   FloatVector  tOfEECaloG4Hit;      // Tof of Hits.
+   FloatVector  eOfEECaloG4Hit;      // Energy depostion of Hits.
+ 
+   FloatVector  phiOfESCaloG4Hit;    // Phi of Hits.
+   FloatVector  etaOfESCaloG4Hit;    // Eta of Hits.
+   FloatVector  tOfESCaloG4Hit;      // Tof of Hits.
+   FloatVector  eOfESCaloG4Hit;      // Energy depostion of Hits.
+
+   FloatVector  phiOfEBCaloG4Hit;    // Phi of Hits.
+   FloatVector  etaOfEBCaloG4Hit;    // Eta of Hits.
+   FloatVector  tOfEBCaloG4Hit;      // Tof of Hits.
+   FloatVector  eOfEBCaloG4Hit;      // Energy depostion of Hits.
+
+
 
    int thePID;                      // add more ??
    HepLorentzVector theMomentum;  
