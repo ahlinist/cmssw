@@ -35,7 +35,7 @@
 //
 // class decleration
 //
-namespace edmreftest {
+namespace edmtest {
 
 class DoodadESProducer : public edm::ESProducer {
    public:
@@ -87,7 +87,7 @@ DoodadESProducer::~DoodadESProducer()
 DoodadESProducer::ReturnType
 DoodadESProducer::produce(const GadgetRcd& iRecord)
 {
-   using namespace edmreftest;
+   using namespace edmtest;
 
    std::auto_ptr<Doodad> pDoodad(new Doodad) ;
 
@@ -97,6 +97,6 @@ DoodadESProducer::produce(const GadgetRcd& iRecord)
 }
 }
 
-using namespace edmreftest;
+using namespace edmtest;
 //define this as a plug-in
 DEFINE_FWK_EVENTSETUP_MODULE(DoodadESProducer)

@@ -35,7 +35,7 @@
 //
 // class decleration
 //
-namespace edmreftest {
+namespace edmtest {
 
 class WhatsItESProducer : public edm::ESProducer {
    public:
@@ -87,7 +87,7 @@ WhatsItESProducer::~WhatsItESProducer()
 WhatsItESProducer::ReturnType
 WhatsItESProducer::produce(const GadgetRcd& iRecord)
 {
-   using namespace edmreftest;
+   using namespace edmtest;
 
    edm::ESHandle<Doodad> doodad;
    iRecord.get(doodad);
@@ -100,6 +100,6 @@ WhatsItESProducer::produce(const GadgetRcd& iRecord)
 }
 }
 
-using namespace edmreftest;
+using namespace edmtest;
 //define this as a plug-in
 DEFINE_FWK_EVENTSETUP_MODULE(WhatsItESProducer)

@@ -18,4 +18,4 @@
 
 #include "FWCore/Framework/interface/eventsetupdata_registration_macro.h"
 
-EVENTSETUP_DATA_REG(edmreftest::WhatsIt);
+EVENTSETUP_DATA_REG(edmtest::WhatsIt);

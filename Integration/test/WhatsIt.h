@@ -25,7 +25,7 @@
 
 // forward declarations
 
-namespace edmreftest {
+namespace edmtest {
 struct WhatsIt
 {
    WhatsIt() : a() {}

@@ -22,7 +22,7 @@
 #include "FWCore/Integration/test/GadgetRcd.h"
 #include "FWCore/Integration/test/Doodad.h"
 
-namespace edmreftest {
+namespace edmtest {
 class DoodadESSource :
    public edm::EventSetupRecordIntervalFinder, 
    public edm::ESProducer
@@ -101,7 +101,7 @@ DoodadESSource::setIntervalFor(const edm::eventsetup::EventSetupRecordKey&,
 // static member functions
 //
 }
-using namespace edmreftest;
+using namespace edmtest;
 
 DEFINE_FWK_EVENTSETUP_SOURCE(DoodadESSource)
 
