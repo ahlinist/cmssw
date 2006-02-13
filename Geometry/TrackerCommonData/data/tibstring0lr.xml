@@ -87,7 +87,7 @@
 
 <Algorithm name="track:DDTrackerZPosAlgo">
   <rParent name="tibstring0lr:TIBString0LoPls1"/>
-  <String name="ChildName"    value="tibmodule0a:TIBModule0A"/>
+  <String name="ChildName"    value="tibmodule0b:TIBModule0B"/>
   <Numeric name="StartCopyNo" value="4"/>
   <Numeric name="IncrCopyNo"  value="1" />
   <Vector name="ZPositions" type="numeric" nEntries="3">
