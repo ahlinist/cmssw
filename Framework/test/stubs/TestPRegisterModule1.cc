@@ -15,7 +15,7 @@
 
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "DataFormats/Common/interface/ToyProducts.h"
+#include "DataFormats/TestObjects/interface/ToyProducts.h"
 #include "FWCore/Framework/test/stubs/TestPRegisterModule1.h"
 #include <memory>
 #include <string>

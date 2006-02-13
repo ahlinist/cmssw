@@ -16,7 +16,7 @@ static const char CVSId[] = "$Id$";
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/Framework/test/stubs/TestPRegisterModule2.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "DataFormats/Common/interface/ToyProducts.h"
+#include "DataFormats/TestObjects/interface/ToyProducts.h"
 #include <cppunit/extensions/HelperMacros.h>
 #include <memory>
 #include <string>
