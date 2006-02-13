@@ -81,8 +81,7 @@ void FUAdapter::createBUArray()
 	for(; i < buDescs.size(); i++)
 	  if(buinstance==buDescs[i]->getInstance())
 	    break;
-	cout << "FUAdapter::BU descriptor at " << hex << (int) buDescs[buinstance] << dec 
-	     << endl;
+	LOG4CPLUS_INFO(this->getApplicationLogger(),"FUAdapter::BU descriptor at " << hex << (int) buDescs[buinstance] << dec);
 	bu_.push_back(
 		      new BUProxy (
 				   getApplicationDescriptor() , 
@@ -248,9 +247,16 @@ void FUAdapter::sendAllocate(unsigned long buInstance,
 		  "FUAdapter::sending allocate to BU #" << buInstance);
   if(bu_.size()>buInstance)
     {
-
-      bu_[buInstance]->allocate(ev->getPending(), 
+      try{
+	bu_[buInstance]->allocate(ev->getPending(), 
 				context, nbEvents);
+      }
+      catch(xdaq::exception::Exception &e)
+	{
+	  LOG4CPLUS_ERROR(this->getApplicationLogger(),
+		    "sendAllocate failed.buInstance: "
+			  << buInstance << ". Error: " << e.what());
+	}
       pendingRequests_.value_ += nbEvents;
     }
   else
