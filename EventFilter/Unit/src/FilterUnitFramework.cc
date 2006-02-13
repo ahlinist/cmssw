@@ -7,6 +7,9 @@
 //
 //  Modification history:
 //    $Log: FilterUnitFramework.cc,v $
+//    Revision 1.5  2005/11/28 11:40:11  meschi
+//    Added debug web with fragment dump, added workdir configurable
+//
 //    Revision 1.3  2005/11/10 14:44:54  meschi
 //    simplified synchro out of COBRA
 //
@@ -153,14 +156,22 @@ void FilterUnitFramework::configureAction(toolbox::Event::Reference e) throw (to
 {
   if(!runActive_) findOrCreateMemoryPool();
   const char *workdir = 0;
+  int retval = 0;
   if(workDir_.value_=="")
     workdir = getenv("PWD");
   else
     workdir = workDir_.value_.c_str();
   if(workdir != 0)
-    chdir(workdir);
-  LOG4CPLUS_INFO(this->getApplicationLogger(),"FU Working Directory set to" << workdir);
-
+    retval = chdir(workdir);
+  if(retval==0)
+    {
+      LOG4CPLUS_INFO(this->getApplicationLogger(),"FU Working Directory set to " 
+		     << workdir);
+    }
+  else
+    {
+      LOG4CPLUS_ERROR(this->getApplicationLogger(),"could not set working directory to" << workdir);
+    }
   createBUArray();
 }
 
@@ -178,7 +189,6 @@ void FilterUnitFramework::enableAction(toolbox::Event::Reference e) throw (toolb
   unsigned int allocfset = 1;
   LOG4CPLUS_INFO(this->getApplicationLogger(),"FU sends initial allocate N=" << queueSize_);
   sendAllocate(buInstance_, queueSize_, allocfset);
-
   nbEvents_ = 0;       	  
   LOG4CPLUS_INFO(this->getApplicationLogger(),"Run Started...");
 }
