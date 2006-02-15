@@ -9,6 +9,9 @@
 //
 //  Modification history:
 //    $Log: FilterUnitFramework.h,v $
+//    Revision 1.4  2005/11/28 11:39:14  meschi
+//    Added debug web with fragment dump, added workdir configurable
+//
 //    Revision 1.3  2005/11/10 14:41:16  meschi
 //    run number now in Utilities/RunBase
 //
@@ -166,6 +169,7 @@ private:
   virtual void suspendAction(toolbox::Event::Reference e) throw (toolbox::fsm::exception::Exception);
   virtual void resumeAction(toolbox::Event::Reference e) throw (toolbox::fsm::exception::Exception);
   virtual void haltAction(toolbox::Event::Reference e) throw (toolbox::fsm::exception::Exception);
+  virtual void nullAction(toolbox::Event::Reference e) throw (toolbox::fsm::exception::Exception);
 
   /**
    * Web interface member data and functions
