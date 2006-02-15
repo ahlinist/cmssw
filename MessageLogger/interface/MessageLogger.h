@@ -91,6 +91,7 @@ onlyLowestDirectory(const std::string & file) {
   return file.substr(lastSlash+1, file.size()-lastSlash-1);
 }
 
+inline
 void LogStatistics() { 
   edm::MessageLoggerQ::SUM ( ); // trigger summary info
 }
