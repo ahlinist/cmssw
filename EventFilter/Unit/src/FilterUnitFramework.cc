@@ -7,6 +7,9 @@
 //
 //  Modification history:
 //    $Log: FilterUnitFramework.cc,v $
+//    Revision 1.6  2006/02/13 09:41:42  meschi
+//    capture chdir error setting working directory
+//
 //    Revision 1.5  2005/11/28 11:40:11  meschi
 //    Added debug web with fragment dump, added workdir configurable
 //
@@ -217,6 +220,12 @@ void FilterUnitFramework::haltAction(toolbox::Event::Reference e) throw (toolbox
 
 }
 
+void FilterUnitFramework::nullAction(toolbox::Event::Reference e) throw (toolbox::fsm::exception::Exception)
+{
+  //this action has no effect. A warning is issued to this end
+  LOG4CPLUS_WARN(this->getApplicationLogger(),
+		    "Null action invoked");
+}
 
 xoap::MessageReference FilterUnitFramework::getStateMsg(xoap::MessageReference msg)
   throw (xoap::exception::Exception)
