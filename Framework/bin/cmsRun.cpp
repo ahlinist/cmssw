@@ -15,10 +15,10 @@ $Id$
 #include <vector>
 #include <boost/program_options.hpp>
 
+#include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Framework/interface/EventProcessor.h"
 #include "FWCore/Utilities/interface/ProblemTracker.h"
 #include "FWCore/Utilities/interface/Exception.h"
-#include "FWCore/MessageLogger/interface/MessageLoggerSpigot.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 using namespace std;
@@ -32,8 +32,6 @@ static const char* const kProgramName = "cmsRun";
 
 int main(int argc, char* argv[])
 {
-  edm::MessageLoggerSpigot theMessageLoggerSpigot;
-
   using namespace boost::program_options;
   std::string descString(argv[0]);
   descString += " [options] [--";
