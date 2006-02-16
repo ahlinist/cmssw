@@ -33,9 +33,9 @@ $Id$
 #include "DataFormats/Common/interface/EDProduct.h"
 #include "DataFormats/Common/interface/EDProductGetter.h"
 #include "DataFormats/Common/interface/EventAux.h"
+#include "DataFormats/Common/interface/ProcessNameList.h"
 #include "FWCore/Framework/interface/BasicHandle.h"
 #include "FWCore/Framework/interface/NoDelayedReader.h"
-#include "FWCore/Framework/interface/ProcessNameList.h"
 #include "FWCore/Framework/interface/DelayedReader.h"
 #include "FWCore/Framework/interface/Selector.h"
 
