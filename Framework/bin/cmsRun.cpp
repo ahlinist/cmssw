@@ -41,9 +41,9 @@ int main(int argc, char* argv[])
   edm::AssertHandler ah;
 
   // Load the message service plug-in
-  boost::shared_ptr<edm::Presence> theMessageLoggerSpigot
+  boost::shared_ptr<edm::Presence> theMessageServicePresence
       (edm::PresenceFactory::get()->
-	makePresence("MessageLoggerSpigot").release());
+        makePresence("MessageServicePresence").release());
 
   std::string descString(argv[0]);
   descString += " [options] [--";
