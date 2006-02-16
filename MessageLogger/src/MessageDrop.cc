@@ -26,5 +26,10 @@ static boost::thread_specific_ptr<MessageDrop> drops;
 MessageDrop *
 MessageDrop::instance()
 {
-  return drops.get();
+  MessageDrop* drop = drops.get();
+  if(drop==0) { 
+    drops.reset(new MessageDrop);
+    drop=drops.get(); 
+  }
+  return drop;
 }
