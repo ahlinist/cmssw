@@ -1,4 +1,5 @@
 #include "OpticalAlignment/OptAlignASCIISource/interface/OptAlignASCIISource.h"
+#include "OpticalAlignment/OptAlignASCIISource/interface/OptAlignCSCFileReader.h"
 
 #include "CondFormats/OptAlignObjects/interface/OpticalAlignments.h"
 #include "FWCore/Framework/interface/ExternalInputSource.h"
@@ -6,11 +7,16 @@
 #include "PluginManager/ModuleDef.h"
 #include "FWCore/Framework/interface/InputSourceMacros.h"
 
+// Boost parser, spirit, for parsing the std::vector elements.
+#include "boost/spirit/core.hpp"
+
 #include <string>
 #include <vector>
 #include <algorithm>
 #include <fstream>
 #include <iostream>
+#include <sstream>
+#include <stdexcept>
 
 OptAlignASCIISource::OptAlignASCIISource ( edm::ParameterSet const& ps
 					   , edm::InputSourceDescription const& desc) 
@@ -27,6 +33,7 @@ OptAlignASCIISource::~OptAlignASCIISource () { }
 
 
 bool OptAlignASCIISource::produce ( edm::Event& e ) {
+
   // filenames come from super class.
 
   // confirm the file(s) exists and is/are readable.
@@ -34,61 +41,47 @@ bool OptAlignASCIISource::produce ( edm::Event& e ) {
   std::auto_ptr<OpticalAlignments> result(new OpticalAlignments);
   for ( std::vector<std::string>::const_iterator it = fnames.begin();
 	it != fnames.end(); it++ ) {
-    firstFound_ = false;
-
-    currentType_.clear();
-    size_t fit = it->rfind("/");
-    size_t eit = it->rfind(".");
-    size_t j = 0;
-    for ( size_t i = fit; i < eit; i++ ) {
-      currentType_[j++] = (*it)[i];
-    }
-    std::cout << currentType_ << std::endl;
-    //    std::copy(fit, eit, currentType_);
-    tf_ = new std::ifstream( it->c_str() );
-    if ( tf_ ) {
-      //       while ( nextRecord(tf_) ) {
-      // 	int getNextRecord(1);
-      // 	std::vector<float> getNextRecord(6,9);
-      //       }
-    }
-    delete tf_;
-    
-    
-    // fill OpticalAlignments based on the parsing.
-    
-  }
+    OptAlignCSCFileReader oacfr(*it);
+    std::vector<std::string> names, types;
+    oacfr.next();
+    if ( oacfr.getData(names) ) {
+      oacfr.next();
+      if ( oacfr.getData(types) ) {
+	if ( names.size() != types.size() ) { 
+	  std::cout << "Invalid file header.  Need names and types." << std::endl;
+	  std::cout << "names.size() = " << names.size() << "  types.size() = " << types.size() << std::endl;
+	} else {
+	  std::cout << "name-type: " ;
+	  for ( size_t i = 0 ; i < names.size() ; i++ ) {
+	    std::cout << names[i] << "-" << types[i] << ", ";
+	  }
+	  std::cout << std::endl << std::endl;
+	  while ( oacfr.next() ) {
+	    std::vector<std::string> stringData;
+	    //	  std::vector<int> intData;
+	    std::vector<double> dblData;
+	    oacfr.getData(dblData);
+	    oacfr.getData(stringData);
+	    //	  std::vector<float> fltData;
+	    std::cout << "========= Doubles ===========" << std::endl;
+	    for ( size_t i = 0; i < dblData.size(); i++ ) {
+	      std::cout << dblData[i] << ",  ";
+	    }
+	    std::cout << std::endl;
+	    std::cout << "========= Strings ===========" << std::endl;
+	    for ( size_t i = 0; i < stringData.size(); i++ ) {
+	      std::cout << stringData[i] << ",  ";
+	    }
+	    std::cout << std::endl;
+	    // fill OpticalAlignments based on the parsing.
+	  } // end while
+	} // end else
+      } // end if got names 
+    } // if got  types
+  } // end for each file name.
   e.put(result);
   return true;
 }
-
-// some sort of method to get the next record
-// which will contain: int,char,char,char,char and 9 floats.
-// ASSUMPTION: they will be in the same order in the text file always.
-// reader/interpreter and writer/author will need to talk to know
-// what variables they are talking about.
-//
-// the int == OpticalInfo::objectID_
-// the char,char,char,char,char will be concatinated using the | (pipe)
-// symbol as a divider and put into OpticalInfo::objectType_
-// 
-// since none of the floats are x, y, z or angx, angy, angz they
-// will be put into extraEntries and the transformation will be 
-// 0,0,0 and 0,0,0.
-//
-// from the text file I know to ignore everything before "Type,"
-// from there on it is a matter of parsing starting with the next
-// line, and ignoring the first entry of the record. i.e. because 
-// of the way they Excel exports and the titles put in the 
-//
-// NOTE: if there is more than one file then the file name will be used
-// to name the type, instead of concatinating the char variables.
-
-// bool OptAlignASCIISource::nextRecord( std::fstream* tf ) {
-
-
-// }
-
 
 DEFINE_SEAL_MODULE();
 DEFINE_ANOTHER_FWK_INPUT_SOURCE(OptAlignASCIISource)

@@ -23,7 +23,7 @@
 //
 // Original Author:  Mike Case
 //         Created:  Mon Jan 17 11:47:40 CET 2006
-// $Id$
+// $Id: OptAlignASCIISource.h,v 1.1 2006/01/26 15:03:48 case Exp $
 //
 //
 
@@ -40,22 +40,6 @@ class OptAlignASCIISource : public edm::ExternalInputSource
   bool produce( edm::Event& e );
 
  private:
-
-/*   bool nextRecord( std::fstream* tf ); */
-
-/*   int getRecord(size_t i, size_t j = 0); */
-/*   std::vector<float> getRecord(size_t i, size_t j = 0); */
-
-  std::string currentType_;
-  std::ifstream* tf_;
-  bool firstFound_;
-
-/*   struct OARecord { */
-/*     std::string tStr_; */
-/*     float tFloat_; */
-/*   }; */
-
-/*   std::vector<OARecord> record_; */
 
 };
 
