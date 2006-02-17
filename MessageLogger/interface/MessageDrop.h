@@ -32,7 +32,7 @@ namespace edm {
 
 struct MessageDrop {
 private:
-  MessageDrop() :  moduleName ("unknown module"), runEvent("unknown event") { } 
+  MessageDrop() :  moduleName (""), runEvent("pre-services") { } 
 public:
   static MessageDrop * instance ();
   std::string moduleName;
