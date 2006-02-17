@@ -136,15 +136,17 @@ MessageLogger::preEventProcessing( const edm::EventID& iID
 {
   // edm::LogInfo("preEventProcessing") << "Processing event: " << iID
   //                                   << " time: " << iTime.value();
-
+  std::ostringstream ost;
   curr_event_ = iID;
+  ost << curr_event_.run() << "/" << curr_event_.event();
+  edm::MessageDrop::instance()->runEvent = ost.str();  
 }
 void
 MessageLogger::postEventProcessing(const Event&, const EventSetup&)
 {
   // edm::LogInfo("postEventProcessing") << "Finished event";
-
-  curr_event_ = EventID();
+  //curr_event_ = EventID();
+  //edm::MessageDrop::instance()->runEvent = "Between Events";  
 }
 
 void
