@@ -9,7 +9,7 @@ $Id$
 #include "FWCore/Utilities/interface/EDMException.h"
 #include "FWCore/Framework/interface/Actions.h"
 #include "FWCore/Framework/interface/EventPrincipal.h"
-#include "FWCore/Framework/interface/Log.h"
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 #include "boost/signal.hpp"
 
