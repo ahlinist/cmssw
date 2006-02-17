@@ -16,7 +16,7 @@
 */
 
 //
-// Original Author:  M. Fischler and Jim Kowalkowsi
+// Original Author:  M. Fischler and Jim Kowalkowski
 //         Created:  Tues Feb 14 16:38:19 CST 2006
 // $Id$
 //
@@ -32,7 +32,7 @@ namespace edm {
 
 struct MessageDrop {
 private:
-  MessageDrop() :  moduleName (""), runEvent("pre-services") { } 
+  MessageDrop() :  moduleName (""), runEvent("pre-events") { } 
 public:
   static MessageDrop * instance ();
   std::string moduleName;
