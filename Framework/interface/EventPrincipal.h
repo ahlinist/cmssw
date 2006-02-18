@@ -140,6 +140,8 @@ namespace edm {
 
     virtual EDProduct const* getIt(ProductID const& oid) const;
 
+    ProductRegistry const& productRegistry() const {return *preg_;}
+
   private:
     EventAux aux_;	// persistent
 
