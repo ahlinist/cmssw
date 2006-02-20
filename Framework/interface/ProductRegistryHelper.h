@@ -10,7 +10,7 @@ $Id$
 
 ----------------------------------------------------------------------*/
 
-#include "FWCore/Framework/src/TypeID.h"
+#include "FWCore/Framework/interface/TypeID.h"
 #include <string>
 #include <list>
 namespace edm {

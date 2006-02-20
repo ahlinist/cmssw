@@ -12,7 +12,7 @@ $Id$
 ----------------------------------------------------------------------*/
 
 #include "FWCore/Framework/interface/ProductRegistryHelper.h"
-#include "FWCore/Framework/src/TypeID.h"
+#include "FWCore/Framework/interface/TypeID.h"
 #include "boost/bind.hpp"
 #include "boost/function.hpp"
 #include <string>

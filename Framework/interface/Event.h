@@ -27,7 +27,7 @@ $Id$
 
 
 #include "FWCore/Framework/src/Group.h"
-#include "FWCore/Framework/src/TypeID.h"
+#include "FWCore/Framework/interface/TypeID.h"
 
 namespace edm {
   class EventPrincipal;

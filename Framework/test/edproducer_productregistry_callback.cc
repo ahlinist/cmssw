@@ -31,7 +31,7 @@
 #include "FWCore/ParameterSet/interface/Makers.h"
 
 #include "FWCore/ServiceRegistry/interface/ServiceRegistry.h"
-#include "FWCore/Framework/src/TypeID.h"
+#include "FWCore/Framework/interface/TypeID.h"
 
 
 class testEDProducerProductRegistryCallback: public CppUnit::TestFixture
