@@ -4,8 +4,8 @@
   <Class table="CSCGAINS" id_columns="IOV_VALUE_ID" name="CSCGains" >
     <Container table="CSCGAINS_DATA" id_columns="IOV_VALUE_ID" name="gains" position_column="POS" >
       <Object table="CSCGAINS_DATA" id_columns="POS IOV_VALUE_ID" name="CSCGains::Item" >
-        <Primitive column="CSCGAINS_INTERCEPT" name="intercept" />
-        <Primitive column="CSCGAINS_SLOPE" name="slope" />
+        <Primitive column="CSCGAINS_INTERCEPT" name="gain_intercept" />
+        <Primitive column="CSCGAINS_SLOPE" name="gain_slope" />
       </Object >
     </Container >
   </Class >
