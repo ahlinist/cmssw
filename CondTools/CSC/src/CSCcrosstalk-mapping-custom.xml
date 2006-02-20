@@ -9,7 +9,7 @@
         <Primitive column="CROSSTALK_CHI2_RIGHT" name="xtalk_chi2_right" />
         <Primitive column="CROSSTALK_INTERCEPT_LEFT" name="xtalk_intercept_left" />
         <Primitive column="CROSSTALK_SLOPE_LEFT" name="xtalk_slope_left" />
-        <Primitive column="CROSSTALK_CHI2_LEFT" name="xtalk_chi_left" />
+        <Primitive column="CROSSTALK_CHI2_LEFT" name="xtalk_chi2_left" />
       </Object >
     </Container >
   </Class >
