@@ -5,7 +5,7 @@
     <Container table="CSCCROSSTALK_DATA" id_columns="IOV_VALUE_ID" name="crosstalk" position_column="POS" >
       <Object table="CSCCROSSTALK_DATA" id_columns="POS IOV_VALUE_ID" name="CSCcrosstalk::Item" >
         <Primitive column="CROSSTALK_INTERCEPT_RIGHT" name="xtalk_slope_right" />
-        <Primitive column="CROSSTALK_SLOPE_RIGHT" name="xtalk_intrecept_right" />
+        <Primitive column="CROSSTALK_SLOPE_RIGHT" name="xtalk_intercept_right" />
         <Primitive column="CROSSTALK_CHI2_RIGHT" name="xtalk_chi2_right" />
         <Primitive column="CROSSTALK_INTERCEPT_LEFT" name="xtalk_slope_left" />
         <Primitive column="CROSSTALK_SLOPE_LEFT" name="xtalk_intercept_left" />
