@@ -7,14 +7,15 @@
  <Constant name="NPhi"           value="40"/>
  <Constant name="PhiOff"         value="0*deg"/>
  <Constant name="ICBR"           value="34.000*cm"/>
- <Constant name="CoolR1"         value="44.600*cm"/>
- <Constant name="CoolR2"         value="35.800*cm"/>
+ <Constant name="CoolR1"         value="46.148*cm"/>
+ <Constant name="CoolR2"         value="38.871*cm"/>
  <Constant name="CoolSide"       value="2"/>
  <Constant name="ICBTailR"       value="35.20*cm"/>
  <Constant name="ICCRPos"        value="33.80*cm"/>
- <Constant name="RPos"           value="[Rmin]+([tidmodule2:FullHeight]+
+ <Constant name="RPos"           value="43.2368*cm"/>
+<!-- <Constant name="RPos"           value="[Rmin]+([tidmodule2:FullHeight]+
            [tidmodpar:TopFrameHeight]+[tidmodpar:BottomFrameHeight]-
-           [tidmodpar:BottomFrameOver])/2"/>
+           [tidmodpar:BottomFrameOver])/2"/> -->
  <Constant name="ICBTailW"       value="([tidringpar:Rout]-[ICBTailR]-
            [tidringpar:ICBTailTol])"/>
  <Constant name="ICBTailRPos"    value="([tidringpar:Rout]+[ICBTailR]-
