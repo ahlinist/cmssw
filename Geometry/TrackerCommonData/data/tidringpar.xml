@@ -2,8 +2,8 @@
 <DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../DetectorDescription/Schema/DDLSchema.xsd">
 
 <ConstantsSection label="tidringpar.xml" eval="true">
- <Constant name="Rin"               value="22.80*cm"/>
- <Constant name="Rout"              value="51.20*cm"/>
+ <Constant name="Rin"               value="22.50*cm"/>
+ <Constant name="Rout"              value="50.90*cm"/>
  <Constant name="RingT"             value="3.00*cm"/>
  <Constant name="StructureT"        value="0.80*cm"/>
  <Constant name="ICBW"              value="2.40*cm"/>
