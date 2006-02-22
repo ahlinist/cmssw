@@ -1,0 +1,8 @@
+<use name=Utilities/Timing>
+<use name=boost>
+
+<export>
+   <lib name=DataFormatsCSCTFTBRawData>
+   <use name=Utilities/Timing>
+   <use name=boost>
+</export>
