@@ -1,0 +1,7 @@
+How to prepare catalog entries in oracle POOL dbs
+  --download CondTools/OracleDBA from CMSSW CVS
+  --cd CondTools/OracleDBA/src
+  --change locally the "password" parameter in the authentication.xml file to correct ones 
+  --./generate_oracle_catalog.sh oracleservicename
+    example oracleservice names
+     orcon.cern.ch , cms_cond, cms_cond_val, devdb10
