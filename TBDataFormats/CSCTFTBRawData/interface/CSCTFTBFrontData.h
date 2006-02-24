@@ -13,10 +13,13 @@
 // Author:      Lindsey Gray
 // Created:     13.1.2005
 //
-// $Id: CSCTFTBFrontData.h,v 1.2 2005/03/03 18:14:48 lgray Exp $
+// $Id: CSCTFTBFrontData.h,v 1.1 2006/02/22 23:15:49 lgray Exp $
 //
 // Revision History
 // $Log: CSCTFTBFrontData.h,v $
+// Revision 1.1  2006/02/22 23:15:49  lgray
+// First commit of test beam data format from UF
+//
 // Revision 1.2  2005/03/03 18:14:48  lgray
 // Added ability to pack data back into raw form. Added test program for this as well.
 //
@@ -80,6 +83,7 @@ class CSCTFTBFrontData
         // Constants, enums and typedefs
 
         // Constructors and destructor
+        CSCTFTBFrontData() { }
         CSCTFTBFrontData(unsigned);
         CSCTFTBFrontData(const CSCTFTBFrontData&);
 
