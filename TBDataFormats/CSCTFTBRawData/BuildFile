@@ -2,7 +2,7 @@
 <use name=boost>
 
 <export>
-   <lib name=DataFormatsCSCTFTBRawData>
+   <lib name=TBDataFormatsCSCTFTBRawData>
    <use name=Utilities/Timing>
    <use name=boost>
 </export>
