@@ -2,7 +2,8 @@
 <use name=FWCore/Framework>
 <use name=SimDataFormats/HepMCProduct>
 <use name=clhep> 
-<use name=cmkin> 
+<use name=pythia6_227>
+
 <flags SEAL_PLUGIN_NAME="IOMCGeneratorInterface">
 <export>
  <lib name=IOMCGeneratorInterface>
@@ -10,14 +11,10 @@
  <use name=FWCore/Framework>
  <use name=SimDataFormats/HepMCProduct>
  <use name=clhep> 
- <use name=cmkin> 
+ <use name=pythia6_227>
 </export>
 
  <lib name=g2c></lib>
  <lib name=m></lib>
 
- <lib name=kine_d</lib>
- <lib name=util_d</lib>
- <lib name=stdhep</lib>
- <lib name=comphep126</lib>
- <lib name=pythia6324</lib>
+
