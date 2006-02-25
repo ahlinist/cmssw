@@ -1,6 +1,6 @@
 /*
- *  $Date: 2006/02/03 09:13:39 $
- *  $Revision: 1.6 $
+ *  $Date: 2006/02/03 10:34:09 $
+ *  $Revision: 1.7 $
  *  
  *  Filip Moorgat & Hector Naves 
  *  26/10/05
@@ -29,21 +29,22 @@ HepMC::ConvertHEPEVT conv;
 // ***********************
 
 
-//used for defaults
-  static const unsigned long kNanoSecPerSec = 1000000000;
-  static const unsigned long kAveEventPerSec = 200;
 
 PythiaSource::PythiaSource( const ParameterSet & pset, InputSourceDescription const& desc ) :
-  GeneratedInputSource(pset, desc),  
-  //                              
-  //********
-  pysubs_msel_(pset.getUntrackedParameter<int>("pysubsMsel", 1)),
-  pysubs_msub_(pset.getUntrackedParameter<int>("pysubsMsub", 1)),
-  pydatr_mrpy_(pset.getUntrackedParameter<int>("pydatrMrpy", 1)),
-  pypars_mstp_(pset.getUntrackedParameter<int>("pyparsMstp", 1)),
-  pydat2_pmas_(pset.getUntrackedParameter<int>("pydat2Pmas", 1)),
-  pythiaVerbosity_(pset.getUntrackedParameter<bool>("pythiaVerbosity", 
+  GeneratedInputSource(pset, desc), evt(0), pythiaVerbosity_(pset.getUntrackedParameter<bool>("pythiaVerbosity", 
   false)) {
+
+
+  ParameterSet pythia_params = pset.getParameter<ParameterSet>("PythiaParameters") ;
+
+  // prototype with only a few parameters
+
+  pysubs_msel_ = pythia_params.getParameter<int>("pysubsMsel");
+  pysubs_msub_ = pythia_params.getParameter<int>("pysubsMsub");
+  pydatr_mrpy_ = pythia_params.getParameter<int>("pydatrMrpy");
+  pypars_mstp_ = pythia_params.getParameter<int>("pyparsMstp");
+  pydat2_pmas_ = pythia_params.getParameter<int>("pydat2Pmas");
+
 
 
   //********
@@ -88,7 +89,13 @@ void PythiaSource::clear() {
 
 
 bool PythiaSource::produce(Event & e) {
-
+    
+    // clean up GenEvent memory 
+    if (evt != 0) {
+	  delete evt;
+	  evt = 0;
+    }
+		
     auto_ptr<HepMCProduct> bare_product(new HepMCProduct());  
     if (pythiaVerbosity_) {
       cout << "PythiaSource: Generating event number " 
@@ -104,11 +111,10 @@ bool PythiaSource::produce(Event & e) {
     evt->set_event_number(numberEventsInRun() - remainingEvents());
     
     if (pythiaVerbosity_) evt->print();
-
-    //evt = reader_->fillCurrentEventData(); 
-    //********                                      
-
-    if(evt)  bare_product->addHepMCData(evt );
+    
+    if (evt == 0) return false;
+ 
+    if (evt)  bare_product->addHepMCData(evt );
 
     e.put(bare_product);
 
