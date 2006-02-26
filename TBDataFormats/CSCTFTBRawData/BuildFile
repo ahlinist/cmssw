@@ -1,8 +1,10 @@
 <use name=Utilities/Timing>
+<use name=DataFormats/CSCDigi>
 <use name=boost>
 
 <export>
    <lib name=TBDataFormatsCSCTFTBRawData>
+   <use name=DataFormats/CSCDigi>
    <use name=Utilities/Timing>
    <use name=boost>
 </export>

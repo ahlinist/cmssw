@@ -13,10 +13,13 @@
 // Author:      Lindsey Gray
 // Created:     13.5.2003
 //
-// $Id: CSCTFTBFrontBlock.h,v 1.2 2005/03/03 18:14:48 lgray Exp $
+// $Id: CSCTFTBFrontBlock.h,v 1.1 2006/02/22 23:15:49 lgray Exp $
 //
 // Revision History
 // $Log: CSCTFTBFrontBlock.h,v $
+// Revision 1.1  2006/02/22 23:15:49  lgray
+// First commit of test beam data format from UF
+//
 // Revision 1.2  2005/03/03 18:14:48  lgray
 // Added ability to pack data back into raw form. Added test program for this as well.
 //
@@ -62,6 +65,7 @@
 #include "TBDataFormats/CSCTFTBRawData/interface/CSCTFTBFrontHeader.h"
 
 // External package include files
+#include <DataFormats/CSCDigi/interface/CSCCorrelatedLCTDigi.h>
 
 // STL classes
 
@@ -102,6 +106,7 @@ class CSCTFTBFrontBlock
 
 	/// return one link's data
 	CSCTFTBFrontData frontData(unsigned mpc, unsigned link) const;
+	CSCCorrelatedLCTDigi frontDigiData(unsigned mpc, unsigned link) const;
 
 	/// size of data bank in 16-bit words
         int size() const {return size_;};
