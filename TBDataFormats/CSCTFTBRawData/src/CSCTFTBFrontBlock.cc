@@ -11,10 +11,13 @@
 // Author:      Lindsey Gray
 // Created:     24.1.2005
 //
-// $Id: CSCTFTBFrontBlock.cc,v 1.3 2005/06/22 22:03:27 lgray Exp $
+// $Id: CSCTFTBFrontBlock.cc,v 1.1 2006/02/22 23:16:42 lgray Exp $
 //
 // Revision History
 // $Log: CSCTFTBFrontBlock.cc,v $
+// Revision 1.1  2006/02/22 23:16:42  lgray
+// First commit of test beam data format from UF
+//
 // Revision 1.3  2005/06/22 22:03:27  lgray
 // update
 //
@@ -83,7 +86,7 @@
 // Constants, enums and typedefs
 
 // CVS-based strings (Id and Tag with which file was checked out)
-static const char* const kIdString  = "$Id: CSCTFTBFrontBlock.cc,v 1.3 2005/06/22 22:03:27 lgray Exp $";
+static const char* const kIdString  = "$Id: CSCTFTBFrontBlock.cc,v 1.1 2006/02/22 23:16:42 lgray Exp $";
 static const char* const kTagString = "$Name:  $";
 
 // Static data member definitions
@@ -127,18 +130,41 @@ CSCTFTBFrontBlock::~CSCTFTBFrontBlock()
 /// Accessor to link triplet of one MPC
 std::vector<CSCTFTBFrontData> CSCTFTBFrontBlock::frontData(unsigned mpc ) const
 {
-   mpc = (mpc > 0 && mpc <= 5 && mpc <= srdata_.size()) ? mpc-1 : 0;
-   return srdata_[mpc];
+   mpc -= 1;
+   if(mpc < srdata_.size()) return srdata_[mpc];
+   return std::vector<CSCTFTBFrontData>();
 }
 
 /// Accessor to one link's data
 CSCTFTBFrontData CSCTFTBFrontBlock::frontData(unsigned mpc,unsigned link ) 
   const
 {
-   mpc = (mpc > 0 && mpc <= 5 && mpc <= srdata_.size()) ? mpc-1 : 0;
-   link = (link > 0 && link <=3 && link <= srdata_[mpc].size()) ? link-1 : 0;
-   if(srdata_[mpc].size()) return srdata_[mpc][link];
-   return CSCTFTBFrontData(mpc+1);
+  mpc -= 1;
+  link -= 1; 
+  if(srdata_[mpc].size() && (link < srdata_[mpc].size())) return srdata_[mpc][link];
+  return CSCTFTBFrontData(mpc+1);
+}
+
+CSCCorrelatedLCTDigi CSCTFTBFrontBlock::frontDigiData(unsigned mpc, unsigned link) const
+{
+  CSCCorrelatedLCTDigi::PackedDigiType pd;
+  mpc -= 1;
+  link -= 1;
+  if(srdata_[mpc].size() && (link < srdata_[mpc].size()))
+    {
+      CSCTFTBFrontData aFD = srdata_[mpc][link];
+      pd.trknmb = 0;
+      pd.quality = aFD.qualityPacked();
+      pd.keywire = aFD.wireGroupPacked();
+      pd.strip = aFD.stripPacked();
+      pd.pattern = aFD.patternPacked();
+      pd.bend = aFD.lrPacked();
+      pd.bx = myBX_;
+      pd.valid = frontHeader_.getVPBit(mpc + 1, link + 1);
+
+      return CSCCorrelatedLCTDigi(pd);
+    }
+  return CSCCorrelatedLCTDigi();
 }
 
 int CSCTFTBFrontBlock::unpackData(unsigned short *buf,
