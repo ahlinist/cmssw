@@ -1,4 +1,4 @@
-#if !defined(CSCTFTBFORMAT_L1MUCSCDTTDATA_H)
+#if !defined(CSCTFTBRAWFORMAT_L1MUCSCDTDATA_H)
 #define CSCTFTBRAWFORMAT_L1MUCSCDTDATA_H
 // -*- C++ -*-
 //
@@ -13,10 +13,13 @@
 // Author:      Lindsey Gray
 // Created:     13.1.2005
 //
-// $Id: CSCTFTBDTData.h,v 1.2 2005/03/03 18:14:48 lgray Exp $
+// $Id: CSCTFTBDTData.h,v 1.1 2006/02/22 23:15:49 lgray Exp $
 //
 // Revision History
 // $Log: CSCTFTBDTData.h,v $
+// Revision 1.1  2006/02/22 23:15:49  lgray
+// First commit of test beam data format from UF
+//
 // Revision 1.2  2005/03/03 18:14:48  lgray
 // Added ability to pack data back into raw form. Added test program for this as well.
 //

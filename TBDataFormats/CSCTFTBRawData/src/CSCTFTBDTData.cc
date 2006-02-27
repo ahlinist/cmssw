@@ -11,10 +11,13 @@
 // Author:      Lindsey Gray
 // Created:     13.1.2005
 //
-// $Id: CSCTFTBDTData.cc,v 1.2 2005/03/03 18:14:48 lgray Exp $
+// $Id: CSCTFTBDTData.cc,v 1.1 2006/02/22 23:16:42 lgray Exp $
 //
 // Revision History
 // $Log: CSCTFTBDTData.cc,v $
+// Revision 1.1  2006/02/22 23:16:42  lgray
+// First commit of test beam data format from UF
+//
 // Revision 1.2  2005/03/03 18:14:48  lgray
 // Added ability to pack data back into raw form. Added test program for this as well.
 //
@@ -60,6 +63,7 @@ BitVector CSCTFTBDTData::packVector() const
 
 std::ostream & operator<<(std::ostream & stream, const CSCTFTBDTData & dtData)
 {
-  stream << " DT Track Stub:\n\t  " <<"Replace me with pretty print!\n";//dtData.dtDataStub();
+  stream << " DT Track Stub:\n\t  " <<"Quality: " << dtData.quality_ << " Phi: " << dtData.phi_
+	 << " Phi Bend: " << dtData.bend_ << " BX: " << dtData.bx_ << " BC0: " << dtData.bc0_ << std::endl;
   return stream;
 }
