@@ -61,24 +61,13 @@ namespace edm
     void initializePyint2(const ParameterSet& pset);
     
     ///Template method for individual initialization
-    void initCard(const ParameterSet&,double&,const std::string&,
-		  int maxBound,int minBound=1,int compressed=0);
-    
-    void initCard(const ParameterSet&,int&,const std::string&,
-		  int maxBound,int minBound=1,int compressed=0);
-
-    /*    
     template <class T>
-      void test(const ParameterSet&,T&,const std::string&);
-    */
-
-    template <class T>
-      void genericInitialization(T&, 
-				 const std::vector<T>&,
-				 const std::string&,
-				 int maxBound, 
-				 int minBound=1, 
-				 int compressed=0);
+      void genericInitCard(const ParameterSet&,
+			   T&,
+			   const std::string&,
+			   int maxBound, 
+			   int minBound=1, 
+			   int compressed=0);
     
     
   };
