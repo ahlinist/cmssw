@@ -35,14 +35,31 @@ namespace pset
 
   bool
   Registry::getParameterSet(edm::ParameterSetID const& id,
-			    edm::ParameterSet & rseult) const
+			    edm::ParameterSet & result) const
   {
-    return false;
+    bool found;
+    const_iterator i;
+    {
+      // This scope limits the lifetime of the lock to the shortest
+      // required interval.
+      boost::mutex::scoped_lock lock(registry_mutex);
+      i = psets_.find(id);
+      found = ( i != psets_.end() );
+    }
+    if (found) result = i->second;
+    return found;
   }
 
   void
   Registry::insertParameterSet(edm::ParameterSet const& p)
   {
+    edm::ParameterSet tracked_part(p.trackedPart());
+    {
+      // This scope limits the lifetime of the lock to the shortest
+      // required interval.
+      boost::mutex::scoped_lock lock(registry_mutex);
+      psets_[p.id()] = tracked_part;
+    }
   }
 
   Registry::size_type

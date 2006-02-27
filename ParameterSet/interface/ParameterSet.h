@@ -77,7 +77,7 @@ namespace edm {
     std::vector<edm::FileInPath>::size_type
     getAllFileInPaths(std::vector<edm::FileInPath>& output) const;
 
-    std::vector<std::string> getParameterNames()const;
+    std::vector<std::string> getParameterNames() const;
     
     template <class T>
     void
@@ -92,6 +92,7 @@ namespace edm {
       return tbl_.empty();
     }
 
+    ParameterSet trackedPart() const;
 
 private:
     typedef std::map<std::string, Entry> table;

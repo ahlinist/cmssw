@@ -279,6 +279,12 @@ namespace edm {
 		   boost::bind(&std::pair<std::string const, Entry>::first,_1));
     return returnValue;
   }
+
+  ParameterSet
+  ParameterSet::trackedPart() const
+  {
+    return ParameterSet(this->toStringOfTracked());
+  }
   
 } // namespace edm
 // ----------------------------------------------------------------------
