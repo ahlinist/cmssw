@@ -11,10 +11,13 @@
 // Author:      Lindsey Gray
 // Created:     24.1.2005
 //
-// $Id: CSCTFTBFrontBlock.cc,v 1.1 2006/02/22 23:16:42 lgray Exp $
+// $Id: CSCTFTBFrontBlock.cc,v 1.2 2006/02/26 23:34:34 lgray Exp $
 //
 // Revision History
 // $Log: CSCTFTBFrontBlock.cc,v $
+// Revision 1.2  2006/02/26 23:34:34  lgray
+// Adding tests for raw data.
+//
 // Revision 1.1  2006/02/22 23:16:42  lgray
 // First commit of test beam data format from UF
 //
@@ -86,7 +89,7 @@
 // Constants, enums and typedefs
 
 // CVS-based strings (Id and Tag with which file was checked out)
-static const char* const kIdString  = "$Id: CSCTFTBFrontBlock.cc,v 1.1 2006/02/22 23:16:42 lgray Exp $";
+static const char* const kIdString  = "$Id: CSCTFTBFrontBlock.cc,v 1.2 2006/02/26 23:34:34 lgray Exp $";
 static const char* const kTagString = "$Name:  $";
 
 // Static data member definitions
@@ -234,11 +237,11 @@ std::ostream & operator<<(std::ostream & stream, const CSCTFTBFrontBlock & bx)
     stream << "\tFront Event Data (Track Stubs):\n";
   for(unsigned i = 1; i <= sr.size(); ++i)
     {
-      if(sr[i-1].size()) stream<<"\tMPC: "<<i<<'\n';
+      if(sr[i-1].size()) stream<<"\tFPGA: "<<i<<'\n';
       for (unsigned j = 1;j <= sr[i-1].size();j++)
 	{
-	  stream<<"\t Link "<<j<<' ';
-	  stream <<sr[i-1][j-1];
+	  stream<<"\t Link: "<<j<<' '<<std::dec;
+	  bx.frontDigiData(i,j).print();
 	}
     }
   return stream;
