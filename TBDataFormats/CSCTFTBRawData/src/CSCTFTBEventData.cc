@@ -11,10 +11,13 @@
 // Author:      Lindsey Gray
 // Created:     13.1.2005
 //
-// $Id: CSCTFTBEventData.cc,v 1.6 2005/06/22 22:03:27 lgray Exp $
+// $Id: CSCTFTBEventData.cc,v 1.1 2006/02/22 23:16:42 lgray Exp $
 //
 // Revision History
 // $Log: CSCTFTBEventData.cc,v $
+// Revision 1.1  2006/02/22 23:16:42  lgray
+// First commit of test beam data format from UF
+//
 // Revision 1.6  2005/06/22 22:03:27  lgray
 // update
 //
@@ -105,7 +108,7 @@
 // Constants, enums and typedefs
 
 // CVS-based strings (Id and Tag with which file was checked out)
-static const char* const kIdString  = "$Id: CSCTFTBEventData.cc,v 1.6 2005/06/22 22:03:27 lgray Exp $";
+static const char* const kIdString  = "$Id: CSCTFTBEventData.cc,v 1.1 2006/02/22 23:16:42 lgray Exp $";
 static const char* const kTagString = "$Name:  $";
 
 // Static data member definitions
@@ -122,7 +125,7 @@ CSCTFTBEventData::CSCTFTBEventData()
 CSCTFTBEventData::CSCTFTBEventData(unsigned short *buf)
 {
 // Then unpack the rest of the data
-  if(hasCDF_) buf+=4;
+
   unpackData(buf);
 }
 

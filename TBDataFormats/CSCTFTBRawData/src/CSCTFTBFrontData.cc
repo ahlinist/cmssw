@@ -11,10 +11,13 @@
 // Author:      Lindsey Gray
 // Created:     13.1.2005
 //
-// $Id: CSCTFTBFrontData.cc,v 1.2 2005/03/03 18:14:48 lgray Exp $
+// $Id: CSCTFTBFrontData.cc,v 1.1 2006/02/22 23:16:42 lgray Exp $
 //
 // Revision History
 // $Log: CSCTFTBFrontData.cc,v $
+// Revision 1.1  2006/02/22 23:16:42  lgray
+// First commit of test beam data format from UF
+//
 // Revision 1.2  2005/03/03 18:14:48  lgray
 // Added ability to pack data back into raw form. Added test program for this as well.
 //
@@ -79,17 +82,22 @@
 // Constants, enums and typedefs
 
 // CVS-based strings (Id and Tag with which file was checked out)
-static const char* const kIdString  = "$Id: CSCTFTBFrontData.cc,v 1.2 2005/03/03 18:14:48 lgray Exp $";
+static const char* const kIdString  = "$Id: CSCTFTBFrontData.cc,v 1.1 2006/02/22 23:16:42 lgray Exp $";
 static const char* const kTagString = "$Name:  $";
 
 // Static data member definitions
 
 // Constructors and destructor
-CSCTFTBFrontData::CSCTFTBFrontData(unsigned mpc):myMPC_(mpc)
-{}
+CSCTFTBFrontData::CSCTFTBFrontData(unsigned mpc): myMPC_(mpc)
+{
+  memset(this,0,size()*sizeof(short));
+}
 
 CSCTFTBFrontData::~CSCTFTBFrontData()
-{}
+{
+  memset(this,0,size()*sizeof(short));
+  myMPC_ = 0;
+}
 
 CSCTFTBFrontData::CSCTFTBFrontData(const CSCTFTBFrontData& parent)
 {
