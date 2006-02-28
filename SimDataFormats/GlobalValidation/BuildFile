@@ -1,0 +1,6 @@
+<export>
+ <lib name=SimDataFormatsGlobalValidation>
+ <use name=FWCore/EDProduct>
+</export>
+
+<use name=FWCore/EDProduct>
