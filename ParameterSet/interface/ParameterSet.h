@@ -94,6 +94,16 @@ namespace edm {
 
     ParameterSet trackedPart() const;
 
+    // Return the names of all parameters of type ParameterSet,
+    // pushing the names into the argument 'output'. Return the number
+    // of names pushed into the vector.
+    size_t getParameterSetNames(std::vector<std::string>& output) const;
+
+    // Return the names of all parameters of type
+    // vector<ParameterSet>, pushing the names into the argument
+    // 'output'. Return the number of names pushed into the vector.
+    size_t getParameterSetVectorNames(std::vector<std::string>& output) const;
+
 private:
     typedef std::map<std::string, Entry> table;
     table tbl_;
@@ -118,6 +128,10 @@ private:
     // get the untracked Entry object, throwing an exception if it is
     // not found.
     Entry const* getEntryPointerOrThrow_(std::string const& name) const;
+
+    // Return the names of all the entries with the given typecode.
+    size_t getNamesByCode_(char code,
+			   std::vector<std::string>& output) const;
 
 
   };  // ParameterSet
@@ -431,9 +445,15 @@ private:
     return getEntryPointerOrThrow_(name)->getVPSet();
   }
 
-  
 }  // namespace edm
 
-// epilog
+// Associated functions used elsewhere in the ParameterSet system
+namespace pset
+{
+  // Put into 'results' each parameter set in 'top', including 'top'
+  // itself.
+  void explode(edm::ParameterSet const& top,
+	       std::vector<edm::ParameterSet>& results);
+}
 
 #endif
