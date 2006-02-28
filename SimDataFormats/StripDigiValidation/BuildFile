@@ -1,0 +1,6 @@
+<flags LCGDICT_ARGS="--deep">
+<use name=FWCore/EDProduct>
+<export>
+ <lib name=DataFormatsSiStripDigiTest>
+ <use name=FWCore/EDProduct>
+</export>
