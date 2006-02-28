@@ -1,12 +1,12 @@
 <flags SEAL_PLUGIN_NAME="PhysicsToolsRecoCandAlgos">
-<use name=PhysicsTools/RecoCandidate>
+<use name=DataFormats/RecoCandidate>
 <use name=PhysicsTools/CandAlgos>
 <use name=PhysicsTools/CandUtils>
 <use name=FWCore/Framework>
 <use name=FWCore/ParameterSet>
 <export>
   <lib name=PhysicsToolsRecoCandAlgos>
-  <use name=PhysicsTools/RecoCandidate>
+  <use name=DataFormats/RecoCandidate>
   <use name=PhysicsTools/CandAlgos>
   <use name=PhysicsTools/CandUtils>
   <use name=FWCore/Framework>
