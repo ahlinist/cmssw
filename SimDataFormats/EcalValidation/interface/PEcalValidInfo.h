@@ -30,7 +30,7 @@ public:
    PEcalValidInfo()
   :e1(0.0),e4(0.0),e9(0.0),e16(0.0),e25(0.0),
    totalEInEE(0.0), totalEInEB(0.0), totalEInES(0.0),
-   totalHits(0), nHitsInEE(0),nHitsInEB(0),nHitsInES(0)
+   totalHits(0), nHitsInEE(0),nHitsInEB(0),nHitsInES(0),nHitsIn1ES(0),nHitsIn2ES(0) 
 {
 
  }
@@ -45,17 +45,24 @@ public:
    float  e4x4() const { return e16;}
    float  e5x5() const { return e25;}
 
-   float  eInEE() const { return totalEInEE; }
-   float  eInEB() const { return totalEInEB; }
-   float  eInES() const { return totalEInES; }
+   float  eInEE()  const { return totalEInEE; }
+   float  eInEB()  const { return totalEInEB; }
+   float  eInES()  const { return totalEInES; }
 
    int    hitsInEcal() const { return totalHits; }
-   int    hitsInEE() const { return nHitsInEE; }
-   int    hitsInEB() const { return nHitsInEB; }
-   int    hitsInES() const { return nHitsInES; }
+   int    hitsInEE()   const { return nHitsInEE; }
+   int    hitsInEB()   const { return nHitsInEB; }
+   int    hitsInES()   const { return nHitsInES; }
+   int    hitsIn1ES()  const { return nHitsIn1ES;}
+   int    hitsIn2ES()  const { return nHitsIn2ES;}
+  
        
    FloatVector  bX0() const { return eBX0; }
    FloatVector  eX0() const { return eEX0; }
+
+
+   FloatVector  eIn1ES() const { return eOf1ES; }
+   FloatVector  eIn2ES() const { return eOf2ES; }
 
    FloatVector  phiOfEEHits() const { return phiOfEECaloG4Hit; }
    FloatVector  etaOfEEHits() const { return etaOfEECaloG4Hit; }
@@ -75,6 +82,7 @@ public:
    HepLorentzVector  momentum() const { return theMomentum; }
    HepLorentzVector  vertex() const  { return theVertex; }
    
+   int pId()  const { return thePID; }   
 
 private:
  
@@ -89,15 +97,18 @@ private:
    float  totalEInEB;       //The Total Energy deposited in EB;
    float  totalEInES;       //The Total Energy deposited in ES;
 
-
    int totalHits;          //Total number of Hits.
    int nHitsInEE;          //Total number of Hits in EE.
    int nHitsInEB;          //Total number of Hits in EB.
    int nHitsInES;          //Total number of Hits in ES.
+   int nHitsIn1ES;         //Total number of Hits in 1st Layer of ES;
+   int nHitsIn2ES;         //Total number of Hits in 2nd Layer of ES;
    
    FloatVector eBX0;       // longitudinal Energy deposition In EB.
    FloatVector eEX0;       // longitudinal Energy deposition In EE.
-    
+
+   FloatVector  eOf1ES;    // Energy deposition of Hits in 1st layer of ES;
+   FloatVector  eOf2ES;    // Energy deposition of Hits in 2nd layer of ES;              
    FloatVector  phiOfEECaloG4Hit;    // Phi of Hits.
    FloatVector  etaOfEECaloG4Hit;    // Eta of Hits.
    FloatVector  tOfEECaloG4Hit;      // Tof of Hits.
