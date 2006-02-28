@@ -1,6 +1,6 @@
 /*
- *  $Date: 2006/02/27 15:21:56 $
- *  $Revision: 1.9 $
+ *  $Date: 2006/02/27 20:24:29 $
+ *  $Revision: 1.10 $
  *  
  *  Filip Moorgat & Hector Naves 
  *  26/10/05
@@ -119,25 +119,38 @@ bool PythiaSource::produce(Event & e) {
 void PythiaSource::initializePysubs(const ParameterSet& pset) {
 
   // Initialize msel and mselpd
-  int pysubs_msel = pset.getUntrackedParameter<int>("Pysubs_msel",0);
+  int pysubs_msel = pset.getParameter<int>("Pysubs_msel");
+  cout << "PythiaSource::initializePysubs :" 
+	   << "MSEL changed from " 
+	   << pysubs.msel << " to " <<  pysubs_msel << endl;
   pysubs.msel = pysubs_msel;
 
-  int pysubs_mselpd = pset.getUntrackedParameter<int>("Pysubs_mselpd",0);
+  int pysubs_mselpd = pset.getParameter<int>("Pysubs_mselpd");
+  cout << "PythiaSource::initializePysubs :" 
+	   << "MSELPD changed from " 
+	   << pysubs.mselpd << " to " <<  pysubs_msel << endl;
   pysubs.mselpd = pysubs_mselpd;
 
   // Initialize msub(200)
   vector<int> pysubs_msub = 
-    pset.getUntrackedParameter< vector<int> >("Pysubs_msub", vector<int>());
+    pset.getParameter< vector<int> >("Pysubs_msub");
   int evenSize = pysubs_msub.size();
-  for(int i=0;i<evenSize;++i) pysubs.msub[pysubs_msub[i]-1] = 1;
-  
+  if ( evenSize > 0 ) { 
+    cout << "PythiaSource::initializePysubs : " 
+	 << "The follwoing processes are turned on : " << endl;
+    for(int i=0;i<evenSize;++i) {
+      cout << pysubs_msub[i] << " ";
+      pysubs.msub[pysubs_msub[i]-1] = 1;
+    }
+    cout << endl;
+  }
   // Initialize ckin(200)
   genericInitCard(pset,pysubs.ckin[0],"Pysubs_ckin",200);
 
   // Initialize kfin(1,-40:40) & kfin(2,-40:40) simultaneously
   // (1 is for the beam, 2 is for the target - no difference at LHC)
   vector<int> pysubs_kfin = 
-    pset.getUntrackedParameter< vector<int> > ("Pysubs_kfin", vector<int>());
+    pset.getParameter< vector<int> > ("Pysubs_kfin");
 
   evenSize = pysubs_kfin.size();
   if(evenSize%2!=0) {
@@ -233,7 +246,7 @@ void PythiaSource::initializePydat3(const ParameterSet& pset) {
 
   //First, disable series of channels (special card mdme0)
   vector<int> pydat3_mdme0 = 
-    pset.getUntrackedParameter< vector<int> > ("Pydat3_mdme0", vector<int>());
+    pset.getParameter< vector<int> > ("Pydat3_mdme0");
   int evenSize = pydat3_mdme0.size();
   if(evenSize%2!=0) {
 
@@ -280,9 +293,13 @@ void PythiaSource::initializePydat3(const ParameterSet& pset) {
 void PythiaSource::initializePydatr(const ParameterSet& pset) {
 
   // Initialize mrpy[0], the seed of all random numbers. Take the 
-  // time if not specified in Pydatr.
+  // time if a negative integrer is specified in Pydatr.
   
-  int pydatr_mrpy = pset.getUntrackedParameter<int>("Pydatr_mrpy",time(NULL)); 
+  int pydatr_mrpy = pset.getParameter<int>("Pydatr_mrpy");
+  if ( pydatr_mrpy < 0 ) pydatr_mrpy = time(NULL); 
+  cout << "PythiaSource::initializePydatr : " 
+       << "the PYTHIA random generator is initialized with " << endl
+       << "pydatr.mrpy = " << pydatr_mrpy << endl;
   pydatr.mrpy[0] = pydatr_mrpy;
 
 }
@@ -350,7 +367,7 @@ void PythiaSource::genericInitCard(const ParameterSet& pset,
 					 int compressed) {
   
   vector<T> values =
-    pset.template getUntrackedParameter<vector<T> > (myCard, vector<T>());
+    pset.template getParameter<vector<T> > (myCard);
 
   int evenSize = values.size();
   if(evenSize%2!=0) {
