@@ -1,6 +1,6 @@
 /*
- *  $Date: 2006/02/27 20:24:29 $
- *  $Revision: 1.10 $
+ *  $Date: 2006/02/28 14:46:25 $
+ *  $Revision: 1.11 $
  *  
  *  Filip Moorgat & Hector Naves 
  *  26/10/05
@@ -102,10 +102,11 @@ bool PythiaSource::produce(Event & e) {
     evt->set_signal_process_id(pypars.msti[0]);
     evt->set_event_number(numberEventsInRun() - remainingEvents() - 1);
     
-    cout << "Event process = " << pypars.msti[0] << endl 
+    if (pythiaVerbosity_) {
+     cout << "Event process = " << pypars.msti[0] << endl 
 	 << "----------------------" << endl;
-    if (pythiaVerbosity_) evt->print();
-
+     evt->print();
+    }
     //evt = reader_->fillCurrentEventData(); 
     //********                                      
 
