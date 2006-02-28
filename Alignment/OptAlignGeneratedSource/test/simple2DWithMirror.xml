@@ -1,0 +1,165 @@
+<?xml version="1.0"?>
+<DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../DDLSchema/DDLSchema.xsd">
+
+<MaterialSection label="simple2DWithMirror.xml">
+  <ElementaryMaterial name="Hydrogen" density="1*g/cm3 " symbol="H" atomicWeight="1.6021773e-22*g/mole" atomicNumber="1"/>
+</MaterialSection>
+
+<SolidSection label="simple2DWithMirror.xml">
+ <Box name="OCMS;laser1" dx="100*m  " dy="100*m  " dz="100*m  "/>
+ <Box name="OCMS;mirror" dx="100*m  " dy="100*m  " dz="100*m  "/>
+ <Box name="OCMS;sens1" dx="100*m  " dy="100*m  " dz="100*m  "/>
+ <Box name="OCMS;sens2" dx="100*m  " dy="100*m  " dz="100*m  "/>
+ <Box name="OCMS" dx="0.*m" dy="0.*m" dz="0.*m"/>
+</SolidSection>
+
+<LogicalPartSection label="simple2DWithMirror.xml">
+ <LogicalPart name="OCMS;laser1" category="unspecified">
+  <rSolid name="OCMS;laser1"/>
+  <rMaterial name="materials:Hydrogen"/>
+ </LogicalPart>
+ <LogicalPart name="OCMS;mirror" category="unspecified">
+  <rSolid name="OCMS;mirror"/>
+  <rMaterial name="materials:Hydrogen"/>
+ </LogicalPart>
+ <LogicalPart name="OCMS;sens1" category="unspecified">
+  <rSolid name="OCMS;sens1"/>
+  <rMaterial name="materials:Hydrogen"/>
+ </LogicalPart>
+ <LogicalPart name="OCMS;sens2" category="unspecified">
+  <rSolid name="OCMS;sens2"/>
+  <rMaterial name="materials:Hydrogen"/>
+ </LogicalPart>
+ <LogicalPart name="OCMS" category="unspecified">
+  <rSolid name="OCMS"/>
+  <rMaterial name="NONE"/>
+ </LogicalPart>
+</LogicalPartSection>
+
+<PosPartSection label="simple2DWithMirror.xml">
+ <PosPart copyNumber="1">
+   <rParent name="OCMS"/>
+   <rChild name="OCMS;laser1"/>
+  <rRotation name="R0"/>
+ </PosPart>
+ <PosPart copyNumber="1">
+   <rParent name="OCMS"/>
+   <rChild name="OCMS;mirror"/>
+  <rRotation name="R1"/>
+  <Translation x="0*m  " y="0*m  " z="20*cm " />
+ </PosPart>
+ <PosPart copyNumber="1">
+   <rParent name="OCMS"/>
+   <rChild name="OCMS;sens1"/>
+  <rRotation name="R2"/>
+  <Translation x="0*m  " y="0*m  " z="10*cm " />
+ </PosPart>
+ <PosPart copyNumber="1">
+   <rParent name="OCMS"/>
+   <rChild name="OCMS;sens2"/>
+  <rRotation name="R3"/>
+  <Translation x="10*cm " y="0*m  " z="20*cm " />
+ </PosPart>
+</PosPartSection>
+
+<RotationSection label="simple2DWithMirror.xml">
+ <Rotation name="R0" phiX="-45*deg" thetaX="90*deg" phiY="45*deg" thetaY="90*deg" phiZ="0*deg" thetaZ="0*deg" />
+ <Rotation name="R1" phiX="0*deg" thetaX="45*deg" phiY="90*deg" thetaY="90*deg" phiZ="180*deg" thetaZ="45*deg" />
+ <Rotation name="R2" phiX="0*deg" thetaX="90*deg" phiY="90*deg" thetaY="90*deg" phiZ="0*deg" thetaZ="0*deg" />
+ <Rotation name="R3" phiX="0*deg" thetaX="0*deg" phiY="90*deg" thetaY="90*deg" phiZ="180*deg" thetaZ="90*deg" />
+</RotationSection>
+
+<SpecParSection label="simple2DWithMirror.xml">
+ <SpecPar name="OCMS/laser1">
+   <Parameter name="centre_X_sigma" value="10*mum" /> 
+   <Parameter name="centre_X_quality" value="0" /> 
+   <Parameter name="centre_Y_sigma" value="10*mum" /> 
+   <Parameter name="centre_Y_quality" value="2" /> 
+   <Parameter name="centre_Z_sigma" value="10*mum" /> 
+   <Parameter name="centre_Z_quality" value="0" /> 
+   <Parameter name="angles_X_sigma" value="0.057295779513*deg" /> 
+   <Parameter name="angles_X_quality" value="2" /> 
+   <Parameter name="angles_Y_sigma" value="0.57295779513*deg" /> 
+   <Parameter name="angles_Y_quality" value="0" /> 
+   <Parameter name="angles_Z_sigma" value="0.57295779513*deg" /> 
+   <Parameter name="angles_Z_quality" value="0" /> 
+ </SpecPar>
+ <SpecPar name="OCMS/mirror">
+   <Parameter name="centre_X_sigma" value="10*mum" /> 
+   <Parameter name="centre_X_quality" value="0" /> 
+   <Parameter name="centre_Y_sigma" value="10*mum" /> 
+   <Parameter name="centre_Y_quality" value="1" /> 
+   <Parameter name="centre_Z_sigma" value="10*mum" /> 
+   <Parameter name="centre_Z_quality" value="0" /> 
+   <Parameter name="angles_X_sigma" value="0.57295779513*deg" /> 
+   <Parameter name="angles_X_quality" value="0" /> 
+   <Parameter name="angles_Y_sigma" value="0.57295779513*deg" /> 
+   <Parameter name="angles_Y_quality" value="0" /> 
+   <Parameter name="angles_Z_sigma" value="0.57295779513*deg" /> 
+   <Parameter name="angles_Z_quality" value="0" /> 
+   <Parameter name="OptiProp_name=length" value="0." /> 
+   <Parameter name="OptiProp_length_dimType=length" value="0." /> 
+   <Parameter name="OptiProp_length_value" value="4*mm " /> 
+   <Parameter name="OptiProp_length_sigma" value="0*m  " /> 
+   <Parameter name="OptiProp_length_quality" value="0" /> 
+   <Parameter name="OptiProp_name=width" value="0." /> 
+   <Parameter name="OptiProp_width_dimType=length" value="0." /> 
+   <Parameter name="OptiProp_width_value" value="4*mm " /> 
+   <Parameter name="OptiProp_width_sigma" value="0*m  " /> 
+   <Parameter name="OptiProp_width_quality" value="0" /> 
+   <Parameter name="OptiProp_name=refra_ind" value="0." /> 
+   <Parameter name="OptiProp_refra_ind_dimType=nodim" value="0." /> 
+   <Parameter name="OptiProp_refra_ind_value" value="1.4" /> 
+   <Parameter name="OptiProp_refra_ind_sigma" value="0" /> 
+   <Parameter name="OptiProp_refra_ind_quality" value="0" /> 
+   <Parameter name="OptiProp_name=shiftTX" value="0." /> 
+   <Parameter name="OptiProp_shiftTX_dimType=length" value="0." /> 
+   <Parameter name="OptiProp_shiftTX_value" value="100*mum" /> 
+   <Parameter name="OptiProp_shiftTX_sigma" value="10*mum" /> 
+   <Parameter name="OptiProp_shiftTX_quality" value="0" /> 
+   <Parameter name="OptiProp_name=deviTX" value="0." /> 
+   <Parameter name="OptiProp_deviTX_dimType=angle" value="0." /> 
+   <Parameter name="OptiProp_deviTX_value" value="0.03*deg" /> 
+   <Parameter name="OptiProp_deviTX_sigma" value="0.57295779513*deg" /> 
+   <Parameter name="OptiProp_deviTX_quality" value="0" /> 
+ </SpecPar>
+ <SpecPar name="OCMS/sens1">
+   <Parameter name="centre_X_sigma" value="10*mum" /> 
+   <Parameter name="centre_X_quality" value="0" /> 
+   <Parameter name="centre_Y_sigma" value="10*mum" /> 
+   <Parameter name="centre_Y_quality" value="1" /> 
+   <Parameter name="centre_Z_sigma" value="10*mum" /> 
+   <Parameter name="centre_Z_quality" value="0" /> 
+   <Parameter name="angles_X_sigma" value="0.57295779513*deg" /> 
+   <Parameter name="angles_X_quality" value="0" /> 
+   <Parameter name="angles_Y_sigma" value="0.57295779513*deg" /> 
+   <Parameter name="angles_Y_quality" value="0" /> 
+   <Parameter name="angles_Z_sigma" value="0.57295779513*deg" /> 
+   <Parameter name="angles_Z_quality" value="0" /> 
+ </SpecPar>
+ <SpecPar name="OCMS/sens2">
+   <Parameter name="centre_X_sigma" value="10*mum" /> 
+   <Parameter name="centre_X_quality" value="0" /> 
+   <Parameter name="centre_Y_sigma" value="10*mum" /> 
+   <Parameter name="centre_Y_quality" value="1" /> 
+   <Parameter name="centre_Z_sigma" value="10*mum" /> 
+   <Parameter name="centre_Z_quality" value="0" /> 
+   <Parameter name="angles_X_sigma" value="0.57295779513*deg" /> 
+   <Parameter name="angles_X_quality" value="0" /> 
+   <Parameter name="angles_Y_sigma" value="0.57295779513*deg" /> 
+   <Parameter name="angles_Y_quality" value="0" /> 
+   <Parameter name="angles_Z_sigma" value="0.57295779513*deg" /> 
+   <Parameter name="angles_Z_quality" value="0" /> 
+ </SpecPar>
+<!--    Define volumes as COCOA objects --> 
+  <SpecPar name="COCOA"> 
+    <PartSelector path="//OCMS/laser1"/> 
+    <PartSelector path="//OCMS/mirror"/> 
+    <PartSelector path="//OCMS/sens1"/> 
+    <PartSelector path="//OCMS/sens2"/> 
+   <Parameter name="COCOA" value="COCOA"/> 
+  </SpecPar> 
+</SpecParSection>
+
+
+</DDDefinition>
