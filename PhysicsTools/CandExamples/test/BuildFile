@@ -1,17 +1,17 @@
 <bin name="higgsPlots" file="higgsPlots.cpp">
- <use name=PhysicsTools/RecoCandidate>
+ <use name=DataFormats/RecoCandidate>
  <use name=root>
  <lib name="Cintex">
 </bin>
 
 <bin name="candPlots" file="candPlots.cpp">
- <use name=PhysicsTools/RecoCandidate>
+ <use name=DataFormats/RecoCandidate>
  <use name=root>
  <lib name="Cintex">
 </bin>
 
 <bin file=candPlots_pool.cpp>
-  <use name=PhysicsTools/RecoCandidate>
+  <use name=DataFormats/RecoCandidate>
   <use name=PhysicsTools/FWLite>
   <use name=FWCore/Framework>
   <use name=root>
