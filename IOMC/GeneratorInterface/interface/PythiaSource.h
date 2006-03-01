@@ -24,9 +24,18 @@ namespace edm
 {
   class PythiaSource : public GeneratedInputSource {
   public:
+
+    /// Constructor
     PythiaSource(const ParameterSet &, const InputSourceDescription &);
+    /// Destructor
     virtual ~PythiaSource();
-    
+
+
+  private:
+
+    /// Interface to the PYGIVE pythia routine, with add'l protections
+    bool call_pygive(const std::string& iParm );
+
   private:
     
     virtual bool produce(Event & e);
@@ -34,41 +43,8 @@ namespace edm
     
     HepMC::GenEvent  *evt;
     
+    /// Verbosity flag
     bool pythiaVerbosity_;    	
-    
-    ///Method to initialise Pysubs: msel, mselpd, msub, kfin, ckin.
-    void initializePysubs(const ParameterSet &);
-    
-    ///Method to initialise Pypars: mstp, parp, msti, pari
-    void initializePypars(const ParameterSet& pset);
-    
-    ///Method to initialise Pydat1: mstu, paru, mstj, parj.
-    void initializePydat1(const ParameterSet& pset);
-    
-    ///Method to initialise Pydat2: kchg, pmas, parf, vckm.
-    void initializePydat2(const ParameterSet& pset);
-    
-    ///Method to initialise Pydat3: mdcy, mdme, brat, kfdp.
-    void initializePydat3(const ParameterSet& pset);
-    
-    ///Method to initialise Pydatr: mrpy, rrpy
-    void initializePydatr(const ParameterSet& pset);
-    
-    ///Method to initialise Pymssm: imss, rmss
-    //  void initializePymssm(const ParameterSet& pset);
-    
-    ///Method to initialise Pyint2: kfpr
-    void initializePyint2(const ParameterSet& pset);
-    
-    ///Template method for individual initialization
-    template <class T>
-      void genericInitCard(const ParameterSet&,
-			   T&,
-			   const std::string&,
-			   int maxBound, 
-			   int minBound=1, 
-			   int compressed=0);
-    
     
   };
 } 
