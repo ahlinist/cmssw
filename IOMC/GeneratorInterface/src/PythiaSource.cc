@@ -54,8 +54,10 @@ PythiaSource::PythiaSource( const ParameterSet & pset,
     pset.getParameter<ParameterSet>("PythiaParameters") ;
 
   // The parameter sets to be read (default, min bias, user ...)
+  // Don't need to be tracked.
   vector<string> setNames = 
-    pythia_params.getParameter<vector<string> >("parameterSets");
+    pythia_params.getUntrackedParameter<vector<string> > ("parameterSets",
+							  vector<string>());
   
   // Loop over the sets
   for ( unsigned i=0; i<setNames.size(); ++i ) {
