@@ -8,7 +8,7 @@
 #include "DetectorDescription/Core/interface/DDSpecifics.h"
 #include "DetectorDescription/Parser/interface/DDLConfiguration.h"
 #include "DetectorDescription/Algorithm/src/AlgoInit.h"
-
+#include "CondCore/DBCommon/interface/ServiceLoader.h"
 //#include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include "CondCore/MetaDataService/interface/MetaData.h"
@@ -23,7 +23,14 @@ DBIdealGeometryESSource::DBIdealGeometryESSource(const edm::ParameterSet & pset)
   std::string dbConn = pset.getParameter<std::string>("dbConn");
   std::string dbID = pset.getParameter<std::string>("dbID");
  
-  MetaData meta( dbConn );
+  cond::ServiceLoader* loader=new cond::ServiceLoader;
+  ::putenv("CORAL_AUTH_USER=me");
+  ::putenv("CORAL_AUTH_PASSWORD=mypass");
+  loader->loadAuthenticationService( cond::Env );
+  loader->loadMessageService( cond::Error );
+
+  MetaData meta (dbConn, *loader);
+
 
   std::cout << "Looking for: " << dbID << std::endl;
   std::string aToken= meta.getToken( dbID );
