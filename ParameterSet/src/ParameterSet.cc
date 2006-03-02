@@ -285,17 +285,17 @@ namespace edm {
     return ParameterSet(this->toStringOfTracked());
   }
 
-  size_t
-  ParameterSet::getParameterSetNames(std::vector<std::string>& output) const
-  {
-    return getNamesByCode_('P', output);
-  }
+   size_t
+   ParameterSet::getParameterSetNames(std::vector<std::string>& output) const
+   {
+     return getParametergetNamesByCode_('P', output);
+   }
 
-  size_t
-  ParameterSet::getParameterSetVectorNames(std::vector<std::string>& output) const
-  {
-    return getNamesByCode_('p', output);
-  }
+   size_t
+   ParameterSet::getParameterSetVectorNames(std::vector<std::string>& output) const
+   {
+     return getNamesByCode_('p', output);
+   }
 
   size_t
   ParameterSet::getNamesByCode_(char code, 
