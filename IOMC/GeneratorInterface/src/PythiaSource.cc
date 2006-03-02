@@ -1,6 +1,6 @@
 /*
- *  $Date: 2006/02/28 20:08:25 $
- *  $Revision: 1.12 $
+ *  $Date: 2006/03/01 20:29:49 $
+ *  $Revision: 1.14 $
  *  
  *  Filip Moorgat & Hector Naves 
  *  26/10/05
@@ -55,10 +55,8 @@ PythiaSource::PythiaSource( const ParameterSet & pset,
 
   // The parameter sets to be read (default, min bias, user ...)
   // Don't need to be tracked.
-  vector<string> setNames = 
-    pythia_params.getUntrackedParameter<vector<string> > ("parameterSets",
-							  vector<string>());
-  
+  vector<string> setNames = pythia_params.getParameterNames();
+
   // Loop over the sets
   for ( unsigned i=0; i<setNames.size(); ++i ) {
     
