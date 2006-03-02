@@ -288,7 +288,7 @@ namespace edm {
    size_t
    ParameterSet::getParameterSetNames(std::vector<std::string>& output) const
    {
-     return getParametergetNamesByCode_('P', output);
+     return getNamesByCode_('P', output);
    }
 
    size_t
