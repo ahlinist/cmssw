@@ -136,11 +136,13 @@ namespace edm {
     // a cache, and so can be modified through the const reference.
     // We do not change the *number* of groups through this call, and so
     // *this is const.
-    void resolve_(Group const& g, bool unconditional = false) const;
+    void resolve_(Group const& g) const;
 
     virtual EDProduct const* getIt(ProductID const& oid) const;
 
     ProductRegistry const& productRegistry() const {return *preg_;}
+
+    boost::shared_ptr<DelayedReader> store() const {return store_;}
 
   private:
     EventAux aux_;	// persistent

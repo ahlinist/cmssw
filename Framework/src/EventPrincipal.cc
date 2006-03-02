@@ -406,8 +406,8 @@ namespace edm {
   }
 
   void
-  EventPrincipal::resolve_(Group const& g, bool unconditional) const {
-    if (!unconditional && !g.isAccessible())
+  EventPrincipal::resolve_(Group const& g) const {
+    if (!g.isAccessible())
       throw edm::Exception(errors::ProductNotFound,"InaccessibleProduct")
 	<< "resolve_: product is not accessible\n"
 	<< g.provenance();
