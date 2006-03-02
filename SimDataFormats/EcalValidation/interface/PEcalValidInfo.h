@@ -24,11 +24,13 @@ class PEcalValidInfo
 {
    friend  class   EcalTestAnalysis;
    friend  class   PreshowerTestAnalysis;
+   friend  class   SimHitSingleTest;
    typedef  std::vector<float>   FloatVector;
 
 public:
    PEcalValidInfo()
-  :e1(0.0),e4(0.0),e9(0.0),e16(0.0),e25(0.0),
+  :ee1(0.0),ee4(0.0),ee9(0.0),ee16(0.0),ee25(0.0),
+   eb1(0.0),eb4(0.0),eb9(0.0),eb16(0.0),eb25(0.0),
    totalEInEE(0.0), totalEInEB(0.0), totalEInES(0.0),
    totalHits(0), nHitsInEE(0),nHitsInEB(0),nHitsInES(0),nHitsIn1ES(0),nHitsIn2ES(0) 
 {
@@ -39,11 +41,17 @@ public:
    ~PEcalValidInfo() {} 
 
    // Get functions.
-   float  e1x1() const { return e1; }
-   float  e2x2() const { return e4; }
-   float  e3x3() const { return e9; }
-   float  e4x4() const { return e16;}
-   float  e5x5() const { return e25;}
+   float  ee1x1() const { return ee1; }
+   float  ee2x2() const { return ee4; }
+   float  ee3x3() const { return ee9; }
+   float  ee4x4() const { return ee16;}
+   float  ee5x5() const { return ee25;}
+
+   float  eb1x1() const { return eb1; }
+   float  eb2x2() const { return eb4; }
+   float  eb3x3() const { return eb9; }
+   float  eb4x4() const { return eb16;}
+   float  eb5x5() const { return eb25;}
 
    float  eInEE()  const { return totalEInEE; }
    float  eInEB()  const { return totalEInEB; }
@@ -63,6 +71,7 @@ public:
 
    FloatVector  eIn1ES() const { return eOf1ES; }
    FloatVector  eIn2ES() const { return eOf2ES; }
+   FloatVector  zOfInES()  const { return zOfES;  }
 
    FloatVector  phiOfEEHits() const { return phiOfEECaloG4Hit; }
    FloatVector  etaOfEEHits() const { return etaOfEECaloG4Hit; }
@@ -86,11 +95,18 @@ public:
 
 private:
  
-   float  e1;       //Energy deposition in cluser1x1
-   float  e4;       //Energy deposition in cluser2x2
-   float  e9;       //Energy deposition in cluser3x3
-   float  e16;      //Energy deposition in cluser4x4
-   float  e25;      //Energy deposition in cluser5x5
+   float  ee1;       //Energy deposition in cluser1x1
+   float  ee4;       //Energy deposition in cluser2x2
+   float  ee9;       //Energy deposition in cluser3x3
+   float  ee16;      //Energy deposition in cluser4x4
+   float  ee25;      //Energy deposition in cluser5x5
+
+   float  eb1;       //Energy deposition in cluser1x1
+   float  eb4;       //Energy deposition in cluser2x2
+   float  eb9;       //Energy deposition in cluser3x3
+   float  eb16;      //Energy deposition in cluser4x4
+   float  eb25;      //Energy deposition in cluser5x5
+
 
  
    float  totalEInEE;       //The Total Energy deposited in EE;
@@ -109,6 +125,7 @@ private:
 
    FloatVector  eOf1ES;    // Energy deposition of Hits in 1st layer of ES;
    FloatVector  eOf2ES;    // Energy deposition of Hits in 2nd layer of ES;              
+   FloatVector  zOfES;
    FloatVector  phiOfEECaloG4Hit;    // Phi of Hits.
    FloatVector  etaOfEECaloG4Hit;    // Eta of Hits.
    FloatVector  tOfEECaloG4Hit;      // Tof of Hits.
