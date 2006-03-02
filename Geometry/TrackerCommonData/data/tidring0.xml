@@ -12,10 +12,9 @@
  <Constant name="CoolSide"       value="2"/>
  <Constant name="ICBTailR"       value="41.15*cm"/>
  <Constant name="ICCRPos"        value="39.62*cm"/>
- <Constant name="RPos"           value="30.4682*cm"/>
-<!-- <Constant name="RPos"           value="[Rmin]+([tidmodule0:FullHeight]+
+ <Constant name="RPos"           value="[Rmin]+([tidmodule0:FullHeight]+
            [tidmodpar:TopFrameHeight]+[tidmodpar:BottomFrameHeight]-
-           [tidmodpar:BottomFrameOver])/2"/> -->
+           [tidmodpar:BottomFrameOver])/2"/>
  <Constant name="ICBTailW"       value="([tidringpar:Rout]-[ICBTailR]-
            [tidringpar:ICBTailTol])"/>
  <Constant name="ICBTailRPos"    value="([tidringpar:Rout]+[ICBTailR]-
