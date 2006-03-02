@@ -11,10 +11,13 @@
 // Author:      Lindsey Gray
 // Created:     24.1.2005
 //
-// $Id: CSCTFTBFrontBlock.cc,v 1.3 2006/02/27 01:19:24 lgray Exp $
+// $Id: CSCTFTBFrontBlock.cc,v 1.4 2006/02/27 10:43:57 lgray Exp $
 //
 // Revision History
 // $Log: CSCTFTBFrontBlock.cc,v $
+// Revision 1.4  2006/02/27 10:43:57  lgray
+// Print changes.
+//
 // Revision 1.3  2006/02/27 01:19:24  lgray
 // Changes to print functions and test data file
 //
@@ -92,7 +95,7 @@
 // Constants, enums and typedefs
 
 // CVS-based strings (Id and Tag with which file was checked out)
-static const char* const kIdString  = "$Id: CSCTFTBFrontBlock.cc,v 1.3 2006/02/27 01:19:24 lgray Exp $";
+static const char* const kIdString  = "$Id: CSCTFTBFrontBlock.cc,v 1.4 2006/02/27 10:43:57 lgray Exp $";
 static const char* const kTagString = "$Name:  $";
 
 // Static data member definitions
@@ -244,8 +247,8 @@ std::ostream & operator<<(std::ostream & stream, const CSCTFTBFrontBlock & bx)
       for (unsigned j = 1;j <= sr[i-1].size();j++)
 	{
 	  stream<<"\t Link: "<<j<<' '<<std::dec
-		<<" CSCID: " << bx.frontData(i,j).CSCIDPacked() << ' ';
-	  bx.frontDigiData(i,j).print();
+		<<" CSCID: " << bx.frontData(i,j).CSCIDPacked() << ' '
+		<< bx.frontDigiData(i,j);
 	}
     }
   return stream;
