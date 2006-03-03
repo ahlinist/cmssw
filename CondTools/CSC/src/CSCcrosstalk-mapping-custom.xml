@@ -2,15 +2,18 @@
 <!DOCTYPE Mapping SYSTEM "InMemory">
 <Mapping version="CSCCROSSTALK-1.0" >
   <Class table="CSCCROSSTALK" id_columns="IOV_VALUE_ID" name="CSCcrosstalk" >
-    <Container table="CSCCROSSTALK_DATA" id_columns="IOV_VALUE_ID" name="crosstalk" position_column="POS" >
-      <Object table="CSCCROSSTALK_DATA" id_columns="POS IOV_VALUE_ID" name="CSCcrosstalk::Item" >
-        <Primitive column="CSCCROSSTALK_SLOPE_RIGHT" name="xtalk_slope_right" />
-        <Primitive column="CSCCROSSTALK_INTERCEPT_RIGHT" name="xtalk_intercept_right" />
-        <Primitive column="CSCCROSSTALK_CHI2_RIGHT" name="xtalk_chi2_right" />
-        <Primitive column="CSCCROSSTALK_SLOPE_LEFT" name="xtalk_slope_left" />
-        <Primitive column="CSCCROSSTALK_INTERCEPT_LEFT" name="xtalk_intercept_left" />
-        <Primitive column="CSCCROSSTALK_CHI2_LEFT" name="xtalk_chi2_left" />
-      </Object >
+    <Container table="CSCCROSSTALK_MAP" id_columns="IOV_VALUE_ID" name="crosstalk" position_column="MAP_ID" >
+      <Primitive column="CSC_INT_ID" name="int" />
+      <Container table="CSCCROSSTALK_DATA" id_columns="MAP_ID IOV_VALUE_ID" name="std::vector<CSCcrosstalk::Item>" position_column="VEC_INDEX" >
+        <Object table="CSCCROSSTALK_DATA" id_columns="VEC_INDEX MAP_ID IOV_VALUE_ID" name="CSCcrosstalk::Item" >
+          <Primitive column="CROSSTALK_CHI2_LEFT" name="xtalk_chi2_left" />
+          <Primitive column="CROSSTALK_CHI2_RIGHT" name="xtalk_chi2_right" />
+          <Primitive column="CROSSTALK_INRESEPT_LEFT" name="xtalk_intercept_left" />
+          <Primitive column="CROSSTALK_INRESEPT_RIGHT" name="xtalk_intercept_right" />
+          <Primitive column="CROSSTALK_SLOPE_LEFT" name="xtalk_slope_left" />
+          <Primitive column="CROSSTALK_SLOPE_RIGHT" name="xtalk_slope_right" />
+        </Object >
+      </Container >
     </Container >
   </Class >
 </Mapping >
