@@ -9,31 +9,49 @@
 #include <vector>
 #include <memory>
 
+class SimG4HcalValidation;
+
+
 class PHcalValidInfoNxN {
+
+  friend class SimG4HcalValidation;
 
 public:
        
-  PHcalValidInfoNxN(): nIxI(0), ecalNxNr(0), hcalNxNr(0), hoNxNr(0), 
-    etotNxNr(0), ecalNxN(0), hcalNxN(0), hoNxN(0), etotNxN(0) {}
+  PHcalValidInfoNxN(): nNxN(0), ecalNxNr(0), hcalNxNr(0.), hoNxNr(0.), 
+    etotNxNr(0.), ecalNxN(0.), hcalNxN(0.), hoNxN(0.), etotNxN(0.) {}
   virtual ~PHcalValidInfoNxN() {}
 
-  void fillHvsE        (double ee, double he, double hoe, double etot);
-  void fillEcollectNxN (double ee, double he, double hoe, double etot);
-  void fillTProfileNxN (double e, int i, double t);
+  // access
+  std::vector<float> idnxn() const {return idNxN;}
+  std::vector<float>  enxn() const {return  eNxN;}
+  std::vector<float>  tnxn() const {return  tNxN;}
+  int                 nnxn() const {return  nNxN;}
+  
+  float           ecalnxnr() const {return ecalNxNr;}
+  float           hcalnxnr() const {return hcalNxNr;}
+  float             honxnr() const {return   hoNxNr;}
+  float           etotnxnr() const {return etotNxNr;}
 
-  struct NxN {
-    NxN() {}
-    int   id;
-    float e;
-    float t;
-  };
+  float           ecalnxn () const {return ecalNxN ;}
+  float           hcalnxn () const {return hcalNxN ;}
+  float             honxn () const {return   hoNxN ;}
+  float           etotnxn () const {return etotNxN ;}
+  
+
+  // fill
+  void fillHvsE        (double ee, double he, double hoe, double etot);
+  void fillEcollectNxN (double een, double hen, double hoen, double etotn);
+  void fillTProfileNxN (double e, int i, double t);
 
 private:
 
-  int                nIxI;
+  int                nNxN;
   float              ecalNxNr, hcalNxNr, hoNxNr, etotNxNr;
-  float              ecalNxN, hcalNxN, hoNxN, etotNxN;
-  std::vector<NxN>   nXn;
+  float              ecalNxN,  hcalNxN,  hoNxN,  etotNxN;
+  std::vector<float> idNxN; // float for int
+  std::vector<float> eNxN;
+  std::vector<float> tNxN;
 
 };
 
