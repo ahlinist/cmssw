@@ -15,7 +15,7 @@
 //
 // Original Author:  Mike Case
 //         Created:  Mon Jan 17 11:47:40 CET 2006
-// $Id$
+// $Id: OptAlignProdTestAnalyzer.cc,v 1.1 2006/01/26 15:03:51 case Exp $
 //
 //
 
@@ -34,9 +34,14 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include "CondFormats/OptAlignObjects/interface/OpticalAlignments.h"
+#include "CondFormats/OptAlignObjects/interface/OpticalAlignInfo.h"
+#include "CondFormats/OptAlignObjects/interface/OAQuality.h"
+
 #include "CondFormats/DataRecord/interface/OpticalAlignmentsRcd.h"
 
-#include "DetectorDescription/Core/interface/DDExpandedView.h"
+#include "DetectorDescription/Core/interface/DDFilteredView.h"
+#include "DetectorDescription/Core/interface/DDCompactView.h"
+#include "DetectorDescription/Core/interface/DDSpecifics.h"
 
 #include "Geometry/Records/interface/IdealGeometryRecord.h"
 
@@ -47,6 +52,7 @@ using namespace std;
   class OptAlignProdTestAnalyzer : public edm::EDAnalyzer
   {
   public:
+
     explicit  OptAlignProdTestAnalyzer(edm::ParameterSet const& p) 
     { }
     explicit  OptAlignProdTestAnalyzer(int i) 
@@ -58,6 +64,21 @@ using namespace std;
     // see note on endJob() at the bottom of the file.
     // virtual void endJob() ;
   private:
+    OpticalAlignments oa_;
+    double myFetchDbl(const DDsvalues_type& dvst, 
+		      const std::string& spName,
+		      const size_t& vecInd ) {
+      DDValue val(spName, 0.0);
+      if (DDfetch(&dvst,val)) {
+	if ( val.doubles().size() > vecInd ) {
+	  std::cout << "about to return: " << val.doubles()[vecInd] << std::endl;
+	  return val.doubles()[vecInd];
+	} else {
+	  std::cout << "WARNING: OUT OF BOUNDS RETURNING 0 for index " << vecInd << " of SpecPar " << spName << std::endl;
+	}
+      }
+      return 0.0;
+    };
   };
 
 void OptAlignProdTestAnalyzer::beginJob ( const edm::EventSetup& c ) {
@@ -79,12 +100,104 @@ void OptAlignProdTestAnalyzer::beginJob ( const edm::EventSetup& c ) {
   // more can be done here, for example, at each node, one could
   // request any specpars as variables and use them in constructing
   // COCOA objects.
-  DDExpandedView expv( (*cpv) );
+  std::string attribute = "COCOA"; 
+  std::string value     = "COCOA";
+  DDValue val(attribute, value, 0.0);
+  
+  // get all parts labelled with COCOA using a SpecPar
+  DDSpecificsFilter filter;
+  filter.setCriteria(val,  // name & value of a variable 
+		     DDSpecificsFilter::matches,
+		     DDSpecificsFilter::AND, 
+		     true, // compare strings otherwise doubles
+		     true  // use merged-specifics or simple-specifics
+		     );
+  DDFilteredView fv(*cpv);
+  fv.addFilter(filter);
+  bool doCOCOA = fv.firstChild();
 
-  std::cout << "about to traverse the expanded view" << std::endl;
-  while ( expv.next() ) {
-    std::cout << expv.geoHistory() << std::cout << endl;
-  }
+  // Loop on parts
+  int numParts=0;
+  OpticalAlignInfo oai;
+  OpticalAlignParam oap;
+  while ( doCOCOA ){
+    ++numParts;
+    const DDsvalues_type params(fv.mergedSpecifics());
+
+
+    oai.x_.value_ = fv.translation().x();
+    oai.x_.error_ = myFetchDbl(params, "centre_X_sigma", 0);
+    oai.x_.qual_  = int (myFetchDbl(params, "centre_X_quality", 0));
+
+    oai.y_.value_ = fv.translation().y();
+    oai.y_.error_ = myFetchDbl(params, "centre_Y_sigma", 0);
+    oai.y_.qual_  = int (myFetchDbl(params, "centre_Y_quality", 0));
+
+    oai.z_.value_ = fv.translation().z();
+    oai.z_.error_ = myFetchDbl(params, "centre_Z_sigma", 0);
+    oai.z_.qual_  = int (myFetchDbl(params, "centre_Z_quality", 0));
+
+    oai.x_.value_ = fv.translation().x();
+    oai.x_.error_ = myFetchDbl(params, "angles_X_sigma", 0);
+    oai.x_.qual_  = int (myFetchDbl(params, "angles_X_quality", 0));
+
+    oai.y_.value_ = fv.translation().y();
+    oai.y_.error_ = myFetchDbl(params, "angles_Y_sigma", 0);
+    oai.y_.qual_  = int (myFetchDbl(params, "angles_Y_quality", 0));
+
+    oai.z_.value_ = fv.translation().z();
+    oai.z_.error_ = myFetchDbl(params, "angles_Z_sigma", 0);
+    oai.z_.qual_  = int (myFetchDbl(params, "angles_Z_quality", 0));
+
+    std::vector<std::string> names, dims;
+    std::vector<double> values, errors, quality;
+    const std::vector<const DDsvalues_type *> params2(fv.specifics());
+    std::vector<const DDsvalues_type *>::const_iterator spit = params2.begin();
+    std::vector<const DDsvalues_type *>::const_iterator endspit = params2.end();
+    for ( ; spit != endspit; ++spit ) {
+      DDsvalues_type::const_iterator sit = (**spit).begin();
+      DDsvalues_type::const_iterator endsit = (**spit).end();
+      for ( ; sit != endsit; ++sit ) {
+	if (sit->second.name() == "name") {
+	  names = sit->second.strings();
+	} else if (sit->second.name() == "dimType") {
+	  dims = sit->second.strings();
+	} else if (sit->second.name() == "value") {
+	  values = sit->second.doubles();
+	} else if (sit->second.name() == "sigma") {
+	  errors = sit->second.doubles();
+	} else if (sit->second.name() == "quality") {
+	  quality = sit->second.doubles();
+	}
+      }
+    }
+    oai.objectType_ = "fred";
+    oai.objectID_ = numParts;
+    if ( names.size() == dims.size() && dims.size() == values.size() 
+	 && values.size() == errors.size() && errors.size() == quality.size() ) {
+      for ( size_t ind = 0; ind < names.size(); ++ind ) {
+	oap.value_ = values[ind];
+	oap.error_ = errors[ind];
+	oap.qual_ = int (quality[ind]);
+	oap.name_ = names[ind];
+	oai.extraEntries_.push_back (oap);
+	oap.clear();
+      }
+      oa_.opticalAlignments_.push_back(oai);
+    } else {
+      std::cout << "WARNING FOR NOW: sizes of extra parameters (names, dimType, value, quality) do"
+		<< " not match!  Did not add " << numParts << " item to OpticalAlignments." 
+		<< std::endl;
+    }
+      std::cout << "sizes are values=" << values.size();
+      std::cout << "  sigma(errors)=" << errors.size();
+      std::cout << "  quality=" << quality.size();
+      std::cout << "  names=" << names.size();
+      std::cout << "  dimType=" << dims.size() << std::endl;
+    oai.clear();
+    doCOCOA = fv.next(); // go to next part
+  } // while (doCOCOA)
+  std::cout << "Finished making " << numParts << " OpticalAlignInfo objects" << std::endl;
 } // end of ::beginJob
 
 void OptAlignProdTestAnalyzer::analyze(const edm::Event& e, const edm::EventSetup& context)
