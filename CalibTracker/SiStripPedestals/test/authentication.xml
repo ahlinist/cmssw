@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<connectionlist>
+
+<connection name="sqlite_file:/tmp/giordano/sistrippedestals.db">
+  <parameter name="user" value="" />
+  <parameter name="password" value="" />
+</connection>
+
+<connection name="sqlite_file:/tmp/giordano/sistripnoises.db">
+  <parameter name="user" value="" />
+  <parameter name="password" value="" />
+</connection>
+
+
+</connectionlist>
