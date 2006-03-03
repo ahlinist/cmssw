@@ -1,6 +1,6 @@
 /*
- *  $Date: 2006/03/01 20:29:49 $
- *  $Revision: 1.14 $
+ *  $Date: 2006/03/02 14:00:00 $
+ *  $Revision: 1.15 $
  *  
  *  Filip Moorgat & Hector Naves 
  *  26/10/05
@@ -53,9 +53,10 @@ PythiaSource::PythiaSource( const ParameterSet & pset,
   ParameterSet pythia_params = 
     pset.getParameter<ParameterSet>("PythiaParameters") ;
 
-  // The parameter sets to be read (default, min bias, user ...)
-  // Don't need to be tracked.
-  vector<string> setNames = pythia_params.getParameterNames();
+// The parameter sets to be read (default, min bias, user ...) in the
+// proper order.
+  vector<string> setNames = 
+    pythia_params.getParameter<vector<string> >("parameterSets");
 
   // Loop over the sets
   for ( unsigned i=0; i<setNames.size(); ++i ) {
