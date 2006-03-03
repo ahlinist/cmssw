@@ -5,6 +5,8 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Framework/interface/Event.h"
 
+#include <string>
+
 class OptAlignGeneratedSource : public edm::GeneratedInputSource
 {
 
@@ -19,6 +21,7 @@ class OptAlignGeneratedSource : public edm::GeneratedInputSource
 
  private:
   unsigned numObjects_;
+  std::string type_;
 };
 
 #endif

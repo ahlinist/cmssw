@@ -2,6 +2,7 @@
 
 #include "CondFormats/OptAlignObjects/interface/OpticalAlignments.h"
 #include "CondFormats/OptAlignObjects/interface/OpticalAlignInfo.h"
+#include "CondFormats/OptAlignObjects/interface/OAQuality.h"
 
 #include "FWCore/Framework/interface/ExternalInputSource.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
@@ -19,6 +20,7 @@ OptAlignGeneratedSource::OptAlignGeneratedSource ( edm::ParameterSet const& ps
   // ... read any configuration parameters specific to your input source
   // number of play alighments per "payload"
   numObjects_ = ps.getParameter<boost::uint32_t>("numObjects");
+  type_ = ps.getParameter<std::string>("type");
 
   // note: no argument in the call to produces
   // the standard module label is assumed
@@ -38,7 +40,7 @@ bool OptAlignGeneratedSource::produce ( edm::Event& e ) {
     // make up some length value for x
     temp.value_  = RandFlat::shoot(1.0, 5.0);
     temp.error_  = temp.value_ / 20;
-    temp.iState_ = 'u'; // arbitrary
+    temp.qual_ = int (oa_unknown); // arbitrary
 
     oainfo.x_ = temp;
 
@@ -68,13 +70,13 @@ bool OptAlignGeneratedSource::produce ( edm::Event& e ) {
 
     oainfo.angz_ = temp;
 
-    oainfo.objectType_ = "plate";
+    oainfo.objectType_ = type_;
     oainfo.objectID_ = i;
 
     // fill in one BS. entry for the ExtraEntries.
     temp.value_  = RandFlat::shoot(1.0, 10.0);
     temp.error_  = temp.value_ / 20;
-    temp.iState_ = 'f';
+    temp.qual_ = int (oa_fixed);
     oainfo.extraEntries_.push_back(temp);
     oainfo.extraEntries_.push_back(temp);
 

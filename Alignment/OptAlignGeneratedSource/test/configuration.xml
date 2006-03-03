@@ -1,12 +1,9 @@
 <?xml version="1.0"?>
 <Configuration xmlns="." xmlns:xsi="." xsi:schemaLocation= "." name="CMSConfiguration" version="0">
  <Include>
-  <!--File name="OpticalAlignment/OptAlignGeneratedSource/test/simple2D.xml"            url="."/-->
-  <File name="OpticalAlignment/OptAlignGeneratedSource/test/ME2_SLM1.xml"            url="."/>
-  <File name="Geometry/CMSCommonData/data/materials.xml"            url="."/>
-  <File name="Geometry/CMSCommonData/data/rotations.xml"            url="."/>
+  <File name="OpticalAlignment/OptAlignGeneratedSource/test/simple2DWithMirror.xml"            url="."/>
  </Include>
  <!--Root fileName="simple2D.xml" logicalPartName="s"/-->
- <Root fileName="ME2SLM1.xml" logicalPartName="s"/>
+ <Root fileName="simple2DWithMirror.xml" logicalPartName="OCMS"/>
 </Configuration>
 
