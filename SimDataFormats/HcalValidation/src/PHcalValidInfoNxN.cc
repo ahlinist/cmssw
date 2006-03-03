@@ -3,8 +3,7 @@
 // Description: Persistent NxN analysis informaion for SimG4HcalValidation
 ///////////////////////////////////////////////////////////////////////////////
 #include "SimDataFormats/HcalValidation/interface/PHcalValidInfoNxN.h"
-
-#include <cmath>
+//#include <iostream>
 
 void PHcalValidInfoNxN::fillHvsE(double ee, double he, double hoe, 
 				 double etot) {
@@ -14,19 +13,20 @@ void PHcalValidInfoNxN::fillHvsE(double ee, double he, double hoe,
   etotNxNr = (float)etot;
 }
 
-void PHcalValidInfoNxN::fillEcollectNxN(double ee, double he, double hoe,
-					double etot) {
-  ecalNxN = (float)ee;
-  hcalNxN = (float)he;
-  hoNxN   = (float)hoe;
-  etotNxN = (float)etot;
+void PHcalValidInfoNxN::fillEcollectNxN(double een, double hen, double hoen,
+					double etotn) {
+  ecalNxN = (float)een;
+  hcalNxN = (float)hen;
+  hoNxN   = (float)hoen;
+  etotNxN = (float)etotn;
 }
 
-void PHcalValidInfoNxN::fillTProfileNxN (double e, int i, double t) {
+void PHcalValidInfoNxN::fillTProfileNxN (double e, int i, double t) {  
+  idNxN.push_back((float)i);
+  eNxN.push_back((float)e);
+  tNxN.push_back((float)t);
+  nNxN++;
 
-    nXn.resize(nIxI+1);
-    nXn[nIxI].id    = i;
-    nXn[nIxI].e     = e;
-    nXn[nIxI].t     = t;
-    nIxI++;
+  //  std::cout << " fillTProfileNxN - nNxN = " << nNxN << std::endl;
+
 }
