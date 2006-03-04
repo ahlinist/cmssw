@@ -27,10 +27,12 @@ public:
   std::vector<float> jethite() const {return jetHite;}
   std::vector<float> jethitr() const {return jetHitr;}
   std::vector<float> jethitt() const {return jetHitt;}
+  int                njethit() const {return nJetHit;}
 
   std::vector<float> jete()    const {return jetE;}
   std::vector<float> jeteta()  const {return jetEta;}
   std::vector<float> jetphi()  const {return jetPhi;}
+  int                njet()    const {return nJet;} 
 
   float              ecaljet() const {return ecalJet;}
   float              hcaljet() const {return hcalJet;}
