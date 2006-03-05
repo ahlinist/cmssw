@@ -50,7 +50,8 @@ Worker* WorkerRegistry::getWorker(const WorkerParams& p) {
   if (workerIt == m_workerMap.end()){
     
     std::auto_ptr<Worker> workerPtr=
-      Factory::get()->makeWorker(p);
+      Factory::get()->makeWorker(p,act_reg_->preModuleConstructionSignal_,
+                                 act_reg_->preModuleConstructionSignal_);
     
     workerPtr->connect(act_reg_->preModuleSignal_,act_reg_->postModuleSignal_);
 
