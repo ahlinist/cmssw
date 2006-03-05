@@ -2,14 +2,14 @@
 <DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../DetectorDescription/Schema/DDLSchema.xsd">
 
 <ConstantsSection label="pixbarladder.xml" eval="true">
- <Constant name="Length"            value="53.36*cm"/>
+ <Constant name="Length"            value="53.6*cm"/>
  <Constant name="Modules"           value="8"/>
  <Constant name="BaseThick"         value="0.30*mm"/>
  <Constant name="ROChipThick"       value="0.18*mm"/>
- <Constant name="SensorThick"       value="0.30*mm"/>
- <Constant name="SensorDz"          value="6.63*cm"/>
+ <Constant name="SensorThick"       value="0.285*mm"/>
+ <Constant name="SensorDz"          value="6.66*cm"/>
  <Constant name="SensorEdge"        value="1.20*mm"/>
- <Constant name="ActiveDz"          value="6.45*cm"/>
+ <Constant name="ActiveDz"          value="6.48*cm"/>
  <Constant name="HybridThick"       value="0.10*mm"/>
  <Constant name="HybridDz"          value="6.40*cm"/>
  <Constant name="CableThick"        value="0.06*mm"/>
