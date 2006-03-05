@@ -11,8 +11,11 @@ $Id$
 ----------------------------------------------------------------------*/
 
 #include "FWCore/Framework/interface/TypeID.h"
+#include "DataFormats/Common/interface/EDProduct.h"
 #include <string>
 #include <list>
+#include "boost/shared_ptr.hpp"
+
 namespace edm {
   class EDProduct;
   class ModuleDescription;
@@ -25,11 +28,11 @@ namespace edm {
     virtual ~ProductRegistryHelper();
  
     struct TypeLabelItem {
-      TypeLabelItem (TypeID const& tid, std::string const& pin, EDProduct * edp) :
+      TypeLabelItem (TypeID const& tid, std::string const& pin, EDProduct const* edp) :
         typeID_(tid), productInstanceName_(pin), productPtr_(edp) {}
       TypeID typeID_;
       std::string productInstanceName_;
-      EDProduct *productPtr_; // pointer to a default constructed Wrapper<T>.
+      boost::shared_ptr<EDProduct const> productPtr_; // pointer to a default constructed Wrapper<T>.
     };
 
     /// declare what type of product will make and with which optional label 
