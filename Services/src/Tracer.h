@@ -45,6 +45,7 @@ public:
          void postModule(const ModuleDescription&);
 private:
          std::string indention_;
+         unsigned int depth_;
          
       };
    }
