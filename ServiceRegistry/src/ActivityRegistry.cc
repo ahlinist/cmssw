@@ -66,6 +66,10 @@ edm::ActivityRegistry::connect(ActivityRegistry& iOther)
 
    preModuleSignal_.connect(iOther.preModuleSignal_);
    postModuleSignal_.connect(iOther.postModuleSignal_);
+
+   preModuleConstructionSignal_.connect(iOther.preModuleConstructionSignal_);
+   postModuleConstructionSignal_.connect(iOther.postModuleConstructionSignal_);
+
 }
 
 //
