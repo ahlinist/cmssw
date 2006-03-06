@@ -107,6 +107,7 @@
 
 namespace edm
 {
+  class UnscheduledCallProducer;
   class Schedule
   {
   public:
@@ -175,6 +176,9 @@ namespace edm
     bool makeTriggerResults_;
     int total_events_;
     int total_passed_;
+    boost::shared_ptr<UnscheduledCallProducer> unscheduled_;
+    std::vector<boost::shared_ptr<Group> > demandGroups_;
+
   };
 }
 

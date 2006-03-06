@@ -45,6 +45,7 @@ $Id$
 namespace edm {
     
   class ProductRegistry;
+  class UnscheduledHandler;
   class EventPrincipal : public EDProductGetter {
   public:
     typedef std::vector<boost::shared_ptr<Group> > GroupVec;
@@ -140,10 +141,11 @@ namespace edm {
 
     virtual EDProduct const* getIt(ProductID const& oid) const;
 
+    void setUnscheduledHandler(boost::shared_ptr<UnscheduledHandler>);
+    
     ProductRegistry const& productRegistry() const {return *preg_;}
 
     boost::shared_ptr<DelayedReader> store() const {return store_;}
-
   private:
     EventAux aux_;	// persistent
 
@@ -194,6 +196,8 @@ namespace edm {
     // Pointer to the 'source' that will be used to obtain EDProducts
     // from the persistent store.
     boost::shared_ptr<DelayedReader> store_;
+
+    boost::shared_ptr<UnscheduledHandler> unscheduledHandler_;
 
   };
 }
