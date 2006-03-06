@@ -41,30 +41,33 @@
       <rMaterial name="materials:SMD_metal"/>
     </MaterialFraction>
   </CompositeMaterial>
-  <CompositeMaterial name="TIB_DOHM_PRIM" density="1.923*g/cm3" symbol=" " method="mixture by weight">
-    <MaterialFraction fraction="0.61593">
+  <CompositeMaterial name="TIB_DOHM_PRIM" density="2.001*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="0.60702">
       <rMaterial name="materials:T_FR4"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.16774">
+    <MaterialFraction fraction="0.17232">
       <rMaterial name="materials:Copper"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.06395">
+    <MaterialFraction fraction="0.06442">
       <rMaterial name="materials:T_Kapton"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.02400">
+    <MaterialFraction fraction="0.02306">
       <rMaterial name="materials:T_Bronze"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.00157">
+    <MaterialFraction fraction="0.00221">
       <rMaterial name="materials:Carbon"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.00400">
+    <MaterialFraction fraction="0.00614">
       <rMaterial name="materials:Alumina"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.02593">
+    <MaterialFraction fraction="0.02664">
       <rMaterial name="materials:SMD_metal"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.09687">
+    <MaterialFraction fraction="0.09311">
       <rMaterial name="tibmaterial:TIB_CCUM"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.00507">
+      <rMaterial name="materials:Silicon"/>
     </MaterialFraction>
   </CompositeMaterial>
   <CompositeMaterial name="TIB_CCUM" density="1.124*g/cm3" symbol=" " method="mixture by weight">
