@@ -65,8 +65,8 @@ namespace edm {
       explicit ResultsSelector(const std::string& proc_name):
 	name_(proc_name) {}
       
-      virtual bool doMatch(const edm::Provenance& p) const {
-	return p.product.module.processName_==name_;
+      virtual bool doMatch(const edm::ProvenanceAccess& p) const {
+	return p.product().module.processName_==name_;
       }
     private:
       std::string name_;
