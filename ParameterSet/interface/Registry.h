@@ -65,6 +65,9 @@ namespace pset
     static Registry* instance_;
   };
 
+  // Free functions associated with Registry.
+  void loadAllNestedParameterSets(edm::ParameterSet const& main);
+
 }  // namespace pset
 
 

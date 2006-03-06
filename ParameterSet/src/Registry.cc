@@ -85,6 +85,17 @@ namespace pset
 
   Registry::~Registry() { }
 
+  // Associated functions
+    void loadAllNestedParameterSets(edm::ParameterSet const& main)
+    {
+      pset::Registry* reg = pset::Registry::instance();
+      std::vector<edm::ParameterSet> all_main_psets;
+      pset::explode(main, all_main_psets);
+      std::vector<edm::ParameterSet>::const_iterator i = all_main_psets.begin();
+      std::vector<edm::ParameterSet>::const_iterator e = all_main_psets.end();
+      for ( ; i != e; ++i ) reg->insertParameterSet(*i);
+    }
+
 
 } // namespace pset
 
