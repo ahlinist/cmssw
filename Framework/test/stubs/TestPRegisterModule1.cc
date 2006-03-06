@@ -31,7 +31,7 @@ TestPRegisterModule1::TestPRegisterModule1(edm::ParameterSet const& p):pset_(p){
 void TestPRegisterModule1::produce(Event& e, EventSetup const&)
 {
   
-  std::string myname = pset_.getParameter<std::string>("module_name");
+  std::string myname = pset_.getParameter<std::string>("@module_label");
   std::auto_ptr<edmtest::StringProduct> product(new edmtest::StringProduct(myname)); 
   e.put(product);
 }
