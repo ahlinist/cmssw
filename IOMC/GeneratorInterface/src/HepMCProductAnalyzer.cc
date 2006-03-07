@@ -37,7 +37,13 @@ HepMCProductAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
    Handle<HepMCProduct> evt;
 //   iEvent.getByLabel("PythiaSource",evt);
 //   iEvent.getByLabel("MCFileSource",evt);
-   iEvent.getByLabel(label_, evt);
+
+//   if there is an ambiguity: get by label
+//   iEvent.getByLabel(label_, evt);
+
+// if no ambiguity one can do get by type
+   iEvent.getByType(evt);
+
    evt->GetEvent()->print();
 
 
