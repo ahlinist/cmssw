@@ -43,9 +43,11 @@ namespace pset
 
     /// Insert the *tracked parts* of the given ParameterSet into the
     /// Registry. If there was already a ParameterSet with the same
-    /// ID, we clobber it. This should be OK, since it will have the
-    /// same contents if the ID is the same.
-    void insertParameterSet(edm::ParameterSet const& p);
+    /// ID, we don't change itw. This should be OK, since it should
+    /// have the same contents if the ID is the same.
+    /// Return 'true' if we really added the new ParameterSet, and
+    /// 'false' if the ParameterSet was already present.
+    bool insertParameterSet(edm::ParameterSet const& p);
 
     /// Return the number of contained ParameterSets.
     size_type size() const;
