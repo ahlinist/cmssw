@@ -15,7 +15,7 @@
 //
 // Original Author:  Mike Case
 //         Created:  Mon Jan 17 11:47:40 CET 2006
-// $Id: OptAlignProdTestAnalyzer.cc,v 1.1 2006/01/26 15:03:51 case Exp $
+// $Id: OptAlignProdTestAnalyzer.cc,v 1.2 2006/03/03 15:39:04 case Exp $
 //
 //
 
@@ -71,7 +71,7 @@ using namespace std;
       DDValue val(spName, 0.0);
       if (DDfetch(&dvst,val)) {
 	if ( val.doubles().size() > vecInd ) {
-	  std::cout << "about to return: " << val.doubles()[vecInd] << std::endl;
+	  //	  std::cout << "about to return: " << val.doubles()[vecInd] << std::endl;
 	  return val.doubles()[vecInd];
 	} else {
 	  std::cout << "WARNING: OUT OF BOUNDS RETURNING 0 for index " << vecInd << " of SpecPar " << spName << std::endl;
@@ -189,11 +189,11 @@ void OptAlignProdTestAnalyzer::beginJob ( const edm::EventSetup& c ) {
 		<< " not match!  Did not add " << numParts << " item to OpticalAlignments." 
 		<< std::endl;
     }
-      std::cout << "sizes are values=" << values.size();
-      std::cout << "  sigma(errors)=" << errors.size();
-      std::cout << "  quality=" << quality.size();
-      std::cout << "  names=" << names.size();
-      std::cout << "  dimType=" << dims.size() << std::endl;
+//       std::cout << "sizes are values=" << values.size();
+//       std::cout << "  sigma(errors)=" << errors.size();
+//       std::cout << "  quality=" << quality.size();
+//       std::cout << "  names=" << names.size();
+//       std::cout << "  dimType=" << dims.size() << std::endl;
     oai.clear();
     doCOCOA = fv.next(); // go to next part
   } // while (doCOCOA)
