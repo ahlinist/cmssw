@@ -1,13 +1,13 @@
 REM For CSCPEDESTALS:
 SELECT
- iov_sequence.NextVal iov_value_id,
+ iov_sequence_ped.NextVal iov_value_id,
  run_num time
 FROM PED_RECORD;
 
 REM For CSCPEDESTALS_MAP:
 SELECT
- mapid_sequence.NextVal map_id,
- iov_sequence.CurrVal iov_value_id,
+ mapid_sequence_ped.NextVal map_id,
+ iov_sequence_ped.CurrVal iov_value_id,
  layer_id csc_int_id
 FROM PED_RECORD
  order by csc_int_id;
