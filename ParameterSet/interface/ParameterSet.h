@@ -468,15 +468,14 @@ private:
     return getEntryPointerOrThrow_(name)->getVPSet();
   }
 
-}  // namespace edm
-
-// Associated functions used elsewhere in the ParameterSet system
-namespace pset
-{
-  // Put into 'results' each parameter set in 'top', including 'top'
-  // itself.
-  void explode(edm::ParameterSet const& top,
+  // Associated functions used elsewhere in the ParameterSet system
+  namespace pset
+  {
+    // Put into 'results' each parameter set in 'top', including 'top'
+    // itself.
+    void explode(edm::ParameterSet const& top,
 	       std::vector<edm::ParameterSet>& results);
-}
+  }
 
+}  // namespace edm
 #endif
