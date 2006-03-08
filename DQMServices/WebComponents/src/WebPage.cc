@@ -28,7 +28,7 @@ void WebPage::printHTML(xgi::Output * out)
 {
   std::map<std::string, WebElement *>::iterator it;
 
-   *out << cgicc::body() << std::endl;
+   *out << cgicc::body().set("onload", "fillDisplayList()") << std::endl;
 
   for (it = element_map.begin(); it != element_map.end(); it++)
     {

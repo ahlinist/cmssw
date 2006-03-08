@@ -46,6 +46,7 @@ void GifDisplay::printHTML(xgi::Output *out)
 
   *out << cgicc::iframe()
     .set("name", name)
+    .set("id", name)
     .set("src", "")
     .set("height", height).set("width", width);
   *out << cgicc::iframe() << std::endl;
@@ -53,6 +54,8 @@ void GifDisplay::printHTML(xgi::Output *out)
   *out << cgicc::input().set("type", "button").set("value", "start viewer").set("onclick", "startViewing('" + name + "')");
   *out << std::endl;
   *out << cgicc::input().set("type", "button").set("value", "stop viewer").set("onclick", "stopViewing('" + name + "')");
+  *out << std::endl;
+  *out << cgicc::input().set("type", "button").set("value", "make current").set("onclick", "makeCurrent('" + name + "')");
   *out << std::endl;
 
   *out << cgicc::div() << std::endl;
