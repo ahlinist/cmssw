@@ -1,11 +1,8 @@
 REM For CSCPEDESTALS:
 SELECT
  iov_sequence.NextVal iov_value_id,
- run_num time,
- data_taking_time
-FROM PED_RECORD
-WHERE
- run_num=given_value;
+ run_num time
+FROM PED_RECORD;
 
 REM For CSCPEDESTALS_MAP:
 SELECT
@@ -13,8 +10,7 @@ SELECT
  iov_sequence.CurrVal iov_value_id,
  layer_id csc_int_id
 FROM PED_RECORD
-WHERE
- run_num=given_value order by csc_int_id;
+ order by csc_int_id;
 
 REM For CSCPEDESTALS_DATA:
 SELECT
