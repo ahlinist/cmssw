@@ -5,7 +5,7 @@
 // 
 /**\class OptAlignProdTestAnalyzer OptAlignProdTestAnalyzer.cc AlignmentTools/OptAlignGeneratedSource/test/stubs/OptAlignProdTestAnalyzer.cc
 
- Description: test access to the OptAlignments via OptAlignGeneratedSource
+ Description: test access to the XXXXMeasurements via XXXXMeasurementsGeneratedSource
     This also should demonstrate access to a geometry via the XMLIdealGeometryESSource
     for use in THE COCOA analyzer.
 
@@ -15,7 +15,7 @@
 //
 // Original Author:  Mike Case
 //         Created:  Mon Jan 17 11:47:40 CET 2006
-// $Id: OptAlignProdTestAnalyzer.cc,v 1.2 2006/03/03 15:39:04 case Exp $
+// $Id: OptAlignProdTestAnalyzer.cc,v 1.3 2006/03/08 16:57:16 case Exp $
 //
 //
 
@@ -33,9 +33,11 @@
 #include "FWCore/Framework/interface/Handle.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
+#include "CondFormats/OptAlignObjects/interface/OAQuality.h"
 #include "CondFormats/OptAlignObjects/interface/OpticalAlignments.h"
 #include "CondFormats/OptAlignObjects/interface/OpticalAlignInfo.h"
-#include "CondFormats/OptAlignObjects/interface/OAQuality.h"
+#include "CondFormats/OptAlignObjects/interface/XXXXMeasurements.h"
+#include "CondFormats/OptAlignObjects/interface/XXXXMeasurementInfo.h"
 
 #include "CondFormats/DataRecord/interface/OpticalAlignmentsRcd.h"
 
@@ -82,13 +84,10 @@ using namespace std;
   };
 
 void OptAlignProdTestAnalyzer::beginJob ( const edm::EventSetup& c ) {
-  // STEP ONE:  I'm not sure, but I believe the initial COCOA 
-  // objects will be built from a DetectorDescription geometry
-  // description.  It is STILL not clear to me if this is the 
-  // "standard, Ideal CMS" geometry or some special files for
-  // COCOA.
-  // IMPORTANT: for analysis jobs this would still be in analyze
-  // only for the COCOA analysis would this be accessed via
+  // STEP ONE:  Initial COCOA objects will be built from a DDL geometry
+  // description.  
+  // NOTE: For analysis jobs access to eventsetup DDD is only in analyze.
+  // Only for the COCOA analysis would this be accessed via
   // beginJob.
   
   edm::ESHandle<DDCompactView> cpv;
@@ -96,10 +95,11 @@ void OptAlignProdTestAnalyzer::beginJob ( const edm::EventSetup& c ) {
 
   std::cout << cpv->root() << std::endl;
 
-  // example of traversing the whole optical alignment geometry.
-  // more can be done here, for example, at each node, one could
-  // request any specpars as variables and use them in constructing
-  // COCOA objects.
+  // Example of traversing the whole optical alignment geometry.
+  // At each node we get specpars as variables and use them in 
+  // constructing COCOA objects.  Right now this only loads 
+  // OpticalAlignments and does not create any COCOA objects.
+  //  It stores these objects in a private data member oa_
   std::string attribute = "COCOA"; 
   std::string value     = "COCOA";
   DDValue val(attribute, value, 0.0);
@@ -206,33 +206,49 @@ void OptAlignProdTestAnalyzer::analyze(const edm::Event& e, const edm::EventSetu
   std::cout <<" I AM IN RUN NUMBER "<<e.id().run() <<std::endl;
   std::cout <<" ---EVENT NUMBER "<<e.id().event() <<std::endl;
   
-  // If one wanted to get the "initial" version from an existing
-  // alignment PoolDBESSource they would do the following:
-  //     edm::ESHandle<OpticalAlignments> oa;
-  //     context.get<OpticalAlignmentsRcd>().get(oa);
-  //     //  just iterate over all of them...
+  // STEP 2:
+  // Get calibrated OpticalAlignments.  In this case I'm using
+  // some sqlite database examples that are generated using
+  // testOptAlignWriter.cc
+  // from CondFormats/OptAlignObjects/test/
+
+  edm::ESHandle<OpticalAlignments> oaESHandle;
+  context.get<OpticalAlignmentsRcd>().get(oaESHandle);
+
+  // This assumes they ALL come in together.  This may not be
+  // the "real" case.  One could envision different objects coming
+  // in and we would get by label each one (type).
+
+  std::cout << "========== eventSetup data changes with IOV =========" << std::endl;
+  std::cout << *oaESHandle << std::endl;
+  //============== COCOA WORK!
+  //  calibrated values should be used to "correct" the ones read in during beginJob
+  //==============
+  
+  // 
   // to see how to iterate over the OpticalAlignments, please
   // refer to the << operator of OpticalAlignments, OpticalAlignInfo
   // and OpticalAlignParam.
   //     const OpticalAlignments* myoa=oa.product();
   
-  // This retrieves the OpticalAlignments via the event data.
-  // for each event, a new set of alignments comes in to the 
-  // framework.
-  edm::Handle<OpticalAlignments> oaHandle;
-  e.getByLabel("OptAlignGeneratedSource", oaHandle); 
+  // STEP 3:
+  // This retrieves the Measurements
+  // for each event, a new set of measurements is available.
+  edm::Handle<XXXXMeasurements> measHandle;
+  e.getByLabel("OptAlignGeneratedSource", measHandle); 
   
-  std::cout << *oaHandle << std::endl;
+  std::cout << "========== event data product changes with every event =========" << std::endl;
+  std::cout << *measHandle << std::endl;
 
   //============== COCOA WORK!
-  //  Each set of optical alignment corrections can be used
+  //  Each set of optical alignment measurements can be used
   //  in whatever type of analysis COCOA does. 
   //==============
-  
+
 } //end of ::analyze()
 
-// one could use ::endJob() to write out the OpticalAlignments
-// generated by the analysis. Example code is in
+// STEP 4:  one could use ::endJob() to write out the OpticalAlignments
+// generated by the analysis. Example code of writing is in
 // CondFormats/Alignment/test/testOptAlignWriter.cc
 
 

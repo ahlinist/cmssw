@@ -1,6 +1,7 @@
 #include "OpticalAlignment/OptAlignGeneratedSource/interface/OptAlignGeneratedSource.h"
 
-#include "CondFormats/OptAlignObjects/interface/OpticalAlignments.h"
+#include "CondFormats/OptAlignObjects/interface/XXXXMeasurements.h"
+#include "CondFormats/OptAlignObjects/interface/XXXXMeasurementInfo.h"
 #include "CondFormats/OptAlignObjects/interface/OpticalAlignInfo.h"
 #include "CondFormats/OptAlignObjects/interface/OAQuality.h"
 
@@ -24,64 +25,62 @@ OptAlignGeneratedSource::OptAlignGeneratedSource ( edm::ParameterSet const& ps
 
   // note: no argument in the call to produces
   // the standard module label is assumed
-  produces<OpticalAlignments>();
+  produces<XXXXMeasurements>();
 }
   
 OptAlignGeneratedSource::~OptAlignGeneratedSource () { }
 
 
 bool OptAlignGeneratedSource::produce ( edm::Event& e ) {
-  std::auto_ptr<OpticalAlignments> result(new OpticalAlignments);
+  std::auto_ptr<XXXXMeasurements> result(new XXXXMeasurements);
   // ... fill the collection ... assign numObjects_ random values for now.
   OpticalAlignParam temp;
-  OpticalAlignInfo oainfo;
+  XXXXMeasurementInfo xxxxinfo;
 
   for ( size_t i = 0; i < numObjects_ ; i++ ) {
     // make up some length value for x
     temp.value_  = RandFlat::shoot(1.0, 5.0);
     temp.error_  = temp.value_ / 20;
-    temp.qual_ = int (oa_unknown); // arbitrary
+    temp.qual_ = int (oa_fixed); // arbitrary
 
-    oainfo.x_ = temp;
-
-    temp.value_  = RandFlat::shoot(1.0, 5.0);
-    temp.error_  = temp.value_ / 20;
-
-    oainfo.y_ = temp;
+    xxxxinfo.x1_ = temp;
 
     temp.value_  = RandFlat::shoot(1.0, 5.0);
     temp.error_  = temp.value_ / 20;
 
-    oainfo.z_ = temp;
+    xxxxinfo.x2_ = temp;
 
-    // make it more of an angle
-    temp.value_  = RandFlat::shoot(0.0, 3.14);
-    temp.error_  = RandFlat::shoot(0.0, 0.003);
-
-    oainfo.angx_ = temp;
-
-    temp.value_  = RandFlat::shoot(0.0, 3.14);
-    temp.error_  = RandFlat::shoot(0.0, 0.003);
-
-    oainfo.angy_ = temp;
-
-    temp.value_  = RandFlat::shoot(0.0, 3.14);
-    temp.error_  = RandFlat::shoot(0.0, 0.003);
-
-    oainfo.angz_ = temp;
-
-    oainfo.objectType_ = type_;
-    oainfo.objectID_ = i;
-
-    // fill in one BS. entry for the ExtraEntries.
-    temp.value_  = RandFlat::shoot(1.0, 10.0);
+    temp.value_  = RandFlat::shoot(1.0, 5.0);
     temp.error_  = temp.value_ / 20;
-    temp.qual_ = int (oa_fixed);
-    oainfo.extraEntries_.push_back(temp);
-    oainfo.extraEntries_.push_back(temp);
 
-    result->opticalAlignments_.push_back(oainfo);
-    oainfo.extraEntries_.clear();
+    xxxxinfo.x3_ = temp;
+
+    temp.value_  = RandFlat::shoot(1.0, 5.0);
+    temp.error_  = temp.value_ / 20;
+
+    xxxxinfo.x4_ = temp;
+
+    temp.value_  = RandFlat::shoot(0.0, 3.14);
+    temp.error_  = RandFlat::shoot(0.0, 0.003);
+
+    xxxxinfo.extraEntries_.push_back( temp );
+
+    temp.value_  = RandFlat::shoot(0.0, 10.14);
+    temp.error_  = RandFlat::shoot(0.0, 0.3);
+
+    xxxxinfo.extraEntries_.push_back( temp );
+
+    temp.value_  = RandFlat::shoot(0.0, 100.4);
+    temp.error_  = RandFlat::shoot(0.0, 1.3);
+
+    xxxxinfo.extraEntries_.push_back( temp );
+
+    xxxxinfo.objectType_ = type_;
+    xxxxinfo.objectID_ = i;
+
+
+    result->xxxxMeasurements_.push_back(xxxxinfo);
+    xxxxinfo.clear();
   }
 
   e.put(result);
