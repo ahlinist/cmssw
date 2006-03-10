@@ -2,9 +2,9 @@
 // This is CSCRecHit2DBuilder.cc
 
 #include <RecoLocalMuon/CSCRecHit/src/CSCRecHit2DBuilder.h>
-#include <Geometry/CSCSimAlgo/interface/CSCChamberSpecs.h>
-#include <Geometry/CSCSimAlgo/interface/CSCLayer.h>
-#include <Geometry/CSCSimAlgo/interface/CSCGeometry.h>
+#include <Geometry/CSCGeometry/interface/CSCChamberSpecs.h>
+#include <Geometry/CSCGeometry/interface/CSCLayer.h>
+#include <Geometry/CSCGeometry/interface/CSCGeometry.h>
 #include <DataFormats/MuonDetId/interface/CSCDetId.h>
 #include <DataFormats/CSCDigi/interface/CSCStripDigi.h>
 #include <DataFormats/CSCDigi/interface/CSCWireDigi.h>

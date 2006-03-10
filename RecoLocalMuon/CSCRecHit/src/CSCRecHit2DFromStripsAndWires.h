@@ -8,7 +8,6 @@
  */
 
 #include <RecoLocalMuon/CSCRecHit/src/CSCRecHit2DInALayer.h>
-#include <Geometry/CSCSimAlgo/interface/CSCChamberSpecs.h>
 #include <FWCore/ParameterSet/interface/ParameterSet.h>
 
 class CSCRecHit2DFromStripsAndWires : public CSCRecHit2DInALayer

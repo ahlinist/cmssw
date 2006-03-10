@@ -17,9 +17,9 @@
 #include <RecoLocalMuon/CSCRecHit/src/CSCStripClusterCentroid.h>
 #include <RecoLocalMuon/CSCRecHit/src/CSCHalfStripClusterer.h>
 
-#include <Geometry/CSCSimAlgo/interface/CSCLayer.h>
-#include <Geometry/CSCSimAlgo/interface/CSCChamberSpecs.h>
-#include <Geometry/CSCSimAlgo/interface/CSCLayerGeometry.h>
+#include <Geometry/CSCGeometry/interface/CSCLayer.h>
+#include <Geometry/CSCGeometry/interface/CSCChamberSpecs.h>
+#include <Geometry/CSCGeometry/interface/CSCLayerGeometry.h>
 
 #include <FWCore/MessageLogger/interface/MessageLogger.h>
 #include <FWCore/Utilities/interface/Exception.h>

@@ -1,6 +1,6 @@
 #include <RecoLocalMuon/CSCRecHit/src/CSCWireCluster.h>
 #include <DataFormats/CSCDigi/interface/CSCWireDigi.h>
-#include <Geometry/CSCSimAlgo/interface/CSCLayerGeometry.h>
+#include <Geometry/CSCGeometry/interface/CSCLayerGeometry.h>
 #include <FWCore/MessageLogger/interface/MessageLogger.h>
 
 #include <iostream>
