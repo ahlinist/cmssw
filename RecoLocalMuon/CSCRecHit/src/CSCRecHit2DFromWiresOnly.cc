@@ -1,6 +1,6 @@
 #include <RecoLocalMuon/CSCRecHit/src/CSCRecHit2DFromWiresOnly.h>
-#include <Geometry/CSCSimAlgo/interface/CSCLayer.h>
-#include <Geometry/CSCSimAlgo/interface/CSCLayerGeometry.h>
+#include <Geometry/CSCGeometry/interface/CSCLayer.h>
+#include <Geometry/CSCGeometry/interface/CSCLayerGeometry.h>
 #include <DataFormats/CSCRecHit/interface/CSCRecHit2D.h>
 #include <DataFormats/CSCDigi/interface/CSCWireDigi.h>
 #include <FWCore/MessageLogger/interface/MessageLogger.h>

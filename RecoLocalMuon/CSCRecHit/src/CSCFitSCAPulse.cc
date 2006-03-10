@@ -6,7 +6,7 @@
 #include "CLHEP/Units/PhysicalConstants.h"
 #include <DataFormats/CSCDigi/interface/CSCStripDigi.h>
 //@@ Why do we need Specs?? To access various chamber parameters?
-#include <Geometry/CSCSimAlgo/interface/CSCChamberSpecs.h>
+#include <Geometry/CSCGeometry/interface/CSCChamberSpecs.h>
 #include <cmath>
 #include <vector>
 

@@ -1,5 +1,5 @@
 #include <RecoLocalMuon/CSCRecHit/src/CSCStripClusterFcn.h>
-#include <Geometry/CSCSimAlgo/interface/CSCChamberSpecs.h>
+#include <Geometry/CSCGeometry/interface/CSCChamberSpecs.h>
 #include <FWCore/MessageLogger/interface/MessageLogger.h>
 
 #include <cmath>

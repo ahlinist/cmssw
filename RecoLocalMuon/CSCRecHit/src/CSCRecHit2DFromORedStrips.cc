@@ -1,6 +1,6 @@
 #include <RecoLocalMuon/CSCRecHit/src/CSCRecHit2DFromORedStrips.h>
 #include <RecoLocalMuon/CSCRecHit/src/CSCFitData.h>
-#include <Geometry/CSCSimAlgo/interface/CSCLayer.h>
+#include <Geometry/CSCGeometry/interface/CSCLayer.h>
 
 CSCRecHit2DFromORedStrips::CSCRecHit2DFromORedStrips( const edm::ParameterSet& ps ) 
   : CSCRecHit2DInALayer(ps), theStaggering( 16 ) {
