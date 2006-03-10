@@ -31,9 +31,9 @@
 
 CSCRecHit2DInALayer::CSCRecHit2DInALayer(  const edm::ParameterSet& ps ) : CSCRecHit2DAlgo( ps ),
     stripClusterPositionFinder_( 0 ),
-    debugV( false ), myName( "CSCRecHit2DInALayer" ), pulseheightOnStripFinder_( 0 ) {
+    infoV( false ), myName( "CSCRecHit2DInALayer" ), pulseheightOnStripFinder_( 0 ) {
 
-  debugV              = ps.getUntrackedParameter<bool>("verboseDebug");
+  infoV               = ps.getUntrackedParameter<bool>("verboseInfo");
 
   theClusterSize      = ps.getParameter<int>("clusterSize");
   theClusterChargeCut = static_cast<float>( ps.getParameter<double>("clusterChargeCut") );
@@ -256,11 +256,11 @@ CSCRecHit2D CSCRecHit2DInALayer::makeCluster(
 
   CSCRecHit2D rechit( id_, localPoint, localError, channels, chisq, prob );
 
-  if( debugV ) {
-    LogDebug("CSC") << "new CSCRecHit2D ME" <<
+  if( infoV ) {
+    edm::LogInfo("CSC") << "new CSCRecHit2D ME" <<
         id_.station() << "/" << id_.ring() << " C " << 
         id_.chamber() << " L " << id_.layer() << " local point: " << localPoint << "\n";
-    LogDebug("CSC") << " errors:" << 
+    edm::LogInfo("CSC") << " errors:" << 
          " sqrt(dx2)=" << sqrt(dx2) <<
          " sqrt(dy2)=" << sqrt(dy2) << " dxy=" << dxy << 
          " strip du=" << du << "\n";

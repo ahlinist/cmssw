@@ -84,7 +84,7 @@ private:
 
   // as opposed to using the errors that come from the fit
   bool useAverageErrors;
-  bool debugV; // hack to save old code
+  bool infoV; // hack to save old code
   const std::string myName;
   CSCFindPulseheightOnStrip * pulseheightOnStripFinder_;
 };
