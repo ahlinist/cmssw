@@ -68,7 +68,7 @@ int main(int argc, char* argv[])
     store(command_line_parser(argc,argv).options(desc).positional(p).run(),vm);
     notify(vm);
   } catch(const error& iException) {
-    edm::LogError("Parsing") << "Exception from command line processing: " << iException.what();
+    edm::LogError("FwkJob") << "Exception from command line processing: " << iException.what();
     return 1;
   }
     
@@ -78,7 +78,7 @@ int main(int argc, char* argv[])
   }
   
   if(!vm.count(kParameterSetOpt)) {
-    edm::LogError("Configuration") << "No configuration file given \n"
+    edm::LogError("FwkJob") << "No configuration file given \n"
 			      <<" please do '"
 			      << argv[0]
 			      <<  " --"
@@ -89,7 +89,7 @@ int main(int argc, char* argv[])
 
   std::ifstream configFile(vm[kParameterSetOpt].as<std::string>().c_str());
   if(!configFile) {
-    edm::LogError("Configuration") << "Unable to open configuration file "
+    edm::LogError("FwkJob") << "Unable to open configuration file "
 			      << vm[kParameterSetOpt].as<std::string>();
     return 1;
   }
@@ -118,21 +118,21 @@ int main(int argc, char* argv[])
       }
   }
   catch (seal::Error& e) {
-      edm::LogError("seal::Error") << "Exception caught in " 
+      edm::LogError("FwkJob") << "Exception caught in " 
 				<< kProgramName
 				<< "\n"
 				<< e.explainSelf();
       rc = 1;
   }
   catch (std::exception& e) {
-      edm::LogError("std::exception") << "Standard library exception caught in " 
+      edm::LogError("FwkJob") << "Standard library exception caught in " 
 				<< kProgramName
 				<< "\n"
 				<< e.what();
       rc = 1;
   }
   catch (...) {
-      edm::LogError("Unknown Exception") << "Unknown exception caught in "
+      edm::LogError("FwkJob") << "Unknown exception caught in "
 				<< kProgramName
 				<< "\n";
       rc = 2;
