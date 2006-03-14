@@ -48,6 +48,9 @@ namespace edm {
   class VectorInputSource;
 
   template <typename T> class Handle;
+  namespace pset {
+    class Registry;
+  }
 }
 
 // The following are trivial enough so that the real headers can be included.
