@@ -1,15 +1,15 @@
 /** \file
  *
- *  $Date: 2005/11/10 14:36:36 $
- *  $Revision: 1.3 $
+ *  $Date: 2005/11/22 09:50:51 $
+ *  $Revision: 1.4 $
  *  \author E. Meschi - CERN PH/CMD
  */
 
 #include "EventFilter/FUReader/src/FUReader.h"
 #include <DataFormats/FEDRawData/interface/FEDNumbering.h>
 
-#include <FWCore/EDProduct/interface/EventID.h>
-#include <FWCore/EDProduct/interface/Timestamp.h>
+#include <DataFormats/Common/interface/EventID.h>
+#include <DataFormats/Common/interface/Timestamp.h>
 #include <DataFormats/FEDRawData/interface/FEDRawData.h>
 #include <DataFormats/FEDRawData/interface/FEDRawDataCollection.h>
 

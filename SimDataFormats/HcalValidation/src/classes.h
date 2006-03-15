@@ -1,7 +1,7 @@
 #include "SimDataFormats/HcalValidation/interface/PHcalValidInfoLayer.h"
 #include "SimDataFormats/HcalValidation/interface/PHcalValidInfoNxN.h"
 #include "SimDataFormats/HcalValidation/interface/PHcalValidInfoJets.h"
-#include "FWCore/EDProduct/interface/Wrapper.h"
+#include "DataFormats/Common/interface/Wrapper.h"
 #include <vector>
 
 namespace {
