@@ -54,7 +54,7 @@ namespace edm {
 }
 
 // The following are trivial enough so that the real headers can be included.
-#include "FWCore/Framework/interface/ConditionsID.h"
+#include "DataFormats/Common/interface/ConditionsID.h"
 #include "DataFormats/Common/interface/PassID.h"
 #include "DataFormats/Common/interface/VersionNumber.h"
 
