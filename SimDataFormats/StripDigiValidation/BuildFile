@@ -1,6 +1,6 @@
 <flags LCGDICT_ARGS="--deep">
-<use name=FWCore/EDProduct>
+<use name=DataFormats/Common>
 <export>
  <lib name=SimDataFormatsStripDigiValidation>
- <use name=FWCore/EDProduct>
+ <use name=DataFormats/Common>
 </export>

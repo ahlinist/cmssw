@@ -1,9 +1,9 @@
 <flags LCGDICT_ARGS="--deep">
 <export>
  <lib name=SimDataFormatsEcalValidation>
- <use name=FWCore/EDProduct>
+ <use name=DataFormats/Common>
  <use name=clhep>
 </export>
 
-<use name=FWCore/EDProduct>
+<use name=DataFormats/Common>
 <use name=clhep>
