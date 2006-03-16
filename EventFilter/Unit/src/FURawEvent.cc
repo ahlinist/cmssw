@@ -4,6 +4,8 @@
 
 #include <iostream>
 
+#define REAL_SOID_MASK 0x0003FF00
+
 using namespace std;
 
 int FURawEvent::errors[10] = {0,0,0,0,0,0,0,0,0,0};
@@ -169,7 +171,15 @@ int FURawEvent::checkin_data(vector<unsigned char*> &block_adrs)
       int hd_trigno  = ph->trigno;
       int hd_segno   = ph->segno;
       int hd_segsize     = ph->segsize;
-      int segsize_proper = hd_segsize & ~FRL_LAST_SEGM ;
+      int segsize_proper = hd_segsize & FRL_SEGSIZE_MASK;
+      if(segsize_proper >= 1048576)
+	{
+	  LOG4CPLUS_ERROR(adapter_->getApplicationLogger(),"Error in checkin_data for segment " 
+			  << hd_segno << " size " 
+			  << segsize_proper)
+	    retVal = -1;
+	  break;
+	}
 
       // check trigno
       if (current_trigno == -1) {
@@ -215,7 +225,7 @@ int FURawEvent::checkin_data(vector<unsigned char*> &block_adrs)
     {
       //make copy buffer, move data
       sf_data = new unsigned char[sf_size];
-      
+      unsigned long remnant = sf_size;
       vector<unsigned char *>vcursor(block_adrs.size());
       vector<unsigned int> scursor(block_adrs.size());
       unsigned long offset = 0;
@@ -223,10 +233,21 @@ int FURawEvent::checkin_data(vector<unsigned char*> &block_adrs)
 	{
 	  frlh_t *ph = (frlh_t *)block_adrs[iblk];
 	  int hd_segsize     = ph->segsize;
-	  int segsize_proper = hd_segsize & ~FRL_LAST_SEGM ;
+	  int segsize_proper = hd_segsize & FRL_SEGSIZE_MASK;
 	  scursor[iblk] = segsize_proper;
+	  if(segsize_proper > remnant)
+	    {
+	      LOG4CPLUS_ERROR(adapter_->getApplicationLogger(),
+			      "FRL segment " << iblk
+			      << " claims size " << segsize_proper 
+			      << " while superfragment has only " << remnant
+			      << " bytes left "); 
+	      retVal = -1;
+	      break;
+	    }
 	  vcursor[iblk] = new(sf_data+offset) unsigned char[segsize_proper];
 	  offset += segsize_proper;
+	  remnant -= segsize_proper;
 	  memcpy(vcursor[iblk], block_adrs[iblk]+frlhs,segsize_proper);
 	}
 
@@ -274,10 +295,11 @@ int FURawEvent::checkin_data(vector<unsigned char*> &block_adrs)
 	      retVal = FED_HEADER_MMARKER;
 	      break;
 	    }
-	  fedid = pfh->sourceid & FED_SOID_MASK;
+	  fedid = pfh->sourceid & REAL_SOID_MASK;
 	  fedid = fedid >> 8;
 	  lvl1id = pfh->eventid & FED_LVL1_MASK;
 	  
+
 	  if (lvl1id != current_trigno) 
 	    {
 	      //level1id consistent with frl header one ? 
@@ -441,21 +463,15 @@ void FURawEvent::dumpFrame(char* data, int len)
       
   for (int i = 0; i < (len/8); i++) {
     int rpos = 0;
-    if(i<4 || i>(len/8-4))
-      {	
-	for (pos = 0; pos < 8*3; pos += 3) {
-	  sprintf (&left[pos],"%2.2x ", ((unsigned char*)data)[c]);
-	  sprintf (&right[rpos],"%1c", ((data[c] > 32) && (data[c] < 127)) ? data[c]: '.' );
-	  rpos += 1;
-	  c++;
-	}
-	
-	//    LOG4CPLUS_ERROR(adapter_->getApplicationLogger(),toolbox::toString("%4d: %s  ||  %s \n", c-8, left, right));
-	printf ("%4d: %s  ||  %s \n", c-8, left, right);
-      }	
-    else
-      if(i==5)
-      printf("... and %d more 64b words which I skipped\n",len/8-6); 
+    for (pos = 0; pos < 8*3; pos += 3) {
+      sprintf (&left[pos],"%2.2x ", ((unsigned char*)data)[c]);
+      sprintf (&right[rpos],"%1c", ((data[c] > 32) && (data[c] < 127)) ? data[c]: '.' );
+      rpos += 1;
+      c++;
+    }
+    
+    //    LOG4CPLUS_ERROR(adapter_->getApplicationLogger(),toolbox::toString("%4d: %s  ||  %s \n", c-8, left, right));
+    printf ("%4d: %s  ||  %s \n", c-8, left, right);
   }
       
   fflush(stdout);	
