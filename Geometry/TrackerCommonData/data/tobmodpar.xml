@@ -48,7 +48,7 @@
  <Constant name="WaferDx"    value="4.818*cm"/>
  <Constant name="WaferDy"    value="9.450*cm"/>
  <Constant name="WaferDz"    value="0.025*cm"/>
- <Constant name="WaferY"     value="0.200*cm"/>
+ <Constant name="WaferY"     value="0.5*0.43*cm"/>
  <Constant name="WaferZ"     value="2.125*cm"/>
  <Constant name="ActiveDx"   value="4.6848*cm"/>
  <Constant name="ActiveDy"   value="9.3067*cm"/>
