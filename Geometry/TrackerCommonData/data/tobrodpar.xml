@@ -54,7 +54,7 @@
  <Constant name="CCUMDx"         value="5.900*cm"/>
  <Constant name="CCUMDy"         value="0.125*cm"/>
  <Constant name="CCUMDz"         value="3.500*cm"/>
- <Constant name="ModuleY"        value="0.500*cm"/>
+ <Constant name="ModuleY"        value="0.5425*cm"/>
  <Constant name="ModuleZ01"      value="-96.8564*cm"/>
  <Constant name="ModuleZ02"      value="-78.3454*cm"/>
  <Constant name="ModuleZ03"      value="-65.5084*cm"/>

@@ -98,7 +98,7 @@
   </Vector>
   <String name="ModuleName" value="tobmodule0:TOBModule0"/>
   <Vector name="ModuleRot" type="string" nEntries="6">
-    tobrodpar:R180, tobrodpar:R180, tobrodpar:180X,
+    tobrodpar:R180, tobrodpar:R180, tobrodpar:180X, 
     tobrodpar:180X, tobrodpar:180X, tobrodpar:180X</Vector>
   <Vector name="ModuleY" type="numeric" nEntries="6">
     [tobrodpar:ModuleY], -[tobrodpar:ModuleY],  [tobrodpar:ModuleY],

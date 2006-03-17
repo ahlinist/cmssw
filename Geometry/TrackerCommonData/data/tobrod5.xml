@@ -16,14 +16,14 @@
  <PosPart copyNumber="1">
    <rParent name="tobrod5:TOBRod5"/>
    <rChild name="tobrod5l:TOBRod5L"/>
-  <rRotation name="tobrodpar:180D"/>
+  <rRotation name="tobrodpar:180X"/>
   <Translation x="[zero]"         y="[zero]" 
                z="([tobrodpar:RodL]-[tobrodpar:RodDL])/2" />
  </PosPart>
  <PosPart copyNumber="1">
    <rParent name="tobrod5:TOBRod5"/>
    <rChild name="tobrod5h:TOBRod5H"/>
-  <rRotation name="tobrodpar:180D"/>
+  <rRotation name="tobrodpar:180X"/>
   <Translation x="[zero]"         y="[zero]" 
                z="-([tobrodpar:RodL]-[tobrodpar:RodDL])/2" />
   

@@ -103,18 +103,18 @@
  <Constant name="ConnectDphi6"   value="6.93*deg"/>
  <Constant name="Layer0Rin"      value="58.30*cm"/>
  <Constant name="Layer0Rout"     value="64.24*cm"/>
- <Constant name="Layer0LowR"     value="59.40*cm"/>
- <Constant name="Layer0HighR"    value="62.60*cm"/>
+ <Constant name="Layer0LowR"     value="59.20*cm"/>
+ <Constant name="Layer0HighR"    value="62.40*cm"/>
  <Constant name="Layer0CoolR"    value="65.40*cm"/>
  <Constant name="Layer1Rin"      value="66.90*cm"/>
  <Constant name="Layer1Rout"     value="72.80*cm"/>
- <Constant name="Layer1LowR"     value="68.00*cm"/>
- <Constant name="Layer1HighR"    value="71.20*cm"/>
+ <Constant name="Layer1LowR"     value="67.60*cm"/>
+ <Constant name="Layer1HighR"    value="70.80*cm"/>
  <Constant name="Layer1CoolR"    value="74.00*cm"/>
  <Constant name="Layer2Rin"      value="75.50*cm"/>
  <Constant name="Layer2Rout"     value="81.40*cm"/>
- <Constant name="Layer2LowR"     value="76.60*cm"/>
- <Constant name="Layer2HighR"    value="79.80*cm"/>
+ <Constant name="Layer2LowR"     value="76.40*cm"/>
+ <Constant name="Layer2HighR"    value="79.60*cm"/>
  <Constant name="Layer2CoolR"    value="82.50*cm"/>
  <Constant name="Layer3Rin"      value="84.10*cm"/>
  <Constant name="Layer3Rout"     value="89.90*cm"/>
@@ -968,7 +968,7 @@
   <rParent name="tob:TOBLayer0"/>
   <String name="ChildName"    value="tobrod0:TOBRod0"/>
   <Numeric name="Tilt"        value="[DetectorTilt]"/>
-  <Numeric name="StartAngle"  value="0*deg"/>
+  <Numeric name="StartAngle"  value="5.3571*deg"/>
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="RadiusIn"    value="[Layer0LowR]"/>
   <Numeric name="RadiusOut"   value="[Layer0HighR]"/>
@@ -981,7 +981,7 @@
   <rParent name="tob:TOBLayer1"/>
   <String name="ChildName"    value="tobrod1:TOBRod1"/>
   <Numeric name="Tilt"        value="[DetectorTilt]"/>
-  <Numeric name="StartAngle"  value="0*deg"/>
+  <Numeric name="StartAngle"  value="2.1601*deg"/>
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="RadiusIn"    value="[Layer1LowR]"/>
   <Numeric name="RadiusOut"   value="[Layer1HighR]"/>
@@ -994,7 +994,7 @@
   <rParent name="tob:TOBLayer2"/>
   <String name="ChildName"    value="tobrod2:TOBRod2"/>
   <Numeric name="Tilt"        value="[DetectorTilt]"/>
-  <Numeric name="StartAngle"  value="0*deg"/>
+  <Numeric name="StartAngle"  value="13.0309*deg"/>
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="RadiusIn"    value="[Layer2LowR]"/>
   <Numeric name="RadiusOut"   value="[Layer2HighR]"/>
@@ -1007,7 +1007,7 @@
   <rParent name="tob:TOBLayer3"/>
   <String name="ChildName"    value="tobrod3:TOBRod3"/>
   <Numeric name="Tilt"        value="[DetectorTilt]"/>
-  <Numeric name="StartAngle"  value="0*deg"/>
+  <Numeric name="StartAngle"  value="1.5802*deg"/>
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="RadiusIn"    value="[Layer3LowR]"/>
   <Numeric name="RadiusOut"   value="[Layer3HighR]"/>
@@ -1020,7 +1020,7 @@
   <rParent name="tob:TOBLayer4"/>
   <String name="ChildName"    value="tobrod4:TOBRod4"/>
   <Numeric name="Tilt"        value="[DetectorTilt]"/>
-  <Numeric name="StartAngle"  value="0*deg"/>
+  <Numeric name="StartAngle"  value="8.4397*deg"/>
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="RadiusIn"    value="[Layer4LowR]"/>
   <Numeric name="RadiusOut"   value="[Layer4HighR]"/>
@@ -1033,7 +1033,7 @@
   <rParent name="tob:TOBLayer5"/>
   <String name="ChildName"    value="tobrod5:TOBRod5"/>
   <Numeric name="Tilt"        value="[DetectorTilt]"/>
-  <Numeric name="StartAngle"  value="0*deg"/>
+  <Numeric name="StartAngle"  value="1.3779*deg"/>
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="RadiusIn"    value="[Layer5LowR]"/>
   <Numeric name="RadiusOut"   value="[Layer5HighR]"/>
