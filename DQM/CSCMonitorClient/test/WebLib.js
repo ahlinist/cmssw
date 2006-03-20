@@ -23,11 +23,21 @@ var viewing = false;
 function getApplicationURL()
 {
   var url = window.location.href;
+
+  // remove the cgi request from the end of the string
   var index = url.indexOf("?");
   if (index >= 0)
   {
     url = url.substring(0, index);
   }
+
+  // remove the trailing '/' from the end of the string
+  index = url.lastIndexOf("/");
+  if (index == url.length - 1)
+  {
+    url = url.substring(0, index);
+  }
+
   return url;
 }
 
