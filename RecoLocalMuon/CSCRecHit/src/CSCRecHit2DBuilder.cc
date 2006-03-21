@@ -116,8 +116,7 @@ void CSCRecHit2DBuilder::setGeometry( const CSCGeometry* geom ) {
 const CSCLayer* CSCRecHit2DBuilder::getLayer( const CSCDetId& detId ) const {
   if ( !geom_ ) throw cms::Exception("MissingGeometry") << 
      "It don't mean a thing if it ain't got that swing, no, geometry" << std::endl;
-  const GeomDetUnit* detUnit = geom_->idToDet(detId);
-  return dynamic_cast<const CSCLayer *>(detUnit);
+  return geom_->layer(detId);
 }
 
 CSCRecHit2DAlgo* CSCRecHit2DBuilder::getAlgo( int iChamberType ) {
