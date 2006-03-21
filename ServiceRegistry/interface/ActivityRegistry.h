@@ -59,6 +59,15 @@ namespace edm {
       }
       AR_WATCH_USING_METHOD_0(watchPostEndJob)
 
+      typedef boost::signal<void ()> JobFailure;
+      /// signal is emitted if event processing or end-of-job
+      /// processing fails with an uncaught exception.
+      JobFailure    jobFailureSignal_;
+      ///convenience function for attaching to signal
+      void watchJobFailure(const JobFailure::slot_type& iSlot) {
+         jobFailureSignal_.connect(iSlot);
+      }
+      AR_WATCH_USING_METHOD_0(watchJobFailure)
       
       typedef boost::signal<void (const edm::EventID&, const edm::Timestamp&)> PreProcessEvent;
       /// signal is emitted after the Event has been created by the InputSource but before any modules have seen the Event
