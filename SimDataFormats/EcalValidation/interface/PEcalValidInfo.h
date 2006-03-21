@@ -25,6 +25,7 @@ class PEcalValidInfo
    friend  class   EcalTestAnalysis;
    friend  class   PreshowerTestAnalysis;
    friend  class   SimHitSingleTest;
+   friend  class   EcalSimHitsValidProducer;
    typedef  std::vector<float>   FloatVector;
 
 public:
@@ -57,6 +58,12 @@ public:
    float  eInEB()  const { return totalEInEB; }
    float  eInES()  const { return totalEInES; }
 
+   float  eInEEzp()  const { return totalEInEEzp; }
+   float  eInEEzm()  const { return totalEInEEzm; }
+
+   float  eInESzp()  const { return totalEInESzp; }
+   float  eInESzm()  const { return totalEInESzm; }
+
    int    hitsInEcal() const { return totalHits; }
    int    hitsInEE()   const { return nHitsInEE; }
    int    hitsInEB()   const { return nHitsInEB; }
@@ -64,7 +71,11 @@ public:
    int    hitsIn1ES()  const { return nHitsIn1ES;}
    int    hitsIn2ES()  const { return nHitsIn2ES;}
   
-       
+   int    hitsIn1ESzp()  const { return nHitsIn1ESzp;}
+   int    hitsIn1ESzm()  const { return nHitsIn1ESzm;}
+   int    hitsIn2ESzp()  const { return nHitsIn2ESzp;}
+   int    hitsIn2ESzm()  const { return nHitsIn2ESzm;}       
+
    FloatVector  bX0() const { return eBX0; }
    FloatVector  eX0() const { return eEX0; }
 
@@ -72,6 +83,12 @@ public:
    FloatVector  eIn1ES() const { return eOf1ES; }
    FloatVector  eIn2ES() const { return eOf2ES; }
    FloatVector  zOfInES()  const { return zOfES;  }
+
+   FloatVector  eIn1ESzp() const { return eOf1ESzp; }
+   FloatVector  eIn1ESzm() const { return eOf1ESzm; }
+ 
+   FloatVector  eIn2ESzp() const { return eOf2ESzp; }
+   FloatVector  eIn2ESzm() const { return eOf2ESzm; }
 
    FloatVector  phiOfEEHits() const { return phiOfEECaloG4Hit; }
    FloatVector  etaOfEEHits() const { return etaOfEECaloG4Hit; }
@@ -112,6 +129,13 @@ private:
    float  totalEInEE;       //The Total Energy deposited in EE;
    float  totalEInEB;       //The Total Energy deposited in EB;
    float  totalEInES;       //The Total Energy deposited in ES;
+ 
+   float  totalEInEEzp;
+   float  totalEInEEzm;
+   float  totalEInESzp;
+   float  totalEInESzm;
+
+
 
    int totalHits;          //Total number of Hits.
    int nHitsInEE;          //Total number of Hits in EE.
@@ -119,13 +143,25 @@ private:
    int nHitsInES;          //Total number of Hits in ES.
    int nHitsIn1ES;         //Total number of Hits in 1st Layer of ES;
    int nHitsIn2ES;         //Total number of Hits in 2nd Layer of ES;
-   
+
+   int nHitsIn1ESzp;
+   int nHitsIn1ESzm;
+   int nHitsIn2ESzp;
+   int nHitsIn2ESzm;       
+
    FloatVector eBX0;       // longitudinal Energy deposition In EB.
    FloatVector eEX0;       // longitudinal Energy deposition In EE.
 
    FloatVector  eOf1ES;    // Energy deposition of Hits in 1st layer of ES;
    FloatVector  eOf2ES;    // Energy deposition of Hits in 2nd layer of ES;              
    FloatVector  zOfES;
+
+
+   FloatVector  eOf1ESzp;
+   FloatVector  eOf1ESzm;
+   FloatVector  eOf2ESzp;
+   FloatVector  eOf2ESzm;
+
    FloatVector  phiOfEECaloG4Hit;    // Phi of Hits.
    FloatVector  etaOfEECaloG4Hit;    // Eta of Hits.
    FloatVector  tOfEECaloG4Hit;      // Tof of Hits.
