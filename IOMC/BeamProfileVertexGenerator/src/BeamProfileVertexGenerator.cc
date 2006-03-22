@@ -10,8 +10,11 @@
 using std::cout;
 using std::endl;
 
-BeamProfileVertexGenerator::BeamProfileVertexGenerator(const edm::ParameterSet & p) 
-: BaseEventVertexGenerator(p), m_pBeamProfileVertexGenerator(p), myVertex(0)
+BeamProfileVertexGenerator::BeamProfileVertexGenerator(const edm::ParameterSet & p,
+                                                       const long& seed) 
+: BaseEventVertexGenerator(p,seed), 
+  m_pBeamProfileVertexGenerator(p), 
+  myVertex(0)
 {  
   myMeanX = m_pBeamProfileVertexGenerator.getParameter<double>("BeamMeanX")*mm;
   myMeanY = m_pBeamProfileVertexGenerator.getParameter<double>("BeamMeanY")*mm;
@@ -21,6 +24,13 @@ BeamProfileVertexGenerator::BeamProfileVertexGenerator(const edm::ParameterSet &
   myEta = m_pBeamProfileVertexGenerator.getParameter<double>("BeamEta");
   myPhi = m_pBeamProfileVertexGenerator.getParameter<double>("BeamPhi");
   myType = m_pBeamProfileVertexGenerator.getParameter<bool>("GaussianProfile");
+  
+  if ( myType == true )
+  {
+     myRandom = new RandGauss(m_Engine);
+  }
+  else
+     myRandom = new RandFlat(m_Engine) ;
 
   cout << "BeamProfileVertexGenerator: with beam along eta = " 
        << myEta << " (Theta = " << myTheta/deg << ") phi = " 
@@ -37,18 +47,22 @@ Hep3Vector * BeamProfileVertexGenerator::newVertex() {
   if (myVertex) delete myVertex;
   double aX, aY;
   if (myType) 
-    aX = mySigmaX * RandGauss::shoot() + myMeanX;
+    //aX = mySigmaX * RandGauss::shoot() + myMeanX;
+    aX = mySigmaX * (dynamic_cast<RandGauss*>(myRandom))->fire() + myMeanX;
   else
-    aX = RandFlat::shoot(-0.5*mySigmaX,0.5*mySigmaX) + myMeanX;
+    //aX = RandFlat::shoot(-0.5*mySigmaX,0.5*mySigmaX) + myMeanX;
+    aX = (dynamic_cast<RandFlat*>(myRandom))->fire(-0.5*mySigmaX,0.5*mySigmaX) + myMeanX ;
   double tX = 90.*deg + myTheta;
   double sX = sin(tX);
-  if (abs(sX)>1.e-12) sX = 1./sX;
+  if (fabs(sX)>1.e-12) sX = 1./sX;
   else                sX = 1.;
   double fX = atan2(sX*cos(myTheta)*sin(myPhi),sX*cos(myTheta)*cos(myPhi));
   if (myType) 
-    aY = mySigmaY * RandGauss::shoot() + myMeanY;
+    //aY = mySigmaY * RandGauss::shoot() + myMeanY;
+    aX = mySigmaY * (dynamic_cast<RandGauss*>(myRandom))->fire() + myMeanY;
   else
-    aY = RandFlat::shoot(-0.5*mySigmaY,0.5*mySigmaY) + myMeanY;
+    //aY = RandFlat::shoot(-0.5*mySigmaY,0.5*mySigmaY) + myMeanY;
+    aY = (dynamic_cast<RandFlat*>(myRandom))->fire(-0.5*mySigmaY,0.5*mySigmaY) + myMeanY;
   double fY = 90.*deg + myPhi;
   double xp = aX*sin(tX)*cos(fX) +aY*cos(fY) +myMeanZ*sin(myTheta)*cos(myPhi);
   double yp = aX*sin(tX)*sin(fX) +aY*cos(fY) +myMeanZ*sin(myTheta)*sin(myPhi);

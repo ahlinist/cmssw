@@ -8,10 +8,17 @@
  * Attention: All values are assumed to be mm!
  * \author Stephan Wynhoff
  */
+
+namespace CLHEP
+{
+   class RandFlat ;
+}
+
+
 class FlatEventVertexGenerator : public BaseEventVertexGenerator
 {
 public:
-  FlatEventVertexGenerator(const edm::ParameterSet & p);
+  FlatEventVertexGenerator(const edm::ParameterSet & p, const long& seed);
   virtual ~FlatEventVertexGenerator();
 
   /// return a new event vertex
@@ -44,7 +51,8 @@ private:
   edm::ParameterSet m_pFlatEventVertexGenerator;
   double myMinX, myMinY, myMinZ;
   double myMaxX, myMaxY, myMaxZ;
-  Hep3Vector * myVertex;
+  Hep3Vector* myVertex;
+  RandFlat*   myRandom ;
 };
 
 #endif

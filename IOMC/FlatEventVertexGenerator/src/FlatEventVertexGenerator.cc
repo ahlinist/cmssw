@@ -9,9 +9,15 @@
 using std::cout;
 using std::endl;
 
-FlatEventVertexGenerator::FlatEventVertexGenerator(const edm::ParameterSet & p) 
-: BaseEventVertexGenerator(p), m_pFlatEventVertexGenerator(p), myVertex(0)
+FlatEventVertexGenerator::FlatEventVertexGenerator(const edm::ParameterSet & p,
+                                                   const long& seed) 
+: BaseEventVertexGenerator(p,seed), 
+  m_pFlatEventVertexGenerator(p), 
+  myVertex(0)
 { 
+  
+  myRandom = new RandFlat(m_Engine) ;
+  
   myMinX = m_pFlatEventVertexGenerator.getParameter<double>("MinX")*mm;
   myMinY = m_pFlatEventVertexGenerator.getParameter<double>("MinY")*mm;
   myMinZ = m_pFlatEventVertexGenerator.getParameter<double>("MinZ")*mm;
@@ -47,9 +53,12 @@ FlatEventVertexGenerator::~FlatEventVertexGenerator()
 Hep3Vector * FlatEventVertexGenerator::newVertex() {
   delete myVertex;
   double aX,aY,aZ;
-  aX = RandFlat::shoot(myMinX,myMaxX);
-  aY = RandFlat::shoot(myMinY,myMaxY);
-  aZ = RandFlat::shoot(myMinZ,myMaxZ);
+  //aX = RandFlat::shoot(myMinX,myMaxX);
+  //aY = RandFlat::shoot(myMinY,myMaxY);
+  //aZ = RandFlat::shoot(myMinZ,myMaxZ);
+  aX = myRandom->fire(myMinX,myMaxX) ;
+  aY = myRandom->fire(myMinY,myMaxY) ;
+  aZ = myRandom->fire(myMinZ,myMaxZ) ;
   myVertex = new Hep3Vector(aX, aY, aZ);
   return myVertex;
 }
