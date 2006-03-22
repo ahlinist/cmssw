@@ -8,10 +8,15 @@
  * Attention: All values are assumed to be mm!
  * \author Stephan Wynhoff
  */
+
+namespace CLHEP {
+   class RandGauss;
+}
+
 class GaussianEventVertexGenerator : public BaseEventVertexGenerator 
 {
 public:
-  GaussianEventVertexGenerator(const edm::ParameterSet & p);
+  GaussianEventVertexGenerator(const edm::ParameterSet & p, const long& seed);
   virtual ~GaussianEventVertexGenerator();
 
   /// return a new event vertex
@@ -44,7 +49,8 @@ private:
   edm::ParameterSet m_pGaussianEventVertexGenerator;
   double mySigmaX, mySigmaY, mySigmaZ;
   double myMeanX, myMeanY, myMeanZ;
-  Hep3Vector * myVertex;
+  Hep3Vector* myVertex;
+  RandGauss*  myRandom ; 
 };
 
 #endif

@@ -1,7 +1,7 @@
 #include "IOMC/GaussianEventVertexGenerator/interface/GaussianEventVertexGenerator.h"
 #include "Utilities/General/interface/CMSexception.h"
 
-#include "CLHEP/Random/RandFlat.h"
+//#include "CLHEP/Random/RandFlat.h"
 #include "CLHEP/Random/RandGauss.h"
 #include "CLHEP/Units/SystemOfUnits.h"
 
@@ -10,9 +10,15 @@
 using std::cout;
 using std::endl;
 
-GaussianEventVertexGenerator::GaussianEventVertexGenerator(const edm::ParameterSet & p) 
-: BaseEventVertexGenerator(p), m_pGaussianEventVertexGenerator(p), myVertex(0)
+GaussianEventVertexGenerator::GaussianEventVertexGenerator(const edm::ParameterSet & p,
+                                                           const long& seed) 
+: BaseEventVertexGenerator(p,seed), 
+  m_pGaussianEventVertexGenerator(p), 
+  myVertex(0)
 { 
+  
+  myRandom = new RandGauss(m_Engine);
+  
   myMeanX = m_pGaussianEventVertexGenerator.getParameter<double>("MeanX")*mm;
   myMeanY = m_pGaussianEventVertexGenerator.getParameter<double>("MeanY")*mm;
   myMeanZ = m_pGaussianEventVertexGenerator.getParameter<double>("MeanZ")*mm;
@@ -49,14 +55,22 @@ GaussianEventVertexGenerator::GaussianEventVertexGenerator(const edm::ParameterS
 GaussianEventVertexGenerator::~GaussianEventVertexGenerator() 
 {
   delete myVertex;
+  // I'm not deleting this, since the engine seems to have
+  // been delete earlier; thus an attempt tp delete RandGauss
+  // results in a core dump... 
+  // I need to ask Marc/Jim how to do it right...
+  //delete myRandom; 
 }
 
 Hep3Vector * GaussianEventVertexGenerator::newVertex() {
   delete myVertex;
   double aX,aY,aZ;
-  aX = mySigmaX * RandGauss::shoot() + myMeanX;
-  aY = mySigmaY * RandGauss::shoot() + myMeanY;
-  aZ = mySigmaZ * RandGauss::shoot() + myMeanZ;
+  //aX = mySigmaX * RandGauss::shoot() + myMeanX;
+  //aY = mySigmaY * RandGauss::shoot() + myMeanY;
+  //aZ = mySigmaZ * RandGauss::shoot() + myMeanZ;
+  aX = mySigmaX * myRandom->fire() + myMeanX ;
+  aY = mySigmaY * myRandom->fire() + myMeanY ;
+  aZ = mySigmaZ * myRandom->fire() + myMeanZ ;
   myVertex = new Hep3Vector(aX, aY, aZ);
   return myVertex;
 }

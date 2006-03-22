@@ -3,6 +3,14 @@
 
 #include "IOMC/EventVertexGenerators/interface/BaseEventVertexGenerator.h"
 
+namespace CLHEP
+{
+   class HepRandom;
+//   class RandGauss;
+//   class RandFlat;
+}
+
+
 /**
  * Generate event vertices according to a Gaussian distribution transverse
  * to beam direction (given by eta and phi
@@ -12,7 +20,8 @@
 class BeamProfileVertexGenerator : public BaseEventVertexGenerator
 {
 public:
-  BeamProfileVertexGenerator(const edm::ParameterSet & p);
+  BeamProfileVertexGenerator(const edm::ParameterSet & p,
+                             const long& seed);
   virtual ~BeamProfileVertexGenerator();
 
   /// return a new event vertex
@@ -52,7 +61,8 @@ private:
   double myMeanX, myMeanY, myMeanZ;
   double myEta, myPhi, myTheta;
   bool   myType;
-  Hep3Vector * myVertex;
+  Hep3Vector* myVertex;
+  HepRandom*  myRandom;   
 };
 
 #endif
