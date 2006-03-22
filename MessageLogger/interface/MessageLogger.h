@@ -117,7 +117,7 @@ class LogDebug_
 public:
   explicit LogDebug_( std::string const & id, std::string const & file, int line ) 
     : ap( new MessageSender(ELsuccess,id) )
-  { *this << onlyLowestDirectory(file) << ':' << line << ' '; }
+  { *this << onlyLowestDirectory(file) << ":" << line << "\n"; }
 
   template< class T >
     LogDebug_ & 
