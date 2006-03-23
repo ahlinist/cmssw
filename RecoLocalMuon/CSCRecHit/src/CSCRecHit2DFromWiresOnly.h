@@ -5,7 +5,7 @@
  * A concrete algorithm to build 2D space-point RecHits
  * from wire information _alone_ in the Endcap Muon CSCs 
  * (This was once a potential scenario for ME1/A and
- * don't want to throw away functionality...)
+ * I don't want to throw away functionality...)
  *
  * \author Rick Wilkinson, Tim Cox
  *
