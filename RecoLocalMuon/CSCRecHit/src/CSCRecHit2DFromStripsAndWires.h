@@ -3,7 +3,7 @@
 
 /** \class CSCRecHit2DFromStripsAndWires
  * The standard, old, concrete algorithm for building 2D space-point RecHits
- * in the Endcap Muon CSCs, but its abse class does it all!
+ * in the Endcap Muon CSCs, but its base class does it all!
  *
  */
 
