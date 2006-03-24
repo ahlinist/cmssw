@@ -6,7 +6,7 @@
 //#include <iostream>
 
 void PHcalValidInfoLayer::fillLayers(double el[], double ed[], double ho,
-				     double hbhe) {
+				     double hbhe, double ebee) {
 
   for (int i = 0; i < 20; i++) {
     double en  = 0.001*el[i]; // GeV
@@ -18,6 +18,7 @@ void PHcalValidInfoLayer::fillLayers(double el[], double ed[], double ho,
   }
   eHO   = (float)ho;
   eHBHE = (float)hbhe; // MeV
+  eEBEE = (float)ebee;
 }
 
 void PHcalValidInfoLayer::fillHF(double fibl, double fibs, double enec,

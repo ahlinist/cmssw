@@ -17,7 +17,7 @@ class PHcalValidInfoLayer {
 
 public:
        
-  PHcalValidInfoLayer(): hitN(0), eHO(0.0),eHBHE(0.0), elongHF(0.0),
+  PHcalValidInfoLayer(): hitN(0), eHO(0.0),eHBHE(0.0),eEBEE(0.0),elongHF(0.0),
 			 eshortHF(0.0), eEcalHF(0.0), eHcalHF(0.0) {}
   virtual ~PHcalValidInfoLayer() {}
 
@@ -26,6 +26,7 @@ public:
 
   float                   eho()   const {return eHO;}    
   float                 ehbhe()   const {return eHBHE;}    
+  float                 eebee()   const {return eEBEE;}    
   float               elonghf()   const {return elongHF;}    
   float              eshorthf()   const {return eshortHF;}    
   float               eecalhf()   const {return eEcalHF;}    
@@ -42,7 +43,8 @@ public:
   std::vector<float>    idHit()   const {return hitId;} 
 
   // filling
-  void fillLayers (double el[], double ed[], double ho, double hbhe);
+  void fillLayers (double el[], double ed[], double ho, double hbhe,
+		   double ebee);
   void fillHF     (double fibl, double fibs, double enec, double enhc);
   void fillHits   (int Nhits, int lay, int unitID, double eta, double phi, 
 		   double ehit, double t); 
@@ -52,7 +54,7 @@ public:
 private:
 
   int                hitN;
-  float              eHO, eHBHE;
+  float              eHO, eHBHE, eEBEE;
   float              elongHF, eshortHF, eEcalHF, eHcalHF;
   std::vector<float> eLayer;
   std::vector<float> eDepth;
