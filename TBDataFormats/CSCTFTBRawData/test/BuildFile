@@ -1,5 +1,5 @@
 <use name=TBDataFormats/CSCTFTBRawData>
 
-<bin name=testCSCTFTBRawData file=testRunner.cpp,testCSCTFTBRawData.cc>
+<bin name=testCSCTFTBRawData file=testCSCTFTBRawData.cpp>
   <use name=cppunit>
 </bin>
