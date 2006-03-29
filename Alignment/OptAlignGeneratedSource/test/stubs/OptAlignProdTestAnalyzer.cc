@@ -15,7 +15,7 @@
 //
 // Original Author:  Mike Case
 //         Created:  Mon Jan 17 11:47:40 CET 2006
-// $Id: OptAlignProdTestAnalyzer.cc,v 1.3 2006/03/08 16:57:16 case Exp $
+// $Id: OptAlignProdTestAnalyzer.cc,v 1.4 2006/03/09 15:15:45 case Exp $
 //
 //
 
@@ -205,35 +205,38 @@ void OptAlignProdTestAnalyzer::analyze(const edm::Event& e, const edm::EventSetu
   using namespace edm::eventsetup;
   std::cout <<" I AM IN RUN NUMBER "<<e.id().run() <<std::endl;
   std::cout <<" ---EVENT NUMBER "<<e.id().event() <<std::endl;
-  
+ 
+  // just a quick dump of the private OpticalAlignments object
+  std::cout << oa_ << std::endl;
+ 
   // STEP 2:
   // Get calibrated OpticalAlignments.  In this case I'm using
   // some sqlite database examples that are generated using
   // testOptAlignWriter.cc
   // from CondFormats/OptAlignObjects/test/
 
-  edm::ESHandle<OpticalAlignments> oaESHandle;
-  context.get<OpticalAlignmentsRcd>().get(oaESHandle);
+//   edm::ESHandle<OpticalAlignments> oaESHandle;
+//   context.get<OpticalAlignmentsRcd>().get(oaESHandle);
 
-  // This assumes they ALL come in together.  This may not be
-  // the "real" case.  One could envision different objects coming
-  // in and we would get by label each one (type).
+//   // This assumes they ALL come in together.  This may not be
+//   // the "real" case.  One could envision different objects coming
+//   // in and we would get by label each one (type).
 
-  std::cout << "========== eventSetup data changes with IOV =========" << std::endl;
-  std::cout << *oaESHandle << std::endl;
-  //============== COCOA WORK!
-  //  calibrated values should be used to "correct" the ones read in during beginJob
-  //==============
+//   std::cout << "========== eventSetup data changes with IOV =========" << std::endl;
+//   std::cout << *oaESHandle << std::endl;
+//   //============== COCOA WORK!
+//   //  calibrated values should be used to "correct" the ones read in during beginJob
+//   //==============
   
-  // 
-  // to see how to iterate over the OpticalAlignments, please
-  // refer to the << operator of OpticalAlignments, OpticalAlignInfo
-  // and OpticalAlignParam.
-  //     const OpticalAlignments* myoa=oa.product();
+//   // 
+//   // to see how to iterate over the OpticalAlignments, please
+//   // refer to the << operator of OpticalAlignments, OpticalAlignInfo
+//   // and OpticalAlignParam.
+//   //     const OpticalAlignments* myoa=oa.product();
   
-  // STEP 3:
-  // This retrieves the Measurements
-  // for each event, a new set of measurements is available.
+//   // STEP 3:
+//   // This retrieves the Measurements
+//   // for each event, a new set of measurements is available.
   edm::Handle<XXXXMeasurements> measHandle;
   e.getByLabel("OptAlignGeneratedSource", measHandle); 
   
