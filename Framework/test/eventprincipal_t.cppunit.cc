@@ -268,7 +268,7 @@ void testeventprincipal::getbyIdTest() {
     assert(h.id() == id);
   }
   catch (edm::Exception& x) {
-    std::cerr << x.what()<< std::endl;
+    std::cerr << x.explainSelf()<< std::endl;
     assert("Threw exception unexpectedly" == 0);
   }
   catch (...) {
@@ -320,7 +320,7 @@ void testeventprincipal::getbyLabelTest() {
     assert(h.provenance()->product.module.moduleLabel_ == label);
   }
   catch (edm::Exception& x) {
-    std::cerr << x.what()<< std::endl;
+    std::cerr << x.explainSelf()<< std::endl;
     assert("Threw exception unexpectedly" == 0);
   }
   catch (...) {
@@ -370,7 +370,7 @@ void testeventprincipal::getbySelectorTest() {
     assert(h.provenance()->product.module.moduleLabel_ == label);
   }
   catch (edm::Exception& x) {
-    std::cerr << x.what()<< std::endl;
+    std::cerr << x.explainSelf()<< std::endl;
     assert("Threw exception unexpectedly" == 0);
   }
   catch (...) {
@@ -422,7 +422,7 @@ void testeventprincipal::getbyTypeTest() {
     assert(h.provenance()->product.module.moduleLabel_ == label);
   }
   catch (edm::Exception& x) {
-    std::cerr << x.what()<< std::endl;
+    std::cerr << x.explainSelf()<< std::endl;
     assert("Threw exception unexpectedly" == 0);
   }
   catch (...) {
@@ -468,7 +468,7 @@ void testeventprincipal::getProvenanceTest() {
     assert(prov.product.productID_ == id);
   }
   catch (edm::Exception& x) {
-    std::cerr << x.what()<< std::endl;
+    std::cerr << x.explainSelf()<< std::endl;
     assert("Threw exception unexpectedly" == 0);
   }
   catch (...) {
@@ -517,7 +517,7 @@ void testeventprincipal::getAllProvenanceTest() {
     assert(provenances[0]->product.productID_ == id);
   }
   catch (edm::Exception& x) {
-    std::cerr << x.what()<< std::endl;
+    std::cerr << x.explainSelf()<< std::endl;
     assert("Threw exception unexpectedly" == 0);
   }
   catch (...) {

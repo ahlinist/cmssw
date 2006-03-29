@@ -159,7 +159,7 @@ void  testProductRegistry:: testProductRegistration(){
   try {
    edm::EventProcessor proc(config);
   } catch(const cms::Exception& iException) {
-     std::cout <<"caught "<<iException.what()<<std::endl;
+     std::cout <<"caught "<<iException.explainSelf()<<std::endl;
      throw;
   }
 }

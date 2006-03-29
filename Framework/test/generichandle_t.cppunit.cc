@@ -126,7 +126,7 @@ void testGenericHandle::getbyLabelTest() {
     event.getByLabel(label, productInstanceName,h);
   }
   catch (cms::Exception& x) {
-    std::cerr << x.what()<< std::endl;
+    std::cerr << x.explainSelf()<< std::endl;
     CPPUNIT_ASSERT("Threw exception unexpectedly" == 0);
   }
   catch(seal::Error& x){
