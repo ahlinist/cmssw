@@ -318,7 +318,7 @@ namespace edm {
   void
   Event::get(ProductID const& id, Handle<PROD>& result) const
   {
-    BasicHandle bh = this->get_(TypeID(typeid(PROD)), id);
+    BasicHandle bh = this->get_(id);
     gotProductIDs_.push_back(bh.id());
     convert_handle(bh, result);  // throws on conversion error
   }
