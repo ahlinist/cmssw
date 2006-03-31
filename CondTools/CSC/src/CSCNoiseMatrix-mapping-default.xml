@@ -6,18 +6,18 @@
       <Primitive column="MATRIX_INT" name="int" />
       <Container table="CSCNOISEMATRIX_MAT_2" id_columns="ID_POS ID_ID_ID" name="std::vector<CSCNoiseMatrix::Item>" position_column="POS" >
         <Object table="CSCNOISEMATRIX_MAT_2" id_columns="POS ID_POS ID_ID_ID" name="CSCNoiseMatrix::Item" >
-          <Primitive column="MATRIX_STD_VECTOR_CSCNOISEMA_1" name="elem1" />
-          <Primitive column="MATRIX_STD_VECTOR_CSCNOISEMA_2" name="elem10" />
-          <Primitive column="MATRIX_STD_VECTOR_CSCNOISEMA_3" name="elem11" />
-          <Primitive column="MATRIX_STD_VECTOR_CSCNOISEMA_4" name="elem12" />
-          <Primitive column="MATRIX_STD_VECTOR_CSCNOISEMA_5" name="elem2" />
-          <Primitive column="MATRIX_STD_VECTOR_CSCNOISEMA_6" name="elem3" />
-          <Primitive column="MATRIX_STD_VECTOR_CSCNOISEMA_7" name="elem4" />
-          <Primitive column="MATRIX_STD_VECTOR_CSCNOISEMA_8" name="elem5" />
-          <Primitive column="MATRIX_STD_VECTOR_CSCNOISEMA_9" name="elem6" />
-          <Primitive column="MATRIX_STD_VECTOR_CSCNOISEM_10" name="elem7" />
-          <Primitive column="MATRIX_STD_VECTOR_CSCNOISEM_11" name="elem8" />
-          <Primitive column="MATRIX_STD_VECTOR_CSCNOISEM_12" name="elem9" />
+          <Primitive column="MATRIX_STD_VECTOR_CSCNOISEMA_1" name="elem33" />
+          <Primitive column="MATRIX_STD_VECTOR_CSCNOISEMA_2" name="elem34" />
+          <Primitive column="MATRIX_STD_VECTOR_CSCNOISEMA_3" name="elem35" />
+          <Primitive column="MATRIX_STD_VECTOR_CSCNOISEMA_4" name="elem44" />
+          <Primitive column="MATRIX_STD_VECTOR_CSCNOISEMA_5" name="elem45" />
+          <Primitive column="MATRIX_STD_VECTOR_CSCNOISEMA_6" name="elem46" />
+          <Primitive column="MATRIX_STD_VECTOR_CSCNOISEMA_7" name="elem55" />
+          <Primitive column="MATRIX_STD_VECTOR_CSCNOISEMA_8" name="elem56" />
+          <Primitive column="MATRIX_STD_VECTOR_CSCNOISEMA_9" name="elem57" />
+          <Primitive column="MATRIX_STD_VECTOR_CSCNOISEM_10" name="elem66" />
+          <Primitive column="MATRIX_STD_VECTOR_CSCNOISEM_11" name="elem67" />
+          <Primitive column="MATRIX_STD_VECTOR_CSCNOISEM_12" name="elem77" />
         </Object >
       </Container >
     </Container >
