@@ -16,6 +16,7 @@ layer number;
 i number;
 j number;
 k number;
+i_record_id number;
 i_map_id number;
 mean_ped number;
 mean_rms number;
@@ -23,12 +24,17 @@ rndm number;
 i_ped number;
 i_rms number;
 BEGIN
+select max(record_id) into i_record_id from pedestals;
+if i_record_id is null then
+ i_record_id:=0;
+end if;
 select max(map_id) into i_map_id from pedestals_map;
 if i_map_id is null then
  i_map_id:=0;
 end if;
 for run in 1..5 loop
- insert into pedestals values (run,sysdate,sysdate);
+ i_record_id:=i_record_id+1;
+ insert into pedestals values (i_record_id,run,sysdate,sysdate);
  for i in 1..18 loop
   select dbms_random.random into rndm from dual;
   mean_ped:=597+rndm/norm*21;
@@ -55,6 +61,7 @@ layer number;
 i number;
 j number;
 k number;
+i_record_id number;
 i_map_id number;
 mean_gain_slope number;
 mean_gain_intercept number;
@@ -64,12 +71,17 @@ i_gain_slope number;
 i_gain_intercept number;
 i_gain_chi2 number;
 BEGIN
+select max(record_id) into i_record_id from gains;
+if i_record_id is null then
+ i_record_id:=0;
+end if;
 select max(map_id) into i_map_id from gains_map;
 if i_map_id is null then
  i_map_id:=0;
 end if;
 for run in 1..5 loop
- insert into gains values (run,sysdate,sysdate);
+ i_record_id:=i_record_id+1;
+ insert into gains values (i_record_id,run,sysdate,sysdate);
  for i in 1..18 loop
   select dbms_random.random into rndm from dual;
   mean_gain_slope:=7.31+rndm/norm*0.68;
