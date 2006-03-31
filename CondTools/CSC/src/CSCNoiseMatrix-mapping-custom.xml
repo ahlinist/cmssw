@@ -6,18 +6,18 @@
       <Primitive column="CSC_INT_ID" name="int" />
       <Container table="CSCNOISEMATRIX_DATA" id_columns="MAP_ID IOV_VALUE_ID" name="std::vector&lt;CSCNoiseMatrix::Item&gt;" position_column="VEC_INDEX" >
         <Object table="CSCNOISEMATRIX_DATA" id_columns="VEC_INDEX MAP_ID IOV_VALUE_ID" name="CSCNoiseMatrix::Item" >
-          <Primitive column="CSCMATRIX_ELEM1" name="elem1" />
-          <Primitive column="CSCMATRIX_ELEM2" name="elem2" />
-          <Primitive column="CSCMATRIX_ELEM3" name="elem3" />
-          <Primitive column="CSCMATRIX_ELEM4" name="elem4" />
-          <Primitive column="CSCMATRIX_ELEM5" name="elem5" />
-          <Primitive column="CSCMATRIX_ELEM6" name="elem6" />
-          <Primitive column="CSCMATRIX_ELEM7" name="elem7" />
-          <Primitive column="CSCMATRIX_ELEM8" name="elem8" />
-          <Primitive column="CSCMATRIX_ELEM9" name="elem9" />
-          <Primitive column="CSCMATRIX_ELEM10" name="elem10" />
-          <Primitive column="CSCMATRIX_ELEM11" name="elem11" />
-          <Primitive column="CSCMATRIX_ELEM12" name="elem12" />
+          <Primitive column="CSCMATRIX_ELEM33" name="elem33" />
+          <Primitive column="CSCMATRIX_ELEM34" name="elem34" />
+          <Primitive column="CSCMATRIX_ELEM35" name="elem35" />
+          <Primitive column="CSCMATRIX_ELEM44" name="elem44" />
+          <Primitive column="CSCMATRIX_ELEM45" name="elem45" />
+          <Primitive column="CSCMATRIX_ELEM46" name="elem46" />
+          <Primitive column="CSCMATRIX_ELEM55" name="elem55" />
+          <Primitive column="CSCMATRIX_ELEM56" name="elem56" />
+          <Primitive column="CSCMATRIX_ELEM57" name="elem57" />
+          <Primitive column="CSCMATRIX_ELEM66" name="elem66" />
+          <Primitive column="CSCMATRIX_ELEM67" name="elem67" />
+          <Primitive column="CSCMATRIX_ELEM77" name="elem77" />
         </Object >
       </Container >
     </Container >
