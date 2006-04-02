@@ -2,30 +2,31 @@ REM
 REM Table GAINS
 REM
 create table GAINS (
-run_num          number NOT NULL,
-data_taking_time date DEFAULT sysdate NOT NULL,
-insert_time      date DEFAULT sysdate NOT NULL);
+record_id         number NOT NULL,
+run_num           number UNIQUE NOT NULL,
+data_taking_time  date DEFAULT sysdate NOT NULL,
+insertion_time    date DEFAULT sysdate NOT NULL);
 REM
 REM Adding constraints for table GAINS
 REM
 alter table GAINS
-  add constraint gain_run_pk primary key (run_num);
+  add constraint gain_run_pk primary key (record_id);
 
 REM
 REM Table GAINS_MAP
 REM
 create table GAINS_MAP (
 map_id      number NOT NULL,
-run_num     number NOT NULL,
-layer_id    varchar2(32) NOT NULL);
+record_id   number NOT NULL,
+layer_id    number NOT NULL);
 REM
 REM Adding constraints for table GAINS_MAP
 REM
 alter table GAINS_MAP add (
    constraint gain_map_pk primary key (map_id),
-   unique (run_num,layer_id),
-   constraint gain_map_fk foreign key (run_num)
-                         references gains(run_num));
+   unique (record_id,layer_id),
+   constraint gain_map_fk foreign key (record_id)
+                          references gains(record_id));
 
 REM
 REM Table GAINS_DATA
