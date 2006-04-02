@@ -2,30 +2,31 @@ REM
 REM Table PEDESTALS
 REM
 create table PEDESTALS (
-run_num          number NOT NULL,
-data_taking_time date DEFAULT sysdate NOT NULL,
-insert_time      date DEFAULT sysdate NOT NULL);
+record_id         number NOT NULL,
+run_num           number UNIQUE NOT NULL,
+data_taking_time  date DEFAULT sysdate NOT NULL,
+insertion_time    date DEFAULT sysdate NOT NULL);
 REM
 REM Adding constraints for table PEDESTALS
 REM
 alter table PEDESTALS
-  add constraint ped_run_pk primary key (run_num);
+  add constraint ped_run_pk primary key (record_id);
 
 REM
 REM Table PEDESTASLS_MAP
 REM
 create table PEDESTALS_MAP (
 map_id      number NOT NULL,
-run_num     number NOT NULL,
-layer_id    varchar2(32) NOT NULL);
+record_id   number NOT NULL,
+layer_id    number NOT NULL);
 REM
 REM Adding constraints for table PEDESTALS_MAP
 REM
 alter table PEDESTALS_MAP add (
    constraint ped_map_pk primary key (map_id),
-   unique (run_num,layer_id),
-   constraint ped_map_fk foreign key (run_num)
-                         references pedestals(run_num));
+   unique (record_id,layer_id),
+   constraint ped_map_fk foreign key (record_id)
+                         references pedestals(record_id));
 
 REM
 REM Table PEDESTALS_DATA
