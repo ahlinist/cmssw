@@ -18,12 +18,14 @@ REM
 create table GAINS_MAP (
 map_id      number NOT NULL,
 record_id   number NOT NULL,
+map_index   number NOT NULL,
 layer_id    number NOT NULL);
 REM
 REM Adding constraints for table GAINS_MAP
 REM
 alter table GAINS_MAP add (
    constraint gain_map_pk primary key (map_id),
+   unique (record_id,map_index),
    unique (record_id,layer_id),
    constraint gain_map_fk foreign key (record_id)
                           references gains(record_id));
