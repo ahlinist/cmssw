@@ -68,4 +68,3 @@ edm::Event::getByLabel<GenericObject>(std::string const& label,
   gotProductIDs_.push_back(bh.id());
   convert_handle(bh, result);  // throws on conversion error
 }
-}
