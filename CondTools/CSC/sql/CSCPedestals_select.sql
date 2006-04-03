@@ -1,36 +1,28 @@
-create sequence iov_sequence_ped increment by 1 start with 1 order;
-
-create view RUNS as select distinct run_num from ped_record
- order by run;
-
 REM For CSCPEDESTALS:
 SELECT
- iov_sequence_ped.NextVal iov_value_id,
+ record_id iov_value_id,
  run_num time
-FROM RUNS;
+FROM PEDESTALS;
 
 REM For CSCPEDESTALS_MAP:
 SELECT
- record_id map_id,
- iov_value_id,
+ map_index map_id,
+ record_id iov_value_id,
  layer_id csc_int_id
-FROM PED_RECORD, CSCPEDESTALS
-WHERE CSCPEDESTALS.time=PED_RECORD.run_num
- order by csc_int_id;
+FROM PEDESTALS_MAP
+ order by iov_value_id,map_id;
 
 REM For CSCPEDESTALS_DATA:
 SELECT
- vector_index vec_index,
- PED_RECORD.record_id map_id,
- CSCPEDESTALS_MAP.iov_value_id,
- PED_VALUES.ped pedestals_ped,
- PED_VALUES.rms pedestals_rms
-FROM
- PED_VALUES,PED_RECORD,CSCPEDESTALS_MAP
+ PEDESTALS_DATA.vec_index vec_index,
+ PEDESTALS_MAP.map_index map_id,
+ PEDESTALS_MAP.record_id iov_value_id,
+ PEDESTALS_DATA.ped pedestals_ped, 
+ PEDESTALS_DATA.rms pedestals_rms
+FROM  PEDESTALS_DATA,PEDESTALS_MAP
 WHERE
- PED_VALUES.record_id=PED_RECORD.record_id and
- CSCPEDESTALS_MAP.map_id=PED_RECORD.record_id
+ PEDESTALS_DATA.map_id=PEDESTALS_MAP.map_id
 ORDER BY
  iov_value_id,
  map_id,
- vector_index;
+ vec_index;
