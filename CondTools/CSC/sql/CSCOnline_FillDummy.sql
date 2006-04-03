@@ -18,6 +18,7 @@ j number;
 k number;
 i_record_id number;
 i_map_id number;
+i_map_index number;
 mean_ped number;
 mean_rms number;
 rndm number;
@@ -35,6 +36,7 @@ end if;
 for run in 1..5 loop
  i_record_id:=i_record_id+1;
  insert into pedestals values (i_record_id,run,sysdate,sysdate);
+ i_map_index:=0;
  for i in 1..18 loop
   select dbms_random.random into rndm from dual;
   mean_ped:=597+rndm/norm*21;
@@ -42,8 +44,9 @@ for run in 1..5 loop
   mean_rms:=2.07+rndm/norm*0.24;
   for j in 1..6 loop
    i_map_id:=i_map_id+1;
+   i_map_index:=i_map_index+1;
    layer:=chambers(i)+j;
-   insert into pedestals_map values (i_map_id,run,layer);
+   insert into pedestals_map values (i_map_id,i_record_id,i_map_index,layer);
    for k in 1..80 loop
     select dbms_random.random into rndm from dual;
     i_ped:=mean_ped+rndm/norm*56;
@@ -63,6 +66,7 @@ j number;
 k number;
 i_record_id number;
 i_map_id number;
+i_map_index number;
 mean_gain_slope number;
 mean_gain_intercept number;
 mean_gain_chi2 number;
@@ -82,6 +86,7 @@ end if;
 for run in 1..5 loop
  i_record_id:=i_record_id+1;
  insert into gains values (i_record_id,run,sysdate,sysdate);
+ i_map_index:=0;
  for i in 1..18 loop
   select dbms_random.random into rndm from dual;
   mean_gain_slope:=7.31+rndm/norm*0.68;
@@ -91,8 +96,11 @@ for run in 1..5 loop
   mean_gain_chi2:=2.17+rndm/norm*0.76;
   for j in 1..6 loop
    i_map_id:=i_map_id+1;
+   i_map_index:=i_map_index+1;
    layer:=chambers(i)+j;
-   insert into gains_map values (i_map_id,run,layer);
+--   DBMS_OUTPUT.PUT_LINE (i_map_id||' '||i_record_id||' '||i_map_index||
+--    ' '||layer);
+   insert into gains_map values (i_map_id,i_record_id,i_map_index,layer);
    for k in 1..80 loop
     select dbms_random.random into rndm from dual;
     i_gain_slope:=mean_gain_slope+rndm/norm*0.58;
