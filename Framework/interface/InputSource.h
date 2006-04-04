@@ -45,15 +45,18 @@ $Id$
 #include <memory>
 #include <string>
 
+#include "DataFormats/Common/interface/ModuleDescription.h"
+#include "FWCore/Framework/interface/ProductRegistryHelper.h"
+
 namespace edm {
   class EventPrincipal;
   class ProductRegistry;
   class InputSourceDescription;
-  class ModuleDescription;
   class EventID;
-  class InputSource {
+  class ParameterSet;
+  class InputSource : public ProductRegistryHelper {
   public:
-    explicit InputSource(InputSourceDescription const&);
+    explicit InputSource(ParameterSet const&, InputSourceDescription const&);
     virtual ~InputSource();
 
     // Indicate inability to get a new event by returning a null
@@ -62,20 +65,26 @@ namespace edm {
 
     std::auto_ptr<EventPrincipal> readEvent(EventID const&);
 
-    void addToRegistry(ModuleDescription const& md) {
-      this->addToReg(md);
-    }
+    void addToRegistry(ModuleDescription const& md);
 
     ProductRegistry & productRegistry() const {return *preg_;}
     
     void skipEvents(int offset);
 
-  protected: // FIX: Make this private in next release
+  protected:
+
+    int maxEvents() const {return maxEvents_;}
+
+    ModuleDescription const& module() const {return module_;}
+
+  private:
+    int const maxEvents_;
+
+    ModuleDescription module_;
 
     // A pointer to the ProductRegistry;
     ProductRegistry * preg_;
 
-  private:
     // The process name we add to each EventPrincipal.
     std::string const process_;
 
@@ -83,12 +92,8 @@ namespace edm {
     // auto_ptr.
     virtual std::auto_ptr<EventPrincipal> read() = 0;
 
-    virtual void addToReg(ModuleDescription const&);
+    virtual std::auto_ptr<EventPrincipal> readIt(EventID const&) {assert(0);}
 
-    // FIX: Make this = 0 in next release
-    virtual std::auto_ptr<EventPrincipal> read(EventID const&) {assert(0);}
-
-    // FIX: Make this = 0 in next release
     virtual void skip(int) {assert(0);}
   };
 }
