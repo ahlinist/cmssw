@@ -14,17 +14,18 @@
 #include "cgicc/HTMLClasses.h"
 #include "DQMServices/WebComponents/interface/WebElement.h"
 
+#include <list>
 
 class Select : public WebElement
 {
  private:
   
   std::string name;     // the name of the drop down menu
-  std::list<std::string> &options;
+  std::list<std::string> options;
 
  public:
   
-  Select(string the_name, string the_url, string the_callback, 
+  Select(std::string the_name, std::string the_url, std::string the_callback, 
 	 std::string top, std::string left,
 	 std::list<std::string> &the_options) 
     : WebElement(the_url, top, left)
@@ -40,12 +41,5 @@ class Select : public WebElement
   void printHTML(xgi::Output *out);
 };
 
-void Select::printHTML(xgi::Output *out)
-{
-  *out << cgicc::select().set("name", name) << std::endl;
-  for (int i = 0; i < options.size(); i++) 
-    *out << cgicc::option() << options[i]; << cgicc::option() << std::endl;
-  *out << cgicc::select() << std::endl;
-}
 
 #endif
