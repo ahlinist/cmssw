@@ -105,6 +105,8 @@
 #include <vector>
 #include <set>
 
+#include "FWCore/Framework/src/RunStopwatch.h"
+
 namespace edm
 {
   class UnscheduledCallProducer;
@@ -136,6 +138,10 @@ namespace edm
 
     void beginJob(EventSetup const&);
     void endJob();
+
+    std::pair<double,double> timeCpuReal() const {
+      return std::pair<double,double>(stopwatch_->CpuTime(),stopwatch_->RealTime());
+    }
 
   private:
     void resetWorkers();
@@ -176,6 +182,8 @@ namespace edm
     bool makeTriggerResults_;
     int total_events_;
     int total_passed_;
+    RunStopwatch::StopwatchPointer stopwatch_;
+
     boost::shared_ptr<UnscheduledCallProducer> unscheduled_;
     std::vector<boost::shared_ptr<Group> > demandGroups_;
 
