@@ -1,5 +1,5 @@
-#ifndef _Button_h_
-#define _Button_h_
+#ifndef _DQMServices_WebComponents_Button_h_
+#define _DQMServices_WebComponents_Button_h_
 
 /* 
    This is the class that should be instantiated in case the 
@@ -38,17 +38,5 @@ class Button : public WebElement
   void printHTML(xgi::Output *out);
 };
 
-void Button::printHTML(xgi::Output *out)
-{
-  std::string position = "position:absolute; left:" + get_pix_left() + "; top:" + get_pix_top();
-  *out << cgicc::div().set("style", position.c_str()) << std::endl;
-
-  std::string js_command = "makeRequest('" + get_url() + "/" + "Request?RequestID=" + requestID + "')";
-  *out << cgicc::input().set("type", "button")
-    .set("value", name.c_str())
-    .set("onclick", js_command.c_str()) << std::endl;
-
-  *out << cgicc::div()   << std::endl;
-}
 
 #endif
