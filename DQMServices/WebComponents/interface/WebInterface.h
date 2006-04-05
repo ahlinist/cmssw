@@ -51,7 +51,9 @@ class WebInterface
 
   void handleRequest        (xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception);
   void handleStandardRequest(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception);
-  virtual void handleCustomRequest(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception) = 0;
+  virtual void handleCustomRequest(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception)
+    {
+    };
 
   // Answers requests by sending the webpage of the application
   virtual void Default(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception);
