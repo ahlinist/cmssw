@@ -27,7 +27,7 @@ namespace edm {
   class EventSetup;
   class ExternalInputSource;
   class GeneratedInputSource;
-  class GenericInputSource;
+  class EDInputSource;
   class Group;
   class InputSource;
   class InputSourceDescription;
