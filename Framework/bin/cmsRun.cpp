@@ -120,7 +120,15 @@ int main(int argc, char* argv[])
       }
   }
   catch (seal::Error& e) {
-      edm::LogError("FwkJob") << "Exception caught in " 
+      edm::LogError("FwkJob") << "seal::Exception caught in " 
+				<< kProgramName
+				<< "\n"
+				<< e.explainSelf();
+      rc = 1;
+      // TODO: Put 'job failure' report to JobSummary here
+  }
+  catch (cms::Exception& e) {
+      edm::LogError("FwkJob") << "cms::Exception caught in " 
 				<< kProgramName
 				<< "\n"
 				<< e.explainSelf();
