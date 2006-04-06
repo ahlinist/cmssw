@@ -79,7 +79,7 @@ public:
                if(0 == type2Maker_.get() || 
                    type2Maker_->end() == (itFoundMaker = type2Maker_->find(TypeIDBase(typeid(T))))) {
                       throw edm::Exception(edm::errors::NotFound,"Service Request") 
-                      <<" unable to find requested service";
+                      <<" unable to find requested service.\n";
                } else {
                   itFoundMaker->second.add(const_cast<ServicesManager&>(*this));
                   itFound = type2Service_.find(TypeIDBase(typeid(T)));
