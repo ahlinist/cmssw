@@ -11,10 +11,13 @@
 // Author:      Lindsey Gray
 // Created:     24.1.2005
 //
-// $Id: CSCTFTBFrontBlock.cc,v 1.4 2006/02/27 10:43:57 lgray Exp $
+// $Id: CSCTFTBFrontBlock.cc,v 1.5 2006/03/02 14:53:12 lgray Exp $
 //
 // Revision History
 // $Log: CSCTFTBFrontBlock.cc,v $
+// Revision 1.5  2006/03/02 14:53:12  lgray
+// Changed pretty print so I can log it.
+//
 // Revision 1.4  2006/02/27 10:43:57  lgray
 // Print changes.
 //
@@ -95,7 +98,7 @@
 // Constants, enums and typedefs
 
 // CVS-based strings (Id and Tag with which file was checked out)
-static const char* const kIdString  = "$Id: CSCTFTBFrontBlock.cc,v 1.4 2006/02/27 10:43:57 lgray Exp $";
+static const char* const kIdString  = "$Id: CSCTFTBFrontBlock.cc,v 1.5 2006/03/02 14:53:12 lgray Exp $";
 static const char* const kTagString = "$Name:  $";
 
 // Static data member definitions
@@ -156,22 +159,14 @@ CSCTFTBFrontData CSCTFTBFrontBlock::frontData(unsigned mpc,unsigned link )
 
 CSCCorrelatedLCTDigi CSCTFTBFrontBlock::frontDigiData(unsigned mpc, unsigned link) const
 {
-  CSCCorrelatedLCTDigi::PackedDigiType pd;
   mpc -= 1;
   link -= 1;
   if(srdata_[mpc].size() && (link < srdata_[mpc].size()))
     {
       CSCTFTBFrontData aFD = srdata_[mpc][link];
-      pd.trknmb = 0;
-      pd.quality = aFD.qualityPacked();
-      pd.keywire = aFD.wireGroupPacked();
-      pd.strip = aFD.stripPacked();
-      pd.pattern = aFD.patternPacked();
-      pd.bend = aFD.lrPacked();
-      pd.bx = myBX_;
-      pd.valid = frontHeader_.getVPBit(mpc + 1, link + 1);
-
-      return CSCCorrelatedLCTDigi(pd);
+      return CSCCorrelatedLCTDigi(0, frontHeader_.getVPBit(mpc + 1, link + 1), aFD.qualityPacked(), 
+				  aFD.wireGroupPacked(), aFD.stripPacked(),
+				  aFD.patternPacked(), aFD.lrPacked(), myBX_);
     }
   return CSCCorrelatedLCTDigi();
 }
