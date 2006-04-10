@@ -1,5 +1,6 @@
 <bin name="testBatchRoot" file="testBatchRoot.cpp">
- <use name=DataFormats/EGammaReco>
+ <use name=DataFormats/EgammaReco>
+ <use name=DataFormats/EgammaCandidates>
  <use name=DataFormats/MuonReco>
  <use name=DataFormats/VertexReco>
  <use name=DataFormats/TrackReco>
