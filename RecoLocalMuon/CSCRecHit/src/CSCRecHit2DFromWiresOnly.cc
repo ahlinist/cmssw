@@ -17,7 +17,7 @@ std::vector<CSCRecHit2D> CSCRecHit2DFromWiresOnly::run(
   for ( CSCWireDigiCollection::const_iterator it = rwired.first; it != rwired.second; ++it ) {
     CSCWireDigi wdigi = *it;
 
-    int channel = wdigi.channel();
+    int channel = wdigi.getWireGroup();
     LocalPoint lp = lg->localCenterOfWireGroup(channel);
     float lengthOfWireGroup = lg->lengthOfWireGroup(channel);
     float wireAngle = lg->wireAngle();
