@@ -94,6 +94,7 @@
 #include "FWCore/Framework/src/WorkerInPath.h"
 #include "FWCore/Framework/src/Path.h"
 #include "FWCore/Framework/interface/Actions.h"
+#include "FWCore/Framework/interface/TriggerNamesService.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/Framework/interface/EventPrincipal.h"
 #include "DataFormats/Common/interface/ProductRegistry.h"
@@ -125,6 +126,7 @@ namespace edm
     typedef std::vector<WorkerInPath> PathWorkers;
 
     Schedule(ParameterSet const& processDesc,
+	     edm::service::TriggerNamesService& tns,
 	     WorkerRegistry& wregistry,
 	     ProductRegistry& pregistry,
 	     ActionTable& actions,
