@@ -1,9 +1,9 @@
+<flags SEAL_PLUGIN_NAME="CalibCalorimetryEcalWeightsTools">
 <use name=clhep>
 <use name=root>
 <use name=FWCore/Framework>
 <use name=FWCore/ParameterSet>
 <use name=DataFormats/EcalDigi>
-<flags SEAL_PLUGIN_NAME="CalibCalorimetryEcalWeightsTools">
 <export>
    <lib name=CalibCalorimetryEcalWeightsTools>
    <use name=clhep>
