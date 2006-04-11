@@ -1,0 +1,7 @@
+<Flags SEAL_PLUGIN_NAME="SimG4CoreUtilityAction">
+<export>
+ <lib name=SimG4CoreUtilityAction>
+</export>
+<use name=FWCore/ParameterSet>
+<use name=Foundation/PluginManager>
+<use name=boost>
