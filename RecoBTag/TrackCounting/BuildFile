@@ -1,0 +1,11 @@
+<use name=FWCore/Framework>
+<use name=Foundation/PluginManager>
+<use name=FWCore/ParameterSet>
+<use name=DataFromat/Common>
+<flags SEAL_PLUGIN_NAME="RecoBTagTrackCounting">
+<export>
+   <lib name=RecoBTagTrackCounting>
+   <use name=FWCore/Framework>
+   <use name=Foundation/PluginManager>
+   <use name=FWCore/ParameterSet>
+</export>
