@@ -27,6 +27,7 @@
 #endif
 
 #include <limits> // For testing
+
 // user include files
 #include "FWCore/Services/src/EnableFloatingPointExceptions.h"
 
@@ -48,8 +49,17 @@ static float divideByZero(float zero)
 }
 static float useNan()
 {
-  float x = 1.0*std::numeric_limits<float>::quiet_NaN();
+  // libstd++ lies and says that intel doesn't have one of these so we do it ourselves
+  //float x = 1.0*std::numeric_limits<float>::quiet_NaN();
   
+  //union { unsigned int u; float f; } aNaN;
+  //aNaN.u = 0x7fc00000UL;
+  //we found out that propagating nans doesn't cause the exception so we'll do something
+  //that will generate a nan
+  union { unsigned int u; float f; } inf;
+  inf.u = 0x7f800000UL;
+  float x = 0.0*inf.f;
+
   return x;
 }
 static float generateOverFlow()
@@ -84,25 +94,25 @@ enableUnderFlowEx_(iPS.getUntrackedParameter<bool>("enableUnderFlowEx",false))
     {
       float y = divideByZero(0.0);
       throw edm::Exception(edm::errors::LogicError) <<"SIGFPE was not activated."
-       <<"When did test of a divide by zero we get the answer "<<y<<"\n  Please send email to the framework developers";
+       <<"While doing a test of divide by zero, we get the answer "<<y<<"\n  Please send email to the framework developers";
     }
     if(enableInvalidEx_)
     {
       float y = useNan();
       throw edm::Exception(edm::errors::LogicError) <<"SIGFPE was not activated."
-      <<"When did test of a divide by zero we get the answer "<<y<<"\n  Please send email to the framework developers";
+      <<"While doing a test of invalid arguements we get the answer "<<y<<"\n  Please send email to the framework developers";
     }
     if(enableOverFlowEx_)
     {
       float y = generateOverFlow();
       throw edm::Exception(edm::errors::LogicError) <<"SIGFPE was not activated."
-      <<"When did test of a divide by zero we get the answer "<<y<<"\n  Please send email to the framework developers";
+      <<"While doing a test of an overflow we get the answer "<<y<<"\n  Please send email to the framework developers";
     }
     if(enableUnderFlowEx_)
     {
       float y = generateUnderFlow();
       throw edm::Exception(edm::errors::LogicError) <<"SIGFPE was not activated."
-      <<"When did test of a divide by zero we get the answer "<<y<<"\n  Please send email to the framework developers";
+      <<"While doing a test of an underflow we get the answer "<<y<<"\n  Please send email to the framework developers";
     }
   }
 }
