@@ -120,7 +120,7 @@ class cmsconfig:
         return len(self.psdata['modules'])
 
     def numberOfOutputModules(self):
-        return len(self.getOutputModuleNames())
+        return len(self.outputModuleNames())
 
     def moduleNames(self):
         """Return the names of modules. Returns a list."""
@@ -133,6 +133,9 @@ class cmsconfig:
 
     def outputModuleNames(self):
         return self.psdata['output_modules']
+
+    def moduleNamesWithSecSources(self):
+        return self.psdata['modules_with_secsources']
 
     def esSourceNames(self):
         """Return the names of all ESSources. Names are of the form '<C++ type>@<label>' where
