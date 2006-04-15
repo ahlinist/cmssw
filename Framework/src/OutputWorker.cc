@@ -40,6 +40,7 @@ namespace edm {
 
   void 
   OutputWorker::implBeginJob(EventSetup const& es) {
+    mod_->selectProducts();
     mod_->beginJob(es);
   }
 

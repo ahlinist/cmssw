@@ -38,6 +38,7 @@ namespace edm {
     bool selected(BranchDescription const& desc) const;
 
     unsigned long nextID() const;
+    void selectProducts();
   private:
     unsigned long nextID_;
 
