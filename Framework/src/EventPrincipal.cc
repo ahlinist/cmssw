@@ -179,7 +179,9 @@ private:
     unsigned long slotNumber = i->second;
     assert(slotNumber < groups_.size());
 
-    return groups_[slotNumber];
+    SharedGroupPtr const& g = groups_[slotNumber];
+    this->resolve_(*g);
+    return g;
   }
 
   BasicHandle
@@ -193,7 +195,6 @@ private:
       throw edm::Exception(edm::errors::ProductNotFound,"InvalidID")
 	<< "get by product ID: no product with given id\n";
     }
-    this->resolve_(*g);
     return BasicHandle(g->product(), &g->provenance());
   }
 
