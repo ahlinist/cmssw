@@ -115,7 +115,7 @@ void  testProductRegistry:: testWatch(){
    // 1 from the 'float'
    // 1 from 'one' responding to the original call
    CPPUNIT_ASSERT(4*2==hear);
-   CPPUNIT_ASSERT(4 == reg.productList().size());
+   CPPUNIT_ASSERT(4 == reg.size());
 }
 void  testProductRegistry:: testCircular(){
    using namespace edm;
@@ -141,7 +141,7 @@ void  testProductRegistry:: testCircular(){
    // 1 from 'two' responding to the original call
    // 1 from 'one' responding to 'two'
    CPPUNIT_ASSERT(5*2==hear);
-   CPPUNIT_ASSERT(5 == reg.productList().size());
+   CPPUNIT_ASSERT(5 == reg.size());
 }
 
 void  testProductRegistry:: testProductRegistration(){
