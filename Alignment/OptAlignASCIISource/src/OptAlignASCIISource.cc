@@ -1,5 +1,5 @@
-#include "OpticalAlignment/OptAlignASCIISource/interface/OptAlignASCIISource.h"
-#include "OpticalAlignment/OptAlignASCIISource/interface/OptAlignCSCFileReader.h"
+#include "Alignment/OptAlignASCIISource/interface/OptAlignASCIISource.h"
+#include "Alignment/OptAlignASCIISource/interface/OptAlignCSCFileReader.h"
 
 #include "CondFormats/OptAlignObjects/interface/OpticalAlignments.h"
 #include "FWCore/Framework/interface/ExternalInputSource.h"

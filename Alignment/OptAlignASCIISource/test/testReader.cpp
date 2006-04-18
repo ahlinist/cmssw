@@ -11,7 +11,7 @@
 #include <vector>
 #include <map>
 #include <iostream>
-#include "OpticalAlignment/OptAlignASCIISource/interface/OptAlignCSCFileReader.h" 
+#include "Alignment/OptAlignASCIISource/interface/OptAlignCSCFileReader.h" 
 
 namespace std{} using namespace std;
 
