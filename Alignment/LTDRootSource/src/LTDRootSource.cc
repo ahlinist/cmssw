@@ -1,5 +1,5 @@
-#include "OpticalAlignment/LTDRootSource/interface/LTDRootSource.h"
-//#include "OpticalAlignment/LTDRootSource/interface/OptAlignCSCFileReader.h"
+#include "Alignment/LTDRootSource/interface/LTDRootSource.h"
+//#include "Alignment/LTDRootSource/interface/OptAlignCSCFileReader.h"
 
 #include "CondFormats/OptAlignObjects/interface/OpticalAlignments.h"
 #include "CondFormats/OptAlignObjects/interface/OAQuality.h"

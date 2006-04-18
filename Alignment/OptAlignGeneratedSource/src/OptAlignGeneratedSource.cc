@@ -1,4 +1,4 @@
-#include "OpticalAlignment/OptAlignGeneratedSource/interface/OptAlignGeneratedSource.h"
+#include "Alignment/OptAlignGeneratedSource/interface/OptAlignGeneratedSource.h"
 
 #include "CondFormats/OptAlignObjects/interface/XXXXMeasurements.h"
 #include "CondFormats/OptAlignObjects/interface/XXXXMeasurementInfo.h"

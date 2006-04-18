@@ -1,4 +1,4 @@
-#include "OpticalAlignment/OptAlignASCIISource/interface/OptAlignCSCFileReader.h"
+#include "Alignment/OptAlignASCIISource/interface/OptAlignCSCFileReader.h"
 
 #include "CondFormats/OptAlignObjects/interface/OpticalAlignments.h"
 
