@@ -74,6 +74,8 @@ namespace edm {
 
     void setRunNumber(RunNumber_t r) {setRun(r);}
 
+    void issueReports(EventID const&);
+
   protected:
 
     int maxEvents() const {return maxEvents_;}
@@ -89,6 +91,8 @@ namespace edm {
     int const maxEvents_;
 
     int remainingEvents_;
+
+    int readCount_;
 
     bool const unlimited_;
 
