@@ -14,21 +14,21 @@ calls the destructor which stops the clock.
 
 #include "boost/shared_ptr.hpp"
 #include "boost/scoped_ptr.hpp"
-#include "TStopwatch.h"
+#include "FWCore/Utilities/interface/CPUTimer.h"
 
 namespace edm {
 
   class RunStopwatch {
 
   public:
-    typedef boost::shared_ptr<TStopwatch> StopwatchPointer;
+    typedef boost::shared_ptr<CPUTimer> StopwatchPointer;
 
     RunStopwatch(const StopwatchPointer& ptr): stopwatch_(ptr) {
-      stopwatch_->Start(false);
+      stopwatch_->start();
     }
 
     ~RunStopwatch(){
-      stopwatch_->Stop();
+      stopwatch_->stop();
     }
 
   private:

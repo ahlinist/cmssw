@@ -54,7 +54,7 @@ namespace edm {
     void connect(ActivityRegistry::PreModule&, ActivityRegistry::PostModule&);
 
     std::pair<double,double> timeCpuReal() const {
-      return std::pair<double,double>(stopwatch_->CpuTime(),stopwatch_->RealTime());
+      return std::pair<double,double>(stopwatch_->cpuTime(),stopwatch_->realTime());
     }
 
     int timesRun() const { return timesRun_; }

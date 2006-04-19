@@ -57,7 +57,7 @@ namespace edm
     const std::string& name() const { return name_; }
 
     std::pair<double,double> timeCpuReal() const {
-      return std::pair<double,double>(stopwatch_->CpuTime(),stopwatch_->RealTime());
+      return std::pair<double,double>(stopwatch_->cpuTime(),stopwatch_->realTime());
     }
 
     std::pair<double,double> timeCpuReal(const unsigned int i) const {
