@@ -117,8 +117,7 @@ namespace edm
     typedef std::vector<std::string> vstring;
     typedef std::vector<Path> TrigPaths;
     typedef std::vector<Path> NonTrigPaths;
-    typedef TriggerResults::BitMask BitMask;
-    typedef boost::shared_ptr<BitMask> BitMaskPtr;
+    typedef boost::shared_ptr<HLTGlobalStatus> TrigResPtr;
     typedef boost::shared_ptr<Worker> WorkerPtr;
     typedef boost::shared_ptr<ActivityRegistry> ActivityRegistryPtr;
     typedef std::set<Worker*> AllWorkers;
@@ -148,7 +147,7 @@ namespace edm
   private:
     void resetWorkers();
     void fillWorkers(const std::string& name, PathWorkers& out);
-    bool fillTrigPath(int bitpos,const std::string& name, BitMaskPtr);
+    bool fillTrigPath(int bitpos,const std::string& name, TrigResPtr);
     void fillEndPath(int bitpos,const std::string& name);
     void handleWronglyPlacedModules();
 
@@ -166,12 +165,9 @@ namespace edm
     vstring end_path_name_list_;
     std::set<std::string> trig_name_set_;
 
-    BitMaskPtr results_;
-    int results_bit_count_;
-    BitMaskPtr nontrig_results_;
-    int nontrig_results_bit_count_;
-    BitMaskPtr endpath_results_;
-    int endpath_results_bit_count_;
+    TrigResPtr results_;
+    TrigResPtr nontrig_results_;
+    TrigResPtr endpath_results_;
 
     WorkerPtr results_inserter_;
     AllWorkers all_workers_;

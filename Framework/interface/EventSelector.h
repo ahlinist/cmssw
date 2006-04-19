@@ -20,10 +20,10 @@ namespace edm
   public:
     struct BitInfo
     {
-      BitInfo(int pos, bool state):pos_(pos),accept_state_(state) { }
+      BitInfo(unsigned int pos, bool state):pos_(pos),accept_state_(state) { }
       BitInfo():pos_(),accept_state_() { }
 
-      int pos_;
+      unsigned int pos_;
       bool accept_state_;
     };
 
