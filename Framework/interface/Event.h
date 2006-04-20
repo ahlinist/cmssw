@@ -106,13 +106,14 @@ namespace edm {
     // Private functions.
     //
     // commit() is called to complete the transaction represented by
-    // this Event. The friendship required seems gross, but any
+    // this Event. The friendships required seems gross, but any
     // alternative is not great either.  Putting it into the
     // public interface is asking for trouble
     void commit_();
-    friend class ProducerWorker;
     friend class ConfigurableInputSource;
     friend class RawInputSource;
+    friend class FilterWorker;
+    friend class ProducerWorker;
 
     // The following 'get' functions serve to isolate the Event class
     // from the EventPrincipal class.
