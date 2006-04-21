@@ -143,4 +143,4 @@ void FURawEventFactory::removeEvent(FURawEvent *ev)
 
 FUAdapter *FURawEventFactory::adapter_ = 0;
 
-int FURawEventFactory::maxHandles=64;
+int FURawEventFactory::maxHandles=128;
