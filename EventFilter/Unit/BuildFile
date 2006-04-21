@@ -1,10 +1,7 @@
 <export>
 <lib name=EventFilterUnit>
-<use name=xerces-c>
 <use name=xdaq>
 </export>
-<use name=xerces-c>
 <use name=boost>
-<use name=root>
 <use name=EventFilter/Utilities>
 <lib name=i2outils>
