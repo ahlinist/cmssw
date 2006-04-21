@@ -31,7 +31,7 @@ PythiaFilter::~PythiaFilter()
 //
 
 // ------------ method called to produce the data  ------------
-bool PythiaFilter::filter(const edm::Event& iEvent, const edm::EventSetup& iSetup)
+bool PythiaFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
    using namespace edm;
    bool accepted = false;

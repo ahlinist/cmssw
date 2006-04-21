@@ -15,7 +15,7 @@
 //
 // Original Author:  Filip Moortgat
 //         Created:  Mon Jan 23 14:57:54 CET 2006
-// $Id$
+// $Id: PythiaFilter.h,v 1.1 2006/01/30 18:09:50 fmoortga Exp $
 //
 //
 
@@ -46,7 +46,7 @@ class PythiaFilter : public edm::EDFilter {
       ~PythiaFilter();
 
 
-      virtual bool filter(const Event&, const EventSetup&);
+      virtual bool filter(Event&, const EventSetup&);
    private:
       // ----------member data ---------------------------
       
