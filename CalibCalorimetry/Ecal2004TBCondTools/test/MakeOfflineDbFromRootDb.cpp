@@ -112,7 +112,6 @@ int main (int argc, char **argv)
       usage();
     }
 
-  cout << "Ciao" << endl;
   if(verb) {
     cout << "*** h4rootdb: creating H4 ROOT run database: --> " 
 	 << outputFileName << endl;
@@ -199,7 +198,7 @@ int main (int argc, char **argv)
   }
 
 
-  EcalADCToGeVConstant* agc = new EcalADCToGeVConstant(0.0286);
+  EcalADCToGeVConstant* agc = new EcalADCToGeVConstant(0.0375);
 
 
 //   H4DBEntry *myAlignmentEntry
