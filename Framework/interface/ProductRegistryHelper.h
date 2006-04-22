@@ -47,7 +47,6 @@ namespace edm {
                              ProductRegistry& iReg,
                              bool iIsListener=false);
 
-  protected:
     /// declare what type of product will make and with which optional label 
     /** the statement
         \code
