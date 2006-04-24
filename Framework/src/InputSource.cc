@@ -101,4 +101,37 @@ namespace edm {
 			 << ", Event " << eventID.event();
       // At some point we may want to initiate checkpointing here
   }
+
+  std::auto_ptr<EventPrincipal>
+  InputSource::readIt(EventID const&) {
+      throw edm::Exception(edm::errors::LogicError)
+        << "InputSource::readIt()\n"
+        << "Random access is not implemented for this type of Input Source\n"
+        << "Contact a Framework Developer\n";
+  }
+
+  void
+  InputSource::setRun(RunNumber_t) {
+      throw edm::Exception(edm::errors::LogicError)
+        << "InputSource::setRun()\n"
+        << "Run number cannot be modified for this type of Input Source\n"
+        << "Contact a Framework Developer\n";
+  }
+
+  void
+  InputSource::skip(int) {
+      throw edm::Exception(edm::errors::LogicError)
+        << "InputSource::skip()\n"
+        << "Random access is not implemented for this type of Input Source\n"
+        << "Contact a Framework Developer\n";
+  }
+
+  void
+  InputSource::rewind_() {
+      throw edm::Exception(edm::errors::LogicError)
+        << "InputSource::rewind()\n"
+        << "Rewind is not implemented for this type of Input Source\n"
+        << "Contact a Framework Developer\n";
+  }
+
 }
