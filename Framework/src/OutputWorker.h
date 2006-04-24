@@ -20,10 +20,8 @@ $Id$
 
 namespace edm
 {
-  class ActionTable;
   class ModuleDescription;
   class OutputModule;
-  class ParameterSet;
   class WorkerParams;
 
   class OutputWorker : public Worker
