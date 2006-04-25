@@ -305,11 +305,20 @@ testeventprocessor::moduleFailureTest()
       }
       {
          const std::string configuration = preC +"3"+postC;
+         bool threw = true;
          edm::EventProcessor proc(configuration);
          
          proc.beginJob();
-
-         CPPUNIT_ASSERT(!(proc.endJob()));
+         try {
+            proc.endJob();
+            threw = false;
+         } catch(const cms::Exception& iException){
+            if(!findModuleName(iException.explainSelf())) {
+               std::cout <<iException.explainSelf()<<std::endl;
+               CPPUNIT_ASSERT(0 == "module name not in exception message");
+            }
+         }
+         CPPUNIT_ASSERT(threw && 0 != "exception never thrown");
       }
    } catch(const cms::Exception& iException) {
       std::cout <<"Unexpected exception "<<iException.explainSelf()<<std::endl;
