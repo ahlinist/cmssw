@@ -1,9 +1,11 @@
 
 <use name=clhep>
 <use name=Utilities/General>
+<use name=FWCore/ParameterSet>
 
 <export>
  <lib name=SimGeneralHepPDT>
  <use name=clhep>
  <use name=Utilities/General>
+ <use name=FWCore/ParameterSet>
 </export>

@@ -1,8 +1,8 @@
 // -----------------------------------------------------------------------------
 //  24.02.99 taken from http://www.thep.lu.se/~leif/CLHEP-PDT/
 // -----------------------------------------------------------------------------
-//  $Date: 2005/10/10 14:28:25 $
-//  $Revision: 1.2 $
+//  $Date: 2005/10/10 15:46:43 $
+//  $Revision: 1.3 $
 // -----------------------------------------------------------------------------
 // These are the implementations of the non-inlined memberfunctions
 // of class HepPDTable.
@@ -18,7 +18,9 @@
 #include "SimGeneral/HepPDT/interface/HepJetsetDummyHandler.h"
 #include "Utilities/General/interface/CMSexception.h"
 #include "Utilities/General/interface/ConfigurationDictionary.h"
-#include "Utilities/General/interface/FileInPath.h"
+#include "FWCore/ParameterSet/interface/FileInPath.h"
+#include "FWCore/Utilities/interface/EDMException.h"
+
 #include "Utilities/Notification/interface/pidInfo.h"
 
 #ifdef HEP_DEBUG_INLINE
@@ -134,15 +136,17 @@ HepPDTable::HepPDTable() {
   add(*(new HepAnyLightAntiQuarkMatcher));
 
   add(*(new HepJetsetDummyHandler));
-  std::string path(getenv("COBRA_DATA_PATH"));
-  FileInPath f1(path,"GeneratorData/HepPDT/particle_table");
-  if ( f1() == 0) {
-    std::cout << "File GeneratorData/HepPDT/particle_table not found in " << path << std::endl;
-    throw Genexception(" HepPDT particle list not found.");
-  } else {
-    std::cout << "Reading " << f1.name() << std::endl;
+  edm::FileInPath f1("SimGeneral/HepPDT/data/particle_table");
+  std::string absoluteFileName;
+  try {
+    absoluteFileName = f1.fullPath(); 
+    std::cout << "in try..." << f1.fullPath() << std::endl;
+  } catch ( const edm::Exception& e ) {
+    std::string msg = e.what();
+    msg += " caught in HepPDT... \nERROR: Could not locate SimGeneral/HepPDT/data/particle_table ";
+    std::cout << msg << std::endl;
   }
-  std::ifstream & ifile = *f1();
+  std::ifstream ifile(absoluteFileName.c_str(),std::ios::in);
   
   this->read(ifile);
 }
