@@ -12,6 +12,7 @@
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "FWCore/ParameterSet/interface/Registry.h"
 
 #include "FWCore/ParameterSet/interface/split.h"
 #include "FWCore/ParameterSet/interface/types.h"
@@ -402,4 +403,15 @@ namespace edm {
     }
   }
 
+  // Free function to return a parameterSet given its ID.
+  ParameterSet
+  getParameterSet(ParameterSetID const& id) {
+    ParameterSet result;
+    if(!pset::Registry::instance()->getParameterSet(id, result)) {
+        throw edm::Exception(errors::Configuration,"MissingParameterSet:")
+          << "Parameter Set ID '" << id
+          << "' not found.";
+    }
+    return result;
+  }
 } // namespace edm
