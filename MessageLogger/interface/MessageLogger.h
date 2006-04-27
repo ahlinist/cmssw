@@ -28,7 +28,6 @@
 #include "FWCore/MessageLogger/interface/MessageSender.h"
 #include "FWCore/MessageLogger/interface/MessageDrop.h"
 #include "FWCore/MessageLogger/interface/ErrorObj.h"
-#include "FWCore/MessageLogger/interface/MessageLoggerQ.h"
 
 namespace edm  {
 
@@ -107,10 +106,7 @@ onlyLowestDirectory(const std::string & file) {
   return file.substr(lastSlash+1, file.size()-lastSlash-1);
 }
 
-inline
-void LogStatistics() { 
-  edm::MessageLoggerQ::SUM ( ); // trigger summary info
-}
+void LogStatistics(); 
 
 class LogDebug_
 {
