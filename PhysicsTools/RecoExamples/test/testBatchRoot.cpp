@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cassert>
 #include <TROOT.h>
+#include <TSystem.h>
 #include <Cintex/Cintex.h>
 #include <TFile.h>
 #include <TTree.h>
@@ -8,28 +9,31 @@
 #include <TCanvas.h>
 #include <TH1.h>
 #include <vector>
-#include "DataFormats/TrackReco/interface/TrackExtra.h"
+#include "DataFormats/TrackReco/interface/Track.h"
+#include "PhysicsTools/FWLite/src/AutoLibraryLoader.h"
 using namespace std;
 using namespace reco;
-int main() {
-  ROOT::Cintex::Cintex::Enable();
 
-  TFile file("reco.root");
+int main() {
+  gSystem->Load( "libPhysicsToolsFWLite" );
+  AutoLibraryLoader::enable();
+
+  TFile file( "reco.root" );
   TTree * events = dynamic_cast<TTree*>( file.Get( "Events" ) );
   assert( events != 0 );
-  TBranch * branch = events->GetBranch( "TrackExtra_TrackExtras.obj" );
+  TBranch * branch = events->GetBranch( "recoTracks_trackp__RoadSearch.obj" );
   assert( branch != 0 );
 
-  TrackExtraCollection trkExtra;
-  branch->SetAddress( & trkExtra );
+  TrackCollection tracks;
+  branch->SetAddress( & tracks );
 
-  TH1F histo( "nofhits", "Number of hits", 21, -0.5, 20.5 );
+  TH1F histo( "pt", "Transverse momentum", 100, 0, 20 );
 
   int nev = events->GetEntries();
   for( int ev = 0; ev < nev; ++ ev ) {
     branch->GetEntry( ev );
-    for( size_t i = 0; i < trkExtra.size(); ++i ) {
-      histo.Fill( trkExtra[ i ].recHitsSize() );
+    for( size_t i = 0; i < tracks.size(); ++i ) {
+      histo.Fill( tracks[ i ].pt() );
     }
   }
   file.Close();
@@ -41,7 +45,7 @@ int main() {
   gROOT->SetStyle("Plain");
   TCanvas c;
   histo.Draw();
-  c.SaveAs( "hits.jpg" );
+  c.SaveAs( "pt.jpg" );
 
   return 0;
 }
