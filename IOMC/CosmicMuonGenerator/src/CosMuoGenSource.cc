@@ -32,13 +32,13 @@ CosMuoGenSource::CosMuoGenSource( const ParameterSet & pset, InputSourceDescript
     CosMuoGen->setElossScaleFactor(ELSF);
     CosMuoGen->initialize();
     produces<HepMCProduct>();
-    fEvt = new HepMC::GenEvent();
+    //  fEvt = new HepMC::GenEvent();
   }
 
 CosMuoGenSource::~CosMuoGenSource(){
   CosMuoGen->terminate();
   delete CosMuoGen;
-  delete fEvt;
+  //  delete fEvt;
   clear();
 }
 
@@ -50,7 +50,7 @@ bool CosMuoGenSource::produce(Event &e)
   CosMuoGen->nextEvent();
 
   // delete and re-create fEvt (memory)
-  delete fEvt;
+  // delete fEvt;
   fEvt = new HepMC::GenEvent();
   HepMC::GenVertex* Vtx = new  HepMC::GenVertex(CLHEP::HepLorentzVector(CosMuoGen->OneMuoEvt.vx(),
                                                                         CosMuoGen->OneMuoEvt.vy(),
@@ -69,7 +69,6 @@ bool CosMuoGenSource::produce(Event &e)
   auto_ptr<HepMCProduct> CMProduct(new HepMCProduct());
   CMProduct->addHepMCData( fEvt );
   e.put(CMProduct);
-     
   return true;
 }
 
