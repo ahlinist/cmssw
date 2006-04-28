@@ -94,13 +94,9 @@ $Id$
 #include "FWCore/Framework/src/Group.h"
 #include "FWCore/Framework/interface/TypeID.h"
 
+#include "FWCore/Framework/interface/Frameworkfwd.h"
+
 namespace edm {
-  class EventPrincipal;
-  class LuminositySection;
-  class ModuleDescription;
-  class Provenance;
-  class Run;
-  class Selector;
 
   class Event
   {

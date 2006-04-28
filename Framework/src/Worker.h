@@ -50,7 +50,8 @@ namespace edm {
     void endJob();
     void reset() { state_ = Ready; }
     
-    const ModuleDescription& description() const {return md_;}
+    ModuleDescription const & description() const {return md_;}
+    ModuleDescription const * descPtr() const {return &md_; }
     void connect(ActivityRegistry::PreModule&, ActivityRegistry::PostModule&);
 
     std::pair<double,double> timeCpuReal() const {

@@ -43,6 +43,7 @@ namespace edm {
   class RawInputSource;
   class Run;
   class RunHandler;
+  class Schedule;
   class Selector;
   class TypeID;
   class VectorInputSource;
