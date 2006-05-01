@@ -68,22 +68,24 @@ void testeventprocessor::parseTest()
 {
   int rc = -1;                // we should never return this value!
   try { work(); rc = 0;}
-  catch (seal::Error& e)
-    {
+  catch (cms::Exception& e) {
+      std::cerr << "cms exception caught: "
+		<< e.explainSelf() << std::endl;
+      CPPUNIT_ASSERT("Caught cms::Exception " == 0);
+  }
+  catch (seal::Error& e) {
       std::cerr << "Application exception caught: "
 		<< e.explainSelf() << std::endl;
       CPPUNIT_ASSERT("Caught seal::Error " == 0);
-    }
-  catch (std::exception& e)
-    {
+  }
+  catch (std::exception& e) {
       std::cerr << "Standard library exception caught: "
 		<< e.what() << std::endl;
       CPPUNIT_ASSERT("Caught std::exception " == 0);
-    }
-  catch (...)
-    {
+  }
+  catch (...) {
       CPPUNIT_ASSERT("Caught unknown exception " == 0);
-    }
+  }
 }
 
 static int g_pre = 0;

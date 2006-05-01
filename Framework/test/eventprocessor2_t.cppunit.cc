@@ -48,22 +48,24 @@ void testeventprocessor2::eventprocessor2Test()
 {
   /*try { work(); rc = 0;}
   int rc = -1;                // we should never return this value!
-  catch (seal::Error& e)
-    {
+  catch (cms::Exception& e) {
+      std::cerr << "CMS exception caught: "
+		<< e.explainSelf() << std::endl;
+      rc = 1;
+  }
+  catch (seal::Error& e) {
       std::cerr << "Application exception caught: "
 		<< e.explainSelf() << std::endl;
       rc = 1;
-    }
-  catch (std::runtime_error& e)
-    {
+  }
+  catch (std::runtime_error& e) {
       std::cerr << "Standard library exception caught: "
 		<< e.what() << std::endl;
       rc = 1;
-    }
-  catch (...)
-    {
+  }
+  catch (...) {
       std::cerr << "Unknown exception caught" << std::endl;
       rc = 2;
-    }
+  }
   return rc;*/
 }

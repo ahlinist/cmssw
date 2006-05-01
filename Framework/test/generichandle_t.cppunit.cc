@@ -127,7 +127,7 @@ void testGenericHandle::getbyLabelTest() {
   }
   catch (cms::Exception& x) {
     std::cerr << x.explainSelf()<< std::endl;
-    CPPUNIT_ASSERT("Threw exception unexpectedly" == 0);
+    CPPUNIT_ASSERT("Threw cms::Exception unexpectedly" == 0);
   }
   catch(seal::Error& x){
      std::cerr <<x.explainSelf()<<std::endl;
