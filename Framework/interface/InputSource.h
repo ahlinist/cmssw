@@ -87,12 +87,8 @@ namespace edm {
     /// issue an event report
     void issueReports(EventID const&);
 
-    /// Set the module description,
-    /// and register any products to be created.
-    // FIX THIS:  The module description should be
-    // set at construction time by being contained 
-    // the input source description.
-    void addToRegistry(ModuleDescription const& md);
+    /// Register any produced products
+    void registerProducts();
 
     /// Accessor for product registry.
     ProductRegistry & productRegistry() const {return *preg_;}
@@ -144,9 +140,6 @@ namespace edm {
 
     // A pointer to the ProductRegistry;
     ProductRegistry * preg_;
-
-    // The process name we add to each EventPrincipal.
-    std::string const process_;
   };
 }
 

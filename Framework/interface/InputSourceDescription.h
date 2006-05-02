@@ -9,23 +9,21 @@ input source that does not come in through the ParameterSet
 $Id$
 ----------------------------------------------------------------------*/
 #include <string>
-#include "DataFormats/Common/interface/PassID.h"
+#include "DataFormats/Common/interface/ModuleDescription.h"
 
 namespace edm {
   class ProductRegistry;
 
   struct InputSourceDescription {
-    InputSourceDescription() : processName_(), pass(), preg_(0) { }
-    InputSourceDescription(std::string const& name, PassID pid, 
+    InputSourceDescription() : module_(), preg_(0) { }
+    InputSourceDescription(ModuleDescription & md,
 			    ProductRegistry& preg) :
-      processName_(name),
-      pass(pid),
+      module_(md),
       preg_(&preg)
 	 
     {}
 
-    std::string const processName_;
-    PassID      pass;
+    ModuleDescription module_;
     ProductRegistry * preg_;
   };
 }
