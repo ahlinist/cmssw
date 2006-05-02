@@ -184,6 +184,14 @@ namespace edm {
     /// which have been passed by one or more trigger paths.
     int totalEventsPassed() const;
 
+    /// Turn end_paths "off" if "active" is false;
+    /// turn end_paths "on" if "active" is true.
+    void enableEndPaths(bool active);
+
+    /// Return true if end_paths are active, and false if they are
+    /// inactive.
+    bool endPathsEnabled() const;
+
     //------------------------------------------------------------------
     //
     // Data members (and nested classes and structs) below.
