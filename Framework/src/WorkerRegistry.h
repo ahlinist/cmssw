@@ -48,9 +48,12 @@ namespace edm {
         create it
         @note Workers are owned by this class, do not delete them*/
     Worker*  getWorker(const WorkerParams&);
+    void clear();
     
   private:
-     
+    // Disable Assignment and copy construction
+    WorkerRegistry(const WorkerRegistry&);         // not implemented
+    void operator=(const WorkerRegistry&) const;   // not implemented
   
     /// Get a unique name for the worker
     /** Form a string to be used as a key in the map of workers */
@@ -60,7 +63,7 @@ namespace edm {
 				       unsigned long pass);
 
     /// the container of workers
-    typedef std::map<std::string, Worker*> WorkerMap;
+    typedef std::map<std::string, boost::shared_ptr<Worker> > WorkerMap;
 
     /// internal map of registered workers (owned). 
     WorkerMap m_workerMap;

@@ -31,12 +31,12 @@ WorkerRegistry::WorkerRegistry(boost::shared_ptr<ActivityRegistry> areg):
 }
 
 WorkerRegistry:: ~WorkerRegistry(){
-
-  for (WorkerMap::iterator workerIt = m_workerMap.begin();
-	 workerIt != m_workerMap.end() ; ++ workerIt)
-    delete workerIt->second;
+  m_workerMap.clear();
 }
 
+void WorkerRegistry::clear() {
+  m_workerMap.clear();
+}
 
 Worker* WorkerRegistry::getWorker(const WorkerParams& p) {
 
@@ -55,14 +55,13 @@ Worker* WorkerRegistry::getWorker(const WorkerParams& p) {
     
     workerPtr->connect(act_reg_->preModuleSignal_,act_reg_->postModuleSignal_);
 
-    Worker* w =  workerPtr.get(); // take ownership
-    m_workerMap[workerid] = w;
-    workerPtr.release();
-    return w;
+    // Transfer ownership of worker to the registry 
+    m_workerMap[workerid] = boost::shared_ptr<Worker>(workerPtr.release());
+    return m_workerMap[workerid].get();
     
   } 
   
-  return  (workerIt->second);
+  return  (workerIt->second.get());
 
 }
 
