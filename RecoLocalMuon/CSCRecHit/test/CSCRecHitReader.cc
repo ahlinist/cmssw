@@ -40,12 +40,13 @@ using namespace edm;
 // Constructor
 CSCRecHitReader::CSCRecHitReader(const ParameterSet& pset){
   // Get the debug parameter for verbose output
-  debug = pset.getUntrackedParameter<bool>("debug");
-  rootFileName = pset.getUntrackedParameter<string>("rootFileName");
-  simHitLabel = pset.getUntrackedParameter<string>("simHitLabel");
-  recHitLabel = pset.getUntrackedParameter<string>("recHitLabel");
+  debug            = pset.getUntrackedParameter<bool>("debug");
+  rootFileName     = pset.getUntrackedParameter<string>("rootFileName");
+  simHitLabel      = pset.getUntrackedParameter<string>("simHitLabel");
+  recHitLabel      = pset.getUntrackedParameter<string>("recHitLabel");
   minRechitChamber = pset.getUntrackedParameter<int>("minRechitPerChamber");
   maxRechitChamber = pset.getUntrackedParameter<int>("maxRechitPerChamber");
+  WhichEndCap      = pset.getUntrackedParameter<int>("WhichEndCap");
   
   if(debug) cout << "[CSCRecHitReader] Constructor called" << endl;
   
@@ -54,16 +55,16 @@ CSCRecHitReader::CSCRecHitReader(const ParameterSet& pset){
   theFile->cd();
   
   // Book the histograms
-  hRHPAll  = new H1DRecHit("ME_All");
-  hRHPME1a = new H1DRecHit("ME_1_a");  // Innermost ME 1
-  hRHPME11 = new H1DRecHit("ME_1_1");
-  hRHPME12 = new H1DRecHit("ME_1_2");
-  hRHPME13 = new H1DRecHit("ME_1_3");
-  hRHPME21 = new H1DRecHit("ME_2_1");
-  hRHPME22 = new H1DRecHit("ME_2_2");
-  hRHPME31 = new H1DRecHit("ME_3_1");
-  hRHPME32 = new H1DRecHit("ME_3_2");
-  hRHPME4  = new H1DRecHit("ME_4");
+  hRHPAll  = new H2DRecHit("ME_All");
+  hRHPME1a = new H2DRecHit("ME_1_a");  // Innermost ME 1
+  hRHPME1b = new H2DRecHit("ME_1_b");
+  hRHPME12 = new H2DRecHit("ME_1_2");
+  hRHPME13 = new H2DRecHit("ME_1_3");
+  hRHPME21 = new H2DRecHit("ME_2_1");
+  hRHPME22 = new H2DRecHit("ME_2_2");
+  hRHPME31 = new H2DRecHit("ME_3_1");
+  hRHPME32 = new H2DRecHit("ME_3_2");
+  hRHPME4  = new H2DRecHit("ME_4");
 }
 
 // Destructor
@@ -75,7 +76,7 @@ CSCRecHitReader::~CSCRecHitReader(){
   theFile->cd();
   hRHPAll ->Write();
   hRHPME1a->Write();
-  hRHPME11->Write();
+  hRHPME1b->Write();
   hRHPME12->Write();
   hRHPME13->Write();
   hRHPME21->Write();
@@ -143,12 +144,13 @@ void CSCRecHitReader::analyze(const Event & event, const EventSetup& eventSetup)
 	// Find chamber where simhit is located
 	CSCDetId id = (CSCDetId)(*simIt).detUnitId();
 	
-	// Matching chamber (sim/reco) ?
+	// Matching chamber (sim/reco) ?  Also test if it's in the right EndCap: both/1/2
 	if ((idrec.endcap() == id.endcap()) &&
 	    (idrec.ring() == id.ring()) &&
 	    (idrec.station() == id.station()) &&
 	    (idrec.chamber() == id.chamber()) &&
-	    (idrec.layer() == id.layer())) {
+	    (idrec.layer() == id.layer()) && 
+	    ((idrec.endcap() == WhichEndCap) || WhichEndCap == 0)) {    
 	  
 	  found_match = true;  // found at least one match in chambers...
 	  
@@ -185,14 +187,18 @@ void CSCRecHitReader::analyze(const Event & event, const EventSetup& eventSetup)
       float grecphi = rhitglobal.phi();
       float grecx = rhitglobal.x();
       float grecy = rhitglobal.y();
-      float grecr = sqrt(grecx*grecx + grecy*grecy); // No .r() in GlobalPoint?
+      float greceta = rhitglobal.eta();
+      float grecr = sqrt(grecx*grecx + grecy*grecy); // No .r() or .mag() in GlobalPoint?
       
       GlobalPoint shitglobal= csclayer->toGlobal(shitlocal);
       float gsimphi = shitglobal.phi();
+      float gsimeta = shitglobal.eta();
       //    float gsimx = shitglobal.x();
       //    float gsimy = shitglobal.y();
       
       
+      float deta = greceta -  gsimeta; 
+
       float PI = 3.1415927;
       float PIneg = -1 * PI;
 
@@ -214,67 +220,63 @@ void CSCRecHitReader::analyze(const Event & event, const EventSetup& eventSetup)
 	cout << "Delta phi (global)      : " << dphi    << " rads " << endl;
 	cout << "R cylindrical (global)  : " << grecr   << " cm   " << endl;
 	cout << "R x Delta Phi (global)  : " << rdphi   << " cm   " << endl;
+	cout << "Delta eta (global)      : " << deta    << "      " << endl;
 
       }
 
-
       // Fill the histos
-      H1DRecHit *histo = 0;
+      H2DRecHit *histo = 0;
       histo = hRHPAll;
-      histo->Fill(xreco, yreco, xsimu, ysimu, rdphi);
-      
-
-      
-      
+      histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, rdphi, greceta, gsimeta, deta);
+                
       if (!debug) {
-      // if (idrec.endcap() == 1) // --> won't worry about +/- Z for now. 
       
       // Look at ME type first then determine inner/outer ring
       if (idrec.station() == 1) {
 	if (idrec.ring() == 1) {
 	  histo = hRHPME12;
-	  histo->Fill(xreco, yreco, xsimu, ysimu, rdphi);
+	  histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, rdphi, greceta, gsimeta, deta);
 	}
 	if (idrec.ring() == 2) {
 	  histo = hRHPME13;
-	  histo->Fill(xreco, yreco, xsimu, ysimu, rdphi);
+	  histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, rdphi, greceta, gsimeta, deta);
 	}
 	if (idrec.ring() == 3) {
-	  histo = hRHPME11;
-	  histo->Fill(xreco, yreco, xsimu, ysimu, rdphi);
+	  histo = hRHPME1b;
+	  histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, rdphi, greceta, gsimeta, deta);
 	}
 	if (idrec.ring() == 4) {
 	  histo = hRHPME1a;
-	  histo->Fill(xreco, yreco, xsimu, ysimu, rdphi);
+	  histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, rdphi, greceta, gsimeta, deta);
 	}
       }
       if (idrec.station() == 2) {
 	if (idrec.ring() == 1) {
 	  histo = hRHPME21;
-	  histo->Fill(xreco, yreco, xsimu, ysimu, rdphi);
+	  histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, rdphi, greceta, gsimeta, deta);
 	}
 	if (idrec.ring() == 2) {
 	  histo = hRHPME22;
-	  histo->Fill(xreco, yreco, xsimu, ysimu, rdphi);
+	  histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, rdphi, greceta, gsimeta, deta);
 	}
       }
       if (idrec.station() == 3) {
 	if (idrec.ring() == 1) {
 	  histo = hRHPME31;
-	  histo->Fill(xreco, yreco, xsimu, ysimu, rdphi);
+	  histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, rdphi, greceta, gsimeta, deta);
 	}
 	if (idrec.ring() == 2) {
 	  histo = hRHPME32;
-	  histo->Fill(xreco, yreco, xsimu, ysimu, rdphi);
+	  histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, rdphi, greceta, gsimeta, deta);
 	}
       }
       if (idrec.station() == 4) {
 	histo = hRHPME4;
-	histo->Fill(xreco, yreco, xsimu, ysimu, rdphi);
-	if (idrec.ring() == 2) cout << " invalid chamber !!! ";
+	histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, rdphi, greceta, gsimeta, deta);
+	if (idrec.ring() != 1) cout << " invalid ring in ME 4 !!! ";
       }
             }
-      if (debug) cout << "Done filling the histograms !!! " << endl;
+      if (debug) cout << "When debugging, you do not fill histograms !!! " << endl;
     }
   }
 }

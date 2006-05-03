@@ -55,16 +55,16 @@ protected:
 private: 
 
   // Histograms
-  H1DRecHit *hRHPAll;
-  H1DRecHit *hRHPME1a;
-  H1DRecHit *hRHPME11;
-  H1DRecHit *hRHPME12;
-  H1DRecHit *hRHPME13;
-  H1DRecHit *hRHPME21;
-  H1DRecHit *hRHPME22;
-  H1DRecHit *hRHPME31;
-  H1DRecHit *hRHPME32;
-  H1DRecHit *hRHPME4;
+  H2DRecHit *hRHPAll;
+  H2DRecHit *hRHPME1a;
+  H2DRecHit *hRHPME1b;
+  H2DRecHit *hRHPME12;
+  H2DRecHit *hRHPME13;
+  H2DRecHit *hRHPME21;
+  H2DRecHit *hRHPME22;
+  H2DRecHit *hRHPME31;
+  H2DRecHit *hRHPME32;
+  H2DRecHit *hRHPME4;
 
 
   // The file which will store the histos
@@ -77,7 +77,7 @@ private:
   std::string recHitLabel;
   int minRechitChamber;
   int maxRechitChamber;
-
+  int WhichEndCap;
 
 };
 
