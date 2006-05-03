@@ -37,6 +37,7 @@ public:
    
    static bool beginJobCalled;
    static bool endJobCalled;
+   static bool destructorCalled;
 private:
       // ----------member data ---------------------------
 };

@@ -59,6 +59,7 @@ TestBeginEndJobAnalyzer::~TestBeginEndJobAnalyzer()
  
    // do anything here that needs to be done at desctruction time
    // (e.g. close files, deallocate resources etc.)
+   destructorCalled = true;
 
 }
 
@@ -71,6 +72,9 @@ TestBeginEndJobAnalyzer::beginJobCalled = false;
 
 bool
 TestBeginEndJobAnalyzer::endJobCalled = false;
+
+bool
+TestBeginEndJobAnalyzer::destructorCalled = false;
 
 // ------------ method called to produce the data  ------------
 void 
