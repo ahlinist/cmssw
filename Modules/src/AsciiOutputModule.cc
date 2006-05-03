@@ -45,7 +45,7 @@ namespace edm {
     // ... list of process-names
     std::copy(e.beginProcess(),
 	      e.endProcess(),
-	      std::ostream_iterator<EventPrincipal::ProcessNameList::value_type>(*pout_, " "));
+	      std::ostream_iterator<ProcessNameList::value_type>(*pout_, " "));
 
     // ... collision id
     *pout_ << '\n' << e.id() << '\n';
