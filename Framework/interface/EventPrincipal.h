@@ -50,7 +50,6 @@ namespace edm {
   public:
     typedef std::vector<boost::shared_ptr<Group> > GroupVec;
     typedef GroupVec::const_iterator               const_iterator;
-    typedef std::vector<std::string>               ProcessNameList;
     typedef ProcessNameList::const_iterator        ProcessNameConstIterator;
     typedef boost::shared_ptr<Group>               SharedGroupPtr;
     typedef std::vector<BasicHandle>               BasicHandleVec;
