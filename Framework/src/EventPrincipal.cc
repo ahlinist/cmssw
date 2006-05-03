@@ -133,7 +133,15 @@ private:
 
   void
   EventPrincipal::addToProcessHistory(string const& processName) {
-    aux_.process_history_.push_back(processName);
+    ProcessNameList& ph = aux_.process_history_;
+#if 0
+    if (find(ph.begin(), ph.end(), processName) != ph.end()) {
+      throw edm::Exception(errors::Configuration, "Duplicate Process")
+        << "The process name " << processName << " was previously used on these events.\n"
+        << "Please modify the configuration file to use a distinct process name.";
+    }
+#endif
+    ph.push_back(processName);
   }
 
   ProcessNameList const&
