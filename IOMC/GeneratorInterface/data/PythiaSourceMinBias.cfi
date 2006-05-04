@@ -20,7 +20,6 @@ include "IOMC/GeneratorInterface/data/pythiaDefault.cff"
 
 
     vstring pythiaMinBias = {
-      'MRPY(1)=-1     ! Random initizaliation (negative=really random)',
       'MSEL=0         ! User defined processes',
       'MSUB(11)=1     ! Min bias process',
       'MSUB(12)=1     ! Min bias process',
