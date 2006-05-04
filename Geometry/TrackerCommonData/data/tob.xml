@@ -12,11 +12,11 @@
  <Constant name="Zv3"            value="2.820*m"/>
  <Constant name="RailL"          value="1.100*m"/>
  <Constant name="RailInR"        value="0.300*cm"/>
- <Constant name="RailInX"        value="1.17673*m"/>
- <Constant name="RailInY"        value="2.506*cm"/>
+ <Constant name="RailInX"        value="54.433*cm"/>
+ <Constant name="RailInY"        value="2.700*cm"/>
  <Constant name="RailOutR"       value="0.500*cm"/>
- <Constant name="RailOutX"       value="54.433*cm"/>
- <Constant name="RailOutY"       value="2.700*cm"/>
+ <Constant name="RailOutX"       value="1.17673*m"/>
+ <Constant name="RailOutY"       value="2.506*cm"/>
  <Constant name="AlPieceR0"      value="1.161*m"/>
  <Constant name="AlPieceR1"      value="1.164*m"/>
  <Constant name="AlPieceR2"      value="1.182*m"/>
