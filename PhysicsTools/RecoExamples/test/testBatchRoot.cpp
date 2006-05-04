@@ -21,7 +21,7 @@ int main() {
   TFile file( "reco.root" );
   TTree * events = dynamic_cast<TTree*>( file.Get( "Events" ) );
   assert( events != 0 );
-  TBranch * branch = events->GetBranch( "recoTracks_trackp__RoadSearch.obj" );
+  TBranch * branch = events->GetBranch( "recoTracks_trackp_tracks_RoadSearch.obj" );
   assert( branch != 0 );
 
   TrackCollection tracks;
