@@ -16,6 +16,7 @@
 <use name=MagneticField/Records>
 <use name=FWCore/Framework>
 <use name=FWCore/ParameterSet>
+<use name=root>
 <export>
   <lib name=PhysicsToolsRecoExamples>
   <use name=TrackingTools/GeomPropagators>
@@ -35,4 +36,5 @@
   <use name=MagneticField/Records>
   <use name=FWCore/Framework>
   <use name=FWCore/ParameterSet>
+  <use name=root>
 </export>
