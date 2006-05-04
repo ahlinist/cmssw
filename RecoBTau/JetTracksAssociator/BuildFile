@@ -1,0 +1,12 @@
+<use name=FWCore/Framework>
+<use name=Foundation/PluginManager>
+<use name=FWCore/ParameterSet>
+<use name=rootrflx>
+<flags SEAL_PLUGIN_NAME="RecoBTagJetTracksAssociation">
+<export>
+   <lib name=RecoBTagJetTracksAssociation>
+   <use name=FWCore/Framework>
+   <use name=Foundation/PluginManager>
+   <use name=FWCore/ParameterSet>
+   <use name=rootrflx>
+</export>
