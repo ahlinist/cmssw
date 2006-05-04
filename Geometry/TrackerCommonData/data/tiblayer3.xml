@@ -60,6 +60,8 @@
   <Numeric name="DOHMAUXWidth"            value="[tiblayerpar:DOHM_AUX_W]"/>
   <Numeric name="DOHMAUXLength"           value="[tiblayerpar:DOHM_AUX_L]"/>
   <Numeric name="DOHMAUXThickness"        value="[tiblayerpar:DOHM_AUX_T]"/>
+  <String name="DOHMRotstrPlus"           value="tiblayerpar:NULL"/>
+  <String name="DOHMRotstrMinus"          value="tiblayerpar:D180"/>
 </Algorithm>
 
 </DDDefinition>

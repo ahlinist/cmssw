@@ -26,4 +26,9 @@
  <Constant name="DOHM_AUX_T"     value="1.8*mm"/>
 </ConstantsSection>
 
+<RotationSection label="tiblayerpar.xml">
+ <Rotation name="D180" thetaX="90*deg"      phiX="0*deg"        thetaY="90*deg"
+                       phiY="270*deg"       thetaZ="180*deg"    phiZ="0*deg" />
+</RotationSection>
+
 </DDDefinition>
