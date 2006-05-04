@@ -1,6 +1,6 @@
 /*
- *  $Date: 2006/03/02 14:00:00 $
- *  $Revision: 1.15 $
+ *  $Date: 2006/03/03 11:05:21 $
+ *  $Revision: 1.16 $
  *  
  *  Filip Moorgat & Hector Naves 
  *  26/10/05
@@ -12,6 +12,9 @@
 #include "IOMC/GeneratorInterface/interface/PythiaSource.h"
 #include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
 #include "FWCore/Framework/interface/Event.h"
+#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "FWCore/Utilities/interface/RandomNumberGenerator.h"
+
 #include <iostream>
 #include "time.h"
 
@@ -44,51 +47,66 @@ PythiaSource::PythiaSource( const ParameterSet & pset,
 {
   
   cout << "PythiaSource: initializing Pythia. " << endl;
-
+  
   // Verbosity
   pythiaVerbosity_ = pset.getUntrackedParameter<bool>("pythiaVerbosity",false);
   cout << "Pythia verbosity = " << pythiaVerbosity_ << endl;
-
+  
   // Set PYTHIA parameters in a single ParameterSet
   ParameterSet pythia_params = 
     pset.getParameter<ParameterSet>("PythiaParameters") ;
-
-// The parameter sets to be read (default, min bias, user ...) in the
-// proper order.
+  
+  // The parameter sets to be read (default, min bias, user ...) in the
+  // proper order.
   vector<string> setNames = 
     pythia_params.getParameter<vector<string> >("parameterSets");
-
+  
   // Loop over the sets
   for ( unsigned i=0; i<setNames.size(); ++i ) {
     
     string mySet = setNames[i];
-
+    
     // Read the PYTHIA parameters for each set of parameters
     vector<string> pars = 
       pythia_params.getParameter<vector<string> >(mySet);
-
+    
     cout << "----------------------------------------------" << endl;
     cout << "Read PYTHIA parameter set " << mySet << endl;
     cout << "----------------------------------------------" << endl;
-
+    
     // Loop over all parameters and stop in case of mistake
     for( vector<string>::const_iterator  
 	   itPar = pars.begin(); itPar != pars.end(); ++itPar ) {
+      static string sRandomValueSetting("MRPY(1)");
+      if( 0 == itPar->compare(0,sRandomValueSetting.size(),sRandomValueSetting) ) {
+	throw edm::Exception(edm::errors::Configuration,"PythiaError")
+	  <<" attempted to set random number using pythia command 'MRPY(1)' this is not allowed.\n  Please use the RandomNumberGeneratorService to set the random number seed.";
+      }
       if( ! call_pygive(*itPar) ) {
 	throw edm::Exception(edm::errors::Configuration,"PythiaError") 
 	  <<" pythia did not accept the following \""<<*itPar<<"\"";
       }
     }
   }
-
+  
+  //In the future, we will get the random number seed on each event and tell 
+  // pythia to use that new seed
+    cout << "----------------------------------------------" << endl;
+    cout << "Setting Pythia random number seed " << endl;
+    cout << "----------------------------------------------" << endl;
+  edm::Service<RandomNumberGenerator> rng;
+  uint32_t seed = rng->mySeed();
+  ostringstream sRandomSet;
+  sRandomSet <<"MRPY(1)="<<seed;
+  call_pygive(sRandomSet.str());
 
   call_pyinit( "CMS", "p", "p", 14000. );
   cout << endl; // Stetically add for the output
   //********                                      
-
+  
   produces<HepMCProduct>();
   cout << "PythiaSource: starting event generation ... " << endl;
- }
+}
 
 
 PythiaSource::~PythiaSource(){
