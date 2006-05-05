@@ -75,8 +75,10 @@ private:
   std::string rootFileName;
   std::string simHitLabel;
   std::string recHitLabel;
-  int minRechitChamber;
-  int maxRechitChamber;
+  double maxRechitDistance;
+  int maxRechitLayer;
+  int maxRechitLayerGanged;
+
   int WhichEndCap;
 
 };
