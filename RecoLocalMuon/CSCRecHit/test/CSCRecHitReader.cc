@@ -44,9 +44,13 @@ CSCRecHitReader::CSCRecHitReader(const ParameterSet& pset){
   rootFileName     = pset.getUntrackedParameter<string>("rootFileName");
   simHitLabel      = pset.getUntrackedParameter<string>("simHitLabel");
   recHitLabel      = pset.getUntrackedParameter<string>("recHitLabel");
-  minRechitChamber = pset.getUntrackedParameter<int>("minRechitPerChamber");
-  maxRechitChamber = pset.getUntrackedParameter<int>("maxRechitPerChamber");
+  maxRechitDistance = pset.getUntrackedParameter<double>("maxRechitDistance");
+  maxRechitLayer = pset.getUntrackedParameter<int>("maxRechitPerLayer");
   WhichEndCap      = pset.getUntrackedParameter<int>("WhichEndCap");
+
+  // ME_1_a/b are ganged in 3 --> 3 reco hits /hit  so account for it !
+  maxRechitLayerGanged = 3 * maxRechitLayer;  
+
   
   if(debug) cout << "[CSCRecHitReader] Constructor called" << endl;
   
@@ -64,7 +68,7 @@ CSCRecHitReader::CSCRecHitReader(const ParameterSet& pset){
   hRHPME22 = new H2DRecHit("ME_2_2");
   hRHPME31 = new H2DRecHit("ME_3_1");
   hRHPME32 = new H2DRecHit("ME_3_2");
-  hRHPME4  = new H2DRecHit("ME_4");
+  hRHPME4  = new H2DRecHit("ME_4_1");
 }
 
 // Destructor
@@ -109,40 +113,44 @@ void CSCRecHitReader::analyze(const Event & event, const EventSetup& eventSetup)
   event.getByLabel(recHitLabel, recHits);  
   if (debug) cout << "   #RecHits: " << recHits->size() << endl;
   
-  // Loop over rechits 
+  // Build iterator for simHits:
+  PSimHitContainer::const_iterator simIt;
   
-  // Build iterator for rechits and loop :
-  CSCRecHit2DCollection::const_iterator recIt;
-  for (recIt = recHits->begin(); recIt != recHits->end(); recIt++) {
+  // Search for matching hit in layer/chamber/...  in simhits:
+  for (simIt = simHits->begin(); simIt != simHits->end(); simIt++) {
     
-    // Find chamber with rechits in CSC 
-    CSCDetId idrec = (CSCDetId)(*recIt).cscDetId();
-    
-    // Store reco hit as a Local Point:
-    LocalPoint rhitlocal = (*recIt).localPosition();  
-    float xreco = rhitlocal.x();
-    float yreco = rhitlocal.y();
-    
-    
-    // Store dummy x and y position for sim hit:
-    LocalPoint shitlocal(9999.,9999.,9999.);
-    float xsimu = 9999.;
-    float ysimu = 9999.;
-    
-    bool found_match = false;
-    float delta_r = 9999.;
-    
-    // Build iterator for simHits:
-    PSimHitContainer::const_iterator simIt;
-    
-    // Search for matching hit in layer/chamber/...  in simhits:
-    for (simIt = simHits->begin(); simIt != simHits->end(); simIt++) {
+    // Check that simHit is from a muon :
+    if(abs((*simIt).particleType()) == 13) {
       
-      // Check that simHit is from a muon :
-      if(abs((*simIt).particleType()) == 13) {
+      // Find chamber where simhit is located
+      CSCDetId id = (CSCDetId)(*simIt).detUnitId();
+      
+      // Store sim hit as a Local Point:
+      LocalPoint shitlocal = (*simIt).localPosition();  
+      float xsimu = shitlocal.x();
+      float ysimu = shitlocal.y();
+      
+      
+      // Initialize some parameters:
+      bool found_match = false;
+      float delta_r = maxRechitDistance;
+      int rechit_count = 0;
+      
+      // Store dummy x and y position for rec hit:
+      LocalPoint rhitlocal(9999.,9999.,9999.);
+      float xreco = 9999.;
+      float yreco = 9999.;
+ 
+
+      // Loop over rechits 
+      
+      // Build iterator for rechits and loop :
+      CSCRecHit2DCollection::const_iterator recIt;
+      for (recIt = recHits->begin(); recIt != recHits->end(); recIt++) {
 	
-	// Find chamber where simhit is located
-	CSCDetId id = (CSCDetId)(*simIt).detUnitId();
+	// Find chamber with rechits in CSC 
+	CSCDetId idrec = (CSCDetId)(*recIt).cscDetId();
+	
 	
 	// Matching chamber (sim/reco) ?  Also test if it's in the right EndCap: both/1/2
 	if ((idrec.endcap() == id.endcap()) &&
@@ -150,133 +158,150 @@ void CSCRecHitReader::analyze(const Event & event, const EventSetup& eventSetup)
 	    (idrec.station() == id.station()) &&
 	    (idrec.chamber() == id.chamber()) &&
 	    (idrec.layer() == id.layer()) && 
-	    ((idrec.endcap() == WhichEndCap) || WhichEndCap == 0)) {    
-	  
-	  found_match = true;  // found at least one match in chambers...
-	  
-	  
-	  LocalPoint shitlocal_temp = (*simIt).localPosition();
-	  
-	  float xsimu_temp = (*simIt).localPosition().x();
-	  float ysimu_temp = (*simIt).localPosition().y();
-	  
-	  float delta_r_temp = sqrt((xreco-xsimu_temp)*(xreco-xsimu_temp) 
-				    + (yreco-ysimu_temp)*(yreco-ysimu_temp));
-	  
-	  // Is it the optimum simhit ?
+	    ((idrec.endcap() == WhichEndCap) || WhichEndCap == 0)) { 
+
+    
+	  // Store reco hit as a Local Point:
+	  LocalPoint rhitlocal_temp = (*recIt).localPosition();  
+	  float xreco_temp = rhitlocal_temp.x();
+	  float yreco_temp = rhitlocal_temp.y();
+    
+	  float delta_r_temp = sqrt((xreco_temp - xsimu) * (xreco_temp - xsimu) 
+				  + (yreco_temp - ysimu) * (yreco_temp - ysimu));
+
+	  rechit_count ++;
+	  if (debug) cout << "found a rechit match for sim hit:" << rechit_count 
+			  <<" at distance r = " << delta_r_temp << " cm" <<endl;
+
+	  // Is it the optimum rechit/simhit pair ?
 	  if (delta_r_temp < delta_r) {
 	    delta_r = delta_r_temp;
-	    xsimu = xsimu_temp;
-	    ysimu = ysimu_temp;
-	    shitlocal = shitlocal_temp; // Store local Point for sim hit
-	  }      
-	}	
-      }       
-    }
+	    xreco = xreco_temp;
+	    yreco = yreco_temp;
+	    rhitlocal = rhitlocal_temp; // Store local Point for this rec hit
+	    found_match = true;         // found at least one match in chambers...
+	  }  
+	}
+      }
     
-    // Fill in best match:
-    if (found_match) {
-      float x_resol = xsimu - xreco;
-      float y_resol = ysimu - yreco;
+      // Check if we are dealing with ME_1_a or b
+      if ((id.station() == 1 && id.ring() == 1) || // ME_1_b
+	  (id.station() == 1 && id.ring() == 4))   // ME_1_a
+	{
+	  if ( rechit_count > maxRechitLayerGanged ) found_match = false;
+	} else {
+	  // Other chambers don't have ganged wires:
+	  if ( rechit_count > maxRechitLayer ) found_match = false;
+	}
+    
       
-      // Get pointer to layer:
-      const CSCLayer* csclayer = cscGeom->layer( idrec );      
-      
-      // Transform hit position from local chamber geometry to global CMS geom
-      GlobalPoint rhitglobal= csclayer->toGlobal(rhitlocal);
-      float grecphi = rhitglobal.phi();
-      float grecx = rhitglobal.x();
-      float grecy = rhitglobal.y();
-      float greceta = rhitglobal.eta();
-      float grecr = sqrt(grecx*grecx + grecy*grecy); // No .r() or .mag() in GlobalPoint?
-      
-      GlobalPoint shitglobal= csclayer->toGlobal(shitlocal);
-      float gsimphi = shitglobal.phi();
-      float gsimeta = shitglobal.eta();
-      //    float gsimx = shitglobal.x();
-      //    float gsimy = shitglobal.y();
-      
-      
-      float deta = greceta -  gsimeta; 
+      // Fill in best match:
+      if (found_match) {
+	//	cout << "found match" << endl;
+	float x_resol = xreco - xsimu;
+	float y_resol = yreco - ysimu;
+	
+	// Get pointer to layer:
+	const CSCLayer* csclayer = cscGeom->layer( id );      
+	
+	// Transform hit position from local chamber geometry to global CMS geom
+	GlobalPoint rhitglobal= csclayer->toGlobal(rhitlocal);
+	float grecphi = rhitglobal.phi();
+	float greceta = rhitglobal.eta();
+	//	float grecx = rhitglobal.x();
+	//	float grecy = rhitglobal.y();
+	float grecz = rhitglobal.z();
+	
+	GlobalPoint shitglobal= csclayer->toGlobal(shitlocal);
+	float gsimphi = shitglobal.phi();
+	float gsimeta = shitglobal.eta();
+	float gsimx = shitglobal.x();
+	float gsimy = shitglobal.y();
+	float gsimz = shitglobal.z();
 
-      float PI = 3.1415927;
-      float PIneg = -1 * PI;
+	float gsimr = sqrt(gsimx*gsimx + gsimy*gsimy); 
 
-      float dphi = grecphi - gsimphi;
-      if (dphi > PI) dphi -= PI;
-      if (dphi < PIneg) dphi += PI;
-      float rdphi = grecr * dphi;
-      
-      if (debug) {
-	cout << "matching chambers in sim/reco lists" << endl;
-	cout << "Endcap : " << idrec.endcap() << " " 
-	     << "Ring   : " << idrec.ring()   << " "
-	     << "Station: " << idrec.station()<< " "
-	     << "Chamber: " << idrec.chamber()<< " "
-	     << "Layer  : " << idrec.layer()  << " " << endl;
-	cout << "Distance between points : " << delta_r << " cm   " << endl;
-	cout << "X resolution (local)    : " << x_resol << " cm   " << endl;
-	cout << "Y resolution (local)    : " << y_resol << " cm   " << endl;
-	cout << "Delta phi (global)      : " << dphi    << " rads " << endl;
-	cout << "R cylindrical (global)  : " << grecr   << " cm   " << endl;
-	cout << "R x Delta Phi (global)  : " << rdphi   << " cm   " << endl;
-	cout << "Delta eta (global)      : " << deta    << "      " << endl;
-
-      }
-
-      // Fill the histos
-      H2DRecHit *histo = 0;
-      histo = hRHPAll;
-      histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, rdphi, greceta, gsimeta, deta);
-                
-      if (!debug) {
-      
-      // Look at ME type first then determine inner/outer ring
-      if (idrec.station() == 1) {
-	if (idrec.ring() == 1) {
-	  histo = hRHPME12;
-	  histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, rdphi, greceta, gsimeta, deta);
+	float deta = greceta -  gsimeta; 
+	
+	float PI = 3.1415927;
+	float PIneg = -1 * PI;
+	
+	float dphi = grecphi - gsimphi;
+	if (dphi > PI) dphi -= PI;
+	if (dphi < PIneg) dphi += PI;
+	float rdphi = gsimr * dphi;
+	
+	if (debug) {
+	  cout << "matching chambers in sim/reco lists" << endl;
+	  cout << "Endcap : " << id.endcap() << " " 
+	       << "Ring   : " << id.ring()   << " "
+	       << "Station: " << id.station()<< " "
+	       << "Chamber: " << id.chamber()<< " "
+	       << "Layer  : " << id.layer()  << " " << endl;
+	  cout << "Distance between points : " << delta_r << " cm   " << endl;
+	  cout << "X resolution (local)    : " << x_resol << " cm   " << endl;
+	  cout << "Y resolution (local)    : " << y_resol << " cm   " << endl;
+	  cout << "Delta phi (global)      : " << dphi    << " rads " << endl;
+	  cout << "R cylindrical (global)  : " << gsimr   << " cm   " << endl;
+	  cout << "R x Delta Phi (global)  : " << rdphi   << " cm   " << endl;
+	  cout << "Delta eta (global)      : " << deta    << "      " << endl;
+	  cout << "Delta z (global)        : " << grecz-gsimz    << " cm      " << endl;
 	}
-	if (idrec.ring() == 2) {
-	  histo = hRHPME13;
-	  histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, rdphi, greceta, gsimeta, deta);
-	}
-	if (idrec.ring() == 3) {
-	  histo = hRHPME1b;
-	  histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, rdphi, greceta, gsimeta, deta);
-	}
-	if (idrec.ring() == 4) {
-	  histo = hRHPME1a;
-	  histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, rdphi, greceta, gsimeta, deta);
-	}
-      }
-      if (idrec.station() == 2) {
-	if (idrec.ring() == 1) {
-	  histo = hRHPME21;
-	  histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, rdphi, greceta, gsimeta, deta);
-	}
-	if (idrec.ring() == 2) {
-	  histo = hRHPME22;
-	  histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, rdphi, greceta, gsimeta, deta);
-	}
-      }
-      if (idrec.station() == 3) {
-	if (idrec.ring() == 1) {
-	  histo = hRHPME31;
-	  histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, rdphi, greceta, gsimeta, deta);
-	}
-	if (idrec.ring() == 2) {
-	  histo = hRHPME32;
-	  histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, rdphi, greceta, gsimeta, deta);
-	}
-      }
-      if (idrec.station() == 4) {
-	histo = hRHPME4;
+	
+	// Fill the histos
+	H2DRecHit *histo = 0;
+	histo = hRHPAll;
 	histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, rdphi, greceta, gsimeta, deta);
-	if (idrec.ring() != 1) cout << " invalid ring in ME 4 !!! ";
+	
+	if (!debug) {
+	  
+	  // Look at ME type first then determine inner/outer ring
+	  if (id.station() == 1) {
+	    if (id.ring() == 1) {
+	      histo = hRHPME1b;
+	      histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, rdphi, greceta, gsimeta, deta);
+	    }
+	    if (id.ring() == 2) {
+	      histo = hRHPME12;
+	      histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, rdphi, greceta, gsimeta, deta);
+	    }
+	    if (id.ring() == 3) {
+	      histo = hRHPME13;
+	      histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, rdphi, greceta, gsimeta, deta);
+	    }
+	    if (id.ring() == 4) {
+	      histo = hRHPME1a;
+	      histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, rdphi, greceta, gsimeta, deta);
+	    }
+	  }
+	  if (id.station() == 2) {
+	    if (id.ring() == 1) {
+	      histo = hRHPME21;
+	      histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, rdphi, greceta, gsimeta, deta);
+	    }
+	    if (id.ring() == 2) {
+	      histo = hRHPME22;
+	      histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, rdphi, greceta, gsimeta, deta);
+	    }
+	  }
+	  if (id.station() == 3) {
+	    if (id.ring() == 1) {
+	      histo = hRHPME31;
+	      histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, rdphi, greceta, gsimeta, deta);
+	    }
+	    if (id.ring() == 2) {
+	      histo = hRHPME32;
+	      histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, rdphi, greceta, gsimeta, deta);
+	    }
+	  }
+	  if (id.station() == 4) {
+	    histo = hRHPME4;
+	    histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, rdphi, greceta, gsimeta, deta);
+	    if (id.ring() != 1) cout << " invalid ring in ME 4 !!! ";
+	  }
+	}
+	if (debug) cout << "When debugging, you do not fill histograms !!! " << endl;
       }
-            }
-      if (debug) cout << "When debugging, you do not fill histograms !!! " << endl;
     }
   }
 }
