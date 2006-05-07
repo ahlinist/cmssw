@@ -1,25 +1,15 @@
 <export>
 <lib name=GeometryReadersDBIdealGeometryESSource>
-<use name=DetectorDescription/Core>
-<use name=DetectorDescription/Parser>
-<use name=DetectorDescription/DBReader>
-<use name=DetectorDescription/PersistentDDDObjects>
+<use name=DetectorDescription/OfflineDBLoader>
 <use name=Geometry/Records>
 <use name=FWCore/Framework>
 <use name=FWCore/ParameterSet> 
-<use name=CondCore/MetaDataService> 
-<use name=clhep>
-<use name=boost>
+<use name=Utilities/General>
 </export>
 <flags SEAL_PLUGIN_NAME="GeometryReadersDBIdealGeometryESSource">
-<use name=DetectorDescription/Core>
-<use name=DetectorDescription/Parser>
-<use name=DetectorDescription/DBReader>
-<use name=DetectorDescription/PersistentDDDObjects>
-<use name=CondCore/MetaDataService> 
+<use name=DetectorDescription/OfflineDBLoader>
 <use name=Geometry/Records>
-<use name=xerces-c>
 <use name=FWCore/Framework>
 <use name=FWCore/ParameterSet> 
-<use name=clhep>
-<use name=boost>
+<use name=Utilities/General>
+
