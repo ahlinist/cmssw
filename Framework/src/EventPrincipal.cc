@@ -316,9 +316,9 @@ private:
     // We failed to find the product we're looking for, under *any*
     // process name... throw!
     throw edm::Exception(errors::ProductNotFound,"NoMatch")
-      << "getByLabel: could not find a required product " << label
-      << "\nof type " << id
-      << " with user tag " << (productInstanceName.empty() ? "\"\"" : productInstanceName) << '\n';
+      << "getByLabel: could not find a product with module label \"" << label
+      << "\"\nof type " << id
+      << " with product instance label \"" << (productInstanceName.empty() ? "" : productInstanceName) << "\"\n";
   }
 
   void 
