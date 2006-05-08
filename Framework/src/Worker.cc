@@ -159,7 +159,7 @@ namespace edm
 
 	      ++timesExcept_;
 	      state_ = Exception;
-	      e << "cms::Exception going through module";
+	      e << "cms::Exception going through module ";
               exceptionContext(md_,ep,e);
 	      cached_exception_.reset(new cms::Exception(e));
 	      throw;
