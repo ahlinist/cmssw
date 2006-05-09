@@ -381,6 +381,27 @@ testeventprocessor::moduleFailureTest()
       }
       CPPUNIT_ASSERT(threw && 0 != "exception never thrown");
     }
+    ///
+    {
+      bool threw = true;
+      try {
+        const std::string configuration("process p = {\n"
+                               "source = EmptySource { untracked int32 maxEvents = 2 }\n"
+                                "path p1 = { m1 }\n"
+                                "}\n");
+        edm::EventProcessor proc(configuration);
+      
+	threw = false;
+      } catch(const cms::Exception& iException){
+        static const boost::regex expr("m1");
+	if(!regex_search(iException.explainSelf(),expr)) {
+	  std::cout <<iException.explainSelf()<<std::endl;
+	  CPPUNIT_ASSERT(0 == "module name not in exception message");
+	}
+      }
+      CPPUNIT_ASSERT(threw && 0 != "exception never thrown");
+    }
+    
   } catch(const cms::Exception& iException) {
     std::cout <<"Unexpected exception "<<iException.explainSelf()<<std::endl;
     throw;
