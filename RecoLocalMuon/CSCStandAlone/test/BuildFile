@@ -1,0 +1,25 @@
+<use name=EventFilter/CSCRawToDigi>
+<use name=DataFormats/CSCDigi>
+<use name=IORawData/CSCCommissioning>
+<use name=FWCore/MessageService>
+<use name=FWCore/Framework>
+<use name=oracle>
+<lib name=occi>
+<lib name=condbc>
+<lib name=cscmap>
+<use name=rootcore>
+<use name=root>
+<flags CXXFLAGS="-g">
+
+<library file=../src/CSCMonitoring.cc name=CSCMonitoring>
+   <flags SEAL_PLUGIN_NAME="CSCMonitoring">
+</library>
+
+
+<library file=../src/CSCEventDisplay.cc name=CSCEventDisplay>
+   <flags SEAL_PLUGIN_NAME="CSCEventDisplay">
+</library>
+
+<library file=../src/CSCTrackLink.cc name=CSCTrackLink>
+   <flags SEAL_PLUGIN_NAME="CSCTrackLink">
+</library>
