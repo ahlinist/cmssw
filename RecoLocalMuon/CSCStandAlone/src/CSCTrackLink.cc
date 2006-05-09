@@ -63,7 +63,10 @@ namespace test{
    
   public:
     CSCTrackLink(const ParameterSet& pset)
-    {
+    { 
+      string theMappingFile = pset.getParameter<std::string>("theMappingFile");
+      theMapping=CSCReadoutMappingFromFile(theMappingFile);
+      
       writer.setup();
       init=0;
     }
@@ -80,8 +83,8 @@ namespace test{
       // start durkin stuff
       if(init==0){
         init=1;
-        printf(" Initialize \n");
-        theMapping=CSCReadoutMappingFromFile("/home/ippolito/CMSSW_0_6_0/src/RecoLocalMuon/CSCStandAlone/test/csc_slice_test_map.txt");
+        
+        
 	chamb_const= Strip_Fit_Constants();  
         // register all chambers
         int dmb_val[9]={1,2,3,4,5,7,8,9,10};
