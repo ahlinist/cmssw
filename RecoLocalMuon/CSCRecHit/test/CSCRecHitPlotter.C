@@ -27,6 +27,7 @@ TString segment = "ME_All";
  if (segtype == 32) TString segment = "ME_3_2";
  if (segtype == 40) TString segment = "ME_4_1";
 
+
  TString plot1 = "xresol_"+segment+suffixps;
  TString plot2 = "yresol_"+segment+suffixps; 
  TString plot3 = "yresol_vs_y_"+segment+suffixps;
@@ -35,6 +36,11 @@ TString segment = "ME_All";
  TString plot6 = "etaresol_vs_eta_"+segment+suffixps; 
  TString plot7 = "yrec_vs_ysim_"+segment+suffixps;
  TString plot8 = "ysim_vs_xsim_"+segment+suffixps;
+ TString plot9 = "recphi_"+segment+suffixps; 
+ TString plot10 = "simphi_"+segment+suffixps;
+ TString plot11 = "recphi_vs_simphi_"+segment+suffixps;
+ TString plot12 = "xrec_"+segment+suffixps;
+ TString plot13 = "xsim_"+segment+suffixps;
 
 
  hRecPositionX     = (TH1F *) file->Get(segment+"_hRecPositionX");
@@ -53,6 +59,9 @@ TString segment = "ME_All";
  hdetavseta        = (TH2F *) file->Get(segment+"_hdetavseta");
  hRecYvsSimY       = (TH2F *) file->Get(segment+"_hRecYvsSimY");
 
+ hRecphi           = (TH1F *) file->Get(segment+"_hRecphi");
+ hSimphi           = (TH1F *) file->Get(segment+"_hSimphi");
+ hRecphivsSimphi   = (TH2F *) file->Get(segment+"_hRecphivsSimphi");
 
  gStyle->SetOptStat(kFALSE);
  TCanvas *c1 = new TCanvas("c1","");
@@ -221,6 +230,11 @@ TString segment = "ME_All";
  hSimYvsX->GetXaxis()->SetTitle("x_{sim} (cm) ");
  hSimYvsX->GetYaxis()->SetTitle("y_{sim} (cm) ");
  c1->Print(plot8);
+
+
+
+
+
 
  gROOT->ProcessLine(".q");
 

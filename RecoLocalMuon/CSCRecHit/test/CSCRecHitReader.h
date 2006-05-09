@@ -77,6 +77,8 @@ private:
   std::string recHitLabel;
   double maxRechitDistance;
   int maxRechitLayer;
+  int maxSimhitLayer;
+
   int maxRechitLayerGanged;
 
   int WhichEndCap;

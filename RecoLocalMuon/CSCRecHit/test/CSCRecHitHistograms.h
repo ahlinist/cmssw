@@ -23,12 +23,16 @@ public:
     TString N = name_.c_str();
     name=N;
     
-    hRecPositionX = new TH1F(N+"_hRecPositionX", "CSCRecHit x position (cm)", 70, -70., 70.);
+    hRecPositionX = new TH1F(N+"_hRecPositionX", "CSCRecHit x position (cm)", 48, -15., 15.);
     hRecPositionY = new TH1F(N+"_hRecPositionY", "CSCRecHit y position (cm)", 180, -180., 180.);
     hRecPositionYvsX = new TH2F(N+"_hRecPositionYvsX", "CSCRecHit y vs x (cm)", 180, -180., 180., 
 				                                                180, -180, 180);
 
-    hSimPositionX = new TH1F(N+"_hSimPositionX", "CSCSimHit x position (cm)", 70, -70., 70.);
+    hRecYvsSimY = new TH2F(N+"_hRecYvsSimY", "CSCRecHit y_{rec} vs y_{sim}", 150, -150., 150.,
+			                                                     150, -150., 150.);
+
+
+    hSimPositionX = new TH1F(N+"_hSimPositionX", "CSCSimHit x position (cm)", 48, -24., 24.);
     hSimPositionY = new TH1F(N+"_hSimPositionY", "CSCSimHit y position (cm)", 180, -180., 180.);
     hSimPositionYvsX = new TH2F(N+"_hSimPositionYvsX", "CSCSimHit y vs x (cm)", 180, -180., 180., 
 				                                                180, -180., 180.);
@@ -48,8 +52,11 @@ public:
     hdetavseta = new TH2F(N+"_hdetavseta", "CSC Delta eta vs eta", 150, 0.9, 2.4, 
 			                                           101, -0.0101, 0.0101);
 
-    hRecYvsSimY = new TH2F(N+"_hRecYvsSimY", "CSCRecHit y_{rec} vs y_{sim}", 150, -150., 150.,
-			                                                     150, -150., 150.);
+
+    hRecphi = new TH1F(N+"_hRecphi", "Rec phi ", 180, -180., 180.);
+    hSimphi = new TH1F(N+"_hSimphi", "Sim phi", 180, -180., 180.);
+    hRecphivsSimphi = new TH2F(N+"_hRecphivsSimphi", "Rec phi vs Sim phi", 180, -180, 180, 
+			                                                   101, -0.2525, 0.2525);
 
   }
 
@@ -76,6 +83,10 @@ public:
     hdetavseta        = (TH2F *) file->Get(name+"_detavseta");
     hRecYvsSimY       = (TH2F *) file->Get(name+"_RecYvsSimY");
 
+    hRecphi           = (TH1F *) file->Get(name+"_Recphi");
+    hSimphi           = (TH1F *) file->Get(name+"_Simphi");
+    hRecphivsSimphi   = (TH2F *) file->Get(name+"_RecphivsSimphi");
+
   }
 
   /// Destructor
@@ -98,11 +109,20 @@ public:
     delete hdeta;
     delete hdetavseta;
     delete hRecYvsSimY;
+
+    delete hRecphi;  
+    delete hSimphi; 
+    delete hRecphivsSimphi; 
+
   }
 
   // Operations
   /// Fill all the histos
-  void Fill(float recx, float recy, float simx, float simy, float recphi, float rdphi, float receta, float simeta, float deta) {
+  void Fill(float recx, float recy, float simx, float simy, float recphi, float simphi, float rdphi, float receta, float simeta, float deta) {
+
+	
+    float PIfactor = 180./3.1415927;
+
     hRecPositionX->Fill(recx);
     hRecPositionY->Fill(recy);
     hRecPositionYvsX->Fill(recx,recy);
@@ -121,6 +141,10 @@ public:
     hdeta->Fill(deta);
     hdetavseta->Fill(simeta,deta);
     hRecYvsSimY->Fill(simy,recy);  
+
+    hRecphi->Fill(recphi*PIfactor);  
+    hSimphi->Fill(simphi*PIfactor); 
+    hRecphivsSimphi->Fill(simphi*PIfactor,(recphi-simphi)*PIfactor);
   }
 
   /// Write all the histos to currently opened file
@@ -143,6 +167,10 @@ public:
     hdeta->Write();
     hdetavseta->Write();
     hRecYvsSimY->Write();
+
+    hRecphi->Write();
+    hSimphi->Write();
+    hRecphivsSimphi->Write();
   }
   
   TH1F *hRecPositionX;
@@ -163,6 +191,10 @@ public:
   TH1F *hdeta;
   TH2F *hdetavseta;
   TH2F *hRecYvsSimY;
+
+  TH1F *hRecphi;
+  TH1F *hSimphi;
+  TH2F *hRecphivsSimphi;
 
   TString name;
 };

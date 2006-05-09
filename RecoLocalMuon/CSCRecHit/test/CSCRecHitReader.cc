@@ -1,6 +1,8 @@
 /*
  *  Basic analyzer class which accesses CSCRecHits
- *  and compare them with muon simhits
+ *  and compare them with muon simhits.  
+ *
+ *  The output histograms are dealt with in CSCRecHitHistograms.h
  *
  *  Author: D. Fortin - UC Riverside
  */
@@ -39,13 +41,15 @@ using namespace edm;
 
 // Constructor
 CSCRecHitReader::CSCRecHitReader(const ParameterSet& pset){
-  // Get the debug parameter for verbose output
+
+  // Get the various input parameters
   debug            = pset.getUntrackedParameter<bool>("debug");
   rootFileName     = pset.getUntrackedParameter<string>("rootFileName");
   simHitLabel      = pset.getUntrackedParameter<string>("simHitLabel");
   recHitLabel      = pset.getUntrackedParameter<string>("recHitLabel");
-  maxRechitDistance = pset.getUntrackedParameter<double>("maxRechitDistance");
-  maxRechitLayer = pset.getUntrackedParameter<int>("maxRechitPerLayer");
+  maxRechitDistance= pset.getUntrackedParameter<double>("maxRechitDistance");
+  maxRechitLayer   = pset.getUntrackedParameter<int>("maxRechitPerLayer");
+  maxSimhitLayer   = pset.getUntrackedParameter<int>("maxSimhitPerLayer");
   WhichEndCap      = pset.getUntrackedParameter<int>("WhichEndCap");
 
   // ME_1_a/b are ganged in 3 --> 3 reco hits /hit  so account for it !
@@ -60,7 +64,7 @@ CSCRecHitReader::CSCRecHitReader(const ParameterSet& pset){
   
   // Book the histograms
   hRHPAll  = new H2DRecHit("ME_All");
-  hRHPME1a = new H2DRecHit("ME_1_a");  // Innermost ME 1
+  hRHPME1a = new H2DRecHit("ME_1_a");  // Innermost ME 1_1
   hRHPME1b = new H2DRecHit("ME_1_b");
   hRHPME12 = new H2DRecHit("ME_1_2");
   hRHPME13 = new H2DRecHit("ME_1_3");
@@ -94,10 +98,8 @@ CSCRecHitReader::~CSCRecHitReader(){
 // The Analysis  (the main)
 void CSCRecHitReader::analyze(const Event & event, const EventSetup& eventSetup){
   
-  if (event.id().event()%100 == 0) {
-    cout << " Event analysed #Run: " << event.id().run()
-         << " #Event: " << event.id().event() << endl;
-  }
+   if (event.id().event()%100 == 0) cout << " Event analysed #Run: " << event.id().run()
+                                         << " #Event: " << event.id().event() << endl;
   
   // Get the CSC Geometry :
   ESHandle<CSCGeometry> cscGeom;
@@ -113,14 +115,78 @@ void CSCRecHitReader::analyze(const Event & event, const EventSetup& eventSetup)
   event.getByLabel(recHitLabel, recHits);  
   if (debug) cout << "   #RecHits: " << recHits->size() << endl;
   
+ 
+  // First loop over simhits and count how many simhits you have per chambers 
+
+  // Array of type bool to see if save/throw away simhit:
+  bool simhit_keep[200];
+
+  if (simHits->size() > 200) {
+    cout << "More simhits than allowed: " << simHits->size() << " > 200  --> skip event" << endl;
+    return;
+  }
+  int idx_sim = 0;
+  int j = 0;
+
+  // Build iterator for simHits:
+  PSimHitContainer::const_iterator simIt_1;
+  
+  // Search for matching hit in layer/chamber/...  in simhits:
+  for (simIt_1 = simHits->begin(); simIt_1 != simHits->end(); simIt_1++) {
+    
+    // By default, keep this simhit
+    simhit_keep[idx_sim] = true;
+    
+    // Initialize counter of hits in same layer
+    int matched_simhit = 1;
+
+    // Find chamber where simhit is located
+    CSCDetId id_1 = (CSCDetId)(*simIt_1).detUnitId();
+    
+    // Not the most efficient way of doing it
+    // but loop 2nd time to check for hits in same layer and save 
+    // information into an array;
+    
+    // Build 2nd iterator for simHits:
+    PSimHitContainer::const_iterator simIt_2;
+    
+    for (simIt_2 = simHits->begin(); simIt_2 != simHits->end(); simIt_2++) {
+      
+      // Find chamber where simhit 2 is located
+      CSCDetId id_2 = (CSCDetId)(*simIt_2).detUnitId();
+      
+      // See if have matching pair of sim hits in same any chamber layer
+      if ((idx_sim != j) &&
+	  (id_1.endcap() == id_2.endcap()) &&
+	  (id_1.ring() == id_2.ring()) &&
+	  (id_1.station() == id_2.station()) &&
+	  (id_1.chamber() == id_2.chamber()) &&
+	  (id_1.layer() == id_2.layer())) {
+	matched_simhit++;
+      }
+      j++;
+    }
+    // Are there more simhits in this layer than required ?  If so reject these hits.
+    if (matched_simhit > maxSimhitLayer) simhit_keep[idx_sim] = false;
+    idx_sim++;
+  }
+  
+  // So, now we know which simhits to keep/throw away !
+
+  // reset simhit index
+  idx_sim=0;
+
+
+  // Now, loop over simhits again, and search for matching rechits
+  
   // Build iterator for simHits:
   PSimHitContainer::const_iterator simIt;
   
   // Search for matching hit in layer/chamber/...  in simhits:
   for (simIt = simHits->begin(); simIt != simHits->end(); simIt++) {
     
-    // Check that simHit is from a muon :
-    if(abs((*simIt).particleType()) == 13) {
+    // Check that simHit is from a muon and that we want to keep it:
+    if (abs((*simIt).particleType()) == 13  && simhit_keep[idx_sim]) {
       
       // Find chamber where simhit is located
       CSCDetId id = (CSCDetId)(*simIt).detUnitId();
@@ -131,7 +197,8 @@ void CSCRecHitReader::analyze(const Event & event, const EventSetup& eventSetup)
       float ysimu = shitlocal.y();
       
       
-      // Initialize some parameters:
+      // Initialize some parameters which we will use to find best rechit candidates and
+      // count how many (if any) matching rechits we have
       bool found_match = false;
       float delta_r = maxRechitDistance;
       int rechit_count = 0;
@@ -152,7 +219,7 @@ void CSCRecHitReader::analyze(const Event & event, const EventSetup& eventSetup)
 	CSCDetId idrec = (CSCDetId)(*recIt).cscDetId();
 	
 	
-	// Matching chamber (sim/reco) ?  Also test if it's in the right EndCap: both/1/2
+	// Matching chamber (sim/reco) ?  Also test if it's in the right EndCap: either (0), 1 or 2 ?
 	if ((idrec.endcap() == id.endcap()) &&
 	    (idrec.ring() == id.ring()) &&
 	    (idrec.station() == id.station()) &&
@@ -184,20 +251,24 @@ void CSCRecHitReader::analyze(const Event & event, const EventSetup& eventSetup)
 	}
       }
     
-      // Check if we are dealing with ME_1_a or b
+      // Check if exceeded the number of rechits per layer :
+
+      // 1) if we are dealing with  ME_1_a or b 
       if ((id.station() == 1 && id.ring() == 1) || // ME_1_b
 	  (id.station() == 1 && id.ring() == 4))   // ME_1_a
 	{
+          // Then account for the ganged wires which gives you x 3 hits
 	  if ( rechit_count > maxRechitLayerGanged ) found_match = false;
+
 	} else {
-	  // Other chambers don't have ganged wires:
+	  // 2) Other chambers don't have ganged wires:
 	  if ( rechit_count > maxRechitLayer ) found_match = false;
 	}
     
       
-      // Fill in best match:
+      // With best match, compute the various quantities needed:
       if (found_match) {
-	//	cout << "found match" << endl;
+
 	float x_resol = xreco - xsimu;
 	float y_resol = yreco - ysimu;
 	
@@ -219,6 +290,7 @@ void CSCRecHitReader::analyze(const Event & event, const EventSetup& eventSetup)
 	float gsimy = shitglobal.y();
 	float gsimz = shitglobal.z();
 
+	// We're dealing with a Global point, so we need to compute the radial distance by hand:
 	float gsimr = sqrt(gsimx*gsimx + gsimy*gsimy); 
 
 	float deta = greceta -  gsimeta; 
@@ -248,61 +320,64 @@ void CSCRecHitReader::analyze(const Event & event, const EventSetup& eventSetup)
 	  cout << "Delta z (global)        : " << grecz-gsimz    << " cm      " << endl;
 	}
 	
-	// Fill the histos
-	H2DRecHit *histo = 0;
-	histo = hRHPAll;
-	histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, rdphi, greceta, gsimeta, deta);
-	
 	if (!debug) {
 	  
-	  // Look at ME type first then determine inner/outer ring
+	  // Fill the histograms according to which segment we are using:
+	  
+	  H2DRecHit *histo = 0;
+	  histo = hRHPAll;
+	  histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, gsimphi, rdphi, greceta, gsimeta, deta);
+	  
+	  
+	// Look at ME type first then determine inner/outer ring
 	  if (id.station() == 1) {
 	    if (id.ring() == 1) {
 	      histo = hRHPME1b;
-	      histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, rdphi, greceta, gsimeta, deta);
+	      histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, gsimphi, rdphi, greceta, gsimeta, deta);
 	    }
 	    if (id.ring() == 2) {
 	      histo = hRHPME12;
-	      histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, rdphi, greceta, gsimeta, deta);
+	      histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, gsimphi, rdphi, greceta, gsimeta, deta);
 	    }
 	    if (id.ring() == 3) {
 	      histo = hRHPME13;
-	      histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, rdphi, greceta, gsimeta, deta);
+	      histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, gsimphi, rdphi, greceta, gsimeta, deta);
 	    }
 	    if (id.ring() == 4) {
 	      histo = hRHPME1a;
-	      histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, rdphi, greceta, gsimeta, deta);
+	      histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, gsimphi, rdphi, greceta, gsimeta, deta);
 	    }
 	  }
 	  if (id.station() == 2) {
 	    if (id.ring() == 1) {
 	      histo = hRHPME21;
-	      histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, rdphi, greceta, gsimeta, deta);
+	      histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, gsimphi, rdphi, greceta, gsimeta, deta);
 	    }
 	    if (id.ring() == 2) {
 	      histo = hRHPME22;
-	      histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, rdphi, greceta, gsimeta, deta);
+	      histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, gsimphi, rdphi, greceta, gsimeta, deta);
 	    }
 	  }
 	  if (id.station() == 3) {
 	    if (id.ring() == 1) {
 	      histo = hRHPME31;
-	      histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, rdphi, greceta, gsimeta, deta);
+	      histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, gsimphi, rdphi, greceta, gsimeta, deta);
 	    }
 	    if (id.ring() == 2) {
 	      histo = hRHPME32;
-	      histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, rdphi, greceta, gsimeta, deta);
+	      histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, gsimphi, rdphi, greceta, gsimeta, deta);
 	    }
 	  }
 	  if (id.station() == 4) {
 	    histo = hRHPME4;
-	    histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, rdphi, greceta, gsimeta, deta);
+	    histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, gsimphi, rdphi, greceta, gsimeta, deta);
 	    if (id.ring() != 1) cout << " invalid ring in ME 4 !!! ";
 	  }
 	}
 	if (debug) cout << "When debugging, you do not fill histograms !!! " << endl;
       }
     }
+    idx_sim++;
   }
 }
 
