@@ -52,7 +52,13 @@ namespace test{
   class CSCEventDisplay: public EDAnalyzer{
   
   public:
-    CSCEventDisplay(const ParameterSet& pset){init=0;}
+
+    CSCEventDisplay(const ParameterSet& pset){
+      init=0;
+      string theMappingFile = pset.getParameter<std::string>("theMappingFile");
+      theMapping=CSCReadoutMappingFromFile(theMappingFile);
+
+    }
  
     void analyze(const Event & e, const EventSetup& c){ 
 
@@ -61,8 +67,8 @@ namespace test{
 
       if(init==0){
         init=1;
-        printf(" Initialize \n");
-        theMapping=CSCReadoutMappingFromFile("/home/ippolito/CMSSW_0_6_0/src/RecoLocalMuon/CSCStandAlone/test/csc_slice_test_map.txt");
+        
+	// theMapping=CSCReadoutMappingFromFile("/home/ippolito/CMSSW_0_6_0/src/RecoLocalMuon/CSCStandAlone/test/csc_slice_test_map.txt");
 	chamb_const= Strip_Fit_Constants(); 
         // register all chambers
         int dmb_val[9]={1,2,3,4,5,7,8,9,10};

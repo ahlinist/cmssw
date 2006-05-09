@@ -62,7 +62,8 @@ namespace test{
   public:
     CSCMonitor(const ParameterSet& pset)
     {
-      theMapping=CSCReadoutMappingFromFile("/home/ippolito/CMSSW_0_6_0_pre2/src/csc_slice_test_map.txt");
+      string theMappingFile = pset.getParameter<std::string>("theMappingFile");
+      theMapping=CSCReadoutMappingFromFile(theMappingFile);
 
       writer.setup(theMapping);
       
