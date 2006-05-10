@@ -5,7 +5,6 @@
 #include "DataFormats/Candidate/interface/OverlapChecker.h"
 #include <string>
 #include "TH1.h"
-#include "TFile.h"
 
 namespace edm {
   class ParameterSet;
@@ -16,9 +15,11 @@ namespace tth {
   class SimpleAnalysis : public edm::EDAnalyzer {
   public:
     SimpleAnalysis( const edm::ParameterSet & );
-    ~SimpleAnalysis();
+    //    ~SimpleAnalysis();
   private:
+    void beginJob( const edm::EventSetup & );
     void analyze( const edm::Event& , const edm::EventSetup& );
+    void endJob();
     std::string allElectrons;
     std::string goodElectrons;
     std::string signalElectrons;
@@ -31,8 +32,8 @@ namespace tth {
     std::string tLepCandidates;
     std::string tHadCandidates;
     std::string higgsCandidates;
+    std::string histoFileName;
     OverlapChecker overlap;
-    TFile file;
     TH1F  histoPt;
     TH1F  histoGoodPt;
     TH1F  h_wHadMass;

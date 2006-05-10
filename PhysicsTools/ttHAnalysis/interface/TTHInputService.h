@@ -1,11 +1,12 @@
 #ifndef InputService_TTHInputService_h
 #define InputService_TTHInputService_h
 
-#include "FWCore/Framework/interface/InputSource.h"
+#include "FWCore/Framework/interface/GeneratedInputSource.h"
+//#include "FWCore/Framework/interface/InputSource.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Framework/interface/InputSourceDescription.h"
-#include "FWCore/EDProduct/interface/EventID.h"
-#include "FWCore/Framework/interface/BranchDescription.h"
+#include "DataFormats/Common/interface/EventID.h"
+#include "DataFormats/Common/interface/BranchDescription.h"
 #include "PhysicsTools/ttHAnalysis/interface/NtupleReader.h"
 
 namespace edm {
@@ -14,12 +15,12 @@ namespace edm {
 
 namespace tth {
 
-  class TTHInputService : public edm::InputSource {
+  class TTHInputService : public edm::GeneratedInputSource {
   public:
-    TTHInputService( const edm::ParameterSet &, 
-		     const edm::InputSourceDescription &  );  
+    TTHInputService( edm::ParameterSet const &, 
+		     edm::InputSourceDescription const &  );  
   private:
-    virtual std::auto_ptr<edm::EventPrincipal> read();
+    bool produce(edm::Event& );
     int remainingEvents_;
     unsigned long numberEventsInRun_;
     unsigned long presentRun_;
@@ -27,8 +28,8 @@ namespace tth {
     unsigned long timeBetweenEvents_;
     unsigned long numberEventsInThisRun_;
     edm::EventID nextID_;
-    //    edm::Retriever*  retriever_;
-    edm::BranchDescription prodDesc_;
+
+    //    edm::BranchDescription prodDesc_;
 
     NtupleReader reader_;
   };
