@@ -1,0 +1,10 @@
+
+<config name="run tool" value="oval">
+ 
+<watcher mail="yarba_j@fnal.gov">
+ 
+<dir name="GlobalHits">
+
+<dir name="Mixing">
+
+<dir name="HcalHits">
