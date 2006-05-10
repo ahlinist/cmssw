@@ -2,7 +2,7 @@
 #include "PhysicsTools/ttHAnalysis/interface/ElectronVariables.h"
 #include "PhysicsTools/ttHAnalysis/interface/JetVariables.h"
 #include "PhysicsTools/ttHAnalysis/interface/MissingEtVariables.h"
-#include "FWCore/EDProduct/interface/Wrapper.h"
+#include "DataFormats/Common/interface/Wrapper.h"
 #include <vector>
 
 namespace {

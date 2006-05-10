@@ -39,7 +39,6 @@ NtupleReader::NtupleReader( const string & fileName ) :
 }
 
 void NtupleReader::readNext() {
-  chain_.GetEntry( current_ );
-  
+  chain_.GetEntry( current_ );  
   current_ ++;
 }
