@@ -1,13 +1,11 @@
 <flags SEAL_PLUGIN_NAME="PhysicsToolsttHAnalysis">
 <use name=FWCore/Framework>
-<use name=FWCore/EDProduct>
 <use name=DataFormats/Candidate>
 <use name=rootcore>
 <use name=root>
 <export>
   <lib name=PhysicsToolsttHAnalysis>
   <use name=FWCore/Framework>
-  <use name=FWCore/EDProduct>
   <use name=DataFormats/Candidate>
   <use name=rootcore>
   <use name=root>
