@@ -11,9 +11,7 @@
 #include "PhysicsTools/ttHAnalysis/interface/BJetDiscriminator.h"
 #include "PhysicsTools/ttHAnalysis/interface/QJetDiscriminator.h"
 #include "PhysicsTools/ttHAnalysis/interface/SimpleAnalysis.h"
-//#include "ttHAnalysis/interface/SimpleWlepAnalysis.h"
 
-//using tth::SimpleWlepAnalysis;
 using tth::SimpleAnalysis;
 using tth::QJetDiscriminator;
 using tth::BJetDiscriminator;

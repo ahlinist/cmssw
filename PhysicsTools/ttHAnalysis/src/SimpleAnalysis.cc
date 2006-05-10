@@ -7,6 +7,7 @@
 #include "FWCore/Framework/interface/Handle.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "TFile.h"
 #include <iostream>
 using namespace tth;
 using namespace reco;
@@ -26,35 +27,22 @@ SimpleAnalysis::SimpleAnalysis( const ParameterSet & p ) :
   tLepCandidates( p.getParameter<string>( "tLepCandidates" ) ),
   tHadCandidates( p.getParameter<string>( "tHadCandidates" ) ),
   higgsCandidates( p.getParameter<string>( "higgsCandidates" ) ),
-  file( p.getParameter<string>( "fileName" ).c_str(), "RECREATE" ),
-  histoPt  ( "Pt", "Transverse momentum", 50, 0, 1000 ),
-  histoGoodPt  ( "goodPt", "Trans mom", 50, 0, 1000 ) ,
-  h_wHadMass  ( "whadMass", "Hadronic W mass", 100, 0, 200 ),
-  h_tLepMass  ( "tlepMass", "Leptonic top mass", 100, 0, 400 ),
-  h_tHadMass  ( "thadMass", "Hadronic top mass", 100, 0, 400 ),
-  h_wLepMassBest  ( "wlepMassBest", "Best Leptonic W mass", 100, 0, 200 ),
-  h_wHadMassBest  ( "whadMassBest", "Best Hadronic W mass", 100, 0, 200 ),
-  h_tLepMassBest  ( "tlepMassBest", "Best Leptonic top mass", 100, 0, 400 ),
-  h_tHadMassBest  ( "thadMassBest", "Best Hadronic top mass", 100, 0, 400 ),
-  h_higgsMass  ( "higgsMass", "Higgs mass", 100, 0, 400 ),
-  h_nhiggs  ( "n_higgs", "reco higgs per event", 10, 0, 10 ) {
-  cout << ">>> starting histograms" << endl;
+  histoFileName( p.getParameter<string>( "fileName" ) ){
 }
 
-SimpleAnalysis::~SimpleAnalysis() {
-  cout << ">>> ending histograms" << endl;
-  file.cd();
-  histoPt.Write();
-  histoGoodPt.Write();
-  h_wHadMass.Write();
-  h_tLepMass.Write();
-  h_tHadMass.Write();
-  h_wLepMassBest.Write();
-  h_wHadMassBest.Write();
-  h_tLepMassBest.Write();
-  h_tHadMassBest.Write();
-  h_higgsMass.Write();
-  h_nhiggs.Write();
+void SimpleAnalysis::beginJob( const EventSetup & ) {
+  cout << ">>> booking histogram" << endl;
+  histoPt = TH1F( "Pt", "Transverse momentum", 50, 0, 1000 );
+  histoGoodPt = TH1F( "goodPt", "Trans mom", 50, 0, 1000 );
+  h_wHadMass = TH1F( "whadMass", "Hadronic W mass", 100, 0, 200 );
+  h_tLepMass = TH1F( "tlepMass", "Leptonic top mass", 100, 0, 400 );
+  h_tHadMass = TH1F( "thadMass", "Hadronic top mass", 100, 0, 400 );
+  h_wLepMassBest = TH1F( "wlepMassBest", "Best Leptonic W mass", 100, 0, 200 );
+  h_wHadMassBest = TH1F( "whadMassBest", "Best Hadronic W mass", 100, 0, 200 );
+  h_tLepMassBest = TH1F( "tlepMassBest", "Best Leptonic top mass", 100, 0, 400 );
+  h_tHadMassBest = TH1F( "thadMassBest", "Best Hadronic top mass", 100, 0, 400 );
+  h_higgsMass = TH1F( "higgsMass", "Higgs mass", 100, 0, 400 );
+  h_nhiggs = TH1F( "n_higgs", "reco higgs per event", 10, 0, 10 );
 }
 
 void SimpleAnalysis::analyze( const Event& evt, const EventSetup& ) {
@@ -86,7 +74,7 @@ void SimpleAnalysis::analyze( const Event& evt, const EventSetup& ) {
     evt.getByLabel( tLepCandidates, tLep );
     evt.getByLabel( tHadCandidates, tHad );
     evt.getByLabel( higgsCandidates, higgs );
-    //    int elsize = allEl->size();
+    int elsize = allEl->size();
     int goodelsize = goodEl->size();
     int sigelsize = sigEl->size();
     cout << ">>> GoodElectrons found: " << goodelsize << endl;
@@ -94,12 +82,12 @@ void SimpleAnalysis::analyze( const Event& evt, const EventSetup& ) {
 
     if( goodelsize == 0 ) return;
 
-    //    for( int i = 0; i < elsize; ++i ) {
-    //      const Candidate * eCand = ( *allEl )[ i ];
-    //      const ElectronVariables & elVar = ( *elVars )[ i ];
-    //      histoPt.Fill( eCand->pt() );
-    //      cout << "ptIso = " << elVar.ptIso << endl;
-    //    }
+    for( int i = 0; i < elsize; ++i ) {
+      const Candidate & eCand = ( *allEl )[ i ];
+      const ElectronVariables & elVar = ( *elVars )[ i ];
+      histoPt.Fill( eCand.pt() );
+      cout << "ptIso = " << elVar.ptIso << endl;
+    }
 
     // Must be 2 neutrinos
     int nusize = allNu->size();
@@ -126,24 +114,24 @@ void SimpleAnalysis::analyze( const Event& evt, const EventSetup& ) {
 
     int whadsize = wHad->size();
     cout << ">>> W->qq found: " << whadsize << endl;
-    //    for( int i = 0; i < whadsize; ++i ) {
-    //      const Candidate * wHadCand = ( *wHad )[ i ];
-    //      h_wHadMass.Fill( wHadCand->mass() );
-    //    }
+    for( int i = 0; i < whadsize; ++i ) {
+      const Candidate & wHadCand = ( *wHad )[ i ];
+      h_wHadMass.Fill( wHadCand.mass() );
+    }
 
     int tlepsize = tLep->size();
     cout << ">>> t->W_lep b found: " << tlepsize << endl;    
-    //    for( int i = 0; i < tlepsize; ++i ) {
-    //      const Candidate * tLepCand = ( *tLep )[ i ];
-    //      h_tLepMass.Fill( tLepCand->mass() );
-    //    }
+    for( int i = 0; i < tlepsize; ++i ) {
+      const Candidate & tLepCand = ( *tLep )[ i ];
+      h_tLepMass.Fill( tLepCand.mass() );
+    }
 
     int thadsize = tHad->size();
     cout << ">>> t->W_had b found: " << thadsize << endl;
-    //    for( int i = 0; i < thadsize; ++i ) {
-    //      const Candidate * tHadCand = ( *tHad )[ i ];
-    //      h_tHadMass.Fill( tHadCand->mass() );
-    //    }
+    for( int i = 0; i < thadsize; ++i ) {
+      const Candidate & tHadCand = ( *tHad )[ i ];
+      h_tHadMass.Fill( tHadCand.mass() );
+    }
     
     if( bjsize < 4 ) return;
     if( qjsize < 2 ) return;
@@ -154,13 +142,17 @@ void SimpleAnalysis::analyze( const Event& evt, const EventSetup& ) {
     float chi2min = 999999999.0;
     int thadIndex = -99;
     int tlepIndex = -99;
+    int not_overl_t = 0;
 
     for( int i = 0; i < thadsize; ++i ) {
       const Candidate & tHadCand = ( *tHad )[ i ];
       for( int j = 0; j < tlepsize; ++j ) {
 	const Candidate & tLepCand = ( *tLep )[ j ];
+	cout << "Daughters of tLep = " << tLepCand.numberOfDaughters() << endl;
+	cout << "Daughters of tHad = " << tHadCand.numberOfDaughters() << endl;
         if( overlap( tHadCand, tLepCand ) ) continue;
 	cout << "NOT OVERLAPPING CANDIDATES, evaluating chi2" << endl;
+	not_overl_t++;
 	float d_thmass = mTop - tHadCand.mass();
 	float d_tlmass = mTop - tLepCand.mass();
 	float d_whmass = -6666;
@@ -183,6 +175,7 @@ void SimpleAnalysis::analyze( const Event& evt, const EventSetup& ) {
 
     }
 
+    cout << "Examined " << not_overl_t << "(tHad,tLep) pairs" << endl;
     cout << "FOUND best (tHad,tLep) candidates with pseudo_chi2 = " << chi2min << endl; 
 
     if( thadIndex > -1 ) {
@@ -211,15 +204,19 @@ void SimpleAnalysis::analyze( const Event& evt, const EventSetup& ) {
 
       // candidates higgs mass distribution
       int higgssize = higgs->size();
+      cout << "All bb combinations = " << higgssize << endl;
       int nh = 0;
       for( int i = 0; i < higgssize; ++i ) {
 	const Candidate & higgsCand = ( *higgs )[ i ];
 	if( overlap( higgsCand, besttHad ) ) continue;
 	if( overlap( higgsCand, besttLep ) ) continue;
-	
+
+	cout << ">>>>>>> Found a HIGGS candidate!!! " << endl;
 	h_higgsMass.Fill( higgsCand.mass() );
 	++nh;
+	cout << "Number of Higgs in the event = " << nh << endl;
       }
+      cout << " Dumping n_HIGGS = " << nh << endl;
       h_nhiggs.Fill( nh );
       
     }
@@ -229,3 +226,23 @@ void SimpleAnalysis::analyze( const Event& evt, const EventSetup& ) {
     cerr << ">>> can't access " << allElectrons << ": " << e.what() << endl;
   }
 }
+
+void SimpleAnalysis::endJob() {
+  cout << ">>> saving histograms" << endl;
+  TFile hFile( histoFileName.c_str(), "RECREATE" );
+  //  hFile.cd();
+  histoPt.Write();
+  histoGoodPt.Write();
+  h_wHadMass.Write();
+  h_tLepMass.Write();
+  h_tHadMass.Write();
+  h_wLepMassBest.Write();
+  h_wHadMassBest.Write();
+  h_tLepMassBest.Write();
+  h_tHadMassBest.Write();
+  h_higgsMass.Write();
+  h_nhiggs.Write();
+  hFile.Close();
+}
+
+
