@@ -450,7 +450,7 @@ class RootWriterCSCMonitor {
 	      comp_use_hist[histid]->Fill(comp_use);
               comp_use_by_layer[layer-1][histid]->Fill(comp_use);
 	      if(comp_use==0){
-		  float halfstripmissedposition=chstrip[clay_hit[layer-1]]; //Stan is this right??
+		  float halfstripmissedposition=chstrip[clay_hit[layer-1]]; 
 		  missed_comp[histid]->Fill(halfstripmissedposition);
 		  missed_comp_by_layer[layer-1][histid]->Fill(halfstripmissedposition);
 		  for(unsigned k=0;k<trk_spos.size();k++){ 
@@ -511,7 +511,7 @@ class RootWriterCSCMonitor {
 	std::vector<float> t_start=ctrk.ctrk_t_start(ct);
 	std::vector<float> t_peak=ctrk.ctrk_t_peak(ct);
 	std::vector<float> t_chg=ctrk.ctrk_t_chg(ct);
-	std::vector<float> pedmon=ctrk.ctrk_pedmon(ct);   //I added this pedmon
+	std::vector<float> pedmon=ctrk.ctrk_pedmon(ct);   
 	for(unsigned cl=0;cl<clay.size();cl++){
 	  ctim[clay[cl]]=t_start[cl]+t_peak[cl];
           ttmax[clay[cl]]=tmax[cl];
@@ -519,7 +519,7 @@ class RootWriterCSCMonitor {
 	    cathode_pulse_peak_time[histid]->Fill(ctim[clay[cl]]);
 	    cathode_pulse_peak_time_layer[clay[cl]][histid]->Fill(ctim[clay[cl]]);
 	    max_time_bin[histid]->Fill(ttmax[clay[cl]]);
-	    max_time_bin_layer[clay[cl]][histid]->Fill(ttmax[clay[cl]]); //stan help!
+	    max_time_bin_layer[clay[cl]][histid]->Fill(ttmax[clay[cl]]); 
 	    pedmon_chamber[histid]->Fill(pedmon[cl]);
 	    pedmon_layer[cl][histid]->Fill(pedmon[cl]);
 	 
