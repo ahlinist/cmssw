@@ -32,7 +32,7 @@ namespace edm {
       cms::Exception("UnknownModule")
     {
       (*this) << "Module " << moduletype << " was not registered \n"
-	"Perhaps your module type is mispelled or is not a "
+	"Perhaps your module type is misspelled or is not a "
 	"framework plugin \n"
 	"Try running SealPluginDump to obtain a list "
 	"of available Plugins\n";

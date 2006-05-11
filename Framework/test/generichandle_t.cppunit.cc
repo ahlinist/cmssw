@@ -47,7 +47,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION(testGenericHandle);
 
 void testGenericHandle::failWrongType() {
    try {
-      //intentionally mispelled type
+      //intentionally misspelled type
       edm::GenericHandle h("edmtest::DmmyProduct");
       CPPUNIT_ASSERT("Failed to thow"==0);
    }
