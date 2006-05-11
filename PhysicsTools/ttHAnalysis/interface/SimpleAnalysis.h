@@ -15,7 +15,6 @@ namespace tth {
   class SimpleAnalysis : public edm::EDAnalyzer {
   public:
     SimpleAnalysis( const edm::ParameterSet & );
-    //    ~SimpleAnalysis();
   private:
     void beginJob( const edm::EventSetup & );
     void analyze( const edm::Event& , const edm::EventSetup& );
@@ -35,11 +34,9 @@ namespace tth {
     std::string histoFileName;
     OverlapChecker overlap;
     TH1F  histoPt;
-    TH1F  histoGoodPt;
     TH1F  h_wHadMass;
     TH1F  h_tLepMass;
     TH1F  h_tHadMass;
-    TH1F  h_wLepMassBest;
     TH1F  h_wHadMassBest;
     TH1F  h_tLepMassBest;
     TH1F  h_tHadMassBest;
