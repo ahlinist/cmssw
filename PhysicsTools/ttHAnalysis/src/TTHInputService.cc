@@ -38,10 +38,9 @@ TTHInputService::TTHInputService( ParameterSet const& pset,
 
 bool TTHInputService::produce(Event& e)
 {
-  if ( remainingEvents_-- != 0 )                                                                                
+  if ( remainingEvents_-- != 0 ) 
     reader_.readNext();
   
-  cout << "InputService NumbLep : " << reader_.data_.NumbLep << endl;
   std::auto_ptr<NtupleData> data( new NtupleData( reader_.data_ ) );
   
   e.put( data );

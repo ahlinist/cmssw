@@ -26,16 +26,12 @@ void NeutrinoCandidateProducer::produce( Event& evt, const EventSetup& ) {
   try {
     evt.getByLabel( sourceEl, sigEl );
     evt.getByLabel( sourceMet, metVars );
-    cout << "sigEl size = " << sigEl->size() << endl;
     auto_ptr<Candidates> neutrinos( new Candidates );
     if( (sigEl->size() > 0) &&(metVars->size() > 0) ) {
       const Candidate & eCand = ( *sigEl )[ 0 ];
       const MissingEtVariables & metVar = ( *metVars )[ 0 ];
-      cout << "eCand pt = " << eCand.pt() << endl;
     
-      cout << ">>>>>>>>>>> PERFORMING NEUTRINO RECO " << endl; 
       //neutrino reconstruction
-
       TTHNuReco * nuReconstructor = new TTHNuReco();
       float pxLep = eCand.px();
       float pyLep = eCand.py();
