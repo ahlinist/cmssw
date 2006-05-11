@@ -2,38 +2,42 @@
 <DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../DetectorDescription/Schema/DDLSchema.xsd">
     
 <!-- 
+
 == CMS Forward Pixels Geometry ==
 
- @version 2.01.01 Dec 06, 2005
+ @version 3.01.01 May 08, 2006
  @created Dmitry Onoprienko
 
-== COMPONENT DEFINED BY THIS FILE: ==
+== Subsystem or component described by the file ==
 
-  Four types of panels are difined :
-  
-  PixelForwardPanel3Right corresponds to Panel 3RX on the drawings
-  PixelForwardPanel3Left  corresponds to Panel 3LX on the drawings
-  PixelForwardPanel4Right corresponds to Panel 4RX on the drawings
-  PixelForwardPanel4Left  corresponds to Panel 4LX on the drawings
+A panel that includes a base and three or four sensor plaquettes mounted on it.
+Every blade will have two such panels, one on each side.
 
-== Comments : ==
+== Root volume and its reference frame ==
 
- Reference frame for the root volume:
- Y is along the axis of the panel, points from narrow to wide side
- X is in the plane of the panel, ear is on X-positive side for "right" panels
- pozitive Z  points to plaquettes side.
+Four types of panels are difined :
+
+PixelForwardPanel3Right - right 3-plaquette panel (3RX on the drawings)
+PixelForwardPanel3Left  - left 3-plaquette panel (3LX on the drawings)
+PixelForwardPanel4Right - right 4-plaquette panel (4RX on the drawings)
+PixelForwardPanel4Left  - left 3-plaquette panel (4LX on the drawings)
+
+Y is along the axis of the panel, points from narrow to wide end.
+X is in the plane of the panel, ear is on X-positive side for "right" panels.
+Z is perpendicular to the plane of the panel, points to plaquettes side.
+
+== Positioning ==
+
+The file defines AnchorX, AnchorY, and AnchorZ 
+constants that describe the coordinates of the anchor point in the panel 
+root volume (PixelForwardPanelXXX) reference frame.
+Currently, [AnchorX] = [AnchorZ] = 0.
  
- Positioning this volume:
- coordinates of the ancor point ((0.,0.) on the drawing) in the root (PixelForwardPanel<XXX>) frame
- are given by [AncorX] and [AncorY]
 -->
 
 <ConstantsSection  label="Input" eval="true">
 
-<!-- Y-coordinates of active centers of sensors with respect to ancor point ((0.,0.) on the drawing)
-
-     These constants are taken from the design drawings of 3-R Panel dated 14 Oct 05
-     X and Y here correspond to Y and -X on the drawing -->
+   <!-- Y-coordinates of active centers of sensors with respect to ancor point ((0.,0.) on the drawing) -->
 
    <Constant name="ACp3y1" value = "19.469*mm"/>
    <Constant name="ACp3y2" value = "48.777*mm"/>
@@ -57,8 +61,9 @@
    
    <!-- Coordinates of the ancor point ((0.,0.) on the drawing) in the Root (PixelForwardPanel<ХХХ>) frame -->
 
-   <Constant name="AncorX"  value="0." />
-   <Constant name="AncorY"  value="[pixfwdPanelBase:AncorY]" />
+   <Constant name="AnchorX"  value="0.*mm" />
+   <Constant name="AnchorY"  value="[pixfwdPanelBase:AnchorY]" />
+   <Constant name="AnchorZ"  value="0.*mm" />
    
 </ConstantsSection>
 
@@ -101,17 +106,17 @@
   <PosPart copyNumber="1">
     <rParent name="PixelForwardPanel3Right"/>
     <rChild name="pixfwdplaq2x3:PixelForwardPlaquette2x3"/>
-    <Translation x="[AncorX]-[pixfwdplaq2x3:XDisp]" y="[AncorY]+[ACp3y1]-[pixfwdplaq2x3:YDisp]" z="[zPlaquette]" />
+    <Translation x="[AnchorX]-[pixfwdplaq2x3:AnchorX]" y="[AnchorY]+[ACp3y1]-[pixfwdplaq2x3:AnchorY]" z="[zPlaquette]" />
   </PosPart>
   <PosPart copyNumber="1">
     <rParent name="PixelForwardPanel3Right"/>
     <rChild name="pixfwdplaq2x4:PixelForwardPlaquette2x4"/>
-    <Translation x="[AncorX]-[pixfwdplaq2x4:XDisp]" y="[AncorY]+[ACp3y2]-[pixfwdplaq2x4:YDisp]" z="[zPlaquette]" />
+    <Translation x="[AnchorX]-[pixfwdplaq2x4:AnchorX]" y="[AnchorY]+[ACp3y2]-[pixfwdplaq2x4:AnchorY]" z="[zPlaquette]" />
   </PosPart>
   <PosPart copyNumber="1">
     <rParent name="PixelForwardPanel3Right"/>
     <rChild name="pixfwdplaq2x5:PixelForwardPlaquette2x5"/>
-    <Translation x="[AncorX]-[pixfwdplaq2x5:XDisp]" y="[AncorY]+[ACp3y3]-[pixfwdplaq2x5:YDisp]" z="[zPlaquette]" />
+    <Translation x="[AnchorX]-[pixfwdplaq2x5:AnchorX]" y="[AnchorY]+[ACp3y3]-[pixfwdplaq2x5:AnchorY]" z="[zPlaquette]" />
   </PosPart>
 
   <!-- Panel 3 Left -->
@@ -120,26 +125,26 @@
     <rParent name="PixelForwardPanel3Left"/>
     <rChild name="pixfwdPanelBase:PixelForwardPanelBase"/>
     <Translation x="0." y="0." z="[zPanel]" />
-    <rReflectionRotation name="PanelReflectionX" />
+    <rReflectionRotation name="pixfwdCommon:ReflectionX" />
   </PosPart>
   
   <PosPart copyNumber="1">
     <rParent name="PixelForwardPanel3Left"/>
     <rChild name="pixfwdplaq2x3:PixelForwardPlaquette2x3"/>
-    <Translation x="[AncorX]+[pixfwdplaq2x3:XDisp]" y="[AncorY]+[ACp3y1]+[pixfwdplaq2x3:YDisp]" z="[zPlaquette]" />
-    <rRotation name="PanelRotationZ180" />
+    <Translation x="[AnchorX]+[pixfwdplaq2x3:AnchorX]" y="[AnchorY]+[ACp3y1]+[pixfwdplaq2x3:AnchorY]" z="[zPlaquette]" />
+    <rRotation name="pixfwdCommon:Z180" />
   </PosPart>
   <PosPart copyNumber="1">
     <rParent name="PixelForwardPanel3Left"/>
     <rChild name="pixfwdplaq2x4:PixelForwardPlaquette2x4"/>
-    <Translation x="[AncorX]+[pixfwdplaq2x4:XDisp]" y="[AncorY]+[ACp3y2]+[pixfwdplaq2x4:YDisp]" z="[zPlaquette]" />
-    <rRotation name="PanelRotationZ180" />
+    <Translation x="[AnchorX]+[pixfwdplaq2x4:AnchorX]" y="[AnchorY]+[ACp3y2]+[pixfwdplaq2x4:AnchorY]" z="[zPlaquette]" />
+    <rRotation name="pixfwdCommon:Z180" />
   </PosPart>
   <PosPart copyNumber="1">
     <rParent name="PixelForwardPanel3Left"/>
     <rChild name="pixfwdplaq2x5:PixelForwardPlaquette2x5"/>
-    <Translation x="[AncorX]+[pixfwdplaq2x5:XDisp]" y="[AncorY]+[ACp3y3]+[pixfwdplaq2x5:YDisp]" z="[zPlaquette]" />
-    <rRotation name="PanelRotationZ180" />
+    <Translation x="[AnchorX]+[pixfwdplaq2x5:AnchorX]" y="[AnchorY]+[ACp3y3]+[pixfwdplaq2x5:AnchorY]" z="[zPlaquette]" />
+    <rRotation name="pixfwdCommon:Z180" />
   </PosPart>
   
   <!-- Panel 4 Right -->
@@ -153,23 +158,23 @@
   <PosPart copyNumber="1">
     <rParent name="PixelForwardPanel4Right"/>
     <rChild name="pixfwdplaq1x2Right:PixelForwardPlaquette1x2Right"/>
-    <Translation x="[AncorX]-[pixfwdplaq1x2Right:XDisp]" y="[AncorY]+[ACp4y1]-[pixfwdplaq1x2Right:YDisp]" z="[zPlaquette]" />
+    <Translation x="[AnchorX]-[pixfwdplaq1x2Right:AnchorX]" y="[AnchorY]+[ACp4y1]-[pixfwdplaq1x2Right:AnchorY]" z="[zPlaquette]" />
   </PosPart>
   <PosPart copyNumber="1">
     <rParent name="PixelForwardPanel4Right"/>
     <rChild name="pixfwdplaq2x3:PixelForwardPlaquette2x3"/>
-    <Translation x="[AncorX]-[pixfwdplaq2x3:XDisp]" y="[AncorY]+[ACp4y2]-[pixfwdplaq2x3:YDisp]" z="[zPlaquette]" />
+    <Translation x="[AnchorX]-[pixfwdplaq2x3:AnchorX]" y="[AnchorY]+[ACp4y2]-[pixfwdplaq2x3:AnchorY]" z="[zPlaquette]" />
   </PosPart>
   <PosPart copyNumber="1">
     <rParent name="PixelForwardPanel4Right"/>
     <rChild name="pixfwdplaq2x4:PixelForwardPlaquette2x4"/>
-    <Translation x="[AncorX]-[pixfwdplaq2x4:XDisp]" y="[AncorY]+[ACp4y3]-[pixfwdplaq2x4:YDisp]" z="[zPlaquette]" />
+    <Translation x="[AnchorX]-[pixfwdplaq2x4:AnchorX]" y="[AnchorY]+[ACp4y3]-[pixfwdplaq2x4:AnchorY]" z="[zPlaquette]" />
   </PosPart>
   <PosPart copyNumber="1">
     <rParent name="PixelForwardPanel4Right"/>
     <rChild name="pixfwdplaq1x5Left:PixelForwardPlaquette1x5Left"/>
-    <Translation x="[AncorX]+[pixfwdplaq1x5Left:XDisp]" y="[AncorY]+[ACp4y4]+[pixfwdplaq1x5Left:YDisp]" z="[zPlaquette]" />
-    <rRotation name="PanelRotationZ180" />
+    <Translation x="[AnchorX]+[pixfwdplaq1x5Left:AnchorX]" y="[AnchorY]+[ACp4y4]+[pixfwdplaq1x5Left:AnchorY]" z="[zPlaquette]" />
+    <rRotation name="pixfwdCommon:Z180" />
   </PosPart>
   
   <!-- Panel 4 Left -->
@@ -178,43 +183,33 @@
     <rParent name="PixelForwardPanel4Left"/>
     <rChild name="pixfwdPanelBase:PixelForwardPanelBase"/>
     <Translation x="0." y="0." z="[zPanel]" />
-    <rReflectionRotation name="PanelReflectionX" />
+    <rReflectionRotation name="pixfwdCommon:ReflectionX" />
   </PosPart>
   
   <PosPart copyNumber="1">
     <rParent name="PixelForwardPanel4Left"/>
     <rChild name="pixfwdplaq1x2Left:PixelForwardPlaquette1x2Left"/>
-    <Translation x="[AncorX]-[pixfwdplaq1x2Left:XDisp]" y="[AncorY]+[ACp4y1]-[pixfwdplaq1x2Left:YDisp]" z="[zPlaquette]" />
+    <Translation x="[AnchorX]-[pixfwdplaq1x2Left:AnchorX]" y="[AnchorY]+[ACp4y1]-[pixfwdplaq1x2Left:AnchorY]" z="[zPlaquette]" />
   </PosPart>
   <PosPart copyNumber="1">
     <rParent name="PixelForwardPanel4Left"/>
     <rChild name="pixfwdplaq2x3:PixelForwardPlaquette2x3"/>
-    <Translation x="[AncorX]+[pixfwdplaq2x3:XDisp]" y="[AncorY]+[ACp4y2]+[pixfwdplaq2x3:YDisp]" z="[zPlaquette]" />
-    <rRotation name="PanelRotationZ180" />
+    <Translation x="[AnchorX]+[pixfwdplaq2x3:AnchorX]" y="[AnchorY]+[ACp4y2]+[pixfwdplaq2x3:AnchorY]" z="[zPlaquette]" />
+    <rRotation name="pixfwdCommon:Z180" />
   </PosPart>
   <PosPart copyNumber="1">
     <rParent name="PixelForwardPanel4Left"/>
     <rChild name="pixfwdplaq2x4:PixelForwardPlaquette2x4"/>
-    <Translation x="[AncorX]+[pixfwdplaq2x4:XDisp]" y="[AncorY]+[ACp4y3]+[pixfwdplaq2x4:YDisp]" z="[zPlaquette]" />
-    <rRotation name="PanelRotationZ180" />
+    <Translation x="[AnchorX]+[pixfwdplaq2x4:AnchorX]" y="[AnchorY]+[ACp4y3]+[pixfwdplaq2x4:AnchorY]" z="[zPlaquette]" />
+    <rRotation name="pixfwdCommon:Z180" />
   </PosPart>
   <PosPart copyNumber="1">
     <rParent name="PixelForwardPanel4Left"/>
     <rChild name="pixfwdplaq1x5Right:PixelForwardPlaquette1x5Right"/>
-    <Translation x="[AncorX]+[pixfwdplaq1x5Right:XDisp]" y="[AncorY]+[ACp4y4]+[pixfwdplaq1x5Right:YDisp]" z="[zPlaquette]" />
-    <rRotation name="PanelRotationZ180" />
+    <Translation x="[AnchorX]+[pixfwdplaq1x5Right:AnchorX]" y="[AnchorY]+[ACp4y4]+[pixfwdplaq1x5Right:AnchorY]" z="[zPlaquette]" />
+    <rRotation name="pixfwdCommon:Z180" />
   </PosPart>
   
 </PosPartSection>
-
-<RotationSection label="Root">
-  <ReflectionRotation name="PanelReflectionX"  phiX="180.*deg"  thetaX="90.*deg" 
-                                               phiY="90.*deg"   thetaY="90.*deg" 
-                                               phiZ="0.*deg"    thetaZ="0.*deg"        />
-  <Rotation name="PanelRotationZ180"  phiX="180.*deg"  thetaX="90.*deg" 
-                                      phiY="270.*deg"  thetaY="90.*deg" 
-                                      phiZ="0.*deg"    thetaZ="0.*deg"        />
-</RotationSection>
-
 
 </DDDefinition>

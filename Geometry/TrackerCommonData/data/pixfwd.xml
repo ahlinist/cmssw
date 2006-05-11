@@ -2,24 +2,43 @@
 <DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../DetectorDescription/Schema/DDLSchema.xsd">
     
 <!-- 
+
 == CMS Forward Pixels Geometry ==
 
- @version 2.01.01 Dec 06, 2005
+ @version 3.01.01 May 08, 2006
  @created Dmitry Onoprienko
 
-== COMPONENT DEFINED BY THIS FILE: ==
+== Subsystem or component described by the file ==
 
-  Root volumes for forward pixels. 
-  "PixelForwardZPlus" is +Z half of the detector,
-  "PixelForwardZMinus" is -Z half of the detector.
+Forward pixels endcap (contains two disks inside a service cylinder).
 
-== Comments : ==
+== Root volume and its reference frame ==
 
- Reference frame of the root volumes:
- X horizontal, Y vertical, Z along the beam line, pointing away from IP.
- 
- This is true for both endcaps, meaning that "PixelForwardZMinus" has to be positioned with "ZMinusRootRotation"
- also defined in this file. See pixfwdTest.xml for the example of placement.
+Two root volumes are defined:
+
+PixelForwardZPlus  : +Z half of the detector
+PixelForwardZMinus : -Z half of the detector
+
+X horizontal
+Y vertical
+Z along the beam line, pointing away from IP
+
+== Positioning ==
+
+Anchor point of this component is at the IP-side edge of the service cylider, on 
+the axis of the detector (see annotated drawings).
+The file defines [AnchorZ] constant that corresponds to the Z coordinate
+of the anchor point in the forward pixels endcap reference frame, and the
+[ZPixelForward] constant equal to the distance from CMS IP to the 
+anchor point. 
+
+Therefore, in the CMS globar reference frame,
+PixelForwardZPlus has to be positioned at 
+(0., 0., [pixfwd:ZPixelForward]-[pixfwd:AnchorZ]) with no rotation, and 
+PixelForwardZMinus has to be positioned at
+(0., 0., -[pixfwd:ZPixelForward]+[pixfwd:AnchorZ]) 
+with pixfwdCommon:Y180 rotation (180 degrees around Y axis).
+
  -->
 
 <!-- Root volumes -->
@@ -28,14 +47,11 @@
 
  <Constant name="RootRadius"       value="[pixfwdCylinder:CylindersOuterRmax]"/>
  <Constant name="RootHalfLength"   value="[pixfwdCylinder:CylindersOuterLength]/2."/>
+
+ <Constant name="AnchorZ"          value="-[RootHalfLength]"/>
+ <Constant name="ZPixelForward"    value="325.*mm"/>
  
 </ConstantsSection>
-
-<RotationSection label="Root">
-  <Rotation name="ZMinusRootRotation"  phiX="180.*deg"  thetaX=  "90.*deg" 
-                                       phiY= "90.*deg"  thetaY=  "90.*deg" 
-                                       phiZ=  "0.*deg"  thetaZ= "180.*deg" />
-</RotationSection>
 
 <SolidSection label="Root">
  <Tubs name="PixelForward" rMin="0." rMax="[RootRadius]" dz="[RootHalfLength]" startPhi="0." deltaPhi="360*deg" />
@@ -77,11 +93,12 @@
     <Translation x="0." y="0." z="-[RootHalfLength] + [Disk2Z]" />
   </PosPart>
   
-  <PosPart copyNumber="3">
-    <rParent name="PixelForwardZPlus"/>
-    <rChild name="pixfwdDisk:PixelForwardDiskZPlus"/>
-    <Translation x="0." y="0." z="-[RootHalfLength] + [Disk3Z]" />
-  </PosPart>
+<!-- UNCOMMENT TO SIMULATE THE THIRD DISK -->
+<!--  <PosPart copyNumber="3">-->
+<!--    <rParent name="PixelForwardZPlus"/>-->
+<!--    <rChild name="pixfwdDisk:PixelForwardDiskZPlus"/>-->
+<!--    <Translation x="0." y="0." z="-[RootHalfLength] + [Disk3Z]" />-->
+<!--  </PosPart>-->
 
   <!-- -Z endcap -->
 
@@ -97,11 +114,12 @@
     <Translation x="0." y="0." z="-[RootHalfLength] + [Disk2Z]" />
   </PosPart>
   
-  <PosPart copyNumber="3">
-    <rParent name="PixelForwardZMinus"/>
-    <rChild name="pixfwdDisk:PixelForwardDiskZMinus"/>
-    <Translation x="0." y="0." z="-[RootHalfLength] + [Disk3Z]" />
-  </PosPart>
+<!-- UNCOMMENT TO SIMULATE THE THIRD DISK -->
+<!--  <PosPart copyNumber="3">-->
+<!--    <rParent name="PixelForwardZMinus"/>-->
+<!--    <rChild name="pixfwdDisk:PixelForwardDiskZMinus"/>-->
+<!--    <Translation x="0." y="0." z="-[RootHalfLength] + [Disk3Z]" />-->
+<!--  </PosPart>-->
 
 </PosPartSection>
 
@@ -115,5 +133,6 @@
 <ConstantsSection label="ServiceCylinder" eval="true">
   <Constant name="ZCylinder"   value="-[RootHalfLength]"/>
 </ConstantsSection>
+
     
 </DDDefinition>
