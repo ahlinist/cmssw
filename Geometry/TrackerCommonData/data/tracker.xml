@@ -146,13 +146,13 @@
  <PosPart copyNumber="1">
    <rParent name="cms:Tracker"/>
    <rChild name="pixfwd:PixelForwardZPlus"/>
-   <Translation x="0." y="0." z="[ZPixelForward]+[pixfwd:RootHalfLength]" />
+   <Translation x="0." y="0." z="[pixfwd:ZPixelForward]-[pixfwd:AnchorZ]" />
  </PosPart>
  <PosPart copyNumber="1">
    <rParent name="cms:Tracker"/>
    <rChild name="pixfwd:PixelForwardZMinus"/>
-   <Translation x="0." y="0." z="-[ZPixelForward]-[pixfwd:RootHalfLength]" />
-   <rRotation name="pixfwd:ZMinusRootRotation" />
+   <Translation x="0." y="0." z="-[pixfwd:ZPixelForward]+[pixfwd:AnchorZ]" />
+   <rRotation name="pixfwdCommon:Y180" />
  </PosPart>
  <PosPart copyNumber="1">
    <rParent name="cms:Tracker"/>
