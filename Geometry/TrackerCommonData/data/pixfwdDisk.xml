@@ -2,22 +2,34 @@
 <DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../DetectorDescription/Schema/DDLSchema.xsd">
     
 <!-- 
+
 == CMS Forward Pixels Geometry ==
 
- @version 2.01.01 Dec 06, 2005
+ @version 3.01.01 May 08, 2006
  @created Dmitry Onoprienko
 
-== COMPONENT DEFINED BY THIS FILE: ==
+== Subsystem or component described by the file ==
 
-  Forward Pixels disk : +Z (PixelForwardDiskZPlus) and -Z(PixelForwardDiskZMinus) versions
+Forward Pixels disk.
 
-== Comments : ==
+== Root volume and its reference frame ==
 
- Reference frame of the root volume:
- 
- X horizontal
- Y vertical pointing up
- Z along the beam line perpendicular to the disk plane, points away from IP
+Two root volumes are defined: 
+
+  PixelForwardDiskZPlus   (Disks for Z+ endcap)
+  PixelForwardDiskZMinus  (Disks for Z- endcap)
+
+X horizontal<br>
+Y vertical pointing up<br>
+Z along the beam line perpendicular to the disk plane, points away from IP<br>
+
+Origin at the center of the disk.<br>
+
+== Positioning ==
+
+Ancor point coincides with the root reference frame origin.
+Disks are positioned into endcaps without any rotations.
+  
  -->
 
 
@@ -34,20 +46,20 @@
   <Constant name="OuterRingREdge"       value="159.5*mm"/>
   <Constant name="OuterRingEdge"        value= "1.00*mm"/>
   <Constant name="OuterRingHalfWidth"   value="29.50*mm"/>
-  
-  <Constant name="BladeAngle"       value="20.*deg"/>
-  <Constant name="BladeZShift"      value="5.0*mm"/>
+
+  <!-- Layout of panels in disks (left or right). Blades are numbered in 
+       increasing phi order in the disk frame. Therefore, in the global
+       frame they are numbered in increasing phi order for the Z Plus disks,
+       in decreasing phi order, starting with blade 12, for the Z Minus disks. -->
 
 <!--   "L" - left, "R" - right, "-" - no panel : 000000000111111111122222   -->
 <!--                                                 123456789012345678901234   -->
 <!--  <Constant name="PanelLayoutZPlus3"      value="RLLLLRLLLLLRRLLLLRLLLLLR" />-->
 <!--  <Constant name="PanelLayoutZPlus4"      value="LLLLLLRLLLLRLLLLLLRLLLLR" />-->
-<!--  <Constant name="PanelLayoutZMinus3"     value="LRRRRLRRRRRLLRRRRLRRRRRL" />-->
-<!--  <Constant name="PanelLayoutZMinus4"     value="RRRRRRLRRRRLRRRRRRLRRRRL" />-->
+<!--  <Constant name="PanelLayoutZMinus3"     value="LRRRRRLRRRRLLRRRRRLRRRRL" />-->
+<!--  <Constant name="PanelLayoutZMinus4"     value="LRRRRLRRRRRRLRRRRLRRRRRR" />-->
 
-<!-- Oops! DDL does not support string constants... -->
-  
-  <Constant name="PanelAncorRadius"   value="54.631"/>
+<!-- Oops! DDL does not support string constants... Cut-and-paste to algorithm calls below. -->
   
 </ConstantsSection>
 
@@ -187,166 +199,127 @@
 
 <!-- Blades -->
 
-<ConstantsSection label="Blades" eval="true">
-  <Constant name="radiusBlade"      value="[PanelAncorRadius]-[pixfwdBlade:AncorY]"/>
-</ConstantsSection>
-
-<RotationSection label="Blades">
-  <ReflectionRotation name="ReflectionX"  phiX="180.*deg"  thetaX="90.*deg" 
-                                          phiY= "90.*deg"  thetaY="90.*deg" 
-                                          phiZ=  "0.*deg"  thetaZ= "0.*deg" />
-</RotationSection>
-
   <!-- Z Plus Disk -->
 
 <Algorithm name="track:DDPixFwdBlades">
   <rParent name="pixfwdDisk:PixelForwardDiskZPlus"/>
-  <Numeric name="BladeAngle"   value="[BladeAngle]" />
-  <Numeric name="ZPlane"   value="0." />
-  <Numeric name="BladeZShift"  value="[BladeZShift]" />
+  <Numeric name="Endcap"   value="1." />
   <String  name="Child"    value="pixfwdBlade:PixelForwardBlade"/>
-  <Numeric name="ChildX"    value="0."/>
-  <Numeric name="ChildY"    value="[radiusBlade]"/>
-  <Numeric name="ChildZ"    value="0."/>
+  <Vector  name="ChildTranslation" type="numeric" nEntries="3"> 0., -[pixfwdBlade:AnchorY], 0. </Vector>
 </Algorithm>
 
   <!-- Z Minus Disk -->
 
 <Algorithm name="track:DDPixFwdBlades">
   <rParent name="pixfwdDisk:PixelForwardDiskZMinus"/>
-  <Numeric name="BladeAngle"   value="-[BladeAngle]" />
-  <Numeric name="ZPlane"   value="0." />
-  <Numeric name="BladeZShift"  value="-[BladeZShift]" />
+  <Numeric name="Endcap"   value="-1." />
   <String  name="Child"    value="pixfwdBlade:PixelForwardBlade"/>
-  <Numeric name="ChildX"    value="0."/>
-  <Numeric name="ChildY"    value="[radiusBlade]"/>
-  <Numeric name="ChildZ"    value="0."/>
-  <String  name="ChildRotation"    value="pixfwdDisk:ReflectionX"/>
+  <Vector  name="ChildTranslation" type="numeric" nEntries="3"> 0., -[pixfwdBlade:AnchorY], 0. </Vector>
+  <String  name="ChildRotation"    value="pixfwdCommon:ReflectionX"/>
 </Algorithm>
 
 <!-- Panels -->
 
 <ConstantsSection label="Panels" eval="true">
   <Constant name="zPanel"       value="[pixfwdBlade:RootHalfThickness]+[pixfwdPanel:RootHalfThickness]"/>
-  <Constant name="radiusPanel"  value="[PanelAncorRadius]-[pixfwdPanel:AncorY]"/>
 </ConstantsSection>
-
-<RotationSection label="Panels">
-  <Rotation name="Y180"  phiX="180.*deg"  thetaX=  "90.*deg" 
-                         phiY= "90.*deg"  thetaY=  "90.*deg" 
-                         phiZ=  "0.*deg"  thetaZ= "180.*deg" />
-</RotationSection>
 
   <!-- Z Plus Disk -->
 
 <Algorithm name="track:DDPixFwdBlades">
   <rParent name="pixfwdDisk:PixelForwardDiskZPlus"/>
-  <Numeric name="BladeAngle"    value="[BladeAngle]" />
-  <Numeric name="ZPlane"        value="0." />
-  <Numeric name="BladeZShift"   value="[BladeZShift]" />
+  <Numeric name="Endcap"        value="1." />
   <String  name="Child"         value="pixfwdPanel:PixelForwardPanel3Right"/>
-  <Numeric name="ChildX"        value="0."/>
-  <Numeric name="ChildY"        value="[radiusPanel]"/>
-  <Numeric name="ChildZ"        value="[zPanel]"/>
-  <String  name="FlagString"    value="RLLLLRLLLLLRRLLLLRLLLLLR" /> <!-- Panel Layout ZPlus 3 -->
+  <Vector  name="ChildTranslation" type="numeric" nEntries="3"> 0., -[pixfwdPanel:AnchorY], [zPanel] </Vector>
+  <String  name="FlagString"    value="RLLLLRLLLLLRRLLLLRLLLLLR" />  <!-- Panel Layout ZPlus 3  -->
   <String  name="FlagSelector"  value="R" />
 </Algorithm>
 
 <Algorithm name="track:DDPixFwdBlades">
   <rParent name="pixfwdDisk:PixelForwardDiskZPlus"/>
-  <Numeric name="BladeAngle"    value="[BladeAngle]" />
-  <Numeric name="ZPlane"        value="0." />
-  <Numeric name="BladeZShift"   value="[BladeZShift]" />
+  <Numeric name="Endcap"        value="1." />
   <String  name="Child"         value="pixfwdPanel:PixelForwardPanel3Left"/>
-  <Numeric name="ChildX"        value="0."/>
-  <Numeric name="ChildY"        value="[radiusPanel]"/>
-  <Numeric name="ChildZ"        value="[zPanel]"/>
-  <String  name="FlagString"    value="RLLLLRLLLLLRRLLLLRLLLLLR" /> <!-- Panel Layout ZPlus 3 -->
+  <Vector  name="ChildTranslation" type="numeric" nEntries="3"> 0., -[pixfwdPanel:AnchorY], [zPanel] </Vector>
+  <String  name="FlagString"    value="RLLLLRLLLLLRRLLLLRLLLLLR" />  <!-- Panel Layout ZPlus 3  -->
   <String  name="FlagSelector"  value="L" />
 </Algorithm>
 
 <Algorithm name="track:DDPixFwdBlades">
   <rParent name="pixfwdDisk:PixelForwardDiskZPlus"/>
-  <Numeric name="BladeAngle"    value="[BladeAngle]" />
-  <Numeric name="ZPlane"        value="0." />
-  <Numeric name="BladeZShift"   value="[BladeZShift]" />
+  <Numeric name="Endcap"        value="1." />
   <String  name="Child"         value="pixfwdPanel:PixelForwardPanel4Right"/>
-  <Numeric name="ChildX"        value="0."/>
-  <Numeric name="ChildY"        value="[radiusPanel]"/>
-  <Numeric name="ChildZ"        value="-[zPanel]"/>
-  <String  name="ChildRotation" value="pixfwdDisk:Y180"/>
-  <String  name="FlagString"    value="LLLLLLRLLLLRLLLLLLRLLLLR" /> <!-- Panel Layout ZPlus 4 -->
+  <Vector  name="ChildTranslation" type="numeric" nEntries="3"> 0., -[pixfwdPanel:AnchorY], -[zPanel] </Vector>
+  <String  name="ChildRotation" value="pixfwdCommon:Y180"/>
+  <String  name="FlagString"    value="LLLLLLRLLLLRLLLLLLRLLLLR" />  <!-- Panel Layout ZPlus 4  -->
   <String  name="FlagSelector"  value="R" />
 </Algorithm>
 
 <Algorithm name="track:DDPixFwdBlades">
   <rParent name="pixfwdDisk:PixelForwardDiskZPlus"/>
-  <Numeric name="BladeAngle"    value="[BladeAngle]" />
-  <Numeric name="ZPlane"        value="0." />
-  <Numeric name="BladeZShift"   value="[BladeZShift]" />
+  <Numeric name="Endcap"        value="1." />
   <String  name="Child"         value="pixfwdPanel:PixelForwardPanel4Left"/>
-  <Numeric name="ChildX"        value="0."/>
-  <Numeric name="ChildY"        value="[radiusPanel]"/>
-  <Numeric name="ChildZ"        value="-[zPanel]"/>
-  <String  name="ChildRotation" value="pixfwdDisk:Y180"/>
-  <String  name="FlagString"    value="LLLLLLRLLLLRLLLLLLRLLLLR" /> <!-- Panel Layout ZPlus 4 -->
+  <Vector  name="ChildTranslation" type="numeric" nEntries="3"> 0., -[pixfwdPanel:AnchorY], -[zPanel] </Vector>
+  <String  name="ChildRotation" value="pixfwdCommon:Y180"/>
+  <String  name="FlagString"    value="LLLLLLRLLLLRLLLLLLRLLLLR" />  <!-- Panel Layout ZPlus 4  -->
   <String  name="FlagSelector"  value="L" />
 </Algorithm>
 
-  <!-- Z Minus Disk -->
+   <!-- Z Minus Disk -->
 
 <Algorithm name="track:DDPixFwdBlades">
   <rParent name="pixfwdDisk:PixelForwardDiskZMinus"/>
-  <Numeric name="BladeAngle"    value="-[BladeAngle]" />
-  <Numeric name="ZPlane"        value="0." />
-  <Numeric name="BladeZShift"   value="-[BladeZShift]" />
+  <Numeric name="Endcap"        value="-1." />
   <String  name="Child"         value="pixfwdPanel:PixelForwardPanel3Right"/>
-  <Numeric name="ChildX"        value="0."/>
-  <Numeric name="ChildY"        value="[radiusPanel]"/>
-  <Numeric name="ChildZ"        value="[zPanel]"/>
-  <String  name="FlagString"    value="LRRRRLRRRRRLLRRRRLRRRRRL" /> <!-- Panel Layout ZMinus 3 -->
+  <Vector  name="ChildTranslation" type="numeric" nEntries="3"> 0., -[pixfwdPanel:AnchorY], [zPanel] </Vector>
+  <String  name="FlagString"    value="LRRRRRLRRRRLLRRRRRLRRRRL" />  <!-- Panel Layout ZMinus 3  -->
   <String  name="FlagSelector"  value="R" />
 </Algorithm>
 
 <Algorithm name="track:DDPixFwdBlades">
   <rParent name="pixfwdDisk:PixelForwardDiskZMinus"/>
-  <Numeric name="BladeAngle"    value="-[BladeAngle]" />
-  <Numeric name="ZPlane"        value="0." />
-  <Numeric name="BladeZShift"   value="-[BladeZShift]" />
+  <Numeric name="Endcap"        value="-1." />
   <String  name="Child"         value="pixfwdPanel:PixelForwardPanel3Left"/>
-  <Numeric name="ChildX"        value="0."/>
-  <Numeric name="ChildY"        value="[radiusPanel]"/>
-  <Numeric name="ChildZ"        value="[zPanel]"/>
-  <String  name="FlagString"    value="LRRRRLRRRRRLLRRRRLRRRRRL" /> <!-- Panel Layout ZMinus 3 -->
+  <Vector  name="ChildTranslation" type="numeric" nEntries="3"> 0., -[pixfwdPanel:AnchorY], [zPanel] </Vector>
+  <String  name="FlagString"    value="LRRRRRLRRRRLLRRRRRLRRRRL" />  <!-- Panel Layout ZMinus 3  -->
   <String  name="FlagSelector"  value="L" />
 </Algorithm>
 
 <Algorithm name="track:DDPixFwdBlades">
   <rParent name="pixfwdDisk:PixelForwardDiskZMinus"/>
-  <Numeric name="BladeAngle"    value="-[BladeAngle]" />
-  <Numeric name="ZPlane"        value="0." />
-  <Numeric name="BladeZShift"   value="-[BladeZShift]" />
+  <Numeric name="Endcap"        value="-1." />
   <String  name="Child"         value="pixfwdPanel:PixelForwardPanel4Right"/>
-  <Numeric name="ChildX"        value="0."/>
-  <Numeric name="ChildY"        value="[radiusPanel]"/>
-  <Numeric name="ChildZ"        value="-[zPanel]"/>
-  <String  name="ChildRotation" value="pixfwdDisk:Y180"/>
-  <String  name="FlagString"    value="RRRRRRLRRRRLRRRRRRLRRRRL" /> <!-- Panel Layout ZMinus 4 -->
+  <Vector  name="ChildTranslation" type="numeric" nEntries="3"> 0., -[pixfwdPanel:AnchorY], -[zPanel] </Vector>
+  <String  name="ChildRotation" value="pixfwdCommon:Y180"/>
+  <String  name="FlagString"    value="LRRRRLRRRRRRLRRRRLRRRRRR" />  <!-- Panel Layout ZMinus 4  -->
   <String  name="FlagSelector"  value="R" />
 </Algorithm>
 
 <Algorithm name="track:DDPixFwdBlades">
   <rParent name="pixfwdDisk:PixelForwardDiskZMinus"/>
-  <Numeric name="BladeAngle"    value="-[BladeAngle]" />
-  <Numeric name="ZPlane"        value="0." />
-  <Numeric name="BladeZShift"   value="-[BladeZShift]" />
+  <Numeric name="Endcap"        value="-1." />
   <String  name="Child"         value="pixfwdPanel:PixelForwardPanel4Left"/>
-  <Numeric name="ChildX"        value="0."/>
-  <Numeric name="ChildY"        value="[radiusPanel]"/>
-  <Numeric name="ChildZ"        value="-[zPanel]"/>
-  <String  name="ChildRotation" value="pixfwdDisk:Y180"/>
-  <String  name="FlagString"    value="RRRRRRLRRRRLRRRRRRLRRRRL" /> <!-- Panel Layout ZMinus 4 -->
+  <Vector  name="ChildTranslation" type="numeric" nEntries="3"> 0., -[pixfwdPanel:AnchorY], -[zPanel] </Vector>
+  <String  name="ChildRotation" value="pixfwdCommon:Y180"/>
+  <String  name="FlagString"    value="LRRRRLRRRRRRLRRRRLRRRRRR" />  <!-- Panel Layout ZMinus 4  -->
   <String  name="FlagSelector"  value="L" />
+</Algorithm>
+
+<!-- Nipples -->
+
+<Algorithm name="track:DDPixFwdBlades">
+  <rParent name="pixfwdDisk:PixelForwardDiskZPlus"/>
+  <Numeric name="Endcap"        value="1." />
+  <String  name="Child"         value="pixfwdNipple:PixelForwardNippleZPlus"/>
+  <String  name="FlagString"    value="YYYYYNYYYYYNYYYYYNYYYYYN" />
+  <String  name="FlagSelector"  value="Y" />
+</Algorithm>
+
+<Algorithm name="track:DDPixFwdBlades">
+  <rParent name="pixfwdDisk:PixelForwardDiskZMinus"/>
+  <Numeric name="Endcap"        value="-1." />
+  <String  name="Child"         value="pixfwdNipple:PixelForwardNippleZMinus"/>
+  <String  name="FlagString"    value="NYYYYYNYYYYYNYYYYYNYYYYY" />
+  <String  name="FlagSelector"  value="Y" />
 </Algorithm>
 
 </DDDefinition>

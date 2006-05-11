@@ -2,18 +2,21 @@
 <DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../DetectorDescription/Schema/DDLSchema.xsd">
     
 <!-- 
+
 == CMS Forward Pixels Geometry ==
 
- @version 2.01.01 Dec 06, 2005
+ @version 3.01.01 May 08, 2006
  @created Sunanda Banjeree
  @modified Dmitry Onoprienko
 
 == COMPONENT DEFINED BY THIS FILE: ==
 
-  Materials required by PixelForward geometry
+  Materials specific to forward pixels detector.
+
 -->
 
 <MaterialSection label="PixelForwardMaterial.xml">
+
   <CompositeMaterial name="Pix_Fwd_WireBond" density="2.0725*g/cm3" symbol=" " method="mixture by weight">
     <MaterialFraction fraction="0.84318456">
       <rMaterial name="materials:Silicon"/>
@@ -337,6 +340,7 @@
       <rMaterial name="materials:Fluorine"/>
     </MaterialFraction>
   </CompositeMaterial>
+  
 </MaterialSection>
 
 </DDDefinition>

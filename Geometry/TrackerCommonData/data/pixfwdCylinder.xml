@@ -2,9 +2,10 @@
 <DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../DetectorDescription/Schema/DDLSchema.xsd">
     
 <!-- 
+
 == CMS Forward Pixels Geometry ==
 
- @version 2.01.01 Dec 06, 2005
+ @version 3.01.01 May 08, 2006
  @created Dmitry Onoprienko
 
 == COMPONENT DEFINED BY THIS FILE: ==
@@ -13,8 +14,17 @@
   
 == Comments : ==
 
-  Currently, only three graphite cylinders are described. 
-  No ribs, cables, circuit boards, etc.
+Currently, only three graphite cylinders are described. No ribs, cables, coolant pipes, circuit boards, etc. 
+And unlike files for all other subsystems, this file does not define a root volume, but instead positions 
+new volumes directly into pixfwd:PixelForwardZPlus and pixfwd:PixelForwardZMinus, using 
+the pixfwd:ZCylinder constant defined in pixfwd.xml.
+
+The reason is that many components that should go into service cylinders have not been designed yet, 
+and it's not clear what shape the root volume will eventually have to have, what symmetry 
+between Z+ and Z- endcaps we will be able to use, and so on. Once the exact geometry is known, 
+the file will need to be modified to follow the standard scheme for forward pixels geometry - 
+root volume plus an ancor point for positioning. 
+  
 -->
 
 <ConstantsSection label="Cylinders" eval="true">

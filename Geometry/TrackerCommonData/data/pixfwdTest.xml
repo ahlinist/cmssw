@@ -2,20 +2,21 @@
 <DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../DetectorDescription/Schema/DDLSchema.xsd">
     
 <!-- 
+
 == CMS Forward Pixels Geometry ==
 
- @version 2.01.01 Dec 06, 2005
+ @version 3.01.01 May 08, 2006
  @created Dmitry Onoprienko
 
 == COMPONENT DEFINED BY THIS FILE: ==
 
   Root volume for testing forward pixels geometry.
+
 -->
 
 <ConstantsSection label="Root" eval="true">
-  <Constant name="ZPixelForward"            value="325.*mm"/>
   <Constant name="RootRadius"       value="[pixfwd:RootRadius] + 5.*mm"/>
-  <Constant name="RootHalfLength"   value="[ZPixelForward] + [pixfwd:RootHalfLength]*2. + 5.*mm"/>
+  <Constant name="RootHalfLength"   value="[pixfwd:ZPixelForward] + [pixfwd:RootHalfLength]*2. + 5.*mm"/>
 </ConstantsSection>
 
 <!-- Test root volume -->
@@ -39,14 +40,14 @@
   <PosPart copyNumber="1">
     <rParent name="TestRoot"/>
     <rChild name="pixfwd:PixelForwardZPlus"/>
-    <Translation x="0." y="0." z="[ZPixelForward]+[pixfwd:RootHalfLength]" />
+    <Translation x="0." y="0." z="[pixfwd:ZPixelForward]-[pixfwd:AnchorZ]" />
   </PosPart>
 
   <PosPart copyNumber="1">
     <rParent name="TestRoot"/>
     <rChild name="pixfwd:PixelForwardZMinus"/>
-    <Translation x="0." y="0." z="-[ZPixelForward]-[pixfwd:RootHalfLength]" />
-    <rRotation name="pixfwd:ZMinusRootRotation" />
+    <Translation x="0." y="0." z="-[pixfwd:ZPixelForward]+[pixfwd:AnchorZ]" />
+    <rRotation name="pixfwdCommon:Y180" />
   </PosPart>
 
 </PosPartSection>

@@ -2,35 +2,48 @@
 <DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../DetectorDescription/Schema/DDLSchema.xsd">
     
 <!-- 
+
 == CMS Forward Pixels Geometry ==
 
- @version 2.01.01 Dec 06, 2005
+ @version 3.01.01 May 08, 2006
  @created Dmitry Onoprienko
 
-== COMPONENT DEFINED BY THIS FILE: ==
+== Subsystem or component described by the file ==
 
-  Aluminum base of a blade with a cooling channel (No nipples, no panels). 
-  Each blade has this part.
+  Aluminum base of a blade with a cooling channel (no nipples, no panels). 
 
-== Comments : ==
+== Root volume and its reference frame ==
 
- Blade is implemented so that it consists of 
- "body" (narrow aluminum side),
- "cover" (wide aluminum side), and
- "tip" (part close to inner ring, common to both sides. 
- Cooling channel then goes into both "body" and "cover". 
+  "PixelForwardBlade"
 
- Reference frame of the mother volume:
- X is along the axis of the blade, from narrow to wider part
- Y is in the plane of the blade
- Z is perpendicular to the plane of the blade, pointing from "body" to "cover" side.
+  Y is along the axis of the blade, from narrow to wider end. Once the blade 
+         is positioned, its Y axis will be pointing away from the beam line.
+  Z is perpendicular to the plane of the blade, pointing from "body" (narrow) to "cover" (wide) side.
+
+== Positioning ==
+
+The file defines AnchorX, AnchorY, and AnchorZ 
+constants that describe the coordinates of the anchor point in the blade 
+root volume (PixelForwardBlade) reference frame.
+Currently, [AnchorX] = [AnchorZ] = 0.
+
+Since the origin of the "blade frame" with respect to which DDPixFwdBlades
+algorithm positions all one-per-blade items coinsides with the blade anchor point,
+the "child translation" vector passed to the algorithm should be
+(-[pixfwdBlade:AnchorX], -[pixfwdBlade:AnchorY], -[pixfwdBlade:AnchorZ]).
+
+== Additional comments ==
+
+Blade is implemented so that it consists of 
+"body" (narrow aluminum side), "cover" (wide aluminum side), and
+"tip" (part close to inner ring, common to both sides. 
+Cooling channel then goes into both "body" and "cover".
+
+Multiple boolean operations are used in describing the tip of the blade and
+the crossbar. As a result, IguanaCMS sometimes fails to visualize it properly.
+This seems to be a problem for visualization only, not for tracking at simulation time.
+
  -->
- 
-<ConstantsSection label="General" eval="true">
- <Constant name="Small"  value="0.01*mm" />  <!-- Small value used to make boolean-subtracted volumes
-                                                  slightly larger then their mothers, so that Iguana 
-                                                  can visualize them properly -->
-</ConstantsSection>
 
 <!-- Blade geometry parameters: Input from drawings -->
 
@@ -78,15 +91,15 @@
  <Constant name="RootHalfWidth" value="([L02]+[W03])/2." />
  <Constant name="RootHalfThickness" value="[BladeHalfThickness]" />
  
- <!-- Coordinate of ancor point (corresponds to (0.,0.) on panel drawing) in root frame.
-      This will be used in positioning the blade. -->
+ <!-- Coordinates of ancor point  -->
  
- <Constant name="AncorY" value="-[RootHalfLength]+[L10]" />
+ <Constant name="AnchorX" value="0." />
+ <Constant name="AnchorY" value="-[RootHalfLength]+[L10]" />
+ <Constant name="AnchorZ" value="0." />
  
- <!-- Coordinate of point 0 on Blade02.gif (may need to be adjusted if root volume is
-      modified. All other Y-coordinates are relative to it. -->
+ <!-- Coordinate of point 0 on Blade02.gif. All other Y-coordinates are relative to it. -->
 
- <Constant name="y00"  value="-[RootHalfLength]+[L04]+[L03]"/>
+ <Constant name="y00"  value="[AnchorY]-[L10]+[L04]+[L03]"/>
  
  <!-- Others -->
  
@@ -312,16 +325,16 @@
        h1="[W06]/2."         h2="[W06]/2."
        alp1="0.0"  alp2="0.0" phi="90*deg" />
                               
-  <Box name="PixelForwardBladeCover04_02" dx="[L06]/2." dy="[CoverHalfThickness]+[Small]" dz="[R04]" />
-  <Box name="PixelForwardBladeCover04_03" dx="[L06]/2." dy="[CoverHalfThickness]+[Small]" dz="[R04]" />
+  <Box name="PixelForwardBladeCover04_02" dx="[L06]/2." dy="[CoverHalfThickness]+[pixfwdCommon:SmallBool]" dz="[R04]" />
+  <Box name="PixelForwardBladeCover04_03" dx="[L06]/2." dy="[CoverHalfThickness]+[pixfwdCommon:SmallBool]" dz="[R04]" />
  
-  <Tubs name="PixelForwardBladeCover04_04" rMin="0." rMax="[R04]" dz="[CoverHalfThickness]+[Small]" 
+  <Tubs name="PixelForwardBladeCover04_04" rMin="0." rMax="[R04]" dz="[CoverHalfThickness]+[pixfwdCommon:SmallBool]" 
                                  startPhi="0." deltaPhi="360*deg" />
-  <Tubs name="PixelForwardBladeCover04_05" rMin="0." rMax="[R04]" dz="[CoverHalfThickness]+[Small]" 
+  <Tubs name="PixelForwardBladeCover04_05" rMin="0." rMax="[R04]" dz="[CoverHalfThickness]+[pixfwdCommon:SmallBool]" 
                                  startPhi="0." deltaPhi="360*deg" />
-  <Tubs name="PixelForwardBladeCover04_06" rMin="0." rMax="[R04]" dz="[CoverHalfThickness]+[Small]" 
+  <Tubs name="PixelForwardBladeCover04_06" rMin="0." rMax="[R04]" dz="[CoverHalfThickness]+[pixfwdCommon:SmallBool]" 
                                  startPhi="0." deltaPhi="360*deg" />
-  <Tubs name="PixelForwardBladeCover04_07" rMin="0." rMax="[R04]" dz="[CoverHalfThickness]+[Small]" 
+  <Tubs name="PixelForwardBladeCover04_07" rMin="0." rMax="[R04]" dz="[CoverHalfThickness]+[pixfwdCommon:SmallBool]" 
                                  startPhi="0." deltaPhi="360*deg" />
 
  <SubtractionSolid name="PixelForwardBladeCover04_int01">
@@ -449,8 +462,8 @@
                                
  <Tubs name="PixelForwardBladeTip01_01" rMin="[r03]" rMax="[r02]" dz="[BladeHalfThickness]" 
                                 startPhi="180.*deg+[A01]" deltaPhi="180.*deg-2.*[A01]" />
- <Box name="PixelForwardBladeTip01_02" dx="[W05]/2." dy="[e04]-[Small]" dz="[BladeHalfThickness]" />
- <Tubs name="PixelForwardBladeTip01_03" rMin="[R02]" rMax="[R02]*sqrt(2.)" dz="[BladeHalfThickness]+[Small]" 
+ <Box name="PixelForwardBladeTip01_02" dx="[W05]/2." dy="[e04]-[pixfwdCommon:SmallBool]" dz="[BladeHalfThickness]" />
+ <Tubs name="PixelForwardBladeTip01_03" rMin="[R02]" rMax="[R02]*sqrt(2.)" dz="[BladeHalfThickness]+[pixfwdCommon:SmallBool]" 
                                 startPhi="180.*deg" deltaPhi="180.*deg" />
  <Box name="PixelForwardBladeTip01_04" dx="[W04]/2." dy="[e05]" dz="[BladeHalfThickness]" />
  <Box name="PixelForwardBladeTip01_05" dx="[W04]/2." dy="[e05]" dz="[BladeHalfThickness]" />
@@ -469,7 +482,7 @@
  <UnionSolid name="PixelForwardBladeTip01_int03">
    <rSolid name="PixelForwardBladeTip01_int02" />
    <rSolid name="PixelForwardBladeTip01_02" />
-   <Translation x="0." y="-[r03]-[e04]-[Small]" z="0." />
+   <Translation x="0." y="-[r03]-[e04]-[pixfwdCommon:SmallBool]" z="0." />
  </UnionSolid>
  <SubtractionSolid name="PixelForwardBladeTip01">
    <rSolid name="PixelForwardBladeTip01_int03" />

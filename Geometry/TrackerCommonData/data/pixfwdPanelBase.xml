@@ -2,29 +2,32 @@
 <DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../DetectorDescription/Schema/DDLSchema.xsd">
     
 <!-- 
+
 == CMS Forward Pixels Geometry ==
 
- @version 2.01.01 Dec 06, 2005
+ @version 3.01.01 May 08, 2006
  @created Victoria Martin
  @modified Dmitry Onoprienko
 
-== COMPONENT DEFINED BY THIS FILE: ==
+== Subsystem or component described by the file ==
 
-  Berillium panel with VHDI.  No plaquettes, those will be mounted later.
+Berillium panel with VHDI (no plaquettes).
 
-== Comments : ==
+== Root volume and its reference frame ==
 
- Reference frame for the root volume (PixelForwardPanelBase) of the panel:
- Y is along the axis of the panel, points from narrow to wide side
- X is in the plane of the panel, ear is on X-positive side
- pozitive Z  points to VHDI side.
- 
- Positioning this volume:
- coordinates of the ancor point ((0.,0.) on the drawing) in the root (PixelForwardPanelBase) frame
- are given by [AncorX] and [AncorY]
- 
- Positioning plaquettes:
- coordinates of active sensors 
+Root volume : PixelForwardPanelBase
+
+Y is along the axis of the panel, points from narrow to wide end
+X is in the plane of the panel, ear is on X-positive side
+Z is perpendicular to the panel, points to VHDI side.
+
+== Positioning ==
+
+The file defines AnchorX, AnchorY, and AnchorZ
+constants that describe the coordinates of the anchor point in the panel base
+root volume (PixelForwardPanelBase) reference frame.
+Currently, [AnchorX] = [AnchorZ] = 0.
+
 -->
 
 
@@ -60,8 +63,8 @@
    <Constant name="EarHeihgt" value ="5.000*mm"/>
 
    <Constant name="BeThickness"    value="0.508*mm"/>
-   <Constant name="HDIThickness"   value="0.125*mm"/>
-   <Constant name="FilmThickness"  value="0.050*mm"/>
+   <Constant name="HDIThickness"   value="0.191*mm"/>
+   <Constant name="FilmThickness"  value="0.051*mm"/>
 </ConstantsSection>
 
 <ConstantsSection  label="Common" eval="true">
@@ -70,10 +73,11 @@
    <Constant name="RootHalfLength"     value="([Y9]-[Y1])/2." />
    <Constant name="RootHalfWidth"      value="[X10]" />
    
-   <!-- Coordinates of the ancor point ((0.,0.) on the drawing) in the Root (PixelForwardPanelBase) frame -->
+   <!-- Coordinates of the anchor point ((0.,0.) on the drawing) in the Root (PixelForwardPanelBase) frame -->
 
-   <Constant name="AncorX"  value="0." />
-   <Constant name="AncorY"  value="-[RootHalfLength]-[Y1]" />
+   <Constant name="AnchorX"  value="0.*mm" />
+   <Constant name="AnchorY"  value="-[RootHalfLength]-[Y1]" />
+   <Constant name="AnchorZ"  value="0.*mm" />
    
    <!-- Z-positions of layers -->
 
@@ -331,19 +335,19 @@
  <PosPart copyNumber="1">
    <rParent name="PixelForwardPanelBaseBe"/>
    <rChild name="PixelForwardPanelBaseMainBe"/>
-   <Translation x="[AncorX]" y="[AncorY]+[Y2]+[MainLength]/2." z="0." />
+   <Translation x="[AnchorX]" y="[AnchorY]+[Y2]+[MainLength]/2." z="0." />
  </PosPart>
 
  <PosPart copyNumber="1">
    <rParent name="PixelForwardPanelBaseBe"/>
    <rChild name="PixelForwardPanelBaseNoseBe"/>
-   <Translation x="[AncorX]" y="[AncorY]+[Y2]-[NoseLength]/2." z="0." />
+   <Translation x="[AnchorX]" y="[AnchorY]+[Y2]-[NoseLength]/2." z="0." />
  </PosPart>
 
  <PosPart copyNumber="1">
    <rParent name="PixelForwardPanelBaseBe"/>
    <rChild name="PixelForwardPanelBaseEarBe"/>
-   <Translation x="[AncorX]+[earX]" y="[AncorY]+[earY]" z="0." />
+   <Translation x="[AnchorX]+[earX]" y="[AnchorY]+[earY]" z="0." />
  </PosPart>
 
   <!-- Film -->
@@ -351,19 +355,19 @@
  <PosPart copyNumber="1">
    <rParent name="PixelForwardPanelBaseFilm"/>
    <rChild name="PixelForwardPanelBaseMainFilm"/>
-   <Translation x="[AncorX]" y="[AncorY]+[Y2]+[MainLength]/2." z="0." />
+   <Translation x="[AnchorX]" y="[AnchorY]+[Y2]+[MainLength]/2." z="0." />
  </PosPart>
 
  <PosPart copyNumber="1">
    <rParent name="PixelForwardPanelBaseFilm"/>
    <rChild name="PixelForwardPanelBaseNoseFilm"/>
-   <Translation x="[AncorX]" y="[AncorY]+[Y2]-[NoseLength]/2." z="0." />
+   <Translation x="[AnchorX]" y="[AnchorY]+[Y2]-[NoseLength]/2." z="0." />
  </PosPart>
 
  <PosPart copyNumber="1">
    <rParent name="PixelForwardPanelBaseFilm"/>
    <rChild name="PixelForwardPanelBaseEarFilm"/>
-   <Translation x="[AncorX]+[earX]" y="[AncorY]+[earY]" z="0." />
+   <Translation x="[AnchorX]+[earX]" y="[AnchorY]+[earY]" z="0." />
  </PosPart>
 
   <!-- HDI -->
@@ -371,19 +375,19 @@
  <PosPart copyNumber="1">
    <rParent name="PixelForwardPanelBaseHDI"/>
    <rChild name="PixelForwardPanelBaseMainHDI"/>
-   <Translation x="[AncorX]" y="[AncorY]+[Y2]+[MainLength]/2." z="0." />
+   <Translation x="[AnchorX]" y="[AnchorY]+[Y2]+[MainLength]/2." z="0." />
  </PosPart>
 
  <PosPart copyNumber="1">
    <rParent name="PixelForwardPanelBaseHDI"/>
    <rChild name="PixelForwardPanelBaseNoseHDI"/>
-   <Translation x="[AncorX]" y="[AncorY]+[Y2]-[NoseLength]/2." z="0." />
+   <Translation x="[AnchorX]" y="[AnchorY]+[Y2]-[NoseLength]/2." z="0." />
  </PosPart>
 
  <PosPart copyNumber="1">
    <rParent name="PixelForwardPanelBaseHDI"/>
    <rChild name="PixelForwardPanelBaseEarHDI"/>
-   <Translation x="[AncorX]+[earX]" y="[AncorY]+[earY]" z="0." />
+   <Translation x="[AnchorX]+[earX]" y="[AnchorY]+[earY]" z="0." />
  </PosPart>
 
 </PosPartSection>
