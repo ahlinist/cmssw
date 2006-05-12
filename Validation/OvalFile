@@ -3,8 +3,14 @@
  
 <watcher mail="yarba_j@fnal.gov">
  
+<!dir name="TrackerHits">
+
+<dir name="EcalHits">
+
+<dir name="HcalHits">
+
 <dir name="GlobalHits">
 
 <dir name="Mixing">
 
-<dir name="HcalHits">
+<dir name="HcalDigis">
