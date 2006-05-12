@@ -25,6 +25,12 @@
 
 #include <string>
 
+// Change log
+//
+//  1  mf 5/12/06	initialize debugEnabled to true, to avoid unitialized
+//			data detection in memory checks (and to be safe in
+//			getting enabled output independant of timings) 
+
 
 // user include files
 
@@ -32,7 +38,11 @@ namespace edm {
 
 struct MessageDrop {
 private:
-  MessageDrop() :  moduleName (""), runEvent("pre-events") { } 
+  MessageDrop() 
+  :  moduleName ("")
+  , runEvent("pre-events")
+  , debugEnabled(true) 					// change log 1
+  {  } 
 public:
   static MessageDrop * instance ();
   std::string moduleName;

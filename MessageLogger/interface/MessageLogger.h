@@ -15,6 +15,13 @@
 //		     See MessageService/interface/MessageLogger.h
 // $Id$
 //
+// =================================================
+// Change log
+//
+// 1 mf 5/11/06	    Added a space before the file/line string in LogDebug_
+//		    to avoid the run-together with the run and event number
+//
+// =================================================
 
 // system include files
 
@@ -113,8 +120,8 @@ class LogDebug_
 public:
   explicit LogDebug_( std::string const & id, std::string const & file, int line ) 
     : ap( new MessageSender(ELsuccess,id) )
-  { *this << onlyLowestDirectory(file) << ":" << line << "\n"; }
-
+  { *this << " " << onlyLowestDirectory(file) << ":" << line << "\n"; }
+							// change log 1
   template< class T >
     LogDebug_ & 
     operator<< (T const & t)  { (*ap) << t; return *this; }
@@ -161,10 +168,10 @@ public:
 #define LogDebug(id) edm::Suppress_LogDebug_();
 #else
 #define LogDebug(id)                                            \
-  if (edm::MessageDrop::instance()->debugEnabled )               \
+  if ( edm::MessageDrop::instance()->debugEnabled )       	 \
           edm::LogDebug_(id, __FILE__, __LINE__)                               
 #endif
 #undef EDM_MESSAGELOGGER_SUPPRESS_LOGDEBUG
-
+							// change log 1 
 #endif  // MessageLogger_MessageLogger_h
 
