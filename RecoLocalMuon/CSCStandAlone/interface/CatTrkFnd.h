@@ -40,37 +40,6 @@ class CatTrkFnd
   num_strips=chamb_const.num_strips(id);
   gains=chamb_const.gain(id);
 
-  // for(int strp=0;strp<5;strp++)printf(" %f \n",gains[strp]);printf("\n");
-
-  /*
-  // try comparator digis
-
-  strip_stagger=0.5;
-  if(cid.station()==1)strip_stagger=0.0;
-  for(int layer=1;layer<=6;layer++){
-    int tri_strp[2],comp2,comp_time;
-    std::vector <CSCComparatorDigi> digis =  data.clctData().comparatorDigis(layer);
-    for(unsigned sid=0;sid<digis.size();sid++){
-      tri_strp[sid%2]=digis[sid].getStrip();
-      comp2=digis[sid].getComparator();
-      comp_time=digis[sid].getTimeBin();
-      if(sid%2==1){
-        float comp_hstrip;
-        if(comp2==4)comp_hstrip=tri_strp[0]-0.25;
-        if(comp2==5)comp_hstrip=tri_strp[0]+0.25;
-        if(comp2==6)comp_hstrip=tri_strp[1]-0.25;
-        if(comp2==7)comp_hstrip=tri_strp[1]+0.25;
-        comp_hstrip=comp_hstrip+1.0+(layer%2)*strip_stagger;
-        printf(" layer %d comp_hstrip %f time %d \n",layer,comp_hstrip,comp_time);
-      }
-    }
-  }
-
-
-  // comparator digis
-  */
-
-
   strip_stagger=0.5;
   if(cid.station()==1)strip_stagger=0.0;
 
