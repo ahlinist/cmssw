@@ -3,6 +3,8 @@
  
 <watcher mail="yarba_j@fnal.gov">
  
+<dir name="Performance">
+
 <!dir name="TrackerHits">
 
 <dir name="EcalHits">
@@ -14,3 +16,4 @@
 <dir name="Mixing">
 
 <dir name="HcalDigis">
+
