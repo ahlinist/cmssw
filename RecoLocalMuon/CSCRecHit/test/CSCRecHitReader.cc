@@ -253,17 +253,22 @@ void CSCRecHitReader::analyze(const Event & event, const EventSetup& eventSetup)
     
       // Check if exceeded the number of rechits per layer :
 
-      // 1) if we are dealing with  ME_1_a or b 
-      if ((id.station() == 1 && id.ring() == 1) || // ME_1_b
-	  (id.station() == 1 && id.ring() == 4))   // ME_1_a
-	{
-          // Then account for the ganged wires which gives you x 3 hits
-	  if ( rechit_count > maxRechitLayerGanged ) found_match = false;
+      // 1) if we are dealing with  ME_1_a or b
+      //      if ((id.station() == 1 && id.ring() == 1) || // ME_1_b
+      //	  (id.station() == 1 && id.ring() == 4))   // ME_1_a
 
-	} else {
-	  // 2) Other chambers don't have ganged wires:
+      // Tim: Only ME1a has ganged strips...
+
+      // 1) if we are dealing with ME_1_a
+      if ( id.station() == 1 && id.ring() == 4 )   // ME_1_a
+      {
+        // Then account for the ganged strips which gives you x 3 hits
+	if ( rechit_count > maxRechitLayerGanged ) found_match = false;
+
+      } else {
+      // 2) Other chambers don't have ganged strips:
 	  if ( rechit_count > maxRechitLayer ) found_match = false;
-	}
+      }
     
       
       // With best match, compute the various quantities needed:
