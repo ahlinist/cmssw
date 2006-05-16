@@ -5,6 +5,8 @@
  
 <dir name="Performance">
 
+<dir name="Geometry">
+
 <!dir name="TrackerHits">
 
 <dir name="EcalHits">
