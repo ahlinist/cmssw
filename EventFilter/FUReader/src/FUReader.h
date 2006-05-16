@@ -2,8 +2,8 @@
 #define DaqSource_FUReader_h
 
 /** \class FUReader
- *  $Date: 2005/11/22 09:50:42 $
- *  $Revision: 1.3 $
+ *  $Date: 2006/03/15 23:39:58 $
+ *  $Revision: 1.4 $
  *  \author E. Meschi - CERN PH/CMD
  */
 #include "EventFilter/Unit/interface/FURawEvent.h"
@@ -28,7 +28,7 @@ class FUReader : public DaqBaseReader, public EventSink {
 
   void sink(){}
  private:
-  void fillFEDs(const std::pair<int,int>&,
+  void fillFEDs(int, int,
 		FEDRawDataCollection&,
 		FURawEvent &);
 

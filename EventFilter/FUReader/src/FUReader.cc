@@ -1,7 +1,7 @@
 /** \file
  *
- *  $Date: 2005/11/22 09:50:51 $
- *  $Revision: 1.4 $
+ *  $Date: 2006/03/15 23:39:58 $
+ *  $Revision: 1.5 $
  *  \author E. Meschi - CERN PH/CMD
  */
 
@@ -15,6 +15,8 @@
 
 #include "EventFilter/Unit/interface/FUAdapter.h"
 #include <FWCore/ParameterSet/interface/ParameterSet.h>
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
+
 
 using namespace std;
 using namespace edm;
@@ -45,16 +47,17 @@ bool FUReader::fillRawData(EventID& eID,
 
   if(fwk_==0)
     {
-      cerr << "FUReader::Error:Fatal no factory registered yet" << endl;
-      exit(-1);
+      edm::LogError("FUReader")  << "Fatal error: No factory registered yet";
+      throw cms::Exception("NullPointer") 
+	<< "No factory registered yet for FUReader" << std::endl;
     }
   FURawEvent *event = fwk_->rqstEvent();
   runNum = fwk_->getRunNumber();
   eID = EventID(runNum,eventNum);
   eventNum++;
 
-
-
+  fillFEDs(0,FEDNumbering::lastFEDId(), data,*event);
+  /*
   fillFEDs(FEDNumbering::getSiPixelFEDIds(), data, *event);
   fillFEDs(FEDNumbering::getSiStripFEDIds(), data, *event);
 
@@ -64,23 +67,34 @@ bool FUReader::fillRawData(EventID& eID,
 
   fillFEDs(FEDNumbering::getEcalFEDIds(), data, *event);
   fillFEDs(FEDNumbering::getHcalFEDIds(), data, *event);
+  */
   event->reset(true);
   return true;
 }
 
-void FUReader::fillFEDs(const pair<int,int>& fedRange,
-			     FEDRawDataCollection& data,
-			     FURawEvent &event)
+void FUReader::fillFEDs(int b, int e,
+			FEDRawDataCollection& data,
+			FURawEvent &event)
 {
   // Fill the EventID
 
-  for (int fedId = fedRange.first; fedId <= fedRange.second; ++fedId ) 
+  for (int fedId = b; fedId <= e; ++fedId ) 
     {
-      FEDRawData& feddata = data.FEDData(fedId);
-      // Allocate space for header+trailer+payload
-      feddata.resize(event[fedId]->size_); 
-      memcpy(feddata.data(),event[fedId]->data_,event[fedId]->size_);
-    }  
+      FURawEvent::RawData *rd = event[fedId];
+      int sz = rd->size_;
+      if(sz > 0)
+	{
+	  if(!FEDNumbering::inRange(fedId))
+	    edm::LogError("FUReader")  
+	      << "Severe error: fed ID " << fedId 
+	      << " contains data but is out of valid ranges. ";	    
+	  FEDRawData& feddata = data.FEDData(fedId);
+	  // Allocate space for header+trailer+payload
+	  feddata.resize(sz); 
+	  memcpy(feddata.data(),event[fedId]->data_,sz);
+	}  
+
+    }
 }
 
 #include "PluginManager/ModuleDef.h"
