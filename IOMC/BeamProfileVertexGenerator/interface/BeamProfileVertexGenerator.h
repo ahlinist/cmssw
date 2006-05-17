@@ -46,9 +46,9 @@ public:
   /// set eta
   void eta(double m=0);
   /// set phi in radian
-  void phi(double m=0)   {myPhi=m;};
+  void phi(double m=0)      {myPhi=m;};
   /// set type
-  void setType(bool m=true) {myType=m;};
+  void setType(bool m=true);
   
 private:
   /** Copy constructor */
@@ -56,7 +56,6 @@ private:
   /** Copy assignment operator */
   BeamProfileVertexGenerator& operator = (const BeamProfileVertexGenerator& rhs);
 private:
-  edm::ParameterSet m_pBeamProfileVertexGenerator;
   double mySigmaX, mySigmaY;
   double myMeanX, myMeanY, myMeanZ;
   double myEta, myPhi, myTheta;
