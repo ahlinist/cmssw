@@ -4,9 +4,8 @@
  <use name=DataFormats/MuonReco>
  <use name=DataFormats/VertexReco>
  <use name=DataFormats/TrackReco>
- <use name=PhysicsTools/FWLite>
+ <use name=FWCore/FWLite>
  <use name=FWCore/Framework>
+ <use name=rootcintex>
  <use name=root>
- <use name=seal>
- <lib name="Cintex">
 </bin>
