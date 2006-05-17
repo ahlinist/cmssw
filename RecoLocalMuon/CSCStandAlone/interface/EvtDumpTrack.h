@@ -432,12 +432,12 @@ class EvtDump
  
  //root ntuple
  
- int ID1[10]; 
+ int ID1[36]; 
  float CSLP1[10];
  float CINT1[10];
  float ASLP1[10];
  float AINT1[10];
- int ID2[10];
+ int ID2[36];
  float CSLP2[10];
  float CINT2[10];
  float ASLP2[10];
