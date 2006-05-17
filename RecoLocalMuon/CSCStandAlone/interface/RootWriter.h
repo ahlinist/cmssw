@@ -12,12 +12,12 @@
 class TTrackingEvt 
 { 
  public:
-  Int_t ID1[10];
+  Int_t ID1[36];
   Float_t CSLP1[10];
   Float_t CINT1[10];
   Float_t ASLP1[10];
   Float_t AINT1[10];
-  Int_t ID2[10];
+  Int_t ID2[36];
   Float_t CSLP2[10];
   Float_t CINT2[10];
   Float_t ASLP2[10];
@@ -45,7 +45,7 @@ class RootWriter {
   void setup(){
     myFile = new TFile("CSCTrackLink.root", "RECREATE");
     trackingtree = new TTree("Tracking","CSCTracking");
-    trackingevt = trackingtree->Branch("EVENT", &tracking_evt, "ID1[10]/I:CSLP1[10]/F:CINT1[10]/F:ASLP1[10]/F:AINT1[10]/F:ID2[10]/I:CSLP2[10]/F:CINT2[10]/F:ASLP2[10]/F:AINT2[10]/F");
+    trackingevt = trackingtree->Branch("EVENT", &tracking_evt, "ID1[36]/I:CSLP1[10]/F:CINT1[10]/F:ASLP1[10]/F:AINT1[10]/F:ID2[36]/I:CSLP2[10]/F:CINT2[10]/F:ASLP2[10]/F:AINT2[10]/F");
   }
 
 
