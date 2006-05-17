@@ -15,7 +15,7 @@ using namespace std;
 using namespace reco;
 
 int main() {
-  gSystem->Load( "libPhysicsToolsFWLite" );
+  gSystem->Load( "libFWCoreFWLite" );
   AutoLibraryLoader::enable();
 
   TFile file( "reco.root" );
