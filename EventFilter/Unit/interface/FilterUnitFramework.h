@@ -5,10 +5,13 @@
 //
 //
 /// Author: E.Meschi PH/CMD
-/// 
+///
 //
 //  Modification history:
 //    $Log: FilterUnitFramework.h,v $
+//    Revision 1.5  2006/02/15 09:22:34  meschi
+//    changes to reflect EPStateMachine changes
+//
 //    Revision 1.4  2005/11/28 11:39:14  meschi
 //    Added debug web with fragment dump, added workdir configurable
 //
@@ -52,7 +55,7 @@
 //
 #if defined(linux) || defined(macosx)
 using namespace std;
-#endif      
+#endif
 
 #include <semaphore.h>
 #include <map>
@@ -60,11 +63,15 @@ using namespace std;
 #include <deque>
 #include <pthread.h>
 
+#include "toolbox/include/toolbox/task/TimerFactory.h"
 #include "toolbox/include/Task.h"
 #include "toolbox/include/TaskGroup.h"
 #include "toolbox/include/toolbox/Chrono.h"
 #include "xdata/include/xdata/UnsignedLong.h"
 #include "xoap/include/xoap/SOAPEnvelope.h"
+#include "xdata/include/xdata/Float.h"
+#include "xdata/include/xdata/Double.h"
+#include "xdata/include/xdata/String.h"
 #include "xoap/include/xoap/SOAPBody.h"
 #include "xoap/include/xoap/domutils.h"
 #include "xgi/include/xgi/Input.h"
@@ -78,17 +85,18 @@ using namespace std;
 
 
 //
-// forward-declarations 
+// forward-declarations
 
 
-class FilterUnitFramework : public FUAdapter/*, 
-			    public soapMonitorAdapter, 
+class FilterUnitFramework : public FUAdapter,
+			    public toolbox::task::TimerListener/*,
+			    public soapMonitorAdapter,
 			    public soapConfigurationListener,
 			    public xdaqApplication */
 {
 public:
 
-  //macro used by xdaq to register the plugin hook  
+  //macro used by xdaq to register the plugin hook
   XDAQ_INSTANTIATOR();
 
   // constructor
@@ -98,18 +106,25 @@ public:
 
   // The main interface for the HLT
   FURawEvent * rqstEvent();
-  
+
   unsigned long myId(){return instance_;}
   double birth(){return birth_.tstamp();}
-  
 
+  //monitoring infospace
+  xdata::InfoSpace *s_mon;
 
 private:
 
+  toolbox::task::Timer * Monitor_timer_;
+  void timeExpired (toolbox::task::TimerEvent& e);
+  xdata::Boolean MonitorTimerEnable_;
+  xdata::Double MonitorIntervalSec_;
+  xdata::Double MonitorEventsPerSec_;
+
   // config exec
-  
+
   xdata::UnsignedLong buInstance_;
-	
+
   // config Fw
 
   xdata::UnsignedLong queueSize_;
@@ -121,7 +136,7 @@ private:
 
   // exported (monitor) variables
 
-  xdata::UnsignedLong nbEvents_;		
+  xdata::UnsignedLong nbEvents_;
 
   // monitor thread configuration
   xdata::String add_;
@@ -130,7 +145,7 @@ private:
   xdata::String nam_;
 
   // stats
-  
+
   toolbox::Chrono birth_;
   double deltaT;
   vector<int> runs;
