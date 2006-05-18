@@ -23,3 +23,7 @@
 <library file=../src/CSCTrackLink.cc name=CSCTrackLink>
    <flags SEAL_PLUGIN_NAME="CSCTrackLink">
 </library>
+
+<library file=../src/Root2BinConverter.cc name=Root2BinConverter>
+   <flags SEAL_PLUGIN_NAME="Root2BinConverter">
+</library>
