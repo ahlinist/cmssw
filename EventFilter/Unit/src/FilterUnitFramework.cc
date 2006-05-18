@@ -3,10 +3,13 @@
 //
 //
 /// Author: E.Meschi PH/CMD
-/// 
+///
 //
 //  Modification history:
 //    $Log: FilterUnitFramework.cc,v $
+//    Revision 1.7  2006/02/15 09:22:34  meschi
+//    changes to reflect EPStateMachine changes
+//
 //    Revision 1.6  2006/02/13 09:41:42  meschi
 //    capture chdir error setting working directory
 //
@@ -65,7 +68,7 @@
 //    now compatible with cobra task and daqevent
 //
 //
-// 
+//
 
 #include "toolbox/include/toolbox/Chrono.h"
 #include "xcept/include/xcept/tools.h"
@@ -95,15 +98,15 @@ FilterUnitFramework::FilterUnitFramework(xdaq::ApplicationStub *s) : FUAdapter(s
   xoap::bind(this, &FilterUnitFramework::getStateMsg,"getState",XDAQ_NS_URI);
 
   exportParams();
-  
+
   // Bind web interface
    xgi::bind(this, &FilterUnitFramework::css           , "styles.css");
    xgi::bind(this, &FilterUnitFramework::defaultWebPage, "Default");
    xgi::bind(this, &FilterUnitFramework::debugWebPage, "debug");
-  
+
   LOG4CPLUS_INFO(this->getApplicationLogger(),
 		 xmlClass_ << instance_ << " constructor");
-  
+
   cout << xmlClass_ << instance_ << " constructor" << endl;
   pthread_mutex_init(&lock_,0);
   pthread_cond_init(&ready_,0);
@@ -128,6 +131,9 @@ void FilterUnitFramework::exportParams()
   runActive_ = false;
   workDir_ = "/tmp/evf";
   runNumber_ = 1;
+  MonitorTimerEnable_=false;
+  MonitorIntervalSec_=1.0;
+  MonitorEventsPerSec_=0.0;
   s->fireItemAvailable("buInstance",&buInstance_);
 
   // additional configuration specific to parametric FU
@@ -141,11 +147,23 @@ void FilterUnitFramework::exportParams()
   s->fireItemAvailable("runActive",&runActive_);
   s->fireItemAvailable("runNumber",&runNumber_);
   s->fireItemAvailable("workDir",&workDir_);
+
+  s->fireItemAvailable("MonitorTimerEnable",&MonitorTimerEnable_);
+  s->fireItemAvailable("MonitorIntervalSec",&MonitorIntervalSec_);
+
+  //Monitoring infospace and variables
+  s_mon = xdata::InfoSpace::get("urn:xdaq-monitorable:FUFramework");
+  s_mon->fireItemAvailable("nbEvents",&nbEvents_);
+  s_mon->fireItemAvailable("nbRecievedEvents",&nbReceivedEvents_);
+  s_mon->fireItemAvailable("nbRecievedFragments",&nbReceivedFragments_);
+  s_mon->fireItemAvailable("pendingRequests",&pendingRequests_);
+  s_mon->fireItemAvailable("nbDataErrors",&nbDataErrors_);
+  s_mon->fireItemAvailable("MonitorEventsPerSec",&MonitorEventsPerSec_);
 }
 
 FilterUnitFramework::~FilterUnitFramework()
 {
-  
+  xdata::InfoSpace::remove("urn:xdaq-monitorable:FUFramework");
   delete factory_;
   delete dump_;
 }
@@ -168,7 +186,7 @@ void FilterUnitFramework::configureAction(toolbox::Event::Reference e) throw (to
     retval = chdir(workdir);
   if(retval==0)
     {
-      LOG4CPLUS_INFO(this->getApplicationLogger(),"FU Working Directory set to " 
+      LOG4CPLUS_INFO(this->getApplicationLogger(),"FU Working Directory set to "
 		     << workdir);
     }
   else
@@ -176,6 +194,14 @@ void FilterUnitFramework::configureAction(toolbox::Event::Reference e) throw (to
       LOG4CPLUS_ERROR(this->getApplicationLogger(),"could not set working directory to" << workdir);
     }
   createBUArray();
+
+  //setup monitoring timer
+  if (MonitorTimerEnable_) {
+  	toolbox::task::getTimerFactory()->createTimer("monitoringTask");
+  	Monitor_timer_=toolbox::task::getTimerFactory()->getTimer("monitoringTask");
+  	Monitor_timer_->stop();
+  }
+
 }
 
 void FilterUnitFramework::enableAction(toolbox::Event::Reference e) throw (toolbox::fsm::exception::Exception)
@@ -192,7 +218,17 @@ void FilterUnitFramework::enableAction(toolbox::Event::Reference e) throw (toolb
   unsigned int allocfset = 1;
   LOG4CPLUS_INFO(this->getApplicationLogger(),"FU sends initial allocate N=" << queueSize_);
   sendAllocate(buInstance_, queueSize_, allocfset);
-  nbEvents_ = 0;       	  
+  nbEvents_ = 0;
+  //start monitoring timer
+  if (MonitorTimerEnable_) {
+  	toolbox::TimeInterval interval;
+  	interval.msec(long(1000000.0*MonitorIntervalSec_));
+  	toolbox::TimeVal startTime;
+  	startTime = toolbox::TimeVal::gettimeofday();
+  	Monitor_timer_->start();
+  	Monitor_timer_->scheduleAtFixedRate(startTime, this, interval, s_mon, "monitoringTask" );
+  }
+
   LOG4CPLUS_INFO(this->getApplicationLogger(),"Run Started...");
 }
 
@@ -210,7 +246,7 @@ void FilterUnitFramework::resumeAction(toolbox::Event::Reference e) throw (toolb
 
   mutex_->give();
   LOG4CPLUS_INFO(this->getApplicationLogger(),"Run Resumed...");
-}  
+}
 
 #include <pthread.h>
 #include <sys/types.h>
@@ -252,7 +288,7 @@ xoap::MessageReference FilterUnitFramework::getStateMsg(xoap::MessageReference m
 						     "http://www.w3.org/2001/XMLSchema-instance");
   stateElement.addAttribute(stateTypeName, "xsd:string");
   stateElement.addTextNode(fsm_->stateName_);
-  
+
   return responseMsg;
 }
 
@@ -267,17 +303,17 @@ xoap::MessageReference FilterUnitFramework::getStateMsg(xoap::MessageReference m
 
 using namespace cgicc;
 
-void FilterUnitFramework::defaultWebPage(xgi::Input *in, xgi::Output *out) 
+void FilterUnitFramework::defaultWebPage(xgi::Input *in, xgi::Output *out)
   throw (xgi::exception::Exception)
 {
-  
+
   *out << "<html>"                                                   << endl;
   *out << "<head>"                                                   << endl;
   *out << "<link type=\"text/css\" rel=\"stylesheet\"";
   *out << " href=\"/" <<  getApplicationDescriptor()->getURN()
        << "/styles.css\"/>"                                          << endl;
-  *out << "<title>" << getApplicationDescriptor()->getClassName() 
-       << getApplicationDescriptor()->getInstance() 
+  *out << "<title>" << getApplicationDescriptor()->getClassName()
+       << getApplicationDescriptor()->getInstance()
        << " MAIN</title>"                                            << endl;
   *out << "</head>"                                                  << endl;
   *out << "<body>"                                                   << endl;
@@ -292,7 +328,7 @@ void FilterUnitFramework::defaultWebPage(xgi::Input *in, xgi::Output *out)
   *out << "     height=\"64\""                                       << endl;
   *out << "     border=\"\"/>"                                       << endl;
   *out << "    <b>"                                                  << endl;
-  *out << getApplicationDescriptor()->getClassName() 
+  *out << getApplicationDescriptor()->getClassName()
        << getApplicationDescriptor()->getInstance()                  << endl;
   *out << "      " << fsm_->stateName_.toString()                    << endl;
   *out << "    </b>"                                                 << endl;
@@ -311,7 +347,7 @@ void FilterUnitFramework::defaultWebPage(xgi::Input *in, xgi::Output *out)
   *out << "  <td width=\"32\">"                                      << endl;
   *out << "  </td>"                                                  << endl;
   *out << "  <td width=\"32\">"                                      << endl;
-  *out << "    <a href=\"/" << getApplicationDescriptor()->getURN() 
+  *out << "    <a href=\"/" << getApplicationDescriptor()->getURN()
        << "/debug\">"                   << endl;
   *out << "      <img"                                               << endl;
   *out << "       align=\"middle\""                                  << endl;
@@ -324,7 +360,7 @@ void FilterUnitFramework::defaultWebPage(xgi::Input *in, xgi::Output *out)
   *out << "  </td>"                                                  << endl;
   *out << "</tr>"                                                    << endl;
   *out << "</table>"                                                 << endl;
-  
+
   *out << "<hr/>"                                                    << endl;
   *out << "<table>"                                                  << endl;
   *out << "<tr valign=\"top\">"                                      << endl;
@@ -414,7 +450,7 @@ void FilterUnitFramework::debugWebPage(xgi::Input *in, xgi::Output *out)
   *out << "  </td>"                                                  << endl;
   *out << "</tr>"                                                    << endl;
   *out << "</table>"                                                 << endl;
-  
+
   *out << "<hr/>"                                                    << endl;
   *out << "<table>"                                                  << endl;
   *out << "<tr valign=\"top\">"                                      << endl;
@@ -605,6 +641,27 @@ FURawEvent * FilterUnitFramework::rqstEvent()
 
   return ev;
 }
+
+
+/* Monitoring Timer Callback Function*/
+void FilterUnitFramework::timeExpired (toolbox::task::TimerEvent& e)
+{
+  static xdata::UnsignedLong nbLast_=nbEvents_;
+  xdata::UnsignedLong nbDiff_;
+
+
+  mutex_->take();
+  s_mon->lock();
+
+  nbDiff_=nbEvents_-nbLast_;
+  nbLast_=nbEvents_;
+  MonitorEventsPerSec_=((xdata::Double)nbDiff_)/(MonitorIntervalSec_);
+
+  s_mon->unlock();
+  mutex_->give();
+}
+
+
 
 XDAQ_INSTANTIATOR_IMPL(FilterUnitFramework);
 
