@@ -483,7 +483,8 @@ class RootWriterCSCMonitor {
       for (int icfeb=0; icfeb<5;icfeb++) { //loop over cfebs in a given chamber
 	const CSCCFEBData * mycfebData =  data.cfebData(icfeb);
 	if (mycfebData){
-	  for (int itime=0; itime<8; itime++) {//loop over time samples
+	  const unsigned nt = mycfebData->nTimeSamples(); 
+	  for (int itime=0; itime<nt; itime++) {//loop over time samples
 	    CSCCFEBTimeSlice * mytimeSlice = (CSCCFEBTimeSlice *)mycfebData->timeSlice(itime);
 	    
 	    if (mytimeSlice){
