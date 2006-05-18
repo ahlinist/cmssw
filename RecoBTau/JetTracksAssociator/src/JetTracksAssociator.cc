@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrea Rizzi
 //         Created:  Wed Apr 12 11:12:49 CEST 2006
-// $Id: JetTracksAssociation.cc,v 1.2 2006/05/18 13:59:13 arizzi Exp $
+// $Id: JetTracksAssociator.cc,v 1.1 2006/05/18 16:13:47 arizzi Exp $
 //
 //
 
@@ -101,7 +101,6 @@ JetTracksAssociator::~JetTracksAssociator()
 void
 JetTracksAssociator::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-   cout << "PRODUCI, merda" << endl;
 
    using namespace edm;
    Handle<CaloJetCollection> jets;
@@ -110,13 +109,18 @@ JetTracksAssociator::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    iEvent.getByType(tracks);
 
    std::auto_ptr<JetTracksAssociationCollection> jetTracks(associate(jets,tracks));
+   for(JetTracksAssociationCollection::const_iterator it = jetTracks->begin(); it != jetTracks->end(); it++)
+     {
+          cout << "Inside loop" << endl;
+         cout << "JET PX = "  << (*it).key->px();
+         cout << " size of collection "  << (*it).val.size() << endl;
+     }
 //   iEvent.put(jetTracks);
 }
 
 JetTracksAssociationCollection * JetTracksAssociator::associate(const edm::Handle<CaloJetCollection> & jets,
                                 const edm::Handle<TrackCollection> & tracks ) const
 {
-cout << "porco cazzo" << endl;
 JetTracksAssociationCollection * outputCollection = new JetTracksAssociationCollection();
  //loop on jets and associate
  for(size_t j=0; j < jets->size() ; j++)
