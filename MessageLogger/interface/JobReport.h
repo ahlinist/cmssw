@@ -197,6 +197,20 @@ namespace edm {
       void reportSkippedEvent(edm::EventID const& id);
 
 
+      ///
+      /// Report an exception, providing details of the problem as
+      /// a short description (Eg "SEALError") and a long description 
+      /// (Eg "Seal crashed because...")
+      /// Also overload this method to accept an optional standard exit code
+      void  reportError(std::string const& shortDesc,
+			std::string const& longDesc);
+      
+      void reportError(std::string const& shortDesc,
+		       std::string const& longDesc,
+		       int const& exitCode);
+      
+
+
    protected:
       boost::scoped_ptr<JobReportImpl>& impl() {return impl_;}
 
