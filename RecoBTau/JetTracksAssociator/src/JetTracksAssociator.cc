@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrea Rizzi
 //         Created:  Wed Apr 12 11:12:49 CEST 2006
-// $Id: JetTracksAssociator.cc,v 1.2 2006/05/18 16:55:55 arizzi Exp $
+// $Id: JetTracksAssociator.cc,v 1.3 2006/05/19 15:24:56 arizzi Exp $
 //
 //
 
@@ -35,12 +35,6 @@
 #include "DataFormats/BTauReco/interface/JetTracksAssociation.h"
 
 
-#include "MagneticField/Engine/interface/MagneticField.h"
-#include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
-#include "FWCore/Framework/interface/EventSetup.h"
-#include "FWCore/Framework/interface/ESHandle.h"
-#include "RecoBTag/BTagTools/interface/SignedImpactParameter3D.h"
-#include "RecoBTag/BTagTools/interface/SignedTransverseImpactParameter.h"
 
 #include "DataFormats/Math/interface/Vector3D.h"
 
@@ -86,8 +80,8 @@ class JetTracksAssociator : public edm::EDProducer {
 //
 JetTracksAssociator::JetTracksAssociator(const edm::ParameterSet& iConfig)
 {
-//   produces<reco::JetTracksAssociationCollection>();
-produces<float>();
+   produces<reco::JetTracksAssociationCollection>();
+//produces<float>();
 m_deltaRCut = 0.5;
 }
 
@@ -115,33 +109,9 @@ JetTracksAssociator::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    iEvent.getByLabel("mcone5",jets);
    Handle<TrackCollection> tracks;
    iEvent.getByType(tracks);
-   ESHandle<MagneticField> magneticField;
-   iSetup.get<IdealMagneticFieldRecord>().get(magneticField);   
-   SignedImpactParameter3D sip3d(magneticField.product());
-   SignedTransverseImpactParameter stip;
-   Vertex::Error e;
-   Vertex::Point p(0,0,0);
-   
-   Vertex dummyPV(p,e,1,1,1);
    
    std::auto_ptr<JetTracksAssociationCollection> jetTracks(associate(jets,tracks));
-   for(JetTracksAssociationCollection::const_iterator it = jetTracks->begin(); it != jetTracks->end(); it++)
-     {
-          cout << "Inside loop" << endl;
-          cout << "JET PX = "  << (*it).key->px() << " PY = " << (*it).key->py() << " PZ = " << (*it).key->pz() << endl;
-           cout << " size of collection "  << (*it).val.size() << endl;
-            GlobalVector direction((*it).key->px(),(*it).key->py(),(*it).key->pz());
-           edm::RefVector<reco::TrackCollection> tracks=(*it).val;
-            for(edm::RefVector<reco::TrackCollection>::const_iterator it=tracks.begin() ; it!=tracks.end(); it ++)
-            {
-              cout << " track pt = " << (*it)->pt() << endl;
-             
-              cout << "   stip = "<<  stip.apply(*(*it),direction,dummyPV).second.value() <<
-                      "   sip3d = " <<  sip3d.apply(*(*it),direction,dummyPV).second.value() << endl;
-
-            }
-     }
-//   iEvent.put(jetTracks);
+   iEvent.put(jetTracks);
 }
 
 JetTracksAssociationCollection * JetTracksAssociator::associate(const edm::Handle<CaloJetCollection> & jets,

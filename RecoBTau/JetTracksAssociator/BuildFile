@@ -4,9 +4,6 @@
 <use name=rootrflx>
 <use name=DataFormats/Math>
 
-<use name=MagneticField/Engine>
-<use name=MagneticField/Records>
-<use name=RecoBTag/BTagTools>
 <use name=DataFormats/VertexReco>
 
 <flags SEAL_PLUGIN_NAME="RecoBTauJetTracksAssociator">
@@ -18,7 +15,4 @@
    <use name=rootrflx>
    <use name=DataFormats/Math>
 
-<use name=MagneticField/Engine>
-<use name=MagneticField/Records>
-<use name=RecoBTag/BTagTools>
 </export>
