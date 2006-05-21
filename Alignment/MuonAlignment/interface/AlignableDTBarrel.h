@@ -1,12 +1,12 @@
-#ifndef Alignment_MuonAlignment_AlignableDTWheel_H
-#define Alignment_MuonAlignment_AlignableDTWheel_H
+#ifndef Alignment_MuonAlignment_AlignableDTBarrel_H
+#define Alignment_MuonAlignment_AlignableDTBarrel_H
 
 #include "Geometry/CommonDetUnit/interface/GeomDet.h"
 #include "Alignment/CommonAlignment/interface/Alignable.h"
 #include "Alignment/CommonAlignment/interface/AlignableComposite.h"
 #include "Alignment/CommonAlignment/interface/AlignableSurface.h"
 
-#include "Alignment/MuonAlignment/interface/AlignableDTStation.h"
+#include "Alignment/MuonAlignment/interface/AlignableDTWheel.h"
 
 #include "DataFormats/TrackingRecHit/interface/AlignmentPositionError.h"
 #include "Geometry/Vector/interface/Basic3DVector.h"
@@ -15,25 +15,25 @@
 
 class GeomDet;
 
-/// Concrete class for muon DT Wheel alignable.
+/// Concrete class for muon DT Barrel alignable.
 ///
 /// Misalignment can be de-/reactivated (forwarded to components).
 ///
 
-class AlignableDTWheel : public AlignableComposite 
+class AlignableDTBarrel : public AlignableComposite 
 {
 
  public:
 
-  AlignableDTWheel( const std::vector<AlignableDTStation*> dtStations );
+  AlignableDTBarrel( const std::vector<AlignableDTWheel*> dtWheels );
 
-  ~AlignableDTWheel();
+  ~AlignableDTBarrel();
   
   virtual std::vector<Alignable*> components() const 
   {
 
         std::vector<Alignable*> result;
-        result.insert( result.end(), theDTStations.begin(), theDTStations.end() );
+        result.insert( result.end(), theDTWheels.begin(), theDTWheels.end() );
         return result;
 
   }
@@ -48,23 +48,25 @@ class AlignableDTWheel : public AlignableComposite
   // get the Surface
   AlignableSurface computeSurface() ;
 
-  AlignableDTStation &station(int i);  
+  AlignableDTWheel &wheel(int i);  
   
   virtual void twist(float);
 
   /// Return alignable object identifier
-  virtual int alignableObjectId() const { return AlignableObjectId::AlignableDTWheel; }
+  virtual int alignableObjectId() const { return AlignableObjectId::AlignableDTBarrel; }
 
-  /// Printout muon DT wheel information (not recursive)
-  friend std::ostream& operator << ( std::ostream&, const AlignableDTWheel& );
+  /// Printout muon Barrel information (not recursive)
+  friend std::ostream& operator << ( std::ostream&, const AlignableDTBarrel& );
 
-  /// Recursive printout of the muon DT wheel structure
+  /// Recursive printout of the muon Barrel structure
   void dump( void );
+
+
 
 
 private:
 
-  std::vector<AlignableDTStation*> theDTStations;
+  std::vector<AlignableDTWheel*> theDTWheels;
 
 
 };
