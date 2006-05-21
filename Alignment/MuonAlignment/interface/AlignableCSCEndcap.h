@@ -1,12 +1,12 @@
-#ifndef Alignment_MuonAlignment_AlignableDTWheel_H
-#define Alignment_MuonAlignment_AlignableDTWheel_H
+#ifndef Alignment_MuonAlignment_AlignableCSCEndcap_H
+#define Alignment_MuonAlignment_AlignableCSCEndcap_H
 
 #include "Geometry/CommonDetUnit/interface/GeomDet.h"
 #include "Alignment/CommonAlignment/interface/Alignable.h"
 #include "Alignment/CommonAlignment/interface/AlignableComposite.h"
 #include "Alignment/CommonAlignment/interface/AlignableSurface.h"
 
-#include "Alignment/MuonAlignment/interface/AlignableDTStation.h"
+#include "Alignment/MuonAlignment/interface/AlignableCSCStation.h"
 
 #include "DataFormats/TrackingRecHit/interface/AlignmentPositionError.h"
 #include "Geometry/Vector/interface/Basic3DVector.h"
@@ -15,25 +15,25 @@
 
 class GeomDet;
 
-/// Concrete class for muon DT Wheel alignable.
+/// Concrete class for muon CSC Endcap alignable.
 ///
 /// Misalignment can be de-/reactivated (forwarded to components).
 ///
 
-class AlignableDTWheel : public AlignableComposite 
+class AlignableCSCEndcap : public AlignableComposite 
 {
 
  public:
 
-  AlignableDTWheel( const std::vector<AlignableDTStation*> dtStations );
+  AlignableCSCEndcap( const std::vector<AlignableCSCStation*> cscStations );
 
-  ~AlignableDTWheel();
+  ~AlignableCSCEndcap();
   
   virtual std::vector<Alignable*> components() const 
   {
 
         std::vector<Alignable*> result;
-        result.insert( result.end(), theDTStations.begin(), theDTStations.end() );
+        result.insert( result.end(), theCSCStations.begin(), theCSCStations.end() );
         return result;
 
   }
@@ -48,23 +48,24 @@ class AlignableDTWheel : public AlignableComposite
   // get the Surface
   AlignableSurface computeSurface() ;
 
-  AlignableDTStation &station(int i);  
+  AlignableCSCStation &station(int i);  
   
   virtual void twist(float);
 
   /// Return alignable object identifier
-  virtual int alignableObjectId() const { return AlignableObjectId::AlignableDTWheel; }
+  virtual int alignableObjectId() const { return AlignableObjectId::AlignableCSCEndcap; }
 
-  /// Printout muon DT wheel information (not recursive)
-  friend std::ostream& operator << ( std::ostream&, const AlignableDTWheel& );
+  /// Printout muon End Cap information (not recursive)
+  friend std::ostream& operator << ( std::ostream&, const AlignableCSCEndcap& );
 
-  /// Recursive printout of the muon DT wheel structure
+  /// Recursive printout of the muon End Cap structure
   void dump( void );
+
 
 
 private:
 
-  std::vector<AlignableDTStation*> theDTStations;
+  std::vector<AlignableCSCStation*> theCSCStations;
 
 
 };
