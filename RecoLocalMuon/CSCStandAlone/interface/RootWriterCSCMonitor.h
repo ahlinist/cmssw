@@ -1,8 +1,8 @@
 //Authors: Nicole Ippolito
 
 
-#ifndef RootWriterCathodeStan_h
-#define RootWriterCathodeStan_h
+#ifndef RootWriterCSCMonitor_h
+#define RootWriterCSCMonitor_h
 
 #include "EventFilter/CSCRawToDigi/interface/CSCDDUEventData.h"
 #include "DataFormats/CSCDigi/interface/CSCStripDigi.h"
@@ -484,7 +484,7 @@ class RootWriterCSCMonitor {
 	const CSCCFEBData * mycfebData =  data.cfebData(icfeb);
 	if (mycfebData){
 	  const unsigned nt = mycfebData->nTimeSamples(); 
-	  for (int itime=0; itime<nt; itime++) {//loop over time samples
+	  for (unsigned int itime=0; itime<nt; itime++) {//loop over time samples
 	    CSCCFEBTimeSlice * mytimeSlice = (CSCCFEBTimeSlice *)mycfebData->timeSlice(itime);
 	    
 	    if (mytimeSlice){
