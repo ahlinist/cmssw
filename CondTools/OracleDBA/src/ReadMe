@@ -14,7 +14,7 @@ How to prepare a detector pool schema
   pool_setup_database -f dbsetup_CondIOV_2.0.xml -d CondCoreIOVService -c oracle://devdb10/CMS_COND_ECAL_POOL_ADMIN -u CMS_COND_ECAL_POOL_ADMIN -p ***
   pool_build_object_relational_mapping -f mapping_EcalObjects_1.0.xml -d CondFormatsEcalObjects -c oracle://devdb10/CMS_COND_ECAL_POOL_ADMIN -u CMS_COND_ECAL_POOL_ADMIN -p ***
   pool_setup_database -f dbsetup_EcalObjects_1.0.xml -d CondFormatsEcalObjects -c oracle://devdb10/CMS_COND_ECAL_POOL_ADMIN -u CMS_COND_ECAL_POOL_ADMIN -p ***
-  sqlplus CMS_COND_ECAL_POOL_ADMIN@devdb10/*** < ../sql/create_metadata.sql
+  sqlplus CMS_COND_ECAL_POOL_ADMIN@devdb10/*** < ../sql/createMetadata.sql
   sqlplus CMS_COND_ECAL_POOL_ADMIN@devdb10/*** < ../sql/addTime_2.0.sql
   Note: addTime_2.0.sql time type has to match the declared time type in mapping_CondIOV_2.0.xml
 
