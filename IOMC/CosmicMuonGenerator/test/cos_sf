@@ -2,7 +2,8 @@
   cout << "macro cos_sf: generate cosmic muons at surface" << endl;
   gROOT->Reset();
   gROOT->LoadMacro("IOMC/CosmicMuonGenerator/src/CosmicMuonGenerator.cc");
-  gROOT->LoadMacro("IOMC/CosmicMuonGenerator/src/PhaseSpacePart.cc");
+  gROOT->LoadMacro("IOMC/CosmicMuonGenerator/src/CMSCGEN.cc");
+  gROOT->LoadMacro("IOMC/CosmicMuonGenerator/src/CMSCGENnorm.cc");
   gROOT->LoadMacro("IOMC/CosmicMuonGenerator/src/SingleParticleEvent.cc");
 
 #define ROOT_INTERACTIVE true
@@ -13,7 +14,9 @@
     CosmicMuonGenerator CosSfGen;
     // set up generator
     CosSfGen.setNumberOfEvents(100);
-    CosSfGen.setRanSeed(122333);
+    CosSfGen.setRanSeed(123456);
+    CosSfGen.setMinE(2.);  	       // could be set higher for more muons to cross CMS  
+    CosSfGen.setMaxE(10000.);  
     CosSfGen.setMaxTheta(88.);         // "default" value for surface
     CosSfGen.setElossScaleFactor(0.0); // "default" value for surface
     // run the generator (in this order)
@@ -24,7 +27,7 @@
     //*******************************
 
 #if ROOT_INTERACTIVE
-  double Weight = Rate/phi->GetEntries();
+  double Weight = Rate/phi->GetEntries();  
   ene->Scale(Weight);
   the->Scale(Weight);
   phi->Scale(Weight);
