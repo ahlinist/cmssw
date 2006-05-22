@@ -1,3 +1,4 @@
 -- Metadata table
 CREATE TABLE "METADATA" ( "NAME" VARCHAR2(4000), "TOKEN" VARCHAR2(4000) NOT NULL, CONSTRAINT "METADATA_PK" PRIMARY KEY ( "NAME" ));
---don't know who to grant select to public to all known schemas...
+--grant select to public 
+GRANT SELECT ON "METADATA" TO PUBLIC;
