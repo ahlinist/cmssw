@@ -2,15 +2,17 @@
 #define CosmicMuonGenerator_h
 //
 // CosmicMuonGenerator by droll (04/DEC/2005)
+// modified by P. Biallass 29.03.2006 to implement new cosmic generator (CMSCGEN.cc) 
 //
 
 // include files
-#include "IOMC/CosmicMuonGenerator/src/CosmicMuonFunction.cc"
+#include "IOMC/CosmicMuonGenerator/interface/CMSCGENnorm.h"
+#include "IOMC/CosmicMuonGenerator/interface/CMSCGEN.h"
 #include "IOMC/CosmicMuonGenerator/interface/CosmicMuonParameters.h"
-#include "IOMC/CosmicMuonGenerator/interface/PhaseSpacePart.h"
 #include "IOMC/CosmicMuonGenerator/interface/SingleParticleEvent.h"
 #include <iostream>
 #include "TRandom2.h"
+
 
 using namespace std;
 
@@ -19,23 +21,30 @@ class CosmicMuonGenerator{
 public:
   // constructor
   CosmicMuonGenerator(){
+    //initialize class which normalizes flux (added by P.Biallass 29.3.2006)
+    Norm = new CMSCGENnorm();
+    //initialize class which produces the cosmic muons  (modified by P.Biallass 29.3.2006)
+    Cosmics = new CMSCGEN();
     // set default control parameters
     NumberOfEvents = 100;
     RanSeed = 123456;
-    MinE =     10.;
-    MaxE =   5000.;
+    MinE =     2.;
+    MaxE =   10000.;
     MinTheta =  0.*Deg2Rad;
-    MaxTheta = 80.*Deg2Rad;
+    MaxTheta = 88.*Deg2Rad;
     MinPhi =    0.*Deg2Rad;
     MaxPhi =  360.*Deg2Rad;
     MinT0  = -12.5;
     MaxT0  =  12.5;
     ElossScaleFactor = 1.0;
     EventRate = 0.;
+    rateErr_stat = 0.;
+    rateErr_syst = 0.;
 
     SumIntegrals = 0.;
     Ngen = 0.;
     Nsel = 0.;
+    Ndiced = 0.;
     NotInitialized = true;
     Target3dRadius = 0.;
     SurfaceRadius = 0.;
@@ -51,11 +60,20 @@ public:
     cout << endl;
   }
   // destructor
-  ~CosmicMuonGenerator(){}
+  ~CosmicMuonGenerator(){
+    delete Norm; 
+    delete Cosmics;
+  }
   // event with one particle
   SingleParticleEvent OneMuoEvt;
+ 
+ 
 
 private:
+  //initialize class which normalizes flux (added by P.Biallass 29.3.2006)
+  CMSCGENnorm*  Norm ;
+  //initialize class which produces the cosmic muons  (modified by P.Biallass 29.3.2006)
+  CMSCGEN* Cosmics ; 
   // default control parameters
   unsigned int NumberOfEvents; // number of events to be generated
   unsigned int RanSeed; // seed of random number generator
@@ -69,14 +87,17 @@ private:
   double MaxT0;    // max. t0   [ns]
   double ElossScaleFactor; // scale factor for energy loss
   double EventRate; // number of muons per second [Hz]
+  double rateErr_stat; // stat. error of number of muons per second [Hz]
+  double rateErr_syst; // syst. error of number of muons per second [Hz] from error of known flux
   // other stuff needed
   double SumIntegrals; // sum of phase space integrals
-  TRandom2 RanGen; // random number generator (periodicity > 10**14)
-  PhaseSpacePart V[30]; // phase pace parts
   double Ngen; // number of generated events
   double Nsel; // number of selected events
+  double Ndiced; // number of diced events
   double Target3dRadius; // radius of sphere around target (cylinder)
   double SurfaceRadius; // radius for area on surface that has to be considered (for event generation)
+  // random number generator (periodicity > 10**14)
+  TRandom2 RanGen; 
   // check user input
   bool NotInitialized;
   void checkIn();
@@ -101,13 +122,13 @@ public:
   void setElossScaleFactor(double ElossScaleFact);
   // initialize the generator
   void initialize();
-  // generate next event/muon
-  void nextEvent();
-  // prints rate + statistics
+   // prints rate + statistics
   void terminate();
   // initialize, generate and terminate the Cosmic Muon Generator
   void runCMG();
   // returns event rate
   double getRate();
+  // generate next event/muon
+  void nextEvent();
 };
 #endif

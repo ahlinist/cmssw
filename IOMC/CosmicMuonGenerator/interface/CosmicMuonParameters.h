@@ -19,9 +19,9 @@
   // physical constants
   const double SpeedOfLight = 299.792458; // [mm/ns]
   const double MuonMass = 0.105658357; // [GeV/c^2]
-  const double ChargeFrac = 0.545454545; // n(mu+)/n(mu-) ~ 1.2
+//const double ChargeFrac = 0.545454545; // n(mu+)/n(mu-) ~ 1.2 defined in CMSCGEN
   // geometry
-  const double SurfaceOfEarth = 88874.; // Y-distance to surface of earth [mm]
+const double SurfaceOfEarth = 88874.; // Y-distance to surface of earth [mm]
   const double Z_PX56 = 14000.; // Z-distance to central axis of PX 56 [mm]
   // densities of materials
   const double RhoAir  = 0.00; // [g cm^-3]
