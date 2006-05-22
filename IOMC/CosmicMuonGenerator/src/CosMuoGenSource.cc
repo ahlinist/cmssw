@@ -6,10 +6,10 @@ using namespace std;
 CosMuoGenSource::CosMuoGenSource( const ParameterSet & pset, InputSourceDescription const& desc ) :
   GeneratedInputSource(pset, desc ) ,  
   RanS(pset.getUntrackedParameter<int>("RanSeed", 123456)),
-  MinE(pset.getUntrackedParameter<double>("MinEn", 10.)),
-  MaxE(pset.getUntrackedParameter<double>("MaxEn", 5000.)),
+  MinE(pset.getUntrackedParameter<double>("MinEn", 2.)),
+  MaxE(pset.getUntrackedParameter<double>("MaxEn", 10000.)),
   MinT(pset.getUntrackedParameter<double>("MinTheta", 0.)),
-  MaxT(pset.getUntrackedParameter<double>("MaxTheta", 80.)),
+  MaxT(pset.getUntrackedParameter<double>("MaxTheta", 88.)),
   MinP(pset.getUntrackedParameter<double>("MinPhi", 0.)),
   MaxP(pset.getUntrackedParameter<double>("MaxPhi", 360.)),
   MinS(pset.getUntrackedParameter<double>("MinT0", -12.5)),
@@ -69,6 +69,7 @@ bool CosMuoGenSource::produce(Event &e)
   auto_ptr<HepMCProduct> CMProduct(new HepMCProduct());
   CMProduct->addHepMCData( fEvt );
   e.put(CMProduct);
+     
   return true;
 }
 
