@@ -1,3 +1,7 @@
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// modified by P. Biallass 29.03.2006 to implement new cosmic generator (CMSCGEN.cc) and new normalization of flux (CMSCGENnorm.cc)
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 #include "IOMC/CosmicMuonGenerator/interface/CosmicMuonGenerator.h"
 
 void CosmicMuonGenerator::runCMG(){
@@ -9,50 +13,16 @@ void CosmicMuonGenerator::runCMG(){
 void CosmicMuonGenerator::initialize(){
   checkIn();
   if (NumberOfEvents > 0){
-    RanGen.SetSeed2(RanSeed,54321);
+    RanGen.SetSeed2(RanSeed,54321); //set seed for Random Generator (seed can be controled by config-file)
     // set up "surface geometry" dimensions
     Target3dRadius = sqrt(RadiusTarget*RadiusTarget + Z_DistTarget*Z_DistTarget) + MinStepSize;
     if (Debug) cout << "  radius of sphere  around  target = " << Target3dRadius << " mm" << endl;
-    SurfaceRadius = (SurfaceOfEarth+RadiusTarget)*tan(MaxTheta) + Target3dRadius;
+    SurfaceRadius = (SurfaceOfEarth+RadiusTarget)*tan(MaxTheta) + Target3dRadius;  
     if (Debug) cout << "  starting point radius at surface = " << SurfaceRadius << " mm" << endl;
-    // initialize phase space regions
-    int iv=0;
-    int      nE = 15; // number of energy intervals
-    double minE = MinE; double maxE = MinE;
-    double incE = (MaxE-MinE)/pow(2.,nE);
-    for (int iE=0; iE<nE; ++iE){// E
-      minE = maxE;
-      maxE = minE+incE*pow(2.,iE);
-      //if (maxE > MaxE) maxE = MaxE;
-      if (iE == nE-1) maxE = MaxE;
-      int      nTheta = 2; // number of theta intervals
-      double minTheta = MinTheta; double maxTheta = MinTheta;
-      double incTheta = (MaxTheta-MinTheta)/double(nTheta);
-      for (int iTheta=0; iTheta<nTheta; ++iTheta){// theta
-        minTheta = maxTheta;
-        maxTheta = minTheta + incTheta;
-        if (iTheta == nTheta-1) maxTheta = MaxTheta;
-        V[iv].setBorders(minE,maxE,minTheta,maxTheta);
-        ++iv;
-      }
-    }
-    for (int iv=0; iv<30; ++iv){
-      V[iv].setIntAndMax(333);
-      SumIntegrals += V[iv].integral();
-      cout << "  setting up volume " << iv << endl;
-      if (Debug) cout << "    E = " << V[iv].loEnergy() << "..." << V[iv].upEnergy()
-		      << "  theta = " << V[iv].loTheta() << "..." << V[iv].upTheta() << endl;
-      if (Debug) cout << "    --> maximum = " << V[iv].maximum() << "  integral = " << V[iv].integral() << endl;
-    }
-    cout << "  sum of all phase space integrals = " << SumIntegrals << endl;
-    double lowerProb = 0.;
-    double upperProb = 0.;
-    for (int iv=0; iv<30; ++iv){
-      lowerProb = upperProb;
-      upperProb = lowerProb + V[iv].integral()/SumIntegrals;
-      V[iv].setProbabilities(lowerProb,upperProb);
-      if (Debug) cout << "  probability interval " << iv << ":    " << lowerProb << "..." << upperProb << endl;
-    }
+    
+    //set energy and angle limits for CMSCGEN, give same seed as above 
+    Cosmics->initialize(MinE, MaxE, MinTheta, MaxTheta, RanSeed);
+   
 #if ROOT_INTERACTIVE
   // book histos
   TH1D* ene = new TH1D("ene","generated energy",210,0.,1050.);
@@ -68,27 +38,24 @@ void CosmicMuonGenerator::initialize(){
 }
 
 void CosmicMuonGenerator::nextEvent(){
+
   double E = 0.; double Theta = 0.; double Phi = 0.; double RxzV = 0.; double PhiV = 0.;
   if (int(Nsel)%100 == 0) cout << "    generated " << int(Nsel) << " events" << endl;
-  // generate momentum
+  // generate cosmic (E,theta,phi)
   bool   notSelected = true;
   while (notSelected){
-    double prob = RanGen.Rndm();
-    for (int iv=0; iv<30; ++iv){
-      if (prob >= V[iv].loProb() && prob < V[iv].upProb()){
 	bool   badMomentumGenerated = true;
 	while (badMomentumGenerated){
-	  E = RanGen.Rndm()*(V[iv].upEnergy()-V[iv].loEnergy()) + V[iv].loEnergy();
-	  Theta = RanGen.Rndm()*(V[iv].upTheta()-V[iv].loTheta()) + V[iv].loTheta();
-	  double dN = dNdEdT(E,Theta);
-	  if (RanGen.Rndm()*V[iv].maximum() < dN){
-	    Ngen+=1.;
+	  Cosmics->generate(); //dice one event now
+	  E = TMath::Abs( Cosmics->energy_times_charge() ); 
+	  Theta = TMath::ACos( Cosmics->cos_theta() ) ; //angle has to be in RAD here
+	  Ngen+=1.;   //count number of initial cosmic events (in surface area), vertices will be added later
 	    badMomentumGenerated = false;
 	    Phi = RanGen.Rndm()*(MaxPhi-MinPhi) + MinPhi;
-	  }
 	}
-      }
-    }
+	Norm->events_n100cos(E, Theta); //test if this muon is in normalization range
+	Ndiced += 1; //one more cosmic is diced
+  
     // generate vertex
     double Nver = 0.;
     bool   badVertexGenerated = true;
@@ -102,10 +69,11 @@ void CosmicMuonGenerator::nextEvent(){
       if (disPhi < dPhi) badVertexGenerated = false;
       Nver+=1.;
     }
-    Ngen += (Nver-1.); 
+    Ngen += (Nver-1.); //add number of generated vertices to initial cosmic events
+    
     // complete event at surface
     int                             id =  13; // mu-
-    if (RanGen.Rndm() < ChargeFrac) id = -13; // mu+
+    if (Cosmics->energy_times_charge() >0.) id = -13; // mu+
     double absMom = sqrt(E*E - MuonMass*MuonMass);
     double verMom = absMom*cos(Theta);
     double horMom = absMom*sin(Theta);
@@ -116,13 +84,13 @@ void CosmicMuonGenerator::nextEvent(){
     double Vy = SurfaceOfEarth;  // [mm]
     double Vz = RxzV*cos(PhiV);  // [mm]
     double T0 = (RanGen.Rndm()*(MaxT0-MinT0) + MinT0)*SpeedOfLight; // [mm/c];
-    OneMuoEvt.create(id, Px, Py, Pz, E, MuonMass, Vx, Vy, Vz, T0);      
+    OneMuoEvt.create(id, Px, Py, Pz, E, MuonMass, Vx, Vy, Vz, T0); 
     // if angles are ok, propagate to target
     if (goodOrientation()) OneMuoEvt.propagate(ElossScaleFactor);
     if (OneMuoEvt.hitTarget() && OneMuoEvt.e() > MinE){
-      Nsel+=1.;
+      Nsel+=1.; //count number of generated and accepted events  
       notSelected = false;
-    }
+      }
   }
   // plot variables of selected events
 #if ROOT_INTERACTIVE
@@ -139,6 +107,7 @@ void CosmicMuonGenerator::nextEvent(){
          << OneMuoEvt.vz() << ", " << OneMuoEvt.t0() << " mm" << endl;
   }
   if (EventDisplay) displayEv();
+  
 }
 
 void CosmicMuonGenerator::terminate(){
@@ -151,22 +120,57 @@ void CosmicMuonGenerator::terminate(){
     cout << "***                                                   ***" << endl;
     cout << "*********************************************************" << endl;
     cout << "*********************************************************" << endl;
-    cout << endl;
-    cout << "       number of generated events:  " << int(Nsel) << endl;
+    cout << endl;  
+    cout << "       number of initial cosmic events:  " << int(Ngen) << endl;
+    cout << "       number of actually diced events:  " << int(Ndiced) << endl;
+    cout << "       number of generated and accepted events:  " << int(Nsel) << endl;
     double selEff = Nsel/Ngen; // selection efficiency
     cout << "       event selection efficiency:  " << selEff*100. << "%" << endl;
+    int n100cos =  Norm->events_n100cos(0., 0.); //get final amount of cosmics in defined range for normalisation of flux
+    cout << "       events with ~100 GeV and 1 - cos(theta) < 1/2pi: " << n100cos << endl;
     cout << endl;
     cout << "       energy range:  " << MinE             << " ... " << MaxE << " GeV" << endl;
-    cout << "       theta  range:  " << MinTheta*Rad2Deg << " ... " << MaxTheta*Rad2Deg << " deg" << endl;
+    cout << "       theta  range:  " << MinTheta*Rad2Deg << " ... " << MaxTheta*Rad2Deg << " deg" << endl; 
     cout << "       phi    range:  " << MinPhi*Rad2Deg   << " ... " << MaxPhi*Rad2Deg << " deg" << endl;
     cout << "       time   range:  " << MinT0            << " ... " << MaxT0 << " ns" << endl;
     cout << "       energy  loss:  " << ElossScaleFactor*100. << "%" << endl;
     cout << endl;
-    double area = 0.01*Pi*SurfaceRadius*SurfaceRadius; // area on surface [cm^2] 
-    EventRate= SumIntegrals*(MaxPhi-MinPhi)*area*selEff; // rate
-    double rateErr = EventRate/sqrt(Nsel);  // rate error
-    cout << "       rate is " << EventRate << "+-" << rateErr << " muons per second" << endl;
-    cout << "       number of events corresponds to " << Nsel/EventRate << " s" << endl;
+    double area = 1.e-6*Pi*SurfaceRadius*SurfaceRadius; // area on surface [m^2] 
+    cout << "       area of initial cosmics on surface:   " << area << " m^2" << endl;
+    cout << "       depth of CMS detector:   " << SurfaceOfEarth/1000 << " m" << endl;
+       
+    if(n100cos>0){
+      // rate: corrected for area and selection-Eff. and normalized to known flux, integration over solid angle (dOmega) is implicit
+      // flux is normalised with respect to known flux of vertical 100GeV muons in area at suface level (see CosMuoNorm.cc for docu)
+      // rate seen by detector is lower than rate at surface area, so has to be corrected for selection-Eff.
+      // normalisation factor has unit [1/s/m^2] 
+      // rate = N/time --> normalization factor gives 1/runtime/area 
+      // normalization with respect to number of actually diced events (Ndiced)
+      EventRate= (Ndiced * Norm->norm(n100cos)) * area * selEff;
+      rateErr_stat = EventRate/sqrt( (double) n100cos);  // stat. rate error 
+      rateErr_syst = EventRate/2.59e-3 * 0.18e-3;  // syst. rate error, from error of known flux 
+
+      // normalisation in region 1.-cos(theta) < 1./(2.*Pi), if MaxTheta even lower correct for this
+      if(MaxTheta<0.572){
+	double spacean = 2.*Pi*(1.-cos(MaxTheta));
+	EventRate= (Ndiced * Norm->norm(n100cos)) * area * selEff * spacean;
+	rateErr_stat = EventRate/sqrt( (double) n100cos);  // rate error 
+	rateErr_syst = EventRate/2.59e-3 * 0.18e-3;  // syst. rate error, from error of known flux 
+      }
+
+    }else{
+      EventRate=Nsel; //no info as no muons at 100 GeV
+      rateErr_stat =Nsel;
+      rateErr_syst =Nsel;
+      cout << endl;
+      cout << " !!! Not enough statistics to apply normalisation (rate=1 +- 1) !!!" << endl;
+    } 
+    
+    cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
+    cout << "       rate is " << EventRate << " +-" << rateErr_stat <<" (stat) " << "+-" << 
+      rateErr_syst << " (syst) " <<" muons per second" << endl;
+    if(EventRate!=0) cout << "       number of events corresponds to " << Nsel/EventRate << " s" << endl;  //runtime at CMS = Nsel/rate
+    cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
     cout << endl;
     cout << "*********************************************************" << endl;
     cout << "*********************************************************" << endl;
@@ -297,22 +301,22 @@ void CosmicMuonGenerator::setNumberOfEvents(unsigned int N){ if (NotInitialized)
 
 void CosmicMuonGenerator::setRanSeed(unsigned int N){ if (NotInitialized) RanSeed = N; }
 
-void CosmicMuonGenerator::setMinE(double E){ if (NotInitialized) MinE = E; };
+void CosmicMuonGenerator::setMinE(double E){ if (NotInitialized) MinE = E; }
 
-void CosmicMuonGenerator::setMaxE(double E){ if (NotInitialized) MaxE = E; };
+void CosmicMuonGenerator::setMaxE(double E){ if (NotInitialized) MaxE = E; }
 
-void CosmicMuonGenerator::setMinTheta(double Theta){ if (NotInitialized) MinTheta = Theta*Deg2Rad; };
+void CosmicMuonGenerator::setMinTheta(double Theta){ if (NotInitialized) MinTheta = Theta*Deg2Rad; }
 
-void CosmicMuonGenerator::setMaxTheta(double Theta){ if (NotInitialized) MaxTheta = Theta*Deg2Rad; };
+void CosmicMuonGenerator::setMaxTheta(double Theta){ if (NotInitialized) MaxTheta = Theta*Deg2Rad; } 
 
-void CosmicMuonGenerator::setMinPhi(double Phi){ if (NotInitialized) MinPhi = Phi*Deg2Rad; };
+void CosmicMuonGenerator::setMinPhi(double Phi){ if (NotInitialized) MinPhi = Phi*Deg2Rad; }
 
-void CosmicMuonGenerator::setMaxPhi(double Phi){ if (NotInitialized) MaxPhi = Phi*Deg2Rad; };
+void CosmicMuonGenerator::setMaxPhi(double Phi){ if (NotInitialized) MaxPhi = Phi*Deg2Rad; }
 
-void CosmicMuonGenerator::setMinT0(double T0){ if (NotInitialized) MinT0 = T0; };
+void CosmicMuonGenerator::setMinT0(double T0){ if (NotInitialized) MinT0 = T0; }
 
-void CosmicMuonGenerator::setMaxT0(double T0){ if (NotInitialized) MaxT0 = T0; };
+void CosmicMuonGenerator::setMaxT0(double T0){ if (NotInitialized) MaxT0 = T0; }
 
-void CosmicMuonGenerator::setElossScaleFactor(double ElossScaleFact){ if (NotInitialized) ElossScaleFactor = ElossScaleFact; };
+void CosmicMuonGenerator::setElossScaleFactor(double ElossScaleFact){ if (NotInitialized) ElossScaleFactor = ElossScaleFact; }
 
 double CosmicMuonGenerator::getRate(){ return EventRate; }
