@@ -7,6 +7,9 @@
 //
 //  MODIFICATION:
 //  $Log: FUAdapter.h,v $
+//  Revision 1.4  2005/11/22 09:42:10  meschi
+//  fixed destructor, added clear for haltAction
+//
 //  Revision 1.3  2005/11/10 14:38:13  meschi
 //  run number access function
 //
@@ -168,6 +171,13 @@ class FUAdapter: public xdaq::Application, public evf::RunBase
   // debug mode (dump fragments)
   xdata::Boolean doDumpFragments_;
   xdata::Boolean doDropFragments_;
+
+  // debug variables (message counters)
+  xdata::Integer nAllocateSent_;
+  xdata::Integer nAllocatedEvents_;
+  xdata::Integer nTakeReceived_;
+  xdata::Integer nDiscardSent_;
+
   
   /* The instance number of the application.
    */
@@ -192,8 +202,12 @@ class FUAdapter: public xdaq::Application, public evf::RunBase
       s->fireItemAvailable("fragDumpSwitch", &doDumpFragments_);
       s->fireItemAvailable("fragDropSwitch", &doDropFragments_);
 
+      s->fireItemAvailable("nAllocateSent", &nAllocateSent_);
+      s->fireItemAvailable("nAllocatedEvents", &nAllocatedEvents_);
+      s->fireItemAvailable("nTakeReceived", &nTakeReceived_);
+      s->fireItemAvailable("nDiscardSent", &nDiscardSent_);
     }
-
+  
 
   
   void findOrCreateMemoryPool() throw (xcept::Exception);

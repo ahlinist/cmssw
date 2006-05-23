@@ -9,6 +9,9 @@
 //
 //  Modification history:
 //    $Log: FilterUnitFramework.h,v $
+//    Revision 1.6  2006/05/18 13:35:18  vuko
+//    adding XDAQ monitoring to FU
+//
 //    Revision 1.5  2006/02/15 09:22:34  meschi
 //    changes to reflect EPStateMachine changes
 //
@@ -137,12 +140,6 @@ private:
   // exported (monitor) variables
 
   xdata::UnsignedLong nbEvents_;
-
-  // monitor thread configuration
-  xdata::String add_;
-  xdata::Integer port_;
-  xdata::Integer del_;
-  xdata::String nam_;
 
   // stats
 

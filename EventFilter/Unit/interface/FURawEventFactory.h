@@ -38,6 +38,9 @@ class FURawEventFactory
   /** get the size of the built queue */
   unsigned int queueSize() const;
 
+  /** get the total number of events ever processed (from allocate to discard) */
+  unsigned int getnbProcessed() const {return nbProcessed_;}
+
  private:  
 
   //these methods are only used by friend class FUAdapter
@@ -56,6 +59,7 @@ class FURawEventFactory
   std::stack<int> freeRes_;
   std::stack<int> builtRes_;
   unsigned int minBuiltInQueue_;
+  unsigned int nbProcessed_;
   std::vector<FURawEvent *> resources_;
 
   /** constructor: the raw event factory is constructed 
