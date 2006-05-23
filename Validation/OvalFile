@@ -7,15 +7,16 @@
 
 <dir name="Geometry">
 
-<!dir name="TrackerHits">
-
-<dir name="EcalHits">
-
-<dir name="HcalHits">
-
 <dir name="GlobalHits">
 
 <dir name="Mixing">
 
+<dir name="TrackerHits">
+<dit name="TrackerDigis">
+
+<dir name="EcalHits">
+<dir name="EcalDigis">
+
+<dir name="HcalHits">
 <dir name="HcalDigis">
 
