@@ -7,6 +7,9 @@
 //
 //  Modification history:
 //    $Log: FilterUnitFramework.cc,v $
+//    Revision 1.8  2006/05/18 13:35:19  vuko
+//    adding XDAQ monitoring to FU
+//
 //    Revision 1.7  2006/02/15 09:22:34  meschi
 //    changes to reflect EPStateMachine changes
 //
@@ -121,13 +124,7 @@ void FilterUnitFramework::exportParams()
   // default configuration
   buInstance_     = 0;
   queueSize_ = 16;
-  add_ = "localhost";
-  port_ = 9090;
-  del_ = 5000000;
-  ostringstream ns;
-  instance_ = getApplicationDescriptor()->getInstance();
-  ns << "FU" << instance_;
-  nam_ = ns.str();
+
   runActive_ = false;
   workDir_ = "/tmp/evf";
   runNumber_ = 1;
@@ -140,10 +137,6 @@ void FilterUnitFramework::exportParams()
 
   s->fireItemAvailable("queueSize",&queueSize_);
   s->fireItemAvailable("stateName",&fsm_->stateName_);
-  s->fireItemAvailable("collectorAddr",&add_);
-  s->fireItemAvailable("collectorPort",&port_);
-  s->fireItemAvailable("collSendUs",&del_);
-  s->fireItemAvailable("monSourceName",&nam_);
   s->fireItemAvailable("runActive",&runActive_);
   s->fireItemAvailable("runNumber",&runNumber_);
   s->fireItemAvailable("workDir",&workDir_);
@@ -154,8 +147,8 @@ void FilterUnitFramework::exportParams()
   //Monitoring infospace and variables
   s_mon = xdata::InfoSpace::get("urn:xdaq-monitorable:FUFramework");
   s_mon->fireItemAvailable("nbEvents",&nbEvents_);
-  s_mon->fireItemAvailable("nbRecievedEvents",&nbReceivedEvents_);
-  s_mon->fireItemAvailable("nbRecievedFragments",&nbReceivedFragments_);
+  s_mon->fireItemAvailable("nbReceivedEvents",&nbReceivedEvents_);
+  s_mon->fireItemAvailable("nbReceivedFragments",&nbReceivedFragments_);
   s_mon->fireItemAvailable("pendingRequests",&pendingRequests_);
   s_mon->fireItemAvailable("nbDataErrors",&nbDataErrors_);
   s_mon->fireItemAvailable("MonitorEventsPerSec",&MonitorEventsPerSec_);
@@ -471,12 +464,68 @@ void FilterUnitFramework::debugWebPage(xgi::Input *in, xgi::Output *out)
       unsigned int fid = unsigned(fed_id);
       unsigned int size = factory_->spyBuiltEvent(fid,dump_);
       string sdump = evf::dumpFrame(dump_, size);
-      *out << "<textarea rows=" << 10 << " cols=40 scroll=yes>"          << endl;
+      *out << "<textarea rows=10 cols=80 scroll=yes>"          << endl;
       *out << sdump;
     }
   *out << "</textarea><P>"                                           << endl;
   *out << "  </td>"                                                   << endl;
   *out << "</table>"                                        << std::endl;
+  
+  *out << "<table frame=\"void\" rules=\"groups\" class=\"states\">" << std::endl;
+  *out << "<colgroup> <colgroup align=\"rigth\">"                    << std::endl;
+  //title
+  {
+    *out << "  <tr>"                                                   << endl;
+    *out << "    <th colspan=2>"                                       << endl;
+    *out << "      " << "Message Stats"                                << endl;
+    *out << "    </th>"                                                << endl;
+    *out << "  </tr>"                                                  << endl;
+  }
+  //headers
+  {
+    *out << "<tr>" << std::endl;
+    *out << "<th >" << std::endl;
+    *out << "Message" << std::endl;
+    *out << "</th>" << std::endl;
+    *out << "<th>" << std::endl;
+    *out << "Sent/Received" << std::endl;
+    *out << "</th>" << std::endl;
+    *out << "</tr>" << std::endl;
+  }
+  *out << "<tr>" << std::endl;
+  *out << "<td>" << std::endl;
+  *out << "Allocate(*)" << std::endl;
+  *out << "</td>" << std::endl;
+  *out << "<td>" << std::endl;
+  *out << nAllocateSent_ << std::endl;
+  *out << "</td>" << std::endl;
+  *out << "</tr>" << std::endl;
+  *out << "<tr>" << std::endl;
+  *out << "<td>" << std::endl;
+  *out << "Discard" << std::endl;
+  *out << "</td>" << std::endl;
+  *out << "<td>" << std::endl;
+  *out << nDiscardSent_ << std::endl;
+  *out << "</td>" << std::endl;
+  *out << "</tr>" << std::endl;
+  *out << "<tr>" << std::endl;
+  *out << "<td>" << std::endl;
+  *out << "Take" << std::endl;
+  *out << "</td>" << std::endl;
+  *out << "<td>" << std::endl;
+  *out << nTakeReceived_ << std::endl;
+  *out << "</td>" << std::endl;
+  *out << "</tr>" << std::endl;
+  *out << "<tr background-color=\"green\">" << std::endl;
+  *out << "<td>" << std::endl;
+  *out << "(*)EventsAllocated" << std::endl;
+  *out << "</td>" << std::endl;
+  *out << "<td>" << std::endl;
+  *out << nAllocatedEvents_ << std::endl;
+  *out << "</td>" << std::endl;
+  *out << "</tr>" << std::endl;
+  *out << "</table>" << std::endl;
+
   *out << "</body>"                                         << std::endl;
   *out << "</html>"                                         << std::endl;
 }
@@ -579,10 +628,18 @@ void FilterUnitFramework::parameterTables(xgi::Input *in, xgi::Output *out)
   }
   *out << "<tr>" << std::endl;
   *out << "<td>" << std::endl;
-  *out << "EventsProcessed" << std::endl;
+  *out << "EventsClaimed" << std::endl;
   *out << "</td>" << std::endl;
   *out << "<td>" << std::endl;
   *out << nbEvents_ << std::endl;
+  *out << "</td>" << std::endl;
+  *out << "</tr>" << std::endl;
+  *out << "<tr>" << std::endl;
+  *out << "<td>" << std::endl;
+  *out << "EventsProcessed" << std::endl;
+  *out << "</td>" << std::endl;
+  *out << "<td>" << std::endl;
+  *out << factory_->getnbProcessed() << std::endl;
   *out << "</td>" << std::endl;
   *out << "</tr>" << std::endl;
   *out << "<tr>" << std::endl;
@@ -646,15 +703,16 @@ FURawEvent * FilterUnitFramework::rqstEvent()
 /* Monitoring Timer Callback Function*/
 void FilterUnitFramework::timeExpired (toolbox::task::TimerEvent& e)
 {
-  static xdata::UnsignedLong nbLast_=nbEvents_;
+  unsigned int nbproc = factory_->getnbProcessed();
+  static xdata::UnsignedLong nbLast_ = nbproc;
   xdata::UnsignedLong nbDiff_;
 
 
   mutex_->take();
   s_mon->lock();
 
-  nbDiff_=nbEvents_-nbLast_;
-  nbLast_=nbEvents_;
+  nbDiff_=nbproc-nbLast_;
+  nbLast_=nbproc;
   MonitorEventsPerSec_=((xdata::Double)nbDiff_)/(MonitorIntervalSec_);
 
   s_mon->unlock();
