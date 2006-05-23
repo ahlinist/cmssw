@@ -89,13 +89,14 @@ void CSCStripClusterFitter::findPosition(
 
   if( !fmin.IsValid() ) {
     edm::LogWarning("CSC|FitFailed") << "fit failed... using centroid " <<  "\n";
-    theCentroidClusterer.findPosition(data, u, sigma,chisq, prob);
+    theCentroidClusterer.findPosition(data, u, sigma, chisq, prob);
   }
   else {
     LogDebug("CSC") <<  "fit succeeded... results: " << fmin <<  "\n";
     bool ok1 = fmin.Parameters().IsValid(); // from last state
     bool ok2 = fmin.Error().IsValid();
-    double chisq = fmin.Fval();
+    //chisq, u, sigma are passed out by reference. Care!
+    chisq = fmin.Fval();
     // Minuit now has ambiguous unsigned int/const char* arguments
     u     = fmin.UserParameters().Value( static_cast<unsigned int>(0) );
     sigma = fmin.UserParameters().Error( static_cast<unsigned int>(0) );
