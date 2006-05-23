@@ -16,6 +16,10 @@ FUAdapter::FUAdapter(xdaq::ApplicationStub *s, string buClassName,
 					      nbDataErrors_(0), 
 					      doDumpFragments_(false), 
 					      doDropFragments_(false),
+					      nAllocateSent_(0),
+					      nAllocatedEvents_(0), 
+					      nTakeReceived_(0),
+					      nDiscardSent_(0),
 					      sink_(0)
 {
   i2o::bind(this, 
@@ -118,6 +122,7 @@ void FUAdapter::createBUArray()
 /** the actual message slot, reimplemented from FUListener */
 void FUAdapter::realTake(toolbox::mem::Reference *bufRef)
 {
+  nTakeReceived_++;
   bSem_.take();
   int currentFragment = -1;
   bool errorFound = false;
@@ -250,6 +255,10 @@ void FUAdapter::sendAllocate(unsigned long buInstance,
       try{
 	bu_[buInstance]->allocate(ev->getPending(), 
 				context, nbEvents);
+	nAllocateSent_++;
+	pendingRequests_.value_ += nbEvents;
+	nAllocatedEvents_.value_ += nbEvents;
+
       }
       catch(xdaq::exception::Exception &e)
 	{
@@ -257,7 +266,6 @@ void FUAdapter::sendAllocate(unsigned long buInstance,
 		    "sendAllocate failed.buInstance: "
 			  << buInstance << ". Error: " << e.what());
 	}
-      pendingRequests_.value_ += nbEvents;
     }
   else
     LOG4CPLUS_ERROR(this->getApplicationLogger(),
@@ -287,7 +295,20 @@ void FUAdapter::sendDiscard(unsigned long buInstance, FURawEvent *event)
 {
   bSem_.take();
   if(bu_.size()>buInstance)
-    bu_[buInstance]->discard(event->getHandle());
+    {
+      try{
+	bu_[buInstance]->discard(event->getHandle());
+	nDiscardSent_++;
+      }
+      catch(xdaq::exception::Exception &e)
+	{
+	  LOG4CPLUS_ERROR(this->getApplicationLogger(),
+		    "sendDiscard failed.buInstance: "
+			  << buInstance << ". Error: " << e.what());
+	}
+
+    }
+
   else
     LOG4CPLUS_ERROR(this->getApplicationLogger(),
 		    "sendDiscard failed.buInstance: "

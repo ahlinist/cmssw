@@ -5,7 +5,7 @@
 
 //FURawEventFactory *FURawEventFactory::instance_ = 0;
 
-FURawEventFactory::FURawEventFactory() : minBuiltInQueue_(0), resources_(maxHandles)
+FURawEventFactory::FURawEventFactory() : minBuiltInQueue_(0), nbProcessed_(0), resources_(maxHandles)
 {
   FURawEvent::adapter_ = adapter_;
   for(int i = 0; i < maxHandles; i++)
@@ -139,6 +139,7 @@ void FURawEventFactory::removeEvent(FURawEvent *ev)
   pthread_mutex_lock(&mutex_);
   freeRes_.push(ev->getInternalHandle()); // put back into list of free evs
   pthread_mutex_unlock(&mutex_);
+  nbProcessed_++;
 }
 
 FUAdapter *FURawEventFactory::adapter_ = 0;
