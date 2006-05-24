@@ -85,7 +85,7 @@ void  testProductRegistry:: testSignal(){
    reg.productAddedSignal_.connect(listening);
    
    ModuleDescription modDesc;
-   BranchDescription prod(modDesc, "int", "int", "int", "int", boost::shared_ptr<edm::EDProduct const>());
+   BranchDescription prod(modDesc, "int", "int", "int", "int");
    
    reg.addProduct(prod);
    CPPUNIT_ASSERT(1==hear);
@@ -104,10 +104,10 @@ void  testProductRegistry:: testWatch(){
    Responder one("one",constReg, reg);
                  
    ModuleDescription modDesc;
-   BranchDescription prod(modDesc, "int", "int", "int", "int", boost::shared_ptr<edm::EDProduct const>());
+   BranchDescription prod(modDesc, "int", "int", "int", "int");
    reg.addProduct(prod);
 
-   BranchDescription prod2(modDesc, "float", "float", "float", "float", boost::shared_ptr<edm::EDProduct const>());
+   BranchDescription prod2(modDesc, "float", "float", "float", "float");
    reg.addProduct(prod2);
    
    //Should be 4 products
@@ -132,7 +132,7 @@ void  testProductRegistry:: testCircular(){
    Responder two("two",constReg, reg);
    
    ModuleDescription modDesc;
-   BranchDescription prod(modDesc, "int", "int", "int", "int", boost::shared_ptr<edm::EDProduct const>());
+   BranchDescription prod(modDesc, "int", "int", "int", "int");
    
    reg.addProduct(prod);
    //Should be 5 products

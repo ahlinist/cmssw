@@ -26,8 +26,7 @@ namespace edm {
                               p->typeID_.userClassName(),
                               p->typeID_.friendlyClassName(), 
                               p->productInstanceName_,
-                              p->branchAlias_,
-                              p->productPtr_);
+                              p->branchAlias_);
       iReg.addProduct(pdesc, iIsListener);
     }//for
   }
