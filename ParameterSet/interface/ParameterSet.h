@@ -21,6 +21,7 @@
 #include <map>
 #include <stdexcept>
 #include <vector>
+#include <iosfwd>
 
 
 // ----------------------------------------------------------------------
@@ -123,6 +124,8 @@ namespace edm {
     // 'trackiness' is false, w return untracked parameters.
     size_t getParameterSetVectorNames(std::vector<std::string>& output,
 				      bool trackiness) const;
+
+    friend std::ostream & operator<<(std::ostream & os, const ParameterSet & pset);
 
 private:
     typedef std::map<std::string, Entry> table;

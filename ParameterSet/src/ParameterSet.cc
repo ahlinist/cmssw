@@ -324,6 +324,22 @@ namespace edm {
 
   }
 
+
+  std::ostream & operator<<(std::ostream & os, const ParameterSet & pset)
+  {
+    ParameterSet::table::const_iterator i(pset.tbl_.begin()), e(pset.tbl_.end());
+    os << "{" << std::endl;
+    for( ; i != e; ++i) 
+    {
+      // indent a bit
+      os << "  " << i->first << ": " << i->second << std::endl;
+    }
+    os << "}" << std::endl;
+    return os;
+  }
+
+  
+    
   namespace pset
   {
     void explode(edm::ParameterSet const& top,
