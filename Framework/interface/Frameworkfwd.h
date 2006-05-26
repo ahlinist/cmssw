@@ -48,6 +48,11 @@ namespace edm {
   class TypeID;
   class VectorInputSource;
 
+  struct EventSummary;
+  struct PathSummary;
+  struct TriggerReport;
+
+
   template <typename T> class Handle;
   namespace pset {
     class Registry;

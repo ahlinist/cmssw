@@ -168,6 +168,13 @@ namespace edm
       return total_passed_;
     }
 
+    /// Return the number of events that have not passed any trigger.
+    /// (N.B. totalEventsFailed() + totalEventsPassed() == totalEvents()
+    int totalEventsFailed() const
+    {
+      return totalEvents() - totalEventsPassed();
+    }
+
     /// Turn end_paths "off" if "active" is false;
     /// turn end_paths "on" if "active" is true.
     void enableEndPaths(bool active);
@@ -175,6 +182,11 @@ namespace edm
     /// Return true if end_paths are active, and false if they are
     /// inactive.
     bool endPathsEnabled() const;
+
+    /// Return the trigger report information on paths,
+    /// modules-in-path, modules-in-endpath, and modules.
+    void getTriggerReport(TriggerReport& rep) const;      
+
 
 
   private:
