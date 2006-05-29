@@ -1,7 +1,7 @@
 /** \file
  *
- *  $Date: 2006/03/15 23:39:58 $
- *  $Revision: 1.5 $
+ *  $Date: 2006/05/16 10:46:22 $
+ *  $Revision: 1.6 $
  *  \author E. Meschi - CERN PH/CMD
  */
 
@@ -53,7 +53,8 @@ bool FUReader::fillRawData(EventID& eID,
     }
   FURawEvent *event = fwk_->rqstEvent();
   runNum = fwk_->getRunNumber();
-  eID = EventID(runNum,eventNum);
+  unsigned int ievent = event->getLevel1Id();
+  eID = EventID(runNum,ievent);
   eventNum++;
 
   fillFEDs(0,FEDNumbering::lastFEDId(), data,*event);
@@ -85,7 +86,7 @@ void FUReader::fillFEDs(int b, int e,
       if(sz > 0)
 	{
 	  if(!FEDNumbering::inRange(fedId))
-	    edm::LogError("FUReader")  
+	    edm::LogInfo("FUReader")  
 	      << "Severe error: fed ID " << fedId 
 	      << " contains data but is out of valid ranges. ";	    
 	  FEDRawData& feddata = data.FEDData(fedId);
