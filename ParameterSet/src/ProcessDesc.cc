@@ -118,7 +118,7 @@ namespace edm
       new ScheduleValidator(pathFragments_,*pset_); 
    
     validator_->validate();
-std::cout << *pset_ << std::endl; 
+//std::cout << *pset_ << std::endl; 
   }
 
 
