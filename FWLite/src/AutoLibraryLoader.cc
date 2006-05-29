@@ -18,6 +18,7 @@
 // user include files
 #include "FWCore/FWLite/src/AutoLibraryLoader.h"
 #include "FWCore/FWLite/src/stdNamespaceAdder.h"
+#include "FWCore/FWLite/src/BareRootProductGetter.h"
 
 #include "PluginManager/PluginManager.h"
 #include "PluginManager/ModuleCache.h"
@@ -94,6 +95,8 @@ AutoLibraryLoader::GetClass(const type_info& typeinfo, Bool_t load)
 void
 AutoLibraryLoader::enable()
 {
+   static BareRootProductGetter s_getter;
+   static edm::EDProductGetter::Operate s_op(&s_getter);
    static AutoLibraryLoader s_loader;
 }
 
