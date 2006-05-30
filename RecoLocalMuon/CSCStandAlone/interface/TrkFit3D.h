@@ -1,5 +1,3 @@
-///Written by S Durkin
-
 #include "EventFilter/CSCRawToDigi/interface/CSCDDUEventData.h"
 #include "DataFormats/CSCDigi/interface/CSCStripDigi.h"
 #include "DataFormats/CSCDigi/interface/CSCWireDigi.h"
@@ -67,6 +65,7 @@ class TrkFit3D
          float xa=aslp*lay[cm]+aintr-0.5;  // wires run from 1-64 
                                            // so 1st point 0.5 wire groups
          h=gatti_h/(ano_widthl+xa*(ano_widthh-ano_widthl)/ano_num);
+         s_width=ano_widthl+xa*(ano_widthh-ano_widthl)/ano_num;
          // now fit gatti distribution
          gatti_fit(0);
          float tmp0_sgatti=s_gatti;
@@ -113,7 +112,8 @@ class TrkFit3D
            trk_lpos[ntrk].push_back((float)lay[cm]);
 	   float p=(float)strp[cm]+((lay[cm]+1)%2)*strip_offset-s_gatti;
            trk_spos[ntrk].push_back(p);
-	   float dp=(dsl_gatti+dsh_gatti)/2.;
+           trk_swidth[ntrk].push_back(s_width);
+           float dp=(dsl_gatti+dsh_gatti)/2.;
            if(dp<0.003)dp=0.003;           
            trk_dspos[ntrk].push_back(dp);
            trk_sgatti[ntrk].push_back(s_gatti);
@@ -138,7 +138,7 @@ class TrkFit3D
     // now do a fit
     if(trk_spos[ntrk].size()>0){
       fit_line(ntrk);
-      if(trk_slp[ntrk]>-98.0)ghost_quality(ntrk,ctrk,atrk,ct,at);
+      // if(trk_slp[ntrk]>-98.0)ghost_quality(ntrk,ctrk,atrk,ct,at);
       ntrk=ntrk+1;
     }
   }
@@ -541,8 +541,6 @@ void fit_line(int ntrk){
  float dslp,dintr;
  float tslp,tintr,tdslp,tdintr,tchi2;
  float ts1,tsx,tsx2,tsy,tsxy;
- dintr = -99.0;tdslp=-99.0; tdintr=-99.0;
- ts1=0.0;tsx=0.0;tsx2=0.0;tsy=0.0;tsxy=0.0;dslp=-99.0;
  chi2=0.0;
  tslp=-99.;
  tintr=-99;
@@ -550,6 +548,9 @@ void fit_line(int ntrk){
  s1 = 0.0; sx = 0.0; sy = 0.0; sx2 = 0.0; sxy = 0.0;
  intr=-99.0;
  slp=-99.0;
+ dintr = -99.0;tdslp=-99.0; tdintr=-99.0;
+ ts1=0.0;tsx=0.0;tsx2=0.0;tsy=0.0;tsxy=0.0;dslp=-99.0;
+
  if(trk_spos[ntrk].size()>2){
    for(unsigned j = 0; j < trk_spos[ntrk].size(); j++){
      sigma = trk_dspos[ntrk][j]*trk_dspos[ntrk][j];
@@ -681,8 +682,8 @@ void ghost_quality(int ntrk,CatTrkFnd & ctrk,AnoTrkFnd & atrk,int ct,int at){
     }
   }
   for(unsigned i=0;i<lay.size();i++){
-    // int k=sort[i];
-     // printf(" lay %d chr %7.2f ctime %7.2f atime %d gchi2 %7.2f \n",lay[k],t_chg[k],t_start[k]+t_peak[k],a_time[k],trk_gatti_chi2[ntrk][k]);
+     int k=sort[i];
+     printf(" lay %d chr %7.2f ctime %7.2f atime %d gchi2 %7.2f \n",lay[k],t_chg[k],t_start[k]+t_peak[k],a_time[k],trk_gatti_chi2[ntrk][k]);
   }
 }
 
@@ -709,6 +710,8 @@ void ghost_quality(int ntrk,CatTrkFnd & ctrk,AnoTrkFnd & atrk,int ct,int at){
  std::vector<int> trk3D_layer(int trk){return trk_layer[trk];} // layer
  std::vector<int> trk3D_strip(int trk){return trk_strip[trk];} // strip
  std::vector<int> trk3D_use(int trk){return trk_use[trk];} // in final fit?
+ std::vector<float> trk3D_swidth(int trk){return trk_swidth[trk];} //strip width
+
  float trk3D_slp(int trk){return trk_slp[trk];} // cathode slope
  float trk3D_intr(int trk){return trk_intr[trk];} // cathode intercept
  float trk3D_dslp(int trk){return trk_dslp[trk];} // cathode slope err
@@ -721,12 +724,14 @@ void ghost_quality(int ntrk,CatTrkFnd & ctrk,AnoTrkFnd & atrk,int ct,int at){
  float trk3D_sxy(int trk){return trk_sxy[trk];}
  int trk3D_apnt(int trk){return trk_apnt[trk];} // anode num in AnoTrkFnd banks
  int trk3D_cpnt(int trk){return trk_cpnt[trk];} // cathode num in CatTrkFnd banks
- int size(){printf(" return ntrk %d \n",ntrk);return ntrk;} // number of 3D tracks
+ int size(){//printf(" return ntrk %d \n",ntrk);
+   return ntrk;} // number of 3D tracks
 
  private:
 
  // constants for gatti function
  float h;       
+ float s_width;
  float gatti_h;
  float gatti_a;
  float gatti_b;
@@ -769,6 +774,7 @@ void ghost_quality(int ntrk,CatTrkFnd & ctrk,AnoTrkFnd & atrk,int ct,int at){
   std::vector<int> trk_strip[20];
   std::vector<int> trk_use[20];
   std::vector<ADCmat> trk_adcfitmat[20];
+  std::vector<float> trk_swidth[20];
 
   int trk_cpnt[20]; 
   int trk_apnt[20]; 
