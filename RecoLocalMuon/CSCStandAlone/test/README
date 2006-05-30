@@ -36,9 +36,14 @@
 	Chamber ID2, Cathode Slope2, Cathode Intercept2, Anode Slope2,and  Anode Intercept2.
 	The .root file contains these same values as "leaves" on the root tree.
 
+        d)RecHitCom.cc (run from rechit.cfg) compares the hits found by the standalone tracking program 
+          to CSCRecHit. Right now the program only runs on chamber 2/2/27, and if you wish to change that, will
+          require a recompile. I merely wanted this backed up somewhere. 
+
 These programs are intended for use with Global DAQ data available from CASTOR in
 /castor/cern.ch/cms/emuslice/globaldaq. 
 
 Should you find any problems feel free to let me know. 
 
--Nicole Ippolito, May 10 2005 
+-Nicole Ippolito, May 30 2005 
+
