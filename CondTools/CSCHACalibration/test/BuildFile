@@ -1,0 +1,10 @@
+<use name=CondFormats/OptAlignObjects>
+<use name=CondFormats/DataRecord>
+<use name=FWCore/Framework>
+<use name=FWCore/ParameterSet>
+<library file=stubs/CSCZSensorsDataPrinter.cc name=CSCZSensorsDataPrinter>
+        <flags SEAL_PLUGIN_NAME="CSCZSensorsDataPrinter">
+</library>
+<library file=stubs/CSCRSensorsDataPrinter.cc name=CSCRSensorsDataPrinter>
+        <flags SEAL_PLUGIN_NAME="CSCRSensorsDataPrinter">
+</library>
