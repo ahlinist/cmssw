@@ -13,14 +13,16 @@
 //
 // Original Author:  Andrea Rizzi
 //         Created:  Wed Apr 12 11:12:49 CEST 2006
-// $Id: JetTracksAssociator.cc,v 1.3 2006/05/19 15:24:56 arizzi Exp $
+// $Id: JetTracksAssociator.cc,v 1.4 2006/05/20 19:20:00 arizzi Exp $
 //
 //
 
 
 // system include files
 #include <memory>
-
+#include <string>
+#include <iostream>
+using namespace std;
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -34,24 +36,18 @@
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/BTauReco/interface/JetTracksAssociation.h"
 
-
-
 #include "DataFormats/Math/interface/Vector3D.h"
 
-
-//Math
+// Math
 #include "Math/GenVector/VectorUtil.h"
 #include "Math/GenVector/PxPyPzE4D.h"
+
+using namespace reco;
 
 //
 // class decleration
 //
 
-#include <iostream>
-using namespace std;
-
-
-using namespace reco;
 class JetTracksAssociator : public edm::EDProducer {
    public:
       explicit JetTracksAssociator(const edm::ParameterSet&);
@@ -62,8 +58,11 @@ class JetTracksAssociator : public edm::EDProducer {
    private:
      JetTracksAssociationCollection * associate(const edm::Handle<CaloJetCollection> & jets,
                                 const edm::Handle<TrackCollection> & tracks ) const;
-     bool trackIsInJetCone ( const Jet & jet , const Track & track ) const;
-      // ----------member data ---------------------------
+     bool trackIsInJetCone( const Jet & jet , const Track & track ) const;
+
+     // ----------member data ---------------------------
+     string m_tracksSrc;
+     string m_jetsSrc;
      double m_deltaRCut;
 };
 
@@ -80,9 +79,10 @@ class JetTracksAssociator : public edm::EDProducer {
 //
 JetTracksAssociator::JetTracksAssociator(const edm::ParameterSet& iConfig)
 {
-   produces<reco::JetTracksAssociationCollection>();
-//produces<float>();
-m_deltaRCut = 0.5;
+  produces<reco::JetTracksAssociationCollection>();
+  m_tracksSrc = iConfig.getParameter<string>("tracks");
+  m_jetsSrc   = iConfig.getParameter<string>("jets");
+  m_deltaRCut = iConfig.getParameter<double>("coneSize");
 }
 
 
@@ -103,46 +103,37 @@ JetTracksAssociator::~JetTracksAssociator()
 void
 JetTracksAssociator::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-
    using namespace edm;
    Handle<CaloJetCollection> jets;
-   iEvent.getByLabel("mcone5",jets);
+   iEvent.getByLabel(m_jetsSrc, jets);
    Handle<TrackCollection> tracks;
-   iEvent.getByType(tracks);
+   iEvent.getByLabel(m_tracksSrc, tracks);
    
    std::auto_ptr<JetTracksAssociationCollection> jetTracks(associate(jets,tracks));
    iEvent.put(jetTracks);
 }
 
-JetTracksAssociationCollection * JetTracksAssociator::associate(const edm::Handle<CaloJetCollection> & jets,
-                                const edm::Handle<TrackCollection> & tracks ) const
+JetTracksAssociationCollection * JetTracksAssociator::associate( const edm::Handle<CaloJetCollection> & jets,
+                                                                 const edm::Handle<TrackCollection>   & tracks ) const
 {
-JetTracksAssociationCollection * outputCollection = new JetTracksAssociationCollection();
- //loop on jets and associate
- for(size_t j=0; j < jets->size() ; j++)
- {
-    cout << "Jet #" << j << " px= " << (*jets)[j].px() << " py= " << (*jets)[j].py() << " pz= " << (*jets)[j].pz() << endl;
-  for(size_t t=0; t < tracks->size() ; t++) {
-      bool inside= trackIsInJetCone((*jets)[j],(*tracks)[t]);
-      cout << "Track #" << t << " " << (*tracks)[t].momentum() << " is inside ? " << inside << endl;
-     if(inside)outputCollection->insert(edm::Ref<CaloJetCollection>(jets,j),edm::Ref<TrackCollection>(tracks,t));
-   }
- } 
-//dummy insert
+  JetTracksAssociationCollection * outputCollection = new JetTracksAssociationCollection();
+  //loop on jets and associate
+  for (size_t j = 0; j < jets->size(); j++)
+  {
+    cout << boolalpha;
+    cout << fixed;
+    cout << "->   Jet " << setw(2) << j << " pT: " << setprecision(2) << setw(6) << (*jets)[j].pt() << " eta: " << setprecision(2) << setw(5) << (*jets)[j].eta() << " phi: " << setprecision(2) << setw(5) << (*jets)[j].phi() << endl;
+    for (size_t t=0; t < tracks->size() ; t++) {
+      double delta  = ROOT::Math::VectorUtil::DeltaR((*jets)[j].momentum(), (*tracks)[t].momentum());
+      bool   inside = (delta < m_deltaRCut);
+      cout << "   Track " << setw(2) << t << " pT: " << setprecision(2) << setw(6) << (*tracks)[t].pt() << " eta: " << setprecision(2) << setw(5) << (*tracks)[t].eta() << " phi: " << setprecision(2) << setw(5) << (*tracks)[t].phi()
+           << "   delta R: " << setprecision(2) << setw(4) << delta << " is inside: " << inside << endl;
+      if (inside) 
+        outputCollection->insert(edm::Ref<CaloJetCollection>(jets, j), edm::Ref<TrackCollection>(tracks, t));
+    }
+  } 
 
-return outputCollection;
-}
-
-bool JetTracksAssociator::trackIsInJetCone ( const Jet & jet , const Track & track ) const {
-
-  double deltaR ;
-
-  // get direction info from jet/track and compute deltaR
-  math::XYZVector jet3Vec   (jet.px(),jet.py(),jet.pz()) ;
-  math::XYZVector trackMomentum = track.momentum() ;
-  deltaR = ROOT::Math::VectorUtil::DeltaR(jet3Vec,trackMomentum ) ;
-   cout << "deltaR: " << deltaR << " " ;  
-  return ( deltaR < m_deltaRCut ) ;
+  return outputCollection;
 }
 
 //define this as a plug-in
