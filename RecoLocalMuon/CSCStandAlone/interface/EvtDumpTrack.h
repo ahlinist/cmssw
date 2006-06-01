@@ -5,13 +5,13 @@
 #include "DataFormats/CSCDigi/interface/CSCWireDigi.h"
 
 //root specific .h files
-#include </afs/cern.ch/cms/external/lcg/external/root/5.10.00a/slc3_ia32_gcc323/root/include/TROOT.h>
-#include </afs/cern.ch/cms/external/lcg/external/root/5.10.00a/slc3_ia32_gcc323/root/include/TNtuple.h>
-#include </afs/cern.ch/cms/external/lcg/external/root/5.10.00a/slc3_ia32_gcc323/root/include/TFile.h>
-#include "/afs/cern.ch/cms/external/lcg/external/root/5.10.00a/slc3_ia32_gcc323/root/include/TH1F.h"
-#include "/afs/cern.ch/cms/external/lcg/external/root/5.10.00a/slc3_ia32_gcc323/root/include/TH1.h"
-#include "/afs/cern.ch/cms/external/lcg/external/root/5.10.00a/slc3_ia32_gcc323/root/include/TCanvas.h"
-#include "/afs/cern.ch/cms/external/lcg/external/root/5.10.00a/slc3_ia32_gcc323/root/include/TTree.h"
+#include "TROOT.h"
+#include "TNtuple.h"
+#include "TFile.h"
+#include "TH1F.h"
+#include "TH1.h"
+#include "TCanvas.h"
+#include "TTree.h"
 
 
 class EvtDump
