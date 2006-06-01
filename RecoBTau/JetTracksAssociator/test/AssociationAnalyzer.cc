@@ -1,0 +1,99 @@
+// -*- C++ -*-
+//
+// Package:    AssociationAnalyzer
+// Class:      AssociationAnalyzer
+// 
+/**\class AssociationAnalyzer AssociationAnalyzer.cc RecoBTag/AssociationAnalyzer/src/AssociationAnalyzer.cc
+
+ Description: <one line class summary>
+
+ Implementation:
+     <Notes on implementation>
+*/
+//
+// Original Author:  Andrea Rizzi
+//         Created:  Wed Apr 12 11:12:49 CEST 2006
+// $Id: AssociationAnalyzer.cc,v 1.5 2006/05/31 17:48:42 fwyzard Exp $
+//
+//
+
+
+// system include files
+#include <memory>
+#include <string>
+#include <iostream>
+using namespace std;
+
+// user include files
+#include "FWCore/Framework/interface/Frameworkfwd.h"
+#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/Event.h"
+#include "FWCore/Framework/interface/MakerMacros.h"
+
+#include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "DataFormats/Common/interface/Ref.h"
+#include "DataFormats/JetReco/interface/Jet.h"
+#include "DataFormats/TrackReco/interface/Track.h"
+#include "DataFormats/BTauReco/interface/JetTracksAssociation.h"
+
+#include "DataFormats/Math/interface/Vector3D.h"
+
+// Math
+#include "Math/GenVector/VectorUtil.h"
+#include "Math/GenVector/PxPyPzE4D.h"
+
+using namespace reco;
+
+//
+// class decleration
+//
+
+class AssociationAnalyzer : public edm::EDAnalyzer {
+   public:
+      explicit AssociationAnalyzer(const edm::ParameterSet&);
+      ~AssociationAnalyzer() {}
+
+      virtual void analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup);
+
+   private:
+     string m_assoc;
+};
+
+//
+// constructors and destructor
+//
+AssociationAnalyzer::AssociationAnalyzer(const edm::ParameterSet& iConfig)
+{
+  m_assoc = iConfig.getParameter<string>("association");
+}
+
+void
+AssociationAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
+{
+  using namespace edm;
+  using namespace reco;
+  
+  Handle<JetTracksAssociationCollection> associationHandle;
+  iEvent.getByLabel(m_assoc, associationHandle);
+
+  const JetTracksAssociationCollection & association = *(associationHandle.product());
+  cout << "Found " << association.size() << " jets with tracks" << endl;
+
+  JetTracksAssociationCollection::const_iterator i = association.begin();
+  for (; i != association.end(); ++i) {
+    CaloJetRef     jet    = i->key;
+    TrackRefVector tracks = i->val;
+
+    cout << boolalpha;
+    cout << fixed;
+    cout << "->   Jet " << setw(2) << jet.index() << " pT: " << setprecision(2) << setw(6) << jet->pt() << " eta: " << setprecision(2) << setw(5) << jet->eta() << " phi: " << setprecision(2) << setw(5) << jet->phi() << " has " << tracks.size() << " tracks:" << endl;
+    for (TrackRefVector::const_iterator track = tracks.begin(); track != tracks.end(); ++track) {
+      cout << "   Track " << setw(2) << (*track).index() << " pT: " << setprecision(2) << setw(6) << (**track).pt() << " eta: " << setprecision(2) << setw(5) << (**track).eta() << " phi: " << setprecision(2) << setw(5) << (**track).phi() << endl;
+    }
+  }
+
+};
+
+//define this as a plug-in
+DEFINE_SEAL_MODULE();
+DEFINE_ANOTHER_FWK_MODULE(AssociationAnalyzer)
