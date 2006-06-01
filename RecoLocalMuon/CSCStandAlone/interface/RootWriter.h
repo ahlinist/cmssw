@@ -3,9 +3,9 @@
 #ifndef RootWriter_h
 #define RootWriter_h
 
-#include </afs/cern.ch/cms/external/lcg/external/root/5.10.00a/slc3_ia32_gcc323/root/include/TFile.h>
+#include "TFile.h"
 #include <iostream>
-#include </afs/cern.ch/cms/external/lcg/external/root/5.10.00a/slc3_ia32_gcc323/root/include/TTree.h>
+#include "TTree.h"
 
 
 

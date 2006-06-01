@@ -15,12 +15,12 @@
 #include "EventFilter/CSCRawToDigi/interface/CSCCFEBData.h"
 #include "EventFilter/CSCRawToDigi/interface/CSCCFEBTimeSlice.h"
 
-#include </afs/cern.ch/cms/external/lcg/external/root/5.10.00a/slc3_ia32_gcc323/root/include/TFile.h>
-#include </afs/cern.ch/cms/external/lcg/external/root/5.10.00a/slc3_ia32_gcc323/root/include/TDirectory.h>
+#include "TFile.h"
+#include "TDirectory.h"
 #include <iostream>
-#include </afs/cern.ch/cms/external/lcg/external/root/5.10.00a/slc3_ia32_gcc323/root/include/TTree.h>
-#include </afs/cern.ch/cms/external/lcg/external/root/5.10.00a/slc3_ia32_gcc323/root/include/TH1F.h>
-#include </afs/cern.ch/cms/external/lcg/external/root/5.10.00a/slc3_ia32_gcc323/root/include/TH2F.h>
+#include "TTree.h"
+#include "TH1F.h"
+#include "TH2F.h"
 
 #include <cmath>
 
