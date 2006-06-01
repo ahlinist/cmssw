@@ -55,7 +55,7 @@
 #include "EventFilter/CSCRawToDigi/interface/CSCTMBData.h"
 #include "EventFilter/CSCRawToDigi/interface/CSCDDUTrailer.h"
 #include "EventFilter/CSCRawToDigi/interface/CSCDMBHeader.h"
-//#include "condbc.h"
+
 #include "RecoLocalMuon/CSCStandAlone/interface/Strip_Fit_Constants.h"
 #include "RecoLocalMuon/CSCStandAlone/interface/CatTrkFnd.h"
 #include "RecoLocalMuon/CSCStandAlone/interface/AnoTrkFnd.h"
@@ -64,7 +64,7 @@
 #include "RecoLocalMuon/CSCStandAlone/interface/CatTrkDisp.h"
 #include "RecoLocalMuon/CSCStandAlone/interface/TrkLink3D.h"
 #include "RecoLocalMuon/CSCStandAlone/interface/EvtDump.h"
-//#include "RecoLocalMuon/CSCStandAlone/interface/RootWriterCSCMonitor.h"
+
 #include "RecoLocalMuon/CSCStandAlone/interface/RootWriterRechit.h"
 #include "RecoLocalMuon/CSCStandAlone/interface/rechit_pass.h"
 #include <iostream>
@@ -83,7 +83,7 @@ namespace test{
                                                                              
   RecHitComp( const edm::ParameterSet& ps ) : iev( 0 ) {
 	
-  theMapping=CSCReadoutMappingFromFile("/home/ippolito/CMSSW_0_6_0/src/RecoLocalMuon/CSCStandAlone/test/csc_slice_test_map.txt");
+  theMapping=CSCReadoutMappingFromFile("/home/ippolito/CMSSW_0_6_1/src/RecoLocalMuon/CSCStandAlone/test/csc_slice_test_map.txt");
 
   writer.setup(theMapping);
 
@@ -97,7 +97,7 @@ namespace test{
   }
   
 
-  printf(" find the names of algorithms \n");
+  
   // Find names of algorithms
   std::vector<std::string> algoNames = ps.getParameter<std::vector<std::string> >("algo_types");
 
@@ -110,7 +110,6 @@ namespace test{
   // How many chamber types do we have? This seems hard-wirable, but what the heck
   int ntypes = ps.getParameter<int>("no_of_chamber_types");
   LogDebug("CSC") << "no. of chamber types = " << ntypes;
-  printf(" NO OF CHAMBER TYPES %d \n",ntypes);
   algos_.resize(ntypes);
 
   // Instantiate the requested algorithm(s) and buffer them
@@ -120,19 +119,18 @@ namespace test{
   for ( size_t i = 0; i < algoNames.size(); ++i ) {
     CSCRecHit2DAlgo* pAlgo = CSCRecHit2DBuilderPluginFactory::get()-> create( algoNames[i], algoPSets[i] );
     algobuf.push_back( pAlgo );
-    std::cout << "algorithm [" << i << "] named " << algoNames[i] << " has address " << std::endl;
+    
   }
-  printf(" algototype size %d \n",algoToType.size()); 
+  
   // Register appropriate algorithm for each chamber type
   for ( size_t i = 0; i < algoToType.size(); ++i ) {
-    printf(" algototype %d %d \n",i,algoToType[i]);
     algos_[i] = algobuf[ algoToType[i] - 1 ]; // Care! std::vector index is type-1
-    std::cout << "address of algorithm for chamber type " << i << " is " << algos_[i] << std::endl;
+    
   }
 
   fp=fopen("rechitcomp.dat","w");
   // register what this produces
-  printf(" leaving producer \n");
+  //printf(" leaving producer \n");
   produces<CSCRecHit2DCollection>();
 }
 
@@ -147,34 +145,24 @@ namespace test{
 void produce( edm::Event& e, const edm::EventSetup& setup )
 {
   LogDebug("CSC") << "start producing rechits for event " << ++iev;
-  printf(" start produce events \n");
-	
+  
   // find the geometry (& conditions?) for this event & cache it in the builder
   edm::ESHandle<CSCGeometry> h;
   setup.get<MuonGeometryRecord>().get( h );
   const CSCGeometry* pgeom = &*h;
-  //  std::cout << " pgeom address " << pgeom << std::endl; 
- 
-  printf(" process some raw data \n"); 
-
-
   Handle<FEDRawDataCollection> rawdata;
   e.getByLabel("DaqSource", rawdata);
   for (int id=FEDNumbering::getCSCFEDIds().first;id<=FEDNumbering::getCSCFEDIds().second; ++id){ //for each of our DCCs
     const FEDRawData& data = rawdata->FEDData(id);
     if(size_t size=data.size()) {
-      cout << "FED# " << id << " " << size << endl;
       if(id==750){
 	unsigned short * buf = (unsigned short *)data.data();
 	CSCDCCEventData dccEvent(buf);
         std::vector<CSCDDUEventData> & ddudata = dccEvent.dduData();
         if(ddudata.size()==0)continue;
-	printf(" DDU data size %d \n",ddudata.size());
 	for(unsigned iddu=0;iddu<ddudata.size();iddu++){
 	  const std::vector<CSCEventData> & cscData = ddudata[iddu].cscData();
 	  int lvl1num=ddudata[iddu].header().lvl1num();
-	  printf(" Level 1 Number %d \n",lvl1num);
-	  printf(" ddu number %d cscData.size() %d \n",iddu,cscData.size());
 	  for (unsigned k=0; k<cscData.size(); ++k) {
 
             // stan's stuff
@@ -191,7 +179,7 @@ void produce( edm::Event& e, const edm::EventSetup& setup )
 	    int station = -1;
 	    int id  = theMapping.chamber(endcap, station, vmecrate, dmb, tmb);
 	    CSCDetId tcid(id);
-            printf(" chamber %d  %d \n",tcid.chamber(),id);
+            
             int ec=tcid.endcap();
             int st=tcid.station();
             int rg=tcid.ring();
@@ -206,16 +194,16 @@ void produce( edm::Event& e, const edm::EventSetup& setup )
               CSCWireDigiCollection wdc;
               std::vector <CSCStripDigi> digis = cscData[k].stripDigis(layer);
 	      std::vector<CSCWireDigi> wires = cscData[k].wireDigis(layer);
-              // printf(" digi wires size %d %d \n",digis.size(),wires.size());
+              
               sdc.put(std::make_pair(digis.begin(),digis.end()),cid);
               const CSCStripDigiCollection::Range tsdc = sdc.get(cid);
               wdc.put(std::make_pair(wires.begin(),wires.end()),cid);
               const CSCWireDigiCollection::Range twdc = wdc.get(cid);
               if(digis.size()>0&&wires.size()>0){
 		CSCRecHit2DAlgo* alg = algos_[2];
-		// std::cout << "use the algo at address " << alg << std::endl;
+		
                 std::vector<CSCRecHit2D> rhv = alg->run(cid,glayer,tsdc,twdc);
-                // printf("Layer %d RecHit Size %d \n",layer,rhv.size());
+                
                 float xo=-99.0;
                 float yo=-99.0;
                 for(unsigned int rh=0;rh<rhv.size();rh++){
@@ -231,7 +219,7 @@ void produce( edm::Event& e, const edm::EventSetup& setup )
 	        } 
               }
             }
-            printf(" end of layer loop \n");
+            
             
 	    // start comparison between rechit and stan's fitting variables
             //Nicole moved this stuff into a .h file for histogramming!

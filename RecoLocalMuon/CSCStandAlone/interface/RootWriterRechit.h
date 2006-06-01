@@ -33,7 +33,6 @@ class RootWriterRechit {
   
  public:
   RootWriterRechit(){
-    std::cout <<"constructing writer" << std::endl;
     counter1=0;
     counter2=0;
     counter3=0;
@@ -41,14 +40,12 @@ class RootWriterRechit {
   }
   
   ~RootWriterRechit(){
-    std::cout <<"destructing writer" << std::endl;
   }
   
   void done(){
     if (myFile!=0) {
       myFile->Write();
       delete myFile;
-      std::cout<<"closing file" << std::endl;
     }      
   }
   
@@ -185,7 +182,7 @@ class RootWriterRechit {
 	    if(trk_lay.size()>5){
 	      for(unsigned int rhit=0;rhit<srechit.size();rhit++){
 		//recfnd_use[trk_lay[ihit]]=1; 
-		printf(" %d %f %f %f %f \n",trk_lay[ihit],x_trkfnd,y_trkfnd,srechit[rhit],arechit[rhit]);
+		//printf(" %d %f %f %f %f \n",trk_lay[ihit],x_trkfnd,y_trkfnd,srechit[rhit],arechit[rhit]);
 		stan_vs_tim_cathode[histid]->Fill(x_trkfnd,srechit[rhit]);
 		
 		float cat_difference=x_trkfnd-srechit[rhit];
@@ -206,11 +203,7 @@ class RootWriterRechit {
 	  for(int it=0; it<6; it++){
 	    float eff=-99.0;
 	    
-	    if((trkfnd_use[it]==1&&recfnd_use_cat[it]==0)||(trkfnd_use[it]==1&&recfnd_use_ano[it]==0))printf("We got an inefficiency \n");
 	    if(trkfnd_use[it]==1){
-	      std::cout << "trkfnd_use  " << trkfnd_use[it] << std::endl;
-	      std::cout << "recfnd_use_cat  " << recfnd_use_cat[it] << std::endl;
-	      std::cout << "recfnd_use_ano  " << recfnd_use_ano[it] << std::endl;
 	      if(trkfnd_use[it]==1 && recfnd_use_cat[it]==1 && recfnd_use_ano[it]==1){eff=1.1;}else{eff=2.1;}
 	      if(trkfnd_use[it]==1){counter1=counter1+1;}
 	      if(trkfnd_use[it]==1 && recfnd_use_cat[it]==1 && recfnd_use_ano[it]==1){counter2=counter2+1;}
