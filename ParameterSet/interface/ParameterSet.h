@@ -115,7 +115,7 @@ namespace edm {
     // return tracked parameters; if 'trackiness' is false, w return
     // untracked parameters.
     size_t getParameterSetNames(std::vector<std::string>& output,
-				bool trackiness) const;
+				bool trackiness = true) const;
 
     // Return the names of all parameters of type
     // vector<ParameterSet>, pushing the names into the argument
@@ -123,7 +123,7 @@ namespace edm {
     // 'trackiness' is true, we return tracked parameters; if
     // 'trackiness' is false, w return untracked parameters.
     size_t getParameterSetVectorNames(std::vector<std::string>& output,
-				      bool trackiness) const;
+				      bool trackiness=true) const;
 
     friend std::ostream & operator<<(std::ostream & os, const ParameterSet & pset);
 
