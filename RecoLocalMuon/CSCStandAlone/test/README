@@ -38,7 +38,8 @@
 
         d)RecHitCom.cc (run from rechit.cfg) compares the hits found by the standalone tracking program 
           to CSCRecHit. Right now the program only runs on chamber 2/2/27, and if you wish to change that, will
-          require a recompile. I merely wanted this backed up somewhere. 
+          require a recompile. I merely wanted this backed up somewhere. Further, beware the hard-coding of the 
+	  location of csc_slice_test_map.txt in RecHitCom.cc. Chane this to you location before compilation 
 
 These programs are intended for use with Global DAQ data available from CASTOR in
 /castor/cern.ch/cms/emuslice/globaldaq. 
