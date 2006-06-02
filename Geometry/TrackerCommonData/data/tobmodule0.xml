@@ -105,7 +105,7 @@
    <rParent name="tobmodule0:TOBModule0"/>
    <rChild name="tobmodpar:TOBPA2"/>
   <rRotation name="tobmodpar:PA"/>
-  <Translation x="[zero]"                 y="[tobmodpar:PAY]" 
+  <Translation x="[tobmodpar:PAX]"        y="[tobmodpar:PAY]" 
                z="[tobmodpar:PAZ]"  />
  </PosPart>
  <PosPart copyNumber="1">

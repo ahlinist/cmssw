@@ -12,6 +12,7 @@
   <String name="GeneralMaterial"   value="materials:Air"/>
   <Numeric name="Ladders"          value="[pixbarlayer1:Ladders]"/>
   <Numeric name="LayerDz"          value="[pixbarlayer:LayerDz]"/>
+  <Numeric name="SensorEdge"       value="[pixbarladderhalf:SensorEdge]"/>
   <Numeric name="CoolDz"           value="[pixbarlayer:CoolDz]"/>
   <Numeric name="CoolWidth"        value="[pixbarlayer1:CoolWidth]"/>
   <Numeric name="CoolSide"         value="[pixbarlayer:CoolSide]"/>

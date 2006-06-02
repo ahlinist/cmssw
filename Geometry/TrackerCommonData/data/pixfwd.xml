@@ -5,7 +5,7 @@
 
 == CMS Forward Pixels Geometry ==
 
- @version 3.01.01 May 08, 2006
+ @version 3.02.01 May 30, 2006
  @created Dmitry Onoprienko
 
 == Subsystem or component described by the file ==
@@ -133,6 +133,50 @@ with pixfwdCommon:Y180 rotation (180 degrees around Y axis).
 <ConstantsSection label="ServiceCylinder" eval="true">
   <Constant name="ZCylinder"   value="-[RootHalfLength]"/>
 </ConstantsSection>
+
+<PosPartSection label="Cylinders">
+
+  <!-- +Z endcap -->
+
+  <PosPart copyNumber="1">
+    <rParent name="pixfwd:PixelForwardZPlus"/>
+    <rChild name="pixfwdCylinder:PixelForwardCylinderOuterCyl"/>
+    <Translation x="0." y="0." z="[pixfwd:ZCylinder]+[pixfwdCylinder:CylindersOuterLength]/2." />
+  </PosPart>
+
+  <PosPart copyNumber="1">
+    <rParent name="pixfwd:PixelForwardZPlus"/>
+    <rChild name="pixfwdCylinder:PixelForwardCylinderFrontCyl"/>
+    <Translation x="0." y="0." z="[pixfwd:ZCylinder]+[pixfwdCylinder:CylindersFrontLength]/2." />
+  </PosPart>
+
+  <PosPart copyNumber="1">
+    <rParent name="pixfwd:PixelForwardZPlus"/>
+    <rChild name="pixfwdCylinder:PixelForwardCylinderBackCyl"/>
+    <Translation x="0." y="0." z="[pixfwd:ZCylinder]+[pixfwdCylinder:CylindersFrontLength]+[pixfwdCylinder:CylinderBackLength]/2." />
+  </PosPart>
+
+  <!-- -Z endcap -->
+
+  <PosPart copyNumber="1">
+    <rParent name="pixfwd:PixelForwardZMinus"/>
+    <rChild name="pixfwdCylinder:PixelForwardCylinderOuterCyl"/>
+    <Translation x="0." y="0." z="[pixfwd:ZCylinder]+[pixfwdCylinder:CylindersOuterLength]/2." />
+  </PosPart>
+
+  <PosPart copyNumber="1">
+    <rParent name="pixfwd:PixelForwardZMinus"/>
+    <rChild name="pixfwdCylinder:PixelForwardCylinderFrontCyl"/>
+    <Translation x="0." y="0." z="[pixfwd:ZCylinder]+[pixfwdCylinder:CylindersFrontLength]/2." />
+  </PosPart>
+
+  <PosPart copyNumber="1">
+    <rParent name="pixfwd:PixelForwardZMinus"/>
+    <rChild name="pixfwdCylinder:PixelForwardCylinderBackCyl"/>
+    <Translation x="0." y="0." z="[pixfwd:ZCylinder]+[pixfwdCylinder:CylindersFrontLength]+[pixfwdCylinder:CylinderBackLength]/2." />
+  </PosPart>
+
+</PosPartSection>
 
     
 </DDDefinition>

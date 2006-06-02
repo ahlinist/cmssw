@@ -41,8 +41,8 @@
   <Numeric name="StartAngle"  value="[Phi0]"/>
   <Numeric name="IncrAngle"   value="[DPhi]"/>
   <Numeric name="Radius"      value="[tecring1:RPos]"/>
-  <Numeric name="ZIn"         value="-[tecpetpar:ModuleZ]"/>
-  <Numeric name="ZOut"        value="[tecpetpar:ModuleZ]"/>
+  <Numeric name="ZIn"         value="[tecring1:ModuleZ]"/>
+  <Numeric name="ZOut"        value="-[tecring1:ModuleZ]"/>
   <Numeric name="Number"      value="[Modules]"/>
   <Numeric name="StartCopyNo" value="1"/>
   <Numeric name="IncrCopyNo"  value="1"/>

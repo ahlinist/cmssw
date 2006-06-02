@@ -4,11 +4,11 @@
 <ConstantsSection label="tecwheel.xml" eval="true">
  <Constant name="zero"           value="0.0*fm"/>
  <Constant name="WheelRmax"      value="110.30*cm"/>
- <Constant name="WheelT"         value="10.40*cm"/>
+ <Constant name="WheelT"         value="12.22*cm"/>
  <Constant name="DiskT"          value="1.680*cm"/>
  <Constant name="NomexT"         value="1.600*cm"/>
  <Constant name="PetalContN"     value="8"/>
- <Constant name="PetalContZ"     value="3.58*cm"/>
+ <Constant name="PetalContZ"     value="3.583*cm"/>
  <Constant name="PetalContFiF"   value="0.00*deg"/>
  <Constant name="PetalContFiB"   value="22.5*deg"/>
  <Constant name="InsertR"        value="0.550*cm"/>
@@ -47,16 +47,16 @@
  <Constant name="OptConnT1"      value="2.475*cm"/>
  <Constant name="OptConnT2"      value="2.25*cm"/>
  <Constant name="OptConnT3"      value="1.80*cm"/>
- <Constant name="OptConnZ1"      value="2.0775*cm"/>
- <Constant name="OptConnZ2"      value="1.965*cm"/>
- <Constant name="OptConnZ3"      value="1.740*cm"/>
+ <Constant name="OptConnZ1"      value="([DiskT]+[OptConnT1])/2"/>
+ <Constant name="OptConnZ2"      value="([DiskT]+[OptConnT2])/2"/>
+ <Constant name="OptConnZ3"      value="([DiskT]+[OptConnT3])/2"/>
  <Constant name="OptConnFI1"     value="22.5*deg"/>
  <Constant name="OptConnFI2"     value="0.00*deg"/>
  <Constant name="CableW"         value="0.500*cm"/>
  <Constant name="CableT"         value="0.210*cm"/>
  <Constant name="CableTolerR"    value="0.350*cm"/>
- <Constant name="CableZ1"        value="-1.380*cm"/>
- <Constant name="CableZ2"        value="1.380*cm"/>
+ <Constant name="CableZ2"        value="([DiskT]+[CableT])/2"/>
+ <Constant name="CableZ1"        value="-[CableZ2]"/>
  <Constant name="CableFi1"       value="-11.25*deg"/>
  <Constant name="CableFi2"       value="11.25*deg"/>
  <Constant name="FixServRmin"    value="[WheelRmax]-[FixServR]"/>

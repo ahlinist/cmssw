@@ -5,7 +5,7 @@
 
 == CMS Forward Pixels Geometry ==
 
- @version 3.01.01 May 08, 2006
+ @version 3.02.01 May 30, 2006
  @created Dmitry Onoprienko
 
 == COMPONENT DEFINED BY THIS FILE: ==
@@ -23,7 +23,7 @@ The reason is that many components that should go into service cylinders have no
 and it's not clear what shape the root volume will eventually have to have, what symmetry 
 between Z+ and Z- endcaps we will be able to use, and so on. Once the exact geometry is known, 
 the file will need to be modified to follow the standard scheme for forward pixels geometry - 
-root volume plus an ancor point for positioning. 
+root volume plus an anchor point for positioning. 
   
 -->
 
@@ -59,49 +59,5 @@ root volume plus an ancor point for positioning.
    <rMaterial name="materials:Carbon"/>
  </LogicalPart>
 </LogicalPartSection>
-
-<PosPartSection label="Cylinders">
-
-  <!-- +Z endcap -->
-
-  <PosPart copyNumber="1">
-    <rParent name="pixfwd:PixelForwardZPlus"/>
-    <rChild name="PixelForwardCylinderOuterCyl"/>
-    <Translation x="0." y="0." z="[pixfwd:ZCylinder]+[CylindersOuterLength]/2." />
-  </PosPart>
-
-  <PosPart copyNumber="1">
-    <rParent name="pixfwd:PixelForwardZPlus"/>
-    <rChild name="PixelForwardCylinderFrontCyl"/>
-    <Translation x="0." y="0." z="[pixfwd:ZCylinder]+[CylindersFrontLength]/2." />
-  </PosPart>
-
-  <PosPart copyNumber="1">
-    <rParent name="pixfwd:PixelForwardZPlus"/>
-    <rChild name="PixelForwardCylinderBackCyl"/>
-    <Translation x="0." y="0." z="[pixfwd:ZCylinder]+[CylindersFrontLength]+[CylinderBackLength]/2." />
-  </PosPart>
-
-  <!-- -Z endcap -->
-
-  <PosPart copyNumber="1">
-    <rParent name="pixfwd:PixelForwardZMinus"/>
-    <rChild name="PixelForwardCylinderOuterCyl"/>
-    <Translation x="0." y="0." z="[pixfwd:ZCylinder]+[CylindersOuterLength]/2." />
-  </PosPart>
-
-  <PosPart copyNumber="1">
-    <rParent name="pixfwd:PixelForwardZMinus"/>
-    <rChild name="PixelForwardCylinderFrontCyl"/>
-    <Translation x="0." y="0." z="[pixfwd:ZCylinder]+[CylindersFrontLength]/2." />
-  </PosPart>
-
-  <PosPart copyNumber="1">
-    <rParent name="pixfwd:PixelForwardZMinus"/>
-    <rChild name="PixelForwardCylinderBackCyl"/>
-    <Translation x="0." y="0." z="[pixfwd:ZCylinder]+[CylindersFrontLength]+[CylinderBackLength]/2." />
-  </PosPart>
-
-</PosPartSection>
 
 </DDDefinition>

@@ -2,20 +2,28 @@
 <DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../DetectorDescription/Schema/DDLSchema.xsd">
 
 <ConstantsSection label="tecring5.xml" eval="true">
- <Constant name="Rin"            value="72.12*cm"/>
+ <Constant name="Rin"            value="72.11*cm"/>
  <Constant name="Rout"           value="95.61*cm"/>
- <Constant name="Rmin"           value="72.55*cm"/>
+ <Constant name="Rmin"           value="725.41*mm"/>
  <Constant name="NPhi"           value="56"/>
  <Constant name="RPos"           value="[Rmin]+
            ([tecmodule5:FullHeight]+[tecmodpar:TopFrameHeight])/2"/>
+ <Constant name="ModuleGap"      value="3.45*mm"/>
+ <Constant name="RingThick"      value="(2*[tecmodpar:ModuleThickSS]+
+                                           [ModuleGap])"/>
+ <Constant name="ModuleZ"        value="([tecmodpar:ModuleThickSS]+
+                                         [ModuleGap])/2"/>
+ <Constant name="RingZ"          value="12.431*mm"/>
  <Constant name="BridgeR"        value="[Rmin]+[tecmodule5:FullHeight]/2"/>
  <Constant name="BridgeZ"        value="([tecpetpar:BridgeThick]-
            [tecmodule5:BridgeThick])/2"/>
+ <Constant name="BridgeFrameZ"   value="[RingZ]+([tecpetpar:BridgeThick]+
+           [RingThick])/2"/>
 </ConstantsSection>
 
 <SolidSection label="tecring5.xml">
  <Tubs name="TECRing5"                rMin="[Rin]" 
-       rMax="[Rout]"                  dz="[tecpetpar:ModuleThick]/2" 
+       rMax="[Rout]"                  dz="[RingThick]/2" 
        startPhi="-[tecpetpar:PetalContWidth]/2"
        deltaPhi="[tecpetpar:PetalContWidth]"/>
  <Tubs name="TECRing5Bridge"          rMin="[Rin]" 
