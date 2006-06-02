@@ -39,15 +39,15 @@
  <Constant name="ServiceRout"     value="113.00*cm"/>
  <Constant name="ServiceZ1"       value="124.00*cm"/>
  <Constant name="RailsRin"        value="112.70*cm"/>
- <Constant name="Wheel0Z"         value="131.25*cm"/>
- <Constant name="Wheel1Z"         value="144.25*cm"/>
- <Constant name="Wheel2Z"         value="157.25*cm"/>
- <Constant name="Wheel3Z"         value="170.75*cm"/>
- <Constant name="Wheel4Z"         value="184.75*cm"/>
- <Constant name="Wheel5Z"         value="203.25*cm"/>
- <Constant name="Wheel6Z"         value="223.25*cm"/>
- <Constant name="Wheel7Z"         value="244.25*cm"/>
- <Constant name="Wheel8Z"         value="265.25*cm"/>
+ <Constant name="Wheel0Z"         value="132.25*cm"/>
+ <Constant name="Wheel1Z"         value="146.25*cm"/>
+ <Constant name="Wheel2Z"         value="160.25*cm"/>
+ <Constant name="Wheel3Z"         value="174.25*cm"/>
+ <Constant name="Wheel4Z"         value="188.25*cm"/>
+ <Constant name="Wheel5Z"         value="205.75*cm"/>
+ <Constant name="Wheel6Z"         value="224.75*cm"/>
+ <Constant name="Wheel7Z"         value="245.25*cm"/>
+ <Constant name="Wheel8Z"         value="266.75*cm"/>
  <Constant name="AxialCableW"     value="2.0*deg"/>
  <Constant name="AxialCableT"     value="0.21*cm"/>
  <Constant name="CableFi1"        value="-11.25*deg"/>

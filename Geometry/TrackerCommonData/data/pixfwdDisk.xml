@@ -5,7 +5,7 @@
 
 == CMS Forward Pixels Geometry ==
 
- @version 3.01.01 May 08, 2006
+ @version 3.02.01 May 30, 2006
  @created Dmitry Onoprienko
 
 == Subsystem or component described by the file ==
@@ -27,7 +27,7 @@ Origin at the center of the disk.<br>
 
 == Positioning ==
 
-Ancor point coincides with the root reference frame origin.
+Anchor point coincides with the root reference frame origin.
 Disks are positioned into endcaps without any rotations.
   
  -->

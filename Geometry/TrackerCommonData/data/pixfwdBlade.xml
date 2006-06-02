@@ -5,7 +5,7 @@
 
 == CMS Forward Pixels Geometry ==
 
- @version 3.01.01 May 08, 2006
+ @version 3.02.01 May 30, 2006
  @created Dmitry Onoprienko
 
 == Subsystem or component described by the file ==
@@ -28,7 +28,7 @@ root volume (PixelForwardBlade) reference frame.
 Currently, [AnchorX] = [AnchorZ] = 0.
 
 Since the origin of the "blade frame" with respect to which DDPixFwdBlades
-algorithm positions all one-per-blade items coinsides with the blade anchor point,
+algorithm positions all one-per-blade items coincides with the blade anchor point,
 the "child translation" vector passed to the algorithm should be
 (-[pixfwdBlade:AnchorX], -[pixfwdBlade:AnchorY], -[pixfwdBlade:AnchorZ]).
 

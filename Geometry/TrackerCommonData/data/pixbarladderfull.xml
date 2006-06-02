@@ -3,7 +3,7 @@
 
 <ConstantsSection label="pixbarladderfull.xml" eval="true">
  <Constant name="zero"              value="0.0*fm"/>
- <Constant name="CFStripThick"      value="0.22*mm"/>
+ <Constant name="CFStripThick"      value="0.25*mm"/>
  <Constant name="CFStripWidth"      value="26.00*mm"/>
  <Constant name="CFHoleWidth"       value="11.00*mm"/>
  <Constant name="CFHoleDz"          value="22.00*mm"/>

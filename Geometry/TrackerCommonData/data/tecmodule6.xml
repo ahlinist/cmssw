@@ -12,6 +12,13 @@
  <Constant name="BridgeThick"      value="0.224*cm"/>
  <Constant name="BridgeHeight"     value="1.668*cm"/>
  <Constant name="BridgeSeparation" value="5.350*cm"/>
+ <Constant name="ModuleThick"      value="[tecmodpar:ModuleThickSS]"/>
+ <Constant name="ShiftZ"           value="0*fm"/>
+ <Constant name="TopFrameZ"        value="([tecmodpar:TopFrameZ]+[ShiftZ])"/>
+ <Constant name="SideFrameZ"       value="([tecmodpar:SideFrameZ]+[ShiftZ])"/>
+ <Constant name="ActiveZ"          value="([tecmodpar:ActiveZ2]+[ShiftZ])"/>
+ <Constant name="HybridZ"          value="([tecmodpar:HybridZ]+[ShiftZ])"/>
+ <Constant name="PitchZ"           value="([tecmodpar:PitchZ]+[ShiftZ])"/>
 </ConstantsSection>
 
 <Algorithm name="track:DDTECModuleAlgo">
@@ -24,18 +31,18 @@
   <Numeric name="DlBottom"         value="[DlBottom]"/>
   <Numeric name="DlHybrid"         value="[DlHybrid]"/>
   <Numeric name="FrameWidth"       value="[tecmodpar:FrameWidth]"/>
-  <Numeric name="FrameThick"       value="[tecmodpar:ModuleThick]"/>
+  <Numeric name="FrameThick"       value="[ModuleThick]"/>
   <Numeric name="FrameOver"        value="[tecmodpar:FrameOver]"/>
   <String name="TopFrameMaterial"  value="tecmaterial:TEC_frame_top"/>
   <Numeric name="TopFrameHeight"   value="[tecmodpar:TopFrameHeight]"/>
   <Numeric name="TopFrameThick"    value="[tecmodpar:TopFrameThick]"/>
   <Vector name="TopFrameZ"     type="numeric" nEntries="1">
-    [tecmodpar:TopFrameZ]
+    [TopFrameZ]
   </Vector>
   <String name="SideFrameMaterial" value="tecmaterial:TEC_frame_side"/>
   <Numeric name="SideFrameThick"   value="[tecmodpar:SideFrameThick]"/>
   <Vector name="SideFrameZ"    type="numeric" nEntries="1">
-    [tecmodpar:SideFrameZ]
+    [SideFrameZ]
   </Vector>
   <String name="WaferMaterial"     value="materials:Silicon"/>
   <Numeric name="SideWidth"        value="[SideWidth]"/>
@@ -46,22 +53,22 @@
   <Vector name="ActiveThick"   type="numeric" nEntries="1">
     [tecmodpar:ActiveThick2]
   </Vector>
-  <String name="ActiveRotation"    value="tecmodpar:90ZD"/>
+  <String name="ActiveRotation"    value="tecmodpar:ART6"/>
   <Vector name="ActiveZ"       type="numeric" nEntries="1">
-   -[tecmodpar:ActiveZ2]
+    [ActiveZ]
   </Vector>
   <String name="HybridMaterial"    value="tecmaterial:TEC_ele7"/>
   <Numeric name="HybridHeight"     value="[tecmodpar:HybridHeight]"/>
   <Numeric name="HybridWidth"      value="[tecmodpar:HybridWidth]"/>
   <Numeric name="HybridThick"      value="[tecmodpar:HybridThick]"/>
   <Vector name="HybridZ" type="numeric" nEntries="1">
-    -[tecmodpar:HybridZ]
+    [HybridZ]
   </Vector>
   <String name="PitchMaterial"     value="tecmaterial:TEC_PitchAdapter"/>
   <Numeric name="PitchHeight"      value="[tecmodpar:PitchHeight]"/>
   <Numeric name="PitchThick"       value="[tecmodpar:PitchThick]"/>
   <Vector name="PitchZ" type="numeric" nEntries="1">
-    -[tecmodpar:PitchZ]
+    [PitchZ]
   </Vector>
   <String name="PitchRotation"     value="tecmodpar:9NYX"/>
   <Numeric name="BridgeWidth"      value="[BridgeWidth]"/>

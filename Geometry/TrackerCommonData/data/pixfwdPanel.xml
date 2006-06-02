@@ -5,7 +5,7 @@
 
 == CMS Forward Pixels Geometry ==
 
- @version 3.01.01 May 08, 2006
+ @version 3.02.01 May 30, 2006
  @created Dmitry Onoprienko
 
 == Subsystem or component described by the file ==
@@ -15,7 +15,7 @@ Every blade will have two such panels, one on each side.
 
 == Root volume and its reference frame ==
 
-Four types of panels are difined :
+Four types of panels are defined :
 
 PixelForwardPanel3Right - right 3-plaquette panel (3RX on the drawings)
 PixelForwardPanel3Left  - left 3-plaquette panel (3LX on the drawings)
@@ -54,9 +54,9 @@ Currently, [AnchorX] = [AnchorZ] = 0.
 
    <Constant name="RootHalfWidth" value="[pixfwdPanelBase:RootHalfWidth]" />
    <Constant name="RootHalfLength" value="[pixfwdPanelBase:RootHalfLength]" />
-   <Constant name="RootHalfThickness"  value="[pixfwdplaq:PlaquetteT]/2.+[pixfwdPanelBase:RootHalfThickness]" />
+   <Constant name="RootHalfThickness"  value="[pixfwdPlaq:PlaquetteT]/2.+[pixfwdPanelBase:RootHalfThickness]" />
 
-   <Constant name="zPanel"  value="-[pixfwdplaq:PlaquetteT]/2." />
+   <Constant name="zPanel"  value="-[pixfwdPlaq:PlaquetteT]/2." />
    <Constant name="zPlaquette"  value="[pixfwdPanelBase:RootHalfThickness]" />
    
    <!-- Coordinates of the ancor point ((0.,0.) on the drawing) in the Root (PixelForwardPanel<ХХХ>) frame -->
@@ -105,23 +105,23 @@ Currently, [AnchorX] = [AnchorZ] = 0.
   
   <PosPart copyNumber="1">
     <rParent name="PixelForwardPanel3Right"/>
-    <rChild name="pixfwdplaq2x3:PixelForwardPlaquette2x3"/>
-    <Translation x="[AnchorX]-[pixfwdplaq2x3:AnchorX]" y="[AnchorY]+[ACp3y1]-[pixfwdplaq2x3:AnchorY]" z="[zPlaquette]" />
+    <rChild name="pixfwdPlaq2x3:PixelForwardPlaquette2x3Up"/>
+    <Translation x="[AnchorX]-[pixfwdPlaq2x3:AnchorX]" y="[AnchorY]+[ACp3y1]-[pixfwdPlaq2x3:AnchorY]" z="[zPlaquette]" />
   </PosPart>
   <PosPart copyNumber="1">
     <rParent name="PixelForwardPanel3Right"/>
-    <rChild name="pixfwdplaq2x4:PixelForwardPlaquette2x4"/>
-    <Translation x="[AnchorX]-[pixfwdplaq2x4:AnchorX]" y="[AnchorY]+[ACp3y2]-[pixfwdplaq2x4:AnchorY]" z="[zPlaquette]" />
+    <rChild name="pixfwdPlaq2x4:PixelForwardPlaquette2x4Up"/>
+    <Translation x="[AnchorX]-[pixfwdPlaq2x4:AnchorX]" y="[AnchorY]+[ACp3y2]-[pixfwdPlaq2x4:AnchorY]" z="[zPlaquette]" />
   </PosPart>
   <PosPart copyNumber="1">
     <rParent name="PixelForwardPanel3Right"/>
-    <rChild name="pixfwdplaq2x5:PixelForwardPlaquette2x5"/>
-    <Translation x="[AnchorX]-[pixfwdplaq2x5:AnchorX]" y="[AnchorY]+[ACp3y3]-[pixfwdplaq2x5:AnchorY]" z="[zPlaquette]" />
+    <rChild name="pixfwdPlaq2x5:PixelForwardPlaquette2x5Up"/>
+    <Translation x="[AnchorX]-[pixfwdPlaq2x5:AnchorX]" y="[AnchorY]+[ACp3y3]-[pixfwdPlaq2x5:AnchorY]" z="[zPlaquette]" />
   </PosPart>
 
   <!-- Panel 3 Left -->
 
-  <PosPart copyNumber="1">
+  <PosPart copyNumber="2">
     <rParent name="PixelForwardPanel3Left"/>
     <rChild name="pixfwdPanelBase:PixelForwardPanelBase"/>
     <Translation x="0." y="0." z="[zPanel]" />
@@ -130,26 +130,26 @@ Currently, [AnchorX] = [AnchorZ] = 0.
   
   <PosPart copyNumber="1">
     <rParent name="PixelForwardPanel3Left"/>
-    <rChild name="pixfwdplaq2x3:PixelForwardPlaquette2x3"/>
-    <Translation x="[AnchorX]+[pixfwdplaq2x3:AnchorX]" y="[AnchorY]+[ACp3y1]+[pixfwdplaq2x3:AnchorY]" z="[zPlaquette]" />
+    <rChild name="pixfwdPlaq2x3:PixelForwardPlaquette2x3Down"/>
+    <Translation x="[AnchorX]+[pixfwdPlaq2x3:AnchorX]" y="[AnchorY]+[ACp3y1]+[pixfwdPlaq2x3:AnchorY]" z="[zPlaquette]" />
     <rRotation name="pixfwdCommon:Z180" />
   </PosPart>
   <PosPart copyNumber="1">
     <rParent name="PixelForwardPanel3Left"/>
-    <rChild name="pixfwdplaq2x4:PixelForwardPlaquette2x4"/>
-    <Translation x="[AnchorX]+[pixfwdplaq2x4:AnchorX]" y="[AnchorY]+[ACp3y2]+[pixfwdplaq2x4:AnchorY]" z="[zPlaquette]" />
+    <rChild name="pixfwdPlaq2x4:PixelForwardPlaquette2x4Down"/>
+    <Translation x="[AnchorX]+[pixfwdPlaq2x4:AnchorX]" y="[AnchorY]+[ACp3y2]+[pixfwdPlaq2x4:AnchorY]" z="[zPlaquette]" />
     <rRotation name="pixfwdCommon:Z180" />
   </PosPart>
   <PosPart copyNumber="1">
     <rParent name="PixelForwardPanel3Left"/>
-    <rChild name="pixfwdplaq2x5:PixelForwardPlaquette2x5"/>
-    <Translation x="[AnchorX]+[pixfwdplaq2x5:AnchorX]" y="[AnchorY]+[ACp3y3]+[pixfwdplaq2x5:AnchorY]" z="[zPlaquette]" />
+    <rChild name="pixfwdPlaq2x5:PixelForwardPlaquette2x5Down"/>
+    <Translation x="[AnchorX]+[pixfwdPlaq2x5:AnchorX]" y="[AnchorY]+[ACp3y3]+[pixfwdPlaq2x5:AnchorY]" z="[zPlaquette]" />
     <rRotation name="pixfwdCommon:Z180" />
   </PosPart>
   
   <!-- Panel 4 Right -->
 
-  <PosPart copyNumber="1">
+  <PosPart copyNumber="3">
     <rParent name="PixelForwardPanel4Right"/>
     <rChild name="pixfwdPanelBase:PixelForwardPanelBase"/>
     <Translation x="0." y="0." z="[zPanel]" />
@@ -157,29 +157,28 @@ Currently, [AnchorX] = [AnchorZ] = 0.
   
   <PosPart copyNumber="1">
     <rParent name="PixelForwardPanel4Right"/>
-    <rChild name="pixfwdplaq1x2Right:PixelForwardPlaquette1x2Right"/>
-    <Translation x="[AnchorX]-[pixfwdplaq1x2Right:AnchorX]" y="[AnchorY]+[ACp4y1]-[pixfwdplaq1x2Right:AnchorY]" z="[zPlaquette]" />
+    <rChild name="pixfwdPlaq1x2:PixelForwardPlaquette1x2Right"/>
+    <Translation x="[AnchorX]-[pixfwdPlaq1x2:AnchorXRight]" y="[AnchorY]+[ACp4y1]-[pixfwdPlaq1x2:AnchorY]" z="[zPlaquette]" />
+  </PosPart>
+  <PosPart copyNumber="2">
+    <rParent name="PixelForwardPanel4Right"/>
+    <rChild name="pixfwdPlaq2x3:PixelForwardPlaquette2x3Down"/>
+    <Translation x="[AnchorX]-[pixfwdPlaq2x3:AnchorX]" y="[AnchorY]+[ACp4y2]-[pixfwdPlaq2x3:AnchorY]" z="[zPlaquette]" />
+  </PosPart>
+  <PosPart copyNumber="2">
+    <rParent name="PixelForwardPanel4Right"/>
+    <rChild name="pixfwdPlaq2x4:PixelForwardPlaquette2x4Down"/>
+    <Translation x="[AnchorX]-[pixfwdPlaq2x4:AnchorX]" y="[AnchorY]+[ACp4y3]-[pixfwdPlaq2x4:AnchorY]" z="[zPlaquette]" />
   </PosPart>
   <PosPart copyNumber="1">
     <rParent name="PixelForwardPanel4Right"/>
-    <rChild name="pixfwdplaq2x3:PixelForwardPlaquette2x3"/>
-    <Translation x="[AnchorX]-[pixfwdplaq2x3:AnchorX]" y="[AnchorY]+[ACp4y2]-[pixfwdplaq2x3:AnchorY]" z="[zPlaquette]" />
-  </PosPart>
-  <PosPart copyNumber="1">
-    <rParent name="PixelForwardPanel4Right"/>
-    <rChild name="pixfwdplaq2x4:PixelForwardPlaquette2x4"/>
-    <Translation x="[AnchorX]-[pixfwdplaq2x4:AnchorX]" y="[AnchorY]+[ACp4y3]-[pixfwdplaq2x4:AnchorY]" z="[zPlaquette]" />
-  </PosPart>
-  <PosPart copyNumber="1">
-    <rParent name="PixelForwardPanel4Right"/>
-    <rChild name="pixfwdplaq1x5Left:PixelForwardPlaquette1x5Left"/>
-    <Translation x="[AnchorX]+[pixfwdplaq1x5Left:AnchorX]" y="[AnchorY]+[ACp4y4]+[pixfwdplaq1x5Left:AnchorY]" z="[zPlaquette]" />
-    <rRotation name="pixfwdCommon:Z180" />
+    <rChild name="pixfwdPlaq1x5:PixelForwardPlaquette1x5Left"/>
+    <Translation x="[AnchorX]-[pixfwdPlaq1x5:AnchorXLeft]" y="[AnchorY]+[ACp4y4]-[pixfwdPlaq1x5:AnchorY]" z="[zPlaquette]" />
   </PosPart>
   
   <!-- Panel 4 Left -->
 
-  <PosPart copyNumber="1">
+  <PosPart copyNumber="4">
     <rParent name="PixelForwardPanel4Left"/>
     <rChild name="pixfwdPanelBase:PixelForwardPanelBase"/>
     <Translation x="0." y="0." z="[zPanel]" />
@@ -188,26 +187,25 @@ Currently, [AnchorX] = [AnchorZ] = 0.
   
   <PosPart copyNumber="1">
     <rParent name="PixelForwardPanel4Left"/>
-    <rChild name="pixfwdplaq1x2Left:PixelForwardPlaquette1x2Left"/>
-    <Translation x="[AnchorX]-[pixfwdplaq1x2Left:AnchorX]" y="[AnchorY]+[ACp4y1]-[pixfwdplaq1x2Left:AnchorY]" z="[zPlaquette]" />
+    <rChild name="pixfwdPlaq1x2:PixelForwardPlaquette1x2Left"/>
+    <Translation x="[AnchorX]-[pixfwdPlaq1x2:AnchorXLeft]" y="[AnchorY]+[ACp4y1]-[pixfwdPlaq1x2:AnchorY]" z="[zPlaquette]" />
   </PosPart>
-  <PosPart copyNumber="1">
+  <PosPart copyNumber="2">
     <rParent name="PixelForwardPanel4Left"/>
-    <rChild name="pixfwdplaq2x3:PixelForwardPlaquette2x3"/>
-    <Translation x="[AnchorX]+[pixfwdplaq2x3:AnchorX]" y="[AnchorY]+[ACp4y2]+[pixfwdplaq2x3:AnchorY]" z="[zPlaquette]" />
+    <rChild name="pixfwdPlaq2x3:PixelForwardPlaquette2x3Up"/>
+    <Translation x="[AnchorX]+[pixfwdPlaq2x3:AnchorX]" y="[AnchorY]+[ACp4y2]+[pixfwdPlaq2x3:AnchorY]" z="[zPlaquette]" />
+    <rRotation name="pixfwdCommon:Z180" />
+  </PosPart>
+  <PosPart copyNumber="2">
+    <rParent name="PixelForwardPanel4Left"/>
+    <rChild name="pixfwdPlaq2x4:PixelForwardPlaquette2x4Up"/>
+    <Translation x="[AnchorX]+[pixfwdPlaq2x4:AnchorX]" y="[AnchorY]+[ACp4y3]+[pixfwdPlaq2x4:AnchorY]" z="[zPlaquette]" />
     <rRotation name="pixfwdCommon:Z180" />
   </PosPart>
   <PosPart copyNumber="1">
     <rParent name="PixelForwardPanel4Left"/>
-    <rChild name="pixfwdplaq2x4:PixelForwardPlaquette2x4"/>
-    <Translation x="[AnchorX]+[pixfwdplaq2x4:AnchorX]" y="[AnchorY]+[ACp4y3]+[pixfwdplaq2x4:AnchorY]" z="[zPlaquette]" />
-    <rRotation name="pixfwdCommon:Z180" />
-  </PosPart>
-  <PosPart copyNumber="1">
-    <rParent name="PixelForwardPanel4Left"/>
-    <rChild name="pixfwdplaq1x5Right:PixelForwardPlaquette1x5Right"/>
-    <Translation x="[AnchorX]+[pixfwdplaq1x5Right:AnchorX]" y="[AnchorY]+[ACp4y4]+[pixfwdplaq1x5Right:AnchorY]" z="[zPlaquette]" />
-    <rRotation name="pixfwdCommon:Z180" />
+    <rChild name="pixfwdPlaq1x5:PixelForwardPlaquette1x5Right"/>
+    <Translation x="[AnchorX]-[pixfwdPlaq1x5:AnchorXRight]" y="[AnchorY]+[ACp4y4]-[pixfwdPlaq1x5:AnchorY]" z="[zPlaquette]" />
   </PosPart>
   
 </PosPartSection>

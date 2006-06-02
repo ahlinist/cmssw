@@ -49,29 +49,29 @@
    <rParent name="tecpetal6b:TECPetalCont6B"/>
    <rChild name="tecring2b:TECRing2B"/>
   <rRotation name="tecpetpar:180X"/>
-  <Translation x="[zero]" y="[zero]" z="-[tecpetpar:ModuleFrameZ]"/>
+  <Translation x="[zero]" y="[zero]" z="[tecring2:RingZ]"/>
  </PosPart>
  <PosPart copyNumber="1">
    <rParent name="tecpetal6b:TECPetalCont6B"/>
    <rChild name="tecring3b:TECRing3B"/>
-  <Translation x="[zero]" y="[zero]" z="[tecpetpar:ModuleFrameZ]"/>
+  <Translation x="[zero]" y="[zero]" z="[tecring3:RingZ]"/>
  </PosPart>
  <PosPart copyNumber="1">
    <rParent name="tecpetal6b:TECPetalCont6B"/>
    <rChild name="tecring4b:TECRing4B"/>
   <rRotation name="tecpetpar:180X"/>
-  <Translation x="[zero]" y="[zero]" z="-[tecpetpar:ModuleFrameZ]"/>
+  <Translation x="[zero]" y="[zero]" z="[tecring4:RingZ]"/>
  </PosPart>
  <PosPart copyNumber="1">
    <rParent name="tecpetal6b:TECPetalCont6B"/>
    <rChild name="tecring5b:TECRing5B"/>
-  <Translation x="[zero]" y="[zero]" z="[tecpetpar:ModuleFrameZ]"/>
+  <Translation x="[zero]" y="[zero]" z="[tecring5:RingZ]"/>
  </PosPart>
  <PosPart copyNumber="1">
    <rParent name="tecpetal6b:TECPetalCont6B"/>
    <rChild name="tecring6b:TECRing6B"/>
   <rRotation name="tecpetpar:180X"/>
-  <Translation x="[zero]" y="[zero]" z="-[tecpetpar:ModuleFrameZ]"/>
+  <Translation x="[zero]" y="[zero]" z="[tecring6:RingZ]"/>
  </PosPart>
  <PosPart copyNumber="1">
    <rParent name="tecpetal6b:TECPetalCont6B"/>
@@ -142,27 +142,27 @@
  <PosPart copyNumber="1">
    <rParent name="tecpetal6b:TECPetalCont6B"/>
    <rChild name="tecring2b:TECRing2BridgeB"/>
-  <Translation x="[zero]" y="[zero]" z="-[tecpetpar:BridgeZ]"/>
+  <Translation x="[zero]" y="[zero]" z="[tecring2:BridgeFrameZ]"/>
  </PosPart>
  <PosPart copyNumber="1">
    <rParent name="tecpetal6b:TECPetalCont6B"/>
    <rChild name="tecring3b:TECRing3BridgeB"/>
-  <Translation x="[zero]" y="[zero]" z="[tecpetpar:BridgeZ]"/>
+  <Translation x="[zero]" y="[zero]" z="[tecring3:BridgeFrameZ]"/>
  </PosPart>
  <PosPart copyNumber="1">
    <rParent name="tecpetal6b:TECPetalCont6B"/>
    <rChild name="tecring4b:TECRing4BridgeB"/>
-  <Translation x="[zero]" y="[zero]" z="-[tecpetpar:BridgeZ]"/>
+  <Translation x="[zero]" y="[zero]" z="[tecring4:BridgeFrameZ]"/>
  </PosPart>
  <PosPart copyNumber="1">
    <rParent name="tecpetal6b:TECPetalCont6B"/>
    <rChild name="tecring5b:TECRing5BridgeB"/>
-  <Translation x="[zero]" y="[zero]" z="[tecpetpar:BridgeZ]"/>
+  <Translation x="[zero]" y="[zero]" z="[tecring5:BridgeFrameZ]"/>
  </PosPart>
  <PosPart copyNumber="1">
    <rParent name="tecpetal6b:TECPetalCont6B"/>
    <rChild name="tecring6b:TECRing6BridgeB"/>
-  <Translation x="[zero]" y="[zero]" z="-[tecpetpar:BridgeZ]"/>
+  <Translation x="[zero]" y="[zero]" z="[tecring6:BridgeFrameZ]"/>
  </PosPart>
 </PosPartSection>
 

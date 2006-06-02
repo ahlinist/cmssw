@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../DetectorDescription/Schema/DDLSchema.xsd">
+
+<ConstantsSection label="tracker.xml" eval="true">
+ <Constant name="zero"         value="0.0*fm"/>
+ <Constant name="TrackCalorR"  value="1.233*m"/>
+ <Constant name="TrackBeamZ1"  value="1.948*m"/>
+ <Constant name="TrackBeamZ2"  value="2.935*m"/>
+ <Constant name="TrackBeamR1"  value="3.10*cm"/>
+ <Constant name="TrackBeamR2"  value="7.40*cm"/>
+</ConstantsSection>
+
+<SolidSection label="tracker.xml">
+ <Polycone name="Tracker" startPhi="0*deg" deltaPhi="360*deg" >
+  <ZSection z="-[TrackBeamZ2]"  rMin="[zero]"  rMax="[TrackCalorR]" />
+  <ZSection z="[TrackBeamZ2]"   rMin="[zero]"  rMax="[TrackCalorR]" />
+ </Polycone> 
+</SolidSection>
+
+<LogicalPartSection label="tracker.xml">
+ <LogicalPart name="Tracker" category="unspecified">
+  <rSolid name="Tracker"/>
+  <rMaterial name="materials:Air"/>
+ </LogicalPart>
+</LogicalPartSection>
+ 
+<RotationSection label="tracker.xml">
+  <Rotation name="180D" thetaX="90*deg" phiX="180*deg"   thetaY="90*deg"
+                        phiY="90*deg"   thetaZ="180*deg" phiZ="0*deg" />
+</RotationSection>
+
+<PosPartSection label="tracker.xml">
+ <PosPart copyNumber="1">
+   <rParent name="trackertec:Tracker"/>
+   <rChild name="tec:TEC"/>
+  <Translation x="[zero]" y="[zero]" z="[tec:ZPos]"/>
+ </PosPart>
+ <PosPart copyNumber="2">
+   <rParent name="trackertec:Tracker"/>
+   <rChild name="tec:TEC"/>
+  <rRotation name="trackertec:180D"/>
+  <Translation x="[zero]" y="[zero]" z="-[tec:ZPos]"/>
+ </PosPart>
+</PosPartSection>
+
+</DDDefinition>

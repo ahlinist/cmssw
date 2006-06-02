@@ -45,6 +45,8 @@
  <Constant name="ModCool2X"  value="5.250*cm"/>
  <Constant name="ModCool2Y"  value="0.100*cm"/>
  <Constant name="ModCool2Z"  value="10.325*cm"/>
+ <Constant name="Tilt"       value="5.7296*deg"/>
+ <Constant name="TiltX"      value="(90.0*deg-[Tilt])"/>
  <Constant name="WaferDx"    value="4.818*cm"/>
  <Constant name="WaferDy"    value="9.450*cm"/>
  <Constant name="WaferDz"    value="0.025*cm"/>
@@ -53,6 +55,7 @@
  <Constant name="ActiveDx"   value="4.6848*cm"/>
  <Constant name="ActiveDy"   value="9.3067*cm"/>
  <Constant name="InactiveDy" value="0.1553*cm"/>
+ <Constant name="PAX"        value="[WaferDy]*sin([Tilt])"/>
 </ConstantsSection>
 
 <SolidSection label="tobmodpar.xml">
@@ -125,12 +128,12 @@
 </LogicalPartSection>
 
 <RotationSection label="tobmodpar.xml">
-  <Rotation name="Rphi" thetaX="90*deg" phiX="0*deg"     thetaY="0*deg"
-                        phiY="0*deg"    thetaZ="-90*deg" phiZ="90*deg" />
-  <Rotation name="Ster" thetaX="84.2704*deg" phiX="180*deg" thetaY="5.7296*deg"
-                        phiY="0*deg"    thetaZ="90*deg"  phiZ="90*deg" />
-  <Rotation name="PA"   thetaX="0*deg"  phiX="0*deg"     thetaY="90*deg"
-                        phiY="90*deg"   thetaZ="-90*deg" phiZ="0*deg"  />
+  <Rotation name="Rphi" thetaX="90*deg"  phiX="0*deg"     thetaY="0*deg"
+                        phiY="0*deg"     thetaZ="-90*deg" phiZ="90*deg" />
+  <Rotation name="Ster" thetaX="[TiltX]" phiX="180*deg"   thetaY="[Tilt]"
+                        phiY="0*deg"     thetaZ="90*deg"  phiZ="90*deg" />
+  <Rotation name="PA"   thetaX="0*deg"   phiX="0*deg"     thetaY="90*deg"
+                        phiY="90*deg"    thetaZ="-90*deg" phiZ="0*deg"  />
 </RotationSection>
 
 </DDDefinition>
