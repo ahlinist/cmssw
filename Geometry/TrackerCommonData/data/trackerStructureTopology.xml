@@ -54,10 +54,8 @@
     </SpecPar>
 
     <SpecPar name="PixelEndcapDetPar">
-      <PartSelector path="//PixelForwardActive1x2Right" />
-      <PartSelector path="//PixelForwardActive1x2Left" />
-      <PartSelector path="//PixelForwardActive1x5Right" />
-      <PartSelector path="//PixelForwardActive1x5Left" />
+      <PartSelector path="//PixelForwardActive1x2" />
+      <PartSelector path="//PixelForwardActive1x5" />
       <PartSelector path="//PixelForwardActive2x3" />
       <PartSelector path="//PixelForwardActive2x4" />
       <PartSelector path="//PixelForwardActive2x5" />
@@ -306,10 +304,8 @@ definire plus e minus
   <SpecPar name="PixelROCRowsPar">
       <PartSelector path="//PixelBarrelActiveFull" />
       <PartSelector path="//PixelBarrelActiveHalf" />
-      <PartSelector path="//PixelForwardActive1x2Right" />
-      <PartSelector path="//PixelForwardActive1x2Left" />
-      <PartSelector path="//PixelForwardActive1x5Right" />
-      <PartSelector path="//PixelForwardActive1x5Left" />
+      <PartSelector path="//PixelForwardActive1x2" />
+      <PartSelector path="//PixelForwardActive1x5" />
       <PartSelector path="//PixelForwardActive2x3" />
       <PartSelector path="//PixelForwardActive2x4" />
       <PartSelector path="//PixelForwardActive2x5" />
@@ -319,10 +315,8 @@ definire plus e minus
   <SpecPar name="PixelROCColsPar">
       <PartSelector path="//PixelBarrelActiveFull" />
       <PartSelector path="//PixelBarrelActiveHalf" />
-      <PartSelector path="//PixelForwardActive1x2Right" />
-      <PartSelector path="//PixelForwardActive1x2Left" />
-      <PartSelector path="//PixelForwardActive1x5Right" />
-      <PartSelector path="//PixelForwardActive1x5Left" />
+      <PartSelector path="//PixelForwardActive1x2" />
+      <PartSelector path="//PixelForwardActive1x5" />
       <PartSelector path="//PixelForwardActive2x3" />
       <PartSelector path="//PixelForwardActive2x4" />
       <PartSelector path="//PixelForwardActive2x5" />
@@ -339,10 +333,8 @@ definire plus e minus
 
   <SpecPar name="PixelROC_X_HalfPar">
       <PartSelector path="//PixelBarrelActiveHalf" />
-      <PartSelector path="//PixelForwardActive1x2Right" />
-      <PartSelector path="//PixelForwardActive1x2Left" />
-      <PartSelector path="//PixelForwardActive1x5Right" />
-      <PartSelector path="//PixelForwardActive1x5Left" />
+      <PartSelector path="//PixelForwardActive1x2" />
+      <PartSelector path="//PixelForwardActive1x5" />
       <Parameter name="PixelROC_X" value="1"/>
   </SpecPar>
 
@@ -353,8 +345,7 @@ definire plus e minus
   </SpecPar>
 
   <SpecPar name="PixelROC_Y2Par">
-      <PartSelector path="//PixelForwardActive1x2Right" />
-      <PartSelector path="//PixelForwardActive1x2Left" />
+      <PartSelector path="//PixelForwardActive1x2" />
       <Parameter name="PixelROC_Y" value="2"/>
   </SpecPar>
 
@@ -369,8 +360,7 @@ definire plus e minus
   </SpecPar>
 
   <SpecPar name="PixelROC_Y5Par">
-      <PartSelector path="//PixelForwardActive1x5Right" />
-      <PartSelector path="//PixelForwardActive1x5Left" />
+      <PartSelector path="//PixelForwardActive1x5" />
       <PartSelector path="//PixelForwardActive2x5" />
       <Parameter name="PixelROC_Y" value="5"/>
   </SpecPar>
