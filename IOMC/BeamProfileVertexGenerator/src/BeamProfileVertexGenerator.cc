@@ -1,6 +1,5 @@
 #include "IOMC/BeamProfileVertexGenerator/interface/BeamProfileVertexGenerator.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
-#include "FWCore/Utilities/interface/Exception.h"
 
 #include "CLHEP/Random/RandFlat.h"
 #include "CLHEP/Random/RandGauss.h"
@@ -16,18 +15,18 @@ BeamProfileVertexGenerator::BeamProfileVertexGenerator(const edm::ParameterSet &
   BaseEventVertexGenerator(p,seed), myVertex(0), myRandom(0) {
   
   edm::ParameterSet vgenParam(p);
-  meanX(vgenParam.getParameter<double>("BeamMeanX")*mm);
-  meanY(vgenParam.getParameter<double>("BeamMeanY")*mm);
-  beamPos(vgenParam.getParameter<double>("BeamPosition")*mm);
-  sigmaX(vgenParam.getParameter<double>("BeamSigmaX")*mm);
-  sigmaY(vgenParam.getParameter<double>("BeamSigmaY")*mm);
-  double fMinEta = vgenParam.getParameter<double>("MinEta");
-  double fMaxEta = vgenParam.getParameter<double>("MaxEta");
-  double fMinPhi = vgenParam.getParameter<double>("MinPhi");
-  double fMaxPhi = vgenParam.getParameter<double>("MaxPhi");
+  meanX(vgenParam.getUntrackedParameter<double>("BeamMeanX",0.0)*mm);
+  meanY(vgenParam.getUntrackedParameter<double>("BeamMeanY",0.0)*mm);
+  beamPos(vgenParam.getUntrackedParameter<double>("BeamPosition",0.0)*mm);
+  sigmaX(vgenParam.getUntrackedParameter<double>("BeamSigmaX",0.0)*mm);
+  sigmaY(vgenParam.getUntrackedParameter<double>("BeamSigmaY",0.0)*mm);
+  double fMinEta = vgenParam.getUntrackedParameter<double>("MinEta",-5.5);
+  double fMaxEta = vgenParam.getUntrackedParameter<double>("MaxEta",5.5);
+  double fMinPhi = vgenParam.getUntrackedParameter<double>("MinPhi",-3.14159265358979323846);
+  double fMaxPhi = vgenParam.getUntrackedParameter<double>("MaxPhi", 3.14159265358979323846);
   eta(0.5*(fMinEta+fMaxEta));
   phi(0.5*(fMinPhi+fMaxPhi));
-  setType(vgenParam.getParameter<bool>("GaussianProfile"));
+  setType(vgenParam.getUntrackedParameter<bool>("GaussianProfile",true));
 
   edm::LogInfo("VertexGenerator") << "BeamProfileVertexGenerator: with beam "
 				  << "along eta = " << myEta << " (Theta = " 
@@ -85,12 +84,9 @@ void BeamProfileVertexGenerator::sigmaX(double s) {
   if (s>=0) {
     mySigmaX = s; 
   } else {
-    edm::LogError("VertexGenerator") << "Error in BeamProfileVertexGenerator: "
-				     << "Illegal resolution in X " << s
-				     << "- set to default value 0 mm";
-    throw cms::Exception("Unknown", "BeamProfileVertexGenerator")
-      << "Error in BeamProfileVertexGenerator: Illegal resolution in X " << s
-      << "- set to default value 0 mm\n";
+    edm::LogWarning("VertexGenerator") << "Warning BeamProfileVertexGenerator:"
+				       << " Illegal resolution in X " << s
+				       << "- set to default value 0 mm";
     mySigmaX = 0;
   }
 }
@@ -100,12 +96,9 @@ void BeamProfileVertexGenerator::sigmaY(double s) {
   if (s>=0) {
     mySigmaY = s; 
   } else {
-    edm::LogError("VertexGenerator") << "Error in BeamProfileVertexGenerator: "
-				     << "Illegal resolution in Y " << s
-				     << "- set to default value 0 mm";
-    throw cms::Exception("Unknown", "BeamProfileVertexGenerator")
-      << "Error in BeamProfileVertexGenerator: Illegal resolution in Y " << s
-      << "- set to default value 0 mm\n";
+    edm::LogWarning("VertexGenerator") << "Warning BeamProfileVertexGenerator:"
+				       << " Illegal resolution in Y " << s
+				       << "- set to default value 0 mm";
     mySigmaY = 0;
   }
 }
