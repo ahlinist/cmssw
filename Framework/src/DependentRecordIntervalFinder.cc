@@ -76,15 +76,13 @@ DependentRecordIntervalFinder::setIntervalFor(const EventSetupRecordKey&,
       oInterval = ValidityInterval::invalidInterval();
       return;
    }
+   bool haveAValidDependentRecord = false;
    ValidityInterval newInterval(IOVSyncValue::beginOfTime(), IOVSyncValue::endOfTime());
    for(Providers::iterator itProvider = providers_.begin();
        itProvider != providers_.end();
        ++itProvider) {
-      if(! (*itProvider)->setValidityIntervalFor(iTime)) {
-         //If one Finder has no valid time, then this record is also invalid for this time
-         newInterval = ValidityInterval::invalidInterval();
-         break;
-      } else {
+      if((*itProvider)->setValidityIntervalFor(iTime)) {
+         haveAValidDependentRecord=true;
          ValidityInterval providerInterval = (*itProvider)->validityInterval();
          if(newInterval.first() < providerInterval.first()) {
             newInterval.setFirst(providerInterval.first());
@@ -93,6 +91,10 @@ DependentRecordIntervalFinder::setIntervalFor(const EventSetupRecordKey&,
             newInterval.setLast(providerInterval.last());
          }
       }
+   }
+   if(!haveAValidDependentRecord) {
+     //If no Finder has no valid time, then this record is also invalid for this time
+     newInterval = ValidityInterval::invalidInterval();
    }
    oInterval = newInterval;
 }
