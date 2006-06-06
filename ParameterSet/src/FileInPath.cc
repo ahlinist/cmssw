@@ -14,13 +14,13 @@
 #include <iterator>
 #include <string>
 #include <vector>
-
+#include<iostream> // temporary
 #include "boost/filesystem/path.hpp"
 #include "boost/filesystem/operations.hpp"
-#include "boost/tokenizer.hpp"
 
 #include "FWCore/ParameterSet/interface/FileInPath.h"
 #include "FWCore/Utilities/interface/EDMException.h"
+#include "FWCore/ParameterSet/interface/parse.h"
 
 namespace bf = boost::filesystem;
 
@@ -92,8 +92,6 @@ namespace
 
 namespace edm
 {
-  typedef boost::char_separator<char>   separator_t;
-  typedef boost::tokenizer<separator_t> tokenizer_t;
 
   FileInPath::FileInPath() :
     relativePath_(),
@@ -197,18 +195,8 @@ namespace edm
 	<< PathVariableName
 	<< " must be defined\n";
 
-    // boost::tokenizer is overkill here, but if we switch to allowing
-    // a longer path (not just one or two entries), then it is useful.
-
-    separator_t  sep(":"); // separator for elements in path
-    tokenizer_t  tokens(searchPath, sep);
-
     typedef std::vector<std::string> stringvec_t;
-    stringvec_t  pathElements;
-    std::copy(tokens.begin(), 
-	      tokens.end(),
-	      std::back_inserter<stringvec_t>(pathElements));
-
+    stringvec_t  pathElements = edm::pset::tokenize(searchPath, ":");
     stringvec_t::const_iterator it =  pathElements.begin();
     stringvec_t::const_iterator end = pathElements.end();
     while (it != end)
