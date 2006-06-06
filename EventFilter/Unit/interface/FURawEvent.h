@@ -51,6 +51,10 @@ class FURawEvent
   unsigned int getInternalHandle() const 
     {return internalHandle_;}
 
+  /** Get the level1Id */
+  unsigned int getLevel1Id() const 
+    {return l1Id_;}  
+
   /** check the transaction context for this event */
   bool checkTransactionContext(unsigned int context) const
     {return (context%INTERNAL_HANDLE_OFFSET)==internalHandle_;}
@@ -119,7 +123,9 @@ class FURawEvent
 
   void dumpFrame(char* data, int len);
 
-
+  /** Set the level1Id */
+  void setLevel1Id(unsigned int l1id)
+    {l1Id_ = l1id;}
 
   /** Set the event internal handle, only to be used by the factory */
   void setHandle(unsigned int handle)
@@ -164,7 +170,7 @@ class FURawEvent
 
   static RawData *nulldata;
   static int errors[10];
-  
+  unsigned int l1Id_;
   friend class FURawEventFactory;
 
 
