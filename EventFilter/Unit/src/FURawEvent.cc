@@ -17,7 +17,7 @@ FURawEvent::FURawEvent(unsigned int ihandle) :
   outstandingReqs_(0), myData_(nFEDs),
   eventHandle_(INVALID_EVENT_HANDLE),
   internalHandle_(ihandle), pendingFset(0),
-  buInstance_(INVALID_BU_INSTANCE), isNew_(true)
+  buInstance_(INVALID_BU_INSTANCE), isNew_(true), l1Id_(0)
 {
   nulldata->size_ = 0;
   nulldata->data_ = 0;
@@ -339,6 +339,12 @@ int FURawEvent::checkin_data(vector<unsigned char*> &block_adrs)
 	  retVal = -1000;
 	}
     }
+  if(l1Id_==0)
+    l1Id_ = current_trigno;
+  else if(l1Id_ != current_trigno)
+    LOG4CPLUS_ERROR(adapter_->getApplicationLogger()," wrong trigger number. Expected " 
+		    << l1Id_ << " received " << current_trigno);
+
   delete sf_data;
   return retVal;
 }
@@ -391,6 +397,7 @@ FURawEvent::RawData *FURawEvent::timedRequest(int fedid, int delay)
 
 void FURawEvent::reset(bool clean)
 {
+  l1Id_ = 0;
   // if requested release memory allocated for FEDs
   if(clean)
     {
