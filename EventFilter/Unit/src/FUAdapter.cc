@@ -58,6 +58,8 @@ void FUAdapter::clearBUArray()
   bu_.clear();
 }
 
+#include "xcept/include/xcept/tools.h"
+#include "toolbox/include/toolbox/fsm/exception/Exception.h"
 
 void FUAdapter::createBUArray()
   {
@@ -67,42 +69,55 @@ void FUAdapter::createBUArray()
       buDescs= 
 	getApplicationContext()->getApplicationGroup()->
 	getApplicationDescriptors(buName_);
+      int maxBUinstance = 0;
+      
+      for (unsigned int ind=0; ind < buDescs.size(); ind++) 
+	{
+	  if(buDescs[ind]->getInstance() > maxBUinstance)
+	    maxBUinstance = buDescs[ind]->getInstance();
+	}
+      unsigned buinstance = 0;
+      bu_.resize(maxBUinstance+1);
+      for (buinstance = 0; buinstance <= maxBUinstance; buinstance++) 
+	bu_[buinstance] = 0;
+      for (buinstance = 0; buinstance <= maxBUinstance; buinstance++) 
+	{
+	  unsigned int i = 0;
+	  for(; i < buDescs.size(); i++)
+	    if(buinstance==buDescs[i]->getInstance())
+	      break;
+	  LOG4CPLUS_INFO(this->getApplicationLogger(),"FUAdapter::BU descriptor for instance " << buinstance 
+			 << " at " << hex << (int) buDescs[buinstance] << dec);
+	  bu_[buinstance] = new BUProxy (
+					 getApplicationDescriptor() , 
+					 buDescs[i], 
+					 getApplicationContext(),
+					 pool_);
+	} 
+      
+      
     }
-    catch(xdaq::exception::ApplicationDescriptorNotFound e)
+    catch(xcept::Exception &e)
       {
-      LOG4CPLUS_ERROR(this->getApplicationLogger(),
-		      "No BU available in configuration");
+	LOG4CPLUS_ERROR(this->getApplicationLogger(),
+			"Exception in building BU array" 
+			<< xcept::stdformat_exception_history(e));
+	XCEPT_RETHROW(toolbox::fsm::exception::Exception, "Exception in building BU array", e);
       }
     catch(...)
       {
 	LOG4CPLUS_FATAL(this->getApplicationLogger(),
 			"Unknown error in looking up connectable BUs");
       } 
-    unsigned buinstance = 0;
-    for (; buinstance < buDescs.size(); buinstance++) {
-      {
-	unsigned int i = 0;
-	for(; i < buDescs.size(); i++)
-	  if(buinstance==buDescs[i]->getInstance())
-	    break;
-	LOG4CPLUS_INFO(this->getApplicationLogger(),"FUAdapter::BU descriptor at " << hex << (int) buDescs[buinstance] << dec);
-	bu_.push_back(
-		      new BUProxy (
-				   getApplicationDescriptor() , 
-				   buDescs[i], 
-				   getApplicationContext(),
-				   pool_)
-		      );
-      }
-    } 
+    
     LOG4CPLUS_INFO(this->getApplicationLogger(),
 		   "Memory pool for BU messages at " << hex
 		   << (int) pool_ << dec);
-
-
-    LOG4CPLUS_INFO(this->getApplicationLogger(),"Connected " << buinstance
+    
+    
+    LOG4CPLUS_INFO(this->getApplicationLogger(),"Connected " << bu_.size()
 		   << " Builder Units ");
-
+    
     if(sink_) delete sink_; sink_ = 0;
     if(doDropFragments_ && (sink_==0))
       {
