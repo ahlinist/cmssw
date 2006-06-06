@@ -8,8 +8,8 @@
         <Object table="CSCCROSSTALK_DATA" id_columns="VEC_INDEX MAP_ID IOV_VALUE_ID" name="CSCcrosstalk::Item" >
           <Primitive column="CROSSTALK_CHI2_LEFT" name="xtalk_chi2_left" />
           <Primitive column="CROSSTALK_CHI2_RIGHT" name="xtalk_chi2_right" />
-          <Primitive column="CROSSTALK_INRESEPT_LEFT" name="xtalk_intercept_left" />
-          <Primitive column="CROSSTALK_INRESEPT_RIGHT" name="xtalk_intercept_right" />
+          <Primitive column="CROSSTALK_INTERCEPT_LEFT" name="xtalk_intercept_left" />
+          <Primitive column="CROSSTALK_INTERCEPT_RIGHT" name="xtalk_intercept_right" />
           <Primitive column="CROSSTALK_SLOPE_LEFT" name="xtalk_slope_left" />
           <Primitive column="CROSSTALK_SLOPE_RIGHT" name="xtalk_slope_right" />
         </Object >
