@@ -27,6 +27,12 @@ namespace edm {
   InputSource::~InputSource() {}
 
   void
+  InputSource::beginJob(EventSetup const&) { }
+
+  void
+  InputSource::endJob() { }
+
+  void
   InputSource::registerProducts() {
     if (!typeLabelList().empty()) {
       addToRegistry(typeLabelList().begin(), typeLabelList().end(), module(), *preg_);

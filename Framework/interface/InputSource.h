@@ -54,6 +54,7 @@ namespace edm {
   class ProductRegistry;
   class InputSourceDescription;
   class EventID;
+  class EventSetup;
   class ParameterSet;
   class InputSource : public ProductRegistryHelper {
   public:
@@ -105,6 +106,12 @@ namespace edm {
 
     /// Accessor for 'module' description.
     ModuleDescription const& module() const {return module_;}
+
+    /// Called by framework at beginning of job
+    virtual void beginJob(EventSetup const&);
+
+    /// Called by framework at end of job
+    virtual void endJob();
 
   private:
 
