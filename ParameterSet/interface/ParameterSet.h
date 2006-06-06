@@ -265,6 +265,17 @@ private:
   }
   
   // ----------------------------------------------------------------------
+  // ProductTag
+
+  template <>
+  inline
+  edm::ProductTag
+  ParameterSet::getParameter<edm::ProductTag>(std::string const& name) const {
+    return retrieve(name).getProductTag();
+  }
+
+
+  // ----------------------------------------------------------------------
   // PSet, vPSet
   
   template<>

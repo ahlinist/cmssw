@@ -72,6 +72,10 @@ namespace edm
   bool  decode(edm::FileInPath &, std::string const&);
   bool  encode(std::string &, edm::FileInPath const&);
 
+  // ProductTag
+  bool  decode(edm::ProductTag&, std::string const&);
+  bool  encode(std::string &, edm::ProductTag const&);
+
 
   // ParameterSet
   bool  decode(ParameterSet &, std::string  const&);

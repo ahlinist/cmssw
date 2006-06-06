@@ -20,6 +20,7 @@
 #include <iosfwd>
 
 #include "FWCore/ParameterSet/interface/FileInPath.h"
+#include "FWCore/ParameterSet/interface/ProductTag.h"
 //@@ not needed, but there might be trouble if we take it out
 #include "FWCore/Utilities/interface/EDMException.h"
 
@@ -79,6 +80,10 @@ namespace edm {
     Entry(edm::FileInPath const& val, bool is_tracked);
     edm::FileInPath getFileInPath() const;
   
+    // ProductTag
+    Entry(edm::ProductTag const & tag, bool is_tracked);
+    edm::ProductTag getProductTag() const;
+
     // ParameterSet
     Entry(ParameterSet const& val, bool is_tracked);
     ParameterSet getPSet() const;

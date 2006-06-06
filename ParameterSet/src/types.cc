@@ -488,6 +488,29 @@ bool
   return true;
 }
 
+
+// ----------------------------------------------------------------------
+// ProductTag
+// ----------------------------------------------------------------------
+
+bool
+  edm::decode(ProductTag& to, std::string const& from)
+{
+  to.decode(from);
+  return true;
+}  // decode to ProductTag
+
+
+
+bool
+  edm::encode(std::string& to, const ProductTag& from)
+{
+  to = from.encode();
+  return true;
+}
+
+
+
 // ----------------------------------------------------------------------
 
 bool
