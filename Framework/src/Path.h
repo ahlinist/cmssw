@@ -70,7 +70,7 @@ namespace edm
     int timesPassed() const { return timesPassed_; }
     int timesFailed() const { return timesFailed_; }
     int timesExcept() const { return timesExcept_; }
-    int abortWorker() const { return abortWorker_; }
+    //int abortWorker() const { return abortWorker_; }
     State state() const { return state_; }
 
     size_type size() const { return workers_.size(); }
@@ -86,7 +86,7 @@ namespace edm
     int timesPassed_;
     int timesFailed_;
     int timesExcept_;
-    int abortWorker_;
+    //int abortWorker_;
     State state_;
 
     int bitpos_;
@@ -96,6 +96,13 @@ namespace edm
     ActionTable* act_table_;
 
     Workers workers_;
+
+    // Helper functions
+    // nwrwue = numWorkersRunWithoutUnhandledException (really!)
+    bool handleWorkerFailure(cms::Exception const& e, int nwrwue);
+    void recordUnknownException(int nwrwue);
+    void recordStatus(int nwrwue);
+    void updateCounters(bool succeed);
   };
 }
 
