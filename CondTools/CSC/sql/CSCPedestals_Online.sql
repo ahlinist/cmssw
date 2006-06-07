@@ -36,8 +36,8 @@ REM
 create table PEDESTALS_DATA (
 map_id     number NOT NULL,
 vec_index  number(5) NOT NULL,
-ped        binary_float NOT NULL,
-rms        binary_float NOT NULL);
+ped        number(15,4) NOT NULL,
+rms        number(15,5) NOT NULL);
 REM
 REM Adding constraints for table PEDESTALS_DATA
 REM
