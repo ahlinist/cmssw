@@ -190,7 +190,22 @@ namespace edm
 
 
   private:
-    void resetWorkers();
+    AllWorkers::const_iterator workersBegin() const 
+    { return all_workers_.begin(); }
+
+    AllWorkers::const_iterator workersEnd() const 
+    { return all_workers_.end(); }
+
+    AllWorkers::iterator workersBegin() 
+    { return  all_workers_.begin(); }
+
+    AllWorkers::iterator workersEnd() 
+    { return all_workers_.end(); }
+
+    void resetAll();
+
+    void setupOnDemandSystem(EventPrincipal& ep, EventSetup const& es);
+
     void fillWorkers(const std::string& name, PathWorkers& out);
     bool fillTrigPath(int bitpos,const std::string& name, TrigResPtr);
     void fillEndPath(int bitpos,const std::string& name);
