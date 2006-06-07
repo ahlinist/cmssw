@@ -36,9 +36,9 @@ REM
 create table GAINS_DATA (
 map_id         number NOT NULL,
 vec_index      number(5) NOT NULL,
-gain_slope     binary_float NOT NULL,
-gain_intercept binary_float NOT NULL,
-gain_chi2      binary_float NOT NULL);
+gain_slope     number(15,5) NOT NULL,
+gain_intercept number(15,5) NOT NULL,
+gain_chi2      number(15,6) NOT NULL);
 REM
 REM Adding constraints for table GAINS_DATA
 REM
