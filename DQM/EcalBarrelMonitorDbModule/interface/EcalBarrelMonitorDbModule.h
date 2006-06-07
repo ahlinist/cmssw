@@ -4,8 +4,8 @@
 /*
  * \file EcalBarrelMonitorDbModule.h
  *
- * $Date: 2006/06/06 14:51:19 $
- * $Revision: 1.2 $
+ * $Date: 2006/06/06 18:10:58 $
+ * $Revision: 1.3 $
  * \author G. Della Ricca
  *
 */
@@ -51,6 +51,7 @@ using namespace seal;
 using namespace coral;
 
 #include "DQM/EcalBarrelMonitorDbModule/interface/EBTemperatureDb.h"
+#include "DQM/EcalBarrelMonitorDbModule/interface/EBPedestalDb.h"
 
 #include <memory>
 #include <iostream>
@@ -94,6 +95,8 @@ DaqMonitorBEInterface* dbe;
 string htmlDir_;
 
 EBTemperatureDb* tempDb_;
+
+EBPedestalDb* pedDb_;
 
 string outputFile_;
 
