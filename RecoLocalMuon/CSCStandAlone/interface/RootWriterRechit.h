@@ -209,10 +209,10 @@ class RootWriterRechit {
 	      if(trkfnd_use[it]==1 && recfnd_use_cat[it]==1 && recfnd_use_ano[it]==1){counter2=counter2+1;}
 	      if(recfnd_use_cat[it]==1 && recfnd_use_ano[it]==1){counter3=counter3+1;}
 	      ratio=(float)counter2/(float)counter1;
-	      std::cout << " counter1 " << counter1 << std::endl;
-	      std::cout << " counter2 " << counter2 << std::endl;
-	      std::cout << " counter3 " << counter3 << std::endl;
-	      std::cout << " ratio " << ratio << std::endl;
+	      //std::cout << " counter1 " << counter1 << std::endl;
+	      //std::cout << " counter2 " << counter2 << std::endl;
+	      //std::cout << " counter3 " << counter3 << std::endl;
+	      //std::cout << " ratio " << ratio << std::endl;
 	      missing_plot[histid]->Fill(eff);
 	      //efficiency_by_event->Fill(eff);
 	      rechit_hits_raw[histid]->Fill(rechit_hits);
