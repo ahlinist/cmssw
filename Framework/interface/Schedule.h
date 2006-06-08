@@ -203,6 +203,7 @@ namespace edm
     { return all_workers_.end(); }
 
     void resetAll();
+    bool runTriggerPaths(EventPrincipal&, EventSetup const&);
     void runEndPaths(EventPrincipal&, EventSetup const&);
 
     void setupOnDemandSystem(EventPrincipal& ep, EventSetup const& es);
