@@ -185,7 +185,7 @@ class PulseTime
 
 
 
-
+ float ChiSqr(){return Chimin;}
 
  float StartTime(){return t0;}
 
