@@ -25,8 +25,8 @@ public:
     
     hRecPositionX = new TH1F(N+"_hRecPositionX", "CSCRecHit x position (cm)", 48, -15., 15.);
     hRecPositionY = new TH1F(N+"_hRecPositionY", "CSCRecHit y position (cm)", 180, -180., 180.);
-    hRecPositionYvsX = new TH2F(N+"_hRecPositionYvsX", "CSCRecHit y vs x (cm)", 180, -180., 180., 
-				                                                180, -180, 180);
+    hRecPositionYvsX = new TH2F(N+"_hRecPositionYvsX", "CSCRecHit y vs x (cm)", 600, -60., 60., 
+				                                                600, -60., 60.);
 
     hRecYvsSimY = new TH2F(N+"_hRecYvsSimY", "CSCRecHit y_{rec} vs y_{sim}", 150, -150., 150.,
 			                                                     150, -150., 150.);
@@ -34,8 +34,8 @@ public:
 
     hSimPositionX = new TH1F(N+"_hSimPositionX", "CSCSimHit x position (cm)", 48, -24., 24.);
     hSimPositionY = new TH1F(N+"_hSimPositionY", "CSCSimHit y position (cm)", 180, -180., 180.);
-    hSimPositionYvsX = new TH2F(N+"_hSimPositionYvsX", "CSCSimHit y vs x (cm)", 180, -180., 180., 
-				                                                180, -180., 180.);
+    hSimPositionYvsX = new TH2F(N+"_hSimPositionYvsX", "CSCSimHit y vs x (cm)", 600, -60., 60., 
+				                                                600, -60., 60.);
 
 
     hResPositionX = new TH1F(N+"_hResPositionX", "CSC hit resolution x (cm)", 101, -0.202, 0.202);

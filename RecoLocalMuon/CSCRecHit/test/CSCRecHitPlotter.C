@@ -36,6 +36,7 @@ TString segment = "ME_All";
  TString plot6 = "etaresol_vs_eta_"+segment+suffixps; 
  TString plot7 = "yrec_vs_ysim_"+segment+suffixps;
  TString plot8 = "ysim_vs_xsim_"+segment+suffixps;
+ TString plot8b = "yrec_vs_xrec_"+segment+suffixps;
  TString plot9 = "recphi_"+segment+suffixps; 
  TString plot10 = "simphi_"+segment+suffixps;
  TString plot11 = "recphi_vs_simphi_"+segment+suffixps;
@@ -45,6 +46,7 @@ TString segment = "ME_All";
 
  hRecPositionX     = (TH1F *) file->Get(segment+"_hRecPositionX");
  hRecPositionY     = (TH1F *) file->Get(segment+"_hRecPositionY");
+ hRecYvsX          = (TH2F *) file->Get(segment+"_hRecPositionYvsX");
  hSimPositionX     = (TH1F *) file->Get(segment+"_hSimPositionX");
  hSimPositionY     = (TH1F *) file->Get(segment+"_hSimPositionY");
  hSimYvsX          = (TH2F *) file->Get(segment+"_hSimPositionYvsX");
@@ -226,10 +228,20 @@ TString segment = "ME_All";
  c1->SetFillColor(10);
  c1->SetFillColor(10);
  hSimYvsX->SetTitle(segment);
- hSimYvsX->Draw("BOX");
+ hSimYvsX->Draw();
  hSimYvsX->GetXaxis()->SetTitle("x_{sim} (cm) ");
  hSimYvsX->GetYaxis()->SetTitle("y_{sim} (cm) ");
  c1->Print(plot8);
+
+ gStyle->SetOptStat(kFALSE);
+ TCanvas *c1 = new TCanvas("c1","");
+ c1->SetFillColor(10);
+ c1->SetFillColor(10);
+ hRecYvsX->SetTitle(segment);
+ hRecYvsX->Draw();
+ hRecYvsX->GetXaxis()->SetTitle("x_{reco} (cm) ");
+ hRecYvsX->GetYaxis()->SetTitle("y_{reco} (cm) ");
+ c1->Print(plot8b);
 
 
 
