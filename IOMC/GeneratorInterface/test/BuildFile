@@ -1,0 +1,8 @@
+
+<use name=boost>
+<use name=root>
+<use name=IOMC/GeneratorInterface>
+<use name=SimDataFormats/HepMCProduct>
+<flags SEAL_PLUGIN_NAME="HZZ4muAnalyzer">
+<library file=HZZ4muAnalyzer.cc name=HZZ4muAnalyzer>
+</library>
