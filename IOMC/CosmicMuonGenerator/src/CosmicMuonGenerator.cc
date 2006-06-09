@@ -315,7 +315,7 @@ void CosmicMuonGenerator::displayEv(){
 
 void CosmicMuonGenerator::setNumberOfEvents(unsigned int N){ if (NotInitialized) NumberOfEvents = N; }
 
-void CosmicMuonGenerator::setRanSeed(unsigned int N){ if (NotInitialized) RanSeed = N; }
+void CosmicMuonGenerator::setRanSeed(int N){ if (NotInitialized) RanSeed = N; }
 
 void CosmicMuonGenerator::setMinE(double E){ if (NotInitialized) MinE = E; }
 

@@ -14,7 +14,7 @@
     CosmicMuonGenerator CosSfGen;
     // set up generator
     CosSfGen.setNumberOfEvents(100);
-    CosSfGen.setRanSeed(123456);
+    CosSfGen.setRanSeed(135799468);
     CosSfGen.setMinE(2.);  	       // could be set higher for more muons to cross CMS  
     CosSfGen.setMaxE(10000.);  
     CosSfGen.setMaxTheta(88.);         // "default" value for surface

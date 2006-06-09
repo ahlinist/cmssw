@@ -98,7 +98,7 @@ public:
   initialization = 0;
 }
 
-  int initialize(float,float,float,float, unsigned int);  
+  int initialize(float,float,float,float,int);  
         // to set the energy and cos theta range 
 
   int generate();
