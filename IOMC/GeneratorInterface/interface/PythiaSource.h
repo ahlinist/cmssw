@@ -42,9 +42,13 @@ namespace edm
     void clear();
     
     HepMC::GenEvent  *evt;
-    
-    /// Verbosity flag
-    bool pythiaVerbosity_;    	
+
+    /// Pythia PYLIST Verbosity flag
+    unsigned int pythiaPylistVerbosity_;
+    /// HepMC verbosity flag
+    bool pythiaHepMCVerbosity_;
+    /// Events to print if verbosity
+    unsigned int maxEventsToPrint_;    
     
   };
 } 
