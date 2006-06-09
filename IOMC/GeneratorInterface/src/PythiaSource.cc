@@ -1,6 +1,6 @@
 /*
- *  $Date: 2006/03/03 11:05:21 $
- *  $Revision: 1.16 $
+ *  $Date: 2006/05/04 14:13:07 $
+ *  $Revision: 1.17 $
  *  
  *  Filip Moorgat & Hector Naves 
  *  26/10/05
@@ -43,15 +43,28 @@ HepMC::ConvertHEPEVT conv;
 PythiaSource::PythiaSource( const ParameterSet & pset, 
 			    InputSourceDescription const& desc ) :
   GeneratedInputSource(pset, desc), evt(0), 
-  pythiaVerbosity_ (pset.getUntrackedParameter<bool>("pythiaVerbosity",false))
+  pythiaPylistVerbosity_ (pset.getUntrackedParameter<int>("pythiaPylistVerbosity",0)),
+  pythiaHepMCVerbosity_ (pset.getUntrackedParameter<bool>("pythiaHepMCVerbosit\
+y",false)),
+  maxEventsToPrint_ (pset.getUntrackedParameter<int>("maxEventsToPrint",0))
 {
   
   cout << "PythiaSource: initializing Pythia. " << endl;
   
-  // Verbosity
-  pythiaVerbosity_ = pset.getUntrackedParameter<bool>("pythiaVerbosity",false);
-  cout << "Pythia verbosity = " << pythiaVerbosity_ << endl;
+  // PYLIST Verbosity Level
+  // Valid PYLIST arguments are: 1, 2, 3, 5, 7, 11, 12, 13
+  pythiaPylistVerbosity_ = pset.getUntrackedParameter<int>("pythiaPylistVerbosity",0);
+  cout << "Pythia PYLIST verbosity level = " << pythiaPylistVerbosity_ << endl;
   
+  // HepMC event verbosity Level
+  pythiaHepMCVerbosity_ = pset.getUntrackedParameter<bool>("pythiaHepMCVerbosi\
+ty",false);
+  cout << "Pythia HepMC verbosity = " << pythiaHepMCVerbosity_ << endl; 
+
+  //Max number of events printed on verbosity level 
+  maxEventsToPrint_ = pset.getUntrackedParameter<int>("maxEventsToPrint",0);
+  cout << "Number of events to be printed = " << maxEventsToPrint_ << endl;
+
   // Set PYTHIA parameters in a single ParameterSet
   ParameterSet pythia_params = 
     pset.getParameter<ParameterSet>("PythiaParameters") ;
@@ -132,14 +145,31 @@ bool PythiaSource::produce(Event & e) {
     HepMC::GenEvent* evt = conv.getGenEventfromHEPEVT();
     evt->set_signal_process_id(pypars.msti[0]);
     evt->set_event_number(numberEventsInRun() - remainingEvents() - 1);
-    
-    if (pythiaVerbosity_) {
-     cout << "Event process = " << pypars.msti[0] << endl 
-	 << "----------------------" << endl;
-     evt->print();
+
+
+    //******** Verbosity ********
+    //
+    if(event() <= maxEventsToPrint_ &&
+       (pythiaPylistVerbosity_ || pythiaHepMCVerbosity_)) {
+
+      // Prints PYLIST info
+      if(pythiaPylistVerbosity_) {
+	call_pylist(pythiaPylistVerbosity_);
+      }
+      
+      // Prints HepMC event
+      if(pythiaHepMCVerbosity_) {
+	cout << "Event process = " << pypars.msti[0] << endl 
+	<< "----------------------" << endl;
+	evt->print();
+      }
     }
+
     //evt = reader_->fillCurrentEventData(); 
     //********                                      
+
+
+
 
     if(evt)  bare_product->addHepMCData(evt );
 
