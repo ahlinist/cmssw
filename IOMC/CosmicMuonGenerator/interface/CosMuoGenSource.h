@@ -29,7 +29,7 @@ namespace edm
     
     void clear();
     // define the configurable generator parameters
-    unsigned int RanS; // seed of random number generator
+    int32_t      RanS; // seed of random number generator (from Framework)
     double       MinE; // min. E     [GeV]
     double       MaxE; // max. E     [GeV]
     double       MinT; // min. theta [deg]

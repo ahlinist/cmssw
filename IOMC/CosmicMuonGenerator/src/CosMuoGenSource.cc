@@ -1,11 +1,13 @@
 #include "IOMC/CosmicMuonGenerator/interface/CosMuoGenSource.h"
+#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "FWCore/Utilities/interface/RandomNumberGenerator.h"
 
 using namespace edm;
 using namespace std;
 
 CosMuoGenSource::CosMuoGenSource( const ParameterSet & pset, InputSourceDescription const& desc ) :
   GeneratedInputSource(pset, desc ) ,  
-  RanS(pset.getUntrackedParameter<int>("RanSeed", 123456)),
+  //RanS(pset.getUntrackedParameter<int>("RanSeed", 123456)), //get seed now from Framework
   MinE(pset.getUntrackedParameter<double>("MinEn", 2.)),
   MaxE(pset.getUntrackedParameter<double>("MaxEn", 10000.)),
   MinT(pset.getUntrackedParameter<double>("MinTheta", 0.)),
@@ -18,6 +20,9 @@ CosMuoGenSource::CosMuoGenSource( const ParameterSet & pset, InputSourceDescript
   TrackerOnly(pset.getUntrackedParameter<bool>("TrackerOnly", false)),
   cmVerbosity_(pset.getUntrackedParameter<bool>("Verbosity", false))
   {
+    //get seed now from Framework
+    edm::Service<edm::RandomNumberGenerator> rng;
+    RanS = rng->mySeed();
     // set up the generator
     CosMuoGen = new CosmicMuonGenerator();
     CosMuoGen->setNumberOfEvents(numberEventsInRun());

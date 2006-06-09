@@ -27,7 +27,7 @@ public:
     Cosmics = new CMSCGEN();
     // set default control parameters
     NumberOfEvents = 100;
-    RanSeed = 123456;
+    RanSeed = 135799468;
     MinE =     2.;
     MaxE =   10000.;
     MinTheta =  0.*Deg2Rad;
@@ -77,7 +77,7 @@ private:
   CMSCGEN* Cosmics ; 
   // default control parameters
   unsigned int NumberOfEvents; // number of events to be generated
-  unsigned int RanSeed; // seed of random number generator
+  int    RanSeed; // seed of random number generator
   double MinE;     // min. E     [GeV]
   double MaxE;     // max. E     [GeV]
   double MinTheta; // min. theta [rad]
@@ -112,7 +112,7 @@ private:
 public:
   // set parameters
   void setNumberOfEvents(unsigned int N);
-  void setRanSeed(unsigned int N);
+  void setRanSeed(int N);
   void setMinE(double E);
   void setMaxE(double E);
   void setMinTheta(double Theta);
