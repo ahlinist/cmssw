@@ -7,7 +7,7 @@ void SingleParticleEvent::create(int id, double px, double py, double pz, double
     HitTarget = false;
 }
 
-void SingleParticleEvent::propagate(double ElossScaleFac){
+void SingleParticleEvent::propagate(double ElossScaleFac, bool TrackerOnly){
   // calculated propagation direction
   dX = Px/absmom();
   dY = Py/absmom(); 
@@ -16,12 +16,18 @@ void SingleParticleEvent::propagate(double ElossScaleFac){
   tmpVx = Vx;
   tmpVy = Vy;
   tmpVz = Vz;
+  double RadiusTargetEff = RadiusTarget;
+  double Z_DistTargetEff = Z_DistTarget;
+  if(TrackerOnly==true){
+    RadiusTargetEff = RadiusTracker;
+    Z_DistTargetEff = Z_DistTracker;
+  }
   HitTarget = true;
   if (HitTarget == true){
     HitTarget = false;
     double stepSize = MinStepSize*100000.;
-    double acceptR = RadiusTarget + stepSize;
-    double acceptZ = Z_DistTarget + stepSize;
+    double acceptR = RadiusTargetEff + stepSize;
+    double acceptZ = Z_DistTargetEff + stepSize;
     bool continuePropagation = true;
     while (continuePropagation){
       if (tmpVy < -acceptR) continuePropagation = false;
@@ -35,8 +41,8 @@ void SingleParticleEvent::propagate(double ElossScaleFac){
   if (HitTarget == true){
     HitTarget = false;
     double stepSize = MinStepSize*10000.;
-    double acceptR = RadiusTarget + stepSize;
-    double acceptZ = Z_DistTarget + stepSize;
+    double acceptR = RadiusTargetEff + stepSize;
+    double acceptZ = Z_DistTargetEff + stepSize;
     bool continuePropagation = true;
     while (continuePropagation){
       if (tmpVy < -acceptR) continuePropagation = false;
@@ -50,8 +56,8 @@ void SingleParticleEvent::propagate(double ElossScaleFac){
   if (HitTarget == true){
     HitTarget = false;
     double stepSize = MinStepSize*1000.;
-    double acceptR = RadiusTarget + stepSize;
-    double acceptZ = Z_DistTarget + stepSize;
+    double acceptR = RadiusTargetEff + stepSize;
+    double acceptZ = Z_DistTargetEff + stepSize;
     bool continuePropagation = true;
     while (continuePropagation){
       if (tmpVy < -acceptR) continuePropagation = false;
@@ -65,8 +71,8 @@ void SingleParticleEvent::propagate(double ElossScaleFac){
   if (HitTarget == true){
     HitTarget = false;
     double stepSize = MinStepSize*100.;
-    double acceptR = RadiusTarget + stepSize;
-    double acceptZ = Z_DistTarget + stepSize;
+    double acceptR = RadiusTargetEff + stepSize;
+    double acceptZ = Z_DistTargetEff + stepSize;
     bool continuePropagation = true;
     while (continuePropagation){
       if (tmpVy < -acceptR) continuePropagation = false;
@@ -80,8 +86,8 @@ void SingleParticleEvent::propagate(double ElossScaleFac){
   if (HitTarget == true){
     HitTarget = false;
     double stepSize = MinStepSize*10.;
-    double acceptR = RadiusTarget + stepSize;
-    double acceptZ = Z_DistTarget + stepSize;
+    double acceptR = RadiusTargetEff + stepSize;
+    double acceptZ = Z_DistTargetEff + stepSize;
     bool continuePropagation = true;
     while (continuePropagation){
       if (tmpVy < -acceptR) continuePropagation = false;
@@ -95,8 +101,8 @@ void SingleParticleEvent::propagate(double ElossScaleFac){
   if (HitTarget == true){
     HitTarget = false;
     double stepSize = MinStepSize*1.;
-    double acceptR = RadiusTarget + stepSize;
-    double acceptZ = Z_DistTarget + stepSize;
+    double acceptR = RadiusTargetEff + stepSize;
+    double acceptZ = Z_DistTargetEff + stepSize;
     bool continuePropagation = true;
     while (continuePropagation){
       if (tmpVy < -acceptR) continuePropagation = false;
@@ -114,6 +120,10 @@ void SingleParticleEvent::propagate(double ElossScaleFac){
     double stepSize = MinStepSize*1.; // actual step size
     double acceptR = RadiusCMS + stepSize;
     double acceptZ = Z_DistCMS + stepSize;
+    if(TrackerOnly==true){
+      acceptR = RadiusTracker + stepSize;
+      acceptZ = Z_DistTracker + stepSize;
+    }
     bool continuePropagation = true;
     while (continuePropagation){
       if (Vy < -acceptR) continuePropagation = false;
