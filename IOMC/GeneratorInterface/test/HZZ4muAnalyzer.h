@@ -24,10 +24,11 @@ class HZZ4muAnalyzer : public edm::EDAnalyzer
    private:
    
      //
-     TFile* fOutputFile ;
-     TH1D*  fHist2muMass ;
-     TH1D*  fHist4muMass ;
-     TH1D*  fHistZZMass ;
+     std::string fOutputFileName ;
+     TFile*      fOutputFile ;
+     TH1D*       fHist2muMass ;
+     TH1D*       fHist4muMass ;
+     TH1D*       fHistZZMass ;
      
 };
 

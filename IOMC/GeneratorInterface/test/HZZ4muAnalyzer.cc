@@ -20,18 +20,16 @@ using namespace edm;
 using namespace std;
 
  
-HZZ4muAnalyzer::HZZ4muAnalyzer( const ParameterSet& )
+HZZ4muAnalyzer::HZZ4muAnalyzer( const ParameterSet& pset )
+   : fOutputFileName( pset.getUntrackedParameter<string>("HistOutFile",std::string("TestHiggsMass.root")) ),
+     fOutputFile(0), fHist2muMass(0), fHist4muMass(0), fHistZZMass(0)
 {
-   fOutputFile  = 0 ;
-   fHist2muMass = 0 ;
-   fHist4muMass = 0 ;
-   fHistZZMass  = 0 ;
 }
 
 void HZZ4muAnalyzer::beginJob( const EventSetup& )
 {
  
-   fOutputFile   = new TFile( "HZZ4muTest.root", "RECREATE" ) ;
+   fOutputFile   = new TFile( fOutputFileName.c_str(), "RECREATE" ) ;
    fHist2muMass  = new TH1D(  "Hist2muMass", "2-mu inv. mass", 100,  60., 120. ) ;
    fHist4muMass  = new TH1D(  "Hist4muMass", "4-mu inv. mass", 100, 170., 210. ) ;
    fHistZZMass   = new TH1D(  "HistZZMass",  "ZZ inv. mass",   100, 170., 210. ) ;    
@@ -82,8 +80,8 @@ void HZZ4muAnalyzer::analyze( const Event& e, const EventSetup& )
       }
       if ( HiggsDecVtx != 0 )
       {
-	       cout << " Higgs decay found ! " << endl ;
-	       break ; // break the initial loop over vertices
+         // cout << " Higgs decay found ! " << endl ;
+	 break ; // break the initial loop over vertices
       }
    }
    
@@ -138,9 +136,9 @@ void HZZ4muAnalyzer::analyze( const Event& e, const EventSetup& )
 	 Mom2part = StableHiggsDesc[i]->momentum() + StableHiggsDesc[j]->momentum() ;
 	 XMass2part = Mom2part.m() ;
 	 fHist2muMass->Fill( XMass2part ) ;
-	 cout << " counters : " << StableHiggsDesc[i]->barcode() << " " 
-	                        << StableHiggsDesc[j]->barcode() 
-				<< " -> 2-part mass = " << XMass2part << endl ;
+	 //cout << " counters : " << StableHiggsDesc[i]->barcode() << " " 
+	 //                       << StableHiggsDesc[j]->barcode() 
+	 //			<< " -> 2-part mass = " << XMass2part << endl ;
 	 //
          // store if 2-part. inv. mass fits into (roughly) Z-mass interval 
 	 //
@@ -162,11 +160,11 @@ void HZZ4muAnalyzer::analyze( const Event& e, const EventSetup& )
       XMass4part = Mom4part.m() ;
       fHist4muMass->Fill( XMass4part ) ;
    }
-   cout << " 4-part inv. mass = " << XMass4part << endl ;
+   //cout << " 4-part inv. mass = " << XMass4part << endl ;
    
    // make 2-pairs (ZZ) inv.mass
    //
-   cout << " selected Z-candidates in this event : " << Mom2partCont.size() << endl ;
+   //cout << " selected Z-candidates in this event : " << Mom2partCont.size() << endl ;
    for ( unsigned int i=0; i<Mom2partCont.size(); i++ )
    {
       for ( unsigned int j=i+1; j<Mom2partCont.size(); j++ )
@@ -174,7 +172,7 @@ void HZZ4muAnalyzer::analyze( const Event& e, const EventSetup& )
          Mom2pairs = Mom2partCont[i] + Mom2partCont[j] ;
 	 XMass2pairs = Mom2pairs.m() ;
 	 fHistZZMass->Fill( XMass2pairs ) ;
-         cout << " 2-pairs (ZZ) inv. mass = " << XMass2pairs << endl ;
+         //cout << " 2-pairs (ZZ) inv. mass = " << XMass2pairs << endl ;
       }
    }
    
