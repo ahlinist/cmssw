@@ -37,6 +37,7 @@ public:
     MinT0  = -12.5;
     MaxT0  =  12.5;
     ElossScaleFactor = 1.0;
+    TrackerOnly = false;
     EventRate = 0.;
     rateErr_stat = 0.;
     rateErr_syst = 0.;
@@ -86,6 +87,7 @@ private:
   double MinT0;    // min. t0   [ns]
   double MaxT0;    // max. t0   [ns]
   double ElossScaleFactor; // scale factor for energy loss
+  bool   TrackerOnly; //if set to "true" detector with tracker-only setup is used, so no material or B-field outside is considerd
   double EventRate; // number of muons per second [Hz]
   double rateErr_stat; // stat. error of number of muons per second [Hz]
   double rateErr_syst; // syst. error of number of muons per second [Hz] from error of known flux
@@ -120,6 +122,7 @@ public:
   void setMinT0(double T0);
   void setMaxT0(double T0);
   void setElossScaleFactor(double ElossScaleFact);
+  void setTrackerOnly(bool Tracker);
   // initialize the generator
   void initialize();
    // prints rate + statistics

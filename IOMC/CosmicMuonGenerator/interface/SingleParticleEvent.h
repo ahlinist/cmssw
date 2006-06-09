@@ -42,7 +42,7 @@ public:
   // create (initialize) an event with a single particle
   void create(int id, double px, double py, double pz, double e, double m, double vx, double vy, double vz, double t0);
   // propagate particle to target area
-  void propagate(double ElossScaleFac);
+  void propagate(double ElossScaleFac, bool TrackerOnly);
 
   // particle has hit the target volume (during propagation)
   bool hitTarget();

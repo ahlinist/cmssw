@@ -15,9 +15,15 @@ void CosmicMuonGenerator::initialize(){
   if (NumberOfEvents > 0){
     RanGen.SetSeed2(RanSeed,54321); //set seed for Random Generator (seed can be controled by config-file)
     // set up "surface geometry" dimensions
-    Target3dRadius = sqrt(RadiusTarget*RadiusTarget + Z_DistTarget*Z_DistTarget) + MinStepSize;
+    double RadiusTargetEff = RadiusTarget;
+    double Z_DistTargetEff = Z_DistTarget;
+    if(TrackerOnly==true){
+    RadiusTargetEff = RadiusTracker;
+    Z_DistTargetEff = Z_DistTracker;
+    }
+    Target3dRadius = sqrt(RadiusTargetEff*RadiusTargetEff + Z_DistTargetEff*Z_DistTargetEff) + MinStepSize;
     if (Debug) cout << "  radius of sphere  around  target = " << Target3dRadius << " mm" << endl;
-    SurfaceRadius = (SurfaceOfEarth+RadiusTarget)*tan(MaxTheta) + Target3dRadius;  
+    SurfaceRadius = (SurfaceOfEarth+RadiusTargetEff)*tan(MaxTheta) + Target3dRadius;  
     if (Debug) cout << "  starting point radius at surface = " << SurfaceRadius << " mm" << endl;
     
     //set energy and angle limits for CMSCGEN, give same seed as above 
@@ -86,7 +92,7 @@ void CosmicMuonGenerator::nextEvent(){
     double T0 = (RanGen.Rndm()*(MaxT0-MinT0) + MinT0)*SpeedOfLight; // [mm/c];
     OneMuoEvt.create(id, Px, Py, Pz, E, MuonMass, Vx, Vy, Vz, T0); 
     // if angles are ok, propagate to target
-    if (goodOrientation()) OneMuoEvt.propagate(ElossScaleFactor);
+    if (goodOrientation()) OneMuoEvt.propagate(ElossScaleFactor, TrackerOnly);
     if (OneMuoEvt.hitTarget() && OneMuoEvt.e() > MinE){
       Nsel+=1.; //count number of generated and accepted events  
       notSelected = false;
@@ -228,6 +234,10 @@ void CosmicMuonGenerator::initEvDis(){
 #if ROOT_INTERACTIVE
   float rCMS = RadiusCMS/1000.;
   float zCMS = Z_DistCMS/1000.;
+  if(TrackerOnly==true){
+    rCMS = RadiusTracker/1000.;
+    zCMS = Z_DistTracker/1000.;
+}
   TH2F* disXY = new TH2F("disXY","X-Y view",160,-rCMS,rCMS,160,-rCMS,rCMS);
   TH2F* disZY = new TH2F("disZY","Z-Y view",150,-zCMS,zCMS,160,-rCMS,rCMS);
   gStyle->SetPalette(1,0);
@@ -265,10 +275,16 @@ void CosmicMuonGenerator::initEvDis(){
 
 void CosmicMuonGenerator::displayEv(){
 #if ROOT_INTERACTIVE
+  double RadiusDet=RadiusCMS;
+  double Z_DistDet=Z_DistCMS;
+  if(TrackerOnly==true){
+    RadiusDet = RadiusTracker;
+    Z_DistDet = Z_DistTracker;
+  }
   disXY->Reset();
   disZY->Reset();
   TMarker* InteractionPoint = new TMarker(0.,0.,2);
-  TArc* r8m = new TArc(0.,0.,(RadiusCMS/1000.));
+  TArc* r8m = new TArc(0.,0.,(RadiusDet/1000.));
   TLatex* logEaxis = new TLatex(); logEaxis->SetTextSize(0.05);
   float energy = float(OneMuoEvt.e());
   float verX = float(OneMuoEvt.vx()/1000.); // [m]
@@ -285,11 +301,11 @@ void CosmicMuonGenerator::displayEv(){
     verZ += dirZ*yStep;
     float rXY = sqrt(verX*verX + verY*verY)*1000.; // [mm]
     float absZ = fabs(verZ)*1000.;                 // [mm]
-    if (rXY < RadiusCMS && absZ < Z_DistCMS){
+    if (rXY < RadiusDet && absZ < Z_DistDet){
       disXY->Fill(verX,verY,log10(energy));
       disZY->Fill(verZ,verY,log10(energy));
       disC->cd(1); disXY->Draw("COLZ"); InteractionPoint->Draw("SAME"); r8m->Draw("SAME");
-      logEaxis->DrawLatex((0.65*RadiusCMS/1000.),(1.08*RadiusCMS/1000.),"log_{10}E(#mu^{#pm})");
+      logEaxis->DrawLatex((0.65*RadiusDet/1000.),(1.08*RadiusDet/1000.),"log_{10}E(#mu^{#pm})");
       disC->cd(2); disZY->Draw("COL"); InteractionPoint->Draw("SAME");
       gPad->Update();
     }
@@ -318,5 +334,7 @@ void CosmicMuonGenerator::setMinT0(double T0){ if (NotInitialized) MinT0 = T0; }
 void CosmicMuonGenerator::setMaxT0(double T0){ if (NotInitialized) MaxT0 = T0; }
 
 void CosmicMuonGenerator::setElossScaleFactor(double ElossScaleFact){ if (NotInitialized) ElossScaleFactor = ElossScaleFact; }
+
+void CosmicMuonGenerator::setTrackerOnly(bool Tracker){ if (NotInitialized) TrackerOnly = Tracker; }
 
 double CosmicMuonGenerator::getRate(){ return EventRate; }

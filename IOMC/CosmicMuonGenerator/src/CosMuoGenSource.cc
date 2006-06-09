@@ -15,6 +15,7 @@ CosMuoGenSource::CosMuoGenSource( const ParameterSet & pset, InputSourceDescript
   MinS(pset.getUntrackedParameter<double>("MinT0", -12.5)),
   MaxS(pset.getUntrackedParameter<double>("MaxT0", 12.5)),
   ELSF(pset.getUntrackedParameter<double>("ElossScaleFactor", 1.0)),
+  TrackerOnly(pset.getUntrackedParameter<bool>("TrackerOnly", false)),
   cmVerbosity_(pset.getUntrackedParameter<bool>("Verbosity", false))
   {
     // set up the generator
@@ -30,6 +31,7 @@ CosMuoGenSource::CosMuoGenSource( const ParameterSet & pset, InputSourceDescript
     CosMuoGen->setMinT0(MinS);
     CosMuoGen->setMaxT0(MaxS);
     CosMuoGen->setElossScaleFactor(ELSF);
+    CosMuoGen->setTrackerOnly(TrackerOnly);
     CosMuoGen->initialize();
     produces<HepMCProduct>();
     //  fEvt = new HepMC::GenEvent();

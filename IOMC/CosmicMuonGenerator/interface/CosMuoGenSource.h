@@ -39,6 +39,7 @@ namespace edm
     double       MinS; // min. t0    [ns]
     double       MaxS; // max. t0    [ns]
     double       ELSF; // scale factor for energy loss
+    bool         TrackerOnly; //if set to "true" detector with tracker-only setup is used, so no material or B-field outside is considerd
 
     CosmicMuonGenerator* CosMuoGen;
     // the event format itself
