@@ -52,6 +52,7 @@ GFlashShowerModel::GFlashShowerModel(G4String modelName, G4LogicalVolume* envelo
 	model_trigger=0;
 	isapp=0;
 	edoit=0;
+        std::cout << "  GFlashShowerModel  " << std::endl;
 }
 // -----------------------------------------------------------------------------------
 
@@ -87,7 +88,7 @@ G4bool GFlashShowerModel::IsApplicable(const G4ParticleDefinition& particleType)
 G4bool GFlashShowerModel::ModelTrigger(const G4FastTrack & fastTrack )
 {       
 	model_trigger++;  
-	// std::cout << " model_trigger =   " << model_trigger<< "  " << fastTrack.GetPrimaryTrack()->GetKineticEnergy() /GeV  <<
+	std::cout << " model_trigger =   " << model_trigger<< "  " << fastTrack.GetPrimaryTrack()->GetKineticEnergy() /GeV  << std::endl;
 	G4bool select = false;
 	if(FlagParamType != 0)                  
 	{  	test = fastTrack.GetPrimaryTrack()->GetMomentumDirection();

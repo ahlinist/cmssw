@@ -53,10 +53,11 @@ bool GFlashHitMaker::check(  const G4FastTrack * aT){
 	G4VPhysicalVolume* pCurrentVolume = touch->GetVolume();		
 	G4VSensitiveDetector* pSensitive;
 	if( pCurrentVolume != 0) { 
-		// 	  std::cout << "GFlashShowerModel " << pCurrentVolume->GetLogicalVolume()->GetName()   << std::endl; 	
+	  //	       	  std::cout << "GFlashShowerModel " << pCurrentVolume->GetLogicalVolume()->GetName()   << std::endl; 	
 		pSensitive = pCurrentVolume->GetLogicalVolume()->GetSensitiveDetector();
 		G4VGFlashSensitiveDetector * gflashSensitive = 
-		dynamic_cast<G4VGFlashSensitiveDetector * > (pSensitive);			 
+		dynamic_cast<G4VGFlashSensitiveDetector * > (pSensitive);  
+		std::cout << "GFlashShowerModel " << pCurrentVolume->GetLogicalVolume()->GetName()   <<gflashSensitive << std::endl; 			 
 		if( !gflashSensitive ) select = false;
 		if ( gflashSensitive)  select = true;
 	}
