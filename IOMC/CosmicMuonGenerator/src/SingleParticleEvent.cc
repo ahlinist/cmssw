@@ -7,7 +7,8 @@ void SingleParticleEvent::create(int id, double px, double py, double pz, double
     HitTarget = false;
 }
 
-void SingleParticleEvent::propagate(double ElossScaleFac, bool TrackerOnly){
+void SingleParticleEvent::propagate(double ElossScaleFac, bool TrackerOnly, bool MTCCHalf){
+  MTCC=MTCCHalf; //need to know this boolean in absVzTmp()
   // calculated propagation direction
   dX = Px/absmom();
   dY = Py/absmom(); 
@@ -32,8 +33,8 @@ void SingleParticleEvent::propagate(double ElossScaleFac, bool TrackerOnly){
     while (continuePropagation){
       if (tmpVy < -acceptR) continuePropagation = false;
       if (absVzTmp() < acceptZ && rVxyTmp() < acceptR){
-        HitTarget = true;
-        continuePropagation = false;
+	HitTarget = true;
+	continuePropagation = false;
       }
       if (continuePropagation) updateTmp(stepSize);
     }
@@ -47,8 +48,8 @@ void SingleParticleEvent::propagate(double ElossScaleFac, bool TrackerOnly){
     while (continuePropagation){
       if (tmpVy < -acceptR) continuePropagation = false;
       if (absVzTmp() < acceptZ && rVxyTmp() < acceptR){
-        HitTarget = true;
-        continuePropagation = false;
+	HitTarget = true;
+	continuePropagation = false;
       }
       if (continuePropagation) updateTmp(stepSize);
     }
@@ -62,8 +63,8 @@ void SingleParticleEvent::propagate(double ElossScaleFac, bool TrackerOnly){
     while (continuePropagation){
       if (tmpVy < -acceptR) continuePropagation = false;
       if (absVzTmp() < acceptZ && rVxyTmp() < acceptR){
-        HitTarget = true;
-        continuePropagation = false;
+	HitTarget = true;
+	continuePropagation = false;
       }
       if (continuePropagation) updateTmp(stepSize);
     }
@@ -77,8 +78,8 @@ void SingleParticleEvent::propagate(double ElossScaleFac, bool TrackerOnly){
     while (continuePropagation){
       if (tmpVy < -acceptR) continuePropagation = false;
       if (absVzTmp() < acceptZ && rVxyTmp() < acceptR){
-        HitTarget = true;
-        continuePropagation = false;
+	HitTarget = true;
+	continuePropagation = false;
       }
       if (continuePropagation) updateTmp(stepSize);
     }
@@ -92,8 +93,8 @@ void SingleParticleEvent::propagate(double ElossScaleFac, bool TrackerOnly){
     while (continuePropagation){
       if (tmpVy < -acceptR) continuePropagation = false;
       if (absVzTmp() < acceptZ && rVxyTmp() < acceptR){
-        HitTarget = true;
-        continuePropagation = false;
+	HitTarget = true;
+	continuePropagation = false;
       }
       if (continuePropagation) updateTmp(stepSize);
     }
@@ -106,9 +107,11 @@ void SingleParticleEvent::propagate(double ElossScaleFac, bool TrackerOnly){
     bool continuePropagation = true;
     while (continuePropagation){
       if (tmpVy < -acceptR) continuePropagation = false;
-      if (absVzTmp() < acceptZ && rVxyTmp() < acceptR){
-        HitTarget = true;
-        continuePropagation = false;
+      if (0 < absVzTmp()){ //only check for MTCC setup in last step of propagation, need fine stepSize
+	if (absVzTmp() < acceptZ && rVxyTmp() < acceptR){
+	  HitTarget = true;
+	  continuePropagation = false;
+	}
       }
       if (continuePropagation) updateTmp(stepSize);
     }
@@ -175,7 +178,11 @@ void SingleParticleEvent::subtractEloss(double waterEquivalents){
 }
 
 double SingleParticleEvent::absVzTmp(){
-  return abs(tmpVz);
+  if(MTCC==true){
+    return tmpVz; //need sign to be sure muon hits half of CMS with MTCC setup
+  }else{
+    return abs(tmpVz);
+  }
 }
 
 double SingleParticleEvent::rVxyTmp(){
