@@ -27,6 +27,7 @@ private:
   double Px; double Py; double Pz; double E; double M;
   double Vx; double Vy; double Vz; double T0;
   bool HitTarget;
+  bool MTCC;
   // other stuff
   double dX; double dY; double dZ;
   double tmpVx; double tmpVy; double tmpVz;
@@ -42,7 +43,7 @@ public:
   // create (initialize) an event with a single particle
   void create(int id, double px, double py, double pz, double e, double m, double vx, double vy, double vz, double t0);
   // propagate particle to target area
-  void propagate(double ElossScaleFac, bool TrackerOnly);
+  void propagate(double ElossScaleFac, bool TrackerOnly, bool MTCCHalf);
 
   // particle has hit the target volume (during propagation)
   bool hitTarget();

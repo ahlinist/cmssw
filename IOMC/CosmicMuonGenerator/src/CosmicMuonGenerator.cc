@@ -92,7 +92,7 @@ void CosmicMuonGenerator::nextEvent(){
     double T0 = (RanGen.Rndm()*(MaxT0-MinT0) + MinT0)*SpeedOfLight; // [mm/c];
     OneMuoEvt.create(id, Px, Py, Pz, E, MuonMass, Vx, Vy, Vz, T0); 
     // if angles are ok, propagate to target
-    if (goodOrientation()) OneMuoEvt.propagate(ElossScaleFactor, TrackerOnly);
+    if (goodOrientation()) OneMuoEvt.propagate(ElossScaleFactor, TrackerOnly, MTCCHalf);
     if (OneMuoEvt.hitTarget() && OneMuoEvt.e() > MinE){
       Nsel+=1.; //count number of generated and accepted events  
       notSelected = false;
@@ -336,5 +336,7 @@ void CosmicMuonGenerator::setMaxT0(double T0){ if (NotInitialized) MaxT0 = T0; }
 void CosmicMuonGenerator::setElossScaleFactor(double ElossScaleFact){ if (NotInitialized) ElossScaleFactor = ElossScaleFact; }
 
 void CosmicMuonGenerator::setTrackerOnly(bool Tracker){ if (NotInitialized) TrackerOnly = Tracker; }
+
+void CosmicMuonGenerator::setMTCCHalf(bool MTCC){ if (NotInitialized) MTCCHalf = MTCC; }
 
 double CosmicMuonGenerator::getRate(){ return EventRate; }

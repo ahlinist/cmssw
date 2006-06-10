@@ -38,6 +38,7 @@ public:
     MaxT0  =  12.5;
     ElossScaleFactor = 1.0;
     TrackerOnly = false;
+    MTCCHalf = false;
     EventRate = 0.;
     rateErr_stat = 0.;
     rateErr_syst = 0.;
@@ -88,6 +89,8 @@ private:
   double MaxT0;    // max. t0   [ns]
   double ElossScaleFactor; // scale factor for energy loss
   bool   TrackerOnly; //if set to "true" detector with tracker-only setup is used, so no material or B-field outside is considerd
+  bool   MTCCHalf; //if set to "true" muons are sure to hit half of CMS important for MTCC, 
+                   //still material and B-field of whole CMS is considered
   double EventRate; // number of muons per second [Hz]
   double rateErr_stat; // stat. error of number of muons per second [Hz]
   double rateErr_syst; // syst. error of number of muons per second [Hz] from error of known flux
@@ -123,6 +126,7 @@ public:
   void setMaxT0(double T0);
   void setElossScaleFactor(double ElossScaleFact);
   void setTrackerOnly(bool Tracker);
+  void setMTCCHalf(bool MTCC);
   // initialize the generator
   void initialize();
    // prints rate + statistics

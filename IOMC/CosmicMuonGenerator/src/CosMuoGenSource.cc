@@ -18,6 +18,7 @@ CosMuoGenSource::CosMuoGenSource( const ParameterSet & pset, InputSourceDescript
   MaxS(pset.getUntrackedParameter<double>("MaxT0", 12.5)),
   ELSF(pset.getUntrackedParameter<double>("ElossScaleFactor", 1.0)),
   TrackerOnly(pset.getUntrackedParameter<bool>("TrackerOnly", false)),
+  MTCCHalf(pset.getUntrackedParameter<bool>("MTCCHalf", false)),
   cmVerbosity_(pset.getUntrackedParameter<bool>("Verbosity", false))
   {
     //get seed now from Framework
@@ -37,6 +38,7 @@ CosMuoGenSource::CosMuoGenSource( const ParameterSet & pset, InputSourceDescript
     CosMuoGen->setMaxT0(MaxS);
     CosMuoGen->setElossScaleFactor(ELSF);
     CosMuoGen->setTrackerOnly(TrackerOnly);
+    CosMuoGen->setMTCCHalf(MTCCHalf);
     CosMuoGen->initialize();
     produces<HepMCProduct>();
     //  fEvt = new HepMC::GenEvent();

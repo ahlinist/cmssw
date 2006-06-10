@@ -40,6 +40,8 @@ namespace edm
     double       MaxS; // max. t0    [ns]
     double       ELSF; // scale factor for energy loss
     bool         TrackerOnly; //if set to "true" detector with tracker-only setup is used, so no material or B-field outside is considerd
+    bool         MTCCHalf; //if set to "true" muons are sure to hit half of CMS important for MTCC, 
+                           //still material and B-field of whole CMS is considered
 
     CosmicMuonGenerator* CosMuoGen;
     // the event format itself
