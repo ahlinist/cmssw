@@ -14,7 +14,7 @@
  <Constant name="EndRod1Z"       value="110.2*cm"/>
  <Constant name="EndRodT"        value="0.055*cm"/>
  <Constant name="EndRodL"        value="1.300*cm"/>
- <Constant name="EndRod2Y"       value="0.795*cm"/>
+ <Constant name="EndRod2Y"       value="0.845*cm"/>
  <Constant name="EndRod2Z"       value="2.450*cm"/>
  <Constant name="SideCoolLightR" value="0.110*cm"/>
  <Constant name="SideCoolHeavyR" value="0.125*cm"/>
@@ -148,27 +148,27 @@
 <LogicalPartSection label="tobrodpar.xml">
  <LogicalPart name="TOBSideRod1" category="unspecified">
   <rSolid name="TOBSideRod1"/>
-  <rMaterial name="materials:TOB_rod"/>
+  <rMaterial name="tobmaterial:TOB_rod"/>
  </LogicalPart>
  <LogicalPart name="TOBSideRod2" category="unspecified">
   <rSolid name="TOBSideRod2"/>
-  <rMaterial name="materials:TOB_rod"/>
+  <rMaterial name="tobmaterial:TOB_rod"/>
  </LogicalPart>
  <LogicalPart name="TOBEndRod1" category="unspecified">
   <rSolid name="TOBEndRod1"/>
-  <rMaterial name="materials:TOB_rod"/>
+  <rMaterial name="tobmaterial:TOB_rod"/>
  </LogicalPart>
  <LogicalPart name="TOBEndRod2" category="unspecified">
   <rSolid name="TOBEndRod2"/>
-  <rMaterial name="materials:TOB_rod"/>
+  <rMaterial name="tobmaterial:TOB_rod"/>
  </LogicalPart>
  <LogicalPart name="TOBClamp" category="unspecified">
   <rSolid name="TOBClamp"/>
-  <rMaterial name="materials:TOB_plate_A"/>
+  <rMaterial name="tobmaterial:TOB_plate_A"/>
  </LogicalPart>
  <LogicalPart name="TOBCable" category="unspecified">
   <rSolid name="TOBCable"/>
-  <rMaterial name="materials:TOB_ICB"/>
+  <rMaterial name="tobmaterial:TOB_ICB"/>
  </LogicalPart>
 </LogicalPartSection>
 
