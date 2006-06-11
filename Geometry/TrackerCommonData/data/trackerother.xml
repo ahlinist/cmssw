@@ -66,7 +66,7 @@
 <LogicalPartSection label="tracker.xml">
  <LogicalPart name="Tracker" category="unspecified">
   <rSolid name="Tracker"/>
-  <rMaterial name="materials:Air"/>
+  <rMaterial name="materials:Vacuum"/>
  </LogicalPart>
  <LogicalPart name="TrackerScreenCont" category="unspecified">
   <rSolid name="TrackerScreenCont"/>

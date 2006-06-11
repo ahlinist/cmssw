@@ -560,7 +560,7 @@
  </LogicalPart>
  <LogicalPart name="TOBAxCable" category="unspecified">
   <rSolid name="TOBAxCable"/>
-  <rMaterial name="materials:TOB_ax_cable"/>
+  <rMaterial name="tobmaterial:TOB_ax_cable"/>
  </LogicalPart>
 </LogicalPartSection>
 
