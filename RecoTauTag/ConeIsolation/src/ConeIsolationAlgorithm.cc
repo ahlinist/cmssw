@@ -24,19 +24,18 @@ ConeIsolationAlgorithm::ConeIsolationAlgorithm()
 ConeIsolationAlgorithm::ConeIsolationAlgorithm(const ParameterSet & parameters)
 {
   //FIXME: use unsigned int where needed
-  m_nthTrack         = parameters.getParameter<int>("NthTrack");
-  m_cutPixelHits     = parameters.getParameter<int>("MinimumNumberOfPixelHits");
-  m_cutTotalHits     = parameters.getParameter<int>("MinimumNumberOfHits");
+  m_cutPixelHits     = parameters.getParameter<int>("MinimumNumberOfPixelHits");//not used
+  m_cutTotalHits     = parameters.getParameter<int>("MinimumNumberOfHits"); //not used
   m_cutMaxTIP        = parameters.getParameter<double>("MaximumTransverseImpactParameter");
   m_cutMinPt         = parameters.getParameter<double>("MinimumTransverseMomentum");
-  m_cutMaxDecayLen   = parameters.getParameter<double>("MaximumDecayLength");
   m_cutMaxChiSquared = parameters.getParameter<double>("MaximumChiSquared");
+  dZ_vertex          = parameters.getParameter<double>("DeltaZetTrackVertex"); 
+
   matching_cone      = parameters.getParameter<double>("MatchingCone");
   signal_cone        = parameters.getParameter<double>("SignalCone");
   isolation_cone     = parameters.getParameter<double>("IsolationCone"); 
   pt_min_isolation   = parameters.getParameter<double>("MinimumTransverseMomentumInIsolationRing"); 
   pt_min_leadTrack   = parameters.getParameter<double>("MinimumTransverseMomentumLeadingTrack"); 
-  dZ_vertex          = parameters.getParameter<double>("DeltaZetTrackVertex"); 
   n_tracks_isolation_ring = parameters.getParameter<int>("MaximumNumberOfTracksIsolationRing"); 
 
 }
@@ -44,71 +43,33 @@ ConeIsolationAlgorithm::ConeIsolationAlgorithm(const ParameterSet & parameters)
   // I hope this is not leaking too much. Btw, that constructor shouldn't be used!
 //  theFilter.add(theSRTF);
 //  theFilter.add( new PixelHitsRecTrackFilter(npixhits));
-edm::Ref<reco::TrackCollection> ConeIsolationAlgorithm::leadingTrack(GlobalVector dir, edm::RefVector<reco::TrackCollection> myTracks, float z_pv)
-{
-  math::XYZVector jet3Vec(dir.x(),dir.y(),dir.z()) ;
-  double pt_min_tk = 0.;
-  edm::Ref<reco::TrackCollection> leadTk;
-  edm::Ref<reco::TrackCollection> tmpTk;
 
-  for(edm::RefVector<reco::TrackCollection>::const_iterator it=myTracks.begin() ; it!=myTracks.end(); it++ )
-        {
-	  const Track & track = **it;
-	  math::XYZVector trackMomentum = track.momentum() ;
-	  double deltaR = ROOT::Math::VectorUtil::DeltaR(jet3Vec,trackMomentum ) ;
-	  if(deltaR < matching_cone && track.pt() > m_cutMinPt)
-	    {
-	      if(track.pt() > pt_min_tk && fabs(track.dz() - z_pv) < dZ_vertex)
-		
-		{
-		  leadTk = *it;
-		  pt_min_tk = track.pt();
-		}
-	    }
-	}
-  if(pt_min_tk > pt_min_leadTrack) {
-    return leadTk;
-  }else{
-    return tmpTk; //Check if this is working in the right way
-  }
-}
 pair<JetTag,IsolatedTauTagInfo> ConeIsolationAlgorithm::tag(const  JetTracksAssociationRef & jetTracks, const Vertex & pv) 
 {
- GlobalVector direction(jetTracks->key->px(),jetTracks->key->py(),jetTracks->key->pz());
+
  edm::RefVector<reco::TrackCollection> tracks=jetTracks->val;
  edm::RefVector<reco::TrackCollection> myTracks;
 
- //find LeadingTrack
- edm::Ref<reco::TrackCollection> leadTk = leadingTrack(direction,tracks, pv.z());
- int nTracksIsolationRing=0;
- if(leadTk) {
-   math::XYZVector leadTkMomentum = leadTk->momentum();
-   
-  
-   //Find number of tracksInsideIsolationRing
-   for(edm::RefVector<reco::TrackCollection>::const_iterator it=tracks.begin() ; it!=tracks.end(); it++ )
-     {
-       const Track & track = **it;
-       if( track.pt() > m_cutMinPt && track.d0() < m_cutMaxTIP && fabs(track.dz() - pv.z())<  dZ_vertex)
-	 {
-	   myTracks.push_back(*it);
-	   math::XYZVector trackMomentum = track.momentum() ;
-	   double deltaR = ROOT::Math::VectorUtil::DeltaR(leadTkMomentum,trackMomentum ) ;
-	   if(deltaR < isolation_cone && deltaR > signal_cone)
-	     nTracksIsolationRing++;
-	 }
-	     
-     }
- }
- 
- double discriminator=0;
- if(leadTk) {
-   if(nTracksIsolationRing < n_tracks_isolation_ring+1) discriminator=1;
- }
-
- JetTag resultBase(discriminator,jetTracks);
+ //Selection of the Tracks
+ float z_pv = pv.z();
+ edm::RefVector<reco::TrackCollection>::const_iterator it = tracks.begin();
+ for(;it!= tracks.end();it++)
+   {
+     if((*it)->pt() > m_cutMinPt &&
+	(*it)->normalizedChi2() < m_cutMaxChiSquared &&
+	(*it)->d0() < m_cutMaxTIP &&
+	fabs((*it)->dz() - z_pv) < dZ_vertex)
+       myTracks.push_back(*it);
+   }
  IsolatedTauTagInfo resultExtended(myTracks);
- return pair<JetTag,IsolatedTauTagInfo> (resultBase,resultExtended); 
+ 
+ //now I can use it for the discriminator;
+ math::XYZVector jetDir(jetTracks->key->px(),jetTracks->key->py(),jetTracks->key->pz());
+double discriminator =  resultExtended.discriminator(jetDir, matching_cone, signal_cone, isolation_cone, pt_min_leadTrack, pt_min_isolation,  n_tracks_isolation_ring); 
+ JetTag resultBase(discriminator,jetTracks);
+
+
+  return pair<JetTag,IsolatedTauTagInfo> (resultBase,resultExtended); 
 }
 
 
