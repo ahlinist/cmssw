@@ -41,6 +41,9 @@ class FURawEventFactory
   /** get the total number of events ever processed (from allocate to discard) */
   unsigned int getnbProcessed() const {return nbProcessed_;}
 
+  /** signal a waiting thread of the end of a run**/
+  void postEndRunMaybe();
+
  private:  
 
   //these methods are only used by friend class FUAdapter

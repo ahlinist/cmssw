@@ -63,11 +63,18 @@ FURawEvent *FURawEventFactory::getBuiltEvent()
   //  cout << "getBuiltEvent, obtained resource, queuesize= " <<  builtRes_.size()
   //       << endl; 
   if(ret!=0) std::cerr << "FURawEventFactory::error waiting for built resource" << std::endl;
+  int res = -1;
   pthread_mutex_lock(&mutex_);
-  int res = builtRes_.top();
-  builtRes_.pop();
+  if(builtRes_.size()!=0)
+    {
+      res = builtRes_.top();
+      builtRes_.pop();
+    }
   pthread_mutex_unlock(&mutex_);
-  return resources_[res];
+  if(res>=0)
+    return resources_[res];
+  else
+    return 0;
 }
 
 unsigned int FURawEventFactory::spyBuiltEvent(unsigned int fedid, unsigned char *dest)
@@ -140,6 +147,20 @@ void FURawEventFactory::removeEvent(FURawEvent *ev)
   freeRes_.push(ev->getInternalHandle()); // put back into list of free evs
   pthread_mutex_unlock(&mutex_);
   nbProcessed_++;
+}
+
+void FURawEventFactory::postEndRunMaybe()
+{
+  pthread_mutex_lock(&mutex_);
+  int semval = 0;
+  sem_getvalue(&empty_,&semval);
+  if(semval==0)
+    {
+      int ret = sem_post(&empty_);
+      if(ret!=0) std::cerr << "FURawEventFactory::error posting to resource counter " << std::endl;
+    }
+  pthread_mutex_unlock(&mutex_);
+  
 }
 
 FUAdapter *FURawEventFactory::adapter_ = 0;

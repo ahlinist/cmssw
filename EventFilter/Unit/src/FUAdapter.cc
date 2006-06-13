@@ -69,7 +69,7 @@ void FUAdapter::createBUArray()
       buDescs= 
 	getApplicationContext()->getApplicationGroup()->
 	getApplicationDescriptors(buName_);
-      int maxBUinstance = 0;
+      unsigned int maxBUinstance = 0;
       
       for (unsigned int ind=0; ind < buDescs.size(); ind++) 
 	{

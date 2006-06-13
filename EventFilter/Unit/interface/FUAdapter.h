@@ -7,6 +7,9 @@
 //
 //  MODIFICATION:
 //  $Log: FUAdapter.h,v $
+//  Revision 1.5  2006/05/23 11:43:49  meschi
+//  additional diagnostics
+//
 //  Revision 1.4  2005/11/22 09:42:10  meschi
 //  fixed destructor, added clear for haltAction
 //
@@ -99,6 +102,9 @@ class FUAdapter: public xdaq::Application, public evf::RunBase
 
   /** interface to event sink */
   virtual FURawEvent *rqstEvent()=0;
+
+  /** interface to event loop*/
+  virtual void signalWaitingInput()=0;
 
   /** interface to event sink */
   unsigned long getRunNumber() const { return runNumber_.value_;}
