@@ -2,18 +2,19 @@
 #define DaqSource_FUReader_h
 
 /** \class FUReader
- *  $Date: 2006/03/15 23:39:58 $
- *  $Revision: 1.4 $
+ *  $Date: 2006/05/16 10:46:22 $
+ *  $Revision: 1.5 $
  *  \author E. Meschi - CERN PH/CMD
  */
 #include "EventFilter/Unit/interface/FURawEvent.h"
 #include "EventFilter/Unit/interface/EventSink.h"
+#include "EventFilter/Utilities/interface/ShutDownListener.h"
 #include <IORawData/DaqSource/interface/DaqBaseReader.h>
 #include <DataFormats/Common/interface/EventID.h>
 #include <algorithm>
 #include <pthread.h>
 
-class FUReader : public DaqBaseReader, public EventSink {
+class FUReader : public DaqBaseReader, public EventSink, public evf::ShutDownListener {
  public:
   /// Constructor
   FUReader(const edm::ParameterSet& pset);
@@ -27,6 +28,8 @@ class FUReader : public DaqBaseReader, public EventSink {
 			   FEDRawDataCollection& data);
 
   void sink(){}
+  void onShutDown();
+
  private:
   void fillFEDs(int, int,
 		FEDRawDataCollection&,
@@ -36,6 +39,7 @@ class FUReader : public DaqBaseReader, public EventSink {
   edm::EventNumber_t eventNum;
   pthread_cond_t ready_;
   pthread_mutex_t lock_;
+  FURawEvent *event;
 };
 #endif
 
