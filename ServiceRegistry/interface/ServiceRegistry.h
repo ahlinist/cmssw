@@ -88,6 +88,8 @@ namespace edm {
       // ---------- member functions ---------------------------
       
    
+      static ServiceToken createServicesFromConfig(const std::string& config);
+
    public: // Made public (temporarily) at the request of Emilio Meschi.
       static ServiceToken createSet(const std::vector<ParameterSet>&);
       static ServiceToken createSet(const std::vector<ParameterSet>&,

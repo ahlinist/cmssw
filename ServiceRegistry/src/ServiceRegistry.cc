@@ -16,6 +16,8 @@
 
 // user include files
 #include "FWCore/ServiceRegistry/interface/ServiceRegistry.h"
+#include "FWCore/ParameterSet/interface/MakeParameterSets.h"
+#include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 
 //
@@ -83,6 +85,17 @@ edm::ServiceRegistry::presentToken() const
 //
 // static member functions
 //
+
+edm::ServiceToken
+edm::ServiceRegistry::createServicesFromConfig(std::string const& config) {
+   boost::shared_ptr<std::vector<ParameterSet> > pServiceSets;
+   boost::shared_ptr<ParameterSet> params;
+   edm::makeParameterSets(config, params, pServiceSets);
+
+   //create the services
+   return ServiceToken(edm::ServiceRegistry::createSet(*pServiceSets.get()));
+}
+
 edm::ServiceToken 
 edm::ServiceRegistry::createSet(const std::vector<ParameterSet>& iPS)
 {
