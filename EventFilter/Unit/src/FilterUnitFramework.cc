@@ -7,6 +7,9 @@
 //
 //  Modification history:
 //    $Log: FilterUnitFramework.cc,v $
+//    Revision 1.9  2006/05/23 11:45:13  meschi
+//    additional diagnostics in main and debug web, removed dqm-related stuff
+//
 //    Revision 1.8  2006/05/18 13:35:19  vuko
 //    adding XDAQ monitoring to FU
 //
@@ -184,7 +187,7 @@ void FilterUnitFramework::configureAction(toolbox::Event::Reference e) throw (to
     }
   else
     {
-      LOG4CPLUS_ERROR(this->getApplicationLogger(),"could not set working directory to" << workdir);
+      LOG4CPLUS_DEBUG(this->getApplicationLogger(),"could not set working directory to" << workdir);
     }
   createBUArray();
 
@@ -697,6 +700,11 @@ FURawEvent * FilterUnitFramework::rqstEvent()
     }
 
   return ev;
+}
+
+void FilterUnitFramework::signalWaitingInput()
+{
+  factory_->postEndRunMaybe();
 }
 
 

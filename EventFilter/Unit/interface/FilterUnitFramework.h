@@ -9,6 +9,9 @@
 //
 //  Modification history:
 //    $Log: FilterUnitFramework.h,v $
+//    Revision 1.7  2006/05/23 11:43:49  meschi
+//    additional diagnostics
+//
 //    Revision 1.6  2006/05/18 13:35:18  vuko
 //    adding XDAQ monitoring to FU
 //
@@ -109,6 +112,8 @@ public:
 
   // The main interface for the HLT
   FURawEvent * rqstEvent();
+
+  void signalWaitingInput();
 
   unsigned long myId(){return instance_;}
   double birth(){return birth_.tstamp();}
