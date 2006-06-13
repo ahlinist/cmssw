@@ -1,7 +1,7 @@
 /** \file
  *
- *  $Date: 2006/05/16 10:46:22 $
- *  $Revision: 1.6 $
+ *  $Date: 2006/05/29 15:26:43 $
+ *  $Revision: 1.7 $
  *  \author E. Meschi - CERN PH/CMD
  */
 
@@ -23,7 +23,7 @@ using namespace edm;
 #include <string.h>
 
 FUReader::FUReader(const edm::ParameterSet& pset) : 
-  runNum(1), eventNum(0) {
+  runNum(1), eventNum(0), event(0) {
   cout << "FUReader constructor " << endl;
   // mean = pset.getParameter<float>("mean");
   pthread_mutex_init(&lock_,0);
@@ -38,6 +38,12 @@ bool FUReader::fillRawData(EventID& eID,
 			   Timestamp& tstamp, 
 			   FEDRawDataCollection& data){
   //EM FIXME: use logging + exception
+  // check if a previous event is held. Release so discard can be issued.
+  if(event)
+    {
+      event->reset(true);
+      event = 0;
+    }
   if(sinking_)
     {
       pthread_mutex_lock(&lock_);
@@ -51,13 +57,15 @@ bool FUReader::fillRawData(EventID& eID,
       throw cms::Exception("NullPointer") 
 	<< "No factory registered yet for FUReader" << std::endl;
     }
-  FURawEvent *event = fwk_->rqstEvent();
-  runNum = fwk_->getRunNumber();
-  unsigned int ievent = event->getLevel1Id();
-  eID = EventID(runNum,ievent);
-  eventNum++;
-
-  fillFEDs(0,FEDNumbering::lastFEDId(), data,*event);
+  event = fwk_->rqstEvent();
+  if(event != 0)
+    {
+      runNum = fwk_->getRunNumber();
+      unsigned int ievent = event->getLevel1Id();
+      eID = EventID(runNum,ievent);
+      eventNum++;
+      
+      fillFEDs(0,FEDNumbering::lastFEDId(), data,*event);
   /*
   fillFEDs(FEDNumbering::getSiPixelFEDIds(), data, *event);
   fillFEDs(FEDNumbering::getSiStripFEDIds(), data, *event);
@@ -69,8 +77,12 @@ bool FUReader::fillRawData(EventID& eID,
   fillFEDs(FEDNumbering::getEcalFEDIds(), data, *event);
   fillFEDs(FEDNumbering::getHcalFEDIds(), data, *event);
   */
-  event->reset(true);
-  return true;
+      // this should be done on return by the source with a new request
+      // this indicates the previous event has been processed
+      //      event->reset(true);
+      return true;
+    }
+  return false;
 }
 
 void FUReader::fillFEDs(int b, int e,
@@ -96,6 +108,17 @@ void FUReader::fillFEDs(int b, int e,
 	}  
 
     }
+}
+
+void FUReader::onShutDown()
+{
+  if(fwk_==0)
+    {
+      edm::LogError("FUReader")  << "Fatal error: No factory registered yet";
+      throw cms::Exception("NullPointer") 
+	<< "No factory registered yet for FUReader" << std::endl;
+    }
+  fwk_->signalWaitingInput();
 }
 
 #include "PluginManager/ModuleDef.h"
