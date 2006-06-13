@@ -7,9 +7,6 @@
 
 #include <iostream>
 
-using std::cout;
-using std::endl;
-
 BeamProfileVertexGenerator::BeamProfileVertexGenerator(const edm::ParameterSet & p,
                                                        const long& seed) : 
   BaseEventVertexGenerator(p,seed), myVertex(0), myRandom(0) {
@@ -35,11 +32,6 @@ BeamProfileVertexGenerator::BeamProfileVertexGenerator(const edm::ParameterSet &
 				  << myMeanY << ", "  << myMeanZ << ") and "
 				  << "spread (" << mySigmaX << ", " << mySigmaY
 				  << ") of type Gaussian = " << myType;
-  std::cout << "BeamProfileVertexGenerator: with beam along eta = " 
-	    << myEta << " (Theta = " << myTheta/deg << ") phi = " 
-	    << myPhi/deg << " centred at (" << myMeanX << ", " << myMeanY 
-	    << ", "  << myMeanZ << ") and spread (" << mySigmaX << ", "
-	    << mySigmaY << ") of type Gaussian = " << myType << std::endl;
 }
 
 BeamProfileVertexGenerator::~BeamProfileVertexGenerator() {
