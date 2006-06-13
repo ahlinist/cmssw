@@ -22,9 +22,11 @@
 #include "TFile.h"
 #include "TDirectory.h"
 #include <iostream>
+#include <fstream>
 #include "TTree.h"
 #include "TH1F.h"
 #include "TH2F.h"
+
 
 #include <cmath>
 
@@ -36,6 +38,7 @@ class RootWriterRechit {
     counter1=0;
     counter2=0;
     counter3=0;
+    counter4=0;
     ratio=0;
   }
   
@@ -147,6 +150,7 @@ class RootWriterRechit {
 	//int trkfnd_use_ano[6]={0,0,0,0,0,0};
 	int recfnd_use_cat[6]={0,0,0,0,0,0};
 	int recfnd_use_ano[6]={0,0,0,0,0,0};
+        int rechit_use[6]={0,0,0,0,0,0};
 	int rechit_hits=0;
 
 	if(trk_lay.size()>5){
@@ -161,6 +165,7 @@ class RootWriterRechit {
 	    const CSCLayerGeometry * layerg = glayer->geometry();
             std::vector<float> arechit = rhp.rechita(trk_lay[ihit]);
 	    std::vector<float> srechit = rhp.rechitb(trk_lay[ihit]);
+            
 	    // work out trkfnd coodinates
 	    //float sta = aslp*trk_lay[ihit]+aintr;
 	    int isrp=(trk_spos[ihit]+0.5*((trk_lay[ihit])%2));
@@ -177,9 +182,10 @@ class RootWriterRechit {
 	    float x_trkfnd=xx-ds;
             float y_trkfnd=yy; 
 	    
-	    rechit_hits=rechit_hits+srechit.size(); 
-	    
 	    if(trk_lay.size()>5){
+	      rechit_hits=rechit_hits+srechit.size();
+              rechit_use[trk_lay[ihit]]=srechit.size();
+              //printf(" srchit.size() %d %d \n",rechit_hits,srechit.size());
 	      for(unsigned int rhit=0;rhit<srechit.size();rhit++){
 		//recfnd_use[trk_lay[ihit]]=1; 
 		//printf(" %d %f %f %f %f \n",trk_lay[ihit],x_trkfnd,y_trkfnd,srechit[rhit],arechit[rhit]);
@@ -199,8 +205,13 @@ class RootWriterRechit {
 	  } 
 	}
 	// at this point recfnd_use and trkfnd_use are filled. Do your histogramming here!
+
+	
+
 	if(sid==2227){
 	  for(int it=0; it<6; it++){
+
+	    //outfile=new ofstream("out.dat",ios::out);
 	    float eff=-99.0;
 	    
 	    if(trkfnd_use[it]==1){
@@ -208,15 +219,22 @@ class RootWriterRechit {
 	      if(trkfnd_use[it]==1){counter1=counter1+1;}
 	      if(trkfnd_use[it]==1 && recfnd_use_cat[it]==1 && recfnd_use_ano[it]==1){counter2=counter2+1;}
 	      if(recfnd_use_cat[it]==1 && recfnd_use_ano[it]==1){counter3=counter3+1;}
+              if(trkfnd_use[it]==1)counter4=counter4+rechit_use[it];
 	      ratio=(float)counter2/(float)counter1;
+
 	      //std::cout << " counter1 " << counter1 << std::endl;
 	      //std::cout << " counter2 " << counter2 << std::endl;
-	      //std::cout << " counter3 " << counter3 << std::endl;
+	      //std::cout << " counter4 " << counter4 << std::endl;
 	      //std::cout << " ratio " << ratio << std::endl;
+
 	      missing_plot[histid]->Fill(eff);
 	      //efficiency_by_event->Fill(eff);
 	      rechit_hits_raw[histid]->Fill(rechit_hits);
 	      missing_plot_by_layers[it][histid]->Fill(eff);
+
+	      //*outfile << counter1 << "    " << counter2 << "    " << counter4 << endl;
+	      
+
 	    }
 	  }
 	}
@@ -240,7 +258,10 @@ class RootWriterRechit {
   int counter1;
   int counter2;
   int counter3;
+  int counter4;
   float ratio;
+  //ofstream *outfile;
+  
   
 };
 
