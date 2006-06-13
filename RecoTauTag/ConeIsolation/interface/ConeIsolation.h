@@ -9,7 +9,6 @@
 #include "FWCore/Framework/interface/EDProducer.h"
 #include "RecoTauTag/ConeIsolation/interface/ConeIsolationAlgorithm.h"
 
-class ConeIsolationTauTagAlgorithm;
 
 class ConeIsolation : public edm::EDProducer {
    public:
@@ -19,8 +18,7 @@ class ConeIsolation : public edm::EDProducer {
 
       virtual void produce(edm::Event&, const edm::EventSetup&);
  private:
-      ConeIsolationTauTagAlgorithm* m_concreteAlgo;
-      ConeIsolationAlgorithm m_algo;
+      ConeIsolationAlgorithm* m_algo;
 };
 #endif
 

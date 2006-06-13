@@ -76,6 +76,7 @@ pair<JetTag,IsolatedTauTagInfo> ConeIsolationAlgorithm::tag(const  JetTracksAsso
 {
  GlobalVector direction(jetTracks->key->px(),jetTracks->key->py(),jetTracks->key->pz());
  edm::RefVector<reco::TrackCollection> tracks=jetTracks->val;
+ edm::RefVector<reco::TrackCollection> myTracks;
 
  //find LeadingTrack
  edm::Ref<reco::TrackCollection> leadTk = leadingTrack(direction,tracks, pv.z());
@@ -90,6 +91,7 @@ pair<JetTag,IsolatedTauTagInfo> ConeIsolationAlgorithm::tag(const  JetTracksAsso
        const Track & track = **it;
        if( track.pt() > m_cutMinPt && track.d0() < m_cutMaxTIP && fabs(track.dz() - pv.z())<  dZ_vertex)
 	 {
+	   myTracks.push_back(*it);
 	   math::XYZVector trackMomentum = track.momentum() ;
 	   double deltaR = ROOT::Math::VectorUtil::DeltaR(leadTkMomentum,trackMomentum ) ;
 	   if(deltaR < isolation_cone && deltaR > signal_cone)
@@ -104,10 +106,9 @@ pair<JetTag,IsolatedTauTagInfo> ConeIsolationAlgorithm::tag(const  JetTracksAsso
    if(nTracksIsolationRing < n_tracks_isolation_ring+1) discriminator=1;
  }
 
-JetTag resultBase(discriminator,jetTracks);
-IsolatedTauTagInfo resultExtended;
-
-return pair<JetTag,IsolatedTauTagInfo> (resultBase,resultExtended); 
+ JetTag resultBase(discriminator,jetTracks);
+ IsolatedTauTagInfo resultExtended(myTracks);
+ return pair<JetTag,IsolatedTauTagInfo> (resultBase,resultExtended); 
 }
 
 

@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrea Rizzi
 //         Created:  Thu Apr  6 09:56:23 CEST 2006
-// $Id: ConeIsolation.cc,v 1.7 2006/05/26 17:14:36 arizzi Exp $
+// $Id: ConeIsolation.cc,v 1.1 2006/06/06 10:23:56 gennai Exp $
 //
 //
 
@@ -51,16 +51,22 @@
 //
 ConeIsolation::ConeIsolation(const edm::ParameterSet& iConfig)
 {
+
+  
+  m_algo = new ConeIsolationAlgorithm(iConfig);
+
+
    produces<reco::JetTagCollection>();  //Several producer so I put a label
-//   produces<reco::ConeIsolationTagInfoCollection>();       //Only one producer
+   produces<reco::IsolatedTauTagInfoCollection>();       //Only one producer
 
 }
 
 
 ConeIsolation::~ConeIsolation()
 {
-
+  delete m_algo;
 }
+
 
 
 //
@@ -72,13 +78,7 @@ ConeIsolation::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
    using namespace edm;
    Handle<reco::JetTracksAssociationCollection> jetTracksAssociation;
-   iEvent.getByLabel("JetTracksAssociation",jetTracksAssociation);
-//   Handle<PrimaryVertex> tracks;
-//   iEvent.getByLabel("Tracks",tracks);
-//   for() //loop over jets
-//   {
-//    call concrete algo
-//   }
+   iEvent.getByLabel("associator",jetTracksAssociation);
    
    reco::JetTagCollection * baseCollection = new reco::JetTagCollection();
 
@@ -94,24 +94,35 @@ ConeIsolation::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   
   Vertex dummyPV(p,e,1,1,1);
    
-  int i=0;
   //cout << "here-0.5" << jetTracksAssociation <<endl;     
   JetTracksAssociationCollection::const_iterator it = jetTracksAssociation->begin();
   for(; it != jetTracksAssociation->end(); it++)
      {
-       
-       baseCollection->push_back(m_algo.tag(edm::Ref<JetTracksAssociationCollection>(jetTracksAssociation,i),dummyPV).first);    
+       int i = it->key.index();
+       pair<JetTag,IsolatedTauTagInfo> myPair =m_algo->tag(edm::Ref<JetTracksAssociationCollection>(jetTracksAssociation,i),dummyPV); 
+       baseCollection->push_back(myPair.first);    
+       //still need to set the JetTag
+       extCollection->push_back(myPair.second);
        i++;
      }
 
 
    std::auto_ptr<reco::JetTagCollection> resultBase(baseCollection);
-   iEvent.put(resultBase);
+   edm::OrphanHandle <reco::JetTagCollection >  myJetTag =  iEvent.put(resultBase);
+   int cc=0;
+   reco::IsolatedTauTagInfoCollection::iterator myInfo = extCollection->begin();   for(;myInfo!=extCollection->end();myInfo++)
+     {
+       myInfo->setJetTag(JetTagRef(myJetTag,cc)); 
+       cc++;
+     }
+
+
+   
    std::auto_ptr<reco::IsolatedTauTagInfoCollection> resultExt(extCollection);  
    iEvent.put(resultExt);
 
 }
 
 //define this as a plug-in
-DEFINE_FWK_MODULE(ConeIsolation)
+//DEFINE_FWK_MODULE(ConeIsolation)
 
