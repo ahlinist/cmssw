@@ -83,7 +83,7 @@ namespace test{
                                                                              
   RecHitComp( const edm::ParameterSet& ps ) : iev( 0 ) {
 	
-  theMapping=CSCReadoutMappingFromFile("/home/ippolito/CMSSW_0_6_1/src/RecoLocalMuon/CSCStandAlone/test/csc_slice_test_map.txt");
+  theMapping=CSCReadoutMappingFromFile("/home/ippolito/CMSSW_0_7_0_pre6/src/RecoLocalMuon/CSCStandAlone/test/csc_slice_test_map.txt");
 
   writer.setup(theMapping);
 
