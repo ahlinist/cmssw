@@ -19,6 +19,7 @@ class ConeIsolation : public edm::EDProducer {
       virtual void produce(edm::Event&, const edm::EventSetup&);
  private:
       ConeIsolationAlgorithm* m_algo;
+      string jetTrackSrc;
 };
 #endif
 
