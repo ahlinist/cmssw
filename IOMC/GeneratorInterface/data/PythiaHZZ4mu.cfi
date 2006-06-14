@@ -10,7 +10,10 @@
   source = PythiaSource
   { 
     untracked int32 maxEvents = 10
-    untracked bool pythiaVerbosity = false
+    # to printout pythia event record (call pylist)
+    untracked int32 pythiaPylistVerbosity = 0
+    # to printout HepMC::GenEvent record (HepMC::GenEvent::print())
+    untracked bool pythiaHepMCVerbosity = false
 
     PSet PythiaParameters = 
     {
