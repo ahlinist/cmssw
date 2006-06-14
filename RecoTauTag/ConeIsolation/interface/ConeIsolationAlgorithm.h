@@ -31,7 +31,6 @@ public:
   //ConeIsolationAlgorithm (int,float,....);
    
   ~ConeIsolationAlgorithm() {}
-  edm::Ref<reco::TrackCollection> leadingTrack(GlobalVector dir, edm::RefVector<reco::TrackCollection> myTracks, float z_pv);
 
 //  void setBeamSpot();
   void setPrimaryVertex(Vertex * pv) {m_primaryVertex=pv;}

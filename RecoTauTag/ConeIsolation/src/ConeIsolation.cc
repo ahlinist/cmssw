@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrea Rizzi
 //         Created:  Thu Apr  6 09:56:23 CEST 2006
-// $Id: ConeIsolation.cc,v 1.1 2006/06/06 10:23:56 gennai Exp $
+// $Id: ConeIsolation.cc,v 1.2 2006/06/13 17:56:25 gennai Exp $
 //
 //
 
@@ -51,9 +51,10 @@
 //
 ConeIsolation::ConeIsolation(const edm::ParameterSet& iConfig)
 {
-
+  jetTrackSrc = iConfig.getParameter<string>("JetTrackSrc");
   
   m_algo = new ConeIsolationAlgorithm(iConfig);
+  
 
 
    produces<reco::JetTagCollection>();  //Several producer so I put a label
@@ -78,7 +79,7 @@ ConeIsolation::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
    using namespace edm;
    Handle<reco::JetTracksAssociationCollection> jetTracksAssociation;
-   iEvent.getByLabel("associator",jetTracksAssociation);
+   iEvent.getByLabel(jetTrackSrc,jetTracksAssociation);
    
    reco::JetTagCollection * baseCollection = new reco::JetTagCollection();
 
