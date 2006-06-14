@@ -84,7 +84,8 @@ namespace test{
       cout << "--- Run: " << e.id().run()
 	   << " Event: " << e.id().event() << endl;
       Handle<FEDRawDataCollection> rawdata;
-      e.getByLabel("DaqSource", rawdata);
+      //e.getByLabel("DaqSource", rawdata);
+      e.getByType(rawdata);
       for (int i=FEDNumbering::getCSCFEDIds().first;
            i<=FEDNumbering::getCSCFEDIds().second; ++i){ //for each of our DCCs
 	const FEDRawData& data = rawdata->FEDData(i);
