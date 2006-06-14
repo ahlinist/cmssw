@@ -83,7 +83,7 @@ namespace test{
                                                                              
   RecHitComp( const edm::ParameterSet& ps ) : iev( 0 ) {
 	
-  theMapping=CSCReadoutMappingFromFile("/home/ippolito/CMSSW_0_7_0_pre6/src/RecoLocalMuon/CSCStandAlone/test/csc_slice_test_map.txt");
+  theMapping=CSCReadoutMappingFromFile("/home/ippolito/CMSSW_0_7_0_pre4/src/RecoLocalMuon/CSCStandAlone/test/csc_slice_test_map.txt");
 
   writer.setup(theMapping);
 
@@ -128,7 +128,7 @@ namespace test{
     
   }
 
-  fp=fopen("rechitcomp.dat","w");
+  //fp=fopen("rechitcomp.dat","w");
   // register what this produces
   //printf(" leaving producer \n");
   produces<CSCRecHit2DCollection>();
@@ -138,7 +138,7 @@ namespace test{
 {
   LogDebug("CSC") << "deleting recHitComp after " << iev << " events.";
   // delete recHitBuilder_;
-  fclose(fp);
+  //fclose(fp);
   writer.done();
 }
 
@@ -151,7 +151,8 @@ void produce( edm::Event& e, const edm::EventSetup& setup )
   setup.get<MuonGeometryRecord>().get( h );
   const CSCGeometry* pgeom = &*h;
   Handle<FEDRawDataCollection> rawdata;
-  e.getByLabel("DaqSource", rawdata);
+  //e.getByLabel("DaqSource", rawdata);
+  e.getByType(rawdata);
   for (int id=FEDNumbering::getCSCFEDIds().first;id<=FEDNumbering::getCSCFEDIds().second; ++id){ //for each of our DCCs
     const FEDRawData& data = rawdata->FEDData(id);
     if(size_t size=data.size()) {
@@ -162,7 +163,7 @@ void produce( edm::Event& e, const edm::EventSetup& setup )
         if(ddudata.size()==0)continue;
 	for(unsigned iddu=0;iddu<ddudata.size();iddu++){
 	  const std::vector<CSCEventData> & cscData = ddudata[iddu].cscData();
-	  int lvl1num=ddudata[iddu].header().lvl1num();
+	  //int lvl1num=ddudata[iddu].header().lvl1num();
 	  for (unsigned k=0; k<cscData.size(); ++k) {
 
             // stan's stuff
@@ -219,8 +220,7 @@ void produce( edm::Event& e, const edm::EventSetup& setup )
 	        } 
               }
             }
-            
-            
+                        
 	    // start comparison between rechit and stan's fitting variables
             //Nicole moved this stuff into a .h file for histogramming!
             // end comparison rechit with stan's tracking variables 
@@ -235,7 +235,7 @@ void produce( edm::Event& e, const edm::EventSetup& setup )
 
 private:
 
-FILE *fp;
+//FILE *fp;
 
 RootWriterRechit writer;
 
