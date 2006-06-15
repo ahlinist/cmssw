@@ -75,27 +75,30 @@
 using namespace edm;
 using namespace std;
 
-                            
+
 namespace test{
-                                                                              
+  
   class RecHitComp : public edm::EDProducer {
   public:
-                                                                             
-  RecHitComp( const edm::ParameterSet& ps ) : iev( 0 ) {
-	
-  theMapping=CSCReadoutMappingFromFile("/home/ippolito/CMSSW_0_7_0_pre4/src/RecoLocalMuon/CSCStandAlone/test/csc_slice_test_map.txt");
-
-  writer.setup(theMapping);
-
-  // register all chambers
-  int dmb_val[9]={1,2,3,4,5,7,8,9,10};
-  for(int vmecrate=0;vmecrate<4;vmecrate++){
-    for(int i=0;i<9;i++){
-      int dmb=dmb_val[i];
-      chamb_const.Register(theMapping,vmecrate,dmb);
-    }
-  }
-  
+    
+    RecHitComp( const edm::ParameterSet& ps ) : iev( 0 ) {
+      
+      theMapping=CSCReadoutMappingFromFile("csc_slice_test_map.txt");
+      //string theMappingFile = pset.getParameter<std::string>("theMappingFile");
+      //theMapping=CSCReadoutMappingFromFile(theMappingFile);
+      
+      
+      writer.setup(theMapping);
+      
+      // register all chambers
+      int dmb_val[9]={1,2,3,4,5,7,8,9,10};
+      for(int vmecrate=0;vmecrate<4;vmecrate++){
+	for(int i=0;i<9;i++){
+	  int dmb=dmb_val[i];
+	  chamb_const.Register(theMapping,vmecrate,dmb);
+	}
+      }
+    
 
   
   // Find names of algorithms
