@@ -125,7 +125,8 @@ void CSCRSensorsDataConverter::endJob()
   edm::Service<cond::service::PoolDBOutputService> mydbservice;
   if( mydbservice.isAvailable() ){
     try{
-      mydbservice->newValidityForNewPayload<CSCRSensors>(myobj,mydbservice->endOfTime());
+      size_t callbackToken=mydbservice->callbackToken("CSCRSensors");
+      mydbservice->newValidityForNewPayload<CSCRSensors>(myobj,mydbservice->endOfTime(),callbackToken);
     }catch(const cond::Exception& er){
       std::cout<<er.what()<<std::endl;
     }catch(const std::exception& er){
