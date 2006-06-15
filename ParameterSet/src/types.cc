@@ -490,20 +490,20 @@ bool
 
 
 // ----------------------------------------------------------------------
-// ProductTag
+// InputTag
 // ----------------------------------------------------------------------
 
 bool
-  edm::decode(ProductTag& to, std::string const& from)
+  edm::decode(InputTag& to, std::string const& from)
 {
-  to.decode(from);
+  to = InputTag(from);
   return true;
-}  // decode to ProductTag
+}  // decode to InputTag
 
 
 
 bool
-  edm::encode(std::string& to, const ProductTag& from)
+  edm::encode(std::string& to, const InputTag& from)
 {
   to = from.encode();
   return true;

@@ -265,13 +265,13 @@ private:
   }
   
   // ----------------------------------------------------------------------
-  // ProductTag
+  // InputTag
 
   template <>
   inline
-  edm::ProductTag
-  ParameterSet::getParameter<edm::ProductTag>(std::string const& name) const {
-    return retrieve(name).getProductTag();
+  edm::InputTag
+  ParameterSet::getParameter<edm::InputTag>(std::string const& name) const {
+    return retrieve(name).getInputTag();
   }
 
 
