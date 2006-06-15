@@ -95,6 +95,7 @@ $Id$
 
 #include "FWCore/Framework/src/Group.h"
 #include "FWCore/Framework/interface/TypeID.h"
+#include "FWCore/ParameterSet/interface/InputTag.h"
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 
@@ -143,6 +144,11 @@ namespace edm {
     template <typename PROD>
     void 
     getByLabel(std::string const& label, const std::string& productInstanceName, Handle<PROD>& result) const;
+
+    /// same as above, but using the InputTag class 	 
+    template <typename PROD> 	 
+    void 	 
+    getByLabel(InputTag const& tag, Handle<PROD>& result) const; 	 
 
     template <typename PROD>
     void 
@@ -423,6 +429,13 @@ namespace edm {
     getByLabel(label, std::string(), result);
   }
 
+  template <typename PROD>
+  void
+  Event::getByLabel(InputTag const& tag, Handle<PROD>& result) const 	 
+  { 	 
+    getByLabel(tag.label(), tag.instance(), result); 	 
+  } 	 
+  	 
   template <typename PROD>
   void
   Event::getByLabel(std::string const& label,
