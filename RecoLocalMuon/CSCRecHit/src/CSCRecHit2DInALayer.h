@@ -73,6 +73,9 @@ private:
   void  correctForCrosstalk( const CSCStripDigiCollection::Range& );
   float crosstalkLevel(const CSCStripDigi & digi);
 
+  // threshold for identifying a local maximum in strips
+  float theThresholdForAPeak;
+
   // fitting parameters
   int theClusterSize;
   float theClusterChargeCut;
