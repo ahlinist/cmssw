@@ -12,6 +12,7 @@
 #include <RecoLocalMuon/CSCRecHit/src/CSCFitData.h>
 #include <RecoLocalMuon/CSCRecHit/src/CSCFixedBinOfSCAPulse.h>
 #include <RecoLocalMuon/CSCRecHit/src/CSCFitSCAPulse.h>
+#include <RecoLocalMuon/CSCRecHit/src/CSCPeakBinOfSCAPulse.h>
 #include <RecoLocalMuon/CSCRecHit/src/CSCTotalSCACounts.h>
 #include <RecoLocalMuon/CSCRecHit/src/CSCStripClusterFitter.h>
 #include <RecoLocalMuon/CSCRecHit/src/CSCStripClusterCentroid.h>
@@ -39,6 +40,8 @@ CSCRecHit2DInALayer::CSCRecHit2DInALayer(  const edm::ParameterSet& ps ) : CSCRe
   theClusterChargeCut = static_cast<float>( ps.getParameter<double>("clusterChargeCut") );
   theClusterProbCut   = static_cast<float>( ps.getParameter<double>("clusterProbCut") );
 
+  theThresholdForAPeak = static_cast<float>( ps.getParameter<double>("thresholdForAPeak") );
+
   // require that the strip and wire digi BX match
   theBunchMatching = ps.getParameter<int>("recHitBunchMatching");
   useAverageErrors = ps.getParameter<bool>("useAverageErrors");
@@ -52,6 +55,9 @@ CSCRecHit2DInALayer::CSCRecHit2DInALayer(  const edm::ParameterSet& ps ) : CSCRe
 
   if ( pulseheightOnStripFinder=="CSCFixedBinOfSCAPulse" ) {
     pulseheightOnStripFinder_ = new CSCFixedBinOfSCAPulse();
+  }
+  else if ( pulseheightOnStripFinder=="CSCPeakBinOfSCAPulse" ) {
+    pulseheightOnStripFinder_ = new CSCPeakBinOfSCAPulse();
   }
   else if ( pulseheightOnStripFinder=="CSCFitSCAPulse" ) {
     pulseheightOnStripFinder_ = new CSCFitSCAPulse();
@@ -399,18 +405,22 @@ float  CSCRecHit2DInALayer::crosstalkLevel(const CSCStripDigi & digi) {
 
 
 void CSCRecHit2DInALayer::findMaxima() {
-  // fills the std::vector theMaxima with the
-  // local maxima in the strips.
+  // fills vector theMaxima with the local maxima in the pulseheight distribution
+  // of the strips. The threshold defining a maximum is a configurable parameter.
+  // A typical value is 30.
+
   theMaxima.clear();
-  float threshold = 30.;
 
   for(size_t i = 1; i < thePulseHeightMap.size(); ++i) {
-    float height = thePulseHeightMap[i].y();
-    if(height > threshold) {
-      // check neighbors.  Don't worry about bounds;
+    // sum 3 strips so that hits between strips are not suppressed
+    float height = thePulseHeightMap[i-1].y() +
+                   thePulseHeightMap[i].y() +
+                   thePulseHeightMap[i+1].y();
+    if( height > theThresholdForAPeak ) {
+      // check neighbors of strip i  Don't worry about bounds;
       // should be OK at 0 and beyond last strip
-      if(height > thePulseHeightMap[i-1].y() &&
-         height > thePulseHeightMap[i+1].y()) {
+      if( thePulseHeightMap[i].y() > thePulseHeightMap[i-1].y() &&
+          thePulseHeightMap[i].y() >= thePulseHeightMap[i+1].y()) {
         theMaxima.push_back(i);
       }
     }
