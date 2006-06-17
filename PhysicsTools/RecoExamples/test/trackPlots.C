@@ -24,7 +24,7 @@ dpminus.Draw("same");
 Events.Draw("recHits.data_.localPosition().x()")
 
 // plot position of first hit
-Events.Draw( "recHits.data_[trackExtras.recHits_.refVector_.items_[0].index()].localPosition().x():recHits.data_[trackExtras.recHits_.refVector_.items_[1].index()].localPosition().x()", "trackExtras.recHitsSize()>1" );
+Events.Draw( "recHits.data_[trackExtras.recHits_.refVector_.items_[0].key()].localPosition().x():recHits.data_[trackExtras.recHits_.refVector_.items_[1].key()].localPosition().x()", "trackExtras.recHitsSize()>1" );
 // should become:
 // Events.Draw("trackExtras.recHit(0).localPosition().x():trackExtras.recHit(1).localPosition().x()", "trackExtras.recHitsSize()>1");
 }
