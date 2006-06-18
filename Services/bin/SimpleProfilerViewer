@@ -1,12 +1,15 @@
 #!/usr/bin/env python
 from Tkinter import *
 import sys
+#look for our own modules in the directory which holds the application
+import os.path
+sys.path.append(os.path.dirname(sys.argv[0]))
 import profilereader
 
 class Application(Frame):
     def __init__(self,filePrefix):
         Frame.__init__(self)
-        self.profile = profilereader.ProfileData(sys.argv[1])
+        self.profile = profilereader.ProfileData(filePrefix,sys.stdout)
         top=self.winfo_toplevel() 
         top.rowconfigure(0, weight=1) 
         top.columnconfigure(0, weight=1)
@@ -14,22 +17,32 @@ class Application(Frame):
         self.rowconfigure(1,weight=1)
         self.columnconfigure(0,weight=1)
         firstFunc = self.profile.idToFunctionInfo[0]
-        self.funcInfo = Label(self,text=firstFunc.name,justify=LEFT)
-        self.funcInfo.grid(column=0,row=0,sticky=W)
+        funcInfoFrame=Frame(self)
+        funcInfoFrame.grid(column=0,row=0,sticky=E+W)
+        summary =     'function name: '
+        summary += '\n# of samples ending with function: '
+        summary += '\n% of samples ending with function: '
+        summary += '\n% of samples containing func+desc: '
+        funcInfoLabels = Label(funcInfoFrame,text=summary,justify=RIGHT)
+        funcInfoLabels.grid(column=0,row=0)
+        self.funcInfo = Label(funcInfoFrame,text=firstFunc.name,justify=LEFT)
+        self.funcInfo.grid(column=1,row=0,sticky=W)
         jump = Frame(self)
         jump.grid(column=0,row=1,sticky=N+S+E+W)
         jump.rowconfigure(1,weight=1)
-        jump.columnconfigure(0,weight=1)
+        callerColumnIndex = 1
+        callerYScrollerColumnIndex = 0
+        jump.columnconfigure(callerColumnIndex,weight=1)
         jump.columnconfigure(2,weight=1)
-        Label(jump,text="Caller of ->").grid(column=0,row=0)
-        Label(jump,text="-> Descendent Calls").grid(column=2,row=0)
+        Label(jump,text="Distribution to Callers:").grid(column=callerColumnIndex,row=0)
+        Label(jump,text="Contribution from Descendants:").grid(column=2,row=0)
         callersY = Scrollbar(jump, orient=VERTICAL)
-        callersY.grid(row=1,column=1,sticky=N+S)
+        callersY.grid(row=1,column=callerYScrollerColumnIndex,sticky=N+S)
         callersX = Scrollbar(jump, orient=HORIZONTAL)
-        callersX.grid(row=2,column=0, sticky=E+W)
+        callersX.grid(row=2,column=callerColumnIndex, sticky=E+W)
         self.callers = Listbox(jump, selectmode=SINGLE, xscrollcommand=callersX.set,
                                yscrollcommand=callersY.set)
-        self.callers.grid(column=0,row=1,sticky=N+W+S+E)
+        self.callers.grid(column=callerColumnIndex,row=1,sticky=N+W+S+E)
         callersX['command']=self.callers.xview
         callersY['command']=self.callers.yview
 
@@ -54,10 +67,10 @@ class Application(Frame):
         funcInfo = self.profile.idToFunctionInfo[self.profile.functionNameToId[funcName]]
         self.callers.delete(0,self.callers.size())
         self.callees.delete(0,self.callees.size())
-        summary =     '         name: '+funcInfo.name
-        summary += '\n       samples: '+str(funcInfo.leafCount)
-        summary += '\n     % in func: '+str(funcInfo.fractionInFunctionOnly*100)
-        summary += '\n% in func+desc: '+str(funcInfo.fractionInPath*100)
+        summary = funcInfo.name
+        summary += '\n'+str(funcInfo.leafCount)
+        summary += '\n'+str(funcInfo.fractionInFunctionOnly*100)[:6]+"%"
+        summary += '\n'+str(funcInfo.fractionInPath*100)[:6]+"%"
         self.funcInfo['text']=summary
         for frac,callee in funcInfo.calleeList:
             self.callees.insert(END,str(frac*100)[:4]+"% "+callee.name)
@@ -73,7 +86,17 @@ class Application(Frame):
         if selected:
             funcName = self.callers.get(selected[0]).split("%")[1].strip()
             self.moveToFunction(funcName)
-                
-app = Application(sys.argv[1])
-app.master.title("SimpleProfilerViewer ("+sys.argv[1]+")")
+
+import optparse
+    
+#usage = "%prog [options] []"
+usage = "%prog <a file from SimpleProfiler Service>"
+parser = optparse.OptionParser(usage=usage)
+#parser.add_option("--test", action="store_true", dest="test", default=False, help="run the builtin application tests")
+(options,args) = parser.parse_args()
+if 1 != len(args):
+    parser.error("incorrect number of arguments")
+
+app = Application(args[0])
+app.master.title("SimpleProfilerViewer ("+args[0]+")")
 app.mainloop()
