@@ -17,9 +17,9 @@ class FunctionInfo(object):
         self.__calleeTemp = dict()
     def addCaller(self,caller,weight):
         #print caller.name, weight
-        self.__callerTemp.setdefault(caller.name,[0,caller])[0]+=weight
+        self.__callerTemp.setdefault(caller.address,[0,caller])[0]+=weight
     def addCallee(self,callee,weight):
-        self.__calleeTemp.setdefault(callee.name,[0,callee])[0]+=weight
+        self.__calleeTemp.setdefault(callee.address,[0,callee])[0]+=weight
     def normalize(self):
         self.callerList = list()
         self.calleeList = list()
@@ -38,17 +38,35 @@ class Path(object):
         self.count = int(attrList[0])
         self.functionIds = [int(x) for x in attrList[1:] if x != '\n']
 class ProfileData(object):
-    def __init__(self,filePrefix):
+    def __init__(self,filesToUseInfo,feedBackStream=None):
+        #try to determine the filePrefix from the value given
+        # since caller may have given us just one of the files
+        # instead of the prefix to the files
+        (dir,base) = os.path.split(filesToUseInfo)
+        uniqueID = base.split('_')[1]
+        filePrefix = os.path.join(dir,"profdata_"+uniqueID+"_")
+        if feedBackStream:
+            feedBackStream.write('reading file: '+filePrefix+'names')
         nameFile = file(filePrefix+'names','r')
         self.idToFunctionInfo = dict()
         self.functionNameToId = dict()
+        feedbackIndex = 0
         for line in nameFile:
+            if feedBackStream and (0 == feedbackIndex % 100):
+                feedBackStream.write('.')
+            feedbackIndex +=1
             infoList = line.split(' ')
             self.idToFunctionInfo.setdefault( int(infoList[0]), FunctionInfo(infoList[1:]))
             self.functionNameToId.setdefault(self.idToFunctionInfo[int(infoList[0])].name, int(infoList[0]))
+        if feedBackStream:
+            feedBackStream.write('\nreading file: '+filePrefix+'paths')
         pathFile = file(filePrefix+'paths','r')
         self.paths = list()
+        feedbackIndex = 0
         for line in pathFile:
+            if feedBackStream and (0 == feedbackIndex % 100):
+                feedBackStream.write('.')
+            feedbackIndex +=1
             line.strip()
             path = Path( line.split(' ')[1:])
             self.paths.append(path)
@@ -59,7 +77,13 @@ class ProfileData(object):
                     func.addCaller(caller,path.count)
                     caller.addCallee(func,path.count)
                 caller = func
+        feedbackIndex = 0
+        if feedBackStream:
+            feedBackStream.write('\nprocessing data:')
         for x in self.idToFunctionInfo.items():
+            if feedBackStream and (0 == feedbackIndex % 100):
+                feedBackStream.write('.')
+            feedbackIndex +=1
             x[1].normalize()
 
 if __name__ == '__main__':
