@@ -482,7 +482,7 @@ bool
   edm::encode(std::string& to, const FileInPath& from)
 {
   std::ostringstream ost;
-  ost << from.relativePath() << ' ' << from.isLocal();
+  ost << from.relativePath() << ' ' << from.isLocal() << ' ' << from.fullPath();
   if (!ost) return false;
   to = ost.str();
   return true;
