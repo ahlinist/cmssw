@@ -16,6 +16,7 @@ namespace edm {
   class BranchDescription;
   class BranchKey;
   class ConfigurableInputSource;
+  class CurrentProcessingContext;
   class DelayedReader;
   class EDAnalyzer;
   class EDFilter;

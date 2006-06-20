@@ -130,7 +130,6 @@ namespace edm
 	     ProductRegistry& pregistry,
 	     ActionTable& actions,
 	     ActivityRegistryPtr areg);
-    ~Schedule();
 
     enum State { Ready=0, Running, Latched };
 

@@ -17,12 +17,10 @@ $Id$
 #include "boost/shared_ptr.hpp"
 
 #include "FWCore/Framework/src/Worker.h"
+#include "FWCore/Framework/interface/Frameworkfwd.h"
 
 namespace edm
 {
-  class ModuleDescription;
-  class OutputModule;
-  class WorkerParams;
 
   class OutputWorker : public Worker
   {
@@ -37,7 +35,8 @@ namespace edm
     static std::auto_ptr<OutputModule> makeOne(const ModuleDescription& md,
 					const WorkerParams& wp);
   private:
-    virtual bool implDoWork(EventPrincipal& e, EventSetup const& c);
+    virtual bool implDoWork(EventPrincipal& e, EventSetup const& c,
+			    CurrentProcessingContext const* cpc);
 
     virtual void implBeginJob(EventSetup const&) ;
     virtual void implEndJob() ;

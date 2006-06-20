@@ -28,12 +28,13 @@ namespace edm {
   }
 
   bool 
-  OutputWorker::implDoWork(EventPrincipal& ep, EventSetup const&) {
+  OutputWorker::implDoWork(EventPrincipal& ep, EventSetup const&,
+			   CurrentProcessingContext const* cpc) {
     // EventSetup is not (yet) used. Should it be passed to the
     // OutputModule?
     bool rc = false;
 
-    mod_->writeEvent(ep,description());
+    mod_->writeEvent(ep,description(), cpc);
     rc=true;
     return rc;
   }

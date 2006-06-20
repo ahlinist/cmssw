@@ -28,13 +28,10 @@
 #include <vector>
 
 #include "FWCore/Framework/src/RunStopwatch.h"
+#include "FWCore/Framework/interface/Frameworkfwd.h"
 
 namespace edm
 {
-  class EventPrincipal;
-  class EventSetup;
-  class ActionTable;
-  class ActivityRegistry;
 
   class Path
   {

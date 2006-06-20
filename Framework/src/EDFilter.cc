@@ -5,17 +5,41 @@ $Id$
 ----------------------------------------------------------------------*/
 
 #include "FWCore/Framework/interface/EDFilter.h"
+#include "FWCore/Framework/interface/CurrentProcessingContext.h"
+#include "FWCore/Framework/src/CPCSentry.h"
 
 namespace edm
 {
   EDFilter::~EDFilter()
   { }
 
-  void EDFilter::beginJob(EventSetup const&) 
+  bool
+  EDFilter::doFilter(Event& e, EventSetup const& c,
+		     CurrentProcessingContext const* cpc)
+  {
+    detail::CPCSentry sentry(current_context_, cpc);
+    return this->filter(e, c);
+  }
+
+  void 
+  EDFilter::doBeginJob(EventSetup const& es) 
+  { 
+    this->beginJob(es);
+  }
+   
+  void EDFilter::doEndJob()
+  { 
+    this->endJob();
+  }
+
+  void 
+  EDFilter::beginJob(EventSetup const&) 
   { }
    
-  void EDFilter::endJob()
+  void 
+  EDFilter::endJob()
   { }
+  
    
 }
   

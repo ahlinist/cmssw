@@ -11,21 +11,29 @@ $Id$
 ----------------------------------------------------------------------*/
 
 #include "FWCore/Framework/interface/ProducerBase.h"
+#include "FWCore/Framework/interface/Frameworkfwd.h"
 
 namespace edm {
-  class Event;
-  class EventSetup;
-  class ParameterSet;
   class EDProducer : public ProducerBase {
   public:
     typedef EDProducer ModuleType;
 
     EDProducer ();
+    void doProduce(Event& e, EventSetup const& c,
+		   CurrentProcessingContext const* cpcp);
+		   
     virtual ~EDProducer();
-    virtual void produce(Event& e, EventSetup const& c) = 0;
+
     virtual void beginJob(EventSetup const&);
     virtual void endJob();
- 
+
+  protected:
+    CurrentProcessingContext const* currentContext() const;
+
+  private:
+    virtual void produce(Event& e, EventSetup const& c) = 0; 
+
+    CurrentProcessingContext const* current_context_;
   };
 }
 

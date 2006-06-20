@@ -14,11 +14,10 @@
 
 #include "FWCore/Framework/src/Worker.h"
 #include "FWCore/Framework/src/RunStopwatch.h"
+#include "FWCore/Framework/interface/Frameworkfwd.h"
 
 namespace edm
 {
-  class EventPrincipal;
-  class EventSetup;
 
   class WorkerInPath
   {
@@ -28,7 +27,8 @@ namespace edm
     explicit WorkerInPath(Worker*);
     WorkerInPath(Worker*, State state);
 
-    bool runWorker(EventPrincipal&, EventSetup const&);
+    bool runWorker(EventPrincipal&, EventSetup const&,
+		   CurrentProcessingContext const* cpc);
 
     std::pair<double,double> timeCpuReal() const {
       return std::pair<double,double>(stopwatch_->cpuTime(),stopwatch_->realTime());

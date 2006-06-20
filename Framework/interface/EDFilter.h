@@ -13,19 +13,27 @@ $Id$
 ----------------------------------------------------------------------*/
 
 #include "FWCore/Framework/interface/ProducerBase.h"
+#include "FWCore/Framework/interface/Frameworkfwd.h"
 
 namespace edm {
-  class Event;
-  class EventSetup;
-  class EDFilter : public ProducerBase {
-    public:
-      typedef EDFilter ModuleType;
 
-      EDFilter() : ProducerBase() {}
-      virtual ~EDFilter();
-      virtual bool filter(Event& e, EventSetup const& c) = 0;
-      virtual void beginJob(EventSetup const&) ;
-      virtual void endJob() ;
+  class EDFilter : public ProducerBase {
+  public:
+    typedef EDFilter ModuleType;
+    
+    EDFilter() : ProducerBase() {}
+    virtual ~EDFilter();
+    bool doFilter(Event& e, EventSetup const& c,
+		  CurrentProcessingContext const* cpc);
+    void doBeginJob(EventSetup const&) ;
+    void doEndJob() ;
+
+  private:    
+    virtual bool filter(Event& e, EventSetup const& c) = 0;
+    virtual void beginJob(EventSetup const&) ;
+    virtual void endJob() ;
+
+    CurrentProcessingContext const* current_context_;
   };
 }
 

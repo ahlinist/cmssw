@@ -62,7 +62,8 @@ namespace edm
     sigs_.postModuleSignal.connect(post);
   }
 
-  bool Worker::doWork(EventPrincipal& ep, EventSetup const& es)
+  bool Worker::doWork(EventPrincipal& ep, EventSetup const& es,
+		      CurrentProcessingContext const* cpc)
   {
     using namespace std;
     RunStopwatch stopwatch(stopwatch_);
@@ -100,7 +101,7 @@ namespace edm
 
 	CallPrePost cpp(sigs_,md_);
 
-	rc = implDoWork(ep,es);
+	rc = implDoWork(ep,es,cpc);
 
 	if(rc)
 	  {
