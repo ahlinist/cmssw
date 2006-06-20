@@ -21,6 +21,7 @@ class Application(Frame):
         funcInfoFrame.grid(column=0,row=0,sticky=E+W)
         summary =     'function name: '
         summary += '\n# of samples ending with function: '
+        summary += '\n# of samples containing func+desc: '
         summary += '\n% of samples ending with function: '
         summary += '\n% of samples containing func+desc: '
         funcInfoLabels = Label(funcInfoFrame,text=summary,justify=RIGHT)
@@ -69,6 +70,7 @@ class Application(Frame):
         self.callees.delete(0,self.callees.size())
         summary = funcInfo.name
         summary += '\n'+str(funcInfo.leafCount)
+        summary += '\n'+str(funcInfo.countOfFunctPlusChildWithRecursion)
         summary += '\n'+str(funcInfo.fractionInFunctionOnly*100)[:6]+"%"
         summary += '\n'+str(funcInfo.fractionInPath*100)[:6]+"%"
         self.funcInfo['text']=summary
