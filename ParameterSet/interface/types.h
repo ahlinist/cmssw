@@ -76,6 +76,9 @@ namespace edm
   bool  decode(edm::InputTag&, std::string const&);
   bool  encode(std::string &, edm::InputTag const&);
 
+  // VInputTag
+  bool  decode(std::vector<edm::InputTag>&, std::string const&);
+  bool  encode(std::string &, std::vector<edm::InputTag> const&);
 
   // ParameterSet
   bool  decode(ParameterSet &, std::string  const&);

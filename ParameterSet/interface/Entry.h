@@ -84,6 +84,10 @@ namespace edm {
     Entry(edm::InputTag const & tag, bool is_tracked);
     edm::InputTag getInputTag() const;
 
+    // InputTag
+    Entry(std::vector<edm::InputTag> const & vtag, bool is_tracked);
+    std::vector<edm::InputTag> getVInputTag() const;
+
     // ParameterSet
     Entry(ParameterSet const& val, bool is_tracked);
     ParameterSet getPSet() const;

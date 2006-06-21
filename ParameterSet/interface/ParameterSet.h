@@ -276,6 +276,17 @@ private:
 
 
   // ----------------------------------------------------------------------
+  // InputTag
+
+  template <>
+  inline
+  std::vector<edm::InputTag>
+  ParameterSet::getParameter<std::vector<edm::InputTag> >(std::string const& name) const {
+    return retrieve(name).getVInputTag();
+  }
+
+
+  // ----------------------------------------------------------------------
   // PSet, vPSet
   
   template<>
