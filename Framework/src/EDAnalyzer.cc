@@ -40,5 +40,12 @@ namespace edm
   void 
   EDAnalyzer::endJob()
   { }
+
+  CurrentProcessingContext const*
+  EDAnalyzer::currentContext() const
+  {
+    return current_context_;
+  }
+
 }
   

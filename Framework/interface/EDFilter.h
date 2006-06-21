@@ -28,6 +28,11 @@ namespace edm {
     void doBeginJob(EventSetup const&) ;
     void doEndJob() ;
 
+  protected:
+    // The returned pointer will be null unless the this is currently
+    // executing its event loop function ('filter').
+    CurrentProcessingContext const* currentContext() const;
+
   private:    
     virtual bool filter(Event& e, EventSetup const& c) = 0;
     virtual void beginJob(EventSetup const&) ;

@@ -39,6 +39,12 @@ namespace edm
   void 
   EDFilter::endJob()
   { }
+
+  CurrentProcessingContext const*
+  EDFilter::currentContext() const
+  {
+    return current_context_;
+  }
   
    
 }

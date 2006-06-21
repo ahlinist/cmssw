@@ -28,6 +28,8 @@ namespace edm {
     virtual void endJob();
 
   protected:
+    // The returned pointer will be null unless the this is currently
+    // executing its event loop function ('produce').
     CurrentProcessingContext const* currentContext() const;
 
   private:
