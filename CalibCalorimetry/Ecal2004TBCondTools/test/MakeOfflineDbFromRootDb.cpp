@@ -198,8 +198,7 @@ int main (int argc, char **argv)
   }
 
 
-  EcalADCToGeVConstant* agc = new EcalADCToGeVConstant(0.0375);
-
+  EcalADCToGeVConstant* agc = new EcalADCToGeVConstant(0.0375, 0.);
 
 //   H4DBEntry *myAlignmentEntry
 //     =myManager->getEntry("H4Alignment", 1,925);
@@ -448,7 +447,7 @@ int main (int argc, char **argv)
   cond::MetaData* metadata_svc = new cond::MetaData(contact, *loader);
   cout << "Done." << endl;
   
-try {
+  try {
     cout << "Making Connections..." << flush;
     session->connect(cond::ReadWriteCreate);
     metadata_svc->connect();
@@ -468,7 +467,6 @@ try {
     session->startUpdateTransaction();
     cout << "Done." << endl;
     
-    session->startUpdateTransaction();
     std::string gr_tok = grWriter.markWrite<EcalGainRatios>(gratio);//pool::Ref takes the ownership of ped1
     std::string ical_tok = icalWriter.markWrite<EcalIntercalibConstants>(ical);//pool::Ref takes the ownership of ped1
     
@@ -494,13 +492,13 @@ try {
     
     std::string grp_tok = grpWriter.markWrite<EcalWeightXtalGroups>(xtalGroups);
     
-    // iov for groups of xtals
+    //    iov for groups of xtals
     cond::IOV* grp_iov = new cond::IOV;
     grp_iov->iov.insert(std::make_pair(edm::IOVSyncValue::endOfTime().eventID().run(),grp_tok));
     std::string grp_iov_Token = iovWriter.markWrite<cond::IOV>(grp_iov);
     std::cout << "Map of xtals put in the DB with IoV" << std::endl; 
 
-    // create and store IOV for EcalTBWeights
+    //    create and store IOV for EcalTBWeights
     std::string tbwgt_tok = tbwgtWriter.markWrite<EcalTBWeights>(tbwgt);
     cond::IOV* tbwgt_iov =new cond::IOV;
     tbwgt_iov->iov.insert(std::make_pair(edm::IOVSyncValue::endOfTime().eventID().run(),tbwgt_tok));
