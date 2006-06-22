@@ -9,8 +9,11 @@
 #include "CLHEP/HepMC/ReadHepMC.h"
 #include "CLHEP/HepMC/GenEvent.h"
 
+#include "DataFormats/Common/interface/Ref.h"
 
 namespace edm {
+
+   
 
   class HepMCProduct {
   public:
@@ -32,5 +35,34 @@ namespace edm {
     HepMC::GenEvent * evt_;
   };
 
+  //This allows edm::Refs to work with HepMCProduct
+  namespace refhelper {
+      
+    template<> 
+    struct FindTrait<edm::HepMCProduct, HepMC::GenParticle> {
+      struct Find : public std::binary_function<edm::HepMCProduct const&, int, HepMC::GenParticle const*> {
+	typedef Find self;
+	self::result_type operator()(self::first_argument_type iContainer,
+				     self::second_argument_type iBarCode) {
+	   return iContainer.getHepMCData().barcode_to_particle(iBarCode);
+	}
+      };
+      typedef Find value;
+    };
+      
+    template<> 
+    struct FindTrait<edm::HepMCProduct, HepMC::GenVertex> {
+      struct Find : public std::binary_function<edm::HepMCProduct const&, int, HepMC::GenVertex const*> {
+	typedef Find self;
+	self::result_type operator()(self::first_argument_type iContainer,
+				     self::second_argument_type iBarCode) {
+	   return iContainer.getHepMCData().barcode_to_vertex(iBarCode);
+	}
+      };
+      typedef Find value;
+    };
+      
+  }
+   
 }
 #endif
