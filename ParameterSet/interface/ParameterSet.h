@@ -276,7 +276,7 @@ private:
 
 
   // ----------------------------------------------------------------------
-  // InputTag
+  // VInputTag
 
   template <>
   inline
@@ -457,6 +457,62 @@ private:
   ParameterSet::getUntrackedParameter<std::vector<std::string> >(std::string const& name) const {
     return getEntryPointerOrThrow_(name)->getVString();
   }
+
+  // ----------------------------------------------------------------------
+  //  FileInPath
+
+  template<>
+  inline
+  edm::FileInPath
+  ParameterSet::getUntrackedParameter<edm::FileInPath>(std::string const& name, edm::FileInPath const& defaultValue) const {
+    Entry const* entryPtr = retrieveUntracked(name);
+    return entryPtr == 0 ? defaultValue : entryPtr->getFileInPath();
+  }
+
+  template<>
+  inline
+  edm::FileInPath
+  ParameterSet::getUntrackedParameter<edm::FileInPath>(std::string const& name) const {
+    return getEntryPointerOrThrow_(name)->getFileInPath();
+  }
+
+
+  // ----------------------------------------------------------------------
+  // InputTag, VInputTag
+
+  template<>
+  inline
+  edm::InputTag
+  ParameterSet::getUntrackedParameter<edm::InputTag>(std::string const& name, edm::InputTag const& defaultValue) const {
+    Entry const* entryPtr = retrieveUntracked(name);
+    return entryPtr == 0 ? defaultValue : entryPtr->getInputTag();
+  }
+
+  template<>
+  inline
+  edm::InputTag
+  ParameterSet::getUntrackedParameter<edm::InputTag>(std::string const& name) const {
+    return getEntryPointerOrThrow_(name)->getInputTag();
+  }
+
+  template<>
+  inline
+  std::vector<edm::InputTag>
+  ParameterSet::getUntrackedParameter<std::vector<edm::InputTag> >(std::string const& name, 
+                                      std::vector<edm::InputTag> const& defaultValue) const 
+  {
+    Entry const* entryPtr = retrieveUntracked(name);
+    return entryPtr == 0 ? defaultValue : entryPtr->getVInputTag();
+  }
+
+
+  template<>
+  inline
+  std::vector<edm::InputTag>
+  ParameterSet::getUntrackedParameter<std::vector<edm::InputTag> >(std::string const& name) const {
+    return getEntryPointerOrThrow_(name)->getVInputTag();
+  }
+
 
   
   // ----------------------------------------------------------------------
