@@ -122,7 +122,7 @@ private:
 
     branchDict_[bk] = slotNumber;
 
-    productDict_[g->productDescription().productID_] = slotNumber;
+    productDict_[g->productDescription().productID()] = slotNumber;
 
     //cerr << "addGroup DEBUG 4---> " << bk.friendlyClassName_ << endl;
 

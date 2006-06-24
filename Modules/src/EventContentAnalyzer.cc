@@ -297,7 +297,7 @@ EventContentAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
       modLabel = (*itProv)->moduleLabel();
       //if(modLabel.empty())  modLabel = std::string("||");
 
-      instanceName = (*itProv)->product.productInstanceName();
+      instanceName = (*itProv)->productInstanceName();
       //if(instanceName.empty())  instanceName = std::string("||");
       
       std::cout << indentation_ << friendlyName
