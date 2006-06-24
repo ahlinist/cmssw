@@ -142,6 +142,6 @@ void testGenericHandle::getbyLabelTest() {
     CPPUNIT_ASSERT("Threw exception unexpectedly" == 0);
   }
   CPPUNIT_ASSERT(h.isValid());
-  CPPUNIT_ASSERT(h.provenance()->product.module.moduleLabel_ == label);
+  CPPUNIT_ASSERT(h.provenance()->moduleLabel() == label);
 }
 

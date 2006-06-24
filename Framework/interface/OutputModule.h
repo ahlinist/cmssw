@@ -71,7 +71,7 @@ namespace edm {
 	name_(proc_name) {}
       
       virtual bool doMatch(const edm::ProvenanceAccess& p) const {
-	return p.product().module.processName_==name_;
+	return p.product().processName()==name_;
       }
     private:
       std::string name_;

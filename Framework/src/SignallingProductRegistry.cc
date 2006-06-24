@@ -47,7 +47,7 @@ void SignallingProductRegistry::addCalled(BranchDescription const& iProd, bool i
       throw cms::Exception("CircularReference")
       <<"Attempted to register the production of "<<iProd.fullClassName_
       <<" from module "
-      <<iProd.module.moduleLabel_
+      <<iProd.moduleLabel()
       <<" with product instance \""
       <<iProd.productInstanceName_
       <<"\"\n"

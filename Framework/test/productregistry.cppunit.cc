@@ -69,7 +69,7 @@ namespace {
          edm::ModuleDescription modDesc;
          modDesc.moduleLabel_ = name_;
          edm::BranchDescription prod(iDesc);
-         prod.productInstanceName_ = prod.productInstanceName_+"-"+prod.module.moduleLabel_;
+         prod.productInstanceName_ = prod.productInstanceName_+"-"+prod.moduleLabel();
          prod.module = modDesc;
          reg_->addProduct(prod);
       }

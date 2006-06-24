@@ -158,7 +158,7 @@ MessageLogger::postEventProcessing(const Event&, const EventSetup&)
 void
 MessageLogger::preModule(const ModuleDescription& desc)
 {
-  // LogInfo("preModule") << "Module:" << desc.moduleLabel_;
+  // LogInfo("preModule") << "Module:" << desc.moduleLabel();
   curr_module_ = desc.moduleName_;
   curr_module_ += ":";
   curr_module_ += desc.moduleLabel_;
