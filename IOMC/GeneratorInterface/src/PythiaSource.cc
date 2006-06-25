@@ -5,7 +5,9 @@
  *  Filip Moorgat & Hector Naves 
  *  26/10/05
  * 
- * Patrick Janot : Add the PYTHIA card reading
+ *  Patrick Janot : added the PYTHIA card reading
+ *
+ *  Sasha Nikitenko : added single/double particle gun
  */
 
 
@@ -14,6 +16,8 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "FWCore/Utilities/interface/RandomNumberGenerator.h"
+#include "CLHEP/Random/JamesRandom.h"
+#include "CLHEP/Random/RandFlat.h"
 
 #include <iostream>
 #include "time.h"
@@ -32,6 +36,21 @@ extern "C" {
   void PYGIVE(const char*,int length);
 }
 
+#define PY1ENT py1ent_
+extern "C" {
+  void PY1ENT(int& ip, int& kf, double& pe, double& the, double& phi);
+}
+
+#define PYMASS pymass_
+extern "C" {
+  double PYMASS(int& kf);
+}
+
+#define PYEXEC pyexec_
+extern "C" {
+  void PYEXEC();
+}
+
 HepMC::ConvertHEPEVT conv;
 // ***********************
 
@@ -44,12 +63,14 @@ PythiaSource::PythiaSource( const ParameterSet & pset,
 			    InputSourceDescription const& desc ) :
   GeneratedInputSource(pset, desc), evt(0), 
   pythiaPylistVerbosity_ (pset.getUntrackedParameter<int>("pythiaPylistVerbosity",0)),
-  pythiaHepMCVerbosity_ (pset.getUntrackedParameter<bool>("pythiaHepMCVerbosit\
-y",false)),
-  maxEventsToPrint_ (pset.getUntrackedParameter<int>("maxEventsToPrint",0))
+  pythiaHepMCVerbosity_ (pset.getUntrackedParameter<bool>("pythiaHepMCVerbosity",false)),
+  maxEventsToPrint_ (pset.getUntrackedParameter<int>("maxEventsToPrint",1))
+  
 {
   
   cout << "PythiaSource: initializing Pythia. " << endl;
+  
+ 
   
   // PYLIST Verbosity Level
   // Valid PYLIST arguments are: 1, 2, 3, 5, 7, 11, 12, 13
@@ -57,14 +78,42 @@ y",false)),
   cout << "Pythia PYLIST verbosity level = " << pythiaPylistVerbosity_ << endl;
   
   // HepMC event verbosity Level
-  pythiaHepMCVerbosity_ = pset.getUntrackedParameter<bool>("pythiaHepMCVerbosi\
-ty",false);
+  pythiaHepMCVerbosity_ = pset.getUntrackedParameter<bool>("pythiaHepMCVerbosity",false);
   cout << "Pythia HepMC verbosity = " << pythiaHepMCVerbosity_ << endl; 
 
   //Max number of events printed on verbosity level 
   maxEventsToPrint_ = pset.getUntrackedParameter<int>("maxEventsToPrint",0);
   cout << "Number of events to be printed = " << maxEventsToPrint_ << endl;
 
+  
+  particleID = pset.getUntrackedParameter<int>("ParticleID", 0);
+  if(particleID) {
+
+    cout <<" Particle ID = " << particleID << endl; 
+
+    doubleParticle = pset.getUntrackedParameter<bool>("DoubleParticle",true);
+    cout <<" double back-to-back " << doubleParticle << endl; 
+
+    ptmin = pset.getUntrackedParameter<double>("Ptmin",20.);
+    ptmax = pset.getUntrackedParameter<double>("Ptmax",420.);
+    cout <<" ptmin = " << ptmin <<" ptmax = " << ptmax << endl;
+
+    etamin = pset.getUntrackedParameter<double>("Etamin",0.);
+    etamax = pset.getUntrackedParameter<double>("Etamax",2.2);
+    cout <<" etamin = " << etamin <<" etamax = " << etamax << endl;
+
+    phimin = pset.getUntrackedParameter<double>("Phimin",0.);
+    phimax = pset.getUntrackedParameter<double>("Phimax",360.);
+    cout <<" phimin = " << phimin <<" phimax = " << phimax << endl;
+
+    Service<RandomNumberGenerator> rng;
+    long seed = (long)(rng->mySeed());
+    cout << " seed= " << seed << endl ;
+    fRandomEngine = new HepJamesRandom(seed) ;
+    fRandomGenerator = new RandFlat(fRandomEngine) ;
+    cout << "Internal BaseFlatGunSource is initialzed" << endl ;
+ 
+  }
   // Set PYTHIA parameters in a single ParameterSet
   ParameterSet pythia_params = 
     pset.getParameter<ParameterSet>("PythiaParameters") ;
@@ -113,7 +162,13 @@ ty",false);
   sRandomSet <<"MRPY(1)="<<seed;
   call_pygive(sRandomSet.str());
 
-  call_pyinit( "CMS", "p", "p", 14000. );
+  if(particleID) 
+    {
+      call_pyinit( "NONE", "p", "p", 14000. );
+    } else {
+      call_pyinit( "CMS", "p", "p", 14000. );
+    }
+
   cout << endl; // Stetically add for the output
   //********                                      
   
@@ -139,16 +194,54 @@ bool PythiaSource::produce(Event & e) {
 
     //********                                         
     //
-    call_pyevnt();      // generate one event with Pythia
+    if(particleID) 
+      {
+	int ip = 1;
+	double pt  = fRandomGenerator->fire(ptmin, ptmax);
+	double eta = fRandomGenerator->fire(etamin, etamax);
+	double the = 2.*atan(exp(-eta));
+	double phi = fRandomGenerator->fire(phimin, phimax);
+	double pmass = PYMASS(particleID);
+	double pe = pt/sin(the);
+	double ee = sqrt(pe*pe+pmass*pmass);
+
+	/*
+	cout <<" pt = " << pt 
+	     <<" eta = " << eta 
+	     <<" the = " << the 
+	     <<" pe = " << pe 
+	     <<" phi = " << phi 
+	     <<" pmass = " << pmass 
+	     <<" ee = " << ee << endl;
+	*/
+
+	phi = phi * (3.1415927/180.);
+
+	PY1ENT(ip, particleID, ee, the, phi);
+
+	if(doubleParticle)
+	  {
+	    ip = ip + 1;
+	    int particleID2 = -1 * particleID;
+	    the = 2.*atan(exp(eta));
+	    phi  = phi + 3.1415927;
+	    if (phi > 2.* 3.1415927) {phi = phi - 2.* 3.1415927;}         
+	    PY1ENT(ip, particleID2, ee, the, phi);
+	  }
+	PYEXEC();
+      } else {
+	call_pyevnt();      // generate one event with Pythia
+      }
+
     call_pyhepc( 1 );
     
     HepMC::GenEvent* evt = conv.getGenEventfromHEPEVT();
     evt->set_signal_process_id(pypars.msti[0]);
     evt->set_event_number(numberEventsInRun() - remainingEvents() - 1);
-
+    
 
     //******** Verbosity ********
-    //
+    
     if(event() <= maxEventsToPrint_ &&
        (pythiaPylistVerbosity_ || pythiaHepMCVerbosity_)) {
 
@@ -164,12 +257,10 @@ bool PythiaSource::produce(Event & e) {
 	evt->print();
       }
     }
-
+    
+    
     //evt = reader_->fillCurrentEventData(); 
     //********                                      
-
-
-
 
     if(evt)  bare_product->addHepMCData(evt );
 
