@@ -5,3 +5,4 @@
 <use name=FWCore/ParameterSet>
 <use name=Foundation/PluginManager>
 <use name=boost>
+<use name=sigcpp>
