@@ -20,6 +20,13 @@
 #include <string>
 #include "CLHEP/HepMC/GenEvent.h"
 
+
+namespace CLHEP
+{
+  class RandFlat ;
+  class HepRandomEngine;
+}
+
 namespace edm
 {
   class PythiaSource : public GeneratedInputSource {
@@ -42,7 +49,7 @@ namespace edm
     void clear();
     
     HepMC::GenEvent  *evt;
-
+    
     /// Pythia PYLIST Verbosity flag
     unsigned int pythiaPylistVerbosity_;
     /// HepMC verbosity flag
@@ -50,6 +57,17 @@ namespace edm
     /// Events to print if verbosity
     unsigned int maxEventsToPrint_;    
     
+ 
+    // for single particle generation in pythia
+    int    particleID;
+    bool   doubleParticle;
+    double ptmin, ptmax;
+    double etamin, etamax;
+    double phimin, phimax;
+    
+    HepRandomEngine* fRandomEngine;
+    RandFlat*        fRandomGenerator; 
+
   };
 } 
 
