@@ -111,11 +111,11 @@ namespace edm {
     const_iterator end() const { return groups_.end(); }
 
     ProcessNameConstIterator beginProcess() const {
-      return aux_.process_history_.begin();
+      return aux_.processHistory().begin();
     }
 
     ProcessNameConstIterator endProcess() const {
-      return aux_.process_history_.end();
+      return aux_.processHistory().end();
     }
 
     ProcessNameList const& processHistory() const;    
