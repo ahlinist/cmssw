@@ -1,4 +1,5 @@
 <flags SEAL_PLUGIN_NAME="PhysicsToolsRecoExamples">
+<use name=PhysicsTools/RecoAlgos>
 <use name=TrackingTools/GeomPropagators>
 <use name=TrackingTools/TrajectoryState>
 <use name=DataFormats/TrajectoryState>
@@ -19,6 +20,7 @@
 <use name=root>
 <export>
   <lib name=PhysicsToolsRecoExamples>
+  <use name=PhysicsTools/RecoAlgos>
   <use name=TrackingTools/GeomPropagators>
   <use name=TrackingTools/TrajectoryState>
   <use name=DataFormats/TrajectoryState>
