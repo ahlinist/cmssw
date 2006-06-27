@@ -31,7 +31,7 @@
   <Vector name="WaferZ"        type="numeric" nEntries="2">
    [tidmodpar:ActiveZDS],     -[tidmodpar:ActiveZDS] </Vector>
   <Vector name="WaferRotation" type="string" nEntries="2">
-    tidmodpar:NULL,  tidmodpar:G100</Vector>
+    tidmodpar:RFI1,  tidmodpar:G100</Vector>
   <String name="HybridName"         value="tidmodule1:TIDModule1Hybrid"/>
   <Numeric name="HybridHeight"      value="[tidmodpar:HybridHeight]"/>
   <Vector name="HybridZ"       type="numeric" nEntries="2">
