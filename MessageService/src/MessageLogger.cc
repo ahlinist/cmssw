@@ -93,6 +93,12 @@ MessageLogger( ParameterSet const & iPS
   iRegistry.watchPostBeginJob(this,&MessageLogger::postBeginJob);
   iRegistry.watchPostEndJob(this,&MessageLogger::postEndJob);
 
+  iRegistry.watchPreModuleConstruction(this,&MessageLogger::preModuleConstruction);
+  iRegistry.watchPostModuleConstruction(this,&MessageLogger::postModuleConstruction);
+
+   iRegistry.watchPreSourceConstruction(this,&MessageLogger::preSourceConstruction);
+   iRegistry.watchPostSourceConstruction(this,&MessageLogger::postSourceConstruction);
+
   iRegistry.watchPreProcessEvent(this,&MessageLogger::preEventProcessing);
   iRegistry.watchPostProcessEvent(this,&MessageLogger::postEventProcessing);
 
