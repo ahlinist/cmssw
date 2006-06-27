@@ -9,7 +9,7 @@ void CgiReader::read_form(std::multimap<std::string, std::string> &form_info)
 
   std::vector<cgicc::FormEntry> entries = reader.getElements();
 
-  std::cout << "Trying to read a form of " << entries.size() << " elements!" << std::endl;
+  //  std::cout << "Trying to read a form of " << entries.size() << " elements!" << std::endl;
 
   form_info.clear();
 
@@ -18,7 +18,7 @@ void CgiReader::read_form(std::multimap<std::string, std::string> &form_info)
       std::string name  = entries[i].getName();
       std::string value = entries[i].getValue();
 
-      std::cout << "Read " << name << " = " << value << std::endl;
+      //      std::cout << "Read " << name << " = " << value << std::endl;
 
       std::pair<std::string, std::string> map_entry(name, value);
       form_info.insert(map_entry);
