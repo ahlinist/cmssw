@@ -85,7 +85,7 @@
   <Vector name="WaferZ"        type="numeric" nEntries="1">
     [tidmodpar:ActiveZSS] </Vector>
   <Vector name="WaferRotation" type="string" nEntries="1">
-    tidmodpar:R180</Vector>
+    tidmodpar:RFI2</Vector>
   <String name="HybridName"         value="tidmodule2:TIDModule2Hybrid"/>
   <Numeric name="HybridHeight"      value="[tidmodpar:HybridHeight]"/>
   <Vector name="HybridZ"       type="numeric" nEntries="1">
