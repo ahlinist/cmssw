@@ -17,7 +17,7 @@ ConeIsolationAlgorithm::ConeIsolationAlgorithm()
   pt_min_leadTrack = 6.;
   dZ_vertex        = 0.2;
   n_tracks_isolation_ring = 0;
-
+  useVertexConstrain_= true;
 
 }
 
@@ -29,7 +29,8 @@ ConeIsolationAlgorithm::ConeIsolationAlgorithm(const ParameterSet & parameters)
   m_cutMaxTIP        = parameters.getParameter<double>("MaximumTransverseImpactParameter");
   m_cutMinPt         = parameters.getParameter<double>("MinimumTransverseMomentum");
   m_cutMaxChiSquared = parameters.getParameter<double>("MaximumChiSquared");
-  dZ_vertex          = parameters.getParameter<double>("DeltaZetTrackVertex"); 
+  dZ_vertex          = parameters.getParameter<double>("DeltaZetTrackVertex");//To be modified
+  useVertexConstrain_ = parameters.getParameter<bool>("useVertex");
 
   matching_cone      = parameters.getParameter<double>("MatchingCone");
   signal_cone        = parameters.getParameter<double>("SignalCone");
@@ -57,17 +58,29 @@ pair<JetTag,IsolatedTauTagInfo> ConeIsolationAlgorithm::tag(const  JetTracksAsso
    {
      if((*it)->pt() > m_cutMinPt &&
 	(*it)->normalizedChi2() < m_cutMaxChiSquared &&
-	(*it)->d0() < m_cutMaxTIP &&
-	fabs((*it)->dz() - z_pv) < dZ_vertex)
-       myTracks.push_back(*it);
+	(*it)->d0() < m_cutMaxTIP)
+       {
+	 if(useVertexConstrain_) {
+	   if(fabs((*it)->dz() - z_pv) < dZ_vertex)
+	     myTracks.push_back(*it);
+	 }else{
+	   myTracks.push_back(*it);
+	 }
+       }
    }
  IsolatedTauTagInfo resultExtended(myTracks);
  
  //now I can use it for the discriminator;
- math::XYZVector jetDir(jetTracks->key->px(),jetTracks->key->py(),jetTracks->key->pz());
-double discriminator =  resultExtended.discriminator(jetDir, matching_cone, signal_cone, isolation_cone, pt_min_leadTrack, pt_min_isolation,  n_tracks_isolation_ring); 
- JetTag resultBase(discriminator,jetTracks);
-
+ math::XYZVector jetDir(jetTracks->key->px(),jetTracks->key->py(),jetTracks->key->pz());   
+ double discriminator = 0;
+ if(useVertexConstrain_) {
+   //In this case all the selected tracks comes from the same vertex, so no need to pass the dZ_vertex requirement to the discriminator 
+   discriminator =  resultExtended.discriminator(jetDir, matching_cone, signal_cone, isolation_cone, pt_min_leadTrack, pt_min_isolation,  n_tracks_isolation_ring); 
+ }else{
+   //In this case the dZ_vertex is used to associate the tracks to the Z_imp parameter of the Leading Track
+   discriminator =  resultExtended.discriminator(jetDir, matching_cone, signal_cone, isolation_cone, pt_min_leadTrack, pt_min_isolation,  n_tracks_isolation_ring, dZ_vertex); 
+ }
+   JetTag resultBase(discriminator,jetTracks);
 
   return pair<JetTag,IsolatedTauTagInfo> (resultBase,resultExtended); 
 }
