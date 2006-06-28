@@ -12,7 +12,7 @@
 int CMSCGEN::initialize(float Emin_in, float Emax_in, float thetamin_in, float thetamax_in, int RanSeed) 
 {
   //set seed for Random Generator (seed can be controled by config-file), P.Biallass 2006
-  RanGen2.SetSeed2(RanSeed,12345);
+  RanGen2.SetSeed(RanSeed);
 
   // units: GeV
 

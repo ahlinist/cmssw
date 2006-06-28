@@ -13,7 +13,7 @@ void CosmicMuonGenerator::runCMG(){
 void CosmicMuonGenerator::initialize(){
   checkIn();
   if (NumberOfEvents > 0){
-    RanGen.SetSeed2(RanSeed,54321); //set seed for Random Generator (seed can be controled by config-file)
+    RanGen.SetSeed(RanSeed); //set seed for Random Generator (seed can be controled by config-file)
     // set up "surface geometry" dimensions
     double RadiusTargetEff = RadiusTarget;
     double Z_DistTargetEff = Z_DistTarget;
