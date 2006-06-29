@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrea Rizzi
 //         Created:  Thu Apr  6 09:56:23 CEST 2006
-// $Id: ConeIsolation.cc,v 1.2 2006/06/13 17:56:25 gennai Exp $
+// $Id: ConeIsolation.cc,v 1.3 2006/06/14 17:38:04 gennai Exp $
 //
 //
 
@@ -34,8 +34,8 @@
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/BTauReco/interface/IsolatedTauTagInfo.h"
 
-
-
+#include <DataFormats/VertexReco/interface/Vertex.h>
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 //#include "MagneticField/Engine/interface/MagneticField.h"
 //#include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
@@ -52,11 +52,10 @@
 ConeIsolation::ConeIsolation(const edm::ParameterSet& iConfig)
 {
   jetTrackSrc = iConfig.getParameter<string>("JetTrackSrc");
+  vertexSrc = iConfig.getParameter<string>("vertexSrc");
   
   m_algo = new ConeIsolationAlgorithm(iConfig);
   
-
-
    produces<reco::JetTagCollection>();  //Several producer so I put a label
    produces<reco::IsolatedTauTagInfoCollection>();       //Only one producer
 
@@ -78,6 +77,7 @@ void
 ConeIsolation::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
    using namespace edm;
+   //Get jets with tracks
    Handle<reco::JetTracksAssociationCollection> jetTracksAssociation;
    iEvent.getByLabel(jetTrackSrc,jetTracksAssociation);
    
@@ -85,22 +85,34 @@ ConeIsolation::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
    reco::IsolatedTauTagInfoCollection * extCollection = new reco::IsolatedTauTagInfoCollection();
 
-
-
-  Vertex::Error e;
-  e(0,0)=1;
-  e(1,1)=1;
-  e(2,2)=1;
-  Vertex::Point p(0,0,0);
-  
-  Vertex dummyPV(p,e,1,1,1);
+   Vertex::Error e;
+   e(0,0)=1;
+   e(1,1)=1;
+   e(2,2)=1;
+   Vertex::Point p(0,0,0);
+   Vertex myPV(p,e,1,1,1);
+   //Get pixel vertices
+   Handle<reco::VertexCollection> vertices;
+   iEvent.getByLabel(vertexSrc,"pixel",vertices);
+   const reco::VertexCollection vertCollection = *(vertices.product());
+   reco::VertexCollection::const_iterator ci = vertCollection.begin();
+   int i=0;
+   if(!vertCollection.size()) return;
+   for(;ci!=vertCollection.end();ci++){
+      edm::LogInfo("ConeIsolation::produce()")
+	<<" Vertex: "<<i<<" ("
+	 <<ci->x()<<", "
+	 <<ci->y()<<", "
+	 <<ci->z()<<")"<<endl;
+     myPV = *ci;
+   }
    
   //cout << "here-0.5" << jetTracksAssociation <<endl;     
   JetTracksAssociationCollection::const_iterator it = jetTracksAssociation->begin();
   for(; it != jetTracksAssociation->end(); it++)
      {
        int i = it->key.index();
-       pair<JetTag,IsolatedTauTagInfo> myPair =m_algo->tag(edm::Ref<JetTracksAssociationCollection>(jetTracksAssociation,i),dummyPV); 
+       pair<JetTag,IsolatedTauTagInfo> myPair =m_algo->tag(edm::Ref<JetTracksAssociationCollection>(jetTracksAssociation,i),myPV); 
        baseCollection->push_back(myPair.first);    
        //still need to set the JetTag
        extCollection->push_back(myPair.second);
