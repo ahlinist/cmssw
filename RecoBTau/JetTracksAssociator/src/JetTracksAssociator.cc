@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrea Rizzi
 //         Created:  Wed Apr 12 11:12:49 CEST 2006
-// $Id: JetTracksAssociator.cc,v 1.5 2006/05/31 17:48:42 fwyzard Exp $
+// $Id: JetTracksAssociator.cc,v 1.6 2006/06/01 17:28:21 fwyzard Exp $
 //
 //
 
@@ -120,8 +120,8 @@ JetTracksAssociationCollection * JetTracksAssociator::associate( const edm::Hand
   //loop on jets and associate
   for (size_t j = 0; j < jets->size(); j++)
   {
-    cout << boolalpha;
-    cout << fixed;
+    //cout << boolalpha;
+    //cout << fixed;
     cout << "->   Jet " << setw(2) << j << " pT: " << setprecision(2) << setw(6) << (*jets)[j].pt() << " eta: " << setprecision(2) << setw(5) << (*jets)[j].eta() << " phi: " << setprecision(2) << setw(5) << (*jets)[j].phi() << endl;
     for (size_t t=0; t < tracks->size() ; t++) {
       double delta  = ROOT::Math::VectorUtil::DeltaR((*jets)[j].p4().Vect(), (*tracks)[t].momentum());
