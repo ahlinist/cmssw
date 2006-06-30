@@ -1,0 +1,12 @@
+<use name=FWCore/ParameterSet>
+<use name=DataFormats/TrackReco>
+<use name=root>
+<use name=clhep>
+<export>
+   <lib name=AlignmentCSA06AlignmentAlgorithm>
+   <use name=FWCore/ParameterSet>
+   <use name=DataFormats/TrackReco>
+   <use name=root>
+   <use name=clhep>
+</export>
+
