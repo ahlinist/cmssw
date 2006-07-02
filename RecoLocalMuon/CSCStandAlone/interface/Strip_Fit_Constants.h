@@ -21,6 +21,7 @@ class Strip_Calib_Store{
 
  void add_gain(unsigned strips,float *gain){
    float ave,n;
+   
    n=0.0;
    ave=0.0; 
    for(unsigned i=0;i<strips;i++){
@@ -293,34 +294,44 @@ class Strip_Fit_Constants{
      }else{
        std::cout << chname << " average xtalk_slope_right     " << xsrtmp2[2] << std::endl;
      }
-
-  //  Fill Auto Correlation Matrix
+     //  Fill Auto Correlation Matrix                                              
      float xsigtmp[480];
      float xsigtmp2[480];
      int nsig=0;
+     int cconv[12]={33,34,44,35,45,55,46,56,66,57,67,77};
+     //if(stat!=1){for(int l=0;l<12;l++)cconv[l]=l+1;}
      for(int isg=0;isg<12;isg++){
-       char buf[7];
-       sprintf(buf,"elem%d",isg+1);
+       char buf[9];
+       // if(stat==1){
+         sprintf(buf,"elem%d",cconv[isg]);
+	 // }else{
+	 // sprintf(buf,"elem%d",isg+1);
+	 //}
        cdb.cdb_check("CSC_slice",chname,chid,buf,&c_ver);
        if(c_ver>0)nsig=nsig+1;
+       //printf(" nsig %d \n",nsig);
      }
      for(int isg=0;isg<12;isg++){
        if(nsig==12){
-         char buf[7];
-         sprintf(buf,"elem%d",isg+1);
+         char buf[9];
+         //if(stat==1){
+           sprintf(buf,"elem%d",cconv[isg]);
+	   //}else{
+           //sprintf(buf,"elem%d",isg+1);
+	   //}
          cdb.cdb_check("CSC_slice",chname,chid,buf,&c_ver);
          ver=c_ver;
          cdb.cdb_read("CSC_slice",chname,chid,buf,strips,ver,
-		      &c_ver,&ret_ver,&ret_siz,xsigtmp,&ret_run);
+                      &c_ver,&ret_ver,&ret_siz,xsigtmp,&ret_run);
          for(int k=0;k<480;k++)xsigtmp2[k]=xsigtmp[k];
        }else{
-	 sig_ave(isg,xsigtmp2);
+         sig_ave(isg,xsigtmp2);
        }
        chmb_scd[this_index].add_sig(isg,strips,xsigtmp2);
        if(nsig==12){
-	 std::cout << chname << " calib   sig elem" << isg+1 <<" " <<xsigtmp2[2] << std::endl;
+	 std::cout << chname << " calib   sig elem" << cconv[isg] <<" " <<xsigtmp2[2] << std::endl;
        }else{
-	 std::cout << chname << " average sig elem" << isg+1 <<" "<<xsigtmp2[2] << std::endl;
+	 std::cout << chname << " average sig elem" << cconv[isg] <<" "<<xsigtmp2[2] << std::endl;
        }
      }
  }
