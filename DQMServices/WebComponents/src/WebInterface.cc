@@ -20,6 +20,9 @@ void WebInterface::handleRequest(xgi::Input * in, xgi::Output * out ) throw (xgi
 {
   handleStandardRequest(in, out);
   handleCustomRequest(in, out);
+
+  // dispatch any messages:
+  if (msg_dispatcher.hasAnyMessages()) msg_dispatcher.dispatchMessages(out);
 }
 
 void WebInterface::Default(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception)
@@ -50,8 +53,7 @@ void WebInterface::handleStandardRequest(xgi::Input * in, xgi::Output * out ) th
   if (requestID == "Subscribe")    Subscribe(in, out);
   if (requestID == "Unsubscribe")  Unsubscribe(in, out);
   if (requestID == "ContentsOpen") ContentsOpen(in, out);
-  if (requestID == "Draw")      DrawGif(in, out);
-
+  if (requestID == "Draw")         DrawGif(in, out);
 }
 
 void WebInterface::Configure(xgi::Input * in, xgi::Output * out) throw (xgi::exception::Exception)
@@ -229,22 +231,12 @@ void WebInterface::printNavigatorXML(std::string current, xgi::Output * out)
     
     std::cout << "<current>" << current << "</current>" << endl;
     
-    //    ContentReader reader(*mui_p);
-    
-    //    std::list<std::string>::iterator it;
-    
-    //    std::list<std::string> open_l;
-    //    reader.give_subdirs(current, open_l, "SuperUser");
     for (it = open_l.begin(); it != open_l.end(); it++)
     std::cout << "<open>" << *it << "</open>" << endl;
     
-    //   std::list<std::string> subscribe_l;
-    //    reader.give_files(current, subscribe_l, false);
     for (it = subscribe_l.begin(); it != subscribe_l.end(); it++)
     std::cout << "<subscribe>" << *it << "</subscribe>" << endl;
     
-    //    std::list<std::string> unsubscribe_l;
-    //    reader.give_files(current, unsubscribe_l, true);
     for (it = unsubscribe_l.begin(); it != unsubscribe_l.end(); it++)
     std::cout << "<unsubscribe>" << *it << "</unsubscribe>" << endl;
     
@@ -376,4 +368,11 @@ void WebInterface::DrawGif(xgi::Input * in, xgi::Output * out) throw (xgi::excep
   *out << "<fileURL>" << std::endl;
   *out << getContextURL() + "/temporary/" + id + ".gif" << std::endl;
   *out << "</fileURL>" << std::endl;
+}
+
+
+void WebInterface::sendMessage(std::string title, std::string text, MessageType type)
+{
+  Message * msg = new Message(title, text, type);
+  msg_dispatcher.add(msg);
 }
