@@ -12,6 +12,7 @@
 #include "DQMServices/UI/interface/MonitorUIRoot.h"
 
 #include "DQMServices/WebComponents/interface/WebPage.h"
+#include "DQMServices/WebComponents/interface/MessageDispatcher.h"
 
 class WebInterface
 {
@@ -21,6 +22,8 @@ class WebInterface
   std::string exeURL;
   std::string appURL;
   std::multimap<std::string, std::string> conf_map;
+
+  MessageDispatcher msg_dispatcher;
 
  protected:
 
@@ -51,6 +54,7 @@ class WebInterface
 
   void handleRequest        (xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception);
   void handleStandardRequest(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception);
+
   virtual void handleCustomRequest(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception)
     {
     };
@@ -65,17 +69,25 @@ class WebInterface
   void Open(xgi::Input * in, xgi::Output * out) throw (xgi::exception::Exception);
   void Subscribe(xgi::Input * in, xgi::Output * out) throw (xgi::exception::Exception);
   void Unsubscribe(xgi::Input * in, xgi::Output * out) throw (xgi::exception::Exception);
-  // Outputs the subdirectories and files of the directory parameter
+
+  // Outputs the subdirectories and files of "directory". Called by any of the above three.
   void printNavigatorXML(std::string directory, xgi::Output * out);
   
   // Answers ContentViewer requests
   void ContentsOpen(xgi::Input * in, xgi::Output * out) throw (xgi::exception::Exception);
   void printContentViewerXML(std::string current, xgi::Output * out);
 
+  // Answers Messages requests
+  void printMessagesXML(xgi::Output *out);
+
   // Answers viewer requests
   void DrawGif(xgi::Input * in, xgi::Output * out) throw (xgi::exception::Exception);
 
+  // Adds widgets to the page
   void add(std::string, WebElement *);
+
+  // Adds messages to the message dispatcher
+  void sendMessage(std::string the_title, std::string the_text, MessageType the_type);
 
   std::string get_from_multimap(std::multimap<std::string, std::string> &mymap, std::string key);
 
