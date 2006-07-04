@@ -50,3 +50,22 @@
 <use name=rootcore>
 <use name=root>
 </library>
+
+<library name=testRecFitterComp file=../src/RecFitterComp.cc>
+<flags SEAL_PLUGIN_NAME="testRecFitterComp">
+<use name=FWCore/Framework>
+<use name=EventFilter/CSCRawToDigi>
+<use name=DataFormats/CSCDigi>
+<use name=IORawData/CSCCommissioning>
+<use name=FWCore/Utilities>
+<use name=DataFormats/CSCRecHit>
+<use name=RecoLocalMuon/CSCRecHit>
+<use name=Geometry/Records>
+<use name=Geometry/CSCGeometry>
+<use name=oracle>
+<lib name=occi>
+<lib name=condbc>
+<lib name=cscmap>
+<use name=rootcore>
+<use name=root>
+</library>
