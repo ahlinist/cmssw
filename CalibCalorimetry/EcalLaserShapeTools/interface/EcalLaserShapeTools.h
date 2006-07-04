@@ -13,7 +13,7 @@
 //
 // Original Author:  Patrick Jarry
 //         Created:  Sun May 21 18:42:33 CEST 2006
-// $Id: EcalLaserShapeTools.h,v 1.1 2006/07/04 07:41:33 franzoni Exp $
+// $Id: EcalLaserShapeTools.h,v 1.2 2006/07/04 13:10:37 franzoni Exp $
 //
 //
 
@@ -57,6 +57,7 @@
 
 
 #include <iostream>
+#include <fstream>
 
 #include "TROOT.h"
 #include "TFile.h"
@@ -113,6 +114,7 @@ class EcalLaserShapeTools : public edm::EDAnalyzer {
 
   unsigned long evtNum_;
   string rootFile_ ;
+  string txtFile_ ;
   string histFile_ ;
   string hitCollection_ ;
   string hitProducer_ ;
