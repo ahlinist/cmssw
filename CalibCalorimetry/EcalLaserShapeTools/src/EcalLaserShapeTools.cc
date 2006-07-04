@@ -1,8 +1,8 @@
 /*
  * \file EcalLaserShapeTools.cc
  *
- * $Date: 2006/07/04 07:41:34 $
- * $Revision: 1.1 $
+ * $Date: 2006/07/04 15:56:01 $
+ * $Revision: 1.2 $
  * \author P. Jarry
  * \author G. Franzoni
  *
@@ -324,7 +324,7 @@ void EcalLaserShapeTools::endJob (void)
     // writing out text file with alpha and beta channel by channel. For Blue laser.
     std::ofstream txt_outfile;
     txt_outfile.open(txtFile_.c_str(),ios::out);
-    for (int ch=1; ch<1700; ch++)
+    for (int ch=1; ch<1701; ch++)
       {
 	int sm=1;
 	txt_outfile << sm << "\t" << ch << "\t" << alpha[1][ch-1] 
