@@ -13,7 +13,7 @@
 //
 // Original Author:  Patrick Jarry
 //         Created:  Sun May 21 18:42:33 CEST 2006
-// $Id$
+// $Id: EcalLaserShapeTools.h,v 1.1 2006/07/04 07:41:33 franzoni Exp $
 //
 //
 
@@ -22,14 +22,32 @@
 #include <memory>
 
 // user include files
-#include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+// #include "FWCore/Framework/interface/Frameworkfwd.h"
+// #include "FWCore/Framework/interface/EDAnalyzer.h"
 
+// #include "FWCore/Framework/interface/Event.h"
+// #include "FWCore/Framework/interface/MakerMacros.h"
+
+// #include "FWCore/ParameterSet/interface/ParameterSet.h"
+// #include "FWCore/MessageLogger/interface/MessageLogger.h"
+
+
+//pg
+#include <map>
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
+#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "DataFormats/Common/interface/EDProduct.h" 
+#include "DataFormats/EcalDigi/interface/EcalDigiCollections.h"
+#include "CalibCalorimetry/EcalPedestalOffsets/interface/TPedValues.h"
+#include "CalibCalorimetry/EcalPedestalOffsets/interface/TPedResult.h"
+
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/MessageLogger/interface/MessageLogger.h"
+//pg
+
+
 #include "DataFormats/EcalRawData/interface/EcalRawDataCollections.h"
 #include "DataFormats/EcalDigi/interface/EcalDigiCollections.h"
 

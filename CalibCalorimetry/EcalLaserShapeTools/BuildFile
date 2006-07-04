@@ -1,0 +1,17 @@
+<flags SEAL_PLUGIN_NAME="CalibCalorimetryEcalLaserShapeTools">
+<use name=root>
+<use name=FWCore/Framework>
+<use name=FWCore/MessageLogger>
+<use name=Foundation/PluginManager>
+<use name=FWCore/ParameterSet>
+<use name=DataFormats/EcalDigi>
+
+<export>
+   <lib name=CalibCalorimetryEcalLaserShapeTools>
+   <use name=root>
+   <use name=FWCore/Framework>
+   <use name=FWCore/MessageLogger>
+   <use name=Foundation/PluginManager>
+   <use name=FWCore/ParameterSet>
+<use name=DataFormats/EcalDigi>
+</export>
