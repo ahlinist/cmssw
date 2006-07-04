@@ -1,7 +1,7 @@
 /*
  * \file EcalLaserShapeTools.cc
  *
- * $Date: 2006/05/21 19:46:08 $
+ * $Date: 2006/07/04 07:41:34 $
  * $Revision: 1.1 $
  * \author P. Jarry
  * \author G. Franzoni
@@ -15,8 +15,9 @@ EcalLaserShapeTools::EcalLaserShapeTools(const edm::ParameterSet& iConfig)
 {
   //now do what ever initialization is needed
   evtNum_ =0;
-  rootFile_            = iConfig.getUntrackedParameter<std::string>("rootOutFile");
-  histFile_            = iConfig.getUntrackedParameter<std::string>("HistogramOutFile");
+  rootFile_                = iConfig.getUntrackedParameter<std::string>("rootOutFile");
+  txtFile_                   = iConfig.getUntrackedParameter<std::string>("txtOutFile");
+  histFile_                 = iConfig.getUntrackedParameter<std::string>("HistogramOutFile");
   digiProducer_        = iConfig.getParameter<std::string>("digiProducer");
   pndiodeProducer_     = iConfig.getParameter<std::string>("pndiodeProducer");
   hitCollection_       = iConfig.getParameter<std::string>("hitCollection");
@@ -285,11 +286,7 @@ void EcalLaserShapeTools::endJob (void)
 	float time=0;
 	oneChannelTree ->Branch("Ampli",&ampli,"ampli/F");
 	oneChannelTree ->Branch("Time",&time,"time/F");
-	
-	//	treesToWrite.back() ->Branch("Ampli",&ampli,"ampli/D");
-	//	treesToWrite.back() ->Branch("Time",&time,"time/D");
-	//	treesToWrite.back() .Branch("Ampli",&ampli,"ampli/D");
-	//	treesToWrite.back() .Branch("Time",&time,"time/D");
+
 	// one tree with reduced data per channel 
 	std::vector  < pair <float,float>  >::const_iterator Iter;
 	for (Iter = reducedData.begin(); Iter !=reducedData.end(); Iter++)
@@ -321,18 +318,21 @@ void EcalLaserShapeTools::endJob (void)
     alphaH.Write();	betaH.Write();
     chi2H.Write();      widthH.Write();
     
-    //    TDirectory* treeDir = (TDirectory*) basedir->Get("reducedData_blue");
-    //    treeDir->cd();
-    //gio
-    //    std::vector  < TTree * >::const_iterator theTree;
-    //    std::vector  < TTree  >::const_iterator theTree;
-    //    for (theTree = treesToWrite.begin(); theTree !=treesToWrite.end(); theTree++)
-    //      {(*theTree).Write();}
-    //      {(*theTree)->Write();}
-
     file.Write();
     file.Close();
 
+    // writing out text file with alpha and beta channel by channel. For Blue laser.
+    std::ofstream txt_outfile;
+    txt_outfile.open(txtFile_.c_str(),ios::out);
+    for (int ch=1; ch<1700; ch++)
+      {
+	int sm=1;
+	txt_outfile << sm << "\t" << ch << "\t" << alpha[1][ch-1] 
+		    << "\t" << beta[1][ch-1] << "\t" 
+		    << chi2[icolor][ch-1]  << endl;
+      }
+    txt_outfile.close();
+    
   
 
 }
