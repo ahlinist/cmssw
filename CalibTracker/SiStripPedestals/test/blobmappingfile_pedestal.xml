@@ -3,7 +3,7 @@
 <Mapping version="SiStripPedestals-1.0" >
   <Class table="SISTRIPPEDESTALS" id_columns="IOV_VALUE_ID" name="SiStripPedestals" >
     <Container table="DETREGISTRYINDEX" id_columns="IOV_VALUE_ID" name="indexes" position_column="POS" >
-      <Object table="DETREGISTRYINDEX" id_columns="POS IOV_VALUE_ID" name="SiStripPedestals::DetRegistry" >
+      <Object table="DETREGISTRYINDEX" id_columns="POS IOV_VALUE_ID" name="value_type" >
         <Primitive column="DETID" name="detid" />
         <Primitive column="IDBEGIN" name="ibegin" />
         <Primitive column="IDEND" name="iend" />
