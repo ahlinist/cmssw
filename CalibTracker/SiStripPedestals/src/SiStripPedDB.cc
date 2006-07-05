@@ -13,7 +13,7 @@
 //
 // Original Author:  Dorian Kcira
 //         Created:  Sat Feb  4 20:49:10 CET 2006
-// $Id: SiStripMonitorDigi.cc,v 1.2 2006/03/08 13:00:45 dkcira Exp $
+// $Id: SiStripPedDB.cc,v 1.1 2006/07/03 12:57:26 gennai Exp $
 //
 //
 
@@ -145,23 +145,6 @@ void SiStripPedDB::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	} 
 	//cout <<"Data size "<<digis->data.size()<<endl;
 	apvFactory_->update(detid, (*digis));
-	/*
-	if(nEvTot_ > theEventInitNumber_) {
-	  vector<float> tmp;
-	  tmp.clear();
-	  apvFactory_->getCommonMode(detid, tmp);
-	  //unpacking the info looking at the right topology
-	  int numberCMBlocks = int(128. / NumCMstripsInGroup_);
-	  int ibin=0;
-	  for (vector<float>::const_iterator iped=tmp.begin(); iped!=tmp.end();iped++) {
-	    int iapv = int (ibin/numberCMBlocks);
-	    //(local_modmes.CMDistribution)->Fill(iapv,static_cast<float>(*iped));
-	    
-	    ibin++;
-	    
-	  }
-	}
-	*/
 	//asking for the status
 	if((nEvTot_ - theEventInitNumber_)%theEventIterNumber_ == 1)
 	  {
@@ -189,25 +172,25 @@ void SiStripPedDB::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	    
 	    SiStripPedestals::Range range(theSiStripVector.begin(),theSiStripVector.end());
 	    if ( ! SiStripPedestals_->put(detid,range) )
-	      cout<<"[SiStripPedestalsBuilder::analyze] detid already exists"<<endl;
+	      cout<<"[SiStripPedDB::analyze] detid already exists"<<endl;
 	    
 	    //End now write sistrippedestals data in DB
 	    edm::Service<cond::service::PoolDBOutputService> mydbservice;
 	    
 	    if( mydbservice.isAvailable() ){
 	      try{
-		edm::LogInfo("SiStripPedestalsBuilder")<<"current time "<<mydbservice->currentTime()<<std::endl;
-		mydbservice->newValidityForNewPayload<SiStripPedestals>(SiStripPedestals_,mydbservice->currentTime());      
-		//	mydbservice->newValidityForNewPayload<SiStripPedestals>(me,mydbservice->endOfTime());
+		size_t callbackToken=mydbservice->callbackToken("SiStripPedestals");
+		edm::LogInfo("SiStripPedDB")<<"current time "<<mydbservice->currentTime()<<std::endl;
+		mydbservice->newValidityForNewPayload<SiStripPedestals>(SiStripPedestals_,mydbservice->currentTime(), callbackToken);      
 	      }catch(const cond::Exception& er){
-		edm::LogError("SiStripPedestalsBuilder")<<er.what()<<std::endl;
+		edm::LogError("SiStripPedDB")<<er.what()<<std::endl;
 	      }catch(const std::exception& er){
-		edm::LogError("SiStripPedestalsBuilder")<<"caught std::exception "<<er.what()<<std::endl;
+		edm::LogError("SiStripPedDB")<<"caught std::exception "<<er.what()<<std::endl;
 	      }catch(...){
-		edm::LogError("SiStripPedestalsBuilder")<<"Funny error"<<std::endl;
+		edm::LogError("SiStripPedDB")<<"Funny error"<<std::endl;
 	      }
   }else{
-    edm::LogError("SiStripPedestalsBuilder")<<"Service is unavailable"<<std::endl;
+    edm::LogError("SiStripPedDB")<<"Service is unavailable"<<std::endl;
   }
 	  }
 
