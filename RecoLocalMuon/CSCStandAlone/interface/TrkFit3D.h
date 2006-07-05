@@ -66,6 +66,14 @@ class TrkFit3D
                                            // so 1st point 0.5 wire groups
          h=gatti_h/(ano_widthl+xa*(ano_widthh-ano_widthl)/ano_num);
          s_width=ano_widthl+xa*(ano_widthh-ano_widthl)/ano_num;
+         //printf(" h s_swidth %f %f \n",h,s_gatti);
+	 //printf(" TrkFit3D data \n");
+         for(int z=0;z<3;z++){
+           for(int y=0;y<3;y++){
+	     // printf(" %f",d[z][y]);
+	     //printf("\n");
+	   }
+	 }  
          // now fit gatti distribution
          gatti_fit(0);
          float tmp0_sgatti=s_gatti;
@@ -91,16 +99,19 @@ class TrkFit3D
              dsh_gatti=dsl_gatti;  
            }
 	 }
+	 //printf(" TrkFit3D: s_gatti %f\n",s_gatti);
 	 // if(ambig==1)printf("xxxx  %f %f %f %f %f %f %f \n",tmp0_sgatti,tmp1_sgatti,s_gatti,dsl_gatti,dsh_gatti,tmp0_chi2,tmp1_chi2);
     
 	 //if(lay[cm]==4&&cid.station()==3&&cid.ring()==2&&cid.chamber()==31)gatti_contour();
          // printf(" at ct lay strp s_gatti %d %d %d %d %f \n",at,ct,lay[cm],strp[cm],s_gatti);
          if(debug>0){
-	   printf(" gatti fit \n");
-	   printf(" s_gatti %f chi2_gatti %f \n",s_gatti,chi2_gatti);
+	   //printf(" gatti fit \n");
+	   //printf(" s_gatti %f chi2_gatti %f \n",s_gatti,chi2_gatti);
            float nn[3]; 
            nn[0]=fn1;nn[1]=fn2;nn[2]=fn3;
-           for(int su=0;su<3;su++)printf(" d %7.2f %7.2f %7.2f q %7.2f %7.2f %7.2f \n",d[0][su],d[1][su],d[2][su],nn[su]*f[0][su],nn[su]*f[1][su],nn[su]*f[2][su]);
+           for(int su=0;su<3;su++){
+	     // printf(" d %7.2f %7.2f %7.2f q %7.2f %7.2f %7.2f \n",d[0][su],d[1][su],d[2][su],nn[su]*f[0][su],nn[su]*f[1][su],nn[su]*f[2][su]);
+	   }
 	 }
          // sav track coordinates
 	 if(ntrk<20){
@@ -682,8 +693,8 @@ void ghost_quality(int ntrk,CatTrkFnd & ctrk,AnoTrkFnd & atrk,int ct,int at){
     }
   }
   for(unsigned i=0;i<lay.size();i++){
-     int k=sort[i];
-     printf(" lay %d chr %7.2f ctime %7.2f atime %d gchi2 %7.2f \n",lay[k],t_chg[k],t_start[k]+t_peak[k],a_time[k],trk_gatti_chi2[ntrk][k]);
+    //int k=sort[i];
+     //printf(" lay %d chr %7.2f ctime %7.2f atime %d gchi2 %7.2f \n",lay[k],t_chg[k],t_start[k]+t_peak[k],a_time[k],trk_gatti_chi2[ntrk][k]);
   }
 }
 
