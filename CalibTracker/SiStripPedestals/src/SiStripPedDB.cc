@@ -1,22 +1,3 @@
-// -*- C++ -*-
-//
-// Package:    SiStripMonitorDigi_tmp
-// Class:      SiStripMonitorDigi_tmp
-// 
-/**\class SiStripMonitorDigi SiStripMonitorDigi.cc DQM/SiStripMonitorDigi/src/SiStripMonitorDigi.cc
-
- Description: <one line class summary>
-
- Implementation:
-     <Notes on implementation>
-*/
-//
-// Original Author:  Dorian Kcira
-//         Created:  Sat Feb  4 20:49:10 CET 2006
-// $Id: SiStripPedDB.cc,v 1.1 2006/07/03 12:57:26 gennai Exp $
-//
-//
-
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 
