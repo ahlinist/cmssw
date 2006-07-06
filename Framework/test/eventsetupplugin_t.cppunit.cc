@@ -16,6 +16,8 @@
 #include <cppunit/extensions/HelperMacros.h>
 // user include files
 #include "PluginManager/PluginManager.h"
+#include "FWCore/Utilities/interface/GetPassID.h"
+#include "FWCore/Utilities/interface/GetReleaseVersion.h"
 #include "FWCore/Framework/interface/SourceFactory.h"
 #include "FWCore/Framework/interface/ModuleFactory.h"
 #include "FWCore/Framework/interface/EventSetupProvider.h"
@@ -57,7 +59,7 @@ void testEventsetupplugin::finderTest()
    edm::ParameterSet dummyFinderPSet;
    dummyFinderPSet.insert(true, "@module_type", edm::Entry(std::string("LoadableDummyFinder"), true));
    dummyFinderPSet.insert(true, "@module_label", edm::Entry(std::string(""), true));
-   SourceFactory::get()->addTo(provider, dummyFinderPSet, "RECO", 1, 1);
+   SourceFactory::get()->addTo(provider, dummyFinderPSet, "RECO", edm::getReleaseVersion(), edm::getPassID());
 
    
    ComponentDescription descFinder("LoadableDummyFinder","",true);
@@ -69,7 +71,7 @@ void testEventsetupplugin::finderTest()
    edm::ParameterSet dummyProviderPSet;
    dummyProviderPSet.insert(true, "@module_type", edm::Entry(std::string("LoadableDummyProvider"), true));
    dummyProviderPSet.insert(true, "@module_label", edm::Entry(std::string(""), true));
-   ModuleFactory::get()->addTo(provider, dummyProviderPSet, "RECO", 1, 1);
+   ModuleFactory::get()->addTo(provider, dummyProviderPSet, "RECO", edm::getReleaseVersion(), edm::getPassID());
 
    ComponentDescription desc("LoadableDummyProvider","",false);
    descriptions = provider.proxyProviderDescriptions();
@@ -80,7 +82,7 @@ void testEventsetupplugin::finderTest()
    edm::ParameterSet dummySourcePSet;
    dummySourcePSet.insert(true, "@module_type", edm::Entry(std::string("LoadableDummyESSource"), true));
    dummySourcePSet.insert(true, "@module_label", edm::Entry(std::string(""), true));
-   SourceFactory::get()->addTo(provider, dummySourcePSet, "RECO", 1, 1);
+   SourceFactory::get()->addTo(provider, dummySourcePSet, "RECO", edm::getReleaseVersion(), edm::getPassID());
    
    ComponentDescription descSource("LoadableDummyESSource","",true);
    descriptions = provider.proxyProviderDescriptions();

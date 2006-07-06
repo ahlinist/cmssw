@@ -10,21 +10,22 @@ $Id$
 ----------------------------------------------------------------------*/
 #include <string>
 #include "DataFormats/Common/interface/ModuleDescription.h"
+#include "DataFormats/Common/interface/ProcessConfiguration.h"
 
 namespace edm {
   class ProductRegistry;
 
   struct InputSourceDescription {
-    InputSourceDescription() : module_(), preg_(0) { }
-    InputSourceDescription(ModuleDescription & md,
+    InputSourceDescription() : moduleDescription_(), productRegistry_(0) { }
+    InputSourceDescription(ModuleDescription const& md,
 			    ProductRegistry& preg) :
-      module_(md),
-      preg_(&preg)
+      moduleDescription_(md),
+      productRegistry_(&preg)
 	 
     {}
 
-    ModuleDescription module_;
-    ProductRegistry * preg_;
+    ModuleDescription moduleDescription_;
+    ProductRegistry * productRegistry_;
   };
 }
 

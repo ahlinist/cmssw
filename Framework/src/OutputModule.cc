@@ -44,6 +44,7 @@ namespace edm {
   OutputModule::OutputModule(ParameterSet const& pset) : 
     nextID_(),
     descVec_(),
+    droppedVec_(),
     process_name_(Service<service::TriggerNamesService>()->getProcessName()),
     groupSelector_(pset),
     eventSelector_(pset,process_name_,
@@ -72,6 +73,7 @@ namespace edm {
 
     for ( ; it != end; ++it) {
       if (selected(it->second)) descVec_.push_back(&it->second);
+      else droppedVec_.push_back(&it->second);
     }
   }
 

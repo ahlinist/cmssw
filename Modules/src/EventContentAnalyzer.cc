@@ -291,7 +291,7 @@ EventContentAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
    for(Provenances::iterator itProv  = provenances.begin();
                              itProv != provenances.end();
                            ++itProv) {
-      friendlyName = (*itProv)->productType();
+      friendlyName = (*itProv)->friendlyClassName();
       //if(friendlyName.empty())  friendlyName = std::string("||");
 
       modLabel = (*itProv)->moduleLabel();

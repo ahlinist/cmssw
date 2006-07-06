@@ -26,6 +26,8 @@
 
 // user include files
 #include "PluginManager/PluginFactory.h"
+#include "DataFormats/Common/interface/PassID.h"
+#include "DataFormats/Common/interface/ReleaseVersion.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Framework/interface/ComponentMaker.h"
 #include "FWCore/Utilities/interface/EDMException.h"
@@ -50,8 +52,8 @@ class ComponentFactory : public seal::PluginFactory< ComponentMakerBase<T>* ()>
       void addTo(EventSetupProvider& iProvider,
                   edm::ParameterSet const& iConfiguration,
                   std::string const& iProcessName,
-                  unsigned long iVersion,
-                  unsigned long iPass) const
+                  ReleaseVersion const& iVersion,
+                  PassID const& iPass) const
       {
          using namespace std;
          string modtype = iConfiguration.template getParameter<string>("@module_type");

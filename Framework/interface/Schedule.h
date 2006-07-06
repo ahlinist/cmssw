@@ -1,5 +1,5 @@
-#ifndef Framework_Schedule_H
-#define Framework_Schedule_H 1
+#ifndef Framework_Schedule_h
+#define Framework_Schedule_h
 
 /*
   Author: Jim Kowalkowski  28-01-06
@@ -212,11 +212,11 @@ namespace edm
     void fillEndPath(int bitpos,const std::string& name);
     void handleWronglyPlacedModules();
 
-    ParameterSet        pset_;       // why is this kept?
+    ParameterSet        pset_;
     WorkerRegistry*     worker_reg_;
     ProductRegistry*    prod_reg_;
     ActionTable*        act_table_;
-    std::string         proc_name_;
+    std::string         processName_;
     ParameterSet        trig_pset_;  // why is this kept?
     ActivityRegistryPtr act_reg_;
 

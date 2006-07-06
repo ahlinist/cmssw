@@ -46,8 +46,8 @@ namespace edm {
 
   private:
     unsigned long             nextID_;
-    // TODO: Make this data member private, and give OutputModule an
-    // interface (protected?) that supplies client code with the
+    // TODO: Make these data members private, and give OutputModule
+    // an interface (protected?) that supplies client code with the
     // needed functionality *without* giving away implementation
     // details ... don't just return a reference to descVec_, because
     // we are looking to have the flexibility to change the
@@ -55,13 +55,18 @@ namespace edm {
     // change is made, we'll have a one-time-only task of modifying
     // clients (classes derived from OutputModule) to use the
     // newly-introduced interface.
+    // ditto for droppedVec_.
     // TODO: Consider using shared pointers here?
 
-    // These are pointers to the BranchDescription objects describing
-    // the branches we are to write. We do not own the
-    // BranchDescriptions to which we point.
+    // descVec_ are pointers to the BranchDescription objects describing
+    // the branches we are to write.
+    // droppedVec_ are pointers to the BranchDescription objects describing
+    // the branches we are NOT to write.
+    // 
+    // We do not own the BranchDescriptions to which we point.
   protected:
     Selections descVec_;
+    Selections droppedVec_;
 
   private:
     class ResultsSelector : public edm::Selector
@@ -71,7 +76,7 @@ namespace edm {
 	name_(proc_name) {}
       
       virtual bool doMatch(const edm::ProvenanceAccess& p) const {
-	return p.product().processName()==name_;
+	return p.provenance().processName()==name_;
       }
     private:
       std::string name_;

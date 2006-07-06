@@ -24,7 +24,6 @@ namespace edm {
   class Event;
   class EventAux;
   class EventPrincipal;
-  class EventProvenance;
   class EventSetup;
   class ExternalInputSource;
   class GeneratedInputSource;
@@ -55,14 +54,11 @@ namespace edm {
 
 
   template <typename T> class Handle;
-  namespace pset {
-    class Registry;
-  }
 }
 
 // The following are trivial enough so that the real headers can be included.
 #include "DataFormats/Common/interface/ConditionsID.h"
 #include "DataFormats/Common/interface/PassID.h"
-#include "DataFormats/Common/interface/VersionNumber.h"
+#include "DataFormats/Common/interface/ReleaseVersion.h"
 
 #endif

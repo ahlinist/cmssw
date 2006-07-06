@@ -25,6 +25,9 @@ $Id$
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 
+#include "DataFormats/Common/interface/ModuleDescription.h"
+
+
 #include "cppunit/extensions/HelperMacros.h"
 
 class testeventprocessor: public CppUnit::TestFixture

@@ -10,6 +10,9 @@
 static const char CVSId[] = "$Id$";
 
 
+#include "DataFormats/Common/interface/PassID.h"
+#include "DataFormats/Common/interface/ReleaseVersion.h"
+
 #include "FWCore/Framework/src/WorkerRegistry.h"
 #include "FWCore/Framework/src/Worker.h"
 #include "FWCore/Framework/src/Factory.h"
@@ -42,7 +45,7 @@ Worker* WorkerRegistry::getWorker(const WorkerParams& p) {
 
   string workerid= 
     mangleWorkerParameters(*p.pset_, p.processName_,
-			   p.versionNumber__,p.pass_);
+			   p.releaseVersion_,p.passID_);
 
   WorkerMap::iterator workerIt = m_workerMap.find(workerid);
   
@@ -68,14 +71,14 @@ Worker* WorkerRegistry::getWorker(const WorkerParams& p) {
 
 string WorkerRegistry::mangleWorkerParameters(ParameterSet const& parameterSet,
 					      std::string const& processName,
-					      unsigned long versionNumber,
-					      unsigned long pass) {
+					      ReleaseVersion const& releaseVersion,
+					      PassID const& passID) {
 
   stringstream mangled_parameters;
   mangled_parameters<< parameterSet.toString()
                     << processName
-                    << versionNumber
-                    << pass;
+                    << releaseVersion
+                    << passID;
 
   return mangled_parameters.str();
 
