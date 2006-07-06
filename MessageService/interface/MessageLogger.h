@@ -60,8 +60,8 @@ public:
   void  preSourceConstruction ( ModuleDescription const & );
   void  postSourceConstruction( ModuleDescription const & );
 
-  void  preSource  ( ModuleDescription const & );
-  void  postSource ( ModuleDescription const & );
+  void  preSource  ();
+  void  postSource ();
 
   void  preModule ( ModuleDescription const & );
   void  postModule( ModuleDescription const & );
