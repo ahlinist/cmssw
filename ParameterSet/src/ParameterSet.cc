@@ -423,7 +423,7 @@ namespace edm {
   ParameterSet
   getParameterSet(ParameterSetID const& id) {
     ParameterSet result;
-    if(!pset::Registry::instance()->getParameterSet(id, result)) {
+    if(!pset::Registry::instance()->getMapped(id, result)) {
         throw edm::Exception(errors::Configuration,"MissingParameterSet:")
           << "Parameter Set ID '" << id
           << "' not found.";
