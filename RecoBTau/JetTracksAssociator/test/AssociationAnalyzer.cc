@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrea Rizzi
 //         Created:  Wed Apr 12 11:12:49 CEST 2006
-// $Id: AssociationAnalyzer.cc,v 1.5 2006/05/31 17:48:42 fwyzard Exp $
+// $Id: AssociationAnalyzer.cc,v 1.1 2006/06/01 17:26:52 fwyzard Exp $
 //
 //
 
@@ -33,6 +33,7 @@ using namespace std;
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/Common/interface/Ref.h"
 #include "DataFormats/JetReco/interface/Jet.h"
+#include "DataFormats/JetReco/interface/CaloJet.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/BTauReco/interface/JetTracksAssociation.h"
 
@@ -57,6 +58,7 @@ class AssociationAnalyzer : public edm::EDAnalyzer {
 
    private:
      string m_assoc;
+     string m_jets;
 };
 
 //
@@ -64,6 +66,7 @@ class AssociationAnalyzer : public edm::EDAnalyzer {
 //
 AssociationAnalyzer::AssociationAnalyzer(const edm::ParameterSet& iConfig)
 {
+  m_jets  = iConfig.getParameter<string>("jets");
   m_assoc = iConfig.getParameter<string>("association");
 }
 
@@ -73,22 +76,28 @@ AssociationAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   using namespace edm;
   using namespace reco;
   
+  Handle<CaloJetCollection> jetsHandle;
+  iEvent.getByLabel(m_jets, jetsHandle);
+  const CaloJetCollection & jets = *(jetsHandle.product());
+  cout << "Found " << jets.size() << " jets" << endl;
+  
   Handle<JetTracksAssociationCollection> associationHandle;
   iEvent.getByLabel(m_assoc, associationHandle);
-
   const JetTracksAssociationCollection & association = *(associationHandle.product());
   cout << "Found " << association.size() << " jets with tracks" << endl;
 
-  JetTracksAssociationCollection::const_iterator i = association.begin();
-  for (; i != association.end(); ++i) {
-    CaloJetRef     jet    = i->key;
-    TrackRefVector tracks = i->val;
-
-    cout << boolalpha;
-    cout << fixed;
-    cout << "->   Jet " << setw(2) << jet.index() << " pT: " << setprecision(2) << setw(6) << jet->pt() << " eta: " << setprecision(2) << setw(5) << jet->eta() << " phi: " << setprecision(2) << setw(5) << jet->phi() << " has " << tracks.size() << " tracks:" << endl;
-    for (TrackRefVector::const_iterator track = tracks.begin(); track != tracks.end(); ++track) {
-      cout << "   Track " << setw(2) << (*track).index() << " pT: " << setprecision(2) << setw(6) << (**track).pt() << " eta: " << setprecision(2) << setw(5) << (**track).eta() << " phi: " << setprecision(2) << setw(5) << (**track).phi() << endl;
+  cout << boolalpha;
+  cout << fixed;
+  for (CaloJetCollection::size_type i = 0; i < jets.size(); ++i) {
+    CaloJetRef jet(jetsHandle, i);
+    try {
+      TrackRefVector tracks = association[jet].val;
+      cout << "->   Jet " << setw(2) << jet.index() << " pT: " << setprecision(2) << setw(6) << jet->pt() << " eta: " << setprecision(2) << setw(5) << jet->eta() << " phi: " << setprecision(2) << setw(5) << jet->phi() << " has " << tracks.size() << " tracks:" << endl;
+      for (TrackRefVector::const_iterator track = tracks.begin(); track != tracks.end(); ++track) {
+        cout << "   Track " << setw(2) << (*track).index() << " pT: " << setprecision(2) << setw(6) << (**track).pt() << " eta: " << setprecision(2) << setw(5) << (**track).eta() << " phi: " << setprecision(2) << setw(5) << (**track).phi() << endl;
+      }
+    } catch (edm::Exception e) {
+      cout << "->   Jet " << setw(2) << jet.index() << " pT: " << setprecision(2) << setw(6) << jet->pt() << " eta: " << setprecision(2) << setw(5) << jet->eta() << " phi: " << setprecision(2) << setw(5) << jet->phi() << " has 0 tracks" << endl;
     }
   }
 
