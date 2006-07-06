@@ -55,7 +55,6 @@ protected:
 private: 
 
   // Histograms
-  H2DRecHit *hRHPAll;
   H2DRecHit *hRHPME1a;
   H2DRecHit *hRHPME1b;
   H2DRecHit *hRHPME12;
@@ -75,6 +74,9 @@ private:
   std::string rootFileName;
   std::string simHitLabel;
   std::string recHitLabel;
+  std::string stripdigiLabel;
+  std::string wiredigiLabel;
+
   double maxRechitDistance;
   int maxRechitLayer;
   int maxSimhitLayer;

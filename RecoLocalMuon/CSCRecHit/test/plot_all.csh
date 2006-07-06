@@ -8,7 +8,7 @@
 # You may need to make this executable by typing:  chmod u+x plot_all.csh
 #
 # echo '.x CSCRecHitPlotter.C(0)' | root.exe -b
-#echo '.x CSCRecHitPlotter.C(10)' | root.exe -b
+echo '.x CSCRecHitPlotter.C(10)' | root.exe -b
 echo '.x CSCRecHitPlotter.C(11)' | root.exe -b
 #echo '.x CSCRecHitPlotter.C(12)' | root.exe -b
 #echo '.x CSCRecHitPlotter.C(13)' | root.exe -b
