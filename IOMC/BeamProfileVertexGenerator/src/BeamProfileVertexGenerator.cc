@@ -58,7 +58,7 @@ Hep3Vector * BeamProfileVertexGenerator::newVertex() {
     aY = (dynamic_cast<RandFlat*>(myRandom))->fire(-0.5*mySigmaY,0.5*mySigmaY) + myMeanY;
   double fY = 90.*deg + myPhi;
   double xp = aX*sin(tX)*cos(fX) +aY*cos(fY) +myMeanZ*sin(myTheta)*cos(myPhi);
-  double yp = aX*sin(tX)*sin(fX) +aY*cos(fY) +myMeanZ*sin(myTheta)*sin(myPhi);
+  double yp = aX*sin(tX)*sin(fX) +aY*sin(fY) +myMeanZ*sin(myTheta)*sin(myPhi);
   double zp = aX*cos(tX)                     +myMeanZ*cos(myTheta);
 
   myVertex = new Hep3Vector(xp, yp, zp);
