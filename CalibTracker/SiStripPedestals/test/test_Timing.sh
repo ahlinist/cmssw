@@ -2,10 +2,11 @@
 
 function test_db() {
 
+    mode=""
     [ `echo $@ | grep -c "\-write[ ]*"` = 1 ] && mode=write 
     [ `echo $@ | grep -c "\-read[ ]*"`  = 1 ] && mode=read 
 
-    [ "$mode" != "write" ] && [ "$mode" != "read" ] && exit
+    [ "$mode" != "write" ] && [ "$mode" != "read" ] && return
     
     blobflag=noblob
     [ `echo $@ | grep -c "\-blob[ ]*"` = 1 ] && blobflag=blob 
