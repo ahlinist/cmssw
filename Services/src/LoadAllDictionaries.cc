@@ -12,7 +12,7 @@
 //
 
 // system include files
-#include <iostream>
+#include "Cintex/Cintex.h"
 
 // user include files
 #include "FWCore/Services/src/LoadAllDictionaries.h"
@@ -37,6 +37,9 @@ edm::service::LoadAllDictionaries::LoadAllDictionaries(const edm::ParameterSet& 
 {
    bool doLoad(iConfig.getUntrackedParameter("doLoad",true));
    if(doLoad) {
+
+    ROOT::Cintex::Cintex::Enable();
+
       seal::PluginManager                       *db =  seal::PluginManager::get();
       seal::PluginManager::DirectoryIterator    dir;
       seal::ModuleCache::Iterator               plugin;
@@ -44,7 +47,7 @@ edm::service::LoadAllDictionaries::LoadAllDictionaries(const edm::ParameterSet& 
       unsigned                            i;
       
       
-      //std::cout <<"LoadAllDictionaries"<<std::endl;
+      // std::cout <<"LoadAllDictionaries"<<std::endl;
       
       const std::string mycat("Capability");
       const std::string mystring("edm::Wrapper");
