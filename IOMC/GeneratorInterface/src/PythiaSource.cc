@@ -1,6 +1,6 @@
 /*
- *  $Date: 2006/05/04 14:13:07 $
- *  $Revision: 1.17 $
+ *  $Date: 2006/06/25 16:26:22 $
+ *  $Revision: 1.19 $
  *  
  *  Filip Moorgat & Hector Naves 
  *  26/10/05
@@ -179,7 +179,8 @@ PythiaSource::PythiaSource( const ParameterSet & pset,
 
 PythiaSource::~PythiaSource(){
   cout << "PythiaSource: event generation done. " << endl;
-  clear();
+  call_pystat(1);
+  clear(); 
 }
 
 void PythiaSource::clear() {
