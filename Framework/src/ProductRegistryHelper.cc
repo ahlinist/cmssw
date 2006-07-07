@@ -31,6 +31,7 @@ namespace edm {
                               p->productInstanceName_,
                               iDesc.id());
       pdesc.psetIDs_.insert(iDesc.parameterSetID());
+      pdesc.processConfigurationIDs_.insert(iDesc.processConfigurationID());
       pdesc.branchAliases_.insert(p->branchAlias_);
       iReg.addProduct(pdesc, iIsListener);
       ModuleDescriptionRegistry::instance()->insertMapped(iDesc);
