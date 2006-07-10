@@ -4,6 +4,26 @@
 <use name=FWCore/Framework>
 <use name=Geometry/Records>
 <use name=Geometry/TrackerGeometryBuilder>
+<use name=FWCore/ParameterSet>
+<use name=FWCore/MessageLogger>
+<use name=Foundation/PluginManager>
+<use name=Utilities/Timing>
+<use name=DataFormats/Common>
+<use name=DQMServices/Core>
+
+<use name=DataFormats/SiStripDetId>
+<use name=DataFormats/SiStripDigi>
+<use name=CondFormats/DataRecord>
+<use name=CondFormats/SiStripObjects>
+<use name=DQM/SiStripCommon>  
+<use name=TkOnlineSw>
+<use name=oracle>
+<use name=clhep>
+<use name=xdaq>
+<use name=DQMServices/Core>
+<use name=DataFormats/SiStripDigi>
+<use name=CalibFormats/SiStripObjects>
+<use name=CalibTracker/Records>
 
 <use name=DataFormats/SiStripDetId>
 <use name=DataFormats/FEDRawData> 
@@ -13,3 +33,24 @@
 <use name=CondCore/DBOutputService>
 
 <use name=CalibTracker/SiStripAPVAnalysis>
+
+<flags SEAL_PLUGIN_NAME="CalibTrackerSiStripPedestals">
+<export>
+   <lib name=CalibTrackerSiStripPedestals>
+   <use name=FWCore/Framework>
+   <use name=FWCore/ParameterSet>
+   <use name=FWCore/MessageLogger>
+   <use name=Utilities/Timing>
+   <use name=DataFormats/Common>
+   <use name=DataFormats/FEDRawData>
+   <use name=DataFormats/SiStripDetId>
+   <use name=DataFormats/SiStripDigi>
+   <use name=CondFormats/DataRecord>
+   <use name=CondFormats/SiStripObjects>
+   <use name=TkOnlineSw>
+   <use name=oracle>
+   <use name=clhep>
+   <use name=xdaq>
+
+
+</export>
