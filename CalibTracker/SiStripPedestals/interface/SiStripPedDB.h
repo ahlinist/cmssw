@@ -1,11 +1,11 @@
-#ifndef SiStripMonitorDigi_SiStripMonitorDigiTemp_h
-#define SiStripMonitorDigi_SiStripMonitorDigiTemp_h
+#ifndef SiStripPedDB_SiStripPedDBTemp_h
+#define SiStripPedDB_SiStripPedDBTemp_h
 // -*- C++ -*-
 //
-// Package:     SiStripMonitorDigi_temp
-// Class  :     SiStripMonitorDigi_temp
+// Package:     SiStripPedDB
+// Class  :     SiStripPedDB
 // 
-/**\class SiStripMonitorDigi SiStripMonitorDigi.h 
+/**\class SiStripPedDB SiStripPedDB.h 
 
  Description: <one line class summary>
 
@@ -16,7 +16,7 @@
 //
 // Original Author:  dkcira
 //         Created:  Sat Feb  4 20:49:51 CET 2006
-// $Id: SiStripMonitorDigi.h,v 1.2 2006/03/08 13:00:30 dkcira Exp $
+// $Id: SiStripPedDB.h,v 1.1 2006/07/03 12:57:18 gennai Exp $
 //
 
 // system include files
@@ -78,16 +78,8 @@ class SiStripPedDB : public edm::EDAnalyzer {
  private:
        DaqMonitorBEInterface* dbe_;
        edm::ParameterSet conf_;
-       //       Fed9U::Fed9UEvent* fedEvent_;
-       //       Fed9U::Fed9UDescription* fedDescription_;
        SiStripFedCabling* fedCabling_;
 
-
-       int16_t fedid;
-       int16_t freq;
-       int16_t fedkey;
-       int16_t headerBytes_;
-       int16_t dumpFrequency_;
 
        vector<uint32_t> SelectedDetIds;
 	 

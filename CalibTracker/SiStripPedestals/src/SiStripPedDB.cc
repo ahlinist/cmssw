@@ -2,8 +2,6 @@
 #include "FWCore/ServiceRegistry/interface/Service.h"
 
 
-//#include "CalibFormats/SiStripObjects/interface/SiStripStructure.h" // these two will go away
-//#include "CalibTracker/Records/interface/SiStripStructureRcd.h"     // these two will go away
 #include "CalibTracker/SiStripPedestals/interface/SiStripPedDB.h"
 
 #include "DataFormats/SiStripDetId/interface/SiStripSubStructure.h"
@@ -37,7 +35,6 @@ SiStripPedDB::SiStripPedDB(const edm::ParameterSet& iConfig)
    pedsPSet_ = conf_.getParameter<edm::ParameterSet>("PedestalsPSet");
    nEvTot_=0;
    apvFactory_=0;
-   outPutFileName = conf_.getParameter<string>("OutPutFileName");
    theEventInitNumber_ =  pedsPSet_.getParameter<int>("NumberOfEventsForInit");
    theEventIterNumber_ = pedsPSet_.getParameter<int>("NumberOfEventsForIteration");
    NumCMstripsInGroup_ = pedsPSet_.getParameter<int>("NumCMstripsInGroup");
@@ -47,7 +44,7 @@ SiStripPedDB::SiStripPedDB(const edm::ParameterSet& iConfig)
    userEnv_ = "CORAL_AUTH_USER=" + iConfig.getUntrackedParameter<std::string>("userEnv","me");
    passwdEnv_ = "CORAL_AUTH_PASSWORD="+ iConfig.getUntrackedParameter<std::string>("passwdEnv","mypass");
    printdebug_ =iConfig.getUntrackedParameter<bool>("printDebug",false);
-     //now do what ever initialization is needed
+
    
    ::putenv( const_cast<char*>( userEnv_.c_str() ) );
    ::putenv( const_cast<char*>( passwdEnv_.c_str() ) );
