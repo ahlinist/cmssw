@@ -336,6 +336,9 @@ void WebInterface::DrawGif(xgi::Input * in, xgi::Output * out) throw (xgi::excep
 
   std::string current = get_from_multimap(view_multimap, "Current");
   
+  DaqMonitorBEInterface * myBei = (*mui_p)->getBEInterface();
+  myBei->lock();
+
   if (!(*mui_p)) 
     {
       std::cout << "The mui pointer is empty!" << std::endl;
@@ -368,6 +371,8 @@ void WebInterface::DrawGif(xgi::Input * in, xgi::Output * out) throw (xgi::excep
   *out << "<fileURL>" << std::endl;
   *out << getContextURL() + "/temporary/" + id + ".gif" << std::endl;
   *out << "</fileURL>" << std::endl;
+
+  myBei->unlock();
 }
 
 
