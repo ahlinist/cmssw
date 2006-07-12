@@ -1,0 +1,7 @@
+<use name=DataFormats/Common>
+
+<export>
+ <lib name=SimDataFormatsMuonValidation>
+ <use name=DataFormats/Common>
+</export>
+
