@@ -1,8 +1,8 @@
 /*
  * \file EcalLaserShapeTools.cc
  *
- * $Date: 2006/07/04 15:56:01 $
- * $Revision: 1.2 $
+ * $Date: 2006/07/04 16:15:47 $
+ * $Revision: 1.3 $
  * \author P. Jarry
  * \author G. Franzoni
  *
@@ -125,6 +125,7 @@ void EcalLaserShapeTools::analyze(const edm::Event& iEvent, const edm::EventSetu
   const EcalPnDiodeDigiCollection* p_pndiodes = 0;
   p_pndiodes = pndiodes.product() ;
 
+  // protection needed in case of missing PN
   EcalPnDiodeDigiCollection::const_iterator ipnd ;
   std::vector<double> maxAmplPN;
   for(ipnd=pndiodes->begin(); ipnd!=pndiodes->end(); ++ipnd) {
@@ -253,25 +254,44 @@ void EcalLaserShapeTools::endJob (void)
 	double param_out[3] ;
 	int nevt[10];
 	// this is the function which calculates pretty much all
-	cout << " fitting " << endl;
 	LogInfo("EcalLaserShapeTools") << " now fitting " << endl;
 	std::vector< pair <float,float> >  reducedData;
 	reducedData.reserve(600);
-	//gio
-	//	cout << "size before fitting: " << reducedData.size() << endl;
-	cout << "[before launching fitpj] size APD: " << (*channelDataIter).size() << " size pn" << pnData[icris].size() << endl;
-	float    chi2s = fitpj(param_out,nevt[1], (*channelDataIter), pnData[icris], reducedData) ;
-	//gio
-	cout << "size after fitting: " << reducedData.size() << endl;
+	
+	bool doFit =false;
+	if (
+	    (*channelDataIter).size()> 100 &&
+	    (*channelDataIter).size() == pnData[icris].size() 
+	    )
+	  {
+	    doFit = true; 
+	  }
+
+	float    chi2s =0;
+	if (doFit) {
+	  //gio
+	  //	cout << "size before fitting: " << reducedData.size() << endl;
+	  cout << " fitting channel " << (icris+1) << endl;
+	  cout << "[before launching fitpj] size APD: " << (*channelDataIter).size() << " size pn " << pnData[icris].size() << endl;
+	  chi2s = fitpj(param_out,nevt[1], (*channelDataIter), pnData[icris], reducedData) ;
+	  //gio
+	  cout << "[after launching fitpj] size APD: " << (*channelDataIter).size() << " size pn " << pnData[icris].size() << endl;
+	}
+	else
+	  {
+	    cout << "[EcalLaserShape] Fit not  performed for channel: " << (icris+1) << " because too few APD events available (" 
+		 << (*channelDataIter).size() << ") or mismatch with PN event number (" 
+		 << pnData[icris].size() << ")" << endl;
+	  }
        
 
 	//gio to go away
 	cout << "[out of fitpj] alpha is: " << param_out[0]  << " beta " << param_out[1]  << endl;
-	alpha[icolor][icris] = param_out[0] ;
-	beta[icolor][icris]  = param_out[1] ;
-	chi2[icolor][icris]  = chi2s ;
+	alpha_[icolor][icris] = param_out[0] ;
+	beta_[icolor][icris]  = param_out[1] ;
+	chi2_[icolor][icris]  = chi2s ;
 	// calculating widht
-	width[icolor][icris]=ComputePulseWidth(alpha[icolor][icris],beta[icolor][icris]) ;
+	width_[icolor][icris]=ComputePulseWidth(alpha_[icolor][icris],beta_[icolor][icris]) ;
 	
 
 	
@@ -308,7 +328,7 @@ void EcalLaserShapeTools::endJob (void)
 	alphaH.Fill(param_out[0]);
 	betaH.Fill(param_out[1]);
 	chi2H.Fill(chi2s);
-	widthH.Fill(width[icolor][icris]);
+	widthH.Fill(width_[icolor][icris]);
 	
       }
     
@@ -327,9 +347,9 @@ void EcalLaserShapeTools::endJob (void)
     for (int ch=1; ch<1701; ch++)
       {
 	int sm=1;
-	txt_outfile << sm << "\t" << ch << "\t" << alpha[1][ch-1] 
-		    << "\t" << beta[1][ch-1] << "\t" 
-		    << chi2[icolor][ch-1]  << endl;
+	txt_outfile << sm << "\t" << ch << "\t" << alpha_[1][ch-1] 
+		    << "\t" << beta_[1][ch-1] << "\t" 
+		    << chi2_[icolor][ch-1]  << endl;
       }
     txt_outfile.close();
     
@@ -924,7 +944,7 @@ double EcalLaserShapeTools::fitpj(double * parout, int num_event ,
     //	
     a1 += A_CROISS.coeff[0][0] ;
     a2 += A_CROISS.coeff[1][0] ;
-    std::cout << "iter" << iter << "alpha " << a1 << "beta" << a2 << std::endl ; 
+    std::cout << "iter " << iter << " alpha " << a1 << " beta " << a2 << std::endl ; 
     // end of iteration if chi2 is stable
     // uncomment this in case of APD not divided by PN
     // if(iter> 0 && ((chi2_iter[iter]-chi2_iter[iter-1])/chi2_iter[iter-1])<0.01 ) break ;
@@ -1372,7 +1392,9 @@ double EcalLaserShapeTools::parab(Double_t ampl[N_samples],Int_t nmin,Int_t nmax
     dt =0.5*(amp3-amp1)/denom  ;
   }
   else {
-    printf("denom =%f\n",denom)  ;
+    // gio
+    cout << "[LaserParab] denom= " << denom << " (caused by small ampli?)" << endl;
+    //    printf("denom =%f\n",denom)  ;
     dt=0.5  ;
   }
   /* 						                     */	       

@@ -13,7 +13,7 @@
 //
 // Original Author:  Patrick Jarry
 //         Created:  Sun May 21 18:42:33 CEST 2006
-// $Id: EcalLaserShapeTools.h,v 1.2 2006/07/04 13:10:37 franzoni Exp $
+// $Id: EcalLaserShapeTools.h,v 1.3 2006/07/04 15:56:00 franzoni Exp $
 //
 //
 
@@ -184,10 +184,10 @@ class EcalLaserShapeTools : public edm::EDAnalyzer {
    double a2ini ; // value of alpha_prim/beta at starting point
    double a3ini ; // value of beta/alpha_prim at starting point
   
-  double      alpha[4][1700] ;
-  double      beta[4][1700] ;
-  double      chi2[4][1700] ;
-  double      width[4][1700] ;
+  double      alpha_[4][1700] ;
+  double      beta_[4][1700] ;
+  double      chi2_[4][1700] ;
+  double      width_[4][1700] ;
   
    double sigma_rec ;
    int METHODE ;
