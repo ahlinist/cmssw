@@ -1,6 +1,6 @@
 /*
- *  $Date: 2006/06/25 16:26:22 $
- *  $Revision: 1.19 $
+ *  $Date: 2006/07/07 07:19:42 $
+ *  $Revision: 1.20 $
  *  
  *  Filip Moorgat & Hector Naves 
  *  26/10/05
@@ -238,6 +238,7 @@ bool PythiaSource::produce(Event & e) {
     
     HepMC::GenEvent* evt = conv.getGenEventfromHEPEVT();
     evt->set_signal_process_id(pypars.msti[0]);
+    evt->set_event_scale(pypars.pari[16]);
     evt->set_event_number(numberEventsInRun() - remainingEvents() - 1);
     
 
