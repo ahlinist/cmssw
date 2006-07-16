@@ -13,7 +13,7 @@
 //
 // Original Author:  Patrick Jarry
 //         Created:  Sun May 21 18:42:33 CEST 2006
-// $Id: EcalLaserShapeTools.h,v 1.3 2006/07/04 15:56:00 franzoni Exp $
+// $Id: EcalLaserShapeTools.h,v 1.4 2006/07/14 11:04:53 franzoni Exp $
 //
 //
 
@@ -65,6 +65,7 @@
 #include "TGraph.h"
 #include "TF1.h"
 #include "TH1F.h"
+#include "TH2F.h"
 #include "TDirectory.h"
 
 #define N_samples 10 
@@ -133,7 +134,8 @@ class EcalLaserShapeTools : public edm::EDAnalyzer {
   // a vector of vectors, each containing data from a crystal
   std::vector< std::vector <EBDataFrame >   >  blueData;
   std::vector< std::vector <EBDataFrame >   >  irData;
-  std::vector< std::vector <float >   >        pnData;
+  std::vector< std::vector <float >   >        irPnData;
+  std::vector< std::vector <float >   >        bluePnData;
   std::vector< TTree    >       treesToWrite;
   //  std::vector< TTree*    >       treesToWrite;
 

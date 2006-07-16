@@ -1,8 +1,8 @@
 /*
  * \file EcalLaserShapeTools.cc
  *
- * $Date: 2006/07/14 11:04:53 $
- * $Revision: 1.4 $
+ * $Date: 2006/07/16 16:57:44 $
+ * $Revision: 1.5 $
  * \author P. Jarry
  * \author G. Franzoni
  *
@@ -22,6 +22,18 @@ EcalLaserShapeTools::EcalLaserShapeTools(const edm::ParameterSet& iConfig)
   pndiodeProducer_  = iConfig.getParameter<std::string>("pndiodeProducer");
   hitCollection_          = iConfig.getParameter<std::string>("hitCollection");
   hitProducer_            = iConfig.getParameter<std::string>("hitProducer");
+
+
+  for (int wavelength=0; wavelength <4; wavelength++){
+    for (int channel=0; channel <4; channel++){
+      alpha_[wavelength][channel]  =0;
+      beta_[wavelength][channel]  =0;
+      chi2_[wavelength][channel]  =0;
+      width_[wavelength][channel]  =0;
+    }
+  }
+  
+
 }
 
 void EcalLaserShapeTools::beginJob (EventSetup const& eventSetup) 
@@ -29,18 +41,20 @@ void EcalLaserShapeTools::beginJob (EventSetup const& eventSetup)
   
   for (int channel=0; channel < 1700; channel++){
     std::vector <EBDataFrame > theBlueChannel;
-    // std::vector < vector< pair<float,int> >     > theBlueChannel;
     theBlueChannel.reserve(600);
     blueData.push_back(theBlueChannel);
 
-    //    std::vector < vector< pair<float,int> >     >  theIrChannel;
     std::vector <EBDataFrame > theIrChannel;
     theIrChannel.reserve(600);
     irData.push_back(theIrChannel);
 
-    std::vector <float > pnForOneChannel;
-    pnForOneChannel.reserve(600);
-    pnData.push_back(pnForOneChannel);
+    std::vector <float > pnForOneBlueChannel;
+    pnForOneBlueChannel.reserve(600);
+    bluePnData.push_back(pnForOneBlueChannel);
+
+    std::vector <float > pnForOneIrChannel;
+    pnForOneIrChannel.reserve(600);
+    irPnData.push_back(pnForOneIrChannel);
 
   }
   
@@ -59,7 +73,7 @@ void EcalLaserShapeTools::analyze(const edm::Event& iEvent, const edm::EventSetu
   LogInfo("EcalLaserShapeTools") << "\n\n\n Event: " << evtNum_ << endl;
   
   LogDebug("EcalLaserShapeTools") << "Fetching hitCollection: " << hitCollection_
-				 << " produced by " << hitProducer_ << std::endl;
+				  << " produced by " << hitProducer_ << std::endl;
   
   // dcc headers - event info such as wavelenght
   edm::Handle<EcalRawDataCollection> DCCHeaders;
@@ -68,7 +82,7 @@ void EcalLaserShapeTools::analyze(const edm::Event& iEvent, const edm::EventSetu
     iEvent.getByLabel(digiProducer_, DCCHeaders);
   } catch ( std::exception& ex ) {
     LogDebug("EcalLaserShapeTools") << "Cannot get product:  EcalRawDataCollection from " 
-				   << digiProducer_ << " - returning." << endl;
+				    << digiProducer_ << " - returning." << endl;
     return;
   }
   if (DCCHeaders->size() !=1)
@@ -76,11 +90,10 @@ void EcalLaserShapeTools::analyze(const edm::Event& iEvent, const edm::EventSetu
       LogInfo("EcalLaserShapeTools") << "More than 1 DCCHeader found - not expected." << endl;
     }
 
-  // sorting out wavelenght
-  //  short lambda = -1;
+
+  // laser wavelenght from DCC header
   for (headerItr= DCCHeaders->begin();headerItr != DCCHeaders->end(); ++headerItr ) {
     EcalDCCHeaderBlock::EcalDCCEventSettings settings = headerItr->getEventSettings();
-    //lambda         = settings.wavelength;
     laser_color_ = (int) settings.wavelength;
     event_         = headerItr->getLV1();
   }
@@ -93,6 +106,7 @@ void EcalLaserShapeTools::analyze(const edm::Event& iEvent, const edm::EventSetu
   }
 
 
+
   // accessing digis (event-wise). Storing them in vector of vectors
   // to be used channel-wise in endJob()
   edm::Handle<EBDigiCollection>  digis;
@@ -100,32 +114,35 @@ void EcalLaserShapeTools::analyze(const edm::Event& iEvent, const edm::EventSetu
     iEvent.getByLabel(digiProducer_, digis);
     // gio: systematize logs!
     //    LogDebug("EcalLaserShapeTools") << "Got product:  EBDigiCollection from: " 
-    cout << "Got product:  EBDigiCollection from: " 
-				   << digiProducer_ << " - size: " 
-				   << digis->size()    << endl;
+    LogDebug("EcalLaserShapeTools") << "Got product:  EBDigiCollection from: " 
+				    << digiProducer_ << " - size: " 
+				    << digis->size()    << endl;
     
   } catch ( std::exception& ex ) {
     LogError("EcalLaserShapeTools") << "Cannot get product:  EBDigiCollection from: " 
-				   << digiProducer_ << " - returning." << endl;
+				    << digiProducer_ << " - returning." << endl;
     return;
   }
 
 
-  // gettin pndiodes  
+
+  // gettin pndiodes digi
   Handle<EcalPnDiodeDigiCollection> pndiodes;
   try {
     iEvent.getByLabel( pndiodeProducer_,pndiodes);
     LogDebug("EcalLaserShapeTools") << "Got product: EcalPnDiodeDigiCollection  from: " 
-				   << digiProducer_ << " - size: " 
-				   << pndiodes->size()    << endl;
+				    << digiProducer_ << " - size: " 
+				    << pndiodes->size()    << endl;
      
   } catch ( std::exception& ex ) {
     LogError("EcalLaserShapeTools") << "Cannot get product: EcalPnDiodeDigiCollection from: " 
-				   << digiProducer_ << " - returning." << endl;
+				    << digiProducer_ << " - returning." << endl;
     return;
   }
   const EcalPnDiodeDigiCollection* p_pndiodes = 0;
   p_pndiodes = pndiodes.product() ;
+
+
 
   //  gio
   // protection needed in case of missing PN
@@ -151,15 +168,13 @@ void EcalLaserShapeTools::analyze(const edm::Event& iEvent, const edm::EventSetu
 
     // look at PN diodes :
     // normalized amplitude - use average of 2 PNdiodes for each group of TTs
-    // gio: protect in case of lack of pn in digi because of integrity
+    // FIXME: protect in case of lack of pn in digi because of integrity
     float pn_amp = 0.5*( maxAmplPN[ pnFromTT(theId.tower()).first ] + maxAmplPN[ pnFromTT(theId.tower()).second ]) ;
     
     // retrieving a data frame
     for ( int i=0; i< (*digiItr).size() ; ++i ) {
-      // introducing here the normalization to PN amplitude: gio, to be done differently
+      // introducing here the normalization to PN amplitude: FIXME, to be done differently
       EcalMGPASample theSample(  (*digiItr).sample(i).adc()  , (*digiItr).sample(i).gainId()	 );
-      // gio tmp
-      //      EcalMGPASample theSample(  1 , (*digiItr).sample(i).gainId());
 
       if ((*digiItr).sample(i).gainId()!=1 )
 	{
@@ -170,26 +185,22 @@ void EcalLaserShapeTools::analyze(const edm::Event& iEvent, const edm::EventSetu
       theFrame.setSample( i, theSample);
       
     }
-    
-    // vector with the PN amplitudes pertaining to a crystal
-    pnData[ (*digiItr).id().ic() -1  ].push_back(pn_amp);
-    // gio tmp
-    //    pnData[ (*digiItr).id().ic() -1  ].push_back(1);
+        
 
     if (laser_color_ == 0) 
       {
-	// gio: to go away
-	//	cout << "inserting in storage vector data of channel " << (*digiItr).id().ic() << endl;
 	blueData[ (*digiItr).id().ic() -1 ].push_back(theFrame);
+	bluePnData[ (*digiItr).id().ic() -1  ].push_back(pn_amp);
       }
     else if (laser_color_ == 3)
       {
 	irData[ (*digiItr).id().ic() -1      ].push_back(theFrame);
+	irPnData[ (*digiItr).id().ic() -1  ].push_back(pn_amp);
       }
     else
       {	
 	LogDebug("EcalLaserShapeTools") << "Expected only blue (0) and ir (3), while color is "
-				       << laser_color_ << " - event not considered" << std::endl;
+					<< laser_color_ << " - event not considered" << std::endl;
       }
     
   }
@@ -208,171 +219,218 @@ void EcalLaserShapeTools::endJob (void)
 
   // create the ROOT file
   TFile file(rootFile_.c_str(),"RECREATE");
-  TH1F alphaH("alpha", "#alpha", 100,0,10);
-  TH1F betaH("beta", "#beta", 100,0,10);
-  TH1F chi2H("chi2", "#Chi^{2}", 100,0,10);
-  TH1F widthH("Width", "Width", 100,0,10);
 
-  nb_iter = 5;   // anyway iteration is stopped when chi2 is stable ...(3 iterations are usually enough)
-  nsmin   = 1;   // number of samples to fit before the maximum
-  nsmax   = 2;  // number of samples to fit after the maximum sample
+  TH1F alphaHb("alpha_b", "#alpha_{b}", 100,0,5);
+  TH1F betaHb("beta_b", "#beta_{b}", 100,0,5);
+  TH2F betaVsalphaHb("beta_VS_alpha_b", "#beta vs #alpha (blue)", 100,0,5, 100,0,5);
+  TH1F chi2Hb("chi2_b", "#Chi^{2}_{b}", 100,0,5);
+  TH1F widthHb("Width_b", "#Gamma_{b}", 100,0,5);
+  
+  TH1F alphaHir("alpha_ir", "#alpha_{ir}", 100,0,5);
+  TH1F betaHir("beta_ir", "#beta_{ir}", 100,0,5);
+  TH2F betaVsalphaHir("beta_VS_alpha_ir", "#beta vs #alpha (infrared)", 100,0,5, 100,0,5);
+  TH1F chi2Hir("chi2_ir", "#Chi^{2}_{ir}", 100,0,5);
+  TH1F widthHir("Width_ir", "#Gamma_{ir}", 100,0,5);
+
+  
+  // gio loop 1 /2 stasrts here
+  int icolor;
+  std::vector< std::vector <EBDataFrame >   > * pointerChannelsData;
+  for (int colour =0; colour < 2; colour++)
+    {
+      nb_iter = 5;   // anyway iteration is stopped when chi2 is stable ...(3 iterations are usually enough)
+      nsmin   = 1;   // number of samples to fit before the maximum
+      nsmax  = 2;  // number of samples to fit after the maximum sample
       
-
-  //    int IPRINT=0 ; // no results printed
-  sigma_rec = 1.2 ; // noise per channel (pessimisitic , can be adjusted according to covariance matrix)
-  //    sprintf(laser_choice,"blue LASER") ;
-  //    if(icolor==1) sprintf(laser_choice,"red LASER") ;
-  //    printf("====>>  Computing alpha-beta parameters for each channel with %s ... wait a few seconds ...\n",laser_choice) ;
-
-  // analyze data and compute parameters alpha-beta for each crystal
-  // initialize constants
-  // looping on all crys
-
-  // stick to blue just to start
-  int icolor =1;
-  
-  // begin loop on channels
-  std::vector< std::vector  <EBDataFrame >  >::const_iterator channelDataIter;
-    for (channelDataIter = blueData.begin(); channelDataIter !=blueData.end();  channelDataIter++)
-      {
-	LogInfo("EcalLaserShapeTools") << " channel: " 
-				      << ((channelDataIter - blueData.begin() ) +1)
-				      << " # events: " << (*channelDataIter).size() << endl;
-	// gio go away
-	if (   (channelDataIter - blueData.begin() )== 1){
-	  LogInfo("EcalLaserShapeTools") << " ch " << ((channelDataIter - blueData.begin() ) +1)  << ";" << endl;
-	  std::vector  <EBDataFrame >::const_iterator evtIter;
-	 	for (evtIter = (*channelDataIter).begin(); evtIter !=(*channelDataIter).end();  evtIter++)
-	 	  {
-	  	    for (int sample=0; sample<10; sample++)
-	  	      {
-	  		LogInfo("EcalLaserShapeTools") << "(in end job)  ch " << ( (*evtIter).id().ic()) 
-	  					      << " event  " << (evtIter - (*channelDataIter).begin())
-	  					      << " sample " << sample << " " << (*evtIter).sample(sample).adc()  << ";" << endl;
-	  	      }
-	 	  }
+      
+      //    int IPRINT=0 ; // no results printed
+      sigma_rec = 1.2 ; // noise per channel (pessimisitic , can be adjusted according to covariance matrix)
+      //    sprintf(laser_choice,"blue LASER") ;
+      //    if(icolor==1) sprintf(laser_choice,"red LASER") ;
+      //    printf("====>>  Computing alpha-beta parameters for each channel with %s ... wait a few seconds ...\n",laser_choice) ;
+      
+      // analyze data and compute parameters alpha-beta for each crystal
+      // initialize constants
+      // looping on all crys
+      
+      if (colour ==0)
+	{
+	  pointerChannelsData = (&blueData);
+	  // stick to blue just to start
+	  icolor =1;
 	}
-	
-	// crystal number - corresponds to ic()-1
-	int icris = ((int) (channelDataIter - blueData.begin() ) );
-	
-	double param_out[3] ;
-	//	int nevt[10];   // gio: can go away
-	int eventsNumber =0;
-	// this is the function which calculates pretty much all
-	LogInfo("EcalLaserShapeTools") << " now fitting " << endl;
-	std::vector< pair <float,float> >  reducedData;
-	reducedData.reserve(600);
-	
-	bool doFit =false;
-	if (
-	    (*channelDataIter).size()> 100 &&
-	    (*channelDataIter).size() == pnData[icris].size() 
-	    )
-	  {
-	    doFit = true;
-	    eventsNumber = (*channelDataIter).size();
-	  }
-
-
-	float    chi2s =0;
-	if (doFit) {
-	  //gio
-	  //	cout << "size before fitting: " << reducedData.size() << endl;
-	  cout << " fitting channel " << (icris+1) << endl;
-	  cout << "[before launching fitpj] size APD: " << (*channelDataIter).size() << " size pn " << pnData[icris].size() << endl;
-	  chi2s = fitpj(param_out, eventsNumber , (*channelDataIter), pnData[icris], reducedData) ;
-	  //gio
-	  cout << "[after launching fitpj] size APD: " << (*channelDataIter).size() << " size pn " << pnData[icris].size() << endl;
+      else 
+	{
+	  pointerChannelsData = (&irData);
+	  icolor =3;
 	}
-	else
-	  {
-	    cout << "[EcalLaserShape] Fit not  performed for channel: " << (icris+1) << " because too few APD events available (" 
-		 << (*channelDataIter).size() << ") or mismatch with PN event number (" 
-		 << pnData[icris].size() << ")" << endl;
-	  }
-       
-
-	//gio to go away
-	cout << "[out of fitpj] alpha is: " << param_out[0]  << " beta " << param_out[1]  << endl;
-	alpha_[icolor][icris] = param_out[0] ;
-	beta_[icolor][icris]  = param_out[1] ;
-	chi2_[icolor][icris]  = chi2s ;
-	// calculating widht
-	width_[icolor][icris]=ComputePulseWidth(alpha_[icolor][icris],beta_[icolor][icris]) ;
-	
-
-	
-	char nameTree[10];
-	sprintf(nameTree,"ApdOpnBlue_%d", (int) ((channelDataIter - blueData.begin())+1) );
-	TTree *oneChannelTree = new TTree(nameTree,nameTree);
-	// gio
-	//	treesToWrite.push_back( new TTree(nameTree,nameTree)  );
-	//	TTree oneTree(nameTree,nameTree); 
-	//	treesToWrite.push_back( oneTree  );
-	float ampli=0;
-	float time=0;
-	oneChannelTree ->Branch("Ampli",&ampli,"ampli/F");
-	oneChannelTree ->Branch("Time",&time,"time/F");
-
-	// one tree with reduced data per channel 
-	std::vector  < pair <float,float>  >::const_iterator Iter;
-	for (Iter = reducedData.begin(); Iter !=reducedData.end(); Iter++)
-	  {
-	    ampli = (*Iter).first;
-	    time  = (*Iter).second;
-	    //    treesToWrite.back() . Fill();
-	    // gio
-	    //treesToWrite.back() -> Fill();
-	    oneChannelTree-> Fill();
-	    cout << "[filling tree] ampli: " << ampli << " time: " << time << endl;
-	    //treesToWrite.back() . Fill();
+            
+      
+      // begin loop on channels
+      std::vector< std::vector  <EBDataFrame >  >::const_iterator channelDataIter;
+      for (channelDataIter = (*pointerChannelsData).begin(); channelDataIter !=(*pointerChannelsData).end();  channelDataIter++)
+	//    for (channelDataIter = blueData.begin(); channelDataIter !=blueData.end();  channelDataIter++)
+	{
+	  LogInfo("EcalLaserShapeTools") << " channel: " 
+					 << ((channelDataIter -  (*pointerChannelsData).begin() ) +1)
+					 << " # events: " << (*channelDataIter).size() << endl;
+	  // gio go away
+	  if (   (channelDataIter -  (*pointerChannelsData).begin() )== 1){
+	    LogInfo("EcalLaserShapeTools") << " ch " << ((channelDataIter -  (*pointerChannelsData).begin() ) +1)  << ";" << endl;
+	    std::vector  <EBDataFrame >::const_iterator evtIter;
+	    for (evtIter = (*channelDataIter).begin(); evtIter !=(*channelDataIter).end();  evtIter++)
+	      {
+		for (int sample=0; sample<10; sample++)
+		  {
+		    LogInfo("EcalLaserShapeTools") << "(in end job)  ch " << ( (*evtIter).id().ic()) 
+						   << " event  " << (evtIter - (*channelDataIter).begin())
+						   << " sample " << sample << " " << (*evtIter).sample(sample).adc()  << ";" << endl;
+		  }
+	      }
 	  }
 	
-	//	treesToWrite.push_back(oneChannelTree);
-	oneChannelTree->Write();
-	// delete oneChannelTree;
+	  // crystal number - corresponds to ic()-1
+	  int icris = ((int) (channelDataIter -  (*pointerChannelsData).begin() ) );
 	
-	alphaH.Fill(param_out[0]);
-	betaH.Fill(param_out[1]);
-	chi2H.Fill(chi2s);
-	widthH.Fill(width_[icolor][icris]);
+	  double param_out[3] ;
+	  //	int nevt[10];   // gio: can go away
+	  int eventsNumber =0;
+	  // this is the function which calculates pretty much all
+	  LogInfo("EcalLaserShapeTools") << " now fitting " << endl;
+	  std::vector< pair <float,float> >  reducedData;
+	  reducedData.reserve(600);
 	
-      }
-    // end loop on channels
+	  bool doFit =false;
+	  if (
+	      (*channelDataIter).size()> 100 &&
+	      (*channelDataIter).size() == bluePnData[icris].size() 
+	      )
+	    {
+	      doFit = true;
+	      eventsNumber = (*channelDataIter).size();
+	    }
 
 
+	  float    chi2s =0;
+	  if (doFit) {
 
-    
-    cout << "saved all trees" << endl;
-    //    TDirectory* basedir = gDirectory;
-    //    basedir ->cd();
-    alphaH.Write();	betaH.Write();
-    chi2H.Write();      widthH.Write();
-    
-    file.Write();
-    file.Close();
+	    LogDebug("EcalLaserShapeTools") << " fitting channel " << (icris+1) << endl;
+	    LogDebug("EcalLaserShapeTools") << "[before launching fitpj] size APD: " << (*channelDataIter).size() 
+					    << " size pn " << bluePnData[icris].size() << endl;
+	    chi2s = fitpj(param_out, eventsNumber , (*channelDataIter), bluePnData[icris], reducedData) ;
+	    //gio
+	    LogDebug("EcalLaserShapeTools") << "[after launching fitpj] size APD: " << (*channelDataIter).size() 
+					    << " size pn " << bluePnData[icris].size() << endl;
 
-    // writing out text file with alpha and beta channel by channel. For Blue laser.
-    std::ofstream txt_outfile;
-    txt_outfile.open(txtFile_.c_str(),ios::out);
-    for (int ch=1; ch<1701; ch++)
-      {
-	int sm=1;
-	txt_outfile << sm << "\t" << ch << "\t" << alpha_[1][ch-1] 
-		    << "\t" << beta_[1][ch-1] << "\t" 
-		    << chi2_[icolor][ch-1]  << endl;
-      }
-    txt_outfile.close();
+	  }
+	  else
+	    {
+	      LogDebug("EcalLaserShapeTools") << "[EcalLaserShape] Fit not  performed for channel: " 
+					      << (icris+1) << " because too few APD events available (" 
+					      << (*channelDataIter).size() << ") or mismatch with PN event number (" 
+					      << bluePnData[icris].size() << ")" << endl;
+	    }
+	  
+
+	  //gio to go away
+	  LogDebug("EcalLaserShapeTools") << "[out of fitpj] alpha is: " << param_out[0]  << " beta " << param_out[1]  << endl;
+	  alpha_[icolor][icris] = param_out[0] ;
+	  beta_[icolor][icris]   = param_out[1] ;
+	  chi2_[icolor][icris]   = chi2s ;
+	  // calculating widht
+	  width_[icolor][icris]=ComputePulseWidth(alpha_[icolor][icris],beta_[icolor][icris]) ;
+	
+
+	
+	  char nameTree[10];
+	  if (colour ==0)
+	    {
+	      sprintf(nameTree,"ApdOpnBlue_%d", (int) ((channelDataIter -  (*pointerChannelsData).begin())+1) );
+	    }
+	  else
+	    {
+	      sprintf(nameTree,"ApdOpnIr_%d", (int) ((channelDataIter -  (*pointerChannelsData).begin())+1) );
+	    }
+	
+	  TTree *oneChannelTree = new TTree(nameTree,nameTree);
+
+	  float ampli=0;
+	  float time=0;
+	  oneChannelTree ->Branch("Ampli",&ampli,"ampli/F");
+	  oneChannelTree ->Branch("Time",&time,"time/F");
+
+	  // one tree with reduced data per channel 
+	  std::vector  < pair <float,float>  >::const_iterator Iter;
+	  for (Iter = reducedData.begin(); Iter !=reducedData.end(); Iter++)
+	    {
+	      ampli = (*Iter).first;
+	      time  = (*Iter).second;
+
+	      oneChannelTree-> Fill();
+	      LogDebug("EcalLaserShapeTools") << "[filling tree] ampli: " << ampli << " time: " << time << endl;
+	    }
+	
+	  oneChannelTree->Write();
+
+	  
+	  if (colour ==0)
+	    {
+	      alphaHb.Fill(param_out[0]);
+	      betaHb.Fill(param_out[1]);
+	      betaVsalphaHb.Fill(param_out[0], param_out[1]);
+	      chi2Hb.Fill(chi2s);
+	      widthHb.Fill(width_[icolor][icris]);
+	    }
+	  else
+	    {
+	      alphaHir.Fill(param_out[0]);
+	      betaHir.Fill(param_out[1]);
+	      betaVsalphaHir.Fill(param_out[0], param_out[1]);
+	      chi2Hir.Fill(chi2s);
+	      widthHir.Fill(width_[icolor][icris]);
+	    }
+	  
+
+
+	}
+      // end loop on channels
+
+    } // end loop on the two colors
+
+   
+  LogDebug("EcalLaserShapeTools") << "saved all trees" << endl;
+
+  alphaHb.Write();	betaHb.Write();
+  chi2Hb.Write();      widthHb.Write();
+  
+  alphaHir.Write();	betaHir.Write();
+  chi2Hir.Write();      widthHir.Write();
+  
+  
+  file.Write();
+  file.Close();
+  
+  // writing out text file with alpha and beta channel by channel. For Blue laser.
+  std::ofstream txt_outfile;
+  txt_outfile.open(txtFile_.c_str(),ios::out);
+  for (int ch=1; ch<1701; ch++)
+    {
+      int sm=1;
+      txt_outfile << sm << "\t" << ch 
+		  << "\t" << alpha_[1][ch-1] 
+		  << "\t" << beta_[1][ch-1] 
+		  << "\t" << chi2_[1][ch-1] 
+		  << "\t" << alpha_[3][ch-1] 
+		  << "\t" << beta_[3][ch-1] 
+		  << "\t" << chi2_[3][ch-1] 
+		  << endl;
+    }
+  txt_outfile.close();
     
   
 
-}
-    
-  //    }// end loop on channels
-  
-  //  } //color is fixed now
-  //}
+}// end endJob()
+
 
 // fixme: has to be moved into a producer/Algo
 PNfit  EcalLaserShapeTools::maxPNDiode(const EcalPnDiodeDigi& pndigi) {
@@ -512,9 +570,9 @@ void  EcalLaserShapeTools::initPNTTMap() {
 
 
 double EcalLaserShapeTools::fitpj(double * parout, int num_event ,
-				 const std::vector<EBDataFrame >  &  theCrystalPulses, 
-				 const std::vector<float> & thePnAmplitudes , 
-				 std::vector< pair <float,float> > & reducedData ) 
+				  const std::vector<EBDataFrame >  &  theCrystalPulses, 
+				  const std::vector<float> & thePnAmplitudes , 
+				  std::vector< pair <float,float> > & reducedData ) 
 {
 
   // temporarily gio 
@@ -676,7 +734,7 @@ double EcalLaserShapeTools::fitpj(double * parout, int num_event ,
 	  amplu[k]/=  thePnAmplitudes[ nevt ];
 
 	  // gio go away
-	  //	  cout << "sample is: " << k << " ampl is: " << amplu[k] << endl;
+	  //	  LogDebug("EcalLaserShapeTools") << "sample is: " << k << " ampl is: " << amplu[k] << endl;
 	  
 	  if (amplu[k] > ampmax[nk] ) {
 	    ampmax[nk] = amplu[k] ;
@@ -794,7 +852,7 @@ double EcalLaserShapeTools::fitpj(double * parout, int num_event ,
 	  delta[kk] = (amp - fun)*unsurs1 ;
 	  //
 	  //gio
-	  //	  std::cout << "function " << fun << "amplitude "<< amp << "delta " << delta[kk] << std::endl ;
+	  //	  std::LogDebug("EcalLaserShapeTools") << "function " << fun << "amplitude "<< amp << "delta " << delta[kk] << std::endl ;
 	  chi2 = chi2 + delta[kk]*delta[kk]   ;
 	  chi2 /= float(num_event) ; // general chi2 ...
 
@@ -942,14 +1000,10 @@ double EcalLaserShapeTools::fitpj(double * parout, int num_event ,
       dbi[k][1] = dm1i[k][2]*ZMCT.coeff[0][0] + dm1i[k][3]*ZMCT.coeff[1][0] ;
 
       // copy local array into global array  	 
+      // [0] is  amplitude, [1] is time
       db_i[k][0] = bi[k][0]+ dbi[k][0]   ;
       db_i[k][1] = bi[k][1]+ dbi[k][1]   ;
-    
-      // gio
-      // [0] is  amplitude, [1] is time
-      //      pair <float,float> theReducedDatum(db_i[k][0],db_i[k][1]);
-      //      cout  << "ampli " << db_i[k][0] << " time " << db_i[k][1] << endl;
-      //      reducedData.push_back(theReducedDatum);
+      
 
     }
 
@@ -957,7 +1011,7 @@ double EcalLaserShapeTools::fitpj(double * parout, int num_event ,
     //	
     a1 += A_CROISS.coeff[0][0] ;
     a2 += A_CROISS.coeff[1][0] ;
-    std::cout << "iter " << iter << " alpha " << a1 << " beta " << a2 << std::endl ; 
+    LogDebug("EcalLaserShapeTools") << "iter " << iter << " alpha " << a1 << " beta " << a2 << std::endl ; 
     // end of iteration if chi2 is stable
     // uncomment this in case of APD not divided by PN
     // if(iter> 0 && ((chi2_iter[iter]-chi2_iter[iter-1])/chi2_iter[iter-1])<0.01 ) break ;
@@ -968,13 +1022,13 @@ double EcalLaserShapeTools::fitpj(double * parout, int num_event ,
 
   
   for( k=0 ; k< ((int)theCrystalPulses.size()) ; k++) {
-      //
-      if(event_ok[k]==0) continue ; // remove bad events
-      // [0] is  amplitude, [1] is time
-      pair <float,float> theReducedDatum(db_i[k][0],db_i[k][1]);
-      cout  << "[fitpj after iterations] ampli " << db_i[k][0] << " time " << db_i[k][1] << endl;
-      reducedData.push_back(theReducedDatum);
-    }
+    //
+    if(event_ok[k]==0) continue ; // remove bad events
+    // [0] is  amplitude, [1] is time
+    pair <float,float> theReducedDatum(db_i[k][0],db_i[k][1]);
+    LogDebug("EcalLaserShapeTools")  << "[fitpj after iterations] ampli " << db_i[k][0] << " time " << db_i[k][1] << endl;
+    reducedData.push_back(theReducedDatum);
+  }
 
 
 
@@ -983,11 +1037,11 @@ double EcalLaserShapeTools::fitpj(double * parout, int num_event ,
   parout[1] = a2 ;    // beta
   parout[2] = chi2s ;
 
-  cout << "alpha is: " << a1  << " beta " << a2  << endl;
+  LogDebug("EcalLaserShapeTools") << "alpha is: " << a1  << " beta " << a2  << endl;
 
-//   LogDebug("EcalLaserShapeTools") << "cry: " << 1 << ""
-//     hitCollection_
-// 				 << " produced by " << hitProducer_ << std::endl;
+  //   LogDebug("EcalLaserShapeTools") << "cry: " << 1 << ""
+  //     hitCollection_
+  // 				 << " produced by " << hitProducer_ << std::endl;
   
 
 
@@ -1406,7 +1460,7 @@ double EcalLaserShapeTools::parab(Double_t ampl[N_samples],Int_t nmin,Int_t nmax
   }
   else {
     // gio
-    cout << "[LaserParab] denom= " << denom << " (caused by small ampli?)" << endl;
+    LogDebug("EcalLaserShapeTools") << "[LaserParab] denom= " << denom << " (caused by small ampli?)" << endl;
     //    printf("denom =%f\n",denom)  ;
     dt=0.5  ;
   }
