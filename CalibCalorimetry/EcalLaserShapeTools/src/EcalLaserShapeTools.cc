@@ -1,8 +1,8 @@
 /*
  * \file EcalLaserShapeTools.cc
  *
- * $Date: 2006/07/04 16:15:47 $
- * $Revision: 1.3 $
+ * $Date: 2006/07/14 11:04:53 $
+ * $Revision: 1.4 $
  * \author P. Jarry
  * \author G. Franzoni
  *
@@ -15,13 +15,13 @@ EcalLaserShapeTools::EcalLaserShapeTools(const edm::ParameterSet& iConfig)
 {
   //now do what ever initialization is needed
   evtNum_ =0;
-  rootFile_                = iConfig.getUntrackedParameter<std::string>("rootOutFile");
-  txtFile_                   = iConfig.getUntrackedParameter<std::string>("txtOutFile");
-  histFile_                 = iConfig.getUntrackedParameter<std::string>("HistogramOutFile");
-  digiProducer_        = iConfig.getParameter<std::string>("digiProducer");
-  pndiodeProducer_     = iConfig.getParameter<std::string>("pndiodeProducer");
-  hitCollection_       = iConfig.getParameter<std::string>("hitCollection");
-  hitProducer_         = iConfig.getParameter<std::string>("hitProducer");
+  rootFile_                  = iConfig.getUntrackedParameter<std::string>("rootOutFile");
+  txtFile_                     = iConfig.getUntrackedParameter<std::string>("txtOutFile");
+  histFile_                   = iConfig.getUntrackedParameter<std::string>("HistogramOutFile");
+  digiProducer_         = iConfig.getParameter<std::string>("digiProducer");
+  pndiodeProducer_  = iConfig.getParameter<std::string>("pndiodeProducer");
+  hitCollection_          = iConfig.getParameter<std::string>("hitCollection");
+  hitProducer_            = iConfig.getParameter<std::string>("hitProducer");
 }
 
 void EcalLaserShapeTools::beginJob (EventSetup const& eventSetup) 
@@ -56,7 +56,7 @@ EcalLaserShapeTools::~EcalLaserShapeTools()
 void EcalLaserShapeTools::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   evtNum_++;
-  LogInfo("EcalLaserShapeTools") << "\n\n\n event: " << evtNum_ << endl;
+  LogInfo("EcalLaserShapeTools") << "\n\n\n Event: " << evtNum_ << endl;
   
   LogDebug("EcalLaserShapeTools") << "Fetching hitCollection: " << hitCollection_
 				 << " produced by " << hitProducer_ << std::endl;
@@ -98,7 +98,9 @@ void EcalLaserShapeTools::analyze(const edm::Event& iEvent, const edm::EventSetu
   edm::Handle<EBDigiCollection>  digis;
   try{ 
     iEvent.getByLabel(digiProducer_, digis);
-    LogDebug("EcalLaserShapeTools") << "Got product:  EBDigiCollection from: " 
+    // gio: systematize logs!
+    //    LogDebug("EcalLaserShapeTools") << "Got product:  EBDigiCollection from: " 
+    cout << "Got product:  EBDigiCollection from: " 
 				   << digiProducer_ << " - size: " 
 				   << digis->size()    << endl;
     
@@ -125,6 +127,7 @@ void EcalLaserShapeTools::analyze(const edm::Event& iEvent, const edm::EventSetu
   const EcalPnDiodeDigiCollection* p_pndiodes = 0;
   p_pndiodes = pndiodes.product() ;
 
+  //  gio
   // protection needed in case of missing PN
   EcalPnDiodeDigiCollection::const_iterator ipnd ;
   std::vector<double> maxAmplPN;
@@ -142,7 +145,7 @@ void EcalLaserShapeTools::analyze(const edm::Event& iEvent, const edm::EventSetu
    
   for (digiItr = digis->begin(); digiItr != digis->end(); ++digiItr ) {
      
-    EBDetId            theId(digiItr->id()) ;
+    EBDetId                theId(digiItr->id()) ;
     EBDataFrame        theFrame( theId );  
 
 
@@ -154,18 +157,18 @@ void EcalLaserShapeTools::analyze(const edm::Event& iEvent, const edm::EventSetu
     // retrieving a data frame
     for ( int i=0; i< (*digiItr).size() ; ++i ) {
       // introducing here the normalization to PN amplitude: gio, to be done differently
-      EcalMGPASample theSample( ( (*digiItr).sample(i).adc() ) , (*digiItr).sample(i).gainId());
+      EcalMGPASample theSample(  (*digiItr).sample(i).adc()  , (*digiItr).sample(i).gainId()	 );
       // gio tmp
       //      EcalMGPASample theSample(  1 , (*digiItr).sample(i).gainId());
 
       if ((*digiItr).sample(i).gainId()!=1 )
 	{
 	  LogInfo("EcalLaserShapeTools") << " gain " << (*digiItr).sample(i).gainId() << " other than 1(= X12) found "
-					<< " - note: gain ratio not accounted for" << endl;
+					 << " - note: gain ratio not accounted for" << endl;
 	}
-
+      
       theFrame.setSample( i, theSample);
-
+      
     }
     
     // vector with the PN amplitudes pertaining to a crystal
@@ -180,7 +183,9 @@ void EcalLaserShapeTools::analyze(const edm::Event& iEvent, const edm::EventSetu
 	blueData[ (*digiItr).id().ic() -1 ].push_back(theFrame);
       }
     else if (laser_color_ == 3)
-      {irData[ (*digiItr).id().ic() -1      ].push_back(theFrame);}
+      {
+	irData[ (*digiItr).id().ic() -1      ].push_back(theFrame);
+      }
     else
       {	
 	LogDebug("EcalLaserShapeTools") << "Expected only blue (0) and ir (3), while color is "
@@ -208,9 +213,9 @@ void EcalLaserShapeTools::endJob (void)
   TH1F chi2H("chi2", "#Chi^{2}", 100,0,10);
   TH1F widthH("Width", "Width", 100,0,10);
 
-  nb_iter = 5 ;  // anyway iteration is stopped when chi2 is stable ...(3 iterations are usually enough)
-  nsmin   = 1 ; // number of samples to fit before the maximum
-  nsmax   = 2 ; // number of samples to fit after the maximum sample
+  nb_iter = 5;   // anyway iteration is stopped when chi2 is stable ...(3 iterations are usually enough)
+  nsmin   = 1;   // number of samples to fit before the maximum
+  nsmax   = 2;  // number of samples to fit after the maximum sample
       
 
   //    int IPRINT=0 ; // no results printed
@@ -225,17 +230,17 @@ void EcalLaserShapeTools::endJob (void)
 
   // stick to blue just to start
   int icolor =1;
-
-  // gio go away
+  
+  // begin loop on channels
   std::vector< std::vector  <EBDataFrame >  >::const_iterator channelDataIter;
     for (channelDataIter = blueData.begin(); channelDataIter !=blueData.end();  channelDataIter++)
       {
-	LogInfo("EcalLaserShapeTools") << " channel " 
+	LogInfo("EcalLaserShapeTools") << " channel: " 
 				      << ((channelDataIter - blueData.begin() ) +1)
-				      << " # events " << (*channelDataIter).size() << endl;
-      
+				      << " # events: " << (*channelDataIter).size() << endl;
+	// gio go away
 	if (   (channelDataIter - blueData.begin() )== 1){
-	  LogInfo("EcalLaserShapeTools") << " ch " << (channelDataIter - blueData.begin() )  << ";" << endl;
+	  LogInfo("EcalLaserShapeTools") << " ch " << ((channelDataIter - blueData.begin() ) +1)  << ";" << endl;
 	  std::vector  <EBDataFrame >::const_iterator evtIter;
 	 	for (evtIter = (*channelDataIter).begin(); evtIter !=(*channelDataIter).end();  evtIter++)
 	 	  {
@@ -252,7 +257,8 @@ void EcalLaserShapeTools::endJob (void)
 	int icris = ((int) (channelDataIter - blueData.begin() ) );
 	
 	double param_out[3] ;
-	int nevt[10];
+	//	int nevt[10];   // gio: can go away
+	int eventsNumber =0;
 	// this is the function which calculates pretty much all
 	LogInfo("EcalLaserShapeTools") << " now fitting " << endl;
 	std::vector< pair <float,float> >  reducedData;
@@ -264,8 +270,10 @@ void EcalLaserShapeTools::endJob (void)
 	    (*channelDataIter).size() == pnData[icris].size() 
 	    )
 	  {
-	    doFit = true; 
+	    doFit = true;
+	    eventsNumber = (*channelDataIter).size();
 	  }
+
 
 	float    chi2s =0;
 	if (doFit) {
@@ -273,7 +281,7 @@ void EcalLaserShapeTools::endJob (void)
 	  //	cout << "size before fitting: " << reducedData.size() << endl;
 	  cout << " fitting channel " << (icris+1) << endl;
 	  cout << "[before launching fitpj] size APD: " << (*channelDataIter).size() << " size pn " << pnData[icris].size() << endl;
-	  chi2s = fitpj(param_out,nevt[1], (*channelDataIter), pnData[icris], reducedData) ;
+	  chi2s = fitpj(param_out, eventsNumber , (*channelDataIter), pnData[icris], reducedData) ;
 	  //gio
 	  cout << "[after launching fitpj] size APD: " << (*channelDataIter).size() << " size pn " << pnData[icris].size() << endl;
 	}
@@ -331,6 +339,10 @@ void EcalLaserShapeTools::endJob (void)
 	widthH.Fill(width_[icolor][icris]);
 	
       }
+    // end loop on channels
+
+
+
     
     cout << "saved all trees" << endl;
     //    TDirectory* basedir = gDirectory;
@@ -661,7 +673,8 @@ double EcalLaserShapeTools::fitpj(double * parout, int num_event ,
 	imax[nk] = 0 ;
 	for ( k = 0 ; k < N_samples ; k++) {     
 	  amplu[k] =  ((double) (* thePulse).sample(k).adc() ) ;    // get the pulses the new way
-	  amplu[k]/=  thePnAmplitudes[  (*thePulse).id().ic() -1 ];
+	  amplu[k]/=  thePnAmplitudes[ nevt ];
+
 	  // gio go away
 	  //	  cout << "sample is: " << k << " ampl is: " << amplu[k] << endl;
 	  
