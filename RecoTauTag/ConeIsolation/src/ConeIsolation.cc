@@ -11,9 +11,9 @@
      <Notes on implementation>
 */
 //
-// Original Author:  Andrea Rizzi
-//         Created:  Thu Apr  6 09:56:23 CEST 2006
-// $Id: ConeIsolation.cc,v 1.3 2006/06/14 17:38:04 gennai Exp $
+// Original Author:  Simone Gennai
+//      Created:  Thu Apr  6 09:56:23 CEST 2006
+// $Id: ConeIsolation.cc,v 1.4 2006/06/29 09:44:22 akalinow Exp $
 //
 //
 
@@ -92,20 +92,23 @@ ConeIsolation::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    Vertex::Point p(0,0,0);
    Vertex myPV(p,e,1,1,1);
    //Get pixel vertices
-   Handle<reco::VertexCollection> vertices;
-   iEvent.getByLabel(vertexSrc,"pixel",vertices);
-   const reco::VertexCollection vertCollection = *(vertices.product());
-   reco::VertexCollection::const_iterator ci = vertCollection.begin();
-   int i=0;
-   if(!vertCollection.size()) return;
-   for(;ci!=vertCollection.end();ci++){
-      edm::LogInfo("ConeIsolation::produce()")
-	<<" Vertex: "<<i<<" ("
-	 <<ci->x()<<", "
-	 <<ci->y()<<", "
-	 <<ci->z()<<")"<<endl;
-     myPV = *ci;
-   }
+   if(vertexSrc != "Dummy")
+     {
+       Handle<reco::VertexCollection> vertices;
+       iEvent.getByLabel(vertexSrc,"pixel",vertices);
+       const reco::VertexCollection vertCollection = *(vertices.product());
+       reco::VertexCollection::const_iterator ci = vertCollection.begin();
+       int i=0;
+       if(!vertCollection.size()) return;
+       for(;ci!=vertCollection.end();ci++){
+	 edm::LogInfo("ConeIsolation::produce()")
+	   <<" Vertex: "<<i<<" ("
+	   <<ci->x()<<", "
+	   <<ci->y()<<", "
+	   <<ci->z()<<")"<<endl;
+	 myPV = *ci;
+       }
+     }
    
   //cout << "here-0.5" << jetTracksAssociation <<endl;     
   JetTracksAssociationCollection::const_iterator it = jetTracksAssociation->begin();
