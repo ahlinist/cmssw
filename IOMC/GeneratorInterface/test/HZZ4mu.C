@@ -1,7 +1,8 @@
 
 {
 
-   gSystem->Load("libFWCoreFWLite") ;
+   gSystem->Load("libCLHEPRflx.so") ;
+   gSystem->Load("libFWCoreFWLite.so") ;
    AutoLibraryLoader::enable() ;
    
    TFile* f = new TFile("pythiaHZZ4mu.root") ;
@@ -13,7 +14,7 @@
    
    edm::HepMCProduct EvtProd ;
    TBranch* bhepmc =
-      tevt->GetBranch( "edmHepMCProduct_source.obj") ;
+      tevt->GetBranch( "edmHepMCProduct_source__PROD.obj") ;
 
    bhepmc->SetAddress( & EvtProd ) ;
    
@@ -25,14 +26,16 @@
    
    HepMC::GenVertex*   HiggsDecVtx = 0 ;
    
-   HepMC::GenEvent::particle_const_iterator pit ;
-   HepMC::GenEvent::vertex_const_iterator vit ;
+   HepMC::GenEvent::particle_iterator pit ;
+   HepMC::GenEvent::vertex_iterator vit ;
    HepMC::GenVertex::particle_iterator vpit ;
       
-   // because I hate using std::map and there's NO dictionary 
-   // for std::vector<HepMC::GenParticle*>, I'm doing a dirty
-   // trick for storing momenta in one container (std::vector)
-   //  and the PDG's (for checking charge) in another (TArrayI)   
+   // because I hate using std::map and there has been NO dictionary 
+   // for std::vector<HepMC::GenParticle*> untill tag V00-07-00 of the
+   // SimDataFormats/HepMCProduct, I'm doing a dirty trick of storing
+   // momenta in one container (std::vector) and the PDG's (for checking 
+   // charge) in another (TArrayI)
+   // I'll fix it in the 090 series   
    //
    std::vector<CLHEP::HepLorentzVector> StableMuMom ;
    //
