@@ -16,13 +16,14 @@ class DBIdealGeometryESSource : public edm::ESProducer,
 public:
     DBIdealGeometryESSource(const edm::ParameterSet & pset);
     virtual ~DBIdealGeometryESSource(); 
-    const DDCompactView * produce(const IdealGeometryRecord &);
+    std::auto_ptr<DDCompactView> produce(const IdealGeometryRecord &);
 protected:
     virtual void setIntervalFor(const edm::eventsetup::EventSetupRecordKey &,
 				const edm::IOVSyncValue &, edm::ValidityInterval &);
  private:
     DBIdealGeometryESSource(const DBIdealGeometryESSource &);
     const DBIdealGeometryESSource & operator=(const DBIdealGeometryESSource &);
+    std::string rootNodeName_;
 };
 
 
