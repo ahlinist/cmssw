@@ -13,18 +13,20 @@
 
 #include "CondCore/MetaDataService/interface/MetaData.h"
 
+#include "SealUtil/SealTimer.h"
+
 #include <memory>
 
 using cond::MetaData;
 
 DBIdealGeometryESSource::DBIdealGeometryESSource(const edm::ParameterSet & pset) 
 {
-  std::string startNode = pset.getParameter<std::string>("startNode") == ""? std::string("cms:OCMS"):pset.getParameter<std::string>("startNode");
+  rootNodeName_ = pset.getParameter<std::string>("rootNodeName") == ""? std::string("cms:OCMS"):pset.getParameter<std::string>("rootNodeName");
   std::string dbConn = pset.getParameter<std::string>("dbConn");
-  std::string dbID = pset.getParameter<std::string>("dbID");
+  std::string dbMetaName = pset.getParameter<std::string>("dbMetaName");
   std::string dbUser = pset.getParameter<std::string>("dbUser");
   std::string dbPass = pset.getParameter<std::string>("dbPass");
- 
+  seal::SealTimer txml("DBIdealGeometryESSource"); 
   cond::ServiceLoader* loader=new cond::ServiceLoader;
   dbUser="CORAL_AUTH_USER="+dbUser;
   dbPass="CORAL_AUTH_PASSWORD="+dbPass;
@@ -33,31 +35,20 @@ DBIdealGeometryESSource::DBIdealGeometryESSource(const edm::ParameterSet & pset)
   loader->loadAuthenticationService( cond::Env );
   loader->loadMessageService( cond::Error );
 
-std::string aToken;
- try {
-  DDORAReader ddorar( startNode, 
-              dbID,
-		      aToken,
-		      pset.getParameter<std::string>("dbUser"), 
-		      pset.getParameter<std::string>("dbPass"),
-		      dbConn ); 
-  if ( ddorar.readDB() ) {
-  
-//     // MEC: FIX! Specs should NOT come from XML?
-//     DDLParser * parser = DDLParser::instance();
-//     //   DDLParser::setInstance( new DDLParser );
-//     //   DDLParser* parser = DDLParser::instance();     
-//     DDLConfiguration dp;
-//     int result1 = dp.readConfig( pset.getParameter<std::string>("specsConf") );
-//     if ( result1 != 0 ) throw DDException ("DDLConfiguration: readConfig failed!");
-//     result1 = parser->parse( dp );
-//     if ( result1 != 0 ) throw DDException ("DetectorDescription: Parsing failed!");
-  } else {
-    std::cout << "WARNING: DBIdealGeometryESSource could not make a geometry.  Should this throw?" << std::endl;
+  try {
+    DDORAReader ddorar( rootNodeName_, 
+			dbMetaName,
+			pset.getParameter<std::string>("dbUser"), 
+			pset.getParameter<std::string>("dbPass"),
+			dbConn ); 
+    if ( ddorar.readDB() ) {
+      // continue...
+    } else {
+      std::cout << "WARNING: DBIdealGeometryESSource could not make a geometry.  Should this throw?" << std::endl;
+    }
+  } catch ( std::exception& ser ) {
+    std::cout << ser.what() << std::endl;
   }
- } catch ( std::exception& ser ) {
-   std::cout << ser.what() << std::endl;
- }
   //Tell Producer what we produce
   setWhatProduced(this);
   //Tell Finder what records we find
@@ -66,9 +57,20 @@ std::string aToken;
 
 DBIdealGeometryESSource::~DBIdealGeometryESSource() {}
 
-const DDCompactView *
+std::auto_ptr<DDCompactView>
 DBIdealGeometryESSource::produce(const IdealGeometryRecord &)
-{ return new DDCompactView(); }
+{ 
+   DDName ddName(rootNodeName_);
+   DDLogicalPart rootNode(ddName);
+   if(! rootNode.isValid()){
+      throw cms::Exception("Geometry")<<"There is no valid node named \""
+				      <<rootNodeName_<<"\"";
+   }
+   std::auto_ptr<DDCompactView> returnValue(new DDCompactView(rootNode));
+   DDCompactView globalOne;
+   returnValue->writeableGraph() = globalOne.graph();
+   return returnValue;
+ }
 
 void DBIdealGeometryESSource::setIntervalFor(const edm::eventsetup::EventSetupRecordKey & ,
 					     const edm::IOVSyncValue & iosv,
