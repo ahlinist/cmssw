@@ -13,7 +13,7 @@
 //
 // Original Author:  Simone Gennai
 //      Created:  Thu Apr  6 09:56:23 CEST 2006
-// $Id: ConeIsolation.cc,v 1.4 2006/06/29 09:44:22 akalinow Exp $
+// $Id: ConeIsolation.cc,v 1.5 2006/07/16 10:33:46 gennai Exp $
 //
 //
 
@@ -53,7 +53,7 @@ ConeIsolation::ConeIsolation(const edm::ParameterSet& iConfig)
 {
   jetTrackSrc = iConfig.getParameter<string>("JetTrackSrc");
   vertexSrc = iConfig.getParameter<string>("vertexSrc");
-  
+  usingVertex = iConfig.getParameter<bool>("useVertex");
   m_algo = new ConeIsolationAlgorithm(iConfig);
   
    produces<reco::JetTagCollection>();  //Several producer so I put a label
@@ -92,10 +92,11 @@ ConeIsolation::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    Vertex::Point p(0,0,0);
    Vertex myPV(p,e,1,1,1);
    //Get pixel vertices
-   if(vertexSrc != "Dummy")
+   Handle<reco::VertexCollection> vertices;
+   iEvent.getByLabel(vertexSrc,"pixel",vertices);
+   if(usingVertex)
      {
-       Handle<reco::VertexCollection> vertices;
-       iEvent.getByLabel(vertexSrc,"pixel",vertices);
+
        const reco::VertexCollection vertCollection = *(vertices.product());
        reco::VertexCollection::const_iterator ci = vertCollection.begin();
        int i=0;
