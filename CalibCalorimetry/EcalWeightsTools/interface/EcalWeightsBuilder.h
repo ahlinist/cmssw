@@ -1,20 +1,8 @@
 #ifndef ECALWEIGHTSBUILDER_H
 #define ECALWEIGHTSBUILDER_H
-/**\class EcalWeightsBuilder TestEcal/Analyzers/src/EcalWeightsBuilder.h
 
- Description: <one line class summary>
-
- Implementation:
-     <Notes on implementation>
-*/
-//
-// Original Author:  Renaud Bruneliere
-//         Created:  Tue Aug  12 16:15:01 CEST 2005
-// $Id$
-//
-//
-
-
+//Author: Alexandre Zabi - Imperial College
+//Date: 2006/07/10 15:58:06 $
 
 // system include files
 #include <memory>
@@ -32,11 +20,6 @@
 #include <map>
 #include <string>
 
-//
-// class used to produce pulse shape profiles
-// Only works with Ecal barrel data till now...
-//
-
 class TFile;
 class TH2F;
 class TProfile;
@@ -44,25 +27,29 @@ class TProfile;
 class EcalWeightsBuilder : public edm::EDAnalyzer {
  public:
 
-  enum { kGains = 3, kFirstGainId = 1 };
-
-
   explicit EcalWeightsBuilder(edm::ParameterSet const& pSet);
   ~EcalWeightsBuilder();
-  virtual void analyze(const edm::Event& e, const edm::EventSetup& c);
+  virtual void analyze(const edm::Event& evt, const edm::EventSetup& evtSetup);
 
  private:
-  std::vector< std::vector<float> > pedestal_;
-  std::map< std::pair<int, int>, int > channelPosToIndexPed_;
-  std::map< std::pair<int, int>, int > channelPosToIndexHist_;
-  TFile* fOut_;
-  std::vector<TH2F*> hPulse_;
-  std::vector<TProfile*> hPulseProf_;
-  unsigned int verbosity_;
-  int nBinsHisto_;
-  float xMinHisto_, xMaxHisto_;
-  std::string pedestalFileName_;
-  int nChannels_;
-  int iEvent_; // should be removed when we can access class EventID
+
+  unsigned int verbosity_; 
+  unsigned int nSamples_;
+  unsigned int nTdcBins_;
+  unsigned int SuperModule_;
+  unsigned int BinOfMax_;
+  bool         debug_;
+  bool         gen_groupID_;
+  bool         default_weights_ ;
+  double       tMaxRef_;
+
+  unsigned int nPulseSamples_;
+  unsigned int nPrePulseSamples_;
+  bool         doFitBaseline_;
+  bool         doFitTime_;
+  unsigned int nPulseSamples_gain_;
+  unsigned int nPrePulseSamples_gain_;
+  bool         doFitBaseline_gain_;
+  bool         doFitTime_gain_;
 };
 #endif

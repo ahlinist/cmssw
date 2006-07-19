@@ -1,15 +1,11 @@
 /**
  * \file EcalWeightsBuilder.cc 
- * Dump in a root file pulse shapes
+ * This module is used to produce the weights needed by
+ * the reconstruction of amplitude (RecHits) in the ECAL.
  * 
- * 
- * $Date: 2005/08/12 18:06:48 $
+ * $Date: 2006/07/10 15:58:06 $
  * $Revision: 1.1 $
- * \author R. Bruneliere'
- *
- * $Date: 2006/10/04 14:31:31 $
- * $Revision: 1.2 $
- * Updated by Alex Zabi.
+ * Author Alexandre Zabi
 */
 
 #include "TFile.h"
@@ -22,271 +18,546 @@
 #include "CalibCalorimetry/EcalWeightsTools/interface/ComputeWeights.h"
 #include "CalibCalorimetry/EcalWeightsTools/interface/EcalWeightsBuilder.h"
 
+//include reference signal representation
+#include "DataFormats/EcalDetId/interface/EBDetId.h"
+#include "SimCalorimetry/EcalSimAlgos/interface/EcalSimParameterMap.h"
+#include "SimCalorimetry/EcalSimAlgos/interface/EcalShape.h"
+
 #include <iostream>
 #include <iomanip>
 #include <fstream>
+#include <string>
 
-EcalWeightsBuilder::EcalWeightsBuilder(edm::ParameterSet const& pSet) : 
-  verbosity_(pSet.getUntrackedParameter("verbosity", 1U)),
-  nBinsHisto_(pSet.getUntrackedParameter<int>("nBinsHisto", 10)),
-  xMinHisto_(pSet.getUntrackedParameter<double>("xMinHisto", 0.)),
-  xMaxHisto_(pSet.getUntrackedParameter<double>("xMaxHisto", 10.)),
-  pedestalFileName_(pSet.getUntrackedParameter<std::string>("pedestalFile","pedestal.txt")),
-  nChannels_(0), iEvent_(0)
+EcalWeightsBuilder::EcalWeightsBuilder(edm::ParameterSet const& pSet)
 {
-  if (verbosity_ > 0)
-    std::cout << "Constructing EcalWeightsBuilder::EcalWeightsBuilder" << std::endl;
-  
-  //READ PEDESTAL FILE
-  std::ifstream pedestalFile;
-  pedestalFile.open(pedestalFileName_.c_str());
-  if (pedestalFile.is_open()) {
-    int ieta, iphi;
-    std::vector<float> pedestal(kGains, 0.);
-    std::vector<float> noise(kGains, 0.);
-    int index = 0;
-    while (!pedestalFile.eof()) {
-      pedestalFile >> ieta >> iphi;
-      for (int gainId = 0; gainId < kGains; gainId++)
-	pedestalFile >> pedestal[gainId] >> noise[gainId];
-      std::pair<int, int> channelPos(ieta, iphi);
-      if (channelPosToIndexPed_[channelPos] < 1) {
-	channelPosToIndexPed_[channelPos] = index + 1;
-	pedestal_.push_back(pedestal);
-	index++;
-      }//loop channel
-    }//loop file
-    pedestalFile.close();
-  } else {
-    std::cout << "EcalWeightsBuilder::EcalWeightsBuilder: Error: "
-	      << "can not open pedestal file " << pedestalFileName_
-	      << std::endl;
-    abort();
-  }
-  
-  // Open output root file
-  if (verbosity_ > 1)
-    std::cout << "EcalWeightsBuilder::EcalWeightsBuilder: opening root file" << std::endl;
-  fOut_ = new TFile("pulse.root", "recreate");
-  if (verbosity_ > 1)
-    std::cout << "End Constructing EcalWeightsBuilder::EcalWeightsBuilder" << std::endl;
+  //verbosity
+  verbosity_        = pSet.getUntrackedParameter("verbosity", 1U);
+
+  //Prints out the individual weights files: ampWeights.txt, pedWeights.txt etc..
+  debug_            = pSet.getUntrackedParameter<bool>("debug", false);
+
+  //GENERATION OF GROUPID WEIGHTS:
+  // This generates weights for Test Beam analysis. The Module EcalGroupIdBuilder
+  // must have been called priored to EcalWeightsBuilder in order to assign each
+  // crystal to a certain group Id number.
+  // When generating group_id weights, the supermodule number must be specified
+  // and the corresponding group id file produced by EcalGroupIdBuilder must be
+  // accessible: GroupId_SMXX.out 
+  gen_groupID_      = pSet.getUntrackedParameter<bool>("gen_groupID", false);
+  SuperModule_      = pSet.getUntrackedParameter<unsigned int>("SuperModule", 0);
+
+  //REFERENCE TIMING: This is used to generated group id weights. This measures
+  // the difference between the reference and mean timing of SuperModule.
+  // tMaxRef_ = 5.5 if default setting for the Supermodule
+  tMaxRef_          = pSet.getUntrackedParameter<double>("tMaxRef", 5.5); 
+  BinOfMax_         = int(tMaxRef_);
+
+  //GENERATING DEFAULT WEIGHTS:
+  // This generates the default sets of weights for CMS and Test Beam (simulation)
+  // NOTE: if this option is chosen all, other options refering to groupIds are
+  // discraded
+  default_weights_  = pSet.getUntrackedParameter<bool>("default_weights", true);
+  if(default_weights_) 
+    {tMaxRef_ = 5.5;
+      if(gen_groupID_) {
+	gen_groupID_ = false; 
+	if(verbosity_ > 1) std::cout << "EcalWeightsBuilder: WARNING: " 
+				     << " the group id weights will not be generated"
+				     << " default_weights option should be false" << std::endl;
+      }//group id check
+    }//default weight`s
+
+  //SAMPLES: number of samples in the electronics readout
+  nSamples_          = pSet.getUntrackedParameter<unsigned int>("nSamples", 10);
+
+  //TDCBINS: number of Tdc bins
+  nTdcBins_          = pSet.getUntrackedParameter<unsigned int>("nTdcBins", 25);
+
+  //WEIGHTS OPTIONS:
+  // WEIGHTS OPTIONS BEFORE GAIN SWITCHING
+  // number of signal sample and pre-sample used for amplitude reconstruction
+  nPulseSamples_     = pSet.getUntrackedParameter<unsigned int>("nPulseSamples", 5);
+  nPrePulseSamples_  = pSet.getUntrackedParameter<unsigned int>("nPrePulseSamples", 3);
+  //pedestal subtracting weights
+  doFitBaseline_     = pSet.getUntrackedParameter<bool>("doFitBaseline", true);
+  //jitter compensating weights
+  doFitTime_         = pSet.getUntrackedParameter<bool>(" doFitTime", true);
+
+  // WEIGHTS OPTIONS AFTER GAIN SWITCHING
+  // number of signal sample and pre-sample used for amplitude reconstruction after gain switching
+  nPulseSamples_gain_    = pSet.getUntrackedParameter<unsigned int>("nPulseSamples_gain", 5);
+  nPrePulseSamples_gain_ = pSet.getUntrackedParameter<unsigned int>("nPrePulseSamples_gain", 3);
+  doFitBaseline_gain_    = pSet.getUntrackedParameter<bool>("doFitBaseline_gain", false);
+  doFitTime_gain_        = pSet.getUntrackedParameter<bool>("doFitTime_gain", true);
+
+  if(default_weights_)
+    {
+      if(verbosity_ > 1) std::cout << "EcalWeightsBuilder: WARNING: " 
+				   << " PRODUCING DEFAULT WEIGHTS FOR CMS and TEST BEAM SIMULATION" 
+				   << std::endl;
+      
+      //If default weights are produced (for data taking)
+      //Jitter compensating weights are not necessary
+      nPulseSamples_         = 5;
+      nPrePulseSamples_      = 3;
+      doFitBaseline_         = true;
+      doFitTime_             = false;
+      nPulseSamples_gain_    = 5;
+      nPrePulseSamples_gain_ = 3;
+      doFitBaseline_gain_    = false;
+      doFitTime_gain_        = false;
+
+      //default number of Tdcbins
+      nTdcBins_              = 25;
+    }//default weights
+
 }//CONSTRUCTOR
 
 EcalWeightsBuilder::~EcalWeightsBuilder()
 {
-  if (verbosity_ > 0)
-    std::cout << "Destructing EcalWeightsBuilder::~EcalWeightsBuilder"
-	      << std::endl;
+
+}//DESTRUCTOR
+
+void EcalWeightsBuilder::analyze(const edm::Event& evt, const edm::EventSetup& evtSetup) 
+{
+  std::cout << "STARTING ECAL WEIGHTS PRODUCTION"       << std::endl; 
+  std::cout << "REFERENCE TIME OF MAXIMUM=" << tMaxRef_ << std::endl;
+
+  //WEIGHTS FILES
+  std::ofstream WeightsFileCMS("WeightsFileCMS.out"); //weights file for CMS
+  std::ofstream WeightsFileTB("WeightsFileTB.out");   //weights file for Test Beam
+
+  //LOADING REFERENCE SIGNAL REPRESENTATION
+  EcalSimParameterMap parameterMap;
   
+  EBDetId   barrel(1,1);
+  double    thisPhase = parameterMap.simParameters(barrel).timePhase();
+  EcalShape theShape(thisPhase);
+
+  std::cout << "Parameters for the ECAL MGPA shape \n"     << std::endl;
+  std::cout << "Rising time for ECAL shape (timePhase) = " << parameterMap.simParameters(barrel).timePhase()    << std::endl;
+  std::cout << "Bin of maximum = "                         << parameterMap.simParameters(barrel).binOfMaximum() << std::endl;
+
+  double ToM        = theShape.computeTimeOfMaximum();
+  double T0         = theShape.computeT0();
+  double risingTime = theShape.computeRisingTime();
+
+  std::cout << "\n Maximum time from tabulated values = " << ToM        << std::endl;
+  std::cout << "\n Tzero from tabulated values        = " << T0         << std::endl;
+  std::cout << "\n Rising time from tabulated values  = " << risingTime << std::endl;
+  std::cout << std::endl;
+  
+  //time of maximum
+  double tMax      = ToM/25.0;
+  double tMax_gain = tMax + 1;    
+  std::cout << "TIME OF MAXIMUM =" << tMax << std::endl;
+
+  //DETERMINING THE GROUP-ID ACCORDING TO THE SIGNAL TIMING ///////////////////////////////////////////////////////
+  int    nGroupId   = 1;
+  double meanTiming = 5.5;
+
+  if(gen_groupID_){
+
+    //looking for the corresponding group id file
+    char* grpid_file = new char[20];
+    std::sprintf (grpid_file,"GroupId_SM%02u.out",SuperModule_);
+    std::cout << "LOOKING FOR GROUPID FILE=" << grpid_file << std::endl;
+
+    std::ifstream groupid_in(grpid_file);
+    if (groupid_in.is_open())
+      {
+	groupid_in >> nGroupId >> meanTiming;
+	std::cout << std::endl;
+	std::cout << "GENERATING WEIGHTS FOR GROUPIDs" << std::endl;
+	std::cout << "NGroup = " << nGroupId << " Mean Timing = " << meanTiming << std::endl;
+	groupid_in.close();
+	//TMax is set to the mean timing 
+	tMax = meanTiming;
+      }//generating groupIds
+    else
+      {
+	std::cout << "EcalWeightsBuilder : Error: "
+		  << "can not open group id file file " << grpid_file
+		  << std::endl;
+	abort();
+      }
+    delete [] grpid_file;
+  }// generating group id
+
+  //mean timing for each group
+  double meanTimingGroup[3]; //only 3 group Id for the moment.
+  meanTimingGroup[0] = meanTiming - 0.08; 
+  meanTimingGroup[1] = meanTiming;
+  meanTimingGroup[2] = meanTiming + 0.08;
+  if(gen_groupID_){for(int i=0; i < nGroupId ; ++i) std::cout << meanTimingGroup[i] << std::endl;
+    std::cout << std::endl;}
+
   //
-  // COMPUTING WEIGHTS
+  //COMPUTING WEIGHTS ////////////////////////////////////////////////////////////////////////////////////////////////
   //
-  // Create object used to compute weights
-  int verbosity = 1;
-  bool doFitBaseline = true;
-  bool doFitTime = false;
-  int nPulseSamples = 5;
-  int nPrePulseSamples = 3;
-  ComputeWeights weights(verbosity, doFitBaseline, doFitTime, nPulseSamples, nPrePulseSamples);
+  //CREATE OBJECT TO COMPUTE GAIN 12 (low energy) WEIGHTS
+  // For both the simulation and CMS: the amplitude weights are not jitter compensating
+  // the timing weights are determined with an extra ComputeWeights object
+  ComputeWeights weights(verbosity_, doFitBaseline_, doFitTime_, nPulseSamples_, nPrePulseSamples_);
+  ComputeWeights weights_time(verbosity_, doFitBaseline_, true, nPulseSamples_, nPrePulseSamples_);
+
+  // Create output weights files 
+  std::ofstream fAmpWeights_TB, fPedWeights_TB, fTimeWeights_TB, fChi2_TB;
+  std::ofstream fAmpWeights_CMS, fPedWeights_CMS, fTimeWeights_CMS, fChi2_CMS;
+  if(debug_){
+    //Amplitude weights:
+    fAmpWeights_TB.open("ampWeights_TB.txt");
+    //Pedestal weights:
+    if (doFitBaseline_) fPedWeights_TB.open("pedWeights_TB.txt");
+    //Timing weights:
+    if (default_weights_ || doFitTime_) fTimeWeights_TB.open("timeWeights_TB.txt");
+    //chi2 matrix
+    fChi2_TB.open("chi2Matrix_TB.txt");
+
+    //FOR CMS
+    //Amplitude weights:
+    fAmpWeights_CMS.open("ampWeights_CMS.txt");
+    //Pedestal weights:
+    if (doFitBaseline_) fPedWeights_CMS.open("pedWeights_CMS.txt");
+    //Timing weights:
+    if (default_weights_ || doFitTime_) fTimeWeights_CMS.open("timeWeights_CMS.txt");
+    //chi2 matrix
+    fChi2_CMS.open("chi2Matrix_CMS.txt");
+  }//debug files
+
+  // CREATE OBJECT TO COMPUTE GAIN 6 and GAIN 1 (high energy) WEIGHTS
+  ComputeWeights weights_gain(verbosity_, doFitBaseline_gain_, doFitTime_gain_, nPulseSamples_gain_, nPrePulseSamples_gain_);
+  ComputeWeights weights_time_gain(verbosity_, doFitBaseline_gain_, true, nPulseSamples_gain_, nPrePulseSamples_gain_);
 
   // Create output files
-  std::ofstream fAmpWeights, fPedWeights, fChi2;
-  fAmpWeights.open("ampWeights.txt");
-  if (doFitBaseline) fPedWeights.open("pedWeights.txt");
-  fChi2.open("chi2Matrix.txt");
+  std::ofstream fAmpWeightsGain_TB, fPedWeightsGain_TB, fTimeWeightsGain_TB, fChi2Gain_TB; 
+  std::ofstream fAmpWeightsGain_CMS, fPedWeightsGain_CMS, fTimeWeightsGain_CMS, fChi2Gain_CMS; 
+  if(debug_){
+    //Amplitude weights:
+    fAmpWeightsGain_TB.open("ampWeightsAfterGainSwitch_TB.txt");
+    //Pedestal weights:
+    if (doFitBaseline_gain_) fPedWeightsGain_TB.open("pedWeightsAfterGainSwitch_TB.txt");
+    //Timing weights:
+    if (default_weights_ || doFitTime_gain_) fTimeWeightsGain_TB.open("timeWeightsAfterGainSwitch_TB.txt"); 
+    //chi2 matrix
+    fChi2Gain_TB.open("chi2MatrixAfterGainSwitch_TB.txt");
 
-  // Loop over histograms
-  std::map< std::pair<int, int>, int >::const_iterator it;
-  //it = channelPosToIndexHist_.begin();
-  for (it = channelPosToIndexHist_.begin(); 
-       it != channelPosToIndexHist_.end(); it++) {
-    //for (int ii = 0; ii < 85*19; ii++) {
-    //it++;
-    int index = (*it).second - 1;
-    int ieta = (*it).first.first;
-    int iphi = (*it).first.second;
-    if (verbosity_ > 1)
-      std::cout << "EcalWeightsBuilder::~EcalWeightsBuilder: computing weights "
-		<< "for ieta = " << ieta << ", iphi = " << iphi << std::endl;
-    if (!hPulseProf_[index]) {
-      if (verbosity)
-	std::cout << "EcalWeightsBuilder::~EcalWeightsBuilder: Warning:"
-		  << " histogram is not existing for ieta = " << ieta
-		  << ", iphi = " << iphi << std::endl;
-      continue;
-    }// check histogram
-    int nSamples = TMath::Nint(xMaxHisto_ - xMinHisto_);
-    if (nSamples <= 3) {
-      if (verbosity)
-	std::cout << "EcalWeightsBuilder::~EcalWeightsBuilder: Warning:"
-		  << " too few histogram samples for ieta = " << ieta
-		  << ", iphi = " << iphi << std::endl;
-      continue;
-    }// check sample
+    //FOR CMS
+    //Amplitude weights:
+    fAmpWeightsGain_CMS.open("ampWeightsAfterGainSwitch_CMS.txt");
+    //Pedestal weights:
+    if (doFitBaseline_gain_) fPedWeightsGain_CMS.open("pedWeightsAfterGainSwitch_CMS.txt");
+    //Timing weights:
+    if (default_weights_ || doFitTime_gain_) fTimeWeightsGain_CMS.open("timeWeightsAfterGainSwitch_CMS.txt"); 
+    //chi2 matrix
+    fChi2Gain_CMS.open("chi2MatrixAfterGainSwitch_CMS.txt");
+  }//debug file
 
-    // Get histogram maximum by a pol3 fit
-    //double xMax = hPulseProf_[index]->
-    //GetBinCenter(hPulseProf_[index]->GetMaximumBin());
-    //hPulseProf_[index]->Fit("pol3", "0", "", xMax - 1., xMax + 2.5);
-    //TF1* fPol3 = hPulseProf_[index]->GetFunction("pol3");
-    double pulseMax = hPulseProf_[index]->GetMaximum(); // fPol3->GetMaximum(xMax - 1., xMax + 2.);
-    std::vector<double> pulseShape(nSamples);
-    std::vector<double> pulseShapeDerivative(nSamples);
-    int nTdcBins = nBinsHisto_/nSamples;
+  //LOOPING OVER GROUPIDs /////////////////////////////////
+  for(int igroupId = 0; igroupId < nGroupId; ++igroupId){
+    if(debug_) std::cout << "%%%%%%%%%%%%%%%%%%%%%%%GROUPID " << igroupId << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << std::endl;
 
-    // Loop over tdc bins
-    for (int iTdcBin = 0; iTdcBin < nTdcBins; iTdcBin++) {
-      for (int iSample = 0; iSample < nSamples; iSample++) {
-	int bin = iSample*nTdcBins + iTdcBin + 1;
+    std::vector<double> pulseShape(nSamples_);
+    std::vector<double> pulseShapeDerivative(nSamples_);
 
-	// NORMALIZING PROFILE HISTOGRAMS
-	if (pulseMax > 100.)
-	  pulseShape[iSample] = hPulseProf_[index]->GetBinContent(bin)/pulseMax;
-	else
-	  pulseShape[iSample] = 0.;
-	pulseShapeDerivative[iSample] = 0.;
+    //Shift the shape (in ns)
+    // > 0  -> shift left  (earlier)
+    // < 0  -> shift right (later)
+    // 5.5 is the default time of maximum. The default shape from EcalShape has 
+    // its peak set in the following weights producer right on 5.5 = 137.5 ns. 
+
+    double shiftTime = 0.0; //;2.0; //shift to Tmax of Xtal 704
+    if(gen_groupID_){
+      double diff_time = (tMaxRef_ - meanTimingGroup[igroupId])*25.0;
+      shiftTime = (diff_time-(int)diff_time) <= 0.5 ? (int)diff_time : ((int)diff_time + 1); 
+      std::cout << "Shifting shape by " << shiftTime << " ns" << std::endl;
+    }// generating groupIds
+
+    for (int unsigned iTdcBin = 0; iTdcBin < nTdcBins_; iTdcBin++) {
+      std::vector<double> sample_check;//for debugging purposes
+
+      //Determination of tdcbin
+      double tdcbin = -0.5 + (iTdcBin * 0.04) + 0.02; //return value in bin center
+
+      //Determination of tzero
+      //  double tzero = risingTime-(parameterMap.simParameters(barrel).binOfMaximum()-tdcbin)*25.;
+      //  risingTime-(parameterMap.simParameters(barrel).binOfMaximum()-(tdcbin+1))*25.0
+      double tzero = risingTime -(BinOfMax_-tdcbin)*25.;
+
+      if(debug_) std::cout << "BIN=" << iTdcBin << " TDCbin=" << tdcbin << " TZERO=" << tzero << std::endl;
+    
+      for (int unsigned iSample = 0; iSample < nSamples_; iSample++) {
+
+	if(debug_)
+	  std::cout << iTdcBin << " " << tzero + iSample*nTdcBins_ << " Value=" << (theShape)(tzero + shiftTime + iSample*nTdcBins_) 
+		    << " DERVIATIVE=" << theShape.derivative(tzero + shiftTime + iSample*nTdcBins_) << std::endl;
+	
+	pulseShape[iSample]           = (theShape)(tzero + shiftTime + iSample*nTdcBins_);
+	pulseShapeDerivative[iSample] = theShape.derivative(tzero + shiftTime + iSample*nTdcBins_);
+	
+	//saving sampling for sum checks
+	sample_check.push_back(pulseShape[iSample]); 
       }//loop sample
       
-      //COMPUTING WEIGHTS
-      if (!weights.compute(pulseShape, pulseShapeDerivative)) {
-	if (verbosity_)
-	  std::cout << "EcalWeightsBuilder::~EcalWeightsBuilder: Warning:"
-		    << " Impossible to compute weights for ieta = " << ieta
-		    << ", iphi = " << iphi << " and iTdcBin = " << iTdcBin
-		    << std::endl;
+      //COMPUTING WEIGHTS FOR LOW ENERGY
+      if (!weights.compute(pulseShape, pulseShapeDerivative, tMax)) {
+	std::cout << "EcalWeightsBuilder::~EcalWeightsBuilder: Warning:"
+		  << " Impossible to compute weights iTdcBin = " << iTdcBin
+		  << std::endl;
 	continue;
-      }
+      }//compute weights.
+      if (!weights_time.compute(pulseShape, pulseShapeDerivative, tMax)) {
+	std::cout << "EcalWeightsBuilder::~EcalWeightsBuilder: Warning:"
+		  << " Impossible to compute time weights iTdcBin = " << iTdcBin
+		  << std::endl;
+	continue;
+      }//compute time weights.
+      
+      if(debug_){
+	//CHECKING SUMS
+	double sum_weights = 0.0;
+	double sum_wf      = 0.0;
+	for (int unsigned iSample = 0; iSample < nSamples_; iSample++) {
+	  sum_weights += weights.getAmpWeight(iSample);
+	  sum_wf      += weights.getAmpWeight(iSample) * sample_check[iSample];	
+	}//loop sample
+	std::cout << "SUM WEIGHTS=" << sum_weights << " " << " SUM Wi*Fi=" <<  sum_wf << std::endl;
+	
+	//WRITING WEIGHTS INTO OUTPUT FILE
+	for (int unsigned iSample = 0; iSample < nSamples_; iSample++) {
+	  fAmpWeights_TB << std::setw(10) << std::setprecision(7) << weights.getAmpWeight(iSample) << " "; 
+	  if (doFitBaseline_)
+	    fPedWeights_TB << std::setw(10) << std::setprecision(7) << weights.getPedWeight(iSample) << " ";      
+	  if(default_weights_) fTimeWeights_TB << std::setw(10) << std::setprecision(7) << weights_time.getTimeWeight(iSample) << " "; 
+	  else if (doFitTime_) { fTimeWeights_TB << std::setw(10) << std::setprecision(7) << weights.getTimeWeight(iSample) << " ";}      
+	  for (int unsigned iSample2 = 0; iSample2 < nSamples_; iSample2++)
+	    fChi2_TB << std::setw(10) << std::setprecision(7) << weights.getChi2Matrix(iSample, iSample2) << " "; 
+	  fChi2_TB << std::endl;
+	}//loop sample
+	fAmpWeights_TB << std::endl;
+	if (doFitBaseline_) fPedWeights_TB << std::endl;
+	if (default_weights_ || doFitTime_) fTimeWeights_TB << std::endl;  
 
-      //WRITING WEIGHTS INTO OUTPUT FILE
-      if (!iTdcBin) {
-	fAmpWeights << ieta << " " << iphi << " " << nSamples << " " << nTdcBins << std::endl;
-	if (doFitBaseline)
-	  fPedWeights << ieta << " " << iphi << " " << nSamples << " " << nTdcBins << std::endl;
-	fChi2 << ieta << " " << iphi << " " << nSamples << " " << nTdcBins << std::endl;
+	if (iTdcBin == 12 && !gen_groupID_){
+	  for (int unsigned iSample = 0; iSample < nSamples_; iSample++) {
+	    fAmpWeights_CMS << std::setw(10) << std::setprecision(7) << weights.getAmpWeight(iSample) << " "; 
+	    if (doFitBaseline_)
+	      fPedWeights_CMS << std::setw(10) << std::setprecision(7) << weights.getPedWeight(iSample) << " ";      
+	    if(default_weights_) fTimeWeights_CMS << std::setw(10) << std::setprecision(7) << weights_time.getTimeWeight(iSample) << " "; 
+	    else if (doFitTime_) { fTimeWeights_CMS << std::setw(10) << std::setprecision(7) << weights.getTimeWeight(iSample) << " ";}      
+	    for (int unsigned iSample2 = 0; iSample2 < nSamples_; iSample2++)
+	      fChi2_CMS << std::setw(10) << std::setprecision(7) << weights.getChi2Matrix(iSample, iSample2) << " "; 
+	    fChi2_CMS << std::endl;
+	  }//loop sample
+	  fAmpWeights_CMS << std::endl;
+	  if (doFitBaseline_) fPedWeights_CMS << std::endl;
+	  if (default_weights_ || doFitTime_) fTimeWeights_CMS << std::endl;  
+	}//CMS
+      }//debug files
+      
+      //Depending on the TDC value, the 5 samples used in the reconstruction are:
+      // if TDC < 0.5 -> 5 6 7 8 9  so tMax = tMax + 1
+      // if TDC > 0.5 -> 4 5 6 7 8  so tMax = tMax 
+      
+      //COMPUTING WEIGHTS FOR HIGH ENERGY
+      if(iTdcBin < 12) {
+	if (!weights_gain.compute(pulseShape, pulseShapeDerivative, tMax_gain)) { 
+	  if (verbosity_)
+	    std::cout << "EcalWeightsBuilder::~EcalWeightsBuilder: Warning:"
+		      << " Impossible to compute weights iTdcBin =" << iTdcBin
+		      << std::endl;
+	  continue;
+	}//compute weights.
+	if (!weights_time_gain.compute(pulseShape, pulseShapeDerivative, tMax_gain)) { 
+	  if (verbosity_)
+	    std::cout << "EcalWeightsBuilder::~EcalWeightsBuilder: Warning:"
+		      << " Impossible to compute time weights iTdcBin =" << iTdcBin
+		      << std::endl;
+	  continue;
+	}//compute weights.
       }
-      for (int iSample = 0; iSample < nSamples; iSample++) {
-	fAmpWeights << std::setw(10) << std::setprecision(7) << weights.getAmpWeight(iSample) << " "; 
-	if (doFitBaseline)
-	  fPedWeights << std::setw(10) << std::setprecision(7) << weights.getPedWeight(iSample) << " "; 
-	for (int iSample2 = 0; iSample2 < nSamples; iSample2++)
-	  fChi2 << std::setw(10) << std::setprecision(7) << weights.getChi2Matrix(iSample, iSample2) << " "; 
-	fChi2 << std::endl;
-      }
-      fAmpWeights << std::endl;
-      if (doFitBaseline) fPedWeights << std::endl;
+      else 
+	{
+	  if (!weights_gain.compute(pulseShape, pulseShapeDerivative, tMax)) { 
+	    if (verbosity_)
+	      std::cout << "EcalWeightsBuilder::~EcalWeightsBuilder: Warning:"
+			<< " Impossible to compute weights iTdcBin =" << iTdcBin
+			<< std::endl;
+	    continue;
+	  }//compute weights.
+	  if (!weights_time_gain.compute(pulseShape, pulseShapeDerivative, tMax)) { 
+	    if (verbosity_)
+	      std::cout << "EcalWeightsBuilder::~EcalWeightsBuilder: Warning:"
+			<< " Impossible to compute time weights iTdcBin =" << iTdcBin
+			<< std::endl;
+	    continue;
+	  }//compute weights.
+	}
+      
+      if(debug_){
+	//WRITING HIGH GAIN WEIGHTS INTO OUTPUT FILE
+	for (int unsigned iSample = 0; iSample < nSamples_; iSample++) {
+	  fAmpWeightsGain_TB << std::setw(10) << std::setprecision(7) << weights_gain.getAmpWeight(iSample) << " "; 
+	  if (doFitBaseline_gain_)
+	    fPedWeightsGain_TB << std::setw(10) << std::setprecision(7) << weights_gain.getPedWeight(iSample) << " "; 
+	  if(default_weights_) fTimeWeightsGain_TB << std::setw(10) << std::setprecision(7) << weights_time_gain.getTimeWeight(iSample) << " "; 
+	  else if (doFitTime_gain_) { fTimeWeightsGain_TB << std::setw(10) << std::setprecision(7) << weights_gain.getTimeWeight(iSample) << " "; }
+	  for (int unsigned iSample2 = 0; iSample2 < nSamples_; iSample2++)
+	    fChi2Gain_TB << std::setw(10) << std::setprecision(7) << weights_gain.getChi2Matrix(iSample, iSample2) << " "; 
+	  fChi2Gain_TB << std::endl;
+	}
+	fAmpWeightsGain_TB << std::endl;
+	if (doFitBaseline_gain_) fPedWeightsGain_TB << std::endl;
+	if (default_weights_ || doFitTime_gain_) fTimeWeightsGain_TB << std::endl;
 
+	if (iTdcBin == 12 && !gen_groupID_){
+	  if(default_weights_) {
+	    for (int unsigned iSample = 0; iSample < nSamples_; iSample++) {
+	      //if(iSample == unsigned(parameterMap.simParameters(barrel).binOfMaximum()-1)) 
+	      if(iSample == BinOfMax_)
+		fAmpWeightsGain_CMS << std::setw(10) << std::setprecision(7) << 1.0 << " ";
+	      else fAmpWeightsGain_CMS << std::setw(10) << std::setprecision(7) << 0.0 << " ";
+	    }//loop sample
+	    fAmpWeightsGain_CMS << std::endl;
+	    for (int unsigned iSample = 0; iSample < nSamples_; iSample++) fPedWeightsGain_CMS << std::setw(10) << std::setprecision(7) << 0.0 << " ";
+	    fPedWeightsGain_CMS << std::endl;
+	    for (int unsigned iSample = 0; iSample < nSamples_; iSample++) fTimeWeightsGain_CMS << std::setw(10) << std::setprecision(7) << 0.0 << " ";
+	    fTimeWeightsGain_CMS << std::endl;
+	    for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
+	      for (int unsigned iSample2 = 0; iSample2 < nSamples_; iSample2++)
+		fChi2Gain_CMS << std::setw(10) << std::setprecision(7) << 0.0 << " ";
+	      fChi2Gain_CMS << std::endl;
+	    }//loop sample
+	  }//default weights
+	  else
+	    {
+	      for (int unsigned iSample = 0; iSample < nSamples_; iSample++) {
+		fAmpWeightsGain_CMS << std::setw(10) << std::setprecision(7) << weights_gain.getAmpWeight(iSample) << " "; 
+		if (doFitBaseline_gain_)
+		  fPedWeightsGain_CMS  << std::setw(10) << std::setprecision(7) << weights_gain.getPedWeight(iSample) << " "; 
+		if (doFitTime_gain_)
+		  fTimeWeightsGain_CMS << std::setw(10) << std::setprecision(7) << weights_gain.getTimeWeight(iSample) << " "; 
+		for (int unsigned iSample2 = 0; iSample2 < nSamples_; iSample2++)
+		  fChi2Gain_CMS << std::setw(10) << std::setprecision(7) << weights_gain.getChi2Matrix(iSample, iSample2) << " "; 
+		fChi2Gain_CMS << std::endl;
+	      }//loop sample
+	      fAmpWeightsGain_CMS << std::endl;
+	      if (doFitBaseline_gain_) fPedWeightsGain_CMS  << std::endl;
+	      if (doFitTime_gain_)     fTimeWeightsGain_CMS << std::endl;
+	    }
+	}//CMS
+      }//debug files
+      
+      //CREATING THE WEIGHTS FILE:
+      if (!iTdcBin)
+	WeightsFileTB << igroupId << " " << nSamples_ << " " << nTdcBins_ << std::endl;
+      
+      //low energy
+      for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
+	WeightsFileTB << std::setw(10) << std::setprecision(7) << weights.getAmpWeight(iSample) << " "; }
+      WeightsFileTB << std::endl;
+      for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
+	if (doFitBaseline_) {WeightsFileTB << std::setw(10) << std::setprecision(7) << weights.getPedWeight(iSample) << " ";}
+	else               {WeightsFileTB << std::setw(10) << std::setprecision(7) << 0.0 << " ";}}
+      WeightsFileTB << std::endl;
+      for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
+	if(default_weights_) WeightsFileTB << std::setw(10) << std::setprecision(7) << weights_time.getTimeWeight(iSample) << " "; 
+	else { if (doFitTime_) WeightsFileTB << std::setw(10) << std::setprecision(7) << weights.getTimeWeight(iSample) << " ";
+	  else WeightsFileTB << std::setw(10) << std::setprecision(7) << 0.0 << " "; }}
+      WeightsFileTB << std::endl;
+      for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
+	for (int unsigned iSample2 = 0; iSample2 < nSamples_; iSample2++)
+	  WeightsFileTB << std::setw(10) << std::setprecision(7) << weights.getChi2Matrix(iSample, iSample2) << " "; 
+	WeightsFileTB << std::endl;
+      }//loop sample
+      
+      //high energy
+      for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
+	WeightsFileTB << std::setw(10) << std::setprecision(7) << weights_gain.getAmpWeight(iSample) << " "; }
+      WeightsFileTB << std::endl;
+      for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
+	if (doFitBaseline_gain_) {WeightsFileTB << std::setw(10) << std::setprecision(7) << weights_gain.getPedWeight(iSample) << " "; }
+	else                    {WeightsFileTB << std::setw(10) << std::setprecision(7) << 0.0 << " ";}}
+      WeightsFileTB << std::endl;
+      for (int unsigned iSample = 0; iSample < nSamples_; iSample++) {
+	if(default_weights_)      WeightsFileTB << std::setw(10) << std::setprecision(7) << weights_time_gain.getTimeWeight(iSample) << " "; 
+	else { if (doFitTime_gain_) WeightsFileTB << std::setw(10) << std::setprecision(7) << weights_gain.getTimeWeight(iSample) << " ";
+	  else WeightsFileTB << std::setw(10) << std::setprecision(7) << 0.0 << " ";}}
+      WeightsFileTB << std::endl;
+      for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
+	for (int unsigned iSample2 = 0; iSample2 < nSamples_; iSample2++)
+	  WeightsFileTB << std::setw(10) << std::setprecision(7) << weights_gain.getChi2Matrix(iSample, iSample2) << " "; 
+	WeightsFileTB << std::endl;
+      }//loop sample      
+      
+      // WEIGHTS FOR CMS /////////////////////////////////////////////////////////////////////////////
+      if (iTdcBin == 12 && default_weights_ && !gen_groupID_){
+	WeightsFileCMS << 0 << " " << nSamples_ << " " << 1 << std::endl;
+	
+	//low energy
+	for (int unsigned iSample = 0; iSample < nSamples_; iSample++) 
+	  WeightsFileCMS << std::setw(10) << std::setprecision(7) << weights.getAmpWeight(iSample) << " ";
+	WeightsFileCMS << std::endl;
+	for (int unsigned iSample = 0; iSample < nSamples_; iSample++) 
+	  WeightsFileCMS << std::setw(10) << std::setprecision(7) << weights.getPedWeight(iSample) << " ";
+	WeightsFileCMS << std::endl;
+	for (int unsigned iSample = 0; iSample < nSamples_; iSample++)
+	  WeightsFileCMS << std::setw(10) << std::setprecision(7) << weights_time.getTimeWeight(iSample) << " "; 
+	WeightsFileCMS << std::endl;
+	for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
+	  for (int unsigned iSample2 = 0; iSample2 < nSamples_; iSample2++)
+	    WeightsFileCMS << std::setw(10) << std::setprecision(7) << weights.getChi2Matrix(iSample, iSample2) << " "; 
+	  WeightsFileCMS << std::endl;
+	}//loop sample
+	
+	//high energy
+	for (int unsigned iSample = 0; iSample < nSamples_; iSample++) {
+	  //if(iSample == unsigned(parameterMap.simParameters(barrel).binOfMaximum()-1)) 
+	  if(iSample == BinOfMax_) 
+	    WeightsFileCMS << std::setw(10) << std::setprecision(7) << 1.0 << " ";
+	  else WeightsFileCMS << std::setw(10) << std::setprecision(7) << 0.0 << " ";
+	}
+	WeightsFileCMS << std::endl;
+	for (int unsigned iSample = 0; iSample < nSamples_; iSample++) WeightsFileCMS << std::setw(10) << std::setprecision(7) << 0.0 << " ";
+	WeightsFileCMS << std::endl;
+	for (int unsigned iSample = 0; iSample < nSamples_; iSample++) WeightsFileCMS << std::setw(10) << std::setprecision(7) << 0.0 << " ";
+	WeightsFileCMS << std::endl;
+	for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
+	  for (int unsigned iSample2 = 0; iSample2 < nSamples_; iSample2++)
+	    WeightsFileCMS << std::setw(10) << std::setprecision(7) << 0.0 << " ";
+	  WeightsFileCMS << std::endl;
+	}//loop sample
+      }//CMS WEIGHTS
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////  
+      
     }//loop TDC
-  }//loop Channels.
+  }//loop group IDs
 
   //CLOSING FILES
-  fAmpWeights.close();
-  if (doFitBaseline) fPedWeights.close();
-  fChi2.close();
 
-  // Close output root file
-  fOut_->Write();
-  //delete fOut_;
-  // ====>
-  // Problem during destruction between root and clhep to solve.... maybe....
-}//DESTRUCTOT
-
-void EcalWeightsBuilder::analyze(const edm::Event& e, const edm::EventSetup& c) 
-{
-  if (verbosity_ > 1)
-    std::cout << "Starting EcalWeightsBuilder::analyze for event "
-	      << iEvent_ << std::endl;
-  
-  // Get ecal barrel digis
-  edm::Handle<EBDigiCollection> digis;
-  e.getByLabel("ecalEBunpacker", digis);
-  
-  // Loop over Ecal barrel digis
-  for (EBDigiCollection::const_iterator digiItr = digis->begin(); 
-       digiItr != digis->end(); ++digiItr) {
+  if(debug_){
+    fAmpWeights_TB.close();
+    if (doFitBaseline_) fPedWeights_TB.close();
+    if (default_weights_ || doFitTime_) fTimeWeights_TB.close();
+    fChi2_TB.close();
     
-    // Get (ieta, iphi) coordinates
-    std::pair<int, int> channelPos((*digiItr).id().ieta(),(*digiItr).id().iphi());
+    fAmpWeightsGain_TB.close();
+    if (doFitBaseline_gain_) fPedWeightsGain_TB.close();
+    if (default_weights_ || doFitTime_gain_) fTimeWeightsGain_TB.close();
+    fChi2Gain_TB.close();
 
-    if (!channelPosToIndexHist_[channelPos]) {
-      nChannels_++;
-      channelPosToIndexHist_[channelPos] = nChannels_;
-      std::string hName = Form("hPulse_%d_%d", (*digiItr).id().ieta(),
-			       (*digiItr).id().iphi());
-      std::string hTitle = Form("Pulse shape at i#eta = %d and i#phi = %d", 
-				(*digiItr).id().ieta(),
-				(*digiItr).id().iphi());
-      fOut_->cd();
-      hPulse_.push_back(new TH2F(hName.c_str(), hTitle.c_str(),
-				 nBinsHisto_, xMinHisto_, xMaxHisto_,
-				 1025, -100., 4000.));
-      hName = Form("hPulseProf_%d_%d",
-		   (*digiItr).id().ieta(), (*digiItr).id().iphi());
-      hTitle = Form("Pulse shape profile at i#eta = %d and i#phi = %d", 
-		    (*digiItr).id().ieta(), (*digiItr).id().iphi());
-      hPulseProf_.push_back(new TProfile(hName.c_str(), hTitle.c_str(),
-					 nBinsHisto_, 
-					 xMinHisto_, xMaxHisto_));
-    }
-
-    int iChannel = channelPosToIndexHist_[channelPos] - 1;
-    if (iChannel < 0 || iChannel >= nChannels_) {
-      if (verbosity_)
-	std::cout << "EcalWeightsBuilder::analyze: Warning: iChannel = "
-		  << iChannel << " at eta = " << channelPos.first
-		  << " and phi = " << channelPos.second
-		  << " for event " << iEvent_ << std::endl;
-      continue;
-    }
-    if (verbosity_ > 1)
-      std::cout << "EcalWeightsBuilder::analyze: "
-		<< "dump the ADC counts for eta = " << channelPos.first
-		<< " and phi = " << channelPos.second << std::endl;
+    fAmpWeights_CMS.close();
+    if (doFitBaseline_) fPedWeights_CMS.close();
+    if (default_weights_ || doFitTime_) fTimeWeights_CMS.close();
+    fChi2_CMS.close();
     
+    fAmpWeightsGain_CMS.close();
+    if (doFitBaseline_gain_) fPedWeightsGain_CMS.close();
+    if (default_weights_ || doFitTime_gain_) fTimeWeightsGain_CMS.close();
+    fChi2Gain_CMS.close();
+  }//debug files
 
-    //CHECKING GAINS
-    // Loop over samples and look gainId
-    bool isSameGain = true;
-    int gainId0 = kFirstGainId - 1;
-    for (int iSample = 0; iSample < digiItr->size(); ++iSample) {
-      int gainId = (*digiItr).sample(iSample).gainId();
-      if (!iSample) gainId0 = gainId;
-      if (gainId != gainId0) isSameGain = false;
-    }//loop samples
-    if (gainId0 < kFirstGainId || gainId0 >= kFirstGainId + kGains) isSameGain = false;
+  WeightsFileCMS.close();
+  WeightsFileTB.close();
 
-    // Keep only pulses where gain is the same for all samples
-    if (!isSameGain) {
-      if (verbosity_ > 1) 
-	std::cout << "EcalWeightsBuilder::analyze: Warning: gainId "
-		  << " was not constant at eta = " << channelPos.first
-		  << " and phi = " << channelPos.second
-		  << " for event " << iEvent_ << std::endl;
-      continue;
-    }//check gain
-    
-    //CHECKING PEDESTAL FILE
-    // Keep only channels where pedestal was measured
-    if (!channelPosToIndexPed_[channelPos]) {
-      if (verbosity_ > 1) 
-	std::cout << "EcalWeightsBuilder::analyze: Warning: no pedestal "
-		  << "available at eta = " << channelPos.first
-		  << " and phi = " << channelPos.second
-		  << " for event " << iEvent_ << std::endl;
-      continue;
-    }// check pedestal
-
-    float pedestal = pedestal_[channelPosToIndexPed_[channelPos] - 1][gainId0 - kFirstGainId];
-    
-    //WRITING HISTOS
-    // Loop over samples to fill histo
-    for (int iSample = 0; iSample < digiItr->size(); ++iSample) {
-      float adc = float((*digiItr).sample(iSample).adc());
-      hPulse_[iChannel]->Fill(float(iSample) + 0.5,float(adc) - pedestal);
-      hPulseProf_[iChannel]->Fill(float(iSample) + 0.5,float(adc) - pedestal);
-    }//loop samples
-  }//loop digis
-
-  if (verbosity_ > 1)
-    std::cout << "Finishing EcalWeightsBuilder::analyze for event " << iEvent_ << std::endl;
-  iEvent_++;
-}//analyze
+}//ANALYZE
