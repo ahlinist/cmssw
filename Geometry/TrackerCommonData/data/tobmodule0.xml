@@ -59,6 +59,7 @@
  <PosPart copyNumber="1">
    <rParent name="tobmodule0:TOBWaferRphi0"/>
    <rChild name="tobmodule0:TOBActiveRphi0"/>
+  <rRotation name="tobmodpar:Activ"/>
  </PosPart>
  <PosPart copyNumber="1">
    <rParent name="tobmodule0:TOBActiveSter0"/>
@@ -67,6 +68,7 @@
  <PosPart copyNumber="1">
    <rParent name="tobmodule0:TOBWaferSter0"/>
    <rChild name="tobmodule0:TOBActiveSter0"/>
+  <rRotation name="tobmodpar:Activ"/>
  </PosPart>
 
  <PosPart copyNumber="1">
