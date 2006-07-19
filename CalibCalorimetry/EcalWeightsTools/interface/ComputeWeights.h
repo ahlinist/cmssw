@@ -4,7 +4,7 @@
 /** \class ComputeWeights
   *  Class used to compute weights from a pulse shape profile.
   *
-  *  $Date: 2005/09/02 10:13:49 $
+  *  $Date: 2006/04/11 15:58:06 $
   *  $Revision: 1.1 $
   *  \author R. Bruneliere - CERN
   */
@@ -27,7 +27,8 @@ class ComputeWeights
 
   /// Compute weigths from an input pulse shape
   bool compute(const std::vector<double>& pulseShape,
-       const std::vector<double>& pulseShapeDerivative);
+	       const std::vector<double>& pulseShapeDerivative,
+	       const double tMax); //modif
 
   /// Get weight used to compute amplitude
   double getAmpWeight(int iSample) const;
