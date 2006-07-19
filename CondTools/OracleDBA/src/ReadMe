@@ -8,6 +8,7 @@ How to prepare catalog entries in oracle POOL dbs
     ./generate_oracle_catalog.sh orcon
     ./generate_oracle_catalog.sh cms_orcoff
     ./generate_oracle_catalog.sh cms_orcoff_val
+    ./generate_oracle_catalog.sh cms_orcoff_int2r
 
 How to prepare a detector pool schema 
   pool_build_object_relational_mapping -f mapping_CondIOV_2.0.xml -d CondCoreIOVService -c oracle://devdb10/CMS_COND_ECAL_POOL_ADMIN -u CMS_COND_ECAL_POOL_ADMIN -p ***
