@@ -2,9 +2,8 @@
  * \file EcalPedestalAnalyzer.h 
  * Dump in a file values of pedestal
  * 
- * 
- * $Date: 2006/04/11 16:10:15 $
- * $Revision: 1.1 $
+ * $Date: 2006/07/19 21:57:31 $
+ * $Revision: 1.2 $
  * \author R. Bruneliere'
  *
 */
