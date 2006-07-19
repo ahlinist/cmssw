@@ -128,12 +128,14 @@
 </LogicalPartSection>
 
 <RotationSection label="tobmodpar.xml">
-  <Rotation name="Rphi" thetaX="90*deg"  phiX="0*deg"     thetaY="0*deg"
-                        phiY="0*deg"     thetaZ="-90*deg" phiZ="90*deg" />
-  <Rotation name="Ster" thetaX="[TiltX]" phiX="180*deg"   thetaY="[Tilt]"
-                        phiY="0*deg"     thetaZ="90*deg"  phiZ="90*deg" />
-  <Rotation name="PA"   thetaX="0*deg"   phiX="0*deg"     thetaY="90*deg"
-                        phiY="90*deg"    thetaZ="-90*deg" phiZ="0*deg"  />
+  <Rotation name="Rphi"  thetaX="90*deg"  phiX="0*deg"     thetaY="0*deg"
+                         phiY="0*deg"     thetaZ="-90*deg" phiZ="90*deg" />
+  <Rotation name="Ster"  thetaX="[TiltX]" phiX="180*deg"   thetaY="[Tilt]"
+                         phiY="0*deg"     thetaZ="90*deg"  phiZ="90*deg" />
+  <Rotation name="PA"    thetaX="0*deg"   phiX="0*deg"     thetaY="90*deg"
+                         phiY="90*deg"    thetaZ="-90*deg" phiZ="0*deg"  />
+  <Rotation name="Activ" thetaX="90*deg"  phiX="180*deg"   thetaY="90*deg"
+                         phiY="270*deg"   thetaZ="0*deg"   phiZ="0*deg" />
 </RotationSection>
 
 </DDDefinition>
