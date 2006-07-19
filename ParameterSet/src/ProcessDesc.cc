@@ -163,7 +163,8 @@ namespace edm
     if (node->type()=="operand"){
       SeqMap::iterator seqIt = sequences.find(node->name); 
       if (seqIt!= sequences.end()){
-	node = seqIt->second->wrapped_;
+        node = seqIt->second->wrapped_;
+        sequenceSubstitution(node, sequences);
       }
     } // if operator
     else {
@@ -172,13 +173,13 @@ namespace edm
     
       SeqMap::iterator seqIt = sequences.find(onode->left_->name); 
       if (seqIt!= sequences.end()) {
-	onode->left_= seqIt->second->wrapped_;
-	onode->left_->setParent(onode);
+        onode->left_= seqIt->second->wrapped_;
+        onode->left_->setParent(onode);
       }
       seqIt = sequences.find(onode->right_->name); 
       if (seqIt!= sequences.end()){
-	onode->right_= seqIt->second->wrapped_; 
-	onode->right_->setParent(onode);
+        onode->right_= seqIt->second->wrapped_; 
+        onode->right_->setParent(onode);
       }
       sequenceSubstitution(onode->left_, sequences);
       sequenceSubstitution(onode->right_,sequences);
