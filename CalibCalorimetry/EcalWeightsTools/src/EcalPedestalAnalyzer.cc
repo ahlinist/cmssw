@@ -3,7 +3,7 @@
  * Dump in a file values of pedestal
  * 
  * 
- * $Date: 2005/08/09 18:06:48 $
+ * $Date: 2006/04/11 16:10:15 $
  * $Revision: 1.1 $
  * \author R. Bruneliere'
  *
@@ -121,8 +121,8 @@ void EcalPedestalAnalyzer::analyze(const edm::Event& e,
        digiItr != digis->end(); ++digiItr) {
     
     // Get (ieta, iphi) coordinates
-    std::pair<int, int> channelPos((*digiItr).id().ieta(), 
-				   (*digiItr).id().iphi());
+    std::pair<int, int> channelPos(EBDetId((*digiItr).id()).ieta(), 
+				   EBDetId((*digiItr).id()).iphi());
     int iChannel = int(digiItr - digis->begin());
     if (!nEntries_[iChannel]) {
       indexToChannelPos_[iChannel] = channelPos;

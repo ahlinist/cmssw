@@ -4,6 +4,9 @@
 <use name=FWCore/Framework>
 <use name=FWCore/ParameterSet>
 <use name=DataFormats/EcalDigi>
+<use name=DataFormats/EcalDetId>
+<use name=SimCalorimetry/EcalSimAlgos>
+<use name=SimCalorimetry/CaloSimAlgos>
 <export>
    <lib name=CalibCalorimetryEcalWeightsTools>
    <use name=clhep>
@@ -11,4 +14,7 @@
    <use name=FWCore/Framework>
    <use name=FWCore/ParameterSet>
    <use name=DataFormats/EcalDigi>
+   <use name=DataFormats/EcalDetId>
+   <use name=SimCalorimetry/EcalSimAlgos>
+   <use name=SimCalorimetry/CaloSimAlgos>
 </export>
