@@ -1,11 +1,11 @@
 /* \file ComputeWeights.cc
  *
- *  $Date: 2005/09/05 10:13:49 $
+ *  $Date: 2006/04/11 15:58:06 $
  *  $Revision: 1.1 $
  *  \author R. Bruneliere - CERN
  *
- * $Date: 2006/10/04 15:07:31 $
- * $Revision: 1.2 $
+ * $Date: 2006/06/15  15:58:06 $
+ * $Revision: 1.1 $
  * Updated by Alex Zabi.
  */
 
@@ -42,15 +42,15 @@ ComputeWeights::ComputeWeights(int verbosity,
 ComputeWeights::~ComputeWeights()
 {
   if (verbosity_)
-    std::cout << "ComputeWeights::~ComputeWeights: Destructing ComputeWeights"
-	      << std::endl;
+    std::cout << "ComputeWeights::~ComputeWeights: Destructing ComputeWeights" << std::endl;
 }
 
 // Compute weigths from an input pulse shape
 bool ComputeWeights::compute(const std::vector<double>& pulseShape,
-			     const std::vector<double>& pulseShapeDerivative)
+			     const std::vector<double>& pulseShapeDerivative,
+			     const double tMax)
 {
-  int nSamples = pulseShape.size();
+  int nSamples = pulseShape.size(); 
   int nParams = 1 + int(doFitBaseline_) + int(doFitTime_);
 
   // Check if nSamples is large enough
@@ -74,32 +74,10 @@ bool ComputeWeights::compute(const std::vector<double>& pulseShape,
     }
   }
 
-  // LOOK FOR MAXIMUM
-  double pulseMax = 0.;
-  int sampleMax = 0;
-  for (int iSample = 0; iSample < nSamples; iSample++)
-    if (pulseShape[iSample] > pulseMax) {
-      pulseMax = pulseShape[iSample];
-      sampleMax = iSample;
-    }//check max
-  if (pulseMax == 0.) {
-    std::cout << "ComputeWeights::compute: Warning: could not compute"
-	      << " weights because max = 0." << std::endl;
-    return false;
-  }//check max
-
-  //LOOKING FOR SAMPLE FIRST
-  int firstSample = sampleMax - 2;
-  double sumffMax = 0.;
-  for (int sampleFirst = sampleMax - 2; sampleFirst < nPulseSamples_ - nSamples; sampleFirst++) {
-    double sumff = 0.;
-    for (int iSample = sampleFirst; iSample < sampleFirst + nSamples; iSample++)
-      sumff += pulseShape[iSample]*pulseShape[iSample];
-    if (sumff > sumffMax) {
-      sumffMax = sumff;
-      firstSample = sampleFirst;
-    }
-  }// loop sample
+  //DETERMINATION OF THE FIRST SAMPLE
+  int firstSample = int(tMax) - 1;
+  if(nPulseSamples_ == 1) firstSample = int(tMax); // if only 1 sample -> the max sample is chosen
+//   std::cout << "FIRST SAMPLE=" << firstSample << std::endl;
 
   if (firstSample + nPulseSamples_ > nSamples) {
     if (verbosity_)
