@@ -1,0 +1,12 @@
+<environment>
+  <use name=DataFormats/MuonDetId>
+  <use name=CondFormats/DataRecord>
+  <use name=CondFormats/RPCObjects>
+  <use name=CondCore/DBCommon>
+  <use name=CondCore/ESSources>
+  <use name=CondCore/IOVService>
+  <use name=CondCore/MetaDataService>
+  <use name=FWCore/Framework>
+  <use name=oracle>
+  <bin file="RPCReadOutMappingBuilder.cpp"></bin>
+</environment>
