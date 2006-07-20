@@ -1,0 +1,8 @@
+1. To build RPCReadOutMapping in PoolDB (currently sqlite_file) from 
+   OMDS execute:
+
+$ RPCReadOutMappingBuilder oracms.cern.ch OMDS RPC_CONFIGURATION ***** 10121
+
+2. To test PoolDB execute:
+
+$ cmsRun -p read.cfg
