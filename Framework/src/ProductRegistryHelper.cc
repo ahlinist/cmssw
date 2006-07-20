@@ -4,7 +4,7 @@ $Id$
 
 ----------------------------------------------------------------------*/
 
-#include "FWCore/Framework/interface/ModuleDescriptionRegistry.h"
+#include "DataFormats/Common/interface/ModuleDescriptionRegistry.h"
 #include "FWCore/Framework/interface/ProductRegistryHelper.h"
 #include "DataFormats/Common/interface/ProductRegistry.h"
 #include "DataFormats/Common/interface/BranchDescription.h"

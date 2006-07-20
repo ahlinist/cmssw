@@ -9,7 +9,7 @@ $Id$
 
 #include "FWCore/Framework/interface/EventPrincipal.h"
 #include "FWCore/Framework/interface/EventProvenanceFiller.h"
-#include "FWCore/Framework/interface/ProcessHistoryRegistry.h"
+#include "DataFormats/Common/interface/ProcessHistoryRegistry.h"
 #include "DataFormats/Common/interface/ProductRegistry.h"
 #include "FWCore/Utilities/interface/EDMException.h"
 #include "FWCore/Framework/interface/UnscheduledHandler.h"
