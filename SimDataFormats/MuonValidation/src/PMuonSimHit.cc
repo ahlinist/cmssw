@@ -205,4 +205,5 @@ void PMuonSimHit::putRPCHits (std::vector<float> _detUnitId,
     RPCHits[i]._tof             = _tof[i];
   }
   return;
+
 }
