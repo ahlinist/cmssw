@@ -32,7 +32,7 @@ namespace edm {
                               iDesc.id());
       pdesc.psetIDs_.insert(iDesc.parameterSetID());
       pdesc.processConfigurationIDs_.insert(iDesc.processConfigurationID());
-      pdesc.branchAliases_.insert(p->branchAlias_);
+      if (!p->branchAlias_.empty()) pdesc.branchAliases_.insert(p->branchAlias_);
       iReg.addProduct(pdesc, iIsListener);
       ModuleDescriptionRegistry::instance()->insertMapped(iDesc);
     }//for
