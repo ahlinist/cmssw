@@ -24,6 +24,7 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Python/src/PythonManager.h"
+#include "FWCore/Framework/interface/EDFilter.h"
 
 
 class PythonFilter : public edm::EDFilter {
