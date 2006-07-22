@@ -161,7 +161,7 @@ PythonFilter::PythonFilter(const edm::ParameterSet& iConfig) :
 	    "if os.environ.has_key('ROOTSYS'):\n" //ROOT module is in $ROOTSYS/lib
 	    "  sys.path.append(os.environ['ROOTSYS']+'/lib')\n"
 	    "import ROOT\n"
-	    "ROOT.gSystem.Load(\"libPhysicsToolsFWLite\")\n"
+	    "ROOT.gSystem.Load(\"libFWCoreFWLite\")\n"
 	    "ROOT.AutoLibraryLoader.enable()\n"
 	    "import libFWCorePython as edm\n"),
    handle_(PythonManager::handle())
