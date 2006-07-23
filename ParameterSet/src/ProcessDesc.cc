@@ -57,6 +57,7 @@ namespace edm
 
     writeBookkeeping("@all_modules");
     writeBookkeeping("@all_sources");
+    writeBookkeeping("@all_loopers");
     writeBookkeeping("@all_esmodules");
     writeBookkeeping("@all_essources");
     writeBookkeeping("@all_esprefers");

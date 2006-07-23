@@ -32,6 +32,8 @@ namespace edm {
       class DataProxyProvider;
 
       struct ModuleMakerTraits {
+         typedef DataProxyProvider base_type;
+        
          static std::string name();
          static void addTo(EventSetupProvider& iProvider, boost::shared_ptr<DataProxyProvider> iComponent) ;
       };

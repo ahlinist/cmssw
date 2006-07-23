@@ -41,12 +41,14 @@ class DependentRecordIntervalFinder : public EventSetupRecordIntervalFinder
       virtual ~DependentRecordIntervalFinder();
 
       // ---------- const member functions ---------------------
+      bool haveProviders() const {
+        return !providers_.empty();
+      }
 
       // ---------- static member functions --------------------
 
       // ---------- member functions ---------------------------
       void addProviderWeAreDependentOn(boost::shared_ptr<EventSetupRecordProvider>);
-      
    protected:
       virtual void setIntervalFor(const EventSetupRecordKey&,
                                    const IOVSyncValue& , 

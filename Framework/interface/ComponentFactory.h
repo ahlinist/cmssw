@@ -48,8 +48,9 @@ class ComponentFactory : public seal::PluginFactory< ComponentMakerBase<T>* ()>
 
    typedef  ComponentMakerBase<T> Maker;
    typedef std::map<std::string, boost::shared_ptr<Maker> > MakerMap;
+   typedef typename T::base_type base_type;
       // ---------- const member functions ---------------------
-      void addTo(EventSetupProvider& iProvider,
+   boost::shared_ptr<base_type> addTo(EventSetupProvider& iProvider,
                   edm::ParameterSet const& iConfiguration,
                   std::string const& iProcessName,
                   ReleaseVersion const& iVersion,
@@ -80,7 +81,7 @@ class ComponentFactory : public seal::PluginFactory< ComponentMakerBase<T>* ()>
          }
          
          try {
-            it->second->addTo(iProvider,iConfiguration,iProcessName,iVersion,iPass);
+            return it->second->addTo(iProvider,iConfiguration,iProcessName,iVersion,iPass);
          } catch(cms::Exception& iException) {
             edm::Exception toThrow(edm::errors::Configuration,"Error occured while creating ");
             toThrow<<modtype<<"\n";
