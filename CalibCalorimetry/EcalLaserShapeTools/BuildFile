@@ -5,6 +5,9 @@
 <use name=Foundation/PluginManager>
 <use name=FWCore/ParameterSet>
 <use name=DataFormats/EcalDigi>
+<use name=OnlineDB/EcalCondDB>
+<use name=oracle>
+
 
 <export>
    <lib name=CalibCalorimetryEcalLaserShapeTools>
@@ -13,5 +16,8 @@
    <use name=FWCore/MessageLogger>
    <use name=Foundation/PluginManager>
    <use name=FWCore/ParameterSet>
-<use name=DataFormats/EcalDigi>
+   <use name=DataFormats/EcalDigi>
+   <use name=OnlineDB/EcalCondDB>
+   <use name=oracle>
+
 </export>

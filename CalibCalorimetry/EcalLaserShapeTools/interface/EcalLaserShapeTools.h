@@ -13,27 +13,15 @@
 //
 // Original Author:  Patrick Jarry
 //         Created:  Sun May 21 18:42:33 CEST 2006
-// $Id: EcalLaserShapeTools.h,v 1.4 2006/07/14 11:04:53 franzoni Exp $
+// $Id: EcalLaserShapeTools.h,v 1.5 2006/07/16 19:21:56 franzoni Exp $
 //
 //
 
 
-// system include files
 #include <memory>
+#include <iostream>
+#include <fstream>
 
-// user include files
-// #include "FWCore/Framework/interface/Frameworkfwd.h"
-// #include "FWCore/Framework/interface/EDAnalyzer.h"
-
-// #include "FWCore/Framework/interface/Event.h"
-// #include "FWCore/Framework/interface/MakerMacros.h"
-
-// #include "FWCore/ParameterSet/interface/ParameterSet.h"
-// #include "FWCore/MessageLogger/interface/MessageLogger.h"
-
-
-//pg
-#include <map>
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
@@ -45,7 +33,6 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-//pg
 
 
 #include "DataFormats/EcalRawData/interface/EcalRawDataCollections.h"
@@ -55,9 +42,12 @@
 #include <DataFormats/EcalDetId/interface/EBDetId.h>
 #include <DataFormats/EcalDigi/interface/EcalMGPASample.h>
 
-
-#include <iostream>
-#include <fstream>
+#include "OnlineDB/EcalCondDB/interface/EcalCondDBInterface.h"
+#include "OnlineDB/EcalCondDB/interface/RunTag.h"
+#include "OnlineDB/EcalCondDB/interface/RunDat.h"
+#include "OnlineDB/EcalCondDB/interface/MonRunDat.h"
+#include "OnlineDB/EcalCondDB/interface/RunIOV.h"
+#include "OnlineDB/EcalCondDB/interface/MonRunIOV.h"
 
 #include "TROOT.h"
 #include "TFile.h"
@@ -107,6 +97,19 @@ class EcalLaserShapeTools : public edm::EDAnalyzer {
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
   
  private:
+
+  void beginRunDb( void  );
+  string  dbName_;
+  string  dbHostName_;
+  int     dbHostPort_;
+  string  dbUserName_;
+  string  dbPassword_;
+  string  location_;
+  time_t current_time_;
+  time_t last_time_;
+  RunIOV runiov_;
+  int run_;
+
   // ----------member data ---------------------------
 
   PNfit                    maxPNDiode(const EcalPnDiodeDigi& pndigi);

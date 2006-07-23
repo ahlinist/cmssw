@@ -1,8 +1,8 @@
 /*
  * \file EcalLaserShapeTools.cc
  *
- * $Date: 2006/07/16 16:57:44 $
- * $Revision: 1.5 $
+ * $Date: 2006/07/16 19:21:57 $
+ * $Revision: 1.6 $
  * \author P. Jarry
  * \author G. Franzoni
  *
@@ -23,6 +23,14 @@ EcalLaserShapeTools::EcalLaserShapeTools(const edm::ParameterSet& iConfig)
   hitCollection_          = iConfig.getParameter<std::string>("hitCollection");
   hitProducer_            = iConfig.getParameter<std::string>("hitProducer");
 
+  
+  dbName_ = iConfig.getUntrackedParameter<string>("dbName", "");
+  dbHostName_ = iConfig.getUntrackedParameter<string>("dbHostName", "");
+  dbHostPort_ = iConfig.getUntrackedParameter<int>("dbHostPort", 1521);
+  dbUserName_ = iConfig.getUntrackedParameter<string>("dbUserName", "");
+  dbPassword_ = iConfig.getUntrackedParameter<string>("dbPassword", "");
+  
+  location_ =  iConfig.getUntrackedParameter<string>("location", "H4");
 
   for (int wavelength=0; wavelength <4; wavelength++){
     for (int channel=0; channel <4; channel++){
@@ -427,9 +435,152 @@ void EcalLaserShapeTools::endJob (void)
     }
   txt_outfile.close();
     
+  beginRunDb( );
   
 
-}// end endJob()
+}
+// end endJob()
+
+
+
+void  EcalLaserShapeTools::beginRunDb( void )
+{
+
+  if ( dbName_.size() != 0 ) {
+    cout << "[EcalLaserShapeTools][beginRunDb] DB output will go to"
+         << " dbName = '" << dbName_ << "'"
+         << " dbHostName = '" << dbHostName_ << "'"
+         << " dbHostPort = '" << dbHostPort_ << "'"
+         << " dbUserName = '" << dbUserName_ << "'" << endl;
+  } else {
+    cout << " DB output is disabled" << endl;
+  }
+  
+  current_time_ = time(NULL);
+  last_time_ = current_time_;
+  
+  EcalCondDBInterface* econn;
+  econn =0;
+
+  if ( dbName_.size() != 0 ) {
+    try {
+      cout << "[EcalLaserShapeTools][beginRunDb] Opening DB connection ..." << endl;
+      econn = new EcalCondDBInterface(dbHostName_, dbName_, dbUserName_, dbPassword_, dbHostPort_);
+    } catch (runtime_error &e) {
+      cerr << e.what() << endl;
+    }
+  }
+
+
+  
+  // create the objects necessary to identify a dataset
+  
+  LocationDef locdef;
+  locdef.setLocation(location_);
+  
+  RunTypeDef rundef;
+  rundef.setRunType( "LASER"  );
+ 
+  RunTag runtag;
+  runtag.setLocationDef(locdef);
+  runtag.setRunTypeDef(rundef);
+
+  runtag.setGeneralTag( "LASER" );
+
+
+  // fetch the RunIOV from the DB
+  bool foundRunIOV = false;
+  if ( econn ) {
+    try {
+      cout << "[EcalLaserShapeTools][beginRunDb] Fetching RunIOV ... " << flush;
+      runiov_ = econn->fetchRunIOV(&runtag, run_);
+      //      runiov_ = econn->fetchRunIOV(location_, run_);
+      cout << "done." << endl;
+      foundRunIOV = true;
+    } catch (runtime_error &e) {
+      cerr << e.what() << endl;
+      foundRunIOV = false;
+    }
+  }
+
+
+
+  // begin - setup the RunIOV (on behalf of the DAQ, if needed)
+  if ( ! foundRunIOV ) {
+
+    Tm startRun;
+
+    startRun.setToCurrentGMTime();
+
+    runiov_.setRunNumber(run_);
+    runiov_.setRunStart(startRun);
+    runiov_.setRunTag(runtag);
+
+    if ( econn ) {
+      try {
+        cout << "[EcalLaserShapeTools][beginRunDb] Inserting missing RunIOV ... " << flush;
+        econn->insertRunIOV(&runiov_);
+        cout << "done." << endl;
+      } catch (runtime_error &e) {
+        cerr << e.what() << endl;
+      }
+    }
+
+  }
+  // end - setup the RunIOV (on behalf of the DAQ)
+
+
+
+  string st = runiov_.getRunTag().getRunTypeDef().getRunType();
+  if ( st == "LASER" )
+    {
+      cout << "runtype from db: LASER" << endl; 
+    }
+  else
+    {
+      cout << "runtype from db is not LASER, rather "  << st << endl; 
+    }
+
+
+  cout << endl;
+  cout << "=============RunIOV:" << endl;
+  cout << "Run Number:         " << runiov_.getRunNumber() << endl;
+  cout << "Run Start:          " << runiov_.getRunStart().str() << endl;
+  cout << "Run End:            " << runiov_.getRunEnd().str() << endl;
+  cout << "====================" << endl;
+  cout << endl;
+  cout << "=============RunTag:" << endl;
+  cout << "GeneralTag:         " << runiov_.getRunTag().getGeneralTag() << endl;
+  cout << "Location:           " << runiov_.getRunTag().getLocationDef().getLocation() << endl;
+  cout << "Run Type:           " << runiov_.getRunTag().getRunTypeDef().getRunType() << endl;
+  cout << "====================" << endl;
+  cout << endl;
+
+  if ( econn ) {
+    try {
+      cout << "Closing DB connection ..." << endl;
+      delete econn;
+      econn = 0;
+    } catch (runtime_error &e) {
+      cerr << e.what() << endl;
+    }
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+}// end of beginRunDb
+
+
+
 
 
 // fixme: has to be moved into a producer/Algo
