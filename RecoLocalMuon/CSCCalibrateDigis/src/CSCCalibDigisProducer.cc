@@ -2,7 +2,7 @@
 //
 // Original Author:  Dominique Fortin
 //         Created:  Thu Jun 15 01:41:55 CEST 2006
-// $Id$
+// $Id: CSCCalibDigisProducer.cc,v 1.1 2006/07/19 21:12:41 dfortin Exp $
 //
 //
 
@@ -33,9 +33,9 @@
 
 #include <Geometry/Records/interface/MuonGeometryRecord.h>
 
-#include "RecoLocalMuon/CSCCalibrateDigis/interface/CSCCalibDigisProducer.h"
-#include "RecoLocalMuon/CSCCalibrateDigis/interface/MakeStripDigiCollections.h"
-#include "RecoLocalMuon/CSCCalibrateDigis/interface/MakeWireDigiCollections.h"
+#include "RecoLocalMuon/CSCCalibrateDigis/src/CSCCalibDigisProducer.h"
+#include "RecoLocalMuon/CSCCalibrateDigis/src/MakeStripDigiCollections.h"
+#include "RecoLocalMuon/CSCCalibrateDigis/src/MakeWireDigiCollections.h"
 
 using namespace std;
 
