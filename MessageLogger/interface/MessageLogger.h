@@ -45,18 +45,18 @@ class LogWarning
 {
 public:
   explicit LogWarning( std::string const & id ) 
-    : ap( new MessageSender(ELwarning,id) )
+    : ap ( edm::MessageDrop::instance()->warningEnabled ? new MessageSender(ELwarning,id) : 0 )
   { }
 
   template< class T >
     LogWarning & 
-    operator<< (T const & t)  { (*ap) << t; return *this; }
+    operator<< (T const & t)  { if(ap.get()) (*ap) << t; return *this; }
   LogWarning & 
   operator<< ( std::ostream&(*f)(std::ostream&))  
-    				      { (*ap) << f; return *this; }
+    				      { if(ap.get()) (*ap) << f; return *this; }
   LogWarning & 
   operator<< ( std::ios_base&(*f)(std::ios_base&) )  
-    				      { (*ap) << f; return *this; }     
+    				      { if(ap.get()) (*ap) << f; return *this; }     
 private:
   std::auto_ptr<MessageSender> ap; 
   
@@ -89,18 +89,18 @@ class LogInfo
 {
 public:
   explicit LogInfo( std::string const & id ) 
-    : ap( new MessageSender(ELinfo,id) )
+    : ap ( edm::MessageDrop::instance()->infoEnabled ? new MessageSender(ELinfo,id) : 0 )
   { }
 
   template< class T >
     LogInfo & 
-    operator<< (T const & t)  { (*ap) << t; return *this; }
+    operator<< (T const & t)  { if(ap.get()) (*ap) << t; return *this; }
   LogInfo & 
   operator<< ( std::ostream&(*f)(std::ostream&))  
-    				      { (*ap) << f; return *this; }
+    				      { if(ap.get()) (*ap) << f; return *this; }
   LogInfo & 
   operator<< ( std::ios_base&(*f)(std::ios_base&) )  
-    				      { (*ap) << f; return *this; }     
+    				      { if(ap.get()) (*ap) << f; return *this; }     
 
 private:
   std::auto_ptr<MessageSender> ap; 

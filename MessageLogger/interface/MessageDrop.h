@@ -39,15 +39,19 @@ namespace edm {
 struct MessageDrop {
 private:
   MessageDrop() 
-  :  moduleName ("")
+  : moduleName ("")
   , runEvent("pre-events")
   , debugEnabled(true) 					// change log 1
+  , infoEnabled(true) 					// change log 3
+  , warningEnabled(true)				// change log 3
   {  } 
 public:
   static MessageDrop * instance ();
   std::string moduleName;
   std::string runEvent;
   bool debugEnabled;
+  bool infoEnabled;
+  bool warningEnabled;
 };
 
 
