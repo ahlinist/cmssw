@@ -90,7 +90,7 @@ namespace {
 
 
     PythonManagerHandle PythonManager::handle() {
-	    static PythonManager* s_manager( new PythonManager() );
+        static PythonManager* s_manager( new PythonManager() );
         return PythonManagerHandle( *s_manager);
     }
    
@@ -98,15 +98,17 @@ namespace {
    
    
     PythonManager::PythonManager() : 
-	    refCount_(0),
-        initCommand_("import ROOT\n"
+        refCount_(0),
+        initCommand_(
+            "import sys\n"
+	    "sys.path.append('./')\n"
+            "import ROOT\n"
             "ROOT.gSystem.Load(\"libFWCoreFWLite\")\n"
             "ROOT.AutoLibraryLoader.enable()\n"
             "import libFWCorePython as edm\n")
     {
        Py_InitializeEx(0);
        using namespace boost::python;
-
 
        if(PyImport_AppendInittab("libFWCorePython",initlibFWCorePython)==-1) {
          throw cms::Exception("InitializationFailure" )
