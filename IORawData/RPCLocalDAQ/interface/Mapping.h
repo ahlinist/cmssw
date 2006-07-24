@@ -3,7 +3,7 @@
 /** \class  Mapping
  *   Channel Mapping for LB unpacking 
  *
- *  \author Alessandro Grelli
+ *  \author Raffaello Trentadue & Alessandro Grelli
  */
 #include <string>
 #include <map>

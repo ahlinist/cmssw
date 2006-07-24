@@ -1,10 +1,10 @@
 /** \file
  * Implementation of class RPCFileProcessor
  *
- *  $Date: 2006/06/30 19:27:58 $
- *  $Revision: 1.17 $
+ *  $Date: 2006/07/21 14:31:45 $
+ *  $Revision: 1.1 $
  *
- * \author Alessandro Grelli
+ * \author Raffaello Trentadue & Alessandro Grelli
  */
 #include "IORawData/RPCLocalDAQ/interface/Mapping.h"
 #include <vector>
