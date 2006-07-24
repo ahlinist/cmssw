@@ -77,16 +77,28 @@ void CSCRecHit2DBuilder::build( const CSCStripDigiCollection* stripdc,
   // loop over layers with strip digis and run the local reco on each one with wire digis
   for( CSCStripDigiCollection::DigiRangeIterator it = stripdc->begin(); it != stripdc->end(); ++it )
   {
-    const CSCDetId& id = (*it).first;
-   
+    const CSCDetId& id = (*it).first;  // DetId for strip region
+
     // Require both strips and wires in a layer before trying to reconstruct...
     // Any wire digis _in this layer_?
-    const CSCWireDigiCollection::Range rwired = wiredc->get( id );
+
+    CSCWireDigiCollection::Range rwired = wiredc->get( id );
 
     LogDebug("CSC") << "found " << rwired.second - rwired.first << " wire digi(s) in layer";
 
     // Skip if no wire digis in this layer
-    if ( rwired.second == rwired.first ) continue;
+    // But for ME11, real wire digis are labelled as belonging to ME1b, so that's where ME1a must look
+    // (We try ME1a - above - anyway, because simulated wire digis are labelled as ME1a.)
+    if ( rwired.second == rwired.first ) {
+      if ( id.station()!=1 || id.ring()!=4 ) continue; // not ME1a, skip to next layer
+      // It is ME1a but no wire digis there, so try ME1b...
+      int endcap  = id.endcap();
+      int chamber = id.chamber();
+      int layer   = id.layer();
+      CSCDetId idw( endcap, 1, 1, chamber, layer ); // Set idw to same layer in ME1b
+      CSCWireDigiCollection::Range rwired = wiredc->get( idw );
+      if ( rwired.second == rwired.first ) continue; // Nothing there either, skip
+    }
 
     const CSCStripDigiCollection::Range& rstripd = (*it).second;
 
@@ -96,7 +108,8 @@ void CSCRecHit2DBuilder::build( const CSCStripDigiCollection* stripdc,
     const CSCLayer* layer = getLayer( id );
     LogDebug("CSC") << "CSCDetId " << id << " adr CSCLayer=" << layer << "\n";
 
-    int chamberType = dynamic_cast<const CSCChamberSpecs&>(layer->type()).chamberType(); 
+    //    int chamberType = dynamic_cast<const CSCChamberSpecs&>(layer->type()).chamberType(); 
+    int chamberType = layer->chamber()->specs()->chamberType();
     LogDebug("CSC") << "chambertype=" << chamberType;
 
     CSCRecHit2DAlgo* theAlgo = getAlgo(chamberType);
