@@ -227,7 +227,7 @@ private:
     ProductDict::const_iterator i = productDict_.find(oid);
     if (i == productDict_.end()) {
       throw edm::Exception(edm::errors::ProductNotFound,"InvalidID")
-	<< "get by product ID: no product with given id\n";
+	<< "get by product ID: no product with given id: "<<oid<<"\n";
     }
     unsigned long slotNumber = i->second;
     assert(slotNumber < groups_.size());
@@ -463,7 +463,7 @@ private:
     ProductDict::const_iterator i = productDict_.find(oid);
     if (i == productDict_.end()) {
       throw edm::Exception(edm::errors::ProductNotFound,"InvalidID")
-	<< "getProvenance: no product with given id\n";
+	<< "getProvenance: no product with given id : "<< oid <<"\n";
     }
 
     unsigned long slotNumber = i->second;
