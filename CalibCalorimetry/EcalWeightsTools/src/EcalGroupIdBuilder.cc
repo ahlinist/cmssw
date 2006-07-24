@@ -3,26 +3,19 @@
  * Determination of crystal group Ids to be used by the 
  * EcalWeightsBuilder to generate weights for SuperModules
  *
- * $Date: 2006/07/19$
+ * $Date: 2006/07/23 17:11:56 $
  * $Revision: 1.1 $
  * Alexandre Zabi - Imperial College
 */
 
+//header file
 #include "CalibCalorimetry/EcalWeightsTools/interface/EcalGroupIdBuilder.h"
 
 #include <iostream>
 #include <fstream>
 #include <vector>
-
-//TO BE DONE:
-//check the file: continuity, missing lines, timing to zero, 1700 channels total
-//print a report
-//mapping to ieta and iphi
-//2D plot du mapping des group Id
-//tell what is done for particular channels -> if more than 10 channels outside -> new group Id?
-//granularity of the group Ids
-//plot de timing -> plot de timing en log
-//add options of having 1groupid/channel
+#include <string>
+#include "TFile.h"
 
 //This code will produce a file to assign each crystal of the supermodule to
 //a group id number according its signal timing.
@@ -51,11 +44,22 @@ EcalGroupIdBuilder::EcalGroupIdBuilder(edm::ParameterSet const& pSet)
   // should be set if problem found when reading timing profile
   problem_          = false; 
 
+  //OUTPUT ROOT FILE
+  // Plots of the timing distribution and map the group Id
+  rootFile_         = pSet.getUntrackedParameter<std::string>("rootFile", "GroupId.root");
+  
+  //HISTOS
+  TIMING_     = new TH1F("TIMING","TIMING",1000,0,10);
+  GROUPIDMAP_ = new TH2F("GROUPIDMAP","GROUPIDMAP",85,0,85,20,0,20);
+
 }//CONSTRUCTOR
 
 EcalGroupIdBuilder::~EcalGroupIdBuilder()
 {
-
+  TFile f(rootFile_.c_str(),"RECREATE");
+  TIMING_->Write();
+  GROUPIDMAP_->Write();
+  f.Close();
 }//DESTRUCTOR
 
 void EcalGroupIdBuilder::analyze(const edm::Event& evt, const edm::EventSetup& evtSetup) 
@@ -157,6 +161,8 @@ void EcalGroupIdBuilder::analyze(const edm::Event& evt, const edm::EventSetup& e
 	rms_timing += (timing[i]-mean_timing)*(timing[i]-mean_timing);
 	if(timing[i] < min_timing) min_timing = timing[i];
 	if(timing[i] > max_timing) max_timing = timing[i];
+
+	TIMING_->Fill(timing[i]);
       }//kept channels
     }//loop channels
 
@@ -195,16 +201,19 @@ void EcalGroupIdBuilder::analyze(const edm::Event& evt, const edm::EventSetup& e
       {
 	groupID0.push_back(i+1);
 	groupid_out << i+1 << " " << i/20 << " " << i%20 << " " << 0 << std::endl;
+	GROUPIDMAP_->Fill(i/20,i%20,0);
       }//group 0
     if((timing[i] >= (mean_timing - timing_interval)) && (timing[i] <= (mean_timing + timing_interval)))
       {
 	groupID1.push_back(i+1);
 	groupid_out << i+1 << " " << i/20 << " " << i%20 << " " << 1 << std::endl;
+	GROUPIDMAP_->Fill(i/20,i%20,1);
       }//group 1
     if(timing[i] > (mean_timing + timing_interval))
       {
 	groupID2.push_back(i+1);
 	groupid_out << i+1 << " " << i/20 << " " << i%20 << " " << 2 << std::endl;
+	GROUPIDMAP_->Fill(i/20,i%20,2);
       }//group 2
   }//loop on crystals
     
