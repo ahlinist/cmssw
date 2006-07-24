@@ -110,7 +110,8 @@ std::vector<CSCRecHit2D> CSCRecHit2DInALayer::run(
 
   // cache CSCChamberSpecs so the stripClusterPositionFinder can access type-dependent parameters
   //  specs_ = layer_->getSpecs();
-  specs_ = &( dynamic_cast<const CSCChamberSpecs&>(layer->type()) );
+  //  specs_ = &( dynamic_cast<const CSCChamberSpecs&>(layer->type()) );
+  specs_ = layer->chamber()->specs();
   stripClusterPositionFinder_->initChamberSpecs(*specs_);
 
   // find clusters of strips
