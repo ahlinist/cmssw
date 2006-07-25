@@ -90,6 +90,7 @@ class TFWLiteSelectorBasic : public TSelector
       virtual void        Terminate();
       virtual Int_t Version() const { return 1; }
       
+      void setupNewFile(TFile&);
       // ---------- member data --------------------------------
       edm::root::TFWLiteSelectorMembers* m_;
       bool everythingOK_;
