@@ -29,6 +29,10 @@ class CSCRecHit2DProducer : public edm::EDProducer {
       std::string stripDigiProducer_;
       std::string wireDigiProducer_;
       CSCRecHit2DBuilder* recHitBuilder_;
+
+// DOMINIQUE:  switch to turn on/off 1-D hit production
+      bool Produce1DHits;
+
 };
 
 #endif

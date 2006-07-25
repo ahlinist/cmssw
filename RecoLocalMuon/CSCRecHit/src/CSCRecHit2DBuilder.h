@@ -15,18 +15,21 @@
  */
 
 #include <DataFormats/CSCRecHit/interface/CSCRecHit2DCollection.h>
+#include <DataFormats/CSCRecHit/interface/CSCRecHit1DCollection.h>
 #include <DataFormats/CSCDigi/interface/CSCStripDigiCollection.h>
 #include <DataFormats/CSCDigi/interface/CSCWireDigiCollection.h>
 
 #include <FWCore/ParameterSet/interface/ParameterSet.h>
 
-//class CSCRecHit2DCollection;
-//class CSCStripDigiCollection;
-//class CSCWireDigiCollection;
 class CSCLayer;
 class CSCGeometry;
 class CSCRecHit2DAlgo;
 class CSCDetId;
+
+// DOMINIQUE:
+class CSCRecHit1DFromStripOnly;
+class CSCRecHit1DFromWireOnly;
+
 
 class CSCRecHit2DBuilder
  {
@@ -50,31 +53,52 @@ class CSCRecHit2DBuilder
        * This allows the existing ORCA local reco to be ported relatively
        * straightforwardly, at least for a first prototype in CMSSW.
        */
+
+// DOMINIQUE: added wire/strip only collections
       void build( const CSCStripDigiCollection* stripds,
                   const CSCWireDigiCollection* wireds,
-		          CSCRecHit2DCollection& oc );
+                        CSCRecHit2DCollection& oc, 
+                        CSCRecHit1DCollection& woc, 
+                        CSCRecHit1DCollection& soc );
 
-      /** Cache pointer to geometry _for current event_
+      /*
+       * Cache pointer to geometry _for current event_
        */
       void setGeometry( const CSCGeometry* geom );
 
    private:
 
-      /** Get layer corresponding to given detid
+      /*
+       * Get layer corresponding to given detid
        */
       const CSCLayer* getLayer( const CSCDetId& detId ) const;
 
-      /** Get algo registered for given chamber type
+      /*
+       * Get algo registered for given chamber type
        */
       CSCRecHit2DAlgo* getAlgo( int iChamberType );
 
-      /** Cache geometry for current event
+      /*
+       * DOMINIQUE:  Strip/wire only classes.
+       * 
+       * Flag for producing or not 1-D hits (strip only and wire only);
+       */
+      CSCRecHit1DFromStripOnly* HitsFromStripOnly_;
+      CSCRecHit1DFromWireOnly*  HitsFromWireOnly_;
+      bool Produce1DHits;
+
+
+      /*
+       * Cache geometry for current event
        */
       const CSCGeometry* geom_;
 
-      /** Map chamber type to algorithm by chamber type index
+      /*
+       * Map chamber type to algorithm by chamber type index
        */
       std::vector<CSCRecHit2DAlgo*> algos_;
+
+
 };
 
 #endif
