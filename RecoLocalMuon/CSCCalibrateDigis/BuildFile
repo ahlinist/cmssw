@@ -19,9 +19,9 @@
 <use name=root>
 
 
-<flags SEAL_PLUGIN_NAME="RecoLocalMuonCSCCalibDigis">
+<flags SEAL_PLUGIN_NAME="RecoLocalMuonCSCCalibrateDigis">
 <export>
-   <lib name=RecoLocalMuonCSCCalibDigis>
+   <lib name=RecoLocalMuonCSCCalibrateDigis>
    <use name=FWCore/Framework>  
    <use name=Foundation/PluginManager>
    <use name=FWCore/ParameterSet>
