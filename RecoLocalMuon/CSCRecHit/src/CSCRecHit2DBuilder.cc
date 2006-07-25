@@ -91,7 +91,7 @@ void CSCRecHit2DBuilder::build( const CSCStripDigiCollection* stripdc,
                                       CSCRecHit2DCollection& oc,
                                       CSCRecHit1DCollection& woc,
                                       CSCRecHit1DCollection& soc )
-
+{
   // loop over layers with strip digis and run the local reco on each one with wire digis
   for( CSCStripDigiCollection::DigiRangeIterator it = stripdc->begin(); it != stripdc->end(); ++it )
   {
