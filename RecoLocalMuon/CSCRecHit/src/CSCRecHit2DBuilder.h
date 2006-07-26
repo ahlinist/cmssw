@@ -4,8 +4,10 @@
 /** \class CSCRecHit2DBuilder 
  * Algorithm to build CSCRecHit2D's from wire and strip digis
  * in endcap muon CSCs by implementing a 'build' function 
- * required by CSCRecHit2DProducer.
+ * required by CSCRecHit2DProducer.<br>
  *
+ * D. Fortin also added possibility to retain strip and wire only hits <br>
+ * 
  * \author Tim Cox
  *
  * Implementation notes: <BR>
@@ -15,7 +17,8 @@
  */
 
 #include <DataFormats/CSCRecHit/interface/CSCRecHit2DCollection.h>
-#include <DataFormats/CSCRecHit/interface/CSCRecHit1DCollection.h>
+#include <DataFormats/CSCRecHit/interface/CSCStripHitCollection.h>
+#include <DataFormats/CSCRecHit/interface/CSCWireHitCollection.h>
 #include <DataFormats/CSCDigi/interface/CSCStripDigiCollection.h>
 #include <DataFormats/CSCDigi/interface/CSCWireDigiCollection.h>
 
@@ -27,8 +30,8 @@ class CSCRecHit2DAlgo;
 class CSCDetId;
 
 // DOMINIQUE:
-class CSCRecHit1DFromStripOnly;
-class CSCRecHit1DFromWireOnly;
+class CSCHitFromStripOnly;
+class CSCHitFromWireOnly;
 
 
 class CSCRecHit2DBuilder
@@ -52,14 +55,19 @@ class CSCRecHit2DBuilder
        * know to which chamber-type(s) each is to be applied. 
        * This allows the existing ORCA local reco to be ported relatively
        * straightforwardly, at least for a first prototype in CMSSW.
+       *
+       * Dominique also added a loop on each, the wire digis and strip digis to
+       * fill collections of strip hits and wire hits.  By default, these are not
+       * produced: the 1-D hit production must be turned on in the .cfi file.
+       *
        */
 
 // DOMINIQUE: added wire/strip only collections
       void build( const CSCStripDigiCollection* stripds,
                   const CSCWireDigiCollection* wireds,
                         CSCRecHit2DCollection& oc, 
-                        CSCRecHit1DCollection& woc, 
-                        CSCRecHit1DCollection& soc );
+                        CSCWireHitCollection& woc, 
+                        CSCStripHitCollection& soc );
 
       /*
        * Cache pointer to geometry _for current event_
@@ -81,11 +89,10 @@ class CSCRecHit2DBuilder
       /*
        * DOMINIQUE:  Strip/wire only classes.
        * 
-       * Flag for producing or not 1-D hits (strip only and wire only);
        */
-      CSCRecHit1DFromStripOnly* HitsFromStripOnly_;
-      CSCRecHit1DFromWireOnly*  HitsFromWireOnly_;
-      bool Produce1DHits;
+      CSCHitFromStripOnly* HitsFromStripOnly_;
+      CSCHitFromWireOnly*  HitsFromWireOnly_;
+      bool Produce1DHits;     //  Flag for producing or not 1-D hits (strip/wire only);
 
 
       /*

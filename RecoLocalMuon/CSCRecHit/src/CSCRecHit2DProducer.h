@@ -6,6 +6,8 @@
  * in endcap muon CSCs. 
  * It starts from collections of the CSC wire and strip digis.
  *
+ * D. Fortin also added the possibility of filling collections of wire and strip hits.
+ *
  * \author Tim Cox
  *
  */
