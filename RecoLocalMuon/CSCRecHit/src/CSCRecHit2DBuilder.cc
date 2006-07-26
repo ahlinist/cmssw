@@ -18,8 +18,8 @@
 #include <FWCore/MessageLogger/interface/MessageLogger.h> 
 
 // DOMINIQUE:
-#include <RecoLocalMuon/CSCRecHit/src/CSCRecHit1DFromStripOnly.h>
-#include <RecoLocalMuon/CSCRecHit/src/CSCRecHit1DFromWireOnly.h>
+#include <RecoLocalMuon/CSCRecHit/src/CSCHitFromStripOnly.h>
+#include <RecoLocalMuon/CSCRecHit/src/CSCHitFromWireOnly.h>
 
 CSCRecHit2DBuilder::CSCRecHit2DBuilder( const edm::ParameterSet& ps ) : 
    geom_(0), algos_( std::vector<CSCRecHit2DAlgo*>() ) {
@@ -41,9 +41,8 @@ CSCRecHit2DBuilder::CSCRecHit2DBuilder( const edm::ParameterSet& ps ) :
 // DOMINIQUE:  These are the classes for strip and wire only rechit, if we shall produce them...
   Produce1DHits  = ps.getParameter<bool>("CSCproduce1DHits");
 
-  HitsFromStripOnly_ = new CSCRecHit1DFromStripOnly( ps );  // --> How can I pass these parameters: Tim ????
-  HitsFromWireOnly_  = new CSCRecHit1DFromWireOnly();  // --> no parameters needed
-
+  HitsFromStripOnly_ = new CSCHitFromStripOnly( ps );  // --> How can I pass these parameters: Tim ????
+  HitsFromWireOnly_  = new CSCHitFromWireOnly();  // --> no parameters needed
 
 
   if ( ntypes <= 0 ) {
@@ -89,8 +88,8 @@ CSCRecHit2DBuilder::~CSCRecHit2DBuilder() {
 void CSCRecHit2DBuilder::build( const CSCStripDigiCollection* stripdc,
                                 const CSCWireDigiCollection* wiredc,
                                       CSCRecHit2DCollection& oc,
-                                      CSCRecHit1DCollection& woc,
-                                      CSCRecHit1DCollection& soc )
+                                      CSCWireHitCollection& woc,
+                                      CSCStripHitCollection& soc )
 {
   // loop over layers with strip digis and run the local reco on each one with wire digis
   for( CSCStripDigiCollection::DigiRangeIterator it = stripdc->begin(); it != stripdc->end(); ++it )
@@ -139,7 +138,7 @@ void CSCRecHit2DBuilder::build( const CSCStripDigiCollection* stripdc,
 	oc.put( id, rhv.begin(), rhv.end() );
   }
 
-  // DOMINIQUE: if we allow to produce the 1-d hit production, continue, otherwise exit
+  // DOMINIQUE: if we allow to produce the 1-D hit production, continue, otherwise exit
   if ( !Produce1DHits ) return;
 
   // DOMINIQUE: Strip only hits
@@ -154,7 +153,7 @@ void CSCRecHit2DBuilder::build( const CSCStripDigiCollection* stripdc,
       if ( rstripd.second == rstripd.first ) continue;
 
       // This is running CSCRecHit1DFromStripOnly.cc
-      std::vector<CSCRecHit1D> rhv = HitsFromStripOnly_->runStrip( id, layer, rstripd );
+      std::vector<CSCStripHit> rhv = HitsFromStripOnly_->runStrip( id, layer, rstripd );
 
       // Add the strip hits to master collection
       soc.put( id, rhv.begin(), rhv.end() );
@@ -174,7 +173,7 @@ void CSCRecHit2DBuilder::build( const CSCStripDigiCollection* stripdc,
     if ( rwired.second == rwired.first ) continue;
 
 // This is running CSCRecHit1DFromWireOnly.cc
-      std::vector<CSCRecHit1D> rhv = HitsFromWireOnly_->runWire( id, layer, rwired );   
+      std::vector<CSCWireHit> rhv = HitsFromWireOnly_->runWire( id, layer, rwired );   
 
       // Add the wire hits to master collection 
       woc.put( id, rhv.begin(), rhv.end() );
