@@ -34,6 +34,7 @@
 class PythonService {
     public:
         PythonService(const edm::ParameterSet&,edm::ActivityRegistry&);
+        ~PythonService();
         void postBeginJob();
         void postEndJob();
         void preProcessEvent(const edm::EventID&, const edm::Timestamp&);
