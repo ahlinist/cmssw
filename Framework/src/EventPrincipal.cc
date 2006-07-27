@@ -163,7 +163,6 @@ private:
   void 
   EventPrincipal::put(auto_ptr<EDProduct> edp,
 		      auto_ptr<Provenance> prov) {
-    prov->product.init();
 
     if (prov->productID() == ProductID()) {
       ProductRegistry::ProductList const& pl = preg_->productList();
