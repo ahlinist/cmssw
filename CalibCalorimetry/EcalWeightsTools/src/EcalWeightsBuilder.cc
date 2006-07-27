@@ -3,9 +3,19 @@
  * This module is used to produce the weights needed by
  * the reconstruction of amplitude (RecHits) in the ECAL.
  * 
- * $Date: 2006/07/10 15:58:06 $
- * $Revision: 1.1 $
+ * $Date: 2006/07/19 22:07:10 $
+ * $Revision: 1.2 $
  * Author Alexandre Zabi
+ *
+ * Modif-Alex Zabi 25/07/2006
+ * This module has been modified to generate an extra sets of weights
+ * to be used for the reconstruction at high energy
+ * At high energy 2 configurations can happen:
+ * 1st: samples 5, 6, 7, 8, 9 are in gain 6
+ * 2nd: samples 4, 5, 6, 7, 8 are in gain 6
+ * An extra set of 25 weights is produced. The number of TdcBin 
+ * is increased to 50 but the parameter nTdcBin must remain 25.
+ *
 */
 
 #include "TFile.h"
@@ -229,6 +239,11 @@ void EcalWeightsBuilder::analyze(const edm::Event& evt, const edm::EventSetup& e
   ComputeWeights weights_gain(verbosity_, doFitBaseline_gain_, doFitTime_gain_, nPulseSamples_gain_, nPrePulseSamples_gain_);
   ComputeWeights weights_time_gain(verbosity_, doFitBaseline_gain_, true, nPulseSamples_gain_, nPrePulseSamples_gain_);
 
+//   // CREATE OBJECT TO COMPUTE GAIN 6 and GAIN 1 (high energy) EXTRA WEIGHTS
+//   //For resonctruction at high energy
+//   ComputeWeights weights_gain_extra(verbosity_, doFitBaseline_gain_, doFitTime_gain_, nPulseSamples_gain_, nPrePulseSamples_gain_);
+//   ComputeWeights weights_time_gain_extra(verbosity_, doFitBaseline_gain_, true, nPulseSamples_gain_, nPrePulseSamples_gain_);
+
   // Create output files
   std::ofstream fAmpWeightsGain_TB, fPedWeightsGain_TB, fTimeWeightsGain_TB, fChi2Gain_TB; 
   std::ofstream fAmpWeightsGain_CMS, fPedWeightsGain_CMS, fTimeWeightsGain_CMS, fChi2Gain_CMS; 
@@ -260,6 +275,12 @@ void EcalWeightsBuilder::analyze(const edm::Event& evt, const edm::EventSetup& e
     std::vector<double> pulseShape(nSamples_);
     std::vector<double> pulseShapeDerivative(nSamples_);
 
+    //vector to save the weights for high energy
+    std::vector<double> extraWeights_amp; 
+    std::vector<double> extraWeights_ped; 
+    std::vector<double> extraWeights_time;
+    std::vector<double> extraWeights_chi2;
+ 
     //Shift the shape (in ns)
     // > 0  -> shift left  (earlier)
     // < 0  -> shift right (later)
@@ -355,45 +376,24 @@ void EcalWeightsBuilder::analyze(const edm::Event& evt, const edm::EventSetup& e
 	}//CMS
       }//debug files
       
-      //Depending on the TDC value, the 5 samples used in the reconstruction are:
-      // if TDC < 0.5 -> 5 6 7 8 9  so tMax = tMax + 1
-      // if TDC > 0.5 -> 4 5 6 7 8  so tMax = tMax 
-      
       //COMPUTING WEIGHTS FOR HIGH ENERGY
-      if(iTdcBin < 12) {
-	if (!weights_gain.compute(pulseShape, pulseShapeDerivative, tMax_gain)) { 
-	  if (verbosity_)
-	    std::cout << "EcalWeightsBuilder::~EcalWeightsBuilder: Warning:"
-		      << " Impossible to compute weights iTdcBin =" << iTdcBin
-		      << std::endl;
-	  continue;
-	}//compute weights.
-	if (!weights_time_gain.compute(pulseShape, pulseShapeDerivative, tMax_gain)) { 
-	  if (verbosity_)
-	    std::cout << "EcalWeightsBuilder::~EcalWeightsBuilder: Warning:"
-		      << " Impossible to compute time weights iTdcBin =" << iTdcBin
-		      << std::endl;
-	  continue;
-	}//compute weights.
-      }
-      else 
-	{
-	  if (!weights_gain.compute(pulseShape, pulseShapeDerivative, tMax)) { 
-	    if (verbosity_)
-	      std::cout << "EcalWeightsBuilder::~EcalWeightsBuilder: Warning:"
-			<< " Impossible to compute weights iTdcBin =" << iTdcBin
-			<< std::endl;
-	    continue;
-	  }//compute weights.
-	  if (!weights_time_gain.compute(pulseShape, pulseShapeDerivative, tMax)) { 
-	    if (verbosity_)
-	      std::cout << "EcalWeightsBuilder::~EcalWeightsBuilder: Warning:"
-			<< " Impossible to compute time weights iTdcBin =" << iTdcBin
-			<< std::endl;
-	    continue;
-	  }//compute weights.
-	}
-      
+      //1st CONFIGURATION SAMPLES : samples 5 ,6 ,7 ,8 ,9 are in gain 6
+      //In that case Tmax = Tmax + 1;
+      if (!weights_gain.compute(pulseShape, pulseShapeDerivative, tMax_gain)) { 
+	if (verbosity_)
+	  std::cout << "EcalWeightsBuilder::~EcalWeightsBuilder: Warning:"
+		    << " Impossible to compute weights iTdcBin =" << iTdcBin
+		    << std::endl;
+	continue;
+      }//compute weights.
+      if (!weights_time_gain.compute(pulseShape, pulseShapeDerivative, tMax_gain)) { 
+	if (verbosity_)
+	  std::cout << "EcalWeightsBuilder::~EcalWeightsBuilder: Warning:"
+		    << " Impossible to compute time weights iTdcBin =" << iTdcBin
+		    << std::endl;
+	continue;
+      }//compute weights.
+    
       if(debug_){
 	//WRITING HIGH GAIN WEIGHTS INTO OUTPUT FILE
 	for (int unsigned iSample = 0; iSample < nSamples_; iSample++) {
@@ -450,7 +450,7 @@ void EcalWeightsBuilder::analyze(const edm::Event& evt, const edm::EventSetup& e
       
       //CREATING THE WEIGHTS FILE:
       if (!iTdcBin)
-	WeightsFileTB << igroupId << " " << nSamples_ << " " << nTdcBins_ << std::endl;
+	WeightsFileTB << igroupId << " " << nSamples_ << " " << nTdcBins_*2 << std::endl;
       
       //low energy
       for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
@@ -530,11 +530,115 @@ void EcalWeightsBuilder::analyze(const edm::Event& evt, const edm::EventSetup& e
       }//CMS WEIGHTS
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////  
       
-    }//loop TDC
+      //EXTRA SETS OF WEIGHTS FOR RECONSTRUCTION AT HIGH ENERGY
+      //2nd CONFIGURATION SAMPLES : samples 4, 5 ,6 ,7 ,8 are in gain 6
+      //In that case Tmax = Tmax;
+      if (!weights_gain.compute(pulseShape, pulseShapeDerivative, tMax)) { 
+	if (verbosity_)
+	  std::cout << "EcalWeightsBuilder::~EcalWeightsBuilder: Warning:"
+		    << " Impossible to compute weights iTdcBin =" << iTdcBin
+		    << std::endl;
+	continue;
+      }//compute weights.
+      if (!weights_time_gain.compute(pulseShape, pulseShapeDerivative, tMax)) { 
+	if (verbosity_)
+	  std::cout << "EcalWeightsBuilder::~EcalWeightsBuilder: Warning:"
+		    << " Impossible to compute time weights iTdcBin =" << iTdcBin
+		    << std::endl;
+	continue;
+      }//compute weights.
+
+      //saving these extra weights into a vector
+      for (int unsigned iSample = 0; iSample < nSamples_; iSample++)   extraWeights_amp.push_back(weights_gain.getAmpWeight(iSample));
+      if (doFitBaseline_gain_) 
+	for (int unsigned iSample = 0; iSample < nSamples_; iSample++) extraWeights_ped.push_back(weights_gain.getPedWeight(iSample));
+      if(default_weights_) 
+	for (int unsigned iSample = 0; iSample < nSamples_; iSample++) extraWeights_time.push_back(weights_time_gain.getTimeWeight(iSample));
+      else if (doFitTime_gain_) 
+	for (int unsigned iSample = 0; iSample < nSamples_; iSample++) extraWeights_time.push_back(weights_gain.getTimeWeight(iSample));
+      for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
+	for (int unsigned iSample2 = 0; iSample2 < nSamples_; iSample2++)
+	  extraWeights_chi2.push_back(weights_gain.getChi2Matrix(iSample, iSample2));
+      }//loop sample
+
+    }//loop TDC 1st
+
+    //WRITING EXTRA WEIGHTS
+    // for the reconstruction a low energy, extra weights are all 0 
+    // only at high energy weights are used.
+    for (int unsigned iTdcBin = 0; iTdcBin < nTdcBins_; iTdcBin++) {
+      if(debug_){
+	//WRITING ZEROS FOR LOW ENERGY
+	for (int unsigned iSample = 0; iSample < nSamples_; iSample++) {
+	  fAmpWeights_TB << std::setw(10) << std::setprecision(7) << 0.0 << " "; 
+	  if (doFitBaseline_)  fPedWeights_TB  << std::setw(10) << std::setprecision(7) << 0.0 << " ";      
+	  if(default_weights_ || doFitTime_) fTimeWeights_TB << std::setw(10) << std::setprecision(7) << 0.0 << " "; 
+	  for (int unsigned iSample2 = 0; iSample2 < nSamples_; iSample2++)
+	    fChi2_TB << std::setw(10) << std::setprecision(7) << 0.0 << " "; 
+	  fChi2_TB << std::endl;
+	}//loop sample
+	fAmpWeights_TB << std::endl;
+	if (doFitBaseline_) fPedWeights_TB << std::endl;
+	if (default_weights_ || doFitTime_) fTimeWeights_TB << std::endl;  
+	
+	//WRITING HIGH GAIN WEIGHTS INTO OUTPUT FILE
+	for (int unsigned iSample = 0; iSample < nSamples_; iSample++)
+	  fAmpWeightsGain_TB << std::setw(10) << std::setprecision(7)   << extraWeights_amp[iSample+iTdcBin*nSamples_] << " "; 	
+	if (doFitBaseline_gain_) {
+	  for (int unsigned iSample = 0; iSample < nSamples_; iSample++) 
+	    fPedWeightsGain_TB << std::setw(10) << std::setprecision(7) << extraWeights_ped[iSample+iTdcBin*nSamples_] << " "; 
+	}//baseline	
+	if(default_weights_ || doFitTime_gain_) 
+	  for (int unsigned iSample = 0; iSample < nSamples_; iSample++)
+	    fTimeWeightsGain_TB << std::setw(10) << std::setprecision(7) << extraWeights_time[iSample+iTdcBin*nSamples_] << " "; 	
+	for (int unsigned iSample = 0; iSample < nSamples_; iSample++){
+	  for (int unsigned iSample2 = 0; iSample2 < nSamples_; iSample2++)
+	    fChi2Gain_TB << std::setw(10) << std::setprecision(7) << extraWeights_chi2[iSample2+iSample*nSamples_+iTdcBin*nSamples_*nSamples_] << " "; 
+	  fChi2Gain_TB << std::endl;
+	}//loop sample	
+	fAmpWeightsGain_TB << std::endl;
+	if (doFitBaseline_gain_) fPedWeightsGain_TB << std::endl;
+	if (default_weights_ || doFitTime_gain_) fTimeWeightsGain_TB << std::endl;	
+      }//debug
+
+     //low energy
+      for (int unsigned iSample = 0; iSample < nSamples_; iSample++) 
+	WeightsFileTB << std::setw(10) << std::setprecision(7) << 0.0 << " ";
+      WeightsFileTB << std::endl;
+      for (int unsigned iSample = 0; iSample < nSamples_; iSample++) 
+	WeightsFileTB << std::setw(10) << std::setprecision(7) << 0.0 << " ";	
+      WeightsFileTB << std::endl;
+      for (int unsigned iSample = 0; iSample < nSamples_; iSample++) 
+	WeightsFileTB << std::setw(10) << std::setprecision(7) << 0.0 << " "; 
+      WeightsFileTB << std::endl;
+      for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
+	for (int unsigned iSample2 = 0; iSample2 < nSamples_; iSample2++)
+	  WeightsFileTB << std::setw(10) << std::setprecision(7) << 0.0 << " "; 
+	WeightsFileTB << std::endl;
+      }//loop sample
+      
+      //high energy
+      for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
+	WeightsFileTB << std::setw(10) << std::setprecision(7) << extraWeights_amp[iSample+iTdcBin*nSamples_] << " "; }
+      WeightsFileTB << std::endl;
+      for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
+	if (doFitBaseline_gain_) {WeightsFileTB << std::setw(10) << std::setprecision(7) << extraWeights_ped[iSample+iTdcBin*nSamples_] << " "; }
+	else                     {WeightsFileTB << std::setw(10) << std::setprecision(7) << 0.0 << " ";}}
+      WeightsFileTB << std::endl;
+      for (int unsigned iSample = 0; iSample < nSamples_; iSample++) {
+	if(default_weights_ || doFitTime_gain_) WeightsFileTB << std::setw(10) << std::setprecision(7) << extraWeights_time[iSample+iTdcBin*nSamples_] << " "; 
+	else WeightsFileTB << std::setw(10) << std::setprecision(7) << 0.0 << " ";}
+      WeightsFileTB << std::endl;
+      for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
+	for (int unsigned iSample2 = 0; iSample2 < nSamples_; iSample2++)
+	  WeightsFileTB << std::setw(10) << std::setprecision(7) << extraWeights_chi2[iSample2+iSample*nSamples_+iTdcBin*nSamples_*nSamples_] << " "; 
+	WeightsFileTB << std::endl;
+      }//loop sample
+    }//loop TDC 2nd
+
   }//loop group IDs
 
   //CLOSING FILES
-
   if(debug_){
     fAmpWeights_TB.close();
     if (doFitBaseline_) fPedWeights_TB.close();
