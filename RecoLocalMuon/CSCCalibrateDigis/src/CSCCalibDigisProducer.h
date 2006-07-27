@@ -1,11 +1,16 @@
-#ifndef CSCCalibDigis_CSCCalibDigisProducer_h
-#define CSCCalibDigis_CSCCalibDigisProducer_h
+#ifndef CSCCalibrateDigis_CSCCalibDigisProducer_h
+#define CSCCalibrateDigis_CSCCalibDigisProducer_h
 
-/*
-//
-// Original Authors: Dominique Fortin - UCR
-// $Id: CSCCalibDigisProducer.h,v 1.1 2006/07/19 21:12:41 dfortin Exp $
-//
+/** \class CSCCalibDigisProducer
+ * 
+ * Reads in calibration database and computes the average strip gain G for whole CSC System.
+ * Then, it loops over all CSCStripDigis, and it scales the ADC counts of each channel i by
+ * a factor G/g_i, where g_i is the gain for strip i.
+ *
+ * A new CSCStripDigi is then formed and added to a new CSCStripDigiCollection
+ *
+ * \author Dominique Fortin - UCR
+ *
 */
 
 #include <memory>
@@ -16,8 +21,8 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
-class MakeStripDigiCollections;
-class MakeWireDigiCollections;
+class CSCMakeStripDigiCollections;
+class CSCMakeWireDigiCollections;
 
 class CSCCalibDigisProducer : public edm::EDProducer {
  public:
@@ -39,8 +44,8 @@ class CSCCalibDigisProducer : public edm::EDProducer {
   std::string RawDataLabel;
 
 // Classe nicknames:
-  MakeStripDigiCollections* mkStripCollect_;
-  MakeWireDigiCollections* mkWireCollect_;
+  CSCMakeStripDigiCollections* mkStripCollect_;
+  CSCMakeWireDigiCollections* mkWireCollect_;
 
 
 };

@@ -1,15 +1,9 @@
-// You will need to checkout and compile CondFormats/CSCObjects for this to run.
-//
-// Original Author:  Dominique Fortin
-//         Created:  Thu Jun 15 01:41:55 CEST 2006
-// $Id: CSCCalibDigisProducer.cc,v 1.1 2006/07/19 21:12:41 dfortin Exp $
-//
-//
+// You may need to checkout and compile CondFormats/CSCObjects first for this to run.
 
 // system include files
 #include <memory>
-#include <stdio.h>
-#include <iostream>
+//#include <stdio.h>
+//#include <iostream>
 #include <map>
 #include <vector>
 #include <stdexcept>
@@ -23,19 +17,21 @@
 #include <FWCore/Framework/interface/Handle.h>
 #include <FWCore/Framework/interface/ESHandle.h>
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include <FWCore/Utilities/interface/Exception.h>
+#include <FWCore/MessageLogger/interface/MessageLogger.h>
 
 #include <DataFormats/CSCDigi/interface/CSCStripDigiCollection.h>
 #include <DataFormats/CSCDigi/interface/CSCWireDigiCollection.h>
-
 #include <DataFormats/MuonDetId/interface/CSCDetId.h>
+
 #include "CondFormats/CSCObjects/interface/CSCGains.h"   
 #include "CondFormats/DataRecord/interface/CSCGainsRcd.h"
 
 #include <Geometry/Records/interface/MuonGeometryRecord.h>
 
 #include "RecoLocalMuon/CSCCalibrateDigis/src/CSCCalibDigisProducer.h"
-#include "RecoLocalMuon/CSCCalibrateDigis/src/MakeStripDigiCollections.h"
-#include "RecoLocalMuon/CSCCalibrateDigis/src/MakeWireDigiCollections.h"
+#include "RecoLocalMuon/CSCCalibrateDigis/src/CSCMakeStripDigiCollections.h"
+#include "RecoLocalMuon/CSCCalibrateDigis/src/CSCMakeWireDigiCollections.h"
 
 using namespace std;
 
@@ -48,24 +44,22 @@ CSCCalibDigisProducer::CSCCalibDigisProducer(const edm::ParameterSet& pset) : ie
 
 
   // Pass on the .cfg parameters to other classes
-  mkStripCollect_   = new MakeStripDigiCollections( pset );
-  mkWireCollect_    = new MakeWireDigiCollections( pset );
+  mkStripCollect_   = new CSCMakeStripDigiCollections( pset );
+  mkWireCollect_    = new CSCMakeWireDigiCollections( pset );
 
   // Register what are the collections produced
   produces<CSCWireDigiCollection>("MuonCSCWireDigi");
   produces<CSCStripDigiCollection>("MuonCSCStripDigi");
 
-  if (debug) cout << "[CSCCalibCosmicsProducer] Construction completed" << endl;
-  if (debug) cout << endl;
+  LogDebug("CSC") << "[CSCCalibDigisProducer] Construction completed" << "\n";
 
 }
 
 // Destructor:
 CSCCalibDigisProducer::~CSCCalibDigisProducer()
 {
-  if (debug) cout << "[CSCCalibCosmicsProducer] Destructor called at event " 
-                  << iev << " events." << endl;
-  if (debug) cout << endl;
+  LogDebug("CSC") << "[CSCCalibDigisProducer] Destructor called at event " << iev << "\n";
+
   // Free memory:
   delete mkStripCollect_;
   delete mkWireCollect_;
@@ -78,7 +72,7 @@ void CSCCalibDigisProducer::produce(edm::Event& ev, const edm::EventSetup& evSet
 
 // The following parameters only needs to be set once
   if (iev == 0) {
-    if (debug) cout << "*** Now initializing parameters for event " << ++iev << endl;
+    LogDebug("CSC") << "[CSCCalibDigisProducer] Now initializing parameters for event " << ++iev << "\n";
 
     // Get the gains and compute global gain average to store for later use in strip calibration
     edm::ESHandle<CSCGains> hGains;
@@ -87,8 +81,7 @@ void CSCCalibDigisProducer::produce(edm::Event& ev, const edm::EventSetup& evSet
     mkStripCollect_->setGains( pGains );
     mkStripCollect_->getStripGainAvg();
 
-    if (debug) cout << " I was able to read in the gains !!!" << endl;
-
+    LogDebug("CSC") << "[CSCCalibDigisProducer] I was able to read in the CSC gains !!!" << "\n";
   }
 
   // Get the CSC Digis :
@@ -105,10 +98,10 @@ void CSCCalibDigisProducer::produce(edm::Event& ev, const edm::EventSetup& evSet
   std::auto_ptr<CSCStripDigiCollection> calibStripDigis( new CSCStripDigiCollection() );
 
   // Create wire and strip collections from raw data:  
-  if (debug) cout << "Making the CSC strip digi collections" << endl;
+  LogDebug("CSC") << "[CSCCalibDigisProducer] Making the CSC strip digi collections" << "\n";
   mkStripCollect_->mkStripCollect( stripDigis.product(), *calibStripDigis);
 
-  if (debug) cout << endl << "Making the CSC wire digi collections" << endl;
+  LogDebug("CSC") << endl << "[CSCCalibDigisProducer] Making the CSC wire digi collections" << "\n";
   mkWireCollect_->mkWireCollect( wireDigis.product(), *calibWireDigis);
 
 
