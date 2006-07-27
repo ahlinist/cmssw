@@ -7,6 +7,6 @@
    <use name=CondCore/DBCommon>
    <use name=CondCore/DBOutputService>
    <use name=CondFormats/OptAlignObjects>
-   <use name=CondTools/Utilities>
+   <use name=CondTools/Utilities>	
    <lib name=CondToolsCSCHACalibration>
 </export>
