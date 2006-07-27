@@ -3,8 +3,8 @@
  * This module is used to produce the weights needed by
  * the reconstruction of amplitude (RecHits) in the ECAL.
  * 
- * $Date: 2006/07/19 22:07:10 $
- * $Revision: 1.2 $
+ * $Date: 2006/07/27 17:42:33 $
+ * $Revision: 1.3 $
  * Author Alexandre Zabi
  *
  * Modif-Alex Zabi 25/07/2006
@@ -91,7 +91,7 @@ EcalWeightsBuilder::EcalWeightsBuilder(edm::ParameterSet const& pSet)
   //pedestal subtracting weights
   doFitBaseline_     = pSet.getUntrackedParameter<bool>("doFitBaseline", true);
   //jitter compensating weights
-  doFitTime_         = pSet.getUntrackedParameter<bool>(" doFitTime", true);
+  doFitTime_         = pSet.getUntrackedParameter<bool>("doFitTime", true);
 
   // WEIGHTS OPTIONS AFTER GAIN SWITCHING
   // number of signal sample and pre-sample used for amplitude reconstruction after gain switching
