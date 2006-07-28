@@ -73,7 +73,7 @@ IterateNTimesLooper::duringLoop(const edm::Event& event, const edm::EventSetup& 
 }
 
 edm::EDLooper::Status 
-IterateNTimesLooper::endOfLoop(const edm::EventSetup&) {
+IterateNTimesLooper::endOfLoop(const edm::EventSetup& es, unsigned int iCounter) {
   ++times_;
   return (times_ < max_ ) ? kContinue : kStop;
 }

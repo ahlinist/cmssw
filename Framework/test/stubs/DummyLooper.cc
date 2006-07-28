@@ -53,7 +53,7 @@ class DummyLooper : public edm::ESProducerLooper {
       Status duringLoop(const edm::Event&, const edm::EventSetup&) {
          return kContinue;
       }
-      Status endOfLoop(const edm::EventSetup&) {
+      Status endOfLoop(const edm::EventSetup&, unsigned int iCounter) {
          (data_->value_)++;
          ++counter_;
          return counter_==2 ? kStop : kContinue;
