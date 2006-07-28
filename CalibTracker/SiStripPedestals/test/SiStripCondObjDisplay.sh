@@ -1,11 +1,17 @@
 #!/bin/sh
 
+if [ "$#" != "3" ]; then
+    echo "usage: SiStripCondObjDisplay.sh runNb DBfile DBcatalog"
+    exit
+fi
+
+
 runNb=$1
 DBfile=$2
 DBcatalog=$3
 
 output_file_name=/tmp/$USER/Display_PedNoise_RunNb_${runNb}.root 
-cfg_file=/tmp/$USER/SiStripCondObjDisplay_${runNb}.cfg
+cfg_file=/tmp/$USER/SiStripCondObjDisplay_RunNb_${runNb}.cfg
 
 echo ${cfg_file}
 
@@ -19,3 +25,5 @@ cat template_SiStripCondObjDisplay.cfg | sed -e "s#insert_DBfile#$DBfile#" -e "s
 
 echo "cmsRun ${cfg_file}"
 cmsRun ${cfg_file}
+
+
