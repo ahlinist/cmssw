@@ -14,7 +14,11 @@ particleID(iConfig.getUntrackedParameter("ParticleID", 0)),
 minptcut(iConfig.getUntrackedParameter("MinPt", 0.)),
 maxptcut(iConfig.getUntrackedParameter("MaxPt", 10000.)),
 minetacut(iConfig.getUntrackedParameter("MinEta", -10.)),
-maxetacut(iConfig.getUntrackedParameter("MaxEta", 10.))
+maxetacut(iConfig.getUntrackedParameter("MaxEta", 10.)),
+minphicut(iConfig.getUntrackedParameter("MinPhi", -3.5)),
+maxphicut(iConfig.getUntrackedParameter("MaxPhi", 3.5))
+
+
 {
    //now do what ever initialization is needed
 
@@ -48,12 +52,14 @@ bool PythiaFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
     for ( HepMC::GenEvent::particle_iterator p = myGenEvent->particles_begin();
 	  p != myGenEvent->particles_end(); ++p ) {
 	  
-	
+ 
 	if ( abs((*p)->pdg_id()) == particleID 
 	     && (*p)->momentum().perp() > minptcut 
 	     && (*p)->momentum().perp() < maxptcut
 	     && (*p)->momentum().eta() > minetacut
-	     && (*p)->momentum().eta() < maxetacut ) {accepted = true;} 
+	     && (*p)->momentum().eta() < maxetacut 
+	     && (*p)->momentum().phi() > minphicut
+	     && (*p)->momentum().phi() < maxphicut ) {accepted = true;} 
 	  
     }
 
