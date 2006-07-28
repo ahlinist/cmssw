@@ -47,19 +47,14 @@ Hep3Vector * BeamProfileVertexGenerator::newVertex() {
     aX = mySigmaX * (dynamic_cast<RandGauss*>(myRandom))->fire() + myMeanX;
   else
     aX = (dynamic_cast<RandFlat*>(myRandom))->fire(-0.5*mySigmaX,0.5*mySigmaX) + myMeanX ;
-  double tX = 90.*deg + myTheta;
-  double sX = sin(tX);
-  if (fabs(sX)>1.e-12) sX = 1./sX;
-  else                 sX = 1.;
-  double fX = atan2(sX*cos(myTheta)*sin(myPhi),sX*cos(myTheta)*cos(myPhi));
   if (myType) 
     aY = mySigmaY * (dynamic_cast<RandGauss*>(myRandom))->fire() + myMeanY;
   else
     aY = (dynamic_cast<RandFlat*>(myRandom))->fire(-0.5*mySigmaY,0.5*mySigmaY) + myMeanY;
-  double fY = 90.*deg + myPhi;
-  double xp = aX*sin(tX)*cos(fX) +aY*cos(fY) +myMeanZ*sin(myTheta)*cos(myPhi);
-  double yp = aX*sin(tX)*sin(fX) +aY*sin(fY) +myMeanZ*sin(myTheta)*sin(myPhi);
-  double zp = aX*cos(tX)                     +myMeanZ*cos(myTheta);
+
+  double xp = -aX*cos(myTheta)*cos(myPhi) +aY*sin(myPhi) +myMeanZ*sin(myTheta)*cos(myPhi);
+  double yp = -aX*cos(myTheta)*sin(myPhi) -aY*cos(myPhi) +myMeanZ*sin(myTheta)*sin(myPhi);
+  double zp =  aX*sin(myTheta)                           +myMeanZ*cos(myTheta);
 
   myVertex = new Hep3Vector(xp, yp, zp);
   LogDebug("VertexGenerator") << "BeamProfileVertexGenerator: Vertex created "
