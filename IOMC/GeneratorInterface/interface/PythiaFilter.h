@@ -15,7 +15,7 @@
 //
 // Original Author:  Filip Moortgat
 //         Created:  Mon Jan 23 14:57:54 CET 2006
-// $Id: PythiaFilter.h,v 1.2 2006/04/21 01:10:17 wmtan Exp $
+// $Id: PythiaFilter.h,v 1.3 2006/06/25 17:15:15 fmoortga Exp $
 //
 //
 
@@ -56,6 +56,7 @@ class PythiaFilter : public edm::EDFilter {
        double maxptcut;
        double minetacut;
        double maxetacut;
-      
+       double minphicut;
+       double maxphicut;      
 };
 #endif
