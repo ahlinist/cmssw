@@ -22,9 +22,18 @@ using namespace std;
 CSCMakeStripDigiCollections::CSCMakeStripDigiCollections(const edm::ParameterSet & p) {
   // Initialize parameters needed...
   debug              = p.getUntrackedParameter<bool>("debug");
-  CSCMapFile         = p.getUntrackedParameter<string>("mappingFile");
 
-  theCSCMap=CSCReadoutMappingFromFile(CSCMapFile);                                              
+/*
+ * Tim changed the CondFormats/CSCObjects, so the mapping file is obtained 
+ * from the ParameterSet directly
+ *
+ * CSCMapFile = p.getUntrackedParameter<string>("mappingFile");
+ * theCSCMap=CSCReadoutMappingFromFile(CSCMapFile);                                              
+ *
+ */
+
+  theCSCMap=CSCReadoutMappingFromFile( p );                                              
+
 
   LogDebug("CSC") << "[CSCMakeStripDigiCollections] Initialized strip collection maker" << "\n";
 }
