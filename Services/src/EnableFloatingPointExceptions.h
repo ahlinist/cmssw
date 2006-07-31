@@ -9,7 +9,13 @@
 
  Description: This service gives cmsRun users the ability to configure FPE behavior.  For now the whole job is configured the same way.  A future inhancement would allow control on a module by module basis.
 
-
+ Usage:
+    By adding the following to your configuration
+    /code
+      service = EnableFloatingPointExceptions {}
+    /endcode
+   Any arithmetic 'exception' (such as divide by zero) will cause the CPU to emit a SIGFPE.  This is very useful if
+you are trying to track down where a floating point value of 'nan' or 'inf' is being generated.
 */
 //
 // Original Author:  E. Sexton-Kennedy
