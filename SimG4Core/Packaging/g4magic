@@ -1,6 +1,6 @@
 #!/bin/sh
 pwd
-G4SHARE=`scramv1 tool tag geant4 GEANT4_SHARE_BASE`
+G4SHARE=`scramv1 tool tag geant4 GEANT4_BASE`/share
 G4Packaging=${G4SHARE}/physics_lists/hadronic/Packaging
 G4THISLIB=G4packaging
 cp -rp ${G4Packaging} ${G4THISLIB}
