@@ -39,6 +39,18 @@ namespace edm {
       double curr_event_time_;  // seconds
       double curr_module_time_; // seconds
       bool want_summary_;
+      bool report_summary_;
+      
+        //
+       // Min Max and average event times for summary
+      //  at end of job
+      double max_event_time_;    // seconds
+      double min_event_time_;    // seconds
+      int total_event_count_; 
+
+
+      
+
     };
   }
 }
