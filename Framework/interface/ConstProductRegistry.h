@@ -38,6 +38,8 @@ namespace edm {
     ConstProductRegistry(SignallingProductRegistry& iReg) : reg_(&iReg) { }
      
     // ---------- const member functions ---------------------
+    ProductRegistry const& productRegistry() const {return *reg_;}
+
     ProductList const& productList() const {return reg_->productList();}
 
     // Return all the branch names currently known to *this.  This
