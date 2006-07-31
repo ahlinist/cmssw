@@ -26,6 +26,7 @@ through the MessageLogger.
 #include <string>
 #include <ostream>
 #include <set>
+#include <map>
 #include <vector>
 #include <sstream>
 
@@ -208,7 +209,21 @@ namespace edm {
       void reportError(std::string const& shortDesc,
 		       std::string const& longDesc,
 		       int const& exitCode);
-      
+
+      ///
+      /// Report Skipped File
+      ///
+      /// Report that a file has been skipped due to it not being
+      /// found.
+      void reportSkippedFile(std::string const& pfn, std::string const& lfn);
+	
+
+      ///
+      /// Report Timing statistics
+      /// Invoked by the Timing service to send an end of job 
+      /// summary about time taken for inclusion in the job report
+      ///
+	void reportTimingInfo(std::map<std::string, double> & timingData);
 
 
    protected:
