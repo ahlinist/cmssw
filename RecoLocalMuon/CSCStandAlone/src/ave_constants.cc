@@ -1,8 +1,8 @@
 /** \file
  * 
  * 
- * $Date: 2006/02/06 15:15:59 $
- * $Revision: 1.4 $
+ * $Date: 2006/07/02 06:06:17 $
+ * $Revision: 1.1 $
  * \author N. Amapane - S. Argiro'
  *
 */
@@ -35,6 +35,10 @@
 #include "EventFilter/CSCRawToDigi/interface/CSCDDUTrailer.h"
 #include "EventFilter/CSCRawToDigi/interface/CSCDMBHeader.h"
 //#include "RecoLocalMuon/CSCStandAlone/interface/condbc.h"
+
+#include <FWCore/MessageLogger/interface/MessageLogger.h>
+#include <FWCore/ParameterSet/interface/FileInPath.h>
+
 #include "RecoLocalMuon/CSCStandAlone/interface/Strip_Fit_Constants.h"
 #include "RecoLocalMuon/CSCStandAlone/interface/CatTrkFnd.h"
 #include "RecoLocalMuon/CSCStandAlone/interface/AnoTrkFnd.h"
@@ -65,11 +69,11 @@ namespace test{
   public:
 
 
-    ave_constants(const ParameterSet& pset)
+    ave_constants(const ParameterSet& ps)
     {
-      string theMappingFile = pset.getParameter<std::string>("theMappingFile");
-      theMapping=CSCReadoutMappingFromFile(theMappingFile);
-	// theMapping=CSCReadoutMappingFromFile("/home/ippolito/CMSSW_0_8_0_pre2/RecoLocalMuon/CSCStandAlone/src/csc_slice_test_map.txt");
+      //string theMappingFile = pset.getParameter<std::string>("theMappingFile");
+      //theMapping=CSCReadoutMappingFromFile(theMappingFile);
+	theMapping=CSCReadoutMappingFromFile(ps);
       // register all chambers                                                
       int dmb_val[9]={1,2,3,4,5,7,8,9,10};
       for(int vmecrate=0;vmecrate<4;vmecrate++){

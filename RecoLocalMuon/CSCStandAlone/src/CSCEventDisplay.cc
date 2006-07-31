@@ -31,6 +31,10 @@
 #include "EventFilter/CSCRawToDigi/interface/CSCDDUTrailer.h"
 #include "EventFilter/CSCRawToDigi/interface/CSCDMBHeader.h"
 
+
+#include <FWCore/MessageLogger/interface/MessageLogger.h>
+#include <FWCore/ParameterSet/interface/FileInPath.h>
+
 #include "RecoLocalMuon/CSCStandAlone/interface/Strip_Fit_Constants.h"
 #include "RecoLocalMuon/CSCStandAlone/interface/CatTrkFnd.h"
 #include "RecoLocalMuon/CSCStandAlone/interface/AnoTrkFnd.h"
@@ -53,10 +57,12 @@ namespace test{
   
   public:
 
-    CSCEventDisplay(const ParameterSet& pset){
+    CSCEventDisplay(const edm::ParameterSet& ps){
       init=0;
-      string theMappingFile = pset.getParameter<std::string>("theMappingFile");
-      theMapping=CSCReadoutMappingFromFile(theMappingFile);
+      // edm::FileInPath fp = ps.getParameter<edm::FileInPath>("theMappingFile");
+      // theMappingFile = fp.fullPath();
+      //string theMappingFile = pset.getParameter<std::string>("theMappingFile");
+      theMapping=CSCReadoutMappingFromFile(ps);
 
     }
  

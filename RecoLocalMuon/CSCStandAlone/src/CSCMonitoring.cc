@@ -32,6 +32,9 @@
 #include "EventFilter/CSCRawToDigi/interface/CSCDDUTrailer.h"
 #include "EventFilter/CSCRawToDigi/interface/CSCDMBHeader.h"
 
+#include <FWCore/MessageLogger/interface/MessageLogger.h>
+#include <FWCore/ParameterSet/interface/FileInPath.h>
+
 #include "RecoLocalMuon/CSCStandAlone/interface/Strip_Fit_Constants.h"
 #include "RecoLocalMuon/CSCStandAlone/interface/CatTrkFnd.h"
 #include "RecoLocalMuon/CSCStandAlone/interface/AnoTrkFnd.h"
@@ -60,11 +63,11 @@ namespace test{
 
    
   public:
-    CSCMonitor(const ParameterSet& pset)
+    CSCMonitor(const ParameterSet& ps)
     {
-      string theMappingFile = pset.getParameter<std::string>("theMappingFile");
-      theMapping=CSCReadoutMappingFromFile(theMappingFile);
-
+      //string theMappingFile = pset.getParameter<std::string>("theMappingFile");
+      //theMapping=CSCReadoutMappingFromFile(theMappingFile);
+      theMapping=CSCReadoutMappingFromFile(ps);
       writer.setup(theMapping);
       
       chamb_const=Strip_Fit_Constants();

@@ -44,6 +44,10 @@
 #include "EventFilter/CSCRawToDigi/interface/CSCDDUTrailer.h"
 #include "EventFilter/CSCRawToDigi/interface/CSCDMBHeader.h"
 //#include "condbc.h"
+
+#include <FWCore/MessageLogger/interface/MessageLogger.h>
+#include <FWCore/ParameterSet/interface/FileInPath.h>
+
 #include "RecoLocalMuon/CSCStandAlone/interface/Strip_Fit_Constants.h"
 #include "RecoLocalMuon/CSCStandAlone/interface/CatTrkFnd.h"
 #include "RecoLocalMuon/CSCStandAlone/interface/AnoTrkFnd.h"
@@ -69,8 +73,8 @@ namespace test{
     
     RecFitterComp( const edm::ParameterSet& ps ) : iev( 0 ) {
       
-      theMapping=CSCReadoutMappingFromFile("csc_slice_test_map.txt");
-      
+      //theMapping=CSCReadoutMappingFromFile("csc_slice_test_map.txt");
+      theMapping=CSCReadoutMappingFromFile(ps);
       // register all chambers
       int dmb_val[9]={1,2,3,4,5,7,8,9,10};
       for(int vmecrate=0;vmecrate<4;vmecrate++){
