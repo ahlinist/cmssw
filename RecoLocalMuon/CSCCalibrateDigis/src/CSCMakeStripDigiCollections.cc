@@ -27,7 +27,7 @@ CSCMakeStripDigiCollections::CSCMakeStripDigiCollections(const edm::ParameterSet
  * Tim changed the CondFormats/CSCObjects, so the mapping file is obtained 
  * from the ParameterSet directly
  *
- * CSCMapFile = p.getUntrackedParameter<string>("mappingFile");
+ * CSCMapFile = p.getUntrackedParameter<string>("theMappingFile");
  * theCSCMap=CSCReadoutMappingFromFile(CSCMapFile);                                              
  *
  */
