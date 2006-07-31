@@ -56,6 +56,9 @@
 #include "EventFilter/CSCRawToDigi/interface/CSCDDUTrailer.h"
 #include "EventFilter/CSCRawToDigi/interface/CSCDMBHeader.h"
 
+#include <FWCore/MessageLogger/interface/MessageLogger.h>
+#include <FWCore/ParameterSet/interface/FileInPath.h>
+
 #include "RecoLocalMuon/CSCStandAlone/interface/Strip_Fit_Constants.h"
 #include "RecoLocalMuon/CSCStandAlone/interface/CatTrkFnd.h"
 #include "RecoLocalMuon/CSCStandAlone/interface/AnoTrkFnd.h"
@@ -83,10 +86,10 @@ namespace test{
     
     RecHitComp( const edm::ParameterSet& ps ) : iev( 0 ) {
       
-      theMapping=CSCReadoutMappingFromFile("csc_slice_test_map.txt");
+      //theMapping=CSCReadoutMappingFromFile("csc_slice_test_map.txt");
       //string theMappingFile = pset.getParameter<std::string>("theMappingFile");
       //theMapping=CSCReadoutMappingFromFile(theMappingFile);
-      
+      theMapping=CSCReadoutMappingFromFile(ps);
       
       writer.setup(theMapping);
       

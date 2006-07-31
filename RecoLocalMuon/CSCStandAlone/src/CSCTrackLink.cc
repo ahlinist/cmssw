@@ -34,6 +34,9 @@
 #include "EventFilter/CSCRawToDigi/interface/CSCDDUTrailer.h"
 #include "EventFilter/CSCRawToDigi/interface/CSCDMBHeader.h"
 
+#include <FWCore/MessageLogger/interface/MessageLogger.h>
+#include <FWCore/ParameterSet/interface/FileInPath.h>
+
 #include "RecoLocalMuon/CSCStandAlone/interface/Strip_Fit_Constants.h"
 #include "RecoLocalMuon/CSCStandAlone/interface/CatTrkFnd.h"
 #include "RecoLocalMuon/CSCStandAlone/interface/AnoTrkFnd.h"
@@ -44,7 +47,7 @@
 #include "RecoLocalMuon/CSCStandAlone/interface/EvtDumpTrack.h"
 #include "RecoLocalMuon/CSCStandAlone/interface/RootWriter.h"
 
-#include </afs/cern.ch/cms/external/lcg/external/root/5.10.00a/slc3_ia32_gcc323/root/include/TFile.h>
+#include <TFile.h>
 
 #include <iostream>
 #include <fstream>
@@ -62,11 +65,11 @@ namespace test{
 
    
   public:
-    CSCTrackLink(const ParameterSet& pset)
+    CSCTrackLink(const ParameterSet& ps)
     { 
-      string theMappingFile = pset.getParameter<std::string>("theMappingFile");
-      theMapping=CSCReadoutMappingFromFile(theMappingFile);
-      
+      //string theMappingFile = pset.getParameter<std::string>("theMappingFile");
+      //theMapping=CSCReadoutMappingFromFile(theMappingFile);
+      theMapping=CSCReadoutMappingFromFile(ps);
       writer.setup();
       init=0;
     }
