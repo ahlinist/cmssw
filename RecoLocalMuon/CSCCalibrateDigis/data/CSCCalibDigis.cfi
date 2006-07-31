@@ -10,7 +10,7 @@ module muoncscdigi = CSCCalibDigisProducer {
      # Switch on/off the verbosity for debug purposes
      untracked bool debug = false
      # Mapping file for MTCC CSC chambers
-     untracked string mappingFile = "../data/csc_slice_test_map.txt"
+     FileInPath theMappingFile = "RecoLocalMuon/CSCCalibrateDigis/data/csc_slice_test_map.txt"
      # Label to retrieve raw data from the event
      untracked string whichRawData = "cscunpacker"
 }

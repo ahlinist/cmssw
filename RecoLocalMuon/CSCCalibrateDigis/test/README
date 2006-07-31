@@ -29,7 +29,7 @@ Note:  You may want to modify unpack_raw_to_digi.cfg first, so you run on a diff
 
    a) Checkout the code from CVS:
       cd ~/scratch0
-      scramv1 project CMSSW CMSSW_2006-07-28
+      scramv1 project CMSSW 2006-07-28
       cd CMSSW_2006-07-28/src/
       cvs co RecoLocalMuon/CSCCalibrateDigis
       cd RecoLocalMuon/CSCCalibrateDigis
@@ -49,7 +49,7 @@ Note:  Again, if you are running on many events, you may want to edit
    c) Now you are finally ready to run the calibration, but some parameters need
       to be set to have access to the database:
       eval `scramv1 runtime -csh`
-      scramv1 -i oracle
+      scramv1 setup -i oracle
       <RETURN>
       <RETURN>
       <RETURN>
