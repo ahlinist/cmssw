@@ -5,7 +5,7 @@
 #
 # For the moment being, keep the content of the cfi file below
 # 
-module muoncscdigi = CSCCalibDigisProducer {
+module muonCSCDigis = CSCCalibDigisProducer {
 
      # Switch on/off the verbosity for debug purposes
      untracked bool debug = false
