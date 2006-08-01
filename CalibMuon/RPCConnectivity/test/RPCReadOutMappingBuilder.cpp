@@ -1,11 +1,11 @@
 
-/** \class RPCReadOutMapingO2O
+/** \class RPCReadOutMappingBuilder
  *
  * Description:
  *      Class to read directly OMDS DB with OCCI and fill Offline DB
  *
- * $Date: 2006/07/17 19:38:11 $
- * $Revision: 1.6 $
+ * $Date: 2006/07/20 14:27:39 $
+ * $Revision: 1.1 $
  * \author Michal Bluj -- INS Warsaw
  *
  */
@@ -42,11 +42,11 @@
 using namespace std;
 using namespace oracle::occi;
 
-class RPCReadOutMapingO2O {
+class RPCReadOutMappingBuilder {
   
 public:
 
-  RPCReadOutMapingO2O(string host, string sid, string user, string pass, int port=1521, string poolDb="sqlite_file:cabling.db", string version="RPCReadOutMapping_v1", int first_run=0, int last_run=0) 
+  RPCReadOutMappingBuilder(string host, string sid, string user, string pass, int port=1521, string poolDb="sqlite_file:cabling.db", string version="RPCReadOutMapping_v1", int first_run=0, int last_run=0) 
   { 
     ConnectOnlineDB(host, sid, user, pass, port);
     poolDbCon_=poolDb;
@@ -62,7 +62,7 @@ public:
 
   }
  
- ~RPCReadOutMapingO2O()
+ ~RPCReadOutMappingBuilder()
   { 
     DisconnectOnlineDB();
     WritePoolDB();
@@ -350,9 +350,10 @@ public:
 		cout << " |    |    |    |    |    |    Zero strips found in DB for FEB no. " << theFEB[iFEB].lbInputNum << flush << endl;
 		cout << " |    |    |    |    |    |    Dummy strip generation ... " << flush;
 		for(unsigned int iStrip=0; iStrip <= 15; iStrip++) {
-		  int chamberStrip =theFEB[iFEB].lbInputNum*16+iStrip;
+		  int stripCablePin = 2*iStrip+1;
+		  int chamberStrip =(theFEB[iFEB].lbInputNum-1)*16+iStrip+1;
 		  int cmsStrip = chamberStrip;
-		  ChamberStripSpec strip = {iStrip, chamberStrip, cmsStrip};
+		  ChamberStripSpec strip = {stripCablePin, chamberStrip, cmsStrip};
 		  febConnector.add(strip);
 		}
 		cout << " Done." << endl;		
@@ -443,9 +444,9 @@ int main(int argc, char* argv[])
   if(argc > 9 ) run2 = atoi(argv[9]);
 
   try {
-    RPCReadOutMapingO2O o2o(host, sid, user, pass, port, poolCon, ver, run1, run2);
+    RPCReadOutMappingBuilder builder(host, sid, user, pass, port, poolCon, ver, run1, run2);
     
-    o2o.readCablingMap();
+    builder.readCablingMap();
       
   } catch (SQLException &e) {
     cerr << "SQLException:  " << e.getMessage() << endl;
