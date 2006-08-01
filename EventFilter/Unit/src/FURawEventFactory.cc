@@ -46,7 +46,7 @@ FURawEvent *FURawEventFactory::getEvent(unsigned int ifset, unsigned long buinst
 void FURawEventFactory::take(FURawEvent *ev)
 {
   pthread_mutex_lock(&mutex_);
-  builtRes_.push(ev->getInternalHandle());
+  builtRes_.push_back(ev->getInternalHandle());
   if(builtRes_.size()>minBuiltInQueue_)
     {
       int ret = sem_post(&empty_);
@@ -67,8 +67,8 @@ FURawEvent *FURawEventFactory::getBuiltEvent()
   pthread_mutex_lock(&mutex_);
   if(builtRes_.size()!=0)
     {
-      res = builtRes_.top();
-      builtRes_.pop();
+      res = builtRes_.front();
+      builtRes_.pop_front();
     }
   pthread_mutex_unlock(&mutex_);
   if(res>=0)
@@ -83,7 +83,7 @@ unsigned int FURawEventFactory::spyBuiltEvent(unsigned int fedid, unsigned char 
   int ret = sem_wait(&empty_); // wait for an event if queue is empty
   if(ret!=0) std::cerr << "FURawEventFactory::error waiting for built resource" << std::endl;
   pthread_mutex_lock(&mutex_);
-  int res = builtRes_.top();
+  int res = builtRes_.front();
   unsigned int siz = (*resources_[res])[fedid]->size_;
   memcpy(dest, (*resources_[res])[fedid]->data_,siz);  
   ret = sem_post(&empty_); // wait for an event if queue is empty

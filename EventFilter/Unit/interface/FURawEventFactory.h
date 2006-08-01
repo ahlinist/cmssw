@@ -60,7 +60,7 @@ class FURawEventFactory
   static int maxHandles;
 
   std::stack<int> freeRes_;
-  std::stack<int> builtRes_;
+  std::deque<int> builtRes_;
   unsigned int minBuiltInQueue_;
   unsigned int nbProcessed_;
   std::vector<FURawEvent *> resources_;
