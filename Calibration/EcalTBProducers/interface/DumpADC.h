@@ -9,7 +9,7 @@
      <Notes on implementation>
 */
 //
-// $Id: DumpADC.h,v 1.1 2006/04/21 09:19:18 meridian Exp $
+// $Id: DumpADC.h,v 1.1 2006/08/01 09:53:49 govoni Exp $
 //
 
 
@@ -30,7 +30,6 @@
 #include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
 #include "Geometry/CaloGeometry/interface/CaloSubdetectorGeometry.h"
 
-#include "Calibration/EcalTBTools/interface/BlockClasses.h"
 #include "Calibration/EcalTBTools/interface/TB06Tree.h"
 
 //#include "CLHEP/Geometry/Transform3D.h"
