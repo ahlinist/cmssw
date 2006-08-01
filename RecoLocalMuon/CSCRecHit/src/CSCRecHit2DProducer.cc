@@ -8,9 +8,6 @@
 #include <Geometry/Records/interface/MuonGeometryRecord.h>
 
 #include <DataFormats/CSCRecHit/interface/CSCRecHit2DCollection.h>
-#include <DataFormats/CSCRecHit/interface/CSCWireHitCollection.h>
-#include <DataFormats/CSCRecHit/interface/CSCStripHitCollection.h>
-
 #include <DataFormats/CSCDigi/interface/CSCStripDigiCollection.h>
 #include <DataFormats/CSCDigi/interface/CSCWireDigiCollection.h>
 
@@ -23,14 +20,6 @@ CSCRecHit2DProducer::CSCRecHit2DProducer( const edm::ParameterSet& pas ) : iev( 
 
   // register what this produces
   produces<CSCRecHit2DCollection>();
-
-  // DOMINIQUE:  want to produce wire/strip only hits ?
-  Produce1DHits  = pas.getParameter<bool>("CSCproduce1DHits");
-  if ( Produce1DHits ) {
-     produces<CSCStripHitCollection>();
-     produces<CSCWireHitCollection>();
-  }
-
 }
 
 CSCRecHit2DProducer::~CSCRecHit2DProducer()
@@ -58,19 +47,10 @@ void  CSCRecHit2DProducer::produce( edm::Event& ev, const edm::EventSetup& setup
   // create empty collection of rechits
   std::auto_ptr<CSCRecHit2DCollection> oc( new CSCRecHit2DCollection );
 
-  // DOMINIQUE: also empty collections for wire/strip only hits
-  std::auto_ptr<CSCWireHitCollection> woc( new CSCWireHitCollection );
-  std::auto_ptr<CSCStripHitCollection> soc( new CSCStripHitCollection );
-
-  // fill the collection...  DOMINIQUE:  also wire/strip only collection
-  recHitBuilder_->build( stripDigis.product(), wireDigis.product(), *oc, *woc, *soc ); //@@ FILL oc
+  // fill the collection
+  recHitBuilder_->build( stripDigis.product(), wireDigis.product(), *oc ); //@@ FILL oc
 
   // put collection in event
   ev.put( oc );
-
-  // DOMINIQUE: put wire/strip hit collections in event if have produced them
-  if ( !Produce1DHits ) return;
-  ev.put( woc );
-  ev.put( soc );
 
 }

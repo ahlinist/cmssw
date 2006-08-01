@@ -4,10 +4,8 @@
 /** \class CSCRecHit2DBuilder 
  * Algorithm to build CSCRecHit2D's from wire and strip digis
  * in endcap muon CSCs by implementing a 'build' function 
- * required by CSCRecHit2DProducer.<br>
+ * required by CSCRecHit2DProducer.
  *
- * D. Fortin also added possibility to retain strip and wire only hits <br>
- * 
  * \author Tim Cox
  *
  * Implementation notes: <BR>
@@ -17,22 +15,18 @@
  */
 
 #include <DataFormats/CSCRecHit/interface/CSCRecHit2DCollection.h>
-#include <DataFormats/CSCRecHit/interface/CSCStripHitCollection.h>
-#include <DataFormats/CSCRecHit/interface/CSCWireHitCollection.h>
 #include <DataFormats/CSCDigi/interface/CSCStripDigiCollection.h>
 #include <DataFormats/CSCDigi/interface/CSCWireDigiCollection.h>
 
 #include <FWCore/ParameterSet/interface/ParameterSet.h>
 
+//class CSCRecHit2DCollection;
+//class CSCStripDigiCollection;
+//class CSCWireDigiCollection;
 class CSCLayer;
 class CSCGeometry;
 class CSCRecHit2DAlgo;
 class CSCDetId;
-
-// DOMINIQUE:
-class CSCHitFromStripOnly;
-class CSCHitFromWireOnly;
-
 
 class CSCRecHit2DBuilder
  {
@@ -55,57 +49,32 @@ class CSCRecHit2DBuilder
        * know to which chamber-type(s) each is to be applied. 
        * This allows the existing ORCA local reco to be ported relatively
        * straightforwardly, at least for a first prototype in CMSSW.
-       *
-       * Dominique also added a loop on each, the wire digis and strip digis to
-       * fill collections of strip hits and wire hits.  By default, these are not
-       * produced: the 1-D hit production must be turned on in the .cfi file.
-       *
        */
-
-// DOMINIQUE: added wire/strip only collections
       void build( const CSCStripDigiCollection* stripds,
                   const CSCWireDigiCollection* wireds,
-                        CSCRecHit2DCollection& oc, 
-                        CSCWireHitCollection& woc, 
-                        CSCStripHitCollection& soc );
+		          CSCRecHit2DCollection& oc );
 
-      /*
-       * Cache pointer to geometry _for current event_
+      /** Cache pointer to geometry _for current event_
        */
       void setGeometry( const CSCGeometry* geom );
 
    private:
 
-      /*
-       * Get layer corresponding to given detid
+      /** Get layer corresponding to given detid
        */
       const CSCLayer* getLayer( const CSCDetId& detId ) const;
 
-      /*
-       * Get algo registered for given chamber type
+      /** Get algo registered for given chamber type
        */
       CSCRecHit2DAlgo* getAlgo( int iChamberType );
 
-      /*
-       * DOMINIQUE:  Strip/wire only classes.
-       * 
-       */
-      CSCHitFromStripOnly* HitsFromStripOnly_;
-      CSCHitFromWireOnly*  HitsFromWireOnly_;
-      bool Produce1DHits;     //  Flag for producing or not 1-D hits (strip/wire only);
-
-
-      /*
-       * Cache geometry for current event
+      /** Cache geometry for current event
        */
       const CSCGeometry* geom_;
 
-      /*
-       * Map chamber type to algorithm by chamber type index
+      /** Map chamber type to algorithm by chamber type index
        */
       std::vector<CSCRecHit2DAlgo*> algos_;
-
-
 };
 
 #endif

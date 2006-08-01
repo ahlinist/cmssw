@@ -17,10 +17,6 @@
 #include <FWCore/Utilities/interface/Exception.h>
 #include <FWCore/MessageLogger/interface/MessageLogger.h> 
 
-// DOMINIQUE:
-#include <RecoLocalMuon/CSCRecHit/src/CSCHitFromStripOnly.h>
-#include <RecoLocalMuon/CSCRecHit/src/CSCHitFromWireOnly.h>
-
 CSCRecHit2DBuilder::CSCRecHit2DBuilder( const edm::ParameterSet& ps ) : 
    geom_(0), algos_( std::vector<CSCRecHit2DAlgo*>() ) {
 	// Receives ParameterSet percolated down from EDProducer
@@ -37,13 +33,6 @@ CSCRecHit2DBuilder::CSCRecHit2DBuilder( const edm::ParameterSet& ps ) :
   // How many chamber types do we have? This seems hard-wirable, but what the heck
   int ntypes = ps.getParameter<int>("no_of_chamber_types");
   LogDebug("CSC") << "no. of chamber types = " << ntypes;
-
-// DOMINIQUE:  These are the classes for strip and wire only rechit, if we shall produce them...
-  Produce1DHits  = ps.getParameter<bool>("CSCproduce1DHits");
-
-  HitsFromStripOnly_ = new CSCHitFromStripOnly( ps );  // --> How can I pass these parameters: Tim ????
-  HitsFromWireOnly_  = new CSCHitFromWireOnly();  // --> no parameters needed
-
 
   if ( ntypes <= 0 ) {
 	 throw cms::Exception("ParameterSetError") << "No. of chamber types=" << ntypes << " is invalid" << std::endl;
@@ -82,15 +71,9 @@ CSCRecHit2DBuilder::~CSCRecHit2DBuilder() {
   //	}
 }
 
-
-// DOMINIQUE:  added wire/strip only hits
-
 void CSCRecHit2DBuilder::build( const CSCStripDigiCollection* stripdc,
                                 const CSCWireDigiCollection* wiredc,
-                                      CSCRecHit2DCollection& oc,
-                                      CSCWireHitCollection& woc,
-                                      CSCStripHitCollection& soc )
-{
+		                        CSCRecHit2DCollection& oc ) {
   // loop over layers with strip digis and run the local reco on each one with wire digis
   for( CSCStripDigiCollection::DigiRangeIterator it = stripdc->begin(); it != stripdc->end(); ++it )
   {
@@ -137,48 +120,6 @@ void CSCRecHit2DBuilder::build( const CSCStripDigiCollection* stripdc,
     // Add the rechits to master collection
 	oc.put( id, rhv.begin(), rhv.end() );
   }
-
-  // DOMINIQUE: if we allow to produce the 1-D hit production, continue, otherwise exit
-  if ( !Produce1DHits ) return;
-
-  // DOMINIQUE: Strip only hits
-  for ( CSCStripDigiCollection::DigiRangeIterator it = stripdc->begin(); it != stripdc->end(); ++it )
-  {
-      const CSCDetId& id = (*it).first;
-      const CSCLayer* layer = getLayer( id );
-      const CSCStripDigiCollection::Range& rstripd = (*it).second;
-      LogDebug("CSC") << "found " << rstripd.second - rstripd.first << " strip digi(s) in layer";
-      
-      // Skip if no wire digis in this layer
-      if ( rstripd.second == rstripd.first ) continue;
-
-      // This is running CSCRecHit1DFromStripOnly.cc
-      std::vector<CSCStripHit> rhv = HitsFromStripOnly_->runStrip( id, layer, rstripd );
-
-      // Add the strip hits to master collection
-      soc.put( id, rhv.begin(), rhv.end() );
-  }
-
-  // DOMINIQUE:  wire only hits !
-  for ( CSCWireDigiCollection::DigiRangeIterator it = wiredc->begin(); it != wiredc->end(); ++it )
-  {
-      const CSCDetId& id = (*it).first;
-      const CSCLayer* layer = getLayer( id );
-      const CSCWireDigiCollection::Range rwired = wiredc->get( id );
-
-     // Any wire digis _in this layer_?
-     LogDebug("CSC") << "found " << rwired.second - rwired.first << " wire digi(s) in layer";
-      
-    // Skip if no wire digis in this layer  
-    if ( rwired.second == rwired.first ) continue;
-
-// This is running CSCRecHit1DFromWireOnly.cc
-      std::vector<CSCWireHit> rhv = HitsFromWireOnly_->runWire( id, layer, rwired );   
-
-      // Add the wire hits to master collection 
-      woc.put( id, rhv.begin(), rhv.end() );
-  }
-
 }
 
 void CSCRecHit2DBuilder::setGeometry( const CSCGeometry* geom ) {

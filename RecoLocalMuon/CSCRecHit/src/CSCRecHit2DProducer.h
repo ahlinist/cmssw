@@ -6,8 +6,6 @@
  * in endcap muon CSCs. 
  * It starts from collections of the CSC wire and strip digis.
  *
- * D. Fortin also added the possibility of filling collections of wire and strip hits.
- *
  * \author Tim Cox
  *
  */
@@ -31,10 +29,6 @@ class CSCRecHit2DProducer : public edm::EDProducer {
       std::string stripDigiProducer_;
       std::string wireDigiProducer_;
       CSCRecHit2DBuilder* recHitBuilder_;
-
-// DOMINIQUE:  switch to turn on/off 1-D hit production
-      bool Produce1DHits;
-
 };
 
 #endif
