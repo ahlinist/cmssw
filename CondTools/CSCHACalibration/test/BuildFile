@@ -1,3 +1,4 @@
+
 <use name=CondFormats/OptAlignObjects>
 <use name=CondFormats/DataRecord>
 <use name=FWCore/Framework>
@@ -7,4 +8,10 @@
 </library>
 <library file=stubs/CSCRSensorsDataPrinter.cc name=CSCRSensorsDataPrinter>
         <flags SEAL_PLUGIN_NAME="CSCRSensorsDataPrinter">
+</library>
+<library file=stubs/InclinometersDataPrinter.cc name=InclinometersDataPrinter>
+    <flags SEAL_PLUGIN_NAME="InclinometersDataPrinter">
+</library>   
+<library file=stubs/PX_sensorsDataPrinter.cc name=PX_sensorsDataPrinter>
+    <flags SEAL_PLUGIN_NAME="PX_sensorsDataPrinter">
 </library>
