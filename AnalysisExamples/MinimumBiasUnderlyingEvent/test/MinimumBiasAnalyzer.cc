@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-#include "Validation/Generator/test/MinimumBiasAnalyzer.h"
+#include "AnalysisExamples/MinimumBiasUnderlyingEvent/test/MinimumBiasAnalyzer.h"
  
 #include "DataFormats/Common/interface/Ref.h" 
 #include "DataFormats/JetReco/interface/Jet.h"
