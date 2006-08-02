@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrea Rizzi
 //         Created:  Wed Apr 12 11:12:49 CEST 2006
-// $Id: TrackCountingAnalyzer.cc,v 1.2 2006/07/06 15:40:05 fwyzard Exp $
+// $Id: TrackCountingAnalyzer.cc,v 1.1 2006/07/18 14:23:11 arizzi Exp $
 //
 //
 
@@ -77,7 +77,7 @@ TrackCountingAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   
   Handle<JetTagCollection> jetsHandle;
   Handle<TrackCountingTagInfoCollection> jetsInfoHandle;
-  iEvent.getByLabel("trackCounting","TrackCounting", jetsHandle);
+  iEvent.getByLabel("trackCountingJetTags", jetsHandle);
   const JetTagCollection & jets = *(jetsHandle.product());
   
   for (JetTagCollection::size_type i = 0; i < jets.size(); ++i) {
