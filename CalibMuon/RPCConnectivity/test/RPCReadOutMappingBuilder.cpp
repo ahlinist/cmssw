@@ -4,8 +4,8 @@
  * Description:
  *      Class to read directly OMDS DB with OCCI and fill Offline DB
  *
- * $Date: 2006/07/20 14:27:39 $
- * $Revision: 1.1 $
+ * $Date: 2006/08/01 13:25:50 $
+ * $Revision: 1.2 $
  * \author Michal Bluj -- INS Warsaw
  *
  */
@@ -167,6 +167,38 @@ public:
     cout << "PoolDB written!" << endl;
   }
   
+
+// Method called to compute number of strips connected to FEB (barrel only)
+  unsigned int giveNumOfStripsPerFEB(int sector, int layer) const {
+
+    unsigned int nStrips = 0;
+    if(layer==1 || layer==3) nStrips = 90;
+    if(layer==2 || layer==4) nStrips = 84;
+    if(layer==5) nStrips = 42;
+    if(layer==6){
+      if(sector==4) nStrips = 36;
+      else if(sector==9 || sector==11) nStrips = 52;
+      else if(sector==10) nStrips = 60;
+      else nStrips = 48;
+    } 
+ 
+    unsigned int tmp;
+    const unsigned int FEB = 16;
+
+    if(nStrips==60) return 12;
+
+    for(int i=0;i<5;i++){
+      tmp = nStrips%(FEB-i);
+      if(tmp==0) return (FEB-i);
+    }
+
+    cout << "[RPCReadOutMappingBuilder::giveNumOfStripsPerFEB]: " << endl
+	 << "Can't figure out number of FEB channels for this number of strips: "
+	 << nStrips << " Returning 0 channels!" << endl;
+
+    return 0;
+
+  }
 
 // Method called to read Online DB and fill RPCReadOutMapping
   void readCablingMap()
@@ -349,9 +381,12 @@ public:
 	      if(iStripEntry==0){
 		cout << " |    |    |    |    |    |    Zero strips found in DB for FEB no. " << theFEB[iFEB].lbInputNum << flush << endl;
 		cout << " |    |    |    |    |    |    Dummy strip generation ... " << flush;
-		for(unsigned int iStrip=0; iStrip <= 15; iStrip++) {
+	
+		unsigned int max_iStrip = giveNumOfStripsPerFEB(chamber.sector,chamber.layer);
+		for(unsigned int iStrip=0; iStrip < max_iStrip; iStrip++) {
 		  int stripCablePin = 2*iStrip+1;
-		  int chamberStrip =(theFEB[iFEB].lbInputNum-1)*16+iStrip+1;
+		  int chamberStrip =(theFEB[iFEB].lbInputNum-1)*max_iStrip+iStrip+1;
+		  if(chamber.subsector=="+" && chamber.layer==5) chamberStrip-=42;
 		  int cmsStrip = chamberStrip;
 		  ChamberStripSpec strip = {stripCablePin, chamberStrip, cmsStrip};
 		  febConnector.add(strip);
@@ -458,3 +493,5 @@ int main(int argc, char* argv[])
 
   return 0;
 }
+
+
