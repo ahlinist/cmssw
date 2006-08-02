@@ -12,6 +12,6 @@
 <library file=stubs/InclinometersDataPrinter.cc name=InclinometersDataPrinter>
     <flags SEAL_PLUGIN_NAME="InclinometersDataPrinter">
 </library>   
-<library file=stubs/PX_sensorsDataPrinter.cc name=PX_sensorsDataPrinter>
-    <flags SEAL_PLUGIN_NAME="PX_sensorsDataPrinter">
+<library file=stubs/PXsensorsDataPrinter.cc name=PXsensorsDataPrinter>
+    <flags SEAL_PLUGIN_NAME="PXsensorsDataPrinter">
 </library>
