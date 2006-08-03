@@ -6,7 +6,7 @@
      <Notes on implementation>
 */
 //
-// $Id: DumpADC.cc,v 1.1 2006/04/21 09:19:17 meridian Exp $
+// $Id: DumpADC.cc,v 1.1 2006/08/01 09:53:50 govoni Exp $
 //
 //
 
@@ -250,6 +250,7 @@ DumpADC::analyze( const edm::Event& iEvent, const edm::EventSetup& iSetup )
    //FIXME not sure about the "1"
    EBDetId EBMExtal (1,xtalNum,EBDetId::SMCRYSTALMODE) ;
 
+   std::cout << "[CR]\n" ;
    // loop over the 7x7 matrix
    for (UInt_t icry=0 ; icry<49 ; ++icry)
      {
@@ -264,12 +265,15 @@ DumpADC::analyze( const edm::Event& iEvent, const edm::EventSetup& iSetup )
              Xtals7x7.push_back (tempo) ;
              amplitude [icry] = EBuncalibRecHits->find (Xtals7x7[icry])->
                                                     amplitude () ;
+//             std::cout << "[CR][PG] Building element (" << tempo
+//                       << " around " << EBMExtal 
+//                       << " ene " << amplitude [icry] << std::endl ;
            }
        catch ( std::runtime_error &e )
            {
              amplitude[icry] = 0. ;
-//             std::cerr << "Cannot construct 7x7 matrix around EBDetId " 
-//                       << EBMExtal << std::endl ;
+             std::cerr << "Cannot get amplitude for " 
+                       << tempo << std::endl ;
            }
      } // loop over the 7x7 matrix
    
