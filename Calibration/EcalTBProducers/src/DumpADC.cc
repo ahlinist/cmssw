@@ -6,7 +6,7 @@
      <Notes on implementation>
 */
 //
-// $Id: DumpADC.cc,v 1.2 2006/08/03 09:43:38 govoni Exp $
+// $Id: DumpADC.cc,v 1.3 2006/08/03 10:06:29 govoni Exp $
 //
 //
 
@@ -262,12 +262,16 @@ DumpADC::analyze( const edm::Event& iEvent, const edm::EventSetup& iSetup )
                             EBMExtal.iphi ()+column-3, 
                             EBDetId::ETAPHIMODE) ;
 
-             Xtals7x7.push_back (tempo) ;
-             amplitude [icry] = EBuncalibRecHits->find (Xtals7x7[icry])->
-                                                    amplitude () ;
-//             std::cout << "[CR][PG] Building element (" << tempo
-//                       << " around " << EBMExtal 
-//                       << " ene " << amplitude [icry] << std::endl ;
+             if (tempo.ism () == 1)
+               {
+                 Xtals7x7.push_back (tempo) ;
+                 amplitude [icry] = EBuncalibRecHits->find (Xtals7x7[icry])->
+                                                        amplitude () ;
+//                 std::cout << "[CR][PG] Building element (" << tempo
+//                           << " around " << EBMExtal 
+//                           << " ene " << amplitude [icry] << std::endl ;
+               }
+              else amplitude [icry] = 0. ;               
            }
        catch ( std::runtime_error &e )
            {
