@@ -6,7 +6,7 @@
      <Notes on implementation>
 */
 //
-// $Id: DumpADC.cc,v 1.1 2006/08/01 09:53:50 govoni Exp $
+// $Id: DumpADC.cc,v 1.2 2006/08/03 09:43:38 govoni Exp $
 //
 //
 
@@ -272,8 +272,7 @@ DumpADC::analyze( const edm::Event& iEvent, const edm::EventSetup& iSetup )
        catch ( std::runtime_error &e )
            {
              amplitude[icry] = 0. ;
-             std::cerr << "Cannot get amplitude for " 
-                       << tempo << std::endl ;
+             std::cerr << "Cannot get amplitude" << std::endl ;
            }
      } // loop over the 7x7 matrix
    
