@@ -90,6 +90,7 @@ void MinimumBiasAnalyzer::beginJob( const EventSetup& )
 
 void MinimumBiasAnalyzer::analyze( const Event& e, const EventSetup& ){
 
+
   Handle< CandidateCollection > CandHandle ;
   objectAnalyzed == "MCCandidate" ? 
     e.getByLabel( "goodParticles", CandHandle ) :
@@ -97,14 +98,18 @@ void MinimumBiasAnalyzer::analyze( const Event& e, const EventSetup& ){
   
   Handle< GenJetCollection > GenJetsHandle ;
   Handle< BasicJetCollection > BasicJetsHandle ;
-  objectAnalyzed == "MCCandidate" ? 
-    e.getByLabel( "GenJetIcone5", GenJetsHandle ) :
-    e.getByLabel( "BasicJetIcone5", BasicJetsHandle );
+
+  if(objectAnalyzed == "MCCandidate" ){ 
+    e.getByLabel( "iterativeCone5GenJets", GenJetsHandle );
+  }else{
+    e.getByLabel( "iterativeCone5BasicJets", BasicJetsHandle );
+  }
 
   std::vector<math::XYZTLorentzVector> particles4Jet;
   particles4Jet.clear();
 
   float_t piG=acos(-1.);
+
 
   if(CandHandle->size()){ 
     
