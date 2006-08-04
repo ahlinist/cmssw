@@ -48,22 +48,34 @@ class EcalTimingTBElectron : public edm::EDAnalyzer {
       std::string hitCollection_;
       std::string hitProducer_;
       std::string digiProducer_;
+      std::string tdcRecInfoProducer_;
+      std::string tdcRecInfoCollection_;
+
       float ampl_thr_;
+      float chi2_thr_;
       int min_num_ev_;
       int sm_;
+      int cry_;
       std::string txtFileName_;
       std::string txtFileForChGroups_;
       //std::string pndiodeProducer_;
       
       
-      TProfile amplProfile_;
-      TProfile absoluteTimingTDC_;
-      TProfile absoluteTimingNoTDC_;
-      TProfile Chi2Profile_;
+      TProfile* amplProfile_;
+      TProfile* absoluteTimingTDC_;
+      TProfile* absoluteTimingNoTDC_;
+      TProfile* Chi2Profile_;
       
-      TProfile relativeTiming_;
+      TProfile* relativeTiming_;
 
-      TH1F tTDC_;
+      TH1F* tTDC_;
+      TH1F* tCry_;
+      TH1F* CryTdc_;
+      TH1F* cry_cry_;
+      TProfile* tvsAmpl_;
+      TProfile* amplProf_;
+      
+      int ievt_;
 };
 
 
