@@ -49,8 +49,8 @@ test_area=/tmp/$USER/o2o
 
 [ ! -e ${test_area} ] && mkdir ${test_area}
 
-DBfile=${test_area}/dummy.db
-DBcatalog=${test_area}/dummy.xml
+DBfile=${test_area}/dummy_${IOV}.db
+DBcatalog=${test_area}/dummy_${IOV}.xml
 
 o2otrans="dummy"
 if [ "$doPedNoiseTansfer" == "1" ] && [ "$doFedCablingTransfer" == "1" ];
@@ -75,6 +75,8 @@ cat template_SiStripO2O.cfg | sed -e "s#insert_DBfile#$DBfile#" -e "s#insert_DBc
 
 rm -f $DBfile
 rm -f $DBcatalog
+
+export TNS_ADMIN=/afs/cern.ch/project/oracle/admin
 
 if [ ! -e ${DBfile} ];
     then
