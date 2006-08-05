@@ -38,7 +38,7 @@ $Id$
 
 #include <string>
 
-#include "boost/signal.hpp"
+#include "sigc++/signal.h"
 #include "boost/shared_ptr.hpp"
 #include "boost/thread/thread.hpp"
 
@@ -214,12 +214,12 @@ class EDLooperHelper;
 
     /// signal is emitted after the Event has been created by the
     /// InputSource but before any modules have seen the Event
-    boost::signal<void (const EventID&, const Timestamp&)> 
+    ActivityRegistry::PreProcessEvent
     preProcessEventSignal;
 
     /// signal is emitted after all modules have finished processing
     /// the Event
-    boost::signal<void (const Event&, const EventSetup&)> 
+    ActivityRegistry::PostProcessEvent
     postProcessEventSignal;
 
 

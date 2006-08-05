@@ -171,7 +171,7 @@ void  testEDProducerProductRegistryCallback::testCircularRef(){
    edm::WorkerParams paramsl1(l1, l1, preg, table, "PROD", edm::getReleaseVersion(), edm::getPassID());
    edm::WorkerParams paramsl2(l2, l2, preg, table, "PROD", edm::getReleaseVersion(), edm::getPassID());
 
-   boost::signal<void (const ModuleDescription&)> aSignal;
+   sigc::signal<void, const ModuleDescription&> aSignal;
 
    auto_ptr<Worker> w1 = f->makeWorker(params1,aSignal,aSignal);
    auto_ptr<Worker> wl1 = lM->makeWorker(paramsl1,aSignal,aSignal);
@@ -233,7 +233,7 @@ void  testEDProducerProductRegistryCallback::testCircularRef2(){
    edm::WorkerParams paramsl2(l2, l2, preg, table, "PROD", edm::getReleaseVersion(), edm::getPassID());
    
    
-   boost::signal<void (const ModuleDescription&)> aSignal;
+   sigc::signal<void, const ModuleDescription&> aSignal;
    auto_ptr<Worker> wl1 = lM->makeWorker(paramsl1,aSignal,aSignal);
    auto_ptr<Worker> wl2 = lM->makeWorker(paramsl2,aSignal,aSignal);
    auto_ptr<Worker> w1 = f->makeWorker(params1,aSignal,aSignal);
@@ -295,7 +295,7 @@ void  testEDProducerProductRegistryCallback::testTwoListeners(){
    edm::WorkerParams paramsl2(l2, l2, preg, table, "PROD", edm::getReleaseVersion(), edm::getPassID());
    
    
-   boost::signal<void (const ModuleDescription&)> aSignal;
+   sigc::signal<void, const ModuleDescription&> aSignal;
    auto_ptr<Worker> w1 = f->makeWorker(params1,aSignal,aSignal);
    auto_ptr<Worker> wl1 = lM->makeWorker(paramsl1,aSignal,aSignal);
    auto_ptr<Worker> wl2 = lFM->makeWorker(paramsl2,aSignal,aSignal);

@@ -66,8 +66,8 @@ namespace edm {
    
     struct Sigs
     {
-      boost::signal<void (const ModuleDescription&)> preModuleSignal;
-      boost::signal<void (const ModuleDescription&)> postModuleSignal;
+      ActivityRegistry::PreModule preModuleSignal;
+      ActivityRegistry::PostModule postModuleSignal;
     };
 
     int timesPass() const { return timesPassed(); } // for backward compatibility only - to be removed soon
