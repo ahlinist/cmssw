@@ -10,8 +10,11 @@ runNb=$1
 DBfile=$2
 DBcatalog=$3
 
-output_file_name=/tmp/$USER/Display_PedNoise_RunNb_${runNb}.root 
-cfg_file=/tmp/$USER/SiStripCondObjDisplay_RunNb_${runNb}.cfg
+test_area=/tmp/$USER/Display
+[ ! -e ${test_area} ] && mkdir ${test_area}
+
+output_file_name=${test_area}/Display_PedNoise_RunNb_${runNb}.root 
+cfg_file=${test_area}/SiStripCondObjDisplay_RunNb_${runNb}.cfg
 
 echo ${cfg_file}
 
@@ -24,6 +27,6 @@ eval `scramv1 runtime -sh`
 cat template_SiStripCondObjDisplay.cfg | sed -e "s#insert_DBfile#$DBfile#" -e "s#insert_DBcatalog#$DBcatalog#" -e "s#insert_output_filename#${output_file_name}#" -e "s#insert_runNb#${runNb}#" > ${cfg_file}
 
 echo "cmsRun ${cfg_file}"
-cmsRun ${cfg_file}
+cmsRun ${cfg_file} > ${test_area}/out_diplay_${runNb}
 
 
