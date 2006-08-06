@@ -27,6 +27,7 @@
 #include <memory>
 #include <string>
 #include <set>
+#include <map>
 
 // user include files
 
@@ -82,6 +83,8 @@ private:
   std::set<std::string> debugEnabledModules_;
   std::map<std::string,ELseverityLevel> suppression_levels_;
   bool debugEnabled_;
+  //this is a cache which profiling has shown to be helpful
+  std::map<const ModuleDescription*, std::string> descToCalcName_;
   static bool   anyDebugEnabled_;
   static bool everyDebugEnabled_;
 
