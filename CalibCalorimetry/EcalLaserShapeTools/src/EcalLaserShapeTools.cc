@@ -1,8 +1,8 @@
 /*
  * \file EcalLaserShapeTools.cc
  *
- * $Date: 2006/07/16 19:21:57 $
- * $Revision: 1.6 $
+ * $Date: 2006/07/23 17:44:41 $
+ * $Revision: 1.7 $
  * \author P. Jarry
  * \author G. Franzoni
  *
@@ -186,8 +186,8 @@ void EcalLaserShapeTools::analyze(const edm::Event& iEvent, const edm::EventSetu
 
       if ((*digiItr).sample(i).gainId()!=1 )
 	{
-	  LogInfo("EcalLaserShapeTools") << " gain " << (*digiItr).sample(i).gainId() << " other than 1(= X12) found "
-					 << " - note: gain ratio not accounted for" << endl;
+	  LogInfo("EcalLaserShapeTools") << " gain " << (*digiItr).sample(i).gainId() << " other than 1(= X12) found for channel: "
+					 << theId.ism() << " - note: gain ratio not accounted for" << endl;
 	}
       
       theFrame.setSample( i, theSample);
@@ -226,7 +226,8 @@ void EcalLaserShapeTools::endJob (void)
   //  treeDir->cd();
 
   // create the ROOT file
-  TFile file(rootFile_.c_str(),"RECREATE");
+  //  TFile file(rootFile_.c_str(),"RECREATE");
+  //  TFile file(rootFile_.c_str(),"UPDATE");
 
   TH1F alphaHb("alpha_b", "#alpha_{b}", 100,0,5);
   TH1F betaHb("beta_b", "#beta_{b}", 100,0,5);
@@ -248,7 +249,7 @@ void EcalLaserShapeTools::endJob (void)
     {
       nb_iter = 5;   // anyway iteration is stopped when chi2 is stable ...(3 iterations are usually enough)
       nsmin   = 1;   // number of samples to fit before the maximum
-      nsmax  = 2;  // number of samples to fit after the maximum sample
+      nsmax  = 2;    // number of samples to fit after the maximum sample
       
       
       //    int IPRINT=0 ; // no results printed
@@ -264,7 +265,6 @@ void EcalLaserShapeTools::endJob (void)
       if (colour ==0)
 	{
 	  pointerChannelsData = (&blueData);
-	  // stick to blue just to start
 	  icolor =1;
 	}
       else 
@@ -277,20 +277,19 @@ void EcalLaserShapeTools::endJob (void)
       // begin loop on channels
       std::vector< std::vector  <EBDataFrame >  >::const_iterator channelDataIter;
       for (channelDataIter = (*pointerChannelsData).begin(); channelDataIter !=(*pointerChannelsData).end();  channelDataIter++)
-	//    for (channelDataIter = blueData.begin(); channelDataIter !=blueData.end();  channelDataIter++)
 	{
-	  LogInfo("EcalLaserShapeTools") << " channel: " 
+	  LogDebug("EcalLaserShapeTools") << " channel: " 
 					 << ((channelDataIter -  (*pointerChannelsData).begin() ) +1)
 					 << " # events: " << (*channelDataIter).size() << endl;
 	  // gio go away
 	  if (   (channelDataIter -  (*pointerChannelsData).begin() )== 1){
-	    LogInfo("EcalLaserShapeTools") << " ch " << ((channelDataIter -  (*pointerChannelsData).begin() ) +1)  << ";" << endl;
+	    LogDebug("EcalLaserShapeTools") << " ch " << ((channelDataIter -  (*pointerChannelsData).begin() ) +1)  << ";" << endl;
 	    std::vector  <EBDataFrame >::const_iterator evtIter;
 	    for (evtIter = (*channelDataIter).begin(); evtIter !=(*channelDataIter).end();  evtIter++)
 	      {
 		for (int sample=0; sample<10; sample++)
 		  {
-		    LogInfo("EcalLaserShapeTools") << "(in end job)  ch " << ( (*evtIter).id().ic()) 
+		    LogDebug("EcalLaserShapeTools") << "(in end job)  ch " << ( (*evtIter).id().ic()) 
 						   << " event  " << (evtIter - (*channelDataIter).begin())
 						   << " sample " << sample << " " << (*evtIter).sample(sample).adc()  << ";" << endl;
 		  }
@@ -301,17 +300,17 @@ void EcalLaserShapeTools::endJob (void)
 	  int icris = ((int) (channelDataIter -  (*pointerChannelsData).begin() ) );
 	
 	  double param_out[3] ;
-	  //	int nevt[10];   // gio: can go away
+
 	  int eventsNumber =0;
 	  // this is the function which calculates pretty much all
-	  LogInfo("EcalLaserShapeTools") << " now fitting " << endl;
+	  LogDebug("EcalLaserShapeTools") << " now fitting " << endl;
 	  std::vector< pair <float,float> >  reducedData;
 	  reducedData.reserve(600);
 	
 	  bool doFit =false;
 	  if (
-	      (*channelDataIter).size()> 100 &&
-	      (*channelDataIter).size() == bluePnData[icris].size() 
+	      (*channelDataIter).size()> 100 &&          // at least 100 events
+	      (*channelDataIter).size() == bluePnData[icris].size()  // synk between ADP and PN data
 	      )
 	    {
 	      doFit = true;
@@ -337,12 +336,13 @@ void EcalLaserShapeTools::endJob (void)
 					      << (icris+1) << " because too few APD events available (" 
 					      << (*channelDataIter).size() << ") or mismatch with PN event number (" 
 					      << bluePnData[icris].size() << ")" << endl;
+	      return;                         // skip this channel and move on to the next
 	    }
 	  
 
 	  //gio to go away
 	  LogDebug("EcalLaserShapeTools") << "[out of fitpj] alpha is: " << param_out[0]  << " beta " << param_out[1]  << endl;
-	  alpha_[icolor][icris] = param_out[0] ;
+	  alpha_[icolor][icris]  = param_out[0] ;
 	  beta_[icolor][icris]   = param_out[1] ;
 	  chi2_[icolor][icris]   = chi2s ;
 	  // calculating widht
@@ -360,6 +360,9 @@ void EcalLaserShapeTools::endJob (void)
 	      sprintf(nameTree,"ApdOpnIr_%d", (int) ((channelDataIter -  (*pointerChannelsData).begin())+1) );
 	    }
 	
+	  // gio test
+	  TFile file(rootFile_.c_str(),"UPDATE");
+	  
 	  TTree *oneChannelTree = new TTree(nameTree,nameTree);
 
 	  float ampli=0;
@@ -379,8 +382,12 @@ void EcalLaserShapeTools::endJob (void)
 	    }
 	
 	  oneChannelTree->Write();
+	  delete oneChannelTree;
 
-	  
+	  // gio test
+	  file.Write();
+	  file.Close();
+
 	  if (colour ==0)
 	    {
 	      alphaHb.Fill(param_out[0]);
@@ -405,7 +412,9 @@ void EcalLaserShapeTools::endJob (void)
 
     } // end loop on the two colors
 
-   
+  // gio test
+  TFile file(rootFile_.c_str(),"UPDATE");
+
   LogDebug("EcalLaserShapeTools") << "saved all trees" << endl;
 
   alphaHb.Write();	betaHb.Write();
