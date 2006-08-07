@@ -1,5 +1,181 @@
 <?xml version="1.0" ?>
 <connectionlist>
+ <connection name="oracle://orcon/CMS_COND_GENERAL">
+   <parameter name="user" value="CMS_COND_GENERAL_R"/>
+   <parameter name="password" value="R2106xon"/>
+ </connection>
+ <connection name="oracle://orcon/CMS_COND_CSC">
+   <parameter name="user" value="CMS_COND_CSC_R"/>
+   <parameter name="password" value="R2106xon"/>
+ </connection>
+ <connection name="oracle://orcon/CMS_COND_DT">
+   <parameter name="user" value="CMS_COND_DT_R"/>
+   <parameter name="password" value="R2106xon"/>
+ </connection>
+ <connection name="oracle://orcon/CMS_COND_ECAL">
+   <parameter name="user" value="CMS_COND_ECAL_R"/>
+   <parameter name="password" value="R2106xon"/>
+ </connection>
+ <connection name="oracle://orcon/CMS_COND_HCAL">
+   <parameter name="user" value="CMS_COND_HCAL_R"/>
+   <parameter name="password" value="R2106xon"/>
+ </connection>
+ <connection name="oracle://orcon/CMS_COND_PIXEL">
+   <parameter name="user" value="CMS_COND_PIXEL_R"/>
+   <parameter name="password" value="R2106xon"/>
+ </connection>
+ <connection name="oracle://orcon/CMS_COND_PRESH">
+   <parameter name="user" value="CMS_COND_PRESH_R"/>
+   <parameter name="password" value="R2106xon"/>
+ </connection>
+ <connection name="oracle://orcon/CMS_COND_RPC">
+   <parameter name="user" value="CMS_COND_RPC_R"/>
+   <parameter name="password" value="R2106xon"/>
+ </connection>
+ <connection name="oracle://orcon/CMS_COND_STRIP">
+   <parameter name="user" value="CMS_COND_STRIP_R"/>
+   <parameter name="password" value="R2106xon"/>
+ </connection>
+ <connection name="oracle://cms_orcoff/CMS_COND_GENERAL">
+   <parameter name="user" value="CMS_COND_GENERAL_R"/>
+   <parameter name="password" value="p1306qofr"/>
+ </connection>
+ <connection name="oracle://cms_orcoff/CMS_COND_CSC">
+   <parameter name="user" value="CMS_COND_CSC_R"/>
+   <parameter name="password" value="p1306qofr"/>
+ </connection>
+ <connection name="oracle://cms_orcoff/CMS_COND_DT">
+   <parameter name="user" value="CMS_COND_DT_R"/>
+   <parameter name="password" value="p1306qofr"/>
+ </connection>
+ <connection name="oracle://cms_orcoff/CMS_COND_ECAL">
+   <parameter name="user" value="CMS_COND_ECAL_R"/>
+   <parameter name="password" value="p1306qofr"/>
+ </connection>
+ <connection name="oracle://cms_orcoff/CMS_COND_HCAL">
+   <parameter name="user" value="CMS_COND_HCAL_R"/>
+   <parameter name="password" value="p1306qofr"/>
+ </connection>
+ <connection name="oracle://cms_orcoff/CMS_COND_PIXEL">
+   <parameter name="user" value="CMS_COND_PIXEL_R"/>
+   <parameter name="password" value="p1306qofr"/>
+ </connection>
+ <connection name="oracle://cms_orcoff/CMS_COND_PRESH">
+   <parameter name="user" value="CMS_COND_PRESH_R"/>
+   <parameter name="password" value="p1306qofr"/>
+ </connection>
+ <connection name="oracle://cms_orcoff/CMS_COND_RPC">
+   <parameter name="user" value="CMS_COND_RPC_R"/>
+   <parameter name="password" value="p1306qofr"/>
+ </connection>
+ <connection name="oracle://cms_orcoff/CMS_COND_STRIP">
+   <parameter name="user" value="CMS_COND_STRIP_R"/>
+   <parameter name="password" value="p1306qofr"/>
+ </connection>
+ <connection name="oracle://cms_orcoff_int2r/CMS_COND_GENERAL">
+   <parameter name="user" value="CMS_COND_GENERAL_R"/>
+   <parameter name="password" value="R2707iof"/>
+ </connection>
+ <connection name="oracle://cms_orcoff_int2r/CMS_COND_CSC">
+   <parameter name="user" value="CMS_COND_CSC_R"/>
+   <parameter name="password" value="R2707iof"/>
+ </connection>
+ <connection name="oracle://cms_orcoff_int2r/CMS_COND_DT">
+   <parameter name="user" value="CMS_COND_DT_R"/>
+   <parameter name="password" value="R2707iof"/>
+ </connection>
+ <connection name="oracle://cms_orcoff_int2r/CMS_COND_ECAL">
+   <parameter name="user" value="CMS_COND_ECAL_R"/>
+   <parameter name="password" value="R2707iof"/>
+ </connection>
+ <connection name="oracle://cms_orcoff_int2r/CMS_COND_HCAL">
+   <parameter name="user" value="CMS_COND_HCAL_R"/>
+   <parameter name="password" value="R2707iof"/>
+ </connection>
+ <connection name="oracle://cms_orcoff_int2r/CMS_COND_PIXEL">
+   <parameter name="user" value="CMS_COND_PIXEL_R"/>
+   <parameter name="password" value="R2707iof"/>
+ </connection>
+ <connection name="oracle://cms_orcoff_int2r/CMS_COND_PRESH">
+   <parameter name="user" value="CMS_COND_PRESH_R"/>
+   <parameter name="password" value="R2707iof"/>
+ </connection>
+ <connection name="oracle://cms_orcoff_int2r/CMS_COND_RPC">
+   <parameter name="user" value="CMS_COND_RPC_R"/>
+   <parameter name="password" value="R2707iof"/>
+ </connection>
+ <connection name="oracle://cms_orcoff_int2r/CMS_COND_STRIP">
+   <parameter name="user" value="CMS_COND_STRIP_R"/>
+   <parameter name="password" value="R2707iof"/>
+ </connection>
+ <connection name="oracle://cms_orcoff_val/CMS_COND_CSC">
+   <parameter name="user" value="CMS_COND_CSC_R"/>
+   <parameter name="password" value="p1306qofr"/>
+ </connection>
+ <connection name="oracle://cms_orcoff_val/CMS_COND_DT">
+   <parameter name="user" value="CMS_COND_DT_R"/>
+   <parameter name="password" value="p1306qofr"/>
+ </connection>
+ <connection name="oracle://cms_orcoff_val/CMS_COND_ECAL">
+   <parameter name="user" value="CMS_COND_ECAL_R"/>
+   <parameter name="password" value="p1306qofr"/>
+ </connection>
+ <connection name="oracle://cms_orcoff_val/CMS_COND_HCAL">
+   <parameter name="user" value="CMS_COND_HCAL_R"/>
+   <parameter name="password" value="p1306qofr"/>
+ </connection>
+ <connection name="oracle://cms_orcoff_val/CMS_COND_PIXEL">
+   <parameter name="user" value="CMS_COND_PIXEL_R"/>
+   <parameter name="password" value="p1306qofr"/>
+ </connection>
+ <connection name="oracle://cms_orcoff_val/CMS_COND_PRESH">
+   <parameter name="user" value="CMS_COND_PRESH_R"/>
+   <parameter name="password" value="p1306qofr"/>
+ </connection>
+ <connection name="oracle://cms_orcoff_val/CMS_COND_RPC">
+   <parameter name="user" value="CMS_COND_RPC_R"/>
+   <parameter name="password" value="p1306qofr"/>
+ </connection>
+ <connection name="oracle://cms_orcoff_val/CMS_COND_STRIP">
+   <parameter name="user" value="CMS_COND_STRIP_R"/>
+   <parameter name="password" value="p1306qofr"/>
+ </connection>
+ <connection name="oracle://devdb10/CMS_COND_GENERAL">
+   <parameter name="user" value="CMS_COND_GENERAL"/>
+   <parameter name="password" value="gen_cern200603"/>
+ </connection>
+ <connection name="oracle://devdb10/CMS_COND_CSC">
+   <parameter name="user" value="CMS_COND_CSC"/>
+   <parameter name="password" value="***"/>
+ </connection>
+ <connection name="oracle://devdb10/CMS_COND_DT">
+   <parameter name="user" value="CMS_COND_DT"/>
+   <parameter name="password" value="***"/>
+ </connection>
+ <connection name="oracle://devdb10/CMS_COND_ECAL">
+   <parameter name="user" value="CMS_COND_ECAL"/>
+   <parameter name="password" value="***"/>
+ </connection>
+ <connection name="oracle://devdb10/CMS_COND_HCAL">
+   <parameter name="user" value="CMS_COND_HCAL"/>
+   <parameter name="password" value="***"/>
+ </connection>
+ <connection name="oracle://devdb10/CMS_COND_PIXEL">
+   <parameter name="user" value="CMS_COND_PIXEL"/>
+   <parameter name="password" value="***"/>
+ </connection>
+ <connection name="oracle://devdb10/CMS_COND_PRESH">
+   <parameter name="user" value="CMS_COND_PRESH"/>
+   <parameter name="password" value="***"/>
+ </connection>
+ <connection name="oracle://devdb10/CMS_COND_RPC">
+   <parameter name="user" value="CMS_COND_RPC"/>
+   <parameter name="password" value="***"/>
+ </connection>
+ <connection name="oracle://devdb10/CMS_COND_STRIP">
+   <parameter name="user" value="CMS_COND_STRIP"/>
+   <parameter name="password" value="strip_cern200603"/>
+ </connection>
 
 <connection name="sqlite_file:/tmp/testSiStripNoisesBuilder_noblob.db">
   <parameter name="user" value="" />
