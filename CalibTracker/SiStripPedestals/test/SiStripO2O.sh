@@ -49,8 +49,11 @@ test_area=/tmp/$USER/o2o
 
 [ ! -e ${test_area} ] && mkdir ${test_area}
 
-DBfile=${test_area}/dummy_${IOV}.db
-DBcatalog=${test_area}/dummy_${IOV}.xml
+#DBfile="sqlite_file:${test_area}/dummy_${IOV}.db"
+#DBcatalog="file:${test_area}/dummy_${IOV}.xml"
+
+DBfile="oracle://devdb10/CMS_COND_STRIP"
+DBcatalog="relationalcatalog_oracle://devdb10/CMS_COND_GENERAL"
 
 o2otrans="dummy"
 if [ "$doPedNoiseTansfer" == "1" ] && [ "$doFedCablingTransfer" == "1" ];
@@ -64,8 +67,8 @@ fi
 
 cfg_file=${test_area}/SiStripO2O_IOV_${IOV}.cfg
 
-export CORAL_AUTH_USER=me
-export CORAL_AUTH_PASSWORD=me
+export CORAL_AUTH_USER=CMS_COND_STRIP
+export CORAL_AUTH_PASSWORD=strip_cern200603
 
 eval `scramv1 runtime -sh`
 
@@ -73,17 +76,17 @@ cat template_SiStripO2O.cfg | sed -e "s#insert_DBfile#$DBfile#" -e "s#insert_DBc
 -e "s#insert_ConfigDbUser#${ConfigDbUser}#" -e "s#insert_ConfigDbPasswd#${ConfigDbPasswd}#" -e "s#insert_ConfigDbPath#${ConfigDbPath}#"	-e "s#insert_ConfigDbPartition#${ConfigDbPartition}#" -e "s#insert_ConfigDbMajorVersion#${ConfigDbMajorVersion}#" -e "s#insert_ConfigDbMinorVersion#${ConfigDbMinorVersion}#" \
 -e "s#insert_doPedNoiseTransfer#$doPedNoiseTansfer#" -e "s#insert_doFedCablingTransfer#$doFedCablingTransfer#" -e "s@${o2otrans}@@"> ${cfg_file}
 
-rm -f $DBfile
-rm -f $DBcatalog
 
 export TNS_ADMIN=/afs/cern.ch/project/oracle/admin
 
-if [ ! -e ${DBfile} ];
-    then
+if [ `echo $DBfile | grep -c sqlite_file` != 0 ];
+    then 
+    rm -f $DBfile
+    rm -f $DBcatalog
 
     mapping=blobmappingfile_pednoise.xml
-    echo pool_build_object_relational_mapping -f ${mapping} -d CondFormatsSiStripObjects -c sqlite_file:${DBfile} -u me -p mypass  
-    pool_build_object_relational_mapping -f ${mapping} -d CondFormatsSiStripObjects -c sqlite_file:${DBfile} -u me -p mypass  
+    echo pool_build_object_relational_mapping -f ${mapping} -d CondFormatsSiStripObjects -c ${DBfile} -u me -p mypass  
+    pool_build_object_relational_mapping -f ${mapping} -d CondFormatsSiStripObjects -c ${DBfile} -u me -p mypass  
 fi
 
 echo "cmsRun ${cfg_file}"
