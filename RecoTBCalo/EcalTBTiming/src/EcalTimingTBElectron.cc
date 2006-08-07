@@ -435,10 +435,11 @@ EcalTimingTBElectron::analyze( const edm::Event& iEvent, const edm::EventSetup& 
 	CryTdc_->Fill ( (ithit->jitter() -5. + tdcVal)*25);
 	tvsAmpl_->Fill( ithit->amplitude(), (ithit->jitter() -5. + tdcVal)*25 );
 	AmpCry = ithit->amplitude();
+	t1=ithit->jitter();
       }
       if(ievt_%200 ==0){std::cout <<"Event: "<<ievt_<< " cry: "<<SMind <<"  ampl: "<< ithit->amplitude() << std::endl;}
-      //if(SMind == 1203){t1=ithit->jitter();}
-      //if(SMind == 1223){t2=ithit->jitter();}
+      //if(SMind == 1203 ){t1=ithit->jitter();}
+      if(SMind == cry_+20){t2=ithit->jitter();}
       //if(t2>0){}
     }
 
