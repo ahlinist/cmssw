@@ -16,9 +16,9 @@ maxptcut(iConfig.getUntrackedParameter("MaxPt", 10000.)),
 minetacut(iConfig.getUntrackedParameter("MinEta", -10.)),
 maxetacut(iConfig.getUntrackedParameter("MaxEta", 10.)),
 minphicut(iConfig.getUntrackedParameter("MinPhi", -3.5)),
-maxphicut(iConfig.getUntrackedParameter("MaxPhi", 3.5))
-
-
+maxphicut(iConfig.getUntrackedParameter("MaxPhi", 3.5)),
+status(iConfig.getUntrackedParameter("Status", 0)),
+motherID(iConfig.getUntrackedParameter("MotherID", 0))
 {
    //now do what ever initialization is needed
 
@@ -46,7 +46,6 @@ bool PythiaFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
    Handle<HepMCProduct> evt;
    iEvent.getByLabel(label_, evt);
 
-
     HepMC::GenEvent * myGenEvent = new  HepMC::GenEvent(*(evt->GetEvent()));
     
     for ( HepMC::GenEvent::particle_iterator p = myGenEvent->particles_begin();
@@ -59,7 +58,34 @@ bool PythiaFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	     && (*p)->momentum().eta() > minetacut
 	     && (*p)->momentum().eta() < maxetacut 
 	     && (*p)->momentum().phi() > minphicut
-	     && (*p)->momentum().phi() < maxphicut ) {accepted = true;} 
+	     && (*p)->momentum().phi() < maxphicut ) {
+
+             cout << "past initial cuts" << endl;
+	     
+	     if (status == 0 && motherID == 0){
+           	     accepted = true;
+	     }
+	     if (status != 0 && motherID == 0){
+           	if ((*p)->status() == status)   
+		     accepted = true;
+	        }
+	     
+	     if (status == 0 && motherID != 0){
+           	if (abs(((*p)->mother())->pdg_id()) == abs(motherID)) {
+		     accepted = true;
+	        }
+	     }
+	     if (status != 0 && motherID != 0){
+                
+           	if ((*p)->status() == status && abs(((*p)->mother())->pdg_id()) == abs(motherID)){   
+		     accepted = true;
+                    
+	        }
+	     }
+	     
+	 }    
+	     
+	    
 	  
     }
 
