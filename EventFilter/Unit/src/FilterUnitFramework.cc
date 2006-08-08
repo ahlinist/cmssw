@@ -7,6 +7,9 @@
 //
 //  Modification history:
 //    $Log: FilterUnitFramework.cc,v $
+//    Revision 1.10  2006/06/13 15:10:42  meschi
+//    modifications to signal a thread waiting on input
+//
 //    Revision 1.9  2006/05/23 11:45:13  meschi
 //    additional diagnostics in main and debug web, removed dqm-related stuff
 //
@@ -189,7 +192,7 @@ void FilterUnitFramework::configureAction(toolbox::Event::Reference e) throw (to
     {
       LOG4CPLUS_DEBUG(this->getApplicationLogger(),"could not set working directory to" << workdir);
     }
-  createBUArray();
+  if(!runActive_) createBUArray();
 
   //setup monitoring timer
   if (MonitorTimerEnable_) {
@@ -249,7 +252,12 @@ void FilterUnitFramework::resumeAction(toolbox::Event::Reference e) throw (toolb
 #include <signal.h>
 void FilterUnitFramework::haltAction(toolbox::Event::Reference e) throw (toolbox::fsm::exception::Exception)
 {
+  if(factory_->queueSize() != 0)
+  LOG4CPLUS_WARN(this->getApplicationLogger(),
+		 "Built queue not empty. " << factory_->queueSize()
+		 << " events are being discarded ");
 
+  pendingRequests_ = 0;
 }
 
 void FilterUnitFramework::nullAction(toolbox::Event::Reference e) throw (toolbox::fsm::exception::Exception)
