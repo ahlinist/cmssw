@@ -134,6 +134,12 @@ public:
          
          ///causes iOther's signals to be forward to us
          void connectTo(ActivityRegistry& iOther);
+         
+         ///copy our Service's slots to the argument's signals
+         void copySlotsTo(ActivityRegistry&);
+         ///the copy the argument's slots to the our signals
+         void copySlotsFrom(ActivityRegistry&);
+         
 private:
          ServicesManager(const ServicesManager&); // stop default
          

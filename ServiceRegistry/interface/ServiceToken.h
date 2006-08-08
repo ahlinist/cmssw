@@ -53,6 +53,11 @@ namespace edm {
       void connectTo(ActivityRegistry&);
       ///the argument's signals will forward the token's signals
       void connect(ActivityRegistry&);
+
+      ///copy our Service's slots to the argument's signals
+      void copySlotsTo(ActivityRegistry&);
+      ///the copy the argument's slots to the token's signals
+      void copySlotsFrom(ActivityRegistry&);
       
     private:
       ServiceToken(boost::shared_ptr<edm::serviceregistry::ServicesManager>  iManager):

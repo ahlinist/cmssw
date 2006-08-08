@@ -72,6 +72,21 @@ edm::ServiceToken::connect(edm::ActivityRegistry& iConnectTo)
    }
 }
 
+void
+edm::ServiceToken::copySlotsTo(edm::ActivityRegistry& iConnectTo)
+{
+  if(0!=manager_.get()){
+    manager_->copySlotsTo(iConnectTo);
+  }
+}
+void
+edm::ServiceToken::copySlotsFrom(edm::ActivityRegistry& iConnectTo)
+{
+  if(0!=manager_.get()){
+    manager_->copySlotsFrom(iConnectTo);
+  }
+}
+
 //
 // const member functions
 //

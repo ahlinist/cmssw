@@ -170,6 +170,19 @@ ServicesManager::connectTo(ActivityRegistry& iOther)
    iOther.connect(registry_);
 }
 
+void 
+ServicesManager::copySlotsFrom(ActivityRegistry& iOther)
+{
+  registry_.copySlotsFrom(iOther);
+}   
+
+void 
+ServicesManager::copySlotsTo(ActivityRegistry& iOther)
+{
+  iOther.copySlotsFrom(registry_);
+}
+
+
 void
 ServicesManager::fillListOfMakers(const std::vector<edm::ParameterSet>& iConfiguration)
 {
