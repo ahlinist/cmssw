@@ -51,6 +51,8 @@ namespace edm {
     
     ModuleDescription const & description() const {return md_;}
     ModuleDescription const * descPtr() const {return &md_; }
+    ///The signals passed in are required to live longer than the last call to 'doWork'
+    /// this was done to improve performance based on profiling
     void connect(ActivityRegistry::PreModule&, ActivityRegistry::PostModule&);
 
     std::pair<double,double> timeCpuReal() const {
@@ -66,8 +68,9 @@ namespace edm {
    
     struct Sigs
     {
-      ActivityRegistry::PreModule preModuleSignal;
-      ActivityRegistry::PostModule postModuleSignal;
+      Sigs();
+      ActivityRegistry::PreModule* preModuleSignal;
+      ActivityRegistry::PostModule* postModuleSignal;
     };
 
     int timesPass() const { return timesPassed(); } // for backward compatibility only - to be removed soon
