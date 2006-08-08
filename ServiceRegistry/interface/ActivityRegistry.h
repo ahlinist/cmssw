@@ -156,6 +156,11 @@ namespace edm {
       ///forwards our signals to slots connected to iOther
       void connect(ActivityRegistry& iOther);
       
+      ///copy the slots from iOther and connect them directly to our own
+      /// this allows us to 'forward' signals more efficiently,
+      /// BUT if iOther gains new slots after this call, we will not see them
+      void copySlotsFrom(ActivityRegistry& iOther);
+      
    private:
       ActivityRegistry(const ActivityRegistry&); // stop default
 
