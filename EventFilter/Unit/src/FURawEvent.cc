@@ -151,6 +151,8 @@ int FURawEvent::processMsg(I2O_MESSAGE_FRAME *stdMsg)
 
 
 #include <netinet/in.h>
+#include "EventFilter/Utilities/interface/DebugUtils.h"
+
 
 int FURawEvent::checkin_data(vector<unsigned char*> &block_adrs)
 {
@@ -261,12 +263,28 @@ int FURawEvent::checkin_data(vector<unsigned char*> &block_adrs)
 	  if((pft->eventsize & FED_TCTRLID_MASK)!=FED_TCTRLID)
 	    {
 	      if(errors[(-FED_TRAILER_MMARKER)]++ < 10)      
-		LOG4CPLUS_ERROR(adapter_->getApplicationLogger(),
-				"FED trailer marker not found: 0x" << hex
-				<< int(pft->eventsize & FED_TCTRLID_MASK) 
-				<< dec 
-				<< ", expecting 0x" << hex << (int)FED_TCTRLID 
-				<< dec); 
+		{
+		  unsigned char *bd = cursor - 3*fedts;
+		  unsigned int ds = 5*fedts;
+		  while(bd<sf_data)
+		    bd += fedts;
+		  while((bd + ds) > (sf_data + sf_size))
+		    ds -= fedts;
+		  std::string dmp = evf::dumpFrame(bd,ds);
+		  LOG4CPLUS_ERROR(adapter_->getApplicationLogger(),
+				  "Trigger # " 
+				  << current_trigno 
+				  << ": FED trailer marker not found: 0x" 
+				  << hex
+				  << int(pft->eventsize & FED_TCTRLID_MASK) 
+				  << dec 
+				  << ", expecting 0x" 
+				  << hex << (int)FED_TCTRLID 
+				  << dec
+				  << "\n local dump \n"
+				  << dmp
+				  ); 
+		}
 	      retVal = FED_TRAILER_MMARKER;
 	      break;
 	    }
@@ -287,11 +305,25 @@ int FURawEvent::checkin_data(vector<unsigned char*> &block_adrs)
 	  if((pfh->eventid & FED_HCTRLID_MASK)!=FED_HCTRLID)
 	    {
 	      if(errors[(-FED_HEADER_MMARKER)]++ < 10)      
-		LOG4CPLUS_ERROR(adapter_->getApplicationLogger(),
-				"FED trailer marker not found: 0x" << hex
-				<< int(pfh->eventid & FED_HCTRLID_MASK) << dec 
-				<< ", expecting 0x" << hex << (int)FED_HCTRLID 
-				<< dec); 
+		{
+		  unsigned char *bd = cursor - 2*fedhs;
+		  unsigned int ds = 5*fedhs;
+		  while(bd<sf_data)
+		    bd += fedts;
+		  while((bd + ds) > (sf_data + sf_size))
+		    ds -= fedts;
+		  std::string dmp = evf::dumpFrame(bd,ds);
+		    LOG4CPLUS_ERROR(adapter_->getApplicationLogger(),
+				    "Trigger # " 
+				    << current_trigno 
+				    << ": FED header marker not found: 0x" << hex
+				    << int(pfh->eventid & FED_HCTRLID_MASK) << dec 
+				    << ", expecting 0x" << hex << (int)FED_HCTRLID 
+				    << dec 
+				    << "\n local dump \n"
+				    << dmp
+				    ); 
+		}
 	      retVal = FED_HEADER_MMARKER;
 	      break;
 	    }
