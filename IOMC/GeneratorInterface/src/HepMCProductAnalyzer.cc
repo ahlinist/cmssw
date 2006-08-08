@@ -8,7 +8,7 @@ using namespace edm;
 using namespace std;
 
 HepMCProductAnalyzer::HepMCProductAnalyzer(const edm::ParameterSet& iConfig) :
-label_(iConfig.getUntrackedParameter("moduleLabel",std::string("PythiaSource")))
+label_(iConfig.getUntrackedParameter("moduleLabel",std::string("source")))
 {
    //now do what ever initialization is needed
 
