@@ -13,7 +13,7 @@
 //
 // Original Author:  Simone Gennai
 //      Created:  Thu Apr  6 09:56:23 CEST 2006
-// $Id: ConeIsolation.cc,v 1.6 2006/07/18 11:36:14 gennai Exp $
+// $Id: ConeIsolation.cc,v 1.7 2006/07/18 14:17:07 gennai Exp $
 //
 //
 
@@ -93,7 +93,8 @@ ConeIsolation::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    Vertex myPV(p,e,1,1,1);
    //Get pixel vertices
    Handle<reco::VertexCollection> vertices;
-      iEvent.getByLabel(vertexSrc,"PrimaryVertex",vertices);
+   //      iEvent.getByLabel(vertexSrc,"PrimaryVertex",vertices);
+      iEvent.getByLabel(vertexSrc,vertices);
    //   iEvent.getByLabel(vertexSrc,vertices);
    if(usingVertex)
      {
