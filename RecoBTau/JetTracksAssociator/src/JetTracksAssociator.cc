@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrea Rizzi
 //         Created:  Wed Apr 12 11:12:49 CEST 2006
-// $Id: JetTracksAssociator.cc,v 1.6 2006/06/01 17:28:21 fwyzard Exp $
+// $Id: JetTracksAssociator.cc,v 1.7 2006/06/30 13:43:22 fwyzard Exp $
 //
 //
 
@@ -23,6 +23,7 @@
 #include <string>
 #include <iostream>
 using namespace std;
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -122,12 +123,17 @@ JetTracksAssociationCollection * JetTracksAssociator::associate( const edm::Hand
   {
     //cout << boolalpha;
     //cout << fixed;
-    cout << "->   Jet " << setw(2) << j << " pT: " << setprecision(2) << setw(6) << (*jets)[j].pt() << " eta: " << setprecision(2) << setw(5) << (*jets)[j].eta() << " phi: " << setprecision(2) << setw(5) << (*jets)[j].phi() << endl;
+
+#ifdef DEBUG
+    LogDebug("JetTracksAssociator") << "->   Jet " << setw(2) << j << " pT: " << setprecision(2) << setw(6) << (*jets)[j].pt() << " eta: " << setprecision(2) << setw(5) << (*jets)[j].eta() << " phi: " << setprecision(2) << setw(5) << (*jets)[j].phi();
+#endif
     for (size_t t=0; t < tracks->size() ; t++) {
       double delta  = ROOT::Math::VectorUtil::DeltaR((*jets)[j].p4().Vect(), (*tracks)[t].momentum());
       bool   inside = (delta < m_deltaRCut);
-      cout << "   Track " << setw(2) << t << " pT: " << setprecision(2) << setw(6) << (*tracks)[t].pt() << " eta: " << setprecision(2) << setw(5) << (*tracks)[t].eta() << " phi: " << setprecision(2) << setw(5) << (*tracks)[t].phi()
-           << "   delta R: " << setprecision(2) << setw(4) << delta << " is inside: " << inside << endl;
+#ifdef DEBUG
+       LogDebug("JetTracksAssociator") << "   Track " << setw(2) << t << " pT: " << setprecision(2) << setw(6) << (*tracks)[t].pt() << " eta: " << setprecision(2) << setw(5) << (*tracks)[t].eta() << " phi: " << setprecision(2) << setw(5) << (*tracks)[t].phi()
+				       << "   delta R: " << setprecision(2) << setw(4) << delta << " is inside: " << inside;
+#endif
       if (inside) 
         outputCollection->insert(edm::Ref<CaloJetCollection>(jets, j), edm::Ref<TrackCollection>(tracks, t));
     }
