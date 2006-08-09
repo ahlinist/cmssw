@@ -5,6 +5,10 @@
   # and pasted from 
   #   RecoTracker/RoadSearchCloudMaker/test/sim_pythia.cfg
   # prepared by Oliver Gutsche (FNAL)
+  #
+  # the only change is MSTP(128)=2 - this option takes decay 
+  # products out of doc section; decay products point at parents
+  # in the main section (Julia Yarba, FNAL).
   
   
   source = PythiaSource
@@ -14,6 +18,7 @@
     untracked int32 pythiaPylistVerbosity = 0
     # to printout HepMC::GenEvent record (HepMC::GenEvent::print())
     untracked bool pythiaHepMCVerbosity = false
+    untracked int32 maxEventsToPrint = 0
 
     PSet PythiaParameters = 
     {
@@ -75,7 +80,8 @@
         "MDME(223,1)=0           !Higgs decay into gam gam",
         "MDME(224,1)=0           !Higgs decay into gam Z",
         "MDME(225,1)=1           !Higgs decay into Z Z",
-        "MDME(226,1)=0           !Higgs decay into W W"
+        "MDME(226,1)=0           !Higgs decay into W W",
+	"MSTP(128)=2             !dec.prods out of doc section, point at parents in the main section"
       }
     }
   }
