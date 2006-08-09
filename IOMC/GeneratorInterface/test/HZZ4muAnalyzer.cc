@@ -39,7 +39,7 @@ void HZZ4muAnalyzer::beginJob( const EventSetup& )
  
 void HZZ4muAnalyzer::analyze( const Event& e, const EventSetup& )
 {
-   
+      
    Handle< HepMCProduct > EvtHandle ;
    
    // find initial (unsmeared, unfiltered,...) HepMCProduct
@@ -69,8 +69,8 @@ void HZZ4muAnalyzer::analyze( const Event& e, const EventSetup& )
             pout=(*vit)->particles_out_const_begin();
 	    pout!=(*vit)->particles_out_const_end(); pout++ )
       {
-         if ( (*pout)->pdg_id() == 25 ) 
-         {
+         if ( (*pout)->pdg_id() == 25 && (*pout)->status() == 2 ) 
+         {	    
 	    if ( (*pout)->end_vertex() != 0 )
 	    {
 	       HiggsDecVtx = (*pout)->end_vertex() ;
@@ -80,7 +80,6 @@ void HZZ4muAnalyzer::analyze( const Event& e, const EventSetup& )
       }
       if ( HiggsDecVtx != 0 )
       {
-         // cout << " Higgs decay found ! " << endl ;
 	 break ; // break the initial loop over vertices
       }
    }
@@ -91,15 +90,32 @@ void HZZ4muAnalyzer::analyze( const Event& e, const EventSetup& )
       return ;
    }
       
-   
+   if ( e.id().event() == 1 )
+   {
+      cout << " " << endl ;
+      cout << " We do some example printouts in the event 1 " << endl ;
+      cout << " Higgs decay found at the vertex " << HiggsDecVtx->barcode() <<" (barcode)" << endl ;
+   HepMC::GenVertex::particles_in_const_iterator H0in = 
+      HiggsDecVtx->particles_in_const_begin();
+   vector<HepMC::GenParticle*> HiggsChildren = (*H0in)->listChildren() ;      
+   cout << " Number of Higgs (immediate) children = " << HiggsChildren.size() << endl ;
+   for (unsigned int ic=0; ic<HiggsChildren.size(); ic++ )
+   {
+      HiggsChildren[ic]->print() ;   
+   }
+   }
+
    // select and store stable descendants of the Higgs
    //   
    vector<HepMC::GenParticle*> StableHiggsDesc ;
    
+   if ( e.id().event() == 1 )
+      cout << " Now let us list all descendents of the Higgs" << endl ;
    for ( HepMC::GenVertex::particle_iterator
          des=HiggsDecVtx->particles_begin(HepMC::descendants);
 	 des!=HiggsDecVtx->particles_end(HepMC::descendants); des++ )
    {
+      if ( e.id().event() == 1 ) (*des)->print() ;
       if ( (*des)->status() == 1 ) StableHiggsDesc.push_back(*des) ;
    }
    
