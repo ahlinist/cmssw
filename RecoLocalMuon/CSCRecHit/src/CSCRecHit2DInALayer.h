@@ -72,6 +72,7 @@ private:
   CSCFitData makeFitData(int centerWire, float centerStrip, int offset);
   void  correctForCrosstalk( const CSCStripDigiCollection::Range& );
   float crosstalkLevel(const CSCStripDigi & digi);
+  bool isInFiducial( const CSCRecHit2D& rh );
 
   // threshold for identifying a local maximum in strips
   float theThresholdForAPeak;
