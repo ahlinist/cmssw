@@ -99,8 +99,8 @@ cat template_SiStripO2O.cfg | sed -e "s#insert_DBfile#$DBfile#" -e "s#insert_DBc
 
 if [ "${oracle_db}" == 0 ] && [ "${append}" == 0 ];
     then 
-    rm -f $DBfile
-    rm -f $DBcatalog
+    rm -f ${test_area}/dummy_${IOV}.db
+    rm -f ${test_area}/dummy_${IOV}.xml
 
     mapping=blobmappingfile_pednoise.xml
     echo pool_build_object_relational_mapping -f ${mapping} -d CondFormatsSiStripObjects -c ${DBfile} -u me -p mypass  
