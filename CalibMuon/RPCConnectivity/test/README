@@ -2,6 +2,7 @@
    OMDS execute:
 
 $ RPCReadOutMappingBuilder oracms.cern.ch OMDS RPC_CONFIGURATION ***** 10121
+  RPCReadOutMappingBuilder oradev.cern.ch D10 CMS_ENDCAP_RPCDCS_DEV ***** 10520
 
 2. To test PoolDB execute:
 
