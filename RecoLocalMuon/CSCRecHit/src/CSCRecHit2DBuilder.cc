@@ -96,7 +96,9 @@ void CSCRecHit2DBuilder::build( const CSCStripDigiCollection* stripdc,
       int chamber = id.chamber();
       int layer   = id.layer();
       CSCDetId idw( endcap, 1, 1, chamber, layer ); // Set idw to same layer in ME1b
-      CSCWireDigiCollection::Range rwired = wiredc->get( idw );
+      //      CSCWireDigiCollection::Range rwired = wiredc->get( idw );
+      rwired = wiredc->get( idw );
+      LogDebug("CSC") << "found " << rwired.second - rwired.first << " me11 wire digi(s) in layer";
       if ( rwired.second == rwired.first ) continue; // Nothing there either, skip
     }
 
