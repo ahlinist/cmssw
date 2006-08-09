@@ -4,8 +4,8 @@
  * Description:
  *      Class to read directly OMDS DB with OCCI and fill Offline DB
  *
- * $Date: 2006/08/01 13:25:50 $
- * $Revision: 1.2 $
+ * $Date: 2006/08/02 13:18:22 $
+ * $Revision: 1.3 $
  * \author Michal Bluj -- INS Warsaw
  *
  */
@@ -362,7 +362,8 @@ public:
 	      FebConnectorSpec febConnector(theFEB[iFEB].lbInputNum,chamber,febLocation);
 	      cout << " Done ... " << flush;
 	      // Get Strips
-	      sqlQuery = "SELECT CablePinNumber, ChamberStripNumber, CmsStripNumber";
+	      //sqlQuery = "SELECT CablePinNumber, ChamberStripNumber, CmsStripNumber";
+	      sqlQuery = "SELECT CableChannelNum, ChamberStripNumber, CmsStripNumber";
 	      sqlQuery += " FROM ChamberStrip "; 
 	      sqlQuery += " WHERE FC_FEBConnectorId= ";
 	      sqlQuery +=  IntToString(theFEB[iFEB].connectorId);
