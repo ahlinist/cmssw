@@ -1,7 +1,6 @@
 
 {
 
-   gSystem->Load("libCLHEPRflx.so") ;
    gSystem->Load("libFWCoreFWLite.so") ;
    AutoLibraryLoader::enable() ;
    
@@ -35,7 +34,7 @@
    // SimDataFormats/HepMCProduct, I'm doing a dirty trick of storing
    // momenta in one container (std::vector) and the PDG's (for checking 
    // charge) in another (TArrayI)
-   // I'll fix it in the 090 series   
+   // I'll fix it later   
    //
    std::vector<CLHEP::HepLorentzVector> StableMuMom ;
    //
@@ -60,12 +59,7 @@
 
       if ( iev == 0 ) Evt->print() ;
 
-/*
-      NVtx = Evt->vertices_size() ;
-      NPrt = Evt->particles_size() ;
-      cout << " Event " << iev << " : NVtx = " << NVtx << ", NPrt = " << NPrt << endl ;
-*/      
-/*
+/* 
       for (vit=Evt->vertices_begin(); vit!=Evt->vertices_end(); vit++ )
       {
          for ( vpit=(*vit)->particles_begin(HepMC::children);
