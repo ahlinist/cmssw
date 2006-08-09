@@ -130,7 +130,8 @@ std::vector<CSCRecHit2D> CSCRecHit2DInALayer::run(
       //      int stripBX = thePulseHeightMap[theMaxima[imax]].bx();
       //      if(abs(wireBX-stripBX) <= theBunchMatching) {
         CSCRecHit2D rechit = makeCluster(*wireClusterItr, theMaxima[imax]);
-        hitsInLayer.push_back( rechit ); //@@ copy it 
+        
+        if ( isInFiducial(rechit) ) hitsInLayer.push_back( rechit ); //@@ copy it 
       //      }
     }
   }
@@ -203,7 +204,7 @@ CSCRecHit2D CSCRecHit2DInALayer::makeCluster(
   }
 
   float v = layergeom_->yOfWire(centerWire, u);
-  LocalPoint localPoint(u, v); 
+    LocalPoint localPoint(u, v); 
 
   float strangle = layergeom_->stripAngle(centerStrip);
   float du = sigma/sin(strangle); // since sigma is in local x units
@@ -428,6 +429,14 @@ void CSCRecHit2DInALayer::findMaxima() {
   }
 }
     
-  
+bool CSCRecHit2DInALayer::isInFiducial( const CSCRecHit2D& rh ) {
+
+  const float marginAtEdge = 0.1; // Allow extra margin for future tuning etc. For now 0.1 cm.
+
+  float y = rh.localPosition().y();
+  float apothem = layergeom_->length()/2.;
+  return ( fabs(y) < (apothem+marginAtEdge) );
+}
+
 
 
