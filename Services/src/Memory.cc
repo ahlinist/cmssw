@@ -213,7 +213,7 @@ namespace edm {
 
     void SimpleMemoryCheck::postModule(const ModuleDescription& md)
     {
-      swap(current_,previous_);
+      std::swap(current_,previous_);
       *current_ = fetch();
 
       if(*current_ > max_)
