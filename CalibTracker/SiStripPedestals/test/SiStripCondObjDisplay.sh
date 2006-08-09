@@ -61,8 +61,10 @@ echo
 echo
 echo "Empty Pedestal Histos" `grep "Empty Ped"  ${test_area}/out_diplay_${runNb} | wc -l`
 echo "Empty Noise Histos" `grep "Empty Nois"  ${test_area}/out_diplay_${runNb} | wc -l`
+echo "Empty BadStrip Histos" `grep "Empty Bad"  ${test_area}/out_diplay_${runNb} | wc -l`
 echo "Pedestal Histos with all channel at zero" `grep "All channel at zero in Ped"  ${test_area}/out_diplay_${runNb} | wc -l`
 echo "Noise Histos with all channel at zero" `grep "All channel at zero in Nois"  ${test_area}/out_diplay_${runNb} | wc -l`
+echo "BadStrips Histos with all channel at zero" `grep "All channel at zero in Bad"  ${test_area}/out_diplay_${runNb} | wc -l`
 
 echo -e "\nroot file and postscript file with histos can be found in  ${test_area}"
-echo -e "to see .ps file do\ngv  ${ps_file_name}"
+echo -e "to see .ps file do\ngv  ${ps_file_name}&"
