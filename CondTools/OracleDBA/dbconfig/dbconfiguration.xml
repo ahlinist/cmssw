@@ -1,0 +1,25 @@
+<?xml version="1.0" ?>
+
+<dbconfiguration>
+
+  <general offline_db='orcon' general_schema='CMS_COND_GENERAL' />
+
+  <iov>
+    <poolsetup mapping='mapping_CondIOV_2.0.xml' dbsetup='dbsetup_CondIOV_2.0.xml' library='CondCoreIOVService' />
+  </iov>
+
+  <metadata sql='createMetadata.sql' />
+
+  <detector name='ECAL' offline_schema='CMS_COND_ECAL'>
+     <poolsetup mapping='mapping_EcalObjects_1.0.xml' dbsetup='dbsetup_EcalObjects_1.0.xml' library='CondFormatsEcalObjects' />
+  </detector>
+
+  <detector name='CSC' offline_schema='CMS_COND_CSC'>
+     <poolsetup mapping='mapping_CSCObjects_1.0.xml' dbsetup='dbsetup_CSCObjects_1.0.xml' library='CondFormatsCSCObjects' />
+  </detector>
+
+  <detector name='DT' offline_schema='CMS_COND_DT'>
+     <poolsetup mapping='mapping_DTObjects_1.0.xml' dbsetup='dbsetup_DTObjects_1.0.xml' library='CondFormatsDTObjects' />
+  </detector>
+
+</dbconfiguration>
