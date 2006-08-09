@@ -4,8 +4,8 @@
  * Description:
  *      Class to read directly OMDS DB with OCCI and fill Offline DB
  *
- * $Date: 2006/08/02 13:18:22 $
- * $Revision: 1.3 $
+ * $Date: 2006/08/09 06:32:13 $
+ * $Revision: 1.4 $
  * \author Michal Bluj -- INS Warsaw
  *
  */
@@ -367,7 +367,8 @@ public:
 	      sqlQuery += " FROM ChamberStrip "; 
 	      sqlQuery += " WHERE FC_FEBConnectorId= ";
 	      sqlQuery +=  IntToString(theFEB[iFEB].connectorId);
-	      sqlQuery += " ORDER BY CablePinNumber";
+	      //sqlQuery += " ORDER BY CablePinNumber";
+	      sqlQuery += " ORDER BY CableChannelNum";
 	      stmt->setSQL(sqlQuery.c_str());
 	      rset = stmt->executeQuery();
 	      cout << " Done." << endl;
