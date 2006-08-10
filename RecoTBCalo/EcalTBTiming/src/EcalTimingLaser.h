@@ -25,6 +25,7 @@
 
 #include <string>
 #include "TProfile.h"
+#include "TH1F.h"
 
 //#include<fstream>
 //#include<map>
@@ -55,15 +56,18 @@ class EcalTimingLaser : public edm::EDAnalyzer {
       //std::string pndiodeProducer_;
       
       
-      TProfile amplProfileConv_[4];
-      TProfile absoluteTimingConv_[4];
+      TProfile* amplProfileConv_[4];
+      TProfile* absoluteTimingConv_[4];
 
-      TProfile amplProfileAll_[4];
-      TProfile absoluteTimingAll_[4];
+      TProfile* amplProfileAll_[4];
+      TProfile* absoluteTimingAll_[4];
       
-      TProfile Chi2ProfileConv_[4];
+      TProfile* Chi2ProfileConv_[4];
       
-      TProfile relativeTimingBlueConv_;
+      TProfile* relativeTimingBlueConv_;
+      
+      TH1F* timeCry1; 
+      TH1F* timeCry2; 
       
       int ievt_;
 };
