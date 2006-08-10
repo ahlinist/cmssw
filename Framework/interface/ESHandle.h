@@ -72,5 +72,13 @@ class ESHandle
       const edm::eventsetup::ComponentDescription* description_;
 };
 
+  // Free swap function
+  template <class T>
+  inline
+  void
+  swap(ESHandle<T>& a, ESHandle<T>& b) 
+  {
+    a.swap(b);
+  }
 }
 #endif

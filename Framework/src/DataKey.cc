@@ -13,6 +13,7 @@
 
 // system include files
 #include <memory>
+#include <algorithm>
 
 // user include files
 #include "FWCore/Framework/interface/DataKey.h"
@@ -62,8 +63,11 @@ void
 DataKey::swap(DataKey& iOther)
 {
    std::swap(ownMemory_, iOther.ownMemory_);
-   std::swap(type_, iOther.type_);
-   std::swap(name_, iOther.name_);
+   // unqualified swap is used for user defined classes.
+   // The using directive is needed so that std::swap will be used if there is no other matching swap.
+   using std::swap;
+   swap(type_, iOther.type_);
+   swap(name_, iOther.name_);
 }
 
 void 

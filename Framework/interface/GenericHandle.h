@@ -95,10 +95,12 @@ public:
       
    void swap(Handle<GenericObject>& other)
    {
-      std::swap(type_, other.type_);
+      // use unqualified swap for user defined classes
+      using std::swap;
+      swap(type_, other.type_);
       std::swap(prod_, other.prod_);
-      std::swap(prov_, other.prov_);
-      std::swap(id_, other.id_);
+      swap(prov_, other.prov_);
+      swap(id_, other.id_);
    }
    
    

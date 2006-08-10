@@ -31,6 +31,7 @@ namespace edm {
 class DataKey
 {
 
+   friend void swap(DataKey&, DataKey&);
    public:
    enum DoNotCopyMemory { kDoNotCopyMemory };
    
@@ -89,6 +90,13 @@ class DataKey
       bool ownMemory_;
 };
 
-   }
+    // Free swap function
+    inline
+    void
+    swap(DataKey& a, DataKey& b) 
+    {
+      a.swap(b);
+    }
+  }
 }
 #endif
