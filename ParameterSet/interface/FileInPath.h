@@ -102,6 +102,13 @@ namespace edm
     void initialize_();
   };
 
+  // Free swap function
+  inline
+  void
+  swap(FileInPath& a, FileInPath& b) 
+  {
+    a.swap(b);
+  }
 
   inline  std::ostream& 
   operator<< (std::ostream& os, const edm::FileInPath& fip)
