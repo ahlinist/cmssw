@@ -77,37 +77,46 @@ EcalTimingLaser::beginJob(edm::EventSetup const&) {
   
     sprintf(profName,"ampl_prof_conv_%d",l+1);
     sprintf(profTit," profile of converged amplitude for lambda laser %d",l+1);
-    amplProfileConv_[l]= TProfile(profName,profTit,1700, 1, 1701, 0,50000);
+    amplProfileConv_[l]= new TProfile(profName,profTit,1700, 1, 1701, 0,50000);
 
     sprintf(profName,"timing_prof_conv_%d",l+1);
     sprintf(profTit," profile of converged timing for lambda laser %d",l+1);
-    absoluteTimingConv_[l]= TProfile(profName,profTit,1700, 1, 1701, 0,15);
+    absoluteTimingConv_[l]= new TProfile(profName,profTit,1700, 1, 1701, 0,15);
 
     sprintf(profName,"ampl_prof_all_%d",l+1);
     sprintf(profTit," profile of all amplitude for lambda laser %d",l+1);
-    amplProfileAll_[l]= TProfile(profName,profTit,1700, 1, 1701, 0,50000);
+    amplProfileAll_[l]= new TProfile(profName,profTit,1700, 1, 1701, 0,50000);
 
     sprintf(profName,"timing_prof_all_%d",l+1);
     sprintf(profTit," profile of all timing for lambda laser %d",l+1);
-    absoluteTimingAll_[l]= TProfile(profName,profTit,1700, 1, 1701, 0,50000);
+    absoluteTimingAll_[l]= new TProfile(profName,profTit,1700, 1, 1701, 0,50000);
 
     sprintf(profName,"chi2_prof_%d",l+1);
     sprintf(profTit," profile of chi2 for lambda laser %d",l+1);
-    Chi2ProfileConv_[l]= TProfile(profName,profTit,1700, 1, 1701, 0,50000);
+    Chi2ProfileConv_[l]= new TProfile(profName,profTit,1700, 1, 1701, 0,50000);
   }
   sprintf(profName,"rel_timing_prof_conv_blu");
   sprintf(profTit," profile of converged relative timing for the blu laser");
-  relativeTimingBlueConv_ = TProfile(profName,profTit,1700, 1, 1701, -10,10);
+  relativeTimingBlueConv_ = new TProfile(profName,profTit,1700, 1, 1701, -10,10);
   
+  char hName[100];char hTit[100];
+  sprintf(hName,"timingCry1");
+  sprintf(hTit,"timing from a crystal in the first half");
+  timeCry1=new TH1F(hName,hTit,600,0.,250.); 
+
+  sprintf(hName,"timingCry2");
+  sprintf(hTit,"timing from a crystal in the second half");
+  timeCry2=new TH1F(hName,hTit,600,0.,250.); 
+
+
   ievt_ = 0;
 }
 
 //========================================================================
-void
-EcalTimingLaser::endJob() {
+void EcalTimingLaser::endJob() {
 //========================================================================
 // produce offsets for each TT 
-  if( absoluteTimingConv_[0].GetEntries() <= 0 ){
+  if( absoluteTimingConv_[0]->GetEntries() <= 0 ){
     cout<<"Error:  the profilw is empty !! "<<endl;
   }
 
@@ -200,9 +209,9 @@ EcalTimingLaser::endJob() {
 
   
   // Absolute timing
-  TH1F absTT("absolute_TT_timing", "absolute average timing per TT",500,0,10);
-  TH1F absCh("absolute_Ch_timing", "absolute average timing per channel",500,0,10);
-  TH1F absTTRMS("absolute_TT_spread", "RMS of the absolute timing in the TT ",200,0,2);
+  TH1F* absTT = new TH1F("absolute_TT_timing", "absolute average timing per TT",500,0,10);
+  TH1F* absCh = new TH1F("absolute_Ch_timing", "absolute average timing per channel",500,0,10);
+  TH1F* absTTRMS = new TH1F("absolute_TT_spread", "RMS of the absolute timing in the TT ",200,0,2);
   float mean[68],x2[68],nCry[68], RMS[68];
   for(int u=0;u<68;u++){
     mean[u] =0; x2[u]=0; nCry[u]=0;
@@ -210,14 +219,14 @@ EcalTimingLaser::endJob() {
   }
   int TT = 0;
   for(int cry=1; cry < 1700l; cry++){
-    if( absoluteTimingConv_[0].GetBinEntries(cry) > min_num_ev_ ){
+    if( absoluteTimingConv_[0]->GetBinEntries(cry) > min_num_ev_ ){
       
       if(cry>0 && cry< 1701){ TT = table_cry_tt[cry];}
       else {TT =0;}
       int TTi = TT -1;
       if(TTi>=0 && TTi<68){
-	float time = absoluteTimingConv_[0].GetBinContent(cry);
-	absCh.Fill(time);
+	float time = absoluteTimingConv_[0]->GetBinContent(cry);
+	absCh->Fill(time);
 	mean[TTi] += time;
 	x2[TTi] += time*time;
 	nCry[TTi]++;
@@ -233,14 +242,14 @@ EcalTimingLaser::endJob() {
     }
     else{mean[u] = -100.;}
     //cout<<u+1<<"  "<< mean[u] << "  "<< RMS[u]<<endl;
-    absTT.Fill(mean[u]);
-    absTTRMS.Fill(RMS[u]);
+    absTT->Fill(mean[u]);
+    absTTRMS->Fill(RMS[u]);
   }
   
  // Relative timing
-  TH1F relTT("relative_TT_timing", "relative average timing per TT",500,-5,5);
-  TH1F relCh("relative_Ch_timing", "relative average timing per channel",500,-5,5);
-  TH1F relTTRMS("relative_TT_spread", "RMS of the relative timing in the TT ",200,0,2);
+  TH1F* relTT = new TH1F("relative_TT_timing", "relative average timing per TT",500,-5,5);
+  TH1F* relCh = new TH1F("relative_Ch_timing", "relative average timing per channel",500,-5,5);
+  TH1F* relTTRMS = new TH1F("relative_TT_spread", "RMS of the relative timing in the TT ",200,0,2);
   float meanr[68],x2r[68],nCryr[68], RMSr[68];
   for(int u=0;u<68;u++){
     meanr[u] =0; x2r[u]=0; nCryr[u]=0;
@@ -248,14 +257,14 @@ EcalTimingLaser::endJob() {
   }
   int TTr = 0;
   for(int cry=1; cry < 1701; cry++){
-    if( relativeTimingBlueConv_.GetBinEntries(cry) > min_num_ev_ ){
+    if( relativeTimingBlueConv_->GetBinEntries(cry) > min_num_ev_ ){
       
       if(cry>0 && cry< 1701){ TTr = table_cry_tt[cry];}
       else {TTr =0;}
       int TTi = TTr -1;
       if(TTi>=0 && TTi<68){
-	float time = relativeTimingBlueConv_.GetBinContent(cry);
-	relCh.Fill(time);
+	float time = relativeTimingBlueConv_->GetBinContent(cry);
+	relCh->Fill(time);
 	meanr[TTi] += time;
 	x2r[TTi] += time*time;
 	nCryr[TTi]++;
@@ -270,8 +279,8 @@ EcalTimingLaser::endJob() {
       if( rms2 > 0) {RMSr[u] = sqrt(rms2);}
     }
     else{meanr[u] = -100.;}
-    relTT.Fill(meanr[u]);
-    relTTRMS.Fill(RMSr[u]);
+    relTT->Fill(meanr[u]);
+    relTTRMS->Fill(RMSr[u]);
     cout<<u+1<<"  "<< mean[u] << "  "<< RMS[u]<<"  " <<meanr[u] << "  "<< RMSr[u]<<endl;
   }
 
@@ -291,7 +300,13 @@ EcalTimingLaser::endJob() {
   ofstream txt_channels;
   txt_channels.open(txtFileForChGroups_.c_str(),ios::out);
   for(int i=1;i<1701;i++){
-    txt_channels <<sm_<<"   "<<setw(4)<<i<<" \t "<<setw(6)<<setprecision(5)<<absoluteTimingConv_[0].GetBinContent(i)<< endl;
+    
+    //txt_channels <<sm_<<"   "<<setw(4)<<i<<" \t "<<setw(6)<<setprecision(5)<<absoluteTimingConv_[0]->GetBinContent(i)<< endl;
+    //float half_corr  = 0;
+    //if ( i<101 || (i-1)%20 > 9){half_corr=0;}
+    //else {half_corr=0.08;}//2ns
+    //txt_channels <<sm_<<"   "<<setw(4)<<i<<" \t "<<setw(6)<<setprecision(5)<<relativeTimingBlueConv_->GetBinContent(i)+5+half_corr<< endl;
+    txt_channels <<sm_<<"   "<<setw(4)<<i<<" \t "<<setw(6)<<setprecision(5)<<relativeTimingBlueConv_->GetBinContent(i)<< endl;
   }
   txt_channels.close();
 
@@ -301,18 +316,20 @@ EcalTimingLaser::endJob() {
   f.cd();
   for(int l=0; l<4; ++l) {
     if(l==0 || l==4){
-      amplProfileConv_[l].Write();
-      absoluteTimingConv_[l].Write();
-      //amplProfileAll_[l].Write();
-      absoluteTimingAll_[l].Write();
-      Chi2ProfileConv_[l].Write();
+      amplProfileConv_[l]->Write();
+      absoluteTimingConv_[l]->Write();
+      //amplProfileAll_[l]->Write();
+      absoluteTimingAll_[l]->Write();
+      Chi2ProfileConv_[l]->Write();
     }
   }
-  relativeTimingBlueConv_.Write();
+  relativeTimingBlueConv_->Write();
   TDirectory* hist = gDirectory->mkdir("histos");
   hist->cd();
-  absTT.Write();absCh.Write();absTTRMS.Write();
-  relTT.Write();relCh.Write();relTTRMS.Write();
+  absTT->Write();absCh->Write();absTTRMS->Write();
+  relTT->Write();relCh->Write();relTTRMS->Write();
+  timeCry2->Write();
+  timeCry1->Write();
   f.cd();
   f.Close();
 }
@@ -359,15 +376,17 @@ EcalTimingLaser::analyze( const edm::Event& iEvent, const edm::EventSetup& iSetu
      EBDetId anid(ithit->id()); 
      //int SMind = (anid.ieta()-1)*20+ anid.iphi();
      int SMind = anid.ic();
-     if(ithit->chi2()>0. && ithit->chi2()<500. && ithit->amplitude()> ampl_thr_ ) { // make sure fit has converged
-       amplProfileConv_[lambda].Fill(SMind,ithit->amplitude());
-       absoluteTimingConv_[lambda].Fill(SMind,ithit->jitter());
-       Chi2ProfileConv_[lambda].Fill(SMind,ithit->chi2());
+     if(ithit->chi2()>0. && ithit->chi2()<300. && ithit->amplitude()> ampl_thr_ ) { // make sure fit has converged
+       amplProfileConv_[lambda]->Fill(SMind,ithit->amplitude());
+       absoluteTimingConv_[lambda]->Fill(SMind,ithit->jitter());
+       Chi2ProfileConv_[lambda]->Fill(SMind,ithit->chi2());
        if(lambda == 0){absTime[SMind] = ithit->jitter();}
+       if(SMind == 648  ){timeCry2->Fill(ithit->jitter()*25.);}
+       else if(SMind == 653  ){timeCry1->Fill(ithit->jitter()*25.);}
      }
      
-     amplProfileAll_[lambda].Fill(SMind,ithit->amplitude());
-     absoluteTimingAll_[lambda].Fill(SMind,ithit->jitter());
+     amplProfileAll_[lambda]->Fill(SMind,ithit->amplitude());
+     absoluteTimingAll_[lambda]->Fill(SMind,ithit->jitter());
 
      if(ithit->chi2()<0 && false)
      std::cout << "analytic fit failed! EcalUncalibratedRecHit  id: "
@@ -386,7 +405,7 @@ EcalTimingLaser::analyze( const edm::Event& iEvent, const edm::EventSetup& iSetu
    if ( foundCh > 0 ){
      ave_time  = ave_time / foundCh;
      for( int ch =0; ch<1701; ch++){
-       if(absTime[ch]>0) {relativeTimingBlueConv_.Fill( ch, absTime[ch]- ave_time );}
+       if(absTime[ch]>0) {relativeTimingBlueConv_->Fill( ch, absTime[ch]- ave_time );}
      }
    }
    
