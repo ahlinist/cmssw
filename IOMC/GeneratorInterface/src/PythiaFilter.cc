@@ -18,7 +18,8 @@ maxetacut(iConfig.getUntrackedParameter("MaxEta", 10.)),
 minphicut(iConfig.getUntrackedParameter("MinPhi", -3.5)),
 maxphicut(iConfig.getUntrackedParameter("MaxPhi", 3.5)),
 status(iConfig.getUntrackedParameter("Status", 0)),
-motherID(iConfig.getUntrackedParameter("MotherID", 0))
+motherID(iConfig.getUntrackedParameter("MotherID", 0)),
+processID(iConfig.getUntrackedParameter("ProcessID", 0))
 {
    //now do what ever initialization is needed
 
@@ -47,6 +48,8 @@ bool PythiaFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
    iEvent.getByLabel(label_, evt);
 
     HepMC::GenEvent * myGenEvent = new  HepMC::GenEvent(*(evt->GetEvent()));
+    
+    if(processID == 0 || processID == myGenEvent->signal_process_id()) {
     
     for ( HepMC::GenEvent::particle_iterator p = myGenEvent->particles_begin();
 	  p != myGenEvent->particles_end(); ++p ) {
@@ -89,7 +92,7 @@ bool PythiaFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  
     }
 
-
+    }
 
 
     delete myGenEvent; 
