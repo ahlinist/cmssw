@@ -47,30 +47,50 @@ C...Read out x_1, x_2, x_F, shat, that, uhat, p_T^2.
       THAT=VINT(45)
       UHAT=VINT(46)
       PT2=VINT(48)
+
+      PTHAT = SQRT(PT2)  
  
-C...Modifications by user to be put here.
- 
-C...Stop program if this routine is ever called.
-C...You should not copy these lines to your own routine.
-C      WRITE(MSTU(11),5000)
-C      IF(PYR(0).LT.10D0) STOP
- 
-C...Format for error printout.
-C 5000 FORMAT(1X,'Error: you did not link your PYEVWT routine ',
-C     &'correctly.'/1X,'Dummy routine in PYTHIA file called instead.'/
-C     &1X,'Execution stopped!')
- 
+C...Weights for QCD dijet sample
+
+      IF ((ISUB.EQ.11).OR.(ISUB.EQ.68)) THEN 
+
+       IF(PTHAT.GE.0.AND.PTHAT.LT.15) WTXS = 0.025 
+       IF(PTHAT.GE.15.AND.PTHAT.LT.20) WTXS = 1.8405931
+       IF(PTHAT.GE.20.AND.PTHAT.LT.30) WTXS = 8.60482502 
+       IF(PTHAT.GE.30.AND.PTHAT.LT.50) WTXS = 35.4135551 
+       IF(PTHAT.GE.50.AND.PTHAT.LT.80) WTXS = 263.720733 
+       IF(PTHAT.GE.80.AND.PTHAT.LT.120) WTXS = 936.023193
+       IF(PTHAT.GE.120.AND.PTHAT.LT.170) WTXS = 5525.80176
+       IF(PTHAT.GE.170.AND.PTHAT.LT.230) WTXS = 27337.9121
+       IF(PTHAT.GE.230.AND.PTHAT.LT.300) WTXS = 115738.633
+       IF(PTHAT.GE.300.AND.PTHAT.LT.380) WTXS = 432008.344
+       IF(PTHAT.GE.380.AND.PTHAT.LT.470) WTXS = 1461105.62
+       IF(PTHAT.GE.470.AND.PTHAT.LT.600) WTXS = 3999869.75
+       IF(PTHAT.GE.600.AND.PTHAT.LT.800) WTXS = 8180579.5
+       IF(PTHAT.GE.800.AND.PTHAT.LT.1000) WTXS = 46357008.
+       IF(PTHAT.GE.1000.AND.PTHAT.LT.1400) WTXS = 152645456.
+       IF(PTHAT.GE.1400.AND.PTHAT.LT.1800) WTXS = 1.56872026D9
+       IF(PTHAT.GE.1800.AND.PTHAT.LT.2200) WTXS = 1.14387118D10
+       IF(PTHAT.GE.2200.AND.PTHAT.LT.2600) WTXS = 6.9543682D10
+       IF(PTHAT.GE.2600.AND.PTHAT.LT.3000) WTXS = 3.86604466D11
+       IF(PTHAT.GE.3000.AND.PTHAT.LT.3500) WTXS = 1.96279625D12
+       IF(PTHAT.GE.3500.AND.PTHAT.LT.4000) WTXS = 1.70783513D13
+
+      ENDIF
+
+C... Fit function form
 C      WTXS = (150.564d0*(PT2/25.0d0)**(6.28335d0)*
 C     & exp(-6.28335d0*(PT2/25.0d0))
 C     & + 0.035313d0*PT2-0.00628d0*log(PT2+1)*log(PT2+1))/
 C     & (1.04992d0*exp(-0.245*PT2)) 
 
-C      WTXS=PT2**3
+
+C...Weights for EWK sample
  
       IF (ISUB.EQ.2) WTXS=0.2
-      IF (ISUB.EQ.102) WTXS=10.    
-      IF (ISUB.EQ.123) WTXS=10.    
-      IF (ISUB.EQ.124) WTXS=10.    
+      IF (ISUB.EQ.102) WTXS=400.    
+      IF (ISUB.EQ.123) WTXS=400.    
+      IF (ISUB.EQ.124) WTXS=400.    
       
 
       RETURN
