@@ -52,7 +52,7 @@ C...Read out x_1, x_2, x_F, shat, that, uhat, p_T^2.
  
 C...Weights for QCD dijet sample
 
-      IF ((ISUB.EQ.11).OR.(ISUB.EQ.68)) THEN 
+      IF (ISUB.EQ.11.OR.ISUB.EQ.68.OR.ISUB.EQ.28.OR.ISUB.EQ.53) THEN 
 
        IF(PTHAT.GE.0.AND.PTHAT.LT.15) WTXS = 0.025 
        IF(PTHAT.GE.15.AND.PTHAT.LT.20) WTXS = 1.8405931
