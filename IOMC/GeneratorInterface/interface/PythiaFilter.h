@@ -15,7 +15,7 @@
 //
 // Original Author:  Filip Moortgat
 //         Created:  Mon Jan 23 14:57:54 CET 2006
-// $Id: PythiaFilter.h,v 1.4 2006/07/28 13:28:57 fmoortga Exp $
+// $Id: PythiaFilter.h,v 1.5 2006/08/09 16:31:43 fmoortga Exp $
 //
 //
 
@@ -59,6 +59,7 @@ class PythiaFilter : public edm::EDFilter {
        double minphicut;
        double maxphicut;
        int status; 
-       int motherID;     
+       int motherID;   
+       int processID;    
 };
 #endif
