@@ -17,7 +17,6 @@ using namespace std;
 
 CSCMakeWireDigiCollections::CSCMakeWireDigiCollections(const edm::ParameterSet & p) {
   // Initialize parameters needed...
-  debug              = p.getUntrackedParameter<bool>("debug");
 
   LogDebug("CSC") << "[CSCMakeWireDigiCollections] Initialized wire collection maker";
 }

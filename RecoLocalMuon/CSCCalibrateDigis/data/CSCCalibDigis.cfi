@@ -6,9 +6,7 @@
 # For the moment being, keep the content of the cfi file below
 # 
 module muonCSCDigis = CSCCalibDigisProducer {
-
-     # Switch on/off the verbosity for debug purposes
-     untracked bool debug = false
+     untracked bool PrintEventNumber = false
      # Mapping file for MTCC CSC chambers
      FileInPath theMappingFile = "RecoLocalMuon/CSCCalibrateDigis/data/csc_slice_test_map.txt"
      # Label to retrieve raw data from the event
