@@ -39,7 +39,6 @@ using namespace std;
 CSCCalibDigisProducer::CSCCalibDigisProducer(const edm::ParameterSet& pset) : iev( 0 ){
 
   // Reading in parameters from .cfg file:
-  debug              = pset.getUntrackedParameter<bool>("debug");
   RawDataLabel       = pset.getUntrackedParameter<string>("whichRawData");
 
 

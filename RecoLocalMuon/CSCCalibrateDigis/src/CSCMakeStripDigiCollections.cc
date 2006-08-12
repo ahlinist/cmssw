@@ -21,7 +21,6 @@ using namespace std;
 
 CSCMakeStripDigiCollections::CSCMakeStripDigiCollections(const edm::ParameterSet & p) {
   // Initialize parameters needed...
-  debug              = p.getUntrackedParameter<bool>("debug");
 
 /*
  * Tim changed the CondFormats/CSCObjects, so the mapping file is obtained 
