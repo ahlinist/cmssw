@@ -12,8 +12,8 @@ C...Sets values of commonblock variables.
       save   /TXPAR/
 ***
       integer CSAMODE
-      double precision  MUONRW, GAMMAJRW, ZJRW
-      common /EXPAR/CSAMODE, MUONRW, GAMMAJRW, ZJRW
+      double precision  MUONRW, GAMMAJRW, ZJRW, ZPRW
+      common /EXPAR/CSAMODE, MUONRW, GAMMAJRW, ZJRW, ZPRW
       save   /EXPAR/
 ***
       integer IER, I, IL, IREAD
@@ -61,6 +61,16 @@ C	print*,'IER', ier
            iread = 0
            read(strin(1:80),*) ZJRW 
          endif
+	 
+      rnam = 'ZPRW ='
+        call TXRSTR2(rnam, chin, strin, ier) 
+C	print*,'IER', ier
+         if(ier.ne.1) then
+           iread = 0
+           read(strin(1:80),*) ZPRW 
+         endif
+	 
+	 
 ***
 
       do I = 1,200
@@ -201,13 +211,14 @@ c----------------------------------------------------------------------------c
       implicit none
      
       integer CSAMODE
-      double precision  MUONRW, GAMMAJRW, ZJRW
-      common /EXPAR/CSAMODE, MUONRW, GAMMAJRW, ZJRW
+      double precision  MUONRW, GAMMAJRW, ZJRW, ZPRW
+      common /EXPAR/CSAMODE, MUONRW, GAMMAJRW, ZJRW, ZPRW
       save   /EXPAR/ 
 
       CSAMODE = 0
       MUONRW = -1        
       GAMMAJRW = -1
       ZJRW = -1
+      ZPRW = -1
  
       END
