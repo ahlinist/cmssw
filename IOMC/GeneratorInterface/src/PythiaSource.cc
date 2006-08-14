@@ -1,6 +1,6 @@
 /*
- *  $Date: 2006/07/07 07:19:42 $
- *  $Revision: 1.20 $
+ *  $Date: 2006/07/14 16:26:58 $
+ *  $Revision: 1.21 $
  *  
  *  Filip Moorgat & Hector Naves 
  *  26/10/05
@@ -50,6 +50,17 @@ extern "C" {
 extern "C" {
   void PYEXEC();
 }
+
+#define TXGIVE txgive_
+extern "C" {
+  void TXGIVE(const char*,int length);
+}
+
+#define TXGIVE_INIT txgive_init_
+extern "C" {
+  void TXGIVE_INIT();
+}
+
 
 HepMC::ConvertHEPEVT conv;
 // ***********************
@@ -132,6 +143,7 @@ PythiaSource::PythiaSource( const ParameterSet & pset,
     vector<string> pars = 
       pythia_params.getParameter<vector<string> >(mySet);
     
+    if (mySet != "CSAParameters"){
     cout << "----------------------------------------------" << endl;
     cout << "Read PYTHIA parameter set " << mySet << endl;
     cout << "----------------------------------------------" << endl;
@@ -149,8 +161,28 @@ PythiaSource::PythiaSource( const ParameterSet & pset,
 	  <<" pythia did not accept the following \""<<*itPar<<"\"";
       }
     }
-  }
+    }else if(mySet == "CSAParameters"){   
+
+   // Read CSA parameter
   
+   pars = pythia_params.getParameter<vector<string> >("CSAParameters");
+
+   cout << "----------------------------------------------" << endl; 
+   cout << "Reading CSA parameter settings. " << endl;
+   cout << "----------------------------------------------" << endl;                                                                           
+
+   call_txgive_init();
+  
+  
+   // Loop over all parameters and stop in case of a mistake
+    for (vector<string>::const_iterator 
+            itPar = pars.begin(); itPar != pars.end(); ++itPar) {
+      call_txgive(*itPar); 
+     
+         } 
+  
+  }
+  }
   //In the future, we will get the random number seed on each event and tell 
   // pythia to use that new seed
     cout << "----------------------------------------------" << endl;
@@ -282,5 +314,23 @@ PythiaSource::call_pygive(const std::string& iParm ) {
   //  PYGIVE( iParm );  
 //if an error or warning happens it is problem
   return pydat1.mstu[26] == numWarn && pydat1.mstu[22] == numErr;   
+ 
+}
 
+bool 
+PythiaSource::call_txgive(const std::string& iParm ) {
+  
+   TXGIVE( iParm.c_str(), iParm.length() );
+   cout << "     " <<  iParm.c_str() << endl; 
+
+	return 1;  
+}
+
+bool 
+PythiaSource::call_txgive_init() {
+  
+   TXGIVE_INIT();
+   cout << "  Setting CSA defaults.   "   << endl; 
+
+	return 1;  
 }
