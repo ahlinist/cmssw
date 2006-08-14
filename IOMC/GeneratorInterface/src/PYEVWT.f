@@ -19,8 +19,11 @@ C...Commonblocks.
       COMMON/PYDAT1/MSTU(200),PARU(200),MSTJ(200),PARJ(200)
       COMMON/PYINT1/MINT(400),VINT(400)
       COMMON/PYINT2/ISET(500),KFPR(500,2),COEF(500,20),ICOL(40,4,2)
-C      COMMON/PYPARS/MSTP(200),PARP(200),MSTI(200),PARI(200)
       SAVE /PYDAT1/,/PYINT1/,/PYINT2/
+C... CSA specific 
+      integer CSAMODE
+      double precision  MUONRW, GAMMAJRW, ZJRW
+      common /EXPAR/CSAMODE, MUONRW, GAMMAJRW, ZJRW
  
 C...Set default weight for WTXS.
 
@@ -50,7 +53,29 @@ C...Read out x_1, x_2, x_F, shat, that, uhat, p_T^2.
 
       PTHAT = SQRT(PT2)  
  
+ 
+C     CSAMODE  :   selection of reweighting algorithm for CSA06 production
+C                  1 for QCD dijet
+C                  2 for EWK soup 
+C                  3 for HLT soup
+C                  4 for soft muon soup
+ 
+      IF (CSAMODE.LE.0.OR.CSAMODE.GT.4) THEN
+         write (*,*) ' CSAMODE not properly set !! No reweighting!! '
+      ENDIF      
+
+ 
+ 
+C...Optional printout
+ 
+C      write (*,*) ' CSAMODE = ', CSAMODE
+C      write (*,*) ' MUONRW = ', MUONRW
+C      write (*,*) ' GAMMAJRW = ', GAMMAJRW
+C      write (*,*) ' ZJRW = ', ZJRW
+ 
 C...Weights for QCD dijet sample
+      
+      IF (CSAMODE.EQ.1) THEN
 
       IF (ISUB.EQ.11.OR.ISUB.EQ.68.OR.ISUB.EQ.28.OR.ISUB.EQ.53) THEN 
 
@@ -78,20 +103,60 @@ C...Weights for QCD dijet sample
 
       ENDIF
 
+      IF (ISUB.EQ.14.OR.ISUB.EQ.29) THEN
+       IF(PTHAT.GE.9.AND.PTHAT.LT.44) WTXS = 36
+       IF(PTHAT.GE.44.AND.PTHAT.LT.220) WTXS = 7500
+       IF (GAMMAJRW.GT.(1.0D-14)) WTXS = WTXS * GAMMAJRW
+      ENDIF
+
+      IF (ISUB.EQ.15.OR.ISUB.EQ.30) THEN
+       IF(PTHAT.GE.9.AND.PTHAT.LT.44) WTXS = 10.6
+       IF(PTHAT.GE.44.AND.PTHAT.LT.220) WTXS = 9
+       IF (ZJRW.GT.(1.0D-14)) WTXS = WTXS * ZJRW
+      ENDIF
+
 C... Fit function form
 C      WTXS = (150.564d0*(PT2/25.0d0)**(6.28335d0)*
 C     & exp(-6.28335d0*(PT2/25.0d0))
 C     & + 0.035313d0*PT2-0.00628d0*log(PT2+1)*log(PT2+1))/
 C     & (1.04992d0*exp(-0.245*PT2)) 
 
-
+      ENDIF
+ 
+ 
 C...Weights for EWK sample
+    
+      IF (CSAMODE.EQ.2) THEN
  
       IF (ISUB.EQ.2) WTXS=0.2
       IF (ISUB.EQ.102) WTXS=400.    
       IF (ISUB.EQ.123) WTXS=400.    
       IF (ISUB.EQ.124) WTXS=400.    
       
+      ENDIF
+      
+C... Weights for HLT sample
+
+      IF (CSAMODE.EQ.3) THEN
+      
+c      IF (ISUB.EQ.2) WTXS=0.2 
+      IF (ISUB.EQ.11.OR.ISUB.EQ.68.OR.ISUB.EQ.28.OR.ISUB.EQ.53) THEN 
+        IF(PTHAT<400) WTXS=0.1D-9 
+	IF(PTHAT>400) WTXS=1.
+      ENDIF
+c      IF (ISUB.EQ.81.OR.ISUB.EQ.82) WTXS=100. 
+       
+      ENDIF      
+
+C...Weights for Soft Muon sample
+
+      IF (CSAMODE.EQ.4) THEN
+      
+       IF (ISUB.EQ.86) WTXS = 1.3D7
+       IF (MUONRW.GT.(1.0D-14)) WTXS = WTXS * MUONRW
+       
+      ENDIF
+
 
       RETURN
       END
