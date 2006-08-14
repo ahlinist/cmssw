@@ -116,7 +116,7 @@ C...Weights for QCD dijet sample
       ENDIF
 
       IF (ISUB.EQ.141) THEN
-         WTXS = ZPRW 
+        IF (ZPRW.GT.(1.0D-14)) WTXS = ZPRW 
       ENDIF
 
 C... Fit function form
