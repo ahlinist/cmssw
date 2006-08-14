@@ -1,3 +1,6 @@
+<use name=TrackingTools/TrackFitters>
+<use name=Alignment/CommonAlignment>
+<use name=Alignment/CommonAlignmentAlgorithm>
 <use name=FWCore/Framework>
 <use name=FWCore/ParameterSet>
 <use name=DataFormats/TrackReco>
@@ -5,6 +8,9 @@
 <use name=clhep>
 <export>
    <lib name=AlignmentCSA06AlignmentAlgorithm>
+   <use name=TrackingTools/TrackFitters>
+   <use name=Alignment/CommonAlignment>
+   <use name=Alignment/CommonAlignmentAlgorithm>
    <use name=FWCore/ParameterSet>
    <use name=DataFormats/TrackReco>
    <use name=root>
