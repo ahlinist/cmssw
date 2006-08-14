@@ -152,7 +152,7 @@ C...Weights for Soft Muon sample
 
       IF (CSAMODE.EQ.4) THEN
       
-       IF (ISUB.EQ.86) WTXS = 1.3D7
+       IF (ISUB.EQ.86) WTXS = 1.25D7
        IF (MUONRW.GT.(1.0D-14)) WTXS = WTXS * MUONRW
        
       ENDIF
