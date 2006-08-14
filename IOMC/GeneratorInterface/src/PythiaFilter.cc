@@ -63,7 +63,7 @@ bool PythiaFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	     && (*p)->momentum().phi() > minphicut
 	     && (*p)->momentum().phi() < maxphicut ) {
 
-             cout << "past initial cuts" << endl;
+             
 	     
 	     if (status == 0 && motherID == 0){
            	     accepted = true;
