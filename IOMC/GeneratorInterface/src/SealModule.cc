@@ -16,4 +16,4 @@
   DEFINE_ANOTHER_FWK_MODULE(PythiaFilter)
   DEFINE_ANOTHER_FWK_MODULE(PythiaFilterGammaJet)
   DEFINE_ANOTHER_FWK_MODULE(PythiaFilterZJet)
-[
+
