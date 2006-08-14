@@ -42,7 +42,9 @@ namespace edm
 
     /// Interface to the PYGIVE pythia routine, with add'l protections
     bool call_pygive(const std::string& iParm );
-
+    bool call_txgive(const std::string& iParm );
+    bool call_txgive_init();
+  
   private:
     
     virtual bool produce(Event & e);
