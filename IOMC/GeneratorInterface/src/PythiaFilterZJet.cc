@@ -10,7 +10,7 @@ label_(iConfig.getUntrackedParameter("moduleLabel",std::string("source"))),
 etaMuMax(iConfig.getUntrackedParameter<double>("MaxMuonEta", 2.5)),
 ptZMin(iConfig.getUntrackedParameter<double>("MinZPt")),
 ptZMax(iConfig.getUntrackedParameter<double>("MaxZPt")),
-maxnumberofeventsinrun(iConfig.getUntrackedParameter<int>("MaxEvents",10)){ 
+maxnumberofeventsinrun(iConfig.getUntrackedParameter<int>("MaxEvents",10000)){ 
   
   theNumberOfSelected = 0;
 }
@@ -31,6 +31,11 @@ bool PythiaFilterZJet::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.getByLabel(label_, evt);
 
   const HepMC::GenEvent * myGenEvent = evt->GetEvent();
+
+
+ if(myGenEvent->signal_process_id() == 15 || myGenEvent->signal_process_id() == 30) {
+
+
   std::vector<const HepMC::GenParticle *> mu;
 
   for ( HepMC::GenEvent::particle_const_iterator p = myGenEvent->particles_begin();   p != myGenEvent->particles_end(); ++p ) {
@@ -46,6 +51,12 @@ bool PythiaFilterZJet::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	std::abs(mu[0]->momentum().eta()) < etaMuMax &&
 	std::abs(mu[1]->momentum().eta()) < etaMuMax) 
       accepted=true;
+  }
+
+  } else {
+  // end of if(gammajetevent)
+  return true;
+  // accept all non-gammajet events
   }
 
   if (accepted) {

@@ -44,7 +44,7 @@ dphiMin(iConfig.getUntrackedParameter<double>("MinDeltaPhi", -1)/180*M_PI),
 detaMax(iConfig.getUntrackedParameter<double>("MaxDeltaEta", 10.)),
 etaPhotonCut2(iConfig.getUntrackedParameter<double>("MinPhotonEtaForwardJet", 1.3)),
 cone(0.5),ebEtaMax(1.479),
-maxnumberofeventsinrun(iConfig.getUntrackedParameter<int>("MaxEvents",10)){ 
+maxnumberofeventsinrun(iConfig.getUntrackedParameter<int>("MaxEvents",10000)){ 
   
   deltaEB=0.01745/2  *5; // delta_eta, delta_phi
   deltaEE=2.93/317/2 *5; // delta_x/z, delta_y/z
@@ -68,6 +68,9 @@ bool PythiaFilterGammaJet::filter(edm::Event& iEvent, const edm::EventSetup& iSe
 
   std::list<const HepMC::GenParticle *> seeds;
   const HepMC::GenEvent * myGenEvent = evt->GetEvent();
+
+  if(myGenEvent->signal_process_id() == 14 || myGenEvent->signal_process_id() == 29) {
+
 
   for ( HepMC::GenEvent::particle_const_iterator p = myGenEvent->particles_begin();   p != myGenEvent->particles_end(); ++p ) {
    
@@ -162,6 +165,11 @@ bool PythiaFilterGammaJet::filter(edm::Event& iEvent, const edm::EventSetup& iSe
 
   } //loop over seeds
   
+  } else {
+  // end of if(gammajetevent)
+  return true;
+  // accept all non-gammajet events
+  }
   
   if (accepted) {
     theNumberOfSelected++;
