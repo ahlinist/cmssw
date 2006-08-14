@@ -22,8 +22,8 @@ C...Commonblocks.
       SAVE /PYDAT1/,/PYINT1/,/PYINT2/
 C... CSA specific 
       integer CSAMODE
-      double precision  MUONRW, GAMMAJRW, ZJRW
-      common /EXPAR/CSAMODE, MUONRW, GAMMAJRW, ZJRW
+      double precision  MUONRW, GAMMAJRW, ZJRW, ZPRW
+      common /EXPAR/CSAMODE, MUONRW, GAMMAJRW, ZJRW, ZPRW
  
 C...Set default weight for WTXS.
 
@@ -115,6 +115,10 @@ C...Weights for QCD dijet sample
        IF (ZJRW.GT.(1.0D-14)) WTXS = WTXS * ZJRW
       ENDIF
 
+      IF (ISUB.EQ.141) THEN
+         WTXS = ZPRW 
+      ENDIF
+
 C... Fit function form
 C      WTXS = (150.564d0*(PT2/25.0d0)**(6.28335d0)*
 C     & exp(-6.28335d0*(PT2/25.0d0))
@@ -142,8 +146,8 @@ C... Weights for HLT sample
 c      IF (ISUB.EQ.2) WTXS=0.2 
       IF (ISUB.EQ.11.OR.ISUB.EQ.68.OR.ISUB.EQ.28.OR.ISUB.EQ.53
      & .OR.ISUB.EQ.12.OR.ISUB.EQ.13) THEN 
-        IF(PTHAT.LT.350) WTXS=2.0D-8 
-	IF(PTHAT.GE.350) WTXS=1.0	
+        IF(PTHAT.LT.350) WTXS=1.0D-8 
+	IF(PTHAT.GE.350) WTXS=10.0	
       ENDIF
 c      IF (ISUB.EQ.81.OR.ISUB.EQ.82) WTXS=100. 
        
