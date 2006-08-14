@@ -92,7 +92,7 @@ bool PythiaFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  
     }
 
-    }
+    } else { accepted = true; }
 
 
     delete myGenEvent; 
