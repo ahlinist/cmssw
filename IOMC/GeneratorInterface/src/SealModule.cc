@@ -6,7 +6,7 @@
 #include "IOMC/GeneratorInterface/interface/PythiaFilter.h"
 #include "IOMC/GeneratorInterface/interface/PythiaFilterGammaJet.h"
 #include "IOMC/GeneratorInterface/interface/PythiaFilterZJet.h"
-#include "IOMC/GeneratorInterface/interface/HLTFilter.h"
+#include "IOMC/GeneratorInterface/interface/PythiaHLTSoupFilter.h"
  
 
   using edm::PythiaSource;
@@ -17,5 +17,5 @@
   DEFINE_ANOTHER_FWK_MODULE(PythiaFilter)
   DEFINE_ANOTHER_FWK_MODULE(PythiaFilterGammaJet)
   DEFINE_ANOTHER_FWK_MODULE(PythiaFilterZJet)
-  DEFINE_ANOTHER_FWK_MODULE(HLTFilter)
+  DEFINE_ANOTHER_FWK_MODULE(PythiaHLTSoupFilter)
 
