@@ -6,7 +6,7 @@
      <Notes on implementation>
 */
 //
-// $Id: DumpADC.cc,v 1.3 2006/08/03 10:06:29 govoni Exp $
+// $Id: DumpADC.cc,v 1.4 2006/08/03 12:48:41 govoni Exp $
 //
 //
 
@@ -192,6 +192,7 @@ DumpADC::analyze( const edm::Event& iEvent, const edm::EventSetup& iSetup )
    int run = -1 ;
    int event = -1 ;
    int tableIsMoving = -1 ;
+   int S6ADC = 0 ;
    std::string eventType = "0" ;
    if (evtHeader)   
      { 
@@ -200,6 +201,7 @@ DumpADC::analyze( const edm::Event& iEvent, const edm::EventSetup& iSetup )
        event = evtHeader->eventNumber () ;
        xtalNum = evtHeader->crystalInBeam () ;
        tableIsMoving = evtHeader->tableIsMoving () ;
+       S6ADC = evtHeader->S6ADC () ;
      }
    else
      { 
@@ -281,7 +283,7 @@ DumpADC::analyze( const edm::Event& iEvent, const edm::EventSetup& iSetup )
      } // loop over the 7x7 matrix
    
    m_TB06Tree.store (tableIsMoving,
-                     run,event,
+                     run,event,S6ADC,
                      xhodo,yhodo,
                      xslope, yslope,
                      xqual, yqual,
