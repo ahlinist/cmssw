@@ -1,8 +1,8 @@
 /*
  * \file EcalLaserShapeTools.cc
  *
- * $Date: 2006/07/23 17:44:41 $
- * $Revision: 1.7 $
+ * $Date: 2006/08/06 22:52:50 $
+ * $Revision: 1.8 $
  * \author P. Jarry
  * \author G. Franzoni
  *
@@ -97,13 +97,15 @@ void EcalLaserShapeTools::analyze(const edm::Event& iEvent, const edm::EventSetu
     {
       LogInfo("EcalLaserShapeTools") << "More than 1 DCCHeader found - not expected." << endl;
     }
-
+  
+  
 
   // laser wavelenght from DCC header
   for (headerItr= DCCHeaders->begin();headerItr != DCCHeaders->end(); ++headerItr ) {
     EcalDCCHeaderBlock::EcalDCCEventSettings settings = headerItr->getEventSettings();
     laser_color_ = (int) settings.wavelength;
     event_         = headerItr->getLV1();
+    run_ = headerItr-> getRunNumber();
   }
   
   if(laser_color_  <0 || laser_color_  > 3){
@@ -125,7 +127,12 @@ void EcalLaserShapeTools::analyze(const edm::Event& iEvent, const edm::EventSetu
     LogDebug("EcalLaserShapeTools") << "Got product:  EBDigiCollection from: " 
 				    << digiProducer_ << " - size: " 
 				    << digis->size()    << endl;
+    if (digis->size()){
+      EBDigiCollection::const_iterator digiItr = digis->begin();
+      ism_ =     EBDetId( (*digiItr).id()).ism();    //    EBDetId                theId(digiItr->id()) ;
+    }
     
+
   } catch ( std::exception& ex ) {
     LogError("EcalLaserShapeTools") << "Cannot get product:  EBDigiCollection from: " 
 				    << digiProducer_ << " - returning." << endl;
@@ -564,6 +571,50 @@ void  EcalLaserShapeTools::beginRunDb( void )
   cout << "Run Type:           " << runiov_.getRunTag().getRunTypeDef().getRunType() << endl;
   cout << "====================" << endl;
   cout << endl;
+
+
+
+  // getting LMF run IOV ready
+  LMFiov_.setRunIOV(runiov_);
+  LMFRunTag lmftag;
+  lmftag.setGeneralTag("test-tb");
+  LMFiov_.setLMFRunTag( lmftag);
+
+
+  EcalLogicID ecid;
+  LMFLaserBlueShapeDat   c1;
+  map<EcalLogicID, LMFLaserBlueShapeDat > dataset1;
+
+
+  for ( int ie = 1; ie <= 85; ie++ ) {
+    for ( int ip = 1; ip <= 20; ip++ ) {
+      c1.setAlpha(1);
+      c1.setAlphaRMS(1);
+      c1.setBeta(1);
+      c1.setBetaRMS(1);
+
+      int ic = (ip-1) + 20*(ie-1) + 1;
+      if ( econn ) {
+	try {
+	  ecid = econn->getEcalLogicID("EB_crystal_number", ism_, ic);
+	  dataset1[ecid] = c1;
+	} catch (runtime_error &e) {
+	  cerr << e.what() << endl;
+	}
+      }
+    }// end loop on phi
+  }// end loop on eta
+  
+  if ( econn ) {
+    try {
+      cout << "Inserting LMFLaserBlueShapeDat ... " << flush;
+      if ( dataset1.size() != 0 ) econn->insertDataSet(&dataset1, &LMFiov_);  
+      cout << "done." << endl;
+    } catch (runtime_error &e) {
+      cerr << e.what() << endl;
+    }
+  }
+
 
   if ( econn ) {
     try {

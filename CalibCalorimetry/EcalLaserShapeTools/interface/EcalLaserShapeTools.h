@@ -13,7 +13,7 @@
 //
 // Original Author:  Patrick Jarry
 //         Created:  Sun May 21 18:42:33 CEST 2006
-// $Id: EcalLaserShapeTools.h,v 1.5 2006/07/16 19:21:56 franzoni Exp $
+// $Id: EcalLaserShapeTools.h,v 1.6 2006/07/23 17:44:40 franzoni Exp $
 //
 //
 
@@ -47,7 +47,13 @@
 #include "OnlineDB/EcalCondDB/interface/RunDat.h"
 #include "OnlineDB/EcalCondDB/interface/MonRunDat.h"
 #include "OnlineDB/EcalCondDB/interface/RunIOV.h"
-#include "OnlineDB/EcalCondDB/interface/MonRunIOV.h"
+#include "OnlineDB/EcalCondDB/interface/LMFRunIOV.h"
+#include "OnlineDB/EcalCondDB/interface/LMFRunTag.h"
+
+#include "OnlineDB/EcalCondDB/interface/LMFLaserBlueShapeDat.h"
+#include "OnlineDB/EcalCondDB/interface/LMFLaserIRedShapeDat.h"
+#include "OnlineDB/EcalCondDB/interface/LMFLaserBlueCoeffDat.h"
+#include "OnlineDB/EcalCondDB/interface/LMFLaserIRedCoeffDat.h"
 
 #include "TROOT.h"
 #include "TFile.h"
@@ -107,7 +113,9 @@ class EcalLaserShapeTools : public edm::EDAnalyzer {
   string  location_;
   time_t current_time_;
   time_t last_time_;
+
   RunIOV runiov_;
+  LMFRunIOV LMFiov_;
   int run_;
 
   // ----------member data ---------------------------
@@ -128,6 +136,7 @@ class EcalLaserShapeTools : public edm::EDAnalyzer {
   
   int event_;
   int iphi_, jeta_;
+  int ism_;
   int laser_color_;
   int  pn_amp_;
   
