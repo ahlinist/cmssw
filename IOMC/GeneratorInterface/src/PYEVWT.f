@@ -146,8 +146,11 @@ C... Weights for HLT sample
 c      IF (ISUB.EQ.2) WTXS=0.2 
       IF (ISUB.EQ.11.OR.ISUB.EQ.68.OR.ISUB.EQ.28.OR.ISUB.EQ.53
      & .OR.ISUB.EQ.12.OR.ISUB.EQ.13) THEN 
-        IF(PTHAT.LT.350) WTXS=1.0D-8 
-	IF(PTHAT.GE.350) WTXS=10.0	
+        IF(PTHAT.LT.350) THEN 
+	 WTXS=1.0D-8 
+	 IF (MUONRW.GT.(1.0D-14)) WTXS = WTXS * MUONRW
+	ENDIF
+	IF(PTHAT.GE.350) WTXS=1.0	
       ENDIF
 c      IF (ISUB.EQ.81.OR.ISUB.EQ.82) WTXS=100. 
        
@@ -157,8 +160,7 @@ C...Weights for Soft Muon sample
 
       IF (CSAMODE.EQ.4) THEN
       
-       IF (ISUB.EQ.86) WTXS = 1.25D7
-       IF (MUONRW.GT.(1.0D-14)) WTXS = WTXS * MUONRW
+       IF (ISUB.EQ.86) WTXS = 1.25D7       
        
       ENDIF
 
