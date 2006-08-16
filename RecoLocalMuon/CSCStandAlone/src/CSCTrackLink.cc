@@ -111,7 +111,7 @@ namespace test{
 	const FEDRawData& data = rawdata->FEDData(id);
 	if(size_t size=data.size()) {
 	  cout << "FED# " << id << " " << size << endl;
-          if(id==750){
+          if(id>=750&&id<=757){
             unsigned short * buf = (unsigned short *)data.data();
             CSCDCCEventData dccEvent(buf);
             std::vector<CSCDDUEventData> & ddudata = dccEvent.dduData();
