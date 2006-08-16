@@ -103,9 +103,10 @@ namespace test{
       for (int id=FEDNumbering::getCSCFEDIds().first;
 	   id<=FEDNumbering::getCSCFEDIds().second; ++id){ //for each of our DCCs
 	const FEDRawData& data = rawdata->FEDData(id);
+        cout << " data.size() " << data.size() << endl; 
 	if(size_t size=data.size()) {
 	  cout << "FED# " << id << " " << size << endl;
-          if(id==750){
+          if(id>=750&&id<=757){
             unsigned short * buf = (unsigned short *)data.data();
             CSCDCCEventData dccEvent(buf);
             std::vector<CSCDDUEventData> & ddudata = dccEvent.dduData();

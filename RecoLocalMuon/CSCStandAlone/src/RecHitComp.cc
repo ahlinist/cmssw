@@ -162,7 +162,7 @@ void produce( edm::Event& e, const edm::EventSetup& setup )
   for (int id=FEDNumbering::getCSCFEDIds().first;id<=FEDNumbering::getCSCFEDIds().second; ++id){ //for each of our DCCs
     const FEDRawData& data = rawdata->FEDData(id);
     if(size_t size=data.size()) {
-      if(id==750){
+      if(id>=750&&id<=757){
 	unsigned short * buf = (unsigned short *)data.data();
 	CSCDCCEventData dccEvent(buf);
         std::vector<CSCDDUEventData> & ddudata = dccEvent.dduData();
