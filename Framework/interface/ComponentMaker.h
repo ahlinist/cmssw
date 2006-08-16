@@ -25,6 +25,7 @@
 
 // user include files
 #include "FWCore/Framework/interface/ComponentDescription.h"
+#include "FWCore/Framework/interface/DataProxyProvider.h"
 
 // forward declarations
 
@@ -37,6 +38,7 @@ namespace edm {
 template <class T>
       class ComponentMakerBase {
 public:
+         virtual ~ComponentMakerBase() {}
          typedef typename T::base_type base_type;
          virtual boost::shared_ptr<base_type> addTo(EventSetupProvider& iProvider,
                      ParameterSet const& iConfiguration,
