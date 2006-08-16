@@ -30,7 +30,12 @@ namespace edm {
       
       namespace produce { struct Null;}
       
-      namespace produce { 
+     template<typename FromT, typename ToT> void copyFromTo(FromT& iFrom,
+                                                            ToT & iTo) {
+       iTo = iFrom;
+     }
+
+     namespace produce { 
          struct Null {};
          template <typename T> struct EndList {
             typedef T tail_type;

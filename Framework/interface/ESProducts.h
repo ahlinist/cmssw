@@ -190,16 +190,12 @@ namespace edm {
             return ESProducts<T,S,U>(produced << i1 << i2 << i3);
          }
    }
-   
-   namespace eventsetup {
-      namespace produce {
-         template<typename T1, typename T2, typename T3, typename ToT> 
-         void copyFromTo(ESProducts<T1,T2,T3>& iFrom,
-                         ToT& iTo) {
-            iFrom.assignTo(iTo);
-         }
-      }
-   }
+
+   template<typename T1, typename T2, typename T3, typename ToT> 
+     void copyFromTo(ESProducts<T1,T2,T3>& iFrom,
+                     ToT& iTo) {
+       iFrom.assignTo(iTo);
+     }
 }
 
 
