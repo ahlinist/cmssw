@@ -25,6 +25,7 @@
 // user include files
 #include "FWCore/Framework/interface/DataProxy.h"
 #include "FWCore/Framework/interface/MakeDataException.h"
+#include "FWCore/Framework/interface/EventSetupRecord.h"
 
 // forward declarations
 
