@@ -20,7 +20,7 @@
 //
 
 // system include files
-#include "boost/signal.hpp"
+#include "sigc++/signal.h"
 #include <map>
 #include <string>
 
@@ -34,7 +34,7 @@ namespace edm {
 
    public:
       SignallingProductRegistry() {}
-      boost::signal<void(BranchDescription const&)> productAddedSignal_;
+      sigc::signal<void, BranchDescription const&> productAddedSignal_;
       
    private:
       SignallingProductRegistry(const SignallingProductRegistry&); // stop default
