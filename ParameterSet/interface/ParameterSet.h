@@ -59,7 +59,7 @@ namespace edm {
     addParameter(std::string const& name, T value)
     {
       invalidate();
-      insert(true, name, Entry(value, true));
+      insert(true, name, Entry(name, value, true));
     }
 
     template <class T>
@@ -87,7 +87,7 @@ namespace edm {
       // This is icky, but I don't know of another way in the current
       // code to get at the character code that denotes type T.
       T value = T();
-      edm::Entry type_translator(value, trackiness);
+      edm::Entry type_translator("", value, trackiness);
       char type_code = type_translator.typeCode();
       
       (void)getNamesByCode_(type_code, trackiness, result);
@@ -99,7 +99,7 @@ namespace edm {
     addUntrackedParameter(std::string const& name, T value)
     {
       // No need to invalidate: this is modifying an untracked parameter!
-      insert(true, name, Entry(value, false));
+      insert(true, name, Entry(name, value, false));
     }
 
     bool empty() const

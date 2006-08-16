@@ -249,7 +249,7 @@ namespace edm {
         return false;
 
       // form value and insert name/value pair
-      Entry  value(std::string(q+1, b->end()));
+      Entry  value(name, std::string(q+1, b->end()));
       if(! tbl_.insert(std::make_pair(name, value)).second)
         return false;
     }
