@@ -27,6 +27,7 @@
 #include "FWCore/Framework/interface/EventSetupRecord.h"
 #include "FWCore/Framework/interface/EventSetupRecordKey.h"
 #include "FWCore/Framework/interface/DataKey.h"
+#include "FWCore/Framework/interface/DataProxy.h"
 
 // forward declarations
 namespace edm {
