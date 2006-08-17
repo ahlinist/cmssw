@@ -6,7 +6,7 @@
      <Notes on implementation>
 */
 //
-// $Id: DumpADC.cc,v 1.4 2006/08/03 12:48:41 govoni Exp $
+// $Id: DumpADC.cc,v 1.5 2006/08/15 10:22:51 govoni Exp $
 //
 //
 
@@ -247,7 +247,6 @@ DumpADC::analyze( const edm::Event& iEvent, const edm::EventSetup& iSetup )
    // get the 7x7 matrix
    // ------------------
 
-   std::vector<EBDetId> Xtals7x7 ;
    double amplitude[49] ; 
    //FIXME not sure about the "1"
    EBDetId EBMExtal (1,xtalNum,EBDetId::SMCRYSTALMODE) ;
@@ -266,8 +265,7 @@ DumpADC::analyze( const edm::Event& iEvent, const edm::EventSetup& iSetup )
 
              if (tempo.ism () == 1)
                {
-                 Xtals7x7.push_back (tempo) ;
-                 amplitude [icry] = EBuncalibRecHits->find (Xtals7x7[icry])->
+                 amplitude [icry] = EBuncalibRecHits->find (tempo)->
                                                         amplitude () ;
 //                 std::cout << "[CR][PG] Building element (" << tempo
 //                           << " around " << EBMExtal 
