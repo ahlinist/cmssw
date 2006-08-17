@@ -13,6 +13,7 @@
 
 class FUAdapter;
 
+
 class FURawEvent
 {
  private:
@@ -30,15 +31,16 @@ class FURawEvent
   static const unsigned long INVALID_BU_INSTANCE    = 10000;
 
   /** ERROR CODES */
-  static const int UFO_ERROR            = -1;
-  static const int FRL_TRIGGER_MISMATCH = -2;
-  static const int FRL_LASTSEG_FLNOTSET = -3;
-  static const int FRL_LASTSEG_FLISWRNG = -4;
-  static const int FED_DROPPED_DUPLDATA = -5;
-  static const int FED_TRIGGER_MISMATCH = -6;
-  static const int FED_TRAILER_MMARKER  = -7;
-  static const int FED_HEADER_MMARKER   = -8;
-  static const int I2O_BLOCK_MISMATCH   = -9;
+  static const int UFO_ERROR            =  -1;
+  static const int FRL_TRIGGER_MISMATCH =  -2;
+  static const int FRL_LASTSEG_FLNOTSET =  -3;
+  static const int FRL_LASTSEG_FLISWRNG =  -4;
+  static const int FED_DROPPED_DUPLDATA =  -5;
+  static const int FED_TRIGGER_MISMATCH =  -6;
+  static const int FED_TRAILER_MMARKER  =  -7;
+  static const int FED_HEADER_MMARKER   =  -8;
+  static const int I2O_BLOCK_MISMATCH   =  -9;
+  static const int FED_CRCCHK_FAILED    = -10;
 
   /** destructor (only invoked when FU is halted) */
   virtual ~FURawEvent();
@@ -169,7 +171,7 @@ class FURawEvent
   static FUAdapter *adapter_;
 
   static RawData *nulldata;
-  static int errors[10];
+  static int errors[11];
   unsigned int l1Id_;
   friend class FURawEventFactory;
 
