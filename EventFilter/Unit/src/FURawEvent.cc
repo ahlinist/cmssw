@@ -2,16 +2,37 @@
 #include "EventFilter/Unit/interface/FUAdapter.h"
 #include "EventFilter/Unit/interface/FSetBroker.h"
 
+#include "EventFilter/Utilities/interface/DebugUtils.h"
+#include "EventFilter/Utilities/interface/Crc.h"
+
+#include <netinet/in.h>
+
 #include <iostream>
 
+
 #define REAL_SOID_MASK 0x0003FF00
+#define FED_RBIT_MASK  0x2
+
 
 using namespace std;
 
-int FURawEvent::errors[10] = {0,0,0,0,0,0,0,0,0,0};
+
+////////////////////////////////////////////////////////////////////////////////
+// initialize static members
+////////////////////////////////////////////////////////////////////////////////
+
+int FURawEvent::errors[11] = {0,0,0,0,0,0,0,0,0,0,0};
 
 FURawEvent::RawData *FURawEvent::nulldata = new RawData();
 
+FUAdapter *FURawEvent::adapter_ = 0;
+
+
+////////////////////////////////////////////////////////////////////////////////
+// construction/destruction
+////////////////////////////////////////////////////////////////////////////////
+
+//______________________________________________________________________________
 FURawEvent::FURawEvent(unsigned int ihandle) :  
   fragmentCount_(0), blockCount_(0), 
   outstandingReqs_(0), myData_(nFEDs),
@@ -24,11 +45,11 @@ FURawEvent::FURawEvent(unsigned int ihandle) :
   //initialize locks and conditions
   pthread_mutex_init(&lock_,0);
   pthread_cond_init(&ready_,0);
-
-
+  
+  
   //for the moment the initial fragment consists trivially of all the fragments
   //  outstandingReqs_ = FSetBroker::instance()->getNSF(pendingFset);
-
+  
   unsigned int totalSF = FSetBroker::instance()->getNSF(0);
   builtFlags = new bool[totalSF];
   for(unsigned int i = 0; i < totalSF; i++)
@@ -41,6 +62,8 @@ FURawEvent::FURawEvent(unsigned int ihandle) :
     }
 }
 
+
+//______________________________________________________________________________
 FURawEvent::~FURawEvent()
 {
   for(vector<RawData *>::iterator it = myData_.begin(); it != myData_.end(); it++)
@@ -51,6 +74,12 @@ FURawEvent::~FURawEvent()
   delete builtFlags;
 }
 
+
+////////////////////////////////////////////////////////////////////////////////
+// implementation of member functions
+////////////////////////////////////////////////////////////////////////////////
+
+//______________________________________________________________________________
 int FURawEvent::processMsg(I2O_MESSAGE_FRAME *stdMsg)
 {
   
@@ -150,39 +179,39 @@ int FURawEvent::processMsg(I2O_MESSAGE_FRAME *stdMsg)
 }
 
 
-#include <netinet/in.h>
-#include "EventFilter/Utilities/interface/DebugUtils.h"
 
 
+//______________________________________________________________________________
 int FURawEvent::checkin_data(vector<unsigned char*> &block_adrs)
 {
-
+  
   int          retVal =  0;
   int           fedid = -1;
   int  current_trigno = -1;
   int          lvl1id = -1;
-
+  
   unsigned char*sf_data = 0;
   unsigned long sf_size = 0;
-
+  
   //check all frl headers
   for(unsigned int iblk = 0; iblk < block_adrs.size(); iblk++)
     {
       frlh_t *ph = (frlh_t *)block_adrs[iblk];
-
-      int hd_trigno  = ph->trigno;
-      int hd_segno   = ph->segno;
+      
+      int hd_trigno      = ph->trigno;
+      int hd_segno       = ph->segno;
       int hd_segsize     = ph->segsize;
       int segsize_proper = hd_segsize & FRL_SEGSIZE_MASK;
       if(segsize_proper >= 1048576)
 	{
-	  LOG4CPLUS_ERROR(adapter_->getApplicationLogger(),"Error in checkin_data for segment " 
+	  LOG4CPLUS_ERROR(adapter_->getApplicationLogger(),
+			  "Error in checkin_data for segment " 
 			  << hd_segno << " size " 
 			  << segsize_proper)
 	    retVal = -1;
 	  break;
 	}
-
+      
       // check trigno
       if (current_trigno == -1) {
 	current_trigno = hd_trigno ;
@@ -252,10 +281,10 @@ int FURawEvent::checkin_data(vector<unsigned char*> &block_adrs)
 	  remnant -= segsize_proper;
 	  memcpy(vcursor[iblk], block_adrs[iblk]+frlhs,segsize_proper);
 	}
-
+      
       unsigned char *cursor = sf_data + sf_size;
       unsigned long cursize = sf_size; 
-
+      
       while(cursize>0)
 	{
 	  fedt_t *pft = (fedt_t*)(cursor-fedts);
@@ -298,7 +327,7 @@ int FURawEvent::checkin_data(vector<unsigned char*> &block_adrs)
 	      retVal = -100;
 	      break;
 	    }
-	  short crc = (pft->conscheck & FED_CRCS_MASK >> 16);
+	  //short crc = (pft->conscheck & FED_CRCS_MASK >> 16);
 	  cursor  -= fedlen;
 	  cursize -= fedlen;
 	  fedh_t *pfh = (fedh_t *)cursor;
@@ -313,16 +342,16 @@ int FURawEvent::checkin_data(vector<unsigned char*> &block_adrs)
 		  while((bd + ds) > (sf_data + sf_size))
 		    ds -= fedts;
 		  std::string dmp = evf::dumpFrame(bd,ds);
-		    LOG4CPLUS_ERROR(adapter_->getApplicationLogger(),
-				    "Trigger # " 
-				    << current_trigno 
-				    << ": FED header marker not found: 0x" << hex
-				    << int(pfh->eventid & FED_HCTRLID_MASK) << dec 
-				    << ", expecting 0x" << hex << (int)FED_HCTRLID 
-				    << dec 
-				    << "\n local dump \n"
-				    << dmp
-				    ); 
+		  LOG4CPLUS_ERROR(adapter_->getApplicationLogger(),
+				  "Trigger # " 
+				  << current_trigno 
+				  << ": FED header marker not found: 0x" << hex
+				  << int(pfh->eventid & FED_HCTRLID_MASK) << dec 
+				  << ", expecting 0x" << hex << (int)FED_HCTRLID 
+				  << dec 
+				  << "\n local dump \n"
+				  << dmp
+				  ); 
 		}
 	      retVal = FED_HEADER_MMARKER;
 	      break;
@@ -345,6 +374,8 @@ int FURawEvent::checkin_data(vector<unsigned char*> &block_adrs)
 	      retVal = FED_TRIGGER_MISMATCH;
 	      break;
 	    }
+	  
+	  
 	  if(myData_[fedid]->size_ != 0)
 	    {
 	      // FED is not a duplicate ? 
@@ -363,7 +394,41 @@ int FURawEvent::checkin_data(vector<unsigned char*> &block_adrs)
 	      myData_[fedid]->data_ = new unsigned char[fedlen];
 	      memcpy(myData_[fedid]->data_,cursor,fedlen);
 	      myData_[fedid]->size_ = fedlen;
-	  
+	      
+	      
+	      //
+	      // crc check
+	      //
+	      
+	      // save crc and reset to 0 (as well as R bit!)
+	      unsigned char* pfedd=myData_[fedid]->data_;
+	      fedt_t*        pfedt=(fedt_t*)(pfedd+fedlen-fedts);
+	      short int      crc  =(pfedt->conscheck & FED_CRCS_MASK >> 16);
+	      unsigned int   save =pfedt->conscheck;
+	      pfedt->conscheck &= (~FED_CRCS_MASK);
+	      pfedt->conscheck &= (~FED_RBIT_MASK);
+
+
+	      // compute crc check
+	      unsigned short chk=0xffff;
+	      unsigned int   n64=fedlen/8;
+	      for (unsigned i=0;i<n64;i++) 
+		chk=evf::compute_crc_64bit(chk,&pfedd[(i+1)*8-1]);
+	      
+	      // compare chk to stored crc
+	      if (chk!=crc) {
+		cout<<"error, stored crc '"<<crc
+		    <<"'is not equal to recomputed check '"<<chk<<"'"<<endl;
+		if(errors[(-FED_CRCCHK_FAILED)]++ < 10)
+		  LOG4CPLUS_ERROR(adapter_->getApplicationLogger(),
+				  "stored crc "<<crc
+				  <<" doesn't match recomputed check "<<chk);
+		
+		retVal = FED_CRCCHK_FAILED;
+	      }
+	      
+	      // reset stored crc value
+	      pfedt->conscheck=save;
 	    }
 	}
       if(cursize>0)
@@ -374,13 +439,16 @@ int FURawEvent::checkin_data(vector<unsigned char*> &block_adrs)
   if(l1Id_==0)
     l1Id_ = current_trigno;
   else if(l1Id_ != current_trigno)
-    LOG4CPLUS_ERROR(adapter_->getApplicationLogger()," wrong trigger number. Expected " 
-		    << l1Id_ << " received " << current_trigno);
+    LOG4CPLUS_ERROR(adapter_->getApplicationLogger(),
+		    " wrong trigger number. Expected "<<l1Id_
+		    <<" received "<<current_trigno);
 
   delete sf_data;
   return retVal;
 }
 
+
+//______________________________________________________________________________
 FURawEvent::RawData *FURawEvent::operator[](int fedid)
 {
   RawData *retVal = myData_[fedid];
@@ -402,6 +470,8 @@ FURawEvent::RawData *FURawEvent::operator[](int fedid)
 
 #include <sys/time.h>
 
+
+//______________________________________________________________________________
 FURawEvent::RawData *FURawEvent::timedRequest(int fedid, int delay)
 {
   struct timeval now;
@@ -426,7 +496,7 @@ FURawEvent::RawData *FURawEvent::timedRequest(int fedid, int delay)
 }
 
 
-
+//______________________________________________________________________________
 void FURawEvent::reset(bool clean)
 {
   l1Id_ = 0;
@@ -459,6 +529,8 @@ void FURawEvent::reset(bool clean)
   //  cout << "Finished resetting " << endl;
 }
 
+
+//______________________________________________________________________________
 void FURawEvent::setPending(unsigned int ifset) 
 {
   pendingFset = ifset;
@@ -467,38 +539,48 @@ void FURawEvent::setPending(unsigned int ifset)
 
 //thread safeness
 
+
+//______________________________________________________________________________
 void FURawEvent::lock()
 {
   //  pthread_t ttid = pthread_self();
   pthread_mutex_lock(&lock_);
 }
+
+
+//______________________________________________________________________________
 void FURawEvent::free()
 {
   //  pthread_t ttid = pthread_self();
   pthread_mutex_unlock(&lock_);
 }
+
+
+//______________________________________________________________________________
 void FURawEvent::release()
 {
   pthread_cond_signal(&ready_);
   pthread_mutex_unlock(&lock_);
 }
 
+
+//______________________________________________________________________________
 void FURawEvent::dumpFrame(char* data, int len)
 {
   if(!adapter_->doDump()) return;
   cout << "Dump of frame at " << hex << (int) data << dec << " of expected size " << len << "bytes" << endl;
   //      PI2O_MESSAGE_FRAME  ptrFrame = (PI2O_MESSAGE_FRAME)data;
   //      printf ("\nMessageSize: %d Function %d\n",ptrFrame->MessageSize, ptrFrame->Function);
-      
+  
   char left[40];
   char right[40];
-      
+  
   //  LOG4CPLUS_ERROR(adapter_->getApplicationLogger(),toolbox::toString("Byte  0  1  2  3  4  5  6  7\n"));
   printf ("Byte  0  1  2  3  4  5  6  7\n");
       
   int c = 0;
   int pos = 0;
-      
+  
       
   for (int i = 0; i < (len/8); i++) {
     int rpos = 0;
@@ -512,11 +594,8 @@ void FURawEvent::dumpFrame(char* data, int len)
     //    LOG4CPLUS_ERROR(adapter_->getApplicationLogger(),toolbox::toString("%4d: %s  ||  %s \n", c-8, left, right));
     printf ("%4d: %s  ||  %s \n", c-8, left, right);
   }
-      
+  
   fflush(stdout);	
-      
-      
+  
+  
 }
-
-
-FUAdapter *FURawEvent::adapter_ = 0;
