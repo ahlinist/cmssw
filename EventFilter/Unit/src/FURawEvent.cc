@@ -413,7 +413,7 @@ int FURawEvent::checkin_data(vector<unsigned char*> &block_adrs)
 	      unsigned short chk=0xffff;
 	      unsigned int   n64=fedlen/8;
 	      for (unsigned i=0;i<n64;i++) 
-		chk=evf::compute_crc_64bit(chk,&pfedd[(i+1)*8-1]);
+		chk=evf::compute_crc_64bit(chk,&pfedd[i*8]);
 	      
 	      // compare chk to stored crc
 	      if (chk!=crc) {
