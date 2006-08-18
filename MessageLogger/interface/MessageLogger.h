@@ -183,8 +183,8 @@ private:
 
 };  // LogTrace_
 
-static LogDebug_ dummyLogDebugObject_( "dummy_id", __FILE__, __LINE__ );
-static LogTrace_ dummyLogTraceObject_( "dummy_id" );
+extern LogDebug_ dummyLogDebugObject_;
+extern LogTrace_ dummyLogTraceObject_;
 
 class Suppress_LogDebug_ 
 { 
