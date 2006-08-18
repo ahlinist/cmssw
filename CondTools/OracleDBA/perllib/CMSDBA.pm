@@ -39,7 +39,7 @@ sub parse_dbconfiguration {
 sub parse_o2oconfiguration {
     my $configfile = shift @_;
     my $config = XMLin( $configfile, 
-			forcearray => [qw(object)], 
+			forcearray => [qw(object detector)], 
 			keyattr => [qw(name)]
 			);
     return $config;
