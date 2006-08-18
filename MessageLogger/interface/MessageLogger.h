@@ -183,6 +183,9 @@ private:
 
 };  // LogTrace_
 
+static LogDebug_ dummyLogDebugObject_( "dummy_id", __FILE__, __LINE__ );
+static LogTrace_ dummyLogTraceObject_( "dummy_id" );
+
 class Suppress_LogDebug_ 
 { 
   // With any decent optimization, use of Suppress_LogDebug_ (...)
@@ -214,12 +217,14 @@ public:
 #define LogDebug(id) edm::Suppress_LogDebug_();
 #define LogTrace(id) edm::Suppress_LogDebug_();
 #else
-#define LogDebug(id)                                            \
-  if ( edm::MessageDrop::instance()->debugEnabled )       	 \
-          edm::LogDebug_(id, __FILE__, __LINE__)  		       
-#define LogTrace(id)                                            \
-  if ( edm::MessageDrop::instance()->debugEnabled )              \
-          edm::LogTrace_(id)                               
+#define LogDebug(id)                                 \
+  ( !edm::MessageDrop::instance()->debugEnabled )    \
+    ?  edm::dummyLogDebugObject_                     \
+    :  edm::LogDebug_(id, __FILE__, __LINE__)
+#define LogTrace(id)                                 \
+  ( !edm::MessageDrop::instance()->debugEnabled )    \
+    ?  edm::dummyLogTraceObject_                     \
+    :  edm::LogTrace_(id)
 #endif
 #undef EDM_MESSAGELOGGER_SUPPRESS_LOGDEBUG
 							// change log 1, 2

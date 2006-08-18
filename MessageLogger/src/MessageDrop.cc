@@ -33,3 +33,16 @@ MessageDrop::instance()
   }
   return drop;
 }
+
+  bool edm::isDebugEnabled() {
+    return ( edm::MessageDrop::instance()->debugEnabled );
+  }
+
+  bool edm::isInfoEnabled() {
+    return( edm::MessageDrop::instance()->infoEnabled );
+  }
+
+  bool edm::isWarningEnabled() {
+    return( edm::MessageDrop::instance()->warningEnabled );
+  }
+

@@ -54,6 +54,9 @@ public:
   bool warningEnabled;
 };
 
+  bool isDebugEnabled();
+  bool isInfoEnabled();
+  bool isWarningEnabled();
 
 
 } // end of namespace edm
