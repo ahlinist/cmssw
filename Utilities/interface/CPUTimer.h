@@ -21,6 +21,7 @@
 
 // system include files
 #include <unistd.h>
+#include <sys/time.h>
 
 // user include files
 
