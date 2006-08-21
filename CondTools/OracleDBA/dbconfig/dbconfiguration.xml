@@ -22,4 +22,8 @@
      <poolsetup mapping='mapping_DTObjects_1.0.xml' dbsetup='dbsetup_DTObjects_1.0.xml' library='CondFormatsDTObjects' />
   </detector>
 
+  <detector name='STRIP' offline_schema='CMS_COND_STRIP'>
+     <poolsetup mapping='mapping_SiStripObjects_1.0.xml' dbsetup='dbsetup_SiStripObjects_1.0.xml' library='CondFormatsSiStripObjects' />
+  </detector>
+
 </dbconfiguration>
