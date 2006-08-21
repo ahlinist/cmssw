@@ -18,12 +18,12 @@ FlatEventVertexGenerator::FlatEventVertexGenerator(const edm::ParameterSet & p,
   
   myRandom = new RandFlat(m_Engine) ;
   
-  myMinX = m_pFlatEventVertexGenerator.getParameter<double>("MinX")*mm;
-  myMinY = m_pFlatEventVertexGenerator.getParameter<double>("MinY")*mm;
-  myMinZ = m_pFlatEventVertexGenerator.getParameter<double>("MinZ")*mm;
-  myMaxX = m_pFlatEventVertexGenerator.getParameter<double>("MaxX")*mm;
-  myMaxY = m_pFlatEventVertexGenerator.getParameter<double>("MaxY")*mm;
-  myMaxZ = m_pFlatEventVertexGenerator.getParameter<double>("MaxZ")*mm;     
+  myMinX = m_pFlatEventVertexGenerator.getParameter<double>("MinX")*cm;
+  myMinY = m_pFlatEventVertexGenerator.getParameter<double>("MinY")*cm;
+  myMinZ = m_pFlatEventVertexGenerator.getParameter<double>("MinZ")*cm;
+  myMaxX = m_pFlatEventVertexGenerator.getParameter<double>("MaxX")*cm;
+  myMaxY = m_pFlatEventVertexGenerator.getParameter<double>("MaxY")*cm;
+  myMaxZ = m_pFlatEventVertexGenerator.getParameter<double>("MaxZ")*cm;     
 
   if (myMinX > myMaxX) {
     cout << "Warning from FlatEventVertexGenerator: "
