@@ -19,37 +19,38 @@ GaussianEventVertexGenerator::GaussianEventVertexGenerator(const edm::ParameterS
   
   myRandom = new RandGauss(m_Engine);
   
-  myMeanX = m_pGaussianEventVertexGenerator.getParameter<double>("MeanX")*mm;
-  myMeanY = m_pGaussianEventVertexGenerator.getParameter<double>("MeanY")*mm;
-  myMeanZ = m_pGaussianEventVertexGenerator.getParameter<double>("MeanZ")*mm;
-  mySigmaX = m_pGaussianEventVertexGenerator.getParameter<double>("SigmaX")*mm;
-  mySigmaY = m_pGaussianEventVertexGenerator.getParameter<double>("SigmaY")*mm;
-  mySigmaZ = m_pGaussianEventVertexGenerator.getParameter<double>("SigmaZ")*mm;
+  myMeanX = m_pGaussianEventVertexGenerator.getParameter<double>("MeanX")*cm;
+  myMeanY = m_pGaussianEventVertexGenerator.getParameter<double>("MeanY")*cm;
+  myMeanZ = m_pGaussianEventVertexGenerator.getParameter<double>("MeanZ")*cm;
+  mySigmaX = m_pGaussianEventVertexGenerator.getParameter<double>("SigmaX")*cm;
+  mySigmaY = m_pGaussianEventVertexGenerator.getParameter<double>("SigmaY")*cm;
+  mySigmaZ = m_pGaussianEventVertexGenerator.getParameter<double>("SigmaZ")*cm;
 
   if (mySigmaX <= 0) {
     cout << "Error in GaussianEventVertexGenerator: "
-	 << "Illegal resolution in X - set to default value 1.0 mm"
+	 << "Illegal resolution in X - set to default value 0.1cm (1mm)"
 	 << endl;
     BaseGenexception ex("GaussianEventVertexGenerator:Illegal resolution in X");
     throw ex;
-    mySigmaX = 1; 
+    mySigmaX = 0.1*cm; 
   }
   if (mySigmaY <= 0) {
     cout << "Error in GaussianEventVertexGenerator: "
-	 << "Illegal resolution in Y - set to default value 1.0 mm"
+	 << "Illegal resolution in Y - set to default value 0.1cm (1mm)"
 	 << endl;
     BaseGenexception ex("GaussianEventVertexGenerator:Illegal resolution in Y");
     throw ex;
-    mySigmaY = 1; 
+    mySigmaY = 0.1*cm; 
   }
   if (mySigmaZ <= 0) {
     cout << "Error in GaussianEventVertexGenerator: "
-	 << "Illegal resolution in Z - set to default value 1.0 mm"
+	 << "Illegal resolution in Z - set to default value 0.1cm (1mm)"
 	 << endl;
     BaseGenexception ex("GaussianEventVertexGenerator:Illegal resolution in Z");
     throw ex;
-    mySigmaZ = 1; 
+    mySigmaZ = 0.1*cm; 
   }
+    
 }
 
 GaussianEventVertexGenerator::~GaussianEventVertexGenerator() 
@@ -87,11 +88,11 @@ void GaussianEventVertexGenerator::sigmaX(double s)
   }
   else {
     cout << "Error in GaussianEventVertexGenerator: "
-	 << "Illegal resolution in X - set to default value 1.0 mm"
+	 << "Illegal resolution in X - set to default value 0.1cm (1mm)"
 	 << endl;
     BaseGenexception ex("GaussianEventVertexGenerator:Illegal resolution in X");
     throw ex;
-    mySigmaX=1.0;
+    mySigmaX=0.1*cm;
   }
 }
 
@@ -102,11 +103,11 @@ void GaussianEventVertexGenerator::sigmaY(double s)
   }
   else {
     cout << "Error in GaussianEventVertexGenerator: "
-	 << "Illegal resolution in Y - set to default value 1.0 mm"
+	 << "Illegal resolution in Y - set to default value 0.1cm (1mm)"
 	 << endl;
     BaseGenexception ex("GaussianEventVertexGenerator:Illegal resolution in Y");
     throw ex;
-    mySigmaY=1.0;
+    mySigmaY=0.1*cm;
   }
 }
 
@@ -117,10 +118,10 @@ void GaussianEventVertexGenerator::sigmaZ(double s)
   }
   else {
     cout << "Error in GaussianEventVertexGenerator: "
-	 << "Illegal resolution in Z - set to default value 1.0 mm"
+	 << "Illegal resolution in Z - set to default value 0.1cm (1mm)"
 	 << endl;
     BaseGenexception ex("GaussianEventVertexGenerator:Illegal resolution in Z");
     throw ex;
-    mySigmaZ=1.0;
+    mySigmaZ=0.1*cm;
   }
 }
