@@ -22,6 +22,7 @@
 // system include files
 #include <map>
 #include "boost/shared_ptr.hpp"
+#include "Rtypes.h"
 
 // user include files
 #include "DataFormats/Common/interface/EDProductGetter.h"
