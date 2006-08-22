@@ -3,6 +3,7 @@ $Id$
 ----------------------------------------------------------------------*/
 
 #include <vector>
+#include <iostream>
 
 #include "FWCore/Framework/interface/OutputModule.h"
 #include "FWCore/Framework/interface/ConstProductRegistry.h"
