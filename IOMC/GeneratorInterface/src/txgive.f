@@ -12,8 +12,11 @@ C...Sets values of commonblock variables.
       save   /TXPAR/
 ***
       integer CSAMODE
-      double precision  MUONRW, GAMMAJRW, ZJRW, ZPRW
-      common /EXPAR/CSAMODE, MUONRW, GAMMAJRW, ZJRW, ZPRW
+      double precision  MUONRW, GAMMAJRW, ZJRW, ZPRW, HLTRW, 
+     &  SUSYRW, WWRW
+      common /EXPAR/CSAMODE, MUONRW, GAMMAJRW, ZJRW, ZPRW, 
+     &  HLTRW, SUSYRW, WWRW
+
       save   /EXPAR/
 ***
       integer IER, I, IL, IREAD
@@ -68,6 +71,31 @@ C	print*,'IER', ier
          if(ier.ne.1) then
            iread = 0
            read(strin(1:80),*) ZPRW 
+         endif
+	 
+	 
+      rnam = 'HLTRW ='
+        call TXRSTR2(rnam, chin, strin, ier) 
+C	print*,'IER', ier
+         if(ier.ne.1) then
+           iread = 0
+           read(strin(1:80),*) HLTRW 
+         endif
+	 
+      rnam = 'SUSYRW ='
+        call TXRSTR2(rnam, chin, strin, ier) 
+C	print*,'IER', ier
+         if(ier.ne.1) then
+           iread = 0
+           read(strin(1:80),*) SUSYRW 
+         endif
+
+      rnam = 'WWRW ='
+        call TXRSTR2(rnam, chin, strin, ier) 
+C	print*,'IER', ier
+         if(ier.ne.1) then
+           iread = 0
+           read(strin(1:80),*) WWRW 
          endif
 	 
 	 
@@ -211,8 +239,10 @@ c----------------------------------------------------------------------------c
       implicit none
      
       integer CSAMODE
-      double precision  MUONRW, GAMMAJRW, ZJRW, ZPRW
-      common /EXPAR/CSAMODE, MUONRW, GAMMAJRW, ZJRW, ZPRW
+      double precision  MUONRW, GAMMAJRW, ZJRW, ZPRW, HLTRW, 
+     &  SUSYRW, WWRW
+      common /EXPAR/CSAMODE, MUONRW, GAMMAJRW, ZJRW, ZPRW, 
+     &  HLTRW, SUSYRW, WWRW
       save   /EXPAR/ 
 
       CSAMODE = 0
@@ -220,5 +250,10 @@ c----------------------------------------------------------------------------c
       GAMMAJRW = -1
       ZJRW = -1
       ZPRW = -1
+      HLTRW = -1
+      SUSYRW = -1
+      WWRW = -1
+ 
+ 
  
       END

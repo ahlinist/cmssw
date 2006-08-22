@@ -22,8 +22,10 @@ C...Commonblocks.
       SAVE /PYDAT1/,/PYINT1/,/PYINT2/
 C... CSA specific 
       integer CSAMODE
-      double precision  MUONRW, GAMMAJRW, ZJRW, ZPRW
-      common /EXPAR/CSAMODE, MUONRW, GAMMAJRW, ZJRW, ZPRW
+      double precision  MUONRW, GAMMAJRW, ZJRW, ZPRW, HLTRW, 
+     &  SUSYRW, WWRW
+      common /EXPAR/CSAMODE, MUONRW, GAMMAJRW, ZJRW, ZPRW, 
+     &  HLTRW, SUSYRW, WWRW
  
 C...Set default weight for WTXS.
 
@@ -59,8 +61,10 @@ C                  1 for QCD dijet
 C                  2 for EWK soup 
 C                  3 for HLT soup
 C                  4 for soft muon soup
+C                  5 for exotics soup ?
+
  
-      IF (CSAMODE.LE.0.OR.CSAMODE.GT.4) THEN
+      IF (CSAMODE.LE.0.OR.CSAMODE.GT.5) THEN
          write (*,*) ' CSAMODE not properly set !! No reweighting!! '
       ENDIF      
 
@@ -111,13 +115,11 @@ C...Weights for QCD dijet sample
 
       IF (ISUB.EQ.15.OR.ISUB.EQ.30) THEN
        IF(PTHAT.GE.9.AND.PTHAT.LT.44) WTXS = 10.6
-       IF(PTHAT.GE.44.AND.PTHAT.LT.220) WTXS = 9
+       IF(PTHAT.GE.44.AND.PTHAT.LT.220) WTXS = 90
        IF (ZJRW.GT.(1.0D-14)) WTXS = WTXS * ZJRW
       ENDIF
 
-      IF (ISUB.EQ.141) THEN
-        IF (ZPRW.GT.(1.0D-14)) WTXS = ZPRW 
-      ENDIF
+     
 
 C... Fit function form
 C      WTXS = (150.564d0*(PT2/25.0d0)**(6.28335d0)*
@@ -135,8 +137,10 @@ C...Weights for EWK sample
       IF (ISUB.EQ.2) WTXS=0.2
       IF (ISUB.EQ.102) WTXS=400.    
       IF (ISUB.EQ.123) WTXS=400.    
-      IF (ISUB.EQ.124) WTXS=400.    
+      IF (ISUB.EQ.124) WTXS=400.  
       
+      IF (ISUB.EQ.25) WTXS = WWRW 
+            
       ENDIF
       
 C... Weights for HLT sample
@@ -148,7 +152,7 @@ c      IF (ISUB.EQ.2) WTXS=0.2
      & .OR.ISUB.EQ.12.OR.ISUB.EQ.13) THEN 
         IF(PTHAT.LT.350) THEN 
 	 WTXS=1.0D-8 
-	 IF (MUONRW.GT.(1.0D-14)) WTXS = WTXS * MUONRW
+	 IF (HLTRW.GT.(1.0D-14)) WTXS = WTXS * HLTRW
 	ENDIF
 	IF(PTHAT.GE.350) WTXS=1.0	
       ENDIF
@@ -160,10 +164,28 @@ C...Weights for Soft Muon sample
 
       IF (CSAMODE.EQ.4) THEN
       
-       IF (ISUB.EQ.86) WTXS = 1.25D7       
-       
+       IF (ISUB.EQ.86) THEN
+         WTXS = 1.25D7       
+         IF (MUONRW.GT.(1.0D-14)) WTXS = WTXS * MUONRW
+       ENDIF
+      
       ENDIF
 
+C...Optional weights for zprime and susy (exotics soup?)
+
+      IF (CSAMODE.GE.1.OR.CSAMODE.LE.3.OR.CSAMODE.EQ.5) THEN
+      
+      
+        IF (ISUB.EQ.141) THEN
+          IF (ZPRW.GT.(1.0D-14)) WTXS = ZPRW 
+        ENDIF
+       
+        IF (ISUB.GE.201.AND.ISUB.LE.296) THEN
+          IF (SUSYRW.GT.(1.0D-14)) WTXS = SUSYRW 
+        ENDIF
+      
+       
+      ENDIF 
 
       RETURN
       END
