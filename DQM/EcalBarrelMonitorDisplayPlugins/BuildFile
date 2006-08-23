@@ -1,0 +1,11 @@
+<use name="root">
+<use name=VisMonitoring/VisDQMBase>
+<use name=Foundation/SealBase>
+<use name=DQMServices/Core>
+
+<Flags SEAL_PLUGIN_NAME=DQMEcalBarrelMonitorDisplayPlugins>
+
+<export>
+	<use name=VisRoot/VisRootModel>
+	<lib name=DQMEcalBarrelMonitorDisplayPlugins>
+</export>
