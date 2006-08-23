@@ -49,6 +49,9 @@ extern CallbackPtr G__p_class_autoloading;
 static 
 bool loadLibraryForClass( const char* classname )
 {  
+  if(0 == classname) {
+    return false;
+  }
   //std::cout <<"asking to find "<<classname<<std::endl;
   static const std::string cPrefix("LCGReflex/");
   //std::cout <<"asking to find "<<cPrefix+classname<<std::endl;
@@ -70,7 +73,12 @@ bool loadLibraryForClass( const char* classname )
 
 //Based on code in ROOT's TCint.cxx file
 
-/* extern "C" */ static int ALL_AutoLoadCallback(char *c, char *l) {
+static int ALL_AutoLoadCallback(char *c, char *l) {
+  //NOTE: if the library (i.e. 'l') is an empty string this means we are dealing with a namespace
+  // These checks appear to avoid a crash of ROOT during shutdown of the application
+  if(0==c || 0==l || l[0]==0) {
+    return 0;
+  }
   ULong_t varp = G__getgvp();
   G__setgvp(G__PVOID);
   int result = loadLibraryForClass(c) ? 1:0;
