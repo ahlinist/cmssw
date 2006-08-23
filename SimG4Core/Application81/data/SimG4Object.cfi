@@ -28,6 +28,7 @@
          bool DummyEMPhysics = false
          bool CutsPerRegion = true
          double DefaultCutValue = 1000.  # cuts in cm, i.e. 10m
+         double G4BremsstrahlungThreshold = 0.5 # cut in GeV
          untracked int32 Verbosity = 0   # 1 will print cuts as they get set fdrom DD
                                          # 2 will do as 1 + will dump Geant4 table of cuts
 	 double GFlashEmin = 1.0
