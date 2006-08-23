@@ -1,4 +1,4 @@
-// $Id: $
+// $Id: EBMDisplayPlugins.h,v 1.1 2006/08/23 08:35:30 benigno Exp $
 
 #ifndef  EBMDisplayPlugins_H
 # define EBMDisplayPlugins_H
@@ -7,8 +7,8 @@
   \file EBMDisplayPlugins
   \brief Display Plugin for Quality Histograms (2D)
   \author B. Gobbo 
-  \version $Revision: $
-  \date $Date: $
+  \version $Revision: 1.1 $
+  \date $Date: 2006/08/23 08:35:30 $
 */
 
 # include "VisMonitoring/VisDQMBase/interface/VisDQMDisplayPlugin.h"
@@ -62,7 +62,6 @@ class EBMDisplayPlugins : public VisDQMDisplayPlugin {
   std::string preDrawTH1( DisplayData *data );
   void postDrawTProfile2D( DisplayData *data );
   void postDrawTH2( DisplayData *data );
-  void postDrawTH1( DisplayData *data );
   template<class T> void adjustRange( T obj );
 
 };

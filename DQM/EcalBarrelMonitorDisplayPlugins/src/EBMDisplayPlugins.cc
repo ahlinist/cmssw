@@ -1,11 +1,11 @@
-// $Id: $
+// $Id: EBMDisplayPlugins.cc,v 1.1 2006/08/23 08:35:31 benigno Exp $
 
 /*!
   \file EBMDisplayPlugins
   \brief Display Plugin for Quality Histograms (2D)
   \author B. Gobbo 
-  \version $Revision: $
-  \date $Date: $
+  \version $Revision: 1.1 $
+  \date $Date: 2006/08/23 08:35:31 $
 */
 
 #include "DQM/EcalBarrelMonitorDisplayPlugins/interface/EBMDisplayPlugins.h"
@@ -222,7 +222,64 @@ std::string EBMDisplayPlugins::preDrawTH2( DisplayData *data ) {
     }
     (data->pad)->SetGridx();
     (data->pad)->SetGridy();
+
+    // Atypical plot...
+    if( name.find( "EBMM event" ) < name.size() ) {
+      gStyle->SetPalette( 10, pCol4 );
+      obj->SetOption( "colz" );
+      return "";
+    }
+
+    // Quality-like (green, yellow, red) plots
+    if( name.find( "entries or read crystals errors" ) < name.size() ) {
+      obj->GetXaxis()->SetNdivisions( 86 );
+      obj->GetYaxis()->SetNdivisions(  0 );
+      (data->pad)->SetGridx( 1 );
+      (data->pad)->SetGridy( 0 );
+      obj->SetMinimum( -0.00000001 );
+      obj->SetMaximum( 2.0 );
+      gStyle->SetPalette( 3, pCol3 );
+      obj->SetOption( "col" );
+    return "";
+    }
+
+    // Atypical plot...
+    if( name.find( "read crystal errors" ) < name.size() ) {
+      obj->GetXaxis()->SetNdivisions( 0 );
+      obj->GetYaxis()->SetNdivisions( 0 );
+      obj->SetMinimum( -0.00000001 );
+      obj->SetMaximum( 2.0 );
+      gStyle->SetPalette( 3, pCol3 );
+      obj->SetOption( "col" );
+      return "";
+    }    
+
+    // Atypical plot...
+    if( name.find( "EBBCT crystal on beam" ) < name.size() ||
+	  name.find( "EBBCT crystal with maximum rec energy" ) < name.size() ) {
+      obj->GetXaxis()->SetNdivisions( 17 );
+      obj->GetYaxis()->SetNdivisions(  4 );
+      obj->SetMinimum( -0.00000001 );
+      gStyle->SetPalette( 1 );
+      obj->SetOption( "colz" );
+      return "";
+    }    
+
+    // Atypical plot...
+    if( name.find( "EBBCT energy deposition in the 3x3" ) < name.size() ) {
+      obj->SetLineColor( kRed );
+      obj->SetFillColor( kRed );
+      obj->SetOption( "box" );
+      return "";
+    }    
     
+    // Atypical plot...
+    if( name.find( "EBBHT" ) < name.size() ) {
+      (data->pad)->SetGridx( 0 );
+      (data->pad)->SetGridy( 0 );
+      return "";
+    }
+
     // Quality-like (green, yellow, red) plots
     if( name.find( "quality" ) < name.size() ) {
       obj->SetMinimum( -0.00000001 );
@@ -255,6 +312,7 @@ std::string EBMDisplayPlugins::preDrawTH1( DisplayData *data ) {
 
   if( obj ) {
 
+    // Apply to following...
     obj->SetStats(kTRUE);
     if ( obj->GetMaximum(1.e15) > 0. ) {
       gPad->SetLogy(1);
@@ -262,15 +320,29 @@ std::string EBMDisplayPlugins::preDrawTH1( DisplayData *data ) {
       gPad->SetLogy(0);
     }
 
-    if( name.find( "EBBCT readout crystals" ) < name.size() ||
+    if( name.find( "EBBCT readout crystals number" ) < name.size() ||
 	name.find( "EBBCT rec energy cry" ) < name.size() ||
+	name.find( "EBBCT found gains cry" ) < name.size() ||
 	name.find( "EBBCT rec Ene sum" ) < name.size() ) {
       adjustRange( obj ); 
       gStyle->SetOptStat(1110);
       return "";
     }
 
-    if( name.find( "EBBCT crystal done" ) < name.size() ||
+    if( name.find( "EBBCT crystals done" ) < name.size() ) {
+      text5->Reset();
+      for( int i=1; i<1701; i++ ) {
+	int step = int( obj->GetBinContent( i ) );
+	if( step > 0 ) text5->SetBinContent( step+1, 1, i );
+      }
+      adjustRange( obj ); 
+      gStyle->SetOptStat( "e" );
+      return "";      
+    }						    
+
+    if( name.find( "EBBCT readout crystals errors" ) < name.size() ||
+	name.find( "EBBCT Desynchronization" ) < name.size() ||
+	name.find( "EBBCT E1 in the max cry" ) < name.size() ||
 	name.find( "EBBCT number of entries" ) < name.size() ) {
       adjustRange( obj ); 
       gStyle->SetOptStat( "e" );
@@ -302,9 +374,6 @@ void EBMDisplayPlugins::postDraw( DisplayData *data ) {
   }
   else if( dynamic_cast<TH2*>( data->object ) ) {
     postDrawTH2( data );
-  }
-  else if( dynamic_cast<TH1*>( data->object ) ) {
-    postDrawTH1( data );
   }
 
 }
@@ -348,29 +417,11 @@ void EBMDisplayPlugins::postDrawTH2( DisplayData *data ) {
   else if( nbx == 2 && nby == 1 ) {
     text4->Draw( "text,same" );
   }
+  else if( nbx == 86 && nby == 1 ) {
+    text5->Draw( "text90,same" );
+  }
 
   return;    
 
 }
 
-void EBMDisplayPlugins::postDrawTH1( DisplayData *data ) {
-
-  TH1* obj = dynamic_cast<TH1*>( data->object );
-
-  name = (data->object)->GetName();
-
-  if( obj ) {
-    if( name.find( "EBBCT crystals done" ) < name.size() ) {    
-      for( int i=1; i<1701; i++ ) {
-	int step = int( obj->GetBinContent(i) );
-	if( step>0 ) text5->SetBinContent( step+1, 1, i );
-      }
-      //text5->SetBinContent( 6, 1, 1699 );
-      //text5->SetBinContent( 85, 1, 1698 );
-      text5->SetMarkerSize(2);
-      text5->Draw();
-    } 
-
-  }
-
-}
