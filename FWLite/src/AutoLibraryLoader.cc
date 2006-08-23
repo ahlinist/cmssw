@@ -142,11 +142,11 @@ void registerTypes() {
       if (className.size() <= pos+1 or className[pos+1] != ':') {break;}
       //should check to see if this is a class or not
       G__set_class_autoloading_table(const_cast<char*>( className.substr(0,pos).c_str() ),"");
-      std::cout <<"namespace "<<className.substr(0,pos).c_str()<<std::endl;
+      //std::cout <<"namespace "<<className.substr(0,pos).c_str()<<std::endl;
       pos +=2;
     }
     G__set_class_autoloading_table(const_cast<char*>( className.c_str()),"dummy");
-    std::cout <<"class "<<className.c_str()<<std::endl;
+    //std::cout <<"class "<<className.c_str()<<std::endl;
   }
 }
 
