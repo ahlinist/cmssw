@@ -11,7 +11,7 @@ PhysicsList::~PhysicsList()
 { 
     if (m_pPhysics.getUntrackedParameter<int>("Verbosity") > 1)
 	std::cout << " G4BremsstrahlungThreshold was " 
-		  << G4LossTableManager::Instance()->BremsstrahlungTh() 
+		  << G4LossTableManager::Instance()->BremsstrahlungTh()/GeV 
 		  << " GeV " << std::endl;
     if (prodCuts!=0) delete prodCuts; 
 }
