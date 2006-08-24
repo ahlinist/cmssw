@@ -10,6 +10,7 @@ $Id$
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "FWCore/Framework/interface/TriggerNamesService.h"
 #include "DataFormats/Common/interface/TriggerResults.h"
+#include "DataFormats/Common/interface/BranchDescription.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventPrincipal.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -73,8 +74,25 @@ namespace edm {
       reg->productList().end();
 
     for ( ; it != end; ++it) {
-      if (selected(it->second)) descVec_.push_back(&it->second);
-      else droppedVec_.push_back(&it->second);
+      BranchDescription const& desc = it->second;
+      if(desc.transient()) {
+	// If the class of the branch is marked transient, output nothing
+	continue;
+      } else if(!desc.provenancePresent() & !desc.produced()) {
+	// else if the branch containing the provenance has been previously dropped,
+	// and the product has not been produced again, output nothing
+	continue;
+      } else if(!desc.present() & !desc.produced()) {
+        // else if the branch containing the product has been previously dropped,
+	// and the product has not been produced again, drop the product branch again.
+        droppedVec_.push_back(&desc);
+      } else if (selected(desc)) {
+        // else if the branch has been selected, put it in the list of selected branches
+	descVec_.push_back(&desc);
+      } else {
+        // otherwise, drop the product branch.
+	droppedVec_.push_back(&desc);
+      }
     }
   }
 
