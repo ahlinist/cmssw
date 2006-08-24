@@ -7,8 +7,8 @@
 
 /** \class HcalEventPositionMonitor
   *  
-  * $Date: 2006/06/23 16:08:13 $
-  * $Revision: 1.5 $
+  * $Date: 2006/08/23 18:51:47 $
+  * $Revision: 1.1 $
   * \author W. Fisher - FNAL
   */
 class HcalEventPositionMonitor: public HcalBaseMonitor {
@@ -18,6 +18,7 @@ public:
 
   void setup(const edm::ParameterSet& ps, DaqMonitorBEInterface* dbe);
   void processEvent(const HcalTBEventPosition& epos);
+  void clearME();
 
 private:  ///Monitoring elements
 
@@ -32,6 +33,9 @@ private:  ///Monitoring elements
   vector<MonitorElement*> mePlanes_;
   vector<MonitorElement*> meXvalue_;
   vector<MonitorElement*> meYvalue_;
+
+  vector<MonitorElement*> meXhits_;
+  vector<MonitorElement*> meYhits_;
 
 
 };

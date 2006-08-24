@@ -3,8 +3,8 @@
 /*
  * \file TBMonitorModule.cc
  * 
- * $Date: 2006/08/01 20:47:49 $
- * $Revision: 1.11 $
+ * $Date: 2006/08/23 18:51:47 $
+ * $Revision: 1.1 $
  * \author W Fisher
  *
 */
@@ -75,17 +75,19 @@ TBMonitorModule::TBMonitorModule(const edm::ParameterSet& ps){
 }
 
 TBMonitorModule::~TBMonitorModule(){
-  printf("TBMonitorModule: Destructor.....\n");
-  if ( offline_ ) sleep(30); 
+
+  if ( m_dbe && !offline_) {
+    if(m_timeMon!=NULL) {  m_timeMon->clearME(); }
+    if(m_eposMon!=NULL) {  m_eposMon->clearME(); }
+    if(m_qadcMon!=NULL) {  m_qadcMon->clearME(); }
+    m_dbe->setCurrentFolder("TBMonitor");
+    m_dbe->removeContents();
+  }
 
   if(m_timeMon!=NULL) { delete m_timeMon; m_timeMon=NULL; }
   if(m_eposMon!=NULL) { delete m_eposMon; m_eposMon=NULL; }
   if(m_qadcMon!=NULL) { delete m_qadcMon; m_qadcMon=NULL; }
 
-  if ( m_dbe ) {
-    m_dbe->setCurrentFolder("TBMonitor");
-    m_dbe->removeContents();
-  }
   m_logFile.close();
 
 }
@@ -106,7 +108,7 @@ void TBMonitorModule::endJob(void) {
   if ( m_meStatus ) m_meStatus->Fill(2);
   if ( m_meRunNum ) m_meRunNum->Fill(m_runNum);
   if ( m_meEvtNum ) m_meEvtNum->Fill(m_ievt);
-  if ( offline_ ) sleep(45);
+  if ( offline_ ) sleep(5);
 
   if(m_timeMon) m_timeMon->done();
   if(m_eposMon) m_eposMon->done();
@@ -165,7 +167,7 @@ void TBMonitorModule::analyze(const edm::Event& e, const edm::EventSetup& eventS
   if(m_ievt%1000 == 0)
     cout << "TBMonitorModule: analyzed " << m_ievt << " events" << endl;
 
-  if(offline_) usleep(30);
+  //  if(offline_) usleep(30);
 
   return;
 }
