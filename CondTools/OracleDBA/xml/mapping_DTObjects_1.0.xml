@@ -21,5 +21,8 @@
     </Container >
     <Primitive column="ROB_MAP_VERSION" name="robMapVersion" />
   </Class >
-
+  <Class name="DTT0">
+  </Class>
+  <Class name="DTTtrig">
+  </Class>
 </Mapping >
