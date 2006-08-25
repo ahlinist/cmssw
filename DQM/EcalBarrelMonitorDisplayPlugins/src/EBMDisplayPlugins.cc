@@ -1,11 +1,11 @@
-// $Id: EBMDisplayPlugins.cc,v 1.1 2006/08/23 08:35:31 benigno Exp $
+// $Id: EBMDisplayPlugins.cc,v 1.2 2006/08/23 15:08:59 benigno Exp $
 
 /*!
   \file EBMDisplayPlugins
   \brief Display Plugin for Quality Histograms (2D)
   \author B. Gobbo 
-  \version $Revision: 1.1 $
-  \date $Date: 2006/08/23 08:35:31 $
+  \version $Revision: 1.2 $
+  \date $Date: 2006/08/23 15:08:59 $
 */
 
 #include "DQM/EcalBarrelMonitorDisplayPlugins/interface/EBMDisplayPlugins.h"
@@ -259,7 +259,7 @@ std::string EBMDisplayPlugins::preDrawTH2( DisplayData *data ) {
 	  name.find( "EBBCT crystal with maximum rec energy" ) < name.size() ) {
       obj->GetXaxis()->SetNdivisions( 17 );
       obj->GetYaxis()->SetNdivisions(  4 );
-      obj->SetMinimum( -0.00000001 );
+      obj->SetMinimum( 0.00000001 );
       gStyle->SetPalette( 1 );
       obj->SetOption( "colz" );
       return "";
