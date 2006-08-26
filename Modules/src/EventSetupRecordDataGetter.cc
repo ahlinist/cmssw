@@ -51,6 +51,8 @@ namespace edm {
 //
    EventSetupRecordDataGetter::EventSetupRecordDataGetter(const edm::ParameterSet& iConfig):
    pSet_(iConfig),
+   recordToDataKeys_(),
+   recordToIOVSyncValue_(),
    verbose_(iConfig.getUntrackedParameter("verbose",false))
 {
 }

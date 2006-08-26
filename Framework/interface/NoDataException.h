@@ -91,7 +91,8 @@ template <class T>
                       const char* category_name = "NoDataException") : 
         cms::Exception(category_name),
         record_(iRecordKey),
-        dataKey_(iDataKey)
+        dataKey_(iDataKey),
+        dataTypeMessage_()
         {
           this->append(dataTypeMessage()+std::string("\n "));
           this->append(standardMessage(iRecordKey));
@@ -103,7 +104,8 @@ template <class T>
                       const std::string& iExtraInfo ) : 
 	cms::Exception(category_name),
 	record_(iRecordKey),
-	dataKey_(iDataKey)
+	dataKey_(iDataKey),
+        dataTypeMessage_()
       {
         this->append(dataTypeMessage()+std::string("\n "));
 	this->append(iExtraInfo);

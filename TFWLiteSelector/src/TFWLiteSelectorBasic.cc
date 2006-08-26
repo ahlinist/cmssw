@@ -42,6 +42,7 @@ namespace edm {
   namespace root {
     class FWLiteDelayedReader : public DelayedReader {
      public:
+      FWLiteDelayedReader(): entry_(-1),eventTree_(0),reg_(0) {}
       virtual std::auto_ptr<EDProduct> get(BranchKey const& k, EDProductGetter const* ep) const;
       void setEntry(Long64_t iEntry) { entry_ = iEntry; }
       void setTree(TTree* iTree) {eventTree_ = iTree;}
@@ -100,7 +101,14 @@ namespace edm {
     
     struct TFWLiteSelectorMembers {
       TFWLiteSelectorMembers():
-      tree_(0), reader_(new FWLiteDelayedReader) {
+      tree_(0),
+      metaTree_(0),
+      reg_(),
+      processNames_(),
+      reader_(new FWLiteDelayedReader),
+      productMap_(),
+      prov_()
+      {
         reader_->set(&reg_);}
       void setTree( TTree* iTree) {
         tree_ = iTree;

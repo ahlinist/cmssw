@@ -40,6 +40,7 @@ template<class CallbackT, class RecordT, class DataT>
    typedef typename DataProxyTemplate<RecordT, typename produce::smart_pointer_traits<DataT>::type >::record_type record_type;
    
    CallbackProxy(boost::shared_ptr<CallbackT>& iCallback) :
+   data_(),
    callback_(iCallback) { 
       //The callback fills the data directly.  This is done so that the callback does not have to
       //  hold onto a temporary copy of the result of the callback since the callback is allowed
