@@ -103,6 +103,8 @@ namespace edm {
          template<typename T1, typename T2, typename T3> 
             struct ProductHolder : public ProductHolder<T2, T3, Null> {
                typedef ProductHolder<T2, T3, Null> parent_type;
+              
+              ProductHolder() : value() {}
                
                template<typename T>
                   void setAllValues(T& iValuesFrom) {
@@ -134,7 +136,9 @@ namespace edm {
          template<typename T1>
             struct ProductHolder<T1, Null, Null> {
                
-               template<typename T>
+              ProductHolder() : value() {}
+
+              template<typename T>
                void setAllValues(T& iValuesFrom) {
                   iValuesFrom.assignToRecursive(*this);
                }
