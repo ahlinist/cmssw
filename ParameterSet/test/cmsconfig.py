@@ -290,10 +290,13 @@ class cmsconfig:
         Write all the psets to the file-like object fileobj."""
         for name in self.psetNames():
             psettuple = self.pset(name)
-            fileobj.write("PSet %s = \n{\n" % (name) )
-            psetdict = psettuple[2]
-            self.__write_module_guts(psetdict, fileobj)
-            fileobj.write('}\n')
+            # 8/2006: Wasn't writing trackedness!  Just re-use code
+            # for embedded PSets
+            fileobj.write('%s' % printable_parameter(name, psettuple))
+            #fileobj.write("PSet %s = \n{\n" % (name) )
+            #psetdict = psettuple[2]
+            #self.__write_module_guts(psetdict, fileobj)
+            #fileobj.write('}\n')
 
     def __write_modules(self, fileobj):
         """Private method.
