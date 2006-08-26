@@ -34,7 +34,7 @@ class ESHandle
    public:
       typedef T value_type;
    
-      ESHandle() : data_(0) {}
+      ESHandle() : data_(0), description_(0) {}
       ESHandle(const T* iData) : data_(iData), description_(0) {}
 //      { std::cout<<"Call ESHanlde(data) ctor"<<std::endl; }
       ESHandle(const T* iData, const edm::eventsetup::ComponentDescription* description) 

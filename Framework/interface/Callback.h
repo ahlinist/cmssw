@@ -55,6 +55,7 @@ namespace edm {
             proxyData_(produce::size< TReturn >::value, static_cast<void*>(0)),
             producer_(iProd), 
             method_(iMethod),
+            wasCalledForThisRecord_(false),
             decorator_(iDec) {}
          
          
