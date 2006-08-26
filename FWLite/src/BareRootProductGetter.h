@@ -23,6 +23,7 @@
 #include <map>
 #include "boost/shared_ptr.hpp"
 #include "Rtypes.h"
+#include "TUUID.h"
 
 // user include files
 #include "DataFormats/Common/interface/EDProductGetter.h"
@@ -73,6 +74,7 @@ class BareRootProductGetter : public edm::EDProductGetter
       mutable IdToBranchDesc idToBranchDesc_;
       typedef std::map<edm::ProductID, Buffer> IdToBuffers;
       mutable IdToBuffers idToBuffers_;
+      mutable TUUID fileUUID_;
       
 };
 
