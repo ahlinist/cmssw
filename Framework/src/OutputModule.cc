@@ -75,12 +75,13 @@ namespace edm {
 
     for ( ; it != end; ++it) {
       BranchDescription const& desc = it->second;
-      if(desc.transient()) {
-        // If the class of the branch is marked transient, output nothing
-        continue;
-      } else if(!desc.provenancePresent() & !desc.produced()) {
-        // else if the branch containing the provenance has been previously dropped,
+      if(!desc.provenancePresent() & !desc.produced()) {
+        // If the branch containing the provenance has been previously dropped,
         // and the product has not been produced again, output nothing
+        continue;
+      } else if(desc.transient()) {
+        // else if the class of the branch is marked transient, drop the product branch
+        droppedVec_.push_back(&desc);
         continue;
       } else if(!desc.present() & !desc.produced()) {
         // else if the branch containing the product has been previously dropped,
