@@ -42,8 +42,11 @@ namespace edm
   }
 
   ProcessDesc::ProcessDesc(const std::string& config)
-  : pset_(new ParameterSet),
-    services_(new std::vector<ParameterSet>())
+  : validator_(0),
+    pathFragments_(),
+    pset_(new ParameterSet),
+    services_(new std::vector<ParameterSet>()),
+    bookkeeping_()
   {
     edm::pset::ParseResults parsetree = edm::pset::fullParse(config.c_str());
 
