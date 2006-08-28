@@ -49,10 +49,17 @@ DBIdealGeometryESSource::DBIdealGeometryESSource(const edm::ParameterSet & pset)
   } catch ( std::exception& ser ) {
     std::cout << ser.what() << std::endl;
   }
+
   //Tell Producer what we produce
-  setWhatProduced(this);
+  if(""==pset.getParameter<std::string>("@module_label")){
+    setWhatProduced(this);
+  }else {
+    setWhatProduced(this,pset.getParameter<std::string>("@module_label"));
+  }
+
   //Tell Finder what records we find
   findingRecord<IdealGeometryRecord>();
+
 }
 
 DBIdealGeometryESSource::~DBIdealGeometryESSource() {}
