@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrea Rizzi
 //         Created:  Wed Apr 12 11:12:49 CEST 2006
-// $Id: AssociationAnalyzer.cc,v 1.1 2006/06/01 17:26:52 fwyzard Exp $
+// $Id: AssociationAnalyzer.cc,v 1.2 2006/07/06 15:40:05 fwyzard Exp $
 //
 //
 
@@ -91,7 +91,7 @@ AssociationAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   for (CaloJetCollection::size_type i = 0; i < jets.size(); ++i) {
     CaloJetRef jet(jetsHandle, i);
     try {
-      TrackRefVector tracks = association[jet].val;
+      TrackRefVector tracks = association[jet];
       cout << "->   Jet " << setw(2) << jet.index() << " pT: " << setprecision(2) << setw(6) << jet->pt() << " eta: " << setprecision(2) << setw(5) << jet->eta() << " phi: " << setprecision(2) << setw(5) << jet->phi() << " has " << tracks.size() << " tracks:" << endl;
       for (TrackRefVector::const_iterator track = tracks.begin(); track != tracks.end(); ++track) {
         cout << "   Track " << setw(2) << (*track).index() << " pT: " << setprecision(2) << setw(6) << (**track).pt() << " eta: " << setprecision(2) << setw(5) << (**track).eta() << " phi: " << setprecision(2) << setw(5) << (**track).phi() << endl;
