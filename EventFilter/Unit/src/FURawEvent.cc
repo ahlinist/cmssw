@@ -87,7 +87,7 @@ int FURawEvent::processMsg(I2O_MESSAGE_FRAME *stdMsg)
     (I2O_EVENT_DATA_BLOCK_MESSAGE_FRAME*)stdMsg;
   
   size_t        sizeOfPayload   = 0;
-  unsigned char *startOfPayload = 0;
+  unsigned char*startOfPayload  = 0;
   bool          startOfFragment = false;
   bool          firstFragment   = false;
   bool          lastFragment    = false;
@@ -161,13 +161,15 @@ int FURawEvent::processMsg(I2O_MESSAGE_FRAME *stdMsg)
       fragmentCount_++;
       outstandingReqs_--;
       builtFlags[fragInd]=true;
+      cout<<"super fragment with fragInd="<<fragInd<<" built!"<<endl;
       block_adrs.clear();
     }
   
-  if(errorFound) 
-    {
-      return -1;
-    }
+  int return_val=fragInd+1;
+  if(errorFound) {
+    return_val*=-1;
+    return return_val;
+  }
   
   if(outstandingReqs_==0) 
     {
@@ -175,7 +177,9 @@ int FURawEvent::processMsg(I2O_MESSAGE_FRAME *stdMsg)
                  // other thread is signaled
       if(isNew_) isNew_ = false; //set flag that this event is available
     }
-  return fragInd;
+  
+  //return fragInd;
+  return return_val;
 }
 
 

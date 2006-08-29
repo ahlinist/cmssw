@@ -7,6 +7,9 @@
 //
 //  Modification history:
 //    $Log: FilterUnitFramework.cc,v $
+//    Revision 1.11  2006/08/08 11:20:32  meschi
+//    reset pending requests when halting
+//
 //    Revision 1.10  2006/06/13 15:10:42  meschi
 //    modifications to signal a thread waiting on input
 //
@@ -98,12 +101,12 @@ FilterUnitFramework::FilterUnitFramework(xdaq::ApplicationStub *s) : FUAdapter(s
 								     fsm_(0)
 {
   cout << "Entered constructor " << endl;
-
+  
   mutex_ = new BSem(BSem::FULL);
-
+  
   fsm_ = new evf::EPStateMachine(getApplicationLogger());
   fsm_->init<FilterUnitFramework>(this);
-
+  
   xoap::bind(this, &FilterUnitFramework::getStateMsg,"getState",XDAQ_NS_URI);
 
   exportParams();
@@ -146,10 +149,10 @@ void FilterUnitFramework::exportParams()
   s->fireItemAvailable("runActive",&runActive_);
   s->fireItemAvailable("runNumber",&runNumber_);
   s->fireItemAvailable("workDir",&workDir_);
-
+  
   s->fireItemAvailable("MonitorTimerEnable",&MonitorTimerEnable_);
   s->fireItemAvailable("MonitorIntervalSec",&MonitorIntervalSec_);
-
+  
   //Monitoring infospace and variables
   s_mon = xdata::InfoSpace::get("urn:xdaq-monitorable:FUFramework");
   s_mon->fireItemAvailable("nbEvents",&nbEvents_);

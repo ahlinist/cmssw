@@ -153,11 +153,11 @@ void FURawEventFactory::postEndRunMaybe()
 {
   pthread_mutex_lock(&mutex_);
   int semval = 0;
-  sem_getvalue(&empty_,&semval);
+   sem_getvalue(&empty_,&semval);
   if(semval==0)
     {
       int ret = sem_post(&empty_);
-      if(ret!=0) std::cerr << "FURawEventFactory::error posting to resource counter " << std::endl;
+       if(ret!=0) std::cerr << "FURawEventFactory::error posting to resource counter " << std::endl;
     }
   pthread_mutex_unlock(&mutex_);
   
