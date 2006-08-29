@@ -87,6 +87,16 @@ sub check_db_connection {
 sub connection_test {
     my ($auth, $connect) = @_;
 
+    if ($connect =~ /^sqlite/) {
+	my ($db) = ($connect =~ m'^sqlite_file:(.+)$');
+	print "[INFO]   Checking connection...";
+	unless (-e $db) {
+	    print "\n[WARN]   File $db does not exist.  It may be created by this script.\n";
+	} else { print "OK\n"; }
+	my ($user, $pass) = ('nobody', 'nothing');
+	return ($user, $pass, $db);
+    }
+
     my ($db) = ($connect =~ m'^oracle://(\w+)/\w+$');
     unless ($db) {
 	die "Connect string $connect is malformed\n";
@@ -112,7 +122,7 @@ sub connection_test {
 	print "OK\n";
     }
 
-    return ($user, $pass);
+    return ($user, $pass, $db);
 }
 
 
