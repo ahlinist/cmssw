@@ -142,11 +142,11 @@ void FUAdapter::realTake(toolbox::mem::Reference *bufRef)
   int currentFragment = -1;
   bool errorFound = false;
   bool isNew = false;
-
+  
   // The FU maybe in the same executive as the BU and may therefore
   // receive a chain of messages / blocks.
   // Break up the chain into its individual messages / blocks
-
+  
   FURawEvent *event = 0;
   
 
@@ -208,21 +208,24 @@ void FUAdapter::realTake(toolbox::mem::Reference *bufRef)
 
       currentFragment = event->processMsg(stdMsg);
       if(currentFragment<0) nbDataErrors_.value_++;
-
-      // if an error is found, bail out ¿ without telling why !!!
       errorFound = errorFound || (currentFragment < 0);
+      currentFragment=std::abs(currentFragment)-1;
+      
+      // if an error is found, bail out ¿ without telling why !!!
+      //errorFound = errorFound || (currentFragment < 0);
       if(errorFound)
 	{
 	  //	  LOG4CPLUS_ERROR(this->getApplicationLogger(),"Error found in processing take message");
 	}
-
+      
       toGo_.push_back(bufRef); // we are not allowed to free buffers yet
       
       toolbox::mem::Reference *old = bufRef;
       bufRef = bufRef->getNextReference();
       old->setNextReference(0); // break the chain if there is one, this deals with local/remote problem
-
+      
       // check if buffers can be freed
+      
 
       if(event->fragmentComplete(currentFragment))
 	{

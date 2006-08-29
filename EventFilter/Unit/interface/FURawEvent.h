@@ -44,7 +44,7 @@ class FURawEvent
 
   /** destructor (only invoked when FU is halted) */
   virtual ~FURawEvent();
-
+  
   /** Get the real event handle */
   unsigned int getHandle() const 
     {return eventHandle_;}
@@ -61,7 +61,7 @@ class FURawEvent
   bool checkTransactionContext(unsigned int context) const
     {return (context%INTERNAL_HANDLE_OFFSET)==internalHandle_;}
 
-  /** return the transaction context to be used for this event */
+   /** return the transaction context to be used for this event */
   unsigned int transactionContext() const 
     { return (internalHandle_ + INTERNAL_HANDLE_OFFSET);}
 
@@ -157,10 +157,10 @@ class FURawEvent
   RawData *timedRequest(int, int);
   /**set the BU instance to be used for subsequent transactions */
   void setBU(unsigned long buinstance)
-    {
-      buInstance_ = buinstance;
-    }
-
+  {
+    buInstance_ = buinstance;
+  }
+  
   unsigned long buInstance_;
 
   /**release the timed request */
