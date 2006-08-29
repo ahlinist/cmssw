@@ -221,8 +221,8 @@ namespace edm
     return services_;
   }
 
-  ProcessDesc::Strs ProcessDesc::findSchedule(const ProcessDesc::Strs & triggerPaths,
-                                              const ProcessDesc::Strs & endPaths) const
+  ProcessDesc::Strs ProcessDesc::findSchedule(ProcessDesc::Strs & triggerPaths,
+                                              ProcessDesc::Strs & endPaths) const
   {
     Strs result;
     bool found = false;
@@ -246,6 +246,14 @@ namespace edm
         {
           found = true;
           getNames((*pathIt)->wrapped().get(), result);
+          // now override triggerPaths with everything that
+          // was in the schedule before the first endpath
+            //endOfTriggerPaths = std::find(result.begin(), result.end(), *(endPaths.begin()) );
+          Strs::iterator endOfTriggerPaths = std::find_first_of(result.begin(), result.end(),
+                                                                endPaths.begin(), endPaths.end());
+          // override trigger_paths and endpaths
+          triggerPaths = Strs(result.begin(), endOfTriggerPaths);
+          endPaths = Strs(endOfTriggerPaths, result.end());
         }
       }
     }
