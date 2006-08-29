@@ -72,10 +72,11 @@ sub check_db_connection {
 	return 0;
     }
 
-    unless (my $sqlplus = get_sqlplus_cmd(%args)) {
-	return "ERROR: check_db_connection had bad parameters";
+    my $sqlplus = get_sqlplus_cmd(%args);
+    unless ($sqlplus) {
+	return 0;
     }
-
+    
     my $result = `echo 'exit;' | $sqlplus 2>&1;`;
     if ($?) {
 	return $result;
@@ -87,6 +88,7 @@ sub check_db_connection {
 sub connection_test {
     my ($auth, $connect) = @_;
 
+    # Sqlite test
     if ($connect =~ /^sqlite/) {
 	my ($db) = ($connect =~ m'^sqlite_file:(.+)$');
 	print "[INFO]   Checking connection...";
@@ -97,14 +99,15 @@ sub connection_test {
 	return ($user, $pass, $db);
     }
 
-    my ($db) = ($connect =~ m'^oracle://(\w+)/\w+$');
-    unless ($db) {
+    # Oracle test
+    my ($db, $schema) = ($connect =~ m'^oracle://(\w+)/(\w+)$');
+    unless ($db && $schema) {
 	die "Connect string $connect is malformed\n";
     }
 
     # Parse out the login info
     unless (exists $auth->{$connect}) {
-	die "Connection $connect is not defined in $authfile\n";
+	die "Connection $connect is not defined in the authfile\n";
     }
 
     my $user = $auth->{$connect}->{user};
@@ -122,7 +125,7 @@ sub connection_test {
 	print "OK\n";
     }
 
-    return ($user, $pass, $db);
+    return ($user, $pass, $db, $schema);
 }
 
 
