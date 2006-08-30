@@ -175,6 +175,7 @@ class FURawEvent
   unsigned int l1Id_;
   friend class FURawEventFactory;
 
-
+  bool doCrcCheck_;
+  
 };
 #endif

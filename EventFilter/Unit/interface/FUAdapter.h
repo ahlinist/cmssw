@@ -7,6 +7,9 @@
 //
 //  MODIFICATION:
 //  $Log: FUAdapter.h,v $
+//  Revision 1.6  2006/06/13 15:09:56  meschi
+//  modifications to signal a thread waiting on input
+//
 //  Revision 1.5  2006/05/23 11:43:49  meschi
 //  additional diagnostics
 //
@@ -173,10 +176,12 @@ class FUAdapter: public xdaq::Application, public evf::RunBase
   xdata::Integer nbReceivedFragments_;
   xdata::Integer nbReceivedEvents_;
   xdata::Integer nbDataErrors_;
+  xdata::Integer nbCrcErrors_;
 
   // debug mode (dump fragments)
   xdata::Boolean doDumpFragments_;
   xdata::Boolean doDropFragments_;
+  xdata::Integer doCrcCheck_;
 
   // debug variables (message counters)
   xdata::Integer nAllocateSent_;
@@ -205,8 +210,11 @@ class FUAdapter: public xdaq::Application, public evf::RunBase
       s->fireItemAvailable("nbReceivedFragments", &nbReceivedFragments_);
       s->fireItemAvailable("nbReceivedEvents", &nbReceivedEvents_);
       s->fireItemAvailable("nbDataErrors", &nbDataErrors_);
+      s->fireItemAvailable("nbCrcErrors", &nbCrcErrors_);
+
       s->fireItemAvailable("fragDumpSwitch", &doDumpFragments_);
       s->fireItemAvailable("fragDropSwitch", &doDropFragments_);
+      s->fireItemAvailable("doCrcCheck",     &doCrcCheck_);
 
       s->fireItemAvailable("nAllocateSent", &nAllocateSent_);
       s->fireItemAvailable("nAllocatedEvents", &nAllocatedEvents_);
@@ -219,6 +227,16 @@ class FUAdapter: public xdaq::Application, public evf::RunBase
   void findOrCreateMemoryPool() throw (xcept::Exception);
 
   EventSink             *sink_;  
+
+  // PS
+public:
+  void crcErrorOccured() { nbCrcErrors_.value_++; }
+  bool doCrcCheck() const {
+    if (0!=doCrcCheck_.value_&&
+	nbReceivedFragments_.value_%doCrcCheck_.value_==0) return true;
+    return false;
+  }
+  
 };
 
 #endif

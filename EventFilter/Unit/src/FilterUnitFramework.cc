@@ -7,6 +7,9 @@
 //
 //  Modification history:
 //    $Log: FilterUnitFramework.cc,v $
+//    Revision 1.12  2006/08/29 16:55:43  schiefer
+//    temporary fix to FURawEvent::processMsg: return value indicates now super fragment number eventhough error has occured
+//
 //    Revision 1.11  2006/08/08 11:20:32  meschi
 //    reset pending requests when halting
 //
@@ -160,6 +163,7 @@ void FilterUnitFramework::exportParams()
   s_mon->fireItemAvailable("nbReceivedFragments",&nbReceivedFragments_);
   s_mon->fireItemAvailable("pendingRequests",&pendingRequests_);
   s_mon->fireItemAvailable("nbDataErrors",&nbDataErrors_);
+  s_mon->fireItemAvailable("nbCrcErrors",&nbCrcErrors_);
   s_mon->fireItemAvailable("MonitorEventsPerSec",&MonitorEventsPerSec_);
 }
 
@@ -577,6 +581,7 @@ void FilterUnitFramework::parameterTables(xgi::Input *in, xgi::Output *out)
   *out << buInstance_ << std::endl;
   *out << "</td>" << std::endl;
   *out << "</tr>" << std::endl;
+
   *out << "<tr>" << std::endl;
   *out << "<td>" << std::endl;
   *out << "runNumber" << std::endl;
@@ -585,6 +590,7 @@ void FilterUnitFramework::parameterTables(xgi::Input *in, xgi::Output *out)
   *out << runNumber_ << std::endl;
   *out << "</td>" << std::endl;
   *out << "</tr>" << std::endl;
+
   *out << "<tr>" << std::endl;
   *out << "<td>" << std::endl;
   *out << "workDir" << std::endl;
@@ -593,6 +599,7 @@ void FilterUnitFramework::parameterTables(xgi::Input *in, xgi::Output *out)
   *out << workDir_.value_ << std::endl;
   *out << "</td>" << std::endl;
   *out << "</tr>" << std::endl;
+
   *out << "<tr>" << std::endl;
   *out << "<td>" << std::endl;
   *out << "doDump" << std::endl;
@@ -601,6 +608,7 @@ void FilterUnitFramework::parameterTables(xgi::Input *in, xgi::Output *out)
   *out << doDumpFragments_ << std::endl;
   *out << "</td>" << std::endl;
   *out << "</tr>" << std::endl;
+
   *out << "<tr>" << std::endl;
   *out << "<td>" << std::endl;
   *out << "doDrop" << std::endl;
@@ -609,6 +617,16 @@ void FilterUnitFramework::parameterTables(xgi::Input *in, xgi::Output *out)
   *out << doDropFragments_ << std::endl;
   *out << "</td>" << std::endl;
   *out << "</tr>" << std::endl;
+
+  *out << "<tr>" << std::endl;
+  *out << "<td>" << std::endl;
+  *out << "doCrc" << std::endl;
+  *out << "</td>" << std::endl;
+  *out << "<td>" << std::endl;
+  *out << doCrcCheck_ << std::endl;
+  *out << "</td>" << std::endl;
+  *out << "</tr>" << std::endl;
+
   *out << "<tr>" << std::endl;
   *out << "<td>" << std::endl;
   *out << "queueSize" << std::endl;
@@ -617,6 +635,7 @@ void FilterUnitFramework::parameterTables(xgi::Input *in, xgi::Output *out)
   *out << queueSize_ << std::endl;
   *out << "</td>" << std::endl;
   *out << "</tr>" << std::endl;
+
   *out << "</table>" << std::endl;
 
 
@@ -648,6 +667,7 @@ void FilterUnitFramework::parameterTables(xgi::Input *in, xgi::Output *out)
   *out << nbEvents_ << std::endl;
   *out << "</td>" << std::endl;
   *out << "</tr>" << std::endl;
+
   *out << "<tr>" << std::endl;
   *out << "<td>" << std::endl;
   *out << "EventsProcessed" << std::endl;
@@ -656,6 +676,7 @@ void FilterUnitFramework::parameterTables(xgi::Input *in, xgi::Output *out)
   *out << factory_->getnbProcessed() << std::endl;
   *out << "</td>" << std::endl;
   *out << "</tr>" << std::endl;
+
   *out << "<tr>" << std::endl;
   *out << "<td>" << std::endl;
   *out << "EventsReceived" << std::endl;
@@ -664,6 +685,7 @@ void FilterUnitFramework::parameterTables(xgi::Input *in, xgi::Output *out)
   *out << nbReceivedEvents_ << std::endl;
   *out << "</td>" << std::endl;
   *out << "</tr>" << std::endl;
+
   *out << "<tr>" << std::endl;
   *out << "<td>" << std::endl;
   *out << "FragmentsReceived" << std::endl;
@@ -672,6 +694,7 @@ void FilterUnitFramework::parameterTables(xgi::Input *in, xgi::Output *out)
   *out << nbReceivedFragments_ << std::endl;
   *out << "</td>" << std::endl;
   *out << "</tr>" << std::endl;
+
   *out << "<tr>" << std::endl;
   *out << "<td>" << std::endl;
   *out << "PendingRequests" << std::endl;
@@ -687,6 +710,15 @@ void FilterUnitFramework::parameterTables(xgi::Input *in, xgi::Output *out)
   *out << "</td>" << std::endl;
   *out << "<td>" << std::endl;
   *out << nbDataErrors_ << std::endl;
+  *out << "</td>" << std::endl;
+  *out << "</tr>" << std::endl;
+  
+  *out << "<tr>" << std::endl;
+  *out << "<td>" << std::endl;
+  *out << "CrcErrors" << std::endl;
+  *out << "</td>" << std::endl;
+  *out << "<td>" << std::endl;
+  *out << nbCrcErrors_ << std::endl;
   *out << "</td>" << std::endl;
   *out << "</tr>" << std::endl;
   

@@ -38,7 +38,8 @@ FURawEvent::FURawEvent(unsigned int ihandle) :
   outstandingReqs_(0), myData_(nFEDs),
   eventHandle_(INVALID_EVENT_HANDLE),
   internalHandle_(ihandle), pendingFset(0),
-  buInstance_(INVALID_BU_INSTANCE), isNew_(true), l1Id_(0)
+  buInstance_(INVALID_BU_INSTANCE), isNew_(true), l1Id_(0),
+  doCrcCheck_(0)
 {
   nulldata->size_ = 0;
   nulldata->data_ = 0;
@@ -112,7 +113,7 @@ int FURawEvent::processMsg(I2O_MESSAGE_FRAME *stdMsg)
     sizeof(I2O_EVENT_DATA_BLOCK_MESSAGE_FRAME);
   
   int fragInd = (int)msg->superFragmentNb;
-
+  
   /*
   cout << "Now working on fragment " << fragInd << endl; 
   cout << "Total blocks " << (int) msg->totalBlocks;
@@ -126,12 +127,13 @@ int FURawEvent::processMsg(I2O_MESSAGE_FRAME *stdMsg)
 	  outstandingReqs_ = msg->nbSuperFragmentsInEvent;
 	}
     }
-
+  
   if(startOfFragment)
     {
       /*      cout << "Start of fragment, create pointer array of size " 
 	      << msg->totalFragments << endl;*/
       blockCount_ = 0;
+      doCrcCheck_=adapter_->doCrcCheck();
     }
   else
     {
@@ -161,7 +163,6 @@ int FURawEvent::processMsg(I2O_MESSAGE_FRAME *stdMsg)
       fragmentCount_++;
       outstandingReqs_--;
       builtFlags[fragInd]=true;
-      cout<<"super fragment with fragInd="<<fragInd<<" built!"<<endl;
       block_adrs.clear();
     }
   
@@ -403,36 +404,40 @@ int FURawEvent::checkin_data(vector<unsigned char*> &block_adrs)
 	      //
 	      // crc check
 	      //
-	      
-	      // save crc and reset to 0 (as well as R bit!)
-	      unsigned char* pfedd=myData_[fedid]->data_;
-	      fedt_t*        pfedt=(fedt_t*)(pfedd+fedlen-fedts);
-	      short int      crc  =(pfedt->conscheck & FED_CRCS_MASK >> 16);
-	      unsigned int   save =pfedt->conscheck;
-	      pfedt->conscheck &= (~FED_CRCS_MASK);
-	      pfedt->conscheck &= (~FED_RBIT_MASK);
-
-
-	      // compute crc check
-	      unsigned short chk=0xffff;
-	      unsigned int   n64=fedlen/8;
-	      for (unsigned i=0;i<n64;i++) 
-		chk=evf::compute_crc_64bit(chk,&pfedd[i*8]);
-	      
-	      // compare chk to stored crc
-	      if (chk!=crc) {
-		cout<<"error, stored crc '"<<crc
-		    <<"'is not equal to recomputed check '"<<chk<<"'"<<endl;
-		if(errors[(-FED_CRCCHK_FAILED)]++ < 10)
-		  LOG4CPLUS_ERROR(adapter_->getApplicationLogger(),
-				  "stored crc "<<crc
-				  <<" doesn't match recomputed check "<<chk);
+	      if (doCrcCheck_) {
 		
-		retVal = FED_CRCCHK_FAILED;
-	      }
-	      
-	      // reset stored crc value
-	      pfedt->conscheck=save;
+		// save crc and reset to 0 (as well as R bit!)
+		unsigned char* pfedd=myData_[fedid]->data_;
+		fedt_t*        pfedt=(fedt_t*)(pfedd+fedlen-fedts);
+		short int      crc  =(pfedt->conscheck & FED_CRCS_MASK >> 16);
+		unsigned int   save =pfedt->conscheck;
+		pfedt->conscheck &= (~FED_CRCS_MASK);
+		pfedt->conscheck &= (~FED_RBIT_MASK);
+		
+		// compute crc check
+		unsigned short chk=0xffff;
+		unsigned int   n64=fedlen/8;
+		for (unsigned i=0;i<n64;i++) 
+		  chk=evf::compute_crc_64bit(chk,&pfedd[i*8]);
+		
+		// compare chk to stored crc
+		if (chk!=crc) {
+		  //cout<<"error, stored crc '"<<crc
+		  //<<"'is not equal to recomputed check '"<<chk<<"'"<<endl;
+		  if(errors[(-FED_CRCCHK_FAILED)]++ < 10)
+		    LOG4CPLUS_ERROR(adapter_->getApplicationLogger(),
+				    "stored crc "<<crc
+				    <<" doesn't match recomputed check "<<chk);
+		  adapter_->crcErrorOccured();
+		  
+		  retVal = FED_CRCCHK_FAILED;
+		}
+		
+		// reset stored crc value
+		pfedt->conscheck=save;
+
+	      } // crc check
+
 	    }
 	}
       if(cursize>0)
