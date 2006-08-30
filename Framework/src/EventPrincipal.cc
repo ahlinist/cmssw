@@ -190,7 +190,7 @@ private:
     ProductID id = prov->productID();
 
     // Group assumes ownership
-    auto_ptr<Group> g(new Group(edp, prov));
+    std::auto_ptr<Group> g(new Group(edp, prov));
     g->setID(id);
     this->addGroup(g);
   }

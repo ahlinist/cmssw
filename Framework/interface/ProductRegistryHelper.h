@@ -33,7 +33,7 @@ namespace edm {
         branchAlias_() {}
       TypeID typeID_;
       std::string productInstanceName_;
-      std::string mutable branchAlias_;
+      mutable std::string branchAlias_;
       void setBranchAlias(std::string const& alias) const {branchAlias_ = alias;}
     };
 

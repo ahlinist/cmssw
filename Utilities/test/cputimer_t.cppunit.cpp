@@ -83,10 +83,10 @@ void testCPUTimer::testTiming()
   timer.start();
   struct timeval nowTime;
   do {
-    rusage theUsage;
-    getrusage(RUSAGE_SELF, &theUsage) ;
-    nowTime.tv_sec =theUsage.ru_utime.tv_sec;
-    nowTime.tv_usec =theUsage.ru_utime.tv_usec;
+    rusage theUsage2;
+    getrusage(RUSAGE_SELF, &theUsage2) ;
+    nowTime.tv_sec =theUsage2.ru_utime.tv_sec;
+    nowTime.tv_usec =theUsage2.ru_utime.tv_usec;
   }while(nowTime.tv_sec -startTime.tv_sec +1E-6*(nowTime.tv_usec-startTime.tv_usec) <1);
   timer.stop();
 
