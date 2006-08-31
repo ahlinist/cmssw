@@ -77,7 +77,7 @@ sub check_db_connection {
 	return 0;
     }
     
-    my $result = `echo 'exit;' | $sqlplus 2>&1;`;
+    my $result = `echo 'exit;' | $sqlplus 2>&1`;
     if ($?) {
 	return $result;
     } else { return 0; }
@@ -128,7 +128,11 @@ sub connection_test {
     return ($user, $pass, $db, $schema);
 }
 
-
+sub query_catalog {
+  my($pool_catalog, $offline_connect) = @_;
+  my $guid =  `FClistGUID -u $pool_catalog -p $offline_connect 2>&1`;
+  return $guid;
+}
 
 sub check_files {
     foreach (@_) {
