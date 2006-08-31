@@ -282,7 +282,7 @@ class RootWriterCSCMonitor {
 	}
 	char charge_bits[50];
 
-        sprintf(charge_bits,"27 Cathode Landau Peaks by Segment%d",sid);
+        sprintf(charge_bits,"27 Cathode Landau Peaks by Sector%d",sid);
         printf("charge_bits %s \n",charge_bits); 
 
 	TDirectory *dir_15 = dir->mkdir(charge_bits);
