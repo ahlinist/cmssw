@@ -280,9 +280,34 @@ class RootWriterCSCMonitor {
           sprintf(buf4,"layer%d",j);
 	  cat_raw_hits_pos_lay[j][histid] = new TH1F(buf4,raw_hits_cathode,80,0.0,80.0);
 	}
-	
+	char charge_bits[50];
 
+        sprintf(charge_bits,"27 Cathode Landau Peaks by Segment%d",sid);
+        printf("charge_bits %s \n",charge_bits); 
+
+	TDirectory *dir_15 = dir->mkdir(charge_bits);
+	// dir_15->cd();
+
+        for(int j=0;j<6;j++){ //layer
+          char buf4[20];
+          sprintf(buf4,"layer%d",j);
+          //dir_15->cd();
+	  TDirectory *dir_layer = dir_15->mkdir(buf4);//adam
+	  dir_layer->cd(); //adam
+
+	  for(int k=0; k<5; k++){ //first graph loop
+	    char buf6[20];
+	    sprintf(buf6, "CFEB%d",k);
+	    for(int m=0; m<5; m++){ //second graph loop
+	      char buf7[40];
+	      sprintf(buf7, "%dchip %d cfeb %d wb %d ",histid,j,k,m);
+              charge_sec[j][k][m][histid] = new TH1F(buf7,charge_bits,200,0.,1000.);
+	    }//second loop
+	  }//first graph loops
+	}//layer
+	///end for Misha's histogram!
       }
+      gROOT->cd();
     }
   }
   void dump3_ROOT(const CSCReadoutMappingFromFile & theMapping,const CSCEventData & data,CatTrkFnd & ctrk,AnoTrkFnd & atrk,TrkFit3D & fit) {
@@ -550,12 +575,71 @@ class RootWriterCSCMonitor {
 	  cat_trk_hits[histid]->Fill(trk_strip[k]);
 	  charge[trk_lay[k]][histid]->Fill(qsum*xcos);
 	  landau[histid]->Fill(qsum*xcos);
+
+	  //thing Misha wanted added!
 	  
+	 /*  int gwire_set[5]={16,28,30,52,64}; */
+/* 	  int igwire=-5; */
+
+/* 	  for(int i=0;i<=64;i++){ */
+/* 	    for(int j=0;j<5;j++){ */
+/* 	      if(awire[i]<gwire_set[j])igwire=j; */
+/* 	    } */
+/* 	  } */
+/* 	  int gcfeb=-5; */
+/* 	  for(int i=0; i<=80; i++){ */
+/* 	    gcfeb = (trk_strip[i]-1)%16; */
+/* 	  } */
+	  
+	  //charge_sec[trk_lay[k]][gcfeb][igwire][histid]->Fill(qsum*xcos);
+
+	 /*  for(int at=0;at<atrk.size();at++){ */
+
 	}
       }
     }
+
+    float d[3][3];
+    for(int at=0;at<atrk.size();at++){
+      std::vector<int> alay=atrk.atrk_layer(at);
+      std::vector<int> awire=atrk.atrk_wire(at);
+      for(int ct=0;ct<ctrk.size();ct++){
+	std::vector<int> clay=ctrk.ctrk_layer(ct);
+	std::vector<int> cstrip=ctrk.ctrk_strip(ct);
+	std::vector<ADCmat> cadcmat=ctrk.ctrk_adcmat(ct);
+	for(unsigned ia=0;ia<alay.size();ia++){
+	  for(unsigned ic=0;ic<clay.size();ic++){
+	    if(alay[ia]==clay[ic]){
+	      float *tmp=cadcmat[ic].array();
+	      int unpk=0;
+	      for(int iu=0;iu<3;iu++){
+		for(int ju=0;ju<4;ju++){
+		  if(ju!=3)d[iu][ju]=tmp[unpk];
+		  unpk=unpk+1;
+		}
+	      }
+	      float qsum=d[0][1]+d[1][1]+d[2][1];
+	      int gwire_set[5]={0,16,28,30,52};
+	      int igwire=0;
+	      for(int i=0;i<5;i++){
+		if(awire[ia]>gwire_set[i])igwire=i;
+	      }
+              //printf(" awire[ia] igwire %d %d \n",awire[ia],igwire);
+              int icfeb=(cstrip[ic]-1)/16; //does layer count from 1 or 0?
+	      int layer=alay[ia]; //does layer count from 1 or 0?
+	      //printf(" layer %d icfeb %d igwire %d histid %d qsum %f\n",layer,icfeb,igwire,histid,qsum);
+	      charge_sec[layer][icfeb][igwire][histid]->Fill(qsum); 
+	    }
+	  }
+	}  
+      }
+    }   
     
+    
+  
   }
+  
+  
   
   
   void print_raw_tracks_ROOT(const CSCReadoutMappingFromFile & theMapping,const CSCEventData & data,CatTrkFnd & ctrk,AnoTrkFnd & atrk,TrkFit3D & fit) {
@@ -713,6 +797,7 @@ class RootWriterCSCMonitor {
   TH1F *cat_raw_hits_pos_lay[6][36];
   TH1F *ano_raw_hits_number[36];
   TH1F *cat_raw_hits_number[36];
+  TH1F *charge_sec[6][5][5][36];
    
 };
 
