@@ -292,8 +292,8 @@ class RootWriterCSCMonitor {
           char buf4[20];
           sprintf(buf4,"layer%d",j);
           //dir_15->cd();
-	  TDirectory *dir_layer = dir_15->mkdir(buf4);//adam
-	  dir_layer->cd(); //adam
+	  TDirectory *dir_layer = dir_15->mkdir(buf4);
+	  dir_layer->cd(); 
 
 	  for(int k=0; k<5; k++){ //first graph loop
 	    char buf6[20];
@@ -305,7 +305,7 @@ class RootWriterCSCMonitor {
 	    }//second loop
 	  }//first graph loops
 	}//layer
-	///end for Misha's histogram!
+	
       }
       gROOT->cd();
     }
@@ -575,25 +575,6 @@ class RootWriterCSCMonitor {
 	  cat_trk_hits[histid]->Fill(trk_strip[k]);
 	  charge[trk_lay[k]][histid]->Fill(qsum*xcos);
 	  landau[histid]->Fill(qsum*xcos);
-
-	  //thing Misha wanted added!
-	  
-	 /*  int gwire_set[5]={16,28,30,52,64}; */
-/* 	  int igwire=-5; */
-
-/* 	  for(int i=0;i<=64;i++){ */
-/* 	    for(int j=0;j<5;j++){ */
-/* 	      if(awire[i]<gwire_set[j])igwire=j; */
-/* 	    } */
-/* 	  } */
-/* 	  int gcfeb=-5; */
-/* 	  for(int i=0; i<=80; i++){ */
-/* 	    gcfeb = (trk_strip[i]-1)%16; */
-/* 	  } */
-	  
-	  //charge_sec[trk_lay[k]][gcfeb][igwire][histid]->Fill(qsum*xcos);
-
-	 /*  for(int at=0;at<atrk.size();at++){ */
 
 	}
       }
