@@ -47,7 +47,7 @@ class Handle<GenericObject> {
 public:
       ///Throws exception if iName is not a known C++ class type
       Handle(const std::string& iName) : 
-        type_(ROOT::Reflex::Type::ByName(iName)),prov_(0),id_(0) {
+        type_(ROOT::Reflex::Type::ByName(iName)), prod_(), prov_(0), id_(0) {
            if(type_ == ROOT::Reflex::Type()) {
               throw edm::Exception(edm::errors::NotFound)<<"Handle<GenericObject> told to use uknown type '"<<iName<<"'.\n Please check spelling or that a module uses this type in the job.";
            }
@@ -61,7 +61,7 @@ public:
    
    ///Throws exception if iType is invalid
    Handle(const ROOT::Reflex::Type& iType):
-      type_(iType),prov_(0),id_(0) {
+      type_(iType), prod_(), prov_(0), id_(0) {
          if(iType == ROOT::Reflex::Type()) {
             throw edm::Exception(edm::errors::NotFound)<<"Handle<GenericObject> given an invalid ROOT::Reflex::Type";
          }

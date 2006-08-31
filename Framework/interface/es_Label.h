@@ -34,10 +34,10 @@ namespace edm {
       struct L {
          typedef T element_type;
          
-         L() {}
-         explicit L(boost::shared_ptr<T> iP):product_(iP) {}
-         explicit L(T* iP):product_(iP) {}
-         L(const L<T,ILabel>& iOther):product_(iOther.product_) {}
+         L() : product_() {}
+         explicit L(boost::shared_ptr<T> iP) : product_(iP) {}
+         explicit L(T* iP) : product_(iP) {}
+         L(const L<T,ILabel>& iOther) : product_(iOther.product_) {}
          
          T& operator*() { return *product_;}
          T* operator->() { return product_.get(); }
@@ -49,11 +49,11 @@ namespace edm {
             return temp;
          }
       struct Label {
-         Label() {}
-         Label(const char* iLabel):default_(iLabel){}
-         Label(const std::string& iString):default_(iString) {}
-         Label(const std::string& iString, unsigned int iIndex): 
-         labels_(iIndex+1,def()){ labels_[iIndex]=iString;}
+         Label() : labels_(), default_() {}
+         Label(const char* iLabel) : labels_(), default_(iLabel) {}
+         Label(const std::string& iString) : labels_(), default_(iString) {}
+         Label(const std::string& iString, unsigned int iIndex) : 
+           labels_(iIndex+1,def()), default_() {labels_[iIndex] = iString;}
          
          Label& operator()(const std::string& iString, unsigned int iIndex) {
             if(iIndex==labels_.size()){

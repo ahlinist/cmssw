@@ -29,7 +29,7 @@
 
 class DummyFinder : public edm::EventSetupRecordIntervalFinder {
 public:
-   DummyFinder() {
+   DummyFinder() :edm::EventSetupRecordIntervalFinder(), interval_() {
       this->findingRecord<DummyRecord>();
    }
    

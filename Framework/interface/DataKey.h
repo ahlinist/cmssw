@@ -39,7 +39,10 @@ class DataKey
       DataKey(const TypeTag& iType, 
                const IdTags& iId) :
          type_(iType),
-         name_(iId) { makeCopyOfMemory();}
+         name_(iId),
+         ownMemory_() {
+           makeCopyOfMemory();
+         }
 
       DataKey(const TypeTag& iType, 
                const IdTags& iId,
@@ -50,8 +53,9 @@ class DataKey
       
       DataKey(const DataKey& iRHS) : 
          type_(iRHS.type_),
-         name_(iRHS.name_) {
-            makeCopyOfMemory();
+         name_(iRHS.name_),
+         ownMemory_() {
+           makeCopyOfMemory();
          }
       
       const DataKey& operator=(const DataKey&); // stop default

@@ -20,7 +20,7 @@ $Id$
 using namespace std;
 
 namespace edm {
-  ProducerBase::ProducerBase() : ProductRegistryHelper() {}
+  ProducerBase::ProducerBase() : ProductRegistryHelper(), callWhenNewProductsRegistered_() {}
   ProducerBase::~ProducerBase() { }
 
    boost::function<void(const BranchDescription&)> ProducerBase::registrationCallback() const {

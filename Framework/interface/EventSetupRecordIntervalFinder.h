@@ -34,7 +34,7 @@ class EventSetupRecordIntervalFinder
 {
 
    public:
-      EventSetupRecordIntervalFinder() {}
+      EventSetupRecordIntervalFinder() : intervals_() {}
       virtual ~EventSetupRecordIntervalFinder();
 
       // ---------- const member functions ---------------------

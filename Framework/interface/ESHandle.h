@@ -37,9 +37,9 @@ class ESHandle
       ESHandle() : data_(0), description_(0) {}
       ESHandle(const T* iData) : data_(iData), description_(0) {}
 //      { std::cout<<"Call ESHanlde(data) ctor"<<std::endl; }
-      ESHandle(const T* iData, const edm::eventsetup::ComponentDescription* description) 
-           : data_(iData), description_(description) {}
-//      { std::cout<<"Call ESHanlde(data,description) ctor"<<std::endl; }
+      ESHandle(const T* iData, const edm::eventsetup::ComponentDescription* desc) 
+           : data_(iData), description_(desc) {}
+//      { std::cout<<"Call ESHanlde(data,desc) ctor"<<std::endl; }
       //virtual ~ESHandle();
 
       // ---------- const member functions ---------------------

@@ -54,11 +54,25 @@ namespace edm {
          /* ----------- end of provenance information ------------- */
                      
          
-         ComponentDescription() : isSource_(false){}
+         ComponentDescription() :
+	     label_(),
+	     type_(),
+	     isSource_(false),
+	     pid_(),
+	     releaseVersion_(),
+	     processName_(),
+	     passID_() {}
          
          ComponentDescription(const std::string& iType,
                               const std::string& iLabel,
-                              bool iIsSource) : label_(iLabel),type_(iType),isSource_(iIsSource){}
+                              bool iIsSource) :
+				label_(iLabel),
+				type_(iType),
+				isSource_(iIsSource),
+				pid_(), 
+				releaseVersion_(), 
+				processName_(), 
+				passID_() {}
                                 
          bool operator<( const ComponentDescription& iRHS) const {
             return (type_ == iRHS.type_) ? (label_ < iRHS.label_) : (type_<iRHS.type_);

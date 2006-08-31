@@ -21,7 +21,7 @@ namespace edm {
   public:
     typedef EDFilter ModuleType;
     
-    EDFilter() : ProducerBase() {}
+    EDFilter() : ProducerBase() , current_context_(0) {}
     virtual ~EDFilter();
     bool doFilter(Event& e, EventSetup const& c,
 		  CurrentProcessingContext const* cpc);

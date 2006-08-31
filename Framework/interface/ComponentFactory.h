@@ -38,12 +38,11 @@ namespace edm {
       class EventSetupProvider;
       
 template< class T>
-class ComponentFactory : public seal::PluginFactory< ComponentMakerBase<T>* ()>
+class ComponentFactory : public seal::PluginFactory<ComponentMakerBase<T>* ()>
 {
 
    public:
-   ComponentFactory() : seal::PluginFactory<ComponentMakerBase<T>* () >(
-                                                                        T::name()) {}
+   ComponentFactory() : seal::PluginFactory<ComponentMakerBase<T>* ()>(T::name()), makers_() {}
    //~ComponentFactory();
 
    typedef  ComponentMakerBase<T> Maker;

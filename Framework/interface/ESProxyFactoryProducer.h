@@ -65,7 +65,7 @@ namespace edm {
       class ProxyFactoryBase;
       
       struct FactoryInfo {
-         FactoryInfo() {}
+         FactoryInfo() : key_(), factory_() {}
          FactoryInfo(const DataKey& iKey, 
                       boost::shared_ptr<ProxyFactoryBase> iFactory)
          : key_(iKey), 

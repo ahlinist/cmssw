@@ -226,6 +226,7 @@ class EDLooperHelper;
     struct CommonParams
     {
       CommonParams():
+	processName_(),
 	releaseVersion_(),
 	passID_()
       { }
