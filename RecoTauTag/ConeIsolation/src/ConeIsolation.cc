@@ -13,7 +13,7 @@
 //
 // Original Author:  Simone Gennai
 //      Created:  Thu Apr  6 09:56:23 CEST 2006
-// $Id: ConeIsolation.cc,v 1.8 2006/08/08 07:53:48 tboccali Exp $
+// $Id: ConeIsolation.cc,v 1.9 2006/08/31 16:01:01 gennai Exp $
 //
 //
 
@@ -57,13 +57,11 @@ ConeIsolation::ConeIsolation(const edm::ParameterSet& iConfig)
   m_algo = new ConeIsolationAlgorithm(iConfig);
   
   std::string modulname = iConfig.getParameter<string>( "@module_label" );
-   produces<reco::JetTagCollection>();
    produces<reco::JetTagCollection>().setBranchAlias( modulname );
    std::string extCollectionName = modulname;
    int stringStart = modulname.size() - 7;
    extCollectionName.erase(stringStart, 7);
    extCollectionName =  extCollectionName + "TagInfos";
-   produces<reco::IsolatedTauTagInfoCollection>();       //Only one producer
    produces<reco::IsolatedTauTagInfoCollection>().setBranchAlias( extCollectionName );
    
 
