@@ -66,6 +66,7 @@ namespace edm
     double ptmin, ptmax;
     double etamin, etamax;
     double phimin, phimax;
+    double comenergy;
     
     HepRandomEngine* fRandomEngine;
     RandFlat*        fRandomGenerator; 

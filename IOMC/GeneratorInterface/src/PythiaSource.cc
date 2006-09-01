@@ -1,6 +1,6 @@
 /*
- *  $Date: 2006/07/14 16:26:58 $
- *  $Revision: 1.21 $
+ *  $Date: 2006/08/14 14:14:55 $
+ *  $Revision: 1.22 $
  *  
  *  Filip Moorgat & Hector Naves 
  *  26/10/05
@@ -75,7 +75,8 @@ PythiaSource::PythiaSource( const ParameterSet & pset,
   GeneratedInputSource(pset, desc), evt(0), 
   pythiaPylistVerbosity_ (pset.getUntrackedParameter<int>("pythiaPylistVerbosity",0)),
   pythiaHepMCVerbosity_ (pset.getUntrackedParameter<bool>("pythiaHepMCVerbosity",false)),
-  maxEventsToPrint_ (pset.getUntrackedParameter<int>("maxEventsToPrint",1))
+  maxEventsToPrint_ (pset.getUntrackedParameter<int>("maxEventsToPrint",1)),
+  comenergy(pset.getUntrackedParameter<double>("comEnergy",14000.))
   
 {
   
@@ -196,9 +197,9 @@ PythiaSource::PythiaSource( const ParameterSet & pset,
 
   if(particleID) 
     {
-      call_pyinit( "NONE", "p", "p", 14000. );
+      call_pyinit( "NONE", "p", "p", comenergy );
     } else {
-      call_pyinit( "CMS", "p", "p", 14000. );
+      call_pyinit( "CMS", "p", "p", comenergy );
     }
 
   cout << endl; // Stetically add for the output
