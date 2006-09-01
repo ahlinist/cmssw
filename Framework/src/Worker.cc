@@ -52,7 +52,8 @@ namespace edm
     state_(Ready),
     md_(iMD),
     actions_(iWP.actions_),
-    cached_exception_()
+    cached_exception_(),
+    sigs_()
   {
   }
 

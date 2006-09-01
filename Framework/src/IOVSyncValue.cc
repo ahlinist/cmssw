@@ -27,25 +27,26 @@ namespace edm {
 // static data member definitions
 //
 
+
 //
 // constructors and destructor
 //
-IOVSyncValue::IOVSyncValue(): haveID_(true), haveTime_(true)
+IOVSyncValue::IOVSyncValue(): eventID_(), time_(),
+haveID_(true), haveTime_(true)
 {
 }
 
-IOVSyncValue::IOVSyncValue(const EventID& iID): eventID_(iID),
+IOVSyncValue::IOVSyncValue(const EventID& iID) : eventID_(iID), time_(),
 haveID_(true), haveTime_(false)
 {
 }
 
-IOVSyncValue::IOVSyncValue(const Timestamp& iTime): time_(iTime),
+IOVSyncValue::IOVSyncValue(const Timestamp& iTime) : eventID_(), time_(iTime),
 haveID_(false), haveTime_(true)
 {
 }
 
-IOVSyncValue::IOVSyncValue(const EventID& iID, const Timestamp& iTime): 
-
+IOVSyncValue::IOVSyncValue(const EventID& iID, const Timestamp& iTime) :
 eventID_(iID), time_(iTime),
 haveID_(true), haveTime_(true)
 {

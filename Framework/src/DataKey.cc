@@ -31,7 +31,7 @@ namespace edm {
 //
 // constructors and destructor
 //
-DataKey::DataKey(): ownMemory_(false)
+DataKey::DataKey(): type_(), name_(), ownMemory_(false)
 {
 }
 

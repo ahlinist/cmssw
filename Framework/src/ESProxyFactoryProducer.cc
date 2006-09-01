@@ -35,7 +35,7 @@ namespace edm {
 //
 // constructors and destructor
 //
-ESProxyFactoryProducer::ESProxyFactoryProducer()
+ESProxyFactoryProducer::ESProxyFactoryProducer() : record2Factories_()
 {
 }
 

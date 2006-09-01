@@ -89,7 +89,7 @@ TestESDummyDataAnalyzer::~TestESDummyDataAnalyzer()
 
 // ------------ method called to produce the data  ------------
 void
-TestESDummyDataAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
+TestESDummyDataAnalyzer::analyze(const edm::Event&, const edm::EventSetup& iSetup)
 {
    using namespace edm;
 

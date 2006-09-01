@@ -23,7 +23,7 @@ static const char CVSId[] = "$Id$";
 
 using namespace edm;
 
-TestPRegisterModule2::TestPRegisterModule2(edm::ParameterSet const& p){
+TestPRegisterModule2::TestPRegisterModule2(edm::ParameterSet const&){
    produces<edmtest::DoubleProduct>();
 }
 

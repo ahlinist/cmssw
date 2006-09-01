@@ -58,8 +58,8 @@ ESProducerLooper::~ESProducerLooper()
 // member functions
 //
 void 
-ESProducerLooper::setIntervalFor(const EventSetupRecordKey& iKey,
-                                 const IOVSyncValue& iTime, 
+ESProducerLooper::setIntervalFor(const EventSetupRecordKey&,
+                                 const IOVSyncValue&, 
                                  ValidityInterval& oInterval)
 {
   //since non of the dependent records are valid, I will create one that is valid

@@ -30,7 +30,8 @@ namespace edm {
 //
 // constructors and destructor
 //
-DependentRecordIntervalFinder::DependentRecordIntervalFinder(const EventSetupRecordKey& iKey)
+DependentRecordIntervalFinder::DependentRecordIntervalFinder(const EventSetupRecordKey& iKey) :
+  providers_()
 {
    findingRecordWithKey(iKey);
 }

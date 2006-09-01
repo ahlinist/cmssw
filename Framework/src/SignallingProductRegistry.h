@@ -33,7 +33,7 @@ namespace edm {
    {
 
    public:
-      SignallingProductRegistry() {}
+      SignallingProductRegistry() : ProductRegistry(), productAddedSignal_(), typeAddedStack_() {}
       sigc::signal<void, BranchDescription const&> productAddedSignal_;
       
    private:

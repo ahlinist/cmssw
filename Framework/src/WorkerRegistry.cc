@@ -23,17 +23,19 @@ static const char CVSId[] = "$Id$";
 using namespace std;
 using namespace edm;
 
-WorkerRegistry::WorkerRegistry():
+WorkerRegistry::WorkerRegistry() :
+  m_workerMap(),
   act_reg_(new ActivityRegistry)
 {
 }
 
-WorkerRegistry::WorkerRegistry(boost::shared_ptr<ActivityRegistry> areg):
+WorkerRegistry::WorkerRegistry(boost::shared_ptr<ActivityRegistry> areg) :
+  m_workerMap(),
   act_reg_(areg)
 {
 }
 
-WorkerRegistry:: ~WorkerRegistry(){
+WorkerRegistry:: ~WorkerRegistry() {
   m_workerMap.clear();
 }
 
@@ -43,7 +45,7 @@ void WorkerRegistry::clear() {
 
 Worker* WorkerRegistry::getWorker(const WorkerParams& p) {
 
-  string workerid= 
+  string workerid =
     mangleWorkerParameters(*p.pset_, p.processName_,
 			   p.releaseVersion_,p.passID_);
 

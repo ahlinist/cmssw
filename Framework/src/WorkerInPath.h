@@ -25,7 +25,7 @@ namespace edm
     enum State { Normal=0, Ignore, Veto };
 
     explicit WorkerInPath(Worker*);
-    WorkerInPath(Worker*, State state);
+    WorkerInPath(Worker*, State theState);
 
     bool runWorker(EventPrincipal&, EventSetup const&,
 		   CurrentProcessingContext const* cpc);

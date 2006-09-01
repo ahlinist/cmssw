@@ -78,12 +78,18 @@ namespace edm {
     // note: names_ comes from "@trigger_paths", the parameter that has
     // the options applied to it.
 
-    TriggerNamesService::TriggerNamesService(const ParameterSet& pset):
+    TriggerNamesService::TriggerNamesService(const ParameterSet& pset) :
       process_name_(pset.getParameter<string>("@process_name")),
       trig_pset_(getTrigPSetFunc(pset)),
       trignames_(trig_pset_.getUntrackedParameter<vstring>("@trigger_paths")),
+      trigpos_(),
       pathnames_(trig_pset_.getParameter<vstring>("@paths")),
-      end_names_(trig_pset_.getParameter<vstring>("@end_paths"))
+      pathpos_(),
+      end_names_(trig_pset_.getParameter<vstring>("@end_paths")),
+      end_pos_(),
+      modulenames_(),
+      wantSummary_(),
+      makeTriggerResults_()
     {
       ParameterSet defopts;
       ParameterSet opts = 
