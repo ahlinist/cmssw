@@ -58,4 +58,18 @@
     <logical/>
   </File>
 
+  <File ID="24FBDEF4-C339-DB11-9CAB-0016761581E6">
+    <physical>
+      <pfn filetype="POOL_RDBMS" name="oracle://host/CMS_COND_HLT"/>
+    </physical>
+    <logical/>
+  </File>
+
+  <File ID="8A371FF9-C339-DB11-9A6D-0016761581E6">
+    <physical>
+      <pfn filetype="POOL_RDBMS" name="oracle://host/CMS_COND_ALIGNMENT"/>
+    </physical>
+    <logical/>
+  </File>
+
 </POOLFILECATALOG>
