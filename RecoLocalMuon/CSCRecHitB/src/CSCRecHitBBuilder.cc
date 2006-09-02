@@ -135,7 +135,7 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
     bool foundMatch = false;
     
     // Loop over strip hit collection
-    for ( CSCStripHitCollection::const_iterator sit = soc.begin(); sit != soc.end(); ++sit ){
+    for ( CSCStripHitCollection::const_iterator sit = clean_soc.begin(); sit != clean_soc.end(); ++sit ){
       
       const CSCStripHit& s_hit = *sit;
       const CSCDetId& sDetId = (*sit).cscDetId();
