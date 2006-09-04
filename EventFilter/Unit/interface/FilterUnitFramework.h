@@ -9,6 +9,9 @@
 //
 //  Modification history:
 //    $Log: FilterUnitFramework.h,v $
+//    Revision 1.8  2006/06/13 15:09:56  meschi
+//    modifications to signal a thread waiting on input
+//
 //    Revision 1.7  2006/05/23 11:43:49  meschi
 //    additional diagnostics
 //
@@ -247,4 +250,3 @@ private:
 };
 
 #endif
-
