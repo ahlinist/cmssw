@@ -38,9 +38,9 @@ function settings (){
     [ `echo $@ | grep -c "\-doPedNoiseTransfer"` = 1 ] && doPedNoiseTansfer=1 
     [ `echo $@ | grep -c "\-doFedCablingTransfer"` = 1 ] && doFedCablingTransfer=1 
     [ `echo $@ | grep -c "\-ConfigDb="`  = 1 ] && ConfigDb=`echo $@ | awk -F"\-ConfigDb=" '{print $2}' | awk '{print $1}'`
-    [ `echo $@ | grep -c "\-ConfigDbVersion="`  = 1 ] && ConfigDbVersion=`echo $@ | awk -F"\-ConfigDbVersion=" '{print $2}' | awk '{print $1}'`
-    [ `echo $@ | grep -c "\-ConfigDbPartition="`  = 1 ] && ConfigDbPartition=`echo $@ | awk -F"\-ConfigDbPartition=" '{print $2}' | awk '{print $1}'`
-    [ `echo $@ | grep -c "\-IOV="`  = 1 ] && IOV=`echo $@ | awk -F"\-IOV=" '{print $2}' | awk '{print $1}'`
+    [ `echo $@ | grep -c "\-ConfigDbVersion="`  = 1 ] && ConfigDbVersion=`echo $@ | awk -F"-ConfigDbVersion=" '{print $2}' | awk '{print $1}'`
+    [ `echo $@ | grep -c "\-ConfigDbPartition="`  = 1 ] && ConfigDbPartition=`echo $@ | awk -F"-ConfigDbPartition=" '{print $2}' | awk '{print $1}'`
+    [ `echo $@ | grep -c "\-IOV="`  = 1 ] && IOV=`echo $@ | awk -F"-IOV=" '{print $2}' | awk '{print $1}'`
     [ `echo $@ | grep -c "\-oracle"` = 1 ] && oracle_db=1 
     [ `echo $@ | grep -c "\-first_upload"` = 1 ] && append=0 
     
@@ -56,9 +56,16 @@ function settings (){
 #################
 
 export TNS_ADMIN=/afs/cern.ch/project/oracle/admin
-export CORAL_AUTH_PATH=CalibTracker/SiStripPedestals/test
-export CORAL_AUTH_USER=CMS_COND_STRIP
-export CORAL_AUTH_PASSWORD=strip_cern200603
+export CORAL_AUTH_PATH=/afs/cern.ch/cms/DB/conddb
+
+scramv1 setup -i oracle <<EOF
+
+
+
+/afs/cern.ch/project/oracle/admin
+
+EOF
+
 
 settings "$@"
 

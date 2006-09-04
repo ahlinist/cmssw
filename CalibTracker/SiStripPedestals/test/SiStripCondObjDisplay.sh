@@ -12,9 +12,16 @@ if [ `echo $@ | grep -c "\-help"` = 1 ];
 fi
 
 export TNS_ADMIN=/afs/cern.ch/project/oracle/admin
-export CORAL_AUTH_PATH=CalibTracker/SiStripPedestals/test
-export CORAL_AUTH_USER=CMS_COND_STRIP
-export CORAL_AUTH_PASSWORD=strip_cern200603
+#export CORAL_AUTH_PATH=CalibTracker/SiStripPedestals/test
+export CORAL_AUTH_PATH=/afs/cern.ch/cms/DB/conddb
+
+scramv1 setup -i oracle <<EOF
+
+
+
+/afs/cern.ch/project/oracle/admin
+
+EOF
 
 oracle_db=0
 runNb=1
