@@ -7,6 +7,9 @@
 //
 //  MODIFICATION:
 //  $Log: FUAdapter.h,v $
+//  Revision 1.7  2006/08/30 08:45:19  schiefer
+//  added 'doCrcCheck' parameter and 'nbCrcErros' counter, removed cout statements
+//
 //  Revision 1.6  2006/06/13 15:09:56  meschi
 //  modifications to signal a thread waiting on input
 //
@@ -167,11 +170,11 @@ class FUAdapter: public xdaq::Application, public evf::RunBase
   unsigned long bufSize_;
   BSem bSem_;
   vector<toolbox::mem::Reference *> toGo_;
-
- protected:
-
+  
+protected:
+  
   //variables to be exported to XDAQ
-
+  
   xdata::Integer pendingRequests_;
   xdata::Integer nbReceivedFragments_;
   xdata::Integer nbReceivedEvents_;
@@ -233,7 +236,7 @@ public:
   void crcErrorOccured() { nbCrcErrors_.value_++; }
   bool doCrcCheck() const {
     if (0!=doCrcCheck_.value_&&
-	nbReceivedFragments_.value_%doCrcCheck_.value_==0) return true;
+	nbReceivedEvents_.value_%doCrcCheck_.value_==0) return true;
     return false;
   }
   

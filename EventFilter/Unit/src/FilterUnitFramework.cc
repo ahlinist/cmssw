@@ -7,6 +7,9 @@
 //
 //  Modification history:
 //    $Log: FilterUnitFramework.cc,v $
+//    Revision 1.13  2006/08/30 08:45:20  schiefer
+//    added 'doCrcCheck' paramete rand 'nbCrcErros' counter, removed cout statements
+//
 //    Revision 1.12  2006/08/29 16:55:43  schiefer
 //    temporary fix to FURawEvent::processMsg: return value indicates now super fragment number eventhough error has occured
 //

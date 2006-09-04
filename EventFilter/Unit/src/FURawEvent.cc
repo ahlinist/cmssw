@@ -126,6 +126,8 @@ int FURawEvent::processMsg(I2O_MESSAGE_FRAME *stdMsg)
 	{
 	  outstandingReqs_ = msg->nbSuperFragmentsInEvent;
 	}
+      // check if a crc check is requested for the fragments of this event
+      doCrcCheck_=adapter_->doCrcCheck();
     }
   
   if(startOfFragment)
@@ -133,7 +135,6 @@ int FURawEvent::processMsg(I2O_MESSAGE_FRAME *stdMsg)
       /*      cout << "Start of fragment, create pointer array of size " 
 	      << msg->totalFragments << endl;*/
       blockCount_ = 0;
-      doCrcCheck_=adapter_->doCrcCheck();
     }
   else
     {
