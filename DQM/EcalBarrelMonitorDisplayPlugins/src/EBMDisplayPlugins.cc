@@ -1,11 +1,11 @@
-// $Id: EBMDisplayPlugins.cc,v 1.2 2006/08/23 15:08:59 benigno Exp $
+// $Id: EBMDisplayPlugins.cc,v 1.3 2006/08/25 07:33:44 dellaric Exp $
 
 /*!
   \file EBMDisplayPlugins
   \brief Display Plugin for Quality Histograms (2D)
   \author B. Gobbo 
-  \version $Revision: 1.2 $
-  \date $Date: 2006/08/23 15:08:59 $
+  \version $Revision: 1.3 $
+  \date $Date: 2006/08/25 07:33:44 $
 */
 
 #include "DQM/EcalBarrelMonitorDisplayPlugins/interface/EBMDisplayPlugins.h"
@@ -386,7 +386,8 @@ void EBMDisplayPlugins::postDrawTProfile2D( DisplayData *data ) {
 
   if( obj ) {
     if( name.find( "EBPDT" ) < name.size() || 
-	name.find( "EBTDT shape" ) < name.size() ) {
+	name.find( "EBLT shape" ) < name.size() || 
+	name.find( "EBTPT shape" ) < name.size() ) {
       TH1D* obj1 = obj->ProjectionY( "_py", 1, 1, "e" );
       gStyle->SetOptStat( "euomr" );
       obj1->SetStats( kTRUE );
