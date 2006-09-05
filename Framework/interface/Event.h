@@ -51,6 +51,8 @@ Putting Data
 
 
 Getting a reference to an event product before that product is put into the event
+NOTE: The edm::RefProd returned will not work until after the edm::Event has 
+been committed (which happens after the EDProducer::produce method has ended)
 \code
   std::auto_ptr<AppleCollection> pApples( new AppleCollection);
 
@@ -125,6 +127,9 @@ namespace edm {
     OrphanHandle<PROD>
     put(std::auto_ptr<PROD> product, const std::string& productInstanceName);
 
+    ///Returns a RefProd to a product before that product has been placed into the Event
+    /// The RefProd (and any Ref's made from it) will no work properly until after the
+    /// Event has been committed (which happens after leaving the EDProducer::produce method)
     template <typename PROD>
     RefProd<PROD>
     getRefBeforePut(const std::string& productInstanceName = std::string());
