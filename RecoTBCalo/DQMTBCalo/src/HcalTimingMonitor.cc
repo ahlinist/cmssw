@@ -72,11 +72,13 @@ void HcalTimingMonitor::processEvent(const HcalTBTiming& time){
 
   meTrigger_->Fill(time.triggerTime());
   meTTCL1A_->Fill(time.ttcL1Atime());
-  meBeamCoinc_->Fill(time.beamCoincidence());
-
+  if(time.BeamCoincidenceCount())
+   {
+  meBeamCoinc_->Fill(time.BeamCoincidenceHits(0));
+  meDT_[1]->Fill(time.triggerTime()-time.BeamCoincidenceHits(0));
+  meDT_[2]->Fill(time.ttcL1Atime()-time.BeamCoincidenceHits(0));
+   }
   meDT_[0]->Fill(time.triggerTime()-time.ttcL1Atime());
-  meDT_[1]->Fill(time.triggerTime()-time.beamCoincidence());
-  meDT_[2]->Fill(time.ttcL1Atime()-time.beamCoincidence());
 
   return;
 }
