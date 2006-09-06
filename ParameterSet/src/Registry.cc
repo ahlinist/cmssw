@@ -29,6 +29,12 @@ namespace edm
       reg->extra().setID(main.id());
     }
 
+    edm::ParameterSetID
+    getProcessParameterSetID(Registry const* reg)
+    {
+      return reg->extra().id();
+    }
+
     void fill(Registry* reg, regmap_type& fillme)
     {
       typedef Registry::const_iterator iter;

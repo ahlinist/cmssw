@@ -57,6 +57,13 @@ namespace edm
     void loadAllNestedParameterSets(Registry* reg,
 				    edm::ParameterSet const& main);
 
+
+    /// Return the ParameterSetID of the top-level ParameterSet stored
+    /// in the given Registry. Note the the returned ParameterSetID may
+    /// be invalid; this will happen if the Registry has not yet been
+    /// filled.
+    edm::ParameterSetID getProcessParameterSetID(Registry const* reg);
+
     /// Fill the given map with the persistent form of each
     /// ParameterSet in the given registry.
     typedef std::map<edm::ParameterSetID, edm::ParameterSetBlob> regmap_type;
