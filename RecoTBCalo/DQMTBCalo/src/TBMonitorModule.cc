@@ -3,8 +3,8 @@
 /*
  * \file TBMonitorModule.cc
  * 
- * $Date: 2006/08/23 18:51:47 $
- * $Revision: 1.1 $
+ * $Date: 2006/08/24 23:45:15 $
+ * $Revision: 1.2 $
  * \author W Fisher
  *
 */
@@ -27,7 +27,11 @@ TBMonitorModule::TBMonitorModule(const edm::ParameterSet& ps){
   }
   
   m_outputFile = ps.getUntrackedParameter<string>("outputFile", "");
-  if ( m_outputFile.size() != 0 ) {
+  if ( m_outputFile == (string)("NoOutput") ) {
+    cout << "TB Monitoring histograms will be not be saved..." << endl;    
+    m_outputFile = "";
+  }
+  else if ( m_outputFile.size() != 0 ) {
     cout << "TB Monitoring histograms will be saved to " << m_outputFile.c_str() << endl;    
   }
   else{
