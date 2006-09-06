@@ -26,6 +26,7 @@ namespace edm
       std::vector<ParameterSet>::const_iterator i = all_main_psets.begin();
       std::vector<ParameterSet>::const_iterator e = all_main_psets.end();
       for (; i != e; ++i) reg->insertMapped(*i);
+      reg->extra().setID(main.id());
     }
 
     void fill(Registry* reg, regmap_type& fillme)

@@ -27,8 +27,20 @@ namespace edm
   namespace pset
   {
 
+    class ProcessParameterSetIDCache
+    {
+    public:
+      ProcessParameterSetIDCache() : id_() { }
+      edm::ParameterSetID id() const { return id_; }
+      void setID(ParameterSetID const& id) { id_ = id; }
+    private:
+      edm::ParameterSetID id_;      
+    };
+
     typedef edm::detail::ThreadSafeRegistry<edm::ParameterSetID,
-					    edm::ParameterSet>  Registry;
+    					    edm::ParameterSet,
+					    ProcessParameterSetIDCache>
+                                            Registry;
 
     /// Associated free functions.
 
