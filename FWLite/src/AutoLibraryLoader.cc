@@ -154,7 +154,7 @@ void registerTypes() {
       //std::cout <<"namespace "<<className.substr(0,pos).c_str()<<std::endl;
       pos +=2;
     }
-    G__set_class_autoloading_table(const_cast<char*>( className.c_str()),kDummyLibName);
+    G__set_class_autoloading_table(const_cast<char*>( className.c_str()), const_cast<char*>(kDummyLibName));
     //std::cout <<"class "<<className.c_str()<<std::endl;
   }
 }
