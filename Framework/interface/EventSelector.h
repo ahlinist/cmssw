@@ -8,6 +8,7 @@
  */
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "DataFormats/Common/interface/HLTPathStatus.h"
 #include "DataFormats/Common/interface/TriggerResults.h"
 
 #include <vector>
@@ -37,11 +38,14 @@ namespace edm
     std::string getProcessName() const { return process_name_; }
     bool wantAll() const { return accept_all_; }
     bool acceptEvent(TriggerResults const&) const;
+    bool acceptEvent(unsigned char const*, int) const;
 
   private:
     std::string process_name_;
     bool accept_all_;
     Bits decision_bits_;
+
+    bool acceptTriggerPath(HLTPathStatus const&, BitInfo const&) const;
   };
 }
 
