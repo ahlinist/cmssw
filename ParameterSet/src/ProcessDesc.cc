@@ -12,7 +12,7 @@ static const char CVSId[] = "$Id$";
 
 #include <FWCore/ParameterSet/interface/ProcessDesc.h>
 #include "FWCore/ParameterSet/interface/Makers.h"
-#include "FWCore/ParameterSet/interface/parse.h"
+#include "FWCore/ParameterSet/interface/ParseTree.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ParameterSet/interface/Entry.h"
 
@@ -48,14 +48,8 @@ namespace edm
     services_(new std::vector<ParameterSet>()),
     bookkeeping_()
   {
-    edm::pset::ParseResults parsetree = edm::pset::fullParse(config.c_str());
-
-    // top node should be the PSetNode representing the process
-    pset::NodePtr processPSetNodePtr = parsetree->front();
-    edm::pset::PSetNode * processPSetNode 
-      = dynamic_cast<edm::pset::PSetNode*>(processPSetNodePtr.get());
-    assert(processPSetNode != 0);
-    processPSetNode->fillProcess(*this);
+    edm::pset::ParseTree parsetree(config.c_str());
+    parsetree.top()->fillProcess(*this);
 
 
     writeBookkeeping("@all_modules");
