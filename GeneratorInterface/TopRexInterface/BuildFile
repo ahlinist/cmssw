@@ -1,0 +1,26 @@
+<use name=boost>
+<use name=FWCore/Framework>
+<use name=SimDataFormats/HepMCProduct>
+<use name=clhep> 
+<use name=pythia6_227>
+<use name=toprex421>
+#<use name=tauola27.121.1_aux1> 
+#<use name=tauola27.121.1> 
+#<use name=photos215> 
+
+<flags SEAL_PLUGIN_NAME="GeneratorInterfaceTopRexInterface">
+<export>
+ <lib name=GeneratorInterfaceTopRexInterface> 
+ <use name=boost>
+ <use name=FWCore/Framework>
+ <use name=SimDataFormats/HepMCProduct>
+ <use name=clhep> 
+ <use name=pythia6_227>
+ <use name=toprex421>
+# <use name=tauola27.121.1_aux1> 
+# <use name=tauola27.121.1> 
+# <use name=photos215> 
+</export>
+
+ <lib name=g2c></lib>
+ <lib name=m></lib>
