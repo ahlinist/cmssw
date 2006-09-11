@@ -1,0 +1,25 @@
+<use name=boost>
+<use name=FWCore/Framework>
+<use name=SimDataFormats/HepMCProduct>
+<use name=clhep> 
+<use name=charybdis1_002> 
+<use name=pythia6_227>
+<use name=charybdis1_002> 
+
+<flags SEAL_PLUGIN_NAME="GeneratorInterfaceCharybdisInterface">
+<export>
+ <lib name=GeneratorInterfaceCharybdisInterface>
+ <use name=boost>
+ <use name=FWCore/Framework>
+ <use name=SimDataFormats/HepMCProduct>
+ <use name=clhep> 
+ <use name=charybdis1_002> 
+ <use name=pythia6_227>
+ <use name=charybdis1_002> 
+</export>
+
+ <lib name=g2c></lib>
+ <lib name=m></lib>
+
+
+
