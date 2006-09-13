@@ -88,7 +88,7 @@ class RootWriterCSCMonitor {
         hnctrks[histid]= new TH1F("05 Number of Cathode Tracks",buf2,20,0.0,20.0);
         sprintf(buf2,"06 Number of 3D Tracks%d",sid); 
         hntrks[histid]= new TH1F("06 Number of 3D Tracks",buf2,20,0.0,20.0);
-	sprintf(buf2, "18 Cathode  Landua Peaks%04d", sid);
+	sprintf(buf2, "18 Cathode  Landau Peaks%04d", sid);
 	landau[histid] = new TH1F("18 Cathode Landau peak", buf2, 100, 0.0, 1000.0);
 	sprintf(buf2, "19 Correlation Between Anode and Cathode Misses%d", sid);
 	miss_correlation[histid] = new TH1F("19 Correlation Between Anode and Cathode Misses", buf2,4, 0.0, 4.0); 
@@ -280,6 +280,7 @@ class RootWriterCSCMonitor {
           sprintf(buf4,"layer%d",j);
 	  cat_raw_hits_pos_lay[j][histid] = new TH1F(buf4,raw_hits_cathode,80,0.0,80.0);
 	}
+
 	char charge_bits[50];
 
         sprintf(charge_bits,"27 Cathode Landau Peaks by Sector%d",sid);
