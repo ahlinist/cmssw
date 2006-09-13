@@ -1,0 +1,5 @@
+for compilation Charybdis the package CommonInterface should be install
+in GeneratorInterface area
+
+to run cmsRun and Comphep.cfg make a symbol link:
+ln -s /afs/cern.ch/user/s/spitsky/scratch0/CMSSW/data/tq_tqb_tot.pev CompHEP_events.PEV
