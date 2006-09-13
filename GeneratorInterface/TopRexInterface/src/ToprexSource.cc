@@ -1,6 +1,6 @@
 /*
- *  $Date: 2006/09/11 16:26:58 $
- *  $Revision: 1.21 $
+ *  $Date: 2006/09/11 14:36:36 $
+ *  $Revision: 1.1 $
  *  
  *  Filip Moorgat & Hector Naves 
  *  26/10/05
@@ -158,7 +158,7 @@ ToprexSource::ToprexSource( const ParameterSet & pset,
   // cout << "TopReX was called OK" << endl;
   call_pyinit( "USER", "p", "p", 14000. );
   //
-  //    call_pretauola(-1);     // TAUOLA initialization
+  //     call_pretauola(-1);     // TAUOLA initialization
   cout << endl; // Stetically add for the output
 
   produces<HepMCProduct>();
@@ -169,7 +169,7 @@ ToprexSource::ToprexSource( const ParameterSet & pset,
 ToprexSource::~ToprexSource(){
   cout << "ToprexSource: event generation done. " << endl;
   call_pystat(1);
-  //  call_pretauola(1);  // output from TAUOLA 
+  //    call_pretauola(1);  // output from TAUOLA 
   clear(); 
 }
 
@@ -183,7 +183,7 @@ bool ToprexSource::produce(Event & e) {
 
     call_pyevnt();      // generate one event with Pythia
 
-    //    call_pretauola(0);       // tau-lepton decays with TAUOLA 
+    //        call_pretauola(0);       // tau-lepton decays with TAUOLA 
 
     call_findjets();      // find jets 
     call_pyhepc( 1 );
