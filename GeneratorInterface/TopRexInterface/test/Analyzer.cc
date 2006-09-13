@@ -169,6 +169,7 @@ void Analyzer::analyze( const Event& iEvent, const EventSetup& )
 	km = km + 1;
       P_J_E->Fill(pp_e);
       P_J_PT->Fill(pp_pt);
+      P_J_ETA->Fill(pp_eta);
       P_J_M->Fill(pm);
      }
     }
