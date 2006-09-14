@@ -20,6 +20,7 @@ class CSCDetId;
 class CSCLayer;
 class CSCChamberSpecs;
 class CSCLayerGeometry;
+class CSCFitXonStripWithGatti;
 
 class CSCMake2DRecHit
 {
@@ -31,10 +32,15 @@ class CSCMake2DRecHit
   
   /// Make 2D hits when have both wire and strip hit available in same layer
   CSCRecHit2D hitFromStripAndWire(const CSCDetId& id, const CSCLayer* layer, const CSCWireHit& wHit, const CSCStripHit& sHit);
+
   /// Make pseudo 2D hits when only wire information is available within a layer 
   CSCRecHit2D hitFromWireOnly(const CSCDetId& id, const CSCLayer* layer, const CSCWireHit& wHit);
+
   /// Make pseudo 2D hits when only strip information is available within a layer
   CSCRecHit2D hitFromStripOnly(const CSCDetId& id, const CSCLayer* layer, const CSCStripHit& sHit);
+
+  /// Keep hit within fiducial volume by changing y of hit if needed
+  float keepHitInFiducial( float& y );
   
   const CSCLayer * layer_;
   const CSCLayerGeometry * layergeom_;
@@ -43,8 +49,12 @@ class CSCMake2DRecHit
   
  private:
   
-  bool Debug;
+  bool debug;
   int stripWireDeltaTime;
+  bool useGatti;
+  
+  CSCFitXonStripWithGatti * xFitWithGatti_;
+
   
 };
 

@@ -3,38 +3,41 @@
 
 /** \class CSCPeakBinOfStripPulse
  *
- * Concrete algorithmic class used to identify ADC peak pulse height and Tmax
+ *
+ * Class used to identify ADC peak pulse height, T_max and T_peak
  * on strips in the endcap muon CSCs.
- * This version just finds the SCA bin with maximum content and Tmax.
  *
  * \author Dominique Fortin
  *
- * Modified from existing code in CSCRecHit/src/
  */
 
 class CSCChamberSpecs;
 class CSCStripDigi;
+class CSCFindPeakTime;
 
 class CSCPeakBinOfStripPulse {
   
  public:
-  CSCPeakBinOfStripPulse(){};
-  ~CSCPeakBinOfStripPulse(){};
-  
-  /// Find the peak pulseheight from the samples
-  bool peakAboveBaseline(const CSCStripDigi& digi, 
-                         const CSCChamberSpecs& specs,
-                         double& height, int& tpeak, double& sigma) const;
+  CSCPeakBinOfStripPulse();
+  ~CSCPeakBinOfStripPulse();
+
+
+  /// This finds the strip seed for the cluster, that is the strip with maximum deposition
+  bool peakAboveBaseline( const CSCStripDigi& digi, double& height, int& tmax, 
+                          float& tpeak, double& sigma) const;
 
 
   /// Find the signal after subtracting pedestals (first 2 time bins)  
-  bool signalAboveBaseline(const CSCStripDigi& digi,
-                           const CSCChamberSpecs& specs,
-                           double& height, const int& time) const;
+  bool signalAboveBaseline( const CSCStripDigi& digi, double& height, const int& time) const;
   
   
   /// Find the Strip pulseheight baseline 
-  float baseline(const CSCStripDigi& digi) const;
+  float baseline( const CSCStripDigi& digi ) const;
+
+
+ private:
+ 
+  CSCFindPeakTime* peakTimeFinder_;
   
 };
 

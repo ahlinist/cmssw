@@ -27,6 +27,7 @@ CSCStripSegments::CSCStripSegments(const edm::ParameterSet& ps) : geom_(0) {
   debug                  = ps.getUntrackedParameter<bool>("CSCDebug");
   minLayersApart         = ps.getUntrackedParameter<int>("CSCStripminLayersApart");
   proto_poca             = ps.getUntrackedParameter<double>("CSCStripMaxDistance");
+  isFarFromSegment       = ps.getUntrackedParameter<double>("CSCStripCloseToSegment");
   proto_deltaT           = ps.getUntrackedParameter<int>("CSCStripSegmentDeltaT"); 
   minStripHitsPerSegment = ps.getUntrackedParameter<int>("CSCminStripHitsPerSegment");
   useHitsFromFits        = ps.getUntrackedParameter<bool>("CSCuseStripHitsFromFits");
@@ -165,9 +166,9 @@ void CSCStripSegments::findStripSegments(const ChamberHitContainer& striphit) {
 	bool segok = false;
 	const CSCStripHit& h2 = *i2;					
 	unsigned L1 = h1.cscDetId().layer();
-	float W1 = h1.halfStripPos(); 
+	float W1 = h1.sHitPos(); 
 	unsigned L2 = h2.cscDetId().layer(); 
-	float W2 = h2.halfStripPos(); 
+	float W2 = h2.sHitPos(); 
 	
 	if (debug) std::cout << "[CSCStripSegments::findStripSegments] start proto segment from hits "
 			     << "h1 in layer: " << L1 <<  " strip pos: " << W1 << "   "
@@ -219,7 +220,7 @@ bool CSCStripSegments::addHit(const CSCStripHit& aHit, int layer) {
   
   // Test that we are not trying to add the same hit again
   for ( ChamberHitContainer::const_iterator it = proto_segment.begin(); it != proto_segment.end(); it++ ) 
-    if ( ( it->cscDetId().layer() == layer ) && ( aHit.halfStripPos() == it->halfStripPos() ) ) ok = false;
+    if ( ( it->cscDetId().layer() == layer ) && ( aHit.sHitPos() == it->sHitPos() ) ) ok = false;
   
   if ( ok ) {
     proto_segment.push_back(aHit);
@@ -260,8 +261,8 @@ void CSCStripSegments::updateParameters() {
     if ( il1 == il2 ) return;
     
     // Take into account the offset between strip # of different layers   
-    float y1 = float( h1.halfStripPos()) + offset1;
-    float y2 = float( h2.halfStripPos()) + offset2;
+    float y1 = float( h1.sHitPos()) + offset1;
+    float y2 = float( h2.sHitPos()) + offset2;
     proto_slope = (y2 - y1) / float( il2 - il1 );        
     
     // Have to figure out what is intercept in "y" space
@@ -321,7 +322,7 @@ void CSCStripSegments::fitSlope() {
     const CSCStripHit& h1 = (*it);
     offset1 = getStripOffset( h1 );
     // Take into account the offset between strip # of different layers
-    float y = float( h1.halfStripPos()) + offset1;
+    float y = float( h1.sHitPos()) + offset1;
     
     sz  += z;
     sz2 += z*z;
@@ -374,7 +375,7 @@ void CSCStripSegments::fillChiSquared() {
   for (ChamberHitContainer::const_iterator ih = proto_segment.begin(); ih != proto_segment.end(); ++ih ) {
     // Again, I have set z(layer_1) = 0.
     int idx = ih->cscDetId().layer() -1; 
-    float y = float( ih->halfStripPos() );
+    float y = float( ih->sHitPos() );
     chisq += (y - proto_y[idx]) * (y - proto_y[idx]) / sigma2; 
   }
   proto_Chi2 = chisq;
@@ -451,7 +452,7 @@ bool CSCStripSegments::isHitNearSegment( const CSCStripHit& h ) const {
   
   // Again, remember that z=0 for layer 1 by default
   int idx = h.cscDetId().layer() - 1;
-  float diff = float( h.halfStripPos() ) - proto_y[idx];
+  float diff = float( h.sHitPos() ) - proto_y[idx];
   
   if ( diff >= -1.* proto_poca && diff <= proto_poca ) return true;
   
@@ -471,11 +472,11 @@ void CSCStripSegments::flagHitNearSegment( const CSCStripHit& h,
   
   // Again, remember that z=0 for layer 1 by default
   int idx = h.cscDetId().layer() - 1;
-  float diff = float( h.halfStripPos() ) - proto_y[idx];
+  float diff = float( h.sHitPos() ) - proto_y[idx];
   
   if ( diff >= -1.* proto_poca && diff <= 1. * proto_poca ) {
       usedHits[id1-id2] = 1;  // Mark those as close by
-  } else if ( diff >= -5.* proto_poca && diff <= 5. * proto_poca ) {
+  } else if ( diff >= -1 * isFarFromSegment && diff <= isFarFromSegment ) {
       usedHits[id1-id2] = 2;  // Mark those as far off..
   }
 }  
@@ -563,7 +564,7 @@ void CSCStripSegments::increaseProtoSegment(const CSCStripHit& h, int layer) {
   bool ok = false;
   
   // Test that new hit fits closely to existing segment
-  float y = float( h.halfStripPos() );
+  float y = float( h.sHitPos() );
   float diff = y - proto_y[layer-1];
   
   if ( diff >= -1. * proto_poca && diff <= proto_poca ) ok = addHit(h, layer);
@@ -615,7 +616,7 @@ void CSCStripSegments::flagHitsAsUsed(const ChamberHitContainer& StripHitsInCham
     for ( ChamberHitContainerCIt iu = StripHitsInChamber.begin(); iu != StripHitsInChamber.end(); ++iu ) {
       CSCStripHit h1 = *hi;
       CSCStripHit h2 = *iu;		
-      if ( ( h1.halfStripPos() == h2.halfStripPos() ) &&	
+      if ( ( h1.sHitPos() == h2.sHitPos() ) &&	
 	   ( h1.cscDetId().layer() == h2.cscDetId().layer() ) )
 	
 	// Flag hit has used     
@@ -640,10 +641,14 @@ void CSCStripSegments::storeChamberHits() {
       hitsInChamber.push_back( h1 );
     } else {
       int this_layer = (*hi).cscDetId().layer();
-      float this_wgroup = proto_y[this_layer-1];
+      float this_strippos = proto_y[this_layer-1];
       CSCDetId this_id = (*hi).cscDetId();
       int this_tmax = (*hi).tmax();  
-      CSCStripHit this_striphit( this_id, this_wgroup, this_tmax );
+      float this_tpeak = (*hi).tpeak();  
+      int this_csize = (*hi).clusterSize();  
+      std::vector<float> adcs = (*hi).s_adc();
+
+      CSCStripHit this_striphit( this_id, this_strippos, this_tmax, this_tpeak, this_csize, adcs );
       hitsInChamber.push_back( this_striphit );
     }
   }
