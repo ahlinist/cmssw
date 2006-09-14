@@ -8,6 +8,13 @@
  * a Strip Hit out of these clusters by finding the center-of-mass position of the hit
  * The DetId, strip hit position, and peaking time are stored in a CSCStripHit collection.
  *
+ * Here one has to be careful with the ME_1/a chambers:  in MC, digis are produced only for the first 16
+ * strips, so one has to account for the ganging in groups of 3.
+ *
+ * In data, the ME_11 digis are stored in the same collection, so one has to untangle the output from
+ * the ME_1a and ME_1b strips.  64 readouts from ME_1b, 16 from ME_1a.  Will have to figure out if ME_1a comes
+ * first, and then the 64 ME_1b...
+ *
  * \author Dominique Fortin - UCR
  *
  */
@@ -60,10 +67,15 @@ class CSCHitFromStripOnly
   
  private:
   
-  CSCStripData makeStripData(int centerStrip, int offset, int ClusterSize);
+  CSCStripData makeStripData( int centerStrip, int offset );
+
+  // Variables entering the CSCStripHit construction:
+  int tmax_cluster;
+  float t_peak;
+  int ClusterSize;
+  std::vector<float> strips_adc;  
   
   /// The cuts for forming the strip hits are described in the data/.cfi file
-  int tmax_of_cluster;
   float theThresholdForAPeak;
   int theClusterSize;
   float theClusterChargeCut;

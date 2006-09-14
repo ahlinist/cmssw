@@ -96,7 +96,7 @@ class CSCWireSegments
   int proto_deltaT;
   bool debug;
   bool useHitsFromFits;
-  unsigned minWireHitsPerSegment;
+  int minWireHitsPerSegment;
   int muonsPerChamberMax;
   
   /*

@@ -90,8 +90,9 @@ class CSCStripSegments
   /// Cuts used in the code:  see .cfi file for description
   int minLayersApart;
   double proto_poca;
+  double isFarFromSegment;
   double proto_deltaT;
-  unsigned minStripHitsPerSegment;
+  int minStripHitsPerSegment;
   bool useHitsFromFits;
   bool debug;
   int muonsPerChamberMax;

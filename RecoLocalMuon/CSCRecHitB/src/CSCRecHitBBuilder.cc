@@ -101,8 +101,11 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
   HitsFromStripSegments_->setGeometry( geom_ );
   CSCStripHitCollection clean_soc = HitsFromStripSegments_->cleanStripHits(soc);
   
+
   
+
   // Now create 2-D hits by looking at superposition of strip and wire hit
+
   if (debug) std::cout << "[CSCRecHitBBuilder] Now producing 2D hits" << std::endl;
   
   int layer_idx = 0;
@@ -110,36 +113,39 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
   std::vector<CSCRecHit2D> hitsInLayer;
   CSCDetId old_id; 
   
-  // Loop over cleaned up wire hit collection
-  for ( CSCWireHitCollection::const_iterator wit = clean_woc.begin(); wit != clean_woc.end(); ++wit ) {
+
+  // Loop over strip hit collection
+  for ( CSCStripHitCollection::const_iterator sit = clean_soc.begin(); sit != clean_soc.end(); ++sit ){
+      
+    const CSCStripHit& s_hit = *sit;
+    const CSCDetId& sDetId = (*sit).cscDetId();
+    const CSCLayer* layer = getLayer( sDetId );
+    int shit_time = (*sit).tmax();
     
-    const CSCWireHit& w_hit = *wit;
-    const CSCDetId& wDetId = (*wit).cscDetId();
-    const CSCLayer* layer = getLayer( wDetId );
-    int whit_time = (*wit).tmax();
+    if ( layer_idx == 0 ) old_id = sDetId;
     
-    if ( layer_idx == 0 ) old_id = wDetId;
-    
-    if ((wDetId.endcap()  != old_id.endcap() ) ||
-	(wDetId.station() != old_id.station()) ||
-	(wDetId.ring()    != old_id.ring()   ) ||
-	(wDetId.chamber() != old_id.chamber()) ||
-	(wDetId.layer()   != old_id.layer()  )) {
+    if ((sDetId.endcap()  != old_id.endcap() ) ||
+	(sDetId.station() != old_id.station()) ||
+	(sDetId.ring()    != old_id.ring()   ) ||
+	(sDetId.chamber() != old_id.chamber()) ||
+	(sDetId.layer()   != old_id.layer()  )) {
       oc.put( old_id, hitsInLayer.begin(), hitsInLayer.end() );
       // Reset layer parameters and clear vector of rechit
       hitsInLayer.clear();
-      old_id = wDetId;
+      old_id = sDetId;
       hits_in_layer = 0;
     }
     
     bool foundMatch = false;
     
-    // Loop over strip hit collection
-    for ( CSCStripHitCollection::const_iterator sit = clean_soc.begin(); sit != clean_soc.end(); ++sit ){
-      
-      const CSCStripHit& s_hit = *sit;
-      const CSCDetId& sDetId = (*sit).cscDetId();
-      int shit_time = (*sit).tmax();
+
+    // Loop over cleaned up wire hit collection
+    for ( CSCWireHitCollection::const_iterator wit = clean_woc.begin(); wit != clean_woc.end(); ++wit ) {
+    
+      const CSCWireHit& w_hit = *wit;
+      const CSCDetId& wDetId = (*wit).cscDetId();
+      int whit_time = (*wit).tmax();
+
       
       int time_diff = (int) abs(whit_time - shit_time);
       
@@ -156,23 +162,24 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
       }
     }
     
-    // If missing strip hit in a layer, form pseudo 2-D hit from wire hit.
+    // If missing strip hit in a layer, form pseudo 2-D hit from strip hit.
     
     /*  Here is where you can build 1-D hits !!!   --> ignore for now until we have validated 2-D hits
      *
      *       if ( !foundMatch ) { 
-     *           CSCRecHit2D rechit = Make2DHits_->hitFromWireOnly(wDetId, layer, w_hit);
+     *           CSCRecHit2D rechit = Make2DHits_->hitFromStripOnly(sDetId, layer, w_hit);
      *           hits_in_layer++;
      *           hitsInLayer.push_back( rechit );
      *       }
      */
     
     layer_idx++;
-    old_id = wDetId;
+    old_id = sDetId;
   }
   // Add last set of hits to collection if found hits
   if ( hits_in_layer > 0 ) oc.put( old_id, hitsInLayer.begin(), hitsInLayer.end() );
 }
+
 
 
 /* setGeometry

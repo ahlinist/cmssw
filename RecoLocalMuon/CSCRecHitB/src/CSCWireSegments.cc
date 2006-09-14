@@ -131,7 +131,7 @@ void CSCWireSegments::findWireSegments(const ChamberHitContainer& wirehit) {
   for ( unsigned i = 0; i < 100; i++ ) usedHits[i] = 2;
   for ( unsigned i = 0; i < wirehit.size(); i++ ) usedHits[i] = 0; 
   
-  if ( ie - ib < minWireHitsPerSegment) { 
+  if ( (ie - ib) < minWireHitsPerSegment) { 
     storeLeftOverHits( wirehit );   // not enough hits to build segment, but store hits
     if (debug) std::cout << "[CSCWireSegments::findWireSegments] Not enough hits to build segments" << std::endl;
     if (debug) std::cout << "[CSCWireSegments::findWireSegments] Therefore just store wire hits " << std::endl;
@@ -165,9 +165,9 @@ void CSCWireSegments::findWireSegments(const ChamberHitContainer& wirehit) {
 	bool segok = false;
 	const CSCWireHit& h2 = *i2;					
 	unsigned L1 = h1.cscDetId().layer();
-	float W1 = h1.wgrouppos(); 
+	float W1 = h1.wHitPos(); 
 	unsigned L2 = h2.cscDetId().layer(); 
-	float W2 = h2.wgrouppos(); 
+	float W2 = h2.wHitPos(); 
 	
 	if (debug) std::cout << "[CSCWireSegments::findWireSegments] start proto segment from hits "
 			     << "h1 in layer: " << L1 <<  " wire #: " << W1 << "   "
@@ -219,7 +219,7 @@ bool CSCWireSegments::addHit(const CSCWireHit& aHit, int layer) {
   
   // Test that we are not trying to add the same hit again
   for ( ChamberHitContainer::const_iterator it = proto_segment.begin(); it != proto_segment.end(); it++ ) 
-    if ( ( it->cscDetId().layer() == layer ) && ( aHit.wgrouppos() == it->wgrouppos() ) ) ok = false;
+    if ( ( it->cscDetId().layer() == layer ) && ( aHit.wHitPos() == it->wHitPos() ) ) ok = false;
   
   if ( ok ) {
     proto_segment.push_back(aHit);
@@ -259,16 +259,16 @@ void CSCWireSegments::updateParameters(const CSCWireHit& aHit) {
     // If on same layer, at this point reject
     if ( il1 == il2 ) return;
     
-    proto_slope = float( h2.wgrouppos() - h1.wgrouppos() ) / float( il2 - il1 ) ;
+    proto_slope = float( h2.wHitPos() - h1.wHitPos() ) / float( il2 - il1 ) ;
     
     // CAREFUL HERE:
     // Have to figure out what is intercept
     // Remember to use  z = layer# -1  such that  z = 0 for layer 1:  
     
     if ( il1 == 1 ) {
-      proto_intercept = float( h1.wgrouppos() );
+      proto_intercept = float( h1.wHitPos() );
     } else {  
-      proto_intercept = float( h1.wgrouppos() ) - proto_slope * (il1 - 1);
+      proto_intercept = float( h1.wHitPos() ) - proto_slope * (il1 - 1);
     }
     // Expected position for each layer is:
     for ( int j = 0; j < 6; j++) proto_y[j] = j * proto_slope + proto_intercept;
@@ -299,7 +299,7 @@ void CSCWireSegments::fitSlope() {
     
     // Again, by definition, we set z = layer# - 1;
     float z = float( it->cscDetId().layer() ) -1.;
-    float y = float( it->wgrouppos() );
+    float y = float( it->wHitPos() );
     sz  += z;
     sz2 += z*z;
     sy  += y;
@@ -334,7 +334,7 @@ void CSCWireSegments::fillChiSquared(const CSCWireHit& aHit) {
   const CSCDetId id = aHit.cscDetId();
   const CSCLayer* layer_ = getLayer( id );
   const CSCLayerGeometry* layergeom_ = layer_->geometry();    
-  float wire_pos = aHit.wgrouppos();                         // This is the position of the wire hit in terms of wire #
+  float wire_pos = aHit.wHitPos();                         // This is the position of the wire hit in terms of wire #
   int thewire = int(wire_pos);              
   int wgroup = layergeom_->wireGroup(thewire);               // This is the corresponding wire group #
   int nwires = layergeom_->numberOfWiresPerGroup(wgroup);
@@ -344,7 +344,7 @@ void CSCWireSegments::fillChiSquared(const CSCWireHit& aHit) {
   for (ChamberHitContainer::const_iterator ih = proto_segment.begin(); ih != proto_segment.end(); ++ih ) {
     // Again, I have set z(layer_1) = 0.
     int idx = ih->cscDetId().layer() -1; 
-    float y = float( ih->wgrouppos() );
+    float y = float( ih->wHitPos() );
     chisq += (y - proto_y[idx]) * (y - proto_y[idx]) / sigma2; 
   }
   proto_Chi2 = chisq;
@@ -421,7 +421,7 @@ bool CSCWireSegments::isHitNearSegment( const CSCWireHit& h ) const {
   
   // Again, remember that z=0 for layer 1 by default
   int idx = h.cscDetId().layer() - 1;
-  float diff = float( h.wgrouppos() ) - proto_y[idx];
+  float diff = float( h.wHitPos() ) - proto_y[idx];
   
   if ( diff >= -1.* proto_poca && diff <= proto_poca ) return true;
   
@@ -442,7 +442,7 @@ void CSCWireSegments::flagHitNearSegment( const CSCWireHit& h,
   
   // Again, remember that z=0 for layer 1 by default
   int idx = h.cscDetId().layer() - 1;
-  float diff = float( h.wgrouppos() ) - proto_y[idx];
+  float diff = float( h.wHitPos() ) - proto_y[idx];
   
   if ( diff >= -3.* proto_poca && diff <= 3. * proto_poca ) usedHits[id1-id2] = 1;
 }  
@@ -529,7 +529,7 @@ void CSCWireSegments::increaseProtoSegment(const CSCWireHit& h, int layer) {
   bool ok = false;
   
   // Test that new hit fits closely to existing segment
-  float y = float( h.wgrouppos() );
+  float y = float( h.wHitPos() );
   float diff = y - proto_y[layer-1];
   
   if ( diff >= -1. * proto_poca && diff <= proto_poca ) ok = addHit(h, layer);
@@ -581,7 +581,7 @@ void CSCWireSegments::flagHitsAsUsed(const ChamberHitContainer& WireHitsInChambe
     for ( ChamberHitContainerCIt iu = WireHitsInChamber.begin(); iu != WireHitsInChamber.end(); ++iu ) {
       CSCWireHit h1 = *hi;
       CSCWireHit h2 = *iu;		
-      if ( ( h1.wgrouppos() == h2.wgrouppos() ) &&	
+      if ( ( h1.wHitPos() == h2.wHitPos() ) &&	
 	   ( h1.cscDetId().layer() == h2.cscDetId().layer() ) )
 	
 	// Flag hit has used     

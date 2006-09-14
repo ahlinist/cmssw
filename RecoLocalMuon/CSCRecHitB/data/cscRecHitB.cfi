@@ -4,7 +4,7 @@
 # ==================================
 module csc2DRecHits = CSCRecHitBProducer {
 
-     untracked bool CSCDebug = false
+     untracked bool CSCDebug = true
      string CSCStripDigiProducer = "muonCSCDigis"
      string CSCWireDigiProducer  = "muonCSCDigis"
      bool CSCproduce1DHits = false
@@ -23,18 +23,19 @@ module csc2DRecHits = CSCRecHitBProducer {
      untracked bool   CSCstripHituse3timeBin   = true 
      untracked double CSCStripClusterChargeCut = 10.
      untracked double CSCStripPeakThreshold    = 30.
-     untracked int32  CSCStripClusterSize      = 7
+     untracked int32  CSCStripClusterSize      = 3
 
-     untracked int32  CSCStripminLayersApart   = 2   
-     untracked double CSCStripMaxDistance      = 2.
+     untracked int32  CSCStripminLayersApart   = 2
+     untracked double CSCStripMaxDistance      = 5.
+     untracked double CSCStripCloseToSegment   = 8.
      untracked int32  CSCStripSegmentDeltaT    = 1
      untracked int32  CSCminStripHitsPerSegment= 3
      untracked bool   CSCuseStripHitsFromFits  = false
 	
 
-# common parameters for segment building
+# common parameters for segment and rechit building
      untracked int32  CSCmuonsPerChamberMax    = 3
-
+     untracked bool   CSC2UseGattiFit          = true
 
 # parameter for rechit building
      untracked int32  CSCstripWireDeltaTime    = 1

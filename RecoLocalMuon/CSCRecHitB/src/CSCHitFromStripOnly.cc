@@ -47,15 +47,14 @@ CSCHitFromStripOnly::~CSCHitFromStripOnly() {
  */
 std::vector<CSCStripHit> CSCHitFromStripOnly::runStrip( const CSCDetId& id, const CSCLayer* layer,
                                                         const CSCStripDigiCollection::Range& rstripd ) {	
-  
+
   std::vector<CSCStripHit> hitsInLayer;
   
   // cache layer info for ease of access
   id_ = id;
   layer_ = layer;
   layergeom_ = layer_->geometry();
-  
-  specs_ = &( dynamic_cast<const CSCChamberSpecs&>(layer->type()) );
+  specs_ = layer->chamber()->specs();  
   
   // find clusters of strips
   fillPulseHeights( rstripd );
@@ -63,12 +62,19 @@ std::vector<CSCStripHit> CSCHitFromStripOnly::runStrip( const CSCDetId& id, cons
   
   // Make a Strip Hit out of each strip local maximum
   for ( size_t imax = 0; imax < theMaxima.size(); ++imax ) {
-    tmax_of_cluster = 5;
-    float strippos = makeCluster( theMaxima[imax] );  // tmax_of_cluster is also found here
+
+    // Initialize parameters entering the CSCStripHit
+    tmax_cluster = 5;
+    t_peak = -999.;
+    ClusterSize = theClusterSize;
+    strips_adc.clear();
+
+    // tmax_of_cluster is also found here as well as size of cluster used, and adc outputs for each strips * 3 time bins    
+    float strippos = makeCluster( theMaxima[imax] );  
     
     if ( strippos < 0 ) continue;
     
-    CSCStripHit striphit( id, strippos, tmax_of_cluster );
+    CSCStripHit striphit( id, strippos, tmax_cluster, t_peak, ClusterSize, strips_adc );
     hitsInLayer.push_back( striphit ); 
   }
   return hitsInLayer;
@@ -81,7 +87,7 @@ std::vector<CSCStripHit> CSCHitFromStripOnly::runStrip( const CSCDetId& id, cons
 float CSCHitFromStripOnly::makeCluster( int centerStrip ) {
   
   float strippos = -1.;
-  int ClusterSize = theClusterSize;
+  ClusterSize = theClusterSize;
   std::vector<CSCStripData> stripDataV;
   
   // We only want to use strip position in terms of strip # for the strip hit.
@@ -99,12 +105,12 @@ float CSCHitFromStripOnly::makeCluster( int centerStrip ) {
   }
   
   for ( int i = -ClusterSize/2; i <= ClusterSize/2; ++i ) {
-    CSCStripData data = makeStripData(centerStrip, i, ClusterSize);
+    CSCStripData data = makeStripData(centerStrip, i);
     stripDataV.push_back( data );
   }
   
   strippos = findHitOnStripPosition( stripDataV );
-  tmax_of_cluster = findTmaxofCluster( stripDataV );
+  tmax_cluster = findTmaxofCluster( stripDataV );
   
   return strippos;
 }
@@ -113,9 +119,9 @@ float CSCHitFromStripOnly::makeCluster( int centerStrip ) {
 /* makeStripData
  *
  */
-CSCStripData CSCHitFromStripOnly::makeStripData(int centerStrip, int offset, int ClusterSize) {
+CSCStripData CSCHitFromStripOnly::makeStripData(int centerStrip, int offset ) {
   
-  CSCStripData prelimData(-1.,0.,0.,0.,0);
+  CSCStripData prelimData(-1.,0.,0.,0.,0,-1.);
   int thisStrip = centerStrip+offset;
   
   if ( offset == 0 ) {
@@ -144,7 +150,9 @@ CSCStripData CSCHitFromStripOnly::makeStripData(int centerStrip, int offset, int
 	float thisHeight      = thePulseHeightMap[thisStrip].y()  * ratio; 
 	float thisHeight2     = thePulseHeightMap[thisStrip].y2() * ratio2;
 	int thisTmax          = thePulseHeightMap[thisStrip].t();
-	prelimData = CSCStripData(thisStrip, thisHeight0, thisHeight, thisHeight2, thisTmax);
+	float thisTpeak       = thePulseHeightMap[thisStrip].tpk();
+
+	prelimData = CSCStripData(thisStrip, thisHeight0, thisHeight, thisHeight2, thisTmax, thisTpeak);
       }
     }
   }
@@ -159,6 +167,8 @@ void CSCHitFromStripOnly::fillPulseHeights( const CSCStripDigiCollection::Range&
   
   // Loop over strip digis and fill the pulseheight map
   
+//  std::vector<float> strip_adcs;
+
   thePulseHeightMap.clear();
   thePulseHeightMap.resize(100);
   
@@ -181,13 +191,25 @@ void CSCHitFromStripOnly::fillPulseHeights( const CSCStripDigiCollection::Range&
     if ( fill ) {
       double height[3], sigma;
       int tmax;
-      pulseheightOnStripFinder_->peakAboveBaseline( (*it), *specs_, height[1], tmax, sigma);
-      pulseheightOnStripFinder_->signalAboveBaseline( (*it), *specs_, height[0], tmax-1);
-      pulseheightOnStripFinder_->signalAboveBaseline( (*it), *specs_, height[2], tmax+1);
-      thePulseHeightMap[thisChannel] = CSCStripData( float(thisChannel), height[0], height[1], height[2], tmax);
+      float tpeak;
+      pulseheightOnStripFinder_->peakAboveBaseline( (*it), height[1], tmax, tpeak, sigma);    // time bin for maximum
+      pulseheightOnStripFinder_->signalAboveBaseline( (*it), height[0], tmax-1);              // previous time bin
+      pulseheightOnStripFinder_->signalAboveBaseline( (*it), height[2], tmax+1);              // next time bin
+
+
+      // Don't forget that the ME_11/a strips are ganged !!!
+      // Have to loop 2 more times to populate strips 17-48.
+    
+      if ( id_.station() == 1 && id_.ring() == 4 ) {
+        for ( int j = 0; j < 3; j++ ) {
+          thePulseHeightMap[thisChannel+16*j] = CSCStripData( float(thisChannel+16*j), height[0], height[1], height[2], tmax, tpeak);
+        }
+      } else {
+        thePulseHeightMap[thisChannel] = CSCStripData( float(thisChannel), height[0], height[1], height[2], tmax, tpeak);
+      }
+
     }
   }
-  //  correctForCrosstalk( rstripd );
 }
 
 
@@ -242,15 +264,22 @@ float CSCHitFromStripOnly::findHitOnStripPosition( const std::vector<CSCStripDat
       if (w < 0.) w = 0.;
       sum_w += w;
       sum  += w * data[i].x();
+      std::cout << " you have chosen not to use 3 time bins --> Gatti will fail " << std::endl;
     }
   } else {  
-    //    This uses 3 time bins, but ignore for now.
+    //    This uses 3 time bins
     for ( unsigned i = 0; i != data.size(); i++ ) {
       float w0 = data[i].y0();
       float w = data[i].y();
       float w2 = data[i].y2();
+
+      // Fill the adcs to the strip hit --> needed for Gatti fitter
+      strips_adc.push_back( w0 );
+      strips_adc.push_back(  w );
+      strips_adc.push_back( w2 );
+ 
       if (w0 < 0.) w0 = 0.;
-      if (w < 0.) w = 0.;
+      if (w  < 0.)  w = 0.;
       if (w2 < 0.) w2 = 0.;
       float tot_w = w0 + w + w2;
       sum_w += tot_w;
@@ -269,7 +298,8 @@ float CSCHitFromStripOnly::findHitOnStripPosition( const std::vector<CSCStripDat
 
 /* findTmaxofCluster
  * 
- * Simply find time bin when maximu hit occurs
+ * Simply find time bin when maximum hit occurs
+ * Also want to eventually find what this corresponds to for t_peak
  */
 int CSCHitFromStripOnly::findTmaxofCluster( const std::vector<CSCStripData>& data ) {
   
@@ -282,55 +312,3 @@ int CSCHitFromStripOnly::findTmaxofCluster( const std::vector<CSCStripData>& dat
 }
 
 
-/* This is not adequate, ignore for now
- 
-void CSCHitFromStripOnly::correctForCrosstalk( const CSCStripDigiCollection::Range& rstripd ) {
-  // loop over the map, and do a correction for each entry
-  for ( size_t istrip = 1; istrip < thePulseHeightMap.size(); ++istrip ) {
-    if ( thePulseHeightMap[istrip].y() > 0 ) {
-      
-      int theTbin = thePulseHeightMap[istrip].t();
-      
-      // find the digis corresponding to this strip and nearest neighbors.
-      for ( CSCStripDigiCollection::const_iterator it = rstripd.first; it != rstripd.second; ++it ) {
-	CSCStripDigi digi = *it;
-	unsigned int jstrip = digi.getStrip();
-	if ( jstrip == istrip ) {
-	  // add back in what got removed
-	  thePulseHeightMap[istrip] += 2.*crosstalkLevel( digi, theTbin );
-	} else if ( abs(jstrip - istrip) == 1 ) {
-	  // subtract off what came from that neighbor
-	  thePulseHeightMap[istrip] += -1.*crosstalkLevel( digi, theTbin );
-	}
-      }
-    }
-  }
-}
-
-
-float CSCHitFromStripOnly::crosstalkLevel(const CSCStripDigi & digi, int& theTbin) {
-  // Don't even bother for small signals -
-  //@@ check 5th bin, which is where peak is supposed to fall
-  std::vector<int> sca = digi.getADCCounts();
-  if ( sca[theTbin] < theClusterChargeCut) return 0.;
-  
-  // Make crosstalk proportional to the slope in the digi
-  // our time-variable will be the ratio of the SCA values.
-  float slope =  sca[theTbin]/( sca[theTbin-1]+0.1 ) - 1.;
-  if ( slope < 0. ) return 0.;
-  if ( slope > 2.5 ) slope = 2.5;
-  
-  // Correction factor is 0 for ratio of 1, and 2.6% for ratio of 2...
-  //@@ Need theCrossTalkLevel to be configurable
-  float theCrosstalkLevel = 0.026;
-  
-  // Smaller chambers get half the crosstalk
-  //@@ What happened to ME1a ??
-  if ( id_.station() == 1 || id_.ring() == 1) {
-    theCrosstalkLevel /= 2.;
-  }
-  return theCrosstalkLevel * sca[theTbin] * slope;
-}
-
-
-*/
