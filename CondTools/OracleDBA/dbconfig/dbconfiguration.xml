@@ -26,4 +26,7 @@
      <poolsetup mapping='mapping_SiStripObjects_1.0.xml' dbsetup='dbsetup_SiStripObjects_1.0.xml' library='CondFormatsSiStripObjects' />
   </detector>
 
+  <detector name='ALIGNMENT' offline_connect='oracle://devdb10/CMS_COND_ALIGNMENT'>
+     <poolsetup mapping='mapping_AlignmentObjects_1.0.xml' dbsetup='dbsetup_AlignmentObjects_1.0.xml' library='CondFormatsAlignment' />
+  </detector>
 </dbconfiguration>
