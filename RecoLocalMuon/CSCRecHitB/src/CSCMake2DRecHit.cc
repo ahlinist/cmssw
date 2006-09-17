@@ -28,7 +28,7 @@ CSCMake2DRecHit::CSCMake2DRecHit(const edm::ParameterSet& ps){
     
   debug                      = ps.getUntrackedParameter<bool>("CSCDebug");
   stripWireDeltaTime         = ps.getUntrackedParameter<int>("CSCstripWireDeltaTime");
-  useGatti                   = ps.getUntrackedParameter<bool>("CSC2UseGattiFit");
+  useGatti                   = ps.getUntrackedParameter<bool>("CSCUseGattiFit");
 
   xFitWithGatti_             = new CSCFitXonStripWithGatti( ps );
 }   
@@ -84,8 +84,8 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
 
     // Ensure that y position is within active area (ME_11 chambers):
     // If not, use upper (ME_1b)/lower (ME_1a) edge
-    y = keepHitInFiducial( y );
-    LocalPoint lp0(x, y);
+    LocalPoint lp0;
+    keepHitInFiducial( lp1, lp0 );
 
     sigma =  layergeom_->stripPitch(lp0)/sqrt(12);  
     double dx = sigma/sin(s_angle);
@@ -110,7 +110,7 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
   }
 
 
-  // If not at the edge, used stripClusterSize strip cluster:
+  // If not at the edge, used cluster of size ClusterSize:
 
   // Store channels used
   for ( int i = (centerStrip-stripClusterSize/2); i <= (centerStrip+stripClusterSize/2); i++ ) {
@@ -120,42 +120,50 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
   int ch0 = int(strip_pos);
   LocalPoint lp1 = layergeom_->stripWireIntersection( ch0,   wire_pos);
   LocalPoint lp2 = layergeom_->stripWireIntersection( ch0+1, wire_pos);
-    
+
+  // Ensure that y position is within active area (ME_11 chambers):
+  // If not, use upper (ME_1b)/lower (ME_1a) edge
+  LocalPoint lp3;
+  keepHitInFiducial( lp1, lp3 );
+  LocalPoint lp4;
+  keepHitInFiducial( lp2, lp4 );
+
+
   // Use center of gravity to determine local x and y position:
-  float x1 = lp1.x();
-  float x2 = lp2.x();
+  float x1 = lp3.x();
+  float x2 = lp4.x();
   float x  = (1. - strip_offset) * x1 + strip_offset * x2;
-  float y1 = lp1.y();
-  float y2 = lp2.y();
+  float y1 = lp3.y();
+  float y2 = lp4.y();
   float y  = (1. - strip_offset) * y1 + strip_offset * y2;
 
   if (debug) std::cout <<  "Output from simple centroid:" << std::endl;
   if (debug) std::cout <<  "x = " << x << std::endl;
 
-
   // Build local point
-  LocalPoint lp3(x, y);  
-  float stripWidth = fabs(x2 - x1);   // layergeom_->stripPitch(lp3);
+  float stripWidth = fabs(x2 - x1);  
   sigma =  stripWidth/sqrt(12);              
-
 
   // Here try to improve the strip position by applying Gatti fitter
 
   if ( useGatti ) {   
-    LocalPoint lp4 = layergeom_->stripWireIntersection( centerStrip, the_wire);
-    float x_to_gatti = lp4.x();   // Position at center of strip
+    LocalPoint lp5 = layergeom_->stripWireIntersection( centerStrip, the_wire);
+    LocalPoint lp6;
+    keepHitInFiducial( lp5, lp6 );
+
+    // Local position at center of strip
+    float x_to_gatti = lp6.x();   
+    y = lp6.y();
     float x_fit;
-//    xFitWithGatti_->initChamberSpecs( *specs_ );
-//    xFitWithGatti_->findXOnStrip( sHit, x_to_gatti, stripWidth, x_fit, sigma, chisq, prob );
     xFitWithGatti_->findXOnStrip( layer_, sHit, x_to_gatti, stripWidth, x_fit, sigma, chisq, prob );
-    if (debug) std::cout << "x, x_to_gatti, x_fit, and diff " << x << " " << x_to_gatti  << " " << x_fit << " " << x-x_fit << std::endl;
+
+    if (debug) std::cout << "Centroid x, Gatti x, diff " << x << " " << x_fit << " " << x-x_fit << std::endl;
+
     x = x_fit;
   }
 
-  // Ensure that y position is within active area (ME_11 chambers):
-  // If not, use upper (ME_1b)/lower (ME_1a) edge              
-  y = keepHitInFiducial( y );
   LocalPoint lp0(x, y);
+
 
   // Now compute the errors properly on local x and y
 
@@ -200,20 +208,47 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripOnly(const CSCDetId& id, const CSCLayer
 }
 
 
-float CSCMake2DRecHit::keepHitInFiducial( float& y ) {
+void CSCMake2DRecHit::keepHitInFiducial( LocalPoint& lp1, LocalPoint& lp0 ) {
 
-  const float marginAtEdge = 0.1;  // Allow extra margin for future tuning etc. For now 0.1 cm.
-  float y2 = y;
+  // Allow extra margin for future tuning etc. For now use 0.2 cm.
+  const float marginAtEdge = 0.2;  
 
-  float apothem = layergeom_->length()/2.;
+  // Initialize parameters needed for correction:
+  float x1 = lp1.x();
+  float y1 = lp1.y();
+  int centralStrip = layergeom_->nearestStrip( lp0 );
+  float wAngle     = layergeom_->wireAngle();      
+  float apothem    = layergeom_->length()/2.;
 
-  if ( fabs(y) > (apothem+marginAtEdge) ) {
-    if ( y < 0. ) {
-      y2 = -1. * (apothem+marginAtEdge);
-    } else {
-      y2 =  (apothem+marginAtEdge);
+  // Test if beyond edge of chamber
+  if ( fabs(y1) > apothem )  {                                
+
+    // beyond bottom of chamber
+    if ( y1 < 0. ) {       
+
+      float yNearWire     = apothem + marginAtEdge;           
+      float xNearWire     = x1 - yNearWire * sin( wAngle );
+      LocalPoint lpGetWire( xNearWire, yNearWire );
+      float closestWire   = layergeom_->nearestWire( lpGetWire );
+      lp0                 = layergeom_->stripWireIntersection( centralStrip, closestWire );
+
+   // beyond top of chamber      
+    } else {            
+
+      float yNearWire     = apothem - marginAtEdge;           
+      float xNearWire     = x1 + yNearWire * sin( wAngle );
+      LocalPoint lpGetwire( xNearWire, yNearWire );
+      float closestWire   = layergeom_->nearestWire( lpGetwire );
+      lp0                 = layergeom_->stripWireIntersection( centralStrip, closestWire );
+
     }
+
+  // Within chamber, so keep local point as is
+  } else {              
+
+    lp0 = lp1;
   } 
-  return y2;
+ 
+
 }
 

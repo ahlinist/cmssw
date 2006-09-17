@@ -13,6 +13,13 @@
 #include <Geometry/CSCGeometry/interface/CSCChamberSpecs.h>
 #include <Geometry/CSCGeometry/interface/CSCLayerGeometry.h>
 
+#include "CondFormats/CSCObjects/interface/CSCGains.h"
+#include "CondFormats/DataRecord/interface/CSCGainsRcd.h"
+#include "CondFormats/CSCObjects/interface/CSCcrosstalk.h"
+#include "CondFormats/DataRecord/interface/CSCcrosstalkRcd.h"
+#include "CondFormats/CSCObjects/interface/CSCNoiseMatrix.h"
+#include "CondFormats/DataRecord/interface/CSCNoiseMatrixRcd.h"
+
 #include <FWCore/MessageLogger/interface/MessageLogger.h>
 #include <FWCore/Utilities/interface/Exception.h>
 
@@ -25,12 +32,12 @@
 
 CSCHitFromStripOnly::CSCHitFromStripOnly( const edm::ParameterSet& ps ) {
   
-  theClusterSize         = ps.getUntrackedParameter<int>("CSCStripClusterSize");
-  theClusterChargeCut    = ps.getUntrackedParameter<double>("CSCStripClusterChargeCut");
-  theThresholdForAPeak   = ps.getUntrackedParameter<double>("CSCStripPeakThreshold");
-  stripHituse3timeBin    = ps.getUntrackedParameter<bool>("CSCstripHituse3timeBin");
+  isData                     = ps.getUntrackedParameter<bool>("CSCIsRunningOnData");
+  theClusterSize             = ps.getUntrackedParameter<int>("CSCStripClusterSize");
+  theClusterChargeCut        = ps.getUntrackedParameter<double>("CSCStripClusterChargeCut");
+  theThresholdForAPeak       = ps.getUntrackedParameter<double>("CSCStripPeakThreshold");
   
-  pulseheightOnStripFinder_   = new CSCPeakBinOfStripPulse();
+  pulseheightOnStripFinder_  = new CSCPeakBinOfStripPulse( ps );
 }
 
 
@@ -48,6 +55,7 @@ CSCHitFromStripOnly::~CSCHitFromStripOnly() {
 std::vector<CSCStripHit> CSCHitFromStripOnly::runStrip( const CSCDetId& id, const CSCLayer* layer,
                                                         const CSCStripDigiCollection::Range& rstripd ) {	
 
+
   std::vector<CSCStripHit> hitsInLayer;
   
   // cache layer info for ease of access
@@ -57,6 +65,8 @@ std::vector<CSCStripHit> CSCHitFromStripOnly::runStrip( const CSCDetId& id, cons
   specs_ = layer->chamber()->specs();  
   
   // find clusters of strips
+  if (isData) pulseheightOnStripFinder_->setCalibration( gains_, xtalk_, noise_ );
+
   fillPulseHeights( rstripd );
   findMaxima();    
   
@@ -257,34 +267,23 @@ float CSCHitFromStripOnly::findHitOnStripPosition( const std::vector<CSCStripDat
   float sum=0.;
   float sum_w=0.;
   
-  if ( !stripHituse3timeBin ) {  
-    // This uses only 1 time bin
-    for ( unsigned i = 0; i != data.size(); i++ ) {
-      float w = data[i].y();
-      if (w < 0.) w = 0.;
-      sum_w += w;
-      sum  += w * data[i].x();
-      std::cout << " you have chosen not to use 3 time bins --> Gatti will fail " << std::endl;
-    }
-  } else {  
-    //    This uses 3 time bins
-    for ( unsigned i = 0; i != data.size(); i++ ) {
-      float w0 = data[i].y0();
-      float w = data[i].y();
-      float w2 = data[i].y2();
+  //    This uses 3 time bins
+  for ( unsigned i = 0; i != data.size(); i++ ) {
+    float w0 = data[i].y0();
+    float w = data[i].y();
+    float w2 = data[i].y2();
 
-      // Fill the adcs to the strip hit --> needed for Gatti fitter
-      strips_adc.push_back( w0 );
-      strips_adc.push_back(  w );
-      strips_adc.push_back( w2 );
+    // Fill the adcs to the strip hit --> needed for Gatti fitter
+    strips_adc.push_back( w0 );
+    strips_adc.push_back(  w );
+    strips_adc.push_back( w2 );
  
-      if (w0 < 0.) w0 = 0.;
-      if (w  < 0.)  w = 0.;
-      if (w2 < 0.) w2 = 0.;
-      float tot_w = w0 + w + w2;
-      sum_w += tot_w;
-      sum += tot_w * data[i].x();
-    }
+    if (w0 < 0.) w0 = 0.;
+    if (w  < 0.)  w = 0.;
+    if (w2 < 0.) w2 = 0.;
+    float tot_w = w0 + w + w2;
+    sum_w += tot_w;
+    sum += tot_w * data[i].x();
   }
   
   if ( sum_w > 0. ) {

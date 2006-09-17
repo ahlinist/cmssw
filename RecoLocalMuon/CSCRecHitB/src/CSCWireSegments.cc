@@ -29,8 +29,7 @@ CSCWireSegments::CSCWireSegments(const edm::ParameterSet& ps) : geom_(0) {
   proto_deltaT           = ps.getUntrackedParameter<int>("CSCWireSegmentDeltaT"); 
   minWireHitsPerSegment  = ps.getUntrackedParameter<int>("CSCminWireHitsPerSegment");
   useHitsFromFits        = ps.getUntrackedParameter<bool>("CSCuseWireHitsFromFits");
-  muonsPerChamberMax     = ps.getUntrackedParameter<int>("CSCmuonsPerChamberMax");
-  
+  muonsPerChamberMax     = ps.getUntrackedParameter<int>("CSCSegmentPerChamberMax");  
 }
 
 

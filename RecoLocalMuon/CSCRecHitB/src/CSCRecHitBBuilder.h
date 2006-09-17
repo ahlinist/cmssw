@@ -30,8 +30,10 @@
 
 class CSCLayer;
 class CSCGeometry;
+class CSCGains;
+class CSCcrosstalk;
+class CSCNoiseMatrix;
 class CSCDetId;
-
 class CSCHitFromStripOnly;
 class CSCHitFromWireOnly;
 class CSCWireSegments;
@@ -62,12 +64,26 @@ class CSCRecHitBBuilder
 	      CSCRecHit2DCollection& oc );
   
   /*
-   * Cache pointer to geometry _for current event_
+   * Cache pointer to geometry and calibration constants so they can be
+   * redistributed further downstream
    */
-  void setGeometry( const CSCGeometry* geom );
+  void setGeometry   ( const CSCGeometry* geom ) {geom_ = geom;}
+  void setCalibration( const CSCGains* gains,
+                       const CSCcrosstalk* xtalk,
+                       const CSCNoiseMatrix* noise ) {
+    gains_ = gains;
+    xtalk_ = xtalk;
+    noise_ = noise;
+  }
+
   const CSCLayer* getLayer( const CSCDetId& detId );
 
+
  private:
+
+  bool isData;
+  bool debug;  
+  int stripWireDeltaT;
   
   /**
    *  The Program first constructs proto wire/strip hits which
@@ -81,12 +97,13 @@ class CSCRecHitBBuilder
   CSCMake2DRecHit*       Make2DHits_;
 
   /*
-   * Cache geometry for current event
+   * Cache geometry and calibrations for current event
    */
   const CSCGeometry* geom_;
+  const CSCGains* gains_;
+  const CSCcrosstalk* xtalk_;
+  const CSCNoiseMatrix* noise_;
 
-  bool debug;  
-  int stripWireDeltaT;
 };
 
 #endif

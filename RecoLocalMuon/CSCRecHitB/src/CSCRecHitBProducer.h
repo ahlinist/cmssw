@@ -22,18 +22,23 @@
 class CSCRecHitBBuilder; 
 
 class CSCRecHitBProducer : public edm::EDProducer {
-   public:
-      explicit CSCRecHitBProducer( const edm::ParameterSet& ps);
-      ~CSCRecHitBProducer();
 
-      virtual void produce( edm::Event&, const edm::EventSetup& );
+public:
+  explicit CSCRecHitBProducer( const edm::ParameterSet& ps);
+  ~CSCRecHitBProducer();
 
-   private:
-      int iev; // events through
-      std::string stripDigiProducer_;
-      std::string wireDigiProducer_;
-      CSCRecHitBBuilder* recHitBuilder_;
+  virtual void produce( edm::Event&, const edm::EventSetup& );
 
+ private:
+
+  // Counting events processed
+  int iev; 
+  bool isData;
+
+  std::string stripDigiProducer_;
+  std::string wireDigiProducer_;
+
+  CSCRecHitBBuilder* recHitBuilder_;
 };
 
 #endif
