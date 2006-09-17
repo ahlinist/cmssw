@@ -158,6 +158,7 @@ void CSCFitXonStripWithGatti::runGattiFit( int istrt ) {
   // Now compute errors
   float errl = .001;
   float errh = .001;
+
   
   // Look at chi^2 for dx - 0.001
 
@@ -200,7 +201,7 @@ float CSCFitXonStripWithGatti::chisqrFromGatti( float x ) {
 
   float chi2 = 0.;
 
-  // What is the error on these adc counts after applying all the corrections ?  
+  // What is the error on these adc counts after applying all the corrections (gains, noise cross talk) ?  
   // Blightly assume poisson stats ...
 
   // Also, leave the option open to use either 3 x 3 Gatti or simply look at 3 strip for tmax

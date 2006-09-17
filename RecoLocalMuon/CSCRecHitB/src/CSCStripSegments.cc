@@ -31,8 +31,7 @@ CSCStripSegments::CSCStripSegments(const edm::ParameterSet& ps) : geom_(0) {
   proto_deltaT           = ps.getUntrackedParameter<int>("CSCStripSegmentDeltaT"); 
   minStripHitsPerSegment = ps.getUntrackedParameter<int>("CSCminStripHitsPerSegment");
   useHitsFromFits        = ps.getUntrackedParameter<bool>("CSCuseStripHitsFromFits");
-  muonsPerChamberMax     = ps.getUntrackedParameter<int>("CSCmuonsPerChamberMax");
-  
+  muonsPerChamberMax     = ps.getUntrackedParameter<int>("CSCSegmentPerChamberMax"); 
 }
 
 

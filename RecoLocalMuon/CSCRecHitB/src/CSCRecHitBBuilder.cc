@@ -11,6 +11,13 @@
 #include <DataFormats/CSCRecHit/interface/CSCWireHitCollection.h>
 #include <DataFormats/CSCRecHit/interface/CSCStripHitCollection.h>
 
+#include "CondFormats/CSCObjects/interface/CSCGains.h"
+#include "CondFormats/DataRecord/interface/CSCGainsRcd.h"
+#include "CondFormats/CSCObjects/interface/CSCcrosstalk.h"
+#include "CondFormats/DataRecord/interface/CSCcrosstalkRcd.h"
+#include "CondFormats/CSCObjects/interface/CSCNoiseMatrix.h"
+#include "CondFormats/DataRecord/interface/CSCNoiseMatrixRcd.h"
+
 #include <FWCore/Utilities/interface/Exception.h>
 #include <FWCore/MessageLogger/interface/MessageLogger.h> 
 
@@ -25,7 +32,8 @@
 CSCRecHitBBuilder::CSCRecHitBBuilder( const edm::ParameterSet& ps ) : geom_(0) {
   
   // Receives ParameterSet percolated down from EDProducer	
-  
+
+  isData                 = ps.getUntrackedParameter<bool>("CSCIsRunningOnData");  
   debug                  = ps.getUntrackedParameter<bool>("CSCDebug");
   stripWireDeltaT        = ps.getUntrackedParameter<int>("CSCstripWireDeltaTime");
   
@@ -67,7 +75,7 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
   }
   
   // Clean up the wire hit collection by trying to build segments
-  if (debug) std::cout << "[CSCRecHitFrom1DHitsBuilder] Now trying to create wire segments to clean up wire hit collection" << std::endl;
+  if (debug) std::cout << "[CSCRecHitBBuilder] Now trying to create wire segments to clean up wire hit collection" << std::endl;
   // First pass geometry
   HitsFromWireSegments_->setGeometry( geom_ );
   // Now try building segments
@@ -78,6 +86,10 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
   // Make collection of strip only hits
   
   if (debug) std::cout << "[CSCRecHitBBuilder] Now producing strip hits" << std::endl;
+
+  // Pass calibration constants if it is data
+  if (isData) HitsFromStripOnly_->setCalibration( gains_, xtalk_, noise_ );
+
   CSCStripHitCollection soc;
   
   for ( CSCStripDigiCollection::DigiRangeIterator it = stripdc->begin(); it != stripdc->end(); ++it ){
@@ -146,15 +158,16 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
       const CSCDetId& wDetId = (*wit).cscDetId();
       int whit_time = (*wit).tmax();
 
-      
-      int time_diff = (int) abs(whit_time - shit_time);
-      
+      if (isData) {
+        int time_diff = (int) abs(whit_time - shit_time);
+      	if (time_diff <= stripWireDeltaT) continue;
+      }     
+
       if ((wDetId.endcap()  == sDetId.endcap() ) &&
 	  (wDetId.station() == sDetId.station()) &&
 	  (wDetId.ring()    == sDetId.ring()   ) &&
 	  (wDetId.chamber() == sDetId.chamber()) &&
 	  (wDetId.layer()   == sDetId.layer()  )) { 
-	// &&           (time_diff        <= stripWireDeltaT)) {     // Found problem in wire timing, so don't use this for now.
 	foundMatch = true;  
 	hits_in_layer++;
 	CSCRecHit2D rechit = Make2DHits_->hitFromStripAndWire(wDetId, layer, w_hit, s_hit);
@@ -181,13 +194,6 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
 }
 
 
-
-/* setGeometry
- *
- */
-void CSCRecHitBBuilder::setGeometry( const CSCGeometry* geom ) {
-  geom_ = geom;
-}
 
 
 /* getLayer

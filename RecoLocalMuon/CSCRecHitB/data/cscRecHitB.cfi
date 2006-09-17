@@ -1,13 +1,12 @@
-
-
 # parameters for CSC rechit building
 # ==================================
 module csc2DRecHits = CSCRecHitBProducer {
 
-     untracked bool CSCDebug = false
-     string CSCStripDigiProducer = "muonCSCDigis"
-     string CSCWireDigiProducer  = "muonCSCDigis"
-     bool CSCproduce1DHits = false
+     untracked bool CSCIsRunningOnData = false
+     untracked bool CSCDebug           = false
+     string CSCStripDigiProducer       = "muonCSCDigis"
+     string CSCWireDigiProducer        = "muonCSCDigis"
+     bool CSCproduce1DHits             = false
 
 # parameter for wire clustering and segment building
      untracked int32  CSCWireClusterDeltaT     = 1
@@ -20,11 +19,11 @@ module csc2DRecHits = CSCRecHitBProducer {
      untracked bool   CSCuseWireHitsFromFits   = false
 
 # parameter for strip clustering and segment building
-     untracked bool   CSCstripHituse3timeBin   = true 
      untracked double CSCStripClusterChargeCut = 10.
      untracked double CSCStripPeakThreshold    = 30.
-     untracked int32  CSCStripClusterSize      = 3
-     untracked bool   CSCUse3x3Gatti           = true
+     untracked int32  CSCStripClusterSize      = 5
+     untracked bool   CSCUseGattiFit           = true
+     untracked bool   CSCUse3x3Gatti           = false
 
      untracked int32  CSCStripminLayersApart   = 2
      untracked double CSCStripMaxDistance      = 5.
@@ -33,10 +32,8 @@ module csc2DRecHits = CSCRecHitBProducer {
      untracked int32  CSCminStripHitsPerSegment= 3
      untracked bool   CSCuseStripHitsFromFits  = false
 	
-
 # common parameters for segment and rechit building
-     untracked int32  CSCmuonsPerChamberMax    = 3
-     untracked bool   CSC2UseGattiFit          = true
+     untracked int32  CSCSegmentPerChamberMax  = 3
 
 # parameter for rechit building
      untracked int32  CSCstripWireDeltaTime    = 1

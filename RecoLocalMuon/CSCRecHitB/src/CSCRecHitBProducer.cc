@@ -13,19 +13,25 @@
 
 #include <Geometry/Records/interface/MuonGeometryRecord.h>
 
-#include <DataFormats/CSCRecHit/interface/CSCRecHit2DCollection.h>
-//#include <DataFormats/CSCRecHit/interface/CSCWireHitCollection.h>
-//#include <DataFormats/CSCRecHit/interface/CSCStripHitCollection.h>
+#include "CondFormats/CSCObjects/interface/CSCGains.h"
+#include "CondFormats/DataRecord/interface/CSCGainsRcd.h"
+#include "CondFormats/CSCObjects/interface/CSCcrosstalk.h"
+#include "CondFormats/DataRecord/interface/CSCcrosstalkRcd.h"
+#include "CondFormats/CSCObjects/interface/CSCNoiseMatrix.h"
+#include "CondFormats/DataRecord/interface/CSCNoiseMatrixRcd.h"
 
+#include <DataFormats/CSCRecHit/interface/CSCRecHit2DCollection.h>
 #include <DataFormats/CSCDigi/interface/CSCStripDigiCollection.h>
 #include <DataFormats/CSCDigi/interface/CSCWireDigiCollection.h>
+
 
 CSCRecHitBProducer::CSCRecHitBProducer( const edm::ParameterSet& ps ) : iev( 0 ) {
 	
   stripDigiProducer_ = ps.getParameter<std::string>("CSCStripDigiProducer");
   wireDigiProducer_  = ps.getParameter<std::string>("CSCWireDigiProducer");
+  isData             = ps.getUntrackedParameter<bool>("CSCIsRunningOnData");
 
-  recHitBuilder_ = new CSCRecHitBBuilder( ps ); // pass on the Parameter Settings
+  recHitBuilder_     = new CSCRecHitBBuilder( ps ); // pass on the Parameter Settings
 
   // register what this produces
   produces<CSCRecHit2DCollection>();
@@ -41,31 +47,52 @@ CSCRecHitBProducer::~CSCRecHitBProducer()
 
 void  CSCRecHitBProducer::produce( edm::Event& ev, const edm::EventSetup& setup )
 {
-  LogDebug("CSC") << "start producing rechits for event " << ++iev;
+  LogDebug("CSC") << "[CSCRecHitBProducer::produce] start producing rechits for event " << ++iev;
+
 	
-  // find the geometry (& conditions?) for this event & cache it in the builder
+  // find the geometry & calibrations for this event & cache it in the builder
+
+  // Geometry
   edm::ESHandle<CSCGeometry> h;
   setup.get<MuonGeometryRecord>().get( h );
   const CSCGeometry* pgeom = &*h;
   recHitBuilder_->setGeometry( pgeom );
+
+
+  // Only for data can you load in calibration constants !
+  if (isData) {  
+    // Strip gains
+    edm::ESHandle<CSCGains> hGains;
+    setup.get<CSCGainsRcd>().get( hGains );
+    const CSCGains* pGains = &*hGains.product(); 
+    // Strip X-talk
+    edm::ESHandle<CSCcrosstalk> hCrosstalk;
+    setup.get<CSCcrosstalkRcd>().get( hCrosstalk );
+    const CSCcrosstalk* pCrosstalk = &*hCrosstalk.product();
+    // Strip autocorrelation noise matrix
+    edm::ESHandle<CSCNoiseMatrix> hNoiseMatrix;
+    setup.get<CSCNoiseMatrixRcd>().get(hNoiseMatrix);
+    const CSCNoiseMatrix* pNoiseMatrix = &*hNoiseMatrix.product();
+    // Pass set of calibrations to builder all at once
+    recHitBuilder_->setCalibration( pGains, pCrosstalk, pNoiseMatrix );
+  }
 	
-  // get the collections of strip & wire digis from event
+  // Get the collections of strip & wire digis from event
   edm::Handle<CSCStripDigiCollection> stripDigis;
   edm::Handle<CSCWireDigiCollection> wireDigis;
   ev.getByLabel(stripDigiProducer_, "MuonCSCStripDigi", stripDigis);
   ev.getByLabel(wireDigiProducer_,  "MuonCSCWireDigi",  wireDigis);
 
-  // create empty collection of rechits
+
+  // Create empty collection of rechits
   std::auto_ptr<CSCRecHit2DCollection> oc( new CSCRecHit2DCollection );
 
-  // Empty collections for wire/strip only hits 
-//  std::auto_ptr<CSCStripHitCollection> soc( new CSCStripHitCollection );
 
-
-  // fill the collection
+  // Fill the CSCRecHit2DCollection
   recHitBuilder_->build( stripDigis.product(), wireDigis.product(), *oc);
 
-  // put collection in event
+
+  // Put collection in event
   ev.put( oc );
 
 }

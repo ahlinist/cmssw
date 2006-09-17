@@ -13,6 +13,7 @@
 #include <DataFormats/CSCRecHit/interface/CSCWireHit.h>
 #include <DataFormats/CSCRecHit/interface/CSCStripHit.h>
 #include <DataFormats/CSCRecHit/interface/CSCRecHit2D.h>
+#include <Geometry/Vector/interface/LocalPoint.h>
 #include <FWCore/ParameterSet/interface/ParameterSet.h>
 
 
@@ -39,8 +40,9 @@ class CSCMake2DRecHit
   /// Make pseudo 2D hits when only strip information is available within a layer
   CSCRecHit2D hitFromStripOnly(const CSCDetId& id, const CSCLayer* layer, const CSCStripHit& sHit);
 
-  /// Keep hit within fiducial volume by changing y of hit if needed
-  float keepHitInFiducial( float& y );
+  /// Keep hit within fiducial volume by finding proper wire # if needed 
+  void keepHitInFiducial( LocalPoint& lp1, LocalPoint& lp0 );
+
   
   const CSCLayer * layer_;
   const CSCLayerGeometry * layergeom_;

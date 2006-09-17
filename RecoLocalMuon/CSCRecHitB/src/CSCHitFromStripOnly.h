@@ -28,6 +28,9 @@
 class CSCLayer;
 class CSCChamberSpecs;
 class CSCLayerGeometry;
+class CSCGains;
+class CSCcrosstalk;
+class CSCNoiseMatrix;
 class CSCStripDigi;
 class CSCPeakBinOfStripPulse;
 
@@ -36,6 +39,7 @@ class CSCHitFromStripOnly
 {
   
  public:
+
   typedef std::vector<CSCStripData> PulseHeightMap;
   
   explicit CSCHitFromStripOnly( const edm::ParameterSet& ps );
@@ -43,13 +47,24 @@ class CSCHitFromStripOnly
   ~CSCHitFromStripOnly();
   
   std::vector<CSCStripHit> runStrip( const CSCDetId& id, const CSCLayer* layer, const CSCStripDigiCollection::Range& rstripd);
+
+  void setCalibration( const CSCGains* gains,
+                       const CSCcrosstalk* xtalk,
+                       const CSCNoiseMatrix* noise ) {
+    gains_ = gains;
+    xtalk_ = xtalk;
+    noise_ = noise;
+  }
+
   
  protected:
   
   /// Go through strip in layers and build a table with 
   void fillPulseHeights( const CSCStripDigiCollection::Range& );  
+
   /// Find local maxima
   void findMaxima();    
+
   /// Make clusters using local maxima
   float makeCluster( int centerStrip );
   std::vector<int> theMaxima;
@@ -57,6 +72,7 @@ class CSCHitFromStripOnly
   
   /// Find position of hit in strip cluster in terms of strip #
   float findHitOnStripPosition( const std::vector<CSCStripData>& data );
+
   /// Find peaking time for strip hit
   int findTmaxofCluster( const std::vector<CSCStripData>& data );
   
@@ -69,19 +85,31 @@ class CSCHitFromStripOnly
   
   CSCStripData makeStripData( int centerStrip, int offset );
 
+  bool isData;
+
   // Variables entering the CSCStripHit construction:
   int tmax_cluster;
   float t_peak;
   int ClusterSize;
   std::vector<float> strips_adc;  
   
-  /// The cuts for forming the strip hits are described in the data/.cfi file
+  // The cuts for forming the strip hits are described in the data/.cfi file
   float theThresholdForAPeak;
   int theClusterSize;
   float theClusterChargeCut;
   bool stripHituse3timeBin;
+
+
+  /*
+   * Cache calibrations for current event
+   */
+  const CSCGains* gains_;
+  const CSCcrosstalk* xtalk_;
+  const CSCNoiseMatrix* noise_;
   
   CSCPeakBinOfStripPulse * pulseheightOnStripFinder_;
+
+
 };
 
 #endif
