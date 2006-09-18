@@ -1,3 +1,4 @@
-replace ecalPreshowerRecHit.digiProducer = "esZeroSuppression"
-replace ecalWeightUncalibRecHit.digiProducer = "ecalSelectiveReadout"
-
+replace ecalPreshowerRecHit.ESdigiCollection = esZeroSuppression
+replace ecalWeightUncalibRecHit.EBdigiCollection = ecalSelectiveReadout:ebDigis
+replace ecalWeightUncalibRecHit.EEdigiCollection = ecalSelectiveReadout:eeDigis
+#
