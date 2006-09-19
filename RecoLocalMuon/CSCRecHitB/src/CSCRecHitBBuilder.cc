@@ -36,6 +36,9 @@ CSCRecHitBBuilder::CSCRecHitBBuilder( const edm::ParameterSet& ps ) : geom_(0) {
   isData                 = ps.getUntrackedParameter<bool>("CSCIsRunningOnData");  
   debug                  = ps.getUntrackedParameter<bool>("CSCDebug");
   stripWireDeltaT        = ps.getUntrackedParameter<int>("CSCstripWireDeltaTime");
+  useCleanStripCollection= ps.getUntrackedParameter<bool>("CSCuseCleanStripCollection");
+  useCleanWireCollection = ps.getUntrackedParameter<bool>("CSCuseCleanWireCollection");
+
   
   HitsFromStripOnly_     = new CSCHitFromStripOnly( ps ); 
   HitsFromWireOnly_      = new CSCHitFromWireOnly( ps );  
@@ -73,15 +76,19 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
     // Add the wire hits to master collection
     woc.put( id, rhv.begin(), rhv.end() );
   }
-  
+
+  CSCWireHitCollection clean_woc;  
   // Clean up the wire hit collection by trying to build segments
-  if (debug) std::cout << "[CSCRecHitBBuilder] Now trying to create wire segments to clean up wire hit collection" << std::endl;
-  // First pass geometry
-  HitsFromWireSegments_->setGeometry( geom_ );
-  // Now try building segments
-  CSCWireHitCollection clean_woc = HitsFromWireSegments_->cleanWireHits(woc);
-  
-  
+  if ( useCleanWireCollection ) {
+    if (debug) std::cout << "[CSCRecHitBBuilder] Now trying to create wire segments to clean up wire hit collection" << std::endl;
+    // First pass geometry
+    HitsFromWireSegments_->setGeometry( geom_ );
+    // Now try building segments
+    clean_woc = HitsFromWireSegments_->cleanWireHits(woc);
+  } else {
+    clean_woc = woc;
+  }
+
   
   // Make collection of strip only hits
   
@@ -90,8 +97,7 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
   // Pass calibration constants if it is data
   if (isData) HitsFromStripOnly_->setCalibration( gains_, xtalk_, noise_ );
 
-  CSCStripHitCollection soc;
-  
+  CSCStripHitCollection soc;  
   for ( CSCStripDigiCollection::DigiRangeIterator it = stripdc->begin(); it != stripdc->end(); ++it ){
     const CSCDetId& id = (*it).first;
     const CSCLayer* layer = getLayer( id );
@@ -107,15 +113,18 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
     soc.put( id, rhv.begin(), rhv.end() );
   }
   
-  // Now clean up the strip hit collection by trying to build strip segments
-  if (debug) std::cout << "[CSCRecHitBBuilder] Now trying to create strip segments to clean up strip hit collection" << std::endl;
-  // First pass geometry
-  HitsFromStripSegments_->setGeometry( geom_ );
-  CSCStripHitCollection clean_soc = HitsFromStripSegments_->cleanStripHits(soc);
-  
+  CSCStripHitCollection clean_soc;
+  if ( useCleanStripCollection ) {
+    // Now clean up the strip hit collection by trying to build strip segments
+    if (debug) std::cout << "[CSCRecHitBBuilder] Now trying to create strip segments to clean up strip hit collection" << std::endl;
+    // First pass geometry
+    HitsFromStripSegments_->setGeometry( geom_ );
+    clean_soc = HitsFromStripSegments_->cleanStripHits(soc);
+  } else {
+    clean_soc = soc;
+  }
 
   
-
   // Now create 2-D hits by looking at superposition of strip and wire hit
 
   if (debug) std::cout << "[CSCRecHitBBuilder] Now producing 2D hits" << std::endl;
@@ -128,7 +137,7 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
 
   // Loop over strip hit collection
   for ( CSCStripHitCollection::const_iterator sit = clean_soc.begin(); sit != clean_soc.end(); ++sit ){
-      
+
     const CSCStripHit& s_hit = *sit;
     const CSCDetId& sDetId = (*sit).cscDetId();
     const CSCLayer* layer = getLayer( sDetId );
@@ -153,7 +162,7 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
 
     // Loop over cleaned up wire hit collection
     for ( CSCWireHitCollection::const_iterator wit = clean_woc.begin(); wit != clean_woc.end(); ++wit ) {
-    
+
       const CSCWireHit& w_hit = *wit;
       const CSCDetId& wDetId = (*wit).cscDetId();
       int whit_time = (*wit).tmax();

@@ -2,39 +2,41 @@
 # ==================================
 module csc2DRecHits = CSCRecHitBProducer {
 
-     untracked bool CSCIsRunningOnData = false
-     untracked bool CSCDebug           = false
-     string CSCStripDigiProducer       = "muonCSCDigis"
-     string CSCWireDigiProducer        = "muonCSCDigis"
-     bool CSCproduce1DHits             = false
+     untracked bool CSCIsRunningOnData           = false
+     untracked bool CSCDebug                     = false
+     string CSCStripDigiProducer                 = "muonCSCDigis"
+     string CSCWireDigiProducer                  = "muonCSCDigis"
+     bool CSCproduce1DHits                       = false
 
-# parameter for wire clustering and segment building
-     untracked int32  CSCWireClusterDeltaT     = 1
-     untracked int32  CSCWireClusterMaxSize    = 999
+# parameter for wire clustering/segment building
+     untracked int32  CSCWireClusterDeltaT       = 1
+     untracked int32  CSCWireClusterMaxSize      = 999
 
-     untracked int32  CSCWireminLayersApart    = 2
-     untracked double CSCWireMaxDistance       = 20.
-     untracked int32  CSCWireSegmentDeltaT     = 1
-     untracked int32  CSCminWireHitsPerSegment = 3
-     untracked bool   CSCuseWireHitsFromFits   = false
+     untracked bool   CSCuseCleanWireCollection  = true
+     untracked int32  CSCWireminLayersApart      = 2
+     untracked double CSCWireMaxDistance         = 2.
+     untracked int32  CSCWireSegmentDeltaT       = 1
+     untracked int32  CSCminWireHitsPerSegment   = 3
+     untracked bool   CSCuseWireHitsFromFits     = false
 
-# parameter for strip clustering and segment building
-     untracked double CSCStripClusterChargeCut = 10.
-     untracked double CSCStripPeakThreshold    = 30.
-     untracked int32  CSCStripClusterSize      = 5
-     untracked bool   CSCUseGattiFit           = true
-     untracked bool   CSCUse3x3Gatti           = false
+# parameter for strip clustering/segment building
+     untracked double CSCStripClusterChargeCut   = 10.
+     untracked double CSCStripPeakThreshold      = 30.
+     untracked int32  CSCStripClusterSize        = 5
+     untracked bool   CSCUseGattiFit             = true
+     untracked bool   CSCUse3x3Gatti             = false
 
-     untracked int32  CSCStripminLayersApart   = 2
-     untracked double CSCStripMaxDistance      = 5.
-     untracked double CSCStripCloseToSegment   = 8.
-     untracked int32  CSCStripSegmentDeltaT    = 1
-     untracked int32  CSCminStripHitsPerSegment= 3
-     untracked bool   CSCuseStripHitsFromFits  = false
+     untracked bool   CSCuseCleanStripCollection = false
+     untracked int32  CSCStripminLayersApart     = 2
+     untracked double CSCStripMaxDistance        = 5.
+     untracked double CSCStripCloseToSegment     = 8.
+     untracked int32  CSCStripSegmentDeltaT      = 1
+     untracked int32  CSCminStripHitsPerSegment  = 3
+     untracked bool   CSCuseStripHitsFromFits    = false
 	
 # common parameters for segment and rechit building
-     untracked int32  CSCSegmentPerChamberMax  = 3
+     untracked int32  CSCSegmentPerChamberMax    = 3
 
 # parameter for rechit building
-     untracked int32  CSCstripWireDeltaTime    = 1
+     untracked int32  CSCstripWireDeltaTime      = 1
  }
