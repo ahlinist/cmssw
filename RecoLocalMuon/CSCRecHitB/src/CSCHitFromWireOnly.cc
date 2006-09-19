@@ -118,39 +118,49 @@ float CSCHitFromWireOnly::findWireHitPosition() {
   // To do so, need to know wire spacing and # of wires
   
   float wire_pos = -999.;
-  float weighting = 0.0;
   float y = 0.0;
   
   for ( unsigned i = 0; i < wire_cluster.size(); i++ ) {
     CSCWireDigi wdigi = wire_cluster[i];
-    int channel = wdigi.getWireGroup();
-    int nwires = layergeom_->numberOfWiresPerGroup(channel); 
-    float w_channel = float ( nwires );
-    y += w_channel * channel;
-    weighting += w_channel;
+    int wgroup = wdigi.getWireGroup();
+    y += float( wgroup );
   }       
-  float wiregpos = y / weighting;
 
+  float wiregpos = y /wire_cluster.size() ;
+
+  return wiregpos;
+
+/*  
+ * There is a bug here... so just save as wire group for now...
+ *
   int wgroup = int( wiregpos );        // This is the corresponding wiregroup
   float woffset = wiregpos - wgroup ;
  
-  float theFirstWire;
-  float theLastWire;
+  int theFirstWire;
+  int theLastWire;
 
   if ( woffset == 0 ) {
-    wire_pos = layergeom_->middleWireOfGroup(wgroup);
-
+    wire_pos = layergeom_->middleWireOfGroup( wgroup );
+  } else if ( woffset == 0.5 ) {
+    wire_pos  = layergeom_->middleWireOfGroup( wgroup   );
+    wire_pos += layergeom_->middleWireOfGroup( wgroup+1 );
+    wire_pos = wire_pos / 2.;	
+  } else if ( woffset == -0.5 ) {
+    wire_pos  = layergeom_->middleWireOfGroup( wgroup   );
+    wire_pos += layergeom_->middleWireOfGroup( wgroup-1 );
+    wire_pos = wire_pos / 2.;
   } else {
-    float middleWire = layergeom_->middleWireOfGroup(1);   
-    int nwires       = layergeom_->numberOfWiresPerGroup(1);
-    theFirstWire     = ( middleWire - nwires/2. );
-    theLastWire      = ( middleWire + nwires/2. );
+    float middleWire = layergeom_->middleWireOfGroup(wgroup);   
+    int nwires       = layergeom_->numberOfWiresPerGroup(wgroup);
+    theFirstWire     = int( middleWire - 1.*nwires/2. + 0.5 );
+    theLastWire      = int( middleWire + 1.*nwires/2. - 0.5 );
     if ( woffset < 0.5 ) {
-      wire_pos = 2. * (0.5 - woffset) * middleWire + 2. *woffset * theFirstWire;  // Keep proper normalization !!!
+      wire_pos = middleWire - 2. * woffset * ( middleWire - theFirstWire );  // Keep proper normalization !!!
     } else {
-      wire_pos = 2. * (0.5 - woffset) * theLastWire + 2. * woffset * middleWire;
+      wire_pos = middleWire + 2. * woffset * ( theLastWire - middleWire );
     } 
-  }   
-  return wire_pos;
+  }
+
+*/   
 }
 

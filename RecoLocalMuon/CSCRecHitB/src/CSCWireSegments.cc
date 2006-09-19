@@ -297,7 +297,7 @@ void CSCWireSegments::fitSlope() {
   for (ChamberHitContainer::const_iterator it = proto_segment.begin(); it != proto_segment.end(); it++ ) {
     
     // Again, by definition, we set z = layer# - 1;
-    float z = float( it->cscDetId().layer() ) -1.;
+    float z = float( it->cscDetId().layer() ) - 1.;
     float y = float( it->wHitPos() );
     sz  += z;
     sz2 += z*z;
@@ -334,11 +334,13 @@ void CSCWireSegments::fillChiSquared(const CSCWireHit& aHit) {
   const CSCLayer* layer_ = getLayer( id );
   const CSCLayerGeometry* layergeom_ = layer_->geometry();    
   float wire_pos = aHit.wHitPos();                         // This is the position of the wire hit in terms of wire #
-  int thewire = int(wire_pos);              
-  int wgroup = layergeom_->wireGroup(thewire);               // This is the corresponding wire group #
-  int nwires = layergeom_->numberOfWiresPerGroup(wgroup);
+
+//  int wgroup = layergeom_->wireGroup(thewire);               // This is the corresponding wire group #
+//  int nwires = layergeom_->numberOfWiresPerGroup(wgroup);
   
-  float sigma2 = nwires * nwires /12.;
+  // Don't use wire but wire group --> so error is just 1/sqrt(12)
+
+  float sigma2 = 1. /12.;
   
   for (ChamberHitContainer::const_iterator ih = proto_segment.begin(); ih != proto_segment.end(); ++ih ) {
     // Again, I have set z(layer_1) = 0.

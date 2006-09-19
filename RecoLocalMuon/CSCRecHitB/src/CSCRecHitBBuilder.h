@@ -84,7 +84,9 @@ class CSCRecHitBBuilder
   bool isData;
   bool debug;  
   int stripWireDeltaT;
-  
+  bool useCleanStripCollection;
+  bool useCleanWireCollection;
+
   /**
    *  The Program first constructs proto wire/strip hits which
    *  it stores in a special collection.  Proto strip/wire segments
