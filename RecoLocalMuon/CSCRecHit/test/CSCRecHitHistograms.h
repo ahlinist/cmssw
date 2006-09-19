@@ -45,7 +45,6 @@ public:
     hWireGrpvsYres   = new TH2F(N+"_hWireGrpvsYres", "CSCRecHit Dy vs WireGrp", 61, -0.5, 60.5, 101, -2.02, 2.02);
     hAllWireGrpDigi  = new TH1F(N+"_hAllWireGrpDigi", "CSCDigi WireGrp", 71, -0.5, 70.5);
     hSimWireGrp      = new TH1F(N+"_hSimWireGrp", "CSCSimHit WireGrp", 71, -0.5, 70.5);
-
 // Strip position
     hStripNu         = new TH1F(N+"_hStripNu", "CSCRecHit StripNumber", 81, -0.5, 80.5);
     hStripNuDigi     = new TH1F(N+"_hStripNuDigi", "CSCDigi StripNumber vs x", 81, -0.5, 80.5);
@@ -54,13 +53,15 @@ public:
     hAllStripNuDigi  = new TH1F(N+"_hAllStripNuDigi", "CSCDigi StripNumber vs x", 81, -0.5, 80.5);
     hSimStripNu      = new TH1F(N+"_hSimStripNu", "CSCSimHit StripNumber", 81, -0.5, 80.5);
 // Phi
-    hRecphi          = new TH1F(N+"_hRecphi", "CSCRecHit phi", 180, -180., 180.);
-    hSimphi          = new TH1F(N+"_hSimphi", "CSCSimHit phi", 180, -180., 180.);
-    hResphivsSimphi  = new TH2F(N+"_hRecphivsSimphi", "CSCHit Dphi vs phi_{sim}", 180, -180., 180., 101, -5.05, 5.05);
+    hResphi          = new TH1F(N+"_hResphi", "CSCRecHit phi", 101, -0.5, 0.5);
+    hResphib         = new TH1F(N+"_hResphib", "CSCRecHit phi", 101, -0.5, 0.5);
+    hResphit         = new TH1F(N+"_hResphit", "CSCRecHit phi", 101, -0.5, 0.5);
+    hResphivsr       = new TH2F(N+"_hResphivsr", "CSCHit Dphi vs r_{sim}", 120, 100., 700., 101, -0.505, 0.505);
     hrDphi           = new TH1F(N+"_hrDphi", "CSCHit r x Dphi", 101, -0.101, 0.101);
+    hrDphib          = new TH1F(N+"_hrDphib", "CSCHit r x Dphi", 101, -0.101, 0.101);
+    hrDphit          = new TH1F(N+"_hrDphit", "CSCHit r x Dphi", 101, -0.101, 0.101);
+    hrDphivsr        = new TH2F(N+"_hrDphivsr", "CSCHit r Dphi vs r_{sim}", 180, 100., 700., 61, -0.1525, 0.1525);
 // Eta
-    hReceta          = new TH1F(N+"_hReceta", "CSCRecHit eta ", 150, 0.9, 2.4);
-    hSimeta          = new TH1F(N+"_hSimeta", "CSCSimHit eta ", 150, 0.9, 2.4);
     hDeta            = new TH1F(N+"_hDeta", "CSC Deta ", 101, -0.0101, 0.0101);
     hDetavseta       = new TH2F(N+"_hDetavseta", "CSC Deta vs eta", 150, 0.9, 2.4, 101, -0.0101, 0.0101);
   }
@@ -99,13 +100,11 @@ public:
     hAllStripNuDigi   = (TH1F *) file->Get(name+"_AllStripNuDigi");
     hSimStripNu       = (TH1F *) file->Get(name+"_SimStripNu");
 // Phi
-    hRecphi           = (TH1F *) file->Get(name+"_Recphi");
-    hSimphi           = (TH1F *) file->Get(name+"_Simphi");
-    hResphivsSimphi   = (TH2F *) file->Get(name+"_RecphivsSimphi");
+    hResphi           = (TH1F *) file->Get(name+"_Resphi");
+    hResphivsr        = (TH2F *) file->Get(name+"_Resphivsr");
     hrDphi            = (TH1F *) file->Get(name+"_rDphi");
+    hrDphivsr         = (TH2F *) file->Get(name+"_rDphivsr");
 // Eta
-    hReceta           = (TH1F *) file->Get(name+"_Receta");
-    hSimeta           = (TH1F *) file->Get(name+"_Simeta");  
     hDeta             = (TH1F *) file->Get(name+"_Deta");
     hDetavseta        = (TH2F *) file->Get(name+"_Detavseta");
 
@@ -145,13 +144,15 @@ public:
     delete hAllStripNuDigi;
     delete hSimStripNu;
 // Phi
-    delete hRecphi;
-    delete hSimphi;
-    delete hResphivsSimphi;
+    delete hResphi;
+    delete hResphib;
+    delete hResphit;
+    delete hResphivsr;
     delete hrDphi;    
+    delete hrDphib;    
+    delete hrDphit;    
+    delete hrDphivsr;    
 // Eta
-    delete hReceta;
-    delete hSimeta;
     delete hDeta;
     delete hDetavseta;
   }
@@ -163,9 +164,8 @@ public:
   /// Fill all the histos
   void Fill(float recx, float recy, float simx, float simy, float recphi, float simphi, float rdphi, float receta, 
             float simeta, float deta, int wiregrp, int stripnum, int wiregrp_digi, int stripnum_digi, 
-            int strip_shit, int wiregrp_shit) {
+            int strip_shit, int wiregrp_shit, float r, float apothem) {
 	
-    float radtodeg = 180./3.1415927;
 
 // X
     hRecPositionX->Fill(recx);
@@ -196,13 +196,24 @@ public:
     hStripNuvsX->Fill(stripnum,recx);
     hSimStripNu->Fill(strip_shit);
 // Phi
-    hRecphi->Fill(recphi*radtodeg);
-    hSimphi->Fill(simphi*radtodeg);
-    hResphivsSimphi->Fill(simphi*radtodeg,(recphi-simphi)*radtodeg);
+    float resol = (recphi-simphi)*1000.;
+    hResphi->Fill(resol);
+    if (simy < 0. && (-1.*simy/apothem) > 0.6) {
+      hResphib->Fill(resol);
+    } else if  (simy > 0. && (simy/apothem) > 0.6) {
+      hResphit->Fill(resol);
+    }
+    hResphi->Fill(resol);
+    hResphi->Fill(resol);
+    hResphivsr->Fill(r, resol);
     hrDphi->Fill(rdphi);
+    if (simy < 0. && (-1.*simy/apothem) > 0.6) {
+      hrDphib->Fill(rdphi);
+    } else if  (simy > 0. && (simy/apothem) > 0.6) {
+      hrDphit->Fill(rdphi);
+    }
+    hrDphivsr->Fill(r, rdphi);
 // Eta
-    hReceta->Fill(receta);
-    hSimeta->Fill(simeta); 
     hDeta->Fill(receta-simeta);
     hDetavseta->Fill(simeta,receta-simeta); 
   }
@@ -240,13 +251,15 @@ public:
     hAllStripNuDigi->Write();
     hSimStripNu->Write();
 // Phi
-    hRecphi->Write();
-    hSimphi->Write();
-    hResphivsSimphi->Write();
+    hResphi->Write();
+    hResphib->Write();
+    hResphit->Write();
+    hResphivsr->Write();
     hrDphi->Write();
+    hrDphib->Write();
+    hrDphit->Write();
+    hrDphivsr->Write();
 // Eta
-    hReceta->Write();
-    hSimeta->Write();
     hDeta->Write();
     hDetavseta->Write();
   }
@@ -282,13 +295,15 @@ public:
     TH1F *hAllStripNuDigi;
     TH1F *hSimStripNu;
 // Phi
-    TH1F *hRecphi;
-    TH1F *hSimphi;
-    TH2F *hResphivsSimphi;
+    TH1F *hResphi;
+    TH1F *hResphib;
+    TH1F *hResphit;
+    TH2F *hResphivsr;
     TH1F *hrDphi;
+    TH1F *hrDphib;
+    TH1F *hrDphit;
+    TH2F *hrDphivsr;
 // Eta
-    TH1F *hReceta;
-    TH1F *hSimeta;
     TH1F *hDeta;
     TH2F *hDetavseta;  
 

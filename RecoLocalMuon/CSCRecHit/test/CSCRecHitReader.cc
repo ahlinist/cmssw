@@ -152,7 +152,7 @@ void CSCRecHitReader::analyze(const Event & event, const EventSetup& eventSetup)
     simhit_keep[idx_sim] = true;
     
     // Initialize counter of hits in same layer
-    int matched_simhit = 1;
+    int matched_simhit = 0;
     
     // Find chamber where simhit is located
     CSCDetId id_1 = (CSCDetId)(*simIt_1).detUnitId();
@@ -181,7 +181,6 @@ void CSCRecHitReader::analyze(const Event & event, const EventSetup& eventSetup)
       j++;
     }
     // Are there more simhits in this layer than required ?  
-    // If so reject these hits.
     if (matched_simhit > maxSimhitLayer) simhit_keep[idx_sim] = false;
     idx_sim++;
   }
@@ -425,8 +424,9 @@ void CSCRecHitReader::analyze(const Event & event, const EventSetup& eventSetup)
 	float y_resol = yreco - ysimu;
 	
 	// Get pointer to layer:
-        const CSCLayer* csclayer = cscGeom->layer( id );      
-	
+        const CSCLayer* csclayer = cscGeom->layer( id );
+        const CSCLayerGeometry* layergeom_ = csclayer->geometry();
+        float apothem = layergeom_->length()/2.;	
 	// Transform hit position from local chamber geometry to global CMS geom
 	GlobalPoint rhitglobal= csclayer->toGlobal(rhitlocal);
 	float grecphi = rhitglobal.phi();
@@ -481,44 +481,44 @@ void CSCRecHitReader::analyze(const Event & event, const EventSetup& eventSetup)
 	  if (id.station() == 1) {
 	    if (id.ring() == 1) {
 	      histo = hRHPME1b;
-	      histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, gsimphi, rdphi, greceta, gsimeta, deta, rwiregrp, stripnum, wiregrp_digi, stripnum_digi, strip_shit, wiregrp_shit);
+	      histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, gsimphi, rdphi, greceta, gsimeta, deta, rwiregrp, stripnum, wiregrp_digi, stripnum_digi, strip_shit, wiregrp_shit, gsimr, apothem);
 	    }
 	    if (id.ring() == 2) {
 	      histo = hRHPME12;
-	      histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, gsimphi, rdphi, greceta, gsimeta, deta, rwiregrp, stripnum, wiregrp_digi, stripnum_digi, strip_shit, wiregrp_shit);
+	      histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, gsimphi, rdphi, greceta, gsimeta, deta, rwiregrp, stripnum, wiregrp_digi, stripnum_digi, strip_shit, wiregrp_shit, gsimr, apothem);
 	    }
 	    if (id.ring() == 3) {
 	      histo = hRHPME13;
-	      histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, gsimphi, rdphi, greceta, gsimeta, deta, rwiregrp,stripnum, wiregrp_digi, stripnum_digi, strip_shit, wiregrp_shit);
+	      histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, gsimphi, rdphi, greceta, gsimeta, deta, rwiregrp,stripnum, wiregrp_digi, stripnum_digi, strip_shit, wiregrp_shit, gsimr, apothem);
 	    }
 	    if (id.ring() == 4) {
 	      histo = hRHPME1a;
-	      histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, gsimphi, rdphi, greceta, gsimeta, deta, rwiregrp,stripnum, wiregrp_digi, stripnum_digi, strip_shit, wiregrp_shit);
+	      histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, gsimphi, rdphi, greceta, gsimeta, deta, rwiregrp,stripnum, wiregrp_digi, stripnum_digi, strip_shit, wiregrp_shit, gsimr, apothem);
 	    }
 	  }
 	  if (id.station() == 2) {
 	    if (id.ring() == 1) {
 	      histo = hRHPME21;
-	      histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, gsimphi, rdphi, greceta, gsimeta, deta, rwiregrp,stripnum, wiregrp_digi, stripnum_digi, strip_shit, wiregrp_shit);
+	      histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, gsimphi, rdphi, greceta, gsimeta, deta, rwiregrp,stripnum, wiregrp_digi, stripnum_digi, strip_shit, wiregrp_shit, gsimr, apothem);
 	    }
 	    if (id.ring() == 2) {
 	      histo = hRHPME22;
-	      histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, gsimphi, rdphi, greceta, gsimeta, deta, rwiregrp,stripnum, wiregrp_digi, stripnum_digi, strip_shit, wiregrp_shit);
+	      histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, gsimphi, rdphi, greceta, gsimeta, deta, rwiregrp,stripnum, wiregrp_digi, stripnum_digi, strip_shit, wiregrp_shit, gsimr, apothem);
 	    }
 	  }
 	  if (id.station() == 3) {
 	    if (id.ring() == 1) {
 	      histo = hRHPME31;
-	      histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, gsimphi, rdphi, greceta, gsimeta, deta, rwiregrp,stripnum, wiregrp_digi, stripnum_digi, strip_shit, wiregrp_shit);
+	      histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, gsimphi, rdphi, greceta, gsimeta, deta, rwiregrp,stripnum, wiregrp_digi, stripnum_digi, strip_shit, wiregrp_shit, gsimr, apothem);
 	    }
 	    if (id.ring() == 2) {
 	      histo = hRHPME32;
-	      histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, gsimphi, rdphi, greceta, gsimeta, deta, rwiregrp,stripnum, wiregrp_digi, stripnum_digi, strip_shit, wiregrp_shit);
+	      histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, gsimphi, rdphi, greceta, gsimeta, deta, rwiregrp,stripnum, wiregrp_digi, stripnum_digi, strip_shit, wiregrp_shit, gsimr, apothem);
 	    }
 	  }
 	  if (id.station() == 4) {
 	    histo = hRHPME4;
-	    histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, gsimphi, rdphi, greceta, gsimeta, deta, rwiregrp,stripnum, wiregrp_digi, stripnum_digi, strip_shit, wiregrp_shit);
+	    histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, gsimphi, rdphi, greceta, gsimeta, deta, rwiregrp,stripnum, wiregrp_digi, stripnum_digi, strip_shit, wiregrp_shit, gsimr, apothem);
 	    if (id.ring() != 1) cout << " invalid ring in ME 4 !!! ";
 	  }
        }
