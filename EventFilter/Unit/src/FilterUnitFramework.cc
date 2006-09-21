@@ -7,6 +7,9 @@
 //
 //  Modification history:
 //    $Log: FilterUnitFramework.cc,v $
+//    Revision 1.14  2006/09/04 15:00:10  schiefer
+//    FUAdapter::doCrcCheck_=n indicates now that every n-th event will have its crc values checked, not every n-th superfragment
+//
 //    Revision 1.13  2006/08/30 08:45:20  schiefer
 //    added 'doCrcCheck' paramete rand 'nbCrcErros' counter, removed cout statements
 //
@@ -768,7 +771,7 @@ void FilterUnitFramework::timeExpired (toolbox::task::TimerEvent& e)
   nbDiff_=nbproc-nbLast_;
   nbLast_=nbproc;
   MonitorEventsPerSec_=((xdata::Double)nbDiff_)/(MonitorIntervalSec_);
-
+  
   s_mon->unlock();
   mutex_->give();
 }

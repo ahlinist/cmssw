@@ -151,8 +151,8 @@ void FUAdapter::realTake(toolbox::mem::Reference *bufRef)
   
   FURawEvent *event = 0;
   
-
-
+  
+  
   while(bufRef != 0 && !errorFound)
     {
       I2O_MESSAGE_FRAME         *stdMsg = 
@@ -391,7 +391,7 @@ void FUAdapter::findOrCreateMemoryPool() throw (xcept::Exception)
 	  string s = "Failed to create pool: " + poolName;
 	  
 	  LOG4CPLUS_FATAL(getApplicationLogger(), s);
-	      XCEPT_RETHROW(xcept::Exception, s, e);
+	  XCEPT_RETHROW(xcept::Exception, s, e);
 	}
     }
 }
