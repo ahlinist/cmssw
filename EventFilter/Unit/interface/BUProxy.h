@@ -7,6 +7,9 @@
 //
 //  MODIFICATION:
 //  $Log: BUProxy.h,v $
+//  Revision 1.1  2005/10/19 09:10:35  meschi
+//  first import from COSINE
+//
 //  Revision 1.6  2005/06/28 08:48:46  meschi
 //  fix argument order
 //
@@ -36,15 +39,21 @@
 #include "toolbox/include/toolbox/mem/Reference.h"
 #include "toolbox/include/toolbox/mem/MemoryPoolFactory.h"
 #include "toolbox/include/toolbox/mem/exception/Exception.h"
+
+#include "i2o/include/i2o/Method.h"
 #include "i2o/utils/include/i2o/utils/AddressMap.h"
+
 #include "xcept/include/xcept/tools.h"
+
 #include "xdaq/include/xdaq/ApplicationDescriptor.h"
+
 #include "interface/evb/include/i2oEVBMsgs.h" 
 #include "interface/shared/include/i2oXFunctionCodes.h"
 
+
 class BUProxy
 {
- public:  
+public:  
   
   /** constructor from owner tid, destination tid, and buffer size */
   BUProxy (xdaq::ApplicationDescriptor *source, 
@@ -126,11 +135,11 @@ class BUProxy
       stdMsg->Function         = I2O_PRIVATE_MESSAGE;
       stdMsg->VersionOffset    = 0;
       stdMsg->MsgFlags         = 0;  // Point-to-point
-
+      
       pvtMsg->XFunctionCode    = I2O_BU_ALLOCATE;
       pvtMsg->OrganizationID   = XDAQ_ORGANIZATION_ID;
       msg->n                   = nbEvents;
-
+      
       for(i=0; i<nbEvents; i++)
         {
 	  msg->allocate[i].fuTransactionId = context[i];
@@ -158,11 +167,9 @@ class BUProxy
       toolbox::mem::Reference *bufRef =
 	toolbox::mem::getMemoryPoolFactory()->getFrame(mpool_, msgSizeInBytes);
       
-      I2O_MESSAGE_FRAME         *stdMsg = (I2O_MESSAGE_FRAME*)bufRef->getDataLocation();
-      I2O_PRIVATE_MESSAGE_FRAME *pvtMsg = (I2O_PRIVATE_MESSAGE_FRAME*)stdMsg;
-      I2O_BU_DISCARD_MESSAGE_FRAME *msg =
-	(I2O_BU_DISCARD_MESSAGE_FRAME*)stdMsg;
-      
+      I2O_MESSAGE_FRAME* stdMsg=(I2O_MESSAGE_FRAME*)bufRef->getDataLocation();
+      I2O_PRIVATE_MESSAGE_FRAME* pvtMsg=(I2O_PRIVATE_MESSAGE_FRAME*)stdMsg;
+      I2O_BU_DISCARD_MESSAGE_FRAME* msg=(I2O_BU_DISCARD_MESSAGE_FRAME*)stdMsg;
       
       stdMsg->MessageSize      = msgSizeInBytes >> 2;
       stdMsg->InitiatorAddress = i2o::utils::getAddressMap()->getTid(source_);

@@ -408,37 +408,27 @@ int FURawEvent::checkin_data(vector<unsigned char*> &block_adrs)
 	      if (doCrcCheck_) {
 		
 		// save crc and reset to 0 (as well as R bit!)
-		unsigned char* pfedd=myData_[fedid]->data_;
-		fedt_t*        pfedt=(fedt_t*)(pfedd+fedlen-fedts);
-		short int      crc  =(pfedt->conscheck & FED_CRCS_MASK >> 16);
-		unsigned int   save =pfedt->conscheck;
-		pfedt->conscheck &= (~FED_CRCS_MASK);
-		pfedt->conscheck &= (~FED_RBIT_MASK);
+		unsigned char* pfedd   =myData_[fedid]->data_;
+		fedt_t*        pfedt   =(fedt_t*)(pfedd+fedlen-fedts);
+		unsigned int   conscheck=pfedt->conscheck;
+		unsigned short crc     =((conscheck&FED_CRCS_MASK)>>FED_CRCS_SHIFT);
+		pfedt->conscheck      &=(~FED_CRCS_MASK);
+		pfedt->conscheck      &=(~FED_RBIT_MASK);
+		unsigned short crc_chk =evf::compute_crc(pfedd,fedlen);
+		pfedt->conscheck       =conscheck; // reset
 		
-		// compute crc check
-		unsigned short chk=0xffff;
-		unsigned int   n64=fedlen/8;
-		for (unsigned i=0;i<n64;i++) 
-		  chk=evf::compute_crc_64bit(chk,&pfedd[i*8]);
-		
-		// compare chk to stored crc
-		if (chk!=crc) {
-		  //cout<<"error, stored crc '"<<crc
-		  //<<"'is not equal to recomputed check '"<<chk<<"'"<<endl;
+		if (crc_chk!=crc) {
 		  if(errors[(-FED_CRCCHK_FAILED)]++ < 10)
 		    LOG4CPLUS_ERROR(adapter_->getApplicationLogger(),
 				    "stored crc "<<crc
-				    <<" doesn't match recomputed check "<<chk);
+				    <<" doesn't match recomputed check "<<crc_chk);
 		  adapter_->crcErrorOccured();
 		  
 		  retVal = FED_CRCCHK_FAILED;
 		}
 		
-		// reset stored crc value
-		pfedt->conscheck=save;
-
 	      } // crc check
-
+	      
 	    }
 	}
       if(cursize>0)

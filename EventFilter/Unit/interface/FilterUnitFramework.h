@@ -9,6 +9,9 @@
 //
 //  Modification history:
 //    $Log: FilterUnitFramework.h,v $
+//    Revision 1.9  2006/09/04 15:00:10  schiefer
+//    FUAdapter::doCrcCheck_=n indicates now that every n-th event will have its crc values checked, not every n-th superfragment
+//
 //    Revision 1.8  2006/06/13 15:09:56  meschi
 //    modifications to signal a thread waiting on input
 //
@@ -146,7 +149,7 @@ private:
   xdata::String  workDir_;
 
   // exported (monitor) variables
-
+  
   xdata::UnsignedLong nbEvents_;
 
   // stats
@@ -202,9 +205,9 @@ private:
   void parameterTables(xgi::Input *in, xgi::Output *out);
   void css(xgi::Input  *in,
 	   xgi::Output *out) throw (xgi::exception::Exception)
-    {css_.css(in,out);}  
+  {css_.css(in,out);}  
   xoap::MessageReference getStateMsg(xoap::MessageReference msg) throw (xoap::exception::Exception);
-
+  
   /**
    * SOAP Callback used to trigger state change.
    */
