@@ -23,6 +23,7 @@
 #include "FWCore/ParameterSet/interface/InputTag.h"
 //@@ not needed, but there might be trouble if we take it out
 #include "FWCore/Utilities/interface/EDMException.h"
+#include <boost/cstdint.hpp>
 
 // ----------------------------------------------------------------------
 // contents
@@ -60,6 +61,22 @@ namespace edm {
     Entry(std::string const& name, std::vector<unsigned> const& val, bool is_tracked);
     std::vector<unsigned>  getVUInt32() const;
   
+    // Int64
+    Entry(std::string const& name, int val, bool is_tracked);
+    int  getInt64() const;
+
+    // vInt64
+    Entry(std::string const& name, std::vector<int> const& val, bool is_tracked);
+    std::vector<int>  getVInt64() const;
+
+    // Uint64
+    Entry(std::string const& name, unsigned val, bool is_tracked);
+    unsigned  getUInt64() const;
+
+    // vUint64
+    Entry(std::string const& name, std::vector<unsigned> const& val, bool is_tracked);
+    std::vector<unsigned>  getVUInt64() const;
+
     // Double
     Entry(std::string const& name, double val, bool is_tracked);
     double getDouble() const;
