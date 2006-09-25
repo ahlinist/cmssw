@@ -13,7 +13,7 @@
      
 */
 //
-// Original Author:  Fabian Stoeckli  && Filip Moortgat   
+// Original Author:  Fabian Stoeckli 
 //         Created:  Mon Sept 22 10:57:54 CET 2006
 // $Id: MCParticlePairFilter.h,v 1.1 2006/09/19 08:07:02 fmoortga Exp $
 //
@@ -51,7 +51,8 @@ class MCParticlePairFilter : public edm::EDFilter {
       // ----------member data ---------------------------
       
        std::string label_;
-       std::vector<int> particleID;
+       std::vector<int> particleID1;
+       std::vector<int> particleID2;
        std::vector<int> particleCharge;
        std::vector<double> ptMin;
        std::vector<double> etaMin;  
