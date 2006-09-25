@@ -14,7 +14,7 @@ namespace CLHEP
 /**
  * Generate event vertices according to a Gaussian distribution transverse
  * to beam direction (given by eta and phi
- * Attention: Units are assumed to be mm and radian!
+ * Attention: Units are assumed to be cm and radian!
  * \author Sunanda Banerjee
  */
 class BeamProfileVertexGenerator : public BaseEventVertexGenerator
@@ -31,16 +31,16 @@ public:
    *  If no vertex has been generated yet, a NULL pointer is returned. */
   virtual Hep3Vector * lastVertex();
 
-  /// set resolution in X in mm
+  /// set resolution in X in cm
   void sigmaX(double s=1.0);
-  /// set resolution in Y in mm
+  /// set resolution in Y in cm
   void sigmaY(double s=1.0);
 
-  /// set mean in X in mm
+  /// set mean in X in cm
   void meanX(double m=0) {myMeanX=m;};
-  /// set mean in Y in mm
+  /// set mean in Y in cm
   void meanY(double m=0) {myMeanY=m;};
-  /// set mean in Z in mm
+  /// set mean in Z in cm
   void beamPos(double m=0) {myMeanZ=m;};
 
   /// set eta
