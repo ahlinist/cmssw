@@ -16,9 +16,12 @@ minDeltaPhi(iConfig.getUntrackedParameter("MinDeltaPhi", 0.)),
 maxDeltaPhi(iConfig.getUntrackedParameter("MaxDeltaPhi", 6.3))
 {
    //here do whatever other initialization is needed
-   vector<int> defpid;
-   defpid.push_back(0) ;
-   particleID = iConfig.getUntrackedParameter< vector<int> >("ParticleID",defpid);  
+   vector<int> defpid1;
+   defpid1.push_back(0) ;
+   particleID1 = iConfig.getUntrackedParameter< vector<int> >("ParticleID1",defpid1);
+   vector<int> defpid2;
+   defpid2.push_back(0) ;
+   particleID2 = iConfig.getUntrackedParameter< vector<int> >("ParticleID2",defpid2);
    vector<int> defcharge;
    defcharge.push_back(0);
    particleCharge = iConfig.getUntrackedParameter< vector<int> >("ParticleCharge",defcharge);
@@ -35,54 +38,46 @@ maxDeltaPhi(iConfig.getUntrackedParameter("MaxDeltaPhi", 6.3))
    defstat.push_back(0);
    status = iConfig.getUntrackedParameter< vector<int> >("Status", defstat);
 
-   // chekc for particleID size to be exactely 2
-   if(particleID.size() != 2) {
-     cerr <<"ERROR: ParticleID must have size 2!"<<endl;
-     exit(-1);
-   }
-
-
-    // check for same size
-    if (ptMin.size() > 1 &&  particleID.size() != ptMin.size()
-	|| particleCharge.size() > 1 && particleID.size() != particleCharge.size()	
-	|| etaMin.size() > 1 && particleID.size() != etaMin.size() 
-	|| etaMax.size() > 1 && particleID.size() != etaMax.size()
-	|| status.size() > 1 && particleID.size() != status.size() ) {
-      cout << "WARNING: MCParticlePairFilter : size of some vectors not matching with Particle ID size!!" << endl;
+   
+    // check for correct size
+    if (ptMin.size() != 2 
+	|| particleCharge.size() != 2 
+	|| etaMin.size() != 2 
+	|| etaMax.size() != 2 
+	|| status.size() != 2 ) {
+      cout << "WARNING: MCParticlePairFilter : size of some vectors not matching with 2!!" << endl;
     }
-
-    // if particleCharge size is smaller than particleID, fill up with defaults
-    if (particleID.size() > particleCharge.size()) {
+    
+    // if particleCharge size is smaller than 2, fill up with defaults
+    if (2 > particleCharge.size()) {
       vector<int> defcharge2;
-      for (unsigned int i = 0; i < particleID.size(); i++){ defcharge2.push_back(0);}
+      for (unsigned int i = 0; i < 2; i++){ defcharge2.push_back(0);}
       particleCharge = defcharge2;   
     } 
-    // if ptMin size smaller than particleID , fill up further with defaults
-    if (particleID.size() > ptMin.size() ){
+    // if ptMin size smaller than 2, fill up further with defaults
+    if (2 > ptMin.size() ){
        vector<double> defptmin2 ;
-       for (unsigned int i = 0; i < particleID.size(); i++){ defptmin2.push_back(0.);}
+       for (unsigned int i = 0; i < 2; i++){ defptmin2.push_back(0.);}
        ptMin = defptmin2;   
     } 
-    // if etaMin size smaller than particleID , fill up further with defaults
-    if (particleID.size() > etaMin.size() ){
+    // if etaMin size smaller than 2, fill up further with defaults
+    if (2 > etaMin.size() ){
        vector<double> defetamin2 ;
-       for (unsigned int i = 0; i < particleID.size(); i++){ defetamin2.push_back(-10.);}
+       for (unsigned int i = 0; i < 2; i++){ defetamin2.push_back(-10.);}
        etaMin = defetamin2;   
     } 
-    // if etaMax size smaller than particleID , fill up further with defaults
-    if (particleID.size() > etaMax.size() ){
+    // if etaMax size smaller than 2, fill up further with defaults
+    if (2 > etaMax.size() ){
        vector<double> defetamax2 ;
-       for (unsigned int i = 0; i < particleID.size(); i++){ defetamax2.push_back(10.);}
+       for (unsigned int i = 0; i < 2; i++){ defetamax2.push_back(10.);}
        etaMin = defetamax2;   
     }     
-    // if status size smaller than particleID , fill up further with defaults
-    if (particleID.size() > status.size() ){
+    // if status size smaller than 2, fill up further with defaults
+    if (2 > status.size() ){
        vector<int> defstat2 ;
-       for (unsigned int i = 0; i < particleID.size(); i++){ defstat2.push_back(0);}
+       for (unsigned int i = 0; i < 2; i++){ defstat2.push_back(0);}
        status = defstat2;   
     } 
-
-
 
 }
 
@@ -116,7 +111,14 @@ bool MCParticlePairFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSe
 	  p != myGenEvent->particles_end(); ++p ) {
 
       // check for type A conditions
-      if(abs((*p)->pdg_id()) == particleID[0] || particleID[0] == 0) {
+      bool gottypeAID = false;
+      for(unsigned int i=0; i<particleID1.size(); ++i) {
+	if(abs((*p)->pdg_id()) == particleID1[i] || particleID1[i] == 0) {
+	  gottypeAID = true;
+	  break;
+	}
+      }
+      if(gottypeAID) {
 	if(particleCharge[0]==0 || ((*p)->pdg_id()*particleCharge[0]) >= 0) {
 	  // passed charge criterium
 	  if ( (*p)->momentum().perp() > ptMin[0] && (*p)->momentum().eta() > etaMin[0] 
@@ -145,13 +147,23 @@ bool MCParticlePairFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSe
 	  }
 	}
       }
-
+      
       // if we found a matching pair quit the loop
       if(accepted) break;
       else typeApassed.push_back((*p));   // else remember the particle to have passed type A conditions
-
+      
       // check for type B conditions
-      if(abs((*p)->pdg_id()) == particleID[1] || particleID[1] == 0) {
+
+
+ // check for type A conditions
+      bool gottypeBID = false;
+      for(unsigned int i=0; i<particleID2.size(); ++i) {
+	if(abs((*p)->pdg_id()) == particleID2[i] || particleID2[i] == 0) {
+	  gottypeBID = true;
+	  break;
+	}
+      }
+      if(gottypeBID) {
 	if(particleCharge[1]==0 || ((*p)->pdg_id()*particleCharge[1]) >= 0) {
 	  // passed charge criterium
 	  if ( (*p)->momentum().perp() > ptMin[1] && (*p)->momentum().eta() > etaMin[1] 
