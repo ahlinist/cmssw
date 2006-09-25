@@ -12,11 +12,11 @@ BeamProfileVertexGenerator::BeamProfileVertexGenerator(const edm::ParameterSet &
   BaseEventVertexGenerator(p,seed), myVertex(0), myRandom(0) {
   
   edm::ParameterSet vgenParam(p);
-  meanX(vgenParam.getUntrackedParameter<double>("BeamMeanX",0.0)*mm);
-  meanY(vgenParam.getUntrackedParameter<double>("BeamMeanY",0.0)*mm);
-  beamPos(vgenParam.getUntrackedParameter<double>("BeamPosition",0.0)*mm);
-  sigmaX(vgenParam.getUntrackedParameter<double>("BeamSigmaX",0.0)*mm);
-  sigmaY(vgenParam.getUntrackedParameter<double>("BeamSigmaY",0.0)*mm);
+  meanX(vgenParam.getUntrackedParameter<double>("BeamMeanX",0.0)*cm);
+  meanY(vgenParam.getUntrackedParameter<double>("BeamMeanY",0.0)*cm);
+  beamPos(vgenParam.getUntrackedParameter<double>("BeamPosition",0.0)*cm);
+  sigmaX(vgenParam.getUntrackedParameter<double>("BeamSigmaX",0.0)*cm);
+  sigmaY(vgenParam.getUntrackedParameter<double>("BeamSigmaY",0.0)*cm);
   double fMinEta = vgenParam.getUntrackedParameter<double>("MinEta",-5.5);
   double fMaxEta = vgenParam.getUntrackedParameter<double>("MaxEta",5.5);
   double fMinPhi = vgenParam.getUntrackedParameter<double>("MinPhi",-3.14159265358979323846);
@@ -73,7 +73,7 @@ void BeamProfileVertexGenerator::sigmaX(double s) {
   } else {
     edm::LogWarning("VertexGenerator") << "Warning BeamProfileVertexGenerator:"
 				       << " Illegal resolution in X " << s
-				       << "- set to default value 0 mm";
+				       << "- set to default value 0 cm";
     mySigmaX = 0;
   }
 }
@@ -85,7 +85,7 @@ void BeamProfileVertexGenerator::sigmaY(double s) {
   } else {
     edm::LogWarning("VertexGenerator") << "Warning BeamProfileVertexGenerator:"
 				       << " Illegal resolution in Y " << s
-				       << "- set to default value 0 mm";
+				       << "- set to default value 0 cm";
     mySigmaY = 0;
   }
 }
