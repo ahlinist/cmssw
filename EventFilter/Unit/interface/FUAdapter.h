@@ -7,6 +7,9 @@
 //
 //  MODIFICATION:
 //  $Log: FUAdapter.h,v $
+//  Revision 1.8  2006/09/04 15:00:10  schiefer
+//  FUAdapter::doCrcCheck_=n indicates now that every n-th event will have its crc values checked, not every n-th superfragment
+//
 //  Revision 1.7  2006/08/30 08:45:19  schiefer
 //  added 'doCrcCheck' parameter and 'nbCrcErros' counter, removed cout statements
 //
@@ -88,7 +91,7 @@ class FUAdapter: public xdaq::Application, public evf::RunBase
  public:
   
   /** constructor specifying outgoing message size */
-  FUAdapter(xdaq::ApplicationStub *s, string buClassName = "BU", 
+  FUAdapter(xdaq::ApplicationStub *s, std::string buClassName = "BU", 
 	    unsigned long outsize=1024);
 
   /** destructor */
@@ -165,11 +168,13 @@ class FUAdapter: public xdaq::Application, public evf::RunBase
     }
 
 
-  vector<BUProxy*> bu_;
-  string buName_;
-  unsigned long bufSize_;
-  BSem bSem_;
-  vector<toolbox::mem::Reference *> toGo_;
+  std::vector<BUProxy*> bu_;
+  std::string           buName_;
+  unsigned long         bufSize_;
+  BSem                  bSem_;
+
+  std::vector<toolbox::mem::Reference *> toGo_;
+  
   
 protected:
   
@@ -195,11 +200,11 @@ protected:
   
   /* The instance number of the application.
    */
-  unsigned long instance_;
+  unsigned long       instance_;
   
-  string xmlClass_;
+  std::string         xmlClass_;
   toolbox::mem::Pool *pool_;
-  xdata::String poolName_;
+  xdata::String       poolName_;
   
   void exportCommonParameters()
     {

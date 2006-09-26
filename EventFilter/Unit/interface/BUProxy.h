@@ -7,6 +7,9 @@
 //
 //  MODIFICATION:
 //  $Log: BUProxy.h,v $
+//  Revision 1.2  2006/09/21 12:39:44  schiefer
+//  fix crc check performed in FURawEvent
+//
 //  Revision 1.1  2005/10/19 09:10:35  meschi
 //  first import from COSINE
 //
@@ -51,6 +54,10 @@
 #include "interface/shared/include/i2oXFunctionCodes.h"
 
 
+#include <iostream>
+#include <vector>
+
+
 class BUProxy
 {
 public:  
@@ -66,7 +73,7 @@ public:
     {
       if(mpool_==0)
 	{
-	  cout << "BUProxy::shit, where's my memory pool ???" << endl;
+	  std::cout<<"BUProxy::shit, where's my memory pool ???"<<std::endl;
 	  // do something
 	}
       
@@ -79,7 +86,7 @@ public:
     }
   
   /** FU requests nbEvents new events to BU  (throws xdaq::exception::Exception*/
-  void allocate(U32 fset, vector<U32> &context, U32 nbEvents) 
+  void allocate(U32 fset, std::vector<U32> &context, U32 nbEvents) 
     { 
       //calculate size of message
       size_t msgSizeInBytes = sizeof(I2O_BU_ALLOCATE_MESSAGE_FRAME) +
@@ -95,13 +102,13 @@ public:
       //should rethrow to adapter
       catch(toolbox::mem::exception::Exception e)
 	{
-	  cout << "BUProxy::exception in allocating frame " 
-	       <<  xcept::stdformat_exception_history(e) << endl;
+	  std::cout<<"BUProxy::exception in allocating frame " 
+		   <<xcept::stdformat_exception_history(e)<<std::endl;
 	  return;
 	}
       catch(...)
 	{
-	  cout << "BUProxy::unknown exception in allocating frame " << endl;
+	  std::cout<<"BUProxy::unknown exception in allocating frame "<<std::endl;
 	  return;
 	}
       //prepare the message frame
@@ -118,8 +125,8 @@ public:
       }
       catch(xdaq::exception::ApplicationDescriptorNotFound e)
 	{
-	  cout << "BUProxy::exception in getting source tid " 
-	       <<  xcept::stdformat_exception_history(e) << endl;
+	  std::cout<<"BUProxy::exception in getting source tid " 
+		   <<xcept::stdformat_exception_history(e)<<std::endl;
 	}	    
       try{
 	stdMsg->TargetAddress    = i2o::utils::getAddressMap()->getTid(destination_);
@@ -127,8 +134,8 @@ public:
       }
       catch(xdaq::exception::ApplicationDescriptorNotFound e)
 	{
-	  cout << "BUProxy::exception in getting source tid " 
-	       <<  xcept::stdformat_exception_history(e) << endl;
+	  std::cout<<"BUProxy::exception in getting source tid " 
+		   <<xcept::stdformat_exception_history(e)<<std::endl;
 	}	    
 
 
@@ -155,7 +162,7 @@ public:
   /** collect more data for eventHandle: dummy for the moment */
   void collect(U32 eventHandle, U32 fs, U32 context) 
     { 
-      cerr << "BUProxy::dummy collect method called " << endl;
+      std::cerr<<"BUProxy::dummy collect method called "<<std::endl;
     }
 	
   /** discard event eventHandle (throws xdaq::exception::Exception*/

@@ -7,6 +7,9 @@
 //
 //  Modification history:
 //    $Log: FilterUnitFramework.cc,v $
+//    Revision 1.15  2006/09/21 12:39:44  schiefer
+//    fix crc check performed in FURawEvent
+//
 //    Revision 1.14  2006/09/04 15:00:10  schiefer
 //    FUAdapter::doCrcCheck_=n indicates now that every n-th event will have its crc values checked, not every n-th superfragment
 //
@@ -234,7 +237,7 @@ void FilterUnitFramework::enableAction(toolbox::Event::Reference e) throw (toolb
   //start monitoring timer
   if (MonitorTimerEnable_) {
   	toolbox::TimeInterval interval;
-  	interval.msec(long(1000000.0*MonitorIntervalSec_));
+  	interval.sec(MonitorIntervalSec_);
   	toolbox::TimeVal startTime;
   	startTime = toolbox::TimeVal::gettimeofday();
   	Monitor_timer_->start();
@@ -761,8 +764,8 @@ void FilterUnitFramework::signalWaitingInput()
 void FilterUnitFramework::timeExpired (toolbox::task::TimerEvent& e)
 {
   unsigned int nbproc = factory_->getnbProcessed();
-  static xdata::UnsignedLong nbLast_ = nbproc;
-  xdata::UnsignedLong nbDiff_;
+  static xdata::UnsignedInteger32 nbLast_ = nbproc;
+  xdata::UnsignedInteger32 nbDiff_;
 
 
   mutex_->take();
