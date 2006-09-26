@@ -9,6 +9,9 @@
 #include "EventFilter/Unit/interface/EventSink.h"
 
 
+using namespace std;
+
+
 FUAdapter::FUAdapter(xdaq::ApplicationStub *s, string buClassName, 
 		     unsigned long outsize) : xdaq::Application(s),
   factory_(0), buName_(buClassName), bufSize_(outsize), bSem_(BSem::FULL), 
@@ -65,46 +68,45 @@ void FUAdapter::clearBUArray()
 
 void FUAdapter::createBUArray()
   {
-    vector<xdaq::ApplicationDescriptor*> buDescs;
+    typedef set<xdaq::ApplicationDescriptor*> AppDescSet_t;
+    typedef AppDescSet_t::iterator            AppDescIter_t;
+    
+    AppDescSet_t buDescs;
     
     try{
       buDescs= 
-	getApplicationContext()->getApplicationGroup()->
+	getApplicationContext()->getDefaultZone()->
 	getApplicationDescriptors(buName_);
       unsigned int maxBUinstance = 0;
       
-      for (unsigned int ind=0; ind < buDescs.size(); ind++) 
-	{
-	  if(buDescs[ind]->getInstance() > maxBUinstance)
-	    maxBUinstance = buDescs[ind]->getInstance();
-	}
-      unsigned buinstance = 0;
+      for (AppDescIter_t it=buDescs.begin();it!=buDescs.end();++it) {
+	if ((*it)->getInstance()>maxBUinstance) maxBUinstance=(*it)->getInstance();
+      }
+      
       bu_.resize(maxBUinstance+1);
-      for (buinstance = 0; buinstance <= maxBUinstance; buinstance++) 
+      
+      for (unsigned int buinstance=0;buinstance<bu_.size();buinstance++) {
 	bu_[buinstance] = 0;
-      for (buinstance = 0; buinstance <= maxBUinstance; buinstance++) 
-	{
-	  unsigned int i = 0;
-	  for(; i < buDescs.size(); i++)
-	    if(buinstance==buDescs[i]->getInstance())
-	      break;
-	  LOG4CPLUS_INFO(this->getApplicationLogger(),"FUAdapter::BU descriptor for instance " << buinstance 
-			 << " at " << hex << (int) buDescs[buinstance] << dec);
-	  bu_[buinstance] = new BUProxy (
-					 getApplicationDescriptor() , 
-					 buDescs[i], 
-					 getApplicationContext(),
-					 pool_);
-	} 
-      
-      
+	for (AppDescIter_t it=buDescs.begin();it!=buDescs.end();++it) {
+	  if (buinstance==(*it)->getInstance()) {
+	    LOG4CPLUS_INFO(getApplicationLogger(),
+			   "FUAdapter: BU descriptor for instance "<<buinstance 
+			   <<" at "<<hex<<(unsigned int)(*it)<<dec);
+	    bu_[buinstance]=new BUProxy(getApplicationDescriptor(),
+					*it, 
+					getApplicationContext(),
+					pool_);
+	  }
+	}
+      }
     }
     catch(xcept::Exception &e)
       {
 	LOG4CPLUS_ERROR(this->getApplicationLogger(),
 			"Exception in building BU array" 
 			<< xcept::stdformat_exception_history(e));
-	XCEPT_RETHROW(toolbox::fsm::exception::Exception, "Exception in building BU array", e);
+	XCEPT_RETHROW(toolbox::fsm::exception::Exception,
+		      "Exception in building BU array",e);
       }
     catch(...)
       {

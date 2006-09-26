@@ -9,6 +9,9 @@
 //
 //  Modification history:
 //    $Log: FilterUnitFramework.h,v $
+//    Revision 1.10  2006/09/21 12:39:44  schiefer
+//    fix crc check performed in FURawEvent
+//
 //    Revision 1.9  2006/09/04 15:00:10  schiefer
 //    FUAdapter::doCrcCheck_=n indicates now that every n-th event will have its crc values checked, not every n-th superfragment
 //
@@ -79,7 +82,7 @@ using namespace std;
 #include "toolbox/include/Task.h"
 #include "toolbox/include/TaskGroup.h"
 #include "toolbox/include/toolbox/Chrono.h"
-#include "xdata/include/xdata/UnsignedLong.h"
+#include "xdata/include/xdata/UnsignedInteger32.h"
 #include "xoap/include/xoap/SOAPEnvelope.h"
 #include "xdata/include/xdata/Float.h"
 #include "xdata/include/xdata/Double.h"
@@ -137,11 +140,11 @@ private:
 
   // config exec
 
-  xdata::UnsignedLong buInstance_;
+  xdata::UnsignedInteger32 buInstance_;
 
   // config Fw
 
-  xdata::UnsignedLong queueSize_;
+  xdata::UnsignedInteger32 queueSize_;
 
   // config hlt
 
@@ -150,7 +153,7 @@ private:
 
   // exported (monitor) variables
   
-  xdata::UnsignedLong nbEvents_;
+  xdata::UnsignedInteger32 nbEvents_;
 
   // stats
 
