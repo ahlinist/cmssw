@@ -643,11 +643,10 @@ void CSCStripSegments::storeChamberHits() {
       float this_strippos = proto_y[this_layer-1];
       CSCDetId this_id = (*hi).cscDetId();
       int this_tmax = (*hi).tmax();  
-      float this_tpeak = (*hi).tpeak();  
       int this_csize = (*hi).clusterSize();  
       std::vector<float> adcs = (*hi).s_adc();
 
-      CSCStripHit this_striphit( this_id, this_strippos, this_tmax, this_tpeak, this_csize, adcs );
+      CSCStripHit this_striphit( this_id, this_strippos, this_tmax, this_csize, adcs );
       hitsInChamber.push_back( this_striphit );
     }
   }

@@ -117,7 +117,7 @@ float CSCHitFromWireOnly::findWireHitPosition() {
   // Again use center of mass to determine position of wire hit
   // To do so, need to know wire spacing and # of wires
   
-  float wire_pos = -999.;
+//  float wire_pos = -999.;
   float y = 0.0;
   
   for ( unsigned i = 0; i < wire_cluster.size(); i++ ) {
