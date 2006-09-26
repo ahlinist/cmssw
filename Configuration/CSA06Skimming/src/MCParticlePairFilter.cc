@@ -18,15 +18,15 @@ maxDeltaPhi(iConfig.getUntrackedParameter("MaxDeltaPhi", 6.3))
 {
    //here do whatever other initialization is needed
    vector<int> defpid1;
-   defpid1.push_back(0) ;
+   defpid1.push_back(0);
    particleID1 = iConfig.getUntrackedParameter< vector<int> >("ParticleID1",defpid1);
    vector<int> defpid2;
-   defpid2.push_back(0) ;
+   defpid2.push_back(0);
    particleID2 = iConfig.getUntrackedParameter< vector<int> >("ParticleID2",defpid2);
    vector<double> defptmin;   
    defptmin.push_back(0.);
    ptMin = iConfig.getUntrackedParameter< vector<double> >("MinPt", defptmin);
-   vector<double> defetamin ;
+   vector<double> defetamin;
    defetamin.push_back(-10.);
    etaMin = iConfig.getUntrackedParameter< vector<double> >("MinEta", defetamin);
    vector<double> defetamax ;
@@ -89,7 +89,7 @@ bool MCParticlePairFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSe
    bool accepted = false;
    Handle<HepMCProduct> evt;
    iEvent.getByLabel(label_, evt);
-   const double pi = 3.14159265359;
+   const double pi = 3.14159;
 
    vector<HepMC::GenParticle*> typeApassed;
    vector<HepMC::GenParticle*> typeBpassed;
@@ -130,18 +130,20 @@ bool MCParticlePairFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSe
 	      deltaphi = fabs(phi1-phi2);
 	      if(deltaphi > pi) deltaphi = 2.*pi-deltaphi;
 	      if(deltaphi > minDeltaPhi && deltaphi < maxDeltaPhi) {
-		//if(combcharge*particleCharge>=0) 
+		if(combcharge*particleCharge>=0) {
 		  accepted = true;
+		}
 	      }
 	    }
 	    i++;
+	  }	  
+	  // if we found a matching pair quit the loop
+	  if(accepted) break;
+	  else{
+	    typeApassed.push_back(*p);   // else remember the particle to have passed type A conditions
 	  }
 	}
       }
-      
-      // if we found a matching pair quit the loop
-      if(accepted) break;
-      else typeApassed.push_back((*p));   // else remember the particle to have passed type A conditions
       
       // check for type B conditions
       
@@ -174,23 +176,25 @@ bool MCParticlePairFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSe
 		deltaphi = fabs(phi1-phi2);
 		if(deltaphi > pi) deltaphi = 2.*pi-deltaphi;
 		if(deltaphi > minDeltaPhi && deltaphi < maxDeltaPhi) {
-		  if(combcharge*particleCharge>=0) 
-		  accepted = true;
+		  if(combcharge*particleCharge>=0) {
+		    accepted = true;
+		  }
 		}
 	      }
 	    }
 	    i++;
 	  }
+	  // if we found a matching pair quit the loop
+	  if(accepted) break;
+	  else {
+	    typeBpassed.push_back(*p);   // else remember the particle to have passed type B conditions
+	  }
 	}
       }
-      
-      // if we found a matching pair quit the loop
-      if(accepted) break;
-      else typeBpassed.push_back((*p));   // else remember the particle to have passed type B conditions
     }
     
     delete myGenEvent; 
-
+    
     if (accepted){ return true; } else {return false;}
     
 }
