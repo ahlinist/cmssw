@@ -328,17 +328,15 @@ void CSCWireSegments::fillChiSquared(const CSCWireHit& aHit) {
   
   float chisq = 0.;
   
-  // For uniform distribution, the error^2 is 1/12 --> here take avg number of wire = ~10:
-  
-  const CSCDetId id = aHit.cscDetId();
-  const CSCLayer* layer_ = getLayer( id );
-  const CSCLayerGeometry* layergeom_ = layer_->geometry();    
-  float wire_pos = aHit.wHitPos();                         // This is the position of the wire hit in terms of wire #
-
+// For uniform distribution, the error^2 is 1/12 --> here take avg number of wire = ~10:  
+//  const CSCDetId id = aHit.cscDetId();
+//  const CSCLayer* layer_ = getLayer( id );
+//  const CSCLayerGeometry* layergeom_ = layer_->geometry();    
+//  float wire_pos = aHit.wHitPos();                         // This is the position of the wire hit in terms of wire #
 //  int wgroup = layergeom_->wireGroup(thewire);               // This is the corresponding wire group #
 //  int nwires = layergeom_->numberOfWiresPerGroup(wgroup);
   
-  // Don't use wire but wire group --> so error is just 1/sqrt(12)
+  // For now, don't use wire but wire group --> so error is just 1/sqrt(12)
 
   float sigma2 = 1. /12.;
   

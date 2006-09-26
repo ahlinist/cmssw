@@ -2,10 +2,14 @@
 # ==================================
 module csc2DRecHits = CSCRecHitBProducer {
 
-     untracked bool CSCIsRunningOnData           = false
+     untracked bool CSCIsRunningOnData           = true
      untracked bool CSCDebug                     = false
-     string CSCStripDigiProducer                 = "muonCSCDigis"
-     string CSCWireDigiProducer                  = "muonCSCDigis"
+     # Mapping file for MTCC CSC chambers
+     FileInPath theMappingFile = "RecoLocalMuon/CSCRecHitB/data/csc_slice_test_map.txt"
+#     string CSCStripDigiProducer                 = "muonCSCDigis"
+#     string CSCWireDigiProducer                  = "muonCSCDigis"
+     string CSCStripDigiProducer                 = "cscunpacker"
+     string CSCWireDigiProducer                  = "cscunpacker"
      bool CSCproduce1DHits                       = false
 
 # parameter for wire clustering/segment building
@@ -20,11 +24,11 @@ module csc2DRecHits = CSCRecHitBProducer {
      untracked bool   CSCuseWireHitsFromFits     = false
 
 # parameter for strip clustering/segment building
-     untracked double CSCStripClusterChargeCut   = 10.
-     untracked double CSCStripPeakThreshold      = 30.
+     untracked double CSCStripPeakThreshold      = 10.
+     untracked double CSCStripClusterChargeCut   = 30.
      untracked int32  CSCStripClusterSize        = 5
      untracked bool   CSCUseGattiFit             = true
-     untracked bool   CSCUse3x3Gatti             = false
+     untracked bool   CSCUse3x3Gatti             = true
 
      untracked bool   CSCuseCleanStripCollection = false
      untracked int32  CSCStripminLayersApart     = 2

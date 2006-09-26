@@ -17,10 +17,12 @@
  * yields N, p0, t0(nsec)				                          <BR>
  *										  <BR>
  * Note: tpeak=4/p0 (nsec) and adc[0] is arbitrarily defined a time of 0.0 nsec.  <BR>
- *
+ *                                                                                <BR>
+ * Finally, fit charge deposition for each time bin                               <BR>
  */
 
-class CSCStripDigi;
+#include <vector>
+
 
 class CSCFindPeakTime
 {
@@ -31,14 +33,9 @@ class CSCFindPeakTime
   ~CSCFindPeakTime(){}; 
   
   /// Member functions
-  float FindPeakTime( const int& tmax, const float* adc ); 
-  float ChiSqr()   { return Chi_min; }
-  float StartTime(){ return t0; }
-  float PeakTime() { return t_peak; }
-  float PeakChg()  { return Q_peak; }
+  void FindPeakTime( const int& tmax, const float* adc, float& t_peak, std::vector<float>& adcFit ); 
   
  private:
   
-  float t0, t_peak, Chi_min, Q_peak;
   
 };

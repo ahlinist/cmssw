@@ -19,10 +19,13 @@
  *
  */
 #include <RecoLocalMuon/CSCRecHitB/src/CSCStripData.h>
+
 #include <DataFormats/CSCRecHit/interface/CSCStripHit.h>
 #include <DataFormats/CSCDigi/interface/CSCStripDigiCollection.h>
+
 #include <FWCore/Framework/interface/Frameworkfwd.h>
 #include <FWCore/ParameterSet/interface/ParameterSet.h>
+
 #include <vector>
 
 class CSCLayer;
@@ -33,7 +36,8 @@ class CSCcrosstalk;
 class CSCNoiseMatrix;
 class CSCStripDigi;
 class CSCPeakBinOfStripPulse;
-
+class CSCCalibrateStrip;
+class CSCFindPeakTime;
 
 class CSCHitFromStripOnly 
 {
@@ -62,19 +66,26 @@ class CSCHitFromStripOnly
   /// Go through strip in layers and build a table with 
   void fillPulseHeights( const CSCStripDigiCollection::Range& );  
 
+  /// Compute crosstalk correction to strip adc
+  void correctForCrosstalk( const CSCStripDigiCollection::Range& rstripd );
+
+  /// Get crosstalk level for MC for a given tbin
+  float crosstalkLevel( const CSCStripDigi& digi, const int& tbin );
+
   /// Find local maxima
   void findMaxima();    
 
   /// Make clusters using local maxima
   float makeCluster( int centerStrip );
+
+
   std::vector<int> theMaxima;
+
   PulseHeightMap thePulseHeightMap;
   
-  /// Find position of hit in strip cluster in terms of strip #
-  float findHitOnStripPosition( const std::vector<CSCStripData>& data );
 
-  /// Find peaking time for strip hit
-  int findTmaxofCluster( const std::vector<CSCStripData>& data );
+  /// Find position of hit in strip cluster in terms of strip #
+  float findHitOnStripPosition( const std::vector<CSCStripData>& data, const int& centerStrip );
   
   CSCDetId id_;    
   const CSCLayer * layer_;
@@ -83,32 +94,43 @@ class CSCHitFromStripOnly
   
  private:
   
-  CSCStripData makeStripData( int centerStrip, int offset );
+  CSCStripData makeStripData( int centerStrip, int offset, int stripIndex );
 
-  bool isData;
 
   // Variables entering the CSCStripHit construction:
   int tmax_cluster;
-  float t_peak;
   int ClusterSize;
   std::vector<float> strips_adc;  
   
   // The cuts for forming the strip hits are described in the data/.cfi file
-  float theThresholdForAPeak;
+  bool debug;
+  bool isData;
   int theClusterSize;
-  float theClusterChargeCut;
-  bool stripHituse3timeBin;
+  float theThresholdForAPeak;
+  float theThresholdForCluster;
 
+  /// These are the gain correction weights and X-talks read in from database.
+  float globalGainAvg;
+  float gainWeight[100];
+  float slopeRight[100];
+  float slopeLeft[100];
+  float interRight[100];
+  float interLeft[100];  
+  // Peaking time for strip hit
+  int TmaxOfCluster;            // in time bins;
+  float peakTime;               // in nanosec
 
-  /*
-   * Cache calibrations for current event
+  /* Cache calibrations for current event
+   *
    */
-  const CSCGains* gains_;
-  const CSCcrosstalk* xtalk_;
+  const CSCGains*       gains_;
+  const CSCcrosstalk*   xtalk_;
   const CSCNoiseMatrix* noise_;
-  
-  CSCPeakBinOfStripPulse * pulseheightOnStripFinder_;
 
+
+  CSCPeakBinOfStripPulse* pulseheightOnStripFinder_;
+  CSCCalibrateStrip*      calibrateStrip_;
+  CSCFindPeakTime*        peakTimeFinder_;
 
 };
 
