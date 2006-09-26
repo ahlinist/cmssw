@@ -8,6 +8,12 @@
 #include "SimG4Core/Packaging/src/IonPhysics.hh"
 #include "SimG4Core/Packaging/src/G4DataQuestionaire.hh"
 #else
+#include "G4DecayPhysics.hh"
+#include "G4EmStandardPhysics.hh"
+#include "G4EmExtraPhysics.hh"
+#include "G4IonPhysics.hh"
+#include "G4HadronElasticPhysics.hh"
+#include "G4DataQuestionaire.hh"
 #endif
 
 LHEP::LHEP(const edm::ParameterSet & p) : PhysicsList(p)
