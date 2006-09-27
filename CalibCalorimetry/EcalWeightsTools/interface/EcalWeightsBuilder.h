@@ -10,15 +10,13 @@
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
-
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
-
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include <vector>
-#include <map>
 #include <string>
+#include <map>
 
 class TFile;
 class TH2F;
@@ -42,6 +40,7 @@ class EcalWeightsBuilder : public edm::EDAnalyzer {
   bool         gen_groupID_;
   bool         default_weights_ ;
   double       tMaxRef_;
+  std::vector<int>  XtalSpecial_;
 
   unsigned int nPulseSamples_;
   unsigned int nPrePulseSamples_;
