@@ -3,8 +3,8 @@
  * This module is used to produce the weights needed by
  * the reconstruction of amplitude (RecHits) in the ECAL.
  * 
- * $Date: 2006/07/27 17:42:33 $
- * $Revision: 1.3 $
+ * $Date: 2006/07/27 18:20:25 $
+ * $Revision: 1.4 $
  * Author Alexandre Zabi
  *
  * Modif-Alex Zabi 25/07/2006
@@ -16,6 +16,13 @@
  * An extra set of 25 weights is produced. The number of TdcBin 
  * is increased to 50 but the parameter nTdcBin must remain 25.
  *
+ * Modif-Alex Zabi 11/08/06
+ * Adding data base header for the weights file. 
+ * Reading data base header from the groupid file.
+ *
+ * Modif Alex Zabi 18/09/06
+ * Adding ability to generate optimized weights from known 
+ * crystal shape and timing.
 */
 
 #include "TFile.h"
@@ -134,8 +141,11 @@ void EcalWeightsBuilder::analyze(const edm::Event& evt, const edm::EventSetup& e
   std::cout << "REFERENCE TIME OF MAXIMUM=" << tMaxRef_ << std::endl;
 
   //WEIGHTS FILES
+  char weights_file[20];
+  std::sprintf (weights_file,"WeightsFileTB_SM%02u_V0.out",SuperModule_);
+  std::cout << "CREATING OUTPUT WEIGHTS FILE=" << weights_file << std::endl;
   std::ofstream WeightsFileCMS("WeightsFileCMS.out"); //weights file for CMS
-  std::ofstream WeightsFileTB("WeightsFileTB.out");   //weights file for Test Beam
+  std::ofstream WeightsFileTB(weights_file);          //weights file for Test Beam
 
   //LOADING REFERENCE SIGNAL REPRESENTATION
   EcalSimParameterMap parameterMap;
@@ -162,6 +172,18 @@ void EcalWeightsBuilder::analyze(const edm::Event& evt, const edm::EventSetup& e
   double tMax_gain = tMax + 1;    
   std::cout << "TIME OF MAXIMUM =" << tMax << std::endl;
 
+  //STANDARD DATA BASE HEADER INFORMATION
+  // for more information, look at EcalGroupIdBuilder code.
+  // This is the defaul header, to be added to the Weights file to 
+  // loaded into the Condition Data Base. 
+  // If the weights are generated from a groupId file, these
+  // values will be changed. 
+  unsigned int supermodule_in  = SuperModule_;
+  std::string grouptype = "standard";
+  std::string datatype  = "electron";
+  std::string version   = "V0";
+  std::string notused   = "notused";
+
   //DETERMINING THE GROUP-ID ACCORDING TO THE SIGNAL TIMING ///////////////////////////////////////////////////////
   int    nGroupId   = 1;
   double meanTiming = 5.5;
@@ -170,19 +192,53 @@ void EcalWeightsBuilder::analyze(const edm::Event& evt, const edm::EventSetup& e
 
     //looking for the corresponding group id file
     char* grpid_file = new char[20];
-    std::sprintf (grpid_file,"GroupId_SM%02u.out",SuperModule_);
+    std::sprintf (grpid_file,"GroupId_SM%02u_V0.out",SuperModule_);
     std::cout << "LOOKING FOR GROUPID FILE=" << grpid_file << std::endl;
-
+    
     std::ifstream groupid_in(grpid_file);
     if (groupid_in.is_open())
       {
+	//READING DATA BASE HEADER
+	groupid_in >> supermodule_in;
+	groupid_in >> notused;
+	groupid_in >> grouptype;
+	groupid_in >> datatype;
+	groupid_in >> version;
+	groupid_in >> notused;
+	
+	if(SuperModule_ != supermodule_in) 
+	  std::cout << "ECALWEIGHTSBUILDER: ERROR: this is the wrong group id file," 
+		    << " this is for SuperModule = " << supermodule_in << std::endl;
+
 	groupid_in >> nGroupId >> meanTiming;
 	std::cout << std::endl;
 	std::cout << "GENERATING WEIGHTS FOR GROUPIDs" << std::endl;
 	std::cout << "NGroup = " << nGroupId << " Mean Timing = " << meanTiming << std::endl;
-	groupid_in.close();
 	//TMax is set to the mean timing 
 	tMax = meanTiming;
+	
+	//special crystals -> special weights to be generated
+	if(grouptype == "special")
+	  {
+	    std::cout << "WARNING!! THERE ARE SOME SPECIAL WEIGHTS TO BE BUILT" << std::endl;
+	    for(int xtG=0; xtG < 1700; ++xtG){
+	      int xtal_GID;
+	      int ieta_GID;
+	      int iphi_GID;
+	      int GID;
+	      groupid_in >> xtal_GID >> ieta_GID >> iphi_GID >> GID;
+	      //std::cout <<  xtal_GID << ieta_GID << iphi_GID << GID << std::endl;
+	      if(GID > 100)
+		XtalSpecial_.push_back(xtal_GID);
+	    }//loop xtal
+	    
+	    for(unsigned int y=0; y<XtalSpecial_.size(); ++y)
+	      std::cout << XtalSpecial_[y] << " ";
+	    std::cout << std::endl;
+	  }//special
+
+	//closing group Id files
+	groupid_in.close();
       }//generating groupIds
     else
       {
@@ -199,7 +255,8 @@ void EcalWeightsBuilder::analyze(const edm::Event& evt, const edm::EventSetup& e
   meanTimingGroup[0] = meanTiming - 0.08; 
   meanTimingGroup[1] = meanTiming;
   meanTimingGroup[2] = meanTiming + 0.08;
-  if(gen_groupID_){for(int i=0; i < nGroupId ; ++i) std::cout << meanTimingGroup[i] << std::endl;
+  if(nGroupId == 1) meanTimingGroup[0] = meanTiming;
+  if(gen_groupID_) {for(int i=0; i < 3; ++i) std::cout << meanTimingGroup[i] << std::endl;
     std::cout << std::endl;}
 
   //
@@ -272,6 +329,25 @@ void EcalWeightsBuilder::analyze(const edm::Event& evt, const edm::EventSetup& e
   for(int igroupId = 0; igroupId < nGroupId; ++igroupId){
     if(debug_) std::cout << "%%%%%%%%%%%%%%%%%%%%%%%GROUPID " << igroupId << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << std::endl;
 
+    //loading new shape of special weights
+    if(grouptype == "special" && igroupId > 2)
+      {
+	std::cout << "LOADING SHAPE FOR XTAL=" << XtalSpecial_[igroupId - 3] << std::endl;
+	//Modif 27/09/06 The Load function is not implemented in EcalShape.cc yet.
+	// This is a temporary version.
+	//theShape.load(XtalSpecial_[igroupId - 3], SuperModule_);
+	ToM        = theShape.computeTimeOfMaximum();
+	T0         = theShape.computeT0();
+	risingTime = theShape.computeRisingTime();
+	std::cout << "\n Maximum time from tabulated values = " << ToM        << std::endl;
+	std::cout << "\n Tzero from tabulated values        = " << T0         << std::endl;
+	std::cout << "\n Rising time from tabulated values  = " << risingTime << std::endl;
+	std::cout << std::endl;
+	//time of maximum
+	tMax      = ToM/25.0;
+	std::cout << "NEW TIME OF MAXIMUM =" << tMax << std::endl;
+      }//special
+
     std::vector<double> pulseShape(nSamples_);
     std::vector<double> pulseShapeDerivative(nSamples_);
 
@@ -290,6 +366,8 @@ void EcalWeightsBuilder::analyze(const edm::Event& evt, const edm::EventSetup& e
     double shiftTime = 0.0; //;2.0; //shift to Tmax of Xtal 704
     if(gen_groupID_){
       double diff_time = (tMaxRef_ - meanTimingGroup[igroupId])*25.0;
+      if(grouptype == "special" && igroupId > 2)
+	diff_time = (tMaxRef_ -tMax)*25.0;
       shiftTime = (diff_time-(int)diff_time) <= 0.5 ? (int)diff_time : ((int)diff_time + 1); 
       std::cout << "Shifting shape by " << shiftTime << " ns" << std::endl;
     }// generating groupIds
@@ -449,9 +527,23 @@ void EcalWeightsBuilder::analyze(const edm::Event& evt, const edm::EventSetup& e
       }//debug files
       
       //CREATING THE WEIGHTS FILE:
-      if (!iTdcBin)
-	WeightsFileTB << igroupId << " " << nSamples_ << " " << nTdcBins_*2 << std::endl;
-      
+      if (!iTdcBin){
+	//STANDARD DATA BASE HEADER:
+	if(igroupId == 0){
+	  WeightsFileTB << SuperModule_ << std::endl;
+	  WeightsFileTB << "notused"    << std::endl;
+	  WeightsFileTB << grouptype    << std::endl;
+	  WeightsFileTB << datatype     << std::endl;
+	  WeightsFileTB << version      << std::endl;
+	  WeightsFileTB << "notused"    << std::endl;
+	}//only at the begining of the weights file
+
+	if(grouptype == "special" && igroupId > 2)
+	  WeightsFileTB << XtalSpecial_[igroupId - 3]+10000 << " " << nSamples_ << " " << nTdcBins_*2 << std::endl;
+	else
+	  WeightsFileTB << igroupId << " " << nSamples_ << " " << nTdcBins_*2 << std::endl;
+      }//header
+
       //low energy
       for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
 	WeightsFileTB << std::setw(10) << std::setprecision(7) << weights.getAmpWeight(iSample) << " "; }
