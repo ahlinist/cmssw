@@ -26,7 +26,6 @@
 #include <FWCore/MessageLogger/interface/MessageLogger.h>
 #include <FWCore/Utilities/interface/Exception.h>
 
-//#include <algorithm>
 #include <cmath>
 #include <string>
 #include <vector>
@@ -71,6 +70,8 @@ std::vector<CSCStripHit> CSCHitFromStripOnly::runStrip( const CSCDetId& id, cons
   layer_ = layer;
   layergeom_ = layer_->geometry();
   specs_ = layer->chamber()->specs();  
+  Nstrips = specs_->nStrips();
+
 
   // Get gains for cluster and compute correction weights:
 
@@ -94,8 +95,7 @@ std::vector<CSCStripHit> CSCHitFromStripOnly::runStrip( const CSCDetId& id, cons
   
   // Fill adc map and find maxima (potential hits)
   fillPulseHeights( rstripd );
-  findMaxima();    
-  
+  findMaxima();      
 
   // Make a Strip Hit out of each strip local maximum
   for ( size_t imax = 0; imax < theMaxima.size(); ++imax ) {
@@ -129,7 +129,7 @@ float CSCHitFromStripOnly::makeCluster( int centerStrip ) {
   ClusterSize = theClusterSize;
   std::vector<CSCStripData> stripDataV;
 
-  
+ 
   // We only want to use strip position in terms of strip # for the strip hit.
   
   // If Maximum on edge of detector, can only use the center of the strip...
@@ -291,7 +291,7 @@ void CSCHitFromStripOnly::findMaxima() {
 
     // Have found a strip Hit if...
     if ( heightPeak > theThresholdForAPeak &&  heightCluster > theThresholdForCluster ) {
-      // check neighbors of strip i  Don't worry about bounds;
+      // check neighbors of strip i  don't worry about bounds;
       // should be OK at 0 and beyond last strip
       if ( thePulseHeightMap[i].y() > thePulseHeightMap[i-1].y() &&
 	   thePulseHeightMap[i].y() >= thePulseHeightMap[i+1].y()) {
@@ -305,7 +305,6 @@ void CSCHitFromStripOnly::findMaxima() {
 
 /* findHitOnStripPosition
  *
- * Apply crosstalks here !
  */
 float CSCHitFromStripOnly::findHitOnStripPosition( const std::vector<CSCStripData>& data, const int& centerStrip ) {
   
@@ -367,6 +366,8 @@ void CSCHitFromStripOnly::correctForCrosstalk( const CSCStripDigiCollection::Ran
       unsigned int jstrip = digi.getStrip();
       std::vector<int> sca = digi.getADCCounts();
 
+      float pedestal = (sca[0] + sca[1]) /2.;
+
       float xtalks[4];
     
       // Dealing with MC first     
@@ -379,7 +380,7 @@ void CSCHitFromStripOnly::correctForCrosstalk( const CSCStripDigiCollection::Ran
 
         // subtract off what came from that neighbor
         } else if( abs(jstrip - istrip) == 1 ) {
-          for ( int t = 0; t < 4; t++ ) xtalks[t] = -1.*crosstalkLevel( digi, theTmax+t-1);
+          for ( int t = 0; t < 4; t++ ) xtalks[t] = -1.*crosstalkLevel( digi, theTmax + t - 1);
           thePulseHeightMap[istrip] += xtalks;
         }
         continue;
@@ -392,24 +393,32 @@ void CSCHitFromStripOnly::correctForCrosstalk( const CSCStripDigiCollection::Ran
         if ( jstrip == istrip ) {
           for ( int t = 0; t < 4; t++ ) {
 	    int tbin = theTmax + t - 1;
-            xtalks[t] = sca[tbin] * 
-                      ( slopeRight[istrip-1] * 50. * (t-1) + interRight[istrip-1]
-                      + slopeLeft[istrip-1]  * 50. * (t-1) + interLeft[istrip-1] );
+            if ( istrip == 1 ) {
+              xtalks[t] = (sca[tbin]-pedestal) *
+                        ( slopeRight[istrip-1] * 50. * (t-1) + interRight[istrip-1]);
+            } else if ( istrip ==  Nstrips ) {
+              xtalks[t] = (sca[tbin]-pedestal) *
+                        ( slopeLeft[istrip-1]  * 50. * (t-1) + interLeft[istrip-1] );
+            } else {
+              xtalks[t] = (sca[tbin]-pedestal) * 
+                        ( slopeRight[istrip-1] * 50. * (t-1) + interRight[istrip-1]
+                        + slopeLeft[istrip-1]  * 50. * (t-1) + interLeft[istrip-1] );
+            }
             thePulseHeightMap[istrip] += xtalks;
           }
-        // subtract off what came from the neighbor  --> look strip on left
-        } else if ( int(jstrip - istrip) == -1 ) {
+        // subtract off what came from the neighbor  --> look for strip j on Left of strip i
+        } else if ( int(istrip - jstrip) == 1 ) {
           for ( int t = 0; t < 4; t++ ) {
 	    int tbin = theTmax + t - 1;
-            xtalks[t] = -sca[tbin] * 
+            xtalks[t] = -(sca[tbin]-pedestal)* 
                       ( slopeLeft[istrip-1]  * 50. * (t-1) + interLeft[istrip-1] );
             thePulseHeightMap[istrip] += xtalks;
           }    
-        // subtract off what came from the neighbor  --> look strip on right
-        } else if ( int(jstrip - istrip) == 1 ) {
+        // subtract off what came from the neighbor  --> look for strip j on Right of strip i
+        } else if ( int(istrip - jstrip) == -1 ) {
           for ( int t = 0; t < 4; t++ ) {
             int tbin = theTmax + t - 1;
-            xtalks[t] = -sca[tbin] * 
+            xtalks[t] = -(sca[tbin]-pedestal)* 
                       ( slopeRight[istrip-1] * 50. * (t-1) + interRight[istrip-1]);
             thePulseHeightMap[istrip] += xtalks;
           }
@@ -427,7 +436,10 @@ void CSCHitFromStripOnly::correctForCrosstalk( const CSCStripDigiCollection::Ran
 float CSCHitFromStripOnly::crosstalkLevel( const CSCStripDigi& digi, const int& tbin ) {
   // Don't even bother for small signals
   std::vector<int> sca = digi.getADCCounts();
-  if ( sca[tbin] < 5.) return 0.; 
+
+  float pedestal = (sca[0] + sca[1]) /2.;
+
+  if ( sca[tbin]-pedestal < 5.) return 0.; 
 
   // Make crosstalk proportional to the slope in the digi
   // our time-variable will be the ratio of the SCA values.
@@ -445,6 +457,6 @@ float CSCHitFromStripOnly::crosstalkLevel( const CSCStripDigi& digi, const int& 
     theCrosstalkLevel /= 2.;
   }
 
-  return theCrosstalkLevel * sca[tbin] * slope;
+  return theCrosstalkLevel * (sca[tbin]-pedestal) * slope;
 }
 
