@@ -119,6 +119,8 @@ class CSCHitFromStripOnly
   // Peaking time for strip hit
   int TmaxOfCluster;            // in time bins;
   float peakTime;               // in nanosec
+  // Number of strips in layer
+  unsigned Nstrips;
 
   /* Cache calibrations for current event
    *
