@@ -46,6 +46,7 @@ namespace edm {
   class Schedule;
   class Selector;
   class TypeID;
+  class UnsheduledHandler;
   class VectorInputSource;
 
   struct EventSummary;

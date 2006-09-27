@@ -25,11 +25,10 @@ to keep the EventPrincipal class from having too much 'physical' coupling with t
 
 // user include files
 #include "DataFormats/Common/interface/Provenance.h"
+#include "FWCore/Framework/interface/Frameworkfwd.h"
 
 // forward declarations
 namespace edm {
-   class EventPrincipal;
-   class EventSetup;
    
    class UnscheduledHandler
 {

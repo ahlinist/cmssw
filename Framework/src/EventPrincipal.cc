@@ -1,41 +1,22 @@
 /*----------------------------------------------------------------------
 $Id$
 ----------------------------------------------------------------------*/
-//#include <iostream>
+#include <algorithm>
 #include <memory>
 #include <sstream>
 #include <stdexcept>
-#include <algorithm>
 
-#include "FWCore/Framework/interface/EventPrincipal.h"
-#include "FWCore/Framework/interface/EventProvenanceFiller.h"
 #include "DataFormats/Common/interface/ProcessHistoryRegistry.h"
 #include "DataFormats/Common/interface/ProductRegistry.h"
-#include "FWCore/Utilities/interface/EDMException.h"
+#include "FWCore/Framework/interface/EPEventProvenanceFiller.h"
+#include "FWCore/Framework/interface/EventPrincipal.h"
 #include "FWCore/Framework/interface/UnscheduledHandler.h"
+#include "FWCore/Utilities/interface/EDMException.h"
+
 using namespace std;
 
 namespace edm {
 
-   class EPEventProvenanceFiller : public EventProvenanceFiller {
-public:
-      EPEventProvenanceFiller(boost::shared_ptr<UnscheduledHandler> handler, EventPrincipal* iEvent) : handler_(handler), event_(iEvent) {}
-      virtual bool fill(Provenance& prov) {
-         bool returnValue = false;
-         //try {
-            if(handler_){
-               handler_->tryToFill(prov, *event_);
-            }
-            returnValue = true;
-         //}catch(...) {
-         //}
-         return returnValue;
-      }
-private:
-      boost::shared_ptr<UnscheduledHandler> handler_;
-      EventPrincipal* event_;
-   };
-   
   EventPrincipal::EventPrincipal() :
     aux_(),
     groups_(),
