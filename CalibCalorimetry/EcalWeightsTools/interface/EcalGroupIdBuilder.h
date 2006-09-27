@@ -2,7 +2,7 @@
 #define ECALGROUPIDBUILDER_H
 
 //Author: Alexandre Zabi - Imperial College
-//$Date: 2006/07/23 17:11:57 $
+//$Date: 2006/07/24 15:28:48 $
 
 // system include files
 #include <memory>
@@ -33,10 +33,15 @@ class EcalGroupIdBuilder : public edm::EDAnalyzer {
   unsigned int nGroups_;
   unsigned int SuperModule_;
   bool         debug_;
+  bool         default_;
   bool         problem_;
   double       granularity_;
   std::string  inputFile_;
   std::string  rootFile_;
+  std::string  grouptype_;
+  std::string  datatype_;
+  std::string  version_;
+  std::vector<int>  XtalSpecial_;
 
   //HISTO
   TH1F *TIMING_;
