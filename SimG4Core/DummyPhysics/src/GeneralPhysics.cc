@@ -1,4 +1,5 @@
 #include "SimG4Core/DummyPhysics/interface/GeneralPhysics.h"
+#ifdef G4v7
 
 #include "G4ParticleDefinition.hh"
 #include "G4ChargedGeantino.hh"
@@ -44,3 +45,5 @@ void GeneralPhysics::ConstructProcess()
 	}
     }
 }
+
+#endif
