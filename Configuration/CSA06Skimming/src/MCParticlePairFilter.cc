@@ -14,7 +14,9 @@ particleCharge(iConfig.getUntrackedParameter("ParticleCharge",0)),
 minInvMass(iConfig.getUntrackedParameter("MinInvMass", 0.)),
 maxInvMass(iConfig.getUntrackedParameter("MaxInvMass", 14000.)),
 minDeltaPhi(iConfig.getUntrackedParameter("MinDeltaPhi", 0.)),
-maxDeltaPhi(iConfig.getUntrackedParameter("MaxDeltaPhi", 6.3))
+maxDeltaPhi(iConfig.getUntrackedParameter("MaxDeltaPhi", 6.3)),
+minDeltaR(iConfig.getUntrackedParameter("MinDeltaR",0.)),
+maxDeltaR(iConfig.getUntrackedParameter("MaxDeltaR",10000.))
 {
    //here do whatever other initialization is needed
    vector<int> defpid1;
@@ -26,6 +28,7 @@ maxDeltaPhi(iConfig.getUntrackedParameter("MaxDeltaPhi", 6.3))
    vector<double> defptmin;   
    defptmin.push_back(0.);
    ptMin = iConfig.getUntrackedParameter< vector<double> >("MinPt", defptmin);
+
    vector<double> defetamin;
    defetamin.push_back(-10.);
    etaMin = iConfig.getUntrackedParameter< vector<double> >("MinEta", defetamin);
@@ -61,7 +64,7 @@ maxDeltaPhi(iConfig.getUntrackedParameter("MaxDeltaPhi", 6.3))
     if (2 > etaMax.size() ){
        vector<double> defetamax2 ;
        for (unsigned int i = 0; i < 2; i++){ defetamax2.push_back(10.);}
-       etaMin = defetamax2;   
+       etaMax = defetamax2;   
     }     
     // if status size smaller than 2, fill up further with defaults
     if (2 > status.size() ){
@@ -104,7 +107,7 @@ bool MCParticlePairFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSe
       // check for type A conditions
       bool gottypeAID = false;
       for(unsigned int j=0; j<particleID1.size(); ++j) {
-	if(abs((*p)->pdg_id()) == particleID1[j] || particleID1[j] == 0) {
+	if(abs((*p)->pdg_id()) == abs(particleID1[j]) || particleID1[j] == 0) {
 	  gottypeAID = true;
 	  break;
 	}
@@ -118,20 +121,31 @@ bool MCParticlePairFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSe
 	  double deltaphi;
 	  double phi1 = (*p)->momentum().phi();
 	  double phi2;
-	  HepLorentzVector totmomentum = (*p)->momentum();
+	  double deltaeta;
+	  double eta1 = (*p)->momentum().eta();
+	  double eta2;
+	  double deltaR;
+	  HepLorentzVector momentum1 = (*p)->momentum();
+	  HepLorentzVector totmomentum;
 	  double invmass;
-	  int combcharge = charge((*p)->pdg_id());
+	  int charge1 = charge((*p)->pdg_id());
+	  int combcharge;
 	  while(!accepted && i<typeBpassed.size()) {
-	    totmomentum += typeBpassed[i]->momentum();
+	    totmomentum = momentum1 + typeBpassed[i]->momentum();
 	    invmass = totmomentum.m();
-	    combcharge *= charge(typeBpassed[i]->pdg_id());
+	    combcharge = charge1 * charge(typeBpassed[i]->pdg_id());
 	    if(invmass > minInvMass && invmass < maxInvMass) {
 	      phi2 = typeBpassed[i]->momentum().phi();
 	      deltaphi = fabs(phi1-phi2);
 	      if(deltaphi > pi) deltaphi = 2.*pi-deltaphi;
 	      if(deltaphi > minDeltaPhi && deltaphi < maxDeltaPhi) {
-		if(combcharge*particleCharge>=0) {
-		  accepted = true;
+		eta2 = typeBpassed[i]->momentum().eta();
+		deltaeta=fabs(eta1-eta2);
+		deltaR = sqrt(deltaeta*deltaeta+deltaphi*deltaphi);
+		if(deltaR > minDeltaR && deltaR < maxDeltaR) {
+		  if(combcharge*particleCharge>=0) {
+		    accepted = true;
+		  }
 		}
 	      }
 	    }
@@ -149,7 +163,7 @@ bool MCParticlePairFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSe
       
       bool gottypeBID = false;
       for(unsigned int j=0; j<particleID2.size(); ++j) {
-	if(abs((*p)->pdg_id()) == particleID2[j] || particleID2[j] == 0) {
+	if(abs((*p)->pdg_id()) == abs(particleID2[j]) || particleID2[j] == 0) {
 	  gottypeBID = true;
 	  break;
 	}
@@ -163,21 +177,32 @@ bool MCParticlePairFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSe
 	  double deltaphi;
 	  double phi1 = (*p)->momentum().phi();
 	  double phi2;
-	  HepLorentzVector totmomentum = (*p)->momentum();
+	  double deltaeta;
+	  double eta1 = (*p)->momentum().eta();
+	  double eta2;
+	  double deltaR;
+	  HepLorentzVector momentum1 = (*p)->momentum();
+	  HepLorentzVector totmomentum;
 	  double invmass;
-	  int combcharge = charge((*p)->pdg_id());
+	  int charge1 = charge((*p)->pdg_id());
+	  int combcharge;
 	  while(!accepted && i<typeApassed.size()) {
 	    if((*p) != typeApassed[i]) {
-	      totmomentum += typeApassed[i]->momentum();
+	      totmomentum = momentum1 + typeApassed[i]->momentum();
 	      invmass = totmomentum.m();
-	      combcharge *= charge(typeApassed[i]->pdg_id());
+	      combcharge = charge1 * charge(typeApassed[i]->pdg_id());
 	      if(invmass > minInvMass && invmass < maxInvMass) {
 		phi2 = typeApassed[i]->momentum().phi();
 		deltaphi = fabs(phi1-phi2);
 		if(deltaphi > pi) deltaphi = 2.*pi-deltaphi;
 		if(deltaphi > minDeltaPhi && deltaphi < maxDeltaPhi) {
-		  if(combcharge*particleCharge>=0) {
-		    accepted = true;
+		  eta2 = typeApassed[i]->momentum().eta();
+		  deltaeta=fabs(eta1-eta2);
+		  deltaR = sqrt(deltaeta*deltaeta+deltaphi*deltaphi);
+		  if(deltaR > minDeltaR && deltaR < maxDeltaR) {
+		    if(combcharge*particleCharge>=0) {
+		      accepted = true;
+		    }
 		  }
 		}
 	      }

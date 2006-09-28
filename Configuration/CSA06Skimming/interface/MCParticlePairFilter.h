@@ -15,7 +15,7 @@
 //
 // Original Author:  Fabian Stoeckli
 //         Created:  Mon Sept 11 10:57:54 CET 2006
-// $Id: MCParticlePairFilter.h,v 1.1 2006/09/19 08:07:02 fmoortga Exp $
+// $Id: MCParticlePairFilter.h,v 1.3 2006/09/26 10:40:39 fmoortga Exp $
 //
 //
 
@@ -65,7 +65,8 @@ class MCParticlePairFilter : public edm::EDFilter {
        double maxInvMass;
        double minDeltaPhi;
        double maxDeltaPhi;
-      
+       double minDeltaR;
+       double maxDeltaR;
        
 };
 #endif
