@@ -86,6 +86,7 @@ class CSCRecHitBBuilder
   int stripWireDeltaT;
   bool useCleanStripCollection;
   bool useCleanWireCollection;
+  bool makePseudo2DHits;
 
   /**
    *  The Program first constructs proto wire/strip hits which
