@@ -18,6 +18,7 @@ label_(iConfig.getUntrackedParameter("moduleLabel",std::string("source")))
    vector<double> defptmin ;
    defptmin.push_back(0.);
    ptMin = iConfig.getUntrackedParameter< vector<double> >("MinPt", defptmin);
+
    vector<double> defetamin ;
    defetamin.push_back(-10.);
    etaMin = iConfig.getUntrackedParameter< vector<double> >("MinEta", defetamin);
@@ -53,7 +54,7 @@ label_(iConfig.getUntrackedParameter("moduleLabel",std::string("source")))
     if (particleID.size() > etaMax.size() ){
        vector<double> defetamax2 ;
        for (unsigned int i = 0; i < particleID.size(); i++){ defetamax2.push_back(10.);}
-       etaMin = defetamax2;   
+       etaMax = defetamax2;   
     }     
     // if status size smaller than particleID , fill up further with defaults
     if (particleID.size() > status.size() ){
