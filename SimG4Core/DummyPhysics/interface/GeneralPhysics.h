@@ -1,5 +1,7 @@
 #ifndef SimG4Core_GeneralPhysics_h
 #define SimG4Core_GeneralPhysics_h
+//#define G4v7
+#ifdef G4v7
 
 #include "G4VPhysicsConstructor.hh"
 
@@ -19,7 +21,7 @@ private:
 };
 
 #endif
-
+#endif
 
 
 
