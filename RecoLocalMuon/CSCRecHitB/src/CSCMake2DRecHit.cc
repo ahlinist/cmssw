@@ -41,9 +41,9 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
                                                  const CSCWireHit& wHit, const CSCStripHit& sHit){
   
   // Cache layer info for ease of access
-  layer_ = layer;
-  layergeom_ = layer_->geometry();
-  specs_ = layer->chamber()->specs();
+  layer_         = layer;
+  layergeom_     = layer_->geometry();
+  specs_         = layer->chamber()->specs();
   int this_layer = id.layer();
   
   double sigma, chisq, prob;
@@ -52,7 +52,6 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
   
   CSCRecHit2D::ChannelContainer channels;
   
-
   // Find wire hit position and wire properties
   float wireg = wHit.wHitPos();                            // Position in terms of wire group #
   int wireg1 = int( wireg );
@@ -77,7 +76,6 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
   if ( strip_offset > 0.5 ) ch++;
   int centerStrip = ch;
   double sAngle   = layergeom_->stripAngle(ch);
-
 
 
   // If at the edge, then used 1 strip cluster only :
@@ -120,8 +118,9 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
     
     CSCRecHit2D rechit( id, lp0, localerr, channels, chisq, prob );
     if (debug) std::cout << "Found rechit in layer " << this_layer << " with local position:  x = " << x << "  y = " << y << std::endl; 
+
     return rechit;  
-  }
+  } 
 
 
   // If not at the edge, used cluster of size ClusterSize:
@@ -233,22 +232,155 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
 }
 
 
+
 /* hitFromWireOnly
  *
  */
-CSCRecHit2D CSCMake2DRecHit::hitFromWireOnly(const CSCDetId& id, const CSCLayer* layer, const CSCWireHit& w_Hit){
-  CSCRecHit2D rechit;
+CSCRecHit2D CSCMake2DRecHit::hitFromWireOnly(const CSCDetId& id, const CSCLayer* layer, const CSCWireHit& wHit){
+
+  // Cache layer info for ease of access
+  layer_        = layer;
+  layergeom_    = layer_->geometry();
+  specs_        = layer->chamber()->specs();
+  float wAngle  = layergeom_->wireAngle();
+  
+  int this_layer= id.layer();
+
+  double sigma, chisq, prob;
+  chisq = 0.00;
+  prob  = 1.00;
+  
+  CSCRecHit2D::ChannelContainer channels;
+  
+  // Find wire hit position and wire properties
+  float wireg = wHit.wHitPos();                            // Position in terms of wire group #
+  int wireg1 = int( wireg );
+  int wireg2 = wireg1;
+  if ( (wireg - wireg1) != 0. ) {
+    wireg2++;
+  }  
+  float wgoffset   = wireg - wireg1;
+
+  LocalPoint lp1 = layergeom_->localCenterOfWireGroup( wireg1 ); 
+  LocalPoint lp2 = layergeom_->localCenterOfWireGroup( wireg2 );
+
+  float x = lp1.x() + wgoffset * ( lp2.x() - lp1.x() ); 
+  float y = lp1.y() + wgoffset * ( lp2.y() - lp1.y() ); 
+
+  LocalPoint lp0(x, y);
+
+  // Now compute errors properly:
+
+  float width1 = layergeom_->lengthOfWireGroup( wireg1 );
+  float width2 = layergeom_->lengthOfWireGroup( wireg1 );
+  float width  = width1 + wgoffset * (width2 - width1 );
+
+  sigma = width * cos(wAngle) / sqrt(12.);
+
+  // What are the proper error on these ?????
+
+  float dx2 = sigma * sigma;
+  float dy2 = ( lp1.y()-lp2.y() )*( lp1.y()-lp2.y() ) /12.; 
+  float dxy = dx2 + dy2;
+
+  LocalError localerr(dx2, dxy, dy2);
+
+  CSCRecHit2D rechit( id, lp0, localerr, channels, chisq, prob );
+
+  if (debug) std::cout << "Found wire hit in layer " << this_layer << " with local position:  x = " << x << "  y = " << y << std::endl; 
+
   return rechit;
 }
+
 
 
 /* hitFromStripOnly
  *
+ * Don't bother applying Gatti fit here since we don't know the "y", i.e. the width of the strip.
+ * Centroid will do.  Use y = 0 to find the "x", then assume the strip width at top/sqrt(12) is error (maximum deviation)
  */
-CSCRecHit2D CSCMake2DRecHit::hitFromStripOnly(const CSCDetId& id, const CSCLayer* layer, const CSCStripHit& s_Hit){
-  CSCRecHit2D rechit;
+CSCRecHit2D CSCMake2DRecHit::hitFromStripOnly(const CSCDetId& id, const CSCLayer* layer, const CSCStripHit& sHit){
+
+  // Cache layer info for ease of access
+  layer_        = layer;
+  layergeom_    = layer_->geometry();
+  specs_        = layer->chamber()->specs();
+
+  int this_layer= id.layer();
+
+  double sigma, chisq, prob;
+  chisq = 0.00;
+  prob  = 1.00;
+
+  CSCRecHit2D::ChannelContainer channels;
+
+  // Strip position and properties
+  int stripClusterSize = sHit.clusterSize();
+  float strip_pos = sHit.sHitPos();
+  int ch = int(strip_pos);
+  float strip_offset = float(strip_pos) - ch;
+  if ( strip_offset > 0.5 ) ch++;
+  int centerStrip = ch;
+  float chamberLength = layergeom_->length();
+  float stripWidth = layergeom_->stripPitch(); 
+
+  float x, xAtTop, xAtBottom;
+
+  // If at the edge, then used 1 strip cluster only :
+  if ( ch <= 1 || ch >= specs_->nStrips() ) {
+    
+    // Store channel used
+    channels.push_back(centerStrip);
+
+    x         = layergeom_->xOfStrip( ch, 0.);
+    xAtTop    = layergeom_->xOfStrip( ch, chamberLength/2.);
+    xAtBottom = layergeom_->xOfStrip( ch, -chamberLength/2.);
+
+  // If not at the edge, used cluster of size ClusterSize:
+  } else {
+ 
+    // Store channels used
+    for ( int i = (centerStrip-stripClusterSize/2); i <= (centerStrip+stripClusterSize/2); i++ ) {
+      channels.push_back( i ); 
+    }
+    int ch0 = int(strip_pos);
+
+    float x1, x2;
+    x1 = layergeom_->xOfStrip( ch0,   0.); 
+    x2 = layergeom_->xOfStrip( ch0+1, 0.);
+    x  = (1. - strip_offset) * x1 + strip_offset * x2;
+
+    x1     = layergeom_->xOfStrip( ch0,   chamberLength/2.); 
+    x2     = layergeom_->xOfStrip( ch0+1, chamberLength/2.);
+    xAtTop = (1. - strip_offset) * x1 + strip_offset * x2;
+
+    x1        = layergeom_->xOfStrip( ch0,   -chamberLength/2.); 
+    x2        = layergeom_->xOfStrip( ch0+1, -chamberLength/2.);
+    xAtBottom = (1. - strip_offset) * x1 + strip_offset * x2;
+  }
+
+  float y=0.;
+
+  LocalPoint lp0(x, y);
+
+  sigma = (xAtTop - xAtBottom + stripWidth)/sqrt(12.);  // Be on the conservative side...
+
+
+  // Now compute the errors, but again, what are they ???
+
+  double dx2 = sigma * sigma;
+  double dy2 = chamberLength*chamberLength/12.;   // i.e. sigma_y = chamberLength/sqrt(12);
+  double dxy = dx2 + dy2;
+
+  LocalError localerr(dx2, dxy, dy2);
+
+  CSCRecHit2D rechit( id, lp0, localerr, channels, chisq, prob );
+
+  if (debug) std::cout << "Found strip hit in layer " << this_layer << " with local position:  x = " << x << "  y = " << y << std::endl; 
+
   return rechit;
 }
+
 
 
 void CSCMake2DRecHit::keepHitInFiducial( LocalPoint& lp1, LocalPoint& lp0 ) {
@@ -283,15 +415,12 @@ void CSCMake2DRecHit::keepHitInFiducial( LocalPoint& lp1, LocalPoint& lp0 ) {
       LocalPoint lpGetwire( xNearWire, yNearWire );
       float closestWire   = layergeom_->nearestWire( lpGetwire );
       lp0                 = layergeom_->stripWireIntersection( centralStrip, closestWire );
-
     }
 
   // Within chamber, so keep local point as is
   } else {              
-
     lp0 = lp1;
   } 
  
-
 }
 

@@ -38,7 +38,7 @@ CSCRecHitBBuilder::CSCRecHitBBuilder( const edm::ParameterSet& ps ) : geom_(0) {
   stripWireDeltaT        = ps.getUntrackedParameter<int>("CSCstripWireDeltaTime");
   useCleanStripCollection= ps.getUntrackedParameter<bool>("CSCuseCleanStripCollection");
   useCleanWireCollection = ps.getUntrackedParameter<bool>("CSCuseCleanWireCollection");
-
+  makePseudo2DHits       = ps.getUntrackedParameter<bool>("CSCproduce1DHits");
   
   HitsFromStripOnly_     = new CSCHitFromStripOnly( ps ); 
   HitsFromWireOnly_      = new CSCHitFromWireOnly( ps );  
@@ -129,20 +129,25 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
 
   if (debug) std::cout << "[CSCRecHitBBuilder] Now producing 2D hits" << std::endl;
   
-  int layer_idx = 0;
+  int layer_idx     = 0;
   int hits_in_layer = 0;
   std::vector<CSCRecHit2D> hitsInLayer;
   CSCDetId old_id; 
   
+  // N.B.  I've sorted the hits from layer 1-6 always, so can test if there are "holes", that is
+  // layers without hits for a given chamber.
 
   // Loop over strip hit collection
   for ( CSCStripHitCollection::const_iterator sit = clean_soc.begin(); sit != clean_soc.end(); ++sit ){
 
     const CSCStripHit& s_hit = *sit;
-    const CSCDetId& sDetId = (*sit).cscDetId();
-    const CSCLayer* layer = getLayer( sDetId );
-    int shit_time = (*sit).tmax();
+    const CSCDetId& sDetId   = (*sit).cscDetId();
+    const CSCLayer* layer    = getLayer( sDetId );
+    int shit_time            = (*sit).tmax();
     
+    bool foundMatch = false;
+
+
     if ( layer_idx == 0 ) old_id = sDetId;
     
     if ((sDetId.endcap()  != old_id.endcap() ) ||
@@ -156,16 +161,14 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
       old_id = sDetId;
       hits_in_layer = 0;
     }
-    
-    bool foundMatch = false;
-    
+        
 
     // Loop over cleaned up wire hit collection
     for ( CSCWireHitCollection::const_iterator wit = clean_woc.begin(); wit != clean_woc.end(); ++wit ) {
 
       const CSCWireHit& w_hit = *wit;
-      const CSCDetId& wDetId = (*wit).cscDetId();
-      int whit_time = (*wit).tmax();
+      const CSCDetId& wDetId  = (*wit).cscDetId();
+      int whit_time           = (*wit).tmax();
 
       if (isData) {
         int time_diff = (int) abs(whit_time - shit_time);
@@ -184,16 +187,12 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
       }
     }
     
-    // If missing strip hit in a layer, form pseudo 2-D hit from strip hit.
-    
-    /*  Here is where you can build 1-D hits !!!   --> ignore for now until we have validated 2-D hits
-     *
-     *       if ( !foundMatch ) { 
-     *           CSCRecHit2D rechit = Make2DHits_->hitFromStripOnly(sDetId, layer, w_hit);
-     *           hits_in_layer++;
-     *           hitsInLayer.push_back( rechit );
-     *       }
-     */
+    // If missing wire hit in a layer, form pseudo 2-D hit from strip hit.
+    if ( !foundMatch && makePseudo2DHits ) { 
+      CSCRecHit2D rechit = Make2DHits_->hitFromStripOnly(sDetId, layer, s_hit);
+      hits_in_layer++;
+      hitsInLayer.push_back( rechit );
+    }
     
     layer_idx++;
     old_id = sDetId;
@@ -201,7 +200,6 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
   // Add last set of hits to collection if found hits
   if ( hits_in_layer > 0 ) oc.put( old_id, hitsInLayer.begin(), hitsInLayer.end() );
 }
-
 
 
 
