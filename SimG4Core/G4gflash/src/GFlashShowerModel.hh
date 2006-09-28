@@ -1,29 +1,47 @@
 //
 // ********************************************************************
-// * DISCLAIMER                                                       *
+// * License and Disclaimer                                           *
 // *                                                                  *
-// * The following disclaimer summarizes all the specific disclaimers *
-// * of contributors to this software. The specific disclaimers,which *
-// * govern, are listed with their locations in:                      *
-// *   http://cern.ch/geant4/license                                  *
+// * The  Geant4 software  is  copyright of the Copyright Holders  of *
+// * the Geant4 Collaboration.  It is provided  under  the terms  and *
+// * conditions of the Geant4 Software License,  included in the file *
+// * LICENSE and available at  http://cern.ch/geant4/license .  These *
+// * include a list of copyright holders.                             *
 // *                                                                  *
 // * Neither the authors of this software system, nor their employing *
 // * institutes,nor the agencies providing financial support for this *
 // * work  make  any representation or  warranty, express or implied, *
 // * regarding  this  software system or assume any liability for its *
-// * use.                                                             *
+// * use.  Please see the license in the file  LICENSE  and URL above *
+// * for the full disclaimer and the limitation of liability.         *
 // *                                                                  *
-// * This  code  implementation is the  intellectual property  of the *
-// * GEANT4 collaboration.                                            *
-// * By copying,  distributing  or modifying the Program (or any work *
-// * based  on  the Program)  you indicate  your  acceptance of  this *
-// * statement, and all its terms.                                    *
+// * This  code  implementation is the result of  the  scientific and *
+// * technical work of the GEANT4 collaboration.                      *
+// * By using,  copying,  modifying or  distributing the software (or *
+// * any work based  on the software)  you  agree  to acknowledge its *
+// * use  in  resulting  scientific  publications,  and indicate your *
+// * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-/// Created by E.Barberio, Joanna Weng 9.11.2004  
+//
+// $Id: GFlashShowerModel.hh,v 1.9 2006/06/29 19:13:59 gunter Exp $
+// GEANT4 tag $Name: geant4-08-01-patch-01 $
+//
+//
+//---------------------------------------------------------------
+//  GEANT 4 class header file
+//
+//  GFlashShowerModel
+//
+//  Class description:
+//
+//  GFlash parameterisation shower model.
 
+// Authors: E.Barberio & Joanna Weng - 9.11.04
+//---------------------------------------------------------------
 #ifndef GFlashShowerModel_h
 #define GFlashShowerModel_h 1
+//#define G4v7
 
 //G4 Standard
 #include "G4VFastSimulationModel.hh"
@@ -37,60 +55,96 @@
 #include "GFlashHitMaker.hh"
 #include  <vector>
 
+#ifdef G4v7
 class GFlashHomoShowerParamterisation;
+#else
+class GVFlashShowerParameterisation;
+class GFlashHomoShowerParameterisation;
+class GFlashSamplingShowerParameterisation;
+#endif
 
 class GFlashShowerModel : public G4VFastSimulationModel
 {
-	public:
-	/// Constructor, destructor
-	GFlashShowerModel (G4String, G4LogicalVolume*);
-	GFlashShowerModel (G4String);
-	~GFlashShowerModel ();	
-	 G4ThreeVector test;	
-	/// Checks whether conditions of fast
-	/// parametrisation  are fullfilled
-  
+  public:  // with description
+
+#ifdef G4v7
+    GFlashShowerModel (G4String, G4LogicalVolume*);
+#else
+    GFlashShowerModel (G4String, G4Envelope*);
+#endif
+    GFlashShowerModel (G4String);
+    ~GFlashShowerModel ();  
+      // Constructors, destructor
   int model_trigger;
   int isapp;
-  int edoit;
-	G4bool ModelTrigger(const G4FastTrack &); 
-	G4bool IsApplicable(const G4ParticleDefinition&);
-	void DoIt(const G4FastTrack&, G4FastStep&);
-	
-	// setting
-	inline void SetFlagParamType(G4int I) { FlagParamType = I; }
-	inline void SetFlagParticleContainment(G4int I) { FlagParticleContainment = I; }
-	inline void SetStepInX0(G4double Lenght) { StepInX0=Lenght; }
-	inline void SetParametrisation(GFlashHomoShowerParamterisation &DetectorParametrisation){ Parametrisation=&DetectorParametrisation;}
-	inline void SetHitMaker(GFlashHitMaker &Maker){ HMaker=&Maker;}
-	inline void SetParticleBounds(GFlashParticleBounds &SpecificBound){PBound =&SpecificBound;}
-	
-	//getting
-	inline G4int GetFlagParamType() { return FlagParamType; }
-	inline G4int GetFlagParticleContainment() { return FlagParticleContainment; }  
-	inline G4double GetStepInX0()  { return StepInX0; }
-	// Gets ?	
-	GFlashParticleBounds  *PBound;
-	
-	private:
-	GFlashHomoShowerParamterisation *Parametrisation;	
-	GFlashHitMaker *HMaker;	
-	GFlashShowerModelMessenger* Messenger;
-	
-	//Control Flags
-	G4int FlagParamType;    	///0=no GFlash 1=only em showers parametrized
-	G4int FlagParticleContainment;  ///0=no check  ///1=only fully contained...
-	G4double StepInX0;  
-	G4double EnergyStop;
-  G4double  meta;
-	// private methods
-  void KillParticle(const G4FastTrack& fastTrack, G4FastStep& fastStep);
-	void ElectronDoIt(const G4FastTrack&, G4FastStep&);
-	//  void GammaDoIt(const G4FastTrack&, G4FastStep&);
-	//  void NeutrinoDoIt(const G4FastTrack&, G4FastStep&);
-	G4bool CheckParticleDefAndContainment(const G4FastTrack &fastTrack);
-	G4bool CheckContainment(const G4FastTrack &fastTrack);
-	
-};
+  int edoit;	 
+  G4ThreeVector test;	
+
+    G4bool ModelTrigger(const G4FastTrack &); 
+    G4bool IsApplicable(const G4ParticleDefinition&);
+    void DoIt(const G4FastTrack&, G4FastStep&);
+      // Checks whether conditions of fast parameterisation are fullfilled
+  
+    // setting
+
+    inline void SetFlagParamType(G4int I)
+      { FlagParamType = I; }
+    inline void SetFlagParticleContainment(G4int I)
+      { FlagParticleContainment = I; }
+    inline void SetStepInX0(G4double Lenght)
+      { StepInX0=Lenght; } 
+#ifdef G4v7
+    inline void SetParametrisation(GFlashHomoShowerParamterisation &DP)
+      { Parametrisation=&DP;}
+#else
+    inline void SetParameterisation(GVFlashShowerParameterisation &DP)
+      { Parameterisation=&DP;}
+#endif
+    inline void SetHitMaker(GFlashHitMaker &Maker)
+      { HMaker=&Maker; }
+    inline void SetParticleBounds(GFlashParticleBounds &SpecificBound)
+      { PBound =&SpecificBound; }
+  
+    // getting
+
+    inline G4int GetFlagParamType()
+      { return FlagParamType; }
+    inline G4int GetFlagParticleContainment()
+      { return FlagParticleContainment; }  
+    inline G4double GetStepInX0()
+      { return StepInX0; }
+
+  public:  // without description
+
+    // Gets ?  
+    GFlashParticleBounds  *PBound;
+#ifdef G4v7
+    GFlashHomoShowerParamterisation *Parametrisation;	
+#else
+    GVFlashShowerParameterisation *Parameterisation;  
 #endif
 
+  private:
+
+    void ElectronDoIt(const G4FastTrack&, G4FastStep&);
+    //  void GammaDoIt(const G4FastTrack&, G4FastStep&);
+    //  void NeutrinoDoIt(const G4FastTrack&, G4FastStep&);
+    G4bool CheckParticleDefAndContainment(const G4FastTrack &fastTrack);
+    G4bool CheckContainment(const G4FastTrack &fastTrack);
+#ifdef G4v7
+    void KillParticle(const G4FastTrack& fastTrack, G4FastStep& fastStep);
+#endif
+  
+  private:
+
+    GFlashHitMaker *HMaker;  
+    GFlashShowerModelMessenger* Messenger;
+  
+    //Control Flags
+    G4int FlagParamType;           ///0=no GFlash 1=only em showers parametrized
+    G4int FlagParticleContainment; ///0=no check  ///1=only fully contained...
+    G4double StepInX0;  
+    G4double EnergyStop;
+  
+};
+#endif
