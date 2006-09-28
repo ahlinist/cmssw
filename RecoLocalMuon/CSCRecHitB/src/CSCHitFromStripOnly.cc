@@ -383,7 +383,6 @@ void CSCHitFromStripOnly::correctForCrosstalk( const CSCStripDigiCollection::Ran
           for ( int t = 0; t < 4; t++ ) xtalks[t] = -1.*crosstalkLevel( digi, theTmax + t - 1);
           thePulseHeightMap[istrip] += xtalks;
         }
-        continue;
       }
 
       // Now, dealing with data
@@ -404,24 +403,32 @@ void CSCHitFromStripOnly::correctForCrosstalk( const CSCStripDigiCollection::Ran
                         ( slopeRight[istrip-1] * 50. * (t-1) + interRight[istrip-1]
                         + slopeLeft[istrip-1]  * 50. * (t-1) + interLeft[istrip-1] );
             }
-            thePulseHeightMap[istrip] += xtalks;
           }
+          if (debug) std::cout << "Pulse height before cross talk: " << thePulseHeightMap[istrip].y() << std::endl;
+          thePulseHeightMap[istrip] += xtalks;
+          if (debug) std::cout << "Pulse height after cross talk: " << thePulseHeightMap[istrip].y() << std::endl;
+        
         // subtract off what came from the neighbor  --> look for strip j on Left of strip i
         } else if ( int(istrip - jstrip) == 1 ) {
           for ( int t = 0; t < 4; t++ ) {
 	    int tbin = theTmax + t - 1;
             xtalks[t] = -(sca[tbin]-pedestal)* 
                       ( slopeLeft[istrip-1]  * 50. * (t-1) + interLeft[istrip-1] );
-            thePulseHeightMap[istrip] += xtalks;
-          }    
+          } 
+          if (debug) std::cout << "Pulse height before cross talk: " << thePulseHeightMap[istrip].y() << std::endl;
+          thePulseHeightMap[istrip] += xtalks;
+          if (debug) std::cout << "Pulse height after cross talk: " << thePulseHeightMap[istrip].y() << std::endl;
+    
         // subtract off what came from the neighbor  --> look for strip j on Right of strip i
         } else if ( int(istrip - jstrip) == -1 ) {
           for ( int t = 0; t < 4; t++ ) {
             int tbin = theTmax + t - 1;
             xtalks[t] = -(sca[tbin]-pedestal)* 
                       ( slopeRight[istrip-1] * 50. * (t-1) + interRight[istrip-1]);
-            thePulseHeightMap[istrip] += xtalks;
           }
+          if (debug) std::cout << "Pulse height before cross talk: " << thePulseHeightMap[istrip].y() << std::endl;
+          thePulseHeightMap[istrip] += xtalks;
+          if (debug) std::cout << "Pulse height after cross talk: " << thePulseHeightMap[istrip].y() << std::endl;
         } 
       }
     }
