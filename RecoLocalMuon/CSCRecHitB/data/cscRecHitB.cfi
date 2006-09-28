@@ -3,14 +3,14 @@
 module csc2DRecHits = CSCRecHitBProducer {
 
      untracked bool CSCIsRunningOnData           = true
-     untracked bool CSCDebug                     = false
+     untracked bool CSCDebug                     = true
      # Mapping file for MTCC CSC chambers
      FileInPath theMappingFile = "RecoLocalMuon/CSCRecHitB/data/csc_slice_test_map.txt"
 #     string CSCStripDigiProducer                 = "muonCSCDigis"
 #     string CSCWireDigiProducer                  = "muonCSCDigis"
      string CSCStripDigiProducer                 = "cscunpacker"
      string CSCWireDigiProducer                  = "cscunpacker"
-     bool CSCproduce1DHits                       = false
+     untracked bool CSCproduce1DHits             = false
 
 # parameter for wire clustering/segment building
      untracked int32  CSCWireClusterDeltaT       = 1

@@ -264,7 +264,7 @@ void CSCFitXonStripWithGatti::getGatti( float x, int t ) {
   double g4 = Q_tot[t] * norm * r * atan( sqrt_k_3 * tanh( k_2 * (-x + 1.5)/r ) );
 
 
-  if (debug) std::cout << "g3, g2, q[1][1] " << g3 << " " << g2 << " " << g3 - g2 << std::endl;
+//  if (debug) std::cout << "g3, g2, q[1][1] " << g3 << " " << g2 << " " << g3 - g2 << std::endl;
 
   q[0][t] = g2 - g1;
   q[1][t] = g3 - g2;
