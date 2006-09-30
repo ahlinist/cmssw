@@ -2,7 +2,7 @@
 
 #include <RecoLocalMuon/CSCRecHitB/src/CSCHitFromStripOnly.h>
 #include <RecoLocalMuon/CSCRecHitB/src/CSCPeakBinOfStripPulse.h>
-#include <RecoLocalMuon/CSCRecHitB/src/CSCFindPeakTime.h>
+//#include <RecoLocalMuon/CSCRecHitB/src/CSCFindPeakTime.h>
 #include <RecoLocalMuon/CSCRecHitB/src/CSCCalibrateStrip.h>
 
 #include <RecoLocalMuon/CSCRecHitB/src/CSCStripData.h>
@@ -42,7 +42,7 @@ CSCHitFromStripOnly::CSCHitFromStripOnly( const edm::ParameterSet& ps ) {
 
   pulseheightOnStripFinder_  = new CSCPeakBinOfStripPulse( ps );
   calibrateStrip_            = new CSCCalibrateStrip( ps );
-  peakTimeFinder_            = new CSCFindPeakTime();
+//  peakTimeFinder_            = new CSCFindPeakTime();
   
 }
 
@@ -50,7 +50,7 @@ CSCHitFromStripOnly::CSCHitFromStripOnly( const edm::ParameterSet& ps ) {
 CSCHitFromStripOnly::~CSCHitFromStripOnly() {
   delete pulseheightOnStripFinder_;
   delete calibrateStrip_;
-  delete peakTimeFinder_;
+//  delete peakTimeFinder_;
 }
 
 
@@ -393,20 +393,18 @@ void CSCHitFromStripOnly::correctForCrosstalk( const CSCStripDigiCollection::Ran
           for ( int t = 0; t < 4; t++ ) {
 	    int tbin = theTmax + t - 1;
             if ( istrip == 1 ) {
-              xtalks[t] = (sca[tbin]-pedestal) *
-                        ( slopeRight[istrip-1] * 50. * (t-1) + interRight[istrip-1]);
+              xtalks[t] = (sca[tbin]-pedestal) 
+                       *  ( slopeRight[istrip-1] * 50. * (t-1) + interRight[istrip-1]);
             } else if ( istrip ==  Nstrips ) {
-              xtalks[t] = (sca[tbin]-pedestal) *
-                        ( slopeLeft[istrip-1]  * 50. * (t-1) + interLeft[istrip-1] );
+              xtalks[t] = (sca[tbin]-pedestal)
+                        * ( slopeLeft[istrip-1]  * 50. * (t-1) + interLeft[istrip-1] );
             } else {
-              xtalks[t] = (sca[tbin]-pedestal) * 
-                        ( slopeRight[istrip-1] * 50. * (t-1) + interRight[istrip-1]
-                        + slopeLeft[istrip-1]  * 50. * (t-1) + interLeft[istrip-1] );
+              xtalks[t] = (sca[tbin]-pedestal)  
+                        * ( slopeRight[istrip-1] * 50. * (t-1) + interRight[istrip-1]
+                          + slopeLeft[istrip-1]  * 50. * (t-1) + interLeft[istrip-1] );
             }
           }
-          if (debug) std::cout << "Pulse height before cross talk: " << thePulseHeightMap[istrip].y() << std::endl;
           thePulseHeightMap[istrip] += xtalks;
-          if (debug) std::cout << "Pulse height after cross talk: " << thePulseHeightMap[istrip].y() << std::endl;
         
         // subtract off what came from the neighbor  --> look for strip j on Left of strip i
         } else if ( int(istrip - jstrip) == 1 ) {
@@ -415,9 +413,7 @@ void CSCHitFromStripOnly::correctForCrosstalk( const CSCStripDigiCollection::Ran
             xtalks[t] = -(sca[tbin]-pedestal)* 
                       ( slopeLeft[istrip-1]  * 50. * (t-1) + interLeft[istrip-1] );
           } 
-          if (debug) std::cout << "Pulse height before cross talk: " << thePulseHeightMap[istrip].y() << std::endl;
           thePulseHeightMap[istrip] += xtalks;
-          if (debug) std::cout << "Pulse height after cross talk: " << thePulseHeightMap[istrip].y() << std::endl;
     
         // subtract off what came from the neighbor  --> look for strip j on Right of strip i
         } else if ( int(istrip - jstrip) == -1 ) {
@@ -426,9 +422,7 @@ void CSCHitFromStripOnly::correctForCrosstalk( const CSCStripDigiCollection::Ran
             xtalks[t] = -(sca[tbin]-pedestal)* 
                       ( slopeRight[istrip-1] * 50. * (t-1) + interRight[istrip-1]);
           }
-          if (debug) std::cout << "Pulse height before cross talk: " << thePulseHeightMap[istrip].y() << std::endl;
           thePulseHeightMap[istrip] += xtalks;
-          if (debug) std::cout << "Pulse height after cross talk: " << thePulseHeightMap[istrip].y() << std::endl;
         } 
       }
     }

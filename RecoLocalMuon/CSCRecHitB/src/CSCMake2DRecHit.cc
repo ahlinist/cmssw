@@ -29,6 +29,7 @@ CSCMake2DRecHit::CSCMake2DRecHit(const edm::ParameterSet& ps){
   debug                      = ps.getUntrackedParameter<bool>("CSCDebug");
   stripWireDeltaTime         = ps.getUntrackedParameter<int>("CSCstripWireDeltaTime");
   useGatti                   = ps.getUntrackedParameter<bool>("CSCUseGattiFit");
+  maxGattiChi2               = ps.getUntrackedParameter<double>("CSCMaxGattiChi2");
 
   xFitWithGatti_             = new CSCFitXonStripWithGatti( ps );
 }   
@@ -198,11 +199,16 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
     float x_to_gatti = lp6.x();   
     y = lp6.y();
     float x_fit;
-    xFitWithGatti_->findXOnStrip( layer_, sHit, x_to_gatti, stripWidth, x_fit, sigma, chisq, prob );
+    double sigma_fit, chisq_fit, prob_fit;
+    xFitWithGatti_->findXOnStrip( layer_, sHit, x_to_gatti, stripWidth, x_fit, sigma_fit, chisq_fit, prob_fit );
 
     if (debug) std::cout << "Centroid x, Gatti x, diff " << x << " " << x_fit << " " << x-x_fit << std::endl;
 
-    x = x_fit;
+    if (chisq_fit < maxGattiChi2 ) {
+      x     = x_fit;
+      sigma = sigma_fit;
+      prob  = prob_fit;
+    }
   }
   LocalPoint lp0(x, y);
 

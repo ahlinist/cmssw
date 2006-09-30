@@ -54,6 +54,7 @@ class CSCMake2DRecHit
   bool debug;
   int stripWireDeltaTime;
   bool useGatti;
+  float maxGattiChi2;
   
   CSCFitXonStripWithGatti * xFitWithGatti_;
 
