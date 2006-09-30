@@ -18,6 +18,7 @@
 
 class CSCLayer;
 class CSCChamberSpecs;
+class CSCFindPeakTime;
 
 class CSCFitXonStripWithGatti
 {
@@ -69,6 +70,8 @@ class CSCFitXonStripWithGatti
   // Parameter settings from config file
   bool debug;
   bool use3TimeBins;
+
+  CSCFindPeakTime* peakTimeFinder_;  
 
 }; 
 

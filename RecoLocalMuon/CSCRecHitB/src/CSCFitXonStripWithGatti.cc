@@ -1,6 +1,7 @@
 // This is CSCFitXonStripWithGatti.cc
 
 #include <RecoLocalMuon/CSCRecHitB/src/CSCFitXonStripWithGatti.h>
+#include <RecoLocalMuon/CSCRecHitB/src/CSCFindPeakTime.h>
 
 #include <RecoLocalMuon/CSCRecHit/src/probab.h>
 
@@ -25,9 +26,15 @@ CSCFitXonStripWithGatti::CSCFitXonStripWithGatti(const edm::ParameterSet& ps){
   debug                      = ps.getUntrackedParameter<bool>("CSCDebug");
   use3TimeBins               = ps.getUntrackedParameter<bool>("CSCUse3x3Gatti");
 
+  peakTimeFinder_            = new CSCFindPeakTime();
+
 }
 
-CSCFitXonStripWithGatti::~CSCFitXonStripWithGatti(){}
+CSCFitXonStripWithGatti::~CSCFitXonStripWithGatti(){
+
+//  delete peakTimeFinder_;
+
+}
 
 
 /* findPosition
@@ -51,25 +58,33 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCLayer* layer, const CSCStri
   int nStrips = stripHit.clusterSize();
   int CenterStrip = nStrips/2 + 1;   
   std::vector<float> adcs = stripHit.s_adc();
+  int tmax = stripHit.tmax();
 
-  // Loading in 3x3 matrix with corrected adcs... well eventually.
+  // Loading in 3x3 matrix with corrected adcs..
   int j = 0;
   Q_tot[0] = 0.;
   Q_tot[1] = 0.;
   Q_tot[2] = 0.;
-
+  
   for ( int i=1; i <= nStrips; i++ ) {
     if ( i > (CenterStrip-2) && i < (CenterStrip+2) ) {
+      float adc[4];
       for ( int t=0; t<3; t++ ) {
         int k = t + 3*(i-1);
-        d[j][t] = adcs[k];
+        adc[t]    = adcs[k];
+//      }
+//      std::vector<float> adcsFit;
+//      float tpeak;
+//      peakTimeFinder_->FindPeakTime( tmax, adc, tpeak, adcsFit);
+//      for ( int t=0; t<3; t++ ) {
+        d[j][t]   = adcs[k];
         Q_tot[t] += adcs[k];
       }
       j++;
     }
   }
     
-    
+  
   // Run Gatti for offset = 0
   runGattiFit( 0 );
 

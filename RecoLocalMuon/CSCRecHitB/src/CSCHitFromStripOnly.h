@@ -37,7 +37,7 @@ class CSCNoiseMatrix;
 class CSCStripDigi;
 class CSCPeakBinOfStripPulse;
 class CSCCalibrateStrip;
-class CSCFindPeakTime;
+//class CSCFindPeakTime;
 
 class CSCHitFromStripOnly 
 {
@@ -132,7 +132,7 @@ class CSCHitFromStripOnly
 
   CSCPeakBinOfStripPulse* pulseheightOnStripFinder_;
   CSCCalibrateStrip*      calibrateStrip_;
-  CSCFindPeakTime*        peakTimeFinder_;
+//  CSCFindPeakTime*        peakTimeFinder_;
 
 };
 
