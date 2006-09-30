@@ -61,6 +61,11 @@ bool loadLibraryForClass( const char* classname )
   
   ROOT::Reflex::Type t = ROOT::Reflex::Type::ByName(classname);
   if(ROOT::Reflex::Type() != t ) {
+     if(! t.IsComplete() ) {
+	// this message happens too often (to many false positives) to be useful plus ROOT will complain about a missing dictionary 
+	//std::cerr <<"Warning: Reflex knows about type '"<<classname<<"' but has no dictionary for it."<<std::endl;
+	return false;
+     }
     //std::cout <<"loaded "<<classname<<std::endl;
     return true;
   } 
