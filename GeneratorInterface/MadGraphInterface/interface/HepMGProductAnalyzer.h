@@ -7,10 +7,9 @@
 // 
 /**\class HepMGProductAnalyzer HepMGProductAnalyzer.cc IOMC/HepMGProductAnalyzer/src/HepMGProductAnalyzer.cc
  A modified version of the HepMCProducts, which is 
- used to print out content of HepMCProducts.
+ used to print out the content of HepMC products.
  This version has an additional method to print
- a table of basic 4-vector quantities and produce
- a simple ntuple and plots.
+ a table of particles and their decay products.
 
 */
 //
@@ -32,10 +31,7 @@
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
-#include "TNtuple.h"
 
-class TFile;
-class TH1D;
 
 class HepMGProductAnalyzer : public edm::EDAnalyzer {
    public:
@@ -44,13 +40,7 @@ class HepMGProductAnalyzer : public edm::EDAnalyzer {
 
       virtual void analyze(const edm::Event&, const edm::EventSetup&);
       void printTable(HepMC::GenEvent * event);
-   private:
- std::string label_;
- TFile* fOutputFile;
- TH1D* pdgPlot;
- TH1D* etaPlot;
- TH1D* etPlot;
- TH1D* phiPlot;
- TNtuple *nt;
+ private:
+      std::string label_;
 };
 #endif
