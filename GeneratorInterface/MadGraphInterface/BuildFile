@@ -1,0 +1,25 @@
+<use name=boost>
+<use name=FWCore/Framework>
+<use name=FWCore/ParameterSet>
+<use name=Foundation/PluginManager>
+<use name=FWCore/Utilities>
+<use name=SimDataFormats/HepMCProduct>
+<use name=clhep> 
+<use name=pythia6_227>
+<use name=root>
+<flags SEAL_PLUGIN_NAME="GeneratorInterfaceMadGraphInterface">
+<export>
+ <lib name=GeneratorInterfaceMadGraphInterface>
+ <use name=boost>
+ <use name=FWCore/Framework>
+ <use name=FWCore/ParameterSet>
+ <use name=Foundation/PluginManager>
+ <use name=SimDataFormats/HepMCProduct>
+ <use name=clhep> 
+ <use name=pythia6_227>
+ <use name=root>
+</export>
+
+<lib name=g2c></lib>
+<lib name=m></lib>
+
