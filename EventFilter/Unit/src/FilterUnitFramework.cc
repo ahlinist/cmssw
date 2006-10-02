@@ -7,6 +7,9 @@
 //
 //  Modification history:
 //    $Log: FilterUnitFramework.cc,v $
+//    Revision 1.16  2006/09/26 16:26:01  schiefer
+//    ready for xdaq 3.7 / CMSSW_1_1_0
+//
 //    Revision 1.15  2006/09/21 12:39:44  schiefer
 //    fix crc check performed in FURawEvent
 //
@@ -136,6 +139,7 @@ FilterUnitFramework::FilterUnitFramework(xdaq::ApplicationStub *s) : FUAdapter(s
   pthread_cond_init(&ready_,0);
   dump_ = new unsigned char[128000];
   fed_id = -1;
+  
 }
 
 
@@ -146,10 +150,19 @@ void FilterUnitFramework::exportParams()
   buInstance_     = 0;
   queueSize_ = 16;
 
+  class_ = getApplicationDescriptor()->getClassName();
+  instance_ = getApplicationDescriptor()->getInstance();
+  std::string surl;
+  surl =  getApplicationDescriptor()->getContextDescriptor()->getURL();
+  host_ = surl;
+  surl += "/";
+  surl +=  getApplicationDescriptor()->getURN();
+  url_=surl;
+
   runActive_ = false;
   workDir_ = "/tmp/evf";
   runNumber_ = 1;
-  MonitorTimerEnable_=false;
+  MonitorTimerEnable_=true;
   MonitorIntervalSec_=1.0;
   MonitorEventsPerSec_=0.0;
   s->fireItemAvailable("buInstance",&buInstance_);
@@ -166,14 +179,26 @@ void FilterUnitFramework::exportParams()
   s->fireItemAvailable("MonitorIntervalSec",&MonitorIntervalSec_);
   
   //Monitoring infospace and variables
-  s_mon = xdata::InfoSpace::get("urn:xdaq-monitorable:FUFramework");
-  s_mon->fireItemAvailable("nbEvents",&nbEvents_);
+
+  nbProcessedEvents_ = factory_->getnbProcessed();
+
+  std::ostringstream oss;
+  oss << "urn:xdaq-monitorable:" << class_.value_ << ":" << instance_.value_;
+  s_mon = xdata::InfoSpace::get(oss.str());
+  s_mon->fireItemAvailable("class",&class_);
+  s_mon->fireItemAvailable("hostname",&host_);
+  s_mon->fireItemAvailable("instance",&instance_);
+  s_mon->fireItemAvailable("url",&url_);
+  s_mon->fireItemAvailable("stateName",&fsm_->stateName_);
+  s_mon->fireItemAvailable("runNumber",&runNumber_);
+  s_mon->fireItemAvailable("crcCheckEv",&doCrcCheck_);
   s_mon->fireItemAvailable("nbReceivedEvents",&nbReceivedEvents_);
+  s_mon->fireItemAvailable("nbProcessedEvents",&nbProcessedEvents_);
   s_mon->fireItemAvailable("nbReceivedFragments",&nbReceivedFragments_);
   s_mon->fireItemAvailable("pendingRequests",&pendingRequests_);
   s_mon->fireItemAvailable("nbDataErrors",&nbDataErrors_);
   s_mon->fireItemAvailable("nbCrcErrors",&nbCrcErrors_);
-  s_mon->fireItemAvailable("MonitorEventsPerSec",&MonitorEventsPerSec_);
+  s_mon->fireItemAvailable("eventRate",&MonitorEventsPerSec_);
 }
 
 FilterUnitFramework::~FilterUnitFramework()
@@ -236,8 +261,7 @@ void FilterUnitFramework::enableAction(toolbox::Event::Reference e) throw (toolb
   nbEvents_ = 0;
   //start monitoring timer
   if (MonitorTimerEnable_) {
-  	toolbox::TimeInterval interval;
-  	interval.sec(MonitorIntervalSec_);
+  	toolbox::TimeInterval interval(MonitorIntervalSec_.value_);
   	toolbox::TimeVal startTime;
   	startTime = toolbox::TimeVal::gettimeofday();
   	Monitor_timer_->start();
@@ -726,7 +750,8 @@ void FilterUnitFramework::parameterTables(xgi::Input *in, xgi::Output *out)
   *out << "<td>" << std::endl;
   *out << "CrcErrors" << std::endl;
   *out << "</td>" << std::endl;
-  *out << "<td>" << std::endl;
+  *out << "<td" << ( doCrcCheck_.value_ !=0 ?  (nbCrcErrors_==0 ? ">" : "bgcolor=\"red\">" ) : 
+   " bgcolor=\"grey\">" ) << std::endl;
   *out << nbCrcErrors_ << std::endl;
   *out << "</td>" << std::endl;
   *out << "</tr>" << std::endl;
@@ -738,12 +763,13 @@ void FilterUnitFramework::parameterTables(xgi::Input *in, xgi::Output *out)
 
 FURawEvent * FilterUnitFramework::rqstEvent()
 {
+  nbProcessedEvents_ = factory_->getnbProcessed();
   mutex_->take(); //this is used to atomically suspend the FU on next event
   //  cout << "FF::rqstEvent, queue size=" << factory_->queueSize() << "pending requests "
   //       << pendingRequests_ << endl;
   FURawEvent *ev = factory_->getBuiltEvent();
   mutex_->give();
-  nbEvents_.value_++; // increment counter of processed events 
+  nbEvents_.value_++; // increment counter of claimed events 
 
   if((factory_->queueSize() + pendingRequests_<=queueSize_/2) && !flush_)
     {
