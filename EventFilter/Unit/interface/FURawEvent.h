@@ -112,8 +112,8 @@ class FURawEvent
   /** constructor from internal handle (only used by factory at creation) */
   FURawEvent(unsigned int);   // constructor is not exposed 
 
-  unsigned char fragmentCount_;
-  unsigned char blockCount_;
+  unsigned int fragmentCount_;
+  unsigned int blockCount_;
   unsigned int outstandingReqs_; // the number of expected superfragments to declare
                         // the even as "built"
 
