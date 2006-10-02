@@ -195,6 +195,14 @@ namespace edm {
       /// was not obtained from outputFileOpened.
       void outputFileClosed(Token fileToken);
 
+      ///
+      /// For use by fast merge: Since the event by event counter cant
+      /// be used for fast merges, use this method to forcibly set the
+      /// events written count for an output file before reporting it 
+      /// closed
+      void overrideEventsWritten(Token fileToken, const int eventsWritten);
+
+
       void reportSkippedEvent(edm::EventID const& id);
 
 

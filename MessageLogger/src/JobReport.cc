@@ -296,6 +296,16 @@ namespace edm
     }
 
     void 
+    JobReport::overrideEventsWritten(Token fileToken, const int eventsWritten)
+    {
+      // Get the required output file instance using the token
+      JobReport::OutputFile& f = impl_->getOutputFileForToken(fileToken);
+      // set the eventsWritten parameter to the provided value
+      f.numEventsWritten = eventsWritten;
+
+    }
+
+    void 
     JobReport::reportSkippedEvent(edm::EventID const& id)
     {
       std::ostringstream msg;
