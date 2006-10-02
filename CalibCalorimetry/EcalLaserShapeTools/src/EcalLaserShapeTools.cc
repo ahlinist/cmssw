@@ -1,8 +1,8 @@
 /*
  * \file EcalLaserShapeTools.cc
  *
- * $Date: 2006/08/06 22:52:50 $
- * $Revision: 1.8 $
+ * $Date: 2006/08/15 00:05:10 $
+ * $Revision: 1.9 $
  * \author P. Jarry
  * \author G. Franzoni
  *
@@ -174,6 +174,8 @@ void EcalLaserShapeTools::analyze(const edm::Event& iEvent, const edm::EventSetu
   EBDigiCollection::const_iterator digiItr ;
   //  int adc_lu[20][85][10] ;
   //  int gain_lu ;
+
+  bool notOnlyGain12Event = false;
    
   for (digiItr = digis->begin(); digiItr != digis->end(); ++digiItr ) {
      
@@ -193,12 +195,11 @@ void EcalLaserShapeTools::analyze(const edm::Event& iEvent, const edm::EventSetu
 
       if ((*digiItr).sample(i).gainId()!=1 )
 	{
-	  LogInfo("EcalLaserShapeTools") << " gain " << (*digiItr).sample(i).gainId() << " other than 1(= X12) found for channel: "
-					 << theId.ism() << " - note: gain ratio not accounted for" << endl;
+	  notOnlyGain12Event = true;
 	}
       
       theFrame.setSample( i, theSample);
-      
+
     }
         
 
@@ -219,6 +220,16 @@ void EcalLaserShapeTools::analyze(const edm::Event& iEvent, const edm::EventSetu
       }
     
   }
+
+  // overall message once per event
+  if (notOnlyGain12Event )
+    {
+      LogInfo("EcalLaserShapeTools") << "Gain  other than 1(= X12) found in digi of the event for at least one sample. "
+				     << " Note: gain ratio not accounted for here." << endl;
+      
+    }
+
+
   
   
 }
@@ -289,19 +300,19 @@ void EcalLaserShapeTools::endJob (void)
 					 << ((channelDataIter -  (*pointerChannelsData).begin() ) +1)
 					 << " # events: " << (*channelDataIter).size() << endl;
 	  // gio go away
-	  if (   (channelDataIter -  (*pointerChannelsData).begin() )== 1){
-	    LogDebug("EcalLaserShapeTools") << " ch " << ((channelDataIter -  (*pointerChannelsData).begin() ) +1)  << ";" << endl;
-	    std::vector  <EBDataFrame >::const_iterator evtIter;
-	    for (evtIter = (*channelDataIter).begin(); evtIter !=(*channelDataIter).end();  evtIter++)
-	      {
-		for (int sample=0; sample<10; sample++)
-		  {
-		    LogDebug("EcalLaserShapeTools") << "(in end job)  ch " << ( (*evtIter).id().ic()) 
-						   << " event  " << (evtIter - (*channelDataIter).begin())
-						   << " sample " << sample << " " << (*evtIter).sample(sample).adc()  << ";" << endl;
-		  }
-	      }
-	  }
+	  // 	  if (   (channelDataIter -  (*pointerChannelsData).begin() )== 1){
+	  // 	    LogDebug("EcalLaserShapeTools") << " ch " << ((channelDataIter -  (*pointerChannelsData).begin() ) +1)  << ";" << endl;
+	  // 	    std::vector  <EBDataFrame >::const_iterator evtIter;
+	  // 	    for (evtIter = (*channelDataIter).begin(); evtIter !=(*channelDataIter).end();  evtIter++)
+	  // 	      {
+	  // 		for (int sample=0; sample<10; sample++)
+	  // 		  {
+	  // 		    LogDebug("EcalLaserShapeTools") << "(in end job)  ch " << ( (*evtIter).id().ic()) 
+	  // 						    << " event  " << (evtIter - (*channelDataIter).begin())
+	  // 						    << " sample " << sample << " " << (*evtIter).sample(sample).adc()  << ";" << endl;
+	  // 		  }
+	  // 	      }
+	  // 	  }
 	
 	  // crystal number - corresponds to ic()-1
 	  int icris = ((int) (channelDataIter -  (*pointerChannelsData).begin() ) );
@@ -348,7 +359,7 @@ void EcalLaserShapeTools::endJob (void)
 	  
 
 	  //gio to go away
-	  LogDebug("EcalLaserShapeTools") << "[out of fitpj] alpha is: " << param_out[0]  << " beta " << param_out[1]  << endl;
+	  //  LogDebug("EcalLaserShapeTools") << "[out of fitpj] alpha is: " << param_out[0]  << " beta " << param_out[1]  << endl;
 	  alpha_[icolor][icris]  = param_out[0] ;
 	  beta_[icolor][icris]   = param_out[1] ;
 	  chi2_[icolor][icris]   = chi2s ;
@@ -944,8 +955,6 @@ double EcalLaserShapeTools::fitpj(double * parout, int num_event ,
 	  amplu[k] =  ((double) (* thePulse).sample(k).adc() ) ;    // get the pulses the new way
 	  amplu[k]/=  thePnAmplitudes[ nevt ];
 
-	  // gio go away
-	  //	  LogDebug("EcalLaserShapeTools") << "sample is: " << k << " ampl is: " << amplu[k] << endl;
 	  
 	  if (amplu[k] > ampmax[nk] ) {
 	    ampmax[nk] = amplu[k] ;
