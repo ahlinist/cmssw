@@ -191,10 +191,10 @@ int FURawEvent::processMsg(I2O_MESSAGE_FRAME *stdMsg)
 int FURawEvent::checkin_data(vector<unsigned char*> &block_adrs)
 {
   
-  int          retVal =  0;
-  int           fedid = -1;
-  int  current_trigno = -1;
-  int          lvl1id = -1;
+  int           retVal         =  0;
+  int           fedid          = -1;
+  unsigned int  current_trigno =  0;
+  unsigned int  lvl1id         =  0;
   
   unsigned char*sf_data = 0;
   unsigned long sf_size = 0;
@@ -204,10 +204,10 @@ int FURawEvent::checkin_data(vector<unsigned char*> &block_adrs)
     {
       frlh_t *ph = (frlh_t *)block_adrs[iblk];
       
-      int hd_trigno      = ph->trigno;
-      int hd_segno       = ph->segno;
-      int hd_segsize     = ph->segsize;
-      int segsize_proper = hd_segsize & FRL_SEGSIZE_MASK;
+      unsigned int hd_trigno      = ph->trigno;
+      int hd_segno                = ph->segno;
+      int hd_segsize              = ph->segsize;
+      unsigned int segsize_proper = hd_segsize & FRL_SEGSIZE_MASK;
       if(segsize_proper >= 1048576)
 	{
 	  LOG4CPLUS_ERROR(adapter_->getApplicationLogger(),
@@ -219,7 +219,7 @@ int FURawEvent::checkin_data(vector<unsigned char*> &block_adrs)
 	}
       
       // check trigno
-      if (current_trigno == -1) {
+      if (iblk==0) {
 	current_trigno = hd_trigno ;
       }
       else {
@@ -270,7 +270,7 @@ int FURawEvent::checkin_data(vector<unsigned char*> &block_adrs)
 	{
 	  frlh_t *ph = (frlh_t *)block_adrs[iblk];
 	  int hd_segsize     = ph->segsize;
-	  int segsize_proper = hd_segsize & FRL_SEGSIZE_MASK;
+	  unsigned int segsize_proper = hd_segsize & FRL_SEGSIZE_MASK;
 	  scursor[iblk] = segsize_proper;
 	  if(segsize_proper > remnant)
 	    {
