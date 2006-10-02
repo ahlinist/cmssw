@@ -175,8 +175,9 @@ void MinimumBiasAnalyzer::analyze( const Event& e, const EventSetup& ){
 	       par != particles4Jet.end(); par++ ){
 	    
 	    float_t tmpphitrk_mc=conv*(par->phi());
-	    
-	    float_t Dphi_mc=pJ.phi()-tmpphitrk_mc;
+	    float_t tmpphijet_mc=conv*(pJ.phi());
+
+	    float_t Dphi_mc=tmpphijet_mc-tmpphitrk_mc; 	    
 	    
 	    temp1->Fill(Dphi_mc);
 	    temp2->Fill(Dphi_mc,par->Pt());
