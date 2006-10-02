@@ -174,6 +174,7 @@ void MinimumBiasAnalyzer::analyze( const Event& e, const EventSetup& ){
 	  for (std::vector<math::XYZTLorentzVector>::const_iterator par = particles4Jet.begin();
 	       par != particles4Jet.end(); par++ ){
 	    
+	    // convert phi from radiants to degrees
 	    float_t tmpphitrk_mc=conv*(par->phi());
 	    float_t tmpphijet_mc=conv*(pJ.phi());
 
@@ -224,9 +225,11 @@ void MinimumBiasAnalyzer::analyze( const Event& e, const EventSetup& ){
 	  for (std::vector<math::XYZTLorentzVector>::const_iterator par = particles4Jet.begin();
 	       par != particles4Jet.end(); par++ ){
 	    
+	    // convert phi from radiants to degrees
 	    float_t tmpphitrk_mc=conv*(par->phi());
-	    
-	    float_t Dphi_mc=pJ.phi()-tmpphitrk_mc;
+	    float_t tmpphijet_mc=conv*(pJ.phi());
+
+	    float_t Dphi_mc=tmpphijet_mc-tmpphitrk_mc; 	    
 	    
 	    temp1->Fill(Dphi_mc);
 	    temp2->Fill(Dphi_mc,par->Pt());
