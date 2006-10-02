@@ -9,6 +9,9 @@
 //
 //  Modification history:
 //    $Log: FilterUnitFramework.h,v $
+//    Revision 1.11  2006/09/26 16:26:01  schiefer
+//    ready for xdaq 3.7 / CMSSW_1_1_0
+//
 //    Revision 1.10  2006/09/21 12:39:44  schiefer
 //    fix crc check performed in FURawEvent
 //
@@ -152,8 +155,13 @@ private:
   xdata::String  workDir_;
 
   // exported (monitor) variables
-  
+
   xdata::UnsignedInteger32 nbEvents_;
+  xdata::UnsignedInteger32 nbProcessedEvents_;
+  xdata::String class_;
+  xdata::UnsignedInteger32 instance_;
+  xdata::String url_;
+  xdata::String host_;
 
   // stats
 
