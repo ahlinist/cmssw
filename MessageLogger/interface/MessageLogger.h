@@ -197,6 +197,10 @@ public:
     operator<< (T const & t)  { return *this; }
 };  // Suppress_LogDebug_
 
+  bool isDebugEnabled();
+  bool isInfoEnabled();
+  bool isWarningEnabled();
+
 }  // namespace edm
 
 
