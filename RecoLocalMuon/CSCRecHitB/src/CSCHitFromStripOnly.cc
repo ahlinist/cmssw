@@ -144,7 +144,6 @@ float CSCHitFromStripOnly::makeCluster( int centerStrip ) {
     }
   }
 
-
   for ( int i = -ClusterSize/2; i <= ClusterSize/2; i++ ) {
     int calibIndex = centerStrip + i;
     CSCStripData data = makeStripData(centerStrip, i, calibIndex );
@@ -254,19 +253,18 @@ void CSCHitFromStripOnly::fillPulseHeights( const CSCStripDigiCollection::Range&
 
       pulseheightOnStripFinder_->peakAboveBaseline( (*it), height, tmax);  
 
-
       // Don't forget that the ME_11/a strips are ganged !!!
       // Have to loop 2 more times to populate strips 17-48.
     
       if ( id_.station() == 1 && id_.ring() == 4 ) {
         for ( int j = 0; j < 3; j++ ) {
           thePulseHeightMap[thisChannel+16*j] = CSCStripData( float(thisChannel+16*j), height[0], height[1], height[2], height[3], tmax);
-          correctForCrosstalk( rstripd );
+          correctForCrosstalk( rstripd, thisChannel );
           thePulseHeightMap[thisChannel+16*j] *= gainWeight[thisChannel-1];
         }
       } else {
         thePulseHeightMap[thisChannel] = CSCStripData( float(thisChannel), height[0], height[1], height[2], height[3], tmax);
-        correctForCrosstalk( rstripd );
+        correctForCrosstalk( rstripd, thisChannel );
         thePulseHeightMap[thisChannel] *= gainWeight[thisChannel-1];
       }
     }
@@ -352,79 +350,76 @@ float CSCHitFromStripOnly::findHitOnStripPosition( const std::vector<CSCStripDat
 /* correctForCrosstalk
  *
  */
-void CSCHitFromStripOnly::correctForCrosstalk( const CSCStripDigiCollection::Range& rstripd ) {
+void CSCHitFromStripOnly::correctForCrosstalk( const CSCStripDigiCollection::Range& rstripd, const unsigned& theChannel ) {
 
-  // loop over the map, and do a correction for each entry if have significant signal
-  for ( size_t istrip = 1; istrip < thePulseHeightMap.size(); ++istrip ) {
-    if ( thePulseHeightMap[istrip].y() < 5. ) continue;
+  if ( thePulseHeightMap[theChannel].y() < 5. ) return;
 
-    int theTmax = thePulseHeightMap[istrip].t();
+  int theTmax = thePulseHeightMap[theChannel].t();
 
-    // find the digis corresponding to this strip and nearest neighbors
-    for ( CSCStripDigiCollection::const_iterator it = rstripd.first; it != rstripd.second; ++it ) {
-      CSCStripDigi digi = *it;
-      unsigned int jstrip = digi.getStrip();
-      std::vector<int> sca = digi.getADCCounts();
+  // find the digis corresponding to this strip and nearest neighbors
+  for ( CSCStripDigiCollection::const_iterator it = rstripd.first; it != rstripd.second; ++it ) {
+    CSCStripDigi digi = *it;
+    unsigned int jstrip = digi.getStrip();
+    std::vector<int> sca = digi.getADCCounts();
 
-      float pedestal = (sca[0] + sca[1]) /2.;
+    float pedestal = (sca[0] + sca[1]) /2.;
 
-      float xtalks[4];
+    float xtalks[4];
     
-      // Dealing with MC first     
-      if ( !isData ) {
+    // Dealing with MC first     
+    if ( !isData ) {
 
-        // add back what leaked out to adjacent strips
-        if ( jstrip == istrip ) {
-          for ( int t = 0; t < 4; t++ ) xtalks[t] = 2.*crosstalkLevel( digi, theTmax + t - 1);
-          thePulseHeightMap[istrip] += xtalks;
+      // add back what leaked out to adjacent strips
+      if ( jstrip == theChannel ) {
+        for ( int t = 0; t < 4; t++ ) xtalks[t] = 2.*crosstalkLevel( digi, theTmax + t - 1);
+        thePulseHeightMap[theChannel] += xtalks;
 
-        // subtract off what came from that neighbor
-        } else if( abs(jstrip - istrip) == 1 ) {
-          for ( int t = 0; t < 4; t++ ) xtalks[t] = -1.*crosstalkLevel( digi, theTmax + t - 1);
-          thePulseHeightMap[istrip] += xtalks;
+      // subtract off what came from that neighbor
+      } else if ( abs(jstrip - theChannel) == 1 ) {
+        for ( int t = 0; t < 4; t++ ) xtalks[t] = -1.*crosstalkLevel( digi, theTmax + t - 1);
+        thePulseHeightMap[theChannel] += xtalks;
+      }
+    }
+
+    // Now, dealing with data
+    if ( isData ) {
+
+      // add back what leaked out to adjacent strips
+      if ( jstrip == theChannel ) {
+        for ( int t = 0; t < 4; t++ ) {
+          int tbin = theTmax + t - 1;
+          if ( theChannel == 1 ) {
+            xtalks[t] = (sca[tbin]-pedestal) 
+                      * ( slopeRight[theChannel-1] * 50. * (t-1) + interRight[theChannel-1]);
+          } else if ( theChannel ==  Nstrips ) {
+            xtalks[t] = (sca[tbin]-pedestal)
+                      * ( slopeLeft[theChannel-1]  * 50. * (t-1) + interLeft[theChannel-1] );
+          } else {
+            xtalks[t] = (sca[tbin]-pedestal)  
+                      * ( slopeRight[theChannel-1] * 50. * (t-1) + interRight[theChannel-1]
+                        + slopeLeft[theChannel-1]  * 50. * (t-1) + interLeft[theChannel-1] );
+          }
         }
-      }
-
-      // Now, dealing with data
-      if ( isData ) {
-
-        // add back what leaked out to adjacent strips
-        if ( jstrip == istrip ) {
-          for ( int t = 0; t < 4; t++ ) {
-	    int tbin = theTmax + t - 1;
-            if ( istrip == 1 ) {
-              xtalks[t] = (sca[tbin]-pedestal) 
-                       *  ( slopeRight[istrip-1] * 50. * (t-1) + interRight[istrip-1]);
-            } else if ( istrip ==  Nstrips ) {
-              xtalks[t] = (sca[tbin]-pedestal)
-                        * ( slopeLeft[istrip-1]  * 50. * (t-1) + interLeft[istrip-1] );
-            } else {
-              xtalks[t] = (sca[tbin]-pedestal)  
-                        * ( slopeRight[istrip-1] * 50. * (t-1) + interRight[istrip-1]
-                          + slopeLeft[istrip-1]  * 50. * (t-1) + interLeft[istrip-1] );
-            }
-          }
-          thePulseHeightMap[istrip] += xtalks;
+        thePulseHeightMap[theChannel] += xtalks;
         
-        // subtract off what came from the neighbor  --> look for strip j on Left of strip i
-        } else if ( int(istrip - jstrip) == 1 ) {
-          for ( int t = 0; t < 4; t++ ) {
-	    int tbin = theTmax + t - 1;
-            xtalks[t] = -(sca[tbin]-pedestal)* 
-                      ( slopeLeft[istrip-1]  * 50. * (t-1) + interLeft[istrip-1] );
-          } 
-          thePulseHeightMap[istrip] += xtalks;
-    
-        // subtract off what came from the neighbor  --> look for strip j on Right of strip i
-        } else if ( int(istrip - jstrip) == -1 ) {
-          for ( int t = 0; t < 4; t++ ) {
-            int tbin = theTmax + t - 1;
-            xtalks[t] = -(sca[tbin]-pedestal)* 
-                      ( slopeRight[istrip-1] * 50. * (t-1) + interRight[istrip-1]);
-          }
-          thePulseHeightMap[istrip] += xtalks;
+      // subtract off what came from the neighbor  --> look for strip j on Left of strip i
+      } else if ( int(theChannel - jstrip) == 1 ) {
+        for ( int t = 0; t < 4; t++ ) {
+          int tbin = theTmax + t - 1;
+          xtalks[t] = -(sca[tbin]-pedestal)* 
+                    ( slopeLeft[theChannel-1]  * 50. * (t-1) + interLeft[theChannel-1] );
         } 
-      }
+        thePulseHeightMap[theChannel] += xtalks;
+    
+      // subtract off what came from the neighbor  --> look for strip j on Right of strip i
+      } else if ( int(theChannel - jstrip) == -1 ) {
+        for ( int t = 0; t < 4; t++ ) {
+          int tbin = theTmax + t - 1;
+          xtalks[t] = -(sca[tbin]-pedestal)* 
+                    ( slopeRight[theChannel-1] * 50. * (t-1) + interRight[theChannel-1]);
+        }
+        thePulseHeightMap[theChannel] += xtalks;
+      } 
     }
   }
 }

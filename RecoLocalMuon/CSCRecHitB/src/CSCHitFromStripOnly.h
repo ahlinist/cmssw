@@ -66,8 +66,8 @@ class CSCHitFromStripOnly
   /// Go through strip in layers and build a table with 
   void fillPulseHeights( const CSCStripDigiCollection::Range& );  
 
-  /// Compute crosstalk correction to strip adc
-  void correctForCrosstalk( const CSCStripDigiCollection::Range& rstripd );
+  /// Compute crosstalk corrections for a given strip
+  void correctForCrosstalk( const CSCStripDigiCollection::Range& rstripd, const unsigned& theChannel );
 
   /// Get crosstalk level for MC for a given tbin
   float crosstalkLevel( const CSCStripDigi& digi, const int& tbin );
