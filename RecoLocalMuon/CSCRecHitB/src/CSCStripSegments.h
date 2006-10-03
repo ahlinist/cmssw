@@ -95,6 +95,7 @@ class CSCStripSegments
   int minStripHitsPerSegment;
   bool useHitsFromFits;
   bool debug;
+  bool storeLeftOvers;
   int muonsPerChamberMax;
   
   /*

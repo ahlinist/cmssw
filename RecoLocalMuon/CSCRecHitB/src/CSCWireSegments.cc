@@ -30,6 +30,7 @@ CSCWireSegments::CSCWireSegments(const edm::ParameterSet& ps) : geom_(0) {
   minWireHitsPerSegment  = ps.getUntrackedParameter<int>("CSCminWireHitsPerSegment");
   useHitsFromFits        = ps.getUntrackedParameter<bool>("CSCuseWireHitsFromFits");
   muonsPerChamberMax     = ps.getUntrackedParameter<int>("CSCSegmentPerChamberMax");  
+  storeLeftOvers         = ps.getUntrackedParameter<bool>("CSCuseLeftOverWireHits");
 }
 
 
@@ -195,7 +196,7 @@ void CSCWireSegments::findWireSegments(const ChamberHitContainer& wirehit) {
       } 
     } 
   }
-  storeLeftOverHits( wirehit );   // Also save hits which are far from existing segments
+  if (storeLeftOvers) storeLeftOverHits( wirehit );   // Also save hits which are far from existing segments
 }
 
 

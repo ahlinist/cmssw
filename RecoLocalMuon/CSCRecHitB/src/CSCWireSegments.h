@@ -98,7 +98,8 @@ class CSCWireSegments
   bool useHitsFromFits;
   int minWireHitsPerSegment;
   int muonsPerChamberMax;
-  
+  bool storeLeftOvers;
+    
   /*
    * Cache geometry for current event
    */
