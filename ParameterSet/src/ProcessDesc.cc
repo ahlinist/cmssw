@@ -49,7 +49,7 @@ namespace edm
     bookkeeping_()
   {
     edm::pset::ParseTree parsetree(config.c_str());
-    parsetree.top()->fillProcess(*this);
+    parsetree.getProcessNode()->fillProcess(*this);
 
 
     writeBookkeeping("@all_modules");
