@@ -146,7 +146,7 @@
 
     <String  name="SpmSideName"   value="ebalgo:ESPL" />
     <String  name="SpmSideMat"    value="materials:Aluminium" />
-    <Numeric name="SpmSideHigh"   value="35*cm"/>
+    <Numeric name="SpmSideHigh"   value="38*cm"/>
     <Numeric name="SpmSideThick"  value="1*mm"/>
     <Numeric name="SpmSideYOffM"  value="-5*mm"/>
     <Numeric name="SpmSideYOffP"  value="-3*mm"/>
@@ -336,28 +336,17 @@
          This does not include the grid & tablet included above,
          but does include cooling, electronics, cables, & support plates.
     --> 
-    <Numeric name="BackXOff"              value="1548*mm" />
+    <Numeric name="BackXOff"              value="1566*mm" />
     <Numeric name="BackYOff"              value="  17*mm" />
 
     <String  name="BackSideName"          value="EBSID"  />
     <Numeric name="BackSideLength"        value="2874*mm" />
-    <Numeric name="BackSideHeight"        value=" 140*mm" />
+    <Numeric name="BackSideHeight"        value=" 148*mm" />
     <Numeric name="BackSideWidth"         value="  20*mm" />
-    <Numeric name="BackSideYOff1"         value=" -22*mm" />
-    <Numeric name="BackSideYOff2"         value="  19*mm" />
+    <Numeric name="BackSideYOff1"         value=" -18*mm" />
+    <Numeric name="BackSideYOff2"         value="  13*mm" />
     <Numeric name="BackSideAngle"         value="82*deg" />
     <String  name="BackSideMat"           value="materials:Aluminium"  />
-
-    <String  name="ExtPlateName"     value="EEXT"  />
-    <Numeric name="ExtPlateLength"   value="2673*mm" />
-    <Numeric name="ExtPlateThick"    value="  30*mm" />
-    <Numeric name="ExtPlateWidth"    value=" 260*mm" />
-    <String  name="ExtPlateMat"      value="materials:StainlessSteel"  />
-
-    <String  name="ExtSpacerName"     value="ESPAC"  />
-    <Numeric name="ExtSpacerThick"    value=" 80*mm" />
-    <Numeric name="ExtSpacerWidth"    value=" 23*mm" />
-    <String  name="ExtSpacerMat"      value="materials:Aluminium"  />
 
     <String  name="BackPlateName"     value="EBPL"  />
     <Numeric name="BackPlateLength"   value="2873*mm" />
@@ -371,7 +360,9 @@
     <Numeric name="GrilleZSpace"     value="50*mm" />
     <String  name="GrilleMat"        value="materials:Aluminium"  />
     <Vector  name="GrilleHeight" type="numeric" nEntries="8">
-      120*mm, 140*mm, 140*mm, 169*mm, 169*mm, 195*mm, 195*mm, 224*mm
+<!--      120*mm, 140*mm, 140*mm, 169*mm, 169*mm, 195*mm, 195*mm, 224*mm
+-->
+      140*mm, 160*mm, 160*mm, 189*mm, 189*mm, 215*mm, 215*mm, 244*mm
     </Vector>
     <Vector  name="GrilleZOff" type="numeric" nEntries="8">
       0*mm, 680*mm,  720*mm, 1310*mm,  1350*mm, 2040*mm,  2080*mm, 2854*mm
@@ -385,37 +376,92 @@
     <String  name="BackPipeWaterMat"      value="materials:E_Water"  />
     <String  name="BackPipeMat"           value="materials:StainlessSteel"  />
 
-    <String  name="BackCoolName"     value="EBCOOL"  />
-    <Numeric name="BackCoolWidth"    value="466*mm" />
+
+    <Vector  name="BackCoolName"     type="string" nEntries="4">
+      EBCOOL1, EBCOOL2, EBCOOL3, EBCOOL4
+    </Vector>
+    <String  name="BackCoolMat"     value="materials:E_Air"  />
+
+    <Numeric name="BackCoolBarWidth"    value="466*mm" />
+    <Numeric name="BackCoolBarHeight"   value="91*mm" />
+
+    <String  name="BackCoolBarName"  value="EBCBAR"  />
+    <Numeric name="BackCoolBarThick" value="8*mm" />
+    <String  name="BackCoolBarMat"   value="materials:Aluminium"  />
+    <String  name="BackCoolBarSSName"  value="EBCBSS"  />
+    <Numeric name="BackCoolBarSSThick" value="0.86*mm" />
+    <String  name="BackCoolBarSSMat"   value="materials:StainlessSteel"  />
+    <String  name="BackCoolBarWaName"  value="EBCBWA"  />
+    <Numeric name="BackCoolBarWaThick" value="0.55*mm" />
+    <String  name="BackCoolBarWaMat"   value="materials:E_Water"  />
+
+    <String  name="BackCoolVFEName"        value="ECVFE"  />
+    <String  name="BackCoolVFEMat"         value="materials:E_Air"  />
+
+    <String  name="BackVFEName"        value="EVFE"  />
+    <String  name="BackVFEMat"         value="materials:E_Air"  />
+
+    <Vector  name="BackVFELyrThick" type="numeric" nEntries="5">
+      1*mm, 3*mm, 2*mm, 1*mm, 0.1*mm
+    </Vector>
+
+    <Vector  name="BackVFELyrName" type="string" nEntries="5">
+      EVFE_1, EVFE_2, EVFE_3, EVFE_4, EVFE_5
+    </Vector>
+    <Vector  name="BackVFELyrMat" type="string" nEntries="5">
+      materials:E_Air,
+      materials:Aluminium, 
+      materials:E_G10, 
+      materials:E_Silicon, 
+      materials:E_Copper
+    </Vector>
+
+    <Vector  name="BackCoolNSec" type="numeric" nEntries="4">
+      1,2,4,3
+    </Vector>
+    <Vector  name="BackCoolSecSep" type="numeric" nEntries="6">
+      50*mm, 100*mm, 54*mm, 54*mm, 77*mm, 158*mm
+    </Vector>
+    <Vector  name="BackCoolNPerSec" type="numeric" nEntries="10">
+      15,6,6,6,3,1,3,3,3,6
+    </Vector>
+
+    <String  name="BackCoolTankName"    value="EBTANK"  />
+    <Numeric name="BackCoolTankWidth"   value="28*mm" />
+    <Numeric name="BackCoolTankThick"   value="16*mm" />
+    <String  name="BackCoolTankMat"     value="materials:StainlessSteel"  />
+    <String  name="BackCoolTankWaName"  value="EBTWA"  />
+    <Numeric name="BackCoolTankWaWidth" value="22*mm" />
+    <String  name="BackCoolTankWaMat"   value="materials:E_Water"  />
+    <String  name="BackBracketName"     value="EBBRK"  />
+    <Numeric name="BackBracketHeight"   value="12*mm" />
+    <String  name="BackBracketMat"      value="materials:Aluminium"  />
+
+
     <Vector  name="BackCoolLength" type="numeric" nEntries="4">
       530*mm, 441*mm,  543*mm, 606*mm
     </Vector>
-    <Vector  name="BackCoolSSVol" type="numeric" nEntries="4">
-      689*cm*cm*cm,   513*cm*cm*cm,  631*cm*cm*cm,  644*cm*cm*cm
-    </Vector>
-    <Vector  name="BackCoolAlVol" type="numeric" nEntries="4">
-      5772*cm*cm*cm, 4743*cm*cm*cm, 5154*cm*cm*cm,  5266*cm*cm*cm
-    </Vector>
-    <Vector  name="BackCoolWaVol" type="numeric" nEntries="4">
-      1167*cm*cm*cm,  805*cm*cm*cm,  988*cm*cm*cm, 1175*cm*cm*cm
-    </Vector>
-    <String  name="BackSSName"  value="EBKSS"  />
-    <String  name="BackAlName"  value="EBKAL"  />
-    <String  name="BackWaName"  value="EBKWA"  />
-    <String  name="BackSSMat"  value="materials:StainlessSteel"  />
-    <String  name="BackAlMat"  value="materials:Aluminium"  />
-    <String  name="BackWaMat"  value="materials:E_Water"  />
 
-    <Vector  name="BackMiscThick" type="numeric" nEntries="5">
-      2*mm, 2*mm, 6*mm, 2*mm, 1*mm
+    <Vector  name="BackMiscThick" type="numeric" nEntries="20">
+      2*mm, 2*mm, 6*mm, 2*mm, 1*mm,
+      2*mm, 4*mm, 6*mm, 2*mm, 1*mm,
+      2*mm, 6*mm, 6*mm, 2*mm, 1*mm,
+      2*mm, 8*mm, 6*mm, 2*mm, 1*mm
     </Vector>
-    <Vector  name="BackMiscName" type="string" nEntries="5">
-      EMAL, EMCA, EMG10, EMSI, EMCU
+    <Vector  name="BackMiscName" type="string" nEntries="20">
+      EMAL1, EMCA1, EMG101, EMSI1, EMCU1,
+      EMAL2, EMCA2, EMG102, EMSI2, EMCU2,
+      EMAL3, EMCA3, EMG103, EMSI3, EMCU3,
+      EMAL4, EMCA4, EMG104, EMSI4, EMCU4
     </Vector>
-    <Vector  name="BackMiscMat" type="string" nEntries="5">
-      materials:Aluminium, materials:E_Cables,
-      materials:E_G10, materials:E_Silicon, materials:E_Copper
+    <Vector  name="BackMiscMat" type="string" nEntries="20">
+ materials:Aluminium, materials:E_Cables, materials:E_G10, materials:E_Silicon, materials:E_Copper,
+ materials:Aluminium, materials:E_Cables, materials:E_G10, materials:E_Silicon, materials:E_Copper,
+ materials:Aluminium, materials:E_Cables, materials:E_G10, materials:E_Silicon, materials:E_Copper,
+ materials:Aluminium, materials:E_Cables, materials:E_G10, materials:E_Silicon, materials:E_Copper
     </Vector>
+
+    <Numeric name="BackCBStdSep" value="36*mm" />
 
     <String  name="PatchPanelName"  value="EPPA"  />
     <Vector  name="PatchPanelThick" type="numeric" nEntries="5">
@@ -428,8 +474,6 @@
       materials:Aluminium, materials:E_Cables,
       materials:E_G10, materials:E_Silicon, materials:E_Copper
     </Vector>
-    
-
 
   </Algorithm>
 
