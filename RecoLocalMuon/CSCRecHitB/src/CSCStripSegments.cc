@@ -32,6 +32,7 @@ CSCStripSegments::CSCStripSegments(const edm::ParameterSet& ps) : geom_(0) {
   minStripHitsPerSegment = ps.getUntrackedParameter<int>("CSCminStripHitsPerSegment");
   useHitsFromFits        = ps.getUntrackedParameter<bool>("CSCuseStripHitsFromFits");
   muonsPerChamberMax     = ps.getUntrackedParameter<int>("CSCSegmentPerChamberMax"); 
+  storeLeftOvers         = ps.getUntrackedParameter<bool>("CSCuseLeftOverStripHits");
 }
 
 
@@ -196,7 +197,7 @@ void CSCStripSegments::findStripSegments(const ChamberHitContainer& striphit) {
       } 
     } 
   }
-  storeLeftOverHits( striphit );   // Also save hits which are far from existing segments
+  if (storeLeftOvers) storeLeftOverHits( striphit );   // Also save hits which are far from existing segments
 }
 
 

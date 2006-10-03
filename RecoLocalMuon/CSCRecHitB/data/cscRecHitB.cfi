@@ -21,6 +21,7 @@ module csc2DRecHits = CSCRecHitBProducer {
      untracked double CSCWireMaxDistance         = 2.
      untracked int32  CSCWireSegmentDeltaT       = 1
      untracked int32  CSCminWireHitsPerSegment   = 3
+     untracked bool   CSCuseLeftOverWireHits     = false
      untracked bool   CSCuseWireHitsFromFits     = false
 
 # parameter for strip clustering/segment building
@@ -31,12 +32,13 @@ module csc2DRecHits = CSCRecHitBProducer {
      untracked bool   CSCUse3x3Gatti             = true
      untracked double CSCMaxGattiChi2            = 1000.
 
-     untracked bool   CSCuseCleanStripCollection = false
+     untracked bool   CSCuseCleanStripCollection = true
      untracked int32  CSCStripminLayersApart     = 2
      untracked double CSCStripMaxDistance        = 5.
      untracked double CSCStripCloseToSegment     = 8.
      untracked int32  CSCStripSegmentDeltaT      = 1
      untracked int32  CSCminStripHitsPerSegment  = 3
+     untracked bool   CSCuseLeftOverStripHits    = false
      untracked bool   CSCuseStripHitsFromFits    = false
 	
 # common parameters for segment and rechit building
