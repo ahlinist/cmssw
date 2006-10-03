@@ -306,6 +306,16 @@ namespace edm
     }
 
     void 
+    JobReport::overrideEventsRead(Token fileToken, const int eventsRead)
+    {
+      // Get the required input file instance using the token
+      JobReport::InputFile& f = impl_->getInputFileForToken(fileToken);
+      // set the events read parameter to the provided value
+      f.numEventsRead = eventsRead;
+
+    }
+
+    void 
     JobReport::reportSkippedEvent(edm::EventID const& id)
     {
       std::ostringstream msg;
