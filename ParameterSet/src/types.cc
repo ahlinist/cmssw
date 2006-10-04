@@ -505,11 +505,18 @@ bool
   if(from == "NaN")
     to = std::numeric_limits<double>::quiet_NaN();
 
-  else if(from == "+inf")
-    to = std::numeric_limits<double>::infinity();
-
+  else if(from == "+inf" || from == "inf")
+  {
+    to = std::numeric_limits<double>::has_infinity
+       ? std::numeric_limits<double>::infinity()
+       : std::numeric_limits<double>::max();
+  }
   else if(from == "-inf")
-    to = - std::numeric_limits<double>::infinity();
+  {
+    to = std::numeric_limits<double>::has_infinity
+       ? -std::numeric_limits<double>::infinity()
+       : -std::numeric_limits<double>::max();
+  }  
 
   else  {
     try  {
