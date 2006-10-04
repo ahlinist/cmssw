@@ -1,0 +1,7 @@
+
+<use name=FWCore/Framework>
+
+<export>
+  <lib name=L1TriggerL1Scales>
+  <use name=FWCore/Framework>
+</export>
