@@ -7,6 +7,8 @@
 #include "Configuration/CSA06Skimming/interface/HLTCSA06Bits.h"
 #include "Configuration/CSA06Skimming/interface/MCParticlePairFilter.h"
 #include "Configuration/CSA06Skimming/interface/MCProcessRangeFilter.h"
+#include "Configuration/CSA06Skimming/interface/MCDijetResonance.h" 
+
  
 
 DEFINE_SEAL_MODULE();
@@ -16,4 +18,6 @@ DEFINE_ANOTHER_FWK_MODULE(HLTCSA06Bits);
 DEFINE_ANOTHER_FWK_MODULE(MCParticlePairFilter);
 DEFINE_ANOTHER_FWK_MODULE(MCProcessRangeFilter);
 DEFINE_ANOTHER_FWK_MODULE(MCZll)
+DEFINE_ANOTHER_FWK_MODULE(MCDijetResonance)
+
   
