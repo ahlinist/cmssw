@@ -769,7 +769,7 @@ namespace edm {
       throw edm::Exception(errors::Configuration, "EntryError")
         << "can not convert representation of " << name_ << ": "
         << badRep
-        << "to value of type " << expectedType;
+        << " to value of type " << expectedType << " ";
     }
 
     void Entry::throwEncodeError(const char* type) const
