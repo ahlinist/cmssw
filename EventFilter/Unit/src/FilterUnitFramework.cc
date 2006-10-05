@@ -7,6 +7,9 @@
 //
 //  Modification history:
 //    $Log: FilterUnitFramework.cc,v $
+//    Revision 1.17  2006/10/02 09:17:51  meschi
+//    mods for FU flashlist
+//
 //    Revision 1.16  2006/09/26 16:26:01  schiefer
 //    ready for xdaq 3.7 / CMSSW_1_1_0
 //
@@ -116,7 +119,7 @@ FilterUnitFramework::FilterUnitFramework(xdaq::ApplicationStub *s) : FUAdapter(s
 								     fsm_(0)
 {
   cout << "Entered constructor " << endl;
-  
+  Monitor_timer_=0;  
   mutex_ = new BSem(BSem::FULL);
   
   fsm_ = new evf::EPStateMachine(getApplicationLogger());
@@ -199,6 +202,11 @@ void FilterUnitFramework::exportParams()
   s_mon->fireItemAvailable("nbDataErrors",&nbDataErrors_);
   s_mon->fireItemAvailable("nbCrcErrors",&nbCrcErrors_);
   s_mon->fireItemAvailable("eventRate",&MonitorEventsPerSec_);
+
+  // Add infospace listeners for exported parameters watch
+  getApplicationInfoSpace()->addItemChangedListener ("runNumber", this);
+
+
 }
 
 FilterUnitFramework::~FilterUnitFramework()
@@ -215,6 +223,7 @@ FilterUnitFramework::~FilterUnitFramework()
 
 void FilterUnitFramework::configureAction(toolbox::Event::Reference e) throw (toolbox::fsm::exception::Exception)
 {
+  flush_ = false;
   if(!runActive_) findOrCreateMemoryPool();
   const char *workdir = 0;
   int retval = 0;
@@ -226,7 +235,7 @@ void FilterUnitFramework::configureAction(toolbox::Event::Reference e) throw (to
     retval = chdir(workdir);
   if(retval==0)
     {
-      LOG4CPLUS_INFO(this->getApplicationLogger(),"FU Working Directory set to "
+      LOG4CPLUS_DEBUG(this->getApplicationLogger(),"FU Working Directory set to "
 		     << workdir);
     }
   else
@@ -236,12 +245,12 @@ void FilterUnitFramework::configureAction(toolbox::Event::Reference e) throw (to
   if(!runActive_) createBUArray();
 
   //setup monitoring timer
-  if (MonitorTimerEnable_) {
+  if (MonitorTimerEnable_ && !runActive_) {
   	toolbox::task::getTimerFactory()->createTimer("monitoringTask");
   	Monitor_timer_=toolbox::task::getTimerFactory()->getTimer("monitoringTask");
   	Monitor_timer_->stop();
   }
-
+  factory_->resetNbProcessed();
 }
 
 void FilterUnitFramework::enableAction(toolbox::Event::Reference e) throw (toolbox::fsm::exception::Exception)
@@ -292,12 +301,34 @@ void FilterUnitFramework::resumeAction(toolbox::Event::Reference e) throw (toolb
 #include <signal.h>
 void FilterUnitFramework::haltAction(toolbox::Event::Reference e) throw (toolbox::fsm::exception::Exception)
 {
+  flush_ = true;
+  if(Monitor_timer_)Monitor_timer_->stop();
+  int savePending = pendingRequests_;
+  mutex_->take(); //exclude EP requests while flushing
   if(factory_->queueSize() != 0)
-  LOG4CPLUS_WARN(this->getApplicationLogger(),
-		 "Built queue not empty. " << factory_->queueSize()
-		 << " events are being discarded ");
-
-  pendingRequests_ = 0;
+    {
+      LOG4CPLUS_WARN(this->getApplicationLogger(),
+		     "Built queue not empty. " << factory_->queueSize()
+		     << " events are being discarded ");
+      flushBuiltQueue();
+      if(savePending != pendingRequests_)
+	{
+	  LOG4CPLUS_ERROR(this->getApplicationLogger(),
+			  "Requests serviced during flush: " << savePending- pendingRequests_
+			  << " this should never happen!!! ");
+      	  //wait 50 ms then check again queue size 
+	  usleep(50000);
+	  flushBuiltQueue();
+	}
+    }
+  mutex_->give();
+  if(pendingRequests_ != 0)
+    {
+      LOG4CPLUS_WARN(this->getApplicationLogger(),
+		     "Requests still pending after halt: " << pendingRequests_
+		     << " will be forgotten ");
+      pendingRequests_ = 0;
+    }
 }
 
 void FilterUnitFramework::nullAction(toolbox::Event::Reference e) throw (toolbox::fsm::exception::Exception)
@@ -626,15 +657,6 @@ void FilterUnitFramework::parameterTables(xgi::Input *in, xgi::Output *out)
 
   *out << "<tr>" << std::endl;
   *out << "<td>" << std::endl;
-  *out << "workDir" << std::endl;
-  *out << "</td>" << std::endl;
-  *out << "<td>" << std::endl;
-  *out << workDir_.value_ << std::endl;
-  *out << "</td>" << std::endl;
-  *out << "</tr>" << std::endl;
-
-  *out << "<tr>" << std::endl;
-  *out << "<td>" << std::endl;
   *out << "doDump" << std::endl;
   *out << "</td>" << std::endl;
   *out << "<td>" << std::endl;
@@ -706,7 +728,7 @@ void FilterUnitFramework::parameterTables(xgi::Input *in, xgi::Output *out)
   *out << "EventsProcessed" << std::endl;
   *out << "</td>" << std::endl;
   *out << "<td>" << std::endl;
-  *out << factory_->getnbProcessed() << std::endl;
+  *out << nbProcessedEvents_ << std::endl;
   *out << "</td>" << std::endl;
   *out << "</tr>" << std::endl;
 
@@ -803,6 +825,42 @@ void FilterUnitFramework::timeExpired (toolbox::task::TimerEvent& e)
   
   s_mon->unlock();
   mutex_->give();
+}
+
+#include "EventFilter/Unit/interface/FURawEvent.h"
+void FilterUnitFramework::flushBuiltQueue()
+{
+  // flushed events are considered as processed by the eventfactory but the local counter is not incremented
+  // one should not forget to reset the factory counter after a halt or else the count will keep incrementing the old value 
+  while(factory_->queueSize() != 0)
+    {
+      FURawEvent *ev = factory_->getBuiltEvent();
+      ev->reset(true);
+      nbEvents_.value_++; // increment counter of claimed events 
+    }
+}
+
+void FilterUnitFramework::actionPerformed (xdata::Event& e)
+{
+  if (e.type() == "ItemChangedEvent" && !(fsm_->stateName_.toString()=="Halted"))
+    {
+      std::string item = dynamic_cast<xdata::ItemChangedEvent&>(e).itemName();
+      if ( item == "runNumber")
+	resetCounters();
+    }
+}
+
+
+void FilterUnitFramework::resetCounters()
+{
+  nbReceivedEvents_    = 0;
+  nbProcessedEvents_   = 0;
+  nbReceivedFragments_ = 0;
+  //  pendingRequests_     = 0; // this should not be reset since the BU remembers across runs
+  nbDataErrors_        = 0;
+  nbCrcErrors_         = 0;
+  MonitorEventsPerSec_ = 0;
+  factory_->resetNbProcessed();
 }
 
 
