@@ -2,7 +2,6 @@
 
 #include <RecoLocalMuon/CSCRecHitB/src/CSCHitFromStripOnly.h>
 #include <RecoLocalMuon/CSCRecHitB/src/CSCPeakBinOfStripPulse.h>
-//#include <RecoLocalMuon/CSCRecHitB/src/CSCFindPeakTime.h>
 #include <RecoLocalMuon/CSCRecHitB/src/CSCCalibrateStrip.h>
 
 #include <RecoLocalMuon/CSCRecHitB/src/CSCStripData.h>
@@ -42,7 +41,6 @@ CSCHitFromStripOnly::CSCHitFromStripOnly( const edm::ParameterSet& ps ) {
 
   pulseheightOnStripFinder_  = new CSCPeakBinOfStripPulse( ps );
   calibrateStrip_            = new CSCCalibrateStrip( ps );
-//  peakTimeFinder_            = new CSCFindPeakTime();
   
 }
 
@@ -50,7 +48,6 @@ CSCHitFromStripOnly::CSCHitFromStripOnly( const edm::ParameterSet& ps ) {
 CSCHitFromStripOnly::~CSCHitFromStripOnly() {
   delete pulseheightOnStripFinder_;
   delete calibrateStrip_;
-//  delete peakTimeFinder_;
 }
 
 
@@ -109,9 +106,9 @@ std::vector<CSCStripHit> CSCHitFromStripOnly::runStrip( const CSCDetId& id, cons
     // The strips_adc vector is also filled here with all corrections but noise... 
     float strippos = makeCluster( theMaxima[imax] );  
     
-    if ( strippos < 0 ) continue;
+    if ( strippos < 0 || TmaxOfCluster < 0 ) continue;
     
-    CSCStripHit striphit( id, strippos, tmax_cluster, ClusterSize, strips_adc );
+    CSCStripHit striphit( id, strippos, TmaxOfCluster, ClusterSize, strips_adc );
     hitsInLayer.push_back( striphit ); 
   }
 
@@ -170,21 +167,10 @@ CSCStripData CSCHitFromStripOnly::makeStripData(int centerStrip, int offset, int
   adc[1] = thePulseHeightMap[thisStrip].y();
   adc[2] = thePulseHeightMap[thisStrip].y2();
   adc[3] = thePulseHeightMap[thisStrip].y3();
-  int thisTmax = thePulseHeightMap[thisStrip].t();
-
-
-
-/* Need to talk to Stan about how to use fitted charges (for other than central strip)... 
- * std::vector<float> adcFitted;
- * peakTime = thisTmax * 50.;
- * if (isData) peakTime = peakTimeFinder_->FindPeakTime( tmax, adc, peakTime, adcFitted );  
- *
- */
+  TmaxOfCluster = thePulseHeightMap[thisStrip].t();
   
   if ( offset == 0 ) {
-    prelimData = CSCStripData(thisStrip, adc[0], adc[1], adc[2], adc[3], thisTmax);
-    TmaxOfCluster = thisTmax;
-    peakTime = thisTmax * 50.;  // want to eventually fit...
+    prelimData = CSCStripData(thisStrip, adc[0], adc[1], adc[2], adc[3], TmaxOfCluster);
   } else {
     int sign = offset>0 ? 1 : -1;
     
@@ -199,7 +185,7 @@ CSCStripData CSCHitFromStripOnly::makeStripData(int centerStrip, int offset, int
 
       // No other maxima found, so just store
       if ( otherMax == theMaxima.end() ) {
-        prelimData = CSCStripData(thisStrip, adc[0], adc[1], adc[2], adc[3], thisTmax);
+        prelimData = CSCStripData(thisStrip, adc[0], adc[1], adc[2], adc[3], TmaxOfCluster);
 
       } else {
         adc[4] = thePulseHeightMap[testStrip].y0();
@@ -210,7 +196,7 @@ CSCStripData CSCHitFromStripOnly::makeStripData(int centerStrip, int offset, int
         for (int k = 0; k < 4; k++) ratio[k] = adc[0] / (adc[0]+adc[k+4]);
         for (int k = 0; k < 4; k++) adc[k]   = adc[k] * ratio[k];
 
-	prelimData = CSCStripData(thisStrip, adc[0], adc[1], adc[2], adc[3], thisTmax);
+	prelimData = CSCStripData(thisStrip, adc[0], adc[1], adc[2], adc[3], TmaxOfCluster);
       }
     }
   }
@@ -226,8 +212,6 @@ void CSCHitFromStripOnly::fillPulseHeights( const CSCStripDigiCollection::Range&
   
   // Loop over strip digis and fill the pulseheight map
   
-//  std::vector<float> strip_adcs;
-
   thePulseHeightMap.clear();
   thePulseHeightMap.resize(100);
   
@@ -246,12 +230,11 @@ void CSCHitFromStripOnly::fillPulseHeights( const CSCStripDigiCollection::Range&
     }
     lastChannel = thisChannel;
     lastFirstSCA = thisFirstSCA;
-    
-    if ( fill ) {
-      float height[4];
-      int tmax;
 
-      pulseheightOnStripFinder_->peakAboveBaseline( (*it), height, tmax);  
+    float height[4];
+    int tmax = -1;
+    
+    if ( fill && pulseheightOnStripFinder_->peakAboveBaseline( (*it), height, tmax) ) { 
 
       // Don't forget that the ME_11/a strips are ganged !!!
       // Have to loop 2 more times to populate strips 17-48.

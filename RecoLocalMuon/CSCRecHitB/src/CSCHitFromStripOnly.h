@@ -37,7 +37,7 @@ class CSCNoiseMatrix;
 class CSCStripDigi;
 class CSCPeakBinOfStripPulse;
 class CSCCalibrateStrip;
-//class CSCFindPeakTime;
+
 
 class CSCHitFromStripOnly 
 {
@@ -60,7 +60,6 @@ class CSCHitFromStripOnly
     noise_ = noise;
   }
 
-  
  protected:
   
   /// Go through strip in layers and build a table with 
@@ -78,12 +77,10 @@ class CSCHitFromStripOnly
   /// Make clusters using local maxima
   float makeCluster( int centerStrip );
 
-
   std::vector<int> theMaxima;
 
   PulseHeightMap thePulseHeightMap;
   
-
   /// Find position of hit in strip cluster in terms of strip #
   float findHitOnStripPosition( const std::vector<CSCStripData>& data, const int& centerStrip );
   
@@ -132,7 +129,6 @@ class CSCHitFromStripOnly
 
   CSCPeakBinOfStripPulse* pulseheightOnStripFinder_;
   CSCCalibrateStrip*      calibrateStrip_;
-//  CSCFindPeakTime*        peakTimeFinder_;
 
 };
 
