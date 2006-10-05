@@ -41,6 +41,9 @@ class FURawEventFactory
   /** get the total number of events ever processed (from allocate to discard) */
   unsigned int getnbProcessed() const {return nbProcessed_;}
 
+  /** reset the number of processed events */
+  void resetNbProcessed() { nbProcessed_ = 0;}
+
   /** signal a waiting thread of the end of a run**/
   void postEndRunMaybe();
 
