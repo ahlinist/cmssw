@@ -80,8 +80,8 @@ bool MCDijetResonance::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
     {
       //Find resonance particle and check that it is part of hard collision
       if ( (*p)->status() == 3 && ( (dijetProcess == "ZprimeLightQuarks" && (*p)->pdg_id() == 32)     || 
-                                    (dijetProcess == "QstarQuarkGluon"   && abs((*p)->pdg_id()) == 7) ||
-                                    (dijetProcess == "QstarQuarkGluon"   && abs((*p)->pdg_id()) == 8) ) )
+                                    (dijetProcess == "QstarQuarkGluon"   && abs((*p)->pdg_id()) == 4000001) ||
+                                    (dijetProcess == "QstarQuarkGluon"   && abs((*p)->pdg_id()) == 4000002) ) )
       	{ 
           // The next two particles are the outgoing particles from the resonance decay
 	  p++;
