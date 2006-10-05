@@ -19,7 +19,11 @@
 
 5) Compile from /CSCStandAlone/test.
 
-6) Here is what the software does:
+6) Type: eval `scramv1 runtime -csh` to set the CMSSW enviroment variables.
+
+7) Type: source setora.csh - This sets the ORACLE database enviroment.
+
+8) Here is what the software does:
 
 	a)CSCMonitoring.cc (run from CSCMonitor.cfg) creates file CSCMonitoring.root. This contains
 	26+ histograms for the (eventual) 36 odd chambers in the Slice Test / MTCC. These histograms
@@ -46,5 +50,5 @@ These programs are intended for use with Global DAQ data available from CASTOR i
 
 Should you find any problems feel free to let me know. 
 
--Nicole Ippolito, May 30 2005 
+-Nicole Ippolito, October 5 2006 
 
