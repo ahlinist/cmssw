@@ -9,6 +9,9 @@
 //
 //  Modification history:
 //    $Log: FilterUnitFramework.h,v $
+//    Revision 1.12  2006/10/02 08:59:15  meschi
+//    added variables for flashlists
+//
 //    Revision 1.11  2006/09/26 16:26:01  schiefer
 //    ready for xdaq 3.7 / CMSSW_1_1_0
 //
@@ -107,7 +110,8 @@ using namespace std;
 
 
 class FilterUnitFramework : public FUAdapter,
-			    public toolbox::task::TimerListener/*,
+			    public toolbox::task::TimerListener,
+			    public xdata::ActionListener/*,
 			    public soapMonitorAdapter,
 			    public soapConfigurationListener,
 			    public xdaqApplication */
@@ -250,7 +254,8 @@ private:
   /**
    * Processes FSM commands from run-control.
    */
-  
+  //now delegated to EPStateMachine;
+  friend class evf::EPStateMachine;
 
   /** default actions for commands not yet implemented */
 
@@ -259,8 +264,15 @@ private:
   
   virtual void failAction(toolbox::Event::Reference e)
     throw (toolbox::fsm::exception::Exception) {}
-  friend class evf::EPStateMachine;
 
+
+  /** miscellaneous actions */
+
+  void flushBuiltQueue();
+
+  void actionPerformed (xdata::Event& e);
+
+  void resetCounters();
 };
 
 #endif
