@@ -53,12 +53,14 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCLayer* layer, const CSCStri
 
   // Initialize output parameters just in case the fit fails  
   xGatti = xCenterStrip;  
-  sigma = prob = chisq= 0.;
+  sigma = prob = chisq= 9999.;
 
   int nStrips = stripHit.clusterSize();
   int CenterStrip = nStrips/2 + 1;   
   std::vector<float> adcs = stripHit.s_adc();
   int tmax = stripHit.tmax();
+
+  std::cout << "tmax is " << tmax << std::endl;
 
   // Loading in 3x3 matrix with corrected adcs..
   int j = 0;
@@ -69,17 +71,19 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCLayer* layer, const CSCStri
   for ( int i=1; i <= nStrips; i++ ) {
     if ( i > (CenterStrip-2) && i < (CenterStrip+2) ) {
       float adc[4];
-      for ( int t=0; t<3; t++ ) {
+      std::vector<float> adcsFit;
+      for ( int t=0; t<4; t++ ) {
         int k = t + 3*(i-1);
         adc[t]    = adcs[k];
-//      }
-//      std::vector<float> adcsFit;
-//      float tpeak;
-//      peakTimeFinder_->FindPeakTime( tmax, adc, tpeak, adcsFit);
-//      for ( int t=0; t<3; t++ ) {
-        d[j][t]   = adcs[k];
-        Q_tot[t] += adcs[k];
+        d[j][t]   = adc[t];
+        Q_tot[t] += adc[t];
       }
+      // float tpeak;
+      // peakTimeFinder_->FindPeakTime( tmax, adc, tpeak, adcsFit );
+      // for ( int t=0; t<3; t++ ) {
+      //  d[j][t]   = adcsFit[t];
+      //  Q_tot[t] += adcsFit[t];
+      // }
       j++;
     }
   }

@@ -38,19 +38,25 @@ bool CSCPeakBinOfStripPulse::peakAboveBaseline( const CSCStripDigi& digi, float*
   // First find maximum time bin
   tmax = std::max_element( sca.begin(), sca.end() ) - sca.begin();
 
-  // Maximum cannot occur in 2 first time bins
-  if ( tmax < 1 ) return false;
+  // Maximum cannot occur in 2 first time bins or in last time bin.
+  if ( tmax < 2 || tmax > 6) return false;
 
   // Find pedestal
   float ped = baseline( digi );
 
   // Now find adc signal after pedestal subtraction for 4 time bins around peak [tmax-1, tmax+2]
-  int i = 0;
-  for ( int t = tmax-1; t < tmax+3; t++ ) {
-    height[i] = sca[t] - ped;
-    i++; 
-  }    
-
+  int i = 0;  
+  if (tmax < 6) {
+    for ( int t = tmax-1; t < tmax+3; t++ ) {
+      height[i] = sca[t] - ped;
+      i++; 
+    }
+  } else {
+    for ( int t = tmax-1; t < tmax+2; t++ ) {
+      height[i] = sca[t] - ped;
+      i++;
+    }
+  }
   return true;
 }
 
