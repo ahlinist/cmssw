@@ -60,8 +60,6 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCLayer* layer, const CSCStri
   std::vector<float> adcs = stripHit.s_adc();
   int tmax = stripHit.tmax();
 
-  std::cout << "tmax is " << tmax << std::endl;
-
   // Loading in 3x3 matrix with corrected adcs..
   int j = 0;
   Q_tot[0] = 0.;

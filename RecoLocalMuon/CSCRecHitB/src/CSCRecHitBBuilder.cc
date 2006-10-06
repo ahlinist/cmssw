@@ -59,7 +59,7 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
   
   // Make collection of wire only hits !
   
-  if (debug) std::cout << "[CSCRecHitBBuilder] Now producing wire hits" << std::endl;
+//  if (debug) std::cout << "[CSCRecHitBBuilder] Now producing wire hits" << std::endl;
   CSCWireHitCollection woc;
   
   for ( CSCWireDigiCollection::DigiRangeIterator it = wiredc->begin(); it != wiredc->end(); ++it ){
@@ -92,7 +92,7 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
   
   // Make collection of strip only hits
   
-  if (debug) std::cout << "[CSCRecHitBBuilder] Now producing strip hits" << std::endl;
+//  if (debug) std::cout << "[CSCRecHitBBuilder] Now producing strip hits" << std::endl;
 
   // Pass calibration constants if it is data
   if (isData) HitsFromStripOnly_->setCalibration( gains_, xtalk_, noise_ );
@@ -127,7 +127,7 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
   
   // Now create 2-D hits by looking at superposition of strip and wire hit
 
-  if (debug) std::cout << "[CSCRecHitBBuilder] Now producing 2D hits" << std::endl;
+//  if (debug) std::cout << "[CSCRecHitBBuilder] Now producing 2D hits" << std::endl;
   
   int layer_idx     = 0;
   int hits_in_layer = 0;
