@@ -16,12 +16,10 @@
 //
 // Author:      
 // Created:     Wed Oct  4 16:49:43 CEST 2006
-// $Id: L1JetEtScaleRcd.h,v 1.1 2006/10/04 14:53:17 jbrooke Exp $
+// $Id: L1JetEtScaleRcd.h,v 1.2 2006/10/04 15:06:46 jbrooke Exp $
 //
 
 #include "FWCore/Framework/interface/EventSetupRecordImplementation.h"
-
-#include "L1Trigger/L1Scales/interface/L1JetEtScale.h"
 
 class L1JetEtScaleRcd : public edm::eventsetup::EventSetupRecordImplementation<L1JetEtScaleRcd> {};
 
