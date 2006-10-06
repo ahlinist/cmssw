@@ -43,10 +43,10 @@ class L1CaloEtScale {
   ~L1CaloEtScale();
 
   /// convert from linear Et scale to rank scale
-  const uint16_t rank(const uint16_t linear);
+  uint16_t rank(const uint16_t linear) const;
 
   /// convert from rank to physically meaningful quantity
-  const double et(const uint16_t rank);
+  double et(const uint16_t rank) const;
 
   /// debug dump
   friend std::ostream& operator<<(std::ostream& o, const L1CaloEtScale& o);
