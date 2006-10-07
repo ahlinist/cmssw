@@ -236,7 +236,6 @@ TFWLiteSelectorBasic::Process(Long64_t iEntry) {
       m_->metaTree_->GetEntry(iEntry);
 
 //NEW      m_->processNames_ = aux.processHistory();
-      m_->processNames_ = aux.processHistory();
 
 //      std::cout <<"ProcessNames\n";
 //      for(edm::ProcessNameList::const_iterator itName = m_->processNames_.begin();
@@ -248,6 +247,7 @@ TFWLiteSelectorBasic::Process(Long64_t iEntry) {
       try {
 	 m_->reader_->setEntry(iEntry);
 	 edm::EventPrincipal ep(aux.id(), aux.time(),m_->reg_, aux.luminosityBlockID(),  aux.processHistoryID(), m_->reader_);
+         m_->processNames_ = ep.processHistory();
 //OLD	 edm::EventPrincipal ep(aux.id_, aux.time_,m_->reg_, m_->processNames_, m_->reader_);
 
 	 using namespace edm;
