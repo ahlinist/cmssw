@@ -124,7 +124,7 @@ namespace edm {
     ProcessHistory const& processHistory() const;    
 
     ProcessHistoryID const& processHistoryID() const {
-      return aux_.processHistoryID();   
+      return processHistoryID_;   
     }
 
     // ----- manipulation of provenance
