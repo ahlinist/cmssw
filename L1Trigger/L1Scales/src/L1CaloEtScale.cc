@@ -47,7 +47,7 @@ L1CaloEtScale::~L1CaloEtScale() {
 }
 
 // convert from linear Et to rank
-const uint16_t L1CaloEtScale::rank(const uint16_t linear) {
+uint16_t L1CaloEtScale::rank(const uint16_t linear) const {
 
   uint16_t out = 0;
 
@@ -60,7 +60,7 @@ const uint16_t L1CaloEtScale::rank(const uint16_t linear) {
 }
 
 // convert from rank to Et/GeV
-const double L1CaloEtScale::et(const uint16_t rank) {
+double L1CaloEtScale::et(const uint16_t rank) const {
 
   return (m_thresholds[rank+1]-m_thresholds[rank]) / 2;
 
