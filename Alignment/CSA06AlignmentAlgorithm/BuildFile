@@ -19,4 +19,4 @@
    <use name=root>
    <use name=clhep>
 </export>
-
+<flags SEAL_PLUGIN_NAME="AlignmentCSA06AlignmentAlgorithm">
