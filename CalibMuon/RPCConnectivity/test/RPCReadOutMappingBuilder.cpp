@@ -4,8 +4,8 @@
  * Description:
  *      Class to read directly OMDS DB with OCCI and fill Offline DB
  *
- * $Date: 2006/08/09 07:49:24 $
- * $Revision: 1.5 $
+ * $Date: 2006/08/25 10:41:16 $
+ * $Revision: 1.6 $
  * \author Michal Bluj -- INS Warsaw
  *
  */
@@ -46,7 +46,8 @@ class RPCReadOutMappingBuilder {
   
 public:
 
-  RPCReadOutMappingBuilder(string host, string sid, string user, string pass, int port=1521, string poolDb="sqlite_file:cabling.db", string version="RPCReadOutMapping_v1", int first_run=0, int last_run=0) 
+  RPCReadOutMappingBuilder(string host, string sid, string user, string pass, int port=1521, 
+			   string poolDb="sqlite_file:cabling.db", string version="RPCReadOutMapping_v1", int first_run=0, int last_run=0) 
   { 
     ConnectOnlineDB(host, sid, user, pass, port);
     poolDbCon_=poolDb;
@@ -384,16 +385,20 @@ public:
 	      if(iStripEntry==0){
 		cout << " |    |    |    |    |    |    Zero strips found in DB for FEB no. " << theFEB[iFEB].lbInputNum << flush << endl;
 		cout << " |    |    |    |    |    |    Dummy strip generation ... " << flush;
-	
+		
 		unsigned int max_iStrip = giveNumOfStripsPerFEB(chamber.sector,chamber.layer);
+		max_iStrip = 16;
 		for(unsigned int iStrip=0; iStrip < max_iStrip; iStrip++) {
 		  int stripCablePin = iStrip;
 		  int chamberStrip =(theFEB[iFEB].lbInputNum-1)*max_iStrip+iStrip+1;
 		  if(chamber.subsector=="+" && chamber.layer==5) chamberStrip-=42;
 		  int cmsStrip = chamberStrip;
-		  ChamberStripSpec strip = {stripCablePin+2, chamberStrip, cmsStrip};
+		  //ChamberStripSpec strip = {stripCablePin+2, chamberStrip, cmsStrip};
+		  ChamberStripSpec strip = {iStrip+1, chamberStrip, cmsStrip};
+		  //cout<<iStrip+1<<" "<<chamberStrip<<" "<<cmsStrip<<endl;
 		  febConnector.add(strip);
 		}
+		
 		cout << " Done." << endl;		
 	      }
 	      lb.add(febConnector); 
