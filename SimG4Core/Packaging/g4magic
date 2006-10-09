@@ -8,5 +8,4 @@ mv ${G4THISLIB}/include/*.* ${G4THISLIB}/src
 cp -p `pwd`/src/*.* ${G4THISLIB}/src
 mv ${G4THISLIB}/src/*.* `pwd`/src
 rm -fr ${G4THISLIB} 
-(scramv1 b CXXUSERFLAGS="-DG4VERBOSE")
 
