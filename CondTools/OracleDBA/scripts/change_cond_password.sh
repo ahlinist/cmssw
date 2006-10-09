@@ -66,6 +66,8 @@ PIXEL
 PRESH
 RPC
 STRIP
+ALIGNMENT
+HLT
 " 
 echo
 for OWNER in ${OWNERS} ; do
