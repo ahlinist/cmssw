@@ -5,3 +5,4 @@
 
 <use name=clhep>
 <use name=geant4>
+<Flags CPPDEFINES="G4VERBOSE">
