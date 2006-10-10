@@ -13,7 +13,7 @@
 //
 // Original Author:  Simone Gennai
 //      Created:  Thu Apr  6 09:56:23 CEST 2006
-// $Id: ConeIsolation.cc,v 1.9 2006/08/31 16:01:01 gennai Exp $
+// $Id: ConeIsolation.cc,v 1.8 2006/08/08 07:53:48 tboccali Exp $
 //
 //
 
@@ -56,14 +56,8 @@ ConeIsolation::ConeIsolation(const edm::ParameterSet& iConfig)
   usingVertex = iConfig.getParameter<bool>("useVertex");
   m_algo = new ConeIsolationAlgorithm(iConfig);
   
-  std::string modulname = iConfig.getParameter<string>( "@module_label" );
-   produces<reco::JetTagCollection>().setBranchAlias( modulname );
-   std::string extCollectionName = modulname;
-   int stringStart = modulname.size() - 7;
-   extCollectionName.erase(stringStart, 7);
-   extCollectionName =  extCollectionName + "TagInfos";
-   produces<reco::IsolatedTauTagInfoCollection>().setBranchAlias( extCollectionName );
-   
+   produces<reco::JetTagCollection>();  //Several producer so I put a label
+   produces<reco::IsolatedTauTagInfoCollection>();       //Only one producer
 
 }
 
@@ -108,7 +102,10 @@ ConeIsolation::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
        const reco::VertexCollection vertCollection = *(vertices.product());
        reco::VertexCollection::const_iterator ci = vertCollection.begin();
        int i=0;
+	std::cout <<"Vertex Size "<<vertCollection.size()<<std::endl;
        if(!vertCollection.size()) return;
+       myPV = *ci;
+       /*
        for(;ci!=vertCollection.end();ci++){
 	 edm::LogInfo("ConeIsolation::produce()")
 	   <<" Vertex: "<<i<<" ("
@@ -117,6 +114,7 @@ ConeIsolation::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	   <<ci->z()<<")"<<endl;
 	 myPV = *ci;
        }
+       */
      }
    
   //cout << "here-0.5" << jetTracksAssociation <<endl;     
