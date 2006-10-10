@@ -62,7 +62,7 @@ int run_script(const std::string& shell, const std::string& script)
 
 int ptomaine(int argc, char* argv[])
 {
-  bf::path currentPath = bf::initial_path();
+  bf::path currentPath(bf::initial_path().string(), bf::no_check);
   
   if (argc<4)
     {
@@ -101,7 +101,7 @@ int ptomaine(int argc, char* argv[])
   if ( !arch )
     {
       // Try to synthesize SCRAM_ARCH value.
-      bf::path exepath(argv[0]);
+      bf::path exepath(argv[0], bf::no_check);
       std::string maybe_arch = exepath.branch_path().leaf();
       if (setenv("SCRAM_ARCH", maybe_arch.c_str(), 1) != 0)
 	{
