@@ -1,6 +1,6 @@
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; This file defines cmssw-mode version 1.2                                ;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; This file defines cmssw-mode version 1.2 (synced to CVS revision number) ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;; cmssw-mode.el, A major mode for editing CMSSW configuration files
 ;;; Copyright (C) 2006  Jim Pivarski
@@ -67,6 +67,10 @@
 (defvar cmssw-mode-syntax-table nil "")
 (when (not cmssw-mode-syntax-table)
   (setq cmssw-mode-syntax-table (make-syntax-table))
+  (modify-syntax-entry ?\# "< b" cmssw-mode-syntax-table)
+  (modify-syntax-entry ?\n "> 4b" cmssw-mode-syntax-table)
+  (modify-syntax-entry ?\r "> 4b" cmssw-mode-syntax-table)
+  (modify-syntax-entry ?/ ". 12b" cmssw-mode-syntax-table)
   )
 
 (defvar cmssw-mode-map () "Keymap used in cmssw-mode.")
@@ -85,16 +89,17 @@
 (defvar cmssw-font-lock-keywords
   '(
     ("\\(service\\|source\\|secsource\\|es_source\\|es_module\\|es_prefer\\)\\(\\s-+es_hardcode\\|\\)\\s-*=\\s-*\\(!?[a-zA-Z]+[-a-zA-Z0-9_\\.:]*\\)" (1 font-lock-keyword-face) (2 font-lock-keyword-face) (3 font-lock-builtin-face))
-    ("\\(process\\)\\s-+!?[a-zA-Z]+[-a-zA-Z0-9_\\.:]*\\s-*=" (1 font-lock-keyword-face))
     ("\\(es_module\\|module\\)\\s-+!?[a-zA-Z]+[-a-zA-Z0-9_\\.:]*\\s-*=\\s-*\\(!?[a-zA-Z]+[-a-zA-Z0-9_\\.]*\\)" (1 font-lock-keyword-face) (2 font-lock-builtin-face))
+    ("\\(using\\)\\s-+[a-zA-Z]+[-a-zA-Z0-9_\\.:]*" (1 font-lock-keyword-face))
     ("\\(rename\\)\\s-+!?[a-zA-Z]+[-a-zA-Z0-9_\\.:]*\\s-+!?[a-zA-Z]+[-a-zA-Z0-9_\\.:]*" (1 font-lock-keyword-face))
-    ("\\(replace\\)\\s-+!?[a-zA-Z]+[-a-zA-Z0-9_\\.:]*\\(\\.!?[a-zA-Z]+[-a-zA-Z0-9_\\.]*\\)\\s-*=" (1 font-lock-keyword-face) (2 font-lock-variable-name-face))
-    ("\\(include\\)\\s-+\\([\"'].*[\"']\\)" (1 font-lock-keyword-face) (2 font-lock-string-face))
-    ("\\(untracked\\s-+\\|\\)\\(bool\\|v?u?int32\\|v?string\\|v?double\\|V?PSet\\|FileInPath\\|V?InputTag\\)\\s-+\\(!?[a-zA-Z]+[-a-zA-Z0-9_\\.]*\\)\\s-*=" (1 font-lock-type-face) (2 font-lock-type-face) (3 font-lock-variable-name-face))
+    ("\\(replace\\)\\s-+!?[a-zA-Z]+[-a-zA-Z0-9_\\.:]*\\(\\.!?[a-zA-Z]+[-a-zA-Z0-9_\\.]*\\)" (1 font-lock-keyword-face) (2 font-lock-variable-name-face))
+    ("\\(include\\)\\s-+\\(\"[^\"]*\"\\)" (1 font-lock-keyword-face) (2 font-lock-string-face))
+    ("\\(include\\)\\s-+\\(\'[^']*\'\\)" (1 font-lock-keyword-face) (2 font-lock-string-face))
+    ("\\(untracked\\s-+\\|\\)\\(bool\\|v?u?int32\\|v?string\\|v?double\\|V?PSet\\|FileInPath\\|V?InputTag\\)\\s-+\\(!?[a-zA-Z]+[-a-zA-Z0-9_\\.]*\\)" (1 font-lock-type-face) (2 font-lock-type-face) (3 font-lock-variable-name-face))
     ("\\(mixer\\)\\s-+!?[a-zA-Z]+[-a-zA-Z0-9_\\.]*\\s-*=\\s-*\\([AB]_Mixer\\)" (1 font-lock-keyword-face) (2 font-lock-builtin-face))
-    ("\\(path\\|endpath\\|sequence\\|mixer_path\\)\\s-+!?[a-zA-Z]+[-a-zA-Z0-9_\\.:]*\\s-*=" (1 font-lock-keyword-face))
-    ("\\(#.*\\)\n" 1 font-lock-comment-face t)
-    ("\\(//.*\\)\n" 1 font-lock-comment-face t)
+    ("\\(path\\|endpath\\|sequence\\|mixer_path\\)\\s-+!?[a-zA-Z]+[-a-zA-Z0-9_\\.:]*" (1 font-lock-keyword-face))
+    ("\\(service\\|source\\|secsource\\|es_source\\|es_module\\|es_prefer\\|es_hardcode\\|process\\|block\\|es_module\\|module\\|using\\|rename\\|replace\\|include\\|mixer\\|path\\|endpath\\|sequence\\|mixer_path\\)" . font-lock-keyword-face)
+    ("\\(untracked\\|bool\\|v?u?int32\\|v?string\\|v?double\\|V?PSet\\|FileInPath\\|V?InputTag\\)" . font-lock-type-face)
     )
   )
 
@@ -147,33 +152,36 @@ Special commands:
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.cff$" . cmssw-mode))
 
-(defun cmssw-incomment-q ()
-  "Return true if the point is in a comment, false if not."
-  (let ((bound (point)) (output nil))
-    (beginning-of-line)
-    (if (re-search-forward "\\(#\\|//\\)" bound t) (setq output t))
-    (goto-char bound)
-    output))
-
 (defun cmssw-calculate-indent ()
   "Determine the indentation level of the current point.  (Searches
 the entire buffer from the beginning of the buffer to (point): this
 may be slow if your .cfg file is very large!  Unaffected by
 narrowing.)"
-  (let ((depth 0) (beg (point)))
+  (let ((depth 0) (there (point)) (here nil))
     (beginning-of-line)
-    (skip-chars-forward " \t")
-    (if (looking-at "}") (setq depth (1- depth)))
-    (beginning-of-line)
-    
-    (while (> (point) 1)
-      (backward-char)
-      (if (and (looking-at "{") (not (cmssw-incomment-q)))
-	  (setq depth (1+ depth)))
-      (if (and (looking-at "}") (not (cmssw-incomment-q)))
-	  (setq depth (1- depth)))
-      )
-    (goto-char beg)
+    (setq here (point))
+    (goto-char 0)
+    (while (< (point) here)
+      (cond
+       ((looking-at "{") (progn
+			   (setq depth (1+ depth))
+			   (forward-char 1)))
+       ((looking-at "}") (progn
+			   (setq depth (1- depth))
+			   (forward-char 1)))
+       ((looking-at "\"") (progn
+			    (forward-char 1)
+			    (re-search-forward "[^\\]\"" here t)))
+       ((looking-at "'") (progn
+			   (forward-char 1)
+			   (re-search-forward "'" here t)))
+       ((looking-at "#") (if (not (re-search-forward "[\r\n]" here t))
+			       (goto-char here)))
+       ((looking-at "//") (if (not (re-search-forward "[\r\n]" here t))
+			      (goto-char here)))
+       (t (forward-char))
+       ))
+    (goto-char there)
     (max 0 (* depth cmssw-indent-level))
     ))
 
