@@ -1,5 +1,4 @@
 <use name=root>
-<use name=AnalysisExamples/MinimumBiasUnderlyingEvent>
 <use name=SimDataFormats/HepMCProduct>
 <use name=DataFormats/JetReco>
 <use name=DataFormats/Candidate>
