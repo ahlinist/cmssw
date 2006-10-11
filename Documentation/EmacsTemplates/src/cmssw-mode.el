@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; This file defines cmssw-mode version 1.4 (CMS CVS revision number 1.4)   ;;
+;;; This file defines cmssw-mode version 1.5 (CMS CVS revision number 1.5)   ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;; cmssw-mode.el, A major mode for editing CMSSW configuration files
@@ -200,7 +200,7 @@ only calculate the indentation level relative to the previous line."
 	(skip-chars-forward " \t")
 	(setq indent (current-column))
 	)
-      (while (and (looking-at "\\([#\r\n]\\|//\\)") (= (forward-line -1) 0))
+      (while (and (looking-at "\\(\\s-*$\\|#\\|//\\)") (= (forward-line -1) 0))
 	(beginning-of-line)
 	(skip-chars-forward " \t")
 	(setq indent (current-column))
@@ -214,7 +214,7 @@ only calculate the indentation level relative to the previous line."
     (beginning-of-line)
     (setq beg (point))
     (skip-chars-forward " \t")
-    (when (and (not (= indent (current-column))) (not (looking-at "\\([#\r\n]\\|//\\)")))
+    (when (and (not (= indent (current-column))) (not (looking-at "\\(#\\|//\\)")))
       (delete-region beg (point))
       (indent-to indent)
       )
