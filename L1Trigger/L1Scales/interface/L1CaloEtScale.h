@@ -48,8 +48,7 @@ class L1CaloEtScale {
   /// convert from rank to physically meaningful quantity
   double et(const uint16_t rank) const;
 
-  /// debug dump
-  friend std::ostream& operator<<(std::ostream& o, const L1CaloEtScale& o);
+  void print(std::ostream& s) const;
 
  private:
 

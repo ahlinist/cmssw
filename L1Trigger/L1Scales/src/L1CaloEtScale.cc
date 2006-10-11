@@ -14,6 +14,7 @@
 
 using std::vector;
 using std::ostream;
+using std::endl;
 
 uint16_t L1CaloEtScale::linScaleMax = 0x3ff;
 uint16_t L1CaloEtScale::rankScaleMax = 0x3f;
@@ -66,11 +67,12 @@ double L1CaloEtScale::et(const uint16_t rank) const {
 
 }
 
-ostream& operator<<(ostream& s, const L1CaloEtScale& o) {
-  s << "L1CaloEtScale : linear LSB = " << o.m_linearLsb << " GeV";
-  for (unsigned i=0; i<o.m_thresholds.size(); i++) {
-    s << "L1CaloEtScale : threshold " << i << " = " << o.m_thresholds[i] << " GeV";
+void L1CaloEtScale::print(ostream& s) const {
+  s << "L1CaloEtScale" << endl;
+  s << "L1CaloEtScale : linear LSB = " << m_linearLsb << " GeV" << endl;
+  for (unsigned i=0; i<m_thresholds.size(); i++) {
+    s << "L1CaloEtScale : threshold " << i << " = " << m_thresholds[i] << " GeV" << endl;
   }
-  return s;
 }
+
 
