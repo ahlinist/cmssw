@@ -1,6 +1,6 @@
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; This file defines cmssw-mode version 1.2 (synced to CVS revision number) ;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; This file defines cmssw-mode version 1.3 (CMS revision number 1.3)       ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;; cmssw-mode.el, A major mode for editing CMSSW configuration files
 ;;; Copyright (C) 2006  Jim Pivarski
@@ -152,15 +152,16 @@ Special commands:
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.cff$" . cmssw-mode))
 
-(defun cmssw-calculate-indent ()
-  "Determine the indentation level of the current point.  (Searches
-the entire buffer from the beginning of the buffer to (point): this
-may be slow if your .cfg file is very large!  Unaffected by
-narrowing.)"
-  (let ((depth 0) (there (point)) (here nil))
+(defun cmssw-calculate-indent (&optional here startfrom)
+  "Determine the indentation level of the current point (or `here' if
+non-nil).  (Searches the entire buffer from the beginning of the
+buffer to (point): this may be slow if your .cfg file is very large!
+Unaffected by narrowing, unless you pass (point-min) to startfrom.)"
+  (let ((depth 0) (there (point)))
     (beginning-of-line)
-    (setq here (point))
-    (goto-char 0)
+    (skip-chars-forward " \t}")
+    (if (not here) (setq here (point)))
+    (if (not startfrom) (goto-char 0) (goto-char startfrom))
     (while (< (point) here)
       (cond
        ((looking-at "{") (progn
@@ -187,15 +188,35 @@ narrowing.)"
 
 ;; This is called by TAB
 (defun cmssw-indent-line (&optional assume)
-  "Indent the current line."
-  (let ((indent) (beg) (pos (- (point-max) (point))))
-    (if (not (not assume))
-	(setq indent assume)
-      (setq indent (cmssw-calculate-indent)))
+  (interactive "p")
+  "Indent the current line.  If a prefix argument is passed, this will
+only calculate the indentation level relative to the previous line."
+  (let ((initial (point)) (indent nil) (depth 0) (beg nil) (pos (- (point-max) (point))))
+    (if (not assume)
+	(setq indent (cmssw-calculate-indent))
+      (setq indent 0)
+      (when (= (forward-line -1) 0)
+	(beginning-of-line)
+	(skip-chars-forward " \t")
+	(setq indent (current-column))
+	(skip-chars-forward "}")
+	)
+      (while (and (looking-at "\\([#\r\n]\\|//\\)") (= (forward-line -1) 0))
+	(beginning-of-line)
+	(skip-chars-forward " \t")
+	(setq indent (current-column))
+	(skip-chars-forward "}")
+	)
+      (setq indent (+ indent (cmssw-calculate-indent initial (point))))
+      (goto-char initial)
+      (beginning-of-line)
+      (skip-chars-forward " \t")
+      (if (looking-at "}") (setq indent (- indent cmssw-indent-level)))
+      (setq indent (max indent 0)))
     (beginning-of-line)
     (setq beg (point))
     (skip-chars-forward " \t")
-    (when (not (= indent (current-column)))
+    (when (and (not (= indent (current-column))) (not (looking-at "\\([#\r\n]\\|//\\)")))
       (delete-region beg (point))
       (indent-to indent)
       )
@@ -208,26 +229,15 @@ narrowing.)"
 ;; This is called by \C-\M-\
 (defun cmssw-indent-region (start end)
   "Indent the current region."
-  (let ((initial (point-marker)) (indent) (end-mark))
-    (goto-char end)
+  (let ((initial (point-marker)) (start-mark nil) (end-mark nil))
+    (goto-char (max start end))
     (setq end-mark (point-marker))
-
-    (goto-char start)
-    (beginning-of-line)
-    (setq indent (cmssw-indent-line))
-    (while (< (point-marker) end-mark)
-      (while (progn
-	       (if (and (looking-at "{") (not (cmssw-incomment-q)))
-		   (setq indent (+ indent cmssw-indent-level)))
-	       (if (and (looking-at "}") (not (cmssw-incomment-q)))
-		   (setq indent (- indent cmssw-indent-level)))
-	       (forward-char)
-	       (not (looking-at "^"))))
-      (if (looking-at "^\\s-*}")
-	  (cmssw-indent-line (- indent cmssw-indent-level))
-	(cmssw-indent-line indent))
-      )
-    (goto-char initial)
+    (goto-char (min start end))
+    (setq start-mark (point-marker))
+    (cmssw-indent-line)
+    (while (and (< (point) (marker-position end-mark)) (= (forward-line 1) 0))
+      (cmssw-indent-line t))
+    (goto-char (marker-position initial))
     ))
 
 (defun cmssw-electric-brace ()
