@@ -67,7 +67,12 @@ bool MCZll::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   HepMC::GenEvent * zEvent = new HepMC::GenEvent();
 
   if (myGenEvent->signal_process_id() != 1) 
-    return false;
+    {
+      delete myGenEvent;   
+      delete zEvent;
+      return false;
+    }
+      
   
   //found a prompt Z
   
@@ -108,6 +113,7 @@ bool MCZll::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  zEvent->add_vertex( zVertex );
 	  if (accepted)
 	    break;
+	  
 	}
 
     } 
@@ -124,13 +130,17 @@ bool MCZll::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
       LogDebug("MCZll") << "Event " << iEvent.id().event()  << " accepted" << std::endl; 
       //    std::cout << "+++++++++++++++++++++++++++++++++++++++++++++++++"<< std::endl;
       //       myGenEvent->print(); 
+      delete myGenEvent;   
+      delete zEvent;
       return true; 
     } 
   else 
     { 
+      delete myGenEvent;   
+      delete zEvent;
       return false;
     }
-  delete myGenEvent;   
-  delete zEvent;
+
+
 }
 
