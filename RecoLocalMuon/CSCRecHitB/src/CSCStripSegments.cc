@@ -63,8 +63,8 @@ CSCStripHitCollection CSCStripSegments::cleanStripHits(const CSCStripHitCollecti
     }
     if ( insert ) chambers.push_back((*it2).cscDetId().chamberId());
   }
-  
-  if (debug) std::cout << "[CSCStripSegments::cleanStripHits] Number of chambers with hits is: " << chambers.end()-chambers.begin() << std::endl;
+
+  if (debug) std::cout <<"[CSCStripSegments::cleanStripHits] Number of chambers with hits is " << chambers.end() - chambers.begin() << std::endl;
   
   // Now, create vector of hits for each chamber
   for ( chIt=chambers.begin(); chIt != chambers.end(); ++chIt ) {
@@ -79,13 +79,8 @@ CSCStripHitCollection CSCStripSegments::cleanStripHits(const CSCStripHitCollecti
     for ( CSCStripHitCollection::const_iterator raw_shit = range.first; raw_shit != range.second; raw_shit++)
       cscStripHit.push_back(*raw_shit);
     
-//    if (debug) std::cout <<"[CSCStripSegments::cleanStripHits] found " << cscStripHit.size() << " strip hits in this chamber" << std::endl;
-    
-    
     // Try to build segment
     findStripSegments(cscStripHit);
-    
-//    if (debug) std::cout << "Will now store hits from segments into new strip hit collection" << std::endl;
     
     // Order hits on segments per layer # and store to Collection
     for ( int layer = 1; layer < 7; layer++ ) {
@@ -134,9 +129,7 @@ void CSCStripSegments::findStripSegments(const ChamberHitContainer& striphit) {
   for ( unsigned i = 0; i < striphit.size(); i++ ) usedHits[i] = 0; 
   
   if ( ie - ib <  minStripHitsPerSegment ) { 
-    storeLeftOverHits( striphit );   // not enough hits to build segment, but store hits
-//    if (debug) std::cout << "[CSCStripSegments::findStripSegments] Not enough hits to build segments" << std::endl;
-//    if (debug) std::cout << "[CSCStripSegments::findStripSegments] Therefore just store strip hits " << std::endl;
+    if (storeLeftOvers && ie - ib > 0 ) storeLeftOverHits( striphit );   // not enough hits to build segment, but store hits
     return;
   }
   
@@ -165,14 +158,6 @@ void CSCStripSegments::findStripSegments(const ChamberHitContainer& striphit) {
 	
 	bool segok = false;
 	const CSCStripHit& h2 = *i2;					
-	unsigned L1 = h1.cscDetId().layer();
-	float W1 = h1.sHitPos(); 
-	unsigned L2 = h2.cscDetId().layer(); 
-	float W2 = h2.sHitPos(); 
-	
-//	if (debug) std::cout << "[CSCStripSegments::findStripSegments] start proto segment from hits "
-//			     << "h1 in layer: " << L1 <<  " strip pos: " << W1 << "   "
-//			     << "h2 in layer: " << L2 <<  " strip pos: " << W2 << std::endl;
 	
 	if ( !addHit(h1, layer1) ) continue;
 	if ( !addHit(h2, layer2) ) continue;
@@ -184,12 +169,10 @@ void CSCStripSegments::findStripSegments(const ChamberHitContainer& striphit) {
 	segok = isSegmentGood(striphit);
 	if ( segok ) {
 	  if ( proto_segment.empty() ) {
-//	    if (debug) std::cout << "[CSCStripSegments::findStripSegments] No segment found" << std::endl;
 	    proto_segment.clear();
 	  } else {
 	    // Flag used hits
 	    flagHitsAsUsed(striphit);
-//	    if (debug) std::cout <<"[CSCStripSegments::findStripSegments] Found a segment" << std::endl;
 	    storeChamberHits();
 	    proto_segment.clear();
 	  }
@@ -515,7 +498,7 @@ void CSCStripSegments::compareProtoSegment(const CSCStripHit& h, int layer) {
   bool ok = replaceHit(h, layer);
   
   if ( (proto_Chi2 < old_proto_Chi2) && (ok) ) {
-//    if (debug) std::cout << "[CSCStripSegment::compareProtoSegment] Segment with replaced hit is better" << std::endl;
+    return;
   } else {
     proto_Chi2      = old_proto_Chi2;
     proto_intercept = old_proto_intercept;
@@ -570,8 +553,7 @@ void CSCStripSegments::increaseProtoSegment(const CSCStripHit& h, int layer) {
   if ( diff >= -1. * proto_poca && diff <= proto_poca ) ok = addHit(h, layer);
   
   if ( ok ) {
-//    if (debug) std::cout << "[CSCStripSegment::increaseProtoSegment] Hit in new layer: added to segment, new chi2: " << proto_Chi2 << std::endl;
-    
+    return;    
   } else {
     proto_Chi2      = old_proto_Chi2;
     proto_intercept = old_proto_intercept;

@@ -117,7 +117,6 @@ float CSCHitFromWireOnly::findWireHitPosition() {
   // Again use center of mass to determine position of wire hit
   // To do so, need to know wire spacing and # of wires
   
-//  float wire_pos = -999.;
   float y = 0.0;
   
   for ( unsigned i = 0; i < wire_cluster.size(); i++ ) {
@@ -130,37 +129,5 @@ float CSCHitFromWireOnly::findWireHitPosition() {
 
   return wiregpos;
 
-/*  
- * There is a bug here... so just save as wire group for now...
- *
-  int wgroup = int( wiregpos );        // This is the corresponding wiregroup
-  float woffset = wiregpos - wgroup ;
- 
-  int theFirstWire;
-  int theLastWire;
-
-  if ( woffset == 0 ) {
-    wire_pos = layergeom_->middleWireOfGroup( wgroup );
-  } else if ( woffset == 0.5 ) {
-    wire_pos  = layergeom_->middleWireOfGroup( wgroup   );
-    wire_pos += layergeom_->middleWireOfGroup( wgroup+1 );
-    wire_pos = wire_pos / 2.;	
-  } else if ( woffset == -0.5 ) {
-    wire_pos  = layergeom_->middleWireOfGroup( wgroup   );
-    wire_pos += layergeom_->middleWireOfGroup( wgroup-1 );
-    wire_pos = wire_pos / 2.;
-  } else {
-    float middleWire = layergeom_->middleWireOfGroup(wgroup);   
-    int nwires       = layergeom_->numberOfWiresPerGroup(wgroup);
-    theFirstWire     = int( middleWire - 1.*nwires/2. + 0.5 );
-    theLastWire      = int( middleWire + 1.*nwires/2. - 0.5 );
-    if ( woffset < 0.5 ) {
-      wire_pos = middleWire - 2. * woffset * ( middleWire - theFirstWire );  // Keep proper normalization !!!
-    } else {
-      wire_pos = middleWire + 2. * woffset * ( theLastWire - middleWire );
-    } 
-  }
-
-*/   
 }
 

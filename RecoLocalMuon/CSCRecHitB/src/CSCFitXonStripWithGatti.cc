@@ -12,7 +12,8 @@
 
 #include <FWCore/MessageLogger/interface/MessageLogger.h>
 #include <FWCore/Utilities/interface/Exception.h>
-                                                                                                 
+
+#include <vector>                                                                                                 
 #include <cmath>
 #include <iostream>
                                                                                                  
@@ -24,16 +25,15 @@
 CSCFitXonStripWithGatti::CSCFitXonStripWithGatti(const edm::ParameterSet& ps){
 
   debug                      = ps.getUntrackedParameter<bool>("CSCDebug");
-  use3TimeBins               = ps.getUntrackedParameter<bool>("CSCUse3x3Gatti");
+  isData                     = ps.getUntrackedParameter<bool>("CSCIsRunningOnData");
 
   peakTimeFinder_            = new CSCFindPeakTime();
-
 }
+
 
 CSCFitXonStripWithGatti::~CSCFitXonStripWithGatti(){
 
-//  delete peakTimeFinder_;
-
+  delete peakTimeFinder_;
 }
 
 
@@ -41,8 +41,9 @@ CSCFitXonStripWithGatti::~CSCFitXonStripWithGatti(){
  *
  */
 void CSCFitXonStripWithGatti::findXOnStrip( const CSCLayer* layer, const CSCStripHit& stripHit, 
-                                            float& xCenterStrip, float& sWidth,
-                                            float& xGatti, double& sigma, double& chisq, double& prob ) { 
+                                            float& xCenterStrip, float& sWidth, 
+                                            std::vector<float> xtalks, std::vector<float> nmatrix,
+                                            float& xGatti, double& sigma, double& chisq ) { 
 
   // Initialize Gatti parameters using chamberSpecs
   // Cache specs_ info for ease of access
@@ -50,43 +51,77 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCLayer* layer, const CSCStri
   stripWidth = sWidth;
   initChamberSpecs();
 
-
   // Initialize output parameters just in case the fit fails  
   xGatti = xCenterStrip;  
-  sigma = prob = chisq= 9999.;
+  sigma = chisq= 9999.;
 
   int nStrips = stripHit.clusterSize();
   int CenterStrip = nStrips/2 + 1;   
   std::vector<float> adcs = stripHit.s_adc();
   int tmax = stripHit.tmax();
 
-  // Loading in 3x3 matrix with corrected adcs..
-  int j = 0;
-  Q_tot[0] = 0.;
-  Q_tot[1] = 0.;
-  Q_tot[2] = 0.;
-  
-  for ( int i=1; i <= nStrips; i++ ) {
-    if ( i > (CenterStrip-2) && i < (CenterStrip+2) ) {
+  // Fit peaking time  
+  float t_peak = tmax * 50.;
+  float t_zero = 0.;
+  bool useFittedCharge = false;
+  for ( int i = 1; i <= nStrips; i++ ) {
+    if ( i == CenterStrip ) {
       float adc[4];
-      std::vector<float> adcsFit;
-      for ( int t=0; t<4; t++ ) {
-        int k = t + 3*(i-1);
-        adc[t]    = adcs[k];
-        d[j][t]   = adc[t];
-        Q_tot[t] += adc[t];
+      for ( int t = 0; t < 4; t++ ) {
+        int k  = t + 3*(i-1);
+        adc[t] = adcs[k];
       }
-      // float tpeak;
-      // peakTimeFinder_->FindPeakTime( tmax, adc, tpeak, adcsFit );
-      // for ( int t=0; t<3; t++ ) {
-      //  d[j][t]   = adcsFit[t];
-      //  Q_tot[t] += adcsFit[t];
-      // }
+      useFittedCharge = peakTimeFinder_->FindPeakTime( tmax, adc, t_zero, t_peak );
+      break;
+    }
+  }
+
+  if (debug) std::cout << "t_max is: " << tmax*50. << " and fitted peak is: " << t_peak << std::endl;
+
+  int j = 0;
+  // Now fill with array with fitted charge...
+  // ... or not, depending if managed to fit peaking time
+  for ( int i = 1; i <= nStrips; i++ ) {
+    if ( i > (CenterStrip-2) && i < (CenterStrip+2) ) {
+      std::vector<float> adcsFit;
+      float adc[4];
+      for ( int t = 0; t < 4; t++ ) {
+        int k  = t + 3*(i-1);
+        adc[t] = adcs[k];  
+        if ( !useFittedCharge && t < 3) d[j][t] = adc[t];
+      }
+      if ( useFittedCharge ) {
+        peakTimeFinder_->FitCharge( tmax, adc, t_zero, t_peak, adcsFit );
+        for ( int t = 0; t < 3; t++ ) d[j][t] = adcsFit[t];
+      }
       j++;
     }
   }
-    
-  
+
+  // Load in x-talks:
+  float dt = 50. * tmax - t_peak;
+  if ( dt < 0 ) dt = 0.;
+  for ( int t = 0; t < 3; t++ ) {
+    xt_l[0][t] = xtalks[0] * (50.* (t-1) + dt) + xtalks[1];
+    xt_r[0][t] = xtalks[2] * (50.* (t-1) + dt) + xtalks[3];
+    xt_l[1][t] = xtalks[4] * (50.* (t-1) + dt) + xtalks[5];
+    xt_r[1][t] = xtalks[6] * (50.* (t-1) + dt) + xtalks[7];
+    xt_l[2][t] = xtalks[8] * (50.* (t-1) + dt) + xtalks[9];
+    xt_r[2][t] = xtalks[10]* (50.* (t-1) + dt) + xtalks[11];
+  }   
+
+  // vector containing noise starts at 3rd time bin,
+  int tbin = tmax - 4;
+  // Load in auto-correlation noise matrices
+  for ( int istrip =0; istrip < 3; istrip++ ) {
+    a11[istrip] = nmatrix[tbin+0+15*istrip];
+    a12[istrip] = nmatrix[tbin+1+15*istrip];
+    a13[istrip] = nmatrix[tbin+2+15*istrip];
+    a22[istrip] = nmatrix[tbin+3+15*istrip];
+    a23[istrip] = nmatrix[tbin+4+15*istrip];
+    a33[istrip] = nmatrix[tbin+6+15*istrip];
+  }
+
   // Run Gatti for offset = 0
   runGattiFit( 0 );
 
@@ -175,10 +210,8 @@ void CSCFitXonStripWithGatti::runGattiFit( int istrt ) {
   // Now compute errors
   float errl = .001;
   float errh = .001;
-
   
   // Look at chi^2 for dx - 0.001
-
   float dxl = dx - errl;
   float chi2l = chisqrFromGatti( dxl );
   chi2l = chi2l - chi2;
@@ -190,7 +223,6 @@ void CSCFitXonStripWithGatti::runGattiFit( int istrt ) {
 
 
   // Look at chi^2 for dx + 0.001
-
   float dxh = errh - dx;
   float chi2h = chisqrFromGatti( dxh );
   chi2h = chi2h - chi2;
@@ -213,30 +245,130 @@ void CSCFitXonStripWithGatti::runGattiFit( int istrt ) {
  */
 float CSCFitXonStripWithGatti::chisqrFromGatti( float x ) {
 
+  float chi2, dd;
+  float sn11,sn12,sn13,sn21,sn22,sn23,sn31,sn32,sn33;
+  float sd11,sd12,sd13,sd21,sd22,sd23,sd31,sd32,sd33;
+  float sn1,sn2,sn3,n1,n2,n3;
+
   // Compute Gatti function for 3 positions and 3 time bins
   for (int t = 0; t < 3; t++ ) getGatti( x, t );
 
-  float chi2 = 0.;
+  sn11 = v11[0]*q[0][0]*d[0][0] + v11[1]*q[1][0]*d[1][0] + v11[2]*q[2][0]*d[2][0];
+  sd11 = v11[0]*q[0][0]*q[0][0] + v11[1]*q[1][0]*q[1][0] + v11[2]*q[2][0]*q[2][0];
+  sn12 = v12[0]*q[0][0]*d[0][1] + v12[1]*q[1][0]*d[1][1] + v12[2]*q[2][0]*d[2][1];
+  sd12 = v12[0]*q[0][0]*q[0][1] + v12[1]*q[1][0]*q[1][1] + v12[2]*q[2][0]*q[2][1];
+  sn13 = v13[0]*q[0][0]*d[0][2] + v13[1]*q[1][0]*d[1][2] + v13[2]*q[2][0]*d[2][2];
+  sd13 = v13[0]*q[0][0]*q[0][2] + v13[1]*q[1][0]*q[1][2] + v13[2]*q[2][0]*q[2][2];
+  
+  sn21 = v12[0]*q[0][1]*d[0][0] + v12[1]*q[1][1]*d[1][0] + v12[2]*q[2][1]*d[2][0];
+  sd21 = v12[0]*q[0][1]*q[0][0] + v12[1]*q[1][1]*q[1][0] + v12[2]*q[2][1]*q[2][0];
+  sn22 = v22[0]*q[0][1]*d[0][1] + v22[1]*q[1][1]*d[1][1] + v22[2]*q[2][1]*d[2][1];
+  sd22 = v22[0]*q[0][1]*q[0][1] + v22[1]*q[1][1]*q[1][1] + v22[2]*q[2][1]*q[2][1];
+  sn23 = v23[0]*q[0][1]*d[0][2] + v23[1]*q[1][1]*d[1][2] + v23[2]*q[2][1]*d[2][2];
+  sd23 = v23[0]*q[0][1]*q[0][2] + v23[1]*q[1][1]*q[1][2] + v23[2]*q[2][1]*q[2][2];
+  
+  sn31 = v13[0]*q[0][2]*d[0][0] + v13[1]*q[1][2]*d[1][0] + v13[2]*q[2][2]*d[2][0];
+  sd31 = v13[0]*q[0][2]*q[0][0] + v13[1]*q[1][2]*q[1][0] + v13[2]*q[2][2]*q[2][0];
+  sn32 = v23[0]*q[0][2]*d[0][1] + v23[1]*q[1][2]*d[1][1] + v23[2]*q[2][2]*d[2][1];
+  sd32 = v23[0]*q[0][2]*q[0][1] + v23[1]*q[1][2]*q[1][1] + v23[2]*q[2][2]*q[2][1];
+  sn33 = v33[0]*q[0][2]*d[0][2] + v33[1]*q[1][2]*d[1][2] + v33[2]*q[2][2]*d[2][2];
+  sd33 = v33[0]*q[0][2]*q[0][2] + v33[1]*q[1][2]*q[1][2] + v33[2]*q[2][2]*q[2][2];
 
-  // What is the error on these adc counts after applying all the corrections (gains, noise cross talk) ?  
-  // Blightly assume poisson stats ...
+  sn1 = sn11 + sn12 + sn13;
+  sn2 = sn21 + sn22 + sn23;
+  sn3 = sn31 + sn32 + sn33;
+  
+  dd = (-sd11*sd23*sd32 + sd11*sd22*sd33 + sd13*sd21*sd32 - sd22*sd13*sd31 + sd23*sd12*sd31 - sd12*sd21*sd33);
 
-  // Also, leave the option open to use either 3 x 3 Gatti or simply look at 3 strip for tmax
-  if (use3TimeBins) {
-    for ( int i = 0; i < 3; i++) {
-      for (int t = 0; t < 3; t++) {
-        chi2 += (d[i][t] - q[i][t])*(d[i][t] - q[i][t]) / (d[i][t] + q[i][t]);
-      } 
-    }
-  } else {
-    int t = 1;
-    for (int i = 0; i < 3; i++) {
-      chi2 += (d[i][t] - q[i][t])*(d[i][t] - q[i][t]) / (d[i][t] + q[i][t]);
-    } 
-  }
+  // These are the normalization factors:
+  n1 = (-sd21*sd33*sn2 + sd21*sn3*sd32 - sd31*sd22*sn3 + sd31*sd23*sn2 - sn1*sd23*sd32 + sn1*sd22*sd33)/dd;
+  n2 =-(-sd11*sd33*sn2 + sd11*sn3*sd32 + sd13*sd31*sn2 + sd33*sd12*sn1 - sn3*sd12*sd31 - sd13*sn1*sd32)/dd;
+  n3 = (-sd22*sd13*sn1 + sd11*sd22*sn3 - sd11*sd23*sn2 + sd23*sd12*sn1 + sd13*sd21*sn2 - sd12*sd21*sn3)/dd;
+  
+  // Now compute chi^2
+  chi2  = 0.;
+
+  chi2 +=       v11[0] * (d[0][0] - n1*q[0][0]) * (d[0][0] - n1*q[0][0]) 
+              + v11[1] * (d[1][0] - n1*q[1][0]) * (d[1][0] - n1*q[1][0])
+              + v11[2] * (d[2][0] - n1*q[2][0]) * (d[2][0] - n1*q[2][0]);
+
+  chi2 += 2.* ( v12[0] * (d[0][0] - n1*q[0][0]) * (d[0][1] - n2*q[0][1])
+              + v12[1] * (d[1][0] - n1*q[1][0]) * (d[1][1] - n2*q[1][1])
+              + v12[2] * (d[2][0] - n1*q[2][0]) * (d[2][1] - n2*q[2][1]) );
+
+  chi2 += 2.* ( v13[0] * (d[0][0] - n1*q[0][0]) * (d[0][2] - n3*q[0][2])
+              + v13[1] * (d[1][0] - n1*q[1][0]) * (d[1][2] - n3*q[1][2])
+              + v13[2] * (d[2][0] - n1*q[2][0]) * (d[2][2] - n3*q[2][2]) );
+
+  chi2 +=       v22[0] * (d[0][1] - n2*q[0][1]) * (d[0][1] - n2*q[0][1])
+              + v22[1] * (d[1][1] - n2*q[1][1]) * (d[1][1] - n2*q[1][1])
+              + v22[2] * (d[2][1] - n2*q[2][1]) * (d[2][1] - n2*q[2][1]);
+
+  chi2 += 2.* ( v23[0] * (d[0][1] - n2*q[0][1]) * (d[0][2] - n3*q[0][2])
+              + v23[1] * (d[1][1] - n2*q[1][1]) * (d[1][2] - n3*q[1][2])
+              + v23[2] * (d[2][1] - n2*q[2][1]) * (d[2][2] - n3*q[2][2]) ); 
+
+  chi2 +=       v33[0] * (d[0][2] - n3*q[0][2]) * (d[0][2] - n3*q[0][2])
+              + v33[1] * (d[1][2] - n3*q[1][2]) * (d[1][2] - n3*q[1][2])
+              + v33[2] * (d[2][2] - n3*q[2][2]) * (d[2][2] - n3*q[2][2]);
+
   return chi2;
 }
 
+
+/* setupMatrix
+ *
+ */
+void CSCFitXonStripWithGatti::setupMatrix() {
+
+  double dd, a11t, a12t, a13t, a22t, a23t, a33t;
+  double syserr = 0.015;
+
+  // Left strip
+  a11t = a11[0] + syserr*syserr * d[0][0]*d[0][0];
+  a12t = a12[0] + syserr*syserr * d[0][0]*d[0][1];
+  a13t = a13[0] + syserr*syserr * d[0][0]*d[0][2];
+  a22t = a22[0] + syserr*syserr * d[0][1]*d[0][1];
+  a23t = a23[0] + syserr*syserr * d[0][1]*d[0][2];
+  a33t = a33[0] + syserr*syserr * d[0][2]*d[0][2];
+  dd     = (a11t*a33t*a22t-a11t*a23t*a23t-a33t*a12t*a12t+2.0*a12t*a13t*a23t-a13t*a13t*a22t);
+  v11[0] = (a33t*a22t-a23t*a23t)/dd;
+  v12[0] =-(a33t*a12t-a13t*a23t)/dd;
+  v13[0] = (a12t*a23t-a13t*a22t)/dd;
+  v22[0] = (a33t*a11t-a13t*a13t)/dd;
+  v23[0] =-(a23t*a11t-a12t*a13t)/dd;
+  v33[0] = (a22t*a11t-a12t*a12t)/dd;
+     
+  // Center strip
+  a11t = a11[1] + syserr*syserr * d[1][0]*d[1][0];
+  a12t = a12[1] + syserr*syserr * d[1][0]*d[1][1];
+  a13t = a13[1] + syserr*syserr * d[1][0]*d[1][2];
+  a22t = a22[1] + syserr*syserr * d[1][1]*d[1][1];
+  a23t = a23[1] + syserr*syserr * d[1][1]*d[1][2];
+  a33t = a33[1] + syserr*syserr * d[1][2]*d[1][2];
+  dd     = (a11t*a33t*a22t-a11t*a23t*a23t-a33t*a12t*a12t+2.0*a12t*a13t*a23t-a13t*a13t*a22t);
+  v11[1] = (a33t*a22t-a23t*a23t)/dd;
+  v12[1] =-(a33t*a12t-a13t*a23t)/dd;
+  v13[1] = (a12t*a23t-a13t*a22t)/dd;
+  v22[1] = (a33t*a11t-a13t*a13t)/dd;
+  v23[1] =-(a23t*a11t-a12t*a13t)/dd;
+  v33[1] = (a22t*a11t-a12t*a12t)/dd;
+
+  // Right strip
+  a11t = a11[2] + syserr*syserr * d[2][0]*d[2][0];
+  a12t = a12[2] + syserr*syserr * d[2][0]*d[2][1];
+  a13t = a13[2] + syserr*syserr * d[2][0]*d[2][2];
+  a22t = a22[2] + syserr*syserr * d[2][1]*d[2][1];
+  a23t = a23[2] + syserr*syserr * d[2][1]*d[2][2];
+  a33t = a33[2] + syserr*syserr * d[2][2]*d[2][2];
+  dd     = (a11t*a33t*a22t-a11t*a23t*a23t-a33t*a12t*a12t+2.0*a12t*a13t*a23t-a13t*a13t*a22t);
+  v11[2] = (a33t*a22t-a23t*a23t)/dd;
+  v12[2] =-(a33t*a12t-a13t*a23t)/dd;
+  v13[2] = (a12t*a23t-a13t*a22t)/dd;
+  v22[2] = (a33t*a11t-a13t*a13t)/dd;
+  v23[2] =-(a23t*a11t-a12t*a13t)/dd;
+  v33[2] = (a22t*a11t-a12t*a12t)/dd;
+}
 
 
 /* initChamberSpecs
@@ -263,28 +395,33 @@ void CSCFitXonStripWithGatti::initChamberSpecs() {
   norm     = 0.5 / atan( sqrt_k_3 );
   k_2      = M_PI_2 * ( 1. - sqrt_k_3 /2. );
   k_1      = 0.25 * k_2 * sqrt_k_3 / atan( sqrt_k_3 );
-
 }
-
 
 
 /* getGatti
  *
+ * Compute expected charge for a given x and time bin
  */
 void CSCFitXonStripWithGatti::getGatti( float x, int t ) {
 
   double r = h / stripWidth;
 
-  double g1 = Q_tot[t] * norm * r * atan( sqrt_k_3 * tanh( k_2 * (-x - 1.5)/r ) );
-  double g2 = Q_tot[t] * norm * r * atan( sqrt_k_3 * tanh( k_2 * (-x - 0.5)/r ) );
-  double g3 = Q_tot[t] * norm * r * atan( sqrt_k_3 * tanh( k_2 * (-x + 0.5)/r ) );
-  double g4 = Q_tot[t] * norm * r * atan( sqrt_k_3 * tanh( k_2 * (-x + 1.5)/r ) );
+  double g0 = norm * r * atan( sqrt_k_3 * tanh( k_2 * (-x - 2.5)/r ) );
+  double g1 = norm * r * atan( sqrt_k_3 * tanh( k_2 * (-x - 1.5)/r ) );
+  double g2 = norm * r * atan( sqrt_k_3 * tanh( k_2 * (-x - 0.5)/r ) );
+  double g3 = norm * r * atan( sqrt_k_3 * tanh( k_2 * (-x + 0.5)/r ) );
+  double g4 = norm * r * atan( sqrt_k_3 * tanh( k_2 * (-x + 1.5)/r ) );
+  double g5 = norm * r * atan( sqrt_k_3 * tanh( k_2 * (-x + 2.5)/r ) );
 
+  // These are the expected charges without x-talks
+  double qt_ll = g1 - g0;
+  double qt_l  = g2 - g1;
+  double qt    = g3 - g2;
+  double qt_r  = g4 - g3;
+  double qt_rr = g5 - g4;
 
-//  if (debug) std::cout << "g3, g2, q[1][1] " << g3 << " " << g2 << " " << g3 - g2 << std::endl;
-
-  q[0][t] = g2 - g1;
-  q[1][t] = g3 - g2;
-  q[2][t] = g4 - g3;
-
+  // Now correct for x-talks:
+  q[0][t] = qt_l * (1. - xt_l[0][t] - xt_r[0][t]) + qt_ll * xt_r[0][t] + qt    * xt_l[1][t];
+  q[1][t] = qt   * (1. - xt_l[1][t] - xt_r[1][t]) + qt_l  * xt_r[0][t] + qt_r  * xt_l[2][t];
+  q[2][t] = qt_r * (1. - xt_l[2][t] - xt_r[2][t]) + qt    * xt_r[1][t] + qt_rr * xt_l[2][t];
 }

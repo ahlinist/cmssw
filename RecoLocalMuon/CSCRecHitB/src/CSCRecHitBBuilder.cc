@@ -57,9 +57,7 @@ CSCRecHitBBuilder::~CSCRecHitBBuilder() {}
 void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCWireDigiCollection* wiredc,
                                CSCRecHit2DCollection& oc ) {
   
-  // Make collection of wire only hits !
-  
-//  if (debug) std::cout << "[CSCRecHitBBuilder] Now producing wire hits" << std::endl;
+  // Make collection of wire only hits !  
   CSCWireHitCollection woc;
   
   for ( CSCWireDigiCollection::DigiRangeIterator it = wiredc->begin(); it != wiredc->end(); ++it ){
@@ -77,10 +75,9 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
     woc.put( id, rhv.begin(), rhv.end() );
   }
 
-  CSCWireHitCollection clean_woc;  
   // Clean up the wire hit collection by trying to build segments
+  CSCWireHitCollection clean_woc;  
   if ( useCleanWireCollection ) {
-    if (debug) std::cout << "[CSCRecHitBBuilder] Now trying to create wire segments to clean up wire hit collection" << std::endl;
     // First pass geometry
     HitsFromWireSegments_->setGeometry( geom_ );
     // Now try building segments
@@ -92,10 +89,8 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
   
   // Make collection of strip only hits
   
-//  if (debug) std::cout << "[CSCRecHitBBuilder] Now producing strip hits" << std::endl;
-
-  // Pass calibration constants if it is data
-  if (isData) HitsFromStripOnly_->setCalibration( gains_, xtalk_, noise_ );
+  // Pass gain constants if it is data
+  if (isData) HitsFromStripOnly_->setCalibration( gains_ );
 
   CSCStripHitCollection soc;  
   for ( CSCStripDigiCollection::DigiRangeIterator it = stripdc->begin(); it != stripdc->end(); ++it ){
@@ -112,11 +107,10 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
     // Add the strip hits to master collection
     soc.put( id, rhv.begin(), rhv.end() );
   }
-  
+
+  // Now clean up the strip hit collection by trying to build strip segments  
   CSCStripHitCollection clean_soc;
   if ( useCleanStripCollection ) {
-    // Now clean up the strip hit collection by trying to build strip segments
-    if (debug) std::cout << "[CSCRecHitBBuilder] Now trying to create strip segments to clean up strip hit collection" << std::endl;
     // First pass geometry
     HitsFromStripSegments_->setGeometry( geom_ );
     clean_soc = HitsFromStripSegments_->cleanStripHits(soc);
@@ -127,11 +121,15 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
   
   // Now create 2-D hits by looking at superposition of strip and wire hit
 
-//  if (debug) std::cout << "[CSCRecHitBBuilder] Now producing 2D hits" << std::endl;
+  // Pass X-talks and noise matrix which are implemented in Gatti fit
+  if (isData) Make2DHits_->setCalibration( xtalk_, noise_ );
   
   int layer_idx     = 0;
   int hits_in_layer = 0;
   std::vector<CSCRecHit2D> hitsInLayer;
+  // Clear vector of rechit (useful if have problem in buidling 2-D hits...
+  hitsInLayer.clear();
+
   CSCDetId old_id; 
   
   // N.B.  I've sorted the hits from layer 1-6 always, so can test if there are "holes", that is
@@ -139,6 +137,8 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
 
   // Loop over strip hit collection
   for ( CSCStripHitCollection::const_iterator sit = clean_soc.begin(); sit != clean_soc.end(); ++sit ){
+
+//    if ( clean_soc.end() - clean_soc.begin() <= 0 ) break;
 
     const CSCStripHit& s_hit = *sit;
     const CSCDetId& sDetId   = (*sit).cscDetId();
@@ -165,6 +165,8 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
 
     // Loop over cleaned up wire hit collection
     for ( CSCWireHitCollection::const_iterator wit = clean_woc.begin(); wit != clean_woc.end(); ++wit ) {
+
+//    if ( clean_woc.end() - clean_woc.begin() <= 0 ) break;
 
       const CSCWireHit& w_hit = *wit;
       const CSCDetId& wDetId  = (*wit).cscDetId();

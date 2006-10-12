@@ -19,16 +19,16 @@
 /* FindPeakTime
  *
  */
-void CSCFindPeakTime::FindPeakTime( const int& tmax, const float* adc, float& t_peak, std::vector<float>& adcsFit ) {
+bool CSCFindPeakTime::FindPeakTime( const int& tmax, const float* adc, float& t_zero, float& t_peak ) {
   
   // Initialize parameters in case fit fails
   float t0       = 0.;
   float N        = adc[1];
-  t_peak         = 150.;
+  t_peak         = 133.;
   float p0       = 4./t_peak;
 
   // If outside physical range, exit
-  if ( tmax < 2 || tmax > 6 ) return;
+  if ( tmax < 2 || tmax > 6 ) return false;
 
   float tb[4], y[4];
   for ( int time=0; time<4; time++ ){
@@ -43,17 +43,18 @@ void CSCFindPeakTime::FindPeakTime( const int& tmax, const float* adc, float& t_
   int i_count = 0;
   float chi_min  = 1.e10;
   float chi_last = 1.e10;
+  float chi_last2=1.0e10;
+  float tt0      = 0.;
+  float chi2     = 0.;
 
   while ( del_tpeak > 1. ) {
 
     p0             = 4./t_peak;  
     float del_t    = 100.;
-    float tt0      = 0.;
-    float chi2     = 0.;
 
     while ( del_t > 0.05 ) {
     
-      float x[4], y[4];
+      float x[4];
       float sx2 = 0.;
       float sxy = 0.;
     
@@ -86,28 +87,63 @@ void CSCFindPeakTime::FindPeakTime( const int& tmax, const float* adc, float& t_
       i_count++;
     }
     // Test on chi^2 to decide what to do
-    if ( chi_last > chi2 ) {
-      chi_last  = chi2;
+    if ( chi_last2 > chi2 ) {
+      chi_last2 = chi2;
       t_peak    = t_peak + del_tpeak;
     } else {
-      t_peak   = t_peak - 2. * del_tpeak;
-      del_tpeak= del_tpeak / 2.;    
-      t_peak   = t_peak + del_tpeak;
-      chi_last = 1.0e10;
+      t_peak    = t_peak - 2. * del_tpeak;
+      del_tpeak = del_tpeak / 2.;    
+      t_peak    = t_peak + del_tpeak;
+      chi_last2 = 1.0e10;
     }      
-    if (i_count > 1000) break;
+    if (i_count > 10000) break;
   }
 
-  if (i_count > 0) std::cout << "Fit for finding peak time failed" << std::endl;
+  if (i_count > 10000) {
+    std::cout << "Fit for finding peak time failed" << std::endl;
+    return false;
+  }
 
-  p0 = 4./t_peak;
+  t_peak = t_peak;
+  t_zero = tt0;
 
-  std::cout << "peaking time is " << t_peak << std::endl;
+  return true;
+}
 
-  // Now fit charge so have tb[1] = peak charge 
-  for ( int i = -1; i < 2; i++ ) {
-    float t = t_peak + i * 50.;
-    float q_fitted = N * (t-t0)*(t-t0)*(t-t0)*(t-t0) * exp( -p0 * (t-t0) );
+
+/* FitCharge
+ *
+ */
+void CSCFindPeakTime::FitCharge( const int& tmax, const float* adc, const float& t_zero, const float& t_peak, std::vector<float>& adcsFit ) {
+
+  float p0  = 4./t_peak;
+  float tt0 = t_zero;
+  int n_fit = 4;
+  if ( tmax == 6 ) n_fit=3;
+  
+  float tb[4], y[4];
+  for ( int t = 0; t < 4; t++ ){
+    tb[t] = (tmax + t - 1) * 50.;
+    y[t] = adc[t];
+  }
+
+  // Find the normalization factor for the function
+  float x[4];    
+  float sx2 = 0.;
+  float sxy = 0.;
+  for ( int j=0; j < n_fit; j++ ) {
+    float t = tb[j];
+    x[j] = (t-tt0)*(t-tt0)*(t-tt0)*(t-tt0) * exp( -p0 * (t-tt0) );
+    sx2  = sx2 + x[j] * x[j];
+    sxy  = sxy + x[j] * y[j];
+  }
+  float N = sxy / sx2;
+    
+
+  // Now compute charge for a given t  --> only need charges at: tpeak-50, tpeak and tpeak+50
+  for ( int i = 0; i < 3; i++ ) {
+    float t = t_peak + (i - 1) * 50.;
+    float q_fitted = N * (t-tt0)*(t-tt0)*(t-tt0)*(t-tt0) * exp( -p0 * (t-tt0) );
     adcsFit.push_back(q_fitted);
   }
   return;

@@ -21,6 +21,10 @@ class CSCDetId;
 class CSCLayer;
 class CSCChamberSpecs;
 class CSCLayerGeometry;
+class CSCcrosstalk;
+class CSCNoiseMatrix;
+class CSCStripCrosstalk;
+class CSCStripNoiseMatrix;
 class CSCFitXonStripWithGatti;
 
 class CSCMake2DRecHit
@@ -43,7 +47,14 @@ class CSCMake2DRecHit
   /// Keep hit within fiducial volume by finding proper wire # if needed 
   void keepHitInFiducial( LocalPoint& lp1, LocalPoint& lp0 );
 
-  
+  /// Load in X-Talks and Noise Matrix
+  void setCalibration( const CSCcrosstalk* xtalk,
+                       const CSCNoiseMatrix* noise ) {
+    xtalk_ = xtalk;
+    noise_ = noise;
+  }
+
+ 
   const CSCLayer * layer_;
   const CSCLayerGeometry * layergeom_;
   const CSCChamberSpecs * specs_;
@@ -52,12 +63,27 @@ class CSCMake2DRecHit
  private:
   
   bool debug;
+  bool isData;
   int stripWireDeltaTime;
   bool useGatti;
   float maxGattiChi2;
-  
-  CSCFitXonStripWithGatti * xFitWithGatti_;
 
+  float slopeRight[100];
+  float slopeLeft[100];
+  float interRight[100];
+  float interLeft[100];
+  std::vector<float> nMatrix;
+
+  /* Cache calibrations for current event
+   *
+   */
+  const CSCcrosstalk*   xtalk_;
+  const CSCNoiseMatrix* noise_;
+
+
+  CSCStripCrosstalk*       stripCrosstalk_; 
+  CSCStripNoiseMatrix*     stripNoiseMatrix_;
+  CSCFitXonStripWithGatti* xFitWithGatti_;
   
 };
 
