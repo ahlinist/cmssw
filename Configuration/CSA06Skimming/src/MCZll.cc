@@ -131,6 +131,6 @@ bool MCZll::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
       return false;
     }
   delete myGenEvent;   
-  //  delete zEvent;
+  delete zEvent;
 }
 
