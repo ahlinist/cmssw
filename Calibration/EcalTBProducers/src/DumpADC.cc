@@ -6,7 +6,7 @@
      <Notes on implementation>
 */
 //
-// $Id: DumpADC.cc,v 1.5 2006/08/15 10:22:51 govoni Exp $
+// $Id: DumpADC.cc,v 1.6 2006/08/17 12:45:34 govoni Exp $
 //
 //
 
@@ -59,8 +59,8 @@ DumpADC::DumpADC( const edm::ParameterSet& iConfig ) :
 {
    m_eventNum = 0 ; // FIXME
    m_minEvent = iConfig.getUntrackedParameter<int> ("minEvent",0) ; // FIXME
-   m_beamEnergy = iConfig.getUntrackedParameter<double> ("beamEnergy",120) ; 
-   
+   m_beamEnergy = iConfig.getUntrackedParameter<double> ("beamEnergy",120) ;
+
    //now do what ever initialization is needed
 //   rootfile_          = iConfig.getUntrackedParameter<std::string>("rootfile","ecalSimpleTBanalysis.root") ;
    ECALRawDataProducer_       = iConfig.getParameter<std::string> ("ECALRawDataProducer") ; 
@@ -194,34 +194,37 @@ DumpADC::analyze( const edm::Event& iEvent, const edm::EventSetup& iSetup )
    int tableIsMoving = -1 ;
    int S6ADC = 0 ;
    std::string eventType = "0" ;
-   if (evtHeader)   
-     { 
+   if (evtHeader)
+     {
        eventType = evtHeader->eventType () ;
        run = evtHeader->runNumber () ;
        event = evtHeader->eventNumber () ;
        xtalNum = evtHeader->crystalInBeam () ;
        tableIsMoving = evtHeader->tableIsMoving () ;
        S6ADC = evtHeader->S6ADC () ;
+       std::cout << "Danilo Event Header== True" << std::endl;
      }
    else
-     { 
+     {
        float maxAmplitude = -999999. ;
        DetId MExtal (0) ;
-       // loop over uncalibrated rechits 
-       for (EBUncalibratedRecHitCollection::const_iterator EBUit  
+       // loop over uncalibrated rechits
+       for (EBUncalibratedRecHitCollection::const_iterator EBUit
                                        = EBuncalibRecHits->begin () ;
-            EBUit != EBuncalibRecHits->end () ; 
-            ++EBUit) 
+            EBUit != EBuncalibRecHits->end () ;
+            ++EBUit)
          {
            if (maxAmplitude < EBUit->amplitude ())
              {
                maxAmplitude = EBUit->amplitude () ;
-               MExtal = EBUit->id () ;           
+               MExtal = EBUit->id () ;
              }
-         } // loop over uncalibrated rechits 
-       if (maxAmplitude < -999990) return ; 
+         } // loop over uncalibrated rechits
+       if (maxAmplitude < -999990) return ;
        EBDetId EBMExtal (MExtal) ;
        xtalNum = EBMExtal.ic () ;
+       std::cout << "Danilo Event Header== False" << std::endl;
+
    }
 
    // get the hodoscope info
@@ -233,8 +236,8 @@ DumpADC::analyze( const edm::Event& iEvent, const edm::EventSetup& iSetup )
    float yslope = -99. ;
    float xqual = -99. ;
    float yqual = -99. ;
-   
-   if (recHodo) 
+
+   if (recHodo)
      {
        xhodo=recHodo->posX () ;
        yhodo=recHodo->posY () ;
@@ -247,9 +250,28 @@ DumpADC::analyze( const edm::Event& iEvent, const edm::EventSetup& iSetup )
    // get the 7x7 matrix
    // ------------------
 
-   double amplitude[49] ; 
+   double amplitude[49] ;
    //FIXME not sure about the "1"
-   EBDetId EBMExtal (1,xtalNum,EBDetId::SMCRYSTALMODE) ;
+   //EBDetId EBMExtal (1,xtalNum,EBDetId::SMCRYSTALMODE) ;
+
+   // Danilo: I try to enclose the statement in a try-catch schema
+   EBDetId EBMExtal;
+   try
+        {
+         EBDetId dummy (1,xtalNum,EBDetId::SMCRYSTALMODE) ;
+         EBMExtal = dummy;
+        }
+
+   catch ( cms::Exception &e )
+        {
+         std::cerr << "Danilo Problems in generating central crystal EBDetId object : " 
+                   << "RunNb= " << run 
+                   << " EvtNb= " << event 
+                   << " XtalNb= " << xtalNum <<std::endl ;
+         return;
+        }
+
+   // Danilo: End of the try-catch schema
 
    std::cout << "[CR]\n" ;
    // loop over the 7x7 matrix
@@ -259,7 +281,7 @@ DumpADC::analyze( const edm::Event& iEvent, const edm::EventSetup& iSetup )
        Int_t column = icry % 7 ;
        try
            {
-             EBDetId tempo (EBMExtal.ieta ()+row-3, 
+             EBDetId tempo (EBMExtal.ieta ()+row-3,
                             EBMExtal.iphi ()+column-3, 
                             EBDetId::ETAPHIMODE) ;
 
@@ -273,8 +295,8 @@ DumpADC::analyze( const edm::Event& iEvent, const edm::EventSetup& iSetup )
                }
               else amplitude [icry] = 0. ;               
            }
-       catch ( std::runtime_error &e )
-           {
+       catch ( cms::Exception &e )
+	    {
              amplitude[icry] = 0. ;
              std::cerr << "Cannot get amplitude" << std::endl ;
            }
