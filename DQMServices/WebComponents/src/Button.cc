@@ -11,5 +11,5 @@ void Button::printHTML(xgi::Output *out)
     .set("value", name.c_str())
     .set("onclick", js_command.c_str()) << std::endl;
 
-  *out << cgicc::div()   << std::endl;
+  *out << cgicc::div() << std::endl;
 }
