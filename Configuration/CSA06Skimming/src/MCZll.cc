@@ -126,20 +126,17 @@ bool MCZll::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
       if (filter_)
 	iEvent.put(bare_product);
       nAccepted_++;
-      //    std::cout << "+++++++++++++++++++++++++++++++++++++++++++++++++"<< std::endl;
+      //      std::cout << "+++++++++++++++++++++++++++++++++++++++++++++++++"<< std::endl;
       LogDebug("MCZll") << "Event " << iEvent.id().event()  << " accepted" << std::endl; 
-      //    std::cout << "+++++++++++++++++++++++++++++++++++++++++++++++++"<< std::endl;
+      //      std::cout << "+++++++++++++++++++++++++++++++++++++++++++++++++"<< std::endl;
       //       myGenEvent->print(); 
       delete myGenEvent;   
-      delete zEvent;
       return true; 
     } 
-  else 
-    { 
-      delete myGenEvent;   
-      delete zEvent;
-      return false;
-    }
+
+  delete myGenEvent;   
+  delete zEvent;
+  return false;
 
 
 }
