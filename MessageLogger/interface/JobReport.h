@@ -169,7 +169,13 @@ namespace edm {
 			    std::string const& moduleLabel,
                             std::string const& guid,
 			    std::vector<std::string> const& branchNames);
-
+      
+     Token inputFileOpened(std::string const& physicalFileName,
+			    std::string const& logicalFileName,
+			    std::string const& catalog,
+			    std::string const& inputSourceClassName,
+			    std::string const& moduleLabel,
+			    std::vector<std::string> const& branchNames);
       /// Report that the event with the given id has been read from
       /// the file identified by the given Token.
       void eventReadFromFile(Token fileToken, edm::EventID const& id);
@@ -188,6 +194,12 @@ namespace edm {
 			     std::string const& outputModuleClassName,
 			     std::string const& moduleLabel,
 			     std::string const& guid,
+			     std::vector<std::string> const& branchNames);
+      Token outputFileOpened(std::string const& physicalFileName,
+			     std::string const& logicalFileName,
+			     std::string const& catalog,
+			     std::string const& outputModuleClassName,
+			     std::string const& moduleLabel,
 			     std::vector<std::string> const& branchNames);
 
       /// Report that the event with the given id has been written to
