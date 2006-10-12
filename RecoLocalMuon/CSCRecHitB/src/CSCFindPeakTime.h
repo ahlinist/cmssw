@@ -33,7 +33,12 @@ class CSCFindPeakTime
   ~CSCFindPeakTime(){}; 
   
   /// Member functions
-  void FindPeakTime( const int& tmax, const float* adc, float& t_peak, std::vector<float>& adcsFit ); 
+
+  /// Finding the peak time and zeroth time
+  bool FindPeakTime( const int& tmax, const float* adc, float& t_zero, float& t_peak ); 
+
+  /// Fitting the charge for a given t_zero and t_peak
+  void FitCharge( const int& tmax, const float* adc, const float& t_zero, const float& t_peak, std::vector<float>& adcsFit );
   
  private:
   

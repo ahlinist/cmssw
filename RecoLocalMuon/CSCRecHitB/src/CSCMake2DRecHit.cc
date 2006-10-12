@@ -1,8 +1,10 @@
 // This is CSCMake2DRecHit
 
 #include <RecoLocalMuon/CSCRecHitB/src/CSCMake2DRecHit.h>
+#include <RecoLocalMuon/CSCRecHitB/src/CSCStripCrosstalk.h>
+#include <RecoLocalMuon/CSCRecHitB/src/CSCStripNoiseMatrix.h>
 #include <RecoLocalMuon/CSCRecHitB/src/CSCFitXonStripWithGatti.h>
-
+#include <RecoLocalMuon/CSCRecHitB/src/probab.h>
 
 #include <DataFormats/MuonDetId/interface/CSCDetId.h>
 #include <DataFormats/CSCRecHit/interface/CSCStripHit.h>
@@ -12,6 +14,11 @@
 #include <Geometry/CSCGeometry/interface/CSCLayer.h>
 #include <Geometry/CSCGeometry/interface/CSCChamberSpecs.h>
 #include <Geometry/CSCGeometry/interface/CSCLayerGeometry.h>
+
+#include "CondFormats/CSCObjects/interface/CSCcrosstalk.h"
+#include "CondFormats/DataRecord/interface/CSCcrosstalkRcd.h"
+#include "CondFormats/CSCObjects/interface/CSCNoiseMatrix.h"
+#include "CondFormats/DataRecord/interface/CSCNoiseMatrixRcd.h"
 
 #include <Geometry/Vector/interface/LocalPoint.h>
 
@@ -27,12 +34,24 @@
 CSCMake2DRecHit::CSCMake2DRecHit(const edm::ParameterSet& ps){
     
   debug                      = ps.getUntrackedParameter<bool>("CSCDebug");
+  isData                     = ps.getUntrackedParameter<bool>("CSCIsRunningOnData");
   stripWireDeltaTime         = ps.getUntrackedParameter<int>("CSCstripWireDeltaTime");
   useGatti                   = ps.getUntrackedParameter<bool>("CSCUseGattiFit");
   maxGattiChi2               = ps.getUntrackedParameter<double>("CSCMaxGattiChi2");
 
+  stripCrosstalk_            = new CSCStripCrosstalk( ps );
+  stripNoiseMatrix_          = new CSCStripNoiseMatrix( ps );
   xFitWithGatti_             = new CSCFitXonStripWithGatti( ps );
+
 }   
+
+
+CSCMake2DRecHit::~CSCMake2DRecHit() {
+  
+  delete stripCrosstalk_;
+  delete stripNoiseMatrix_;
+  delete xFitWithGatti_;
+}
 
 
 /* hitFromStripAndWire
@@ -40,13 +59,34 @@ CSCMake2DRecHit::CSCMake2DRecHit(const edm::ParameterSet& ps){
  */
 CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLayer* layer,
                                                  const CSCWireHit& wHit, const CSCStripHit& sHit){
-  
+
+  if (debug) std::cout <<"[CSCMake2DRecHit::hitFromStripAndWire] creating 2-D hit" << std::endl;  
+
   // Cache layer info for ease of access
   layer_         = layer;
   layergeom_     = layer_->geometry();
   specs_         = layer->chamber()->specs();
   int this_layer = id.layer();
   
+  // Fill x-talk and noise matrix at once:
+  for ( int i = 0; i < 100; i++ ) {
+    slopeRight[i] = 0.;
+    slopeLeft[i]  = 0.;
+    interRight[i] = 0.;
+    interLeft[i]  = 0.;
+  }
+  if ( isData ) {
+    if (debug) std::cout <<"[CSCMake2DRecHit::hitFromStripAndWire] Getting x-talks" << std::endl;
+    stripCrosstalk_->setCrossTalk( xtalk_ );
+    stripCrosstalk_->getCrossTalk( id, slopeLeft, interLeft, slopeRight, interRight );
+    if (debug) std::cout <<"[CSCMake2DRecHit::hitFromStripAndWire] Getting noise matrix" << std::endl;
+    stripNoiseMatrix_->setNoiseMatrix( noise_ );
+    stripNoiseMatrix_->getNoiseMatrix( id, nMatrix ); 
+  } else {
+    for ( int i = 0; i < 1500; i++ ) 
+      nMatrix.push_back( 0. );
+  }
+
   double sigma, chisq, prob;
   chisq = 0.00;
   prob  = 1.00;
@@ -199,15 +239,27 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
     float x_to_gatti = lp6.x();   
     y = lp6.y();
     float x_fit;
-    double sigma_fit, chisq_fit, prob_fit;
-    xFitWithGatti_->findXOnStrip( layer_, sHit, x_to_gatti, stripWidth, x_fit, sigma_fit, chisq_fit, prob_fit );
+    double sigma_fit, chisq_fit;
+
+    std::vector<float> xtalks, nmatrix;
+    for ( int j = centerStrip -2; j < centerStrip + 1; j++) {  // Index of strip is starts at 1 whereas array 
+      xtalks.push_back(slopeLeft[j]);                          // starts at 0 --> make use of this here
+      xtalks.push_back(interLeft[j]);
+      xtalks.push_back(slopeRight[j]);
+      xtalks.push_back(slopeRight[j]);
+      for ( int k = 0; k < 15; k++ ) nmatrix.push_back(nMatrix[j*15 + k]);
+    }   
+
+    xFitWithGatti_->findXOnStrip( layer_, sHit, x_to_gatti, stripWidth, xtalks, nmatrix, x_fit, sigma_fit, chisq_fit );
 
     if (debug) std::cout << "Centroid x, Gatti x, diff " << x << " " << x_fit << " " << x-x_fit << std::endl;
 
     if (chisq_fit < maxGattiChi2 ) {
       x     = x_fit;
       sigma = sigma_fit;
-      prob  = prob_fit;
+      chisq = chisq_fit;
+      int ndof = 5;
+      prob  = probab(ndof, chisq_fit);
     }
   }
   LocalPoint lp0(x, y);

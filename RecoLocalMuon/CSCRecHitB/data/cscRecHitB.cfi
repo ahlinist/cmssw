@@ -3,7 +3,7 @@
 module csc2DRecHits = CSCRecHitBProducer {
 
      untracked bool CSCIsRunningOnData           = true
-     untracked bool CSCDebug                     = true
+     untracked bool CSCDebug                     = false
      # Mapping file for MTCC CSC chambers
      FileInPath theMappingFile = "RecoLocalMuon/CSCRecHitB/data/csc_slice_test_map.txt"
 #     string CSCStripDigiProducer                 = "muonCSCDigis"
@@ -29,10 +29,9 @@ module csc2DRecHits = CSCRecHitBProducer {
      untracked double CSCStripClusterChargeCut   = 30.
      untracked int32  CSCStripClusterSize        = 5
      untracked bool   CSCUseGattiFit             = true
-     untracked bool   CSCUse3x3Gatti             = true
      untracked double CSCMaxGattiChi2            = 1000.
 
-     untracked bool   CSCuseCleanStripCollection = false
+     untracked bool   CSCuseCleanStripCollection = true
      untracked int32  CSCStripminLayersApart     = 2
      untracked double CSCStripMaxDistance        = 5.
      untracked double CSCStripCloseToSegment     = 8.

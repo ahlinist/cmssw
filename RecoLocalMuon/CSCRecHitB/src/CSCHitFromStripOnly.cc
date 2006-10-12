@@ -2,7 +2,7 @@
 
 #include <RecoLocalMuon/CSCRecHitB/src/CSCHitFromStripOnly.h>
 #include <RecoLocalMuon/CSCRecHitB/src/CSCPeakBinOfStripPulse.h>
-#include <RecoLocalMuon/CSCRecHitB/src/CSCCalibrateStrip.h>
+#include <RecoLocalMuon/CSCRecHitB/src/CSCStripGain.h>
 
 #include <RecoLocalMuon/CSCRecHitB/src/CSCStripData.h>
 
@@ -17,10 +17,10 @@
 
 #include "CondFormats/CSCObjects/interface/CSCGains.h"
 #include "CondFormats/DataRecord/interface/CSCGainsRcd.h"
-#include "CondFormats/CSCObjects/interface/CSCcrosstalk.h"
-#include "CondFormats/DataRecord/interface/CSCcrosstalkRcd.h"
-#include "CondFormats/CSCObjects/interface/CSCNoiseMatrix.h"
-#include "CondFormats/DataRecord/interface/CSCNoiseMatrixRcd.h"
+//#include "CondFormats/CSCObjects/interface/CSCcrosstalk.h"
+//#include "CondFormats/DataRecord/interface/CSCcrosstalkRcd.h"
+//#include "CondFormats/CSCObjects/interface/CSCNoiseMatrix.h"
+//#include "CondFormats/DataRecord/interface/CSCNoiseMatrixRcd.h"
 
 #include <FWCore/MessageLogger/interface/MessageLogger.h>
 #include <FWCore/Utilities/interface/Exception.h>
@@ -40,14 +40,14 @@ CSCHitFromStripOnly::CSCHitFromStripOnly( const edm::ParameterSet& ps ) {
   theThresholdForCluster     = ps.getUntrackedParameter<double>("CSCStripClusterChargeCut");
 
   pulseheightOnStripFinder_  = new CSCPeakBinOfStripPulse( ps );
-  calibrateStrip_            = new CSCCalibrateStrip( ps );
+  stripGain_                 = new CSCStripGain( ps );
   
 }
 
 
 CSCHitFromStripOnly::~CSCHitFromStripOnly() {
   delete pulseheightOnStripFinder_;
-  delete calibrateStrip_;
+  delete stripGain_;
 }
 
 
@@ -77,16 +77,16 @@ std::vector<CSCStripHit> CSCHitFromStripOnly::runStrip( const CSCDetId& id, cons
   // Initialize weights to 1. and crosstalk to 0., in case database isn't populated or using MC
   for ( int i = 0; i < 100; i++) {
     gainWeight[i] = 1.;     
-    slopeRight[i] = 0.;
-    slopeLeft[i]  = 0.;
-    interRight[i] = 0.;
-    interLeft[i]  = 0.;
+//    slopeRight[i] = 0.;
+//    slopeLeft[i]  = 0.;
+//    interRight[i] = 0.;
+//    interLeft[i]  = 0.;
   }  
   if (isData) {
-    calibrateStrip_->setCalibration( gains_, xtalk_, noise_ );
-    float globalGainAvg = calibrateStrip_->getStripGainAvg();
-    calibrateStrip_->getStripGain( id_, globalGainAvg, gainWeight );
-    calibrateStrip_->getCrossTalk( id_, slopeLeft, interLeft, slopeRight, interRight );
+    stripGain_->setCalibration( gains_ );
+    float globalGainAvg = stripGain_->getStripGainAvg();
+    stripGain_->getStripGain( id_, globalGainAvg, gainWeight );
+//    calibrateStrip_->getCrossTalk( id_, slopeLeft, interLeft, slopeRight, interRight );
   }
 
   
@@ -242,12 +242,12 @@ void CSCHitFromStripOnly::fillPulseHeights( const CSCStripDigiCollection::Range&
       if ( id_.station() == 1 && id_.ring() == 4 ) {
         for ( int j = 0; j < 3; j++ ) {
           thePulseHeightMap[thisChannel+16*j] = CSCStripData( float(thisChannel+16*j), height[0], height[1], height[2], height[3], tmax);
-          correctForCrosstalk( rstripd, thisChannel );
+//          correctForCrosstalk( rstripd, thisChannel );
           thePulseHeightMap[thisChannel+16*j] *= gainWeight[thisChannel-1];
         }
       } else {
         thePulseHeightMap[thisChannel] = CSCStripData( float(thisChannel), height[0], height[1], height[2], height[3], tmax);
-        correctForCrosstalk( rstripd, thisChannel );
+//        correctForCrosstalk( rstripd, thisChannel );
         thePulseHeightMap[thisChannel] *= gainWeight[thisChannel-1];
       }
     }
@@ -330,10 +330,12 @@ float CSCHitFromStripOnly::findHitOnStripPosition( const std::vector<CSCStripDat
 }
 
 
-/* correctForCrosstalk
+/*  Moved x-Talk stuff into Gatti fitter for now !!!
  *
- */
-void CSCHitFromStripOnly::correctForCrosstalk( const CSCStripDigiCollection::Range& rstripd, const unsigned& theChannel ) {
+ * correctForCrosstalk
+ *
+ *
+ * void CSCHitFromStripOnly::correctForCrosstalk( const CSCStripDigiCollection::Range& rstripd, const unsigned& theChannel ) {
 
   if ( thePulseHeightMap[theChannel].y() < 5. ) return;
 
@@ -408,10 +410,10 @@ void CSCHitFromStripOnly::correctForCrosstalk( const CSCStripDigiCollection::Ran
 }
 
 
-/* crosstalkLevel
+ * crosstalkLevel
  *
  * This is how crosstalk was implemented in MC (digi)
- */
+ *
 float CSCHitFromStripOnly::crosstalkLevel( const CSCStripDigi& digi, const int& tbin ) {
   // Don't even bother for small signals
   std::vector<int> sca = digi.getADCCounts();
@@ -439,3 +441,4 @@ float CSCHitFromStripOnly::crosstalkLevel( const CSCStripDigi& digi, const int& 
   return theCrosstalkLevel * (sca[tbin]-pedestal) * slope;
 }
 
+*/

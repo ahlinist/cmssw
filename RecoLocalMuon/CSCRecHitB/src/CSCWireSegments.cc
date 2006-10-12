@@ -75,15 +75,10 @@ CSCWireHitCollection CSCWireSegments::cleanWireHits(const CSCWireHitCollection& 
     CSCWireHitCollection::range range = raw_whit.get(acc.cscChamber(*chIt));
     
     for ( CSCWireHitCollection::const_iterator raw_whit = range.first; raw_whit != range.second; raw_whit++)
-      cscWireHit.push_back(*raw_whit);
-    
-//    if (debug) std::cout <<"[CSCWireSegments::cleanWireHits] found " << cscWireHit.size() << " wire hits in this chamber" << std::endl;
-    
+      cscWireHit.push_back(*raw_whit);    
     
     // Try to build segment
     findWireSegments(cscWireHit);
-    
-//    if (debug) std::cout << "Will now store hits from segments into new wire hit collection" << std::endl;
     
     // Order hits on segments per layer # and store to Collection
     for ( int layer = 1; layer < 7; layer++ ) {
@@ -132,10 +127,7 @@ void CSCWireSegments::findWireSegments(const ChamberHitContainer& wirehit) {
   for ( unsigned i = 0; i < wirehit.size(); i++ ) usedHits[i] = 0; 
   
   if ( (ie - ib) < minWireHitsPerSegment) { 
-    storeLeftOverHits( wirehit );   // not enough hits to build segment, but store hits
-//    if (debug) std::cout << "[CSCWireSegments::findWireSegments] Not enough hits to build segments" << std::endl;
-//    if (debug) std::cout << "[CSCWireSegments::findWireSegments] Therefore just store wire hits " << std::endl;
-    
+    if (storeLeftOvers) storeLeftOverHits( wirehit );   // not enough hits to build segment, but store hits
     return;
   }
   
@@ -164,14 +156,6 @@ void CSCWireSegments::findWireSegments(const ChamberHitContainer& wirehit) {
 	
 	bool segok = false;
 	const CSCWireHit& h2 = *i2;					
-	unsigned L1 = h1.cscDetId().layer();
-	float W1 = h1.wHitPos(); 
-	unsigned L2 = h2.cscDetId().layer(); 
-	float W2 = h2.wHitPos(); 
-	
-//	if (debug) std::cout << "[CSCWireSegments::findWireSegments] start proto segment from hits "
-//			     << "h1 in layer: " << L1 <<  " wire #: " << W1 << "   "
-//			     << "h2 in layer: " << L2 <<  " wire #: " << W2 << std::endl;
 	
 	if ( !addHit(h1, layer1) ) continue;
 	if ( !addHit(h2, layer2) ) continue;
@@ -183,12 +167,10 @@ void CSCWireSegments::findWireSegments(const ChamberHitContainer& wirehit) {
 	segok = isSegmentGood(wirehit);
 	if ( segok ) {
 	  if ( proto_segment.empty() ) {
-//	    if (debug) std::cout << "[CSCWireSegments::findWireSegments] No segment found" << std::endl;
 	    proto_segment.clear();
 	  } else {
 	    // Flag used hits
 	    flagHitsAsUsed(wirehit);
-//	    if (debug) std::cout <<"[CSCWireSegments::findWireSegments] Found a segment" << std::endl;
 	    storeChamberHits();
 	    proto_segment.clear();
 	  }
@@ -397,7 +379,6 @@ void CSCWireSegments::tryAddingHitsToSegment( const ChamberHitContainer& wirehit
 	break;
       }
       
-
       if ( isHitNearSegment( h ) ) {
 	if ( hasHitOnLayer(layer) ) {
 	  // If segment > 2 hits, try changing endpoints
@@ -535,7 +516,6 @@ void CSCWireSegments::increaseProtoSegment(const CSCWireHit& h, int layer) {
   if ( diff >= -1. * proto_poca && diff <= proto_poca ) ok = addHit(h, layer);
   
   if ( ok ) {
-//    if (debug) std::cout << "[CSCWireSegment::increaseProtoSegment] Hit in new layer: added to segment, new chi2: " << proto_Chi2 << std::endl;
     
   } else {
     proto_Chi2      = old_proto_Chi2;
