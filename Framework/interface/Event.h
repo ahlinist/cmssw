@@ -224,7 +224,7 @@ namespace edm {
 
     // Also isolates the Event class
     // from the EventPrincipal class.
-    EDProductGetter * prodGetter() const;
+    EDProductGetter const* prodGetter() const;
     //------------------------------------------------------------
     // Copying and assignment of Events is disallowed
     //

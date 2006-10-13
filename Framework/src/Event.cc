@@ -146,7 +146,7 @@ namespace edm {
     return it->second;
   }
 
-  EDProductGetter *
+  EDProductGetter const*
   Event::prodGetter() const{
     return &ep_;
   }
