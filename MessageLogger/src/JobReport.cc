@@ -353,6 +353,16 @@ namespace edm
 
     }
 
+    void
+    JobReport::overrideContributingInputs(Token outputToken, 
+					  std::vector<Token> inputTokens)
+    {
+       // Get the required output file instance using the token
+      JobReport::OutputFile& f = impl_->getOutputFileForToken(outputToken);
+      // override its contributing inputs data
+      f.contributingInputs = inputTokens;
+    }
+
     void 
     JobReport::reportSkippedEvent(edm::EventID const& id)
     {

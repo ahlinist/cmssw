@@ -255,7 +255,12 @@ namespace edm {
       void reportTimingInfo(std::map<std::string, double> & timingData);
 
       /// Report Storage Statistics
-	void reportStorageStats(std::string & data); 
+      void reportStorageStats(std::string & data); 
+
+      /// Override the list of input files seen by an output file
+      /// for use with EdmFastMerge 
+      void overrideContributingInputs(Token outputToken, std::vector<Token> inputTokens);
+      
 
    protected:
       boost::scoped_ptr<JobReportImpl>& impl() {return impl_;}
