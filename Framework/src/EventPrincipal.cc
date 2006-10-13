@@ -17,24 +17,6 @@ using namespace std;
 
 namespace edm {
 
-  EventPrincipal::EventPrincipal() :
-    aux_(),
-    processHistoryID_(),
-    processHistoryPtr_(boost::shared_ptr<ProcessHistory>(new ProcessHistory)),
-    groups_(),
-    branchDict_(),
-    productDict_(),
-    typeDict_(),
-    inactiveGroups_(),
-    inactiveBranchDict_(),
-    inactiveProductDict_(),
-    inactiveTypeDict_(),
-    preg_(0),
-    store_(),
-    unscheduledHandler_()
-  { }
-
-
   EventPrincipal::EventPrincipal(EventID const& evtID,
 				 Timestamp const& theTime,
                                  ProductRegistry const& reg,

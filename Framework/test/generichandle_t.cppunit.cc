@@ -54,7 +54,10 @@ void testGenericHandle::failWrongType() {
 }
 void testGenericHandle::failgetbyLabelTest() {
 
-  edm::EventPrincipal ep;
+  edm::EventID id;
+  edm::Timestamp time;
+  edm::ProductRegistry preg;
+  edm::EventPrincipal ep(id, time, preg);
   ep.addToProcessHistory(edm::ProcessConfiguration("PROD", edm::ParameterSetID(), edm::getReleaseVersion(), edm::getPassID()));
   edm::GenericHandle h("edmtest::DummyProduct");
   try {

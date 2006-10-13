@@ -56,11 +56,6 @@ namespace edm {
     typedef boost::shared_ptr<const Group>         SharedConstGroupPtr;
     typedef std::vector<BasicHandle>               BasicHandleVec;
 
-    // This default constructor should go away, because a default
-    // constructed EventPrincipal does not behave correctly. Test use
-    // it, and those tests must be modified.
-    EventPrincipal();
-    
     EventPrincipal(EventID const& evtID,
                    Timestamp const& theTime,
                    ProductRegistry const& reg,
