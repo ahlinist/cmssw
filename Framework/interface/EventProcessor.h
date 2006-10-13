@@ -253,7 +253,7 @@ class EDLooperHelper;
     StatusCode run_p(unsigned long numberToProcess,
 		     event_processor::Msg m);
     StatusCode doneAsync(event_processor::Msg m);
-    EventHelperDescription runOnce(unsigned long numberToProcess);
+    EventHelperDescription runOnce();
     
     void rewind();
 
