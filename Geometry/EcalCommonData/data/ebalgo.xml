@@ -109,13 +109,13 @@
     -->
 
     <Vector  name="SpmHere" type="numeric" nEntries="2*[ebalgo:NSpmPerHalf]">
-      1, 1, 1, 1, 1, 1,
-      1, 1, 1, 1, 1, 1,
-      1, 1, 1, 1, 1, 1,
+      0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0,
 
-      1, 1, 1, 1, 1, 1,
-      1, 1, 1, 1, 1, 1,
-      1, 1, 1, 1, 1, 1
+      0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 1
     </Vector>
 
     <!-- These are for cut BOXes which trim off the sides/corners of
@@ -360,9 +360,7 @@
     <Numeric name="GrilleZSpace"     value="50*mm" />
     <String  name="GrilleMat"        value="materials:Aluminium"  />
     <Vector  name="GrilleHeight" type="numeric" nEntries="8">
-<!--      120*mm, 140*mm, 140*mm, 169*mm, 169*mm, 195*mm, 195*mm, 224*mm
--->
-      140*mm, 160*mm, 160*mm, 189*mm, 189*mm, 215*mm, 215*mm, 244*mm
+      146*mm, 160*mm, 160*mm, 189*mm, 189*mm, 215*mm, 215*mm, 244*mm
     </Vector>
     <Vector  name="GrilleZOff" type="numeric" nEntries="8">
       0*mm, 680*mm,  720*mm, 1310*mm,  1350*mm, 2040*mm,  2080*mm, 2854*mm
@@ -375,7 +373,6 @@
     <Numeric name="BackPipeThick"    value="  2*mm" />
     <String  name="BackPipeWaterMat"      value="materials:E_Water"  />
     <String  name="BackPipeMat"           value="materials:StainlessSteel"  />
-
 
     <Vector  name="BackCoolName"     type="string" nEntries="4">
       EBCOOL1, EBCOOL2, EBCOOL3, EBCOOL4
@@ -439,7 +436,7 @@
 
 
     <Vector  name="BackCoolLength" type="numeric" nEntries="4">
-      530*mm, 441*mm,  543*mm, 606*mm
+      530*mm, 441*mm,  553*mm, 606*mm
     </Vector>
 
     <Vector  name="BackMiscThick" type="numeric" nEntries="20">
@@ -473,6 +470,37 @@
     <Vector  name="PatchPanelMat" type="string" nEntries="5">
       materials:Aluminium, materials:E_Cables,
       materials:E_G10, materials:E_Silicon, materials:E_Copper
+    </Vector>
+
+
+    <String  name="DryAirTubeName"      value="EDRY"  />
+    <Numeric name="DryAirTubeNum"       value="9"     />
+    <Numeric name="DryAirTubeInnDiam"   value="5*mm"  />
+    <Numeric name="DryAirTubeOutDiam"   value="6*mm"  />
+    <String  name="DryAirTubeMat"       value="materials:E_Copper" />
+
+    <String  name="MBCoolTubeName"      value="EMBC"  />
+    <Numeric name="MBCoolTubeInnDiam"   value="5*mm"  />
+    <Numeric name="MBCoolTubeOutDiam"   value="6*mm"  />
+    <String  name="MBCoolTubeMat"       value="materials:StainlessSteel" />
+
+    <String  name="MBManifName"      value="EMANF"  />
+    <Numeric name="MBManifInnDiam"   value="13*mm"  />
+    <Numeric name="MBManifOutDiam"   value="15*mm"  />
+    <String  name="MBManifMat"       value="materials:StainlessSteel" />
+
+    <Vector  name="MBLyrThick" type="numeric" nEntries="5">
+      1*mm, 2.6*mm, 2*mm, 1*mm, 0.1*mm
+    </Vector>
+    <Vector  name="MBLyrName" type="string" nEntries="5">
+      EMBL1, EMBL2, EMBL3, EMBL4, EMBL5
+    </Vector>
+    <Vector  name="MBLyrMat" type="string" nEntries="5">
+      materials:E_Air,
+      materials:Aluminium, 
+      materials:E_G10, 
+      materials:E_Silicon, 
+      materials:E_Copper
     </Vector>
 
   </Algorithm>
