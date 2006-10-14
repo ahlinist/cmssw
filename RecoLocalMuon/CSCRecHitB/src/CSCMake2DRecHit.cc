@@ -237,9 +237,28 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
   // Here try to improve the strip position by applying Gatti fitter
 
   if ( useGatti ) {   
-                                     
-    // Local position at center of strip  --> this was determined above
-    float x_to_gatti = x1;   
+
+    LocalPoint lp55  = layergeom_->stripWireIntersection( centerStrip, the_wire1);
+    LocalPoint lp555 = layergeom_->stripWireIntersection( centerStrip, the_wire2);
+    x1 = lp55.x();
+    y1 = lp55.y();
+    x2 = lp555.x();
+    y2 = lp555.y();
+
+    x1   = (x1 + wgoffset * (x2 - x1) );
+    y1   = (y1 + wgoffset * (y2 - y1) );
+  
+    LocalPoint lp5(x1, y1);
+                                   
+    LocalPoint lp6;
+    keepHit = keepHitInFiducial( lp5, lp6 );
+    if ( !keepHit ) { 
+      if (debug) std::cout <<"[CSCMake2DRecHit::hitFromStripAndWire] failedHit" << std::endl;
+      return failedHit;
+    }	
+
+    // Local position at center of strip
+    float x_to_gatti = lp6.x();   
     float x_fit;
     double sigma_fit, chisq_fit;
 
