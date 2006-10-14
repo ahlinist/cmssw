@@ -53,7 +53,7 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCLayer* layer, const CSCStri
 
   // Initialize output parameters just in case the fit fails  
   xGatti = xCenterStrip;  
-  sigma = chisq= 9999.;
+  sigma = chisq = 9999.;
 
   int nStrips = stripHit.clusterSize();
   int CenterStrip = nStrips/2 + 1;   
@@ -99,8 +99,8 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCLayer* layer, const CSCStri
   }
 
   // Load in x-talks:
-  float dt = 50. * tmax - t_peak;
-  if ( dt < 0 ) dt = 0.;
+  float dt = 50. * tmax - t_peak - t_zero;
+
   for ( int t = 0; t < 3; t++ ) {
     xt_l[0][t] = xtalks[0] * (50.* (t-1) + dt) + xtalks[1];
     xt_r[0][t] = xtalks[2] * (50.* (t-1) + dt) + xtalks[3];
@@ -121,6 +121,10 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCLayer* layer, const CSCStri
     a23[istrip] = nmatrix[tbin+4+15*istrip];
     a33[istrip] = nmatrix[tbin+6+15*istrip];
   }
+
+  // Set Matrix used in Gatti fitting
+  setupMatrix();
+
 
   // Run Gatti for offset = 0
   runGattiFit( 0 );

@@ -63,18 +63,28 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
   if (debug) std::cout <<"[CSCMake2DRecHit::hitFromStripAndWire] creating 2-D hit" << std::endl;  
 
   // Cache layer info for ease of access
-  layer_         = layer;
-  layergeom_     = layer_->geometry();
-  specs_         = layer->chamber()->specs();
+  layer_        = layer;
+  layergeom_    = layer_->geometry();
+  specs_        = layer->chamber()->specs();
+  id_           = id;
   int this_layer = id.layer();
-  
+
+  double sigma, chisq, prob;
+  sigma = chisq = 0.00;
+  float dx2, dy2, dxy;
+  dx2 = dy2 = dxy = 0.;
+  prob  = 1.00;
+    
+  CSCRecHit2D::ChannelContainer channels;
+
+  // In case hit falls outside fiducial volume of chamber:
+  bool keepHit = true;
+  LocalPoint lpFailed(-999., -999.);
+  LocalError localerrFailed(dx2, dxy, dy2);  
+  CSCRecHit2D failedHit( id, lpFailed, localerrFailed, channels, chisq, prob );
+
+
   // Fill x-talk and noise matrix at once:
-  for ( int i = 0; i < 100; i++ ) {
-    slopeRight[i] = 0.;
-    slopeLeft[i]  = 0.;
-    interRight[i] = 0.;
-    interLeft[i]  = 0.;
-  }
   if ( isData ) {
     if (debug) std::cout <<"[CSCMake2DRecHit::hitFromStripAndWire] Getting x-talks" << std::endl;
     stripCrosstalk_->setCrossTalk( xtalk_ );
@@ -83,15 +93,15 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
     stripNoiseMatrix_->setNoiseMatrix( noise_ );
     stripNoiseMatrix_->getNoiseMatrix( id, nMatrix ); 
   } else {
-    for ( int i = 0; i < 1500; i++ ) 
-      nMatrix.push_back( 0. );
+    for ( int i = 0; i < 1500; i++ ) nMatrix.push_back( 0. );
+    for ( int i = 0; i < 100; i++ ) {
+      slopeRight[i] = 0.;
+      slopeLeft[i]  = 0.;
+      interRight[i] = 0.026;  // From MC digi...
+      interLeft[i]  = 0.026;
+    }
   }
 
-  double sigma, chisq, prob;
-  chisq = 0.00;
-  prob  = 1.00;
-  
-  CSCRecHit2D::ChannelContainer channels;
   
   // Find wire hit position and wire properties
   float wireg = wHit.wHitPos();                            // Position in terms of wire group #
@@ -118,7 +128,6 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
   int centerStrip = ch;
   double sAngle   = layergeom_->stripAngle(ch);
 
-
   // If at the edge, then used 1 strip cluster only :
   if ( ch <= 1 || ch >= specs_->nStrips() ) {
 
@@ -138,8 +147,12 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
     // Ensure that y position is within active area (ME_11 chambers):
     // If not, use upper (ME_1b)/lower (ME_1a) edge
     LocalPoint lp0;
-    keepHitInFiducial( lp3, lp0 );
+    keepHit = keepHitInFiducial( lp3, lp0 );
 
+    if ( !keepHit ) { 
+      if (debug) std::cout <<"[CSCMake2DRecHit::hitFromStripAndWire] failedHit" << std::endl;
+      return failedHit;
+    }
     sigma =  layergeom_->stripPitch(lp0)/sqrt(12);  
     double dx = sigma/sin(sAngle);
     
@@ -151,9 +164,9 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
     float ssinw = dx * sin(wAngle);
     float scosw = dx * cos(wAngle);
     
-    float dx2 = (scosw*scosw + wcoss*wcoss)/sin2angdif;
-    float dy2 = (ssinw*ssinw + wsins*wsins)/sin2angdif;
-    float dxy = (scosw*ssinw + wcoss*wsins)/sin2angdif;
+    dx2 = (scosw*scosw + wcoss*wcoss)/sin2angdif;
+    dy2 = (ssinw*ssinw + wsins*wsins)/sin2angdif;
+    dxy = (scosw*ssinw + wcoss*wsins)/sin2angdif;
     
     LocalError localerr(dx2, dxy, dy2);
     
@@ -197,10 +210,17 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
   // Ensure that y position is within active area (ME_11 chambers):
   // If not, use upper (ME_1b)/lower (ME_1a) edge
   LocalPoint lp3;
-  keepHitInFiducial( lp1, lp3 );
+  keepHit = keepHitInFiducial( lp1, lp3 );
+  if ( !keepHit ) { 
+    if (debug) std::cout <<"[CSCMake2DRecHit::hitFromStripAndWire] failedHit" << std::endl;
+    return failedHit;
+  }
   LocalPoint lp4;
-  keepHitInFiducial( lp2, lp4 );
-
+  keepHit = keepHitInFiducial( lp2, lp4 );
+  if ( !keepHit ) { 
+    if (debug) std::cout <<"[CSCMake2DRecHit::hitFromStripAndWire] failedHit" << std::endl;
+    return failedHit;
+  }
 
   // Use center of gravity to determine local x and y position:
   x1 = lp3.x();
@@ -233,7 +253,11 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
     LocalPoint lp5(x1, y1);
                                    
     LocalPoint lp6;
-    keepHitInFiducial( lp5, lp6 );
+    keepHit = keepHitInFiducial( lp5, lp6 );
+    if ( !keepHit ) { 
+      if (debug) std::cout <<"[CSCMake2DRecHit::hitFromStripAndWire] failedHit" << std::endl;
+      return failedHit;
+    }	
 
     // Local position at center of strip
     float x_to_gatti = lp6.x();   
@@ -277,9 +301,9 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
   float ssinw = dx * sin(wAngle);
   float scosw = dx * cos(wAngle);
   
-  float dx2 = (scosw*scosw + wcoss*wcoss)/sin2angdif;
-  float dy2 = (ssinw*ssinw + wsins*wsins)/sin2angdif;
-  float dxy = (scosw*ssinw + wcoss*wsins)/sin2angdif;
+  dx2 = (scosw*scosw + wcoss*wcoss)/sin2angdif;
+  dy2 = (ssinw*ssinw + wsins*wsins)/sin2angdif;
+  dxy = (scosw*ssinw + wcoss*wsins)/sin2angdif;
   
   LocalError localerr(dx2, dxy, dy2);
     
@@ -300,15 +324,24 @@ CSCRecHit2D CSCMake2DRecHit::hitFromWireOnly(const CSCDetId& id, const CSCLayer*
   layer_        = layer;
   layergeom_    = layer_->geometry();
   specs_        = layer->chamber()->specs();
+  id_           = id;
   float wAngle  = layergeom_->wireAngle();
-  
   int this_layer= id.layer();
 
+  bool keepHit;
   double sigma, chisq, prob;
-  chisq = 0.00;
+  sigma = chisq = 0.00;
   prob  = 1.00;
-  
+  float dx2, dy2, dxy;
+  dx2 = dy2 = dxy = 0.;
+
   CSCRecHit2D::ChannelContainer channels;
+    
+  // In case hit falls outside fiducial volume of chamber:
+  LocalPoint lpFailed(-999., -999.);
+  LocalError localerrFailed(dx2, dxy, dy2);
+  CSCRecHit2D failedHit( id, lpFailed, localerrFailed, channels, chisq, prob );
+
   
   // Find wire hit position and wire properties
   float wireg = wHit.wHitPos();                            // Position in terms of wire group #
@@ -325,7 +358,13 @@ CSCRecHit2D CSCMake2DRecHit::hitFromWireOnly(const CSCDetId& id, const CSCLayer*
   float x = lp1.x() + wgoffset * ( lp2.x() - lp1.x() ); 
   float y = lp1.y() + wgoffset * ( lp2.y() - lp1.y() ); 
 
-  LocalPoint lp0(x, y);
+  LocalPoint lp0;
+  keepHit = keepHitInFiducial( lp1, lp0 );
+  if ( !keepHit ) { 
+    if (debug) std::cout <<"[CSCMake2DRecHit::hitFromWireOnly] failedHit" << std::endl;
+    return failedHit;
+  }	
+
 
   // Now compute errors properly:
 
@@ -337,9 +376,9 @@ CSCRecHit2D CSCMake2DRecHit::hitFromWireOnly(const CSCDetId& id, const CSCLayer*
 
   // What are the proper error on these ?????
 
-  float dx2 = sigma * sigma;
-  float dy2 = ( lp1.y()-lp2.y() )*( lp1.y()-lp2.y() ) /12.; 
-  float dxy = dx2 + dy2;
+  dx2 = sigma * sigma;
+  dy2 = ( lp1.y()-lp2.y() )*( lp1.y()-lp2.y() ) /12.; 
+  dxy = dx2 + dy2;
 
   LocalError localerr(dx2, dxy, dy2);
 
@@ -363,6 +402,7 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripOnly(const CSCDetId& id, const CSCLayer
   layer_        = layer;
   layergeom_    = layer_->geometry();
   specs_        = layer->chamber()->specs();
+  id_           = id;
 
   int this_layer= id.layer();
 
@@ -441,10 +481,16 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripOnly(const CSCDetId& id, const CSCLayer
 
 
 
-void CSCMake2DRecHit::keepHitInFiducial( LocalPoint& lp1, LocalPoint& lp0 ) {
+/* keepHitInFiducial
+ *
+ * Only useful for ME11 chambers.
+ */
+bool CSCMake2DRecHit::keepHitInFiducial( LocalPoint& lp1, LocalPoint& lp0 ) {
 
-  // Allow extra margin for future tuning etc. For now use 0.2 cm.
-  const float marginAtEdge = 0.2;  
+  bool isInFiducial = true;
+
+  // Allow extra margin for future tuning etc. For now 0.1 cm.
+  float marginAtEdge = 0.1; 
 
   // Initialize parameters needed for correction:
   float x1 = lp1.x();
@@ -453,13 +499,41 @@ void CSCMake2DRecHit::keepHitInFiducial( LocalPoint& lp1, LocalPoint& lp0 ) {
   float wAngle     = layergeom_->wireAngle();      
   float apothem    = layergeom_->length()/2.;
 
+  // Test what type of chambers we are dealing with
+
+  if (id_.station() == 1 && id_.ring() == 4 ) {
+    // Within ME1a chambers, allow hit to be reconstructed below bottom, 
+    // but not above top of chamber
+    if (y1 > apothem + marginAtEdge) {
+      lp0 = lp1;
+      isInFiducial = false;
+      return isInFiducial;
+    } 
+  } else if (id_.station() == 1 && id_.ring() == 1 ) {
+    // Within ME1b chambers, allow hit to be reconstructed above top, 
+    // but not below bottom of chamber
+    if (y1 < - (apothem + marginAtEdge)) {
+      lp0 = lp1;
+      isInFiducial = false;
+      return isInFiducial;
+    }
+
+  } else {
+   // Within all other chambers, wires are parallel to top/bottom of chamber 
+   // so hit should always be within fiducial volume
+   lp0 = lp1;
+   return isInFiducial;
+  }
+
+  // Now deal with ME11 chambers:
+
   // Test if beyond edge of chamber
   if ( fabs(y1) > apothem )  {                                
 
     // beyond bottom of chamber
     if ( y1 < 0. ) {       
 
-      float yNearWire     = apothem + marginAtEdge;           
+      float yNearWire     = apothem + marginAtEdge/cos( wAngle );           
       float xNearWire     = x1 - yNearWire * sin( wAngle );
       LocalPoint lpGetWire( xNearWire, yNearWire );
       float closestWire   = layergeom_->nearestWire( lpGetWire );
@@ -468,7 +542,7 @@ void CSCMake2DRecHit::keepHitInFiducial( LocalPoint& lp1, LocalPoint& lp0 ) {
    // beyond top of chamber      
     } else {            
 
-      float yNearWire     = apothem - marginAtEdge;           
+      float yNearWire     = apothem - marginAtEdge/cos( wAngle );           
       float xNearWire     = x1 + yNearWire * sin( wAngle );
       LocalPoint lpGetwire( xNearWire, yNearWire );
       float closestWire   = layergeom_->nearestWire( lpGetwire );
@@ -479,6 +553,32 @@ void CSCMake2DRecHit::keepHitInFiducial( LocalPoint& lp1, LocalPoint& lp0 ) {
   } else {              
     lp0 = lp1;
   } 
- 
+
+  return isInFiducial;
 }
+
+
+
+/* isHitInFiducial
+ *
+ * Only useful for ME11 chambers.
+ */
+bool CSCMake2DRecHit::isHitInFiducial( const CSCLayer* layer, const CSCRecHit2D& rh ) {
+
+  bool isInFiducial = true;
+
+  // Allow extra margin for future tuning etc.
+  float marginAtEdge = 0.1; 
+
+  const CSCLayerGeometry* layergeom = layer->geometry();
+  
+  float y = rh.localPosition().y();
+  float apothem = layergeom->length()/2.;
+
+  if ( fabs(y) > (apothem+marginAtEdge) ) isInFiducial=false;
+
+  return isInFiducial;
+}
+ 
+ 
 

@@ -44,8 +44,11 @@ class CSCMake2DRecHit
   /// Make pseudo 2D hits when only strip information is available within a layer
   CSCRecHit2D hitFromStripOnly(const CSCDetId& id, const CSCLayer* layer, const CSCStripHit& sHit);
 
-  /// Keep hit within fiducial volume by finding proper wire # if needed 
-  void keepHitInFiducial( LocalPoint& lp1, LocalPoint& lp0 );
+  /// Keep ME11 hit within fiducial volume by looking at proper wire # if possible
+  bool keepHitInFiducial( LocalPoint& lp1, LocalPoint& lp0 );
+
+  /// Test if rechit is in fiducial volume 
+  bool isHitInFiducial( const CSCLayer* layer, const CSCRecHit2D& rh );
 
   /// Load in X-Talks and Noise Matrix
   void setCalibration( const CSCcrosstalk* xtalk,
@@ -55,10 +58,10 @@ class CSCMake2DRecHit
   }
 
  
-  const CSCLayer * layer_;
-  const CSCLayerGeometry * layergeom_;
-  const CSCChamberSpecs * specs_;
-  
+  const CSCLayer*         layer_;
+  const CSCLayerGeometry* layergeom_;
+  const CSCChamberSpecs*  specs_;
+  CSCDetId                id_;  
   
  private:
   
