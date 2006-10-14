@@ -86,10 +86,8 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
 
   // Fill x-talk and noise matrix at once:
   if ( isData ) {
-    if (debug) std::cout <<"[CSCMake2DRecHit::hitFromStripAndWire] Getting x-talks" << std::endl;
     stripCrosstalk_->setCrossTalk( xtalk_ );
     stripCrosstalk_->getCrossTalk( id, slopeLeft, interLeft, slopeRight, interRight );
-    if (debug) std::cout <<"[CSCMake2DRecHit::hitFromStripAndWire] Getting noise matrix" << std::endl;
     stripNoiseMatrix_->setNoiseMatrix( noise_ );
     stripNoiseMatrix_->getNoiseMatrix( id, nMatrix ); 
   } else {
@@ -124,9 +122,10 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
   float strip_pos = sHit.sHitPos();
   int ch = int(strip_pos);
   float strip_offset = float(strip_pos) - ch;
-  if ( strip_offset > 0.5 ) ch++;
+  if ( strip_offset >= 0.5 ) ch++;
   int centerStrip = ch;
   double sAngle   = layergeom_->stripAngle(ch);
+
 
   // If at the edge, then used 1 strip cluster only :
   if ( ch <= 1 || ch >= specs_->nStrips() ) {
@@ -145,7 +144,6 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
     LocalPoint lp3(x, y);
 
     // Ensure that y position is within active area (ME_11 chambers):
-    // If not, use upper (ME_1b)/lower (ME_1a) edge
     LocalPoint lp0;
     keepHit = keepHitInFiducial( lp3, lp0 );
 
@@ -208,7 +206,6 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
   
 
   // Ensure that y position is within active area (ME_11 chambers):
-  // If not, use upper (ME_1b)/lower (ME_1a) edge
   LocalPoint lp3;
   keepHit = keepHitInFiducial( lp1, lp3 );
   if ( !keepHit ) { 
@@ -223,12 +220,12 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
   }
 
   // Use center of gravity to determine local x and y position:
-  x1 = lp3.x();
-  x2 = lp4.x();
-  float x  = (1. - strip_offset) * x1 + strip_offset * x2;
-  y1 = lp3.y();
-  y2 = lp4.y();
-  float y  = (1. - strip_offset) * y1 + strip_offset * y2;
+  float x3 = lp3.x();
+  float x4 = lp4.x();
+  float x  = (1. - strip_offset) * x3 + strip_offset * x4;
+  float y3 = lp3.y();
+  float y4 = lp4.y();
+  float y  = (1. - strip_offset) * y3 + strip_offset * y4;
 
   if (debug) std::cout <<  "Output from simple centroid:" << std::endl;
   if (debug) std::cout <<  "x = " << x << std::endl;
@@ -240,28 +237,9 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
   // Here try to improve the strip position by applying Gatti fitter
 
   if ( useGatti ) {   
-    LocalPoint lp55  = layergeom_->stripWireIntersection( centerStrip, the_wire1);
-    LocalPoint lp555 = layergeom_->stripWireIntersection( centerStrip, the_wire2);
-    x1 = lp55.x();
-    y1 = lp55.y();
-    x2 = lp555.x();
-    y2 = lp555.y();
-
-    x1   = (x1 + wgoffset * (x2 - x1) );
-    y1   = (y1 + wgoffset * (y2 - y1) );
-  
-    LocalPoint lp5(x1, y1);
-                                   
-    LocalPoint lp6;
-    keepHit = keepHitInFiducial( lp5, lp6 );
-    if ( !keepHit ) { 
-      if (debug) std::cout <<"[CSCMake2DRecHit::hitFromStripAndWire] failedHit" << std::endl;
-      return failedHit;
-    }	
-
-    // Local position at center of strip
-    float x_to_gatti = lp6.x();   
-    y = lp6.y();
+                                     
+    // Local position at center of strip  --> this was determined above
+    float x_to_gatti = x1;   
     float x_fit;
     double sigma_fit, chisq_fit;
 

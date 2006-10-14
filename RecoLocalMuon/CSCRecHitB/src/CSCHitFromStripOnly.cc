@@ -159,7 +159,6 @@ CSCStripData CSCHitFromStripOnly::makeStripData(int centerStrip, int offset) {
   adc[3] = thePulseHeightMap[thisStrip-1].y3();
 
   TmaxOfCluster = thePulseHeightMap[centerStrip-1].t();
-  if ( debug ) std::cout << "tmax is : " << TmaxOfCluster << std::endl;  
   
   if ( offset == 0 ) {
     prelimData = CSCStripData(thisStrip, adc[0], adc[1], adc[2], adc[3], TmaxOfCluster);
@@ -309,119 +308,41 @@ float CSCHitFromStripOnly::findHitOnStripPosition( const std::vector<CSCStripDat
     strippos = data[biggestStrip].x();
   } 
 
+
+  // Test if center of centroid is very close to between 2 strips
+  // If so, then use an even # of strip in cluster to fit centroid
+
+  float old_strippos = strippos;
+  int strip_pos = int (strippos);
+  sum_w = 0.;
+  sum   = 0.;
+
+  if ( fabs(strippos-strip_pos-0.5) < 0.1) {
+     if ( (strippos-strip_pos-0.5) < 0 ) {
+       for ( unsigned i = 0; i != data.size()-1; i++ ) {
+         float w  = data[i].y(); 
+         if (w  < 0.) w  = 0.;
+         sum_w += w;
+         sum   += w * data[i].x();
+       }
+     } else if ( (strippos-strip_pos-0.5) > 0 ) {
+       for ( unsigned i = 1; i != data.size(); i++ ) {
+         float w  = data[i].y();
+         if (w  < 0.) w  = 0.;
+         sum_w += w;
+         sum   += w * data[i].x();
+       }
+    }
+    strippos = sum / sum_w;
+
+    if ( debug ) {
+      std::cout << "Used improved centroid for strip Hit position" << std::endl;  
+      std::cout << "Before: " << old_strippos << std::endl;  
+      std::cout << "After : " << strippos << std::endl;  
+      std::cout << "Diff  : " << strippos-old_strippos << std::endl;  
+    } 
+  }
+
   return strippos;
 }
 
-
-/*  Moved x-Talk stuff into Gatti fitter for now !!!
- *
- * correctForCrosstalk
- *
- *
- * void CSCHitFromStripOnly::correctForCrosstalk( const CSCStripDigiCollection::Range& rstripd, const unsigned& theChannel ) {
- *
- * if ( thePulseHeightMap[theChannel].y() < 5. ) return;
- *
- * int theTmax = thePulseHeightMap[theChannel].t();
- *
- * // find the digis corresponding to this strip and nearest neighbors
- * for ( CSCStripDigiCollection::const_iterator it = rstripd.first; it != rstripd.second; ++it ) {
- *   CSCStripDigi digi = *it;
- *   unsigned int jstrip = digi.getStrip();
- *   std::vector<int> sca = digi.getADCCounts();
- *
- *   float pedestal = (sca[0] + sca[1]) /2.;
- *
- *   float xtalks[4];
- *    
- *   // Dealing with MC first     
- *   if ( !isData ) {
- *
- *     // add back what leaked out to adjacent strips
- *     if ( jstrip == theChannel ) {
- *       for ( int t = 0; t < 4; t++ ) xtalks[t] = 2.*crosstalkLevel( digi, theTmax + t - 1);
- *       thePulseHeightMap[theChannel] += xtalks;
- *
- *     // subtract off what came from that neighbor
- *     } else if ( abs(jstrip - theChannel) == 1 ) {
- *       for ( int t = 0; t < 4; t++ ) xtalks[t] = -1.*crosstalkLevel( digi, theTmax + t - 1);
- *       thePulseHeightMap[theChannel] += xtalks;
- *     }
- *   }
- *
- *   // Now, dealing with data
- *   if ( isData ) {
- *
- *     // add back what leaked out to adjacent strips
- *     if ( jstrip == theChannel ) {
- *       for ( int t = 0; t < 4; t++ ) {
- *         int tbin = theTmax + t - 1;
- *         if ( theChannel == 1 ) {
- *           xtalks[t] = (sca[tbin]-pedestal) 
- *                     * ( slopeRight[theChannel-1] * 50. * (t-1) + interRight[theChannel-1]);
- *         } else if ( theChannel ==  Nstrips ) {
- *           xtalks[t] = (sca[tbin]-pedestal)
- *                     * ( slopeLeft[theChannel-1]  * 50. * (t-1) + interLeft[theChannel-1] );
- *         } else {
- *           xtalks[t] = (sca[tbin]-pedestal)  
- *                     * ( slopeRight[theChannel-1] * 50. * (t-1) + interRight[theChannel-1]
- *                       + slopeLeft[theChannel-1]  * 50. * (t-1) + interLeft[theChannel-1] );
- *         }
- *       }
- *       thePulseHeightMap[theChannel] += xtalks;
- *       
- *     // subtract off what came from the neighbor  --> look for strip j on Left of strip i
- *     } else if ( int(theChannel - jstrip) == 1 ) {
- *       for ( int t = 0; t < 4; t++ ) {
- *         int tbin = theTmax + t - 1;
- *         xtalks[t] = -(sca[tbin]-pedestal)* 
- *                   ( slopeLeft[theChannel-1]  * 50. * (t-1) + interLeft[theChannel-1] );
- *       } 
- *       thePulseHeightMap[theChannel] += xtalks;
- *   
- *     // subtract off what came from the neighbor  --> look for strip j on Right of strip i
- *     } else if ( int(theChannel - jstrip) == -1 ) {
- *       for ( int t = 0; t < 4; t++ ) {
- *         int tbin = theTmax + t - 1;
- *         xtalks[t] = -(sca[tbin]-pedestal)* 
- *                   ( slopeRight[theChannel-1] * 50. * (t-1) + interRight[theChannel-1]);
- *       }
- *       thePulseHeightMap[theChannel] += xtalks;
- *     } 
- *   }
- *  }
- *}
- *
- *
- * crosstalkLevel
- *
- * This is how crosstalk was implemented in MC (digi)
- *
- * float CSCHitFromStripOnly::crosstalkLevel( const CSCStripDigi& digi, const int& tbin ) {
- * // Don't even bother for small signals
- * std::vector<int> sca = digi.getADCCounts();
- *
- * float pedestal = (sca[0] + sca[1]) /2.;
- *
- * if ( sca[tbin]-pedestal < 5.) return 0.; 
- *
- * // Make crosstalk proportional to the slope in the digi
- * // our time-variable will be the ratio of the SCA values.
- * float slope =  sca[tbin]/( sca[tbin-1]+0.1 ) - 1.;
- * if( slope < 0. ) return 0.;
- * if( slope > 2.5 ) slope = 2.5;
- * 
- * // Correction factor is 0 for ratio of 1, and 2.6% for ratio of 2...
- * //@@ Need theCrossTalkLevel to be configurable
- * float theCrosstalkLevel = 0.026; 
- * 
- * // Smaller chambers get half the crosstalk
- * //@@ What happened to ME1a ??
- * if(id_.station() == 1 || id_.ring() == 1) {
- *   theCrosstalkLevel /= 2.;
- * }
- *
- * return theCrosstalkLevel * (sca[tbin]-pedestal) * slope;
- * }
- *
- */
