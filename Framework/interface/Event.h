@@ -173,9 +173,6 @@ namespace edm {
     void
     getAllProvenance(std::vector<Provenance const*> &provenances) const;
 
-    BranchDescription const&
-    getBranchDescription(std::string const& friendlyClassName, std::string const& productInstanceName) const;
-
   private:
 
     typedef std::vector<ProductID>       ProductIDVec;
@@ -195,6 +192,9 @@ namespace edm {
     friend class RawInputSource;
     friend class FilterWorker;
     friend class ProducerWorker;
+
+    BranchDescription const&
+    getBranchDescription(std::string const& friendlyClassName, std::string const& productInstanceName) const;
 
     // The following 'get' functions serve to isolate the Event class
     // from the EventPrincipal class.
