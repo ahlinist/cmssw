@@ -57,15 +57,6 @@ class CSCHitFromStripOnly
   /// Go through strip in layers and build a table with 
   void fillPulseHeights( const CSCStripDigiCollection::Range& );  
 
-/* This was moved to Gatti fitter.
- *
- * // Compute crosstalk corrections for a given strip
- * //  void correctForCrosstalk( const CSCStripDigiCollection::Range& rstripd, const unsigned& theChannel );
- *
- * // Get crosstalk level for MC for a given tbin
- * //  float crosstalkLevel( const CSCStripDigi& digi, const int& tbin );
- *
- */
   /// Find local maxima
   void findMaxima();    
 
@@ -86,7 +77,7 @@ class CSCHitFromStripOnly
   
  private:
   
-  CSCStripData makeStripData( int centerStrip, int offset, int stripIndex );
+  CSCStripData makeStripData( int centerStrip, int offset );
 
 
   // Variables entering the CSCStripHit construction:
@@ -104,11 +95,7 @@ class CSCHitFromStripOnly
   /// These are the gain correction weights and X-talks read in from database.
   float globalGainAvg;
   float gainWeight[100];
-/*  float slopeRight[100];
- *  float slopeLeft[100];
- *  float interRight[100];
- *  float interLeft[100];  
- */
+
   // Peaking time for strip hit
   int TmaxOfCluster;            // in time bins;
   // Number of strips in layer
@@ -118,8 +105,6 @@ class CSCHitFromStripOnly
    *
    */
   const CSCGains*       gains_;
-//  const CSCcrosstalk*   xtalk_;
-//  const CSCNoiseMatrix* noise_;
 
 
   CSCPeakBinOfStripPulse* pulseheightOnStripFinder_;

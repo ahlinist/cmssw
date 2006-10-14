@@ -56,6 +56,15 @@ CSCRecHitBBuilder::~CSCRecHitBBuilder() {}
  */
 void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCWireDigiCollection* wiredc,
                                CSCRecHit2DCollection& oc ) {
+
+  if ( isData ) {
+    // Pass gain constants to strip hit reconstruction package
+    HitsFromStripOnly_->setCalibration( gains_ );
+
+    // Pass X-talks and noise matrix to 2-D hit builder (these are ultimately implemented in Gatti fit)
+    Make2DHits_->setCalibration( xtalk_, noise_ );
+  }
+
   
   // Make collection of wire only hits !  
   CSCWireHitCollection woc;
@@ -68,14 +77,13 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
     // Skip if no wire digis in this layer
     if ( rwired.second == rwired.first ) continue;
     
-    // This is running CSCRecHit1DFromWireOnly.cc
     std::vector<CSCWireHit> rhv = HitsFromWireOnly_->runWire( id, layer, rwired );
     
     // Add the wire hits to master collection
     woc.put( id, rhv.begin(), rhv.end() );
   }
 
-  // Clean up the wire hit collection by trying to build segments
+  // Clean up the wire hit collection by trying to build wire segments
   CSCWireHitCollection clean_woc;  
   if ( useCleanWireCollection ) {
     // First pass geometry
@@ -89,9 +97,6 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
   
   // Make collection of strip only hits
   
-  // Pass gain constants if it is data
-  if (isData) HitsFromStripOnly_->setCalibration( gains_ );
-
   CSCStripHitCollection soc;  
   for ( CSCStripDigiCollection::DigiRangeIterator it = stripdc->begin(); it != stripdc->end(); ++it ){
     const CSCDetId& id = (*it).first;
@@ -101,7 +106,6 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
     // Skip if no strip digis in this layer
     if ( rstripd.second == rstripd.first ) continue;
     
-    // This is running CSCRecHit1DFromStripOnly.cc
     std::vector<CSCStripHit> rhv = HitsFromStripOnly_->runStrip( id, layer, rstripd );
     
     // Add the strip hits to master collection
@@ -120,17 +124,16 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
 
   
   // Now create 2-D hits by looking at superposition of strip and wire hit
-
-  // Pass X-talks and noise matrix which are implemented in Gatti fit
-  if (isData) Make2DHits_->setCalibration( xtalk_, noise_ );
   
   int layer_idx     = 0;
   int hits_in_layer = 0;
-  std::vector<CSCRecHit2D> hitsInLayer;
-  // Clear vector of rechit (useful if have problem in buidling 2-D hits...
-  hitsInLayer.clear();
-
   CSCDetId old_id; 
+  CSCDetId very_old_id; 
+
+  // Vector to store rechit within layer
+  std::vector<CSCRecHit2D> hitsInLayer;
+  // Initially clear it just in case...
+  hitsInLayer.clear();
   
   // N.B.  I've sorted the hits from layer 1-6 always, so can test if there are "holes", that is
   // layers without hits for a given chamber.
@@ -138,71 +141,161 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
   // Loop over strip hit collection
   for ( CSCStripHitCollection::const_iterator sit = clean_soc.begin(); sit != clean_soc.end(); ++sit ){
 
-//    if ( clean_soc.end() - clean_soc.begin() <= 0 ) break;
+    if ( clean_soc.end() - clean_soc.begin() <= 0 ) continue;  // just in case...
+
+    bool foundMatch    = false;  
+
+    // This is the id I'll compare the wire digis against because of the ME1a confusion in data
+    // i.e. ME1a == ME11 == ME1b for wire in data
+    CSCDetId compId;
 
     const CSCStripHit& s_hit = *sit;
     const CSCDetId& sDetId   = (*sit).cscDetId();
     const CSCLayer* layer    = getLayer( sDetId );
     int shit_time            = (*sit).tmax();
-    
-    bool foundMatch = false;
 
+    if ( layer_idx == 0 ) {
+      old_id      = sDetId;
+      very_old_id = old_id;
+    }
 
-    if ( layer_idx == 0 ) old_id = sDetId;
-    
+    // Test if have changed layer
+    // If so, store hits in previous layer in collection
     if ((sDetId.endcap()  != old_id.endcap() ) ||
-	(sDetId.station() != old_id.station()) ||
-	(sDetId.ring()    != old_id.ring()   ) ||
-	(sDetId.chamber() != old_id.chamber()) ||
-	(sDetId.layer()   != old_id.layer()  )) {
-      oc.put( old_id, hitsInLayer.begin(), hitsInLayer.end() );
+        (sDetId.station() != old_id.station()) ||
+        (sDetId.ring()    != old_id.ring()   ) ||
+        (sDetId.chamber() != old_id.chamber()) ||
+        (sDetId.layer()   != old_id.layer()  )) {
+
+      if (hits_in_layer > 0) oc.put( old_id, hitsInLayer.begin(), hitsInLayer.end() );
+
       // Reset layer parameters and clear vector of rechit
       hitsInLayer.clear();
-      old_id = sDetId;
+      very_old_id   = old_id;
+      old_id        = sDetId;
       hits_in_layer = 0;
     }
-        
+
+    // For ME11, real data wire digis are labelled as belonging to ME1b, 
+    // so that's where ME1a must look
+    if ((      isData          ) && 
+        (sDetId.station() == 1 ) && 
+        (sDetId.ring()    == 4 )) {
+      int sendcap  = sDetId.endcap();
+      int schamber = sDetId.chamber();
+      int slayer   = sDetId.layer();
+      CSCDetId testId( sendcap, 1, 1, schamber, slayer );
+      compId = testId;
+    } else {
+      compId = sDetId;
+    }
+
+    // Test if layer gap in strip hit collection --> if so, build pseudo 2-D hit from wire hit
+    // N.B. as is, cannot accomodate for 2 successive gaps in layers for strip hit 
+    // e.g. if no strip hit in layer 1 and 2, can only try retrieving wire hit in layer 1.
+
+    if ((          makePseudo2DHits               ) &&
+        (sDetId.layer()   == very_old_id.layer()+2) &&
+        (sDetId.endcap()  == very_old_id.endcap() ) &&  
+        (sDetId.station() == very_old_id.station()) &&
+        (sDetId.ring()    == very_old_id.ring()   ) &&
+        (sDetId.chamber() == very_old_id.chamber())) {
+
+      if ( debug ) std::cout << " Found gap in layer for strip hit collection " << std::endl;
+      CSCDetId wDetId_modified;
+
+      // Loop over cleaned up wire hit collection
+      for ( CSCWireHitCollection::const_iterator wit = clean_woc.begin(); wit != clean_woc.end(); ++wit ) {
+    
+        if ( clean_woc.end() - clean_woc.begin() <= 0 ) continue;
+
+        const CSCWireHit& w_hit = *wit;   
+        const CSCDetId& wDetId  = (*wit).cscDetId();
+      
+        if ((wDetId.endcap()  == compId.endcap()       ) &&
+            (wDetId.station() == compId.station()      ) &&
+            (wDetId.ring()    == compId.ring()         ) &&
+            (wDetId.chamber() == compId.chamber()      ) &&
+            (wDetId.layer()   == very_old_id.layer()+1 )) {
+
+          // Because of ME-1a problem, have to do the following trick:
+          int wendcap  = sDetId.endcap();
+          int wstation = sDetId.station();
+          int wring    = sDetId.ring();
+          int wchamber = sDetId.chamber();
+          int wlayer   = wDetId.layer();   
+          CSCDetId testId( wendcap, wstation, wring, wchamber, wlayer );
+          wDetId_modified = testId;
+
+          const CSCLayer* w_layer = getLayer( wDetId );
+          CSCRecHit2D rechit = Make2DHits_->hitFromWireOnly( testId, w_layer, w_hit);
+          bool isInFiducial = Make2DHits_->isHitInFiducial( w_layer, rechit );
+          if ( isInFiducial ) {
+            hitsInLayer.push_back( rechit );
+            hits_in_layer++;
+          }
+        }
+      }
+      if ( hits_in_layer > 0 ) {
+        oc.put( wDetId_modified, hitsInLayer.begin(), hitsInLayer.end() );
+        hitsInLayer.clear();
+        hits_in_layer = 0;
+        very_old_id = old_id;
+      }      
+    }
+
 
     // Loop over cleaned up wire hit collection
     for ( CSCWireHitCollection::const_iterator wit = clean_woc.begin(); wit != clean_woc.end(); ++wit ) {
 
-//    if ( clean_woc.end() - clean_woc.begin() <= 0 ) break;
+      if ( clean_woc.end() - clean_woc.begin() <= 0 ) continue;
 
       const CSCWireHit& w_hit = *wit;
       const CSCDetId& wDetId  = (*wit).cscDetId();
       int whit_time           = (*wit).tmax();
 
-      if (isData) {
-        int time_diff = (int) abs(whit_time - shit_time);
-      	if (time_diff <= stripWireDeltaT) continue;
-      }     
 
-      if ((wDetId.endcap()  == sDetId.endcap() ) &&
-	  (wDetId.station() == sDetId.station()) &&
-	  (wDetId.ring()    == sDetId.ring()   ) &&
-	  (wDetId.chamber() == sDetId.chamber()) &&
-	  (wDetId.layer()   == sDetId.layer()  )) { 
-	foundMatch = true;  
-	hits_in_layer++;
-	CSCRecHit2D rechit = Make2DHits_->hitFromStripAndWire(wDetId, layer, w_hit, s_hit);
-	hitsInLayer.push_back( rechit );
+/* Not clear to me if this is needed...
+ *    // Ensure that wire and strip hit occur in same time bin +/- stripWireDeltaT
+ *    if ( isData ) {
+ *      int time_diff = (int) abs(whit_time - shit_time);
+ *      if (time_diff <= stripWireDeltaT) continue;
+ *    }     
+ */
+
+      // Again, because of ME1a, use the compId to make a comparison between strip and wire hit CSCDetId
+      if ((wDetId.endcap()  == compId.endcap() ) &&
+          (wDetId.station() == compId.station()) &&
+          (wDetId.ring()    == compId.ring()   ) &&
+          (wDetId.chamber() == compId.chamber()) &&
+          (wDetId.layer()   == compId.layer()  )) { 
+
+	CSCRecHit2D rechit = Make2DHits_->hitFromStripAndWire(sDetId, layer, w_hit, s_hit);
+        bool isInFiducial = Make2DHits_->isHitInFiducial( layer, rechit );
+        if ( isInFiducial ) {
+          foundMatch = true;  
+          hitsInLayer.push_back( rechit );
+          hits_in_layer++;
+        }
       }
     }
     
-    // If missing wire hit in a layer, form pseudo 2-D hit from strip hit.
+    // If missing wire hit in a layer, form pseudo 2-D hit from strip hit
     if ( !foundMatch && makePseudo2DHits ) { 
+      if ( debug ) std::cout << " Found gap in layer for wire hit collection " << std::endl;      
       CSCRecHit2D rechit = Make2DHits_->hitFromStripOnly(sDetId, layer, s_hit);
       hits_in_layer++;
       hitsInLayer.push_back( rechit );
     }
-    
     layer_idx++;
-    old_id = sDetId;
+    very_old_id = old_id;
+    old_id      = sDetId;
   }
-  // Add last set of hits to collection if found hits
-  if ( hits_in_layer > 0 ) oc.put( old_id, hitsInLayer.begin(), hitsInLayer.end() );
-}
 
+  // Finally, after exiting loop, check that last set of hits has been added to layer
+  if ( hits_in_layer > 0 ) oc.put( old_id, hitsInLayer.begin(), hitsInLayer.end() );
+
+}
 
 
 /* getLayer
