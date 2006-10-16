@@ -316,16 +316,17 @@ float CSCHitFromStripOnly::findHitOnStripPosition( const std::vector<CSCStripDat
   int strip_pos = int (strippos);
   sum_w = 0.;
   sum   = 0.;
-
+ 
+  
   if ( fabs(strippos-strip_pos-0.5) < 0.1) {
-     if ( (strippos-strip_pos-0.5) < 0 ) {
+     if ( (centerStrip - strip_pos ) < 0 ) {
        for ( unsigned i = 0; i != data.size()-1; i++ ) {
          float w  = data[i].y(); 
          if (w  < 0.) w  = 0.;
          sum_w += w;
          sum   += w * data[i].x();
        }
-     } else if ( (strippos-strip_pos-0.5) > 0 ) {
+     } else if ( (centerStrip - strip_pos) > 0 ) {
        for ( unsigned i = 1; i != data.size(); i++ ) {
          float w  = data[i].y();
          if (w  < 0.) w  = 0.;
