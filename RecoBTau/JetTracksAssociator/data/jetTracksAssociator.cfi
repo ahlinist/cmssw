@@ -1,8 +1,8 @@
 
     # Test tracks to jets association
     module jetTracksAssociator = JetTracksAssociator {
-      string tracks = "CTFWMaterial"
-      string jets   = "CaloJetIcone5"
+      string tracks = "ctfWithMaterialTracks"
+      string jets   = "iterativeCone5CaloJets"
       double coneSize = 0.5
     }
 
