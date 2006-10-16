@@ -76,7 +76,7 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCLayer* layer, const CSCStri
     }
   }
 
-  if (debug) std::cout << "t_max is: " << tmax*50. << " and fitted peak is: " << t_peak << std::endl;
+  if (debug) std::cout << "t_max is: " << tmax*50. << " and fitted peak is: " << t_peak+t_zero << std::endl;
 
   int j = 0;
   // Now fill with array with fitted charge...
@@ -99,7 +99,7 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCLayer* layer, const CSCStri
   }
 
   // Load in x-talks:
-  float dt = 50. * tmax - t_peak - t_zero;
+  float dt = 50. * tmax - (t_peak + t_zero);
 
   for ( int t = 0; t < 3; t++ ) {
     xt_l[0][t] = xtalks[0] * (50.* (t-1) + dt) + xtalks[1];
@@ -160,11 +160,12 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCLayer* layer, const CSCStri
   if ( dx_gatti < 0.003 ) dx_gatti = 0.003;
 
   xGatti = xCenterStrip - x_gatti * stripWidth;
-  sigma = dx_gatti * stripWidth / sqrt(12.);      
+  sigma  = dx_gatti * stripWidth;      
+  chisq  = chi2_gatti;
 
   if (debug) {
         std::cout << "Output from Gatti:"        << std::endl;
-        std::cout << "x      :  " << xGatti      << std::endl;
+        std::cout << "x      :  " << xGatti << " +/- " << sigma << std::endl;
         std::cout << "chi^2  :  " << chi2_gatti  << std::endl;
   } 
 }

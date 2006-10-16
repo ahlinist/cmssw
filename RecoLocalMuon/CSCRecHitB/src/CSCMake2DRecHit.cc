@@ -267,7 +267,7 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
       xtalks.push_back(slopeLeft[j]);                          // starts at 0 --> make use of this here
       xtalks.push_back(interLeft[j]);
       xtalks.push_back(slopeRight[j]);
-      xtalks.push_back(slopeRight[j]);
+      xtalks.push_back(interRight[j]);
       for ( int k = 0; k < 15; k++ ) nmatrix.push_back(nMatrix[j*15 + k]);
     }   
 
