@@ -88,12 +88,13 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCLayer* layer, const CSCStri
       for ( int t = 0; t < 4; t++ ) {
         int k  = t + 3*(i-1);
         adc[t] = adcs[k];  
-        if ( !useFittedCharge && t < 3) d[j][t] = adc[t];
+//        if ( !useFittedCharge && t < 3) d[j][t] = adc[t];
+        if ( t < 3) d[j][t] = adc[t];
       }
-      if ( useFittedCharge ) {
-        peakTimeFinder_->FitCharge( tmax, adc, t_zero, t_peak, adcsFit );
-        for ( int t = 0; t < 3; t++ ) d[j][t] = adcsFit[t];
-      }
+//      if ( useFittedCharge ) {
+//        peakTimeFinder_->FitCharge( tmax, adc, t_zero, t_peak, adcsFit );
+//        for ( int t = 0; t < 3; t++ ) d[j][t] = adcsFit[t];
+//      }
       j++;
     }
   }
