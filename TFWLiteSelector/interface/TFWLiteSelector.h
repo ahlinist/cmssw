@@ -44,6 +44,7 @@
 //
 
 // system include files
+#include "TList.h"
 
 // user include files
 #include "FWCore/TFWLiteSelector/interface/TFWLiteSelectorBasic.h"

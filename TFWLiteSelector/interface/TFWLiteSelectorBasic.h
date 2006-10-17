@@ -26,6 +26,10 @@ allows you to access data using an edm::Event.
 // user include files
 
 // forward declarations
+class TFile;
+class TList;
+class TTree;
+
 namespace edm {
   class Event;
   
