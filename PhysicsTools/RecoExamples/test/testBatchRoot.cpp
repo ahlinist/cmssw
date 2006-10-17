@@ -18,10 +18,10 @@ int main() {
   gSystem->Load( "libFWCoreFWLite" );
   AutoLibraryLoader::enable();
 
-  TFile file( "reco.root" );
+  TFile file( "events.root" );
   TTree * events = dynamic_cast<TTree*>( file.Get( "Events" ) );
   assert( events != 0 );
-  TBranch * branch = events->GetBranch( "recoTracks_TrackProducer__RoadSearch.obj" );
+  TBranch * branch = events->GetBranch( "recoTracks_ctfWithMaterialTracks__Test.obj" );
   assert( branch != 0 );
 
   TrackCollection tracks;
