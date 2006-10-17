@@ -6,7 +6,9 @@ $Id$
 #include "FWCore/Framework/interface/EventPrincipal.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
-
+#include "FWCore/Framework/interface/Event.h"
+#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "FWCore/Utilities/interface/RandomNumberGenerator.h"
 
 namespace edm {
 
@@ -43,8 +45,11 @@ namespace edm {
     std::auto_ptr<EventPrincipal> result(0);
 
     if (remainingEvents_ != 0) {
+      preRead();
       result = read();
       if (result.get() != 0) {
+        Event event(*result, moduleDescription());
+        postRead(event);
         if (!unlimited_) --remainingEvents_;
 	++readCount_;
 	issueReports(result->id());
@@ -70,8 +75,11 @@ namespace edm {
     std::auto_ptr<EventPrincipal> result(0);
 
     if (remainingEvents_ != 0) {
+      preRead();
       result = readIt(eventID);
       if (result.get() != 0) {
+        Event event(*result, moduleDescription());
+        postRead(event);
         if (!unlimited_) --remainingEvents_;
 	++readCount_;
 	issueReports(result->id());
@@ -134,4 +142,21 @@ namespace edm {
         << "Contact a Framework Developer\n";
   }
 
+  void 
+  InputSource::preRead() {
+
+    Service<RandomNumberGenerator> rng;
+    if (rng.isAvailable()) {
+      rng->snapShot();
+    }
+  }
+
+  void 
+  InputSource::postRead(Event& event) {
+
+    Service<RandomNumberGenerator> rng;
+    if (rng.isAvailable()) {
+      rng->restoreState(event);
+    }
+  }
 }

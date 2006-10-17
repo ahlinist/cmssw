@@ -56,6 +56,8 @@ namespace edm {
   class EventID;
   class EventSetup;
   class ParameterSet;
+  class Event;
+
   class InputSource : public ProductRegistryHelper {
   public:
     /// Constructor
@@ -132,6 +134,10 @@ namespace edm {
     virtual void rewind_();
 
     virtual void wakeUp_() {}
+
+    void preRead();
+
+    void postRead(Event& event);
 
   private:
 
