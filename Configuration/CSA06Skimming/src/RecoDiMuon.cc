@@ -3,8 +3,8 @@
  *  
  *  This class is an EDFilter choosing reconstructed di-muons
  *
- *  $Date: $
- *  $Revision: $
+ *  $Date: 2006/10/17 21:47:55 $
+ *  $Revision: 1.1 $
  *
  *  \author Chang Liu  -  Purdue University
  *
@@ -27,7 +27,7 @@ using namespace std;
 RecoDiMuon::RecoDiMuon(const edm::ParameterSet& iConfig) :
   nEvents_(0), nAccepted_(0)
 {
-  muonLabel_ = iConfig.getUntrackedParameter<string>("MuonLabel","standAloneMuons");
+  muonLabel_ = iConfig.getParameter<InputTag>("MuonLabel");
   singleMuonPtMin_ = iConfig.getUntrackedParameter<double>("SingleMuonPtMin",20.);
   diMuonPtMin_ = iConfig.getUntrackedParameter<double>("DiMuonPtMin",5.);
 }
@@ -63,8 +63,7 @@ bool RecoDiMuon::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   catch (...) 
   {	
-    edm::LogError("RecoDiMuon") << "FAILED to get Muon Track Collection: "
-                                << muonLabel_<<std::endl;
+    edm::LogError("RecoDiMuon") << "FAILED to get Muon Track Collection. ";
     return false;
   }
 
