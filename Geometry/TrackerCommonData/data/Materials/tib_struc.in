@@ -1,0 +1,697 @@
+TIB Structure (anything but modules)
+====================================
+Input file for mixture.f
+Start new mixtures with a '#' in the first column
+Start the components with a '*' in the first column
+You can type any kind of comment in as long as you don't start it
+with '#' or '*' !
+.....................................................................
+For mixture declaration: Name of Mixture, Name of GMIX for title file, 
+                         Monte Carlo Volume, MC Area
+For items in a compound: Item number, Comment, Material (has to be 
+                 written exactly as in material.input file), 
+                 Volume, Multiplicity, Type
+      Type is one of the following:  SUP for support
+                                     SEN for sensitive volumes
+                                     CAB for cables
+                                     COL for cooling
+                                     ELE for electronics
+..................................................................... 
+
+
+o Inner cooling pipes  (per 1 cm length)
+  -------------------
+(1) Cooling pipes: material Al 3mm OD, 2.7 mm ID 
+(2) Coolant: C6F14
+.....................................................................
+# "TIB inner cooling"    "TIB_mod_cool"      0.0707   0.236
+* 1 "Al pipe"            "Aluminium"         0.0134    1   COL
+* 2 "Coolant"            "C6F14"             0.0573    1   COL
+.....................................................................
+=====================================================================
+
+o Mother Cable (per 1 cm)
+  ------------
+(1) Kapton: Stack up from DeRobertis: 300 um Kapton + 2 cover layers
+            ==> 400 um Kapton 
+    width of cable is 2.4 cm
+(2) Copper: Estimate from DeRobertis 5-Apr-01: 1900 mm^3 for a
+            55 cm prototype
+(3) Smear some average number of optical fibres on the Mother Cable
+    In the 2 inner layers, we have 6 fibers/module and 3 modules,
+    hence 18 fibers. In layer 3/4 2 fibers/module, hence 6 fibers.
+    Of course, not all of them run the full length, so take only
+    about 50 %. on average: 6 fibers
+    X-sect for fibers: 0.0127 mm^2 Quartz (Ale)
+    Outer diameter 900 um, fill with Polyethylene from 62.5-450 um
+......................................................................
+# "TIB Mothercable"        "TIB_mother_cable"  0.144    2.4
+* 1 "Kapton"               "T_Kapton"          0.096      1   CAB
+* 2 "Cu traces"            "Copper"            0.0345     1   CAB
+* 3 "Optical fibers"       "Quartz"            1.27E-4    6   CAB
+* 4 "Optical fibers"       "Polyethylene"      6.23E-3    6   CAB
+......................................................................
+======================================================================
+
+o TIB cylinder for each layer
+  ------------
+The carbon fibre covers on average 51.2 % of the cylinder
+  ==> make some pseudo mixture with MC Volume scaling
+ (MCArea calculated to result in width of 0.44 mm)
+......................................................................
+# "TIB layer support"      "TIB_cylinder"         1.   22.73
+* 1 "CF cylinder"          "Carbon fibre str."   0.512     1   SUP
+......................................................................
+======================================================================
+
+o Ribs in TIB cylinder 
+  --------------------
+Since it is only one type of material, these should be
+2 different thicknesses: 2 horizontal ribs of X cm width and
+4 additional ones of only 1/27.5 this width.
+Their radial height is 7.12 mm
+Calculate here for the horizontal ones:
+  Xsection 237.3 mm^2, length = 703 mm => 166.8 cm^3
+
+(I am neglecting the Aluminium screws in the horizontal ribs !)
+
+Suggestion: horizontal ribs are 3.5 cm wide (hence the others 0.13 cm)
+MC Volume: 7.12 x 35 x 690 mm => 171.9 cm^3
+......................................................................
+# "Ribs in TIB cylinders"    "TIB_Rib_in?"     171.9    241.4
+* 1 "CF ribs"                "Carbon fibre str."    166.8    1  SUP
+......................................................................
+======================================================================       
+
+o TIB Endflange Ring 1
+  --------------------
+This is the ring below layer 1
+MCVolume: r = 22.2 - 23.1 cm, dz=1.5 cm
+Contains:
+(1) Inner ring of Carbon fiber: 1.5 x 0.044 x 2*pi*22.1 =9.165 cm^3
+(2) axial piece of endflange CF, front and back: 
+               2*0.46*0.044*2*pi*22.2 = 5.62 cm^3
+(3) Endflange CF skins (2 of them): r = 22.2-23.7 cm 
+    (radial pieces go into TIB_disk)
+    thickness 0.044 cm, leave 7 mm diameter holes for axial inserts
+    (16 total)  => 9.25 cm^3
+(4) Aluminium axial inserts, per insert 0.497 cm^3  
+    16 total
+(5) Radial inserts: 0.1 cm^3 Al/piece  --- 6 total (?)
+(6) Cooling manifold: here not much is known :-(
+    wall thickness 0.5 mm Al
+    length along z: assume 18 mm  
+    4 walls (3 in z and 1 to account for the end and the tubes coming out)
+    middle radius = 22.6 cm   => 51.1 cm^3
+
+Neglected: "saddle" Al pieces, radial stiffeners
+........................................................................
+# "TIB Endflange Ring 1"        "TIB_rib0"       192.12     213.5
+* 1 "Inner Ring"                "Carbon fibre str."   9.165     1  SUP
+* 2 "Axial pieces of endflange" "Carbon fibre str."   5.62      1  SUP
+* 3 "CF endflange skin"         "Carbon fibre str."   9.25      2  SUP
+* 4 "Axial inserts"             "Aluminium"           0.497    16  SUP
+* 5 "Radial inserts"            "Aluminium"           0.1       6  SUP
+* 6 "Cooling manifold"          "Aluminium"           51.1      1  COL
+........................................................................
+========================================================================
+
+CAUTION!!
+For endflanges of layers 2-4, the exact radial dimensions cannot
+be extracted from the drawings on the web. Have to make a few estimates.
+!!!!!!!!!!!!!!
+
+o TIB Endflange Ring 2
+  --------------------
+ This incorporates the endflange structure from layer 1 (upper part)
+ and layer 2 (lower part)
+MCVolume: r = 26.9 - 32.6 cm, dz=1.5 cm
+Contains:
+(1) Outer ring of Carbon fiber + axial piece of endflange for Layer 1: 
+        r=295 mm     V=2*pi*r*1.5*0.044*2 = 24.5 cm^3
+(2) Inner ring layer 2: r=300 mm  => 12.44 cm^3
+(3) Axial piece of endflange, layer 2:   r=300 mm
+           2*pi*r*2*0.46*0.044 = 7.63 cm^3
+(4) Endflange skin layer 1: r_in=27.35   r_out=29.5 
+    minus holes for 16 inserts => 16.62 cm^3
+(5) Endflange skin layer 2: r_in=30.0    r_out=32.15, 20 insert holes
+    V = 18.13 cm^3
+(6) axial inserts: 36 total
+(7) radial inserts: 6 total
+(8) Cooling manifolds: r(layer1) = 28.425  => 64.3 cm^3
+                       r(layer2) = 31.075  => 70.26 cm^3  total 134.56 cm^3
+..........................................................................
+# "TIB Endflange Ring 2"        "TIB_rib1"       1598.2    280.4
+* 1 "Outer Ring layer 1"        "Carbon fibre str."  24.5     1   SUP
+* 2 "Inner Ring layer 2"        "Carbon fibre str."  12.44    1   SUP
+* 3 "Axial pieces of flange 2"  "Carbon fibre str."  7.63     1   SUP
+* 4 "Flange layer 1 (up)"       "Carbon fibre str."  16.62    2   SUP
+* 5 "Flange layer 2 (down)"     "Carbon fibre str."  18.13    2   SUP
+* 6 "Axial inserts"             "Aluminium"           0.497   36  SUP
+* 7 "Radial inserts"            "Aluminium"           0.1     6   SUP
+* 8 "Cooling manifold"          "Aluminium"          134.5    1   COL
+.........................................................................
+=========================================================================
+
+o TIB Endflange Ring 3
+  --------------------
+ This incorporates the endflange structure from layer 2 (upper part)
+ and layer 3 (lower part)
+MCVolume: r = 36.4 - 40.35 cm, dz=1.5 cm
+Contains:
+(1) Outer ring of Carbon fiber + axial piece of endflange for Layer 2: 
+        r=378 mm     V = 31.35 cm^3
+(2) Inner ring layer 3: r=384 mm  => 15.92 cm^3
+(3) Axial piece of endflange, layer 3:   r=384 mm  => 9.77 cm^3
+(4) Endflange skin layer 2: r_in=35.8   r_out=37.8 
+    minus holes for 20 inserts => 20.0 cm^3
+(5) Endflange skin layer 3: r_in=38.4    r_out=40.17, 14 insert holes
+    V = 19.0 cm^3
+(6) axial inserts: 34 total
+(7) radial inserts: 6 total
+(8) Cooling manifolds: r(layer2) = 36.8  => 83.2 cm^3
+                       r(layer3) = 39.3  => 88.8 cm^3  total 172.0 cm^3
+..........................................................................
+# "TIB Endflange Ring 3"        "TIB_rib2"        1428.62   361.7
+* 1 "Outer Ring layer 2"        "Carbon fibre str."  31.35    1   SUP
+* 2 "Inner Ring layer 3"        "Carbon fibre str."  15.92    1   SUP
+* 3 "Axial pieces of flange 3"  "Carbon fibre str."  9.77     1   SUP
+* 4 "Flange layer 2 (up)"       "Carbon fibre str."  20.0     2   SUP
+* 5 "Flange layer 3 (down)"     "Carbon fibre str."  19.0     2   SUP
+* 6 "Axial inserts"             "Aluminium"           0.497   34  SUP
+* 7 "Radial inserts"            "Aluminium"           0.1     6   SUP
+* 8 "Cooling manifold"          "Aluminium"          172.0    1   COL
+.........................................................................
+=========================================================================
+
+o TIB Endflange Ring 4
+  --------------------
+ This incorporates the endflange structure from layer 3 (upper part)
+ and layer 4 (lower part)
+MCVolume: r = 44.15 - 48.1 cm, dz=1.5 cm
+Contains:
+(1) Outer ring of Carbon fiber + axial piece of endflange for Layer 3: 
+        r=456 mm     V=2*pi*r*1.5*0.044*2 = 37.8 cm^3
+(2) Inner ring layer 4: r=461 mm  => 19.12 cm^3
+(3) Axial piece of endflange, layer 4:   r=461 mm
+           2*pi*r*2*0.46*0.044 =11.73 cm^3
+(4) Endflange skin layer 3: r_in=43.82   r_out=45.6 
+    minus holes for 14 inserts => 21.76 cm^3
+(5) Endflange skin layer 4: r_in=46.1    r_out=47.63, 28 insert holes
+    V = 19.35 cm^3
+(6) axial inserts: 42 total
+(7) radial inserts: 6 total
+(8) Cooling manifolds: r(layer3) = 44.71   => 101.1 cm^3
+                       r(layer4) = 46.87   => 106.0 cm^3  total 207.1 cm^3
+..........................................................................
+# "TIB Endflange Ring 4"        "TIB_rib3"       1717.14   434.7
+* 1 "Outer Ring layer 3"        "Carbon fibre str."  37.8     1   SUP
+* 2 "Inner Ring layer 4"        "Carbon fibre str."  19.12    1   SUP
+* 3 "Axial pieces of flange 4"  "Carbon fibre str."  11.73    1   SUP
+* 4 "Flange layer 3 (up)"       "Carbon fibre str."  21.76    2   SUP
+* 5 "Flange layer 4 (down)"     "Carbon fibre str."  19.35    2   SUP
+* 6 "Axial inserts"             "Aluminium"           0.497   42  SUP
+* 7 "Radial inserts"            "Aluminium"           0.1     6   SUP
+* 8 "Cooling manifold"          "Aluminium"          207.1    1   COL
+.........................................................................
+=========================================================================
+
+o TIB Endflange Ring 5
+  --------------------
+ This incorporates the endflange structure from layer 4 (upper part)
+MCVolume: r = 51.90 - 53.0 cm, dz=1.5 cm
+Contains:
+(1) Outer ring of Carbon fiber + axial piece of endflange for Layer 4: 
+        r=528 mm     V=2*pi*r*1.5*0.044*2 = 43.8 cm^3
+(2) Endflange skin layer 4: r_in=51.28   r_out=52.8 
+    minus holes for 28 inserts => 21.39 cm^3
+(3) axial inserts: 28 total
+(4) Cooling manifolds: r = 52      => 117.6 cm^3
+..........................................................................
+# "TIB Endflange Ring 5"        "TIB_rib4"        543.76   494.3
+* 1 "Outer Ring layer 4"        "Carbon fibre str."  43.8     1   SUP
+* 2 "Flange layer 4 (up)"       "Carbon fibre str."  21.39    2   SUP
+* 3 "Axial inserts"             "Aluminium"           0.497   28  SUP
+* 4 "Cooling manifold"          "Aluminium"          117.6    1   COL
+.........................................................................
+=========================================================================
+
+o TIB Endflange ICB rings
+  -----------------------
+This is one material for all 4 rings, so have to average.
+They are radially interleaved between the TIB_rib?'s
+
+!!! All volumes in the following are 'downscaled' to the first
+ring at radius 25 cm !!!
+radial extent is 3.8 cm and dz = 1.5 cm   => MCVolume = 895.35
+=> ratios for Volumes for the different layers:
+    Layer 1:2  =>  1 : 1.38
+          1:3  =>  1 : 1.69
+          1:4  =>  1 : 2 
+
+(1) Carbon fiber structures: consisting of "radial endflange ribs" 
+    and C-earrings. Take average of 13.2 cm^3 
+(2-4) Mothercables (56)
+    3 mm of Mothercable sticking into endflange, reinforced by FR4
+       400 um Kapton, width 3.2 cm 
+       Copper volume about 1/4 of Kapton volume
+       200 um FR4 	
+
+(5-6) Mothercable connector pair (56)    
+	SAMTEC FTSH-125-02-L-MT & CLP-125-02-G-D-K
+	Body: 0.65 + 0.4 g Plastic (Vectra E130, take Kapton)
+	Pins: 0.135 + 0.25 g  Phosphor Bronze (take 95% Cu, 5% Sn)
+
+	Kapton: 1.05 g  => 0.75 cm^3
+        Bronze: 0.385 g => 4.35e-2 cm^3
+
+(7-9) ICB - not much know at this time ! 
+    Radial thickness 2.85 cm. Assume same stackup as in Mothercable
+    r = 25 +/- 1.425
+    400 um Kapton  => 17.9 cm^3
+    200 um FR4     => 8.95 cm^3
+    De Robertis estimates 1000 mm^3 Cu volume per motherboard in the
+    ICB, with the ICB length (including the flex tail) about 50 cm.
+    Assume equal distribution along the length 
+    => V_Cu = 2.85/50 * 1000 mm^3 = 57 mm^3 
+
+(5) Digital Optohybrid 
+    radial extent 2.85 cm
+    assume on average 10
+    width (???) 30 mm
+    take 400 um G10  =>  2.85 x 3.0 x 0.04 = 0.342 cm^3
+    assume 20 % Cu   =>                      0.05  cm^3
+    leave out the components so far since I don't know them !
+	
+(6) Optical fibers - leave out here ! Go into radial cables 
+.....................................................................
+# "TIB Endflange ICB rings"      "TIB_disk"       895.3      235.6
+* 1 "Endflange structure"      "Carbon fibre str."  13.2      1   SUP
+* 2 "Mothercable Kapton"       "T_Kapton"           0.038     56  CAB
+* 3 "Mothercable Copper"       "Copper"             0.01      56  CAB
+* 4 "Mothercable FR4"          "T_FR4"              0.019     56  CAB
+* 5 "Connector plastic"        "T_Kapton"           0.75      56  CAB
+* 6 "Connector pins"           "T_Bronze"           0.043     56  CAB
+* 7 "ICB Kapton"               "T_Kapton"           17.9      1   CAB
+* 8 "ICB FR4"                  "T_FR4"              8.95      1   CAB
+* 9 "ICB Cu"                   "Copper"             0.057     56  CAB
+* 10 "Digital Optoh."          "G10"                0.342     10  ELE
+* 11 "Digital Optoh."          "Copper"             0.05      10  ELE
+.....................................................................
+=====================================================================
+
+o TIB Radial Cables Layer 1
+  -------------------------
+MCVolume is disk of constant cross-section (2*pi*r*t) = 47.1239
+Cross sections for the various service cables (i.e. unit length) 
+
+(1) Kapton cables - exact stackup not yet known !!!    (14)
+    ASSUME: 400 um thick Kapton, 7 cm wide    => 0.28 cm^2
+    from De Robertis: estimate 1 cm^3 Cu/50 cm = 0.02 cm^2 
+    per Mothercable (56) 
+(3) Optical fibers   use optical ribbon already from here to 
+    include some Polyethylene.  1008 fibers, i.e.84 ribbons.
+    Ribbon Xsection is 0.00961 cm^2
+(4-5) Cooling pipes: Al pipes, 8 mm OD, 7 mm ID        (24)
+     Al: 0.118 cm^2
+     Coolant: 0.384 cm^2
+(6) Control cables: MS_cntrl_cables, OD 6.0 mm         (12)
+
+    Neglected so far: optical fibers for control signals !!
+................................................................
+# "TIB radial cables layer 1"   "TIB_cab_rad1"     47.1239  -1.
+* 1 "Kapton pigtail"          "T_Kapton"            0.28     14  CAB
+* 2 "Kapton pigtail"          "Copper"              0.02     56  CAB
+* 3 "Optical ribbon"          "Fibre_Ribbon"        0.00961  84  CAB
+* 4 "Cooling pipes"           "Aluminium"           0.118   24   COL
+* 5 "Coolant"                 "C6F14"               0.384   24   COL
+* 6 "Control cables"          "MS_cntrl_cable"      0.283   12   CAB
+................................................................. 
+=================================================================
+
+o TIB Radial Cables Layer 2
+  -------------------------
+MCVolume is disk of constant cross-section (2*pi*r*t) = 65.0310
+Cross sections for the various service cables (i.e. unit length) 
+Explanations cf. layer 1
+
+(1) Kapton cables     (18/72)
+(3) Optical fiber ribbons (108)
+(4-5) Cooling pipes        (32)
+(6) Control cables         (16)
+................................................................
+# "TIB radial cables layer 2"   "TIB_cab_rad2"     65.0310  -1.
+* 1 "Kapton pigtail"          "T_Kapton"            0.28     18  CAB 
+* 2 "Kapton pigtail"          "Copper"              0.02     72  CAB
+* 3 "Optical ribbon"          "Fibre_Ribbon"        0.00961  108 CAB
+* 4 "Cooling pipes"           "Aluminium"           0.118   32   COL
+* 5 "Coolant"                 "C6F14"               0.384   32   COL
+* 6 "Control cables"          "MS_cntrl_cable"      0.283   16   CAB
+................................................................. 
+=================================================================
+         
+o TIB Radial Cables Layer 3
+  -------------------------
+MCVolume is disk of constant cross-section (2*pi*r*t) = 79.6394
+Cross sections for the various service cables (i.e. unit length) 
+Explanations cf. layer 1
+
+(1) Kapton cables     (12/90)
+(3) Optical fiber ribbons  (45)
+(4-5) Cooling pipes        (24)
+(6) Control cables          (6) 
+................................................................
+# "TIB radial cables layer 3"   "TIB_cab_rad3"     79.6394  -1.
+* 1 "Kapton pigtail"          "T_Kapton"            0.28     12  CAB
+* 2 "Kapton pigtail"          "Copper"              0.02     90  CAB
+* 3 "Optical ribbon"          "Fibre_Ribbon"        0.00961  45  CAB
+* 4 "Cooling pipes"           "Aluminium"            0.118   24   COL
+* 5 "Coolant"                 "C6F14"               0.384   24   COL
+* 6 "Control cables"          "MS_cntrl_cable"      0.283   6    CAB
+................................................................. 
+=================================================================
+
+o TIB Radial Cables Layer 4
+  -------------------------
+MCVolume is disk of constant cross-section (2*pi*r*t) = 94.2478
+Cross sections for the various service cables (i.e. unit length) 
+Explanations cf. layer 1
+
+(1) Kapton cables     (14/108)
+(3) Optical fiber ribbons  (54)
+(4-5) Cooling pipes        (32)
+(6) Control cables          (8) 
+................................................................
+# "TIB radial cables layer 4"   "TIB_cab_rad4"     94.2478  -1.
+* 1 "Kapton pigtail"          "T_Kapton"            0.28     14  CAB
+* 2 "Kapton pigtail"          "Copper"              0.02     108 CAB
+* 3 "Optical ribbon"          "Fibre_Ribbon"        0.00961  54  CAB
+* 4 "Cooling pipes"           "Aluminium"           0.118   32   COL
+* 5 "Coolant"                 "C6F14"               0.384   32   COL
+* 6 "Control cables"          "MS_cntrl_cable"      0.283   8    CAB
+................................................................. 
+=================================================================
+
+o TIB Axial Cables 1
+  ------------------
+ These run from the endflange along half the service cylinder
+ length (where then the Kapton pigtails are soldered to the 
+ MS Aluminium cables)
+
+ MCVolume: 14 bundles of Xsec 21.9697 => 307.5758
+ Number and types of cables are just then sum from the 
+ radial cables above.
+
+(1) Kapton cables     (58/326)
+(3) Optical fiber ribbons  (291)
+(4-5) Cooling pipes        (112)
+(6) Control cables         (42) 
+................................................................
+# "TIB axial cables 1"      "TIB_cables_ax"       307.5758  -1.
+* 1 "Kapton pigtail"          "T_Kapton"            0.28     58  CAB
+* 2 "Kapton pigtail"          "Copper"              0.02     326 CAB
+* 3 "Optical ribbon"          "Fibre_Ribbon"        0.00961  291 CAB
+* 4 "Cooling pipes"           "Aluminium"           0.118   112   COL
+* 5 "Coolant"                 "C6F14"               0.384   112   COL
+* 6 "Control cables"          "MS_cntrl_cable"      0.283   42   CAB
+................................................................. 
+=================================================================
+
+o TIB Axial Cables 2
+  ------------------
+ These run the second half of the service cylinder
+ length. As TIB Axial Cables 1, but with MS Aluminium cables instead
+ of Kapton pigtails.
+
+ MCVolume: 14 bundles of Xsec 21.9697 => 307.5758
+
+(1) Optical fiber ribbons  (291)      ! update 12/01
+(2-3) Cooling pipes        (112)
+(4) Control cables         (42) 
+(5) MS Alu Cable for 36 APVs   (128)  ! update 14/03/02
+    OD   8.1 mm
+(6) MS Alu Cable for 48 APVs   (56)   ! update 14/03/02
+    OD  8.5 mm
+................................................................
+# "TIB axial cables 2"      "TIB_cables_ax_out"    307.5758  -1.
+* 1 "Optical ribbon"          "Fibre_Ribbon"        0.00961  291  CAB
+* 2 "Cooling pipes"           "Aluminium"           0.118   112    COL
+* 3 "Coolant"                 "C6F14"               0.384   112    COL
+* 4 "Control cables"          "MS_cntrl_cable"      0.283   42    CAB
+* 5 "Alu MS Cable 36 APVs"    "MS_Al36"             0.515   128   CAB
+* 6 "Alu MS Cable 48 APVs"    "MS_Al48"             0.567   56    CAB
+................................................................. 
+=================================================================
+
+o TIB center support
+  ------------------
+This includes for each layer the structure for the endring at z=0 as
+well as the "closing" of the cooling pipes (approximate by one full ring)
+Calculate volume for unit length in circumference, i.e.
+MCVolume = 1 cm x 0.712 cm (radial thickness) x 1 cm unit = 2.136 cm^3
+
+UPDATE : cooling pipes no longer in !!
+
+///(1-2) Cooling pipe end pieces. Length/pipe 5.1 cm. 1 per inner and 1 per
+    outer module string. Example layer 1: 56 x 5.1 = 1.8 x 2*pi*r
+    => take 1.8 * 1 cm long cooling pipe * 2 (forward+backward)
+       (OD 3 mm/2.7 ID) 
+(3) CF rings.
+    Not really clear from drawings. Assume 4 rings of 0.05 cm thickness.
+    Per 1 cm in 2*pi*r this amounts to 0.461 cm^3. Add 10 % for CF
+    stuff at the cylinder ends. => 0.5 cm^3 
+(4) Al inserts: take number from EDR weights table
+    average 16 inserts, weight per insert about 1.5 g -> 0.556 cm^3
+    / 2*pi*r = 0.0038
+.......................................................................
+# "TIB central support"       "TIB_cent_supp"        0.712    1.
+* 1 "Endring"                   "Carbon fibre str."  0.5      1    SUP
+* 2 "Aluminium inserts"         "Aluminium"          0.0038   16   SUP
+.......................................................................    
+=======================================================================
+
+o TIB Connectors
+  --------------
+These are the connectors on the TOB face, connecting MS power and
+control cables. 
+MCVolume: r_in = 75 cm, r_out = 95 cm, dz = 0.3 cm
+
+Not sure if what I take is correct here !!
+(1) Connectors MS power cables   (184)
+    take Micro-T 37 pins (may not be the right ones !!)
+    Scale from Bills measurement on 31 pin connector: 
+    Plastic  2.578 g  -> 1.84 cm^3 
+    Cu       3.485 g  -> 0.389 cm^3  (change that to 3.46 g !!)
+(2) Connectors MS control   (44) 
+    take Micro-T 25 pin
+    Plastic  1.741 g  -> 1.243 cm^3
+    Cu       2.354 g  -> 0.263 cm^3
+...................................................................
+# "TIB MS connectors"         "TIB_connector"     3204.42   10681
+* 1 "Micro T 37 pin conn"     "T_Kapton"             1.84      184 CAB
+* 2 "Micro T 37 pins"         "Copper"               0.389     184 CAB
+* 3 "Micro T 25 pin conn"     "T_Kapton"             1.243     44  CAB
+* 4 "Micro T 25 pins"         "Copper"               0.263     44  CAB
+....................................................................
+
+o Cable service disk
+  ------------------
+  in front of TOB face. 
+  MC VOlume: 5 mm thick in z
+  Take this to be 1 mm CF and 5 mm Nomex
+.......................................................................
+# "TIB/TID service disk"        "TIB_CF"             0.5    1.
+* 1 "Carbon Fiber support"      "Carbon fibre str."  0.1    1    SUP
+* 2 "Nomex core"                "Nomex"              0.5    1    SUP
+.......................................................................    
+=======================================================================
+
+Here rr part starts ...
+
+o TIB DOHM (Primary) Board
+  ------------------------
+This is the Digital OptoHibrids Module: 
+ - Layer 1: 6x2x2=24
+ - Layer 2: 8x2x2=32
+ - Layer 3: 3x2x2=12
+ - Layer 4: 4x2x2=16
+DOHMs are mounted on carbon fibre structures which cover the module 
+strings above the module further from the interaction point.
+
+MC Volume: 5 cm x 28.5 cm x 0.21 cm (must turn to be 29.858 cm3)
+
+Contains:
+1) DOHM PRIM Board: FR4 (27.508x5.207+1.003x3.607) cm2 Area=22.2 sq.in. ==> 28.5 cm x 5.0 cm thickness=0.146 cm
+
+2) traces:  Cu   Area                       Thickness   Volume [mm3]
+           Top    2.3 sq.in =  1483.868 mm2   35 um       51.935
+           GND   21.4 sq.in = 13806.424 mm2   35 um      483.225
+           SIG1   0.93 sq.in=   599.999 mm2   35 um       21.000
+           SIG2   2.38 sq.in=  1535.481 mm2   35 um       53.742
+           PWR   20.9 sq.in = 13483.844 mm2   35 um      471.935   
+           Bot    1.67 sq.in=  1077.417 mm2   35 um       37.710
+           TOTAL VOLUME = 1074.547 mm3
+
+3) chips: 6 I.C. 8 pin SOIC 4x5x1.5 mm3
+
+4-5) Connectors: 7 x ERNI   26 pin [20x8.2x4.2 mm3]     7 x  688.800 = 4821.600 mm3   7 x 26 = 182 pin
+                 1 x ERNI   50 pin [34.5x8.2x4.2 mm3]   1 x 1118.180 = 1118.180 mm3   1 x 50 =  50 pin
+                 2 x SAMTEC 20 pin [21.2x7.3x3.5 mm3]   2 x  541.660 = 1083.320 mm3   2 x 20 =  40 pin
+                 2 x NAIS   26 pin [14x6x3 mm3]         2 x  252.000 =  504.000 mm3   2 x 26 =  52 pin
+                 1 x MOLEX  24 pin [33.2x10.9x9.75 mm3] 1 x 3528.330 = 3528.330 mm3   1 x 24 =  24 pin
+    TOTAL VOLUME = 11055.430 mm3
+    TOTAL PIN #  = 348
+    From CCU in tib_module.in: 2x50 pins = 100 pins correspond to 0.037 mm3 ==> 0.037 mm3 x 348 / 100 = 0.129 mm3
+    ... but it is better to calculate the fraction of plastic/bronze per connector
+                 7 x ERNI   26 pin [missing info on material]         0.273 g Plastic, 0.1001 g Bronze = 1.911 g Plastic + 0.7007 g Bronze
+                 1 x ERNI   50 pin [missing info on material]         0.525 g Plastic, 0.1925 g Bronze = 0.525 g Plastic + 0.1925 g Bronze
+                 2 x SAMTEC 20 pin [0.56 g, 65% Plastic + 35% Bronze] 0.364 g Plastic, 0.196  g Bronze = 0.728 g Plastic + 0.392  g Bronze
+                 1 x MOLEX  24 pin [missing info on material]         0.252 g Plastic, 0.0924 g Bronze = 0.252 g Plastic + 0.0924 g Bronze
+    TOTAL Plastic: 3.416  g => 2.443 cm3 Kapton
+    TOTAL Bronze:  1.3776 g => 0.155 cm3 Bronze
+
+6) Resistors: 11 x size 0805 [2x1.25x1.45 mm3, 4.8 mg] Volume=3.625E-3 cm3
+
+7) Capacitors: 18 x size 0805 [2x1.25x1.45 mm3, 4.8 mg] Volume=3.625E-3 cm3
+
+8) Solder "balls":  on the board: 0.88 sq.in. x 150 um thickness = 5.677 cm2 x 0.0150 cm = 0.085155 cm3
+                    plus 24 solder "balls" in the 24-pin power connector: cone trunk 2r=1.5 mm, h=0.9 mm with inside pin cylinder 2r=h=0.9 mm
+                      cone: R=0.75 mm, r=0.45 mm, (H-h)=0.9 mm=H(1-r/R) => H=2.25 mm, h=1.35 mm => Volume=pi*R²*H-pi*r²*h=3.11725 mm3
+                      cylinder: r=0.45 mm, (H-h)=0.9 mm => Volume=pi*r²*(H-h)=0.57256 mm3
+                      Pin Volume = 3.11725 - 0.57526 = 2.542 mm3
+                      TOTAL PIN VOLUME = 24 x 2.542 mm3 = 61.008 mm3 = 0.061 cm3
+                  TOTAL SOLDER VOLUME = 0.085155 +  0.061 = 0.146 cm3
+
+9) CCU [from tib_module.in: volume = 4.949 cm3, material = "TIB_CCUM"]
+
+10-17) Optohybrid (two copies per primary DOHM, taken from tib_module.in TIB_ICC1 and TIB_ICC2)
+    FR4 22 x 30 mm, 400 um 
+    Cu: 35 um, 2 layer with 50 % occ, 2 layers with 30 % occ
+    Capacitors (0603) 1.6 x .8 x .9 mm
+    Resistors  (0603) 1.6 x .8 x .9 mm
+    Laser diode: 0.02 cm^3 Si     (1 for 2 APVs)
+    Laser driver: 0.0025 cm^3 Si  (1 for 3 APVs ??)
+    Fiber clamps: 1.4 x 0.3 x 0.15 cm Kapton
+
+.......................................................................
+# "TIB DOHM PRIM Board"       "TIB_DOHM_PRIM"   29.858     142.50
+* 1 "DOHM PRIM Board"         "T_FR4"           20.805     1      ELE
+* 2 "Copper traces"           "Copper"           1.075     1      ELE    
+* 3 "IC Chips"                "T_Kapton"         0.030     6      ELE
+* 4 "Connector"               "T_Kapton"         2.443     1      ELE   
+* 5 "Connector pins"          "T_Bronze"         0.155     1      ELE
+* 6 "Resistors (0805)"        "Carbon"           3.625E-3 11      ELE
+* 7 "Capacitors (0805)"       "Alumina"          3.625E-3 18      ELE
+* 8 "Solder ball"             "SMD_metal"        0.146     1      ELE
+* 9 "CCU"                     "TIB_CCUM"         4.949     1      ELE
+* 10 "Optohybrid Substrate"   "T_FR4"            0.264     2      ELE
+* 11 "Optohybrid copper"      "Copper"           0.037     2      ELE
+* 12 "OH capacitors (0603)"   "Alumina"          1.15E-3  34      ELE
+* 13 "OH resistors (0603)"    "Carbon"           1.15E-3  16      ELE
+* 14 "OH C/R solder"          "SMD_metal"        2.E-4    50      ELE
+* 15 "OH Laser diode"         "Silicon"          0.02      6      ELE
+* 16 "OH Laser driver"        "Silicon"          0.0025    4      ELE
+* 17 "OH fiber clamp"         "T_Kapton"         0.063     2      ELE
+.......................................................................
+=======================================================================
+
+o TIB DOHM (Auxiliary) Board
+  --------------------------
+
+MC Volume: 5 cm x 15.2 cm x 0.18 cm (must turn to be 13.698 cm3)
+
+Contains:
+1) DOHM AUX Board: FR4 (15.202x5.004) cm2 Area=11.8 sq.in. ==> 15.2 cm x 5.0 cm thickness=0.143 cm
+
+2) traces:  Cu   Area                       Thickness   Volume [mm3]
+           Top    1.7 sq.in =  1096.772 mm2   35 um       38.387
+           GND   11.2 sq.in =  7225.792 mm2   35 um      252.903
+           PWR   11.1 sq.in =  7161.276 mm2   35 um      250.645   
+           Bot    1.  sq.in=    645.160 mm2   35 um       22.581
+           TOTAL VOLUME = 564.516 mm3
+
+3) chips: 2 I.C. 8 pin SOIC 4x5x1.5 mm3
+
+4-5) Connectors: 8 x ERNI   26 pin [missing info on material] 0.273 g Plastic, 0.1001 g Bronze = 2.184 g Plastic + 0.8008 g Bronze
+                 1 x ERNI   50 pin [missing info on material] 0.525 g Plastic, 0.1925 g Bronze = 0.525 g Plastic + 0.1925 g Bronze
+    TOTAL Plastic: 2.709 g => 1.937 cm3 Kapton
+    TOTAL Bronze:  0.993 g => 0.112 cm3 Bronze
+
+6) Resistors: 12 x size 0805 [2x1.25x1.45 mm3, 4.8 mg] Volume=3.625E-3 cm3
+
+7) Capacitors: 15 x size 0805 [2x1.25x1.45 mm3, 4.8 mg] Volume=3.625E-3 cm3
+
+8) Solder "balls":  on the board: 0.6 sq.in. x 150 um thickness = 3.87096 cm2 x 0.0150 cm = 0.05806 cm3
+
+.......................................................................
+# "TIB DOHM AUX Board"        "TIB_DOHM_AUX"    13.698     76.00
+* 1 "DOHM AUX Board"          "T_FR4"           10.868     1      ELE
+* 2 "Copper traces"           "Copper"           0.565     1      ELE    
+* 3 "IC Chips"                "T_Kapton"         0.030     2      ELE
+* 4 "Connector"               "T_Kapton"         1.937     1      ELE   
+* 5 "Connector pins"          "T_Bronze"         0.112     1      ELE
+* 6 "Resistors (0805)"        "Carbon"           3.625E-3 12      ELE
+* 7 "Capacitors (0805)"       "Alumina"          3.625E-3 15      ELE
+* 8 "Solder ball"             "SMD_metal"        0.058     1      ELE
+.......................................................................
+=======================================================================
+
+
+o TIB DOHM Carrier
+  ----------------
+
+MC Volume: 1.0 cm x 1.0 cm x 0.1125 cm (it is only for the thickness)
+
+1 mm Carbon Fibre covered with 0.125 mm domopak (Al)
+
+Contains:
+1) FR4       1.0 cm x 1.0 cm x 0.1 cm
+2) Aluminium 1.0 cm x 1.0 cm x 0.0125 mm
+
+.......................................................................
+# "TIB DOHM Carrier"          "TIB_DOHM_carrier" 0.1125    1.000
+* 1 "Carbon Fibre"            "T_FR4"            0.1000    1      CAB
+* 2 "Domopak"                 "Aluminium"        0.0125    1      CAB    
+.......................................................................
+=======================================================================
+
+
+o TIB DOHM cables 
+  ---------------
+
+MC Volume: 1.62 cm x 30 cm x 0.15 cm (only one 26-pin cable + connector, 5 on average)
+
+1-2) take Micro-T 25 pin rescaled to 26 pin
+    Plastic  1.741 g  -> 1.243 cm^3 -> 1.293 cm^3
+    Cu       2.354 g  -> 0.263 cm^3 -> 0.274 cm^3
+
+...................................................................
+# "TIB DOHM cables"           "TIB_DOHM_cable"       7.29     48.6
+* 1 "Micro T 26 pin conn"     "T_Kapton"             1.293    5 CAB
+* 2 "Micro T 26 pins"         "Copper"               0.274    5 CAB
+.......................................................................
+=======================================================================
+
+
+... here rr part ends
+
+# "END"  "END"  0.  0.   
+this has to be the last line !
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

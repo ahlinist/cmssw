@@ -1,0 +1,445 @@
+TIB MODULES
+============
+
+$$  This includes all the volumes that make up the TIB modules
+$$  as well as the electronics on the module string !
+
+
+Input file for mixture.f
+Start new mixtures with a '#' in the first column
+Start the components with a '*' in the first column
+You can type any kind of comment in as long as you don't start it
+with '#' or '*' !
+.....................................................................
+For mixture declaration: Name of Mixture, Name of GMIX for title file, 
+                         Monte Carlo Volume, MC Area
+For items in a compound: Item number, Comment, Material (has to be 
+                 written exactly as in material.input file), 
+                 Volume, Multiplicity, type
+      Type is one of the following:  SUP for support
+                                     SEN for sensitive volumes
+                                     CAB for cables
+                                     COL for cooling
+                                     ELE for electronics
+..................................................................... 
+
+o  Hybrid for single sided module 
+   ------------------------------
+
+Wedge shape, max dimensions 47 x 25 mm^2
+Actual surface (mm): 47*12 + 35*13 + 6*6 = 
+                   = 1055 mm^2 = 10.55 cm^2  
+
+Hybrid is changed to FR 4 !! (Mail from Uli 7/05/02)
+(1) Estimate: 300 mu FR4,
+          3 x 25 mu Cu
+          ~300 mu Kapton
+
+//******* (1) Ceramic hybrid (Al2O3) with gold 
+-thickness of ceramic: 380 um 
+                      120 um insulation (also ceramic)
+-4 conductive layers Au (8 um each)
+             occupancy 3 x 75 % of surrounding rectangle (JD Berst)
+                    assume 47 x 28 mm^2) => 987 mm^2
+                       1 x 35 %  ==> 460 mm^2
+//*************//
+-Pt-Au layer: tbd
+(2) Hybrid components
+    R: (14 + n_APV)   0402 size  material: carbon   -> 18 
+    C: 2 x 1206 large ones
+       (5 + 2*n_APV)  0402 size    -> 13
+                 0402: 1 x 0.5 x 0.5 mm^3
+                 1206: 3 x 1.5 x 1.5 mm^3
+    APV25:     7.1 x 8.1 x 0.3 mm^3     4 per hybrid
+    PLL+MUX  : 2.0 x 7.1 x 0.3 mm^3     1 per hybrid
+    DCU  :     2.0 x 2.0 x 0.3 mm^3     1 per hybrid
+
+(3) Carbon fibre frame piece: 2.5 x 4.7 x 0.05 cm = 0.5875 cm^3
+
+.................................................................
+# "TIB Hybrid SS"    "TIB_ele3/4"        1.316        11.75
+Actual hybrid
+* 1  "Hybrid FR4"         "T_FR4"           0.3165      1   ELE
+* 2  "Hybrid Kapton"      "T_Kapton"        0.3165      1   ELE
+* 3  "Hybrid Copper"      "Copper"          0.0791      1   ELE 
+Components:  Resistors
+* 4  "Resistors"          "Carbon"          2.5E-4      18  ELE
+* 5  "R metal"            "SMD_metal"       1.E-4       18  ELE
+Capacitors
+* 6  "Small caps"         "Alumina"         2.5E-4      13  ELE
+* 7  "C metal"            "SMD_metal"       1.E-4       13  ELE
+* 8  "Large caps"         "Alumina"         0.00675     2   ELE
+* 9  "C metal large"      "SMD_metal"       1.E-3       2   ELE
+* 10  "APV25"              "Silicon"         1.7253E-2   4   ELE
+* 11 "PLL+MUX"            "Silicon"         4.26E-3     1   ELE
+* 12 "DCU"                "Silicon"         1.2E-3      1   ELE
+* 13 "CF frame piece"     "Carbon fibre str." 0.5875    1   SUP
+..................................................................
+
+==================================================================
+
+o  Hybrid for double sided module 
+   ------------------------------
+
+(1) Hybrid as single-sided one 
+     
+(3-11) Hybrid components
+    R: (14 + n_APV)   0402 size  --> 20 
+    C: 2 x 1206 large ones
+       (5 + 2*n_APV)  0402 size   --> 17
+    APV25:        6 per hybrid
+    PLL+MUX  :    1 per hybrid
+    DCU  :        1 per hybrid
+
+(12) Carbon fibre frame piece: same surface as hybrid, 10.55 cm^2
+
+.................................................................
+# "TIB Hybrid DS"    "TIB_ele1/2"         1.316        11.75
+Actual hybrid
+* 1  "Hybrid FR4"         "T_FR4"           0.3165      1   ELE
+* 2  "Hybrid Kapton"      "T_Kapton"        0.3165      1   ELE
+* 3  "Hybrid Copper"      "Copper"          0.0791      1   ELE 
+Components:  Resistors
+* 4  "Resistors"          "Carbon"          2.5E-4      20   ELE
+* 5  "R metal"            "SMD_metal"       1.E-4       20   ELE
+Capacitors
+* 6  "Small caps"         "Alumina"         2.5E-4      17   ELE
+* 7  "C metal"            "SMD_metal"       1.E-4       17   ELE
+* 8  "Large caps"         "Alumina"         0.00675     2    ELE
+* 9  "C metal large"      "SMD_metal"       1.E-3       2    ELE
+* 10 "APV25"              "Silicon"         1.7253E-2   6    ELE
+* 11 "PLL+MUX"            "Silicon"         4.26E-3     1    ELE
+* 12 "DCU"                "Silicon"         1.2E-3      1    ELE
+* 13 "CF frame piece"     "Carbon fibre str." 0.5275    1    SUP
+..................................................................
+
+==================================================================
+
+o Cold ledge under hybrid
+  -----------------------
+(1) piece of read-out cold ledge
+(2) Al inserts, weight 0.045 g each =>  0.01667 cm^3  
+(3) CF ribbon, approx. 0.6 x 6 x 0.044 = 0.1584 
+
+..................................................................
+# "TIB RO cold ledge"  "TIB_ledge_hybrid"     0.0987        3.29
+* 1 "Cold ledge"      "Aluminium"         0.56        1    COL
+* 2 "Al Inserts"      "Aluminium"         0.01667      2    COL
+* 3 "CF Ribbon"       "Carbon fibre str." 0.1584       1    SUP
+...................................................................
+
+====================================================================
+
+o Cold ledge at hybrid side
+  ---------------------------
+(1) Aluminium ledge 0.1875 cm^3  !! UPDATE 12/01 0.4 cm^3
+(2) Carbon fibre frame piece (0.65*2.45 + 0.5*0.9*0.9)*0.05 = 0.0999 cm^3
+    (this is not correct for double-sided modules, there it should only
+     be aluminium - leave in for now)
+
+.......................................................................
+# "TIB Cold ledge hybrid side" "TIB_ledge_side"    0.045    1.5
+* 1 "Cold ledge"            "Aluminium"          0.4        1  COL
+* 2 "CF frame piece"        "Carbon fibre str."  0.0999     1  SUP
+.......................................................................
+
+======================================================================
+
+o Pitch adapter, r-phi
+  --------------------
+(1) Glass pitch adapter 
+dimensions 6.4 x 0.9 x 0.03 cm
+(2) Pitch adapter spacer (material similar to glass)
+dimensions 6.5 x 0.3 x 0.025
+(3) Carbon fibre frame piece
+dimensions 6 x 0.73 x 0.05 cm
+(4) protruding ceramic of hybrid
+dimensions 4.7 x 0.3 x 0.038 cm
+
+.....................................................................
+# "TIB Pitch Adapter r-phi"  "TIB_PA_rphi"      0.6048      5.4
+* 1 "Glass pitch adapter"  "Silica"        0.1728      1    ELE
+* 2 "Spacer"               "Silica"        0.04875     1    ELE
+* 3 "CF frame piece"       "Carbon fibre str."  0.219  1    SUP
+* 4 "Hybrid piece"         "Alumina"       0.05358     1    ELE
+.....................................................................
+
+=================================================================== 
+
+o Pitch adapter, stereo
+  --------------------
+(1) Glass pitch adapter 
+(2) Pitch adapter spacer (material similar to glass)
+(3) Carbon fibre frame piece      
+dimensions 6 x 0.73 x 0.05 cm
+(4) protruding ceramic of hybrid
+dimensions 4.7 x 0.3 x 0.038 cm
+
+.....................................................................
+# "TIB Pitch Adapter stereo"  "TIB_PA_ster"      0.612      5.466
+* 1 "Glass pitch adapter"  "Silica"        0.1534      1      ELE
+* 2 "Spacer"               "Silica"        0.04875     1      ELE
+* 3 "CF frame piece"       "Carbon fibre str."  0.219  1      SUP
+* 4 "Hybrid piece"         "Alumina"       0.05358     1      ELE
+.....................................................................
+
+=================================================================== 
+
+o Module side rail I (heavier side)
+  -------------------
+Volumes from single-sided modules. Also used for double-sided modules
+(1) Carbon fiber frame piece
+    ~ (12.55*0.9 + 1/2*0.9*0.9) * 0.05 = 0.585 cm^3
+(2) Kapton
+    (12.4*1.05 + 3*0.5)* 0.01 = 0.1452 cm^3
+(3) Copper traces  < 9 mm^3 (De Robertis)
+Neglect the components on it for the moment !
+....................................................................
+# "TIB side rail heavy"  "TIB_sid_rail1"         0.8249   11.457
+* 1 "CF frame piece"     "Carbon fibre str."   0.585   1    SUP
+* 2 "LV Kapton"          "T_Kapton"            0.1452  1    ELE
+* 3 "Copper traces"      "Copper"              0.01    1    ELE
+.....................................................................
+
+=================================================================== 
+
+o Module side rail II (lighter side)
+  -------------------
+Volumes from single-sided modules. Also used for double-sided modules
+(1) Carbon fiber frame piece  0.585 cm^3
+(2) Kapton
+    12.4*1.05 * 0.01 = 0.13 cm^3
+....................................................................
+# "TIB side rail light"  "TIB_sid_rail2"         0.8249   11.457
+* 1 "CF frame piece"     "Carbon fibre str."   0.585   1   SUP
+* 2 "LV Kapton"          "T_Kapton"            0.13    1   ELE
+.....................................................................
+
+=================================================================== 
+
+o Bottom ledge single sided 
+  -------------------------
+(1) Aluminium ledge  0.8 cm^3  UPDATE 12/01 : 3 gr =>1 cm^3
+(2) Aluminium inserts, weight = 0.045 g each = > 0.01667 cm^3
+(3) LV Kapton 5.6 x 0.75 x 0.01 = 0.042 cm^3
+(4) CF frame piece: ~ 6x1.25x0.05 = 0.375 cm^3
+(5) CF ribbon as under hybrid ledge    0.1584
+.....................................................................
+# "TIB module bottom ss" "TIB_ledge_bss"    0.5508     5.4
+* 1 "Cold ledge"        "Aluminium"          1.       1    COL
+* 2 "Al inserts"        "Aluminium"          0.01667  2    COL
+* 3 "LV Kapton"         "T_Kapton"           0.042    1    ELE
+* 4 "CF frame piece"    "Carbon fibre str."  0.375    1    SUP
+* 5 "CF ribbon"         "Carbon fibre str."  0.1584   1    SUP
+......................................................................
+
+=====================================================================
+
+o Bottom ledge double sided 
+  -------------------------
+(1) Aluminium ledge  3 g => 1.1 cm^3
+(2) Aluminium inserts, weight = 0.045 g each = > 0.01667 cm^3
+(3) LV Kapton 5.6 x 0.75 x 0.01 = 0.042 cm^3
+(4) CF frame piece: ~ 6x1.25x0.05 = 0.375 cm^3
+(5) CF ribbon as under hybrid ledge    0.1584
+.....................................................................
+# "TIB module bottom ds" "TIB_ledge_bds"      0.4437      4.35
+* 1 "Cold ledge"        "Aluminium"          1.1      1   COL
+* 2 "Al inserts"        "Aluminium"          0.01667  2    COL
+* 3 "LV Kapton"         "T_Kapton"           0.042    1    ELE
+* 4 "CF frame piece"    "Carbon fibre str."  0.375    1    SUP
+* 5 "CF ribbon"         "Carbon fibre str."  0.1584   1    SUP
+......................................................................
+
+=====================================================================
+
+o Bottom spacer in double sided modules
+  -------------------------------------
+(1) Aluminium spacer, thickness 0.3 mm, dimensions 6 x 0.9 cm
+(2) Kapton   as above
+(3) CF frame piece  as above 0.375 cm^3
+....................................................................
+# "Bottom spacer ds"    "TIB_mod_spacer2"    0.5508     5.4
+* 1 "Al spacer 0.3mm"   "Aluminium"          0.162   1   COL
+* 2 "LV Kapton"         "T_Kapton"           0.042   1   ELE
+* 3 "CF frame piece"    "Carbon fibre str."  0.375   1   SUP
+....................................................................
+====================================================================
+
+o Electronics for single-sided modules
+  ------------------------------------
+
+MCVolume 3.0 x 7.2 x 0.19 cm^3
+
+(1) Mothercable reinforcement on FR4 28 x 24 mm^2, 200 um
+(2) Piece of HV insulation Kapton from module, rough dimensions
+    35 x 5 mm + 32 x 7mm = 399 mm^2, 100 um thick (neglect Cu)
+(3-4) Kapton hybrid pigtail,
+    46 x 66 mm^2, 200 um thick, 76 mm^3 Cu (DeRobertis)
+(5-7) Connectors: 
+    HV: SAMTEC FTSH-105-02-L-MT & CLP-105-02-G-D-K
+               0.21 g Plastic, 0.077 g Bronze
+    LV:        FTSH-110-02-L-MT & CLP-110-02-G-D-K
+               0.42 g Plastic, 0.154 g Bronze
+    OH: AXN430330S & AXN33038S (30 pins)
+               0.38 g Plastic, 0.218 Cu
+    total plastic: 1.01 g => 0.721 cm^3 Kapton
+    total bronze:  0.231 g => 0.026 cm^3 
+    total Cu:      0.218 g => 0.0243 cm^3 
+
+(8-9) Buffer on mothercable:
+    estimate: 4 x 5 x 1 mm Plastic
+    8 pins    0.028 g Cu => 3.1E-3
+
+(10-17) Optohybrid (for 4 chips)
+    FR4 22 x 30 mm, 400 um 
+    Cu: 35 um, 2 layer with 50 % occ, 2 layers with 30 % occ
+    Capacitors (0603) 1.6 x .8 x .9 mm
+    Resistors  (0603) 1.6 x .8 x .9 mm
+    Laser diode: 0.02 cm^3 Si     (1 for 2 APVs)
+    Laser driver: 0.0025 cm^3 Si  (1 for 3 APVs ??)
+    Fiber clamps: 1.4 x 0.3 x 0.15 cm Kapton
+.......................................................................
+# "TIB Electronics ss"           "TIB_ICC1"      4.104     21.6
+* 1 "Mothercable FR4"            "T_FR4"         0.1344    1   CAB
+* 2 "Piece of HV Kapton"         "T_Kapton"      0.04      1   ELE
+* 3 "Hybrid pigtail"             "T_Kapton"      0.6072    1   ELE
+* 4 "Hybrid pigtail"             "Copper"        0.076     1   ELE
+* 5 "Connectors"                 "T_Kapton"      0.721     1   ELE
+* 6 "Connectors Pins"            "T_Bronze"      0.026     1   ELE
+* 7 "Connectors Pins"            "Copper"        0.0243    1   ELE     
+* 8 "Buffer on Mothercable"      "T_Kapton"      0.02      1   ELE
+* 9 "Buffer pins"                "Copper"        3.1E-3    1   ELE
+* 10 "Optohybrid Substrate"      "T_FR4"         0.264     1   ELE
+* 11 "Optohybrid copper"         "Copper"        0.037     1   ELE
+* 12 "OH capacitors (0603)"      "Alumina"       1.15E-3  17   ELE
+* 13 "OH resistors (0603)"       "Carbon"        1.15E-3  8    ELE
+* 14 "OH C/R solder"             "SMD_metal"     2.E-4    25   ELE
+* 15 "OH Laser diode"            "Silicon"       0.02     2    ELE
+* 16 "OH Laser driver"           "Silicon"       0.0025   2    ELE
+* 17 "OH fiber clamp"            "T_Kapton"      0.063    1    ELE
+.......................................................................
+========================================================================
+
+o Electronics for double-sided modules
+  ------------------------------------
+
+MCVolume 3.0 x 7.2 x 0.19 cm^3
+
+  everything as for single-sided, only multiplicities change
+.......................................................................
+# "TIB Electronics ds"           "TIB_ICC2"     4.104     21.6
+* 1 "Mothercable FR4"            "T_FR4"         0.1344    1   CAB
+* 2 "Piece of HV Kapton"         "T_Kapton"      0.04      2   ELE
+* 3 "Hybrid pigtail"             "T_Kapton"      0.6072    2   ELE
+* 4 "Hybrid pigtail"             "Copper"        0.076     2   ELE
+* 5 "Connectors"                 "T_Kapton"      0.721     2   ELE
+* 6 "Connectors Pins"            "T_Bronze"      0.026     2   ELE
+* 7 "Connectors Pins"            "Copper"        0.0243    2   ELE  
+* 8 "Buffer on Mothercable"      "T_Kapton"      0.02      2   ELE
+* 9 "Buffer pins"                "Copper"        3.1E-3    2   ELE
+* 10 "Optohybrid Substrate"      "T_FR4"         0.264     2   ELE
+* 11 "Optohybrid copper"         "Copper"        0.037     2   ELE
+* 12 "OH capacitors (0603)"      "Alumina"       1.15E-3  34   ELE
+* 13 "OH resistors (0603)"       "Carbon"        1.15E-3  16   ELE
+* 14 "OH C/R solder"             "SMD_metal"     2.E-4    50   ELE
+* 15 "OH Laser diode"            "Silicon"       0.02     6    ELE
+* 16 "OH Laser driver"           "Silicon"       0.0025   4    ELE
+* 17 "OH fiber clamp"            "T_Kapton"      0.063    2    ELE
+.......................................................................
+=======================================================================
+
+o Cold ledge side for electronics
+  -------------------------------
+This is along the cooling pipes
+MC Volume 35 x 6.25 x 1.1 mm
+
+Contains 288.75 mm^3 Aluminium UPDATE : increase by 25 %
+........................................................................
+# "TIB ICC cold ledge side"   "TIB_ICC_ledge1"     0.2406      2.187
+* 1 "Cold ledge"            "Aluminium"          0.36      1   COL
+........................................................................
+========================================================================
+
+o Cold ledge 2 for electronics
+  -------------------------------
+This is perpendicular to the cooling pipes
+MC Volume 3 x 47.5 x 1.1 mm
+
+Contains 170 mm^3 Aluminium plus 2 inserts (take identical to 
+hybrid inserts, i.e 0.045 g each =>  0.01667 cm^3
+No info available !! 
+........................................................................
+# "TIB ICC cold ledge 2"    "TIB_ICC_ledge2"      0.157    1.425
+* 1 "Cold ledge"               "Aluminium"          0.213      1  COL
+* 2 "Al pins"                  "Aluminium"         0.01667     2  COL
+........................................................................
+========================================================================
+
+o TIB CCU Board
+  --------------
+
+MCVolume:  7.4 x 2.2 x 0.304 mm 
+
+Nothing is really know about the cold ledge. 
+For the time being, just smear it over the full volume !
+
+CCUM board: FR4 32 x 22 x 1 mm
+4 layer Cu 17 um, 50 % occ
+CCU in plastic housing, 15 x 15 x 1mm
+196 solder "balls" diameter 0.5 mm
+2 more plastic ship carriers, 7 x 7 x 0.3 mm
+4 caps, half size of 0402
+8 R     "   
+Connectors: 2 pairs QT(S)E-020-01-L-D-A
+      SAMTEC info not available.
+ For the moment: take double of FTSH/CLP-110 pair plus 10 %.
+    -> 0.9 g plastic, 0.33 g Bronze
+
+Cooling ledge: I make a fantasy guess of 0.27 cm^3 Aluminium !
+
+in addition: FR4 reenforcement of mothercable:
+  45 x 32 mm, 200 um thickness
+
+........................................................................
+# "TIB CCUM Board"            "TIB_CCUM"        4.949   16.28
+* 1 "CCUM Board"              "T_FR4"           0.704    1     ELE
+* 2 "Copper traces"           "Copper"          0.024    1     ELE
+* 3 "CCU in housing"          "T_Kapton"        0.225    1     ELE
+* 4 "Solder balls"            "SMD_metal"       0.01     1     ELE
+* 5 "Other chips"             "T_Kapton"        0.015    2     ELE 
+* 6 "Capacitors"              "Alumina"         1.E-4    4     ELE
+* 7 "Resistors"               "Carbon"          1.E-4    8     ELE     
+* 8 "Solder"                  "SMD_metal"       1.E-4    12    ELE
+* 9 "Connector"               "T_Kapton"        0.643    2     ELE
+* 10 "Connector pins"         "T_Bronze"        0.037    2     ELE
+* 11 "Cold ledge (guess!)"    "Aluminium"       0.27     1     COL
+* 12 "Mothercable FR4"        "T_FR4"           0.288    1     CAB
+.......................................................................
+=======================================================================
+
+
+# "END"  "END"  0.  0.   
+this has to be the last line !
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,268 @@
+TEC Structure (anything but modules)
+====================================
+Input file for mixture.f
+Start new mixtures with a '#' in the first column
+Start the components with a '*' in the first column
+You can type any kind of comment in as long as you don't start it
+with '#' or '*' !
+.....................................................................
+For mixture declaration: Name of Mixture, Name of GMIX for title file, 
+                         Monte Carlo Volume, MC Area
+For items in a compound: Item number, Comment, Material (has to be 
+                 written exactly as in material.input file), 
+                 Volume, Multiplicity, Type     
+      Type is one of the following:  SUP for support
+                                     SEN for sensitive volumes
+                                     CAB for cables
+                                     COL for cooling
+                                     ELE for electronics
+..................................................................... 
+=======================================================================
+
+o TEC Frontplate
+  --------------
+
+  r = 22.9 - 110.3 cm
+  thickness  0.54 cm
+  (1) Carbon fibre skins 2 * 0.02 cm 
+  (2) NOMEX core, 0.5 cm thick
+...................................................................
+# "TEC Frontplate"     "Tk_SO_FC_C"          19749.6    36573.4
+* 1 "CF skins 0.2 mm"  "Carbon fibre str."    731.47     2       SUP
+* 2 "Nomex core"       "TEC_Nomex"           18286.7     1       SUP
+....................................................................
+=====================================================================
+
+o TEC Backplate
+  -------------
+
+  r = 30.9 - 110.3 cm
+  thickness 8.3 cm
+  This plate is in reality 2 plates attached to each other
+  (1) Carbon fibre skins: total thickness of 0.23 cm
+  (2) NOMEX: total thickness 8.3 cm
+.....................................................................
+# "TEC Backplate"     "Tk_SO_FC_B"           292336.6    35221.3
+* 1 "CF skins"        "Carbon fibre str."    8100.9      1       SUP
+* 2 "Nomex core"       "TEC_Nomex"           292336.8    1       SUP
+....................................................................
+=====================================================================
+
+o TEC wheels 
+  ----------
+
+  The wheels consist of a 1.6 cm NOMEX core and 2*0.04 cm CF skins.
+  11800 cm^2 of the area are cut out due to holes in the structure.
+  (I assume the same holes are cut for all 9 disks, irrespective of their
+   inner radius). Hence, for the 3 innermost disk, the material is reduced by 
+  32.3%, and by 33.5% for the 6 outer disks. => Take 33 % for all.
+  Thus for calculation take 100 cm^3 volume !
+......................................................................
+# "TEC Wheel NOMEX"       "TEC_wheel_Nomex"      160        100
+* 1 "Nomex, reduced by 33%"     "TEC_Nomex"      106.4     1    SUP
+......................................................................
+# "TEC Wheel CF skins"          "TEC_wheel_CF"       8       100
+* 1 "Carbon fibre, reduced 33%"  "Carbon fibre str." 5.32   1   SUP  
+......................................................................
+======================================================================
+
+o Inserts for petal fixation
+  --------------------------
+ MC Volume: cylinder with r=0.55cm and length=1.6 cm => V = 1.52 cm^3
+
+ Assume 4.8 g Aluminium/piece
+ 4.8g/rho(al)[2.7] => 1.78 cm^3
+.......................................................................
+# "Petal fixations"             "TEC_wheelinsert"   1.52     0.95
+* 1 "Aluminium"                 "Aluminium"         1.78     1   SUP
+......................................................................
+======================================================================
+ 
+o Fixations to inner support tube
+  -------------------------------
+  MC Volume: Tube sectors with dimensions: 2.3 cm in r, 8.5 cm in phi 
+             and 1 cm thick => 19.55 cm^3 
+  Per fixation: 50 g Aluminium + 10 g Stainless Steel
+                18.52 cm^3 Al  +  1.28 cm^3 SS   
+.......................................................................
+# "Fixations to inner support"  "TEC_Fixframe"       19.55    19.55
+* 1 "Aluminium fixations"        "Aluminium"          18.52    1   SUP
+* 2 "Stainless Steel screw"      "Steel-008"          1.28     1   SUP
+.......................................................................
+=======================================================================
+
+o Fixations to service channels
+  -----------------------------
+  MC Volume: 22.94 cm^3
+
+  Per fixation: 60 g Aluminium + 10 g SS
+                22.22 cm^3  Al + 1.28 g SS 
+......................................................................
+# "Fixations to service channels"  "TEC_FixServ"      22.94    14.34
+* 1 "Aluminium fixations"        "Aluminium"          22.22    1   SUP
+* 2 "Stainless Steel screw"      "Steel-008"          1.28     1   SUP
+.......................................................................
+=======================================================================
+
+o Service channel
+  ---------------
+  MC Volume: 3433.3 cm^3
+ 
+  16 total, 8 per endcap
+  Demetris estimates 15.1 kg CF for all of them
+  => 558.43 cm^3 per service channel
+....................................................................
+# "Service channel"                 "TEC_rods"       3433.3    21.73
+* 1 "Carbon fiber"          "Carbon fibre str."       558.43   1   SUP
+.....................................................................
+======================================================================
+
+o TEC petal 
+  ---------
+  MC Volume: take here a petal of the first 3 disks:
+            r = 23.3 - 109.25 cm
+            dz = 1cm
+            dphi = 26.5 deg  
+            --> V = 2635 cm^3  (2533.6 cm^3 for the shorter petals)
+
+  (1) 10 mm NOMEX core   
+  (2) 2*0.04 cm CF skins
+  (3) cooling pipes: take as length for cooling circuit 2*3.4 m 
+     %% SS with 0.2 cm outer radius and 0.01 mm wall thickness
+     new:: Titanium pipes, 0.4 cm OD, 0.02 cm wall thickness  
+  (4) Coolant C6F14 
+.......................................................................
+# "TEC petals"                  "TEC_petal"      2635.     2635.     
+* 1 "Nomex core"               "TEC_Nomex"       2635.     1    SUP
+* 2 "Carbon fiber skins"  "Carbon fibre str."    210.8     1    SUP
+* 3 "Cooling pipes"               "Titanium"     8.12      2    COL
+* 4 "Coolant"                     "C6F14"        34.6      2    COL
+.......................................................................
+=======================================================================
+
+o Petal connectors
+  ----------------
+ 
+  MC Volume: tube sector, r= 108.5-109.25 cm, dphi= 10, dz = 0.8  
+ 
+  (1-2) Cooling connectors: 4 * 2 g Al    => 2.963 cm^3
+                          4 * 8 g Steel => 4.1 cm^3
+  (3-4) HV connector: 
+             Samtec IPT1 18 pins - no info
+   	     Take info from Micro-T connector from Bill's table
+                 => 0.069 g plastic/pin + 0.09 g Copper/pin
+  (5-6) Power connector 110 pin EZmet 2mm hard metric
+                    don't know anything, so take values from Bill's
+                    table (see above)
+.....................................................................
+# "Petal Connectors"           "TEC_PetalCon"       11.4      14.25
+* 1 "Cooling connectors"       "Aluminium"          2.963    1    COL
+* 2 "Cooling connectors"       "Steel-008"          4.1      1    COL
+* 3 "HV connector"             "T_Kapton"           0.049    18   CAB
+* 4 "HV connector pins"        "Copper"             0.01     18   CAB
+* 5 "Power connector"          "T_Kapton"           0.049    110  CAB
+* 6 "Power connector pins"     "Copper"             0.01     110  CAB
+.....................................................................
+=====================================================================
+
+o Alignment periscopes
+  --------------------
+
+  MC Volume: r=30.9 - 39.9, dphi = 10, dz = 6 cm
+
+  (1) 10 g of glass
+  (2) 100 g CF
+  (3) 2 * 60 g CF for the mounting
+  (4) 2 * 10 g Al for the mounting
+......................................................................
+# "TEC Alignment Periscopes"        "TEC_periscopes"     333.6   55.6 
+* 1 "Glass prism"                   "Silica"             4.545   1  SUP
+* 2 "Connection"               "Carbon fibre str."       59.2    1  SUP
+* 3 "Mounting platform"        "Carbon fibre str."       35.5    2  SUP
+* 4 "Mounting platform"            "Aluminium"            3.7    2  SUP
+........................................................................
+========================================================================
+
+o TEC tiltmeters
+  --------------
+
+  MC Volume: r= 30.9 - 32.9 cm, dphi = 3.6, dz = 5 cm
+
+  Essentially block of copper 2 x 2 x 5 cm
+
+........................................................................
+# "TEC Alignment tiltmeters"       "TEC_tiltmeter"       20.    4.
+* 1 "Brick of copper"              "Copper"              20.   1    SUP
+........................................................................
+========================================================================
+
+o TEC Optoconnectors
+  Located inbetween petals
+
+  MC Volume: Area is 33.91 cm^2, r=95.65-107.60, dphi = 1.6
+             thickness: 1.8 cm for 4 connectors ! For the other 
+             wheels with 5 and 6 connectors thickness is scaled
+             accordingly !
+........................................................................
+# "TEC optoconnectors"             "TEC_OptoCon"      61.038   33.91       
+* 1 "Optoconnector"                "T_Kapton"         15.0    4   CAB
+* 2 "Optoconnector"                "Copper"           0.446   4   CAB
+........................................................................
+========================================================================
+
+o TEC axial cables
+  -----------------
+  MC Volume: Cross section of 1.62 cm^2
+
+  This volume serves 2 petals !
+  
+  (1) Fiber ribbon
+      9.66 fiber ribbons for 2 petals on average
+      plus 0.666 ribbons for control loop => 10.333
+  (2) 384 MS cables for 9 wheels => 5.333 for 2 petals
+      make them all for 36 APV's
+  (3) 144 control cables => 2 per pair of petals
+  (4) 64 cooling pipes => 1 per pair 
+        These are Stainless Steel 6 mm radius, 0.5 mm skin
+................................................................
+# "TEC axial cables"         "TEC_ax_cable"       1.62     -1.
+* 1 "Optical ribbon"         "Fibre_Ribbon"       0.00961   10.333 CAB
+* 2 "Alu MS Cable 36 APVs"   "MS_Al36"            0.515     5.333  CAB
+* 3 "Control Cables"         "MS_cntrl_cable"     0.283     2      CAB
+* 4 "Cooling pipes"          "Steel-008"          0.1806    1      COL
+* 5 "Coolant"                "C6F14"              0.95      1      COL
+.......................................................................
+=======================================================================
+
+o TEC radial cable
+  ----------------
+
+  this includes the optical fibers.
+  There are on average 56.77 fibers/petal. Most of them will only
+  run a very short distance. I think it is fair to cut the number
+  by a factor of 3 ==> 18 fibers.
+.......................................................................
+# "TEC radial cables"        "TEC_rad_cable"     0.105     -1.
+* 1 "Optical fibers"           "Quartz"          1.27E-4   18   CAB
+* 2 "Optical fibers"           "Polyethylene"    6.23E-3   18   CAB 
+.......................................................................
+=======================================================================
+
+# "END"  "END"  0.  0.   
+this has to be the last line !
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

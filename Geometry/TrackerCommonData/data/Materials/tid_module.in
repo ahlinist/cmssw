@@ -1,0 +1,272 @@
+TID MODULES
+============
+
+$$  This includes all the volumes that make up the TID modules
+$$  as well as the electronics !
+
+
+Input file for mixture.f
+Start new mixtures with a '#' in the first column
+Start the components with a '*' in the first column
+You can type any kind of comment in as long as you don't start it
+with '#' or '*' !
+.....................................................................
+For mixture declaration: Name of Mixture, Name of GMIX for title file, 
+                         Monte Carlo Volume, MC Area
+For items in a compound: Item number, Comment, Material (has to be 
+                 written exactly as in material.input file), 
+                 Volume, Multiplicity, type
+      Type is one of the following:  SUP for support
+                                     SEN for sensitive volumes
+                                     CAB for cables
+                                     COL for cooling
+                                     ELE for electronics
+..................................................................... 
+
+o TID Pitch Adapter
+  -------------
+The MC Volume should have the original size, so just take 100 % Silica.
+Assumed thickness: 0.05 cm 
+
+...................................................................
+# "TID pitch adapter"    "TID_PitchAdapter"       0.05      1.
+* 1 "Glass pitch adapter"    "Silica"             0.05      1  ELE
+....................................................................
+====================================================================
+
+o Frame side (legs and bottom)
+  ----------------------------
+MC Volumes are about original size, so scale thicknesses
+(1) Carbon fiber frame piece 0.05 cm thickness
+(2) Kapton 0.01 cm thickness
+(3) Copper traces, make them about 7% of the Kapton thickness, 
+    i.e. 0.0007
+....................................................................
+# "TID frame legs"       "TID_frame_side"       0.06   1.
+* 1 "CF frame piece"     "Carbon fibre str."    0.05   1    SUP
+* 2 "LV Kapton"          "T_Kapton"             0.01   1    ELE
+* 3 "Copper traces"      "Copper"               0.0007 1    ELE
+.....................................................................
+=================================================================== 
+
+o TID Frame top
+  -------------
+This is the Carbon fibre support under the hybrid and the pitch adapter.
+Simply 100 % Carbon fibre, thickness 0.05 cm
+....................................................................
+# "TID frame top"       "TID_frame_top"         0.05   1.
+* 1 "CF frame piece"     "Carbon fibre str."    0.05   1    SUP
+.....................................................................
+=================================================================== 
+
+o  Hybrid for single sided module (Ring 3) 
+   ------------------------------
+4 APVs
+
+MC Volume: 4.7 x 2.5 x 0.05 cm = 0.5875
+
+Wedge shape, max dimensions 47 x 25 mm^2
+Actual surface (mm): 47*12 + 35*13 + 6*6 = 
+                   = 1055 mm^2 = 10.55 cm^2  
+
+(1) new FR4 hybrid 
+    Estimate: 300 mu FR4,
+          3 x 25 mu Cu
+          ~300 mu Kapton
+-Pt-Au layer: tbd
+(2) Hybrid components
+    R: (14 + n_APV)   0402 size  material: carbon   -> 18 
+    C: 2 x 1206 large ones
+       (5 + 2*n_APV)  0402 size    -> 13
+                 0402: 1 x 0.5 x 0.5 mm^3
+                 1206: 3 x 1.5 x 1.5 mm^3
+    APV25:     7.1 x 8.1 x 0.3 mm^3     4 per hybrid
+    PLL+MUX  : 2.0 x 7.1 x 0.3 mm^3     1 per hybrid
+    DCU  :     2.0 x 2.0 x 0.3 mm^3     1 per hybrid
+
+.................................................................
+# "TID Hybrid ring 3"    "TID_ele3"         0.5875         11.75
+Actual hybrid
+* 1  "Hybrid FR4"         "T_FR4"           0.3165      1   ELE
+* 2  "Hybrid Kapton"      "T_Kapton"        0.3165      1   ELE
+* 3  "Hybrid Copper"      "Copper"          0.0791      1   ELE 
+Components:  Resistors
+* 4  "Resistors"          "Carbon"          2.5E-4      18  ELE
+* 5  "R metal"            "SMD_metal"       1.E-4       18  ELE
+Capacitors
+* 6  "Small caps"         "Alumina"         2.5E-4      13  ELE
+* 7  "C metal"            "SMD_metal"       1.E-4       13  ELE
+* 8  "Large caps"         "Alumina"         0.00675     2   ELE
+* 9  "C metal large"      "SMD_metal"       1.E-3       2   ELE
+* 10 "APV25"              "Silicon"         1.7253E-2   4   ELE
+* 11 "PLL+MUX"            "Silicon"         4.26E-3     1   ELE
+* 12 "DCU"                "Silicon"         1.2E-3      1   ELE
+..................................................................
+
+==================================================================
+
+o  Hybrid for double sided module (ring 1 & ring 2) 
+   ------------------------------
+6 APVs
+MC Volume: 4.7 x 2.5 x 0.05 cm = 0.5875
+
+(1) Hybrid as single-sided one 
+     
+(3-11) Hybrid components
+    R: (14 + n_APV)   0402 size  --> 20 
+    C: 2 x 1206 large ones
+       (5 + 2*n_APV)  0402 size   --> 17
+    APV25:        6 per hybrid
+    PLL+MUX  :    1 per hybrid
+    DCU  :        1 per hybrid
+
+.................................................................
+# "TID Hybrid rings 1/2"    "TID_ele1/2"      0.5875       11.75
+Actual hybrid
+* 1  "Hybrid FR4"         "T_FR4"           0.3165      1   ELE
+* 2  "Hybrid Kapton"      "T_Kapton"        0.3165      1   ELE
+* 3  "Hybrid Copper"      "Copper"          0.0791      1   ELE 
+Components:  Resistors
+* 4  "Resistors"          "Carbon"          2.5E-4      20   ELE
+* 5  "R metal"            "SMD_metal"       1.E-4       20   ELE
+Capacitors
+* 6  "Small caps"         "Alumina"         2.5E-4      17   ELE
+* 7  "C metal"            "SMD_metal"       1.E-4       17   ELE
+* 8  "Large caps"         "Alumina"         0.00675     2    ELE
+* 9  "C metal large"      "SMD_metal"       1.E-3       2    ELE
+* 10 "APV25"              "Silicon"         1.7253E-2   6    ELE
+* 11 "PLL+MUX"            "Silicon"         4.26E-3     1    ELE
+* 12 "DCU"                "Silicon"         1.2E-3      1    ELE
+..................................................................
+==================================================================
+
+o Cooling insert
+  --------------
+
+MC Volume: 1.5 X 0.8 X 0.38 cm^3 ==> 0.456 cm^3
+
+This is mainly Aluminium, and not much known about it yet...
+i.e. make it 100 % Aluminium, dimensions should be about ok.
+.......................................................................
+# "TID module cooling inserts"   "TID_Cool_insert" 0.456     1.2
+* 1 "Aluminium insert"            "Aluminium"      0.456     1   COL
+.......................................................................
+=======================================================================
+
+o Electronics for single-sided modules (ICC2)
+  ------------------------------------
+
+MCVolume 3.0 x 6.0 x 0.15 cm^3 ==> 2.7 cm^3
+
+(1-17) as in TIB, in addition piece of cooling pipe !
+ 
+(1) Mothercable reinforcement on FR4 28 x 24 mm^2, 200 um
+(2) Piece of HV insulation Kapton from module, rough dimensions
+    35 x 5 mm + 32 x 7mm = 399 mm^2, 100 um thick (neglect Cu)
+(3-4) Kapton hybrid pigtail,
+    46 x 66 mm^2, 200 um thick, 76 mm^3 Cu (DeRobertis)
+(5-7) Connectors: 
+    HV: SAMTEC FTSH-105-02-L-MT & CLP-105-02-G-D-K
+               0.21 g Plastic, 0.077 g Bronze
+    LV:        FTSH-110-02-L-MT & CLP-110-02-G-D-K
+               0.42 g Plastic, 0.154 g Bronze
+    OH: AXN430330S & AXN33038S (30 pins)
+               0.38 g Plastic, 0.218 Cu
+    total plastic: 1.01 g => 0.721 cm^3 Kapton
+    total bronze:  0.231 g => 0.026 cm^3 
+    total Cu:      0.218 g => 0.0243 cm^3 
+
+(8-9) Buffer on mothercable:
+    estimate: 4 x 5 x 1 mm Plastic
+    8 pins    0.028 g Cu => 3.1E-3
+
+(10-17) Optohybrid (for 4 chips)
+    FR4 22 x 30 mm, 400 um 
+    Cu: 35 um, 2 layer with 50 % occ, 2 layers with 30 % occ
+    Capacitors (0603) 1.6 x .8 x .9 mm
+    Resistors  (0603) 1.6 x .8 x .9 mm
+    Laser diode: 0.02 cm^3 Si     (1 for 2 APVs)
+    Laser driver: 0.0025 cm^3 Si  (1 for 3 APVs ??)
+    Fiber clamps: 1.4 x 0.3 x 0.15 cm Kapton
+
+(18-19) Piece of cooling pipe, approx. length 6 cm 
+     Aluminium  3mm OD, 2.7 mm ID
+     Coolant     
+.......................................................................
+# "TID ICC ring 3"               "TID_ICC2"      2.7       18.0
+* 1 "Mothercable FR4"            "T_FR4"         0.1344    1   CAB
+* 2 "Piece of HV Kapton"         "T_Kapton"      0.04      1   ELE
+* 3 "Hybrid pigtail"             "T_Kapton"      0.6072    1   ELE
+* 4 "Hybrid pigtail"             "Copper"        0.076     1   ELE
+* 5 "Connectors"                 "T_Kapton"      0.721     1   ELE
+* 6 "Connectors Pins"            "T_Bronze"      0.026     1   ELE
+* 7 "Connectors Pins"            "Copper"        0.0243    1   ELE     
+* 8 "Buffer on Mothercable"      "T_Kapton"      0.02      1   ELE
+* 9 "Buffer pins"                "Copper"        3.1E-3    1   ELE
+* 10 "Optohybrid Substrate"      "T_FR4"         0.264     1   ELE
+* 11 "Optohybrid copper"         "Copper"        0.037     1   ELE
+* 12 "OH capacitors (0603)"      "Alumina"       1.15E-3  17   ELE
+* 13 "OH resistors (0603)"       "Carbon"        1.15E-3  8    ELE
+* 14 "OH C/R solder"             "SMD_metal"     2.E-4    25   ELE
+* 15 "OH Laser diode"            "Silicon"       0.02     2    ELE
+* 16 "OH Laser driver"           "Silicon"       0.0025   2    ELE
+* 17 "OH fiber clamp"            "T_Kapton"      0.063    1    ELE
+* 18 "Cooling pipe 6 cm"         "Aluminium"     0.0134   6    COL
+* 19 "Coolant"                   "C6F14"         0.0573	  6    COL
+.......................................................................
+========================================================================
+
+o Electronics for double-sided modules
+  ------------------------------------
+
+MCVolume 3.0 x 6.0 x 0.15 cm^3
+
+  everything as for single-sided, only multiplicities change
+.......................................................................
+# "TID ICC rings 1/2"           "TID_ICC1"      2.7      18.0
+* 1 "Mothercable FR4"            "T_FR4"         0.1344    1   CAB
+* 2 "Piece of HV Kapton"         "T_Kapton"      0.04      2   ELE
+* 3 "Hybrid pigtail"             "T_Kapton"      0.6072    2   ELE
+* 4 "Hybrid pigtail"             "Copper"        0.076     2   ELE
+* 5 "Connectors"                 "T_Kapton"      0.721     2   ELE
+* 6 "Connectors Pins"            "T_Bronze"      0.026     2   ELE
+* 7 "Connectors Pins"            "Copper"        0.0243    2   ELE  
+* 8 "Buffer on Mothercable"      "T_Kapton"      0.02      2   ELE
+* 9 "Buffer pins"                "Copper"        3.1E-3    2   ELE
+* 10 "Optohybrid Substrate"      "T_FR4"         0.264     2   ELE
+* 11 "Optohybrid copper"         "Copper"        0.037     2   ELE
+* 12 "OH capacitors (0603)"      "Alumina"       1.15E-3  34   ELE
+* 13 "OH resistors (0603)"       "Carbon"        1.15E-3  16   ELE
+* 14 "OH C/R solder"             "SMD_metal"     2.E-4    50   ELE
+* 15 "OH Laser diode"            "Silicon"       0.02     6    ELE
+* 16 "OH Laser driver"           "Silicon"       0.0025   4    ELE
+* 17 "OH fiber clamp"            "T_Kapton"      0.063    2    ELE
+* 18 "Cooling pipe 6 cm"         "Aluminium"     0.0134   6    COL
+* 19 "Coolant"                   "C6F14"         0.0573	  6    COL
+.......................................................................
+=======================================================================
+
+# "END"  "END"  0.  0.   
+this has to be the last line !
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
