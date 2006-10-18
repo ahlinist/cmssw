@@ -4,8 +4,8 @@
  * Description:
  *      Class to read directly OMDS DB with OCCI and fill Offline DB
  *
- * $Date: 2006/08/25 10:41:16 $
- * $Revision: 1.6 $
+ * $Date: 2006/10/09 12:00:42 $
+ * $Revision: 1.7 $
  * \author Michal Bluj -- INS Warsaw
  *
  */
@@ -250,7 +250,7 @@ public:
 	TriggerBoardSpec tb(theTB[iTB].second);
 	sqlQuery = " SELECT Board_BoardId, TriggerBoardInputNum FROM LinkConn ";
 	sqlQuery += " WHERE TB_TriggerBoardId= ";
-	sqlQuery +=  IntToString(theTB[iFED].first);  
+	sqlQuery +=  IntToString(theTB[iTB].first);  
 	sqlQuery += " ORDER BY TriggerBoardInputNum ";
 	stmt->setSQL(sqlQuery.c_str());
 	rset = stmt->executeQuery();
