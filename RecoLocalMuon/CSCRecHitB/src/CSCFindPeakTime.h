@@ -8,7 +8,7 @@
  *    N*(p0**2/256/exp(-4))*(t-t0)**4*exp(-p0*(t-t0))				  <BR>
  *										  <BR>
  * PulseTime has peaking time fixed to 133 nsec.				  <BR>
- * PulseTime_full lets peaking time vary.					  <BR>
+ * It actually fits for the t0                                                    <BR>
  *										  <BR>
  * Fit the log of data                                                     	  <BR>
  *                      chi2=(log(Data)-log(N)-4*log(t-t0)+p0*(t-t0))**2	  <BR>
@@ -18,7 +18,8 @@
  *										  <BR>
  * Note: tpeak=4/p0 (nsec) and adc[0] is arbitrarily defined a time of 0.0 nsec.  <BR>
  *                                                                                <BR>
- * Finally, fit charge deposition for each time bin                               <BR>
+ * Finally, a fit to the charge deposition for each time bin is performed using   <BR>
+ * the fitted t0.                                                                 <BR>
  */
 
 #include <vector>

@@ -3,8 +3,8 @@
 #include <RecoLocalMuon/CSCRecHitB/src/CSCHitFromStripOnly.h>
 #include <RecoLocalMuon/CSCRecHitB/src/CSCPeakBinOfStripPulse.h>
 #include <RecoLocalMuon/CSCRecHitB/src/CSCStripGain.h>
-
 #include <RecoLocalMuon/CSCRecHitB/src/CSCStripData.h>
+#include <RecoLocalMuon/CSCRecHitB/src/CSCStripHitData.h>
 
 #include <DataFormats/MuonDetId/interface/CSCDetId.h>
 #include <DataFormats/CSCDigi/interface/CSCStripDigi.h>
@@ -63,11 +63,11 @@ std::vector<CSCStripHit> CSCHitFromStripOnly::runStrip( const CSCDetId& id, cons
   std::vector<CSCStripHit> hitsInLayer;
   
   // cache layer info for ease of access
-  id_ = id;
-  layer_ = layer;
+  id_        = id;
+  layer_     = layer;
   layergeom_ = layer_->geometry();
-  specs_ = layer->chamber()->specs();  
-  Nstrips = specs_->nStrips();
+  specs_     = layer->chamber()->specs();  
+  Nstrips    = specs_->nStrips();
 
   TmaxOfCluster = 5;
 
@@ -77,7 +77,7 @@ std::vector<CSCStripHit> CSCHitFromStripOnly::runStrip( const CSCDetId& id, cons
   // N.B. in database, strip_id starts at 0, whereas it starts at 1 in detId
   // Initialize weights to 1. and crosstalk to 0., in case database isn't populated or using MC
 
-  if (isData) {
+  if ( isData ) {
     stripGain_->setCalibration( gains_ );
     float globalGainAvg = stripGain_->getStripGainAvg();
     stripGain_->getStripGain( id_, globalGainAvg, gainWeight );
@@ -118,22 +118,22 @@ float CSCHitFromStripOnly::makeCluster( int centerStrip ) {
   
   float strippos = -1.;
   ClusterSize = theClusterSize;
-  std::vector<CSCStripData> stripDataV;
+  std::vector<CSCStripHitData> stripDataV;
  
   // We only want to use strip position in terms of strip # for the strip hit.
     
   // If the cluster size is such that you go beyond the edge of detector, shrink cluster appropriatly
-  for ( int i = theClusterSize/2; i > 0; i--) {
+  for ( int i = 1; i < theClusterSize/2 + 1; i++) {
+ 
     if ( centerStrip - i < 1 || centerStrip + i > specs_->nStrips() ) {
+
       // Shrink cluster size, but keep it an odd number of strips.
       ClusterSize = 2*i - 1;  
-    } else {
-      break;
     }
   }
 
   for ( int i = -ClusterSize/2; i <= ClusterSize/2; i++ ) {
-    CSCStripData data = makeStripData(centerStrip, i);
+    CSCStripHitData data = makeStripData(centerStrip, i);
     stripDataV.push_back( data );
   }
   
@@ -147,21 +147,46 @@ float CSCHitFromStripOnly::makeCluster( int centerStrip ) {
  *
  * Gain corrections are applied here
  */
-CSCStripData CSCHitFromStripOnly::makeStripData(int centerStrip, int offset) {
+CSCStripHitData CSCHitFromStripOnly::makeStripData(int centerStrip, int offset) {
   
-  CSCStripData prelimData(-1.,0.,0.,0.,0.,0);
+  CSCStripHitData prelimData(-1.,0.,0.,0.,0.,0);
   int thisStrip = centerStrip+offset;
 
-  float adc[8];
-  adc[0] = thePulseHeightMap[thisStrip-1].y0();
-  adc[1] = thePulseHeightMap[thisStrip-1].y();
-  adc[2] = thePulseHeightMap[thisStrip-1].y2();
-  adc[3] = thePulseHeightMap[thisStrip-1].y3();
+  int tmax      = thePulseHeightMap[centerStrip-1].t();
+  TmaxOfCluster = tmax;
 
-  TmaxOfCluster = thePulseHeightMap[centerStrip-1].t();
+  float adc[8];
+
+  if ( tmax == 3 ) {
+    adc[0] = thePulseHeightMap[thisStrip-1].y2();
+    adc[1] = thePulseHeightMap[thisStrip-1].y3();
+    adc[2] = thePulseHeightMap[thisStrip-1].y4();
+    adc[3] = thePulseHeightMap[thisStrip-1].y5();
+  } else if ( tmax == 4 ) {
+    adc[0] = thePulseHeightMap[thisStrip-1].y3();
+    adc[1] = thePulseHeightMap[thisStrip-1].y4();
+    adc[2] = thePulseHeightMap[thisStrip-1].y5();
+    adc[3] = thePulseHeightMap[thisStrip-1].y6();
+  } else if ( tmax == 5 ) {
+    adc[0] = thePulseHeightMap[thisStrip-1].y4();
+    adc[1] = thePulseHeightMap[thisStrip-1].y5();
+    adc[2] = thePulseHeightMap[thisStrip-1].y6();
+    adc[3] = thePulseHeightMap[thisStrip-1].y7();
+  } else if ( tmax == 6 ) {
+    adc[0] = thePulseHeightMap[thisStrip-1].y5();
+    adc[1] = thePulseHeightMap[thisStrip-1].y6();
+    adc[2] = thePulseHeightMap[thisStrip-1].y7();
+    adc[3] = 0.1;
+  } else {
+    adc[0] = 0.1;
+    adc[1] = 0.1;
+    adc[2] = 0.1;
+    adc[3] = 0.1;
+    std::cout << "[CSCHitFromStripOnly::makeStripData] Tmax out of range: contact CSC expert!!!" << std::endl;
+  }
   
   if ( offset == 0 ) {
-    prelimData = CSCStripData(thisStrip, adc[0], adc[1], adc[2], adc[3], TmaxOfCluster);
+    prelimData = CSCStripHitData(thisStrip, adc[0], adc[1], adc[2], adc[3], TmaxOfCluster);
   } else {
     int sign = offset>0 ? 1 : -1;
     
@@ -176,18 +201,36 @@ CSCStripData CSCHitFromStripOnly::makeStripData(int centerStrip, int offset) {
 
       // No other maxima found, so just store
       if ( otherMax == theMaxima.end() ) {
-        prelimData = CSCStripData(thisStrip, adc[0], adc[1], adc[2], adc[3], TmaxOfCluster);
-
+        prelimData = CSCStripHitData(thisStrip, adc[0], adc[1], adc[2], adc[3], TmaxOfCluster);
       } else {
-        adc[4] = thePulseHeightMap[testStrip-1].y0();
-	adc[5] = thePulseHeightMap[testStrip-1].y();
-	adc[6] = thePulseHeightMap[testStrip-1].y2();
-	adc[7] = thePulseHeightMap[testStrip-1].y3();
-        float ratio[4]; 
-        for (int k = 0; k < 4; k++) ratio[k] = adc[0] / (adc[0]+adc[k+4]);
-        for (int k = 0; k < 4; k++) adc[k]   = adc[k] * ratio[k];
-
-	prelimData = CSCStripData(thisStrip, adc[0], adc[1], adc[2], adc[3], TmaxOfCluster);
+        if ( tmax == 3 ) {
+          adc[4] = thePulseHeightMap[testStrip-1].y2();
+          adc[5] = thePulseHeightMap[testStrip-1].y3();
+          adc[6] = thePulseHeightMap[testStrip-1].y4();
+          adc[7] = thePulseHeightMap[testStrip-1].y5();
+        } else if ( tmax == 4 ) {
+          adc[4] = thePulseHeightMap[testStrip-1].y3();
+          adc[5] = thePulseHeightMap[testStrip-1].y4();
+          adc[6] = thePulseHeightMap[testStrip-1].y5();
+          adc[7] = thePulseHeightMap[testStrip-1].y6();
+         } else if ( tmax == 5 ) {
+          adc[4] = thePulseHeightMap[testStrip-1].y4();
+          adc[5] = thePulseHeightMap[testStrip-1].y5();
+          adc[6] = thePulseHeightMap[testStrip-1].y6();
+          adc[7] = thePulseHeightMap[testStrip-1].y7();
+         } else if ( tmax == 6 ) {
+          adc[4] = thePulseHeightMap[testStrip-1].y5();
+          adc[5] = thePulseHeightMap[testStrip-1].y6();
+          adc[6] = thePulseHeightMap[testStrip-1].y7();
+          adc[7] = 0.1;
+        } else {
+          adc[4] = 0.1;
+          adc[5] = 0.1;
+          adc[6] = 0.1;
+          adc[7] = 0.1;
+        }
+        for (int k = 0; k < 4; k++) adc[k]   = adc[k] * adc[k] / (adc[k]+adc[k+4]);
+        prelimData = CSCStripHitData(thisStrip, adc[0], adc[1], adc[2], adc[3], TmaxOfCluster);
       }
     }
   }
@@ -206,25 +249,26 @@ void CSCHitFromStripOnly::fillPulseHeights( const CSCStripDigiCollection::Range&
   thePulseHeightMap.resize(100);
   
   for ( CSCStripDigiCollection::const_iterator it = rstripd.first; it != rstripd.second; ++it ) {
-    bool fill = true;
-    int thisChannel = (*it).getStrip(); 
+    bool fill            = true;
+    int  thisChannel     = (*it).getStrip(); 
     std::vector<int> sca = (*it).getADCCounts();
 
-    float height[4];
-    int tmax = -1;
+    float height[6];
+    float hmax = 0.;
+    int   tmax = -1;
     
-    fill = pulseheightOnStripFinder_->peakAboveBaseline( (*it), height, tmax );
+    fill = pulseheightOnStripFinder_->peakAboveBaseline( (*it), hmax, tmax, height );
 
     // Don't forget that the ME_11/a strips are ganged !!!
     // Have to loop 2 more times to populate strips 17-48.
     
     if ( id_.station() == 1 && id_.ring() == 4 ) {
       for ( int j = 0; j < 3; j++ ) {
-        thePulseHeightMap[thisChannel+16*j-1] = CSCStripData( float(thisChannel+16*j), height[0], height[1], height[2], height[3], tmax);
+        thePulseHeightMap[thisChannel+16*j-1] = CSCStripData( float(thisChannel+16*j), hmax, tmax, height[0], height[1], height[2], height[3], height[4], height[5]);
         thePulseHeightMap[thisChannel+16*j-1] *= gainWeight[thisChannel-1];
       }
     } else {
-      thePulseHeightMap[thisChannel-1] = CSCStripData( float(thisChannel), height[0], height[1], height[2], height[3], tmax);
+      thePulseHeightMap[thisChannel-1] = CSCStripData( float(thisChannel), hmax, tmax, height[0], height[1], height[2], height[3], height[4], height[5]);
       thePulseHeightMap[thisChannel-1] *= gainWeight[thisChannel-1];
     }
   }
@@ -242,23 +286,23 @@ void CSCHitFromStripOnly::findMaxima() {
   theMaxima.clear();
   for ( size_t i = 0; i < thePulseHeightMap.size(); i++ ) {
 
-    float heightPeak    = thePulseHeightMap[i].y();
+    float heightPeak = thePulseHeightMap[i].ymax();
+
     // sum 3 strips so that hits between strips are not suppressed
     float heightCluster;
     if ( i == 0 ) {
-      heightCluster = thePulseHeightMap[i].y()+thePulseHeightMap[i+1].y();
+      heightCluster = thePulseHeightMap[i].ymax()+thePulseHeightMap[i+1].ymax();
     } else if ( i == thePulseHeightMap.size()-1) {  
-      heightCluster = thePulseHeightMap[i-1].y()+thePulseHeightMap[i].y();
+      heightCluster = thePulseHeightMap[i-1].ymax()+thePulseHeightMap[i].ymax();
     } else {
-      heightCluster = thePulseHeightMap[i-1].y()+thePulseHeightMap[i].y()+thePulseHeightMap[i+1].y();
+      heightCluster = thePulseHeightMap[i-1].ymax()+thePulseHeightMap[i].ymax()+thePulseHeightMap[i+1].ymax();
     }
    
     // Have found a strip Hit if...
-    if (( heightPeak               > theThresholdForAPeak       ) &&  
-        ( heightCluster            > theThresholdForCluster     ) && 
-        ( thePulseHeightMap[i].t() > 2                          ) && 
-        ( thePulseHeightMap[i].y() > thePulseHeightMap[i-1].y() ) &&
-	( thePulseHeightMap[i].y() >= thePulseHeightMap[i+1].y())) {
+    if (( heightPeak                   > theThresholdForAPeak         ) &&  
+        ( heightCluster                > theThresholdForCluster       ) && 
+        ( thePulseHeightMap[i].ymax()  > thePulseHeightMap[i-1].ymax()) &&
+	( thePulseHeightMap[i].ymax() >= thePulseHeightMap[i+1].ymax())) {
       theMaxima.push_back(i);
     }
   }
@@ -269,7 +313,7 @@ void CSCHitFromStripOnly::findMaxima() {
 /* findHitOnStripPosition
  *
  */
-float CSCHitFromStripOnly::findHitOnStripPosition( const std::vector<CSCStripData>& data, const int& centerStrip ) {
+float CSCHitFromStripOnly::findHitOnStripPosition( const std::vector<CSCStripHitData>& data, const int& centerStrip ) {
   
   float strippos = -1.;
   
@@ -286,20 +330,20 @@ float CSCHitFromStripOnly::findHitOnStripPosition( const std::vector<CSCStripDat
   
   for ( unsigned i = 0; i != data.size(); i++ ) {
     float w0 = data[i].y0();
-    float w  = data[i].y();
+    float w1 = data[i].y1();
     float w2 = data[i].y2();
 
-    if (w0 < 0.) w0 = 0.;
-    if (w  < 0.) w  = 0.;
-    if (w2 < 0.) w2 = 0.;
+    if (w0 < 0.) w0 = 0.001;
+    if (w1 < 0.) w1 = 0.001;
+    if (w2 < 0.) w2 = 0.001;
 
      // Fill the adcs to the strip hit --> needed for Gatti fitter
     strips_adc.push_back( w0 );
-    strips_adc.push_back( w );
+    strips_adc.push_back( w1 );
     strips_adc.push_back( w2 );
  
-    sum_w += w;
-    sum   += w * data[i].x();
+    sum_w += w1;
+    sum   += w1 * data[i].x();
   }
 
   if ( sum_w > 0. ) {
@@ -313,34 +357,37 @@ float CSCHitFromStripOnly::findHitOnStripPosition( const std::vector<CSCStripDat
   // If so, then use an even # of strip in cluster to fit centroid
 
   float old_strippos = strippos;
-  int strip_pos = int (strippos);
+  int strip_pos = int( strippos );
   sum_w = 0.;
   sum   = 0.;
  
-  
-  if ( fabs(strippos-strip_pos-0.5) < 0.1) {
+  // Look if hit is near strip border && cluster >= 5 strips  
+  if (( fabs(strippos - strip_pos - 0.5) < 0.1 ) && ( int(data.size()) > 3 )) {
      if ( (centerStrip - strip_pos ) < 0 ) {
-       for ( unsigned i = 0; i != data.size()-1; i++ ) {
-         float w  = data[i].y(); 
-         if (w  < 0.) w  = 0.;
-         sum_w += w;
-         sum   += w * data[i].x();
+       for ( unsigned i = 0; i < data.size()-1; i++ ) {
+         float w1 = data[i].y1(); 
+         if (w1 < 0.) w1 = 0.001;
+         sum_w += w1;
+         sum   += w1 * data[i].x();
+         strippos = sum / sum_w;
        }
      } else if ( (centerStrip - strip_pos) > 0 ) {
-       for ( unsigned i = 1; i != data.size(); i++ ) {
-         float w  = data[i].y();
-         if (w  < 0.) w  = 0.;
-         sum_w += w;
-         sum   += w * data[i].x();
+       for ( unsigned i = 1; i < data.size(); i++ ) {
+         float w1 = data[i].y1();
+         if (w1 < 0.) w1 = 0.001;
+         sum_w += w1;
+         sum   += w1 * data[i].x();
+         strippos = sum / sum_w;
        }
+    } else {
+      strippos = strippos;
     }
-    strippos = sum / sum_w;
 
     if ( debug ) {
       std::cout << "Used improved centroid for strip Hit position" << std::endl;  
-      std::cout << "Before: " << old_strippos << std::endl;  
-      std::cout << "After : " << strippos << std::endl;  
-      std::cout << "Diff  : " << strippos-old_strippos << std::endl;  
+      std::cout << "Before: " << old_strippos                      << std::endl;  
+      std::cout << "After : " << strippos                          << std::endl;  
+      std::cout << "Diff  : " << strippos-old_strippos             << std::endl;  
     } 
   }
 

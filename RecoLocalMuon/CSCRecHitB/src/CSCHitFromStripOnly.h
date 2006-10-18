@@ -19,6 +19,7 @@
  *
  */
 #include <RecoLocalMuon/CSCRecHitB/src/CSCStripData.h>
+#include <RecoLocalMuon/CSCRecHitB/src/CSCStripHitData.h>
 
 #include <DataFormats/CSCRecHit/interface/CSCStripHit.h>
 #include <DataFormats/CSCDigi/interface/CSCStripDigiCollection.h>
@@ -68,7 +69,7 @@ class CSCHitFromStripOnly
   PulseHeightMap thePulseHeightMap;
   
   /// Find position of hit in strip cluster in terms of strip #
-  float findHitOnStripPosition( const std::vector<CSCStripData>& data, const int& centerStrip );
+  float findHitOnStripPosition( const std::vector<CSCStripHitData>& data, const int& centerStrip );
   
   CSCDetId id_;    
   const CSCLayer * layer_;
@@ -77,7 +78,7 @@ class CSCHitFromStripOnly
   
  private:
   
-  CSCStripData makeStripData( int centerStrip, int offset );
+  CSCStripHitData makeStripData( int centerStrip, int offset );
 
 
   // Variables entering the CSCStripHit construction:

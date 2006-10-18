@@ -39,63 +39,46 @@ bool CSCFindPeakTime::FindPeakTime( const int& tmax, const float* adc, float& t_
   int n_fit  = 4;
   if ( tmax == 6 ) n_fit = 3;
 
-  float del_tpeak = 100.;
   int i_count = 0;
   float chi_min  = 1.e10;
   float chi_last = 1.e10;
-  float chi_last2=1.0e10;
   float tt0      = 0.;
   float chi2     = 0.;
+  float del_t    = 100.;
 
-  while ( del_tpeak > 1. ) {
-
-    p0             = 4./t_peak;  
-    float del_t    = 100.;
-
-    while ( del_t > 0.05 ) {
+  while ( del_t > 0.05 ) {
     
-      float x[4];
-      float sx2 = 0.;
-      float sxy = 0.;
+    float x[4];
+    float sx2 = 0.;
+    float sxy = 0.;
     
-      for ( int j=0; j < n_fit; j++ ) {
-        float t = tb[j];
-        x[j] = (t-tt0)*(t-tt0)*(t-tt0)*(t-tt0) * exp( -p0 * (t-tt0) );
-        sx2  = sx2 + x[j] * x[j];
-        sxy  = sxy + x[j] * y[j];
-      }
-      float NN = sxy / sx2;
-    
-      // Compute chi^2
-      chi2 = 0.0;
-      for (int j=0; j < n_fit; j++) chi2 += (y[j] - NN * x[j]) * (y[j] - NN * x[j]);
-
-      // Test on chi^2 to decide what to do    
-      if ( chi_last > chi2 ) {
-        if (chi2 < chi_min ){
-          t0      = tt0;
-          N       = NN;
-        }
-        chi_last  = chi2;
-        tt0       = tt0 + del_t;
-      } else {
-        tt0      = tt0 - 2. * del_t;
-        del_t    = del_t / 2.;
-        tt0      = tt0 + del_t;
-        chi_last = 1.0e10;
-      }
-      i_count++;
+    for ( int j=0; j < n_fit; j++ ) {
+      float t = tb[j];
+      x[j] = (t-tt0)*(t-tt0)*(t-tt0)*(t-tt0) * exp( -p0 * (t-tt0) );
+      sx2  = sx2 + x[j] * x[j];
+      sxy  = sxy + x[j] * y[j];
     }
-    // Test on chi^2 to decide what to do
-    if ( chi_last2 > chi2 ) {
-      chi_last2 = chi2;
-      t_peak    = t_peak + del_tpeak;
+    float NN = sxy / sx2;
+    
+    // Compute chi^2
+    chi2 = 0.0;
+    for (int j=0; j < n_fit; j++) chi2 += (y[j] - NN * x[j]) * (y[j] - NN * x[j]);
+
+    // Test on chi^2 to decide what to do    
+    if ( chi_last > chi2 ) {
+      if (chi2 < chi_min ){
+        t0      = tt0;
+        N       = NN;
+      }
+      chi_last  = chi2;
+      tt0       = tt0 + del_t;
     } else {
-      t_peak    = t_peak - 2. * del_tpeak;
-      del_tpeak = del_tpeak / 2.;    
-      t_peak    = t_peak + del_tpeak;
-      chi_last2 = 1.0e10;
-    }      
+      tt0      = tt0 - 2. * del_t;
+      del_t    = del_t / 2.;
+      tt0      = tt0 + del_t;
+      chi_last = 1.0e10;
+    }
+    i_count++;
     if (i_count > 10000) break;
   }
 
