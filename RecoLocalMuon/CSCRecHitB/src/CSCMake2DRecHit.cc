@@ -275,7 +275,7 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
 
     if (debug) std::cout << "Centroid x, Gatti x, diff " << x << " " << x_fit << " " << x-x_fit << std::endl;
 
-    if (fabs(chisq_fit) < maxGattiChi2 ) {
+    if ( sigma_fit < 0.1 ) {
       x     = x_fit;
       sigma = sigma_fit;
       chisq = chisq_fit;

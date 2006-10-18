@@ -24,11 +24,10 @@ class CSCPeakBinOfStripPulse
   ~CSCPeakBinOfStripPulse();
 
   /// This finds the strip seed for the cluster, that is the strip with maximum deposition
-  bool peakAboveBaseline( const CSCStripDigi& digi, float* height, int& tmax) const;
+  bool peakAboveBaseline( const CSCStripDigi& digi, float& hmax, int& tmax, float* height ) const;
 
   /// Find the Strip pulseheight baseline 
   float baseline( const CSCStripDigi& digi ) const;
-
 
  private:
 
