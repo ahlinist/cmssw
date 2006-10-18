@@ -58,7 +58,7 @@ pair<JetTag,IsolatedTauTagInfo> ConeIsolationAlgorithm::tag(const  JetTracksAsso
    {
      if((*it)->pt() > m_cutMinPt &&
 	(*it)->normalizedChi2() < m_cutMaxChiSquared &&
-	(*it)->d0() < m_cutMaxTIP)
+	fabs((*it)->d0())< m_cutMaxTIP)
        {
 	 if(useVertexConstrain_) {
 	   if(fabs((*it)->dz() - z_pv) < dZ_vertex)
