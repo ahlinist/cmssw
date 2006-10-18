@@ -1,0 +1,419 @@
+TOB Structure (anything but modules)
+====================================
+Input file for mixture.f
+Start new mixtures with a '#' in the first column
+Start the components with a '*' in the first column
+You can type any kind of comment in as long as you don't start it
+with '#' or '*' !
+.....................................................................
+For mixture declaration: Name of Mixture, Name of GMIX for title file, 
+                         Monte Carlo Volume, MC Area
+For items in a compound: Item number, Comment, Material (has to be 
+                 written exactly as in material.input file), 
+                 Volume, Multiplicity, Type     
+      Type is one of the following:  SUP for support
+                                     SEN for sensitive volumes
+                                     CAB for cables
+                                     COL for cooling
+                                     ELE for electronics
+..................................................................... 
+
+
+o TOB Cooling pipes DS (per 1 cm length)
+  --------------------
+(1) Cooling pipes: material CuNi 2.5 mm OD, 2.3 mm ID 
+(2) Coolant: C6F14
+.....................................................................
+# "TOB cooling pipes DS"    "TOB_cool_DS"    0.0491   0.196
+* 1 "CuNi pipe"             "TOB_CuNi"       7.6E-3    1    COL
+* 2 "Coolant"               "C6F14"          0.0415    1    COL
+.....................................................................
+=====================================================================
+
+o TOB Cooling pipes SS (per 1 cm length)
+  --------------------
+(1) Cooling pipes: material CuNi 2.2 mm OD, 2.0 mm ID 
+(2) Coolant: C6F14
+.....................................................................
+# "TOB cooling pipes SS"    "TOB_cool_SS"    0.038   0.173
+* 1 "CuNi pipe"             "TOB_CuNi"       0.007    1     COL
+* 2 "Coolant"               "C6F14"          0.031    1     COL
+.....................................................................
+=====================================================================
+
+o Rod carbon fibre frame
+  -----------------------
+This material is also used for the end pieces ! 
+
+MCVolume: 1.2 x 0.12 cm^2 /unit length -> 0.144 cm^2
+Calculate from C-profile:
+CF thickness 0.9 mm, length (including bended piece): ~17 mm -> 0.153 cm^2
+......................................................................
+# "TOB rod CF structure"     "TOB_rod"            0.144     1.6
+* 1 "C profiles"             "Carbon fibre str."  0.153     1  SUP
+......................................................................
+======================================================================
+
+o TOB Mothercable (per 1 cm)
+  ---------------
+  this is what Robert calls ICB
+MCVolume: 5 x 0.1 = 0.5 cm^2
+(1) 1 mm G10
+(2) Copper volume (this board is trimmed, but model at the moment
+    still with homogeneous material). 
+    4 Cu layers a 25 um, 2 * occ 50 %,
+                         2 * occ 100 %.
+    Halfway between mod 3 & 4 one could take away < 50% of the Cu.
+    (-50% for 1/3 of the length)
+
+    5 * 0.0025 * 3 = 0.0375 cm^2 without trimming taken into account
+    * 5/6 for trimming = 0.03125 
+                        --> take 0.035 cm^2
+........................................................................
+# "TOB mothercable (ICB)"      "TOB_ICB"        0.5        5.
+* 1 "ICB substrate"              "G10"            0.5        1  CAB
+* 2 "Cu traces"                  "Copper"         0.035      1  CAB
+........................................................................
+========================================================================
+
+o HV and Optical fibers DS (per 1 cm)
+  ------------------------
+These run in 2 tubes next to the cooling pipes. 
+MCVolume: diameter 1.5 mm      
+(1) Per module 1 Al wire with 0.08 mm^2 xsect. 
+    Since volume on both sides (not true in reality !),
+    3 per side, and they don't run all over the full
+    length. "Average" 2 per side.
+    radius = 0.16 mm
+(2) Insulation skin (assumption !) 0.1 mm 
+    -> 0.132 mm^2 
+(3) Optical fibers: 4 per /module, hence 24 total
+    take 16 (difference in length), i.e.  8/side
+.......................................................................
+# "TOB HV and opt. fibers DS"  "TOB_optfib_DS"   0.01767   0.118
+* 1 "HV wires"                 "Aluminium"       8.E-4      2   CAB
+* 2 "HV Insulation"            "Polyethylene"    0.00132    2   CAB
+* 3 "Optical fibers"           "Quartz"          1.27E-4    8   CAB
+* 4 "Optical fibers"           "Polyethylene"    6.23E-3    8   CAB
+......................................................................
+======================================================================
+    
+o HV and Optical fibers SS (per 1 cm)
+  ------------------------
+These run in 2 tubes next to the cooling pipes. 
+MCVolume: diameter 1.5 mm      
+(1) Per module 1 Al wire with 0.08 mm^2 xsect. 
+    Since volume on both sides (not true in reality !),
+    3 per side, and they don't run all over the full
+    length. "Average" 2 per side.
+    radius = 0.16 mm
+(2) Insulation skin (assumption !) 0.1 mm 
+    -> 0.132 mm^2 
+(3) Optical fibers: 
+    layers 7/8: 2/module  12
+           9/10: 3/module 18
+    15 -> 10 -> 5/side
+.......................................................................
+# "TOB HV and opt. fibers SS"  "TOB_optfib_SS"   0.01767   0.118
+* 1 "HV wires"                 "Aluminium"       8.E-4      2   CAB
+* 2 "HV Insulation"            "Polyethylene"    0.00132    2   CAB
+* 3 "Optical fibers"           "Quartz"          1.27E-4    5   CAB
+* 4 "Optical fibers"           "Polyethylene"    6.23E-3    5   CAB
+......................................................................
+======================================================================
+
+o TOB rod fixation to disk
+  ------------------------
+These attach the rod to the disk. There are 8 /full-length-rod
+MCVolume: 0.7 x 1.7 x 1.56 cm = 1.8564 cm^3
+Volume from Antti's table: 400 + 63.5 mm^3 = 0.4635 cm^3
+.....................................................................
+# "TOB rod fixation to disk"   "TOB_plate_A"    1.8564  1.19
+* 1 "Al fixations"             "Aluminium"      0.4635    1    SUP
+.....................................................................
+=====================================================================
+
+o Endflange Cooling manifolds
+  ---------------------------- 
+MCVolumes: 12 mm radial thickness, 6 mm thick in z
+           rings at z = 110.8 cm
+
+(1-2) Two arcs per layer. Outer diameter 6 mm, ID 5.6 mm.
+      Xsection: CuNi : 0.0364 cm^2
+                C6F14: 0.2463 cm^2
+(3-4) Brass pipe connectors, 2 per rod
+             total volume 180 mm^3 (Antti)
+	     Solder (SnPbAg 62/36/2)  42 mm^3 (Antti)
+Layer 5: 
+ MC r = 64.8 - 66.0 cm
+ r_1 = 64.9 cm -> length of pipe 2*pi*r = 407.78 cm
+ r_2 = 65.9 cm -> 414.06 
+.....................................................................
+# "TOB Cooling manifold lay 5"   "TOB_coolmanifold1"  295.86   493.  
+* 1 "Arc pipes"               "TOB_CuNi"           0.0364   821.84  COL
+* 2 "Coolant"                 "C6F14"              0.2463   821.84  COL
+* 3 "Brass pipe connectors"   "TOB_Brass"          0.18     42      COL
+* 4 "Cool pipe solder"        "TOB_cool_solder"    0.042    42      COL
+.....................................................................
+
+Layer 6: 
+ MC r = 74 cm
+ r_1 = 73.5 cm -> 461.81 cm
+ r_2 = 74.5 cm -> 468.1  cm 
+.....................................................................
+# "TOB Cooling manifold lay 6"   "TOB_coolmanifold2"  334.77   558.  
+* 1 "Arc pipes"               "TOB_CuNi"           0.0364   929.9   COL
+* 2 "Coolant"                 "C6F14"              0.2463   929.9   COL
+* 3 "Brass pipe connectors"   "TOB_Brass"          0.18     48      COL
+* 4 "Cool pipe solder"        "TOB_cool_solder"    0.042    48      COL
+.....................................................................
+
+Layer 7: 
+ MC r = 82.5 cm
+ r_1 = 82.0 cm -> 515.22 cm
+ r_2 = 83.0 cm -> 521.5  cm
+.....................................................................
+# "TOB Cooling manifold lay 7"   "TOB_coolmanifold3"  373.22   622.  
+* 1 "Arc pipes"               "TOB_CuNi"           0.0364  1036.72  COL
+* 2 "Coolant"                 "C6F14"              0.2463  1036.72  COL
+* 3 "Brass pipe connectors"   "TOB_Brass"          0.18     54      COL
+* 4 "Cool pipe solder"        "TOB_cool_solder"    0.042    54      COL
+.....................................................................
+
+Layer 8: 
+ MC r = 91.1 cm
+ r_1 = 90.6 cm -> 569.3  cm
+ r_2 = 91.6 cm -> 575.5  cm
+.....................................................................
+# "TOB Cooling manifold lay 8"   "TOB_coolmanifold4"  412.13   687.  
+* 1 "Arc pipes"               "TOB_CuNi"           0.0364  1144.76  COL
+* 2 "Coolant"                 "C6F14"              0.2463  1144.76  COL
+* 3 "Brass pipe connectors"   "TOB_Brass"          0.18     60      COL
+* 4 "Cool pipe solder"        "TOB_cool_solder"    0.042    60      COL
+.....................................................................
+
+Layer 9: 
+ MC r = 100.7 cm
+ r_1 = 100.2 cm -> 629.6 cm
+ r_2 = 101.2 cm -> 635.9 cm
+.....................................................................
+# "TOB Cooling manifold lay 9"   "TOB_coolmanifold5"  455.56   759.  
+* 1 "Arc pipes"               "TOB_CuNi"           0.0364  1265.4   COL 
+* 2 "Coolant"                 "C6F14"              0.2463  1265.4   COL
+* 3 "Brass pipe connectors"   "TOB_Brass"          0.18     66      COL
+* 4 "Cool pipe solder"        "TOB_cool_solder"    0.042    66      COL
+.....................................................................
+
+Layer 10:
+ MC r = 112.2 cm
+ r_1 = 111.7 cm -> 701.8 cm
+ r_2 = 112.7 cm -> 708.1 cm
+.....................................................................
+# "TOB Cooling manifold lay 10"  "TOB_coolmanifold6"  507.6    846.  
+* 1 "Arc pipes"               "TOB_CuNi"           0.0364  1410.    COL
+* 2 "Coolant"                 "C6F14"              0.2463  1410.    COL
+* 3 "Brass pipe connectors"   "TOB_Brass"          0.18     74      COL
+* 4 "Cool pipe solder"        "TOB_cool_solder"    0.042    74      COL
+.....................................................................
+=====================================================================
+
+o Endflange Connectors
+  --------------------
+These are rings at z = 110.8 cm, of radial thickness 4 cm and  
+thickness in z of 23 mm.
+
+Included are all the connectors at the rod end, and also the
+digital optohybrid (that I don't know much about !)
+
+Per rod:
+(1-2) Connectors:
+      1 x LV connector pair (Micro-T 37 pin) 
+        Plastic: 2.578 g -> 1.84 cm^3 Kapton
+        Cu     : 3.46  g -> 0.385 cm^3
+      1 x HV connector pair (Micro-T 25 pin)
+        Plastic: 1.742 g -> 1.244 cm^3
+        Cu     : 2.38 g  -> 0.266 cm^3
+      2 x Control loop connector pair (Micro-T 31 pin)
+        Plastic: 2.16 g -> 1.543 cm^3  each
+        Cu     : 2.92 g -> 0.326 cm^3  each
+     -->    total 6.17 cm^3 Kapton, 1.303 Cu 
+(3) Support boards 
+         G10, 0.5 mm, 3*1.75x2, 1* 1.75x2.5 = 0.744 cm^3 
+(4-5) Digital OH
+
+    No idea !! Assume: 3.2 x 3.2 cm^2, 400 um G10, 20 % Cu
+    No components, since I don't know them !
+
+(6-10) Only for layers 9/10:  
+        (5/6 no longer since APV number has been reduced 15/03/02)
+        1/2 optoconnector per rod
+        46.8 g plastic, 8.4 g Cu  NO !!! see tie_struc.in
+        take 15 cm^3 plastic !
+
+Layer 5: r = 61 cm, 42 rods, 8 DOHs
+.........................................................................
+# "TOB endflange connectors 5"   "TOB_rib1"      3526.1   1533.    
+* 1 "Connectors"                 "T_Kapton"        6.17     42   CAB
+* 2 "Connector pins"             "Copper"          1.303    42   CAB
+* 3 "Cable support"              "G10"             0.744    42   CAB
+* 4 "Digital OH"                 "G10"             0.41      8   ELE
+* 5 "Digital OH"                 "Copper"          0.08      8   ELE
+C-- * 6 "Optoconnector"              "T_Kapton"       15.0     21    CAB
+C-- * 7 "Optoconnector"              "Copper"         0.446    21    CAB
+.........................................................................
+Layer 6: r = 69.6 cm, 48 rods, 8 DOHs
+.........................................................................
+# "TOB endflange connectors 6"   "TOB_rib2"        4023.2  1749.    
+* 1 "Connectors"                 "T_Kapton"        6.17     48   CAB
+* 2 "Connector pins"             "Copper"          1.303    48   CAB
+* 3 "Cable support"              "G10"             0.744    48   CAB
+* 4 "Digital OH"                 "G10"             0.41      8   ELE
+* 5 "Digital OH"                 "Copper"          0.08      8   ELE
+C-- * 6 "Optoconnector"              "T_Kapton"       15.00     24   CAB
+C-- * 7 "Optoconnector"              "Copper"         0.446     24   CAB
+.........................................................................
+Layer 7: r = 78.2 cm, 54 rods, 9 DOHs
+.........................................................................
+# "TOB endflange connectors 7"   "TOB_rib3"        4520.4  1965.    
+* 1 "Connectors"                 "T_Kapton"        6.17     54   CAB
+* 2 "Connector pins"             "Copper"          1.303    54   CAB
+* 3 "Cable support"              "G10"             0.744    54   CAB
+* 4 "Digital OH"                 "G10"             0.41      9   ELE
+* 5 "Digital OH"                 "Copper"          0.08      9   ELE
+.........................................................................
+Layer 8: r = 86.8 cm, 60 rods, 8 DOHs
+.........................................................................
+# "TOB endflange connectors 8"   "TOB_rib4"        5017.5  2182.    
+* 1 "Connectors"                 "T_Kapton"        6.17     60   CAB
+* 2 "Connector pins"             "Copper"          1.303    60   CAB
+* 3 "Cable support"              "G10"             0.744    60   CAB
+* 4 "Digital OH"                 "G10"             0.41      8   ELE
+* 5 "Digital OH"                 "Copper"          0.08      8   ELE
+.........................................................................
+Layer 9: r = 96.5 cm, 66 rods, 12 DOHs
+.........................................................................
+# "TOB endflange connectors 9"   "TOB_rib5"        5578.2  2425.    
+* 1 "Connectors"                 "T_Kapton"        6.17     66   CAB
+* 2 "Connector pins"             "Copper"          1.303    66   CAB
+* 3 "Cable support"              "G10"             0.744    66   CAB
+* 4 "Digital OH"                 "G10"             0.41     12   ELE
+* 5 "Digital OH"                 "Copper"          0.08     12   ELE
+* 6 "Optoconnector"              "T_Kapton"       15.00     33   CAB
+* 7 "Optoconnector"              "Copper"         0.446     33   CAB
+.........................................................................
+Layer 10: r = 108 cm, 74 rods, 10 DOHs
+.........................................................................
+# "TOB endflange connectors 10"  "TOB_rib6"        6243.0  2714.    
+* 1 "Connectors"                 "T_Kapton"        6.17     74   CAB
+* 2 "Connector pins"             "Copper"          1.303    74   CAB
+* 3 "Cable support"              "G10"             0.744    74   CAB
+* 4 "Digital OH"                 "G10"             0.41     10   ELE
+* 5 "Digital OH"                 "Copper"          0.08     10   ELE
+* 6 "Optoconnector"              "T_Kapton"       15.00     37   CAB
+* 7 "Optoconnector"              "Copper"         0.446     37   CAB
+.........................................................................
+=========================================================================
+      
+o TOB radial cables
+  -----------------
+One for each layer, disks of constant Xsection (2*pi*r*t)
+Cross sections for the various service cables
+
+(1) Al MS Cables 
+(2) Control cables:  MS_cntrl_cables, OD 6.0 mm
+    (number of groups taken from Duccio's TOB page, final layout 21/11/01)
+(3) Optical ribbons (include also for control signals)
+(4) Cooling pipes:  11 mm OD, 10 mm ID
+          CuNi:  0.16 cm^2
+          C6F14: 0.785 cm^2
+
+Layer 5: 42 MS Al cables for 48 APVs, 7 control cables 
+.......................................................................
+# "TOB radial cables layer 5"   "TOB_rad_cable1"      268.292  -1.
+* 1 "MS cable 60 APVs"          "MS_Al48"             0.567    42   CAB
+* 2 "Control cables"            "MS_cntrl_cable"      0.283     7   CAB
+* 3 "Optical ribbon"            "Fibre_Ribbon"        9.61E-3   107 CAB
+* 4 "Cooling pipes"             "TOB_CuNi"              0.16    8   COL
+* 5 "Coolant"                   "C6F14"                0.785    8   COL
+.......................................................................
+Layer 6: 48 MS Al cables for 48 APVs, 8 control cables
+.......................................................................
+# "TOB radial cables layer 6"   "TOB_rad_cable2"      306.117  -1.
+* 1 "MS cable 60 APVs"          "MS_Al48"             0.567    48   CAB
+* 2 "Control cables"            "MS_cntrl_cable"      0.283     8   CAB
+* 3 "Optical ribbon"            "Fibre_Ribbon"        9.61E-3   122 CAB
+* 4 "Cooling pipes"             "TOB_CuNi"              0.16    8   COL
+* 5 "Coolant"                   "C6F14"                0.785    8   COL
+.......................................................................
+Layer 7: 54 MS Al cables for 24 APVs, 7 control cables
+.......................................................................
+# "TOB radial cables layer 7"   "TOB_rad_cable3"      343.942  -1.
+* 1 "MS cable 36 APVs"          "MS_Al36"             0.515    54   CAB
+* 2 "Control cables"            "MS_cntrl_cable"      0.283     7   CAB
+* 3 "Optical ribbon"            "Fibre_Ribbon"        9.61E-3   56  CAB
+* 4 "Cooling pipes"             "TOB_CuNi"              0.16    6   COL
+* 5 "Coolant"                   "C6F14"                0.785    6   COL
+.......................................................................
+Layer 8: 60 MS Al cables for 24 APVs, 8 control cables
+.......................................................................
+# "TOB radial cables layer 8"   "TOB_rad_cable4"      381.766  -1.
+* 1 "MS cable 36 APVs"          "MS_Al36"             0.515    60   CAB
+* 2 "Control cables"            "MS_cntrl_cable"      0.283     8   CAB
+* 3 "Optical ribbon"            "Fibre_Ribbon"        9.61E-3   62  CAB
+* 4 "Cooling pipes"             "TOB_CuNi"              0.16    8   COL
+* 5 "Coolant"                   "C6F14"                0.785    8   COL
+.......................................................................
+Layer 9: 66 MS Al cables for 36 APVs, 8 control cables
+.......................................................................
+# "TOB radial cables layer 9"   "TOB_rad_cable5"      424.429  -1.
+* 1 "MS cable 36 APVs"          "MS_Al36"             0.515    66   CAB
+* 2 "Control cables"            "MS_cntrl_cable"      0.283     8   CAB
+* 3 "Optical ribbon"            "Fibre_Ribbon"        9.61E-3   101 CAB
+* 4 "Cooling pipes"             "TOB_CuNi"              0.16    8   COL
+* 5 "Coolant"                   "C6F14"                0.785    8   COL
+.......................................................................
+Layer 10: 74 MS Al cables for 36 APVs, 8 control cables
+.......................................................................
+# "TOB radial cables layer 10"  "TOB_rad_cable6"      475.009  -1.
+* 1 "MS cable 36 APVs"          "MS_Al36"             0.515    74   CAB
+* 2 "Control cables"            "MS_cntrl_cable"      0.283     8   CAB
+* 3 "Optical ribbon"            "Fibre_Ribbon"        9.61E-3  113  CAB
+* 4 "Cooling pipes"             "TOB_CuNi"              0.16    8   COL
+* 5 "Coolant"                   "C6F14"                0.785    8   COL
+.......................................................................
+=======================================================================
+
+o TOB axial cables
+  ----------------
+MC Xsection is only 8 bundles with 9.64 cm^2 => 77.12 cm^2
+
+Cables are just the sum of all cables above !
+.......................................................................
+# "TOB axial cables"            "TOB_ax_cable"        77.12  -1.
+* 1 "MS cable 60 APVs"          "MS_Al48"             0.567    90   CAB
+* 2 "MS cable 36 APVs"          "MS_Al36"             0.515    254  CAB
+* 3 "Control cables"            "MS_cntrl_cable"      0.283    46   CAB
+* 4 "Optical ribbon"            "Fibre_Ribbon"        9.61E-3  561  CAB
+* 5 "Cooling pipes"             "TOB_CuNi"              0.16   46   COL
+* 6 "Coolant"                   "C6F14"                0.785   46   COL
+.......................................................................
+======================================================================= 
+
+# "END"  "END"  0.  0.   
+this has to be the last line !
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,267 @@
+Common service cable types
+==========================
+
+$$  ATTENTION: Materials calculated in this file are used
+$$             in mixtures for other materials !
+$$             So if you change something, do not forget to  
+$$             update the materials input file and the dimensions
+$$             in the other materials that use it !!
+$$
+Input file for mixture.f
+Start new mixtures with a '#' in the first column
+Start the components with a '*' in the first column
+You can type any kind of comment in as long as you don't start it
+with '#' or '*' !
+.....................................................................
+For mixture declaration: Name of Mixture, Name of GMIX for title file, 
+                        Monte Carlo Volume, MC Area
+For items in a compound: Item number, Comment, Material (has to be 
+                 written exactly as in material.input file), 
+                 Volume, Multiplicity
+..................................................................... 
+
+=====================================================================
+
+o Optical Ribbon
+  --------------
+This is 12 optical fibers together in a plastic shield
+(1) Fibers, X-sextion = 1.27e-4 cm^2
+(2) total dimensions  3.1 x 0.32 mm^2 = 9.61e-3 cm^2
+    => plastic X-section: 8.1e-3 cm^3
+.....................................................................
+# "Optical fibre ribbon"         "Fibre_Ribbon"    9.61E-3   -1.
+* 1 "Optical Fibers"             "Quartz"          1.27E-4   12  CAB
+* 2 "Ribbon shield"              "Polyethylene"    8.1e-3    1   CAB
+.....................................................................
+=====================================================================
+
+o Control Cable
+  -------------
+Control cable connected to the digital Optohybrids
+From Robert's Habia  table (13-03-02)
+Outer diameter is 6.0  mm
+(1) Cu x-sec      3.82 mm^2
+(2) Insulation   12.54 mm^2
+.....................................................................
+# "Control Cable"           "MS_cntrl_cable"        0.283     -1.
+* 1 "Copper"                "Copper"                0.0382     1  CAB
+* 2 "Insulation"            "Polyethylene"          0.1254     1  CAB
+......................................................................
+======================================================================
+
+o Multi Service Cable (60 APVs)
+  -----------------------------
+From Robert's Filotex table (13-03-02)
+Outer diameter: 10.7 mm
+(1) Al x-sect:  14.21 mm^2
+(2) Cu x-sect:   2.22 mm^2 
+(3) Insulation: 27.39 mm^2
+(4) Silver:      0.29 mm^2
+......................................................................
+# "MS Al Cable 60 APVs"         "MS_Al60"         0.899    -1.
+* 1 "Aluminium"                 "Aluminium"       0.1421    1   CAB
+* 2 "Copper"                    "Copper"          0.0222    1   CAB
+* 3 "Insulation"                "Polyethylene"    0.2739    1   CAB
+* 4 "Silver coating"            "Silver"          0.0029    1   CAB
+......................................................................
+======================================================================
+
+o Multi Service Cable (48 APVs)
+  -----------------------------
+From Robert's Filotex table (13-03-02)
+Outer diameter:  8.5  mm
+(1) Al x-sect:  11.73 mm^2
+(2) Cu x-sect:   2.22 mm^2
+(3) Insulation: 25.02 mm^2
+(4) Silver:      0.24 mm^2
+......................................................................
+# "MS Al Cable 48 APVs"         "MS_Al48"         0.567    -1.
+* 1 "Aluminium"                 "Aluminium"       0.1173    1   CAB
+* 2 "Copper"                    "Copper"          0.0222    1   CAB
+* 3 "Insulation"                "Polyethylene"    0.2502    1   CAB
+* 4 "Silver coating"            "Silver"          0.0024    1   CAB
+......................................................................
+======================================================================
+
+o Multi Service Cable (36 APVs)
+  -----------------------------
+From Robert's Filotex table (13-03-02)
+Outer diameter:  8.1  mm
+(1) Al x-sect:  10.16 mm^2
+(2) Cu x-sect:   2.22 mm^2
+(3) Insulation: 23.83 mm^2
+(4) Silver:      0.22 mm^2
+......................................................................
+# "MS Al Cable 36 APVs"         "MS_Al36"         0.515    -1.
+* 1 "Aluminium"                 "Aluminium"       0.1016    1   CAB
+* 2 "Copper"                    "Copper"          0.0222    1   CAB
+* 3 "Insulation"                "Polyethylene"    0.2383    1   CAB
+* 4 "Silver coating"            "Silver"          0.0022    1   CAB
+......................................................................
+======================================================================
+
+o Multi Service Cable Copper (60 APVs)
+  -----------------------------
+From Robert's HABIA table (13-03-02)
+Outer diameter: 12.3 mm
+(1) Cu x-sect:  26.87 mm^2 
+(2) Insulation: 44.42 mm^2
+......................................................................
+# "MS Cu Cable 60 APVs"         "MS_Cu60"         1.188    -1.
+* 1 "Copper"                    "Copper"          0.2687    1   CAB
+* 2 "Insulation"                "Polyethylene"    0.4442    1   CAB
+......................................................................
+======================================================================
+
+o Bulkhead cables: Pixel input/output
+  ------------------------------------
+MC Volume: tube segments, r = 30-110.5 cm, dz = 7.7 cm, dphi = 2*20 deg
+              ==> 30400 cm^3
+
+(1-2) Cooling pipes: per unit length
+        Aluminium x-section (r=0.33-0.3 cm) = 0.0594 cm^2   
+        Coolant r=0.3 cm  => 0.2827 cm^2     
+        Barrel pipes: 20 
+        Encap pipes:  16
+        Flushing pipes: 4  => total 40 
+        Length = 80 cm 
+(3-4) Copper power cables
+      Here I have to improvise and extrapolate from the pixel barrel Al
+      cables and the Si strip tracker cables...
+      I estimate:
+        ratio (total pixel)/(pixel barrel) = 5 : 3 
+        - pixel barrel cables have 3 cm^2 cross-section Al, 
+          so outside cables may have 1.5 * 3 cm^2 Cu for barrel, 
+          ==> total x-sect 7.5 cm^2, length = 80cm ==> V = 600 cm^3
+          Insulation: ~970 cm^3 (factor as in MS_Cu60 cable)
+(5-6) Optical ribbon
+       Number of fibers: for barrel, I calculated 576 fibers, 
+       i.e. total = 960 fibers -> 80 ribbons, length 80 cm
+
+
+......................................................................
+# "Bulkhead pixel in/out-put"  "Tk_panels_mid1"   30400.0   3948.
+* 1 "Cooling pipes"           "Steel-008"         14.48   20    COL
+* 2 "Coolant"                 "C6F14"             76.0    20    COL
+* 3 "Copper power cables"       "Copper"          600.0     1   CAB
+* 4 "Power cable insulation"    "Polyethylene"    970.0     1   CAB
+* 5 "Optical Fibers"             "Quartz"        1.27E-4  960   CAB
+* 6 "Ribbon shield"              "Polyethylene"   8.1e-3   80   CAB
+......................................................................
+======================================================================
+
+o Bulkhead cables: Pixel cables/connectors
+  ----------------------------------------
+MC Volume: tube segments, r = 30-62.5 cm, dz = 7.7 cm, dphi = 2*160 deg
+              ==> 64640 cm^3
+
+(1-2) Copper power cables (neglect Al cables to connectors here)
+          ==> total x-sect 7.5 cm^2, 
+          length = 2*pi*r(~50cm)* 0.25 = ~80 cm ==> 600 cm^3
+          Insulation: ~970 cm^3 (factor as in MS_Cu60 cable)
+(3-4) Optical ribbon
+       Number of fibers: for barrel, I calculated 576 fibers, 
+       i.e. total = 960 fibers -> 80 ribbons, length 80 cm
+(5-6) Power connectors (MOLEX 43020/25 20 pins) 
+      from Paolo: MOLEX conn 4x1.2x2.5 cm 
+                  take 85 %-vol plastic, 15 % metal
+         -> Kapton 10.2 cm^3
+            Cu     1.8 cm^3
+        28 stacks of 5 connectors each -> 140
+(7-8) Optoconnectors - as in strip detector
+......................................................................
+# "Bulkhead pixel connectors"  "Tk_panels_mid2"   64640.0   8395.0
+* 1 "Copper power cables"       "Copper"         600.0     1   CAB
+* 2 "Power cable insulation"    "Polyethylene"   970.0     1   CAB
+* 3 "Optical Fibers"            "Quartz"        1.27E-4  960   CAB
+* 4 "Ribbon shield"             "Polyethylene"   8.1e-3   80   CAB
+* 5 "Power connector"           "T_Kapton"       10.2    140   CAB
+* 6 "Power connector"           "Copper"         1.8     140   CAB
+* 7 "Optoconnector"             "T_Kapton"       15.0     80   CAB
+* 8 "Optoconnector"             "Copper"         0.446    80   CAB    
+......................................................................
+======================================================================
+
+o Bulkhead cables: TEC cables
+  ----------------------------------------
+MC Volume: tube segments, r = 62.5-110.5 cm, dz = 7.7 cm, dphi = 4*70 deg
+              ==> 156236 cm^3
+
+(1) Al MS cables, average length = 50 cm, 384 of them
+     X-sect 0.515 cm^2 ==> 25.75 cm^3
+(2) Cu MS cables, "         "           , 384 of them
+(3-4) Connectors: numbers from Horst 
+        5.7 g plastic => 4.07 cm^3
+        5.95 g Cu     => 0.664 cm^3
+......................................................................
+# "Bulkhead TEC cables"  "Tk_panels_mid3"       156236    20290.
+* 1 "MS cable Al 36 APVs"       "MS_Al36"         25.75   384   CAB
+* 2 "MS cable Cu 60 APVs"       "MS_Cu60"         59.4    384   CAB
+* 3 "Connectors"                "T_Kapton"        4.07    384   CAB
+* 4 "Connectors"                "Copper"          0.664   384   CAB
+......................................................................
+======================================================================
+
+o Bulkhead cables: TEC/TOB/TID/TIB out...
+  ---------------------------------------
+All cables, fibers and cooling pipes of all subdetectors...
+ 
+MC Volume: r = 110.5-123.30 cm, dz = 9 cm
+          ==> take cross-section here = 9401 cm^2
+
+                 TIB          TID     TOB     TEC  
+MS Cables:  
+ MS_Al36         128           48     254      -
+ MS_Al48          56           12      -       -
+ MS_Al60          -            -       90      -
+ MS_Cu60          -            -       -      384
+ Control cabl.    42           15      46     144
+ Fiber Ribbons   291           92     561     744
+
+Cooling pipes: TIB+TID : 56 + 14 Steel pipes
+               TOB :     46 CuNi pipes, but approx. by Steel
+               TEC :     64 SS pipes
+
+......................................................................
+# "Bulkhead cables outlet"  "Tk_panels_up"         9401.   -1.
+* 1 "MS cable Al 36 APVs"       "MS_Al36"         0.515   430   CAB
+* 2 "MS cable Al 48 APVs"       "MS_Al48"         0.567    68   CAB
+* 3 "MS cable Al 60 APVs"       "MS_Al60"         0.899    90   CAB
+* 4 "Control cables"            "MS_cntrl_cable"  0.283   247   CAB  
+* 5 "MS cable Cu 60 APVs"       "MS_Cu60"         1.188   384   CAB
+* 6 "Optical ribbon"         "Fibre_Ribbon"     0.00961  1688   CAB
+* 7 "Cooling pipes TIB+TID"   "Steel-008"         0.181   70    COL
+* 8 "Coolant TIB+TID"         "C6F14"             0.950   70    COL
+* 9 "Cooling pipes TOB"       "Steel-008"          0.16   46    COL
+* 10 "Coolant TOB"             "C6F14"            0.785   46    COL
+* 11 "Cooling pipes TEC"       "Steel-008"       0.1806   64    COL
+* 12"Coolant TEC"             "C6F14"            0.95     64    COL
+......................................................................
+======================================================================
+
+
+
+
+
+# "END"  "END"  0.  0.   
+this has to be the last line !
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

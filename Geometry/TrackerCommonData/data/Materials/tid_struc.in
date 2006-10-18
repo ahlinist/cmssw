@@ -1,0 +1,192 @@
+TID Structure (anything but modules)
+====================================
+Input file for mixture.f
+Start new mixtures with a '#' in the first column
+Start the components with a '*' in the first column
+You can type any kind of comment in as long as you don't start it
+with '#' or '*' !
+.....................................................................
+For mixture declaration: Name of Mixture, Name of GMIX for title file, 
+                         Monte Carlo Volume, MC Area
+For items in a compound: Item number, Comment, Material (has to be 
+                 written exactly as in material.input file), 
+                 Volume, Multiplicity, Type
+      Type is one of the following:  SUP for support
+                                     SEN for sensitive volumes
+                                     CAB for cables
+                                     COL for cooling
+                                     ELE for electronics
+..................................................................... 
+
+o TID support disks
+  -----------------
+
+These are the disks that hold the sensor rings. They are 8 mm thick,
+Nomex core of 7 mm and 0.5 mm CF skin each side
+
+Numbers per unit area
+.....................................................................
+# "TID support disk"        "TID_mech"            0.8       1.   
+* 1 "Nomex core"            "TID_Nomex"           0.7       1    SUP
+* 2 "CF skins"              "Carbon fibre str."   0.1       1    SUP
+....................................................................
+=====================================================================
+ 
+o Cooling pipes
+  -------------
+
+These are the same pipes as in the TIB
+
+(per 1 cm length)
+  -------------------
+(1) Cooling pipes: material Al 3mm OD, 2.7 mm ID 
+(2) Coolant: C6F14
+.....................................................................
+# "TID cooling pipes"    "TID_Cool_ring"      0.0707   0.236
+* 1 "Al pipe"            "Aluminium"         0.0134    1   COL
+* 2 "Coolant"            "C6F14"             0.0573    1   COL
+.....................................................................
+=====================================================================
+
+o Cooling manifolds
+  -----------------
+There are two of these per ring.
+
+MC Volume: r = 46-49 cm, dz = 0.7 cm, dphi = 18.5 deg ==> 32.2 cm^3
+
+Not too much known at this time, assume:
+(1) Aluminium walls (0.05 cm thick): (16 x 1.6 x 0.05) x 2.5 
+                                     + 15 x 3 x 0.05    ==> 5.45 cm^3
+(2) Coolant : 14 x 3 x 1.5 cm ==> 63 cm^3
+......................................................................
+# "TID cooling manifolds"  "TID_Cool_Manifold" 32.2       46.
+* 1 "Aluminium walls"      "Aluminium"         5.45       1   COL
+* 2 "Coolant"              "C6F14"             63.0       1   COL
+......................................................................
+======================================================================
+
+o TID ICB rings
+  -------------
+
+radial width: 2.4 cm, thickness 0.06 cm
+
+Use same recipe as for TIB
+per 1 cm:
+(1) Kapton: Stack up from DeRobertis: 300 um Kapton + 2 cover layers
+            ==> 400 um Kapton 
+(2) Copper: Estimate from DeRobertis 5-Apr-01: 1900 mm^3 for a
+            55 cm prototype
+......................................................................
+# "TID ICB rings"         "TID_ICB1/2/3"       0.144    2.4
+* 1 "Kapton"               "T_Kapton"          0.096      1   CAB
+* 2 "Cu traces"            "Copper"            0.0345     1   CAB
+......................................................................
+======================================================================
+ 
+o TID ICB "tails"
+  ---------------
+These are the pieces of the ICB running out to the outer radius of the
+support disks, where they connect to the interface cards (not yet modelled,
+nothing known)
+
+MC Volume: per unit radial length) 3.2 x 0.06 cm^3 = 0.192
+
+same material composition as the ICB (thus also the 2.4 cm width from above)
+......................................................................
+# "TID ICB tails"         "TID_in_cable"       0.144      2.4
+* 1 "Kapton"               "T_Kapton"          0.096      1   CAB
+* 2 "Cu traces"            "Copper"            0.0345     1   CAB
+......................................................................
+======================================================================
+
+o TID support disk fixation
+  -------------------------
+The central disk/wheel (carrying ring 1) is fixed with Aluminium 
+fixations to the service cylinder in 3 points
+
+MC Volume: r = 46.2 - 51.2 cm, dz = 0.7 cm, dphi = 6.25 ==> 18.6 cm^3
+
+Material: Aluminium, approx. volume: 5*4*0.4 (in wheel) +
+                                     5*4*0.4 + 3.6*4*0.4 (on cyl.) 
+                                     ==> 21.76 cm^3
+.......................................................................
+# "TID wheel fixations"       "TID_Wheel_Fixation" 18.6     26.6
+* 1 "Aluminium fixation"            "Aluminium"    21.76     1   SUP
+.......................................................................
+=======================================================================
+
+o TID axial cables
+  ----------------
+These are the cables that run outside the support cylinder 
+
+MC Volume: cross-section 12 bundles of 2.465 cm^2 ==> 29.58 cm^2
+
+Per TID half we have in total: 
+(1) Optical fiber ribbons : 1104 fibres ==> 92 ribbons
+(2-3) Take here the "Hans pipes": Stainless Steel OD 12 mm, ID 11 mm
+                                   number: 14
+(4) Control cables: 15
+(5) MS cables 48 APVs: 12
+(6) MS cables 36 APVs: 48
+.....................................................................
+# "TID axial cables"          "TID_ax_cable"        29.58    -1.
+* 1 "Optical ribbon"          "Fibre_Ribbon"        0.00961  92  CAB
+* 2 "Cooling pipes"           "Steel-008"           0.181   14    COL
+* 3 "Coolant"                 "C6F14"               0.950   14    COL
+* 4 "Control cables"          "MS_cntrl_cable"      0.283   15    CAB
+* 5 "Alu MS Cable 36 APVs"    "MS_Al36"             0.515   48   CAB
+* 6 "Alu MS Cable 48 APVs"    "MS_Al48"             0.567   12    CAB
+................................................................. 
+=================================================================
+
+
+
+o TID_Connector
+  -------------
+These are the optical connector at the end of the TID. Total number: 398
+
+TIB: 306 conn.
+TID: 92 conn
+
+%%NEWS: Mail from Francois: weight of optoconnector (12 channels) is 
+%%      46.8 g Plastic + 8.4 g Cu 
+%%      33.43 cm^3     + 0.9375 cm^3 
+%%
+%%I don't believe this ! Too heavy !
+%%Now take the following: Per MU Connector 0.7 g Cu and 0.7 g Plastic (12)
+%%     Plastic: take Kapton => 12 * 0.5 cm^3 = 6 cm^3
+%%Big connector has about dimensions of 6 x 2 x 1 cm => 12 cm^3
+%%      total 18 cm^3 + 0.937 cm^3 copper
+
+New information from Francois:
+  Connector weighs 25 g total, about 4 g metallic mass  
+     21 g Kapton => 15 cm^3 plastic
+      4 g Copper => 0.446 cm^3
+     
+.....................................................................
+# "TIB/TID optical conn"    "TID_Connector"      43228.   4322.8   
+* 1 "Optoconnector"         "T_Kapton"           15.0     398   CAB
+* 2 "Optoconnector"         "Copper"             0.446    398   CAB
+....................................................................
+=====================================================================
+
+# "END"  "END"  0.  0.   
+this has to be the last line !
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

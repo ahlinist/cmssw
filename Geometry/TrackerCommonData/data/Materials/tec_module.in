@@ -1,0 +1,476 @@
+TEC MODULES
+============
+
+$$  This includes all the volumes that make up the TEC modules
+
+Input file for mixture.f
+Start new mixtures with a '#' in the first column
+Start the components with a '*' in the first column
+You can type any kind of comment in as long as you don't start it
+with '#' or '*' !
+.....................................................................
+For mixture declaration: Name of Mixture, Name of GMIX for title file, 
+                         Monte Carlo Volume, MC Area
+For items in a compound: Item number, Comment, Material (has to be 
+                 written exactly as in material.input file), 
+                 Volume, Multiplicity, Type
+      Type is one of the following:  SUP for support
+                                     SEN for sensitive volumes
+                                     CAB for cables
+                                     COL for cooling
+                                     ELE for electronics
+..................................................................... 
+
+o  Hybrid for TEC rings 1,2,5
+   --------------------------
+Hybrids have 6 APVs
+Dimensions 60 x 25 mm^2 = 15 cm^2
+
+MCVolume: 6 x 2.5 x 0.05 = 0.75 cm^3
+(1) new FR4 hybrid
+Estimate: 300 mu FR4,
+          3 x 25 mu Cu
+          ~300 mu Kapton
+-Pt-Au layer: tbd
+(2) Hybrid components
+    R: (14 + n_APV)   0402 size  material: carbon   -> 20 
+    C: 2 x 1206 large ones
+       (5 + 2*n_APV)  0402 size    -> 17
+                 0402: 1 x 0.5 x 0.5 mm^3
+                 1206: 3 x 1.5 x 1.5 mm^3
+    APV25:     7.1 x 8.1 x 0.3 mm^3     5 per hybrid
+    PLL+MUX  : 2.0 x 7.1 x 0.3 mm^3     1 per hybrid
+    DCU  :     2.0 x 2.0 x 0.3 mm^3     1 per hybrid
+.................................................................
+# "TEC Hybrid Ring 1,2,5"    "TEC_ele1/2/5"   0.75        15.
+Actual hybrid
+* 1  "Hybrid FR4"         "T_FR4"           0.45        1   ELE
+* 2  "Hybrid Kapton"      "T_Kapton"        0.45        1   ELE
+* 3  "Hybrid Copper"      "Copper"          0.1125      1   ELE
+Components:  Resistors
+* 4  "Resistors"          "Carbon"          2.5E-4      20  ELE
+* 5  "R metal"            "SMD_metal"       1.E-4       20  ELE
+Capacitors
+* 6  "Small caps"         "Alumina"         2.5E-4      17  ELE
+* 7  "C metal"            "SMD_metal"       1.E-4       17  ELE
+* 8  "Large caps"         "Alumina"         0.00675     2   ELE
+* 9  "C metal large"      "SMD_metal"       1.E-3       2   ELE
+* 10 "APV25"              "Silicon"         1.7253E-2   6   ELE
+* 11 "PLL+MUX"            "Silicon"         4.26E-3     1   ELE
+* 12 "DCU"                "Silicon"         1.2E-3      1   ELE
+..................................................................
+==================================================================
+
+o  Hybrid for TEC rings 3,4,6,7 
+   ----------------------------
+Hybrids have 4 APVs
+
+as above, except: 
+(2) Hybrid components
+    R: (14 + n_APV)   0402 size  material: carbon   -> 18 
+    C: 2 x 1206 large ones
+       (5 + 2*n_APV)  0402 size    -> 13
+.................................................................
+# "TEC hybrids rings 3/4/6/7"   "TEC_ele3/4/6/7"  0.75        15.
+Actual hybrid
+* 1  "Hybrid FR4"         "T_FR4"           0.45        1   ELE
+* 2  "Hybrid Kapton"      "T_Kapton"        0.45        1   ELE
+* 3  "Hybrid Copper"      "Copper"          0.1125      1   ELE
+Components:  Resistors
+* 4  "Resistors"          "Carbon"          2.5E-4      18  ELE
+* 5  "R metal"            "SMD_metal"       1.E-4       18  ELE
+Capacitors
+* 6  "Small caps"         "Alumina"         2.5E-4      13  ELE
+* 7  "C metal"            "SMD_metal"       1.E-4       13  ELE
+* 8  "Large caps"         "Alumina"         0.00675     2   ELE
+* 9  "C metal large"      "SMD_metal"       1.E-3       2   ELE
+* 10 "APV25"              "Silicon"         1.7253E-2   4   ELE
+* 11 "PLL+MUX"            "Silicon"         4.26E-3     1   ELE
+* 12 "DCU"                "Silicon"         1.2E-3      1   ELE
+..................................................................
+==================================================================
+
+o Pitch adapter
+  -------------
+
+  MC Volume: should have the original size for the r-phi sensors, so
+  just take 100 % Silica
+  Assumed thickness: 0.03 cm 
+...................................................................
+# "TEC pitch adapter"    "TEC_PitchAdapter"       0.03      1.
+* 1 "Glass pitch adapter"    "Silica"             0.03      1  ELE
+....................................................................
+====================================================================
+
+o Module frame legs
+  -----------------
+  MC Volume: length as physical sensor, width 1.2 cm, thickness 0.05 cm
+  
+  (1) Carbon fiber frame. Dimensions as MC dimensions with about 
+      10% material added for some protruding pieces (estimated from
+      comparison calculation and measurement in Aachen)
+  (2) Kapton 100 um thick. Add about 20% in volume for the piece 
+      going to the connector.
+  (3) Copper traces: from Demetris table estimate ratio 
+      Copper to Kapton volume of 33.5/2000 = 0.0167 
+
+  Neglect components on the Kapton for now !!!!
+  Table is for frame legs of unit length !
+...................................................................
+# "TEC frame legs"        "TEC_frame_side"        0.06     1.2
+* 1 "Carbon fiber frame"  "Carbon fibre str."     0.066    1    SUP
+* 2 "LV Kapton"           "T_Kapton"              0.0144   1    ELE
+* 3 "Copper traces"       "Copper"                2.4E-4   1    ELE      
+...................................................................
+====================================================================  
+
+o TEC frame at the module top
+  ---------------------------
+
+  MC Volume: Width of the module x 3.72 x 0.1 cm
+  
+  Actual volume is about that minus 10 %
+
+  (1) 2 Carbon fiber layers of 0.05 cm thickness each
+
+   Numbers for unit width of module !
+....................................................................
+# "TEC module frame top"        "TEC_frame_top"    0.372      3.72
+* 1 "TEC frame top"             "Carbon fibre str."  0.3348   1  SUP
+....................................................................
+=====================================================================  
+
+o TEC cooling inserts
+  -------------------
+  
+  MC Volume: 1.5 x 0.8 x 0.5 cm
+
+  (1) Insert 2.1 g => 0.7778 cm^3
+  (2) Positioning plate 0.1625 g => 0.06 cm^3
+  (3) Al screw  0.04 g => 0.01507 cm^3
+  (4) Solder Silver 0.052 g => 5E-3
+.....................................................................
+# "TEC cooling inserts"        "TEC_cool"          0.6      1.2
+* 1 "Insert"                   "Aluminium"         0.7778   1    COL
+* 2 "Positioning Plate"        "Aluminium"         0.06     1    COL
+* 3 "Al screw"                 "Aluminium"         0.01507  1    COL
+* 4 "Solder"                   "Silver"            5E-3     1    COL
+.....................................................................
+======================================================================
+
+o TEC Optohybrid
+  ---------------
+ 
+  MC Volume: 2.50 x 2.50 x 0.38 cm^3
+
+  This also has to include the cooling insert !
+  
+  Looks like the Optohybrid is identical to the TOB one !
+   
+  (1-2) Connector pair: 30 pin NAIS 
+        per pin : Plastic:  0.01275 g -> 9.107E-3 cm^3 Kapton
+                  Cu     :  7.25E-3 g -> 8.092E-4 cm^3 Cu
+  (3-4) Optohybrid substrate and Copper.
+        Take values from TOB !
+        Components: 17 C 0805
+                     8 R 0805
+      Laser driver: 0.0025 cm^3 Si              (1/OH)
+      Laser diode: 0.02 cm^3 Si            (1 for 2 APVs)
+      Fiber clamps: 1.4 x 0.3 x 0.15 cm Kapton  (1/OH)   
+   
+   Cooling insert: 1.6 g Al + 0.04 g Al (Screw) + 0.052 g Silver (Solder)
+.........................................................................
+# "TEC Optohybrid"         "TEC_OptoH"        2.375        6.25
+* 1 "Connectors"             "T_Kapton"        9.107E-3    30  ELE
+* 2 "Connectors pins"        "Copper"          8.092E-4    30  ELE
+* 3 "Optohybrid"             "T_FR4"              0.345     1  ELE
+* 4 "Optohybrid traces"      "Copper"             0.048     1  ELE
+* 5 "Capacitors"            "Alumina"             3.1E-3   17  ELE
+* 6 "Resistors"             "Carbon"             1.15E-3    8  ELE
+* 7 "Solder"                "SMD_metal"          2.E-4     25  ELE 
+* 8 "Laser drivers"         "Silicon"            0.0025    1   ELE
+* 9 "Laser diode"           "Silicon"              0.02   2.5  ELE
+* 10 "Fiber clamp"          "T_Kapton"            0.063    1   ELE
+* 11 "Cooling insert"       "Aluminium"           0.607    1   COL
+* 12 "Solder"               "Silver"              5.E-3    1   COL 
+.........................................................................
+=========================================================================
+
+o TEC ICBs
+  ---------
+
+  These contain all:
+
+  (1) ICB substrate: 0.8 mm FR4    NOTE: in table will put as unit 0.08 cm^3,
+                                         i.e. volume per 1 cm^2 area !!
+  (2) 17 um Copper traces, 2 layers a 70 % and 2 layers a 50 % occupancy
+                                   Again, volume per area of 1 cm^2 
+  (3-4) Kapton pigtails: don't know anything about, take numbers from TOB
+  	 	Kapton: 4 x 3 x 0.01 cm   -> 0.12 cm^3
+                Cu: 2 layers 50 um 50 % occ -> 0.06 cm^3 
+  (5-6) Connector from pigtail to ICB & HV to ICB, take from TOB !
+       per pin : Plastic:  0.01275 g -> 9.107E-3 cm^3 Kapton
+                 Cu     :  7.25E-3 g -> 8.092E-4 cm^3 Cu
+         Pins: 40+16 per module side
+  (7-8) Maybe connectors connecting ICB parts, typically 66 pins,
+        take NAIS weights for the pieces connecting rings !
+
+  (9) 2 Al inserts per ICB, 0.17 g/piece
+
+  Optical fibers running across will be neglected !
+
+ 
+ Front petal:
+ ------------
+ Ring 1: no connectors
+.......................................................................
+# "TEC front petal ICB ring 1"      "TEC_ICC11"     3.567   29.73
+* 1 "ICB substrate"             "T_FR4"             0.08    35.3  CAB         
+* 2 "ICB traces"                "Copper"         0.00408    35.3  CAB
+* 3 "Fixation inserts"          "Aluminium"        0.063     2    CAB
+......................................................................
+ Ring 2: 4 module connections
+.......................................................................
+# "TEC front petal ICB ring 2"      "TEC_ICC12"     5.89    49.1
+* 1 "ICB substrate"             "T_FR4"             0.08    51.5  CAB         
+* 2 "ICB traces"                "Copper"         0.00408    51.5  CAB
+* 3 "Kapton pigtails"           "T_Kapton"         0.12      4    ELE
+* 4 "Pigtail traces"            "Copper"           0.06      4    ELE
+* 5 "Module connectors"         "T_Kapton"         0.51      4    ELE
+* 6 "Module connectors pins"    "Copper"           0.045     4    ELE
+* 7 "Fixation inserts"          "Aluminium"        0.063     2    CAB
+......................................................................
+ Ring 3: 4 module connections
+.......................................................................
+# "TEC front petal ICB ring 3"      "TEC_ICC13"    10.40    86.7
+* 1 "ICB substrate"             "T_FR4"             0.08   86.25  CAB        
+* 2 "ICB traces"                "Copper"         0.00408   86.25  CAB
+* 3 "Kapton pigtails"           "T_Kapton"         0.12      4    ELE
+* 4 "Pigtail traces"            "Copper"           0.06      4    ELE
+* 5 "Module connectors"         "T_Kapton"         0.51      4    ELE
+* 6 "Module connectors pins"    "Copper"           0.045     4    ELE
+* 7 "Fixation inserts"          "Aluminium"        0.063     2    CAB
+......................................................................
+ Ring 4: 3 module connections
+.......................................................................
+# "TEC front petal ICB ring 4"      "TEC_ICC14"    12.38    103.2
+* 1 "ICB substrate"             "T_FR4"             0.08    70.0  CAB         
+* 2 "ICB traces"                "Copper"         0.00408    70.0  CAB
+* 3 "Kapton pigtails"           "T_Kapton"         0.12      3    ELE
+* 4 "Pigtail traces"            "Copper"           0.06      3    ELE
+* 5 "Module connectors"         "T_Kapton"         0.51      3    ELE
+* 6 "Module connectors pins"    "Copper"           0.045     3    ELE
+* 7 "Fixation inserts"          "Aluminium"        0.063     2    CAB
+......................................................................
+ Ring 5: 4 module connections
+.......................................................................
+# "TEC front petal ICB ring 5"      "TEC_ICC15"    12.76   106.3
+* 1 "ICB substrate"             "T_FR4"             0.08   130.2  CAB         
+* 2 "ICB traces"                "Copper"         0.00408   130.2  CAB
+* 3 "Kapton pigtails"           "T_Kapton"         0.12      4    ELE
+* 4 "Pigtail traces"            "Copper"           0.06      4    ELE
+* 5 "Module connectors"         "T_Kapton"         0.51      4    ELE
+* 6 "Module connectors pins"    "Copper"           0.045     4    ELE
+* 7 "Fixation inserts"          "Aluminium"        0.063     2    CAB
+......................................................................
+ Ring 6: 9 module connections
+.......................................................................
+# "TEC front petal ICB ring 6"      "TEC_ICC16"     21.9    182.6
+* 1 "ICB substrate"             "T_FR4"             0.08    181.0 CAB         
+* 2 "ICB traces"                "Copper"         0.00408    181.0 CAB
+* 3 "Kapton pigtails"           "T_Kapton"         0.12      9    ELE
+* 4 "Pigtail traces"            "Copper"           0.06      9    ELE
+* 5 "Module connectors"         "T_Kapton"         0.51      9    ELE
+* 6 "Module connectors pins"    "Copper"           0.045     9    ELE
+* 7 "Fixation inserts"          "Aluminium"        0.063     2    CAB
+......................................................................
+ Ring 7: 4 module connections
+.......................................................................
+# "TEC front petal ICB ring 7"      "TEC_ICC17"    18.78    156.5
+* 1 "ICB substrate"             "T_FR4"             0.08    152.7 CAB         
+* 2 "ICB traces"                "Copper"         0.00408    152.7 CAB
+* 3 "Kapton pigtails"           "T_Kapton"         0.12      4    ELE
+* 4 "Pigtail traces"            "Copper"           0.06      4    ELE
+* 5 "Module connectors"         "T_Kapton"         0.51      4    ELE
+* 6 "Module connectors pins"    "Copper"           0.045     4    ELE
+* 7 "Fixation inserts"          "Aluminium"        0.063     2    CAB
+......................................................................
+
+ Ring connection 1 & 3: 1 ICB connector
+.......................................................................
+# "TEC front petal ICB conn 1/3"    "TEC_ICC1B1"    6.79     56.6
+* 1 "ICB substrate"             "T_FR4"             0.08    57.15 CAB         
+* 2 "ICB traces"                "Copper"         0.00408    57.15 CAB
+* 3 "ICB connectors"            "T_Kapton"         0.601     1    CAB
+* 4 "ICB connectors pins"       "Copper"           0.053     1    CAB
+* 5 "Fixation inserts"          "Aluminium"        0.063     2    CAB
+......................................................................
+
+ Ring connection 3 & 5: 2 ICB connector
+.......................................................................
+# "TEC front petal ICB conn 3/5"    "TEC_ICC1B2"   10.33     86.1
+* 1 "ICB substrate"             "T_FR4"             0.08    86.05 CAB         
+* 2 "ICB traces"                "Copper"         0.00408    86.05 CAB
+* 3 "ICB connectors"            "T_Kapton"         0.601     2    CAB
+* 4 "ICB connectors pins"       "Copper"           0.053     2    CAB
+* 5 "Fixation inserts"          "Aluminium"        0.063     2    CAB
+......................................................................
+
+ Ring connection 5 & 7: 1 ICB connector
+.......................................................................
+# "TEC front petal ICB conn 5/7"    "TEC_ICC1B3"   22.94    191.2
+* 1 "ICB substrate"             "T_FR4"             0.08    232.6 CAB         
+* 2 "ICB traces"                "Copper"         0.00408    232.6 CAB
+* 3 "ICB connectors"            "T_Kapton"         0.601     1    CAB
+* 4 "ICB connectors pins"       "Copper"           0.053     1    CAB
+* 5 "Fixation inserts"          "Aluminium"        0.063     2    CAB
+......................................................................
+
+ Ring connection top of 7: no ICB connector, but 2 CCU boards
+       take TOB CCU ! 
+.......................................................................
+# "TEC front petal ICB conn top"    "TEC_ICC1B4"   19.94     166.2
+* 1 "ICB substrate"             "T_FR4"             0.08    180.7 CAB         
+* 2 "ICB traces"                "Copper"         0.00408    180.7 CAB
+* 3 "Fixation inserts"          "Aluminium"        0.063     2    CAB
+* 4 "CCUM board"                "G10"              1.02     2     ELE
+* 5 "Copper traces"             "Copper"           0.035    2     ELE
+* 6 "CCU in housing"            "T_Kapton"         0.225    2     ELE
+* 7 "Solder balls"              "SMD_metal"        0.01     2     ELE
+* 8 "Other chips"               "T_Kapton"         0.015    4     ELE
+* 9 "Capacitors"                "Alumina"          1.E-4    8     ELE
+* 10 "Resistors"                "Carbon"           1.E-4    16    ELE       
+* 11 "Solder"                   "SMD_metal"        1.E-4    24    ELE
+* 12 "Connector"                "T_Kapton"       9.107E-3   160   ELE 
+* 13 "Connector pins"           "Copper"          8.092E-4  160   ELE   
+......................................................................
+
+
+ BACK petal:
+ ------------
+ Ring 1: nothing
+       put just T_Air for material TEC_ICC21
+.......................................................................
+ Ring 2: 2 module connections
+.......................................................................
+# "TEC back  petal ICB ring 2"      "TEC_ICC22"     6.36    53.0
+* 1 "ICB substrate"             "T_FR4"             0.08    54.4  CAB         
+* 2 "ICB traces"                "Copper"         0.00408    54.4  CAB
+* 3 "Kapton pigtails"           "T_Kapton"         0.12      2    ELE
+* 4 "Pigtail traces"            "Copper"           0.06      2    ELE
+* 5 "Module connectors"         "T_Kapton"         0.51      2    ELE
+* 6 "Module connectors pins"    "Copper"           0.045     2    ELE
+* 7 "Fixation inserts"          "Aluminium"        0.063     2    CAB
+......................................................................
+ Ring 3: 2 module connections
+.......................................................................
+# "TEC back  petal ICB ring 3"      "TEC_ICC23"     5.14    42.8
+* 1 "ICB substrate"             "T_FR4"             0.08   49.5   CAB        
+* 2 "ICB traces"                "Copper"         0.00408   49.5   CAB
+* 3 "Kapton pigtails"           "T_Kapton"         0.12      2    ELE
+* 4 "Pigtail traces"            "Copper"           0.06      2    ELE
+* 5 "Module connectors"         "T_Kapton"         0.51      2    ELE
+* 6 "Module connectors pins"    "Copper"           0.045     2    ELE
+* 7 "Fixation inserts"          "Aluminium"        0.063     2    CAB
+......................................................................
+ Ring 4: 2 module connections
+.......................................................................
+# "TEC back  petal ICB ring 4"      "TEC_ICC24"     6.74     56.2
+* 1 "ICB substrate"             "T_FR4"             0.08    92.5  CAB         
+* 2 "ICB traces"                "Copper"         0.00408    92.5  CAB
+* 3 "Kapton pigtails"           "T_Kapton"         0.12      2    ELE
+* 4 "Pigtail traces"            "Copper"           0.06      2    ELE
+* 5 "Module connectors"         "T_Kapton"         0.51      2    ELE
+* 6 "Module connectors pins"    "Copper"           0.045     2    ELE
+* 7 "Fixation inserts"          "Aluminium"        0.063     2    CAB
+......................................................................
+ Ring 5: 3 module connections
+.......................................................................
+# "TEC back  petal ICB ring 5"      "TEC_ICC25"    12.7    105.85
+* 1 "ICB substrate"             "T_FR4"             0.08   105.85 CAB         
+* 2 "ICB traces"                "Copper"         0.00408   105.85 CAB
+* 3 "Kapton pigtails"           "T_Kapton"         0.12      3    ELE
+* 4 "Pigtail traces"            "Copper"           0.06      3    ELE
+* 5 "Module connectors"         "T_Kapton"         0.51      3    ELE
+* 6 "Module connectors pins"    "Copper"           0.045     3    ELE
+* 7 "Fixation inserts"          "Aluminium"        0.063     2    CAB
+......................................................................
+ Ring 6: 11 module connections
+.......................................................................
+# "TEC back  petal ICB ring 6"      "TEC_ICC26"     24.9    207.5
+* 1 "ICB substrate"             "T_FR4"             0.08    215.0 CAB         
+* 2 "ICB traces"                "Copper"         0.00408    215.0 CAB
+* 3 "Kapton pigtails"           "T_Kapton"         0.12      11   ELE
+* 4 "Pigtail traces"            "Copper"           0.06      11   ELE
+* 5 "Module connectors"         "T_Kapton"         0.51      11   ELE
+* 6 "Module connectors pins"    "Copper"           0.045     11   ELE
+* 7 "Fixation inserts"          "Aluminium"        0.063     2    CAB
+......................................................................
+ Ring 7: 3 module connections
+.......................................................................
+# "TEC back  petal ICB ring 7"      "TEC_ICC27"    13.18    109.8
+* 1 "ICB substrate"             "T_FR4"             0.08    108.3 CAB         
+* 2 "ICB traces"                "Copper"         0.00408    108.3 CAB
+* 3 "Kapton pigtails"           "T_Kapton"         0.12      3    ELE
+* 4 "Pigtail traces"            "Copper"           0.06      3    ELE
+* 5 "Module connectors"         "T_Kapton"         0.51      3    ELE
+* 6 "Module connectors pins"    "Copper"           0.045     3    ELE
+* 7 "Fixation inserts"          "Aluminium"        0.063     2    CAB
+......................................................................
+
+ Ring connection 1 & 3: 1 ICB connector
+.......................................................................
+# "TEC back  petal ICB conn 1/3"    "TEC_ICC2B1"    2.83     23.6
+* 1 "ICB substrate"             "T_FR4"             0.08    38.12 CAB         
+* 2 "ICB traces"                "Copper"         0.00408    38.12 CAB
+* 3 "ICB connectors"            "T_Kapton"         0.601     1    CAB
+* 4 "ICB connectors pins"       "Copper"           0.053     1    CAB
+* 5 "Fixation inserts"          "Aluminium"        0.063     2    CAB
+......................................................................
+
+ Ring connection 3 & 5: 2 ICB connector
+.......................................................................
+# "TEC back  petal ICB conn 3/5"    "TEC_ICC2B2"    7.91     65.9
+* 1 "ICB substrate"             "T_FR4"             0.08    65.6  CAB         
+* 2 "ICB traces"                "Copper"         0.00408    65.6  CAB
+* 3 "ICB connectors"            "T_Kapton"         0.601     2    CAB
+* 4 "ICB connectors pins"       "Copper"           0.053     2    CAB
+* 5 "Fixation inserts"          "Aluminium"        0.063     2    CAB
+......................................................................
+
+ Ring connection 5 & 7: 1 ICB connector
+.......................................................................
+# "TEC back  petal ICB conn 5/7"    "TEC_ICC2B3"   23.47    195.6
+* 1 "ICB substrate"             "T_FR4"             0.08    292.  CAB         
+* 2 "ICB traces"                "Copper"         0.00408    292.  CAB
+* 3 "ICB connectors"            "T_Kapton"         0.601     1    CAB
+* 4 "ICB connectors pins"       "Copper"           0.053     1    CAB
+* 5 "Fixation inserts"          "Aluminium"        0.063     2    CAB
+......................................................................
+
+ Ring connection top of 7: no ICB connector, but 2 CCU boards
+       take TOB CCU ! 
+.......................................................................
+# "TEC back  petal ICB conn top"    "TEC_ICC2B4"   19.94     166.2
+* 1 "ICB substrate"             "T_FR4"             0.08    188.  CAB         
+* 2 "ICB traces"                "Copper"         0.00408    188.  CAB
+* 3 "Fixation inserts"          "Aluminium"        0.063     2    CAB
+* 4 "CCUM board"                "G10"              1.02     2     ELE
+* 5 "Copper traces"             "Copper"           0.035    2     ELE
+* 6 "CCU in housing"            "T_Kapton"         0.225    2     ELE
+* 7 "Solder balls"              "SMD_metal"        0.01     2     ELE
+* 8 "Other chips"               "T_Kapton"         0.015    4     ELE
+* 9 "Capacitors"                "Alumina"          1.E-4    8     ELE
+* 10 "Resistors"                "Carbon"           1.E-4    16    ELE       
+* 11 "Solder"                   "SMD_metal"        1.E-4    24    ELE
+* 12 "Connector"                "T_Kapton"       9.107E-3   160   ELE 
+* 13 "Connector pins"           "Copper"          8.092E-4  160   ELE   
+......................................................................
+======================================================================
+
+
+# "END"  "END"  0.  0.   
+this has to be the last line !
+
+
+
