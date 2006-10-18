@@ -48,7 +48,7 @@ class PMuonSimHit
          _enloss(0),      _tof(0) {}
  
     int   _cscId;
-    float _detUnitId;
+    unsigned int _detUnitId;
     float _trackId;
     float _processType;
     float _particleType;
@@ -87,7 +87,7 @@ class PMuonSimHit
 	 _entrypointx(0), _entrypointy(0), _entrypointz(0), 
          _enloss(0),      _tof(0) {}
 
-    float _detUnitId;
+    unsigned int _detUnitId;
     float _trackId;
     float _processType;
     float _particleType;
@@ -126,7 +126,7 @@ class PMuonSimHit
 	 _entrypointx(0), _entrypointy(0), _entrypointz(0), 
          _enloss(0),      _tof(0) {}
 
-    float _detUnitId;
+    unsigned int _detUnitId;
     float _trackId;
     float _processType;
     float _particleType;
@@ -169,8 +169,8 @@ class PMuonSimHit
                 std::vector<float> eta, std::vector<float> phi);  
 
   void putCSCHits(
-               std::vector<int>   _cscId,
-               std::vector<float> _detUnitId,
+               std::vector<int>  _cscId,
+               std::vector<unsigned int> _detUnitId,
 	       std::vector<float> _trackId , 
                std::vector<float> _processType,
 	       std::vector<float> _particleType, 
@@ -196,7 +196,7 @@ class PMuonSimHit
                std::vector<float> _tof);   
 
   void putDTHits(
-               std::vector<float> _detUnitId,
+               std::vector<unsigned int> _detUnitId,
 	       std::vector<float> _trackId , 
                std::vector<float> _processType,
 	       std::vector<float> _particleType, 
@@ -222,7 +222,7 @@ class PMuonSimHit
                std::vector<float> _tof); 
 
   void putRPCHits(
-               std::vector<float> _detUnitId,
+               std::vector<unsigned int> _detUnitId,
 	       std::vector<float> _trackId , 
                std::vector<float> _processType,
 	       std::vector<float> _particleType, 

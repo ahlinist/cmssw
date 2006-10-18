@@ -35,7 +35,7 @@ void PMuonSimHit::putG4Trk(std::vector<float> pt,  std::vector<float> e,
 
 void PMuonSimHit::putCSCHits (
                               std::vector<int>   _cscId,
-                              std::vector<float> _detUnitId,
+                              std::vector<unsigned int> _detUnitId,
                               std::vector<float> _trackId , 
                               std::vector<float> _processType,
                               std::vector<float> _particleType, 
@@ -93,7 +93,7 @@ void PMuonSimHit::putCSCHits (
   return;
 }
 
-void PMuonSimHit::putDTHits  (std::vector<float> _detUnitId,
+void PMuonSimHit::putDTHits  (std::vector<unsigned int> _detUnitId,
                               std::vector<float> _trackId , 
                               std::vector<float> _processType,
                               std::vector<float> _particleType, 
@@ -150,7 +150,7 @@ void PMuonSimHit::putDTHits  (std::vector<float> _detUnitId,
   return;
 }
 
-void PMuonSimHit::putRPCHits (std::vector<float> _detUnitId,
+void PMuonSimHit::putRPCHits (std::vector<unsigned int> _detUnitId,
                               std::vector<float> _trackId , 
                               std::vector<float> _processType,
                               std::vector<float> _particleType, 
