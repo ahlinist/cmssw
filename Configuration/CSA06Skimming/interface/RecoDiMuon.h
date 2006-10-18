@@ -6,8 +6,8 @@
  *  
  *  This class is an EDFilter choosing reconstructed di-muons
  *
- *  $Date: $
- *  $Revision: $
+ *  $Date: 2006/10/17 21:43:02 $
+ *  $Revision: 1.1 $
  *
  *  \author Chang Liu  -  Purdue University
  *
@@ -38,7 +38,7 @@ class RecoDiMuon : public edm::EDFilter {
        virtual bool filter(Event&, const EventSetup&);
 
    private:
-      std::string muonLabel_;
+      InputTag muonLabel_;
       double singleMuonPtMin_;
       double diMuonPtMin_;
       unsigned int  nEvents_;
