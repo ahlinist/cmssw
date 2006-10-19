@@ -1,0 +1,20 @@
+<export>
+ <lib name=RecoBTagAnalysis>
+ <use name=root>
+ <use name=DataFormats/BTauReco>
+ <use name=FWCore/Framework>
+ <use name=Foundation/PluginManager>
+ <use name=FWCore/Utilities>
+ <use name=FWCore/ParameterSet>
+ <use name=FWCore/Framework>
+</export>
+
+<use name=DataFormats/BTauReco>
+<use name=root>
+<use name=FWCore/Framework>
+<use name=Foundation/PluginManager>
+<use name=FWCore/Utilities>
+<use name=FWCore/ParameterSet>
+<use name=FWCore/Framework>
+
+<flags SEAL_PLUGIN_NAME="RecoBTagAnalysis">
