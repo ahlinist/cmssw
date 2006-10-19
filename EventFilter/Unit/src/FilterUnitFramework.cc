@@ -7,6 +7,9 @@
 //
 //  Modification history:
 //    $Log: FilterUnitFramework.cc,v $
+//    Revision 1.18  2006/10/05 08:46:09  meschi
+//    fixes for reconfigure upon halt, implementation of flush for halt, reset of counters upon reception of new run number
+//
 //    Revision 1.17  2006/10/02 09:17:51  meschi
 //    mods for FU flashlist
 //
@@ -772,7 +775,7 @@ void FilterUnitFramework::parameterTables(xgi::Input *in, xgi::Output *out)
   *out << "<td>" << std::endl;
   *out << "CrcErrors" << std::endl;
   *out << "</td>" << std::endl;
-  *out << "<td" << ( doCrcCheck_.value_ !=0 ?  (nbCrcErrors_==0 ? ">" : "bgcolor=\"red\">" ) : 
+  *out << "<td" << ( doCrcCheck_.value_ !=0 ?  (nbCrcErrors_==0 ? ">" : " bgcolor=\"red\">" ) : 
    " bgcolor=\"grey\">" ) << std::endl;
   *out << nbCrcErrors_ << std::endl;
   *out << "</td>" << std::endl;
