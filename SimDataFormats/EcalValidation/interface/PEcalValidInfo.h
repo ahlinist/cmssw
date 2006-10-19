@@ -76,6 +76,10 @@ public:
    int    hitsIn2ESzp()  const { return nHitsIn2ESzp;}
    int    hitsIn2ESzm()  const { return nHitsIn2ESzm;}       
 
+   int    crystalInEB()   const { return nCrystalInEB;}
+   int    crystalInEEzp() const { return nCrystalInEEzp; }
+   int    crystalInEEzm() const { return nCrystalInEEzm; }
+
    FloatVector  bX0() const { return eBX0; }
    FloatVector  eX0() const { return eEX0; }
 
@@ -94,6 +98,9 @@ public:
    FloatVector  etaOfEEHits() const { return etaOfEECaloG4Hit; }
    FloatVector  tOfEEHits()   const { return tOfEECaloG4Hit;   }
    FloatVector  eOfEEHits()   const { return eOfEECaloG4Hit;   }
+   FloatVector  eOfEEPlusHits()    const { return eOfEEPlusCaloG4Hit;   }
+   FloatVector  eOfEEMinusHits()   const { return eOfEEMinusCaloG4Hit;   }
+
 
    FloatVector  phiOfEBHits() const { return phiOfEBCaloG4Hit; }
    FloatVector  etaOfEBHits() const { return etaOfEBCaloG4Hit; }
@@ -149,6 +156,11 @@ private:
    int nHitsIn2ESzp;
    int nHitsIn2ESzm;       
 
+   int nCrystalInEB;
+   int nCrystalInEEzp;
+   int nCrystalInEEzm;
+
+
    FloatVector eBX0;       // longitudinal Energy deposition In EB.
    FloatVector eEX0;       // longitudinal Energy deposition In EE.
 
@@ -166,7 +178,9 @@ private:
    FloatVector  etaOfEECaloG4Hit;    // Eta of Hits.
    FloatVector  tOfEECaloG4Hit;      // Tof of Hits.
    FloatVector  eOfEECaloG4Hit;      // Energy depostion of Hits.
- 
+   FloatVector  eOfEEPlusCaloG4Hit;       // Energy depostion of Hits.
+   FloatVector  eOfEEMinusCaloG4Hit;      // Energy depostion of Hits.
+
    FloatVector  phiOfESCaloG4Hit;    // Phi of Hits.
    FloatVector  etaOfESCaloG4Hit;    // Eta of Hits.
    FloatVector  tOfESCaloG4Hit;      // Tof of Hits.
