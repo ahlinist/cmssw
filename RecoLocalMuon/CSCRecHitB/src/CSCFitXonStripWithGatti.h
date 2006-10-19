@@ -113,6 +113,7 @@ class CSCFitXonStripWithGatti
   bool debug;
   bool isData;
   bool use3TimeBins;
+  double adcSystematics;
 
   CSCFindPeakTime* peakTimeFinder_;  
 

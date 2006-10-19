@@ -28,6 +28,7 @@ module csc2DRecHits = CSCRecHitBProducer {
      untracked int32  CSCStripClusterSize        = 3
      untracked bool   CSCUseGattiFit             = true
      untracked double CSCMaxGattiChi2            = 10000.
+     untracked double CSCCalibrationSystematics  = 0.015
 
      untracked bool   CSCuseCleanStripCollection = true
      untracked int32  CSCStripminLayersApart     = 2

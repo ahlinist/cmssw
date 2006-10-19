@@ -332,15 +332,18 @@ float CSCHitFromStripOnly::findHitOnStripPosition( const std::vector<CSCStripHit
     float w0 = data[i].y0();
     float w1 = data[i].y1();
     float w2 = data[i].y2();
+    float w3 = data[i].y3();
 
-    if (w0 < 0.) w0 = 0.001;
-    if (w1 < 0.) w1 = 0.001;
-    if (w2 < 0.) w2 = 0.001;
+    if (w0 < 0. || w0 > 2000.) w0 = 0.001;
+    if (w1 < 0. || w1 > 2000.) w1 = 0.001;
+    if (w2 < 0. || w2 > 2000.) w2 = 0.001;
+    if (w3 < 0. || w3 > 2000.) w3 = 0.001;
 
      // Fill the adcs to the strip hit --> needed for Gatti fitter
     strips_adc.push_back( w0 );
     strips_adc.push_back( w1 );
     strips_adc.push_back( w2 );
+    strips_adc.push_back( w3 );
  
     sum_w += w1;
     sum   += w1 * data[i].x();
@@ -352,6 +355,7 @@ float CSCHitFromStripOnly::findHitOnStripPosition( const std::vector<CSCStripHit
     strippos = data[biggestStrip].x();
   } 
 
+/* This to be moved in CSCMake2Dhits
 
   // Test if center of centroid is very close to between 2 strips
   // If so, then use an even # of strip in cluster to fit centroid
@@ -383,6 +387,7 @@ float CSCHitFromStripOnly::findHitOnStripPosition( const std::vector<CSCStripHit
       strippos = strippos;
     }
 
+
     if ( debug ) {
       std::cout << "Used improved centroid for strip Hit position" << std::endl;  
       std::cout << "Before: " << old_strippos                      << std::endl;  
@@ -390,6 +395,7 @@ float CSCHitFromStripOnly::findHitOnStripPosition( const std::vector<CSCStripHit
       std::cout << "Diff  : " << strippos-old_strippos             << std::endl;  
     } 
   }
+*/
 
   return strippos;
 }
