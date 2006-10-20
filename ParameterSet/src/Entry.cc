@@ -717,14 +717,17 @@ namespace edm {
         std::vector<ParameterSet>::const_iterator i = whole.begin();
         std::vector<ParameterSet>::const_iterator e = whole.end();
         std::string start ="";
-        const std::string between(",");
+        const std::string between(",\n");
         os << "{"<<std::endl;
          for ( ; i != e; ++i )
          {
-           os <<  start<< *i << std::endl;
+           os <<  start<< *i;
            start = between;
          }
-         os<<"\n}";
+         if (whole.size()) {
+           os<<std::endl;
+         }
+         os<<"}";
          break;
       } 
       case 'S':
