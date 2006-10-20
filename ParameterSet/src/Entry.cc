@@ -698,7 +698,7 @@ namespace edm {
   operator<< (std::ostream& os, const Entry & entry)
   {
     os << sTypeTranslations.table_[entry.typeCode()] << " " 
-       << (entry.isTracked() ? "tracked " : "untracked "); 
+       << (entry.isTracked() ? "tracked " : "untracked ") <<" = "; 
 
     // now handle the difficult cases
     switch(entry.typeCode())
@@ -717,31 +717,39 @@ namespace edm {
          std::vector<ParameterSet>::const_iterator e = whole.end();
          for ( ; i != e; ++i )
          {
-           os << *i << std::endl;
+           os << "{\n"<< *i << "\n}"<< std::endl;
          }
          break;
       } 
       case 'S':
       {
-        os << " = " << entry.getString() << std::endl;
+        os << entry.getString() ;
         break;
       }
       case 's':
       {
-        os << " = ";
+        
+        os << "{";
+        std::string start ="'";
+        const std::string between(",'");
         std::vector<std::string> strings = entry.getVString();
-        std::copy(strings.begin(), strings.end(),
-                  std::ostream_iterator<std::string>(os, " "));
+        for(std::vector<std::string>::const_iterator it = strings.begin();
+            it != strings.end();
+            ++it) {
+          os<<start<<*it<<"'";
+          start = between;
+        }
+        os <<"}";
         break;
       }
       case 'I':
       {
-        os << " = " << entry.getInt32() << std::endl;
+        os << entry.getInt32();
         break;
       }
       case 'U':
       {
-        os << " = " << entry.getUInt32() << std::endl;
+        os <<entry.getUInt32();
         break;
       }
 
