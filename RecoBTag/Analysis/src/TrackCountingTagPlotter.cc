@@ -68,16 +68,17 @@ void TrackCountingTagPlotter::psPlot(const TString & name)
   jetTagPlotter_->psPlot(name);
 
   TString cName = "TrackCountingPlots"+ theExtensionString;
-  TCanvas canvas(cName,
-  	"TrackCountingPlots"+ theExtensionString, 600, 900);
+  setTDRStyle()->cd();
+  TCanvas canvas(cName, "TrackCountingPlots"+ theExtensionString, 600, 900);
+  canvas.UseCurrentStyle();
   canvas.Divide(2,3);
   canvas.Print(name + cName + ".ps[");
   canvas.cd(1);
-  hSignificance->plot(0);
+  hSignificance->plot((TPad*) canvas.GetPrimitive(cName+"_1"));
 
   for(int n=0; n < 4; n++) {
-    canvas.cd(1+n);
-    tkcntHistosSig[n]->plot(0);
+    canvas.cd(2+n);
+    tkcntHistosSig[n]->plot((TPad*) canvas.GetPrimitive(cName+"_"+itos(n+2)));
   }
 
   canvas.Print(name + cName + ".ps");

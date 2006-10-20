@@ -1,9 +1,10 @@
 #include "RecoBTag/Analysis/interface/JetTagPlotter.h"
-#include "RecoBTag/Analysis/src/Tools.h"
+#include "RecoBTag/Analysis/interface/Tools.h"
 
 #include <iostream>
 
 using namespace std;
+using namespace RecoBTag;
 
 
 JetTagPlotter::JetTagPlotter (const EtaPtBin & etaPtBin,
@@ -125,8 +126,10 @@ void JetTagPlotter::epsPlot(const TString & name)
 void JetTagPlotter::psPlot(const TString & name)
 {
   TString cName = "JetTagPlots"+ theExtensionString;
-  TCanvas canvas(cName,
-  	"JetTagPlors"+ theExtensionString, 600, 900);
+  setTDRStyle()->cd();
+  TCanvas canvas(cName, "JetTagPlors"+ theExtensionString, 600, 900);
+  canvas.UseCurrentStyle();
+
   canvas.Divide(2,3);
   canvas.Print(name + cName + ".ps[");
   canvas.cd(1);
@@ -222,43 +225,43 @@ void JetTagPlotter::finalize() {
 					     nBinEffPur_, startEffPur_, endEffPur_ );
 
   // discr. for computation
-  vector<TH1F*> discrCfHistos;
-  discrCfHistos.push_back ( dDiscriminatorFC->histo_all  () );
-  discrCfHistos.push_back ( dDiscriminatorFC->histo_d    () );
-  discrCfHistos.push_back ( dDiscriminatorFC->histo_u    () );
-  discrCfHistos.push_back ( dDiscriminatorFC->histo_s    () );
-  discrCfHistos.push_back ( dDiscriminatorFC->histo_c    () );
-  discrCfHistos.push_back ( dDiscriminatorFC->histo_b    () );
-  discrCfHistos.push_back ( dDiscriminatorFC->histo_g    () );
-  discrCfHistos.push_back ( dDiscriminatorFC->histo_ni   () );
-  discrCfHistos.push_back ( dDiscriminatorFC->histo_dus  () );
-  discrCfHistos.push_back ( dDiscriminatorFC->histo_dusg () );
+  vector<TH1F*> discrCfHistos = dDiscriminatorFC->getHistoVector();
+//   discrCfHistos.push_back ( dDiscriminatorFC->histo_all  () );
+//   discrCfHistos.push_back ( dDiscriminatorFC->histo_d    () );
+//   discrCfHistos.push_back ( dDiscriminatorFC->histo_u    () );
+//   discrCfHistos.push_back ( dDiscriminatorFC->histo_s    () );
+//   discrCfHistos.push_back ( dDiscriminatorFC->histo_c    () );
+//   discrCfHistos.push_back ( dDiscriminatorFC->histo_b    () );
+//   discrCfHistos.push_back ( dDiscriminatorFC->histo_g    () );
+//   discrCfHistos.push_back ( dDiscriminatorFC->histo_ni   () );
+//   discrCfHistos.push_back ( dDiscriminatorFC->histo_dus  () );
+//   discrCfHistos.push_back ( dDiscriminatorFC->histo_dusg () );
 
   // discr no cut
-  vector<TH1F*> discrNoCutHistos;
-  discrNoCutHistos.push_back ( dDiscrCut->histo_all  () );
-  discrNoCutHistos.push_back ( dDiscrCut->histo_d    () );
-  discrNoCutHistos.push_back ( dDiscrCut->histo_u    () );
-  discrNoCutHistos.push_back ( dDiscrCut->histo_s    () );
-  discrNoCutHistos.push_back ( dDiscrCut->histo_c    () );
-  discrNoCutHistos.push_back ( dDiscrCut->histo_b    () );
-  discrNoCutHistos.push_back ( dDiscrCut->histo_g    () );
-  discrNoCutHistos.push_back ( dDiscrCut->histo_ni   () );
-  discrNoCutHistos.push_back ( dDiscrCut->histo_dus  () );
-  discrNoCutHistos.push_back ( dDiscrCut->histo_dusg () );
+  vector<TH1F*> discrNoCutHistos = dDiscrCut->getHistoVector();
+//   discrNoCutHistos.push_back ( dDiscrCut->histo_all  () );
+//   discrNoCutHistos.push_back ( dDiscrCut->histo_d    () );
+//   discrNoCutHistos.push_back ( dDiscrCut->histo_u    () );
+//   discrNoCutHistos.push_back ( dDiscrCut->histo_s    () );
+//   discrNoCutHistos.push_back ( dDiscrCut->histo_c    () );
+//   discrNoCutHistos.push_back ( dDiscrCut->histo_b    () );
+//   discrNoCutHistos.push_back ( dDiscrCut->histo_g    () );
+//   discrNoCutHistos.push_back ( dDiscrCut->histo_ni   () );
+//   discrNoCutHistos.push_back ( dDiscrCut->histo_dus  () );
+//   discrNoCutHistos.push_back ( dDiscrCut->histo_dusg () );
 
   // discr no cut
-  vector<TH1F*> discrCutHistos;
-  discrCutHistos.push_back ( dDiscrCutCond->histo_all  () );
-  discrCutHistos.push_back ( dDiscrCutCond->histo_d    () );
-  discrCutHistos.push_back ( dDiscrCutCond->histo_u    () );
-  discrCutHistos.push_back ( dDiscrCutCond->histo_s    () );
-  discrCutHistos.push_back ( dDiscrCutCond->histo_c    () );
-  discrCutHistos.push_back ( dDiscrCutCond->histo_b    () );
-  discrCutHistos.push_back ( dDiscrCutCond->histo_g    () );
-  discrCutHistos.push_back ( dDiscrCutCond->histo_ni   () );
-  discrCutHistos.push_back ( dDiscrCutCond->histo_dus  () );
-  discrCutHistos.push_back ( dDiscrCutCond->histo_dusg () );
+  vector<TH1F*> discrCutHistos = dDiscrCutCond->getHistoVector();
+//   discrCutHistos.push_back ( dDiscrCutCond->histo_all  () );
+//   discrCutHistos.push_back ( dDiscrCutCond->histo_d    () );
+//   discrCutHistos.push_back ( dDiscrCutCond->histo_u    () );
+//   discrCutHistos.push_back ( dDiscrCutCond->histo_s    () );
+//   discrCutHistos.push_back ( dDiscrCutCond->histo_c    () );
+//   discrCutHistos.push_back ( dDiscrCutCond->histo_b    () );
+//   discrCutHistos.push_back ( dDiscrCutCond->histo_g    () );
+//   discrCutHistos.push_back ( dDiscrCutCond->histo_ni   () );
+//   discrCutHistos.push_back ( dDiscrCutCond->histo_dus  () );
+//   discrCutHistos.push_back ( dDiscrCutCond->histo_dusg () );
 
   int dimHistos = discrCfHistos.size(); // they all have the same size
 

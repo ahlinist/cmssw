@@ -1,11 +1,12 @@
 #include "RecoBTag/Analysis/interface/EffPurFromHistos.h"
-#include "RecoBTag/Analysis/src/Tools.h"
+#include "RecoBTag/Analysis/interface/Tools.h"
 
 #include "TStyle.h"
 #include "TCanvas.h"
 
 #include <iostream>
 using namespace std;
+using namespace RecoBTag;
 
 
 
