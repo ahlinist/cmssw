@@ -334,7 +334,7 @@ namespace edm {
       // indent a bit
       os << "  " << i->first << ": " << i->second << std::endl;
     }
-    os << "}" << std::endl;
+    os << "}";
     return os;
   }
 
