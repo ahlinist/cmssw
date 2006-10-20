@@ -11,11 +11,12 @@
 #include "TSystem.h"
 #include "TStyle.h"
 
-#include "RecoBTag/Analysis/src/Tools.h"
+#include "RecoBTag/Analysis/interface/Tools.h"
 
 #include <iostream>
 
 using namespace std ;
+using namespace RecoBTag;
 
 
 //
@@ -79,7 +80,9 @@ public:
   TH1F * histo_ni   () const { return theHisto_ni   ; }
   TH1F * histo_dus  () const { return theHisto_dus  ; }
   TH1F * histo_dusg () const { return theHisto_dusg ; }
-    
+
+  vector<TH1F*> getHistoVector() const;
+
   
 
 protected:
@@ -291,6 +294,8 @@ void FlavourHistorgrams<T>::plot (TPad * theCanvas) {
 //fixme:
   bool btppNI = false;
   bool btppColour = true;
+  setTDRStyle()->cd();
+  theCanvas->UseCurrentStyle();
 //   if ( !btppTitle ) gStyle->SetOptTitle ( 0 ) ;
 //   
 //   // here: plot histograms in a canvas
@@ -465,7 +470,22 @@ void FlavourHistorgrams<T>::fillVariable ( const int & flavour , const T & var )
   if ( flavourIsDUSG(flavour) ) theHisto_dusg ->Fill ( var ) ;
 }
 
-
+template <class T>
+vector<TH1F*> FlavourHistorgrams<T>::getHistoVector() const
+{
+  vector<TH1F*> histoVector;
+  histoVector.push_back ( theHisto_all );
+  histoVector.push_back ( theHisto_d   );
+  histoVector.push_back ( theHisto_u   );
+  histoVector.push_back ( theHisto_s   );
+  histoVector.push_back ( theHisto_c   );
+  histoVector.push_back ( theHisto_b   );
+  histoVector.push_back ( theHisto_g   );
+  histoVector.push_back ( theHisto_ni  );
+  histoVector.push_back ( theHisto_dus );
+  histoVector.push_back ( theHisto_dusg);
+  return histoVector;
+}
 
 
 #endif
