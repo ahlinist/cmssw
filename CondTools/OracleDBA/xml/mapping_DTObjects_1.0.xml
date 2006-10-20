@@ -25,4 +25,6 @@
   </Class>
   <Class name="DTTtrig">
   </Class>
+  <Class name="DTStatusFlag">
+  </Class>
 </Mapping >
