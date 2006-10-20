@@ -2,7 +2,7 @@
 
 <dbconfiguration>
 
-  <general general_connect='oracle://devdb10/CMS_COND_GENERAL' />
+  <general general_connect='oracle://orcon/CMS_COND_GENERAL' />
 
   <iov>
     <poolsetup mapping='mapping_CondIOV_2.0.xml' dbsetup='dbsetup_CondIOV_2.0.xml' library='CondCoreIOVService' />
@@ -10,23 +10,23 @@
 
   <metadata sql='createMetadata.sql' />
 
-  <detector name='ECAL' offline_connect='oracle://devdb10/CMS_COND_ECAL'>
+  <detector name='ECAL' offline_connect='oracle://orcon/CMS_COND_ECAL'>
      <poolsetup mapping='mapping_EcalObjects_1.0.xml' dbsetup='dbsetup_EcalObjects_1.0.xml' library='CondFormatsEcalObjects' />
   </detector>
 
-  <detector name='CSC' offline_connect='oracle://devdb10/CMS_COND_CSC'>
+  <detector name='CSC' offline_connect='oracle://orcon/CMS_COND_CSC'>
      <poolsetup mapping='mapping_CSCObjects_1.0.xml' dbsetup='dbsetup_CSCObjects_1.0.xml' library='CondFormatsCSCObjects' />
   </detector>
 
-  <detector name='DT' offline_connect='oracle://devdb10/CMS_COND_DT'>
-     <poolsetup mapping='mapping_DTObjects_1.0.xml' dbsetup='dbsetup_DTObjects_1.0.xml' library='CondFormatsDTObjects' />
+  <detector name='DT' offline_connect='oracle://orcon/CMS_COND_DT'>
+     <poolsetup mapping='mapping_DTObjects_2.0.xml' dbsetup='dbsetup_DTObjects_2.0.xml' library='CondFormatsDTObjects' />
   </detector>
 
-  <detector name='STRIP' offline_connect='oracle://devdb10/CMS_COND_STRIP'>
+  <detector name='STRIP' offline_connect='oracle://orcon/CMS_COND_STRIP'>
      <poolsetup mapping='mapping_SiStripObjects_1.0.xml' dbsetup='dbsetup_SiStripObjects_1.0.xml' library='CondFormatsSiStripObjects' />
   </detector>
 
-  <detector name='ALIGNMENT' offline_connect='oracle://devdb10/CMS_COND_ALIGNMENT'>
+  <detector name='ALIGNMENT' offline_connect='oracle://orcon/CMS_COND_ALIGNMENT'>
      <poolsetup mapping='mapping_AlignmentObjects_1.0.xml' dbsetup='dbsetup_AlignmentObjects_1.0.xml' library='CondFormatsAlignment' />
   </detector>
 </dbconfiguration>
