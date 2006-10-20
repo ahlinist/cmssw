@@ -1,6 +1,6 @@
 #include "RecoBTag/Analysis/interface/BTagDifferentialPlot.h"
 #include "RecoBTag/Analysis/interface/EffPurFromHistos.h"
-#include "RecoBTag/Analysis/src/Tools.h"
+#include "RecoBTag/Analysis/interface/Tools.h"
 
 #include <iostream>
 using namespace std ;

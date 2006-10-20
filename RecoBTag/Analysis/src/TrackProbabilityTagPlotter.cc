@@ -70,16 +70,17 @@ void TrackProbabilityTagPlotter::psPlot(const TString & name)
   jetTagPlotter_->psPlot(name);
 
   TString cName = "TrackProbabilityPlots"+ theExtensionString;
-  TCanvas canvas(cName,
-  	"TrackProbabilityPlots"+ theExtensionString, 600, 900);
+  setTDRStyle()->cd();
+  TCanvas canvas(cName, "TrackProbabilityPlots"+ theExtensionString, 600, 900);
+  canvas.UseCurrentStyle();
   canvas.Divide(2,3);
   canvas.Print(name + cName + ".ps[");
   canvas.cd(1);
   hSignificance->plot(0);
 
   for(int n=0; n < 4; n++) {
-    canvas.cd(1+n);
-    tkprobHistosSig[n]->plot(0);
+    canvas.cd(2+n);
+    tkprobHistosSig[n]->plot((TPad*) canvas.GetPrimitive(cName+"_"+itos(n+2)));
   }
 
   canvas.Print(name + cName + ".ps");
