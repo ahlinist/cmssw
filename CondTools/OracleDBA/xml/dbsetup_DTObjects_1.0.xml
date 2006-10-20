@@ -10,7 +10,4 @@
    <HomogeneousContainer name="DTTtrig">
       <Class name="DTTtrig" mappingVersion="DTObjects_1.0"/>
    </HomogeneousContainer >
-   <HomogeneousContainer name="DTStatusFlag">
-      <Class name="DTStatusFlag" mappingVersion="DTObjects_1.0"/>
-   </HomogeneousContainer >
 </Database >
