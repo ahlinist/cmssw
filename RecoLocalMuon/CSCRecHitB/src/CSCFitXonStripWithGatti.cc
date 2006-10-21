@@ -93,13 +93,13 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCLayer* layer, const CSCStri
       for ( int t = 0; t < 4; t++ ) {
         int k  = t + 4*(i-1);
         adc[t] = adcs[k];  
-        if ( !useFittedCharge && t < 3) d[j][t] = adc[t];
+//        if ( !useFittedCharge && t < 3) d[j][t] = adc[t];
         if ( t < 3) d[j][t] = adc[t];
       }
-      if ( useFittedCharge ) {
-        peakTimeFinder_->FitCharge( tmax, adc, t_zero, t_peak, adcsFit );
-        for ( int t = 0; t < 3; t++ ) d[j][t] = adcsFit[t];
-      }
+//      if ( useFittedCharge ) {
+//        peakTimeFinder_->FitCharge( tmax, adc, t_zero, t_peak, adcsFit );
+//        for ( int t = 0; t < 3; t++ ) d[j][t] = adcsFit[t];
+//      }
       j++;
     }
   }
@@ -428,14 +428,14 @@ void CSCFitXonStripWithGatti::initChamberSpecs() {
  */
 void CSCFitXonStripWithGatti::getGatti( float x, int t ) {
 
-  double r = h / stripWidth;
+  // These are computed in units of stripWidth, not cm
 
-  double g0 = norm * r * atan( sqrt_k_3 * tanh( k_2 * (-x - 2.5)/r ) );
-  double g1 = norm * r * atan( sqrt_k_3 * tanh( k_2 * (-x - 1.5)/r ) );
-  double g2 = norm * r * atan( sqrt_k_3 * tanh( k_2 * (-x - 0.5)/r ) );
-  double g3 = norm * r * atan( sqrt_k_3 * tanh( k_2 * (-x + 0.5)/r ) );
-  double g4 = norm * r * atan( sqrt_k_3 * tanh( k_2 * (-x + 1.5)/r ) );
-  double g5 = norm * r * atan( sqrt_k_3 * tanh( k_2 * (-x + 2.5)/r ) );
+  double g0 = norm * h * atan( sqrt_k_3 * tanh( k_2 * (-x - 2.5)/h ) );
+  double g1 = norm * h * atan( sqrt_k_3 * tanh( k_2 * (-x - 1.5)/h ) );
+  double g2 = norm * h * atan( sqrt_k_3 * tanh( k_2 * (-x - 0.5)/h ) );
+  double g3 = norm * h * atan( sqrt_k_3 * tanh( k_2 * (-x + 0.5)/h ) );
+  double g4 = norm * h * atan( sqrt_k_3 * tanh( k_2 * (-x + 1.5)/h ) );
+  double g5 = norm * h * atan( sqrt_k_3 * tanh( k_2 * (-x + 2.5)/h ) );
 
   // These are the expected charges without x-talks
   double qt_ll = g1 - g0;

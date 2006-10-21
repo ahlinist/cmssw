@@ -3,7 +3,7 @@
 module csc2DRecHits = CSCRecHitBProducer {
 
      untracked bool CSCIsRunningOnData           = true
-     untracked bool CSCDebug                     = true
+     untracked bool CSCDebug                     = false
      # Mapping file for MTCC CSC chambers
      FileInPath theMappingFile = "RecoLocalMuon/CSCRecHitB/data/csc_slice_test_map.txt"
      string CSCStripDigiProducer                 = "cscunpacker"
