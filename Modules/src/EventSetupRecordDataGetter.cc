@@ -140,4 +140,4 @@ EventSetupRecordDataGetter::analyze(const edm::Event& /*iEvent*/, const edm::Eve
 }
 }
 //define this as a plug-in
-//DEFINE_FWK_MODULE(EventSetupRecordDataGetter)
+//DEFINE_FWK_MODULE(EventSetupRecordDataGetter);
