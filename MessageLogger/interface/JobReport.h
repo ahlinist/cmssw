@@ -305,7 +305,7 @@ namespace edm {
     }
     os << "\n</Branches>";
     return os;
-  };
+  }
 }
 
 #endif

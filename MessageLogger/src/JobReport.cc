@@ -186,7 +186,7 @@ namespace edm
 	  writeOutputFile(*opos);
 	}
       }
-    };
+    }
 
   JobReport::~JobReport() {impl_->flushFiles();}
 

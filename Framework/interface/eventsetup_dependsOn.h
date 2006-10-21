@@ -170,7 +170,7 @@ private:
             ESPreFunctorDecorator<TRecord,DependsOnCaller<T,TRecord, TDependsOnRecord, DependsOnDoNothingCaller<TRecord> > >
                temp(createDependsOnCaller(iT, iRec, iHolder.holdee_, tCaller));
             return temp;
-         };
+         }
       
       template< typename T, typename TRecord, typename T1, typename T2>
          struct DecoratorFromArg<T,TRecord, depends_on::TwoHolder<T1,T2> > { 
@@ -182,7 +182,7 @@ private:
          createDecoratorFrom(T* iT, const TRecord*iRec, const depends_on::TwoHolder<T1,T2>& iHolder) {
             return ESPreFunctorDecorator<TRecord, typename depends_on::HolderToCaller<TRecord,depends_on::TwoHolder< T1, T2> >::Caller_t >
             (createDependsOnCaller(iT, iRec, iHolder.h2_, makeCaller(iT, iRec, iHolder.h1_)));
-         };
+         }
       
       
       //The actual dependsOn functions which users call

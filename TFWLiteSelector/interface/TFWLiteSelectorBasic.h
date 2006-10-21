@@ -35,7 +35,7 @@ namespace edm {
   
   namespace root {
     struct TFWLiteSelectorMembers;
-  };
+  }
 }
 
 class TFWLiteSelectorBasic : public TSelector

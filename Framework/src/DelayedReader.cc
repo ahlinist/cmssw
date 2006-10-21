@@ -7,8 +7,6 @@ $Id$
 ----------------------------------------------------------------------*/
 
 
-namespace edm
-{
-  DelayedReader::~DelayedReader() 
-  { };
+namespace edm {
+  DelayedReader::~DelayedReader() {}
 }

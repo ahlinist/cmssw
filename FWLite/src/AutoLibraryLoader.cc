@@ -274,4 +274,4 @@ AutoLibraryLoader::loadAll()
 }
 
 
-ClassImp(AutoLibraryLoader);
+ClassImp(AutoLibraryLoader)

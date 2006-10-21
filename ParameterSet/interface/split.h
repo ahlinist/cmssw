@@ -61,7 +61,7 @@ FwdIter
 
   return e;
 
-};  // contextual_find()
+}  // contextual_find()
 
 
 // ----------------------------------------------------------------------
@@ -79,7 +79,7 @@ FwdIter
 
   return e;
 
-};  // contextual_find_not()
+}  // contextual_find_not()
 
 
 // ----------------------------------------------------------------------
