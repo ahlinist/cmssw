@@ -107,4 +107,4 @@ DummyLooper::produce(const DummyRecord&)
 }
 
 //define this as a plug-in
-DEFINE_FWK_LOOPER(DummyLooper)
+DEFINE_FWK_LOOPER(DummyLooper);

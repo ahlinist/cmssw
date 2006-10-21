@@ -31,4 +31,4 @@ public:
    }
 };
 
-DEFINE_FWK_EVENTSETUP_SOURCE(LoadableDummyEventSetupRecordRetriever)
+DEFINE_FWK_EVENTSETUP_SOURCE(LoadableDummyEventSetupRecordRetriever);

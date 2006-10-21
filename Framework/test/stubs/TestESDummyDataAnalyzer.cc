@@ -113,4 +113,4 @@ TestESDummyDataAnalyzer::analyze(const edm::Event&, const edm::EventSetup& iSetu
 }
 
 //define this as a plug-in
-DEFINE_FWK_MODULE(TestESDummyDataAnalyzer)
+DEFINE_FWK_MODULE(TestESDummyDataAnalyzer);

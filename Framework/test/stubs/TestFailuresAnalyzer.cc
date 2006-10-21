@@ -105,4 +105,4 @@ TestFailuresAnalyzer::analyze(const edm::Event& /* iEvent */, const edm::EventSe
 }
 
 //define this as a plug-in
-DEFINE_FWK_MODULE(TestFailuresAnalyzer)
+DEFINE_FWK_MODULE(TestFailuresAnalyzer);

@@ -25,4 +25,4 @@ public:
    LoadableDummyFinder(const edm::ParameterSet&) {}
 };
 
-DEFINE_FWK_EVENTSETUP_SOURCE(LoadableDummyFinder)
+DEFINE_FWK_EVENTSETUP_SOURCE(LoadableDummyFinder);

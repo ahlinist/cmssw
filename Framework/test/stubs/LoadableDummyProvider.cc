@@ -28,4 +28,4 @@ public:
    :DummyProxyProvider( edm::eventsetup::test::DummyData(iPSet.getUntrackedParameter<int>("value",1))) {}
 };
 
-DEFINE_FWK_EVENTSETUP_MODULE(LoadableDummyProvider)
+DEFINE_FWK_EVENTSETUP_MODULE(LoadableDummyProvider);

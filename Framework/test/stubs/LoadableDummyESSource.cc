@@ -34,4 +34,4 @@ public:
    }
 };
 
-DEFINE_FWK_EVENTSETUP_SOURCE(LoadableDummyESSource)
+DEFINE_FWK_EVENTSETUP_SOURCE(LoadableDummyESSource);

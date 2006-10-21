@@ -47,7 +47,7 @@ namespace edm{
   }
 }//namespace  
 using edm::TestSchedulerModule2;
-DEFINE_FWK_MODULE(TestSchedulerModule2)
+DEFINE_FWK_MODULE(TestSchedulerModule2);
 
 // Configure (x)emacs for this file ...
 // Local Variables:
