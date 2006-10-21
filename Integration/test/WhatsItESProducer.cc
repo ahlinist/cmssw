@@ -102,4 +102,4 @@ WhatsItESProducer::produce(const GadgetRcd& iRecord)
 
 using namespace edmtest;
 //define this as a plug-in
-DEFINE_FWK_EVENTSETUP_MODULE(WhatsItESProducer)
+DEFINE_FWK_EVENTSETUP_MODULE(WhatsItESProducer);

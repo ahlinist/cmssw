@@ -129,4 +129,4 @@ WhatsItWatcherAnalyzer::watch2(const GadgetRcd& iRcd)
 }
 using namespace edmtest;
 //define this as a plug-in
-DEFINE_FWK_MODULE(WhatsItWatcherAnalyzer)
+DEFINE_FWK_MODULE(WhatsItWatcherAnalyzer);

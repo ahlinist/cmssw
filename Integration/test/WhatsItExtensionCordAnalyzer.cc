@@ -125,4 +125,4 @@ WhatsItExtensionCordAnalyzer::analyze(const edm::Event& /*iEvent*/, const edm::E
 }
 using namespace edmtest;
 //define this as a plug-in
-DEFINE_FWK_MODULE(WhatsItExtensionCordAnalyzer)
+DEFINE_FWK_MODULE(WhatsItExtensionCordAnalyzer);

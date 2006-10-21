@@ -99,4 +99,4 @@ DoodadESProducer::produce(const GadgetRcd& iRecord)
 
 using namespace edmtest;
 //define this as a plug-in
-DEFINE_FWK_EVENTSETUP_MODULE(DoodadESProducer)
+DEFINE_FWK_EVENTSETUP_MODULE(DoodadESProducer);

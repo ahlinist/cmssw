@@ -103,5 +103,5 @@ DoodadESSource::setIntervalFor(const edm::eventsetup::EventSetupRecordKey&,
 }
 using namespace edmtest;
 
-DEFINE_FWK_EVENTSETUP_SOURCE(DoodadESSource)
+DEFINE_FWK_EVENTSETUP_SOURCE(DoodadESSource);
 

@@ -88,5 +88,5 @@ UseValueExampleAnalyzer::analyze(const edm::Event& /* iEvent */, const edm::Even
 }
 
 //define this as a plug-in
-DEFINE_FWK_MODULE(UseValueExampleAnalyzer)
+DEFINE_FWK_MODULE(UseValueExampleAnalyzer);
 

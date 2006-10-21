@@ -98,4 +98,4 @@ WhatsItAnalyzer::analyze(const edm::Event& /*iEvent*/, const edm::EventSetup& iS
 }
 using namespace edmtest;
 //define this as a plug-in
-DEFINE_FWK_MODULE(WhatsItAnalyzer)
+DEFINE_FWK_MODULE(WhatsItAnalyzer);

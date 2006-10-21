@@ -67,4 +67,4 @@ ValueExample::~ValueExample()
 //
 using namespace edm::serviceregistry;
 DEFINE_SEAL_MODULE();
-DEFINE_ANOTHER_FWK_SERVICE_MAKER(ValueExample,ParameterSetMaker<ValueExample>)
+DEFINE_ANOTHER_FWK_SERVICE_MAKER(ValueExample,ParameterSetMaker<ValueExample>);
