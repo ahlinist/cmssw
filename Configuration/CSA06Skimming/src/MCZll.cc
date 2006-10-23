@@ -20,7 +20,7 @@ MCZll::MCZll(const edm::ParameterSet& iConfig) :
   leptonEtaMax_ = iConfig.getUntrackedParameter<double>("leptonEtaMax",2.7);
   zMassRange_.first = iConfig.getUntrackedParameter<double>("zMassMin",60.);
   zMassRange_.second = iConfig.getUntrackedParameter<double>("zMassMax",120.);
-  //  filter_ = iConfig.getUntrackedParameter<bool>("filter",true);
+  filter_ = iConfig.getUntrackedParameter<bool>("filter",true);
   std::ostringstream str;
   str << "=========================================================\n" 
       << "Filter MCZll being constructed with parameters: " 
