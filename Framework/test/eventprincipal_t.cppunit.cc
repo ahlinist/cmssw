@@ -244,6 +244,12 @@ void testeventprincipal::getbyLabelTest()
   handle h = pEvent_->getByLabel(tid, label, productInstanceName);
   CPPUNIT_ASSERT(h.isValid());
   CPPUNIT_ASSERT(h.provenance()->moduleLabel() == label);
+  {
+    handle h = pEvent_->getByLabel(tid, label, productInstanceName, processName);
+    CPPUNIT_ASSERT(h.isValid());
+    CPPUNIT_ASSERT(h.provenance()->moduleLabel() == label);
+    CPPUNIT_ASSERT(h.provenance()->processName() == processName);
+  }
 }
 
 void testeventprincipal::getbySelectorTest() 
