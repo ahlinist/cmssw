@@ -81,7 +81,7 @@ namespace edm {
   }
 
   BasicHandle
-  Event::get_(TypeID const& tid, Selector const& sel) const
+  Event::get_(TypeID const& tid, SelectorBase const& sel) const
   {
     return ep_.getBySelector(tid, sel);
   }
@@ -94,9 +94,18 @@ namespace edm {
     return ep_.getByLabel(tid, label, productInstanceName);
   }
 
+  BasicHandle
+  Event::getByLabel_(TypeID const& tid,
+		     const string& label,
+                     const string& productInstanceName,
+                     const string& processName) const
+  {
+    return ep_.getByLabel(tid, label, productInstanceName,processName);
+  }
+
   void 
   Event::getMany_(TypeID const& tid, 
-		  Selector const& sel,
+		  SelectorBase const& sel,
 		  BasicHandleVec& results) const
   {
     ep_.getMany(tid, sel, results);
