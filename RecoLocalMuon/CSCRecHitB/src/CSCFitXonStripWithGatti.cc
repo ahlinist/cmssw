@@ -428,14 +428,14 @@ void CSCFitXonStripWithGatti::initChamberSpecs() {
  */
 void CSCFitXonStripWithGatti::getGatti( float x, int t ) {
 
-  // These are computed in units of stripWidth, not cm
+  double r = h / stripWidth;
 
-  double g0 = norm * h * atan( sqrt_k_3 * tanh( k_2 * (-x - 2.5)/h ) );
-  double g1 = norm * h * atan( sqrt_k_3 * tanh( k_2 * (-x - 1.5)/h ) );
-  double g2 = norm * h * atan( sqrt_k_3 * tanh( k_2 * (-x - 0.5)/h ) );
-  double g3 = norm * h * atan( sqrt_k_3 * tanh( k_2 * (-x + 0.5)/h ) );
-  double g4 = norm * h * atan( sqrt_k_3 * tanh( k_2 * (-x + 1.5)/h ) );
-  double g5 = norm * h * atan( sqrt_k_3 * tanh( k_2 * (-x + 2.5)/h ) );
+  double g0 = norm * r * atan( sqrt_k_3 * tanh( k_2 * (-x - 2.5)/r ) );
+  double g1 = norm * r * atan( sqrt_k_3 * tanh( k_2 * (-x - 1.5)/r ) );
+  double g2 = norm * r * atan( sqrt_k_3 * tanh( k_2 * (-x - 0.5)/r ) );
+  double g3 = norm * r * atan( sqrt_k_3 * tanh( k_2 * (-x + 0.5)/r ) );
+  double g4 = norm * r * atan( sqrt_k_3 * tanh( k_2 * (-x + 1.5)/r ) );
+  double g5 = norm * r * atan( sqrt_k_3 * tanh( k_2 * (-x + 2.5)/r ) );
 
   // These are the expected charges without x-talks
   double qt_ll = g1 - g0;
