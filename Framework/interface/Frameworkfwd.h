@@ -45,6 +45,7 @@ namespace edm {
   class RunHandler;
   class Schedule;
   class Selector;
+  class SelectorBase;
   class TypeID;
   class UnsheduledHandler;
   class VectorInputSource;
