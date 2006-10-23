@@ -46,7 +46,10 @@ when random numbers are only generated in modules and not in the source).
 #include <vector>
 #include <string>
 #include "boost/cstdint.hpp"
-#include "CLHEP/Random/RandomEngine.h"
+
+namespace CLHEP {
+  class HepRandomEngine;
+}
 
 namespace edm {
 
@@ -76,6 +79,9 @@ namespace edm {
 
     virtual void snapShot() = 0;
     virtual void restoreState(const Event& event) = 0;
+
+    // For debugging purposes only
+    virtual void print() = 0;
 
   private:
 
