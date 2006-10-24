@@ -115,6 +115,8 @@ namespace edm {
     /// Called by framework at end of job
     virtual void endJob();
 
+    bool const primary() const {return primary_;}
+
   private:
 
     // Indicate inability to get a new event by returning a null
@@ -150,6 +152,8 @@ namespace edm {
     bool const unlimited_;
 
     InputSourceDescription isDesc_;
+
+    bool const primary_;
   };
 }
 
