@@ -13,7 +13,7 @@
 //
 // Original Author:  Simone Gennai
 //      Created:  Thu Apr  6 09:56:23 CEST 2006
-// $Id: ConeIsolation.cc,v 1.8 2006/08/08 07:53:48 tboccali Exp $
+// $Id: ConeIsolation.cc,v 1.11 2006/10/10 15:38:58 gennai Exp $
 //
 //
 
@@ -56,8 +56,8 @@ ConeIsolation::ConeIsolation(const edm::ParameterSet& iConfig)
   usingVertex = iConfig.getParameter<bool>("useVertex");
   m_algo = new ConeIsolationAlgorithm(iConfig);
   
-   produces<reco::JetTagCollection>();  //Several producer so I put a label
-   produces<reco::IsolatedTauTagInfoCollection>();       //Only one producer
+   produces<reco::JetTagCollection>(); 
+   produces<reco::IsolatedTauTagInfoCollection>();       
 
 }
 
