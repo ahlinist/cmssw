@@ -588,17 +588,20 @@ C     =======================================
       Implicit None
       Character*20 stringname,stringtemp
       Integer      k,maxunderscore,findunderscore,findspace
+      Integer      underscorefound
       
       stringtemp = stringname
       findunderscore = 0
       k = 0
       maxunderscore = 5                                                  At most maxunderscore '_' searched
+      underscorefound = 0
       
 C     Avoid LaTeX errors when compiling names with '_'
 c     write(*,*) k,stringname,stringtemp
       do k=1,maxunderscore
          findunderscore = INDEX(stringtemp,'_')
          if(findunderscore.ne.0) then
+            underscorefound = underscorefound + 1
             if(k.eq.1) then
                stringname = stringtemp(1:findunderscore-1) // '\\'
      +              // stringtemp(findunderscore:findunderscore)
@@ -612,8 +615,10 @@ c     write(*,*) k,stringname,stringtemp
          endif
 c     write(*,*) k,stringname,stringtemp
       enddo
-      findspace = INDEX(stringname,' ')
-      stringname = stringname(1:findspace-1) // stringtemp
+      if(underscorefound.ne.0) then
+         findspace = INDEX(stringname,' ')
+         stringname = stringname(1:findspace-1) // stringtemp
+      endif
 c     write(*,*) k,stringname,stringtemp
       return
       end
