@@ -107,7 +107,8 @@ C      write(LunOut,*) "\\end{center}"
 C... write out little latex/dvips script
       open(30,file="do",status="REPLACE")
       write(30,*) "latex ",Filename(1:LENOCC(Filename))
-      write(30,*) "dvips ",Filename(1:LENOCC(Filename))
+      write(30,*) "dvips ",Filename(1:LENOCC(Filename)),
+     +     " -o",Filename(1:LENOCC(Filename)),".ps"
       write(30,*) "gv ",Filename(1:LENOCC(Filename))," &"
       close(30)
 
@@ -280,7 +281,7 @@ C.................................................................
 
       Real PSUP,PSEN,PCAB,PCOL,PELE
 
-      Character*20 string,string1,string2
+      Character*20 string,string1,string2,stringmatname
 
       Character*30 TZName(MaxDiv)
       Character*32 tzstring
@@ -288,7 +289,7 @@ C.................................................................
 
       External LENOCC
       Integer LENOCC
-
+      
 C..................................................................
 
 C..initialize
@@ -378,26 +379,30 @@ C---> separate contributions to X_0 by type
       enddo
 
 C---> write out the results ..................
-      
-      write(LUN,1000) Nmix,MixtureName
- 1000 Format('\\subsection*{\\underline{',I3,2X,A40,' }}')
 
+      stringmatname = GMIXName
+      call LatexUnderscore(stringmatname)
+      write(LUN,1000) Nmix,MixtureName,stringmatname
+ 1000 Format('\\subsection*{\\underline{',I3,2X,A40,2X,
+     +     '(Material name: ',A40,')',' }}')
+      
       write(LUN,*) "\\begin{table}[h]"
       write(LUN,*) "\\begin{tabular}{rlrrr}"
       write(LUN,*) "\\hline\\hline"
       write(LUN,*) " & Item & \\% Volume & \\% Weight & ",
-     +              "\\% Total X0  \\","\\"
+     +     "\\% Total X0  \\","\\"
       write(LUN,*) "\\hline\\hline"
       
       do k=1,NMat
          string = Material(k)
+         call LatexUnderscore(string)
          write(LUN,1001) k, string(1:LENOCC(string)),100.*PVOL(k),
      +        100.*Pweight(k),100.*PRAD(k)
          write(LUN,*) "\\hline"
       enddo
  1001 Format(1X,I4,2X,' & ',A20,' & ',2(1X,F8.3,' & '),1X,F8.3,
-     +        '\\','\\')
-
+     +     '\\','\\')
+      
       write(LUN,*) " & & & & \\","\\"
       write(LUN,1002) "Mixture density",TDEN
       write(LUN,1002) "Norm. mixture density",Ndens
@@ -423,6 +428,8 @@ C---> write out the results ..................
       do i = 1,NMat
          string1 = Comment(i)
          string2 = Material(i)
+         call LatexUnderscore(string1)
+         call LatexUnderscore(string2)
          write(LUN,1003) i,string1(1:LENOCC(string1)),
      +        string2(1:LENOCC(string2)),Density(i), Radl(i)
       enddo
@@ -576,8 +583,42 @@ C      write(LUN,*) "\\addtolength{\\oddsidemargin}{-1.5cm}"
       
 
 
-
-
+      Subroutine LatexUnderscore(stringname)
+C     =======================================
+      Implicit None
+      Character*20 stringname,stringtemp
+      Integer      k,maxunderscore,findunderscore,findspace
+      
+      stringtemp = stringname
+      findunderscore = 0
+      k = 0
+      maxunderscore = 5                                                  At most maxunderscore '_' searched
+      
+C     Avoid LaTeX errors when compiling names with '_'
+c     write(*,*) k,stringname,stringtemp
+      do k=1,maxunderscore
+         findunderscore = INDEX(stringtemp,'_')
+         if(findunderscore.ne.0) then
+            if(k.eq.1) then
+               stringname = stringtemp(1:findunderscore-1) // '\\'
+     +              // stringtemp(findunderscore:findunderscore)
+            else
+               findspace = INDEX(stringname,' ')
+               stringname = stringname(1:findspace-1)
+     +              // stringtemp(1:findunderscore-1) // '\\'
+     +              // stringtemp(findunderscore:findunderscore)
+            endif
+            stringtemp = stringtemp(findunderscore+1:)
+         endif
+c     write(*,*) k,stringname,stringtemp
+      enddo
+      findspace = INDEX(stringname,' ')
+      stringname = stringname(1:findspace-1) // stringtemp
+c     write(*,*) k,stringname,stringtemp
+      return
+      end
+C     
+      
 
 
 
