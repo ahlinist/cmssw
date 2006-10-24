@@ -272,4 +272,4 @@ float_t MinimumBiasAnalyzer::delR(const float_t& eta1,const float_t& eta2,const 
 }
 
  
-DEFINE_FWK_MODULE(MinimumBiasAnalyzer)
+DEFINE_FWK_MODULE(MinimumBiasAnalyzer);
