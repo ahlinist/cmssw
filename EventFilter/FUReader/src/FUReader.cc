@@ -1,7 +1,7 @@
 /** \file
  *
- *  $Date: 2006/05/29 15:26:43 $
- *  $Revision: 1.7 $
+ *  $Date: 2006/06/13 14:09:00 $
+ *  $Revision: 1.8 $
  *  \author E. Meschi - CERN PH/CMD
  */
 
@@ -17,113 +17,145 @@
 #include <FWCore/ParameterSet/interface/ParameterSet.h>
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
+#include "PluginManager/ModuleDef.h"
+#include <IORawData/DaqSource/interface/DaqReaderPluginFactory.h>
+
+#include <string>
+
 
 using namespace std;
 using namespace edm;
-#include <string.h>
 
-FUReader::FUReader(const edm::ParameterSet& pset) : 
-  runNum(1), eventNum(0), event(0) {
-  cout << "FUReader constructor " << endl;
+
+////////////////////////////////////////////////////////////////////////////////
+// construction/destruction
+////////////////////////////////////////////////////////////////////////////////
+
+//______________________________________________________________________________
+FUReader::FUReader(const edm::ParameterSet& pset) 
+  : runNum_(1)
+  , eventNum_(0)
+  , event_(0)
+{
+  cout<<"FUReader constructor "<<endl;
   // mean = pset.getParameter<float>("mean");
   pthread_mutex_init(&lock_,0);
   pthread_cond_init(&ready_,0);
 }
 
 
+//______________________________________________________________________________
 FUReader::~FUReader(){}
 
 
+////////////////////////////////////////////////////////////////////////////////
+// implementation of member functions
+////////////////////////////////////////////////////////////////////////////////
+
+//______________________________________________________________________________
 bool FUReader::fillRawData(EventID& eID,
 			   Timestamp& tstamp, 
-			   FEDRawDataCollection& data){
-  //EM FIXME: use logging + exception
+			   FEDRawDataCollection*& data)
+{
+  // EM FIXME: use logging + exception
+  
   // check if a previous event is held. Release so discard can be issued.
-  if(event)
-    {
-      event->reset(true);
-      event = 0;
-    }
-  if(sinking_)
-    {
-      pthread_mutex_lock(&lock_);
-      pthread_cond_wait(&ready_,&lock_);
-      pthread_mutex_unlock(&lock_);
-    }      
-
-  if(fwk_==0)
-    {
-      edm::LogError("FUReader")  << "Fatal error: No factory registered yet";
-      throw cms::Exception("NullPointer") 
-	<< "No factory registered yet for FUReader" << std::endl;
-    }
-  event = fwk_->rqstEvent();
-  if(event != 0)
-    {
-      runNum = fwk_->getRunNumber();
-      unsigned int ievent = event->getLevel1Id();
-      eID = EventID(runNum,ievent);
-      eventNum++;
+  if(event_) {
+    event_->reset(true);
+    event_=0;
+  }
+  
+  if(sinking_) {
+    pthread_mutex_lock(&lock_);
+    pthread_cond_wait(&ready_,&lock_);
+    pthread_mutex_unlock(&lock_);
+  }      
+  
+  // check that a pointer to the FilterUnitFramework [FUAdapter] is present
+  if(fwk_==0) {
+    edm::LogError("FUReader")<<"Fatal error: No factory registered yet";
+    throw cms::Exception("NullPointer")<<"No factory registered for FUReader"<<endl;
+  }
+  
+  // retrieve event data from FilterUnitFramework (via FUAdapter)
+  event_=fwk_->rqstEvent();
+  
+  if(event_!=0) {
+    // allocate fed collection
+    data=new FEDRawDataCollection();
+    
+    // set collision id
+    runNum_=fwk_->getRunNumber();
+    unsigned int ievent=event_->getLevel1Id();
+    eID=EventID(runNum_,ievent);
+    eventNum_++;
+    
+    // fill fed buffers
+    fillFEDs(0,FEDNumbering::lastFEDId(),*data,*event_);
+    
+    /*
+      fillFEDs(FEDNumbering::getSiPixelFEDIds(), data, *event_);
+      fillFEDs(FEDNumbering::getSiStripFEDIds(), data, *event_);
       
-      fillFEDs(0,FEDNumbering::lastFEDId(), data,*event);
-  /*
-  fillFEDs(FEDNumbering::getSiPixelFEDIds(), data, *event);
-  fillFEDs(FEDNumbering::getSiStripFEDIds(), data, *event);
-
-  fillFEDs(FEDNumbering::getDTFEDIds(), data, *event);
-  fillFEDs(FEDNumbering::getCSCFEDIds(), data, *event);
-  fillFEDs(FEDNumbering::getRPCFEDIds(), data, *event);
-
-  fillFEDs(FEDNumbering::getEcalFEDIds(), data, *event);
-  fillFEDs(FEDNumbering::getHcalFEDIds(), data, *event);
-  */
-      // this should be done on return by the source with a new request
-      // this indicates the previous event has been processed
-      //      event->reset(true);
-      return true;
-    }
+      fillFEDs(FEDNumbering::getDTFEDIds(), data, *event_);
+      fillFEDs(FEDNumbering::getCSCFEDIds(), data, *event_);
+      fillFEDs(FEDNumbering::getRPCFEDIds(), data, *event_);
+      
+      fillFEDs(FEDNumbering::getEcalFEDIds(), data, *event_);
+      fillFEDs(FEDNumbering::getHcalFEDIds(), data, *event_);
+    */
+    
+    // this should be done on return by the source with a new request
+    // this indicates the previous event has been processed
+    // event_->reset(true);
+    
+    return true;
+  }
+  
   return false;
 }
 
-void FUReader::fillFEDs(int b, int e,
+
+//______________________________________________________________________________
+void FUReader::fillFEDs(unsigned int b,unsigned int e,
 			FEDRawDataCollection& data,
 			FURawEvent &event)
 {
-  // Fill the EventID
+  for (unsigned int fedId=b;fedId<=e;++fedId) {
 
-  for (int fedId = b; fedId <= e; ++fedId ) 
-    {
-      FURawEvent::RawData *rd = event[fedId];
-      int sz = rd->size_;
-      if(sz > 0)
-	{
-	  if(!FEDNumbering::inRange(fedId))
-	    edm::LogInfo("FUReader")  
-	      << "Severe error: fed ID " << fedId 
-	      << " contains data but is out of valid ranges. ";	    
-	  FEDRawData& feddata = data.FEDData(fedId);
-	  // Allocate space for header+trailer+payload
-	  feddata.resize(sz); 
-	  memcpy(feddata.data(),event[fedId]->data_,sz);
-	}  
+    // retrieve fed data destination
+    FURawEvent::RawData *rd=event[fedId];
 
-    }
+    // check fed buffer size
+    int sz = rd->size_;
+    if(sz>0) {
+      // check that fed it is valid
+      if(!FEDNumbering::inRange(fedId)) {
+	edm::LogInfo("FUReader")  
+	  <<"WARNING: fed ID "<<fedId<<" contains data but is out of valid ranges.";
+      }
+
+      // retrieve the target buffer
+      FEDRawData& feddata=data.FEDData(fedId);
+      // Allocate space for header+trailer+payload
+      feddata.resize(sz); 
+      // copy the fed buffer
+      memcpy(feddata.data(),event[fedId]->data_,sz);
+    }  
+  }
 }
 
+
+//______________________________________________________________________________
 void FUReader::onShutDown()
 {
-  if(fwk_==0)
-    {
-      edm::LogError("FUReader")  << "Fatal error: No factory registered yet";
-      throw cms::Exception("NullPointer") 
-	<< "No factory registered yet for FUReader" << std::endl;
-    }
+  if(fwk_==0) {
+    edm::LogError("FUReader")<<"Fatal error: No factory registered yet";
+    throw cms::Exception("NullPointer")<< "No factory registered for FUReader"<<endl;
+  }
   fwk_->signalWaitingInput();
 }
 
-#include "PluginManager/ModuleDef.h"
-#include <IORawData/DaqSource/interface/DaqReaderPluginFactory.h>
-
 DEFINE_SEAL_MODULE();
-DEFINE_SEAL_PLUGIN (DaqReaderPluginFactory, FUReader, "FUReader");
+DEFINE_SEAL_PLUGIN (DaqReaderPluginFactory,FUReader,"FUReader");
 

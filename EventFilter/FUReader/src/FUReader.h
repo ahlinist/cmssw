@@ -2,8 +2,8 @@
 #define DaqSource_FUReader_h
 
 /** \class FUReader
- *  $Date: 2006/05/16 10:46:22 $
- *  $Revision: 1.5 $
+ *  $Date: 2006/06/13 14:05:07 $
+ *  $Revision: 1.6 $
  *  \author E. Meschi - CERN PH/CMD
  */
 #include "EventFilter/Unit/interface/FURawEvent.h"
@@ -14,32 +14,53 @@
 #include <algorithm>
 #include <pthread.h>
 
-class FUReader : public DaqBaseReader, public EventSink, public evf::ShutDownListener {
- public:
-  /// Constructor
-  FUReader(const edm::ParameterSet& pset);
 
-  /// Destructor
+class FUReader : public DaqBaseReader,
+		 public EventSink,
+		 public evf::ShutDownListener
+{
+public:
+  //
+  // construction/destruction
+  //
+  FUReader(const edm::ParameterSet& pset);
   virtual ~FUReader();
 
-  /// Generate and fill FED raw data for a full event
+  
+  //
+  // public member functions
+  //
+  
+  /// DaqBaseReader interface, fill fed collection 'data'
   virtual bool fillRawData(edm::EventID& eID,
 			   edm::Timestamp& tstamp, 
-			   FEDRawDataCollection& data);
+			   FEDRawDataCollection*& data);
 
+  // EventSink interface
   void sink(){}
+
+  // evf::ShutDownListener interface
   void onShutDown();
-
+  
+  
  private:
-  void fillFEDs(int, int,
-		FEDRawDataCollection&,
-		FURawEvent &);
+  //
+  // private member functions
+  //
+  void fillFEDs(unsigned int b,unsigned int e,
+		FEDRawDataCollection& data,
+		FURawEvent& event);
+  
+private:
+  //
+  // member data
+  //
+  edm::RunNumber_t   runNum_;
+  edm::EventNumber_t eventNum_;
+  pthread_cond_t     ready_;
+  pthread_mutex_t    lock_;
+  FURawEvent        *event_;
 
-  edm::RunNumber_t runNum;
-  edm::EventNumber_t eventNum;
-  pthread_cond_t ready_;
-  pthread_mutex_t lock_;
-  FURawEvent *event;
 };
-#endif
 
+#endif
