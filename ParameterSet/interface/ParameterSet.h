@@ -94,6 +94,18 @@ namespace edm {
       return result;
     }
     
+
+    /// see if the set contains a parameter with a specific name
+    /// for the given type
+    template <class T>
+    bool containsParameter(const std::string & name,
+                           bool trackiness = true) const
+    {
+      std::vector<std::string> allNames = getParameterNamesForType<T>(trackiness);
+      return (std::find( allNames.begin(), allNames.end(), name ) != allNames.end());
+    }
+
+
     template <class T>
     void
     addUntrackedParameter(std::string const& name, T value)
