@@ -16,7 +16,7 @@
 //
 // Original Author:  dkcira
 //         Created:  Sat Feb  4 20:49:51 CET 2006
-// $Id: SiStripNoiseDB.h,v 1.2 2006/07/10 14:18:53 gennai Exp $
+// $Id: SiStripNoiseDB.h,v 1.1 2006/07/10 15:05:49 gennai Exp $
 //
 
 // system include files
@@ -48,6 +48,8 @@
 //
 #include "CalibTracker/SiStripAPVAnalysis/interface/ApvAnalysisFactory.h"
 
+#include "CondFormats/SiStripObjects/interface/SiStripNoises.h"
+
 //#include "Fed9UUtils.hh"
 #include "boost/cstdint.hpp"
 #include <iostream>
@@ -64,7 +66,6 @@ class SiStripRawDigi;
 class SiStripEventSummary;
 class SiStripFedCabling;
 
-
 class SiStripNoiseDB : public edm::EDAnalyzer {
    public:
       explicit SiStripNoiseDB(const edm::ParameterSet&);
@@ -80,7 +81,9 @@ class SiStripNoiseDB : public edm::EDAnalyzer {
        edm::ParameterSet conf_;
        SiStripFedCabling* fedCabling_;
 
-
+       SiStripNoises* SiStripNoises_;
+       std::vector< std::pair<uint32_t,std::vector<short> > > mSiStripNoises;
+	 
        vector<uint32_t> SelectedDetIds;
 	 
        ApvAnalysisFactory* apvFactory_;
@@ -90,9 +93,6 @@ class SiStripNoiseDB : public edm::EDAnalyzer {
        int theEventIterNumber_;
        int NumCMstripsInGroup_;
        string outPutFileName;
-       std::string userEnv_;  
-       std::string passwdEnv_;   
-       bool printdebug_;
 
 
 };
