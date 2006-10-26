@@ -4,12 +4,17 @@
 /** \class CSCStripNoiseMatrix
  *
  * This routine finds for a given DetId the autocorrelation noise in a given layer.
+ * Note that the elements of the matrix have to be multiplied by the square of the
+ * strip gain for that strip.
  *
  * \author Dominique Fortin - UCR
  */
 
 #include "CondFormats/CSCObjects/interface/CSCNoiseMatrix.h"
 #include "CondFormats/DataRecord/interface/CSCNoiseMatrixRcd.h"
+
+#include "CondFormats/CSCObjects/interface/CSCGains.h"
+#include "CondFormats/DataRecord/interface/CSCGainsRcd.h"
 
 #include <CondFormats/CSCObjects/interface/CSCReadoutMappingFromFile.h>
 #include <CondFormats/CSCObjects/interface/CSCReadoutMappingForSliceTest.h>
@@ -31,10 +36,18 @@ class CSCStripNoiseMatrix
   // Member functions
 
   /// Load in the noise matrix and store in memory
-  void setNoiseMatrix( const CSCNoiseMatrix* noise ) { Noise = noise; }
+  void setNoiseMatrix( const CSCGains* gains, const CSCNoiseMatrix* noise ) { 
+    Gains = gains;
+    Noise = noise; }
  
   /// Get the noise matrix out of the database for each of the strips within a cluster.
  void getNoiseMatrix( const CSCDetId& id, std::vector<float>& nMatrix );
+
+  /// Computes the average gain for the whole CSC system.
+  float getStripGainAvg();
+
+  /// Get the gains out of the database for each of the strips within a cluster.
+  void getStripGain( const CSCDetId& id, const float& globalGainAvg );
 
  private:
 
@@ -42,7 +55,10 @@ class CSCStripNoiseMatrix
   bool debug;
   CSCReadoutMappingFromFile theCSCMap;
 
-  // Store in memory Noise matrix
+  float gainWeight[100];
+
+  // Store in memory Gains and Noise matrix
+  const CSCGains         * Gains;
   const CSCNoiseMatrix   * Noise;
 
 };

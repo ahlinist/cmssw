@@ -15,6 +15,8 @@
 #include <Geometry/CSCGeometry/interface/CSCChamberSpecs.h>
 #include <Geometry/CSCGeometry/interface/CSCLayerGeometry.h>
 
+#include "CondFormats/CSCObjects/interface/CSCGains.h"
+#include "CondFormats/DataRecord/interface/CSCGainsRcd.h"
 #include "CondFormats/CSCObjects/interface/CSCcrosstalk.h"
 #include "CondFormats/DataRecord/interface/CSCcrosstalkRcd.h"
 #include "CondFormats/CSCObjects/interface/CSCNoiseMatrix.h"
@@ -88,7 +90,7 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
   if ( isData ) {
     stripCrosstalk_->setCrossTalk( xtalk_ );
     stripCrosstalk_->getCrossTalk( id, slopeLeft, interLeft, slopeRight, interRight );
-    stripNoiseMatrix_->setNoiseMatrix( noise_ );
+    stripNoiseMatrix_->setNoiseMatrix( gains_, noise_ );
     stripNoiseMatrix_->getNoiseMatrix( id, nMatrix ); 
   } else {
     for ( int i = 0; i < 1500; i++ ) nMatrix.push_back( 0. );

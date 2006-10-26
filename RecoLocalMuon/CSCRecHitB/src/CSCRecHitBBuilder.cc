@@ -62,7 +62,7 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
     HitsFromStripOnly_->setCalibration( gains_ );
 
     // Pass X-talks and noise matrix to 2-D hit builder (these are ultimately implemented in Gatti fit)
-    Make2DHits_->setCalibration( xtalk_, noise_ );
+    Make2DHits_->setCalibration( gains_, xtalk_, noise_ );
   }
 
   
