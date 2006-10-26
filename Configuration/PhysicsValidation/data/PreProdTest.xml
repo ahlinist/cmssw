@@ -1,0 +1,59 @@
+<?xml version="1.0" ?>
+<PhysicsValidation>
+          <Validate Version="Default">
+                <Test Events="25" Name="PhysValDiElePt5">
+                        DiElectrons_pt5_NoPU.cfg
+                </Test>
+                <Test Events="25" Name="PhysValDiElePt7">
+                        DiElectrons_pt7_NoPU.cfg
+                </Test>
+                <Test Events="25" Name="PhysValDiElePt10">
+                        DiElectrons_pt10_NoPU.cfg
+                </Test>
+                <Test Events="25" Name="PhysValDiElePt20">
+                        DiElectrons_pt20_NoPU.cfg
+                </Test>
+                <Test Events="25" Name="PhysValDiElePt35">
+                        DiElectrons_pt35_NoPU.cfg
+                </Test>
+                <Test Events="25" Name="PhysValDiElePt100">
+                        DiElectrons_pt100_NoPU.cfg
+                </Test>
+                <Test Events="25" Name="PhysValDiPhotonPt25">
+                        DiPhotons_pt25_NoPU.cfg
+                </Test>
+                <Test Events="25" Name="PhysValDiPhotonPt35">
+                        DiPhotons_pt35_NoPU.cfg
+                </Test>
+                <Test Events="25" Name="PhysValDiPhotonPt50">
+                        DiPhotons_pt50_NoPU.cfg
+                </Test>
+                <Test Events="100" Name="PhysValDiElePt5To100">
+                        DiElectrons_pt5to100_NoPU.cfg
+                </Test>
+                <Test Events="100" Name="PhysValDiPhotonPt20To100">
+                        DiPhotons_pt20to100_NoPU.cfg
+                </Test>
+                <Test Events="25" Name="PhysValDiEleEne10">
+                        DiElectrons_Ene10_NoPU.cfg
+                </Test>
+                <Test Events="25" Name="PhysValDiEleEne30">
+                        DiElectrons_Ene30_NoPU.cfg
+                </Test>
+                <Test Events="25" Name="PhysValDiEleEne50">
+                        DiElectrons_Ene50_NoPU.cfg
+                </Test>
+                <Test Events="100" Name="PhysValDiEleEne5To100">
+                        DiElectrons_Ene5to100_NoPU.cfg
+                </Test>
+                <Test Events="150" Name="PhysValDiEleEne500To4000">
+                        DiElectrons_Ene500to4000_NoPU.cfg
+                </Test>
+                <Test Events="25" Name="PhysValDiEleEne30NoTracker">
+                        DiElectrons_Ene30_NoTracker_NoPU.cfg
+                </Test>
+                <Test Events="25" Name="PhysValDiEleEne30NoTrackerNoB">
+                        DiElectrons_Ene30_NoTracker_N0BField_NoPU.cfg
+                </Test>
+	</Validate>
+</PhysicsValidation>
