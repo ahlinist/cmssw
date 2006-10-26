@@ -18,7 +18,7 @@ class TrackCountingTagPlotter : public BaseBTagPlotter {
 
   void analyzeTag (const reco::TrackCountingTagInfo & tagInfo, const reco::JetTag & jetTag);
 
-  virtual void finalize () { jetTagPlotter_->finalize();}
+  virtual void finalize ();
 
   // get "2d" histograms for misid. vs. b-eff
   virtual EffPurFromHistos * getEffPurFromHistos ()
@@ -36,6 +36,9 @@ class TrackCountingTagPlotter : public BaseBTagPlotter {
 
   FlavourHistorgrams<double> * hSignificance;
   FlavourHistorgrams<double> * tkcntHistosSig[4];
+  EffPurFromHistos * effPurFromHistos2 ;
+  EffPurFromHistos * effPurFromHistos3 ;
+  bool finalized;
 } ;
 
 #endif

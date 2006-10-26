@@ -38,6 +38,10 @@ class JetTagPlotter : public BaseBTagPlotter {
 
   void psPlot(const TString & name);
 
+  int nBinEffPur() const {return nBinEffPur_;}
+  double startEffPur() const {return startEffPur_;}
+  double endEffPur() const {return endEffPur_;}
+
  protected:
 
   // binning and bounds
@@ -50,19 +54,10 @@ class JetTagPlotter : public BaseBTagPlotter {
   double startEffPur_ ; 
   double endEffPur_ ; 
   
-  // the discriminator cut now must be a data member when using
-  // HistoDescription also for the efficiencies
-  double discrCut ;
   bool finalized;
-
-  
-  // for efficiency/purity like histograms (versus discriminator cut)
-//   vector<FlavourHistorgrams*> effPurHistos ;
 
   // for the misid vs. eff plots
   EffPurFromHistos * effPurFromHistos ;
-
-  FlavourHistorgrams<double> * dDiscrCut, *dDiscrCutCond;
 
   FlavourHistorgrams<double> * dDiscriminatorFC;
   FlavourHistorgrams<int> * dJetFlav;
