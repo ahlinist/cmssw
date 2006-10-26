@@ -92,6 +92,6 @@ void DBIdealGeometryESSource::setIntervalFor(const edm::eventsetup::EventSetupRe
 #include "FWCore/Framework/interface/SourceFactory.h"
 
 
-DEFINE_FWK_EVENTSETUP_SOURCE(DBIdealGeometryESSource)
+DEFINE_FWK_EVENTSETUP_SOURCE(DBIdealGeometryESSource);
 
 
