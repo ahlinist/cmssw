@@ -1,14 +1,18 @@
 <export>
 <lib name=GeometryReadersDBIdealGeometryESSource>
 <use name=DetectorDescription/OfflineDBLoader>
+<use name=DetectorDescription/CoreImpl>
 <use name=Geometry/Records>
+<use name=CondFormats/DataRecord>
 <use name=FWCore/Framework>
 <use name=FWCore/ParameterSet> 
 <use name=Utilities/General>
 </export>
 <flags SEAL_PLUGIN_NAME="GeometryReadersDBIdealGeometryESSource">
 <use name=DetectorDescription/OfflineDBLoader>
+<use name=DetectorDescription/CoreImpl>
 <use name=Geometry/Records>
+<use name=CondFormats/DataRecord>
 <use name=FWCore/Framework>
 <use name=FWCore/ParameterSet> 
 <use name=Utilities/General>
