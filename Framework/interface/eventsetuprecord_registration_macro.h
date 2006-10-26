@@ -38,6 +38,19 @@ macro EVENTSETUP_RECORD_REG is used to create that code.
 #define EVENTSETUP_RECORD_NAME2(_a_, _b_) EVENTSETUP_RECORD_NAME2_HIDDEN(_a_,_b_)
 #define EVENTSETUP_RECORD_NAME2_HIDDEN(_a_,_b_) _a_ ## _b_
 
+
+#if __GNUC_PREREQ (3,4)
+
+#define EVENTSETUP_RECORD_REG(_recordclassname_) \
+template<> const char* \
+edm::eventsetup::heterocontainer::HCTypeTagTemplate<_recordclassname_, edm::eventsetup::EventSetupRecordKey>::className() {return # _recordclassname_; }\
+static edm::eventsetup::EventSetupRecordProviderFactoryTemplate<_recordclassname_> EVENTSETUP_RECORD_NAME2(s_factory,__LINE__);\
+template void edm::eventsetup::eventSetupGetImplementation<_recordclassname_>(edm::EventSetup const&, _recordclassname_ const*&); \
+template  edm::eventsetup::EventSetupRecordKey edm::eventsetup::heterocontainer::makeKey<_recordclassname_, edm::eventsetup::EventSetupRecordKey>() ;\
+template class edm::eventsetup::heterocontainer::HCTypeTagTemplate<_recordclassname_, edm::eventsetup::EventSetupRecordKey>
+
+#else
+
 #define EVENTSETUP_RECORD_REG(_recordclassname_) \
 template<> const char* \
 edm::eventsetup::heterocontainer::HCTypeTagTemplate<_recordclassname_, edm::eventsetup::EventSetupRecordKey>::className() {return # _recordclassname_; }\
@@ -46,5 +59,6 @@ template void edm::eventsetup::eventSetupGetImplementation<_recordclassname_>(ed
 template  edm::eventsetup::EventSetupRecordKey edm::eventsetup::heterocontainer::makeKey<_recordclassname_, edm::eventsetup::EventSetupRecordKey>() ;\
 template class edm::eventsetup::heterocontainer::HCTypeTagTemplate<_recordclassname_, edm::eventsetup::EventSetupRecordKey>;
 
+#endif
 
 #endif

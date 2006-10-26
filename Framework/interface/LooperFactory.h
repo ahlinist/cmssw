@@ -80,11 +80,24 @@ namespace edm {
    }
 }
 
+#if __GNUC_PREREQ (3,4)
+
+#define DEFINE_FWK_LOOPER(type) \
+DEFINE_SEAL_MODULE (); \
+DEFINE_SEAL_PLUGIN (edm::eventsetup::LooperFactory,edm::eventsetup::LooperMaker<type>,#type)
+
+#define DEFINE_ANOTHER_FWK_LOOPER(type) \
+DEFINE_SEAL_PLUGIN (edm::eventsetup::LooperFactory,edm::eventsetup::LooperMaker<type>,#type)
+
+#else
+
 #define DEFINE_FWK_LOOPER(type) \
 DEFINE_SEAL_MODULE (); \
 DEFINE_SEAL_PLUGIN (edm::eventsetup::LooperFactory,edm::eventsetup::LooperMaker<type>,#type);
 
 #define DEFINE_ANOTHER_FWK_LOOPER(type) \
 DEFINE_SEAL_PLUGIN (edm::eventsetup::LooperFactory,edm::eventsetup::LooperMaker<type>,#type);
+
+#endif
 
 #endif

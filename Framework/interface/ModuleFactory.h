@@ -44,12 +44,25 @@ namespace edm {
    }
 }
 
+#if __GNUC_PREREQ (3,4)
+
+#define DEFINE_FWK_EVENTSETUP_MODULE(type) \
+DEFINE_SEAL_MODULE (); \
+DEFINE_SEAL_PLUGIN (edm::eventsetup::ModuleFactory,edm::eventsetup::ModuleMaker<type>,#type)
+
+#define DEFINE_ANOTHER_FWK_EVENTSETUP_MODULE(type) \
+DEFINE_SEAL_PLUGIN (edm::eventsetup::ModuleFactory,edm::eventsetup::ModuleMaker<type>,#type)
+
+#else
+
 #define DEFINE_FWK_EVENTSETUP_MODULE(type) \
 DEFINE_SEAL_MODULE (); \
 DEFINE_SEAL_PLUGIN (edm::eventsetup::ModuleFactory,edm::eventsetup::ModuleMaker<type>,#type);
 
 #define DEFINE_ANOTHER_FWK_EVENTSETUP_MODULE(type) \
 DEFINE_SEAL_PLUGIN (edm::eventsetup::ModuleFactory,edm::eventsetup::ModuleMaker<type>,#type);
+
+#endif
 
 #endif
 
