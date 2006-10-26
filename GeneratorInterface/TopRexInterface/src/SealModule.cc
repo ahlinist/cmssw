@@ -6,6 +6,6 @@
   using edm::ToprexSource;
 
   DEFINE_SEAL_MODULE();
-  DEFINE_ANOTHER_FWK_INPUT_SOURCE(ToprexSource)
+  DEFINE_ANOTHER_FWK_INPUT_SOURCE(ToprexSource);
   // DEFINE_ANOTHER_FWK_MODULE(HepMCProductAnalyzer);
-  // DEFINE_ANOTHER_FWK_MODULE(PythiaFilter)
+  // DEFINE_ANOTHER_FWK_MODULE(PythiaFilter);
