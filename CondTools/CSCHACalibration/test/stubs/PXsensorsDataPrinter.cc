@@ -57,5 +57,5 @@ namespace condtooltest
     }
     std::cout<<std::endl;
   }
-  DEFINE_FWK_MODULE(PXsensorsDataPrinter)
+  DEFINE_FWK_MODULE(PXsensorsDataPrinter);
 }

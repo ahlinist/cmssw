@@ -269,4 +269,4 @@ void Analyzer::HistPart(int &i, double &e, double &pt, double &eta, double &phi)
 
 
  
-DEFINE_FWK_MODULE(Analyzer)
+DEFINE_FWK_MODULE(Analyzer);

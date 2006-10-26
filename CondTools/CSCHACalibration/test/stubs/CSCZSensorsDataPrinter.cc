@@ -56,5 +56,5 @@ namespace condtooltest
     }
     std::cout<<std::endl;
   }
-  DEFINE_FWK_MODULE(CSCZSensorsDataPrinter)
+  DEFINE_FWK_MODULE(CSCZSensorsDataPrinter);
 }
