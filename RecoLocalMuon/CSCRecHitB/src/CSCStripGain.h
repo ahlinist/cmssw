@@ -48,7 +48,7 @@ class CSCStripGain
   bool debug;
   CSCReadoutMappingFromFile theCSCMap;
 
-  // Store in memory Gains, xtalks, and noise matrix
+  // Store in memory Gains
   const CSCGains         * Gains;
 
 };

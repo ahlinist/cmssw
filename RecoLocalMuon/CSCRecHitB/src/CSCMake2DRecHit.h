@@ -21,6 +21,7 @@ class CSCDetId;
 class CSCLayer;
 class CSCChamberSpecs;
 class CSCLayerGeometry;
+class CSCGains;
 class CSCcrosstalk;
 class CSCNoiseMatrix;
 class CSCStripCrosstalk;
@@ -51,8 +52,10 @@ class CSCMake2DRecHit
   bool isHitInFiducial( const CSCLayer* layer, const CSCRecHit2D& rh );
 
   /// Load in X-Talks and Noise Matrix
-  void setCalibration( const CSCcrosstalk* xtalk,
+  void setCalibration( const CSCGains* gains,
+                       const CSCcrosstalk* xtalk,
                        const CSCNoiseMatrix* noise ) {
+    gains_ = gains;
     xtalk_ = xtalk;
     noise_ = noise;
   }
@@ -80,6 +83,7 @@ class CSCMake2DRecHit
   /* Cache calibrations for current event
    *
    */
+  const CSCGains*       gains_;
   const CSCcrosstalk*   xtalk_;
   const CSCNoiseMatrix* noise_;
 
