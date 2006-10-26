@@ -1,7 +1,17 @@
-#!/bin/bash
+#!/bin/sh
 
+CORAL_AUTH_PATH=/afs/cern.ch/cms/DB/conddb
 
-pool_build_object_relational_mapping -f blobmappingfile_noise.xml    -d CondFormatsSiStripObjects -c sqlite_file:/tmp/testSiStripNoisesBuilder_blob.db	        -u me -p mypass  
-pool_build_object_relational_mapping -f blobmappingfile_pedestal.xml -d CondFormatsSiStripObjects -c sqlite_file:/tmp/testSiStripPedestalsBuilder_blob.db	-u me -p mypass    
-pool_build_object_relational_mapping -f blobmappingfile_pednoise.xml -d CondFormatsSiStripObjects -c sqlite_file:/tmp/testSiStripPedestalsNoisesBuilder_blob.db -u me -p mypass  
+DBfile="sqlite_file:/tmp/$USER/testSiStripNoisesBuilder_blob.db"
+echo "CondTools/OracleDBA/scripts/cmscond_bootstrap_detector.pl --offline_connect $DBfile --auth ${CORAL_AUTH_PATH}/authentication.xml STRIP "
+cmscond_bootstrap_detector.pl --offline_connect $DBfile --auth ${CORAL_AUTH_PATH}/authentication.xml STRIP 
+
+DBfile="sqlite_file:/tmp/$USER/testSiStripPedestalsBuilder_blob.db"
+echo "cmscond_bootstrap_detector.pl --offline_connect $DBfile --auth ${CORAL_AUTH_PATH}/authentication.xml STRIP "
+cmscond_bootstrap_detector.pl --offline_connect $DBfile --auth ${CORAL_AUTH_PATH}/authentication.xml STRIP 
+
+DBfile="sqlite_file:/tmp/$USER/testSiStripPedestalsNoisesBuilder_blob.db"
+echo "cmscond_bootstrap_detector.pl --offline_connect $DBfile --auth ${CORAL_AUTH_PATH}/authentication.xml STRIP "
+cmscond_bootstrap_detector.pl --offline_connect $DBfile --auth ${CORAL_AUTH_PATH}/authentication.xml STRIP 
+
 
