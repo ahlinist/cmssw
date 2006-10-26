@@ -4,6 +4,7 @@ TrackCountingTagPlotter::TrackCountingTagPlotter(JetTagPlotter *jetTagPlotter,
 	bool update) :
     BaseBTagPlotter(jetTagPlotter->etaPtBin()), jetTagPlotter_(jetTagPlotter)
 {
+  finalized = false;
   if (update){
   TString dir= "TrackCounting"+theExtensionString;
   gFile->cd();
@@ -39,6 +40,10 @@ TrackCountingTagPlotter::~TrackCountingTagPlotter ()
 
   for(int n=0; n < 4; n++) delete tkcntHistosSig[n];
   delete hSignificance;
+  if (finalized) {
+    delete effPurFromHistos2;
+    delete effPurFromHistos3;
+  }
 }
 
 
@@ -63,6 +68,24 @@ void TrackCountingTagPlotter::analyzeTag (const reco::TrackCountingTagInfo & tag
       hSignificance->fill(jetFlav, tagInfo.significance(n,0));
 }
 
+void TrackCountingTagPlotter::finalize ()
+{
+  jetTagPlotter_->finalize();
+  //
+  // final processing:
+  // produce the misid. vs. eff histograms
+  //
+  effPurFromHistos2 = new EffPurFromHistos (tkcntHistosSig[1],
+		jetTagPlotter_->nBinEffPur(), jetTagPlotter_->startEffPur(),
+		jetTagPlotter_->endEffPur());
+  effPurFromHistos2->compute();
+  effPurFromHistos3 = new EffPurFromHistos (tkcntHistosSig[2],
+		jetTagPlotter_->nBinEffPur(), jetTagPlotter_->startEffPur(),
+		jetTagPlotter_->endEffPur());
+  effPurFromHistos3->compute();
+  finalized = true;
+}
+
 void TrackCountingTagPlotter::psPlot(const TString & name)
 {
   jetTagPlotter_->psPlot(name);
@@ -80,6 +103,23 @@ void TrackCountingTagPlotter::psPlot(const TString & name)
     canvas.cd(2+n);
     tkcntHistosSig[n]->plot((TPad*) canvas.GetPrimitive(cName+"_"+itos(n+2)));
   }
+  if (finalized) {
+    canvas.Print(name + cName + ".ps");
+    canvas.Clear();
+    canvas.Divide(2,3);
+    canvas.cd(1);
+    effPurFromHistos2->discriminatorNoCutEffic()->plot((TPad*) canvas.GetPrimitive(cName+"_1"));
+    canvas.cd(2);
+    effPurFromHistos2->discriminatorCutEfficScan()->plot((TPad*) canvas.GetPrimitive(cName+"_2"));
+    canvas.cd(3);
+    effPurFromHistos2->plot((TPad*) canvas.GetPrimitive(cName+"_3"));
+    canvas.cd(4);
+    effPurFromHistos3->discriminatorNoCutEffic()->plot((TPad*) canvas.GetPrimitive(cName+"_4"));
+    canvas.cd(5);
+    effPurFromHistos3->discriminatorCutEfficScan()->plot((TPad*) canvas.GetPrimitive(cName+"_5"));
+    canvas.cd(6);
+    effPurFromHistos3->plot((TPad*) canvas.GetPrimitive(cName+"_6"));
+  }
 
   canvas.Print(name + cName + ".ps");
   canvas.Print(name + cName + ".ps]");
@@ -95,6 +135,10 @@ void TrackCountingTagPlotter::write()
   gFile->cd(dir);
   for(int n=0; n < 4; n++) tkcntHistosSig[n]->write();
   hSignificance->write();
+  if (finalized) {
+    effPurFromHistos2->write();
+    effPurFromHistos3->write();
+  }
   gFile->cd();
 }
 
@@ -103,4 +147,8 @@ void TrackCountingTagPlotter::epsPlot(const TString & name)
   jetTagPlotter_->epsPlot(name);
   for(int n=0; n < 4; n++) tkcntHistosSig[n]->epsPlot(name);
   hSignificance->epsPlot(name);
+  if (finalized) {
+    effPurFromHistos2->epsPlot(name);
+    effPurFromHistos3->epsPlot(name);
+  }
 }

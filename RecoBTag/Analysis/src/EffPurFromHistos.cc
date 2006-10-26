@@ -10,39 +10,95 @@ using namespace RecoBTag;
 
 
 
-EffPurFromHistos::EffPurFromHistos ( TString ext, TH1F * h_d, TH1F * h_u,
+EffPurFromHistos::EffPurFromHistos ( const TString & ext, TH1F * h_d, TH1F * h_u,
 	TH1F * h_s, TH1F * h_c, TH1F * h_b, TH1F * h_g,	TH1F * h_ni,
-	TH1F * h_dus, TH1F * h_dusg, int nBin, float startO, float endO) :
+	TH1F * h_dus, TH1F * h_dusg, int nBin, double startO, double endO) :
 	//BTagPlotPrintC(),
 	histoExtension(ext), effVersusDiscr_d(h_d), effVersusDiscr_u(h_u),
 	effVersusDiscr_s(h_s), effVersusDiscr_c(h_c), effVersusDiscr_b(h_b),
 	effVersusDiscr_g(h_g), effVersusDiscr_ni(h_ni), effVersusDiscr_dus(h_dus),
 	effVersusDiscr_dusg(h_dusg), nBinOutput(nBin), startOutput(startO),
-	endOutput(endO), plotCanvas(0)
+	endOutput(endO)
 {
+  fromDiscriminatorDistr = false;
   // consistency check
   if ( !(check()) ) {
     cout << "EffPurFromHistos::EffPurFromHistos : consistency check failed -> exit!!" << endl;
     exit (1);
   }
+}
+
+EffPurFromHistos::EffPurFromHistos 
+	(const FlavourHistorgrams<double> * dDiscriminatorFC, int nBin,
+	double startO, double endO) :
+	nBinOutput(nBin), startOutput(startO), endOutput(endO)
+{
+  histoExtension = "_"+dDiscriminatorFC->baseNameTitle();
+  cout << histoExtension<<" - "<<dDiscriminatorFC->baseNameTitle()<<endl;
+  fromDiscriminatorDistr = true;
+  discrNoCutEffic = new FlavourHistorgrams<double> (
+	"discrCut" + histoExtension, "Discriminator Cut" + histoExtension,
+	dDiscriminatorFC->nBins(), dDiscriminatorFC->lowerBound(),
+	dDiscriminatorFC->upperBound(), true, false, false, "b" );
+
+  // conditional discriminator cut for efficiency histos
+
+  discrCutEfficScan = new FlavourHistorgrams<double> (
+	"discrCutCond" + histoExtension, "Conditional Discriminator Cut" + histoExtension,
+	dDiscriminatorFC->nBins(), dDiscriminatorFC->lowerBound(),
+	dDiscriminatorFC->upperBound(), true, false, false, "b" );
+
+  effVersusDiscr_d =    discrCutEfficScan->histo_d   ();
+  effVersusDiscr_u =    discrCutEfficScan->histo_u   ();
+  effVersusDiscr_s =    discrCutEfficScan->histo_s   ();
+  effVersusDiscr_c =    discrCutEfficScan->histo_c   ();
+  effVersusDiscr_b =    discrCutEfficScan->histo_b   ();
+  effVersusDiscr_g =    discrCutEfficScan->histo_g   ();
+  effVersusDiscr_ni =   discrCutEfficScan->histo_ni  ();
+  effVersusDiscr_dus =  discrCutEfficScan->histo_dus ();
+  effVersusDiscr_dusg = discrCutEfficScan->histo_dusg();
+
+  // discr. for computation
+  vector<TH1F*> discrCfHistos = dDiscriminatorFC->getHistoVector();
+
+  // discr no cut
+  vector<TH1F*> discrNoCutHistos = discrNoCutEffic->getHistoVector();
+
+  // discr no cut
+  vector<TH1F*> discrCutHistos = discrCutEfficScan->getHistoVector();
+
+  int dimHistos = discrCfHistos.size(); // they all have the same size
+
+  // DISCR-CUT LOOP:
+  // fill the histos for eff-pur computations by scanning the discriminatorFC histogram
+//   discrCut = discrFirstBin;
+
+  // better to loop over bins -> discrCut no longer needed
+  for ( int iDiscr = 0; iDiscr < dDiscriminatorFC->nBins(); iDiscr++ ) {
+    //
+    // loop over flavours
+    for ( int iFlav = 0; iFlav < dimHistos; iFlav++ ) {
+      // fill all jets into NoCut histo
+//       int    iBin      = discrNoCutHistos[iFlav]->FindBin    ( discrCut );
+      double nJetsFlav = discrCfHistos   [iFlav]->GetEntries ()          ;
+      discrNoCutHistos[iFlav]->SetBinContent ( iDiscr, nJetsFlav );
+      discrNoCutHistos[iFlav]->SetBinError   ( iDiscr, sqrt(nJetsFlav) );
+      // fill jets fulfilling discriminator >= discriminatorCut in Cut histo
+      double sum = 0.0;
+      for ( int i = iDiscr; i < discrCfHistos[iFlav]->GetSize(); i++ ) {
+	sum += discrCfHistos[iFlav]->GetBinContent( i );
+      }
+      discrCutHistos[iFlav]->SetBinContent ( iDiscr, sum );
+      discrCutHistos[iFlav]->SetBinError   ( iDiscr, sqrt(sum) );
+    }
+
+    // increase
+//     discrCut += discrWidth;
+  }
 
 
-  // to have shorter names ......
-  TString & hE = histoExtension;
-  TString hB = "FlavEffVsBEff_";
-
-
-  // create histograms from base name and extension as given from user
-  // BINNING MUST BE IDENTICAL FOR ALL OF THEM!!
-  EffFlavVsBEff_d    = new TH1F ( hB + "D"    + hE , hB + "D"    + hE , nBinOutput , startOutput , endOutput );
-  EffFlavVsBEff_u    = new TH1F ( hB + "U"    + hE , hB + "U"    + hE , nBinOutput , startOutput , endOutput ) ;
-  EffFlavVsBEff_s    = new TH1F ( hB + "S"    + hE , hB + "S"    + hE , nBinOutput , startOutput , endOutput ) ;
-  EffFlavVsBEff_c    = new TH1F ( hB + "C"    + hE , hB + "C"    + hE , nBinOutput , startOutput , endOutput ) ;
-  EffFlavVsBEff_b    = new TH1F ( hB + "B"    + hE , hB + "B"    + hE , nBinOutput , startOutput , endOutput ) ;
-  EffFlavVsBEff_g    = new TH1F ( hB + "G"    + hE , hB + "G"    + hE , nBinOutput , startOutput , endOutput ) ;
-  EffFlavVsBEff_ni   = new TH1F ( hB + "NI"   + hE , hB + "NI"   + hE , nBinOutput , startOutput , endOutput ) ;
-  EffFlavVsBEff_dus  = new TH1F ( hB + "DUS"  + hE , hB + "DUS"  + hE , nBinOutput , startOutput , endOutput ) ;
-  EffFlavVsBEff_dusg = new TH1F ( hB + "DUSG" + hE , hB + "DUSG" + hE , nBinOutput , startOutput , endOutput ) ;
+  // divide to get efficiency vs. discriminator cut from absolute numbers
+  discrCutEfficScan->divide ( *discrNoCutEffic );  // does: histos including discriminator cut / flat histo
 }
 
 
@@ -56,6 +112,10 @@ EffPurFromHistos::~EffPurFromHistos () {
   delete EffFlavVsBEff_ni  ;
   delete EffFlavVsBEff_dus ;
   delete EffFlavVsBEff_dusg;
+  if ( fromDiscriminatorDistr) {
+    delete discrNoCutEffic;
+    delete discrCutEfficScan;
+  }
 }
 
 
@@ -69,11 +129,19 @@ void EffPurFromHistos::write () {
   EffFlavVsBEff_ni  ->Write();
   EffFlavVsBEff_dus ->Write();
   EffFlavVsBEff_dusg->Write();
+  if ( fromDiscriminatorDistr) {
+    discrNoCutEffic->write();
+    discrCutEfficScan->write();
+  }
 }
 
 
 void EffPurFromHistos::epsPlot(const TString & name)
 {
+  if ( fromDiscriminatorDistr) {
+    discrNoCutEffic->epsPlot(name);
+    discrCutEfficScan->epsPlot(name);
+  }
   plot(name, ".eps");
 }
 
@@ -96,17 +164,9 @@ void EffPurFromHistos::plot (TPad * plotCanvas ) {
   bool btppNI = false;
   bool btppColour = true;
 
-//   // might be called more than once -> check if canvas already created
-//   // if yes -> don't do anything
-//
-//   if ( plotCanvas != 0 ) return;
-//
 //   if ( !btppTitle ) gStyle->SetOptTitle ( 0 );
-//
-//   plotCanvas = new TCanvas( "FlavEffVsBEff" +histoExtension ,
-// 			    "Flavour misidentification vs. b-tagging efficiency " + histoExtension ,
-// 			    btppXCanvas , btppYCanvas );
-
+  setTDRStyle()->cd();
+  plotCanvas->UseCurrentStyle();
   plotCanvas->SetFillColor ( 0 );
   plotCanvas->cd ( 1 );
   gPad->SetLogy  ( 1 );
@@ -302,7 +362,26 @@ bool EffPurFromHistos::check () {
 }
 
 
-void EffPurFromHistos::compute () {
+void EffPurFromHistos::compute ()
+{
+
+  // to have shorter names ......
+  TString & hE = histoExtension;
+  TString hB = "FlavEffVsBEff_";
+
+
+  // create histograms from base name and extension as given from user
+  // BINNING MUST BE IDENTICAL FOR ALL OF THEM!!
+  EffFlavVsBEff_d    = new TH1F ( hB + "D"    + hE , hB + "D"    + hE , nBinOutput , startOutput , endOutput );
+  EffFlavVsBEff_u    = new TH1F ( hB + "U"    + hE , hB + "U"    + hE , nBinOutput , startOutput , endOutput ) ;
+  EffFlavVsBEff_s    = new TH1F ( hB + "S"    + hE , hB + "S"    + hE , nBinOutput , startOutput , endOutput ) ;
+  EffFlavVsBEff_c    = new TH1F ( hB + "C"    + hE , hB + "C"    + hE , nBinOutput , startOutput , endOutput ) ;
+  EffFlavVsBEff_b    = new TH1F ( hB + "B"    + hE , hB + "B"    + hE , nBinOutput , startOutput , endOutput ) ;
+  EffFlavVsBEff_g    = new TH1F ( hB + "G"    + hE , hB + "G"    + hE , nBinOutput , startOutput , endOutput ) ;
+  EffFlavVsBEff_ni   = new TH1F ( hB + "NI"   + hE , hB + "NI"   + hE , nBinOutput , startOutput , endOutput ) ;
+  EffFlavVsBEff_dus  = new TH1F ( hB + "DUS"  + hE , hB + "DUS"  + hE , nBinOutput , startOutput , endOutput ) ;
+  EffFlavVsBEff_dusg = new TH1F ( hB + "DUSG" + hE , hB + "DUSG" + hE , nBinOutput , startOutput , endOutput ) ;
+
 
   // loop over eff. vs. discriminator cut b-histo and look in which bin the closest entry is;
   // use fact that eff decreases monotonously
