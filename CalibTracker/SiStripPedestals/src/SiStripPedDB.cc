@@ -5,7 +5,6 @@
 #include "CalibTracker/SiStripPedestals/interface/SiStripPedDB.h"
 
 #include "DataFormats/SiStripDetId/interface/SiStripSubStructure.h"
-#include "CondFormats/SiStripObjects/interface/SiStripPedestals.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "CondCore/DBOutputService/interface/PoolDBOutputService.h"
@@ -39,16 +38,6 @@ SiStripPedDB::SiStripPedDB(const edm::ParameterSet& iConfig)
    theEventIterNumber_ = pedsPSet_.getParameter<int>("NumberOfEventsForIteration");
    NumCMstripsInGroup_ = pedsPSet_.getParameter<int>("NumCMstripsInGroup");
 
-   //DB related stuff
-   
-   userEnv_ = "CORAL_AUTH_USER=" + iConfig.getUntrackedParameter<std::string>("userEnv","me");
-   passwdEnv_ = "CORAL_AUTH_PASSWORD="+ iConfig.getUntrackedParameter<std::string>("passwdEnv","mypass");
-   printdebug_ =iConfig.getUntrackedParameter<bool>("printDebug",false);
-
-   
-   ::putenv( const_cast<char*>( userEnv_.c_str() ) );
-   ::putenv( const_cast<char*>( passwdEnv_.c_str() ) );
-   
 }
 
 
@@ -62,6 +51,9 @@ void SiStripPedDB::beginJob(const edm::EventSetup& es){
    // retrieve parameters from configuration file
   using namespace edm;
   SelectedDetIds.clear();
+
+  //Pedestals object ...
+  SiStripPedestals_ = new SiStripPedestals();
 
   //ApvAnalysisFactory
   apvFactory_ = new ApvAnalysisFactory(pedsPSet_);
@@ -110,9 +102,7 @@ void SiStripPedDB::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     std::string digiType = "VirginRaw";
     //you have a collection as there are all the digis for the event for every detector
     iEvent.getByLabel(digiProducer, digiType, digi_collection);
-    //Pedestals object ...
-
-    SiStripPedestals* SiStripPedestals_ = new SiStripPedestals();
+    
     // loop over all DetIds to be implement
     for(vector<uint32_t>::const_iterator myDet = SelectedDetIds.begin();myDet!=SelectedDetIds.end();myDet++)
       {
@@ -126,14 +116,12 @@ void SiStripPedDB::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	//asking for the status
 	if((nEvTot_ - theEventInitNumber_)%theEventIterNumber_ == 1)
 	  {
+	    mSiStripPedestals.clear();
 	    //Generate Pedestal for det detid
 	    std::vector<char> theSiStripVector;  
 	    vector<float> tmp_ped;
-	    vector<float> tmp_noise;
 	    tmp_ped.clear();
-	    tmp_noise.clear();
 	    apvFactory_->getPedestal(detid, tmp_ped);
-	    //apvFactory_->getNoise(detid, tmp_noise);
 	    int ibin=0;
 	    for (vector<float>::const_iterator iped=tmp_ped.begin(); iped!=tmp_ped.end();iped++) {
 	      float ped = *iped;
@@ -147,33 +135,38 @@ void SiStripPedDB::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	      SiStripPedestals_->setData(ped,lTh,hTh,theSiStripVector);
 	      ibin++;
 	    }
-	    
-	    SiStripPedestals::Range range(theSiStripVector.begin(),theSiStripVector.end());
-	    if ( ! SiStripPedestals_->put(detid,range) )
-	      cout<<"[SiStripPedDB::analyze] detid already exists"<<endl;
-	    
-	    //End now write sistrippedestals data in DB
-	    edm::Service<cond::service::PoolDBOutputService> mydbservice;
-	    
-	    if( mydbservice.isAvailable() ){
-	      try{
-		size_t callbackToken=mydbservice->callbackToken("SiStripPedestals");
-		edm::LogInfo("SiStripPedDB")<<"current time "<<mydbservice->currentTime()<<std::endl;
-		mydbservice->newValidityForNewPayload<SiStripPedestals>(SiStripPedestals_,mydbservice->currentTime(), callbackToken);      
-	      }catch(const cond::Exception& er){
-		edm::LogError("SiStripPedDB")<<er.what()<<std::endl;
-	      }catch(const std::exception& er){
-		edm::LogError("SiStripPedDB")<<"caught std::exception "<<er.what()<<std::endl;
-	      }catch(...){
-		edm::LogError("SiStripPedDB")<<"Funny error"<<std::endl;
-	      }
-  }else{
-    edm::LogError("SiStripPedDB")<<"Service is unavailable"<<std::endl;
-  }
-	  }
-
+	    mSiStripPedestals.push_back(make_pair(detid,theSiStripVector));
+	  }	
       }
 }
 
-void SiStripPedDB::endJob(void){}
+void SiStripPedDB::endJob(void){
+  edm::LogInfo("SiStripPedDB") << "... now write sistrippedestals data in DB" << std::endl;
+	
+  for (std::vector< std::pair<uint32_t, std::vector<char> > >::const_iterator iter=mSiStripPedestals.begin(); iter!=mSiStripPedestals.end();iter++)
+    {
+      edm::LogInfo("SiStripPedDB")<<"uploading detid "<< iter->first << " vector size " << iter->second.size() <<std::endl;
+      SiStripPedestals::Range range(iter->second.begin(),iter->second.end());
+      if ( ! SiStripPedestals_->put(iter->first,range) )
+	edm::LogError("SiStripPedDB") <<"[SiStripPedDB::analyze] detid " << iter->first << "already exists"<<endl;
+    }       
+
+  edm::Service<cond::service::PoolDBOutputService> mydbservice;
+  
+  if( mydbservice.isAvailable() ){
+    try{
+      uint32_t callbackToken=mydbservice->callbackToken("SiStripPedestals");
+      edm::LogInfo("SiStripPedDB")<<"callbackToken SiStripPedestals "<<callbackToken<<std::endl;
+      mydbservice->newValidityForNewPayload<SiStripPedestals>(SiStripPedestals_,mydbservice->endOfTime(), callbackToken);      
+    }catch(const cond::Exception& er){
+      edm::LogError("SiStripPedDB")<<er.what()<<std::endl;
+    }catch(const std::exception& er){
+      edm::LogError("SiStripPedDB")<<"caught std::exception "<<er.what()<<std::endl;
+    }catch(...){
+      edm::LogError("SiStripPedDB")<<"Funny error"<<std::endl;
+    }
+  }else{
+    edm::LogError("SiStripPedDB")<<"Service is unavailable"<<std::endl;
+  }
+}
 

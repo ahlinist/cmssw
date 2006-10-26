@@ -16,7 +16,7 @@
 //
 // Original Author:  dkcira
 //         Created:  Sat Feb  4 20:49:51 CET 2006
-// $Id: SiStripPedDB.h,v 1.1 2006/07/03 12:57:18 gennai Exp $
+// $Id: SiStripPedDB.h,v 1.2 2006/07/10 14:18:53 gennai Exp $
 //
 
 // system include files
@@ -47,6 +47,8 @@
 //#include "DQM/SiStripCommon/interface/SiStripGenerateKey.h"
 //
 #include "CalibTracker/SiStripAPVAnalysis/interface/ApvAnalysisFactory.h"
+
+#include "CondFormats/SiStripObjects/interface/SiStripPedestals.h"
 
 //#include "Fed9UUtils.hh"
 #include "boost/cstdint.hpp"
@@ -80,6 +82,8 @@ class SiStripPedDB : public edm::EDAnalyzer {
        edm::ParameterSet conf_;
        SiStripFedCabling* fedCabling_;
 
+       SiStripPedestals* SiStripPedestals_;
+       std::vector< std::pair<uint32_t,std::vector<char> > > mSiStripPedestals;
 
        vector<uint32_t> SelectedDetIds;
 	 
@@ -90,10 +94,6 @@ class SiStripPedDB : public edm::EDAnalyzer {
        int theEventIterNumber_;
        int NumCMstripsInGroup_;
        string outPutFileName;
-       std::string userEnv_;  
-       std::string passwdEnv_;   
-       bool printdebug_;
-
 
 };
 
