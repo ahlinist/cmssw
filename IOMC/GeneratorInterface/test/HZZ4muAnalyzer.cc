@@ -205,4 +205,4 @@ void HZZ4muAnalyzer::endJob()
    return ;
 }
  
-DEFINE_FWK_MODULE(HZZ4muAnalyzer)
+DEFINE_FWK_MODULE(HZZ4muAnalyzer);
