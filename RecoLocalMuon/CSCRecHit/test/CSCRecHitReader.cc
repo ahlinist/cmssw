@@ -529,5 +529,5 @@ void CSCRecHitReader::analyze(const Event & event, const EventSetup& eventSetup)
 
 
 
-DEFINE_FWK_MODULE(CSCRecHitReader)
+DEFINE_FWK_MODULE(CSCRecHitReader);
 
