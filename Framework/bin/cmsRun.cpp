@@ -167,16 +167,22 @@ int main(int argc, char* argv[])
     // the program.
     std::string line;
     
-    while(std::getline(configFile,line)) { configstring+=line; configstring+="\n"; }
+    while(std::getline(configFile,line)) 
+      {
+	configstring+=line; 
+	configstring+="\n"; 
+      }
   }
-  edm::ParameterSet main;
-  std::vector<edm::ParameterSet> serviceparams;
-
 
   EventProcessorWithSentry proc;
   int rc = -1; // we should never return this value!
+  using std::auto_ptr;
+  using edm::EventProcessor;
   try {
-      std::auto_ptr<edm::EventProcessor> procP(new edm::EventProcessor(configstring, jobReportToken, edm::serviceregistry::kTokenOverrides));
+      auto_ptr<EventProcessor> 
+	procP(new 
+	      EventProcessor(configstring, jobReportToken, 
+			     edm::serviceregistry::kTokenOverrides));
       EventProcessorWithSentry procTmp(procP);
       proc = procTmp;
       proc->beginJob();
