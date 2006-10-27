@@ -13,7 +13,7 @@
 //
 // Original Author:  Simone Gennai
 //      Created:  Thu Apr  6 09:56:23 CEST 2006
-// $Id: ConeIsolation.cc,v 1.11 2006/10/10 15:38:58 gennai Exp $
+// $Id: ConeIsolation.cc,v 1.12 2006/10/24 15:54:20 gennai Exp $
 //
 //
 
@@ -147,5 +147,5 @@ ConeIsolation::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 }
 
 //define this as a plug-in
-//DEFINE_FWK_MODULE(ConeIsolation)
+//DEFINE_FWK_MODULE(ConeIsolation);
 

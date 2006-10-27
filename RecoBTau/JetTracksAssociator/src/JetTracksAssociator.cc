@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrea Rizzi
 //         Created:  Wed Apr 12 11:12:49 CEST 2006
-// $Id: JetTracksAssociator.cc,v 1.7 2006/06/30 13:43:22 fwyzard Exp $
+// $Id: JetTracksAssociator.cc,v 1.8 2006/08/08 14:50:43 tboccali Exp $
 //
 //
 
@@ -143,4 +143,4 @@ JetTracksAssociationCollection * JetTracksAssociator::associate( const edm::Hand
 }
 
 //define this as a plug-in
-DEFINE_FWK_MODULE(JetTracksAssociator)
+DEFINE_FWK_MODULE(JetTracksAssociator);
