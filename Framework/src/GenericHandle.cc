@@ -57,10 +57,10 @@ void convert_handle(BasicHandle const& orig,
   h.swap(result);
 }
 
-///Specialize the Event's getByLabel method to work with a Handle<GenericObject>
+///Specialize the getByLabel method to work with a Handle<GenericObject>
 template<>
 void
-edm::Event::getByLabel<GenericObject>(std::string const& label,
+edm::DataViewImpl::getByLabel<GenericObject>(std::string const& label,
                                       const std::string& productInstanceName,
                                       Handle<GenericObject>& result) const
 {
