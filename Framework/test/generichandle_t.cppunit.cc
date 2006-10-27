@@ -17,6 +17,7 @@ $Id$
 #include "FWCore/Framework/interface/TypeID.h"
 #include "DataFormats/TestObjects/interface/ToyProducts.h"
 
+#include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventPrincipal.h"
 
 #include "FWCore/Framework/interface/GenericHandle.h"
