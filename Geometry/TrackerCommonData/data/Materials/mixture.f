@@ -135,7 +135,7 @@ C     ========================
      +     PureX0(MaxPure),Pureabsl(MaxPure) 
       SAVE NPure, Pureweight, Purenumber, Puredens, PureX0, Pureabsl
 
-      Character*20 string,teststring
+      Character*30 string,teststring
 
       Logical DEBUG,FIRST
       DATA FIRST /.TRUE./
@@ -281,7 +281,7 @@ C.................................................................
 
       Real PSUP,PSEN,PCAB,PCOL,PELE
 
-      Character*20 string,string1,string2,stringmatname
+      Character*30 string,string1,string2,stringmatname
 
       Character*30 TZName(MaxDiv)
       Character*32 tzstring
@@ -586,7 +586,7 @@ C      write(LUN,*) "\\addtolength{\\oddsidemargin}{-1.5cm}"
       Subroutine LatexUnderscore(stringname)
 C     =======================================
       Implicit None
-      Character*20 stringname,stringtemp
+      Character*30 stringname,stringtemp
       Integer      k,maxunderscore,findunderscore,findspace
       Integer      underscorefound
       
