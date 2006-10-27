@@ -18,9 +18,9 @@
                 </Test>
                 <Test Events="25000" Name="PhysVal-DiEle-Pt100">
                         DiElectrons_pt100_NoPU.cfg
+                </Test>
 	  </Validate>
           <Validate Version="BackToBackPhotonsHighPriority">
-                </Test>
                 <Test Events="25000" Name="PhysVal-DiPhoton-Pt25">
                         DiPhotons_pt25_NoPU.cfg
                 </Test>
@@ -68,7 +68,7 @@
                         DiElectrons_Ene30_NoTracker_NoPU.cfg
                 </Test>
                 <Test Events="25000" Name="PhysVal-DiEle-Ene30-NoTracker-NoB">
-                        DiElectrons_Ene30_NoTracker_N0BField_NoPU.cfg
+                        DiElectrons_Ene30_NoTracker_NoBField_NoPU.cfg
                 </Test>
 	</Validate>
 </PhysicsValidation>

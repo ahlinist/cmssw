@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<PhysicsValidation>
+<ReleaseValidation>
           <Validate Version="BackToBackElectrons-HighPriority">
                 <Test Events="500" Name="PhysVal-DiEle-Pt5">
                         DiElectrons_pt5_NoPU.cfg
@@ -18,9 +18,9 @@
                 </Test>
                 <Test Events="500" Name="PhysVal-DiEle-Pt100">
                         DiElectrons_pt100_NoPU.cfg
+                </Test>
 	  </Validate>
           <Validate Version="BackToBackPhotonsHighPriority">
-                </Test>
                 <Test Events="500" Name="PhysVal-DiPhoton-Pt25">
                         DiPhotons_pt25_NoPU.cfg
                 </Test>
@@ -62,13 +62,13 @@
                 <Test Events="500" Name="PhysVal-DiPhoton-Ene50">
                         DiPhotons_Ene50_NoPU.cfg
                 </Test>
-	  </Validate>
+          </Validate>
           <Validate Version="BackToBackElectrons-VeryLowPriority">
                 <Test Events="500" Name="PhysVal-DiEle-Ene30-NoTracker">
                         DiElectrons_Ene30_NoTracker_NoPU.cfg
                 </Test>
                 <Test Events="500" Name="PhysVal-DiEle-Ene30-NoTracker-NoB">
-                        DiElectrons_Ene30_NoTracker_N0BField_NoPU.cfg
+                        DiElectrons_Ene30_NoTracker_NoBField_NoPU.cfg
                 </Test>
 	</Validate>
-</PhysicsValidation>
+</ReleaseValidation>
