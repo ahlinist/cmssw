@@ -18,12 +18,12 @@ namespace edm {
   class ConfigurableInputSource;
   class CurrentProcessingContext;
   class DelayedReader;
+  class DataBlockImpl;
   class EDAnalyzer;
   class EDFilter;
   class EDProducer;
   class Event;
   class EventAux;
-  class EventPrincipal;
   class EventSetup;
   class ExternalInputSource;
   class GeneratedInputSource;
@@ -54,7 +54,6 @@ namespace edm {
   struct PathSummary;
   struct TriggerReport;
 
-
   template <typename T> class Handle;
 }
 
@@ -62,5 +61,6 @@ namespace edm {
 #include "DataFormats/Common/interface/ConditionsID.h"
 #include "DataFormats/Common/interface/PassID.h"
 #include "DataFormats/Common/interface/ReleaseVersion.h"
+#include "FWCore/Framework/interface/EventPrincipalFwd.h"
 
 #endif

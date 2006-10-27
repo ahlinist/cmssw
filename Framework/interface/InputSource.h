@@ -46,14 +46,13 @@ $Id$
 #include <string>
 
 #include "DataFormats/Common/interface/EventID.h"
+#include "DataFormats/Common/interface/EDProductfwd.h"
 #include "FWCore/Framework/interface/InputSourceDescription.h"
 #include "FWCore/Framework/interface/ProductRegistryHelper.h"
+#include "FWCore/Framework/interface/EventPrincipalFwd.h"
 
 namespace edm {
-  class EventPrincipal;
-  class ProductRegistry;
   class InputSourceDescription;
-  class EventID;
   class EventSetup;
   class ParameterSet;
   class Event;
