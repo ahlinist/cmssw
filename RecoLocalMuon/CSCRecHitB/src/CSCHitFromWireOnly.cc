@@ -42,7 +42,7 @@ std::vector<CSCWireHit> CSCHitFromWireOnly::runWire( const CSCDetId& id, const C
   layergeom_ = layer->geometry();
   bool any_digis = true;
   int n_wgroup = 0;
-  
+
   for ( CSCWireDigiCollection::const_iterator it = rwired.first; it != rwired.second; ++it ) {
     
     const CSCWireDigi wdigi = *it;
@@ -61,7 +61,7 @@ std::vector<CSCWireHit> CSCHitFromWireOnly::runWire( const CSCDetId& id, const C
     } else {
       if ( !addToCluster( wdigi ) ) {
 	// Make Wire Hit from cluster, delete old cluster and start new one
-	if (n_wgroup > 2) std::cout << "Found wire cluster of " << n_wgroup << " wire groups " << std::endl;
+	if (debug && n_wgroup > 2) std::cout << "Found wire cluster of " << n_wgroup << " wire groups " << std::endl;
 	float whit_pos = findWireHitPosition();
 	CSCWireHit whit(id, whit_pos, theTime);
 	hitsInLayer.push_back( whit );	
@@ -72,7 +72,7 @@ std::vector<CSCWireHit> CSCHitFromWireOnly::runWire( const CSCDetId& id, const C
       }
     }
     // Don't forget to fill last wire hit !!!
-    if ( it - rwired.first == 1) {           
+    if ( rwired.second - it == 1) {           
       float whit_pos = findWireHitPosition();
       CSCWireHit whit(id, whit_pos, theTime);
       hitsInLayer.push_back( whit );
@@ -97,14 +97,18 @@ void CSCHitFromWireOnly::makeWireCluster(const CSCWireDigi & digi) {
  *
  */
 bool CSCHitFromWireOnly::addToCluster(const CSCWireDigi & digi) {
-  bool value = false;
+
   int iwg = digi.getWireGroup();
+
+  if ( iwg == theLastChannel ) return true;  // Same wire group but different tbin -> ignore
+
   if ( (iwg == theLastChannel+1) && (abs(digi.getTimeBin()-theTime)<= deltaT) ) {
-    value = true;
     theLastChannel = iwg;
     wire_cluster.push_back( digi );
+    return true;
   }
-  return value;
+
+  return false;
 }
 
 
