@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrea Rizzi
 //         Created:  Wed Apr 12 11:12:49 CEST 2006
-// $Id: JetTracksAssociator.cc,v 1.8 2006/08/08 14:50:43 tboccali Exp $
+// $Id: JetTracksAssociator.cc,v 1.9 2006/10/27 01:35:36 wmtan Exp $
 //
 //
 
@@ -30,13 +30,13 @@ using namespace std;
 #include "FWCore/Framework/interface/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
-
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "FWCore/ParameterSet/interface/InputTag.h"
+
 #include "DataFormats/Common/interface/Ref.h"
 #include "DataFormats/JetReco/interface/Jet.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/BTauReco/interface/JetTracksAssociation.h"
-
 #include "DataFormats/Math/interface/Vector3D.h"
 
 // Math
@@ -62,8 +62,8 @@ class JetTracksAssociator : public edm::EDProducer {
      bool trackIsInJetCone( const Jet & jet , const Track & track ) const;
 
      // ----------member data ---------------------------
-     string m_tracksSrc;
-     string m_jetsSrc;
+     edm::InputTag m_tracksSrc;
+     edm::InputTag m_jetsSrc;
      double m_deltaRCut;
 };
 
@@ -81,8 +81,8 @@ class JetTracksAssociator : public edm::EDProducer {
 JetTracksAssociator::JetTracksAssociator(const edm::ParameterSet& iConfig)
 {
   produces<reco::JetTracksAssociationCollection>();
-  m_tracksSrc = iConfig.getParameter<string>("tracks");
-  m_jetsSrc   = iConfig.getParameter<string>("jets");
+  m_tracksSrc = iConfig.getParameter<edm::InputTag>("tracks");
+  m_jetsSrc   = iConfig.getParameter<edm::InputTag>("jets");
   m_deltaRCut = iConfig.getParameter<double>("coneSize");
 }
 
