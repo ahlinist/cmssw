@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrea Rizzi
 //         Created:  Wed Apr 12 11:12:49 CEST 2006
-// $Id: AssociationAnalyzer.cc,v 1.3 2006/08/28 10:35:07 argiro Exp $
+// $Id: AssociationAnalyzer.cc,v 1.4 2006/10/26 23:35:50 wmtan Exp $
 //
 //
 
@@ -29,8 +29,9 @@ using namespace std;
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
-
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "FWCore/ParameterSet/interface/InputTag.h"
+
 #include "DataFormats/Common/interface/Ref.h"
 #include "DataFormats/JetReco/interface/Jet.h"
 #include "DataFormats/JetReco/interface/CaloJet.h"
@@ -57,8 +58,8 @@ class AssociationAnalyzer : public edm::EDAnalyzer {
       virtual void analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup);
 
    private:
-     string m_assoc;
-     string m_jets;
+     edm::InputTag m_assoc;
+     edm::InputTag m_jets;
 };
 
 //
@@ -66,8 +67,8 @@ class AssociationAnalyzer : public edm::EDAnalyzer {
 //
 AssociationAnalyzer::AssociationAnalyzer(const edm::ParameterSet& iConfig)
 {
-  m_jets  = iConfig.getParameter<string>("jets");
-  m_assoc = iConfig.getParameter<string>("association");
+  m_jets  = iConfig.getParameter<edm::InputTag>("jets");
+  m_assoc = iConfig.getParameter<edm::InputTag>("association");
 }
 
 void
