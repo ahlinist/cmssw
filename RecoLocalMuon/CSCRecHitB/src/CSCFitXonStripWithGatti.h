@@ -40,7 +40,7 @@
  * D_i(t1,t1) = ( q_i,t1 - N_t1 gatti_i,t1(x) )^2                                             <br>
  */
 
-#include <DataFormats/CSCRecHit/interface/CSCStripHit.h>
+#include <RecoLocalMuon/CSCRecHitB/interface/CSCStripHit.h>
 #include <FWCore/ParameterSet/interface/ParameterSet.h>
 
 #include <map>  

@@ -2,10 +2,8 @@
 
 #include <RecoLocalMuon/CSCRecHitB/src/CSCFitXonStripWithGatti.h>
 #include <RecoLocalMuon/CSCRecHitB/src/CSCFindPeakTime.h>
-
-#include <RecoLocalMuon/CSCRecHit/src/probab.h>
-
-#include <DataFormats/CSCRecHit/interface/CSCStripHit.h>
+#include <RecoLocalMuon/CSCRecHitB/src/probab.h>
+#include <RecoLocalMuon/CSCRecHitB/interface/CSCStripHit.h>
 
 #include <Geometry/CSCGeometry/interface/CSCLayer.h>
 #include <Geometry/CSCGeometry/interface/CSCChamberSpecs.h>

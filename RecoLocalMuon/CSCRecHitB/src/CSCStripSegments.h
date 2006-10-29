@@ -16,8 +16,9 @@
  *
  */
 
-#include <DataFormats/CSCRecHit/interface/CSCStripHitCollection.h>
-#include <DataFormats/CSCRecHit/interface/CSCStripHit.h>
+#include <RecoLocalMuon/CSCRecHitB/interface/CSCStripHitCollection.h>
+#include <RecoLocalMuon/CSCRecHitB/interface/CSCStripHit.h>
+
 #include <FWCore/ParameterSet/interface/ParameterSet.h>
 
 #include <map>  

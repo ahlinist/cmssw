@@ -20,8 +20,8 @@
  */
 #include <RecoLocalMuon/CSCRecHitB/src/CSCStripData.h>
 #include <RecoLocalMuon/CSCRecHitB/src/CSCStripHitData.h>
+#include <RecoLocalMuon/CSCRecHitB/interface/CSCStripHit.h>
 
-#include <DataFormats/CSCRecHit/interface/CSCStripHit.h>
 #include <DataFormats/CSCDigi/interface/CSCStripDigiCollection.h>
 
 #include <FWCore/Framework/interface/Frameworkfwd.h>

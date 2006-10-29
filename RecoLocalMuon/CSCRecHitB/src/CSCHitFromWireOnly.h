@@ -17,8 +17,10 @@
  *
  */
 
-#include <DataFormats/CSCRecHit/interface/CSCWireHit.h>
+#include <RecoLocalMuon/CSCRecHitB/interface/CSCWireHit.h>
+
 #include <DataFormats/CSCDigi/interface/CSCWireDigiCollection.h>
+
 #include <FWCore/Framework/interface/Frameworkfwd.h>
 #include <FWCore/ParameterSet/interface/ParameterSet.h>
 
@@ -27,7 +29,6 @@
 class CSCLayer;
 class CSCLayerGeometry;
 class CSCDetId;
-
 
 class CSCHitFromWireOnly 
 {

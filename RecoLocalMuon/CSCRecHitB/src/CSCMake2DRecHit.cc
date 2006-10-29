@@ -5,22 +5,22 @@
 #include <RecoLocalMuon/CSCRecHitB/src/CSCStripNoiseMatrix.h>
 #include <RecoLocalMuon/CSCRecHitB/src/CSCFitXonStripWithGatti.h>
 #include <RecoLocalMuon/CSCRecHitB/src/probab.h>
+#include <RecoLocalMuon/CSCRecHitB/interface/CSCStripHit.h>
+#include <RecoLocalMuon/CSCRecHitB/interface/CSCWireHit.h>
 
-#include <DataFormats/MuonDetId/interface/CSCDetId.h>
-#include <DataFormats/CSCRecHit/interface/CSCStripHit.h>
-#include <DataFormats/CSCRecHit/interface/CSCWireHit.h>
 #include <DataFormats/CSCRecHit/interface/CSCRecHit2D.h>
+#include <DataFormats/MuonDetId/interface/CSCDetId.h>
 
 #include <Geometry/CSCGeometry/interface/CSCLayer.h>
 #include <Geometry/CSCGeometry/interface/CSCChamberSpecs.h>
 #include <Geometry/CSCGeometry/interface/CSCLayerGeometry.h>
 
-#include "CondFormats/CSCObjects/interface/CSCGains.h"
-#include "CondFormats/DataRecord/interface/CSCGainsRcd.h"
-#include "CondFormats/CSCObjects/interface/CSCcrosstalk.h"
-#include "CondFormats/DataRecord/interface/CSCcrosstalkRcd.h"
-#include "CondFormats/CSCObjects/interface/CSCNoiseMatrix.h"
-#include "CondFormats/DataRecord/interface/CSCNoiseMatrixRcd.h"
+#include <CondFormats/CSCObjects/interface/CSCGains.h>
+#include <CondFormats/DataRecord/interface/CSCGainsRcd.h>
+#include <CondFormats/CSCObjects/interface/CSCcrosstalk.h>
+#include <CondFormats/DataRecord/interface/CSCcrosstalkRcd.h>
+#include <CondFormats/CSCObjects/interface/CSCNoiseMatrix.h>
+#include <CondFormats/DataRecord/interface/CSCNoiseMatrixRcd.h>
 
 #include <Geometry/Vector/interface/LocalPoint.h>
 

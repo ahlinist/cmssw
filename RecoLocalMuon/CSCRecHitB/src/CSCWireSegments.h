@@ -17,10 +17,10 @@
  *
  */
 
-#include <DataFormats/CSCRecHit/interface/CSCWireHitCollection.h>
-#include <DataFormats/CSCRecHit/interface/CSCWireHit.h>
-#include <FWCore/ParameterSet/interface/ParameterSet.h>
+#include <RecoLocalMuon/CSCRecHitB/interface/CSCWireHitCollection.h>
+#include <RecoLocalMuon/CSCRecHitB/interface/CSCWireHit.h>
 
+#include <FWCore/ParameterSet/interface/ParameterSet.h>
 
 #include <deque>
 #include <map>  

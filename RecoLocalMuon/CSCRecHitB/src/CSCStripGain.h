@@ -11,9 +11,8 @@
  * \author Dominique Fortin - UCR
  */
 
-#include "CondFormats/CSCObjects/interface/CSCGains.h"
-#include "CondFormats/DataRecord/interface/CSCGainsRcd.h"
-
+#include <CondFormats/CSCObjects/interface/CSCGains.h>
+#include <CondFormats/DataRecord/interface/CSCGainsRcd.h>
 #include <CondFormats/CSCObjects/interface/CSCReadoutMappingFromFile.h>
 #include <CondFormats/CSCObjects/interface/CSCReadoutMappingForSliceTest.h>
 

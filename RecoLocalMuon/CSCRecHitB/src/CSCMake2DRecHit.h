@@ -10,12 +10,14 @@
  *
  */
 
-#include <DataFormats/CSCRecHit/interface/CSCWireHit.h>
-#include <DataFormats/CSCRecHit/interface/CSCStripHit.h>
-#include <DataFormats/CSCRecHit/interface/CSCRecHit2D.h>
-#include <Geometry/Vector/interface/LocalPoint.h>
-#include <FWCore/ParameterSet/interface/ParameterSet.h>
+#include <RecoLocalMuon/CSCRecHitB/interface/CSCWireHit.h>
+#include <RecoLocalMuon/CSCRecHitB/interface/CSCStripHit.h>
 
+#include <DataFormats/CSCRecHit/interface/CSCRecHit2D.h>
+
+#include <Geometry/Vector/interface/LocalPoint.h>
+
+#include <FWCore/ParameterSet/interface/ParameterSet.h>
 
 class CSCDetId;
 class CSCLayer;
