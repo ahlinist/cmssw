@@ -8,11 +8,11 @@
  */
 
 #include <RecoLocalMuon/CSCRecHitB/src/CSCHitFromWireOnly.h>
+#include <RecoLocalMuon/CSCRecHitB/interface/CSCWireHit.h>
 
 #include <Geometry/CSCGeometry/interface/CSCLayer.h>
 #include <Geometry/CSCGeometry/interface/CSCLayerGeometry.h>
 
-#include <DataFormats/CSCRecHit/interface/CSCWireHit.h>
 #include <DataFormats/CSCDigi/interface/CSCWireDigi.h>
 
 #include <FWCore/MessageLogger/interface/MessageLogger.h>

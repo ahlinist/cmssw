@@ -1,14 +1,14 @@
 // Read in strip digi collection and apply calibrations to ADC counts
 
-#include "RecoLocalMuon/CSCRecHitB/src/CSCStripCrosstalk.h"
+#include <RecoLocalMuon/CSCRecHitB/src/CSCStripCrosstalk.h>
 
 #include <FWCore/Utilities/interface/Exception.h>
 #include <FWCore/MessageLogger/interface/MessageLogger.h>
 
 #include <DataFormats/MuonDetId/interface/CSCDetId.h>
 
-#include "CondFormats/CSCObjects/interface/CSCcrosstalk.h"
-#include "CondFormats/DataRecord/interface/CSCcrosstalkRcd.h"
+#include <CondFormats/CSCObjects/interface/CSCcrosstalk.h>
+#include <CondFormats/DataRecord/interface/CSCcrosstalkRcd.h>
 
 #include <CondFormats/CSCObjects/interface/CSCReadoutMappingFromFile.h>
 #include <CondFormats/CSCObjects/interface/CSCReadoutMappingForSliceTest.h>

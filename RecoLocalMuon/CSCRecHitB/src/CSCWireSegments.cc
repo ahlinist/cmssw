@@ -5,9 +5,9 @@
  */
 
 #include <RecoLocalMuon/CSCRecHitB/src/CSCWireSegments.h>
+#include <RecoLocalMuon/CSCRecHitB/interface/CSCWireHitCollection.h>
+#include <RecoLocalMuon/CSCRecHitB/interface/CSCWireHit.h>
 
-#include <DataFormats/CSCRecHit/interface/CSCWireHitCollection.h>
-#include <DataFormats/CSCRecHit/interface/CSCWireHit.h>
 #include <DataFormats/CSCRecHit/interface/CSCRangeMapAccessor.h>
 #include <DataFormats/MuonDetId/interface/CSCDetId.h>
 

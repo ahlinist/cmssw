@@ -1,24 +1,21 @@
 // Read in strip digi collection and apply calibrations to ADC counts
 
-#include "RecoLocalMuon/CSCRecHitB/src/CSCStripNoiseMatrix.h"
+#include <RecoLocalMuon/CSCRecHitB/src/CSCStripNoiseMatrix.h>
 
 #include <FWCore/Utilities/interface/Exception.h>
 #include <FWCore/MessageLogger/interface/MessageLogger.h>
 
 #include <DataFormats/MuonDetId/interface/CSCDetId.h>
 
-#include "CondFormats/CSCObjects/interface/CSCNoiseMatrix.h"
-#include "CondFormats/DataRecord/interface/CSCNoiseMatrixRcd.h"
-
-#include "CondFormats/CSCObjects/interface/CSCGains.h"
-#include "CondFormats/DataRecord/interface/CSCGainsRcd.h"
-
+#include <CondFormats/CSCObjects/interface/CSCNoiseMatrix.h>
+#include <CondFormats/DataRecord/interface/CSCNoiseMatrixRcd.h>
+#include <CondFormats/CSCObjects/interface/CSCGains.h>
+#include <CondFormats/DataRecord/interface/CSCGainsRcd.h>
 #include <CondFormats/CSCObjects/interface/CSCReadoutMappingFromFile.h>
 #include <CondFormats/CSCObjects/interface/CSCReadoutMappingForSliceTest.h>
 
 #include <map>
 #include <vector>
-
 
 CSCStripNoiseMatrix::CSCStripNoiseMatrix( const edm::ParameterSet & ps ) {
 

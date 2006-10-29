@@ -5,9 +5,9 @@
  */
 
 #include <RecoLocalMuon/CSCRecHitB/src/CSCStripSegments.h>
+#include <RecoLocalMuon/CSCRecHitB/interface/CSCStripHit.h>
+#include <RecoLocalMuon/CSCRecHitB/interface/CSCStripHitCollection.h>
 
-#include <DataFormats/CSCRecHit/interface/CSCStripHitCollection.h>
-#include <DataFormats/CSCRecHit/interface/CSCStripHit.h>
 #include <DataFormats/CSCRecHit/interface/CSCRangeMapAccessor.h>
 #include <DataFormats/MuonDetId/interface/CSCDetId.h>
 
@@ -20,7 +20,6 @@
   
 #include <vector>
 #include <iostream>
-
 
 CSCStripSegments::CSCStripSegments(const edm::ParameterSet& ps) : geom_(0) {
   

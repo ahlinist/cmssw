@@ -4,8 +4,7 @@ module csc2DRecHits = CSCRecHitBProducer {
 
      untracked bool CSCIsRunningOnData           = true
      untracked bool CSCDebug                     = false
-     # Mapping file for MTCC CSC chambers
-     FileInPath theMappingFile = "RecoLocalMuon/CSCRecHitB/data/csc_slice_test_map.txt"
+     FileInPath theMappingFile                   = "CondFormats/CSCObjects/data/csc_slice_test_map.txt"
      string CSCStripDigiProducer                 = "cscunpacker"
      string CSCWireDigiProducer                  = "cscunpacker"
      untracked bool CSCproduce1DHits             = false
@@ -43,5 +42,5 @@ module csc2DRecHits = CSCRecHitBProducer {
      untracked int32  CSCSegmentPerChamberMax    = 3
 
 # parameter for rechit building
-     untracked int32  CSCstripWireDeltaTime      = 1
+     untracked int32  CSCstripWireDeltaTime      = 8
  }

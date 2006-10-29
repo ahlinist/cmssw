@@ -5,22 +5,18 @@
 #include <RecoLocalMuon/CSCRecHitB/src/CSCStripGain.h>
 #include <RecoLocalMuon/CSCRecHitB/src/CSCStripData.h>
 #include <RecoLocalMuon/CSCRecHitB/src/CSCStripHitData.h>
+#include <RecoLocalMuon/CSCRecHitB/interface/CSCStripHit.h>
+#include <RecoLocalMuon/CSCRecHitB/interface/CSCStripHitCollection.h>
 
 #include <DataFormats/MuonDetId/interface/CSCDetId.h>
 #include <DataFormats/CSCDigi/interface/CSCStripDigi.h>
-#include <DataFormats/CSCRecHit/interface/CSCStripHit.h>
-#include <DataFormats/CSCRecHit/interface/CSCStripHitCollection.h>
 
 #include <Geometry/CSCGeometry/interface/CSCLayer.h>
 #include <Geometry/CSCGeometry/interface/CSCChamberSpecs.h>
 #include <Geometry/CSCGeometry/interface/CSCLayerGeometry.h>
 
-#include "CondFormats/CSCObjects/interface/CSCGains.h"
-#include "CondFormats/DataRecord/interface/CSCGainsRcd.h"
-//#include "CondFormats/CSCObjects/interface/CSCcrosstalk.h"
-//#include "CondFormats/DataRecord/interface/CSCcrosstalkRcd.h"
-//#include "CondFormats/CSCObjects/interface/CSCNoiseMatrix.h"
-//#include "CondFormats/DataRecord/interface/CSCNoiseMatrixRcd.h"
+#include <CondFormats/CSCObjects/interface/CSCGains.h>
+#include <CondFormats/DataRecord/interface/CSCGainsRcd.h>
 
 #include <FWCore/MessageLogger/interface/MessageLogger.h>
 #include <FWCore/Utilities/interface/Exception.h>

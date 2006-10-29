@@ -8,9 +8,8 @@
  * \author Dominique Fortin - UCR
  */
 
-#include "CondFormats/CSCObjects/interface/CSCcrosstalk.h"
-#include "CondFormats/DataRecord/interface/CSCcrosstalkRcd.h"
-
+#include <CondFormats/CSCObjects/interface/CSCcrosstalk.h>
+#include <CondFormats/DataRecord/interface/CSCcrosstalkRcd.h>
 #include <CondFormats/CSCObjects/interface/CSCReadoutMappingFromFile.h>
 #include <CondFormats/CSCObjects/interface/CSCReadoutMappingForSliceTest.h>
 
@@ -18,7 +17,6 @@
 
 #include <vector>
 #include <string>
-
 
 class CSCStripCrosstalk
 {
