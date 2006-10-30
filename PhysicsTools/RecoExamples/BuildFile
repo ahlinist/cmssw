@@ -1,5 +1,6 @@
 <flags SEAL_PLUGIN_NAME="PhysicsToolsRecoExamples">
-<use name=SimDataFormats/HepMCProduct><
+<use name=SimGeneral/HepPDTRecord>
+<use name=SimDataFormats/HepMCProduct>
 <use name=PhysicsTools/RecoAlgos>
 <use name=TrackingTools/GeomPropagators>
 <use name=TrackingTools/TrajectoryState>
@@ -21,6 +22,7 @@
 <use name=root>
 <export>
   <lib name=PhysicsToolsRecoExamples>
+  <use name=SimGeneral/HepPDTRecord>
   <use name=SimDataFormats/HepMCProduct>
   <use name=PhysicsTools/RecoAlgos>
   <use name=TrackingTools/GeomPropagators>
