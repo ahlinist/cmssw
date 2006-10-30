@@ -23,7 +23,7 @@
  </LogicalPart>
  <LogicalPart name="TOBHybrid0" category="unspecified">
   <rSolid name="tobmodpar:TOBHybrid"/>
-  <rMaterial name="tobmaterial:TOB_ele5"/>
+  <rMaterial name="tobmaterial:TOB_ele12"/>
  </LogicalPart>
  <LogicalPart name="TOBModCool01" category="unspecified">
   <rSolid name="TOBModCool01"/>
