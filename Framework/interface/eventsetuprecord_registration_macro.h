@@ -35,11 +35,13 @@ macro EVENTSETUP_RECORD_REG is used to create that code.
 
 #include "FWCore/Framework/interface/EventSetupRecordProviderFactoryTemplate.h"
 
+#include "FWCore/Utilities/interface/GCCPrerequisite.h"
+
 #define EVENTSETUP_RECORD_NAME2(_a_, _b_) EVENTSETUP_RECORD_NAME2_HIDDEN(_a_,_b_)
 #define EVENTSETUP_RECORD_NAME2_HIDDEN(_a_,_b_) _a_ ## _b_
 
 
-#if __GNUC_PREREQ (3,4)
+#if GCC_PREREQUISITE(3,4,4)
 
 #define EVENTSETUP_RECORD_REG(_recordclassname_) \
 template<> const char* \

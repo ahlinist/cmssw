@@ -28,6 +28,8 @@
 #include "FWCore/ServiceRegistry/interface/ServicesManager.h"
 #include "FWCore/ServiceRegistry/interface/ServicePluginFactory.h"
 
+#include "FWCore/Utilities/interface/GCCPrerequisite.h"
+
 // forward declarations
 
 namespace edm {
@@ -108,7 +110,7 @@ private:
 }
 
 
-#if __GNUC_PREREQ (3,4)
+#if GCC_PREREQUISITE(3,4,4)
 
 #define DEFINE_FWK_SERVICE(type) \
 DEFINE_SEAL_MODULE (); \

@@ -83,9 +83,11 @@ $Id$
 #include "FWCore/Framework/interface/DataViewImpl.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 
+#include "FWCore/Utilities/interface/GCCPrerequisite.h"
+
 namespace edm {
 
-#if __GNUC_PREREQ (3,4)
+#if GCC_PREREQUISITE(3,4,4)
   class Event : private DataViewImpl
 #else
   // Bug in gcc3.2.3 compiler forces public inheritance

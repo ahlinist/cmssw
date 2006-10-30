@@ -26,6 +26,9 @@
 // user include files
 #include "FWCore/Framework/interface/ComponentFactory.h"
 #include "FWCore/Framework/interface/EventSetupProvider.h"
+
+#include "FWCore/Utilities/interface/GCCPrerequisite.h"
+
 // forward declarations
 
 namespace edm {
@@ -80,7 +83,7 @@ namespace edm {
    }
 }
 
-#if __GNUC_PREREQ (3,4)
+#if GCC_PREREQUISITE(3,4,4)
 
 #define DEFINE_FWK_LOOPER(type) \
 DEFINE_SEAL_MODULE (); \

@@ -26,6 +26,8 @@
 // user include files
 #include "FWCore/Framework/interface/ComponentFactory.h"
 
+#include "FWCore/Utilities/interface/GCCPrerequisite.h"
+
 // forward declarations
 namespace edm {
    namespace eventsetup {
@@ -44,7 +46,7 @@ namespace edm {
    }
 }
 
-#if __GNUC_PREREQ (3,4)
+#if GCC_PREREQUISITE(3,4,4)
 
 #define DEFINE_FWK_EVENTSETUP_MODULE(type) \
 DEFINE_SEAL_MODULE (); \
