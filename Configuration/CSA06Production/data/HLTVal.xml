@@ -1,0 +1,80 @@
+<?xml version="1.0" ?>
+<ReleaseValidation>
+          <Validate Version="QCD-HLT">
+                <Test Events="1000" Name="HLTVal_QCD_pt_15_20">
+                        QCD_pt_15_20_sim_digi_OnSel.cfg
+                </Test>
+		<Test Events="1000" Name="HLTVal_QCD_pt_20_30">
+			QCD_pt_20_30_sim_digi_OnSel.cfg
+		</Test>
+		<Test Events="1000" Name="HLTVal_QCD_pt_30_50">
+			QCD_pt_30_50_sim_digi_OnSel.cfg
+		</Test>
+		<Test Events="1000" Name="HLTVal_QCD_pt_50_80">
+			QCD_pt_50_80_sim_digi_OnSel.cfg
+		</Test>
+		<Test Events="1000" Name="HLTVal_QCD_pt_80_120">
+			QCD_pt_80_120_sim_digi_OnSel.cfg
+		</Test>
+		<Test Events="1000" Name="HLTVal_QCD_pt_120_170">
+			QCD_pt_120_170_sim_digi_OnSel.cfg
+		</Test>
+		<Test Events="1000" Name="HLTVal_QCD_pt_170_230">
+			QCD_pt_170_230_sim_digi_OnSel.cfg
+		</Test>
+		<Test Events="1000" Name="HLTVal_QCD_pt_230_300">
+			QCD_pt_230_300_sim_digi_OnSel.cfg
+		</Test>
+		<Test Events="1000" Name="HLTVal_QCD_pt_300_380">
+			QCD_pt_300_380_sim_digi_OnSel.cfg
+		</Test>
+		<Test Events="1000" Name="HLTVal_QCD_pt_380_470">
+			QCD_pt_380_470_sim_digi_OnSel.cfg
+		</Test>
+		<Test Events="1000" Name="HLTVal_QCD_pt_470_600">
+			QCD_pt_470_600_sim_digi_OnSel.cfg
+		</Test>
+		<Test Events="1000" Name="HLTVal_QCD_pt_600_800">
+			QCD_pt_600_800_sim_digi_OnSel.cfg
+		</Test>
+		<Test Events="1000" Name="HLTVal_QCD_pt_800_1000">
+			QCD_pt_800_1000_sim_digi_OnSel.cfg
+		</Test>
+	</Validate>
+        <Validate Version="Minbias-HLT">
+                <Test Events="1000" Name="HLTVal_Minbias">
+                        Minbias_OnSel.cfg
+                </Test>
+        </Validate>
+        <Validate Version="Wenu-HLT">
+                <Test Events="1000" FractionSelected="0.62" Name="HLTVal_Wenu">
+                        Wenu_OnSel.cfg
+                </Test>
+        </Validate>
+        <Validate Version="Wmunu-HLT">
+                <Test Events="1000" FractionSelected="0.62" Name="HLTVal_Wmunu">
+                        Wmunu_OnSel.cfg
+                </Test>
+        </Validate>
+        <Validate Version="Zmumu-HLT">
+                <Test Events="1000" FractionSelected="0.45" Name="HLTVal_Zmumu">
+                        Zmumu_OnSel.cfg
+                </Test>
+        </Validate>
+        <Validate Version="Zee-HLT">
+                <Test Events="1000" FractionSelected="0.50" Name="HLTVal_Zee">
+                        Zee_OnSel.cfg
+                </Test>
+        </Validate>
+        <Validate Version="PhysSamples-HLT">
+                <Test Events="1000" Name="HLTVal_H2tau_M200">
+                        bbHto2tau_mA200_tb20_OnSel.cfg
+                </Test>
+                <Test Events="1000" Name="HLTVal_H2tau_M500">
+                        bbHto2tau_mA500_tb20_OnSel.cfg
+                </Test>
+                <Test Events="1000" Name="HLTVal_H2tau_M800">
+                        bbHto2tau_mA800_tb20_OnSel.cfg
+                </Test>
+        </Validate>
+</ReleaseValidation>
