@@ -12,7 +12,7 @@
  </LogicalPart>
  <LogicalPart name="TOBHybrid4" category="unspecified">
   <rSolid name="tobmodpar:TOBHybrid"/>
-  <rMaterial name="tobmaterial:TOB_ele9"/>
+  <rMaterial name="tobmaterial:TOB_ele56"/>
  </LogicalPart>
  <LogicalPart name="TOBWaferRphi4" category="unspecified">
   <rSolid name="tobmodpar:TOBWaferRphi"/>

@@ -3,7 +3,7 @@
 
 <ConstantsSection label="tobmodpar.xml" eval="true">
  <Constant name="ModuleDx"   value="6.000*cm"/>
- <Constant name="ModuleDy"   value="0.240*cm"/>
+ <Constant name="ModuleDy"   value="0.440*cm"/>
  <Constant name="ModuleDz"   value="12.075*cm"/>
  <Constant name="HybridDx"   value="3.000*cm"/>
  <Constant name="HybridDy"   value="0.025*cm"/>
@@ -25,10 +25,10 @@
  <Constant name="SideRailY"  value="0.125*cm"/>
  <Constant name="SideRailZ"  value="1.575*cm"/>
  <Constant name="FrameDx"    value="6.000*cm"/>
- <Constant name="FrameDy"    value="0.030*cm"/>
- <Constant name="FrameDz"    value="2.350*cm"/>
- <Constant name="FrameY"     value="0.054*cm"/>
- <Constant name="FrameZ"     value="9.725*cm"/>
+ <Constant name="FrameDy"    value="0.03125*cm"/>
+ <Constant name="FrameDz"    value="2.250*cm"/>
+ <Constant name="FrameY"     value="0.05275*cm"/>
+ <Constant name="FrameZ"     value="9.825*cm"/>
  <Constant name="HybSupDx"   value="3.500*cm"/>
  <Constant name="HybSupDy"   value="0.030*cm"/>
  <Constant name="HybSupDz"   value="1.665*cm"/>
@@ -45,6 +45,17 @@
  <Constant name="ModCool2X"  value="5.250*cm"/>
  <Constant name="ModCool2Y"  value="0.100*cm"/>
  <Constant name="ModCool2Z"  value="10.325*cm"/>
+ <Constant name="ModCoolComp1Dx" value="0.800*cm"/>
+ <Constant name="ModCoolCompDy"  value="0.015*cm"/>
+ <Constant name="ModCoolComp1Dz" value="1.300*cm"/>
+ <Constant name="ModCoolComp1X"  value="5.200*cm"/>
+ <Constant name="ModCoolComp1Y"  value="0.039*cm"/>
+ <Constant name="ModCoolComp1Z"  value="2.125*cm"/>
+ <Constant name="ModCoolComp2Dx" value="0.800*cm"/>
+ <Constant name="ModCoolComp2Dz" value="1.300*cm"/>
+ <Constant name="ModCoolComp2X"  value="5.200*cm"/>
+ <Constant name="ModCoolComp2Y"  value="0.130*cm"/>
+ <Constant name="ModCoolComp2Z"  value="10.325*cm"/>
  <Constant name="Tilt"       value="5.7296*deg"/>
  <Constant name="TiltX"      value="(90.0*deg-[Tilt])"/>
  <Constant name="WaferDx"    value="4.818*cm"/>
@@ -55,6 +66,13 @@
  <Constant name="ActiveDx"   value="4.6848*cm"/>
  <Constant name="ActiveDy"   value="9.3067*cm"/>
  <Constant name="InactiveDy" value="0.1553*cm"/>
+ <Constant name="GlueDx"     value="4.6848*cm"/>
+ <Constant name="GlueDy"     value="0.275*cm"/>
+ <Constant name="GlueDz"     value="0.1*cm"/>
+ <Constant name="GlueSi1Y"   value="0.340*cm"/>
+ <Constant name="GlueSi2Y"   value="-0.076*cm"/>
+ <Constant name="GluePAY"    value="0.340*cm"/>
+ <Constant name="GluePAZ"    value="7.435*cm"/>
  <Constant name="PAX"        value="[WaferDy]*sin([Tilt])"/>
 </ConstantsSection>
 
@@ -72,6 +90,7 @@
                           tl1="[PA2Dz1]" h1="[PADy]"    alp2="0*deg" 
                           bl2="[PA2Dz2]" tl2="[PA2Dz2]" h2="[PADy]" 
 			  phi="0*deg"    theta="[PA2Theta]" />
+ <Box name="TOBEncapsulant" dx="[GlueDx]"    dy="[GlueDy]"    dz="[GlueDz]"/>
  <Box name="TOBSideRailL" dx="[SideRailDx]" 
                           dy="[SideRailDy]" dz="[SideRailDz]"/>
  <Box name="TOBSideRailR" dx="[SideRailDx]" 
@@ -84,6 +103,10 @@
                           dy="[ModCoolDy]"  dz="[ModCool1Dz]"/>
  <Box name="TOBModCool2"  dx="[ModCool2Dx]" 
                           dy="[ModCoolDy]"  dz="[ModCool2Dz]"/>
+ <Box name="TOBModCoolComp1"  dx="[ModCoolComp1Dx]" 
+                          dy="[ModCoolCompDy]"  dz="[ModCoolComp1Dz]"/>
+ <Box name="TOBModCoolComp2"  dx="[ModCoolComp2Dx]" 
+                          dy="[ModCoolCompDy]"  dz="[ModCoolComp2Dz]"/>
  <Box name="TOBInactive"  dx="[ActiveDx]" 
                           dy="[InactiveDy]" dz="[WaferDz]"/>
 </SolidSection>
@@ -96,6 +119,10 @@
  <LogicalPart name="TOBPA2" category="unspecified">
   <rSolid name="TOBPA2"/>
   <rMaterial name="tobmaterial:TOB_PA_ster"/>
+ </LogicalPart>
+ <LogicalPart name="TOBPAEncaps" category="unspecified">
+  <rSolid name="TOBEncapsulant"/>
+  <rMaterial name="tobmaterial:TOB_Sens_Interface"/>
  </LogicalPart>
  <LogicalPart name="TOBSideRailL" category="unspecified">
   <rSolid name="TOBSideRailL"/>
@@ -121,9 +148,25 @@
   <rSolid name="TOBModCool2"/>
   <rMaterial name="tobmaterial:TOB_mod_cool_3"/>
  </LogicalPart>
+ <LogicalPart name="TOBModCoolComp1" category="unspecified">
+  <rSolid name="TOBModCoolComp1"/>
+  <rMaterial name="tobmaterial:TOB_mod_comp"/>
+ </LogicalPart>
+ <LogicalPart name="TOBModCoolComp2" category="unspecified">
+  <rSolid name="TOBModCoolComp2"/>
+  <rMaterial name="materials:Carbon fibre str."/>
+ </LogicalPart>
  <LogicalPart name="TOBInactive" category="unspecified">
   <rSolid name="TOBInactive"/>
   <rMaterial name="materials:Silicon"/>
+ </LogicalPart>
+ <LogicalPart name="TOBSiEncaps" category="unspecified">
+  <rSolid name="TOBEncapsulant"/>
+  <rMaterial name="tobmaterial:TOB_Sens_Interface"/>
+ </LogicalPart>
+ <LogicalPart name="TOBSiBackEncaps" category="unspecified">
+  <rSolid name="TOBEncapsulant"/>
+  <rMaterial name="materials:Silicone_Gel"/>
  </LogicalPart>
 </LogicalPartSection>
 
