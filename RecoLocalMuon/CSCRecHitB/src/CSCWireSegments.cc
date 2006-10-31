@@ -123,7 +123,7 @@ void CSCWireSegments::findWireSegments(const ChamberHitContainer& wirehit) {
   ChamberHitContainerCIt ie = wirehit.end();
   
   // Initialize flags that a given hit has been allocated to a segment
-  for ( unsigned i = 0; i < 100; i++ ) usedHits[i] = 2;
+  for ( unsigned i = 0; i < 200; i++ ) usedHits[i] = 2;
   for ( unsigned i = 0; i < wirehit.size(); i++ ) usedHits[i] = 0; 
   
   if ( (ie - ib) < minWireHitsPerSegment) { 
