@@ -163,6 +163,17 @@ void FURawEventFactory::postEndRunMaybe()
   
 }
 
+void FURawEventFactory::resetFreeRes()
+{
+  while(!freeRes_.empty())
+    freeRes_.pop();
+
+  for(int i = 0; i < maxHandles; i++)
+    {
+      freeRes_.push(i);
+    }
+}
+
 FUAdapter *FURawEventFactory::adapter_ = 0;
 
 int FURawEventFactory::maxHandles=128;
