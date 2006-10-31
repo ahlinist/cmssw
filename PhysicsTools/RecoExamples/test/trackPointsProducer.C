@@ -27,9 +27,9 @@ Events.Project( "deltaPhi", "outer.phi() - inner.phi()", "fabs(outer.eta())<1" )
 deltaPhi.Draw();
 canv.SaveAs( "deltaPhi.eps" );
 
-TH2F deltaPhiVsDeltaR( "deltaPhiVsDeltaR", "#Delta #phi vs pt", 70, 0, 20, 40, -1.5, 1.5 );
-Events.Project( "deltaPhiVsDeltaR", "outer.phi()-inner.phi():ctfWithMaterialTracks.pt()", "fabs(outer.eta())<1" );
-deltaPhiVsDeltaR.Draw( "box" );
+TH2F deltaPhiVsPt( "deltaPhiVsPt", "#Delta #phi vs pt", 70, 0, 20, 40, -1.5, 1.5 );
+Events.Project( "deltaPhiVsPt", "outer.phi()-inner.phi():ctfWithMaterialTracks.pt()", "fabs(outer.eta())<1" );
+deltaPhiVsPt.Draw( "box" );
 canv.SaveAs( "deltaPhiVsPt.eps" );
 
 }
