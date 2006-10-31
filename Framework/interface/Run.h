@@ -1,14 +1,14 @@
-#ifndef Framework_Event_h
-#define Framework_Event_h
+#ifndef Framework_Run_h
+#define Framework_Run_h
 
 // -*- C++ -*-
 //
 // Package:     Framework
-// Class  :     Event
+// Class  :     Run
 // 
-/**\class Event Event.h FWCore/Framework/interface/Event.h
+/**\class Run Run.h FWCore/Framework/interface/Run.h
 
-Description: This is the primary interface for accessing EDProducts from a single collision and inserting new derived products.
+Description: This is the primary interface for accessing per run EDProducts and inserting new derived products.
 
 For its usage, see "FWCore/Framework/interface/DataViewImpl.h"
 
@@ -19,8 +19,8 @@ $Id$
 
 ----------------------------------------------------------------------*/
 
-#include "DataFormats/Common/interface/EventAux.h"
-#include "DataFormats/Common/interface/EventID.h"
+#include "DataFormats/Common/interface/RunAux.h"
+#include "DataFormats/Common/interface/RunID.h"
 #include "DataFormats/Common/interface/Timestamp.h"
 
 #include "FWCore/Framework/interface/DataViewImpl.h"
@@ -31,18 +31,18 @@ $Id$
 namespace edm {
 
 #if GCC_PREREQUISITE(3,4,4)
-  class Event : private DataViewImpl
+  class Run : private DataViewImpl
 #else
   // Bug in gcc3.2.3 compiler forces public inheritance
-  class Event : public DataViewImpl
+  class Run : public DataViewImpl
 #endif
   {
   public:
-    Event(EventPrincipal& dbk, const ModuleDescription& md);
-    ~Event(){}
+    Run(RunPrincipal& dbk, const ModuleDescription& md);
+    ~Run(){}
 
     // AUX functions.
-    EventID id() const {return aux_.id();}
+    RunNumber_t id() const {return aux_.id();}
     Timestamp time() const {return aux_.time();}
 
     using DataViewImpl::get;
@@ -64,7 +64,7 @@ namespace edm {
     friend class FilterWorker;
     friend class ProducerWorker;
 
-    EventAux const& aux_;
+    RunAux const& aux_;
   };
 }
 #endif

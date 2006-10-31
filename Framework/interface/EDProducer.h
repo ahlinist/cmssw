@@ -19,13 +19,21 @@ namespace edm {
     typedef EDProducer ModuleType;
 
     EDProducer ();
-    void doProduce(Event& e, EventSetup const& c,
-		   CurrentProcessingContext const* cpcp);
-		   
     virtual ~EDProducer();
 
-    virtual void beginJob(EventSetup const&);
-    virtual void endJob();
+    void doProduce(Event& e, EventSetup const& c,
+		   CurrentProcessingContext const* cpcp);
+    void doBeginJob(EventSetup const&);
+    void doEndJob();
+    void doBeginRun(Run & r, EventSetup const& c,
+		   CurrentProcessingContext const* cpc);
+    void doEndRun(Run & r, EventSetup const& c,
+		   CurrentProcessingContext const* cpc);
+    void doBeginLuminosityBlock(LuminosityBlock & lb, EventSetup const& c,
+		   CurrentProcessingContext const* cpc);
+    void doEndLuminosityBlock(LuminosityBlock & lb, EventSetup const& c,
+		   CurrentProcessingContext const* cpc);
+
 
   protected:
     // The returned pointer will be null unless the this is currently
@@ -33,7 +41,13 @@ namespace edm {
     CurrentProcessingContext const* currentContext() const;
 
   private:
-    virtual void produce(Event& e, EventSetup const& c) = 0; 
+    virtual void produce(Event &, EventSetup const&){}
+    virtual void beginJob(EventSetup const&){}
+    virtual void endJob(){}
+    virtual void beginRun(Run &, EventSetup const&){}
+    virtual void endRun(Run &, EventSetup const&){}
+    virtual void beginLuminosityBlock(LuminosityBlock &, EventSetup const&){}
+    virtual void endLuminosityBlock(LuminosityBlock &, EventSetup const&){}
 
     CurrentProcessingContext const* current_context_;
   };

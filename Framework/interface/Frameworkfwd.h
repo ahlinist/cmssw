@@ -31,7 +31,7 @@ namespace edm {
   class Group;
   class InputSource;
   class InputSourceDescription;
-  class LuminositySection;
+  class LuminosityBlock;
   class ModuleDescription;
   class ModuleDescriptionSelector;
   class OutputModule;
@@ -62,5 +62,7 @@ namespace edm {
 #include "DataFormats/Common/interface/PassID.h"
 #include "DataFormats/Common/interface/ReleaseVersion.h"
 #include "FWCore/Framework/interface/EventPrincipalFwd.h"
+#include "FWCore/Framework/interface/LuminosityBlockPrincipalFwd.h"
+#include "FWCore/Framework/interface/RunPrincipalFwd.h"
 
 #endif

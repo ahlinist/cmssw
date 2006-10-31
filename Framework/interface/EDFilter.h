@@ -25,8 +25,17 @@ namespace edm {
     virtual ~EDFilter();
     bool doFilter(Event& e, EventSetup const& c,
 		  CurrentProcessingContext const* cpc);
-    void doBeginJob(EventSetup const&) ;
-    void doEndJob() ;
+    void doBeginJob(EventSetup const&);
+    void doEndJob();
+    bool doBeginRun(Run & r, EventSetup const& c,
+		   CurrentProcessingContext const* cpc);
+    bool doEndRun(Run & r, EventSetup const& c,
+		   CurrentProcessingContext const* cpc);
+    bool doBeginLuminosityBlock(LuminosityBlock & lb, EventSetup const& c,
+		   CurrentProcessingContext const* cpc);
+    bool doEndLuminosityBlock(LuminosityBlock & lb, EventSetup const& c,
+		   CurrentProcessingContext const* cpc);
+
 
   protected:
     // The returned pointer will be null unless the this is currently
@@ -34,9 +43,13 @@ namespace edm {
     CurrentProcessingContext const* currentContext() const;
 
   private:    
-    virtual bool filter(Event& e, EventSetup const& c) = 0;
-    virtual void beginJob(EventSetup const&) ;
-    virtual void endJob() ;
+    virtual bool filter(Event&, EventSetup const&){return true;}
+    virtual void beginJob(EventSetup const&){}
+    virtual void endJob(){}
+    virtual bool beginRun(Run &, EventSetup const&){return true;}
+    virtual bool endRun(Run &, EventSetup const&){return true;}
+    virtual bool beginLuminosityBlock(LuminosityBlock &, EventSetup const&){return true;}
+    virtual bool endLuminosityBlock(LuminosityBlock &, EventSetup const&){return true;}
 
     CurrentProcessingContext const* current_context_;
   };

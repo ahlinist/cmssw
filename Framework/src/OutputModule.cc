@@ -154,6 +154,54 @@ namespace edm
     return rc;
   }
 
+  void OutputModule::doBeginRun(RunPrincipal const& rp,
+                                ModuleDescription const& md,
+                                CurrentProcessingContext const* c)
+  {
+    detail::CPCSentry sentry(current_context_, c);
+    //Save the current Mod Desc
+    current_md_ = &md;
+
+    FDEBUG(2) << "beginRun called\n";
+    beginRun(rp);
+  }
+
+  void OutputModule::doEndRun(RunPrincipal const& rp,
+                                ModuleDescription const& md,
+                                CurrentProcessingContext const* c)
+  {
+    detail::CPCSentry sentry(current_context_, c);
+    //Save the current Mod Desc
+    current_md_ = &md;
+
+    FDEBUG(2) << "endRun called\n";
+    endRun(rp);
+  }
+
+  void OutputModule::doBeginLuminosityBlock(LuminosityBlockPrincipal const& lbp,
+                                ModuleDescription const& md,
+                                CurrentProcessingContext const* c)
+  {
+    detail::CPCSentry sentry(current_context_, c);
+    //Save the current Mod Desc
+    current_md_ = &md;
+
+    FDEBUG(2) << "beginLuminosityBlock called\n";
+    beginLuminosityBlock(lbp);
+  }
+
+  void OutputModule::doEndLuminosityBlock(LuminosityBlockPrincipal const& lbp,
+                                ModuleDescription const& md,
+                                CurrentProcessingContext const* c)
+  {
+    detail::CPCSentry sentry(current_context_, c);
+    //Save the current Mod Desc
+    current_md_ = &md;
+
+    FDEBUG(2) << "endLuminosityBlock called\n";
+    endLuminosityBlock(lbp);
+  }
+
   CurrentProcessingContext const*
   OutputModule::currentContext() const
   {

@@ -40,6 +40,14 @@ namespace edm {
     virtual void endJob();
     void writeEvent(EventPrincipal const& e, ModuleDescription const& d,
 		    CurrentProcessingContext const* c);
+    void doBeginRun(RunPrincipal const& e, ModuleDescription const& d,
+		    CurrentProcessingContext const* c);
+    void doEndRun(RunPrincipal const& e, ModuleDescription const& d,
+		    CurrentProcessingContext const* c);
+    void doBeginLuminosityBlock(LuminosityBlockPrincipal const& e, ModuleDescription const& d,
+		    CurrentProcessingContext const* c);
+    void doEndLuminosityBlock(LuminosityBlockPrincipal const& e, ModuleDescription const& d,
+		    CurrentProcessingContext const* c);
     bool selected(BranchDescription const& desc) const;
 
     unsigned long nextID() const;
@@ -92,6 +100,10 @@ namespace edm {
 
     virtual void write(EventPrincipal const& e) = 0;
     bool wantEvent(EventPrincipal const& e);
+    virtual void beginRun(RunPrincipal const& r){}
+    virtual void endRun(RunPrincipal const& r){}
+    virtual void beginLuminosityBlock(LuminosityBlockPrincipal const& lb){}
+    virtual void endLuminosityBlock(LuminosityBlockPrincipal const& lb){}
 
     std::string process_name_;
     GroupSelector groupSelector_;
