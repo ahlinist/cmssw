@@ -264,9 +264,17 @@ void FUAdapter::sendAllocate(unsigned long buInstance,
 {
   FURawEvent *ev = 0;
   vector<U32> context(nbEvents);
-  for(unsigned int i = 0; i<nbEvents; i++)
+  unsigned int i = 0;
+  for(i = 0; i<nbEvents; i++)
     {
       ev = factory_->getEvent(ifset, buInstance);
+      if(ev==0)
+	{
+	  LOG4CPLUS_ERROR(this->getApplicationLogger(),
+			  "sendAllocate, out of free resources after allocate # "
+			  << i);
+	  continue;
+	}
       context[i] = ev->transactionContext();
     }
   bSem_.take();
@@ -280,7 +288,6 @@ void FUAdapter::sendAllocate(unsigned long buInstance,
 	nAllocateSent_++;
 	pendingRequests_.value_ += nbEvents;
 	nAllocatedEvents_.value_ += nbEvents;
-
       }
       catch(xdaq::exception::Exception &e)
 	{
@@ -295,7 +302,6 @@ void FUAdapter::sendAllocate(unsigned long buInstance,
 		    << buInstance << " Not accessible ");
   LOG4CPLUS_DEBUG(this->getApplicationLogger(),
 		  "FUAdapter::allocate sent to BU #" << buInstance);
-    
   bSem_.give();
 }
 
