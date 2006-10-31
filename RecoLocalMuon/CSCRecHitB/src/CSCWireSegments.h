@@ -81,7 +81,7 @@ class CSCWireSegments
    */
   ChamberHitContainer proto_segment;
   ChamberHitContainer hitsInChamber;
-  int usedHits[100];
+  int usedHits[5120];
   float proto_Chi2;
   float proto_intercept;
   float proto_slope;
