@@ -7,6 +7,9 @@
 //
 //  Modification history:
 //    $Log: FilterUnitFramework.cc,v $
+//    Revision 1.19  2006/10/19 12:29:38  schiefer
+//    fix to crc error counter web display
+//
 //    Revision 1.18  2006/10/05 08:46:09  meschi
 //    fixes for reconfigure upon halt, implementation of flush for halt, reset of counters upon reception of new run number
 //
@@ -272,7 +275,8 @@ void FilterUnitFramework::enableAction(toolbox::Event::Reference e) throw (toolb
   sendAllocate(buInstance_, queueSize_, allocfset);
   nbEvents_ = 0;
   //start monitoring timer
-  if (MonitorTimerEnable_) {
+  LOG4CPLUS_INFO(this->getApplicationLogger(),"FU sent initial allocate N=" << queueSize_);
+  if (MonitorTimerEnable_ && !runActive_) {
   	toolbox::TimeInterval interval(MonitorIntervalSec_.value_);
   	toolbox::TimeVal startTime;
   	startTime = toolbox::TimeVal::gettimeofday();
@@ -305,7 +309,7 @@ void FilterUnitFramework::resumeAction(toolbox::Event::Reference e) throw (toolb
 void FilterUnitFramework::haltAction(toolbox::Event::Reference e) throw (toolbox::fsm::exception::Exception)
 {
   flush_ = true;
-  if(Monitor_timer_)Monitor_timer_->stop();
+  //  if(Monitor_timer_)Monitor_timer_->stop();
   int savePending = pendingRequests_;
   mutex_->take(); //exclude EP requests while flushing
   if(factory_->queueSize() != 0)
@@ -331,6 +335,7 @@ void FilterUnitFramework::haltAction(toolbox::Event::Reference e) throw (toolbox
 		     "Requests still pending after halt: " << pendingRequests_
 		     << " will be forgotten ");
       pendingRequests_ = 0;
+      factory_->resetFreeRes();
     }
 }
 
