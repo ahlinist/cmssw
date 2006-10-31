@@ -44,6 +44,9 @@ class FURawEventFactory
   /** reset the number of processed events */
   void resetNbProcessed() { nbProcessed_ = 0;}
 
+  /** return all unused resources back to the free list*/
+  void resetFreeRes();
+
   /** signal a waiting thread of the end of a run**/
   void postEndRunMaybe();
 
