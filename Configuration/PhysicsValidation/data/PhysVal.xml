@@ -22,7 +22,7 @@
                 </Test>
 	  </Validate>
 <!-- Single muons from Tracker b/tau (high priority)-->
-          <Validate Version="Single muons-HighPriority">
+          <Validate Version="SingleMuons-HighPriority">
                 <Test Events="25000" Name="PhysVal-SingleMuPlus-Pt100">
                         SingleMuon_pt100_pos_NoPU.cfg
                 </Test>
@@ -43,7 +43,7 @@
                 </Test>
 	  </Validate>
 <!-- Single pions from Tracker b/tau (high priority)-->
-          <Validate Version="Single pions-HighPriority">
+          <Validate Version="SinglePions-HighPriority">
                 <Test Events="25000" Name="PhysVal-SinglePiPlus-Pt100">
                         SinglePion_pt100_pos_NoPU.cfg
                 </Test>
@@ -76,7 +76,7 @@
                 </Test>
 	  </Validate>
 <!-- Single electrons from Tracker b/tau (high priority)-->
-          <Validate Version="Single electrons-HighPriority">
+          <Validate Version="SingleElectrons-HighPriority">
                 <Test Events="25000" Name="PhysVal-SingleEPlus-Pt100">
                         SingleElectron_pt100_pos_NoPU.cfg
                 </Test>
