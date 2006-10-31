@@ -24,6 +24,8 @@
 //
 // 2 mf 6/6/06	    Added LogVerbatim and LogTrace
 //
+// 3 mf 10/30/06    Added LogSystem and LogPrint
+//
 // =================================================
 
 // system include files
@@ -84,6 +86,27 @@ private:
 
 };  // LogError
 
+class LogSystem
+{
+public:
+  explicit LogSystem( std::string const & id ) 
+    : ap( new MessageSender(ELsevere,id) )
+  { }
+
+  template< class T >
+    LogSystem & 
+    operator<< (T const & t)  { (*ap) << t; return *this; }
+  LogSystem & 
+  operator<< ( std::ostream&(*f)(std::ostream&))  
+    				      { (*ap) << f; return *this; }
+  LogSystem & 
+  operator<< ( std::ios_base&(*f)(std::ios_base&) )  
+    				      { (*ap) << f; return *this; }     
+
+private:
+  std::auto_ptr<MessageSender> ap; 
+
+};  // LogSystem
 
 class LogInfo
 {
@@ -127,7 +150,29 @@ public:
 private:
   std::auto_ptr<MessageSender> ap; 
   
-};  // LogInfo
+};  // LogVerbaitm
+
+class LogPrint						// change log 3
+{
+public:
+  explicit LogPrint( std::string const & id ) 
+    : ap( new MessageSender(ELwarning,id,true) ) // the true is the Print arg 
+  { }
+
+  template< class T >
+    LogPrint & 
+    operator<< (T const & t)  { (*ap) << t; return *this; }
+  LogPrint & 
+  operator<< ( std::ostream&(*f)(std::ostream&))  
+    				      { (*ap) << f; return *this; }
+  LogPrint & 
+  operator<< ( std::ios_base&(*f)(std::ios_base&) )  
+    				      { (*ap) << f; return *this; }     
+
+private:
+  std::auto_ptr<MessageSender> ap; 
+  
+};  // LogPrint
 
 static 
 std::string
