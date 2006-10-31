@@ -20,6 +20,48 @@
                         DiElectrons_pt100_NoPU.cfg
                 </Test>
 	  </Validate>
+<!-- Single muons from Tracker b/tau (high priority)-->
+          <Validate Version="Single muons-HighPriority">
+                <Test Events="500" Name="PhysVal-SingleMuPlus-Pt100">
+                        SingleMuon_pt100_pos_NoPU.cfg
+                </Test>
+                <Test Events="500" Name="PhysVal-SingleMuMinus-Pt100">
+                        SingleMuon_pt100_neg_NoPU.cfg
+                </Test>
+                <Test Events="500" Name="PhysVal-SingleMuPlus-Pt10">
+                        SingleMuon_pt10_pos_NoPU.cfg
+                </Test>
+                <Test Events="500" Name="PhysVal-SingleMuMinus-Pt10">
+                        SingleMuon_pt10_neg_NoPU.cfg
+                </Test>
+                <Test Events="500" Name="PhysVal-SingleMuPlus-Pt1">
+                        SingleMuon_pt1_pos_NoPU.cfg
+                </Test>
+                <Test Events="500" Name="PhysVal-SingleMuMinus-Pt1">
+                        SingleMuon_pt1_neg_NoPU.cfg
+                </Test>
+	  </Validate>
+<!-- Single pions from Tracker b/tau (high priority)-->
+          <Validate Version="Single pions-HighPriority">
+                <Test Events="500" Name="PhysVal-SinglePiPlus-Pt100">
+                        SinglePion_pt100_pos_NoPU.cfg
+                </Test>
+                <Test Events="500" Name="PhysVal-SinglePiMinus-Pt100">
+                        SinglePion_pt100_neg_NoPU.cfg
+                </Test>
+                <Test Events="500" Name="PhysVal-SinglePiPlus-Pt10">
+                        SinglePion_pt10_pos_NoPU.cfg
+                </Test>
+                <Test Events="500" Name="PhysVal-SinglePiMinus-Pt10">
+                        SinglePion_pt10_neg_NoPU.cfg
+                </Test>
+                <Test Events="500" Name="PhysVal-SinglePiPlus-Pt1">
+                        SinglePion_pt1_pos_NoPU.cfg
+                </Test>
+                <Test Events="500" Name="PhysVal-SinglePiMinus-Pt1">
+                        SinglePion_pt1_neg_NoPU.cfg
+                </Test>
+	  </Validate>
           <Validate Version="BackToBackPhotonsHighPriority">
                 <Test Events="500" Name="PhysVal-DiPhoton-Pt25">
                         DiPhotons_pt25_NoPU.cfg
@@ -29,6 +71,27 @@
                 </Test>
                 <Test Events="500" Name="PhysVal-DiPhoton-Pt50">
                         DiPhotons_pt50_NoPU.cfg
+                </Test>
+	  </Validate>
+<!-- Single electrons from Tracker b/tau (high priority)-->
+          <Validate Version="Single electrons-HighPriority">
+                <Test Events="500" Name="PhysVal-SingleEPlus-Pt100">
+                        SingleElectron_pt100_pos_NoPU.cfg
+                </Test>
+                <Test Events="500" Name="PhysVal-SingleEMinus-Pt100">
+                        SingleElectron_pt100_neg_NoPU.cfg
+                </Test>
+                <Test Events="500" Name="PhysVal-SingleEPlus-Pt10">
+                        SingleElectron_pt10_pos_NoPU.cfg
+                </Test>
+                <Test Events="500" Name="PhysVal-SingleEMinus-Pt10">
+                        SingleElectron_pt10_neg_NoPU.cfg
+                </Test>
+                <Test Events="500" Name="PhysVal-SingleEPlus-Pt1">
+                        SingleElectron_pt1_pos_NoPU.cfg
+                </Test>
+                <Test Events="500" Name="PhysVal-SingleEMinus-Pt1">
+                        SingleElectron_pt1_neg_NoPU.cfg
                 </Test>
 	  </Validate>
           <Validate Version="BackToBackElectrons-MediumPriority">
