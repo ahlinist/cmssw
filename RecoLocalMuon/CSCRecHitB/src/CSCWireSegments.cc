@@ -34,7 +34,9 @@ CSCWireSegments::CSCWireSegments(const edm::ParameterSet& ps) : geom_(0) {
 }
 
 
-CSCWireSegments::~CSCWireSegments(){}
+CSCWireSegments::~CSCWireSegments(){
+
+}
 
 
 /* cleanWireHits

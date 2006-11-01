@@ -49,7 +49,13 @@ CSCRecHitBBuilder::CSCRecHitBBuilder( const edm::ParameterSet& ps ) : geom_(0) {
 }
 
 
-CSCRecHitBBuilder::~CSCRecHitBBuilder() {}
+CSCRecHitBBuilder::~CSCRecHitBBuilder() {
+  delete HitsFromStripOnly_;
+  delete HitsFromWireOnly_;
+  delete HitsFromWireSegments_;
+  delete HitsFromStripSegments_;
+  delete Make2DHits_;   
+}
 
 
 /* Member function build
