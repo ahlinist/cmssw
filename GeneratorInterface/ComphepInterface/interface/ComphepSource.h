@@ -60,6 +60,13 @@ namespace edm
     bool pythiaHepMCVerbosity_;
     /// Events to print if verbosity
     unsigned int maxEventsToPrint_;    
+    /// MCDB input file
+    std::string CHFile_;
+    /// Get input file from LCG MCDB
+    bool getInputFromMCDB_;
+    /// Sets the MCDB Article ID (0 if none)
+    int MCDBArticleID_;
+
     
  
     // for single particle generation in pythia
