@@ -22,6 +22,9 @@ public:
   //
   // access info
   //
+  int flavour() const {return m_flavour;}
+  LorentzVector underlyingParton4Vec() const {return m_underlyingParton4Vec;}
+
   int  mainFlavour                  ( void ) const { return m_mainFlavour; }
   int  heaviestFlavour              ( void ) const { return m_heaviestFlavour; }
   int  minimumDeltaRFlavour         ( void ) const { return m_minimumDeltaRFlavour; }
@@ -70,6 +73,9 @@ public:
 
 //set methods:
 
+  void flavour(const int a) {m_flavour = a;}
+  void underlyingParton4Vec(const LorentzVector a) {m_underlyingParton4Vec = a;}
+
   void mainFlavour 		 (const int a)  {m_mainFlavour = a; }
   void heaviestFlavour		 (const int a)  {m_heaviestFlavour = a; }
   void minimumDeltaRFlavour	 (const int a)  {m_minimumDeltaRFlavour = a; }
@@ -116,6 +122,9 @@ private:
 
   // info members
   // for both methods
+  int    m_flavour;             // THE flavour, depends on whether the physics of the algo def is chosen
+  LorentzVector m_underlyingParton4Vec;
+
   int    m_mainFlavour;         // main is the hardest
   int    m_heaviestFlavour;     // heaviest does not include gluons
   int    m_minimumDeltaRFlavour;
