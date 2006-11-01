@@ -31,7 +31,7 @@ bool CSCPeakBinOfStripPulse::peakAboveBaseline( const CSCStripDigi& digi, float&
   std::vector<int> sca = digi.getADCCounts();
 
   // Initialize parameters, just in case...  
-  tmax =-1;
+  tmax = 0;
   hmax = 0;
   for (int j = 0; j<6; j++) height[j] = 0.;
   if ( sca.empty() ) return false;
