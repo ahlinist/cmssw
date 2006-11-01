@@ -5,7 +5,7 @@
 
 <flags SEAL_PLUGIN_NAME="ConfigurationCSA06Skimming">
 <export>
- <lib name=ConfigurationCSA06Production>
+ <lib name=ConfigurationCSA06Skimming>
  <use name=boost>
  <use name=FWCore/Framework>
  <use name=SimDataFormats/HepMCProduct>
