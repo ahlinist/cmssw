@@ -1,3 +1,4 @@
+
 #ifndef MadGraph_Source_h
 #define MadGraph_Source_h
 
@@ -10,6 +11,8 @@
  * 
  * July 2006
  * Maria Hansen, University of Bristol
+ *
+ * Hector Naves : added the MCDB Interface (25/10/06)
  ***************************************/
 
 #define PYCOMP pycomp_
@@ -19,6 +22,7 @@
 #include <map>
 #include <string>
 #include "CLHEP/HepMC/GenEvent.h"
+
 
 namespace edm
 {
@@ -38,6 +42,7 @@ namespace edm
     
   private:
 
+    
     HepMC::GenEvent  *evt;
     /// Pythia PYLIST Verbosity flag
     unsigned int pythiaPylistVerbosity_;
@@ -47,6 +52,10 @@ namespace edm
     unsigned int maxEventsToPrint_;    
     /// Name of file which contains the unweighted MadGraph events
     std::string MGfile_;
+    /// Get input file from LCG MCDB 
+    bool getInputFromMCDB_;
+    /// Sets the MCDB Article ID (0 if none)
+    int MCDBArticleID_;
   };
 } 
 
