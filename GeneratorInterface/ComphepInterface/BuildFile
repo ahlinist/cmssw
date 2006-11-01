@@ -4,6 +4,7 @@
 <use name=clhep> 
 <use name=pythia6_227>
 #<use name=photos215>
+<use name=Utilities/StorageFactory>
  
 <flags SEAL_PLUGIN_NAME="GeneratorInterfaceComphepInterface">
 <export>
@@ -13,6 +14,7 @@
  <use name=SimDataFormats/HepMCProduct>
  <use name=clhep> 
  <use name=pythia6_227>
+ <use name=Utilities/StorageFactory>
 # <use name=tauola27.121_aux1>
 # <use name=tauola27.121>
 # <use name=photos215>
