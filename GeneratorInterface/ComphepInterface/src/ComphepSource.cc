@@ -1,6 +1,6 @@
 /*
- *  $Date: 2006/07/07 07:19:42 $
- *  $Revision: 1.20 $
+ *  $Date: 2006/09/11 17:15:26 $
+ *  $Revision: 1.1 $
  *  
  *  Filip Moorgat & Hector Naves 
  *  26/10/05
@@ -8,6 +8,8 @@
  *  Patrick Janot : added the PYTHIA card reading
  *
  *  Serge SLabospitsky : added Comphep reading tools 
+ *
+ *  Hector Naves : added MCDB Interface (25/10/06)
  */
 
 
@@ -39,6 +41,9 @@ using namespace std;
 HepMC::ConvertHEPEVT conv;
 // ***********************
 
+// MCDB Interface
+#include "GeneratorInterface/ComphepInterface/interface/MCDBInterface.h"
+
 
 //used for defaults
   static const unsigned long kNanoSecPerSec = 1000000000;
@@ -49,13 +54,23 @@ ComphepSource::ComphepSource( const ParameterSet & pset,
   GeneratedInputSource(pset, desc), evt(0), 
   pythiaPylistVerbosity_ (pset.getUntrackedParameter<int>("pythiaPylistVerbosity",0)),
   pythiaHepMCVerbosity_ (pset.getUntrackedParameter<bool>("pythiaHepMCVerbosity",false)),
-  maxEventsToPrint_ (pset.getUntrackedParameter<int>("maxEventsToPrint",1))
-  
-{
+  maxEventsToPrint_ (pset.getUntrackedParameter<int>("maxEventsToPrint",1)),
+  getInputFromMCDB_ (pset.getUntrackedParameter<bool>("getInputFromMCDB",false)), MCDBArticleID_ (pset.getParameter<int>("MCDBArticleID")) {
+
+
+  //******
+  // Interface with the LCG MCDB
+  //
+  if (getInputFromMCDB_) {
+    CHFile_ = pset.getUntrackedParameter<string>("ComphepInputFile");
+    mcdbGetInputFile(CHFile_, MCDBArticleID_);
+  }
+  //  
+  //******
+
+
   
   cout << "ComphepSource: initializing Pythia. " << endl;
-  
- 
   
   // PYLIST Verbosity Level
   // Valid PYLIST arguments are: 1, 2, 3, 5, 7, 11, 12, 13
