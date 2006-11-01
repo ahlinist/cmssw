@@ -1,3 +1,16 @@
+/** MadGraphSource
+ *
+ * A modified version of the PythiaSource by 
+ * Filip Moorgat & Hector Naves, that generates 
+ * events by reading in a file produced with MadGraph/MadEvent
+ * and shower them with Pythia.
+ * 
+ * 
+ * July 2006
+ * Maria Hansen, University of Bristol
+ *
+ * Hector Naves : added the MCDB Interface (25/10/06)
+ ***************************************/
 #include "GeneratorInterface/MadGraphInterface/interface/MadGraphSource.h"
 #include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
 #include "FWCore/Framework/interface/Event.h"
@@ -11,10 +24,15 @@
 using namespace edm;
 using namespace std;
 
+
 // Generator modifications
 #include "CLHEP/HepMC/include/PythiaWrapper6_2.h"
 #include "CLHEP/HepMC/ConvertHEPEVT.h"
 #include "CLHEP/HepMC/CBhepevt.h"
+
+// MCDB Interface 
+#include "GeneratorInterface/MadGraphInterface/interface/MCDBInterface.h"
+
 
 #define PYGIVE pygive_
 extern "C" {
@@ -29,9 +47,20 @@ HepMC::ConvertHEPEVT conv;
 
 MadGraphSource::MadGraphSource( const ParameterSet & pset, 
 			    InputSourceDescription const& desc) :
-  GeneratedInputSource(pset, desc), evt(0),pythiaPylistVerbosity_ (pset.getUntrackedParameter<int>("pythiaPylistVerbosity",0)),pythiaHepMCVerbosity_ (pset.getUntrackedParameter<bool>("pythiaHepMCVerbosity",false)),maxEventsToPrint_ (pset.getUntrackedParameter<int>("maxEventsToPrint",0)),MGfile_ (pset.getParameter<string>("MadGraphInputFile")){
+  GeneratedInputSource(pset, desc), evt(0),
+  //  mcdbArticleID_ (pset.addParameter<int>("mcdbArticleID",0)),
+pythiaPylistVerbosity_ (pset.getUntrackedParameter<int>("pythiaPylistVerbosity",0)),pythiaHepMCVerbosity_ (pset.getUntrackedParameter<bool>("pythiaHepMCVerbosity",false)),maxEventsToPrint_ (pset.getUntrackedParameter<int>("maxEventsToPrint",0)),MGfile_ (pset.getParameter<string>("MadGraphInputFile")),getInputFromMCDB_ (pset.getUntrackedParameter<bool>("getInputFromMCDB",false)),MCDBArticleID_ (pset.getParameter<int>("MCDBArticleID")){
+
   ifstream file;
   ofstream ofile;
+
+  //******
+  // Interface with the LCG MCDB
+  //
+  if (getInputFromMCDB_)  mcdbGetInputFile(MGfile_, MCDBArticleID_);  
+  //  
+  //******
+
 
   file.open(MGfile_.c_str(),std::ios::in);  
   if(!file){
