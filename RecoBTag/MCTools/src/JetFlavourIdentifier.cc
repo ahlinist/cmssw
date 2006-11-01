@@ -12,6 +12,17 @@ JetFlavourIdentifier::JetFlavourIdentifier(const edm::ParameterSet& iConfig)
   fillHeavyHadrons =  iConfig.getParameter<bool>("fillHeavyHadrons");
   fillLeptons =  iConfig.getParameter<bool>("fillLeptons");
   coneSizeToAssociate =  iConfig.getParameter<double>("coneSizeToAssociate");
+  physDefinition =  iConfig.getParameter<bool>("physicsDefinition");
+  rejectBCSplitting =  iConfig.getParameter<bool>("rejectBCSplitting");
+  vector<string> veto = iConfig.getParameter< vector<string> >("vetoFlavour");
+  vetoB = false;vetoC = false;vetoL = false;vetoG = false;
+  for (vector<string>::iterator iVeto = veto.begin(); iVeto!=veto.end(); ++iVeto)
+  {
+    if (*iVeto=="B") vetoB = true;
+    if (*iVeto=="C") vetoC = true;
+    if (*iVeto=="UDS") vetoL = true;
+    if (*iVeto=="G") vetoG = true;
+  }
 }
 
 void JetFlavourIdentifier::readEvent(const edm::Event& iEvent, std::string label_)
@@ -133,12 +144,29 @@ void JetFlavourIdentifier::fillInfo ( const HepMC::GenEvent * event ) {
 }
 
 template <class JetCollection>
-JetFlavour  JetFlavourIdentifier::identifyBasedOnPartons ( const edm::Ref<JetCollection> & theJet ) {
+JetFlavour  JetFlavourIdentifier::identifyBasedOnPartons ( const edm::Ref<JetCollection> & theJet )
+{
+  JetFlavour jetFlavour = basicIdentityBasedOnPartons(theJet.getLorentzVector(), coneSizeToAssociate);
+  if (physDefinition) fillAlgorithmicDefinition(jetFlavour, theJet.getLorentzVector());
+    else fillAlgorithmicDefinition(jetFlavour);
+  if ( jetFlavour.flavour()==5   && vetoB ) jetFlavour.flavour(0);
+  if ( jetFlavour.flavour()==4   && vetoC ) jetFlavour.flavour(0);
+  if ( jetFlavour.flavour()==1   && vetoL ) jetFlavour.flavour(0);
+  if ( jetFlavour.flavour()==2   && vetoL ) jetFlavour.flavour(0);
+  if ( jetFlavour.flavour()==3   && vetoL ) jetFlavour.flavour(0);
+  if ( jetFlavour.flavour()==21  && vetoG ) jetFlavour.flavour(0);
+  return jetFlavour;
+}
+
+
+JetFlavour  JetFlavourIdentifier::basicIdentityBasedOnPartons
+	(const Hep3Vector & jet3Vec, const double coneSize)
+{
   JetFlavour jetFlavour;
   // to count partons from how many sources
-  jetFlavour.numberOfSources = 0;
+  jetFlavour.numberOfSources(0);
   vector<int> indicesSources;
-  int nDown, nUp, nStrange, nCharm, nBottom, nGluon;
+  int nDown = 0, nUp = 0, nStrange = 0, nCharm = 0, nBottom = 0, nGluon = 0;
   // kinematics of underlying parton by summing them up
   
   // don't assign initial parton if more than one in cone
@@ -152,20 +180,19 @@ JetFlavour  JetFlavourIdentifier::identifyBasedOnPartons ( const edm::Ref<JetCol
     // get mother status
     // int motherStatus = itP->getMotherStatusPythia();
     // get kinemat. info
-    Hep3Vector Jet3Vec ( theJet.getLorentzVector() );
     Hep3Vector P3Vec   ( itP->getFourVector() );
     // for initial partons: use the resummed daughters
     if ( itP->getIsInitialParton() ) P3Vec = itP->getSummedDaughters();
     //
-    double deltaR     = Jet3Vec.deltaR( P3Vec );
+    double deltaR     = jet3Vec.deltaR( P3Vec );
     double pAbsParton = P3Vec.mag();
     
     //CW match also to the initial partons for the 'physics definition'
     if ( itP->getIsInitialParton() ) {
-      if ( deltaR < coneSizeToAssociate ) {   // is in cone
+      if ( deltaR < coneSize ) {   // is in cone
 	jetFlavour.initialFlavour(theFlavour);
 	nInitialPartons++;
-	jetFlavour.vec4OriginParton += itP->getSummedDaughters();
+	jetFlavour.vec4OriginParton(jetFlavour.vec4OriginParton() + itP->getSummedDaughters());
 	// reset if it has other HF nearby (from other sources!!)
 	if ( itP->getInitialPartonHasCloseHF() ) jetFlavour.initialFlavour(0);
 	// check if it has split to heavy flavours
@@ -178,7 +205,7 @@ JetFlavour  JetFlavourIdentifier::identifyBasedOnPartons ( const edm::Ref<JetCol
     //CW    if ( itP->getIsFinalParton() && itP->getFromPrimaryProcess() ) {
     if ( itP->getIsFinalParton() ) {
       
-      if ( deltaR < ConeSizeToAssociate ) {   // is in cone
+      if ( deltaR < coneSize ) {   // is in cone
 	//
 	// set members
 	//
@@ -199,7 +226,7 @@ JetFlavour  JetFlavourIdentifier::identifyBasedOnPartons ( const edm::Ref<JetCol
 	
 	
 	// main flavour is given to Parton with highest |p|
-	if ( pAbsParton     > jetFlavour.pMainParton          ) {
+	if ( pAbsParton     > jetFlavour.pMainParton()          ) {
 	  jetFlavour.mainFlavour     (theFlavour);
 	  jetFlavour.pMainParton     (pAbsParton);
 	  jetFlavour.vec4MainParton  (itP->getFourVector());	  
@@ -208,13 +235,13 @@ JetFlavour  JetFlavourIdentifier::identifyBasedOnPartons ( const edm::Ref<JetCol
 	}
 	
 	// Def.: gluon (21) is lighter than quarks!!
-	if ( theFlavour > jetFlavour.heaviestFlavour  &&  theFlavour != 21  ) {
+	if ( theFlavour > jetFlavour.heaviestFlavour()  &&  theFlavour != 21  ) {
 	  jetFlavour.pHeaviestParton   (pAbsParton);	  
 	  jetFlavour.vec4HeaviestParton(itP->getFourVector());	  
 	  jetFlavour.heaviestFlavour   (theFlavour);
 	}
 	
-	if ( deltaR     < jetFlavour.deltaRClosestParton ) {
+	if ( deltaR     < jetFlavour.deltaRClosestParton() ) {
 	  jetFlavour.minimumDeltaRFlavour(theFlavour);
 	  jetFlavour.pClosestParton      (pAbsParton);	  
 	  jetFlavour.vec4ClosestParton   (itP->getFourVector());	  
@@ -251,13 +278,13 @@ JetFlavour  JetFlavourIdentifier::identifyBasedOnPartons ( const edm::Ref<JetCol
   // temporary fudge for gluon as heaviest flavour
   // (future: get info from ordered list):
   // if there is a gluon and the heaviest flavour == 0 -> set it to 21 for a gluon
-  if ( jetFlavour.mainFlavour == 21 && jetFlavour.heaviestFlavour == 0 ) {
-    jetFlavour.heaviestFlavour(jetFlavour.mainFlavour);
-    jetFlavour.pHeaviestParton(jetFlavour.pMainParton);
+  if ( jetFlavour.mainFlavour() == 21 && jetFlavour.heaviestFlavour() == 0 ) {
+    jetFlavour.heaviestFlavour(jetFlavour.mainFlavour());
+    jetFlavour.pHeaviestParton(jetFlavour.pMainParton());
   }
 
   // determine the origin flavour: the source of the hardest one
-  jetFlavour.originFlavour(jetFlavour.mainOrigFlavour);
+  jetFlavour.originFlavour(jetFlavour.mainOrigFlavour());
 
 //  cout << "CW JetIdentifier : " << jetFlavour.originFlavour << " , " << jetFlavour.mainFlavour << " , "  << jetFlavour.numberOfSources << " , " << endl;
   if ( nInitialPartons > 1 ) {
@@ -269,5 +296,57 @@ JetFlavour  JetFlavourIdentifier::identifyBasedOnPartons ( const edm::Ref<JetCol
 //CW       << jetFlavour.initialFlavour << " , "
 //CW       << theJet.getLorentzVector() << endl;
   
+  return jetFlavour;
+}
 
+void JetFlavourIdentifier::fillAlgorithmicDefinition(JetFlavour & jetFlavour)
+{
+  // if the heaviest flavour is a b or c, give that one
+  if ( jetFlavour.heaviestFlavour() == 5 || jetFlavour.heaviestFlavour() == 4 ) {
+    jetFlavour.flavour(jetFlavour.heaviestFlavour() );
+    jetFlavour.underlyingParton4Vec(jetFlavour.vec4SummedPartons() );
+  }
+  else {
+    // take the main parton
+    jetFlavour.flavour(jetFlavour.mainFlavour() );
+    jetFlavour.underlyingParton4Vec(jetFlavour.vec4SummedPartons() );
+  }
+}
+
+void JetFlavourIdentifier::fillPhysicsDefinition(JetFlavour & jetFlavour, const Hep3Vector & jet3Vec)
+{
+  int flavour = jetFlavour.initialFlavour() ;
+  // clean: do not accept if final state heavy partons from many sources -> take bigger cone here
+  JetFlavour phIdentifierPartons = basicIdentityBasedOnPartons(jet3Vec, 0.7);
+
+  // if there is heavy flavour content from another source we reject it 
+  bool resetJetFlavour = false ;
+  int maxHF = 0 ;
+  if ( phIdentifierPartons.numberOfSources() > 1 ) {
+    vector<int> sources = jetFlavour.flavourSources() ;
+    for ( vector<int>::const_iterator itS = sources.begin() ; itS != sources.end() ; itS++ ) {
+      if ( *itS == 4  ||  *itS == 5 ) {
+	resetJetFlavour = true ;
+	if ( *itS > maxHF ) maxHF = *itS ; 
+      }
+    }
+  }
+  if ( resetJetFlavour ) {
+    cout << "DefaultJEtIdentifier::mcJetInfo : will reset jet flavour = "
+	 << flavour
+	 << " because of heavy flavour content from other sources: "
+	 << maxHF << endl ;
+    flavour = 0 ;
+  }
+
+  // if wanted, we reject the ones that have splitted into heavy flavours
+  if ( rejectBCSplitting ) {
+    if ( jetFlavour.initialPartonSplitsToC() || jetFlavour.initialPartonSplitsToB() ) {
+      cout << "CW: reject initial parton because of b/c splitting" << endl ;
+      flavour = 0 ;
+    }
+  }
+
+  jetFlavour.flavour(flavour);
+  jetFlavour.underlyingParton4Vec(jetFlavour.vec4OriginParton() );
 }

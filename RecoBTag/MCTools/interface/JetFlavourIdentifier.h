@@ -27,6 +27,12 @@ public:
 private:
   void fillInfo ( const HepMC::GenEvent * generated_event );
 
+  JetFlavour  basicIdentityBasedOnPartons
+	(const Hep3Vector & jet3Vec, const double coneSize);
+
+  void fillAlgorithmicDefinition(JetFlavour & jetFlavour);
+  void fillPhysicsDefinition(JetFlavour & jetFlavour, const Hep3Vector & jet3Vec);
+
   static double deltaR ( const HepLorentzVector & vec1 , const HepLorentzVector & vec2 ) { 
     HepLorentzVector v = vec1 - vec2;
     return hypot(v.eta(), v.phi());
@@ -38,7 +44,11 @@ private:
   bool fillPartons;
   bool fillHeavyHadrons;
   bool fillLeptons;
+  bool physDefinition;
+  bool rejectBCSplitting;
   std::vector<MCParton>      m_partons;
+  bool vetoB, vetoC, vetoL, vetoG;
+
 
 };
 
