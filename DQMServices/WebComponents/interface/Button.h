@@ -1,7 +1,7 @@
 #ifndef _DQMServices_WebComponents_Button_h_
 #define _DQMServices_WebComponents_Button_h_
 
-/* 
+/** 
    This is the class that should be instantiated in case the 
    user wants to have a button on the web page, which is 
    connected to a function defined in your web client. 
@@ -18,9 +18,10 @@
 class Button : public WebElement
 {
  private:
-  
-  std::string name;     // the name that will appear on the button
-  std::string requestID; // the string connected to the callback, eg "Default"
+  /// the name that will appear on the button  
+   std::string name;     
+   /// the string connected to the callback, eg "Default"
+     std::string requestID; 
 
  public:
   

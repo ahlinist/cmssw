@@ -1,7 +1,7 @@
 #ifndef _DQMServices_WebComponents_Select_h_
 #define _DQMServices_WebComponents_Select_h_
 
-/* 
+/** 
    This is the class that should be instantiated in case the
    user wants to have a select menu, the elements of which, 
    submit a request when clicked on. 

@@ -1,7 +1,7 @@
 #ifndef _GifDisplay_h_
 #define _GifDisplay_h_
 
-/* 
+/** 
    This is the class that should be instantiated and
    added to the web page in order to present a display
    for the histograms on the browser screen

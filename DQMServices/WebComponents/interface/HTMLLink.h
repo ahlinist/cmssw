@@ -9,8 +9,8 @@
 class HTMLLink : public WebElement
 {
  private:
-
-  std::string text; // the text of the link
+  /// the text of the link
+  std::string text; 
   std::string link_url;
 
  public:
