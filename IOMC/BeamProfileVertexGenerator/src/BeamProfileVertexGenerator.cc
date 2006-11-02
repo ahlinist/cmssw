@@ -1,17 +1,31 @@
+// $Id$
+
 #include "IOMC/BeamProfileVertexGenerator/interface/BeamProfileVertexGenerator.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 #include "CLHEP/Random/RandFlat.h"
 #include "CLHEP/Random/RandGauss.h"
 #include "CLHEP/Units/SystemOfUnits.h"
+#include "CLHEP/Vector/ThreeVector.h"
 
-#include <iostream>
+using namespace CLHEP;
+
+BeamProfileVertexGenerator::BeamProfileVertexGenerator(const edm::ParameterSet & p) : 
+  BaseEventVertexGenerator(p), myVertex(0), myRandom(0)
+{
+  init(p);
+}  
 
 BeamProfileVertexGenerator::BeamProfileVertexGenerator(const edm::ParameterSet & p,
                                                        const long& seed) : 
-  BaseEventVertexGenerator(p,seed), myVertex(0), myRandom(0) {
-  
-  edm::ParameterSet vgenParam(p);
+  BaseEventVertexGenerator(p,seed), myVertex(0), myRandom(0)
+{
+  init(p);
+}  
+
+void
+BeamProfileVertexGenerator::init(const edm::ParameterSet & vgenParam) {
+
   meanX(vgenParam.getUntrackedParameter<double>("BeamMeanX",0.0)*cm);
   meanY(vgenParam.getUntrackedParameter<double>("BeamMeanY",0.0)*cm);
   beamPos(vgenParam.getUntrackedParameter<double>("BeamPosition",0.0)*cm);
@@ -35,13 +49,12 @@ BeamProfileVertexGenerator::BeamProfileVertexGenerator(const edm::ParameterSet &
 }
 
 BeamProfileVertexGenerator::~BeamProfileVertexGenerator() {
-  if (myVertex) delete myVertex;
-  //  if (myRandom) delete myRandom;
+  delete myVertex;
+  delete myRandom;
 }
 
 Hep3Vector * BeamProfileVertexGenerator::newVertex() {
 
-  if (myVertex) delete myVertex;
   double aX, aY;
   if (myType) 
     aX = mySigmaX * (dynamic_cast<RandGauss*>(myRandom))->fire() + myMeanX;
@@ -56,7 +69,8 @@ Hep3Vector * BeamProfileVertexGenerator::newVertex() {
   double yp = -aX*cos(myTheta)*sin(myPhi) -aY*cos(myPhi) +myMeanZ*sin(myTheta)*sin(myPhi);
   double zp =  aX*sin(myTheta)                           +myMeanZ*cos(myTheta);
 
-  myVertex = new Hep3Vector(xp, yp, zp);
+  if (myVertex == 0) myVertex = new Hep3Vector;
+  myVertex->set(xp, yp, zp);
   LogDebug("VertexGenerator") << "BeamProfileVertexGenerator: Vertex created "
 			      << "at " << *myVertex;
   return myVertex;
@@ -98,10 +112,10 @@ void BeamProfileVertexGenerator::eta(double s) {
 void BeamProfileVertexGenerator::setType(bool s) { 
 
   myType = s;
-  if (myRandom) delete myRandom;
+  delete myRandom;
   
   if (myType == true)
-    myRandom = new RandGauss(m_Engine);
+    myRandom = new RandGauss(getEngine());
   else
-    myRandom = new RandFlat(m_Engine) ;
+    myRandom = new RandFlat(getEngine());
 }
