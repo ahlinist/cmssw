@@ -1,30 +1,32 @@
 #ifndef IOMC_GaussianEventVertexGenerator_H
 #define IOMC_GaussianEventVertexGenerator_H
 
-#include "IOMC/EventVertexGenerators/interface/BaseEventVertexGenerator.h"
-
 /**
  * Generate event vertices according to a Gauss distribution. 
  * Attention: All values are assumed to be mm!
  * \author Stephan Wynhoff
  */
+// $Id$
+
+#include "IOMC/EventVertexGenerators/interface/BaseEventVertexGenerator.h"
 
 namespace CLHEP {
-   class RandGauss;
+  class RandGauss;
 }
 
 class GaussianEventVertexGenerator : public BaseEventVertexGenerator 
 {
 public:
+  explicit GaussianEventVertexGenerator(const edm::ParameterSet & p);
   GaussianEventVertexGenerator(const edm::ParameterSet & p, const long& seed);
   virtual ~GaussianEventVertexGenerator();
 
   /// return a new event vertex
-  virtual Hep3Vector * newVertex();
+  virtual CLHEP::Hep3Vector * newVertex();
 
   /** return the last generated event vertex.
    *  If no vertex has been generated yet, a NULL pointer is returned. */
-  virtual Hep3Vector * lastVertex();
+  virtual CLHEP::Hep3Vector * lastVertex();
 
   /// set resolution in X in mm
   void sigmaX(double s=1.0);
@@ -34,23 +36,24 @@ public:
   void sigmaZ(double s=1.0);
 
   /// set mean in X in mm
-  void meanX(double m=0) { myMeanX=m; };
+  void meanX(double m=0) { myMeanX=m; }
   /// set mean in Y in mm
-  void meanY(double m=0) { myMeanY=m; };
+  void meanY(double m=0) { myMeanY=m; }
   /// set mean in Z in mm
-  void meanZ(double m=0) { myMeanZ=m; };
+  void meanZ(double m=0) { myMeanZ=m; }
   
 private:
   /** Copy constructor */
   GaussianEventVertexGenerator(const GaussianEventVertexGenerator &p);
   /** Copy assignment operator */
   GaussianEventVertexGenerator&  operator = (const GaussianEventVertexGenerator & rhs );
-private:
-  edm::ParameterSet m_pGaussianEventVertexGenerator;
+
+  void init(const edm::ParameterSet & pset);
+
   double mySigmaX, mySigmaY, mySigmaZ;
   double myMeanX, myMeanY, myMeanZ;
-  Hep3Vector* myVertex;
-  RandGauss*  myRandom ; 
+  CLHEP::Hep3Vector* myVertex;
+  CLHEP::RandGauss*  myRandom ; 
 };
 
 #endif
