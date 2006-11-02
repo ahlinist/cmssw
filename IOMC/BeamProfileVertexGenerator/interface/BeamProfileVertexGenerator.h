@@ -1,35 +1,36 @@
 #ifndef IOMC_BeamProfileVertexGenerator_H
 #define IOMC_BeamProfileVertexGenerator_H
 
-#include "IOMC/EventVertexGenerators/interface/BaseEventVertexGenerator.h"
-
-namespace CLHEP
-{
-   class HepRandom;
-//   class RandGauss;
-//   class RandFlat;
-}
-
-
 /**
  * Generate event vertices according to a Gaussian distribution transverse
  * to beam direction (given by eta and phi
  * Attention: Units are assumed to be cm and radian!
  * \author Sunanda Banerjee
  */
+// $Id$
+
+#include "IOMC/EventVertexGenerators/interface/BaseEventVertexGenerator.h"
+
+namespace CLHEP
+{
+  class HepRandom;
+}
+
+
 class BeamProfileVertexGenerator : public BaseEventVertexGenerator
 {
 public:
+  explicit BeamProfileVertexGenerator(const edm::ParameterSet & p);
   BeamProfileVertexGenerator(const edm::ParameterSet & p,
                              const long& seed);
   virtual ~BeamProfileVertexGenerator();
 
   /// return a new event vertex
-  virtual Hep3Vector * newVertex();
+  virtual CLHEP::Hep3Vector * newVertex();
 
   /** return the last generated event vertex.
    *  If no vertex has been generated yet, a NULL pointer is returned. */
-  virtual Hep3Vector * lastVertex();
+  virtual CLHEP::Hep3Vector * lastVertex();
 
   /// set resolution in X in cm
   void sigmaX(double s=1.0);
@@ -37,16 +38,16 @@ public:
   void sigmaY(double s=1.0);
 
   /// set mean in X in cm
-  void meanX(double m=0) {myMeanX=m;};
+  void meanX(double m=0) {myMeanX=m;}
   /// set mean in Y in cm
-  void meanY(double m=0) {myMeanY=m;};
+  void meanY(double m=0) {myMeanY=m;}
   /// set mean in Z in cm
-  void beamPos(double m=0) {myMeanZ=m;};
+  void beamPos(double m=0) {myMeanZ=m;}
 
   /// set eta
   void eta(double m=0);
   /// set phi in radian
-  void phi(double m=0)      {myPhi=m;};
+  void phi(double m=0)      {myPhi=m;}
   /// set type
   void setType(bool m=true);
   
@@ -55,13 +56,15 @@ private:
   BeamProfileVertexGenerator(const BeamProfileVertexGenerator &p);
   /** Copy assignment operator */
   BeamProfileVertexGenerator& operator = (const BeamProfileVertexGenerator& rhs);
-private:
+
+  void init(const edm::ParameterSet & vgenParam);
+
   double mySigmaX, mySigmaY;
   double myMeanX, myMeanY, myMeanZ;
   double myEta, myPhi, myTheta;
   bool   myType;
-  Hep3Vector* myVertex;
-  HepRandom*  myRandom;   
+  CLHEP::Hep3Vector* myVertex;
+  CLHEP::HepRandom*  myRandom;   
 };
 
 #endif

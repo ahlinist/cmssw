@@ -1,32 +1,34 @@
 #ifndef IOMC_FlatEventVertexGenerator_H
 #define IOMC_FlatEventVertexGenerator_H
 
-#include "IOMC/EventVertexGenerators/interface/BaseEventVertexGenerator.h"
-
 /**
  * Generate event vertices according to a flat distribution. 
  * Attention: All values are assumed to be mm!
  * \author Stephan Wynhoff
  */
+// $Id$
+
+#include "IOMC/EventVertexGenerators/interface/BaseEventVertexGenerator.h"
 
 namespace CLHEP
 {
-   class RandFlat ;
+  class RandFlat;
 }
 
 
 class FlatEventVertexGenerator : public BaseEventVertexGenerator
 {
 public:
+  explicit FlatEventVertexGenerator(const edm::ParameterSet & p);
   FlatEventVertexGenerator(const edm::ParameterSet & p, const long& seed);
   virtual ~FlatEventVertexGenerator();
 
   /// return a new event vertex
-  virtual Hep3Vector * newVertex();
+  virtual CLHEP::Hep3Vector * newVertex();
 
   /** return the last generated event vertex.
    *  If no vertex has been generated yet, a NULL pointer is returned. */
-  virtual Hep3Vector * lastVertex();
+  virtual CLHEP::Hep3Vector * lastVertex();
 
   /// set minimum in X in mm
   void minX(double min=0);
@@ -47,12 +49,13 @@ private:
   FlatEventVertexGenerator(const FlatEventVertexGenerator &p);
   /** Copy assignment operator */
   FlatEventVertexGenerator&  operator = (const FlatEventVertexGenerator & rhs );
-private:
-  edm::ParameterSet m_pFlatEventVertexGenerator;
+
+  void init(const edm::ParameterSet & pset);
+
   double myMinX, myMinY, myMinZ;
   double myMaxX, myMaxY, myMaxZ;
-  Hep3Vector* myVertex;
-  RandFlat*   myRandom ;
+  CLHEP::Hep3Vector* myVertex;
+  CLHEP::RandFlat*   myRandom ;
 };
 
 #endif
