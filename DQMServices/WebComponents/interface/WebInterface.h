@@ -61,35 +61,35 @@ class WebInterface
     {
     };
 
-  // Answers requests by sending the webpage of the application
+  /// Answers requests by sending the webpage of the application
   virtual void Default(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception);
 
-  // Answers connection configuration requests
+  /// Answers connection configuration requests
   void Configure(xgi::Input * in, xgi::Output * out) throw (xgi::exception::Exception);
   
-  // Answer navigator requests 
+  /// Answer navigator requests 
   void Open(xgi::Input * in, xgi::Output * out) throw (xgi::exception::Exception);
   void Subscribe(xgi::Input * in, xgi::Output * out) throw (xgi::exception::Exception);
   void Unsubscribe(xgi::Input * in, xgi::Output * out) throw (xgi::exception::Exception);
 
-  // Outputs the subdirectories and files of "directory". Called by any of the above three.
+  /// Outputs the subdirectories and files of "directory". Called by any of the above three.
   void printNavigatorXML(std::string directory, xgi::Output * out);
   
-  // Answers ContentViewer requests
+  /// Answers ContentViewer requests
   void ContentsOpen(xgi::Input * in, xgi::Output * out) throw (xgi::exception::Exception);
   void printContentViewerXML(std::string current, xgi::Output * out);
 
-  // Answers Messages requests
+  /// Answers Messages requests
   void printMessagesXML(xgi::Output *out);
 
-  // Answers viewer requests
+  /// Answers viewer requests
   void DrawGif(xgi::Input * in, xgi::Output * out) throw (xgi::exception::Exception);
   void printMap(ME_map view_map, std::string id);
 
-  // Adds widgets to the page
+  /// Adds widgets to the page
   void add(std::string, WebElement *);
 
-  // Adds messages to the message dispatcher
+  /// Adds messages to the message dispatcher
   void sendMessage(std::string the_title, std::string the_text, MessageType the_type);
 
   std::string get_from_multimap(std::multimap<std::string, std::string> &mymap, std::string key);

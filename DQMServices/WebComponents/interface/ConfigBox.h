@@ -1,7 +1,7 @@
 #ifndef _ConfigBox_h_
 #define _ConfigBox_h_
 
-/* 
+/** 
    This is the class that should be instantiated in case the
    user wants to have a box that resets the configuration of 
    the DQM client. Submitting the information of this box

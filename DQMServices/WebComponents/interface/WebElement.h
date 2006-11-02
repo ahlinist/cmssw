@@ -9,10 +9,12 @@ class WebElement
 {
  private:
 
-  std::string url; // The url of the application
-
-  std::string pix_top; // position in pixels (from top)
-  std::string pix_left; // position in pixels (from left)
+  /// The url of the application
+   std::string url; 
+   /// position in pixels (from top)
+   std::string pix_top; 
+   /// position in pixels (from left)
+   std::string pix_left; 
 
  public:
 
