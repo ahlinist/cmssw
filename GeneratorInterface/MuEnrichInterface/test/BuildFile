@@ -1,0 +1,8 @@
+
+<use name=boost>
+<use name=root>
+<use name=GeneratorInterface/MuEnrichInterface>
+<use name=SimDataFormats/HepMCProduct>
+<flags SEAL_PLUGIN_NAME="MuAnalyzer">
+<library file=MuAnalyzer.cc name=MuAnalyzer>
+</library>
