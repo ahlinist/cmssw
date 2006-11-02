@@ -1,0 +1,18 @@
+<use name=boost>
+<use name=FWCore/Framework>
+<use name=SimDataFormats/HepMCProduct>
+<use name=clhep> 
+<use name=pythia6_227>
+
+<flags SEAL_PLUGIN_NAME="GeneratorInterfaceMuEnrichInterface">
+<export>
+ <lib name=GeneratorInterfaceMuEnrichInterface> 
+ <use name=boost>
+ <use name=FWCore/Framework>
+ <use name=SimDataFormats/HepMCProduct>
+ <use name=clhep> 
+ <use name=pythia6_227>
+</export>
+
+ <lib name=g2c></lib>
+ <lib name=m></lib>
