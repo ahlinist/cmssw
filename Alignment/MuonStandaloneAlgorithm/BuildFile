@@ -1,0 +1,28 @@
+<use name=FWCore/Framework>
+<use name=FWCore/Utilities>
+<use name=FWCore/ParameterSet>
+<use name=RecoMuon/TrackingTools>
+<use name=TrackingTools/TransientTrack>
+<use name=DataFormats/Common>
+<use name=Alignment/MuonAlignment>
+<use name=rootrflx>
+<use name=CLHEP>
+<use name=root>
+
+<flags SEAL_PLUGIN_NAME="AlignmentMuonStandaloneAlgorithm">
+
+<export>
+   <lib name=AlignmentMuonStandaloneAlgorithm>
+   <use name=FWCore/Framework>
+   <use name=FWCore/Utilities>
+   <use name=FWCore/ParameterSet>
+   <use name=RecoMuon/TrackingTools>
+   <use name=TrackingTools/TransientTrack>
+   <use name=DataFormats/Common>
+   <use name=Alignment/MuonAlignment>
+   <use name=rootrflx>
+   <use name=CLHEP>
+   <use name=root>
+</Export>
+
+
