@@ -13,7 +13,7 @@ module csc2DRecHits = CSCRecHitBProducer {
      untracked int32  CSCWireClusterDeltaT       = 1
      untracked int32  CSCWireClusterMaxSize      = 999
 
-     untracked bool   CSCuseCleanWireCollection  = false
+     untracked bool   CSCuseCleanWireCollection  = true
      untracked int32  CSCWireminLayersApart      = 2
      untracked double CSCWireMaxDistance         = 2.
      untracked int32  CSCWireSegmentDeltaT       = 1
@@ -29,7 +29,7 @@ module csc2DRecHits = CSCRecHitBProducer {
      untracked double CSCMaxGattiChi2            = 10000.
      untracked double CSCCalibrationSystematics  = 0.015
 
-     untracked bool   CSCuseCleanStripCollection = false
+     untracked bool   CSCuseCleanStripCollection = true
      untracked int32  CSCStripminLayersApart     = 2
      untracked double CSCStripMaxDistance        = 5.
      untracked double CSCStripCloseToSegment     = 8.
