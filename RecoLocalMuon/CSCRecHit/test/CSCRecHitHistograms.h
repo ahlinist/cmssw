@@ -22,10 +22,13 @@ public:
   H2DRecHit(std::string name_) {
     TString N = name_.c_str();
     name=N;
+// Matching Sim/Rec hits
+    hHaveMatch       = new TH1F(N+"_hHaveMatch", "matching sim/reco pairs ?", 2, -0.5, 1.5);
 // Local X position    
     hRecPositionX    = new TH1F(N+"_hRecPositionX", "CSCRecHit x local", 200, -24., 24.);
     hSimPositionX    = new TH1F(N+"_hSimPositionX", "CSCSimHit x local", 200, -24., 24.);
     hResPositionX    = new TH1F(N+"_hResPositionX", "CSCHit local Dx", 101, -0.202, 0.202);
+    hResidualX       = new TH1F(N+"_hResidualX", "CSCHit x residual", 101, -5.05, 5.05);
     hResPositionXvsX = new TH2F(N+"_hResPositionXvsX", "CSCHit Dx vs x_{sim}", 200, -24., 24., 101, -2.02, 2.02); 
     hRecPositionYvsX = new TH2F(N+"_hRecPositionYvsX", "CSCRecHit y vs x", 600, -60., 60., 600, -60., 60.);
     hSimPositionYvsX = new TH2F(N+"_hSimPositionYvsX", "CSCSimHit y vs x", 600, -60., 60., 600, -60., 60.);
@@ -34,6 +37,7 @@ public:
     hRecPositionY    = new TH1F(N+"_hRecPositionY", "CSCRecHit y local", 200, -40., 40.);
     hSimPositionY    = new TH1F(N+"_hSimPositionY", "CSCSimHit y local", 200, -40., 40.);
     hResPositionY    = new TH1F(N+"_hResPositionY", "CSCHit Dy", 101, -2.02, 2.02);  
+    hResidualY       = new TH1F(N+"_hResidualY", "CSCHit Y residual", 101, -5.05, 5.05);
     hResPositionYvsY = new TH2F(N+"_hResPositionYvsY", "CSCHit Dy vs y", 120, -60., 60., 101, -2.02, 2.02);
     hRecYvsSimY      = new TH2F(N+"_hRecYvsSimY", "CSCRecHit y_{rec} vs y_{sim}", 200, -60., 60., 200, -60., 60.);
 // Wire group
@@ -69,10 +73,14 @@ public:
   /// Constructor from collection name and TFile.
   H2DRecHit(TString name_, TFile* file) {
     name=name_;
+
+// Matching sim/reco pair ?
+    hHaveMatch        = (TH1F *) file->Get(name+"_HaveMatch");
 // X
     hRecPositionX     = (TH1F *) file->Get(name+"_RecPositionX");
     hSimPositionX     = (TH1F *) file->Get(name+"_SimPositionX");
     hResPositionX     = (TH1F *) file->Get(name+"_ResPositionX");
+    hResidualX        = (TH1F *) file->Get(name+"_ResidualX");
     hResPositionXvsX  = (TH2F *) file->Get(name+"_ResPositionXvsX");
     hRecPositionYvsX  = (TH2F *) file->Get(name+"_RecPositionYvsX");
     hSimPositionYvsX  = (TH2F *) file->Get(name+"_SimPositionYvsX");
@@ -81,6 +89,7 @@ public:
     hRecPositionY     = (TH1F *) file->Get(name+"_RecPositionY");
     hSimPositionY     = (TH1F *) file->Get(name+"_SimPositionY");
     hResPositionY     = (TH1F *) file->Get(name+"_ResPositionY");
+    hResidualY        = (TH1F *) file->Get(name+"_ResidualY");
     hResPositionYvsY  = (TH2F *) file->Get(name+"_ResPositionYvsY");
     hRecYvsSimY       = (TH2F *) file->Get(name+"_RecYvsSimY");  
 // Wire group
@@ -113,10 +122,14 @@ public:
 
   /// Destructor
   virtual ~H2DRecHit() {
+
+// Have match
+    delete hHaveMatch;
 // X
     delete hRecPositionX;
     delete hSimPositionX;
     delete hResPositionX;
+    delete hResidualX;
     delete hResPositionXvsX;
     delete hRecPositionYvsX;
     delete hSimPositionYvsX;
@@ -125,6 +138,7 @@ public:
     delete hRecPositionY;
     delete hSimPositionY;
     delete hResPositionY;
+    delete hResidualY;
     delete hResPositionYvsY;
     delete hRecYvsSimY;
 // Wire group
@@ -158,19 +172,22 @@ public:
   }
 
   // Operations
+  void FillHaveMatch(int match) {hHaveMatch->Fill(match);}
   void FillWDigi(int wiregrp_digi) {hAllWireGrpDigi->Fill(wiregrp_digi);}
   void FillSDigi(int stripnum_digi) {hAllStripNuDigi->Fill(stripnum_digi);}
 
   /// Fill all the histos
   void Fill(float recx, float recy, float simx, float simy, float recphi, float simphi, float rdphi, float receta, 
             float simeta, float deta, int wiregrp, int stripnum, int wiregrp_digi, int stripnum_digi, 
-            int strip_shit, int wiregrp_shit, float r, float apothem) {
+            int strip_shit, int wiregrp_shit, float r, float apothem, float sigma_xreco, float sigma_yreco) {
 	
 
 // X
     hRecPositionX->Fill(recx);
     hSimPositionX->Fill(simx);
     hResPositionX->Fill(recx-simx);
+    if (sigma_xreco == 0) sigma_xreco = 0.0001;
+    hResidualX->Fill((recx-simx)/sigma_xreco);
     hResPositionXvsX->Fill(simx,recx-simx);
     hRecPositionYvsX->Fill(recx,recy);
     hSimPositionYvsX->Fill(simx,simy);
@@ -179,6 +196,8 @@ public:
     hRecPositionY->Fill(recy);
     hSimPositionY->Fill(simy);
     hResPositionY->Fill(recy-simy);
+    if (sigma_yreco == 0) sigma_yreco = 0.0001;
+    hResidualY->Fill((recy-simy)/sigma_yreco);
     hResPositionYvsY->Fill(simy,recy-simy);
     hRecYvsSimY->Fill(simy,recy);
 // Wire group
@@ -220,10 +239,14 @@ public:
 
   /// Write all the histos to currently opened file
   void Write() {
+
+// Have Match
+    hHaveMatch->Write();
 // X
     hRecPositionX->Write();
     hSimPositionX->Write();
     hResPositionX->Write();
+    hResidualX->Write();
     hResPositionXvsX->Write();
     hRecPositionYvsX->Write();
     hSimPositionYvsX->Write();
@@ -232,6 +255,7 @@ public:
     hRecPositionY->Write();
     hSimPositionY->Write();
     hResPositionY->Write();
+    hResidualY->Write();
     hResPositionYvsY->Write();
     hRecYvsSimY->Write();
 // Wire group
@@ -264,10 +288,14 @@ public:
     hDetavseta->Write();
   }
 
+
+// Have Match
+    TH1F *hHaveMatch;
 // X
     TH1F *hRecPositionX;
     TH1F *hSimPositionX;
     TH1F *hResPositionX;
+    TH1F *hResidualX;
     TH2F *hResPositionXvsX;
     TH2F *hRecPositionYvsX;
     TH2F *hSimPositionYvsX;
@@ -276,6 +304,7 @@ public:
     TH1F *hRecPositionY;
     TH1F *hSimPositionY;
     TH1F *hResPositionY;
+    TH1F *hResidualY;
     TH2F *hResPositionYvsY;
     TH2F *hRecYvsSimY;
 // Wire group
