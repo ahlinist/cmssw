@@ -8,6 +8,7 @@
 #include <RecoLocalMuon/CSCRecHitB/src/CSCMake2DRecHit.h>
 #include <RecoLocalMuon/CSCRecHitB/interface/CSCWireHitCollection.h>
 #include <RecoLocalMuon/CSCRecHitB/interface/CSCStripHitCollection.h>
+#include <RecoLocalMuon/CSCRecHitB/interface/CSCRangeMapAccessor.h>
 
 #include <Geometry/CSCGeometry/interface/CSCChamberSpecs.h>
 #include <Geometry/CSCGeometry/interface/CSCLayer.h>
@@ -16,7 +17,6 @@
 #include <DataFormats/MuonDetId/interface/CSCDetId.h>
 #include <DataFormats/CSCDigi/interface/CSCStripDigi.h>
 #include <DataFormats/CSCDigi/interface/CSCWireDigi.h>
-#include <DataFormats/CSCRecHit/interface/CSCRangeMapAccessor.h>
 
 #include <CondFormats/CSCObjects/interface/CSCGains.h>
 #include <CondFormats/DataRecord/interface/CSCGainsRcd.h>
@@ -157,6 +157,7 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
     if ( insert ) stripLayer.push_back((*it).cscDetId());
   }
   if (debug) std::cout << "[CSCRecHitBBuilder] Done sorting strip hits" << std::endl;
+  if (debug) std::cout << "# of layers with strip hits: " << stripLayer.size() << std::endl;
 
   // Sort wire hits
   for ( CSCWireHitCollection::const_iterator it = clean_woc.begin(); it != clean_woc.end(); it++ ) {
@@ -172,6 +173,7 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
     if ( insert ) wireLayer.push_back((*it).cscDetId());
   }
   if (debug) std::cout << "[CSCRecHitBBuilder] Done sorting wire hits" << std::endl;
+  if (debug) std::cout << "# of layers with wire hits: " << wireLayer.size() << std::endl;
 
 
   // Now create 2-D hits by looking at superposition of strip and wire hit in a layer
@@ -198,7 +200,7 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
     std::vector<CSCStripHit> cscStripHit;
     
     CSCRangeMapAccessor acc;
-    CSCStripHitCollection::range range = clean_soc.get(acc.cscChamber(*sIt));
+    CSCStripHitCollection::range range = clean_soc.get(acc.cscDetLayer(*sIt));
 
     // Create vector of strip hits for this layer    
     for ( CSCStripHitCollection::const_iterator clean_soc = range.first; clean_soc != range.second; clean_soc++)
@@ -248,11 +250,6 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
       // to see if have wire hits in gap
       for ( wIt=wireLayer.begin(); wIt != wireLayer.end(); ++wIt ) {
         
-        std::vector<CSCWireHit> cscWireHit;
-    
-        CSCRangeMapAccessor acc2;
-        CSCWireHitCollection::range range = clean_woc.get(acc2.cscChamber(*wIt));
-        
         const CSCDetId wDetId = (*wIt);
       
         if ((wDetId.endcap()  == compId.endcap() ) &&
@@ -262,8 +259,14 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
             (wDetId.layer()   == compId.layer()  )) {
 
           // Create vector of wire hits for this layer
+          std::vector<CSCWireHit> cscWireHit;   
+          CSCRangeMapAccessor acc2;
+          CSCWireHitCollection::range range = clean_woc.get(acc2.cscDetLayer(*wIt));
+        
           for ( CSCWireHitCollection::const_iterator clean_woc = range.first; clean_woc != range.second; clean_woc++)
             cscWireHit.push_back(*clean_woc);
+
+          if ( debug ) std::cout << "# wire hits in layer: "<< cscWireHit.size() << std::endl;
 
           // Because of ME-1a problem, have to do the following trick:
           int wendcap  = sDetId.endcap();
@@ -301,11 +304,6 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
 
     for ( wIt=wireLayer.begin(); wIt != wireLayer.end(); ++wIt ) {
         
-      std::vector<CSCWireHit> cscWireHit;
-       
-      CSCRangeMapAccessor acc2;
-      CSCWireHitCollection::range range = clean_woc.get(acc2.cscChamber(*wIt));
-      
       const CSCDetId& wDetId  = (*wIt);
         
       // Again, because of ME1a, use the compId to make a comparison between strip and wire hit CSCDetId
@@ -316,11 +314,19 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
           (wDetId.layer()   == compId.layer()  )) {
           
         // Create vector of wire hits for this layer
+        std::vector<CSCWireHit> cscWireHit;
+       
+        CSCRangeMapAccessor acc2;
+        CSCWireHitCollection::range range = clean_woc.get(acc2.cscDetLayer(*wIt));
+      
         for ( CSCWireHitCollection::const_iterator clean_woc = range.first; clean_woc != range.second; clean_woc++)
           cscWireHit.push_back(*clean_woc);
 
-        // Build pseudo 2D hit for all possible strip-wire pairs 
+        // Build 2D hit for all possible strip-wire pairs 
         // overlapping within this layer
+        if (debug) std::cout << "# strip hits in layer: " << cscStripHit.size() << "  " 
+                             << "# wire hits in layer: "  << cscWireHit.size()  << std::endl;
+
         for (unsigned i = 0; i != cscStripHit.size(); i++ ) {
           const CSCStripHit s_hit = cscStripHit[i];
           for (unsigned j = 0; j != cscWireHit.size(); j++ ) {
@@ -336,10 +342,11 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
         }
       }
     }
-    
-    // If missing wire hit in a layer, form pseudo 2-D hit from strip hit
-    if ( !foundMatch && makePseudo2DHits ) { 
+
+    if ( hits_in_layer < 1 && makePseudo2DHits ) { 
+      // If missing wire hit in a layer, form pseudo 2-D hit from strip hit
       if ( debug ) std::cout << " Found gap in layer for wire hit collection " << std::endl;      
+      if ( debug ) std::cout << "# strip hits in layer: "<< cscStripHit.size() << std::endl;
 
       for (unsigned i = 0; i != cscStripHit.size(); i++ ) {
         const CSCStripHit s_hit = cscStripHit[i];
@@ -347,6 +354,13 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
         hitsInLayer.push_back( rechit );
         hits_in_layer++;
       }
+    }
+
+    // output vector of 2D rechits to collection
+    if (hits_in_layer > 0) {
+      oc.put( sDetId, hitsInLayer.begin(), hitsInLayer.end() );
+      hitsInLayer.clear();
+      hits_in_layer = 0;
     }
     layer_idx++;
     old_id = sDetId;
