@@ -81,6 +81,14 @@ namespace edm {
 			    CurrentProcessingContext const* cpc) = 0;
     virtual void implBeginJob(EventSetup const&) = 0;
     virtual void implEndJob() = 0;
+    virtual bool implBeginRun(RunPrincipal& rp, EventSetup const& c,
+			    CurrentProcessingContext const* cpc) = 0;
+    virtual bool implEndRun(RunPrincipal& rp, EventSetup const& c,
+			    CurrentProcessingContext const* cpc) = 0;
+    virtual bool implBeginLuminosityBlock(LuminosityBlockPrincipal& lbp, EventSetup const& c,
+			    CurrentProcessingContext const* cpc) = 0;
+    virtual bool implEndLuminosityBlock(LuminosityBlockPrincipal& lbp, EventSetup const& c,
+			    CurrentProcessingContext const* cpc) = 0;
 
   private:
     RunStopwatch::StopwatchPointer stopwatch_;

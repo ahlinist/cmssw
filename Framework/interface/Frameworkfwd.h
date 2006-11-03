@@ -42,7 +42,6 @@ namespace edm {
   class Provenance;
   class RawInputSource;
   class Run;
-  class RunHandler;
   class Schedule;
   class Selector;
   class SelectorBase;

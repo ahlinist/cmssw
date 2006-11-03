@@ -99,11 +99,15 @@ namespace edm
 
   OutputModule::~OutputModule() { }
 
-  void OutputModule::beginJob(EventSetup const&) { }
+  void OutputModule::doBeginJob(EventSetup const& c) {
+    beginJob(c);
+  }
 
-  void OutputModule::endJob() { }
+  void OutputModule::doEndJob() {
+    endJob();
+  }
 
- const Trig& OutputModule::getTrigMask(EventPrincipal const& ep) const
+  Trig const& OutputModule::getTrigMask(EventPrincipal const& ep) const
   {
     if (! prod_.isValid())
     {

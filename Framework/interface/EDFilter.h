@@ -43,7 +43,7 @@ namespace edm {
     CurrentProcessingContext const* currentContext() const;
 
   private:    
-    virtual bool filter(Event&, EventSetup const&){return true;}
+    virtual bool filter(Event&, EventSetup const&) = 0;
     virtual void beginJob(EventSetup const&){}
     virtual void endJob(){}
     virtual bool beginRun(Run &, EventSetup const&){return true;}

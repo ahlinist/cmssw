@@ -40,6 +40,14 @@ namespace edm
 
     virtual void implBeginJob(EventSetup const&) ;
     virtual void implEndJob() ;
+    virtual bool implBeginRun(RunPrincipal& rp, EventSetup const& c,
+			    CurrentProcessingContext const* cpc);
+    virtual bool implEndRun(RunPrincipal& rp, EventSetup const& c,
+			    CurrentProcessingContext const* cpc);
+    virtual bool implBeginLuminosityBlock(LuminosityBlockPrincipal& lbp, EventSetup const& c,
+			    CurrentProcessingContext const* cpc);
+    virtual bool implEndLuminosityBlock(LuminosityBlockPrincipal& lbp, EventSetup const& c,
+			    CurrentProcessingContext const* cpc);
     virtual std::string workerType() const;
     
     boost::shared_ptr<OutputModule> mod_;

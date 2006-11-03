@@ -41,7 +41,7 @@ namespace edm {
     CurrentProcessingContext const* currentContext() const;
 
   private:
-    virtual void produce(Event &, EventSetup const&){}
+    virtual void produce(Event &, EventSetup const&) = 0;
     virtual void beginJob(EventSetup const&){}
     virtual void endJob(){}
     virtual void beginRun(Run &, EventSetup const&){}

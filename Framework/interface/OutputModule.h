@@ -36,8 +36,8 @@ namespace edm {
 
     explicit OutputModule(ParameterSet const& pset);
     virtual ~OutputModule();
-    virtual void beginJob(EventSetup const&);
-    virtual void endJob();
+    void doBeginJob(EventSetup const&);
+    void doEndJob();
     void writeEvent(EventPrincipal const& e, ModuleDescription const& d,
 		    CurrentProcessingContext const* c);
     void doBeginRun(RunPrincipal const& e, ModuleDescription const& d,
@@ -100,9 +100,13 @@ namespace edm {
 
     virtual void write(EventPrincipal const& e) = 0;
     bool wantEvent(EventPrincipal const& e);
+    virtual void beginJob(EventSetup const&){}
+    virtual void endJob(){}
     virtual void beginRun(RunPrincipal const& r){}
     virtual void endRun(RunPrincipal const& r){}
+    //virtual void endRun(RunPrincipal const& r) = 0; // QQQ
     virtual void beginLuminosityBlock(LuminosityBlockPrincipal const& lb){}
+    //virtual void endLuminosityBlock(LuminosityBlockPrincipal const& lb) = 0; // QQQ
     virtual void endLuminosityBlock(LuminosityBlockPrincipal const& lb){}
 
     std::string process_name_;
