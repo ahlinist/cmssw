@@ -93,7 +93,12 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
     stripNoiseMatrix_->setNoiseMatrix( gains_, noise_ );
     stripNoiseMatrix_->getNoiseMatrix( id, nMatrix ); 
   } else {
-    for ( int i = 0; i < 1500; i++ ) nMatrix.push_back( 0. );
+    for ( int i = 0; i < 1500; i++ ) {
+      if (i%3 == 0) {
+        nMatrix.push_back( 10. );
+      } else {
+        nMatrix.push_back( 0. );
+    }
     for ( int i = 0; i < 100; i++ ) {
       slopeRight[i] = 0.;
       slopeLeft[i]  = 0.;
