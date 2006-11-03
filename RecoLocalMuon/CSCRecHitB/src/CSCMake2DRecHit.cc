@@ -98,6 +98,7 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
         nMatrix.push_back( 10. );
       } else {
         nMatrix.push_back( 0. );
+      }
     }
     for ( int i = 0; i < 100; i++ ) {
       slopeRight[i] = 0.;
