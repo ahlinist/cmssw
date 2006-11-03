@@ -66,7 +66,7 @@ TString segment = "ME_All";
  TString plot5b = "dphi_vs_r_"+segment+suffixps;
  TString plot5c = "rdphi_"+segment+suffixps;
  TString plot5cc = "rdphi_bottom_"+segment+suffixps;
- TString plot5ccc = "rdphit_top_"+segment+suffixps;
+ TString plot5ccc = "rdphi_top_"+segment+suffixps;
  TString plot5d = "rdphi_vs_r_"+segment+suffixps; 
 
  TString plot6c = "deta_"+segment+suffixps;
