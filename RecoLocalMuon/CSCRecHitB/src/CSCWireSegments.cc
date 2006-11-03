@@ -7,8 +7,8 @@
 #include <RecoLocalMuon/CSCRecHitB/src/CSCWireSegments.h>
 #include <RecoLocalMuon/CSCRecHitB/interface/CSCWireHitCollection.h>
 #include <RecoLocalMuon/CSCRecHitB/interface/CSCWireHit.h>
+#include <RecoLocalMuon/CSCRecHitB/interface/CSCRangeMapAccessor.h>
 
-#include <DataFormats/CSCRecHit/interface/CSCRangeMapAccessor.h>
 #include <DataFormats/MuonDetId/interface/CSCDetId.h>
 
 #include <Geometry/CSCGeometry/interface/CSCLayer.h>
