@@ -29,17 +29,19 @@ TString segment = "ME_All";
 
 // Files for histogram output --> set suffixps to desired file type:  e.g. .eps, .jpg, ...
 
+ TString plot0 = "matched_pair_"+segment+suffixps;
+
  TString plot1a = "xrec_"+segment+suffixps;
  TString plot1b = "xsim_"+segment+suffixps;
  TString plot1c = "dx_"+segment+suffixps;
- TString plot1d = "dx_vs_x_"+segment+suffixps;
+ TString plot1d = "x_residual_"+segment+suffixps;
  TString plot1e = "yrec_vs_xrec_"+segment+suffixps;
  TString plot1f = "ysim_vs_xsim_"+segment+suffixps;
 
  TString plot2a = "yrec_"+segment+suffixps; 
  TString plot2b = "ysim_"+segment+suffixps; 
  TString plot2c = "dy_"+segment+suffixps; 
- TString plot2d = "dy_vs_y_"+segment+suffixps;
+ TString plot2d = "y_residual_"+segment+suffixps;
  TString plot2e = "yrec_vs_ysim_"+segment+suffixps;
 
  TString plot3a = "wiregrp_rec_"+segment+suffixps;
@@ -74,10 +76,14 @@ TString segment = "ME_All";
 // Pointers to histograms
 // ********************************************************************
 
+// 0) Matched pair
+ hHaveMatch        = (TH1F *) file->Get(segment+"_hHaveMatch");
+
 // 1) X
  hRecPositionX     = (TH1F *) file->Get(segment+"_hRecPositionX");
  hSimPositionX     = (TH1F *) file->Get(segment+"_hSimPositionX");
  hResPositionX     = (TH1F *) file->Get(segment+"_hResPositionX");
+ hResidualX        = (TH1F *) file->Get(segment+"_hResidualX");
  hResPositionXvsX  = (TH2F *) file->Get(segment+"_ResPositionXvsX");
  hRecYvsX          = (TH2F *) file->Get(segment+"_hRecPositionYvsX");
  hSimYvsX          = (TH2F *) file->Get(segment+"_hSimPositionYvsX");
@@ -86,6 +92,7 @@ TString segment = "ME_All";
  hRecPositionY     = (TH1F *) file->Get(segment+"_hRecPositionY");
  hSimPositionY     = (TH1F *) file->Get(segment+"_hSimPositionY");
  hResPositionY     = (TH1F *) file->Get(segment+"_hResPositionY");
+ hResidualY        = (TH1F *) file->Get(segment+"_hResidualY");
  hResPositionYvsY  = (TH2F *) file->Get(segment+"_hResPositionYvsY");
  hRecYvsSimY       = (TH2F *) file->Get(segment+"_hRecYvsSimY");
 
@@ -121,54 +128,88 @@ TString segment = "ME_All";
  hDeta             = (TH1F *) file->Get(segment+"_hDeta");
  hDetavseta        = (TH2F *) file->Get(segment+"_hDetavseta");
 
+// ***************************************************************** 
+// Have match
+// *****************************************************************
 
+ gStyle->SetOptStat(kTRUE);
+ gStyle->SetOptStat(kFALSE);
+ TCanvas *c1 = new TCanvas("c1","");
+ c1->SetFillColor(10);
+ c1->SetFillColor(10);
+ hHaveMatch->SetTitle(segment);
+ hHaveMatch->Draw();
+ hHaveMatch->GetXaxis()->SetTitle("Sim hits without (0) or with (1) matching rechit");
+ c1->Print(plot0);
+ 
 // *****************************************************************
 // 1) Local X position
 // *****************************************************************
 
-// 1c) X res
- gStyle->SetOptStat(kTRUE);
+// 1c) delta X
+ gStyle->SetOptStat(kFALSE);
  TCanvas *c1 = new TCanvas("c1","");
- c1->SetFillColor(10);
+ c1->SetFillColor(10);   
  c1->SetFillColor(10);
  hResPositionX->SetTitle(segment);
  hResPositionX->Draw();
  hResPositionX->GetXaxis()->SetTitle("#Delta x_{local} (cm)");
  hResPositionX->GetYaxis()->SetTitle(" ");
-// hResPositionX->Fit("gaus");
-// TF1 *myfunc = hResPositionX->GetFunction("gaus");
-// float par0 = gaus->GetParameter(0); 
-// float par1 = gaus->GetParameter(1); 
-// float par2 = gaus->GetParameter(2); 
-// cout << "Parameters are: " << "P0: " << par0  
-//     <<  " P1: " << par1 << " P2: " <<par2 << endl;
-// float low = par1 -nsigmas * par2;
-// float hi = par1 + nsigmas * par2;
-// hResPositionX->Fit("gaus","R","",low,hi);
-// par0 = gaus->GetParameter(0); 
-// par1 = gaus->GetParameter(1); 
-// par2 = gaus->GetParameter(2); 
-// cout << "********* Second fit *********" << endl;
-// cout << "Parameters are: " << "P0: " << par0  
-//      <<  " P1: " << par1 << " P2: " << par2 << endl;
-// gStyle->SetOptStat(kTRUE);
-// gStyle->SetOptFit(0111);
-// low = par1 -nsigmas * par2;
-// hi = par1 + nsigmas * par2;
-// hResPositionX->Fit("gaus","R","",low,hi);
-
-
+ hResPositionX->Fit("gaus");
+ TF1 *myfunc = hResPositionX->GetFunction("gaus");
+ float par0 = gaus->GetParameter(0);
+ float par1 = gaus->GetParameter(1);
+ float par2 = gaus->GetParameter(2);
+ cout << "Parameters are: " << "P0: " << par0
+     <<  " P1: " << par1 << " P2: " <<par2 << endl;
+ float low = par1 -nsigmas * par2;
+ float hi = par1 + nsigmas * par2;
+ hResPositionX->Fit("gaus","R","",low,hi);
+ par0 = gaus->GetParameter(0);
+ par1 = gaus->GetParameter(1);
+ par2 = gaus->GetParameter(2);
+ cout << "********* Second fit *********" << endl;
+ cout << "Parameters are: " << "P0: " << par0
+      <<  " P1: " << par1 << " P2: " << par2 << endl;
  gStyle->SetOptStat(kTRUE);
- TCanvas *c1 = new TCanvas("c1","");
- c1->SetFillColor(10);
- c1->SetFillColor(10);
- hResPositionX->SetTitle(segment);
- hResPositionX->Draw();
- hResPositionX->GetXaxis()->SetTitle("#Delta x_{local} (cm)");
- hResPositionX->GetYaxis()->SetTitle(" ");
+ gStyle->SetOptFit(0111);
+ low = par1 -nsigmas * par2;
+ hi = par1 + nsigmas * par2;  
+ hResPositionX->Fit("gaus","R","",low,hi);
  c1->Print(plot1c);
-
-
+ 
+// 1d) X residual
+ gStyle->SetOptStat(kFALSE);
+ TCanvas *c1 = new TCanvas("c1","");
+ c1->SetFillColor(10);
+ c1->SetFillColor(10);
+ hResidualX->SetTitle(segment);
+ hResidualX->Draw();
+ hResidualX->GetXaxis()->SetTitle("#Delta x_{local}/#sigma x_{reco}");
+ hResidualX->GetYaxis()->SetTitle(" ");   
+ hResidualX->Fit("gaus");
+ TF1 *myfunc = hResidualX->GetFunction("gaus");
+ float par0 = gaus->GetParameter(0);
+ float par1 = gaus->GetParameter(1);
+ float par2 = gaus->GetParameter(2);
+ cout << "Parameters are: " << "P0: " << par0
+      <<  " P1: " << par1 << " P2: " <<par2 << endl;
+ float low = par1 - nsigmas * par2;
+ float hi  = par1 + nsigmas * par2;
+ hResidualX->Fit("gaus","R","",low,hi);
+ par0 = gaus->GetParameter(0);
+ par1 = gaus->GetParameter(1);
+ par2 = gaus->GetParameter(2);
+ cout << "********* Second fit *********" << endl;
+ cout << "Parameters are: " << "P0: " << par0
+      <<  " P1: " << par1 << " P2: " << par2 << endl;
+ gStyle->SetOptStat(kTRUE);
+ gStyle->SetOptFit(0111);
+ low = par1 - nsigmas * par2;  
+ hi  = par1 + nsigmas * par2;
+ hResidualX->Fit("gaus","R","",low,hi);
+ c1->Print(plot1d);
+ 
 
 // 1e) Yrec vs Xrec
  gStyle->SetOptStat(kFALSE);
@@ -196,69 +237,69 @@ TString segment = "ME_All";
 // *****************************************************************
 // 2) Local Y position  
 // *****************************************************************
-//// 2a) Rec Y
-// gStyle->SetOptStat(kFALSE);
-// TCanvas *c1 = new TCanvas("c1","");
-// c1->SetFillColor(10);
-// c1->SetFillColor(10);
-// hRecPositionY->SetTitle(segment);
-// hRecPositionY->Draw();
-// hRecPositionY->GetXaxis()->SetTitle(" yrec_{local} (cm)");
-// hRecPositionY->GetYaxis()->SetTitle(" ");
-// c1->Print(plot2a);
-//
-//// 2b) Sim Y
-// gStyle->SetOptStat(kFALSE);
-// TCanvas *c1 = new TCanvas("c1","");
-// c1->SetFillColor(10);
-// c1->SetFillColor(10);
-// hSimPositionY->SetTitle(segment);
-// hSimPositionY->Draw();
-// hSimPositionY->GetXaxis()->SetTitle(" ysim_{local} (cm)");
-// hSimPositionY->GetYaxis()->SetTitle(" ");
-// c1->Print(plot2b);
 
 // 2c) Delta y
  gStyle->SetOptStat(kFALSE);
  TCanvas *c1 = new TCanvas("c1","");
- c1->SetFillColor(10);
+ c1->SetFillColor(10);   
  c1->SetFillColor(10);
  hResPositionY->SetTitle(segment);
  hResPositionY->Draw();
  hResPositionY->GetXaxis()->SetTitle("#Delta y_{local} (cm)");
  hResPositionY->GetYaxis()->SetTitle(" ");
-// hResPositionY->Fit("gaus");
-// TF1 *myfunc = hResPositionY->GetFunction("gaus");
-// float par0 = gaus->GetParameter(0); 
-// float par1 = gaus->GetParameter(1); 
-// float par2 = gaus->GetParameter(2); 
-// cout << "Parameters are: " << "P0: " << par0  
-//     <<  " P1: " << par1 << " P2: " <<par2 << endl;
-// float low = par1 -nsigmas * par2;
-// float hi = par1 + nsigmas * par2;
-// hResPositionY->Fit("gaus","R","",low,hi);
-// par0 = gaus->GetParameter(0); 
-// par1 = gaus->GetParameter(1); 
-// par2 = gaus->GetParameter(2); 
-// cout << "********* Second fit *********" << endl;
-// cout << "Parameters are: " << "P0: " << par0  
-//      <<  " P1: " << par1 << " P2: " << par2 << endl;
-// gStyle->SetOptStat(kTRUE);
-// gStyle->SetOptFit(0111);
-// low = par1 -nsigmas * par2;
-// hi = par1 + nsigmas * par2;
-// hResPositionY->Fit("gaus","R","",low,hi);
+ hResPositionY->Fit("gaus");
+ TF1 *myfunc = hResPositionY->GetFunction("gaus");
+ float par0 = gaus->GetParameter(0);
+ float par1 = gaus->GetParameter(1);
+ float par2 = gaus->GetParameter(2);
+ cout << "Parameters are: " << "P0: " << par0
+     <<  " P1: " << par1 << " P2: " <<par2 << endl;
+ float low = par1 -nsigmas * par2;
+ float hi = par1 + nsigmas * par2;
+ hResPositionY->Fit("gaus","R","",low,hi);
+ par0 = gaus->GetParameter(0);
+ par1 = gaus->GetParameter(1);
+ par2 = gaus->GetParameter(2);
+ cout << "********* Second fit *********" << endl;
+ cout << "Parameters are: " << "P0: " << par0
+      <<  " P1: " << par1 << " P2: " << par2 << endl;
+ gStyle->SetOptStat(kTRUE);
+ gStyle->SetOptFit(0111);
+ low = par1 -nsigmas * par2;
+ hi = par1 + nsigmas * par2;  
+ hResPositionY->Fit("gaus","R","",low,hi);
  c1->Print(plot2c);
 
-//// 2d) Delta Y vs Y
+// 2d) Y residual
  gStyle->SetOptStat(kFALSE);
  TCanvas *c1 = new TCanvas("c1","");
+ c1->SetFillColor(10);   
  c1->SetFillColor(10);
- c1->SetFillColor(10);
- hResPositionYvsY->SetTitle(segment);
- hResPositionYvsY->Draw();
- hResPositionYvsY->GetXaxis()->SetTitle("y_{local} (cm)");
- hResPositionYvsY->GetYaxis()->SetTitle("#Delta y_{local} (cm) ");
+ hResidualY->SetTitle(segment);
+ hResidualY->Draw();
+ hResidualY->GetXaxis()->SetTitle("#Delta y_{local}/#sigma y_{reco}");
+ hResidualY->GetYaxis()->SetTitle(" ");
+ hResidualY->Fit("gaus");
+ TF1 *myfunc = hResidualY->GetFunction("gaus");
+ float par0 = gaus->GetParameter(0);
+ float par1 = gaus->GetParameter(1);
+ float par2 = gaus->GetParameter(2);
+ cout << "Parameters are: " << "P0: " << par0
+      <<  " P1: " << par1 << " P2: " <<par2 << endl;
+ float low = par1 - nsigmas * par2;
+ float hi  = par1 + nsigmas * par2;
+ hResidualY->Fit("gaus","R","",low,hi);
+ par0 = gaus->GetParameter(0);
+ par1 = gaus->GetParameter(1);
+ par2 = gaus->GetParameter(2);
+ cout << "********* Second fit *********" << endl;
+ cout << "Parameters are: " << "P0: " << par0
+      <<  " P1: " << par1 << " P2: " << par2 << endl;
+ gStyle->SetOptStat(kTRUE);
+ gStyle->SetOptFit(0111);
+ low = par1 - nsigmas * par2;  
+ hi  = par1 + nsigmas * par2;
+ hResidualY->Fit("gaus","R","",low,hi);
  c1->Print(plot2d);
 
 //// 2e) Y reco vs Y sim 
