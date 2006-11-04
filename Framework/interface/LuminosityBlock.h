@@ -62,10 +62,10 @@ namespace edm {
     // this DataViewImpl. The friendships required seems gross, but any
     // alternative is not great either.  Putting it into the
     // public interface is asking for trouble
-    //friend class ConfigurableInputSource;
-    //friend class RawInputSource;
-    //friend class FilterWorker;
-    //friend class ProducerWorker;
+    friend class ConfigurableInputSource;
+    friend class RawInputSource;
+    friend class FilterWorker;
+    friend class ProducerWorker;
 
     LuminosityBlockAux const& aux_;
   };
