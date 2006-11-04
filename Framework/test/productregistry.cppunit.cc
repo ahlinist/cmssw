@@ -82,7 +82,7 @@ void  testProductRegistry:: testSignal(){
    Listener listening(hear);
    reg.productAddedSignal_.connect(listening);
    
-   BranchDescription prod("label", "PROD", "int", "int", "int");
+   BranchDescription prod(InEvent, "label", "PROD", "int", "int", "int");
    
    reg.addProduct(prod);
    CPPUNIT_ASSERT(1==hear);
@@ -100,10 +100,10 @@ void  testProductRegistry:: testWatch(){
 
    Responder one("one",constReg, reg);
                  
-   BranchDescription prod("label", "PROD", "int", "int", "int");
+   BranchDescription prod(InEvent, "label", "PROD", "int", "int", "int");
    reg.addProduct(prod);
 
-   BranchDescription prod2("label", "PROD", "float", "float", "float");
+   BranchDescription prod2(InEvent, "label", "PROD", "float", "float", "float");
    reg.addProduct(prod2);
    
    //Should be 4 products
@@ -127,7 +127,7 @@ void  testProductRegistry:: testCircular(){
    Responder one("one",constReg, reg);
    Responder two("two",constReg, reg);
    
-   BranchDescription prod("label", "PROD", "int", "int", "int");
+   BranchDescription prod(InEvent, "label", "PROD", "int", "int", "int");
    
    reg.addProduct(prod);
    //Should be 5 products

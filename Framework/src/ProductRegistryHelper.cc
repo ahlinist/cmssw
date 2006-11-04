@@ -24,7 +24,8 @@ namespace edm {
                              ProductRegistry& iReg,
                              bool iIsListener) {
     for (TypeLabelList::const_iterator p = iBegin; p != iEnd; ++p) {
-      BranchDescription pdesc(iDesc.moduleLabel(),
+      BranchDescription pdesc(p->branchType_,
+                              iDesc.moduleLabel(),
                               iDesc.processName(),
                               p->typeID_.userClassName(),
                               p->typeID_.friendlyClassName(), 
