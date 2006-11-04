@@ -34,14 +34,14 @@ TString segment = "ME_All";
  TString plot1a = "xrec_"+segment+suffixps;
  TString plot1b = "xsim_"+segment+suffixps;
  TString plot1c = "dx_"+segment+suffixps;
- TString plot1d = "x_residual_"+segment+suffixps;
+ TString plot1d = "x_pulls_"+segment+suffixps;
  TString plot1e = "yrec_vs_xrec_"+segment+suffixps;
  TString plot1f = "ysim_vs_xsim_"+segment+suffixps;
 
  TString plot2a = "yrec_"+segment+suffixps; 
  TString plot2b = "ysim_"+segment+suffixps; 
  TString plot2c = "dy_"+segment+suffixps; 
- TString plot2d = "y_residual_"+segment+suffixps;
+ TString plot2d = "y_pulls_"+segment+suffixps;
  TString plot2e = "yrec_vs_ysim_"+segment+suffixps;
 
  TString plot3a = "wiregrp_rec_"+segment+suffixps;
@@ -66,7 +66,7 @@ TString segment = "ME_All";
  TString plot5b = "dphi_vs_r_"+segment+suffixps;
  TString plot5c = "rdphi_"+segment+suffixps;
  TString plot5cc = "rdphi_bottom_"+segment+suffixps;
- TString plot5ccc = "rdphi_top_"+segment+suffixps;
+ TString plot5ccc = "rdphit_top_"+segment+suffixps;
  TString plot5d = "rdphi_vs_r_"+segment+suffixps; 
 
  TString plot6c = "deta_"+segment+suffixps;
