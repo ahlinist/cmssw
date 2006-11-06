@@ -1,20 +1,16 @@
-//  Author:             Christian.Weiser@cern.ch
-//  Ported to CMSSW by: Andrea.Bocci@cern.ch
-//  Last Update:        12/07/2006
-
 #include "RecoBTag/MCTools/interface/MCBaseParticle.h"
 
 using namespace edm;
 using namespace std;
 using namespace HepMC;
 
+// is the event needed here?
 MCBaseParticle::MCBaseParticle( const HepMC::GenParticle* particle, const HepMC::GenEvent* event ):
-  m_LundCode( particle->pdg_id() ) //why was it barcode???
+  particleInfo_( particle->pdg_id() )
  {
-  m_HepParticle = particle;
-  m_HepEvent  = event;
-
-  setFourVector( particle->momentum() );
+  hepParticle = particle;
+  hepEvent  = event;
+  fourVector_ = lorentzVect( particle->momentum() );
 }
 
 MCBaseParticle::~MCBaseParticle() {
@@ -24,7 +20,7 @@ MCBaseParticle::~MCBaseParticle() {
 
 void MCBaseParticle::print() const {
   cout << "--> MCBaseParticle:" << endl;
-//   cout << "--> LundCode                :" << m_LundCode.LundCode() << endl;
+//   cout << "--> LundCode                :" << particleInfo.LundCode() << endl;
 //   cout << "--> mass                    :" << mass                  << endl;
 //   cout << "--> eta                     :" << eta                   << endl;
 //   cout << "--> phi                     :" << phi                   << endl;

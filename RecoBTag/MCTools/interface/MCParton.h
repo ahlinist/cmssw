@@ -3,89 +3,81 @@
 
 // class for partons in the simulation allowing
 // to get the most important info for partons
-//
-// inherits from BaseParticle
-
-//  Author:             Christian.Weiser@cern.ch
-//  Ported to CMSSW by: Andrea.Bocci@cern.ch
-//  Last Update:        12/07/2006
 
 #include "RecoBTag/MCTools/interface/MCBaseParticle.h"
 
-//
-// here it comes:
-//
 class MCParton : public MCBaseParticle {
 
 public:
-  /// default constructor
-  MCParton(){}
 
-  MCParton( const HepMC::GenParticle* particle, const HepMC::GenEvent* event, int iLP) :
-    MCBaseParticle(particle,event),indexLastParton(iLP){}
+  MCParton();
 
-  /// default destructor
+  MCParton(const HepMC::GenParticle* particle, const HepMC::GenEvent* event,
+		const HepMC::GenParticle* lastParton);
+
   ~MCParton(){}
 
 
   // other info (isPrimary etc.) where the complete vector of generated particles is needed
-  void setParticleProperties () {}; //to be filled later
+  void setParticleProperties ();
 
   // print
-  void print () const {}
+  void print () const;
 
   // access to data members
-  int  getFlavour            () const { return flavour ; }
-  int  getFlavourAbs         () const { return flavourAbs ; }
-  int  getStatusPythia       () const { return statusPythia ; }
-  int  getMotherLundCode     () const { return motherLundCode ; }
-  int  getMotherStatusPythia () const { return motherStatusPythia ; }
-  int  getMotherIndex        () const { return motherIndex ; }
-  bool getFromPrimaryProcess () const { return fromPrimaryProcess ; }
-  bool getFromRadiation      () const { return fromRadiation ; }
-  bool getFromGluonSplitting () const { return fromGluonSplitting ; }
-  bool getIsFinalParton      () const { return isFinalParton ; }
-  //  bool getRadiatesGluon      () const { return radiatesGluon ; }
-  bool getSplitsToD          () const { return splitsToD ; }
-  bool getSplitsToU          () const { return splitsToU ; }
-  bool getSplitsToS          () const { return splitsToS ; }
-  bool getSplitsToC          () const { return splitsToC ; }
-  bool getSplitsToB          () const { return splitsToB ; }
+  int  flavour  	  () const { return flavour_; }
+  int  flavourAbs	  () const { return flavourAbs_; }
+  int  statusPythia	  () const { return statusPythia_; }
+  const HepMC::GenParticle* mother () const { return mother_; }
+  int  motherLundCode	  () const { return motherLundCode_; }
+  int  motherStatusPythia () const { return motherStatusPythia_; }
+  bool fromPrimaryProcess () const { return fromPrimaryProcess_; }
+  bool fromRadiation	  () const { return fromRadiation_; }
+  bool fromGluonSplitting () const { return fromGluonSplitting_; }
+  bool isFinalParton	  () const { return isFinalParton_; }
+  //  bool RadiatesGluon      () const { return radiatesGluon_; }
+  bool splitsToD	  () const { return splitsToD_; }
+  bool splitsToU	  () const { return splitsToU_; }
+  bool splitsToS	  () const { return splitsToS_; }
+  bool splitsToC	  () const { return splitsToC_; }
+  bool splitsToB	  () const { return splitsToB_; }
   //  bool getSplitsToGluon      () const { return splitsToGluon ; }
 
-  std::vector<int> getDaughterLines () const { return daughterLines ; }
-  HepLorentzVector getSummedDaughters () const { return summedDaughters ; }
+  std::vector<const HepMC::GenParticle*> daughters () const { return daughterLines_ ; }
+  math::XYZTLorentzVector summedDaughterMomentum () const { return summedDaughters_ ; }
 
-  bool getIsInitialParton      () const { return isInitialParton ; }
-  bool getInitialPartonHasCloseHF () const { return initialPartonHasCloseHF; }
+  bool isInitialParton      () const { return isInitialParton_; }
+  bool initialPartonHasCloseHF () const { return initialPartonHasCloseHF_; }
 
 private:
 
-  int  flavour ;     // 0: undef. ; 12345: duscb ; 21: gluon // D
-  int  flavourAbs ;                                          // D
-  int  statusPythia ;                                        // D
-  int  motherLundCode ;                                      // D
-  int  motherStatusPythia ;
-  int  motherIndex ;                                         // for unique identification
-  bool fromPrimaryProcess ;                                  // D
-  bool fromRadiation ;                                       // NOT YET
-  bool fromGluonSplitting ;                                  // D
-  bool isFinalParton ;                                       // D
-  //  bool radiatesGluon ;
-  bool splitsToD ;                                           // D
-  bool splitsToU ;                                           // D
-  bool splitsToS ;                                           // D
-  bool splitsToC ;                                           // D
-  bool splitsToB ;                                           // D
-  //  bool splitsToGluon ;                                   // D
+  void reset ();
+  int  flavour_;     // 0: undef._; 12345: duscb_; 21: gluon // D
+  int  flavourAbs_;                                          // D
+  int  statusPythia_;                                        // D
+  int  motherLundCode_;                                      // D
+  int  motherStatusPythia_;
+  bool fromPrimaryProcess_;                                  // D
+  bool fromRadiation_;                                       // NOT YET
+  bool fromGluonSplitting_;                                  // D
+  bool isFinalParton_;                                       // D
+  //  bool radiatesGluon_;
+  bool splitsToD_;                                           // D
+  bool splitsToU_;                                           // D
+  bool splitsToS_;                                           // D
+  bool splitsToC_;                                           // D
+  bool splitsToB_;                                           // D
+  //  bool splitsToGluon_;                                   // D
 
-  int indexLastParton ;
+  const HepMC::GenParticle* lastParton_;
+  const HepMC::GenParticle* mother_;
 
-  std::vector<int> daughterLines ;
-  HepLorentzVector summedDaughters ;
+  std::vector<const HepMC::GenParticle*> daughterLines_;
+  math::XYZTLorentzVector summedDaughters_;
 
-  bool isInitialParton ;
-  bool initialPartonHasCloseHF ;
+  bool isInitialParton_;
+  bool initialPartonHasCloseHF_;
+
 
 };
 #endif
