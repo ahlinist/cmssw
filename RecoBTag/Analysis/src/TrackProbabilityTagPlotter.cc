@@ -45,13 +45,11 @@ TrackProbabilityTagPlotter::~TrackProbabilityTagPlotter ()
 
 
 void TrackProbabilityTagPlotter::analyzeTag (const reco::TrackCountingTagInfo & tagInfo,
-	const reco::JetTag & jetTag)
+	const reco::JetTag & jetTag, const JetFlavour & jetFlavour)
 {
 
-  //fixme:
-  int jetFlav = 5;
-
-  jetTagPlotter_->analyzeJetTag(jetTag);
+  int jetFlav = jetFlavour.flavour();
+  jetTagPlotter_->analyzeJetTag(jetTag, jetFlavour);
 
   // check if properly initialized
 

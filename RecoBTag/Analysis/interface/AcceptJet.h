@@ -2,13 +2,14 @@
 #define AcceptJet_H
 
 #include "DataFormats/BTauReco/interface/JetTag.h"
+#include "RecoBTag/MCTools/interface/JetFlavour.h"
 
 class AcceptJet {
 
  public:
   AcceptJet();
   // event selection
-  bool operator() (const reco::JetTag & jetTag) const;
+  bool operator() (const reco::JetTag & jetTag, const JetFlavour & jetFlavour) const;
 
   // set cut parameters
   void setEtaMin            ( double d ) { etaMin            = d ; } 

@@ -9,6 +9,7 @@
 #include "RecoBTag/Analysis/interface/EffPurFromHistos.h"
 #include "DataFormats/BTauReco/interface/JetTag.h"
 #include "RecoBTag/Analysis/interface/BaseBTagPlotter.h"
+#include "RecoBTag/MCTools/interface/JetFlavour.h"
 
 
 
@@ -23,8 +24,9 @@ class JetTagPlotter : public BaseBTagPlotter {
   virtual ~JetTagPlotter () ;
 
 //   virtual void analyzeEvent (const edm::Event& iEvent) ;
-  void analyzeJetTag (const reco::JetTag & jetTag) ;
-  void analyzeTag (const reco::JetTag & jetTag) {return analyzeJetTag(jetTag);}
+  void analyzeJetTag (const reco::JetTag & jetTag, const JetFlavour & jetFlavour) ;
+  void analyzeTag (const reco::JetTag & jetTag, const JetFlavour & jetFlavour)
+	{return analyzeJetTag(jetTag, jetFlavour);}
 
   // final computation, plotting, printing .......
   void finalize () ;

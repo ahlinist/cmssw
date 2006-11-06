@@ -167,11 +167,10 @@ void JetTagPlotter::psPlot(const TString & name)
   canvas.Print(name + cName + ".ps]");
 }
 
-void JetTagPlotter::analyzeJetTag(const reco::JetTag & jetTag)
+void JetTagPlotter::analyzeJetTag(const reco::JetTag & jetTag,
+	const JetFlavour & jetFlavour)
 {
-  //fixme:
-  int jetFlav = 5;
-  // "normal" variables once per event
+  int jetFlav = jetFlavour.flavour();
 
   dDiscriminatorFC->fill(jetFlav, jetTag.discriminator());
   cout << jetTag.discriminator()<< " ";
@@ -183,10 +182,9 @@ void JetTagPlotter::analyzeJetTag(const reco::JetTag & jetTag)
   dJetRecPseudoRapidity->fill(jetFlav, jetTag.jet().eta() );
   dJetRecPhi->fill(jetFlav, jetTag.jet().phi());
 
-//fixme
-//   dJetPartonMomentum->fill(jetFlav, jetPartonMomentum );
-//   dJetPartonPt->fill(jetFlav, jetPartonPt );
-//   dJetPartonPseudoRapidity->fill(jetFlav, jetPartonPseudoRapidity );
+  dJetPartonMomentum->fill(jetFlav, jetFlavour.underlyingParton4Vec().P() );
+  dJetPartonPt->fill(jetFlav, jetFlavour.underlyingParton4Vec().Pt() );
+  dJetPartonPseudoRapidity->fill(jetFlav, jetFlavour.underlyingParton4Vec().Eta() );
 
 }
 
