@@ -105,7 +105,7 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
   } else {
     for ( int i = 0; i < 1500; i++ ) {
       if (i%3 == 0) {
-        nMatrix.push_back( 10. );
+        nMatrix.push_back( 1. );
       } else {
         nMatrix.push_back( 0. );
       }
