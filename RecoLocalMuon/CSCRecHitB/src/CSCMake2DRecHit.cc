@@ -33,6 +33,9 @@
 #include <string>
 
 
+/* Constructor
+ *
+ */
 CSCMake2DRecHit::CSCMake2DRecHit(const edm::ParameterSet& ps){
     
   debug                      = ps.getUntrackedParameter<bool>("CSCDebug");
@@ -44,12 +47,13 @@ CSCMake2DRecHit::CSCMake2DRecHit(const edm::ParameterSet& ps){
   stripCrosstalk_            = new CSCStripCrosstalk( ps );
   stripNoiseMatrix_          = new CSCStripNoiseMatrix( ps );
   xFitWithGatti_             = new CSCFitXonStripWithGatti( ps );
-
 }   
 
 
+/* Destructor
+ *
+ */
 CSCMake2DRecHit::~CSCMake2DRecHit() {
-  
   delete stripCrosstalk_;
   delete stripNoiseMatrix_;
   delete xFitWithGatti_;
@@ -85,6 +89,12 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
   LocalError localerrFailed(dx2, dxy, dy2);  
   CSCRecHit2D failedHit( id, lpFailed, localerrFailed, channels, chisq, prob );
 
+
+  float slopeRight[100];
+  float slopeLeft[100];
+  float interRight[100];
+  float interLeft[100];
+  std::vector<float> nMatrix;
 
   // Fill x-talk and noise matrix at once:
   if ( isData ) {
@@ -178,7 +188,7 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
     
     CSCRecHit2D rechit( id, lp0, localerr, channels, chisq, prob );
     if (debug) std::cout << "Found rechit in layer " << this_layer << " with local position:  x = " << x << "  y = " << y << std::endl; 
-
+    nMatrix.clear();
     return rechit;  
   } 
 
@@ -262,6 +272,7 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
     keepHit = keepHitInFiducial( lp5, lp6 );
     if ( !keepHit ) { 
       if (debug) std::cout <<"[CSCMake2DRecHit::hitFromStripAndWire] failedHit" << std::endl;
+      nMatrix.clear();
       return failedHit;
     }	
 
@@ -315,6 +326,7 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
   CSCRecHit2D rechit( id, lp0, localerr, channels, chisq, prob );
   
   if (debug) std::cout << "Found rechit in layer " << this_layer << " with local position:  x = " << x << "  y = " << y << std::endl; 
+  nMatrix.clear();
   return rechit;
 }
 

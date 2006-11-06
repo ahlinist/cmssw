@@ -58,10 +58,6 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCLayer* layer, const CSCStri
   std::vector<float> adcs = stripHit.s_adc();
   int tmax = stripHit.tmax();
 
-  if ( debug ) {
-    std::cout << "[CSCFitXonStripWithGatti::findXOnStrip] Content of stripHit: " << std::endl;
-    for ( int i = 0; i < nStrips; i++ ) std::cout << "strip " << i+1 << ": "  << adcs[4*i] << " " << adcs[4*i+1] << " " << adcs[4*i+2] << " " << adcs[4*i+3] << std::endl;
-  } 
   // Fit peaking time  
   float t_peak = tmax * 50.;
   float t_zero = 0.;
@@ -74,8 +70,6 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCLayer* layer, const CSCStri
         adc[t] = adcs[k];
       }
       useFittedCharge = peakTimeFinder_->FindPeakTime( tmax, adc, t_zero, t_peak );
-      if (debug) std::cout << "ADCs to peakFinder : "  << adc[0] << " " << adc[1] << " " << adc[2] << " " << adc[3] << std::endl;
-
     }
   }
 

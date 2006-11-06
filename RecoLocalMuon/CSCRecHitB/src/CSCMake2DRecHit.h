@@ -76,19 +76,12 @@ class CSCMake2DRecHit
   bool useGatti;
   float maxGattiChi2;
 
-  float slopeRight[100];
-  float slopeLeft[100];
-  float interRight[100];
-  float interLeft[100];
-  std::vector<float> nMatrix;
-
   /* Cache calibrations for current event
    *
    */
   const CSCGains*       gains_;
   const CSCcrosstalk*   xtalk_;
   const CSCNoiseMatrix* noise_;
-
 
   CSCStripCrosstalk*       stripCrosstalk_; 
   CSCStripNoiseMatrix*     stripNoiseMatrix_;
