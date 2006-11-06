@@ -12,7 +12,7 @@ PythiaWeightFilter::PythiaWeightFilter(const edm::ParameterSet& iConfig) :
 label_(iConfig.getUntrackedParameter("moduleLabel",std::string("source"))),
 minweight(iConfig.getUntrackedParameter<double>("MinWeight", 0.1))
 {
-  edm::LogInfo ("PythiaWeightFilter") << "Minimum accepted weight"<<minweight<<endl;   //now do what ever initialization is needed
+  edm::LogVerbatim ("PythiaWeightFilter") << "Minimum accepted weight"<<minweight<<endl;   //now do what ever initialization is needed
 
 }
 
@@ -39,7 +39,7 @@ bool PythiaWeightFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetu
    iEvent.getByLabel(label_, evt);
    HepMC::GenEvent * myGenEvent = new  HepMC::GenEvent(*(evt->GetEvent()));
    if (myGenEvent->weights()[0]>minweight)accepted=true;
-   edm::LogInfo ("PythiaWeightFilter") << "Weight="<<myGenEvent->weights()[0]<<" accepted="<<accepted<<endl;
+   edm::LogVerbatim ("PythiaWeightFilter") << "Weight="<<myGenEvent->weights()[0]<<" accepted="<<accepted<<endl;
    delete myGenEvent;
    return accepted;
 
