@@ -1,10 +1,17 @@
 #include "RecoBTag/MCTools/interface/JetFlavourIdentifier.h"
 #include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
 #include "RecoBTag/MCTools/interface/MCParticleInfo.h"
+#include "DataFormats/Math/interface/LorentzVector.h"
+#include "DataFormats/Math/interface/Vector3D.h"
+#include <Math/GenVector/VectorUtil.h>
+#include "DataFormats/Math/interface/Vector.h"
+#include "DataFormats/Math/interface/LorentzVector.h"
 
 using namespace edm;
 using namespace std;
 using namespace HepMC;
+using namespace reco;
+using namespace math;
 
 JetFlavourIdentifier::JetFlavourIdentifier(const edm::ParameterSet& iConfig)
 {
@@ -49,30 +56,27 @@ void JetFlavourIdentifier::fillInfo ( const HepMC::GenEvent * event ) {
 //   cout << "===> Size of Leptons after erasing : " << Leptons.size() << endl ;
 // 
   // print RawHepEvent in Debug mode
-   { event->print(); }
+//    { event->print(); }
 // 
   // one loop to find out the index of the last parton
-  int indexLastParton = -1 , counter=0;
+  const HepMC::GenParticle* lastParton;
   HepMC::GenEvent::particle_const_iterator p;
-  for (p = event->particles_begin(); p != event->particles_end(); p++) {
-  ++counter;
-//  for ( unsigned int i = 1; i<= event->n(); i++ ){
-//     const RawHepEventParticle* particle = event->getParticle(i); 
+  for (p = event->particles_begin(); p != event->particles_end(); ++p) {
     // decode particle info from Lund Code
     MCParticleInfo testCode( (*p)->pdg_id() ); 
-    cout << "pid: "<<(*p)->pdg_id()<<" barcode "<<(*p)->barcode()<<endl;
+//     cout << "pid: "<<(*p)->pdg_id()<<" barcode "<<(*p)->barcode()<<endl;
     if ( testCode.isParton() ) {
-      indexLastParton = counter;
+      lastParton = *p;
     }
   }
-  cout << "====>>>>> MCInfoFiller::fillInfo : index of last parton : " << indexLastParton << endl ;
+  cout << "====>>>>> MCInfoFiller::fillInfo : index of last parton : " << lastParton->barcode() << endl ;
 
   
   
   // loop over all generated particles and retrieve information
   //
 
-  for (p = event->particles_begin(); p != event->particles_end(); p++) {
+  for (p = event->particles_begin(); p != event->particles_end(); ++p) {
 
 //    for ( unsigned int i = 1; i<= event->n(); i++ ){
 //      const RawHepEventParticle* particle = event->getParticle(i); 
@@ -96,7 +100,7 @@ void JetFlavourIdentifier::fillInfo ( const HepMC::GenEvent * event ) {
      // **********************************************************************
      if ( testCode.isParton() ) {
        if ( fillPartons ) {
-	 MCParton aParton ( *p, event , indexLastParton ) ;
+	 MCParton aParton ( *p, event , lastParton ) ;
 	 m_partons.push_back( aParton ) ;
        }
      } // end parton-if
@@ -143,11 +147,10 @@ void JetFlavourIdentifier::fillInfo ( const HepMC::GenEvent * event ) {
   
 }
 
-template <class JetCollection>
-JetFlavour  JetFlavourIdentifier::identifyBasedOnPartons ( const edm::Ref<JetCollection> & theJet )
+JetFlavour  JetFlavourIdentifier::identifyBasedOnPartons ( const Jet & theJet )
 {
-  JetFlavour jetFlavour = basicIdentityBasedOnPartons(theJet.getLorentzVector(), coneSizeToAssociate);
-  if (physDefinition) fillAlgorithmicDefinition(jetFlavour, theJet.getLorentzVector());
+  JetFlavour jetFlavour = basicIdentityBasedOnPartons(theJet.p4(), coneSizeToAssociate);//Hep3Vector(theJet.p4().x(),theJet.p4().y(),theJet.p4().z())
+  if (physDefinition) fillPhysicsDefinition(jetFlavour, theJet.p4());
     else fillAlgorithmicDefinition(jetFlavour);
   if ( jetFlavour.flavour()==5   && vetoB ) jetFlavour.flavour(0);
   if ( jetFlavour.flavour()==4   && vetoC ) jetFlavour.flavour(0);
@@ -160,12 +163,12 @@ JetFlavour  JetFlavourIdentifier::identifyBasedOnPartons ( const edm::Ref<JetCol
 
 
 JetFlavour  JetFlavourIdentifier::basicIdentityBasedOnPartons
-	(const Hep3Vector & jet3Vec, const double coneSize)
+	(const XYZTLorentzVector & jet4Vec, const double coneSize)
 {
   JetFlavour jetFlavour;
   // to count partons from how many sources
   jetFlavour.numberOfSources(0);
-  vector<int> indicesSources;
+  vector<const GenParticle *> indicesSources;
   int nDown = 0, nUp = 0, nStrange = 0, nCharm = 0, nBottom = 0, nGluon = 0;
   // kinematics of underlying parton by summing them up
   
@@ -176,60 +179,61 @@ JetFlavour  JetFlavourIdentifier::basicIdentityBasedOnPartons
 	                           itP != m_partons.end(); itP++ ) {
 
     // get Lundcode
-    int theFlavour = abs ( itP->getFlavour() );
+    int theFlavour = abs ( itP->flavour() );
     // get mother status
-    // int motherStatus = itP->getMotherStatusPythia();
+    // int motherStatus = itP->motherStatusPythia();
     // get kinemat. info
-    Hep3Vector P3Vec   ( itP->getFourVector() );
+    XYZTLorentzVector partonMomentum = itP->fourVector();
+
     // for initial partons: use the resummed daughters
-    if ( itP->getIsInitialParton() ) P3Vec = itP->getSummedDaughters();
+    if ( itP->isInitialParton() ) partonMomentum = itP->summedDaughterMomentum();
     //
-    double deltaR     = jet3Vec.deltaR( P3Vec );
-    double pAbsParton = P3Vec.mag();
+    double deltaR     = ROOT::Math::VectorUtil::DeltaR(jet4Vec, partonMomentum);
+    double pAbsParton = partonMomentum.P();
     
     //CW match also to the initial partons for the 'physics definition'
-    if ( itP->getIsInitialParton() ) {
+    if ( itP->isInitialParton() ) {
       if ( deltaR < coneSize ) {   // is in cone
 	jetFlavour.initialFlavour(theFlavour);
 	nInitialPartons++;
-	jetFlavour.vec4OriginParton(jetFlavour.vec4OriginParton() + itP->getSummedDaughters());
+	jetFlavour.vec4OriginParton(jetFlavour.vec4OriginParton() + itP->summedDaughterMomentum());
 	// reset if it has other HF nearby (from other sources!!)
-	if ( itP->getInitialPartonHasCloseHF() ) jetFlavour.initialFlavour(0);
+	if ( itP->initialPartonHasCloseHF() ) jetFlavour.initialFlavour(0);
 	// check if it has split to heavy flavours
-	jetFlavour.initialPartonSplitsToC(itP->getSplitsToC());
-	jetFlavour.initialPartonSplitsToB(itP->getSplitsToB());
+	jetFlavour.initialPartonSplitsToC(itP->splitsToC());
+	jetFlavour.initialPartonSplitsToB(itP->splitsToB());
       }
     }
     
     // final parton? (asking both final parton and from primary process removes remnant/underlying event)
-    //CW    if ( itP->getIsFinalParton() && itP->getFromPrimaryProcess() ) {
-    if ( itP->getIsFinalParton() ) {
+    //CW    if ( itP->isFinalParton() && itP->fromPrimaryProcess() ) {
+    if ( itP->isFinalParton() ) {
       
       if ( deltaR < coneSize ) {   // is in cone
 	//
 	// set members
 	//
-
+// cout <<"Got "<< itP->fourVector().eta()<<" , "<< itP->fourVector().phi()<<" , "<< itP->flavour()<<endl;
 	// sum up parton 4-momenta
-	jetFlavour.vec4SummedPartons(jetFlavour.vec4SummedPartons()+itP->getFourVector());
+	jetFlavour.vec4SummedPartons(jetFlavour.vec4SummedPartons()+itP->fourVector());
 
 	// origin source of this parton
-	int origSourceCode  = abs ( itP->getMotherLundCode() );
-	int origSourceIndex = itP->getMotherIndex();
+	int origSourceCode  = abs ( itP->motherLundCode() );
 	// check if this source is already there
 	bool sourceAlreadyThere = false;
-	for ( vector<int>::const_iterator itS = indicesSources.begin(); itS != indicesSources.end(); itS++ ) {
-	  if ( *itS == origSourceIndex ) sourceAlreadyThere = true;
+	for ( vector<const GenParticle *>::const_iterator itS = indicesSources.begin(); itS != indicesSources.end(); itS++ ) {
+	  if ( *itS == itP->mother() ) sourceAlreadyThere = true;
 	}
 	// add the new source if not there
-	if ( !sourceAlreadyThere ) indicesSources.push_back(origSourceIndex);
+	if ( !sourceAlreadyThere ) indicesSources.push_back(itP->mother());
+// 	cout << jetFlavour.heaviestFlavour()<<" ";
 	
 	
 	// main flavour is given to Parton with highest |p|
 	if ( pAbsParton     > jetFlavour.pMainParton()          ) {
-	  jetFlavour.mainFlavour     (theFlavour);
+	  jetFlavour.mainFlavour     (theFlavour);//cout <<"P "<<jetFlavour.pMainParton()<<endl;
 	  jetFlavour.pMainParton     (pAbsParton);
-	  jetFlavour.vec4MainParton  (itP->getFourVector());	  
+	  jetFlavour.vec4MainParton  (itP->fourVector());	  
 	  jetFlavour.deltaRMainParton(deltaR);
 	  jetFlavour.mainOrigFlavour (origSourceCode);
 	}
@@ -237,14 +241,15 @@ JetFlavour  JetFlavourIdentifier::basicIdentityBasedOnPartons
 	// Def.: gluon (21) is lighter than quarks!!
 	if ( theFlavour > jetFlavour.heaviestFlavour()  &&  theFlavour != 21  ) {
 	  jetFlavour.pHeaviestParton   (pAbsParton);	  
-	  jetFlavour.vec4HeaviestParton(itP->getFourVector());	  
+	  jetFlavour.vec4HeaviestParton(itP->fourVector());	  
 	  jetFlavour.heaviestFlavour   (theFlavour);
 	}
+// 	cout << jetFlavour.heaviestFlavour()<<" ";
 	
 	if ( deltaR     < jetFlavour.deltaRClosestParton() ) {
 	  jetFlavour.minimumDeltaRFlavour(theFlavour);
 	  jetFlavour.pClosestParton      (pAbsParton);	  
-	  jetFlavour.vec4ClosestParton   (itP->getFourVector());	  
+	  jetFlavour.vec4ClosestParton   (itP->fourVector());	  
 	  jetFlavour.deltaRClosestParton (deltaR);
 	}
 
@@ -259,6 +264,7 @@ JetFlavour  JetFlavourIdentifier::basicIdentityBasedOnPartons
     } // end primary-if 
   } // end HH for-loop
 
+// 	cout << jetFlavour.heaviestFlavour()<<" ";
 
   jetFlavour.nDown(nDown); 
   jetFlavour.nUp(nUp);
@@ -286,16 +292,15 @@ JetFlavour  JetFlavourIdentifier::basicIdentityBasedOnPartons
   // determine the origin flavour: the source of the hardest one
   jetFlavour.originFlavour(jetFlavour.mainOrigFlavour());
 
-//  cout << "CW JetIdentifier : " << jetFlavour.originFlavour << " , " << jetFlavour.mainFlavour << " , "  << jetFlavour.numberOfSources << " , " << endl;
+//  cout << "CW JetIdentifier : " << jetFlavour.originFlavour() << " , " << jetFlavour.mainFlavour() << " , "  << jetFlavour.numberOfSources() << " , " << endl;
   if ( nInitialPartons > 1 ) {
     //    cout << "CW JetIdentifier : reset initialFlavour because > 1 initial partons : " << nInitialPartons << endl;
     jetFlavour.initialFlavour(0);
   }
   
-//CW  cout << "CW JetIdentifier initial flavour  = "
-//CW       << jetFlavour.initialFlavour << " , "
-//CW       << theJet.getLorentzVector() << endl;
-  
+//  cout << "CW JetIdentifier initial flavour  = "
+//       << jetFlavour.initialFlavour() << " , "<< jetFlavour.heaviestFlavour()<<"\n ";
+
   return jetFlavour;
 }
 
@@ -313,11 +318,11 @@ void JetFlavourIdentifier::fillAlgorithmicDefinition(JetFlavour & jetFlavour)
   }
 }
 
-void JetFlavourIdentifier::fillPhysicsDefinition(JetFlavour & jetFlavour, const Hep3Vector & jet3Vec)
+void JetFlavourIdentifier::fillPhysicsDefinition(JetFlavour & jetFlavour, const math::XYZTLorentzVector & jet4Vec)
 {
   int flavour = jetFlavour.initialFlavour() ;
   // clean: do not accept if final state heavy partons from many sources -> take bigger cone here
-  JetFlavour phIdentifierPartons = basicIdentityBasedOnPartons(jet3Vec, 0.7);
+  JetFlavour phIdentifierPartons = basicIdentityBasedOnPartons(jet4Vec, 0.7);
 
   // if there is heavy flavour content from another source we reject it 
   bool resetJetFlavour = false ;

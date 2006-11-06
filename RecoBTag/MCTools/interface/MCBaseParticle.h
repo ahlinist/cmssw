@@ -1,23 +1,14 @@
 #ifndef SimDataFormats_BTauMC_MCBaseParticle_h
 #define SimDataFormats_BTauMC_MCBaseParticle_h
 
-// base class for BTauMC MonteCarlo particles
-
-//  Author:             Christian.Weiser@cern.ch
-//  Ported to CMSSW by: Andrea.Bocci@cern.ch
-//  Last Update:        12/07/2006
+// base class for BTag MonteCarlo particles
 
 #include <string>
 #include <vector>
 
-#include "DataFormats/Common/interface/Ref.h"
-
 #include "DataFormats/Math/interface/LorentzVector.h"
 #include "RecoBTag/MCTools/interface/MCParticleInfo.h"
 #include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
-
-typedef edm::RefProd<edm::HepMCProduct>                 HepEventRef;
-typedef edm::Ref<edm::HepMCProduct, HepMC::GenParticle> HepParticleRef;
 
 class MCBaseParticle {
 
@@ -29,29 +20,39 @@ public:
   /// default destructor
   virtual ~MCBaseParticle();
 
-  // fill particle info - this also decodes all particle related information and sets the corresponding variables
-  virtual void setMCInfo( int info ) { 
-    m_LundCode.setCode( info ); 
+  /**
+   * fill particle info - this also decodes all particle related information and
+   * sets the corresponding variables
+   */
+  virtual void setPDGid( int info ) { 
+    particleInfo_.setCode( info ); 
   }
 
-  // fill kinematical info
-  virtual void setFourVector ( const HepLorentzVector & fv) {
-    m_FourVector = fv;
+  /**
+   * fill kinematical info
+   */
+  virtual void fourVector ( const HepLorentzVector & fv) {
+    fourVector_ = fv;
   }
 
-  // print
+  /**
+   * prints base info
+   */
   virtual void print() const;
 
   // access to data members
-  virtual const MCParticleInfo & getMCInfo ()     const { return m_LundCode; }
-  virtual const HepLorentzVector  & getFourVector () const { return m_FourVector; }
-  virtual const HepMC::GenParticle * getParticle ()   const { return m_HepParticle; }
+  virtual const MCParticleInfo & particleInfo ()     const { return particleInfo_; }
+  virtual const math::XYZTLorentzVector  & fourVector () const { return fourVector_; }
+  virtual const HepMC::GenParticle * particle ()   const { return hepParticle; }
 
 protected:
-  const HepMC::GenEvent *    m_HepEvent;
-  const HepMC::GenParticle * m_HepParticle;
-  MCParticleInfo m_LundCode;
-  HepLorentzVector  m_FourVector;
+  const HepMC::GenEvent *    hepEvent;
+  const HepMC::GenParticle * hepParticle;
+  MCParticleInfo particleInfo_;
+  math::XYZTLorentzVector  fourVector_;
+
+  math::XYZTLorentzVector lorentzVect(const CLHEP::HepLorentzVector & p4) const 
+  	{return  math::XYZTLorentzVector( p4.x(), p4.y(), p4.z(), p4.t() );}
 
 };
 

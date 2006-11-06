@@ -1,29 +1,33 @@
 #ifndef JetFlavour_H
 #define JetFlavour_H
 
-// class to identify origin of a jet
-
-//  Author:             Christian.Weiser@cern.ch
-//  Ported to CMSSW by: Andrea.Bocci@cern.ch
-//  Last Update:        12/07/2006
-
 #include <vector>
 #include <cmath>
 
+#include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
+
+  /**
+   * Class containing the main MC information on a jet, as extracted from the HepMC event.
+   * Some information, see below, depends on the chosen definition, 'algorithmic' or 'physical'
+   */
 
 class JetFlavour {
 
 public:
-  typedef HepLorentzVector LorentzVector;
 
-  // define association criterium via constructor
+  JetFlavour();
 
-  //
-  // access info
-  //
+  /**
+   * Returns the flavour of the jet. This changes according of the definition, 'algorithmic' or 'physical'
+   */
   int flavour() const {return m_flavour;}
-  LorentzVector underlyingParton4Vec() const {return m_underlyingParton4Vec;}
+
+  /**
+   * The momentum of the underlying parton. This parton changes according of the
+   * definition, 'algorithmic' or 'physical'
+   */
+  math::XYZTLorentzVector underlyingParton4Vec() const {return m_underlyingParton4Vec;}
 
   int  mainFlavour                  ( void ) const { return m_mainFlavour; }
   int  heaviestFlavour              ( void ) const { return m_heaviestFlavour; }
@@ -41,12 +45,12 @@ public:
   double pHeaviestParton            ( void ) const { return m_pHeaviestParton; }
   double deltaRMainParton           ( void ) const { return m_deltaRMainParton; }
   double deltaRClosestParton        ( void ) const { return m_deltaRClosestParton; }
-  LorentzVector vec4MainParton      ( void ) const { return m_Vec4MainParton; }
-  LorentzVector vec4ClosestParton   ( void ) const { return m_Vec4ClosestParton; }
-  LorentzVector vec4HeaviestParton  ( void ) const { return m_Vec4HeaviestParton; }
+  math::XYZTLorentzVector vec4MainParton      ( void ) const { return m_Vec4MainParton; }
+  math::XYZTLorentzVector vec4ClosestParton   ( void ) const { return m_Vec4ClosestParton; }
+  math::XYZTLorentzVector vec4HeaviestParton  ( void ) const { return m_Vec4HeaviestParton; }
 
-  LorentzVector vec4SummedPartons   ( void ) const { return m_Vec4SummedPartons; }
-  LorentzVector vec4OriginParton    ( void ) const { return m_Vec4OriginParton; }
+  math::XYZTLorentzVector vec4SummedPartons   ( void ) const { return m_Vec4SummedPartons; }
+  math::XYZTLorentzVector vec4OriginParton    ( void ) const { return m_Vec4OriginParton; }
 
   // if based on heavy hadrons
   bool hasBottomHadronInCone        ( void ) const { return ( m_mainFlavour == 5 ); }
@@ -74,7 +78,7 @@ public:
 //set methods:
 
   void flavour(const int a) {m_flavour = a;}
-  void underlyingParton4Vec(const LorentzVector a) {m_underlyingParton4Vec = a;}
+  void underlyingParton4Vec(const math::XYZTLorentzVector a) {m_underlyingParton4Vec = a;}
 
   void mainFlavour 		 (const int a)  {m_mainFlavour = a; }
   void heaviestFlavour		 (const int a)  {m_heaviestFlavour = a; }
@@ -92,12 +96,12 @@ public:
   void pHeaviestParton	      (const double a)  {m_pHeaviestParton = a; }
   void deltaRMainParton	      (const double a)  {m_deltaRMainParton = a; }
   void deltaRClosestParton        (const double a)  {m_deltaRClosestParton = a; }
-  void vec4MainParton      (const LorentzVector a)  {m_Vec4MainParton = a; }
-  void vec4ClosestParton   (const LorentzVector a)  {m_Vec4ClosestParton = a; }
-  void vec4HeaviestParton  (const LorentzVector a)  {m_Vec4HeaviestParton = a; }
+  void vec4MainParton      (const math::XYZTLorentzVector a)  {m_Vec4MainParton = a; }
+  void vec4ClosestParton   (const math::XYZTLorentzVector a)  {m_Vec4ClosestParton = a; }
+  void vec4HeaviestParton  (const math::XYZTLorentzVector a)  {m_Vec4HeaviestParton = a; }
 
-  void vec4SummedPartons   (const LorentzVector a)  {m_Vec4SummedPartons = a; }
-  void vec4OriginParton    (const LorentzVector a)  {m_Vec4OriginParton = a; }
+  void vec4SummedPartons   (const math::XYZTLorentzVector a)  {m_Vec4SummedPartons = a; }
+  void vec4OriginParton    (const math::XYZTLorentzVector a)  {m_Vec4OriginParton = a; }
 
   // if based on heavy hadrons
 
@@ -120,11 +124,8 @@ public:
 
 private:
 
-  // info members
-  // for both methods
   int    m_flavour;             // THE flavour, depends on whether the physics of the algo def is chosen
-  LorentzVector m_underlyingParton4Vec;
-
+  math::XYZTLorentzVector m_underlyingParton4Vec;
   int    m_mainFlavour;         // main is the hardest
   int    m_heaviestFlavour;     // heaviest does not include gluons
   int    m_minimumDeltaRFlavour;
@@ -138,12 +139,12 @@ private:
   double m_deltaRMainParton;    // deltaR of main parton
   double m_deltaRClosestParton; // deltaR of closest parton
 
-  LorentzVector m_Vec4MainParton;
-  LorentzVector m_Vec4ClosestParton;
-  LorentzVector m_Vec4HeaviestParton;
+  math::XYZTLorentzVector m_Vec4MainParton;
+  math::XYZTLorentzVector m_Vec4ClosestParton;
+  math::XYZTLorentzVector m_Vec4HeaviestParton;
 
-  LorentzVector m_Vec4SummedPartons;
-  LorentzVector m_Vec4OriginParton;
+  math::XYZTLorentzVector m_Vec4SummedPartons;
+  math::XYZTLorentzVector m_Vec4OriginParton;
 
   bool m_heavyHadronBased;
   bool m_partonBased;
