@@ -1,0 +1,15 @@
+<use name="root">
+<use name=VisMonitoring/VisDQMBase>
+<use name=VisMonitoring/VisDQMDisplayPlugins>
+<use name=Foundation/SealBase>
+<use name=DQMServices/Core>
+<use name=CommonTools/TrackerMap>
+
+<Flags SEAL_PLUGIN_NAME=DQMSiStripMonitorDisplayPlugins>
+
+<export>
+	<lib name=DQMSiStripMonitorDisplayPlugins>
+        <use name=CommonTools/TrackerMap>
+
+</export>
+
