@@ -1,18 +1,12 @@
 #ifndef BaseBTagPlotter_H
 #define BaseBTagPlotter_H
 
-// #include "BTagPlotPrintC.h"
-
-#include "FWCore/Framework/interface/Event.h"
 #include "RecoBTag/Analysis/interface/EtaPtBin.h"
 #include "TString.h"
 
 class EffPurFromHistos;
 
-// inheritance from BTagPlotPrintC is for practical reasons only
-// to simplify passing of plot/print options to HistoDescription that
-
-class BaseBTagPlotter /*: public BTagPlotPrintC */{
+class BaseBTagPlotter {
 
  public:
 
@@ -38,24 +32,6 @@ class BaseBTagPlotter /*: public BTagPlotPrintC */{
 
   virtual void psPlot(const TString & name) = 0;
 
-//   // dummies from BTagPlotPrintC
-//   void plot () {}
-//   void print () const {} 
-// 
-//   
-//   // common one applying the filter and calling analyzeMe()
-//   void analyze () { if ( acceptEvent() ) analyzeMe() ; }
-// 
-//   // this one has to be implemented by the derived classes
-//   // however, not defined pure virtual here to allow to instantiate an object
-//   // to get access without overhead to the variables
-//   virtual void analyzeMe () {}
-// 
-//   // event selection
-//   virtual bool acceptEvent () ;
-// 
-//   // final computation, plotting, printing .......
-//   virtual void finalize () {}
  protected:
 
   // the extension string to be used in histograms etc.

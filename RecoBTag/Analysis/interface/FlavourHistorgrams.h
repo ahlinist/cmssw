@@ -332,8 +332,16 @@ void FlavourHistorgrams<T>::plot (TPad * theCanvas) {
   //CW histo_1 = theHisto_dus ;
   histo_2 = theHisto_b ;
   histo_3 = theHisto_c ;
-  histo_4 = 0 ; if (btppNI) histo_4 = theHisto_ni ;
-  
+  histo_4 = 0 ;
+  double max = theHisto_dusg->GetMaximum();
+  if (theHisto_b->GetMaximum() > max) max = theHisto_b->GetMaximum();
+  if (theHisto_c->GetMaximum() > max) max = theHisto_c->GetMaximum();
+
+  if (btppNI) {
+    histo_4 = theHisto_ni ;
+    if (theHisto_ni->GetMaximum() > max) max = theHisto_ni->GetMaximum();
+  }
+
   if ( btppColour ) { // print colours 
     col_1   = 4 ;
     col_2   = 2 ;
@@ -343,7 +351,7 @@ void FlavourHistorgrams<T>::plot (TPad * theCanvas) {
     lineStyle_2  = 1 ;
     lineStyle_3  = 1 ;
     lineStyle_4  = 1 ;
-    lineWidth = 3 ;
+    lineWidth = 1 ;
   }
   else { // different marker/line styles
     col_1   = 1 ;
@@ -377,6 +385,8 @@ void FlavourHistorgrams<T>::plot (TPad * theCanvas) {
     if ( btppColour  ) col_2   = 4 ;
     if ( !btppColour ) lineStyle_2  = 2 ;
   }
+
+  histo_1 ->SetMaximum(max*1.05);
 
   histo_1 ->GetXaxis()->SetTitle ( theBaseNameTitle ) ;
   histo_1 ->GetYaxis()->SetTitle ( "Arbitrary Units" ) ;

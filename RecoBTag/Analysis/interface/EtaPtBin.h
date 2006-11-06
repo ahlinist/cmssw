@@ -3,6 +3,7 @@
 
 #include "TString.h"
 #include "DataFormats/BTauReco/interface/JetTag.h"
+#include "RecoBTag/MCTools/interface/JetFlavour.h"
 
 class EtaPtBin {
 
@@ -33,6 +34,7 @@ class EtaPtBin {
 
   bool inBin(const double & eta , const double & pt) const;
   bool inBin(const reco::JetTag & jetTag) const;
+  bool inBin(const JetFlavour & jetFlavour) const;
 
  private:
 

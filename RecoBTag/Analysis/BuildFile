@@ -7,6 +7,7 @@
  <use name=FWCore/Utilities>
  <use name=FWCore/ParameterSet>
  <use name=FWCore/Framework>
+ <use name=RecoBTag/MCTools>
 </export>
 
 <use name=DataFormats/BTauReco>
@@ -16,5 +17,6 @@
 <use name=FWCore/Utilities>
 <use name=FWCore/ParameterSet>
 <use name=FWCore/Framework>
+<use name=RecoBTag/MCTools>
 
 <flags SEAL_PLUGIN_NAME="RecoBTagAnalysis">
