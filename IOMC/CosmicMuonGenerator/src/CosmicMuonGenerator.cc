@@ -15,8 +15,8 @@ void CosmicMuonGenerator::initialize(){
   if (NumberOfEvents > 0){
     RanGen.SetSeed(RanSeed); //set seed for Random Generator (seed can be controled by config-file)
     // set up "surface geometry" dimensions
-    double RadiusTargetEff = RadiusTarget;
-    double Z_DistTargetEff = Z_DistTarget;
+    double RadiusTargetEff = RadiusOfTarget; //get this from cfg-file
+    double Z_DistTargetEff = ZDistOfTarget;  //get this from cfg-file
     if(TrackerOnly==true){
     RadiusTargetEff = RadiusTracker;
     Z_DistTargetEff = Z_DistTracker;
@@ -92,7 +92,7 @@ void CosmicMuonGenerator::nextEvent(){
     double T0 = (RanGen.Rndm()*(MaxT0-MinT0) + MinT0)*SpeedOfLight; // [mm/c];
     OneMuoEvt.create(id, Px, Py, Pz, E, MuonMass, Vx, Vy, Vz, T0); 
     // if angles are ok, propagate to target
-    if (goodOrientation()) OneMuoEvt.propagate(ElossScaleFactor, TrackerOnly, MTCCHalf);
+    if (goodOrientation()) OneMuoEvt.propagate(ElossScaleFactor, RadiusOfTarget, ZDistOfTarget, TrackerOnly, MTCCHalf);
     if (OneMuoEvt.hitTarget() && OneMuoEvt.e() > MinE){
       Nsel+=1.; //count number of generated and accepted events  
       notSelected = false;
@@ -334,6 +334,10 @@ void CosmicMuonGenerator::setMinT0(double T0){ if (NotInitialized) MinT0 = T0; }
 void CosmicMuonGenerator::setMaxT0(double T0){ if (NotInitialized) MaxT0 = T0; }
 
 void CosmicMuonGenerator::setElossScaleFactor(double ElossScaleFact){ if (NotInitialized) ElossScaleFactor = ElossScaleFact; }
+
+void CosmicMuonGenerator::setRadiusOfTarget(double R){ if (NotInitialized) RadiusOfTarget = R; }
+
+void CosmicMuonGenerator::setZDistOfTarget(double Z){ if (NotInitialized) ZDistOfTarget = Z; }
 
 void CosmicMuonGenerator::setTrackerOnly(bool Tracker){ if (NotInitialized) TrackerOnly = Tracker; }
 

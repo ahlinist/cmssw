@@ -17,6 +17,8 @@ CosMuoGenSource::CosMuoGenSource( const ParameterSet & pset, InputSourceDescript
   MinS(pset.getUntrackedParameter<double>("MinT0", -12.5)),
   MaxS(pset.getUntrackedParameter<double>("MaxT0", 12.5)),
   ELSF(pset.getUntrackedParameter<double>("ElossScaleFactor", 1.0)),
+  RTarget(pset.getUntrackedParameter<double>("RadiusOfTarget", 8000.)),
+  ZTarget(pset.getUntrackedParameter<double>("ZDistOfTarget", 15000.)),
   TrackerOnly(pset.getUntrackedParameter<bool>("TrackerOnly", false)),
   MTCCHalf(pset.getUntrackedParameter<bool>("MTCCHalf", false)),
   cmVerbosity_(pset.getUntrackedParameter<bool>("Verbosity", false))
@@ -37,6 +39,8 @@ CosMuoGenSource::CosMuoGenSource( const ParameterSet & pset, InputSourceDescript
     CosMuoGen->setMinT0(MinS);
     CosMuoGen->setMaxT0(MaxS);
     CosMuoGen->setElossScaleFactor(ELSF);
+    CosMuoGen->setRadiusOfTarget(RTarget);
+    CosMuoGen->setZDistOfTarget(ZTarget);
     CosMuoGen->setTrackerOnly(TrackerOnly);
     CosMuoGen->setMTCCHalf(MTCCHalf);
     CosMuoGen->initialize();

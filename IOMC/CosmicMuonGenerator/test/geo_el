@@ -186,7 +186,7 @@
     for (int iz=0; iz<75; ++iz){
       double Vz = double(iz)/2.5 - 14.8;
       TestEvt.create(id, Px, Py, Pz, E, MuonMass, (Vx*1000.), Vy, (Vz*1000.), T0);
-      TestEvt.propagate(1.0, false, false);
+      TestEvt.propagate(1.0, 8000., 15000., false, false);
       if (TestEvt.hitTarget()) exz->Fill(float(Vx),float(Vz),float(TestEvt.e()));
     }
   }
@@ -220,7 +220,7 @@
       Py = -P*cos(ThRad);
       Pz = -P*sin(ThRad);
       TestEvt.create(id, Px, Py, Pz, E, MuonMass, 0., Vy, Vz, T0);
-      TestEvt.propagate(1.0, false);
+      TestEvt.propagate(1.0, 8000., 15000., false, false);
       if (TestEvt.hitTarget()) eth->Fill(float(E),float(Theta));
     }
   }

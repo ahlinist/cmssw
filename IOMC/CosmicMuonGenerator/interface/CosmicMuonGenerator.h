@@ -37,6 +37,8 @@ public:
     MinT0  = -12.5;
     MaxT0  =  12.5;
     ElossScaleFactor = 1.0;
+    RadiusOfTarget = 8000.;
+    ZDistOfTarget = 15000.;
     TrackerOnly = false;
     MTCCHalf = false;
     EventRate = 0.;
@@ -88,6 +90,8 @@ private:
   double MinT0;    // min. t0   [ns]
   double MaxT0;    // max. t0   [ns]
   double ElossScaleFactor; // scale factor for energy loss
+  double RadiusOfTarget; // Radius of target-cylinder which cosmics HAVE to hit [mm], default is CMS-dimensions
+  double ZDistOfTarget; // z-length of target-cylinder which cosmics HAVE to hit [mm], default is CMS-dimensions
   bool   TrackerOnly; //if set to "true" detector with tracker-only setup is used, so no material or B-field outside is considerd
   bool   MTCCHalf; //if set to "true" muons are sure to hit half of CMS important for MTCC, 
                    //still material and B-field of whole CMS is considered
@@ -125,6 +129,8 @@ public:
   void setMinT0(double T0);
   void setMaxT0(double T0);
   void setElossScaleFactor(double ElossScaleFact);
+  void setRadiusOfTarget(double R);
+  void setZDistOfTarget(double Z);
   void setTrackerOnly(bool Tracker);
   void setMTCCHalf(bool MTCC);
   // initialize the generator
