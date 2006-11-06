@@ -35,7 +35,7 @@ const double Z_DistCMS = 15000.; // [mm]
 const double RadiusTracker =  1100.; // [mm]
 const double Z_DistTracker = 1100.; // [mm]
 // cylinder actually used in the code
-const double RadiusTarget = RadiusCMS; // [mm]
-const double Z_DistTarget = Z_DistCMS; // [mm]
+//const double RadiusTarget = RadiusCMS; // [mm]  //now controlled by cfg-file!!!
+//const double Z_DistTarget = Z_DistCMS; // [mm]  //now controlled by cfg-file!!!
 
 #endif
