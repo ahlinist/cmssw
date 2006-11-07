@@ -1,7 +1,7 @@
 #include "Alignment/OptAlignGeneratedSource/interface/OptAlignGeneratedSource.h"
 
-#include "CondFormats/OptAlignObjects/interface/XXXXMeasurements.h"
-#include "CondFormats/OptAlignObjects/interface/XXXXMeasurementInfo.h"
+#include "CondFormats/OptAlignObjects/interface/OpticalAlignMeasurements.h"
+#include "CondFormats/OptAlignObjects/interface/OpticalAlignMeasurementInfo.h"
 #include "CondFormats/OptAlignObjects/interface/OpticalAlignInfo.h"
 #include "CondFormats/OptAlignObjects/interface/OAQuality.h"
 
@@ -25,24 +25,24 @@ OptAlignGeneratedSource::OptAlignGeneratedSource ( edm::ParameterSet const& ps
 
   // note: no argument in the call to produces
   // the standard module label is assumed
-  produces<XXXXMeasurements>();
+  produces<OpticalAlignMeasurements>();
 }
   
 OptAlignGeneratedSource::~OptAlignGeneratedSource () { }
 
 
 bool OptAlignGeneratedSource::produce ( edm::Event& e ) {
-  std::auto_ptr<XXXXMeasurements> result(new XXXXMeasurements);
+  std::auto_ptr<OpticalAlignMeasurements> result(new OpticalAlignMeasurements);
   // ... fill the collection ... assign numObjects_ random values for now.
   OpticalAlignParam temp;
-  XXXXMeasurementInfo xxxxinfo;
+  OpticalAlignMeasurementInfo xxxxinfo;
 
   for ( size_t i = 0; i < numObjects_ ; i++ ) {
     // make up some length value for x
     temp.value_  = RandFlat::shoot(1.0, 5.0);
     temp.error_  = temp.value_ / 20;
-    temp.qual_ = int (oa_fixed); // arbitrary
-
+    temp.quality_ = int (oa_fixed); // arbitrary
+    /*
     xxxxinfo.x1_ = temp;
 
     temp.value_  = RandFlat::shoot(1.0, 5.0);
@@ -81,6 +81,7 @@ bool OptAlignGeneratedSource::produce ( edm::Event& e ) {
 
     result->xxxxMeasurements_.push_back(xxxxinfo);
     xxxxinfo.clear();
+    */
   }
 
   e.put(result);
