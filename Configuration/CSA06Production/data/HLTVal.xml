@@ -122,6 +122,11 @@
                         Photon_jets_OnSel.cfg
                 </Test>
         </Validate>
+        <Validate Version="Jpsi-mumu-HLT">
+                <Test Events="1000" Name="HLTVal_Jpsi_mumu">
+                        Jpsi_mumu_sim_digi_OnSel.cfg
+                </Test>
+        </Validate>
         <Validate Version="PhysSamples-HLT">
                 <Test Events="1000" Name="HLTVal_H2tau_M200">
                         bbHto2tau_mA200_tb20_OnSel.cfg
