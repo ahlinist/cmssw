@@ -129,6 +129,12 @@
                         DiPhotons_pt20to100_NoPU.cfg
                 </Test>
 	  </Validate>
+<!-- H to ZZ to mu+mu-mu+mu- from Muons (medium priority) -->
+          <Validate Version="HToZZTo4MuLowLumi-MediumPriority">
+                <Test Events="50000" Name="PhysVal-HToZZTo4Mu">
+                        HtoZZto4Mu_LowLumiPU.cfg
+                </Test>
+	  </Validate>
 <!-- Back to back electrons from ECAL e/gamma (low priority)-->
           <Validate Version="BackToBackElectrons-LowPriority">
                 <Test Events="25000" Name="PhysVal-DiEle-Ene10">
