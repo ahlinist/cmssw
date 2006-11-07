@@ -16,18 +16,17 @@ public:
   JetFlavourIdentifier(const edm::ParameterSet& iConfig);
   void readEvent(const edm::Event& iEvent, std::string label_ = "source");
 
-  JetFlavour identifyBasedOnPartons( const reco::Jet & jet );
-
-  void getAssociatedLepton(const reco::Jet & theJet) const;
+  JetFlavour identifyBasedOnPartons( const reco::Jet & jet ) const;
+  std::vector<MCParton> getListOfPartons() const  {return m_partons;}
 
 private:
   void fillInfo ( const HepMC::GenEvent * generated_event );
 
   JetFlavour  basicIdentityBasedOnPartons
-	(const math::XYZTLorentzVector & jet4Vec, const double coneSize);
+	(const math::XYZTLorentzVector & jet4Vec, const double coneSize) const;
 
-  void fillAlgorithmicDefinition(JetFlavour & jetFlavour);
-  void fillPhysicsDefinition(JetFlavour & jetFlavour, const math::XYZTLorentzVector & jet4Vec);
+  void fillAlgorithmicDefinition(JetFlavour & jetFlavour) const;
+  void fillPhysicsDefinition(JetFlavour & jetFlavour, const math::XYZTLorentzVector & jet4Vec) const;
 
   double coneSizeToAssociate;
 
@@ -36,7 +35,7 @@ private:
   bool fillLeptons;
   bool physDefinition;
   bool rejectBCSplitting;
-  std::vector<MCParton>      m_partons;
+  std::vector<MCParton> m_partons;
   bool vetoB, vetoC, vetoL, vetoG;
 
 
