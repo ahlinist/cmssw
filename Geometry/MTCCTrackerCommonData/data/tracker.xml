@@ -1,6 +1,11 @@
 <?xml version="1.0"?>
 <DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../DetectorDescription/Schema/DDLSchema.xsd">
 
+<!-- 2006/10/24:MEC (case) IMPORTANT: This file is for MTCC and was previously named tracker_mtcc.xml.
+     However for making things work together we should use the same DDL namespace, tracker,
+     therefore I've renamed it.
+-->
+
 <ConstantsSection label="tracker.xml" eval="true">
  <Constant name="zero"             value="0.0*fm"/>
  <Constant name="ActiveScreenL"    value="5.640*m"/>
@@ -21,18 +26,15 @@
  <Constant name="PatchPannelR2"    value="62.50*cm"/>
  <Constant name="PatchPannelR3"    value="1.105*m"/>
  <Constant name="PatchPannelZ"     value="2.865*m"/>
- <Constant name="ZPixelForward"    value="325.*mm"/>
 </ConstantsSection>
 
 <SolidSection label="tracker.xml">
-
  <Polycone name="Tracker" startPhi="0*deg" deltaPhi="360*deg" >
   <ZSection z="-[cms:TrackBeamZ2]"  rMin="[cms:TrackBeamR2]"  rMax="[cms:TrackCalorR]" />
   <ZSection z="-[cms:TrackBeamZ1]"  rMin="[cms:TrackBeamR1]"  rMax="[cms:TrackCalorR]" />
   <ZSection z="[cms:TrackBeamZ1]"   rMin="[cms:TrackBeamR1]"  rMax="[cms:TrackCalorR]" />
   <ZSection z="[cms:TrackBeamZ2]"   rMin="[cms:TrackBeamR2]"  rMax="[cms:TrackCalorR]" />
  </Polycone>
-
  <Tubs name="TrackerScreenCont"     rMin="[ActiveScreenRin]" 
        rMax="[ActiveScreenRout]"    dz="[ActiveScreenL]/2" 
        startPhi="0*deg"             deltaPhi="360*deg"/>
@@ -119,7 +121,7 @@
 
 <PosPartSection label="tracker.xml">
  <PosPart copyNumber="1">
-   <rParent name="Tracker"/>
+   <rParent name="tracker:Tracker"/>
    <rChild name="tracker:TrackerScreenCont"/>
  </PosPart>
  <PosPart copyNumber="1">
@@ -127,12 +129,12 @@
    <rChild name="tracker:TrackerScreenSupp"/>
  </PosPart>
  <PosPart copyNumber="1">
-   <rParent name="Tracker"/>
+   <rParent name="tracker:Tracker"/>
    <rChild name="tracker:TrackerPatchPanel"/>
   <Translation x="[zero]" y="[zero]" z="[PatchPannelZ]"/>
  </PosPart>
  <PosPart copyNumber="2">
-   <rParent name="Tracker"/>
+   <rParent name="tracker:Tracker"/>
    <rChild name="tracker:TrackerPatchPanel"/>
   <rRotation name="tracker:180D"/>
   <Translation x="[zero]" y="[zero]" z="-[PatchPannelZ]"/>
@@ -152,47 +154,17 @@
    <rChild name="tracker:TrackerPatchPanelUp"/>
  </PosPart>
  <PosPart copyNumber="1">
-   <rParent name="Tracker"/>
-   <rChild name="pixbar:PixelBarrel"/>
+   <rParent name="tracker:Tracker"/>
+   <rChild name="tib_mtcc:TIB"/>
  </PosPart>
  <PosPart copyNumber="1">
-   <rParent name="Tracker"/>
-   <rChild name="pixfwd:PixelForwardZPlus"/>
-   <Translation x="0." y="0." z="[pixfwd:ZPixelForward]-[pixfwd:AnchorZ]" />
+   <rParent name="tracker:Tracker"/>
+   <rChild name="tob_mtcc:TOB"/>
  </PosPart>
  <PosPart copyNumber="1">
-   <rParent name="Tracker"/>
-   <rChild name="pixfwd:PixelForwardZMinus"/>
-   <Translation x="0." y="0." z="-[pixfwd:ZPixelForward]+[pixfwd:AnchorZ]" />
-   <rRotation name="pixfwdCommon:Y180" />
- </PosPart>
- <PosPart copyNumber="1">
-   <rParent name="Tracker"/>
-   <rChild name="tib:TIB"/>
- </PosPart>
- <PosPart copyNumber="1">
-   <rParent name="Tracker"/>
-   <rChild name="tidf:TIDF"/>
- </PosPart>
- <PosPart copyNumber="2">
-   <rParent name="Tracker"/>
-   <rChild name="tidb:TIDB"/>
-  <rRotation name="tracker:180D"/>
- </PosPart>
- <PosPart copyNumber="1">
-   <rParent name="Tracker"/>
-   <rChild name="tob:TOB"/>
- </PosPart>
- <PosPart copyNumber="1">
-   <rParent name="Tracker"/>
-   <rChild name="tec:TEC"/>
-  <Translation x="[zero]" y="[zero]" z="[tec:ZPos]"/>
- </PosPart>
- <PosPart copyNumber="2">
-   <rParent name="Tracker"/>
-   <rChild name="tec:TEC"/>
-  <rRotation name="tracker:180D"/>
-  <Translation x="[zero]" y="[zero]" z="-[tec:ZPos]"/>
+   <rParent name="tracker:Tracker"/>
+   <rChild name="tec_mtcc:TEC"/>
+  <Translation x="[zero]" y="[zero]" z="[tec_mtcc:ZPos]"/>
  </PosPart>
 </PosPartSection>
 
