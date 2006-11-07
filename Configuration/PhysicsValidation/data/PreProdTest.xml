@@ -1,5 +1,17 @@
 <?xml version="1.0" ?>
 <ReleaseValidation>
+<!-- Three randomly chosen requests from HCAL (high priority)-->
+          <Validate Version="SinglePionForHCAL-HighPriority">
+                <Test Events="1000" Name="PhysVal-SinglePi-E005Phi1Eta01">
+                      SinglePion-E005-Iphi1-Ieta01.cfg
+                </Test>
+                <Test Events="1000" Name="PhysVal-SinglePi-E050Phi2Eta18">
+                      SinglePion-E050-Iphi2-Ieta18.cfg
+                </Test>
+                <Test Events="1000" Name="PhysVal-SinglePi-E300Phi1Eta07">
+                      SinglePion-E300-Iphi1-Ieta07.cfg
+                </Test>
+	  </Validate>
 <!-- Back to back electrons from ECAL e/gamma (high priority)-->
           <Validate Version="BackToBackElectrons-HighPriority">
                 <Test Events="500" Name="PhysVal-DiEle-Pt5">
