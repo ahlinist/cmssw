@@ -69,6 +69,24 @@
                         DiPhotons_pt50_NoPU.cfg
                 </Test>
 	  </Validate>
+<!-- Di-taus from Tracker (high priority)-->
+          <Validate Version="DiTaus-HighPriority">
+        	<Test Events="200000" Name="PhysVal-DiTaus-Pt20To420">
+	        	DiTaus_pt20to420_NoPU.cfg
+        	</Test>
+	  </Validate>
+<!-- qqbar samples from Tracker (high priority)-->
+          <Validate Version="QQbar-HighPriority">
+        	<Test Events="5000" Name="PhysVal-BBbar">
+                        BBbar_pt50to120_NoPU.cfg
+        	</Test>
+        	<Test Events="10000" Name="PhysVal-CCbar">
+                        CCbar_pt50to120_NoPU.cfg
+        	</Test>
+        	<Test Events="35000" FractionSelected="0.6" Name="PhysVal-UDSUDSbar">
+                        UDSUDSbar_pt50to120_NoPU.cfg
+        	</Test>
+	  </Validate>
 <!-- Single muons from Muons (medium priority)-->
           <Validate Version="SingleMuons-MediumPriority-Muons">
                 <Test Events="50000" Name="PhysVal-SingleMuPlus-Pt1000">
@@ -173,5 +191,18 @@
                 <Test Events="25000" Name="PhysVal-DiEle-Ene30-NoTracker-NoB">
                         DiElectrons_Ene30_NoTracker_NoBField_NoPU.cfg
                 </Test>
+   	  </Validate>
+<!-- Bs to J/psi phi from Tracker, with low lumi pile-up (very low priority)-->
+<!-- N.B. Only 0.3% of these are accepted by Pythia level filter -->
+          <Validate Version="BsToJPsiPhiLowLumi-VeryLowPriority">
+                <Test Events="3000000" FractionSelected="0.003" Name="PhysVal-BsToJpsiPhi">
+                        BsToJPsiPhi_LowLumiPU.cfg
+                 </Test>
+   	  </Validate>
+<!-- Z to mu+mu- sample for alignment (very low priority)-->
+          <Validate Version="ZToMuMu-VeryLowPriority">
+        	<Test Events="2000000" Name="PhysVal-ZToMuMu">
+                        ZMuMu_NoPU.cfg
+	        </Test>
    	  </Validate>
 </PhysicsValidation>
