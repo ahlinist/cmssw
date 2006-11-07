@@ -1,20 +1,22 @@
 <?xml version="1.0"?>
 <DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../DetectorDescription/Schema/DDLSchema.xsd">
+  <ZSection z="[cms:TrackBeamZ1]"
+  <ZSection z="[cms:TrackBeamZ2]"
 
 <ConstantsSection label="cms.xml" eval="true">
- <Constant name="Rmin"         value="0*fm"/>
- <Constant name="Zmin"         value="0*fm"/>
- <Constant name="HallZ"        value="27.0*m"/>
- <Constant name="HallR"        value="13.0*m"/>
- <Constant name="CMSR1"        value="8.30*m"/>
- <Constant name="CMSR2"        value="1.00*m"/>
- <Constant name="CMSZ2"        value="26.0*m"/>
- <Constant name="TrackCalorR"  value="1.233*m"/>
+ <Constant name="Rmin"         value="cms:Rmin"/>
+ <Constant name="Zmin"         value="cms:Zmin"/>
+ <Constant name="HallZ"        value="cms:HallZ"/>
+ <Constant name="HallR"        value="cms:HallR"/>
+ <Constant name="CMSR1"        value="cms:CMSR1"/>
+ <Constant name="CMSR2"        value="cms:CMSR2"/>
+ <Constant name="CMSZ2"        value="cms:CMSZ2"/>
+ <Constant name="TrackCalorR"  value="cms:TrackCalorR"/>
  <Constant name="CalorMuonR"   value="2.950*m"/>
- <Constant name="TrackBeamZ1"  value="1.948*m"/>
- <Constant name="TrackBeamZ2"  value="2.935*m"/>
- <Constant name="TrackBeamR1"  value="3.10*cm"/>
- <Constant name="TrackBeamR2"  value="7.40*cm"/>
+ <Constant name="TrackBeamZ1"  value="cms:TrackBeamZ1"/>
+ <Constant name="TrackBeamZ2"  value="cms:TrackBeamZ2"/>
+ <Constant name="TrackBeamR1"  value="cms:TrackBeamR1"/>
+ <Constant name="TrackBeamR2"  value="cms:TrackBeamR2"/>
  <Constant name="CalorBeamZ1"  value="3.180*m"/>
  <Constant name="CalorBeamZ2"  value="5.541*m"/>
  <Constant name="CalorBeamR1"  value="8.00*cm"/>
