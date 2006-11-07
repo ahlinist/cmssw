@@ -36,7 +36,7 @@ void MCParton::reset ( ) {
   splitsToB_           = false ;
   //  splitsToGluon_       = false ;
 
-  daughterLines_.erase ( daughterLines_.begin() , daughterLines_.end() ) ;
+  daughterLines_.clear();
   summedDaughters_.SetPx (0.0) ;
   summedDaughters_.SetPy (0.0) ;
   summedDaughters_.SetPz (0.0) ;
@@ -93,6 +93,7 @@ void MCParton::setParticleProperties( ) {
 // <<hepParticle->listChildren ().size()<<" - "
 // <<daughterLines_.size()<<endl;
   // set it as initial parton if there have been daughters and the mother is not the proton
+
   if ( daughterLines_.size() >= 1 && motherLundCode_ != 2212 ) isInitialParton_ = true ;
 
 //   if ( isInitialParton_ ) {
@@ -201,34 +202,48 @@ void MCParton::setParticleProperties( ) {
 
 void MCParton::print() const {
   // print all Info for heavy hadron
-  cout << "--> " << endl;
-  cout << "--> MCParton               :" << endl;
-  cout << "--> LundCode               :" << particleInfo().lundCode() << endl;
-  cout << "--> flavour                :" << flavour_             << endl;              
-//   cout << "--> line                   :" << rhep->line()        << endl;              
-  cout << "--> statusPythia           :" << statusPythia_        << endl;
-  cout << "--> Mother Lund Code       :" << motherLundCode_      << endl;
-  cout << "--> motherStatusPythia     :" << motherStatusPythia_  << endl;
-  cout << "--> fromPrimaryProcess     :" << fromPrimaryProcess_  << endl;
-  cout << "--> fromRadiation          :" << fromRadiation_       << endl;
-  cout << "--> fromGluonSplitting     :" << fromGluonSplitting_  << endl;
-  cout << "--> isFinalParton          :" << isFinalParton_       << endl;
-  cout << "--> isInitialParton        :" << isInitialParton_     << endl;
-  //  cout << "--> radiates gluon         :" << radiatesGluon       << endl;
-  cout << "--> splitsToD              :" << splitsToD_           << endl;
-  cout << "--> splitsToU              :" << splitsToU_           << endl;
-  cout << "--> splitsToS              :" << splitsToS_           << endl;
-  cout << "--> splitsToC              :" << splitsToC_           << endl;
-  cout << "--> splitsToB              :" << splitsToB_           << endl;
-  //  cout << "--> splitsToGluon          :" << splitsToGluon       << endl;
+  cout << "--> MCParton:" << endl;
+  cout << "--> LundCode, flavour, statusPythia: ";
+  cout.width(8); cout << particleInfo().lundCode();
+  cout.width(8); cout << flavour_;
+  cout.width(8); cout << statusPythia_        << endl;
+
+  cout << "--> Mother Lund Code, status :       ";
+  cout.width(8); cout << motherLundCode_;
+  cout.width(16); cout << motherStatusPythia_ << endl;
+
+  if ( fromPrimaryProcess_) cout << "--> fromPrimaryProcess ";
+  if ( fromRadiation_	) cout << "--> fromRadiation	  ";
+  if ( fromGluonSplitting_) cout << "--> fromGluonSplitting ";
+  if ( isFinalParton_	) cout << "--> isFinalParton	  ";
+  if ( isInitialParton_	) cout << "--> isInitialParton    ";
+  if ( fromPrimaryProcess_ || fromRadiation_ || fromGluonSplitting_ || isFinalParton_ ||
+	isInitialParton_ ) cout << endl;
+    //  cout << "--> radiates gluon         :" << radiatesGluon       << endl;
+
+  if (splitsToD_ || splitsToU_ || splitsToS_ || splitsToC_ || splitsToB_)
+	cout <<"--> splits to : ";
+  if (splitsToD_) cout << " D";
+  if (splitsToU_) cout << " U";
+  if (splitsToS_) cout << " S";
+  if (splitsToC_) cout << " C";
+  if (splitsToB_) cout << " B";
+  if (splitsToD_ || splitsToU_ || splitsToS_ || splitsToC_ || splitsToB_)
+    cout << endl;
+
+//   cout << "--> splitsToGluon          :" << splitsToGluon       << endl;
 //   cout << "--> mass                   :" << mass                << endl;
 //   cout << "--> eta                    :" << eta                 << endl;
 //   cout << "--> phi                    :" << phi                 << endl;
 //   cout << "--> pabs                   :" << pabs                << endl;
 //   cout << "--> e                      :" << e                   << endl;
-  cout << "--> px                     :" << fourVector().px()	<< " , " << summedDaughters_.px() << endl;
-  cout << "--> py                     :" << fourVector().py()	<< " , " << summedDaughters_.py() << endl;
-  cout << "--> pz                     :" << fourVector().pz()	<< " , " << summedDaughters_.pz() << endl;
-    cout << "Parton eta/phi: "<<fourVector().eta()<<" , "<< fourVector().phi()<<" , "<< flavour_<<endl;
+  cout << "--> Momentum, eta, phi        :" << fourVector().px()<< " , "  
+    << fourVector().py() << " , " << fourVector().pz() << " , "  
+    << fourVector().eta()<< " , " << fourVector().phi() <<endl;
+  cout << "--> Summed daugther momentum  :" << summedDaughters_.px()<< " , "
+    << summedDaughters_.py() << " , " << summedDaughters_.pz() << " , "
+    << summedDaughters_.eta()<< " , " << summedDaughters_.phi() <<endl;
+  cout << endl;
+
 }
   
