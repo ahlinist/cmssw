@@ -41,25 +41,18 @@ void JetFlavourIdentifier::readEvent(const edm::Event& iEvent, std::string label
   fillInfo(generated_event);
 }
 
-void JetFlavourIdentifier::getAssociatedLepton(const reco::Jet & theJet) const
-{
-}
 
 void JetFlavourIdentifier::fillInfo ( const HepMC::GenEvent * event ) {
 
-//   // reset HeavyHadrons vector (erase wants iterators as arguments)
 //   HeavyHadrons.erase( HeavyHadrons.begin() , HeavyHadrons.end() ) ;
-//   cout << "===> Size of HeavyHadrons after erasing : " << HeavyHadrons.size() << endl ;
   m_partons.clear();
-  cout << "===> Size of Partons after erasing : " << m_partons.size() << endl ;
 //   Leptons.erase( Leptons.begin() , Leptons.end() ) ;
-//   cout << "===> Size of Leptons after erasing : " << Leptons.size() << endl ;
-// 
+
   // print RawHepEvent in Debug mode
 //    { event->print(); }
-// 
+
   // one loop to find out the index of the last parton
-  const HepMC::GenParticle* lastParton;
+  const HepMC::GenParticle* lastParton = event->particle(event->particles_size()-1) ;
   HepMC::GenEvent::particle_const_iterator p;
   for (p = event->particles_begin(); p != event->particles_end(); ++p) {
     // decode particle info from Lund Code
@@ -69,7 +62,7 @@ void JetFlavourIdentifier::fillInfo ( const HepMC::GenEvent * event ) {
       lastParton = *p;
     }
   }
-  cout << "====>>>>> MCInfoFiller::fillInfo : index of last parton : " << lastParton->barcode() << endl ;
+//   cout << "====>>>>> JetFlavourIdentifier::fillInfo : index of last parton : " << lastParton->barcode() << endl ;
 
   
   
@@ -147,7 +140,7 @@ void JetFlavourIdentifier::fillInfo ( const HepMC::GenEvent * event ) {
   
 }
 
-JetFlavour  JetFlavourIdentifier::identifyBasedOnPartons ( const Jet & theJet )
+JetFlavour  JetFlavourIdentifier::identifyBasedOnPartons (const Jet & theJet) const
 {
   JetFlavour jetFlavour = basicIdentityBasedOnPartons(theJet.p4(), coneSizeToAssociate);//Hep3Vector(theJet.p4().x(),theJet.p4().y(),theJet.p4().z())
   if (physDefinition) fillPhysicsDefinition(jetFlavour, theJet.p4());
@@ -163,7 +156,7 @@ JetFlavour  JetFlavourIdentifier::identifyBasedOnPartons ( const Jet & theJet )
 
 
 JetFlavour  JetFlavourIdentifier::basicIdentityBasedOnPartons
-	(const XYZTLorentzVector & jet4Vec, const double coneSize)
+	(const XYZTLorentzVector & jet4Vec, const double coneSize) const
 {
   JetFlavour jetFlavour;
   // to count partons from how many sources
@@ -175,7 +168,7 @@ JetFlavour  JetFlavourIdentifier::basicIdentityBasedOnPartons
   // don't assign initial parton if more than one in cone
   int nInitialPartons = 0;
   
-  for ( vector<MCParton>::iterator itP  = m_partons.begin();
+  for ( vector<MCParton>::const_iterator itP  = m_partons.begin();
 	                           itP != m_partons.end(); itP++ ) {
 
     // get Lundcode
@@ -213,7 +206,8 @@ JetFlavour  JetFlavourIdentifier::basicIdentityBasedOnPartons
 	//
 	// set members
 	//
-// cout <<"Got "<< itP->fourVector().eta()<<" , "<< itP->fourVector().phi()<<" , "<< itP->flavour()<<endl;
+// cout <<"Got "<< itP->fourVector().px()<< " , "  
+//     << itP->fourVector().py() << " , " << itP->fourVector().pz() << " , "<<itP->fourVector().eta()<<" , "<< itP->fourVector().phi()<<" , "<< itP->flavour()<<endl;
 	// sum up parton 4-momenta
 	jetFlavour.vec4SummedPartons(jetFlavour.vec4SummedPartons()+itP->fourVector());
 
@@ -304,7 +298,7 @@ JetFlavour  JetFlavourIdentifier::basicIdentityBasedOnPartons
   return jetFlavour;
 }
 
-void JetFlavourIdentifier::fillAlgorithmicDefinition(JetFlavour & jetFlavour)
+void JetFlavourIdentifier::fillAlgorithmicDefinition(JetFlavour & jetFlavour) const
 {
   // if the heaviest flavour is a b or c, give that one
   if ( jetFlavour.heaviestFlavour() == 5 || jetFlavour.heaviestFlavour() == 4 ) {
@@ -318,7 +312,8 @@ void JetFlavourIdentifier::fillAlgorithmicDefinition(JetFlavour & jetFlavour)
   }
 }
 
-void JetFlavourIdentifier::fillPhysicsDefinition(JetFlavour & jetFlavour, const math::XYZTLorentzVector & jet4Vec)
+void JetFlavourIdentifier::fillPhysicsDefinition(JetFlavour & jetFlavour,
+	const math::XYZTLorentzVector & jet4Vec) const
 {
   int flavour = jetFlavour.initialFlavour() ;
   // clean: do not accept if final state heavy partons from many sources -> take bigger cone here
