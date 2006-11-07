@@ -173,7 +173,6 @@ void JetTagPlotter::analyzeJetTag(const reco::JetTag & jetTag,
   int jetFlav = jetFlavour.flavour();
 
   dDiscriminatorFC->fill(jetFlav, jetTag.discriminator());
-  cout << jetTag.discriminator()<< " ";
   dJetFlav->fill(jetFlav, jetFlav);
   dJetMultiplicity->fill(jetFlav, jetTag.tracks().size()); //fixme
   dDiscriminator->fill(jetFlav, jetTag.discriminator() );
