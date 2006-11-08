@@ -288,8 +288,6 @@ void FlavourHistorgrams<T>::write () const {
   
 template <class T>
 void FlavourHistorgrams<T>::plot (TPad * theCanvas) {
-// template <class T>
-// void FlavourHistorgrams<T>::plot (TCanvas * theCanvas) {
 
 //fixme:
   bool btppNI = false;
@@ -309,125 +307,108 @@ void FlavourHistorgrams<T>::plot (TPad * theCanvas) {
   gPad->SetGridy ( 0 ) ;
   gPad->SetTitle ( false ) ;
 
-  // plot order ("highest" one first)
-  TH1F * histo_1 ;
-  TH1F * histo_2 ;
-  TH1F * histo_3 ;
-  TH1F * histo_4 ; // only if bttpNI
-
-  int col_1 ;
-  int col_2 ;
-  int col_3 ;
-  int col_4 ;
-  
-  int lineStyle_1 ;
-  int lineStyle_2 ;
-  int lineStyle_3 ;
-  int lineStyle_4 ;
-
+  TH1F * histo[4];
+  int col[4], lineStyle[4], markerStyle[4];
   int lineWidth = 1 ;
 
+  double markerSize  = theCanvas->GetWh()*theCanvas->GetHNDC()/500.;
+
   // default (l)
-  histo_1 = theHisto_dusg ;
+  histo[0] = theHisto_dusg ;
   //CW histo_1 = theHisto_dus ;
-  histo_2 = theHisto_b ;
-  histo_3 = theHisto_c ;
-  histo_4 = 0 ;
+  histo[1] = theHisto_b ;
+  histo[2] = theHisto_c ;
+  histo[3]= 0 ;
   double max = theHisto_dusg->GetMaximum();
   if (theHisto_b->GetMaximum() > max) max = theHisto_b->GetMaximum();
   if (theHisto_c->GetMaximum() > max) max = theHisto_c->GetMaximum();
 
   if (btppNI) {
-    histo_4 = theHisto_ni ;
+    histo[3] = theHisto_ni ;
     if (theHisto_ni->GetMaximum() > max) max = theHisto_ni->GetMaximum();
   }
 
   if ( btppColour ) { // print colours 
-    col_1   = 4 ;
-    col_2   = 2 ;
-    col_3   = 6 ;
-    col_4   = 3 ;
-    lineStyle_1  = 1 ;
-    lineStyle_2  = 1 ;
-    lineStyle_3  = 1 ;
-    lineStyle_4  = 1 ;
-    lineWidth = 1 ;
+    col[0] = 4 ;
+    col[1] = 2 ;
+    col[2] = 6 ;
+    col[3] = 3 ;
+    lineStyle[0] = 1 ;
+    lineStyle[1] = 1 ;
+    lineStyle[2] = 1 ;
+    lineStyle[3] = 1 ;
+    markerStyle[0] = 20 ;
+    markerStyle[1] = 21 ;
+    markerStyle[2] = 22 ;
+    markerStyle[3] = 23 ;
+   lineWidth = 1 ;
   }
   else { // different marker/line styles
-    col_1   = 1 ;
-    col_2   = 1 ;
-    col_3   = 1 ;
-    col_4   = 1 ;
-    lineStyle_1  = 2 ;
-    lineStyle_2  = 1 ;
-    lineStyle_3  = 3 ;
-    lineStyle_4  = 4 ;
+    col[1] = 1 ;
+    col[2] = 1 ;
+    col[3] = 1 ;
+    col[0] = 1 ;
+    lineStyle[0] = 2 ;
+    lineStyle[1] = 1 ;
+    lineStyle[2] = 3 ;
+    lineStyle[3] = 4 ;
+    markerStyle[0] = 20 ;
+    markerStyle[1] = 21 ;
+    markerStyle[2] = 22 ;
+    markerStyle[3] = 23 ;
   }
 
   // if changing order (NI stays always last)
   
   // c to plot first   
   if ( thePlotFirst == "c" ) {
-    histo_1 = theHisto_c ;
-    if ( btppColour  ) col_1   = 6 ;
-    if ( !btppColour ) lineStyle_1  = 3 ;
-    histo_3 = theHisto_dusg ;
-    if ( btppColour  ) col_3   = 4 ;
-    if ( !btppColour ) lineStyle_2  = 2 ;
+    histo[1] = theHisto_c ;
+    if ( btppColour  ) col[1] = 6 ;
+    if ( !btppColour ) lineStyle[1] = 3 ;
+    histo[3] = theHisto_dusg ;
+    if ( btppColour  ) col[3] = 4 ;
+    if ( !btppColour ) lineStyle[2] = 2 ;
   }
 
   // b to plot first   
   if ( thePlotFirst == "b" ) {
-    histo_1 = theHisto_b ;
-    if ( btppColour  ) col_1   = 2 ;
-    if ( !btppColour ) lineStyle_1  = 1 ;
-    histo_2 = theHisto_dusg ;
-    if ( btppColour  ) col_2   = 4 ;
-    if ( !btppColour ) lineStyle_2  = 2 ;
+    histo[1] = theHisto_b ;
+    if ( btppColour  ) col[1] = 2 ;
+    if ( !btppColour ) lineStyle[1] = 1 ;
+    histo[2] = theHisto_dusg ;
+    if ( btppColour  ) col[2] = 4 ;
+    if ( !btppColour ) lineStyle[2] = 2 ;
   }
 
-  histo_1 ->SetMaximum(max*1.05);
+  histo[0] ->SetMaximum(max*1.05);
 
-  histo_1 ->GetXaxis()->SetTitle ( theBaseNameTitle ) ;
-  histo_1 ->GetYaxis()->SetTitle ( "Arbitrary Units" ) ;
-  histo_1 ->GetYaxis()->SetTitleOffset(1.25) ;
-  histo_1 ->SetStats ( false ) ;
-  histo_1 ->SetLineStyle ( lineStyle_1 ) ;
-  histo_1 ->SetLineWidth ( lineWidth ) ;
-  histo_1 ->SetLineColor ( col_1 ) ;
-    
-  histo_2 ->SetStats     ( false ) ;
-  histo_2 ->SetLineStyle ( lineStyle_2 ) ;
-  histo_2 ->SetLineWidth ( lineWidth ) ;
-  histo_2 ->SetLineColor ( col_2 ) ;
+  histo[0] ->GetXaxis()->SetTitle ( theBaseNameTitle ) ;
+  histo[0] ->GetYaxis()->SetTitle ( "Arbitrary Units" ) ;
+  histo[0] ->GetYaxis()->SetTitleOffset(1.25) ;
 
-  histo_3 ->SetStats     ( false ) ;
-  histo_3 ->SetStats ( "0" ) ;
-  histo_3 ->SetLineWidth ( lineWidth ) ;
-  histo_3 ->SetLineStyle ( lineStyle_3 ) ;
-  histo_3 ->SetLineColor ( col_3 ) ;
-
-  if ( histo_4 != 0 ) {
-    histo_4 ->SetStats     ( false ) ;
-    histo_4 ->SetStats ( "0" ) ;
-    histo_4 ->SetLineWidth ( lineWidth ) ;
-    histo_4 ->SetLineStyle ( lineStyle_4 ) ;
-    histo_4 ->SetLineColor ( col_4 ) ;
+  for (int i=0; i < 4; ++i) {
+    if (histo[i]== 0 ) continue;
+    histo[i] ->SetStats ( false ) ;
+    histo[i] ->SetLineStyle ( lineStyle[i] ) ;
+    histo[i] ->SetLineWidth ( lineWidth ) ;
+    histo[i] ->SetLineColor ( col[i] ) ;
+    histo[i] ->SetMarkerStyle ( markerStyle[i] ) ;
+    histo[i] ->SetMarkerColor ( col[i] ) ;
+    histo[i] ->SetMarkerSize ( markerSize ) ;
   }
 
   if ( thePlotNormalized ) {
-    histo_1 ->DrawNormalized() ;
-    histo_2 ->DrawNormalized("Same") ;
-    histo_3 ->DrawNormalized("Same") ;
-    if ( histo_4 != 0 ) histo_4 ->DrawNormalized("Same") ;
+    histo[0] ->DrawNormalized() ;
+    histo[1] ->DrawNormalized("Same") ;
+    histo[2] ->DrawNormalized("Same") ;
+    if ( histo[3] != 0 ) histo[3] ->DrawNormalized("Same") ;
   }
   else {
-    histo_1 ->Draw() ;
-    histo_2 ->Draw("Same") ;
-    histo_3 ->Draw("Same") ;
-    if ( histo_4 != 0 ) histo_4 ->Draw("Same") ;
+    histo[0] ->Draw() ;
+    histo[1] ->Draw("Same") ;
+    histo[2] ->Draw("Same") ;
+    if ( histo[3] != 0 ) histo[3] ->Draw("Same") ;
   }
-//   theHisto_all->Draw() ;
 
 }
 
@@ -436,7 +417,6 @@ void FlavourHistorgrams<T>::epsPlot(TString name)
 {
    TCanvas tc(theBaseNameTitle , theBaseNameDescription);
    
-//    theHisto_all->Draw() ;
    plot(&tc);
    tc.Print(TString(name + theBaseNameTitle + ".eps"));
 }
