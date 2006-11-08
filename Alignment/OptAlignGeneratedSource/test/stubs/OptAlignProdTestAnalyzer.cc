@@ -5,7 +5,7 @@
 // 
 /**\class OptAlignProdTestAnalyzer OptAlignProdTestAnalyzer.cc AlignmentTools/OptAlignGeneratedSource/test/stubs/OptAlignProdTestAnalyzer.cc
 
- Description: test access to the XXXXMeasurements via XXXXMeasurementsGeneratedSource
+ Description: test access to the OpticalAlignMeasurements via OpticalAlignMeasurementsGeneratedSource
     This also should demonstrate access to a geometry via the XMLIdealGeometryESSource
     for use in THE COCOA analyzer.
 
@@ -15,7 +15,7 @@
 //
 // Original Author:  Mike Case
 //         Created:  Mon Jan 17 11:47:40 CET 2006
-// $Id: OptAlignProdTestAnalyzer.cc,v 1.4 2006/03/09 15:15:45 case Exp $
+// $Id: OptAlignProdTestAnalyzer.cc,v 1.5 2006/03/29 16:46:46 case Exp $
 //
 //
 
@@ -36,8 +36,8 @@
 #include "CondFormats/OptAlignObjects/interface/OAQuality.h"
 #include "CondFormats/OptAlignObjects/interface/OpticalAlignments.h"
 #include "CondFormats/OptAlignObjects/interface/OpticalAlignInfo.h"
-#include "CondFormats/OptAlignObjects/interface/XXXXMeasurements.h"
-#include "CondFormats/OptAlignObjects/interface/XXXXMeasurementInfo.h"
+#include "CondFormats/OptAlignObjects/interface/OpticalAlignMeasurements.h"
+#include "CondFormats/OptAlignObjects/interface/OpticalAlignMeasurementInfo.h"
 
 #include "CondFormats/DataRecord/interface/OpticalAlignmentsRcd.h"
 
@@ -67,6 +67,7 @@ using namespace std;
     // virtual void endJob() ;
   private:
     OpticalAlignments oa_;
+    OpticalAlignMeasurements measList_;
     double myFetchDbl(const DDsvalues_type& dvst, 
 		      const std::string& spName,
 		      const size_t& vecInd ) {
@@ -92,9 +93,9 @@ void OptAlignProdTestAnalyzer::beginJob ( const edm::EventSetup& c ) {
   
   edm::ESHandle<DDCompactView> cpv;
   c.get<IdealGeometryRecord>().get(cpv);
-
-  std::cout << cpv->root() << std::endl;
-
+  
+  std::cout << " OptAlignProdTestAnalyzer " << cpv->root() << std::endl;
+  
   // Example of traversing the whole optical alignment geometry.
   // At each node we get specpars as variables and use them in 
   // constructing COCOA objects.  Right now this only loads 
@@ -115,40 +116,48 @@ void OptAlignProdTestAnalyzer::beginJob ( const edm::EventSetup& c ) {
   DDFilteredView fv(*cpv);
   fv.addFilter(filter);
   bool doCOCOA = fv.firstChild();
-
+  
   // Loop on parts
   int numParts=0;
   OpticalAlignInfo oai;
   OpticalAlignParam oap;
+  OpticalAlignMeasurementInfo meas;
+  
   while ( doCOCOA ){
     ++numParts;
     const DDsvalues_type params(fv.mergedSpecifics());
-
-
+    
+    const DDLogicalPart lv = fv.logicalPart();
+    oai.name_ = lv.name();
+    
+    oai.x_.quality_  = int (myFetchDbl(params, "centre_X_quality", 0));
+    
     oai.x_.value_ = fv.translation().x();
     oai.x_.error_ = myFetchDbl(params, "centre_X_sigma", 0);
-    oai.x_.qual_  = int (myFetchDbl(params, "centre_X_quality", 0));
-
+    oai.x_.quality_  = int (myFetchDbl(params, "centre_X_quality", 0));
+    
     oai.y_.value_ = fv.translation().y();
     oai.y_.error_ = myFetchDbl(params, "centre_Y_sigma", 0);
-    oai.y_.qual_  = int (myFetchDbl(params, "centre_Y_quality", 0));
+    oai.y_.quality_  = int (myFetchDbl(params, "centre_Y_quality", 0));
 
     oai.z_.value_ = fv.translation().z();
     oai.z_.error_ = myFetchDbl(params, "centre_Z_sigma", 0);
-    oai.z_.qual_  = int (myFetchDbl(params, "centre_Z_quality", 0));
+    oai.z_.quality_  = int (myFetchDbl(params, "centre_Z_quality", 0));
 
     oai.x_.value_ = fv.translation().x();
     oai.x_.error_ = myFetchDbl(params, "angles_X_sigma", 0);
-    oai.x_.qual_  = int (myFetchDbl(params, "angles_X_quality", 0));
+    oai.x_.quality_  = int (myFetchDbl(params, "angles_X_quality", 0));
 
     oai.y_.value_ = fv.translation().y();
     oai.y_.error_ = myFetchDbl(params, "angles_Y_sigma", 0);
-    oai.y_.qual_  = int (myFetchDbl(params, "angles_Y_quality", 0));
+    oai.y_.quality_  = int (myFetchDbl(params, "angles_Y_quality", 0));
 
     oai.z_.value_ = fv.translation().z();
     oai.z_.error_ = myFetchDbl(params, "angles_Z_sigma", 0);
-    oai.z_.qual_  = int (myFetchDbl(params, "angles_Z_quality", 0));
+    oai.z_.quality_  = int (myFetchDbl(params, "angles_Z_quality", 0));
 
+    std::cout << " OBJECT " <<  oai.name_ << " pos/angle read " << std::endl;
+    
     std::vector<std::string> names, dims;
     std::vector<double> values, errors, quality;
     const std::vector<const DDsvalues_type *> params2(fv.specifics());
@@ -158,7 +167,9 @@ void OptAlignProdTestAnalyzer::beginJob ( const edm::EventSetup& c ) {
       DDsvalues_type::const_iterator sit = (**spit).begin();
       DDsvalues_type::const_iterator endsit = (**spit).end();
       for ( ; sit != endsit; ++sit ) {
-	if (sit->second.name() == "name") {
+ 	if (sit->second.name() == "cocoa_type") {
+          oai.type_ = sit->second.strings()[0];
+	} else if (sit->second.name() == "extra_entry") {
 	  names = sit->second.strings();
 	} else if (sit->second.name() == "dimType") {
 	  dims = sit->second.strings();
@@ -169,20 +180,24 @@ void OptAlignProdTestAnalyzer::beginJob ( const edm::EventSetup& c ) {
 	} else if (sit->second.name() == "quality") {
 	  quality = sit->second.doubles();
 	}
+	
       }
     }
-    oai.objectType_ = "fred";
-    oai.objectID_ = numParts;
+    
+    oai.ID_ = numParts;
     if ( names.size() == dims.size() && dims.size() == values.size() 
 	 && values.size() == errors.size() && errors.size() == quality.size() ) {
       for ( size_t ind = 0; ind < names.size(); ++ind ) {
 	oap.value_ = values[ind];
 	oap.error_ = errors[ind];
-	oap.qual_ = int (quality[ind]);
+	oap.quality_ = int (quality[ind]);
 	oap.name_ = names[ind];
 	oai.extraEntries_.push_back (oap);
 	oap.clear();
       }
+
+     std::cout << " OBJECT " <<  oai.name_ << " extra entries read " << std::endl;
+
       oa_.opticalAlignments_.push_back(oai);
     } else {
       std::cout << "WARNING FOR NOW: sizes of extra parameters (names, dimType, value, quality) do"
@@ -202,6 +217,7 @@ void OptAlignProdTestAnalyzer::beginJob ( const edm::EventSetup& c ) {
 
 void OptAlignProdTestAnalyzer::analyze(const edm::Event& e, const edm::EventSetup& context)
 {
+  std::cout <<" I " << std::endl;
   using namespace edm::eventsetup;
   std::cout <<" I AM IN RUN NUMBER "<<e.id().run() <<std::endl;
   std::cout <<" ---EVENT NUMBER "<<e.id().event() <<std::endl;
@@ -237,7 +253,7 @@ void OptAlignProdTestAnalyzer::analyze(const edm::Event& e, const edm::EventSetu
 //   // STEP 3:
 //   // This retrieves the Measurements
 //   // for each event, a new set of measurements is available.
-  edm::Handle<XXXXMeasurements> measHandle;
+  edm::Handle<OpticalAlignMeasurements> measHandle;
   e.getByLabel("OptAlignGeneratedSource", measHandle); 
   
   std::cout << "========== event data product changes with every event =========" << std::endl;
