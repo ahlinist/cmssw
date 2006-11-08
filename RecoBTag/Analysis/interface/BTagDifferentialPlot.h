@@ -13,15 +13,15 @@ using namespace std ;
 #include "RecoBTag/Analysis/interface/EtaPtBin.h"
 #include "RecoBTag/Analysis/interface/BaseBTagPlotter.h"
 
-//#include "EffPurFromHistosC.h"
-
-class BTagDifferentialPlot /*: public BTagPlotPrintC */{
+class BTagDifferentialPlot {
 
 
   
  public:
 
-  BTagDifferentialPlot ( double ) ;
+  enum ConstVarType {constPT, constETA };
+
+  BTagDifferentialPlot ( double bEff, ConstVarType constVariable) ;
 
   ~BTagDifferentialPlot () ;
 
@@ -70,7 +70,6 @@ class BTagDifferentialPlot /*: public BTagPlotPrintC */{
 
   // the fixed b-efficiency (later: allow more than one) for which the misids have to be plotted
   double fixedBEfficiency ;
-
   // verbosity flag
   bool verbose ;
   
@@ -78,6 +77,7 @@ class BTagDifferentialPlot /*: public BTagPlotPrintC */{
   bool noProcessing ;
   bool processed;
 
+  ConstVarType constVar;
   // the name for the variable with constant value
   TString constVariableName ;
   // the name of the variable to be plotted on the x-axis (e.g. "eta", "pt")

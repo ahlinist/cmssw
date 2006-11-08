@@ -7,8 +7,8 @@ using namespace std ;
 
 
 
-BTagDifferentialPlot::BTagDifferentialPlot ( double bEff ) : //BTagPlotPrintC () ,
-	fixedBEfficiency     ( bEff )  , verbose              ( false ) ,
+BTagDifferentialPlot::BTagDifferentialPlot (double bEff, ConstVarType constVariable) :
+	fixedBEfficiency     ( bEff )  , verbose(false), constVar(constVariable),
 	noProcessing         ( false ) , processed(false),
 	constVariableName    ( "" )    , diffVariableName     ( "" )    ,
 	constVariableValue   ( 999.9 , 999.9 ) , commonName( "MisidForBEff_" ) ,
@@ -20,8 +20,7 @@ BTagDifferentialPlot::BTagDifferentialPlot ( double bEff ) : //BTagPlotPrintC ()
 	theDifferentialHistoB_g    ( 0 ) ,
 	theDifferentialHistoB_ni   ( 0 ) ,
 	theDifferentialHistoB_dus  ( 0 ) ,
-	theDifferentialHistoB_dusg ( 0 )   {
-}
+	theDifferentialHistoB_dusg ( 0 )   {}
 
 
 BTagDifferentialPlot::~BTagDifferentialPlot () {
@@ -197,50 +196,14 @@ void BTagDifferentialPlot::process () {
 }
 
 
-void BTagDifferentialPlot::setVariableName () {
-  // check, if eta or pt constant -> plot vs. pt or eta
-  bool etaConstant = true ;
-  bool ptConstant  = true ;
-
-  for ( unsigned int i = 0 ; i < theBinPlotters.size() ; i++ ) {
-    if ( ( theBinPlotters[i]->etaPtBin().getEtaMin() != theBinPlotters[0]->etaPtBin().getEtaMin() ) ||
-	 ( theBinPlotters[i]->etaPtBin().getEtaMax() != theBinPlotters[0]->etaPtBin().getEtaMax() )    ) etaConstant = false ;
-    if ( ( theBinPlotters[i]->etaPtBin().getPtMin()  != theBinPlotters[0]->etaPtBin().getPtMin()  ) ||
-	 ( theBinPlotters[i]->etaPtBin().getPtMax()  != theBinPlotters[0]->etaPtBin().getPtMax()  )    ) ptConstant = false ;
-    if ( verbose ) {
-      cout << "BTagDifferentialPlot::setVariableName() : compare etaMin : "
-	   << theBinPlotters[i]->etaPtBin().getEtaMin() << " , " << theBinPlotters[0]->etaPtBin().getEtaMin() << endl ;
-      cout << "BTagDifferentialPlot::setVariableName() : compare etaMax : "
-	   << theBinPlotters[i]->etaPtBin().getEtaMax() << " , " << theBinPlotters[0]->etaPtBin().getEtaMax() << endl ;
-      cout << "BTagDifferentialPlot::setVariableName() : compare ptMin : "
-	   << theBinPlotters[i]->etaPtBin().getPtMin() << " , " << theBinPlotters[0]->etaPtBin().getPtMin() << endl ;
-      cout << "BTagDifferentialPlot::setVariableName() : compare ptMax : "
-	   << theBinPlotters[i]->etaPtBin().getPtMax() << " , " << theBinPlotters[0]->etaPtBin().getPtMax() << endl ;
-      cout << "BTagDifferentialPlot::setVariableName() : eta/ptConstant : " << etaConstant << " , " << ptConstant << endl << endl ;
-    }
-  }
-
-  if ( etaConstant && ptConstant ) {
-    cout << "====>>>> BTagDifferentialPlot::setVariableName() : both eta and pt are constant!"  << endl
-	 << "====>>>>                                            maybe just one bin for both??"  << endl
-	 << "====>>>>                                            I won't do anything with it!!"  << endl ;
-    noProcessing = true ;
-    return ;
-  }
-
-  if ( !etaConstant && !ptConstant ) {
-    cout << "====>>>> BTagDifferentialPlot::setVariableName() : neither eta or pt are constant!" << endl
-	 << "====>>>>                                            I won't do anything with it!!"  << endl ;
-    noProcessing = true ;
-    return ;
-  }
-
-  if ( etaConstant ) {
+void BTagDifferentialPlot::setVariableName ()
+{
+  if ( constVar==constETA ) {
     constVariableName  = "eta" ;
     diffVariableName   = "pt"  ;
     constVariableValue = make_pair ( theBinPlotters[0]->etaPtBin().getEtaMin() , theBinPlotters[0]->etaPtBin().getEtaMax() ) ;
   }
-  if ( ptConstant  ) {
+  if ( constVar==constPT  ) {
     constVariableName = "pt"  ;
     diffVariableName  = "eta" ;
     constVariableValue = make_pair ( theBinPlotters[0]->etaPtBin().getPtMin() , theBinPlotters[0]->etaPtBin().getPtMax() ) ;
