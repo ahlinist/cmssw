@@ -130,9 +130,9 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
   float the_wire1  = layergeom_->middleWireOfGroup(wireg1);
   float the_wire2  = layergeom_->middleWireOfGroup(wireg2);
   int n_wires      = layergeom_->numberOfWiresPerGroup(wireg1);   
-  double wSpace    = specs_->wireSpacing();
+  double wSpace    = layergeom_->wirePitch();
   float wAngle     = layergeom_->wireAngle();
-  float dy         = wSpace * (n_wires - 1) / sqrt(12.);       // Error on y'  (on y if wAngle = 0)
+  float dy         = wSpace * (n_wires) / sqrt(12.);       // Error on y'  (on y if wAngle = 0)
 
 
   // Now, find strip position and properties
