@@ -7,7 +7,7 @@
 #include <RecoLocalMuon/CSCRecHitB/src/CSCStripSegments.h>
 #include <RecoLocalMuon/CSCRecHitB/interface/CSCStripHit.h>
 #include <RecoLocalMuon/CSCRecHitB/interface/CSCStripHitCollection.h>
-#include <RecoLocalMuon/CSCRecHitB/interface/CSCRangeMapAccessor.h>
+#include <RecoLocalMuon/CSCRecHitB/interface/CSCRangeMapForRecHit.h>
 
 #include <DataFormats/MuonDetId/interface/CSCDetId.h>
 
@@ -72,7 +72,7 @@ CSCStripHitCollection CSCStripSegments::cleanStripHits(const CSCStripHitCollecti
     
     ChamberHitContainer cscStripHit;
     
-    CSCRangeMapAccessor acc;
+    CSCRangeMapForRecHit acc;
     CSCStripHitCollection::range range = raw_shit.get(acc.cscChamber(*chIt));
     
     for ( CSCStripHitCollection::const_iterator raw_shit = range.first; raw_shit != range.second; raw_shit++)

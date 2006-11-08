@@ -8,7 +8,7 @@
 #include <RecoLocalMuon/CSCRecHitB/src/CSCMake2DRecHit.h>
 #include <RecoLocalMuon/CSCRecHitB/interface/CSCWireHitCollection.h>
 #include <RecoLocalMuon/CSCRecHitB/interface/CSCStripHitCollection.h>
-#include <RecoLocalMuon/CSCRecHitB/interface/CSCRangeMapAccessor.h>
+#include <RecoLocalMuon/CSCRecHitB/interface/CSCRangeMapForRecHit.h>
 
 #include <Geometry/CSCGeometry/interface/CSCChamberSpecs.h>
 #include <Geometry/CSCGeometry/interface/CSCLayer.h>
@@ -201,7 +201,7 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
    
     std::vector<CSCStripHit> cscStripHit;
     
-    CSCRangeMapAccessor acc;
+    CSCRangeMapForRecHit acc;
     CSCStripHitCollection::range range = clean_soc.get(acc.cscDetLayer(*sIt));
 
     // Create vector of strip hits for this layer    
@@ -262,7 +262,7 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
 
           // Create vector of wire hits for this layer
           std::vector<CSCWireHit> cscWireHit;   
-          CSCRangeMapAccessor acc2;
+          CSCRangeMapForRecHit acc2;
           CSCWireHitCollection::range range = clean_woc.get(acc2.cscDetLayer(*wIt));
         
           for ( CSCWireHitCollection::const_iterator clean_woc = range.first; clean_woc != range.second; clean_woc++)
@@ -319,7 +319,7 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
         // Create vector of wire hits for this layer
         std::vector<CSCWireHit> cscWireHit;
        
-        CSCRangeMapAccessor acc2;
+        CSCRangeMapForRecHit acc2;
         CSCWireHitCollection::range range = clean_woc.get(acc2.cscDetLayer(*wIt));
       
         for ( CSCWireHitCollection::const_iterator clean_woc = range.first; clean_woc != range.second; clean_woc++)

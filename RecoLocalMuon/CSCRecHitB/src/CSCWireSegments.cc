@@ -7,7 +7,7 @@
 #include <RecoLocalMuon/CSCRecHitB/src/CSCWireSegments.h>
 #include <RecoLocalMuon/CSCRecHitB/interface/CSCWireHitCollection.h>
 #include <RecoLocalMuon/CSCRecHitB/interface/CSCWireHit.h>
-#include <RecoLocalMuon/CSCRecHitB/interface/CSCRangeMapAccessor.h>
+#include <RecoLocalMuon/CSCRecHitB/interface/CSCRangeMapForRecHit.h>
 
 #include <DataFormats/MuonDetId/interface/CSCDetId.h>
 
@@ -73,7 +73,7 @@ CSCWireHitCollection CSCWireSegments::cleanWireHits(const CSCWireHitCollection& 
     
     ChamberHitContainer cscWireHit;
     
-    CSCRangeMapAccessor acc;
+    CSCRangeMapForRecHit acc;
     CSCWireHitCollection::range range = raw_whit.get(acc.cscChamber(*chIt));
     
     for ( CSCWireHitCollection::const_iterator raw_whit = range.first; raw_whit != range.second; raw_whit++)
