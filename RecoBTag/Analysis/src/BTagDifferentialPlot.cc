@@ -8,8 +8,8 @@ using namespace std ;
 
 
 BTagDifferentialPlot::BTagDifferentialPlot (double bEff, ConstVarType constVariable) :
-	fixedBEfficiency     ( bEff )  , verbose(false), constVar(constVariable),
-	noProcessing         ( false ) , processed(false),
+	fixedBEfficiency     ( bEff )  , verbose(false),
+	noProcessing         ( false ) , processed(false), constVar(constVariable),
 	constVariableName    ( "" )    , diffVariableName     ( "" )    ,
 	constVariableValue   ( 999.9 , 999.9 ) , commonName( "MisidForBEff_" ) ,
 	theDifferentialHistoB_d    ( 0 ) ,
