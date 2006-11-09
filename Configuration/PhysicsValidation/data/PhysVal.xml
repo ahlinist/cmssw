@@ -129,12 +129,23 @@
                         DiPhotons_pt20to100_NoPU.cfg
                 </Test>
 	  </Validate>
-<!-- H to ZZ to mu+mu-mu+mu- from Muons (medium priority) -->
-          <Validate Version="HToZZTo4MuLowLumi-MediumPriority">
-                <Test Events="50000" Name="PhysVal-HToZZTo4Mu">
-                        HtoZZto4Mu_LowLumiPU.cfg
+<!-- Single electrons without tracker for ParticleFlow (medium priority)-->
+          <Validate Version="SingleElecrons-MediumPriority-ParticleFlow">
+                <Test Events="100000" Name="PhysVal-SingleElectrons-Ene0To50">
+                        SingleElectrons_Ene0to50_NoTracker.cfg
                 </Test>
 	  </Validate>
+<!-- Single photons without tracker for ParticleFlow (medium priority)-->
+          <Validate Version="SinglePhotons-MediumPriority-ParticleFlow">
+                <Test Events="500000" Name="PhysVal-SinglePhotons-Ene0To200">
+                        SinglePhotons_Ene0to200_NoTracker.cfg 
+                </Test>
+	  </Validate>
+<!-- Single pizeros without tracker for ParticleFlow (medium priority)-->
+          <Validate Version="SinglePi0-MediumPriority-ParticleFlow">
+                <Test Events="500000" Name="PhysVal-SinglePi0-Ene0To20">
+                        SinglePi0_Ene0to20_NoTracker.cfg
+                </Test>
 <!-- Back to back electrons from ECAL e/gamma (low priority)-->
           <Validate Version="BackToBackElectrons-LowPriority">
                 <Test Events="25000" Name="PhysVal-DiEle-Ene10">
@@ -197,13 +208,6 @@
                 <Test Events="25000" Name="PhysVal-DiEle-Ene30-NoTracker-NoB">
                         DiElectrons_Ene30_NoTracker_NoBField_NoPU.cfg
                 </Test>
-   	  </Validate>
-<!-- Bs to J/psi phi from Tracker, with low lumi pile-up (very low priority)-->
-<!-- N.B. Only 0.3% of these are accepted by Pythia level filter -->
-          <Validate Version="BsToJPsiPhiLowLumi-VeryLowPriority">
-                <Test Events="3000000" FractionSelected="0.003" Name="PhysVal-BsToJpsiPhi">
-                        BsToJPsiPhi_LowLumiPU.cfg
-                 </Test>
    	  </Validate>
 <!-- Z to mu+mu- sample for alignment (very low priority)-->
           <Validate Version="ZToMuMu-VeryLowPriority">
