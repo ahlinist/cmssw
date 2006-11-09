@@ -89,7 +89,7 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
   LocalError localerrFailed(dx2, dxy, dy2);  
   CSCRecHit2D failedHit( id, lpFailed, localerrFailed, channels, chisq, prob );
 
-  bool test = false;
+  bool test = true;
 
   float slopeRight[100];
   float slopeLeft[100];
