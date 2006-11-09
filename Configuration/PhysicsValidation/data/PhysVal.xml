@@ -143,7 +143,7 @@
 	  </Validate>
 <!-- Single pizeros without tracker for ParticleFlow (medium priority)-->
           <Validate Version="SinglePi0-MediumPriority-ParticleFlow">
-                <Test Events="500000" Name="PhysVal-SinglePi0-Ene0To20">
+                <Test Events="50000" Name="PhysVal-SinglePi0-Ene0To20">
                         SinglePi0_Ene0to20_NoTracker.cfg
                 </Test>
 <!-- Back to back electrons from ECAL e/gamma (low priority)-->
