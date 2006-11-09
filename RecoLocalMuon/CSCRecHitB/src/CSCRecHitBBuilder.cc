@@ -181,8 +181,6 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
   // N.B.  I've sorted the hits from layer 1-6 always, so can test if there are "holes", 
   // that is layers without hits for a given chamber.
 
-  int n_rechit = 0;
-
   // Vector to store rechit within layer
   std::vector<CSCRecHit2D> hitsInLayer;
 

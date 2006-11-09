@@ -9,12 +9,12 @@
 
 #include <DataFormats/MuonDetId/interface/CSCDetId.h>
 
-class CSCDetIdSameDetLayerComparator {
+class CSCDetIdSameDetLayerCompare {
  public:
   bool operator() (CSCDetId i1, CSCDetId i2) const;
 };
 
-class CSCDetIdSameChamberComparator {
+class CSCDetIdSameChamberCompare {
  public:
   bool operator()(CSCDetId i1, CSCDetId i2) const;
 };
@@ -29,8 +29,8 @@ class CSCRangeMapForRecHit {
   virtual ~CSCRangeMapForRecHit();
   
   ///  Returns a valid DetId + a valid comparator for the RangeMap.
-  static std::pair<CSCDetId,CSCDetIdSameChamberComparator> cscChamber(CSCDetId id);
-  static std::pair<CSCDetId,CSCDetIdSameDetLayerComparator> cscDetLayer(CSCDetId id);
+  static std::pair<CSCDetId,CSCDetIdSameChamberCompare> cscChamber(CSCDetId id);
+  static std::pair<CSCDetId,CSCDetIdSameDetLayerCompare> cscDetLayer(CSCDetId id);
 
  private:
    

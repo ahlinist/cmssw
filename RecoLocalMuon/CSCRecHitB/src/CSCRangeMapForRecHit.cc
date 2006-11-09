@@ -9,24 +9,24 @@ CSCRangeMapForRecHit::CSCRangeMapForRecHit() {}
 
 CSCRangeMapForRecHit::~CSCRangeMapForRecHit() {}
 
-std::pair<CSCDetId,CSCDetIdSameChamberComparator> CSCRangeMapForRecHit::cscChamber(CSCDetId id) {
+std::pair<CSCDetId,CSCDetIdSameChamberCompare> CSCRangeMapForRecHit::cscChamber(CSCDetId id) {
   
-  return std::make_pair(id, CSCDetIdSameChamberComparator());
+  return std::make_pair(id, CSCDetIdSameChamberCompare());
 }
 
-std::pair<CSCDetId,CSCDetIdSameDetLayerComparator> CSCRangeMapForRecHit::cscDetLayer(CSCDetId id) {
+std::pair<CSCDetId,CSCDetIdSameDetLayerCompare> CSCRangeMapForRecHit::cscDetLayer(CSCDetId id) {
   
-  return std::make_pair(id, CSCDetIdSameDetLayerComparator());
+  return std::make_pair(id, CSCDetIdSameDetLayerCompare());
 }
 
-bool CSCDetIdSameChamberComparator::operator()(CSCDetId i1, CSCDetId i2) const {
+bool CSCDetIdSameChamberCompare::operator()(CSCDetId i1, CSCDetId i2) const {
   if (i1.chamberId() == i2.chamberId())
     return false;
 
   return (i1<i2);
 }
 
-bool CSCDetIdSameDetLayerComparator::operator()(CSCDetId i1, CSCDetId i2) const {
+bool CSCDetIdSameDetLayerCompare::operator()(CSCDetId i1, CSCDetId i2) const {
   if ((i1.chamberId() == i2.chamberId()) &&
       (i1.endcap()    == i2.endcap()   ) &&
       (i1.station()   == i2.station()  ) &&
