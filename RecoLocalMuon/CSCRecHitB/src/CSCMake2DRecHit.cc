@@ -89,6 +89,7 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
   LocalError localerrFailed(dx2, dxy, dy2);  
   CSCRecHit2D failedHit( id, lpFailed, localerrFailed, channels, chisq, prob );
 
+  bool test = false;
 
   float slopeRight[100];
   float slopeLeft[100];
@@ -100,21 +101,31 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
   if ( isData ) {
     stripCrosstalk_->setCrossTalk( xtalk_ );
     stripCrosstalk_->getCrossTalk( id, slopeLeft, interLeft, slopeRight, interRight );
-    stripNoiseMatrix_->setNoiseMatrix( gains_, noise_ );
-    stripNoiseMatrix_->getNoiseMatrix( id, nMatrix ); 
+    if ( test ) {
+      stripNoiseMatrix_->setNoiseMatrix( gains_, noise_ );
+      stripNoiseMatrix_->getNoiseMatrix( id, nMatrix ); 
+    } else {
+      for ( int i = 0; i < 1500; i++ ) {
+        if (i%3 == 0) {
+          nMatrix.push_back( 1. );
+        } else {
+          nMatrix.push_back( 0. );
+        }
+      }
+    }
   } else {
+    for ( int i = 0; i < 100; i++ ) {
+      slopeRight[i] = 0.;
+      slopeLeft[i]  = 0.;
+      interRight[i] = 0.026;  // From MC digi...
+      interLeft[i]  = 0.026;
+    }
     for ( int i = 0; i < 1500; i++ ) {
       if (i%3 == 0) {
         nMatrix.push_back( 1. );
       } else {
         nMatrix.push_back( 0. );
       }
-    }
-    for ( int i = 0; i < 100; i++ ) {
-      slopeRight[i] = 0.;
-      slopeLeft[i]  = 0.;
-      interRight[i] = 0.026;  // From MC digi...
-      interLeft[i]  = 0.026;
     }
   }
 
