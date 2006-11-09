@@ -66,22 +66,44 @@ CSCStripNoiseMatrix::~CSCStripNoiseMatrix() {
     for ( matrix_i=it->second.begin(); matrix_i!=it->second.end(); ++matrix_i ) {
 
       float w = gainWeight[j]*gainWeight[j];
-
-      nMatrix.push_back(matrix_i->elem33 * w);
-      nMatrix.push_back(matrix_i->elem34 * w);
-      nMatrix.push_back(matrix_i->elem35 * w);
-      nMatrix.push_back(matrix_i->elem44 * w);
-      nMatrix.push_back(matrix_i->elem45 * w);
-      nMatrix.push_back(matrix_i->elem46 * w);
-      nMatrix.push_back(matrix_i->elem55 * w); 
-      nMatrix.push_back(matrix_i->elem56 * w); 
-      nMatrix.push_back(matrix_i->elem57 * w); 
-      nMatrix.push_back(matrix_i->elem66 * w); 
-      nMatrix.push_back(matrix_i->elem67 * w);
-      nMatrix.push_back(0.); 
-      nMatrix.push_back(matrix_i->elem77 * w);
-      nMatrix.push_back(0.);
-      nMatrix.push_back(0.);
+      float elem[15];
+      elem[0] = matrix_i->elem33 * w;
+      elem[1] = matrix_i->elem34 * w;
+      elem[2] = matrix_i->elem35 * w;
+      elem[3] = matrix_i->elem44 * w;
+      elem[4] = matrix_i->elem45 * w;
+      elem[5] = matrix_i->elem46 * w;
+      elem[6] = matrix_i->elem55 * w; 
+      elem[7] = matrix_i->elem56 * w; 
+      elem[8] = matrix_i->elem57 * w; 
+      elem[9] = matrix_i->elem66 * w; 
+      elem[10]= matrix_i->elem67 * w;
+      elem[11]= 0.; 
+      elem[12]= matrix_i->elem77 * w;
+      elem[13]= 0.;
+      elem[14]= 0.;
+      bool isFlawed[5];
+      
+      // Test that elements make sense:
+      for ( int l = 0; l < 5; l++) {
+        isFlawed[l] = false;
+	for ( int k = 0; k < 3; k++) {
+          // make sure the number isn't too close to zero...
+          if (elem[k + 3*l] < 0.001) elem[k + 3*l] = 0.001;
+	  if (elem[k + 3*l] > 50.) isFlawed[l] = true; 
+	}
+      }
+      for ( int l = 0; l < 5; l++) { 
+        if ( !isFlawed[l]) continue; 
+        for ( int k = 0; k < 3; k++) { 
+          if ( k == 0) {
+            elem[k + 3*l] = 1.;  
+          } else {
+	    elem[k + 3*l] = 0.;
+	  } 
+	} 
+      }
+      for (int k = 0; k < 15; k++) nMatrix.push_back(elem[k]);
       j++;
     }
   }
