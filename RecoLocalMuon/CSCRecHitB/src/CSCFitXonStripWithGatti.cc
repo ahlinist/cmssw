@@ -109,7 +109,7 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCLayer* layer, const CSCStri
   }   
 
   // vector containing noise starts at 3rd time bin,
-  int tbin = tmax - 4;
+  int tbin = tmax - 3;
   // Load in auto-correlation noise matrices
   for ( int istrip =0; istrip < 3; istrip++ ) {
     a11[istrip] = nmatrix[0+tbin*3+istrip*15];
