@@ -146,6 +146,7 @@
                 <Test Events="50000" Name="PhysVal-SinglePi0-Ene0To20">
                         SinglePi0_Ene0to20_NoTracker.cfg
                 </Test>
+	  </Validate>
 <!-- Back to back electrons from ECAL e/gamma (low priority)-->
           <Validate Version="BackToBackElectrons-LowPriority">
                 <Test Events="25000" Name="PhysVal-DiEle-Ene10">
