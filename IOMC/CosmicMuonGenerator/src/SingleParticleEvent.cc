@@ -181,7 +181,7 @@ double SingleParticleEvent::absVzTmp(){
   if(MTCC==true){
     return tmpVz; //need sign to be sure muon hits half of CMS with MTCC setup
   }else{
-    return abs(tmpVz);
+    return fabs(tmpVz);
   }
 }
 
@@ -226,7 +226,7 @@ double SingleParticleEvent::absmom(){
 }
 
 double SingleParticleEvent::absVz(){
-  return abs(Vz);
+  return fabs(Vz);
 }
 
 double SingleParticleEvent::rVxy(){
