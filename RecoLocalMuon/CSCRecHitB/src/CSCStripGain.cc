@@ -36,11 +36,19 @@ CSCStripGain::~CSCStripGain() {
 void CSCStripGain::getStripGain( const CSCDetId& id, const float& globalGainAvg, float* weights ) {
 
   // Compute channel id used for retrieving gains from database
+  bool isME1a = false;
   int ec = id.endcap();
   int st = id.station();
   int rg = id.ring();
   int ch = id.chamber();
   int la = id.layer();
+
+  // Note that ME-1a constants are stored in ME-11 (ME-1b)
+  if ((id.station() == 1 ) && (id.ring() == 4 )) {
+      rg = 1;
+      isME1a = true;
+  }
+
   int chId=220000000 + ec*100000 + st*10000 + rg*1000 + ch*10 + la;
 
   // Build iterator which loops on all layer id:
@@ -55,9 +63,19 @@ void CSCStripGain::getStripGain( const CSCDetId& id, const float& globalGainAvg,
     std::vector<CSCGains::Item>::const_iterator gain_i;
 
     // N.B. in database, strip_id starts at 0, whereas it starts at 1 in detId
-    int k = 0;
+    int s_id = 0;
+    int me1a_id = 0;
     for ( gain_i=it->second.begin(); gain_i!=it->second.end(); ++gain_i ) {
-      weights[k++]  = globalGainAvg/gain_i->gain_slope;
+      if ( isME1a ) {
+        if (s_id > 63 ) {
+          weights[me1a_id]     = globalGainAvg/gain_i->gain_slope;   
+          weights[me1a_id+16]  = globalGainAvg/gain_i->gain_slope;   
+          weights[me1a_id+32]  = globalGainAvg/gain_i->gain_slope;   
+          me1a_id++;
+        }
+      } 
+      if ( !isME1a ) weights[s_id]  = globalGainAvg/gain_i->gain_slope;
+      s_id++;
     }
   }
 }

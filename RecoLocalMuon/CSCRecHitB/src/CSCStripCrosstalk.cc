@@ -37,11 +37,19 @@ CSCStripCrosstalk::~CSCStripCrosstalk() {
 void CSCStripCrosstalk::getCrossTalk( const CSCDetId& id, float* m_left, float* b_left, float* m_right, float* b_right ) {
 
   // Compute channel id used for retrieving gains from database
+  bool isME1a = false;
   int ec = id.endcap();
   int st = id.station();
   int rg = id.ring();
   int ch = id.chamber();
   int la = id.layer();
+
+  // Note that ME-1a constants are stored in ME-11 (ME-1b)
+  if ((id.station() == 1 ) && (id.ring() == 4 )) {   
+    rg = 1;
+    isME1a = true;
+  }
+
   int chId=220000000 + ec*100000 + st*10000 + rg*1000 + ch*10 + la;
 
   // Build iterator which loops on all layer id:
@@ -56,13 +64,33 @@ void CSCStripCrosstalk::getCrossTalk( const CSCDetId& id, float* m_left, float* 
     std::vector<CSCcrosstalk::Item>::const_iterator xtalk_i;
 
     // N.B. in database, strip_id starts at 0, whereas it starts at 1 in detId
-    int k = 0;   
+    int s_id = 0;   
+    int me1a_id = 0;
     for ( xtalk_i=it->second.begin(); xtalk_i!=it->second.end(); ++xtalk_i ) {
-      m_left[k]  = xtalk_i->xtalk_slope_left;
-      b_left[k]  = xtalk_i->xtalk_intercept_left;
-      m_right[k] = xtalk_i->xtalk_slope_right;
-      b_right[k] = xtalk_i->xtalk_intercept_right;
-      k++;
+      if ( isME1a ) {
+        if (s_id > 63 ) {
+	  m_left[me1a_id]     = xtalk_i->xtalk_slope_left; 
+	  b_left[me1a_id]     = xtalk_i->xtalk_intercept_left; 
+	  m_right[me1a_id]    = xtalk_i->xtalk_slope_right; 
+	  b_right[me1a_id]    = xtalk_i->xtalk_intercept_right;
+          m_left[me1a_id+16]  = xtalk_i->xtalk_slope_left;  
+          b_left[me1a_id+16]  = xtalk_i->xtalk_intercept_left;  
+          m_right[me1a_id+16] = xtalk_i->xtalk_slope_right;  
+          b_right[me1a_id+16] = xtalk_i->xtalk_intercept_right;  
+          m_left[me1a_id+32]  = xtalk_i->xtalk_slope_left;  
+          b_left[me1a_id+32]  = xtalk_i->xtalk_intercept_left;  
+          m_right[me1a_id+32] = xtalk_i->xtalk_slope_right;  
+          b_right[me1a_id+32] = xtalk_i->xtalk_intercept_right;  
+	  me1a_id++;
+	}
+      }
+      if ( !isME1a ) {
+	m_left[s_id]  = xtalk_i->xtalk_slope_left;
+	b_left[s_id]  = xtalk_i->xtalk_intercept_left;
+	m_right[s_id] = xtalk_i->xtalk_slope_right;
+	b_right[s_id] = xtalk_i->xtalk_intercept_right;
+      }
+      s_id++;
     }
   }
   return;

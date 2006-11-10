@@ -37,12 +37,20 @@ CSCStripNoiseMatrix::~CSCStripNoiseMatrix() {
   void CSCStripNoiseMatrix::getNoiseMatrix( const CSCDetId& id, std::vector<float>& nMatrix ) {
 
   // Compute channel id used for retrieving gains from database
-  int ec = id.endcap();
-  int st = id.station();
-  int rg = id.ring();
-  int ch = id.chamber();
-  int la = id.layer();
-  int chId=220000000 + ec*100000 + st*10000 + rg*1000 + ch*10 + la;
+    bool isME1a = false;
+    int ec = id.endcap();
+    int st = id.station();
+    int rg = id.ring();
+    int ch = id.chamber();
+    int la = id.layer();
+
+    // Note that ME-1a constants are stored in ME-11 (ME-1b)
+    if ((id.station() == 1 ) && (id.ring() == 4 )) {
+      rg = 1;
+      isME1a = true;
+    }
+      
+    int chId=220000000 + ec*100000 + st*10000 + rg*1000 + ch*10 + la;
                                                            
   // Build iterator which loops on all layer id:
   std::map<int,std::vector<CSCNoiseMatrix::Item> >::const_iterator it;
@@ -51,7 +59,6 @@ CSCStripNoiseMatrix::~CSCStripNoiseMatrix() {
     
     // Is it the right detector unit ?
     if (it->first != chId) continue;  
-
 
     // The auto-correlation noise matrix has to be multiplied by the square
     // of the gain correction factor:
@@ -62,10 +69,12 @@ CSCStripNoiseMatrix::~CSCStripNoiseMatrix() {
     std::vector<CSCNoiseMatrix::Item>::const_iterator matrix_i;
   
     // N.B. in database, strip_id starts at 0, whereas it starts at 1 in detId
-    int j = 0;
+    int s_id = 0;
+
     for ( matrix_i=it->second.begin(); matrix_i!=it->second.end(); ++matrix_i ) {
 
-      float w = gainWeight[j]*gainWeight[j];
+      float w = gainWeight[s_id]*gainWeight[s_id];
+
       float elem[15];
       elem[0] = matrix_i->elem33 * w;
       elem[1] = matrix_i->elem34 * w;
@@ -82,29 +91,26 @@ CSCStripNoiseMatrix::~CSCStripNoiseMatrix() {
       elem[12]= matrix_i->elem77 * w;
       elem[13]= 0.;
       elem[14]= 0.;
-      bool isFlawed[5];
-      
+
+      bool isFlawed = false;      
       // Test that elements make sense:
-      for ( int l = 0; l < 5; l++) {
-        isFlawed[l] = false;
-	for ( int k = 0; k < 3; k++) {
-          // make sure the number isn't too close to zero...
-          if (elem[k + 3*l] < 0.001) elem[k + 3*l] = 0.001;
-	  if (elem[k + 3*l] > 50.) isFlawed[l] = true; 
-	}
+      for ( int k = 0; k < 15; k++) {
+        // make sure the number isn't too close to zero...
+        if (elem[k] < 0.001) elem[k] = 0.001;
+	if (elem[k] > 50.) isFlawed = true; 
       }
-      for ( int l = 0; l < 5; l++) { 
-        if ( !isFlawed[l]) continue; 
-        for ( int k = 0; k < 3; k++) { 
-          if ( k == 0) {
-            elem[k + 3*l] = 1.;  
+      if ( isFlawed ) {
+        for ( int k = 0; k < 15; k++) { 
+          if ( k%3 == 0) {
+            elem[k] = 1.;  
           } else {
-	    elem[k + 3*l] = 0.;
+	    elem[k] = 0.;
 	  } 
 	} 
       }
-      for (int k = 0; k < 15; k++) nMatrix.push_back(elem[k]);
-      j++;
+      if ( isME1a && s_id > 63 ) for (int k = 0; k < 15; k++) nMatrix.push_back(elem[k]);
+      if ( !isME1a ) for (int k = 0; k < 15; k++) nMatrix.push_back(elem[k]);
+      s_id++;
     }
   }
 }
@@ -152,31 +158,50 @@ float CSCStripNoiseMatrix::getStripGainAvg() {
 void CSCStripNoiseMatrix::getStripGain( const CSCDetId& id, const float& globalGainAvg ) {
     
   // Compute channel id used for retrieving gains from database
+  bool isME1a = false;
   int ec = id.endcap();
   int st = id.station();
   int rg = id.ring();
   int ch = id.chamber();
   int la = id.layer();
+    
+  // Note that ME-1a constants are stored in ME-11 (ME-1b)
+  if ((id.station() == 1 ) && (id.ring() == 4 )) {
+    rg = 1;
+    isME1a = true;   
+  }
+          
   int chId=220000000 + ec*100000 + st*10000 + rg*1000 + ch*10 + la;
-
+          
   // Build iterator which loops on all layer id:
   std::map<int,std::vector<CSCGains::Item> >::const_iterator it;
-
+      
   for ( it=Gains->gains.begin(); it!=Gains->gains.end(); ++it ) {
-  
+     
     // Is it the right detector unit ?
     if (it->first != chId) continue;
-
+    
     // Build iterator which loops on all channels and finds desired channel:
     std::vector<CSCGains::Item>::const_iterator gain_i;
-  
+
     // N.B. in database, strip_id starts at 0, whereas it starts at 1 in detId
-    int k = 0;
+    int s_id = 0;
+    int me1a_id = 0;
     for ( gain_i=it->second.begin(); gain_i!=it->second.end(); ++gain_i ) {
-      gainWeight[k++]  = globalGainAvg/gain_i->gain_slope;
+
+      if ( isME1a ) {
+	if (s_id > 63 ) { 
+          gainWeight[me1a_id]    = globalGainAvg/gain_i->gain_slope;
+          gainWeight[me1a_id+16] = globalGainAvg/gain_i->gain_slope;
+          gainWeight[me1a_id+32] = globalGainAvg/gain_i->gain_slope;
+          me1a_id++;
+        }
+      }
+      if ( !isME1a ) gainWeight[s_id]  = globalGainAvg/gain_i->gain_slope;
+      s_id++;
     }
   }
-}
+}  
 
 
 
