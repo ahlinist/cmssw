@@ -7,6 +7,9 @@
 //
 //  Modification history:
 //    $Log: FilterUnitFramework.cc,v $
+//    Revision 1.20  2006/10/31 21:07:25  meschi
+//     fix to timer call in rate configure and reset unused resources upon halting
+//
 //    Revision 1.19  2006/10/19 12:29:38  schiefer
 //    fix to crc error counter web display
 //
@@ -873,5 +876,5 @@ void FilterUnitFramework::resetCounters()
 
 
 
-XDAQ_INSTANTIATOR_IMPL(FilterUnitFramework);
+XDAQ_INSTANTIATOR_IMPL(FilterUnitFramework)
 
