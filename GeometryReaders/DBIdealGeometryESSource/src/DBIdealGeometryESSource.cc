@@ -16,6 +16,7 @@
 #include "SealUtil/SealTimer.h"
 
 #include <memory>
+#include <cstring>
 
 using cond::MetaData;
 
@@ -30,8 +31,16 @@ DBIdealGeometryESSource::DBIdealGeometryESSource(const edm::ParameterSet & pset)
   cond::ServiceLoader* loader=new cond::ServiceLoader;
   dbUser="CORAL_AUTH_USER="+dbUser;
   dbPass="CORAL_AUTH_PASSWORD="+dbPass;
-  ::putenv(dbUser.c_str());
-  ::putenv(dbPass.c_str());
+  //NOTE: putenv holds onto the pointer passed to it but it will not delete it.  Unfortunately
+  // we have no knowledge of when putenv will release its hold on the pointer. Therefore we
+  // can either have a memory leak (by never deleting the pointer) or a segmentation fault
+  // (by deleting the pointer too soon).  I choose memory leak
+  char* pUser = new char[dbUser.size()+1];
+  std::strncpy(pUser,dbUser.c_str(),dbUser.size()+1);
+  ::putenv(pUser);
+  char* pPass = new char[dbPass.size()+1];
+  std::strncpy(pPass,dbPass.c_str(),dbPass.size()+1);
+  ::putenv(pPass);
   loader->loadAuthenticationService( cond::Env );
   loader->loadMessageService( cond::Error );
 
