@@ -19,5 +19,5 @@ private:
 };
  
 #define DEFINE_UTILITYACTION(type) \
- DEFINE_SEAL_PLUGIN(UtilityActionPluginFactory,UtilityActionMaker<type>,"SimG4Core/UtilityAction/" #type);
+ DEFINE_SEAL_PLUGIN(UtilityActionPluginFactory,UtilityActionMaker<type>,"SimG4Core/UtilityAction/" #type)
 #endif
