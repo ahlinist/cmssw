@@ -1,0 +1,18 @@
+<use name=FWCore/Framework>
+<use name=Foundation/PluginManager>
+<use name=FWCore/ParameterSet>
+<use name=DataFormats/Common>
+<use name=SimDataFormats/HepMCProduct>
+<use name=clhep> 
+<use name=root>
+<flags SEAL_PLUGIN_NAME="AnalysisExamplesSusyAnalysis">
+<export>
+   <lib name=AnalysisExamplesSusyAnalysis>
+   <use name=SimDataFormats/HepMCProduct>
+   <use name=DataFormats/Common>
+   <use name=clhep>
+   <use name=root> 
+   <use name=FWCore/Framework>
+   <use name=Foundation/PluginManager>
+   <use name=FWCore/ParameterSet>
+</export>
