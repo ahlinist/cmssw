@@ -24,8 +24,8 @@
 // ********************************************************************
 //
 //
-// $Id: GFlashSamplingShowerParameterisation.hh,v 1.4 2006/06/29 19:13:53 gunter Exp $
-// GEANT4 tag $Name: geant4-08-01-patch-01 $
+// $Id: GFlashSamplingShowerParameterisation.hh,v 1.1 2006/09/28 15:35:46 sunanda Exp $
+// GEANT4 tag $Name:  $
 //
 //
 //---------------------------------------------------------------
@@ -41,7 +41,6 @@
 //---------------------------------------------------------------
 #ifndef GFlashSamplingShowerParameterisation_h
 #define GFlashSamplingShowerParameterisation_h 1
-//#define G4v7
 
 #include "globals.hh"
 #include "GFlashSamplingShowerTuning.hh"

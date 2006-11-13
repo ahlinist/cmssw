@@ -24,8 +24,8 @@
 // ********************************************************************
 //
 //
-// $Id: GFlashHomoShowerParameterisation.hh,v 1.4 2006/06/29 19:13:47 gunter Exp $
-// GEANT4 tag $Name: geant4-08-01-patch-01 $
+// $Id: GFlashHomoShowerParameterisation.hh,v 1.1 2006/09/28 15:35:46 sunanda Exp $
+// GEANT4 tag $Name:  $
 //
 //
 // ---------------------------------------------------------------
@@ -41,7 +41,7 @@
 // ---------------------------------------------------------------
 #ifndef GFlashHomoShowerParameterisation_h
 #define GFlashHomoShowerParameterisation_h 1
-//#define G4v7
+
 #ifndef G4v7
 #include "globals.hh"
 #include "GVFlashHomoShowerTuning.hh"

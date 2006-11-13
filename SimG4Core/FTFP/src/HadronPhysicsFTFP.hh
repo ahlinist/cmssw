@@ -1,7 +1,6 @@
 #ifndef SimG4Core_HadronPhysicsFTFP_H
 #define SimG4Core_HadronPhysicsFTFP_H
 
-#define G4v7
 #include "G4VPhysicsConstructor.hh"
 
 #ifdef G4v7
