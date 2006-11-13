@@ -1,0 +1,34 @@
+<flags SEAL_PLUGIN_NAME="AnalysisExamplesSimTrackerAnalysis">
+
+<use name=SimDataFormats/TrackingHit>
+<use name=SimDataFormats/Track>
+<use name=SimDataFormats/Vertex>
+<use name=DataFormats/DetId>
+<use name=DataFormats/SiPixelDetId>
+<use name=DataFormats/SiStripDetId>
+<use name=FWCore/Framework>
+<use name=Foundation/PluginManager>
+<use name=Geometry/TrackerGeometryBuilder>
+<use name=Geometry/CommonDetUnit>
+<use name=clhep> 
+<use name=root>
+
+<export>
+
+ <lib name=AnalysisExamplesSimTrackerAnalysis>
+ <use name=SimDataFormats/TrackingHit>
+ <use name=SimDataFormats/Track>
+ <use name=SimDataFormats/Vertex>
+ <use name=DataFormats/DetId>
+ <use name=DataFormats/SiPixelDetId>
+ <use name=DataFormats/SiStripDetId>
+ <use name=FWCore/Framework>
+ <use name=Foundation/PluginManager>
+ <use name=Geometry/TrackerGeometryBuilder>
+ <use name=Geometry/CommonDetUnit>
+ <use name=clhep>
+ <use name=root>
+
+</export>
+
+
