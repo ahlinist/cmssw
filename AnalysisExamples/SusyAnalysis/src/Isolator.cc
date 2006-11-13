@@ -97,9 +97,9 @@ bool Isolator::IsoElectron(int ichk)
  //  - cut on absolute value of Et or ratio or number of objects 
  
   bool isIsolated = true;
-//  if (DEBUGLVL >= 2){
+  if (DEBUGLVL >= 2){
     cout << " Electron isolation method = " << iso_MethodElec << endl;
-//  }
+  }
 
   if (RecoData[ichk]->particleType() != 1){
     cout << " *** Particle given " << ichk 
@@ -124,14 +124,14 @@ bool Isolator::IsoElectron(int ichk)
 //      cout << " ptwrtJet = " << ptwrtJet << endl;
       if (ptwrtJet > iso_ptElwrtJetmin){
         isIsolated = true;
-//        if (DEBUGLVL >= 2){
+        if (DEBUGLVL >= 2){
           cout << " electron is isolated by Pt wrt jet, Pt = " << ptwrtJet << endl;
-//        }
+        }
       } else {
         isIsolated = false;
-//        if (DEBUGLVL >= 2){
+        if (DEBUGLVL >= 2){
           cout << " electron is not isolated by Pt wrt jet, Pt = " << ptwrtJet << endl;
-//        }
+        }
       }
     }
   }
@@ -181,7 +181,7 @@ bool Isolator::IsoElectron(int ichk)
       } else {
         cout << " *** Chosen isolation method is not implemented for electron ***" << endl;
       }
-//      if (DEBUGLVL >= 2){
+      if (DEBUGLVL >= 2){
        if (itra < 3 && ival == 1) {
         if (isIsolated){
          cout << " electron is isolated in calorimeter, Esum = " << eSum << endl;
@@ -201,7 +201,7 @@ bool Isolator::IsoElectron(int ichk)
          cout << " electron is not isolated in calorimeter, #trks = " << eSum << endl;
         }
        }
-//      }
+      }
     } 
 
     // using tracker information
@@ -232,7 +232,7 @@ bool Isolator::IsoElectron(int ichk)
       } else {
         cout << " *** Chosen isolation method is not implemented for electron ***" << endl;
       }
-//      if (DEBUGLVL >= 2){
+      if (DEBUGLVL >= 2){
        if (itra < 3 && ival == 1) {
         if (isIsolated){
          cout << " electron is isolated in tracker, Psum = " << pSum << endl;
@@ -252,7 +252,7 @@ bool Isolator::IsoElectron(int ichk)
          cout << " electron is not isolated in tracker, #trks = " << pSum << endl;
         }
        }
-//      }
+      }
     }
 
     // using a weighted sum of calorimeter and tracker information
@@ -287,7 +287,7 @@ bool Isolator::IsoElectron(int ichk)
       } else {
         cout << " *** Chosen isolation method is not implemented for electron ***" << endl;
       }
-//      if (DEBUGLVL >= 2){
+      if (DEBUGLVL >= 2){
        if (itra < 3 && ival == 1) {
         if (isIsolated){
          cout << " electron is isolated from candidates, Psum = " << pSum << endl;
@@ -307,7 +307,7 @@ bool Isolator::IsoElectron(int ichk)
          cout << " electron is not isolated from candidates, #trks = " << pSum << endl;
         }
        }
-//      }
+      }
     }
   }
 
@@ -331,9 +331,9 @@ bool Isolator::IsoMuon(int ichk)
  //  - cut on absolute value of Et or ratio or number of objects 
  
   bool isIsolated = true;
-//  if (DEBUGLVL >= 2){
+  if (DEBUGLVL >= 2){
     cout << " Muon isolation method = " << iso_MethodMuon << endl;
-//  }
+  }
 
   if (RecoData[ichk]->particleType() != 2){
     cout << " *** Particle given " << ichk 
@@ -403,7 +403,7 @@ bool Isolator::IsoMuon(int ichk)
       } else {
         cout << " *** Chosen isolation method is not implemented for muon ***" << endl;
       }
-//      if (DEBUGLVL >= 2){
+      if (DEBUGLVL >= 2){
        if (itra < 3 && ival == 1) {
         if (isIsolated){
          cout << " muon is isolated in calorimeter, Esum = " << eSum << endl;
@@ -423,7 +423,7 @@ bool Isolator::IsoMuon(int ichk)
          cout << " muon is not isolated in calorimeter, #trks = " << eSum << endl;
         }
        }
-//      }
+      }
     } 
 
     // using tracker information
@@ -444,7 +444,7 @@ bool Isolator::IsoMuon(int ichk)
       } else {
         cout << " *** Chosen isolation method is not implemented for muon ***" << endl;
       }
-//      if (DEBUGLVL >= 2){
+      if (DEBUGLVL >= 2){
        if (itra < 3 && ival == 1) {
         if (isIsolated){
          cout << " muon is isolated in tracker, Psum = " << pSum << endl;
@@ -464,7 +464,7 @@ bool Isolator::IsoMuon(int ichk)
          cout << " muon is not isolated in tracker, #trks = " << pSum << endl;
         }
        }
-//      }
+      }
     }
 
     // using a weighted sum of calorimeter and tracker information
@@ -499,7 +499,7 @@ bool Isolator::IsoMuon(int ichk)
       } else {
         cout << " *** Chosen isolation method is not implemented for muon ***" << endl;
       }
-//      if (DEBUGLVL >= 2){
+      if (DEBUGLVL >= 2){
        if (itra < 3 && ival == 1) {
         if (isIsolated){
          cout << " muon is isolated from candidates, Psum = " << pSum << endl;
@@ -519,7 +519,7 @@ bool Isolator::IsoMuon(int ichk)
          cout << " muon is not isolated from candidates, #trks = " << pSum << endl;
         }
        }
-//      }
+      }
     }
   }
 
