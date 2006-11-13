@@ -1,6 +1,7 @@
 #include <RecoLocalMuon/CSCRecHit/src/CSCFixedBinOfSCAPulse.h>
 #include <DataFormats/CSCDigi/interface/CSCStripDigi.h>
 #include <vector>
+#include <cmath>
 
 bool CSCFixedBinOfSCAPulse::peakAboveBaseline(const CSCStripDigi & digi, 
                          const CSCChamberSpecs & specs,
