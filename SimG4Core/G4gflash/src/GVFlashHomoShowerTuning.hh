@@ -24,8 +24,8 @@
 // ********************************************************************
 //
 //
-// $Id: GVFlashHomoShowerTuning.hh,v 1.7 2006/06/29 19:14:04 gunter Exp $
-// GEANT4 tag $Name: geant4-08-01-patch-01 $
+// $Id: GVFlashHomoShowerTuning.hh,v 1.2 2006/09/28 15:35:46 sunanda Exp $
+// GEANT4 tag $Name:  $
 //
 //
 // ---------------------------------------------------------------
@@ -59,7 +59,6 @@
 //---------------------------------------------------------------
 #ifndef GVFlashHomoShowerTuning_hh
 #define GVFlashHomoShowerTuning_hh
-//#define G4v7
 
 class GVFlashHomoShowerTuning
 {
