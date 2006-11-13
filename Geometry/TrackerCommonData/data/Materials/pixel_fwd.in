@@ -1,0 +1,100 @@
+PIXEL forward detector
+============
+
+Input file for mixture.f
+Start new mixtures with a '#' in the first column
+Start the components with a '*' in the first column
+You can type any kind of comment in as long as you don't start it
+with '#' or '*' !
+.....................................................................
+For mixture declaration: Name of Mixture, Name of GMIX for title file, 
+                         Monte Carlo Volume, MC Area
+For items in a compound: Item number, Comment, Material (has to be 
+                 written exactly as in material.input file), 
+                 Volume, Multiplicity, Type
+      Type is one of the following:  SUP for support
+                                     SEN for sensitive volumes
+                                     CAB for cables
+                                     COL for cooling
+                                     ELE for electronics
+..................................................................... 
+
+1) BumpBonds+Air (per ROC area = 0.7962cm2)
+   =======================
+
+(1)      An average of 4160 Bump Bonds (63% Tin and 37% Lead)
+         Area: 0.003 x 0.003 = 0.000009 cm^2
+         thickness 0.0025cm ->  V = 0.0000000225 cm^3 
+(2)      Air: (Area_ROC * 0.0025) - 4160 * 0.0000000225 
+               V_Air = 0.0019905 - 0.0000936 = 0.00189 cm^3
+.....................................................................
+# "Pixel Forward BumpBond layer per ROC" "Pix_Fwd_Bump"  0.002  0.7962
+* 1 "Bump Bonds" "Bump Bonds"  0.0000000225 4160 SUP
+* 2 "Bump Bond Air" "Air"  0.00189  1 SUP
+
+
+2) VHDI (updated on october 4th 2006)
+   ====
+
+(1-2)       (a) Kapton V =  0.5448 cm^3
+            (c) Copper V = 0.1453 cm^3
+.....................................................................
+# "Pixel Forward VHDI" "Pix_Fwd_VHDI"  0.6901  60.5326
+* 1 "VHDI: Kapton" "Kapton" 0.5448 1 SUP
+* 2 "VHDI: Copper" "Copper" 0.1453 1 SUP
+
+
+
+3) ChoTherm per ROC
+   =================
+
+(1-4)    (a) Acrylic is epoxy
+             V = 0.002 cm^3    
+         (b) BN powder 
+             volume = 0.002 cm^3 
+         (c) Silicone 
+             volume = 0.008 cm^3
+         (d) Polyimide
+             volume = 0.002 cm^3
+.....................................................................
+# "Pixel Forward ChoTherm sensor" "Pix_Fwd_ChoTherm_sensor"  0.014  0.7962
+* 1 "Chotherm: Acrylic is epoxy" "Epoxy" 0.002 1 SUP
+* 2 "Chotherm: BN powder" "BN powder" 0.002 1 SUP
+* 3 "Chotherm: Silicone" "Silicone" 0.008 1 SUP
+* 4 "Chotherm: Polyimide it's kapton" "Kapton" 0.002 1 SUP 
+
+
+4) 3M 9882 tape
+   ====================
+
+(1-2)    (a) Acrylic is epoxy
+             Area: 60.53 cm^2
+             V = 0.2421 cm^3
+
+         (b) Ceramic(BN)  V = 0.0605 cm^3
+
+.....................................................................
+# "Pixel Forward AdhFilm" "Pix_Fwd_AdhFilm"  0.3026  60.53
+* 1 "AdhFilm: Acrylic is epoxy" "Epoxy" 0.2421 1 SUP
+* 2 "AdhFilm: Ceramic" "BN powder" 0.0605 1 SUP
+
+
+5) HDI 
+   ===
+
+(1-3)       (a) Kapton V =  0.4278 cm^3
+            (b) Internal flex adhesive V = 0.2139 cm^3
+            (c) Copper V = 0.0675 cm^3
+.....................................................................
+# "Pixel Forward HDI" "Pix_Fwd_HDI"  0.7092  42.78
+* 1 "HDI: Kapton" "T_Kapton" 0.4278 1 SUP
+* 2 "HDI: Internal flex adhesive is like epoxy" "Internal flex adhesive" 0.2139 1 SUP
+* 3 "HDI: Copper" "Copper" 0.0675 1 SUP
+
+
+# "END"  "END"  0.  0.   
+this has to be the last line !
+
+
+
+
