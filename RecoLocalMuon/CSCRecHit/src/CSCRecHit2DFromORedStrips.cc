@@ -5,7 +5,7 @@
 CSCRecHit2DFromORedStrips::CSCRecHit2DFromORedStrips( const edm::ParameterSet& ps ) 
   : CSCRecHit2DInALayer(ps), theStaggering( 16 ) {
   //@@ Must fill theStaggering from PS
-};
+}
 
 void CSCRecHit2DFromORedStrips::fillPulseHeights( const CSCStripDigiCollection::Range& rstripd ) {
   CSCRecHit2DInALayer::fillPulseHeights( rstripd );
