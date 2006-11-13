@@ -4,6 +4,7 @@
 #include <DataFormats/CSCRecHit/interface/CSCRecHit2D.h>
 #include <DataFormats/CSCDigi/interface/CSCWireDigi.h>
 #include <FWCore/MessageLogger/interface/MessageLogger.h>
+#include <cmath>
 
 std::vector<CSCRecHit2D> CSCRecHit2DFromWiresOnly::run( 
   const CSCDetId& id, const CSCLayer* layer,

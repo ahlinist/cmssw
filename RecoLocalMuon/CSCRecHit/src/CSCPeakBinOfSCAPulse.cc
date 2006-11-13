@@ -2,6 +2,7 @@
 #include <DataFormats/CSCDigi/interface/CSCStripDigi.h>
 #include <vector>
 #include <algorithm>
+#include <cmath>
 
 bool CSCPeakBinOfSCAPulse::peakAboveBaseline(const CSCStripDigi & digi, 
                          const CSCChamberSpecs & specs,
