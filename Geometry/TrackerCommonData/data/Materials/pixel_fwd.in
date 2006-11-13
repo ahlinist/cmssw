@@ -40,7 +40,7 @@ For items in a compound: Item number, Comment, Material (has to be
             (c) Copper V = 0.1453 cm^3
 .....................................................................
 # "Pixel Forward VHDI" "Pix_Fwd_VHDI"  0.6901  60.5326
-* 1 "VHDI: Kapton" "Kapton" 0.5448 1 SUP
+* 1 "VHDI: Kapton" "T_Kapton" 0.5448 1 SUP
 * 2 "VHDI: Copper" "Copper" 0.1453 1 SUP
 
 
@@ -61,7 +61,7 @@ For items in a compound: Item number, Comment, Material (has to be
 * 1 "Chotherm: Acrylic is epoxy" "Epoxy" 0.002 1 SUP
 * 2 "Chotherm: BN powder" "BN powder" 0.002 1 SUP
 * 3 "Chotherm: Silicone" "Silicone" 0.008 1 SUP
-* 4 "Chotherm: Polyimide it's kapton" "Kapton" 0.002 1 SUP 
+* 4 "Chotherm: Polyimide it's kapton" "T_Kapton" 0.002 1 SUP 
 
 
 4) 3M 9882 tape
