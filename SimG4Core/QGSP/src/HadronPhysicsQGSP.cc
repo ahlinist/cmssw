@@ -7,7 +7,7 @@
 HadronPhysicsQGSP::HadronPhysicsQGSP(const G4String& name)
                     :  G4VPhysicsConstructor(name) 
 {
-#ifdef G4v7
+#ifdef G4V7
   theNeutrons.RegisterMe(&theQGSPNeutron);
   theNeutrons.RegisterMe(&theLEPNeutron);
   theLEPNeutron.SetMaxInelasticEnergy(25*GeV);
@@ -23,7 +23,7 @@ HadronPhysicsQGSP::HadronPhysicsQGSP(const G4String& name)
 }
 
 HadronPhysicsQGSP::~HadronPhysicsQGSP() {
-#ifndef G4v7
+#ifndef G4V7
   delete theStoppingHadron;
   delete theMiscLHEP;
   delete theQGSPNeutron;
@@ -36,7 +36,7 @@ HadronPhysicsQGSP::~HadronPhysicsQGSP() {
   delete thePiK;
 #endif
 }
-#ifndef G4v7
+#ifndef G4V7
 
 void HadronPhysicsQGSP::CreateModels() {
   theNeutrons=new G4NeutronBuilder;
@@ -75,7 +75,7 @@ void HadronPhysicsQGSP::ConstructParticle()
 
 void HadronPhysicsQGSP::ConstructProcess()
 {
-#ifdef G4v7
+#ifdef G4V7
   theNeutrons.Build();
   thePro.Build();
   thePiK.Build();

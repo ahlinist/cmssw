@@ -7,7 +7,7 @@
 HadronPhysicsFTFP::HadronPhysicsFTFP(const G4String& name)
                     :  G4VPhysicsConstructor(name) 
 {
-#ifdef G4v7
+#ifdef G4V7
   theNeutrons.RegisterMe(&theFTFPNeutron);
   theNeutrons.RegisterMe(&theLEPNeutron);
   theLEPNeutron.SetMaxInelasticEnergy(25*GeV);
@@ -23,7 +23,7 @@ HadronPhysicsFTFP::HadronPhysicsFTFP(const G4String& name)
 }
 
 HadronPhysicsFTFP::~HadronPhysicsFTFP() {
-#ifndef G4v7
+#ifndef G4V7
   delete theNeutrons;
   delete theLEPNeutron;
   delete theFTFPNeutron;
@@ -36,7 +36,7 @@ HadronPhysicsFTFP::~HadronPhysicsFTFP() {
   delete theMiscLHEP;
 #endif
 }
-#ifndef G4v7
+#ifndef G4V7
 
 void HadronPhysicsFTFP::CreateModels()
 {
@@ -76,7 +76,7 @@ void HadronPhysicsFTFP::ConstructParticle()
 
 void HadronPhysicsFTFP::ConstructProcess()
 {
-#ifdef G4v7
+#ifdef G4V7
   theNeutrons.Build();
   thePro.Build();
   thePiK.Build();

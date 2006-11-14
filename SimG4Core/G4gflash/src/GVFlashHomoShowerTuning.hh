@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: GVFlashHomoShowerTuning.hh,v 1.2 2006/09/28 15:35:46 sunanda Exp $
+// $Id: GVFlashHomoShowerTuning.hh,v 1.3 2006/11/13 17:01:13 sunanda Exp $
 // GEANT4 tag $Name:  $
 //
 //
@@ -64,7 +64,7 @@ class GVFlashHomoShowerTuning
 {
   public: // with description
 
-#ifdef G4v7
+#ifdef G4V7
     virtual G4double ParAveT1(){ return -0.858;} // t1
     virtual G4double ParAveA1(){ return 0.21;  } // a1
     virtual G4double ParAveA2(){ return 0.492; } // a2

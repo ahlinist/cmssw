@@ -7,7 +7,7 @@
 HadronPhysicsLHEP::HadronPhysicsLHEP(const G4String& name)
                     :  G4VPhysicsConstructor(name) 
 {
-#ifdef G4v7
+#ifdef G4V7
   theNeutrons.RegisterMe(&theLHEPNeutron);
   thePro.RegisterMe(&theLHEPPro);
   thePiK.RegisterMe(&theLHEPPiK);
@@ -15,7 +15,7 @@ HadronPhysicsLHEP::HadronPhysicsLHEP(const G4String& name)
 }
 
 HadronPhysicsLHEP::~HadronPhysicsLHEP() {
-#ifndef G4v7
+#ifndef G4V7
   delete theLHEPNeutron;
   delete theNeutrons;
   delete theLHEPPro;
@@ -24,7 +24,7 @@ HadronPhysicsLHEP::~HadronPhysicsLHEP() {
   delete thePiK;
 #endif
 }
-#ifndef G4v7
+#ifndef G4V7
 
 void HadronPhysicsLHEP::CreateModels()
 {
@@ -58,7 +58,7 @@ void HadronPhysicsLHEP::ConstructParticle()
 
 void HadronPhysicsLHEP::ConstructProcess()
 {
-#ifdef G4v7
+#ifdef G4V7
   theNeutrons.Build();
   thePro.Build();
   thePiK.Build();

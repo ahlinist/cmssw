@@ -1,5 +1,5 @@
 #include "SimG4Core/DummyPhysics/interface/GeneralPhysics.h"
-#ifdef G4v7
+#ifdef G4V7
 
 #include "G4ParticleDefinition.hh"
 #include "G4ChargedGeantino.hh"

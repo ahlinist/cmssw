@@ -1,7 +1,7 @@
 #include "QGSC.hh"
 #include "HadronPhysicsQGSC.hh"
 
-#ifdef G4v7
+#ifdef G4V7
 #include "SimG4Core/Packaging/src/GeneralPhysics.hh"
 #include "SimG4Core/Packaging/src/EMPhysics.hh"
 #include "SimG4Core/Packaging/src/MuonPhysics.hh"
@@ -21,7 +21,7 @@ QGSC::QGSC(const edm::ParameterSet & p)
     : PhysicsList(p)
 {
   G4DataQuestionaire it(photon);
-#ifdef G4v7
+#ifdef G4V7
   std::cout << "You are using the simulation engine: QGSC 2.8" << std::endl;
   
   RegisterPhysics(new GeneralPhysics("general"));

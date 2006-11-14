@@ -1,7 +1,7 @@
 #ifndef G4EMBuilder_h
 #define G4EMBuilder_h 1
 
-#define G4v7
+#define G4V7
 
 #include "globals.hh"
 #include "G4ios.hh"
@@ -11,7 +11,7 @@
 #include "G4GammaConversion.hh"
 #include "G4MultipleScattering.hh"
 #include "G4eIonisation.hh"
-#ifdef G4v7
+#ifdef G4V7
 #include "G4eBremsstrahlung.hh"
 #else
 #include "G4eBremsstrahlungCMS.hh"
@@ -41,14 +41,14 @@ class G4EMBuilder
   
     G4MultipleScattering theElectronMultipleScattering;
     G4eIonisation theElectronIonisation;
-#ifdef G4v7
+#ifdef G4V7
     G4eBremsstrahlung theElectronBremsStrahlung;
 #else
     G4eBremsstrahlungCMS theElectronBremsStrahlung;
 #endif
     G4MultipleScattering thePositronMultipleScattering;
     G4eIonisation thePositronIonisation; 
-#ifdef G4v7
+#ifdef G4V7
     G4eBremsstrahlung thePositronBremsStrahlung;  
 #else
     G4eBremsstrahlungCMS thePositronBremsStrahlung;  

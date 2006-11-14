@@ -39,14 +39,14 @@
 
 #include "GFlashShowerModel.hh"
 #include "GFlashEnergySpot.hh"
-#ifdef G4v7
+#ifdef G4V7
 #include "GFlashHomoShowerParamterisation.hh"
 #else
 #include "GFlashHomoShowerParameterisation.hh"
 #include "GFlashSamplingShowerParameterisation.hh"
 #endif
 
-#ifdef G4v7
+#ifdef G4V7
 GFlashShowerModel::GFlashShowerModel(G4String modelName, G4LogicalVolume* envelope)
 : G4VFastSimulationModel(modelName, envelope)
 #else
@@ -67,7 +67,7 @@ GFlashShowerModel::GFlashShowerModel(G4String modelName,
 // -----------------------------------------------------------------------------------
 
 GFlashShowerModel::GFlashShowerModel(G4String modelName)
-#ifdef G4v7
+#ifdef G4V7
   : G4VFastSimulationModel(modelName)
 #else
   : G4VFastSimulationModel(modelName),
@@ -123,7 +123,7 @@ G4bool GFlashShowerModel::ModelTrigger(const G4FastTrack & fastTrack )
 			if (select ) {
 				if ( HMaker->check(&fastTrack)) {		 //sensitive detector ?        
 					///check conditions depending on particle flavour
-#ifdef G4v7
+#ifdef G4V7
 					Parametrisation->GenerateLongitudinalProfile(ParticleEnergy); // performance to be optimized @@@@@@@
 #else
 					Parameterisation->GenerateLongitudinalProfile(ParticleEnergy); // performance to be optimized @@@@@@@
@@ -171,7 +171,7 @@ G4bool GFlashShowerModel::CheckContainment(const G4FastTrack& fastTrack)
 	// Shower in direction perpendicular to OrthoShower and DirectionShower
 	CrossShower = DirectionShower.cross(OrthoShower);
 	
-#ifdef G4v7
+#ifdef G4V7
 	G4double  R     = Parametrisation->GetAveR90();
 	G4double  Z     = Parametrisation->GetAveT90();
 #else
@@ -243,7 +243,7 @@ void GFlashShowerModel::ElectronDoIt(const G4FastTrack& fastTrack,  G4FastStep& 
 	//--------------------------------
 	///Generate longitudinal profile
 	//--------------------------------
-#ifdef G4v7
+#ifdef G4V7
 	Parametrisation->GenerateLongitudinalProfile(Energy); // performane iteration @@@@@@@	
 #else
 	Parameterisation->GenerateLongitudinalProfile(Energy); // performane iteration @@@@@@@	
@@ -277,7 +277,7 @@ void GFlashShowerModel::ElectronDoIt(const G4FastTrack& fastTrack,  G4FastStep& 
 	do
 	{  
 		//determine step size=min(1Xo,next boundary)
-#ifdef G4v7
+#ifdef G4V7
 		G4double stepLength = StepInX0*Parametrisation->GetX0();
 #else
 		G4double stepLength = StepInX0*Parameterisation->GetX0();
@@ -294,14 +294,14 @@ void GFlashShowerModel::ElectronDoIt(const G4FastTrack& fastTrack,  G4FastStep& 
 		// Determine Energy Release in Step
 		if(EnergyNow > EnergyStop){
 			LastEneIntegral  = EneIntegral;
-#ifdef G4v7
+#ifdef G4V7
 			EneIntegral      = Parametrisation->IntegrateEneLongitudinal(ZEndStep);
 #else
 			EneIntegral      = Parameterisation->IntegrateEneLongitudinal(ZEndStep);
 #endif
 			DEne             = std::min( EnergyNow, (EneIntegral-LastEneIntegral)*Energy);
 			LastNspIntegral  = NspIntegral;
-#ifdef G4v7
+#ifdef G4V7
 			NspIntegral      = Parametrisation->IntegrateNspLongitudinal(ZEndStep);
 			DNsp             = std::max(1., std::floor( (NspIntegral-LastNspIntegral)*Parametrisation->GetNspot() ) );
 #else
@@ -312,7 +312,7 @@ void GFlashShowerModel::ElectronDoIt(const G4FastTrack& fastTrack,  G4FastStep& 
 		// end of the shower
 		else{    
 			DEne             = EnergyNow;
-#ifdef G4v7
+#ifdef G4V7
 			DNsp             = std::max(1., std::floor( (1.- NspIntegral)*Parametrisation->GetNspot() ));
 #else
 			DNsp             = std::max(1., std::floor( (1.- NspIntegral)*Parameterisation->GetNspot() ));
@@ -335,7 +335,7 @@ void GFlashShowerModel::ElectronDoIt(const G4FastTrack& fastTrack,  G4FastStep& 
 			NSpotDeposited=NSpotDeposited++;		      						
 			//Spot energy: the same for all spots
 			Spot.SetEnergy( DEne / DNsp );
-#ifdef G4v7
+#ifdef G4V7
 			G4double PhiSpot = Parametrisation->GeneratePhi(); // phi of spot
 			G4double RSpot   = Parametrisation->GenerateRadius(i,Energy,ZEndStep-Dz/2.); // radius of spot	
 #else
@@ -369,7 +369,7 @@ void GFlashShowerModel::ElectronDoIt(const G4FastTrack& fastTrack,  G4FastStep& 
 }
 // -----------------------------------------------------------------------------------
 
-#ifdef G4v7
+#ifdef G4V7
 void GFlashShowerModel::KillParticle(const G4FastTrack& fastTrack, G4FastStep& fastStep)
  {
 	
