@@ -9,6 +9,9 @@
 //
 //  Modification history:
 //    $Log: FilterUnitFramework.h,v $
+//    Revision 1.13  2006/10/05 08:43:46  meschi
+//    Added flush of built queue to correctly handle halt command. Added reset of counters to be used on reception of a new run number. Added actionPerformed to look at change of runnumber":
+//
 //    Revision 1.12  2006/10/02 08:59:15  meschi
 //    added variables for flashlists
 //
@@ -148,6 +151,8 @@ private:
   // config exec
 
   xdata::UnsignedInteger32 buInstance_;
+  xdata::UnsignedInteger32 buMaxInstance_;
+  unsigned int bui_;
 
   // config Fw
 
@@ -273,6 +278,8 @@ private:
   void actionPerformed (xdata::Event& e);
 
   void resetCounters();
+
+  bool checkParameters(std::string &);
 };
 
 #endif
