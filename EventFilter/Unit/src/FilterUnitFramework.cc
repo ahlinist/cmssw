@@ -7,6 +7,9 @@
 //
 //  Modification history:
 //    $Log: FilterUnitFramework.cc,v $
+//    Revision 1.21  2006/11/11 12:28:08  schiefer
+//    tag V00-11-01: removed extra ';' for slc4/gcc3.4.5 compliance
+//
 //    Revision 1.20  2006/10/31 21:07:25  meschi
 //     fix to timer call in rate configure and reset unused resources upon halting
 //
@@ -160,6 +163,8 @@ void FilterUnitFramework::exportParams()
   xdata::InfoSpace *s = getApplicationInfoSpace();
   // default configuration
   buInstance_     = 0;
+  buMaxInstance_  = 0;
+  bui_ = 0;
   queueSize_ = 16;
 
   class_ = getApplicationDescriptor()->getClassName();
@@ -178,6 +183,7 @@ void FilterUnitFramework::exportParams()
   MonitorIntervalSec_=1.0;
   MonitorEventsPerSec_=0.0;
   s->fireItemAvailable("buInstance",&buInstance_);
+  s->fireItemAvailable("buMaxInstance",&buMaxInstance_);
 
   // additional configuration specific to parametric FU
 
@@ -232,6 +238,10 @@ FilterUnitFramework::~FilterUnitFramework()
 
 void FilterUnitFramework::configureAction(toolbox::Event::Reference e) throw (toolbox::fsm::exception::Exception)
 {
+  string reason;
+  if(!checkParameters(reason))
+    XCEPT_RAISE (toolbox::fsm::exception::Exception, 
+		 reason);
   flush_ = false;
   if(!runActive_) findOrCreateMemoryPool();
   const char *workdir = 0;
@@ -275,6 +285,7 @@ void FilterUnitFramework::enableAction(toolbox::Event::Reference e) throw (toolb
 
   unsigned int allocfset = 1;
   LOG4CPLUS_INFO(this->getApplicationLogger(),"FU sends initial allocate N=" << queueSize_);
+  bui_ = buInstance_;
   sendAllocate(buInstance_, queueSize_, allocfset);
   nbEvents_ = 0;
   //start monitoring timer
@@ -727,6 +738,15 @@ void FilterUnitFramework::parameterTables(xgi::Input *in, xgi::Output *out)
   }
   *out << "<tr>" << std::endl;
   *out << "<td>" << std::endl;
+  *out << "EventRate" << std::endl;
+  *out << "</td>" << std::endl;
+  *out << "<td>" << std::endl;
+  *out << MonitorEventsPerSec_ << std::endl;
+  *out << "</td>" << std::endl;
+  *out << "</tr>" << std::endl;
+
+  *out << "<tr>" << std::endl;
+  *out << "<td>" << std::endl;
   *out << "EventsClaimed" << std::endl;
   *out << "</td>" << std::endl;
   *out << "<td>" << std::endl;
@@ -803,11 +823,22 @@ FURawEvent * FilterUnitFramework::rqstEvent()
   FURawEvent *ev = factory_->getBuiltEvent();
   mutex_->give();
   nbEvents_.value_++; // increment counter of claimed events 
-
+  int request = queueSize_/2;
+  if(queueSize_.value_ < 2)
+    request = 1;
   if((factory_->queueSize() + pendingRequests_<=queueSize_/2) && !flush_)
     {
         unsigned int allocfset = 1;
-	sendAllocate(buInstance_,queueSize_/2,allocfset);
+	if(buMaxInstance_.value_ == 0)
+	  sendAllocate(buInstance_, request, allocfset);
+	else
+	  {
+	    if(bui_ < buMaxInstance_.value_) 
+	      bui_++;
+	    else
+	      bui_ = buInstance_;
+	    sendAllocate(bui_, request, allocfset);
+	  }
     }
 
   return ev;
@@ -874,7 +905,29 @@ void FilterUnitFramework::resetCounters()
   factory_->resetNbProcessed();
 }
 
-
+bool FilterUnitFramework::checkParameters(string &reason)
+{
+  ostringstream oreason;
+  bool retVal = true;
+  if(queueSize_.value_==0)
+    {
+      retVal = false;
+      oreason << "Cannot set queueSize to " << queueSize_ << ". Invalid parameter value.";
+    }
+  else if(queueSize_.value_ == 1)
+    {
+      LOG4CPLUS_WARN(this->getApplicationLogger(),
+		     "queueSize is set to 1. No events will be cached ");
+    }
+  else if(queueSize_.value_ > FURawEventFactory::maxHandles)
+    {
+      retVal = false;
+      oreason << "Cannot set queueSize to " << queueSize_ << ". Not enough event handles, max "
+	      <<  FURawEventFactory::maxHandles;
+    }
+  reason = oreason.str();
+  return retVal;
+}
 
 XDAQ_INSTANTIATOR_IMPL(FilterUnitFramework)
 
