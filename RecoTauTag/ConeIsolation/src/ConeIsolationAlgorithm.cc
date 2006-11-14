@@ -25,7 +25,7 @@ ConeIsolationAlgorithm::ConeIsolationAlgorithm(const ParameterSet & parameters)
 {
   //FIXME: use unsigned int where needed
   m_cutPixelHits     = parameters.getParameter<int>("MinimumNumberOfPixelHits");//not used
-  m_cutTotalHits     = parameters.getParameter<int>("MinimumNumberOfHits"); //not used
+  m_cutTotalHits     = parameters.getParameter<int>("MinimumNumberOfHits");
   m_cutMaxTIP        = parameters.getParameter<double>("MaximumTransverseImpactParameter");
   m_cutMinPt         = parameters.getParameter<double>("MinimumTransverseMomentum");
   m_cutMaxChiSquared = parameters.getParameter<double>("MaximumChiSquared");
@@ -58,7 +58,10 @@ pair<JetTag,IsolatedTauTagInfo> ConeIsolationAlgorithm::tag(const  JetTracksAsso
    {
      if((*it)->pt() > m_cutMinPt &&
 	(*it)->normalizedChi2() < m_cutMaxChiSquared &&
-	fabs((*it)->d0())< m_cutMaxTIP)
+	fabs((*it)->d0())< m_cutMaxTIP&&
+	(*it)->recHitsSize() >= (unsigned int)m_cutTotalHits &&
+	(*it)->hitPattern().numberOfValidPixelHits() >= m_cutPixelHits)
+
        {
 	 if(useVertexConstrain_) {
 	   if(fabs((*it)->dz() - z_pv) < dZ_vertex)
