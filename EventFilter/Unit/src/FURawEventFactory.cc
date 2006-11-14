@@ -8,7 +8,7 @@
 FURawEventFactory::FURawEventFactory() : minBuiltInQueue_(0), nbProcessed_(0), resources_(maxHandles)
 {
   FURawEvent::adapter_ = adapter_;
-  for(int i = 0; i < maxHandles; i++)
+  for(unsigned int i = 0; i < maxHandles; i++)
     {
       resources_[i] = new FURawEvent(i);
       freeRes_.push(i);
@@ -102,7 +102,7 @@ FURawEvent *FURawEventFactory::checkEvent(unsigned int transaction,
 					  unsigned int handle)
 {
   FURawEvent *retVal = 0;
-  int ind = transaction%FURawEvent::INTERNAL_HANDLE_OFFSET;
+  unsigned int ind = transaction%FURawEvent::INTERNAL_HANDLE_OFFSET;
 
   if(ind < maxHandles)
     {
@@ -168,7 +168,7 @@ void FURawEventFactory::resetFreeRes()
   while(!freeRes_.empty())
     freeRes_.pop();
 
-  for(int i = 0; i < maxHandles; i++)
+  for(unsigned int i = 0; i < maxHandles; i++)
     {
       freeRes_.push(i);
     }
@@ -176,4 +176,4 @@ void FURawEventFactory::resetFreeRes()
 
 FUAdapter *FURawEventFactory::adapter_ = 0;
 
-int FURawEventFactory::maxHandles=128;
+unsigned int FURawEventFactory::maxHandles=128;
