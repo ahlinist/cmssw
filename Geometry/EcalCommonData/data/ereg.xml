@@ -70,7 +70,7 @@
 
 <PosPartSection label="ereg.xml">
  <PosPart copyNumber="1">
-   <rParent name="caloBase:CALO"/>
+   <rParent name="cms:CALO"/>
    <rChild name="ereg:ECAL"/>
   <rRotation name="rotations:000D"/>
  </PosPart>
