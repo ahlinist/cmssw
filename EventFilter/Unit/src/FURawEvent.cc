@@ -394,8 +394,8 @@ int FURawEvent::checkin_data(vector<unsigned char*> &block_adrs)
 	    }
 	  else
 	    {
-	      LOG4CPLUS_DEBUG(adapter_->getApplicationLogger(),"FED data for id " << fedid 
-			      << "with size " << fedlen << " was stored" );
+	      //	      LOG4CPLUS_DEBUG(adapter_->getApplicationLogger(),"FED data for id " << fedid 
+	      //			      << "with size " << fedlen << " was stored" );
 	      //otherwise save data in the event
 	      myData_[fedid]->data_ = new unsigned char[fedlen];
 	      memcpy(myData_[fedid]->data_,cursor,fedlen);
