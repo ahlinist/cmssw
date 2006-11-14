@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: GFlashShowerModel.hh,v 1.2 2006/09/28 15:35:46 sunanda Exp $
+// $Id: GFlashShowerModel.hh,v 1.3 2006/11/13 17:01:13 sunanda Exp $
 // GEANT4 tag $Name:  $
 //
 //
@@ -54,7 +54,7 @@
 #include "GFlashHitMaker.hh"
 #include  <vector>
 
-#ifdef G4v7
+#ifdef G4V7
 class GFlashHomoShowerParamterisation;
 #else
 class GVFlashShowerParameterisation;
@@ -66,7 +66,7 @@ class GFlashShowerModel : public G4VFastSimulationModel
 {
   public:  // with description
 
-#ifdef G4v7
+#ifdef G4V7
     GFlashShowerModel (G4String, G4LogicalVolume*);
 #else
     GFlashShowerModel (G4String, G4Envelope*);
@@ -92,7 +92,7 @@ class GFlashShowerModel : public G4VFastSimulationModel
       { FlagParticleContainment = I; }
     inline void SetStepInX0(G4double Lenght)
       { StepInX0=Lenght; } 
-#ifdef G4v7
+#ifdef G4V7
     inline void SetParametrisation(GFlashHomoShowerParamterisation &DP)
       { Parametrisation=&DP;}
 #else
@@ -117,7 +117,7 @@ class GFlashShowerModel : public G4VFastSimulationModel
 
     // Gets ?  
     GFlashParticleBounds  *PBound;
-#ifdef G4v7
+#ifdef G4V7
     GFlashHomoShowerParamterisation *Parametrisation;	
 #else
     GVFlashShowerParameterisation *Parameterisation;  
@@ -130,7 +130,7 @@ class GFlashShowerModel : public G4VFastSimulationModel
     //  void NeutrinoDoIt(const G4FastTrack&, G4FastStep&);
     G4bool CheckParticleDefAndContainment(const G4FastTrack &fastTrack);
     G4bool CheckContainment(const G4FastTrack &fastTrack);
-#ifdef G4v7
+#ifdef G4V7
     void KillParticle(const G4FastTrack& fastTrack, G4FastStep& fastStep);
 #endif
   

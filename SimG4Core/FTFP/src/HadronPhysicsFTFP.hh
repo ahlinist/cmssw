@@ -3,7 +3,7 @@
 
 #include "G4VPhysicsConstructor.hh"
 
-#ifdef G4v7
+#ifdef G4V7
 #include "SimG4Core/Packaging/src/G4HadronQEDBuilder.hh"
 #include "SimG4Core/Packaging/src/G4StoppingHadronBuilder.hh"
 #include "SimG4Core/Packaging/src/G4MiscLHEPBuilder.hh"
@@ -46,7 +46,7 @@ class HadronPhysicsFTFP : public G4VPhysicsConstructor
     virtual void ConstructProcess();
 
   private:
-#ifdef G4v7
+#ifdef G4V7
     G4NeutronBuilder theNeutrons;
     G4LEPNeutronBuilder theLEPNeutron;
     G4FTFPNeutronBuilder theFTFPNeutron;

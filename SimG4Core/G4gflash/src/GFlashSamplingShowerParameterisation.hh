@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: GFlashSamplingShowerParameterisation.hh,v 1.1 2006/09/28 15:35:46 sunanda Exp $
+// $Id: GFlashSamplingShowerParameterisation.hh,v 1.2 2006/11/13 17:01:13 sunanda Exp $
 // GEANT4 tag $Name:  $
 //
 //
@@ -47,7 +47,7 @@
 #include "GVFlashShowerParameterisation.hh"
 
 class G4Material;
-#ifndef G4v7
+#ifndef G4V7
 class GFlashSamplingShowerParameterisation
   : public GVFlashShowerParameterisation
 {

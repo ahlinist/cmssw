@@ -7,7 +7,7 @@
 DummyPhysics::DummyPhysics(const edm::ParameterSet & p) 
     : PhysicsList(p)
 { 
-#ifdef G4v7
+#ifdef G4V7
     RegisterPhysics(new GeneralPhysics("general"));
 #else
     RegisterPhysics(new G4DecayPhysics("decay"));
