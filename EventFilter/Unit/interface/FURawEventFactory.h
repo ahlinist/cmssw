@@ -50,6 +50,8 @@ class FURawEventFactory
   /** signal a waiting thread of the end of a run**/
   void postEndRunMaybe();
 
+  static int maxHandles;
+
  private:  
 
   //these methods are only used by friend class FUAdapter
@@ -62,8 +64,6 @@ class FURawEventFactory
 
   /** take this event as built (after a transaction is completed)*/
   void take(FURawEvent *);
-
-  static int maxHandles;
 
   std::stack<int> freeRes_;
   std::deque<int> builtRes_;
