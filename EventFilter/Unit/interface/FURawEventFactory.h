@@ -50,7 +50,7 @@ class FURawEventFactory
   /** signal a waiting thread of the end of a run**/
   void postEndRunMaybe();
 
-  static int maxHandles;
+  static unsigned int maxHandles;
 
  private:  
 
