@@ -127,7 +127,12 @@
                         Jpsi_mumu_sim_digi_OnSel.cfg
                 </Test>
         </Validate>
-        <Validate Version="PhysSamples-HLT">
+        <Validate Version="MumuX-HLT">
+                <Test Events="1000" FractionSelected="0.1" Name="HLTVal_MumuX">
+                        MumuX_sim_digi_OnSel.cfg
+                </Test>
+        </Validate>
+        <Validate Version="PhysSamples-Set1-HLT">
                 <Test Events="1000" Name="HLTVal_H2tau_M200">
                         bbHto2tau_mA200_tb20_OnSel.cfg
                 </Test>
@@ -137,11 +142,35 @@
                 <Test Events="1000" Name="HLTVal_H2tau_M800">
                         bbHto2tau_mA800_tb20_OnSel.cfg
                 </Test>
+        </Validate>
+        <Validate Version="PhysSamples-Set2-HLT">
                 <Test Events="1000" Name="HLTVal_HchTau_M200">
                         HchTau200_sim_digi_OnSel.cfg
                 </Test>
                 <Test Events="1000" Name="HLTVal_HchTau_M400">
                         HchTau400_sim_digi_OnSel.cfg
+                </Test>
+        </Validate>
+        <Validate Version="PhysSamples-Set3-HLT">
+                <Test Events="1000" Name="HLTVal_qqH135">
+                        qqH135_2tau_sim_digi_OnSel.cfg
+                </Test>
+                <Test Events="1000" Name="HLTVal_qqH120">
+                        qqH120_WW_2l_sim_digi_OnSel.cfg
+                </Test>
+                <Test Events="1000" Name="HLTVal_qqH160">
+                        qqH160_WW_2l_sim_digi_OnSel.cfg
+                </Test>
+        </Validate>
+        <Validate Version="PhysSamples-Set4-HLT">
+                <Test Events="1000" Name="HLTVal_H150_ZZ">
+                        H150_ZZ_4l_sim_digi_OnSel.cfg
+                </Test>
+                <Test Events="1000" Name="HLTVal_H165_WW">
+                        H165_WW_2l_sim_digi_OnSel.cfg
+                </Test>
+                <Test Events="1000" Name="HLTVal_Z2Tau">
+                        Z2Tau_sim_digi_OnSel.cfg
                 </Test>
         </Validate>
 </ReleaseValidation>
