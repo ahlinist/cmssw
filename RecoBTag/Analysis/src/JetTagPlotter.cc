@@ -16,7 +16,7 @@ JetTagPlotter::JetTagPlotter (const EtaPtBin & etaPtBin,
 		       startEffPur_(startEffPur ), endEffPur_(endEffPur)  {
 
   if (update){
-    TString dir= theExtensionString.Strip( TString::kLeading, '_');
+    TString dir= "JetTag"+theExtensionString;
     gFile->cd();
     gFile->cd(dir);
   }
@@ -200,7 +200,7 @@ void JetTagPlotter::finalize() {
 }
 void JetTagPlotter::write()
 {
-  TString dir= theExtensionString.Strip( TString::kLeading, '_');
+  TString dir= "JetTag"+theExtensionString;
 
   gFile->cd();
   gFile->mkdir(dir);
