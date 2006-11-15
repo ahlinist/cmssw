@@ -3,12 +3,10 @@
 
 ConeIsolationAlgorithm::ConeIsolationAlgorithm()
 {
-  m_nthTrack         = 3;
   m_cutPixelHits     = 2;
   m_cutTotalHits     = 8;
   m_cutMaxTIP        = 1.;
   m_cutMinPt         = 1.;
-  m_cutMaxDecayLen   = 8.;
   m_cutMaxChiSquared = 5.;
   matching_cone      =  0.1;
   signal_cone  =  0.07;
