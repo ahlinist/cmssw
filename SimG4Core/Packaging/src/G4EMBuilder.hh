@@ -1,8 +1,6 @@
 #ifndef G4EMBuilder_h
 #define G4EMBuilder_h 1
 
-#define G4V7
-
 #include "globals.hh"
 #include "G4ios.hh"
 
