@@ -2,7 +2,9 @@
 #include "SimG4Core/DummyPhysics/interface/GeneralPhysics.h"
 #include "SimG4Core/DummyPhysics/interface/DummyEMPhysics.h"
 
+#ifndef G4V7
 #include "G4DecayPhysics.hh"
+#endif
 
 DummyPhysics::DummyPhysics(const edm::ParameterSet & p) 
     : PhysicsList(p)
