@@ -362,22 +362,22 @@ void FlavourHistorgrams<T>::plot (TPad * theCanvas) {
   
   // c to plot first   
   if ( thePlotFirst == "c" ) {
-    histo[1] = theHisto_c ;
-    if ( btppColour  ) col[1] = 6 ;
-    if ( !btppColour ) lineStyle[1] = 3 ;
-    histo[3] = theHisto_dusg ;
-    if ( btppColour  ) col[3] = 4 ;
+    histo[0] = theHisto_c ;
+    if ( btppColour  ) col[0] = 6 ;
+    if ( !btppColour ) lineStyle[0] = 3 ;
+    histo[2] = theHisto_dusg ;
+    if ( btppColour  ) col[2] = 4 ;
     if ( !btppColour ) lineStyle[2] = 2 ;
   }
 
   // b to plot first   
   if ( thePlotFirst == "b" ) {
-    histo[1] = theHisto_b ;
-    if ( btppColour  ) col[1] = 2 ;
-    if ( !btppColour ) lineStyle[1] = 1 ;
-    histo[2] = theHisto_dusg ;
-    if ( btppColour  ) col[2] = 4 ;
-    if ( !btppColour ) lineStyle[2] = 2 ;
+    histo[0] = theHisto_b ;
+    if ( btppColour  ) col[0] = 2 ;
+    if ( !btppColour ) lineStyle[0] = 1 ;
+    histo[1] = theHisto_dusg ;
+    if ( btppColour  ) col[1] = 4 ;
+    if ( !btppColour ) lineStyle[1] = 2 ;
   }
 
   histo[0] ->SetMaximum(max*1.05);
