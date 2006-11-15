@@ -123,23 +123,28 @@
                 </Test>
         </Validate>
         <Validate Version="Jpsi-mumu-HLT">
-                <Test Events="1000" Name="HLTVal_Jpsi_mumu">
+                <Test Events="1000" FractionSelected="0.0024" Name="HLTVal_Jpsi_mumu">
                         Jpsi_mumu_sim_digi_OnSel.cfg
                 </Test>
         </Validate>
         <Validate Version="MumuX-HLT">
-                <Test Events="1000" FractionSelected="0.1" Name="HLTVal_MumuX">
+                <Test Events="1000" FractionSelected="0.01" Name="HLTVal_MumuX">
                         MumuX_sim_digi_OnSel.cfg
                 </Test>
         </Validate>
+        <Validate Version="Inclusive-Muon-HLT">
+                <Test Events="1000" FractionSelected="0.006" Name="HLTVal_pp_muX">
+                        pp_muX_sim_digi_OnSel.cfg
+                </Test>
+        </Validate>
         <Validate Version="PhysSamples-Set1-HLT">
-                <Test Events="1000" Name="HLTVal_H2tau_M200">
+                <Test Events="1000" Name="HLTVal_Hto2tau_M200">
                         bbHto2tau_mA200_tb20_OnSel.cfg
                 </Test>
-                <Test Events="1000" Name="HLTVal_H2tau_M500">
+                <Test Events="1000" Name="HLTVal_Hto2tau_M500">
                         bbHto2tau_mA500_tb20_OnSel.cfg
                 </Test>
-                <Test Events="1000" Name="HLTVal_H2tau_M800">
+                <Test Events="1000" Name="HLTVal_Hto2tau_M800">
                         bbHto2tau_mA800_tb20_OnSel.cfg
                 </Test>
         </Validate>
@@ -152,13 +157,13 @@
                 </Test>
         </Validate>
         <Validate Version="PhysSamples-Set3-HLT">
-                <Test Events="1000" Name="HLTVal_qqH135">
+                <Test Events="1000" Name="HLTVal_qqH135_2tau">
                         qqH135_2tau_sim_digi_OnSel.cfg
                 </Test>
-                <Test Events="1000" Name="HLTVal_qqH120">
+                <Test Events="1000" Name="HLTVal_qqH120_WW">
                         qqH120_WW_2l_sim_digi_OnSel.cfg
                 </Test>
-                <Test Events="1000" Name="HLTVal_qqH160">
+                <Test Events="1000" Name="HLTVal_qqH160_WW">
                         qqH160_WW_2l_sim_digi_OnSel.cfg
                 </Test>
         </Validate>
@@ -171,6 +176,20 @@
                 </Test>
                 <Test Events="1000" Name="HLTVal_Z2Tau">
                         Z2Tau_sim_digi_OnSel.cfg
+                </Test>
+        </Validate>
+        <Validate Version="PhysSamples-Set5-HLT">
+                <Test Events="1000" Name="HLTVal_qqH1_a1a1">
+                        qqH1_a1a1_4tau_sim_digi_OnSel.cfg
+                </Test>
+                <Test Events="1000" Name="HLTVal_H120_gluonfusion">
+                        H120_gluonfusion_gamgam_sim_digi_OnSel.cfg
+                </Test>
+                <Test Events="1000" Name="HLTVal_bbH500to2b">
+                        bbH500to2b_sim_digi_OnSel.cfg
+                </Test>
+                <Test Events="1000" Name="HLTVal_double_chHiggs">
+                        double_chHiggs200_sim_digi_OnSel.cfg
                 </Test>
         </Validate>
 </ReleaseValidation>
