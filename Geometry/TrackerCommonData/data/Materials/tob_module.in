@@ -57,21 +57,20 @@ MCVolume: (0.78*8.6*0.11 + 0.5 * 0.863*8.6*0.11) cm^3 = 1.146 cm^3
 		and http://www.osti.gov/bridge/servlets/purl/10117627-uo1lPX/webviewable/10117627.pdf
 		(TIB: CORNING 1737F density = 2.54 g/cm^3)
 	Borosilicate Glass chemical composition: http://www.qvf.com/en/Equipment_1/Borosilicate%20glass/Composition.shtml
-    	dimensions 0.9*9.6*0.03 + 0.5 * 0.9*9.6*0.03 = 0.389 cm^3
+	dimensions: [ ( 0.9 x 9.6 x 0.0550 ) + 0.5 x ( 0.9 x 9.6 x 0.0550 ) ] cm^3 = 0.7128 cm^3 (TIB: 300 um, TID/TOB/TEC: 550 um thickness)
+		[WAS dimensions 0.9*9.6*0.03 + 0.5 * 0.9*9.6*0.03 = 0.389 cm^3]
 (2) Pitch adapter spacers
 	dimensions 86x3x0.635 mm^3 + 60x3x0.635 mm^3 = 278.13 mm^3 = 0.27813 cm^3
 		[WAS (NOMEX)    0.24 cm^3]
 		[WAS (3) Carbon fibre support piece dimensions 8.6 x 1.18 x 0.06 cm^3]
-(3) Carbon fibre frame piece      
-    0.8*8.0*1.5*0.06 = 0.576 cm^3
-
-....................................................................
-# "TOB Pitch Adapter stereo"  "TOB_PA_ster"     1.146     10.42
-* 1 "Glass pitch adapter"  "Borosilicate_Glass" 0.389      1    ELE
-* 2 "Spacer"               "Ceramic"            0.27813    1    SUP
-* 3 "CF frame piece"       "Carbon fibre str."  0.576      1    SUP
-....................................................................
-==================================================================== 
+		[WAS (3) Carbon fibre frame piece      
+			    0.8*8.0*1.5*0.06 = 0.576 cm^3 ]
+........................................................................
+# "TOB Pitch Adapter stereo"  "TOB_PA_ster"        1.146     10.42
+* 1 "Glass pitch adapter"     "Borosilicate_Glass" 0.7128     1    ELE
+* 2 "Spacer"                  "Ceramic"            0.27813    1    SUP
+........................................................................
+======================================================================== 
 
 o Module end plate
   ----------------
@@ -131,31 +130,35 @@ MCVolume: (1.6 x 2 x 0.03) cm^3
 .....................................................................
 =====================================================================
 
-o Aluminium cooling II 
-  --------------------
-Al piece at sensor middle
-No screw !
-MCVolume: (1.5 x 2.8 x 0.03) cm
+[WAS
+	o Aluminium cooling II 
+	  --------------------
+	Al piece at sensor middle
+	No screw !
+	MCVolume: (1.5 x 2.8 x 0.03) cm
+	
+	(1) Al heat spreader   
+		dimensions from EDM file CMSTKOBM0025 version 0
+		{ [ 16 x 20 ] - [ pi x (2/2)^2 ] } mm^2 x 0.300 mm 
+		= 316.8584 mm^2 x 0.300 mm = 95.0575 mm^3
+			[WAS 0.096 cm^3]
+		[THIS MATERIAL HAS BEEN CREATED APART
+			(2) CF compensator
+				dimensions from EDM file CMSTKOBM0035 version AA
+				{ [ 16 x 26 ] - [ pi x (10 / 2)^2 ] } mm^2 x 0.300 mm =
+				= 337.46 mm^2 x 0.300 mm = 101.238 mm^3
+					[WAS 0.15  cm^3]
+		]
+	....................................................................
+	# "TOB Module Cooling 2"   "TOB_mod_cool2"      0.126       4.2
+	* 1 "Al heat spreader"     "Aluminium"          0.0950575   1   COL
+	....................................................................
+	====================================================================
+NO MORE NEEDED, ALL THE SPREADER ARE THE SAME
+]
 
-(1) Al heat spreader   
-	dimensions from EDM file CMSTKOBM0025 version 0
-	{ [ 16 x 20 ] - [ pi x (2/2)^2 ] } mm^2 x 0.300 mm 
-	= 316.8584 mm^2 x 0.300 mm = 95.0575 mm^3
-		[WAS 0.096 cm^3]
-	[THIS MATERIAL HAS BEEN CREATED APART
-		(2) CF compensator
-			dimensions from EDM file CMSTKOBM0035 version AA
-			{ [ 16 x 26 ] - [ pi x (10 / 2)^2 ] } mm^2 x 0.300 mm =
-			= 337.46 mm^2 x 0.300 mm = 101.238 mm^3
-				[WAS 0.15  cm^3]
-	]
-....................................................................
-# "TOB Module Cooling 2"   "TOB_mod_cool2"      0.126       4.2
-* 1 "Al heat spreader"     "Aluminium"          0.0950575   1   COL
-....................................................................
-====================================================================
-
-o Aluminium cooling III 
+o Aluminium cooling III
+	[WAS o Aluminium cooling III ]
   ---------------------
 Al and locator piece at hybrid sides
 This one includes the screw !
@@ -178,7 +181,7 @@ MCVolume: 1.5 x 2.8 x 0.03 cm
 (4) CuBe/brass -> take all Cu for now:
              0.0044 * 3
 ...................................................................
-# "TOB Module Cooling 3"   "TOB_mod_cool3"      0.126      4.2
+# "TOB Module Cooling 2"   "TOB_mod_cool2"      0.126      4.2
 * 1 "Al heat spreader"     "Aluminium"          0.1154575  1   COL
 * 2 "Steel screw"          "Steel-008"          0.009      1   COL
 * 3 "Al washer"            "Aluminium"          0.02       1   COL
@@ -186,32 +189,35 @@ MCVolume: 1.5 x 2.8 x 0.03 cm
 ...................................................................
 ===================================================================
 
-o Aluminium cooling IV 
-  --------------------
-Al and locator piece at hybrid sides
-No screw !
-MCVolume: 1.5 x 2.8 x 0.03 cm
-
-(1) Al heat spreader   
-	dimensions from EDM file CMSTKOBM0024 version 0
-	{ [ 15 x 28 ] - (8 x 8 / 2) - [ pi x (2/2)^2 ] } mm^2 x 0.300 mm
-	= 384.8584 mm^2 x 0.300 mm = 115.4575 mm^3
-		[WAS 0.116 cm^3]
-	[THIS MATERIAL HAS BEEN CREATED APART
-		(2) CF compensator
-			dimensions from EDM file CMSTKOBM0035 version AA
-			{ [ 16 x 26 ] - [ pi x (10 / 2)^2 ] } mm^2 x 0.300 mm =
-			= 337.46 mm^2 x 0.300 mm = 101.238 mm^3
-				[WAS 0.15  cm^3]
-	]
-(2) CuBe/brass -> take all Cu for now:
-             0.0044 cm^3 x 3
-..................................................................
-# "TOB Module Cooling 4"   "TOB_mod_cool4"      0.126      4.2
-* 1 "Al heat spreader"     "Aluminium"          0.115475   1  COL
-* 2 "Cu locator"           "Copper"             0.0044     3  SUP
-..................................................................
-==================================================================
+[WAS
+	o Aluminium cooling IV 
+	  --------------------
+	Al and locator piece at hybrid sides
+	No screw !
+	MCVolume: 1.5 x 2.8 x 0.03 cm
+	
+	(1) Al heat spreader   
+		dimensions from EDM file CMSTKOBM0024 version 0
+		{ [ 15 x 28 ] - (8 x 8 / 2) - [ pi x (2/2)^2 ] } mm^2 x 0.300 mm
+		= 384.8584 mm^2 x 0.300 mm = 115.4575 mm^3
+			[WAS 0.116 cm^3]
+		[THIS MATERIAL HAS BEEN CREATED APART
+			(2) CF compensator
+				dimensions from EDM file CMSTKOBM0035 version AA
+				{ [ 16 x 26 ] - [ pi x (10 / 2)^2 ] } mm^2 x 0.300 mm =
+				= 337.46 mm^2 x 0.300 mm = 101.238 mm^3
+					[WAS 0.15  cm^3]
+		]
+	(2) CuBe/brass -> take all Cu for now:
+	             0.0044 cm^3 x 3
+	..................................................................
+	# "TOB Module Cooling 4"   "TOB_mod_cool4"      0.126      4.2
+	* 1 "Al heat spreader"     "Aluminium"          0.115475   1  COL
+	* 2 "Cu locator"           "Copper"             0.0044     3  SUP
+	..................................................................
+	==================================================================
+NO MORE NEEDED, ALL THE SPREADER ARE THE SAME
+]
 
 o Carbon Fibre Compensator (cooling)
   --------------------
@@ -286,6 +292,8 @@ o  Hybrid for TOB layers 1/2
 
 These are the hybrids of the double sided layers. 
 Each of the hybrids carries 4 APVs (changed 15/03/02)
+
+Hybrids have 4 APVs
 
 MCVolume: (6 x 2.5 x 0.05) cm^3 = 0.75 cm^3
 
@@ -377,8 +385,8 @@ Components:  Resistors
 * 4  "Resistors"                  "Carbon"          0.25E-3    18 ELE
 * 5  "R metal"                    "SMD_metal"       1.E-4      18 ELE
 Capacitors
-* 6  "Small caps"                 "Alumina"         0.25E-3    18 ELE
-* 7  "C metal"                    "SMD_metal"       1.E-4      18 ELE
+* 6  "Small caps"                 "Alumina"         0.25E-3    13 ELE
+* 7  "C metal"                    "SMD_metal"       1.E-4      13 ELE
 * 8  "Large caps"                 "Alumina"         6.75E-3     2 ELE
 * 9  "C metal large"              "SMD_metal"       1.E-3       2 ELE
 * 10 "APV25"                      "Silicon"         0.017253    4 ELE
