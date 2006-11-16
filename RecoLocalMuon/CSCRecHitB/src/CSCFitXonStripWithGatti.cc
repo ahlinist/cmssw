@@ -226,7 +226,7 @@ void CSCFitXonStripWithGatti::runGattiFit( int istrt ) {
 
 
   // Look at chi^2 for dx + 0.001
-  float dxh = errh - dx;
+  float dxh = errh + dx;
   float chi2h = chisqrFromGatti( dxh );
   chi2h = chi2h - chi2;
   if ( chi2h > 0. ) {
