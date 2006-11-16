@@ -15,6 +15,18 @@
 
 -->
 
+<!-- Rotations for placing sensors -->
+
+<RotationSection label="PlaquetteCommon">
+  <Rotation name="Z90"  phiX="90.*deg"    thetaX="90.*deg" 
+                        phiY= "180.*deg"  thetaY="90.*deg" 
+                        phiZ=  "0.*deg"   thetaZ= "0.*deg" />
+  <Rotation name="Z270"  phiX="-90.*deg"    thetaX="90.*deg" 
+                         phiY=  "0.*deg"    thetaY="90.*deg" 
+                         phiZ=  "0.*deg"    thetaZ= "0.*deg" />
+</RotationSection>
+
+
 <ConstantsSection label="Input" eval="true">
 
  <Constant name="SensorT"    value="0.270*mm"/>
@@ -96,16 +108,5 @@
    <Translation x="0.*mm" y="0.*mm" z="[EpoxyZ]" />
  </PosPart>
 </PosPartSection>
-
-<!-- Rotations for placing sensors -->
-
-<RotationSection label="PlaquetteCommon">
-  <Rotation name="Z90"  phiX="90.*deg"    thetaX="90.*deg" 
-                        phiY= "180.*deg"  thetaY="90.*deg" 
-                        phiZ=  "0.*deg"   thetaZ= "0.*deg" />
-  <Rotation name="Z270"  phiX="-90.*deg"    thetaX="90.*deg" 
-                         phiY=  "0.*deg"    thetaY="90.*deg" 
-                         phiZ=  "0.*deg"    thetaZ= "0.*deg" />
-</RotationSection>
 
 </DDDefinition>
