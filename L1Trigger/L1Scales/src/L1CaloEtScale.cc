@@ -53,7 +53,7 @@ uint16_t L1CaloEtScale::rank(const uint16_t linear) const {
   uint16_t out = 0;
 
   for (unsigned i=0; i<m_thresholds.size() && i<(rankScaleMax+1); i++) {
-    if ( ( (linear & linScaleMax) * m_linearLsb) > m_thresholds[i] ) { out = i; }
+    if ( ( (linear & linScaleMax) * m_linearLsb) >= m_thresholds[i] ) { out = i; }
   }
 
   return out & rankScaleMax;

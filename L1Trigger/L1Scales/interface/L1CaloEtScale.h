@@ -42,6 +42,9 @@ class L1CaloEtScale {
   // destructor
   ~L1CaloEtScale();
 
+  /// get LSB of linear input scale
+  double linearLsb() const { return m_linearLsb; }
+
   /// convert from linear Et scale to rank scale
   uint16_t rank(const uint16_t linear) const;
 
