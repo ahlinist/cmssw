@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<PhysicsValidation>
+<ReleaseValidation>
 <!-- Z to ee from ECAL e/gamma (high priority)-->
           <Validate Version="ZToEE-LowLumiPU-HighPriority">
                 <Test Events="100" FractionSelected="0.8" Name="PhysVal-ZToEE-LowLumi">
@@ -21,7 +21,7 @@
 <!-- Bs to J/psi Phi from Tracker (high priority)-->
           <Validate Version="BsToJPsiPhi-LowLumiPU-HighPriority">
                 <Test Events="100" FractionSelected="0.003" Name="PhysVal-BsToJPsiPhi-LowLumi">
-                        Bs_JPsiPhi_LowLumi.cfg
+                        BstoJPsiPhi_LowLumi.cfg
                  </Test>
 	  </Validate>
 <!-- H to ZZ to e+e-e+e- from ECAL e/gamma (medium priority)-->
@@ -60,4 +60,4 @@
                         DrellYan_LowLumi.cfg
                 </Test>
 	  </Validate>
-</PhysicsValidation>
+</ReleaseValidation>
