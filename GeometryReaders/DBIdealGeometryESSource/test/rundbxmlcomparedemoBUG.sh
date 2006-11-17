@@ -6,7 +6,6 @@ mkdir db
 mkdir xml
 cd db
 rm *
-touch test.db
 
 echo start write Mag
 date
