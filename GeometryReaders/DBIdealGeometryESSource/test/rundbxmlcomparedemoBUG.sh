@@ -6,6 +6,9 @@ mkdir db
 mkdir xml
 cd db
 rm *
+#uncomment these with 1_2_0_pre4
+#touch testMag.db
+#touch testIdeal.db
 
 echo start write Mag
 date
