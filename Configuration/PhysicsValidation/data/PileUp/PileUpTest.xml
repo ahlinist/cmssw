@@ -1,63 +1,63 @@
 <?xml version="1.0" ?>
-<ReleaseValidation>
+<PhysicsValidation>
 <!-- Z to ee from ECAL e/gamma (high priority)-->
           <Validate Version="ZToEE-LowLumiPU-HighPriority">
-                <Test Events="125000" FractionSelected="0.8" Name="PhysVal-ZToEE-LowLumi">
+                <Test Events="125" FractionSelected="0.8" Name="PhysVal-ZToEE-LowLumi">
                         ZtoEE_LowLumi.cfg
                 </Test>
 	  </Validate>
 <!-- H to ZZ to mu+mu-mu+mu- from Muons (high priority)-->
           <Validate Version="HToZZToMuMuMuMu-mH150-LowLumiPU-HighPriority">
-                <Test Events="50000" Name="PhysVal-HToZZToMuMuMuMu-mH150-LowLumi">
+                <Test Events="100" Name="PhysVal-HToZZToMuMuMuMu-mH150-LowLumi">
                         HtoZZtoMuMuMuMu_mH150_LowLumi.cfg
                 </Test>
 	  </Validate>
 <!-- W to enu from ECAL e/gamma (high priority)-->
           <Validate Version="WToENU-LowLumiPU-HighPriority">
-                <Test Events="150000" FractionSelected="0.667" Name="PhysVal-WToENU-LowLumi">
+                <Test Events="150" FractionSelected="0.667" Name="PhysVal-WToENU-LowLumi">
                         WtoENU_LowLumi.cfg
                 </Test>
 	  </Validate>
 <!-- Bs to J/psi Phi from Tracker (high priority)-->
           <Validate Version="BsToJPsiPhi-LowLumiPU-HighPriority">
-                <Test Events="3000000" FractionSelected="0.003" Name="PhysVal-BsToJPsiPhi-LowLumi">
+                <Test Events="30000" FractionSelected="0.003" Name="PhysVal-BsToJPsiPhi-LowLumi">
                         Bs_JPsiPhi_LowLumi.cfg
                  </Test>
 	  </Validate>
 <!-- H to ZZ to e+e-e+e- from ECAL e/gamma (medium priority)-->
           <Validate Version="HToZZToEEEE-mH150-LowLumiPU-MediumPriority">
-                <Test Events="50000" Name="PhysVal-HToZZToEEEE-mH150-LowLumi">
+                <Test Events="100" Name="PhysVal-HToZZToEEEE-mH150-LowLumi">
                         HtoZZtoEEEE_mH150_LowLumi.cfg
                 </Test>
 	  </Validate>
 <!-- H to gamma gamma  from ECAL e/gamma (medium priority)-->
           <Validate Version="HToGaGa-mH120-LowLumi-MediumPriority">
-                <Test Events="80000" FractionSelected="0.625" Name="PhysVal-HToGaGa-mH120-LowLumi">
+                <Test Events="160" FractionSelected="0.625" Name="PhysVal-HToGaGa-mH120-LowLumi">
                         HtoGaGa_mH120_LowLumi.cfg
                 </Test>
 	  </Validate>
 <!-- qqbar samples from Tracker (medium priority)-->
           <Validate Version="QQbar-LowLumi-MediumPriority">
-        	<Test Events="5000" Name="PhysVal-BBbar-LowLumiPU">
+        	<Test Events="100" Name="PhysVal-BBbar-LowLumiPU">
                         BBbar_pt50to120_LowLumi.cfg
         	</Test>
-        	<Test Events="10000" Name="PhysVal-CCbar-LowLumiPU">
+        	<Test Events="100" Name="PhysVal-CCbar-LowLumiPU">
                         CCbar_pt50to120_LowLumi.cfg
         	</Test>
-        	<Test Events="35000" FractionSelected="0.6" Name="PhysVal-UDSUDSbar-LowLumiPU">
+        	<Test Events="150" FractionSelected="0.6" Name="PhysVal-UDSUDSbar-LowLumiPU">
                         UDSUDSbar_pt50to120_LowLumi.cfg
         	</Test>
 	  </Validate>
 <!-- gamma Jet production with pT>20 from ECAL e/gamma (medium priority)-->
           <Validate Version="GammaJet-LowLumi-LowPriority">
-                <Test Events="100000" FractionSelected="0.50" Name="PhysVal-GammaJet-LowLumi">
+                <Test Events="200" FractionSelected="0.50" Name="PhysVal-GammaJet-LowLumi">
                         GamJet_Pt20_LowLumi.cfg
                 </Test>
 	  </Validate>
 <!-- Drell Yan events from Muons (low priority)-->
           <Validate Version="DrellYan-LowLumiPU-LowPriority">
-                <Test Events="50000" Name="PhysVal-DrellYan-LowLumi">
+                <Test Events="100" Name="PhysVal-DrellYan-LowLumi">
                         DrellYan_LowLumi.cfg
                 </Test>
 	  </Validate>
-</ReleaseValidation>
+</PhysicsValidation>
