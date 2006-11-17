@@ -2,7 +2,7 @@
 <ReleaseValidation>
 <!-- Z to ee from ECAL e/gamma (high priority)-->
           <Validate Version="ZToEE-LowLumiPU-HighPriority">
-                <Test Events="125000" FractionSelected="0.8" Name="PhysVal-ZToEE-LowLumi">
+                <Test Events="100000" FractionSelected="0.8" Name="PhysVal-ZToEE-LowLumi">
                         ZtoEE_LowLumi.cfg
                 </Test>
 	  </Validate>
@@ -14,13 +14,13 @@
 	  </Validate>
 <!-- W to enu from ECAL e/gamma (high priority)-->
           <Validate Version="WToENU-LowLumiPU-HighPriority">
-                <Test Events="150000" FractionSelected="0.667" Name="PhysVal-WToENU-LowLumi">
+                <Test Events="100000" FractionSelected="0.667" Name="PhysVal-WToENU-LowLumi">
                         WtoENU_LowLumi.cfg
                 </Test>
 	  </Validate>
 <!-- Bs to J/psi Phi from Tracker (high priority)-->
           <Validate Version="BsToJPsiPhi-LowLumiPU-HighPriority">
-                <Test Events="3000000" FractionSelected="0.003" Name="PhysVal-BsToJPsiPhi-LowLumi">
+                <Test Events="1000" FractionSelected="0.003" Name="PhysVal-BsToJPsiPhi-LowLumi">
                         Bs_JPsiPhi_LowLumi.cfg
                  </Test>
 	  </Validate>
@@ -32,7 +32,7 @@
 	  </Validate>
 <!-- H to gamma gamma  from ECAL e/gamma (medium priority)-->
           <Validate Version="HToGaGa-mH120-LowLumi-MediumPriority">
-                <Test Events="80000" FractionSelected="0.625" Name="PhysVal-HToGaGa-mH120-LowLumi">
+                <Test Events="50000" FractionSelected="0.625" Name="PhysVal-HToGaGa-mH120-LowLumi">
                         HtoGaGa_mH120_LowLumi.cfg
                 </Test>
 	  </Validate>
@@ -44,13 +44,13 @@
         	<Test Events="10000" Name="PhysVal-CCbar-LowLumiPU">
                         CCbar_pt50to120_LowLumi.cfg
         	</Test>
-        	<Test Events="35000" FractionSelected="0.6" Name="PhysVal-UDSUDSbar-LowLumiPU">
+        	<Test Events="25000" FractionSelected="0.6" Name="PhysVal-UDSUDSbar-LowLumiPU">
                         UDSUDSbar_pt50to120_LowLumi.cfg
         	</Test>
 	  </Validate>
 <!-- gamma Jet production with pT>20 from ECAL e/gamma (medium priority)-->
           <Validate Version="GammaJet-LowLumi-LowPriority">
-                <Test Events="100000" FractionSelected="0.50" Name="PhysVal-GammaJet-LowLumi">
+                <Test Events="50000" FractionSelected="0.50" Name="PhysVal-GammaJet-LowLumi">
                         GamJet_Pt20_LowLumi.cfg
                 </Test>
 	  </Validate>
