@@ -1,6 +1,6 @@
 echo start
 date
-cd mkdir workarea
+mkdir workarea
 cd workarea
 mkdir db
 mkdir xml
