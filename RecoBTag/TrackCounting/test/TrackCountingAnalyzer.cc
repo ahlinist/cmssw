@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrea Rizzi
 //         Created:  Wed Apr 12 11:12:49 CEST 2006
-// $Id: TrackCountingAnalyzer.cc,v 1.2 2006/08/02 07:59:43 llista Exp $
+// $Id: TrackCountingAnalyzer.cc,v 1.3 2006/10/26 23:35:49 wmtan Exp $
 //
 //
 
@@ -94,7 +94,7 @@ TrackCountingAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
    */
   }
 
-};
+}
 
 //define this as a plug-in
 DEFINE_SEAL_MODULE();
