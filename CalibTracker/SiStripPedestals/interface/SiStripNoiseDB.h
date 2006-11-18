@@ -16,7 +16,7 @@
 //
 // Original Author:  dkcira
 //         Created:  Sat Feb  4 20:49:51 CET 2006
-// $Id: SiStripNoiseDB.h,v 1.1 2006/07/10 15:05:49 gennai Exp $
+// $Id: SiStripNoiseDB.h,v 1.2 2006/10/26 16:25:43 giordano Exp $
 //
 
 // system include files
@@ -43,7 +43,7 @@
 #include "CondFormats/SiStripObjects/interface/SiStripFedCabling.h"
 #include "CondFormats/DataRecord/interface/SiStripFedCablingRcd.h"
 #include "CondFormats/SiStripObjects/interface/FedChannelConnection.h"
-#include "DataFormats/SiStripDetId/interface/SiStripReadoutKey.h"
+//#include "DataFormats/SiStripDetId/interface/SiStripReadoutKey.h"
 //#include "DQM/SiStripCommon/interface/SiStripGenerateKey.h"
 //
 #include "CalibTracker/SiStripAPVAnalysis/interface/ApvAnalysisFactory.h"
@@ -84,7 +84,7 @@ class SiStripNoiseDB : public edm::EDAnalyzer {
        SiStripNoises* SiStripNoises_;
        std::vector< std::pair<uint32_t,std::vector<short> > > mSiStripNoises;
 	 
-       vector<uint32_t> SelectedDetIds;
+       std::vector<uint32_t> SelectedDetIds;
 	 
        ApvAnalysisFactory* apvFactory_;
        edm::ParameterSet pedsPSet_;
@@ -92,7 +92,7 @@ class SiStripNoiseDB : public edm::EDAnalyzer {
        int  theEventInitNumber_; 
        int theEventIterNumber_;
        int NumCMstripsInGroup_;
-       string outPutFileName;
+       std::string outPutFileName;
 
 
 };
