@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrea Rizzi
 //         Created:  Wed Apr 12 11:12:49 CEST 2006
-// $Id: AssociationAnalyzer.cc,v 1.4 2006/10/26 23:35:50 wmtan Exp $
+// $Id: AssociationAnalyzer.cc,v 1.5 2006/10/28 17:10:54 fwyzard Exp $
 //
 //
 
@@ -102,7 +102,7 @@ AssociationAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     }
   }
 
-};
+}
 
 //define this as a plug-in
 DEFINE_SEAL_MODULE();
