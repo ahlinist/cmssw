@@ -55,9 +55,9 @@ void MuAnalyzer::analyze( const Event& e, const EventSetup& )
   //cout << " Starting a new event" <<endl;
   int nmuon=0;
   double ptmax=-99;
-  double ww=1.;
+  double wt=1.;
 
-  if ( Evt->weights().size() > 0 ) ww=Evt->weights()[0];
+  if ( Evt->weights().size() > 0 ) wt=Evt->weights()[0];
   for ( HepMC::GenEvent::vertex_const_iterator
 	  vit=Evt->vertices_begin(); vit!=Evt->vertices_end(); ++vit )
     {
@@ -73,9 +73,9 @@ void MuAnalyzer::analyze( const Event& e, const EventSetup& )
 	    {	
 	      ++nmuon;
 	      if ( pt > ptmax && eta<maxeta) ptmax=pt;
-	      cout << "Muon Pt="<<pt<< " Evt weight="<<ww<<endl;
-	      fHistMuEta->Fill((*pout)->momentum().eta(),ww);
-	      fHistPtMu->Fill(pt,ww ) ;
+	      cout << "Muon Pt="<<pt<< " Evt weight="<<wt<<endl;
+	      fHistMuEta->Fill((*pout)->momentum().eta(),wt);
+	      fHistPtMu->Fill(pt,wt ) ;
 	      vector<HepMC::GenParticle*> MuonParents = (*vit)->listParents() ;      
 	      //cout << " Number of Muon (immediate) parents = " << MuonParents.size() << endl ;
 	      for (unsigned int ic=0; ic<MuonParents.size(); ic++ )
@@ -127,7 +127,7 @@ void MuAnalyzer::analyze( const Event& e, const EventSetup& )
       }
     }
   //cout<<" There is are "<<nmuon<<" muons in this event ! " << endl ;
-  fHistMuweight->Fill(ww);
+  fHistMuweight->Fill(wt);
   return ;
   }
 }
