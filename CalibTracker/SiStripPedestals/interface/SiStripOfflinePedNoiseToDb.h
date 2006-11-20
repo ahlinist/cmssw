@@ -1,7 +1,7 @@
 #ifndef SiStripOfflinePedNoiseToDb_h
 #define SiStripOfflinePedNoiseToDb_h
 
-// $Id: $
+// $Id: SiStripOfflinePedNoiseToDb.h,v 1.1 2006/11/19 17:06:39 giordano Exp $
 
 // system include files
 #include <memory>
@@ -53,9 +53,6 @@ namespace cms{
 	 
     SiStripPedestals* SiStripPedestals_;
     SiStripNoises* SiStripNoises_;
-
-    std::vector< std::pair<uint32_t,std::vector<char> > > mSiStripPedestals_;
-    std::vector< std::pair<uint32_t,std::vector<short> > > mSiStripNoises_;
 
     int nEvTot_;
     int theEventInitNumber_; 

@@ -78,11 +78,6 @@ namespace cms{
   // ------------ method called to produce the data  ------------
   void SiStripOfflinePedNoiseToDb::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   {
-    //Increment # of Events
-    nEvTot_++;
-    if((nEvTot_ - theEventInitNumber_)%theEventIterNumber_ != 1)
-      return;
-
     if ( appendMode_ ){
       edm::ESHandle<SiStripPedestals> peds;
       iSetup.get<SiStripPedestalsRcd>().get(peds);
@@ -100,8 +95,6 @@ namespace cms{
     //you have a collection as there are all the digis for the event for every detector
     iEvent.getByLabel(digiProducer, digiType, digi_collection);
     
-    mSiStripPedestals_.clear();
-    mSiStripNoises_.clear();
     // loop over all DetIds to be implement
     for(std::vector<uint32_t>::const_iterator myDet = SelectedDetIds_.begin();myDet!=SelectedDetIds_.end();myDet++)
       {
@@ -109,94 +102,82 @@ namespace cms{
 	if (detid < 1)
 	  continue;
 
-	std::cout << "Domenico e' qui " << detid << std::endl;
 	std::vector< edm::DetSet<SiStripRawDigi> >::const_iterator digis = digi_collection->find( detid );
 	if ( digis->data.empty() ) { 
 	  edm::LogError("SiStripOfflinePedNoiseToDb") << "[" << __PRETTY_FUNCTION__ <<"]  Zero digis found for DetId " << detid << std::endl; 
 	}else{ 
 	  apvFactory_->update(detid, (*digis));
-
-	  std::cout << "Domenico e' di nuovo " << detid << std::endl;
-	      
-	  //Get Pedestal and Noise for detid
-	  std::vector<char>  theSiStripPedVector;
-	  std::vector<short> theSiStripNoiseVector;
-	      
-	  std::vector<float> tmp_ped;
-	  std::vector<float> tmp_noi;
-	  TkApvMask::MaskType tmp_bad;
-	  tmp_ped.clear();
-	  tmp_noi.clear();
-	  apvFactory_->getPedestal(detid, tmp_ped);
-	  apvFactory_->getNoise(detid, tmp_noi);
-	  apvFactory_->getMask(detid, tmp_bad);
-
-	  /*	      
-	  if (tmp_ped.size()!=tmp_noi.size()){
-	    std::stringstream ss;
-	    ss << "[" << __PRETTY_FUNCTION__ <<"]  pedestal and noise container have different size!!" << detid << std::endl; 
-	    edm::LogError("SiStripOfflinePedNoiseToDb") << ss.str();
-	    throw cms::Exception("") << ss.str(); 
-	  }
-	  */
-  
-	  size_t istop=tmp_ped.size();
-	  for (size_t ibin=0; ibin<istop; ibin++){
-	    float ped = tmp_ped[ibin];
-	    float lTh = 2.;
-	    float hTh = 5.;
-	    float noise = tmp_noi[ibin];
-	    bool disable = (tmp_bad[ibin] == 0) ? false : true;
-		
-	    //LogDebug("SiStripOfflinePedNoiseToDb")  
-	    std::cout <<"DetId " << detid << " Ped Noise lth hth disable " << ped << " " << noise << " " << lTh << " " << hTh << " " << disable << std::endl;
-	    SiStripPedestals_->setData(ped,lTh,hTh,theSiStripPedVector);
-	    SiStripNoises_->setData(noise,disable,theSiStripNoiseVector);
-	  }
-	  mSiStripPedestals_.push_back(make_pair(detid,theSiStripPedVector));
-	  mSiStripNoises_.push_back(make_pair(detid,theSiStripNoiseVector));
 	}
       }
   }
   
   void SiStripOfflinePedNoiseToDb::endJob(void){
+    
+    // loop over all DetIds to be implement
+    for(std::vector<uint32_t>::const_iterator myDet = SelectedDetIds_.begin();myDet!=SelectedDetIds_.end();myDet++){
+      uint32_t detid = *myDet;
+      if (detid < 1)
+	continue;
+	      
+      //Get Pedestal and Noise for detid
+      std::vector<char>  theSiStripPedVector;
+      std::vector<short> theSiStripNoiseVector;
+	      
+      std::vector<float> tmp_ped;
+      std::vector<float> tmp_noi;
+      TkApvMask::MaskType tmp_bad;
+      tmp_ped.clear();
+      tmp_noi.clear();
+      apvFactory_->getPedestal(detid, tmp_ped);
+      apvFactory_->getNoise(detid, tmp_noi);
+      apvFactory_->getMask(detid, tmp_bad);
+	
+      if (tmp_ped.size()!=tmp_noi.size()){
+	std::stringstream ss;
+	ss << "[" << __PRETTY_FUNCTION__ <<"]  pedestal and noise container have different size!!" << detid << std::endl; 
+	edm::LogError("SiStripOfflinePedNoiseToDb") << ss.str();
+	throw cms::Exception("") << ss.str(); 
+      }
+	  
+      size_t istop=tmp_ped.size();
+      for (size_t ibin=0; ibin<istop; ibin++){
+	float ped = tmp_ped[ibin];
+	float lTh = 2.;
+	float hTh = 5.;
+	float noise = tmp_noi[ibin];
+	bool disable = (tmp_bad[ibin] == 0) ? false : true;
+		
+	LogDebug("SiStripOfflinePedNoiseToDb")  <<"DetId " << detid << " Ped Noise lth hth disable " << ped << " " << noise << " " << lTh << " " << hTh << " " << disable << std::endl;
+	SiStripPedestals_->setData(ped,lTh,hTh,theSiStripPedVector);
+	SiStripNoises_->setData(noise,disable,theSiStripNoiseVector);
+      }
+
+      {
+	edm::LogInfo("SiStripOfflinePedNoiseToDb") <<"uploading Ped for detid "<< detid << " vector size " << theSiStripPedVector.size() <<std::endl;
+	SiStripPedestals::Range range(theSiStripPedVector.begin(),theSiStripPedVector.end());
+	if ( ! SiStripPedestals_->put(detid,range) )
+	  edm::LogError("SiStripOfflinePedNoiseToDb") <<"[SiStripOfflinePedNoiseToDb::analyze] detid " << detid << "already exists"<<std::endl;
+      }
+      {
+	edm::LogInfo("SiStripOfflinePedNoiseToDb") <<"uploading Noise for detid "<< detid << " vector size " << theSiStripNoiseVector.size() <<std::endl;
+	SiStripNoises::Range range(theSiStripNoiseVector.begin(),theSiStripNoiseVector.end());
+	if ( ! SiStripNoises_->put(detid,range) )
+	  edm::LogError("SiStripNoiseDB") << "[SiStripNoiseDB::analyze] detid " << detid << "already exists"<<std::endl;	
+      }       
+    }
     edm::LogInfo("SiStripOfflinePedNoiseToDb") << "... now write SiStrip Ped Noise data in DB" << std::endl;
 
-    if (mSiStripPedestals_.size()==0 || mSiStripNoises_.size()==0){
-      std::stringstream ss;
-      ss << "[" << __PRETTY_FUNCTION__ <<"]  pedestal container size " << mSiStripPedestals_.size() << " noise container size " << mSiStripNoises_.size() << "\nExit without fill DB "<< std::endl; 
-      edm::LogError("SiStripOfflinePedNoiseToDb") << ss.str();
-      throw cms::Exception("") << ss.str(); 
-      return;
-    }
-
-	
-    for (std::vector< std::pair<uint32_t, std::vector<char> > >::const_iterator iter=mSiStripPedestals_.begin(); iter!=mSiStripPedestals_.end();iter++){
-      //edm::LogInfo("SiStripOfflinePedNoiseToDb") 
-      std::cout <<"uploading Ped for detid "<< iter->first << " vector size " << iter->second.size() <<std::endl;
-      SiStripPedestals::Range range(iter->second.begin(),iter->second.end());
-      if ( ! SiStripPedestals_->put(iter->first,range) )
-	edm::LogError("SiStripOfflinePedNoiseToDb") <<"[SiStripOfflinePedNoiseToDb::analyze] detid " << iter->first << "already exists"<<std::endl;
-    }       
-
-    for (std::vector< std::pair<uint32_t, std::vector<short> > >::const_iterator iter=mSiStripNoises_.begin(); iter!=mSiStripNoises_.end();iter++){
-      //      edm::LogInfo("SiStripOfflinePedNoiseToDb") 
-	std::cout <<"uploading Noise for detid "<< iter->first << " vector size " << iter->second.size() <<std::endl;
-      SiStripNoises::Range range(iter->second.begin(),iter->second.end());
-      if ( ! SiStripNoises_->put(iter->first,range) )
-	edm::LogError("SiStripNoiseDB") << "[SiStripNoiseDB::analyze] detid " << iter->first << "already exists"<<std::endl;
-    }    
-
-    edm::Service<cond::service::PoolDBOutputService> mydbservice;
-    
+    edm::Service<cond::service::PoolDBOutputService> mydbservice;    
     if( mydbservice.isAvailable() ){
       try{
 	uint32_t callbackToken;
 	unsigned long long tillTime;
 	if ( appendMode_){
-	  tillTime = conf_.getUntrackedParameter<uint32_t>("StartIOV",0); //the -1 allows to start the new IOV from the pedestal run under analysis
+	  tillTime = conf_.getUntrackedParameter<uint32_t>("StartIOV",0); 
 	  if (tillTime == 0)
-	    tillTime = mydbservice->currentTime();
+	    tillTime = mydbservice->currentTime()-1; //the -1 allows to start the new IOV from the pedestal run under analysis
+	  else
+	    tillTime--; //the -1 allows to start the new IOV from the pedestal run under analysis
 	}
 	else
 	  tillTime = mydbservice->endOfTime();
