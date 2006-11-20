@@ -121,7 +121,7 @@ void MuAnalyzer::analyze( const Event& e, const EventSetup& )
 	double pp;
 	double ww;
 	pp=0.4+i*0.8;
-	ww=2*(ww)/intlum;
+	ww=2*(wt)/intlum;
 	fHistRate33->Fill(pp,ww);
 	fHistRate34->Fill(pp,ww*5);
       }
