@@ -141,4 +141,4 @@ fOutputFile->Close() ;
 return ;
 }
  
-DEFINE_FWK_MODULE(MuAnalyzer)
+DEFINE_FWK_MODULE(MuAnalyzer);
