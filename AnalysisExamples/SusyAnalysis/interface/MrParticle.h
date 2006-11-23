@@ -123,7 +123,10 @@ public:
 MrElectron() : MrParticle(),  PCandidate(0) {MrParticle::setParticleType(1);};
 
 MrElectron(float px, float py, float pz, float e, const Electron* mycand) : MrParticle(px,py,pz,e), 
- PCandidate(mycand) {MrParticle::setParticleType(1);};
+ PCandidate(mycand) {
+     MrParticle::setParticleType(1);
+     MrParticle::setCharge(mycand->charge());
+ }
 
 virtual ~MrElectron() {};
 
@@ -154,7 +157,10 @@ public:
 MrMuon() : MrParticle(),  PCandidate(0) {MrParticle::setParticleType(2);};
 
 MrMuon(float px, float py, float pz, float e, const Muon* mycand) : MrParticle(px,py,pz,e), 
- PCandidate(mycand) {MrParticle::setParticleType(2);};
+ PCandidate(mycand) {
+   MrParticle::setParticleType(2);
+   MrParticle::setCharge(mycand->charge());
+ }
 
 virtual ~MrMuon() {};
 
