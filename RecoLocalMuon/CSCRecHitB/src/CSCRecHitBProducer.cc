@@ -98,5 +98,5 @@ void  CSCRecHitBProducer::produce( edm::Event& ev, const edm::EventSetup& setup 
 }
 
 //define this as a plug-in
-DEFINE_FWK_MODULE(CSCRecHitBProducer)
+DEFINE_FWK_MODULE(CSCRecHitBProducer);
 
