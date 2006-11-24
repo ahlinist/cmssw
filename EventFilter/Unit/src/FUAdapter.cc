@@ -68,21 +68,30 @@ void FUAdapter::clearBUArray()
 
 void FUAdapter::createBUArray()
   {
+    typedef std::set<xdaq::ApplicationGroup*> AppGroupSet_t;
+    typedef AppGroupSet_t::iterator           AppGroupIter_t;
     typedef set<xdaq::ApplicationDescriptor*> AppDescSet_t;
     typedef AppDescSet_t::iterator            AppDescIter_t;
     
+    AppGroupSet_t avGroups;
+    AppDescSet_t appsInGroup;
     AppDescSet_t buDescs;
-    
+    unsigned int connectedBU = 0;    
     try{
-      buDescs= 
-	getApplicationContext()->getDefaultZone()->
-	getApplicationDescriptors(buName_);
+      avGroups = getApplicationContext()->getDefaultZone()->getGroups();
+      for (AppGroupIter_t itg=avGroups.begin();itg!=avGroups.end();++itg) {
+	appsInGroup = (*itg)->getApplicationDescriptors();
+	for (AppDescIter_t ita=appsInGroup.begin();ita!=appsInGroup.end();++ita) {
+	  if((*ita)->getClassName().find(buName_)!= string::npos)
+	    buDescs.insert((*ita));
+	}
+      }
       unsigned int maxBUinstance = 0;
       
       for (AppDescIter_t it=buDescs.begin();it!=buDescs.end();++it) {
 	if ((*it)->getInstance()>maxBUinstance) maxBUinstance=(*it)->getInstance();
       }
-      
+
       bu_.resize(maxBUinstance+1);
       
       for (unsigned int buinstance=0;buinstance<bu_.size();buinstance++) {
@@ -91,11 +100,13 @@ void FUAdapter::createBUArray()
 	  if (buinstance==(*it)->getInstance()) {
 	    LOG4CPLUS_INFO(getApplicationLogger(),
 			   "FUAdapter: BU descriptor for instance "<<buinstance 
-			   <<" at "<<hex<<(unsigned int)(*it)<<dec);
+			   << " and class name " << (*it)->getClassName()
+			   <<" at 0x"<<hex<<(unsigned int)(*it)<<dec);
 	    bu_[buinstance]=new BUProxy(getApplicationDescriptor(),
 					*it, 
 					getApplicationContext(),
 					pool_);
+	    connectedBU++; 
 	  }
 	}
       }
@@ -113,15 +124,21 @@ void FUAdapter::createBUArray()
 	LOG4CPLUS_FATAL(this->getApplicationLogger(),
 			"Unknown error in looking up connectable BUs");
       } 
-    
-    LOG4CPLUS_INFO(this->getApplicationLogger(),
-		   "Memory pool for BU messages at " << hex
-		   << (int) pool_ << dec);
-    
-    
-    LOG4CPLUS_INFO(this->getApplicationLogger(),"Connected " << bu_.size()
-		   << " Builder Units ");
-    
+    if(connectedBU > 0)
+      {    
+	LOG4CPLUS_INFO(this->getApplicationLogger(),
+		       "Memory pool for BU messages at " << hex
+		       << (int) pool_ << dec);
+	
+	
+	LOG4CPLUS_INFO(this->getApplicationLogger(),"Connected " << connectedBU
+		       << " Builder Units ");
+      }
+    else
+      {
+	string errmsg = "No builder units connected! Check configuration";
+	XCEPT_RAISE(toolbox::fsm::exception::Exception,errmsg);
+      }
     if(sink_) delete sink_; sink_ = 0;
     if(doDropFragments_ && (sink_==0))
       {
