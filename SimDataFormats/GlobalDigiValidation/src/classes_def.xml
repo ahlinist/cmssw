@@ -1,0 +1,6 @@
+<lcgdict>
+  <class name="PGlobalDigi"/>
+  <class name="PGlobalDigi::ECalDigi"/>
+  <class name="std::vector<PGlobalDigi::ECalDigi>"/>
+  <class name="edm::Wrapper<PGlobalDigi>"/>
+</lcgdict>
