@@ -1,7 +1,41 @@
-      PROGRAM MaterialMixtures
+      PROGRAM AllMaterialMixtures
 C     ========================
 
       IMPLICIT NONE
+
+      Integer Narg, Iarg, Istatus
+
+
+      CALL SYSTEM('rm -f do', Istatus)
+      CALL SYSTEM('touch do', Istatus)
+
+
+      Narg = IARGC()
+
+      if (Narg.eq.0) then
+         write (*,*) "No input file(s) given."
+         write (*,*) "Usage: mixture FILE"
+         write (*,*) "Run the mixture program on the input FILE(s)."
+         write (*,*) "File names without the extension .in!"
+      endif
+
+
+      do Iarg=1, Narg
+
+         call MaterialMixtures(Iarg)
+         
+      enddo
+
+
+      END
+
+
+      SUBROUTINE MaterialMixtures(Iarg)
+C     ========================
+
+      IMPLICIT NONE
+
+      Integer Iarg
 
       Integer ISTAT,i,j,k,l
 
@@ -15,6 +49,7 @@ C...Common Block .................................................
       Integer MaxDiv
       Parameter (MaxDiv=30)
       Character*40 MixtureName, GMIXName
+      Character*80 Command
       Character*30 Comment(MaxDiv),Material(MaxDiv)
       Character*3 Type(MaxDiv)
       Real Volume(MaxDiv), Mult(MaxDiv),
@@ -30,23 +65,29 @@ C.................................................................
 
 C... initialization
 
-         
-
 C---> read in the input file from standard input
-      write(*,*) " Which file do you want me to open ?"
-      read(*,*) Filename
+C      write(*,*) " Which file do you want me to open ?"
+C      read(*,*) Filename
+
+      CALL GETARG(Iarg , Filename) 
+
       InFile = Filename(1:LENOCC(Filename))//".in"
       OutFile = Filename(1:LENOCC(Filename))//".tex" 
       tzfile  = Filename(1:LENOCC(Filename))//".titles"
       x0file  = Filename(1:LENOCC(Filename))//".x0"
 
-      write(*,*) Filename, InFile, OutFile
+C      write(*,*) Filename, InFile, OutFile
 
       LunIn = 23
       LunOut = 24
       Luntz = LunOut + 1
       Lunx0 = LunOut + 2
-      open(unit=LunIn,file=InFile,status="OLD")
+      open(unit=LunIn,file=InFile,status="OLD",IOSTAT=istat)
+      if(istat.ne.0) then
+         write(*,*) "Input file not found. Filename: ", InFile
+         return
+      endif
+
       open(unit=LunOut,file=OutFile,status="REPLACE")
       open(unit=Luntz,file=tzfile,status="REPLACE")
       open(unit=Lunx0,file=x0file,status="REPLACE")
@@ -97,6 +138,7 @@ C... reset everything
 
 
 C      write(LunOut,*) "\\end{center}"
+      write(LunOut,*) "\\end{landscape}"
       write(LunOut,*) "\\end{document}"
 
       close(LunIn)
@@ -105,16 +147,37 @@ C      write(LunOut,*) "\\end{center}"
       close(Lunx0)
        
 C... write out little latex/dvips script
-      open(30,file="do",status="REPLACE")
-      write(30,*) "latex ",Filename(1:LENOCC(Filename))
-      write(30,*) "dvips ",Filename(1:LENOCC(Filename)),
-     +     " -o",Filename(1:LENOCC(Filename)),".ps"
-      write(30,*) "gv ",Filename(1:LENOCC(Filename))," &"
-      close(30)
+C      open(30,file="do",status="OLD")
+C      write(30,*) "latex ",Filename(1:LENOCC(Filename))
+C      write(30,*) "dvips ",Filename(1:LENOCC(Filename)),
+C     +     " -o",Filename(1:LENOCC(Filename)),".ps"
+C      write(30,*) "gv ",Filename(1:LENOCC(Filename))," &"
+C      close(30)
+
+C      write(*,*) "--> I made ",Filename(1:LENOCC(Filename)),
+C     +   "  for you. Type ''do'' to see it " 
+
+      write(command,*) "echo 'latex ",Filename(1:LENOCC(Filename)),
+     +     "' >> do"
+      CALL SYSTEM(command, istat)
+
+      write(command,*) "echo 'dvips ",Filename(1:LENOCC(Filename)),
+     +     " -o",Filename(1:LENOCC(Filename)),".ps' ",
+     +     " >> do"
+      CALL SYSTEM(command, istat)
+
+      write(command,*) "echo 'gv -landscape ",
+     +     Filename(1:LENOCC(Filename))," &' ",
+     +     " >> do"
+      CALL SYSTEM(command, istat)
+
+      write(command,*) "chmod +x do"
+      CALL SYSTEM(command, istat)
 
       write(*,*) "--> I made ",Filename(1:LENOCC(Filename)),
      +   "  for you. Type ''do'' to see it " 
 
+      return
       end
 
 
@@ -380,74 +443,106 @@ C---> separate contributions to X_0 by type
 
 C---> write out the results ..................
 
+c$$$      stringmatname = GMIXName
+c$$$      call LatexUnderscore(stringmatname)
+c$$$      write(LUN,1000) Nmix,MixtureName,stringmatname
+c$$$ 1000 Format('\\subsection*{\\underline{',I3,2X,A40,2X,
+c$$$     +     '(Material name: ',A40,')',' }}')
+c$$$      
+c$$$C      write(LUN,*) "\\begin{table}[ht]"
+c$$$      write(LUN,*) "\\begin{tabular}{rlrrr}"
+c$$$      write(LUN,*) "\\hline\\hline"
+c$$$      write(LUN,*) " & Item & \\% Volume & \\% Weight & ",
+c$$$     +     "\\% Total X0  \\","\\"
+c$$$      write(LUN,*) "\\hline\\hline"
+c$$$      
+c$$$      do k=1,NMat
+c$$$         string = Material(k)
+c$$$         call LatexUnderscore(string)
+c$$$         write(LUN,1001) k, string(1:LENOCC(string)),100.*PVOL(k),
+c$$$     +        100.*Pweight(k),100.*PRAD(k)
+c$$$         write(LUN,*) "\\hline"
+c$$$      enddo
+c$$$ 1001 Format(1X,I4,2X,' & ',A20,' & ',2(1X,F8.3,' & '),1X,F8.3,
+c$$$     +     '\\','\\')
+      
+C
+C--------------------New big table START
+C
       stringmatname = GMIXName
       call LatexUnderscore(stringmatname)
       write(LUN,1000) Nmix,MixtureName,stringmatname
  1000 Format('\\subsection*{\\underline{',I3,2X,A40,2X,
      +     '(Material name: ',A40,')',' }}')
       
-      write(LUN,*) "\\begin{table}[h]"
-      write(LUN,*) "\\begin{tabular}{rlrrr}"
-      write(LUN,*) "\\hline\\hline"
-      write(LUN,*) " & Item & \\% Volume & \\% Weight & ",
-     +     "\\% Total X0  \\","\\"
-      write(LUN,*) "\\hline\\hline"
+C      write(LUN,*) "\\begin{table}[ht]"
+      write(LUN,*) "\\begin{tabular}{crlrlrlcrl}"
+C      write(LUN,*) "\\hline\\hline"
+      write(LUN,*) " & Component & Material & ",
+     +     " Volume & \\%  & ",
+     + " Weight & \\% & Density ",
+     +     " & X$_0$ & ",
+     +     " \\% "
+      write(LUN,*) "\\","\\"
+      write(LUN,*) " & & & ",
+     +     " [cm$^3$] & & ",
+     + " [g] & & [g/cm$^3$]",
+     +     " & [cm] & ",
+     +     " "
+      write(LUN,*) "\\","\\"
+C      write(LUN,*) "\\hline\\hline"
+      write(LUN,*) "\\hline"
       
       do k=1,NMat
          string = Material(k)
+         string1 = Comment(k)
          call LatexUnderscore(string)
-         write(LUN,1001) k, string(1:LENOCC(string)),100.*PVOL(k),
-     +        100.*Pweight(k),100.*PRAD(k)
+         call LatexUnderscore(string1)
+         write(LUN,1001) k,string1(1:LENOCC(string1)),
+     +        string(1:LENOCC(string)),Volume(k),100.*PVOL(k),
+     +        Density(k)*Volume(k),
+     +        100.*Pweight(k),Density(k),Radl(k),100.*PRAD(k)
          write(LUN,*) "\\hline"
       enddo
- 1001 Format(1X,I4,2X,' & ',A20,' & ',2(1X,F8.3,' & '),1X,F8.3,
+ 1001 Format(1X,I4,2X,' & ',A20,' & ',A20,' & ',
+     +     6(1X,F8.3,' & '),1X,F8.3,
      +     '\\','\\')
-      
-      write(LUN,*) " & & & & \\","\\"
-      write(LUN,1002) "Mixture density",TDEN
-      write(LUN,1002) "Norm. mixture density",Ndens
-      write(LUN,1002) "Mixture Volume",TVOL
-      write(LUN,1002) "MC Volume",MCVolume
+
+C
+C--------------------New big table END
+C
+      write(LUN,*) "\\end{tabular}"
+C      write(LUN,*) "\\vskip 0.1cm"
+      write(LUN,*) " "
+      write(LUN,*) "\\begin{tabular}{lr}"
+      write(LUN,*) "\\fbox{\\begin{tabular}{rl}"
+      write(LUN,1002) "Mixture density [g/cm$^3$]",TDEN
+      write(LUN,1002) "Norm. mixture density [g/cm$^3$]",Ndens
+      write(LUN,1002) "Mixture Volume [cm$^3$]",TVOL
+      write(LUN,1002) "MC Volume [cm$^3$]",MCVolume
+      write(LUN,1002) "MC Area [cm$^2]$",MCArea
       write(LUN,1002) "Normalization factor",Norm
-      write(LUN,1002) "Mixture X0 (cm)", TRAD
-      write(LUN,1002) "Norm. Mixture X0 (cm)",NRadl
+      write(LUN,1002) "Mixture X$_0$ [cm]", TRAD
+      write(LUN,1002) "Norm. Mixture X$_0$ [cm]",NRadl
       if (MCArea.gt.0) then
-         write(LUN,1004) "Norm. Mixture X0 (\\%)",100*PRadl
+         write(LUN,1002) "Norm. Mixture X0 (\\%)",100*PRadl
       endif
       write(LUN,1002) "Total weight (g)",weight
+ 1002 Format(A40," & ",F11.5," \\","\\")
 
- 1002 Format(" & ",A25," & ",F11.5," && \\","\\")
- 1004 Format(" & ",A25," & ",F11.3," && \\","\\")
-
-      write(LUN,*) " & & & & \\","\\"
-      write(LUN,*) " & & & & \\","\\"
-   
-      write(LUN,*) " & Components & Material & Density & X0 (cm)\\","\\"
-      write(LUN,*) "\\hline"
+      write(LUN,*) "\\end{tabular}} & \\fbox{\\begin{tabular}{rl}"
       
-      do i = 1,NMat
-         string1 = Comment(i)
-         string2 = Material(i)
-         call LatexUnderscore(string1)
-         call LatexUnderscore(string2)
-         write(LUN,1003) i,string1(1:LENOCC(string1)),
-     +        string2(1:LENOCC(string2)),Density(i), Radl(i)
-      enddo
- 1003 format(1X,I4," & ",A22,"&",A22,"&",F8.3," & ",F8.3," \\","\\")
-
-      write(LUN,*) " & & & & \\","\\"
-      write(LUN,1006) "\\underline{X0 contribution}"
+      write(LUN,1006) "\\underline{X$_0$ contribution}"
       write(LUN,1005) "Support: ",PSUP
       write(LUN,1005) "Sensitive: ",PSEN
       write(LUN,1005) "Cables: ",PCAB
       write(LUN,1005) "Cooling: ",PCOL
       write(LUN,1005) "Electronics: ", PELE
 
- 1005 Format(" & ",A25," & ",F5.3," && \\","\\")
- 1006 Format(" & ",A30," &   & & \\","\\")
+ 1005 Format(A25," & ",F5.3,"\\","\\")
+ 1006 Format(A30," & \\","\\")
 
-      write(LUN,*) "\\end{tabular}"
-      write(LUN,*) "\\end{table}"
+      write(LUN,*) "\\end{tabular}}\\end{tabular}"
       write(LUN,*) "\\clearpage"
 
 C----> now write out a pseudo title file
@@ -568,15 +663,19 @@ C     ==========================
       Implicit None
       Integer LUN
 C--
-      write(LUN,*) "\\documentstyle[11pt]{article}"
+      write(LUN,*) "\\documentclass[10pt]{article}"
+      write(LUN,*) "\\usepackage{lscape}"
+      write(LUN,*) "\\usepackage{a4}"
       write(LUN,*) "\\pagestyle{empty}"
       write(LUN,*) "\\renewcommand{\\baselinestretch}{1.1}"
       write(LUN,*) "\\parskip4pt"
       write(LUN,*) "\\setlength{\\textwidth}{18cm}"
-      write(LUN,*) "\\setlength{\\textheight}{31.cm}"     
-C      write(LUN,*) "\\addtolength{\\oddsidemargin}{-1.5cm}"
-      write(LUN,*) "\\addtolength{\\topmargin}{-2cm}"
+      write(LUN,*) "\\setlength{\\textheight}{28cm}"     
+      write(LUN,*) "\\addtolength{\\oddsidemargin}{-1.5cm}"
+      write(LUN,*) "\\addtolength{\\evensidemargin}{-1.5cm}"
+      write(LUN,*) "\\addtolength{\\topmargin}{-5cm}"
       write(LUN,*) "\\begin{document}"
+      write(LUN,*) "\\begin{landscape}"
         
       return
       end
@@ -593,7 +692,7 @@ C     =======================================
       stringtemp = stringname
       findunderscore = 0
       k = 0
-      maxunderscore = 5                                                  At most maxunderscore '_' searched
+      maxunderscore = 5  !At most maxunderscore '_' searched
       underscorefound = 0
       
 C     Avoid LaTeX errors when compiling names with '_'
