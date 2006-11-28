@@ -137,6 +137,11 @@
                         pp_muX_sim_digi_OnSel.cfg
                 </Test>
         </Validate>
+        <Validate Version="Inclusive-Ttbar-HLT">
+                <Test Events="1000" Name="HLTVal_Incl_ttbar">
+                        TTbar_inclusive_sim_digi_OnSel.cfg
+                </Test>
+        </Validate>
         <Validate Version="PhysSamples-Set1-HLT">
                 <Test Events="1000" Name="HLTVal_Hto2tau_M200">
                         bbHto2tau_mA200_tb20_OnSel.cfg
