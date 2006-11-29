@@ -41,7 +41,7 @@ CSCFitXonStripWithGatti::~CSCFitXonStripWithGatti(){
 void CSCFitXonStripWithGatti::findXOnStrip( const CSCLayer* layer, const CSCStripHit& stripHit, 
                                             float& xCenterStrip, float& sWidth, 
                                             std::vector<float> xtalks, std::vector<float> nmatrix,
-                                            float& xGatti, double& sigma, double& chisq ) { 
+                                            float& xGatti, double& sigma, double& chisq ) {
 
   // Initialize Gatti parameters using chamberSpecs
   // Cache specs_ info for ease of access
@@ -76,8 +76,9 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCLayer* layer, const CSCStri
   if (debug) std::cout << "t_max is: " << tmax*50. << " and fitted peak is: " << t_peak+t_zero << std::endl;
 
   int j = 0;
-  // Now fill with array with fitted charge...
-  // ... or not, depending if managed to fit peaking time
+
+  // Now fill with array with fitted charge or not, depending if managed to fit peaking time
+
   for ( int i = 1; i <= nStrips; i++ ) {
     if ( i > (CenterStrip-2) && i < (CenterStrip+2) ) {
       std::vector<float> adcsFit;
@@ -85,28 +86,30 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCLayer* layer, const CSCStri
       for ( int t = 0; t < 4; t++ ) {
         int k  = t + 4*(i-1);
         adc[t] = adcs[k];  
-//        if ( !useFittedCharge && t < 3) d[j][t] = adc[t];
+        // if ( !useFittedCharge && t < 3) d[j][t] = adc[t];
         if ( t < 3) d[j][t] = adc[t];
       }
-//      if ( useFittedCharge ) {
-//        peakTimeFinder_->FitCharge( tmax, adc, t_zero, t_peak, adcsFit );
-//        for ( int t = 0; t < 3; t++ ) d[j][t] = adcsFit[t];
-//      }
+      /*      if ( useFittedCharge ) {
+       *        peakTimeFinder_->FitCharge( tmax, adc, t_zero, t_peak, adcsFit );
+       *        for ( int t = 0; t < 3; t++ ) d[j][t] = adcsFit[t];
+       *      }
+       */
       j++;
     }
   }
-
   // Load in x-talks:
   float dt = 50. * tmax - (t_peak + t_zero);
 
+  float xtalksOffset = 0.03;
+
   for ( int t = 0; t < 3; t++ ) {
-    xt_l[0][t] = xtalks[0] * (50.* (t-1) + dt) + xtalks[1];
-    xt_r[0][t] = xtalks[2] * (50.* (t-1) + dt) + xtalks[3];
-    xt_l[1][t] = xtalks[4] * (50.* (t-1) + dt) + xtalks[5];
-    xt_r[1][t] = xtalks[6] * (50.* (t-1) + dt) + xtalks[7];
-    xt_l[2][t] = xtalks[8] * (50.* (t-1) + dt) + xtalks[9];
-    xt_r[2][t] = xtalks[10]* (50.* (t-1) + dt) + xtalks[11];
-  }   
+    xt_l[0][t] = xtalks[0] * (50.* (t-1) + dt) + xtalks[1] + xtalksOffset;
+    xt_r[0][t] = xtalks[2] * (50.* (t-1) + dt) + xtalks[3] + xtalksOffset;
+    xt_l[1][t] = xtalks[4] * (50.* (t-1) + dt) + xtalks[5] + xtalksOffset;
+    xt_r[1][t] = xtalks[6] * (50.* (t-1) + dt) + xtalks[7] + xtalksOffset;
+    xt_l[2][t] = xtalks[8] * (50.* (t-1) + dt) + xtalks[9] + xtalksOffset;
+    xt_r[2][t] = xtalks[10]* (50.* (t-1) + dt) + xtalks[11] + xtalksOffset;
+  }
 
   // vector containing noise starts at 3rd time bin,
   int tbin = tmax - 3;
@@ -123,7 +126,6 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCLayer* layer, const CSCStri
   // Set Matrix used in Gatti fitting
   setupMatrix();
 
-
   // Run Gatti for offset = 0
   runGattiFit( 0 );
 
@@ -138,7 +140,6 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCLayer* layer, const CSCStri
 
   float tmp1_x      = x_gatti;
   float tmp1_chi2   = chi2_gatti;
-    
   if ( fabs( tmp1_x - tmp0_x ) > 0.005 ) {
     if ( fabs( tmp1_chi2 - tmp0_chi2 ) > 3.){
       if ( tmp0_chi2 < tmp1_chi2 ){
@@ -151,6 +152,7 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCLayer* layer, const CSCStri
       x_gatti   = ( tmp0_x + tmp1_x ) / 2.;
       dxl_gatti = fabs( tmp0_x - tmp1_x )/ sqrt(12.);
       dxh_gatti = dxl_gatti;
+      chi2_gatti = 9999.;
     }
   }    
 
@@ -330,14 +332,15 @@ void CSCFitXonStripWithGatti::setupMatrix() {
 
   double dd, a11t, a12t, a13t, a22t, a23t, a33t;
   double syserr = adcSystematics;
+  double xtlk_err=0.01;
 
   // Left strip
-  a11t = a11[0] + syserr*syserr * d[0][0]*d[0][0];
+  a11t = a11[0] + syserr*syserr * d[0][0]*d[0][0] + xtlk_err*xtlk_err*d[1][0]*d[1][0];
   a12t = a12[0] + syserr*syserr * d[0][0]*d[0][1];
   a13t = a13[0] + syserr*syserr * d[0][0]*d[0][2];
-  a22t = a22[0] + syserr*syserr * d[0][1]*d[0][1];
+  a22t = a22[0] + syserr*syserr * d[0][1]*d[0][1] + xtlk_err*xtlk_err*d[1][1]*d[1][1];
   a23t = a23[0] + syserr*syserr * d[0][1]*d[0][2];
-  a33t = a33[0] + syserr*syserr * d[0][2]*d[0][2];
+  a33t = a33[0] + syserr*syserr * d[0][2]*d[0][2] + xtlk_err*xtlk_err*d[1][2]*d[1][2];
 
   dd     = (a11t*a33t*a22t - a11t*a23t*a23t - a33t*a12t*a12t 
                        + 2.* a12t*a13t*a23t - a13t*a13t*a22t );
@@ -350,12 +353,12 @@ void CSCFitXonStripWithGatti::setupMatrix() {
   v33[0] = (a22t*a11t - a12t*a12t)/dd;
      
   // Center strip
-  a11t = a11[1] + syserr*syserr * d[1][0]*d[1][0];
+  a11t = a11[1] + syserr*syserr * d[1][0]*d[1][0] + xtlk_err*xtlk_err*(d[0][0]*d[0][0]+d[2][0]*d[2][0]);
   a12t = a12[1] + syserr*syserr * d[1][0]*d[1][1];
   a13t = a13[1] + syserr*syserr * d[1][0]*d[1][2];
-  a22t = a22[1] + syserr*syserr * d[1][1]*d[1][1];
+  a22t = a22[1] + syserr*syserr * d[1][1]*d[1][1] + xtlk_err*xtlk_err*(d[0][1]*d[0][1]+d[2][1]*d[2][1]);
   a23t = a23[1] + syserr*syserr * d[1][1]*d[1][2];
-  a33t = a33[1] + syserr*syserr * d[1][2]*d[1][2];
+  a33t = a33[1] + syserr*syserr * d[1][2]*d[1][2] + xtlk_err*xtlk_err*(d[0][2]*d[0][2]+d[2][2]*d[2][2]);
 
   dd     = (a11t*a33t*a22t - a11t*a23t*a23t - a33t*a12t*a12t
                        + 2.* a12t*a13t*a23t - a13t*a13t*a22t );
@@ -368,12 +371,12 @@ void CSCFitXonStripWithGatti::setupMatrix() {
   v33[1] = (a22t*a11t - a12t*a12t)/dd;
 
   // Right strip
-  a11t = a11[2] + syserr*syserr * d[2][0]*d[2][0];
+  a11t = a11[2] + syserr*syserr * d[2][0]*d[2][0] + xtlk_err*xtlk_err*d[1][0]*d[1][0];
   a12t = a12[2] + syserr*syserr * d[2][0]*d[2][1];
   a13t = a13[2] + syserr*syserr * d[2][0]*d[2][2];
-  a22t = a22[2] + syserr*syserr * d[2][1]*d[2][1];
+  a22t = a22[2] + syserr*syserr * d[2][1]*d[2][1] + xtlk_err*xtlk_err*d[1][1]*d[1][1];
   a23t = a23[2] + syserr*syserr * d[2][1]*d[2][2];
-  a33t = a33[2] + syserr*syserr * d[2][2]*d[2][2];
+  a33t = a33[2] + syserr*syserr * d[2][2]*d[2][2] + xtlk_err*xtlk_err*d[1][2]*d[1][2];
 
   dd     = (a11t*a33t*a22t - a11t*a23t*a23t - a33t*a12t*a12t
                         +2.* a12t*a13t*a23t - a13t*a13t*a22t );
