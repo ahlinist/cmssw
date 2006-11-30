@@ -11,21 +11,28 @@
 
 #include "DataFormats/Common/interface/Ref.h"
 
+class CLHEP::Hep3Vector ;
+
 namespace edm {
 
    
 
   class HepMCProduct {
   public:
-    HepMCProduct() : evt_( 0 ) { };
+    HepMCProduct() : evt_( 0 ), isVtxGenApplied_ ( false ) { };
     explicit HepMCProduct( HepMC::GenEvent * evt );
     virtual ~HepMCProduct();
+    
     void addHepMCData( HepMC::GenEvent  *evt);
+    void applyVtxGen( CLHEP::Hep3Vector* vtxShift ) const ; 
+    
     const HepMC::GenEvent& getHepMCData() const ;
  
     const HepMC::GenEvent * GetEvent() const {
       return evt_;
     }
+    
+    bool isVtxGenApplied() const { return isVtxGenApplied_ ; }
 
     HepMCProduct(HepMCProduct const& x);
     void swap(HepMCProduct & other);
@@ -33,6 +40,7 @@ namespace edm {
 
   private:
     HepMC::GenEvent * evt_;
+    mutable bool      isVtxGenApplied_ ;
   };
 
   //This allows edm::Refs to work with HepMCProduct
