@@ -54,6 +54,7 @@ namespace edm {
     using DataViewImpl::getProvenance;
     using DataViewImpl::getRefBeforePut;
     using DataViewImpl::put;
+    using DataViewImpl::size;
 
   private:
     // commit_() is called to complete the transaction represented by
