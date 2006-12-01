@@ -38,7 +38,7 @@ namespace edm {
   public:
     typedef OutputModule ModuleType;
     typedef std::vector<BranchDescription const *> Selections;
-    typedef boost::array<Selections, 3> SelectionsArray;
+    typedef boost::array<Selections, EndBranchType> SelectionsArray;
 
     explicit OutputModule(ParameterSet const& pset);
     virtual ~OutputModule();

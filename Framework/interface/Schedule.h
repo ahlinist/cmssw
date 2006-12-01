@@ -134,7 +134,8 @@ namespace edm
     enum State { Ready=0, Running, Latched };
 
     void runOneEvent(EventPrincipal& eventPrincipal, 
-		     EventSetup const& eventSetup);
+		     EventSetup const& eventSetup,
+		     BranchActionType const& branchActionType);
 
     void beginJob(EventSetup const&);
     void endJob();
@@ -202,8 +203,8 @@ namespace edm
     { return all_workers_.end(); }
 
     void resetAll();
-    bool runTriggerPaths(EventPrincipal&, EventSetup const&);
-    void runEndPaths(EventPrincipal&, EventSetup const&);
+    bool runTriggerPaths(EventPrincipal&, EventSetup const&, BranchActionType const&);
+    void runEndPaths(EventPrincipal&, EventSetup const&, BranchActionType const&);
 
     void setupOnDemandSystem(EventPrincipal& ep, EventSetup const& es);
 

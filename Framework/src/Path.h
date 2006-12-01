@@ -50,7 +50,7 @@ namespace edm
 	 ActionTable& actions,
 	 ActivityRegistryPtr reg);
 
-    void runOneEvent(EventPrincipal&, EventSetup const&);
+    void runOneEvent(EventPrincipal&, EventSetup const&, BranchActionType const&);
 
     int bitPosition() const { return bitpos_; }
     const std::string& name() const { return name_; }
@@ -96,10 +96,10 @@ namespace edm
 
     // Helper functions
     // nwrwue = numWorkersRunWithoutUnhandledException (really!)
-    bool handleWorkerFailure(cms::Exception const& e, int nwrwue);
-    void recordUnknownException(int nwrwue);
-    void recordStatus(int nwrwue);
-    void updateCounters(bool succeed);
+    bool handleWorkerFailure(cms::Exception const& e, int nwrwue, bool isEvent);
+    void recordUnknownException(int nwrwue, bool isEvent);
+    void recordStatus(int nwrwue, bool isEvent);
+    void updateCounters(bool succeed, bool isEvent);
   };
 }
 

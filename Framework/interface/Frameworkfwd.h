@@ -23,6 +23,7 @@ namespace edm {
   class EDFilter;
   class EDProducer;
   class Event;
+  class EventPrincipal;
   class EventAux;
   class EventSetup;
   class ExternalInputSource;
@@ -32,6 +33,7 @@ namespace edm {
   class InputSource;
   class InputSourceDescription;
   class LuminosityBlock;
+  class LuminosityBlockPrincipal;
   class ModuleDescription;
   class ModuleDescriptionSelector;
   class OutputModule;
@@ -42,6 +44,7 @@ namespace edm {
   class Provenance;
   class RawInputSource;
   class Run;
+  class RunPrincipal;
   class Schedule;
   class Selector;
   class SelectorBase;
@@ -60,8 +63,6 @@ namespace edm {
 #include "DataFormats/Common/interface/ConditionsID.h"
 #include "DataFormats/Common/interface/PassID.h"
 #include "DataFormats/Common/interface/ReleaseVersion.h"
-#include "FWCore/Framework/interface/EventPrincipalFwd.h"
-#include "FWCore/Framework/interface/LuminosityBlockPrincipalFwd.h"
-#include "FWCore/Framework/interface/RunPrincipalFwd.h"
+#include "FWCore/Framework/interface/BranchActionType.h"
 
 #endif

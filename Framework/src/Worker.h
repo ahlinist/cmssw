@@ -29,6 +29,7 @@ the worker is reset().
 
 #include "boost/scoped_ptr.hpp"
 #include "boost/shared_ptr.hpp"
+#include "boost/array.hpp"
 
 #include "FWCore/Framework/src/RunStopwatch.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -44,6 +45,7 @@ namespace edm {
     virtual ~Worker();
 
     bool doWork(EventPrincipal&, EventSetup const& c,
+		BranchActionType const& bat,
 		CurrentProcessingContext const* cpc) ;
     void beginJob(EventSetup const&) ;
     void endJob();

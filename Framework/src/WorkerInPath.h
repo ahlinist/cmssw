@@ -22,12 +22,13 @@ namespace edm
   class WorkerInPath
   {
   public:
-    enum State { Normal=0, Ignore, Veto };
+    enum FilterAction { Normal=0, Ignore, Veto };
 
     explicit WorkerInPath(Worker*);
-    WorkerInPath(Worker*, State theState);
+    WorkerInPath(Worker*, FilterAction theAction);
 
     bool runWorker(EventPrincipal&, EventSetup const&,
+		   BranchActionType const&,
 		   CurrentProcessingContext const* cpc);
 
     std::pair<double,double> timeCpuReal() const {
@@ -39,7 +40,7 @@ namespace edm
     int timesFailed() const { return timesFailed_; }
     int timesExcept() const { return timesExcept_; }
 
-    State state() const { return state_; }
+    FilterAction filterAction() const { return filterAction_; }
     Worker* getWorker() const { return worker_; }
 
   private:
@@ -50,7 +51,7 @@ namespace edm
     int timesFailed_;
     int timesExcept_;
     
-    State state_;
+    FilterAction filterAction_;
     Worker* worker_;
   };
 }
