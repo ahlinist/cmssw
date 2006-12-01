@@ -114,8 +114,8 @@ void MatchObjects::DoMatch(void)
         }   
     
       // matching jets with MC truth
-        if (RecoData[i]->particleType() >= 5 &&
-           (abs(MCData[j]->pid()) == 21 || 
+        if ((RecoData[i]->particleType() >= 5 && RecoData[i]->particleType() <= 7) 
+           && (abs(MCData[j]->pid()) == 21 || 
            (abs(MCData[j]->pid()) > 0 && abs(MCData[j]->pid()) < 6)) 
            &&  MCData[j]->status() == 2) {
           float deltaR = GetDeltaR(RecoData[i]->eta(), MCData[j]->eta(), 
@@ -285,7 +285,8 @@ void MatchObjects::ResolveMatchObjects(void)
                  if (abs(MCData[m]->pid()) != 22
                  || deltaR > mo_cphotonDRmax) {useind = false;}
               }
-              else if (RecoData[indPart[k]]->particleType() >= 5){
+              else if (RecoData[indPart[k]]->particleType() >= 5
+                       && RecoData[indPart[k]]->particleType() <= 7){
                  if (!(abs(MCData[m]->pid()) == 21 || 
                  (abs(MCData[m]->pid()) > 0 && abs(MCData[m]->pid()) < 6)) 
                  ||  MCData[m]->status() != 2 

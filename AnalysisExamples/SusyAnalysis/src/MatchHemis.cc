@@ -115,7 +115,7 @@ bool MatchHemis::DoMatch(void)
     // seems tricky: here works only for t-tbar
     if (tsmctr == 0 && trySMMOthers) {
       for (int i = 0; i < (int) MCData.size(); i++){ 
-        if ( abs(MCData[i]->pid()) == 6
+        if ( abs(MCData[i]->pid()) == 6 && MCData[i]->status() == 3
          && tsmctr < 2) {
           topSusyMotherIndex[tsmctr] = i;
   	  tsmctr++;

@@ -23,12 +23,16 @@ class MrParticle {
 public:
 
 // constructors
-MrParticle() : Px(0), Py(0), Pz(0), E(0), Charge(0),  
+MrParticle() : Px(0.), Py(0.), Pz(0.), E(0.), Charge(0.),  
+Vx(0.), Vy(0.), Vz(0.), D0Error(0.), DzError(0.),
 ParticleType(0), ParticleIso(true), Hemi(0),
+Pt_tracks(0.), Et_em(0.), Et_had(0.),
 MCParton(0), PID(0), Status(0), Mother1(0) {};
 
-MrParticle(float px, float py, float pz, float e) : Px(px), Py(py), Pz(pz), E(e), Charge(0),  
+MrParticle(float px, float py, float pz, float e) : Px(px), Py(py), Pz(pz), E(e), Charge(0.),  
+Vx(0.), Vy(0.), Vz(0.), D0Error(0.), DzError(0.),
 ParticleType(0), ParticleIso(true), Hemi(0),
+Pt_tracks(0.), Et_em(0.), Et_had(0.),
 MCParton(0), PID(0), Status(0), Mother1(0) {};
 
 
@@ -40,15 +44,22 @@ float eta(){if (fabs(Pz) <1.0e-5 ) {return 0;}
             float theta = atan(sqrt(Px*Px+Py*Py)/Pz);
             if (theta < 0.) {theta = theta + 3.141592654;}
             return -log(tan(0.5*theta));}
-float phi(){return atan2(Py,Px);}
-float p(){return sqrt(Px*Px+Py*Py+Pz*Pz);}
-float pt(){return sqrt(Px*Px+Py*Py);}
+float phi() {return atan2(Py,Px);}
+float p() {return sqrt(Px*Px+Py*Py+Pz*Pz);}
+float pt() {return sqrt(Px*Px+Py*Py);}
 float px() {return Px;}
 float py() {return Py;}
 float pz() {return Pz;}
 float energy() {return E;}
 float mass() {return sqrt(E*E-Px*Px-Py*Py-Pz*Pz);}
 float charge() {return Charge;}
+// coordinates of reference point (closest approach to beam)
+float vx() {return Vx;}
+float vy() {return Vy;}
+float vz() {return Vz;}
+// impact parameter errors
+float d0Error() {return D0Error;}
+float dzError() {return DzError;}
 // particleType: particle identification   
 //                   1 for e
 //                   2 for mu
@@ -58,11 +69,16 @@ float charge() {return Charge;}
 //                   6 for b-jet
 //                   7 for top
 //               
-//                   9 for MET 
+//                   9 for invisible particle (only for MC data)
+//                  10 for MET from calorimetry
+//                  11 for MET from recoil
 //
 int particleType() {return ParticleType;}
 bool particleIso() {return ParticleIso;}
 int hemisphere() {return Hemi;} 
+float pt_tracks() {return Pt_tracks;}
+float et_em() {return Et_em;}
+float et_had() {return Et_had;}
 int partonIndex() {return MCParton;} 
 // PDG particle identification
 int pid() {return PID;} 
@@ -85,9 +101,17 @@ void setPy(float py) {Py = py;}
 void setPz(float pz) {Pz = pz;}
 void setEnergy(float e) {E = e;}
 void setCharge(float charge) {Charge = charge;}
+void setVx(float vx) {Vx = vx;}
+void setVy(float vy) {Vy = vy;}
+void setVz(float vz) {Vz = vz;}
+void setd0Error(float dd0) {D0Error = dd0;}
+void setdzError(float ddz) {DzError = ddz;}
 virtual void setParticleType(int ptype) {ParticleType = ptype;}
 void setParticleIso(bool piso) {ParticleIso = piso;}
 void setHemisphere(int hem) {Hemi = hem;}
+void setPt_tracks(float apt_tracks) {Pt_tracks = apt_tracks;}
+void setEt_em(float aet_em){Et_em = aet_em;} 
+void setEt_had(float aet_had){Et_had = aet_had;}
 void setPartonIndex(int mcpart) {MCParton = mcpart;}
 void setPID(int pid) {PID = pid; 
                       if (abs(PID) == 11) {ParticleType = 1;} 
@@ -106,7 +130,9 @@ private:
 // data members
 float Px, Py, Pz, E;
 float Charge; 
+float Vx, Vy, Vz, D0Error, DzError;
 int ParticleType, ParticleIso, Hemi; 
+float Pt_tracks, Et_em, Et_had;
 int MCParton, PID, Status, Mother1;
 
 
@@ -122,11 +148,10 @@ public:
 // constructors
 MrElectron() : MrParticle(),  PCandidate(0) {MrParticle::setParticleType(1);};
 
-MrElectron(float px, float py, float pz, float e, const Electron* mycand) : MrParticle(px,py,pz,e), 
- PCandidate(mycand) {
-     MrParticle::setParticleType(1);
-     MrParticle::setCharge(mycand->charge());
- }
+MrElectron(float px, float py, float pz, float e, const Electron* mycand) : 
+ MrParticle(px,py,pz,e), PCandidate(mycand) 
+ {MrParticle::setParticleType(1);
+ MrParticle::setCharge(mycand->charge());}
 
 virtual ~MrElectron() {};
 
@@ -156,11 +181,10 @@ public:
 // constructors
 MrMuon() : MrParticle(),  PCandidate(0) {MrParticle::setParticleType(2);};
 
-MrMuon(float px, float py, float pz, float e, const Muon* mycand) : MrParticle(px,py,pz,e), 
- PCandidate(mycand) {
-   MrParticle::setParticleType(2);
-   MrParticle::setCharge(mycand->charge());
- }
+MrMuon(float px, float py, float pz, float e, const Muon* mycand) : 
+ MrParticle(px,py,pz,e), PCandidate(mycand) 
+ {MrParticle::setParticleType(2);
+ MrParticle::setCharge(mycand->charge());}
 
 virtual ~MrMuon() {};
 

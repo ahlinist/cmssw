@@ -117,6 +117,7 @@ void SusyAnalyzer::beginJob( const edm::EventSetup& )
    numTotEvtBadMET = 0;
    numTotEvtBadHemi = 0;
 
+   numTotNotVx = 0;
    numTotElectrons = 0;  
    numTotElectronsNonIso = 0;  
    numTotElectronsfinal = 0;  
@@ -168,6 +169,7 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
 
   // Variables and counters valid per event
+  int numNotVx = 0;
   int numElectrons = 0;
   int numElectronsNonIso = 0;
   int numElectronsfinal = 0;
@@ -264,7 +266,8 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
    // make MC printout
   
-    if (DEBUGLVL >= 2){
+//    if (DEBUGLVL >= 2){
+    if (DEBUGLVL >= 1){
       PrintMCInfo(20);
     }
    
@@ -322,15 +325,17 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
  
    // Apply first acceptance cuts
    if (fabs(recopart->eta()) < ana_elecEtaMax && recopart->pt() > ana_elecPtMin1){   
+      
+//      recopart->setVx((*electrons)[j].track()->vx() );
+//      recopart->setVy((*electrons)[j].track()->vy() );
+//      recopart->setVz((*electrons)[j].track()->vz() );
+      
       RecoData.push_back(recopart);
       numElectrons++;
       counter++;
+//      cout << "Electron vertex: x = " << (*electrons)[j].track()->vx() << ", y = " << (*electrons)[j].track()->vy() 
+//           << ", z = " << (*electrons)[j].track()->vz() << endl;
    }  
-//   cout << " elec " << numElectrons-1
-//   << ", E = "<< recopart->energy() 
-//   << ", eta = "<< recopart->eta() 
-//   << ", phi = "<< recopart->phi() 
-//   << ", type = " << recopart->particleType() << endl;
 
   
   }
@@ -349,22 +354,29 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   
    // Apply first acceptance cuts
    if (fabs(recopart->eta()) < ana_muonEtaMax && recopart->pt() > ana_muonPtMin1){   
+      
+//      recopart->setVx((*muons)[j].vx() );
+//      recopart->setVy((*muons)[j].vy() );
+//      recopart->setVz((*muons)[j].vz() );
+      
       RecoData.push_back(recopart);
       numMuons++;
       counter++;
+//      cout << "Muon vertex: x = " << (*muons)[j].vx() << ", y = " << (*muons)[j].vy() 
+//           << ", z = " << (*muons)[j].vz() << endl;
    }
 
   }
 
 
+   // get photons collection
+   // still to be implemented
+   
+
    // get Taus collection
    //Handle<IsolatedTauTagInfoCollection> tauTagInfoHandle;
    //iEvent.getByLabel(m_tautaginfo, tauTagInfoHandle);
    //const IsolatedTauTagInfoCollection & tauTagInfo = *(tauTagInfoHandle.product());
-
-
-   // get photons collection
-   // still to be implemented
 
 
    // get calo jet collection
@@ -383,6 +395,8 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       RecoData.push_back(recopart);
       numJets++;
       counter++;
+//      cout << "Jet vertex: x = " << (*jets)[j].vx() << ", y = " << (*jets)[j].vy() 
+//           << ", z = " << (*jets)[j].vz() << endl;
    }
  
   }
@@ -392,15 +406,46 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
    // get track collection
    Handle<TrackCollection> tracks;
    iEvent.getByLabel(m_tracksSrc, tracks);
+   TrackData = tracks.product();
+   if (DEBUGLVL >= 3){
+     cout << "Track collection: " << endl;
+     for (int i=0; i< (int) TrackData->size(); i++){
+       const Track* pTrack = &(*TrackData)[i];
+       if (pTrack->pt() > 1.) {
+         cout << " Track index = " << i << ", pT = " << pTrack->pt() << endl;
+       }
+     }
+   }
 
    // get vertex collection
    Handle<VertexCollection> vertices;
    iEvent.getByLabel(m_vertexSrc, vertices);
+   VertexData = vertices.product();
+   if (DEBUGLVL >= 3){
+     cout << "Vertex collection: " << endl;
+     for (int i=0; i< (int) VertexData->size(); i++){
+       const Vertex* pVertex = &(*VertexData)[i];
+       cout << " Vertex index = " << i << ", x = " << pVertex->x()
+            << ", y = " << pVertex->y()<< ", z = " << pVertex->z() << endl;
+     }
+   }
 
 
    // get calo towers collection
    Handle<CaloTowerCollection> calotowers; 
    iEvent.getByType(calotowers);
+   CaloTowerData = calotowers.product();
+   if (DEBUGLVL >= 3){
+     cout << "CaloTower collection: " << endl;
+     for (int i=0; i< (int) CaloTowerData->size(); i++){
+       const CaloTower* pCaloTower = &(*CaloTowerData)[i];
+       if (pCaloTower->et() > 5.) {
+         cout << " CaloTower index = " << i << ", ET = " << pCaloTower->et()
+              << ", ET em = " << pCaloTower->emEnergy()
+              << ", ET had = " << pCaloTower->hadEnergy() << endl;
+       }
+     }
+   }
 
 
    // get gen jet collection
@@ -418,14 +463,64 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
      //cout << " number of photons    "<< photons->size() << endl;
      cout << " number of jets       "<< jets->size() << endl;
      cout << " number of tracks     "<< tracks->size() << endl;
+     cout << " number of vertices   "<< vertices->size() << endl;
      cout << " number of calotowers "<< calotowers->size() << endl;
      //cout << " number of jetsgen    "<< jetsgen->size() << endl;
    }
-   
 
 
   // ******************************************************** 
   // Look up the b-tagging information
+
+
+  // ******************************************************** 
+  // Set the position of the reference point in the MrParticle for all objects
+   
+   bool withRefPoint = true;
+   for (int i = 0; i < (int) RecoData.size(); i++){
+     // for electrons
+     if (RecoData[i]->particleType() == 1){
+       const Electron* elecand = RecoData[i]->electronCandidate();
+       RecoData[i]->setVx(elecand->track()->vx() );
+       RecoData[i]->setVy(elecand->track()->vy() );
+       RecoData[i]->setVz(elecand->track()->vz() );
+       RecoData[i]->setd0Error(elecand->track()->d0Error() );
+       RecoData[i]->setdzError(elecand->track()->dzError() );
+     }
+     // for muons
+     else if (RecoData[i]->particleType() == 2){
+       const Muon* muoncand = RecoData[i]->muonCandidate();
+       RecoData[i]->setVx(muoncand->vx() );
+       RecoData[i]->setVy(muoncand->vy() );
+       RecoData[i]->setVz(muoncand->vz() );
+       RecoData[i]->setd0Error(muoncand->track()->d0Error() );
+       RecoData[i]->setdzError(muoncand->track()->dzError() );
+     }
+     // for taus
+     else if (RecoData[i]->particleType() == 3){
+     }
+     // for photons
+     else if (RecoData[i]->particleType() == 4){
+     }
+     // for jets
+     else if (RecoData[i]->particleType() >= 5
+              && RecoData[i]->particleType() <= 7){
+       withRefPoint = GetJetVx(i);
+     }
+     if (DEBUGLVL >= 2){
+       if(!withRefPoint){
+         cout << "  Object " << i << " of type = " << RecoData[i]->particleType()
+              << " ET = " << RecoData[i]->pt()
+              << " has no ref point " << endl;
+       }
+       else{
+         cout << "  Object " << i << " of type = " << RecoData[i]->particleType()
+              << " ET = " << RecoData[i]->pt()
+              << " ref point x = " << RecoData[i]->vx()
+              << ", y = " << RecoData[i]->vy() << ", z = " << RecoData[i]->vz() << endl;
+       }
+     }
+   }
 
    
 
@@ -433,7 +528,7 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   // Perform the cleaning of the objects
 
    myCleaner = new  ObjectCleaner(RecoData, 
-                    tracks.product(), vertices.product(), calotowers.product(), cleaner_params);
+                    TrackData, VertexData, CaloTowerData, cleaner_params);
    myCleaner->SetDebug(DEBUGLVL);
 
    if (DEBUGLVL >= 1){
@@ -441,127 +536,95 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
      cout << "Cleaning step: " << endl;
    }
    
+   // First, check the quality of the primary vertex
+   bool acceptPrimaryVx = true;
+   acceptPrimaryVx = myCleaner->CleanPrimaryVertex();
+  
+   if (!acceptPrimaryVx){
+      CleanMemory();
+      numTotEvtBadNoisy++;
+      if (DEBUGLVL >= 1){
+       cout << " Event rejected for bad primary vertex " << endl;
+      }
+      return;
+   }
+   
+
+   // Second, check the quality of the objects
    int i = 0;
    while (i< (int) RecoData.size()){
+   
+     // Check that is compatible with primary vertex
+     bool fromPrimaryVx = true;
+     fromPrimaryVx = myCleaner->IsFromPrimaryVx(i);
 
-     // for electrons
-     if (RecoData[i]->particleType() == 1){
-
+     if (fromPrimaryVx){
+       if (DEBUGLVL >= 2){
+        cout << " Object, index =  " << i
+             << " Type = " << RecoData[i]->particleType()
+             << " ET = " << RecoData[i]->pt()
+             << " compatible with primary vertex " << endl;
+       }
+     } else {
+       if (DEBUGLVL >= 2){
+        cout << " Object, index =  " << i
+             << " Type = " << RecoData[i]->particleType()
+             << " ET = " << RecoData[i]->pt()
+             << " not compatible with primary vertex " << endl;
+       }
+       if (RecoData[i]->particleType() == 1){numElectrons--;}
+       else if (RecoData[i]->particleType() == 2){numMuons--;}
+       else if (RecoData[i]->particleType() == 3){numTaus--;}
+       else if (RecoData[i]->particleType() == 4){numPhotons--;}
+       else if (RecoData[i]->particleType() >= 5
+              && RecoData[i]->particleType() <= 7){numJets--;}
+       numNotVx++;
+       counter--;
+       delete RecoData[i];
+       RecoData.erase(RecoData.begin() + i);
+       continue;
+     }
       
-       // perform the electron cleaning
+       // perform the object cleaning
+     bool acceptObject = true;
+     acceptObject = myCleaner->CleanObject(i);
 
-       bool acceptElectron = true;
-       acceptElectron = myCleaner->CleanElectron(i);
-
-       // avoid duplicated electrons
-
-       bool multElectron = true;
-       multElectron = myCleaner->DuplicateElectron(i);
-
-       if (acceptElectron && !multElectron){
-         if (DEBUGLVL >= 2){
-          cout << " Clean electron, index =  " << i
-               << " Ch = " << RecoData[i]->charge()
-               << " eta = "<< RecoData[i]->eta()
-               << " Pt = " << RecoData[i]->pt() << endl;
-         }
-         i++;
-       } else {
-         if (DEBUGLVL >= 2){
-          cout << " Bad electron, index =  " << i
-               << " Ch = " << RecoData[i]->charge()
-               << " eta = "<< RecoData[i]->eta()
-               << " Pt = " << RecoData[i]->pt() << endl;
-         }
-         delete RecoData[i];
-         RecoData.erase(RecoData.begin() + i);
-         numElectrons--;
-         counter--;
+     if (acceptObject){
+       if (DEBUGLVL >= 2){
+        cout << " Object accepted, index =  " << i
+             << " Type = " << RecoData[i]->particleType()
+             << " Ch = " << RecoData[i]->charge()
+             << " eta = "<< RecoData[i]->eta()
+             << " Pt = " << RecoData[i]->pt() << endl;
        }
-     }
-
-     
- 
-     // for muons
-     else if (RecoData[i]->particleType() == 2){
-     
-       // perform the muon cleaning
-
-       bool acceptMuon = true;
-       acceptMuon = myCleaner->CleanMuon(i);
-     
-       if (acceptMuon){   
-         if (DEBUGLVL >= 2){
-           cout << " Clean muon, index =  " << i
-                << " Ch = " << RecoData[i]->charge()
-                << " eta = "<< RecoData[i]->eta()
-                << " Pt = " << RecoData[i]->pt() << endl;
-         }
-         i++;
-       } else {
-         if (DEBUGLVL >= 2){
-           cout << " Bad muon, index =  " << i
-                << " Ch = " << RecoData[i]->charge()
-                << " eta = "<< RecoData[i]->eta()
-                << " Pt = " << RecoData[i]->pt() << endl;
-         }
-         delete RecoData[i];
-         RecoData.erase(RecoData.begin() + i);
-         numMuons--;
-         counter--;
+       i++;
+     } else {
+       if (DEBUGLVL >= 2){
+        cout << " Object rejected, index =  " << i
+             << " Type = " << RecoData[i]->particleType()
+             << " Ch = " << RecoData[i]->charge()
+             << " eta = "<< RecoData[i]->eta()
+             << " Pt = " << RecoData[i]->pt() << endl;
        }
+       if (RecoData[i]->particleType() == 1){numElectrons--;}
+       else if (RecoData[i]->particleType() == 2){numMuons--;}
+       else if (RecoData[i]->particleType() == 3){numTaus--;}
+       else if (RecoData[i]->particleType() == 4){numPhotons--;}
+       else if (RecoData[i]->particleType() >= 5
+              && RecoData[i]->particleType() <= 7){numJets--;}
+       counter--;
+       delete RecoData[i];
+       RecoData.erase(RecoData.begin() + i);
      }
-
-     // for taus
-     else if (RecoData[i]->particleType() == 3){
-
-        i++;
-     }
-
-     // for photons
-     else if (RecoData[i]->particleType() == 4){
-
-        i++;
-    }
-    
-     // for jets
-     else if (RecoData[i]->particleType() >= 5){
-
-       // perform the jet cleaning
-
-       bool acceptJet = true;
-       acceptJet = myCleaner->CleanJet(i);
-    
-       if (acceptJet){
-         if (DEBUGLVL >= 2){
-           cout << " Clean jet, index =  " << i
-                << " Ch = " << RecoData[i]->charge()
-                << " eta = "<< RecoData[i]->eta()
-                << " Pt = " << RecoData[i]->pt() << endl;
-         }
-         i++;
-       } else {
-         if (DEBUGLVL >= 2){
-           cout << " Bad jet, index =  " << i
-                << " Ch = " << RecoData[i]->charge()
-                << " eta = "<< RecoData[i]->eta()
-                << " Pt = " << RecoData[i]->pt() << endl;
-         }
-         delete RecoData[i];
-         RecoData.erase(RecoData.begin() + i);
-         numJets--;
-         counter--;
-       }
-    }   
-
-     else {i++;}
    }
 
    if (DEBUGLVL >= 1){
      cout << " After cleaning, RecoData.size = " << RecoData.size() << endl;
      cout << " Number of clean electrons in first acceptance = " << numElectrons << endl;
-     cout << " Number of clean muons in first acceptance = " << numMuons << endl;
-     cout << " Number of clean jets in first acceptance = " << numJets << endl;
+     cout << " Number of clean muons in first acceptance =     " << numMuons << endl;
+     cout << " Number of clean taus in first acceptance =      " << numTaus << endl;
+     cout << " Number of clean photons in first acceptance =   " << numPhotons << endl;
+     cout << " Number of clean jets in first acceptance =      " << numJets << endl;
    }
    
    // cleaning bad events 
@@ -656,7 +719,7 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   // ******************************************************** 
   // Apply lepton/photon isolation if more stringent criteria needed than in reconstruction
 
-    myIsolator = new  Isolator(RecoData, tracks.product(), calotowers.product(), isolator_params);
+    myIsolator = new  Isolator(RecoData, TrackData, CaloTowerData, isolator_params);
     myIsolator->SetDebug(DEBUGLVL);
 
    if (DEBUGLVL >= 1){
@@ -712,50 +775,53 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     
     i = 0;
     while (i < (int) RecoData.size()){
-      bool iaccept = false;
-      if (RecoData[i]->particleType() == 1){
-        if (RecoData[i]->pt() > ana_elecPtMin2){  
+      if (RecoData[i]->particleType() < 5){
+        bool iaccept = false;
+        if (RecoData[i]->particleType() == 1){
+          if (RecoData[i]->pt() > ana_elecPtMin2){  
+            iaccept = true;
+          }
+        }
+        else if (RecoData[i]->particleType() == 2){
+          if (RecoData[i]->pt() > ana_muonPtMin2){  
+            iaccept = true;
+          }
+        }
+        else if (RecoData[i]->particleType() == 3){
+          if (RecoData[i]->pt() > ana_tauPtMin2){  
+            iaccept = true;
+          }
+        }
+        else if (RecoData[i]->particleType() == 4){
+          if (RecoData[i]->pt() > ana_photonPtMin2){  
+            iaccept = true;
+          }
+        } 
+        else {
           iaccept = true;
         }
-      }
-      else if (RecoData[i]->particleType() == 2){
-        if (RecoData[i]->pt() > ana_muonPtMin2){  
-          iaccept = true;
-        }
-      }
-      else if (RecoData[i]->particleType() == 3){
-        if (RecoData[i]->pt() > ana_tauPtMin2){  
-          iaccept = true;
-        }
-      }
-      else if (RecoData[i]->particleType() == 4){
-        if (RecoData[i]->pt() > ana_photonPtMin2){  
-          iaccept = true;
-        }
-      } 
-      else {
-        iaccept = true;
-      }
       
-      if (iaccept){
-        if (DEBUGLVL >= 2 && RecoData[i]->particleType() < 5){
-          cout << " part " << i << " is kept" << endl;
+        if (iaccept){
+          if (DEBUGLVL >= 2 && RecoData[i]->particleType() < 5){
+            cout << " part " << i << " is kept" << endl;
+          }
+          i++;
         }
-        i++;
-      }
-      else{
-        if (DEBUGLVL >= 2){
-          cout << " part " << i << " is added to nearest jet and removed" << endl;
+        else{
+          if (DEBUGLVL >= 2 && RecoData[i]->particleType() < 5){
+            cout << " part " << i << " is added to nearest jet and removed" << endl;
+          }
+          AddToJet(i);
+          delete RecoData[i];
+          RecoData.erase(RecoData.begin() + i);
         }
-        AddToJet(i);
-        delete RecoData[i];
-        RecoData.erase(RecoData.begin() + i);
-      }
+      } else {i++;}
     }
    
     i = 0;
     while (i < (int) RecoData.size()){
-      if (RecoData[i]->particleType() >= 5){
+      if (RecoData[i]->particleType() >= 5
+          && RecoData[i]->particleType() <= 7){
         if (RecoData[i]->pt() > ana_jetPtMin2){  
           if (DEBUGLVL >= 2){
             cout << " part " << i << " is jet and is kept" << endl;
@@ -779,9 +845,9 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
      cout << "   RecoData.size(): " <<  RecoData.size() << endl;
      cout << "   MCData.size(): " << MCData.size() << endl;
     }
-    if (DEBUGLVL >= 2){
+    if (DEBUGLVL >= 1){
       cout << endl;
-      cout << " Remaining objects inside final acceptance: " << endl;
+      cout << "Remaining objects inside final acceptance: " << endl;
       PrintRecoInfo();
     }
 
@@ -871,7 +937,8 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
           numPhotonsMatched++;
         }
       }
-      if (RecoData[i]->particleType() >= 5){
+      if (RecoData[i]->particleType() >= 5
+          && RecoData[i]->particleType() <= 7){
         numJetsfinal++;
         if (RecoData[i]->particleType() == 6){
           numBJetsfinal++;
@@ -920,6 +987,7 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     for (int i = 0; i < (int) RecoData.size() ; i++){
        RecoData[i]->setHemisphere(vgroups[i]);
     }
+    vgroups.clear();
     
     float Axis1_x = vA1[0];
     float Axis1_y = vA1[1];
@@ -933,10 +1001,6 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     float Axis2_P = vA2[3];
     float Axis1_E = vA1[4];
     float Axis2_E = vA2[4];    
-
-    vA1.clear();
-    vA2.clear();
-    vgroups.clear();
 
     if (DEBUGLVL >= 2){
      cout << "  Hemisphere Axis 1: Nx = " << Axis1_x << ", Ny = " <<  Axis1_y
@@ -989,6 +1053,35 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
     delete myHemiMatcher;
     myHemiMatcher = NULL;
+    vA1.clear();
+    vA2.clear();
+
+  // end of hemisphere matching
+  
+  // Add event counters to run counters for end of job statistics
+  numTotNotVx += numNotVx;
+  numTotElectrons += numElectrons;  
+  numTotElectronsNonIso += numElectronsNonIso;  
+  numTotElectronsfinal += numElectronsfinal;  
+  numTotElectronsMatched += numElectronsMatched;
+  numTotMuons += numMuons;  
+  numTotMuonsNonIso += numMuonsNonIso;  
+  numTotMuonsfinal += numMuonsfinal;  
+  numTotMuonsMatched += numMuonsMatched;
+  numTotTaus += numTaus;  
+  numTotTausNonIso += numTausNonIso;  
+  numTotTausfinal += numTausfinal;  
+  numTotTausMatched += numTausMatched;
+  numTotPhotons += numPhotons;  
+  numTotPhotonsNonIso += numPhotonsNonIso;  
+  numTotPhotonsfinal += numPhotonsfinal;  
+  numTotPhotonsMatched += numPhotonsMatched;
+  numTotJets += numJets;  
+  numTotBJets += numBJets;  
+  numTotJetsfinal += numJetsfinal;  
+  numTotBJetsfinal += numBJetsfinal;  
+  numTotJetsMatched += numJetsMatched;
+
   
   // ******************************************************** 
   // Now start the analysis
@@ -1100,30 +1193,6 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   // ******************************************************** 
   // End of the event analysis
   // ******************************************************** 
-  
-  // Add event counters to run counters for end of job statistics
-
-  numTotElectrons += numElectrons;  
-  numTotElectronsNonIso += numElectronsNonIso;  
-  numTotElectronsfinal += numElectronsfinal;  
-  numTotElectronsMatched += numElectronsMatched;
-  numTotMuons += numMuons;  
-  numTotMuonsNonIso += numMuonsNonIso;  
-  numTotMuonsfinal += numMuonsfinal;  
-  numTotMuonsMatched += numMuonsMatched;
-  numTotTaus += numTaus;  
-  numTotTausNonIso += numTausNonIso;  
-  numTotTausfinal += numTausfinal;  
-  numTotTausMatched += numTausMatched;
-  numTotPhotons += numPhotons;  
-  numTotPhotonsNonIso += numPhotonsNonIso;  
-  numTotPhotonsfinal += numPhotonsfinal;  
-  numTotPhotonsMatched += numPhotonsMatched;
-  numTotJets += numJets;  
-  numTotBJets += numBJets;  
-  numTotJetsfinal += numJetsfinal;  
-  numTotBJetsfinal += numBJetsfinal;  
-  numTotJetsMatched += numJetsMatched;
 
 
 
@@ -1338,14 +1407,14 @@ void SusyAnalyzer::PrintRecoInfo(void)
   cout << " Reco particles : " << endl;
   for (unsigned int j=0; j<RecoData.size(); j++){
    cout << " part " << j 
+   << ", type = " << RecoData[j]->particleType()
 //   << ", px = "<< RecoData[j]->px() 
 //   << ", py = "<< RecoData[j]->py() 
 //   << ", pz = "<< RecoData[j]->pz() 
    << ", E = "<< RecoData[j]->energy() 
    << ", pt = "<< RecoData[j]->pt() 
    << ", eta = "<< RecoData[j]->eta() 
-   << ", phi = "<< RecoData[j]->phi() 
-   << ", type = " << RecoData[j]->particleType();
+   << ", phi = "<< RecoData[j]->phi() ;
    if (RecoData[j]->particleType() <= 3){
      cout << " Ch = " << RecoData[j]->charge();
    }
@@ -1392,6 +1461,7 @@ void SusyAnalyzer::PrintStatistics(void)
 
  cout << endl;
  cout << "Accepted objects within first acceptance cuts:" << endl;
+ cout << "Total number incompatible with primary vertex = " << numTotNotVx << endl;
  cout << "Total number of electrons = " << numTotElectrons 
       << " per event = " << (float)numTotElectrons / (float)numTotEvt << endl;
  int numTotElectronsIso = numTotElectrons - numTotElectronsNonIso;
@@ -1699,6 +1769,79 @@ float SusyAnalyzer::MetFromMC()
 
 //------------------------------------------------------------------------------
 
+bool SusyAnalyzer::GetJetVx(int ichk)
+{ // computes the vertex of a jet from its tracks
+  // the coordinates are stored in the jet MrParticle
+  // if no vertex found, it returns false
+  
+  float dRTrkFromJet = 0.6;    // temporary
+  
+  vector<int> tracksFromJet;
+  
+  float etaJet = RecoData[ichk]->eta();
+  float phiJet = RecoData[ichk]->phi();
+//  cout << " Jet index = " << ichk << ", pT = " << RecoData[ichk]->pt()
+//       << ", eta = " << etaJet << ", phi = " << phiJet << endl;
+  
+  // Get the list of track indices inside a cone around the jet
+  GetJetTrks(etaJet, phiJet, dRTrkFromJet, & tracksFromJet);
+  if (tracksFromJet.size() <= 0){
+    tracksFromJet.clear();
+    return false;
+  }
+  
+  // make simple average of track ref point positions
+  // could be replaced by a vertex fit
+  float xv = 0.;
+  float yv = 0.;
+  float zv = 0.;
+  float dd0 = 0.;
+  float ddz = 0.;
+//  cout << "  Nber of associated tracks = " << tracksFromJet.size() 
+//       << ", indices = ";
+  for (int i = 0; i < (int) tracksFromJet.size(); i++) {
+//    cout << tracksFromJet[i] << ", ";
+    const Track* pTrack = &(*TrackData)[tracksFromJet[i]];
+    xv += pTrack->vx();
+    yv += pTrack->vy();
+    zv += pTrack->vz();
+    dd0 += pTrack->d0Error()*pTrack->d0Error();
+    ddz += pTrack->dzError()*pTrack->dzError();
+  }
+//  cout << endl;
+  float nberTracks = tracksFromJet.size();
+  RecoData[ichk]->setVx(xv / nberTracks);
+  RecoData[ichk]->setVy(yv / nberTracks);
+  RecoData[ichk]->setVz(zv / nberTracks);
+  RecoData[ichk]->setd0Error(sqrt(dd0) / nberTracks );
+  RecoData[ichk]->setdzError(sqrt(ddz) / nberTracks );
+
+  tracksFromJet.clear();
+  return true;
+}
+
+//------------------------------------------------------------------------------
+
+void SusyAnalyzer::GetJetTrks(float etaJet, float phiJet, float dRjet, 
+                              vector<int> * tracksFromJet)
+{ // makes a list of tracks compatible with coming from a jet
+  // it returns the indices in the track collection in a vector
+  
+  for (int i=0; i< (int) TrackData->size(); i++){
+    const Track* pTrack = &(*TrackData)[i];
+    float eta = pTrack->eta();
+    float phi = pTrack->phi();
+    float DR = GetDeltaR(etaJet, eta, phiJet, phi);
+    if (DR < dRjet){
+      (*tracksFromJet).push_back(i);
+    }
+  }
+
+  return;
+}
+
+//------------------------------------------------------------------------------
+
 void SusyAnalyzer::AddToJet(int ichk)
 { // adds an object to its nearest jet
 
@@ -1729,7 +1872,8 @@ int SusyAnalyzer::FindNearestJet(int ichk)
   
   float deltaRmin = 999.;
   for(int i = 0; i < (int) RecoData.size(); i++){
-   if(RecoData[i]->particleType() >= 5){
+   if(RecoData[i]->particleType() >= 5
+      && RecoData[i]->particleType() <= 7){
     float deltaR = GetDeltaR(RecoData[ichk]->eta(), RecoData[i]->eta(), 
                              RecoData[ichk]->phi(), RecoData[i]->phi());
     if (deltaR < deltaRmin && i != ichk){
