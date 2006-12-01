@@ -246,9 +246,8 @@ TFWLiteSelectorBasic::Process(Long64_t iEntry) {
 
       try {
 	 m_->reader_->setEntry(iEntry);
-	 edm::EventPrincipal ep(aux.id(), aux.time(), m_->reg_, aux.luminosityBlockID(), aux.processHistoryID(), m_->reader_);
+	 edm::EventPrincipal ep(aux.id(), aux.time(), m_->reg_, aux.processHistoryID(), m_->reader_);
          m_->processNames_ = ep.processHistory();
-//OLD	 edm::EventPrincipal ep(aux.id_, aux.time_,m_->reg_, m_->processNames_, m_->reader_);
 
 	 using namespace edm;
 	 std::vector<BranchEntryDescription>::iterator pit = m_->prov_.data_.begin();
