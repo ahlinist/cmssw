@@ -16,20 +16,21 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include "DataFormats/Common/interface/Ref.h"
-#include "DataFormats/JetReco/interface/Jet.h"
-#include "DataFormats/TrackReco/interface/Track.h"
+#include "DataFormats/EgammaCandidates/interface/Electron.h"
 #include "DataFormats/MuonReco/interface/Muon.h"
+#include "DataFormats/JetReco/interface/Jet.h"
 #include "DataFormats/JetReco/interface/CaloJetCollection.h"
+#include "DataFormats/JetReco/interface/CaloJet.h"
 #include "DataFormats/JetReco/interface/GenJet.h"
-#include "DataFormats/CaloTowers/interface/CaloTowerCollection.h"
-#include "DataFormats/Candidate/interface/Candidate.h"
-#include "DataFormats/DetId/interface/DetId.h"
-#include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
 #include "DataFormats/JetReco/interface/GenJetfwd.h"
+#include "DataFormats/CaloTowers/interface/CaloTowerCollection.h"
 #include "DataFormats/BTauReco/interface/JetTracksAssociation.h"
 #include "DataFormats/BTauReco/interface/IsolatedTauTagInfo.h"
-#include "DataFormats/EgammaCandidates/interface/Electron.h"
+#include "DataFormats/Candidate/interface/Candidate.h"
+#include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/DetId/interface/DetId.h"
+#include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
 
 #include "AnalysisExamples/SusyAnalysis/interface/MrParticle.h"
 #include "AnalysisExamples/SusyAnalysis/interface/ObjectCleaner.h"
@@ -108,6 +109,9 @@ class SusyAnalyzer : public edm::EDAnalyzer {
      MatchObjects* myMatcher;    
      Hemisphere * myHemi;
      MatchHemis * myHemiMatcher;
+     const TrackCollection * TrackData;
+     const VertexCollection * VertexData;
+     const CaloTowerCollection * CaloTowerData;
 
   // acceptance cut variables
     double ana_elecEtaMax; 
@@ -140,6 +144,7 @@ class SusyAnalyzer : public edm::EDAnalyzer {
   int numTotEvtBadMET;
   int numTotEvtBadHemi;
 
+  int numTotNotVx;
   int numTotElectrons;  
   int numTotElectronsNonIso;  
   int numTotElectronsfinal;  
@@ -178,9 +183,11 @@ class SusyAnalyzer : public edm::EDAnalyzer {
   int FirstSMParton(int);
   bool ComesFromSquark(int);
   bool ComesFromGluino(int);
+  float MetFromMC(void);
+  bool GetJetVx(int);
+  void GetJetTrks(float, float, float, vector<int>*);
   void AddToJet(int);
   int FindNearestJet(int);
-  float MetFromMC(void);
   float DeltaPhi(float, float);
   float GetDeltaR(float, float, float, float);
   

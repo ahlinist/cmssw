@@ -617,10 +617,10 @@ bool Isolator::IsoPhoton(int ichk)
 //      cout << " ptwrtJet = " << ptwrtJet << endl;
       if (ptwrtJet > iso_ptPhotwrtJetmin){
         isIsolated = true;
-        cout << " photon is isolated by Pt wrt jet, Pt = " << ptwrtJet << endl;
+//        cout << " photon is isolated by Pt wrt jet, Pt = " << ptwrtJet << endl;
       } else {
         isIsolated = false;
-        cout << " photon is not isolated by Pt wrt jet, Pt = " << ptwrtJet << endl;
+//        cout << " photon is not isolated by Pt wrt jet, Pt = " << ptwrtJet << endl;
       }
     }
   }
@@ -880,7 +880,8 @@ int Isolator::FindNearestJet(int ichk)
   
   float deltaRmin = 999.;
   for(int i = 0; i < (int) RecoData.size(); i++){
-   if(RecoData[i]->particleType() >= 5){
+   if(RecoData[i]->particleType() >= 5
+      && RecoData[i]->particleType() <= 7){
     float deltaR = GetDeltaR(RecoData[ichk]->eta(), RecoData[i]->eta(), 
                              RecoData[ichk]->phi(), RecoData[i]->phi());
     if (deltaR < deltaRmin && i != ichk){
