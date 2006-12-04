@@ -13,7 +13,7 @@
 //
 // Original Author:  Simone Gennai
 //      Created:  Thu Apr  6 09:56:23 CEST 2006
-// $Id: ConeIsolation.cc,v 1.12 2006/10/24 15:54:20 gennai Exp $
+// $Id: ConeIsolation.cc,v 1.13 2006/10/27 01:35:38 wmtan Exp $
 //
 //
 
@@ -98,23 +98,15 @@ ConeIsolation::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    //   iEvent.getByLabel(vertexSrc,vertices);
    if(usingVertex)
      {
-
        const reco::VertexCollection vertCollection = *(vertices.product());
        reco::VertexCollection::const_iterator ci = vertCollection.begin();
        int i=0;
-	std::cout <<"Vertex Size "<<vertCollection.size()<<std::endl;
-       if(!vertCollection.size()) return;
-       myPV = *ci;
-       /*
-       for(;ci!=vertCollection.end();ci++){
-	 edm::LogInfo("ConeIsolation::produce()")
-	   <<" Vertex: "<<i<<" ("
-	   <<ci->x()<<", "
-	   <<ci->y()<<", "
-	   <<ci->z()<<")"<<endl;
+       std::cout <<"Vertex Size "<<vertCollection.size()<<std::endl;
+       if(vertCollection.size() > 0) {
 	 myPV = *ci;
+       }else{
+	 usingVertex = false;
        }
-       */
      }
    
   //cout << "here-0.5" << jetTracksAssociation <<endl;     
