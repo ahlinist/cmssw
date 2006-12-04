@@ -15,6 +15,7 @@ using namespace math;
 
 JetFlavourIdentifier::JetFlavourIdentifier(const edm::ParameterSet& iConfig)
 {
+  moduleLabel = iConfig.getParameter<std::string>( "mcSource" );
   fillPartons =  iConfig.getParameter<bool>("fillPartons");
   fillHeavyHadrons =  iConfig.getParameter<bool>("fillHeavyHadrons");
   fillLeptons =  iConfig.getParameter<bool>("fillLeptons");
@@ -32,10 +33,10 @@ JetFlavourIdentifier::JetFlavourIdentifier(const edm::ParameterSet& iConfig)
   }
 }
 
-void JetFlavourIdentifier::readEvent(const edm::Event& iEvent, std::string label_)
+void JetFlavourIdentifier::readEvent(const edm::Event& iEvent)
 {
   edm::Handle<HepMCProduct> evt;
-  iEvent.getByLabel(label_, evt);
+  iEvent.getByLabel(moduleLabel, evt);
   
   HepMC::GenEvent * generated_event = new HepMC::GenEvent(*(evt->GetEvent()));
   fillInfo(generated_event);

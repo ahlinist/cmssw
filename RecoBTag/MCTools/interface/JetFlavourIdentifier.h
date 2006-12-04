@@ -14,7 +14,7 @@ public:
 
   JetFlavourIdentifier() {}
   JetFlavourIdentifier(const edm::ParameterSet& iConfig);
-  void readEvent(const edm::Event& iEvent, std::string label_ = "source");
+  void readEvent(const edm::Event& iEvent);
 
   JetFlavour identifyBasedOnPartons( const reco::Jet & jet ) const;
   std::vector<MCParton> getListOfPartons() const  {return m_partons;}
@@ -37,7 +37,7 @@ private:
   bool rejectBCSplitting;
   std::vector<MCParton> m_partons;
   bool vetoB, vetoC, vetoL, vetoG;
-
+  std::string moduleLabel;
 
 };
 
