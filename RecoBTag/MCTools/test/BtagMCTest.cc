@@ -34,14 +34,13 @@ class BtagMCTest : public edm::EDAnalyzer {
 
    private:
   JetFlavourIdentifier jfi;
-  std::string jetTagLabel, moduleLabel;
+  std::string moduleLabel;
 };
 
 
 BtagMCTest::BtagMCTest(const edm::ParameterSet& iConfig)
 {
   moduleLabel = iConfig.getParameter<std::string>( "moduleLabel" );
-  jetTagLabel = iConfig.getParameter<std::string>( "instanceLabel" );
 
   jfi = JetFlavourIdentifier(iConfig.getParameter<edm::ParameterSet>("jetIdParameters"));
 }
@@ -53,7 +52,7 @@ void BtagMCTest::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
   cout <<"\nNew Event\n";
   cout <<"\n============================================================================\n";
 
-  jfi.readEvent(iEvent, "source");
+  jfi.readEvent(iEvent);
 
   cout <<"\nList of partons:\n";
   vector<MCParton> partonList = jfi.getListOfPartons();
@@ -67,7 +66,7 @@ void BtagMCTest::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
   cout <<"\nList of tagged jets:\n";
   edm::Handle<reco::JetTagCollection> tagHandle;
-  iEvent.getByLabel(moduleLabel, jetTagLabel, tagHandle);
+  iEvent.getByLabel(moduleLabel, tagHandle);
   const reco::JetTagCollection & tagColl = *(tagHandle.product());
   cout << "Found " << tagColl.size() << " B candidates" << endl;
 
