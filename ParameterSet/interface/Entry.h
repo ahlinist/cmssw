@@ -23,6 +23,7 @@
 #include "FWCore/ParameterSet/interface/InputTag.h"
 //@@ not needed, but there might be trouble if we take it out
 #include "FWCore/Utilities/interface/EDMException.h"
+#include "DataFormats/Common/interface/EventID.h"
 #include <boost/cstdint.hpp>
 
 // ----------------------------------------------------------------------
@@ -104,6 +105,14 @@ namespace edm {
     // InputTag
     Entry(std::string const& name, std::vector<edm::InputTag> const & vtag, bool is_tracked);
     std::vector<edm::InputTag> getVInputTag() const;
+
+    // EventID
+    Entry(std::string const& name, edm::EventID const & tag, bool is_tracked);
+    edm::EventID getEventID() const;
+
+    // VEventID
+    Entry(std::string const& name, std::vector<edm::EventID> const & vtag, bool is_tracked);
+    std::vector<edm::EventID> getVEventID() const;
 
     // ParameterSet
     Entry(std::string const& name, ParameterSet const& val, bool is_tracked);
