@@ -98,10 +98,13 @@ void testGenericHandle::getbyLabelTest() {
   pprov->product.fullClassName_ = dummytype.userClassName();
   pprov->product.friendlyClassName_ = className;
 
+  edm::ModuleDescription modDesc;
+  modDesc.moduleName_ = "Blah";
 
   pprov->product.moduleLabel_ = label;
   pprov->product.productInstanceName_ = productInstanceName;
   pprov->product.processName_ = processName;
+  pprov->product.moduleDescriptionID_ = modDesc.id();
   pprov->product.init();
 
   edm::ProductRegistry preg;
