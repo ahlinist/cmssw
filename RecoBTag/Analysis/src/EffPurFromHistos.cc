@@ -39,14 +39,15 @@ EffPurFromHistos::EffPurFromHistos
   discrNoCutEffic = new FlavourHistorgrams<double> (
 	"discrCut" + histoExtension, "Discriminator Cut" + histoExtension,
 	dDiscriminatorFC->nBins(), dDiscriminatorFC->lowerBound(),
-	dDiscriminatorFC->upperBound(), true, false, false, "b" );
+	dDiscriminatorFC->upperBound(), true, true, false, "b" );
 
   // conditional discriminator cut for efficiency histos
 
   discrCutEfficScan = new FlavourHistorgrams<double> (
 	"discrCutCond" + histoExtension, "Conditional Discriminator Cut" + histoExtension,
 	dDiscriminatorFC->nBins(), dDiscriminatorFC->lowerBound(),
-	dDiscriminatorFC->upperBound(), true, false, false, "b" );
+	dDiscriminatorFC->upperBound(), true, true, false, "b" );
+  discrCutEfficScan->SetMinimum(1E-4);
 
   effVersusDiscr_d =    discrCutEfficScan->histo_d   ();
   effVersusDiscr_u =    discrCutEfficScan->histo_u   ();
@@ -184,7 +185,7 @@ void EffPurFromHistos::plot (TPad * plotCanvas ) {
   int mStyle_ni ;
 
   // marker size (same for all)
-  float mSize = 1.2;
+  float mSize =  plotCanvas->GetWh()*plotCanvas->GetHNDC()/500.;//1.2;
 
   if ( btppColour ) {
     col_c    = 6;
