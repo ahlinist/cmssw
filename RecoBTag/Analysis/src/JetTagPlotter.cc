@@ -39,47 +39,47 @@ JetTagPlotter::JetTagPlotter (const EtaPtBin & etaPtBin,
   // track multiplicity in jet
   dJetMultiplicity = new FlavourHistorgrams<int>
 	("jetMultiplicity" + es, "Jet Multiplicity" + es, 31, -0.5, 30.5,
-	false, false, false, "b", update);
+	false, true, true, "b", update);
 
     // Discriminator: again with reasonable binning
   dDiscriminator = new FlavourHistorgrams<double>
 	("discr" + es, "Discriminator" + es, 50, discrStart_, discrEnd_,
-	false, false, false, "b", update);
+	false, true, true, "b", update);
 
     // reconstructed jet momentum
   dJetRecMomentum = new FlavourHistorgrams<double>
 	("jetMomentum" + es, "jet momentum" + es, 200, 0.0, 200.0,
-	false, false, false, "b", update);
+	false, false, true, "b", update);
 
   // reconstructed jet transverse momentum
   dJetRecPt = new FlavourHistorgrams<double>
 	("jetPt" + es, "jet pt" + es, 200, 0.0, 200.0,
-	false, false, false, "b", update);
+	false, false, true, "b", update);
 
   // reconstructed jet eta
   dJetRecPseudoRapidity = new FlavourHistorgrams<double>
 	("jetEta" + es, "jet eta" + es, 100, -3.5, 3.5,
-	false, false, false, "b", update);
+	false, false, true, "b", update);
 
   // reconstructed jet phi
   dJetRecPhi = new FlavourHistorgrams<double>
 	("jetPhi" + es, "jet phi" + es, 100, -3.15, 3.15,
-	false, false, false, "b", update);
+	false, false, true, "b", update);
 
   // associated parton momentum
   dJetPartonMomentum = new FlavourHistorgrams<double>
 	("associatedPartonMomentum" + es, "associated parton momentum" + es,
-	200, 0.0, 400.0, false, false, false, "b", update);
+	200, 0.0, 400.0, false, false, true, "b", update);
 
   // associated parton pt
   dJetPartonPt = new FlavourHistorgrams<double>
 	("associatedPartonPt" + es, "associated parton pt" + es,
-	200, 0.0, 400.0, false, false, false, "b", update);
+	200, 0.0, 400.0, false, false, true, "b", update);
 
   // associated parton eta
   dJetPartonPseudoRapidity = new FlavourHistorgrams<double>
 	("associatedPartonEta" + es, "associated parton eta" + es,
-	100, -3.5, 3.5, false, false, false, "b", update);
+	100, -3.5, 3.5, false, false, true, "b", update);
 }
 
 
