@@ -57,7 +57,11 @@ public:
   // needed for efficiency computations -> this / b
   // (void : alternative would be not to overwrite the histos but to return a cloned HistoDescription)
   void divide ( FlavourHistorgrams<T> & bHD ) const ;
-  
+
+  void SetMaximum(const double max) { theMax = max;}
+  void SetMinimum(const double min) { theMin = min;}
+
+
   // trivial access functions
   TString  baseNameTitle       () const { return theBaseNameTitle       ; }
   TString  baseNameDescription () const { return theBaseNameDescription ; }
@@ -109,6 +113,7 @@ protected:
   bool   thePlotLog    ;
   bool   thePlotNormalized ;
   TString  thePlotFirst  ; // one character; gives flavour to plot first: l (light) , c , b
+  double theMin, theMax;
 
   // the histos
   TH1F *theHisto_all  ;    
@@ -146,7 +151,7 @@ FlavourHistorgrams<T>::FlavourHistorgrams (TString baseNameTitle_ , TString base
   theStatistics ( statistics_ ) ,
   thePlotLog ( plotLog_ ) ,
   thePlotNormalized ( plotNormalized_ ) ,
-  thePlotFirst ( plotFirst_ )  
+  thePlotFirst ( plotFirst_ ), theMin(-1.), theMax(-1.)
 {
   // defaults for array dimensions
   theArrayDimension = 0  ;
@@ -319,9 +324,13 @@ void FlavourHistorgrams<T>::plot (TPad * theCanvas) {
   histo[1] = theHisto_b ;
   histo[2] = theHisto_c ;
   histo[3]= 0 ;
-  double max = theHisto_dusg->GetMaximum();
-  if (theHisto_b->GetMaximum() > max) max = theHisto_b->GetMaximum();
-  if (theHisto_c->GetMaximum() > max) max = theHisto_c->GetMaximum();
+
+  double max = theMax;
+  if (theMax<=0.) {
+    max = theHisto_dusg->GetMaximum();
+    if (theHisto_b->GetMaximum() > max) max = theHisto_b->GetMaximum();
+    if (theHisto_c->GetMaximum() > max) max = theHisto_c->GetMaximum();
+  }
 
   if (btppNI) {
     histo[3] = theHisto_ni ;
@@ -380,7 +389,6 @@ void FlavourHistorgrams<T>::plot (TPad * theCanvas) {
     if ( !btppColour ) lineStyle[1] = 2 ;
   }
 
-  histo[0] ->SetMaximum(max*1.05);
 
   histo[0] ->GetXaxis()->SetTitle ( theBaseNameTitle ) ;
   histo[0] ->GetYaxis()->SetTitle ( "Arbitrary Units" ) ;
@@ -398,16 +406,20 @@ void FlavourHistorgrams<T>::plot (TPad * theCanvas) {
   }
 
   if ( thePlotNormalized ) {
-    histo[0] ->DrawNormalized() ;
-    histo[1] ->DrawNormalized("Same") ;
-    histo[2] ->DrawNormalized("Same") ;
-    if ( histo[3] != 0 ) histo[3] ->DrawNormalized("Same") ;
+//   cout <<histo[0]->GetEntries() <<" "<< histo[1]->GetEntries() <<" "<< histo[2]->GetEntries()<<" "<<histo[3]->GetEntries()<<endl;
+    if (histo[0]->GetEntries() != 0) {histo[0] ->DrawNormalized() ;} else {    histo[0] ->SetMaximum(1.0);
+histo[0] ->Draw() ;}
+    if (histo[1]->GetEntries() != 0) histo[1] ->DrawNormalized("Same") ;
+    if (histo[2]->GetEntries() != 0) histo[2] ->DrawNormalized("Same") ;
+    if ((histo[3] != 0) && (histo[3]->GetEntries() != 0))  histo[3] ->DrawNormalized("Same") ;
   }
   else {
-    histo[0] ->Draw() ;
-    histo[1] ->Draw("Same") ;
-    histo[2] ->Draw("Same") ;
-    if ( histo[3] != 0 ) histo[3] ->Draw("Same") ;
+    histo[0]->SetMaximum(max*1.05);
+    if (theMin!=-1.) histo[0]->SetMinimum(theMin);
+    histo[0]->Draw() ;
+    histo[1]->Draw("Same") ;
+    histo[2]->Draw("Same") ;
+    if ( histo[3] != 0 ) histo[3]->Draw("Same") ;
   }
 
 }
