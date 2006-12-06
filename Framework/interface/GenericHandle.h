@@ -123,6 +123,8 @@ public:
    Provenance const* provenance() const {return prov_;}
    
    ProductID id() const {return id_;}
+
+  void clear() { prov_ = 0; id_ = ProductID(); }
       
 private:
    ROOT::Reflex::Type type_;
