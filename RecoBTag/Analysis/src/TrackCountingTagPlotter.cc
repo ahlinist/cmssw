@@ -10,25 +10,45 @@ TrackCountingTagPlotter::TrackCountingTagPlotter(JetTagPlotter *jetTagPlotter,
   gFile->cd();
   gFile->cd(dir);
   }
-  hSignificance = new FlavourHistorgrams<double>
-       ("ips" + theExtensionString, "Significance of impact parameter",
-	50, -10.0, 10.0, false, false, false, "b", update) ;
+  tkcntHistosSig3D[4] = new FlavourHistorgrams<double>
+       ("ips_3D" + theExtensionString, "3D Significance of impact parameter",
+	50, -35.0, 35.0, false, true, true, "b", update) ;
 
-  tkcntHistosSig[0] = new FlavourHistorgrams<double>
-       ("ips1" + theExtensionString, "Significance of impact parameter 1st trk",
-	50, -10.0, 10.0, false, false, false, "b", update) ;
+  tkcntHistosSig3D[0] = new FlavourHistorgrams<double>
+       ("ips1_3D" + theExtensionString, "3D Significance of impact parameter 1st trk",
+	50, -35.0, 35.0, false, true, true, "b", update) ;
 
-  tkcntHistosSig[1] = new FlavourHistorgrams<double>
-       ("ips2" + theExtensionString, "Significance of impact parameter 2nd trk",
-	50, -10.0, 10.0, false, false, false, "b", update) ;
+  tkcntHistosSig3D[1] = new FlavourHistorgrams<double>
+       ("ips2_3D" + theExtensionString, "3D Significance of impact parameter 2nd trk",
+	50, -35.0, 35.0, false, true, true, "b", update) ;
 
-  tkcntHistosSig[2] = new FlavourHistorgrams<double>
-       ("ips3" + theExtensionString, "Significance of impact parameter 3rd trk",
-	50, -10.0, 10.0, false, false, false, "b", update) ;
+  tkcntHistosSig3D[2] = new FlavourHistorgrams<double>
+       ("ips3_3D" + theExtensionString, "3D Significance of impact parameter 3rd trk",
+	50, -35.0, 35.0, false, true, true, "b", update) ;
 
-  tkcntHistosSig[3] = new FlavourHistorgrams<double>
-       ("ips4" + theExtensionString, "Significance of impact parameter 4th trk",
-	50, -10.0, 10.0, false, false, false, "b", update) ;
+  tkcntHistosSig3D[3] = new FlavourHistorgrams<double>
+       ("ips4_3D" + theExtensionString, "3D Significance of impact parameter 4th trk",
+	50, -35.0, 35.0, false, true, true, "b", update) ;
+
+  tkcntHistosSig2D[4] = new FlavourHistorgrams<double>
+       ("ips_2D" + theExtensionString, "2D Significance of impact parameter",
+	50, -35.0, 35.0, false, true, true, "b", update) ;
+
+  tkcntHistosSig2D[0] = new FlavourHistorgrams<double>
+       ("ips1_2D" + theExtensionString, "2D Significance of impact parameter 1st trk",
+	50, -35.0, 35.0, false, true, true, "b", update) ;
+
+  tkcntHistosSig2D[1] = new FlavourHistorgrams<double>
+       ("ips2_2D" + theExtensionString, "2D Significance of impact parameter 2nd trk",
+	50, -35.0, 35.0, false, true, true, "b", update) ;
+
+  tkcntHistosSig2D[2] = new FlavourHistorgrams<double>
+       ("ips3_2D" + theExtensionString, "2D Significance of impact parameter 3rd trk",
+	50, -35.0, 35.0, false, true, true, "b", update) ;
+
+  tkcntHistosSig2D[3] = new FlavourHistorgrams<double>
+       ("ips4" + theExtensionString, "2D Significance of impact parameter 4th trk",
+	50, -35.0, 35.0, false, true, true, "b", update) ;
 
 }
 
@@ -38,11 +58,12 @@ TrackCountingTagPlotter::~TrackCountingTagPlotter ()
 
   delete jetTagPlotter_;
 
-  for(int n=0; n < 4; n++) delete tkcntHistosSig[n];
-  delete hSignificance;
+  for(int n=0; n <= 4; n++) {
+    delete tkcntHistosSig2D[n];
+    delete tkcntHistosSig3D[n];
+  }
   if (finalized) {
-    delete effPurFromHistos2;
-    delete effPurFromHistos3;
+    for(int n=0; n < 4; n++) delete effPurFromHistos[n];
   }
 }
 
@@ -61,10 +82,14 @@ void TrackCountingTagPlotter::analyzeTag (const reco::TrackCountingTagInfo & tag
 
   int numberOfTracks = jetTag.tracks().size();
 
-  for(int n=0; n < numberOfTracks && n < 4; n++)
-    tkcntHistosSig[n]->fill(jetFlav, tagInfo.significance(n,0));
-  for(int n=0; n < numberOfTracks; n++)
-      hSignificance->fill(jetFlav, tagInfo.significance(n,0));
+  for(int n=0; n < numberOfTracks && n < 4; n++) {
+    if (tagInfo.significance(n,1)!= -10.0 ) tkcntHistosSig2D[n]->fill(jetFlav, tagInfo.significance(n,1));
+    if (tagInfo.significance(n,0)!= -10.0 ) tkcntHistosSig3D[n]->fill(jetFlav, tagInfo.significance(n,0));
+  }
+  for(int n=0; n < numberOfTracks; n++){
+    if (tagInfo.significance(n,1)!= -10.0 )   tkcntHistosSig2D[4]->fill(jetFlav, tagInfo.significance(n,1));
+    if (tagInfo.significance(n,0)!= -10.0 )   tkcntHistosSig3D[4]->fill(jetFlav, tagInfo.significance(n,0));
+  }
 }
 
 void TrackCountingTagPlotter::finalize ()
@@ -74,14 +99,19 @@ void TrackCountingTagPlotter::finalize ()
   // final processing:
   // produce the misid. vs. eff histograms
   //
-  effPurFromHistos2 = new EffPurFromHistos (tkcntHistosSig[1],
+  effPurFromHistos[0] = new EffPurFromHistos (tkcntHistosSig3D[1],
 		jetTagPlotter_->nBinEffPur(), jetTagPlotter_->startEffPur(),
 		jetTagPlotter_->endEffPur());
-  effPurFromHistos2->compute();
-  effPurFromHistos3 = new EffPurFromHistos (tkcntHistosSig[2],
+  effPurFromHistos[1] = new EffPurFromHistos (tkcntHistosSig3D[2],
 		jetTagPlotter_->nBinEffPur(), jetTagPlotter_->startEffPur(),
 		jetTagPlotter_->endEffPur());
-  effPurFromHistos3->compute();
+  effPurFromHistos[2] = new EffPurFromHistos (tkcntHistosSig2D[1],
+		jetTagPlotter_->nBinEffPur(), jetTagPlotter_->startEffPur(),
+		jetTagPlotter_->endEffPur());
+  effPurFromHistos[3] = new EffPurFromHistos (tkcntHistosSig2D[2],
+		jetTagPlotter_->nBinEffPur(), jetTagPlotter_->startEffPur(),
+		jetTagPlotter_->endEffPur());
+  for(int n=0; n < 4; n++) effPurFromHistos[n]->compute();
   finalized = true;
 }
 
@@ -96,28 +126,42 @@ void TrackCountingTagPlotter::psPlot(const TString & name)
   canvas.Divide(2,3);
   canvas.Print(name + cName + ".ps[");
   canvas.cd(1);
-  hSignificance->plot((TPad*) canvas.GetPrimitive(cName+"_1"));
 
+  tkcntHistosSig3D[4]->plot((TPad*) canvas.GetPrimitive(cName+"_1"));
   for(int n=0; n < 4; n++) {
     canvas.cd(2+n);
-    tkcntHistosSig[n]->plot((TPad*) canvas.GetPrimitive(cName+"_"+itos(n+2)));
+    tkcntHistosSig3D[n]->plot((TPad*) canvas.GetPrimitive(cName+"_"+itos(n+2)));
   }
+
+  canvas.Print(name + cName + ".ps");
+  canvas.Clear();
+  canvas.Divide(2,3);
+
+  canvas.cd(1);
+  tkcntHistosSig2D[4]->plot((TPad*) canvas.GetPrimitive(cName+"_1"));
+  for(int n=0; n < 4; n++) {
+    canvas.cd(2+n);
+    tkcntHistosSig2D[n]->plot((TPad*) canvas.GetPrimitive(cName+"_"+itos(n+2)));
+  }
+
   if (finalized) {
-    canvas.Print(name + cName + ".ps");
-    canvas.Clear();
-    canvas.Divide(2,3);
-    canvas.cd(1);
-    effPurFromHistos2->discriminatorNoCutEffic()->plot((TPad*) canvas.GetPrimitive(cName+"_1"));
-    canvas.cd(2);
-    effPurFromHistos2->discriminatorCutEfficScan()->plot((TPad*) canvas.GetPrimitive(cName+"_2"));
-    canvas.cd(3);
-    effPurFromHistos2->plot((TPad*) canvas.GetPrimitive(cName+"_3"));
-    canvas.cd(4);
-    effPurFromHistos3->discriminatorNoCutEffic()->plot((TPad*) canvas.GetPrimitive(cName+"_4"));
-    canvas.cd(5);
-    effPurFromHistos3->discriminatorCutEfficScan()->plot((TPad*) canvas.GetPrimitive(cName+"_5"));
-    canvas.cd(6);
-    effPurFromHistos3->plot((TPad*) canvas.GetPrimitive(cName+"_6"));
+    for(int n=0; n < 2; n++) {
+      canvas.Print(name + cName + ".ps");
+      canvas.Clear();
+      canvas.Divide(2,3);
+      canvas.cd(1);
+      effPurFromHistos[0+n]->discriminatorNoCutEffic()->plot((TPad*) canvas.GetPrimitive(cName+"_1"));
+      canvas.cd(2);
+      effPurFromHistos[0+n]->discriminatorCutEfficScan()->plot((TPad*) canvas.GetPrimitive(cName+"_2"));
+      canvas.cd(3);
+      effPurFromHistos[0+n]->plot((TPad*) canvas.GetPrimitive(cName+"_3"));
+      canvas.cd(4);
+      effPurFromHistos[1+n]->discriminatorNoCutEffic()->plot((TPad*) canvas.GetPrimitive(cName+"_4"));
+      canvas.cd(5);
+      effPurFromHistos[1+n]->discriminatorCutEfficScan()->plot((TPad*) canvas.GetPrimitive(cName+"_5"));
+      canvas.cd(6);
+      effPurFromHistos[1+n]->plot((TPad*) canvas.GetPrimitive(cName+"_6"));
+    }
   }
 
   canvas.Print(name + cName + ".ps");
@@ -132,11 +176,12 @@ void TrackCountingTagPlotter::write()
   gFile->cd();
   gFile->mkdir(dir);
   gFile->cd(dir);
-  for(int n=0; n < 4; n++) tkcntHistosSig[n]->write();
-  hSignificance->write();
+  for(int n=0; n <= 4; n++) {
+    tkcntHistosSig2D[n]->write();
+    tkcntHistosSig3D[n]->write();
+  }
   if (finalized) {
-    effPurFromHistos2->write();
-    effPurFromHistos3->write();
+    for(int n=0; n < 4; n++) effPurFromHistos[n]->write();
   }
   gFile->cd();
 }
@@ -144,10 +189,11 @@ void TrackCountingTagPlotter::write()
 void TrackCountingTagPlotter::epsPlot(const TString & name)
 {
   jetTagPlotter_->epsPlot(name);
-  for(int n=0; n < 4; n++) tkcntHistosSig[n]->epsPlot(name);
-  hSignificance->epsPlot(name);
+  for(int n=0; n <= 4; n++) {
+    tkcntHistosSig2D[n]->epsPlot(name);
+    tkcntHistosSig3D[n]->epsPlot(name);
+  }
   if (finalized) {
-    effPurFromHistos2->epsPlot(name);
-    effPurFromHistos3->epsPlot(name);
+    for(int n=0; n < 4; n++) effPurFromHistos[n]->epsPlot(name);
   }
 }
