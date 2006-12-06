@@ -36,10 +36,9 @@ class TrackCountingTagPlotter : public BaseBTagPlotter {
 
   JetTagPlotter *jetTagPlotter_;
 
-  FlavourHistorgrams<double> * hSignificance;
-  FlavourHistorgrams<double> * tkcntHistosSig[4];
-  EffPurFromHistos * effPurFromHistos2 ;
-  EffPurFromHistos * effPurFromHistos3 ;
+  FlavourHistorgrams<double> * tkcntHistosSig3D[5];
+  FlavourHistorgrams<double> * tkcntHistosSig2D[5];
+  EffPurFromHistos * effPurFromHistos[4] ;
   bool finalized;
 } ;
 
