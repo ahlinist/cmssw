@@ -140,8 +140,12 @@ namespace edm
 	    break;
 	}
 
-	if (isEvent) {
-	  if(rc) ++timesPassed_; else ++timesFailed_;
+	if (rc) {
+	  state_ = Pass;
+	  if (isEvent) ++timesPassed_;
+	} else {
+	  state_ = Fail;
+	  if (isEvent) ++timesFailed_;
 	}
     }
 
