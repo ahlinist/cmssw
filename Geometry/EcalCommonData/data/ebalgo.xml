@@ -17,7 +17,7 @@
 
 <!-- Barrel container volume assumed to be full 360 degree polycone
 -->
-    <String  name="BarName" value="ebalgo:EBAR"/>
+    <String  name="BarName" value="EBAR"/>
     <String  name="BarMat"  value="materials:Air"/>
     <Vector  name="BarZPts" type="numeric" nEntries="4">
       -3045*mm, -2686.7*mm, 2686.7*mm, 3045*mm
@@ -109,13 +109,13 @@
     -->
 
     <Vector  name="SpmHere" type="numeric" nEntries="2*[ebalgo:NSpmPerHalf]">
-      0, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 0,
+      1, 1, 1, 1, 1, 1,
+      1, 1, 1, 1, 1, 1,
+      1, 1, 1, 1, 1, 1,
 
-      0, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 1
+      1, 1, 1, 1, 1, 1,
+      1, 1, 1, 1, 1, 1,
+      1, 1, 1, 1, 1, 1
     </Vector>
 
     <!-- These are for cut BOXes which trim off the sides/corners of
@@ -144,7 +144,7 @@
     <Numeric name="SpmExpWide"  value="600*mm"/>
     <Numeric name="SpmExpYOff"  value="15*mm"/>
 
-    <String  name="SpmSideName"   value="ebalgo:ESPL" />
+    <String  name="SpmSideName"   value="ESPL" />
     <String  name="SpmSideMat"    value="materials:Aluminium" />
     <Numeric name="SpmSideHigh"   value="38*cm"/>
     <Numeric name="SpmSideThick"  value="1*mm"/>
@@ -159,21 +159,151 @@
       be indexed 1, 2, 3, ...), thicknesses, and materials.
 -->
 
-    <String  name="IlyName"    value="ebalgo:EILY" />
+    <Numeric name="IlyHere"    value="1"/>
+    <String  name="IlyName"    value="EILY" />
     <Numeric name="IlyPhiLow"  value="-9.9*deg"/>
     <Numeric name="IlyDelPhi"  value="19.7*deg"/>
 
-    <Vector name="IlyThick" type="numeric" nEntries="6">
-     0.2*mm, 3*mm, 0.2*mm, 0.2*mm, 25*mm, 4*mm
+    <Vector name="IlyThick" type="numeric" nEntries="7">
+     0.2*mm, 3*mm, 0.2*mm, 0.2*mm, 25*mm, 4*mm, 12*mm
     </Vector>
 
-    <Vector name="IlyMat" type="string" nEntries="6">
+    <Vector name="IlyMat" type="string" nEntries="7">
       materials:E_Epoxy,
       materials:E_Rohacell,
       materials:E_Epoxy,
       materials:E_Aluminium,
-      materials:E_Polythene,
-      materials:E_Aluminium 
+      materials:E_PolyGrains,
+      materials:E_Aluminium ,
+      materials:E_Air
+    </Vector>
+
+    <Numeric name="IlyPipeHere"    value="1"/>
+    <String  name="IlyPipeName"    value="EIPIP" />
+    <String  name="IlyPipeMat"     value="materials:E_Aluminium" />
+    <Numeric name="IlyPipeOD"      value="8*mm"/>
+    <Numeric name="IlyPipeID"      value="6*mm"/>
+
+    <Vector name="IlyPipeLength" type="numeric" nEntries="10">
+     2573*mm,
+      520*mm,
+      351*mm, 
+      400*mm, 
+     1985*mm,
+      735*mm, 
+      675*mm,
+      595*mm, 
+     1438*mm,
+       42.7*mm
+    </Vector>
+
+    <Vector name="IlyPipeType" type="numeric" nEntries="96">
+       0,
+       1,1,1,1,1,1,1,1,
+       2,2,2,2,2,2,2,2,2,
+       3,3,3,3,3,3,3,3,
+       4,
+       5,5,
+       6,6,6,
+       7,
+       8,
+       9,9,9,9,9,9,9,9,9,9,
+       9,9,9,9,9,9,9,9,9,9,
+       9,9,9,9,9,9,9,9,9,9,9,
+       9,9,9,9,9,9,9,9,9,
+       9,9,9,9,9,9,9,9,
+       9,9,9,9,9,9,9,9,
+       9,9,9,9,9,9
+    </Vector>
+
+    <Vector name="IlyPipePhi" type="numeric" nEntries="96">
+     -9*deg, 
+                     -5*deg, -3*deg, -1*deg, +1*deg, +3*deg, +5*deg,
+                                     -1*deg, +1*deg,
+             -7*deg, -5*deg, -3*deg, -1*deg, +1*deg, +3*deg, +5*deg, +7*deg, +9*deg,
+             -7*deg, -5*deg, -3*deg, -1*deg, +1*deg, +3*deg, +5*deg, +7*deg,
+                                                                             +9*deg, 
+                                                                     +7*deg,
+                     -5*deg, 
+                             -3*deg,                 +3*deg, +5*deg,
+     +7*deg,
+     -7*deg,
+                 -6*deg, -4*deg, -2*deg, +0*deg, +2*deg, +4*deg, +6*deg, +8*deg,
+                 -6*deg, -4*deg, -2*deg, +0*deg, +2*deg, +4*deg, +6*deg, +8*deg,
+                 -6*deg, -4*deg, -2*deg, +0*deg, +2*deg, +4*deg, +6*deg,
+         -8*deg,         -4*deg, -2*deg, +0*deg, +2*deg, +4*deg, +6*deg, +8*deg,
+         -8*deg, -6*deg, -4*deg, -2*deg, +0*deg, +2*deg, +4*deg, +6*deg, +8*deg,
+                 -6*deg, -4*deg, -2*deg, +0*deg, +2*deg, +4*deg, +6*deg, +8*deg,
+                 -6*deg, -4*deg, -2*deg, +0*deg, +2*deg, +4*deg, +6*deg, +8*deg,
+                         -4*deg, -2*deg, +0*deg, +2*deg, +4*deg, +6*deg
+    </Vector>
+
+    <Vector name="IlyPipeZ" type="numeric" nEntries="96">
+       31*mm, 
+     1161*mm, 1161*mm, 1161*mm, 1161*mm, 1161*mm, 1161*mm, 1861*mm, 1861*mm, 
+      148*mm,  148*mm,  148*mm,  148*mm,  148*mm,  148*mm,  148*mm,  148*mm,  148*mm,
+      616*mm,  616*mm,  616*mm,  616*mm,  616*mm,  616*mm,  616*mm,  616*mm,
+      616*mm, 
+     1861*mm, 1778*mm,
+     1861*mm, 1861*mm, 1861*mm,
+     1161*mm,
+     1161*mm,
+      505*mm,  142*mm,  505*mm,  142*mm,  505*mm,  142*mm,  505*mm,  142*mm,
+     1027*mm,  610*mm, 1027*mm,  610*mm, 1027*mm,  610*mm, 1027*mm,  610*mm,
+     1155*mm, 1687*mm, 1155*mm, 1687*mm, 1155*mm, 1687*mm, 1155*mm,
+     2606*mm, 2554*mm, 1855*mm, 2400*mm, 1855*mm, 2554*mm, 1855*mm, 2606*mm,
+       25*mm,   25*mm,   25*mm,   25*mm,   25*mm,   25*mm,   25*mm,   25*mm,   25*mm,
+       51*mm,   51*mm,   51*mm,   51*mm,   51*mm,   51*mm,   51*mm,   51*mm,
+      571*mm,  571*mm,  571*mm,  571*mm,  571*mm,  571*mm,  571*mm,  571*mm,
+     1778*mm, 1778*mm, 1778*mm, 1778*mm, 1778*mm, 1778*mm
+    </Vector>
+
+    <Numeric name="IlyPTMHere"    value="1"/>
+    <String  name="IlyPTMName"    value="EIPTM" />
+    <String  name="IlyPTMMat"     value="materials:E_Aluminium" />
+    <Numeric name="IlyPTMWidth"   value="16*mm"/>
+    <Numeric name="IlyPTMLength"  value="10*mm"/>
+    <Numeric name="IlyPTMHeight"  value=" 6*mm"/>
+    <Vector name="IlyPTMZ" type="numeric" nEntries="4">
+     282*mm, 851*mm, 1428*mm, 2204*mm
+    </Vector>
+    <Vector name="IlyPTMPhi" type="numeric" nEntries="4">
+    +0.963*deg - 0.6*deg, -1.037*deg - 0.6*deg, +9.5*deg - 1.2*deg, -7.037*deg - 0.6*deg
+    </Vector>
+
+    <Numeric name="IlyFanOutHere"    value="1"/>
+    <String  name="IlyFanOutName"    value="EIFO" />
+    <String  name="IlyFanOutMat"     value="materials:E_Aluminium" />
+    <Numeric name="IlyFanOutWidth"   value=" 15*mm"/>
+    <Numeric name="IlyFanOutLength"  value="100*mm"/>
+    <Numeric name="IlyFanOutHeight"  value="  8*mm"/>
+    <String  name="IlyDiffName"      value="EIDI" />
+    <String  name="IlyDiffMat"       value="materials:Teflon" />
+    <Numeric name="IlyDiffLength"    value=" 25*mm"/>
+    <Numeric name="IlyDiffOff"       value=" 25*mm"/>
+    <String  name="IlyBndlName"      value="EIFB" />
+    <String  name="IlyBndlMat"       value="materials:Glass" />
+    <Numeric name="IlyBndlLength"    value=" 45*mm"/>
+    <Numeric name="IlyBndlOff"       value=" 55*mm"/>
+    <Vector name="IlyFanOutZ" type="numeric" nEntries="11">
+     2520*mm, 2520*mm, 2350*mm, 2350*mm, 1610*mm,
+     1610*mm,  960*mm,  960*mm,  430*mm,  430*mm,  430*mm
+    </Vector>
+    <Vector name="IlyFanOutPhi" type="numeric" nEntries="11">
+     0.0*deg, +2.0*deg, -4.0*deg, +6.0*deg, -4.0*deg,
+    +6.0*deg, -4.0*deg, +6.0*deg, -4.0*deg, +6.0*deg,  2.0*deg
+    </Vector>
+
+    <String  name="IlyFEMName"    value="EIFEM" />
+    <String  name="IlyFEMMat"     value="materials:E_Aluminium" />
+    <Numeric name="IlyFEMWidth"   value=" 10*mm"/>
+    <Numeric name="IlyFEMLength"  value=" 45*mm"/>
+    <Numeric name="IlyFEMHeight"  value="  5*mm"/>
+    <Vector name="IlyFEMZ" type="numeric" nEntries="5">
+     1930*mm, 1220*mm,  700*mm,  200*mm,  200*mm
+    </Vector>
+    <Vector name="IlyFEMPhi" type="numeric" nEntries="5">
+    -4.0*deg, -4.0*deg, -4.0*deg, -4.0*deg, +2.0*deg
     </Vector>
 
 <!-- Barrel ECAL nominal crystal sizes from Table 3.2 ECAL TDR, page 54 
@@ -280,18 +410,26 @@
     <String name="WrapMat"       value="materials:E_Aluminium" />
     <String name="WallMat"       value="materials:E_Epoxy"     />
 
+
+    <String  name="APDName"     value="EAPD"  />
+    <Numeric name="APDHere"     value="1" />
+    <String  name="APDMat"      value="materials:E_Silicon"  />
+    <Numeric name="APDSide"     value="   5*mm" />
+    <Numeric name="APDThick"    value=" 0.1*mm" />
+    <Numeric name="APDZ"        value="12.5*mm" />
+    <Numeric name="APDX1"       value=" 7.2*mm" />
+    <Numeric name="APDX2"       value="16.8*mm" />
+
     <!-- Conical web specifications: known to be placed at 5 locations,
          before the 1st crystal at 90deg, & thence after 25, 45, 65, & 85
          crystals. Clearance volume holds plate inside it.
     -->
 
-    <String name="WebPlName"    value="EWEBPL" />
-
-    <String name="WebClrName"   value="EWEB" />
-
-    <String name="WebPlMat"     value="materials:E_Aluminium" />
-
-    <String name="WebClrMat"    value="materials:Air" />
+    <Numeric  name="WebHere"      value="1" />
+    <String   name="WebPlName"    value="EWEBPL" />
+    <String   name="WebClrName"   value="EWEB" />
+    <String   name="WebPlMat"     value="materials:E_Aluminium" />
+    <String   name="WebClrMat"    value="materials:Air" />
 
     <Vector  name="WebPlTh" type="numeric" nEntries="5">
       2*mm, 4*mm, 4*mm, 4*mm, 2*mm
@@ -314,6 +452,7 @@
 
     <String  name="HawRName"    value="EHAWR" />
     <String  name="FawName"     value="EFAW"  />
+    <Numeric name="FawHere"     value="1" />
     <Numeric name="HawRHBIG"    value="295*mm" />
     <Numeric name="HawRhsml"    value="185*mm" />
     <Numeric name="HawRCutY"    value="20*cm" />
@@ -328,6 +467,7 @@
     <Numeric name="FawPhiRot"   value="2.7*deg" />
     <Numeric name="FawRadOff"   value="1270*mm" />
 
+    <Numeric name="GridHere"  value="1" />
     <String  name="GridName"  value="EGRID" />
     <String  name="GridMat"   value="materials:Aluminium"  />
     <Numeric name="GridThick" value="32*mm" />
@@ -339,41 +479,82 @@
     <Numeric name="BackXOff"              value="1566*mm" />
     <Numeric name="BackYOff"              value="  17*mm" />
 
+
     <String  name="BackSideName"          value="EBSID"  />
+    <Numeric name="BackSideHere"              value="1" />
     <Numeric name="BackSideLength"        value="2874*mm" />
     <Numeric name="BackSideHeight"        value=" 148*mm" />
     <Numeric name="BackSideWidth"         value="  20*mm" />
     <Numeric name="BackSideYOff1"         value=" -18*mm" />
     <Numeric name="BackSideYOff2"         value="  13*mm" />
     <Numeric name="BackSideAngle"         value="82*deg" />
-    <String  name="BackSideMat"           value="materials:Aluminium"  />
+    <String  name="BackSideMat"           value="materials:E_Aluminium"  />
+
+    <Numeric name="BackHere"              value="1" />
 
     <String  name="BackPlateName"     value="EBPL"  />
+    <Numeric name="BackPlateHere"              value="1" />
     <Numeric name="BackPlateLength"   value="2873*mm" />
     <Numeric name="BackPlateThick"    value="  15*mm" />
     <Numeric name="BackPlateWidth"    value=" 590*mm" />
     <String  name="BackPlateMat"      value="materials:StainlessSteel"  />
 
+    <String  name="BackPlate2Name"     value="EBPL2"  />
+    <Numeric name="BackPlate2Thick"    value="  1*mm" />
+    <String  name="BackPlate2Mat"      value="materials:E_Aluminium"  />
+
+<!--
+    <String  name="BackSpacerName"    value="ESPA"  />
+    <Numeric name="BackSpacerHere"    value="1" />
+    <Numeric name="BackSpacerLength"  value="2673*mm" />
+    <Numeric name="BackSpacerThick"   value="  23*mm" />
+    <Numeric name="BackSpacerWidth"   value="  80*mm" />
+    <Numeric name="BackSpacerXOff"    value="  90*mm" />
+    <String  name="BackSpacerMat"     value="materials:E_Aluminium"  />
+      146*mm, 160*mm, 160*mm, 189*mm, 189*mm, 215*mm, 215*mm, 244*mm
+-->
+
     <String  name="GrilleName"       value="EGRL"  />
+    <Numeric name="GrilleHere"       value="1" />
     <Numeric name="GrilleThick"      value=" 20*mm" />
     <Numeric name="GrilleWidth"      value="510*mm" />
-    <Numeric name="GrilleZSpace"     value="50*mm" />
-    <String  name="GrilleMat"        value="materials:Aluminium"  />
+    <Numeric name="GrilleZSpace"     value="5*mm" />
+    <String  name="GrilleMat"        value="materials:E_Aluminium"  />
     <Vector  name="GrilleHeight" type="numeric" nEntries="8">
-      146*mm, 160*mm, 160*mm, 189*mm, 189*mm, 215*mm, 215*mm, 244*mm
+      146*mm, 156*mm, 167*mm, 167*mm, 196*mm, 196*mm, 222*mm, 231*mm
     </Vector>
     <Vector  name="GrilleZOff" type="numeric" nEntries="8">
       0*mm, 680*mm,  720*mm, 1310*mm,  1350*mm, 2040*mm,  2080*mm, 2854*mm
     </Vector>
 
+    <String  name="GrEdgeSlotName"       value="EGRES"  />
+    <String  name="GrEdgeSlotMat"        value="materials:E_Air"  />
+    <Numeric name="GrEdgeSlotHere"       value="1" />
+    <Numeric name="GrEdgeSlotWidth"      value=" 44*mm" />
+    <Numeric name="GrEdgeSlotHeight"     value=" 52*mm - 10*mm" />
+
+    <String  name="GrMidSlotName"       value="EGRMS"  />
+    <String  name="GrMidSlotMat"        value="materials:E_Cables"  />
+    <Numeric name="GrMidSlotHere"       value="1" />
+    <Numeric name="GrMidSlotXOff"       value=" 91*mm" />
+    <Numeric name="GrMidSlotWidth"      value="114*mm" />
+    <Vector  name="GrMidSlotHeight"  type="numeric" nEntries="4">
+      24*mm, 42*mm,  59*mm, 76*mm
+    </Vector>
+
+
+    <Numeric name="BackPipeHere"     value="1" />
     <String  name="BackPipeName"     value="EBPIPE"  />
     <Vector  name="BackPipeDiam" type="numeric" nEntries="4">
-      20*mm, 30*mm,  40*mm, 50*mm
+      22*mm, 33.7*mm,  42.4*mm, 48.3*mm
     </Vector>
-    <Numeric name="BackPipeThick"    value="  2*mm" />
+    <Vector  name="BackPipeThick" type="numeric" nEntries="4">
+      1*mm, 1*mm,  3.2*mm, 3.2*mm
+    </Vector>
     <String  name="BackPipeWaterMat"      value="materials:E_Water"  />
     <String  name="BackPipeMat"           value="materials:StainlessSteel"  />
 
+    <Numeric name="BackCoolHere"     value="1" />
     <Vector  name="BackCoolName"     type="string" nEntries="4">
       EBCOOL1, EBCOOL2, EBCOOL3, EBCOOL4
     </Vector>
@@ -382,6 +563,7 @@
     <Numeric name="BackCoolBarWidth"    value="466*mm" />
     <Numeric name="BackCoolBarHeight"   value="91*mm" />
 
+    <Numeric name="BackCoolBarHere"  value="1" />
     <String  name="BackCoolBarName"  value="EBCBAR"  />
     <Numeric name="BackCoolBarThick" value="8*mm" />
     <String  name="BackCoolBarMat"   value="materials:Aluminium"  />
@@ -392,6 +574,7 @@
     <Numeric name="BackCoolBarWaThick" value="0.55*mm" />
     <String  name="BackCoolBarWaMat"   value="materials:E_Water"  />
 
+    <Numeric name="BackCoolVFEHere"        value="1"  />
     <String  name="BackCoolVFEName"        value="ECVFE"  />
     <String  name="BackCoolVFEMat"         value="materials:E_Air"  />
 
@@ -399,7 +582,7 @@
     <String  name="BackVFEMat"         value="materials:E_Air"  />
 
     <Vector  name="BackVFELyrThick" type="numeric" nEntries="5">
-      1*mm, 3*mm, 2*mm, 1*mm, 0.1*mm
+      1*mm, 5*mm, 2*mm, 1*mm, 0.1*mm
     </Vector>
 
     <Vector  name="BackVFELyrName" type="string" nEntries="5">
@@ -423,6 +606,7 @@
       15,6,6,6,3,1,3,3,3,6
     </Vector>
 
+    <Numeric name="BackCoolTankHere"    value="1" />
     <String  name="BackCoolTankName"    value="EBTANK"  />
     <Numeric name="BackCoolTankWidth"   value="28*mm" />
     <Numeric name="BackCoolTankThick"   value="16*mm" />
@@ -435,15 +619,12 @@
     <String  name="BackBracketMat"      value="materials:Aluminium"  />
 
 
-    <Vector  name="BackCoolLength" type="numeric" nEntries="4">
-      530*mm, 441*mm,  553*mm, 606*mm
-    </Vector>
-
+    <Numeric name="BackMiscHere"  value="1" />
     <Vector  name="BackMiscThick" type="numeric" nEntries="20">
-      2*mm, 2*mm, 6*mm, 2*mm, 1*mm,
-      2*mm, 4*mm, 6*mm, 2*mm, 1*mm,
+      2*mm, 3*mm, 6*mm, 2*mm, 1*mm,
       2*mm, 6*mm, 6*mm, 2*mm, 1*mm,
-      2*mm, 8*mm, 6*mm, 2*mm, 1*mm
+      2*mm, 9*mm, 6*mm, 2*mm, 1*mm,
+      2*mm,12*mm, 6*mm, 2*mm, 1*mm
     </Vector>
     <Vector  name="BackMiscName" type="string" nEntries="20">
       EMAL1, EMCA1, EMG101, EMSI1, EMCU1,
@@ -460,35 +641,41 @@
 
     <Numeric name="BackCBStdSep" value="36*mm" />
 
+    <Numeric name="PatchPanelHere"  value="1"  />
     <String  name="PatchPanelName"  value="EPPA"  />
-    <Vector  name="PatchPanelThick" type="numeric" nEntries="5">
-      10*mm, 50*mm, 50*mm, 10*mm, 5*mm
+    <Vector  name="PatchPanelThick" type="numeric" nEntries="7">
+      10*mm, 80*mm, 50*mm, 10*mm, 5*mm, 50*mm, 10*mm
     </Vector>
-    <Vector  name="PatchPanelNames" type="string" nEntries="5">
-      EPPAL, EPPCA, EPPG10, EPPSI, EPPCU
+    <Vector  name="PatchPanelNames" type="string" nEntries="7">
+      EPPAL, EPPCA, EPPG10, EPPSI, EPPCU, EPPWA, EPPSS
     </Vector>
-    <Vector  name="PatchPanelMat" type="string" nEntries="5">
+    <Vector  name="PatchPanelMat" type="string" nEntries="7">
       materials:Aluminium, materials:E_Cables,
-      materials:E_G10, materials:E_Silicon, materials:E_Copper
+      materials:E_G10, materials:E_Silicon, materials:E_Copper,
+      materials:E_Water, materials:StainlessSteel
     </Vector>
 
 
+    <Numeric name="DryAirTubeHere"      value="1"     />
     <String  name="DryAirTubeName"      value="EDRY"  />
-    <Numeric name="DryAirTubeNum"       value="9"     />
     <Numeric name="DryAirTubeInnDiam"   value="5*mm"  />
     <Numeric name="DryAirTubeOutDiam"   value="6*mm"  />
     <String  name="DryAirTubeMat"       value="materials:E_Copper" />
 
+    <Numeric name="MBCoolTubeHere"      value="1"  />
     <String  name="MBCoolTubeName"      value="EMBC"  />
     <Numeric name="MBCoolTubeInnDiam"   value="5*mm"  />
     <Numeric name="MBCoolTubeOutDiam"   value="6*mm"  />
+    <Numeric name="MBCoolTubeNum"       value="9"     />
     <String  name="MBCoolTubeMat"       value="materials:StainlessSteel" />
 
+    <Numeric name="MBManifHere"      value="1"  />
     <String  name="MBManifName"      value="EMANF"  />
     <Numeric name="MBManifInnDiam"   value="13*mm"  />
     <Numeric name="MBManifOutDiam"   value="15*mm"  />
     <String  name="MBManifMat"       value="materials:StainlessSteel" />
 
+    <Numeric name="MBLyrHere"   value="1"  />
     <Vector  name="MBLyrThick" type="numeric" nEntries="5">
       1*mm, 2.6*mm, 2*mm, 1*mm, 0.1*mm
     </Vector>
@@ -502,6 +689,44 @@
       materials:E_Silicon, 
       materials:E_Copper
     </Vector>
+
+
+
+    <Numeric name="PincerRodHere"      value="1"     />
+    <String  name="PincerRodName"      value="EPCRROD"  />
+    <String  name="PincerRodMat"       value="materials:E_Air" />
+    <Vector  name="PincerRodAzimuth"   type="numeric" nEntries="9">
+      -8*deg, -6*deg, -4*deg, -2*deg, 0*deg, 2*deg, 4*deg, 6*deg, 8*deg
+    </Vector>
+
+    <String  name="PincerEnvName"      value="EPCRENV"  />
+    <String  name="PincerEnvMat"       value="materials:E_Air" />
+    <Numeric name="PincerEnvWidth"     value="13.6*mm"     />
+    <Numeric name="PincerEnvHeight"    value="9.5*mm"     />
+    <Numeric name="PincerEnvLength"    value="15.5*mm"     />
+    <Vector  name="PincerEnvZOff"      type="numeric" nEntries="34">
+    50.984535*mm,  98.778778*mm, 167.981033*mm, 213.184143*mm, 281.757080*mm, 327.713348*mm, 397.682068*mm,
+   444.741180*mm, 516.680664*mm, 565.242798*mm, 646.232422*mm, 696.343262*mm, 772.983398*mm, 824.869385*mm,
+   904.857849*mm, 959.290649*mm,1043.466309*mm,1100.898071*mm,1198.996460*mm,1260.129883*mm,1354.826782*mm,
+  1419.607178*mm,1520.354248*mm,1589.457520*mm,1697.164795*mm,1771.165894*mm,1898.585449*mm,1978.222656*mm,
+  2102.583740*mm,2188.188721*mm,2322.048828*mm,2414.281982*mm,2558.725098*mm,2658.347412*mm
+    </Vector>
+
+    <String  name="PincerBlkName"      value="EPCRBLK"  />
+    <String  name="PincerBlkMat"       value="materials:E_Aluminium" />
+    <Numeric name="PincerBlkLength"    value="15*mm"     />
+
+    <String  name="PincerShimMat"       value="materials:StainlessSteel" />
+    <String  name="PincerShim1Name"      value="EPCRSHIM1"  />
+    <Numeric name="PincerShimHeight"     value="7.0*mm"     />
+    <Numeric name="PincerShim1Width"     value="5.1*mm"     />
+    <String  name="PincerShim2Name"      value="EPCRSHIM2"  />
+    <Numeric name="PincerShim2Width"     value="0.5*mm"     />
+
+    <String  name="PincerCutName"      value="EPCRCUT"  />
+    <String  name="PincerCutMat"       value="materials:E_Air" />
+    <Numeric name="PincerCutWidth"     value="5.0*mm"     />
+    <Numeric name="PincerCutHeight"    value="7.5*mm"     />
 
   </Algorithm>
 
