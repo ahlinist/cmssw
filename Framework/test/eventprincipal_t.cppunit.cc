@@ -277,7 +277,7 @@ void testeventprincipal::put_a_product(edm::ProcessConfiguration* config,
   //   edm::EventID col(1L);
   //   edm::Timestamp fakeTime;
   //   edm::EventPrincipal ep(col, fakeTime, *pProductRegistry_);
-  pEvent_->addToProcessHistory(*pProdConfig_);
+  //pEvent_->addToProcessHistory(*pProdConfig_);
   pEvent_->put(product, provenance);
 }
 
