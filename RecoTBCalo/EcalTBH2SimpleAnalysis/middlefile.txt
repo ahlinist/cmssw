@@ -126,7 +126,7 @@ module hcaldigi = HcalRawToDigi {
     } 
 
   # analysis module for H2 TB
-  module simpleTBanalysis = EcalSimpleH2TBAnalyzer 
+  module simpleTBanalysis = EcalTBH2SimpleAnalyzer 
   {
    string digiProducer   = "ecalTBunpack"
    string digiCollection = ""
