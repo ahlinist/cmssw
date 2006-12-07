@@ -3,7 +3,7 @@
 
 #include "RecoBTag/Analysis/interface/BaseBTagPlotter.h"
 #include "RecoBTag/Analysis/interface/JetTagPlotter.h"
-#include "DataFormats/BTauReco/interface/TrackCountingTagInfo.h"
+#include "DataFormats/BTauReco/interface/TrackProbabilityTagInfo.h"
 #include "RecoBTag/Analysis/interface/FlavourHistorgrams.h"
 #include "RecoBTag/MCTools/interface/JetFlavour.h"
 
@@ -14,13 +14,13 @@ class TrackProbabilityTagPlotter : public BaseBTagPlotter {
  public:
 
   TrackProbabilityTagPlotter (JetTagPlotter *jetTagPlotter, bool update = false);
-  
+
   ~TrackProbabilityTagPlotter () ;
 
-  void analyzeTag (const reco::TrackCountingTagInfo & tagInfo,
-	const reco::JetTag & jetTag, const JetFlavour & jetFlavour);
+  void analyzeTag (const reco::TrackProbabilityTagInfo & tagInfo,
+  	const reco::JetTag & jetTag, const JetFlavour & jetFlavour);
 
-  virtual void finalize () { jetTagPlotter_->finalize();}
+  virtual void finalize ();
 
   // get "2d" histograms for misid. vs. b-eff
   virtual EffPurFromHistos * getEffPurFromHistos ()
@@ -36,8 +36,10 @@ class TrackProbabilityTagPlotter : public BaseBTagPlotter {
 
   JetTagPlotter *jetTagPlotter_;
 
-  FlavourHistorgrams<double> * hSignificance;
-  FlavourHistorgrams<double> * tkprobHistosSig[4];
+  FlavourHistorgrams<double> * tkcntHistosSig3D[5];
+  FlavourHistorgrams<double> * tkcntHistosSig2D[5];
+  EffPurFromHistos * effPurFromHistos[4] ;
+  bool finalized;
 } ;
 
 #endif
