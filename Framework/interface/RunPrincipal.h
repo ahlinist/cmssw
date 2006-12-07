@@ -22,11 +22,10 @@ namespace edm {
   typedef DataBlockImpl Base;
   public:
     RunPrincipal(RunNumber_t const& id,
-	Timestamp time,
 	ProductRegistry const& reg,
 	ProcessHistoryID const& hist = ProcessHistoryID(),
 	boost::shared_ptr<DelayedReader> rtrv = boost::shared_ptr<DelayedReader>(new NoDelayedReader)) :
-	  Base(reg, hist, rtrv), aux_(id, time) {}
+	  Base(reg, hist, rtrv), aux_(id) {}
     ~RunPrincipal() {}
 
     RunAux const& aux() const {
@@ -35,10 +34,6 @@ namespace edm {
 
     RunNumber_t const& id() const {
       return aux().id();
-    }
-
-    Timestamp const& time() const {
-      return aux().time();
     }
 
     using Base::addGroup;

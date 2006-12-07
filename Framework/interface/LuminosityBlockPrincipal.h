@@ -25,13 +25,11 @@ namespace edm {
   typedef DataBlockImpl Base;
   public:
     LuminosityBlockPrincipal(LuminosityBlockID const& id,
-	Timestamp const& time,
 	ProductRegistry const& reg,
         boost::shared_ptr<RunPrincipal> rp,
 	ProcessHistoryID const& hist = ProcessHistoryID(),
 	boost::shared_ptr<DelayedReader> rtrv = boost::shared_ptr<DelayedReader>(new NoDelayedReader));
     LuminosityBlockPrincipal(LuminosityBlockID const& id,
-	Timestamp const& time,
 	ProductRegistry const& reg,
 	ProcessHistoryID const& hist = ProcessHistoryID(),
 	boost::shared_ptr<DelayedReader> rtrv = boost::shared_ptr<DelayedReader>(new NoDelayedReader));
@@ -43,10 +41,6 @@ namespace edm {
 
     LuminosityBlockID const& id() const {
       return aux().id();
-    }
-
-    Timestamp const& time() const {
-      return aux().time();
     }
 
     LuminosityBlockAux const& aux() const {

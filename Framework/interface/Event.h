@@ -19,6 +19,8 @@ $Id$
 
 ----------------------------------------------------------------------*/
 
+#include "boost/shared_ptr.hpp"
+
 #include "DataFormats/Common/interface/EventAux.h"
 #include "DataFormats/Common/interface/EventID.h"
 #include "DataFormats/Common/interface/Timestamp.h"
@@ -56,6 +58,14 @@ namespace edm {
     using DataViewImpl::put;
     using DataViewImpl::size;
 
+    LuminosityBlock const&
+    getLuminosityBlock() const {
+      return *luminosityBlock_;
+    }
+
+    Run const&
+    getRun() const;
+
   private:
     // commit_() is called to complete the transaction represented by
     // this DataViewImpl. The friendships required seems gross, but any
@@ -67,6 +77,7 @@ namespace edm {
     friend class ProducerWorker;
 
     EventAux const& aux_;
+    boost::shared_ptr<LuminosityBlock const> const luminosityBlock_;
   };
 }
 #endif

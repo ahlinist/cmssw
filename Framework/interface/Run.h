@@ -21,7 +21,6 @@ $Id$
 
 #include "DataFormats/Common/interface/RunAux.h"
 #include "DataFormats/Common/interface/RunID.h"
-#include "DataFormats/Common/interface/Timestamp.h"
 
 #include "FWCore/Framework/interface/DataViewImpl.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -43,7 +42,6 @@ namespace edm {
 
     // AUX functions.
     RunNumber_t id() const {return aux_.id();}
-    Timestamp time() const {return aux_.time();}
 
     using DataViewImpl::get;
     using DataViewImpl::getAllProvenance;
