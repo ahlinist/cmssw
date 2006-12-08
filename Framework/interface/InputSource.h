@@ -45,6 +45,7 @@ $Id$
 #include <memory>
 #include <string>
 
+#include "FWCore/Utilities/interface/GCCPrerequisite.h"
 #include "DataFormats/Common/interface/EventID.h"
 #include "DataFormats/Common/interface/EDProductfwd.h"
 #include "FWCore/Framework/interface/InputSourceDescription.h"
@@ -54,7 +55,12 @@ $Id$
 namespace edm {
   class ParameterSet;
 
+#if GCC_PREREQUISITE(3,4,4)
   class InputSource : private ProductRegistryHelper {
+#else
+  // Bug in gcc3.2.3 compiler forces public inheritance
+  class InputSource : public ProductRegistryHelper {
+#endif
   public:
     typedef ProductRegistryHelper::TypeLabelList TypeLabelList;
     /// Constructor
