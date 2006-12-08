@@ -4,7 +4,7 @@
 
 /*----------------------------------------------------------------------
   
-InputSource: Abstract interface for all primary input sources. Input
+InputSource: Abstract interface for all input sources. Input
 sources are responsible for creating an EventPrincipal, using data
 controlled by the source, and external to the EventPrincipal itself.
 
@@ -54,8 +54,9 @@ $Id$
 namespace edm {
   class ParameterSet;
 
-  class InputSource : public ProductRegistryHelper {
+  class InputSource : private ProductRegistryHelper {
   public:
+    typedef ProductRegistryHelper::TypeLabelList TypeLabelList;
     /// Constructor
     explicit InputSource(ParameterSet const&, InputSourceDescription const&);
 
@@ -113,6 +114,9 @@ namespace edm {
 
     /// Called by framework at end of job
     void doEndJob();
+
+    using ProductRegistryHelper::produces;
+    using ProductRegistryHelper::typeLabelList;
 
   private:
 

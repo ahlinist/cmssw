@@ -20,8 +20,9 @@ namespace edm {
   class BranchDescription;
   class ModuleDescription;
   class ProductRegistry;
-  class ProducerBase : public ProductRegistryHelper {
+  class ProducerBase : private ProductRegistryHelper {
   public:
+    typedef ProductRegistryHelper::TypeLabelList TypeLabelList;
     ProducerBase ();
     virtual ~ProducerBase();
  
@@ -32,6 +33,9 @@ namespace edm {
 			ProductRegistry *,
 			ModuleDescription const&,
 			bool throwIfNoProducts);
+
+    using ProductRegistryHelper::produces;
+    using ProductRegistryHelper::typeLabelList;
 
   protected:
     template<class TProducer, class TMethod>
