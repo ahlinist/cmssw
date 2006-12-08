@@ -25,7 +25,7 @@ namespace edm {
   public:
 
     ProductRegistryHelper() : typeLabelList_() {}
-    virtual ~ProductRegistryHelper();
+    ~ProductRegistryHelper();
  
     struct TypeLabelItem {
       TypeLabelItem (BranchType const& branchType, TypeID const& tid, std::string const& pin) :
