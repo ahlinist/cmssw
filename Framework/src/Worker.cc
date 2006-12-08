@@ -77,8 +77,11 @@ namespace edm
     using namespace std;
 
     bool const isEvent = (bat == BranchActionEvent);
+
+    // A RunStopwatch, but only if we are processing an event.
+    std::auto_ptr<RunStopwatch> stopwatch(isEvent ? new RunStopwatch(stopwatch_) : 0);
+
     if (isEvent) {
-      RunStopwatch stopwatch(stopwatch_);
       ++timesVisited_;
     }
     bool rc = false;
