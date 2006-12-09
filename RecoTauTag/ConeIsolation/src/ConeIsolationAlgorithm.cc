@@ -52,8 +52,11 @@ pair<JetTag,IsolatedTauTagInfo> ConeIsolationAlgorithm::tag(const  JetTracksAsso
  //Selection of the Tracks
  float z_pv = pv.z();
  edm::RefVector<reco::TrackCollection>::const_iterator it = tracks.begin();
- for(;it!= tracks.end();it++)
+    cout <<"Z PV = "<<z_pv<<endl;
+ 
+for(;it!= tracks.end();it++)
    {
+      cout <<"Z impLT = "<<(*it)->dz()<<endl;
      if((*it)->pt() > m_cutMinPt &&
 	(*it)->normalizedChi2() < m_cutMaxChiSquared &&
 	fabs((*it)->d0())< m_cutMaxTIP&&
@@ -61,11 +64,13 @@ pair<JetTag,IsolatedTauTagInfo> ConeIsolationAlgorithm::tag(const  JetTracksAsso
 	(*it)->hitPattern().numberOfValidPixelHits() >= m_cutPixelHits)
 
        {
-	 if(useVertexConstrain_) {
-	   if(fabs((*it)->dz() - z_pv) < dZ_vertex)
+	 if(useVertexConstrain_ && z_pv > -500.) {
+	   if(fabs((*it)->dz() - z_pv) < dZ_vertex){
 	     myTracks.push_back(*it);
+	   }
 	 }else{
 	   myTracks.push_back(*it);
+
 	 }
        }
    }
