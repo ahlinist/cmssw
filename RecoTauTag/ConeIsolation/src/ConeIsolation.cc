@@ -13,7 +13,7 @@
 //
 // Original Author:  Simone Gennai
 //      Created:  Thu Apr  6 09:56:23 CEST 2006
-// $Id: ConeIsolation.cc,v 1.14 2006/12/04 13:09:15 gennai Exp $
+// $Id: ConeIsolation.cc,v 1.15 2006/12/06 16:35:39 gennai Exp $
 //
 //
 
@@ -80,7 +80,6 @@ ConeIsolation::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    //Get jets with tracks
    Handle<reco::JetTracksAssociationCollection> jetTracksAssociation;
    iEvent.getByLabel(jetTrackSrc,jetTracksAssociation);
-   
    reco::JetTagCollection * baseCollection = new reco::JetTagCollection();
 
    reco::IsolatedTauTagInfoCollection * extCollection = new reco::IsolatedTauTagInfoCollection();
@@ -89,13 +88,11 @@ ConeIsolation::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    e(0,0)=1;
    e(1,1)=1;
    e(2,2)=1;
-   Vertex::Point p(0,0,0);
+   Vertex::Point p(0,0,-1000);
    Vertex myPV(p,e,1,1,1);
    //Get pixel vertices
    Handle<reco::VertexCollection> vertices;
-   //      iEvent.getByLabel(vertexSrc,"PrimaryVertex",vertices);
-      iEvent.getByLabel(vertexSrc,vertices);
-   //   iEvent.getByLabel(vertexSrc,vertices);
+   iEvent.getByLabel(vertexSrc,vertices);
    if(usingVertex)
      {
        const reco::VertexCollection vertCollection = *(vertices.product());
@@ -104,11 +101,8 @@ ConeIsolation::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
        //       std::cout <<"Vertex Size "<<vertCollection.size()<<std::endl;
        if(vertCollection.size() > 0) {
 	 myPV = *ci;
-       }else{
-	 usingVertex = false;
        }
      }
-   
   //cout << "here-0.5" << jetTracksAssociation <<endl;     
   JetTracksAssociationCollection::const_iterator it = jetTracksAssociation->begin();
   for(; it != jetTracksAssociation->end(); it++)
