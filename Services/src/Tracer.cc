@@ -48,6 +48,10 @@ depth_(0)
    
    iRegistry.watchPreSource(this,&Tracer::preSource);
    iRegistry.watchPostSource(this,&Tracer::postSource);
+   
+   iRegistry.watchPreProcessPath(this, &Tracer::prePath);
+   iRegistry.watchPostProcessPath(this, &Tracer::postPath);
+
 }
 
 // Tracer::Tracer(const Tracer& rhs)
@@ -109,10 +113,22 @@ Tracer::postEventProcessing(const Event&, const EventSetup&)
 }
 
 void 
+Tracer::prePath(const std::string& iName)
+{
+  std::cout <<indention_<<indention_<<indention_<<" processing path:"<<iName<<std::endl;
+}
+
+void 
+Tracer::postPath(const std::string& iName, const edm::HLTPathStatus&)
+{
+  std::cout <<indention_<<indention_<<indention_<<" finished path:"<<std::endl;
+}
+
+void 
 Tracer::preModule(const ModuleDescription& iDescription)
 {
    ++depth_;
-   std::cout <<indention_<<indention_;
+   std::cout <<indention_<<indention_<<indention_;
    for(unsigned int depth = 0; depth !=depth_; ++depth) {
       std::cout<<indention_;
    }
@@ -123,7 +139,7 @@ void
 Tracer::postModule(const ModuleDescription& iDescription)
 {
    --depth_;
-   std::cout <<indention_<<indention_<<indention_;
+   std::cout <<indention_<<indention_<<indention_<<indention_;
    for(unsigned int depth = 0; depth !=depth_; ++depth) {
       std::cout<<indention_;
    }

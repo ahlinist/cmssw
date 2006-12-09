@@ -46,6 +46,9 @@ public:
          
          void preSource();
          void postSource();
+         
+         void prePath(const std::string&);
+         void postPath(const std::string&, const edm::HLTPathStatus&);
 private:
          std::string indention_;
          unsigned int depth_;
