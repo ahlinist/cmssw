@@ -38,6 +38,7 @@ namespace edm {
    class ModuleDescription;
    class Event;
    class EventSetup;
+   class HLTPathStatus;
    
    struct ActivityRegistry
    {
@@ -104,6 +105,22 @@ namespace edm {
       }
       AR_WATCH_USING_METHOD_2(watchPostProcessEvent)
 
+      /// signal is emitted before starting to process a Path
+      typedef sigc::signal<void, const std::string&> PreProcessPath;
+      PreProcessPath preProcessPathSignal_;
+      void watchPreProcessPath(const PreProcessPath::slot_type& iSlot) {
+        preProcessPathSignal_.connect(iSlot);
+      }
+      AR_WATCH_USING_METHOD_1(watchPreProcessPath)
+        
+      /// signal is emitted after all modules have finished for the Path
+      typedef sigc::signal<void , const std::string&, const HLTPathStatus&> PostProcessPath;
+      PostProcessPath postProcessPathSignal_;
+      void watchPostProcessPath(const PostProcessPath::slot_type& iSlot) {
+        postProcessPathSignal_.connect(iSlot);
+      }  
+      AR_WATCH_USING_METHOD_2(watchPostProcessPath)
+        
       /// signal is emitted before the module is constructed
       typedef sigc::signal<void, const ModuleDescription&> PreModuleConstruction;
       PreModuleConstruction preModuleConstructionSignal_;
