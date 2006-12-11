@@ -38,7 +38,7 @@ namespace edm {
       double curr_job_; // seconds
       double curr_event_time_;  // seconds
       double curr_module_time_; // seconds
-      bool want_summary_;
+      bool summary_only_;
       bool report_summary_;
       
         //
