@@ -6,7 +6,7 @@ Implementation:
 <Notes on implementation>
 */
 //
-// $Id: EcalTBH2SimpleAnalyzer.cc,v 1.6 2006/08/03 17:24:46 meridian Exp $
+// $Id: EcalTBH2SimpleAnalyzer.cc,v 1.1 2006/12/03 19:08:47 delre Exp $
 //
 //
 
@@ -15,6 +15,7 @@ Implementation:
 #include "DataFormats/EcalRecHit/interface/EcalUncalibratedRecHit.h"
 #include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
 #include "DataFormats/EcalDigi/interface/EcalDigiCollections.h"
+#include "DataFormats/HcalRecHit/interface/HcalRecHitCollections.h"
 #include "TBDataFormats/EcalTBObjects/interface/EcalTBTDCRecInfo.h"
 #include "TBDataFormats/HcalTBObjects/interface/HcalTBTriggerData.h"
 #include "TBDataFormats/HcalTBObjects/interface/HcalTBEventPosition.h"
@@ -229,7 +230,7 @@ void EcalTBH2SimpleAnalyzer::beginJob(edm::EventSetup const&) {
   h1_S1_adc_ped = new TH1F("h1_S1_adc_ped","Scintillator 1 - pedestal events", 100, -100., 100.);
   h1_S2_adc_ped = new TH1F("h1_S2_adc_ped","Scintillator 2 - pedestal events", 100, -100., 100.);
   h1_S3_adc_ped = new TH1F("h1_S3_adc_ped","Scintillator 3 - pedestal events", 100, -100., 100.);
-  h1_S4_adc_ped = new TH1F("h1_S4_adc_ped","Scintillator 4 - pedestal events", 100, -100., 100.);
+ h1_S4_adc_ped = new TH1F("h1_S4_adc_ped","Scintillator 4 - pedestal events", 100, -100., 100.);
 
   // Wire Chambers
 
@@ -280,6 +281,15 @@ void EcalTBH2SimpleAnalyzer::beginJob(edm::EventSetup const&) {
   h1_TOFTDC2diff = new TH1F("TOF2 TDC Right-Left", "TOF2 TDC Right-Left", 200, -10., 10.); 
 
   h1_TOFTDCaver12diff = new TH1F("Average TOF1 - TOF2 TDC", "Average TOF1 - TOF2 TDC", 500, -50., 50.); 
+
+
+  h2_hcalPedMap   = new  TProfile2D("raw HCAL pedestal map", "raw HCAL ped map", 16, 0,16 , 8, 10, 18);
+  h2_hcalAmpliMap = new  TProfile2D("raw HCAL Amplityde map", "raw HCAL ampli map", 16, 0,16 , 8, 10, 18);
+  
+  h1_hcalPed                = new  TH1F("raw HCAL pedestal", "raw HCAL ped", 100, 0,10);
+  h1_hcalAmpli             = new  TH1F("raw HCAL amplitude", "raw HCAL ampli", 200, 0,60);
+  h1_hcalMaxAmpli      = new  TH1F("raw HCAL max tower", "raw HCAL max tower", 200, 0,60); 
+
 
 }
 
@@ -388,6 +398,14 @@ void EcalTBH2SimpleAnalyzer::endJob() {
 
   h1_TOFTDCaver12diff->Write();
 
+  
+  h2_hcalPedMap ->Write();
+  h2_hcalAmpliMap->Write();
+  h1_hcalPed     ->Write();
+  h1_hcalAmpli->Write();
+  h1_hcalMaxAmpli->Write();
+
+
   f.Close();
 }
 
@@ -434,6 +452,18 @@ void EcalTBH2SimpleAnalyzer::analyze( const edm::Event& iEvent, const edm::Event
     std::cerr << "Error! can't get the product EBRecHitCollection: " << recoCollection_.c_str() << std::endl;
   }
 
+
+  // Get HBHE RecHits
+  Handle<HBHERecHitCollection> hbheHandle;
+  const HBHERecHitCollection* hbheRecHitCollection = 0;
+  try {
+    //    iEvent.getByLabel( "recohbhe", hbheHandle); // name of collection?
+    iEvent.getByType( hbheHandle);
+    hbheRecHitCollection = hbheHandle.product(); // get a ptr to the product
+  } catch ( std::exception& ex ) {
+    std::cerr << "Error! can't get the product HBHERecHitCollection: " << "recohbhe" << std::endl;
+  }
+  
 
 
   Handle<EcalTBTDCRecInfo> pTDC;
@@ -568,8 +598,25 @@ void EcalTBH2SimpleAnalyzer::analyze( const edm::Event& iEvent, const edm::Event
   wasbeam = trgData->wasBeamTrigger();
 
   if (!trgData->wasBeamTrigger()) {
+
+    // collecting hcal pedestals
+    for( HBHERecHitCollection::const_iterator  iRec = hbheRecHitCollection->begin();
+	 iRec != hbheRecHitCollection->end();
+	 iRec++) {
+      
+      h2_hcalPedMap    -> Fill( float ( iRec->id().ieta()-0.5 ), float ( iRec->id().iphi() -0.5 ), iRec->energy() );
+      
+      // collecting pedestal only from the hcal wedge behin ECAL
+      if ( (float ( iRec->id().iphi() -0.5)) <16  )
+	{       h1_hcalPed           -> Fill(   iRec->energy()  ); }
+    }// end hcal pedestals
+
+
     return;
   }
+
+
+
    
   // Wire Chambers
 
@@ -647,17 +694,17 @@ void EcalTBH2SimpleAnalyzer::analyze( const edm::Event& iEvent, const edm::Event
 //   nx_wcD = xvecD.size();
 //   ny_wcD = yvecD.size();
 
-  for (int i=0; i<xvecA.size(); i++)
+  for (int i=0; i<(int)xvecA.size(); i++)
     x_wcA[i] = xvecA[i];
-  for (int i=0; i<yvecA.size(); i++)
+  for (int i=0; i<(int)yvecA.size(); i++)
     y_wcA[i] = yvecA[i];
-  for (int i=0; i<xvecB.size(); i++)
+  for (int i=0; i<(int)xvecB.size(); i++)
     x_wcB[i] = xvecB[i];
-  for (int i=0; i<yvecB.size(); i++)
+  for (int i=0; i<(int)yvecB.size(); i++)
     y_wcB[i] = yvecB[i];
-  for (int i=0; i<xvecC.size(); i++)
+  for (int i=0; i<(int)xvecC.size(); i++)
     x_wcC[i] = xvecC[i];
-  for (int i=0; i<yvecC.size(); i++)
+  for (int i=0; i<(int)yvecC.size(); i++)
     y_wcC[i] = yvecC[i];
 
   xvecB.clear();
@@ -676,15 +723,18 @@ void EcalTBH2SimpleAnalyzer::analyze( const edm::Event& iEvent, const edm::Event
   //    tof1_tdc[1] = tbtime->TOF1Jtime();
   //    tof1_tdc[2] = tbtime->TOF2Stime();
   //    tof1_tdc[3] = tbtime->TOF2Jtime();
-  h1_TOFTDC1S->Fill(tbtime->TOF1Stime());  
-  h1_TOFTDC1J->Fill(tbtime->TOF1Jtime());  
-  h1_TOFTDC2S->Fill(tbtime->TOF2Stime());  
-  h1_TOFTDC2J->Fill(tbtime->TOF2Jtime());  
+
+  // note: during the pi0 running, the tdcs normally used for pid
+  // were connected to the four veto slabs located around the Aluminium target
+  h1_TOFTDC1S->Fill(tbtime->TOF1Stime());     // tof1 tdc Saleve      =-->    pi0run: veto counter top  
+  h1_TOFTDC1J->Fill(tbtime->TOF1Jtime());      // tof1 tdc Jura          =-->    pi0run: veto counter Saleve  
+  h1_TOFTDC2S->Fill(tbtime->TOF2Stime());     // tof2 tdc Saleve      =-->    pi0run: veto counter bottom  
+  h1_TOFTDC2J->Fill(tbtime->TOF2Jtime());      // tof2 tdc Jura          =-->    pi0run: veto counter Jura  
    
-  h1_TOFQADC1S->Fill(tbqadc->TOF1Sadc());  
-  h1_TOFQADC1J->Fill(tbqadc->TOF1Jadc());  
-  h1_TOFQADC2S->Fill(tbqadc->TOF2Sadc());  
-  h1_TOFQADC2J->Fill(tbqadc->TOF2Jadc());  
+  h1_TOFQADC1S->Fill(tbqadc->TOF1Sadc());  // TOF1S (Saleve side)
+  h1_TOFQADC1J->Fill(tbqadc->TOF1Jadc());   // TOF1J (Jura side)
+  h1_TOFQADC2S->Fill(tbqadc->TOF2Sadc());  // TOF2S (Saleve side)
+  h1_TOFQADC2J->Fill(tbqadc->TOF2Jadc());  // TOF2J (Jura side)
    
   h1_TOFTDC1diff->Fill(tbtime->TOF1Stime() - tbtime->TOF1Jtime());
   h1_TOFTDC2diff->Fill(tbtime->TOF2Stime() - tbtime->TOF2Jtime());
@@ -747,6 +797,34 @@ void EcalTBH2SimpleAnalyzer::analyze( const edm::Event& iEvent, const edm::Event
       
        
     }   
+
+
+  // hcal amplitudes and max amplitudes
+  float totHcal = 0;  float maxHcal=0;
+  for( HBHERecHitCollection::const_iterator  iRec = hbheRecHitCollection->begin();
+       iRec != hbheRecHitCollection->end();
+       iRec++) 
+    {
+      
+      h2_hcalAmpliMap ->Fill ( float ( iRec->id().ieta()-0.5 ), float ( iRec->id().iphi() -0.5 ), iRec->energy() );
+      
+      // seek max tower and integrate total energy only for the wedge begind ECAL
+      if ( (float ( iRec->id().iphi() -0.5)) <16  ){
+	
+	if (iRec->energy() > maxHcal ) {	maxHcal =  iRec->energy(); }
+	
+	totHcal           +=  iRec->energy();
+	
+      }
+      
+    }
+  h1_hcalAmpli        ->Fill (  totHcal  );
+  h1_hcalMaxAmpli ->Fill ( maxHcal  );
+  
+
+
+
+
 
 
   // order in energy

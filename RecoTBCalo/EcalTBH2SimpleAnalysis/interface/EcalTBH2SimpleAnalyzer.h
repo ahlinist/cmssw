@@ -9,7 +9,7 @@
      <Notes on implementation>
 */
 //
-// $Id: EcalTBH2SimpleAnalyzer.h,v 1.4 2006/08/03 17:24:46 meridian Exp $
+// $Id: EcalTBH2SimpleAnalyzer.h,v 1.1 2006/12/03 19:08:47 delre Exp $
 //
 
 // system include files
@@ -33,6 +33,7 @@
 #include "TTree.h"
 #include "TGraph.h"
 #include "TH2.h"
+#include "TProfile2D.h"
 #include<fstream>
 #include<map>
 //#include<stl_pair>
@@ -215,6 +216,13 @@ class EcalTBH2SimpleAnalyzer : public edm::EDAnalyzer {
       TH1F* h1_TOFTDC2diff;
 
       TH1F* h1_TOFTDCaver12diff;
+
+      TProfile2D *  h2_hcalPedMap;        TH1F * h1_hcalPed;
+      TProfile2D *  h2_hcalAmpliMap ; 
+      TH1F * h1_hcalAmpli;       TH1F * h1_hcalMaxAmpli; 
+
+
+
 };
 
 
