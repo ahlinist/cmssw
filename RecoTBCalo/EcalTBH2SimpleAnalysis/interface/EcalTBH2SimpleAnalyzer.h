@@ -9,7 +9,7 @@
      <Notes on implementation>
 */
 //
-// $Id: EcalTBH2SimpleAnalyzer.h,v 1.1 2006/12/03 19:08:47 delre Exp $
+// $Id: EcalTBH2SimpleAnalyzer.h,v 1.2 2006/12/12 18:24:48 franzoni Exp $
 //
 
 // system include files
@@ -90,6 +90,13 @@ class EcalTBH2SimpleAnalyzer : public edm::EDAnalyzer {
       Float_t E25;
       Float_t E9;
       Float_t E1;
+      Int_t hHcalTowers;
+      Float_t amplHt[256];
+      Float_t etaHt[256];
+      Float_t phiHt[256];
+      Float_t etamaxH;
+      Float_t phimaxH;
+      Float_t Halo_adc[4];
       Int_t nClu;
       Float_t amplClu[160];
       Float_t etaClu[160];
@@ -171,6 +178,16 @@ class EcalTBH2SimpleAnalyzer : public edm::EDAnalyzer {
       TH1F* h1_S2_adc_ped;
       TH1F* h1_S3_adc_ped;
       TH1F* h1_S4_adc_ped;
+
+  // Halo counters
+      TH1F* h1_Halo1_adc;
+      TH1F* h1_Halo2_adc;
+      TH1F* h1_Halo3_adc;
+      TH1F* h1_Halo4_adc;
+      TH1F* h1_Halo1_adc_ped;
+      TH1F* h1_Halo2_adc_ped;
+      TH1F* h1_Halo3_adc_ped;
+      TH1F* h1_Halo4_adc_ped;
 
    // Wire Chambers
 /*       TH1F* h1_all_hits_wcA_x;  */
