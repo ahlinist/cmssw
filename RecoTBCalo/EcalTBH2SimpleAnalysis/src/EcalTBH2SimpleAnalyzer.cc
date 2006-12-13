@@ -6,7 +6,7 @@ Implementation:
 <Notes on implementation>
 */
 //
-// $Id: EcalTBH2SimpleAnalyzer.cc,v 1.1 2006/12/03 19:08:47 delre Exp $
+// $Id: EcalTBH2SimpleAnalyzer.cc,v 1.2 2006/12/12 18:24:49 franzoni Exp $
 //
 //
 
@@ -154,6 +154,8 @@ void EcalTBH2SimpleAnalyzer::beginJob(edm::EventSetup const&) {
   m_tree->Branch("tofadc2s",&tofadc2s,"tofadc2s/F");
   m_tree->Branch("tofadc2j",&tofadc2j,"tofadc2j/F");
 
+  m_tree->Branch("halos",&Halo_adc,"halos[4]/F");
+
   m_tree->Branch("nCry",&nCry,"nCry/I");
   m_tree->Branch("amplCry",&amplCry,"amplCry[nCry]/F");
   m_tree->Branch("etaCry",&etaCry,"etaCry[nCry]/F");
@@ -163,6 +165,13 @@ void EcalTBH2SimpleAnalyzer::beginJob(edm::EventSetup const&) {
   m_tree->Branch("E25",&E25,"E25/F");
   m_tree->Branch("E9",&E9,"E9/F");
   m_tree->Branch("E1",&E1,"E1/F");
+
+  m_tree->Branch("hHcalTowers",&hHcalTowers,"hHcalTowers/I");
+  m_tree->Branch("amplHt",&amplHt,"amplHt[hHcalTowers]/F");
+  m_tree->Branch("etaHt",&etaHt,"etaHt[hHcalTowers]/F");
+  m_tree->Branch("phiHt",&phiHt,"phiHt[hHcalTowers]/F");
+  m_tree->Branch("etamaxH",&etamaxH,"etamaxH/F");
+  m_tree->Branch("phimaxH",&phimaxH,"phimaxH/F");
 
   m_tree->Branch("nClu",&nClu,"nClu/I");
   m_tree->Branch("amplClu",&amplClu,"amplClu[nClu]/F");
@@ -231,6 +240,18 @@ void EcalTBH2SimpleAnalyzer::beginJob(edm::EventSetup const&) {
   h1_S2_adc_ped = new TH1F("h1_S2_adc_ped","Scintillator 2 - pedestal events", 100, -100., 100.);
   h1_S3_adc_ped = new TH1F("h1_S3_adc_ped","Scintillator 3 - pedestal events", 100, -100., 100.);
  h1_S4_adc_ped = new TH1F("h1_S4_adc_ped","Scintillator 4 - pedestal events", 100, -100., 100.);
+
+ // left, right: from particle point of view
+ h1_Halo1_adc = new  TH1F("amplitude Halo1 (up)", "ampli H1", 2056, -1024,1024);
+ h1_Halo2_adc = new  TH1F("amplitude Halo2 (left)", "ampli H2", 2056, -1024,1024);
+ h1_Halo3_adc = new  TH1F("amplitude Halo3 (right)", "ampli H3", 2056, -1024,1024);
+ h1_Halo4_adc = new  TH1F("amplitude Halo4 (down)", "ampli H4", 2056, -1024,1024);
+ h1_Halo1_adc_ped = new  TH1F("pedestal Halo1 (up)", "ped H1", 2056, -1024,1024);
+ h1_Halo2_adc_ped = new  TH1F("pedestal Halo2 (left)", "ped H2", 2056, -1024,1024);
+ h1_Halo3_adc_ped = new  TH1F("pedestal Halo3 (right)", "ped H3", 2056, -1024,1024);
+ h1_Halo4_adc_ped = new  TH1F("pedestal Halo4 (down)", "ped H4", 2056, -1024,1024);
+
+
 
   // Wire Chambers
 
@@ -353,6 +374,16 @@ void EcalTBH2SimpleAnalyzer::endJob() {
   h1_S2_adc_ped->Write();
   h1_S3_adc_ped->Write();
   h1_S4_adc_ped->Write();
+  
+  h1_Halo1_adc->Write();
+  h1_Halo2_adc->Write();
+  h1_Halo3_adc->Write();
+  h1_Halo4_adc->Write();
+  h1_Halo1_adc_ped->Write();
+  h1_Halo2_adc_ped->Write();
+  h1_Halo3_adc_ped->Write();
+  h1_Halo4_adc_ped->Write();
+
 
   //  h1_all_hits_wcA_x->Write();  
   //  h1_all_hits_wcA_y->Write();  
@@ -570,6 +601,11 @@ void EcalTBH2SimpleAnalyzer::analyze( const edm::Event& iEvent, const edm::Event
   Scint_adc[1] = tbqadc->S2adc();
   Scint_adc[2] = tbqadc->S3adc();
   Scint_adc[3] = tbqadc->S4adc();
+  for (int u=0; u<4; u++){ Halo_adc[u]=0;}
+  Halo_adc[0] = tbqadc->BH1adc();// beam halo up
+  Halo_adc[1] = tbqadc->BH2adc();// beam halo left from particle view
+  Halo_adc[2] = tbqadc->BH3adc();// beam halo right from particle view
+  Halo_adc[3] = tbqadc->BH4adc();// beam halo down
   if(trgData->wasInSpillPedestalTrigger() || trgData->wasOutSpillPedestalTrigger()) {
     numberOfPedestalEvents++;
     std::cout << "Pedestal Event" << std::endl;
@@ -577,11 +613,20 @@ void EcalTBH2SimpleAnalyzer::analyze( const edm::Event& iEvent, const edm::Event
     h1_S2_adc_ped->Fill(Scint_adc[1]);
     h1_S3_adc_ped->Fill(Scint_adc[2]);
     h1_S4_adc_ped->Fill(Scint_adc[3]);
+    h1_Halo1_adc_ped ->Fill(Halo_adc[0]);   
+    h1_Halo2_adc_ped ->Fill(Halo_adc[1]);
+    h1_Halo3_adc_ped ->Fill(Halo_adc[2]);
+    h1_Halo4_adc_ped ->Fill(Halo_adc[3]);
+    
   } else if(trgData->wasBeamTrigger()) {
     h1_S1_adc->Fill(Scint_adc[0]);
     h1_S2_adc->Fill(Scint_adc[1]);
     h1_S3_adc->Fill(Scint_adc[2]);
     h1_S4_adc->Fill(Scint_adc[3]);
+    h1_Halo1_adc   ->Fill(Halo_adc[0]);
+    h1_Halo2_adc   ->Fill(Halo_adc[1]);
+    h1_Halo3_adc   ->Fill(Halo_adc[2]);
+    h1_Halo4_adc   ->Fill(Halo_adc[3]);
   }
   //   edm::LogVerbatim("info") << "S1_adc: " << Scint_adc[0] << std::endl;
   //}
@@ -724,6 +769,7 @@ void EcalTBH2SimpleAnalyzer::analyze( const edm::Event& iEvent, const edm::Event
   //    tof1_tdc[2] = tbtime->TOF2Stime();
   //    tof1_tdc[3] = tbtime->TOF2Jtime();
 
+
   // note: during the pi0 running, the tdcs normally used for pid
   // were connected to the four veto slabs located around the Aluminium target
   h1_TOFTDC1S->Fill(tbtime->TOF1Stime());     // tof1 tdc Saleve      =-->    pi0run: veto counter top  
@@ -738,6 +784,7 @@ void EcalTBH2SimpleAnalyzer::analyze( const edm::Event& iEvent, const edm::Event
    
   h1_TOFTDC1diff->Fill(tbtime->TOF1Stime() - tbtime->TOF1Jtime());
   h1_TOFTDC2diff->Fill(tbtime->TOF2Stime() - tbtime->TOF2Jtime());
+
 
   h1_TOFTDCaver12diff->Fill((tbtime->TOF1Stime() + tbtime->TOF1Jtime())/2. - (tbtime->TOF2Stime() + tbtime->TOF2Jtime())/2.);
 
@@ -799,6 +846,10 @@ void EcalTBH2SimpleAnalyzer::analyze( const edm::Event& iEvent, const edm::Event
     }   
 
 
+  hHcalTowers=0;
+  for (int i=0; i<256; i++){
+    amplHt[i]=    etaHt[i]=  phiHt[i]= 0;
+  }
   // hcal amplitudes and max amplitudes
   float totHcal = 0;  float maxHcal=0;
   for( HBHERecHitCollection::const_iterator  iRec = hbheRecHitCollection->begin();
@@ -807,17 +858,29 @@ void EcalTBH2SimpleAnalyzer::analyze( const edm::Event& iEvent, const edm::Event
     {
       
       h2_hcalAmpliMap ->Fill ( float ( iRec->id().ieta()-0.5 ), float ( iRec->id().iphi() -0.5 ), iRec->energy() );
-      
+      if (hHcalTowers<256)
+	{
+	  amplHt[hHcalTowers]=iRec->energy();
+	  etaHt[hHcalTowers]  = iRec->id().ieta();
+	  phiHt[hHcalTowers]  = iRec->id().iphi();
+	}
+      hHcalTowers++;
+
       // seek max tower and integrate total energy only for the wedge begind ECAL
       if ( (float ( iRec->id().iphi() -0.5)) <16  ){
 	
-	if (iRec->energy() > maxHcal ) {	maxHcal =  iRec->energy(); }
+	if (iRec->energy() > maxHcal ) {
+	  maxHcal =  iRec->energy();
+	  etamaxH= iRec->id().ieta();;
+	  phimaxH= iRec->id().iphi();;
+	}
 	
 	totHcal           +=  iRec->energy();
 	
       }
       
     }
+  // gio tests
   h1_hcalAmpli        ->Fill (  totHcal  );
   h1_hcalMaxAmpli ->Fill ( maxHcal  );
   
