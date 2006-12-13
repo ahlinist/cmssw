@@ -16,7 +16,7 @@
 //
 // Original Author:  dkcira
 //         Created:  Sat Feb  4 20:49:51 CET 2006
-// $Id: SiStripNoiseDB.h,v 1.2 2006/10/26 16:25:43 giordano Exp $
+// $Id: SiStripNoiseDB.h,v 1.3 2006/11/18 00:17:52 giordano Exp $
 //
 
 // system include files
@@ -50,7 +50,6 @@
 
 #include "CondFormats/SiStripObjects/interface/SiStripNoises.h"
 
-//#include "Fed9UUtils.hh"
 #include "boost/cstdint.hpp"
 #include <iostream>
 #include <sstream>
