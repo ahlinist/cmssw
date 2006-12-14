@@ -33,7 +33,7 @@ namespace edm {
     EventPrincipal(EventID const& id,
 	Timestamp const& time,
 	ProductRegistry const& reg,
-        boost::shared_ptr<LuminosityBlockPrincipal> lbp,
+        boost::shared_ptr<LuminosityBlockPrincipal const> lbp,
 	ProcessHistoryID const& hist = ProcessHistoryID(),
 	boost::shared_ptr<DelayedReader> rtrv = boost::shared_ptr<DelayedReader>(new NoDelayedReader));
     EventPrincipal(EventID const& id,
@@ -45,6 +45,11 @@ namespace edm {
 
     LuminosityBlockPrincipal const& luminosityBlockPrincipal() const {
       return *luminosityBlockPrincipal_;
+    }
+
+    boost::shared_ptr<LuminosityBlockPrincipal const> const
+    luminosityBlockPrincipalConstSharedPtr() const {
+      return luminosityBlockPrincipal_;
     }
 
     EventID const& id() const {
@@ -87,10 +92,9 @@ namespace edm {
     using Base::size;
     using Base::store;
 
-    using Base::setUnscheduledHandler;
+    void setUnscheduledHandler(boost::shared_ptr<UnscheduledHandler> iHandler);
 
   private:
-    virtual void setUnscheduledHandler_(boost::shared_ptr<UnscheduledHandler> iHandler);
 
     virtual bool unscheduledFill(Group const& group) const;
 

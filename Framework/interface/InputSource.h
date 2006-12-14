@@ -112,7 +112,7 @@ namespace edm {
     /// Accessor for 'module' description.
     ModuleDescription const& moduleDescription() const {return isDesc_.moduleDescription_;}
 
-    /// Accessor fpr primary input source flag
+    /// Accessor for primary input source flag
     bool const primary() const {return primary_;}
 
     /// Called by framework at beginning of job
@@ -162,7 +162,7 @@ namespace edm {
 
     bool const unlimited_;
 
-    InputSourceDescription isDesc_;
+    InputSourceDescription const isDesc_;
 
     bool const primary_;
   };
