@@ -1,12 +1,12 @@
 <flags SEAL_PLUGIN_NAME="PhysicsToolsCandExamples">
-<use name=FWCore/Framework>
 <use name=DataFormats/RecoCandidate>
 <use name=PhysicsTools/CandUtils>
+<use name=FWCore/Framework>
 <use name=root>
 <export>
   <lib name=PhysicsToolsCandExamples>
-  <use name=FWCore/Framework>
   <use name=DataFormats/RecoCandidate>
   <use name=PhysicsTools/CandUtils>
+  <use name=FWCore/Framework>
   <use name=root>
 </export>
