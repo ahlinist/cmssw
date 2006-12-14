@@ -1,4 +1,8 @@
 <flags SEAL_PLUGIN_NAME="PhysicsToolsRecoCandAlgos">
+<use name=RecoVertex/KalmanVertexFit>
+<use name=RecoVertex/VertexPrimitives>
+<use name=TrackingTools/TransientTrack>
+<use name=MagneticField/Records>
 <use name=DataFormats/EgammaCandidates>
 <use name=DataFormats/MuonReco>
 <use name=DataFormats/JetReco>
@@ -11,6 +15,10 @@
 <use name=FWCore/ParameterSet>
 <export>
   <lib name=PhysicsToolsRecoCandAlgos>
+  <use name=RecoVertex/KalmanVertexFit>
+  <use name=RecoVertex/VertexPrimitives>
+  <use name=TrackingTools/TransientTrack>
+  <use name=MagneticField/Records>
   <use name=DataFormats/EgammaCandidates>
   <use name=DataFormats/MuonReco>
   <use name=DataFormats/JetReco>
