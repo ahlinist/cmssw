@@ -11,8 +11,8 @@
  * 
  * July 2006
  * Maria Hansen, University of Bristol
- *
  * Hector Naves : added the MCDB Interface (25/10/06)
+ * Dorian Kcira : change to new Les Houches format.
  ***************************************/
 
 #define PYCOMP pycomp_
