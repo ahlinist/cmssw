@@ -1,15 +1,21 @@
-C******************************************************
+******************************************************
 C*          MadEvent - Pythia interface.              *
-C*            Version 3.7.2, 4 Oct 2006                 *
+C*            Version 3.7.2, 4 Oct 2006               *
 C*                                                    *
 C*  - Set mass of massless outgoing particles to      *
 C*    Pythia mass (PMAS(I,1))                         *
 C*                                                    *
 C*  Version 3.6-CMSSW                                 *
-C*  Hack for reading input file in present setup      *
-C*  of CMSSW                                          *
-C*  Comment out unused variables to avoid warnings    *
-C*  at build time                                     *
+C*  dkcira                                            *
+C*                                                    *
+C*  - add changes proposed by S. Bolognesi to allow   *
+C*    reading of Phantom files. Two flags are added   *
+C*    that disallow setting the model and reading the *
+C*    input cards file SLHA.dat                       *
+C*  - Hack for reading input file in present setup    *
+C*    of CMSSW                                        *
+C*  - Comment out unused variables to avoid warnings  *
+C*    at build time                                   *
 C*                                                    *
 C*  Version 3.6                                       *
 C*                                                    *
@@ -547,7 +553,12 @@ C...Local variables
       CHARACTER*132 buff
       CHARACTER*8 model
       INTEGER iunit
+
+C...add flags for the case when no model is defined in the head of LH and no cards should be read
+      INTEGER model_def,cards_def
       
+      model_def = 0
+      cards_def = 0
       buff='#'
       do 100 while(.true.)
          read(iunit,'(a132)',end=105,err=98) buff
@@ -558,11 +569,13 @@ C...Local variables
          if(buff(1:14).eq.'# Begin MODEL')then
             read(iunit,'(a132)',end=99,err=98) buff
             model=buff
+            model_def=1
          endif
          if(buff(1:23).eq.'# Begin param_card.dat')then
             open(24,FILE='SLHA.dat',ERR=90)
             do 10 while(.true.)
                read(iunit,'(a132)',end=99,err=98) buff
+               cards_def=1
                if(buff(1:21).eq.'# End param_card.dat') goto 15
                write(24,'(a80)') buff
  10         continue
@@ -574,11 +587,15 @@ C...Local variables
  105  continue
       REWIND(iunit)
       
-      write(*,*) 'Reading model: ',model
+      if(model_def.EQ.1) then
+        write(*,*) 'Reading model: ',model
+      endif
 
-      open(24,FILE='SLHA.dat',ERR=91)
+      if(cards_def.EQ.1) then
+        open(24,FILE='SLHA.dat',ERR=91)
 c     Pick out SM parameters
-      CALL READSMLHA(24)
+        CALL READSMLHA(24)
+      endif
 
       if(model.eq.'mssm')then
          IMSS(1) = 11
