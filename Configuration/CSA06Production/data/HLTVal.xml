@@ -2,84 +2,109 @@
 <ReleaseValidation>
           <Validate Version="QCD-HLT">
                 <Test Events="1000" Name="HLTVal_QCD_pt_15_20">
-                        QCD_pt_15_20_sim_digi_OnSel.cfg
+                        QCD_pt_15_20_OnSel.cfg
                 </Test>
 		<Test Events="1000" Name="HLTVal_QCD_pt_20_30">
-			QCD_pt_20_30_sim_digi_OnSel.cfg
+			QCD_pt_20_30_OnSel.cfg
 		</Test>
 		<Test Events="1000" Name="HLTVal_QCD_pt_30_50">
-			QCD_pt_30_50_sim_digi_OnSel.cfg
+			QCD_pt_30_50_OnSel.cfg
 		</Test>
 		<Test Events="1000" Name="HLTVal_QCD_pt_50_80">
-			QCD_pt_50_80_sim_digi_OnSel.cfg
+			QCD_pt_50_80_OnSel.cfg
 		</Test>
 		<Test Events="1000" Name="HLTVal_QCD_pt_80_120">
-			QCD_pt_80_120_sim_digi_OnSel.cfg
+			QCD_pt_80_120_OnSel.cfg
 		</Test>
 		<Test Events="1000" Name="HLTVal_QCD_pt_120_170">
-			QCD_pt_120_170_sim_digi_OnSel.cfg
+			QCD_pt_120_170_OnSel.cfg
 		</Test>
 		<Test Events="1000" Name="HLTVal_QCD_pt_170_230">
-			QCD_pt_170_230_sim_digi_OnSel.cfg
+			QCD_pt_170_230_OnSel.cfg
 		</Test>
 		<Test Events="1000" Name="HLTVal_QCD_pt_230_300">
-			QCD_pt_230_300_sim_digi_OnSel.cfg
+			QCD_pt_230_300_OnSel.cfg
 		</Test>
+        </Validate>
+        <Validate Version="QCD-HLT-slow">
 		<Test Events="1000" Name="HLTVal_QCD_pt_300_380">
-			QCD_pt_300_380_sim_digi_OnSel.cfg
+			QCD_pt_300_380_OnSel.cfg
 		</Test>
 		<Test Events="1000" Name="HLTVal_QCD_pt_380_470">
-			QCD_pt_380_470_sim_digi_OnSel.cfg
+			QCD_pt_380_470_OnSel.cfg
 		</Test>
 		<Test Events="1000" Name="HLTVal_QCD_pt_470_600">
-			QCD_pt_470_600_sim_digi_OnSel.cfg
+			QCD_pt_470_600_OnSel.cfg
 		</Test>
 		<Test Events="1000" Name="HLTVal_QCD_pt_600_800">
-			QCD_pt_600_800_sim_digi_OnSel.cfg
+			QCD_pt_600_800_OnSel.cfg
 		</Test>
 		<Test Events="1000" Name="HLTVal_QCD_pt_800_1000">
-			QCD_pt_800_1000_sim_digi_OnSel.cfg
+			QCD_pt_800_1000_OnSel.cfg
 		</Test>
 	</Validate>
+        <Validate Version="QCD-HLT-very-slow">
+                <Test Events="1000" Name="HLTVal_QCD_pt_1000_1400">
+                        QCD_pt_1000_1400_OnSel.cfg
+                </Test>
+		<Test Events="1000" Name="HLTVal_QCD_pt_1400_1800">
+			QCD_pt_1400_1800_OnSel.cfg
+		</Test>
+		<Test Events="1000" Name="HLTVal_QCD_pt_1800_2200">
+			QCD_pt_1800_2200_OnSel.cfg
+		</Test>
+		<Test Events="1000" Name="HLTVal_QCD_pt_2200_2600">
+			QCD_pt_2200_2600_OnSel.cfg
+		</Test>
+		<Test Events="1000" Name="HLTVal_QCD_pt_2600_3000">
+			QCD_pt_2600_3000_OnSel.cfg
+		</Test>
+		<Test Events="1000" Name="HLTVal_QCD_pt_3000_3500">
+			QCD_pt_3000_3500_OnSel.cfg
+		</Test>
+		<Test Events="1000" Name="HLTVal_QCD_pt_3500_inf">
+			QCD_pt_3500_-1_OnSel.cfg
+		</Test>
+        </Validate>
         <Validate Version="Wjets-HLT">
                 <Test Events="1000" Name="HLTVal_Wjets_pt_15_20">
-                        Wjets_pt_15_20_sim_digi_OnSel.cfg
+                        Wjets_pt_15_20_OnSel.cfg
                 </Test>
                 <Test Events="1000" Name="HLTVal_Wjets_pt_20_30">
-                        Wjets_pt_20_30_sim_digi_OnSel.cfg
+                        Wjets_pt_20_30_OnSel.cfg
                 </Test>
                 <Test Events="1000" Name="HLTVal_Wjets_pt_30_50">
-                        Wjets_pt_30_50_sim_digi_OnSel.cfg
+                        Wjets_pt_30_50_OnSel.cfg
                 </Test>
                 <Test Events="1000" Name="HLTVal_Wjets_pt_50_80">
-                        Wjets_pt_50_80_sim_digi_OnSel.cfg
+                        Wjets_pt_50_80_OnSel.cfg
                 </Test>
                 <Test Events="1000" Name="HLTVal_Wjets_pt_80_120">
-                        Wjets_pt_80_120_sim_digi_OnSel.cfg
+                        Wjets_pt_80_120_OnSel.cfg
                 </Test>
                 <Test Events="1000" Name="HLTVal_Wjets_pt_120_170">
-                        Wjets_pt_120_170_sim_digi_OnSel.cfg
+                        Wjets_pt_120_170_OnSel.cfg
                 </Test>
                 <Test Events="1000" Name="HLTVal_Wjets_pt_170_230">
-                        Wjets_pt_170_230_sim_digi_OnSel.cfg
+                        Wjets_pt_170_230_OnSel.cfg
                 </Test>
                 <Test Events="1000" Name="HLTVal_Wjets_pt_230_300">
-                        Wjets_pt_230_300_sim_digi_OnSel.cfg
+                        Wjets_pt_230_300_OnSel.cfg
                 </Test>
                 <Test Events="1000" Name="HLTVal_Wjets_pt_300_380">
-                        Wjets_pt_300_380_sim_digi_OnSel.cfg
+                        Wjets_pt_300_380_OnSel.cfg
                 </Test>
                 <Test Events="1000" Name="HLTVal_Wjets_pt_380_470">
-                        Wjets_pt_380_470_sim_digi_OnSel.cfg
+                        Wjets_pt_380_470_OnSel.cfg
                 </Test>
                 <Test Events="1000" Name="HLTVal_Wjets_pt_470_600">
-                        Wjets_pt_470_600_sim_digi_OnSel.cfg
+                        Wjets_pt_470_600_OnSel.cfg
                 </Test>
                 <Test Events="1000" Name="HLTVal_Wjets_pt_600_800">
-                        Wjets_pt_600_800_sim_digi_OnSel.cfg
+                        Wjets_pt_600_800_OnSel.cfg
                 </Test>
                 <Test Events="1000" Name="HLTVal_Wjets_pt_800_1000">
-                        Wjets_pt_800_1000_sim_digi_OnSel.cfg
+                        Wjets_pt_800_1000_OnSel.cfg
                 </Test>
         </Validate>
         <Validate Version="Minbias-HLT">
@@ -124,22 +149,22 @@
         </Validate>
         <Validate Version="Jpsi-mumu-HLT">
                 <Test Events="1000" FractionSelected="0.0024" Name="HLTVal_Jpsi_mumu">
-                        Jpsi_mumu_sim_digi_OnSel.cfg
+                        Jpsi_mumu_OnSel.cfg
                 </Test>
         </Validate>
         <Validate Version="MumuX-HLT">
                 <Test Events="1000" FractionSelected="0.01" Name="HLTVal_MumuX">
-                        MumuX_sim_digi_OnSel.cfg
+                        MumuX_OnSel.cfg
                 </Test>
         </Validate>
         <Validate Version="Inclusive-Muon-HLT">
                 <Test Events="1000" FractionSelected="0.006" Name="HLTVal_pp_muX">
-                        pp_muX_sim_digi_OnSel.cfg
+                        pp_muX_OnSel.cfg
                 </Test>
         </Validate>
         <Validate Version="Inclusive-Ttbar-HLT">
                 <Test Events="1000" Name="HLTVal_Incl_ttbar">
-                        TTbar_inclusive_sim_digi_OnSel.cfg
+                        TTbar_inclusive_OnSel.cfg
                 </Test>
         </Validate>
         <Validate Version="PhysSamples-Set1-HLT">
@@ -155,46 +180,62 @@
         </Validate>
         <Validate Version="PhysSamples-Set2-HLT">
                 <Test Events="1000" Name="HLTVal_HchTau_M200">
-                        HchTau200_sim_digi_OnSel.cfg
+                        HchTau200_OnSel.cfg
                 </Test>
                 <Test Events="1000" Name="HLTVal_HchTau_M400">
-                        HchTau400_sim_digi_OnSel.cfg
+                        HchTau400_OnSel.cfg
                 </Test>
         </Validate>
         <Validate Version="PhysSamples-Set3-HLT">
                 <Test Events="1000" Name="HLTVal_qqH135_2tau">
-                        qqH135_2tau_sim_digi_OnSel.cfg
+                        qqH135_2tau_OnSel.cfg
                 </Test>
                 <Test Events="1000" Name="HLTVal_qqH120_WW">
-                        qqH120_WW_2l_sim_digi_OnSel.cfg
+                        qqH120_WW_2l_OnSel.cfg
                 </Test>
                 <Test Events="1000" Name="HLTVal_qqH160_WW">
-                        qqH160_WW_2l_sim_digi_OnSel.cfg
+                        qqH160_WW_2l_OnSel.cfg
                 </Test>
         </Validate>
         <Validate Version="PhysSamples-Set4-HLT">
                 <Test Events="1000" Name="HLTVal_H150_ZZ">
-                        H150_ZZ_4l_sim_digi_OnSel.cfg
+                        H150_ZZ_4l_OnSel.cfg
                 </Test>
                 <Test Events="1000" Name="HLTVal_H165_WW">
-                        H165_WW_2l_sim_digi_OnSel.cfg
+                        H165_WW_2l_OnSel.cfg
                 </Test>
                 <Test Events="1000" Name="HLTVal_Z2Tau">
-                        Z2Tau_sim_digi_OnSel.cfg
+                        Z2Tau_OnSel.cfg
                 </Test>
         </Validate>
         <Validate Version="PhysSamples-Set5-HLT">
                 <Test Events="1000" Name="HLTVal_qqH1_a1a1">
-                        qqH1_a1a1_4tau_sim_digi_OnSel.cfg
+                        qqH1_a1a1_4tau_OnSel.cfg
                 </Test>
                 <Test Events="1000" Name="HLTVal_H120_gluonfusion">
-                        H120_gluonfusion_gamgam_sim_digi_OnSel.cfg
+                        H120_gluonfusion_gamgam_OnSel.cfg
                 </Test>
                 <Test Events="1000" Name="HLTVal_bbH500to2b">
-                        bbH500to2b_sim_digi_OnSel.cfg
+                        bbH500to2b_OnSel.cfg
                 </Test>
                 <Test Events="1000" Name="HLTVal_double_chHiggs">
-                        double_chHiggs200_sim_digi_OnSel.cfg
+                        double_chHiggs200_OnSel.cfg
+                </Test>
+        </Validate>
+        <Validate Version="Zprime-HLT">
+                <Test Events="1000" Name="HLTVal_Zprime_700">
+                        Zprime700_OnSel.cfg
+                </Test>
+                <Test Events="1000" Name="HLTVal_Zprime_1000">
+                        Zprime1000_OnSel.cfg
+                </Test>
+                <Test Events="1000" Name="HLTVal_Zprime_4000">
+                        Zprime4000_OnSel.cfg
+                </Test>
+        </Validate>
+        <Validate Version="Drell-Yan-HLT">
+                <Test Events="1000" Name="HLTVal_DrellYan">
+                        DrellYan_OnSel.cfg
                 </Test>
         </Validate>
 </ReleaseValidation>
