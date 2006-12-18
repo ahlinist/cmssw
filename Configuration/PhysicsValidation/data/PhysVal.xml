@@ -35,10 +35,10 @@
                 <Test Events="50000" Name="PhysVal-SingleMuMinus-Pt10">
                         SingleMuon_pt10_neg_NoPU.cfg
                 </Test>
-                <Test Events="25000" Name="PhysVal-SingleMuPlus-Pt1">
+                <Test Events="50000" Name="PhysVal-SingleMuPlus-Pt1">
                         SingleMuon_pt1_pos_NoPU.cfg
                 </Test>
-                <Test Events="25000" Name="PhysVal-SingleMuMinus-Pt1">
+                <Test Events="50000" Name="PhysVal-SingleMuMinus-Pt1">
                         SingleMuon_pt1_neg_NoPU.cfg
                 </Test>
 	  </Validate>
@@ -75,18 +75,6 @@
 	        	DiTaus_pt20to420_NoPU.cfg
         	</Test>
 	  </Validate>
-<!-- qqbar samples from Tracker (high priority)-->
-          <Validate Version="QQbar-HighPriority">
-        	<Test Events="5000" Name="PhysVal-BBbar">
-                        BBbar_pt50to120_NoPU.cfg
-        	</Test>
-        	<Test Events="10000" Name="PhysVal-CCbar">
-                        CCbar_pt50to120_NoPU.cfg
-        	</Test>
-        	<Test Events="35000" FractionSelected="0.6" Name="PhysVal-UDSUDSbar">
-                        UDSUDSbar_pt50to120_NoPU.cfg
-        	</Test>
-	  </Validate>
 <!-- Single muons from Muons (medium priority)-->
           <Validate Version="SingleMuons-MediumPriority-Muons">
                 <Test Events="50000" Name="PhysVal-SingleMuPlus-Pt1000">
@@ -98,22 +86,22 @@
 	  </Validate>
 <!-- Single pions from Tracker b/tau (medium priority)-->
           <Validate Version="SinglePions-MediumPriority">
-                <Test Events="25000" Name="PhysVal-SinglePiPlus-Pt100">
+                <Test Events="50000" Name="PhysVal-SinglePiPlus-Pt100">
                         SinglePion_pt100_pos_NoPU.cfg
                 </Test>
-                <Test Events="25000" Name="PhysVal-SinglePiMinus-Pt100">
+                <Test Events="50000" Name="PhysVal-SinglePiMinus-Pt100">
                         SinglePion_pt100_neg_NoPU.cfg
                 </Test>
-                <Test Events="25000" Name="PhysVal-SinglePiPlus-Pt10">
+                <Test Events="50000" Name="PhysVal-SinglePiPlus-Pt10">
                         SinglePion_pt10_pos_NoPU.cfg
                 </Test>
-                <Test Events="25000" Name="PhysVal-SinglePiMinus-Pt10">
+                <Test Events="50000" Name="PhysVal-SinglePiMinus-Pt10">
                         SinglePion_pt10_neg_NoPU.cfg
                 </Test>
-                <Test Events="25000" Name="PhysVal-SinglePiPlus-Pt1">
+                <Test Events="50000" Name="PhysVal-SinglePiPlus-Pt1">
                         SinglePion_pt1_pos_NoPU.cfg
                 </Test>
-                <Test Events="25000" Name="PhysVal-SinglePiMinus-Pt1">
+                <Test Events="50000" Name="PhysVal-SinglePiMinus-Pt1">
                         SinglePion_pt1_neg_NoPU.cfg
                 </Test>
 	  </Validate>
@@ -129,22 +117,13 @@
                         DiPhotons_pt20to100_NoPU.cfg
                 </Test>
 	  </Validate>
-<!-- Single electrons without tracker for ParticleFlow (medium priority)-->
-          <Validate Version="SingleElecrons-MediumPriority-ParticleFlow">
-                <Test Events="100000" Name="PhysVal-SingleElectrons-Ene0To50">
-                        SingleElectrons_Ene0to50_NoTracker.cfg
+<!-- Single muons from Muons (medium priority)-->
+          <Validate Version="SingleMuons-MediumPriority-Muons">
+                <Test Events="200000" Name="PhysVal-SingleMuPlus-Pt5To200">
+                        SingleMuon_pt5to200_pos_NoPU.cfg
                 </Test>
-	  </Validate>
-<!-- Single photons without tracker for ParticleFlow (medium priority)-->
-          <Validate Version="SinglePhotons-MediumPriority-ParticleFlow">
-                <Test Events="500000" Name="PhysVal-SinglePhotons-Ene0To200">
-                        SinglePhotons_Ene0to200_NoTracker.cfg 
-                </Test>
-	  </Validate>
-<!-- Single pizeros without tracker for ParticleFlow (medium priority)-->
-          <Validate Version="SinglePi0-MediumPriority-ParticleFlow">
-                <Test Events="50000" Name="PhysVal-SinglePi0-Ene0To20">
-                        SinglePi0_Ene0to20_NoTracker.cfg
+                <Test Events="200000" Name="PhysVal-SingleMuMinus-Pt5To200">
+                        SingleMuon_pt5to200_neg_NoPU.cfg
                 </Test>
 	  </Validate>
 <!-- Back to back electrons from ECAL e/gamma (low priority)-->
@@ -186,15 +165,6 @@
                         SingleElectron_pt1_neg_NoPU.cfg
                 </Test>
 	  </Validate>
-<!-- Single muons from Muons (low priority)-->
-          <Validate Version="SingleMuons-LowPriority-Muons">
-                <Test Events="200000" Name="PhysVal-SingleMuPlus-Pt5To200">
-                        SingleMuon_pt5to200_pos_NoPU.cfg
-                </Test>
-                <Test Events="200000" Name="PhysVal-SingleMuMinus-Pt5To200">
-                        SingleMuon_pt5to200_neg_NoPU.cfg
-                </Test>
-	  </Validate>
 <!-- Back to back photons from ECAL e/gamma (low priority) -->
           <Validate Version="BackToBackPhotons-LowPriority">
                 <Test Events="25000" Name="PhysVal-DiPhoton-Ene50">
@@ -209,11 +179,5 @@
                 <Test Events="25000" Name="PhysVal-DiEle-Ene30-NoTracker-NoB">
                         DiElectrons_Ene30_NoTracker_NoBField_NoPU.cfg
                 </Test>
-   	  </Validate>
-<!-- Z to mu+mu- sample for alignment (very low priority)-->
-          <Validate Version="ZToMuMu-VeryLowPriority">
-        	<Test Events="2000000" Name="PhysVal-ZToMuMu">
-                        ZMuMu_NoPU.cfg
-	        </Test>
    	  </Validate>
 </PhysicsValidation>
