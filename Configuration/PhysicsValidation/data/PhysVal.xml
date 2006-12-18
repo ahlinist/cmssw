@@ -171,13 +171,19 @@
                         DiPhotons_Ene50_NoPU.cfg
                 </Test>
 	  </Validate>
-<!-- Back to back electrons from ECAL e/gamma (very low priority)-->
-          <Validate Version="BackToBackElectrons-VeryLowPriority">
+<!-- Back to back electrons from ECAL e/gamma (low priority)-->
+          <Validate Version="BackToBackElectrons-LowPriority">
                 <Test Events="25000" Name="PhysVal-DiEle-Ene30-NoTracker">
                         DiElectrons_Ene30_NoTracker_NoPU.cfg
                 </Test>
                 <Test Events="25000" Name="PhysVal-DiEle-Ene30-NoTracker-NoB">
                         DiElectrons_Ene30_NoTracker_NoBField_NoPU.cfg
                 </Test>
+   	  </Validate>
+<!-- Z to mu+mu- sample for HLT (low priority)-->
+          <Validate Version="ZToMuMu-NoPU-LowPriority">
+        	<Test Events="1000000" Name="PhysVal-ZToMuMu-NoPU">
+                        ZtoMuMu_NoPU.cfg
+	        </Test>
    	  </Validate>
 </PhysicsValidation>
