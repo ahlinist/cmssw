@@ -112,16 +112,6 @@
                         Minbias_OnSel.cfg
                 </Test>
         </Validate>
-        <Validate Version="Minbias-noEE-HLT">
-                <Test Events="1000" Name="HLTVal_Minbias_noEE">
-                        Minbias_noEE_OnSel.cfg
-                </Test>
-        </Validate>
-        <Validate Version="Minbias-noEE-900GeV-HLT">
-                <Test Events="1000" Name="HLTVal_Minbias_noEE_900GeV">
-                        Minbias_noEE_900GeV_OnSel.cfg
-                </Test>
-        </Validate>
         <Validate Version="Wenu-HLT">
                 <Test Events="1000" FractionSelected="0.62" Name="HLTVal_Wenu">
                         Wenu_OnSel.cfg
@@ -130,11 +120,6 @@
         <Validate Version="Wmunu-HLT">
                 <Test Events="1000" FractionSelected="0.62" Name="HLTVal_Wmunu">
                         Wmunu_OnSel.cfg
-                </Test>
-        </Validate>
-        <Validate Version="Zmumu-HLT">
-                <Test Events="1000" FractionSelected="0.45" Name="HLTVal_Zmumu">
-                        Zmumu_OnSel.cfg
                 </Test>
         </Validate>
         <Validate Version="Zee-HLT">
