@@ -57,6 +57,7 @@ namespace edm {
   struct TriggerReport;
 
   template <typename T> class Handle;
+  template <typename T> class View;
 }
 
 // The following are trivial enough so that the real headers can be included.
