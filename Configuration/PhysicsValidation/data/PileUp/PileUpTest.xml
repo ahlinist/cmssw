@@ -50,13 +50,13 @@
           </Validate>
 <!-- Z to mu+mu- sample for alignment (medium priority)-->
           <Validate Version="ZToMuMu-MediumPriority">
-        	<Test Events="100" Name="PhysVal-ZToMuMu">
+        	<Test Events="100" Name="PhysVal-ZToMuMu-LowLumiPU">
                         ZtoMuMu_LowLumi.cfg
 	        </Test>
    	  </Validate>
 <!-- W to enu from ECAL Calibration (low priority)-->
           <Validate Version="WToENU-LowLumiPU-LowPriority">
-                <Test Events="100" FractionSelected="?" Name="PhysVal-WToENU-Calib-LowLumi">
+                <Test Events="100" FractionSelected="0.04" Name="PhysVal-WToENU-Calib-LowLumi">
                         WtoENU_Calib_LowLumi.cfg
                 </Test>
 	  </Validate>
@@ -87,5 +87,10 @@
                         CCbar_pt170to230_LowLumi.cfg
                 </Test>
           </Validate>
-
+<!-- Z to mu+mu- sample for alignment (low priority)-->
+          <Validate Version="ZToMuMu-StartUpLumi-LowPriority">
+        	<Test Events="100" Name="PhysVal-ZToMuMu-StartUpLumiPU">
+                        ZtoMuMu_StartUpLumi.cfg
+	        </Test>
+   	  </Validate>
 </ReleaseValidation>
