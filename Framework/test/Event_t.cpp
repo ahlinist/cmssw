@@ -352,7 +352,7 @@ void testEvent::getByProductID()
   ProductID invalid;
   CPPUNIT_ASSERT_THROW(currentEvent_->get(invalid, h), edm::Exception);
   CPPUNIT_ASSERT(!h.isValid());
-  ProductID notpresent(std::numeric_limits<unsigned long>::max());
+  ProductID notpresent(std::numeric_limits<unsigned int>::max());
   CPPUNIT_ASSERT_THROW(currentEvent_->get(notpresent, h), edm::Exception);
   CPPUNIT_ASSERT(!h.isValid());
 }

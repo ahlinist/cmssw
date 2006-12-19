@@ -380,7 +380,7 @@ namespace edm
     return groupSelector_.selected(desc);
   }
 
-  unsigned long OutputModule::nextID() const 
+  unsigned int OutputModule::nextID() const 
   {
     return nextID_;
   }

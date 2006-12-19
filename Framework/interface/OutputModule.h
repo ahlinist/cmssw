@@ -56,7 +56,7 @@ namespace edm {
 		    CurrentProcessingContext const* c);
     bool selected(BranchDescription const& desc) const;
 
-    unsigned long nextID() const;
+    unsigned int nextID() const;
     void selectProducts();
 
 
@@ -77,7 +77,7 @@ namespace edm {
   private:
     size_t getManyTriggerResults(EventPrincipal const& ep) const;
 
-    unsigned long             nextID_;
+    unsigned int nextID_;
     // TODO: Make these data members private, and give OutputModule
     // an interface (protected?) that supplies client code with the
     // needed functionality *without* giving away implementation

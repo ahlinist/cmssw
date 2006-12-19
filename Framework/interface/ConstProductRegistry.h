@@ -53,7 +53,7 @@ namespace edm {
     // colon-initialization list.
     std::vector<BranchDescription const*> allBranchDescriptions() const;
      
-    unsigned long nextID() const {return reg_->nextID();}
+    unsigned int nextID() const {return reg_->nextID();}
      
     template< class T>
     void watchProductAdditions(const T& iFunc)
