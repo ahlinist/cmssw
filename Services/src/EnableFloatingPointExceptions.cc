@@ -60,11 +60,11 @@ static float useNan()
   //float x = 1.0*std::numeric_limits<float>::quiet_NaN();
   
   //union { unsigned int u; float f; } aNaN;
-  //aNaN.u = 0x7fc00000UL;
+  //aNaN.u = 0x7fc00000U;
   //we found out that propagating nans doesn't cause the exception so we'll do something
   //that will generate a nan
   union { unsigned int u; float f; } inf;
-  inf.u = 0x7f800000UL;
+  inf.u = 0x7f800000U;
   float x = 0.0*inf.f;
 
   return x;

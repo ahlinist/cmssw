@@ -94,7 +94,7 @@ bool
   str_c_iter  b = s.begin()
            ,  e = s.end();
 
-  if(static_cast<unsigned long>(e - b) < 2u)  return false;
+  if(static_cast<unsigned int>(e - b) < 2u)  return false;
 
   if(*b == first)  ++b;
   else               return false;

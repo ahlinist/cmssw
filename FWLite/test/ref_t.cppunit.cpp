@@ -84,7 +84,7 @@ static void checkMatch(const edmtest::OtherThingCollection* pOthers,
   
   for( ; itThing != pThings->end(); ++itThing,++itOther) {
     //I'm assuming the following is true
-    CPPUNIT_ASSERT(itOther->ref.key() == static_cast<unsigned long>(itThing - pThings->begin()));
+    CPPUNIT_ASSERT(itOther->ref.key() == static_cast<unsigned int>(itThing - pThings->begin()));
     CPPUNIT_ASSERT( itOther->ref.get()->a == itThing->a);
   }
 }
