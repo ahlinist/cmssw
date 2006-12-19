@@ -128,8 +128,37 @@
                 </Test>
         </Validate>
         <Validate Version="Photon-Jets-HLT">
-                <Test Events="1000" Name="HLTVal_Photon_Jets">
-                        Photon_jets_OnSel.cfg
+                <Test Events="1000" Name="HLTVal_Photon_Jets_pt_0_15">
+                        Photon_jets_pt_0_15_OnSel.cfg
+                </Test>
+                <Test Events="1000" Name="HLTVal_Photon_Jets_pt_15_20">
+                        Photon_jets_pt_15_20_OnSel.cfg
+                </Test>
+                <Test Events="1000" Name="HLTVal_Photon_Jets_pt_20_30">
+                        Photon_jets_pt_20_30_OnSel.cfg
+                </Test>
+                <Test Events="1000" Name="HLTVal_Photon_Jets_pt_30_50">
+                        Photon_jets_pt_30_50_OnSel.cfg
+                </Test>
+                <Test Events="1000" Name="HLTVal_Photon_Jets_pt_50_80">
+                        Photon_jets_pt_50_80_OnSel.cfg
+                </Test>
+                <Test Events="1000" Name="HLTVal_Photon_Jets_pt_80_120">
+                        Photon_jets_pt_80_120_OnSel.cfg
+                </Test>
+                <Test Events="1000" Name="HLTVal_Photon_Jets_pt_120_170">
+                        Photon_jets_pt_120_170_OnSel.cfg
+                </Test>
+        </Validate>
+        <Validate Version="Photon-Jets-HLT-slow">
+                <Test Events="1000" Name="HLTVal_Photon_Jets_pt_170_300">
+                        Photon_jets_pt_170_300_OnSel.cfg
+                </Test>
+                <Test Events="1000" Name="HLTVal_Photon_Jets_pt_300_500">
+                        Photon_jets_pt_300_500_OnSel.cfg
+                </Test>
+                <Test Events="1000" Name="HLTVal_Photon_Jets_pt_500_7000">
+                        Photon_jets_pt_500_7000_OnSel.cfg
                 </Test>
         </Validate>
         <Validate Version="Jpsi-mumu-HLT">
