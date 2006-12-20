@@ -55,6 +55,7 @@ namespace edm {
     using DataViewImpl::getManyByType;
     using DataViewImpl::getProvenance;
     using DataViewImpl::getRefBeforePut;
+    using DataViewImpl::processHistory;
     using DataViewImpl::put;
     using DataViewImpl::size;
 
