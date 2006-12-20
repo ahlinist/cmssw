@@ -35,8 +35,8 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventPrincipal.h"
 #include "DataFormats/Common/interface/EventProvenance.h"
-#include "FWCore/Framework/interface/ModuleDescriptionRegistry.h"
-#include "FWCore/Framework/interface/ProcessHistoryRegistry.h"
+#include "DataFormats/Common/interface/ModuleDescriptionRegistry.h"
+#include "DataFormats/Common/interface/ProcessHistoryRegistry.h"
 #include "DataFormats/Common/interface/ParameterSetBlob.h"
 #include "FWCore/ParameterSet/interface/Registry.h"
 namespace edm {
