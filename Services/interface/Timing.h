@@ -11,11 +11,11 @@
 //
 #include "sigc++/signal.h"
 
-#include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/ServiceRegistry/interface/ActivityRegistry.h"
 #include "DataFormats/Common/interface/EventID.h"
+#include "FWCore/Framework/interface/Frameworkfwd.h"
 
 namespace edm {
+  struct ActivityRegistry;
   namespace service {
     class Timing
     {
