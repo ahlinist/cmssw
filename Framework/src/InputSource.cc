@@ -135,6 +135,14 @@ namespace edm {
   }
 
   void
+  InputSource::setLumi(LuminosityBlockID) {
+      throw edm::Exception(edm::errors::LogicError)
+        << "InputSource::setLumi()\n"
+        << "Luminosity Block ID  cannot be modified for this type of Input Source\n"
+        << "Contact a Framework Developer\n";
+  }
+
+  void
   InputSource::skip(int) {
       throw edm::Exception(edm::errors::LogicError)
         << "InputSource::skip()\n"
