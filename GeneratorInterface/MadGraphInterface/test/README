@@ -1,1 +1,4 @@
 https://twiki.cern.ch/twiki/bin/view/CMS/MadgraphInterface
+
+run_1_unweighted_events.lhe <- example file with events in the Les Houches format for MadGraph
+phantom.lhe                 <- example file with events in the Les Houches format for the Phantom MC
