@@ -182,7 +182,7 @@
    	  </Validate>
 <!-- Z to mu+mu- sample for HLT (low priority)-->
           <Validate Version="ZToMuMu-NoPU-LowPriority">
-        	<Test Events="1000000" Name="PhysVal-ZToMuMu-NoPU">
+        	<Test Events="1000000" FractionSelected="0.40" Name="PhysVal-ZToMuMu-NoPU">
                         ZtoMuMu_NoPU.cfg
 	        </Test>
    	  </Validate>
