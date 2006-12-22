@@ -2,6 +2,8 @@
 <use name=boost>
 
 <use name=FWCore/Framework>
+<use name=FWCore/ParameterSet>
+<use name=FWCore/MessageLogger>
 <use name=Geometry/Records>
 <use name=Geometry/TrackerGeometryBuilder>
 <use name=FWCore/ParameterSet>
@@ -11,6 +13,7 @@
 <use name=DataFormats/Common>
 <use name=DQMServices/Core>
 
+<use name=DataFormats/SiStripCommon>
 <use name=DataFormats/SiStripDetId>
 <use name=DataFormats/SiStripDigi>
 <use name=CondFormats/DataRecord>
