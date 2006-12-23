@@ -24,7 +24,7 @@
 // user include files
 #include "FWCore/TFWLiteSelector/interface/TFWLiteSelectorBasic.h"
 
-#include "FWCore/Utilities/interface/PersistentNames.h"
+#include "DataFormats/Common/interface/BranchType.h"
 #include "DataFormats/Common/interface/ProductRegistry.h"
 #include "DataFormats/Common/interface/EDProduct.h"
 #include "DataFormats/Common/interface/Wrapper.h"

@@ -22,8 +22,8 @@
 
 // user include files
 #include "FWCore/FWLite/src/BareRootProductGetter.h"
-#include "FWCore/Utilities/interface/PersistentNames.h"
 #include "DataFormats/Common/interface/ProductRegistry.h"
+#include "DataFormats/Common/interface/BranchType.h"
 #include "DataFormats/Common/interface/EDProduct.h"
 #include "DataFormats/Common/interface/Wrapper.h"
 #include "FWCore/Utilities/interface/Exception.h"
