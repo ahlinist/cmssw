@@ -23,6 +23,8 @@ $Id$
 
 #include "DataFormats/Common/interface/EventAux.h"
 #include "DataFormats/Common/interface/EventID.h"
+#include "DataFormats/Common/interface/LuminosityBlockID.h"
+#include "DataFormats/Common/interface/RunID.h"
 #include "DataFormats/Common/interface/Timestamp.h"
 
 #include "FWCore/Framework/interface/DataViewImpl.h"
@@ -64,8 +66,14 @@ namespace edm {
       return *luminosityBlock_;
     }
 
+    LuminosityBlockID
+    luminosityBlockID() const;    
+
     Run const&
     getRun() const;
+
+    RunNumber_t
+    runID() const;    
 
   private:
     // commit_() is called to complete the transaction represented by

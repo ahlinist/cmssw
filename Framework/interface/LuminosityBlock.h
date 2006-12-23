@@ -25,6 +25,7 @@ $Id$
 #include "DataFormats/Common/interface/BranchType.h"
 #include "DataFormats/Common/interface/LuminosityBlockAux.h"
 #include "DataFormats/Common/interface/LuminosityBlockID.h"
+#include "DataFormats/Common/interface/RunID.h"
 
 #include "FWCore/Framework/interface/DataViewImpl.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -46,6 +47,8 @@ namespace edm {
 
     // AUX functions.
     LuminosityBlockID id() const {return aux_.id();}
+
+    RunNumber_t runID() const;
 
     using DataViewImpl::get;
     using DataViewImpl::getAllProvenance;
