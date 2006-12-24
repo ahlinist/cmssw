@@ -46,7 +46,6 @@
 			QCD_pt_800_1000_PU_OnSel.cfg
 		</Test>
 	</Validate>
-        </Validate>
         <Validate Version="QCD-HLT-special-PU">
                 <Test Events="1000" Name="HLTVal_PU_QCD_pt_120_170_EcalUnsupr">
                         QCD_pt_120_170_EcalUnsupr_PU_OnSel.cfg
