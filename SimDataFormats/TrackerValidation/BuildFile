@@ -1,6 +1,6 @@
+<use name=DataFormats/Common>
+<use name=rootrflx>
 <export>
  <lib name=SimDataFormatsTrackerValidation>
- <use name=DataFormats/Common>
 </export>
 
-<use name=DataFormats/Common>
