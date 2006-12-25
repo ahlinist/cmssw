@@ -1,9 +1,8 @@
-<flags LCGDICT_ARGS="--deep">
-<export>
- <lib name=SimDataFormatsEcalValidation>
- <use name=DataFormats/Common>
- <use name=clhep>
-</export>
-
 <use name=DataFormats/Common>
 <use name=clhep>
+<use name=rootrflx>
+<export>
+  <use name=clhep>
+  <lib name=SimDataFormatsEcalValidation>
+</export>
+

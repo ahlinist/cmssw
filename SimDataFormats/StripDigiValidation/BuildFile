@@ -1,6 +1,6 @@
-<flags LCGDICT_ARGS="--deep">
 <use name=DataFormats/Common>
+<use name=rootrflx>
 <export>
  <lib name=SimDataFormatsStripDigiValidation>
- <use name=DataFormats/Common>
 </export>
+
