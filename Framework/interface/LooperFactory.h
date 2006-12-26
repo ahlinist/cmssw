@@ -27,8 +27,6 @@
 #include "FWCore/Framework/interface/ComponentFactory.h"
 #include "FWCore/Framework/interface/EventSetupProvider.h"
 
-#include "FWCore/Utilities/interface/GCCPrerequisite.h"
-
 // forward declarations
 
 namespace edm {
@@ -83,24 +81,11 @@ namespace edm {
    }
 }
 
-#if GCC_PREREQUISITE(3,4,4)
-
 #define DEFINE_FWK_LOOPER(type) \
 DEFINE_SEAL_MODULE (); \
 DEFINE_SEAL_PLUGIN (edm::eventsetup::LooperFactory,edm::eventsetup::LooperMaker<type>,#type)
 
 #define DEFINE_ANOTHER_FWK_LOOPER(type) \
 DEFINE_SEAL_PLUGIN (edm::eventsetup::LooperFactory,edm::eventsetup::LooperMaker<type>,#type)
-
-#else
-
-#define DEFINE_FWK_LOOPER(type) \
-DEFINE_SEAL_MODULE (); \
-DEFINE_SEAL_PLUGIN (edm::eventsetup::LooperFactory,edm::eventsetup::LooperMaker<type>,#type);
-
-#define DEFINE_ANOTHER_FWK_LOOPER(type) \
-DEFINE_SEAL_PLUGIN (edm::eventsetup::LooperFactory,edm::eventsetup::LooperMaker<type>,#type);
-
-#endif
 
 #endif

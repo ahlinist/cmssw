@@ -26,8 +26,6 @@
 // user include files
 #include "FWCore/Framework/interface/ComponentFactory.h"
 
-#include "FWCore/Utilities/interface/GCCPrerequisite.h"
-
 // forward declarations
 namespace edm {
    namespace eventsetup {
@@ -46,25 +44,12 @@ namespace edm {
    }
 }
 
-#if GCC_PREREQUISITE(3,4,4)
-
 #define DEFINE_FWK_EVENTSETUP_MODULE(type) \
 DEFINE_SEAL_MODULE (); \
 DEFINE_SEAL_PLUGIN (edm::eventsetup::ModuleFactory,edm::eventsetup::ModuleMaker<type>,#type)
 
 #define DEFINE_ANOTHER_FWK_EVENTSETUP_MODULE(type) \
 DEFINE_SEAL_PLUGIN (edm::eventsetup::ModuleFactory,edm::eventsetup::ModuleMaker<type>,#type)
-
-#else
-
-#define DEFINE_FWK_EVENTSETUP_MODULE(type) \
-DEFINE_SEAL_MODULE (); \
-DEFINE_SEAL_PLUGIN (edm::eventsetup::ModuleFactory,edm::eventsetup::ModuleMaker<type>,#type);
-
-#define DEFINE_ANOTHER_FWK_EVENTSETUP_MODULE(type) \
-DEFINE_SEAL_PLUGIN (edm::eventsetup::ModuleFactory,edm::eventsetup::ModuleMaker<type>,#type);
-
-#endif
 
 #endif
 
