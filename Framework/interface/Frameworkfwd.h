@@ -21,6 +21,8 @@ namespace edm {
   class DataBlockImpl;
   class EDAnalyzer;
   class EDFilter;
+  class EDLooper;
+  class EDLooperHelper;
   class EDProducer;
   class Event;
   class EventPrincipal;
