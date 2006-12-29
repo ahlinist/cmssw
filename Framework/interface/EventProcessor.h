@@ -29,7 +29,7 @@ problems:
   we are not careful yet about catching seal exceptions and printing
   useful information.
 
-  where does the pluginmanager initialise call go?
+  where does the pluginmanager initialize call go?
 
 
 $Id$
@@ -57,8 +57,6 @@ $Id$
 #include "FWCore/Framework/interface/EventHelperDescription.h"
 
 namespace edm {
-class EDLooper;
-class EDLooperHelper;
 
   namespace event_processor
   {  
@@ -277,9 +275,11 @@ class EDLooperHelper;
     StatusCode doneAsync(event_processor::Msg m);
     EventHelperDescription runOnce();
     
+    void endLumiAndRun(EventPrincipal & ep, bool isNewRun = true) const;
+
     void rewind();
 
-    void connectSigs(EventProcessor* ep);
+    void connectSigs(EventProcessor * ep);
 
     struct DoPluginInit
     {
@@ -290,12 +290,11 @@ class EDLooperHelper;
     void errorState();
     void setupSignal();
 
-    static void asyncRun(EventProcessor*);
+    static void asyncRun(EventProcessor *);
 
     // Are all these data members really needed? Some of them are used
     // only during construction, and never again. If they aren't
     // really needed, we should remove them.    
-
 
     DoPluginInit                                  plug_init_;
     CommonParams                                  common_;

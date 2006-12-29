@@ -64,6 +64,14 @@ namespace edm {
       return aux_;
     }
 
+    LuminosityBlockID const& luminosityBlockID() const {
+      return aux().luminosityBlockID();
+    }
+
+    RunNumber_t runNumber() const {
+      return id().run();
+    }
+
     RunPrincipal const& runPrincipal() const;
 
     using Base::addGroup;
@@ -107,6 +115,18 @@ namespace edm {
     // Provenance filler for unscheduled modules
     boost::shared_ptr<EPEventProvenanceFiller> provenanceFiller_;
   };
+
+  inline
+  bool
+  isSameRun(EventPrincipal const* a, EventPrincipal const* b) {
+    return(a != 0 && b != 0 && a->runNumber() == b->runNumber());
+  }
+
+  inline
+  bool
+  isSameLumi(EventPrincipal const* a, EventPrincipal const* b) {
+    return(isSameRun(a, b) && a->luminosityBlockID() == b->luminosityBlockID());
+  }
 }
 #endif
 
