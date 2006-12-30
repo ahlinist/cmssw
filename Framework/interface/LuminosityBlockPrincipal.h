@@ -50,6 +50,9 @@ namespace edm {
       return aux_;
     }
 
+    RunNumber_t const& runNumber() const {
+      return aux().runID();
+    }
     using Base::addGroup;
     using Base::addToProcessHistory;
     using Base::begin;
