@@ -31,8 +31,10 @@
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
+#include "FWCore/Utilities/interface/Exception.h" 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ParameterSet/interface/FileInPath.h"
+#include "FWCore/MessageLogger/interface/MessageLogger.h" 
 
 #include "Geometry/Vector/interface/GlobalTag.h"
 #include "Geometry/Vector/interface/Vector3DBase.h"
@@ -51,6 +53,9 @@
 #include "Math/GenVector/PxPyPzE4D.h"
 
 #include "CLHEP/Vector/LorentzVector.h"
+
+#include <math.h>
+
 #include "TFile.h"
 #include "TH1.h"
 #include "TH2.h"
@@ -58,7 +63,6 @@
 using namespace std; 
 using namespace edm;
 using namespace reco;
-using namespace math;
 
 typedef Vector3DBase<float,GlobalTag> Global3DVector;
 typedef Point3DBase<float,GlobalTag> Global3DPoint;
@@ -160,7 +164,7 @@ public:
   pair<JetTag,CombinedTauTagInfo> tag(const IsolatedTauTagInfoRef&,const Vertex&,Event&,const EventSetup&);
  private:
   void init(const EventSetup&);
-  XYZPoint recTrackImpactPositiononECAL(Event&,const EventSetup&,TrackRef);
+  math::XYZPoint recTrackImpactPositiononECAL(Event&,const EventSetup&,TrackRef);
   void AssociateECALcluster_to_track();
   double LikelihoodRatiovalue();
   string Get_candvar_TDirectoryname(int);
@@ -252,6 +256,10 @@ public:
   double the_signedflightpath_significance;
   double ECALEt_o_leadtkPt;
   double HCALEt_o_leadtkPt;
+  bool couldnotobtain_leadtk_signedipt;
+  bool couldnotobtain_leadtk_signedip3D;
   bool couldnotproduce_SV;
+  bool couldnotobtain_ECALEt_o_leadtkPt;
+  bool couldnotobtain_HCALEt_o_leadtkPt;
 };
 #endif 
