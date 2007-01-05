@@ -6,7 +6,6 @@
 
 namespace {
   namespace {
-    std::vector<float>  dumv;
     PHcalValidInfoLayer theLayer;
     PHcalValidInfoNxN   theNxN;
     PHcalValidInfoJets  theJets;
