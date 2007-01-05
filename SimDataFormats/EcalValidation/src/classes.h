@@ -3,7 +3,6 @@
 #include <vector>
 namespace {
   namespace {
-    std::vector<float>  dumm1;
     edm::Wrapper<PEcalValidInfo> theValidData;
   }
 }

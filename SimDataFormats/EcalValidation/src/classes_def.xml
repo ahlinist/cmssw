@@ -1,5 +1,4 @@
 <lcgdict>
-  <class name="std::vector<float>"/>
   <class name="PEcalValidInfo"/>
   <class name="edm::Wrapper<PEcalValidInfo>"/>
 </lcgdict>
