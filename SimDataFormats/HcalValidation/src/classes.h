@@ -2,7 +2,6 @@
 #include "SimDataFormats/HcalValidation/interface/PHcalValidInfoNxN.h"
 #include "SimDataFormats/HcalValidation/interface/PHcalValidInfoJets.h"
 #include "DataFormats/Common/interface/Wrapper.h"
-#include <vector>
 
 namespace {
   namespace {
