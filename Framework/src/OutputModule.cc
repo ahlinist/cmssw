@@ -145,6 +145,9 @@ namespace edm
     wantAllEvents_(false),
     selectors_()
   {
+    edm::Service<edm::service::TriggerNamesService> tns;
+    process_name_ = tns->getProcessName();
+
     ParameterSet selectevents =
       pset.getUntrackedParameter("SelectEvents", ParameterSet());
 
@@ -176,7 +179,7 @@ namespace edm
     for (size_t i = 0; i < path_specs.size(); ++i)
       parse_path_spec(path_specs[i], parsed_paths[i]);
 
-    selectors_.setup(parsed_paths, getAllTriggerNames());
+    selectors_.setup(parsed_paths, getAllTriggerNames(), process_name_);
   }
 
   void OutputModule::selectProducts() {

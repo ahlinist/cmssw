@@ -39,7 +39,7 @@ namespace edm
 	e.get(nameSelector_, product_);
       }
 
-      bool match() const
+      bool match()
       {
 	return eventSelector_.acceptEvent(*product_);
       }
@@ -73,7 +73,8 @@ namespace edm
       void setupDefault(std::vector<std::string> const& triggernames);
       
       void setup(std::vector<parsed_path_spec_t> const& path_specs,
-		 std::vector<std::string> const& triggernames);
+		 std::vector<std::string> const& triggernames,
+                 const std::string& process_name);
 
       bool wantEvent(Event const& e);
 
