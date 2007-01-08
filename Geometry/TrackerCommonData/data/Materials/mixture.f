@@ -40,10 +40,10 @@ C     ========================
       Integer ISTAT,i,j,k,l
 
       Character*1 Coding, Code
-      Character*20 Filename,OutFile,InFile,tzfile,x0file
+      Character*20 Filename,OutFile,InFile,tzfile,x0file,l0file
       Character*120 inputstring
 
-      Integer Nmix, Ndiv,LunOut,LunIn,Index, Luntz,Lunx0
+      Integer Nmix, Ndiv,LunOut,LunIn,Index, Luntz,Lunx0,Lunl0
 
 C...Common Block .................................................
       Integer MaxDiv
@@ -54,7 +54,8 @@ C...Common Block .................................................
       Character*3 Type(MaxDiv)
       Real Volume(MaxDiv), Mult(MaxDiv),
      +     Density(MaxDiv),Radl(MaxDiv),MCVolume,MCArea
-      Common /MatMix/ Comment, Material,Volume,Mult,Density,Radl,
+      Real Intl(MaxDiv)
+      Common /MatMix/ Comment, Material,Volume,Mult,Density,Radl,Intl,
      +                MCVolume,MCArea,MixtureName,GMIXName,Type
 C.................................................................
 
@@ -75,6 +76,7 @@ C      read(*,*) Filename
       OutFile = Filename(1:LENOCC(Filename))//".tex" 
       tzfile  = Filename(1:LENOCC(Filename))//".titles"
       x0file  = Filename(1:LENOCC(Filename))//".x0"
+      l0file  = Filename(1:LENOCC(Filename))//".l0"
 
 C      write(*,*) Filename, InFile, OutFile
 
@@ -82,6 +84,7 @@ C      write(*,*) Filename, InFile, OutFile
       LunOut = 24
       Luntz = LunOut + 1
       Lunx0 = LunOut + 2
+      Lunl0 = LunOut + 3
       open(unit=LunIn,file=InFile,status="OLD",IOSTAT=istat)
       if(istat.ne.0) then
          write(*,*) "Input file not found. Filename: ", InFile
@@ -91,6 +94,7 @@ C      write(*,*) Filename, InFile, OutFile
       open(unit=LunOut,file=OutFile,status="REPLACE")
       open(unit=Luntz,file=tzfile,status="REPLACE")
       open(unit=Lunx0,file=x0file,status="REPLACE")
+      open(unit=Lunl0,file=l0file,status="REPLACE")
       call LatexSetup(LunOut)
 
 
@@ -145,6 +149,7 @@ C      write(LunOut,*) "\\end{center}"
       close(LunOut)
       close(Luntz)
       close(Lunx0)
+      close(Lunl0)
        
 C... write out little latex/dvips script
 C      open(30,file="do",status="OLD")
@@ -195,8 +200,8 @@ C     ========================
       Integer NPure,match
       CHARACTER*25 PureName(MaxPure)
       REAL Pureweight(MaxPure), Purenumber(MaxPure), Puredens(MaxPure),
-     +     PureX0(MaxPure),Pureabsl(MaxPure) 
-      SAVE NPure, Pureweight, Purenumber, Puredens, PureX0, Pureabsl
+     +     PureX0(MaxPure), PureL0(MaxPure)
+      SAVE NPure, Pureweight, Purenumber, Puredens, PureX0, PureL0
 
       Character*30 string,teststring
 
@@ -216,7 +221,8 @@ C...Common Block .................................................
       Character*3 Type(MaxDiv)
       Real Volume(MaxDiv), Mult(MaxDiv),
      +     Density(MaxDiv),Radl(MaxDiv),MCVolume,MCArea
-      Common /MatMix/ Comment, Material,Volume,Mult,Density,Radl,
+      Real Intl(MaxDiv)
+      Common /MatMix/ Comment, Material,Volume,Mult,Density,Radl,Intl,
      +                MCVolume,MCArea,MixtureName,GMIXName,Type
 C.................................................................
 
@@ -237,7 +243,7 @@ C... read in pure material file
          Npure = 0
          do i=1, MaxPure
             read(22,*,END=10) PureName(i), Pureweight(i), 
-     +           PureNumber(i),PureDens(i), PureX0(i),Pureabsl(i)
+     +           PureNumber(i),PureDens(i), PureX0(i), PureL0(i)
             Npure = Npure + 1
          enddo
  10      continue
@@ -257,7 +263,7 @@ C... read in mixed material file
 
          do i=Npure+1, MaxPure
             read(22,*,END=20) PureName(i), Pureweight(i), 
-     +           PureNumber(i),PureDens(i), PureX0(i),Pureabsl(i)
+     +           PureNumber(i),PureDens(i), PureX0(i), PureL0(i)
             Npure = Npure + 1
          enddo
  20      continue
@@ -267,14 +273,14 @@ C
          if (debug) then
             write(*,*) "Number of pure materials:  ", Npure
             write(*,*) "Material name            ", "A        ",
-     +           "Z       ",
-     +           "dens    ", "X_0        ","abs_l       "
+     +           "Z         ",
+     +           "dens [g/cm3]", "  X_0 [cm]  ","  l_0 [cm]"
             do j= 1, NPure
                write(*,200) PureName(j), Pureweight(j), 
-     +           PureNumber(j),PureDens(j), PureX0(j),Pureabsl(j)
+     +              PureNumber(j),PureDens(j), PureX0(j), PureL0(j)
             enddo
          endif
- 200     Format(A20,F10.5,F7.0,3F10.5)
+ 200     Format(A20,F10.5,F7.0,3F15.5)
 
          FIRST = .FALSE.
       endif
@@ -291,11 +297,12 @@ C---> try to match material here !
          if(teststring(1:LENOCC(teststring)).eq.
      +        string(1:LENOCC(string))) then
             if (debug)  write(*,200) PureName(i), Pureweight(i), 
-     +           PureNumber(i), PureDens(i), PureX0(i),Pureabsl(i)           
+     +           PureNumber(i), PureDens(i), PureX0(i), PureL0(i)
             match = 1
-C... set density and radiation lenght
+C... set density and radiation lenght and nuclear interaction length
             Density(Index) = Puredens(I)
             Radl(Index) = PureX0(I)
+            Intl(Index) = PureL0(I)
        endif
       enddo
 
@@ -313,6 +320,11 @@ C... set density and radiation lenght
              write(*,*) "Density is zero for material ",
      +           Material(Index)
           endif
+         if(Intl(Index).le.0.) then
+            write(*,*)
+     +           "Nuclear Interaction length is zero for material ",
+     +           Material(Index)
+         endif
       endif
 
       return
@@ -333,16 +345,20 @@ C...Common Block .................................................
       Character*3 Type(MaxDiv)
       Real Volume(MaxDiv), Mult(MaxDiv),
      +     Density(MaxDiv),Radl(MaxDiv),MCVolume,MCArea
-      Common /MatMix/ Comment, Material,Volume,Mult,Density,Radl,
+      Real Intl(MaxDiv)
+      Common /MatMix/ Comment, Material,Volume,Mult,Density,Radl,Intl,
      +                MCVolume,MCArea,MixtureName,GMIXName,Type
 C.................................................................
 
-      Integer NMat, i, j, k,LUN,NMix,LUNTZ,NTZ,Lunx0
+      Integer NMat, i, j, k,LUN,NMix,LUNTZ,NTZ,Lunx0,Lunl0
 
       Real TVOL,TDEN,TRAD,Weight,PVOL(MaxDiv),PWeight(MaxDiv)
+      Real TINT
       Real ws(MaxDiv),tmp,PRAD(MaxDiv),Norm,Ndens,NRadl,PRadl
+      Real ws2(MaxDiv),tmp2,PINT(MaxDiv),NIntl,PIntl
 
       Real PSUP,PSEN,PCAB,PCOL,PELE
+      Real PSUP2,PSEN2,PCAB2,PCOL2,PELE2
 
       Character*30 string,string1,string2,stringmatname
 
@@ -360,12 +376,15 @@ C..initialize
       TDEN = 0.     ! compound density
       TRAD = 0.     ! compound radiation length
       Weight = 0.   ! Total weight
+      TINT = 0.     ! compound nuclear interaction length
       call VZERO(PVOL,MaxDiv)
       call VZERO(Pweight,MaxDiv)
       call VZERO(ws,MaxDiv)
+      call VZERO(ws2,MaxDiv)
       call VZERO(PRAD,MaxDiv)
       call VZERO(TZVol,MaxDiv)
       tmp = 0.
+      tmp2 = 0.
 
 * total volume
       do i=1, NMat
@@ -390,15 +409,26 @@ C..initialize
 * weight for X0 calculation (pweight/(density*radl))
             ws(j) =  Pweight(j)/(Density(j)*Radl(j))
             tmp = tmp + ws(j)
+* weight for Lambda0 calculation (pweight/(density*intl))
+            ws2(j) = Pweight(j)/(Density(j)*Intl(j))
+            tmp2 = tmp2 + ws2(j)
          endif
       enddo
       
 * radiation length of compound
       TRAD = 1/(tmp*TDEN)
 
+* nuclear interaction length of compound
+      TINT = 1/(tmp2*TDEN)
+
 * contribution to compound X0
       do k = 1,NMat
          PRAD(k) = ws(k)*TRAD*TDEN
+      enddo
+
+* contribution to compound Lambda0
+      do k = 1,NMat
+         PINT(k) = ws2(k)*TINT*TDEN
       enddo
 
 * Normalization factor Mixture/MC volume
@@ -408,14 +438,20 @@ C..initialize
          Norm = 1.
       endif
 
-* Normalized density and radiation length
+* Normalized density and radiation length and nuclear interaction length
 
       ndens = TDEN*Norm
       NRadl = TRAD / norm
+      NIntl = TINT / norm
 
 * percentual radiation length of compound (if area is given)
       if (MCArea.gt.0) then
          PRadl = MCVolume/(MCArea*NRadl)
+      endif
+
+* percentual nuclear interaction length of compound (if area is given)
+      if (MCArea.gt.0) then
+         PIntl = MCVolume/(MCArea*NIntl)
       endif
 
 C---> separate contributions to X_0 by type
@@ -437,7 +473,30 @@ C---> separate contributions to X_0 by type
             PELE = PELE + PRAD(i) 
          else
             write(*,*) "No grouping given for material ",
-     +                 Material(i)
+     +           Material(i)
+         endif
+      enddo
+      
+C---> separate contributions to Lambda_0 by type
+      PSUP2 = 0.
+      PSEN2 = 0.
+      PCAB2 = 0.
+      PCOL2 = 0.
+      PELE2 = 0.
+      do i = 1, NMat
+         if(Type(i).eq."SUP") then
+            PSUP2 = PSUP2 + PINT(i)
+         elseif (Type(i).eq."SEN") then
+            PSEN2 = PSEN2 + PINT(i)
+         elseif (Type(i).eq."CAB") then
+            PCAB2 = PCAB2 + PINT(i) 
+         elseif (Type(i).eq."COL") then
+            PCOL2 = PCOL2 + PINT(i) 
+         elseif (Type(i).eq."ELE") then
+            PELE2 = PELE2 + PINT(i) 
+         else
+            write(*,*) "No grouping given for material ",
+     +           Material(i)
          endif
       enddo
 
@@ -476,17 +535,21 @@ C
      +     '(Material name: ',A40,')',' }}')
       
 C      write(LUN,*) "\\begin{table}[ht]"
-      write(LUN,*) "\\begin{tabular}{crlrlrlcrl}"
+      write(LUN,*) "\\begin{tabular}{crlrlrlcrrrr}"
 C      write(LUN,*) "\\hline\\hline"
       write(LUN,*) " & Component & Material & ",
      +     " Volume & \\%  & ",
      + " Weight & \\% & Density ",
      +     " & X$_0$ & ",
+     +     " \\% ",
+     +     " & $\\lambda_0$ & ",
      +     " \\% "
       write(LUN,*) "\\","\\"
       write(LUN,*) " & & & ",
      +     " [cm$^3$] & & ",
      + " [g] & & [g/cm$^3$]",
+     +     " & [cm] & ",
+     +     " ",
      +     " & [cm] & ",
      +     " "
       write(LUN,*) "\\","\\"
@@ -501,11 +564,12 @@ C      write(LUN,*) "\\hline\\hline"
          write(LUN,1001) k,string1(1:LENOCC(string1)),
      +        string(1:LENOCC(string)),Volume(k),100.*PVOL(k),
      +        Density(k)*Volume(k),
-     +        100.*Pweight(k),Density(k),Radl(k),100.*PRAD(k)
+     +        100.*Pweight(k),Density(k),Radl(k),100.*PRAD(k),
+     +        Intl(k),100*PINT(k)
          write(LUN,*) "\\hline"
       enddo
  1001 Format(1X,I4,2X,' & ',A20,' & ',A20,' & ',
-     +     6(1X,F8.3,' & '),1X,F8.3,
+     +     8(1X,F8.3,' & '),1X,F8.3,
      +     '\\','\\')
 
 C
@@ -514,7 +578,7 @@ C
       write(LUN,*) "\\end{tabular}"
 C      write(LUN,*) "\\vskip 0.1cm"
       write(LUN,*) " "
-      write(LUN,*) "\\begin{tabular}{lr}"
+      write(LUN,*) "\\begin{tabular}{lrr}"
       write(LUN,*) "\\fbox{\\begin{tabular}{rl}"
       write(LUN,1002) "Mixture density [g/cm$^3$]",TDEN
       write(LUN,1002) "Norm. mixture density [g/cm$^3$]",Ndens
@@ -525,7 +589,12 @@ C      write(LUN,*) "\\vskip 0.1cm"
       write(LUN,1002) "Mixture X$_0$ [cm]", TRAD
       write(LUN,1002) "Norm. Mixture X$_0$ [cm]",NRadl
       if (MCArea.gt.0) then
-         write(LUN,1002) "Norm. Mixture X0 (\\%)",100*PRadl
+         write(LUN,1002) "Norm. Mixture X$_0$ (\\%)",100*PRadl
+      endif
+      write(LUN,1002) "Mixture $\\lambda_0$ [cm]", TINT
+      write(LUN,1002) "Norm. Mixture $\\lambda_0$ [cm]",NIntl
+      if (MCArea.gt.0) then
+         write(LUN,1002) "Norm. Mixture $\\lambda_0$ (\\%)",100*PIntl
       endif
       write(LUN,1002) "Total weight (g)",weight
  1002 Format(A40," & ",F11.5," \\","\\")
@@ -538,13 +607,22 @@ C      write(LUN,*) "\\vskip 0.1cm"
       write(LUN,1005) "Cables: ",PCAB
       write(LUN,1005) "Cooling: ",PCOL
       write(LUN,1005) "Electronics: ", PELE
-
+      
+      write(LUN,*) "\\end{tabular}} & \\fbox{\\begin{tabular}{rl}"
+      
+      write(LUN,1006) "\\underline{$\\lambda_0$ contribution}"
+      write(LUN,1005) "Support: ",PSUP2
+      write(LUN,1005) "Sensitive: ",PSEN2
+      write(LUN,1005) "Cables: ",PCAB2
+      write(LUN,1005) "Cooling: ",PCOL2
+      write(LUN,1005) "Electronics: ", PELE2
+      
  1005 Format(A25," & ",F5.3,"\\","\\")
- 1006 Format(A30," & \\","\\")
-
+ 1006 Format(A40," & \\","\\")
+      
       write(LUN,*) "\\end{tabular}}\\end{tabular}"
       write(LUN,*) "\\clearpage"
-
+      
 C----> now write out a pseudo title file
 
       LUNTZ = LUN+1
@@ -594,6 +672,7 @@ C      enddo
 C--> and x0 contributions into a separate file
 
       Lunx0 = LUN+2
+      Lunl0 = LUN+3
 
 C     Original
 C     tzstring = '"'//GMIXName(1:LENOCC(GMIXName))//'"'
@@ -610,6 +689,9 @@ C     rr
       tzstring = GMIXName(1:LENOCC(GMIXName))
       write(Lunx0,1012) tzstring,PSUP,PSEN,PCAB,PCOL,PELE
       write(Lunx0,*) "   "
+      tzstring = GMIXName(1:LENOCC(GMIXName))
+      write(Lunl0,1012) tzstring,PSUP2,PSEN2,PCAB2,PCOL2,PELE2
+      write(Lunl0,*) "   "
  1012 Format(A23,1X,F5.3,1X,F5.3,1X,F5.3,1X,F5.3,1X,F5.3)
 C     rr
       
@@ -633,7 +715,8 @@ C...Common Block .................................................
       Character*3 Type(MaxDiv)
       Real Volume(MaxDiv), Mult(MaxDiv),
      +     Density(MaxDiv),Radl(MaxDiv),MCVolume,MCArea
-      Common /MatMix/ Comment, Material,Volume,Mult,Density,Radl,
+      Real Intl(MaxDiv)
+      Common /MatMix/ Comment, Material,Volume,Mult,Density,Radl,Intl,
      +                MCVolume,MCArea,MixtureName,GMIXName,Type
 C.................................................................
 
@@ -647,6 +730,7 @@ C.................................................................
       Call VZERO(Mult,MaxDiv)
       Call VZERO(Density,MaxDiv)
       Call VZERO(Radl,MaxDiv)
+      Call VZERO(Intl,MaxDiv)
       MCVolume = 0.
       MCArea = 0.
       MixtureName = " "
