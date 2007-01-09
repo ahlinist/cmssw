@@ -227,7 +227,11 @@
       <rMaterial name="materials:Fluorine"/>
     </MaterialFraction>
   </CompositeMaterial>
-  <ElementaryMaterial name="Pix_Bar_Ring_HC" density="44*mg/cm3" symbol=" " atomicWeight="26.98*g/mole" atomicNumber="13"/>
+  <CompositeMaterial name="Pix_Bar_Ring_HC" density="44*mg/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="1.00000000">
+      <rMaterial name="materials:Aluminium"/>
+    </MaterialFraction>
+  </CompositeMaterial>
   <CompositeMaterial name="Pix_Bar_Services" density="1.963*g/cm3" symbol=" " method="mixture by weight">
     <MaterialFraction fraction="0.25342715">
       <rMaterial name="materials:Aluminium"/>
