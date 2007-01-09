@@ -53,7 +53,7 @@
  <Constant name="ModCoolComp1Z"  value="2.125*cm"/>
  <Constant name="ModCoolComp2Dx" value="0.800*cm"/>
  <Constant name="ModCoolComp2Dz" value="1.300*cm"/>
- <Constant name="ModCoolComp2X"  value="5.200*cm"/>
+ <Constant name="ModCoolComp2X"  value="5.250*cm"/>
  <Constant name="ModCoolComp2Y"  value="0.130*cm"/>
  <Constant name="ModCoolComp2Z"  value="10.325*cm"/>
  <Constant name="Tilt"       value="5.7296*deg"/>
@@ -70,10 +70,11 @@
  <Constant name="GlueDy"     value="0.275*cm"/>
  <Constant name="GlueDz"     value="0.1*cm"/>
  <Constant name="GlueSi1Y"   value="0.340*cm"/>
- <Constant name="GlueSi2Y"   value="-0.076*cm"/>
+ <Constant name="GlueSi2Y"   value="0.015*cm"/>
  <Constant name="GluePAY"    value="0.340*cm"/>
  <Constant name="GluePAZ"    value="7.435*cm"/>
  <Constant name="PAX"        value="[WaferDy]*sin([Tilt])"/>
+ <Constant name="GluePAX"    value="[WaferDy]*sin([Tilt])"/>
 </ConstantsSection>
 
 <SolidSection label="tobmodpar.xml">
@@ -146,7 +147,7 @@
  </LogicalPart>
  <LogicalPart name="TOBModCool2" category="unspecified">
   <rSolid name="TOBModCool2"/>
-  <rMaterial name="tobmaterial:TOB_mod_cool_3"/>
+  <rMaterial name="tobmaterial:TOB_mod_cool_2"/>
  </LogicalPart>
  <LogicalPart name="TOBModCoolComp1" category="unspecified">
   <rSolid name="TOBModCoolComp1"/>

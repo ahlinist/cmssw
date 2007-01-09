@@ -8,6 +8,7 @@
  @version 3.02.01 May 30, 2006
  @created Sunanda Banjeree
  @modified Dmitry Onoprienko
+ @modified Vesna Cuplov
 
 == COMPONENT DEFINED BY THIS FILE: ==
 
@@ -32,84 +33,60 @@
     </MaterialFraction>
   </CompositeMaterial>
 
-  <CompositeMaterial name="Pix_Fwd_Bump" density="2.0725*g/cm3" symbol=" " method="mixture by weight">
-    <MaterialFraction fraction="0.84318456">
-      <rMaterial name="materials:Silicon"/>
+  <CompositeMaterial name="Pix_Fwd_Bump" density="0.41299*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="0.6282486">
+      <rMaterial name="materials:Tin"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.083958502">
-      <rMaterial name="materials:Carbon"/>
+    <MaterialFraction fraction="0.3689714">
+      <rMaterial name="materials:Lead"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.020667199">
-      <rMaterial name="materials:Hydrogen"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.05218974">
-      <rMaterial name="materials:Oxygen"/>
+    <MaterialFraction fraction="0.00278">
+      <rMaterial name="materials:Air"/>
     </MaterialFraction>
   </CompositeMaterial>
 
-  <CompositeMaterial name="Pix_Fwd_AgEpoxy" density="2.0725*g/cm3" symbol=" " method="mixture by weight">
-    <MaterialFraction fraction="0.84318456">
-      <rMaterial name="materials:Silicon"/>
+  <CompositeMaterial name="Pix_Fwd_AgEpoxy" density="1.62857*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="0.11404">
+      <rMaterial name="materials:E_Epoxy"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.083958502">
-      <rMaterial name="materials:Carbon"/>
+    <MaterialFraction fraction="0.30702">
+      <rMaterial name="materials:Boron"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.020667199">
+    <MaterialFraction fraction="0.114035">
+      <rMaterial name="materials:E_Silicon"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.342105">
       <rMaterial name="materials:Hydrogen"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.05218974">
-      <rMaterial name="materials:Oxygen"/>
+    <MaterialFraction fraction="0.12281">
+      <rMaterial name="materials:Kapton"/>
     </MaterialFraction>
   </CompositeMaterial>
 
-  <CompositeMaterial name="Pix_Fwd_AdhFilm" density="2.0725*g/cm3" symbol=" " method="mixture by weight">
-    <MaterialFraction fraction="0.84318456">
-      <rMaterial name="materials:Silicon"/>
+
+  <CompositeMaterial name="Pix_Fwd_AdhFilm" density="1.73985*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="0.59780">
+      <rMaterial name="materials:E_Epoxy"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.083958502">
-      <rMaterial name="materials:Carbon"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.020667199">
-      <rMaterial name="materials:Hydrogen"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.05218974">
-      <rMaterial name="materials:Oxygen"/>
+    <MaterialFraction fraction="0.40220">
+      <rMaterial name="materials:Boron"/>
     </MaterialFraction>
   </CompositeMaterial>
 
-  <CompositeMaterial name="Pix_Fwd_VHDI" density="1.3736*g/cm3" symbol=" " method="mixture by weight">
-    <MaterialFraction fraction="0.10963061">
+
+  <CompositeMaterial name="Pix_Fwd_VHDI" density="2.99175*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="0.36943">
+      <rMaterial name="materials:Kapton"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.63057">
       <rMaterial name="materials:Copper"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.15526924">
-      <rMaterial name="materials:Aluminium"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.43900268">
-      <rMaterial name="materials:Carbon"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.060754883">
-      <rMaterial name="materials:Hydrogen"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.23534259">
-      <rMaterial name="materials:Oxygen"/>
-    </MaterialFraction>
   </CompositeMaterial>
 
-  <CompositeMaterial name="Pix_Fwd_ROChip" density="2.17525*g/cm3" symbol=" " method="mixture by weight">
-    <MaterialFraction fraction="0.84842968">
-      <rMaterial name="materials:Silicon"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.063360581">
-      <rMaterial name="materials:Carbon"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.015596821">
-      <rMaterial name="materials:Hydrogen"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.039385794">
-      <rMaterial name="materials:Oxygen"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.033227128">
-      <rMaterial name="materials:Indium"/>
+
+  <CompositeMaterial name="Pix_Fwd_ROChip" density="2.33*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="1">
+      <rMaterial name="materials:E_Silicon"/>
     </MaterialFraction>
   </CompositeMaterial>
 
@@ -155,21 +132,15 @@
     </MaterialFraction>
   </CompositeMaterial>
 
-  <CompositeMaterial name="Pix_Fwd_HDI" density="1.3736*g/cm3" symbol=" " method="mixture by weight">
-    <MaterialFraction fraction="0.10963061">
+  <CompositeMaterial name="Pix_Fwd_HDI" density="2.07430*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="0.40713">
+      <rMaterial name="materials:Kapton"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.18175">
+      <rMaterial name="materials:E_Epoxy"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.41112">
       <rMaterial name="materials:Copper"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.15526924">
-      <rMaterial name="materials:Aluminium"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.43900268">
-      <rMaterial name="materials:Carbon"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.060754883">
-      <rMaterial name="materials:Hydrogen"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.23534259">
-      <rMaterial name="materials:Oxygen"/>
     </MaterialFraction>
   </CompositeMaterial>
 

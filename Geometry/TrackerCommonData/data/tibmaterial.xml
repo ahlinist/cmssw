@@ -183,8 +183,16 @@
       <rMaterial name="materials:Silver"/>
     </MaterialFraction>
   </CompositeMaterial>
-  <ElementaryMaterial name="TIB_ICC_ledge1" density="4.04*g/cm3" symbol=" " atomicWeight="26.98*g/mole" atomicNumber="13"/>
-  <ElementaryMaterial name="TIB_ICC_ledge2" density="4.236*g/cm3" symbol=" " atomicWeight="26.98*g/mole" atomicNumber="13"/>
+  <CompositeMaterial name="TIB_ICC_ledge1" density="4.04*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="1.00000000">
+      <rMaterial name="materials:Aluminium"/>
+    </MaterialFraction>
+  </CompositeMaterial>
+  <CompositeMaterial name="TIB_ICC_ledge2" density="4.236*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="1.00000000">
+      <rMaterial name="materials:Aluminium"/>
+    </MaterialFraction>
+  </CompositeMaterial>
   <CompositeMaterial name="TIB_PA_rphi" density="1.73*g/cm3" symbol=" " method="mixture by weight">
     <MaterialFraction fraction="0.21780988">
       <rMaterial name="materials:Silicon"/>
@@ -597,7 +605,11 @@
       <rMaterial name="materials:Fluorine"/>
     </MaterialFraction>
   </CompositeMaterial>
-  <ElementaryMaterial name="TIB_mod_spacer1" density="2.7*g/cm3" symbol=" " atomicWeight="26.98*g/mole" atomicNumber="13"/>
+  <CompositeMaterial name="TIB_mod_spacer1" density="2.7*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="1.00000000">
+      <rMaterial name="materials:Aluminium"/>
+    </MaterialFraction>
+  </CompositeMaterial>
   <CompositeMaterial name="TIB_mod_spacer2" density="2.051*g/cm3" symbol=" " method="mixture by weight">
     <MaterialFraction fraction="0.38709359">
       <rMaterial name="materials:Aluminium"/>

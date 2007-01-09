@@ -14,6 +14,10 @@
       dy="[tobmodpar:WaferDy]"    dz="[tobmodpar:WaferDz]"/>
  <Box name="TOBActiveSter0"       dx="[tobmodpar:ActiveDx]" 
       dy="[tobmodpar:ActiveDy]"   dz="[tobmodpar:WaferDz]"/>
+ <Box name="TOBModCoolComp01"        dx="[tobmodpar:ModCoolComp1Dx]" 
+      dy="[tobmodpar:ModCoolCompDy]" dz="[tobmodpar:ModCoolComp1Dz]"/>
+ <Box name="TOBModCoolComp02"        dx="[tobmodpar:ModCoolComp2Dx]" 
+      dy="[tobmodpar:ModCoolCompDy]" dz="[tobmodpar:ModCoolComp2Dz]"/>
 </SolidSection>
 
 <LogicalPartSection label="tobmodule0.xml">
@@ -27,11 +31,11 @@
  </LogicalPart>
  <LogicalPart name="TOBModCool01" category="unspecified">
   <rSolid name="TOBModCool01"/>
-  <rMaterial name="tobmaterial:TOB_mod_cool_2"/>
+  <rMaterial name="tobmaterial:TOB_mod_cool_1"/>
  </LogicalPart>
  <LogicalPart name="TOBModCool02" category="unspecified">
   <rSolid name="TOBModCool02"/>
-  <rMaterial name="tobmaterial:TOB_mod_cool_4"/>
+  <rMaterial name="tobmaterial:TOB_mod_cool_2"/>
  </LogicalPart>
  <LogicalPart name="TOBWaferRphi0" category="unspecified">
   <rSolid name="tobmodpar:TOBWaferRphi"/>
@@ -48,6 +52,14 @@
  <LogicalPart name="TOBActiveSter0" category="unspecified">
   <rSolid name="TOBActiveSter0"/>
   <rMaterial name="materials:Silicon"/>
+ </LogicalPart>
+ <LogicalPart name="TOBModCoolComp01" category="unspecified">
+  <rSolid name="TOBModCoolComp01"/>
+  <rMaterial name="tobmaterial:TOB_mod_comp"/>
+ </LogicalPart>
+ <LogicalPart name="TOBModCoolComp02" category="unspecified">
+  <rSolid name="TOBModCoolComp02"/>
+  <rMaterial name="materials:Carbon fibre str."/>
  </LogicalPart>
 </LogicalPartSection>
 
@@ -87,6 +99,34 @@
  </PosPart>
  <PosPart copyNumber="1">
    <rParent name="tobmodule0:TOBModule0"/>
+   <rChild name="tobmodpar:TOBSiEncaps"/>
+  <rRotation name="tobmodpar:Rphi"/>
+  <Translation x="[zero]"                 y="-[tobmodpar:GlueSi1Y]" 
+               z="-[tobmodpar:WaferZ]" />
+ </PosPart>
+ <PosPart copyNumber="2">
+   <rParent name="tobmodule0:TOBModule0"/>
+   <rChild name="tobmodpar:TOBSiEncaps"/>
+  <rRotation name="tobmodpar:Ster"/>
+  <Translation x="[zero]"                 y="[tobmodpar:GlueSi1Y]" 
+               z="-[tobmodpar:WaferZ]" />
+ </PosPart>
+ <PosPart copyNumber="1">
+   <rParent name="tobmodule0:TOBModule0"/>
+   <rChild name="tobmodpar:TOBSiBackEncaps"/>
+  <rRotation name="tobmodpar:Rphi"/>
+  <Translation x="[zero]" y="-[tobmodpar:GlueSi2Y]" 
+               z="-[tobmodpar:WaferZ]-[tobmodpar:GlueDy]" />
+ </PosPart>
+ <PosPart copyNumber="1">
+   <rParent name="tobmodule0:TOBModule0"/>
+   <rChild name="tobmodpar:TOBSiBackEncaps"/>
+  <rRotation name="tobmodpar:Rphi"/>
+  <Translation x="[zero]" y="[tobmodpar:GlueSi2Y]" 
+               z="-[tobmodpar:WaferZ]+[tobmodpar:GlueDy]" />
+ </PosPart>
+ <PosPart copyNumber="1">
+   <rParent name="tobmodule0:TOBModule0"/>
    <rChild name="tobmodule0:TOBHybrid0"/>
   <Translation x="[zero]"                 y="-[tobmodpar:HybridY]" 
                z="[tobmodpar:HybridZ]"  />
@@ -109,6 +149,20 @@
   <rRotation name="tobmodpar:PA"/>
   <Translation x="[tobmodpar:PAX]"        y="[tobmodpar:PAY]" 
                z="[tobmodpar:PAZ]"  />
+ </PosPart>
+ <PosPart copyNumber="1">
+   <rParent name="tobmodule0:TOBModule0"/>
+   <rChild name="tobmodpar:TOBPAEncaps"/>
+  <rRotation name="tobmodpar:Rphi"/>
+  <Translation x="[zero]"                 y="-[tobmodpar:GluePAY]" 
+               z="[tobmodpar:GluePAZ]"  />
+ </PosPart>
+ <PosPart copyNumber="2">
+   <rParent name="tobmodule0:TOBModule0"/>
+   <rChild name="tobmodpar:TOBPAEncaps"/>
+  <rRotation name="tobmodpar:Ster"/>
+  <Translation x="[tobmodpar:GluePAX]"    y="[tobmodpar:GluePAY]" 
+               z="[tobmodpar:GluePAZ]"  />
  </PosPart>
  <PosPart copyNumber="1">
    <rParent name="tobmodule0:TOBModule0"/>
@@ -172,6 +226,18 @@
  </PosPart>
  <PosPart copyNumber="1">
    <rParent name="tobmodule0:TOBModule0"/>
+   <rChild name="tobmodpar:TOBModCoolComp1"/>
+  <Translation x="-[tobmodpar:ModCoolComp1X]" y="-[tobmodpar:ModCoolComp1Y]" 
+               z="-[tobmodpar:ModCoolComp1Z]" />
+ </PosPart>
+ <PosPart copyNumber="2">
+   <rParent name="tobmodule0:TOBModule0"/>
+   <rChild name="tobmodpar:TOBModCoolComp1"/>
+  <Translation x="[tobmodpar:ModCoolComp1X]" y="-[tobmodpar:ModCoolComp1Y]" 
+               z="-[tobmodpar:ModCoolComp1Z]" />
+ </PosPart>
+ <PosPart copyNumber="1">
+   <rParent name="tobmodule0:TOBModule0"/>
    <rChild name="tobmodpar:TOBModCool2"/>
   <Translation x="-[tobmodpar:ModCool2X]" y="-[tobmodpar:ModCool2Y]" 
                z="[tobmodpar:ModCool2Z]"  />
@@ -181,6 +247,18 @@
    <rChild name="tobmodpar:TOBModCool2"/>
   <Translation x="[tobmodpar:ModCool2X]"  y="-[tobmodpar:ModCool2Y]" 
                z="[tobmodpar:ModCool2Z]"  />
+ </PosPart>
+ <PosPart copyNumber="1">
+   <rParent name="tobmodule0:TOBModule0"/>
+   <rChild name="tobmodpar:TOBModCoolComp2"/>
+  <Translation x="-[tobmodpar:ModCoolComp2X]" y="-[tobmodpar:ModCoolComp2Y]" 
+               z="[tobmodpar:ModCoolComp2Z]"  />
+ </PosPart>
+ <PosPart copyNumber="2">
+   <rParent name="tobmodule0:TOBModule0"/>
+   <rChild name="tobmodpar:TOBModCoolComp2"/>
+  <Translation x="[tobmodpar:ModCoolComp2X]"  y="-[tobmodpar:ModCoolComp2Y]" 
+               z="[tobmodpar:ModCoolComp2Z]"  />
  </PosPart>
  <PosPart copyNumber="1">
    <rParent name="tobmodule0:TOBModule0"/>
@@ -196,6 +274,18 @@
  </PosPart>
  <PosPart copyNumber="1">
    <rParent name="tobmodule0:TOBModule0"/>
+   <rChild name="tobmodule0:TOBModCoolComp01"/>
+  <Translation x="-[tobmodpar:ModCoolComp1X]" y="[tobmodpar:ModCoolComp1Y]" 
+               z="-[tobmodpar:ModCoolComp1Z]" />
+ </PosPart>
+ <PosPart copyNumber="2">
+   <rParent name="tobmodule0:TOBModule0"/>
+   <rChild name="tobmodule0:TOBModCoolComp01"/>
+  <Translation x="[tobmodpar:ModCoolComp1X]" y="[tobmodpar:ModCoolComp1Y]" 
+               z="-[tobmodpar:ModCoolComp1Z]" />
+ </PosPart>
+ <PosPart copyNumber="1">
+   <rParent name="tobmodule0:TOBModule0"/>
    <rChild name="tobmodule0:TOBModCool02"/>
   <Translation x="-[tobmodpar:ModCool2X]" y="[tobmodpar:ModCool2Y]" 
                z="[tobmodpar:ModCool2Z]"  />
@@ -205,6 +295,18 @@
    <rChild name="tobmodule0:TOBModCool02"/>
   <Translation x="[tobmodpar:ModCool2X]"  y="[tobmodpar:ModCool2Y]" 
                z="[tobmodpar:ModCool2Z]"  />
+ </PosPart>
+ <PosPart copyNumber="1">
+   <rParent name="tobmodule0:TOBModule0"/>
+   <rChild name="tobmodule0:TOBModCoolComp02"/>
+  <Translation x="-[tobmodpar:ModCoolComp2X]" y="[tobmodpar:ModCoolComp2Y]" 
+               z="[tobmodpar:ModCoolComp2Z]"  />
+ </PosPart>
+ <PosPart copyNumber="2">
+   <rParent name="tobmodule0:TOBModule0"/>
+   <rChild name="tobmodule0:TOBModCoolComp02"/>
+  <Translation x="[tobmodpar:ModCoolComp2X]"  y="[tobmodpar:ModCoolComp2Y]" 
+               z="[tobmodpar:ModCoolComp2Z]"  />
  </PosPart>
 </PosPartSection>
 

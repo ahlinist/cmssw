@@ -38,7 +38,11 @@
       <rMaterial name="materials:Fluorine"/>
     </MaterialFraction>
   </CompositeMaterial>
-  <ElementaryMaterial name="TID_Cool_insert" density="2.7*g/cm3" symbol=" " atomicWeight="26.98*g/mole" atomicNumber="13"/>
+  <CompositeMaterial name="TID_Cool_insert" density="2.7*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="1.00000000">
+      <rMaterial name="materials:Aluminium"/>
+    </MaterialFraction>
+  </CompositeMaterial>
   <CompositeMaterial name="TID_Cool_ring" density="1.938*g/cm3" symbol=" " method="mixture by weight">
     <MaterialFraction fraction="0.26402953">
       <rMaterial name="materials:Aluminium"/>
@@ -187,7 +191,11 @@
       <rMaterial name="materials:Oxygen"/>
     </MaterialFraction>
   </CompositeMaterial>
-  <ElementaryMaterial name="TID_Wheel_Fixation" density="3.159*g/cm3" symbol=" " atomicWeight="26.98*g/mole" atomicNumber="13"/>
+  <CompositeMaterial name="TID_Wheel_Fixation" density="3.159*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="1.00000000">
+      <rMaterial name="materials:Aluminium"/>
+    </MaterialFraction>
+  </CompositeMaterial>
   <CompositeMaterial name="TID_ax_cable" density="3.218*g/cm3" symbol=" " method="mixture by weight">
     <MaterialFraction fraction="0.0021485581">
       <rMaterial name="materials:Silicon"/>
