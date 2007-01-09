@@ -55,7 +55,12 @@ namespace edm {
     ModuleDescription const * descPtr() const {return &md_; }
     ///The signals passed in are required to live longer than the last call to 'doWork'
     /// this was done to improve performance based on profiling
-    void connect(ActivityRegistry::PreModule&, ActivityRegistry::PostModule&);
+    void connect(ActivityRegistry::PreModule&,
+                 ActivityRegistry::PostModule&,
+                 ActivityRegistry::PreModuleBeginJob&,
+                 ActivityRegistry::PostModuleBeginJob&,
+                 ActivityRegistry::PreModuleEndJob&,
+                 ActivityRegistry::PostModuleEndJob&);
 
     std::pair<double,double> timeCpuReal() const {
       return std::pair<double,double>(stopwatch_->cpuTime(),stopwatch_->realTime());
@@ -73,6 +78,10 @@ namespace edm {
       Sigs();
       ActivityRegistry::PreModule* preModuleSignal;
       ActivityRegistry::PostModule* postModuleSignal;
+      ActivityRegistry::PreModuleBeginJob* preModuleBeginJobSignal;
+      ActivityRegistry::PostModuleBeginJob* postModuleBeginJobSignal;
+      ActivityRegistry::PreModuleEndJob* preModuleEndJobSignal;
+      ActivityRegistry::PostModuleEndJob* postModuleEndJobSignal;
     };
 
     int timesPass() const { return timesPassed(); } // for backward compatibility only - to be removed soon
