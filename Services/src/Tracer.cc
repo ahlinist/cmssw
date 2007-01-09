@@ -52,6 +52,14 @@ depth_(0)
    iRegistry.watchPreProcessPath(this, &Tracer::prePath);
    iRegistry.watchPostProcessPath(this, &Tracer::postPath);
 
+   iRegistry.watchPreModuleConstruction(this, &Tracer::preModuleConstruction);
+   iRegistry.watchPostModuleConstruction(this, &Tracer::postModuleConstruction);
+
+   iRegistry.watchPreModuleBeginJob(this, &Tracer::preModuleBeginJob);
+   iRegistry.watchPostModuleBeginJob(this, &Tracer::postModuleBeginJob);
+
+   iRegistry.watchPreModuleEndJob(this, &Tracer::preModuleEndJob);
+   iRegistry.watchPostModuleEndJob(this, &Tracer::postModuleEndJob);
 }
 
 // Tracer::Tracer(const Tracer& rhs)
@@ -145,6 +153,48 @@ Tracer::postModule(const ModuleDescription& iDescription)
    }
    
    std::cout<<" finished:"<<iDescription.moduleLabel_<<std::endl;
+}
+
+void 
+Tracer::preModuleConstruction(const ModuleDescription& iDescription)
+{
+  std::cout <<indention_;
+  std::cout<<" constructing module:" <<iDescription.moduleLabel_<<std::endl;
+}
+
+void 
+Tracer::postModuleConstruction(const ModuleDescription& iDescription)
+{
+  std::cout <<indention_;
+  std::cout<<" construction finished:"<<iDescription.moduleLabel_<<std::endl;
+}
+
+void 
+Tracer::preModuleBeginJob(const ModuleDescription& iDescription)
+{
+  std::cout <<indention_;
+  std::cout<<" beginJob module:" <<iDescription.moduleLabel_<<std::endl;
+}
+
+void 
+Tracer::postModuleBeginJob(const ModuleDescription& iDescription)
+{
+  std::cout <<indention_;
+  std::cout<<" beginJob finished:"<<iDescription.moduleLabel_<<std::endl;
+}
+
+void 
+Tracer::preModuleEndJob(const ModuleDescription& iDescription)
+{
+  std::cout <<indention_;
+  std::cout<<" endJob module:" <<iDescription.moduleLabel_<<std::endl;
+}
+
+void 
+Tracer::postModuleEndJob(const ModuleDescription& iDescription)
+{
+  std::cout <<indention_;
+  std::cout<<" endJob finished:"<<iDescription.moduleLabel_<<std::endl;
 }
 
 //

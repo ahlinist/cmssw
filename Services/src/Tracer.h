@@ -41,9 +41,18 @@ public:
          void preEventProcessing(const edm::EventID&, const edm::Timestamp&);
          void postEventProcessing(const Event&, const EventSetup&);
          
+         void preModuleConstruction(const ModuleDescription&);
+         void postModuleConstruction(const ModuleDescription&);
+
+         void preModuleBeginJob(const ModuleDescription&);
+         void postModuleBeginJob(const ModuleDescription&);
+
          void preModule(const ModuleDescription&);
          void postModule(const ModuleDescription&);
          
+         void preModuleEndJob(const ModuleDescription&);
+         void postModuleEndJob(const ModuleDescription&);
+
          void preSource();
          void postSource();
          
