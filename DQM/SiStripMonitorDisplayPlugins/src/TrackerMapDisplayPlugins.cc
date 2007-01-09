@@ -16,9 +16,10 @@ TrackerMapDisplayPlugins::TrackerMapDisplayPlugins (IgState *state)
 {
     // Here you can setup plugin configuration GUIs, if needed.
   // Create Tracker Map Box
-  tkMapBox= new VisTrackerMapBox ( 0,"TrackerMap");
+//  tkMapBox= new VisTrackerMapBox ( 0,"TrackerMap");
 //  igDocumentData = IgDocumentData::get (state);
   updateCounter = 0;
+  tkMapBox=0;
 }
 
 bool
@@ -31,6 +32,7 @@ TrackerMapDisplayPlugins::applies (DisplayData *data)
   updateCounter++;
   // SiStripTracker DQM related MEs start with ""
   if( name.find( "TrackerMap_for_" ) == 0 && (updateCounter%30 == 1) ) {
+  if(tkMapBox==0)tkMapBox= new VisTrackerMapBox ( 0,"TrackerMap");
     return true;
   }
   return false;
