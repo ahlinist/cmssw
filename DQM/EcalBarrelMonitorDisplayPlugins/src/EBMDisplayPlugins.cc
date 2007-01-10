@@ -1,11 +1,11 @@
-// $Id: EBMDisplayPlugins.cc,v 1.5 2007/01/10 06:55:53 dellaric Exp $
+// $Id: EBMDisplayPlugins.cc,v 1.6 2007/01/10 12:01:39 benigno Exp $
 
 /*!
   \file EBMDisplayPlugins
   \brief Display Plugin for Quality Histograms (2D)
   \author B. Gobbo 
-  \version $Revision: 1.5 $
-  \date $Date: 2007/01/10 06:55:53 $
+  \version $Revision: 1.6 $
+  \date $Date: 2007/01/10 12:01:39 $
 */
 
 #include "DQM/EcalBarrelMonitorDisplayPlugins/interface/EBMDisplayPlugins.h"
@@ -133,6 +133,18 @@ std::string EBMDisplayPlugins::preDrawTProfile2D( DisplayData *data ) {
   name = (data->object)->GetName();
 
   if( obj ) {
+    if( name.find( "EBPDT" ) < name.size() || 
+	name.find( "EBLT shape" ) < name.size() || 
+	name.find( "EBTPT shape" ) < name.size() ) {
+      gStyle->SetOptStat( 0 );
+      obj->SetStats( kFALSE );
+      obj->GetXaxis()->SetDrawOption("u");
+      obj->GetYaxis()->SetDrawOption("u");
+      obj->GetXaxis()->SetNdivisions(0);
+      obj->GetYaxis()->SetNdivisions(0);
+      obj->SetOption( "axis" );
+      return "";
+    }
 
     gStyle->SetOptStat( 0 );
     obj->SetStats( kFALSE );
@@ -394,6 +406,10 @@ void EBMDisplayPlugins::postDrawTProfile2D( DisplayData *data ) {
       obj1->SetMinimum( 0. );
       (data->pad)->SetGridx( 0 );
       (data->pad)->SetGridy( 0 );
+      obj1->GetXaxis()->SetDrawOption("+");
+      obj1->GetYaxis()->SetDrawOption("+");
+      obj1->GetXaxis()->SetNdivisions(510);
+      obj1->GetYaxis()->SetNdivisions(510);
       obj1->Draw();
       return;
     }
