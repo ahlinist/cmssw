@@ -1,13 +1,5 @@
 <flags GENREFLEX_ARGS="--">
 <use name=rootrflx>
-<use name=DataSvc>
-<use name=RelationalAccess>
-<use name=Foundation/SealUtil>
-
 <export>
  <lib name=CondFormatsIdealGeometryObjects>
- <use name=rootrflx> 
- <use name=DataSvc>
- <use name=RelationalAccess>
- <use name=Foundation/SealUtil>
 </export>
