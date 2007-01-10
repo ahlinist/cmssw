@@ -50,6 +50,7 @@ $Id$
 #include "DataFormats/Common/interface/EDProductfwd.h"
 #include "DataFormats/Common/interface/RunID.h"
 #include "DataFormats/Common/interface/LuminosityBlockID.h"
+#include "DataFormats/Common/interface/ModuleDescription.h"
 #include "FWCore/Framework/interface/InputSourceDescription.h"
 #include "FWCore/Framework/interface/ProductRegistryHelper.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -117,6 +118,9 @@ namespace edm {
     /// Accessor for 'module' description.
     ModuleDescription const& moduleDescription() const {return isDesc_.moduleDescription_;}
 
+    /// Accessor for Process Configuration
+    ProcessConfiguration const& processConfiguration() const {return moduleDescription().processConfiguration();}
+
     /// Accessor for primary input source flag
     bool const primary() const {return primary_;}
 
@@ -133,10 +137,6 @@ namespace edm {
 
     // Indicate inability to get a new event by returning a null
     // auto_ptr.
-    std::auto_ptr<EventPrincipal> readEvent_();
-
-    std::auto_ptr<EventPrincipal> readEvent_(EventID const&);
-
     virtual std::auto_ptr<EventPrincipal> read() = 0;
 
     virtual std::auto_ptr<EventPrincipal> readIt(EventID const&);
@@ -154,6 +154,8 @@ namespace edm {
     void preRead();
 
     void postRead(Event& event);
+
+    virtual void endLumiAndRun(){}
 
     virtual void beginJob(EventSetup const&){}
 

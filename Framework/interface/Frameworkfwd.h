@@ -19,6 +19,7 @@ namespace edm {
   class CurrentProcessingContext;
   class DelayedReader;
   class DataBlockImpl;
+  class DataViewImpl;
   class EDAnalyzer;
   class EDFilter;
   class EDLooper;

@@ -34,11 +34,13 @@ namespace edm {
 	Timestamp const& time,
 	ProductRegistry const& reg,
         boost::shared_ptr<LuminosityBlockPrincipal const> lbp,
+        ProcessConfiguration const& pc,
 	ProcessHistoryID const& hist = ProcessHistoryID(),
 	boost::shared_ptr<DelayedReader> rtrv = boost::shared_ptr<DelayedReader>(new NoDelayedReader));
     EventPrincipal(EventID const& id,
 	Timestamp const& time,
 	ProductRegistry const& reg,
+        ProcessConfiguration const& pc,
 	ProcessHistoryID const& hist = ProcessHistoryID(),
 	boost::shared_ptr<DelayedReader> rtrv = boost::shared_ptr<DelayedReader>(new NoDelayedReader));
     ~EventPrincipal() {}
@@ -75,11 +77,8 @@ namespace edm {
     RunPrincipal const& runPrincipal() const;
 
     using Base::addGroup;
-    using Base::addToProcessHistory;
     using Base::begin;
-    using Base::beginProcess;
     using Base::end;
-    using Base::endProcess;
     using Base::getAllProvenance;
     using Base::getByLabel;
     using Base::get;

@@ -265,7 +265,7 @@ void testEvent::setUp()
 {
   principal_  = new EventPrincipal(make_id(),
 				   make_timestamp(),
-				   *availableProducts_);
+				   *availableProducts_, currentModuleDescription_->processConfiguration());
 
   currentEvent_ = new Event(*principal_, *currentModuleDescription_);
 }
