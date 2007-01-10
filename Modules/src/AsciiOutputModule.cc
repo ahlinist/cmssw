@@ -43,7 +43,7 @@ namespace edm {
     // Write out non-EDProduct contents...
 
     // ... list of process-names
-    for (ProcessHistory::const_iterator it = e.beginProcess(); it != e.endProcess(); ++it) {
+    for (ProcessHistory::const_iterator it = e.processHistory().begin(); it != e.processHistory().end(); ++it) {
       *pout_ << it->processName() << " ";
     }
 
