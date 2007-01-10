@@ -1,11 +1,11 @@
-// $Id: EBMDisplayPlugins.cc,v 1.4 2006/09/05 09:12:36 dellaric Exp $
+// $Id: EBMDisplayPlugins.cc,v 1.5 2007/01/10 06:55:53 dellaric Exp $
 
 /*!
   \file EBMDisplayPlugins
   \brief Display Plugin for Quality Histograms (2D)
   \author B. Gobbo 
-  \version $Revision: 1.4 $
-  \date $Date: 2006/09/05 09:12:36 $
+  \version $Revision: 1.5 $
+  \date $Date: 2007/01/10 06:55:53 $
 */
 
 #include "DQM/EcalBarrelMonitorDisplayPlugins/interface/EBMDisplayPlugins.h"
@@ -392,6 +392,8 @@ void EBMDisplayPlugins::postDrawTProfile2D( DisplayData *data ) {
       gStyle->SetOptStat( "euomr" );
       obj1->SetStats( kTRUE );
       obj1->SetMinimum( 0. );
+      (data->pad)->SetGridx( 0 );
+      (data->pad)->SetGridy( 0 );
       obj1->Draw();
       return;
     }
