@@ -30,6 +30,7 @@
 #include "DataFormats/Common/interface/Wrapper.h"
 #include "FWCore/Utilities/interface/EDMException.h"
 #include "FWCore/Framework/interface/DelayedReader.h"
+#include "DataFormats/Common/interface/ProcessConfiguration.h"
 #include "DataFormats/Common/interface/ProcessHistory.h"
 #include "DataFormats/Common/interface/EventAux.h"
 #include "FWCore/Framework/interface/Event.h"
@@ -264,7 +265,9 @@ TFWLiteSelectorBasic::Process(Long64_t iEntry) {
 
       try {
 	 m_->reader_->setEntry(iEntry);
-	 edm::EventPrincipal ep(aux.id(), aux.time(), m_->reg_, aux.processHistoryID(), m_->reader_);
+	 edm::ProcessConfiguration pc;
+	 edm::EventPrincipal ep(aux.id(), aux.time(), m_->reg_,
+	     pc, aux.processHistoryID(), m_->reader_);
          m_->processNames_ = ep.processHistory();
 
 	 using namespace edm;
