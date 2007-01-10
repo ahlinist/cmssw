@@ -1,0 +1,33 @@
+<lcgdict>
+ <class name="PSolid"/>
+ <class name="PMaterial"/>
+ <class name="PRotation"/>
+ <class name="PLogicalPart"/>
+ <class name="PPosPart"/>
+ <!--class name="PValuePair"/--> 
+ <class name="PSpecPar"/>
+ <!--class name="PSolid::PSolidPar"/-->
+ <class name="PIdealGeometry" id="4A99637B-576F-4A1D-AEA3-24DAC65B72C0"/>
+
+ <class name="std::vector<PSolid>"/>
+ <class name="std::vector<PMaterial>"/>
+ <class name="std::vector<PLogicalPart>"/>
+ <class name="std::vector<PPosPart>"/>
+ <class name="std::vector<PRotation>"/>
+ <class name="std::vector<PSpecPar>"/>
+ <class name="std::basic_string<char>"/>
+ <!--class name="std::vector<PSolid::PSolidPar>"/-->
+ <class name="std::pair<std::basic_string<char>, double>"/>
+ <class name="std::vector<std::pair<std::basic_string<char>, double> >"/>
+ <class name="std::vector<std::basic_string<char> >"/>
+ <!--class name="std::vector<PValuePair>"/-->
+ <!--class name="std::map<std::basic_string<char>, std::vector<PValuePair> >"/-->
+ <class name="std::map<std::basic_string<char>, std::vector<std::pair<std::basic_string<char>, double> > >"/>
+ <class name="std::map<std::basic_string<char>, int >"/>
+ <class name="std::vector<double>"/>
+
+ <class pattern="*iterator*"/>
+ <class pattern="*vector*"/>
+ <class pattern="*map*"/>
+ <class pattern="*pair*"/>
+</lcgdict> 
