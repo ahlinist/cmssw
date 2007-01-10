@@ -1,4 +1,4 @@
-#include "DetectorDescription/PersistentDDDObjects/interface/PersistentDDDObjects.h"
+#include "CondFormats/IdealGeometryObjects/interface/PersistentDDDObjects.h"
 
 
 namespace {
