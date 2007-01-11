@@ -20,7 +20,7 @@ $Id$
 #include "boost/shared_ptr.hpp"
 
 namespace edm {
-  class RunBlockPrincipal;
+  class RunPrincipal;
   class LuminosityBlockPrincipal : private DataBlockImpl {
   typedef DataBlockImpl Base;
   public:
@@ -31,6 +31,12 @@ namespace edm {
 	ProcessHistoryID const& hist = ProcessHistoryID(),
 	boost::shared_ptr<DelayedReader> rtrv = boost::shared_ptr<DelayedReader>(new NoDelayedReader)) :
         Base(reg, pc, hist, rtrv), runPrincipal_(rp), aux_(id) {}
+
+    LuminosityBlockPrincipal(LuminosityBlockID const& id,
+	ProductRegistry const& reg,
+        ProcessConfiguration const& pc,
+	ProcessHistoryID const& hist = ProcessHistoryID(),
+	boost::shared_ptr<DelayedReader> rtrv = boost::shared_ptr<DelayedReader>(new NoDelayedReader));
 
     ~LuminosityBlockPrincipal() {}
 
