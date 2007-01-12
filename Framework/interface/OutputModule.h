@@ -25,7 +25,7 @@ $Id$
 #include "FWCore/Framework/interface/Selector.h"
 
 #include "DataFormats/Common/interface/TriggerResults.h"
-#include "FWCore/Framework/interface/Handle.h"
+#include "DataFormats/Common/interface/Handle.h"
 
 namespace edm {
 

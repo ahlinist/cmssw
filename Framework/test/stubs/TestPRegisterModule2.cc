@@ -11,7 +11,7 @@ static const char CVSId[] = "$Id$";
 
 
 #include "FWCore/Framework/interface/Event.h"
-#include "FWCore/Framework/interface/Handle.h"
+#include "DataFormats/Common/interface/Handle.h"
 
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/Framework/test/stubs/TestPRegisterModule2.h"

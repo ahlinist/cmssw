@@ -33,7 +33,7 @@
 // user include files
 #include "Reflex/Object.h"
 #include "FWCore/Framework/interface/DataViewImpl.h"
-#include "FWCore/Framework/interface/Handle.h"
+#include "DataFormats/Common/interface/Handle.h"
 
 // forward declarations
 namespace edm {
