@@ -3,6 +3,9 @@
 <!-- qqbar samples from Tracker (high priority)-->
           <Validate Version="QQbar-LowLumi-HighPriority">
                 <Test Events="100" Name="PhysVal-BBbar50to80-LowLumiPU">
+                        BBbar_pt30to50_LowLumi.cfg
+                </Test>
+                <Test Events="100" Name="PhysVal-BBbar50to80-LowLumiPU">
                         BBbar_pt50to80_LowLumi.cfg
                 </Test>
                 <Test Events="100" Name="PhysVal-CCbar50to80-LowLumiPU">
