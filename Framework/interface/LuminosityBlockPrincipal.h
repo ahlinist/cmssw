@@ -61,6 +61,7 @@ namespace edm {
       return aux().runID();
     }
     using Base::addGroup;
+    using Base::addToProcessHistory;
     using Base::begin;
     using Base::end;
     using Base::getAllProvenance;

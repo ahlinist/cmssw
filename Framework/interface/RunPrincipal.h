@@ -38,6 +38,7 @@ namespace edm {
     }
 
     using Base::addGroup;
+    using Base::addToProcessHistory;
     using Base::begin;
     using Base::end;
     using Base::getAllProvenance;

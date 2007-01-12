@@ -77,6 +77,7 @@ namespace edm {
     RunPrincipal const& runPrincipal() const;
 
     using Base::addGroup;
+    using Base::addToProcessHistory;
     using Base::begin;
     using Base::end;
     using Base::getAllProvenance;
