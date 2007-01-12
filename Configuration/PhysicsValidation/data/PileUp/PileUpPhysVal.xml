@@ -2,8 +2,8 @@
 <PhysicsValidation>
 <!-- qqbar samples from Tracker (high priority)-->
           <Validate Version="QQbar-LowLumi-HighPriority">
-                <Test Events="100000" Name="PhysVal-BBbar50to80-LowLumiPU">
-                        BBbar_pt50to80_LowLumi.cfg
+                <Test Events="100000" Name="PhysVal-BBbar30to50-LowLumiPU">
+                        BBbar_pt30to50_LowLumi.cfg
                 </Test>
                 <Test Events="150000" Name="PhysVal-BBbar50to80-LowLumiPU">
                         BBbar_pt50to80_LowLumi.cfg
