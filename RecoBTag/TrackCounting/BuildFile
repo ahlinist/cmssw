@@ -6,7 +6,7 @@
 <use name=MagneticField/Records>
 <use name=RecoBTag/BTagTools>
 <use name=DataFormats/VertexReco>
-
+<use name=RecoVertex/PrimaryVertexProducer>
 
 <flags SEAL_PLUGIN_NAME="RecoBTagTrackCounting">
 <export>
