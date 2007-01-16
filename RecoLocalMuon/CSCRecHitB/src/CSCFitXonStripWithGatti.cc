@@ -111,8 +111,16 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCLayer* layer, const CSCStri
     xt_r[2][t] = xtalks[10]* (50.* (t-1) + dt) + xtalks[11] + xtalksOffset;
   }
 
-  // vector containing noise starts at 3rd time bin,
-  int tbin = tmax - 3;
+  // vector containing noise starts at tmax - 1, and tmax > 3, but....
+  int tbin = tmax - 4;
+
+  // .... originally, suppose to have tmax in tbin 4 or 5, but noticed in MTCC lots of 
+  // hits with tmax == 3, so let's allow these, and shift down noise matrix by one element...
+  // This is a patch because the calibration database doesn't have elements for tbin = 2, 
+  // e.g. there is no element e[tmax-1,tmax+1] = e[2,4].
+
+  if (tmax < 4) tbin = 0;    // patch
+
   // Load in auto-correlation noise matrices
   for ( int istrip =0; istrip < 3; istrip++ ) {
     a11[istrip] = nmatrix[0+tbin*3+istrip*15];

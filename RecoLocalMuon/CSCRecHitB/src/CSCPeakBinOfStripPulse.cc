@@ -53,8 +53,8 @@ bool CSCPeakBinOfStripPulse::peakAboveBaseline( const CSCStripDigi& digi, float&
   }
   hmax = height[tmax-2];
 
-  // Maximum cannot occur in first 4 time bins or in last time bin.
-  if ( tmax < 4 || tmax > 6) return false;
+  // Maximum cannot occur in first 3 time bins or in last time bin.
+  if ( tmax < 3 || tmax > 6) return false;
 
   return true;
 }
