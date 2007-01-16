@@ -1,0 +1,6 @@
+<lcgdict>
+  <class name="PGlobalRecHit"/>
+  <class name="PGlobalRecHit::ECalRecHit"/>
+  <class name="std::vector<PGlobalRecHit::ECalRecHit>"/>
+  <class name="edm::Wrapper<PGlobalRecHit>"/>
+</lcgdict>
