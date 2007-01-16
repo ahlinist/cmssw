@@ -5,6 +5,9 @@
                 <Test Events="100" Name="PhysVal-BBbar30to50-LowLumiPU">
                         BBbar_pt30to50_LowLumi.cfg
                 </Test>
+                <Test Events="100" Name="PhysVal-CCbar30to50-LowLumiPU">
+                        CCbar_pt30to50_LowLumi.cfg
+                </Test>
                 <Test Events="100" Name="PhysVal-BBbar50to80-LowLumiPU">
                         BBbar_pt50to80_LowLumi.cfg
                 </Test>
