@@ -299,7 +299,7 @@ void CSCHitFromStripOnly::findMaxima() {
         ( heightCluster                > theThresholdForCluster       ) && 
         ( thePulseHeightMap[i].ymax()  > thePulseHeightMap[i-1].ymax()) &&
 	( thePulseHeightMap[i].ymax() >= thePulseHeightMap[i+1].ymax()) &&
-        ( thePulseHeightMap[i].t()     > 3                            ) &&
+        ( thePulseHeightMap[i].t()     > 2                            ) &&
         ( thePulseHeightMap[i].t()     < 7                            )) {
       theMaxima.push_back(i);
     }
