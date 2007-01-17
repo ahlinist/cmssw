@@ -99,6 +99,7 @@ namespace edm {
   protected:
     SelectionsArray descVec_;
     SelectionsArray droppedVec_;
+    boost::array<bool, EndBranchType> hasNewlyDroppedBranch_;
 
   private:
     virtual void write(EventPrincipal const& e) = 0;
