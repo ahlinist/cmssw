@@ -1,8 +1,8 @@
 #combinedTauTag
 module combinedTauTag=CombinedTauTag {
 	#---initial tau candidate
-	#string IsolatedTauTagSrc = "coneIsolation"                     # ask for user-defined (in RecoTauTag/CombinedTauTag/data dir) iterativeConeJetProducer, jetTracksAssociator, ConeIsolation modules	
-	string IsolatedTauTagSrc = "coneIsolationTauJetTags"            # use of standard iterativeConeJetProducer, jetTracksAssociator, ConeIsolation modules	
+	string IsolatedTauTagSrc = "coneIsolation"                     # ask for user-defined (in RecoTauTag/CombinedTauTag/data dir) iterativeConeJetProducer, jetTracksAssocialinkcomtor, ConeIsolation modules	
+	#string IsolatedTauTagSrc = "coneIsolationTauJetTags"            # use of standard iterativeConeJetProducer, jetTracksAssociator, ConeIsolation modules	
 	#---tracker selection parameters
 	#string PVSrc = "offlinePrimaryVerticesFromCTFTracks"
   	string PVSrc = "pixelVertices"
@@ -21,7 +21,8 @@ module combinedTauTag=CombinedTauTag {
 	double ECALclusleadtk_conesize = 0.5
 	double matchingECALclustrack_deltaR = 0.015
     	#---likelihood function selection parameters
-	string ROOTfilename_gettingPDFs = "RecoTauTag/CombinedTauTag/data/TauCandidates_THistos.root"
+	#string ROOTfilename_gettingPDFs = "RecoTauTag/CombinedTauTag/data/TauCandidates_THistos.root"
+	string ROOTfilename_gettingPDFs = "TauCandidates_THistos.root"
 	int32 minnumbercandidates_inpdf_byrecjetEtslice_case1signaltk = 1300
     	int32 minnumbercandidates_inpdf_byrecjetEtslice_case3signaltks = 600
 	#------choice of the variables entering into the likelihood function - case 1signal tk	
