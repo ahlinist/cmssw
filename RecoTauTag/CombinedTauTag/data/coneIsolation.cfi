@@ -15,6 +15,6 @@ module coneIsolation = ConeIsolation {
   	double MinimumTransverseMomentumLeadingTrack = 2.5
   	double DeltaZetTrackVertex = 0.2
   	int32 MaximumNumberOfTracksIsolationRing = 0.
-        bool useVertex = true		
+        bool useVertex = false		
 }
 
