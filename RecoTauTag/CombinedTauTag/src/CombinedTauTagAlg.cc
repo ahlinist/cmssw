@@ -713,23 +713,26 @@ double CombinedTauTagAlg::rectk_signedip3D_significance(const Vertex& thePV,cons
 }
 double CombinedTauTagAlg::signedflightpath_significance(const Vertex& iPV){ 
   if(filtered_chargedpicand_tk.size()>2){
-    vector<TransientTrack> transientTracks;
-    transientTracks.clear();
-    for(RefVector<TrackCollection>::const_iterator i_recTrack=filtered_chargedpicand_tk.begin();i_recTrack!=filtered_chargedpicand_tk.end();i_recTrack++){
-      TransientTrack* theTransientTrack=theTransientTrackBuilder->build(&(**i_recTrack));
-      transientTracks.push_back(*theTransientTrack);
-    }
-    try{
-      KalmanVertexFitter kvf;
-      TransientVertex tv = kvf.vertex(transientTracks); 
-      VertexDistance3D theVertexDistance3D;
-      double thesignedflightpath_significance=theVertexDistance3D.signedDistance(iPV,tv,*the_recjet_G3DV).significance();
-      return(thesignedflightpath_significance);
-    }catch(cms::Exception& exception){
-      throw exception;
-    }
-    string exception_message="In CombinedTauTagAlg::signedflightpath_significance(.) - could not build a vtx with >2 tks.";
-    throw cms::Exception(exception_message);
+     vector<TransientTrack> transientTracks;
+     transientTracks.clear();
+     for(RefVector<TrackCollection>::const_iterator i_recTrack=filtered_chargedpicand_tk.begin();i_recTrack!=filtered_chargedpicand_tk.end();i_recTrack++){
+       TransientTrack* theTransientTrack=theTransientTrackBuilder->build(&(**i_recTrack));
+       transientTracks.push_back(*theTransientTrack);
+     }
+     try{
+       KalmanVertexFitter kvf;
+       TransientVertex tv = kvf.vertex(transientTracks); 
+       VertexDistance3D theVertexDistance3D;
+       double thesignedflightpath_significance=theVertexDistance3D.signedDistance(iPV,tv,*the_recjet_G3DV).significance();
+       return(thesignedflightpath_significance);
+     }catch(cms::Exception& exception){
+       throw exception;
+     }catch(VertexException& exception){
+       string exception_message="In CombinedTauTagAlg::signedflightpath_significance(.) - could not build a vtx with >2 tks.";
+       throw cms::Exception(exception_message);
+     }
+     string exception_message="In CombinedTauTagAlg::signedflightpath_significance(.) - could not build a vtx with >2 tks.";
+     throw cms::Exception(exception_message);
   }else {
     string exception_message="In CombinedTauTagAlg::signedflightpath_significance(.) - did not try to build a vtx with <3 tk(s).";
     throw cms::Exception(exception_message);
