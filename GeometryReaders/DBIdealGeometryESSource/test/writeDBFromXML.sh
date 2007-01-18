@@ -25,9 +25,5 @@ date
 echo done with all DB writes.
 
 echo ALL DONE!
-echo =====================================
-echo    To test that this worked you can try testreadIdealOnlyQuiet.cfg and testreadDBMagOnlyQuiet.cfg.
-echo    These will read from the database and do very minimal output if they succeed.
-echo =====================================
 
 
