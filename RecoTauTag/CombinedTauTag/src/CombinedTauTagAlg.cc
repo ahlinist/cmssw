@@ -838,6 +838,3 @@ double CombinedTauTagAlg::ECALcellsEtSum_around_rectk(const IsolatedTauTagInfoRe
     throw cms::Exception(exception_message); 
   }
 }
-;
-
-
