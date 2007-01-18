@@ -60,21 +60,36 @@ DBIdealGeometryESSource::DBIdealGeometryESSource(const edm::ParameterSet & pset)
   }
 
   //Tell Producer what we produce
-  if(""==pset.getParameter<std::string>("@module_label")){
-    setWhatProduced(this);
-  }else {
-    setWhatProduced(this,pset.getParameter<std::string>("@module_label"));
+//   if(""==pset.getParameter<std::string>("@module_label")){
+//     setWhatProduced(this, &DBIdealGeometryESSource::produceGeom );
+//     findingRecord<IdealGeometryRecord>();
+//   }else 
+  if ( rootNodeName_ == "MagneticFieldVolumes:MAGF" ){
+    setWhatProduced(this, &DBIdealGeometryESSource::produceMagField, 
+		    edm::es::Label(pset.getParameter<std::string>("@module_label")));
+    findingRecord<IdealMagneticFieldRecord>();
+  } else {
+    setWhatProduced(this, &DBIdealGeometryESSource::produceGeom );
+    findingRecord<IdealGeometryRecord>();
   }
 
-  //Tell Finder what records we find
-  findingRecord<IdealGeometryRecord>();
 
 }
 
 DBIdealGeometryESSource::~DBIdealGeometryESSource() {}
 
 std::auto_ptr<DDCompactView>
-DBIdealGeometryESSource::produce(const IdealGeometryRecord &)
+DBIdealGeometryESSource::produceGeom (const IdealGeometryRecord &) {
+  return produce();
+}
+
+std::auto_ptr<DDCompactView>
+DBIdealGeometryESSource::produceMagField (const IdealMagneticFieldRecord &) {
+  return produce();
+}
+
+std::auto_ptr<DDCompactView>
+DBIdealGeometryESSource::produce()
 { 
    DDName ddName(rootNodeName_);
    DDLogicalPart rootNode(ddName);
