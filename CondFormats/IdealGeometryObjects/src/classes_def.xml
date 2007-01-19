@@ -18,4 +18,12 @@
  <!--class name="std::vector<PSolid::PSolidPar>"/-->
  <!--class name="std::vector<PValuePair>"/-->
  <!--class name="std::map<std::basic_string<char>, std::vector<PValuePair> >"/-->
+ <class name="std::basic_string<char>"/>
+ <class name="std::pair<std::basic_string<char>, double>"/>
+ <class name="std::vector<std::pair<std::basic_string<char>, double> >"/>
+ <class name="std::map<std::basic_string<char>, std::vector<std::pair<std::basic_string<char>, double> > >"/>
+ <class pattern="*iterator*"/>
+ <class pattern="*vector*"/>
+ <class pattern="*map*"/>
+ <class pattern="*pair*"/>
 </lcgdict> 
