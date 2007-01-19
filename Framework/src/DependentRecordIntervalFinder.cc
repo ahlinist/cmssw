@@ -79,8 +79,8 @@ DependentRecordIntervalFinder::setIntervalFor(const EventSetupRecordKey&,
    }
    bool haveAValidDependentRecord = false;
    ValidityInterval newInterval(IOVSyncValue::beginOfTime(), IOVSyncValue::endOfTime());
-   for(Providers::iterator itProvider = providers_.begin();
-       itProvider != providers_.end();
+   for(Providers::iterator itProvider = providers_.begin(), itProviderEnd = providers_.end();
+       itProvider != itProviderEnd;
        ++itProvider) {
       if((*itProvider)->setValidityIntervalFor(iTime)) {
          haveAValidDependentRecord=true;

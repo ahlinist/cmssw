@@ -82,9 +82,8 @@ EventSetupRecordIntervalFinder::findingForRecords() const
 {
    std::set<EventSetupRecordKey> returnValue;
    
-   Intervals::const_iterator itEnd = intervals_.end();
-   for(Intervals::const_iterator itEntry = intervals_.begin();
-       itEntry != itEnd;
+   for(Intervals::const_iterator itEntry = intervals_.begin(), itEntryEnd = intervals_.end();
+       itEntry != itEntryEnd;
        ++itEntry) {
       returnValue.insert(returnValue.end(), itEntry->first);
    }
