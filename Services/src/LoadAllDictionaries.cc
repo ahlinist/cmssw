@@ -42,7 +42,7 @@ edm::service::LoadAllDictionaries::LoadAllDictionaries(const edm::ParameterSet& 
 
       seal::PluginManager                       *db =  seal::PluginManager::get();
       seal::PluginManager::DirectoryIterator    dir;
-      seal::ModuleCache::Iterator               plugin;
+      seal::ModuleCache::Iterator               plugin, pluginEnd;
       seal::ModuleDescriptor                    *cache;
       unsigned                            i;
       
@@ -53,7 +53,7 @@ edm::service::LoadAllDictionaries::LoadAllDictionaries(const edm::ParameterSet& 
       const std::string mystring("edm::Wrapper");
       
       for (dir = db->beginDirectories(); dir != db->endDirectories(); ++dir) {
-         for (plugin = (*dir)->begin(); plugin != (*dir)->end(); ++plugin) {
+         for (plugin = (*dir)->begin(), pluginEnd = (*dir)->end(); plugin != pluginEnd; ++plugin) {
             for (cache=(*plugin)->cacheRoot(), i=0; i < cache->children(); ++i) {
                //std::cout <<" "<<cache->child(i)->token(0)<<std::endl;
                if (cache->child(i)->token(0) == mycat) {
