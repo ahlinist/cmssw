@@ -318,13 +318,24 @@ float CSCHitFromStripOnly::findHitOnStripPosition( const std::vector<CSCStripHit
   int nstrips = data.size();
   if ( nstrips == 0 ) return strippos;
   
-  // biggestStrip is strip with largest pulse height --> use pointer subtraction
+  // biggestStrip is strip with largest pulse height 
+  // Use pointer subtraction
+
   int biggestStrip = max_element(data.begin(), data.end()) - data.begin();
+  strippos = data[biggestStrip].x() * 1.;
   
   // If more than one strip:  use centroid to find center of cluster
   // but only use time bin == tmax (otherwise, bias centroid).
   float sum  = 0.;
   float sum_w= 0.;
+
+   
+  // CFEB trigger problem:
+  // Make sure there are non-zero entries on either side of the central strip
+  // otherwise, centroid will be biased.
+  float stripLeft = 0.;
+  float stripRight = 0.;
+
   
   for ( unsigned i = 0; i != data.size(); i++ ) {
     float w0 = data[i].y0();
@@ -332,10 +343,15 @@ float CSCHitFromStripOnly::findHitOnStripPosition( const std::vector<CSCStripHit
     float w2 = data[i].y2();
     float w3 = data[i].y3();
 
-    if (w0 < 0. || w0 > 2000.) w0 = 0.001;
-    if (w1 < 0. || w1 > 2000.) w1 = 0.001;
-    if (w2 < 0. || w2 > 2000.) w2 = 0.001;
-    if (w3 < 0. || w3 > 2000.) w3 = 0.001;
+    if (w0 < 0.) w0 = 0.001;
+    if (w1 < 0.) w1 = 0.001;
+    if (w2 < 0.) w2 = 0.001;
+    if (w3 < 0.) w3 = 0.001;
+    
+
+    if (i == data.size()/2 -1) stripLeft = w1;
+    if (i == data.size()/2 +1) stripRight = w1;
+
 
      // Fill the adcs to the strip hit --> needed for Gatti fitter
     strips_adc.push_back( w0 );
@@ -347,53 +363,15 @@ float CSCHitFromStripOnly::findHitOnStripPosition( const std::vector<CSCStripHit
     sum   += w1 * data[i].x();
   }
 
-  if ( sum_w > 0. ) {
-    strippos = sum / sum_w;
-  } else {
-    strippos = data[biggestStrip].x();
+  // CFEB trigger problem:
+  // Test that we have readout entries on either side of the central strip
+  // What's the minimum ADC count ???  Try 5 for now..
+  if (int(strippos)%16 < 2) {
+    if ( stripLeft > 2. && stripRight > 2. && sum_w > 0.) strippos = sum / sum_w;
+  } else if ( sum_w > 0.) {
+    strippos = sum / sum_w;    
   } 
 
-/* This to be moved in CSCMake2Dhits
-
-  // Test if center of centroid is very close to between 2 strips
-  // If so, then use an even # of strip in cluster to fit centroid
-
-  float old_strippos = strippos;
-  int strip_pos = int( strippos );
-  sum_w = 0.;
-  sum   = 0.;
- 
-  // Look if hit is near strip border && cluster >= 5 strips  
-  if (( fabs(strippos - strip_pos - 0.5) < 0.1 ) && ( int(data.size()) > 3 )) {
-     if ( (centerStrip - strip_pos ) < 0 ) {
-       for ( unsigned i = 0; i < data.size()-1; i++ ) {
-         float w1 = data[i].y1(); 
-         if (w1 < 0.) w1 = 0.001;
-         sum_w += w1;
-         sum   += w1 * data[i].x();
-         strippos = sum / sum_w;
-       }
-     } else if ( (centerStrip - strip_pos) > 0 ) {
-       for ( unsigned i = 1; i < data.size(); i++ ) {
-         float w1 = data[i].y1();
-         if (w1 < 0.) w1 = 0.001;
-         sum_w += w1;
-         sum   += w1 * data[i].x();
-         strippos = sum / sum_w;
-       }
-    } else {
-      strippos = strippos;
-    }
-
-
-    if ( debug ) {
-      std::cout << "Used improved centroid for strip Hit position" << std::endl;  
-      std::cout << "Before: " << old_strippos                      << std::endl;  
-      std::cout << "After : " << strippos                          << std::endl;  
-      std::cout << "Diff  : " << strippos-old_strippos             << std::endl;  
-    } 
-  }
-*/
 
   return strippos;
 }

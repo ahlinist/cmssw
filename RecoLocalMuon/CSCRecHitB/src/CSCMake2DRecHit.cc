@@ -155,9 +155,22 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
   int centerStrip = ch;
   double sAngle   = layergeom_->stripAngle(ch);
 
+  // CFEB trigger problem:
+  // If the strip positon and the channel # are the same, it means I'm either at the edge of the
+  // chamber, or that one of the strip next to the central strip wasn't readout.  Flag these hits as
+  // we don't want them to go through the Gatti fit procedure.
+  bool hasCFEBProblem = false;
+  if (strip_offset == 0. && ch%16 < 2) { 
+    hasCFEBProblem = true;
+    if (debug &&  ch > 1 && ch < specs_->nStrips() ) 
+      std::cout << "Have found potential CFEB problem for strip: " << ch << std::endl; 
+  }
+  
+  // CFEB trigger problem:
+  // Use the following if the hit is flagged as deficient
 
   // If at the edge, then used 1 strip cluster only :
-  if ( ch <= 1 || ch >= specs_->nStrips() ) {
+  if ( ch <= 1 || ch >= specs_->nStrips() || hasCFEBProblem) {
 
     channels.push_back(centerStrip);
     LocalPoint lp1 = layergeom_->stripWireIntersection( centerStrip, the_wire1);
@@ -256,9 +269,6 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
   float y4 = lp4.y();
   float y  = (1. - strip_offset) * y3 + strip_offset * y4;
 
-  if (debug) std::cout <<  "Output from simple centroid:" << std::endl;
-  if (debug) std::cout <<  "x = " << x << std::endl;
-
   // Build local point
   float stripWidth = fabs(x2 - x1);  
   sigma =  stripWidth/sqrt(12);              
@@ -302,8 +312,6 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
     }   
 
     xFitWithGatti_->findXOnStrip( layer_, sHit, x_to_gatti, stripWidth, xtalks, nmatrix, x_fit, sigma_fit, chisq_fit );
-
-    if (debug) std::cout << "Centroid x, Gatti x, diff " << x << " " << x_fit << " " << x-x_fit << std::endl;
 
     if ( chisq_fit < maxGattiChi2 ) {
       x     = x_fit;
