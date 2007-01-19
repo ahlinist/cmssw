@@ -164,8 +164,9 @@ BareRootProductGetter::setupNewFile(TFile* iFile) const
       IdToBuffers temp2;
       idToBuffers_.swap(temp2);
       const edm::ProductRegistry::ProductList& prodList = reg.productList();
-      for(edm::ProductRegistry::ProductList::const_iterator itProd = prodList.begin();
-          itProd != prodList.end();
+      for(edm::ProductRegistry::ProductList::const_iterator itProd = prodList.begin(),
+	  itProdEnd = prodList.end();
+          itProd != itProdEnd;
           ++itProd) {
         //this has to be called since 'branchName' is not stored and the 'init' method is supposed to
         // regenerate it
