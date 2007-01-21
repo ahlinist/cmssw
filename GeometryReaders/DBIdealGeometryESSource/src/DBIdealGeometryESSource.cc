@@ -8,7 +8,7 @@
 // #include "DetectorDescription/Core/interface/DDSpecifics.h"
 // #include "DetectorDescription/Parser/interface/DDLConfiguration.h"
 // #include "DetectorDescription/Algorithm/src/AlgoInit.h"
-#include "CondCore/DBCommon/interface/ServiceLoader.h"
+//#include "CondCore/DBCommon/interface/ServiceLoader.h"
 //#include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include "CondCore/MetaDataService/interface/MetaData.h"
@@ -28,7 +28,7 @@ DBIdealGeometryESSource::DBIdealGeometryESSource(const edm::ParameterSet & pset)
   std::string dbUser = pset.getParameter<std::string>("dbUser");
   std::string dbPass = pset.getParameter<std::string>("dbPass");
   seal::SealTimer txml("DBIdealGeometryESSource"); 
-  cond::ServiceLoader* loader=new cond::ServiceLoader;
+  //  cond::ServiceLoader* loader=new cond::ServiceLoader;
   dbUser="CORAL_AUTH_USER="+dbUser;
   dbPass="CORAL_AUTH_PASSWORD="+dbPass;
   //NOTE: putenv holds onto the pointer passed to it but it will not delete it.  Unfortunately
@@ -41,8 +41,8 @@ DBIdealGeometryESSource::DBIdealGeometryESSource(const edm::ParameterSet & pset)
   char* pPass = new char[dbPass.size()+1];
   std::strncpy(pPass,dbPass.c_str(),dbPass.size()+1);
   ::putenv(pPass);
-  loader->loadAuthenticationService( cond::Env );
-  loader->loadMessageService( cond::Error );
+  //loader->loadAuthenticationService( cond::Env );
+  //  loader->loadMessageService( cond::Error );
 
   try {
     DDORAReader ddorar( rootNodeName_, 
