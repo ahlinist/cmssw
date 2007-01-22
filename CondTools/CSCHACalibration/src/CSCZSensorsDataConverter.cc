@@ -125,8 +125,7 @@ void CSCZSensorsDataConverter::endJob()
   edm::Service<cond::service::PoolDBOutputService> mydbservice;
   if( mydbservice.isAvailable() ){
     try{
-      size_t callbackToken=mydbservice->callbackToken("CSCZSensors");
-      mydbservice->newValidityForNewPayload<CSCZSensors>(myobj,mydbservice->endOfTime(),callbackToken);
+      mydbservice->createNewIOV<CSCZSensors>(myobj,mydbservice->endOfTime(),"CSCZSensorsRcd");
     }catch(const cond::Exception& er){
       std::cout<<er.what()<<std::endl;
     }catch(const std::exception& er){

@@ -129,8 +129,7 @@ void InclinometersDataConverter::endJob()
   edm::Service<cond::service::PoolDBOutputService> mydbservice;
   if( mydbservice.isAvailable() ){
     try{
-      size_t callbackToken=mydbservice->callbackToken("Inclinometers");
-      mydbservice->newValidityForNewPayload<Inclinometers>(myobj,mydbservice->endOfTime(),callbackToken);
+      mydbservice->createNewIOV<Inclinometers>(myobj,mydbservice->endOfTime(),"InclinometersRcd");
     }catch(const cond::Exception& er){
       std::cout<<er.what()<<std::endl;
     }catch(const std::exception& er){
