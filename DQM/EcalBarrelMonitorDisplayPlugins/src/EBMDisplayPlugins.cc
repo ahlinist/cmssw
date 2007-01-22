@@ -1,11 +1,11 @@
-// $Id: EBMDisplayPlugins.cc,v 1.6 2007/01/10 12:01:39 benigno Exp $
+// $Id: EBMDisplayPlugins.cc,v 1.7 2007/01/10 14:33:55 benigno Exp $
 
 /*!
   \file EBMDisplayPlugins
   \brief Display Plugin for Quality Histograms (2D)
   \author B. Gobbo 
-  \version $Revision: 1.6 $
-  \date $Date: 2007/01/10 12:01:39 $
+  \version $Revision: 1.7 $
+  \date $Date: 2007/01/10 14:33:55 $
 */
 
 #include "DQM/EcalBarrelMonitorDisplayPlugins/interface/EBMDisplayPlugins.h"
@@ -55,7 +55,8 @@ EBMDisplayPlugins::EBMDisplayPlugins( IgState *state ) : VisDQMDisplayPlugin( st
   nby = 0;
   name = "";
 
-  pCol3[0] = 2; pCol3[1] = 3; pCol3[2] = 5; pCol3[3] = 1;
+  pCol3[0] = 2; pCol3[1] = 3; pCol3[2] = 5;
+  pCol3[3] = 1; pCol3[4] = 1; pCol3[5] = 1;
   for( short i=0; i<10; i++ ) pCol4[i] = i+30;
 
   text1 = t1;
@@ -249,8 +250,8 @@ std::string EBMDisplayPlugins::preDrawTH2( DisplayData *data ) {
       (data->pad)->SetGridx( 1 );
       (data->pad)->SetGridy( 0 );
       obj->SetMinimum( -0.00000001 );
-      obj->SetMaximum( 3.0 );
-      gStyle->SetPalette( 4, pCol3 );
+      obj->SetMaximum( 5.0 );
+      gStyle->SetPalette( 6, pCol3 );
       obj->SetOption( "col" );
     return "";
     }
@@ -260,8 +261,8 @@ std::string EBMDisplayPlugins::preDrawTH2( DisplayData *data ) {
       obj->GetXaxis()->SetNdivisions( 0 );
       obj->GetYaxis()->SetNdivisions( 0 );
       obj->SetMinimum( -0.00000001 );
-      obj->SetMaximum( 3.0 );
-      gStyle->SetPalette( 4, pCol3 );
+      obj->SetMaximum( 5.0 );
+      gStyle->SetPalette( 6, pCol3 );
       obj->SetOption( "col" );
       return "";
     }    
@@ -295,8 +296,8 @@ std::string EBMDisplayPlugins::preDrawTH2( DisplayData *data ) {
     // Quality-like (green, yellow, red) plots
     if( name.find( "quality" ) < name.size() ) {
       obj->SetMinimum( -0.00000001 );
-      obj->SetMaximum( 3.0 );
-      gStyle->SetPalette( 4, pCol3 );
+      obj->SetMaximum( 5.0 );
+      gStyle->SetPalette( 6, pCol3 );
       obj->SetOption( "col" );
     return "";
     }
