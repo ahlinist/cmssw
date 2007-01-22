@@ -36,7 +36,12 @@ namespace {
    }
 }
 
-LikelihoodRatio::LikelihoodRatio ( const BTagAlgorithmCalibration & calib, 
+LikelihoodRatio::~LikelihoodRatio()
+{
+  delete bTagCalibration_;
+}
+
+LikelihoodRatio::LikelihoodRatio ( const BTagAlgorithmCalibration * calib, 
     reco::btag::Vertices::VertexType tp, double p ) :
   bTagCalibration_ ( calib ), priorCharmInBG_ ( p ), priorUDSG_ ( 1. - p ),
   vtxtype_ ( tp )
@@ -163,7 +168,7 @@ long double LikelihoodRatio::getPDFValue( double variableValue,
 
   // fetch corresponding histogram from calibration
   // this does not seem to work properly yet
-  const CalibratedHistogram *pdfHisto = bTagCalibration_.fetch( input );
+  const CalibratedHistogram *pdfHisto = bTagCalibration_->fetch( input );
 
   if (pdfHisto) {
     returnValue = pdfHisto->value(variableValue);
@@ -182,5 +187,5 @@ long double LikelihoodRatio::getPDFValue( double variableValue,
 
 const BTagAlgorithmCalibration & LikelihoodRatio::calibration() const
 {
-  return bTagCalibration_;
+  return *( bTagCalibration_ );
 }
