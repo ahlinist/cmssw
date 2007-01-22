@@ -1,4 +1,5 @@
 #include "RecoBTag/CombinedSV/interface/JetFilter.h"
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include <iostream>
 #include <cmath>
 
@@ -15,12 +16,11 @@ bool JetFilter::operator() ( const reco::Particle & jet ) const
                jet.pt()             > pTMin_   &&
                jet.p()              > pMin_ );
 
-  cout << "[JetFilter] ";
   if ( !ret )
   {
-    cout << "NOT accepting jet. Discriminator=-1." << endl;
+    edm::LogInfo("JetFilter") << "NOT accepting jet. Discriminator=-1.";
   } else {
-    cout << "accepting jet." << endl;
+    edm::LogInfo("JetFilter") << "accepting jet.";
   }
   return ret;
 }
