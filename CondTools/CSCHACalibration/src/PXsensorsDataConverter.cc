@@ -126,8 +126,7 @@ void PXsensorsDataConverter::endJob()
   edm::Service<cond::service::PoolDBOutputService> mydbservice;
   if( mydbservice.isAvailable() ){
     try{
-      size_t callbackToken=mydbservice->callbackToken("PXsensors");
-      mydbservice->newValidityForNewPayload<PXsensors>(myobj,mydbservice->endOfTime(),callbackToken);
+      mydbservice->createNewIOV<PXsensors>(myobj,mydbservice->endOfTime(),"PXsensorsRcd");
     }catch(const cond::Exception& er){
       std::cout<<er.what()<<std::endl;
     }catch(const std::exception& er){
