@@ -1,0 +1,112 @@
+#include "RecoBTag/CombinedSV/interface/CombinedSVCalibrationCategory.h"
+#include "DataFormats/BTauReco/interface/TaggingVariable.h"
+#include <string>
+
+using namespace std;
+
+combsv::CombinedSVCalibrationCategory::CombinedSVCalibrationCategory(
+    double ptMin,  double ptMax, double etaMin, double etaMax,
+    reco::btag::Vertices::VertexType      vertexType,
+    combsv::Partons::PartonType      partonType,
+    reco::btag::TaggingVariableName taggingVar) :
+  jetPtMin_ (ptMin ), jetPtMax_ ( ptMax ), jetEtaMin_ ( etaMin ), jetEtaMax_ ( etaMax ),
+  vertexType_ ( vertexType ), partonType_ ( partonType ), taggingVar_ ( taggingVar )
+{}
+
+bool combsv::CombinedSVCalibrationCategory::match(const combsv::CombinedSVCalibInput& input) const
+{
+
+  bool returnValue = false;
+
+  if (input.jetPt()      >= jetPtMin_    &&
+      input.jetPt()      <  jetPtMax_    &&
+      input.jetEta()     >= jetEtaMin_   &&
+      input.jetEta()     <  jetEtaMax_   &&
+      input.vertexType() == vertexType_  &&
+      input.partonType() == partonType_  &&
+      input.taggingVar() == taggingVar_)
+    returnValue = true;
+
+  /*
+  cout << "[CombinedSVCalibrationCategory] " << jetPtMin_ << " < jetpt(" << input.jetPt()
+       << ") < " << jetPtMax_
+       << endl;
+  cout << "[CombinedSVCalibrationCategory] ::match: " << returnValue << endl;
+  */
+
+  return returnValue;
+} // bool match
+
+reco::btag::Vertices::VertexType      combsv::CombinedSVCalibrationCategory::vertexType() const
+{
+  return vertexType_;
+}
+
+combsv::Partons::PartonType      combsv::CombinedSVCalibrationCategory::partonType() const
+{
+  return partonType_;
+}
+
+reco::btag::TaggingVariableName combsv::CombinedSVCalibrationCategory::taggingVar() const
+{
+  return taggingVar_;
+}
+
+double combsv::CombinedSVCalibrationCategory::jetPtMin() const
+{
+  return jetPtMin_;
+}
+
+double combsv::CombinedSVCalibrationCategory::jetPtMax() const
+{
+  return jetPtMax_;
+}
+
+double combsv::CombinedSVCalibrationCategory::jetEtaMin() const
+{
+  return jetEtaMin_;
+}
+
+double combsv::CombinedSVCalibrationCategory::jetEtaMax() const
+{
+  return jetEtaMax_;
+}
+
+std::ostream & operator<< ( std::ostream & os, const combsv::CombinedSVCalibrationCategory & c )
+{
+  os << "{ pt=[" << c.jetPtMin()
+     << ", " << c.jetPtMax() << "], eta=[" << c.jetEtaMin()
+     << ", " << c.jetEtaMax() << "], vtx="
+     << reco::btag::Vertices::name ( c.vertexType() )
+     << ", parton=" << combsv::Partons::name ( c.partonType() )
+     << ", var=" << reco::TaggingVariableTokens [ c.taggingVar() ] << " }";
+  return os;
+}
+
+#ifndef RAVE
+void combsv::CombinedSVCalibrationCategory::readFromDOM(DOMElement * dom)
+{
+  jetEtaMin_  = CalibrationXML::readAttribute<double>(dom,"JetEtaMin");
+  jetEtaMax_  = CalibrationXML::readAttribute<double>(dom,"JetEtaMax");
+
+  jetPtMin_   = CalibrationXML::readAttribute<double>(dom,"JetPtMin");
+  jetPtMax_   = CalibrationXML::readAttribute<double>(dom,"JetPtMax");
+
+  // need to test if this works - compiler gives warning about
+  // invalid conversion int -> enum type
+  string vt = CalibrationXML::readAttribute<string>(dom,"VertexType");
+  vertexType_ = reco::btag::Vertices::type ( vt );
+
+  string pt = CalibrationXML::readAttribute<string>(dom,"PartonType");
+  partonType_ = combsv::Partons::type ( pt );
+
+  string tv = CalibrationXML::readAttribute<string>(dom,"TaggingVariable");
+  taggingVar_ = reco::getTaggingVariableName ( tv );
+
+  // cout << "[CombinedSVCalibrationCategory] reading from DOM: " << *this << endl;
+}
+
+void combsv::CombinedSVCalibrationCategory::saveToDOM(DOMElement * dom) {
+  // what do I do here?
+}
+#endif
