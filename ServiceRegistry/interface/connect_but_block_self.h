@@ -83,7 +83,7 @@ namespace edm {
          }
       template<class T, class TArg>
          BlockingWrapper<T,TArg> make_blockingwrapper(T iT,
-                                                      const sigc::slot<void,TArg>*){
+                                                      const sigc::slot<void,TArg>*) {
             return BlockingWrapper<T,TArg>(iT);
          }
       
@@ -91,10 +91,9 @@ namespace edm {
       template<class Func, class Signal>
       void 
       connect_but_block_self(Signal& oSignal, const Func& iFunc) {
-         using sigc::connection;
-         boost::shared_ptr<boost::shared_ptr<connection> > holder(new boost::shared_ptr<connection>());
-         *holder = boost::shared_ptr<connection>(
-                    new connection(oSignal.connect(
+         boost::shared_ptr<boost::shared_ptr<sigc::connection> > holder(new boost::shared_ptr<sigc::connection>());
+         *holder = boost::shared_ptr<sigc::connection>(
+                    new sigc::connection(oSignal.connect(
                                                    make_blockingwrapper(iFunc,
                                                                         static_cast<const typename Signal::slot_type*>(0)))));
       }
