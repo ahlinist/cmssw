@@ -1,0 +1,30 @@
+<use name=FWCore/Framework>
+<use name=Foundation/PluginManager>
+<use name=FWCore/ParameterSet>
+<use name=DataFormats/BTauReco>
+<use name=TrackingTools/TransientTrack>
+<use name=RecoVertex/VertexTools>
+<use name=RecoVertex/ConfigurableVertexReco>
+<use name=RecoBTag/BTagTools>
+<use name=RecoBTag/XMLCalibration>
+<use name=RecoBTag/TrackCounting>
+<use name=xerces-c>
+
+<use name=CLHEP>
+<flags SEAL_PLUGIN_NAME="RecoBTagCombinedSV">
+<export>
+   <lib name=RecoBTagCombinedSV>
+   <use name=FWCore/Framework>
+   <use name=Foundation/PluginManager>
+   <use name=FWCore/ParameterSet>
+   <use name=DataFormats/BTauReco>
+   <use name=TrackingTools/TransientTrack>
+   <use name=RecoVertex/ConfigurableVertexReco>
+   <use name=RecoVertex/VertexTools>
+   <use name=RecoBTag/TrackCounting>
+   <use name=RecoBTag/BTagTools>
+   <use name=RecoBTag/XMLCalibration>
+   <use name=xerces-c>
+   <use name=CLHEP>
+</export>
+
