@@ -168,7 +168,7 @@ long double LikelihoodRatio::getPDFValue( double variableValue,
 
   // fetch corresponding histogram from calibration
   // this does not seem to work properly yet
-  const CalibratedHistogram *pdfHisto = bTagCalibration_->fetch( input );
+  const CalibratedHistogramXML *pdfHisto = bTagCalibration_->getCalibData( input );
 
   if (pdfHisto) {
     returnValue = pdfHisto->value(variableValue);

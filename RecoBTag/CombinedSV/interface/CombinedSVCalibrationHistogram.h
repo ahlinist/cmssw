@@ -2,12 +2,12 @@
 #define RecoBTag_CombinedSVCalibrationHistogram_h
 
 #include "DataFormats/BTauReco/interface/TaggingVariable.h"
-#include "RecoBTag/XMLCalibration/interface/CalibratedHistogram.h"
+#include "RecoBTag/XMLCalibration/interface/CalibratedHistogramXML.h"
 #include "RecoBTag/CombinedSV/interface/PartonTypes.h"
 #include "DataFormats/BTauReco/interface/VertexTypes.h"
 
 namespace combsv {
-  class CombinedSVCalibrationHistogram : public CalibratedHistogram {
+  class CombinedSVCalibrationHistogram : public CalibratedHistogramXML {
   /** \class CombinedSVCalibrationHistogram
     * \short histogram used to store PDF
     */
