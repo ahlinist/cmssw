@@ -54,10 +54,12 @@ reco::Vertex PseudoVertexBuilder::build(
     t=NoVertex;
     vtx= build ( t, trackColl );
   }
-  cout << "[PseudoVertexBuilder] building " << name ( t ) << endl;
+  LogDebug ("") << "building " << name ( t );
+  /*
   edm::LogError("PseudoVertexBuilder")
     << "there is sth wrong with the builder."
     << " Crashes on amilo. Zero mass on centurion";
+    */
   return vtx;
 }
 
