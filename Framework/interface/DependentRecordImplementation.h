@@ -45,7 +45,6 @@ class DependentRecordImplementation : public EventSetupRecordImplementation<Reco
       // ---------- const member functions ---------------------
       template<class DepRecordT>
          const DepRecordT& getRecord() const {
-            //using namespace boost;
             //Make sure that DepRecordT is a type in ListT
             typedef typename boost::mpl::end< ListT >::type EndItrT;
             typedef typename boost::mpl::find< ListT, DepRecordT>::type FoundItrT; 
