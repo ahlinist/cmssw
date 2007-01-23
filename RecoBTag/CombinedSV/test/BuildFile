@@ -9,7 +9,6 @@
 <use name=DataFormats/VertexReco>
 <use name=DataFormats/BTauReco>
 <use name=RecoBTag/CombinedSV>
-<use name=RaveBase/EventHarvesting>
 
 <library file=CombinedSVAnalyzer.cc name=CombinedSVAnalyzer>
   <use name=FWCore/Framework>
