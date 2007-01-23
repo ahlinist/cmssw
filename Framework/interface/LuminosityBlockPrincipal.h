@@ -29,8 +29,7 @@ namespace edm {
         boost::shared_ptr<RunPrincipal const> rp,
         ProcessConfiguration const& pc,
 	ProcessHistoryID const& hist = ProcessHistoryID(),
-	boost::shared_ptr<DelayedReader> rtrv = boost::shared_ptr<DelayedReader>(new NoDelayedReader)) :
-        Base(reg, pc, hist, rtrv), runPrincipal_(rp), aux_(id) {}
+	boost::shared_ptr<DelayedReader> rtrv = boost::shared_ptr<DelayedReader>(new NoDelayedReader));
 
     LuminosityBlockPrincipal(LuminosityBlockID const& id,
 	ProductRegistry const& reg,
