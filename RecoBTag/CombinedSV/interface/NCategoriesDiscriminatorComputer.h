@@ -2,6 +2,7 @@
 #define RecoBTag_NCategoriesDiscriminatorComputer_h
 
 #include "RecoBTag/CombinedSV/interface/AbstractDiscriminatorComputer.h"
+#include "DataFormats/BTauReco/interface/VertexTypes.h"
 
 class NCategoriesDiscriminatorComputer {
   /** 
