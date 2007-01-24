@@ -10,6 +10,8 @@
 <use name=Utilities/StorageFactory>
 
 <flags SEAL_PLUGIN_NAME="GeneratorInterfaceMadGraphInterface">
+<flags FFLAGS="-w">
+
 <export>
  <lib name=GeneratorInterfaceMadGraphInterface>
  <use name=boost>
