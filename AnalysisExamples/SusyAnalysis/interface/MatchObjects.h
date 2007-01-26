@@ -24,8 +24,8 @@ class MatchObjects {
 public:
 
 // Constructor:
-MatchObjects(vector<MrParticle*>&, vector<MrParticle*>&);
-MatchObjects(vector<MrParticle*>&, vector<MrParticle*>&, edm::ParameterSet);
+MatchObjects(vector<MrParticle*>*, vector<MrParticle*>*);
+MatchObjects(vector<MrParticle*>*, vector<MrParticle*>*, edm::ParameterSet);
 
 // Destructor:
 ~MatchObjects(){};

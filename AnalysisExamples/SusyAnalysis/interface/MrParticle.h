@@ -8,9 +8,12 @@
 *  Authors: Luc Pape & Filip Moortgat      Date: August 2005 
 */
 
+#include "FWCore/ParameterSet/interface/ParameterSet.h"
+
 #include "DataFormats/Candidate/interface/Candidate.h"
-#include "DataFormats/EgammaCandidates/interface/Electron.h"
+#include "DataFormats/EgammaCandidates/interface/PixelMatchGsfElectron.h"
 #include "DataFormats/MuonReco/interface/Muon.h"
+#include "DataFormats/EgammaCandidates/interface/Photon.h"
 #include "DataFormats/JetReco/interface/Jet.h"
 #include "DataFormats/EgammaReco/interface/SuperCluster.h"
 
@@ -52,6 +55,8 @@ float py() {return Py;}
 float pz() {return Pz;}
 float energy() {return E;}
 float mass() {return sqrt(E*E-Px*Px-Py*Py-Pz*Pz);}
+float invmass(MrParticle* part) {
+   return sqrt(E*part->energy()-Px*part->px()-Py*part->py()-Pz*part->pz());}
 float charge() {return Charge;}
 // coordinates of reference point (closest approach to beam)
 float vx() {return Vx;}
@@ -84,11 +89,14 @@ int partonIndex() {return MCParton;}
 int pid() {return PID;} 
 int status() {return Status;}
 int motherIndex() {return Mother1;}
-virtual const Electron* electronCandidate() {
+virtual const PixelMatchGsfElectron* electronCandidate() {
                    cout << "Pointer to electron candidate not defined." << endl;
                    return NULL;}
 virtual const Muon* muonCandidate() {
                    cout << "Pointer to muon candidate not defined." << endl;
+                   return NULL;}
+virtual const Photon* photonCandidate() {
+                   cout << "Pointer to photon candidate not defined." << endl;
                    return NULL;}
 virtual const Jet* jetCandidate() {
                    cout << "Pointer to jet candidate not defined." << endl;
@@ -148,7 +156,7 @@ public:
 // constructors
 MrElectron() : MrParticle(),  PCandidate(0) {MrParticle::setParticleType(1);};
 
-MrElectron(float px, float py, float pz, float e, const Electron* mycand) : 
+MrElectron(float px, float py, float pz, float e, const PixelMatchGsfElectron* mycand) : 
  MrParticle(px,py,pz,e), PCandidate(mycand) 
  {MrParticle::setParticleType(1);
  MrParticle::setCharge(mycand->charge());}
@@ -156,18 +164,19 @@ MrElectron(float px, float py, float pz, float e, const Electron* mycand) :
 virtual ~MrElectron() {};
 
 //access methods
-virtual const Electron* electronCandidate() {return PCandidate;}
+virtual const PixelMatchGsfElectron* electronCandidate() {return PCandidate;}
 
 //set methods
-void setCandidate (const Electron* mycand) {PCandidate = mycand;}
+void setCandidate (const PixelMatchGsfElectron* mycand) {PCandidate = mycand;}
 virtual void setParticleType(int ptype) {
                if (ptype != 1){ cout << "Changing type to non-electron not allowed." << endl;}
+                else { MrParticle::setParticleType(ptype); }
                 }
 
 private:
 
 // data members
-const Electron* PCandidate;
+const PixelMatchGsfElectron* PCandidate;
 
 
 };
@@ -195,12 +204,47 @@ const Muon* muonCandidate() {return PCandidate;}
 void setCandidate (const Muon* mycand) {PCandidate = mycand;}
 virtual void setParticleType(int ptype) {
                if (ptype != 2){ cout << "Changing type to non-muon not allowed." << endl;}
+                else { MrParticle::setParticleType(ptype); }      
                 }
 
 private:
 
 // data members
 const Muon* PCandidate;
+
+};
+
+
+
+class MrPhoton : public MrParticle {
+
+public:
+
+// constructors
+MrPhoton() : MrParticle(),  PCandidate(0) {MrParticle::setParticleType(4);};
+
+MrPhoton(float px, float py, float pz, float e, const Photon* mycand) : 
+ MrParticle(px,py,pz,e), PCandidate(mycand) 
+ {MrParticle::setParticleType(4);
+ MrParticle::setCharge(0.);}
+
+virtual ~MrPhoton() {};
+
+//access methods
+virtual const Photon* photonCandidate() {return PCandidate;}
+
+//set methods
+void setCandidate (const Photon* mycand) {PCandidate = mycand;}
+virtual void setParticleType(int ptype) {
+               if (ptype != 4){ cout << "Changing type to non-photon not allowed." << endl;}
+                else { MrParticle::setParticleType(ptype); }
+                }
+
+private:
+
+// data members
+const Photon* PCandidate;
+
 
 };
 
@@ -224,7 +268,8 @@ const Jet* jetCandidate() {return PCandidate;}
 //set methods
 void setCandidate (const Jet* mycand) {PCandidate = mycand;}
 virtual void setParticleType(int ptype) {
-               if (ptype <= 2 || ptype == 4 ){ cout << "Changing type to non-jet not allowed." << endl;}
+               if (ptype <= 2 || ptype == 4 || ptype > 7){ cout << "Changing type to non-jet not allowed." << endl;}
+               else { MrParticle::setParticleType(ptype); }
                 }
 
 private:
@@ -234,6 +279,22 @@ const Jet* PCandidate;
 
 
 };
+
+// The structure Config_t has been introduced 
+// to hold the entries to the constants,
+// because the entry to the config cannot be transmitted to classes
+// invoked from SusyAnalyzer.
+// It may be a temporary solution.
+
+struct Config_t {
+     edm::ParameterSet acceptance_cuts;
+     edm::ParameterSet cleaner_params;
+     edm::ParameterSet isolator_params;
+     edm::ParameterSet objectmatch_params;
+     edm::ParameterSet mcproc_params;
+    
+};
+
 
 
 
