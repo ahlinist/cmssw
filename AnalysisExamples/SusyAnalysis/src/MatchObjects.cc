@@ -9,9 +9,9 @@ using std::endl;
 
 // Constructor:
 
-MatchObjects::MatchObjects(vector<MrParticle*>& DataReco, 
-                           vector<MrParticle*>& DataMC):
-RecoData(DataReco), MCData(DataMC),
+MatchObjects::MatchObjects(vector<MrParticle*>* pData, 
+                           vector<MrParticle*>* pMC):
+RecoData(*pData), MCData(*pMC),
 DEBUGLVL(0),
 mo_elecDRmax(0.15), mo_elecDPbyPmax(2.0),
 mo_muonDRmax(0.2), mo_muonDPbyPmax(1.0),
@@ -20,9 +20,9 @@ mo_jetDRmax(0.15), mo_jetDPbyPmax(3.0),
 mo_celecDRmax(0.15), mo_cmuonDRmax(0.2), mo_cphotonDRmax(0.15), mo_cjetDRmax(0.15)
 {};
 
-MatchObjects::MatchObjects(vector<MrParticle*>& DataReco, 
-              vector<MrParticle*>& DataMC, edm::ParameterSet param):
-RecoData(DataReco), MCData(DataMC),
+MatchObjects::MatchObjects(vector<MrParticle*>* pData, 
+              vector<MrParticle*>* pMC, edm::ParameterSet param):
+RecoData(*pData), MCData(*pMC),
 DEBUGLVL(0)
 {
 mo_elecDRmax = param.getParameter<double>("mo_elecDRmax") ;
@@ -138,7 +138,7 @@ void MatchObjects::DoMatch(void)
 
       RecoData[i]->setPartonIndex(iMatch);
       if (DEBUGLVL >= 2){
-       if (iMatch > 0) {
+       if (iMatch >= 0) {
          cout << "  object " << i 
               << ", type = " << RecoData[i]->particleType() 
               << " matched to MC " << iMatch
@@ -162,7 +162,7 @@ void MatchObjects::DoMatch(void)
      int nTried = 0;
      for(int i = 0; i < (int) RecoData.size() ;i++){
        nTried++;
-       if (RecoData[i]->partonIndex() > 0) {nMatched++;}
+       if (RecoData[i]->partonIndex() >= 0) {nMatched++;}
      }
      cout << "  Number of objects matched   = " << nMatched << endl;
      cout << "  Number of objects unmatched = " << nTried-nMatched << endl;
@@ -229,7 +229,7 @@ void MatchObjects::ResolveMatchObjects(void)
       // loop over the RecoData and collect objects with same MC into vectors
     for(int i = 0; i < (int) RecoData.size() ;i++){
        int indcommon = -1;
-       if (RecoData[i]->partonIndex() > 0 ){
+       if (RecoData[i]->partonIndex() >= 0 ){
          bool newset = true;
          for(int j = i+1; j < (int) RecoData.size() ;j++){
            if (RecoData[i]->partonIndex() == RecoData[j]->partonIndex() ){
@@ -320,7 +320,7 @@ void MatchObjects::ResolveMatchObjects(void)
         RecoData[indPart[k]]->setPartonIndex(indNew[k]);
         if (DEBUGLVL >= 2){
           int iMatch = RecoData[indPart[k]]->partonIndex();
-          if (iMatch > 0){
+          if (iMatch >= 0){
             cout << "  object " << indPart[k] 
               << ", type = " << RecoData[indPart[k]]->particleType() 
               << "  rematched to MC " << iMatch

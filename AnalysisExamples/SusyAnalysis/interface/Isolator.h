@@ -26,9 +26,9 @@ class Isolator {
 public:
 
 // Constructor:
-Isolator(vector<MrParticle*>&, const TrackCollection *, 
+Isolator(vector<MrParticle*>*, const TrackCollection *, 
     const CaloTowerCollection*);
-Isolator(vector<MrParticle*>&, const TrackCollection *, 
+Isolator(vector<MrParticle*>*, const TrackCollection *, 
     const CaloTowerCollection*, edm::ParameterSet);
 
 // Destructor:
@@ -78,28 +78,36 @@ float iso_ptElwrtJetmin;
 float iso_ElCalDRin;
 float iso_ElCalDRout;
 float iso_ElCalSeed;
-float iso_ElCalValue;
 float iso_ElTkDRin;
 float iso_ElTkDRout;
 float iso_ElTkSeed;
-float iso_ElTkValue;
+float iso_ElCalWeight;
+float iso_ElIsoValue;
 int   iso_MethodMuon;
 float iso_jetbyMuEmin;
 float iso_ptMuwrtJetmin;
 float iso_MuCalDRin;
 float iso_MuCalDRout;
 float iso_MuCalSeed;
-float iso_MuCalValue;
 float iso_MuTkDRin;
 float iso_MuTkDRout;
 float iso_MuTkSeed;
-float iso_MuTkValue;
+float iso_MuCalWeight;
+float iso_MuIsoValue;
 int   iso_MethodTau;
 float iso_jetbyTauEmin;
 float iso_ptTauwrtJetmin;
 int   iso_MethodPhot;
 float iso_jetbyPhotEmin;
 float iso_ptPhotwrtJetmin;
+float iso_PhCalDRin;
+float iso_PhCalDRout;
+float iso_PhCalSeed;
+float iso_PhTkDRin;
+float iso_PhTkDRout;
+float iso_PhTkSeed;
+float iso_PhCalWeight;
+float iso_PhIsoValue;
 
 float IsoCalSum (int, float, float, float, float, float);
 float IsoTrkSum (int, float, float, float, float, float);

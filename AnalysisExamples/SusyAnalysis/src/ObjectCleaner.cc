@@ -9,24 +9,29 @@ using std::endl;
 
 // Constructor:
 
-ObjectCleaner::ObjectCleaner(vector<MrParticle*>& Data, const TrackCollection * Tracks,
+ObjectCleaner::ObjectCleaner(vector<MrParticle*>* pData, const TrackCollection * Tracks,
 const VertexCollection* Vertices, const CaloTowerCollection* CaloTowers):
-RecoData(Data), TrackData(Tracks), VertexData(Vertices), CaloTowerData(CaloTowers),
+RecoData(*pData), TrackData(Tracks), VertexData(Vertices), CaloTowerData(CaloTowers),
 primVx(NULL), DEBUGLVL(0),
 clean_chisqVxmax(10.), clean_dRVxmax(0.24), clean_dzVxmax(10.),
 clean_etaTkfromVxmax(2.0), clean_sumPtTkfromVxmin(30.),
 clean_distVxmax(5.),
-clean_dRSSelecmax(10.), 
+clean_ElecEoPmin(0.9), clean_ElecEoPinvmax(0.02), clean_dRElecTowermax(0.4),
+clean_ElecHoEmax(0.05), clean_dRSSelecmax(10.), 
+clean_MuonDPbyPmax(0.5), clean_MuonChi2max(3.0), clean_MuonNHitsmin(13),
+clean_dRMuonTowermax(0.4), clean_dRSSmuonmax(0.1), 
+clean_dRPhotTowermax(0.4), clean_PhotHoEmax(0.05), 
+clean_dRPhotElemax(10.), clean_dRPhotDupmax(10.),
 clean_deltaRElecJetmax(0.5), clean_elecbyJetEratio(0.9),
 clean_dRTrkFromJet(0.6), clean_FracChmin(0.1), clean_FracEmmin(0.175),
-clean_dROSelecmax(0.2),
-clean_dPhiJetMETmin(0.), clean_dR12min(0.5), clean_dR21min(0.5)
+clean_dROSelecmax(0.2), clean_MOSelecmax(5.),
+clean_METmin(50.), clean_dPhiJetMETmin(0.), clean_dR12min(0.5), clean_dR21min(0.5)
 {};
 
-ObjectCleaner::ObjectCleaner(vector<MrParticle*>& Data, const TrackCollection * Tracks,
+ObjectCleaner::ObjectCleaner(vector<MrParticle*>* pData, const TrackCollection * Tracks,
 const VertexCollection* Vertices, const CaloTowerCollection* CaloTowers, 
 edm::ParameterSet param):
-RecoData(Data), TrackData(Tracks), VertexData(Vertices), CaloTowerData(CaloTowers),
+RecoData(*pData), TrackData(Tracks), VertexData(Vertices), CaloTowerData(CaloTowers),
 primVx(NULL), DEBUGLVL(0)
 {
 clean_chisqVxmax = param.getParameter<double>("clean_chisqVxmax") ;
@@ -35,13 +40,28 @@ clean_dzVxmax = param.getParameter<double>("clean_dzVxmax") ;
 clean_etaTkfromVxmax = param.getParameter<double>("clean_etaTkfromVxmax") ;
 clean_sumPtTkfromVxmin = param.getParameter<double>("clean_sumPtTkfromVxmin") ;
 clean_distVxmax = param.getParameter<double>("clean_distVxmax") ;
+clean_ElecEoPmin = param.getParameter<double>("clean_ElecEoPmin") ;
+clean_ElecEoPinvmax = param.getParameter<double>("clean_ElecEoPinvmax") ;
+clean_dRElecTowermax = param.getParameter<double>("clean_dRElecTowermax") ;
+clean_ElecHoEmax = param.getParameter<double>("clean_ElecHoEmax") ;
 clean_dRSSelecmax = param.getParameter<double>("clean_dRSSelecmax") ;
+clean_MuonDPbyPmax = param.getParameter<double>("clean_MuonDPbyPmax") ;
+clean_MuonChi2max = param.getParameter<double>("clean_MuonChi2max") ;
+clean_MuonNHitsmin = param.getParameter<double>("clean_MuonNHitsmin") ;
+clean_dRMuonTowermax = param.getParameter<double>("clean_dRMuonTowermax") ;
+clean_dRSSmuonmax = param.getParameter<double>("clean_dRSSmuonmax") ;
+clean_dRPhotTowermax = param.getParameter<double>("clean_dRPhotTowermax") ;
+clean_PhotHoEmax = param.getParameter<double>("clean_PhotHoEmax") ;
+clean_dRPhotElemax = param.getParameter<double>("clean_dRPhotElemax") ;
+clean_dRPhotDupmax = param.getParameter<double>("clean_dRPhotDupmax") ;
 clean_deltaRElecJetmax = param.getParameter<double>("clean_deltaRElecJetmax") ;
 clean_elecbyJetEratio = param.getParameter<double>("clean_elecbyJetEratio") ;
 clean_dRTrkFromJet = param.getParameter<double>("clean_dRTrkFromJet") ;
 clean_FracChmin = param.getParameter<double>("clean_FracChmin") ;
 clean_FracEmmin = param.getParameter<double>("clean_FracEmmin") ;
 clean_dROSelecmax = param.getParameter<double>("clean_dROSelecmax") ;
+clean_MOSelecmax = param.getParameter<double>("clean_MOSelecmax") ;
+clean_METmin = param.getParameter<double>("clean_METmin") ;
 clean_dPhiJetMETmin = param.getParameter<double>("clean_dPhiJetMETmin") ;
 clean_dR12min = param.getParameter<double>("clean_dR12min") ;
 clean_dR21min = param.getParameter<double>("clean_dR21min") ;
@@ -58,7 +78,7 @@ bool ObjectCleaner::CleanPrimaryVertex(void)
  
 
  if (DEBUGLVL >= 2){
-   cout << " Check Primary Vertex " << endl;
+   cout << " Check Primary Vertex: " << endl;
    cout << " Number of vertices in collection = " << VertexData->size() << endl;
  }
  int indPrim = GetPrimaryVertex();
@@ -113,6 +133,8 @@ bool ObjectCleaner::CleanPrimaryVertex(void)
    }
  }
  if (DEBUGLVL >= 2){
+   cout << " Primary vertex coordinates: x = " << xVx 
+        << ", y = " << yVx << ", z = " << zVx << endl;
    cout << " number of tracks at vertex = " << primVx->tracksSize()
         << ", track PT sum = " << ptsum << endl;
  }
@@ -138,11 +160,13 @@ int ObjectCleaner::GetPrimaryVertex(void)
 
 //------------------------------------------------------------------------------
 
-bool ObjectCleaner::IsFromPrimaryVx(int i)
+bool ObjectCleaner::IsFromPrimaryVx(int ichk)
 {
   // Checks whether the object is compatible with the primary vertex
 
+// cout << "Pointer to Prim Vx " << primVx << endl;
  if (primVx == NULL) {return true;}
+ if (RecoData[ichk]->particleType() == 4) {return true;}
  
  float xVx = primVx->x();
  float yVx = primVx->y();
@@ -150,14 +174,15 @@ bool ObjectCleaner::IsFromPrimaryVx(int i)
  float dxVx = primVx->xError();
  float dyVx = primVx->yError();
  float dzVx = primVx->zError();
- float xTk = RecoData[i]->vx();
- float yTk = RecoData[i]->vy();
- float zTk = RecoData[i]->vz();
- float phi = RecoData[i]->phi();
- float dd0 = RecoData[i]->d0Error();
+ float xTk = RecoData[ichk]->vx();
+ float yTk = RecoData[ichk]->vy();
+ float zTk = RecoData[ichk]->vz();
+ float phi = RecoData[ichk]->phi();
+ float dd0 = RecoData[ichk]->d0Error();
  float ddx = dd0 * sin(phi);
  float ddy = dd0 * cos(phi);
- float ddz = RecoData[i]->dzError();
+ float ddz = RecoData[ichk]->dzError();
+// cout << "Check Prim Vx for object " << i << " complete " << endl;
  
  // take error from vertex and from track extrapolation into account
  float r = sqrt((xVx-xTk)*(xVx-xTk) + (yVx-yTk)*(yVx-yTk) );
@@ -167,10 +192,25 @@ bool ObjectCleaner::IsFromPrimaryVx(int i)
  float dz = sqrt(dzVx*dzVx+ddz*ddz);
  if (r > clean_distVxmax * dr && z > clean_distVxmax * dz) {
    if (DEBUGLVL >= 2){
-     cout << " Distance to Vx in r = " << r << " +- " << dr 
-          << ", in z = " << z << " +- " << dz << endl;
+   cout << " Not from Primary Vertex, index =  " << ichk
+        << " Type = " << RecoData[ichk]->particleType()
+        << " Pt = " << RecoData[ichk]->pt()
+        << " eta = "<< RecoData[ichk]->eta()
+        << " Ch = " << RecoData[ichk]->charge() << endl;
+//     cout << " Distance to Vx in r = " << r << " +- " << dr 
+//          << ", in z = " << z << " +- " << dz << endl;
    }
    return false;
+ } else {
+   if (DEBUGLVL >= 2){
+   cout << " Is from Primary Vertex, index =  " << ichk
+        << " Type = " << RecoData[ichk]->particleType()
+        << " Pt = " << RecoData[ichk]->pt()
+        << " eta = "<< RecoData[ichk]->eta()
+        << " Ch = " << RecoData[ichk]->charge() << endl;
+//     cout << " Distance to Vx in r = " << r << " +- " << dr 
+//          << ", in z = " << z << " +- " << dz << endl;
+   }
  }
  
  return true;
@@ -184,27 +224,6 @@ bool ObjectCleaner::CleanObject(int ichk)
   // Verifies the object identification quality
   // invoquing the various object-dependent methods
    
-     // Check that it is compatible with primary vertex
-     bool fromPrimaryVx = true;
-     fromPrimaryVx = IsFromPrimaryVx(ichk);
-
-     if (fromPrimaryVx){
-       if (DEBUGLVL >= 2){
-        cout << " Object, index =  " << ichk
-             << " Type = " << RecoData[ichk]->particleType()
-             << " ET = " << RecoData[ichk]->pt()
-             << " compatible with primary vertex " << endl;
-       }
-     } else {
-       if (DEBUGLVL >= 2){
-        cout << " Object, index =  " << ichk
-             << " Type = " << RecoData[ichk]->particleType()
-             << " ET = " << RecoData[ichk]->pt()
-             << " not compatible with primary vertex " << endl;
-       }
-     return false;
-     }
-     
      bool acceptObject = true;
 
      // for electrons
@@ -215,13 +234,8 @@ bool ObjectCleaner::CleanObject(int ichk)
 
        bool acceptElectron = true;
        acceptElectron = CleanElectron(ichk);
-
-       // avoid duplicated electrons
-
-       bool multElectron = true;
-       multElectron = DuplicateElectron(ichk);
        
-       acceptObject = acceptElectron && !multElectron;
+       acceptObject = acceptElectron;
      }
  
      // for muons
@@ -241,6 +255,13 @@ bool ObjectCleaner::CleanObject(int ichk)
 
      // for photons
      else if (RecoData[ichk]->particleType() == 4){
+     
+       // perform the photon cleaning
+
+       bool acceptPhoton = true;
+       acceptPhoton = CleanPhoton(ichk);
+       
+       acceptObject = acceptPhoton;
      }
     
      // for jets
@@ -259,24 +280,85 @@ bool ObjectCleaner::CleanObject(int ichk)
 
      if (acceptObject){   
        if (DEBUGLVL >= 2){
-         cout << " Clean object, index =  " << ichk
+         cout << " Is clean object, index =  " << ichk
               << " Type = " << RecoData[ichk]->particleType()
-              << " Ch = " << RecoData[ichk]->charge()
+              << " Pt = " << RecoData[ichk]->pt()
               << " eta = "<< RecoData[ichk]->eta()
-              << " Pt = " << RecoData[ichk]->pt() << endl;
+              << " Ch = " << RecoData[ichk]->charge() << endl;
        }
      } else {
        if (DEBUGLVL >= 2){
-         cout << " Bad object, index =  " << ichk
+         cout << " Is bad object, index =  " << ichk
               << " Type = " << RecoData[ichk]->particleType()
-              << " Ch = " << RecoData[ichk]->charge()
+              << " Pt = " << RecoData[ichk]->pt()
               << " eta = "<< RecoData[ichk]->eta()
-              << " Pt = " << RecoData[ichk]->pt() << endl;
+              << " Ch = " << RecoData[ichk]->charge() << endl;
        }
      }
 
+  return acceptObject;
 
- return true;
+}
+
+//------------------------------------------------------------------------------
+
+bool ObjectCleaner::NotDuplicateObject(int ichk)
+{
+  // Verifies the object identification quality
+  // invoquing the various object-dependent methods
+     
+     bool acceptObject = true;
+
+     // avoid duplicated electrons
+     if (RecoData[ichk]->particleType() == 1){
+
+       acceptObject = !DuplicateElectron(ichk);
+     }
+ 
+     // for muons
+     else if (RecoData[ichk]->particleType() == 2){
+
+       acceptObject = !DuplicateMuon(ichk);
+     }
+
+     // for taus
+     else if (RecoData[ichk]->particleType() == 3){
+     }
+
+     // for photons
+     else if (RecoData[ichk]->particleType() == 4){
+
+       acceptObject = !DuplicatePhoton(ichk);
+     }
+    
+     // for jets
+     else if (RecoData[ichk]->particleType() >= 5
+              && RecoData[ichk]->particleType() <= 7){
+
+       acceptObject = !ElectronJet(ichk);
+     }
+
+     else {acceptObject = true;}
+
+     if (acceptObject){   
+       if (DEBUGLVL >= 2){
+         cout << " Not duplicate object, index =  " << ichk
+              << " Type = " << RecoData[ichk]->particleType()
+              << " Pt = " << RecoData[ichk]->pt()
+              << " eta = "<< RecoData[ichk]->eta()
+              << " Ch = " << RecoData[ichk]->charge() << endl;
+       }
+     } else {
+       if (DEBUGLVL >= 2){
+         cout << " Is duplicate object, index =  " << ichk
+              << " Type = " << RecoData[ichk]->particleType()
+              << " Pt = " << RecoData[ichk]->pt()
+              << " eta = "<< RecoData[ichk]->eta()
+              << " Ch = " << RecoData[ichk]->charge() << endl;
+       }
+     }
+
+  return acceptObject;
 
 }
 
@@ -285,28 +367,87 @@ bool ObjectCleaner::CleanObject(int ichk)
 bool ObjectCleaner::CleanElectron(int ichk)
 {
   // Verifies the electron identification quality
-  // Still to be done ****
+  // Still to be completed ****
 
  if (ichk < 0){return false;}
  
- const Electron* elecand = RecoData[ichk]->electronCandidate();
- if (elecand != NULL) {
+ const PixelMatchGsfElectron* elecand = RecoData[ichk]->electronCandidate();
+ if (elecand == NULL) {
+   if (DEBUGLVL >= 2){
+     cout << " No electron candidate for this electron, index = " << ichk << endl;
+   }
+   return false;
+ }
  
    // Verify the electron quality
+  
+   float elenergy = elecand->superCluster()->energy();
+   float ele_eta = elecand->superCluster()->eta();
+   float ele_phi = elecand->superCluster()->phi();
+   float ele_theta = 2. * atan(exp(-ele_eta));
+   float p_track = elecand->track()->p();
+   float pt_track = elecand->track()->pt();
+   float et_em = fabs(elenergy*sin(ele_theta));
+   float e_had = 0.;                       
+   float et_had = 0.;
+  
+   // --------------------------- E over p -------------------------------------------
+   if (elenergy/p_track < clean_ElecEoPmin || 
+       fabs(1/elenergy - 1/p_track) > clean_ElecEoPinvmax) {
+     if (DEBUGLVL >= 2){
+       cout << " Electron rejected due to bad E/p :" << elenergy/p_track << endl;
+     }
+     return false;
+   }
+  
+   // --------------------------- H over E -------------------------------------------
+   // another try: use seed cluster angles and energy (like H->4e)
+   const BasicCluster* basicCluster = &(*(elecand->superCluster()->seed() ));
+   elenergy = basicCluster->energy();
+   ele_eta = basicCluster->eta();
+   ele_phi = basicCluster->phi();
+   float hcalEnergy = 0.;
+   float hcalEt = 0.;
+   CaloTowerCollection::const_iterator calo;
+   for ( calo = CaloTowerData->begin(); calo != CaloTowerData->end(); ++calo ){
+     float tow_eta = calo->eta();
+     float tow_phi = calo->phi();
+     float deltar0 = GetDeltaR(tow_eta, ele_eta, tow_phi, ele_phi);
+     if (deltar0 < clean_dRElecTowermax){ 
+       hcalEnergy += calo->hadEnergy();
+       hcalEt += calo->hadEt();
+//       cout << "  Electron hcal energy = " << calo->hadEnergy()
+//            << ", ET = " << calo->hadEt() << ", ecal energy = " << calo->emEnergy()
+//            << ", ET = " << calo->emEt() << endl;
+     }
+   }
+   e_had = hcalEnergy;
+   et_had = hcalEt;
+   
+   if (e_had/elenergy >= clean_ElecHoEmax ) {
+     if (DEBUGLVL >= 2){
+       cout << " Electron rejected due to bad H/E :" << e_had/elenergy << endl;
+     }
+     return false;
+   }
    
    // Check that not a fake from pi0
+   
+/*  not yet available in 1_2_0
+   float e3x3 = elecand->superCluster()->e3x3();
+   float e5x5 = elecand->superCluster()->e5x5();
+   cout << " e3x3 = " << e3x3 << ", e5x5 = " << e5x5 << endl;
+   float covEtaEta = elecand->superCluster()->covEtaEta();
+   float covPhiPhi = elecand->superCluster()->covPhiPhi();
+   cout << " covEtaEta = " << covEtaEta << " covPhiPhi = " << covPhiPhi << endl;
+*/
  
    // Save the transverse quantities in MrParticle
-   float pt_track = elecand->track()->pt();
-   float elenergy = elecand->superCluster()->energy();
-   float elephi = elecand->superCluster()->phi();
-   float et_em = fabs(elenergy*sin(elephi));
-   float et_had = 0.;                       // temporary
+  
    RecoData[ichk]->setPt_tracks(pt_track);
    RecoData[ichk]->setEt_em(et_em);
    RecoData[ichk]->setEt_had(et_had);
  
- }
 
  return true;
 
@@ -324,7 +465,7 @@ bool ObjectCleaner::DuplicateElectron(int ichk)
  MrParticle * recopart = RecoData[ichk];
  if (recopart->particleType() != 1){return false;}
 
- const Electron* elecand = RecoData[ichk]->electronCandidate();
+ const PixelMatchGsfElectron* elecand = RecoData[ichk]->electronCandidate();
 // cout << " pointer to elec cand " << elecand;
  float elecmom = elecand->p();
 // cout << " momentum " << elecmom << endl;
@@ -338,7 +479,7 @@ bool ObjectCleaner::DuplicateElectron(int ichk)
       
     if (RecoData[j]->particleType() == 1){
 
-      if (recopart->charge() == RecoData[j]->charge() ){
+//      if (recopart->charge() == RecoData[j]->charge() ){
 
         float deltaR = GetDeltaR(recopart->eta(), RecoData[j]->eta(), 
                                 recopart->phi(), RecoData[j]->phi());
@@ -351,8 +492,9 @@ bool ObjectCleaner::DuplicateElectron(int ichk)
 //            cout << " new momentum " << newmom << endl;
             if (fabs(elenergy-elecmom) >= fabs(elenergy-newmom)){
               if (DEBUGLVL >= 2){
-                cout << " Electron " << ichk 
-                     << " duplicate: DeltaR = " << deltaR
+                cout << " Electron, index = " << ichk 
+                     << " duplicate with index = " << j 
+                     << ", DeltaR = " << deltaR
                      << endl;
               }
               isDuplicate =  true;
@@ -360,7 +502,7 @@ bool ObjectCleaner::DuplicateElectron(int ichk)
             }
           }
         }
-      }
+//      }
     }
    }
       
@@ -375,25 +517,136 @@ bool ObjectCleaner::DuplicateElectron(int ichk)
 bool ObjectCleaner::CleanMuon(int ichk)
 {
   // Verifies the muon identification quality
+ 
 
  if (ichk < 0){return false;}
  
  const Muon* muoncand = RecoData[ichk]->muonCandidate();
+//cout << " Clean muon cand with pointer " << muoncand << endl;
  if (muoncand != NULL) {
  
    // Verify the muon quality
- 
+// cout << " Comb muon address " << &(*(muoncand->combinedMuon())) << endl;
+   float pt_track = muoncand->combinedMuon()->pt();
+   float dpt_track = muoncand->combinedMuon()->ptError();
+   float chisq = muoncand->combinedMuon()->normalizedChi2();
+   int nHitsValid = muoncand->combinedMuon()->numberOfValidHits();
+//   int nHitsLost = muoncand->combinedMuon()->numberOfLostHits();
+
+   // Maximum Delta p / p
+   if (dpt_track >= clean_MuonDPbyPmax * pt_track) {
+     if (DEBUGLVL >= 2){
+//       cout << " Muon rejected due to bad Dp/p :" << dpt_track/pt_track << endl;
+     }
+     return false;
+   }
+   
+   // Maximum Chisquared
+   if (chisq > clean_MuonChi2max) {
+     if (DEBUGLVL >= 2){
+//       cout << " Muon rejected due large chi2 :" << chisq << endl;
+     }
+     return false;
+   }
+   
+   // Minimum number of valid hits
+   if (nHitsValid < clean_MuonNHitsmin) {
+     if (DEBUGLVL >= 2){
+//       cout << " Muon rejected due too few hits :" << nHitsValid << endl;
+     }
+     return false;
+   }
+   
+   float pt_cand = muoncand->pt();
+   float et_em = 0.;
+   float et_had = 0.;
+/*   
+ cout << " Muon Supercluster address " << &(*(muoncand->superCluster())) << endl;
+   float muonSCenergy =(muoncand->superCluster())->energy();
+   float muonSCeta =(muoncand->superCluster())->eta();
+   float muonSCphi =(muoncand->superCluster())->phi();
+   float muonSCtheta =2. * atan(exp(-muonSCeta));
+   et_em = fabs(muonSCenergy*sin(muonSCtheta));
+   et_had = 0.;
+
+ cout << " Muon track address " << &(*(muoncand->track())) << endl;
+   float muonTketa =(muoncand->track())->outerEta();
+   float muonTkphi =(muoncand->track())->outerPhi();
+   
+   
+   CaloTowerCollection::const_iterator calo;
+   for ( calo = CaloTowerData->begin(); calo != CaloTowerData->end(); ++calo ){
+     float tow_eta = calo->eta();
+     float tow_phi = calo->phi();
+     float deltar0 = GetDeltaR(tow_eta, muonTketa, tow_phi, muonTkphi);
+     if (deltar0 < clean_dRMuonTowermax){ 
+ cout << " Muon CaloTower address " << &(*(calo)) << endl;
+       et_had += calo->hadEt();
+//       cout << "  Muon ET had = " << calo->hadEt() 
+//            << ", ET em = " << calo->emEt() << endl;
+     }
+   }
+*/ 
    // Save the transverse quantities in MrParticle
-   float pt_track = muoncand->pt();
-   float et_em = 0.;                       // temporary
-   float et_had = 0.;                       // temporary
-   RecoData[ichk]->setPt_tracks(pt_track);
+   RecoData[ichk]->setPt_tracks(pt_cand);
    RecoData[ichk]->setEt_em(et_em);
    RecoData[ichk]->setEt_had(et_had);
  
  }
 
  return true;
+
+}
+
+//------------------------------------------------------------------------------
+
+bool ObjectCleaner::DuplicateMuon(int ichk)
+{
+
+
+  // Checks for duplicate muons
+ 
+ bool isDuplicate = false;
+ if (ichk < 0){return isDuplicate;}
+
+ MrParticle * recopart = RecoData[ichk];
+ if (recopart->particleType() != 2){return false;}
+
+ const Muon* muoncand = RecoData[ichk]->muonCandidate();
+ float ptmuon = muoncand->combinedMuon()->pt();
+ float dptmuon = muoncand->combinedMuon()->ptError();
+
+ for (int j = 0; j < (int) RecoData.size(); j++){
+   if (j != ichk){
+      
+    if (RecoData[j]->particleType() == 2){
+
+      if (recopart->charge() == RecoData[j]->charge() ){
+
+        float deltaR = GetDeltaR(recopart->eta(), RecoData[j]->eta(), 
+                                recopart->phi(), RecoData[j]->phi());
+        if (deltaR < clean_dRSSmuonmax){
+   
+          const Muon* muonnew = RecoData[j]->muonCandidate();
+          float ptnew = muonnew->combinedMuon()->pt();
+          float dptnew = muonnew->combinedMuon()->ptError();
+          if (dptmuon/ptmuon >= dptnew/ptnew){
+            if (DEBUGLVL >= 2){
+              cout << " Muon " << ichk 
+                   << " duplicate: DeltaR = " << deltaR
+                   << endl;
+            }
+            isDuplicate =  true;
+            break;
+          }
+        }
+      }
+    }
+   }
+      
+ }
+
+ return isDuplicate;
 
 }
 
@@ -414,10 +667,146 @@ bool ObjectCleaner::CleanTau(int ichk)
 bool ObjectCleaner::CleanPhoton(int ichk)
 {
   // Verifies the photon identification quality
+  // Still to be completed ****
 
  if (ichk < 0){return false;}
-
+ 
+ const Photon* photcand = RecoData[ichk]->photonCandidate();
+ if (photcand == NULL) {
+   if (DEBUGLVL >= 2){
+     cout << " No photon candidate for this photon, index = " << ichk << endl;
+   }
+   return false;
+ }
+ 
+   // Verify the photon quality
+  
+   float photenergy = photcand->superCluster()->energy();
+   float phot_eta = photcand->superCluster()->eta();
+   float phot_phi = photcand->superCluster()->phi();
+   float phot_theta = 2. * atan(exp(-phot_eta));
+   float pt_track = 0.;
+   float et_em = fabs(photenergy*sin(phot_theta));
+   float e_had = 0.;                       
+   float et_had = 0.;
+  
+   // --------------------------- H over E -------------------------------------------
+   // another try: use seed cluster angles and energy (like H->4e)
+   const BasicCluster* basicCluster = &(*(photcand->superCluster()->seed() ));
+   photenergy = basicCluster->energy();
+   phot_eta = basicCluster->eta();
+   phot_phi = basicCluster->phi();
+   float hcalEnergy = 0.;
+   float hcalEt = 0.;
+   CaloTowerCollection::const_iterator calo;
+   for ( calo = CaloTowerData->begin(); calo != CaloTowerData->end(); ++calo ){
+     float tow_eta = calo->eta();
+     float tow_phi = calo->phi();
+     float deltar0 = GetDeltaR(tow_eta, phot_eta, tow_phi, phot_phi);
+     if (deltar0 < clean_dRPhotTowermax){ 
+       hcalEnergy += calo->hadEnergy();
+       hcalEt += calo->hadEt();
+//       cout << "  Photon hcal energy = " << calo->hadEnergy()
+//            << ", ET = " << calo->hadEt() << ", ecal energy = " << calo->emEnergy()
+//            << ", ET = " << calo->emEt() << endl;
+     }
+   }
+   e_had = hcalEnergy;
+   et_had = hcalEt;
+   
+   if (e_had/photenergy >= clean_PhotHoEmax ) {
+     if (DEBUGLVL >= 2){
+       cout << " Photon rejected due to bad H/E :" << e_had/photenergy << endl;
+     }
+     return false;
+   }
+   
+   // Check that not a fake from pi0
+ 
+   // Save the transverse quantities in MrParticle
+  
+   RecoData[ichk]->setPt_tracks(pt_track);
+   RecoData[ichk]->setEt_em(et_em);
+   RecoData[ichk]->setEt_had(et_had);
+ 
  return true;
+
+}
+
+//------------------------------------------------------------------------------
+
+bool ObjectCleaner::DuplicatePhoton(int ichk)
+{
+  // Checks for photons duplicate with electrons or photons
+ 
+ bool isDuplicate = false;
+ if (ichk < 0){return isDuplicate;}
+
+ MrParticle * recopart = RecoData[ichk];
+ if (recopart->particleType() != 4){return false;}
+
+ const Photon* photcand = RecoData[ichk]->photonCandidate();
+// cout << " pointer to elec cand " << elecand;
+ const SuperCluster* supercluster = &(*(photcand->superCluster()));
+// cout << " pointer to supercluster " << supercluster;
+ float photenergy = supercluster->energy();
+// cout << " energy " << photenergy << endl;
+ const BasicCluster* basicCluster = &(*(photcand->superCluster()->seed() ));
+
+ for (int j = 0; j < (int) RecoData.size(); j++){
+   if (j != ichk){
+      
+    if (RecoData[j]->particleType() == 1){
+
+        float deltaR = GetDeltaR(recopart->eta(), RecoData[j]->eta(), 
+                                recopart->phi(), RecoData[j]->phi());
+        if (deltaR < clean_dRPhotElemax){
+   
+          const SuperCluster* newsuper =&(*( RecoData[j]->electronCandidate()->superCluster()));
+//          cout << " pointer to new supercluster " << newsuper << endl;
+          const BasicCluster* newbasic = &(*(newsuper->seed() ));
+          if (newbasic == basicCluster){
+              if (DEBUGLVL >= 2){
+                cout << " Photon, index = " << ichk 
+                     << " duplicate with electron index = " << j 
+                     << ", DeltaR = " << deltaR
+                     << endl;
+              }
+              isDuplicate =  true;
+              break;
+            }
+          }
+        }
+    }
+    else if (RecoData[j]->particleType() == 4){
+
+        float deltaR = GetDeltaR(recopart->eta(), RecoData[j]->eta(), 
+                                recopart->phi(), RecoData[j]->phi());
+        if (deltaR < clean_dRPhotDupmax){
+   
+          const SuperCluster* newsuper =&(*( RecoData[j]->photonCandidate()->superCluster()));
+//          cout << " pointer to new supercluster " << newsuper << endl;
+          const BasicCluster* newbasic = &(*(newsuper->seed() ));
+          if (newbasic == basicCluster){
+            float newegy = RecoData[j]->photonCandidate()->energy();
+//            cout << " new energy " << newegy << endl;
+            if (photenergy < newegy){
+              if (DEBUGLVL >= 2){
+                cout << " Photon, index = " << ichk 
+                     << " duplicate with photon index = " << j 
+                     << ", DeltaR = " << deltaR
+                     << endl;
+              }
+              isDuplicate =  true;
+              break;
+            }
+          }
+        }
+   }
+      
+ }
+
+ return isDuplicate;
 
 }
 
@@ -496,6 +885,69 @@ bool ObjectCleaner::CleanJet(int ichk)
 
 //------------------------------------------------------------------------------
 
+bool ObjectCleaner::ElectronJet(int ichk)
+{
+  // Rejects jets made from electrons
+  // (electrons should be filled in RecoData before checking the jets)   
+
+
+ if (ichk < 0){return false;}
+  
+ MrParticle * recopart = RecoData[ichk];
+
+ // veto jets made of electrons
+ for (unsigned int j = 0; j < RecoData.size(); j++) {
+
+   if(RecoData[j]->particleType() == 1){
+    float deltaR = GetDeltaR(recopart->eta(), RecoData[j]->eta(), 
+                             recopart->phi(), RecoData[j]->phi());
+    
+    if( deltaR < clean_deltaRElecJetmax && 
+      ( RecoData[j]->energy() / recopart->energy() ) > clean_elecbyJetEratio) {
+      if (DEBUGLVL >= 2){
+        cout << "  Elec = " << j << " E = " << RecoData[j]->energy()
+             << " DRejet = " << deltaR
+             << " Ee/Ej = " << RecoData[j]->energy() / recopart->energy() << endl;
+      }
+      return true;
+    }
+   }
+ } 
+
+
+ return false;
+
+}
+
+//------------------------------------------------------------------------------
+
+bool ObjectCleaner::ConvertedPhoton(int i, int j)
+{
+ // Checks whether 2 OS electrons come from photon conversion
+ // returns true if converted photon
+ // here only test on DeltaR (like Catania analysis)
+ // could also make a cut on invariant mass
+
+  if (i < 0 || j < 0){return false;}
+
+  if (RecoData[i]->charge()*RecoData[j]->charge() == -1){
+    float deltaR = GetDeltaR(RecoData[i]->eta(), RecoData[j]->eta(), 
+                             RecoData[i]->phi(), RecoData[j]->phi());
+    float invMass = RecoData[i]->invmass(RecoData[j]);                         
+    if (deltaR < clean_dROSelecmax && invMass < clean_MOSelecmax){
+      return true;
+    }
+  }
+  else{
+    return false;
+  }
+  //dummy
+  return false;
+
+}
+
+//------------------------------------------------------------------------------
+
 bool ObjectCleaner::CleanEvent()
 {
  // To veto events from beam halo, cosmics or noise
@@ -505,6 +957,9 @@ bool ObjectCleaner::CleanEvent()
 
   // test that data still exist
   if (RecoData.size() <= 0){
+    if (DEBUGLVL >= 2){
+      cout << " No RecoData left " << endl;
+    }
     return false;
   }
   if (TrackData->size() <=0){
@@ -519,8 +974,8 @@ bool ObjectCleaner::CleanEvent()
   int nMuon = 0;
   int nPhot = 0;
   float pt_track = 0.;
-  float et_em = 0.;                       // temporary
-  float et_had = 0.;                       // temporary
+  float et_em = 0.;
+  float et_had = 0.;
   for (int i = 0; i < (int) RecoData.size(); i++){
     pt_track += RecoData[i]->pt_tracks();
     et_em += RecoData[i]->et_em();
@@ -540,10 +995,10 @@ bool ObjectCleaner::CleanEvent()
   float fracCh = 0.;
   float fracEm = 0.;
   if (et_em+et_had <= 0.){
-    if (nMuon < 2){
-//      if (DEBUGLVL >= 2){
-        cout << " No calorimatric energy in event, Et = " << et_em+et_had << endl;
-//      }
+    if (nMuon < 1){
+      if (DEBUGLVL >= 2){
+        cout << " No calorimetric energy in event, Et = " << et_em+et_had << endl;
+      }
       return false;
     }
     fracCh = 1.;
@@ -552,47 +1007,22 @@ bool ObjectCleaner::CleanEvent()
     fracCh = pt_track / (et_em + et_had);
     fracEm = et_em / (et_em + et_had);
   }
-  if (fracCh < clean_FracChmin && nPhot < 2){
-//    if (DEBUGLVL >= 2){
+  if (fracCh < clean_FracChmin && nPhot < 1){
+    if (DEBUGLVL >= 2){
       cout << " Insufficient event charged fraction " << fracCh << endl;
-//    }
+    }
     return false;
   }
   if (fracEm < clean_FracEmmin){
-//    if (DEBUGLVL >= 2){
+    if (DEBUGLVL >= 2){
       cout << " Insufficient event em fraction " << fracEm << endl;
-//    }
+    }
     return false;
   }
 
 
 
 return true;
-
-}
-//------------------------------------------------------------------------------
-
-bool ObjectCleaner::ConvertedPhoton(int i, int j)
-{
- // Checks whether 2 OS electrons come from photon conversion
- // returns true if converted photon
- // here only test on DeltaR (like Catania analysis)
- // could also make a cut on invariant mass
-
-  if (i < 0 || j < 0){return false;}
-
-  if (RecoData[i]->charge()*RecoData[j]->charge() == -1){
-    float deltaR = GetDeltaR(RecoData[i]->eta(), RecoData[j]->eta(), 
-                             RecoData[i]->phi(), RecoData[j]->phi());
-    if (deltaR < clean_dROSelecmax){
-      return true;
-    }
-  }
-  else{
-    return false;
-  }
-  //dummy
-  return false;
 
 }
 
@@ -608,6 +1038,7 @@ bool ObjectCleaner::CleanMET(float met[])
   float met_x = met[0];
   float met_y = met[1];
   if (met_x == 0. && met_y == 0.){return false;}
+  if (sqrt(met_x*met_x + met_y*met_y) < clean_METmin){return true;}
   float met_phi = atan2(met_y,met_x);
 
   float etmax1 = 0.;
@@ -638,8 +1069,12 @@ bool ObjectCleaner::CleanMET(float met[])
      float pi = 3.141592654;
      float r12 = sqrt(dPhi1*dPhi1 + (pi-dPhi2)*(pi-dPhi2) );
      float r21 = sqrt(dPhi2*dPhi2 + (pi-dPhi1)*(pi-dPhi1) );
-     if (r12 < clean_dR12min){return false;}
-     if (r21 < clean_dR21min){return false;}
+     if (r12 < clean_dR12min || r21 < clean_dR21min){
+       if (DEBUGLVL >= 2){
+         cout << " MET cleaning: R12 = " << r12 << ", R21 = " << r21 << endl;
+       }
+       return false;
+     }
    }
 
  return true;
