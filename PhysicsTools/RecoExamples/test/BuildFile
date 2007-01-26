@@ -9,3 +9,9 @@
  <use name=rootcintex>
  <use name=root>
 </bin>
+
+<library file="*.cc" name=PhysicsToolsRecoExamples_test>
+  <use name=PhysicsTools/RecoExamples>
+  <flags SEAL_PLUGIN_NAME="PhysicsToolsRecoExamples_test">
+</library>
+
