@@ -4,8 +4,8 @@
  * Description:
  *      Class to read directly OMDS DB with OCCI and fill Offline DB
  *
- * $Date: 2006/10/09 12:00:42 $
- * $Revision: 1.7 $
+ * $Date: 2006/10/18 22:52:16 $
+ * $Revision: 1.8 $
  * \author Michal Bluj -- INS Warsaw
  *
  */
@@ -21,17 +21,9 @@
 #include "CondFormats/RPCObjects/interface/ChamberStripSpec.h"
 
 //#include "DataFormats/MuonDetId/interface/RPCDetId.h"
+#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "CondCore/DBOutputService/interface/PoolDBOutputService.h"
 
-#include "CondCore/DBCommon/interface/DBWriter.h"
-#include "CondCore/DBCommon/interface/DBSession.h"
-#include "CondCore/DBCommon/interface/Exception.h"
-#include "CondCore/DBCommon/interface/ServiceLoader.h"
-#include "CondCore/DBCommon/interface/ConnectMode.h"
-#include "CondCore/DBCommon/interface/MessageLevel.h"
-#include "CondCore/IOVService/interface/IOV.h"
-#include "CondCore/MetaDataService/interface/MetaData.h"
-
-#include "FWCore/Framework/interface/IOVSyncValue.h"
 
 #include <iostream>
 #include <string>
@@ -58,8 +50,8 @@ public:
     first_run>=0 ? run1_=first_run : run1_=0;
     last_run>run1_ ? run2_=last_run : run2_=run1_;
 
-    ::putenv("CORAL_AUTH_USER=konec");
-    ::putenv("CORAL_AUTH_PASSWORD=konecPass"); 
+    ::putenv("CORAL_AUTH_USER=me");
+    ::putenv("CORAL_AUTH_PASSWORD=test"); 
 
   }
  
@@ -88,7 +80,29 @@ public:
 
   void WritePoolDB()
   {
+  string m_record="RPCReadOutMappingRcd";
     cout << endl << "Start writing to PoolDB" << flush << endl;
+  cout<<"Now writing to DB"<<endl;
+  edm::Service<cond::service::PoolDBOutputService> mydbservice;
+  if( !mydbservice.isAvailable() ){
+    cout<<"db service unavailable"<<endl;
+    return;
+  } else { cout<<"DB service OK"<<endl; }
+  
+  try {
+    if( mydbservice->isNewTagRequest(m_record) ) {
+      mydbservice->createNewIOV<RPCReadOutMapping>(
+          cabling, mydbservice->endOfTime(), m_record);
+    } else {
+      mydbservice->appendSinceTime<RPCReadOutMapping>(
+          cabling, mydbservice->currentTime(), m_record);
+    }
+  }
+  catch (std::exception &e) { cout <<"std::exception:  "<< e.what(); }
+  catch (...) { cout << "Unknown error caught "<<endl; }
+  cout<<"... all done, end"<<endl;
+
+/*
     try {
       loader = new cond::ServiceLoader;
       loader->loadAuthenticationService( cond::Env );
@@ -166,6 +180,7 @@ public:
     if (metadataSvc) delete metadataSvc;
     if(loader) delete loader;
     cout << "PoolDB written!" << endl;
+*/
   }
   
 
@@ -418,11 +433,11 @@ private:
   Environment* env;
   Connection* conn;
 
-  cond::ServiceLoader* loader;
-  cond::DBSession* session;
-  cond::DBWriter* mapWriter;
-  cond::DBWriter* iovWriter;
-  cond::MetaData* metadataSvc;
+//  cond::ServiceLoader* loader;
+//  cond::DBSession* session;
+//  cond::DBWriter* mapWriter;
+//  cond::DBWriter* iovWriter;
+//  cond::MetaData* metadataSvc;
 
   string poolDbCon_;
   
