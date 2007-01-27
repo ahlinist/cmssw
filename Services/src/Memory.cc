@@ -20,8 +20,6 @@
 #include <sstream>
 #include <algorithm>
 
-using namespace std;
-
 #ifdef __linux__
 #define LINUX 1
 #endif

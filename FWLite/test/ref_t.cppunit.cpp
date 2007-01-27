@@ -69,9 +69,6 @@ bool testRefInROOT::sWasRun_=false;
 ///registration of the test so that the runner can find it
 CPPUNIT_TEST_SUITE_REGISTRATION(testRefInROOT);
 
-using std::cout;
-using std::endl;
-
 static void checkMatch(const edmtest::OtherThingCollection* pOthers,
                        const edmtest::ThingCollection* pThings)
 {

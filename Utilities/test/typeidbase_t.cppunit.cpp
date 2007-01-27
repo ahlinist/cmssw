@@ -35,9 +35,6 @@ namespace edmtest {
   struct empty { };
 }
 
-using std::cerr;
-using std::endl;
-
 void testTypeIDBase::equalityTest()
 
 {
