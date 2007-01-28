@@ -276,9 +276,8 @@ TFWLiteSelectorBasic::Process(Long64_t iEntry) {
 	 std::vector<BranchEntryDescription>::iterator pitEnd = m_->prov_.data_.end();
 	 for (; pit != pitEnd; ++pit) {
 	    if (pit->status_ != BranchEntryDescription::Success) continue;
-	    std::auto_ptr<Provenance> prov(new Provenance);
-	    prov->event = *pit;
-	    prov->product = m_->productMap_[prov->event.productID_];
+	    BranchDescription &product = m_->productMap_[pit->productID_];
+	    std::auto_ptr<Provenance> prov(new Provenance(product, *pit));
             //std::cout<< "adding group for ID "<<prov->event.productID_<<std::endl;
 	    std::auto_ptr<Group> g(new Group(prov, prov->event.isPresent()));
 	    ep.addGroup(g);

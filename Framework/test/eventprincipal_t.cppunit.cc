@@ -183,24 +183,19 @@ void testeventprincipal::setUp()
     typedef edmtest::DummyProduct PRODUCT_TYPE;
     typedef edm::Wrapper<PRODUCT_TYPE> WDP;
     std::auto_ptr<edm::EDProduct>  product(new WDP(std::auto_ptr<PRODUCT_TYPE>(new PRODUCT_TYPE)));
-    std::auto_ptr<edm::Provenance> provenance(new edm::Provenance);
 
     std::string tag("rick");
-    edm::BranchDescription* branch = branchDescriptions_[tag];
-    assert(branch);
+    assert(branchDescriptions_[tag]);
+    edm::BranchDescription branch = *branchDescriptions_[tag];
 
-    provenance->product.fullClassName_       = branch->fullClassName_;
-    provenance->product.friendlyClassName_   = branch->friendlyClassName_;
-    provenance->product.moduleLabel_         = branch->moduleLabel_;
-    provenance->product.processName_         = branch->processName_;
-    provenance->product.productInstanceName_ = branch->productInstanceName_;
-    provenance->product.moduleDescriptionID_ = branch->moduleDescriptionID_;
-    provenance->product.init();
+    branch.init();
 
     edm::ProductRegistry::ProductList const& pl = pProductRegistry_->productList();
-    edm::BranchKey const bk(provenance->product);
+    edm::BranchKey const bk(branch);
     edm::ProductRegistry::ProductList::const_iterator it = pl.find(bk);
-    provenance->product.productID_ = it->second.productID_;
+    branch.productID_ = it->second.productID_;
+
+    std::auto_ptr<edm::Provenance> provenance(new edm::Provenance(branch, edm::BranchEntryDescription::Success));
 
     edm::ProcessConfiguration* process = processConfigurations_[tag];
     assert(process);

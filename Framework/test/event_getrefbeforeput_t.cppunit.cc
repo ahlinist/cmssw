@@ -86,22 +86,22 @@ void testEventGetRefBeforePut::getRefTest() {
   edm::TypeID dummytype(dp);
   std::string className = dummytype.friendlyClassName();
 
-  std::auto_ptr<edm::Provenance> pprov(new edm::Provenance);
+  edm::BranchDescription product;
 
-  pprov->product.fullClassName_ = dummytype.userClassName();
-  pprov->product.friendlyClassName_ = className;
+  product.fullClassName_ = dummytype.userClassName();
+  product.friendlyClassName_ = className;
 
   edm::ModuleDescription modDesc;
   modDesc.moduleName_ = "Blah";
 
-  pprov->product.moduleLabel_ = label;
-  pprov->product.productInstanceName_ = productInstanceName;
-  pprov->product.processName_ = processName;
-  pprov->product.moduleDescriptionID_ = modDesc.id();
-  pprov->product.init();
+  product.moduleLabel_ = label;
+  product.productInstanceName_ = productInstanceName;
+  product.processName_ = processName;
+  product.moduleDescriptionID_ = modDesc.id();
+  product.init();
 
   edm::ProductRegistry preg;
-  preg.addProduct(pprov->product);
+  preg.addProduct(product);
   preg.setProductIDs();
   edm::EventID col(1L);
   edm::Timestamp fakeTime;
