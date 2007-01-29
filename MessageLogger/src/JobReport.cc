@@ -198,10 +198,12 @@ namespace edm
     LogInfo("FwkJob") << "\n<GeneratorInfo>";
     std::map<std::string, std::string>::iterator pos;
     for (pos = generatorInfo_.begin(); pos != generatorInfo_.end(); ++pos){
-      LogInfo("FwkJob") << "\n<Data Name=\"" << pos->first
+      std::ostringstream msg;
+      msg << "\n<Data Name=\"" << pos->first
 			<< "\" Value=\"" << pos->second << "\">";
+      LogInfo("FwkJob") << msg.str();
     }
-    LogInfo("FwkJob") << "\n</GeneratorInfo>";
+    LogInfo("FwkJob") << "</GeneratorInfo>";
     
   }
 
