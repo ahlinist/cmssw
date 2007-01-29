@@ -5,11 +5,11 @@
  * events by reading in a file produced with MadGraph/MadEvent
  * and shower them with Pythia.
  * 
- * 
  * July 2006
  * Maria Hansen, University of Bristol
- *
  * Hector Naves : added the MCDB Interface (25/10/06)
+ * Dorian Kcira : add automatic end of event processing when hitting
+ *                the end of the lhe file (29/01/07)
  ***************************************/
 #include "GeneratorInterface/MadGraphInterface/interface/MadGraphSource.h"
 #include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
