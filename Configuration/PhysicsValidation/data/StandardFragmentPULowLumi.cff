@@ -5,6 +5,8 @@ include "Configuration/StandardSequences/data/Reconstruction.cff"
 include "Configuration/StandardSequences/data/Simulation.cff"
 include "Configuration/StandardSequences/data/MixingLowLumiPileUp.cff" 
 include "Configuration/StandardSequences/data/VtxSmearedGauss.cff" 
+include "Configuration/StandardSequences/data/FakeConditions.cff"       
+                                                                
 
 path p1 = {simulation}
 path p2 = {reconstruction} # reconstruction
