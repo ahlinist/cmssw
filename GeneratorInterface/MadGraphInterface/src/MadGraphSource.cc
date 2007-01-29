@@ -16,6 +16,7 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "FWCore/Utilities/interface/RandomNumberGenerator.h"
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 #include <iostream>
 #include <fstream> 
@@ -38,6 +39,35 @@ using namespace std;
 extern "C" {
   void PYGIVE(const char*,int length);
 }
+
+/*
+      INTEGER MAXNUP
+      PARAMETER (MAXNUP=500)
+      INTEGER NUP,IDPRUP,IDUP,ISTUP,MOTHUP,ICOLUP
+      DOUBLE PRECISION XWGTUP,SCALUP,AQEDUP,AQCDUP,PUP,VTIMUP,SPINUP
+
+      COMMON/HEPEUP/NUP,IDPRUP,XWGTUP,SCALUP,AQEDUP,AQCDUP,IDUP(MAXNUP),
+     &   ISTUP(MAXNUP),MOTHUP(2,MAXNUP),ICOLUP(2,MAXNUP),PUP(5,MAXNUP),
+     &   VTIMUP(MAXNUP),SPINUP(MAXNUP)
+*/
+extern "C" {
+ extern struct HEPEUP{
+ int nup;
+ int idprup;
+ double xwgtup;
+ double scalup;
+ double aqedup;
+ double aqcdup;
+ int idup[500];
+ int istup[500];
+ int mothup[500][2];
+ int icolup[500][2];
+ double pup[500][5];
+ double vtimup[500];
+ double spinup[500];
+ }hepeup_;
+}
+
 
 HepMC::ConvertHEPEVT conv;
 
@@ -76,7 +106,6 @@ pythiaPylistVerbosity_ (pset.getUntrackedParameter<int>("pythiaPylistVerbosity",
   
   //Write to file name and first event to be read in to a file which the MadGraph subroutine will read in
   ofile.open("MGinput.dat",ios::out);
-  //  ofile<<"1) PATH/FileName:CompHEP_events.PEV, MadEvent.dat, ALPGEN.unw \n";
   ofile<<MGfile_;
   ofile<<"\n";
   ofile.close();
@@ -168,6 +197,7 @@ bool MadGraphSource::produce(Event & e) {
     call_pyevnt();      // generate one event with Pythia
     call_pyhepc( 1 );
     
+
     HepMC::GenEvent* evt = conv.getGenEventfromHEPEVT();
     evt->set_signal_process_id(pypars.msti[0]);
     evt->set_event_number(numberEventsInRun() - remainingEvents() - 1);
@@ -187,6 +217,11 @@ bool MadGraphSource::produce(Event & e) {
 	evt->print();
       }
     }
+
+   if(hepeup_.nup==0){
+      cout << "MadGraphSource::produce - the interface signalled end of Les Houches file. Finishing event processing here."<<endl;
+      return false; // finish event processing if variable nup from common block HEPEUP set to 0 in ME2Pythia.f
+   }
 
     if(evt)  bare_product->addHepMCData(evt );
 
