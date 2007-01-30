@@ -13,7 +13,7 @@
 //
 // Original Author:  Simone Gennai
 //      Created:  Thu Apr  6 09:56:23 CEST 2006
-// $Id: ConeIsolation.cc,v 1.16 2006/12/09 13:58:47 gennai Exp $
+// $Id: ConeIsolation.cc,v 1.17 2006/12/15 11:03:52 gennai Exp $
 //
 //
 
@@ -98,7 +98,7 @@ ConeIsolation::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
        const reco::VertexCollection vertCollection = *(vertices.product());
        reco::VertexCollection::const_iterator ci = vertCollection.begin();
        int i=0;
-       std::cout <<"Vertex Size "<<vertCollection.size()<<std::endl;
+//       std::cout <<"Vertex Size "<<vertCollection.size()<<std::endl;
        if(vertCollection.size() > 0) {
 	 myPV = *ci;
        }
