@@ -5,6 +5,7 @@
 #include "RecoBTag/XMLCalibration/interface/CalibratedHistogramXML.h"
 #include "RecoBTag/CombinedSV/interface/PartonTypes.h"
 #include "DataFormats/BTauReco/interface/VertexTypes.h"
+#include "RecoBTag/CombinedSV/interface/CombinedSVCalibrationCategory.h"
 
 namespace combsv {
   class CombinedSVCalibrationHistogram : public CalibratedHistogramXML {
@@ -13,21 +14,31 @@ namespace combsv {
     */
   public:
     CombinedSVCalibrationHistogram();
-    CombinedSVCalibrationHistogram(double ptMin,  double ptMax,
-                                     double etaMin, double etaMax,
-                                     reco::btag::Vertices::VertexType      vertexType,
-                                     combsv::Partons::PartonType      partonType,
-                                     reco::btag::TaggingVariableName taggingVar,
-                                     const std::vector<double> & binlowerEdge);
-    ~CombinedSVCalibrationHistogram() {}
-    
-    void startCalibration();
-    void updateCalibration( const combsv::CombinedSVCalibInput &,
-                            const std::vector<double> & binContent);
-    void finishCalibration();
+    CombinedSVCalibrationHistogram(float ptMin,  float ptMax,
+                   float etaMin, float etaMax,
+                   reco::btag::Vertices::VertexType vertexType,
+                   combsv::Partons::PartonType partonType,
+                   reco::btag::TaggingVariableName taggingVar,
+                   const std::vector < float > & binlowerEdge,
+                   int nentries );
 
+    ~CombinedSVCalibrationHistogram() {}
+
+    int binCount ( int bin ) const; /// get number of counts in bin
+    void setBinCount ( int b, int v ); /// set number of counts in bin
+    void addCount ( float x );
+
+    int entries() const;
+    void setEntries ( int i );
+    void addEntries ( int i );
+
+    combsv::CombinedSVCalibrationCategory & category();
+    const combsv::CombinedSVCalibrationCategory & constCategory() const;
+    
   private:
-    std::vector<double> binLowerEdge_;
+    combsv::CombinedSVCalibrationCategory category_;
+    std::vector< float > binLowerEdge_;
+    int nentries_;
   };
 }
 

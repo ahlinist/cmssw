@@ -1,9 +1,10 @@
 #include "RecoBTag/CombinedSV/interface/TrackFilter.h"
+#include <limits>
 
 using namespace std;
 
-TrackFilter::TrackFilter ( float pTMin, int nHitAllMin, int nHitPixelMin, 
-  float n_chi2Max, float etaMin, float etaMax, float ip2DMin, 
+TrackFilter::TrackFilter ( float pTMin, int nHitAllMin, int nHitPixelMin,
+  float n_chi2Max, float etaMin, float etaMax, float ip2DMin,
   float ip2DMax, float jetDistanceMax ) :
   pTMin_(pTMin), nHitAllMin_(nHitAllMin), nHitPixelMin_(nHitPixelMin),
   normedChi2Max_(n_chi2Max), etaMin_(etaMin), etaMax_(etaMax), ip2DMin_(ip2DMin),
@@ -14,30 +15,35 @@ void TrackFilter::print ( const combsv::CombinedTrack & data, double ipSigni2DCu
 {
   cout << endl;
   cout << "[TrackFilter]" << endl;
-  cout << " - pt          _" <<data.pt()           << "_ > " << pTMin_        << endl;
-//  cout << " - #hits       _" <<data.nHitsTotal()   << "_ > " << nHitAllMin_   << endl;
+  cout << " - pt          '" <<data.pt()           << "' > " << pTMin_        << endl;
+//  cout << " - #hits       '" <<data.nHitsTotal()   << "' > " << nHitAllMin_   << endl;
 //cout << " - #hits pixel " <<data.nHitsPixel()   << " > " << nHitPixelMin_ << endl;
-//cout << " - chi2        " <<data.chi2()         << " < " << normedChi2Max_      << endl;
-//  cout << " - eta         _" <<data.eta()          << "_ > " << etaMin_       << endl;
-//  cout << " - eta         _" <<data.eta()          << "_ < " << etaMax_       << endl;
-  cout << " - ip2D        _" <<data.ip2D().value() << "_ > " << ip2DMin_      << endl;
-  cout << " - ip2D        _" <<data.ip2D().value() << "_ < " << ip2DMax_      << endl;
-  cout << " - ip2D signi  _" <<data.ip2D().significance() << "_ > " << ipSigni2DCut     << endl;
-  cout << " - jetDistance _" << data.jetDistance() << "_ < " << jetDistanceMax_ << endl;
-  cout << " - accept: " << this->operator() ( data, ipSigni2DCut, false ) << endl;
+// cout << " - chi2 / ndof        " <<data.chi2()         << " < " << normedChi2Max_      << endl;
+//  cout << " - eta         '" <<data.eta()          << "' > " << etaMin_       << endl;
+//  cout << " - eta         '" <<data.eta()          << "' < " << etaMax_       << endl;
+  cout << " - ip2D        '" <<data.ip2D().value() << "' > " << ip2DMin_      << endl;
+  cout << " - ip2D        '" <<data.ip2D().value() << "' < " << ip2DMax_      << endl;
+  cout << " - ip2D signi  '" <<data.ip2D().significance() << "' > " << ipSigni2DCut     << endl;
+  cout << " - jetDistance '" << data.jetDistance() << "' < " << jetDistanceMax_ << endl;
+  // cout << " - accept: " << this->operator() ( data, ipSigni2DCut, false ) << endl;
 }
 
-bool TrackFilter::operator()( const combsv::CombinedTrack & data, 
+bool TrackFilter::operator()( const combsv::CombinedTrack & data,
                               double ipSigni2DCut, bool prt ) const
 {
-  if ( prt ) print ( data, ipSigni2DCut );
-  return( data.pt() > pTMin_ && 
+  bool ret = operator() ( data, prt );
+  if (!ret) return false;
+  return ( data.ip2D().significance() > ipSigni2DCut );
+}
+
+bool TrackFilter::operator()( const combsv::CombinedTrack & data, bool prt ) const
+{
+  if ( prt ) print ( data, -numeric_limits<double>::infinity() );
+  return( data.pt() > pTMin_ &&
           // data.nHitsTotal() >= nHitAllMin_ &&
           // data.nHitsPixel() >= nHitPixelMin_ &&
           // data.chi2() / data.ndf() < normedChi2Max_ &&
           // data.eta() > etaMin_ && data.eta() < etaMax_ &&
           data.ip2D().value() > ip2DMin_ && data.ip2D().value() < ip2DMax_ &&
-          data.ip2D().significance() > ipSigni2DCut &&
           data.jetDistance() < jetDistanceMax_ );
-  // return true;
 }

@@ -16,8 +16,8 @@ namespace combsv {
     */
   public:
     CombinedSVCalibrationCategory() {};
-    CombinedSVCalibrationCategory(double ptMin,  double ptMax,
-            double etaMin, double etaMax,
+    CombinedSVCalibrationCategory(float ptMin,  float ptMax,
+            float etaMin, float etaMax,
             reco::btag::Vertices::VertexType      vertexType,
             combsv::Partons::PartonType      partonType,
             reco::btag::TaggingVariableName taggingVar);
@@ -30,10 +30,10 @@ namespace combsv {
     combsv::Partons::PartonType      partonType() const;
     reco::btag::TaggingVariableName taggingVar() const;
 
-    double jetPtMin() const;
-    double jetPtMax() const;
-    double jetEtaMin() const;
-    double jetEtaMax() const;
+    float jetPtMin() const;
+    float jetPtMax() const;
+    float jetEtaMin() const;
+    float jetEtaMax() const;
 
     #ifndef RAVE
     void readFromDOM( XERCES_CPP_NAMESPACE::DOMElement * );
@@ -43,11 +43,11 @@ namespace combsv {
     
  private:
 
-  double jetPtMin_;
-  double jetPtMax_;
+  float jetPtMin_;
+  float jetPtMax_;
   
-  double jetEtaMin_;
-  double jetEtaMax_;
+  float jetEtaMin_;
+  float jetEtaMax_;
 
   reco::btag::Vertices::VertexType      vertexType_;
   combsv::Partons::PartonType      partonType_;

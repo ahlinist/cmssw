@@ -1,4 +1,5 @@
 #include "RecoBTag/CombinedSV/interface/FilterFactory.h"
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 FilterFactory::FilterFactory ( const edm::ParameterSet & s, const MagneticField * m )
 {
@@ -14,7 +15,9 @@ FilterFactory::FilterFactory ( const TrackFilter & tf, const VertexFilter & vf,
 
 FilterFactory::FilterFactory ( ) :
   track_( TrackFilter() ), vertex_( VertexFilter() ), jet_( JetFilter() )
-{ }
+{
+//  edm::LogError ( "FilterFactory" ) << "Created filters via defaults!";
+}
 
 const TrackFilter & FilterFactory::trackFilter() const
 {

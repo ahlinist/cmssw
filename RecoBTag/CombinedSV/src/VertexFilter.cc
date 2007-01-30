@@ -1,5 +1,5 @@
 #include "RecoBTag/CombinedSV/interface/VertexFilter.h"
-#include "RecoVertex/VertexTools/interface/NbSharedTracks.h"
+// #include "RecoVertex/VertexTools/interface/NbSharedTracks.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "RecoBTag/CombinedSV/interface/BKinematics.h"
 #include "Geometry/CommonDetAlgo/interface/AlgebraicObjects.h"
@@ -138,6 +138,9 @@ bool VertexFilter::operator() ( const reco::Vertex & vertex, VertexType t ) cons
   int nTracksSV = vertex.tracksSize();
   int nShared=0;
 
+  /*
+   * FIXME removed the NbSharedTracks test, because 
+   * of the adaptive fitters ....
   double fracPV = 0.;
   if (nTracksSV >0)
   {
@@ -152,7 +155,7 @@ bool VertexFilter::operator() ( const reco::Vertex & vertex, VertexType t ) cons
                  << ") shared with primary vertex " 
                  << fracPV << " >= " << vertexFracPV_ << " " << toString(false);
     return false; // primary vertex fails
-  }
+  }*/
 
   return true;
 }

@@ -2,10 +2,16 @@
 #define RecoBTag_BTagAlgorithmCalibration_h
 
 #include "RecoBTag/CombinedSV/interface/CombinedSVCalibrationCategory.h"
-#include "RecoBTag/XMLCalibration/interface/CalibratedHistogramXML.h"
+#include "RecoBTag/CombinedSV/interface/CombinedSVCalibrationHistogram.h"
 #include "RecoBTag/XMLCalibration/interface/AlgorithmCalibration.h"
 
 typedef AlgorithmCalibration < combsv::CombinedSVCalibrationCategory,                                        
-                              CalibratedHistogramXML> BTagAlgorithmCalibration;   
+                               combsv::CombinedSVCalibrationHistogram > BTagAlgorithmCalibration;
+
+/*
+class BTagAlgorithmCalibration : public AlgorithmCalibration 
+      < combsv::CombinedSVCalibrationCategory, combsv::CombinedSVCalibrationHistogram > 
+{
+};*/
 
 #endif

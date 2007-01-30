@@ -5,7 +5,7 @@
 using namespace std;
 
 combsv::CombinedSVCalibrationCategory::CombinedSVCalibrationCategory(
-    double ptMin,  double ptMax, double etaMin, double etaMax,
+    float ptMin,  float ptMax, float etaMin, float etaMax,
     reco::btag::Vertices::VertexType      vertexType,
     combsv::Partons::PartonType      partonType,
     reco::btag::TaggingVariableName taggingVar) :
@@ -52,22 +52,22 @@ reco::btag::TaggingVariableName combsv::CombinedSVCalibrationCategory::taggingVa
   return taggingVar_;
 }
 
-double combsv::CombinedSVCalibrationCategory::jetPtMin() const
+float combsv::CombinedSVCalibrationCategory::jetPtMin() const
 {
   return jetPtMin_;
 }
 
-double combsv::CombinedSVCalibrationCategory::jetPtMax() const
+float combsv::CombinedSVCalibrationCategory::jetPtMax() const
 {
   return jetPtMax_;
 }
 
-double combsv::CombinedSVCalibrationCategory::jetEtaMin() const
+float combsv::CombinedSVCalibrationCategory::jetEtaMin() const
 {
   return jetEtaMin_;
 }
 
-double combsv::CombinedSVCalibrationCategory::jetEtaMax() const
+float combsv::CombinedSVCalibrationCategory::jetEtaMax() const
 {
   return jetEtaMax_;
 }
@@ -86,11 +86,11 @@ std::ostream & operator<< ( std::ostream & os, const combsv::CombinedSVCalibrati
 #ifndef RAVE
 void combsv::CombinedSVCalibrationCategory::readFromDOM(DOMElement * dom)
 {
-  jetEtaMin_  = CalibrationXML::readAttribute<double>(dom,"JetEtaMin");
-  jetEtaMax_  = CalibrationXML::readAttribute<double>(dom,"JetEtaMax");
+  jetEtaMin_  = CalibrationXML::readAttribute<float>(dom,"JetEtaMin");
+  jetEtaMax_  = CalibrationXML::readAttribute<float>(dom,"JetEtaMax");
 
-  jetPtMin_   = CalibrationXML::readAttribute<double>(dom,"JetPtMin");
-  jetPtMax_   = CalibrationXML::readAttribute<double>(dom,"JetPtMax");
+  jetPtMin_   = CalibrationXML::readAttribute<float>(dom,"JetPtMin");
+  jetPtMax_   = CalibrationXML::readAttribute<float>(dom,"JetPtMax");
 
   // need to test if this works - compiler gives warning about
   // invalid conversion int -> enum type
