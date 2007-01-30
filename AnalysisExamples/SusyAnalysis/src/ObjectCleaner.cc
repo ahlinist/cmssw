@@ -746,6 +746,7 @@ bool ObjectCleaner::DuplicatePhoton(int ichk)
  if (recopart->particleType() != 4){return false;}
 
  const Photon* photcand = RecoData[ichk]->photonCandidate();
+ if (photcand == NULL){return false;}
 // cout << " pointer to elec cand " << elecand;
  const SuperCluster* supercluster = &(*(photcand->superCluster()));
 // cout << " pointer to supercluster " << supercluster;

@@ -755,34 +755,37 @@ bool Isolator::IsoPhoton(int ichk)
     itra = (iso_MethodPhot - 100*itra) / 10;
     int ival = (iso_MethodPhot / 10);
     ival = iso_MethodPhot - 10*ival;
-    const Photon* photcand = RecoData[ichk]->photonCandidate();
 //    cout << " pointer to photon cand " << photcand;
 //    float photmom = photcand->p();
 //    cout << " momentum " << photmom << endl;
 
-    // using calorimeter information
     float eSum = 0.;
     float etest = 0.;
     float phCalEta = 0.;
     float phCalPhi = 0.;
-    if (idet >= 1 && idet <= 3){
+    const Photon* photcand = RecoData[ichk]->photonCandidate();
+    if (photcand != NULL){
       const SuperCluster* supercluster = &(*(photcand->superCluster()));
 //      cout << " pointer to supercluster " << supercluster;
-//      float photenergy = supercluster->energy();
-//      cout << " energy " << photenergy << endl;
-      if (itra == 1) {
-        float eta = supercluster->eta();
-        float theta = 2. * atan(exp(-eta)); // pseudorapidity or rapidity?
-        etest = supercluster->energy() * fabs(sin(theta));
-//        etest = supercluster->energy() / cosh(eta);
-//        cout << " eta = " << eta << ", Et " << etest << endl;
-      } else if (itra == 2) {
-        etest = supercluster->energy();
-//        cout << ", E " << etest << endl;
-      }
+      etest = supercluster->energy();
+//      cout << ", E " << etest << endl;
       phCalEta = supercluster->eta();
       phCalPhi = supercluster->phi();
+    } else {
+      etest = RecoData[ichk]->energy();
+      phCalEta = RecoData[ichk]->eta();
+      phCalPhi = RecoData[ichk]->phi();
     }
+    
+    if (idet >= 1 && idet <= 3 && itra == 1){
+      float theta = 2. * atan(exp(-phCalEta)); // pseudorapidity or rapidity?
+      etest = etest * fabs(sin(theta));
+//      etest = etest / cosh(phCalEta);
+//      cout << " eta = " << phCalEta << ", Et " << etest << endl;
+    }
+    
+    // using calorimeter information
+
     if (idet == 1 || idet == 3){
       eSum = IsoCalSum (itra, phCalEta, phCalPhi, 
                               iso_PhCalDRin, iso_PhCalDRout, iso_PhCalSeed);
