@@ -90,7 +90,7 @@ int pid() {return PID;}
 int status() {return Status;}
 int motherIndex() {return Mother1;}
 virtual const PixelMatchGsfElectron* electronCandidate() {
-                   cout << "Pointer to electron candidate not defined." << endl;
+//                   cout << "Pointer to electron candidate not defined." << endl;
                    return NULL;}
 virtual const Muon* muonCandidate() {
                    cout << "Pointer to muon candidate not defined." << endl;
