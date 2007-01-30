@@ -200,7 +200,7 @@ namespace edm
     for (pos = generatorInfo_.begin(); pos != generatorInfo_.end(); ++pos){
       std::ostringstream msg;
       msg << "\n<Data Name=\"" << pos->first
-			<< "\" Value=\"" << pos->second << "\">";
+			<< "\" Value=\"" << pos->second << "\"/>";
       LogInfo("FwkJob") << msg.str();
     }
     LogInfo("FwkJob") << "</GeneratorInfo>";
