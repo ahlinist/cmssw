@@ -7,13 +7,13 @@ using namespace std;
 using namespace reco::btag::Vertices;
 
 PseudoVertexBuilder::PseudoVertexBuilder ( double tmin,
-    const TrackFilter * filter, TrackInfoBuilder * b, const MagneticField * f )
+    const TrackFilter & filter, TrackInfoBuilder * b, const MagneticField * f )
   : trackIpSignificanceMin2DMin_ ( tmin ), filter_ ( filter ),
   trackInfoBuilder_ ( b ), field_(f)
 {}
 
 PseudoVertexBuilder::PseudoVertexBuilder () : 
-    trackIpSignificanceMin2DMin_ ( 0. ), filter_ ( 0 ),
+    trackIpSignificanceMin2DMin_ ( 0. ), filter_ ( TrackFilter() ),
     trackInfoBuilder_ ( 0 )
 {}
 
@@ -77,7 +77,7 @@ reco::Vertex PseudoVertexBuilder::build( VertexType t,
 
   vector<combsv::CombinedTrack> filteredTrackColl = filterTracks ( trackColl, ipSigni2DCut );
   int nTracks = filteredTrackColl.size();
-  cout << "[PseudoVertexBuilder] " << nTracks << " accepted tracks." << endl;
+  edm::LogInfo ( "PseudoVertexBuilder" ) << nTracks << " accepted tracks." << endl;
   /*
   if (nTracks < 2) {
     throw cms::Exception("NoTracksForVertex")
@@ -106,7 +106,7 @@ bool PseudoVertexBuilder::acceptTrack(
 {
   // CAVE: IP significance just for pseudo/no-vertex ?
   //       jet distance just for reco-vertex?
-  return filter_->operator() ( t, ipSigni2DCut );
+  return filter_.operator() ( t, ipSigni2DCut );
 }
 
 std::vector < combsv::CombinedTrack > PseudoVertexBuilder::filterTracks (
@@ -128,5 +128,5 @@ const TrackInfoBuilder & PseudoVertexBuilder::trackInfoBuilder() const
 
 const TrackFilter & PseudoVertexBuilder::trackFilter() const
 {
-  return (*filter_);
+  return filter_;
 }

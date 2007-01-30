@@ -25,6 +25,11 @@ void combsv::CombinedSVCalibInput::setTaggingVariable ( reco::btag::TaggingVaria
   taggingVar_=t;
 }
 
+void combsv::CombinedSVCalibInput::setVertexType ( reco::btag::Vertices::VertexType t )
+{
+  vertexType_=t;
+}
+
 string combsv::CombinedSVCalibInput::describe() const
 {
   ostringstream ostr;

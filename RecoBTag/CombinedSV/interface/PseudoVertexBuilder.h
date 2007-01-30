@@ -33,7 +33,7 @@ class PseudoVertexBuilder {
      */
 
     PseudoVertexBuilder ( double trackIpSignificanceMin2DMin,
-        const TrackFilter * filter, TrackInfoBuilder *, const MagneticField * );
+        const TrackFilter & filter, TrackInfoBuilder *, const MagneticField * );
 
     PseudoVertexBuilder ();
 
@@ -66,7 +66,7 @@ class PseudoVertexBuilder {
 
   private:
     double trackIpSignificanceMin2DMin_;
-    const TrackFilter * filter_;
+    TrackFilter filter_;
     TrackInfoBuilder * trackInfoBuilder_;
     const MagneticField * field_;
 

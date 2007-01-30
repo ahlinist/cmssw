@@ -1,72 +1,96 @@
-#include "RecoBTag/CombinedSV/interface/CombinedSVCalibrationCategory.h"
 #include "RecoBTag/CombinedSV/interface/CombinedSVCalibrationHistogram.h"
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include <iostream>
 
 using namespace std;
 
 combsv::CombinedSVCalibrationHistogram::CombinedSVCalibrationHistogram(
-    double ptMin, double ptMax, double etaMin, double etaMax,
+    float ptMin, float ptMax, float etaMin, float etaMax,
     reco::btag::Vertices::VertexType vertexType,
     combsv::Partons::PartonType      partonType,
     reco::btag::TaggingVariableName taggingVar,
-    const vector<double> & binLowerEdge ) : binLowerEdge_ ( binLowerEdge )
+    const vector < float > & binLowerEdge, int nentries ) : 
+    CalibratedHistogramXML  ( binLowerEdge ),
+    category_ ( CombinedSVCalibrationCategory (
+          ptMin,  ptMax, etaMin, etaMax, vertexType, partonType, taggingVar) ),
+    nentries_(nentries) 
 {
-  // add new category (=new histogram) based on information given in constructor
-  CombinedSVCalibrationCategory calibCategory(ptMin,  ptMax,
-        etaMin, etaMax, vertexType, partonType, taggingVar);
 }
 
-combsv::CombinedSVCalibrationHistogram::CombinedSVCalibrationHistogram()
+combsv::CombinedSVCalibrationHistogram::CombinedSVCalibrationHistogram() : CalibratedHistogramXML()
+{}
+
+int combsv::CombinedSVCalibrationHistogram::entries() const
 {
-  cout << "*** default constructor of :CombinedSVCalibrationHistogram *** "<< endl;
+  return nentries_;
 }
 
-void combsv::CombinedSVCalibrationHistogram::startCalibration() {
-  //
-  // book histogram
-  //
-
-  reset();
-  m_binULimits.clear();
-
-  for ( vector<double>::const_iterator binIter = binLowerEdge_.begin(); 
-        binIter != binLowerEdge_.end(); binIter++) {
-    m_binULimits.push_back(*binIter);    
-  } //for binIter
-  m_binValues.resize(m_binULimits.size()+1);
-
-} // void startCalibration
-
-// ========================================================================================================
-void combsv::CombinedSVCalibrationHistogram::updateCalibration(
-    const combsv::CombinedSVCalibInput &,
-    const vector<double> & binContent)
+void combsv::CombinedSVCalibrationHistogram::setEntries( int i )
 {
-  // This update function is called only once in the 
-  // conversion from ASCII -> XML based calibration
-  // It sets the content of each bin to the value read out from the 
-  // ASCII file
-  //
+  nentries_=i;
+}
 
-  if (binContent.size() != m_binValues.size()) {
+void combsv::CombinedSVCalibrationHistogram::addEntries( int i )
+{
+  nentries_+=i;
+}
 
-    cout << "### ERROR in combsv::CombinedSVCalibrationHistogram::updateCalibration" << endl;
-    cout << "###       HISTOGRAM SIZES DO NOT MATCH                                " << endl;
-    cout << "### from ASCII            " << binContent.size()                        << endl;
-    cout << "### from booked histogram " << m_binValues.size()                       << endl;
+combsv::CombinedSVCalibrationCategory & 
+    combsv::CombinedSVCalibrationHistogram::category()
+{
+  return category_;
+}
+
+const combsv::CombinedSVCalibrationCategory & 
+    combsv::CombinedSVCalibrationHistogram::constCategory() const
+{
+  return category_;
+}
+
+void combsv::CombinedSVCalibrationHistogram::addCount ( float x )
+{
+  if ( m_binULimits.size() != m_binValues.size()-1 )
+  {
+    edm::LogError("CombinedSVCalibrationHistogram" )
+      << "bin size mismatch: " << m_binULimits.size()
+      << ":" << m_binValues.size();
+    exit(-1);
+  }
+  int ctr=0;
+  // normalize old data
+  for ( vector< float >::const_iterator i=m_binULimits.begin(); 
+        i!=m_binULimits.end() ; ++i )
+  {
+    m_binValues[ctr]=m_binValues[ctr] * nentries_ / ( nentries_ + 1. );
+    ctr++;
   }
 
-  // int i = 0;
-  m_binValues.clear();
-  for ( vector<double>::const_iterator valueIter = binContent.begin(); 
-        valueIter != binContent.end(); valueIter ++ )
+  nentries_++;
+  int bin=findBin(x);
+  // add new data
+  setBinContent(bin, ( binContent(bin) + 1. / nentries_ ) );
+}
+
+int combsv::CombinedSVCalibrationHistogram::binCount ( int bin ) const
+{
+  if ( nentries_ == 0 )
   {
-    cout << "*** setting bin content to " << (*valueIter) << endl;
-    // m_binValues[i] = (*valueIter); ?
-    m_binValues.push_back ( *valueIter );
-  } //for valueIter
+    edm::LogError ( "CombinedSVCalibrationHistogram" )
+      << "trying to set bin count with zero entries!";
+    return 0;
+  }
+  return int ( binContent ( bin ) * nentries_ );
+}
 
-} // void updatedCalibration
+void combsv::CombinedSVCalibrationHistogram::setBinCount ( int bin, int count )
+{
+  if ( nentries_ == 0 )
+  {
+    edm::LogError ( "CombinedSVCalibrationHistogram" )
+      << "trying to set bin count with zero entries!";
+    return;
+  }
+  float value = (float) count / (float) nentries_;
+  setBinContent ( bin, value );
+}
 
-void combsv::CombinedSVCalibrationHistogram::finishCalibration()
-{ }

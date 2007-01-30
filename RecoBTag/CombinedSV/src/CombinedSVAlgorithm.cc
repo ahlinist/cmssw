@@ -99,7 +99,7 @@ combsv::CombinedSVAlgorithm::CombinedSVAlgorithm( const MagneticField * field,
   discriminatorComputer_ ( c ), variables_ ( vars ),
   vertexCharmCut_(vcc), trackIpSignificanceMin2DMin_(tismm) ,
   trackInfoBuilder_ ( TrackInfoBuilder ( field ) ),
-  vtxBuilder_ ( PseudoVertexBuilder (tismm, &(ff.trackFilter()), &trackInfoBuilder_, field ) )
+  vtxBuilder_ ( PseudoVertexBuilder (tismm, ff.trackFilter(), &trackInfoBuilder_, field ) )
 {}
 
 combsv::CombinedSVAlgorithm::~CombinedSVAlgorithm()
@@ -171,7 +171,8 @@ reco::CombinedSVTagInfo combsv::CombinedSVAlgorithm::tag ( const reco::Vertex & 
         i!=itracks.end() ; ++i )
   {
     combsv::CombinedTrack t = trackInfoBuilder_.build ( *i );
-    if ( filters_.trackFilter() ( t, trackIpSignificanceMin2DMin_ ) )
+    // if ( filters_.trackFilter() ( t, trackIpSignificanceMin2DMin_ ) )
+    if ( filters_.trackFilter() ( t ) )
     {
       etracks.push_back ( t );
       tracks.push_back ( *i );

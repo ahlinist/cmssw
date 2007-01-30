@@ -71,7 +71,7 @@ void reco::BKinematics::updateMass()
   double p2 = vec3_.mag2();
   if ( p2 == 0. && energy_ == 0. )
   {
-    edm::LogError ("BKinematics" ) << "FIXME zero mass vertex. Check this.";
+    // edm::LogError ("BKinematics" ) << "FIXME zero mass vertex. Check this.";
     mass_=0.;
     return;
   }

@@ -143,7 +143,7 @@ double LikelihoodRatio::compute ( const reco::TaggingVariableList & s ) const
 
   edm::LogInfo("LikelihoodRatio") << "tag ends, return " << combinedVariable
        << " (ratioC=" << ratioC << ", ratioUDSG=" << ratioUDSG << ", priorCharm="
-       << priorCharmInBG_ << ", priorUDSG=" << priorUDSG_ << ")";
+       << priorCharmInBG_ << ", priorUDSG=" << priorUDSG_ << ")" << endl;
 
   return combinedVariable;
 }
@@ -156,7 +156,7 @@ long double LikelihoodRatio::getPDFValue( double variableValue,
   // protect against not filled variables
   if ( isnan ( variableValue ) )
   {
-    cout << "[LikelihoodRatio] ::getPDFValue warning "
+    edm::LogWarning ( "LikelihoodRatio" ) << "::getPDFValue warning "
          << " variable not filled: value=" << variableValue;
              /*
              << "tagging variable "
@@ -179,7 +179,7 @@ long double LikelihoodRatio::getPDFValue( double variableValue,
 
   if (!(isfinite(returnValue)))
   {
-    cout << "[LikelihoodRatio] warning getPDFValue has non-finite value!" << endl;
+    edm::LogWarning ( "LikelihoodRatio" ) << "getPDFValue has non-finite value!" << endl;
     returnValue=1.;
   }
   return returnValue;

@@ -22,6 +22,7 @@ namespace combsv {
           double jetpt, double jeteta );
 
       void setTaggingVariable ( reco::btag::TaggingVariableName t );
+      void setVertexType ( reco::btag::Vertices::VertexType );
 
       reco::btag::Vertices::VertexType vertexType() const;
       combsv::Partons::PartonType partonType() const;

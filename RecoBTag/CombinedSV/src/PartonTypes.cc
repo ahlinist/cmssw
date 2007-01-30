@@ -20,13 +20,8 @@ std::string combsv::Partons::name ( PartonType p )
 
 combsv::Partons::PartonType combsv::Partons::type ( const std::string & s )
 {
-  if ( s=="B" ) return B;
-  if ( s=="C" ) return C;
-  if ( s=="UDSG" ) return UDSG;
-  int i = atoi ( s.c_str() );
-  if ( i > 0 ) return ( combsv::Partons::PartonType ) (i);
-  if ( ( i==0 ) && s == "0" ) return ( combsv::Partons::PartonType ) (i);
-
+  if ( s.size() == 1 ) return type ( s[0] );
+  if ( s=="UDSG" || s=="udsg" ) return UDSG;
   return UndefParton;
 }
 
@@ -36,5 +31,11 @@ combsv::Partons::PartonType combsv::Partons::type ( char s )
   if ( s=='C' || s=='c' ) return C;
   if ( s=='U' || s=='D' || s=='S' || s=='G' ) return UDSG;
   if ( s=='u' || s=='d' || s=='s' || s=='g' ) return UDSG;
+  if ( s=='Q' || s=='q' ) return UDSG;
+  int i = (int) s - 48; // simple numbers are ok, also
+  if ( i>=0  && i < (int) UndefParton )
+  {
+    return ( combsv::Partons::PartonType ) (i);
+  }
   return UndefParton;
 }
