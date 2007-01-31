@@ -155,9 +155,7 @@ void SiStripPedDB::endJob(void){
   
   if( mydbservice.isAvailable() ){
     try{
-      uint32_t callbackToken=mydbservice->callbackToken("SiStripPedestals");
-      edm::LogInfo("SiStripPedDB")<<"callbackToken SiStripPedestals "<<callbackToken<<std::endl;
-      mydbservice->newValidityForNewPayload<SiStripPedestals>(SiStripPedestals_,mydbservice->endOfTime(), callbackToken);      
+      mydbservice->createNewIOV<SiStripPedestals>(SiStripPedestals_,mydbservice->endOfTime(), "SiStripPedestalsRcd");      
     }catch(const cond::Exception& er){
       edm::LogError("SiStripPedDB")<<er.what()<<std::endl;
     }catch(const std::exception& er){

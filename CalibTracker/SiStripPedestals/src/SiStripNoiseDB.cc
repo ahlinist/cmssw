@@ -153,9 +153,8 @@ void SiStripNoiseDB::endJob(void){
   
   if( mydbservice.isAvailable() ){
     try{
-      uint32_t callbackToken=mydbservice->callbackToken("SiStripNoises");
       edm::LogInfo("SiStripNoiseDB")<<"current time "<<mydbservice->currentTime()<<std::endl;
-      mydbservice->newValidityForNewPayload<SiStripNoises>(SiStripNoises_,mydbservice->endOfTime(), callbackToken);      
+      mydbservice->createNewIOV<SiStripNoises>(SiStripNoises_,mydbservice->endOfTime(), "SiStripNoisesRcd");      
     }catch(const cond::Exception& er){
       edm::LogError("SiStripNoiseDB")<<er.what()<<std::endl;
     }catch(const std::exception& er){
