@@ -13,7 +13,7 @@
 //
 // Original Author:  Simone Gennai
 //      Created:  Thu Apr  6 09:56:23 CEST 2006
-// $Id: ConeIsolation.cc,v 1.17 2006/12/15 11:03:52 gennai Exp $
+// $Id: ConeIsolation.cc,v 1.18 2007/01/30 13:56:45 gennai Exp $
 //
 //
 
@@ -45,6 +45,9 @@
 //#include "RecoBTag/BTagTools/interface/SignedTransverseImpactParameter.h"
 
 
+using namespace reco;
+using namespace edm;
+using namespace std;
 
 //
 // constructors and destructor
