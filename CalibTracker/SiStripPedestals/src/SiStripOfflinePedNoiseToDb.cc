@@ -185,12 +185,8 @@ namespace cms{
 	edm::LogInfo("SiStripOfflinePedNoiseToDb")<<" tillTime = " << tillTime << std::endl;
 	
 	if (conf_.getUntrackedParameter<bool>("doPedNoiseTansfer",false)){
-	  callbackToken=mydbservice->callbackToken("SiStripPedestals");
-	  edm::LogInfo("SiStripOfflinePedNoiseToDb") <<"callbackToken SiStripPedestals "<<callbackToken<<std::endl;
-	  mydbservice->newValidityForNewPayload<SiStripPedestals>(SiStripPedestals_,tillTime,callbackToken);      
-	  callbackToken=mydbservice->callbackToken("SiStripNoises");
-	  edm::LogInfo("SiStripOfflinePedNoiseToDb") <<"callbackToken SiStripNoises "<<callbackToken<<std::endl;
-	  mydbservice->newValidityForNewPayload<SiStripNoises>(SiStripNoises_,tillTime,callbackToken);      
+	  mydbservice->createNewIOV<SiStripPedestals>(SiStripPedestals_,tillTime,"SiStripPedestalsRcd");      
+	  mydbservice->createNewIOV<SiStripNoises>(SiStripNoises_,tillTime,"SiStripNoisesRcd");      
 	}
      }catch(const cond::Exception& er){
 	edm::LogError("SiStripOfflinePedNoiseToDb")<<er.what()<<std::endl;
