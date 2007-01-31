@@ -1,5 +1,9 @@
 
 #include "RecoTauTag/ConeIsolation/interface/ConeIsolationAlgorithm.h"
+using namespace std;
+using namespace reco;
+using namespace edm;
+
 
 ConeIsolationAlgorithm::ConeIsolationAlgorithm()
 {
