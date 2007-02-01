@@ -15,7 +15,6 @@
 #include <iostream>
 #include "TROOT.h"
 #include "G__ci.h"
-#include "common.h"
 #include "boost/regex.hpp"
 
 // user include files
