@@ -31,9 +31,9 @@ class  ConeIsolationAlgorithm  {
   ~ConeIsolationAlgorithm() {}
 
 //  void setBeamSpot();
-  void setPrimaryVertex(reco::Vertex * pv) {m_primaryVertex=pv;}
+  void setPrimaryVertex(reco::Vertex * pv) {m_primaryVertex = pv;}
   
-  pair<reco::JetTag,reco::IsolatedTauTagInfo> tag(const  reco::JetTracksAssociationRef & jetTracks, const reco::Vertex & pv); 
+  std::pair<reco::JetTag,reco::IsolatedTauTagInfo> tag(const  reco::JetTracksAssociationRef & jetTracks, const reco::Vertex & pv); 
   
 
  private:
