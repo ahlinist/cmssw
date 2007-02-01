@@ -1,11 +1,11 @@
-// $Id: EBMDisplayPlugins.cc,v 1.7 2007/01/10 14:33:55 benigno Exp $
+// $Id: EBMDisplayPlugins.cc,v 1.8 2007/01/22 07:20:11 dellaric Exp $
 
 /*!
   \file EBMDisplayPlugins
   \brief Display Plugin for Quality Histograms (2D)
   \author B. Gobbo 
-  \version $Revision: 1.7 $
-  \date $Date: 2007/01/10 14:33:55 $
+  \version $Revision: 1.8 $
+  \date $Date: 2007/01/22 07:20:11 $
 */
 
 #include "DQM/EcalBarrelMonitorDisplayPlugins/interface/EBMDisplayPlugins.h"
@@ -21,6 +21,7 @@
 #include <TVirtualPad.h>
 #include <TStyle.h>
 #include <TCanvas.h>
+#include <TColor.h>
 
 // Temporary: this class should be instantiated once, but due to bugs 
 // it happens that's instantiated more times...
@@ -55,8 +56,21 @@ EBMDisplayPlugins::EBMDisplayPlugins( IgState *state ) : VisDQMDisplayPlugin( st
   nby = 0;
   name = "";
 
-  pCol3[0] = 2; pCol3[1] = 3; pCol3[2] = 5;
-  pCol3[3] = 1; pCol3[4] = 1; pCol3[5] = 1;
+  for( int i=1; i<7; i++ ) {
+    TColor* color;
+    float r = float((i&1)^((i&4)>>2)) * ( 1. - 0.5 * float( i / 4 ) );
+    float g = float((((i-1)%3+1)&2)>>1) * ( 1. - 0.5 * float( i / 4 ) );
+    float b = 0.0;
+    if( ! gROOT->GetColor( 300+i )) {
+      color = new TColor( 300+i, r, g, b, "" );
+    }
+    else {
+      color = gROOT->GetColor( 300+i );
+      color->SetRGB( r, g, b );
+    }
+  }
+
+  for( short i=0; i<6; i++ ) pCol4[i] = i+301;
   for( short i=0; i<10; i++ ) pCol4[i] = i+30;
 
   text1 = t1;
