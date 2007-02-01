@@ -100,6 +100,8 @@ int main(int argc, char* argv[])
   defaultServices.push_back("InitRootHandlers");
   defaultServices.push_back("MessageLogger");
   defaultServices.push_back("EnableFloatingPointExceptions");
+  defaultServices.push_back("LoadAllDictionaries");
+  defaultServices.push_back("UnixSignalService");
   
   // These cannot be overridden from the configuration files.
   // An exception will be thrown if any of these is specified there.
