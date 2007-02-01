@@ -1,20 +1,11 @@
-<flags SEAL_PLUGIN_NAME="PhysicsToolsRecoCandAlgos">
 <use name=SimGeneral/HepPDTRecord>
-<use name=MagneticField/Records>
-<use name=PhysicsTools/RecoCandUtils>
 <use name=DataFormats/RecoCandidate>
-<use name=PhysicsTools/CandAlgos>
-<use name=PhysicsTools/CandUtils>
 <use name=FWCore/Framework>
 <use name=FWCore/ParameterSet>
 <export>
   <lib name=PhysicsToolsRecoCandAlgos>
   <use name=SimGeneral/HepPDTRecord>
-  <use name=MagneticField/Records>
-  <use name=PhysicsTools/RecoCandUtils>
   <use name=DataFormats/RecoCandidate>
-  <use name=PhysicsTools/CandAlgos>
-  <use name=PhysicsTools/CandUtils>
   <use name=FWCore/Framework>
   <use name=FWCore/ParameterSet>
 </export>
