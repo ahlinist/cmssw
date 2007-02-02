@@ -75,22 +75,50 @@ int combsv::CombinedSVCalibrationHistogram::binCount ( int bin ) const
 {
   if ( nentries_ == 0 )
   {
-    edm::LogError ( "CombinedSVCalibrationHistogram" )
-      << "trying to set bin count with zero entries!";
+    /* edm::LogError ( "CombinedSVCalibrationHistogram" )
+      << "trying to set bin count with zero entries!"; */
     return 0;
   }
   return int ( binContent ( bin ) * nentries_ );
 }
 
-void combsv::CombinedSVCalibrationHistogram::setBinCount ( int bin, int count )
+void combsv::CombinedSVCalibrationHistogram::addBinCount ( int bin, int add )
 {
-  if ( nentries_ == 0 )
+  if ( m_binULimits.size() != m_binValues.size()-1 )
   {
-    edm::LogError ( "CombinedSVCalibrationHistogram" )
-      << "trying to set bin count with zero entries!";
-    return;
+    edm::LogError("CombinedSVCalibrationHistogram" )
+      << "bin size mismatch: " << m_binULimits.size()
+      << ":" << m_binValues.size();
+    exit(-1);
   }
-  float value = (float) count / (float) nentries_;
-  setBinContent ( bin, value );
+  int ctr=0;
+  // normalize old data
+  for ( vector< float >::const_iterator i=m_binULimits.begin(); 
+        i!=m_binULimits.end() ; ++i )
+  {
+    float old=m_binValues[ctr];
+    if ( finite(old) )
+    {
+      m_binValues[ctr]=old * nentries_ / ( nentries_ + (float) add );
+      // LogDebug("Normalize old data") << old << "<->" << m_binValues[ctr]; 
+    } else {
+      m_binValues[ctr]=0.;
+    }
+    ctr++;
+  }
+
+  nentries_+=add;
+  // add new data
+  float oldcontent=binContent(bin);
+  if ( !finite(oldcontent) )
+  {
+    oldcontent=0.;
+  }
+
+  float newcontent = oldcontent + (float) add / nentries_;
+  if ( finite(newcontent) )
+  {
+    setBinContent(bin, newcontent );
+  }
 }
 

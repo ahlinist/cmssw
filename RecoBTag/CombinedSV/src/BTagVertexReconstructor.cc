@@ -20,7 +20,7 @@ combsv::CombinedVertex BTagVertexReconstructor::buildVertexInfo (
 {
   vector < reco::TransientTrack > ttrks = vtx.originalTracks();
   vector < combsv::CombinedTrack > trks = trackinfobuilder.build ( ttrks );
-  reco::BKinematics kin( &(vtxfilter.field()), trks );
+  reco::BKinematics kin( trks );
   combsv::CombinedVertex vertexData ( vtx, trks, kin.get3Vector(),
                                     kin.getMass(), vtxfilter.checkV0(vtx) );
   return vertexData;
@@ -32,7 +32,7 @@ combsv::CombinedVertex BTagVertexReconstructor::buildVertexInfo (
     reco::btag::Vertices::VertexType vtxType,
     const VertexFilter & vtxfilter, const TrackInfoBuilder & trackinfobuilder ) const
 {
-  reco::BKinematics kin( &(vtxfilter.field()), trks );
+  reco::BKinematics kin( trks );
   combsv::CombinedVertex vertexData ( vtx, trks, kin.get3Vector(),
                                     kin.getMass(), vtxfilter.checkV0(vtx) );
   return vertexData;

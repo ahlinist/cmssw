@@ -6,7 +6,7 @@
 #include "RecoBTag/CombinedSV/interface/CombinedTrack.h"
 #include "TrackingTools/TransientTrack/interface/TransientTrack.h"
 #include "RecoVertex/VertexPrimitives/interface/TransientVertex.h"
-#include "MagneticField/Engine/interface/MagneticField.h"
+#include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
 
 #include <vector>
 
@@ -22,11 +22,10 @@ namespace reco {
 
   public:
     // N.B. mPion to be taken from particle DB once available
-    BKinematics ( const MagneticField *, const reco::Vertex & vertex );
-    BKinematics ( const MagneticField *, const TransientVertex & vertex );
-    BKinematics ( const MagneticField *, const std::vector<combsv::CombinedTrack> & );
-    BKinematics ( const MagneticField *, const std::vector<reco::TransientTrack> & );
-    BKinematics ( const MagneticField * );
+    BKinematics ( const TransientVertex & vertex );
+    BKinematics ( const std::vector<combsv::CombinedTrack> & );
+    BKinematics ( const std::vector<reco::TransientTrack> & );
+    BKinematics ( );
 
     void add ( const reco::TransientTrack & t, bool update=true );
     void add ( const combsv::CombinedTrack & t );
@@ -40,7 +39,6 @@ namespace reco {
     void computeKinematics( const std::vector<reco::TransientTrack> & );
 
   private:
-    const MagneticField * field_;
     // variables
     double mass_; // mass associated to the tracks assuming Pion 
                   // mass hypothesis

@@ -5,6 +5,7 @@
 #include "Geometry/CommonDetAlgo/interface/AlgebraicObjects.h"
 #include "RecoBTag/CombinedSV/interface/V0Checker.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
+#include "RecoBTag/CombinedSV/interface/TTracksFromRecoVertex.h"
 #include <iostream>
 
 using namespace std;
@@ -19,10 +20,13 @@ namespace {
   }
 }
 
-VertexFilter::VertexFilter( const MagneticField * f, float vertexV0MassWindow,
+VertexFilter::VertexFilter( 
+         const TransientTrackBuilder * builder,
+         float vertexV0MassWindow,
          float vertexMassMax, int vertexMultiplicityMin, float vertexFracPV ) :
-  field_ ( f ), v0Checker_ ( vertexV0MassWindow), vertexMassMax_(vertexMassMax),
-  vertexMultiplicityMin_(vertexMultiplicityMin), vertexFracPV_(vertexFracPV)
+  builder_ ( builder ), v0Checker_ ( vertexV0MassWindow), 
+  vertexMassMax_(vertexMassMax), vertexMultiplicityMin_(vertexMultiplicityMin), 
+  vertexFracPV_(vertexFracPV)
 {}
 
 void VertexFilter::setPrimary ( const reco::Vertex & primary )
@@ -125,7 +129,9 @@ bool VertexFilter::operator() ( const reco::Vertex & vertex, VertexType t ) cons
     return false; // too few trks?
   }
 
-  reco::BKinematics vertexKinematics( field_, vertex );
+  // FIXME
+  edm::LogError("VertexFilter") << "need to FIXME edm::ESHandle!";
+  reco::BKinematics vertexKinematics( TTracksFromRecoVertex::create ( vertex, *builder_ ) );
   double mass = vertexKinematics.getMass();
   if ( mass > vertexMassMax_ )
   {
@@ -135,10 +141,10 @@ bool VertexFilter::operator() ( const reco::Vertex & vertex, VertexType t ) cons
   }
 
   // determine fraction of tracks also used // to build primary vertex
+  /*
   int nTracksSV = vertex.tracksSize();
   int nShared=0;
 
-  /*
    * FIXME removed the NbSharedTracks test, because 
    * of the adaptive fitters ....
   double fracPV = 0.;
@@ -160,14 +166,9 @@ bool VertexFilter::operator() ( const reco::Vertex & vertex, VertexType t ) cons
   return true;
 }
 
-const MagneticField & VertexFilter::field() const
+void VertexFilter::setTransientTrackBuilder ( const TransientTrackBuilder * b )
 {
-  return (*field_);
-}
-
-void VertexFilter::setMagneticField ( const MagneticField *  m )
-{
-  field_=m;
+  builder_=b;
 }
 
 bool VertexFilter::checkV0 ( const reco::Vertex & v ) const

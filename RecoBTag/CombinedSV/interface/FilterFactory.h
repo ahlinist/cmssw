@@ -6,6 +6,7 @@
 #include "RecoBTag/CombinedSV/interface/VertexFilter.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "MagneticField/Engine/interface/MagneticField.h"
+#include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
 
 class FilterFactory {
   /**
@@ -14,7 +15,7 @@ class FilterFactory {
    */
    public:
       FilterFactory ( const edm::ParameterSet &,
-                      const MagneticField * m=0 );
+                      const TransientTrackBuilder * m = 0 );
 
       FilterFactory ( const TrackFilter &,
                       const VertexFilter &,
@@ -30,7 +31,7 @@ class FilterFactory {
     private:
       void createTrackFilter ( const edm::ParameterSet & );
       void createVertexFilter ( const edm::ParameterSet &,
-                                const MagneticField * m );
+                                const TransientTrackBuilder * );
       void createJetFilter ( const edm::ParameterSet & );
 
    private:

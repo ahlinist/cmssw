@@ -88,7 +88,11 @@ namespace {
 void combsv::CombinedSVAlgorithm::setMagneticField ( const MagneticField * field )
 {
   magneticField_ = field;
-  filters_.vertexFilter().setMagneticField ( field );
+}
+
+void combsv::CombinedSVAlgorithm::setTransientTrackBuilder ( const TransientTrackBuilder * b )
+{
+  filters_.vertexFilter().setTransientTrackBuilder ( b );
 }
 
 combsv::CombinedSVAlgorithm::CombinedSVAlgorithm( const MagneticField * field,
@@ -262,7 +266,7 @@ double combsv::CombinedSVAlgorithm::computeFirstTrackAboveCharmMass(
     sortedTrackMapSignedD0Significance.insert(make_pair(i->ip2D().significance(), *i ));
   }
 
-  reco::BKinematics tmpKinematics( magneticField_ );
+  reco::BKinematics tmpKinematics;
 
   // loop over tracks sorted by lifetime-signed impact parameter (2D)
   for (  multimap<double,CombinedTrack,greater<double> >::const_iterator trk =
@@ -288,14 +292,14 @@ combsv::CombinedJet combsv::CombinedSVAlgorithm::createJetInfo (
     const vector < combsv::CombinedVertex > & vtces,
     reco::btag::Vertices::VertexType vertexType )
 {
-  reco::BKinematics allTrackKinematics( magneticField_, alltracks );
+  reco::BKinematics allTrackKinematics( alltracks );
 
   // get vector given by sum of all tracks in jet
   GlobalVector pAll = allTrackKinematics.get3Vector();
 
   // create instance of small helper class used to determine
   // kinematic properties based on a selection of tracks
-  reco::BKinematics bTrackKinematics( magneticField_, secondaries );
+  reco::BKinematics bTrackKinematics( secondaries );
 
   // compute vertex related variables
   // (based on all tracks at all secondary vertices)

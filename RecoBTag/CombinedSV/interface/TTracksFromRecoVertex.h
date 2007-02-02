@@ -13,11 +13,8 @@ class TTracksFromRecoVertex {
    *  using TransientTrackBuilder
    */
    public:
-     TTracksFromRecoVertex ( const MagneticField * );
-     std::vector < reco::TransientTrack > create ( const reco::Vertex & ) const;
-
-   private:
-     TransientTrackBuilder theBuilder;
+     static std::vector < reco::TransientTrack > create ( const reco::Vertex &,
+                        const TransientTrackBuilder & );
 };
 
 #endif

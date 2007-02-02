@@ -15,7 +15,7 @@ void TrackFilter::print ( const combsv::CombinedTrack & data, double ipSigni2DCu
 {
   cout << endl;
   cout << "[TrackFilter]" << endl;
-  cout << " - pt          '" <<data.pt()           << "' > " << pTMin_        << endl;
+  cout << " - pt          '" <<data.track().pt()           << "' > " << pTMin_        << endl;
   #ifdef RAVE
   cout << " - #hits       '" <<data.raveTrack().tag() << "' == 1 " << endl;
   #else
@@ -44,7 +44,7 @@ bool TrackFilter::operator()( const combsv::CombinedTrack & data,
 bool TrackFilter::operator()( const combsv::CombinedTrack & data, bool prt ) const
 {
   if ( prt ) print ( data, -numeric_limits<double>::infinity() );
-  return( data.pt() > pTMin_ &&
+  return( data.track().pt() > pTMin_ &&
   #ifdef RAVE
           data.raveTrack().tag() == "1" &&
   #else
