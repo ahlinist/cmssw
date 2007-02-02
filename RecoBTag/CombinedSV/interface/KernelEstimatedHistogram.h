@@ -13,6 +13,7 @@ namespace combsv {
     KernelEstimatedHistogram( const CombinedSVCalibrationHistogram & h );
     float binContent(int bin) const;
   private:
+    void copyTrueHistogram();
     std::vector < float > m_smoothed;
   };
 }

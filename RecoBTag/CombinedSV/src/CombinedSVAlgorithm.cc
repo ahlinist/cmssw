@@ -172,7 +172,7 @@ reco::CombinedSVTagInfo combsv::CombinedSVAlgorithm::tag ( const reco::Vertex & 
   {
     combsv::CombinedTrack t = trackInfoBuilder_.build ( *i );
     // if ( filters_.trackFilter() ( t, trackIpSignificanceMin2DMin_ ) )
-    if ( filters_.trackFilter() ( t ) )
+    if ( filters_.trackFilter() ( t, false ) )
     {
       etracks.push_back ( t );
       tracks.push_back ( *i );

@@ -35,7 +35,7 @@ namespace combsv {
     combsv::CombinedSVCalibrationCategory & category();
     const combsv::CombinedSVCalibrationCategory & constCategory() const;
     
-  private:
+  protected:
     combsv::CombinedSVCalibrationCategory category_;
     std::vector< float > binLowerEdge_;
     int nentries_;

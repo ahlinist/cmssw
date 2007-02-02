@@ -37,13 +37,6 @@ class PseudoVertexBuilder {
 
     PseudoVertexBuilder ();
 
-    /**
-     *  add a fake Vertex to STL vector, returning type of added vertex. A
-     *  PseudoVertex is tried first, if it fails the filter, a NoVertex is added.
-    btag::Vertices::VertexType add( std::vector < reco::Vertex > &,
-        const std::vector < combsv::CombinedTrack > &, const VertexFilter & );
-        */
-
     reco::Vertex build(
         const std::vector<combsv::CombinedTrack> & trackColl, const VertexFilter & filter,
         reco::btag::Vertices::VertexType & t ) const;
