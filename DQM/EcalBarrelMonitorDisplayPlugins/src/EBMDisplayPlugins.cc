@@ -1,11 +1,11 @@
-// $Id: EBMDisplayPlugins.cc,v 1.8 2007/01/22 07:20:11 dellaric Exp $
+// $Id: EBMDisplayPlugins.cc,v 1.9 2007/02/01 15:06:36 benigno Exp $
 
 /*!
   \file EBMDisplayPlugins
   \brief Display Plugin for Quality Histograms (2D)
   \author B. Gobbo 
-  \version $Revision: 1.8 $
-  \date $Date: 2007/01/22 07:20:11 $
+  \version $Revision: 1.9 $
+  \date $Date: 2007/02/01 15:06:36 $
 */
 
 #include "DQM/EcalBarrelMonitorDisplayPlugins/interface/EBMDisplayPlugins.h"
@@ -70,7 +70,7 @@ EBMDisplayPlugins::EBMDisplayPlugins( IgState *state ) : VisDQMDisplayPlugin( st
     }
   }
 
-  for( short i=0; i<6; i++ ) pCol4[i] = i+301;
+  for( short i=0; i<6; i++ ) pCol3[i] = i+301;
   for( short i=0; i<10; i++ ) pCol4[i] = i+30;
 
   text1 = t1;
