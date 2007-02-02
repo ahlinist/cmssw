@@ -16,7 +16,7 @@ vector < reco::TransientTrack > TTracksFromRecoVertex::create ( const reco::Vert
   vector < reco::TransientTrack > ret;
   for ( reco::track_iterator i=v.tracks_begin(); i!=v.tracks_end() ; ++i )
   {
-    const reco::TransientTrack * tmp = theBuilder.build ( &(**i) );
+    reco::TransientTrack tmp = theBuilder.build ( &(**i) );
     LogDebug("") << "TransientTrack: " << tmp;
     ret.push_back ( *(tmp) );
   }

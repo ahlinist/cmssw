@@ -16,9 +16,13 @@ void TrackFilter::print ( const combsv::CombinedTrack & data, double ipSigni2DCu
   cout << endl;
   cout << "[TrackFilter]" << endl;
   cout << " - pt          '" <<data.pt()           << "' > " << pTMin_        << endl;
-//  cout << " - #hits       '" <<data.nHitsTotal()   << "' > " << nHitAllMin_   << endl;
-//cout << " - #hits pixel " <<data.nHitsPixel()   << " > " << nHitPixelMin_ << endl;
-// cout << " - chi2 / ndof        " <<data.chi2()         << " < " << normedChi2Max_      << endl;
+  #ifdef RAVE
+  cout << " - #hits       '" <<data.raveTrack().tag() << "' == 1 " << endl;
+  #else
+  cout << " - #hits       '" <<data.nHitsTotal()   << "' > " << nHitAllMin_   << endl;
+  cout << " - #hits pixel " <<data.nHitsPixel()   << " > " << nHitPixelMin_ << endl;
+  #endif
+  cout << " - chi2 / ndof '" <<data.chi2() / data.ndof() << "' < " << normedChi2Max_      << endl;
 //  cout << " - eta         '" <<data.eta()          << "' > " << etaMin_       << endl;
 //  cout << " - eta         '" <<data.eta()          << "' < " << etaMax_       << endl;
   cout << " - ip2D        '" <<data.ip2D().value() << "' > " << ip2DMin_      << endl;
@@ -31,7 +35,8 @@ void TrackFilter::print ( const combsv::CombinedTrack & data, double ipSigni2DCu
 bool TrackFilter::operator()( const combsv::CombinedTrack & data,
                               double ipSigni2DCut, bool prt ) const
 {
-  bool ret = operator() ( data, prt );
+  if ( prt ) print ( data, ipSigni2DCut );
+  bool ret = operator() ( data, false );
   if (!ret) return false;
   return ( data.ip2D().significance() > ipSigni2DCut );
 }
@@ -40,9 +45,13 @@ bool TrackFilter::operator()( const combsv::CombinedTrack & data, bool prt ) con
 {
   if ( prt ) print ( data, -numeric_limits<double>::infinity() );
   return( data.pt() > pTMin_ &&
-          // data.nHitsTotal() >= nHitAllMin_ &&
-          // data.nHitsPixel() >= nHitPixelMin_ &&
-          // data.chi2() / data.ndf() < normedChi2Max_ &&
+  #ifdef RAVE
+          data.raveTrack().tag() == "1" &&
+  #else
+          data.nHitsTotal() >= nHitAllMin_ &&
+          data.nHitsPixel() >= nHitPixelMin_ &&
+  #endif
+          data.chi2() / data.ndof() < normedChi2Max_ &&
           // data.eta() > etaMin_ && data.eta() < etaMax_ &&
           data.ip2D().value() > ip2DMin_ && data.ip2D().value() < ip2DMax_ &&
           data.jetDistance() < jetDistanceMax_ );

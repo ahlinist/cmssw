@@ -48,9 +48,15 @@ reco::Vertex PseudoVertexBuilder::build(
 {
   t=PseudoVertex;
   // cout << "[PseudoVertexBuilder] try PseudoVertex" << endl;
-  reco::Vertex vtx = build ( t, trackColl);
-  if ( !(filter ( vtx, PseudoVertex )) )
-  {
+  reco::Vertex vtx;
+  try {
+    vtx = build ( t, trackColl);
+    if ( !(filter ( vtx, PseudoVertex )) )
+    {
+      t=NoVertex;
+      vtx= build ( t, trackColl );
+    }
+  } catch ( ... ) {
     t=NoVertex;
     vtx= build ( t, trackColl );
   }
@@ -77,13 +83,11 @@ reco::Vertex PseudoVertexBuilder::build( VertexType t,
 
   vector<combsv::CombinedTrack> filteredTrackColl = filterTracks ( trackColl, ipSigni2DCut );
   int nTracks = filteredTrackColl.size();
-  edm::LogInfo ( "PseudoVertexBuilder" ) << nTracks << " accepted tracks." << endl;
-  /*
-  if (nTracks < 2) {
-    throw cms::Exception("NoTracksForVertex")
-      << "while building vertex in PseudoVertexBuilder::buildVertex"
-      << " no track survived cuts, cannot build vertex" << endl;
-  }*/
+  edm::LogInfo ( "PseudoVertexBuilder" ) << nTracks << " tracks accepted for " 
+    << reco::btag::Vertices::name( t ) << endl;
+  if ( t == reco::btag::Vertices::PseudoVertex && nTracks < 2) {
+    throw cms::Exception ("cannot build pseudo vertex" );
+  }
 
   double chi2 = -1.;
   double ndof = 2*nTracks-3;
@@ -98,7 +102,6 @@ reco::Vertex PseudoVertexBuilder::build( VertexType t,
   }
   TransientVertex vtx ( s.position(), s.error(), trks, chi2, ndof );
   return vtx;
-  // return reco::Vertex ( s.position(), s.error(), chi2, ndof, trackColl.size() );
 }
 
 bool PseudoVertexBuilder::acceptTrack(
