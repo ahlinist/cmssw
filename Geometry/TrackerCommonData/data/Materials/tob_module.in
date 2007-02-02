@@ -442,6 +442,166 @@ ICC1: MCVolume: (11.800 x 4.400 x 0.500) cm^3 = 25.96 cm^3
 ICC2: MCVolume: (11.800 x 6.800 x 0.500) cm^3 = 40.12 cm^3
 Data taken from G.Magazzù measurements: http://test-gmagazzu.web.cern.ch/test%2Dgmagazzu/TOB/MB/ICCs_MB.htm
 
+
+	Layer 1/2
+	---------
+
+HERE MUCH WORK TO DO --> FOR THE MOMENT IS THE LAYER 3/4 SCHEME BUT DS COULD BE DIFFERENT!!!
+
+ICC1
+----
+Circuit ICC3 (SS_ICC1)
+EDMS Code EP 680-1174-220-B
+
+(1-2) PCBs
+	FR4:    m = 5.754 g
+		density (T_G10) = 1.90 g/cm^3
+		--> volume = 3.028 cm^3
+	copper: m = 1.289 g
+		density = 8.96 g/cm^3
+		--> volume = 0.144 cm^3
+
+(3-4) OptoHybrid Connectors NaiS
+	socket + header
+	1 x ICC-Kapton bias PCB 16 pins (AXN316038S + AXN416330S)
+	1 x ICC-AOH             30 pins (AXN330038S + AXN430330S)
+	1 x ICC-FEH             40 pins (AXN340038S + AXN440330S)
+	1 x ICC-ICB             50 pins (AXN350038S + AXN450330S)
+	copper: m = 1 x (0.0882 + 0.1085) g + 1 x (0.1445 + 0.1547) g + 1 x (0.1768 + 0.2013) g + 1 x (0.2329 + 0.2764) g = 1.3833 g
+		density = 8.96 g/cm^3
+		--> volume = 0.154 cm^3
+	resin:  m = 1 x (0.0461 + 0.0515) g + 1 x (0.0865 + 0.0965) g + 1 x (0.1153 + 0.1287) g + 1 x (0.1442 + 0.1609) g = 0.8297 g
+		density (epoxy) = 1.3 g/cm^3
+		--> volume = 0.638 cm^3
+
+@@@ HERE THE OPTOHYBRID SPECS ARE MISSING
+
+(5) HV stiffener
+	FR4:    m = 0.060 g
+		density (T_G10) = 1.90 g/cm^3
+		--> volume = 0.032 cm^3
+
+(6) ICC SMD Resistors, 14 x (0603) + 1 x (0805) + 4 x (1206) resistors, mostly Al2O3 (Aluminiumoxid, ceramic), the total mass is computed
+	m = 0.0741 g
+	density = 3.96525 g/cm^3
+	--> volume = 0.019 cm^3
+
+(7) ICC SMD Capacitors, 7 x (0805) + 4 x (1812), mostly BaTiO3, the total mass is computed
+	m = 1.025 g
+	density = 6.02 g/cm^3
+	--> volume = 0.170 cm^3
+
+(8-9) ICC ASICs: 1 x ("CRT245" 24 pin) + 1 x ("LVDSBUF" 16 pin)
+	epoxy:	m = (0.015675 + 0.038519) g = 0.054194 g
+		density = 1.3 g/cm^3
+		--> volume = 0.042 cm^3
+	copper: m = [ 0.1180 - 0.054194) g = 0.063806 g
+		density = 8.96 g/cm^3
+		--> volume = 0.007 cm^3
+
+(10-13) Hybrid tail
+	see http://www.fynu.ucl.ac.be/he/cms/activities/tracker/FHITfiles/CCTPHybrides.pdf
+	surface: (19 x 30) mm^2 = 570 mm^2 = 5.70 cm^2
+	- Kapton: (25+25) um = 50 um = 0.0050 cm --> 0.0285 cm^3
+	- Copper: (18+12+18+18+18+12) um = 96 um = 0.0096 cm --> 0.05472 cm^3
+	- Solder Mask: 20 um = 0.0020 cm --> 0.0114 cm^3
+	- Glue: (50+50) um = 100 um thickness = 0.0100 cm --> 0.057 cm^3 
+	
+.......................................................................
+# "TOB ICC Layer 1/2 (1 APV)"   "TOB_L12_ICC1"    25.96   51.92
+* 1 "PCB board"                 "T_G10"            3.028   1     ELE
+* 2 "PCB copper traces"         "Copper"           0.144   1     ELE	 
+* 3 "NAiS connectors"           "Copper"           0.154   1     ELE
+* 4 "NAiS connectors"           "Epoxy"            0.638   1     ELE
+* 5 "HV Stiffener"              "T_G10"            0.032   1     ELE
+* 6 "ICC Resistors"             "Ceramic"          0.019   1     ELE
+* 7 "ICC Capacitors"            "Barium Titanate"  0.170   1     ELE
+* 8 "ICC ASICs EMC"             "Epoxy"            0.042   1     ELE
+* 9 "ICC ASICs copper"          "Copper"           0.007   1     ELE
+* 10 "Hybrid Tail Kapton"       "T_Kapton"         0.028   1     ELE
+* 11 "Hybrid Tail Copper"       "Copper"           0.055   1     ELE
+* 12 "Hybrid Tail Solder Mask"  "T_Kapton"         0.011   1     ELE
+* 13 "Hybrid Tail Glue"         "Epoxy"            0.057   1     ELE
+.......................................................................
+=======================================================================
+
+ICC2
+----
+Circuit ICC4 (SS_ICC1)
+EDMS Code EP 680-1174-230-B
+
+(1-2) PCBs
+	FR4:    m = 8.175 g
+		density (T_G10) = 1.90 g/cm^3
+		--> volume = 4.302 cm^3
+	copper: m = 1.617 g
+		density = 8.96 g/cm^3
+		--> volume = 0.180 cm^3
+
+(3-4) OptoHybrid Connectors NaiS
+	socket + header
+	2 x ICC-Kapton bias PCB 16 pins (AXN316038S + AXN416330S)
+	2 x ICC-AOH             30 pins (AXN330038S + AXN430330S)
+	2 x ICC-FEH             40 pins (AXN340038S + AXN440330S)
+	1 x ICC-ICB             50 pins (AXN350038S + AXN450330S)
+	copper: m = 2 x (0.0882 + 0.1085) g + 2 x (0.1445 + 0.1547) g + 2 x (0.1768 + 0.2013) g + 1 x (0.2329 + 0.2764) g = 2.2573 g
+		density = 8.96 g/cm^3
+		--> volume = 0.252 cm^3
+	resin:  m = 2 x (0.0461 + 0.0515) g + 2 x (0.0865 + 0.0965) g + 2 x (0.1153 + 0.1287) g + 1 x (0.1442 + 0.1609) g = 1.3543 g
+		density (epoxy) = 1.3 g/cm^3
+		--> volume = 1.042 cm^3
+
+@@@ HERE THE OPTOHYBRID SPECS ARE MISSING
+
+(5) HV stiffener (2 copies)
+	FR4:    m = 0.060 g
+		density (T_G10) = 1.90 g/cm^3
+		--> volume = 0.032 cm^3
+
+(6) ICC SMD Resistors, 28 x (0603) + 2 x (0805) + 4 x (1206) resistors, mostly Al2O3 (Aluminiumoxid, ceramic), the total mass is computed
+	m = 0.1090 g
+	density = 3.96525 g/cm^3
+	--> volume = 0.027 cm^3
+
+(7) ICC SMD Capacitors, 12 x (0805) + 8 x (1812), mostly BaTiO3, the total mass is computed
+	m = 2.020 g
+	density = 6.02 g/cm^3
+	--> volume = 0.336 cm^3
+
+(8-9) ICC ASICs: 1 x ("CRT245" 24 pin) + 2 x ("LVDSBUF" 16 pin)
+	epoxy:	m = (0.015675 + 2 x 0.038519) g = 0.092713 g
+		density = 1.3 g/cm^3
+		--> volume = 0.071 cm^3
+	copper: m = [ 0.194 - 0.092713) g = 0.101287 g
+		density = 8.96 g/cm^3
+		--> volume = 0.011 cm^3
+
+(10-13) Hybrid tail (2 copies)
+	see http://www.fynu.ucl.ac.be/he/cms/activities/tracker/FHITfiles/CCTPHybrides.pdf
+	surface: (19 x 30) mm^2 = 570 mm^2 = 5.70 cm^2
+	- Kapton: (25+25) um = 50 um = 0.0050 cm --> 0.0285 cm^3
+	- Copper: (18+12+18+18+18+12) um = 96 um = 0.0096 cm --> 0.05472 cm^3
+	- Solder Mask: 20 um = 0.0020 cm --> 0.0114 cm^3
+	- Glue: (50+50) um = 100 um thickness = 0.0100 cm --> 0.057 cm^3 
+	
+.......................................................................
+# "TOB ICC Layer 1/2 (2 APVs)"  "TOB_L12_ICC2"    40.12   80.24
+* 1 "PCB board"                 "T_G10"            4.302   1     ELE
+* 2 "PCB copper traces"         "Copper"           0.180   1     ELE	 
+* 3 "NAiS connectors"           "Copper"           0.252   1     ELE
+* 4 "NAiS connectors"           "Epoxy"            1.042   1     ELE
+* 5 "HV Stiffener"              "T_G10"            0.032   2     ELE
+* 6 "ICC Resistors"             "Ceramic"          0.027   1     ELE
+* 7 "ICC Capacitors"            "Barium Titanate"  0.336   1     ELE
+* 8 "ICC ASICs EMC"             "Epoxy"            0.071   1     ELE
+* 9 "ICC ASICs copper"          "Copper"           0.011   1     ELE
+* 10 "Hybrid Tail Kapton"       "T_Kapton"         0.028   2     ELE
+* 11 "Hybrid Tail Copper"       "Copper"           0.055   2     ELE
+* 12 "Hybrid Tail Solder Mask"  "T_Kapton"         0.011   2     ELE
+* 13 "Hybrid Tail Glue"         "Epoxy"            0.057   2     ELE
+.......................................................................
+=======================================================================
+
 	Layer 3/4
 	---------
 	
@@ -601,6 +761,164 @@ EDMS Code EP 680-1174-230-B
 
 
 
+	Layer 5/6
+	---------
+	
+ICC1
+----
+Circuit ICC3 (SS_ICC1)
+EDMS Code EP 680-1174-220-B
+
+(1-2) PCBs
+	FR4:    m = 5.754 g
+		density (T_G10) = 1.90 g/cm^3
+		--> volume = 3.028 cm^3
+	copper: m = 1.289 g
+		density = 8.96 g/cm^3
+		--> volume = 0.144 cm^3
+
+(3-4) OptoHybrid Connectors NaiS
+	socket + header
+	1 x ICC-Kapton bias PCB 16 pins (AXN316038S + AXN416330S)
+	1 x ICC-AOH             30 pins (AXN330038S + AXN430330S)
+	1 x ICC-FEH             40 pins (AXN340038S + AXN440330S)
+	1 x ICC-ICB             50 pins (AXN350038S + AXN450330S)
+	copper: m = 1 x (0.0882 + 0.1085) g + 1 x (0.1445 + 0.1547) g + 1 x (0.1768 + 0.2013) g + 1 x (0.2329 + 0.2764) g = 1.3833 g
+		density = 8.96 g/cm^3
+		--> volume = 0.154 cm^3
+	resin:  m = 1 x (0.0461 + 0.0515) g + 1 x (0.0865 + 0.0965) g + 1 x (0.1153 + 0.1287) g + 1 x (0.1442 + 0.1609) g = 0.8297 g
+		density (epoxy) = 1.3 g/cm^3
+		--> volume = 0.638 cm^3
+
+@@@ HERE THE OPTOHYBRID SPECS ARE MISSING
+
+(5) HV stiffener
+	FR4:    m = 0.060 g
+		density (T_G10) = 1.90 g/cm^3
+		--> volume = 0.032 cm^3
+
+(6) ICC SMD Resistors, 14 x (0603) + 1 x (0805) + 4 x (1206) resistors, mostly Al2O3 (Aluminiumoxid, ceramic), the total mass is computed
+	m = 0.0741 g
+	density = 3.96525 g/cm^3
+	--> volume = 0.019 cm^3
+
+(7) ICC SMD Capacitors, 7 x (0805) + 4 x (1812), mostly BaTiO3, the total mass is computed
+	m = 1.025 g
+	density = 6.02 g/cm^3
+	--> volume = 0.170 cm^3
+
+(8-9) ICC ASICs: 1 x ("CRT245" 24 pin) + 1 x ("LVDSBUF" 16 pin)
+	epoxy:	m = (0.015675 + 0.038519) g = 0.054194 g
+		density = 1.3 g/cm^3
+		--> volume = 0.042 cm^3
+	copper: m = [ 0.1180 - 0.054194) g = 0.063806 g
+		density = 8.96 g/cm^3
+		--> volume = 0.007 cm^3
+
+(10-13) Hybrid tail
+	see http://www.fynu.ucl.ac.be/he/cms/activities/tracker/FHITfiles/CCTPHybrides.pdf
+	surface: (19 x 30) mm^2 = 570 mm^2 = 5.70 cm^2
+	- Kapton: (25+25) um = 50 um = 0.0050 cm --> 0.0285 cm^3
+	- Copper: (18+12+18+18+18+12) um = 96 um = 0.0096 cm --> 0.05472 cm^3
+	- Solder Mask: 20 um = 0.0020 cm --> 0.0114 cm^3
+	- Glue: (50+50) um = 100 um thickness = 0.0100 cm --> 0.057 cm^3 
+	
+.......................................................................
+# "TOB ICC Layer 5/6 (1 APV)"   "TOB_L56_ICC1"    25.96   51.92
+* 1 "PCB board"                 "T_G10"            3.028   1     ELE
+* 2 "PCB copper traces"         "Copper"           0.144   1     ELE	 
+* 3 "NAiS connectors"           "Copper"           0.154   1     ELE
+* 4 "NAiS connectors"           "Epoxy"            0.638   1     ELE
+* 5 "HV Stiffener"              "T_G10"            0.032   1     ELE
+* 6 "ICC Resistors"             "Ceramic"          0.019   1     ELE
+* 7 "ICC Capacitors"            "Barium Titanate"  0.170   1     ELE
+* 8 "ICC ASICs EMC"             "Epoxy"            0.042   1     ELE
+* 9 "ICC ASICs copper"          "Copper"           0.007   1     ELE
+* 10 "Hybrid Tail Kapton"       "T_Kapton"         0.028   1     ELE
+* 11 "Hybrid Tail Copper"       "Copper"           0.055   1     ELE
+* 12 "Hybrid Tail Solder Mask"  "T_Kapton"         0.011   1     ELE
+* 13 "Hybrid Tail Glue"         "Epoxy"            0.057   1     ELE
+.......................................................................
+=======================================================================
+
+ICC2
+----
+Circuit ICC4 (SS_ICC1)
+EDMS Code EP 680-1174-230-B
+
+(1-2) PCBs
+	FR4:    m = 8.175 g
+		density (T_G10) = 1.90 g/cm^3
+		--> volume = 4.302 cm^3
+	copper: m = 1.617 g
+		density = 8.96 g/cm^3
+		--> volume = 0.180 cm^3
+
+(3-4) OptoHybrid Connectors NaiS
+	socket + header
+	2 x ICC-Kapton bias PCB 16 pins (AXN316038S + AXN416330S)
+	2 x ICC-AOH             30 pins (AXN330038S + AXN430330S)
+	2 x ICC-FEH             40 pins (AXN340038S + AXN440330S)
+	1 x ICC-ICB             50 pins (AXN350038S + AXN450330S)
+	copper: m = 2 x (0.0882 + 0.1085) g + 2 x (0.1445 + 0.1547) g + 2 x (0.1768 + 0.2013) g + 1 x (0.2329 + 0.2764) g = 2.2573 g
+		density = 8.96 g/cm^3
+		--> volume = 0.252 cm^3
+	resin:  m = 2 x (0.0461 + 0.0515) g + 2 x (0.0865 + 0.0965) g + 2 x (0.1153 + 0.1287) g + 1 x (0.1442 + 0.1609) g = 1.3543 g
+		density (epoxy) = 1.3 g/cm^3
+		--> volume = 1.042 cm^3
+
+@@@ HERE THE OPTOHYBRID SPECS ARE MISSING
+
+(5) HV stiffener (2 copies)
+	FR4:    m = 0.060 g
+		density (T_G10) = 1.90 g/cm^3
+		--> volume = 0.032 cm^3
+
+(6) ICC SMD Resistors, 28 x (0603) + 2 x (0805) + 4 x (1206) resistors, mostly Al2O3 (Aluminiumoxid, ceramic), the total mass is computed
+	m = 0.1090 g
+	density = 3.96525 g/cm^3
+	--> volume = 0.027 cm^3
+
+(7) ICC SMD Capacitors, 12 x (0805) + 8 x (1812), mostly BaTiO3, the total mass is computed
+	m = 2.020 g
+	density = 6.02 g/cm^3
+	--> volume = 0.336 cm^3
+
+(8-9) ICC ASICs: 1 x ("CRT245" 24 pin) + 2 x ("LVDSBUF" 16 pin)
+	epoxy:	m = (0.015675 + 2 x 0.038519) g = 0.092713 g
+		density = 1.3 g/cm^3
+		--> volume = 0.071 cm^3
+	copper: m = [ 0.194 - 0.092713) g = 0.101287 g
+		density = 8.96 g/cm^3
+		--> volume = 0.011 cm^3
+
+(10-13) Hybrid tail (2 copies)
+	see http://www.fynu.ucl.ac.be/he/cms/activities/tracker/FHITfiles/CCTPHybrides.pdf
+	surface: (19 x 30) mm^2 = 570 mm^2 = 5.70 cm^2
+	- Kapton: (25+25) um = 50 um = 0.0050 cm --> 0.0285 cm^3
+	- Copper: (18+12+18+18+18+12) um = 96 um = 0.0096 cm --> 0.05472 cm^3
+	- Solder Mask: 20 um = 0.0020 cm --> 0.0114 cm^3
+	- Glue: (50+50) um = 100 um thickness = 0.0100 cm --> 0.057 cm^3 
+	
+.......................................................................
+# "TOB ICC Layer 5/6 (2 APVs)"  "TOB_L56_ICC2"    40.12   80.24
+* 1 "PCB board"                 "T_G10"            4.302   1     ELE
+* 2 "PCB copper traces"         "Copper"           0.180   1     ELE	 
+* 3 "NAiS connectors"           "Copper"           0.252   1     ELE
+* 4 "NAiS connectors"           "Epoxy"            1.042   1     ELE
+* 5 "HV Stiffener"              "T_G10"            0.032   2     ELE
+* 6 "ICC Resistors"             "Ceramic"          0.027   1     ELE
+* 7 "ICC Capacitors"            "Barium Titanate"  0.336   1     ELE
+* 8 "ICC ASICs EMC"             "Epoxy"            0.071   1     ELE
+* 9 "ICC ASICs copper"          "Copper"           0.011   1     ELE
+* 10 "Hybrid Tail Kapton"       "T_Kapton"         0.028   2     ELE
+* 11 "Hybrid Tail Copper"       "Copper"           0.055   2     ELE
+* 12 "Hybrid Tail Solder Mask"  "T_Kapton"         0.011   2     ELE
+* 13 "Hybrid Tail Glue"         "Epoxy"            0.057   2     ELE
+.......................................................................
+=======================================================================
+
+
 o TOB_CCUM
   ---------
 The TOB CCUM board.
@@ -677,20 +995,21 @@ o TOB Rod Connectors (inside)
   ---------------------------
 MCVolume: (11.800 x 7.500 x 0.500) cm^3 = 44.25 cm^3
 
-Layer 3-4
+Layer 1/2
 ----------
 
 	SCLAC
 	-----
 Ladder Adapter Card
 Composition taken from G.Magazzù measurements: http://test-gmagazzu.web.cern.ch/test%2Dgmagazzu/TOB/MB/CCUM_MB.htm
+EDMS Code EP 680-1174-510
 
-(1) SCLAC carbon fibre EDMS Code EP 680-1174-510
+(1) SCLAC carbon fibre
 	m = 0.400 g
 	density = 1.90 g/cm^3
 	--> volume = 0.211 cm^3
 
-(2) SCLAC copper traces EDMS Code EP 680-1174-510
+(2) SCLAC copper traces
 	m = 0.061 g
 	density = 8.96 g/cm^3
 	--> volume = 0.007 cm^3
@@ -763,7 +1082,7 @@ Composition taken from G.Magazzù measurements: http://test-gmagazzu.web.cern.ch
 	volume = 0.004 cm^3
 
 ..............................................................................
-# "TOB Rod Connections Layer 3-4"          "TOB_CONN2"      44.25   88.5
+# "TOB Rod Connections Layer 1/2"          "TOB_CONN12"     44.25   88.5
 * 1 "SCLAC board"                          "T_G10"           0.211   1    ELE
 * 2 "SCLAC copper traces"                  "Copper"          0.007   1    ELE
 * 3 "Shielded twisted pair Cu"             "Copper"          0.191   2    ELE
@@ -778,6 +1097,211 @@ Composition taken from G.Magazzù measurements: http://test-gmagazzu.web.cern.ch
 ..............................................................................
 ==============================================================================
 
+
+Layer 3/4
+----------
+
+	SCLAC
+	-----
+Ladder Adapter Card
+Composition taken from G.Magazzù measurements: http://test-gmagazzu.web.cern.ch/test%2Dgmagazzu/TOB/MB/CCUM_MB.htm
+EDMS Code EP 680-1174-510
+
+(1) SCLAC carbon fibre
+	m = 0.400 g
+	density = 1.90 g/cm^3
+	--> volume = 0.211 cm^3
+
+(2) SCLAC copper traces
+	m = 0.061 g
+	density = 8.96 g/cm^3
+	--> volume = 0.007 cm^3
+
+
+	Wires
+	-----
+
+(3-7) Short tail (to be multiplied by 2)
+	Shielded Twisted pair (112 mm), 9 pairs, total mass of a single wire (number of components to bu multiplied by 2)
+	Tinned copper wire (diameter 0.50 mm) + shielded twisted pair + 0.5 mm^2 Copper wire, 2 pieces 106 mm 1 piece 100 mm
+	total mass; 2 copies in the mixture
+	Copper:	m = (0.3417 + 0.9328 + 0.4400) g = 1.7145 g
+		density = 8.96 g/cm^3
+		--> volume = 0.191 cm^3
+	Aluminium:
+	 	m = 0.3326 g
+		density = 2.7 g/cm^3
+		--> volume = 0.123 cm^3
+	PEI: 	m = 0.1956 g
+		density (silicone gel) = 0.965 g/cm^3
+		--> volume = 0.203 cm^3
+	SILTEM:	m = (0.5088 + 0.240) g = 0.7488 g
+		density (polyethylene) = 0.95 g/cm^3
+		--> volume = 0.788 cm^3
+
+
+	SCCAC
+	-----
+Cable Adapter Card
+Composition taken from G.Magazzù measurements: http://test-gmagazzu.web.cern.ch/test%2Dgmagazzu/TOB/MB/CCUM_MB.htm
+2 x short tail
+
+
+	BUS
+	---
+
+
+	Optical components
+	------------------
+
+
+	Other components
+	----------------
+
+(7) Araldite glue (take epoxy): (1/2 CCUM), 1/4 SCLAC, (1/4 SCACC)
+	m = 1.05 g / 4 = 0.2625 g
+	density = 1.3 g/cm^3
+	volume = 0.202 cm^3
+
+(8) Output cable shield Aluminium: 1/2 here, (1/2 outside)
+	m = 0.480 g / 2 = 0.240 g
+	density = 2.7 g/cm^3
+	volume = 0.178 cm^3
+
+(9) Output cable sleeve (l=55 cm, ext diameter=9.5 mm, 1 piece) + (l=10 mm, ext diameter=3.0 mm, 4 pieces) Polyolefin (take polyethilene):
+	total mass, 1/2 here, (1/2 outside)
+	m = ( 0.090 + 0.032 ) g / 2 = 0.061 g
+	density = 0.95 g/cm^3
+	volume = 0.128 cm^3
+
+(10) Input & Output cable tie Kapton: 2/3 here, (1/3 outside)
+	m = 0.041 g * (2/3) = 0.027 g
+	density = 1.40 g/cm^3
+	volume = 0.019 cm^3
+
+(11) Input & Output cable solder paste (BGA): 1/2 here, (1/2 outside)
+	m = 0.067 g / 2 = 0.0335 g
+	density = 8.82 g/cm^3
+	volume = 0.004 cm^3
+
+..............................................................................
+# "TOB Rod Connections Layer 3/4"          "TOB_CONN34"     44.25   88.5
+* 1 "SCLAC board"                          "T_G10"           0.211   1    ELE
+* 2 "SCLAC copper traces"                  "Copper"          0.007   1    ELE
+* 3 "Shielded twisted pair Cu"             "Copper"          0.191   2    ELE
+* 4 "Shielded twisted pair Al"             "Aluminium"       0.123   2    ELE
+* 5 "Shielded twisted pair PEI"            "Silicone_Gel"    0.203   2    ELE
+* 6 "Shielded twisted pair SILTEM"         "Polyethylene"    0.788   2    ELE
+* 7 "SCLAC glue"                           "Epoxy"           0.202   1    ELE
+* 8 "Output cable Shield"                  "Aluminium"       0.178   1    ELE
+* 9 "Output cable Sleeve"                  "Polyethylene"    0.064   1    ELE
+* 10 "Input and Output cable Tie"          "T_Kapton"        0.019   1    ELE
+* 11 "Input and Output cable Solder Paste" "BGA"             0.004   1    ELE
+..............................................................................
+==============================================================================
+
+
+Layer 5/6
+----------
+
+	SCLAC
+	-----
+Ladder Adapter Card
+Composition taken from G.Magazzù measurements: http://test-gmagazzu.web.cern.ch/test%2Dgmagazzu/TOB/MB/CCUM_MB.htm
+EDMS Code EP 680-1174-510
+
+(1) SCLAC carbon fibre
+	m = 0.400 g
+	density = 1.90 g/cm^3
+	--> volume = 0.211 cm^3
+
+(2) SCLAC copper traces
+	m = 0.061 g
+	density = 8.96 g/cm^3
+	--> volume = 0.007 cm^3
+
+
+	Wires
+	-----
+
+(3-7) Short tail (to be multiplied by 2)
+	Shielded Twisted pair (112 mm), 9 pairs, total mass of a single wire (number of components to bu multiplied by 2)
+	Tinned copper wire (diameter 0.50 mm) + shielded twisted pair + 0.5 mm^2 Copper wire, 2 pieces 106 mm 1 piece 100 mm
+	total mass; 2 copies in the mixture
+	Copper:	m = (0.3417 + 0.9328 + 0.4400) g = 1.7145 g
+		density = 8.96 g/cm^3
+		--> volume = 0.191 cm^3
+	Aluminium:
+	 	m = 0.3326 g
+		density = 2.7 g/cm^3
+		--> volume = 0.123 cm^3
+	PEI: 	m = 0.1956 g
+		density (silicone gel) = 0.965 g/cm^3
+		--> volume = 0.203 cm^3
+	SILTEM:	m = (0.5088 + 0.240) g = 0.7488 g
+		density (polyethylene) = 0.95 g/cm^3
+		--> volume = 0.788 cm^3
+
+
+	SCCAC
+	-----
+Cable Adapter Card
+Composition taken from G.Magazzù measurements: http://test-gmagazzu.web.cern.ch/test%2Dgmagazzu/TOB/MB/CCUM_MB.htm
+2 x short tail
+
+
+	BUS
+	---
+
+
+	Optical components
+	------------------
+
+
+	Other components
+	----------------
+
+(7) Araldite glue (take epoxy): (1/2 CCUM), 1/4 SCLAC, (1/4 SCACC)
+	m = 1.05 g / 4 = 0.2625 g
+	density = 1.3 g/cm^3
+	volume = 0.202 cm^3
+
+(8) Output cable shield Aluminium: 1/2 here, (1/2 outside)
+	m = 0.480 g / 2 = 0.240 g
+	density = 2.7 g/cm^3
+	volume = 0.178 cm^3
+
+(9) Output cable sleeve (l=55 cm, ext diameter=9.5 mm, 1 piece) + (l=10 mm, ext diameter=3.0 mm, 4 pieces) Polyolefin (take polyethilene):
+	total mass, 1/2 here, (1/2 outside)
+	m = ( 0.090 + 0.032 ) g / 2 = 0.061 g
+	density = 0.95 g/cm^3
+	volume = 0.128 cm^3
+
+(10) Input & Output cable tie Kapton: 2/3 here, (1/3 outside)
+	m = 0.041 g * (2/3) = 0.027 g
+	density = 1.40 g/cm^3
+	volume = 0.019 cm^3
+
+(11) Input & Output cable solder paste (BGA): 1/2 here, (1/2 outside)
+	m = 0.067 g / 2 = 0.0335 g
+	density = 8.82 g/cm^3
+	volume = 0.004 cm^3
+
+..............................................................................
+# "TOB Rod Connections Layer 5/6"          "TOB_CONN56"     44.25   88.5
+* 1 "SCLAC board"                          "T_G10"           0.211   1    ELE
+* 2 "SCLAC copper traces"                  "Copper"          0.007   1    ELE
+* 3 "Shielded twisted pair Cu"             "Copper"          0.191   2    ELE
+* 4 "Shielded twisted pair Al"             "Aluminium"       0.123   2    ELE
+* 5 "Shielded twisted pair PEI"            "Silicone_Gel"    0.203   2    ELE
+* 6 "Shielded twisted pair SILTEM"         "Polyethylene"    0.788   2    ELE
+* 7 "SCLAC glue"                           "Epoxy"           0.202   1    ELE
+* 8 "Output cable Shield"                  "Aluminium"       0.178   1    ELE
+* 9 "Output cable Sleeve"                  "Polyethylene"    0.064   1    ELE
+* 10 "Input and Output cable Tie"          "T_Kapton"        0.019   1    ELE
+* 11 "Input and Output cable Solder Paste" "BGA"             0.004   1    ELE
+..............................................................................
+==============================================================================
 
 
 
