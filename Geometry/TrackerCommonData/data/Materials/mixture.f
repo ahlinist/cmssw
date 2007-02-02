@@ -50,7 +50,7 @@ C...Common Block .................................................
       Parameter (MaxDiv=30)
       Character*40 MixtureName, GMIXName
       Character*80 Command
-      Character*30 Comment(MaxDiv),Material(MaxDiv)
+      Character*60 Comment(MaxDiv),Material(MaxDiv)
       Character*3 Type(MaxDiv)
       Real Volume(MaxDiv), Mult(MaxDiv),
      +     Density(MaxDiv),Radl(MaxDiv),MCVolume,MCArea
@@ -203,7 +203,7 @@ C     ========================
      +     PureX0(MaxPure), PureL0(MaxPure)
       SAVE NPure, Pureweight, Purenumber, Puredens, PureX0, PureL0
 
-      Character*30 string,teststring
+      Character*60 string,teststring
 
       Logical DEBUG,FIRST
       DATA FIRST /.TRUE./
@@ -217,7 +217,7 @@ C...Common Block .................................................
       Integer MaxDiv
       Parameter (MaxDiv=30)
       Character*40 MixtureName, GMIXName
-      Character*30 Comment(MaxDiv),Material(MaxDiv)
+      Character*60 Comment(MaxDiv),Material(MaxDiv)
       Character*3 Type(MaxDiv)
       Real Volume(MaxDiv), Mult(MaxDiv),
      +     Density(MaxDiv),Radl(MaxDiv),MCVolume,MCArea
@@ -341,7 +341,7 @@ C...Common Block .................................................
       Integer MaxDiv
       Parameter (MaxDiv=30)
       Character*40 MixtureName, GMIXName
-      Character*30 Comment(MaxDiv),Material(MaxDiv)
+      Character*60 Comment(MaxDiv),Material(MaxDiv)
       Character*3 Type(MaxDiv)
       Real Volume(MaxDiv), Mult(MaxDiv),
      +     Density(MaxDiv),Radl(MaxDiv),MCVolume,MCArea
@@ -360,7 +360,7 @@ C.................................................................
       Real PSUP,PSEN,PCAB,PCOL,PELE
       Real PSUP2,PSEN2,PCAB2,PCOL2,PELE2
 
-      Character*30 string,string1,string2,stringmatname
+      Character*60 string,string1,string2,stringmatname
 
       Character*30 TZName(MaxDiv)
       Character*32 tzstring
@@ -568,7 +568,7 @@ C      write(LUN,*) "\\hline\\hline"
      +        Intl(k),100*PINT(k)
          write(LUN,*) "\\hline"
       enddo
- 1001 Format(1X,I4,2X,' & ',A20,' & ',A20,' & ',
+ 1001 Format(1X,I4,2X,' & ',A60,' & ',A20,' & ',
      +     8(1X,F8.3,' & '),1X,F8.3,
      +     '\\','\\')
 
@@ -711,7 +711,7 @@ C...Common Block .................................................
       Integer MaxDiv
       Parameter (MaxDiv=30)
       Character*40 MixtureName, GMIXName
-      Character*30 Comment(MaxDiv),Material(MaxDiv)
+      Character*60 Comment(MaxDiv),Material(MaxDiv)
       Character*3 Type(MaxDiv)
       Real Volume(MaxDiv), Mult(MaxDiv),
      +     Density(MaxDiv),Radl(MaxDiv),MCVolume,MCArea
@@ -769,7 +769,7 @@ C--
       Subroutine LatexUnderscore(stringname)
 C     =======================================
       Implicit None
-      Character*30 stringname,stringtemp
+      Character*60 stringname,stringtemp
       Integer      k,maxunderscore,findunderscore,findspace
       Integer      underscorefound
       
