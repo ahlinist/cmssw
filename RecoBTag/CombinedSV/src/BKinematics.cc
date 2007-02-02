@@ -12,30 +12,20 @@ namespace {
   }
 }
 
-reco::BKinematics::BKinematics( const MagneticField * f ) :
-      field_(f), mass_(0.), energy_(0.), vec3_(GlobalVector())
+reco::BKinematics::BKinematics() :
+      mass_(0.), energy_(0.), vec3_(GlobalVector())
 {}
 
-reco::BKinematics::BKinematics( const MagneticField * f,
-           const reco::Vertex & vertex ) :
-      field_(f), mass_(0.), energy_(0.), vec3_(GlobalVector())
-{
-  TTracksFromRecoVertex converter ( field_ );
-  computeKinematics ( converter.create ( vertex ) );
-}
-
 reco::BKinematics::BKinematics(
-           const MagneticField * f,
-           const TransientVertex & vertex ) : field_ ( f ),
+           const TransientVertex & vertex ) :
       mass_(0.), energy_(0.), vec3_(GlobalVector())
 {
   computeKinematics(vertex.originalTracks() );
 }
 
 
-reco::BKinematics::BKinematics( 
-    const MagneticField * f, const vector<combsv::CombinedTrack> & trks ) : 
-  field_ ( f ), mass_(0.), energy_(0.), vec3_ ( GlobalVector() )
+reco::BKinematics::BKinematics( const vector<combsv::CombinedTrack> & trks ) : 
+  mass_(0.), energy_(0.), vec3_ ( GlobalVector() )
 {
   vector < reco::TransientTrack > ntrks;
   for ( vector< combsv::CombinedTrack >::const_iterator i=trks.begin(); i!=trks.end() ; ++i )
@@ -45,9 +35,8 @@ reco::BKinematics::BKinematics(
   computeKinematics(ntrks);
 } 
 
-reco::BKinematics::BKinematics( 
-    const MagneticField * f, const vector<reco::TransientTrack> & trks ) : 
-  field_ ( f ), mass_(0.), energy_(0.), vec3_ ( GlobalVector() )
+reco::BKinematics::BKinematics( const vector<reco::TransientTrack> & trks ) : 
+  mass_(0.), energy_(0.), vec3_ ( GlobalVector() )
 {
   computeKinematics(trks);
 } 

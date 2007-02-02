@@ -29,7 +29,7 @@ void combsv::CombinedTrack::CombinedTrack::print() const
 {
   cout << "*** printing trackData for combined b-tag info " << endl;
   cout << "    aboveCharmMass   " << aboveCharmMass()   << endl;
-  cout << "    pt               " << pt()               << endl;
+  cout << "    pt               " << track().pt()       << endl;
   cout << "    rapidity         " << rapidity()         << endl;
   cout << "    jetDistance      " << jetDistance()      << endl;
   cout << "    nHitsTotal       " << nHitsTotal()       << endl;

@@ -25,7 +25,7 @@ namespace combsv {
     ~CombinedSVCalibrationHistogram() {}
 
     int binCount ( int bin ) const; /// get number of counts in bin
-    void setBinCount ( int b, int v ); /// set number of counts in bin
+    void addBinCount ( int b, int addcounts ); /// add counts to bin
     void addCount ( float x );
 
     int entries() const;

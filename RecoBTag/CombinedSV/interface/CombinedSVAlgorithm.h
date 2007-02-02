@@ -14,6 +14,7 @@
 #include "RecoBTag/CombinedSV/interface/CombinedSVTaggingVariables.h"
 #include "RecoBTag/CombinedSV/interface/BTagVertexReconstructor.h"
 #include "DataFormats/BTauReco/interface/CombinedSVTagInfo.h"
+#include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
 #include <vector>
 
 class MagneticField;
@@ -51,6 +52,7 @@ namespace combsv {
      */
     void setMagneticField ( const MagneticField * );
     const MagneticField * magneticField() const;
+    void setTransientTrackBuilder ( const TransientTrackBuilder * );
 
     ~CombinedSVAlgorithm();
 

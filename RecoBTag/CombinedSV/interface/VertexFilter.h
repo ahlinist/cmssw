@@ -5,6 +5,7 @@
 #include "RecoBTag/CombinedSV/interface/V0Checker.h"
 #include "MagneticField/Engine/interface/MagneticField.h"
 #include "DataFormats/BTauReco/interface/VertexTypes.h"
+#include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
 
 class VertexFilter {
   /**
@@ -13,7 +14,7 @@ class VertexFilter {
 
    public:
      VertexFilter ( 
-         const MagneticField * field = 0,
+         const TransientTrackBuilder * builder = 0,
          float vertexV0MassWindow=0.05,
          float vertexMassMax=6.5, int vertexMultiplicityMin=2,
          float vertexFracPV=0.65 );
@@ -53,8 +54,7 @@ class VertexFilter {
      */
      bool checkV0 ( const reco::Vertex & v ) const;
 
-     void setMagneticField ( const MagneticField * m );
-     const MagneticField & field() const;
+     void setTransientTrackBuilder ( const TransientTrackBuilder * b );
 
    private:
      bool checkDistance ( const reco::Vertex & vertex ) const;
@@ -63,7 +63,7 @@ class VertexFilter {
      double reducedDistance ( const reco::Vertex & vertex ) const;
      bool checkPseudoVertex ( const reco::Vertex & vertex ) const;
    private:
-     const MagneticField * field_;
+     const TransientTrackBuilder * builder_;
      reco::Vertex primaryVertex_;
      V0Checker v0Checker_;
      float vertexMassMax_;

@@ -1,11 +1,12 @@
 #include "RecoBTag/CombinedSV/interface/FilterFactory.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
-FilterFactory::FilterFactory ( const edm::ParameterSet & s, const MagneticField * m )
+FilterFactory::FilterFactory ( const edm::ParameterSet & s,
+    const TransientTrackBuilder * b )
 {
   createTrackFilter ( s.getParameter<edm::ParameterSet>("trackcuts") );
   createJetFilter ( s.getParameter<edm::ParameterSet>("jetcuts") );
-  createVertexFilter ( s.getParameter<edm::ParameterSet>("vertexcuts"), m );
+  createVertexFilter ( s.getParameter<edm::ParameterSet>("vertexcuts"), b );
 }
 
 FilterFactory::FilterFactory ( const TrackFilter & tf, const VertexFilter & vf,
@@ -58,14 +59,14 @@ void FilterFactory::createTrackFilter ( const edm::ParameterSet & s )
 }
 
 void FilterFactory::createVertexFilter ( const edm::ParameterSet & s,
-    const MagneticField * m )
+    const TransientTrackBuilder * b )
 {
   double massMax      = s.getParameter<double>("MassMax");
   double cutV0        = s.getParameter<double>("V0Masswindow");
   double cutPV        = s.getParameter<double>("FracPV");
   int multMin         = s.getParameter<int>("MultiplicityMin");  
 
-  vertex_ = VertexFilter ( m, cutV0, massMax, multMin, cutPV );
+  vertex_ = VertexFilter ( b, cutV0, massMax, multMin, cutPV );
 }
 
 void FilterFactory::createJetFilter ( const edm::ParameterSet & s )
