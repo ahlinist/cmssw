@@ -1,12 +1,7 @@
 <use name=FWCore/Framework>
-<use name=Foundation/PluginManager>
 <use name=FWCore/ParameterSet>
-<use name=DetectorDescription/Core>
-<flags SEAL_PLUGIN_NAME="GeometryReadersPrintIdealGeometryAnalyzer">
 <export>
-   <lib name=GeometryReadersPrintIdealGeometryAnalyzer>
-   <use name=FWCore/Framework>
-   <use name=Foundation/PluginManager>
-   <use name=FWCore/ParameterSet>
-   <use name=DetectorDescription/Core>
+  <lib name=GeometryReadersPrintIdealGeometryAnalyzer>
 </export>
+
+<flags SEAL_PLUGIN_NAME="GeometryReadersPrintIdealGeometryAnalyzer">
