@@ -13,7 +13,7 @@
 //
 // Original Author:  Chris D Jones
 //         Created:  Mon Jul 25 16:58:09 EDT 2005
-// $Id$
+// $Id: PrintIdealGeometryAnalyzer.cc,v 1.1 2005/07/25 21:01:15 chrjones Exp $
 //
 //
 
@@ -93,4 +93,4 @@ PrintIdealGeometryAnalyzer::analyze( const edm::Event& iEvent, const edm::EventS
 }
 
 //define this as a plug-in
-DEFINE_FWK_MODULE(PrintIdealGeometryAnalyzer)
+DEFINE_FWK_MODULE(PrintIdealGeometryAnalyzer);
