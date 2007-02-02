@@ -10,6 +10,7 @@
 // #include "DetectorDescription/Algorithm/src/AlgoInit.h"
 //#include "CondCore/DBCommon/interface/ServiceLoader.h"
 //#include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "FWCore/Framework/interface/SourceFactory.h"
 
 #include "CondCore/MetaDataService/interface/MetaData.h"
 
@@ -113,7 +114,6 @@ void DBIdealGeometryESSource::setIntervalFor(const edm::eventsetup::EventSetupRe
 }
 
 
-#include "FWCore/Framework/interface/SourceFactory.h"
 
 
 DEFINE_FWK_EVENTSETUP_SOURCE(DBIdealGeometryESSource);
