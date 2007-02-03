@@ -129,8 +129,6 @@ bool VertexFilter::operator() ( const reco::Vertex & vertex, VertexType t ) cons
     return false; // too few trks?
   }
 
-  // FIXME
-  edm::LogError("VertexFilter") << "need to FIXME edm::ESHandle!";
   reco::BKinematics vertexKinematics( TTracksFromRecoVertex::create ( vertex, *builder_ ) );
   double mass = vertexKinematics.getMass();
   if ( mass > vertexMassMax_ )
