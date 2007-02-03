@@ -1,6 +1,7 @@
 #include "RecoBTag/CombinedSV/interface/CombinedSVCalibrationHistogram.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include <iostream>
+#include <cmath>
 
 using namespace std;
 

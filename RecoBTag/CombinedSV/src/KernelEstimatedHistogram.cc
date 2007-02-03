@@ -3,6 +3,7 @@
 #include "FWCore/Utilities/interface/Exception.h"
 // #include "CommonTools/Statistics/interface/Accumulator.h"
 #include <iostream>
+#include <cmath>
 
 using namespace std;
 
