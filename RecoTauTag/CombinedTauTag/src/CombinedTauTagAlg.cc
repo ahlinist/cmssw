@@ -172,9 +172,7 @@ pair<JetTag,CombinedTauTagInfo> CombinedTauTagAlg::tag(const IsolatedTauTagInfoR
       signalchargedpicand_fromtk_HepLV.push_back(thechargedpicand_fromtk_HepLV);
     }
   }
-  //if((((int)(signalrecTracks.size())==1 && refAxis_XYZVector.Rho()>MinimumTransverseMomentumLeadingTrack_case1signalTrack_) || ((int)(signalrecTracks.size())==3 && refAxis_XYZVector.Rho()>MinimumTransverseMomentumLeadingTrack_case3signalTracks_)) && abs(chargedpicand_fromtk_qsum)==1) passed_tracker_signalcone_selection=true; // events from mc-physval-111-DiTaus-Pt20To420 sample analyzed using CMSSW_1_2_0 : Track.charge()=+1;
-  if(((int)(signalrecTracks.size())==1 && refAxis_XYZVector.Rho()>MinimumTransverseMomentumLeadingTrack_case1signalTrack_) || ((int)(signalrecTracks.size())==3 && refAxis_XYZVector.Rho()>MinimumTransverseMomentumLeadingTrack_case3signalTracks_)) passed_tracker_signalcone_selection=true;
-
+  if((((int)(signalrecTracks.size())==1 && refAxis_XYZVector.Rho()>MinimumTransverseMomentumLeadingTrack_case1signalTrack_) || ((int)(signalrecTracks.size())==3 && refAxis_XYZVector.Rho()>MinimumTransverseMomentumLeadingTrack_case3signalTracks_)) && abs(chargedpicand_fromtk_qsum)==1) passed_tracker_signalcone_selection=true; 
     // *** tracker selection
   if(passed_leadtk_selection && passed_tracker_isolationring_selection && passed_tracker_signalcone_selection) passed_tracker_selection=true;
   // *********************************************end********************************************************
@@ -684,31 +682,27 @@ string  CombinedTauTagAlg::Get_ivar_vs_recjetEt_TH2name(int the_1truth0fake_type
   return (ivar_vs_recjetEt_TH2name);
 }
 double CombinedTauTagAlg::rectk_signedipt_significance(const Vertex& thePV,const TrackRef theTrack){ 
-  const TransientTrack* the_transTrack=theTransientTrackBuilder->build(&(*theTrack));
+  TransientTrack the_transTrack=theTransientTrackBuilder->build(&(*theTrack));
   SignedTransverseImpactParameter the_Track_STIP;
   double the_signedipt_significance;
-  if(the_Track_STIP.apply(*the_transTrack,*the_recjet_G3DV,thePV).first)
-    the_signedipt_significance=the_Track_STIP.apply(*the_transTrack,*the_recjet_G3DV,thePV).second.significance();
+  if(the_Track_STIP.apply(the_transTrack,*the_recjet_G3DV,thePV).first)
+    the_signedipt_significance=the_Track_STIP.apply(the_transTrack,*the_recjet_G3DV,thePV).second.significance();
   else {
-    delete the_transTrack;
     string exception_message="In CombinedTauTagAlg::rectk_signedipt_significance(.,.) - could not obtain the lead tk signed ipt.";
     throw cms::Exception(exception_message);
   }
-  delete the_transTrack;
   return(the_signedipt_significance);
 }
 double CombinedTauTagAlg::rectk_signedip3D_significance(const Vertex& thePV,const TrackRef theTrack){ 
-  const TransientTrack* the_transTrack=theTransientTrackBuilder->build(&(*theTrack));
+  TransientTrack the_transTrack=theTransientTrackBuilder->build(&(*theTrack));
   SignedImpactParameter3D the_Track_STIP;
   double the_signedip3D_significance;
-  if(the_Track_STIP.apply(*the_transTrack,*the_recjet_G3DV,thePV).first)
-    the_signedip3D_significance=the_Track_STIP.apply(*the_transTrack,*the_recjet_G3DV,thePV).second.significance();
+  if(the_Track_STIP.apply(the_transTrack,*the_recjet_G3DV,thePV).first)
+    the_signedip3D_significance=the_Track_STIP.apply(the_transTrack,*the_recjet_G3DV,thePV).second.significance();
   else{
-    delete the_transTrack;
     string exception_message="In CombinedTauTagAlg::rectk_signedip3D_significance(.,.) - could not obtain the lead tk signed ip3D.";
     throw cms::Exception(exception_message);
   }
-  delete the_transTrack;
   return(the_signedip3D_significance);
 }
 double CombinedTauTagAlg::signedflightpath_significance(const Vertex& iPV){ 
@@ -716,8 +710,8 @@ double CombinedTauTagAlg::signedflightpath_significance(const Vertex& iPV){
      vector<TransientTrack> transientTracks;
      transientTracks.clear();
      for(RefVector<TrackCollection>::const_iterator i_recTrack=filtered_chargedpicand_tk.begin();i_recTrack!=filtered_chargedpicand_tk.end();i_recTrack++){
-       TransientTrack* theTransientTrack=theTransientTrackBuilder->build(&(**i_recTrack));
-       transientTracks.push_back(*theTransientTrack);
+       TransientTrack theTransientTrack=theTransientTrackBuilder->build(&(**i_recTrack));
+       transientTracks.push_back(theTransientTrack);
      }
      try{
        KalmanVertexFitter kvf;
