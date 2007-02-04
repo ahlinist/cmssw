@@ -1,0 +1,23 @@
+<flags SEAL_PLUGIN_NAME="EventFilterFUSender">
+<use name=xdaq>
+<use name=mimetic>
+<use name=xerces-c>
+<use name=boost>
+<use name=FWCore/Framework>
+<use name=DataFormats/Common>
+<use name=DataFormats/Streamer>
+<use name=IOPool/Streamer>
+<use name=EventFilter/StorageManager>
+<export>
+ <lib name=EventFilterFUSender>
+ <use name=xdaq>
+ <use name=mimetic>
+ <use name=xerces-c>
+ <use name=boost>
+ <use name=FWCore/Framework>
+ <use name=DataFormats/Common>
+ <use name=DataFormats/Streamer>
+ <use name=IOPool/Streamer>
+ <use name=EventFilter/StorageManager>
+</export>
+
