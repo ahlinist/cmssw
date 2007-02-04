@@ -4,14 +4,20 @@
 #include "DataFormats/BTauReco/interface/JetTag.h"
 #include "RecoBTag/MCTools/interface/JetFlavour.h"
 
+/** \class AcceptJet
+ *
+ *  Decide if jet and associated parton satisfy desired kinematic cuts.
+ *
+ */
+
 class AcceptJet {
 
  public:
   AcceptJet();
-  // event selection
+  /// Returns true if jet and associated parton satisfy kinematic cuts.
   bool operator() (const reco::JetTag & jetTag, const JetFlavour & jetFlavour) const;
 
-  // set cut parameters
+  /// Set cut parameters
   void setEtaMin            ( double d ) { etaMin            = d ; } 
   void setEtaMax            ( double d ) { etaMax            = d ; } 
   void setPPartonMin        ( double d ) { pPartonMin        = d ; } 

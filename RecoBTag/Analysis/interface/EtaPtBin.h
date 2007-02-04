@@ -5,6 +5,12 @@
 #include "DataFormats/BTauReco/interface/JetTag.h"
 #include "RecoBTag/MCTools/interface/JetFlavour.h"
 
+/** \class EtaPtBin
+ *
+ *  Decide if jet/parton lie within desired rapidity/pt range.
+ *
+ */
+
 class EtaPtBin {
 
  public:
@@ -14,15 +20,17 @@ class EtaPtBin {
 
   ~EtaPtBin () {} ;
 
+  /// String describes rapidity/pt range.
   TString getDescriptionString () const { return descriptionString ; } 
 
-  // method to build the string from other quantities
-  // (static for easy external use)
+  /// method to build the string from other quantities
+  /// (static for easy external use)
   static TString buildDescriptionString 
   	( bool etaActive_ , double etaMin_ , double etaMax_ ,
 	  bool ptActive_  , double ptMin_  , double ptMax_ ) ;  // pt
   
   
+  /// Get rapidity/pt ranges and check whether rapidity/pt cuts are active.
   bool   getEtaActive () const { return etaActive ; }
   double getEtaMin    () const { return etaMin    ; }
   double getEtaMax    () const { return etaMax    ; }
@@ -32,6 +40,7 @@ class EtaPtBin {
   double getPtMax    () const { return ptMax    ; }
 
 
+  /// Check if jet/parton are within rapidity/pt cuts.
   bool inBin(const double & eta , const double & pt) const;
   bool inBin(const reco::JetTag & jetTag) const;
   bool inBin(const JetFlavour & jetFlavour) const;
