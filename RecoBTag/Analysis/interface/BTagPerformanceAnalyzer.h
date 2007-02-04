@@ -10,6 +10,12 @@
 #include <string>
 #include <vector>
 
+/** \class BTagPerformanceAnalyzer
+ *
+ *  Top level steering routine for b tag performance analysis.
+ *
+ */
+
 class BTagPerformanceAnalyzer : public edm::EDAnalyzer {
    public:
       explicit BTagPerformanceAnalyzer(const edm::ParameterSet& pSet);
@@ -21,6 +27,7 @@ class BTagPerformanceAnalyzer : public edm::EDAnalyzer {
   virtual void endJob();
 
    private:
+  // Keeps track of the specific b tag and histograms.
    BTagPABaseABC *petBase;
 };
 
