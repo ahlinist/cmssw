@@ -21,7 +21,26 @@ combsv::CombinedVertex::CombinedVertex( const reco::Vertex & vertex,
   reco::Vertex(vertex), trackVector_ ( trackVector ), mass_ ( mass ), isV0_ ( isV0 ), 
   d2_(d2), d3_(d3), isValid_(true), btagTracks_ ( trks )
 {
+  for ( vector< combsv::CombinedTrack >::const_iterator i=trks.begin(); 
+        i!=trks.end() ; ++i )
+  {
+    weightedTracks_[*i]=1.0;
+  }
 }
+
+combsv::CombinedVertex::CombinedVertex( const reco::Vertex & vertex,
+        const map < combsv::CombinedTrack, float > & trks, const GlobalVector & trackVector, double mass,
+        bool isV0, const Measurement1D & d2, const Measurement1D & d3 ) : 
+  reco::Vertex(vertex), trackVector_ ( trackVector ), mass_ ( mass ), isV0_ ( isV0 ), 
+  d2_(d2), d3_(d3), isValid_(true), weightedTracks_ ( trks )
+{
+  for ( map < combsv::CombinedTrack, float >::const_iterator i=weightedTracks_.begin(); 
+        i!=weightedTracks_.end() ; ++i )
+  {
+    btagTracks_.push_back ( i->first );
+  }
+}
+
 
 combsv::CombinedVertex::CombinedVertex() : reco::Vertex(), mass_(0.), isV0_(false),
   isValid_(false)
@@ -56,6 +75,11 @@ const GlobalVector & combsv::CombinedVertex::trackVector() const
 vector < combsv::CombinedTrack > combsv::CombinedVertex::bTagTracks() const
 {
   return btagTracks_;
+}
+
+map < combsv::CombinedTrack, float > combsv::CombinedVertex::weightedTracks() const
+{
+  return weightedTracks_;
 }
 
 bool combsv::CombinedVertex::isV0() const
