@@ -86,11 +86,10 @@ namespace combsv {
     double computeFirstTrackAboveCharmMass(
         const std::vector<combsv::CombinedTrack> & );
 
-    double minFlightDistanceSignificance2D ( const GlobalVector & pAll,
-        reco::btag::Vertices::VertexType, const vector < combsv::CombinedVertex > & ) const;
+    double minFlightDistanceSignificance2D ( reco::btag::Vertices::VertexType, 
+        const vector < combsv::CombinedVertex > & ) const;
 
     combsv::CombinedJet createJetInfo ( const std::vector<combsv::CombinedTrack> & alltracks,
-        const std::vector < combsv::CombinedTrack > & secondaries,
         const std::vector < combsv::CombinedVertex > & vertices,
         reco::btag::Vertices::VertexType );
     

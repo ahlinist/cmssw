@@ -20,9 +20,23 @@ combsv::CombinedVertex BTagVertexReconstructor::buildVertexInfo (
 {
   vector < reco::TransientTrack > ttrks = vtx.originalTracks();
   vector < combsv::CombinedTrack > trks = trackinfobuilder.build ( ttrks );
+  map < combsv::CombinedTrack, float > wtrks;
+  for ( vector< combsv::CombinedTrack >::const_iterator i=trks.begin(); i!=trks.end() ; ++i )
+  {
+    wtrks[*i]=vtx.trackWeight(*i);
+  }
+
   reco::BKinematics kin( trks );
-  combsv::CombinedVertex vertexData ( vtx, trks, kin.get3Vector(),
+
+  combsv::CombinedVertex vertexData;
+  if ( vtx.hasTrackWeight() )
+  {
+    vertexData = combsv::CombinedVertex  ( vtx, trks, kin.get3Vector(),
                                     kin.getMass(), vtxfilter.checkV0(vtx) );
+  } else {
+    vertexData = combsv::CombinedVertex  ( vtx, wtrks, kin.get3Vector(),
+                                    kin.getMass(), vtxfilter.checkV0(vtx) );
+  }
   return vertexData;
 }
 

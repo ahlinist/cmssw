@@ -5,7 +5,6 @@
 #include "RecoBTag/CombinedSV/interface/TrackFilter.h"
 #include "RecoBTag/CombinedSV/interface/VertexFilter.h"
 #include "RecoBTag/CombinedSV/interface/TrackInfoBuilder.h"
-#include "MagneticField/Engine/interface/MagneticField.h"
 #include "DataFormats/BTauReco/interface/VertexTypes.h"
 #include <vector>
 #include <map>
@@ -33,7 +32,7 @@ class PseudoVertexBuilder {
      */
 
     PseudoVertexBuilder ( double trackIpSignificanceMin2DMin,
-        const TrackFilter & filter, TrackInfoBuilder *, const MagneticField * );
+        const TrackFilter & filter, TrackInfoBuilder * );
 
     PseudoVertexBuilder ();
 
@@ -61,8 +60,6 @@ class PseudoVertexBuilder {
     double trackIpSignificanceMin2DMin_;
     TrackFilter filter_;
     TrackInfoBuilder * trackInfoBuilder_;
-    const MagneticField * field_;
-
 };
 
 #endif

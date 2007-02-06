@@ -31,7 +31,7 @@ double TrackInfoBuilder::computeTrackRapidity( const reco::TransientTrack & trac
   return y;
 }
 
-TrackInfoBuilder::TrackInfoBuilder () : m_(0), pv_(reco::Vertex() )
+TrackInfoBuilder::TrackInfoBuilder () : pv_(reco::Vertex() )
 {}
 
 void TrackInfoBuilder::setJet ( const reco::Vertex & pv, const GlobalVector & jetdir )
@@ -39,10 +39,6 @@ void TrackInfoBuilder::setJet ( const reco::Vertex & pv, const GlobalVector & je
   pv_=pv;
   jetdir_=jetdir;
 }
-
-TrackInfoBuilder::TrackInfoBuilder ( const MagneticField * m ) :
-  m_ (m)
-{}
 
 combsv::CombinedTrack TrackInfoBuilder::build( const reco::TransientTrack & tt ) const
 {

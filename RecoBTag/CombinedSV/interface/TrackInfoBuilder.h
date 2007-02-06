@@ -14,7 +14,6 @@ class TrackInfoBuilder {
      * \short Creates CombinedTrack from a TrackRef
      */
     TrackInfoBuilder();
-    TrackInfoBuilder( const MagneticField * );
     
     /**
      *  set per-jet information
@@ -45,7 +44,6 @@ class TrackInfoBuilder {
     double computeTrackRapidity( const reco::TransientTrack & track,
                                  const GlobalVector & pAll ) const;
   private:
-    const MagneticField * m_;
     reco::Vertex pv_;
     GlobalVector jetdir_;
 };

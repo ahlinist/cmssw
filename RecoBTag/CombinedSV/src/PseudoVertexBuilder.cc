@@ -7,9 +7,9 @@ using namespace std;
 using namespace reco::btag::Vertices;
 
 PseudoVertexBuilder::PseudoVertexBuilder ( double tmin,
-    const TrackFilter & filter, TrackInfoBuilder * b, const MagneticField * f )
+    const TrackFilter & filter, TrackInfoBuilder * b )
   : trackIpSignificanceMin2DMin_ ( tmin ), filter_ ( filter ),
-  trackInfoBuilder_ ( b ), field_(f)
+  trackInfoBuilder_ ( b )
 {}
 
 PseudoVertexBuilder::PseudoVertexBuilder () : 
@@ -95,8 +95,8 @@ reco::Vertex PseudoVertexBuilder::build( VertexType t,
   // now setup vertex
   BeamSpot s;
   vector< reco::TransientTrack > trks;
-  for ( vector< combsv::CombinedTrack >::const_iterator i=trackColl.begin(); 
-        i!=trackColl.end() ; ++i )
+  for ( vector< combsv::CombinedTrack >::const_iterator i=filteredTrackColl.begin(); 
+        i!=filteredTrackColl.end() ; ++i )
   {
     trks.push_back ( *i );
   }

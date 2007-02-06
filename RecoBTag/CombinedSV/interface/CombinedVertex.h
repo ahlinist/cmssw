@@ -5,7 +5,7 @@
 #include "Geometry/Vector/interface/GlobalVector.h"
 #include "Geometry/CommonDetAlgo/interface/Measurement1D.h"
 #include "RecoBTag/CombinedSV/interface/CombinedTrack.h"
-#include <vector>
+#include <map>
 
 namespace combsv {
   class CombinedVertex : public reco::Vertex {
@@ -18,6 +18,13 @@ namespace combsv {
     CombinedVertex(); 
     CombinedVertex( const reco::Vertex & vertex,
         const std::vector < combsv::CombinedTrack > & tracks,
+        const GlobalVector & trackVector, double mass,
+        bool isV0, 
+        const Measurement1D & flightdistance_2d = Measurement1D(),
+        const Measurement1D & flightdistance_3d = Measurement1D() );
+
+    CombinedVertex( const reco::Vertex & vertex,
+        const std::map < combsv::CombinedTrack, float > & tracks,
         const GlobalVector & trackVector, double mass,
         bool isV0, 
         const Measurement1D & flightdistance_2d = Measurement1D(),
@@ -36,6 +43,7 @@ namespace combsv {
     Measurement1D flightDistance3D() const;
     bool isValid() const;
     std::vector < combsv::CombinedTrack > bTagTracks() const;
+    std::map < combsv::CombinedTrack, float > weightedTracks() const;
 
   private:
     GlobalVector trackVector_;  // sum of all tracks at this vertex
@@ -51,6 +59,7 @@ namespace combsv {
     bool isValid_;
 
     std::vector < combsv::CombinedTrack > btagTracks_;
+    std::map < combsv::CombinedTrack, float > weightedTracks_;
   };
 }
 

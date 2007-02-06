@@ -74,11 +74,12 @@ namespace {
     for ( vector<combsv::CombinedVertex>::const_iterator vtx = vtces.begin();
           vtx != vtces.end(); vtx++ )
     {
-      const vector<combsv::CombinedTrack> & tmp = vtx->bTagTracks();
-      for ( vector < combsv::CombinedTrack >::const_iterator trk = tmp.begin();
+      const map <combsv::CombinedTrack, float > & tmp = vtx->weightedTracks();
+      for ( map < combsv::CombinedTrack, float >::const_iterator trk = tmp.begin();
             trk != tmp.end(); trk++ )
       {
-        ret.push_back( *trk );
+        // a track is secondary if and only if w>0.5!
+        if ( trk->second > 0.5 ) ret.push_back( trk->first );
       }
     }
     return ret;
@@ -102,8 +103,8 @@ combsv::CombinedSVAlgorithm::CombinedSVAlgorithm( const MagneticField * field,
   filters_ ( ff ), btagRector_ ( BTagVertexReconstructor ( v, ff.trackFilter() ) ), magneticField_ ( field ), 
   discriminatorComputer_ ( c ), variables_ ( vars ),
   vertexCharmCut_(vcc), trackIpSignificanceMin2DMin_(tismm) ,
-  trackInfoBuilder_ ( TrackInfoBuilder ( field ) ),
-  vtxBuilder_ ( PseudoVertexBuilder (tismm, ff.trackFilter(), &trackInfoBuilder_, field ) )
+  trackInfoBuilder_ ( TrackInfoBuilder () ),
+  vtxBuilder_ ( PseudoVertexBuilder (tismm, ff.trackFilter(), &trackInfoBuilder_ ) )
 {}
 
 combsv::CombinedSVAlgorithm::~CombinedSVAlgorithm()
@@ -195,7 +196,10 @@ reco::CombinedSVTagInfo combsv::CombinedSVAlgorithm::tag ( const reco::Vertex & 
   LogDebug("") << "we have " << vtces.size() << " vertices. VtxType: "
                << reco::btag::Vertices::name ( vertexType );
 
-  combsv::CombinedJet cjet = createJetInfo ( etracks, getSecondaryTracks( vtces), vtces, vertexType );
+  /* edm::LogError("CombinedSVAlgorithm" ) <<
+    "createJetInfo different API. Compute both hard-assigned and soft-assigned energies!";
+    */
+  combsv::CombinedJet cjet = createJetInfo ( etracks, vtces, vertexType );
 
   combsv::CombinedData data ( primVertex, jet, vtces, vertexType, 
       tracks, etracks, cjet, jet.pt(), jet.eta() );
@@ -214,7 +218,7 @@ reco::CombinedSVTagInfo combsv::CombinedSVAlgorithm::tag ( const reco::Vertex & 
 }
 
 double combsv::CombinedSVAlgorithm::minFlightDistanceSignificance2D ( 
-    const GlobalVector & pAll, reco::btag::Vertices::VertexType vertexType,
+    reco::btag::Vertices::VertexType vertexType,
     const vector < combsv::CombinedVertex > & vtces ) const
 {
   if ( vertexType != reco::btag::Vertices::RecoVertex ) return -1.;
@@ -232,8 +236,8 @@ double combsv::CombinedSVAlgorithm::minFlightDistanceSignificance2D (
         v != vtces.end(); v++ )
   {
     // 2D case
-    Measurement1D m2d = vertexDistance2DCalculator.signedDistance(
-                      filters_.constVertexFilter().primaryVertex(), *v, pAll);
+    Measurement1D m2d = vertexDistance2DCalculator.compatibility (
+                      filters_.constVertexFilter().primaryVertex(), *v );
 
     if ( m2d.value() < ret ) ret=m2d.value();
   }
@@ -288,10 +292,10 @@ double combsv::CombinedSVAlgorithm::computeFirstTrackAboveCharmMass(
 
 combsv::CombinedJet combsv::CombinedSVAlgorithm::createJetInfo (
     const vector<combsv::CombinedTrack> & alltracks,
-    const vector < combsv::CombinedTrack > & secondaries,
     const vector < combsv::CombinedVertex > & vtces,
     reco::btag::Vertices::VertexType vertexType )
 {
+  const vector < combsv::CombinedTrack > & secondaries = getSecondaryTracks ( vtces );
   reco::BKinematics allTrackKinematics( alltracks );
 
   // get vector given by sum of all tracks in jet
@@ -316,7 +320,7 @@ combsv::CombinedJet combsv::CombinedSVAlgorithm::createJetInfo (
 
   int vertexMult = secondaries.size();
 
-  double minFDSig2D = minFlightDistanceSignificance2D ( pAll, vertexType, vtces );
+  double minFDSig2D = minFlightDistanceSignificance2D ( vertexType, vtces );
   double first2DSignedIPSigniAboveCut = computeFirstTrackAboveCharmMass( alltracks );
   return CombinedJet( mass, vertexMult, fracEnergy,
                           minFDSig2D, first2DSignedIPSigniAboveCut );
