@@ -1,11 +1,11 @@
-// $Id: EBMDisplayPlugins.cc,v 1.9 2007/02/01 15:06:36 benigno Exp $
+// $Id: EBMDisplayPlugins.cc,v 1.10 2007/02/02 08:19:09 benigno Exp $
 
 /*!
   \file EBMDisplayPlugins
   \brief Display Plugin for Quality Histograms (2D)
   \author B. Gobbo 
-  \version $Revision: 1.9 $
-  \date $Date: 2007/02/01 15:06:36 $
+  \version $Revision: 1.10 $
+  \date $Date: 2007/02/02 08:19:09 $
 */
 
 #include "DQM/EcalBarrelMonitorDisplayPlugins/interface/EBMDisplayPlugins.h"
@@ -56,17 +56,17 @@ EBMDisplayPlugins::EBMDisplayPlugins( IgState *state ) : VisDQMDisplayPlugin( st
   nby = 0;
   name = "";
 
-  for( int i=1; i<7; i++ ) {
+  float rgb[6][3] = {{1.00, 0.00, 0.00}, {0.00, 1.00, 0.00}, {1.00, 0.96, 0.00},
+                     {0.50, 0.00, 0.00}, {0.00, 0.40, 0.00}, {0.75, 0.63, 0.00}};
+  
+  for( int i=0; i<6; i++ ) {
     TColor* color;
-    float r = float((i&1)^((i&4)>>2)) * ( 1. - 0.5 * float( i / 4 ) );
-    float g = float((((i-1)%3+1)&2)>>1) * ( 1. - 0.5 * float( i / 4 ) );
-    float b = 0.0;
-    if( ! gROOT->GetColor( 300+i )) {
-      color = new TColor( 300+i, r, g, b, "" );
+    if( ! gROOT->GetColor( 301+i )) {
+      color = new TColor( 301+i, rgb[i][0], rgb[i][1], rgb[i][2], "" );
     }
     else {
-      color = gROOT->GetColor( 300+i );
-      color->SetRGB( r, g, b );
+      color = gROOT->GetColor( 301+i );
+      color->SetRGB( rgb[i][0], rgb[i][1], rgb[i][2] );
     }
   }
 
