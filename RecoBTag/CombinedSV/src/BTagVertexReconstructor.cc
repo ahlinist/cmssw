@@ -37,6 +37,12 @@ combsv::CombinedVertex BTagVertexReconstructor::buildVertexInfo (
     vertexData = combsv::CombinedVertex  ( vtx, wtrks, kin.get3Vector(),
                                     kin.getMass(), vtxfilter.checkV0(vtx) );
   }
+
+  /*
+  LogDebug("") << "BTagVertexReconstructor::buildVertexInfo: vtx has "
+               << vtx.originalTracks().size() << " tracks and cvtx has " << vertexData.bTagTracks().size() 
+               << " tracks.";
+               */
   return vertexData;
 }
 
@@ -49,6 +55,11 @@ combsv::CombinedVertex BTagVertexReconstructor::buildVertexInfo (
   reco::BKinematics kin( trks );
   combsv::CombinedVertex vertexData ( vtx, trks, kin.get3Vector(),
                                     kin.getMass(), vtxfilter.checkV0(vtx) );
+  /*
+  LogDebug("") << "BTagVertexReconstructor::buildVertexInfo: vtx has "
+               << vtx.tracksSize() << " ttracks and cvtx has " << vertexData.bTagTracks().size() 
+               << " tracks.";
+               */
   return vertexData;
 }
 
@@ -97,8 +108,12 @@ pair < reco::btag::Vertices::VertexType, vector< combsv::CombinedVertex > >
     type=reco::btag::Vertices::RecoVertex;
   } else {
     reco::Vertex vtx = pvtxbuilder.build ( etracks, vfilter, type ); 
-    ret.push_back( buildVertexInfo ( vtx, etracks,
-          reco::btag::Vertices::PseudoVertex, vfilter, pvtxbuilder.trackInfoBuilder() ) );
+    /* LogDebug("") << "BTagVertexReconstructor::vertices building from " << etracks.size() 
+                 << " tracks a vertex with " << vtx.tracksSize() << " tracks"; */
+    combsv::CombinedVertex cvtx = buildVertexInfo ( vtx, pvtxbuilder.lastTracks(), 
+          reco::btag::Vertices::PseudoVertex, vfilter, pvtxbuilder.trackInfoBuilder() );
+    // LogDebug("") << "We return " << cvtx.bTagTracks().size() << " tracks.";
+    ret.push_back( cvtx );
 
     // combsv::CombinedVertex cvtx ( vtx );
     // ret.push_back ( cvtx, etracks,  );

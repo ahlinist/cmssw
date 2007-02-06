@@ -60,13 +60,18 @@ reco::Vertex PseudoVertexBuilder::build(
     t=NoVertex;
     vtx= build ( t, trackColl );
   }
-  LogDebug ("") << "building " << name ( t );
+  LogDebug ("") << "building " << name ( t ) << " with " << vtx.tracksSize() << " tracks.";
   /*
   edm::LogError("PseudoVertexBuilder")
     << "there is sth wrong with the builder."
     << " Crashes on amilo. Zero mass on centurion";
     */
   return vtx;
+}
+
+const std::vector < combsv::CombinedTrack > &  PseudoVertexBuilder::lastTracks() const
+{
+  return tracks_;
 }
 
 reco::Vertex PseudoVertexBuilder::build( VertexType t,
@@ -81,8 +86,8 @@ reco::Vertex PseudoVertexBuilder::build( VertexType t,
   if (t == reco::btag::Vertices::PseudoVertex) 
     ipSigni2DCut = trackIpSignificanceMin2DMin_;
 
-  vector<combsv::CombinedTrack> filteredTrackColl = filterTracks ( trackColl, ipSigni2DCut );
-  int nTracks = filteredTrackColl.size();
+  tracks_ = filterTracks ( trackColl, ipSigni2DCut );
+  int nTracks = tracks_.size();
   edm::LogInfo ( "PseudoVertexBuilder" ) << nTracks << " tracks accepted for " 
     << reco::btag::Vertices::name( t ) << endl;
   if ( t == reco::btag::Vertices::PseudoVertex && nTracks < 2) {
@@ -95,8 +100,8 @@ reco::Vertex PseudoVertexBuilder::build( VertexType t,
   // now setup vertex
   BeamSpot s;
   vector< reco::TransientTrack > trks;
-  for ( vector< combsv::CombinedTrack >::const_iterator i=filteredTrackColl.begin(); 
-        i!=filteredTrackColl.end() ; ++i )
+  for ( vector< combsv::CombinedTrack >::const_iterator i=tracks_.begin(); 
+        i!=tracks_.end() ; ++i )
   {
     trks.push_back ( *i );
   }
