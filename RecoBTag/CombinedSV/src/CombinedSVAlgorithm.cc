@@ -193,8 +193,20 @@ reco::CombinedSVTagInfo combsv::CombinedSVAlgorithm::tag ( const reco::Vertex & 
   reco::btag::Vertices::VertexType vertexType = svtces.first;
   const vector < combsv::CombinedVertex > & vtces = svtces.second;
 
-  LogDebug("") << "we have " << vtces.size() << " vertices. VtxType: "
-               << reco::btag::Vertices::name ( vertexType );
+  if ( vertexType != reco::btag::Vertices::RecoVertex )
+  {
+    // the filter is different now, so redo the tracks
+    etracks=getSecondaryTracks ( vtces );
+    tracks.clear();
+    for ( vector< combsv::CombinedTrack >::const_iterator i=etracks.begin(); i!=etracks.end() ; ++i )
+    { 
+      tracks.push_back ( *i );
+    }
+  }
+
+  LogDebug("") << "we have " << vtces.size() << " vertices of type "
+               << reco::btag::Vertices::name ( vertexType ) << " and a total of "
+               << etracks.size() << " secondary tracks.";
 
   /* edm::LogError("CombinedSVAlgorithm" ) <<
     "createJetInfo different API. Compute both hard-assigned and soft-assigned energies!";
@@ -299,7 +311,7 @@ combsv::CombinedJet combsv::CombinedSVAlgorithm::createJetInfo (
   reco::BKinematics allTrackKinematics( alltracks );
 
   // get vector given by sum of all tracks in jet
-  GlobalVector pAll = allTrackKinematics.get3Vector();
+  // GlobalVector pAll = allTrackKinematics.get3Vector();
 
   // create instance of small helper class used to determine
   // kinematic properties based on a selection of tracks

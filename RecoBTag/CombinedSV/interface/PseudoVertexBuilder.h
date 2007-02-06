@@ -56,10 +56,14 @@ class PseudoVertexBuilder {
 
     const TrackFilter & trackFilter() const;
 
+    // get the vector of tracks that build the last pseudo vertex
+    const std::vector < combsv::CombinedTrack > & lastTracks() const; 
+
   private:
     double trackIpSignificanceMin2DMin_;
     TrackFilter filter_;
     TrackInfoBuilder * trackInfoBuilder_;
+    mutable std::vector < combsv::CombinedTrack > tracks_;
 };
 
 #endif
