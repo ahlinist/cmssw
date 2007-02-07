@@ -17,7 +17,7 @@
 #include "FWCore/Framework/interface/ConstProductRegistry.h"
 #include "DataFormats/Common/interface/BranchDescription.h"
 #include "DataFormats/Common/interface/ModuleDescription.h"
-#include "FWCore/Utilities/interface/ProblemTracker.h"
+#include "FWCore/PluginManager/interface/ProblemTracker.h"
 
 // namespace edm {
 //   class EDProduct;

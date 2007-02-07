@@ -21,7 +21,7 @@ $Id$
 #include "FWCore/Utilities/interface/Exception.h"
 #include "FWCore/Framework/test/stubs/TestBeginEndJobAnalyzer.h"
 
-#include "FWCore/Utilities/interface/ProblemTracker.h"
+#include "FWCore/PluginManager/interface/ProblemTracker.h"
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 
