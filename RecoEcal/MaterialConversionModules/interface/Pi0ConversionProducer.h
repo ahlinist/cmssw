@@ -10,7 +10,7 @@
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
-#include "RecoEcal/EgammaMaterialDetAlgos/Pi0ConversionAlgo.h"
+#include "RecoEcal/MaterialConversionTools/Pi0ConversionAlgo.h"
 
 //
 

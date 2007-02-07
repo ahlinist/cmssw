@@ -1,12 +1,75 @@
+
+// Package:         RecoEcal/ConversionMaterialTools
+// Class:           Pi0ConversionAlgo
+// 
+// Description:     Creates roads based on BasicClusters in ECAL
+//                  Selects hits in these roads 
+//                  Fits hits into tracks
+//                  Vertexes tracks together
+//
+// Original Author: Andrew Askew, askew@fnal.gov
+// Created:         Wed Feb 7 13:00:00 UTC 2006
+
+#include <cmath>
+
 #include <vector>
-#include <Pi0ConversionAlgo.h>
-#include <StubCandidate.h>
+#include "RecoEcal/MaterialConversionTools/interface/Pi0ConversionAlgo.h"
+#include "RecoEcal/MaterialConversionTools/interface/StubCandidate.h" 
+
+#include "DataFormats/EgammaReco/interface/BasicCluster.h"
+#include "DataFormats/TrackCandidate/interface/TrackCandidate.h"
+#include "DataFormats/Common/interface/OwnVector.h"
+ 
+#include "RecoTracker/TrackProducer/interface/TrackingRecHitLessFromGlobalPosition.h"
+ 
+#include "Geometry/CommonDetUnit/interface/TrackingGeometry.h"
+#include "Geometry/CommonDetUnit/interface/GeomDetUnit.h"
+#include "Geometry/TrackerGeometryBuilder/interface/TrackerGeometry.h"
+#include "Geometry/Records/interface/TrackerDigiGeometryRecord.h"
+ 
+#include "MagneticField/Engine/interface/MagneticField.h"
+#include "MagneticField/Records/interface/IdealMagneticFieldRecord.h" 
+ 
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
+#include "TrackingTools/GeomPropagators/interface/AnalyticalPropagator.h"
+#include "TrackingTools/TrajectoryState/interface/TrajectoryStateOnSurface.h"
+#include "TrackingTools/TrajectoryState/interface/TrajectoryStateTransform.h"
+#include "TrackingTools/TransientTrackingRecHit/interface/TransientTrackingRecHitBuilder.h" 
+#include "TrackingTools/Records/interface/TransientRecHitRecord.h" 
+
+#include "TrackingTools/PatternTools/interface/Trajectory.h"
+#include "TrackingTools/MaterialEffects/interface/PropagatorWithMaterial.h"
+#include "TrackingTools/KalmanUpdators/interface/KFUpdator.h"
+#include "TrackingTools/PatternTools/interface/TrajectoryStateUpdator.h"
+#include "TrackingTools/PatternTools/interface/MeasurementEstimator.h"
+#include "TrackingTools/KalmanUpdators/interface/Chi2MeasurementEstimatorBase.h"
+#include "TrackingTools/KalmanUpdators/interface/Chi2MeasurementEstimator.h"
+#include "TrackingTools/TransientTrackingRecHit/interface/TransientTrackingRecHitBuilder.h"
+#include "TrackingTools/PatternTools/interface/TrajectoryMeasurement.h"
+
+#include "TrackingTools/TrajectoryCleaning/interface/TrajectoryCleaner.h"
+#include "TrackingTools/TrajectoryCleaning/interface/TrajectoryCleanerBySharedHits.h"
+#include "RecoTracker/MeasurementDet/interface/MeasurementTracker.h"
+#include "RecoTracker/TkDetLayers/interface/GeometricSearchTracker.h"
+#include "RecoTracker/TkSeedGenerator/interface/FastHelix.h"
+#include "RecoTracker/RoadSearchSeedFinder/interface/RoadSearchSeedFinderAlgorithm.h"
+#include "TrackingTools/TrackFitters/interface/KFTrajectorySmoother.h"
+#include "RecoTracker/Record/interface/CkfComponentsRecord.h"
+#include "TrackingTools/TrajectoryState/interface/BasicSingleTrajectoryState.h"
+#include "TrackPropagation/SteppingHelixPropagator/interface/SteppingHelixPropagator.h"
+
 using namespace std::vector;
 using namespace std::cout;
 
 Pi0ConversionAlgo::Pi0ConversionAlgo(){
+}
 
-
+Pi0ConversionAlgo::Pi0ConversionAlgo(DebugLevel debugLevel)
+{
+  debugLevel_ = debugLevel;
+  if (debugLevel_ == 0)
+    debug_ = true;
+  else debug_ = false;
 
 }
 
@@ -14,9 +77,9 @@ Pi0ConversionAlgo::~Pi0ConversionAlgo(){
 }
 
 
-Pi0ConversionAlgo::GetConversionR(float phi1, float pt1, float phi2, float pt2)
+float Pi0ConversionAlgo::GetConversionR(float phi1, float pt1, float phi2, float pt2) 
 {
-  float ConversionR=-1;
+  float ConversionR=-1; 
   float CONSTFORCURVE = 1e9 / 299792458.; //Need a constant to put everything into measurement units.
   float MAGFIELD = 4.;//In Tesla
   float RadiusOfECAL = 120.;//in cm.
@@ -34,7 +97,7 @@ Pi0ConversionAlgo::GetConversionR(float phi1, float pt1, float phi2, float pt2)
   return ConversionR;
 }
 
-Pi0ConversionAlgo::GetConversionPhi(float phi1, float pt1, float phi2, float pt2)
+float Pi0ConversionAlgo::GetConversionPhi(float phi1, float pt1, float phi2, float pt2)
 {
   float ConversionR=-1;
   float CONSTFORCURVE = 1e9 / 299792458.; //Need a constant to put everything into measurement units.
@@ -236,13 +299,15 @@ std::vector <TrackingRecHit*> Pi0ConversionAlgo::GetStubHits(BasicCluster ele1, 
 }
 
 
-Reco::Track Pi0ConversionAlgo::FitTrack( vector <TrackingRecHit> Stub, MeasurementTracker *theMeasurementTracker, TransientTrackingRecHitBuilder *ttrhBuilder,
-					 const MagneticField *magField)
+TrackCollection Pi0ConversionAlgo::FitTrack( vector <TrackingRecHit> Stub, 
+						      MeasurementTracker *theMeasurementTracker, 
+						      TransientTrackingRecHitBuilder *ttrhBuilder,
+						      const MagneticField *magField)
 {
   //Around 900 lines of code regarding the fitting of the candidate hits into a track.  That is
   //of course, presuming that we've GOT the right hits.
   
- 
+  TrackCandidateCollection output;
   // Create the trajectory cleaner 
   TrajectoryCleanerBySharedHits theTrajectoryCleaner;
   vector<Trajectory> FinalTrajectories;
@@ -898,189 +963,224 @@ Reco::Track Pi0ConversionAlgo::FitTrack( vector <TrackingRecHit> Stub, Measureme
 	      TransientTrackingRecHit::ConstRecHitPointer rh = im->recHit();
 	      if (rh->isValid() && 
 		  theMeasurementTracker->geometricSearchTracker()->detLayer(rh->geographicalId()) == layers[ilayer]) {
-803                 if (debug_) std::cout<<" has a good hit " << std::endl;
-804                 ++im;
-805 
-806                 const GeomDet* det = geom->idToDet(rh->geographicalId());
-807             
-808                 if (newTrajectory.measurements().empty())
-809                   if (debug_) std::cout<<"How the heck does this have no measurements!!!" <<std::endl;
-810 
-811 
-812                 currTsos = newTrajectory.measurements().back().updatedState();
-813                 predTsos = thePropagator->propagate(currTsos, det->surface());
-814                 if (!predTsos.isValid()) continue;
-815                 MeasurementEstimator::HitReturnType est = theEstimator->estimate(predTsos, *rh);
-816                 if (!est.first) {
-817                   if (debug_) std::cout<<"Failed to add one of the original hits on a low occupancy layer!!!!" << std::endl;
-818                   continue;
-819                 }
-820                 currTsos = theUpdator->update(predTsos, *rh);
-821                 tm = TrajectoryMeasurement(predTsos, currTsos, &(*rh),est.second,layers[ilayer]);
-822                 newTrajectory.push(tm,est.second);
-823 
-824               }
-825               else {
-826                 if (debug_) std::cout<<" has no hit" << std::endl;
-827               }
-828             }       
-829           }
-830 
-831           if (debug_) std::cout<<"Finished loop over layers in cloud.  Trajectory now has " <<newTrajectory.measurements().size()
-832                    << " hits. " << std::endl;
-833           // DO WE NEED TO SMOOTH THIS TRAJECTORY?
-834           //newSmoothed = theSmoother.trajectories(newTrajectory);
-835           //if (newSmoothed.empty()){
-836           //  std::cout<< " Smoothing of new trajectory has failed. " <<std::endl;
-837           // }
-838           //std::cout<< " Smoothing has succeeded. " <<std::endl;
-839           if (newTrajectory.measurements().size() >= theNumHitCut)
-840             extendedChunks.insert(extendedChunks.end(), newTrajectory);
-841         }
-842       }
-843       if (debug_) std::cout<< "Extended chunks: " << extendedChunks.size() << endl;
-844       //if (!extendedChunks.empty()) {
-845       //  smoothedResult.insert(smoothedResult.end(), extendedChunks.begin(), extendedChunks.end());
-846       //  break;
-847       //}
-848       if (debug_) std::cout<< "Now Clean the extended chunks " <<std::endl;
-849       theTrajectoryCleaner.clean(extendedChunks);
-850       for (vector<Trajectory>::const_iterator it = extendedChunks.begin();
-851            it != extendedChunks.end(); it++) {
-852         if (it->isValid()) CloudTrajectories.push_back(*it);
-853       }
-854     }
-855 
-856 // ********************* END NEW ADDITION
-857 
-858     if (debug_) std::cout<< "Finished with the cloud, so clean the " 
-859              << CloudTrajectories.size() << " cloud trajectories "<<std::endl ;
-860     theTrajectoryCleaner.clean(CloudTrajectories);
-861     for (vector<Trajectory>::const_iterator it = CloudTrajectories.begin();
-862          it != CloudTrajectories.end(); it++) {
-863       if (it->isValid()) FinalTrajectories.push_back(*it);
-864     }
-865 
-866     if (debug_) std::cout<<" Final trajectories now has size " << FinalTrajectories.size()<<std::endl ;
-867 
-868   } // End loop over Cloud Collection
-869 
-870   if (debug_) std::cout<< " Finished loop over all clouds " <<std::endl;
-871     theTrajectoryCleaner.clean(FinalTrajectories);
-872     for (vector<Trajectory>::const_iterator it = FinalTrajectories.begin();
-873          it != FinalTrajectories.end(); it++) {
-874       if (debug_) std::cout<< " Trajectory has "<<it->recHits().size()<<" hits with chi2="
-875                              <<it->chiSquared()<<" and is valid? "<<it->isValid()<<std::endl;
-876       if (it->isValid()){
-877 
-878         edm::OwnVector<TrackingRecHit> goodHits;
-879         //edm::OwnVector<const TransientTrackingRecHit> ttHits = it->recHits(); 
-880         //for (edm::OwnVector<const TransientTrackingRecHit>::const_iterator rhit=ttHits.begin(); 
-881         TransientTrackingRecHit::ConstRecHitContainer ttHits = it->recHits();           
-882         for (TransientTrackingRecHit::ConstRecHitContainer::const_iterator rhit=ttHits.begin(); 
-883              rhit!=ttHits.end(); ++rhit){
-884           goodHits.push_back((*rhit)->hit()->clone());
-885         }
-886 
-887         if (debug_) std::cout<<" Trajectory has " << goodHits.size() << " good hits "<<std::endl;
-888         // clone 
-889         //TrajectorySeed seed = *((*ref).clone());
-890         PTrajectoryStateOnDet state = it->seed().startingState();
-891         TrajectoryStateOnSurface firstState;
-892 
-893         // check if Trajectory from seed is on first hit of the cloud, if not, propagate
-894         // exclude if first state on first hit is not valid
-895       
-896         DetId FirstHitId = (*(it->recHits().begin()))->geographicalId();
-897         if (debug_) std::cout<< " FirstHitId is null ? "<< FirstHitId.null()<<std::endl;
-898 
-899         // propagate back to first hit
-900 
-901         TrajectoryMeasurement firstMeasurement = it->measurements()[0];
-902         ////if (it->recHits().begin()->geographicalId().rawId() != state.detId()) {
-903         const GeomDet* det = geom->idToDet(FirstHitId);
-904           // const GeomDet* detState = geom->idToDet(DetId(state.detId())  );
-905           
-906           //TrajectoryStateOnSurface before(transformer.transientState(state,  &(detState->surface()), magField));
-907           // firstState = prop.propagate(before, det->surface());
-908         firstState = prop.propagate(firstMeasurement.updatedState(), det->surface());
-909           
-910           if (firstState.isValid() == false) continue;
-911 
-912           state = *(transformer.persistentState(firstState,FirstHitId.rawId()));
-913 
-914           //std::cout<<"This track candidate has " << goodHits.size() << " hits "<<std::endl ;
-915 
-916         output.push_back(TrackCandidate(goodHits,it->seed(),state));
-917       }
-918     }
-919 
-920 
-921     if (debug_) std::cout<< "Found " << output.size() << " track candidates."<<std::endl;
-922 
-923 }
-924
-RoadSearchTrackCandidateMakerAlgorithm::FindBestHit(const TrajectoryStateOnSurface& tsosBefore,
-998                                                     const std::set<const GeomDet*>& theDets,
-999                                                     edm::OwnVector<TrackingRecHit>& theHits)
-1000 {
-1001 
-1002   std::vector<TrajectoryMeasurement> theBestHits;
-1003 
-1004   bool found_one = false;
-1005   double bestchi = 10000.0;
-1006   // extrapolate to all detectors from the list
-1007   map<const GeomDet*, TrajectoryStateOnSurface> dmmap;
-1008   for (set<const GeomDet*>::iterator idet = theDets.begin();
-1009        idet != theDets.end(); ++idet) {
-1010     TrajectoryStateOnSurface predTsos = thePropagator->propagate(tsosBefore, (**idet).surface());
-1011     if (predTsos.isValid()) {
-1012       dmmap.insert(make_pair(*idet, predTsos));
-1013     }
-1014   }
-1015   // evaluate hit residuals
-1016   map<const GeomDet*, TrajectoryMeasurement> dtmmap;
-1017   for (edm::OwnVector<TrackingRecHit>::const_iterator ih = theHits.begin();
-1018        ih != theHits.end(); ++ih) {
-1019     const GeomDet* det = geom->idToDet(ih->geographicalId());
-1020     //if (*isl != theMeasurementTracker->geometricSearchTracker()->detLayer(ih->geographicalId())) 
-1021     //  cout <<" You don't know what you're doing !!!!" << endl;
-1022     
-1023     map<const GeomDet*, TrajectoryStateOnSurface>::iterator idm = dmmap.find(det);
-1024     if (idm == dmmap.end()) continue;
-1025     TrajectoryStateOnSurface predTsos = idm->second;
-1026     TransientTrackingRecHit::RecHitPointer rhit = ttrhBuilder->build(&(*ih));
-1027     MeasurementEstimator::HitReturnType est = theEstimator->estimate(predTsos, *rhit);
-1028     //std::cout<< "hit " << ih-theHits.begin() 
-1029     //     << ": est = " << est.first << " " << est.second  <<std::endl;
-1030     
-1031     
-1032     // Take the best hit on any Det
-1033     if (est.first) {
-1034       TrajectoryStateOnSurface currTsos = theUpdator->update(predTsos, *rhit);
-1035       found_one = true;
-1036       if (est.second < bestchi){
-1037         if(!theBestHits.empty()){
-1038           theBestHits.erase(theBestHits.begin());
-1039         }
-1040         bestchi = est.second;
-1041         TrajectoryMeasurement tm(predTsos, currTsos, &(*rhit),est.second,
-1042                                  theMeasurementTracker->geometricSearchTracker()->detLayer(ih->geographicalId()));      
-1043         theBestHits.push_back(tm);
-1044       }
-1045     }
-1046   }
-1047 
-1048   if (theBestHits.empty()){
-1049     if (debug_) std::cout<< "no hits to add! " <<std::endl;
-1050   }
-1051   else{
-1052     for (std::vector<TrajectoryMeasurement>::const_iterator im=theBestHits.begin();im!=theBestHits.end();++im)
-1053       if (debug_) std::cout<<" Measurement on layer "
-1054                           << theMeasurementTracker->geometricSearchTracker()->detLayer(im->recHit()->geographicalId())
-1055                           << " with estimate " << im->estimate()<<std::endl ;
-1056   }
-1057   //std::cout<<" Measurement returned with estimate "<< theBestHit.estimate() << std::endl ;
-1058   
-1059   return theBestHits;
-1060
+		if (debug_) std::cout<<" has a good hit " << std::endl;
+		++im;
+		
+		const GeomDet* det = geom->idToDet(rh->geographicalId());
+		
+		if (newTrajectory.measurements().empty())
+		  if (debug_) std::cout<<"How the heck does this have no measurements!!!" <<std::endl;
+		
+		
+		currTsos = newTrajectory.measurements().back().updatedState();
+		predTsos = thePropagator->propagate(currTsos, det->surface());
+		if (!predTsos.isValid()) continue;
+		MeasurementEstimator::HitReturnType est = theEstimator->estimate(predTsos, *rh);
+		if (!est.first) {
+		  if (debug_) std::cout<<"Failed to add one of the original hits on a low occupancy layer!!!!" << std::endl;
+		  continue;
+		}
+		currTsos = theUpdator->update(predTsos, *rh);
+		tm = TrajectoryMeasurement(predTsos, currTsos, &(*rh),est.second,layers[ilayer]);
+		newTrajectory.push(tm,est.second);		
+	      }
+	      else {
+		if (debug_) std::cout<<" has no hit" << std::endl;
+	      }
+	    }       
+	  }//ilayer loop!  At last!
+	  
+	  if (debug_) std::cout<<"Finished loop over layers in cloud.  Trajectory now has " <<newTrajectory.measurements().size()
+			       << " hits. " << std::endl;
+	  // DO WE NEED TO SMOOTH THIS TRAJECTORY?
+	  //newSmoothed = theSmoother.trajectories(newTrajectory);
+          //if (newSmoothed.empty()){
+	  //  std::cout<< " Smoothing of new trajectory has failed. " <<std::endl;
+	  // }
+	  //std::cout<< " Smoothing has succeeded. " <<std::endl;
+	  if (newTrajectory.measurements().size() >= theNumHitCut)
+	    extendedChunks.insert(extendedChunks.end(), newTrajectory);
+	}
+      }
+      if (debug_) std::cout<< "Extended chunks: " << extendedChunks.size() << endl;
+      //if (!extendedChunks.empty()) {
+      //  smoothedResult.insert(smoothedResult.end(), extendedChunks.begin(), extendedChunks.end());
+      //  break;
+      //}
+      if (debug_) std::cout<< "Now Clean the extended chunks " <<std::endl;
+      theTrajectoryCleaner.clean(extendedChunks);
+      for (vector<Trajectory>::const_iterator it = extendedChunks.begin();
+	   it != extendedChunks.end(); it++) {
+	if (it->isValid()) CloudTrajectories.push_back(*it);
+      }
+    }
+    
+    // ********************* END NEW ADDITION
+    
+    if (debug_) std::cout<< "Finished with the cloud, so clean the " 
+			 << CloudTrajectories.size() << " cloud trajectories "<<std::endl ;
+    theTrajectoryCleaner.clean(CloudTrajectories);
+    for (vector<Trajectory>::const_iterator it = CloudTrajectories.begin();
+	 it != CloudTrajectories.end(); it++) {
+      if (it->isValid()) FinalTrajectories.push_back(*it);
+    }
+    
+    if (debug_) std::cout<<" Final trajectories now has size " << FinalTrajectories.size()<<std::endl ;
+    
+  } // End loop over Cloud Collection
+  
+  if (debug_) std::cout<< " Finished loop over all clouds " <<std::endl;
+  theTrajectoryCleaner.clean(FinalTrajectories);
+  for (vector<Trajectory>::const_iterator it = FinalTrajectories.begin();
+       it != FinalTrajectories.end(); it++) {
+    if (debug_) std::cout<< " Trajectory has "<<it->recHits().size()<<" hits with chi2="
+			 <<it->chiSquared()<<" and is valid? "<<it->isValid()<<std::endl;
+    if (it->isValid()){
+      
+      edm::OwnVector<TrackingRecHit> goodHits;
+      //edm::OwnVector<const TransientTrackingRecHit> ttHits = it->recHits(); 
+      //for (edm::OwnVector<const TransientTrackingRecHit>::const_iterator rhit=ttHits.begin(); 
+      TransientTrackingRecHit::ConstRecHitContainer ttHits = it->recHits();           
+      for (TransientTrackingRecHit::ConstRecHitContainer::const_iterator rhit=ttHits.begin(); 
+	   rhit!=ttHits.end(); ++rhit){
+	goodHits.push_back((*rhit)->hit()->clone());
+      }
+      
+      if (debug_) std::cout<<" Trajectory has " << goodHits.size() << " good hits "<<std::endl;
+      // clone 
+      //TrajectorySeed seed = *((*ref).clone());
+      PTrajectoryStateOnDet state = it->seed().startingState();
+      TrajectoryStateOnSurface firstState;
+      
+      // check if Trajectory from seed is on first hit of the cloud, if not, propagate
+      // exclude if first state on first hit is not valid
+      
+      DetId FirstHitId = (*(it->recHits().begin()))->geographicalId();
+      if (debug_) std::cout<< " FirstHitId is null ? "<< FirstHitId.null()<<std::endl;
+      
+      // propagate back to first hit
+      
+      TrajectoryMeasurement firstMeasurement = it->measurements()[0];
+      ////if (it->recHits().begin()->geographicalId().rawId() != state.detId()) {
+      const GeomDet* det = geom->idToDet(FirstHitId);
+      firstState = prop.propagate(firstMeasurement.updatedState(), det->surface());
+      
+      if (firstState.isValid() == false) continue;
+      
+      state = *(transformer.persistentState(firstState,FirstHitId.rawId()));
+      
+      //std::cout<<"This track candidate has " << goodHits.size() << " hits "<<std::endl ;
+      
+      output.push_back(TrackCandidate(goodHits,it->seed(),state));
+    }
+  }
+  
+  if (debug_) std::cout<< "Found " << output.size() << " track candidates."<<std::endl;  
+  //Try to make actual tracks:
+  //variable declarations
+  std::vector<reco::Track> trackvec; 
+  std::vector<Trajectory> trajVec;
+  reco::Track * theTrack;
+  Trajectory * theTraj; 
+  KFTrajectoryFitter *theFitter = new KFTrajectoryFitter(thePropagator, theUpdator, theEstimator);
+  //perform the fit: the result's size is 1 if it succeded, 0 if fails
+  for (int ji=0;ji<output.size();ji++){
+    
+    trajVec = theFitter->fit(output[ji].seed(), output[ji].rechits());
+    
+    TrajectoryStateOnSurface innertsos;
+    if (trajVec.size() != 0){
+      
+      theTraj = new Trajectory( trajVec.front() );
+      
+      if (theTraj->direction() == alongMomentum) {
+	innertsos = theTraj->firstMeasurement().updatedState();
+      } else { 
+	innertsos = theTraj->lastMeasurement().updatedState();
+      }
+      
+      
+      TSCPBuilderNoMaterial tscpBuilder;
+      //I'm a bit worried about this one...      
+      TrajectoryStateClosestToPoint tscp = tscpBuilder(*(innertsos.freeState()),
+						       GlobalPoint(0,0,0) );//FIXME Correct?
+      
+      PerigeeTrajectoryParameters::ParameterVector param = tscp.perigeeParameters();
+  
+      PerigeeTrajectoryError::CovarianceMatrix covar = tscp.perigeeError();
+      
+      theTrack = new reco::Track(theTraj->chiSquared(),
+				 int(ndof),//FIXME fix weight() in TrackingRecHit
+				 param,tscp.pt(),
+				 covar);
+      trackvec.push_back(*theTrack);
+    }
+  }//loop over candidates
+  return trackvec;
+}
+
+std::vector<TrajectoryMeasurement> Pi0ConversionAlgo::FindBestHit(const TrajectoryStateOnSurface& tsosBefore,
+								  const std::set<const GeomDet*>& theDets,
+								  edm::OwnVector<TrackingRecHit>& theHits)
+{
+  
+  std::vector<TrajectoryMeasurement> theBestHits;
+  
+  bool found_one = false;
+  double bestchi = 10000.0;
+  // extrapolate to all detectors from the list
+  map<const GeomDet*, TrajectoryStateOnSurface> dmmap;
+  for (set<const GeomDet*>::iterator idet = theDets.begin();
+       idet != theDets.end(); ++idet) {
+    TrajectoryStateOnSurface predTsos = thePropagator->propagate(tsosBefore, (**idet).surface());
+    if (predTsos.isValid()) {
+      dmmap.insert(make_pair(*idet, predTsos));
+    }
+  }
+  // evaluate hit residuals
+  map<const GeomDet*, TrajectoryMeasurement> dtmmap;
+  for (edm::OwnVector<TrackingRecHit>::const_iterator ih = theHits.begin();
+       ih != theHits.end(); ++ih) {
+    const GeomDet* det = geom->idToDet(ih->geographicalId());
+    //if (*isl != theMeasurementTracker->geometricSearchTracker()->detLayer(ih->geographicalId())) 
+    //  cout <<" You don't know what you're doing !!!!" << endl;
+    
+    map<const GeomDet*, TrajectoryStateOnSurface>::iterator idm = dmmap.find(det);
+    if (idm == dmmap.end()) continue;
+    TrajectoryStateOnSurface predTsos = idm->second;
+    TransientTrackingRecHit::RecHitPointer rhit = ttrhBuilder->build(&(*ih));
+    MeasurementEstimator::HitReturnType est = theEstimator->estimate(predTsos, *rhit);
+    //std::cout<< "hit " << ih-theHits.begin() 
+    //     << ": est = " << est.first << " " << est.second  <<std::endl;
+    
+    // Take the best hit on any Det
+    if (est.first) {
+      TrajectoryStateOnSurface currTsos = theUpdator->update(predTsos, *rhit);
+      found_one = true;
+      if (est.second < bestchi){
+	if(!theBestHits.empty()){
+	  theBestHits.erase(theBestHits.begin());
+	}
+	bestchi = est.second;
+	TrajectoryMeasurement tm(predTsos, currTsos, &(*rhit),est.second,
+				 theMeasurementTracker->geometricSearchTracker()->detLayer(ih->geographicalId()));      
+	theBestHits.push_back(tm);
+      }
+    }
+  }
+  
+  if (theBestHits.empty()){
+    if (debug_) std::cout<< "no hits to add! " <<std::endl;
+  }
+  else{
+    for (std::vector<TrajectoryMeasurement>::const_iterator im=theBestHits.begin();im!=theBestHits.end();++im)
+      if (debug_) std::cout<<" Measurement on layer "
+			   << theMeasurementTracker->geometricSearchTracker()->detLayer(im->recHit()->geographicalId())
+                           << " with estimate " << im->estimate()<<std::endl ;
+  }
+  //std::cout<<" Measurement returned with estimate "<< theBestHit.estimate() << std::endl ;
+  
+  return theBestHits;
+}
+
+

@@ -7,8 +7,20 @@
 //
 
 #include <vector>
-#include <Pi0ConversionProducer.h>
-#include <Pi0ConversionAlgo.h>
+#include "RecoEcal/MaterialConversionModules/interface/Pi0ConversionProducer.h"
+#include "RecoEcal/MaterialConversionTools/interface/Pi0ConversionAlgo.h"
+
+#include "FWCore/Framework/interface/Handle.h"
+#include "FWCore/Framework/interface/ESHandle.h"
+#include "FWCore/Framework/interface/EventSetup.h"
+#include "Geometry/CommonDetUnit/interface/TrackingGeometry.h"
+#include "Geometry/CommonDetUnit/interface/GeomDetUnit.h"
+#include "Geometry/TrackerGeometryBuilder/interface/TrackerGeometry.h"
+#include "Geometry/Records/interface/TrackerDigiGeometryRecord.h"
+ 
+#include "MagneticField/Engine/interface/MagneticField.h"
+#include "MagneticField/Records/interface/IdealMagneticFieldRecord.h" 
+#include "TrackingTools/TransientTrackingRecHit/interface/TransientTrackingRecHitBuilder.h" 
 
 Pi0ConversionProducer::Pi0ConversionProducer(const edm::ParameterSet& ps)
 {
@@ -197,18 +209,23 @@ void Pi0ConversionProducer::produce(edm::Event& evt, const edm::EventSetup& es)
 	    theMeasurementTracker->update(evt);
 
 	    //Fit Tracks, found similar code to what was used before in RoadSearchTrackCandidateMakerAlgo
-	    pi0conv_p->FitTrack(Stub1, tracker, theMeasurementTracker, ttrhBuilder, magField);
-	    pi0conv_p->FitTrack(Stub2);
+	    reco::TrackCollection trkCan1 = pi0conv_p->FitTrack(Stub1, tracker, theMeasurementTracker, ttrhBuilder, magField);
+	    reco::TrackCollection trkCan2 = pi0conv_p->FitTrack(Stub2, tracker, theMeasurementTracker, ttrhBuilder, magField);
+	    
 	    //if applicable, fit vertex
 	    
 	    
-	    pi0conv_p->FitVertex(Track1, Track2);
+	    Vertex vert = pi0conv_p->FitVertex(Track1, Track2);
 	    //ALWAYS APPLICABLE, if kinematically possible, put DataFormat object in event with relevant info.
-	    
-	    
+	    //dataformat object goes here.
 
-
-
+	
+	  }//valid conversion radius
+	}//loop3
+      }//Loop2
+    }//Loop1
+  }//BasicClusters > 2?
+  
 }
 
 
