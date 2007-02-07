@@ -14,6 +14,7 @@ $Id$
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 #include "boost/signal.hpp"
+#include "SealBase/Error.h"
 
 namespace edm
 {

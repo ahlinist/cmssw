@@ -23,6 +23,8 @@ $Id$
 #include "FWCore/Framework/interface/GenericHandle.h"
 #include <cppunit/extensions/HelperMacros.h>
 
+#include "SealBase/Error.h"
+
 class testGenericHandle: public CppUnit::TestFixture {
 CPPUNIT_TEST_SUITE(testGenericHandle);
 CPPUNIT_TEST(failgetbyLabelTest);

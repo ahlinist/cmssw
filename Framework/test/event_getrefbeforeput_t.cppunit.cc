@@ -32,6 +32,7 @@ $Id$
 #include "FWCore/Framework/interface/Event.h"
 #undef private
 
+#include "SealBase/Error.h"
 #include <cppunit/extensions/HelperMacros.h>
 
 class testEventGetRefBeforePut: public CppUnit::TestFixture {
