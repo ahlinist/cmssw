@@ -21,10 +21,10 @@
 #include "FWCore/RootAutoLibraryLoader/interface/RootAutoLibraryLoader.h"
 #include "FWCore/RootAutoLibraryLoader/src/stdNamespaceAdder.h"
 
-#include "PluginManager/PluginManager.h"
-#include "PluginManager/ModuleCache.h"
-#include "PluginManager/Module.h"
-#include "PluginManager/PluginCapabilities.h"
+#include "FWCore/PluginManager/interface/PluginManager.h"
+#include "FWCore/PluginManager/interface/ModuleCache.h"
+#include "FWCore/PluginManager/interface/Module.h"
+#include "FWCore/PluginManager/interface/PluginCapabilities.h"
 
 #include "Reflex/Type.h"
 #include "Cintex/Cintex.h"

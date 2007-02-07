@@ -15,7 +15,7 @@
 // system include files
 #include <cppunit/extensions/HelperMacros.h>
 // user include files
-#include "PluginManager/PluginManager.h"
+#include "FWCore/PluginManager/interface/PluginManager.h"
 #include "FWCore/Utilities/interface/GetPassID.h"
 #include "FWCore/Utilities/interface/GetReleaseVersion.h"
 #include "FWCore/Framework/interface/SourceFactory.h"

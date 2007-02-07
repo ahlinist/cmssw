@@ -20,7 +20,7 @@
 //
 
 // system include files
-#include "PluginManager/PluginFactory.h"
+#include "FWCore/PluginManager/interface/PluginFactory.h"
 
 // user include files
 
