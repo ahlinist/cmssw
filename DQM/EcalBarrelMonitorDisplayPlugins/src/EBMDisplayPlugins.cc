@@ -1,11 +1,11 @@
-// $Id: EBMDisplayPlugins.cc,v 1.10 2007/02/02 08:19:09 benigno Exp $
+// $Id: EBMDisplayPlugins.cc,v 1.11 2007/02/06 18:19:48 dellaric Exp $
 
 /*!
   \file EBMDisplayPlugins
   \brief Display Plugin for Quality Histograms (2D)
   \author B. Gobbo 
-  \version $Revision: 1.10 $
-  \date $Date: 2007/02/02 08:19:09 $
+  \version $Revision: 1.11 $
+  \date $Date: 2007/02/06 18:19:48 $
 */
 
 #include "DQM/EcalBarrelMonitorDisplayPlugins/interface/EBMDisplayPlugins.h"
@@ -57,7 +57,7 @@ EBMDisplayPlugins::EBMDisplayPlugins( IgState *state ) : VisDQMDisplayPlugin( st
   name = "";
 
   float rgb[6][3] = {{1.00, 0.00, 0.00}, {0.00, 1.00, 0.00}, {1.00, 0.96, 0.00},
-                     {0.50, 0.00, 0.00}, {0.00, 0.40, 0.00}, {0.75, 0.63, 0.00}};
+                     {0.50, 0.00, 0.20}, {0.00, 0.50, 0.40}, {0.94, 0.78, 0.00}};
   
   for( int i=0; i<6; i++ ) {
     TColor* color;
