@@ -9,7 +9,9 @@ namespace {
     for ( vector< combsv::CombinedTrack >::const_iterator t=tracks.begin(); 
           t!=tracks.end() ; ++t )
     {
-      coll.push_back(reco::TaggingVariable( reco::btag::trackSip2d, t->ip2D().significance() ) );
+      float sip2d=t->ip2D().significance();
+      // sip2d=copysign ( sip2d, t->ip3D().significance() );
+      coll.push_back(reco::TaggingVariable( reco::btag::trackSip2d, sip2d) );
     }
   }
 

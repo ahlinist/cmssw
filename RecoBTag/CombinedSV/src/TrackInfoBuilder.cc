@@ -1,7 +1,8 @@
 #include "RecoBTag/CombinedSV/interface/TrackInfoBuilder.h"
 #include "RecoBTag/BTagTools/interface/SignedTransverseImpactParameter.h"
 #include "RecoBTag/BTagTools/interface/SignedImpactParameter3D.h"
-#include "MagneticField/Engine/interface/MagneticField.h"                                                       
+#include "MagneticField/Engine/interface/MagneticField.h"
+#include "RecoVertex/VertexTools/interface/BeamSpot.h"
 #include "RecoBTag/CombinedSV/interface/ParticleMasses.h"
 #include "CLHEP/Vector/LorentzVector.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -22,7 +23,7 @@ double TrackInfoBuilder::computeTrackRapidity( const reco::TransientTrack & trac
         track.impactPointState().globalMomentum().z());
 
     double pLong   = (pAll * track3Vector) / pAll.mag() ;  // long. comp. of track along jet
-    double energy  = sqrt ( track3Vector.mag2() + 
+    double energy  = sqrt ( track3Vector.mag2() +
                             combsv::ParticleMasses::piPlus() * combsv::ParticleMasses::piPlus() );
 
     if ( (energy+pLong) > num::min() && (energy-pLong) > num::min() )
@@ -48,11 +49,17 @@ combsv::CombinedTrack TrackInfoBuilder::build( const reco::TransientTrack & tt )
   // compute lifetime-signed transverse impact parameter w.r.t. primary vertex
   // CHECK: error seems to be always zero
 
-  pair<bool,Measurement1D> ipReturnValue  = 
+  pair<bool,Measurement1D> ipReturnValue  =
     ip2DCalculator.apply(tt,jetdir_, pv_ );
 
+  float sgn = float ( d0Sign ( tt ) );
   Measurement1D ip2d;
-  if (ipReturnValue.first) { ip2d=ipReturnValue.second; }
+  if (ipReturnValue.first)
+  {
+    float value= copysign ( ipReturnValue.second.value(), sgn );
+    float error=ipReturnValue.second.error();
+    ip2d=Measurement1D ( value, error );
+  }
 
   // compute lifetime-signed 3D impact parameter w.r.t primary Vertex
   // -> needed for jetDistance cut
@@ -62,15 +69,19 @@ combsv::CombinedTrack TrackInfoBuilder::build( const reco::TransientTrack & tt )
 
   Measurement1D ip3d;
   if (ipReturnValue.first) { ip3d=ipReturnValue.second; }
+  /* LogDebug("") << "Computing signed impact point in 2d: jetdir="
+               << jetdir_ << ", pv=" << pv_.position()
+               << " significance=" << ip2d.significance()
+               << " sgn=" << sgn 
+               << " 3ds=" << ip3d.significance();*/
 
   double rapidity = computeTrackRapidity  ( tt, jetdir_ );
 
-  /* d0Sign(tt, jetdir_), */
   combsv::CombinedTrack trackData ( tt, jetDistance, ip2d, ip3d, rapidity );
   return trackData;
 }
 
-vector < combsv::CombinedTrack > TrackInfoBuilder::build ( 
+vector < combsv::CombinedTrack > TrackInfoBuilder::build (
     const vector < reco::TransientTrack > & trks ) const
 {
   vector < combsv::CombinedTrack > ret;
@@ -82,40 +93,20 @@ vector < combsv::CombinedTrack > TrackInfoBuilder::build (
 }
 
 
-double TrackInfoBuilder::d0Sign( const reco::TransientTrack & track,
-    const GlobalVector & jetdirection ) const
+signed TrackInfoBuilder::d0Sign( const reco::TransientTrack & track ) const
 {
-  edm::LogWarning("TrackInfoBuilder") << "d0Sign not computed";
-  return -1.;
-  /** compute signed d0 of track w.r.t. jet axis?
-   */
-  // double d0 = track.d0();  // 2D impact parameter, no life-time sign
-                              // computed w.r.t beamline
-  /*
-  double d0 = 0.;
-
-  // get position of point-of-closest-approach to beamline
-  math::XYZPoint trackPCA = track.vertex();
-
-  // get beamline as origin
-  math::XYZPoint beamline(0,0,0); // use geometric origin for now->to be changed
-
-  // define vector connecting origin->PCA
-  Hep3Vector vPCA (trackPCA.X() - beamline.X(),
-                   trackPCA.Y() - beamline.Y(),
-                   trackPCA.Z() - beamline.Z());
-
-  Hep3Vector dir ( jetdirection.x(), jetdirection.y(), jetdirection.z() );
-
-  double angle = dir.angle(vPCA);
-
-  // determine sign for impact parameter
+  // EXPERIMENTAL
   int sign = +1;
-  if (angle > M_PI) sign = -1;
-
-  double returnValue = sign*d0;
-
-  return returnValue;
-   */
+  GlobalPoint trackPCA = track.impactPointState().freeState()->position();
+  CLHEP::Hep3Vector dir ( jetdir_.x(), jetdir_.y(), jetdir_.z() );
+  BeamSpot spot;
+  CLHEP::Hep3Vector vPCA ( trackPCA.x() - spot.position().x(),
+                           trackPCA.y() - spot.position().y(),
+                           trackPCA.z() - spot.position().z() );
+  double angle = dir.angle(vPCA);
+  /* cout << "[TrackInfoBuilder] trk id=" << track.id() << " angle between " 
+       << dir << " and " << vPCA << " = " << angle << endl; */
+  if (angle > M_PI / 2. ) sign = -1;
+  return sign;
 }
 

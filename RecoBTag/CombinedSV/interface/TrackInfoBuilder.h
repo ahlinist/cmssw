@@ -33,8 +33,7 @@ class TrackInfoBuilder {
         const std::vector < reco::TransientTrack > & ) const;
 
   private:
-    double d0Sign( const reco::TransientTrack & , 
-                   const GlobalVector & jetdirection ) const;
+    signed d0Sign( const reco::TransientTrack & ) const;
 
     /**
      * determine rapidity of a track w.r.t. a given direction

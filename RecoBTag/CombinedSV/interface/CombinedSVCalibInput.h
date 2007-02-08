@@ -29,7 +29,7 @@ namespace combsv {
       reco::btag::TaggingVariableName taggingVar() const;
       double jetPt() const;
       double jetEta() const;
-      void print() const;
+      void printMe() const;
       std::string describe() const;
 
     private:
