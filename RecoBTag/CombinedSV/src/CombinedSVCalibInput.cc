@@ -15,7 +15,7 @@ combsv::CombinedSVCalibInput::CombinedSVCalibInput(
 {
 }
 
-void combsv::CombinedSVCalibInput::print() const
+void combsv::CombinedSVCalibInput::printMe() const
 {
   cout << describe() << endl;
 }

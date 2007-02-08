@@ -146,7 +146,7 @@ void combsv::CombinedSVAlgorithm::adjust ( const reco::Vertex & primVertex,
 
   GlobalVector jetdir ( jet.px(), jet.py(), jet.pz() );
   // Setting the track info builder also affects 
-  // the pseudovertex builder
+  // the track info builder
   trackInfoBuilder_.setJet ( primVertex, jetdir );
 }
 
@@ -154,17 +154,17 @@ reco::CombinedSVTagInfo combsv::CombinedSVAlgorithm::tag ( const reco::Vertex & 
                                     const reco::Particle & jet,
                                     const vector < reco::TransientTrack > & itracks )
 {
+  /**
+   * This is the main tagging routine for the combined b-tagging
+   * algorithm
+   */
+
   if ( ! ( filters_.jetFilter() ( jet ) ) )
   {
     // did not pass the jet filter
     reco::TaggingVariableList x;
     return reco::CombinedSVTagInfo ( x, -1. );
   }
-
-  /**
-   * This is the main tagging routine for the combined b-tagging
-   * algorithm
-   */
 
   // adjust all builders and filters to the new jet
   adjust ( primVertex, jet );
@@ -193,6 +193,7 @@ reco::CombinedSVTagInfo combsv::CombinedSVAlgorithm::tag ( const reco::Vertex & 
   reco::btag::Vertices::VertexType vertexType = svtces.first;
   const vector < combsv::CombinedVertex > & vtces = svtces.second;
 
+  /*
   if ( vertexType != reco::btag::Vertices::RecoVertex )
   {
     // the filter is different now, so redo the tracks
@@ -207,6 +208,7 @@ reco::CombinedSVTagInfo combsv::CombinedSVAlgorithm::tag ( const reco::Vertex & 
   LogDebug("") << "we have " << vtces.size() << " vertices of type "
                << reco::btag::Vertices::name ( vertexType ) << " and a total of "
                << etracks.size() << " secondary tracks.";
+               */
 
   /* edm::LogError("CombinedSVAlgorithm" ) <<
     "createJetInfo different API. Compute both hard-assigned and soft-assigned energies!";
