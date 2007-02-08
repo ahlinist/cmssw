@@ -17,6 +17,8 @@ $Id$
 #include <boost/shared_ptr.hpp>
 #include <boost/program_options.hpp>
 
+#include "SealBase/Error.h"
+
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Framework/interface/EventProcessor.h"
 #include "FWCore/PluginManager/interface/ProblemTracker.h"

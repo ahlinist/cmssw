@@ -9,6 +9,7 @@ $Id$
 #include <iostream>
 #include <string>
 #include "boost/regex.hpp"
+#include "SealBase/Error.h"
 
 //I need to open a 'back door' in order to test the functionality
 #include "FWCore/ServiceRegistry/interface/ActivityRegistry.h"
