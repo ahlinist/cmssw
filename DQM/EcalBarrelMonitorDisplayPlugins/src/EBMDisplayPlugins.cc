@@ -1,11 +1,11 @@
-// $Id: EBMDisplayPlugins.cc,v 1.12 2007/02/07 08:32:35 benigno Exp $
+// $Id: EBMDisplayPlugins.cc,v 1.13 2007/02/07 09:01:31 benigno Exp $
 
 /*!
   \file EBMDisplayPlugins
   \brief Display Plugin for Quality Histograms (2D)
   \author B. Gobbo 
-  \version $Revision: 1.12 $
-  \date $Date: 2007/02/07 08:32:35 $
+  \version $Revision: 1.13 $
+  \date $Date: 2007/02/07 09:01:31 $
 */
 
 #include "DQM/EcalBarrelMonitorDisplayPlugins/interface/EBMDisplayPlugins.h"
@@ -67,9 +67,19 @@ EBMDisplayPlugins::EBMDisplayPlugins( IgState *state ) : VisDQMDisplayPlugin( st
       color->SetRGB( ecdqm::rgb[i][0], ecdqm::rgb[i][1], ecdqm::rgb[i][2] );
     }
   }
+  for( short i=0; i<6; i++ ) pCol3[i]  = i+301;
 
-  for( short i=0; i<6; i++ ) pCol3[i] = i+301;
-  for( short i=0; i<10; i++ ) pCol4[i] = i+30;
+  for( int i=0; i<10; i++ ) {
+    TColor* color;
+    if( ! gROOT->GetColor( 401+i )) {
+      color = new TColor( 401+i, ecdqm::rgb2[i][0], ecdqm::rgb2[i][1], ecdqm::rgb2[i][2], "" );
+    }
+    else {
+      color = gROOT->GetColor( 401+i );
+      color->SetRGB( ecdqm::rgb2[i][0], ecdqm::rgb2[i][1], ecdqm::rgb2[i][2] );
+    }
+  }
+  for( short i=0; i<10; i++ ) pCol4[i] = i+401;
 
   text1 = t1;
   text2 = t2;
