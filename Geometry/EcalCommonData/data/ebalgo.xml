@@ -2,20 +2,25 @@
 <DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../DetectorDescription/Schema/DDLSchema.xsd">
 
 
-<ConstantsSection  label="ebalgo.xml" >
+<ConstantsSection  label="ebalgo.xml" eval="true">
 
 <Constant name="NSpmPerHalf"    value="18"/>
 
 </ConstantsSection>
 
 <Algorithm name="DDEcalBarrelAlgo">
-  <rParent name="eregalgo:ECAL"/>
+     <rParent name="eregalgo:ECAL"/>
 
 <!-- Translations indicated by 3 vectors x, y, z
      Rotations    indicated by an axis 3 vector x,y,z followed by an angle
 -->
 
-<!-- Barrel container volume assumed to be full 360 degree polycone
+<!--    <String  name="BarParFil" value="[ebcon:BarParFil]"/>
+    <String  name="BarParVol" value="[ebcon:BarParVol]"/>
+-->
+
+<!-- Barrel container volume assumed to be polycone, partial in phi for
+     test beam work
 -->
     <String  name="BarName" value="EBAR"/>
     <String  name="BarMat"  value="materials:Air"/>
@@ -29,11 +34,19 @@
       1775*mm, 1775*mm, 1775*mm, 1775*mm
     </Vector>
     <Vector  name="BarTran" type="numeric" nEntries="3">
-      0*mm, 0*mm, 0*mm
+      [ebcon:BarTranX], [ebcon:BarTranY], [ebcon:BarTranZ]
     </Vector>
     <Vector  name="BarRota" type="numeric" nEntries="4">
-      0,1,0,  0*deg
+      [ebrot:BarRotX], [ebrot:BarRotY], [ebrot:BarRotZ], [ebrot:BarRotA]
     </Vector>
+    <Vector  name="BarRota2" type="numeric" nEntries="4">
+      [ebrot:BarRot2X], [ebrot:BarRot2Y], [ebrot:BarRot2Z], [ebrot:BarRot2A]
+    </Vector>
+    <Vector  name="BarRota3" type="numeric" nEntries="4">
+      [ebrot:BarRot3X], [ebrot:BarRot3Y], [ebrot:BarRot3Z], [ebrot:BarRot3A]
+    </Vector>
+    <Numeric  name="BarPhiLo" value="[ebcon:BarPhiLo]"/>
+    <Numeric  name="BarPhiHi" value="[ebcon:BarPhiHi]"/>    
     <Numeric  name="BarHere" value="1"/>
 
 <!-- The base rotations and translations refer to those
@@ -81,7 +94,7 @@
     <Vector  name="SpmTran" type="numeric" nEntries="2*3*[ebalgo:NSpmPerHalf]">
       0*mm, 0*mm, 0*mm,    0*mm, 0*mm, 0*mm,      0*mm, 0*mm, 0*mm,   
       0*mm, 0*mm, 0*mm,    0*mm, 0*mm, 0*mm,      0*mm, 0*mm, 0*mm,   
-      0*mm, 0*mm, 0*cm,    0*mm, 0*mm, 0*mm,      0*mm, 0*mm, 0*mm,   
+      0*mm, 0*mm, 0*mm,    0*mm, 0*mm, 0*mm,      0*mm, 0*mm, 0*mm,   
       0*mm, 0*mm, 0*mm,    0*mm, 0*mm, 0*mm,      0*mm, 0*mm, 0*mm,   
       0*mm, 0*mm, 0*mm,    0*mm, 0*mm, 0*mm,      0*mm, 0*mm, 0*mm,   
       0*mm, 0*mm, 0*mm,    0*mm, 0*mm, 0*mm,      0*mm, 0*mm, 0*mm,   
@@ -109,13 +122,19 @@
     -->
 
     <Vector  name="SpmHere" type="numeric" nEntries="2*[ebalgo:NSpmPerHalf]">
-      1, 1, 1, 1, 1, 1,
-      1, 1, 1, 1, 1, 1,
-      1, 1, 1, 1, 1, 1,
+ [ebcon:SpmHere01], [ebcon:SpmHere02], [ebcon:SpmHere03],
+ [ebcon:SpmHere04], [ebcon:SpmHere05], [ebcon:SpmHere06],
+ [ebcon:SpmHere07], [ebcon:SpmHere08], [ebcon:SpmHere09],
+ [ebcon:SpmHere10], [ebcon:SpmHere11], [ebcon:SpmHere12],
+ [ebcon:SpmHere13], [ebcon:SpmHere14], [ebcon:SpmHere15],
+ [ebcon:SpmHere16], [ebcon:SpmHere17], [ebcon:SpmHere18],
 
-      1, 1, 1, 1, 1, 1,
-      1, 1, 1, 1, 1, 1,
-      1, 1, 1, 1, 1, 1
+ [ebcon:SpmHere19], [ebcon:SpmHere20], [ebcon:SpmHere21],
+ [ebcon:SpmHere22], [ebcon:SpmHere23], [ebcon:SpmHere24],
+ [ebcon:SpmHere25], [ebcon:SpmHere26], [ebcon:SpmHere27],
+ [ebcon:SpmHere28], [ebcon:SpmHere29], [ebcon:SpmHere30],
+ [ebcon:SpmHere31], [ebcon:SpmHere32], [ebcon:SpmHere33],
+ [ebcon:SpmHere34], [ebcon:SpmHere35], [ebcon:SpmHere36]
     </Vector>
 
     <!-- These are for cut BOXes which trim off the sides/corners of
