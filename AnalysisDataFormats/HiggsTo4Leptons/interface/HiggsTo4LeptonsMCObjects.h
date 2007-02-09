@@ -9,31 +9,45 @@
  *
  * DecayType: 
  * 0:  H -> ZZ  -> 4l
- * 1:  H -> ZZ  -> 2e + 2mu
- * 2:  H -> ZZ  -> 4e
- * 3:  H -> ZZ  -> 4mu
- * 4:  H -> ZZ  -> 4tau
+ * 1:  H -> ZZ  -> 4e
+ * 2:  H -> ZZ  -> 4mu
+ * 3:  H -> ZZ  -> 4tau
+ * 4:  H -> ZZ  -> 2e + 2mu
  * 5:  H -> ZZ  -> 2e + 2tau
  * 6:  H -> ZZ  -> 2mu + 2tau
+ * 7:  H -> other -> 4l
  * 10: ZZ/gamma -> 4l
- * 11: ZZ/gamma -> 2e + 2mu
- * 12: ZZ/gamma -> 4e
- * 13: ZZ/gamma -> 4mu
- * 14: ZZ/gamma -> 4tau
+ * 11: ZZ/gamma -> 4e
+ * 12: ZZ/gamma -> 4mu
+ * 13: ZZ/gamma -> 4tau
+ * 14: ZZ/gamma -> 2e + 2mu
  * 15: ZZ/gamma -> 2e + 2tau  
  * 16: ZZ/gamma -> 2mu + 2tau 
+ * 17: ZZ/gamma -> other -> 4l
  * 20: ttbar -> 4l
- * 21: ttbar -> 2e + 2mu
- * 22: ttbar -> 4e
- * 23: ttbar -> 4mu
- * 24: ttbar -> other -> 4l
+ * 21: ttbar -> 4e
+ * 22: ttbar -> 4mu
+ * 23: ttbar -> 4tau
+ * 24: ttbar -> 2e + 2mu
+ * 25: ttbar -> 2e + 2tau
+ * 26: ttbar -> 2mu + 2tau
+ * 27: ttbar -> other -> 4l
  * 30: Zbbar -> 4l
- * 31: Zbbar -> 2e + 2mu
- * 32: Zbbar -> 4e
- * 33: Zbbar -> 2mu
- * 34: Zbbar -> 4tau
+ * 31: Zbbar -> 4e
+ * 32: Zbbar -> 2mu
+ * 33: Zbbar -> 4tau
+ * 34: Zbbar -> 2e + 2mu
  * 35: Zbbar -> 2e + 2 tau
  * 36: Zbbar -> 2mu + 2 tau
+ * 37: Zbbar -> other -> 4l
+ * 40: other -> 4l
+ * 41: other -> 4e
+ * 42: other -> 2mu
+ * 43: other -> 4tau
+ * 44: other -> 2e + 2mu
+ * 45: other -> 2e + 2 tau
+ * 46: other -> 2mu + 2 tau
+ * 47: other -> other -> 4l
  * 
  * ZdecayType:
  * 0: Z -> 2 e
@@ -55,7 +69,7 @@ class HiggsTo4LeptonsMCObjects
 
   HiggsTo4LeptonsMCObjects();
   
-  HiggsTo4LeptonsMCObjects(const int                           &DecayType,
+  HiggsTo4LeptonsMCObjects(const int                    &DecayType,
 	            const HepLorentzVector              &Higgs, 
                     const std::vector<HepLorentzVector> &Z,
                     const std::vector<int>              &ZdecayType,
