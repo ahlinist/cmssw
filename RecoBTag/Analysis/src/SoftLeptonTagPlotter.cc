@@ -110,11 +110,13 @@ void SoftLeptonTagPlotter::psPlot(const TString & name)
   canvas.Print(name + cName + ".ps[");
   canvas.cd(1);
   m_discriminant->plot((TPad*) canvas.GetPrimitive( cName + "_1" ));
+  canvas.Print(name + cName + ".ps");
   for (int i = 0; i < s_leptons; i++) {
     canvas.cd(1);
     m_leptonId[i]->plot((TPad*) canvas.GetPrimitive( cName + "_1" ));
     canvas.cd(2);
     m_leptonPt[i]->plot((TPad*) canvas.GetPrimitive( cName + "_2" ));
+    canvas.Print(name + cName + ".ps");
     canvas.cd(1);
     m_sip3d[i]->plot((TPad*) canvas.GetPrimitive( cName + "_1" ));
     canvas.cd(2);
@@ -127,8 +129,8 @@ void SoftLeptonTagPlotter::psPlot(const TString & name)
     m_ratio[i]->plot((TPad*) canvas.GetPrimitive( cName + "_5" ));
     canvas.cd(6);
     m_ratioRel[i]->plot((TPad*) canvas.GetPrimitive( cName + "_6" ));
+    canvas.Print(name + cName + ".ps");
   }
-  canvas.Print(name + cName + ".ps");
   canvas.Print(name + cName + ".ps]");
 }
 
