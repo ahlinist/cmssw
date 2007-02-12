@@ -8,6 +8,7 @@
 <use name=DataFormats/Streamer>
 <use name=IOPool/Streamer>
 <use name=EventFilter/StorageManager>
+<use name=DQMServices/NodeROOT>
 <export>
  <lib name=EventFilterFUSender>
  <use name=xdaq>
