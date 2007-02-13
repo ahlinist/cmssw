@@ -1,4 +1,5 @@
 
+
 #include "RecoTauTag/ConeIsolation/interface/ConeIsolationAlgorithm.h"
 using namespace std;
 using namespace reco;
@@ -7,19 +8,6 @@ using namespace edm;
 
 ConeIsolationAlgorithm::ConeIsolationAlgorithm()
 {
-  m_cutPixelHits     = 2;
-  m_cutTotalHits     = 8;
-  m_cutMaxTIP        = 1.;
-  m_cutMinPt         = 1.;
-  m_cutMaxChiSquared = 5.;
-  matching_cone      =  0.1;
-  signal_cone  =  0.07;
-  isolation_cone = 0.45;
-  pt_min_isolation = 1.;
-  pt_min_leadTrack = 6.;
-  dZ_vertex        = 0.2;
-  n_tracks_isolation_ring = 0;
-  useVertexConstrain_= true;
 
 }
 
@@ -40,12 +28,10 @@ ConeIsolationAlgorithm::ConeIsolationAlgorithm(const ParameterSet & parameters)
   pt_min_isolation   = parameters.getParameter<double>("MinimumTransverseMomentumInIsolationRing"); 
   pt_min_leadTrack   = parameters.getParameter<double>("MinimumTransverseMomentumLeadingTrack"); 
   n_tracks_isolation_ring = parameters.getParameter<int>("MaximumNumberOfTracksIsolationRing"); 
-
+  
+  useFixedSizeIsolationCone = parameters.getParameter<bool>("UseFixedSizeIsolationCone"); 
+  variableConeParameter = parameters.getParameter<double>("VariableConeParameter");
 }
-// SimpleRecTrackFilter * theSRTF = new SimpleRecTrackFilter(ptmin,0.,2.6,tipmax,170.,ntothits);
-  // I hope this is not leaking too much. Btw, that constructor shouldn't be used!
-//  theFilter.add(theSRTF);
-//  theFilter.add( new PixelHitsRecTrackFilter(npixhits));
 
 pair<JetTag,IsolatedTauTagInfo> ConeIsolationAlgorithm::tag(const  JetTracksAssociationRef & jetTracks, const Vertex & pv) 
 {
@@ -77,16 +63,23 @@ for(;it!= tracks.end();it++)
        }
    }
  IsolatedTauTagInfo resultExtended(myTracks);
- 
+
+ double r_isoCone = isolation_cone;
+ double etJet = jetTracks->key->pt();
+ if(!useFixedSizeIsolationCone){
+   r_isoCone = std::min(isolation_cone, variableConeParameter / etJet);
+ }
+
+
  //now I can use it for the discriminator;
  math::XYZVector jetDir(jetTracks->key->px(),jetTracks->key->py(),jetTracks->key->pz());   
  double discriminator = 0;
  if(useVertexConstrain_) {
    //In this case all the selected tracks comes from the same vertex, so no need to pass the dZ_vertex requirement to the discriminator 
-   discriminator =  resultExtended.discriminator(jetDir, matching_cone, signal_cone, isolation_cone, pt_min_leadTrack, pt_min_isolation,  n_tracks_isolation_ring); 
+   discriminator =  resultExtended.discriminator(jetDir, matching_cone, signal_cone, r_isoCone, pt_min_leadTrack, pt_min_isolation,  n_tracks_isolation_ring); 
  }else{
    //In this case the dZ_vertex is used to associate the tracks to the Z_imp parameter of the Leading Track
-   discriminator =  resultExtended.discriminator(jetDir, matching_cone, signal_cone, isolation_cone, pt_min_leadTrack, pt_min_isolation,  n_tracks_isolation_ring, dZ_vertex); 
+   discriminator =  resultExtended.discriminator(jetDir, matching_cone, signal_cone, r_isoCone, pt_min_leadTrack, pt_min_isolation,  n_tracks_isolation_ring, dZ_vertex); 
  }
    JetTag resultBase(discriminator,jetTracks);
 
