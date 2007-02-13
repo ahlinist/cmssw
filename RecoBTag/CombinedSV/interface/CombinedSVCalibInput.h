@@ -4,6 +4,7 @@
 #include "DataFormats/BTauReco/interface/TaggingVariable.h"
 #include "RecoBTag/CombinedSV/interface/PartonTypes.h"
 #include "DataFormats/BTauReco/interface/VertexTypes.h"
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include <iosfwd>
 
 namespace combsv {
@@ -41,6 +42,8 @@ namespace combsv {
   };
 }
 
-std::ostream & operator<< ( std::ostream & os, const combsv::CombinedSVCalibInput & );
+namespace edm {
+  ErrorObj & operator<< ( ErrorObj & os, const combsv::CombinedSVCalibInput & );
+}
 
 #endif
