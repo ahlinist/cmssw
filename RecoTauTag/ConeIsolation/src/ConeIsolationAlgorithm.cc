@@ -29,7 +29,7 @@ ConeIsolationAlgorithm::ConeIsolationAlgorithm(const ParameterSet & parameters)
   pt_min_leadTrack   = parameters.getParameter<double>("MinimumTransverseMomentumLeadingTrack"); 
   n_tracks_isolation_ring = parameters.getParameter<int>("MaximumNumberOfTracksIsolationRing"); 
   
-  useFixedSizeIsolationCone = parameters.getParameter<bool>("UseFixedSizeIsolationCone"); 
+  useFixedSizeCone = parameters.getParameter<bool>("UseFixedSizeCone"); 
   variableConeParameter = parameters.getParameter<double>("VariableConeParameter");
 }
 
@@ -64,10 +64,10 @@ for(;it!= tracks.end();it++)
    }
  IsolatedTauTagInfo resultExtended(myTracks);
 
- double r_isoCone = isolation_cone;
+ double r_sigCone = signal_cone;
  double etJet = jetTracks->key->pt();
- if(!useFixedSizeIsolationCone){
-   r_isoCone = std::min(isolation_cone, variableConeParameter / etJet);
+ if(!useFixedSizeCone){
+   r_sigCone = std::min(signal_cone, variableConeParameter / etJet);
  }
 
 
@@ -76,10 +76,10 @@ for(;it!= tracks.end();it++)
  double discriminator = 0;
  if(useVertexConstrain_) {
    //In this case all the selected tracks comes from the same vertex, so no need to pass the dZ_vertex requirement to the discriminator 
-   discriminator =  resultExtended.discriminator(jetDir, matching_cone, signal_cone, r_isoCone, pt_min_leadTrack, pt_min_isolation,  n_tracks_isolation_ring); 
+   discriminator =  resultExtended.discriminator(jetDir, matching_cone, r_sigCone, isolation_cone, pt_min_leadTrack, pt_min_isolation,  n_tracks_isolation_ring); 
  }else{
    //In this case the dZ_vertex is used to associate the tracks to the Z_imp parameter of the Leading Track
-   discriminator =  resultExtended.discriminator(jetDir, matching_cone, signal_cone, r_isoCone, pt_min_leadTrack, pt_min_isolation,  n_tracks_isolation_ring, dZ_vertex); 
+   discriminator =  resultExtended.discriminator(jetDir, matching_cone, r_sigCone, isolation_cone, pt_min_leadTrack, pt_min_isolation,  n_tracks_isolation_ring, dZ_vertex); 
  }
    JetTag resultBase(discriminator,jetTracks);
 
