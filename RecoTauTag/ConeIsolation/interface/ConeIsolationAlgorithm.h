@@ -55,7 +55,8 @@ class  ConeIsolationAlgorithm  {
   double dZ_vertex;
   int n_tracks_isolation_ring;
   bool useVertexConstrain_;
-  
+  bool useFixedSizeIsolationCone;
+  double variableConeParameter;
 };
 
 #endif 
