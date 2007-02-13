@@ -1,5 +1,6 @@
 <flags SEAL_PLUGIN_NAME=DQMEcalBarrelMonitorDisplayPlugins>
 <use name=DQMServices/Core>
+<use name=DQMServices/UI>
 <use name=Foundation/PluginManager>
 <use name=VisMonitoring/VisDQMBase>
 <use name=rootcore>
