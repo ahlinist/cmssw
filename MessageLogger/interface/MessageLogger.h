@@ -263,8 +263,8 @@ public:
 #endif
 
 #ifdef EDM_MESSAGELOGGER_SUPPRESS_LOGDEBUG 
-#define LogDebug(id) edm::Suppress_LogDebug_();
-#define LogTrace(id) edm::Suppress_LogDebug_();
+#define LogDebug(id) edm::Suppress_LogDebug_()
+#define LogTrace(id) edm::Suppress_LogDebug_()
 #else
 #define LogDebug(id)                                 \
   ( !edm::MessageDrop::instance()->debugEnabled )    \
