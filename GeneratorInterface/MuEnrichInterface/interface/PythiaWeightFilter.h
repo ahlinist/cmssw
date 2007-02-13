@@ -14,8 +14,6 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 
-using namespace std;
-
 //
 // class declaration
 //
