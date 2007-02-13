@@ -1,0 +1,8 @@
+<use name=RecoBTag/CombinedSV>
+
+<flags SEAL_PLUGIN_NAME="RecoBTagCombinedSVLearning">
+<export>
+   <lib name=RecoBTagCombinedSVLearning>
+   <use name=RecoBTag/CombinedSV>
+</export>
+
