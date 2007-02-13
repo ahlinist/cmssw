@@ -68,7 +68,7 @@ double combsv::CombinedSVCalibInput::jetEta() const
   return jetEta_;
 }
 
-std::ostream & operator<< ( std::ostream & os, const combsv::CombinedSVCalibInput & i )
+edm::ErrorObj & edm::operator<< ( edm::ErrorObj & os, const combsv::CombinedSVCalibInput & i )
 {
   os << "[" << reco::btag::Vertices::name ( i.vertexType() ) << ", "
      << combsv::Partons::name ( i.partonType() ) << ", "
