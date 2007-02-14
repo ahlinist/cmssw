@@ -1,4 +1,4 @@
-module combinedSV = CombinedSV
+module combinedSVJetTags = CombinedSV
 {
   string jetTracks = "jetTracksAssociator"
   string xmlFileName = "combinedsvcalibration.xml"
