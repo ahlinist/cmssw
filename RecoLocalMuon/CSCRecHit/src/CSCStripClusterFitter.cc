@@ -15,7 +15,7 @@
 
 #include <iostream>
 
-//using namespace ROOT::Minuit2;
+using namespace ROOT::Minuit2;
 
 CSCStripClusterFitter::CSCStripClusterFitter(ModularFunctionMinimizer* minimizer, CSCStripClusterFcn * function) :
  pMinimizer(minimizer), pFcn(function), maxChi2( 15.0 ) {
