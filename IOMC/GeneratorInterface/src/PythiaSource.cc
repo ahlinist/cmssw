@@ -61,15 +61,6 @@ extern "C" {
   void TXGIVE_INIT();
 }
 
-#define SLHAGIVE slhagive_
-extern "C" {
-  void SLHAGIVE(const char*,int length);
-}
-
-#define SLHA_INIT slha_init_
-extern "C" {
-  void SLHA_INIT();
-}
 
 HepMC::ConvertHEPEVT conv;
 // ***********************
@@ -153,7 +144,7 @@ PythiaSource::PythiaSource( const ParameterSet & pset,
     vector<string> pars = 
       pythia_params.getParameter<vector<string> >(mySet);
     
-    if (mySet != "SLHAParameters"){
+    if (mySet != "CSAParameters"){
     cout << "----------------------------------------------" << endl;
     cout << "Read PYTHIA parameter set " << mySet << endl;
     cout << "----------------------------------------------" << endl;
@@ -171,24 +162,25 @@ PythiaSource::PythiaSource( const ParameterSet & pset,
 	  <<" pythia did not accept the following \""<<*itPar<<"\"";
       }
     }
-    }else if(mySet == "SLHAParameters"){   
+    }else if(mySet == "CSAParameters"){   
 
-   // Read SLHA parameter
+   // Read CSA parameter
   
-   pars = pythia_params.getParameter<vector<string> >("SLHAParameters");
+   pars = pythia_params.getParameter<vector<string> >("CSAParameters");
 
    cout << "----------------------------------------------" << endl; 
-   cout << "Reading SLHA parameters. " << endl;
+   cout << "Reading CSA parameter settings. " << endl;
    cout << "----------------------------------------------" << endl;                                                                           
+
+   call_txgive_init();
+  
   
    // Loop over all parameters and stop in case of a mistake
     for (vector<string>::const_iterator 
             itPar = pars.begin(); itPar != pars.end(); ++itPar) {
-      call_slhagive(*itPar); 
+      call_txgive(*itPar); 
      
          } 
-	 
-    call_slha_init();	 
   
   }
   }
@@ -339,25 +331,7 @@ bool
 PythiaSource::call_txgive_init() {
   
    TXGIVE_INIT();
-   cout << " Setting CSA reweighting parameters.   "   << endl; 
-
-	return 1;  
-}
-
-bool 
-PythiaSource::call_slhagive(const std::string& iParm ) {
-  
-   SLHAGIVE( iParm.c_str(), iParm.length() );
-   cout << "     " <<  iParm.c_str() << endl; 
-
-	return 1;  
-}
-
-bool 
-PythiaSource::call_slha_init() {
-  
-   SLHA_INIT();
-   cout << " Opening the SLHA file.   "   << endl; 
+   cout << "  Setting CSA defaults.   "   << endl; 
 
 	return 1;  
 }
