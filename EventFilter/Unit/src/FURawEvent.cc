@@ -14,7 +14,6 @@
 #define FED_RBIT_MASK  0x2
 
 
-using namespace std;
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -370,13 +369,11 @@ int FURawEvent::checkin_data(vector<unsigned char*> &block_adrs)
 	  if (lvl1id != current_trigno) 
 	    {
 	      //level1id consistent with frl header one ? 
-	      cout << "error, level1 for fed " << fedid << " " << lvl1id 
-		   << " should be " 
-		   << current_trigno << endl;
 	      if(errors[(-FED_TRIGGER_MISMATCH)]++ < 10)
 		LOG4CPLUS_ERROR(adapter_->getApplicationLogger(),
 				"FED level-1 id mismatch. Found: " 
-				<< lvl1id << ", expecting " << current_trigno);
+				<< lvl1id << ", expecting " << current_trigno
+				<< " for fed id " << fedid);
 	      retVal = FED_TRIGGER_MISMATCH;
 	      break;
 	    }
@@ -385,7 +382,6 @@ int FURawEvent::checkin_data(vector<unsigned char*> &block_adrs)
 	  if(myData_[fedid]->size_ != 0)
 	    {
 	      // FED is not a duplicate ? 
-	      cout << "error, duplicated fed " << fedid << endl;
 	      if(errors[(-FED_DROPPED_DUPLDATA)]++ < 10)
 		LOG4CPLUS_ERROR(adapter_->getApplicationLogger(),"FED data for id " << fedid 
 				<< " already received, dropping data");
@@ -567,6 +563,12 @@ void FURawEvent::release()
 //______________________________________________________________________________
 void FURawEvent::dumpFrame(char* data, int len)
 {
+
+  using std::cout;
+  using std::hex;
+  using std::dec;
+  using std::endl;
+
   if(!adapter_->doDump()) return;
   cout << "Dump of frame at " << hex << (int) data << dec << " of expected size " << len << "bytes" << endl;
   //      PI2O_MESSAGE_FRAME  ptrFrame = (PI2O_MESSAGE_FRAME)data;

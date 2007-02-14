@@ -9,6 +9,9 @@
 //
 //  Modification history:
 //    $Log: FilterUnitFramework.h,v $
+//    Revision 1.14  2006/11/14 10:06:30  meschi
+//    fix bug where some values of queueSize can cause a crash
+//
 //    Revision 1.13  2006/10/05 08:43:46  meschi
 //    Added flush of built queue to correctly handle halt command. Added reset of counters to be used on reception of a new run number. Added actionPerformed to look at change of runnumber":
 //
@@ -77,9 +80,6 @@
 //
 //
 //
-#if defined(linux) || defined(macosx)
-using namespace std;
-#endif
 
 #include <semaphore.h>
 #include <map>
@@ -176,8 +176,8 @@ private:
 
   toolbox::Chrono birth_;
   double deltaT;
-  vector<int> runs;
-  vector<int> events;
+  std::vector<int> runs;
+  std::vector<int> events;
   // locks
   BSem *mutex_;
   BSem *ack_;
@@ -209,6 +209,7 @@ private:
 
   void configureAction(toolbox::Event::Reference e) throw (toolbox::fsm::exception::Exception);
   void enableAction(toolbox::Event::Reference e) throw (toolbox::fsm::exception::Exception);
+  void stopAction(toolbox::Event::Reference e) throw (toolbox::fsm::exception::Exception);
   virtual void suspendAction(toolbox::Event::Reference e) throw (toolbox::fsm::exception::Exception);
   virtual void resumeAction(toolbox::Event::Reference e) throw (toolbox::fsm::exception::Exception);
   virtual void haltAction(toolbox::Event::Reference e) throw (toolbox::fsm::exception::Exception);
