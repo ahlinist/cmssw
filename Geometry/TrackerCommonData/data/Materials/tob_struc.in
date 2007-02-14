@@ -54,73 +54,205 @@ CF thickness 0.9 mm, length (including bended piece): ~17 mm -> 0.153 cm^2
 ......................................................................
 ======================================================================
 
-o TOB Mothercable (per 1 cm)
-  ---------------
-  this is what Robert calls ICB
-MCVolume: 5 x 0.1 = 0.5 cm^2
-(1) 1 mm G10
-(2) Copper volume (this board is trimmed, but model at the moment
-    still with homogeneous material). 
-    4 Cu layers a 25 um, 2 * occ 50 %,
-                         2 * occ 100 %.
-    Halfway between mod 3 & 4 one could take away < 50% of the Cu.
-    (-50% for 1/3 of the length)
+o TOB Mothercable (Inter Connect Board)
+  -------------------------------------
+MCVolume: (5.0 x 76.5 x 0.1) cm^3 = 38.25 cm^3
+Data taken from http://test-gmagazzu.web.cern.ch/test%2Dgmagazzu/TOB/MB/ICB_MB.htm
+ICB Circuit  EDMS Code EP-680-1174-150-A
 
-    5 * 0.0025 * 3 = 0.0375 cm^2 without trimming taken into account
-    * 5/6 for trimming = 0.03125 
-                        --> take 0.035 cm^2
+(1-4) ICB
+	FR4:	m = 86.90 g
+		density (T_G10) = 1.90 g/cm^3
+		--> volume = 45.737 cm^3
+	Copper:	m = 30.633 g
+		density = 8.96 g/cm^3
+		--> volume = 3.419 cm^3
+	ICB SMD Resistors, 28 x (0603) resistors, mostly Al2O3 (Aluminiumoxid, ceramic), the total mass is computed
+		m = 0.579 g
+		density = 3.96525 g/cm^3
+		--> volume = 0.146 cm^3
+
+	ICB SMD Capacitors, 21 x (0805) + 10 x (1812), mostly BaTiO3, the total mass is computed
+		m = 2.615 g
+		density = 6.02 g/cm^3
+		--> volume = 0.434 cm^3
+
+(5-6) ICB ASICs: 4 x ("LVDSBUF" 16 pin)
+	epoxy:	m = ( 4 x 0.038519 ) g = 0.154076 g
+		density = 1.3 g/cm^3
+		--> volume = 0.1185 cm^3
+	copper: m = [ ( 4 x 0.076 ) - 0.154076 ] g = 0.149924 g
+		density = 8.96 g/cm^3
+		--> volume = 0.0167 cm^3
+
+(7-8) NAiS connectors
+	They are in the CCUM material, apart from 1 connector 50 pins not used, only socket (AXN350038S, no AXN450330S)
+	copper: m = 1 x (0.1442) g = 0.1442 g
+		density = 8.96 g/cm^3
+		--> volume = 0.016 cm^3
+	resin:  m = 1 x (0.2329) g = 0.2329 g
+		density (epoxy) = 1.3 g/cm^3
+		--> volume = 0.179 cm^3
+
+(9-12)  Wires Connected to the Rod Connectors
+	Copper Tinned wires, 6 pieces 45 mm, 1 piece 25 mm
+	total mass; 1 only copy in the mixture
+	Copper:	m = ( 1.5663 + 0.1450) g = 1.7113 g
+		density = 8.96 g/cm^3
+		--> volume = 0.191 cm^3
+	Aluminium:
+	 	m = ( 0 + 0 ) = 0 g
+		density = 2.7 g/cm^3
+		--> volume = 0 cm^3
+	PEI: 	m = ( 0 + 0 ) = 0 g
+		density (silicone gel) = 0.965 g/cm^3
+		--> volume = 0 cm^3
+	SILTEM:	m = ( 0 + 0 ) g = 0 g
+		density (polyethylene) = 0.95 g/cm^3
+		--> volume = 0 cm^3
+
+(13) Araldite glue (take epoxy): (1/2 CONN), 1/2 ICB
+	m = 0.47 g / 2 = 0.235 g
+	density = 1.3 g/cm^3
+	volume = 0.181 cm^3
+
+(14) Solder paste (BGA): 1/2 ICB, (1/2 CONN)
+	m = 0.09 g / 2 = 0.045 g
+	density = 8.82 g/cm^3
+	volume = 0.005 cm^3
+
+
+HVLAC and LVLAC will go outside with the CCUM ones.
+
+
+	[WAS: this is what Robert calls ICB
+		MCVolume: 5 x 0.1 = 0.5 cm^2
+		
+		(1) 1 mm G10
+		(2) Copper volume (this board is trimmed, but model at the moment
+		    still with homogeneous material). 
+		    4 Cu layers a 25 um, 2 * occ 50 %,
+		                         2 * occ 100 %.
+		    Halfway between mod 3 & 4 one could take away < 50% of the Cu.
+		    (-50% for 1/3 of the length)
+		
+		    5 * 0.0025 * 3 = 0.0375 cm^2 without trimming taken into account
+		    * 5/6 for trimming = 0.03125 
+		                        --> take 0.035 cm^2
+	]
+
 ........................................................................
-# "TOB mothercable (ICB)"      "TOB_ICB"        0.5        5.
-* 1 "ICB substrate"              "G10"            0.5        1  CAB
-* 2 "Cu traces"                  "Copper"         0.035      1  CAB
+# "TOB mothercable (ICB)"      "TOB_ICB"         38.25     382.5 
+* 1 "ICB substrate"            "T_G10"           45.737      1    ELE
+* 2 "ICB copper traces"        "Copper"           3.419      1    ELE
+* 3 "ICB Resistors"            "Ceramic"          0.146      1    ELE
+* 4 "ICB Capacitors"           "Barium Titanate"  0.434      1    ELE
+* 5 "ICB ASICs EMC"            "Epoxy"            0.1185     1    ELE
+* 6 "ICB ASICs copper"         "Copper"           0.0167     1    ELE
+* 7 "NAiS connector"           "Copper"           0.016      1    ELE
+* 8 "NAiS connector"           "Epoxy"            0.179      1    ELE
+* 9 "BUS wires Cu"             "Copper"           0.191      1    CAB
+* 10 "BUS wires Al"            "Aluminium"        0.000      1    CAB
+* 11 "BUS wires PEI"           "Silicone_Gel"     0.000      1    CAB
+* 12 "BUS wires SILTEM"        "Polyethylene"     0.000      1    CAB
+* 13 "ICB,LVLAC,HVLAC glue"    "Epoxy"            0.181      1    SUP
+* 14 "Solder Paste"            "BGA"              0.005      1    CAB
 ........................................................................
 ========================================================================
 
-o HV and Optical fibers DS (per 1 cm)
-  ------------------------
-These run in 2 tubes next to the cooling pipes. 
-MCVolume: diameter 1.5 mm      
-(1) Per module 1 Al wire with 0.08 mm^2 xsect. 
-    Since volume on both sides (not true in reality !),
-    3 per side, and they don't run all over the full
-    length. "Average" 2 per side.
-    radius = 0.16 mm
-(2) Insulation skin (assumption !) 0.1 mm 
-    -> 0.132 mm^2 
-(3) Optical fibers: 4 per /module, hence 24 total
-    take 16 (difference in length), i.e.  8/side
-.......................................................................
-# "TOB HV and opt. fibers DS"  "TOB_optfib_DS"   0.01767   0.118
-* 1 "HV wires"                 "Aluminium"       8.E-4      2   CAB
-* 2 "HV Insulation"            "Polyethylene"    0.00132    2   CAB
+o HV and Optical fibers DS
+  -------------------------
+MCVolume: (pi 0.075^2 x 107.9) cm^3 = 1.90675 cm^3
+
+(1-2) HV Wires from ICB, data taken from http://test-gmagazzu.web.cern.ch/test%2Dgmagazzu/TOB/MB/ICB_MB.htm
+	SS: number of pieces: 2 + 2 + 2 + 2 + 4
+	Copper:	m = ( 2.1358 + 1.6520 + 1.4160 + 0.9015 + 0.2832 ) g = 6.3885 g
+		density = 8.96 g/cm^3
+		--> volume = 0.713 cm^3
+	TPE-06:	m = ( 1.7376 + 1.3440 + 1.1520 + 0.7334 + 0.2304 ) g = 5.1974 g
+		density (take polyrthylene) = 0.95 g/cm^3
+		--> volume = 5.471 cm^3
+
+(3) HV Wire sleeve (l=15 cm, ext diameter=3.0 mm, 15 piece) + (l=20 mm, ext diameter=3.0 mm, 1 pieces)
+	 + LVLAC wires sleeve (l=10 cm, ext diameter=3.0 mm, 1 piece) Polyethylene and Polyolefin (take polyethylene):
+	total mass
+	m = ( 0.54 + 0.20 + 0.10 ) g = 0.84 g
+	density = 0.95 g/cm^3
+	volume = 0.884 cm^3
+
+
+
+	[WAS:
+		These run in 2 tubes next to the cooling pipes. 
+		MCVolume: diameter 1.5 mm      
+		(1) Per module 1 Al wire with 0.08 mm^2 xsect. 
+		    Since volume on both sides (not true in reality !),
+		    3 per side, and they don't run all over the full
+		    length. "Average" 2 per side.
+		    radius = 0.16 mm
+		(2) Insulation skin (assumption !) 0.1 mm 
+		    -> 0.132 mm^2 
+		(3) Optical fibers: 4 per /module, hence 24 total
+		    take 16 (difference in length), i.e.  8/side
+]
+
+.........................................................................
+# "TOB HV and opt. fibers DS"  "TOB_optfib_DS"   1.90675    0.01767
+* 1 "HV Wires"                 "Copper"          0.713      1       CAB
+* 2 "HV Wires insulation"      "Polyethylene"    5.471      1       CAB
+* 3 "Wire Sleeve"              "Polyethylene"    0.884      1       CAB
+
 * 3 "Optical fibers"           "Quartz"          1.27E-4    8   CAB
 * 4 "Optical fibers"           "Polyethylene"    6.23E-3    8   CAB
-......................................................................
-======================================================================
+.........................................................................
+=========================================================================
     
-o HV and Optical fibers SS (per 1 cm)
-  ------------------------
-These run in 2 tubes next to the cooling pipes. 
-MCVolume: diameter 1.5 mm      
-(1) Per module 1 Al wire with 0.08 mm^2 xsect. 
-    Since volume on both sides (not true in reality !),
-    3 per side, and they don't run all over the full
-    length. "Average" 2 per side.
-    radius = 0.16 mm
-(2) Insulation skin (assumption !) 0.1 mm 
-    -> 0.132 mm^2 
-(3) Optical fibers: 
-    layers 7/8: 2/module  12
-           9/10: 3/module 18
-    15 -> 10 -> 5/side
-.......................................................................
-# "TOB HV and opt. fibers SS"  "TOB_optfib_SS"   0.01767   0.118
-* 1 "HV wires"                 "Aluminium"       8.E-4      2   CAB
-* 2 "HV Insulation"            "Polyethylene"    0.00132    2   CAB
-* 3 "Optical fibers"           "Quartz"          1.27E-4    5   CAB
-* 4 "Optical fibers"           "Polyethylene"    6.23E-3    5   CAB
-......................................................................
-======================================================================
+o HV and Optical fibers SS
+  -------------------------
+MCVolume: (pi 0.075^2 x 107.9) cm^3 = 1.90675 cm^3
+
+(1-2) HV Wires from ICB, data taken from http://test-gmagazzu.web.cern.ch/test%2Dgmagazzu/TOB/MB/ICB_MB.htm
+	SS: number of pieces: 1 + 1 + 2 + 2 + 0
+	Copper:	m = ( 1.0679 + 0.8260 + 1.4160 + 0.9015 + 0 ) g = 4.2114 g
+		density = 8.96 g/cm^3
+		--> volume = 0.470 cm^3
+	TPE-06:	m = ( 0.8688 + 0.6720 + 1.1520 + 0.7334 + 0 ) g = 3.4262 g
+		density (take polyrthylene) = 0.95 g/cm^3
+		--> volume = 3.6065 cm^3
+
+(3) HV Wire sleeve (l=15 cm, ext diameter=3.0 mm, 9 piece) + (l=20 mm, ext diameter=3.0 mm, 1 pieces)
+	 + LVLAC wires sleeve (l=10 cm, ext diameter=3.0 mm, 1 piece) Polyethylene and Polyolefin (take polyethylene):
+	total mass
+	m = ( 0.32 + 0.20 + 0.10 ) g = 0.62 g
+	density = 0.95 g/cm^3
+	volume = 0.653 cm^3
+
+	[WAS:
+		These run in 2 tubes next to the cooling pipes. 
+		MCVolume: diameter 1.5 mm      
+		(1) Per module 1 Al wire with 0.08 mm^2 xsect. 
+		    Since volume on both sides (not true in reality !),
+		    3 per side, and they don't run all over the full
+		    length. "Average" 2 per side.
+		    radius = 0.16 mm
+		(2) Insulation skin (assumption !) 0.1 mm 
+		    -> 0.132 mm^2 
+		(3) Optical fibers: 
+		    layers 7/8: 2/module  12
+		           9/10: 3/module 18
+		    15 -> 10 -> 5/side
+	]
+
+.........................................................................
+# "TOB HV and opt. fibers SS"  "TOB_optfib_SS"   1.90675    0.01767
+* 1 "HV Wires"                 "Copper"          0.470      1       CAB
+* 2 "HV Wires insulation"      "Polyethylene"    3.6065     1       CAB
+* 3 "Wire Sleeve"              "Polyethylene"    0.653      1       CAB
+
+* 3 "Optical fibers"           "Quartz"          1.27E-4    5       CAB
+* 4 "Optical fibers"           "Polyethylene"    6.23E-3    5       CAB
+.........................................................................
+=========================================================================
 
 o TOB rod fixation to disk
   ------------------------
@@ -153,7 +285,7 @@ Layer 5:
 * 1 "Arc pipes"               "TOB_CuNi"           0.0364   821.84  COL
 * 2 "Coolant"                 "C6F14"              0.2463   821.84  COL
 * 3 "Brass pipe connectors"   "TOB_Brass"          0.18     42      COL
-* 4 "Cool pipe solder"        "TOB_cool_solder"    0.042    42      COL
+C* 4 "Cool pipe solder"        "TOB_cool_solder"    0.042    42      COL
 .....................................................................
 
 Layer 6: 
@@ -165,7 +297,7 @@ Layer 6:
 * 1 "Arc pipes"               "TOB_CuNi"           0.0364   929.9   COL
 * 2 "Coolant"                 "C6F14"              0.2463   929.9   COL
 * 3 "Brass pipe connectors"   "TOB_Brass"          0.18     48      COL
-* 4 "Cool pipe solder"        "TOB_cool_solder"    0.042    48      COL
+C* 4 "Cool pipe solder"        "TOB_cool_solder"    0.042    48      COL
 .....................................................................
 
 Layer 7: 
@@ -177,7 +309,7 @@ Layer 7:
 * 1 "Arc pipes"               "TOB_CuNi"           0.0364  1036.72  COL
 * 2 "Coolant"                 "C6F14"              0.2463  1036.72  COL
 * 3 "Brass pipe connectors"   "TOB_Brass"          0.18     54      COL
-* 4 "Cool pipe solder"        "TOB_cool_solder"    0.042    54      COL
+C* 4 "Cool pipe solder"        "TOB_cool_solder"    0.042    54      COL
 .....................................................................
 
 Layer 8: 
@@ -189,7 +321,7 @@ Layer 8:
 * 1 "Arc pipes"               "TOB_CuNi"           0.0364  1144.76  COL
 * 2 "Coolant"                 "C6F14"              0.2463  1144.76  COL
 * 3 "Brass pipe connectors"   "TOB_Brass"          0.18     60      COL
-* 4 "Cool pipe solder"        "TOB_cool_solder"    0.042    60      COL
+C* 4 "Cool pipe solder"        "TOB_cool_solder"    0.042    60      COL
 .....................................................................
 
 Layer 9: 
@@ -201,7 +333,7 @@ Layer 9:
 * 1 "Arc pipes"               "TOB_CuNi"           0.0364  1265.4   COL 
 * 2 "Coolant"                 "C6F14"              0.2463  1265.4   COL
 * 3 "Brass pipe connectors"   "TOB_Brass"          0.18     66      COL
-* 4 "Cool pipe solder"        "TOB_cool_solder"    0.042    66      COL
+C* 4 "Cool pipe solder"        "TOB_cool_solder"    0.042    66      COL
 .....................................................................
 
 Layer 10:
@@ -213,7 +345,7 @@ Layer 10:
 * 1 "Arc pipes"               "TOB_CuNi"           0.0364  1410.    COL
 * 2 "Coolant"                 "C6F14"              0.2463  1410.    COL
 * 3 "Brass pipe connectors"   "TOB_Brass"          0.18     74      COL
-* 4 "Cool pipe solder"        "TOB_cool_solder"    0.042    74      COL
+C* 4 "Cool pipe solder"        "TOB_cool_solder"    0.042    74      COL
 .....................................................................
 =====================================================================
 
