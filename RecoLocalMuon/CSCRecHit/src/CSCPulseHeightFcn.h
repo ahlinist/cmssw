@@ -12,11 +12,9 @@
 #include "Minuit2/FCNBase.h"
 #include <vector>
 
-using namespace ROOT::Minuit2;
-
 class CSCStripDigi;
 
-class CSCPulseHeightFcn : public FCNBase {
+class CSCPulseHeightFcn : public ROOT::Minuit2::FCNBase {
 public:
   ///Cache the current strip digi
   void setDigi(const CSCStripDigi * digi) { theDigi = digi; };
@@ -27,7 +25,7 @@ public:
   /// Provide the chi-squared function for the given data, based on the input parameters
   virtual double operator()(const std::vector<double>&) const;
 
-  ///@@ What?
+  ///@@ What? Does Minuit need this?
   virtual double Up() const {return 1.;}
 
 private:

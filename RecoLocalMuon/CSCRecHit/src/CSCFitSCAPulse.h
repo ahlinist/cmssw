@@ -12,7 +12,6 @@
 
 #include <RecoLocalMuon/CSCRecHit/src/CSCFindPulseheightOnStrip.h>
 #include <Minuit2/VariableMetricMinimizer.h>
-using namespace ROOT::Minuit2;
 
 class CSCPulseHeightFcn;
 
@@ -28,7 +27,7 @@ public:
                          const CSCChamberSpecs & specs,
                          double & height, double & sigma) const;
 private:
-  ModularFunctionMinimizer* theFitter;
+  ROOT::Minuit2::ModularFunctionMinimizer* theFitter;
   CSCPulseHeightFcn* theOBJfun;
 };
 
