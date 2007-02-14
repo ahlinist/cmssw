@@ -1,0 +1,14 @@
+module combinedSV = CombinedSV
+{
+  string jetTracks = "jetTracksAssociator"
+  string xmlFileName = "combinedsvcalibration.xml"
+  string vertexcoll = "offlinePrimaryVerticesFromCTFTracks"
+  # string vertexcoll = "none"
+  string trackcoll = "ctfWithMaterialTracks"
+  double charmPriorInBG = 0.25
+
+  include "RecoBTag/CombinedSV/test/vertexreco.cfi"
+  include "RecoBTag/CombinedSV/test/vertexcuts.cfi"
+  include "RecoBTag/CombinedSV/test/jetcuts.cfi"
+  include "RecoBTag/CombinedSV/test/trackcuts.cfi"
+}
