@@ -67,7 +67,8 @@ public:
          ServicesManager(ServiceToken iToken,
                          ServiceLegacy iLegacy,
                          const std::vector<edm::ParameterSet>& iConfiguration);
-         //virtual ~ServicesManager();
+
+         ~ServicesManager();
          
          // ---------- const member functions ---------------------
          template<class T>
@@ -126,6 +127,7 @@ public:
                   return false;
                }
                type2Service_[ TypeIDBase(typeid(T)) ] = iPtr;
+               actualCreationOrder_.push_back(TypeIDBase(typeid(T)));
                return true;
             }
         
@@ -149,13 +151,18 @@ private:
          void createServices();
 
          // ---------- member data --------------------------------
+         //hold onto the Manager passed in from the ServiceToken so that
+         // the ActivityRegistry of that Manager does not go out of scope
+         // This must be first to get the Service destructors called in
+         // the correct order.
+         boost::shared_ptr<ServicesManager> associatedManager_;
+
          edm::ActivityRegistry registry_;
          Type2Service type2Service_;
          std::auto_ptr<Type2Maker> type2Maker_;
+	 std::vector<TypeIDBase> requestedCreationOrder_;
+	 std::vector<TypeIDBase> actualCreationOrder_;
          
-         //hold onto the Manager passed in from the ServiceToken so that
-         // the ActivityRegistry of that Manager does not go out of scope
-         boost::shared_ptr<ServicesManager> associatedManager_;
       };
    }
 }
