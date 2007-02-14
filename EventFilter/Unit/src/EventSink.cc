@@ -5,7 +5,6 @@
 FUAdapter *EventSink::fwk_ = 0;
 bool EventSink::sinking_ = false;
 
-using namespace std;
 
 void EventSink::sink(){
   FURawEvent *event = fwk_->rqstEvent();

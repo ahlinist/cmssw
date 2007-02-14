@@ -9,9 +9,6 @@
 #include "EventFilter/Unit/interface/EventSink.h"
 
 
-using namespace std;
-
-
 FUAdapter::FUAdapter(xdaq::ApplicationStub *s, string buClassName, 
 		     unsigned long outsize) : xdaq::Application(s),
   factory_(0), buName_(buClassName), bufSize_(outsize), bSem_(BSem::FULL), 
