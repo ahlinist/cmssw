@@ -15,11 +15,9 @@
 
 #include <vector>
 
-using namespace ROOT::Minuit2;
-
 class CSCChamberSpecs;
 
-class CSCStripClusterFcn : public FCNBase {
+class CSCStripClusterFcn : public ROOT::Minuit2::FCNBase {
 public:
   void initChamberSpecs(const CSCChamberSpecs & chamberSpecs);
 

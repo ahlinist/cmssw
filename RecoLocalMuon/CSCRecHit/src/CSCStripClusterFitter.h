@@ -19,8 +19,6 @@
 #include <RecoLocalMuon/CSCRecHit/src/CSCStripClusterCentroid.h>
 #include <Minuit2/VariableMetricMinimizer.h>
 
-using namespace ROOT::Minuit2;
-
 class CSCStripClusterFcn;
 class CSCChamberSpecs;
 
@@ -29,7 +27,7 @@ class CSCStripClusterFitter : public CSCFindPositionOfStripCluster
 public:
   /// ctor allows defaults.
   /// if you don't specify a fitter and chisq function, defaults are assigned.
-  CSCStripClusterFitter(ModularFunctionMinimizer* minimizer = 0, CSCStripClusterFcn * function = 0);
+  CSCStripClusterFitter(ROOT::Minuit2::ModularFunctionMinimizer* minimizer = 0, CSCStripClusterFcn * function = 0);
   virtual ~CSCStripClusterFitter();
 
 /// Feed specs to function
@@ -40,7 +38,7 @@ public:
                    double& u, double&  sigma, double& chisq, double& prob);
 
 private:
-  ModularFunctionMinimizer* pMinimizer;
+  ROOT::Minuit2::ModularFunctionMinimizer* pMinimizer;
   CSCStripClusterFcn* pFcn;
   // backup for when the fit chi2 is bad
   CSCStripClusterCentroid theCentroidClusterer;
