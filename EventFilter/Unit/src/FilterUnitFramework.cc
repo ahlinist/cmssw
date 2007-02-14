@@ -7,6 +7,9 @@
 //
 //  Modification history:
 //    $Log: FilterUnitFramework.cc,v $
+//    Revision 1.22  2006/11/14 10:10:02  meschi
+//    fix bug for queueSize = 1, added bu range
+//
 //    Revision 1.21  2006/11/11 12:28:08  schiefer
 //    tag V00-11-01: removed extra ';' for slc4/gcc3.4.5 compliance
 //
@@ -301,6 +304,12 @@ void FilterUnitFramework::enableAction(toolbox::Event::Reference e) throw (toolb
   LOG4CPLUS_INFO(this->getApplicationLogger(),"Run Started...");
 }
 
+void FilterUnitFramework::stopAction(toolbox::Event::Reference e) throw (toolbox::fsm::exception::Exception)
+{
+  //  dummy for the moment
+}
+
+
 void FilterUnitFramework::suspendAction(toolbox::Event::Reference e) throw (toolbox::fsm::exception::Exception)
 {
   //  pthread_t ttid = pthread_self();
@@ -398,7 +407,6 @@ xoap::MessageReference FilterUnitFramework::getStateMsg(xoap::MessageReference m
 #include "extern/cgicc/linuxx86/include/cgicc/HTMLClasses.h"
 #include <stdio.h>
 
-using namespace cgicc;
 
 void FilterUnitFramework::defaultWebPage(xgi::Input *in, xgi::Output *out)
   throw (xgi::exception::Exception)
