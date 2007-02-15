@@ -16,5 +16,6 @@ module coneIsolation = ConeIsolation {
   	double DeltaZetTrackVertex = 0.2
   	int32 MaximumNumberOfTracksIsolationRing = 0.
         bool useVertex = false		
+        bool UseFixedSizeCone = true
+        double VariableConeParameter = 3.5	
 }
-
