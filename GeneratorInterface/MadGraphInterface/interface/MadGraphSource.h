@@ -57,6 +57,8 @@ namespace edm
     bool getInputFromMCDB_;
     /// Sets the MCDB Article ID (0 if none)
     int MCDBArticleID_;
+    unsigned int firstEvent_;
+    unsigned int lhe_event_counter_;
   };
 } 
 
