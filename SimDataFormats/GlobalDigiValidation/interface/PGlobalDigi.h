@@ -14,17 +14,16 @@ class PGlobalDigi
   // ECal Info
   struct ECalDigi
   {
-    ECalDigi(): ADC(0), maxPos(0), AEE(0), SHE(0) {}
-    float ADC;
+    ECalDigi(): maxPos(0), AEE(0), SHE(0) {}
     float maxPos;
-    float AEE;
-    float SHE;
+    float AEE; //analog equivalent energy
+    float SHE; //simhit energy
   };
   typedef std::vector<ECalDigi> ECalDigiVector;
   //put functions
-  void putEECalDigis(std::vector<float> adc, std::vector<float> maxpos,
+  void putEECalDigis(std::vector<float> maxpos,
 		     std::vector<float> aee, std::vector<float> she);
-  void putEBCalDigis(std::vector<float> adc, std::vector<float> maxpos,
+  void putEBCalDigis(std::vector<float> maxpos,
 		     std::vector<float> aee, std::vector<float> she);
   //get functions
   int getnEECalDigis() {return nEECalDigis;}
