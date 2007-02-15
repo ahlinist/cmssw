@@ -65,9 +65,9 @@ for(;it!= tracks.end();it++)
  IsolatedTauTagInfo resultExtended(myTracks);
 
  double r_sigCone = signal_cone;
- double etJet = jetTracks->key->pt();
+ double energyJet = jetTracks->key->energy();
  if(!useFixedSizeCone){
-   r_sigCone = std::min(signal_cone, variableConeParameter / etJet);
+   r_sigCone = std::min(signal_cone, variableConeParameter / energyJet);
  }
 
 
