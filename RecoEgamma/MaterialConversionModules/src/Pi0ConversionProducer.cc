@@ -47,14 +47,12 @@ Pi0ConversionProducer::Pi0ConversionProducer(const edm::ParameterSet& ps)
   
   pi0conv_p = new Pi0ConversionAlgo(debugL);
   
-  conversioncollection_ = ps.getParameter<std::string>("conversionCollection");
   basicclusterCollection_ = ps.getParameter<std::string>("basicclusterCollection");
   basicclusterProducer_ = ps.getParameter<std::string>("basicclusterProducer");
   //Note to me, steal these and hit accessor from SiStripElectron
   clusterdEtaMax_ = ps.getParameter<double>("clusterMaxEtaSep");
   clusterdRMax_ = ps.getParameter<double>("clusterdRMax");
   cluster_pt_thresh_ = ps.getParameter<double>("cluster_pt_thresh");
-  clusterMinPT_ = ps.getParameter<double>("clusterMinPT");
   clusterLabel_ = ps.getParameter<std::string>("ConversionLabel");
   stubminimumhits_ = ps.getParameter<int>("stubminimumhits");
   //builderName_ =  = ps.getParameter<std::string>("TTRHBuilder");
