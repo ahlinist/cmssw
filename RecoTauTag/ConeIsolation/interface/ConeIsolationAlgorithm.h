@@ -57,6 +57,9 @@ class  ConeIsolationAlgorithm  {
   bool useVertexConstrain_;
   bool useFixedSizeCone;
   double variableConeParameter;
+  double variableMaxCone;
+  double variableMinCone;
+
 };
 
 #endif 
