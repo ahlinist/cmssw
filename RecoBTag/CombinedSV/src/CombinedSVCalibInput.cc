@@ -8,7 +8,7 @@ using namespace std;
 combsv::CombinedSVCalibInput::CombinedSVCalibInput(
     reco::btag::Vertices::VertexType vtx,
     combsv::Partons::PartonType pt,
-    reco::btag::TaggingVariableName tag,
+    reco::btau::TaggingVariableName tag,
     double jetpt, double jeteta ) :
   vertexType_ ( vtx ), partonType_ ( pt ), taggingVar_ ( tag ),
   jetPt_ ( jetpt ), jetEta_ ( fabs ( jeteta ) )
@@ -20,7 +20,7 @@ void combsv::CombinedSVCalibInput::printMe() const
   cout << describe() << endl;
 }
 
-void combsv::CombinedSVCalibInput::setTaggingVariable ( reco::btag::TaggingVariableName t )
+void combsv::CombinedSVCalibInput::setTaggingVariable ( reco::btau::TaggingVariableName t )
 {
   taggingVar_=t;
 }
@@ -53,7 +53,7 @@ combsv::Partons::PartonType combsv::CombinedSVCalibInput::partonType() const
   return partonType_;
 }
 
-reco::btag::TaggingVariableName combsv::CombinedSVCalibInput::taggingVar() const
+reco::btau::TaggingVariableName combsv::CombinedSVCalibInput::taggingVar() const
 {
   return taggingVar_;
 }

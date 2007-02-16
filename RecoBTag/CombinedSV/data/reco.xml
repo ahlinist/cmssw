@@ -363,7 +363,7 @@
       <Bin uLimit="7." value="0." />
    </CalibratedHistogram>
 </CombinedCategory>
-<CombinedCategory JetEtaMax="1.20000004768371582" JetEtaMin="0." JetPtMax="40." JetPtMin="0." PartonType="B" TaggingVariable="eSVXOverE" VertexType="RecoVertex">
+<CombinedCategory JetEtaMax="1.20000004768371582" JetEtaMin="0." JetPtMax="40." JetPtMin="0." PartonType="B" TaggingVariable="secondaryVtxEnergyRatio" VertexType="RecoVertex">
    <CalibratedHistogram entries="8414" overFlowValue="0" size="42">
       <Bin uLimit="-0.0250000003725290298" value="0." />
       <Bin uLimit="0." value="0.000716080539859831333" />
@@ -409,7 +409,7 @@
       <Bin uLimit="1." value="0.0603771880269050598" />
    </CalibratedHistogram>
 </CombinedCategory>
-<CombinedCategory JetEtaMax="1.20000004768371582" JetEtaMin="0." JetPtMax="40." JetPtMin="0." PartonType="C" TaggingVariable="eSVXOverE" VertexType="RecoVertex">
+<CombinedCategory JetEtaMax="1.20000004768371582" JetEtaMin="0." JetPtMax="40." JetPtMin="0." PartonType="C" TaggingVariable="secondaryVtxEnergyRatio" VertexType="RecoVertex">
    <CalibratedHistogram entries="5482" overFlowValue="0" size="42">
       <Bin uLimit="-0.0250000003725290298" value="0." />
       <Bin uLimit="0." value="0.000676687282975763083" />
@@ -455,7 +455,7 @@
       <Bin uLimit="1." value="0.105562396347522736" />
    </CalibratedHistogram>
 </CombinedCategory>
-<CombinedCategory JetEtaMax="1.20000004768371582" JetEtaMin="0." JetPtMax="40." JetPtMin="0." PartonType="UDSG" TaggingVariable="eSVXOverE" VertexType="RecoVertex">
+<CombinedCategory JetEtaMax="1.20000004768371582" JetEtaMin="0." JetPtMax="40." JetPtMin="0." PartonType="UDSG" TaggingVariable="secondaryVtxEnergyRatio" VertexType="RecoVertex">
    <CalibratedHistogram entries="5624" overFlowValue="0" size="42">
       <Bin uLimit="-0.0250000003725290298" value="0." />
       <Bin uLimit="0." value="0.00178081484045833349" />
@@ -2013,7 +2013,7 @@
       <Bin uLimit="7." value="2.81962979897798505e-06" />
    </CalibratedHistogram>
 </CombinedCategory>
-<CombinedCategory JetEtaMax="1.20000004768371582" JetEtaMin="0." JetPtMax="60." JetPtMin="40." PartonType="B" TaggingVariable="eSVXOverE" VertexType="RecoVertex">
+<CombinedCategory JetEtaMax="1.20000004768371582" JetEtaMin="0." JetPtMax="60." JetPtMin="40." PartonType="B" TaggingVariable="secondaryVtxEnergyRatio" VertexType="RecoVertex">
    <CalibratedHistogram entries="8417" overFlowValue="0" size="42">
       <Bin uLimit="-0.0250000003725290298" value="0." />
       <Bin uLimit="0." value="0.00104004982858896255" />
@@ -2059,7 +2059,7 @@
       <Bin uLimit="1." value="0.0378477685153484344" />
    </CalibratedHistogram>
 </CombinedCategory>
-<CombinedCategory JetEtaMax="1.20000004768371582" JetEtaMin="0." JetPtMax="60." JetPtMin="40." PartonType="C" TaggingVariable="eSVXOverE" VertexType="RecoVertex">
+<CombinedCategory JetEtaMax="1.20000004768371582" JetEtaMin="0." JetPtMax="60." JetPtMin="40." PartonType="C" TaggingVariable="secondaryVtxEnergyRatio" VertexType="RecoVertex">
    <CalibratedHistogram entries="6251" overFlowValue="0" size="42">
       <Bin uLimit="-0.0250000003725290298" value="0." />
       <Bin uLimit="0." value="0.00139920029323548079" />
@@ -2105,7 +2105,7 @@
       <Bin uLimit="1." value="0.0659630298614501953" />
    </CalibratedHistogram>
 </CombinedCategory>
-<CombinedCategory JetEtaMax="1.20000004768371582" JetEtaMin="0." JetPtMax="60." JetPtMin="40." PartonType="UDSG" TaggingVariable="eSVXOverE" VertexType="RecoVertex">
+<CombinedCategory JetEtaMax="1.20000004768371582" JetEtaMin="0." JetPtMax="60." JetPtMin="40." PartonType="UDSG" TaggingVariable="secondaryVtxEnergyRatio" VertexType="RecoVertex">
    <CalibratedHistogram entries="3474" overFlowValue="0" size="42">
       <Bin uLimit="-0.0250000003725290298" value="0." />
       <Bin uLimit="0." value="0.00613644206896424294" />
@@ -3663,7 +3663,7 @@
       <Bin uLimit="7." value="0." />
    </CalibratedHistogram>
 </CombinedCategory>
-<CombinedCategory JetEtaMax="1.20000004768371582" JetEtaMin="0." JetPtMax="90." JetPtMin="60." PartonType="B" TaggingVariable="eSVXOverE" VertexType="RecoVertex">
+<CombinedCategory JetEtaMax="1.20000004768371582" JetEtaMin="0." JetPtMax="90." JetPtMin="60." PartonType="B" TaggingVariable="secondaryVtxEnergyRatio" VertexType="RecoVertex">
    <CalibratedHistogram entries="7276" overFlowValue="0" size="42">
       <Bin uLimit="-0.0250000003725290298" value="0." />
       <Bin uLimit="0." value="0.00262335105799138546" />
@@ -3709,7 +3709,7 @@
       <Bin uLimit="1." value="0.0228381957858800888" />
    </CalibratedHistogram>
 </CombinedCategory>
-<CombinedCategory JetEtaMax="1.20000004768371582" JetEtaMin="0." JetPtMax="90." JetPtMin="60." PartonType="C" TaggingVariable="eSVXOverE" VertexType="RecoVertex">
+<CombinedCategory JetEtaMax="1.20000004768371582" JetEtaMin="0." JetPtMax="90." JetPtMin="60." PartonType="C" TaggingVariable="secondaryVtxEnergyRatio" VertexType="RecoVertex">
    <CalibratedHistogram entries="6319" overFlowValue="0" size="42">
       <Bin uLimit="-0.0250000003725290298" value="0." />
       <Bin uLimit="0." value="0.00367719563655555248" />
@@ -3755,7 +3755,7 @@
       <Bin uLimit="1." value="0.0360215045511722565" />
    </CalibratedHistogram>
 </CombinedCategory>
-<CombinedCategory JetEtaMax="1.20000004768371582" JetEtaMin="0." JetPtMax="90." JetPtMin="60." PartonType="UDSG" TaggingVariable="eSVXOverE" VertexType="RecoVertex">
+<CombinedCategory JetEtaMax="1.20000004768371582" JetEtaMin="0." JetPtMax="90." JetPtMin="60." PartonType="UDSG" TaggingVariable="secondaryVtxEnergyRatio" VertexType="RecoVertex">
    <CalibratedHistogram entries="3186" overFlowValue="0" size="42">
       <Bin uLimit="-0.0250000003725290298" value="0." />
       <Bin uLimit="0." value="0.0116657586768269539" />
@@ -5313,7 +5313,7 @@
       <Bin uLimit="7." value="0." />
    </CalibratedHistogram>
 </CombinedCategory>
-<CombinedCategory JetEtaMax="1.20000004768371582" JetEtaMin="0." JetPtMax="150." JetPtMin="90." PartonType="B" TaggingVariable="eSVXOverE" VertexType="RecoVertex">
+<CombinedCategory JetEtaMax="1.20000004768371582" JetEtaMin="0." JetPtMax="150." JetPtMin="90." PartonType="B" TaggingVariable="secondaryVtxEnergyRatio" VertexType="RecoVertex">
    <CalibratedHistogram entries="4645" overFlowValue="0" size="42">
       <Bin uLimit="-0.0250000003725290298" value="0." />
       <Bin uLimit="0." value="0.010791044682264328" />
@@ -5359,7 +5359,7 @@
       <Bin uLimit="1." value="0.0173609070479869843" />
    </CalibratedHistogram>
 </CombinedCategory>
-<CombinedCategory JetEtaMax="1.20000004768371582" JetEtaMin="0." JetPtMax="150." JetPtMin="90." PartonType="C" TaggingVariable="eSVXOverE" VertexType="RecoVertex">
+<CombinedCategory JetEtaMax="1.20000004768371582" JetEtaMin="0." JetPtMax="150." JetPtMin="90." PartonType="C" TaggingVariable="secondaryVtxEnergyRatio" VertexType="RecoVertex">
    <CalibratedHistogram entries="5650" overFlowValue="0" size="42">
       <Bin uLimit="-0.0250000003725290298" value="0." />
       <Bin uLimit="0." value="0.0109966723248362541" />
@@ -5405,7 +5405,7 @@
       <Bin uLimit="1." value="0.0153584247455000877" />
    </CalibratedHistogram>
 </CombinedCategory>
-<CombinedCategory JetEtaMax="1.20000004768371582" JetEtaMin="0." JetPtMax="150." JetPtMin="90." PartonType="UDSG" TaggingVariable="eSVXOverE" VertexType="RecoVertex">
+<CombinedCategory JetEtaMax="1.20000004768371582" JetEtaMin="0." JetPtMax="150." JetPtMin="90." PartonType="UDSG" TaggingVariable="secondaryVtxEnergyRatio" VertexType="RecoVertex">
    <CalibratedHistogram entries="3240" overFlowValue="0" size="42">
       <Bin uLimit="-0.0250000003725290298" value="0." />
       <Bin uLimit="0." value="0.0497811101377010345" />
@@ -6963,7 +6963,7 @@
       <Bin uLimit="7." value="9.91618708212627098e-06" />
    </CalibratedHistogram>
 </CombinedCategory>
-<CombinedCategory JetEtaMax="1.20000004768371582" JetEtaMin="0." JetPtMax="30000." JetPtMin="150." PartonType="B" TaggingVariable="eSVXOverE" VertexType="RecoVertex">
+<CombinedCategory JetEtaMax="1.20000004768371582" JetEtaMin="0." JetPtMax="30000." JetPtMin="150." PartonType="B" TaggingVariable="secondaryVtxEnergyRatio" VertexType="RecoVertex">
    <CalibratedHistogram entries="2790" overFlowValue="0" size="42">
       <Bin uLimit="-0.0250000003725290298" value="0." />
       <Bin uLimit="0." value="0.0510158799588680267" />
@@ -7009,7 +7009,7 @@
       <Bin uLimit="1." value="0.0111117567867040634" />
    </CalibratedHistogram>
 </CombinedCategory>
-<CombinedCategory JetEtaMax="1.20000004768371582" JetEtaMin="0." JetPtMax="30000." JetPtMin="150." PartonType="C" TaggingVariable="eSVXOverE" VertexType="RecoVertex">
+<CombinedCategory JetEtaMax="1.20000004768371582" JetEtaMin="0." JetPtMax="30000." JetPtMin="150." PartonType="C" TaggingVariable="secondaryVtxEnergyRatio" VertexType="RecoVertex">
    <CalibratedHistogram entries="5290" overFlowValue="0" size="42">
       <Bin uLimit="-0.0250000003725290298" value="0." />
       <Bin uLimit="0." value="0.0244745351374149323" />
@@ -7055,7 +7055,7 @@
       <Bin uLimit="1." value="0.0108023621141910553" />
    </CalibratedHistogram>
 </CombinedCategory>
-<CombinedCategory JetEtaMax="1.20000004768371582" JetEtaMin="0." JetPtMax="30000." JetPtMin="150." PartonType="UDSG" TaggingVariable="eSVXOverE" VertexType="RecoVertex">
+<CombinedCategory JetEtaMax="1.20000004768371582" JetEtaMin="0." JetPtMax="30000." JetPtMin="150." PartonType="UDSG" TaggingVariable="secondaryVtxEnergyRatio" VertexType="RecoVertex">
    <CalibratedHistogram entries="3259" overFlowValue="0" size="42">
       <Bin uLimit="-0.0250000003725290298" value="0." />
       <Bin uLimit="0." value="0.124686382710933685" />
@@ -8613,7 +8613,7 @@
       <Bin uLimit="7." value="6.97367613611277193e-06" />
    </CalibratedHistogram>
 </CombinedCategory>
-<CombinedCategory JetEtaMax="2.09999990463256836" JetEtaMin="1.20000004768371582" JetPtMax="40." JetPtMin="0." PartonType="B" TaggingVariable="eSVXOverE" VertexType="RecoVertex">
+<CombinedCategory JetEtaMax="2.09999990463256836" JetEtaMin="1.20000004768371582" JetPtMax="40." JetPtMin="0." PartonType="B" TaggingVariable="secondaryVtxEnergyRatio" VertexType="RecoVertex">
    <CalibratedHistogram entries="1655" overFlowValue="0" size="42">
       <Bin uLimit="-0.0250000003725290298" value="0." />
       <Bin uLimit="0." value="0.00797293055802583694" />
@@ -8659,7 +8659,7 @@
       <Bin uLimit="1." value="0.205398291349411011" />
    </CalibratedHistogram>
 </CombinedCategory>
-<CombinedCategory JetEtaMax="2.09999990463256836" JetEtaMin="1.20000004768371582" JetPtMax="40." JetPtMin="0." PartonType="C" TaggingVariable="eSVXOverE" VertexType="RecoVertex">
+<CombinedCategory JetEtaMax="2.09999990463256836" JetEtaMin="1.20000004768371582" JetPtMax="40." JetPtMin="0." PartonType="C" TaggingVariable="secondaryVtxEnergyRatio" VertexType="RecoVertex">
    <CalibratedHistogram entries="1216" overFlowValue="0" size="42">
       <Bin uLimit="-0.0250000003725290298" value="0." />
       <Bin uLimit="0." value="0.00307138171046972275" />
@@ -8705,7 +8705,7 @@
       <Bin uLimit="1." value="0.317176997661590576" />
    </CalibratedHistogram>
 </CombinedCategory>
-<CombinedCategory JetEtaMax="2.09999990463256836" JetEtaMin="1.20000004768371582" JetPtMax="40." JetPtMin="0." PartonType="UDSG" TaggingVariable="eSVXOverE" VertexType="RecoVertex">
+<CombinedCategory JetEtaMax="2.09999990463256836" JetEtaMin="1.20000004768371582" JetPtMax="40." JetPtMin="0." PartonType="UDSG" TaggingVariable="secondaryVtxEnergyRatio" VertexType="RecoVertex">
    <CalibratedHistogram entries="3948" overFlowValue="0" size="42">
       <Bin uLimit="-0.0250000003725290298" value="0." />
       <Bin uLimit="0." value="0.00578120583668351173" />
@@ -10263,7 +10263,7 @@
       <Bin uLimit="7." value="8.07924971013562754e-06" />
    </CalibratedHistogram>
 </CombinedCategory>
-<CombinedCategory JetEtaMax="2.09999990463256836" JetEtaMin="1.20000004768371582" JetPtMax="60." JetPtMin="40." PartonType="B" TaggingVariable="eSVXOverE" VertexType="RecoVertex">
+<CombinedCategory JetEtaMax="2.09999990463256836" JetEtaMin="1.20000004768371582" JetPtMax="60." JetPtMin="40." PartonType="B" TaggingVariable="secondaryVtxEnergyRatio" VertexType="RecoVertex">
    <CalibratedHistogram entries="1914" overFlowValue="0" size="42">
       <Bin uLimit="-0.0250000003725290298" value="0." />
       <Bin uLimit="0." value="0.0133813470602035522" />
@@ -10309,7 +10309,7 @@
       <Bin uLimit="1." value="0.0861423686146736145" />
    </CalibratedHistogram>
 </CombinedCategory>
-<CombinedCategory JetEtaMax="2.09999990463256836" JetEtaMin="1.20000004768371582" JetPtMax="60." JetPtMin="40." PartonType="C" TaggingVariable="eSVXOverE" VertexType="RecoVertex">
+<CombinedCategory JetEtaMax="2.09999990463256836" JetEtaMin="1.20000004768371582" JetPtMax="60." JetPtMin="40." PartonType="C" TaggingVariable="secondaryVtxEnergyRatio" VertexType="RecoVertex">
    <CalibratedHistogram entries="1325" overFlowValue="0" size="42">
       <Bin uLimit="-0.0250000003725290298" value="0." />
       <Bin uLimit="0." value="0.0094635477289557457" />
@@ -10355,7 +10355,7 @@
       <Bin uLimit="1." value="0.214630633592605591" />
    </CalibratedHistogram>
 </CombinedCategory>
-<CombinedCategory JetEtaMax="2.09999990463256836" JetEtaMin="1.20000004768371582" JetPtMax="60." JetPtMin="40." PartonType="UDSG" TaggingVariable="eSVXOverE" VertexType="RecoVertex">
+<CombinedCategory JetEtaMax="2.09999990463256836" JetEtaMin="1.20000004768371582" JetPtMax="60." JetPtMin="40." PartonType="UDSG" TaggingVariable="secondaryVtxEnergyRatio" VertexType="RecoVertex">
    <CalibratedHistogram entries="1993" overFlowValue="0" size="42">
       <Bin uLimit="-0.0250000003725290298" value="0." />
       <Bin uLimit="0." value="0.024603966623544693" />
@@ -11913,7 +11913,7 @@
       <Bin uLimit="7." value="7.66761222621425986e-05" />
    </CalibratedHistogram>
 </CombinedCategory>
-<CombinedCategory JetEtaMax="2.09999990463256836" JetEtaMin="1.20000004768371582" JetPtMax="90." JetPtMin="60." PartonType="B" TaggingVariable="eSVXOverE" VertexType="RecoVertex">
+<CombinedCategory JetEtaMax="2.09999990463256836" JetEtaMin="1.20000004768371582" JetPtMax="90." JetPtMin="60." PartonType="B" TaggingVariable="secondaryVtxEnergyRatio" VertexType="RecoVertex">
    <CalibratedHistogram entries="1927" overFlowValue="0" size="42">
       <Bin uLimit="-0.0250000003725290298" value="0." />
       <Bin uLimit="0." value="0.0403398089110851288" />
@@ -11959,7 +11959,7 @@
       <Bin uLimit="1." value="0.0403686612844467163" />
    </CalibratedHistogram>
 </CombinedCategory>
-<CombinedCategory JetEtaMax="2.09999990463256836" JetEtaMin="1.20000004768371582" JetPtMax="90." JetPtMin="60." PartonType="C" TaggingVariable="eSVXOverE" VertexType="RecoVertex">
+<CombinedCategory JetEtaMax="2.09999990463256836" JetEtaMin="1.20000004768371582" JetPtMax="90." JetPtMin="60." PartonType="C" TaggingVariable="secondaryVtxEnergyRatio" VertexType="RecoVertex">
    <CalibratedHistogram entries="1689" overFlowValue="0" size="42">
       <Bin uLimit="-0.0250000003725290298" value="0." />
       <Bin uLimit="0." value="0.0335275270044803619" />
@@ -12005,7 +12005,7 @@
       <Bin uLimit="1." value="0.0665469542145729065" />
    </CalibratedHistogram>
 </CombinedCategory>
-<CombinedCategory JetEtaMax="2.09999990463256836" JetEtaMin="1.20000004768371582" JetPtMax="90." JetPtMin="60." PartonType="UDSG" TaggingVariable="eSVXOverE" VertexType="RecoVertex">
+<CombinedCategory JetEtaMax="2.09999990463256836" JetEtaMin="1.20000004768371582" JetPtMax="90." JetPtMin="60." PartonType="UDSG" TaggingVariable="secondaryVtxEnergyRatio" VertexType="RecoVertex">
    <CalibratedHistogram entries="1963" overFlowValue="0" size="42">
       <Bin uLimit="-0.0250000003725290298" value="0." />
       <Bin uLimit="0." value="0.0637056007981300354" />
@@ -13563,7 +13563,7 @@
       <Bin uLimit="7." value="5.70159572816919535e-05" />
    </CalibratedHistogram>
 </CombinedCategory>
-<CombinedCategory JetEtaMax="2.09999990463256836" JetEtaMin="1.20000004768371582" JetPtMax="150." JetPtMin="90." PartonType="B" TaggingVariable="eSVXOverE" VertexType="RecoVertex">
+<CombinedCategory JetEtaMax="2.09999990463256836" JetEtaMin="1.20000004768371582" JetPtMax="150." JetPtMin="90." PartonType="B" TaggingVariable="secondaryVtxEnergyRatio" VertexType="RecoVertex">
    <CalibratedHistogram entries="1719" overFlowValue="0" size="42">
       <Bin uLimit="-0.0250000003725290298" value="0." />
       <Bin uLimit="0." value="0.115237466990947723" />
@@ -13609,7 +13609,7 @@
       <Bin uLimit="1." value="0.0147645724937319756" />
    </CalibratedHistogram>
 </CombinedCategory>
-<CombinedCategory JetEtaMax="2.09999990463256836" JetEtaMin="1.20000004768371582" JetPtMax="150." JetPtMin="90." PartonType="C" TaggingVariable="eSVXOverE" VertexType="RecoVertex">
+<CombinedCategory JetEtaMax="2.09999990463256836" JetEtaMin="1.20000004768371582" JetPtMax="150." JetPtMin="90." PartonType="C" TaggingVariable="secondaryVtxEnergyRatio" VertexType="RecoVertex">
    <CalibratedHistogram entries="1515" overFlowValue="0" size="42">
       <Bin uLimit="-0.0250000003725290298" value="0." />
       <Bin uLimit="0." value="0.106075495481491089" />
@@ -13655,7 +13655,7 @@
       <Bin uLimit="1." value="0.0342200025916099548" />
    </CalibratedHistogram>
 </CombinedCategory>
-<CombinedCategory JetEtaMax="2.09999990463256836" JetEtaMin="1.20000004768371582" JetPtMax="150." JetPtMin="90." PartonType="UDSG" TaggingVariable="eSVXOverE" VertexType="RecoVertex">
+<CombinedCategory JetEtaMax="2.09999990463256836" JetEtaMin="1.20000004768371582" JetPtMax="150." JetPtMin="90." PartonType="UDSG" TaggingVariable="secondaryVtxEnergyRatio" VertexType="RecoVertex">
    <CalibratedHistogram entries="2098" overFlowValue="0" size="42">
       <Bin uLimit="-0.0250000003725290298" value="0." />
       <Bin uLimit="0." value="0.190574198961257935" />
@@ -15213,7 +15213,7 @@
       <Bin uLimit="7." value="0.00037093431456014514" />
    </CalibratedHistogram>
 </CombinedCategory>
-<CombinedCategory JetEtaMax="2.09999990463256836" JetEtaMin="1.20000004768371582" JetPtMax="30000." JetPtMin="150." PartonType="B" TaggingVariable="eSVXOverE" VertexType="RecoVertex">
+<CombinedCategory JetEtaMax="2.09999990463256836" JetEtaMin="1.20000004768371582" JetPtMax="30000." JetPtMin="150." PartonType="B" TaggingVariable="secondaryVtxEnergyRatio" VertexType="RecoVertex">
    <CalibratedHistogram entries="1695" overFlowValue="0" size="42">
       <Bin uLimit="-0.0250000003725290298" value="0." />
       <Bin uLimit="0." value="0.272285491228103638" />
@@ -15259,7 +15259,7 @@
       <Bin uLimit="1." value="0.0094473743811249733" />
    </CalibratedHistogram>
 </CombinedCategory>
-<CombinedCategory JetEtaMax="2.09999990463256836" JetEtaMin="1.20000004768371582" JetPtMax="30000." JetPtMin="150." PartonType="C" TaggingVariable="eSVXOverE" VertexType="RecoVertex">
+<CombinedCategory JetEtaMax="2.09999990463256836" JetEtaMin="1.20000004768371582" JetPtMax="30000." JetPtMin="150." PartonType="C" TaggingVariable="secondaryVtxEnergyRatio" VertexType="RecoVertex">
    <CalibratedHistogram entries="2121" overFlowValue="0" size="42">
       <Bin uLimit="-0.0250000003725290298" value="0." />
       <Bin uLimit="0." value="0.164236605167388916" />
@@ -15305,7 +15305,7 @@
       <Bin uLimit="1." value="0.00887802895158529282" />
    </CalibratedHistogram>
 </CombinedCategory>
-<CombinedCategory JetEtaMax="2.09999990463256836" JetEtaMin="1.20000004768371582" JetPtMax="30000." JetPtMin="150." PartonType="UDSG" TaggingVariable="eSVXOverE" VertexType="RecoVertex">
+<CombinedCategory JetEtaMax="2.09999990463256836" JetEtaMin="1.20000004768371582" JetPtMax="30000." JetPtMin="150." PartonType="UDSG" TaggingVariable="secondaryVtxEnergyRatio" VertexType="RecoVertex">
    <CalibratedHistogram entries="2744" overFlowValue="0" size="42">
       <Bin uLimit="-0.0250000003725290298" value="0." />
       <Bin uLimit="0." value="0.305306673049926758" />
@@ -16863,7 +16863,7 @@
       <Bin uLimit="7." value="0." />
    </CalibratedHistogram>
 </CombinedCategory>
-<CombinedCategory JetEtaMax="5." JetEtaMin="2.09999990463256836" JetPtMax="40." JetPtMin="0." PartonType="B" TaggingVariable="eSVXOverE" VertexType="RecoVertex">
+<CombinedCategory JetEtaMax="5." JetEtaMin="2.09999990463256836" JetPtMax="40." JetPtMin="0." PartonType="B" TaggingVariable="secondaryVtxEnergyRatio" VertexType="RecoVertex">
    <CalibratedHistogram entries="512" overFlowValue="0" size="42">
       <Bin uLimit="-0.0250000003725290298" value="0." />
       <Bin uLimit="0." value="-0." />
@@ -16909,7 +16909,7 @@
       <Bin uLimit="1." value="1.3495628833770752" />
    </CalibratedHistogram>
 </CombinedCategory>
-<CombinedCategory JetEtaMax="5." JetEtaMin="2.09999990463256836" JetPtMax="40." JetPtMin="0." PartonType="C" TaggingVariable="eSVXOverE" VertexType="RecoVertex">
+<CombinedCategory JetEtaMax="5." JetEtaMin="2.09999990463256836" JetPtMax="40." JetPtMin="0." PartonType="C" TaggingVariable="secondaryVtxEnergyRatio" VertexType="RecoVertex">
    <CalibratedHistogram entries="338" overFlowValue="0" size="42">
       <Bin uLimit="-0.0250000003725290298" value="0." />
       <Bin uLimit="0." value="0.0581381618976593018" />
@@ -16955,7 +16955,7 @@
       <Bin uLimit="1." value="1.97669327259063721" />
    </CalibratedHistogram>
 </CombinedCategory>
-<CombinedCategory JetEtaMax="5." JetEtaMin="2.09999990463256836" JetPtMax="40." JetPtMin="0." PartonType="UDSG" TaggingVariable="eSVXOverE" VertexType="RecoVertex">
+<CombinedCategory JetEtaMax="5." JetEtaMin="2.09999990463256836" JetPtMax="40." JetPtMin="0." PartonType="UDSG" TaggingVariable="secondaryVtxEnergyRatio" VertexType="RecoVertex">
    <CalibratedHistogram entries="1839" overFlowValue="0" size="42">
       <Bin uLimit="-0.0250000003725290298" value="0." />
       <Bin uLimit="0." value="-0." />
@@ -18513,7 +18513,7 @@
       <Bin uLimit="7." value="0.000770488753914833069" />
    </CalibratedHistogram>
 </CombinedCategory>
-<CombinedCategory JetEtaMax="5." JetEtaMin="2.09999990463256836" JetPtMax="60." JetPtMin="40." PartonType="B" TaggingVariable="eSVXOverE" VertexType="RecoVertex">
+<CombinedCategory JetEtaMax="5." JetEtaMin="2.09999990463256836" JetPtMax="60." JetPtMin="40." PartonType="B" TaggingVariable="secondaryVtxEnergyRatio" VertexType="RecoVertex">
    <CalibratedHistogram entries="409" overFlowValue="0" size="42">
       <Bin uLimit="-0.0250000003725290298" value="0." />
       <Bin uLimit="0." value="-0." />
@@ -18559,7 +18559,7 @@
       <Bin uLimit="1." value="0.967588305473327637" />
    </CalibratedHistogram>
 </CombinedCategory>
-<CombinedCategory JetEtaMax="5." JetEtaMin="2.09999990463256836" JetPtMax="60." JetPtMin="40." PartonType="C" TaggingVariable="eSVXOverE" VertexType="RecoVertex">
+<CombinedCategory JetEtaMax="5." JetEtaMin="2.09999990463256836" JetPtMax="60." JetPtMin="40." PartonType="C" TaggingVariable="secondaryVtxEnergyRatio" VertexType="RecoVertex">
    <CalibratedHistogram entries="305" overFlowValue="0" size="42">
       <Bin uLimit="-0.0250000003725290298" value="0." />
       <Bin uLimit="0." value="0.0346836000680923462" />
@@ -18605,7 +18605,7 @@
       <Bin uLimit="1." value="1.32453572750091553" />
    </CalibratedHistogram>
 </CombinedCategory>
-<CombinedCategory JetEtaMax="5." JetEtaMin="2.09999990463256836" JetPtMax="60." JetPtMin="40." PartonType="UDSG" TaggingVariable="eSVXOverE" VertexType="RecoVertex">
+<CombinedCategory JetEtaMax="5." JetEtaMin="2.09999990463256836" JetPtMax="60." JetPtMin="40." PartonType="UDSG" TaggingVariable="secondaryVtxEnergyRatio" VertexType="RecoVertex">
    <CalibratedHistogram entries="675" overFlowValue="0" size="42">
       <Bin uLimit="-0.0250000003725290298" value="0." />
       <Bin uLimit="0." value="0.0467349700629711151" />
@@ -20163,7 +20163,7 @@
       <Bin uLimit="7." value="0.00323119317181408405" />
    </CalibratedHistogram>
 </CombinedCategory>
-<CombinedCategory JetEtaMax="5." JetEtaMin="2.09999990463256836" JetPtMax="90." JetPtMin="60." PartonType="B" TaggingVariable="eSVXOverE" VertexType="RecoVertex">
+<CombinedCategory JetEtaMax="5." JetEtaMin="2.09999990463256836" JetPtMax="90." JetPtMin="60." PartonType="B" TaggingVariable="secondaryVtxEnergyRatio" VertexType="RecoVertex">
    <CalibratedHistogram entries="331" overFlowValue="0" size="42">
       <Bin uLimit="-0.0250000003725290298" value="0." />
       <Bin uLimit="0." value="0.0479015111923217773" />
@@ -20209,7 +20209,7 @@
       <Bin uLimit="1." value="0.352018147706985474" />
    </CalibratedHistogram>
 </CombinedCategory>
-<CombinedCategory JetEtaMax="5." JetEtaMin="2.09999990463256836" JetPtMax="90." JetPtMin="60." PartonType="C" TaggingVariable="eSVXOverE" VertexType="RecoVertex">
+<CombinedCategory JetEtaMax="5." JetEtaMin="2.09999990463256836" JetPtMax="90." JetPtMin="60." PartonType="C" TaggingVariable="secondaryVtxEnergyRatio" VertexType="RecoVertex">
    <CalibratedHistogram entries="282" overFlowValue="0" size="42">
       <Bin uLimit="-0.0250000003725290298" value="0." />
       <Bin uLimit="0." value="-0." />
@@ -20255,7 +20255,7 @@
       <Bin uLimit="1." value="0.981163859367370605" />
    </CalibratedHistogram>
 </CombinedCategory>
-<CombinedCategory JetEtaMax="5." JetEtaMin="2.09999990463256836" JetPtMax="90." JetPtMin="60." PartonType="UDSG" TaggingVariable="eSVXOverE" VertexType="RecoVertex">
+<CombinedCategory JetEtaMax="5." JetEtaMin="2.09999990463256836" JetPtMax="90." JetPtMin="60." PartonType="UDSG" TaggingVariable="secondaryVtxEnergyRatio" VertexType="RecoVertex">
    <CalibratedHistogram entries="593" overFlowValue="0" size="42">
       <Bin uLimit="-0.0250000003725290298" value="0." />
       <Bin uLimit="0." value="0.0671494379639625549" />
@@ -21813,7 +21813,7 @@
       <Bin uLimit="7." value="0.00397149287164211273" />
    </CalibratedHistogram>
 </CombinedCategory>
-<CombinedCategory JetEtaMax="5." JetEtaMin="2.09999990463256836" JetPtMax="150." JetPtMin="90." PartonType="B" TaggingVariable="eSVXOverE" VertexType="RecoVertex">
+<CombinedCategory JetEtaMax="5." JetEtaMin="2.09999990463256836" JetPtMax="150." JetPtMin="90." PartonType="B" TaggingVariable="secondaryVtxEnergyRatio" VertexType="RecoVertex">
    <CalibratedHistogram entries="241" overFlowValue="0" size="42">
       <Bin uLimit="-0.0250000003725290298" value="0." />
       <Bin uLimit="0." value="0.16300538182258606" />
@@ -21859,7 +21859,7 @@
       <Bin uLimit="1." value="0.138805761933326721" />
    </CalibratedHistogram>
 </CombinedCategory>
-<CombinedCategory JetEtaMax="5." JetEtaMin="2.09999990463256836" JetPtMax="150." JetPtMin="90." PartonType="C" TaggingVariable="eSVXOverE" VertexType="RecoVertex">
+<CombinedCategory JetEtaMax="5." JetEtaMin="2.09999990463256836" JetPtMax="150." JetPtMin="90." PartonType="C" TaggingVariable="secondaryVtxEnergyRatio" VertexType="RecoVertex">
    <CalibratedHistogram entries="251" overFlowValue="0" size="42">
       <Bin uLimit="-0.0250000003725290298" value="0." />
       <Bin uLimit="0." value="0.180453002452850342" />
@@ -21905,7 +21905,7 @@
       <Bin uLimit="1." value="0.257789969444274902" />
    </CalibratedHistogram>
 </CombinedCategory>
-<CombinedCategory JetEtaMax="5." JetEtaMin="2.09999990463256836" JetPtMax="150." JetPtMin="90." PartonType="UDSG" TaggingVariable="eSVXOverE" VertexType="RecoVertex">
+<CombinedCategory JetEtaMax="5." JetEtaMin="2.09999990463256836" JetPtMax="150." JetPtMin="90." PartonType="UDSG" TaggingVariable="secondaryVtxEnergyRatio" VertexType="RecoVertex">
    <CalibratedHistogram entries="552" overFlowValue="0" size="42">
       <Bin uLimit="-0.0250000003725290298" value="0." />
       <Bin uLimit="0." value="0.20437389612197876" />
@@ -23463,7 +23463,7 @@
       <Bin uLimit="7." value="0.00437836535274982452" />
    </CalibratedHistogram>
 </CombinedCategory>
-<CombinedCategory JetEtaMax="5." JetEtaMin="2.09999990463256836" JetPtMax="30000." JetPtMin="150." PartonType="B" TaggingVariable="eSVXOverE" VertexType="RecoVertex">
+<CombinedCategory JetEtaMax="5." JetEtaMin="2.09999990463256836" JetPtMax="30000." JetPtMin="150." PartonType="B" TaggingVariable="secondaryVtxEnergyRatio" VertexType="RecoVertex">
    <CalibratedHistogram entries="196" overFlowValue="0" size="42">
       <Bin uLimit="-0.0250000003725290298" value="0." />
       <Bin uLimit="0." value="0.575946986675262451" />
@@ -23509,7 +23509,7 @@
       <Bin uLimit="1." value="0.140094876289367676" />
    </CalibratedHistogram>
 </CombinedCategory>
-<CombinedCategory JetEtaMax="5." JetEtaMin="2.09999990463256836" JetPtMax="30000." JetPtMin="150." PartonType="C" TaggingVariable="eSVXOverE" VertexType="RecoVertex">
+<CombinedCategory JetEtaMax="5." JetEtaMin="2.09999990463256836" JetPtMax="30000." JetPtMin="150." PartonType="C" TaggingVariable="secondaryVtxEnergyRatio" VertexType="RecoVertex">
    <CalibratedHistogram entries="239" overFlowValue="0" size="42">
       <Bin uLimit="-0.0250000003725290298" value="0." />
       <Bin uLimit="0." value="0.498711287975311279" />
@@ -23555,7 +23555,7 @@
       <Bin uLimit="1." value="0.166002079844474792" />
    </CalibratedHistogram>
 </CombinedCategory>
-<CombinedCategory JetEtaMax="5." JetEtaMin="2.09999990463256836" JetPtMax="30000." JetPtMin="150." PartonType="UDSG" TaggingVariable="eSVXOverE" VertexType="RecoVertex">
+<CombinedCategory JetEtaMax="5." JetEtaMin="2.09999990463256836" JetPtMax="30000." JetPtMin="150." PartonType="UDSG" TaggingVariable="secondaryVtxEnergyRatio" VertexType="RecoVertex">
    <CalibratedHistogram entries="606" overFlowValue="0" size="42">
       <Bin uLimit="-0.0250000003725290298" value="0." />
       <Bin uLimit="0." value="0.539914906024932861" />

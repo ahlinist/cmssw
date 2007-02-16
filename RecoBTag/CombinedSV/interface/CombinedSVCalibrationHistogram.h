@@ -18,7 +18,7 @@ namespace combsv {
                    float etaMin, float etaMax,
                    reco::btag::Vertices::VertexType vertexType,
                    combsv::Partons::PartonType partonType,
-                   reco::btag::TaggingVariableName taggingVar,
+                   reco::btau::TaggingVariableName taggingVar,
                    const std::vector < float > & binlowerEdge,
                    int nentries );
 

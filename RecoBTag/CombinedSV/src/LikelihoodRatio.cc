@@ -12,7 +12,7 @@ namespace {
    {
      for ( reco::TaggingVariableList::const_iterator i=s.begin(); i!=s.end() ; ++i )
      {
-       if ( i->first == reco::btag::jetPt ) return i->second;
+       if ( i->first == reco::btau::jetPt ) return i->second;
      }
      edm::LogError("LikelihoodRatio") << "jetpt not defined in tagging variables collection"
                                       << endl;
@@ -23,7 +23,7 @@ namespace {
    {
      for ( reco::TaggingVariableList::const_iterator i=s.begin(); i!=s.end() ; ++i )
      {
-       if ( i->first == reco::btag::jetEta ) return i->second;
+       if ( i->first == reco::btau::jetEta ) return i->second;
      }
      edm::LogError("LikelihoodRatio") << "jeteta not defined in tagging variables collection"
                                       << endl;
@@ -78,8 +78,8 @@ double LikelihoodRatio::compute ( const reco::TaggingVariableList & s ) const
 
   for ( reco::TaggingVariableList::const_iterator i = s.begin(); i != s.end(); i++ )
   {
-    reco::btag::TaggingVariableName taggingVar = i->first;
-    if ( taggingVar == reco::btag::jetPt || taggingVar == reco::btag::jetEta )
+    reco::btau::TaggingVariableName taggingVar = i->first;
+    if ( taggingVar == reco::btau::jetPt || taggingVar == reco::btau::jetEta )
     {
       LogDebug("") << "jetpt and jeteta are ignored for the moment." << endl;
       continue;
@@ -160,7 +160,7 @@ long double LikelihoodRatio::getPDFValue( double variableValue,
          << " variable not filled: value=" << variableValue;
              /*
              << "tagging variable "
-             << reco::btag::TaggingVariableName ( taggingVar )
+             << reco::btau::TaggingVariableName ( taggingVar )
              << " parton type " << combsv::Partons::name ( partonType )
              */
     return returnValue;
