@@ -9,6 +9,7 @@
 #include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
 
 #include <vector>
+#include <map>
 
 // \class BKinematics
 // \short small helper class to compute kinematic quantities
@@ -27,16 +28,18 @@ namespace reco {
     BKinematics ( const std::vector<reco::TransientTrack> & );
     BKinematics ( );
 
-    void add ( const reco::TransientTrack & t, bool update=true );
+    void add ( const reco::TransientTrack & t, float weight=1.0, bool update=true );
     void add ( const combsv::CombinedTrack & t );
     void updateMass();
 
     double       getMass() const;
     double       getEnergy() const;
+    double       getWeightedEnergy() const; // get weighted pseudo-energy
     GlobalVector get3Vector() const;
 
   private:
     void computeKinematics( const std::vector<reco::TransientTrack> & );
+    void computeKinematics( const std::map<reco::TransientTrack, float> & );
 
   private:
     // variables
@@ -44,6 +47,8 @@ namespace reco {
                   // mass hypothesis
     double energy_; // energy associated to the tracks assuming Pion
                     // mass hypothesis
+    double fractionalEnergy_; // energy associated to the tracks,
+     // but respecting the track weights - unphysical!
     GlobalVector vec3_; // total momentum
 
   };

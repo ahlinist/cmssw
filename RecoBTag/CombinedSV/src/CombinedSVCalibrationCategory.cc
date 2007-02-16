@@ -8,7 +8,7 @@ combsv::CombinedSVCalibrationCategory::CombinedSVCalibrationCategory(
     float ptMin,  float ptMax, float etaMin, float etaMax,
     reco::btag::Vertices::VertexType      vertexType,
     combsv::Partons::PartonType      partonType,
-    reco::btag::TaggingVariableName taggingVar) :
+    reco::btau::TaggingVariableName taggingVar) :
   jetPtMin_ (ptMin ), jetPtMax_ ( ptMax ), jetEtaMin_ ( etaMin ), jetEtaMax_ ( etaMax ),
   vertexType_ ( vertexType ), partonType_ ( partonType ), taggingVar_ ( taggingVar )
 {}
@@ -47,7 +47,7 @@ combsv::Partons::PartonType      combsv::CombinedSVCalibrationCategory::partonTy
   return partonType_;
 }
 
-reco::btag::TaggingVariableName combsv::CombinedSVCalibrationCategory::taggingVar() const
+reco::btau::TaggingVariableName combsv::CombinedSVCalibrationCategory::taggingVar() const
 {
   return taggingVar_;
 }

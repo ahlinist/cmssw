@@ -2,7 +2,7 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 using namespace std;
-using namespace reco::btag;
+using namespace reco::btau;
 
 CombinedSVTaggingVariables::CombinedSVTaggingVariables (
     const vector < TaggingVariableName > & recovertex,

@@ -23,7 +23,7 @@ combsv::KernelEstimatedHistogram::KernelEstimatedHistogram(
     const combsv::CombinedSVCalibrationHistogram & hist ) :
   combsv::CombinedSVCalibrationHistogram ( hist )
 {
-  if ( hist.constCategory().taggingVar() == reco::btag::vertexCategory )
+  if ( hist.constCategory().taggingVar() == reco::btau::vertexCategory )
   {
     copyTrueHistogram();
     return;

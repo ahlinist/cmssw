@@ -11,7 +11,7 @@ namespace {
     {
       float sip2d=t->ip2D().significance();
       // sip2d=copysign ( sip2d, t->ip3D().significance() );
-      coll.push_back(reco::TaggingVariable( reco::btag::trackSip2d, sip2d) );
+      coll.push_back(reco::TaggingVariable( reco::btau::trackSip2d, sip2d) );
     }
   }
 
@@ -20,7 +20,7 @@ namespace {
     for ( vector< combsv::CombinedTrack >::const_iterator t=tracks.begin(); 
           t!=tracks.end() ; ++t )
     {
-      coll.push_back(reco::TaggingVariable(reco::btag::trackEtaRel, t->rapidity() ) );
+      coll.push_back(reco::TaggingVariable(reco::btau::trackEtaRel, t->rapidity() ) );
     }
   }
 }
@@ -30,12 +30,12 @@ reco::TaggingVariableList reco::TaggingVariablesComputer::compute (
     const combsv::CombinedData & data )
 {
   reco::TaggingVariableList coll;
-  coll.push_back ( reco::TaggingVariable ( reco::btag::jetPt, data.pt() ) );
-  coll.push_back ( reco::TaggingVariable ( reco::btag::jetEta, data.eta() ) );
-  vector < reco::btag::TaggingVariableName > vars = allvars.variables ( data.vertexType() );
+  coll.push_back ( reco::TaggingVariable ( reco::btau::jetPt, data.pt() ) );
+  coll.push_back ( reco::TaggingVariable ( reco::btau::jetEta, data.eta() ) );
+  vector < reco::btau::TaggingVariableName > vars = allvars.variables ( data.vertexType() );
   using namespace btag::Vertices;
-  using namespace reco::btag;
-  for ( vector< reco::btag::TaggingVariableName >::const_iterator v=vars.begin(); v!=vars.end() ; ++v )
+  using namespace reco::btau;
+  for ( vector< reco::btau::TaggingVariableName >::const_iterator v=vars.begin(); v!=vars.end() ; ++v )
   {
     // compute value, add to coll
     switch (*v)
@@ -49,7 +49,7 @@ reco::TaggingVariableList reco::TaggingVariablesComputer::compute (
       case vertexMultiplicity:
         coll.push_back ( reco::TaggingVariable ( *v, data.jet().vertexMultiplicity() ) );
         break;
-      case eSVXOverE:
+      case secondaryVtxEnergyRatio:
         coll.push_back ( reco::TaggingVariable ( *v, data.jet().eSVXOverE() ) );
         break;
       case flightDistance2DSignificance:

@@ -13,25 +13,25 @@ class CombinedSVTaggingVariables {
 
    public:
      CombinedSVTaggingVariables (
-         const std::vector < reco::btag::TaggingVariableName > & recovertex,
-         const std::vector < reco::btag::TaggingVariableName > & pseudovertex,
-         const std::vector < reco::btag::TaggingVariableName > & novertex );
+         const std::vector < reco::btau::TaggingVariableName > & recovertex,
+         const std::vector < reco::btau::TaggingVariableName > & pseudovertex,
+         const std::vector < reco::btau::TaggingVariableName > & novertex );
 
      /**
       *  Retrieve variables of a certain VertexType
       */
-     const std::vector < reco::btag::TaggingVariableName > & variables ( 
+     const std::vector < reco::btau::TaggingVariableName > & variables ( 
          reco::btag::Vertices::VertexType ) const;
    
    private:
 
-     const std::vector < reco::btag::TaggingVariableName > & recoVertex() const;
-     const std::vector < reco::btag::TaggingVariableName > & pseudoVertex() const;
-     const std::vector < reco::btag::TaggingVariableName > & noVertex() const;
+     const std::vector < reco::btau::TaggingVariableName > & recoVertex() const;
+     const std::vector < reco::btau::TaggingVariableName > & pseudoVertex() const;
+     const std::vector < reco::btau::TaggingVariableName > & noVertex() const;
 
-     std::vector < reco::btag::TaggingVariableName > theRecoVars;
-     std::vector < reco::btag::TaggingVariableName > thePseudoVars;
-     std::vector < reco::btag::TaggingVariableName > theNoVars;
+     std::vector < reco::btau::TaggingVariableName > theRecoVars;
+     std::vector < reco::btau::TaggingVariableName > thePseudoVars;
+     std::vector < reco::btau::TaggingVariableName > theNoVars;
 };
 
 #endif

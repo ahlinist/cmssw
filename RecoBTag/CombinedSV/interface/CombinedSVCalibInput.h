@@ -19,15 +19,15 @@ namespace combsv {
     public:
       CombinedSVCalibInput ( reco::btag::Vertices::VertexType,
           combsv::Partons::PartonType,
-          reco::btag::TaggingVariableName,
+          reco::btau::TaggingVariableName,
           double jetpt, double jeteta );
 
-      void setTaggingVariable ( reco::btag::TaggingVariableName t );
+      void setTaggingVariable ( reco::btau::TaggingVariableName t );
       void setVertexType ( reco::btag::Vertices::VertexType );
 
       reco::btag::Vertices::VertexType vertexType() const;
       combsv::Partons::PartonType partonType() const;
-      reco::btag::TaggingVariableName taggingVar() const;
+      reco::btau::TaggingVariableName taggingVar() const;
       double jetPt() const;
       double jetEta() const;
       void printMe() const;
@@ -36,7 +36,7 @@ namespace combsv {
     private:
       reco::btag::Vertices::VertexType vertexType_;
       combsv::Partons::PartonType partonType_;
-      reco::btag::TaggingVariableName taggingVar_;
+      reco::btau::TaggingVariableName taggingVar_;
       double jetPt_;
       double jetEta_;
   };
