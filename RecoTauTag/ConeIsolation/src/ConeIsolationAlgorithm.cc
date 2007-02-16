@@ -31,6 +31,8 @@ ConeIsolationAlgorithm::ConeIsolationAlgorithm(const ParameterSet & parameters)
   
   useFixedSizeCone = parameters.getParameter<bool>("UseFixedSizeCone"); 
   variableConeParameter = parameters.getParameter<double>("VariableConeParameter");
+  variableMaxCone = parameters.getParameter<double>("VariableMaxCone");
+  variableMinCone = parameters.getParameter<double>("VariableMinCone");
 }
 
 pair<JetTag,IsolatedTauTagInfo> ConeIsolationAlgorithm::tag(const  JetTracksAssociationRef & jetTracks, const Vertex & pv) 
@@ -67,7 +69,9 @@ for(;it!= tracks.end();it++)
  double r_sigCone = signal_cone;
  double energyJet = jetTracks->key->energy();
  if(!useFixedSizeCone){
-   r_sigCone = std::min(signal_cone, variableConeParameter / energyJet);
+   r_sigCone = std::min(variableMaxCone, variableConeParameter / energyJet);
+   r_sigCone = std::max((double)r_sigCone, variableMinCone);
+   
  }
 
 
