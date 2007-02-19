@@ -22,6 +22,10 @@
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 
+#include "SimDataFormats/Vertex/interface/SimVertexContainer.h"
+
+#include "CLHEP/Random/RandGauss.h"
+
 #include "RecoTauTag/CombinedTauTag/interface/CombinedTauTagAlg.h"
 
 #include <memory>
@@ -35,6 +39,9 @@ class CombinedTauTag : public EDProducer {
       explicit CombinedTauTag(const ParameterSet& iConfig){
 	IsolatedTauTagSrc_         = iConfig.getParameter<string>("IsolatedTauTagSrc");
 	PVSrc_                     = iConfig.getParameter<string>("PVSrc");
+	smearedPVsigmaX_           = iConfig.getParameter<double>("smearedPVsigmaX");
+	smearedPVsigmaY_           = iConfig.getParameter<double>("smearedPVsigmaY");
+	smearedPVsigmaZ_           = iConfig.getParameter<double>("smearedPVsigmaZ");
 	theCombinedTauTagAlg=new CombinedTauTagAlg(iConfig);
 	string modulname="CombinedTauTag";
 	produces<JetTagCollection>().setBranchAlias(modulname);
@@ -49,5 +56,8 @@ class CombinedTauTag : public EDProducer {
       CombinedTauTagAlg* theCombinedTauTagAlg;
       string IsolatedTauTagSrc_;
       string PVSrc_;
+      double smearedPVsigmaX_;
+      double smearedPVsigmaY_;
+      double smearedPVsigmaZ_;
 };
 #endif
