@@ -7,8 +7,10 @@
  *
  * Reference code can be found in the following files:
  * - IOPool/Streamer/interface/StreamerOutputModule.h
- * - EventFilter/StorageManager/src/StreamerI2OWriter.h
- * - EventFilter/StorageManager/src/StreamerI2OWriter.cc
+ * - IOPool/Streamer/interface/StreamerSerializer.h
+ * - IOPool/Streamer/src/StreamerSerializer.cc
+ * - EventFilter/FUSender/src/FUStreamerI2OWriter.h
+ * - EventFilter/FUSender/src/FUStreamerI2OWriter.cc
  * - DQMServices/Daemon/src/MonitorDaemon.cc
  * - FWCore/ServiceRegistry/interface/ActivityRegistry.h
  * - FWCore/ServiceRegistry/src/ActivityRegistry.cc
@@ -17,6 +19,7 @@
 #include "EventFilter/FUSender/interface/DQMSenderService.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "IOPool/Streamer/interface/DQMEventMsgBuilder.h"
+#include "DQMServices/CoreROOT/interface/MonitorElementRootT.h"
 
 #include "i2o/Method.h"
 #include "i2o/utils/include/i2o/utils/AddressMap.h"
@@ -128,6 +131,12 @@ void DQMSenderService::postEventProcessing(const edm::Event &event,
     for (dirIter = topLevelFolderList.begin();
          dirIter != topLevelFolderList.end();
          dirIter++) {
+
+      #define BUFF_SIZE 32000
+      char transitBuff[BUFF_SIZE];
+      TBuffer sendMsg(TBuffer::kWrite, BUFF_SIZE, &transitBuff[0], false);
+      int numObjects = 0;
+
       std::string dirName = *dirIter;
       std::cout << "Top level directory " << dirName
                 << " contains the following MEs:" << std::endl;
@@ -135,73 +144,34 @@ void DQMSenderService::postEventProcessing(const edm::Event &event,
       std::vector<MonitorElement *>::const_iterator meIter;
       for (meIter = meList.begin(); meIter != meList.end(); meIter++) {
         MonitorElement *mePtr = (*meIter);
+        bool wasUpdated = mePtr->wasUpdated();
         std::cout << "  " << mePtr->getPathname()
-                  << "/"  << mePtr->getName() << std::endl;
+                  << "/"  << mePtr->getName()
+                  << ", updated = "  << wasUpdated << std::endl;
+
+        MonitorElementRootObject* rootObject = 
+          dynamic_cast<MonitorElementRootObject *>((*meIter));
+        if (rootObject) {
+          sendMsg.WriteObject(rootObject->operator->());
+          numObjects++;
+        }
+        else {
+          FoldableMonitor *fm = dynamic_cast<FoldableMonitor *> (*meIter);
+          if (fm) {
+            sendMsg.WriteObject(fm->getTagObject());
+            numObjects++;
+          }
+        }
       }
 
-      //const int BUFF_SIZE = 50;
-      //char smallBuff[BUFF_SIZE];
-      //DQMEventMsgBuilder msgBuilder(&smallBuff[0], BUFF_SIZE, 1,
-      //                              "Pretty long folder name, here");
-      const int BUFF_SIZE = 1000;
-      char smallBuff[BUFF_SIZE];
-      DQMEventMsgBuilder msgBuilder(&smallBuff[0], BUFF_SIZE, 1, dirName);
-
-      std::cout << std::hex;
-      std::cout << "Local buffer address = 0x"
-                << ((int) &smallBuff[0]) << std::endl;
-      std::cout << "Builder buffer size = 0x"
-                << msgBuilder.bufferSize() << std::endl;
-      std::cout << "Builder startAddress = 0x"
-                << ((int) msgBuilder.startAddress()) << std::endl;
-      std::cout << "Builder headerSize = 0x"
-                << msgBuilder.headerSize() << std::endl;
-      std::cout << "Builder eventAddress = 0x"
-                << ((int) msgBuilder.eventAddress()) << std::endl;
-      std::cout << "Builder size = 0x"
-                << msgBuilder.size() << std::endl;
-      std::cout << "Code = 0x" << (0xff & smallBuff[0]) << std::endl;
-      for (int idx = 1; idx < 5; idx++) {
-        std::cout << " 0x" << (0xff & smallBuff[idx]);
+      TBuffer recvMsg(TBuffer::kRead, BUFF_SIZE, &transitBuff[0], false);
+      for (int idx = 0; idx < numObjects /*meList.size()*/; idx++) {
+        TObject *tmpPtr = recvMsg.ReadObject(TObject::Class());
+        string cls = tmpPtr->IsA()->GetName();
+        string nm = tmpPtr->GetName();
+        std::cout << "receive message class = " << cls
+                  << ", name = " << nm << std::endl;
       }
-      std::cout << std::endl;
-      for (int idx = 5; idx < 9; idx++) {
-        std::cout << " 0x" << (0xff & smallBuff[idx]);
-      }
-      std::cout << std::endl;
-      for (int idx = 9; idx < 13; idx++) {
-        std::cout << " 0x" << (0xff & smallBuff[idx]);
-      }
-      std::cout << std::endl;
-      for (int idx = 13; idx < 17; idx++) {
-        std::cout << " 0x" << (0xff & smallBuff[idx]);
-      }
-      std::cout << std::endl;
-      for (int idx = 17; idx < 37; idx++) {
-        std::cout << " 0x" << (0xff & smallBuff[idx]);
-      }
-      std::cout << std::endl;
-
-      // test an incorrect message type
-      //smallBuff[0] = 99;
-
-      // test an event data overflow
-      //msgBuilder.setEventLength(100000);
-
-      DQMEventMsgView msgView(&smallBuff[0]);
-      std::cout << "View startAddress = 0x"
-                << ((int) msgView.startAddress()) << std::endl;
-      std::cout << "View headerSize = 0x"
-                << msgView.headerSize() << std::endl;
-      std::cout << "View eventAddress = 0x"
-                << ((int) msgView.eventAddress()) << std::endl;
-      std::cout << "View eventLength = 0x"
-                << msgView.eventLength() << std::endl;
-      std::cout << "View run number = 0x"
-                << msgView.run() << std::endl;
-      std::cout << "View folder name = "
-                << msgView.getFolderName() << std::endl;
-      std::cout << std::dec;
     }
   }
 }
@@ -240,7 +210,7 @@ void DQMSenderService::findMonitorElements(std::vector<MonitorElement *> &put_he
 {
   if (bei == NULL) {return;}
 
-  // fetch the monitor elements in this directory
+  // fetch the monitor elements in the specified directory
   std::vector<MonitorElement *> localMEList = bei->getContents(folderPath);
 
   // add the local MEs to the list
