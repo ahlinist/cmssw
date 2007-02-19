@@ -1,7 +1,22 @@
 #include "SimDataFormats/GlobalDigiValidation/interface/PGlobalDigi.h"
 
-void PGlobalDigi::putEECalDigis(std::vector<float> maxpos,
-				std::vector<float> aee,
+void PGlobalDigi::putEBCalDigis(std::vector<int> maxpos,
+				std::vector<double> aee,
+				std::vector<float> she)
+{
+  nEBCalDigis = maxpos.size();
+  EBCalDigis.resize(nEBCalDigis);
+  for (int i = 0; i < nEBCalDigis; ++i) {
+    EBCalDigis[i].maxPos = maxpos[i];
+    EBCalDigis[i].AEE = aee[i];
+    EBCalDigis[i].SHE = she[i];
+  }
+
+  return;
+}
+
+void PGlobalDigi::putEECalDigis(std::vector<int> maxpos,
+				std::vector<double> aee,
 				std::vector<float> she)
 {
   nEECalDigis = maxpos.size();
@@ -15,17 +30,3 @@ void PGlobalDigi::putEECalDigis(std::vector<float> maxpos,
   return;
 }
 
-void PGlobalDigi::putEBCalDigis(std::vector<float> maxpos,
-				std::vector<float> aee,
-				std::vector<float> she)
-{
-  nEBCalDigis = maxpos.size();
-  EBCalDigis.resize(nEBCalDigis);
-  for (int i = 0; i < nEBCalDigis; ++i) {
-    EBCalDigis[i].maxPos = maxpos[i];
-    EBCalDigis[i].AEE = aee[i];
-    EBCalDigis[i].SHE = she[i];
-  }
-
-  return;
-}
