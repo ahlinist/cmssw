@@ -153,7 +153,7 @@ pair<JetTag,CombinedTauTagInfo> CombinedTauTagAlg::tag(const IsolatedTauTagInfoR
   double rectks_signalconesize = SignalCone_ifnotEvolutive_;
   if(EvolutiveSignalCone_){
     rectks_signalconesize = min(0.17,3.5/TauJet_ref_et);
-    rectks_signalconesize = max((double)rectks_signalconesize,0.05);
+    rectks_signalconesize = max(rectks_signalconesize,0.05);
   }
   // **************************END*******************************
 
@@ -277,7 +277,7 @@ pair<JetTag,CombinedTauTagInfo> CombinedTauTagAlg::tag(const IsolatedTauTagInfoR
   if (!couldnotobtain_HCALEt_o_leadtkPt) resultExtended.setHCALEt_o_leadTkPt(HCALEt_o_leadtkPt);
   // *** overall tau selection ***
   // **********begin**************
-  const JetTracksAssociationRef& theJetTracksAssociationRef=theIsolatedTauTagInfoRef->jetRef()->jtaRef();
+  const JetTracksAssociationRef& theJetTracksAssociationRef=theIsolatedTauTagInfoRef->getJetTag()->jtaRef();
   if(!passed_tracker_selection){
     JetTag resultBase(0.,theJetTracksAssociationRef);
     return pair<JetTag,CombinedTauTagInfo> (resultBase,resultExtended);
@@ -743,7 +743,7 @@ double CombinedTauTagAlg::HCALtowersEtSum_around_rectk(const IsolatedTauTagInfoR
       thepropagatedrectk_Hep3V.setRThetaPhi((*therecTrack).momentum().r(),(double)therecTrackImpactPositiononECAL.theta(),(double)therecTrackImpactPositiononECAL.phi());
       Handle<CaloTowerCollection> caloTowers;      
       theEvent.getByLabel("towerMaker",caloTowers);
-      const vector<CaloTowerDetId>&  theCaloTowerDetIds=theIsolatedTauTagInfoRef->jetRef()->jtaRef()->key->getTowerIndices();
+      const vector<CaloTowerDetId>&  theCaloTowerDetIds=theIsolatedTauTagInfoRef->getJetTag()->jtaRef()->key->getTowerIndices();
       int theCaloTowerDetIds_n= theCaloTowerDetIds.size();      
       for (int i_CaloTowerDetId=0;i_CaloTowerDetId<theCaloTowerDetIds_n;i_CaloTowerDetId++) {
        CaloTowerCollection::const_iterator theTower=caloTowers->find(theCaloTowerDetIds[i_CaloTowerDetId]);  //Find the tower from its CaloTowerDetID	
@@ -791,7 +791,7 @@ double CombinedTauTagAlg::ECALcellsEtSum_around_rectk(const IsolatedTauTagInfoRe
       theEvent.getByLabel("towerMaker",caloTowers);
       theEvent.getByLabel("ecalRecHit","EcalRecHitsEB",EBRecHits );
       theEvent.getByLabel("ecalRecHit","EcalRecHitsEE",EERecHits );
-      const vector<CaloTowerDetId>&  theCaloTowerDetIds=theIsolatedTauTagInfoRef->jetRef()->jtaRef()->key->getTowerIndices();
+      const vector<CaloTowerDetId>&  theCaloTowerDetIds=theIsolatedTauTagInfoRef->getJetTag()->jtaRef()->key->getTowerIndices();
       int theCaloTowerDetIds_n= theCaloTowerDetIds.size();
       for (int i_CaloTowerDetId=0;i_CaloTowerDetId<theCaloTowerDetIds_n;i_CaloTowerDetId++) {
        CaloTowerCollection::const_iterator theTower=caloTowers->find(theCaloTowerDetIds[i_CaloTowerDetId]);  //Find the tower from its CaloTowerDetID
