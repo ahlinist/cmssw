@@ -17,5 +17,7 @@ module coneIsolation = ConeIsolation {
   	int32 MaximumNumberOfTracksIsolationRing = 0.
         bool useVertex = false		
         bool UseFixedSizeCone = true
-        double VariableConeParameter = 3.5	
+        double VariableConeParameter = 3.5 
+        double VariableMaxCone = 0.17 
+        double VaribleMinCone = 0.05 	
 }
