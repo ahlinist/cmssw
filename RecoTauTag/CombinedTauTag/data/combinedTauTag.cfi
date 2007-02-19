@@ -6,6 +6,9 @@ module combinedTauTag=CombinedTauTag {
 	#---tracker selection parameters
 	#string PVSrc = "offlinePrimaryVerticesFromCTFTracks"
   	string PVSrc = "pixelVertices"
+	double smearedPVsigmaX = 0.0015
+        double smearedPVsigmaY = 0.0015
+        double smearedPVsigmaZ = 0.0050
 	double MinimumTransverseMomentum = 1.5
   	double MatchingCone = 0.17
 	double TracksLeadingTrackCone = 0.60
