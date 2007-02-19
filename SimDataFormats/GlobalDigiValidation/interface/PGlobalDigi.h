@@ -8,36 +8,36 @@ class PGlobalDigi
 {
  public:
 
-  PGlobalDigi(): nEECalDigis(0), nEBCalDigis(0) {}
+  PGlobalDigi(): nEBCalDigis(0), nEECalDigis(0) {}
   virtual ~PGlobalDigi(){}
 
   // ECal Info
   struct ECalDigi
   {
     ECalDigi(): maxPos(0), AEE(0), SHE(0) {}
-    float maxPos;
-    float AEE; //analog equivalent energy
+    int maxPos;
+    double AEE; //analog equivalent energy
     float SHE; //simhit energy
   };
   typedef std::vector<ECalDigi> ECalDigiVector;
   //put functions
-  void putEECalDigis(std::vector<float> maxpos,
-		     std::vector<float> aee, std::vector<float> she);
-  void putEBCalDigis(std::vector<float> maxpos,
-		     std::vector<float> aee, std::vector<float> she);
+  void putEBCalDigis(std::vector<int> maxpos,
+		     std::vector<double> aee, std::vector<float> she);
+  void putEECalDigis(std::vector<int> maxpos,
+		     std::vector<double> aee, std::vector<float> she);
   //get functions
-  int getnEECalDigis() {return nEECalDigis;}
   int getnEBCalDigis() {return nEBCalDigis;}  
-  ECalDigiVector getEECalDigis() {return EECalDigis;}
+  int getnEECalDigis() {return nEECalDigis;}
   ECalDigiVector getEBCalDigis() {return EBCalDigis;}  
+  ECalDigiVector getEECalDigis() {return EECalDigis;}
 
  private:
 
   // ECal info
-  int nEECalDigis;
-  ECalDigiVector EECalDigis;
   int nEBCalDigis;
   ECalDigiVector EBCalDigis;
+  int nEECalDigis;
+  ECalDigiVector EECalDigis;
 
 }; // end class declaration
 
