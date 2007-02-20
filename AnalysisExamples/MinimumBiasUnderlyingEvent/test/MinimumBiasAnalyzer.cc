@@ -24,7 +24,7 @@
  
 #include "TFile.h"
 #include "TH1.h"
-
+#include "TVector3.h"
  
 using namespace edm;
 using namespace std;
@@ -174,15 +174,21 @@ void MinimumBiasAnalyzer::analyze( const Event& e, const EventSetup& ){
 	  for (std::vector<math::XYZTLorentzVector>::const_iterator par = particles4Jet.begin();
 	       par != particles4Jet.end(); par++ ){
 	    
-	    // convert phi from radiants to degrees
-	    float_t tmpphitrk_mc=conv*(par->phi());
-	    float_t tmpphijet_mc=conv*(pJ.phi());
+	    // get 3-vector of jet
+	    TVector3 * jetvector = new TVector3;
+	    jetvector->SetPtEtaPhi(pJ.pt(), pJ.eta(), pJ.phi());
 
-	    float_t Dphi_mc=tmpphijet_mc-tmpphitrk_mc; 	    
-	    
+	    // get 3-vector of particle
+	    TVector3 * particlevector = new TVector3;
+	    particlevector->SetPtEtaPhi(par->pt(), par->eta(), par->phi());
+
+	    // use ROOT method to calculate dphi 
+	    // convert dphi from radiants to degrees 
+	    float_t Dphi_mc = conv * jetvector->DeltaPhi(*particlevector);
+
 	    temp1->Fill(Dphi_mc);
 	    temp2->Fill(Dphi_mc,par->Pt());
-	    
+
 	  }
 	  
 	  for(int i=0;i<100;i++){
@@ -225,15 +231,21 @@ void MinimumBiasAnalyzer::analyze( const Event& e, const EventSetup& ){
 	  for (std::vector<math::XYZTLorentzVector>::const_iterator par = particles4Jet.begin();
 	       par != particles4Jet.end(); par++ ){
 	    
-	    // convert phi from radiants to degrees
-	    float_t tmpphitrk_mc=conv*(par->phi());
-	    float_t tmpphijet_mc=conv*(pJ.phi());
+	    // get 3-vector of jet
+            TVector3 * jetvector = new TVector3;
+            jetvector->SetPtEtaPhi(pJ.pt(), pJ.eta(), pJ.phi());
 
-	    float_t Dphi_mc=tmpphijet_mc-tmpphitrk_mc; 	    
-	    
-	    temp1->Fill(Dphi_mc);
-	    temp2->Fill(Dphi_mc,par->Pt());
-	    
+            // get 3-vector of particle
+            TVector3 * particlevector = new TVector3;
+            particlevector->SetPtEtaPhi(par->pt(), par->eta(), par->phi());
+
+            // use ROOT method to calculate dphi
+            // convert dphi from radiants to degrees
+            float_t Dphi_mc = conv * jetvector->DeltaPhi(*particlevector);
+
+            temp1->Fill(Dphi_mc);
+            temp2->Fill(Dphi_mc,par->Pt());
+
 	  }
 	  
 	  for(int i=0;i<100;i++){
