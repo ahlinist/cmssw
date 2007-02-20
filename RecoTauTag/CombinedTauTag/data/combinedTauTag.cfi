@@ -18,7 +18,7 @@ module combinedTauTag=CombinedTauTag {
   	double MinimumTransverseMomentumLeadingTrack = 2.5
 	double MinimumTransverseMomentumLeadingTrack_case1signalTrack = 5.
 	double MinimumTransverseMomentumLeadingTrack_case3signalTracks = 2.5	
-  	int32 MaximumNumberOfTracksIsolationRing = 0.
+  	int32 MaximumNumberOfTracksIsolationRing = 0
         #---ECAL clus. selection parameters
 	double ECALclus_min_e = 1.
 	double ECALclusleadtk_conesize = 0.5
