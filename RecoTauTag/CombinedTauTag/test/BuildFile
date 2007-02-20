@@ -10,7 +10,6 @@
 <use name=DataFormats/VertexReco>
 <use name=DataFormats/EcalRecHit>
 <use name=DataFormats/EgammaReco>
-<use name=DataFormats/EgammaReco>
 <use name=DataFormats/Math>
 <use name=MagneticField/Engine>
 <use name=MagneticField/Records>
@@ -25,8 +24,6 @@
 <use name=TrackingTools/GeomPropagators>
 <use name=TrackingTools/TransientTrack>
 <use name=TrackingTools/TrajectoryParametrization>
-<use name=TrackingTools/TrajectoryState>
-<use name=TrackingTools/PatternTools>
 <use name=RecoTracker/TrackProducer>
 <use name=boost>
 <use name=root>
