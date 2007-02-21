@@ -26,6 +26,9 @@
 #include "DataFormats/EcalDetId/interface/EBDetId.h"
 #include "DataFormats/EcalDetId/interface/EEDetId.h"
 #include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
+#include "DataFormats/GeometryVector/interface/GlobalTag.h"
+#include "DataFormats/GeometryVector/interface/Vector3DBase.h"
+#include "DataFormats/GeometryVector/interface/Point3DBase.h"
 
 #include "MagneticField/Engine/interface/MagneticField.h"
 #include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
@@ -37,9 +40,6 @@
 #include "FWCore/ParameterSet/interface/FileInPath.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h" 
 
-#include "Geometry/Vector/interface/GlobalTag.h"
-#include "Geometry/Vector/interface/Vector3DBase.h"
-#include "Geometry/Vector/interface/Point3DBase.h"
 #include "Geometry/Records/interface/IdealGeometryRecord.h"
 #include "Geometry/CaloGeometry/interface/CaloGeometry.h"
 #include "Geometry/CaloGeometry/interface/CaloCellGeometry.h"
