@@ -6,6 +6,7 @@
  *
  * \author R. Wilkinson
  */
+#include <vector>
  
 class CSCWireDigi;
 class CSCLayerGeometry;
@@ -14,9 +15,12 @@ class CSCWireCluster {
  public:
    /** ctor from range of wires
     */
-   CSCWireCluster(int firstWire, int lastWire, int beamCrossingTag, float wireSpacing)
+
+   typedef std::vector<int> ChannelContainer;
+  
+   CSCWireCluster(int firstWire, int lastWire, int beamCrossingTag, float wireSpacing, ChannelContainer& wgroups)
    : theFirstWire(firstWire), theLastWire(lastWire), 
-     theBeamCrossing(beamCrossingTag), theWireSpacing(wireSpacing) {}
+     theBeamCrossing(beamCrossingTag), theWireSpacing(wireSpacing), theWgroups(wgroups) {}
 
    /** ctor from wire digi
     */
@@ -33,6 +37,8 @@ class CSCWireCluster {
 
    /// The beam crossing tag for the cluster
    int getBeamCrossingTag() const {return theBeamCrossing;}
+
+   ChannelContainer wgroups() const {return theWgroups;}
  
  private:
    int theFirstWire;
@@ -40,6 +46,7 @@ class CSCWireCluster {
    int theBeamCrossing;
    int theLastChannel;
    float theWireSpacing;
+   ChannelContainer theWgroups;
 };
   
 #endif

@@ -24,7 +24,9 @@ public:
   /// not all that useful. In CMSSW we don't have that total charge value anyway.
   virtual bool peakAboveBaseline(const CSCStripDigi & input, 
                          const CSCChamberSpecs & specs,
-                         double & height, double & sigma) const;
+                         double & height, int& tmax,
+                         StripHitADCContainer& adcs,
+                         double & sigma) const;
 };
 
 #endif

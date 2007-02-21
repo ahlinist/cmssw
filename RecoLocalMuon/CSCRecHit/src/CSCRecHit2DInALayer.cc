@@ -1,6 +1,7 @@
 // This is  CSCRecHit2DInALayer.cc
 
 #include <RecoLocalMuon/CSCRecHit/src/CSCRecHit2DAlgo.h>
+#include <RecoLocalMuon/CSCRecHitB/src/CSCFindPeakTime.h>
 #include <DataFormats/MuonDetId/interface/CSCDetId.h>
 #include <DataFormats/CSCDigi/interface/CSCStripDigi.h>
 #include <DataFormats/CSCDigi/interface/CSCWireDigi.h>
@@ -50,6 +51,8 @@ CSCRecHit2DInALayer::CSCRecHit2DInALayer(  const edm::ParameterSet& ps ) : CSCRe
 //  theCrosstalkLevel     = ps.getParameter<float>("crossTalkCorrection");
 
   // Which algorithms to use?
+
+  peakTimeFinder_ = new CSCFindPeakTime();
 
   std::string pulseheightOnStripFinder = ps.getParameter<std::string>("pulseheightOnStripFinder");
 
@@ -143,7 +146,8 @@ std::vector<CSCWireCluster> CSCRecHit2DInALayer::findWireClusters( const CSCWire
   std::vector<CSCWireCluster> wcls;
   
     // start with a dummy
-    CSCWireCluster clus(-100,-100,-100,10.);
+    std::vector<int> wgroups;
+    CSCWireCluster clus(-100,-100,-100, 10., wgroups);
     bool any_digis = false;
     for ( CSCWireDigiCollection::const_iterator it = rwired.first; it != rwired.second; ++it ) {
       if ( !any_digis ) {
@@ -164,20 +168,27 @@ std::vector<CSCWireCluster> CSCRecHit2DInALayer::findWireClusters( const CSCWire
 }
 
 
-CSCRecHit2D CSCRecHit2DInALayer::makeCluster(
-        const CSCWireCluster & wireCluster, int centerStrip) {
+CSCRecHit2D CSCRecHit2DInALayer::makeCluster( const CSCWireCluster & wireCluster, int centerStrip) {
+
   // fit for the local precise coordinate
   // fit an rhit for every wire group that was hit
   float centerWire = wireCluster.centerWire();
 
   double u, sigma, chisq, prob;
   CSCRecHit2D::ChannelContainer channels;
+  CSCRecHit2D::ADCContainer adcMap;
+  CSCRecHit2D::ChannelContainer wgroups = wireCluster.wgroups();
+  float tpeak = 0.;
 
   if( centerStrip == 1 || centerStrip == specs_->nStrips() ) {
     // edge strip, so just give it full-strip resolution
     // maybe can improve to half-strip by looking at neighbor
     LocalPoint lp = layergeom_->stripWireIntersection(centerStrip, centerWire);
     channels.push_back(centerStrip);
+    CSCFitData data = makeFitData(centerStrip, centerWire, 0);
+    std::vector<float> adcs_ = data.adcs();
+    adcMap.put(centerStrip, adcs_.begin(), adcs_.end());
+    tpeak = data.tmax() * 50.;
     u = lp.x();
     sigma =  layergeom_->stripPitch(lp)/sqrt(12.);
     chisq = 0.;
@@ -194,7 +205,20 @@ CSCRecHit2D CSCRecHit2DInALayer::makeCluster(
       if(centerStrip+i > 0 && centerStrip+i <= specs_->nStrips()) { 
         LogDebug("CSC") << "use channel " << i << " in fit" << "\n";
         CSCFitData data = makeFitData(centerStrip, centerWire, i);
-
+        std::vector<float> adcs_ = data.adcs();
+        adcMap.put(centerStrip+i, adcs_.begin(), adcs_.end());
+        if (i == 0) {
+          // Fit peaking time  
+          int tmax = data.tmax();
+          float t_peak = tmax * 50.;
+          float t_zero = 0.;
+          bool useFit = false;
+          float adc[4];
+          for (int j = 0; j < 4; j++ )
+            adc[j] = adcs_[j];
+          if (adc[3]>0.) useFit = peakTimeFinder_->FindPeakTime( tmax, adc, t_zero, t_peak );
+          tpeak = t_peak+t_zero;
+        }
         fitDataV.push_back( data );
         channels.push_back(centerStrip+i);
       }
@@ -262,7 +286,7 @@ CSCRecHit2D CSCRecHit2DInALayer::makeCluster(
           
   LocalError localError(dx2, dxy, dy2);
 
-  CSCRecHit2D rechit( id_, localPoint, localError, channels, chisq, prob );
+  CSCRecHit2D rechit( id_, localPoint, localError, channels, adcMap, wgroups, tpeak, chisq, prob );
 
   if( infoV ) {
     edm::LogInfo("CSC") << "new CSCRecHit2D ME" <<
@@ -279,7 +303,8 @@ CSCRecHit2D CSCRecHit2DInALayer::makeCluster(
 
 CSCFitData 
 CSCRecHit2DInALayer::makeFitData(int centerStrip, float centerWire, int offset) {
-  CSCFitData prelimData(0.,0.,0.,0);
+  std::vector<float> adcs_dummy;
+  CSCFitData prelimData(0.,0.,0.,0,adcs_dummy,0);
   int thisStrip = centerStrip+offset;
   if(offset == 0) {
     prelimData = thePulseHeightMap[centerStrip];
@@ -301,12 +326,12 @@ CSCRecHit2DInALayer::makeFitData(int centerStrip, float centerWire, int offset) 
         float thisHeight = thePulseHeightMap[thisStrip].y();
         float dy = thePulseHeightMap[thisStrip].dy();
 	//@@ Shouldn't dy get scaled by 'ratio' too?
-        prelimData = CSCFitData(0., thisHeight * ratio, dy);
+        prelimData = CSCFitData(0., thisHeight * ratio, dy, thePulseHeightMap[centerStrip].tmax(), thePulseHeightMap[centerStrip].adcs(), 0);
       }
     }
   }
   LocalPoint lp = layergeom_->stripWireIntersection(thisStrip, centerWire);
-  return CSCFitData(lp.x(), prelimData.y(), prelimData.dy());
+  return CSCFitData(lp.x(), prelimData.y(), prelimData.dy(), prelimData.tmax(), prelimData.adcs(), 0);
 }
 
 
@@ -342,12 +367,14 @@ void CSCRecHit2DInALayer::fillPulseHeights( const CSCStripDigiCollection::Range&
     lastFirstSCA = thisFirstSCA;
 
     if ( fill ) {
+      int tmax;
+      std::vector<float> adcs;
       double height, sigma;
-      pulseheightOnStripFinder_->peakAboveBaseline( (*it), *specs_, height, sigma);
+      pulseheightOnStripFinder_->peakAboveBaseline( (*it), *specs_, height, tmax, adcs, sigma);
       // We no longer have a beam crossing tag in strip digis
       //      int bx = (*it).getBeamCrossingTag();
       int bx = 0; //@@ just a dummy
-      thePulseHeightMap[thisChannel] = CSCFitData( 0., height, sigma, bx );
+      thePulseHeightMap[thisChannel] = CSCFitData( 0., height, sigma, tmax, adcs, bx );
     }
   }
 

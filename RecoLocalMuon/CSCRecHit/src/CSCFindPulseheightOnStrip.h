@@ -7,12 +7,16 @@
  * on strips in the endcap muon CSCs.
  * The peak pulse height represents the energy deposited in the strip.
  */
+#include <vector>
 
 class CSCChamberSpecs;
 class CSCStripDigi;
 
 class CSCFindPulseheightOnStrip {
 public:
+
+  typedef std::vector<float> StripHitADCContainer;
+
   CSCFindPulseheightOnStrip() {};
   virtual ~CSCFindPulseheightOnStrip() {};
 
@@ -20,7 +24,9 @@ public:
 /// The returned bool allows a success/fail status.
   virtual bool peakAboveBaseline(const CSCStripDigi& input, 
                          const CSCChamberSpecs& specs,
-                         double& height, double& sigma) const = 0;
+                         double& height, int& tmax,
+                         StripHitADCContainer& adcs,
+                         double& sigma) const = 0;
  
 /// Find the SCA pulseheight baseline - with a default implementation
   virtual float baseline(const CSCStripDigi& digi) const;

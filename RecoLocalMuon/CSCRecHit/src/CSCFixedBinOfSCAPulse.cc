@@ -5,11 +5,18 @@
 
 bool CSCFixedBinOfSCAPulse::peakAboveBaseline(const CSCStripDigi & digi, 
                          const CSCChamberSpecs & specs,
-                         double & height, double & sigma) const {
-	//@@ Take the 5th bin of the SCA, and subtract baseline - should be configurable?
+                         double & height, int& tmax,
+                         StripHitADCContainer& adcs, double & sigma) const {
+    //@@ Take the 5th bin of the SCA, and subtract baseline - should be configurable?
 	
-	std::vector<int> sca = digi.getADCCounts();
-    height = sca[4] - baseline(digi);
+    std::vector<int> sca = digi.getADCCounts();
+    std::vector<float> adcs_;
+    float ped = baseline(digi);
+    height = sca[4] - ped;
+    tmax = 4;
+    for (int t = tmax-1; t < tmax+3; t++) 
+      adcs_.push_back(sca[t]-ped);
+
    
     //@@ Assumes 3% calibration uncertainty, and the same noise as
     //@@ was in ORCA_4_4_1.  Should probably tie these to configurables.

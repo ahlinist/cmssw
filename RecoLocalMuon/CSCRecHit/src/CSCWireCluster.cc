@@ -14,6 +14,8 @@ CSCWireCluster::CSCWireCluster(const CSCWireDigi & digi, const CSCLayerGeometry 
   theBeamCrossing = digi.getBeamCrossingTag();
   theWireSpacing = geom->wirePitch();
   theLastChannel = iwg;
+  theWgroups.clear();
+  theWgroups.push_back(iwg);
   LogDebug("CSC") << "making wire cluster nwires=" << 
      nwires << ", first=" << theFirstWire << ", last=" << theLastWire <<  "\n";
 }
@@ -34,11 +36,15 @@ bool CSCWireCluster::add(const CSCWireDigi & digi, const CSCLayerGeometry * geom
      && (abs(digi.getBeamCrossingTag()-theBeamCrossing)<= 1) ) {
     value = true;
     theLastChannel = iwg;
+    theWgroups.push_back(iwg);
     float middleWire = geom->middleWireOfGroup(iwg);
     int nwires = geom->numberOfWiresPerGroup(iwg);
     theLastWire  = (int) (middleWire + nwires/2.);
     LogDebug("CSC") << "adding digi to wirecluster " << 
         theFirstWire << " " << theLastWire <<  "\n";
+  } else {
+    theWgroups.clear();
+    theWgroups.push_back(iwg);
   }
   return value;
 }

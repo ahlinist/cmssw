@@ -25,7 +25,8 @@ public:
 /// The returned bool is success/fail status.
   virtual bool peakAboveBaseline(const CSCStripDigi & input, 
                          const CSCChamberSpecs & specs,
-                         double & height, double & sigma) const;
+                         double & height, int& tmax,
+                         StripHitADCContainer& adcs, double & sigma) const;
 private:
   ROOT::Minuit2::ModularFunctionMinimizer* theFitter;
   CSCPulseHeightFcn* theOBJfun;
