@@ -2,7 +2,7 @@
 #define RecoBTag_CombinedSV_CombinedVertex_h
 
 #include "DataFormats/VertexReco/interface/Vertex.h"
-#include "Geometry/Vector/interface/GlobalVector.h"
+#include "DataFormats/GeometryVector/interface/GlobalVector.h"
 #include "Geometry/CommonDetAlgo/interface/Measurement1D.h"
 #include "RecoBTag/CombinedSV/interface/CombinedTrack.h"
 #include <map>

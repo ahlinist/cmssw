@@ -1,7 +1,7 @@
 #ifndef RecoBTag_CombinedSVAlgorithm_h
 #define RecoBTag_CombinedSVAlgorithm_h
 
-#include "Geometry/Vector/interface/GlobalVector.h"
+#include "DataFormats/GeometryVector/interface/GlobalVector.h"
 #include "RecoBTag/CombinedSV/interface/LikelihoodRatio.h"
 #include "RecoBTag/CombinedSV/interface/NCategoriesDiscriminatorComputer.h"
 #include "RecoBTag/CombinedSV/interface/FilterFactory.h"
