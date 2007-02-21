@@ -3,7 +3,7 @@
 
 
 #include <string>
-#include <map>
+//#include <map>
 #include <vector>
 //#include <iostream>
 
@@ -180,20 +180,38 @@ class PPosPart {
 };
 
 
-/* class PValuePair { */
-/*  public:     */
-/*   PValuePair() { } */
-  
-/*   PValuePair ( const std::string& strVal, const double& dblVal ) : pStr(strVal), pDbl(dblVal) { } */
-    
-/*   ~PValuePair() { } */
+class PValuePair {
+ public:
+  PValuePair() { };
+  ~PValuePair() { };
+  PValuePair ( const std::string& instr, double indbl ) {
+    pStr = instr;
+    pDbl = indbl;
+  }
+  // private:
+  std::string pStr;
+  double pDbl;
+};
 
-/*   //  PValuePair* operator* (const PValuePair& pvp) { return this; }   */
+class PValueOffset {
+ public:
+  PValueOffset() { };
+  ~PValueOffset() { };
+  // private:
+  bool pIsEvaluated;
+  int pOneOffset;
+  int pSize;
+}; 
 
-/*   //private: */
-/*   std::string pStr; */
-/*   double pDbl; */
-/* }; */
+class PValueStore {
+ public:
+  PValueStore() { };
+  ~PValueStore() { };
+  //private:
+  std::vector<PValuePair>  pValuePairs; // big vector of value pairs that are refered to in chunks from offset and size.
+  std::vector<std::string> pNames; // this vector and the next must stay in-synch.
+  std::vector<PValueOffset> pOffset; // tells you where in pValues to start and how many to go through.
+};
 
 class PSpecPar {
   // What I need:  the selection string(s), the parameters (name, value)
@@ -203,31 +221,40 @@ class PSpecPar {
 
   PSpecPar () { }
 
-  PSpecPar ( const std::string& name
-	     , const std::vector<std::string>& selections
-	     //	     , const std::map<std::string, std::vector<PValuePair> >& values
-	     , const std::map<std::string, std::vector<std::pair<std::string, double> > >& values
-	     , const std::map<std::string, int>& isEvaluated) 
-    : pName(name), pValues (values)
-    , pSpecSelections(selections), pIsEvaluated(isEvaluated) { 
-    
-/*     if ( strValues.size() == dblValues.size() ) { */
-/*       size_t valmax = strValues.size(); */
-/*       size_t valind = 0; */
-/*       for ( ; valind < valmax ; valind++ ) { */
-/* 	pValues.push_back( PValuePair(strValues[valind], dblValues[valind]) ); */
-/*       } */
-/*     } */
-  }
-  
   ~PSpecPar () { }
+
+  bool newSpecParEntry ( const std::string& name , bool evaluated = false ) {
+    std::vector<std::string>::const_iterator fit = find ( pValues.pNames.begin(), pValues.pNames.end(),  name );
+    if ( fit == pValues.pNames.end() ) {
+      // add it in with 0 size, 0 offset
+      size_t newOffset = 0;
+      if ( pValues.pNames.size() > 0 ) {
+	PValueOffset& pvo = pValues.pOffset.back();
+	newOffset = pvo.pOneOffset + pvo.pSize;
+      }
+      pValues.pOffset.push_back(PValueOffset());
+      PValueOffset& pvoNew = pValues.pOffset.back();
+      pvoNew.pOneOffset = newOffset;
+      pvoNew.pIsEvaluated = evaluated;
+      return true;
+    }
+    return false;
+  }
+
+  void addToCurrentSpecPar ( const std::string& strVal, const double& dblVal = 0.0 ) {
+    PValueOffset& pvo = pValues.pOffset.back();
+    ++(pvo.pSize);
+    pValues.pValuePairs.push_back ( PValuePair (strVal, dblVal) );
+  }
+
+  void addToCurrentSelectionStrings ( const std::string& instr ) {
+    pSpecSelections.push_back(instr);
+  }
 
   //private:
   std::string pName;
-/*   std::map<std::string, std::vector<PValuePair> > pValues; */
-  std::map<std::string, std::vector<std::pair<std::string, double> > > pValues;
+  PValueStore pValues;
   std::vector<std::string> pSpecSelections;
-  std::map<std::string, int> pIsEvaluated;
 
 };
 
