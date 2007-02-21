@@ -22,8 +22,10 @@ class CSCWireHit
 
 public:
 
+  typedef std::vector<int> ChannelContainer;
+
   CSCWireHit();
-  CSCWireHit( const CSCDetId& id, const float& wHitPos, const int& tmax );
+  CSCWireHit( const CSCDetId& id, const float& wHitPos, ChannelContainer& wgroups, const int& tmax );
 
   ~CSCWireHit();
 
@@ -36,12 +38,16 @@ public:
   /// The wire hit position expressed in terms of wire #
   float wHitPos() const { return theWireHitPosition; }
 
+  /// The wire groups used for forming the cluster
+  ChannelContainer wgroups() const { return theWgroups; }
+
   /// The timing for the wire hit
   int tmax() const { return theWireHitTmax; }
  
 private:
   CSCDetId theDetId;
   float theWireHitPosition;
+  ChannelContainer theWgroups;
   int theWireHitTmax;
 };
 

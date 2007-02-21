@@ -5,16 +5,19 @@ CSCStripHit::CSCStripHit() :
   theDetId(),
   theStripHitPosition(),
   theStripHitTmax(),     
-  theStripHitClusterSize(),
+  theStrips(),
   theStripHitADCs()
 {}
 
-CSCStripHit::CSCStripHit( const CSCDetId& id, const float& sHitPos, const int& tmax, 
-                          const int& clusterSize, const StripHitADCContainer& s_adc) :
+CSCStripHit::CSCStripHit( const CSCDetId& id, 
+                          const float& sHitPos, 
+                          const int& tmax, 
+                          const ChannelContainer& strips, 
+                          const StripHitADCContainer& s_adc ) :
   theDetId( id ), 
   theStripHitPosition( sHitPos ),
   theStripHitTmax( tmax ),
-  theStripHitClusterSize( clusterSize ),
+  theStrips( strips ),
   theStripHitADCs( s_adc )
 {}
 

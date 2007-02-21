@@ -30,7 +30,8 @@ CSCRecHitBProducer::CSCRecHitBProducer( const edm::ParameterSet& ps ) : iev( 0 )
   stripDigiProducer_ = ps.getParameter<std::string>("CSCStripDigiProducer");
   wireDigiProducer_  = ps.getParameter<std::string>("CSCWireDigiProducer");
   isData             = ps.getUntrackedParameter<bool>("CSCIsRunningOnData");
-
+  debug              = ps.getUntrackedParameter<bool>("CSCDebug");
+ 
   recHitBuilder_     = new CSCRecHitBBuilder( ps ); // pass on the Parameter Settings
 
   // register what this produces
@@ -93,6 +94,7 @@ void  CSCRecHitBProducer::produce( edm::Event& ev, const edm::EventSetup& setup 
 
 
   // Put collection in event
+  if (debug) std::cout << "Will output rechits collection to event" << std::endl;
   ev.put( oc );
 
 }
