@@ -32,10 +32,10 @@ reco::TaggingVariableList reco::TaggingVariablesComputer::compute (
   reco::TaggingVariableList coll;
   coll.push_back ( reco::TaggingVariable ( reco::btau::jetPt, data.pt() ) );
   coll.push_back ( reco::TaggingVariable ( reco::btau::jetEta, data.eta() ) );
-  vector < reco::btau::TaggingVariableName > vars = allvars.variables ( data.vertexType() );
+  vector < reco::TaggingVariableName > vars = allvars.variables ( data.vertexType() );
   using namespace btag::Vertices;
   using namespace reco::btau;
-  for ( vector< reco::btau::TaggingVariableName >::const_iterator v=vars.begin(); v!=vars.end() ; ++v )
+  for ( vector< reco::TaggingVariableName >::const_iterator v=vars.begin(); v!=vars.end() ; ++v )
   {
     // compute value, add to coll
     switch (*v)

@@ -20,7 +20,7 @@ namespace combsv {
             float etaMin, float etaMax,
             reco::btag::Vertices::VertexType      vertexType,
             combsv::Partons::PartonType      partonType,
-            reco::btau::TaggingVariableName taggingVar);
+            reco::TaggingVariableName taggingVar);
     ~CombinedSVCalibrationCategory() {};
 
     bool match(const combsv::CombinedSVCalibInput& input) const;
@@ -28,7 +28,7 @@ namespace combsv {
 
     reco::btag::Vertices::VertexType      vertexType() const;
     combsv::Partons::PartonType      partonType() const;
-    reco::btau::TaggingVariableName taggingVar() const;
+    reco::TaggingVariableName taggingVar() const;
 
     float jetPtMin() const;
     float jetPtMax() const;
@@ -51,7 +51,7 @@ namespace combsv {
 
   reco::btag::Vertices::VertexType      vertexType_;
   combsv::Partons::PartonType      partonType_;
-  reco::btau::TaggingVariableName taggingVar_;
+  reco::TaggingVariableName taggingVar_;
   };
 }
 
