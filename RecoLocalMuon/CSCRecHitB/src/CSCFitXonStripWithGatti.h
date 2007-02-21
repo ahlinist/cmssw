@@ -65,7 +65,7 @@ class CSCFitXonStripWithGatti
   void findXOnStrip( const CSCLayer* layer, const CSCStripHit& stripHit, 
                      float& xCentroid, float& stripWidth,
                      std::vector<float> xtalks, std::vector<float> nmatrix,
-                     float& xGatti, double& sigma, double& chisq );
+                     float& xGatti, float& tpeak, double& sigma, double& chisq );
 
   /// Use specs to setup Gatti parameters
   void initChamberSpecs();                       

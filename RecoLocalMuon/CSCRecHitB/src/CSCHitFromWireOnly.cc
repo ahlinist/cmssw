@@ -37,7 +37,7 @@ CSCHitFromWireOnly::~CSCHitFromWireOnly(){}
 std::vector<CSCWireHit> CSCHitFromWireOnly::runWire( const CSCDetId& id, const CSCLayer* layer, const CSCWireDigiCollection::Range& rwired ) {
   
   std::vector<CSCWireHit> hitsInLayer;
-  
+    
   layer_ = layer;
   layergeom_ = layer->geometry();
   bool any_digis = true;
@@ -53,7 +53,7 @@ std::vector<CSCWireHit> CSCHitFromWireOnly::runWire( const CSCDetId& id, const C
       if ( rwired.second - rwired.first == 1) {
 	makeWireCluster( wdigi );
 	float whit_pos = findWireHitPosition();
-	CSCWireHit whit(id, whit_pos, theTime); 
+	CSCWireHit whit(id, whit_pos, wire_in_cluster, theTime); 
 	hitsInLayer.push_back( whit );
       } else { 
 	makeWireCluster( wdigi );
@@ -63,7 +63,7 @@ std::vector<CSCWireHit> CSCHitFromWireOnly::runWire( const CSCDetId& id, const C
 	// Make Wire Hit from cluster, delete old cluster and start new one
 	if (debug && n_wgroup > 2) std::cout << "Found wire cluster of " << n_wgroup << " wire groups " << std::endl;
 	float whit_pos = findWireHitPosition();
-	CSCWireHit whit(id, whit_pos, theTime);
+	CSCWireHit whit(id, whit_pos, wire_in_cluster, theTime);
 	hitsInLayer.push_back( whit );	
 	makeWireCluster( wdigi );
 	n_wgroup = 1;
@@ -74,7 +74,7 @@ std::vector<CSCWireHit> CSCHitFromWireOnly::runWire( const CSCDetId& id, const C
     // Don't forget to fill last wire hit !!!
     if ( rwired.second - it == 1) {           
       float whit_pos = findWireHitPosition();
-      CSCWireHit whit(id, whit_pos, theTime);
+      CSCWireHit whit(id, whit_pos, wire_in_cluster, theTime);
       hitsInLayer.push_back( whit );
     }
   }
@@ -87,6 +87,7 @@ std::vector<CSCWireHit> CSCHitFromWireOnly::runWire( const CSCDetId& id, const C
  */
 void CSCHitFromWireOnly::makeWireCluster(const CSCWireDigi & digi) {
   wire_cluster.clear();
+  wire_in_cluster.clear();
   theLastChannel  = digi.getWireGroup();
   theTime         = digi.getTimeBin();
   wire_cluster.push_back( digi );
@@ -126,6 +127,7 @@ float CSCHitFromWireOnly::findWireHitPosition() {
   for ( unsigned i = 0; i < wire_cluster.size(); i++ ) {
     CSCWireDigi wdigi = wire_cluster[i];
     int wgroup = wdigi.getWireGroup();
+    wire_in_cluster.push_back( wgroup );
     y += float( wgroup );
   }       
 

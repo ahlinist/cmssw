@@ -90,6 +90,7 @@ std::vector<CSCStripHit> CSCHitFromStripOnly::runStrip( const CSCDetId& id, cons
 
     // Initialize parameters entering the CSCStripHit
     ClusterSize = theClusterSize;
+    theStrips.clear();
     strips_adc.clear();
 
     // This is where centroid position is determined
@@ -99,7 +100,7 @@ std::vector<CSCStripHit> CSCHitFromStripOnly::runStrip( const CSCDetId& id, cons
     
     if ( strippos < 0 || TmaxOfCluster < 3 ) continue;
     
-    CSCStripHit striphit( id, strippos, TmaxOfCluster, ClusterSize, strips_adc );
+    CSCStripHit striphit( id, strippos, TmaxOfCluster, theStrips, strips_adc );
     hitsInLayer.push_back( striphit ); 
   }
 
@@ -131,6 +132,7 @@ float CSCHitFromStripOnly::makeCluster( int centerStrip ) {
   for ( int i = -ClusterSize/2; i <= ClusterSize/2; i++ ) {
     CSCStripHitData data = makeStripData(centerStrip, i);
     stripDataV.push_back( data );
+    theStrips.push_back( centerStrip + i );
   }
   
   strippos = findHitOnStripPosition( stripDataV, centerStrip );

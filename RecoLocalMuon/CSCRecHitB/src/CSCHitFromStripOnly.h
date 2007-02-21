@@ -85,6 +85,7 @@ class CSCHitFromStripOnly
   int tmax_cluster;
   int ClusterSize;
   std::vector<float> strips_adc;  
+  std::vector<int> theStrips;
   
   // The cuts for forming the strip hits are described in the data/.cfi file
   bool debug;

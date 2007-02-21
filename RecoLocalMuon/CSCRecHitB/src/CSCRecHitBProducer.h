@@ -34,6 +34,7 @@ public:
   // Counting events processed
   int iev; 
   bool isData;
+  bool debug;
 
   std::string stripDigiProducer_;
   std::string wireDigiProducer_;

@@ -41,7 +41,7 @@ CSCFitXonStripWithGatti::~CSCFitXonStripWithGatti(){
 void CSCFitXonStripWithGatti::findXOnStrip( const CSCLayer* layer, const CSCStripHit& stripHit, 
                                             float& xCenterStrip, float& sWidth, 
                                             std::vector<float> xtalks, std::vector<float> nmatrix,
-                                            float& xGatti, double& sigma, double& chisq ) {
+                                            float& xGatti, float& tpeak, double& sigma, double& chisq ) {
 
   // Initialize Gatti parameters using chamberSpecs
   // Cache specs_ info for ease of access
@@ -53,7 +53,8 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCLayer* layer, const CSCStri
   xGatti = xCenterStrip;  
   sigma = chisq = 9999.;
 
-  int nStrips = stripHit.clusterSize();
+  CSCStripHit::ChannelContainer strips = stripHit.strips();
+  int nStrips = strips.size();
   int CenterStrip = nStrips/2 + 1;   
   std::vector<float> adcs = stripHit.s_adc();
   int tmax = stripHit.tmax();
@@ -72,8 +73,8 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCLayer* layer, const CSCStri
       useFittedCharge = peakTimeFinder_->FindPeakTime( tmax, adc, t_zero, t_peak );
     }
   }
-
   if (debug) std::cout << "t_max is: " << tmax*50. << " and fitted peak is: " << t_peak+t_zero << std::endl;
+  tpeak = t_peak+t_zero;
 
   int j = 0;
 
@@ -170,12 +171,6 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCLayer* layer, const CSCStri
   xGatti = xCenterStrip - x_gatti * stripWidth;
   sigma  = dx_gatti * stripWidth;      
   chisq  = chi2_gatti;
-
-  if (debug) {
-        std::cout << "Output from Gatti:"        << std::endl;
-        std::cout << "x      :  " << xGatti << " +/- " << sigma << std::endl;
-        std::cout << "chi^2  :  " << chi2_gatti  << std::endl;
-  } 
 }
 
 

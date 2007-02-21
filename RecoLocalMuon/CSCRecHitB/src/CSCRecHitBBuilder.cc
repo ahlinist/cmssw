@@ -302,7 +302,6 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
 
     // Now try to build proper 2D rechit from overlap of strip/wire hits
 
-
     for ( wIt=wireLayer.begin(); wIt != wireLayer.end(); ++wIt ) {
         
       const CSCDetId& wDetId  = (*wIt);
@@ -367,13 +366,6 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
     layer_idx++;
     old_id = sDetId;
   }
-
-
-/* Clear memory
- *  for ( CSCStripHitCollection::const_iterator sit = clean_soc.begin(); sit != clean_soc.end(); ++sit ){
- *    (*sit).clear();
- *  }
- */
 
 }
 

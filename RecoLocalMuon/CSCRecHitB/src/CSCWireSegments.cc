@@ -591,7 +591,8 @@ void CSCWireSegments::storeChamberHits() {
       float this_wgroup = proto_y[this_layer-1];
       CSCDetId this_id = (*hi).cscDetId();
       int this_tmax = (*hi).tmax();  
-      CSCWireHit this_wirehit( this_id, this_wgroup, this_tmax );
+      CSCWireHit::ChannelContainer wgroups = (*hi).wgroups();
+      CSCWireHit this_wirehit( this_id, this_wgroup, wgroups, this_tmax );
       hitsInChamber.push_back( this_wirehit );
     }
   }
