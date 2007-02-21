@@ -741,27 +741,23 @@ double CombinedTauTagAlg::HCALtowersEtSum_around_rectk(const IsolatedTauTagInfoR
     math::XYZPoint therecTrackImpactPositiononECAL=recTrackImpactPositiononECAL(theEvent,theEventSetup,therecTrack);
     if(therecTrackImpactPositiononECAL.z()!=0.){
       thepropagatedrectk_Hep3V.setRThetaPhi((*therecTrack).momentum().r(),(double)therecTrackImpactPositiononECAL.theta(),(double)therecTrackImpactPositiononECAL.phi());
-      Handle<CaloTowerCollection> caloTowers;      
-      theEvent.getByLabel("towerMaker",caloTowers);
-      const vector<CaloTowerDetId>&  theCaloTowerDetIds=theIsolatedTauTagInfoRef->jtaRef()->key->getTowerIndices();
-      int theCaloTowerDetIds_n= theCaloTowerDetIds.size();      
-      for (int i_CaloTowerDetId=0;i_CaloTowerDetId<theCaloTowerDetIds_n;i_CaloTowerDetId++) {
-       CaloTowerCollection::const_iterator theTower=caloTowers->find(theCaloTowerDetIds[i_CaloTowerDetId]);  //Find the tower from its CaloTowerDetID	
-       size_t numRecHits = theTower->constituentsSize();       
-       for(size_t j=0;j<numRecHits;j++) {
-	 DetId RecHitDetID=theTower->constituent(j);
-	 DetId::Detector DetNum=RecHitDetID.det();     
-	 if(DetNum==DetId::Hcal){
-	   Hep3Vector theHCALCaloRecHit_Hep3V(0.,0.,0.);
-	   theHCALCaloRecHit_Hep3V.setREtaPhi((double)theTower->hadEnergy(),(double)theTower->eta(),(double)theTower->phi());
-	   if(theHCALCaloRecHit_Hep3V.deltaR(thepropagatedrectk_Hep3V)<calotk_conesize_) {
+      vector<CaloTowerRef> theCaloTowers=theIsolatedTauTagInfoRef->jtaRef()->key->getConstituents();
+      for(vector<CaloTowerRef>::const_iterator i_Tower=theCaloTowers.begin();i_Tower!=theCaloTowers.end();i_Tower++){
+	size_t numRecHits = (**i_Tower).constituentsSize();       
+	for(size_t j=0;j<numRecHits;j++) {
+	  DetId RecHitDetID=(**i_Tower).constituent(j);
+	  DetId::Detector DetNum=RecHitDetID.det();     
+	  if(DetNum==DetId::Hcal){
+	    Hep3Vector theHCALCaloRecHit_Hep3V(0.,0.,0.);
+	    theHCALCaloRecHit_Hep3V.setREtaPhi((double)(**i_Tower).hadEnergy(),(double)(**i_Tower).eta(),(double)(**i_Tower).phi());
+	    if(theHCALCaloRecHit_Hep3V.deltaR(thepropagatedrectk_Hep3V)<calotk_conesize_) {
 	     if(thelastselectedHCALCaloRecHit_Hep3V.r()==0. || (thelastselectedHCALCaloRecHit_Hep3V.r()!=0. && theHCALCaloRecHit_Hep3V.diff2(thelastselectedHCALCaloRecHit_Hep3V)>0.01)){
 	       thelastselectedHCALCaloRecHit_Hep3V=theHCALCaloRecHit_Hep3V;
 	       theHCALCaloRecHitsSum_Hep3V+=theHCALCaloRecHit_Hep3V;
 	     }
-	   }  
-	 }
-       }
+	    }  
+	  }
+	}
       }
       return(theHCALCaloRecHitsSum_Hep3V.perp());
     }else{
@@ -785,19 +781,15 @@ double CombinedTauTagAlg::ECALcellsEtSum_around_rectk(const IsolatedTauTagInfoRe
     math::XYZPoint therecTrackImpactPositiononECAL=recTrackImpactPositiononECAL(theEvent,theEventSetup,therecTrack);
     if(therecTrackImpactPositiononECAL.z()!=0.){
       thepropagatedrectk_Hep3V.setRThetaPhi((*therecTrack).momentum().r(),(double)therecTrackImpactPositiononECAL.theta(),(double)therecTrackImpactPositiononECAL.phi());
-      Handle<CaloTowerCollection> caloTowers;
+      vector<CaloTowerRef> theCaloTowers=theIsolatedTauTagInfoRef->jtaRef()->key->getConstituents();
       Handle<EBRecHitCollection> EBRecHits;
       Handle<EERecHitCollection> EERecHits;     
-      theEvent.getByLabel("towerMaker",caloTowers);
       theEvent.getByLabel("ecalRecHit","EcalRecHitsEB",EBRecHits );
       theEvent.getByLabel("ecalRecHit","EcalRecHitsEE",EERecHits );
-      const vector<CaloTowerDetId>&  theCaloTowerDetIds=theIsolatedTauTagInfoRef->jtaRef()->key->getTowerIndices();
-      int theCaloTowerDetIds_n= theCaloTowerDetIds.size();
-      for (int i_CaloTowerDetId=0;i_CaloTowerDetId<theCaloTowerDetIds_n;i_CaloTowerDetId++) {
-       CaloTowerCollection::const_iterator theTower=caloTowers->find(theCaloTowerDetIds[i_CaloTowerDetId]);  //Find the tower from its CaloTowerDetID
-	size_t numRecHits = theTower->constituentsSize();
+      for(vector<CaloTowerRef>::const_iterator i_Tower=theCaloTowers.begin();i_Tower!=theCaloTowers.end();i_Tower++){
+	size_t numRecHits = (**i_Tower).constituentsSize();
 	for(size_t j=0;j<numRecHits;j++) {
-          DetId RecHitDetID=theTower->constituent(j);
+          DetId RecHitDetID=(**i_Tower).constituent(j);
           DetId::Detector DetNum=RecHitDetID.det();     
           if(DetNum==DetId::Ecal){
             int EcalNum=RecHitDetID.subdetId();
