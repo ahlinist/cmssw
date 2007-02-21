@@ -1,7 +1,7 @@
 #ifndef RecoBTag_BKinematics_h
 #define RecoBTag_BKinematics_h
 
-#include "Geometry/Vector/interface/GlobalVector.h"
+#include "DataFormats/GeometryVector/interface/GlobalVector.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "RecoBTag/CombinedSV/interface/CombinedTrack.h"
 #include "TrackingTools/TransientTrack/interface/TransientTrack.h"

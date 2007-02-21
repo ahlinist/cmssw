@@ -4,7 +4,7 @@
 #include "RecoBTag/CombinedSV/interface/CombinedTrack.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "TrackingTools/TransientTrack/interface/TransientTrack.h"
-#include "Geometry/Vector/interface/GlobalVector.h"
+#include "DataFormats/GeometryVector/interface/GlobalVector.h"
 
 class MagneticField;
 
