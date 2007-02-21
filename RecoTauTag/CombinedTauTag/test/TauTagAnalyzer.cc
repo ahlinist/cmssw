@@ -212,7 +212,7 @@ void TauTagAnalyzer::endJob(){
   theCombinedTauTagInfoTree->Write();
   thefile->Write();
   thefile->Close();
-};
+}
 void TauTagAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
   vector<pair<HepLorentzVector,int> > GenTau_pair;
   GenTau_pair.clear();
