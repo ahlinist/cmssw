@@ -31,7 +31,7 @@ std::vector<CSCRecHit2D> CSCRecHit2DFromWiresOnly::run(
     float dxdy = c*s*(du*du - dv*dv);
     LocalError error(dx2, dxdy, dy2);
 
-    CSCRecHit2D rechit( id, lp, error, CSCRecHit2D::ChannelContainer(), 0., 0. );    
+    CSCRecHit2D rechit( id, lp, error, CSCRecHit2D::ChannelContainer(), CSCRecHit2D::ADCContainer(), CSCRecHit2D::ChannelContainer(), 0., 0., 0.);    
     
     hitsInLayer.push_back( rechit ); //@@ copy it
 	

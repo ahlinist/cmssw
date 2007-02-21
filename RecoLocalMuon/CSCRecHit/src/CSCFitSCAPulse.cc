@@ -26,7 +26,8 @@ CSCFitSCAPulse::~CSCFitSCAPulse() {
 
 bool CSCFitSCAPulse::peakAboveBaseline(const CSCStripDigi & digi, 
                          const CSCChamberSpecs & chamberSpecs,
-                         double & height, double & sigma) const {
+                         double & height, int& tmax,
+                         StripHitADCContainer& adcs, double & sigma) const {
   bool status = false;			 
  
   // save so the chi2 and baseline routines can use it			 
@@ -40,6 +41,28 @@ bool CSCFitSCAPulse::peakAboveBaseline(const CSCStripDigi & digi,
   double chisq = 0.;
 
   std::vector<int> sca = digi.getADCCounts();
+  std::vector<float> adcs_;
+  float ped = 0.;
+
+  if ( !sca.empty() ) {
+    tmax = std::max_element( sca.begin(), sca.end() ) - sca.begin();
+    ped = baseline(digi);
+
+    if (tmax > 0 ) {
+      for (int t = tmax-1; t < tmax+3; t++) {
+        if (t < 8) {
+          adcs_.push_back(sca[t]-ped);
+        } else {
+          adcs_.push_back(0.);
+        }
+      }
+    }
+  } else {
+    tmax = 0;
+    adcs = adcs_;
+  }
+
+
 
   // uses a parabolic fit to bins 3, 4, and 5.  We'll try letting the
   // width vary at first, and then try fixing it.
@@ -79,7 +102,7 @@ bool CSCFitSCAPulse::peakAboveBaseline(const CSCStripDigi & digi,
   sigma = std::max(sigma, 0.5); // prevent zero
  
 // Finally, correct for baseline...
-  height -= baseline(digi);
+  height -= ped;
 
 //  float easyHeight = sca[4] - baseline(digi);
 //  cout << "MEPHF: " << digi.getAdcCounts() << " " << easyHeight

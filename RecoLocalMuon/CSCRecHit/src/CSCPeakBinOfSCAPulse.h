@@ -13,14 +13,16 @@
 
 class CSCPeakBinOfSCAPulse : public CSCFindPulseheightOnStrip {
 public:
+
   CSCPeakBinOfSCAPulse(){};
   virtual ~CSCPeakBinOfSCAPulse(){};
 
   /// Find the peak pulseheight from the SCA samples
-  virtual bool peakAboveBaseline(const CSCStripDigi & input, 
-                         const CSCChamberSpecs & specs,
-                         double & height, double & sigma) const;
-  
+  virtual bool peakAboveBaseline(const CSCStripDigi& input, 
+                         const CSCChamberSpecs& specs,
+                         double& height, int& tmax,
+                         StripHitADCContainer& adcs, double& sigma) const;
+
 };
 
 #endif
