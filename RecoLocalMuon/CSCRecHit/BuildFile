@@ -8,6 +8,7 @@
 <use name=FWCore/ParameterSet>
 <use name=Foundation/PluginManager>
 <use name=FWCore/ParameterSet>
+<use name=RecoLocalMuon/CSCRecHitB>
 <use name=boost>
 <use name=clhep>
 <use name=root>
@@ -25,6 +26,7 @@
    <use name=FWCore/ParameterSet>
    <use name=Foundation/PluginManager>
    <use name=FWCore/ParameterSet>
+   <use name=RecoLocalMuon/CSCRecHitB>
    <use name=boost>
    <use name=clhep>
    <use name=root>
