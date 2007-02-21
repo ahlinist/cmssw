@@ -38,6 +38,7 @@ private:
   std::vector<MCParton> m_partons;
   bool vetoB, vetoC, vetoL, vetoG;
   std::string moduleLabel;
+  HepMC::GenEvent * generated_event;
 
 };
 
