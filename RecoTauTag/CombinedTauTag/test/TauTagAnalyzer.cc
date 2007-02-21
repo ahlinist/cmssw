@@ -32,9 +32,9 @@
 #include "DataFormats/BTauReco/interface/CombinedTauTagInfo.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 
-#include "Geometry/Vector/interface/GlobalTag.h"
-#include "Geometry/Vector/interface/Vector3DBase.h"
-#include "Geometry/Vector/interface/Point3DBase.h"
+#include "DataFormats/GeometryVector/interface/GlobalTag.h"
+#include "DataFormats/GeometryVector/interface/Vector3DBase.h"
+#include "DataFormats/GeometryVector/interface/Point3DBase.h"
 
 #include "MagneticField/Engine/interface/MagneticField.h"
 #include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
