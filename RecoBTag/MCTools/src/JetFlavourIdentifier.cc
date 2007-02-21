@@ -31,14 +31,18 @@ JetFlavourIdentifier::JetFlavourIdentifier(const edm::ParameterSet& iConfig)
     if (*iVeto=="UDS") vetoL = true;
     if (*iVeto=="G") vetoG = true;
   }
+  generated_event=0;
 }
 
 void JetFlavourIdentifier::readEvent(const edm::Event& iEvent)
 {
   edm::Handle<HepMCProduct> evt;
   iEvent.getByLabel(moduleLabel, evt);
-  
-  HepMC::GenEvent * generated_event = new HepMC::GenEvent(*(evt->GetEvent()));
+
+  m_partons.clear();
+  if (generated_event!=0) delete generated_event;
+
+  generated_event = new HepMC::GenEvent(*(evt->GetEvent()));
   fillInfo(generated_event);
 }
 
@@ -46,7 +50,6 @@ void JetFlavourIdentifier::readEvent(const edm::Event& iEvent)
 void JetFlavourIdentifier::fillInfo ( const HepMC::GenEvent * event ) {
 
 //   HeavyHadrons.erase( HeavyHadrons.begin() , HeavyHadrons.end() ) ;
-  m_partons.clear();
 //   Leptons.erase( Leptons.begin() , Leptons.end() ) ;
 
   // print RawHepEvent in Debug mode
