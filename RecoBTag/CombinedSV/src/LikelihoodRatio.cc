@@ -78,7 +78,7 @@ double LikelihoodRatio::compute ( const reco::TaggingVariableList & s ) const
 
   for ( reco::TaggingVariableList::const_iterator i = s.begin(); i != s.end(); i++ )
   {
-    reco::btau::TaggingVariableName taggingVar = i->first;
+    reco::TaggingVariableName taggingVar = i->first;
     if ( taggingVar == reco::btau::jetPt || taggingVar == reco::btau::jetEta )
     {
       LogDebug("") << "jetpt and jeteta are ignored for the moment." << endl;
@@ -160,7 +160,7 @@ long double LikelihoodRatio::getPDFValue( double variableValue,
          << " variable not filled: value=" << variableValue;
              /*
              << "tagging variable "
-             << reco::btau::TaggingVariableName ( taggingVar )
+             << reco::TaggingVariableName ( taggingVar )
              << " parton type " << combsv::Partons::name ( partonType )
              */
     return returnValue;

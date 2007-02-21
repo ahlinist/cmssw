@@ -9,7 +9,7 @@ combsv::CombinedSVCalibrationHistogram::CombinedSVCalibrationHistogram(
     float ptMin, float ptMax, float etaMin, float etaMax,
     reco::btag::Vertices::VertexType vertexType,
     combsv::Partons::PartonType      partonType,
-    reco::btau::TaggingVariableName taggingVar,
+    reco::TaggingVariableName taggingVar,
     const vector < float > & binLowerEdge, int nentries ) : 
     CalibratedHistogramXML  ( binLowerEdge ),
     category_ ( CombinedSVCalibrationCategory (
