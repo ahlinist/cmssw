@@ -14,6 +14,7 @@
 #include "FWCore/ServiceRegistry/interface/ActivityRegistry.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
+#include "IOPool/Streamer/interface/DQMEventMessage.h"
 
 #include "toolbox/mem/Reference.h"
 #include "toolbox/mem/Pool.h"
@@ -45,10 +46,14 @@ class DQMSenderService
  protected:
   DaqMonitorBEInterface *bei;
 
-  void findMonitorElements(std::vector<MonitorElement *> &put_here,
+  void findMonitorElements(DQMEvent::MonitorElementTable &meTable,
                            std::string folderPath);
 
  private:
+  std::vector<char> messageBuffer_;
+  std::string destinationName_;
+  int updateInterval_;  // seconds
+  time_t lastUpdateTime_;
 
 };
 
