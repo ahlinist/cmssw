@@ -250,7 +250,7 @@ void DQMSenderService::findMonitorElements(DQMEvent::MonitorElementTable &meTabl
 
   // fetch the monitor elements in the specified directory
   std::vector<MonitorElement *> localMEList = bei->getContents(folderPath);
-  MonitorElementRootFolder* folderPtr = bei->getDirectory(folderPath);
+  //MonitorElementRootFolder* folderPtr = bei->getDirectory(folderPath);
 
   // add the MEs that should be updated to the table
   std::vector<MonitorElement *> updatedMEList;
