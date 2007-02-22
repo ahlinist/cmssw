@@ -262,7 +262,7 @@ void DQMSenderService::findMonitorElements(DQMEvent::MonitorElementTable &meTabl
       updatedMEList.push_back(mePtr);
 
       if (wasUpdated) {
-        bei->add2UpdatedContents(mePtr->getName(), folderPath);
+        //bei->add2UpdatedContents(mePtr->getName(), folderPath);
       }
 
       if (neverSent) {
