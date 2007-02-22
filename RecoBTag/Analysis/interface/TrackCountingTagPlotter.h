@@ -38,6 +38,9 @@ class TrackCountingTagPlotter : public BaseBTagPlotter {
 
   FlavourHistorgrams<double> * tkcntHistosSig3D[5];
   FlavourHistorgrams<double> * tkcntHistosSig2D[5];
+  FlavourHistorgrams<int> * trkNbr3D, * trkNbr2D;
+  double lowerIPSBound;
+
   EffPurFromHistos * effPurFromHistos[4] ;
   bool finalized;
 } ;
