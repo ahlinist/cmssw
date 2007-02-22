@@ -11,7 +11,7 @@ namespace {
     reco::btag::Vertices::VertexType vtype = reco::btag::Vertices::UndefVertex;
     double jetpt=0.;
     double jeteta=0.;
-    using namespace reco::btag;
+    using namespace reco::btau;
     for ( reco::TaggingVariableList::const_iterator i=l.begin(); i!=l.end() ; ++i )
     {
       switch ( i->first )
