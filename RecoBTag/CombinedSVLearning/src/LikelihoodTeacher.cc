@@ -12,7 +12,7 @@ namespace {
     reco::btag::Vertices::VertexType vtype = reco::btag::Vertices::UndefVertex;
     double jetpt=0.;
     double jeteta=0.;
-    using namespace reco::btag;
+    using namespace reco::btau;
     for ( reco::TaggingVariableList::const_iterator i=l.begin(); i!=l.end() ; ++i )
     {
       switch ( i->first )
@@ -55,7 +55,7 @@ void LikelihoodTeacher::teach ( const reco::TaggingVariableList & l, char tag )
   */
 
   combsv::CombinedSVCalibInput ip = createCalibInput ( l, tag );
-  using namespace reco::btag;
+  using namespace reco::btau;
 
   for ( reco::TaggingVariableList::const_iterator i=l.begin(); i!=l.end() ; ++i )
   {
@@ -79,7 +79,7 @@ void LikelihoodTeacher::teachCategory ( const reco::TaggingVariableList & l, cha
 {
   // teach the category only!
   combsv::CombinedSVCalibInput ip = createCalibInput ( l, tag );
-  using namespace reco::btag;
+  using namespace reco::btau;
   ip.setTaggingVariable ( vertexCategory );
   ip.setVertexType ( type_ );
 
