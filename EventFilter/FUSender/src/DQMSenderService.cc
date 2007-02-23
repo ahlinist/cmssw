@@ -139,19 +139,19 @@ void DQMSenderService::postEventProcessing(const edm::Event &event,
 
   // find the monitor elements under each top level folder (including
   // subdirectories)
-  std::map< std::string, DQMEvent::MonitorElementTable > meMap;
+  std::map< std::string, DQMEvent::TObjectTable > toMap;
   std::vector<std::string>::const_iterator dirIter;
   for (dirIter = topLevelFolderList.begin();
        dirIter != topLevelFolderList.end();
        dirIter++) {
     std::string dirName = *dirIter;
-    DQMEvent::MonitorElementTable meTable;
+    DQMEvent::TObjectTable toTable;
 
     // find the MEs
-    findMonitorElements(meTable, dirName);
+    findMonitorElements(toTable, dirName);
 
     // store the list in the map
-    meMap[dirName] = meTable;
+    toMap[dirName] = toTable;
   }
 
   // create a DQMEvent message for each top-level folder
@@ -160,14 +160,14 @@ void DQMSenderService::postEventProcessing(const edm::Event &event,
        dirIter != topLevelFolderList.end();
        dirIter++) {
     std::string dirName = *dirIter;
-    DQMEvent::MonitorElementTable meTable = meMap[dirName];
-    if (meTable.size() == 0) {continue;}
+    DQMEvent::TObjectTable toTable = toMap[dirName];
+    if (toTable.size() == 0) {continue;}
 
     // create the message
     DQMEventMsgBuilder dqmMsgBuilder(&messageBuffer_[0], messageBuffer_.size(),
                                      event.id().run(), event.id().event(),
                                      edm::getReleaseVersion(), dirName);
-    edm::StreamSerializer::serializeDQMEvent(meTable, dqmMsgBuilder);
+    edm::StreamSerializer::serializeDQMEvent(toTable, dqmMsgBuilder);
 
     // send the message
     //coming soon...
@@ -193,10 +193,10 @@ void DQMSenderService::postEventProcessing(const edm::Event &event,
               << dqmEventView.topFolderName() << std::endl; 
     std::cout << "    sub folder count = "
               << dqmEventView.subFolderCount() << std::endl; 
-    std::auto_ptr<DQMEvent::TObjectTable> toTable =
+    std::auto_ptr<DQMEvent::TObjectTable> toTablePtr =
       edm::StreamDeserializer::deserializeDQMEvent(dqmEventView);
     DQMEvent::TObjectTable::const_iterator toIter;
-    for (toIter = toTable->begin(); toIter != toTable->end(); toIter++) {
+    for (toIter = toTablePtr->begin(); toIter != toTablePtr->end(); toIter++) {
       std::string subFolderName = toIter->first;
       std::cout << "  folder = " << subFolderName << std::endl;
       std::vector<TObject *> toList = toIter->second;
@@ -243,7 +243,7 @@ void DQMSenderService::postEndJobProcessing()
  * Finds all of the monitor elements under the specified folder,
  * including those in subdirectories.
  */
-void DQMSenderService::findMonitorElements(DQMEvent::MonitorElementTable &meTable,
+void DQMSenderService::findMonitorElements(DQMEvent::TObjectTable &toTable,
                                            std::string folderPath)
 {
   if (bei == NULL) {return;}
@@ -253,13 +253,28 @@ void DQMSenderService::findMonitorElements(DQMEvent::MonitorElementTable &meTabl
   //MonitorElementRootFolder* folderPtr = bei->getDirectory(folderPath);
 
   // add the MEs that should be updated to the table
-  std::vector<MonitorElement *> updatedMEList;
+  std::vector<TObject *> updateTOList;
   for (int idx = 0; idx < (int) localMEList.size(); idx++) {
     MonitorElement *mePtr = localMEList[idx];
     bool wasUpdated = mePtr->wasUpdated();
     bool neverSent = false; //SenderBase::isNeverSent(folderPtr, mePtr->getName());
     if (wasUpdated || neverSent) {
-      updatedMEList.push_back(mePtr);
+      MonitorElementRootObject* rootObject = 
+        dynamic_cast<MonitorElementRootObject *>(mePtr);
+      if (rootObject) {
+        updateTOList.push_back(rootObject->operator->());
+      }
+      else {
+        FoldableMonitor *foldable =
+          dynamic_cast<FoldableMonitor *>(mePtr);
+        if (foldable) {
+          updateTOList.push_back(foldable->getTagObject());
+        }
+        else {
+          std::cerr << " *** Failed to extract and send object " 
+                    << mePtr->getName() << std::endl;
+        }
+      }
 
       if (wasUpdated) {
         //bei->add2UpdatedContents(mePtr->getName(), folderPath);
@@ -270,8 +285,8 @@ void DQMSenderService::findMonitorElements(DQMEvent::MonitorElementTable &meTabl
       }
     }
   }
-  if (updatedMEList.size() > 0) {
-    meTable[folderPath] = updatedMEList;
+  if (updateTOList.size() > 0) {
+    toTable[folderPath] = updateTOList;
   }
 
   // find the subdirectories in this folder
@@ -286,7 +301,7 @@ void DQMSenderService::findMonitorElements(DQMEvent::MonitorElementTable &meTabl
     std::vector<std::string>::const_iterator dirIter;
     for (dirIter = subDirList.begin(); dirIter != subDirList.end(); dirIter++) {
       std::string subDirPath = folderPath + "/" + (*dirIter);
-      findMonitorElements(meTable, subDirPath);
+      findMonitorElements(toTable, subDirPath);
     }
   }
 }

@@ -46,7 +46,7 @@ class DQMSenderService
  protected:
   DaqMonitorBEInterface *bei;
 
-  void findMonitorElements(DQMEvent::MonitorElementTable &meTable,
+  void findMonitorElements(DQMEvent::TObjectTable &toTable,
                            std::string folderPath);
 
  private:
