@@ -190,14 +190,16 @@ void MinimumBiasAnalyzer::analyze( const Event& e, const EventSetup& ){
 	    temp2->Fill(Dphi_mc,par->Pt());
 
 	  }
-	  
+ 
+	  // fill profile histograms 
+	  // scale by binwidth ( = 360 degrees / 100 bins ) and by eta-range ( = 2 )
 	  for(int i=0;i<100;i++){
 	    float_t bincont1_mc=temp1->GetBinContent(i+1);
-	    pdN_vs_dphi->Fill(-180.+i*3.6+1.8,bincont1_mc/(2.*piG/50.),1);
+	    pdN_vs_dphi->Fill(-180.+i*3.6+1.8,bincont1_mc/(360./50.),1);
 	    float_t bincont2_mc=temp2->GetBinContent(i+1);
-	    pdPt_vs_dphi->Fill(-180.+i*3.6+1.8,bincont2_mc/(2.*piG/50.),1);
+	    pdPt_vs_dphi->Fill(-180.+i*3.6+1.8,bincont2_mc/(360./50.),1);
 	  }
-	  
+
 	  temp1->Reset();
 	  temp2->Reset();
 	}
@@ -248,11 +250,14 @@ void MinimumBiasAnalyzer::analyze( const Event& e, const EventSetup& ){
 
 	  }
 	  
+	  // fill profile histograms 
+	  // scale by binwidth ( = 360 degrees / 100 bins ) and by eta-range ( = 2 )
 	  for(int i=0;i<100;i++){
 	    float_t bincont1_mc=temp1->GetBinContent(i+1);
-	    pdN_vs_dphi->Fill(-180.+i*3.6+1.8,bincont1_mc/(2.*piG/50.),1);
+	    pdN_vs_dphi->Fill(-180.+i*3.6+1.8,bincont1_mc/(360./50.),1);
+
 	    float_t bincont2_mc=temp2->GetBinContent(i+1);
-	    pdPt_vs_dphi->Fill(-180.+i*3.6+1.8,bincont2_mc/(2.*piG/50.),1);
+	    pdPt_vs_dphi->Fill(-180.+i*3.6+1.8,bincont2_mc/(360./50.),1);
 	  }
 	  
 	  temp1->Reset();
