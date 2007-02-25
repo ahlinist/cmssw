@@ -10,7 +10,7 @@ $Id$
 #include <iostream>
 #include <string>
 #include <cppunit/extensions/HelperMacros.h>
-#include "FWCore/FWLite/src/stdNamespaceAdder.h"
+#include "FWCore/RootAutoLibraryLoader/src/stdNamespaceAdder.h"
 
 class testSTDNamespaceAdder: public CppUnit::TestFixture
 {
@@ -35,7 +35,7 @@ using std::endl;
 void testSTDNamespaceAdder::tests()
 {
    using std::string;
-   using namespace fwlite;
+   using edm::root::stdNamespaceAdder;
 
    static const string kVectorBlahNoNS("vector<Blah>");
    static const string kVectorBlahNS("std::vector<Blah>");
