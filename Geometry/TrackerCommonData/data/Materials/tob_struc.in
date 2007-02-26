@@ -63,7 +63,7 @@ ICB Circuit  EDMS Code EP-680-1174-150-A
 (1-4) ICB
 	FR4:	m = 86.90 g
 		density (T_G10) = 1.90 g/cm^3
-		--> volume = 45.737 cm^3
+		--> volume = 45.737 cm^3 [it's ok, the real bus thickness is 1.2 mm and not 1.0 mm]
 	Copper:	m = 30.633 g
 		density = 8.96 g/cm^3
 		--> volume = 3.419 cm^3
