@@ -1,13 +1,14 @@
-<use name=FWCore/Framework>
-<use name=Foundation/PluginManager>
-<use name=FWCore/ParameterSet>
-<use name=FWCore/MessageLogger>
-<use name=DataFormats/Math>
+<use name=DataFormats/BTauReco>
 <use name=DataFormats/Common>
 <use name=DataFormats/JetReco>
+<use name=DataFormats/Math>
 <use name=DataFormats/TrackReco>
-<use name=DataFormats/BTauReco>
-<flags SEAL_PLUGIN_NAME="RecoBTauJetTracksAssociator">
+<use name=FWCore/Framework>
+<use name=FWCore/MessageLogger>
+<use name=FWCore/ParameterSet>
+<use name=rootmath>
+<flags SEALPLUGIN=1>
 <export>
-   <lib name=RecoBTagJetTracksAssociator>
+  <lib name=RecoBTauJetTracksAssociator>
 </export>
+
