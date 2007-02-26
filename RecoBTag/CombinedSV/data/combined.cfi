@@ -7,8 +7,8 @@ module combinedSVJetTags = CombinedSV
   string trackcoll = "ctfWithMaterialTracks"
   double charmPriorInBG = 0.25
 
-  include "RecoBTag/CombinedSV/test/vertexreco.cfi"
-  include "RecoBTag/CombinedSV/test/vertexcuts.cfi"
-  include "RecoBTag/CombinedSV/test/jetcuts.cfi"
-  include "RecoBTag/CombinedSV/test/trackcuts.cfi"
+  include "RecoBTag/CombinedSV/data/vertexreco.cfi"
+  include "RecoBTag/CombinedSV/data/vertexcuts.cfi"
+  include "RecoBTag/CombinedSV/data/jetcuts.cfi"
+  include "RecoBTag/CombinedSV/data/trackcuts.cfi"
 }

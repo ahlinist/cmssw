@@ -1,0 +1,7 @@
+PSet jetcuts =
+{
+  double  AbsEtaMin =  0.0
+  double  AbsEtaMax =  2.5
+  double  PMin      = 15.0
+  double  PtMin     = 10.0
+}
