@@ -1,0 +1,7 @@
+PSet vertexreco =
+{
+  string finder = "avr"
+  double primcut = 4.0
+  double seccut = 4.0
+  double minweight = 0.5
+}
