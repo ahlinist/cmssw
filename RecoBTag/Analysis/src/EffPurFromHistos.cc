@@ -75,18 +75,21 @@ EffPurFromHistos::EffPurFromHistos
 //   discrCut = discrFirstBin;
 
   // better to loop over bins -> discrCut no longer needed
-  for ( int iDiscr = 0; iDiscr < dDiscriminatorFC->nBins(); iDiscr++ ) {
+  int nBins = dDiscriminatorFC->nBins();
+  // In Root histos, bin counting starts at 1 to nBins.
+  // bin 0 is the underflow, and nBins+1 is the overflow.
+  for ( int iDiscr = 1; iDiscr <= nBins; iDiscr++ ) {
     //
     // loop over flavours
     for ( int iFlav = 0; iFlav < dimHistos; iFlav++ ) {
       // fill all jets into NoCut histo
 //       int    iBin      = discrNoCutHistos[iFlav]->FindBin    ( discrCut );
-      double nJetsFlav = discrCfHistos   [iFlav]->GetEntries ()          ;
+      double nJetsFlav = discrCfHistos[iFlav]->GetEntries ();
       discrNoCutHistos[iFlav]->SetBinContent ( iDiscr, nJetsFlav );
       discrNoCutHistos[iFlav]->SetBinError   ( iDiscr, sqrt(nJetsFlav) );
       // fill jets fulfilling discriminator >= discriminatorCut in Cut histo
       double sum = 0.0;
-      for ( int i = iDiscr; i < discrCfHistos[iFlav]->GetSize(); i++ ) {
+      for ( int i = iDiscr; i <= nBins+1; i++ ) {  //+1 to get the overflow.
 	sum += discrCfHistos[iFlav]->GetBinContent( i );
       }
       discrCutHistos[iFlav]->SetBinContent ( iDiscr, sum );
