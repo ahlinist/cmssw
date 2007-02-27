@@ -89,7 +89,7 @@ class CSCHitFromStripOnly
   
   // The cuts for forming the strip hits are described in the data/.cfi file
   bool debug;
-  bool isData;
+  bool useCalib;
   int theClusterSize;
   float theThresholdForAPeak;
   float theThresholdForCluster;

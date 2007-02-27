@@ -71,7 +71,7 @@ class CSCMake2DRecHit
  private:
   
   bool debug;
-  bool isData;
+  bool useCalib;
   int stripWireDeltaTime;
   bool useGatti;
   float maxGattiChi2;

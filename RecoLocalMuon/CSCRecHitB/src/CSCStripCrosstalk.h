@@ -36,7 +36,6 @@ class CSCStripCrosstalk
 
  private:
 
-  bool isData;
   bool debug;
   CSCReadoutMappingFromFile theCSCMap;
 

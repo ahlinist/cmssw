@@ -33,6 +33,7 @@ public:
 
   // Counting events processed
   int iev; 
+  bool useCalib;
   bool isData;
   bool debug;
 

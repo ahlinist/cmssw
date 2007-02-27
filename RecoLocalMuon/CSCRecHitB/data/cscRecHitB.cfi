@@ -3,6 +3,7 @@
 module csc2DRecHits = CSCRecHitBProducer {
 
      untracked bool CSCIsRunningOnData           = true
+     untracked bool CSCUseCalibrations           = false
      untracked bool CSCDebug                     = false
      FileInPath theMappingFile                   = "CondFormats/CSCObjects/data/csc_slice_test_map.txt"
      string CSCStripDigiProducer                 = "cscunpacker"
@@ -13,7 +14,7 @@ module csc2DRecHits = CSCRecHitBProducer {
      untracked int32  CSCWireClusterDeltaT       = 1
      untracked int32  CSCWireClusterMaxSize      = 999
 
-     untracked bool   CSCuseCleanWireCollection  = true
+     untracked bool   CSCuseCleanWireCollection  = false
      untracked int32  CSCWireminLayersApart      = 2
      untracked double CSCWireMaxDistance         = 2.
      untracked int32  CSCWireSegmentDeltaT       = 1
@@ -28,8 +29,9 @@ module csc2DRecHits = CSCRecHitBProducer {
      untracked bool   CSCUseGattiFit             = true
      untracked double CSCMaxGattiChi2            = 10000.
      untracked double CSCCalibrationSystematics  = 0.015
+     untracked double CSCStripxtalksOffset       = 0.03
 
-     untracked bool   CSCuseCleanStripCollection = true
+     untracked bool   CSCuseCleanStripCollection = false
      untracked int32  CSCStripminLayersApart     = 2
      untracked double CSCStripMaxDistance        = 5.
      untracked double CSCStripCloseToSegment     = 8.

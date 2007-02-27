@@ -19,10 +19,8 @@
 
 CSCStripCrosstalk::CSCStripCrosstalk( const edm::ParameterSet & ps ) {
 
-  isData                 = ps.getUntrackedParameter<bool>("CSCIsRunningOnData");
   debug                  = ps.getUntrackedParameter<bool>("CSCDebug");  
-
-  if (isData) theCSCMap  = CSCReadoutMappingFromFile( ps );                                              
+  theCSCMap              = CSCReadoutMappingFromFile( ps );                                              
 
 }
 
