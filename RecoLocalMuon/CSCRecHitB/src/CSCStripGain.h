@@ -43,7 +43,6 @@ class CSCStripGain
 
  private:
 
-  bool isData;
   bool debug;
   CSCReadoutMappingFromFile theCSCMap;
 

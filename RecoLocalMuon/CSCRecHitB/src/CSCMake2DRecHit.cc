@@ -39,7 +39,7 @@
 CSCMake2DRecHit::CSCMake2DRecHit(const edm::ParameterSet& ps){
     
   debug                      = ps.getUntrackedParameter<bool>("CSCDebug");
-  isData                     = ps.getUntrackedParameter<bool>("CSCIsRunningOnData");
+  useCalib                   = ps.getUntrackedParameter<bool>("CSCUseCalibrations");
   stripWireDeltaTime         = ps.getUntrackedParameter<int>("CSCstripWireDeltaTime");
   useGatti                   = ps.getUntrackedParameter<bool>("CSCUseGattiFit");
   maxGattiChi2               = ps.getUntrackedParameter<double>("CSCMaxGattiChi2");
@@ -90,8 +90,6 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
   LocalError localerrFailed(dx2, dxy, dy2);  
   CSCRecHit2D failedHit( id, lpFailed, localerrFailed, channels, adcMap, wgroups, tpeak, chisq, prob );
 
-  bool test = true;
-
   float slopeRight[100];
   float slopeLeft[100];
   float interRight[100];
@@ -99,35 +97,28 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
   std::vector<float> nMatrix;
 
   // Fill x-talk and noise matrix at once:
-  if ( isData ) {
+  if ( useCalib ) {
     stripCrosstalk_->setCrossTalk( xtalk_ );
     stripCrosstalk_->getCrossTalk( id, slopeLeft, interLeft, slopeRight, interRight );
-    if ( test ) {
-      stripNoiseMatrix_->setNoiseMatrix( gains_, noise_ );
-      stripNoiseMatrix_->getNoiseMatrix( id, nMatrix ); 
-    } else {
-      for ( int i = 0; i < 1500; i++ ) {
-        if (i%3 == 0) {
-          nMatrix.push_back( 1. );
-        } else {
-          nMatrix.push_back( 0. );
-        }
-      }
-    }
+    stripNoiseMatrix_->setNoiseMatrix( gains_, noise_ );
+    stripNoiseMatrix_->getNoiseMatrix( id, nMatrix ); 
   } else {
-    for ( int i = 0; i < 100; i++ ) {
-      slopeRight[i] = 0.;
-      slopeLeft[i]  = 0.;
-      interRight[i] = 0.026;  // From MC digi...
-      interLeft[i]  = 0.026;
-    }
-    for ( int i = 0; i < 1500; i++ ) {
-      if (i%3 == 0) {
-        nMatrix.push_back( 1. );
-      } else {
-        nMatrix.push_back( 0. );
-      }
-    }
+    // FIXME:  NOT SUPPOSED TO HARDWIRE ANYTHING !!!
+    nMatrix.push_back(10.06);  // 3,3
+    nMatrix.push_back(3.85);   // 3,4
+    nMatrix.push_back(2.96);   // 3,5
+    nMatrix.push_back(8.53);   // 4,4
+    nMatrix.push_back(3.12);   // 4,5
+    nMatrix.push_back(2.05);   // 4,6
+    nMatrix.push_back(8.72);   // 5,5
+    nMatrix.push_back(3.29);   // 5,6
+    nMatrix.push_back(1.83);   // 5,7
+    nMatrix.push_back(7.65);   // 6,6
+    nMatrix.push_back(2.98);   // 6,7
+    nMatrix.push_back(0.);     // 6,8  <- does not exist
+    nMatrix.push_back(7.95);   // 7,7
+    nMatrix.push_back(0.);     // 7,8  <- does not exist
+    nMatrix.push_back(0.);     // 7,9  <- does not exist
   }
 
   

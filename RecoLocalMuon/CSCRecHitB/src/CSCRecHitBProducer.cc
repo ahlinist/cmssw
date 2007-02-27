@@ -29,7 +29,7 @@ CSCRecHitBProducer::CSCRecHitBProducer( const edm::ParameterSet& ps ) : iev( 0 )
 	
   stripDigiProducer_ = ps.getParameter<std::string>("CSCStripDigiProducer");
   wireDigiProducer_  = ps.getParameter<std::string>("CSCWireDigiProducer");
-  isData             = ps.getUntrackedParameter<bool>("CSCIsRunningOnData");
+  useCalib           = ps.getUntrackedParameter<bool>("CSCUseCalibrations");
   debug              = ps.getUntrackedParameter<bool>("CSCDebug");
  
   recHitBuilder_     = new CSCRecHitBBuilder( ps ); // pass on the Parameter Settings
@@ -61,7 +61,7 @@ void  CSCRecHitBProducer::produce( edm::Event& ev, const edm::EventSetup& setup 
 
 
   // Only for data can you load in calibration constants !
-  if (isData) {  
+  if ( useCalib ) {  
     // Strip gains
     edm::ESHandle<CSCGains> hGains;
     setup.get<CSCGainsRcd>().get( hGains );

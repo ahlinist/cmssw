@@ -38,7 +38,9 @@ CSCRecHitBBuilder::CSCRecHitBBuilder( const edm::ParameterSet& ps ) : geom_(0) {
   
   // Receives ParameterSet percolated down from EDProducer	
 
-  isData                 = ps.getUntrackedParameter<bool>("CSCIsRunningOnData");  
+
+  useCalib               = ps.getUntrackedParameter<bool>("CSCUseCalibrations");  
+  isData                 = ps.getUntrackedParameter<bool>("CSCIsRunningOnData"); 
   debug                  = ps.getUntrackedParameter<bool>("CSCDebug");
   stripWireDeltaT        = ps.getUntrackedParameter<int>("CSCstripWireDeltaTime");
   useCleanStripCollection= ps.getUntrackedParameter<bool>("CSCuseCleanStripCollection");
@@ -70,7 +72,7 @@ CSCRecHitBBuilder::~CSCRecHitBBuilder() {
 void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCWireDigiCollection* wiredc,
                                CSCRecHit2DCollection& oc ) {
 
-  if ( isData ) {
+  if ( useCalib ) {
     // Pass gain constants to strip hit reconstruction package
     HitsFromStripOnly_->setCalibration( gains_ );
     // Pass X-talks and noise matrix to 2-D hit builder (these are ultimately implemented in Gatti fit)

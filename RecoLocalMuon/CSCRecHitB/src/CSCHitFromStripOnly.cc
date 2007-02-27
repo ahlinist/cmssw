@@ -30,7 +30,7 @@
 CSCHitFromStripOnly::CSCHitFromStripOnly( const edm::ParameterSet& ps ) {
   
   debug                      = ps.getUntrackedParameter<bool>("CSCDebug");
-  isData                     = ps.getUntrackedParameter<bool>("CSCIsRunningOnData");
+  useCalib                   = ps.getUntrackedParameter<bool>("CSCUseCalibrations");
   theClusterSize             = ps.getUntrackedParameter<int>("CSCStripClusterSize");
   theThresholdForAPeak       = ps.getUntrackedParameter<double>("CSCStripPeakThreshold");
   theThresholdForCluster     = ps.getUntrackedParameter<double>("CSCStripClusterChargeCut");
@@ -73,12 +73,10 @@ std::vector<CSCStripHit> CSCHitFromStripOnly::runStrip( const CSCDetId& id, cons
   // N.B. in database, strip_id starts at 0, whereas it starts at 1 in detId
   // Initialize weights to 1. and crosstalk to 0., in case database isn't populated or using MC
 
-  if ( isData ) {
+  if ( useCalib ) {
     stripGain_->setCalibration( gains_ );
     float globalGainAvg = stripGain_->getStripGainAvg();
     stripGain_->getStripGain( id_, globalGainAvg, gainWeight );
-  } else {
-    for ( int i = 0; i < 100; i++) gainWeight[i] = 1.;     
   }
   
   // Fill adc map and find maxima (potential hits)
@@ -263,11 +261,11 @@ void CSCHitFromStripOnly::fillPulseHeights( const CSCStripDigiCollection::Range&
     if ( id_.station() == 1 && id_.ring() == 4 ) {
       for ( int j = 0; j < 3; j++ ) {
         thePulseHeightMap[thisChannel+16*j-1] = CSCStripData( float(thisChannel+16*j), hmax, tmax, height[0], height[1], height[2], height[3], height[4], height[5]);
-        thePulseHeightMap[thisChannel+16*j-1] *= gainWeight[thisChannel-1];
+        if ( useCalib ) thePulseHeightMap[thisChannel+16*j-1] *= gainWeight[thisChannel-1];
       }
     } else {
       thePulseHeightMap[thisChannel-1] = CSCStripData( float(thisChannel), hmax, tmax, height[0], height[1], height[2], height[3], height[4], height[5]);
-      thePulseHeightMap[thisChannel-1] *= gainWeight[thisChannel-1];
+      if ( useCalib ) thePulseHeightMap[thisChannel-1] *= gainWeight[thisChannel-1];
     }
   }
 }

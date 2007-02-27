@@ -82,6 +82,7 @@ class CSCRecHitBBuilder
  private:
 
   bool isData;
+  bool useCalib;
   bool debug;  
   int stripWireDeltaT;
   bool useCleanStripCollection;

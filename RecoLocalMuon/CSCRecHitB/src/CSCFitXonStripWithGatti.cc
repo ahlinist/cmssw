@@ -23,8 +23,10 @@
 CSCFitXonStripWithGatti::CSCFitXonStripWithGatti(const edm::ParameterSet& ps){
 
   debug                      = ps.getUntrackedParameter<bool>("CSCDebug");
-  isData                     = ps.getUntrackedParameter<bool>("CSCIsRunningOnData");
+  useCalib                   = ps.getUntrackedParameter<bool>("CSCUseCalibrations");
   adcSystematics             = ps.getUntrackedParameter<double>("CSCCalibrationSystematics");        
+  xtalksOffset               = ps.getUntrackedParameter<bool>("CSCStripxtalksOffset");
+
   peakTimeFinder_            = new CSCFindPeakTime();
 }
 
@@ -101,15 +103,24 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCLayer* layer, const CSCStri
   // Load in x-talks:
   float dt = 50. * tmax - (t_peak + t_zero);
 
-  float xtalksOffset = 0.03;
-
-  for ( int t = 0; t < 3; t++ ) {
-    xt_l[0][t] = xtalks[0] * (50.* (t-1) + dt) + xtalks[1] + xtalksOffset;
-    xt_r[0][t] = xtalks[2] * (50.* (t-1) + dt) + xtalks[3] + xtalksOffset;
-    xt_l[1][t] = xtalks[4] * (50.* (t-1) + dt) + xtalks[5] + xtalksOffset;
-    xt_r[1][t] = xtalks[6] * (50.* (t-1) + dt) + xtalks[7] + xtalksOffset;
-    xt_l[2][t] = xtalks[8] * (50.* (t-1) + dt) + xtalks[9] + xtalksOffset;
-    xt_r[2][t] = xtalks[10]* (50.* (t-1) + dt) + xtalks[11] + xtalksOffset;
+  if ( useCalib ) {
+    for ( int t = 0; t < 3; t++ ) {
+      xt_l[0][t] = xtalks[0] * (50.* (t-1) + dt) + xtalks[1] + xtalksOffset;
+      xt_r[0][t] = xtalks[2] * (50.* (t-1) + dt) + xtalks[3] + xtalksOffset;
+      xt_l[1][t] = xtalks[4] * (50.* (t-1) + dt) + xtalks[5] + xtalksOffset;
+      xt_r[1][t] = xtalks[6] * (50.* (t-1) + dt) + xtalks[7] + xtalksOffset;
+      xt_l[2][t] = xtalks[8] * (50.* (t-1) + dt) + xtalks[9] + xtalksOffset;
+      xt_r[2][t] = xtalks[10]* (50.* (t-1) + dt) + xtalks[11] + xtalksOffset;
+    }
+  } else { 
+    for ( int t = 0; t < 3; t++ ) {
+      xt_l[0][t] = xtalksOffset;
+      xt_r[0][t] = xtalksOffset;
+      xt_l[1][t] = xtalksOffset;
+      xt_r[1][t] = xtalksOffset;
+      xt_l[2][t] = xtalksOffset;
+      xt_r[2][t] = xtalksOffset;
+    } 
   }
 
   // vector containing noise starts at tmax - 1, and tmax > 3, but....
@@ -123,15 +134,26 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCLayer* layer, const CSCStri
   if (tmax < 4) tbin = 0;    // patch
 
   // Load in auto-correlation noise matrices
-  for ( int istrip =0; istrip < 3; istrip++ ) {
-    a11[istrip] = nmatrix[0+tbin*3+istrip*15];
-    a12[istrip] = nmatrix[1+tbin*3+istrip*15];
-    a13[istrip] = nmatrix[2+tbin*3+istrip*15];
-    a22[istrip] = nmatrix[3+tbin*3+istrip*15];
-    a23[istrip] = nmatrix[4+tbin*3+istrip*15];
-    a33[istrip] = nmatrix[6+tbin*3+istrip*15];
+  if ( useCalib ) {
+    for ( int istrip =0; istrip < 3; istrip++ ) {
+      a11[istrip] = nmatrix[0+tbin*3+istrip*15];
+      a12[istrip] = nmatrix[1+tbin*3+istrip*15];
+      a13[istrip] = nmatrix[2+tbin*3+istrip*15];
+      a22[istrip] = nmatrix[3+tbin*3+istrip*15];
+      a23[istrip] = nmatrix[4+tbin*3+istrip*15];
+      a33[istrip] = nmatrix[6+tbin*3+istrip*15];
+    }
+  } else {
+    for ( int istrip =0; istrip < 3; istrip++ ) {
+      a11[istrip] = nmatrix[0+tbin*3];
+      a12[istrip] = nmatrix[1+tbin*3];
+      a13[istrip] = nmatrix[2+tbin*3];
+      a22[istrip] = nmatrix[3+tbin*3];
+      a23[istrip] = nmatrix[4+tbin*3];
+      a33[istrip] = nmatrix[6+tbin*3];
+    }
   }
-
+  
   // Set Matrix used in Gatti fitting
   setupMatrix();
 

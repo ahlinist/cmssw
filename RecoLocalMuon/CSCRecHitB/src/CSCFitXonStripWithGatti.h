@@ -111,9 +111,11 @@ class CSCFitXonStripWithGatti
 
   // Parameter settings from config file
   bool debug;
+  bool useCalib;
   bool isData;
   bool use3TimeBins;
   double adcSystematics;
+  float xtalksOffset;
 
   CSCFindPeakTime* peakTimeFinder_;  
 

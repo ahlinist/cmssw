@@ -49,7 +49,6 @@ class CSCStripNoiseMatrix
 
  private:
 
-  bool isData;
   bool debug;
   CSCReadoutMappingFromFile theCSCMap;
 
