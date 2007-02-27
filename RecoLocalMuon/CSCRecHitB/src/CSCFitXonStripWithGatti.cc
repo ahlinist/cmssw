@@ -25,7 +25,7 @@ CSCFitXonStripWithGatti::CSCFitXonStripWithGatti(const edm::ParameterSet& ps){
   debug                      = ps.getUntrackedParameter<bool>("CSCDebug");
   useCalib                   = ps.getUntrackedParameter<bool>("CSCUseCalibrations");
   adcSystematics             = ps.getUntrackedParameter<double>("CSCCalibrationSystematics");        
-  xtalksOffset               = ps.getUntrackedParameter<bool>("CSCStripxtalksOffset");
+  xtalksOffset               = ps.getUntrackedParameter<double>("CSCStripxtalksOffset");
 
   peakTimeFinder_            = new CSCFindPeakTime();
 }
