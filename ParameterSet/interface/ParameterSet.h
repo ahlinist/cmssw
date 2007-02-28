@@ -314,14 +314,14 @@ private:
   
   template<>
   inline 
-  ParameterSet::ParameterSet
+  edm::ParameterSet
   ParameterSet::getParameter<edm::ParameterSet>(std::string const& name) const {
     return retrieve(name).getPSet();
   }
   
   template<>
   inline 
-  std::vector<ParameterSet::ParameterSet>
+  std::vector<edm::ParameterSet>
   ParameterSet::getParameter<std::vector<edm::ParameterSet> >(std::string const& name) const {
     return retrieve(name).getVPSet();
   }
