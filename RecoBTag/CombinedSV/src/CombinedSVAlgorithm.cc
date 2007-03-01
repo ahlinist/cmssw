@@ -337,7 +337,8 @@ combsv::CombinedJet combsv::CombinedSVAlgorithm::createJetInfo (
   double minFDSig2D = minFlightDistanceSignificance2D ( vertexType, vtces );
   double first2DSignedIPSigniAboveCut = computeFirstTrackAboveCharmMass( alltracks );
   return CombinedJet( mass, vertexMult, fracEnergy,
-                          minFDSig2D, first2DSignedIPSigniAboveCut );
+                          minFDSig2D, first2DSignedIPSigniAboveCut,
+                          vtces.size(), -23./* FIXME */ );
 }
 
 const CombinedSVTaggingVariables & combsv::CombinedSVAlgorithm::variables() const

@@ -18,7 +18,10 @@ bool JetFilter::operator() ( const reco::Particle & jet ) const
 
   if ( !ret )
   {
-    edm::LogInfo("JetFilter") << "NOT accepting jet. Discriminator=-1.";
+    edm::LogInfo("JetFilter") << "NOT accepting jet (eta=" << jet.eta() 
+        << ", pt=" << jet.pt() << ", p=" << jet.p() << "). Discriminator=-1."
+		<< "filter: " << etaMin_ << ",eta," << etaMax_ << " pt=" << pTMin_
+		<< " p=" << pMin_;
   } else {
     edm::LogInfo("JetFilter") << "accepting jet.";
   }
