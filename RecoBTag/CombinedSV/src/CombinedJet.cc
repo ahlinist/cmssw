@@ -2,10 +2,12 @@
 
 combsv::CombinedJet::CombinedJet(
     double VertexMass, double VertexMultiplicity, double ESVXOverE,
-    double MinFlightDistanceSignificance2D, double First2DSignedIPSigniAboveCut ) :
+    double MinFlightDistanceSignificance2D, double First2DSignedIPSigniAboveCut,
+    int nvertices, double weightedESVXOverE ) :
   vertexMass_ ( VertexMass ), vertexMultiplicity_ ( VertexMultiplicity ),
   eSVXOverE_ ( ESVXOverE ), minFlightDistanceSignificance2D_ ( MinFlightDistanceSignificance2D ),
-  first2DSignedIPSigniAboveCut_ ( First2DSignedIPSigniAboveCut ), isValid_ ( true )
+  first2DSignedIPSigniAboveCut_ ( First2DSignedIPSigniAboveCut ),
+  nVertices_(nvertices), weightedESVXOverE_ ( weightedESVXOverE ), isValid_ ( true )
 {}
 
 combsv::CombinedJet::CombinedJet() : isValid_(false)
@@ -29,6 +31,16 @@ double combsv::CombinedJet::vertexMultiplicity() const
 double combsv::CombinedJet::eSVXOverE() const
 {
   return eSVXOverE_;
+}
+
+double combsv::CombinedJet::weightedESVXOverE() const
+{
+  return weightedESVXOverE_;
+}
+
+int combsv::CombinedJet::nVertices() const
+{
+  return nVertices_;
 }
 
 double combsv::CombinedJet::minFlightDistanceSignificance2D() const

@@ -73,8 +73,8 @@ void FilterFactory::createJetFilter ( const edm::ParameterSet & s )
 {
   float etamin = s.getParameter<double>("AbsEtaMin");  //  0.0
   float etamax = s.getParameter<double>("AbsEtaMax");  //  2.5
-  float pmin = s.getParameter<double>("PMin");       // 15.0 GeV
   float ptmin = s.getParameter<double>("PtMin");      // 10.0 GeV 
+  float pmin = s.getParameter<double>("PMin");       // 15.0 GeV
 
-  jet_ = JetFilter ( etamin, etamax, pmin, ptmin );
+  jet_ = JetFilter ( etamin, etamax, ptmin, pmin );
 }
