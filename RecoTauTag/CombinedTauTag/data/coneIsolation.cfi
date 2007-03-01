@@ -19,5 +19,5 @@ module coneIsolation = ConeIsolation {
         bool UseFixedSizeCone = true
         double VariableConeParameter = 3.5 
         double VariableMaxCone = 0.17 
-        double VaribleMinCone = 0.05 	
+        double VariableMinCone = 0.05 	
 }
