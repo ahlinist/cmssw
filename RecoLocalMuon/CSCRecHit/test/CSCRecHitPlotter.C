@@ -12,7 +12,7 @@ void CSCRecHitPlotter(int segtype){
 
 TFile *file = TFile::Open("cscrechitplots.root");
 
-TString suffixps = ".jpg";
+TString suffixps = ".eps";
 
 TString segment = "ME_All";
 
@@ -41,18 +41,13 @@ TString segment = "ME_All";
  TString plot2b = "ysim_"+segment+suffixps; 
  TString plot2c = "dy_"+segment+suffixps; 
  TString plot2d = "y_pulls_"+segment+suffixps;
- TString plot2e = "yrec_vs_ysim_"+segment+suffixps;
 
  TString plot5a = "dphi_"+segment+suffixps;
- TString plot5aa = "dphi_bottom_"+segment+suffixps;
- TString plot5aaa = "dphi_top_"+segment+suffixps;
  TString plot5b = "dphi_pulls_"+segment+suffixps;
  TString plot5c = "rdphi_"+segment+suffixps;
- TString plot5cc = "rdphi_bottom_"+segment+suffixps;
- TString plot5ccc = "rdphi_top_"+segment+suffixps;
  TString plot5d = "rdphi_pulls_"+segment+suffixps;
+ TString plot5e = "rdphisw_"+segment+suffixps;
 
- TString plot6c = "deta_"+segment+suffixps;
 
 // ********************************************************************
 // Pointers to histograms
@@ -66,7 +61,6 @@ TString segment = "ME_All";
  hSimPositionX     = (TH1F *) file->Get(segment+"_hSimPositionX");
  hResPositionX     = (TH1F *) file->Get(segment+"_hResPositionX");
  hPullX            = (TH1F *) file->Get(segment+"_hPullX");
- hResPositionXvsX  = (TH2F *) file->Get(segment+"_ResPositionXvsX");
  hRecYvsX          = (TH2F *) file->Get(segment+"_hRecPositionYvsX");
  hSimYvsX          = (TH2F *) file->Get(segment+"_hSimPositionYvsX");
 
@@ -75,21 +69,13 @@ TString segment = "ME_All";
  hSimPositionY     = (TH1F *) file->Get(segment+"_hSimPositionY");
  hResPositionY     = (TH1F *) file->Get(segment+"_hResPositionY");
  hPullY            = (TH1F *) file->Get(segment+"_hPullY");
- hResPositionYvsY  = (TH2F *) file->Get(segment+"_hResPositionYvsY");
- hRecYvsSimY       = (TH2F *) file->Get(segment+"_hRecYvsSimY");
 
 // 5) Phi
  hResphi           = (TH1F *) file->Get(segment+"_hResphi");
- hResphib          = (TH1F *) file->Get(segment+"_hResphib");
- hResphit          = (TH1F *) file->Get(segment+"_hResphit");
- hPullphi          = (TH1F *) file->Get(segment+"_hPullphi");
+ hPullDphi        = (TH1F *) file->Get(segment+"_hPullDphi");
  hrDphi            = (TH1F *) file->Get(segment+"_hrDphi");
- hrDphib           = (TH1F *) file->Get(segment+"_hrDphib");
- hrDphit           = (TH1F *) file->Get(segment+"_hrDphit");
  hPullrDphi        = (TH1F *) file->Get(segment+"_hPullrDphi");
-
-// 6) Eta
- hDeta             = (TH1F *) file->Get(segment+"_hDeta");
+ hrDphiSW          = (TH1F *) file->Get(segment+"_hrDphiSW");
 
 // ***************************************************************** 
 // Have match
@@ -180,17 +166,6 @@ TString segment = "ME_All";
  hPullY->GetYaxis()->SetTitle(" ");
  c1->Print(plot2d);
 
-// 2e) Y reco vs Y sim 
- gStyle->SetOptStat(kFALSE);  
- TCanvas *c1 = new TCanvas("c1","");
- c1->SetFillColor(10);
- c1->SetFillColor(10);
- hRecYvsSimY->SetTitle(segment);
- hRecYvsSimY->Draw();
- hRecYvsSimY->GetXaxis()->SetTitle("y_{sim} (cm) ");
- hRecYvsSimY->GetYaxis()->SetTitle("y_{reco} (cm) ");
- c1->Print(plot2e);
-
 // *****************************************************************
 // 5) Phi
 // *****************************************************************
@@ -228,81 +203,19 @@ TString segment = "ME_All";
 // hResPhi->Draw();
  c1->Print(plot5a);
 
-// 5aa) Res phi bottom of chamber
- gStyle->SetOptStat(kFALSE);  
- TCanvas *c1 = new TCanvas("c1","");
- c1->SetFillColor(10);
- c1->SetFillColor(10);
- hResphib->SetTitle("20% bottom of "+segment);
- hResphib->GetXaxis()->SetTitle("#Delta #phi  (mrads)");
- hResphib->GetYaxis()->SetTitle(" ");
- hResphib->Fit("gaus");
- TF1 *myfunc = hrDphi->GetFunction("gaus");
- float par0 = gaus->GetParameter(0);
- float par1 = gaus->GetParameter(1);
- float par2 = gaus->GetParameter(2);
- cout << "Parameters are: " << "P0: " << par0
-     <<  " P1: " << par1 << " P2: " <<par2 << endl;
- float low = par1 -nsigmas * par2;
- float hi = par1 + nsigmas * par2;
- hResphib->Fit("gaus","R","",low,hi);
- par0 = gaus->GetParameter(0);
- par1 = gaus->GetParameter(1);
- par2 = gaus->GetParameter(2);
- cout << "********* Second fit *********" << endl;
- cout << "Parameters are: " << "P0: " << par0
-      <<  " P1: " << par1 << " P2: " << par2 << endl;
- gStyle->SetOptStat(kTRUE);
- gStyle->SetOptFit(0111);
- low = par1 -nsigmas * par2;
- hi = par1 + nsigmas * par2;
- hResphib->Fit("gaus","R","",low,hi);
-// hResphib->Draw();
- c1->Print(plot5aa);
 
-// 5aaa) Res phi top of chamber
- gStyle->SetOptStat(kFALSE);  
- TCanvas *c1 = new TCanvas("c1","");
- c1->SetFillColor(10);
- c1->SetFillColor(10);
- hResphit->SetTitle("20% top of "+segment);
-// hResphit->Draw();
- hResphit->GetXaxis()->SetTitle("#Delta #phi  (mrads)");
- hResphit->GetYaxis()->SetTitle(" ");
- hResphit->Fit("gaus");
- TF1 *myfunc = hrDphi->GetFunction("gaus");
- float par0 = gaus->GetParameter(0);
- float par1 = gaus->GetParameter(1);
- float par2 = gaus->GetParameter(2);
- cout << "Parameters are: " << "P0: " << par0
-     <<  " P1: " << par1 << " P2: " <<par2 << endl;
- float low = par1 -nsigmas * par2;
- float hi = par1 + nsigmas * par2;
- hResphit->Fit("gaus","R","",low,hi);
- par0 = gaus->GetParameter(0);
- par1 = gaus->GetParameter(1);
- par2 = gaus->GetParameter(2);
- cout << "********* Second fit *********" << endl;
- cout << "Parameters are: " << "P0: " << par0
-      <<  " P1: " << par1 << " P2: " << par2 << endl;
- gStyle->SetOptStat(kTRUE);
- gStyle->SetOptFit(0111);
- low = par1 -nsigmas * par2;
- hi = par1 + nsigmas * par2;
- hResphit->Fit("gaus","R","",low,hi);
- c1->Print(plot5aaa);
-
-// 5b) Pull phi
+// 5b) Pull Delta Phi
  gStyle->SetOptStat(kTRUE);
  TCanvas *c1 = new TCanvas("c1","");
  c1->SetFillColor(10);
  c1->SetFillColor(10);
- hPullphi->SetTitle(segment);
- hPullphi->Draw();
- hPullphi->GetXaxis()->SetTitle("#Delta #phi/#sigma #phi");
- hPullphi->GetYaxis()->SetTitle("");
+ hPullDphi->SetTitle(segment);
+ hPullDphi->Draw();
+ hPullDphi->GetXaxis()->SetTitle("#Delta #phi/#sigma");
+ hPullDphi->GetYaxis()->SetTitle("");
  c1->Print(plot5b);
- 
+
+
 // 5c) R * Delta Phi
  gStyle->SetOptStat(kFALSE);
  TCanvas *c1 = new TCanvas("c1","");
@@ -335,69 +248,6 @@ TString segment = "ME_All";
  hrDphi->Fit("gaus","R","",low,hi);
  c1->Print(plot5c);
 
-// 5cc) R * Delta Phi
- gStyle->SetOptStat(kFALSE);
- TCanvas *c1 = new TCanvas("c1","");
- c1->SetFillColor(10);
- c1->SetFillColor(10);
- hrDphib->SetTitle("20% bottom of "+segment);
- hrDphib->Draw();
- hrDphib->GetXaxis()->SetTitle("r #Delta #phi  (cm)");
- hrDphib->GetYaxis()->SetTitle(" ");
- hrDphib->Fit("gaus");
- TF1 *myfunc = hrDphi->GetFunction("gaus");
- float par0 = gaus->GetParameter(0); 
- float par1 = gaus->GetParameter(1); 
- float par2 = gaus->GetParameter(2); 
- cout << "Parameters are: " << "P0: " << par0  
-     <<  " P1: " << par1 << " P2: " <<par2 << endl;
- float low = par1 -nsigmas * par2;
- float hi = par1 + nsigmas * par2;
- hrDphib->Fit("gaus","R","",low,hi);
- par0 = gaus->GetParameter(0); 
- par1 = gaus->GetParameter(1); 
- par2 = gaus->GetParameter(2); 
- cout << "********* Second fit *********" << endl;
- cout << "Parameters are: " << "P0: " << par0  
-      <<  " P1: " << par1 << " P2: " << par2 << endl;
- gStyle->SetOptStat(kTRUE);
- gStyle->SetOptFit(0111);
- low = par1 -nsigmas * par2;
- hi = par1 + nsigmas * par2;
- hrDphib->Fit("gaus","R","",low,hi);
- c1->Print(plot5cc);
-
-// 5ccc) R * Delta Phi
- gStyle->SetOptStat(kFALSE);
- TCanvas *c1 = new TCanvas("c1","");
- c1->SetFillColor(10);
- c1->SetFillColor(10);
- hrDphit->SetTitle("20% top of "+segment);
- hrDphit->Draw();
- hrDphit->GetXaxis()->SetTitle("r #Delta #phi  (cm)");
- hrDphit->GetYaxis()->SetTitle(" ");
- hrDphit->Fit("gaus");
- TF1 *myfunc = hrDphi->GetFunction("gaus");
- float par0 = gaus->GetParameter(0); 
- float par1 = gaus->GetParameter(1); 
- float par2 = gaus->GetParameter(2); 
- cout << "Parameters are: " << "P0: " << par0  
-      <<  " P1: " << par1 << " P2: " <<par2 << endl;
- float low = par1 -nsigmas * par2;
- float hi = par1 + nsigmas * par2;
- hrDphit->Fit("gaus","R","",low,hi);
- par0 = gaus->GetParameter(0); 
- par1 = gaus->GetParameter(1); 
- par2 = gaus->GetParameter(2); 
- cout << "********* Second fit *********" << endl;
- cout << "Parameters are: " << "P0: " << par0  
-      <<  " P1: " << par1 << " P2: " << par2 << endl;
- gStyle->SetOptStat(kTRUE);
- gStyle->SetOptFit(0111);
- low = par1 -nsigmas * par2;
- hi = par1 + nsigmas * par2;
- hrDphit->Fit("gaus","R","",low,hi);
- c1->Print(plot5ccc);
 
 // 5d) Pull R * Delta Phi
  gStyle->SetOptStat(kTRUE);
@@ -406,26 +256,42 @@ TString segment = "ME_All";
  c1->SetFillColor(10);
  hPullrDphi->SetTitle(segment);
  hPullrDphi->Draw();
- hPullrDphi->GetXaxis()->SetTitle("r #Delta #phi/#sigma (r #phi) ");
+ hPullrDphi->GetXaxis()->SetTitle("R #Delta #phi/#sigma");
  hPullrDphi->GetYaxis()->SetTitle("");
  c1->Print(plot5d);
 
 
-
-// *****************************************************************
-// 6) Eta
-// *****************************************************************
-
-// 6c) Delta eta
+// 5e) R * Delta Phi (SW)
  gStyle->SetOptStat(kFALSE);
  TCanvas *c1 = new TCanvas("c1","");
  c1->SetFillColor(10);
  c1->SetFillColor(10);
- hDeta->SetTitle(segment);
- hDeta->Draw();
- hDeta->GetXaxis()->SetTitle("#Delta #eta ");
- hDeta->GetYaxis()->SetTitle(" ");
- c1->Print(plot6c);
+ hrDphiSW->SetTitle(segment);
+ hrDphiSW->Draw();
+ hrDphiSW->GetXaxis()->SetTitle("r #Delta #phi/strip width");
+ hrDphiSW->GetYaxis()->SetTitle(" ");
+ hrDphiSW->Fit("gaus");
+ TF1 *myfunc = hrDphiSW->GetFunction("gaus");
+ float par0 = gaus->GetParameter(0); 
+ float par1 = gaus->GetParameter(1); 
+ float par2 = gaus->GetParameter(2); 
+ cout << "Parameters are: " << "P0: " << par0  
+      <<  " P1: " << par1 << " P2: " <<par2 << endl;
+ float low = par1 -nsigmas * par2;
+ float hi = par1 + nsigmas * par2;
+ hrDphiSW->Fit("gaus","R","",low,hi);
+ par0 = gaus->GetParameter(0); 
+ par1 = gaus->GetParameter(1); 
+ par2 = gaus->GetParameter(2); 
+ cout << "********* Second fit *********" << endl;
+ cout << "Parameters are: " << "P0: " << par0  
+      <<  " P1: " << par1 << " P2: " << par2 << endl;
+ gStyle->SetOptStat(kTRUE);
+ gStyle->SetOptFit(0111);
+ low = par1 -nsigmas * par2;
+ hi = par1 + nsigmas * par2;
+ hrDphiSW->Fit("gaus","R","",low,hi);
+ c1->Print(plot5e);
 
 
 

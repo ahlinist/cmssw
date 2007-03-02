@@ -209,6 +209,7 @@ void CSCRecHitReader::analyze(const Event & event, const EventSetup& eventSetup)
       
     // Store sim hit as a Local Point:
     LocalPoint shitlocal = (*simIt).localPosition();  
+
     float xsimu = shitlocal.x();
     float ysimu = shitlocal.y();
       
@@ -217,8 +218,19 @@ void CSCRecHitReader::analyze(const Event & event, const EventSetup& eventSetup)
     const CSCLayerGeometry* geom = csclayer->geometry();
     int wire_shit = geom->nearestWire(shitlocal);
     int wiregrp_shit = geom->wireGroup(wire_shit);
+    float stripWidth = geom->stripPitch(shitlocal);
 
+    // Find wire hit position and wire properties
+    int nWires    = geom->numberOfWiresPerGroup(wiregrp_shit); 
+    double wSpace = geom->wirePitch();
+    float wAngle  = geom->wireAngle();
+    float dy      = wSpace * (nWires) / sqrt(12.);    
+
+    // Find strip hit position and strip properties
     int strip_shit = geom->nearestStrip(shitlocal);
+    float sAngle   = geom->stripAngle(strip_shit);
+    double sPhiPitch = geom->stripPhiPitch();
+
     if (id.station() == 1 && id.ring() == 4) {
     // ME-1-a strips are ganged:  48 strips --> 16 readouts
       strip_shit = strip_shit%16;
@@ -238,7 +250,6 @@ void CSCRecHitReader::analyze(const Event & event, const EventSetup& eventSetup)
     float yreco = 9999.;
     float sigma_xreco = 0.001;
     float sigma_yreco = 0.001;
-    float sigma_phireco = 0.0001;
     float sigma_xyreco = 0.0001;
     int rwiregrp = 0; 
     int stripnum = 0; 
@@ -448,41 +459,34 @@ void CSCRecHitReader::analyze(const Event & event, const EventSetup& eventSetup)
               
       // Get pointer to layer:
       const CSCLayer* csclayer = cscGeom->layer( id );
-      const CSCLayerGeometry* layergeom_ = csclayer->geometry();
-      float apothem = layergeom_->length()/2.;	
       // Transform hit position from local chamber geometry to global CMS geom
       GlobalPoint rhitglobal= csclayer->toGlobal(rhitlocal);
       float grecphi = rhitglobal.phi();
-      float greceta = rhitglobal.eta();
       float grecx = rhitglobal.x();
       float grecy = rhitglobal.y();
       float grecz = rhitglobal.z();
 
       if (grecx == 0) grecx = 0.0001;
       if (grecy == 0) grecy = 0.0001;
-      sigma_phireco = fabs( sigma_xreco/(grecx*grecx) + sigma_yreco/(grecy*grecx) + sigma_xyreco/(grecx*grecy) );
 
-      sigma_phireco = sqrt(sigma_phireco);  // for small angles tan(theta) = theta:
-
-      // sigma_phireco = fabs(grecphi - atan(grecy/grecx * (1. + sigma_phireco)));
-      // float sigma_phireco2 = fabs(grecphi - atan(grecy/grecx * (1. - sigma_phireco)));
-      // sigma_phireco = 0.5 * (sigma_phireco + sigma_phireco2);
+      // Now disantangle local x and y errors to get error in strip frame
+      double sinangdif  = sin(sAngle - wAngle);
+      double sin2angdif = sinangdif * sinangdif;
+      double wcoss      = dy * cos(sAngle);
+      double scosw2     = sigma_xreco * sin2angdif - wcoss*wcoss;
+      double dstrip     = sin(sAngle) * sqrt(scosw2) / cos(wAngle);
 
       sigma_xreco = sqrt(sigma_xreco);
       sigma_yreco = sqrt(sigma_yreco);
 
-	
       GlobalPoint shitglobal= csclayer->toGlobal(shitlocal);
       float gsimphi = shitglobal.phi();
-      float gsimeta = shitglobal.eta();
       float gsimx = shitglobal.x();
       float gsimy = shitglobal.y();
       float gsimz = shitglobal.z();
 	
       // We're dealing with a Global point, so we need to compute the radial distance by hand:
       float gsimr = sqrt(gsimx*gsimx + gsimy*gsimy); 
-	
-      float deta = greceta -  gsimeta; 
 	
       float PI = 3.1415927;
       float PIneg = -1 * PI;
@@ -504,7 +508,6 @@ void CSCRecHitReader::analyze(const Event & event, const EventSetup& eventSetup)
         cout << "Delta Y (local)    : " << y_resol << " cm   " << endl;
         cout << "Delta phi (global)      : " << dphi    << " rads " << endl;
         cout << "R x Delta Phi (global)  : " << rdphi   << " cm   " << endl;
-        cout << "Delta eta (global)      : " << deta    << "      " << endl;
         cout << "Delta z (global)        : " << grecz-gsimz    << " cm      " << endl;
       }
 	
@@ -545,7 +548,7 @@ void CSCRecHitReader::analyze(const Event & event, const EventSetup& eventSetup)
         histo = hRHPME4;
 	if (id.ring() != 1) cout << " invalid ring in ME 4 !!! ";
       }
-      histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, gsimphi, rdphi, greceta, gsimeta, deta, gsimr, apothem, sigma_xreco, sigma_yreco, sigma_phireco);
+      histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, gsimphi, gsimr, sigma_xreco, sigma_yreco, stripWidth, dstrip, sPhiPitch);
 
     } else {
           
