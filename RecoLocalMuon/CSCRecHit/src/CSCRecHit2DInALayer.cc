@@ -93,6 +93,7 @@ CSCRecHit2DInALayer::CSCRecHit2DInALayer(  const edm::ParameterSet& ps ) : CSCRe
 CSCRecHit2DInALayer::~CSCRecHit2DInALayer() {
   delete pulseheightOnStripFinder_;
   delete stripClusterPositionFinder_;
+  delete peakTimeFinder_;
 }
 
 std::vector<CSCRecHit2D> CSCRecHit2DInALayer::run( 
@@ -212,11 +213,9 @@ CSCRecHit2D CSCRecHit2DInALayer::makeCluster( const CSCWireCluster & wireCluster
           int tmax = data.tmax();
           float t_peak = tmax * 50.;
           float t_zero = 0.;
-          bool useFit = false;
           float adc[4];
-          for (int j = 0; j < 4; j++ )
-            adc[j] = adcs_[j];
-          if (adc[3]>0.) useFit = peakTimeFinder_->FindPeakTime( tmax, adc, t_zero, t_peak );
+          for (int k = 0; k < 4; k++ ) adc[k] = adcs_[k];         
+          peakTimeFinder_->FindPeakTime( tmax, adc, t_zero, t_peak );
           tpeak = t_peak+t_zero;
         }
         fitDataV.push_back( data );
