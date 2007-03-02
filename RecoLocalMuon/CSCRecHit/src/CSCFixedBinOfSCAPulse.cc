@@ -10,12 +10,11 @@ bool CSCFixedBinOfSCAPulse::peakAboveBaseline(const CSCStripDigi & digi,
     //@@ Take the 5th bin of the SCA, and subtract baseline - should be configurable?
 	
     std::vector<int> sca = digi.getADCCounts();
-    std::vector<float> adcs_;
     float ped = baseline(digi);
     height = sca[4] - ped;
     tmax = 4;
     for (int t = tmax-1; t < tmax+3; t++) 
-      adcs_.push_back(sca[t]-ped);
+      adcs.push_back(sca[t]-ped);
 
    
     //@@ Assumes 3% calibration uncertainty, and the same noise as

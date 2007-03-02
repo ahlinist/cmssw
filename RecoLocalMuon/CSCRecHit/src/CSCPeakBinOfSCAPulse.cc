@@ -10,7 +10,6 @@ bool CSCPeakBinOfSCAPulse::peakAboveBaseline(const CSCStripDigi& digi,
                          StripHitADCContainer& adcs, double& sigma) const {
   
     std::vector<int> sca = digi.getADCCounts();
-    std::vector<float> adcs_;
     float ped = 0.;
   
     if ( !sca.empty() ) {
@@ -21,15 +20,14 @@ bool CSCPeakBinOfSCAPulse::peakAboveBaseline(const CSCStripDigi& digi,
       if (tmax > 0 ) {
         for (int t = tmax-1; t < tmax+3; t++) {
           if (t < 8) {
-            adcs_.push_back(sca[t]-ped);
+            adcs.push_back(sca[t]-ped);
           } else {
-            adcs_.push_back(0.);
+            adcs.push_back(0.);
           }
         }
       }
     } else {
       tmax = 0;
-      adcs = adcs_;
       height = 0.;
     }
 
