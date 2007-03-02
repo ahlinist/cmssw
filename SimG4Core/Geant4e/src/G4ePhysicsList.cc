@@ -168,7 +168,7 @@ void G4ePhysicsList::ConstructEM()
       G4bool bElossExtrap;
       char* elext = getenv("G4EELOSSEXTRAP");
       if( !elext ) {
-	bElossExtrap = 0;
+	bElossExtrap = 1;
       } else {
 	bElossExtrap = atoi( elext );
       }
