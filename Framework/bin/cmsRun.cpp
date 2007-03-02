@@ -163,7 +163,7 @@ int main(int argc, char* argv[])
     } catch(cms::Exception& iException) {
       std::string shortDesc("ConfigFileReadError");
       std::ostringstream longDesc;
-      longDesc << "python found a problem "<<iException.what();
+      longDesc << "Python found a problem\n" << iException.what();
       int exitCode = 7002;
       jobRep->reportError(shortDesc, longDesc.str(), exitCode);
       edm::LogSystem(shortDesc) << longDesc.str() << "\n";
