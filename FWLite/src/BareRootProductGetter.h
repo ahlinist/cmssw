@@ -27,7 +27,7 @@
 
 // user include files
 #include "DataFormats/Common/interface/EDProductGetter.h"
-#include "DataFormats/Common/interface/BranchDescription.h"
+#include "DataFormats/Provenance/interface/BranchDescription.h"
 #include "DataFormats/Common/interface/EDProduct.h"
 
 // forward declarations
