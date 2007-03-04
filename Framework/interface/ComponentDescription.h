@@ -23,9 +23,9 @@
 #include <string>
 
 // user include files
-#include "DataFormats/Common/interface/PassID.h"
-#include "DataFormats/Common/interface/ParameterSetID.h"
-#include "DataFormats/Common/interface/ReleaseVersion.h"
+#include "DataFormats/Provenance/interface/PassID.h"
+#include "DataFormats/Provenance/interface/ParameterSetID.h"
+#include "DataFormats/Provenance/interface/ReleaseVersion.h"
 
 // forward declarations
 namespace edm {
@@ -37,7 +37,7 @@ namespace edm {
 	 bool isLooper_;
          
          // The following set of parameters comes from
-         // DataFormats/Common/interface/ModuleDescription.h
+         // DataFormats/Provenance/interface/ModuleDescription.h
          // to match and have identical provenance information
 
          // ID of parameter set of the creator

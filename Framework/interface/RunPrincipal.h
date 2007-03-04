@@ -14,7 +14,7 @@ $Id$
 
 ----------------------------------------------------------------------*/
 
-#include "DataFormats/Common/interface/RunAux.h"
+#include "DataFormats/Provenance/interface/RunAuxiliary.h"
 #include "FWCore/Framework/interface/DataBlockImpl.h"
 
 namespace edm {
@@ -29,11 +29,15 @@ namespace edm {
 	  Base(reg, pc, hist, rtrv), aux_(id) {}
     ~RunPrincipal() {}
 
-    RunAux const& aux() const {
+    RunAuxiliary const& aux() const {
       return aux_;
     }
 
-    RunNumber_t const& id() const {
+    RunNumber_t run() const {
+      return aux().run();
+    }
+
+    RunID const& id() const {
       return aux().id();
     }
 
@@ -65,7 +69,7 @@ namespace edm {
     virtual bool unscheduledFill(Group const&) const {return false;}
     virtual bool fillAndMatchSelector(Provenance &, SelectorBase const&) const {return false;}
 
-    RunAux aux_;
+    RunAuxiliary aux_;
   };
 }
 #endif

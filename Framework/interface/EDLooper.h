@@ -21,6 +21,9 @@
 // Revision history
 //
 // $Log$
+// Revision 1.3  2006/12/19 00:28:17  wmtan
+// changed (u)long to (u)int so that data is the same size on 32 and 64 bit machines
+//
 // Revision 1.2  2006/07/28 13:24:34  valya
 // Modified endOfLoop, now it accepts counter as a second argument. Add EDLooper calls to beginOfJob/endOfJob in EventProcessor
 //
@@ -33,7 +36,7 @@
 #include <set>
 
 // user include files
-#include "DataFormats/Common/interface/PassID.h"
+#include "DataFormats/Provenance/interface/PassID.h"
 #include "FWCore/Framework/interface/ProducerBase.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDLooperHelper.h"

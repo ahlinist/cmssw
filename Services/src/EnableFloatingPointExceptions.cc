@@ -38,7 +38,7 @@
 // user include files
 #include "FWCore/Services/src/EnableFloatingPointExceptions.h"
 
-#include "DataFormats/Common/interface/ModuleDescription.h"
+#include "DataFormats/Provenance/interface/ModuleDescription.h"
 
 using namespace edm::service;
 //

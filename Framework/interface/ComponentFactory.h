@@ -26,8 +26,8 @@
 
 // user include files
 #include "FWCore/PluginManager/interface/PluginFactory.h"
-#include "DataFormats/Common/interface/PassID.h"
-#include "DataFormats/Common/interface/ReleaseVersion.h"
+#include "DataFormats/Provenance/interface/PassID.h"
+#include "DataFormats/Provenance/interface/ReleaseVersion.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Framework/interface/ComponentMaker.h"
 #include "FWCore/Utilities/interface/EDMException.h"

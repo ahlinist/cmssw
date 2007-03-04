@@ -9,8 +9,8 @@ input source that does not come in through the ParameterSet
 $Id$
 ----------------------------------------------------------------------*/
 #include <string>
-#include "DataFormats/Common/interface/ModuleDescription.h"
-#include "DataFormats/Common/interface/ProcessConfiguration.h"
+#include "DataFormats/Provenance/interface/ModuleDescription.h"
+#include "DataFormats/Provenance/interface/ProcessConfiguration.h"
 
 namespace edm {
   class ProductRegistry;

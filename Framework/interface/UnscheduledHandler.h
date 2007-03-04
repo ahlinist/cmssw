@@ -24,7 +24,7 @@ to keep the EventPrincipal class from having too much 'physical' coupling with t
 #include <cassert>
 
 // user include files
-#include "DataFormats/Common/interface/Provenance.h"
+#include "DataFormats/Provenance/interface/Provenance.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 
 // forward declarations

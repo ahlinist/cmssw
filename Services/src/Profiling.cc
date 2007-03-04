@@ -11,7 +11,7 @@
 
 #include "FWCore/Services/src/Profiling.h"
 #include "FWCore/Services/src/SimpleProfiler.h"
-#include "DataFormats/Common/interface/ModuleDescription.h"
+#include "DataFormats/Provenance/interface/ModuleDescription.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/Utilities/interface/Exception.h"
 

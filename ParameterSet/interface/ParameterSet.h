@@ -14,7 +14,7 @@
 // ----------------------------------------------------------------------
 // prerequisite source files and headers
 
-#include "DataFormats/Common/interface/ParameterSetID.h"
+#include "DataFormats/Provenance/interface/ParameterSetID.h"
 #include "FWCore/ParameterSet/interface/Entry.h"
 #include "FWCore/ParameterSet/interface/FileInPath.h"
 #include <string>

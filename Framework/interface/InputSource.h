@@ -46,11 +46,11 @@ $Id$
 #include <string>
 
 #include "FWCore/Utilities/interface/GCCPrerequisite.h"
-#include "DataFormats/Common/interface/EventID.h"
+#include "DataFormats/Provenance/interface/EventID.h"
 #include "DataFormats/Common/interface/EDProductfwd.h"
-#include "DataFormats/Common/interface/RunID.h"
-#include "DataFormats/Common/interface/LuminosityBlockID.h"
-#include "DataFormats/Common/interface/ModuleDescription.h"
+#include "DataFormats/Provenance/interface/RunID.h"
+#include "DataFormats/Provenance/interface/LuminosityBlockID.h"
+#include "DataFormats/Provenance/interface/ModuleDescription.h"
 #include "FWCore/Framework/interface/InputSourceDescription.h"
 #include "FWCore/Framework/interface/ProductRegistryHelper.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -94,7 +94,7 @@ namespace edm {
     void setRunNumber(RunNumber_t r) {setRun(r);}
 
     /// Set the luminosity block ID
-    void setLuminosityBlockID(LuminosityBlockID lb) {setLumi(lb);}
+    void setLuminosityBlockNumber_t(LuminosityBlockNumber_t lb) {setLumi(lb);}
 
     /// issue an event report
     void issueReports(EventID const&);
@@ -145,7 +145,7 @@ namespace edm {
 
     virtual void setRun(RunNumber_t r);
 
-    virtual void setLumi(LuminosityBlockID lb);
+    virtual void setLumi(LuminosityBlockNumber_t lb);
 
     virtual void rewind_();
 

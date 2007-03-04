@@ -10,9 +10,9 @@ $Id$
 
 ----------------------------------------------------------------------*/
 
-#include "FWCore/Framework/interface/TypeID.h"
+#include "FWCore/Utilities/interface/TypeID.h"
 #include "DataFormats/Common/interface/EDProduct.h"
-#include "DataFormats/Common/interface/BranchType.h"
+#include "DataFormats/Provenance/interface/BranchType.h"
 #include <string>
 #include <list>
 #include "boost/shared_ptr.hpp"

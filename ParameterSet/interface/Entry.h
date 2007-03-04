@@ -23,7 +23,7 @@
 #include "FWCore/ParameterSet/interface/InputTag.h"
 //@@ not needed, but there might be trouble if we take it out
 #include "FWCore/Utilities/interface/EDMException.h"
-#include "DataFormats/Common/interface/EventID.h"
+#include "DataFormats/Provenance/interface/EventID.h"
 #include <boost/cstdint.hpp>
 
 // ----------------------------------------------------------------------

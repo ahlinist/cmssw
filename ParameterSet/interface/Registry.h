@@ -15,8 +15,8 @@
 #include <map>
 #include <ostream>
 
-#include "DataFormats/Common/interface/ParameterSetID.h"
-#include "DataFormats/Common/interface/ParameterSetBlob.h"
+#include "DataFormats/Provenance/interface/ParameterSetID.h"
+#include "DataFormats/Provenance/interface/ParameterSetBlob.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/ThreadSafeRegistry.h"
 
