@@ -4,11 +4,11 @@ $Id$
 
 ----------------------------------------------------------------------*/
 
-#include "DataFormats/Common/interface/ModuleDescriptionRegistry.h"
+#include "DataFormats/Provenance/interface/ModuleDescriptionRegistry.h"
 #include "FWCore/Framework/interface/ProductRegistryHelper.h"
-#include "DataFormats/Common/interface/ProductRegistry.h"
-#include "DataFormats/Common/interface/BranchDescription.h"
-#include "DataFormats/Common/interface/ModuleDescription.h"
+#include "DataFormats/Provenance/interface/ProductRegistry.h"
+#include "DataFormats/Provenance/interface/BranchDescription.h"
+#include "DataFormats/Provenance/interface/ModuleDescription.h"
 
 namespace edm {
   ProductRegistryHelper::~ProductRegistryHelper() { }

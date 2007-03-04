@@ -26,7 +26,7 @@ $Id$
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 
-#include "DataFormats/Common/interface/ModuleDescription.h"
+#include "DataFormats/Provenance/interface/ModuleDescription.h"
 
 
 #include "cppunit/extensions/HelperMacros.h"

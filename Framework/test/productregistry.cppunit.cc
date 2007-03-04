@@ -15,8 +15,8 @@
 
 #include "FWCore/Framework/src/SignallingProductRegistry.h"
 #include "FWCore/Framework/interface/ConstProductRegistry.h"
-#include "DataFormats/Common/interface/BranchDescription.h"
-#include "DataFormats/Common/interface/ModuleDescription.h"
+#include "DataFormats/Provenance/interface/BranchDescription.h"
+#include "DataFormats/Provenance/interface/ModuleDescription.h"
 #include "FWCore/PluginManager/interface/ProblemTracker.h"
 
 // namespace edm {

@@ -10,8 +10,8 @@
    \date 18 May 2005
 */
 
-#include "DataFormats/Common/interface/PassID.h"
-#include "DataFormats/Common/interface/ReleaseVersion.h"
+#include "DataFormats/Provenance/interface/PassID.h"
+#include "DataFormats/Provenance/interface/ReleaseVersion.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Framework/src/WorkerParams.h"
 #include "FWCore/ServiceRegistry/interface/ActivityRegistry.h"

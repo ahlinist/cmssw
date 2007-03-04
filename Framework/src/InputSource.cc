@@ -117,7 +117,7 @@ namespace edm {
   }
 
   void
-  InputSource::setLumi(LuminosityBlockID) {
+  InputSource::setLumi(LuminosityBlockNumber_t) {
       throw edm::Exception(edm::errors::LogicError)
         << "InputSource::setLumi()\n"
         << "Luminosity Block ID  cannot be modified for this type of Input Source\n"

@@ -6,9 +6,9 @@ $Id$
 
 #include "FWCore/Framework/interface/ProducerBase.h"
 #include "FWCore/Framework/interface/Actions.h"
-#include "DataFormats/Common/interface/BranchDescription.h"
-#include "DataFormats/Common/interface/ModuleDescription.h"
-#include "DataFormats/Common/interface/ProductRegistry.h"
+#include "DataFormats/Provenance/interface/BranchDescription.h"
+#include "DataFormats/Provenance/interface/ModuleDescription.h"
+#include "DataFormats/Provenance/interface/ProductRegistry.h"
 
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "FWCore/Framework/interface/ConstProductRegistry.h"

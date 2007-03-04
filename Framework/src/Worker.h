@@ -23,7 +23,7 @@ the worker is reset().
 
 ----------------------------------------------------------------------*/
 
-#include "DataFormats/Common/interface/ModuleDescription.h"
+#include "DataFormats/Provenance/interface/ModuleDescription.h"
 #include "FWCore/Framework/src/WorkerParams.h"
 #include "FWCore/ServiceRegistry/interface/ActivityRegistry.h"
 

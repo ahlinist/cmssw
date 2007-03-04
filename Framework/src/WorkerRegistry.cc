@@ -10,8 +10,8 @@
 static const char CVSId[] = "$Id$";
 
 
-#include "DataFormats/Common/interface/PassID.h"
-#include "DataFormats/Common/interface/ReleaseVersion.h"
+#include "DataFormats/Provenance/interface/PassID.h"
+#include "DataFormats/Provenance/interface/ReleaseVersion.h"
 
 #include "FWCore/Framework/src/WorkerRegistry.h"
 #include "FWCore/Framework/src/Worker.h"
