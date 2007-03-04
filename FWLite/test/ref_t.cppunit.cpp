@@ -8,7 +8,7 @@ $Id$
 #include <iostream>
 #include <string>
 #include <cppunit/extensions/HelperMacros.h>
-#include "FWCore/FWLite/src/AutoLibraryLoader.h"
+#include "FWCore/FWLite/interface/AutoLibraryLoader.h"
 #include "TFile.h"
 #include "TTree.h"
 #include "TBranch.h"

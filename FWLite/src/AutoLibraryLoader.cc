@@ -18,7 +18,7 @@
 #include "boost/regex.hpp"
 
 // user include files
-#include "FWCore/FWLite/src/AutoLibraryLoader.h"
+#include "FWCore/FWLite/interface/AutoLibraryLoader.h"
 #include "FWCore/RootAutoLibraryLoader/interface/RootAutoLibraryLoader.h"
 #include "FWCore/FWLite/src/BareRootProductGetter.h"
 
