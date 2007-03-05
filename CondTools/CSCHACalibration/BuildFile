@@ -1,12 +1,12 @@
 <use name=CondCore/DBCommon>
 <use name=CondCore/DBOutputService>
 <use name=CondFormats/OptAlignObjects>
-<use name=CondTools/Utilities>
+<use name=CondCore/Utilities>
 <flags SEAL_PLUGIN_NAME="CondToolsCSCHACalibration">
 <export>
    <use name=CondCore/DBCommon>
    <use name=CondCore/DBOutputService>
    <use name=CondFormats/OptAlignObjects>
-   <use name=CondTools/Utilities>	
+   <use name=CondCore/Utilities>	
    <lib name=CondTools/CSCHACalibration>
 </export>
