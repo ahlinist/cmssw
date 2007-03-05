@@ -1,7 +1,7 @@
 #ifndef CSCZSensorsDataConverter_h
 #define CSCZSensorsDataConverter_h
 #include "FWCore/Framework/interface/EDAnalyzer.h"
-#include "CondTools/Utilities/interface/CSVFieldMap.h"
+#include "CondCore/Utilities/interface/CSVFieldMap.h"
 #include <string>
 #include <vector>
 namespace edm{

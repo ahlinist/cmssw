@@ -4,9 +4,9 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "CondCore/DBOutputService/interface/PoolDBOutputService.h"
 #include "CondFormats/OptAlignObjects/interface/CSCRSensors.h"
-#include "CondTools/Utilities/interface/CSVDataLineParser.h"
-#include "CondTools/Utilities/interface/CSVHeaderLineParser.h"
-#include "CondTools/Utilities/interface/CSVBlankLineParser.h"
+#include "CondCore/Utilities/interface/CSVDataLineParser.h"
+#include "CondCore/Utilities/interface/CSVHeaderLineParser.h"
+#include "CondCore/Utilities/interface/CSVBlankLineParser.h"
 #include "CSCRSensorsDataConverter.h"
 #include <fstream>
 #include <iostream>
