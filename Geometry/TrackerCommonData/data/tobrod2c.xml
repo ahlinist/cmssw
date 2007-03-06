@@ -44,19 +44,19 @@
  </LogicalPart>
  <LogicalPart name="TOBICC21" category="unspecified">
   <rSolid name="tobrodpar:TOBICC1"/>
-  <rMaterial name="tobmaterial:TOB_ICC3"/>
+  <rMaterial name="tobmaterial:TOB_L34_ICC1"/>
  </LogicalPart>
  <LogicalPart name="TOBICC22" category="unspecified">
   <rSolid name="tobrodpar:TOBICC2"/>
-  <rMaterial name="tobmaterial:TOB_ICC4"/>
+  <rMaterial name="tobmaterial:TOB_L34_ICC2"/>
  </LogicalPart>
  <LogicalPart name="TOBConn2" category="unspecified">
   <rSolid name="tobrodpar:TOBConn"/>
-  <rMaterial name="tobmaterial:TOB_CONN2"/>
+  <rMaterial name="tobmaterial:TOB_CONN34"/>
  </LogicalPart>
  <LogicalPart name="TOBCCUM2" category="unspecified">
   <rSolid name="tobrodpar:TOBCCUM"/>
-  <rMaterial name="tobmaterial:TOB_CCUM2"/>
+  <rMaterial name="tobmaterial:TOB_CCUM"/>
  </LogicalPart>
 </LogicalPartSection>
  
