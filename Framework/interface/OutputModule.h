@@ -130,6 +130,13 @@ namespace edm {
 
     bool wantAllEvents_;
     mutable detail::CachedProducts selectors_;
+
+    //Used for controlling the maximum number of events output.
+    int const maxEvents_;
+    int remainingEvents_;
+    int writeCount_;
+    bool const unlimited_;
+    bool const maxEventsExit_;
   };
 }
 
