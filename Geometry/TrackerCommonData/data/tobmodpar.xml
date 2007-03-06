@@ -133,6 +133,14 @@
   <rSolid name="TOBSideRailR"/>
   <rMaterial name="tobmaterial:TOB_sid_rail2"/>
  </LogicalPart>
+ <LogicalPart name="TOBSideRailLst" category="unspecified">
+  <rSolid name="TOBSideRailL"/>
+  <rMaterial name="tobmaterial:TOB_sid_rail1st"/>
+ </LogicalPart>
+ <LogicalPart name="TOBSideRailRst" category="unspecified">
+  <rSolid name="TOBSideRailR"/>
+  <rMaterial name="tobmaterial:TOB_sid_rail2st"/>
+ </LogicalPart>
  <LogicalPart name="TOBFrame" category="unspecified">
   <rSolid name="TOBFrame"/>
   <rMaterial name="tobmaterial:TOB_frame_ele"/>

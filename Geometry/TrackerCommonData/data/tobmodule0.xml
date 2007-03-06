@@ -176,15 +176,15 @@
   <Translation x="[tobmodpar:SideRailX]"  y="-[tobmodpar:SideRailY]" 
                z="-[tobmodpar:SideRailZ]" />
  </PosPart>
- <PosPart copyNumber="2">
+ <PosPart copyNumber="1">
    <rParent name="tobmodule0:TOBModule0"/>
-   <rChild name="tobmodpar:TOBSideRailL"/>
+   <rChild name="tobmodpar:TOBSideRailLst"/>
   <Translation x="[tobmodpar:SideRailX]"  y="[tobmodpar:SideRailY]" 
                z="-[tobmodpar:SideRailZ]" />
  </PosPart>
- <PosPart copyNumber="2">
+ <PosPart copyNumber="1">
    <rParent name="tobmodule0:TOBModule0"/>
-   <rChild name="tobmodpar:TOBSideRailR"/>
+   <rChild name="tobmodpar:TOBSideRailRst"/>
   <Translation x="-[tobmodpar:SideRailX]" y="[tobmodpar:SideRailY]" 
                z="-[tobmodpar:SideRailZ]" />
  </PosPart>
