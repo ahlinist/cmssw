@@ -2,38 +2,36 @@
 <DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../DetectorDescription/Schema/DDLSchema.xsd">
 
 <ConstantsSection label="tibmodule0.xml" eval="true">
- <Constant name="ShiftX"     value="6.3335*mm"/>
- <Constant name="HybridY1"   value="0.086*cm"/>
- <Constant name="HybridY2"   value="-0.056*cm"/>
+ <Constant name="ShiftX"     value="5.948*mm"/>
+ <Constant name="HybridRPhiY"   value="[tibmodule0:SpacerDy]+2*[tibmodpar:CFFrameDy]+[tibmodpar:HybridDy]"/>
+ <Constant name="HybridSterY"   value="-[tibmodule0:SpacerDy]-2*[tibmodpar:CFFrameDy]-[tibmodpar:HybridDy]"/>
  <Constant name="PA2Dz1"     value="0.300*cm"/>
  <Constant name="PA2Dz2"     value="0.600*cm"/>
  <Constant name="PA2Theta"   value="-2.86241*deg"/>
- <Constant name="PAY1"       value="0.086*cm"/>
- <Constant name="PAY2"       value="-0.056*cm"/>
- <Constant name="SideRailY1" value="-0.036*cm"/>
- <Constant name="SideRailY2" value="0.066*cm"/>
+ <Constant name="PARPhiY"       value="[tibmodule0:SpacerDy]+2*[tibmodpar:CFFrameDy]+[tibmodpar:PADy]"/>
+ <Constant name="PASterY"       value="-[tibmodule0:SpacerDy]-2*[tibmodpar:CFFrameDy]-[tibmodpar:PADy]"/>
  <Constant name="LedgeDz1"   value="0.500*cm"/>
  <Constant name="LedgeDz2"   value="0.225*cm"/>
  <Constant name="LedgeTheta" value="-2.62422*deg"/>
  <Constant name="LedgeY"     value="-0.091*cm"/>
  <Constant name="LedgeZ"     value="7.7875*cm"/>
- <Constant name="Spacer1Dx"  value="3.000*cm"/>
- <Constant name="Spacer2Dx"  value="0.725*cm"/>
- <Constant name="Spacer1Dy"  value="0.051*cm"/>
- <Constant name="Spacer2Dy"  value="0.015*cm"/>
- <Constant name="Spacer1Dz"  value="0.450*cm"/>
- <Constant name="Spacer2Dz"  value="0.400*cm"/>
- <Constant name="Spacer3Dz"  value="0.925*cm"/>
- <Constant name="Spacer1Y"   value="0.051*cm"/>
- <Constant name="Spacer1Z"   value="7.700*cm"/>
- <Constant name="Spacer2Y"   value="0.015*cm"/>
- <Constant name="Spacer2Z"   value="5.900*cm"/>
- <Constant name="Spacer3X"   value="2.275*cm"/>
- <Constant name="Spacer3Z"   value="7.225*cm"/>
+ <Constant name="SpacerLedgeDx"  value="24.0*mm"/>
+ <Constant name="SpacerLedgeDz"  value="4.00*mm"/>
+ <Constant name="SpacerHybDx"    value="30.0*mm"/>
+ <Constant name="SpacerHybDz"    value="14.4*mm"/>
+ <Constant name="SpacerSideDx"   value="4.00*mm"/>
+ <Constant name="SpacerSideDz"   value="12.1*mm"/>
+ <Constant name="SpacerDy"   value="0.175*mm"/>
+ <Constant name="SpacerY"    value="0.0*fm"/>
+ <Constant name="SpacerSideX"  value="[SpacerHybDx]+[SpacerSideDx]"/>
+ <Constant name="SpacerSideZ"  value="[tibmodpar:ModuleDz]-[SpacerSideDz]-25.8*mm"/>
+ <Constant name="SpacerLedgeZ" value="[tibmodpar:ModuleDz]-[SpacerLedgeDz]"/>
+ <Constant name="SpacerHybZ"   value="[tibmodpar:ModuleDz]-[SpacerHybDz]"/>
+ <Constant name="SideRailSterY" value="[SpacerY]-[SpacerDy]-[tibmodpar:SideRailDy]"/>
+ <Constant name="SideRailRPhiY" value="[SpacerY]+[SpacerDy]+[tibmodpar:SideRailDy]"/>
  <Constant name="ModCoolY"   value="-0.127*cm"/>
- <Constant name="WaferY1"    value="0.1260*cm"/>
- <Constant name="WaferY2"    value="-0.0960*cm"/>
- <Constant name="WaferZ"     value="1.23720*cm"/>
+ <Constant name="WaferRPhiY"    value="1.135*mm"/> 
+ <Constant name="WaferSterY"    value="-1.135*mm"/>
 </ConstantsSection>
 
 <SolidSection label="tibmodule0.xml">
@@ -49,12 +47,12 @@
                              bl2="[LedgeDz2]"         tl2="[LedgeDz2]"
                              h2="[tibmodpar:LedgeDy]" phi="0*deg"
                              theta="[LedgeTheta]" />
- <Box name="TIBSpacerBot"    dx="[Spacer1Dx]"         dy="[Spacer1Dy]"
-                             dz="[Spacer1Dz]"/>
- <Box name="TIBSpacerTop"    dx="[Spacer1Dx]"         dy="[Spacer2Dy]"
-                             dz="[Spacer2Dz]"/>
- <Box name="TIBSpacerSide"   dx="[Spacer2Dx]"         dy="[Spacer2Dy]"
-                             dz="[Spacer3Dz]"/>
+ <Box name="TIBSpacerLedge"  dx="[SpacerLedgeDx]"        dy="[SpacerDy]"
+                             dz="[SpacerLedgeDz]"/>
+ <Box name="TIBSpacerHyb"    dx="[SpacerHybDx]"          dy="[SpacerDy]"
+                             dz="[SpacerHybDz]"/>
+ <Box name="TIBSpacerSide"   dx="[SpacerSideDx]"         dy="[SpacerDy]"
+                             dz="[SpacerSideDz]"/>
 </SolidSection>
 
 <LogicalPartSection label="tibmodule0.xml">
@@ -70,12 +68,12 @@
   <rSolid name="tibmodule0:TIBLedge0"/>
   <rMaterial name="tibmaterial:TIB_ledge_bds"/>
  </LogicalPart>
- <LogicalPart name="TIBSpacerBot" category="unspecified">
-  <rSolid name="tibmodule0:TIBSpacerBot"/>
+ <LogicalPart name="TIBSpacerLedge" category="unspecified">
+  <rSolid name="tibmodule0:TIBSpacerLedge"/>
   <rMaterial name="tibmaterial:TIB_mod_spacer2"/>
  </LogicalPart>
- <LogicalPart name="TIBSpacerTop" category="unspecified">
-  <rSolid name="tibmodule0:TIBSpacerTop"/>
+ <LogicalPart name="TIBSpacerHyb" category="unspecified">
+  <rSolid name="tibmodule0:TIBSpacerHyb"/>
   <rMaterial name="tibmaterial:TIB_mod_spacer1"/>
  </LogicalPart>
  <LogicalPart name="TIBSpacerSide" category="unspecified">
@@ -83,19 +81,19 @@
   <rMaterial name="tibmaterial:TIB_mod_spacer1"/>
  </LogicalPart>
  <LogicalPart name="TIBWaferRphi0" category="unspecified">
-  <rSolid name="tibmodpar:TIBWafer"/>
+  <rSolid name="tibmodpar:TIBDSWafer"/>
   <rMaterial name="materials:Silicon"/>
  </LogicalPart>
  <LogicalPart name="TIBActiveRphi0" category="unspecified">
-  <rSolid name="tibmodpar:TIBActive"/>
+  <rSolid name="tibmodpar:TIBDSActive"/>
   <rMaterial name="materials:Silicon"/>
  </LogicalPart>
  <LogicalPart name="TIBWaferSter0" category="unspecified">
-  <rSolid name="tibmodpar:TIBWafer"/>
+  <rSolid name="tibmodpar:TIBDSWafer"/>
   <rMaterial name="materials:Silicon"/>
  </LogicalPart>
  <LogicalPart name="TIBActiveSter0" category="unspecified">
-  <rSolid name="tibmodpar:TIBActive"/>
+  <rSolid name="tibmodpar:TIBDSActive"/>
   <rMaterial name="materials:Silicon"/>
  </LogicalPart>
 </LogicalPartSection>

@@ -3,18 +3,25 @@
 
 <ConstantsSection label="tibmodpar.xml" eval="true">
  <Constant name="ModuleDx"   value="3.900*cm"/>
- <Constant name="ModuleDy"   value="0.152*cm"/>
- <Constant name="ModuleDz"   value="8.150*cm"/>
+ <Constant name="SSModuleDy"   value="1.120*mm"/>
+ <Constant name="DSModuleDy"   value="2.475*mm"/>
+ <Constant name="DSModuleSideCutDx"   value="3.3*mm"/>
+ <Constant name="DSModuleSideCutDy"   value="0.8*mm"/>
+ <Constant name="DSModuleSideCutX"    value="36.*mm"/>
+ <Constant name="DSModuleSideCutY"    value="1.775*mm"/>
+ <Constant name="SideCutExtraZ"       value="0.1*mm"/>
+ <Constant name="ModuleDz"   value="81.65*mm"/>
  <Constant name="HybridDx"   value="2.350*cm"/>
  <Constant name="HybridDy"   value="0.056*cm"/>
  <Constant name="HybridDz"   value="1.250*cm"/>
  <Constant name="HybridZ"    value="6.900*cm"/>
  <Constant name="PADx"       value="3.000*cm"/>
- <Constant name="PADy"       value="0.056*cm"/>
+ <Constant name="PADy"       value="0.490*mm"/>
  <Constant name="PA1Dz"      value="0.450*cm"/>
  <Constant name="PAZ"        value="5.200*cm"/>
+ <Constant name="CFFrameDy"  value="0.250*mm"/>
  <Constant name="SideRailDx" value="0.450*cm"/>
- <Constant name="SideRailDy" value="0.036*cm"/>
+ <Constant name="SideRailDy" value="[CFFrameDy]+0.110*mm"/> <!-- Extra thickness for glue and kapton bias circuit end its components-->
  <Constant name="SideRailDz" value="6.365*cm"/>
  <Constant name="SideRailX"  value="3.450*cm"/>
  <Constant name="SideRailZ"  value="0.715*cm"/>
@@ -29,17 +36,38 @@
  <Constant name="ModCool2Dz" value="1.250*cm"/>
  <Constant name="ModCool2X"  value="2.650*cm"/>
  <Constant name="ModCool2Z"  value="6.900*cm"/>
- <Constant name="WaferDx"    value="3.172*cm"/>
- <Constant name="WaferDy"    value="5.95825*cm"/>
- <Constant name="WaferDz"    value="0.016*cm"/>
- <Constant name="WaferZ"     value="1.20825*cm"/>
- <Constant name="ActiveDx"   value="3.072*cm"/>
- <Constant name="ActiveDy"   value="5.84425*cm"/>
+
+ <Constant name="SSWaferDx"    value="31.6440*mm"/>
+ <Constant name="DSWaferDx"    value="31.6640*mm"/>
+ <Constant name="WaferDy"      value="59.4805*mm"/>
+ <Constant name="WaferDz"      value="0.160*mm"/>
+ <Constant name="SSActiveDx"   value="30.750*mm"/>
+ <Constant name="DSActiveDx"   value="30.770*mm"/>
+ <Constant name="ActiveDy"     value="58.4425*mm"/>
+
+ <Constant name="WaferZ"       value="12.33*mm"/>
+
 </ConstantsSection>
 
 <SolidSection label="tibmodpar.xml">
- <Box name="TIBModule"            dx="[tibmodpar:ModuleDx]"    
-      dy="[tibmodpar:ModuleDy]"   dz="[tibmodpar:ModuleDz]"/>
+ <Box name="TIBSSModule"            dx="[tibmodpar:ModuleDx]"    
+       dy="[tibmodpar:SSModuleDy]"   dz="[tibmodpar:ModuleDz]"/>
+ <Box name="TIBDSModuleMainPart"            dx="[tibmodpar:ModuleDx]"    
+      dy="[tibmodpar:DSModuleDy]"   dz="[tibmodpar:ModuleDz]"/>
+ <Box name="TIBDSModuleSideCutL"            dx="[tibmodpar:DSModuleSideCutDx]"    
+      dy="[tibmodpar:DSModuleSideCutDy]"   dz="[tibmodpar:ModuleDz]+[tibmodpar:SideCutExtraZ]"/>
+ <Box name="TIBDSModuleSideCutR"            dx="[tibmodpar:DSModuleSideCutDx]"    
+      dy="[tibmodpar:DSModuleSideCutDy]"   dz="[tibmodpar:ModuleDz]+[tibmodpar:SideCutExtraZ]"/>
+ <SubtractionSolid name="TIBDSModuleLeftCutted">
+   <rSolid name="TIBDSModuleMainPart"/>
+   <rSolid name="TIBDSModuleSideCutL"/>
+   <Translation x="-[DSModuleSideCutX]" y="[DSModuleSideCutY]" z="0."/>
+ </SubtractionSolid>
+ <SubtractionSolid name="TIBDSModule">
+   <rSolid name="TIBDSModuleLeftCutted"/>
+   <rSolid name="TIBDSModuleSideCutR"/>
+   <Translation x="[DSModuleSideCutX]" y="[DSModuleSideCutY]" z="0."/>
+ </SubtractionSolid>
  <Box name="TIBHybrid"            dx="[tibmodpar:HybridDx]"    
       dy="[tibmodpar:HybridDy]"   dz="[tibmodpar:HybridDz]"/>
  <Box name="TIBPA1"          dx="[PADx]"    dy="[PADy]"    dz="[PA1Dz]"/>
@@ -51,9 +79,13 @@
                              dy="[ModCoolDy]"  dz="[ModCool1Dz]"/>
  <Box name="TIBModCoolSide"  dx="[ModCool2Dx]" 
                              dy="[ModCoolDy]"  dz="[ModCool2Dz]"/>
- <Box name="TIBWafer"             dx="[tibmodpar:WaferDx]" 
+ <Box name="TIBSSWafer"             dx="[tibmodpar:SSWaferDx]" 
       dy="[tibmodpar:WaferDy]"    dz="[tibmodpar:WaferDz]"/>
- <Box name="TIBActive"            dx="[tibmodpar:ActiveDx]" 
+ <Box name="TIBSSActive"            dx="[tibmodpar:SSActiveDx]" 
+      dy="[tibmodpar:ActiveDy]"   dz="[tibmodpar:WaferDz]"/>
+ <Box name="TIBDSWafer"             dx="[tibmodpar:DSWaferDx]" 
+      dy="[tibmodpar:WaferDy]"    dz="[tibmodpar:WaferDz]"/>
+ <Box name="TIBDSActive"            dx="[tibmodpar:DSActiveDx]" 
       dy="[tibmodpar:ActiveDy]"   dz="[tibmodpar:WaferDz]"/>
 </SolidSection>
 

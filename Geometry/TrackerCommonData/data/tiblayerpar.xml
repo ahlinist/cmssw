@@ -4,8 +4,8 @@
 <ConstantsSection label="tiblayerpar.xml" eval="true">
  <Constant name="DetTilt"        value="-9.00*deg"/>
  <Constant name="Tolerance"      value="0.25*cm"/>
- <Constant name="ROffDet"        value="0.015*cm"/>
- <Constant name="ROffCable"      value="0.302*cm"/>
+ <Constant name="ROffDet"        value="0.0*fm"/>
+ <Constant name="ROffCable"      value="0.302*cm"/>   <!-- No more used -->
  <Constant name="CylinderT"      value="0.80*cm"/>
  <Constant name="SupportW"       value="1.00*cm"/>
  <Constant name="SupportT"       value="0.044*cm"/>
