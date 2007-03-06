@@ -13,7 +13,7 @@
   <Numeric name="LayerL"            value="[tibstringpar:StringL]"/>
   <Numeric name="LayerTolerance"    value="[tiblayerpar:Tolerance]"/>
   <Numeric name="DetectorWidth"     value="2*[tibmodpar:ModuleDx]"/>
-  <Numeric name="DetectorThickness" value="2*[tibmodpar:ModuleDy]"/>
+  <Numeric name="DetectorThickness" value="2*[tibmodpar:DSModuleDy]"/>
   <Numeric name="CoolTubeWidth"     value="[tibstringpar:CoolTubeW]"/>
   <Numeric name="CoolTubeThickness" value="[tibstringpar:CoolTubeD]"/>
   <Numeric name="RadiusLo"          value="[tiblayerpar:RadiusLo1]"/>
@@ -22,14 +22,14 @@
   <String name="StringDetLoName"    value="tibstring1:TIBString1Lo1"/>
   <Numeric name="ROffsetDetLo"      value="[tiblayerpar:ROffDet]"/>
   <String name="StringCabLoName"    value="tibstring1:TIBString1Lo2"/>
-  <Numeric name="ROffsetCabLo"      value="[tiblayerpar:ROffCable]"/>
+  <Numeric name="ROffsetCabLo"      value="[tiblayerpar:ROffCable]"/>   <!-- No more used -->
   <Numeric name="RadiusUp"          value="[tiblayer1:RadiusUp]"/>
   <Numeric name="PhiOffsetUp"       value="4.903*deg"/>
   <Numeric name="StringsUp"         value="38"/>
   <String name="StringDetUpName"    value="tibstring1:TIBString1Up1"/>
   <Numeric name="ROffsetDetUp"      value="-[tiblayerpar:ROffDet]"/>
   <String name="StringCabUpName"    value="tibstring1:TIBString1Up2"/>
-  <Numeric name="ROffsetCabUp"      value="-[tiblayerpar:ROffCable]"/>
+  <Numeric name="ROffsetCabUp"      value="-[tiblayerpar:ROffCable]"/>   <!-- No more used -->
   <Numeric name="CylinderThickness" value="[tiblayerpar:CylinderT]"/>
   <String name="CylinderMaterial"   value="tibmaterial:TIB_cylinder"/>
   <Numeric name="SupportWidth"      value="[tiblayerpar:SupportW]"/>

@@ -7,7 +7,7 @@
 
 <LogicalPartSection label="tibstring0.xml">
  <LogicalPart name="TIBString0Lo1" category="unspecified">
-  <rSolid name="tibstringpar:TIBString1"/>
+  <rSolid name="tibstringpar:TIBDSString1"/>
   <rMaterial name="materials:Air"/>
  </LogicalPart>
  <LogicalPart name="TIBString0Lo2" category="unspecified">
@@ -15,7 +15,7 @@
   <rMaterial name="materials:Air"/>
  </LogicalPart>
  <LogicalPart name="TIBString0Up1" category="unspecified">
-  <rSolid name="tibstringpar:TIBString1"/>
+  <rSolid name="tibstringpar:TIBDSString1"/>
   <rMaterial name="materials:Air"/>
  </LogicalPart>
  <LogicalPart name="TIBString0Up2" category="unspecified">

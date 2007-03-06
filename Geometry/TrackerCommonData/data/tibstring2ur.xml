@@ -5,18 +5,20 @@
  <Constant name="zero"         value="0.0*fm"/>
  <Constant name="MotherCableL" value="53.10*cm"/>
  <Constant name="CoolL"        value="69.70*cm"/>
- <Constant name="Det0Z"        value="8.66585*cm"/>
- <Constant name="Det1Z"        value="31.35235*cm"/>
- <Constant name="Det2Z"        value="53.99835*cm"/>
+ <Constant name="Det0Z"        value="74.5760*mm"/>
+ <Constant name="Det1Z"        value="301.441*mm"/>
+ <Constant name="Det2Z"        value="527.901*mm"/>
  <Constant name="ICC0Z"        value="20.010*cm"/>
  <Constant name="ICC1Z"        value="42.670*cm"/>
  <Constant name="ICC2Z"        value="65.020*cm"/>
- <Constant name="Shift"        value="-[tibstring2c:StringUpMinL]/2"/>
+ <Constant name="ShiftDet"     value="-[tibstring2c:StringUpMinL]/2+[tibstring2c:WaferZUpOffset]"/>
+ <Constant name="ShiftCCU"     value="-[tibstring2c:StringUpMinL]/2"/>
+ <Constant name="ShiftICC"     value="[ShiftDet]+[tibstring2c:ICCUpOffset]"/>
 </ConstantsSection>
 
 <SolidSection label="tibstring2ur.xml">
  <Box name="TIBString2UpPls1"            dx="[tibmodpar:ModuleDx]"    
-      dy="[tibmodpar:ModuleDy]"          dz="[tibstring2c:StringUpPlsL]/2"/>
+      dy="[tibmodpar:SSModuleDy]"          dz="[tibstring2c:StringUpPlsL]/2"/>
  <Box name="TIBString2UpPls2"            dx="[tibstringpar:CoolTubeW]/2"    
       dy="[tibstringpar:CoolTubeD]/2"    dz="[tibstring2c:StringUpPlsL]/2"/>
  <Box name="TIBString2UpPlsCable"        dx="[tibstringpar:MotherCableW]/2"    
@@ -56,7 +58,7 @@
  <PosPart copyNumber="1">
    <rParent name="tibstring2ur:TIBString2UpPls1"/>
    <rChild name="tibstringpar:TIBCCUM"/>
-  <Translation x="[zero]"   y="[zero]"  z="([tibstringpar:CCUMZ]+[Shift])" />
+  <Translation x="[zero]"   y="[zero]"  z="([tibstringpar:CCUMZ]+[ShiftCCU])" />
  </PosPart>
  <PosPart copyNumber="1">
    <rParent name="tibstring2ur:TIBString2UpPls2"/>
@@ -91,7 +93,7 @@
   <Numeric name="StartCopyNo" value="4"/>
   <Numeric name="IncrCopyNo"  value="1" />
   <Vector name="ZPositions" type="numeric" nEntries="3">
-  ([Det0Z]+[Shift]), ([Det1Z]+[Shift]), ([Det2Z]+[Shift]) </Vector>
+  ([Det0Z]+[ShiftDet]), ([Det1Z]+[ShiftDet]), ([Det2Z]+[ShiftDet]) </Vector>
   <Vector name="Rotations" type="string" nEntries="3">
   tibstringpar:180D, tibstringpar:180D, tibstringpar:180D</Vector>
 </Algorithm>
@@ -102,7 +104,7 @@
   <Numeric name="StartCopyNo" value="5"/>
   <Numeric name="IncrCopyNo"  value="1" />
   <Vector name="ZPositions" type="numeric" nEntries="3">
-  ([ICC0Z]+[Shift]), ([ICC1Z]+[Shift]), ([ICC2Z]+[Shift]) </Vector>
+  ([Det0Z]+[ShiftICC]), ([Det1Z]+[ShiftICC]), ([Det2Z]+[ShiftICC]) </Vector>
   <Vector name="Rotations" type="string" nEntries="3">
   tibstringpar:NULL, tibstringpar:NULL, tibstringpar:NULL</Vector>
 </Algorithm>

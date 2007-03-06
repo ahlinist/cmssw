@@ -7,7 +7,7 @@
 
 <LogicalPartSection label="tibmodule0b.xml">
  <LogicalPart name="TIBModule0B" category="unspecified">
-  <rSolid name="tibmodpar:TIBModule"/>
+  <rSolid name="tibmodpar:TIBDSModule"/>
   <rMaterial name="materials:Air"/>
  </LogicalPart>
 </LogicalPartSection>
@@ -17,63 +17,64 @@
    <rParent name="tibmodule0b:TIBModule0B"/>
    <rChild name="tibmodule0:TIBWaferRphi0"/>
   <rRotation name="tibmodpar:Rphi"/>
-  <Translation x="[zero]"                  y="[tibmodule0:WaferY1]" 
+  <Translation x="[zero]"                  y="[tibmodule0:WaferRPhiY]" 
                z="[tibmodpar:WaferZ]" />
  </PosPart>
  <PosPart copyNumber="1">
    <rParent name="tibmodule0b:TIBModule0B"/>
    <rChild name="tibmodule0:TIBWaferSter0"/>
   <rRotation name="tibmodpar:SterB"/>
-  <Translation x="[zero]"                  y="[tibmodule0:WaferY2]" 
-               z="[tibmodule0:WaferZ]" />
+  <Translation x="[zero]"                  y="[tibmodule0:WaferSterY]" 
+               z="[tibmodpar:WaferZ]" />
  </PosPart>
+
  <PosPart copyNumber="1">
    <rParent name="tibmodule0b:TIBModule0B"/>
    <rChild name="tibmodule0:TIBHybrid0"/>
-  <Translation x="[zero]"                  y="[tibmodule0:HybridY1]" 
+  <Translation x="[zero]"                  y="[tibmodule0:HybridRPhiY]" 
                z="-[tibmodpar:HybridZ]"  />
  </PosPart>
  <PosPart copyNumber="2">
    <rParent name="tibmodule0b:TIBModule0B"/>
    <rChild name="tibmodule0:TIBHybrid0"/>
-  <Translation x="-[tibmodule0:ShiftX]"    y="[tibmodule0:HybridY2]" 
+  <Translation x="[zero]"                  y="[tibmodule0:HybridSterY]" 
                z="-[tibmodpar:HybridZ]"  />
  </PosPart>
  <PosPart copyNumber="1">
    <rParent name="tibmodule0b:TIBModule0B"/>
    <rChild name="tibmodpar:TIBPA1"/>
-  <Translation x="[zero]"                  y="[tibmodule0:PAY1]" 
+  <Translation x="[zero]"                  y="[tibmodule0:PARPhiY]" 
                z="-[tibmodpar:PAZ]"  />
  </PosPart>
  <PosPart copyNumber="2">
    <rParent name="tibmodule0b:TIBModule0B"/>
    <rChild name="tibmodule0:TIBPA2"/>
   <rRotation name="tibmodpar:PAB"/>
-  <Translation x="-[tibmodule0:ShiftX]"    y="[tibmodule0:PAY2]" 
+  <Translation x="-[tibmodule0:ShiftX]"    y="[tibmodule0:PASterY]" 
                z="-[tibmodpar:PAZ]"  />
  </PosPart>
  <PosPart copyNumber="1">
    <rParent name="tibmodule0b:TIBModule0B"/>
    <rChild name="tibmodpar:TIBSideRailL"/>
-  <Translation x="[tibmodpar:SideRailX]"   y="[tibmodule0:SideRailY2]" 
+  <Translation x="-[tibmodpar:SideRailX]"   y="[tibmodule0:SideRailRPhiY]" 
                z="[tibmodpar:SideRailZ]" />
  </PosPart>
  <PosPart copyNumber="2">
    <rParent name="tibmodule0b:TIBModule0B"/>
    <rChild name="tibmodpar:TIBSideRailL"/>
-  <Translation x="-[tibmodpar:SideRailX]"  y="[tibmodule0:SideRailY1]" 
+  <Translation x="-[tibmodpar:SideRailX]"   y="[tibmodule0:SideRailSterY]" 
                z="[tibmodpar:SideRailZ]" />
  </PosPart>
  <PosPart copyNumber="1">
    <rParent name="tibmodule0b:TIBModule0B"/>
    <rChild name="tibmodpar:TIBSideRailR"/>
-  <Translation x="-[tibmodpar:SideRailX]"  y="[tibmodule0:SideRailY2]" 
+  <Translation x="[tibmodpar:SideRailX]"    y="[tibmodule0:SideRailRPhiY]" 
                z="[tibmodpar:SideRailZ]" />
  </PosPart>
  <PosPart copyNumber="2">
    <rParent name="tibmodule0b:TIBModule0B"/>
    <rChild name="tibmodpar:TIBSideRailR"/>
-  <Translation x="[tibmodpar:SideRailX]"   y="[tibmodule0:SideRailY1]" 
+  <Translation x="[tibmodpar:SideRailX]"    y="[tibmodule0:SideRailSterY]" 
                z="[tibmodpar:SideRailZ]" />
  </PosPart>
  <PosPart copyNumber="1">
@@ -103,28 +104,30 @@
  </PosPart>
  <PosPart copyNumber="1">
    <rParent name="tibmodule0b:TIBModule0B"/>
-   <rChild name="tibmodule0:TIBSpacerBot"/>
-  <Translation x="[zero]"                  y="[tibmodule0:Spacer1Y]" 
-               z="[tibmodule0:Spacer1Z]" />
+   <rChild name="tibmodule0:TIBSpacerLedge"/>
+  <Translation x="[zero]"                  y="[tibmodule0:SpacerY]" 
+               z="[tibmodule0:SpacerLedgeZ]" />
  </PosPart>
  <PosPart copyNumber="1">
    <rParent name="tibmodule0b:TIBModule0B"/>
-   <rChild name="tibmodule0:TIBSpacerTop"/>
-  <Translation x="[zero]"                  y="[tibmodule0:Spacer2Y]" 
-               z="-[tibmodule0:Spacer2Z]" />
+   <rChild name="tibmodule0:TIBSpacerHyb"/>
+   <rChild name="tibmodule0:TIBSpacerHyb"/>
+  <Translation x="[zero]"                      y="[tibmodule0:SpacerY]" 
+               z="-[tibmodule0:SpacerHybZ]" />
  </PosPart>
  <PosPart copyNumber="1">
    <rParent name="tibmodule0b:TIBModule0B"/>
    <rChild name="tibmodule0:TIBSpacerSide"/>
-  <Translation x="-[tibmodule0:Spacer3X]"  y="[tibmodule0:Spacer2Y]" 
-               z="-[tibmodule0:Spacer3Z]" />
+  <Translation x="[tibmodule0:SpacerSideX]"   y="[tibmodule0:SpacerY]" 
+               z="-[tibmodule0:SpacerSideZ]" />
  </PosPart>
  <PosPart copyNumber="2">
    <rParent name="tibmodule0b:TIBModule0B"/>
    <rChild name="tibmodule0:TIBSpacerSide"/>
-  <Translation x="[tibmodule0:Spacer3X]"   y="[tibmodule0:Spacer2Y]" 
-               z="-[tibmodule0:Spacer3Z]" />
+  <Translation x="-[tibmodule0:SpacerSideX]"  y="[tibmodule0:SpacerY]" 
+               z="-[tibmodule0:SpacerSideZ]" />
  </PosPart>
+
 </PosPartSection>
 
 </DDDefinition>

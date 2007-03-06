@@ -5,12 +5,12 @@
  <Constant name="zero"       value="0.0*fm"/>
  <Constant name="HybridY"    value="-0.041*cm"/>
  <Constant name="PAY"        value="-0.041*cm"/>
- <Constant name="SideRailY"  value="-0.061*cm"/>
+ <Constant name="SideRailY"  value="-[tibmodpar:SSModuleDy]+[tibmodpar:SideRailDy]"/>
  <Constant name="LedgeDz"    value="0.450*cm"/>
  <Constant name="LedgeY"     value="-0.086*cm"/>
  <Constant name="LedgeZ"     value="7.700*cm"/>
  <Constant name="ModCoolY"   value="-0.112*cm"/>
- <Constant name="WaferY"     value="-0.001*cm"/>
+ <Constant name="WaferY"     value="-0.160*mm"/>
 </ConstantsSection>
 
 <SolidSection label="tibmodule2.xml">
@@ -20,7 +20,7 @@
 
 <LogicalPartSection label="tibmodule2.xml">
  <LogicalPart name="TIBModule2" category="unspecified">
-  <rSolid name="tibmodpar:TIBModule"/>
+  <rSolid name="tibmodpar:TIBSSModule"/>
   <rMaterial name="materials:Air"/>
  </LogicalPart>
  <LogicalPart name="TIBHybrid2" category="unspecified">
@@ -32,11 +32,11 @@
   <rMaterial name="tibmaterial:TIB_ledge_bss"/>
  </LogicalPart>
  <LogicalPart name="TIBWaferRphi2" category="unspecified">
-  <rSolid name="tibmodpar:TIBWafer"/>
+  <rSolid name="tibmodpar:TIBSSWafer"/>
   <rMaterial name="materials:Silicon"/>
  </LogicalPart>
  <LogicalPart name="TIBActiveRphi2" category="unspecified">
-  <rSolid name="tibmodpar:TIBActive"/>
+  <rSolid name="tibmodpar:TIBSSActive"/>
   <rMaterial name="materials:Silicon"/>
  </LogicalPart>
 </LogicalPartSection>
