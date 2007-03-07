@@ -13,7 +13,7 @@
 //
 // Original Author:  Ioana Anghel
 //         Created:  Fri Nov 17 17:54:44 CST 2006
-// $Id: JTPropagationAssociator.cc,v 1.00 2006/10/28 17:10:54 fwyzard Exp $
+// $Id: JTPropagationAssociator.cc,v 1.1 2006/11/18 02:58:35 fwyzard Exp $
 //
 //
 
@@ -33,9 +33,9 @@
 #include "FWCore/ParameterSet/interface/InputTag.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
-#include "Geometry/Surface/interface/TkRotation.h"
-#include "Geometry/Surface/interface/BoundCylinder.h"
-#include "Geometry/Surface/interface/SimpleCylinderBounds.h"
+#include "DataFormats/GeometrySurface/interface/TkRotation.h"
+#include "DataFormats/GeometrySurface/interface/BoundCylinder.h"
+#include "DataFormats/GeometrySurface/interface/SimpleCylinderBounds.h"
 
 #include "Geometry/Records/interface/TrackerDigiGeometryRecord.h"
 #include "Geometry/TrackerGeometryBuilder/interface/TrackerGeometry.h"
