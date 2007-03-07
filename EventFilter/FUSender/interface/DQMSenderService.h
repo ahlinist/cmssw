@@ -16,7 +16,7 @@
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "IOPool/Streamer/interface/DQMEventMessage.h"
 #include "IOPool/Streamer/interface/DQMEventMsgBuilder.h"
-#include "DataFormats/Common/interface/LuminosityBlockID.h"
+#include "DataFormats/Provenance/interface/LuminosityBlockID.h"
 #include "IOPool/Streamer/interface/StreamDQMSerializer.h"
 #include "IOPool/Streamer/interface/StreamDQMDeserializer.h"
 
