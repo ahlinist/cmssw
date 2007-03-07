@@ -2,7 +2,7 @@
 // #include "RecoVertex/VertexTools/interface/NbSharedTracks.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "RecoBTag/CombinedSV/interface/BKinematics.h"
-#include "Geometry/CommonDetAlgo/interface/AlgebraicObjects.h"
+#include "DataFormats/CLHEP/interface/AlgebraicObjects.h"
 #include "RecoBTag/CombinedSV/interface/V0Checker.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "RecoBTag/CombinedSV/interface/TTracksFromRecoVertex.h"

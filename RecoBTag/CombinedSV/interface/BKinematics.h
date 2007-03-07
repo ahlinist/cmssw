@@ -4,6 +4,7 @@
 #include "DataFormats/GeometryVector/interface/GlobalVector.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "RecoBTag/CombinedSV/interface/CombinedTrack.h"
+#include "RecoBTag/CombinedSV/interface/CombinedVertex.h"
 #include "TrackingTools/TransientTrack/interface/TransientTrack.h"
 #include "RecoVertex/VertexPrimitives/interface/TransientVertex.h"
 #include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
@@ -30,12 +31,15 @@ namespace reco {
 
     void add ( const reco::TransientTrack & t, float weight=1.0, bool update=true );
     void add ( const combsv::CombinedTrack & t );
+    void add ( const TransientVertex & );
+    void add ( const combsv::CombinedVertex & );
     void updateMass();
 
     double       getMass() const;
     double       getEnergy() const;
     double       getWeightedEnergy() const; // get weighted pseudo-energy
     GlobalVector get3Vector() const;
+    void reset();
 
   private:
     void computeKinematics( const std::vector<reco::TransientTrack> & );
