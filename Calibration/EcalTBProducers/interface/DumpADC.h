@@ -9,7 +9,7 @@
      <Notes on implementation>
 */
 //
-// $Id: DumpADC.h,v 1.1 2006/08/01 09:53:49 govoni Exp $
+// $Id: DumpADC.h,v 1.2 2006/08/01 09:59:33 govoni Exp $
 //
 
 
@@ -64,7 +64,8 @@ class DumpADC : public edm::EDAnalyzer {
       int m_eventNum ; // FIXME
       int m_minEvent ; // FIXME
       double m_beamEnergy ; // GeV
-
+      bool useMaxEnergyXtal_;
+      
       TB06Tree m_TB06Tree ;
 
       std::string ECALRawDataProducer_ ; 
