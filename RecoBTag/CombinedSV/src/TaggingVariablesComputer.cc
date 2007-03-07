@@ -40,14 +40,14 @@ reco::TaggingVariableList reco::TaggingVariablesComputer::compute (
     // compute value, add to coll
     switch (*v)
     {
-		/*
-      case experimentalNVertices: 
+      /*
+      case jetNVertices: 
         coll.push_back ( reco::TaggingVariable ( *v, (double) data.jet().nVertices() ) );
         break;
-      case experimentalWeightedVtxRatio:
+      case secondaryVtxWeightedEnergyRatio:
         coll.push_back ( reco::TaggingVariable ( *v, (double) data.jet().weightedESVXOverE() ) );
         break;
-		*/
+        */
       case vertexCategory:
         coll.push_back ( reco::TaggingVariable ( *v, (double) data.vertexType() ) );
         break;

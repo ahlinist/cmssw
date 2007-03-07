@@ -52,6 +52,7 @@ namespace combsv {
      */
     void setMagneticField ( const MagneticField * );
     const MagneticField * magneticField() const;
+
     void setTransientTrackBuilder ( const TransientTrackBuilder * );
 
     ~CombinedSVAlgorithm();

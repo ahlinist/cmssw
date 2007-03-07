@@ -13,14 +13,19 @@ namespace {
 }
 
 reco::BKinematics::BKinematics() :
-      mass_(0.), energy_(0.),  fractionalEnergy_(0.), 
+      mass_(0.), energy_(0.),  fractionalEnergy_(0.),
       vec3_(GlobalVector())
 {}
 
 reco::BKinematics::BKinematics(
            const TransientVertex & vertex ) :
-      mass_(0.), energy_(0.), 
+      mass_(0.), energy_(0.),
       fractionalEnergy_(0.), vec3_(GlobalVector())
+{
+  add ( vertex );
+}
+
+void reco::BKinematics::add ( const TransientVertex & vertex )
 {
   if ( vertex.hasTrackWeight() )
   {
@@ -30,8 +35,18 @@ reco::BKinematics::BKinematics(
   }
 }
 
+void reco::BKinematics::add ( const combsv::CombinedVertex & vertex )
+{
+  map < combsv::CombinedTrack, float > trks = vertex.weightedTracks();
+  for ( map < combsv::CombinedTrack, float > ::const_iterator t=trks.begin();
+        t!=trks.end() ; ++t )
+  {
+    add ( t->first, t->second );
+  }
+}
 
-reco::BKinematics::BKinematics( const vector<combsv::CombinedTrack> & trks ) : 
+
+reco::BKinematics::BKinematics( const vector<combsv::CombinedTrack> & trks ) :
   mass_(0.), energy_(0.), fractionalEnergy_(0.), vec3_ ( GlobalVector() )
 {
   vector < reco::TransientTrack > ntrks;
@@ -40,21 +55,25 @@ reco::BKinematics::BKinematics( const vector<combsv::CombinedTrack> & trks ) :
     ntrks.push_back ( reco::TransientTrack ( *i ) );
   }
   computeKinematics(ntrks);
-} 
+}
 
-reco::BKinematics::BKinematics( const vector<reco::TransientTrack> & trks ) : 
+reco::BKinematics::BKinematics( const vector<reco::TransientTrack> & trks ) :
   mass_(0.), energy_(0.), fractionalEnergy_(0.), vec3_ ( GlobalVector() )
 {
   computeKinematics(trks);
-} 
+}
 
-void reco::BKinematics::computeKinematics( const vector<reco::TransientTrack> & trks )
+void reco::BKinematics::reset()
 {
+  mass_=0.;
   energy_=0.;
   fractionalEnergy_=0.;
   vec3_ = GlobalVector ( 0., 0., 0. );
+}
 
-  for ( vector<reco::TransientTrack>::const_iterator t = trks.begin(); 
+void reco::BKinematics::computeKinematics( const vector<reco::TransientTrack> & trks )
+{
+  for ( vector<reco::TransientTrack>::const_iterator t = trks.begin();
         t != trks.end(); t++ )
   {
     add ( *t, 1.0, false );
@@ -65,11 +84,7 @@ void reco::BKinematics::computeKinematics( const vector<reco::TransientTrack> & 
 
 void reco::BKinematics::computeKinematics( const map<reco::TransientTrack, float> & trks )
 {
-  energy_=0.;
-  fractionalEnergy_=0.;
-  vec3_ = GlobalVector ( 0., 0., 0. );
-
-  for ( map<reco::TransientTrack, float >::const_iterator t = trks.begin(); 
+  for ( map<reco::TransientTrack, float >::const_iterator t = trks.begin();
         t != trks.end(); t++ )
   {
     add ( t->first, t->second, false );
@@ -92,8 +107,7 @@ void reco::BKinematics::updateMass()
   {
     mass_ = sqrt( energy_ * energy_ - p2);
   } else {
-    cout << "[BKinematics] p^2 < E^2:  p^2=" << p2 << ", E^2=" << energy_ * energy_
-         << endl;
+    LogDebug("") << "p^2 < E^2:  p^2=" << p2 << ", E^2=" << energy_ * energy_;
     mass_ = 0.;
   }
 }
@@ -104,6 +118,7 @@ void reco::BKinematics::add ( const reco::TransientTrack & t, float weight, bool
   double energy = sqrt( p2 + square ( combsv::ParticleMasses::piPlus() ) );
   energy_+=energy;
   fractionalEnergy_+=weight*energy;
+  // LogDebug("") << "e=" << energy << ", w=" << weight;
   vec3_ += t.impactPointState().globalMomentum();
   if (update) updateMass();
 }

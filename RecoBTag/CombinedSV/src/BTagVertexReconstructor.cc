@@ -31,10 +31,10 @@ combsv::CombinedVertex BTagVertexReconstructor::buildVertexInfo (
   combsv::CombinedVertex vertexData;
   if ( vtx.hasTrackWeight() )
   {
-    vertexData = combsv::CombinedVertex  ( vtx, trks, kin.get3Vector(),
+    vertexData = combsv::CombinedVertex  ( vtx, wtrks, kin.get3Vector(),
                                     kin.getMass(), vtxfilter.checkV0(vtx) );
   } else {
-    vertexData = combsv::CombinedVertex  ( vtx, wtrks, kin.get3Vector(),
+    vertexData = combsv::CombinedVertex  ( vtx, trks, kin.get3Vector(),
                                     kin.getMass(), vtxfilter.checkV0(vtx) );
   }
 

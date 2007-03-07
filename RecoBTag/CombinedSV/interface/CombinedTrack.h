@@ -1,7 +1,7 @@
 #ifndef RecoBTag_CombinedSV_CombinedTrack_h
 #define RecoBTag_CombinedSV_CombinedTrack_h
 
-#include "Geometry/CommonDetAlgo/interface/Measurement1D.h"
+#include "DataFormats/GeometryCommonDetAlgo/interface/Measurement1D.h"
 #include "TrackingTools/TransientTrack/interface/TransientTrack.h"
 
 namespace combsv {

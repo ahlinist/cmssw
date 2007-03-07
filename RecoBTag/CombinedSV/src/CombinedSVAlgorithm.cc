@@ -18,7 +18,7 @@
 // #include "RecoVertex/VertexTools/interface/VertexDistance3D.h"
 #include "RecoVertex/AdaptiveVertexFit/interface/AdaptiveVertexFitter.h"
 
-#include "Geometry/CommonDetAlgo/interface/Measurement1D.h"
+#include "DataFormats/GeometryCommonDetAlgo/interface/Measurement1D.h"
 #include "CLHEP/Vector/LorentzVector.h"
 #include "RecoBTag/CombinedSV/interface/BKinematics.h"
 #include "RecoBTag/CombinedSV/interface/CombinedJet.h"
@@ -309,7 +309,6 @@ combsv::CombinedJet combsv::CombinedSVAlgorithm::createJetInfo (
     const vector < combsv::CombinedVertex > & vtces,
     reco::btag::Vertices::VertexType vertexType )
 {
-  const vector < combsv::CombinedTrack > & secondaries = getSecondaryTracks ( vtces );
   reco::BKinematics allTrackKinematics( alltracks );
 
   // get vector given by sum of all tracks in jet
@@ -317,28 +316,43 @@ combsv::CombinedJet combsv::CombinedSVAlgorithm::createJetInfo (
 
   // create instance of small helper class used to determine
   // kinematic properties based on a selection of tracks
-  reco::BKinematics bTrackKinematics( secondaries );
+  int vertexMult = 0;
+  reco::BKinematics bTrackKinematics;
+  for ( vector< combsv::CombinedVertex >::const_iterator i=vtces.begin(); 
+        i!=vtces.end() ; ++i )
+  {
+    bTrackKinematics.add ( *i );
+    vertexMult+=i->bTagTracks().size();
+  }
+  // reco::BKinematics bTrackKinematics ( secondaries );
+  // int vertexMult = secondaries.size();
 
   // compute vertex related variables
   // (based on all tracks at all secondary vertices)
   double mass = bTrackKinematics.getMass();
   double energyBTracks   = bTrackKinematics.getEnergy();
+  double energyWBTracks   = bTrackKinematics.getWeightedEnergy();
   // GlobalVector pB = bTrackKinematics.get3Vector();
 
   double energyAllTracks = allTrackKinematics.getEnergy();
+  double energyWAllTracks = allTrackKinematics.getWeightedEnergy();
 
   double fracEnergy = 0.;
   if (energyBTracks > 0. && energyAllTracks > 0. ) {
     fracEnergy = energyBTracks/energyAllTracks;
   }
 
-  int vertexMult = secondaries.size();
+  double fracWEnergy = 0.;
+  if (energyWBTracks > 0. && energyWAllTracks > 0. ) {
+    fracWEnergy = energyWBTracks/energyWAllTracks;
+  }
+
 
   double minFDSig2D = minFlightDistanceSignificance2D ( vertexType, vtces );
   double first2DSignedIPSigniAboveCut = computeFirstTrackAboveCharmMass( alltracks );
   return CombinedJet( mass, vertexMult, fracEnergy,
                           minFDSig2D, first2DSignedIPSigniAboveCut,
-                          vtces.size(), -23./* FIXME */ );
+                          vtces.size(), fracWEnergy );
 }
 
 const CombinedSVTaggingVariables & combsv::CombinedSVAlgorithm::variables() const
