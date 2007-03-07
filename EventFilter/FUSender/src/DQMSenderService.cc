@@ -152,10 +152,9 @@ void DQMSenderService::postEventProcessing(const edm::Event &event,
                                            const edm::EventSetup &eventSetup)
 {
   // 06-Mar-2006, KAB: fake the luminosity section until the real one is available
-  //edm::LuminosityBlockID thisLumiSection = event.luminosityBlockID();
   time_t now = time(NULL);
-  edm::LuminosityBlockID thisLumiSection = (int) (now / lumiSectionInterval_);
-  //edm::LuminosityBlockID thisLumiSection = (int) (event.id().event() / 100);
+  //edm::LuminosityBlockID thisLumiSection=(int) (now / lumiSectionInterval_);
+  unsigned int thisLumiSection = (int) (now / lumiSectionInterval_);
 
   if (DSS_DEBUG) {
     cout << "DQMSenderService::postEventProcessing called, event number "
@@ -179,7 +178,8 @@ void DQMSenderService::postEventProcessing(const edm::Event &event,
   int fullLsDelta = (int) (thisLumiSection - firstLumiSectionSeen_);
   double fullUpdateRatio = ((double) fullLsDelta) / lumiSectionsPerUpdate_;
   uint32 updateNumber = -1 + (uint32) fullUpdateRatio;
-  edm::LuminosityBlockID lumiSectionTag = firstLumiSectionSeen_ +
+  //edm::LuminosityBlockID lumiSectionTag = firstLumiSectionSeen_ +
+  unsigned int lumiSectionTag = firstLumiSectionSeen_ +
     ((int) (updateNumber * lumiSectionsPerUpdate_)) - 1;
 
   // retry the lookup of the backend interface, if needed

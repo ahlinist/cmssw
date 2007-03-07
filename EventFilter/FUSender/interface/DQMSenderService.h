@@ -59,8 +59,10 @@ class DQMSenderService
   std::vector<char> messageBuffer_;
   int lumiSectionInterval_;  
   double lumiSectionsPerUpdate_;
-  edm::LuminosityBlockID lumiSectionOfPreviousUpdate_;
-  edm::LuminosityBlockID firstLumiSectionSeen_;
+  #edm::LuminosityBlockID lumiSectionOfPreviousUpdate_;
+  #edm::LuminosityBlockID firstLumiSectionSeen_;
+  unsigned int lumiSectionOfPreviousUpdate_;
+  unsigned int firstLumiSectionSeen_;
   bool initializationIsNeeded_;
   bool useCompression_;
   int compressionLevel_;
