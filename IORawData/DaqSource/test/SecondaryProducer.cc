@@ -5,12 +5,13 @@
 //--------------------------------------------
 
 #include "IORawData/DaqSource/test/SecondaryProducer.h"
-#include "FWCore/Framework/interface/TypeID.h"
-#include "FWCore/Framework/interface/BasicHandle.h"
+
 #include "FWCore/Framework/interface/EventPrincipal.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/Framework/interface/InputSourceDescription.h"
-#include "DataFormats/Common/interface/ProductRegistry.h"
+#include "FWCore/Utilities/interface/TypeID.h"
+#include "DataFormats/Common/interface/BasicHandle.h"
+#include "DataFormats/Provenance/interface/ProductRegistry.h"
 #include "FWCore/Framework/src/VectorInputSourceFactory.h"
 
 #include <DataFormats/FEDRawData/interface/FEDRawData.h>
