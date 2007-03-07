@@ -15,6 +15,10 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "IOPool/Streamer/interface/DQMEventMessage.h"
+#include "IOPool/Streamer/interface/DQMEventMsgBuilder.h"
+#include "DataFormats/Common/interface/LuminosityBlockID.h"
+#include "IOPool/Streamer/interface/StreamDQMSerializer.h"
+#include "IOPool/Streamer/interface/StreamDQMDeserializer.h"
 
 #include "toolbox/mem/Reference.h"
 #include "toolbox/mem/Pool.h"
@@ -50,10 +54,25 @@ class DQMSenderService
                            std::string folderPath);
 
  private:
+  void writeI2ODQMData(DQMEventMsgBuilder const& dqmMsgBuilder);
+
   std::vector<char> messageBuffer_;
-  std::string destinationName_;
-  int updateInterval_;  // seconds
-  time_t lastUpdateTime_;
+  int lumiSectionInterval_;  
+  double lumiSectionsPerUpdate_;
+  edm::LuminosityBlockID lumiSectionOfPreviousUpdate_;
+  edm::LuminosityBlockID firstLumiSectionSeen_;
+  bool initializationIsNeeded_;
+  bool useCompression_;
+  int compressionLevel_;
+  edm::StreamDQMSerializer serializeWorker_;
+  edm::StreamDQMDeserializer deserializeWorker_;
+
+  xdaq::Application *thisXdaqApplication_;
+  toolbox::mem::Pool *xdaqMemPool_;
+  xdaq::ApplicationDescriptor *smXdaqDestination_;
+
+  unsigned int i2o_max_size_;
+  unsigned int max_i2o_DQM_datasize_; 
 
 };
 

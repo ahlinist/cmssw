@@ -20,26 +20,32 @@
 
 #include "EventFilter/FUSender/interface/DQMSenderService.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
-#include "IOPool/Streamer/interface/DQMEventMsgBuilder.h"
-#include "IOPool/Streamer/interface/StreamSerializer.h"
-#include "IOPool/Streamer/interface/StreamDeserializer.h"
 #include "DQMServices/CoreROOT/interface/MonitorElementRootT.h"
 #include "FWCore/Utilities/interface/GetReleaseVersion.h"
 #include "DQMServices/NodeROOT/interface/SenderBase.h"
+#include "EventFilter/FUSender/interface/FUi2oSender.h"
+#include "EventFilter/StorageManager/interface/i2oStorageManagerMsg.h"
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 #include "i2o/Method.h"
 #include "i2o/utils/include/i2o/utils/AddressMap.h"
 #include "toolbox/mem/MemoryPoolFactory.h"
 #include "xcept/tools.h"
 
+extern xdaq::Application* getMyXDAQPtr();
+extern toolbox::mem::Pool *getMyXDAQPool();
+extern xdaq::ApplicationDescriptor* getMyXDAQDest();
+extern xdaq::ApplicationDescriptor* getMyXDAQDest(unsigned int);
+
 using namespace std;
 using namespace toolbox::mem;
 
 /**
  * Local debug flag.  0 => no debug output; 1 => tracing of necessary
- * routines; 2 => additional tracing of many framework signals.
+ * routines; 2 => additional tracing of many framework signals;
+ * 3 => deserialization test.
  */
-#define DSS_DEBUG 1
+#define DSS_DEBUG 0
 
 /**
  * DQMSenderService constructor.
@@ -82,12 +88,49 @@ DQMSenderService::DQMSenderService(const edm::ParameterSet &pset,
   }
 
   // set internal values from the parameter set
-  messageBuffer_.resize(pset.getParameter<int>("MessageBufferSize"));
-  destinationName_ = pset.getParameter<string>("DestinationName");
-  updateInterval_ = pset.getParameter<int>("UpdateInterval");
+  int initialSize =
+    pset.getUntrackedParameter<int>("initialMessageBufferSize", 1000000);
+  messageBuffer_.resize(initialSize);
+  lumiSectionsPerUpdate_ = pset.getParameter<double>("lumiSectionsPerUpdate");
+  // for the moment, only support a number of lumi sections per update >= 1
+  if (lumiSectionsPerUpdate_ <= 1.0) {lumiSectionsPerUpdate_ = 1.0;}
+  initializationIsNeeded_ = true;
+  useCompression_ = pset.getParameter<bool>("useCompression");
+  compressionLevel_ = pset.getParameter<int>("compressionLevel");
+  lumiSectionInterval_ =
+    pset.getUntrackedParameter<int>("lumiSectionInterval", 60); // seconds
+  if (lumiSectionInterval_ < 1) {lumiSectionInterval_ = 1;}
 
-  // start the update interval now
-  lastUpdateTime_ = time(0);
+  i2o_max_size_ = pset.getUntrackedParameter<int>("i2o_max_size",I2O_MAX_SIZE);
+  // check the max i20 frame size is not above the value that causes a crash!
+  if(i2o_max_size_ > I2O_ABSOLUTE_MAX_SIZE) {
+    int old_i2o_max_size = i2o_max_size_;
+    i2o_max_size_ = I2O_ABSOLUTE_MAX_SIZE;
+    edm::LogWarning("DQMSenderService")
+      << "user defined i2o_max_size too large for xdaq tcp, changed from " 
+      << old_i2o_max_size << " to " << i2o_max_size_;
+  }
+  // check the total i20 frame size is a multiple of 64 bits (8 bytes)
+  if((i2o_max_size_ & 0x7) != 0) {
+    int old_i2o_max_size = i2o_max_size_;
+    // round it DOWN as this is the maximum size (keep the 0 for illustration!)
+    i2o_max_size_ = ((i2o_max_size_ >> 3) + 0) << 3;
+    edm::LogWarning("DQMSenderService")
+      << "user defined i2o_max_size not multiple of 64 bits, changed from " 
+      << old_i2o_max_size << " to " << i2o_max_size_;
+  }
+  // get the actual max data size for DQM frames
+  max_i2o_DQM_datasize_ = i2o_max_size_ - sizeof(I2O_SM_DQM_MESSAGE_FRAME); 
+
+  thisXdaqApplication_ = getMyXDAQPtr();
+  xdaqMemPool_ = getMyXDAQPool();
+  int smInstance = pset.getUntrackedParameter<int>("smInstance", -1);
+  if (smInstance < 0) {
+    smXdaqDestination_ = getMyXDAQDest();
+  }
+  else {
+    smXdaqDestination_ = getMyXDAQDest(smInstance);
+  }
 }
 
 /**
@@ -108,15 +151,36 @@ DQMSenderService::~DQMSenderService(void)
 void DQMSenderService::postEventProcessing(const edm::Event &event,
                                            const edm::EventSetup &eventSetup)
 {
-  // check if it is time for an update
-  time_t now = time(0);
-  if ((now - lastUpdateTime_) < updateInterval_) {return;}
-  lastUpdateTime_ = now;
+  // 06-Mar-2006, KAB: fake the luminosity section until the real one is available
+  //edm::LuminosityBlockID thisLumiSection = event.luminosityBlockID();
+  time_t now = time(NULL);
+  edm::LuminosityBlockID thisLumiSection = (int) (now / lumiSectionInterval_);
+  //edm::LuminosityBlockID thisLumiSection = (int) (event.id().event() / 100);
 
   if (DSS_DEBUG) {
     cout << "DQMSenderService::postEventProcessing called, event number "
-         << event.id().event() << endl;
+         << event.id().event() << ", lumi section "
+         << thisLumiSection << endl;
   }
+
+  // special handling for the first event
+  if (initializationIsNeeded_) {
+    initializationIsNeeded_ = false;
+    lumiSectionOfPreviousUpdate_ = thisLumiSection;
+    firstLumiSectionSeen_ = thisLumiSection;
+  }
+
+  // only continue if the correct number of luminosity sections have passed
+  int lsDelta = (int) (thisLumiSection - lumiSectionOfPreviousUpdate_);
+  double updateRatio = ((double) lsDelta) / lumiSectionsPerUpdate_;
+  if (updateRatio < 1.0) {return;}
+
+  // calculate the update ID and lumi ID for this update
+  int fullLsDelta = (int) (thisLumiSection - firstLumiSectionSeen_);
+  double fullUpdateRatio = ((double) fullLsDelta) / lumiSectionsPerUpdate_;
+  uint32 updateNumber = -1 + (uint32) fullUpdateRatio;
+  edm::LuminosityBlockID lumiSectionTag = firstLumiSectionSeen_ +
+    ((int) (updateNumber * lumiSectionsPerUpdate_)) - 1;
 
   // retry the lookup of the backend interface, if needed
   if (bei == NULL) {
@@ -163,55 +227,84 @@ void DQMSenderService::postEventProcessing(const edm::Event &event,
     DQMEvent::TObjectTable toTable = toMap[dirName];
     if (toTable.size() == 0) {continue;}
 
+    // serialize the monitor element data
+    serializeWorker_.serializeDQMEvent(toTable, useCompression_,
+                                       compressionLevel_);
+
+    // resize the message buffer, if needed 
+    unsigned int srcSize = serializeWorker_.currentSpaceUsed();
+    unsigned int newSize = srcSize + 50000;  // allow for header
+    if (messageBuffer_.size() < newSize) messageBuffer_.resize(newSize);
+
     // create the message
     DQMEventMsgBuilder dqmMsgBuilder(&messageBuffer_[0], messageBuffer_.size(),
                                      event.id().run(), event.id().event(),
-                                     edm::getReleaseVersion(), dirName);
-    edm::StreamSerializer::serializeDQMEvent(toTable, dqmMsgBuilder);
+                                     lumiSectionTag, updateNumber,
+                                     edm::getReleaseVersion(), dirName,
+                                     toTable);
+
+    // copy the serialized data into the message
+    unsigned char* src = serializeWorker_.bufferPointer();
+    std::copy(src,src + srcSize, dqmMsgBuilder.eventAddress());
+    dqmMsgBuilder.setEventLength(srcSize);
+    if (useCompression_) {
+      dqmMsgBuilder.setCompressionFlag(serializeWorker_.currentEventSize());
+    }
 
     // send the message
-    //coming soon...
+    writeI2ODQMData(dqmMsgBuilder);
 
     // test deserialization
-    DQMEventMsgView dqmEventView(&messageBuffer_[0]);
-    std::cout << "  Message data:" << std::endl; 
-    std::cout << "    protocol version = "
-              << dqmEventView.protocolVersion() << std::endl; 
-    std::cout << "    header size = "
-              << dqmEventView.headerSize() << std::endl; 
-    std::cout << "    run number = "
-              << dqmEventView.runNumber() << std::endl; 
-    std::cout << "    event number = "
-              << dqmEventView.eventNumberAtUpdate() << std::endl; 
-    std::cout << "    compression flag = "
-              << dqmEventView.compressionFlag() << std::endl; 
-    std::cout << "    reserved word = "
-              << dqmEventView.reserved() << std::endl; 
-    std::cout << "    release tag = "
-              << dqmEventView.releaseTag() << std::endl; 
-    std::cout << "    top folder name = "
-              << dqmEventView.topFolderName() << std::endl; 
-    std::cout << "    sub folder count = "
-              << dqmEventView.subFolderCount() << std::endl; 
-    std::auto_ptr<DQMEvent::TObjectTable> toTablePtr =
-      edm::StreamDeserializer::deserializeDQMEvent(dqmEventView);
-    DQMEvent::TObjectTable::const_iterator toIter;
-    for (toIter = toTablePtr->begin(); toIter != toTablePtr->end(); toIter++) {
-      std::string subFolderName = toIter->first;
-      std::cout << "  folder = " << subFolderName << std::endl;
-      std::vector<TObject *> toList = toIter->second;
-      for (int tdx = 0; tdx < (int) toList.size(); tdx++) {
-        TObject *toPtr = toList[tdx];
-        string cls = toPtr->IsA()->GetName();
-        string nm = toPtr->GetName();
-        std::cout << "    TObject class = " << cls
-                  << ", name = " << nm << std::endl;
+    if (DSS_DEBUG >= 3) {
+      DQMEventMsgView dqmEventView(&messageBuffer_[0]);
+      std::cout << "  DQM Message data:" << std::endl; 
+      std::cout << "    protocol version = "
+                << dqmEventView.protocolVersion() << std::endl; 
+      std::cout << "    header size = "
+                << dqmEventView.headerSize() << std::endl; 
+      std::cout << "    run number = "
+                << dqmEventView.runNumber() << std::endl; 
+      std::cout << "    event number = "
+                << dqmEventView.eventNumberAtUpdate() << std::endl; 
+      std::cout << "    lumi section = "
+                << dqmEventView.lumiSection() << std::endl; 
+      std::cout << "    update number = "
+                << dqmEventView.updateNumber() << std::endl; 
+      std::cout << "    compression flag = "
+                << dqmEventView.compressionFlag() << std::endl; 
+      std::cout << "    reserved word = "
+                << dqmEventView.reserved() << std::endl; 
+      std::cout << "    release tag = "
+                << dqmEventView.releaseTag() << std::endl; 
+      std::cout << "    top folder name = "
+                << dqmEventView.topFolderName() << std::endl; 
+      std::cout << "    sub folder count = "
+                << dqmEventView.subFolderCount() << std::endl; 
+      std::auto_ptr<DQMEvent::TObjectTable> toTablePtr =
+        deserializeWorker_.deserializeDQMEvent(dqmEventView);
+      DQMEvent::TObjectTable::const_iterator toIter;
+      for (toIter = toTablePtr->begin();
+           toIter != toTablePtr->end(); toIter++) {
+        std::string subFolderName = toIter->first;
+        std::cout << "  folder = " << subFolderName << std::endl;
+        std::vector<TObject *> toList = toIter->second;
+        for (int tdx = 0; tdx < (int) toList.size(); tdx++) {
+          TObject *toPtr = toList[tdx];
+          string cls = toPtr->IsA()->GetName();
+          string nm = toPtr->GetName();
+          std::cout << "    TObject class = " << cls
+                    << ", name = " << nm << std::endl;
+        }
       }
     }
   }
 
   // reset monitor elements that have requested it
+  // TODO - enable this
   //bei->doneSending(true, true);
+
+  // update the "previous" lumi section
+  lumiSectionOfPreviousUpdate_ = thisLumiSection;
 }
 
 /**
@@ -257,6 +350,7 @@ void DQMSenderService::findMonitorElements(DQMEvent::TObjectTable &toTable,
   for (int idx = 0; idx < (int) localMEList.size(); idx++) {
     MonitorElement *mePtr = localMEList[idx];
     bool wasUpdated = mePtr->wasUpdated();
+    // TODO - enable the correct "never-sent" determination
     bool neverSent = false; //SenderBase::isNeverSent(folderPtr, mePtr->getName());
     if (wasUpdated || neverSent) {
       MonitorElementRootObject* rootObject = 
@@ -277,10 +371,12 @@ void DQMSenderService::findMonitorElements(DQMEvent::TObjectTable &toTable,
       }
 
       if (wasUpdated) {
+        // TODO - enable this
         //bei->add2UpdatedContents(mePtr->getName(), folderPath);
       }
 
       if (neverSent) {
+        // TODO - enable this
         //SenderBase::setNeverSent(folderPtr, mePtr->getName(), false);
       }
     }
@@ -303,6 +399,64 @@ void DQMSenderService::findMonitorElements(DQMEvent::TObjectTable &toTable,
       std::string subDirPath = folderPath + "/" + (*dirIter);
       findMonitorElements(toTable, subDirPath);
     }
+  }
+}
+
+/**
+ * Sends the specified DQM event message to the storage manager.
+ */
+void DQMSenderService::writeI2ODQMData(DQMEventMsgBuilder const& dqmMsgBuilder)
+{
+  // fetch the location and size of the message buffer
+  char* buffer = (char*) dqmMsgBuilder.startAddress();
+  unsigned int size = dqmMsgBuilder.size();
+
+  // fetch the run, event, and folder number for addition to the I2O fragments
+  DQMEventMsgView dqmMsgView(buffer);
+  edm::RunNumber_t runid = dqmMsgView.runNumber();
+  edm::EventNumber_t eventid = dqmMsgView.eventNumberAtUpdate();
+
+  // create the chain of I2O fragments
+  toolbox::mem::Reference *head = 0;
+  unsigned int numBytesSent = 0;
+  head = FUi2oSender::createI2OFragmentChain(buffer, size,
+                                             xdaqMemPool_,
+                                             max_i2o_DQM_datasize_,
+                                             sizeof(I2O_SM_DQM_MESSAGE_FRAME),
+                                             (unsigned short)I2O_SM_DQM,
+                                             thisXdaqApplication_,
+                                             smXdaqDestination_,
+                                             numBytesSent);
+
+  // set the run and event numbers in each I2O fragment
+  toolbox::mem::Reference *currentElement = head;
+  while (currentElement != NULL) {
+    I2O_SM_DQM_MESSAGE_FRAME *dataMsg =
+      (I2O_SM_DQM_MESSAGE_FRAME *) currentElement->getDataLocation();
+    dataMsg->runID = (unsigned int) runid;
+    dataMsg->eventAtUpdateID = (unsigned int) eventid;
+    currentElement = currentElement->getNextReference();
+  }
+
+  if (head != NULL) {
+    if (smXdaqDestination_ != NULL) {
+      try {
+        thisXdaqApplication_->getApplicationContext()->
+          postFrame(head,
+                    thisXdaqApplication_->getApplicationDescriptor(),
+                    smXdaqDestination_);
+      }
+      catch(xcept::Exception &excpt) {
+        edm::LogError("writeI2ORegistry")
+          << "Exception writeI2ODQMData postFrame" 
+          << xcept::stdformat_exception_history(excpt);
+        throw cms::Exception("CommunicationError",excpt.message());
+      }
+    }
+    else
+      edm::LogError("writeI2ORegistry") 
+        << "DQMSenderService::writeI2ODQMData: No StorageManager "
+        << "destination in configuration";
   }
 }
 
