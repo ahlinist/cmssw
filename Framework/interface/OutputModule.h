@@ -59,6 +59,7 @@ namespace edm {
     unsigned int nextID() const;
     void selectProducts();
 
+    bool const terminate() const {return terminate_;}
 
   protected:
     //const Trig& getTriggerResults(Event const& ep) const;
@@ -137,6 +138,7 @@ namespace edm {
     int writeCount_;
     bool const unlimited_;
     bool const maxEventsExit_;
+    bool terminate_;
   };
 }
 
