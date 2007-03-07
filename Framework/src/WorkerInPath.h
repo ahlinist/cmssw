@@ -43,6 +43,8 @@ namespace edm
     FilterAction filterAction() const { return filterAction_; }
     Worker* getWorker() const { return worker_; }
 
+    bool const terminate() const {return terminate_;}
+
   private:
     RunStopwatch::StopwatchPointer stopwatch_;
 
@@ -53,6 +55,7 @@ namespace edm
     
     FilterAction filterAction_;
     Worker* worker_;
+    bool terminate_;
   };
 }
 

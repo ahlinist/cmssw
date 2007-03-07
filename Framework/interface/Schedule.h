@@ -187,7 +187,9 @@ namespace edm
     /// modules-in-path, modules-in-endpath, and modules.
     void getTriggerReport(TriggerReport& rep) const;      
 
-
+    /// Return whether a module has decided to terminate the job
+    /// normally after the event is processed.
+    bool const terminate() const {return terminate_;}
 
   private:
     AllWorkers::const_iterator workersBegin() const 
@@ -248,6 +250,7 @@ namespace edm
     std::vector<boost::shared_ptr<Group> >     demandGroups_;
 
     volatile bool       endpathsAreActive_;
+    bool terminate_;
   };
 }
 
