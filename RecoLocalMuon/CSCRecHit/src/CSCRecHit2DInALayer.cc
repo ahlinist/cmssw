@@ -1,7 +1,7 @@
 // This is  CSCRecHit2DInALayer.cc
 
 #include <RecoLocalMuon/CSCRecHit/src/CSCRecHit2DAlgo.h>
-#include <RecoLocalMuon/CSCRecHitB/src/CSCFindPeakTime.h>
+#include <RecoLocalMuon/CSCRecHit/src/CSCFindPeakingTime.h>
 #include <DataFormats/MuonDetId/interface/CSCDetId.h>
 #include <DataFormats/CSCDigi/interface/CSCStripDigi.h>
 #include <DataFormats/CSCDigi/interface/CSCWireDigi.h>
@@ -52,7 +52,7 @@ CSCRecHit2DInALayer::CSCRecHit2DInALayer(  const edm::ParameterSet& ps ) : CSCRe
 
   // Which algorithms to use?
 
-  peakTimeFinder_ = new CSCFindPeakTime();
+  peakTimeFinder_ = new CSCFindPeakingTime();
 
   std::string pulseheightOnStripFinder = ps.getParameter<std::string>("pulseheightOnStripFinder");
 
