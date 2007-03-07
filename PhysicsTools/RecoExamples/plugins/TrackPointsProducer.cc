@@ -2,7 +2,7 @@
  *
  * \author Luca Lista, INFN
  *
- * \version $Id: TrackPointsProducer.h,v 1.1 2006/10/31 16:05:39 llista Exp $
+ * \version $Id: TrackPointsProducer.cc,v 1.1 2007/02/02 13:59:10 llista Exp $
  *
  */
 #include "FWCore/Framework/interface/EDProducer.h"
@@ -22,7 +22,7 @@ private:
 };
 
 #include "DataFormats/TrackReco/interface/Track.h"
-#include "FWCore/Framework/interface/Handle.h"
+#include "DataFormats/Common/interface/Handle.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 using namespace edm;
