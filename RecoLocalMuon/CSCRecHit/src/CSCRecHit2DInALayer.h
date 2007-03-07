@@ -30,7 +30,7 @@ class CSCChamberSpecs;
 class CSCLayerGeometry;
 class CSCWireDigi;
 class CSCStripDigi;
-class CSCFindPeakTime;
+class CSCFindPeakingTime;
 class CSCFindPositionOfStripCluster;
 class CSCFindPulseheightOnStrip;
 
@@ -93,7 +93,7 @@ private:
   const std::string myName;
   CSCFindPulseheightOnStrip * pulseheightOnStripFinder_;
 
-  CSCFindPeakTime* peakTimeFinder_;
+  CSCFindPeakingTime* peakTimeFinder_;
 
 };
 
