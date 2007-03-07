@@ -4,7 +4,7 @@
 
 #include "EventFilter/ResourceBroker/interface/FEDProvider.h"
 #include "IORawData/DaqSource/interface/DaqBaseReader.h"
-#include "DataFormats/Common/interface/EventID.h"
+#include "DataFormats/Provenance/interface/EventID.h"
 
 
 class FUStdReader : public DaqBaseReader
