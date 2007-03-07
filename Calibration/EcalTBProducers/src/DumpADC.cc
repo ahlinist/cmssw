@@ -6,7 +6,7 @@
      <Notes on implementation>
 */
 //
-// $Id: DumpADC.cc,v 1.6 2006/08/17 12:45:34 govoni Exp $
+// $Id: DumpADC.cc,v 1.7 2006/10/12 11:30:44 govoni Exp $
 //
 //
 
@@ -25,7 +25,7 @@
 #include "Geometry/CaloGeometry/interface/CaloCellGeometry.h"
 #include "Geometry/Records/interface/IdealGeometryRecord.h"
 #include "DataFormats/Math/interface/Point3D.h"
-
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 
 //#include<fstream>
@@ -63,7 +63,7 @@ DumpADC::DumpADC( const edm::ParameterSet& iConfig ) :
 
    //now do what ever initialization is needed
 //   rootfile_          = iConfig.getUntrackedParameter<std::string>("rootfile","ecalSimpleTBanalysis.root") ;
-   ECALRawDataProducer_       = iConfig.getParameter<std::string> ("ECALRawDataProducer") ; 
+   ECALRawDataProducer_       = iConfig.getParameter<std::string> ("ECALRawDataProducer") ;
    ECALRawDataCollection_     = iConfig.getParameter<std::string> ("ECALRawDataCollection") ;
    EBuncalibRecHitCollection_ = iConfig.getParameter<std::string> ("EBuncalibRecHitCollection") ;
    uncalibRecHitProducer_     = iConfig.getParameter<std::string> ("uncalibRecHitProducer") ;
@@ -73,9 +73,13 @@ DumpADC::DumpADC( const edm::ParameterSet& iConfig ) :
    tdcRecInfoProducer_        = iConfig.getParameter<std::string> ("tdcRecInfoProducer") ;
    eventHeaderCollection_     = iConfig.getParameter<std::string> ("eventHeaderCollection") ;
    eventHeaderProducer_       = iConfig.getParameter<std::string> ("eventHeaderProducer") ;
+   // Use the maximum energy xtal instead of the xtal on beam information
+   useMaxEnergyXtal_          = iConfig.getUntrackedParameter<bool> ("useMaxEnergyXtal") ;
 
-   std::cout << "DumpADC: fetching hitCollection: " << EBuncalibRecHitCollection_.c_str ()
-             << " produced by " << uncalibRecHitProducer_.c_str () << std::endl ;
+   edm::LogInfo ("CTOR") << "Use Xtal in Beam information: " <<useMaxEnergyXtal_<< std::endl ;
+
+   edm::LogInfo ("CTOR") << "DumpADC: fetching hitCollection: " << EBuncalibRecHitCollection_
+                         << " produced by " << uncalibRecHitProducer_ << std::endl ;
 
 }
 
@@ -87,13 +91,13 @@ DumpADC::~DumpADC()
 
 //========================================================================
 void
-DumpADC::beginJob (const edm::EventSetup & iSetup) 
+DumpADC::beginJob (const edm::EventSetup & iSetup)
 //========================================================================
 {}
 
 //========================================================================
 void
-DumpADC::endJob() 
+DumpADC::endJob()
 //========================================================================
 {}
 
@@ -103,7 +107,7 @@ DumpADC::endJob()
 
 //========================================================================
 void
-DumpADC::analyze( const edm::Event& iEvent, const edm::EventSetup& iSetup ) 
+DumpADC::analyze( const edm::Event& iEvent, const edm::EventSetup& iSetup )
 //========================================================================
 {
 //   std::cout << "PIETRO " << m_eventNum << "\t" << (m_eventNum < m_minEvent) << std::endl ;
@@ -114,48 +118,55 @@ DumpADC::analyze( const edm::Event& iEvent, const edm::EventSetup& iSetup )
 
    // fetch the uncalibrated digis
    // ----------------------------
-   
+
    Handle< EBUncalibratedRecHitCollection > pEBUncalibRecHits ;
    const EBUncalibratedRecHitCollection*  EBuncalibRecHits = 0 ;
+
    try {
-     iEvent.getByLabel (uncalibRecHitProducer_, 
-                        EBuncalibRecHitCollection_, 
-                        pEBUncalibRecHits) ;
-     EBuncalibRecHits = pEBUncalibRecHits.product () ; // get a ptr to the product
-//     LogDebug("EcalRecHitDebug") << "total # EB uncalibrated rechits: " << EBuncalibRecHits->size () ;
-   } catch ( std::exception& ex ) {
-     std::cerr << ex.what () << std::endl ;
-   }
+       iEvent.getByLabel (uncalibRecHitProducer_,
+                          EBuncalibRecHitCollection_,
+                          pEBUncalibRecHits) ;
+       EBuncalibRecHits = pEBUncalibRecHits.product () ; // get a ptr to the product
+     } catch ( std::exception& ex ) {
+       edm::LogError ("missed") << "get collection " << EBuncalibRecHitCollection_ 
+                                << " from producer " << uncalibRecHitProducer_
+                                << " failed: " << std::endl ;
+       edm::LogError ("missed") << ex.what () << std::endl ;
+     }
+
    if (!EBuncalibRecHits) return ;
    if (EBuncalibRecHits->size () == 0) return ;
-   
+
    Handle<EcalTBHodoscopeRecInfo> pHodo ;
    const EcalTBHodoscopeRecInfo* recHodo=0 ;
+
    try {
-     iEvent.getByLabel(hodoRecInfoProducer_, 
-                       hodoRecInfoCollection_, 
+     iEvent.getByLabel(hodoRecInfoProducer_,
+                       hodoRecInfoCollection_,
                        pHodo) ;
      recHodo = pHodo.product() ; // get a ptr to the product
    } catch ( std::exception& ex ) {
-     std::cerr << ex.what () << std::endl ;
+     edm::LogError ("missed") << ex.what () << std::endl ;
    }
 
    Handle<EcalTBTDCRecInfo> pTDC ;
    const EcalTBTDCRecInfo* recTDC=0 ;
+
    try {
      iEvent.getByLabel (tdcRecInfoProducer_, tdcRecInfoCollection_, pTDC) ;
      recTDC = pTDC.product () ; // get a ptr to the product
    } catch ( std::exception& ex ) {
-     std::cerr << ex.what () << std::endl ;
+     edm::LogError ("missed") << ex.what () << std::endl ;
    }
 
    Handle<EcalTBEventHeader> pEventHeader ;
    const EcalTBEventHeader* evtHeader=0 ;
+
    try {
      iEvent.getByLabel ( eventHeaderProducer_ , pEventHeader ) ;
      evtHeader = pEventHeader.product () ; // get a ptr to the product
    } catch ( std::exception& ex ) {
-     std::cerr << ex.what () << std::endl ;
+     edm::LogError ("missed") << ex.what () << std::endl ;
    }
 
    // FIXME if (!recHodo) return ;
@@ -164,18 +175,18 @@ DumpADC::analyze( const edm::Event& iEvent, const edm::EventSetup& iSetup )
 /*
    Handle<EcalRawDataCollection> dcchs ;
    try {
-//     iEvent.getByLabel (ECALRawDataProducer_, ECALRawDataCollection_, dcchs) ; 
-     iEvent.getByLabel (ECALRawDataProducer_, dcchs) ; 
+//     iEvent.getByLabel (ECALRawDataProducer_, ECALRawDataCollection_, dcchs) ;
+     iEvent.getByLabel (ECALRawDataProducer_, dcchs) ;
 
      //FIXME questo e' un loop su che cosa?
-     for ( EcalRawDataCollection::const_iterator dcchItr = dcchs->begin () ; 
-           dcchItr != dcchs->end () ; 
-           ++dcchItr ) 
+     for ( EcalRawDataCollection::const_iterator dcchItr = dcchs->begin () ;
+           dcchItr != dcchs->end () ;
+           ++dcchItr )
        {
          EcalDCCHeaderBlock dcch = (*dcchItr) ;
          if ( dcch.getRunType () == EcalDCCHeaderBlock::BEAMH4 ||
-              dcch.getRunType () == EcalDCCHeaderBlock::BEAMH2  ) 
-           {   
+              dcch.getRunType () == EcalDCCHeaderBlock::BEAMH2  )
+           {
              std::cerr << "[DumpADC][analyze] " << dcch.getRunType () << std::endl ;
              int enable = true ;
            }
@@ -183,7 +194,7 @@ DumpADC::analyze( const edm::Event& iEvent, const edm::EventSetup& iSetup )
    } catch ( std::exception& ex ) {
      std::cerr << ex.what () << std::endl ;
    }
-*/       
+*/
 
    // get the header info
    // -------------------
@@ -196,16 +207,31 @@ DumpADC::analyze( const edm::Event& iEvent, const edm::EventSetup& iSetup )
    std::string eventType = "0" ;
    if (evtHeader)
      {
+     //D LogDebug("EvtHeaderDebug") << "Found evtHeader " << std::endl ;
+
        eventType = evtHeader->eventType () ;
+       xtalNum = evtHeader->crystalInBeam () ;
        run = evtHeader->runNumber () ;
        event = evtHeader->eventNumber () ;
-       xtalNum = evtHeader->crystalInBeam () ;
        tableIsMoving = evtHeader->tableIsMoving () ;
        S6ADC = evtHeader->S6ADC () ;
-       std::cout << "Danilo Event Header== True" << std::endl;
+       /*
+       LogDebug("EvtHeaderDebug") << "eventType "     << eventType     << "\n"
+                                  << "xtalNum "       << xtalNum       << "\n"
+                                  << "run "           << run           << "\n"
+                                  << "event "         << event         << "\n"
+                                  << "tableIsMoving " << tableIsMoving << "\n"
+                                  << "S6ADC "         << S6ADC         << "\n" ;
+        */         
      }
-   else
+
+   if (not evtHeader or useMaxEnergyXtal_)
      {
+     //D
+       /*
+       LogDebug("EvtHeaderDebug") << "evtHeader= " << evtHeader << " and "
+                 << "useMaxEnergyXtal_= " << useMaxEnergyXtal_ << "\n" ;
+       */          
        float maxAmplitude = -999999. ;
        DetId MExtal (0) ;
        // loop over uncalibrated rechits
@@ -223,8 +249,7 @@ DumpADC::analyze( const edm::Event& iEvent, const edm::EventSetup& iSetup )
        if (maxAmplitude < -999990) return ;
        EBDetId EBMExtal (MExtal) ;
        xtalNum = EBMExtal.ic () ;
-       std::cout << "Danilo Event Header== False" << std::endl;
-
+       //PG std::cout << "xtalNum " << xtalNum << std::endl ;
    }
 
    // get the hodoscope info
@@ -247,6 +272,13 @@ DumpADC::analyze( const edm::Event& iEvent, const edm::EventSetup& iSetup )
        yqual=recHodo->qualY () ;
      }
 
+//   edm::logDebug ("check") << "xhodo " << xhodo  << std::endl
+//                           << "yhodo"  << yhodo  << std::endl
+//                           << "xslope" << xslope << std::endl
+//                           << "yslope" << yslope << std::endl
+//                           << "xqual"  << xqual  << std::endl
+//                           << "yqual"  << yqual  << std::endl ;
+
    // get the 7x7 matrix
    // ------------------
 
@@ -254,33 +286,27 @@ DumpADC::analyze( const edm::Event& iEvent, const edm::EventSetup& iSetup )
    //FIXME not sure about the "1"
    //EBDetId EBMExtal (1,xtalNum,EBDetId::SMCRYSTALMODE) ;
 
-   // Danilo: I try to enclose the statement in a try-catch schema
    EBDetId EBMExtal;
-   try
-        {
+   try  {
          EBDetId dummy (1,xtalNum,EBDetId::SMCRYSTALMODE) ;
          EBMExtal = dummy;
         }
-
    catch ( cms::Exception &e )
         {
-         std::cerr << "Danilo Problems in generating central crystal EBDetId object : " 
-                   << "RunNb= " << run 
-                   << " EvtNb= " << event 
-                   << " XtalNb= " << xtalNum <<std::endl ;
+         edm::LogError ("missed") << "Problems in generating central crystal EBDetId object : "
+                                  << "RunNb= " << run
+                                  << " EvtNb= " << event
+                                  << " XtalNb= " << xtalNum <<std::endl ;
          return;
         }
 
-   // Danilo: End of the try-catch schema
-
-   std::cout << "[CR]\n" ;
    // loop over the 7x7 matrix
    for (UInt_t icry=0 ; icry<49 ; ++icry)
      {
        UInt_t row = icry / 7 ;
        Int_t column = icry % 7 ;
-       try
-           {
+
+       try {
              EBDetId tempo (EBMExtal.ieta ()+row-3,
                             EBMExtal.iphi ()+column-3, 
                             EBDetId::ETAPHIMODE) ;
@@ -290,18 +316,37 @@ DumpADC::analyze( const edm::Event& iEvent, const edm::EventSetup& iSetup )
                  amplitude [icry] = EBuncalibRecHits->find (tempo)->
                                                         amplitude () ;
 //                 std::cout << "[CR][PG] Building element (" << tempo
-//                           << " around " << EBMExtal 
+//                           << " around " << EBMExtal
 //                           << " ene " << amplitude [icry] << std::endl ;
                }
-              else amplitude [icry] = 0. ;               
+              else amplitude [icry] = 0. ;
            }
        catch ( cms::Exception &e )
 	    {
              amplitude[icry] = 0. ;
-             std::cerr << "Cannot get amplitude" << std::endl ;
+             edm::LogError ("missed") << "Cannot get amplitude" << std::endl ;
            }
      } // loop over the 7x7 matrix
-   
+
+   /*
+   std::cout << "Summary of TTree stored material: " << "\n"
+             << "tableIsMoving " << tableIsMoving<<"\n"
+             << "run" << run << "\n"
+             << "event " << event << "\n"
+             << "S6ADC " << S6ADC << "\n"
+             << "xhodo " << xhodo << "\n"
+             << "yhodo " << yhodo << "\n"
+             << "xslope " << xslope << "\n"
+             << "yslope " << yslope << "\n"
+             << "xqual " << xqual << "\n"
+             << "yqual " << yqual << "\n"
+             << "xtalNum " << xtalNum << "\n"
+             << "EBMExtal.ieta () " << EBMExtal.ieta () << "\n"
+             << "EBMExtal.iphi () " << EBMExtal.iphi () << "\n"
+             << "m_beamEnergy " << m_beamEnergy << "\n"
+             << "amplitude " << amplitude << "\n" ;
+   */ 
+
    m_TB06Tree.store (tableIsMoving,
                      run,event,S6ADC,
                      xhodo,yhodo,
