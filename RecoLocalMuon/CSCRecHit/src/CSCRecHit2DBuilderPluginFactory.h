@@ -7,7 +7,7 @@
  *  \author Tim Cox (based on SEAL example)
  */
 
-#include <PluginManager/PluginFactory.h>
+#include <FWCore/PluginManager/interface/PluginFactory.h>
 #include <RecoLocalMuon/CSCRecHit/src/CSCRecHit2DAlgo.h>
 
 class edm::ParameterSet;
