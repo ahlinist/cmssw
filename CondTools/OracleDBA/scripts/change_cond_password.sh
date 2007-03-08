@@ -68,6 +68,7 @@ RPC
 STRIP
 ALIGNMENT
 HLT
+BTAG
 " 
 echo
 for OWNER in ${OWNERS} ; do
