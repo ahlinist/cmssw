@@ -22,8 +22,6 @@
 #include <CondFormats/CSCObjects/interface/CSCNoiseMatrix.h>
 #include <CondFormats/DataRecord/interface/CSCNoiseMatrixRcd.h>
 
-#include <Geometry/Vector/interface/LocalPoint.h>
-
 #include <FWCore/MessageLogger/interface/MessageLogger.h>
 #include <FWCore/Utilities/interface/Exception.h>
 
