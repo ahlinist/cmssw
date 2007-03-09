@@ -1,4 +1,3 @@
-RecoLocalMuon/CSCRecHitB
 <use name=CondFormats/CSCObjects>
 <use name=CondFormats/DataRecord>
 <use name=DataFormats/CSCDigi>
@@ -18,4 +17,3 @@ RecoLocalMuon/CSCRecHitB
   <use name=DataFormats/MuonDetId>
   <lib name=RecoLocalMuonCSCRecHitB>
 </export>
-
