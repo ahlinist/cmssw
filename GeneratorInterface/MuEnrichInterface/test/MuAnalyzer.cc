@@ -3,20 +3,33 @@
 #include "GeneratorInterface/MuEnrichInterface/test/MuAnalyzer.h"
  
 #include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
- 
+#include "SimDataFormats/TrackingAnalysis/interface/TrackingParticleFwd.h"
+#include "SimDataFormats/TrackingAnalysis/interface/TrackingVertexContainer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/Run.h"
-#include "FWCore/Framework/interface/Handle.h"
- 
+#include "Dataformats/Common/interface/Handle.h" 
+#include "DataFormats/Provenance/interface/EventID.h"
+
 #include "TFile.h"
 #include "TH1.h"
 #include "TH2.h"
 #include "TTree.h"
  
 #include "FWCore/Framework/interface/MakerMacros.h"
- 
+
+
 using namespace edm;
 using namespace std;
+
+typedef RefVector<vector<TrackingParticle> > TrackingParticleContainer;
+typedef vector<TrackingParticle>             TrackingParticleCollection;
+
+typedef TrackingParticleRefVector::iterator               tp_iterator;
+typedef TrackingParticle::g4t_iterator                   g4t_iterator;
+typedef TrackingParticle::genp_iterator                 genp_iterator;
+typedef TrackingVertex::genv_iterator                   genv_iterator;
+typedef TrackingVertex::g4v_iterator                     g4v_iterator;
+
 
  
 MuAnalyzer::MuAnalyzer( const ParameterSet& pset ): 
@@ -24,8 +37,7 @@ MuAnalyzer::MuAnalyzer( const ParameterSet& pset ):
   maxeta(pset.getUntrackedParameter<double>("maxeta", 2.5)),
   ptmin(pset.getUntrackedParameter<double>("ptmin",1.8)),
   intlum(pset.getUntrackedParameter<double>("intlumi",4.5e-4)),
-  wtype(pset.getUntrackedParameter<int>("type",1)),
-  fOutputFile(0), fHistPtMu(0), fHistMuweight(0), fHistMuParent(0),fHistMuEta(0),fHistRate33(0),fHistRate34(0),fHistParentDecayLength(0),fHistOtherDecayLength(0)
+  wtype(pset.getUntrackedParameter<int>("type",0))
 {
 }
 
@@ -35,7 +47,10 @@ void MuAnalyzer::beginJob( const EventSetup& )
   fHistNMu  = new TH1D(  "HistNMu", "Number of muons above cut", 5,  0., 5. ) ;
   fHistPtMu  = new TH1D(  "HistPtMu", "Muon transverse momentum", 120,  0., 30. ) ;
   fHistMuweight  = new TH1D(  "HistMuweight", "Mu event weights", 100, 0., 1. ) ;
+  fHistMuRZ  = new TH2D(  "HistMuRZ", "Mu production Vertex R vs Z", 300, -5700., 5700.,300, 0., 3000.) ;
   fHistMuXY  = new TH2D(  "HistMuXY", "Mu production Vertex XY", 300, -150., 150.,300, -150., 150.) ;
+  fHistMuPvsPt  = new TH2D(  "HistMuPvsPt", "Mu P vs Pt", 100, 0., 60.,100, 0., 60.) ;
+  fHistMuPvsEta  = new TH2D(  "HistMuPvsEta", "Mu P vs Eta", 100, -2.5, 2.5,100, 0., 60.) ;
   fHistMuZ   = new TH1D(  "HistMuZ", "Mu Vertex Z",   600, -300., 300. ) ;     
   fHistMuX   = new TH1D(  "HistMuX", "Mu Vertex X",   600, -300., 300. ) ;     
   fHistMuY   = new TH1D(  "HistMuY", "Mu Vertex Y",   600, -300., 300. ) ;     
@@ -50,12 +65,16 @@ void MuAnalyzer::beginJob( const EventSetup& )
   fHistRate34tau   = new TH1D(  "HistRate34tau", "Rate at High lumi from tau",   100, 0., 80. ) ;
   fHistRate34W   = new TH1D(  "HistRate34W", "Rate at High lumi from W",   100, 0., 80. ) ;
   fHistRate34Z   = new TH1D(  "HistRate34Z", "Rate at High lumi from Z",   100, 0., 80. ) ;
+  fHistRate34Other   = new TH1D(  "HistRate34Other", "Rate at High lumi from Other",   100, 0., 80. ) ;
   fHistParentDecayLength   = new TH1D(  "HistMuParentDecayLength", "Mu Parent Decay Length",   630, 0., 6300. ) ;
-  fHistOtherDecayLength   = new TH1D(  "HistOtherDecayLength", "Other Decay Length",   600, 0., 6000. ) ;
   fHistMuParent = new TH1D(  "HistMuParent", "Mu Parent ifd",   1500, 0., 1500. ) ;
   fHistMuParentStatus   = new TH1D(  "HistMuParentStatus", "Mu Parent Status",   15, 0., 15 ) ;
   fHistIsub   = new TH1D(  "HistIsub", "Process producing muons",   90, 10., 100. ) ;
   tmuon = new TTree ("Muon","Highest Muon Pt Generator Info");
+  tmuon->Branch("run",&runnum,"runnum/I");
+  tmuon->Branch("evt",&evtnum,"evtnum/I");
+  tmuon->Branch("simmuon",&simmuon,"simmuon/O");
+  tmuon->Branch("simpt",&simmuon,"simpt/D");
   tmuon->Branch("eta",&etamu,"etamu/D");
   tmuon->Branch("phi",&phimu,"phimu/D");
   tmuon->Branch("px",&pxmu,"pxmu/D");
@@ -65,6 +84,9 @@ void MuAnalyzer::beginJob( const EventSetup& )
   tmuon->Branch("vx",&vxmu,"vxmu/D");
   tmuon->Branch("vy",&vymu,"vymu/D");
   tmuon->Branch("vz",&vzmu,"vzmu/D");
+  tmuon->Branch("vxge",&vxge,"vxge/D");
+  tmuon->Branch("vyge",&vyge,"vyge/D");
+  tmuon->Branch("vzge",&vzge,"vzge/D");
   tmuon->Branch("wt",&wtmu,"wtu/D");
   tmuon->Branch("parent",&pid,"pid/I");
   tmuon->Branch("decaylength",&decayl,"decayl/D");
@@ -75,31 +97,76 @@ void MuAnalyzer::beginJob( const EventSetup& )
 void MuAnalyzer::analyze( const Event& e, const EventSetup& )
 {
       
+  runnum=(int) e->run();
+  evtnum=(int) e->id().event();
+  // Sim track info 
+  Handle<TrackingParticleCollection>  TruthTrackContainer ;
+  e.getByType(TruthTrackContainer);
+  double simptmax=ptmin;
+  simmuon=false;
+  const TrackingParticleCollection *tPC   = TruthTrackContainer.product();
+  for (TrackingParticleCollection::const_iterator t = tPC -> begin(); t != tPC -> end(); ++t) {
+    int simpdgid=t->pdgId();
+    if ( abs(simpdgid)==13) {
+      bool wtype1ok=false;
+      if ( wtype==1 ) wtype1ok=true;
+	for (TrackingParticle::genp_iterator hepT = t -> genParticle_begin();
+	     hepT !=  t -> genParticle_end(); ++hepT) {
+	  double pthep=(*hepT)->momentum().perp();
+	  double etahep=(*hepT)->momentum().eta();
+	  if ( wtype1ok ) {
+	    if (pthep > 4.0 )wtype1ok=false ;
+	    if (etahep>maxeta)wtype1ok=false ;
+	    if (etahep< 1.2 && pthep<3.0)wtype1ok=false ;
+	    if (etahep> 1.2 && etahep< 1.7 && pthep<1.8)wtype1ok=false;
+	    if (etahep> 1.7 && etahep<maxeta &&(*hepT)->momentum().rho()<3.5)wtype1ok=false;
+	  }
+	  if ( ( wtype1ok && wtype==1) || (wtype!=1 && pthep>simptmax && etahep<maxeta ) ){
+	    cout << " Found a muon pt="<<t->pt()<<" eta="<<t->eta()<<"gen: pt eta"<<pthep<<" "<<etahep<<endl;
+	    simmuon=true;
+	    simptmax=t->pt();
+	    // cout << " HepMC Track Pt " <<pthep<<" and id "<<(*hepT)->pdg_id()<<endl;    
+	    for (TrackingParticle::g4t_iterator g4T = t -> g4Track_begin();
+		 g4T !=  t -> g4Track_end(); ++g4T) {
+	      //cout << " Geant Track Pt " << g4T->momentum().perp() << endl;   
+	    }
+	    TrackingVertexRef parentV = t -> parentVertex();
+	    if (parentV.isNull()) {
+	      cout << "No parent vertex" << endl;
+	    } else {  
+	      cout << " Parent  vtx position " << parentV -> position() << endl;
+	      vxge=parentV -> position().x();   
+	      vyge=parentV -> position().y();   
+	      vzge=parentV -> position().z();   
+	      // Loop over source track(s)
+	      for (tp_iterator iTP = parentV -> sourceTracks_begin(); iTP != parentV -> sourceTracks_end(); ++iTP) {
+		cout << "  Source   starts: " << (*iTP)->vertex() <<", source id: " <<(*iTP)->pdgId();
+		for (g4t_iterator g4T  = (*iTP)->g4Track_begin(); g4T != (*iTP)->g4Track_end(); ++g4T) {
+		  cout << ", p " <<  g4T ->momentum();    
+		}
+		cout << endl;     
+	      }         
+	    }
+	  }
+	}
+    }
+  }
+
+  // gen track info
   Handle< HepMCProduct > EvtHandle ;
-  e.getByLabel( "source", EvtHandle ) ;
+  e.getByLabel( "VtxSmeared", EvtHandle ) ;
   //int eventsinrun=0; 
   const HepMC::GenEvent* Evt = EvtHandle->GetEvent() ;
-  /*
-  bool newrun = true;   
-  int runnumber; */
   if (Evt != 0 ) {   
-  /*  if ( newrun ) {
-      runnumber=e.runID();
-      newrun=false;
-    } else if ( runnumber !=e.runID()) {
-      cout<<"Events in Run "<<runnumber<<" was "<<eventsinrun<<endl;
-      runnumber=e.runID();
-    }
-  */ 
- //cout << " Starting a new event" <<endl;
   int nmuon=0;
   double ptmax=ptmin;
   double wt=1.;
- //  ++eventsinrun;
+  parton=0;
   if ( Evt->weights().size() > 0 ) wt=Evt->weights()[0];
   for ( HepMC::GenEvent::vertex_const_iterator
 	  vit=Evt->vertices_begin(); vit!=Evt->vertices_end(); ++vit )
     {
+      HepLorentzVector muprodv=(*vit)->position();
       for ( HepMC::GenVertex::particles_out_const_iterator
 	      pout=(*vit)->particles_out_const_begin();
 	    pout!=(*vit)->particles_out_const_end(); ++pout )
@@ -107,6 +174,10 @@ void MuAnalyzer::analyze( const Event& e, const EventSetup& )
 	  double pt=(*pout)->momentum().perp();
 	  double p=(*pout)->momentum().rho();
 	  int id=(*pout)->pdg_id();
+	  if (abs(id) < 7 && parton==0 ){
+	    //cout << " Original particle: "<<id <<" status="<<(*pout)->status()<< endl;  
+	    parton=abs(id);
+	  }
 	  double eta = abs((*pout)->momentum().eta());
 	  double phi = (*pout)->momentum().phi();
           bool wtype1ok=false;
@@ -118,35 +189,29 @@ void MuAnalyzer::analyze( const Event& e, const EventSetup& )
 	   if (eta> 1.2 && eta< 1.7 && pt<1.8)wtype1ok=false;
 	   if (eta> 1.7 && eta<maxeta && p<3.5)wtype1ok=false;
 	  }
-	  HepLorentzVector muprodv=(*vit)->position();
 	  if ((abs(id) == 13 && pt>ptmin && wtype != 1)||(wtype==1 && wtype1ok)) 
 	    {	
-		++nmuon;
-	      if ( pt > ptmax && eta<maxeta) ptmax=pt;
-	      //	      cout << "Muon Pt="<<pt<< " Evt weight="<<wt<<endl;
-	      etamu=(*pout)->momentum().eta();
-	      phimu=phi;
-	      ptmu=pt;
-	      decayl=-1;
-	      vxmu=muprodv.x();
-	      vymu=muprodv.y();
-	      vzmu=muprodv.z();
-	      pxmu=(*pout)->momentum().x();
-	      pymu=(*pout)->momentum().y();
-	      pzmu=(*pout)->momentum().z();
-	      fHistMuEta->Fill((*pout)->momentum().eta(),wt);
-	      fHistMuPhi->Fill(phi,wt);
-	      fHistPtMu->Fill(pt,wt ) ;
-              fHistMuXY->Fill(muprodv.x(),muprodv.y());
-              fHistMuZ->Fill(muprodv.z(),wt);
-	      vector<HepMC::GenParticle*> MuonParents = (*vit)->listParents() ;      
-	      //cout << " Number of Muon (immediate) parents = " << MuonParents.size() << endl ;
-	      for (unsigned int ic=0; ic<MuonParents.size(); ic++ )
-		{
-		  pid=MuonParents[ic]->pdg_id();
-		  //MuonParents[ic]->print() ;
-		  fHistMuParent->Fill(abs(MuonParents[ic]->pdg_id()));
-		  fHistMuParentStatus->Fill(MuonParents[ic]->status());
+	      ++nmuon;
+	      if ( pt > ptmax && eta<maxeta) {
+		ptmax=pt;
+		etamu=(*pout)->momentum().eta();
+		phimu=phi;
+		ptmu=pt;
+		decayl=-1;
+		vxmu=muprodv.x();
+		vymu=muprodv.y();
+		vzmu=muprodv.z();
+		pxmu=(*pout)->momentum().x();
+		pymu=(*pout)->momentum().y();
+		pzmu=(*pout)->momentum().z();
+		vector<HepMC::GenParticle*> MuonParents = (*vit)->listParents() ;      
+		pid=0;
+		for (unsigned int ic=0; ic<MuonParents.size(); ic++ )
+		  {
+		    pid=MuonParents[ic]->pdg_id();
+		    //MuonParents[ic]->print() ;
+		    fHistMuParent->Fill(abs(MuonParents[ic]->pdg_id()));
+		    fHistMuParentStatus->Fill(MuonParents[ic]->status());
 		    if (MuonParents[ic]->production_vertex() != 0 ) {
 		    HepLorentzVector parentprodv=MuonParents[ic]->production_vertex()->position();
 		    double decaylength=sqrt((muprodv.x()-parentprodv.x())*(muprodv.x()-parentprodv.x())
@@ -157,21 +222,7 @@ void MuAnalyzer::analyze( const Event& e, const EventSetup& )
 		    fHistParentDecayLength->Fill(decaylength);
 		  }else cout << " Could not find muon parent production vertex "<<endl;
 		}
-	    } else if (pt > ptmin){
-	      //cout << " Dealing with another particle than a muon"<<endl;
-	      vector<HepMC::GenParticle*> Parents = (*vit)->listParents() ;      
-	      if (Parents.size() == 1 && Parents[0]->status() == 2 ) 
-		{
-		  if ( Parents[0]->production_vertex() != NULL ){
-		    //Parents[0]->print() ;
-		  HepLorentzVector parentprodv=Parents[0]->production_vertex()->position();
-		  double decaylength=sqrt((muprodv.x()-parentprodv.x())*(muprodv.x()-parentprodv.x())
-					  +(muprodv.y()-parentprodv.y())*(muprodv.y()-parentprodv.y())
-					  +(muprodv.z()-parentprodv.z())*(muprodv.z()-parentprodv.z()));
-		  fHistOtherDecayLength->Fill(decaylength);
-		  }					  
-		}
-
+	      }
 	    }
 	}
     }
@@ -180,8 +231,37 @@ void MuAnalyzer::analyze( const Event& e, const EventSetup& )
       cout << " There is NO Muon in this event ! " << endl ;
       return ;
     } else {
+      TH1D *fH=fHistRate34Other;
+      int apid=abs(pid);
+      if ( apid==5|| (apid>500 && apid<600)){
+	fH=fHistRate34B;
+	if(wtype==3)wt/=8.4;
+      }else if ( apid==4 || (apid>400 && apid<500) ){
+	fH=fHistRate34C;
+	if(wtype==3)wt/=6.0;
+      }else if ( apid==15){
+	fH=fHistRate34tau;
+	if(wtype==3)wt/=8.7;
+      }else if ( apid==311 || apid==321 || apid==130 || apid==310 ){
+	fH=fHistRate34kaon;
+	if(wtype==3)wt/=7.3;
+      }else if ( apid==23 ) fH=fHistRate34Z;
+      else if ( apid==24 ) fH=fHistRate34W;
+      else if ( apid==211 || apid==221){
+	fH=fHistRate34pion;
+	if(wtype==3)wt/=0.8;
+      }
       isub=Evt->signal_process_id();
       fHistIsub->Fill(Evt->signal_process_id()) ;
+      fHistMuRZ->Fill(vzmu,sqrt(vxmu*vxmu+vymu*vymu),wt);
+      fHistMuEta->Fill(etamu,wt);
+      fHistMuPhi->Fill(phimu,wt);
+      fHistPtMu->Fill(ptmu,wt ) ;
+      fHistMuXY->Fill(vxmu,vymu,wt);
+      fHistMuZ->Fill(vzmu,wt);
+      fHistMuPvsPt->Fill(ptmu,sqrt(ptmu*ptmu+pzmu*pzmu),wt);
+      fHistMuPvsEta->Fill(etamu,sqrt(ptmu*ptmu+pzmu*pzmu),wt);
+      
       int imax;
       cout << "Pt max "<<ptmax<<" integrated lum "<<intlum<<endl;
       imax=(int) (ptmax/0.8);
@@ -192,23 +272,16 @@ void MuAnalyzer::analyze( const Event& e, const EventSetup& )
 	ww=2*(wt)/intlum;
 	fHistRate33->Fill(pp,ww);
 	fHistRate34->Fill(pp,ww*5);
-	int apid=abs(pid);
-	if ( apid==5|| (apid>500 && apid<600) )fHistRate34B->Fill(pp,ww*5);
-	else if ( apid==4 || (apid>400 && apid<500) )fHistRate34C->Fill(pp,ww*5);
-	else if ( apid==15 )fHistRate34tau->Fill(pp,ww*5);
-	else if ( apid==311 || apid==321 || apid==130 || apid==310 )fHistRate34kaon->Fill(pp,ww*5);
-	else if ( apid==23 ) fHistRate34Z->Fill(pp,ww*5);
-	else if ( apid==24 ) fHistRate34W->Fill(pp,ww*5);
-	else if ( apid==211 || apid==221) fHistRate34pion->Fill(pp,ww*5);
+	fH->Fill(pp,ww*5);
       }
     }
   cout<<" There is are "<<nmuon<<" muons in this event ! " << endl ;
   fHistMuweight->Fill(wt);
-  cout << " About to fill nmu"<<endl;
+  //cout << " About to fill nmu"<<endl;
   fHistNMu->Fill(nmuon,wt);
   wtmu=wt;
   tmuon->Fill();
-  cout << "Event finished"<<endl;
+  //cout << "Event finished"<<endl;
   return ;
   }
 }
