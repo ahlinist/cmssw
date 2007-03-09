@@ -20,46 +20,47 @@ TrackCountingTagPlotter::TrackCountingTagPlotter(JetTagPlotter *jetTagPlotter,
 	false, true, true, "b", update);
 
   lowerIPSBound = -35.0;
+  upperIPSBound = +35.0;
 
   tkcntHistosSig3D[4] = new FlavourHistorgrams<double>
        ("ips_3D" + theExtensionString, "3D Significance of impact parameter",
-	50, lowerIPSBound, 35.0, false, true, true, "b", update) ;
+	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
   tkcntHistosSig3D[0] = new FlavourHistorgrams<double>
        ("ips1_3D" + theExtensionString, "3D Significance of impact parameter 1st trk",
-	50, lowerIPSBound, 35.0, false, true, true, "b", update) ;
+	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
   tkcntHistosSig3D[1] = new FlavourHistorgrams<double>
        ("ips2_3D" + theExtensionString, "3D Significance of impact parameter 2nd trk",
-	50, lowerIPSBound, 35.0, false, true, true, "b", update) ;
+	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
   tkcntHistosSig3D[2] = new FlavourHistorgrams<double>
        ("ips3_3D" + theExtensionString, "3D Significance of impact parameter 3rd trk",
-	50, lowerIPSBound, 35.0, false, true, true, "b", update) ;
+	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
   tkcntHistosSig3D[3] = new FlavourHistorgrams<double>
        ("ips4_3D" + theExtensionString, "3D Significance of impact parameter 4th trk",
-	50, lowerIPSBound, 35.0, false, true, true, "b", update) ;
+	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
   tkcntHistosSig2D[4] = new FlavourHistorgrams<double>
        ("ips_2D" + theExtensionString, "2D Significance of impact parameter",
-	50, lowerIPSBound, 35.0, false, true, true, "b", update) ;
+	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
   tkcntHistosSig2D[0] = new FlavourHistorgrams<double>
        ("ips1_2D" + theExtensionString, "2D Significance of impact parameter 1st trk",
-	50, lowerIPSBound, 35.0, false, true, true, "b", update) ;
+	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
   tkcntHistosSig2D[1] = new FlavourHistorgrams<double>
        ("ips2_2D" + theExtensionString, "2D Significance of impact parameter 2nd trk",
-	50, lowerIPSBound, 35.0, false, true, true, "b", update) ;
+	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
   tkcntHistosSig2D[2] = new FlavourHistorgrams<double>
        ("ips3_2D" + theExtensionString, "2D Significance of impact parameter 3rd trk",
-	50, lowerIPSBound, 35.0, false, true, true, "b", update) ;
+	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
   tkcntHistosSig2D[3] = new FlavourHistorgrams<double>
        ("ips4" + theExtensionString, "2D Significance of impact parameter 4th trk",
-	50, lowerIPSBound, 35.0, false, true, true, "b", update) ;
+	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
 }
 
@@ -160,7 +161,7 @@ void TrackCountingTagPlotter::psPlot(const TString & name)
   canvas.cd(2);
   tkcntHistosSig2D[4]->plot((TPad*) canvas.GetPrimitive(cName+"_2"));
   for(int n=0; n < 4; n++) {
-    canvas.cd(2+n);
+    canvas.cd(3+n);
     tkcntHistosSig2D[n]->plot((TPad*) canvas.GetPrimitive(cName+"_"+itos(n+3)));
   }
 
