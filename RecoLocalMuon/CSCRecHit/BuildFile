@@ -1,12 +1,12 @@
-RecoLocalMuon/CSCRecHit
 <use name=DataFormats/CSCDigi>
 <use name=DataFormats/CSCRecHit>
+<use name=DataFormats/Common>
 <use name=DataFormats/MuonDetId>
 <use name=FWCore/Framework>
 <use name=FWCore/MessageLogger>
 <use name=FWCore/ParameterSet>
-<use name=FWCore/Utilities>
 <use name=FWCore/PluginManager>
+<use name=FWCore/Utilities>
 <use name=Geometry/CSCGeometry>
 <use name=Geometry/Records>
 <use name=clhep>
@@ -15,4 +15,3 @@ RecoLocalMuon/CSCRecHit
 <export>
   <lib name=RecoLocalMuonCSCRecHit>
 </export>
-
