@@ -1,8 +1,4 @@
 #include "RecoTauTag/CombinedTauTag/interface/ECALBounds.h"
-#include "Geometry/Surface/interface/BoundCylinder.h"
-#include "Geometry/Surface/interface/BoundDisk.h"
-#include "Geometry/Surface/interface/SimpleCylinderBounds.h"
-#include "Geometry/Surface/interface/SimpleDiskBounds.h"
 
 void ECALBounds::initialize(){
   const float epsilon = 0.001; // should not matter at all

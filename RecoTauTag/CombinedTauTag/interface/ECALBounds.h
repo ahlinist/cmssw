@@ -1,8 +1,13 @@
 #ifndef RecoTauTag_CombinedTauTag_ECALBounds_H
 #define RecoTauTag_CombinedTauTag_ECALBounds_H
 
-#include "Geometry/Surface/interface/ReferenceCounted.h"
-#include "Geometry/Surface/interface/Surface.h"
+#include "DataFormats/GeometrySurface/interface/ReferenceCounted.h"
+#include "DataFormats/GeometrySurface/interface/Surface.h"
+#include "DataFormats/GeometrySurface/interface/BoundCylinder.h"
+#include "DataFormats/GeometrySurface/interface/BoundDisk.h"
+#include "DataFormats/GeometrySurface/interface/SimpleCylinderBounds.h"
+#include "DataFormats/GeometrySurface/interface/SimpleDiskBounds.h"
+
 class BoundCylinder;
 class BoundDisk;
 class Cylinder;
