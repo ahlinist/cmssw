@@ -1,20 +1,15 @@
-<export>
- <lib name=RecoBTagMCTools>
- <use name=FWCore/Framework>
- <use name=FWCore/Utilities>
- <use name=FWCore/ParameterSet>
- <use name=FWCore/Framework>
- <use name=DataFormats/Math>
- <use name=DataFormats/JetReco>
- <use name=SimDataFormats/HepMCProduct>
-</export>
-
-<use name=DataFormats/BTauReco>
-<use name=FWCore/Framework>
-<use name=FWCore/Utilities>
-<use name=FWCore/ParameterSet>
-<use name=FWCore/Framework>
 <use name=DataFormats/JetReco>
+<use name=DataFormats/Math>
+<use name=FWCore/Framework>
+<use name=FWCore/ParameterSet>
 <use name=SimDataFormats/HepMCProduct>
- <use name=DataFormats/JetReco>
+<use name=rootmath>
+<export>
+  <use name=DataFormats/JetReco>
+  <use name=DataFormats/Math>
+  <use name=FWCore/Framework>
+  <use name=FWCore/ParameterSet>
+  <use name=SimDataFormats/HepMCProduct>
+  <lib name=RecoBTagMCTools>
+</export>
 

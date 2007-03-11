@@ -1,22 +1,21 @@
+<use name=DataFormats/BTauReco>
+<use name=DataFormats/Common>
+<use name=DataFormats/JetReco>
+<use name=DataFormats/TrackReco>
+<use name=FWCore/Framework>
+<use name=FWCore/ParameterSet>
+<use name=RecoBTag/MCTools>
+<use name=rootcore>
+<flags SEALPLUGIN=1>
 <export>
- <lib name=RecoBTagAnalysis>
- <use name=root>
- <use name=DataFormats/BTauReco>
- <use name=FWCore/Framework>
- <use name=Foundation/PluginManager>
- <use name=FWCore/Utilities>
- <use name=FWCore/ParameterSet>
- <use name=FWCore/Framework>
- <use name=RecoBTag/MCTools>
+  <use name=DataFormats/BTauReco>
+  <use name=DataFormats/Common>
+  <use name=DataFormats/JetReco>
+  <use name=DataFormats/TrackReco>
+  <use name=FWCore/Framework>
+  <use name=FWCore/ParameterSet>
+  <use name=RecoBTag/MCTools>
+  <use name=rootcore>
+  <lib name=RecoBTagAnalysis>
 </export>
 
-<use name=DataFormats/BTauReco>
-<use name=root>
-<use name=FWCore/Framework>
-<use name=Foundation/PluginManager>
-<use name=FWCore/Utilities>
-<use name=FWCore/ParameterSet>
-<use name=FWCore/Framework>
-<use name=RecoBTag/MCTools>
-
-<flags SEAL_PLUGIN_NAME="RecoBTagAnalysis">

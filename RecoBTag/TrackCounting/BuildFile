@@ -1,23 +1,23 @@
-<use name=FWCore/Framework>
-<use name=Foundation/PluginManager>
-<use name=FWCore/ParameterSet>
-<use name=DataFormats/Common>
-<use name=MagneticField/Engine>
-<use name=MagneticField/Records>
-<use name=RecoBTag/BTagTools>
+<use name=DataFormats/BTauReco>
+<use name=DataFormats/JetReco>
+<use name=DataFormats/TrackReco>
 <use name=DataFormats/VertexReco>
+<use name=FWCore/Framework>
+<use name=FWCore/ParameterSet>
+<use name=MagneticField/Engine>
+<use name=RecoBTag/BTagTools>
 <use name=RecoVertex/PrimaryVertexProducer>
-
-<flags SEAL_PLUGIN_NAME="RecoBTagTrackCounting">
+<use name=TrackingTools/Records>
+<use name=TrackingTools/TransientTrack>
+<flags SEALPLUGIN=1>
 <export>
-   <lib name=RecoBTagTrackCounting>
-   <use name=FWCore/Framework>
-   <use name=Foundation/PluginManager>
-   <use name=FWCore/ParameterSet>
-   <use name=MagneticField/Engine>
-   <use name=MagneticField/Records>
-   <use name=RecoBTag/BTagTools>
-   <use name=DataFormats/VertexReco>
-
-
+  <use name=DataFormats/BTauReco>
+  <use name=DataFormats/JetReco>
+  <use name=DataFormats/TrackReco>
+  <use name=DataFormats/VertexReco>
+  <use name=FWCore/Framework>
+  <use name=FWCore/ParameterSet>
+  <use name=MagneticField/Engine>
+  <lib name=RecoBTagTrackCounting>
 </export>
+
