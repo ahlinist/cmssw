@@ -2,15 +2,15 @@
 #define DaqSource_FUReader_h
 
 /** \class FUReader
- *  $Date: 2006/06/13 14:05:07 $
- *  $Revision: 1.6 $
+ *  $Date: 2006/10/24 15:09:51 $
+ *  $Revision: 1.7 $
  *  \author E. Meschi - CERN PH/CMD
  */
 #include "EventFilter/Unit/interface/FURawEvent.h"
 #include "EventFilter/Unit/interface/EventSink.h"
 #include "EventFilter/Utilities/interface/ShutDownListener.h"
 #include <IORawData/DaqSource/interface/DaqBaseReader.h>
-#include <DataFormats/Common/interface/EventID.h>
+#include "DataFormats/Provenance/interface/EventID.h"
 #include <algorithm>
 #include <pthread.h>
 
