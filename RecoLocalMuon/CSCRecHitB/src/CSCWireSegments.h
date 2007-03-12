@@ -53,14 +53,11 @@ class CSCWireSegments
    */
   void findWireSegments(const ChamberHitContainer& cscWireHit);
   bool addHit(const CSCWireHit& aHit, int layer);
-  void updateParameters(const CSCWireHit& aHit);
   void fitSlope(void);
-  void fillChiSquared(const CSCWireHit& aHit);
   void tryAddingHitsToSegment( const ChamberHitContainer& wirehit,
 			       const ChamberHitContainerCIt i1, 
 			       const ChamberHitContainerCIt i2); 
   bool isHitNearSegment(const CSCWireHit& h) const;
-  void flagHitNearSegment(const CSCWireHit& h, const ChamberHitContainerCIt id1, const ChamberHitContainerCIt id2); 
   bool hasHitOnLayer(int layer) const;
   void compareProtoSegment(const CSCWireHit& h, int layer);
   bool replaceHit(const CSCWireHit& h, int layer);
@@ -68,7 +65,6 @@ class CSCWireSegments
   bool isSegmentGood(const ChamberHitContainer& WireHitsInChamber) const;
   void flagHitsAsUsed(const ChamberHitContainer& WireHitsInChamber);
   void storeChamberHits();
-  void storeLeftOverHits(const ChamberHitContainer& wirehit);
   const CSCLayer* getLayer( const CSCDetId& detId ); 
   
   /*
@@ -81,7 +77,8 @@ class CSCWireSegments
    */
   ChamberHitContainer proto_segment;
   ChamberHitContainer hitsInChamber;
-  int usedHits[200];
+  ChamberHitContainer closeHits;
+  int usedHits[500];
   float proto_Chi2;
   float proto_intercept;
   float proto_slope;
@@ -98,7 +95,6 @@ class CSCWireSegments
   bool useHitsFromFits;
   int minWireHitsPerSegment;
   int muonsPerChamberMax;
-  bool storeLeftOvers;
     
   /*
    * Cache geometry for current event
@@ -108,4 +104,5 @@ class CSCWireSegments
 };
 
 #endif
+
 

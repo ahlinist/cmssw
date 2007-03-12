@@ -30,7 +30,6 @@ CSCWireSegments::CSCWireSegments(const edm::ParameterSet& ps) : geom_(0) {
   minWireHitsPerSegment  = ps.getUntrackedParameter<int>("CSCminWireHitsPerSegment");
   useHitsFromFits        = ps.getUntrackedParameter<bool>("CSCuseWireHitsFromFits");
   muonsPerChamberMax     = ps.getUntrackedParameter<int>("CSCSegmentPerChamberMax");  
-  storeLeftOvers         = ps.getUntrackedParameter<bool>("CSCuseLeftOverWireHits");
 }
 
 
@@ -50,6 +49,8 @@ CSCWireHitCollection CSCWireSegments::cleanWireHits(const CSCWireHitCollection& 
   std::vector<CSCDetId> chambers;
   std::vector<CSCDetId>::const_iterator chIt;
   CSCWireHitCollection clean_whit_coll;
+
+  if (raw_whit.size() < 3) return clean_whit_coll;
   
   // Sort hits by chambers 
   for ( CSCWireHitCollection::const_iterator it2 = raw_whit.begin(); it2 != raw_whit.end(); it2++ ) {
@@ -128,23 +129,17 @@ void CSCWireSegments::findWireSegments(const ChamberHitContainer& wirehit) {
   for ( unsigned i = 0; i < 200; i++ ) usedHits[i] = 2;
   for ( unsigned i = 0; i < wirehit.size(); i++ ) usedHits[i] = 0; 
   
-  if ( (ie - ib) < minWireHitsPerSegment) { 
-    if (storeLeftOvers) storeLeftOverHits( wirehit );   // not enough hits to build segment, but store hits
-    return;
-  }
   
   // Allow to have at maximum muonsPerChamberMax muons tracks in a given chamber...
   for ( int pass = 0; pass < muonsPerChamberMax; pass++) {    
-    
-    
+        
     // Now Loop over hits within the chamber to find 1st seed for segment building
     for ( ChamberHitContainerCIt i1 = ib; i1 < ie; ++i1 ) {
       if ( usedHits[i1-ib] > 1 ) continue;
       
       int layer1 = i1->cscDetId().layer();
       const CSCWireHit& h1 = *i1;
-      
-      
+            
       // Loop over hits backward to find 2nd seed for segment building
       for ( ChamberHitContainerCIt i2 = ie-1; i2 > ib; --i2 ) {
 	
@@ -158,9 +153,21 @@ void CSCWireSegments::findWireSegments(const ChamberHitContainer& wirehit) {
 	
 	bool segok = false;
 	const CSCWireHit& h2 = *i2;					
-	
-	if ( !addHit(h1, layer1) ) continue;
-	if ( !addHit(h2, layer2) ) continue;
+
+        proto_slope = float( h2.wHitPos() - h1.wHitPos() ) / float( layer2 - layer1 ) ;
+    
+        // CAREFUL HERE:
+        // Have to figure out what is intercept
+        // Remember to use  z = layer# -1  such that  z = 0 for layer 1:  
+    
+        if ( layer1 == 1 ) {
+          proto_intercept = float( h1.wHitPos() );
+        } else {  
+          proto_intercept = float( h1.wHitPos() ) - proto_slope * (layer1 - 1);
+	}
+	// Expected position for each layer is:
+	for ( int j = 0; j < 6; j++) proto_y[j] = j * proto_slope + proto_intercept;
+	proto_Chi2 = 0.;
 	
 	// Try adding hits to proto segment
 	tryAddingHitsToSegment(wirehit, i1, i2); 
@@ -172,15 +179,78 @@ void CSCWireSegments::findWireSegments(const ChamberHitContainer& wirehit) {
 	    proto_segment.clear();
 	  } else {
 	    // Flag used hits
-	    flagHitsAsUsed(wirehit);
 	    storeChamberHits();
-	    proto_segment.clear();
+	    if (wirehit.size() - proto_segment.size() < 3) return;
+	    flagHitsAsUsed(wirehit);
 	  }
 	}
       } 
     } 
   }
-  if (storeLeftOvers) storeLeftOverHits( wirehit );   // Also save hits which are far from existing segments
+}
+
+
+/* Method tryAddingHitsToSegment
+ *
+ * Look at left over hits and try to add them to proto segment by looking how far they
+ * are from the wire segment.  Here we don't really compute the DOCA, just the difference 
+ * between the wgroup and wgroup expected from segment for that layer.
+ *
+ */
+void CSCWireSegments::tryAddingHitsToSegment( const ChamberHitContainer& wirehit, 
+                                              const ChamberHitContainerCIt i1, 
+                                              const ChamberHitContainerCIt i2) {
+  
+  // Iterate over the layers with hits in the chamber
+  // Skip layers containing the segment points on first passe, but then
+  // in 2nd pass, test each hit on the layers to see if it is nearer the segment  
+  
+  ChamberHitContainerCIt ib = wirehit.begin();
+  ChamberHitContainerCIt ie = wirehit.end();
+  closeHits.clear();
+  
+  for ( ChamberHitContainerCIt i = ib; i != ie; ++i ) {
+    
+    if ( usedHits[i-ib] > 1) continue;   // Don't use hits already part of a segment.
+    
+    if (i == i1 || i == i2 ) continue;   // For first pass, don't try changing endpoints (seeds).
+    
+    int layer = i->cscDetId().layer();
+    const CSCWireHit& h = *i;
+      
+    if ( isHitNearSegment( h ) ) {
+      if ( hasHitOnLayer(layer) ) {
+	closeHits.push_back(h);
+      } 
+    } else {
+      increaseProtoSegment(h, layer);
+    }
+  } 
+
+  fitSlope();
+  if (closeHits.size() < 1 ) return;
+
+  for ( ChamberHitContainerCIt i = closeHits.begin(); i != closeHits.end(); ++i ) {     
+    int layer = i->cscDetId().layer();
+    const CSCWireHit& h = *i;  
+    compareProtoSegment(h, layer); 
+  }
+}
+
+
+/* isHitNearSegment
+ *
+ * Just compare wire group # from CSCWireHit with expected one from proto segment
+ */
+bool CSCWireSegments::isHitNearSegment( const CSCWireHit& h ) const {
+  
+  // Again, remember that z=0 for layer 1 by default
+  int idx = h.cscDetId().layer() - 1;
+  float diff = float( h.wHitPos() ) - proto_y[idx];
+  
+  if ( diff >= -1.* proto_poca && diff <= proto_poca ) return true;
+  
+  return false;
 }
 
 
@@ -205,64 +275,10 @@ bool CSCWireSegments::addHit(const CSCWireHit& aHit, int layer) {
   for ( ChamberHitContainer::const_iterator it = proto_segment.begin(); it != proto_segment.end(); it++ ) 
     if ( ( it->cscDetId().layer() == layer ) && ( aHit.wHitPos() == it->wHitPos() ) ) ok = false;
   
-  if ( ok ) {
-    proto_segment.push_back(aHit);
-    updateParameters(aHit);
-  }
+  if ( ok ) proto_segment.push_back(aHit);
+  
   return ok;
 }    
-
-
-/* Method updateParameters
- *      
- * Perform a simple Least Square Fit on proto segment to determine slope and intercept
- *
- */   
-void CSCWireSegments::updateParameters(const CSCWireHit& aHit) {
-  
-  //  no. of wire hits in the proto segment
-  //  By construction this is the no. of layers with hits
-  //  since we allow just one hit per layer in a segment.
-  
-  int nh = proto_segment.size();
-  
-  // First hit added to a segment must always fail here
-  if ( nh < 2 ) return;
-  
-  if ( nh == 2 ) {
-    
-    // Once we have two hits we can fit a straight line using a Least Square Fit
-    
-    ChamberHitContainer::const_iterator ih = proto_segment.begin();
-    int il1 = (*ih).cscDetId().layer();
-    const CSCWireHit& h1 = (*ih);
-    ++ih;
-    int il2 = (*ih).cscDetId().layer();
-    const CSCWireHit& h2 = (*ih);   
-    
-    // If on same layer, at this point reject
-    if ( il1 == il2 ) return;
-    
-    proto_slope = float( h2.wHitPos() - h1.wHitPos() ) / float( il2 - il1 ) ;
-    
-    // CAREFUL HERE:
-    // Have to figure out what is intercept
-    // Remember to use  z = layer# -1  such that  z = 0 for layer 1:  
-    
-    if ( il1 == 1 ) {
-      proto_intercept = float( h1.wHitPos() );
-    } else {  
-      proto_intercept = float( h1.wHitPos() ) - proto_slope * (il1 - 1);
-    }
-    // Expected position for each layer is:
-    for ( int j = 0; j < 6; j++) proto_y[j] = j * proto_slope + proto_intercept;
-    proto_Chi2 = 0.;
-    return;
-  }
-  // When we have more than two hits then we can fit projections to straight lines
-  fitSlope();
-  fillChiSquared(aHit);
-}
 
 
 /* Method fitSlope
@@ -301,25 +317,8 @@ void CSCWireSegments::fitSlope() {
   }
   // These are the expected position for each layer
   for ( int j = 0; j < 6; j++) proto_y[j] = j * proto_slope + proto_intercept;
-}
 
-
-/* Method fillChiSquared
- *
- * Determine Chi^2 for the proto wire segment
- *
- */
-void CSCWireSegments::fillChiSquared(const CSCWireHit& aHit) {
-  
   float chisq = 0.;
-  
-// For uniform distribution, the error^2 is 1/12 --> here take avg number of wire = ~10:  
-//  const CSCDetId id = aHit.cscDetId();
-//  const CSCLayer* layer_ = getLayer( id );
-//  const CSCLayerGeometry* layergeom_ = layer_->geometry();    
-//  float wire_pos = aHit.wHitPos();                         // This is the position of the wire hit in terms of wire #
-//  int wgroup = layergeom_->wireGroup(thewire);               // This is the corresponding wire group #
-//  int nwires = layergeom_->numberOfWiresPerGroup(wgroup);
   
   // For now, don't use wire but wire group --> so error is just 1/sqrt(12)
 
@@ -333,102 +332,6 @@ void CSCWireSegments::fillChiSquared(const CSCWireHit& aHit) {
   }
   proto_Chi2 = chisq;
 }
-
-
-/* Method tryAddingHitsToSegment
- *
- * Look at left over hits and try to add them to proto segment by looking how far they
- * are from the wire segment.  Here we don't really compute the DOCA, just the difference 
- * between the wgroup and wgroup expected from segment for that layer.
- *
- */
-void CSCWireSegments::tryAddingHitsToSegment( const ChamberHitContainer& wirehit, 
-                                              const ChamberHitContainerCIt i1, 
-                                              const ChamberHitContainerCIt i2) {
-  
-  // Iterate over the layers with hits in the chamber
-  // Skip the layers containing the segment endpoints on first 2 passes, but then
-  // try hits on layer containing the segment starting points on 2nd and/or 3rd pass 
-  // if segment has >2 hits
-  // Test each hit on the other layers to see if it is near the segment
-  // If it is, see whether there is already a hit on the segment from the same layer
-  //    - if so, and there are more than 2 hits on the segment, copy the segment,
-  //      replace the old hit with the new hit. If the new segment chi2 is better
-  //      then replace the original segment with the new one (by swap)
-  //    - if not, copy the segment, add the hit if it's within a certain range. 
-  // Finally, on 5th pass, flag hits which are near the segment, but not part of it.
-  
-  
-  ChamberHitContainerCIt ib = wirehit.begin();
-  ChamberHitContainerCIt ie = wirehit.end();
-  
-  for ( int pass = 0; pass < 5; pass++) {
-    
-    for ( ChamberHitContainerCIt i = ib; i != ie; ++i ) {
-      
-      if ( usedHits[i-ib] > 1) continue;   // Don't use hits already part of a segment.
-      
-      if (pass < 2) if (i == i1 || i == i2 ) continue;  // For first 2 pass, don't try changing endpoints (seeds).
-      
-      int layer = i->cscDetId().layer();
-      const CSCWireHit& h = *i;
-      
-      
-      // This is the end of the loop
-      if ( pass > 3 ) {
-	// flag hits near segment if segment > 2 hits
-	if ( proto_segment.size() > 2 ) flagHitNearSegment( h, i, ib );
-	break;
-      }
-      
-      if ( isHitNearSegment( h ) ) {
-	if ( hasHitOnLayer(layer) ) {
-	  // If segment > 2 hits, try changing endpoints
-	  if ( proto_segment.size() > 2) {
-	    compareProtoSegment(h, layer); 
-	  } 
-	} else {
-	  increaseProtoSegment(h, layer);
-	}
-      } 
-    }
-  } 
-}
-
-
-/* isHitNearSegment
- *
- * Just compare wire group # from CSCWireHit with expected one from proto segment
- */
-bool CSCWireSegments::isHitNearSegment( const CSCWireHit& h ) const {
-  
-  // Again, remember that z=0 for layer 1 by default
-  int idx = h.cscDetId().layer() - 1;
-  float diff = float( h.wHitPos() ) - proto_y[idx];
-  
-  if ( diff >= -1.* proto_poca && diff <= proto_poca ) return true;
-  
-  return false;
-}
-
-
-/* flagHitNearSegment
- *
- * Just compare wire hit position # with expected one from built proto segment
- * Flag hit as near segment if managed to build full segment:
- * This may be noise or a deposit from a muon which crossed path with existing segment.
- * N.B. Increase the window a bit to have hit near segment...
- */
-void CSCWireSegments::flagHitNearSegment( const CSCWireHit& h, 
-                                          const ChamberHitContainerCIt id1,
-                                          const ChamberHitContainerCIt id2) {
-  
-  // Again, remember that z=0 for layer 1 by default
-  int idx = h.cscDetId().layer() - 1;
-  float diff = float( h.wHitPos() ) - proto_y[idx];
-  
-  if ( diff >= -3.* proto_poca && diff <= 3. * proto_poca ) usedHits[id1-id2] = 1;
-}  
 
 
 /* hasHitOnLayer
@@ -462,15 +365,14 @@ void CSCWireSegments::compareProtoSegment(const CSCWireHit& h, int layer) {
   for (int j=0; j < 6; j++) old_proto_y[j] = proto_y[j]; 
   bool ok = replaceHit(h, layer);
   
-  if ( (proto_Chi2 < old_proto_Chi2) && (ok) ) {
-//    if (debug) std::cout << "[CSCWireSegment::compareProtoSegment] Segment with replaced hit is better" << std::endl;
-  } else {
-    proto_Chi2      = old_proto_Chi2;
-    proto_intercept = old_proto_intercept;
-    proto_slope     = old_proto_slope;
-    proto_segment   = old_proto_segment;
-    for (int j=0; j < 6; j++) proto_y[j] = old_proto_y[j];
-  }
+  if ( (proto_Chi2 < old_proto_Chi2) && (ok) ) return;
+  
+  proto_Chi2      = old_proto_Chi2;
+  proto_intercept = old_proto_intercept;
+  proto_slope     = old_proto_slope;
+  proto_segment   = old_proto_segment;
+  for (int j=0; j < 6; j++) proto_y[j] = old_proto_y[j];
+
 }
 
 
@@ -517,15 +419,14 @@ void CSCWireSegments::increaseProtoSegment(const CSCWireHit& h, int layer) {
   
   if ( diff >= -1. * proto_poca && diff <= proto_poca ) ok = addHit(h, layer);
   
-  if ( ok ) {
+  if ( ok ) return;
     
-  } else {
-    proto_Chi2      = old_proto_Chi2;
-    proto_intercept = old_proto_intercept;
-    proto_slope     = old_proto_slope;
-    proto_segment   = old_proto_segment;
-    for (int j=0; j < 6; j++) proto_y[j] = old_proto_y[j];
-  }
+  proto_Chi2      = old_proto_Chi2;
+  proto_intercept = old_proto_intercept;
+  proto_slope     = old_proto_slope;
+  proto_segment   = old_proto_segment;
+  for (int j=0; j < 6; j++) proto_y[j] = old_proto_y[j];
+
 }
 
 
@@ -564,8 +465,20 @@ void CSCWireSegments::flagHitsAsUsed(const ChamberHitContainer& WireHitsInChambe
       CSCWireHit h1 = *hi;
       CSCWireHit h2 = *iu;		
       if ( ( h1.wHitPos() == h2.wHitPos() ) &&	
-	   ( h1.cscDetId().layer() == h2.cscDetId().layer() ) )
-	
+	   ( h1.cscDetId().layer() == h2.cscDetId().layer() ) )	
+	// Flag hit has used     
+	usedHits[iu-ib] = 2;
+    }
+  }
+
+  // Loop over hits near segment and remove
+  for ( ChamberHitContainerCIt hi = closeHits.begin(); hi != closeHits.end();  ++hi ) {    
+    //Loop over chamber hits
+    for ( ChamberHitContainerCIt iu = WireHitsInChamber.begin(); iu != WireHitsInChamber.end(); ++iu ) {
+      CSCWireHit h1 = *hi;
+      CSCWireHit h2 = *iu;		
+      if ( ( h1.wHitPos() == h2.wHitPos() ) &&	
+	   ( h1.cscDetId().layer() == h2.cscDetId().layer() ) )	
 	// Flag hit has used     
 	usedHits[iu-ib] = 2;
     }
@@ -575,7 +488,7 @@ void CSCWireSegments::flagHitsAsUsed(const ChamberHitContainer& WireHitsInChambe
 
 /* Method storeChamberHits
  *
- * Add the wire hits from the successull proto segment within a list CSCWireHits for this chamber
+ * Add the wire hits from the successfull proto segment within a list CSCWireHits for this chamber
  *
  * Also add the hits which were far away from segments, that is flag as 0
  */
@@ -583,7 +496,6 @@ void CSCWireSegments::storeChamberHits() {
   // Loop over hits in proto segment
   for ( ChamberHitContainerCIt hi = proto_segment.begin(); hi != proto_segment.end();  ++hi ) {
     CSCWireHit h1 = *hi;
-    
     if ( !useHitsFromFits ) {
       hitsInChamber.push_back( h1 );
     } else {
@@ -599,23 +511,6 @@ void CSCWireSegments::storeChamberHits() {
 }
 
 
-/* storeLeftOverHits
- *
- * Loop over leftover hits:  if they are far away from existing segments store this hit
- * Otherwise assume that they come from delta rays and ignore
- */
-void CSCWireSegments::storeLeftOverHits(const ChamberHitContainer& wirehit) {
-  
-  ChamberHitContainerCIt ib = wirehit.begin();
-  ChamberHitContainerCIt ie = wirehit.end();
-  
-  for ( ChamberHitContainerCIt i = ib; i != ie; ++i ) {
-    const CSCWireHit& h = *i;        
-    if ( usedHits[i-ib] < 1 ) hitsInChamber.push_back( h );
-  }
-} 
-
-
 /*
  *
  */
@@ -623,4 +518,5 @@ const CSCLayer* CSCWireSegments::getLayer( const CSCDetId& detId )  {
   if ( !geom_ ) throw cms::Exception("MissingGeometry") << "[CSCWireSegments::getLayer] Missing geometry" << std::endl;
   return geom_->layer(detId);
 }
+
 
