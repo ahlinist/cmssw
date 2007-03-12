@@ -7,7 +7,7 @@
 #include "SimDataFormats/TrackingAnalysis/interface/TrackingVertexContainer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/Run.h"
-#include "Dataformats/Common/interface/Handle.h" 
+#include "DataFormats/Common/interface/Handle.h" 
 #include "DataFormats/Provenance/interface/EventID.h"
 
 #include "TFile.h"
