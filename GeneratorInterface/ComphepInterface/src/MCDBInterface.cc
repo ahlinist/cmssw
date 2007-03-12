@@ -6,7 +6,7 @@
 //* First version: 25/10/06 
 //* 
 //************************************
-#include "GeneratorInterface/MadGraphInterface/interface/MCDBInterface.h"
+#include "GeneratorInterface/ComphepInterface/interface/MCDBInterface.h"
 
 
 // Makes a local copy of a CASTOR file.
