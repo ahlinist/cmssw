@@ -26,49 +26,111 @@ For items in a compound: Item number, Comment, Material (has to be
 1) Barrel Modules
    ==============
 
-o Baseplate
+o Baseplate          ---- OK ----
   ----------
-MCVolume: 2.5 x 0.058 x 6.63 cm
+MCVolume: 0.448 x 0.030 x 6.66 cm = 0.08951
 
-(1) Carbon fibre crosspiece
-    Area: 2.5*6.67 - 2*1.1*2.0 = 12.275 cm^2 
-    thickness 0.028 cm  -> V = 0.3437 cm^3
-(2) Glue over crosspiece surface, thickness 20 mu -> 0.02455 cm^3
-(3) Silicon base plate: 2.5*6.63*0.03 = 0.49725 cm^3
-(4) Glue over base plate: 2.5*6.63*0.002 = 0.03315 cm^3
-(5) 6 Screws for connection to cooling pipes (stainless steel)
-    volume per screw and nut about 2.14E-3 cm^3   
+(1) Si3N4 base strips : 2.91cm2 x 0.025 cm => 0.07275
+(2) 2 Screws for connection to cooling pipes 25mg each
+(3) Thermal grease , 291mm2 => 2.91cm2  x 50um = 0.01455 cm3 CHANGE MATERIAL
+(3) Glue between CF and cooling pipes 0.4 x 6.7 x 0.0050 
 .....................................................................
-# "Pixel Barrel module baseplate"  "Pix_Bar_Baseplate"    0.96135  16.575
-* 1 "CF crosspiece"        "Carbon fibre str."  0.3437    1   SUP
-* 2 "Glue"                 "Epoxy"              0.02455   1   SUP
-* 3 "Si base plate"        "Silicon"            0.49725   1   SUP
-* 4 "Glue"                 "Epoxy"              0.03315   1   SUP
-* 5 "Screws and nuts"      "Steel-008"          2.14E-3   6   SUP
+# "Pixel Barrel module baseplate"  "Pix_Bar_Baseplate_Full"    0.08951  2.98
+* 1 "Si3N4 base"           "Silicon_Nitride"    0.07275   1   SUP
+* 2 "Screws and nuts"      "Steel-008"          3.20E-3   2   SUP
+* 3 "Thermal grease"       "Silicone_Gel"       0.01455   1   SUP
+* 4 "Glue"                 "Epoxy"              0.0134    1   SUP
 .....................................................................
 =================================================================== 
 
-o Pixel Barrel Hybrid
-  -------------------
-MC Volume: 1.62 x 0.01 x 6.4 cm 
+o Baseplate Half   ---- TODO:check thermal grease ----
+  ----------
+MCVolume: 1.29 x 0.030 x 6.66 cm = 0.2577
 
-(1) Kapton hybrid: 1.6 x 6.4 x 0.005 cm = 0.0512 
-(2) Copper in Kapton: 7 mu 3 layers, occ = 25,100,25 % = 1.5
-             -> thickness 7*1.5 = 10.5 mu -> 1.07E-2
-(3) Components Si  1 cm^2 x 0.03 cm = 0.03 cm^3
-(4) Capacitors Alumina  0.04 cm^3 
-(5) Wire bonds Al    about 1.2E-3 cm^3
-(6) Glue 20 mu -> 0.02 cm^3
+    65.0mm(l) * 12.9mm(w) * 0.25mm(h)
+(1) Si3N4 base strips : 8.385cm2 x 0.025 cm => 0.2096
+(2) 2 Screws for connection to cooling pipes 25mg each
+(3) Thermal grease , 8.385cm2 x 50um = 0.041925
+(3) Glue between CF and cooling pipes 0.4 x 6.7 x 0.0050 
+.....................................................................
+# "Pixel Barrel module baseplate"  "Pix_Bar_Baseplate_Half"    0.2577  8.49
+* 1 "Si3N4 base"           "Silicon_Nitride"    0.2096     1   SUP
+* 2 "Screws and nuts"      "Steel-008"          3.20E-3    2   SUP
+* 3 "Thermal grease"       "Silicone_Gel"       0.041925  1   SUP
+* 4 "Glue"                 "Epoxy"              0.0134     1   SUP
+.....................................................................
+===================================================================
+
+
+o Pixel Barrel Hybrid Full   ---- OK ----
+
+Size: 18.8(w) * 65(l) * 0.044(h)mm
+(1-4) Material: PI-76.4mg, Cu-56.7mg, Ni-12mg, Au-5.7 (Full modules)
+PI - is polymide (kapton)
+(5) Wire bonds: About 700 Al wires, total weight per module is 0.9mg
+(6) Bump bonds: About 66560 In (indium) bonds, total weight per module 1.5mg
+(7-8) Solder: To connect the kapton and power cables.
+       About 60 mg per module, composition 0.37 Pb + 0.63 Sn.
+(9) Glue: Total glue per module 8g/768 = 10.4mg.
+(10) Capacitors: 8 capacitors 0.05 x 0.10 x 0.05 cm = 0.00025
+(11) Resistors: 2 resistors 0.05 x 0.10 x 0.05 cm = 0.00025
 ......................................................................
-# "Pixel barrel hybrid"     "Pix_Bar_Hybrid"    0.104     10.24
-* 1 "Kapton hybrid"         "T_Kapton"          0.0512    1   ELE
-* 2 "Copper traces"         "Copper"            1.07E-2   1   ELE
-* 3 "Components on hybrid"  "Silicon"           0.03      1   ELE
-* 4 "Filter capacitors"     "Alumina"           0.04      1   ELE
-* 5 "Wire bonds"            "Aluminium"         1.2E-3    1   ELE
-* 6 "Glue"                  "Epoxy"             0.02      1   SUP
+# "Pixel barrel hybrid"     "Pix_Bar_Hybrid_Full" 0.05378   12.2
+* 1 "Kapton hybrid"         "T_Kapton"          0.054571  1  ELE
+* 2 "Copper traces"         "Copper"            0.006328  1  ELE 
+* 3 "Nickel"                "Nickel"            0.001347  1  ELE
+* 4 "Gold"                  "Gold"              0.000303  1  ELE
+* 5 "Wire bonds"            "Aluminium"         0.000333  1  ELE
+* 6 "Bump bonds"            "Indium"            0.000205  1  ELE
+* 7 "Solder Pb"             "Lead"              0.001958  1  ELE
+* 8 "Solder Pb"             "Tin"               0.005185  1  ELE
+* 9 "Glue"                  "Epoxy"             0.008000  1  SUP
+* 10 "Capacitors"           "Barium Titanate"   0.00025   8  ELE
+* 11 "Resistors"            "Alumina"           0.00025   2  ELE
 .....................................................................
 =====================================================================
+
+o Pixel Barrel Hybrid Half    ---- TODO  ----
+
+Size: 10.3(w) * 65(l) * 0.044(h) mm.
+(1-4) Material: PI-41.8mg, Cu-31.1mg, Ni-6.6mg,Au-3.1 (Half modules)
+(5) Wire bonds: About 700/2 Al wires, total weight per module is 0.9mg/2
+(6) Bump bonds: About 66560/2 In (indium) bonds, total weight per module 1.5mg/2
+(7-8) Solder: To connect the kapton and power cables.
+       About 60 mg per module, composition 0.37 Pb + 0.63 Sn.
+(9) Glue: Total glue per module 8g/768 = 10.4mg.
+(10) Capacitors: 8 capacitors 0.05 x 0.10 x 0.05 cm = 0.00025
+(11) Resistors: 2 resistors 0.05 x 0.10 x 0.05 cm = 0.00025
+......................................................................
+# "Pixel barrel hybrid"     "Pix_Bar_Hybrid_Half" 0.029458   6.5
+* 1 "Kapton hybrid"         "T_Kapton"          0.029857  1  ELE
+* 2 "Copper traces"         "Copper"            0.003471  1  ELE
+* 3 "Nickel"                "Nickel"            0.000741  1  ELE
+* 4 "Gold"                  "Gold"              0.000165  1  ELE
+* 5 "Wire bonds"            "Aluminium"         0.000166  1  ELE
+* 6 "Bump bonds"            "Indium"            0.000102  1  ELE
+* 7 "Solder Pb"             "Lead"              0.001958  1  ELE
+* 8 "Solder Pb"             "Tin"               0.005185  1  ELE
+* 9 "Glue"                  "Epoxy"             0.008000  1  SUP
+* 10 "Capacitors"           "Barium Titanate"   0.00025   8  ELE
+* 11 "Resistors"            "Alumina"           0.00025   2  ELE
+.....................................................................
+=====================================================================
+
+
+
+o Pixel Barrel capacitors    ---- OK ----
+ -------------------
+MC Volume: 0.05 x 6.5 x 0.05 cm = 0.01625
+
+(1) 24 Capacitors : 0.05 x 0.10 x 0.05 cm = 0.00025
+......................................................................
+# "Pixel barrel HVcapacitor"  "Pix_Bar_Capacitor"    0.01625     0.32
+* 1 "SMD Capacitor"         "Barium Titanate"        0.00025     24  ELE
+.....................................................................
+=====================================================================
+
+
 
 o Pixel Barrel cooling pipes
   --------------------------
@@ -84,20 +146,28 @@ MC Volume: 0.35 x 0.35 cm
 .....................................................................
 =====================================================================
 
-o Pixel Barrel module cables (per unit length !! )
-  --------------------------
-MC Volume: xsection 2.2 x 0.006 cm 
 
-(1) Kapton cable: 1 cm x 0.01 cm 
-(2) Copper        1 cm x 0.00105 cm
-(3) Al wires, r = 0.016 cm, 8 pieces
-(4) Silver coating 2 mu
+
+o Pixel Barrel module cables (per unit length !! )  ---- OK ----
+  --------------------------
+MC Volume: xsection 0.670 x 0.030 cm   (0.03 = 0.0165 + some volume for 6 wires 0.027 diameter) 
+
+(1) Kapton cable : 2 kapton layer   0.67 cm x 0.0075 cm  
+(2) Kapton cable : 1 Copper layer   0.67 cm x 0.0003 cm  
+(3) Kapton cable : 22 Copper tracks 0.0013 cm x 0.019 cm  
+(4) Kapton cable : 22 Au tracks     0.0001 cm x 0.019 cm  
+(5) Power  cable : 6 wires Al , r  = 0.01125 cm 
+(6) Power  cable : 6 wires Cu , dr = 0.00125 cm
+(7) Power  cable : 6 wires PI , dr = 0.0010 cm
 .....................................................................
-# "Pixel Barrel module cables"   "Pix_Bar_Cable"   0.0132   -1.
-* 1 "Kapton cable"              "T_Kapton"         0.01     1    CAB
-* 2 "Kapton cable"              "Copper"           0.00105  1    CAB
-* 3 "Power module cables"       "Aluminium"        8.E-4    8    CAB
-* 4 "Power module cables"       "Silver"           2.E-5    8    CAB
+# "Pixel Barrel module cables"   "Pix_Bar_Cable"   0.0201   -1.
+* 1 "Kapton cable layer"        "T_Kapton"         0.005025  2    CAB
+* 2 "Kapton cable layer"        "Copper"           2.01E-4   1    CAB
+* 3 "Kapton cable tracks"       "Copper"           2.47E-5  22   CAB
+* 4 "Kapton cable tracks"       "Gold"             1.9E-6   22   CAB
+* 5 "Power cable core"          "Aluminium"        3.97E-4  6    CAB
+* 6 "Power cable coating"       "Copper"           9.39E-5  6    CAB
+* 7 "Power cable ext coating"   "T_Kapton"         8.17E-5  6    CAB
 =====================================================================
 
 o Pixel azimuthal cooling distribution rings
@@ -329,6 +399,62 @@ MC Volume, cylinder r=18.5-18.7  cm
 * 7 "Carbon fibre cylinder"  "Carbon fibre str."  11.62    1   SUP
 ......................................................................
 ======================================================================  
+
+
+
+
+
+# "END"  "END"  0.  0.   
+this has to be the last line !
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+o Pixel barrel services  (per unit length !!)
+  ---------------------
+MC Volume, cylinder r=18.5-18.7  cm
+
+(1-2) Cooling pipes
+        Aluminium x-section (r=0.33-0.3 cm) = 0.0594 cm^2   
+                             20+2 pipes (2 for flushing)
+        Coolant r=0.3 cm  => 0.2827 cm^2      20 volumes
+(3) Al power in/out cables. X-section 3 cm^2
+(4) Bias and control lines, 384 total, Cu r=0.01 cm
+(5-6) Optical fibers (modelled as for strip detectors)
+(7) Carbon fibre cylinder, r=18.5 cm, thickness 0.1 cm
+......................................................................
+# "Pixel barrel services "  "Pix_Bar_Services"    23.37    -1.
+* 1 "Cooling pipes"            "Aluminium"        0.0594  22   COL
+* 2 "Coolant"                  "C6F14"            0.2827  20   COL
+* 3 "Power in/out"             "Aluminium"        3.       1   CAB
+* 4 "Bias and control"         "Copper"           3.1E-4 384   CAB
+* 5 "Optical fibers"           "Quartz"          1.27E-4 576   CAB
+* 6 "Optical fibers"           "Polyethylene"    6.23E-3 576   CAB
+* 7 "Carbon fibre cylinder"  "Carbon fibre str."  11.62    1   SUP
+......................................................................
+======================================================================  
+
+
+
+
 
 # "END"  "END"  0.  0.   
 this has to be the last line !
