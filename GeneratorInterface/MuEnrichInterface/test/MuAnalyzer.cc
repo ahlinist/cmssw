@@ -4,11 +4,14 @@
  
 #include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
 #include "SimDataFormats/TrackingAnalysis/interface/TrackingParticleFwd.h"
+#include "SimDataFormats/TrackingAnalysis/interface/TrackingParticle.h"
 #include "SimDataFormats/TrackingAnalysis/interface/TrackingVertexContainer.h"
+#include "SimDataFormats/TrackingAnalysis/interface/TrackingVertex.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/Run.h"
 #include "DataFormats/Common/interface/Handle.h" 
 #include "DataFormats/Provenance/interface/EventID.h"
+//#include "DataFormats/Common/interface/EventID.h"
 
 #include "TFile.h"
 #include "TH1.h"
@@ -73,8 +76,9 @@ void MuAnalyzer::beginJob( const EventSetup& )
   tmuon = new TTree ("Muon","Highest Muon Pt Generator Info");
   tmuon->Branch("run",&runnum,"runnum/I");
   tmuon->Branch("evt",&evtnum,"evtnum/I");
+  tmuon->Branch("parton",&parton,"parton/I");
   tmuon->Branch("simmuon",&simmuon,"simmuon/O");
-  tmuon->Branch("simpt",&simmuon,"simpt/D");
+  tmuon->Branch("simpt",&simpt,"simpt/D");
   tmuon->Branch("eta",&etamu,"etamu/D");
   tmuon->Branch("phi",&phimu,"phimu/D");
   tmuon->Branch("px",&pxmu,"pxmu/D");
@@ -104,6 +108,7 @@ void MuAnalyzer::analyze( const Event& e, const EventSetup& )
   e.getByType(TruthTrackContainer);
   double simptmax=ptmin;
   simmuon=false;
+  vxge=vyge=vzge=-99999.;
   const TrackingParticleCollection *tPC   = TruthTrackContainer.product();
   for (TrackingParticleCollection::const_iterator t = tPC -> begin(); t != tPC -> end(); ++t) {
     int simpdgid=t->pdgId();
@@ -125,11 +130,16 @@ void MuAnalyzer::analyze( const Event& e, const EventSetup& )
 	    cout << " Found a muon pt="<<t->pt()<<" eta="<<t->eta()<<"gen: pt eta"<<pthep<<" "<<etahep<<endl;
 	    simmuon=true;
 	    simptmax=t->pt();
-	    // cout << " HepMC Track Pt " <<pthep<<" and id "<<(*hepT)->pdg_id()<<endl;    
+	    simpt=simptmax;
+
+
+
+	    /* cout << " HepMC Track Pt " <<pthep<<" and id "<<(*hepT)->pdg_id()<<endl;    
 	    for (TrackingParticle::g4t_iterator g4T = t -> g4Track_begin();
 		 g4T !=  t -> g4Track_end(); ++g4T) {
-	      //cout << " Geant Track Pt " << g4T->momentum().perp() << endl;   
+	      cout << " Geant Track Pt " << g4T->momentum().perp() << endl;   
 	    }
+	    */
 	    TrackingVertexRef parentV = t -> parentVertex();
 	    if (parentV.isNull()) {
 	      cout << "No parent vertex" << endl;
@@ -141,10 +151,10 @@ void MuAnalyzer::analyze( const Event& e, const EventSetup& )
 	      // Loop over source track(s)
 	      for (tp_iterator iTP = parentV -> sourceTracks_begin(); iTP != parentV -> sourceTracks_end(); ++iTP) {
 		cout << "  Source   starts: " << (*iTP)->vertex() <<", source id: " <<(*iTP)->pdgId();
-		for (g4t_iterator g4T  = (*iTP)->g4Track_begin(); g4T != (*iTP)->g4Track_end(); ++g4T) {
-		  cout << ", p " <<  g4T ->momentum();    
-		}
-		cout << endl;     
+		for (g4t_iterator g4T  = (*iTP)->g4Track_begin(); g4T != (*iTP)->g4Track_end(); ++g4T) cout << ", p " <<  g4T->momentum();
+		cout << endl;     	       
+		TrackingVertexRef parentdecayV= (*iTP)->decayVertex();
+		if (parentdecayV != parentV) cout << " Parent Decay Vertex not equal to daughter origin"<<endl;
 	      }         
 	    }
 	  }
@@ -158,131 +168,131 @@ void MuAnalyzer::analyze( const Event& e, const EventSetup& )
   //int eventsinrun=0; 
   const HepMC::GenEvent* Evt = EvtHandle->GetEvent() ;
   if (Evt != 0 ) {   
-  int nmuon=0;
-  double ptmax=ptmin;
-  double wt=1.;
-  parton=0;
-  if ( Evt->weights().size() > 0 ) wt=Evt->weights()[0];
-  for ( HepMC::GenEvent::vertex_const_iterator
-	  vit=Evt->vertices_begin(); vit!=Evt->vertices_end(); ++vit )
-    {
-      HepLorentzVector muprodv=(*vit)->position();
-      for ( HepMC::GenVertex::particles_out_const_iterator
-	      pout=(*vit)->particles_out_const_begin();
-	    pout!=(*vit)->particles_out_const_end(); ++pout )
-	{
-	  double pt=(*pout)->momentum().perp();
-	  double p=(*pout)->momentum().rho();
-	  int id=(*pout)->pdg_id();
-	  if (abs(id) < 7 && parton==0 ){
-	    //cout << " Original particle: "<<id <<" status="<<(*pout)->status()<< endl;  
-	    parton=abs(id);
-	  }
-	  double eta = abs((*pout)->momentum().eta());
-	  double phi = (*pout)->momentum().phi();
-          bool wtype1ok=false;
-	  if ( abs(id) == 13 && wtype==1 ) wtype1ok=true;
-	  if ( wtype1ok ) {
-	   if( pt > 4.0 )wtype1ok=false ;
-	   if (eta>maxeta)wtype1ok=false ;
-	   if (eta< 1.2 && pt<3.0)wtype1ok=false ;
-	   if (eta> 1.2 && eta< 1.7 && pt<1.8)wtype1ok=false;
-	   if (eta> 1.7 && eta<maxeta && p<3.5)wtype1ok=false;
-	  }
-	  if ((abs(id) == 13 && pt>ptmin && wtype != 1)||(wtype==1 && wtype1ok)) 
-	    {	
-	      ++nmuon;
-	      if ( pt > ptmax && eta<maxeta) {
-		ptmax=pt;
-		etamu=(*pout)->momentum().eta();
-		phimu=phi;
-		ptmu=pt;
-		decayl=-1;
-		vxmu=muprodv.x();
-		vymu=muprodv.y();
-		vzmu=muprodv.z();
-		pxmu=(*pout)->momentum().x();
-		pymu=(*pout)->momentum().y();
-		pzmu=(*pout)->momentum().z();
-		vector<HepMC::GenParticle*> MuonParents = (*vit)->listParents() ;      
-		pid=0;
-		for (unsigned int ic=0; ic<MuonParents.size(); ic++ )
-		  {
-		    pid=MuonParents[ic]->pdg_id();
-		    //MuonParents[ic]->print() ;
-		    fHistMuParent->Fill(abs(MuonParents[ic]->pdg_id()));
-		    fHistMuParentStatus->Fill(MuonParents[ic]->status());
-		    if (MuonParents[ic]->production_vertex() != 0 ) {
-		    HepLorentzVector parentprodv=MuonParents[ic]->production_vertex()->position();
-		    double decaylength=sqrt((muprodv.x()-parentprodv.x())*(muprodv.x()-parentprodv.x())
-					  +(muprodv.y()-parentprodv.y())*(muprodv.y()-parentprodv.y())
-					  +(muprodv.z()-parentprodv.z())*(muprodv.z()-parentprodv.z()));
-		    decayl=decaylength;
-		    //cout << "Decay Length ="<<decaylength<<endl;
-		    fHistParentDecayLength->Fill(decaylength);
-		  }else cout << " Could not find muon parent production vertex "<<endl;
+    int nmuon=0;
+    double ptmax=ptmin;
+    double wt=1.;
+    parton=0;
+    if ( Evt->weights().size() > 0 ) wt=Evt->weights()[0];
+    for ( HepMC::GenEvent::vertex_const_iterator
+	    vit=Evt->vertices_begin(); vit!=Evt->vertices_end(); ++vit )
+      {
+	HepLorentzVector muprodv=(*vit)->position();
+	for ( HepMC::GenVertex::particles_out_const_iterator
+		pout=(*vit)->particles_out_const_begin();
+	      pout!=(*vit)->particles_out_const_end(); ++pout )
+	  {
+	    double pt=(*pout)->momentum().perp();
+	    double p=(*pout)->momentum().rho();
+	    int id=(*pout)->pdg_id();
+	    if (abs(id) < 7 && parton==0 ){
+	      //cout << " Original particle: "<<id <<" status="<<(*pout)->status()<< endl;  
+	      parton=abs(id);
+	    }
+	    double eta = abs((*pout)->momentum().eta());
+	    double phi = (*pout)->momentum().phi();
+	    bool wtype1ok=false;
+	    if ( abs(id) == 13 && wtype==1 ) wtype1ok=true;
+	    if ( wtype1ok ) {
+	      if( pt > 4.0 )wtype1ok=false ;
+	      if (eta>maxeta)wtype1ok=false ;
+	      if (eta< 1.2 && pt<3.0)wtype1ok=false ;
+	      if (eta> 1.2 && eta< 1.7 && pt<1.8)wtype1ok=false;
+	      if (eta> 1.7 && eta<maxeta && p<3.5)wtype1ok=false;
+	    }
+	    if ((abs(id) == 13 && pt>ptmin && wtype != 1)||(wtype==1 && wtype1ok)) 
+	      {	
+		++nmuon;
+		if ( pt > ptmax && eta<maxeta) {
+		  ptmax=pt;
+		  etamu=(*pout)->momentum().eta();
+		  phimu=phi;
+		  ptmu=pt;
+		  decayl=-1;
+		  vxmu=muprodv.x();
+		  vymu=muprodv.y();
+		  vzmu=muprodv.z();
+		  pxmu=(*pout)->momentum().x();
+		  pymu=(*pout)->momentum().y();
+		  pzmu=(*pout)->momentum().z();
+		  vector<HepMC::GenParticle*> MuonParents = (*vit)->listParents() ;      
+		  pid=0;
+		  for (unsigned int ic=0; ic<MuonParents.size(); ic++ )
+		    {
+		      pid=MuonParents[ic]->pdg_id();
+		      //MuonParents[ic]->print() ;
+		      fHistMuParent->Fill(abs(MuonParents[ic]->pdg_id()));
+		      fHistMuParentStatus->Fill(MuonParents[ic]->status());
+		      if (MuonParents[ic]->production_vertex() != 0 ) {
+			HepLorentzVector parentprodv=MuonParents[ic]->production_vertex()->position();
+			double decaylength=sqrt((muprodv.x()-parentprodv.x())*(muprodv.x()-parentprodv.x())
+						+(muprodv.y()-parentprodv.y())*(muprodv.y()-parentprodv.y())
+						+(muprodv.z()-parentprodv.z())*(muprodv.z()-parentprodv.z()));
+			decayl=decaylength;
+			//cout << "Decay Length ="<<decaylength<<endl;
+			fHistParentDecayLength->Fill(decaylength);
+		      }else cout << " Could not find muon parent production vertex "<<endl;
+		    }
 		}
 	      }
-	    }
-	}
-    }
-  if ( nmuon == 0 ) 
-    {
-      cout << " There is NO Muon in this event ! " << endl ;
-      return ;
-    } else {
-      TH1D *fH=fHistRate34Other;
-      int apid=abs(pid);
-      if ( apid==5|| (apid>500 && apid<600)){
-	fH=fHistRate34B;
+	  }
+      }
+    if ( nmuon == 0 ) 
+      {
+	cout << " There is NO Muon in this event ! " << endl ;
+	return ;
+      } else {
+	TH1D *fH=fHistRate34Other;
+	int apid=abs(pid);
+	if ( apid==5|| (apid>500 && apid<600)){
+	  fH=fHistRate34B;
 	if(wtype==3)wt/=8.4;
-      }else if ( apid==4 || (apid>400 && apid<500) ){
-	fH=fHistRate34C;
-	if(wtype==3)wt/=6.0;
-      }else if ( apid==15){
-	fH=fHistRate34tau;
-	if(wtype==3)wt/=8.7;
-      }else if ( apid==311 || apid==321 || apid==130 || apid==310 ){
+	}else if ( apid==4 || (apid>400 && apid<500) ){
+	  fH=fHistRate34C;
+	  if(wtype==3)wt/=6.0;
+	}else if ( apid==15){
+	  fH=fHistRate34tau;
+	  if(wtype==3)wt/=8.7;
+	}else if ( apid==311 || apid==321 || apid==130 || apid==310 ){
 	fH=fHistRate34kaon;
 	if(wtype==3)wt/=7.3;
-      }else if ( apid==23 ) fH=fHistRate34Z;
-      else if ( apid==24 ) fH=fHistRate34W;
-      else if ( apid==211 || apid==221){
-	fH=fHistRate34pion;
-	if(wtype==3)wt/=0.8;
+	}else if ( apid==23 ) fH=fHistRate34Z;
+	else if ( apid==24 ) fH=fHistRate34W;
+	else if ( apid==211 || apid==221){
+	  fH=fHistRate34pion;
+	  if(wtype==3)wt/=0.8;
       }
-      isub=Evt->signal_process_id();
-      fHistIsub->Fill(Evt->signal_process_id()) ;
-      fHistMuRZ->Fill(vzmu,sqrt(vxmu*vxmu+vymu*vymu),wt);
-      fHistMuEta->Fill(etamu,wt);
-      fHistMuPhi->Fill(phimu,wt);
-      fHistPtMu->Fill(ptmu,wt ) ;
-      fHistMuXY->Fill(vxmu,vymu,wt);
-      fHistMuZ->Fill(vzmu,wt);
-      fHistMuPvsPt->Fill(ptmu,sqrt(ptmu*ptmu+pzmu*pzmu),wt);
-      fHistMuPvsEta->Fill(etamu,sqrt(ptmu*ptmu+pzmu*pzmu),wt);
-      
-      int imax;
-      cout << "Pt max "<<ptmax<<" integrated lum "<<intlum<<endl;
-      imax=(int) (ptmax/0.8);
-      for (int i=0 ;i<imax ; ++i ) {
-	double pp;
-	double ww;
-	pp=0.4+i*0.8;
-	ww=2*(wt)/intlum;
-	fHistRate33->Fill(pp,ww);
-	fHistRate34->Fill(pp,ww*5);
-	fH->Fill(pp,ww*5);
+	isub=Evt->signal_process_id();
+	fHistIsub->Fill(Evt->signal_process_id()) ;
+	fHistMuRZ->Fill(vzmu,sqrt(vxmu*vxmu+vymu*vymu),wt);
+	fHistMuEta->Fill(etamu,wt);
+	fHistMuPhi->Fill(phimu,wt);
+	fHistPtMu->Fill(ptmu,wt ) ;
+	fHistMuXY->Fill(vxmu,vymu,wt);
+	fHistMuZ->Fill(vzmu,wt);
+	fHistMuPvsPt->Fill(ptmu,sqrt(ptmu*ptmu+pzmu*pzmu),wt);
+	fHistMuPvsEta->Fill(etamu,sqrt(ptmu*ptmu+pzmu*pzmu),wt);
+	
+	int imax;
+	cout << "Pt max "<<ptmax<<" integrated lum "<<intlum<<endl;
+	imax=(int) (ptmax/0.8);
+	for (int i=0 ;i<imax ; ++i ) {
+	  double pp;
+	  double ww;
+	  pp=0.4+i*0.8;
+	  ww=2*(wt)/intlum;
+	  fHistRate33->Fill(pp,ww);
+	  fHistRate34->Fill(pp,ww*5);
+	  fH->Fill(pp,ww*5);
+	}
       }
-    }
-  cout<<" There is are "<<nmuon<<" muons in this event ! " << endl ;
-  fHistMuweight->Fill(wt);
-  //cout << " About to fill nmu"<<endl;
-  fHistNMu->Fill(nmuon,wt);
-  wtmu=wt;
-  tmuon->Fill();
-  //cout << "Event finished"<<endl;
-  return ;
+    cout<<" There is are "<<nmuon<<" muons in this event ! " << endl ;
+    fHistMuweight->Fill(wt);
+    //cout << " About to fill nmu"<<endl;
+    fHistNMu->Fill(nmuon,wt);
+    wtmu=wt;
+    tmuon->Fill();
+    //cout << "Event finished"<<endl;
+    return ;
   }
 }
 
