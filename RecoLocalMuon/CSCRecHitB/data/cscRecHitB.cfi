@@ -14,7 +14,7 @@ module csc2DRecHits = CSCRecHitBProducer {
      untracked int32  CSCWireClusterDeltaT       = 1
      untracked int32  CSCWireClusterMaxSize      = 999
 
-     untracked bool   CSCuseCleanWireCollection  = false
+     untracked bool   CSCuseCleanWireCollection  = true
      untracked int32  CSCWireminLayersApart      = 2
      untracked double CSCWireMaxDistance         = 2.
      untracked int32  CSCWireSegmentDeltaT       = 1
