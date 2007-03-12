@@ -97,8 +97,8 @@ void MuAnalyzer::beginJob( const EventSetup& )
 void MuAnalyzer::analyze( const Event& e, const EventSetup& )
 {
       
-  runnum=(int) e->run();
-  evtnum=(int) e->id().event();
+  runnum=(int) e.id().run();
+  evtnum=(int) e.id().event();
   // Sim track info 
   Handle<TrackingParticleCollection>  TruthTrackContainer ;
   e.getByType(TruthTrackContainer);

@@ -32,7 +32,7 @@ class MuAnalyzer : public edm::EDAnalyzer
      double maxeta;
      double ptmin;
      double etamu,phimu,ptmu,vxmu,vymu,vzmu,pxmu,pymu,pzmu,decayl,wtmu;
-     int pid,isub,runnum;
+     int pid,isub,runnum,evtnum;
      double intlum,vxge,vyge,vzge;
      bool simmuon;
      int wtype,parton;
