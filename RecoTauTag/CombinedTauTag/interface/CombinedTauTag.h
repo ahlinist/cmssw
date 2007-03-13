@@ -12,6 +12,7 @@
 #include "FWCore/Framework/interface/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
+#include "FWCore/Framework/interface/EventSetupRecord.h"
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
@@ -22,16 +23,25 @@
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 
+#include "CondFormats/BTauObjects/interface/CalibratedHistogram.h"
+#include "CondFormats/BTauObjects/interface/CombinedTauTagCalibration.h"
+#include "CondFormats/DataRecord/interface/CombinedTauTagRcd.h"
+
 #include "SimDataFormats/Vertex/interface/SimVertexContainer.h"
 
 #include "CLHEP/Random/RandGauss.h"
 
 #include "RecoTauTag/CombinedTauTag/interface/CombinedTauTagAlg.h"
+#include "RecoTauTag/CombinedTauTag/interface/LikelihoodRatio.h"
+#include "RecoTauTag/CombinedTauTag/interface/CategoryDataCondDB.h"
+
+#include "RecoBTag/XMLCalibration/interface/CalibrationInterface.h"
 
 #include <memory>
 
 using namespace std; 
 using namespace edm;
+using namespace edm::eventsetup; 
 using namespace reco;
 
 class CombinedTauTag : public EDProducer {
@@ -46,7 +56,9 @@ class CombinedTauTag : public EDProducer {
 	string modulname="CombinedTauTag";
 	produces<JetTagCollection>().setBranchAlias(modulname);
 	string infoBranchName=modulname+"Info";
-	produces<CombinedTauTagInfoCollection>().setBranchAlias(infoBranchName);  
+	produces<CombinedTauTagInfoCollection>().setBranchAlias(infoBranchName);
+	theLikelihoodRatio=new LikelihoodRatio(iConfig);  
+	m_cacheId=0;
       }
       ~CombinedTauTag(){
 	delete theCombinedTauTagAlg;
@@ -54,6 +66,8 @@ class CombinedTauTag : public EDProducer {
       virtual void produce(Event&, const EventSetup&);
  private:
       CombinedTauTagAlg* theCombinedTauTagAlg;
+      LikelihoodRatio* theLikelihoodRatio;
+      unsigned long long m_cacheId;
       string IsolatedTauTagSrc_;
       string PVSrc_;
       double smearedPVsigmaX_;

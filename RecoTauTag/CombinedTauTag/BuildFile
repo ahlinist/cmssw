@@ -17,6 +17,8 @@
 <use name=DataFormats/GeometrySurface>
 <use name=DataFormats/GeometryVector>
 <use name=DataFormats/Math>
+<use name=CondFormats/BTauObjects>
+<use name=CondFormats/DataRecord>
 <use name=MagneticField/Engine>
 <use name=MagneticField/Records>
 <use name=Geometry/TrackerGeometryBuilder>
@@ -61,6 +63,8 @@
    <use name=DataFormats/GeometrySurface>
    <use name=DataFormats/GeometryVector>
    <use name=DataFormats/Math>
+   <use name=CondFormats/BTauObjects>
+   <use name=CondFormats/DataRecord>
    <use name=MagneticField/Engine>
    <use name=MagneticField/Records>
    <use name=Geometry/TrackerGeometryBuilder>
