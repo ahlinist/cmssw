@@ -21,7 +21,7 @@ int CMSCGEN::initialize(float Emin_in, float Emax_in, float thetamin_in, float t
   //allowed energy range
   Emin_min=2.;
   Emin_max=1000.;
-  Emax=10000.;   
+  Emax_max=10000.;   
   //allowed angular range
   cmin_min=0.0348994;
   cmin_max=0.9999;
@@ -34,7 +34,7 @@ int CMSCGEN::initialize(float Emin_in, float Emax_in, float thetamin_in, float t
     cout << " >>> CMSCGEN.initialize <<< warning: illegal Emin_in =" << Emin_in;
     return(-1);
   }
-  else if(Emax_in > Emax )
+  else if(Emax_in > Emax_max )
   {
    cout << " >>> CMSCGEN.initialize <<< warning: illegal Emax_in =" << Emax_in;
     return(-1);
@@ -63,7 +63,7 @@ int CMSCGEN::initialize(float Emin_in, float Emax_in, float thetamin_in, float t
   initialization = 1;
 
   elmin = log10(Emin_min);
-  elmax = log10(Emax);
+  elmax = log10(Emax_max);
   elfac = 100./(elmax-elmin);
 
 //
