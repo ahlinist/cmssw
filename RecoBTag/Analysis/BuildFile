@@ -6,6 +6,7 @@
 <use name=FWCore/ParameterSet>
 <use name=RecoBTag/MCTools>
 <use name=rootcore>
+<use name=root>
 <flags SEALPLUGIN=1>
 <export>
   <use name=DataFormats/BTauReco>
