@@ -14,7 +14,7 @@ inline bool inAir(double vx, double vy, double vz){
   }
   // access shaft (PX 56)
   if (vy > 0. && vy < (SurfaceOfEarth-2250.)){
-    if (sqrt(vx*vx + (vz-Z_PX56)*(vz-Z_PX56)) < 10250.) air = true;
+    if (sqrt(vx*vx + (vz+Z_PX56)*(vz+Z_PX56)) < 10250.) air = true;
   }
   return air;
 }
@@ -23,11 +23,11 @@ inline bool inWall(double vx, double vy, double vz){
   bool wall = false;
   // phase II surface building
   if (vy < SurfaceOfEarth && vy > (SurfaceOfEarth-2250.)){
-    if (fabs(vz-Z_PX56) < 30000.){
+    if (fabs(vz+Z_PX56) < 30000.){
       if (fabs(vx) < 10950) wall = true;
     }
     // foundation of crane
-    if (fabs(vz-Z_PX56) < 9000.){
+    if (fabs(vz+Z_PX56) < 9000.){
       if (fabs(vx) >= 10950 && fabs(vx) < 16950) wall = true;
     }
   }
@@ -38,7 +38,7 @@ inline bool inWall(double vx, double vy, double vz){
   }
   // access shaft (PX 56)
   if (vy > 0. && vy < (SurfaceOfEarth-2250.)){
-    if (sqrt(vx*vx + (vz-Z_PX56)*(vz-Z_PX56)) < 12400.) wall = true;
+    if (sqrt(vx*vx + (vz+Z_PX56)*(vz+Z_PX56)) < 12400.) wall = true;
   }
   if (inAir(vx,vy,vz)) wall = false;
   return wall;
