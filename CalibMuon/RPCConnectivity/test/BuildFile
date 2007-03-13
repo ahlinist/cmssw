@@ -1,8 +1,10 @@
 <environment>
+  <use name=FWCore/Framework>
   <use name=CondFormats/DataRecord>
   <use name=CondFormats/RPCObjects>
-  <use name=CondCore/ESSources>
   <use name=CondCore/DBOutputService>
-  <use name=oracle>
-  <bin file="RPCReadOutMappingBuilder.cpp"></bin>
+  <use name=OnlineDB/Oracle>
+  <library file=RPCReadOutMappingBuilder.cpp name=RPCReadOutMappingBuilder>
+    <flags SEAL_PLUGIN_NAME="RPCReadOutMappingBuilder">
+  </library>
 </environment>
