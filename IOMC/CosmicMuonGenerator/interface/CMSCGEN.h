@@ -68,6 +68,8 @@ private:
   float Emin_min;
   float Emin_max;
 
+  float Emax_max;
+
   float cmin_min;
   float cmin_max;
 
