@@ -17,7 +17,7 @@ void CombinedTauTagAlg::init(const EventSetup& theEventSetup){
   the_recjet_alternatHepLV.setPy(0.);
   the_recjet_alternatHepLV.setPz(0.);
   the_recjet_alternatHepLV.setE(0.);
-  TauJet_ref_et=NAN;
+  TauCandJet_ref_et=NAN;
   therecTracks.clear();
   chargedpicand_fromtk_HepLV.clear();
   chargedpicand_frompropagtk_HepLV.clear();
@@ -143,16 +143,16 @@ pair<JetTag,CombinedTauTagInfo> CombinedTauTagAlg::tag(const IsolatedTauTagInfoR
   // *******************************end of the_recjet_alternatHepLV filling *********************************
   
   // tau candidate rec. Et: Et,recjet / Et,neutr.recclus+rectks
-  TauJet_ref_et=recjet_HepLV.et();               // Et,recjet
-  //TauJet_ref_et=the_recjet_alternatHepLV.et();      // Et,neutr.recclus+rectks
+  TauCandJet_ref_et=recjet_HepLV.et();               // Et,recjet
+  //TauCandJet_ref_et=the_recjet_alternatHepLV.et();      // Et,neutr.recclus+rectks
   
   // ***********defining evolutive size signal cones ************
   // *************************BEGIN******************************
-  double neutralECALclus_signalconesize = min(0.15,3./TauJet_ref_et+0.05);
+  double neutralECALclus_signalconesize = min(0.15,3./TauCandJet_ref_et+0.05);
   neutralECALclus_signalconesize = max((double)neutralECALclus_signalconesize,0.08);
   double rectks_signalconesize = SignalCone_ifnotEvolutive_;
   if(EvolutiveSignalCone_){
-    rectks_signalconesize = min(0.17,3.5/TauJet_ref_et);
+    rectks_signalconesize = min(0.17,3.5/TauCandJet_ref_et);
     rectks_signalconesize = max(rectks_signalconesize,0.05);
   }
   // **************************END*******************************
@@ -286,7 +286,10 @@ pair<JetTag,CombinedTauTagInfo> CombinedTauTagAlg::tag(const IsolatedTauTagInfoR
       JetTag resultBase(1.,theJetTracksAssociationRef);
       return pair<JetTag,CombinedTauTagInfo> (resultBase,resultExtended); 
     }else{
-      JetTag resultBase(LikelihoodRatiovalue(),theJetTracksAssociationRef);
+      FillTaggingVariableList();
+      (*theLikelihoodRatio).setCandidateCategoryParameterValues((int)signalchargedpicand_fromtk_HepLV.size(),TauCandJet_ref_et);
+      (*theLikelihoodRatio).setCandidateTaggingVariableList(*theTaggingVariableList);
+      JetTag resultBase((*theLikelihoodRatio).value(),theJetTracksAssociationRef);
       return pair<JetTag,CombinedTauTagInfo> (resultBase,resultExtended); 
     }
   }
@@ -397,289 +400,59 @@ void CombinedTauTagAlg::AssociateECALcluster_to_track(){
   gammacand_fromneutralECALclus_HepLV=bisECALclus_withmass0_HepLV;
   gammacand_neutralECALclus=bisECALclus;
 }
-
-double CombinedTauTagAlg::LikelihoodRatiovalue(){
-  // returns 0.        if candidate did not pass tracker selection,
-  //         1.        if candidate passed tracker selection and did not contain neutral obj.,
-  //         0<=  <=1  if candidate passed tracker selection, contained neutral obj. and goes through the likelihood ratio mechanism, 
-  //         NaN       the values of the likelihood functions PDFs are 0;  
-  // truth matched Tau candidate PDFs obtained with evts from ORCA reco. bt04_double_tau_had sample without PU,
-  // fake Tau candidate PDFs obtained with evts from ORCA reco. jm03b_qcd30_50, jm03b_qcd50_80, jm03b_qcd80_120 and jm03b_qcd120_170 samples, all without PU.
-  
-  if(!passed_tracker_selection) return (0.);
-  if(is_GoodTauCand) return (1.);
-  FileInPath inputROOTFileInPath(ROOTfilename_gettingPDFs_);   
-  TFile inputROOTfile(inputROOTFileInPath.fullPath().c_str());  
-  string truthmatchedcand_var_TDirectoryname=Get_candvar_TDirectoryname(1);
-  TDirectory *truthmatchedcand_var_TDirectory=(TDirectory*)inputROOTfile.Get(truthmatchedcand_var_TDirectoryname.c_str());
-  string fakecand_var_TDirectoryname=Get_candvar_TDirectoryname(0);
-  TDirectory *fakecand_var_TDirectory=(TDirectory*)inputROOTfile.Get(fakecand_var_TDirectoryname.c_str());
-  double the_likelihoodratio_value=-0.1;
-  double truthmatched_likelihoodfunction_value=1.;
-  double fake_likelihoodfunction_value=1.;
-  vector<double> var_vector;
-  vector<string> varname_vector;
-  vector<double> vartruthmatchedpdf_vector;
-  vector<double> varfakepdf_vector;
-  var_vector.clear();
-  varname_vector.clear();
-  vartruthmatchedpdf_vector.clear();
-  varfakepdf_vector.clear();
+void CombinedTauTagAlg::FillTaggingVariableList(){
   if(signalchargedpicand_fromtk_HepLV.size()==1){
     if(use_neutralECALclus_number_case1signaltk_) {
-      var_vector.push_back((double)the_neutralECALclus_number);
-      varname_vector.push_back("neutrECALclus_number");
-      vartruthmatchedpdf_vector.push_back(0.);
-      varfakepdf_vector.push_back(0.);
+      TaggingVariable neutralECALclus_number_TagVar(btau::neutralclusterNumber,(float)the_neutralECALclus_number);
+      (*theTaggingVariableList).push_back(neutralECALclus_number_TagVar);
     }	
     if(use_neutralECALclus_radius_case1signaltk_){
-      var_vector.push_back(the_neutralECALclus_radius);
-      varname_vector.push_back("neutrECALclus_radius");
-      vartruthmatchedpdf_vector.push_back(0.);
-      varfakepdf_vector.push_back(0.);
+      TaggingVariable neutralECALclus_radius_TagVar(btau::neutralclusterRadius,the_neutralECALclus_radius);
+      (*theTaggingVariableList).push_back(neutralECALclus_radius_TagVar);
     }
     if(use_neutralE_ratio_case1signaltk_){
-      var_vector.push_back(the_neutralE_ratio);
-      varname_vector.push_back("neutrE_ratio");
-      vartruthmatchedpdf_vector.push_back(0.);
-      varfakepdf_vector.push_back(0.);
+      TaggingVariable neutralE_ratio_TagVar(btau::neutralEnergyRatio,the_neutralE_ratio);
+      (*theTaggingVariableList).push_back(neutralE_ratio_TagVar);
     }
     if(use_isolneutrE_o_tkEneutrE_case1signaltk_){
-      var_vector.push_back(the_isolneutrE_o_tksEneutrE);
-      varname_vector.push_back("isolneutrE_neutrEtkE_ratio");
-      vartruthmatchedpdf_vector.push_back(0.);
-      varfakepdf_vector.push_back(0.);
+      TaggingVariable isolneutrE_o_tksEneutrE_TagVar(btau::neutralIsolEnergyOverCombinedEnergy,the_isolneutrE_o_tksEneutrE);
+      (*theTaggingVariableList).push_back(isolneutrE_o_tksEneutrE_TagVar);
     }
     if(use_tkEt_o_jetEt_case1signaltk_){
-      var_vector.push_back(the_tksEt_o_jetEt);
-      varname_vector.push_back("tkEt_jetEt_ratio");
-      vartruthmatchedpdf_vector.push_back(0.);
-      varfakepdf_vector.push_back(0.);
+      TaggingVariable tksEt_o_jetEt_TagVar(btau::piontracksEtjetEtRatio,the_tksEt_o_jetEt);
+      (*theTaggingVariableList).push_back(tksEt_o_jetEt_TagVar);
     }
     if(use_leadtk_ipt_significance_case1signaltk_ && !couldnotobtain_leadtk_signedipt){
-      var_vector.push_back(fabs(the_leadtk_signedipt_significance));   
-      varname_vector.push_back("leadtk_ipt_significance");
-      vartruthmatchedpdf_vector.push_back(0.);
-      varfakepdf_vector.push_back(0.);
+      TaggingVariable leadtk_ipt_significance_TagVar(btau::trackip2d,fabs(the_leadtk_signedipt_significance));
+      (*theTaggingVariableList).push_back(leadtk_ipt_significance_TagVar);
     }
   }
   if(signalchargedpicand_fromtk_HepLV.size()==3){
     if(use_neutralECALclus_number_case3signaltks_){
-      var_vector.push_back((double)the_neutralECALclus_number);	
-      varname_vector.push_back("neutrECALclus_number");
-      vartruthmatchedpdf_vector.push_back(0.);
-      varfakepdf_vector.push_back(0.);
+      TaggingVariable neutralECALclus_number_TagVar(btau::neutralclusterNumber,(float)the_neutralECALclus_number);
+      (*theTaggingVariableList).push_back(neutralECALclus_number_TagVar);
     }
     if(use_neutralECALclus_radius_case3signaltks_){
-      var_vector.push_back(the_neutralECALclus_radius);
-      varname_vector.push_back("neutrECALclus_radius");
-      vartruthmatchedpdf_vector.push_back(0.);
-      varfakepdf_vector.push_back(0.);
+      TaggingVariable neutralECALclus_radius_TagVar(btau::neutralclusterRadius,the_neutralECALclus_radius);
+      (*theTaggingVariableList).push_back(neutralECALclus_radius_TagVar);
     }
     if(use_neutralE_ratio_case3signaltks_){
-      var_vector.push_back(the_neutralE_ratio);
-      varname_vector.push_back("neutrE_ratio");
-      vartruthmatchedpdf_vector.push_back(0.);
-      varfakepdf_vector.push_back(0.);
+      TaggingVariable neutralE_ratio_TagVar(btau::neutralEnergyRatio,the_neutralE_ratio);
+      (*theTaggingVariableList).push_back(neutralE_ratio_TagVar);
     }
     if(use_isolneutrE_o_tksEneutrE_case3signaltks_){
-      var_vector.push_back(the_isolneutrE_o_tksEneutrE);
-      varname_vector.push_back("isolneutrE_neutrEtksE_ratio");
-      vartruthmatchedpdf_vector.push_back(0.);
-      varfakepdf_vector.push_back(0.);
+      TaggingVariable isolneutrE_o_tksEneutrE_TagVar(btau::neutralIsolEnergyOverCombinedEnergy,the_isolneutrE_o_tksEneutrE);
+      (*theTaggingVariableList).push_back(isolneutrE_o_tksEneutrE_TagVar);
     }
     if(use_tksEt_o_jetEt_case3signaltks_){
-      var_vector.push_back(the_tksEt_o_jetEt);
-      varname_vector.push_back("tksEt_jetEt_ratio");
-      vartruthmatchedpdf_vector.push_back(0.);
-      varfakepdf_vector.push_back(0.);
+      TaggingVariable tksEt_o_jetEt_TagVar(btau::piontracksEtjetEtRatio,the_tksEt_o_jetEt);
+      (*theTaggingVariableList).push_back(tksEt_o_jetEt_TagVar);
     }
     if(use_signedflightpath_significance_case3signaltks_ && !couldnotproduce_SV){
-      var_vector.push_back(the_signedflightpath_significance);
-      varname_vector.push_back("signedflightpath_significance");
-      vartruthmatchedpdf_vector.push_back(0.);
-      varfakepdf_vector.push_back(0.);
+      TaggingVariable signedflightpath_significance_TagVar(btau::flightDistance3DSignificance,the_signedflightpath_significance);
+      (*theTaggingVariableList).push_back(signedflightpath_significance_TagVar);
     }
   }
-  // PDFs are obtained by variable-width slice of recjet Et, the slice width is little(big) when # tau candidates contained in slice is high(low), the center value of the recjet Et slice approximates the TauCandidate recjet Et value;  
-  int minnumbercandidates_inpdf_byrecjetEtslice=0;
-  if(signalchargedpicand_fromtk_HepLV.size()==1) minnumbercandidates_inpdf_byrecjetEtslice=minnumbercandidates_inpdf_byrecjetEtslice_case1signaltk_;
-  if(signalchargedpicand_fromtk_HepLV.size()==3) minnumbercandidates_inpdf_byrecjetEtslice=minnumbercandidates_inpdf_byrecjetEtslice_case3signaltks_;
-  bool stop_increasing_slicewidth=false;
-  string truthmatched_recjetEt_TH1name=Get_recjetEt_TH1name(1);
-  TH1F *truthmatched_recjetEt_TH1=(TH1F*)truthmatchedcand_var_TDirectory->Get(truthmatched_recjetEt_TH1name.c_str());
-  int truthmatched_recjetEt_binnumber=(int)((TauJet_ref_et-(double)truthmatched_recjetEt_TH1->GetXaxis()->GetXmin())/(double)truthmatched_recjetEt_TH1->GetXaxis()->GetBinWidth(1));
-  if(TauJet_ref_et>=200.) truthmatched_recjetEt_binnumber=(int)truthmatched_recjetEt_TH1->GetXaxis()->GetNbins()-1;
-  double truthmatched_candidatesnumber_inrecjetEtslice=(double)truthmatched_recjetEt_TH1->GetBinContent(truthmatched_recjetEt_binnumber+1);
-  string fake_recjetEt_TH1name=Get_recjetEt_TH1name(0);
-  TH1F *fake_recjetEt_TH1=(TH1F*)fakecand_var_TDirectory->Get(fake_recjetEt_TH1name.c_str());
-  int fake_recjetEt_binnumber=(int)((TauJet_ref_et-(double)fake_recjetEt_TH1->GetXaxis()->GetXmin())/(double)fake_recjetEt_TH1->GetXaxis()->GetBinWidth(1));
-  if(TauJet_ref_et>=200.) fake_recjetEt_binnumber=(int)fake_recjetEt_TH1->GetXaxis()->GetNbins()-1;
-  double fake_candidatesnumber_inrecjetEtslice=(double)fake_recjetEt_TH1->GetBinContent(fake_recjetEt_binnumber+1);
-  int recjetEt_TH1_binsnumber=(int)truthmatched_recjetEt_TH1->GetXaxis()->GetNbins();
-  
-  for (int ivar=0;ivar<(int)var_vector.size();ivar++){
-    double truthmatched_ivarvalue=var_vector[ivar];	   
-    double truthmatched_ivarvalue_entriesnumber=0.;
-    string truthmatched_ivar_vs_recjetEt_TH2name=Get_ivar_vs_recjetEt_TH2name(1,varname_vector[ivar]);
-    TH2F *truthmatchedcand_var_vs_recjetEt_TH2=(TH2F*)truthmatchedcand_var_TDirectory->Get(truthmatched_ivar_vs_recjetEt_TH2name.c_str());
-    if(truthmatched_ivarvalue>=(double)truthmatchedcand_var_vs_recjetEt_TH2->GetYaxis()->GetXmin() && truthmatched_ivarvalue<(double)truthmatchedcand_var_vs_recjetEt_TH2->GetYaxis()->GetXmax()){
-      int truthmatched_ivar_binnumber=(int)((truthmatched_ivarvalue-(double)truthmatchedcand_var_vs_recjetEt_TH2->GetYaxis()->GetXmin())/(double)truthmatchedcand_var_vs_recjetEt_TH2->GetYaxis()->GetBinWidth(1));
-      truthmatched_ivarvalue_entriesnumber=(double)truthmatchedcand_var_vs_recjetEt_TH2->GetBinContent(truthmatched_recjetEt_binnumber+1,truthmatched_ivar_binnumber+1);
-    }
-    if(truthmatched_ivarvalue<(double)truthmatchedcand_var_vs_recjetEt_TH2->GetYaxis()->GetXmin()) {
-      truthmatched_ivarvalue_entriesnumber=(double)truthmatchedcand_var_vs_recjetEt_TH2->GetBinContent(truthmatched_recjetEt_binnumber+1,1);
-    }
-    if(truthmatched_ivarvalue>=(double)truthmatchedcand_var_vs_recjetEt_TH2->GetYaxis()->GetXmax()){
-      truthmatched_ivarvalue_entriesnumber=(double)truthmatchedcand_var_vs_recjetEt_TH2->GetBinContent(truthmatched_recjetEt_binnumber+1,(int)truthmatchedcand_var_vs_recjetEt_TH2->GetNbinsY());
-    }
-    vartruthmatchedpdf_vector[ivar]+=truthmatched_ivarvalue_entriesnumber;
-    double fake_ivarvalue=var_vector[ivar];
-    double fake_ivarvalue_entriesnumber=0.;
-    string fake_ivar_vs_recjetEt_TH2name=Get_ivar_vs_recjetEt_TH2name(0,varname_vector[ivar]);
-    TH2F *fakecand_var_vs_recjetEt_TH2=(TH2F*)fakecand_var_TDirectory->Get(fake_ivar_vs_recjetEt_TH2name.c_str());
-    if(fake_ivarvalue>=(double)fakecand_var_vs_recjetEt_TH2->GetYaxis()->GetXmin() && fake_ivarvalue<(double)fakecand_var_vs_recjetEt_TH2->GetYaxis()->GetXmax()){
-      int fake_ivar_binnumber=(int)((fake_ivarvalue-(double)fakecand_var_vs_recjetEt_TH2->GetYaxis()->GetXmin())/(double)fakecand_var_vs_recjetEt_TH2->GetYaxis()->GetBinWidth(1));
-      fake_ivarvalue_entriesnumber=(double)fakecand_var_vs_recjetEt_TH2->GetBinContent(fake_recjetEt_binnumber+1,fake_ivar_binnumber+1);
-    }
-    if(fake_ivarvalue<(double)fakecand_var_vs_recjetEt_TH2->GetYaxis()->GetXmin()){
-      fake_ivarvalue_entriesnumber=(double)fakecand_var_vs_recjetEt_TH2->GetBinContent(fake_recjetEt_binnumber+1,1);
-    }
-    if(fake_ivarvalue>=(double)fakecand_var_vs_recjetEt_TH2->GetYaxis()->GetXmax()){
-      fake_ivarvalue_entriesnumber=(double)fakecand_var_vs_recjetEt_TH2->GetBinContent(fake_recjetEt_binnumber+1,(int)fakecand_var_vs_recjetEt_TH2->GetNbinsX());
-    }
-    varfakepdf_vector[ivar]+=fake_ivarvalue_entriesnumber;
-  }
-  if((int)truthmatched_candidatesnumber_inrecjetEtslice>minnumbercandidates_inpdf_byrecjetEtslice && (int)fake_candidatesnumber_inrecjetEtslice>minnumbercandidates_inpdf_byrecjetEtslice){
-    stop_increasing_slicewidth=true;	   
-  }
-  if(!stop_increasing_slicewidth){
-    for (int i=1;i<recjetEt_TH1_binsnumber+1;i++){
-      if(truthmatched_recjetEt_binnumber+i<recjetEt_TH1_binsnumber) truthmatched_candidatesnumber_inrecjetEtslice+=(double)truthmatched_recjetEt_TH1->GetBinContent(truthmatched_recjetEt_binnumber+1+i);
-      if(truthmatched_recjetEt_binnumber+1-i>0) truthmatched_candidatesnumber_inrecjetEtslice+=(double)truthmatched_recjetEt_TH1->GetBinContent(truthmatched_recjetEt_binnumber+1-i);
-      if(fake_recjetEt_binnumber+i<recjetEt_TH1_binsnumber) fake_candidatesnumber_inrecjetEtslice+=(double)fake_recjetEt_TH1->GetBinContent(fake_recjetEt_binnumber+1+i);
-      if(fake_recjetEt_binnumber+1-i>0) fake_candidatesnumber_inrecjetEtslice+=(double)fake_recjetEt_TH1->GetBinContent(fake_recjetEt_binnumber+1-i);
-      for (int ivar=0;ivar<(int)var_vector.size();ivar++){
-	if(truthmatched_recjetEt_binnumber+i<recjetEt_TH1_binsnumber){ 
-	  double truthmatched_ivarvalue=var_vector[ivar];
-	  double truthmatched_ivarvalue_entriesnumber=0.;
-	  string truthmatched_ivar_vs_recjetEt_TH2name=Get_ivar_vs_recjetEt_TH2name(1,varname_vector[ivar]);
-	  TH2F *truthmatchedcand_var_vs_recjetEt_TH2=(TH2F*)truthmatchedcand_var_TDirectory->Get(truthmatched_ivar_vs_recjetEt_TH2name.c_str());
-	  if(truthmatched_ivarvalue>=(double)truthmatchedcand_var_vs_recjetEt_TH2->GetYaxis()->GetXmin() && truthmatched_ivarvalue<(double)truthmatchedcand_var_vs_recjetEt_TH2->GetYaxis()->GetXmax()){
-	    int truthmatched_ivar_binnumber=(int)((truthmatched_ivarvalue-(double)truthmatchedcand_var_vs_recjetEt_TH2->GetYaxis()->GetXmin())/(double)truthmatchedcand_var_vs_recjetEt_TH2->GetYaxis()->GetBinWidth(1));
-	    truthmatched_ivarvalue_entriesnumber=(double)truthmatchedcand_var_vs_recjetEt_TH2->GetBinContent(truthmatched_recjetEt_binnumber+i+1,truthmatched_ivar_binnumber+1);
-	  }
-	  if(truthmatched_ivarvalue<(double)truthmatchedcand_var_vs_recjetEt_TH2->GetYaxis()->GetXmin()) {
-	    truthmatched_ivarvalue_entriesnumber=(double)truthmatchedcand_var_vs_recjetEt_TH2->GetBinContent(truthmatched_recjetEt_binnumber+i+1,1);
-	  }
-	  if(truthmatched_ivarvalue>=(double)truthmatchedcand_var_vs_recjetEt_TH2->GetYaxis()->GetXmax()){
-	    truthmatched_ivarvalue_entriesnumber=(double)truthmatchedcand_var_vs_recjetEt_TH2->GetBinContent(truthmatched_recjetEt_binnumber+i+1,(int)truthmatchedcand_var_vs_recjetEt_TH2->GetNbinsY());
-	  }
-	  vartruthmatchedpdf_vector[ivar]+=truthmatched_ivarvalue_entriesnumber;
-	  double fake_ivarvalue=var_vector[ivar];
-	  double fake_ivarvalue_entriesnumber=0.;
-	  string fake_ivar_vs_recjetEt_TH2name=Get_ivar_vs_recjetEt_TH2name(0,varname_vector[ivar]);
-	  TH2F *fakecand_var_vs_recjetEt_TH2=(TH2F*)fakecand_var_TDirectory->Get(fake_ivar_vs_recjetEt_TH2name.c_str());
-	  if(fake_ivarvalue>=(double)fakecand_var_vs_recjetEt_TH2->GetYaxis()->GetXmin() && fake_ivarvalue<(double)fakecand_var_vs_recjetEt_TH2->GetYaxis()->GetXmax()){
-	    int fake_ivar_binnumber=(int)((fake_ivarvalue-(double)fakecand_var_vs_recjetEt_TH2->GetYaxis()->GetXmin())/(double)fakecand_var_vs_recjetEt_TH2->GetYaxis()->GetBinWidth(1));
-	    fake_ivarvalue_entriesnumber=(double)fakecand_var_vs_recjetEt_TH2->GetBinContent(fake_recjetEt_binnumber+i+1,fake_ivar_binnumber+1);
-	  }
-	  if(fake_ivarvalue<(double)fakecand_var_vs_recjetEt_TH2->GetYaxis()->GetXmin()){
-	    fake_ivarvalue_entriesnumber=(double)fakecand_var_vs_recjetEt_TH2->GetBinContent(fake_recjetEt_binnumber+i+1,1);
-	  }
-	  if(fake_ivarvalue>=(double)fakecand_var_vs_recjetEt_TH2->GetYaxis()->GetXmax()){
-	    fake_ivarvalue_entriesnumber=(double)fakecand_var_vs_recjetEt_TH2->GetBinContent(fake_recjetEt_binnumber+i+1,(int)fakecand_var_vs_recjetEt_TH2->GetNbinsX());
-	  }
-	  varfakepdf_vector[ivar]+=fake_ivarvalue_entriesnumber;
-	}
-	if(truthmatched_recjetEt_binnumber+1-i>0){ 
-	  double truthmatched_ivarvalue=var_vector[ivar];
-	  double truthmatched_ivarvalue_entriesnumber=0.;
-	  string truthmatched_ivar_vs_recjetEt_TH2name=Get_ivar_vs_recjetEt_TH2name(1,varname_vector[ivar]);
-	  TH2F *truthmatchedcand_var_vs_recjetEt_TH2=(TH2F*)truthmatchedcand_var_TDirectory->Get(truthmatched_ivar_vs_recjetEt_TH2name.c_str());
-	  if(truthmatched_ivarvalue>=(double)truthmatchedcand_var_vs_recjetEt_TH2->GetYaxis()->GetXmin() && truthmatched_ivarvalue<(double)truthmatchedcand_var_vs_recjetEt_TH2->GetYaxis()->GetXmax()){
-	    int truthmatched_ivar_binnumber=(int)((truthmatched_ivarvalue-(double)truthmatchedcand_var_vs_recjetEt_TH2->GetYaxis()->GetXmin())/(double)truthmatchedcand_var_vs_recjetEt_TH2->GetYaxis()->GetBinWidth(1));
-	    truthmatched_ivarvalue_entriesnumber=(double)truthmatchedcand_var_vs_recjetEt_TH2->GetBinContent(truthmatched_recjetEt_binnumber+1-i,truthmatched_ivar_binnumber+1);
-	  }
-	  if(truthmatched_ivarvalue<(double)truthmatchedcand_var_vs_recjetEt_TH2->GetYaxis()->GetXmin()) {
-	    truthmatched_ivarvalue_entriesnumber=(double)truthmatchedcand_var_vs_recjetEt_TH2->GetBinContent(truthmatched_recjetEt_binnumber+1-i,1);
-	  }
-	  if(truthmatched_ivarvalue>=(double)truthmatchedcand_var_vs_recjetEt_TH2->GetYaxis()->GetXmax()){
-	    truthmatched_ivarvalue_entriesnumber=(double)truthmatchedcand_var_vs_recjetEt_TH2->GetBinContent(truthmatched_recjetEt_binnumber+1-i,(int)truthmatchedcand_var_vs_recjetEt_TH2->GetNbinsY());
-	  }
-	  vartruthmatchedpdf_vector[ivar]+=truthmatched_ivarvalue_entriesnumber;
-	  double fake_ivarvalue=var_vector[ivar];
-	  double fake_ivarvalue_entriesnumber=0.;
-	  string fake_ivar_vs_recjetEt_TH2name=Get_ivar_vs_recjetEt_TH2name(0,varname_vector[ivar]);
-	  TH2F *fakecand_var_vs_recjetEt_TH2=(TH2F*)fakecand_var_TDirectory->Get(fake_ivar_vs_recjetEt_TH2name.c_str());
-	  if(fake_ivarvalue>=(double)fakecand_var_vs_recjetEt_TH2->GetYaxis()->GetXmin() && fake_ivarvalue<(double)fakecand_var_vs_recjetEt_TH2->GetYaxis()->GetXmax()){
-	    int fake_ivar_binnumber=(int)((fake_ivarvalue-(double)fakecand_var_vs_recjetEt_TH2->GetYaxis()->GetXmin())/(double)fakecand_var_vs_recjetEt_TH2->GetYaxis()->GetBinWidth(1));
-	    fake_ivarvalue_entriesnumber=(double)fakecand_var_vs_recjetEt_TH2->GetBinContent(fake_recjetEt_binnumber+1-i,fake_ivar_binnumber+1);
-	  }
-	  if(fake_ivarvalue<(double)fakecand_var_vs_recjetEt_TH2->GetYaxis()->GetXmin()){
-	    fake_ivarvalue_entriesnumber=(double)fakecand_var_vs_recjetEt_TH2->GetBinContent(fake_recjetEt_binnumber+1-i,1);
-	  }
-	  if(fake_ivarvalue>=(double)fakecand_var_vs_recjetEt_TH2->GetYaxis()->GetXmax()){
-	    fake_ivarvalue_entriesnumber=(double)fakecand_var_vs_recjetEt_TH2->GetBinContent(fake_recjetEt_binnumber+1-i,(int)fakecand_var_vs_recjetEt_TH2->GetNbinsX());
-	  }
-	  varfakepdf_vector[ivar]+=fake_ivarvalue_entriesnumber;
-	}
-      }
-      if((int)truthmatched_candidatesnumber_inrecjetEtslice>minnumbercandidates_inpdf_byrecjetEtslice && (int)fake_candidatesnumber_inrecjetEtslice>minnumbercandidates_inpdf_byrecjetEtslice){
-	stop_increasing_slicewidth=true;
-	break;	   
-      }
-    }
-  }
-  for (int ivar=0;ivar<(int)var_vector.size();ivar++){
-    if(truthmatched_recjetEt_binnumber!=0) vartruthmatchedpdf_vector[ivar]/=truthmatched_candidatesnumber_inrecjetEtslice;
-    if(fake_recjetEt_binnumber!=0) varfakepdf_vector[ivar]/=fake_candidatesnumber_inrecjetEtslice;
-    if(vartruthmatchedpdf_vector[ivar]!=0. || varfakepdf_vector[ivar]!=0.){
-      truthmatched_likelihoodfunction_value*=vartruthmatchedpdf_vector[ivar];
-      fake_likelihoodfunction_value*=varfakepdf_vector[ivar];
-    }
-  }
-  if(truthmatched_likelihoodfunction_value+fake_likelihoodfunction_value!=0.){
-    the_likelihoodratio_value=truthmatched_likelihoodfunction_value/(truthmatched_likelihoodfunction_value+fake_likelihoodfunction_value);  
-    return (the_likelihoodratio_value);
-  }else return (NAN); 
-}
-
-string CombinedTauTagAlg::Get_candvar_TDirectoryname(int the_1truth0fake_type){
-  string thestring_1truth0fake_type;
-  if(the_1truth0fake_type==1)  thestring_1truth0fake_type.insert(0,"truthmatched");
-  if(the_1truth0fake_type==0) thestring_1truth0fake_type.insert(0,"fake");
-  
-  string thestring_1signaltk3signaltks_type;
-  if((int)signalchargedpicand_fromtk_HepLV.size()==1) thestring_1signaltk3signaltks_type.insert(0,"1signaltk");
-  if((int)signalchargedpicand_fromtk_HepLV.size()==3) thestring_1signaltk3signaltks_type.insert(0,"3signaltks");
-  
-  string pdf_TDirectoryname(thestring_1truth0fake_type + "_TauCandidate_" + thestring_1signaltk3signaltks_type + "_dir" );
-  return (pdf_TDirectoryname);
-}
-string  CombinedTauTagAlg::Get_recjetEt_TH1name(int the_1truth0fake_type){
-  string thestring_1truth0fake_type;
-  if(the_1truth0fake_type==1)  thestring_1truth0fake_type.insert(0,"truthmatched");
-  if(the_1truth0fake_type==0) thestring_1truth0fake_type.insert(0,"fake");
-  
-  string thestring_1signaltk3signaltks_type;
-  if((int)signalchargedpicand_fromtk_HepLV.size()==1) thestring_1signaltk3signaltks_type.insert(0,"1signaltk");
-  if((int)signalchargedpicand_fromtk_HepLV.size()==3) thestring_1signaltk3signaltks_type.insert(0,"3signaltks");
-  
-  string recjetEt_TH1name(thestring_1truth0fake_type + "_TauCandidate_" + thestring_1signaltk3signaltks_type + "_recjetEt");
-  return (recjetEt_TH1name);
-}
-string  CombinedTauTagAlg::Get_ivar_vs_recjetEt_TH2name(int the_1truth0fake_type,string thestring_Var){
-  string thestring_1truth0fake_type;
-  if(the_1truth0fake_type==1)  thestring_1truth0fake_type.insert(0,"truthmatched");
-  if(the_1truth0fake_type==0) thestring_1truth0fake_type.insert(0,"fake");
-  
-  string thestring_1signaltk3signaltks_type;
-  if((int)signalchargedpicand_fromtk_HepLV.size()==1) thestring_1signaltk3signaltks_type.insert(0,"1signaltk");
-  if((int)signalchargedpicand_fromtk_HepLV.size()==3) thestring_1signaltk3signaltks_type.insert(0,"3signaltks");
-  
-  string ivar_vs_recjetEt_TH2name(thestring_1truth0fake_type + "_TauCandidate_" + thestring_1signaltk3signaltks_type + "_" + thestring_Var + "_vs_recjetEt");
-  return (ivar_vs_recjetEt_TH2name);
 }
 double CombinedTauTagAlg::rectk_signedipt_significance(const Vertex& thePV,const TrackRef theTrack){ 
   TransientTrack the_transTrack=theTransientTrackBuilder->build(&(*theTrack));

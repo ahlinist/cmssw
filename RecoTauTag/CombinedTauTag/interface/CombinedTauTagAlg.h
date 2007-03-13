@@ -17,6 +17,7 @@
 #include "DataFormats/BTauReco/interface/JetTag.h"
 #include "DataFormats/BTauReco/interface/JetTracksAssociation.h"
 #include "DataFormats/BTauReco/interface/IsolatedTauTagInfo.h"
+#include "DataFormats/BTauReco/interface/TaggingVariable.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/JetReco/interface/Jet.h"
 #include "DataFormats/TrackReco/interface/Track.h"
@@ -49,6 +50,7 @@
 #include "RecoBTag/BTagTools/interface/SignedImpactParameter3D.h"
 
 #include "RecoTauTag/CombinedTauTag/interface/ECALBounds.h"
+#include "RecoTauTag/CombinedTauTag/interface/LikelihoodRatio.h"
 
 #include "Math/GenVector/VectorUtil.h"
 #include "Math/GenVector/PxPyPzE4D.h"
@@ -73,7 +75,7 @@ const double chargedpi_mass=0.13957018;      //PDG Particle Physics Booklet, 200
   
 class CombinedTauTagAlg{
 public: 
-  CombinedTauTagAlg(const ParameterSet& parameters){
+  CombinedTauTagAlg(const ParameterSet& parameters):theTransientTrackBuilder(0),theTaggingVariableList(0),theLikelihoodRatio(0){
     // --- parameters filled in RecoTauTag/CombinedTauTag/data/combinedTauTag.cfi
     // ------ tracker selection
     MinimumTransverseMomentum_                                = parameters.getParameter<double>("MinimumTransverseMomentum");
@@ -91,9 +93,6 @@ public:
     ECALclus_min_e_                                           = parameters.getParameter<double>("ECALclus_min_e");
     matchingECALclustrack_deltaR_                             = parameters.getParameter<double>("matchingECALclustrack_deltaR");
     // ------ likelihood function selection
-    ROOTfilename_gettingPDFs_                                 = parameters.getParameter<string>("ROOTfilename_gettingPDFs");
-    minnumbercandidates_inpdf_byrecjetEtslice_case1signaltk_  = parameters.getParameter<int>("minnumbercandidates_inpdf_byrecjetEtslice_case1signaltk");
-    minnumbercandidates_inpdf_byrecjetEtslice_case3signaltks_ = parameters.getParameter<int>("minnumbercandidates_inpdf_byrecjetEtslice_case3signaltks");
     use_neutralECALclus_number_case1signaltk_                 = parameters.getParameter<bool>("use_neutralECALclus_number_case1signaltk");	
     use_neutralECALclus_radius_case1signaltk_                 = parameters.getParameter<bool>("use_neutralECALclus_radius_case1signaltk");
     use_neutralE_ratio_case1signaltk_                         = parameters.getParameter<bool>("use_neutralE_ratio_case1signaltk");
@@ -117,7 +116,7 @@ public:
     muon_selection_max_ECALEt_o_leadtkPt_                     = parameters.getParameter<double>("muon_selection_max_ECALEt_o_leadtkPt");
     muon_selection_max_HCALEt_o_leadtkPt_                     = parameters.getParameter<double>("muon_selection_max_HCALEt_o_leadtkPt");
   }
-  CombinedTauTagAlg(){
+  CombinedTauTagAlg():theTransientTrackBuilder(0),theTaggingVariableList(0),theLikelihoodRatio(0){
     // ------ tracker selection
     MinimumTransverseMomentum_                                = 1.;
     MatchingCone_                                             = 0.17;
@@ -133,9 +132,6 @@ public:
     ECALclusleadtk_conesize_                                  = 0.5;
     ECALclus_min_e_                                           = 1.;
     // ------ likelihood function selection
-    ROOTfilename_gettingPDFs_                                 = "RecoTauTag/CombinedTauTag/data/TauCandidates_THistos.root";
-    minnumbercandidates_inpdf_byrecjetEtslice_case1signaltk_  = 1500;
-    minnumbercandidates_inpdf_byrecjetEtslice_case3signaltks_ = 600;
     use_neutralECALclus_number_case1signaltk_                 = true;	
     use_neutralECALclus_radius_case1signaltk_                 = true;
     use_neutralE_ratio_case1signaltk_                         = false;
@@ -160,17 +156,17 @@ public:
     muon_selection_max_HCALEt_o_leadtkPt_                     = 0.4;  
   } 
   ~CombinedTauTagAlg(){
-    delete theTransientTrackBuilder;
+    if (theTransientTrackBuilder!=0) delete theTransientTrackBuilder;
+    if (theTaggingVariableList!=0) delete theTaggingVariableList;
+    if (theLikelihoodRatio!=0) delete theLikelihoodRatio;
   };
   pair<JetTag,CombinedTauTagInfo> tag(const IsolatedTauTagInfoRef&,const Vertex&,Event&,const EventSetup&);
+  void setLikelihoodRatio(LikelihoodRatio* x){theLikelihoodRatio=x;}
  private:
   void init(const EventSetup&);
   math::XYZPoint recTrackImpactPositiononECAL(Event&,const EventSetup&,TrackRef);
   void AssociateECALcluster_to_track();
-  double LikelihoodRatiovalue();
-  string Get_candvar_TDirectoryname(int);
-  string Get_recjetEt_TH1name(int);
-  string Get_ivar_vs_recjetEt_TH2name(int,string);
+  void FillTaggingVariableList();
   double rectk_signedipt_significance(const Vertex&,const TrackRef);
   double rectk_signedip3D_significance(const Vertex&,const TrackRef);
   double signedflightpath_significance(const Vertex&);
@@ -194,9 +190,8 @@ public:
   double ECALclus_min_e_;
   double matchingECALclustrack_deltaR_;
   // ------ likelihood function selection
-  string ROOTfilename_gettingPDFs_;   
-  int minnumbercandidates_inpdf_byrecjetEtslice_case1signaltk_;
-  int minnumbercandidates_inpdf_byrecjetEtslice_case3signaltks_;      
+  TaggingVariableList* theTaggingVariableList;
+  LikelihoodRatio* theLikelihoodRatio;
   bool use_neutralECALclus_number_case1signaltk_;	
   bool use_neutralECALclus_radius_case1signaltk_;
   bool use_neutralE_ratio_case1signaltk_;
@@ -233,7 +228,7 @@ public:
   bool infact_GoodMuonCand;
   Global3DVector* the_recjet_G3DV;
   HepLorentzVector the_recjet_alternatHepLV;
-  double TauJet_ref_et;
+  double TauCandJet_ref_et;
   vector<HepLorentzVector> chargedpicand_fromtk_HepLV;
   vector<HepLorentzVector> chargedpicand_frompropagtk_HepLV;
   vector<HepLorentzVector> chargedpicand_fromECALclus_HepLV;
