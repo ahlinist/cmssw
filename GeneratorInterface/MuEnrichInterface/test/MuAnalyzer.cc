@@ -153,8 +153,8 @@ void MuAnalyzer::analyze( const Event& e, const EventSetup& )
 		cout << "  Source   starts: " << (*iTP)->vertex() <<", source id: " <<(*iTP)->pdgId();
 		for (g4t_iterator g4T  = (*iTP)->g4Track_begin(); g4T != (*iTP)->g4Track_end(); ++g4T) cout << ", p " <<  g4T->momentum();
 		cout << endl;     	       
-		TrackingVertexRef parentdecayV= (*iTP)->decayVertex();
-		if (parentdecayV != parentV) cout << " Parent Decay Vertex not equal to daughter origin"<<endl;
+		//TrackingVertexRef parentdecayV= (*iTP)->decayVertex();
+		//if (parentdecayV != parentV) cout << " Parent Decay Vertex not equal to daughter origin"<<endl;
 	      }         
 	    }
 	  }
