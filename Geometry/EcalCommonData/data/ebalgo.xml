@@ -337,21 +337,22 @@
     <Numeric name="UnderLZ"      value="00*mum"  />
 
   <!-- these are actual measured underages, avgd for each type. wait to implement
+   -->
     <Numeric name="UnderAF"      value="53*mum"  />
     <Numeric name="UnderBF"      value="44*mum"  />
     <Numeric name="UnderCF"      value="56*mum"  />
     <Numeric name="UnderAR"      value="51*mum"  />
     <Numeric name="UnderBR"      value="36*mum"  />
     <Numeric name="UnderCR"      value="55*mum"  />
-   -->
 
+  <!-- These are dummy underages
     <Numeric name="UnderAF"      value="0*mum"  />
     <Numeric name="UnderBF"      value="0*mum"  />
     <Numeric name="UnderCF"      value="0*mum"  />
     <Numeric name="UnderAR"      value="0*mum"  />
     <Numeric name="UnderBR"      value="0*mum"  />
     <Numeric name="UnderCR"      value="0*mum"  />
-
+   -->
     <Numeric name="NomCryDimLZ"  value="230.0*mm" />
     <Numeric name="NomCryDimAF"  value="21.8308*mm" />
 
@@ -601,7 +602,7 @@
     <String  name="BackVFEMat"         value="materials:E_Air"  />
 
     <Vector  name="BackVFELyrThick" type="numeric" nEntries="5">
-      1*mm, 5*mm, 2*mm, 1*mm, 0.1*mm
+      1*mm, 3.25*mm, 2*mm, 1*mm, 0.1*mm
     </Vector>
 
     <Vector  name="BackVFELyrName" type="string" nEntries="5">
@@ -640,10 +641,10 @@
 
     <Numeric name="BackMiscHere"  value="1" />
     <Vector  name="BackMiscThick" type="numeric" nEntries="20">
-      2*mm, 3*mm, 6*mm, 2*mm, 1*mm,
-      2*mm, 6*mm, 6*mm, 2*mm, 1*mm,
-      2*mm, 9*mm, 6*mm, 2*mm, 1*mm,
-      2*mm,12*mm, 6*mm, 2*mm, 1*mm
+      3*mm,  4*mm, 6*mm, 2*mm, 1*mm,
+      4*mm,  8*mm, 6*mm, 2*mm, 1*mm,
+      5*mm, 10*mm, 6*mm, 2*mm, 1*mm,
+      6*mm, 13*mm, 6*mm, 2*mm, 1*mm
     </Vector>
     <Vector  name="BackMiscName" type="string" nEntries="20">
       EMAL1, EMCA1, EMG101, EMSI1, EMCU1,
