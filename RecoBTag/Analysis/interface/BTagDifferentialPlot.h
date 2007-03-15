@@ -26,8 +26,6 @@ class BTagDifferentialPlot {
   ~BTagDifferentialPlot () ;
 
 
-  void setVerbose ( bool v ) { verbose = v ; }  
-  
   void addBinPlotter ( BaseBTagPlotter * aPlotter ) { theBinPlotters.push_back ( aPlotter ) ; }
 
   void process () ;
@@ -66,12 +64,11 @@ class BTagDifferentialPlot {
   void bookHisto () ;
 
   void fillHisto () ;
+  pair<double, double> getMistag(double fixedBEfficiency, TH1F * effPurHist);
 
 
   // the fixed b-efficiency (later: allow more than one) for which the misids have to be plotted
   double fixedBEfficiency ;
-  // verbosity flag
-  bool verbose ;
   
   // flag if processing should be skipped
   bool noProcessing ;
