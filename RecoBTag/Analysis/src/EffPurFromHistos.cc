@@ -1,6 +1,6 @@
 #include "RecoBTag/Analysis/interface/EffPurFromHistos.h"
 #include "RecoBTag/Analysis/interface/Tools.h"
-
+#include "FWCore/Utilities/interface/CodedException.h"
 #include "TStyle.h"
 #include "TCanvas.h"
 
@@ -22,10 +22,7 @@ EffPurFromHistos::EffPurFromHistos ( const TString & ext, TH1F * h_d, TH1F * h_u
 {
   fromDiscriminatorDistr = false;
   // consistency check
-  if ( !(check()) ) {
-    cout << "EffPurFromHistos::EffPurFromHistos : consistency check failed -> exit!!" << endl;
-    exit (1);
-  }
+  check();
 }
 
 EffPurFromHistos::EffPurFromHistos 
@@ -34,7 +31,7 @@ EffPurFromHistos::EffPurFromHistos
 	nBinOutput(nBin), startOutput(startO), endOutput(endO)
 {
   histoExtension = "_"+dDiscriminatorFC->baseNameTitle();
-  cout << histoExtension<<" - "<<dDiscriminatorFC->baseNameTitle()<<endl;
+
   fromDiscriminatorDistr = true;
   discrNoCutEffic = new FlavourHistorgrams<double> (
 	"discrCut" + histoExtension, "Discriminator Cut" + histoExtension,
@@ -279,7 +276,7 @@ void EffPurFromHistos::plot (TPad * plotCanvas ) {
 }
 
 
-bool EffPurFromHistos::check () {
+void EffPurFromHistos::check () {
   // number of bins
   int nBins_d    = effVersusDiscr_d    -> GetNbinsX();
   int nBins_u    = effVersusDiscr_u    -> GetNbinsX();
@@ -302,8 +299,8 @@ bool EffPurFromHistos::check () {
       nBins_d == nBins_dusg     );
 
   if ( !lNBins ) {
-    cout << "EffPurFromHistos::check() : Input histograms do not all have the same number of bins!" << endl;
-    return false;
+    throw cms::Exception("Configuration")
+      << "Input histograms do not all have the same number of bins!\n";
   }
 
 
@@ -329,8 +326,8 @@ bool EffPurFromHistos::check () {
       sBin_d == sBin_dusg     );
 
   if ( !lSBin ) {
-    cout << "EffPurFromHistos::check() : Input histograms do not all have the same start bin!" << endl;
-    return false;
+    throw cms::Exception("Configuration")
+      << "EffPurFromHistos::check() : Input histograms do not all have the same start bin!\n";
   }
 
 
@@ -356,19 +353,14 @@ bool EffPurFromHistos::check () {
       eBin_d == eBin_dusg     );
 
   if ( !lEBin ) {
-    cout << "EffPurFromHistos::check() : Input histograms do not all have the same end bin!" << endl;
-    return false;
+    throw cms::Exception("Configuration")
+      << "EffPurFromHistos::check() : Input histograms do not all have the same end bin!\n";
   }
-
-
-
-  return true;
 }
 
 
 void EffPurFromHistos::compute ()
 {
-
   // to have shorter names ......
   TString & hE = histoExtension;
   TString hB = "FlavEffVsBEff_";
