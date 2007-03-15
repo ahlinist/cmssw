@@ -1,6 +1,9 @@
 #include "RecoBTag/Analysis/interface/BTagDifferentialPlot.h"
 #include "RecoBTag/Analysis/interface/EffPurFromHistos.h"
 #include "RecoBTag/Analysis/interface/Tools.h"
+#include "FWCore/Utilities/interface/CodedException.h"
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
+#include "TF1.h"
 
 #include <iostream>
 using namespace std ;
@@ -8,7 +11,7 @@ using namespace std ;
 
 
 BTagDifferentialPlot::BTagDifferentialPlot (double bEff, ConstVarType constVariable) :
-	fixedBEfficiency     ( bEff )  , verbose(false),
+	fixedBEfficiency     ( bEff )  ,
 	noProcessing         ( false ) , processed(false), constVar(constVariable),
 	constVariableName    ( "" )    , diffVariableName     ( "" )    ,
 	constVariableValue   ( 999.9 , 999.9 ) , commonName( "MisidForBEff_" ) ,
@@ -209,12 +212,11 @@ void BTagDifferentialPlot::setVariableName ()
     constVariableValue = make_pair ( theBinPlotters[0]->etaPtBin().getPtMin() , theBinPlotters[0]->etaPtBin().getPtMax() ) ;
   }
 
-  if ( verbose ) {
-    cout << "====>>>> BTagDifferentialPlot::setVariableName() : set const/diffVariableName to : "
-	 << constVariableName << " / " << diffVariableName << endl
-	 << "====>>>>                                            constant value interval : "
-	 << constVariableValue.first  << " - " << constVariableValue.second << endl ;
-  }
+  edm::LogInfo("Info") 
+     << "====>>>> BTagDifferentialPlot::setVariableName() : set const/diffVariableName to : "
+     << constVariableName << " / " << diffVariableName << endl
+     << "====>>>>                                            constant value interval : "
+     << constVariableValue.first  << " - " << constVariableValue.second << endl ;
 }
 
 
@@ -290,19 +292,13 @@ void BTagDifferentialPlot::fillHisto () {
     if ( diffVariableName == "eta" ) {
       isActive = currentBin.getEtaActive() ;
       valueXAxis = 0.5 * ( currentBin.getEtaMin() + currentBin.getEtaMax() ) ;
+    } else if ( diffVariableName == "pt"  ) {
+      isActive = currentBin.getPtActive() ;
+      valueXAxis = 0.5 * ( currentBin.getPtMin() + currentBin.getPtMax() ) ;
+    } else {
+      throw cms::Exception("Configuration")
+	<< "====>>>> BTagDifferentialPlot::fillHisto() : illegal diffVariableName = " << diffVariableName << endl;
     }
-    else {
-      if ( diffVariableName == "pt"  ) {
-	isActive = currentBin.getPtActive() ;
-	valueXAxis = 0.5 * ( currentBin.getPtMin() + currentBin.getPtMax() ) ;
-      }
-      else {
-	cout << "====>>>> BTagDifferentialPlot::fillHisto() : illegal diffVariableName = " << diffVariableName << endl
-	     << "====>>>> BTagDifferentialPlot::fillHisto() : -> I'll exit!! " << endl ;
-	exit (1) ;
-      }
-    }
-
 
     // for the moment: ignore inactive bins
     // (maybe later: if a Bin is inactive -> set value to fill well below left edge of histogram to have it in the underflow)
@@ -329,14 +325,39 @@ void BTagDifferentialPlot::fillHisto () {
 	                                              itP != effPurDifferentialPairs.end()   ; itP++ ) {
       TH1F * effPurHist = itP->first  ;
       TH1F * diffHist   = itP->second ;
-      int iBinGet = effPurHist->FindBin ( fixedBEfficiency ) ;
-      double effForBEff    = effPurHist->GetBinContent ( iBinGet ) ;
-      double effForBEffErr = effPurHist->GetBinError   ( iBinGet ) ;
+      pair<double, double> mistag = getMistag(fixedBEfficiency, effPurHist);
       int iBinSet = diffHist->FindBin(valueXAxis) ;
-      diffHist->SetBinContent ( iBinSet , effForBEff    ) ;
-      diffHist->SetBinError   ( iBinSet , effForBEffErr ) ;
+      diffHist->SetBinContent(iBinSet, mistag.first);
+      diffHist->SetBinError(iBinSet, mistag.second);
     }
-
   }
 
+}
+
+pair<double, double>
+BTagDifferentialPlot::getMistag(double fixedBEfficiency, TH1F * effPurHist)
+{
+  int iBinGet = effPurHist->FindBin ( fixedBEfficiency ) ;
+  double effForBEff    = effPurHist->GetBinContent ( iBinGet ) ;
+  double effForBEffErr = effPurHist->GetBinError   ( iBinGet ) ;
+
+  if (effForBEff==0. && effForBEffErr==0.) {
+    // The bin was empty. Could be that it was not filled, as the scan-plot
+    //  did not have an entry at the requested value, or that the curve
+    // is above or below.
+    // Fit a plynomial, and evaluate the mistag at the requested value.
+    effPurHist->Fit("pol4", "q");
+    TF1 *myfunc = effPurHist->GetFunction("pol4");
+    effForBEff = myfunc->Eval(fixedBEfficiency);
+    effPurHist->RecursiveRemove(myfunc);
+    //Error: first non-empty bin on the right and take its error
+    for (int i = iBinGet+1; i< effPurHist->GetNbinsX(); ++i) {
+      if (effPurHist->GetBinContent(i)!=0) {
+        effForBEffErr = effPurHist->GetBinError(i);
+	break;
+      }
+    }
+  }
+
+  return pair<double, double>(effForBEff, effForBEffErr);
 }
