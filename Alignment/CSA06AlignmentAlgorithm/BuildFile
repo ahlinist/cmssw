@@ -1,22 +1,16 @@
-<use name=TrackingTools/TrackFitters>
-<use name=Alignment/TrackerAlignment>
 <use name=Alignment/CommonAlignment>
 <use name=Alignment/CommonAlignmentAlgorithm>
-<use name=FWCore/Framework>
-<use name=FWCore/ParameterSet>
+<use name=Alignment/SurveyAnalysis>
+<use name=Alignment/TrackerAlignment>
+<use name=FWCore/MessageLogger>
+<use name=FWCore/PluginManager>
+<use name=FWCore/Utilities>
 <use name=DataFormats/TrackReco>
-<use name=root>
-<use name=clhep>
+<use name=TrackingTools/PatternTools>
+<use name=TrackingTools/TrackFitters>
 <export>
    <lib name=AlignmentCSA06AlignmentAlgorithm>
-   <use name=Alignment/TrackerAlignment>
-   <use name=TrackingTools/TrackFitters>
    <use name=Alignment/CommonAlignment>
    <use name=Alignment/CommonAlignmentAlgorithm>
-   <use name=FWCore/Framework>
-   <use name=FWCore/ParameterSet>
-   <use name=DataFormats/TrackReco>
-   <use name=root>
-   <use name=clhep>
 </export>
 <flags SEAL_PLUGIN_NAME="AlignmentCSA06AlignmentAlgorithm">
