@@ -24,6 +24,8 @@ class RecoAnalyzerExample : public edm::EDAnalyzer {
   /// names of product labels
   edm::InputTag hepMC_, tracks_, caloTowers_, caloJets_, genJets_, 
     tauTags_, electrons_, muons_;  
+  /// skip product flags
+  bool skipGenJets_;
   /// output ROOT file
   TFile * outputFile_ ;
   /// output histogram
@@ -39,7 +41,7 @@ class RecoAnalyzerExample : public edm::EDAnalyzer {
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/JetReco/interface/CaloJet.h"
 #include "DataFormats/JetReco/interface/GenJet.h"
-#include "DataFormats/EgammaCandidates/interface/Electron.h"
+#include "DataFormats/EgammaCandidates/interface/PixelMatchGsfElectron.h"
 #include "DataFormats/MuonReco/interface/Muon.h"
 #include "DataFormats/BTauReco/interface/IsolatedTauTagInfo.h"
 #include "DataFormats/CaloTowers/interface/CaloTowerCollection.h"
@@ -61,7 +63,8 @@ RecoAnalyzerExample::RecoAnalyzerExample( const ParameterSet & cfg ) :
   genJets_    ( cfg.getParameter<InputTag>( "genJets" ) ),
   tauTags_    ( cfg.getParameter<InputTag>( "tauTags" ) ),
   electrons_  ( cfg.getParameter<InputTag>( "electrons" ) ),
-  muons_      ( cfg.getParameter<InputTag>( "muons" ) ) {
+  muons_      ( cfg.getParameter<InputTag>( "muons" ) ),
+  skipGenJets_( cfg.getUntrackedParameter<bool>( "skipGenJets", false ) ) {
 }
 
 RecoAnalyzerExample::~RecoAnalyzerExample() {
@@ -108,47 +111,48 @@ void RecoAnalyzerExample::analyze(const Event& event, const EventSetup& eventSet
   // get calo towers collection
   Handle<CaloTowerCollection> caloTowers; 
   event.getByLabel( caloTowers_, caloTowers );
-  
+  cout << "====> number of CaloTowers " << caloTowers->size() << endl;
+
   // get calo jet collection
   Handle<CaloJetCollection> caloJets;
   event.getByLabel( caloJets_, caloJets );
+  cout << "====> number of CaloJets   " << caloJets->size() << endl;
   
-  // get gen jet collection
-  Handle<GenJetCollection> genJets;
-  event.getByLabel( genJets_, genJets );
-
+  if ( ! skipGenJets_ ) {
+    // get gen jet collection
+    Handle<GenJetCollection> genJets;
+    event.getByLabel( genJets_, genJets );
+    cout << "====> number of GenJets    " << genJets->size() << endl;
+    // access to MC jets. similar for reco jets, tracks, ....
+    for ( size_t j = 0; j < genJets->size(); ++ j ) {
+      const GenJet & jet = (*genJets)[ j ];
+      cout << "->   Jet " << j << " pT: " << jet.pt() 
+	   << " eta: " << jet.eta() 
+	   << " phi: " << jet.phi() << endl;
+      h_jetEt->Fill( jet.et() );
+    }
+  }
   // get track collection
   Handle<TrackCollection> tracks;
   event.getByLabel( tracks_, tracks );
-  
+  cout << "====> number of Tracks     " << tracks->size() << endl;
+
   // Taus
   Handle<IsolatedTauTagInfoCollection> tauTags;
   event.getByLabel( tauTags_, tauTags );
+  cout << "====> number of Tau tags   " << tauTags->size() << endl;
   
   // Electrons
-  Handle<ElectronCollection> electrons;
+  Handle<PixelMatchGsfElectronCollection> electrons;
   event.getByLabel( electrons_, electrons );
+  cout << "====> number of Electrons  " << electrons->size() << endl;
   
   // Muons
   Handle<MuonCollection> muons;
   event.getByLabel( muons_, muons );
-  
-  cout << "====> number of CaloJets   " << caloJets->size() << endl;
-  cout << "====> number of GenJets    " << genJets->size() << endl;
-  cout << "====> number of Tracks     " << tracks->size() << endl;
-  cout << "====> number of CaloTowers " << caloTowers->size() << endl;
-  cout << "====> number of Tau tags   " << tauTags->size() << endl;
-  cout << "====> number of Electrons  " << electrons->size() << endl;
   cout << "====> number of Muons      " << muons->size() << endl;
   
-  // access to MC jets. similar for reco jets, tracks, ....
-  for ( size_t j = 0; j < genJets->size(); ++ j ) {
-    const GenJet & jet = (*genJets)[ j ];
-    cout << "->   Jet " << j << " pT: " << jet.pt() 
-	 << " eta: " << jet.eta() 
-	 << " phi: " << jet.phi() << endl;
-    h_jetEt->Fill( jet.et() );
-  }
+  
   
   // access tracks
   for (size_t j = 0; j < tracks->size(); ++ j ) {
