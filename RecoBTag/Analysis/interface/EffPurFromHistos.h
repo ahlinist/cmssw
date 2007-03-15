@@ -56,7 +56,7 @@ class EffPurFromHistos {
  private:
 
   // consistency check (same binning)
-  bool check () ;
+  void check () ;
   bool fromDiscriminatorDistr;
 
 
