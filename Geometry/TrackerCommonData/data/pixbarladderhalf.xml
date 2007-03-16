@@ -155,7 +155,7 @@
  </LogicalPart>
  <LogicalPart name="PixelBarrelCapacitorHalf" category="unspecified">
   <rSolid name="PixelBarrelCapacitorHalf"/>
-  <rMaterial name="pixbarmaterial:Barium_Titanate"/>
+  <rMaterial name="materials:Barium_Titanate"/>
  </LogicalPart>
  <LogicalPart name="PixelBarrelCapacitorStripHalf" category="unspecified">
   <rSolid name="PixelBarrelCapacitorStripHalf"/>
