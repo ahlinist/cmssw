@@ -363,7 +363,9 @@ void CSCWireSegments::compareProtoSegment(const CSCWireHit& h, int layer) {
   ChamberHitContainer old_proto_segment = proto_segment;
   float old_proto_y[6];
   for (int j=0; j < 6; j++) old_proto_y[j] = proto_y[j]; 
+
   bool ok = replaceHit(h, layer);
+  if (ok) fitSlope();
   
   if ( (proto_Chi2 < old_proto_Chi2) && (ok) ) return;
   
