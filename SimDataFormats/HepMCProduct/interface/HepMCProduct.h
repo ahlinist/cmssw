@@ -6,8 +6,8 @@
  *  \author Joanna Weng, Filip Moortgat
  */
 
-#include "CLHEP/HepMC/ReadHepMC.h"
-#include "CLHEP/HepMC/GenEvent.h"
+//include "CLHEP/HepMC/ReadHepMC.h"
+#include "HepMC/GenEvent.h"
 
 #include "DataFormats/Common/interface/Ref.h"
 
