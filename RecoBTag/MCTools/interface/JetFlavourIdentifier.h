@@ -17,7 +17,7 @@ public:
   void readEvent(const edm::Event& iEvent);
 
   JetFlavour identifyBasedOnPartons( const reco::Jet & jet ) const;
-  std::vector<MCParton> getListOfPartons() const  {return m_partons;}
+  const std::vector<MCParton> & getListOfPartons() const  {return m_partons;}
 
 private:
   void fillInfo ( const HepMC::GenEvent * generated_event );
