@@ -88,6 +88,9 @@ private:
   float pc[3];
   float corr[101];
 
+  bool TIFOnly_const;
+  bool TIFOnly_lin;
+
 public:
 
   // constructor
@@ -100,7 +103,7 @@ public:
   initialization = 0;
 }
 
-  int initialize(float,float,float,float,int);  
+  int initialize(float,float,float,float,int,bool,bool);  
         // to set the energy and cos theta range 
 
   int generate();
