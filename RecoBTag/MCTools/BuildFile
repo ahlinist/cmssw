@@ -4,12 +4,14 @@
 <use name=FWCore/ParameterSet>
 <use name=SimDataFormats/HepMCProduct>
 <use name=rootmath>
+<use name = hepmc>
 <export>
   <use name=DataFormats/JetReco>
   <use name=DataFormats/Math>
   <use name=FWCore/Framework>
   <use name=FWCore/ParameterSet>
   <use name=SimDataFormats/HepMCProduct>
+  <use name = hepmc>
   <lib name=RecoBTagMCTools>
 </export>
 

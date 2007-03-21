@@ -56,8 +56,9 @@ void JetFlavourIdentifier::fillInfo ( const HepMC::GenEvent * event ) {
 //    { event->print(); }
 
   // one loop to find out the index of the last parton
-  const HepMC::GenParticle* lastParton = event->particle(event->particles_size()-1) ;
+  
   HepMC::GenEvent::particle_const_iterator p;
+  const HepMC::GenParticle* lastParton = 0;
   for (p = event->particles_begin(); p != event->particles_end(); ++p) {
     // decode particle info from Lund Code
     MCParticleInfo testCode( (*p)->pdg_id() ); 

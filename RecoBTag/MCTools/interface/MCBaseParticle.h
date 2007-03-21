@@ -51,7 +51,7 @@ protected:
   MCParticleInfo particleInfo_;
   math::XYZTLorentzVector  fourVector_;
 
-  math::XYZTLorentzVector lorentzVect(const CLHEP::HepLorentzVector & p4) const 
+  math::XYZTLorentzVector lorentzVect(const HepMC::FourVector & p4) const 
   	{return  math::XYZTLorentzVector( p4.x(), p4.y(), p4.z(), p4.t() );}
 
 };
