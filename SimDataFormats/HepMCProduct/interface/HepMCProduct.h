@@ -10,8 +10,7 @@
 #include "HepMC/GenEvent.h"
 
 #include "DataFormats/Common/interface/Ref.h"
-
-class CLHEP::Hep3Vector ;
+#include "CLHEP/Vector/LorentzVector.h"
 
 namespace edm {
 
