@@ -9,6 +9,7 @@ CosMuoGenSource::CosMuoGenSource( const ParameterSet & pset, InputSourceDescript
   GeneratedInputSource(pset, desc ) ,  
   //RanS(pset.getUntrackedParameter<int>("RanSeed", 123456)), //get seed now from Framework
   MinE(pset.getUntrackedParameter<double>("MinEn", 2.)),
+  MinE_CMS(pset.getUntrackedParameter<double>("MinEn_CMS", MinE)),
   MaxE(pset.getUntrackedParameter<double>("MaxEn", 10000.)),
   MinT(pset.getUntrackedParameter<double>("MinTheta", 0.)),
   MaxT(pset.getUntrackedParameter<double>("MaxTheta", 88.)),
@@ -20,6 +21,8 @@ CosMuoGenSource::CosMuoGenSource( const ParameterSet & pset, InputSourceDescript
   RTarget(pset.getUntrackedParameter<double>("RadiusOfTarget", 8000.)),
   ZTarget(pset.getUntrackedParameter<double>("ZDistOfTarget", 15000.)),
   TrackerOnly(pset.getUntrackedParameter<bool>("TrackerOnly", false)),
+  TIFOnly_constant(pset.getUntrackedParameter<bool>("TIFOnly_constant", false)),
+  TIFOnly_linear(pset.getUntrackedParameter<bool>("TIFOnly_linear", false)),
   MTCCHalf(pset.getUntrackedParameter<bool>("MTCCHalf", false)),
   cmVerbosity_(pset.getUntrackedParameter<bool>("Verbosity", false))
   {
@@ -31,6 +34,7 @@ CosMuoGenSource::CosMuoGenSource( const ParameterSet & pset, InputSourceDescript
     CosMuoGen->setNumberOfEvents(numberEventsInRun());
     CosMuoGen->setRanSeed(RanS);
     CosMuoGen->setMinE(MinE);
+    CosMuoGen->setMinE_CMS(MinE_CMS);
     CosMuoGen->setMaxE(MaxE);
     CosMuoGen->setMinTheta(MinT);
     CosMuoGen->setMaxTheta(MaxT);
@@ -42,6 +46,8 @@ CosMuoGenSource::CosMuoGenSource( const ParameterSet & pset, InputSourceDescript
     CosMuoGen->setRadiusOfTarget(RTarget);
     CosMuoGen->setZDistOfTarget(ZTarget);
     CosMuoGen->setTrackerOnly(TrackerOnly);
+    CosMuoGen->setTIFOnly_constant(TIFOnly_constant);
+    CosMuoGen->setTIFOnly_linear(TIFOnly_linear);
     CosMuoGen->setMTCCHalf(MTCCHalf);
     CosMuoGen->initialize();
     produces<HepMCProduct>();

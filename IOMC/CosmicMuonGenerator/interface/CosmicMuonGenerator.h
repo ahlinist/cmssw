@@ -29,6 +29,7 @@ public:
     NumberOfEvents = 100;
     RanSeed = 135799468;
     MinE =     2.;
+    MinE_CMS =     MinE;
     MaxE =   10000.;
     MinTheta =  0.*Deg2Rad;
     MaxTheta = 88.*Deg2Rad;
@@ -40,6 +41,8 @@ public:
     RadiusOfTarget = 8000.;
     ZDistOfTarget = 15000.;
     TrackerOnly = false;
+    TIFOnly_constant = false;
+    TIFOnly_linear = false;
     MTCCHalf = false;
     EventRate = 0.;
     rateErr_stat = 0.;
@@ -82,6 +85,7 @@ private:
   unsigned int NumberOfEvents; // number of events to be generated
   int    RanSeed; // seed of random number generator
   double MinE;     // min. E     [GeV]
+  double MinE_CMS; // min. E at CMS surface    [GeV]; default is MinE_CMS=MinE, thus no bias from access-shaft
   double MaxE;     // max. E     [GeV]
   double MinTheta; // min. theta [rad]
   double MaxTheta; // max. theta [rad]
@@ -93,6 +97,8 @@ private:
   double RadiusOfTarget; // Radius of target-cylinder which cosmics HAVE to hit [mm], default is CMS-dimensions
   double ZDistOfTarget; // z-length of target-cylinder which cosmics HAVE to hit [mm], default is CMS-dimensions
   bool   TrackerOnly; //if set to "true" detector with tracker-only setup is used, so no material or B-field outside is considerd
+  bool   TIFOnly_constant; //if set to "true" cosmics can also be generated below 2GeV with unphysical constant energy dependence
+  bool   TIFOnly_linear; //if set to "true" cosmics can also be generated below 2GeV with unphysical linear energy dependence
   bool   MTCCHalf; //if set to "true" muons are sure to hit half of CMS important for MTCC, 
                    //still material and B-field of whole CMS is considered
   double EventRate; // number of muons per second [Hz]
@@ -121,6 +127,7 @@ public:
   void setNumberOfEvents(unsigned int N);
   void setRanSeed(int N);
   void setMinE(double E);
+  void setMinE_CMS(double E);
   void setMaxE(double E);
   void setMinTheta(double Theta);
   void setMaxTheta(double Theta);
@@ -132,6 +139,8 @@ public:
   void setRadiusOfTarget(double R);
   void setZDistOfTarget(double Z);
   void setTrackerOnly(bool Tracker);
+  void setTIFOnly_constant(bool TIF);
+  void setTIFOnly_linear(bool TIF);
   void setMTCCHalf(bool MTCC);
   // initialize the generator
   void initialize();

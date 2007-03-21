@@ -31,6 +31,7 @@ namespace edm
     // define the configurable generator parameters
     int32_t      RanS; // seed of random number generator (from Framework)
     double       MinE; // min. E     [GeV]
+    double       MinE_CMS; // min. E at CMS surface    [GeV]; default is MinE_CMS=MinE, thus no bias from access-shaft
     double       MaxE; // max. E     [GeV]
     double       MinT; // min. theta [deg]
     double       MaxT; // max. theta [deg]
@@ -42,6 +43,8 @@ namespace edm
     double       RTarget; // Radius of target-cylinder which cosmics HAVE to hit [mm], default is CMS-dimensions
     double       ZTarget; // z-length of target-cylinder which cosmics HAVE to hit [mm], default is CMS-dimensions
     bool         TrackerOnly; //if set to "true" detector with tracker-only setup is used, so no material or B-field outside is considerd
+    bool         TIFOnly_constant; //if set to "true" cosmics can also be generated below 2GeV with unphysical constant energy dependence
+    bool         TIFOnly_linear; //if set to "true" cosmics can also be generated below 2GeV with unphysical linear energy dependence
     bool         MTCCHalf; //if set to "true" muons are sure to hit half of CMS important for MTCC, 
                            //still material and B-field of whole CMS is considered
 
