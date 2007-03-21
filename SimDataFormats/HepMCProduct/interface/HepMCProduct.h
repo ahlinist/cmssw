@@ -6,8 +6,8 @@
  *  \author Joanna Weng, Filip Moortgat
  */
 
-//include "CLHEP/HepMC/ReadHepMC.h"
 #include "HepMC/GenEvent.h"
+#include "HepMC/SimpleVector.h"
 
 #include "DataFormats/Common/interface/Ref.h"
 #include "CLHEP/Vector/LorentzVector.h"
