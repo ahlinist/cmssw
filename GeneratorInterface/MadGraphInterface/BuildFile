@@ -5,6 +5,7 @@
 <use name=FWCore/Utilities>
 <use name=SimDataFormats/HepMCProduct>
 <use name=clhep> 
+<use name=hepmc>
 <use name=pythia6_227>
 <use name=root>
 <use name=Utilities/StorageFactory>
@@ -20,6 +21,7 @@
  <use name=Foundation/PluginManager>
  <use name=SimDataFormats/HepMCProduct>
  <use name=clhep> 
+ <use name=hepmc>
  <use name=pythia6_227>
  <use name=root>
  <use name=Utilities/StorageFactory>
