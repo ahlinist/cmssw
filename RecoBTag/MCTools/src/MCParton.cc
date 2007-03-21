@@ -1,4 +1,5 @@
 #include "RecoBTag/MCTools/interface/MCParton.h"
+#include <Math/GenVector/VectorUtil.h>
 
 using namespace HepMC;
 using namespace std;
@@ -56,17 +57,21 @@ void MCParton::setParticleProperties( ) {
   flavourAbs_   = abs ( flavour_ ) ;
   statusPythia_ = hepParticle->status() ;
 
-  mother_ = hepParticle->mother()  ;
 
   bool hasMother = false ;
 
   MCParticleInfo motherParticleInfo ;
 
-  if ( hepParticle->mother() != 0 ) {
+  if ( hepParticle->production_vertex() && 
+       ( hepParticle->production_vertex()->particles_begin(HepMC::parents) != 
+		hepParticle->production_vertex()->particles_end(HepMC::parents)) ) {
+    mother_ = *(hepParticle->production_vertex()->particles_begin(HepMC::parents));
     motherParticleInfo.setCode ( mother_->pdg_id()) ;
     motherLundCode_ =  motherParticleInfo.lundCode() ;
     motherStatusPythia_ = mother_->status() ;
     hasMother = true ;
+  } else {
+    mother_ = 0;
   }
 
 // ThS: Seems to be useless!!!
@@ -81,7 +86,7 @@ void MCParton::setParticleProperties( ) {
   if ( statusPythia_==3 ) {
     for (p = hepEvent->particles_begin(); (*p) != lastParton_; ++p) {
       int statusP = (**p).status() ;
-      if ( statusP==2 && (**p).mother() == hepParticle ) {
+      if ( statusP==2 && (*((*p)->production_vertex()->particles_begin(HepMC::parents)) == hepParticle) ) {
 //       cout << "found daughter at "<<(**p).barcode()<<endl;
 	daughterLines_.push_back (*p) ;
 	summedDaughters_ += math::XYZTLorentzVector ( (**p).momentum() );
@@ -114,9 +119,9 @@ void MCParton::setParticleProperties( ) {
       int statusP = (**p).status() ;
       MCParticleInfo lundCodeP((**p).pdg_id()) ;
       int flavourP = abs ( lundCodeP.lundCode() ) ;
-      double deltaRP = (**p).momentum().deltaR(hepParticle->momentum()) ;
+      double deltaRP = ROOT::Math::VectorUtil::DeltaR(lorentzVect((**p).momentum()), lorentzVect(hepParticle->momentum()));
       if ( statusP==2 &&
-	   (**p).mother() != hepParticle &&
+	   *((*p)->production_vertex()->particles_begin(HepMC::parents)) != hepParticle &&
 	   (flavourP==4 || flavourP==5)    &&
 	   deltaRP<0.8 ) {
 	initialPartonHasCloseHF_ = true ;
@@ -132,7 +137,8 @@ void MCParton::setParticleProperties( ) {
 	fromPrimaryProcess_ = true ;
   // but: if it has a status==3 daughter, don't set it!
   for (p = hepEvent->particles_begin(); (*p) != lastParton_; ++p) {
-    if ( ((**p).status() == 3)  &&  ((**p).mother() == hepParticle) ) 
+    if ( ((**p).status() == 3)  && 
+	(*((*p)->production_vertex()->particles_begin(HepMC::parents)) == hepParticle) ) 
 	fromPrimaryProcess_ = false ; 
   }
   
@@ -156,7 +162,7 @@ void MCParton::setParticleProperties( ) {
   isFinalParton_ = true ;
   if ( statusPythia_ != 2 ) isFinalParton_ = false ;
   for (p = hepEvent->particles_begin(); (*p) != lastParton_; ++p) {
-    if ( (**p).mother() == hepParticle ) isFinalParton_ = false ; 
+    if ( *((*p)->production_vertex()->particles_begin(HepMC::parents)) == hepParticle ) isFinalParton_ = false ; 
   }
 
   
@@ -174,7 +180,7 @@ void MCParton::setParticleProperties( ) {
     int nC (0) , nCBar (0) ;
     int nB (0) , nBBar (0) ;
     for (p = hepEvent->particles_begin(); (*p) != lastParton_; ++p) {
-      if ( (**p).mother() == hepParticle ) {
+      if ( *((*p)->production_vertex()->particles_begin(HepMC::parents)) == hepParticle ) {
         int pid = (**p).pdg_id();
 	if ( pid == 1 ) nD++ ;
 	if ( pid == 2 ) nU++ ;
