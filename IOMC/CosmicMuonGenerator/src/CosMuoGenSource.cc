@@ -71,13 +71,13 @@ bool CosMuoGenSource::produce(Event &e)
   // delete and re-create fEvt (memory)
   // delete fEvt;
   fEvt = new HepMC::GenEvent();
-  HepMC::GenVertex* Vtx = new  HepMC::GenVertex(CLHEP::HepLorentzVector(CosMuoGen->OneMuoEvt.vx(),
-                                                                        CosMuoGen->OneMuoEvt.vy(),
-                                                                        CosMuoGen->OneMuoEvt.vz(),
-                                                                        CosMuoGen->OneMuoEvt.t0()));
-  CLHEP::Hep3Vector p(CosMuoGen->OneMuoEvt.px(),CosMuoGen->OneMuoEvt.py(),CosMuoGen->OneMuoEvt.pz());
+  HepMC::GenVertex* Vtx = new  HepMC::GenVertex(HepMC::FourVector(CosMuoGen->OneMuoEvt.vx(),
+								  CosMuoGen->OneMuoEvt.vy(),
+								  CosMuoGen->OneMuoEvt.vz(),
+								  CosMuoGen->OneMuoEvt.t0()));
+  HepMC::FourVector p(CosMuoGen->OneMuoEvt.px(),CosMuoGen->OneMuoEvt.py(),CosMuoGen->OneMuoEvt.pz(),CosMuoGen->OneMuoEvt.e());
   HepMC::GenParticle* Part = 
-    new HepMC::GenParticle(CLHEP::HepLorentzVector(p,CosMuoGen->OneMuoEvt.e()),CosMuoGen->OneMuoEvt.id(),1);
+    new HepMC::GenParticle(p,CosMuoGen->OneMuoEvt.id(),1);
   Vtx->add_particle_out(Part); 
   fEvt->add_vertex(Vtx);
   fEvt->set_event_number(event());
