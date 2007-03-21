@@ -29,11 +29,11 @@ const double RhoWall = 2.65; // [g cm^-3]
 const double RhoRock = 2.50; // [g cm^-3]
 // cylinder around CMS (with R, +-Z)
 // WARNING: These values will be set to tracker-only setup if "TrackerOnly=true" in .cfg-file. 
-// This means R=1100 and Z=1100, no material or B-field outside is considered
+// This means R=1200 and Z=2800, no material or B-field outside is considered
 const double RadiusCMS =  8000.; // [mm]
 const double Z_DistCMS = 15000.; // [mm]
-const double RadiusTracker =  1100.; // [mm]
-const double Z_DistTracker = 1100.; // [mm]
+const double RadiusTracker =  1200.; // [mm]
+const double Z_DistTracker = 2800.; // [mm]
 // cylinder actually used in the code
 //const double RadiusTarget = RadiusCMS; // [mm]  //now controlled by cfg-file!!!
 //const double Z_DistTarget = Z_DistCMS; // [mm]  //now controlled by cfg-file!!!
