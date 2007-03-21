@@ -4,7 +4,7 @@
 // CosmicMuonGenerator by droll (01/FEB/2006)
 //
 #include "IOMC/CosmicMuonGenerator/interface/CosmicMuonGenerator.h"
-#include "CLHEP/HepMC/GenEvent.h"
+#include "HepMC/GenEvent.h"
 #include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
 #include "FWCore/Framework/interface/EventPrincipal.h"
 #include "FWCore/Framework/interface/GeneratedInputSource.h"
