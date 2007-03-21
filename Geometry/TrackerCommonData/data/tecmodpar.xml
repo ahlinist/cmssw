@@ -6,25 +6,31 @@
  <Constant name="DetTilt"        value="0.100*rad"/>
  <Constant name="FrameWidth"     value="1.200*cm"/>
  <Constant name="FrameOver"      value="0.300*cm"/>
+<!-- the TopFrameHeight -Parameter should be replaced by local values!!!
+It is used to POSITION(!) the wafer the name is missleading and kept for
+compatibility-->
  <Constant name="TopFrameHeight" value="3.720*cm"/>
- <Constant name="TopFrameThick"  value="1.000*mm"/>
+ <Constant name="TopFrameThick"  value="0.764*mm"/>
  <Constant name="TopFrameZ"      value="0.275*mm"/>
- <Constant name="SideFrameThick" value="0.500*mm"/>
+ <Constant name="SideFrameThick" value="1.022*mm"/>
  <Constant name="SideFrameZ"     value="0.025*mm"/>
  <Constant name="ActiveThick1"   value="0.300*mm"/>
  <Constant name="ActiveThick2"   value="0.500*mm"/>
  <Constant name="ActiveZ1"       value="-0.606*mm"/>
  <Constant name="ActiveZ2"       value="-0.525*mm"/>
- <Constant name="HybridHeight"   value="2.500*cm"/>
- <Constant name="HybridWidth"    value="6.000*cm"/>
- <Constant name="HybridThick"    value="0.500*mm"/>
+ <Constant name="HybridHeight"   value="3.000*cm"/>
+ <Constant name="HybridWidth"    value="6.520*cm"/>
+ <Constant name="HybridThick"    value="0.680*mm"/>
  <Constant name="HybridZ"        value="-0.525*mm"/>
- <Constant name="PitchHeight"    value="1.200*cm"/>
- <Constant name="PitchThick"     value="0.550*mm"/>
- <Constant name="PitchZ"         value="-0.500*mm"/>
+ <Constant name="PitchHeight"    value="13.0*mm"/>
+ <Constant name="PitchStereoHeight"    value="14.35*mm"/>
+ <Constant name="PitchThick"     value="0.6650*mm"/>
+ <Constant name="PitchZ"         value="-1.1075*mm"/>
  <Constant name="GapModule"      value="0.500*mm"/>
  <Constant name="ModuleThickSS"  value="[ModuleThick]"/>
  <Constant name="ModuleThickDS"  value="(2*[ModuleThick]+[GapModule])"/>
+ <Constant name="SiFrSuppBoxThick"   value="0.258*mm"/>
+ <Constant name="SiReenforcementThick"   value="0.387*mm"/>
 </ConstantsSection>
 
 <RotationSection label="tecmodpar.xml">
