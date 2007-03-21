@@ -16,7 +16,7 @@
 //
 // Original Author:  dkcira
 //         Created:  Sat Feb  4 20:49:51 CET 2006
-// $Id: SiStripNoiseDB.h,v 1.3 2006/11/18 00:17:52 giordano Exp $
+// $Id: SiStripNoiseDB.h,v 1.4 2006/12/13 11:34:06 bainbrid Exp $
 //
 
 // system include files
@@ -38,7 +38,7 @@
 #include "DataFormats/Common/interface/DetSetVector.h"
 #include "DataFormats/SiStripDigi/interface/SiStripDigi.h"
 #include "DataFormats/SiStripDigi/interface/SiStripRawDigi.h"
-#include "DataFormats/SiStripDigi/interface/SiStripEventSummary.h"
+#include "DataFormats/SiStripCommon/interface/SiStripEventSummary.h"
 // cabling
 #include "CondFormats/SiStripObjects/interface/SiStripFedCabling.h"
 #include "CondFormats/DataRecord/interface/SiStripFedCablingRcd.h"
