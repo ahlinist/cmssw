@@ -20,20 +20,18 @@ void HepMGProductAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSet
    Handle<HepMCProduct> evt;
    iEvent.getByType(evt);
 
-   HepMC::GenEvent * myGenEvent = new  HepMC::GenEvent(*(evt->GetEvent()));
-
    //Print out the HepMCProduct
    evt->GetEvent()->print();
   
    //To print out status code, pdg, mass, etc table uncomment below
+   //   HepMC::GenEvent * myGenEvent = new  HepMC::GenEvent(*(evt->GetEvent()));
    //   this->printTable(myGenEvent);
 
 }
 
-void HepMGProductAnalyzer::printTable(HepMC::GenEvent * event)
+void HepMGProductAnalyzer::printTable(HepMC::GenEvent * myGenEvent)
 {
 // this method is outdated, use print() method of GenEvent instead
-  HepMC::GenEvent * myGenEvent = event;
   std::cout<<std::endl;
   std::cout<<"Barcode:  Pgd:     Status:  Mother:"<<std::endl;   
 /*
