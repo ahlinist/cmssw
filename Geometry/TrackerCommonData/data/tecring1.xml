@@ -6,7 +6,7 @@
  <Constant name="Rout"           value="45.93*cm"/>
  <Constant name="Rmin"           value="321.932*mm"/>
  <Constant name="NPhi"           value="24"/>
- <Constant name="RPos"           value="[Rmin]+
+ <Constant name="RPos"           value="[Rmin]+ 0.0322*mm+
            ([tecmodule1:FullHeight]+[tecmodpar:TopFrameHeight])/2"/>
  <Constant name="ModuleGap"      value="3.437*mm"/>
  <Constant name="RingThick"      value="(2*[tecmodpar:ModuleThickDS]+
