@@ -9,10 +9,14 @@
 #include "IOMC/CosmicMuonGenerator/interface/CMSCGEN.h"
 
 
-int CMSCGEN::initialize(float Emin_in, float Emax_in, float thetamin_in, float thetamax_in, int RanSeed) 
+int CMSCGEN::initialize(float Emin_in, float Emax_in, float thetamin_in, float thetamax_in, int RanSeed, bool TIFOnly_constant, bool TIFOnly_linear) 
 {
   //set seed for Random Generator (seed can be controled by config-file), P.Biallass 2006
   RanGen2.SetSeed(RanSeed);
+
+  //set bools for TIFOnly options (E<2GeV with unphysical energy dependence)
+  TIFOnly_const = TIFOnly_constant;
+  TIFOnly_lin = TIFOnly_linear;
 
   // units: GeV
 
@@ -28,6 +32,8 @@ int CMSCGEN::initialize(float Emin_in, float Emax_in, float thetamin_in, float t
   cmax = 1.;
 
   // set Emin  
+
+  if(TIFOnly_constant == true || TIFOnly_linear == true) Emin_min = 0.; //forTIF
 
   if(Emin_in < Emin_min || Emin_in > Emin_max)
   { 
@@ -62,6 +68,7 @@ int CMSCGEN::initialize(float Emin_in, float Emax_in, float thetamin_in, float t
 
   initialization = 1;
 
+  if(TIFOnly_constant == true || TIFOnly_linear == true) Emin_min = 2.; //forTIF
   elmin = log10(Emin_min);
   elmax = log10(Emax_max);
   elfac = 100./(elmax-elmin);
@@ -157,13 +164,13 @@ int CMSCGEN::generate()
 {
 
   if(initialization==0)
-  {
-    cout << " >>> CMSCGEN <<< warning: not initialized" << endl;
-    return -1;
-  }
+    {
+      cout << " >>> CMSCGEN <<< warning: not initialized" << endl;
+      return -1;
+    }
 
 // note: use historical notation (fortran version l3cgen.f)
-
+  
 //
 // +++ determine x = 1/e**2
 //
@@ -176,7 +183,7 @@ int CMSCGEN::generate()
 //     emin = 2 GeV energies around 10000 GeV are very rare!
 //     [roughly (2/10000)**3 = 8E-12]
 //
-
+  
   bool accept = 0;
   float r1, r2, r3, r4;
   float xe, e, ce, e10;
@@ -184,37 +191,87 @@ int CMSCGEN::generate()
   double prob; 
 
   while (accept==0)
-  {
-
-// P. Biallass, 2006:
-    prob = RanGen2.Rndm();
-    r1 = float(prob);
-    prob = RanGen2.Rndm();
-    r2 = float(prob);
-
-  xe = xemin+r1*(xemax-xemin);
-  e = 1./sqrt(xe);       
-  e10 = log10(e);
-
-  ce = (((((((pe[8]*e10
-       +pe[7])*e10
-       +pe[6])*e10
-       +pe[5])*e10
-       +pe[4])*e10
-       +pe[3])*e10
-       +pe[2])*e10
-       +pe[1])*e10
-       +pe[0];
-
-  k = int ((e10-elmin)*elfac+1.);
-  k = TMath::Max(1,TMath::Min(k,100));
-  ce = ce * corr[k];
- 
-  if(cemax*r2 < ce)
-  {
-    accept = 1;
-  }
-}
+    {
+      
+      // P. Biallass, 2006:
+      prob = RanGen2.Rndm();
+      r1 = float(prob);
+      prob = RanGen2.Rndm();
+      r2 = float(prob);
+      
+      xe = xemin+r1*(xemax-xemin);
+      if( (1./sqrt(xe)<2) && TIFOnly_const == true) { //generate constant energy dependence for E<2GeV, only used for TIF
+	//compute constant to match to CMSCGEN spectrum
+	e=2.;      
+	e10 = log10(e);
+	
+	ce = (((((((pe[8]*e10
+		    +pe[7])*e10
+		   +pe[6])*e10
+		  +pe[5])*e10
+		 +pe[4])*e10
+		+pe[3])*e10
+	       +pe[2])*e10
+	      +pe[1])*e10
+	  +pe[0];
+	
+	k = int ((e10-elmin)*elfac+1.);
+	k = TMath::Max(1,TMath::Min(k,100));
+	ce = ce * corr[k];
+	
+	e = 1./sqrt(xe);  
+	if(r2 < ( e*e*e*ce/(cemax*2.*2.*2.) ))
+	  {
+	    accept = 1;
+	  }
+      }else if( (1./sqrt(xe)<2) && TIFOnly_lin == true) { //generate linear energy dependence for E<2GeV, only used for TIF
+	//compute constant to match to CMSCGEN spectrum
+	e=2.;      
+	e10 = log10(e);
+	
+	ce = (((((((pe[8]*e10
+		    +pe[7])*e10
+		   +pe[6])*e10
+		  +pe[5])*e10
+		 +pe[4])*e10
+		+pe[3])*e10
+	       +pe[2])*e10
+	      +pe[1])*e10
+	  +pe[0];
+      
+	k = int ((e10-elmin)*elfac+1.);
+	k = TMath::Max(1,TMath::Min(k,100));
+	ce = ce * corr[k];
+      
+	e = 1./sqrt(xe);  
+	if(r2 < ( e*e*e*e*ce/(cemax*2.*2.*2.*2.) ))
+	  {
+	    accept = 1;
+	  }
+      }else{ //this is real CMSCGEN energy-dependence
+	e = 1./sqrt(xe);       
+	e10 = log10(e);
+	
+	ce = (((((((pe[8]*e10
+		    +pe[7])*e10
+		   +pe[6])*e10
+		  +pe[5])*e10
+		 +pe[4])*e10
+		+pe[3])*e10
+	       +pe[2])*e10
+	      +pe[1])*e10
+	  +pe[0];
+	
+	k = int ((e10-elmin)*elfac+1.);
+	k = TMath::Max(1,TMath::Min(k,100));
+	ce = ce * corr[k];
+      
+	if(cemax*r2 < ce)
+	  {
+	    accept = 1;
+	  }
+      } //end of CMSCGEN energy-dependence
+    } //end of while
      
   pq = e;
 
@@ -242,6 +299,9 @@ int CMSCGEN::generate()
 //
   
   float eln, cax, fac, p, q, ca; 
+
+  if(TIFOnly_const == true && e<2.) e = 2.; //forTIF (when E<2GeV use angles of 2GeV cosmic)
+  if(TIFOnly_lin == true && e<2.) e = 2.; //forTIF (when E<2GeV use angles of 2GeV cosmic)
 
   eln = log(e);
   cax = (pc[2]*eln+pc[1])*eln+pc[0];
