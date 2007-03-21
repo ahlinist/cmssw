@@ -23,9 +23,10 @@
 #include "time.h"
 
 // Generator modifications
-#include "CLHEP/HepMC/include/PythiaWrapper6_2.h"
-#include "CLHEP/HepMC/ConvertHEPEVT.h"
-#include "CLHEP/HepMC/CBhepevt.h"
+#include "HepMC/PythiaWrapper6_2.h"
+//#include "HepMC/ConvertHEPEVT.h"
+#include "HepMC/IO_HEPEVT.h"
+//#include "HepMC/CBhepevt.h"
 
 // MCDB Interface 
 #include "GeneratorInterface/MadGraphInterface/interface/MCDBInterface.h"
@@ -64,7 +65,8 @@ extern "C" {
 }
 
 
-HepMC::ConvertHEPEVT conv;
+//HepMC::ConvertHEPEVT conv;
+HepMC::IO_HEPEVT conv;
 
 //used for defaults
   static const unsigned long kNanoSecPerSec = 1000000000;
@@ -185,7 +187,8 @@ bool MadGraphSource::produce(Event & e) {
   call_pyhepc( 1 );
 //  ++lhe_event_counter_; // count this here later if needed
 
-  HepMC::GenEvent* evt = conv.getGenEventfromHEPEVT();
+//  HepMC::GenEvent* evt = conv.getGenEventfromHEPEVT();
+  HepMC::GenEvent* evt = conv.read_next_event();
   evt->set_signal_process_id(pypars.msti[0]);
   evt->set_event_number(numberEventsInRun() - remainingEvents() - 1);
 
