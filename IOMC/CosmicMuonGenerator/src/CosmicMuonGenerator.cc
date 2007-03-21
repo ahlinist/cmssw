@@ -27,7 +27,7 @@ void CosmicMuonGenerator::initialize(){
     if (Debug) cout << "  starting point radius at surface = " << SurfaceRadius << " mm" << endl;
     
     //set energy and angle limits for CMSCGEN, give same seed as above 
-    Cosmics->initialize(MinE, MaxE, MinTheta, MaxTheta, RanSeed);
+    Cosmics->initialize(MinE, MaxE, MinTheta, MaxTheta, RanSeed, TIFOnly_constant, TIFOnly_linear);
    
 #if ROOT_INTERACTIVE
   // book histos
@@ -93,7 +93,8 @@ void CosmicMuonGenerator::nextEvent(){
     OneMuoEvt.create(id, Px, Py, Pz, E, MuonMass, Vx, Vy, Vz, T0); 
     // if angles are ok, propagate to target
     if (goodOrientation()) OneMuoEvt.propagate(ElossScaleFactor, RadiusOfTarget, ZDistOfTarget, TrackerOnly, MTCCHalf);
-    if (OneMuoEvt.hitTarget() && OneMuoEvt.e() > MinE){
+    // if cosmic hits target test also if E>Emin_CMS; the default is MinE_surface=MinE_CMS, thus no bias from access shaft
+    if (OneMuoEvt.hitTarget() && OneMuoEvt.e() > MinE_CMS){
       Nsel+=1.; //count number of generated and accepted events  
       notSelected = false;
       }
@@ -319,6 +320,8 @@ void CosmicMuonGenerator::setRanSeed(int N){ if (NotInitialized) RanSeed = N; }
 
 void CosmicMuonGenerator::setMinE(double E){ if (NotInitialized) MinE = E; }
 
+void CosmicMuonGenerator::setMinE_CMS(double E){ if (NotInitialized) MinE_CMS = E; }
+
 void CosmicMuonGenerator::setMaxE(double E){ if (NotInitialized) MaxE = E; }
 
 void CosmicMuonGenerator::setMinTheta(double Theta){ if (NotInitialized) MinTheta = Theta*Deg2Rad; }
@@ -340,6 +343,10 @@ void CosmicMuonGenerator::setRadiusOfTarget(double R){ if (NotInitialized) Radiu
 void CosmicMuonGenerator::setZDistOfTarget(double Z){ if (NotInitialized) ZDistOfTarget = Z; }
 
 void CosmicMuonGenerator::setTrackerOnly(bool Tracker){ if (NotInitialized) TrackerOnly = Tracker; }
+
+void CosmicMuonGenerator::setTIFOnly_constant(bool TIF){ if (NotInitialized) TIFOnly_constant = TIF; }
+
+void CosmicMuonGenerator::setTIFOnly_linear(bool TIF){ if (NotInitialized) TIFOnly_linear = TIF; }
 
 void CosmicMuonGenerator::setMTCCHalf(bool MTCC){ if (NotInitialized) MTCCHalf = MTCC; }
 
