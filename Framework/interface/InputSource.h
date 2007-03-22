@@ -130,6 +130,9 @@ namespace edm {
     /// Called by framework at end of job
     void doEndJob();
 
+    /// Called by framework when events are exhausted.
+    void doEndLumiAndRun() {endLumiAndRun();}
+
     using ProductRegistryHelper::produces;
     using ProductRegistryHelper::typeLabelList;
 
@@ -163,13 +166,13 @@ namespace edm {
 
   private:
 
-    int const maxEvents_;
+    int maxEvents_;
 
     int remainingEvents_;
 
     int readCount_;
 
-    bool const unlimited_;
+    bool unlimited_;
 
     InputSourceDescription const isDesc_;
 

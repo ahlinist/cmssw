@@ -16,16 +16,19 @@ namespace edm {
   class ProductRegistry;
 
   struct InputSourceDescription {
-    InputSourceDescription() : moduleDescription_(), productRegistry_(0) { }
+    InputSourceDescription() : moduleDescription_(), productRegistry_(0), maxEvents_(-1) {}
     InputSourceDescription(ModuleDescription const& md,
-			    ProductRegistry& preg) :
+			   ProductRegistry& preg,
+			   int maxEvents) :
       moduleDescription_(md),
-      productRegistry_(&preg)
+      productRegistry_(&preg),
+      maxEvents_(maxEvents)
 	 
     {}
 
     ModuleDescription moduleDescription_;
     ProductRegistry * productRegistry_;
+    int maxEvents_;
   };
 }
 

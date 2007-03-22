@@ -34,6 +34,9 @@ namespace edm
     template <class ModType>
     static std::auto_ptr<OutputModule> makeOne(const ModuleDescription& md,
 					const WorkerParams& wp);
+
+    int eventCount() const;
+
   private:
     virtual bool implDoWork(EventPrincipal& e, EventSetup const& c,
 			    CurrentProcessingContext const* cpc);

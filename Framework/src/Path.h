@@ -76,7 +76,6 @@ namespace edm
     int timesFailed (size_type i) const { return workers_.at(i).timesFailed() ; }
     int timesExcept (size_type i) const { return workers_.at(i).timesExcept() ; }
     Worker const * getWorker(size_type i) const { return workers_.at(i).getWorker(); }
-    bool const terminate() const {return terminate_;}
 
   private:
     RunStopwatch::StopwatchPointer stopwatch_;
@@ -86,8 +85,6 @@ namespace edm
     int timesExcept_;
     //int abortWorker_;
     State state_;
-
-    bool terminate_;
 
     int bitpos_;
     std::string name_;

@@ -89,8 +89,7 @@ private:
     md_(iMD),
     actions_(iWP.actions_),
     cached_exception_(),
-    sigs_(),
-    terminate_(false)
+    sigs_()
   {
   }
 
