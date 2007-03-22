@@ -37,11 +37,9 @@ private:
 
   JetTagPlotter * m_plotter;
 
-  FlavourHistorgrams<double> * m_discriminant;          // jet b tagging discriminant
-  
   // keep plots for up to 3 leptons per jet
   static const int s_leptons = 3;
-  
+  FlavourHistorgrams<double> * m_discriminant[s_leptons];   // jet b tagging discriminant
   FlavourHistorgrams<double> * m_leptonId[s_leptons];   // lepton identification discriminant
   FlavourHistorgrams<double> * m_leptonPt[s_leptons];   // lepton transverse momentum
   
