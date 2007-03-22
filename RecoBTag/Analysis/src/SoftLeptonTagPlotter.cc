@@ -14,15 +14,15 @@ SoftLeptonTagPlotter::SoftLeptonTagPlotter(
     gFile->cd(dir);
   }
 
-  m_discriminant = new FlavourHistorgrams<double> (
-      "jet discriminant", "Jet b tagging discriminant",
-      50, 0.0, 1.0, false, false, true, "b", update);
-
   for (int i = 0; i < s_leptons; i++) {
+    m_discriminant[i] = new FlavourHistorgrams<double> (
+        Form("%s lepton %s", ordinal[i], "jet disciminant" ), 
+        "Jet b tagging discriminant",
+        50, 0.0, 1.0, false, false, true, "b", update);
     m_leptonId[i] = new FlavourHistorgrams<double> (
         Form("%s lepton %s", ordinal[i], "id" ),
         "Lepton identification discriminaint",
-        50, 0.0, 1.0, false, false, true, "b", update);
+        60, -0.1, 1.1, false, false, true, "b", update);
     m_leptonPt[i] = new FlavourHistorgrams<double> (
         Form( "%s lepton %s", ordinal[i], "pT" ),
         "Lepton transverse moementum",
@@ -48,7 +48,7 @@ SoftLeptonTagPlotter::SoftLeptonTagPlotter(
         "Ratio of lepton momentum to jet energy",
         100, 0.0, 2.0, false, false, true, "b", update);
     m_ratioRel[i] = new FlavourHistorgrams<double> (
-        Form( "%s lepton %s", ordinal[i], "" ),
+        Form( "%s lepton %s", ordinal[i], "parallel energy ratio" ),
         "Ratio of lepton momentum along the jet axis to jet energy",
         100, 0.0, 2.0, false, false, true, "b", update);
   }
@@ -58,8 +58,8 @@ SoftLeptonTagPlotter::~SoftLeptonTagPlotter ()
 {
   delete m_plotter;
 
-  delete m_discriminant;
   for (int i = 0; i < s_leptons; i++) {
+    delete m_discriminant[i];
     delete m_leptonId[i];
     delete m_leptonPt[i];
     delete m_sip3d[i];
@@ -84,9 +84,8 @@ void SoftLeptonTagPlotter::analyzeTag(
 
   int n_leptons = tagInfo.leptons();
 
-  if (n_leptons)
-    m_discriminant->fill( flavour, tagInfo.properties(0).tag );
   for (int i = 0; i < n_leptons && i < s_leptons; i++) {
+    m_discriminant[i]->fill( flavour, tagInfo.properties(i).tag );
     m_leptonId[i]->fill( flavour, 1.0 );
     m_leptonPt[i]->fill( flavour, tagInfo.lepton(i)->pt() );
     m_sip3d[i]->fill(    flavour, tagInfo.properties(i).sip3d );
@@ -108,27 +107,30 @@ void SoftLeptonTagPlotter::psPlot(const TString & name)
   canvas.UseCurrentStyle();
   canvas.Divide(2,3);
   canvas.Print(name + cName + ".ps[");
-  canvas.cd(1);
-  m_discriminant->plot((TPad*) canvas.GetPrimitive( cName + "_1" ));
-  canvas.Print(name + cName + ".ps");
   for (int i = 0; i < s_leptons; i++) {
-    canvas.cd(1);
-    m_leptonId[i]->plot((TPad*) canvas.GetPrimitive( cName + "_1" ));
-    canvas.cd(2);
-    m_leptonPt[i]->plot((TPad*) canvas.GetPrimitive( cName + "_2" ));
+    canvas.cd(1)->Clear();
+    m_discriminant[i]->plot((TPad*) gPad);
+    canvas.cd(2)->Clear();
+    m_leptonId[i]->plot((TPad*) gPad);
+    canvas.cd(3)->Clear();
+    m_leptonPt[i]->plot((TPad*) gPad);
+    canvas.cd(4)->Clear();
+    canvas.cd(5)->Clear();
+    canvas.cd(6)->Clear();
     canvas.Print(name + cName + ".ps");
-    canvas.cd(1);
-    m_sip3d[i]->plot((TPad*) canvas.GetPrimitive( cName + "_1" ));
-    canvas.cd(2);
-    m_ptRel[i]->plot((TPad*) canvas.GetPrimitive( cName + "_2" ));
-    canvas.cd(3);
-    m_etaRel[i]->plot((TPad*) canvas.GetPrimitive( cName + "_3" ));
-    canvas.cd(4);
-    m_deltaR[i]->plot((TPad*) canvas.GetPrimitive( cName + "_4" ));
-    canvas.cd(5);
-    m_ratio[i]->plot((TPad*) canvas.GetPrimitive( cName + "_5" ));
-    canvas.cd(6);
-    m_ratioRel[i]->plot((TPad*) canvas.GetPrimitive( cName + "_6" ));
+
+    canvas.cd(1)->Clear();
+    m_sip3d[i]->plot((TPad*) gPad);
+    canvas.cd(2)->Clear();
+    m_ptRel[i]->plot((TPad*) gPad);
+    canvas.cd(3)->Clear();
+    m_etaRel[i]->plot((TPad*) gPad);
+    canvas.cd(4)->Clear();
+    m_deltaR[i]->plot((TPad*) gPad);
+    canvas.cd(5)->Clear();
+    m_ratio[i]->plot((TPad*) gPad);
+    canvas.cd(6)->Clear();
+    m_ratioRel[i]->plot((TPad*) gPad);
     canvas.Print(name + cName + ".ps");
   }
   canvas.Print(name + cName + ".ps]");
@@ -142,8 +144,8 @@ void SoftLeptonTagPlotter::write()
   gFile->cd();
   gFile->mkdir(dir);
   gFile->cd(dir);
-  m_discriminant->write();
   for (int i = 0; i < s_leptons; i++) {
+    m_discriminant[i]->write();
     m_leptonId[i]->write();
     m_leptonPt[i]->write();
     m_sip3d[i]->write();
@@ -159,8 +161,8 @@ void SoftLeptonTagPlotter::write()
 void SoftLeptonTagPlotter::epsPlot(const TString & name)
 {
   m_plotter->epsPlot( name );
-  m_discriminant->epsPlot( name );
   for (int i=0; i < s_leptons; i++) {
+    m_discriminant[i]->epsPlot( name );
     m_leptonId[i]->epsPlot( name );
     m_leptonPt[i]->epsPlot( name );
     m_sip3d[i]->epsPlot( name );
