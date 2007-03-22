@@ -5,12 +5,13 @@
 <use name=FWCore/MessageLogger>
 <use name=FWCore/PluginManager>
 <use name=FWCore/Utilities>
-<use name=DataFormats/TrackReco>
 <use name=TrackingTools/PatternTools>
 <use name=TrackingTools/TrackFitters>
+<use name=rootcore>
+<flags SEALPLUGIN=1>
 <export>
-   <lib name=AlignmentCSA06AlignmentAlgorithm>
-   <use name=Alignment/CommonAlignment>
-   <use name=Alignment/CommonAlignmentAlgorithm>
+  <use name=Alignment/CommonAlignment>
+  <use name=Alignment/CommonAlignmentAlgorithm>
+  <lib name=AlignmentCSA06AlignmentAlgorithm>
 </export>
-<flags SEAL_PLUGIN_NAME="AlignmentCSA06AlignmentAlgorithm">
+
