@@ -159,7 +159,7 @@ void EffPurFromHistos::plot(const TString & name, const TString & ext)
    tc.Print(TString(name + "FlavEffVsBEff" + histoExtension + ext));
 }
 
-void EffPurFromHistos::plot (TPad * plotCanvas ) {
+void EffPurFromHistos::plot (TPad * plotCanvas /* = 0 */) {
 
 //fixme:
   bool btppNI = false;
@@ -167,9 +167,12 @@ void EffPurFromHistos::plot (TPad * plotCanvas ) {
 
 //   if ( !btppTitle ) gStyle->SetOptTitle ( 0 );
   setTDRStyle()->cd();
-  plotCanvas->UseCurrentStyle();
-  plotCanvas->SetFillColor ( 0 );
-  plotCanvas->cd ( 1 );
+
+  if (plotCanvas)
+    plotCanvas->cd();
+  
+  gPad->UseCurrentStyle();
+  gPad->SetFillColor ( 0 );
   gPad->SetLogy  ( 1 );
   gPad->SetGridx ( 1 );
   gPad->SetGridy ( 1 );
@@ -185,7 +188,7 @@ void EffPurFromHistos::plot (TPad * plotCanvas ) {
   int mStyle_ni ;
 
   // marker size (same for all)
-  float mSize =  plotCanvas->GetWh()*plotCanvas->GetHNDC()/500.;//1.2;
+  float mSize = gPad->GetWh() * gPad->GetHNDC() / 500.; //1.2;
 
   if ( btppColour ) {
     col_c    = 6;

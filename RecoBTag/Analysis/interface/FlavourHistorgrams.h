@@ -291,7 +291,7 @@ void FlavourHistorgrams<T>::write () const {
 
   
 template <class T>
-void FlavourHistorgrams<T>::plot (TPad * theCanvas) {
+void FlavourHistorgrams<T>::plot (TPad * theCanvas /* = 0 */) {
 
 //fixme:
   bool btppNI = false;

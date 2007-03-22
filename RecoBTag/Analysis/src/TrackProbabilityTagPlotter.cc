@@ -127,10 +127,10 @@ void TrackProbabilityTagPlotter::psPlot(const TString & name)
   canvas.Print(name + cName + ".ps[");
   canvas.cd(1);
 
-  tkcntHistosSig3D[4]->plot((TPad*) canvas.GetPrimitive(cName+"_1"));
+  tkcntHistosSig3D[4]->plot();
   for(int n=0; n < 4; n++) {
     canvas.cd(2+n);
-    tkcntHistosSig3D[n]->plot((TPad*) canvas.GetPrimitive(cName+"_"+itos(n+2)));
+    tkcntHistosSig3D[n]->plot();
   }
 
   canvas.Print(name + cName + ".ps");
@@ -138,10 +138,10 @@ void TrackProbabilityTagPlotter::psPlot(const TString & name)
   canvas.Divide(2,3);
 
   canvas.cd(1);
-  tkcntHistosSig2D[4]->plot((TPad*) canvas.GetPrimitive(cName+"_1"));
+  tkcntHistosSig2D[4]->plot();
   for(int n=0; n < 4; n++) {
     canvas.cd(2+n);
-    tkcntHistosSig2D[n]->plot((TPad*) canvas.GetPrimitive(cName+"_"+itos(n+2)));
+    tkcntHistosSig2D[n]->plot();
   }
 
   if (finalized) {
@@ -150,17 +150,17 @@ void TrackProbabilityTagPlotter::psPlot(const TString & name)
       canvas.Clear();
       canvas.Divide(2,3);
       canvas.cd(1);
-      effPurFromHistos[0+n]->discriminatorNoCutEffic()->plot((TPad*) canvas.GetPrimitive(cName+"_1"));
+      effPurFromHistos[0+n]->discriminatorNoCutEffic()->plot();
       canvas.cd(2);
-      effPurFromHistos[0+n]->discriminatorCutEfficScan()->plot((TPad*) canvas.GetPrimitive(cName+"_2"));
+      effPurFromHistos[0+n]->discriminatorCutEfficScan()->plot();
       canvas.cd(3);
-      effPurFromHistos[0+n]->plot((TPad*) canvas.GetPrimitive(cName+"_3"));
+      effPurFromHistos[0+n]->plot();
       canvas.cd(4);
-      effPurFromHistos[1+n]->discriminatorNoCutEffic()->plot((TPad*) canvas.GetPrimitive(cName+"_4"));
+      effPurFromHistos[1+n]->discriminatorNoCutEffic()->plot();
       canvas.cd(5);
-      effPurFromHistos[1+n]->discriminatorCutEfficScan()->plot((TPad*) canvas.GetPrimitive(cName+"_5"));
+      effPurFromHistos[1+n]->discriminatorCutEfficScan()->plot();
       canvas.cd(6);
-      effPurFromHistos[1+n]->plot((TPad*) canvas.GetPrimitive(cName+"_6"));
+      effPurFromHistos[1+n]->plot();
     }
   }
 
