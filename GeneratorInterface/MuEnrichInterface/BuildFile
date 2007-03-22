@@ -1,7 +1,7 @@
 <use name=boost>
 <use name=FWCore/Framework>
 <use name=SimDataFormats/HepMCProduct>
-<use name=clhep> 
+<use name=hepmc> 
 <use name=pythia6_227>
 
 <flags SEAL_PLUGIN_NAME="GeneratorInterfaceMuEnrichInterface">
@@ -10,7 +10,7 @@
  <use name=boost>
  <use name=FWCore/Framework>
  <use name=SimDataFormats/HepMCProduct>
- <use name=clhep> 
+ <use name=hepmc> 
  <use name=pythia6_227>
 </export>
 

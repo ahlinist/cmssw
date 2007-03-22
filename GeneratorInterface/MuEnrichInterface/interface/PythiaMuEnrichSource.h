@@ -16,7 +16,7 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include <map>
 #include <string>
-#include "CLHEP/HepMC/GenEvent.h"
+#include "HepMC/GenEvent.h"
 
 
 
