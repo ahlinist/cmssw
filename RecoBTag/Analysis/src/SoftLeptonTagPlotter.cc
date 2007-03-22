@@ -109,28 +109,28 @@ void SoftLeptonTagPlotter::psPlot(const TString & name)
   canvas.Print(name + cName + ".ps[");
   for (int i = 0; i < s_leptons; i++) {
     canvas.cd(1)->Clear();
-    m_discriminant[i]->plot((TPad*) gPad);
+    m_discriminant[i]->plot();
     canvas.cd(2)->Clear();
-    m_leptonId[i]->plot((TPad*) gPad);
+    m_leptonId[i]->plot();
     canvas.cd(3)->Clear();
-    m_leptonPt[i]->plot((TPad*) gPad);
+    m_leptonPt[i]->plot();
     canvas.cd(4)->Clear();
     canvas.cd(5)->Clear();
     canvas.cd(6)->Clear();
     canvas.Print(name + cName + ".ps");
 
     canvas.cd(1)->Clear();
-    m_sip3d[i]->plot((TPad*) gPad);
+    m_sip3d[i]->plot();
     canvas.cd(2)->Clear();
-    m_ptRel[i]->plot((TPad*) gPad);
+    m_ptRel[i]->plot();
     canvas.cd(3)->Clear();
-    m_etaRel[i]->plot((TPad*) gPad);
+    m_etaRel[i]->plot();
     canvas.cd(4)->Clear();
-    m_deltaR[i]->plot((TPad*) gPad);
+    m_deltaR[i]->plot();
     canvas.cd(5)->Clear();
-    m_ratio[i]->plot((TPad*) gPad);
+    m_ratio[i]->plot();
     canvas.cd(6)->Clear();
-    m_ratioRel[i]->plot((TPad*) gPad);
+    m_ratioRel[i]->plot();
     canvas.Print(name + cName + ".ps");
   }
   canvas.Print(name + cName + ".ps]");

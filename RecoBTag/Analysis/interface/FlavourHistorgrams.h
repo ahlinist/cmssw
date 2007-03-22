@@ -49,8 +49,7 @@ public:
 
   void write () const ;
   
-  void plot (TPad * theCanvas) ;
-//   void plot (TCanvas * theCanvas) ;
+  void plot (TPad * theCanvas = 0) ;
 
   void epsPlot(TString name);
 
@@ -297,8 +296,12 @@ void FlavourHistorgrams<T>::plot (TPad * theCanvas) {
 //fixme:
   bool btppNI = false;
   bool btppColour = true;
+
+  if (theCanvas)
+    theCanvas->cd();
+  
   setTDRStyle()->cd();
-  theCanvas->UseCurrentStyle();
+  gPad->UseCurrentStyle();
 //   if ( !btppTitle ) gStyle->SetOptTitle ( 0 ) ;
 //   
 //   // here: plot histograms in a canvas
@@ -316,7 +319,7 @@ void FlavourHistorgrams<T>::plot (TPad * theCanvas) {
   int col[4], lineStyle[4], markerStyle[4];
   int lineWidth = 1 ;
 
-  double markerSize  = theCanvas->GetWh()*theCanvas->GetHNDC()/500.;
+  double markerSize = gPad->GetWh() * gPad->GetHNDC() / 500.;
 
   // default (l)
   histo[0] = theHisto_dusg ;
