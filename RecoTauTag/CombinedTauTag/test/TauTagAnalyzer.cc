@@ -263,11 +263,10 @@ void TauTagAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       HepMC::GenParticle* TheParticle=(*iter);
       HepLorentzVector TheParticle_HepLV=TheParticle->momentum();
       HepLorentzVector TheTauJet_HepLV=TheParticle_HepLV;
-      vector<HepMC::GenParticle*> tau_children = TheParticle->listChildren();
       HepMC::GenParticle* TheTauneutrino=0;
       HepMC::GenParticle* TheTauneutrinobar=0;
-      int tau_children_n=(int)tau_children.size();
-      for (vector<HepMC::GenParticle*>::const_iterator i_taudaughter=tau_children.begin();i_taudaughter!=tau_children.end();i_taudaughter++){
+      int tau_children_n=TheParticle->end_vertex()->particles_out_size();
+      for (HepMC::GenVertex::particles_out_const_iterator i_taudaughter=TheParticle->end_vertex()->particles_out_const_begin();i_taudaughter!=TheParticle->end_vertex()->particles_out_const_end();i_taudaughter++){
 	if ((**i_taudaughter).status()==1 && abs((int)(**i_taudaughter).pdg_id())==16){
 	  TheTauneutrino=*i_taudaughter;
 	  TheTauJet_HepLV-=TheTauneutrino->momentum();
@@ -279,19 +278,19 @@ void TauTagAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       bool tau_issuingpi0chargedpinu = false;
       bool tau_issuing3prongsnu = false;
       if (tau_children_n==2) {
-	vector<HepMC::GenParticle*>::const_iterator i_1sttaudaughter=tau_children.begin();
-	vector<HepMC::GenParticle*>::const_iterator i_2ndtaudaughter=tau_children.begin()+1;
+	HepMC::GenVertex::particles_out_const_iterator i_1sttaudaughter=TheParticle->end_vertex()->particles_out_const_begin();
+	HepMC::GenVertex::particles_out_const_iterator i_2ndtaudaughter=++TheParticle->end_vertex()->particles_out_const_begin();
 	if (abs((**i_1sttaudaughter).pdg_id())==211 || abs((**i_2ndtaudaughter).pdg_id())==211) tau_issuing1prongnu = true;
       }
       if (tau_children_n==2) {
-	vector<HepMC::GenParticle*>::const_iterator i_1sttaudaughter=tau_children.begin();
-	vector<HepMC::GenParticle*>::const_iterator i_2ndtaudaughter=tau_children.begin()+1;
+	HepMC::GenVertex::particles_out_const_iterator i_1sttaudaughter=TheParticle->end_vertex()->particles_out_const_begin();
+	HepMC::GenVertex::particles_out_const_iterator i_2ndtaudaughter=++TheParticle->end_vertex()->particles_out_const_begin();
 	if (abs((**i_1sttaudaughter).pdg_id())==213 || abs((**i_2ndtaudaughter).pdg_id())==213) tau_issuingpi0chargedpinu=true;
       }
       if (tau_children_n==3) {
-	vector<HepMC::GenParticle*>::const_iterator i_1sttaudaughter=tau_children.begin();
-	vector<HepMC::GenParticle*>::const_iterator i_2ndtaudaughter=tau_children.begin()+1;
-	vector<HepMC::GenParticle*>::const_iterator i_3rdtaudaughter=tau_children.begin()+2;
+	HepMC::GenVertex::particles_out_const_iterator i_1sttaudaughter=TheParticle->end_vertex()->particles_out_const_begin();
+	HepMC::GenVertex::particles_out_const_iterator i_2ndtaudaughter=++TheParticle->end_vertex()->particles_out_const_begin();
+	HepMC::GenVertex::particles_out_const_iterator i_3rdtaudaughter=++i_2ndtaudaughter;
 	if ((abs((**i_1sttaudaughter).pdg_id())==16 && abs((**i_2ndtaudaughter).pdg_id())==211 && (**i_3rdtaudaughter).pdg_id()==111)
 	    || (abs((**i_1sttaudaughter).pdg_id())==16 && abs((**i_3rdtaudaughter).pdg_id())==211 && (**i_2ndtaudaughter).pdg_id()==111)
 	    || (abs((**i_2ndtaudaughter).pdg_id())==16 && abs((**i_1sttaudaughter).pdg_id())==211 && (**i_3rdtaudaughter).pdg_id()==111)
@@ -308,10 +307,10 @@ void TauTagAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	    ) tau_issuing3prongsnu = true;
       }
       if (tau_children_n==4) {
-	vector<HepMC::GenParticle*>::const_iterator i_1sttaudaughter=tau_children.begin();
-	vector<HepMC::GenParticle*>::const_iterator i_2ndtaudaughter=tau_children.begin()+1;
-	vector<HepMC::GenParticle*>::const_iterator i_3rdtaudaughter=tau_children.begin()+2;
-	vector<HepMC::GenParticle*>::const_iterator i_4thtaudaughter=tau_children.begin()+3;
+	HepMC::GenVertex::particles_out_const_iterator i_1sttaudaughter=TheParticle->end_vertex()->particles_out_const_begin();
+	HepMC::GenVertex::particles_out_const_iterator i_2ndtaudaughter=++TheParticle->end_vertex()->particles_out_const_begin();
+	HepMC::GenVertex::particles_out_const_iterator i_3rdtaudaughter=++i_2ndtaudaughter;
+	HepMC::GenVertex::particles_out_const_iterator i_4thtaudaughter=TheParticle->end_vertex()->particles_out_const_begin();
 	if ((abs((**i_1sttaudaughter).pdg_id())==16 && abs((**i_2ndtaudaughter).pdg_id())==211 && abs((**i_3rdtaudaughter).pdg_id())==211 && abs((**i_4thtaudaughter).pdg_id())==211)
 	    || (abs((**i_2ndtaudaughter).pdg_id())==16 && abs((**i_1sttaudaughter).pdg_id())==211 && abs((**i_3rdtaudaughter).pdg_id())==211 && abs((**i_4thtaudaughter).pdg_id())==211)
 	    || (abs((**i_3rdtaudaughter).pdg_id())==16 && abs((**i_1sttaudaughter).pdg_id())==211 && abs((**i_2ndtaudaughter).pdg_id())==211 && abs((**i_4thtaudaughter).pdg_id())==211)
@@ -319,9 +318,9 @@ void TauTagAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	    )  tau_issuing3prongsnu = true;
       }
       if (tau_children_n==3) {
-	vector<HepMC::GenParticle*>::const_iterator i_1sttaudaughter=tau_children.begin();
-	vector<HepMC::GenParticle*>::const_iterator i_2ndtaudaughter=tau_children.begin()+1;	
-	vector<HepMC::GenParticle*>::const_iterator i_3rdtaudaughter=tau_children.begin()+2;	
+	HepMC::GenVertex::particles_out_const_iterator i_1sttaudaughter=TheParticle->end_vertex()->particles_out_const_begin();
+	HepMC::GenVertex::particles_out_const_iterator i_2ndtaudaughter=++TheParticle->end_vertex()->particles_out_const_begin();	
+	HepMC::GenVertex::particles_out_const_iterator i_3rdtaudaughter=++i_2ndtaudaughter;	
 	if (abs((**i_1sttaudaughter).pdg_id())==12 || abs((**i_2ndtaudaughter).pdg_id())==12 || abs((**i_3rdtaudaughter).pdg_id())==12) {
 	  if (abs((**i_1sttaudaughter).pdg_id())==12) TheTauneutrinobar=(*i_1sttaudaughter);
 	  if (abs((**i_2ndtaudaughter).pdg_id())==12) TheTauneutrinobar=(*i_2ndtaudaughter);
