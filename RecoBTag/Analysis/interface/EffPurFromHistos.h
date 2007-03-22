@@ -44,7 +44,7 @@ class EffPurFromHistos {
 
   void psPlot(const TString & name);
 
-  void plot(TPad * theCanvas) ;
+  void plot(TPad * theCanvas = 0) ;
 
   void plot(const TString & name, const TString & ext);
 
