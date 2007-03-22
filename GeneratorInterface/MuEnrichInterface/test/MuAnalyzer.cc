@@ -164,7 +164,7 @@ void MuAnalyzer::analyze( const Event& e, const EventSetup& )
 
   // gen track info
   Handle< HepMCProduct > EvtHandle ;
-  e.getByLabel( "VtxSmeared", EvtHandle ) ;
+  e.getByLabel( "source", EvtHandle ) ;
   //int eventsinrun=0; 
   const HepMC::GenEvent* Evt = EvtHandle->GetEvent() ;
   if (Evt != 0 ) {   
