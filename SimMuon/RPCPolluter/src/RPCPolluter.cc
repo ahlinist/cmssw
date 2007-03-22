@@ -7,7 +7,7 @@
 
 // Constructor of RPCPolluter
 
-RPCPolluter::RPCPolluter(const RPCRoll* roll)
+RPCPolluter::RPCPolluter(const RPCRoll* roll,double rate,int nbxing)
 {
 
   int i;
@@ -28,22 +28,33 @@ RPCPolluter::RPCPolluter(const RPCRoll* roll)
 
   RPCDetId rpcId = roll->id();
 
-  rate = 5.0;
-
-  nbxing = 8;
-
   double gate = 25.0;
 
   int nstrips = roll->nstrips();
 
-  if ( rpcId.region() == 0 )
+ if ( rpcId.region() == 0 )
     {
       const RectangularStripTopology* top_ = dynamic_cast<const
       RectangularStripTopology*>(&(roll->topology()));
       float xmin = (top_->localPosition(0.)).x();
       float xmax = (top_->localPosition((float)roll->nstrips())).x();
+      std::cout<<"Xmin="<<xmin<<"cm    Xmax="<<xmax<<"cm"<<std::endl;
       float striplength = (top_->stripLength());
+      std::cout<<"Strip Length="<<striplength<<"cm"<<std::endl;
       area = striplength*(xmax-xmin);
+      std::cout<<"Area del Roll= "<<area<<"cm2"<<std::endl;
+    }
+
+ else
+    {
+      const TrapezoidalStripTopology* top_=dynamic_cast<const TrapezoidalStripTopology*>(&(roll->topology()));
+       float xmin = (top_->localPosition(0.)).x();
+      float xmax = (top_->localPosition((float)roll->nstrips())).x();
+      std::cout<<"Xmin="<<xmin<<"cm    Xmax="<<xmax<<"cm"<<std::endl;
+      float striplength = (top_->stripLength());
+      std::cout<<"Strip Length="<<striplength<<"cm"<<std::endl;
+      area = striplength*(xmax-xmin);
+      std::cout<<"Area del Roll= "<<area<<"cm2"<<std::endl;
     }
 
   double ave = rate*nbxing*gate*area*1.0e-9;
