@@ -21,15 +21,15 @@
 #include <Geometry/RPCGeometry/interface/RPCGeometry.h>
 #include <Geometry/CommonTopologies/interface/RectangularStripTopology.h>
 #include <Geometry/CommonTopologies/interface/TrapezoidalStripTopology.h>
-
+/*
 #include <DataFormats/RPCDigi/interface/RPCDigiCollection.h>
-#include <DataFormats/Common/interface/Handle.h>
+#include "DataFormats/Common/interface/Handle.h"
 #include <FWCore/Framework/interface/Event.h>
 #include <FWCore/Framework/interface/ESHandle.h>
 #include <FWCore/Framework/interface/EventSetup.h>
 #include <FWCore/Framework/interface/MakerMacros.h>
 #include <FWCore/Framework/interface/EDProducer.h>
-
+*/
 
 /*  class RPCPolluter
  *
@@ -44,11 +44,6 @@
 class RPCPolluter
 {
 
-  double rate;
-
-  unsigned int nbxing;
-
-
  public :
 
   int N_hits;
@@ -58,7 +53,7 @@ class RPCPolluter
   std::vector<double> time_vector;
 
 
-  RPCPolluter(const RPCRoll*);
+  RPCPolluter(const RPCRoll*,double rate,int nbxing);
 
   ~RPCPolluter();
 
