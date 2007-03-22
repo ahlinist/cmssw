@@ -1,11 +1,9 @@
 <use name=DataFormats/Common>
 <use name=hepmc>
-<use name=clhep>
 <use name=rootrflx>
 <export>
   <use name=DataFormats/Common>
   <use name=hepmc>
-  <use name=clhep>
   <lib name=SimDataFormatsHepMCProduct>
 </export>
 

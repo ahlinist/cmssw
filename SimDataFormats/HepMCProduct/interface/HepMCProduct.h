@@ -10,7 +10,7 @@
 #include "HepMC/SimpleVector.h"
 
 #include "DataFormats/Common/interface/Ref.h"
-#include "CLHEP/Vector/LorentzVector.h"
+//#include "CLHEP/Vector/LorentzVector.h"
 
 namespace edm {
 
@@ -23,7 +23,8 @@ namespace edm {
     virtual ~HepMCProduct();
     
     void addHepMCData( HepMC::GenEvent  *evt);
-    void applyVtxGen( CLHEP::Hep3Vector* vtxShift ) const ; 
+    //void applyVtxGen( CLHEP::Hep3Vector* vtxShift ) const ; 
+    void applyVtxGen( HepMC::FourVector* vtxShift ) const ;
     
     const HepMC::GenEvent& getHepMCData() const ;
  
