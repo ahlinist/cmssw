@@ -176,7 +176,7 @@ void MuAnalyzer::analyze( const Event& e, const EventSetup& )
     for ( HepMC::GenEvent::vertex_const_iterator
 	    vit=Evt->vertices_begin(); vit!=Evt->vertices_end(); ++vit )
       {
-	HepLorentzVector muprodv=(*vit)->position();
+	FourVector muprodv=(*vit)->position();
 	for ( HepMC::GenVertex::particles_out_const_iterator
 		pout=(*vit)->particles_out_const_begin();
 	      pout!=(*vit)->particles_out_const_end(); ++pout )
@@ -223,7 +223,7 @@ void MuAnalyzer::analyze( const Event& e, const EventSetup& )
 		      fHistMuParent->Fill(abs(MuonParents[ic]->pdg_id()));
 		      fHistMuParentStatus->Fill(MuonParents[ic]->status());
 		      if (MuonParents[ic]->production_vertex() != 0 ) {
-			HepLorentzVector parentprodv=MuonParents[ic]->production_vertex()->position();
+			FourVector parentprodv=MuonParents[ic]->production_vertex()->position();
 			double decaylength=sqrt((muprodv.x()-parentprodv.x())*(muprodv.x()-parentprodv.x())
 						+(muprodv.y()-parentprodv.y())*(muprodv.y()-parentprodv.y())
 						+(muprodv.z()-parentprodv.z())*(muprodv.z()-parentprodv.z()));
