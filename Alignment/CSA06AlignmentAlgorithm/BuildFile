@@ -1,6 +1,5 @@
 <use name=Alignment/CommonAlignment>
 <use name=Alignment/CommonAlignmentAlgorithm>
-<use name=Alignment/SurveyAnalysis>
 <use name=Alignment/TrackerAlignment>
 <use name=FWCore/MessageLogger>
 <use name=FWCore/PluginManager>
