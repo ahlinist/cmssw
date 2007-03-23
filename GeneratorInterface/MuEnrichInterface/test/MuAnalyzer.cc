@@ -164,7 +164,7 @@ void MuAnalyzer::analyze( const Event& e, const EventSetup& )
 
   // gen track info
   Handle< HepMCProduct > EvtHandle ;
-  e.getByLabel( "source", EvtHandle ) ;
+  e.getByLabel( "VtxSmeared", EvtHandle ) ;
   //int eventsinrun=0; 
   const HepMC::GenEvent* Evt = EvtHandle->GetEvent() ;
   if (Evt != 0 ) {   
@@ -176,7 +176,7 @@ void MuAnalyzer::analyze( const Event& e, const EventSetup& )
     for ( HepMC::GenEvent::vertex_const_iterator
 	    vit=Evt->vertices_begin(); vit!=Evt->vertices_end(); ++vit )
       {
-	FourVector muprodv=(*vit)->position();
+	HepMC::FourVector muprodv=(*vit)->position();
 	for ( HepMC::GenVertex::particles_out_const_iterator
 		pout=(*vit)->particles_out_const_begin();
 	      pout!=(*vit)->particles_out_const_end(); ++pout )
@@ -214,16 +214,15 @@ void MuAnalyzer::analyze( const Event& e, const EventSetup& )
 		  pxmu=(*pout)->momentum().x();
 		  pymu=(*pout)->momentum().y();
 		  pzmu=(*pout)->momentum().z();
-		  vector<HepMC::GenParticle*> MuonParents = (*vit)->listParents() ;      
 		  pid=0;
-		  for (unsigned int ic=0; ic<MuonParents.size(); ic++ )
+		  for (HepMC::GenVertex::particles_in_const_iterator ic=(*vit)->particles_in_const_begin() ; ic!=(*vit)->particles_in_const_end() ; ic++ )
 		    {
-		      pid=MuonParents[ic]->pdg_id();
+		      pid=(*ic)->pdg_id();
 		      //MuonParents[ic]->print() ;
-		      fHistMuParent->Fill(abs(MuonParents[ic]->pdg_id()));
-		      fHistMuParentStatus->Fill(MuonParents[ic]->status());
-		      if (MuonParents[ic]->production_vertex() != 0 ) {
-			FourVector parentprodv=MuonParents[ic]->production_vertex()->position();
+		      fHistMuParent->Fill(abs(pid));
+		      fHistMuParentStatus->Fill((*ic)->status());
+		      if ((*ic)->production_vertex() != 0 ) {
+			HepMC::FourVector parentprodv=(*ic)->production_vertex()->position();
 			double decaylength=sqrt((muprodv.x()-parentprodv.x())*(muprodv.x()-parentprodv.x())
 						+(muprodv.y()-parentprodv.y())*(muprodv.y()-parentprodv.y())
 						+(muprodv.z()-parentprodv.z())*(muprodv.z()-parentprodv.z()));
