@@ -448,7 +448,9 @@ void CSCRecHit2DInALayer::findMaxima() {
       // check neighbors of strip i  Don't worry about bounds;
       // should be OK at 0 and beyond last strip
       if( thePulseHeightMap[i].y() > thePulseHeightMap[i-1].y() &&
-          thePulseHeightMap[i].y() >= thePulseHeightMap[i+1].y()) {
+          thePulseHeightMap[i].y() >= thePulseHeightMap[i+1].y()) &&
+          thePulseHeightMap[i].tmax() > 1 && 
+          thePulseHeightMap[i].tmax() < 7 ) {
         theMaxima.push_back(i);
       }
     }
