@@ -86,7 +86,7 @@ void RecoAnalyzerExample::endJob() {
 
 void RecoAnalyzerExample::analyze(const Event& event, const EventSetup& eventSetup) {
   /// get the particle data table
-  ESHandle<DefaultConfig::ParticleDataTable> pdt;
+  ESHandle<ParticleDataTable> pdt;
   eventSetup.getData( pdt );
 
   using namespace edm;
@@ -100,7 +100,7 @@ void RecoAnalyzerExample::analyze(const Event& event, const EventSetup& eventSet
 	p != genEvent->particles_end(); ++p ) {
     const HepMC::GenParticle * part = * p; 
     int id = part->pdg_id();
-    const DefaultConfig::ParticleData * pd = pdt->particle( id );
+    const ParticleData * pd = pdt->particle( id );
     if ( pd == 0 )
       throw edm::Exception( edm::errors::InvalidReference ) 
 	<< "HepMC particle with id " << id << "has no particle data" << endl;
