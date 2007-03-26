@@ -10,6 +10,7 @@
 #include "RecoBTag/MCTools/interface/MCParticleInfo.h"
 #include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
 
+
 class MCBaseParticle {
 
 public:
@@ -31,7 +32,7 @@ public:
   /**
    * fill kinematical info
    */
-  virtual void fourVector ( const HepLorentzVector & fv) {
+  virtual void fourVector ( const HepMC::FourVector & fv) {
     fourVector_ = fv;
   }
 
@@ -52,7 +53,7 @@ protected:
   math::XYZTLorentzVector  fourVector_;
 
   math::XYZTLorentzVector lorentzVect(const HepMC::FourVector & p4) const 
-  	{return  math::XYZTLorentzVector( p4.x(), p4.y(), p4.z(), p4.t() );}
+  	{return  math::XYZTLorentzVector( p4 );}
 
 };
 
