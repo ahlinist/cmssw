@@ -24,7 +24,7 @@
 #include "FWCore/Utilities/interface/GetReleaseVersion.h"
 #include "DQMServices/NodeROOT/interface/SenderBase.h"
 #include "EventFilter/FUSender/interface/FUi2oSender.h"
-#include "EventFilter/StorageManager/interface/i2oStorageManagerMsg.h"
+#include "EventFilter/Utilities/interface/i2oEvfMsgs.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 #include "i2o/Method.h"

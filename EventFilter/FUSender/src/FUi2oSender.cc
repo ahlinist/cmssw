@@ -7,13 +7,13 @@
      chain of fragments and ensuring sufficient space in the memory pool.
      See the CMS EvF Storage Manager wiki page for further notes.
 
-   $Id$
+   $Id: FUi2oSender.cc,v 1.1 2007/02/04 06:14:02 hcheung Exp $
 */
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/Utilities/interface/Exception.h"
 #include "EventFilter/FUSender/interface/FUi2oSender.h"
-#include "EventFilter/StorageManager/interface/i2oStorageManagerMsg.h"
+#include "EventFilter/Utilities/interface/i2oEvfMsgs.h"
 
 #include "xdaq/Application.h"
 #include "xdaq/ApplicationContext.h"
@@ -452,7 +452,7 @@ extern "C" xdaq::Application * instantiate_FUi2oSender(xdaq::ApplicationStub * s
  * Splits an arbitrarily large data buffer into a chain of I2O
  * fragments of fixed maximum size.  This method treats each fragment
  * as a I2O_SM_MULTIPART_MESSAGE_FRAME structure
- * (see EventFilter/StorageManager/interface/i2oStorageManagerMsg.h) but
+ * (see EventFilter/Utilities/interface/i2oEvfMsgs.h) but
  * leaves room for additional header data using the trueHeaderSize argument.
  *
  * This method can throw the following exceptions:
@@ -569,8 +569,7 @@ toolbox::mem::Reference
       pvtMsg->OrganizationID = XDAQ_ORGANIZATION_ID;
 
       // fill in the necessary fields in the I2O_SM_MULTIPART_MESSAGE_FRAME
-      // (see $CMSSW_RELEASE_BASE/src/EventFilter/StorageManager/interface/
-      // i2oStorageManagerMsg.h)
+      // (see $CMSSW_RELEASE_BASE/src/EventFilter/Utilities/interface/i2oEvfMsgs.h)
       msg->dataSize = dataFragmentSize;
       msg->hltLocalId = sourceApp->getApplicationDescriptor()->getLocalId();
       msg->hltInstance = sourceApp->getApplicationDescriptor()->getInstance();
