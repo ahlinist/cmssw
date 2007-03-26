@@ -2,18 +2,24 @@
 <use name=FWCore/Framework>
 <use name=SimDataFormats/HepMCProduct>
 <use name=clhep> 
+<use name=hepmc> 
 <use name=pythia6_227>
 #<use name=photos215>
+<use name=root>
 <use name=Utilities/StorageFactory>
  
 <flags SEAL_PLUGIN_NAME="GeneratorInterfaceComphepInterface">
+<flags FFLAGS="-w">
+
 <export>
  <lib name=GeneratorInterfaceComphepInterface>
  <use name=boost>
  <use name=FWCore/Framework>
  <use name=SimDataFormats/HepMCProduct>
  <use name=clhep> 
+ <use name=hepmc> 
  <use name=pythia6_227>
+ <use name=root>
  <use name=Utilities/StorageFactory>
 # <use name=tauola27.121_aux1>
 # <use name=tauola27.121>
