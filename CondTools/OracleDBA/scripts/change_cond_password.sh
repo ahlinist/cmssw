@@ -69,6 +69,7 @@ STRIP
 ALIGNMENT
 HLT
 BTAG
+L1T
 " 
 echo
 for OWNER in ${OWNERS} ; do

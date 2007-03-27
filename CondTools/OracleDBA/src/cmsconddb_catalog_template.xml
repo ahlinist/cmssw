@@ -78,5 +78,11 @@
     </physical>
     <logical/>
   </File>
-
+  
+  <File ID="162E32E1-7FDC-DB11-A6E0-0016761581E6">
+    <physical>
+      <pfn filetype="POOL_RDBMS" name="oracle://host/CMS_COND_L1T"/>
+    </physical>
+    <logical/>
+  </File>
 </POOLFILECATALOG>
