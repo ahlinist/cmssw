@@ -15,6 +15,7 @@ $Id$
 ----------------------------------------------------------------------*/
 
 #include "DataFormats/Provenance/interface/LuminosityBlockAuxiliary.h"
+#include "DataFormats/Provenance/interface/RunID.h"
 #include "FWCore/Framework/interface/DataBlockImpl.h"
 
 #include "boost/shared_ptr.hpp"
@@ -26,13 +27,14 @@ namespace edm {
   public:
     LuminosityBlockPrincipal(LuminosityBlockNumber_t const& id,
 	ProductRegistry const& reg,
-        boost::shared_ptr<RunPrincipal const> rp,
+        boost::shared_ptr<RunPrincipal> rp,
         ProcessConfiguration const& pc,
 	ProcessHistoryID const& hist = ProcessHistoryID(),
 	boost::shared_ptr<DelayedReader> rtrv = boost::shared_ptr<DelayedReader>(new NoDelayedReader));
 
     LuminosityBlockPrincipal(LuminosityBlockNumber_t const& id,
 	ProductRegistry const& reg,
+        RunNumber_t run,
         ProcessConfiguration const& pc,
 	ProcessHistoryID const& hist = ProcessHistoryID(),
 	boost::shared_ptr<DelayedReader> rtrv = boost::shared_ptr<DelayedReader>(new NoDelayedReader));
@@ -43,8 +45,12 @@ namespace edm {
       return *runPrincipal_;
     }
 
-    boost::shared_ptr<RunPrincipal const> const
-    runPrincipalConstSharedPtr() const {
+    RunPrincipal & runPrincipal() {
+      return *runPrincipal_;
+    }
+
+    boost::shared_ptr<RunPrincipal>
+    runPrincipalSharedPtr() {
       return runPrincipal_;
     }
 
@@ -91,7 +97,7 @@ namespace edm {
     virtual bool unscheduledFill(Group const&) const {return false;}
     virtual bool fillAndMatchSelector(Provenance &, SelectorBase const&) const {return false;}
 
-    boost::shared_ptr<RunPrincipal const> const runPrincipal_;
+    boost::shared_ptr<RunPrincipal> runPrincipal_;
     LuminosityBlockAuxiliary aux_;
   };
 }
