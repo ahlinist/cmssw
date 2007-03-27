@@ -61,7 +61,7 @@ void testGenericHandle::failgetbyLabelTest() {
   edm::Timestamp time;
   edm::ProductRegistry preg;
   edm::ProcessConfiguration pc("PROD", edm::ParameterSetID(), edm::getReleaseVersion(), edm::getPassID());
-  edm::EventPrincipal ep(id, time, preg, pc);
+  edm::EventPrincipal ep(id, time, preg, 1, pc);
   edm::GenericHandle h("edmtest::DummyProduct");
   try {
      edm::ModuleDescription modDesc;
@@ -119,10 +119,10 @@ void testGenericHandle::getbyLabelTest() {
   edm::ProductRegistry::ProductList::const_iterator it = pl.find(bk);
   product.productID_ = it->second.productID_;
 
-  edm::EventID col(1L);
+  edm::EventID col(1L, 1L);
   edm::Timestamp fakeTime;
   edm::ProcessConfiguration pc("PROD", edm::ParameterSetID(), edm::getReleaseVersion(), edm::getPassID());
-  edm::EventPrincipal ep(col, fakeTime, preg, pc);
+  edm::EventPrincipal ep(col, fakeTime, preg, 1, pc);
 
   std::auto_ptr<edm::Provenance> pprov(new edm::Provenance(product, edm::BranchEntryDescription::Success));
   ep.put(pprod, pprov);

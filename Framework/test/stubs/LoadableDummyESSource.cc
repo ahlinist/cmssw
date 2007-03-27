@@ -34,7 +34,7 @@ public:
        setInterval(edm::ValidityInterval(edm::IOVSyncValue::beginOfTime(),
                                          edm::IOVSyncValue::endOfTime()));
      } else {
-       setInterval(edm::ValidityInterval(edm::IOVSyncValue(startRun,0),
+       setInterval(edm::ValidityInterval(edm::IOVSyncValue(edm::EventID(startRun,0)),
                                          edm::IOVSyncValue::endOfTime()));
        
      }

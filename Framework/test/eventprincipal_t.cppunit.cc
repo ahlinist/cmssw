@@ -200,7 +200,7 @@ void testeventprincipal::setUp()
     edm::ProcessConfiguration* process = processConfigurations_[tag];
     assert(process);
     edm::Timestamp now(1234567UL);
-    pEvent_  = new edm::EventPrincipal(eventID_, now, *pProductRegistry_, *process);
+    pEvent_  = new edm::EventPrincipal(eventID_, now, *pProductRegistry_, 1, *process);
     pEvent_->put(product, provenance);
   }
   
