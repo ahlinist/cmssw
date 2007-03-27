@@ -67,14 +67,15 @@ namespace edm {
       return *luminosityBlock_;
     }
 
+
     LuminosityBlockNumber_t
-    luminosityBlock() const;    
+    luminosityBlock() const {return aux_.luminosityBlock();}
 
     Run const&
     getRun() const;
 
     RunNumber_t
-    run() const;    
+    run() const {return id().run();}   
 
   private:
     // commit_() is called to complete the transaction represented by

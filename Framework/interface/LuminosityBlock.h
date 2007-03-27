@@ -48,7 +48,9 @@ namespace edm {
     // AUX functions.
     LuminosityBlockNumber_t luminosityBlock() const {return aux_.luminosityBlock();}
 
-    RunNumber_t run() const;
+    RunNumber_t run() const {
+      return aux_.run();
+    }
 
     LuminosityBlockID id() const {
       return aux_.id();
