@@ -16,9 +16,9 @@
  <Constant name="WheelRin"      value="22.38*cm"/>
  <Constant name="WheelRout"     value="51.20*cm"/>
  <Constant name="WheelT"        value="10.00*cm"/>
- <Constant name="Wheel0Z"       value="783*mm"/>
- <Constant name="Wheel1Z"       value="903*mm"/>
- <Constant name="Wheel2Z"       value="1053*mm"/>
+ <Constant name="Wheel0Z"       value="791.0*mm"/>
+ <Constant name="Wheel1Z"       value="920.5*mm"/>
+ <Constant name="Wheel2Z"       value="1050*mm"/>
  <Constant name="RingZ"         value="3.50*cm"/>
  <Constant name="SupportT"      value="0.10*cm"/>
  <Constant name="SupportRin"    value="[WheelRout]"/>

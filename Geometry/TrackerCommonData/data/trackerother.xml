@@ -1,10 +1,8 @@
 <?xml version="1.0"?>
 <DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../DetectorDescription/Schema/DDLSchema.xsd">
 
-<ConstantsSection label="tracker.xml" eval="true">
+<ConstantsSection label="trackerother.xml" eval="true">
  <Constant name="zero"             value="0.0*fm"/>
- <Constant name="TrackCalorR"      value="1.233*m"/>
- <Constant name="TrackBeamZ2"      value="2.935*m"/>
  <Constant name="ActiveScreenL"    value="5.640*m"/>
  <Constant name="ActiveScreenR"    value="0.190*cm"/>
  <Constant name="ActiveScreenRin"  value="1.182*m"/>
@@ -23,14 +21,9 @@
  <Constant name="PatchPannelR2"    value="62.50*cm"/>
  <Constant name="PatchPannelR3"    value="1.105*m"/>
  <Constant name="PatchPannelZ"     value="2.865*m"/>
- <Constant name="ZPixelForward"    value="325.*mm"/>
 </ConstantsSection>
 
-<SolidSection label="tracker.xml">
- <Polycone name="Tracker" startPhi="0*deg" deltaPhi="360*deg" >
-  <ZSection z="-[TrackBeamZ2]"  rMin="[zero]"  rMax="[TrackCalorR]" />
-  <ZSection z="[TrackBeamZ2]"   rMin="[zero]"  rMax="[TrackCalorR]" />
- </Polycone> 
+<SolidSection label="trackerother.xml">
  <Tubs name="TrackerScreenCont"     rMin="[ActiveScreenRin]" 
        rMax="[ActiveScreenRout]"    dz="[ActiveScreenL]/2" 
        startPhi="0*deg"             deltaPhi="360*deg"/>
@@ -63,11 +56,7 @@
        startPhi="0*deg"             deltaPhi="360*deg"/>
 </SolidSection>
 
-<LogicalPartSection label="tracker.xml">
- <LogicalPart name="Tracker" category="unspecified">
-  <rSolid name="Tracker"/>
-  <rMaterial name="materials:Vacuum"/>
- </LogicalPart>
+<LogicalPartSection label="trackerother.xml">
  <LogicalPart name="TrackerScreenCont" category="unspecified">
   <rSolid name="TrackerScreenCont"/>
   <rMaterial name="materials:Foam"/>
@@ -109,15 +98,10 @@
   <rMaterial name="trackermaterial:Tk_panels_up"/>
  </LogicalPart>
 </LogicalPartSection>
- 
-<RotationSection label="tracker.xml">
-  <Rotation name="180D" thetaX="90*deg" phiX="180*deg"   thetaY="90*deg"
-                        phiY="90*deg"   thetaZ="180*deg" phiZ="0*deg" />
-</RotationSection>
 
-<PosPartSection label="tracker.xml">
+<PosPartSection label="trackerother.xml">
  <PosPart copyNumber="1">
-   <rParent name="trackerother:Tracker"/>
+   <rParent name="tracker:Tracker"/>
    <rChild name="trackerother:TrackerScreenCont"/>
  </PosPart>
  <PosPart copyNumber="1">
@@ -125,14 +109,14 @@
    <rChild name="trackerother:TrackerScreenSupp"/>
  </PosPart>
  <PosPart copyNumber="1">
-   <rParent name="trackerother:Tracker"/>
+   <rParent name="tracker:Tracker"/>
    <rChild name="trackerother:TrackerPatchPanel"/>
   <Translation x="[zero]" y="[zero]" z="[PatchPannelZ]"/>
  </PosPart>
  <PosPart copyNumber="2">
-   <rParent name="trackerother:Tracker"/>
+   <rParent name="tracker:Tracker"/>
    <rChild name="trackerother:TrackerPatchPanel"/>
-  <rRotation name="trackerother:180D"/>
+  <rRotation name="tracker:180D"/>
   <Translation x="[zero]" y="[zero]" z="-[PatchPannelZ]"/>
  </PosPart>
  <PosPart copyNumber="1">
