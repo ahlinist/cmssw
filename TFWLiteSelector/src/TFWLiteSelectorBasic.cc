@@ -263,7 +263,7 @@ TFWLiteSelectorBasic::Process(Long64_t iEntry) {
 	 m_->reader_->setEntry(iEntry);
 	 edm::ProcessConfiguration pc;
 	 edm::EventPrincipal ep(aux.id(), aux.time(), m_->reg_,
-	     pc, aux.processHistoryID(), m_->reader_);
+	     1, pc, aux.processHistoryID(), m_->reader_);
          m_->processNames_ = ep.processHistory();
 
 	 using namespace edm;
