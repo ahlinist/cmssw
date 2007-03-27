@@ -8,7 +8,7 @@
 
 </ConstantsSection>
 
-<Algorithm name="DDEcalBarrelAlgo">
+<Algorithm name="ecal:DDEcalBarrelAlgo">
      <rParent name="eregalgo:ECAL"/>
 
 <!-- Translations indicated by 3 vectors x, y, z
