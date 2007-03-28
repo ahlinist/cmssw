@@ -2,6 +2,7 @@
 <use name=FWCore/Framework>
 <use name=SimDataFormats/HepMCProduct>
 <use name=clhep> 
+<use name=hepmc> 
 <use name=charybdis1_002> 
 <use name=pythia6_227>
 <use name=charybdis1_002> 
@@ -13,6 +14,7 @@
  <use name=FWCore/Framework>
  <use name=SimDataFormats/HepMCProduct>
  <use name=clhep> 
+ <use name=hepmc> 
  <use name=charybdis1_002> 
  <use name=pythia6_227>
  <use name=charybdis1_002> 
