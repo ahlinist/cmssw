@@ -1,6 +1,6 @@
 /*
- *  $Date: 2006/09/11 14:36:36 $
- *  $Revision: 1.1 $
+ *  $Date: 2006/09/13 14:44:41 $
+ *  $Revision: 1.2 $
  *  
  *  Filip Moorgat & Hector Naves 
  *  26/10/05
@@ -28,18 +28,18 @@ using namespace std;
 
 // Generator modifications
 // ***********************
+#include "HepMC/PythiaWrapper6_2.h"
+#include "HepMC/IO_HEPEVT.h"
 #include "GeneratorInterface/TopRexInterface/interface/ToprexWrapper.h"
 //#include "GeneratorInterface/CommonInterface/interface/PretauolaWrapper.h"
-#include "CLHEP/HepMC/include/PythiaWrapper6_2.h"
-#include "CLHEP/HepMC/ConvertHEPEVT.h"
-#include "CLHEP/HepMC/CBhepevt.h"
+//#include "CLHEP/HepMC/CBhepevt.h"
 
 
 #include "GeneratorInterface/CommonInterface/interface/PythiaCMS.h"
 #include "GeneratorInterface/CommonInterface/interface/Txgive.h"
 
 
-HepMC::ConvertHEPEVT conv;
+HepMC::IO_HEPEVT conv;
 // ***********************
 
 
@@ -188,7 +188,7 @@ bool ToprexSource::produce(Event & e) {
     call_findjets();      // find jets 
     call_pyhepc( 1 );
     
-    HepMC::GenEvent* evt = conv.getGenEventfromHEPEVT();
+    HepMC::GenEvent* evt = conv.read_next_event();
     evt->set_signal_process_id(pypars.msti[0]);
     evt->set_event_scale(pypars.pari[16]);
     evt->set_event_number(numberEventsInRun() - remainingEvents() - 1);
