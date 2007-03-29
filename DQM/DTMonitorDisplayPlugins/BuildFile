@@ -1,0 +1,11 @@
+<flags SEAL_PLUGIN_NAME=DQMDTMonitorDisplayPlugins>
+<use name=DQMServices/Core>
+<use name=DQMServices/UI>
+<use name=Foundation/PluginManager>
+<use name=VisMonitoring/VisDQMBase>
+<use name=rootcore>
+<export>
+  <use name=VisMonitoring/VisDQMBase>
+  <use name=rootcore>
+  <lib name=DQMDTMonitorDisplayPlugins>
+</export>
