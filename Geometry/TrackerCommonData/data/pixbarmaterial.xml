@@ -276,7 +276,7 @@
 -->
 
 <!-- New materials -->
-   <CompositeMaterial name="Silicon_Nitride" density="2.5*g/cm3" symbol=" " method="mixture by weight">
+   <CompositeMaterial name="Silicon_Nitride" density="3.4*g/cm3" symbol=" " method="mixture by weight">
     <MaterialFraction fraction="0.6006">
           <rMaterial name="materials:Silicon"/>
     </MaterialFraction>
