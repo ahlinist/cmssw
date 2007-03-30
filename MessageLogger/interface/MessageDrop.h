@@ -21,6 +21,11 @@
 // $Id$
 //
 
+// Framework include files
+
+#include "FWCore/Utilities/interface/EDMException.h"	// change log 4
+
+
 // system include files
 
 #include <string>
@@ -30,7 +35,10 @@
 //  1  mf 5/12/06	initialize debugEnabled to true, to avoid unitialized
 //			data detection in memory checks (and to be safe in
 //			getting enabled output independant of timings) 
-
+//
+//  4  mf 2/22/07	static ex_p to have a way to convey exceptions to throw
+//			(this is needed when configuring could lead to an 
+//			exception, for example)
 
 // user include files
 
@@ -52,6 +60,7 @@ public:
   bool debugEnabled;
   bool infoEnabled;
   bool warningEnabled;
+  static edm::Exception * ex_p;				// change log 4
 };
 
 } // end of namespace edm

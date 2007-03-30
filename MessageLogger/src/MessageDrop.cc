@@ -23,6 +23,8 @@ using namespace edm;
 
 static boost::thread_specific_ptr<MessageDrop> drops;
 
+edm::Exception * MessageDrop::ex_p = 0;
+
 MessageDrop *
 MessageDrop::instance()
 {
