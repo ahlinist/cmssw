@@ -73,7 +73,7 @@ public:
 
   static 
   bool  anyDebugEnabled() { return anyDebugEnabled_; }
-  
+
 private:
   // put an ErrorLog object here, and maybe more
 
