@@ -5,10 +5,13 @@
  *  \author Aaron Dominguez (UNL)
  */
 #include "RecoTracker/TkSeedingLayers/interface/SeedingHitSet.h"
-#include "RecoTracker/PixelStubs/interface/SeedComparitor.h"
+#include "RecoTracker/TkSeedingLayers/interface/SeedComparitor.h"
+
+namespace edm { class ParameterSet; }
 
 class SeedComparitorWithPixelStubs : public SeedComparitor {
  public:
+  SeedComparitorWithPixelStubs(const edm::ParameterSet & cfg);
   SeedComparitorWithPixelStubs(double betaCutFactor);
   virtual ~SeedComparitorWithPixelStubs();
   
