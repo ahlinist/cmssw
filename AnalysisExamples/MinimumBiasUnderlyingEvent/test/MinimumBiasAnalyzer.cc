@@ -14,11 +14,11 @@
 #include "DataFormats/JetReco/interface/BasicJetfwd.h"
 #include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
-#include "DataFormats/HepMCCandidate/interface/GenParticleCandidate.h"
+#include "DataFormats/HepMCCandidate/interface/HepMCCandidate.h"
 #include "DataFormats/RecoCandidate/interface/RecoCandidate.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/Event.h"
-#include "DataFormats/Common/interface/Handle.h"
+#include "FWCore/Framework/interface/Handle.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
  
@@ -72,13 +72,13 @@ void MinimumBiasAnalyzer::beginJob( const EventSetup& )
 
    pdN_vs_dphi   = new TProfile("dN_vs_dphi","dN vs dphi",100,-180.,180.,0,100);
    pdPt_vs_dphi  = new TProfile("dPt_vs_dphi","dPt vs dphi",100,-180.,180.,0,100);
-   pdN_vs_eta   = new TProfile("dN_vs_eta","dN vs eta",20,0.,5.);
-   pdN_vs_pt   = new TProfile("dN_vs_pt","dN vs PT",20,0.,10.);
+   pdN_vs_eta   = new TProfile("dN_vs_eta","dN vs eta",100,0.,5.);
+   pdN_vs_pt   = new TProfile("dN_vs_pt","dN vs PT",100,0.,4.);
 
    temp1 = new TH1D("temp1","temp",100,-180.,180.);
    temp2 = new TH1D("temp2","temp",100,-180.,180.);
-   temp3 = new TH1D("temp3","temp",20,0.,5.);
-   temp4 = new TH1D("temp4","temp",20,0.,10.);
+   temp3 = new TH1D("temp3","temp",100,0.,5.);
+   temp4 = new TH1D("temp4","temp",100,0.,4.);
 
    fHistPtDistJetChg   = new TH1D(  "HistPtDistJetChg", "Pt fisrt charged jet Spectra", 100,  0., 100. ) ;
    fHistEtaDistJetChg  = new TH1D(  "HistEtaDistJetChg", "#eta fisrt charged jet Spectra", 100, -5., 5. ) ;
@@ -100,7 +100,7 @@ void MinimumBiasAnalyzer::analyze( const Event& e, const EventSetup& ){
   Handle< BasicJetCollection > BasicJetsHandle ;
 
   if(objectAnalyzed == "MCCandidate" ){ 
-    e.getByLabel( "iterativeCone5GenJets", GenJetsHandle );
+    e.getByLabel( "iterativeCone7GenJets", GenJetsHandle );
   }else{
     e.getByLabel( "iterativeCone5BasicJets", BasicJetsHandle );
   }
@@ -133,10 +133,10 @@ void MinimumBiasAnalyzer::analyze( const Event& e, const EventSetup& ){
     
     fHistChgDist->Fill(nchg);
     
-    for(int i=0;i<20;i++)
+    for(int i=0;i<100;i++)
       {
-	pdN_vs_eta->Fill((i*0.25)+0.125,temp3->GetBinContent(i+1)/0.5,1); // 0.5 normalized to 0.25 bin in abs(eta) (2 times) -> 0.5
-	pdN_vs_pt->Fill((i*0.5)+0.25,temp4->GetBinContent(i+1)/0.5,1); // 0.5 normalized to 0.5 bin in pt -> 0.5
+	pdN_vs_eta->Fill((i*0.05)+0.025,temp3->GetBinContent(i+1)/0.1,1); // 0.5 normalized to 0.25 bin in abs(eta) (2 times) -> 0.5
+	pdN_vs_pt->Fill((i*0.04)+0.02,temp4->GetBinContent(i+1)/0.04,1); // 0.5 normalized to 0.5 bin in pt -> 0.5
       }
     
     temp3->Reset();
