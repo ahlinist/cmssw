@@ -1,11 +1,11 @@
-// $Id: EBMDisplayPlugins.cc,v 1.13 2007/02/07 09:01:31 benigno Exp $
+// $Id: EBMDisplayPlugins.cc,v 1.14 2007/02/08 15:24:00 benigno Exp $
 
 /*!
   \file EBMDisplayPlugins
   \brief Display Plugin for Quality Histograms (2D)
   \author B. Gobbo 
-  \version $Revision: 1.13 $
-  \date $Date: 2007/02/07 09:01:31 $
+  \version $Revision: 1.14 $
+  \date $Date: 2007/02/08 15:24:00 $
 */
 
 #include "DQM/EcalBarrelMonitorDisplayPlugins/interface/EBMDisplayPlugins.h"
@@ -27,11 +27,11 @@
 // Temporary: this class should be instantiated once, but due to bugs 
 // it happens that's instantiated more times...
 static bool  first = true;
-static TH2C* t1 = new TH2C( "text1", "text1", 85, 0, 85, 20, 0, 20 );
-static TH2C* t2 = new TH2C( "text2", "text2", 17, 0, 17,  4, 0,  4 );
-static TH2C* t3 = new TH2C( "text3", "text3", 10, 0, 10,  5, 0,  5 );
-static TH2C* t4 = new TH2C( "text4", "text4",  2, 0,  2,  1, 0,  1 );
-static TH2C* t5 = new TH2C( "text5", "text5", 86, 1, 87,  1, 0,  1 );
+static TH2C* t1 = new TH2C( "ebm_text1", "text1", 85, 0, 85, 20, 0, 20 );
+static TH2C* t2 = new TH2C( "ebm_text2", "text2", 17, 0, 17,  4, 0,  4 );
+static TH2C* t3 = new TH2C( "ebm_text3", "text3", 10, 0, 10,  5, 0,  5 );
+static TH2C* t4 = new TH2C( "ebm_text4", "text4",  2, 0,  2,  1, 0,  1 );
+static TH2C* t5 = new TH2C( "ebm_text5", "text5", 86, 1, 87,  1, 0,  1 );
 //
 
 template<class T> void EBMDisplayPlugins::adjustRange( T obj ) {
