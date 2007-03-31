@@ -4,21 +4,16 @@
 
 /** \class CSCRecHitCBuilder 
  *
- * Algorithm to build 2-D RecHit from wire and strip digis
- * in endcap muon CSCs by implementing a 'build' function 
- * required by CSCRecHitCProducer.
  *
- * The builder goes through many stages before building 2-D hits:
- * 1) It finds wire clusters and form wire hits which it stores in CSCWireHit.
- * 2) From these wire hits, it builds pseudo-wire segments to clean up
- *    the wire hit collection from noisy hits.  Only the hits falling on
- *    the segment or far away from existing segments are retained.
- * 1) It then finds strip cluster and hits which it stores in CSCStripHit.
- * 2) Similary to the wire hits, segments are build using the strip hits.
- *    Because of the trapezoidal geometry of the strips, all strip hits falling
- *    close to the pseudo-strip segments are retained.
+ * An algorithm for fast and efficient track (hits and) segment
+ * reconstruction in Cathode Strip Chambers. Designed to be
+ * CPU-efficient, the algorithm is specifically targeted for the High
+ * Level Trigger purposes. The segment finding efficiency and the
+ * spatial resolution attainable with the proposed algorithm as well
+ * as the required CPU time are benchmarked using the MTCC data and
+ * found to surpass the HLT requirements.
  *
- * \author Dominique Fortin - UCR
+ * \author Alexey.Drozdetskiy@cern.ch (UF), Andrey Korytov (UF), Yuriy Pakhotin (UF)
  *
  */
 
