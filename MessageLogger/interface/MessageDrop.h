@@ -39,6 +39,9 @@
 //  4  mf 2/22/07	static ex_p to have a way to convey exceptions to throw
 //			(this is needed when configuring could lead to an 
 //			exception, for example)
+//
+//  5  mf 2/22/07	jobreport_name to have a way to convey content
+//			of jobreport option from cmsRun to MessageLogger class
 
 // user include files
 
@@ -49,6 +52,7 @@ private:
   MessageDrop() 
   : moduleName ("")
   , runEvent("pre-events")
+  , jobreport_name()					// change log 5
   , debugEnabled(true) 					// change log 1
   , infoEnabled(true) 					// change log 3
   , warningEnabled(true)				// change log 3
@@ -57,6 +61,7 @@ public:
   static MessageDrop * instance ();
   std::string moduleName;
   std::string runEvent;
+  std::string jobreport_name;				// change log 5
   bool debugEnabled;
   bool infoEnabled;
   bool warningEnabled;
