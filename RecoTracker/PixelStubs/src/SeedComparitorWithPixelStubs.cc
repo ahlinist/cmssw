@@ -2,6 +2,11 @@
 #include "RecoTracker/TkSeedingLayers/interface/SeedingHit.h"
 #include "RecoTracker/PixelStubs/interface/PixelStub.h"
 #include "DataFormats/TrackerRecHit2D/interface/SiPixelRecHit.h"
+#include "FWCore/ParameterSet/interface/ParameterSet.h"
+
+SeedComparitorWithPixelStubs::SeedComparitorWithPixelStubs(const edm::ParameterSet & cfg)
+  : betaCutFactor_(cfg.getParameter<double>("betaCutFactor"))
+{}
 
 SeedComparitorWithPixelStubs::SeedComparitorWithPixelStubs(double betaCutFactor)
   : betaCutFactor_(betaCutFactor)
