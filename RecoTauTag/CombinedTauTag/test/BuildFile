@@ -1,6 +1,7 @@
 <use name=FWCore/Framework>
 <use name=FWCore/ParameterSet>
 <use name=FWCore/Utilities>
+<use name=FWCore/ServiceRegistry>
 <use name=Foundation/PluginManager>
 <use name=SimDataFormats/HepMCProduct>
 <use name=DataFormats/HepMCCandidate>
@@ -15,6 +16,8 @@
 <use name=DataFormats/GeometryVector>
 <use name=CondFormats/BTauObjects>
 <use name=CondFormats/DataRecord>
+<use name=CondCore/DBOutputService>
+<use name=CondCore/BTauPlugins>
 <use name=MagneticField/Engine>
 <use name=MagneticField/Records>
 <use name=Geometry/TrackerGeometryBuilder>
