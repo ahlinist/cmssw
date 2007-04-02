@@ -149,7 +149,7 @@ pair<JetTag,CombinedTauTagInfo> CombinedTauTagAlg::tag(const IsolatedTauTagInfoR
   // ***********defining evolutive size signal cones ************
   // *************************BEGIN******************************
   double neutralECALclus_signalconesize = min(0.15,3./TauCandJet_ref_et+0.05);
-  neutralECALclus_signalconesize = max((double)neutralECALclus_signalconesize,0.08);
+  neutralECALclus_signalconesize = max(neutralECALclus_signalconesize,0.08);
   double rectks_signalconesize = SignalCone_ifnotEvolutive_;
   if(EvolutiveSignalCone_){
     rectks_signalconesize = min(0.17,3.5/TauCandJet_ref_et);
