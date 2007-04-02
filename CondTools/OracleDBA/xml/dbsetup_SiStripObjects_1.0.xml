@@ -7,7 +7,10 @@
    <HomogeneousContainer name="SiStripNoises">
       <Class name="SiStripNoises" mappingVersion="SiStripObjects_1.0"/>
    </HomogeneousContainer >
-   <HomogeneousContainer name="SiStripFedCabling">
-      <Class name="SiStripFedCabling" mappingVersion="SiStripObjects_1.0"/>
+   <HomogeneousContainer name="SiStripApvGain">
+      <Class name="SiStripApvGain" mappingVersion="SiStripObjects_1.0"/>
+   </HomogeneousContainer >
+   <HomogeneousContainer name="SiStripLorentzAngle">
+      <Class name="SiStripLorentzAngle" mappingVersion="SiStripObjects_1.0"/>
    </HomogeneousContainer >
 </Database >
