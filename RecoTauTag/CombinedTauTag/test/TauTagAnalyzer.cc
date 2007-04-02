@@ -41,6 +41,7 @@
 
 #include "RecoTauTag/CombinedTauTag/interface/ECALBounds.h"
 
+#include "CLHEP/Vector/ThreeVector.h"
 #include "CLHEP/Vector/LorentzVector.h"
 #include "Math/GenVector/VectorUtil.h"
 #include "Math/GenVector/PxPyPzE4D.h"
@@ -261,7 +262,8 @@ void TauTagAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   for (HepMC::GenEvent::particle_iterator iter=myGenEvent->particles_begin();iter!=myGenEvent->particles_end();iter++) {
     if ((**iter).status()==2 && (abs((**iter).pdg_id())==15)){
       HepMC::GenParticle* TheParticle=(*iter);
-      HepLorentzVector TheParticle_HepLV=TheParticle->momentum();
+      Hep3Vector TheParticle_Hep3V(TheParticle->momentum().px(),TheParticle->momentum().py(),TheParticle->momentum().pz());
+      HepLorentzVector TheParticle_HepLV(TheParticle_Hep3V,TheParticle->momentum().e());
       HepLorentzVector TheTauJet_HepLV=TheParticle_HepLV;
       HepMC::GenParticle* TheTauneutrino=0;
       HepMC::GenParticle* TheTauneutrinobar=0;
@@ -269,7 +271,9 @@ void TauTagAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       for (HepMC::GenVertex::particles_out_const_iterator i_taudaughter=TheParticle->end_vertex()->particles_out_const_begin();i_taudaughter!=TheParticle->end_vertex()->particles_out_const_end();i_taudaughter++){
 	if ((**i_taudaughter).status()==1 && abs((int)(**i_taudaughter).pdg_id())==16){
 	  TheTauneutrino=*i_taudaughter;
-	  TheTauJet_HepLV-=TheTauneutrino->momentum();
+	  Hep3Vector TheTauneutrino_Hep3V(TheTauneutrino->momentum().px(),TheTauneutrino->momentum().py(),TheTauneutrino->momentum().pz());
+	  HepLorentzVector TheTauneutrino_HepLV(TheTauneutrino_Hep3V,TheTauneutrino->momentum().e());
+	  TheTauJet_HepLV-=TheTauneutrino_HepLV;
 	}
       }
       bool tau_issuinge = false;
@@ -325,7 +329,8 @@ void TauTagAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	  if (abs((**i_1sttaudaughter).pdg_id())==12) TheTauneutrinobar=(*i_1sttaudaughter);
 	  if (abs((**i_2ndtaudaughter).pdg_id())==12) TheTauneutrinobar=(*i_2ndtaudaughter);
 	  if (abs((**i_3rdtaudaughter).pdg_id())==12) TheTauneutrinobar=(*i_3rdtaudaughter);
-	  HepLorentzVector TheTauneutrinobar_HepLV=TheTauneutrinobar->momentum();
+	  Hep3Vector TheTauneutrinobar_Hep3V(TheTauneutrinobar->momentum().px(),TheTauneutrinobar->momentum().py(),TheTauneutrinobar->momentum().pz());
+	  HepLorentzVector TheTauneutrinobar_HepLV(TheTauneutrinobar_Hep3V,TheTauneutrinobar->momentum().e());
 	  TheTauJet_HepLV = TheTauJet_HepLV-TheTauneutrinobar_HepLV;
 	  tau_issuinge = true;
 	}
@@ -333,7 +338,8 @@ void TauTagAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	  if (abs((**i_1sttaudaughter).pdg_id())==14) TheTauneutrinobar=(*i_1sttaudaughter);
 	  if (abs((**i_2ndtaudaughter).pdg_id())==14) TheTauneutrinobar=(*i_2ndtaudaughter);
 	  if (abs((**i_3rdtaudaughter).pdg_id())==14) TheTauneutrinobar=(*i_3rdtaudaughter);
-	  HepLorentzVector TheTauneutrinobar_HepLV=TheTauneutrinobar->momentum();
+	  Hep3Vector TheTauneutrinobar_Hep3V(TheTauneutrinobar->momentum().px(),TheTauneutrinobar->momentum().py(),TheTauneutrinobar->momentum().pz());
+	  HepLorentzVector TheTauneutrinobar_HepLV(TheTauneutrinobar_Hep3V,TheTauneutrinobar->momentum().e());
 	  TheTauJet_HepLV = TheTauJet_HepLV-TheTauneutrinobar_HepLV;
 	  tau_issuingmu = true;
 	}	
