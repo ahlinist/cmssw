@@ -49,17 +49,17 @@ MCProcessor(MrEvent *);
 MCProcessor(MrEvent *, Config_t *);
 
 // Destructor:
-~MCProcessor(){};
+virtual ~MCProcessor(){};
 
 // Methods:
-bool MCDriver(void);
+virtual bool MCDriver(void);
 math::XYZVector PmissMC(void) {return metMCvector;}
 void SetDebug(int debug)  {DEBUGLVL  = debug; } 
-int NumMCElecTrue(void){return nMCElecTrue;}
-int NumMCMuonTrue(void){return nMCMuonTrue;}
-int NumMCTauTrue(void){return nMCTauTrue;}
-int NumMCPhotTrue(void){return nMCPhotTrue;}
-int NumMCJetTrue(void){return nMCJetTrue;}
+virtual int NumMCElecTrue(void){return nMCElecTrue;}
+virtual int NumMCMuonTrue(void){return nMCMuonTrue;}
+virtual int NumMCTauTrue(void){return nMCTauTrue;}
+virtual int NumMCPhotTrue(void){return nMCPhotTrue;}
+virtual int NumMCJetTrue(void){return nMCJetTrue;}
 
 private:
      
@@ -108,11 +108,11 @@ private:
   math::XYZVector metMCvector;
 
   // Define the private methods included
-  void PrintMCInfo(int);
-  void MakeMCStatusInfo(void);
-  math::XYZVector MetFromMC(void);
-  float DeltaPhi(float, float);
-  float GetDeltaR(float, float, float, float);
+  virtual void PrintMCInfo(int);
+  virtual void MakeMCStatusInfo(void);
+  virtual math::XYZVector MetFromMC(void);
+  virtual float DeltaPhi(float, float);
+  virtual float GetDeltaR(float, float, float, float);
 
 };
 

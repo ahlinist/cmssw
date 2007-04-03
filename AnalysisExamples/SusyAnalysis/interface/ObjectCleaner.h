@@ -25,11 +25,13 @@
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
+#include "AnalysisExamples/SusyAnalysis/interface/SusyRecoTools.h"
+
 #include <vector>
 #include <iostream>
 #include <cmath>
 
-class ObjectCleaner {
+class ObjectCleaner : public SusyRecoTools {
 
 public:
 
@@ -40,39 +42,38 @@ ObjectCleaner(vector<MrParticle*>*, const TrackCollection *,
     const VertexCollection*, const CaloTowerCollection*, edm::ParameterSet);
 
 // Destructor:
-~ObjectCleaner(){};
+virtual ~ObjectCleaner(){};
+
 
 // Methods:
-bool CleanPrimaryVertex(void);
-int GetPrimaryVertex(void);
-bool IsFromPrimaryVx(int);
-bool CleanObject(int);
-bool NotDuplicateObject(int);
-bool CleanElectron(int);
-bool DuplicateElectron(int);
-bool CleanMuon(int);
-bool DuplicateMuon(int);
-bool CleanTau(int);
-bool CleanPhoton(int);
-bool DuplicatePhoton(int);
-bool CleanJet(int);
-bool ElectronJet(int);
-bool CleanEvent();
-bool ConvertedPhoton(int, int);
-bool CleanMET(float*);
+virtual bool CleanPrimaryVertex(void);
+virtual bool CleanObject(int);
+virtual bool NotDuplicateObject(int);
+virtual bool CleanElectron(int);
+virtual bool DuplicateElectron(int);
+virtual bool CleanMuon(int);
+virtual bool DuplicateMuon(int);
+virtual bool CleanTau(int);
+virtual bool CleanPhoton(int);
+virtual bool DuplicatePhoton(int);
+virtual bool CleanJet(int);
+virtual bool ElectronJet(int);
+virtual bool CleanEvent();
+virtual bool ConvertedPhoton(int, int);
+virtual bool CleanMET(float*);
 
-void SetDebug(int debug)  {DEBUGLVL  = debug; } 
+void SetDebug(int debug)  { DEBUGLVL  = debug; } 
 
 private:
 
-std::vector<MrParticle*>& RecoData;
-const TrackCollection * TrackData;
-const VertexCollection* VertexData;
-const CaloTowerCollection* CaloTowerData;
+//std::vector<MrParticle*>& RecoData;
+//const TrackCollection * TrackData;
+//const VertexCollection* VertexData;
+//const CaloTowerCollection* CaloTowerData;
 
-const Vertex* primVx;
+//const Vertex* primVx;
 
-int DEBUGLVL;
+//int DEBUGLVL;
 
 float clean_chisqVxmax;
 float clean_dRVxmax;
@@ -97,20 +98,17 @@ float clean_dRPhotDupmax;
 float clean_deltaRElecJetmax;
 float clean_elecbyJetEratio;
 float clean_dRTrkFromJet;
-float clean_FracChmin;
-float clean_FracEmmin;
+float clean_FracChminJet;
+float clean_FracEmmaxJet;
 float clean_dROSelecmax;
 float clean_MOSelecmax;
+float clean_FracChmin;
+float clean_FracEmmin;
 float clean_METmin;
 float clean_dPhiJetMETmin;
 float clean_dR12min;
 float clean_dR21min;
 
-int FindNearestJet(int);
-float GetPtwrtJet(int, int);
-float GetJetTrkPtsum(float, float, float);
-float DeltaPhi(float, float);
-float GetDeltaR(float, float, float, float);
 
 };
 

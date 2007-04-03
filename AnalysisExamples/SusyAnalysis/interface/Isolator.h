@@ -13,48 +13,53 @@
 
 
 #include "AnalysisExamples/SusyAnalysis/interface/MrParticle.h" 
+#include "DataFormats/Candidate/interface/Candidate.h"
+#include "DataFormats/EgammaCandidates/interface/Electron.h"
+#include "DataFormats/JetReco/interface/CaloJet.h"
+#include "DataFormats/JetReco/interface/Jet.h"
+#include "DataFormats/EgammaReco/interface/SuperCluster.h"
+#include "DataFormats/EgammaReco/interface/BasicCluster.h"
 #include "DataFormats/CaloTowers/interface/CaloTowerCollection.h"
 #include "DataFormats/TrackReco/interface/Track.h"
+#include "DataFormats/Math/interface/Point3D.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+
+#include "AnalysisExamples/SusyAnalysis/interface/SusyRecoTools.h"
 
 #include <vector>
 #include <iostream>
 #include <cmath>
 
-class Isolator {
+class Isolator : public SusyRecoTools {
 
 public:
 
 // Constructor:
 Isolator(vector<MrParticle*>*, const TrackCollection *, 
-    const CaloTowerCollection*);
+    const VertexCollection*, const CaloTowerCollection*);
 Isolator(vector<MrParticle*>*, const TrackCollection *, 
-    const CaloTowerCollection*, edm::ParameterSet);
+    const VertexCollection*, const CaloTowerCollection*, edm::ParameterSet);
 
 // Destructor:
-~Isolator(){};
+virtual ~Isolator(){};
 
 // Methods:
-bool IsObjectIsolated(int);
-bool IsoElectron(int);
-bool IsoMuon(int);
-bool IsoTau(int);
-bool IsoPhoton(int);
-bool IsObjectMerged(int, bool);
-bool IsElecInJet(int, int);
-bool IsMuonInJet(int, int);
-bool IsTauInJet(int, int);
-bool IsPhotonInJet(int, int);
+virtual bool IsObjectIsolated(int);
+virtual bool IsoElectron(int);
+virtual bool IsoMuon(int);
+virtual bool IsoTau(int);
+virtual bool IsoPhoton(int);
+virtual bool IsObjectMerged(int, bool);
 
 void SetDebug(int debug)  {DEBUGLVL  = debug; } 
  
 private:
 
-std::vector<MrParticle*>& RecoData;
-const TrackCollection * TrackData;
-const CaloTowerCollection* CaloTowerData;
+//std::vector<MrParticle*>& RecoData;
+//const TrackCollection * TrackData;
+//const CaloTowerCollection* CaloTowerData;
 
-int DEBUGLVL;
+//int DEBUGLVL;
 
 // iso_Methodxxx : identification of the isolation method
 // is   1000*imeth + 100*idet + 10*itra + ival
@@ -97,6 +102,14 @@ float iso_MuIsoValue;
 int   iso_MethodTau;
 float iso_jetbyTauEmin;
 float iso_ptTauwrtJetmin;
+float iso_TauCalDRin;
+float iso_TauCalDRout;
+float iso_TauCalSeed;
+float iso_TauTkDRin;
+float iso_TauTkDRout;
+float iso_TauTkSeed;
+float iso_TauCalWeight;
+float iso_TauIsoValue;
 int   iso_MethodPhot;
 float iso_jetbyPhotEmin;
 float iso_ptPhotwrtJetmin;
@@ -109,13 +122,6 @@ float iso_PhTkSeed;
 float iso_PhCalWeight;
 float iso_PhIsoValue;
 
-float IsoCalSum (int, float, float, float, float, float);
-float IsoTrkSum (int, float, float, float, float, float);
-float IsoCandSum (int, float, float, float, float, float);
-int FindNearestJet(int);
-float GetPtwrtJet(int, int);
-float DeltaPhi(float, float);
-float GetDeltaR(float, float, float, float);
 
 };
 

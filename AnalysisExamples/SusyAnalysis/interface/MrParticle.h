@@ -292,6 +292,7 @@ struct Config_t {
      edm::ParameterSet isolator_params;
      edm::ParameterSet objectmatch_params;
      edm::ParameterSet mcproc_params;
+     edm::ParameterSet useranalysis_params;
     
 };
 
