@@ -78,7 +78,7 @@ int numJets(){if(!jetsprocessed) {GetLeadingJets();} ;
 //      cout << "MrEvent: numJets = " << NumJets << " indices stored " << LeadJets[0] << " " << LeadJets[1] << endl;
       return NumJets;}
 int indexRecoJet(int iJet){if(!jetsprocessed) {GetLeadingJets();} ;
-//      cout << "MrEvent: index returned " << LeadJets[iJet] << endl;
+//      cout << "MrEvent: index returned " << LeadJets[iJet-1] << endl;
       if(iJet <= NumJets){return LeadJets[iJet-1];}else{return -1;}}
 float ptJet(int iJet) {if(!jetsprocessed) {GetLeadingJets();} ;
 //      cout << "MrEvent: ptJet indices stored " << LeadJets[0] << " " << LeadJets[1] << endl;
@@ -119,14 +119,14 @@ int TrigL1, TrigHLT;
 math::XYZVector MetMC, MetCalo, MetRecoil;
 std::vector<float> HemiAxis1, HemiAxis2;
 int IndexMatchedSusyMother1, IndexMatchedSusyMother2;
-static const int Njetsmax = 4;
+static const int Njetsmax = 15;
 int LeadJets[Njetsmax], NumJets;
 float PtSumLeadJets;
 bool jetsprocessed;
 
 // methods
 void GetLeadingJets(){
-// saves the indices of the 4 leading jets
+// saves the indices of the 15 leading jets
 // and computes the scalar PtSum of the leading jets
   
   int nsaved = -1;
@@ -137,15 +137,16 @@ void GetLeadingJets(){
         nsaved++;
         LeadJets[nsaved] = i;
       }
-      else if ((*pRecoData)[LeadJets[nsaved]]->energy() < (*pRecoData)[i]->energy()){
+      else if ((*pRecoData)[LeadJets[nsaved]]->pt() < (*pRecoData)[i]->pt()){
         for (int j=0; j <= nsaved; j++){
-          if ((*pRecoData)[LeadJets[j]]->energy() < (*pRecoData)[i]->energy()){
+          if ((*pRecoData)[LeadJets[j]]->pt() < (*pRecoData)[i]->pt()){
             if (nsaved == Njetsmax-1){nsaved--;}
             for (int k=nsaved; k >= j; k--){
               LeadJets[k+1] = LeadJets[k];
             }
             LeadJets[j] = i;
-            nsaved++;
+            nsaved++; 
+            break;
           }
         }
       } else if (nsaved < Njetsmax-1){

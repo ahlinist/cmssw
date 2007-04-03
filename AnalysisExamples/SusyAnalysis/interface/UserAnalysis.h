@@ -7,7 +7,7 @@
 *  Class where the user analysis code goes -- (now it contains just an example)
 *
 *  Authors: Luc Pape & Filip Moortgat      Date: December 2006
-*                                          Updated: 
+*                                          Updated: March 2007
 *
 */
 
@@ -31,13 +31,21 @@ public:
 UserAnalysis(Config_t *);
 
 // Destructor:
-~UserAnalysis(){};
+virtual ~UserAnalysis(){};
 
 // Methods:
 
-void doAnalysis(MrEvent*);
+virtual void doAnalysis(MrEvent*);
 
 private:
+ 
+ 
+  // names of parameter sets  
+  Config_t * myConfig;
+  edm::ParameterSet useranalysis_params;
+  
+  // Define the parameters
+  float user_metMin;
  
  
   // names of histograms
@@ -67,19 +75,19 @@ private:
 
 // Some (possibly) useful functions:
 // Based on MCData
-int FindProducedSusyParticles(int *);
-int FindTopSusyMother(int);
-int FindLowSusyMother(int);
-int FirstSMParton(int);
-bool ComesFromSquark(int);
-bool ComesFromGluino(int);
+virtual int FindProducedSusyParticles(int *);
+virtual int FindTopSusyMother(int);
+virtual int FindLowSusyMother(int);
+virtual int FirstSMParton(int);
+virtual bool ComesFromSquark(int);
+virtual bool ComesFromGluino(int);
 // Based on RecoData
-int FindNearestJet(int);
-float GetPtwrtJet(int, int);
-void AddToJet(int);
+virtual int FindNearestJet(int);
+virtual float GetPtwrtJet(int, int);
+virtual void AddToJet(int);
 // Just kinematics
-float DeltaPhi(float, float);
-float GetDeltaR(float, float, float, float);
+virtual float DeltaPhi(float, float);
+virtual float GetDeltaR(float, float, float, float);
 
 };
 

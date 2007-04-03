@@ -60,9 +60,6 @@ private:
   int DEBUGLVL;
 
 
-float DeltaPhi(float, float);
-float GetDeltaR(float, float, float, float);
-
 };
 
 #endif

@@ -28,11 +28,11 @@ MatchObjects(vector<MrParticle*>*, vector<MrParticle*>*);
 MatchObjects(vector<MrParticle*>*, vector<MrParticle*>*, edm::ParameterSet);
 
 // Destructor:
-~MatchObjects(){};
+virtual ~MatchObjects(){};
 
 // Methods:
 
-void DoMatch(void);
+virtual void DoMatch(void);
 void SetDebug(int debug)  {DEBUGLVL  = debug; } 
 
 private:
@@ -55,10 +55,10 @@ float mo_cmuonDRmax;
 float mo_cphotonDRmax;
 float mo_cjetDRmax;
 
-int BestMatch(int, int, int);
-void ResolveMatchObjects(void);
-float DeltaPhi(float, float);
-float GetDeltaR(float, float, float, float);
+virtual int BestMatch(int, int, int);
+virtual void ResolveMatchObjects(void);
+virtual float DeltaPhi(float, float);
+virtual float GetDeltaR(float, float, float, float);
 
 
 };

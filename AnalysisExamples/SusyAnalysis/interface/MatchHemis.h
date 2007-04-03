@@ -26,17 +26,17 @@ MatchHemis(vector<MrParticle*>&, vector<MrParticle*>&,
            vector<float>&, vector<float>&);
 
 // Destructor:
-~MatchHemis(){};
+virtual ~MatchHemis(){};
 
 // Methods:
 
-int GetMatchedSusyMother1(void); // returns the Susy Mother of hemisphere 1
-int GetMatchedSusyMother2(void); // returns the Susy Mother of hemisphere 2
+virtual int GetMatchedSusyMother1(void); // returns the Susy Mother of hemisphere 1
+virtual int GetMatchedSusyMother2(void); // returns the Susy Mother of hemisphere 2
 void SetDebug(int debug)  {DEBUGLVL  = debug; } 
 
 private:
 
-bool DoMatch(); // the hemisphere matching algorithm
+virtual bool DoMatch(); // the hemisphere matching algorithm
 
 std::vector<MrParticle*>& RecoData;
 std::vector<MrParticle*>& MCData;

@@ -89,6 +89,7 @@ class SusyAnalyzer : public edm::EDAnalyzer {
      edm::ParameterSet isolator_params;
      edm::ParameterSet objectmatch_params;
      edm::ParameterSet mcproc_params;
+     edm::ParameterSet useranalysis_params;
 
      Config_t myConfig;
      
@@ -187,19 +188,10 @@ class SusyAnalyzer : public edm::EDAnalyzer {
     
 
   // private methods
-  void PrintCuts(void);
-  bool AcceptTrigger();  // could become a class once implemented
-  void PrintStatistics(void);
-  void CleanMemory();
-  // some methods to scan through the MCData and compute kinematical quantities
-  int FindProducedSusyParticles(int*);
-  int FindTopSusyMother(int);
-  int FindLowSusyMother(int);
-  int FirstSMParton(int);
-  bool ComesFromSquark(int);
-  bool ComesFromGluino(int);
-  float DeltaPhi(float, float);
-  float GetDeltaR(float, float, float, float);
+  virtual void PrintCuts(void);
+  virtual bool AcceptTrigger();  // could become a class once implemented
+  virtual void PrintStatistics(void);
+  virtual void CleanMemory();
 
 };
 

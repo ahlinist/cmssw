@@ -13,12 +13,6 @@
 */
 
 
-#include <memory>
-#include <string>
-#include <iostream>
-#include <vector>
-#include <cmath>
-
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
@@ -42,7 +36,15 @@
 #include "AnalysisExamples/SusyAnalysis/interface/Isolator.h"
 #include "AnalysisExamples/SusyAnalysis/interface/MatchObjects.h"
 
-class RecoProcessor {
+#include "AnalysisExamples/SusyAnalysis/interface/SusyRecoTools.h"
+
+#include <memory>
+#include <string>
+#include <iostream>
+#include <vector>
+#include <cmath>
+
+class RecoProcessor : public SusyRecoTools {
 
 public:
 
@@ -55,67 +57,67 @@ RecoProcessor(MrEvent *, const TrackCollection *,
     Config_t *);
 
 // Destructor:
-~RecoProcessor(){};
+virtual ~RecoProcessor(){};
 
 // Methods:
-bool RecoDriver(void);
+virtual bool RecoDriver(void);
 void SetDebug(int debug)  {DEBUGLVL  = debug; } 
 
   // counters of events
-int NumEvtNoReco(void) {return numEvtNoReco; }
-int NumEvtNoTracks(void) {return numEvtNoTracks; }
-int NumEvtNoCalo(void) {return numEvtNoCalo; }
-int NumEvtEmpty(void) {return numEvtEmpty; }
-int NumEvtNoPrimary(void) {return numEvtNoPrimary; }
-int NumEvtCleanEmpty(void) {return numEvtCleanEmpty; }
-int NumEvtFinalEmpty(void) {return numEvtFinalEmpty; }
-int NumEvtBadNoisy(void) {return numEvtBadNoisy; }
-int NumEvtBadMET(void) {return numEvtBadMET; }
+virtual int NumEvtNoReco(void) {return numEvtNoReco; }
+virtual int NumEvtNoTracks(void) {return numEvtNoTracks; }
+virtual int NumEvtNoCalo(void) {return numEvtNoCalo; }
+virtual int NumEvtEmpty(void) {return numEvtEmpty; }
+virtual int NumEvtNoPrimary(void) {return numEvtNoPrimary; }
+virtual int NumEvtCleanEmpty(void) {return numEvtCleanEmpty; }
+virtual int NumEvtFinalEmpty(void) {return numEvtFinalEmpty; }
+virtual int NumEvtBadNoisy(void) {return numEvtBadNoisy; }
+virtual int NumEvtBadMET(void) {return numEvtBadMET; }
 
   // counters of objects
-int NumNotPrimaryTrk(void) {return numNotPrimaryTrk; }
-int NumNotClean(void) {return numNotClean; }
-int NumDuplicate(void) {return numDuplicate; }
-int NumElectrons(void) {return numElectrons; }
-int NumElecNotPrimaryTrk(void) {return numElecNotPrimaryTrk; }
-int NumElecNotClean(void) {return numElecNotClean; }
-int NumElecDupl(void) {return numElecDupl; }
-int NumElectronsNonIso(void) {return numElectronsNonIso; }
-int NumElectronsfinal(void) {return numElectronsfinal; }
-int NumElectronsMatched(void) {return numElectronsMatched; }
-int NumMuons(void) {return numMuons; }
-int NumMuonNotPrimaryTrk(void) {return numMuonNotPrimaryTrk; }
-int NumMuonNotClean(void) {return numMuonNotClean; }
-int NumMuonDupl(void) {return numMuonDupl; }
-int NumMuonsNonIso(void) {return numMuonsNonIso; }
-int NumMuonsfinal(void) {return numMuonsfinal; }
-int NumMuonsMatched(void) {return numMuonsMatched; }
-int NumTaus(void) {return numTaus; }
-int NumTauNotPrimaryTrk(void) {return numTauNotPrimaryTrk; }
-int NumTauNotClean(void) {return numTauNotClean; }
-int NumTauDupl(void) {return numTauDupl; }
-int NumTausNonIso(void) {return numTausNonIso; }
-int NumTausfinal(void) {return numTausfinal; }
-int NumTausMatched(void) {return numTausMatched; }
-int NumPhotons(void) {return numPhotons; }
-int NumPhotNotPrimaryTrk(void) {return numPhotNotPrimaryTrk; }
-int NumPhotNotClean(void) {return numPhotNotClean; }
-int NumPhotDupl(void) {return numPhotDupl; }
-int NumPhotonsNonIso(void) {return numPhotonsNonIso; }
-int NumPhotonsfinal(void) {return numPhotonsfinal; }
-int NumPhotonsMatched(void) {return numPhotonsMatched; }
-int NumJets(void) {return numJets; }
-int NumJetNotPrimaryTrk(void) {return numJetNotPrimaryTrk; }
-int NumJetNotClean(void) {return numJetNotClean; }
-int NumJetDupl(void) {return numJetDupl; }
-int NumBJets(void) {return numBJets; }
-int NumJetsfinal(void) {return numJetsfinal; }
-int NumBJetsfinal(void) {return numBJetsfinal; }
-int NumJetsMatched(void) {return numJetsMatched; }
+virtual int NumNotPrimaryTrk(void) {return numNotPrimaryTrk; }
+virtual int NumNotClean(void) {return numNotClean; }
+virtual int NumDuplicate(void) {return numDuplicate; }
+virtual int NumElectrons(void) {return numElectrons; }
+virtual int NumElecNotPrimaryTrk(void) {return numElecNotPrimaryTrk; }
+virtual int NumElecNotClean(void) {return numElecNotClean; }
+virtual int NumElecDupl(void) {return numElecDupl; }
+virtual int NumElectronsNonIso(void) {return numElectronsNonIso; }
+virtual int NumElectronsfinal(void) {return numElectronsfinal; }
+virtual int NumElectronsMatched(void) {return numElectronsMatched; }
+virtual int NumMuons(void) {return numMuons; }
+virtual int NumMuonNotPrimaryTrk(void) {return numMuonNotPrimaryTrk; }
+virtual int NumMuonNotClean(void) {return numMuonNotClean; }
+virtual int NumMuonDupl(void) {return numMuonDupl; }
+virtual int NumMuonsNonIso(void) {return numMuonsNonIso; }
+virtual int NumMuonsfinal(void) {return numMuonsfinal; }
+virtual int NumMuonsMatched(void) {return numMuonsMatched; }
+virtual int NumTaus(void) {return numTaus; }
+virtual int NumTauNotPrimaryTrk(void) {return numTauNotPrimaryTrk; }
+virtual int NumTauNotClean(void) {return numTauNotClean; }
+virtual int NumTauDupl(void) {return numTauDupl; }
+virtual int NumTausNonIso(void) {return numTausNonIso; }
+virtual int NumTausfinal(void) {return numTausfinal; }
+virtual int NumTausMatched(void) {return numTausMatched; }
+virtual int NumPhotons(void) {return numPhotons; }
+virtual int NumPhotNotPrimaryTrk(void) {return numPhotNotPrimaryTrk; }
+virtual int NumPhotNotClean(void) {return numPhotNotClean; }
+virtual int NumPhotDupl(void) {return numPhotDupl; }
+virtual int NumPhotonsNonIso(void) {return numPhotonsNonIso; }
+virtual int NumPhotonsfinal(void) {return numPhotonsfinal; }
+virtual int NumPhotonsMatched(void) {return numPhotonsMatched; }
+virtual int NumJets(void) {return numJets; }
+virtual int NumJetNotPrimaryTrk(void) {return numJetNotPrimaryTrk; }
+virtual int NumJetNotClean(void) {return numJetNotClean; }
+virtual int NumJetDupl(void) {return numJetDupl; }
+virtual int NumBJets(void) {return numBJets; }
+virtual int NumJetsfinal(void) {return numJetsfinal; }
+virtual int NumBJetsfinal(void) {return numBJetsfinal; }
+virtual int NumJetsMatched(void) {return numJetsMatched; }
 
-int NumAllObjects(void) {return counter; }
+virtual int NumAllObjects(void) {return counter; }
 
-math::XYZVector PmissRecoil(void) {return metRecoilvector;}
+virtual math::XYZVector PmissRecoil(void) {return metRecoilvector;}
 
 private:
      
@@ -128,11 +130,11 @@ private:
   edm::ParameterSet objectmatch_params;
   
   MrEvent * myEventData;
-  std::vector<MrParticle*> & RecoData;
+//  std::vector<MrParticle*> & RecoData;
   std::vector<MrParticle*> & MCData;
-  const TrackCollection * TrackData;
-  const VertexCollection* VertexData;
-  const CaloTowerCollection* CaloTowerData;
+//  const TrackCollection * TrackData;
+//  const VertexCollection* VertexData;
+//  const CaloTowerCollection* CaloTowerData;
   
   
   // Define all pointers to objects
@@ -141,7 +143,7 @@ private:
   Isolator * myIsolator;
   MatchObjects* myMatcher;    
 
-  int DEBUGLVL;
+//  int DEBUGLVL;
 
   // Define the acceptance cuts
   float ana_elecEtaMax;
@@ -166,6 +168,8 @@ private:
   float reco_muonDzErrorThresh;
   float reco_jetD0ErrorThresh;
   float reco_jetDzErrorThresh;
+  // Define the parameters for ObjectCleaner
+  float clean_distVxmax;
   
   // Define the counters per event
   // counters of events
@@ -225,15 +229,6 @@ private:
   math::XYZVector metRecoilvector;
 
   // Define the private methods included
-  void PrintRecoInfo(void);
-  bool GetJetVx(int);
-  void GetJetTrks(float, float, float, vector<int>*);
-  void AddToJet(int);
-  int FindNearestJet(int);
-  float GetPtwrtJet(int, int);
-  float GetJetTrkPtsum(float, float, float);
-  float DeltaPhi(float, float);
-  float GetDeltaR(float, float, float, float);
 
 };
 
