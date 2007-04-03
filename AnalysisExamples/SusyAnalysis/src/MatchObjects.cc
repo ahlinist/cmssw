@@ -18,7 +18,7 @@ mo_muonDRmax(0.2), mo_muonDPbyPmax(1.0),
 mo_photonDRmax(0.2), mo_photonDPbyPmax(1.0),
 mo_jetDRmax(0.15), mo_jetDPbyPmax(3.0),
 mo_celecDRmax(0.15), mo_cmuonDRmax(0.2), mo_cphotonDRmax(0.15), mo_cjetDRmax(0.15)
-{};
+{}
 
 MatchObjects::MatchObjects(vector<MrParticle*>* pData, 
               vector<MrParticle*>* pMC, edm::ParameterSet param):
@@ -37,7 +37,7 @@ mo_celecDRmax = param.getParameter<double>("mo_celecDRmax") ;
 mo_cmuonDRmax = param.getParameter<double>("mo_cmuonDRmax") ;
 mo_cphotonDRmax = param.getParameter<double>("mo_cphotonDRmax") ;
 mo_cjetDRmax = param.getParameter<double>("mo_cjetDRmax") ;
-};
+}
 
 // Methods:
 

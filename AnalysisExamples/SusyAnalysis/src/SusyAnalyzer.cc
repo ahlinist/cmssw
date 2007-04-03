@@ -56,6 +56,10 @@ SusyAnalyzer::SusyAnalyzer(const edm::ParameterSet& iConfig)
   mcproc_params = iConfig.getParameter<ParameterSet>("MCProcParams");
   myConfig.mcproc_params = mcproc_params;
   
+  // get parameters for UserAnalysis  
+  useranalysis_params = iConfig.getParameter<ParameterSet>("UserAnalysisParams");
+  myConfig.useranalysis_params = useranalysis_params;
+  
   
   // get debug level
   DEBUGLVL = iConfig.getUntrackedParameter<int>("debuglvl", 0);  
@@ -291,7 +295,6 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   
   delete myMCProcessor;
      
-
   // ******************************************************** 
   // Input the Reconstructed data and store them as MrParticle objects
   // ******************************************************** 
@@ -475,7 +478,6 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   // ******************************************************** 
  
   // Handle the Reco event data and check their quality
-   
    myRecoProcessor = new  RecoProcessor(myEventData, 
                           TrackData, VertexData, CaloTowerData, &myConfig);
    myRecoProcessor->SetDebug(DEBUGLVL);
@@ -863,7 +865,8 @@ void SusyAnalyzer::PrintStatistics(void)
  cout << endl;
  
  cout << endl;
- cout << "Efficiency for MC truth Objects within final acceptance:" << endl;
+ cout << "Efficiency for MC truth Objects within final acceptance"
+      << " (=matched/MC):" << endl;
  cout << "Total number MC electrons = " << numTotMCElec; 
  if (numTotMCElec > 0){
   cout << "  = " << 100.*(float)numTotElectronsMatched / (float)numTotMCElec; 
@@ -945,27 +948,6 @@ void SusyAnalyzer::CleanMemory()
 
 
  return;
-
-}
-
-//------------------------------------------------------------------------------
-
-float SusyAnalyzer::DeltaPhi(float v1, float v2)
-{ // Computes the correctly normalized phi difference
-  // v1, v2 = phi of object 1 and 2
- float diff = fabs(v2 - v1);
- float corr = 2*acos(-1.) - diff;
- if (diff < acos(-1.)){ return diff;} else { return corr;} 
- 
-}
-
-//------------------------------------------------------------------------------
-
-float SusyAnalyzer::GetDeltaR(float eta1, float eta2, float phi1, float phi2)
-{ // Computes the DeltaR of two objects from their eta and phi values
-
- return sqrt( (eta1-eta2)*(eta1-eta2) 
-            + DeltaPhi(phi1, phi2)*DeltaPhi(phi1, phi2) );
 
 }
 
