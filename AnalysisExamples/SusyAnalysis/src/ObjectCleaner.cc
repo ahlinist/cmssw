@@ -11,8 +11,9 @@ using std::endl;
 
 ObjectCleaner::ObjectCleaner(vector<MrParticle*>* pData, const TrackCollection * Tracks,
 const VertexCollection* Vertices, const CaloTowerCollection* CaloTowers):
-RecoData(*pData), TrackData(Tracks), VertexData(Vertices), CaloTowerData(CaloTowers),
-primVx(NULL), DEBUGLVL(0),
+SusyRecoTools(pData, Tracks, Vertices, CaloTowers),
+//RecoData(*pData), TrackData(Tracks), VertexData(Vertices), CaloTowerData(CaloTowers),
+//primVx(NULL), 
 clean_chisqVxmax(10.), clean_dRVxmax(0.24), clean_dzVxmax(10.),
 clean_etaTkfromVxmax(2.0), clean_sumPtTkfromVxmin(30.),
 clean_distVxmax(5.),
@@ -23,16 +24,18 @@ clean_dRMuonTowermax(0.4), clean_dRSSmuonmax(0.1),
 clean_dRPhotTowermax(0.4), clean_PhotHoEmax(0.05), 
 clean_dRPhotElemax(10.), clean_dRPhotDupmax(10.),
 clean_deltaRElecJetmax(0.5), clean_elecbyJetEratio(0.9),
-clean_dRTrkFromJet(0.6), clean_FracChmin(0.1), clean_FracEmmin(0.175),
+clean_dRTrkFromJet(0.6), clean_FracChminJet(0.1), clean_FracEmmaxJet(0.9),
 clean_dROSelecmax(0.2), clean_MOSelecmax(5.),
+clean_FracChmin(0.1), clean_FracEmmin(0.175),
 clean_METmin(50.), clean_dPhiJetMETmin(0.), clean_dR12min(0.5), clean_dR21min(0.5)
-{};
+{}
 
 ObjectCleaner::ObjectCleaner(vector<MrParticle*>* pData, const TrackCollection * Tracks,
 const VertexCollection* Vertices, const CaloTowerCollection* CaloTowers, 
 edm::ParameterSet param):
-RecoData(*pData), TrackData(Tracks), VertexData(Vertices), CaloTowerData(CaloTowers),
-primVx(NULL), DEBUGLVL(0)
+//RecoData(*pData), TrackData(Tracks), VertexData(Vertices), CaloTowerData(CaloTowers),
+SusyRecoTools(pData, Tracks, Vertices, CaloTowers)
+//primVx(NULL)
 {
 clean_chisqVxmax = param.getParameter<double>("clean_chisqVxmax") ;
 clean_dRVxmax = param.getParameter<double>("clean_dRVxmax") ;
@@ -57,15 +60,17 @@ clean_dRPhotDupmax = param.getParameter<double>("clean_dRPhotDupmax") ;
 clean_deltaRElecJetmax = param.getParameter<double>("clean_deltaRElecJetmax") ;
 clean_elecbyJetEratio = param.getParameter<double>("clean_elecbyJetEratio") ;
 clean_dRTrkFromJet = param.getParameter<double>("clean_dRTrkFromJet") ;
-clean_FracChmin = param.getParameter<double>("clean_FracChmin") ;
-clean_FracEmmin = param.getParameter<double>("clean_FracEmmin") ;
+clean_FracChminJet = param.getParameter<double>("clean_FracChminJet") ;
+clean_FracEmmaxJet = param.getParameter<double>("clean_FracEmmaxJet") ;
 clean_dROSelecmax = param.getParameter<double>("clean_dROSelecmax") ;
 clean_MOSelecmax = param.getParameter<double>("clean_MOSelecmax") ;
+clean_FracChmin = param.getParameter<double>("clean_FracChmin") ;
+clean_FracEmmin = param.getParameter<double>("clean_FracEmmin") ;
 clean_METmin = param.getParameter<double>("clean_METmin") ;
 clean_dPhiJetMETmin = param.getParameter<double>("clean_dPhiJetMETmin") ;
 clean_dR12min = param.getParameter<double>("clean_dR12min") ;
 clean_dR21min = param.getParameter<double>("clean_dR21min") ;
-};
+}
 
 //------------------------------------------------------------------------------
 // Methods:
@@ -82,6 +87,7 @@ bool ObjectCleaner::CleanPrimaryVertex(void)
    cout << " Number of vertices in collection = " << VertexData->size() << endl;
  }
  int indPrim = GetPrimaryVertex();
+// int indPrim = GetPrimaryVertex();
  if (indPrim < 0) {
    if (DEBUGLVL >= 2){
      cout << "  No primary vertex found " << endl;
@@ -139,79 +145,6 @@ bool ObjectCleaner::CleanPrimaryVertex(void)
         << ", track PT sum = " << ptsum << endl;
  }
  if (ptsum < clean_sumPtTkfromVxmin){return false;}
- 
- return true;
-
-}
-
-//------------------------------------------------------------------------------
-
-int ObjectCleaner::GetPrimaryVertex(void)
-{
-  // Returns the index in VertexCollection of the primary vertex
-  // at present, it returns the 1st vertex (assumes they are ordered)
-
- int nVx = VertexData->size();
- if (nVx <= 0) {return -1;}
-
- return 0;
-
-}
-
-//------------------------------------------------------------------------------
-
-bool ObjectCleaner::IsFromPrimaryVx(int ichk)
-{
-  // Checks whether the object is compatible with the primary vertex
-
-// cout << "Pointer to Prim Vx " << primVx << endl;
- if (primVx == NULL) {return true;}
- if (RecoData[ichk]->particleType() == 4) {return true;}
- 
- float xVx = primVx->x();
- float yVx = primVx->y();
- float zVx = primVx->z();
- float dxVx = primVx->xError();
- float dyVx = primVx->yError();
- float dzVx = primVx->zError();
- float xTk = RecoData[ichk]->vx();
- float yTk = RecoData[ichk]->vy();
- float zTk = RecoData[ichk]->vz();
- float phi = RecoData[ichk]->phi();
- float dd0 = RecoData[ichk]->d0Error();
- float ddx = dd0 * sin(phi);
- float ddy = dd0 * cos(phi);
- float ddz = RecoData[ichk]->dzError();
-// cout << "Check Prim Vx for object " << i << " complete " << endl;
- 
- // take error from vertex and from track extrapolation into account
- float r = sqrt((xVx-xTk)*(xVx-xTk) + (yVx-yTk)*(yVx-yTk) );
- float dr = sqrt((xVx-xTk)*(xVx-xTk) * (dxVx*dxVx+ddx*ddx)
-               + (yVx-yTk)*(yVx-yTk) * (dyVx*dyVx+ddy*ddy) ) / r;
- float z = fabs(zVx-zTk);
- float dz = sqrt(dzVx*dzVx+ddz*ddz);
- if (r > clean_distVxmax * dr && z > clean_distVxmax * dz) {
-   if (DEBUGLVL >= 2){
-   cout << " Not from Primary Vertex, index =  " << ichk
-        << " Type = " << RecoData[ichk]->particleType()
-        << " Pt = " << RecoData[ichk]->pt()
-        << " eta = "<< RecoData[ichk]->eta()
-        << " Ch = " << RecoData[ichk]->charge() << endl;
-//     cout << " Distance to Vx in r = " << r << " +- " << dr 
-//          << ", in z = " << z << " +- " << dz << endl;
-   }
-   return false;
- } else {
-   if (DEBUGLVL >= 2){
-   cout << " Is from Primary Vertex, index =  " << ichk
-        << " Type = " << RecoData[ichk]->particleType()
-        << " Pt = " << RecoData[ichk]->pt()
-        << " eta = "<< RecoData[ichk]->eta()
-        << " Ch = " << RecoData[ichk]->charge() << endl;
-//     cout << " Distance to Vx in r = " << r << " +- " << dr 
-//          << ", in z = " << z << " +- " << dz << endl;
-   }
- }
  
  return true;
 
@@ -834,44 +767,36 @@ bool ObjectCleaner::CleanJet(int ichk)
    return false;
  }
 
- // veto jets made of electrons
- for (unsigned int j = 0; j < RecoData.size(); j++) {
-
-   if(RecoData[j]->particleType() == 1){
-    float deltaR = GetDeltaR(recopart->eta(), RecoData[j]->eta(), 
-                             recopart->phi(), RecoData[j]->phi());
-    
-    if( deltaR < clean_deltaRElecJetmax && 
-      ( RecoData[j]->energy() / recopart->energy() ) > clean_elecbyJetEratio) {
-      if (DEBUGLVL >= 2){
-        cout << "  Elec = " << j << " E = " << RecoData[j]->energy()
-             << " DRejet = " << deltaR
-             << " Ee/Ej = " << RecoData[j]->energy() / recopart->energy() << endl;
-      }
-      return false;
-    }
-   }
- } 
-
 
  const CaloJet* jetcand = dynamic_cast<const CaloJet*>(recopart->jetCandidate());
 // const Jet* jetcand = recopart->jetCandidate();
  if (jetcand != NULL) {
  
    // Verify the jet quality
-   // being done by Maria, Taylan, Michael
- 
-   // Save the transverse quantities in MrParticle
+   // to be completed by Maria, Taylan, Michael
   float etaJet = RecoData[ichk]->eta();
   float phiJet = RecoData[ichk]->phi();
   float pt_track = GetJetTrkPtsum(etaJet, phiJet, clean_dRTrkFromJet);
-//  float eFractEm = jetcand->emEnergyFraction();
-//  float eFractHad = jetcand->energyFractionHadronic();
+  float eFractEm = jetcand->emEnergyFraction();
+  
+  if (pt_track / jetcand->pt() < clean_FracChminJet){
+    if (DEBUGLVL >= 2){
+      cout << " Jet rejected due to bad Ftrk :" << pt_track / jetcand->pt() << endl;
+    }
+    return false;
+  }
+  if (eFractEm > clean_FracEmmaxJet){
+    if (DEBUGLVL >= 2){
+      cout << " Jet rejected due to bad Fem :" << eFractEm << endl;
+    }
+    return false;
+  }
+ 
+   // Save the transverse quantities in MrParticle
+  float eFractHad = jetcand->energyFractionHadronic();
 //  cout << "  Jet " << ichk << " pt = " << RecoData[ichk]->pt()
-//       << ", Energy fraction em = << eFractEm
+//       << ", Energy fraction em = " << eFractEm
 //       << ", had = " << eFractHad << endl;
-  float eFractEm = 0.3;                       // temporary fiddle
-  float eFractHad = 0.7;                       // temporary fiddle
   float et_em = eFractEm * jetcand->pt();
   float et_had = eFractHad * jetcand->pt();
   RecoData[ichk]->setPt_tracks(pt_track);
@@ -894,6 +819,7 @@ bool ObjectCleaner::ElectronJet(int ichk)
 
  if (ichk < 0){return false;}
   
+ bool isDuplicate = false;
  MrParticle * recopart = RecoData[ichk];
 
  // veto jets made of electrons
@@ -903,20 +829,25 @@ bool ObjectCleaner::ElectronJet(int ichk)
     float deltaR = GetDeltaR(recopart->eta(), RecoData[j]->eta(), 
                              recopart->phi(), RecoData[j]->phi());
     
-    if( deltaR < clean_deltaRElecJetmax && 
-      ( RecoData[j]->energy() / recopart->energy() ) > clean_elecbyJetEratio) {
-      if (DEBUGLVL >= 2){
-        cout << "  Elec = " << j << " E = " << RecoData[j]->energy()
-             << " DRejet = " << deltaR
-             << " Ee/Ej = " << RecoData[j]->energy() / recopart->energy() << endl;
+    if( deltaR < clean_deltaRElecJetmax ){
+      math::XYZVector sharedP(0., 0., 0.);
+      bool isInJet = IsEMObjectInJet(j, ichk, & sharedP);
+      float sharedE = sqrt(sharedP.X()*sharedP.X()+sharedP.Y()*sharedP.Y()
+                     +sharedP.Z()*sharedP.Z());
+      if (isInJet && sharedE / recopart->energy() > clean_elecbyJetEratio) {
+        if (DEBUGLVL >= 2){
+          cout << "  Elec = " << j << " E = " << RecoData[j]->energy()
+               << " DRejet = " << deltaR
+               << " Ee/Ej = " << RecoData[j]->energy() / recopart->energy() << endl;
+        }
+        isDuplicate = true;
       }
-      return true;
     }
    }
+   if (isDuplicate){break;}
  } 
 
-
- return false;
+ return isDuplicate;
 
 }
 
@@ -1079,96 +1010,6 @@ bool ObjectCleaner::CleanMET(float met[])
    }
 
  return true;
-
-}
-
-//------------------------------------------------------------------------------
-
-int ObjectCleaner::FindNearestJet(int ichk)
-{
-// Looks for the nearest jet in deltaR to a given object
-// and returns its RecoData index 
-// returns -1 if no nearest jet
-
-  int iJetMin = -1;
-  if (ichk < 0){return iJetMin;}
-  
-  float deltaRmin = 999.;
-  for(int i = 0; i < (int) RecoData.size(); i++){
-   if(RecoData[i]->particleType() >= 5
-      && RecoData[i]->particleType() <= 7){
-    float deltaR = GetDeltaR(RecoData[ichk]->eta(), RecoData[i]->eta(), 
-                             RecoData[ichk]->phi(), RecoData[i]->phi());
-    if (deltaR < deltaRmin && i != ichk){
-      deltaRmin = deltaR;
-      iJetMin = i;
-    }
-   }
-  }
-  
-  return iJetMin;
-
-}
-
-//------------------------------------------------------------------------------
-
-float ObjectCleaner::GetPtwrtJet(int ichk, int iJet)
-{
-// Computes the Pt of object ichk wrt the direction of object iJet
-  
-    if (ichk < 0 || iJet < 0){return -1.;}
-    
-    float plwrtJet = (RecoData[ichk]->px()*RecoData[iJet]->px() +
-                      RecoData[ichk]->py()*RecoData[iJet]->py() +
-                      RecoData[ichk]->pz()*RecoData[iJet]->pz() )
-                    / RecoData[iJet]->p();
-//    cout << " plwrtJet = " << plwrtJet
-//         << " cosTheta = " << plwrtJet/RecoData[ichk]->p() << endl;
-    float ptwrtJet = sqrt(RecoData[ichk]->p()*RecoData[ichk]->p() -
-                          plwrtJet*plwrtJet);
-//    cout << " ptwrtJet = " << ptwrtJet << endl;
-
- return ptwrtJet;
-
-}
-
-//------------------------------------------------------------------------------
-
-float ObjectCleaner::GetJetTrkPtsum(float etaJet, float phiJet, float dRjet)
-{ // computes the Pt sum of tracks compatible with coming from a jet
-  
-  float ptsum = 0.;
-  for (int i=0; i< (int) TrackData->size(); i++){
-    const Track* pTrack = &(*TrackData)[i];
-    float eta = pTrack->eta();
-    float phi = pTrack->phi();
-    float DR = GetDeltaR(etaJet, eta, phiJet, phi);
-    if (DR < dRjet){
-      ptsum += pTrack->pt();
-    }
-  }
-
-  return ptsum;
-}
-
-//------------------------------------------------------------------------------
-
-float ObjectCleaner::DeltaPhi(float v1, float v2)
-{ // Computes the correctly normalized phi difference
-  // v1, v2 = phi of object 1 and 2
- float diff = fabs(v2 - v1);
- float corr = 2*acos(-1.) - diff;
- if (diff < acos(-1.)){ return diff;} else { return corr;} 
- 
-}
-
-//------------------------------------------------------------------------------
-
-float ObjectCleaner::GetDeltaR(float eta1, float eta2, float phi1, float phi2)
-{ // Computes the DeltaR of two objects from their eta and phi values
-
- return sqrt( (eta1-eta2)*(eta1-eta2) 
-            + DeltaPhi(phi1, phi2)*DeltaPhi(phi1, phi2) );
 
 }
 

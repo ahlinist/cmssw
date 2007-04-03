@@ -5,4 +5,4 @@
 #include "AnalysisExamples/SusyAnalysis/interface/SusyAnalyzer.h"
 
 DEFINE_SEAL_MODULE();
-DEFINE_ANOTHER_FWK_MODULE(SusyAnalyzer)
+DEFINE_ANOTHER_FWK_MODULE(SusyAnalyzer);

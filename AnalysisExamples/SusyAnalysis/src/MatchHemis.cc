@@ -14,7 +14,7 @@ MatchHemis::MatchHemis(vector<MrParticle*>& DataReco, vector<MrParticle*>& DataM
           RecoData(DataReco), MCData(DataMC), vA1(vAin1), vA2(vAin2),
           DEBUGLVL(0),
           status(0), isMatchedOK(false)
-{};
+{}
 
 
 //------------------------------------------------------------------------------

@@ -10,9 +10,10 @@ using std::endl;
 // Constructor:
 
 Isolator::Isolator(vector<MrParticle*>* pData, const TrackCollection * Tracks,
- const CaloTowerCollection* CaloTowers):
-RecoData(*pData), TrackData(Tracks), CaloTowerData(CaloTowers),
-DEBUGLVL(0),
+const VertexCollection* Vertices, const CaloTowerCollection* CaloTowers):
+SusyRecoTools(pData, Tracks, Vertices, CaloTowers),
+//RecoData(*pData), TrackData(Tracks), CaloTowerData(CaloTowers),
+//DEBUGLVL(0),
 iso_MethodElec(1100), iso_jetbyElEmin(1.), iso_ptElwrtJetmin(7.),
 iso_ElCalDRin(0.), iso_ElCalDRout(0.1), iso_ElCalSeed(0.1), 
 iso_ElTkDRin(0.), iso_ElTkDRout(0.1), iso_ElTkSeed(0.1), 
@@ -26,12 +27,13 @@ iso_MethodPhot(1100), iso_jetbyPhotEmin(1.), iso_ptPhotwrtJetmin(7.),
 iso_PhCalDRin(0.), iso_PhCalDRout(0.1), iso_PhCalSeed(0.1), 
 iso_PhTkDRin(0.), iso_PhTkDRout(0.1), iso_PhTkSeed(0.1), 
 iso_PhCalWeight(0.75), iso_PhIsoValue(0.5)
-{};
+{}
 
 Isolator::Isolator(vector<MrParticle*>* pData, const TrackCollection * Tracks,
- const CaloTowerCollection* CaloTowers, edm::ParameterSet param):
-RecoData(*pData), TrackData(Tracks), CaloTowerData(CaloTowers),
-DEBUGLVL(0)
+const VertexCollection* Vertices, const CaloTowerCollection* CaloTowers, edm::ParameterSet param):
+SusyRecoTools(pData, Tracks, Vertices, CaloTowers)
+//RecoData(*pData), TrackData(Tracks), CaloTowerData(CaloTowers),
+//DEBUGLVL(0)
 {
 iso_MethodElec = param.getParameter<int>("iso_MethodElec") ;
 iso_jetbyElEmin = param.getParameter<double>("iso_jetbyElEmin") ;
@@ -58,6 +60,14 @@ iso_MuIsoValue = param.getParameter<double>("iso_MuIsoValue") ;
 iso_MethodTau = param.getParameter<int>("iso_MethodTau") ;
 iso_jetbyTauEmin = param.getParameter<double>("iso_jetbyTauEmin") ;
 iso_ptTauwrtJetmin = param.getParameter<double>("iso_ptTauwrtJetmin") ;
+iso_TauCalDRin = param.getParameter<double>("iso_TauCalDRin") ;
+iso_TauCalDRout = param.getParameter<double>("iso_TauCalDRout") ;
+iso_TauCalSeed = param.getParameter<double>("iso_TauCalSeed") ;
+iso_TauTkDRin = param.getParameter<double>("iso_TauTkDRin") ;
+iso_TauTkDRout = param.getParameter<double>("iso_TauTkDRout") ;
+iso_TauTkSeed = param.getParameter<double>("iso_TauTkSeed") ;
+iso_TauCalWeight = param.getParameter<double>("iso_TauCalWeight") ;
+iso_TauIsoValue = param.getParameter<double>("iso_TauIsoValue") ;
 iso_MethodPhot = param.getParameter<int>("iso_MethodPhot") ;
 iso_jetbyPhotEmin = param.getParameter<double>("iso_jetbyPhotEmin") ;
 iso_ptPhotwrtJetmin = param.getParameter<double>("iso_ptPhotwrtJetmin") ;
@@ -69,7 +79,7 @@ iso_PhTkDRout = param.getParameter<double>("iso_PhTkDRout") ;
 iso_PhTkSeed = param.getParameter<double>("iso_PhTkSeed") ;
 iso_PhCalWeight = param.getParameter<double>("iso_PhCalWeight") ;
 iso_PhIsoValue = param.getParameter<double>("iso_PhIsoValue") ;
-};
+}
 
 // Methods:
 
@@ -664,8 +674,14 @@ bool Isolator::IsoTau(int ichk)
  //  - calorimetric or tracker or weighted sum
  //  - using information in transverse plane or in 3D
  //  - cut on absolute value of Et or ratio or number of objects 
- 
+  
+  int iTauFirst = 9999;
+  
   bool isIsolated = true;
+  if (DEBUGLVL >= 2 && ichk < iTauFirst){
+    iTauFirst = ichk;
+    cout << " Tau isolation method = " << iso_MethodTau << endl;
+  }
 
   if (RecoData[ichk]->particleType() != 3){
     cout << " *** Particle given " << ichk 
@@ -673,7 +689,7 @@ bool Isolator::IsoTau(int ichk)
       << " does not correspond to the type for isolation method IsoTau" << endl;
     return isIsolated;
   }
-  if (iso_MethodElec == 0){return isIsolated;}
+  if (iso_MethodTau == 0){return isIsolated;}
 
   // compute the isolation in pT wrt nearest jet
   if (iso_MethodTau / 1000 == 1){
@@ -697,6 +713,156 @@ bool Isolator::IsoTau(int ichk)
       }
     }
   }
+
+  // compute the isolation by a cone algorithm
+  else if (iso_MethodTau / 1000 == 2){
+    int idet = (iso_MethodTau - 2000) / 100;
+    int itra = (iso_MethodTau / 100);
+    itra = (iso_MethodTau - 100*itra) / 10;
+    int ival = (iso_MethodTau / 10);
+    ival = iso_MethodTau - 10*ival;
+//    const Muon* mucand = RecoData[ichk]->muonCandidate();
+
+//    const Track* mutrack = &(*(mucand->track()));
+    float ptest = 0.;
+    if (itra == 1) {
+      ptest = RecoData[ichk]->pt();
+//      cout << ", Pt " << ptest << endl;
+    } else if (itra == 2) {
+      ptest = RecoData[ichk]->p();
+//      cout << ", P " << ptest << endl;
+    }
+
+    // using calorimeter information
+    float eSum = 0.;
+    if (idet == 1 || idet == 3){
+      float tauCalEta = RecoData[ichk]->eta();
+      float tauCalPhi = RecoData[ichk]->phi();
+      eSum = IsoCalSum (itra, tauCalEta, tauCalPhi, 
+                              iso_TauCalDRin, iso_TauCalDRout, iso_TauCalSeed);
+      if (itra < 3 && ival == 1) {
+        eSum = eSum / ptest;
+        if (idet == 1 && eSum > iso_TauIsoValue){isIsolated = false;}
+      } else if (itra < 3 && ival == 2) {
+        if (idet == 1 && eSum > iso_TauIsoValue){isIsolated = false;}
+      } else if (itra == 3) {
+        if (idet == 1 && eSum > iso_TauIsoValue){isIsolated = false;}
+      } else {
+        cout << " *** Chosen isolation method is not implemented for tau ***" << endl;
+      }
+      if (idet == 1 && DEBUGLVL >= 2){
+       if (itra < 3 && ival == 1) {
+        if (isIsolated){
+         cout << " tau, index = " << ichk
+         << " is isolated in calorimeter, Esum = " << eSum << endl;
+        } else {
+         cout << " tau, index = " << ichk
+         << " is not isolated in calorimeter, Esum = " << eSum << endl;
+        }
+       } else if (itra < 3 && ival == 2) {
+        if (isIsolated){
+         cout << " tau, index = " << ichk
+         << " is isolated in calorimeter, Etsum = " << eSum << endl;
+        } else {
+         cout << " tau, index = " << ichk
+         << " is not isolated in calorimeter, Etsum = " << eSum << endl;
+        }
+       } else if (itra == 3) {
+        if (isIsolated){
+         cout << " tau, index = " << ichk
+         << " is isolated in calorimeter, #towers = " << eSum << endl;
+        } else {
+         cout << " tau, index = " << ichk
+         << " is not isolated in calorimeter, #towers = " << eSum << endl;
+        }
+       }
+      }
+    } 
+
+    // using tracker information
+    float pSum = 0.;
+    if (idet == 2 || idet == 3){
+      float tauTrkEta = RecoData[ichk]->eta();
+      float tauTrkPhi = RecoData[ichk]->phi();
+      pSum = IsoTrkSum (itra, tauTrkEta, tauTrkPhi, 
+                              iso_TauTkDRin, iso_TauTkDRout, iso_TauTkSeed);
+      if (itra < 3 && ival == 1) {
+        if (iso_TauTkDRin == 0.) {pSum = (pSum-ptest) / ptest;}
+        else {pSum = pSum / ptest;}
+        if (idet == 2 && pSum > iso_TauIsoValue){isIsolated = false;}
+      } else if (itra < 3 && ival == 2) {
+        if (iso_TauTkDRin == 0.) {pSum -= ptest;}
+        if (idet == 2 && pSum > iso_TauIsoValue){isIsolated = false;}
+      } else if (itra == 3) {
+        if (iso_TauTkDRin == 0.) {pSum = (int) pSum - 1;}
+        if (idet == 2 && pSum > iso_TauIsoValue){isIsolated = false;}
+      } else {
+        cout << " *** Chosen isolation method is not implemented for tau ***" << endl;
+      }
+      if (idet == 2 && DEBUGLVL >= 2){
+       if (itra < 3 && ival == 1) {
+        if (isIsolated){
+         cout << " tau, index = " << ichk
+         << " is isolated in tracker, Psum = " << pSum << endl;
+        } else {
+         cout << " tau, index = " << ichk
+         << " is not isolated in tracker, Psum = " << pSum << endl;
+        }
+       } else if (itra < 3 && ival == 2) {
+        if (isIsolated){
+         cout << " tau, index = " << ichk
+         << " is isolated in tracker, Ptsum = " << pSum << endl;
+        } else {
+         cout << " tau, index = " << ichk
+         << " is not isolated in tracker, Ptsum = " << pSum << endl;
+        }
+       } else if (itra == 3) {
+        if (isIsolated){
+         cout << " tau, index = " << ichk
+         << " is isolated in tracker, #trks = " << pSum << endl;
+        } else {
+         cout << " tau, index = " << ichk
+         << " is not isolated in tracker, #trks = " << pSum << endl;
+        }
+       }
+      }
+    }
+
+    // using a weighted sum of calorimeter and tracker information
+    if (idet == 3){
+      pSum = pSum + iso_TauCalWeight*eSum;
+      if (pSum > iso_TauIsoValue){isIsolated = false;}
+      if (DEBUGLVL >= 2){
+       if (itra < 3 && ival == 1) {
+        if (isIsolated){
+         cout << " tau, index = " << ichk
+         << " is isolated in tracker+calo, Psum = " << pSum << endl;
+        } else {
+         cout << " tau, index = " << ichk
+         << " is not isolated in tracker+calo, Psum = " << pSum << endl;
+        }
+       } else if (itra < 3 && ival == 2) {
+        if (isIsolated){
+         cout << " tau, index = " << ichk
+         << " is isolated in tracker+calo, Ptsum = " << pSum << endl;
+        } else {
+         cout << " tau, index = " << ichk
+         << " is not isolated in tracker+calo, Ptsum = " << pSum << endl;
+        }
+       } else if (itra == 3) {
+        if (isIsolated){
+         cout << " tau, index = " << ichk
+         << " is isolated in tracker+calo, #objects = " << pSum << endl;
+        } else {
+         cout << " tau, index = " << ichk
+         << " is not isolated in tracker+calo, #objects = " << pSum << endl;
+        }
+       }
+      }
+    }
+  
+  }
+  
   else{
     cout << " *** Chosen isolation method is not implemented for tau ***" << endl;
   }
@@ -918,121 +1084,6 @@ bool Isolator::IsoPhoton(int ichk)
 
 //------------------------------------------------------------------------------
 
-float Isolator::IsoCalSum (int itra, float CalEta, float CalPhi, 
-                 float iso_DRin, float iso_DRout, float iso_Seed){
-// Computes the sum inside a cone from R=iso_ElDRin to R=iso_ElDRout
-// using 4-vectors stored in CaloTower objects
-// if itra = 1 : sum of Pt or Et
-//         = 2 : sum of P or E
-//         = 3 : number of calotowers accepted
-
-  float sum = 0.;
-  for (int i = 0; i < (int) CaloTowerData->size(); i++) {
-    if ((*CaloTowerData)[i].energy() > iso_Seed){
-      float eta = (*CaloTowerData)[i].eta();
-      float phi = (*CaloTowerData)[i].phi();
-      float DR = GetDeltaR(CalEta, eta, CalPhi, phi);
-      if (DR <= 0.) {DR = 0.001;}
-      if (DR > iso_DRin && DR < iso_DRout){
-        if (itra == 1){
-//        float theta = 2. * atan(exp(-eta)); // pseudorapidity or rapidity?
-//        float pt = (*CaloTowerData)[i].energy() * sin(theta);
-          float pt = (*CaloTowerData)[i].energy() / cosh(eta);
-          sum += pt;
-        } else if (itra == 2){
-          sum += (*CaloTowerData)[i].energy();
-        } else if (itra == 3){
-          sum = (int) sum + 1;
-        } else{
-         cout << " *** method " << itra
-          << " for IsoCalSum not implemented ***" << endl;
-        }
-      }
-    }
-  }
-  
-  return sum;
-
-}
-
-//------------------------------------------------------------------------------
-
-float Isolator::IsoTrkSum (int itra, float TrkEta, float TrkPhi, 
-                 float iso_DRin, float iso_DRout, float iso_Seed){
-// Computes the sum inside a cone from R=iso_DRin to R=iso_DRout
-// using 4-vectors stored in Track objects
-// if itra = 1 : sum of Pt or Et
-//         = 2 : sum of P or E
-//         = 3 : number of objects accepted
-
-  float sum = 0.;
-  for (int i = 0; i < (int) TrackData->size(); i++) {
-    if ((*TrackData)[i].p() > iso_Seed){
-      float eta = (*TrackData)[i].eta();
-      float phi = (*TrackData)[i].phi();
-      float DR = GetDeltaR(TrkEta, eta, TrkPhi, phi);
-      if (DR <= 0.) {DR = 0.001;}
-      if (DR > iso_DRin && DR < iso_DRout){
-        if (itra == 1){
-          sum += (*TrackData)[i].pt();
-        } else if (itra == 2){
-          sum += (*TrackData)[i].p();
-        } else if (itra == 3){
-          sum = (int) sum + 1;
-        } else{
-         cout << " *** method " << itra
-          << " for IsoTrkSum not implemented ***" << endl;
-        }
-      }
-    }
-  }
-  
-  return sum;
-
-}
-
-//------------------------------------------------------------------------------
-
-float Isolator::IsoCandSum (int itra, float TrkEta, float TrkPhi, 
-                 float iso_DRin, float iso_DRout, float iso_Seed){
-// Computes the sum inside a cone from R=iso_DRin to R=iso_DRout
-// using 4-vectors stored in MrParticle objects
-// uses the same cuts as IsoTrkSum
-// if itra = 1 : sum of Pt or Et
-//         = 2 : sum of P or E
-//         = 3 : number of objects accepted
-
-// CAUTION: loops over the MrParticle objects with 1st acceptance cuts applied
-//          -> energy is underestimated
-
-  float sum = 0.;
-  for (int i = 0; i < (int) RecoData.size(); i++) {
-    if (RecoData[i]->p() > iso_Seed){
-      float eta = RecoData[i]->eta();
-      float phi = RecoData[i]->phi();
-      float DR = GetDeltaR(TrkEta, eta, TrkPhi, phi);
-      if (DR <= 0.) {DR = 0.001;}
-      if (DR > iso_DRin && DR < iso_DRout){
-        if (itra == 1){
-          sum += RecoData[i]->pt();
-        } else if (itra == 2){
-          sum += RecoData[i]->p();
-        } else if (itra == 3){
-          sum = (int) sum + 1;
-        } else{
-         cout << " *** method " << itra
-          << " for IsoCandSum not implemented ***" << endl;
-        }
-      }
-    }
-  }
-  
-  return sum;
-
-}
-
-//------------------------------------------------------------------------------
-
 bool Isolator::IsObjectMerged(int ichk, bool isIsolated)
 {
 // Checks whether an object is included in the nearest jet
@@ -1053,19 +1104,70 @@ bool Isolator::IsObjectMerged(int ichk, bool isIsolated)
 //  cout << " nearest jet index = " << iJet 
 //       << " type = " << RecoData[iJet]->particleType() << endl;
  
+   math::XYZVector sharedP(0., 0., 0.);
+   float sharedE = 0.;
+   float sharedEt_em = 0.;
+   float sharedEt_had = 0.;
+   float sharedPt_tracks = 0.;
+   
    if (RecoData[ichk]->particleType() == 1){
-     isInJet = IsElecInJet(ichk, iJet);
-     if (!isIsolated){isInJet = true;}
+//     if (isIsolated){cout << endl; 
+//       cout << "  Type = " << RecoData[ichk]->particleType() << "  Is isolated " << endl; }
+//     else {cout << endl; 
+//       cout << "  Type = " << RecoData[ichk]->particleType() << "  Is not isolated " << endl; }
+     isInJet = IsEMObjectInJet(ichk, iJet, & sharedP);
+     sharedE = sqrt(sharedP.X()*sharedP.X()+sharedP.Y()*sharedP.Y()
+                   +sharedP.Z()*sharedP.Z());
+     sharedEt_em = sqrt(sharedP.X()*sharedP.X()+sharedP.Y()*sharedP.Y());
+     sharedEt_had = 0.;
+     sharedPt_tracks = 0.;
+     if (isInJet) {
+       sharedPt_tracks = RecoData[ichk]->pt();
+     }
    }
    else if (RecoData[ichk]->particleType() == 2){
-     isInJet = IsMuonInJet(ichk, iJet);
-     if (!isIsolated){isInJet = true;}
+//     if (isIsolated){cout << endl; 
+//     cout << "  Type = " << RecoData[ichk]->particleType() << " Is isolated " << endl; }
+//     else {cout << endl; 
+//       cout << "  Type = " << RecoData[ichk]->particleType() << "  Is not isolated " << endl; }
+     isInJet = IsMuonInJet(ichk, iJet, & sharedP);
+     sharedE = sqrt(sharedP.X()*sharedP.X()+sharedP.Y()*sharedP.Y()
+                   +sharedP.Z()*sharedP.Z());
+     sharedEt_em = sqrt(sharedP.X()*sharedP.X()+sharedP.Y()*sharedP.Y());
+     sharedEt_had = 0.;
+     sharedPt_tracks = 0.;
+     if (isInJet) {
+       sharedEt_had = RecoData[ichk]->et_had();
+       sharedPt_tracks = RecoData[ichk]->pt_tracks();
+     }
    }
    else if (RecoData[ichk]->particleType() == 3){
-     isInJet = IsTauInJet(ichk, iJet);
+//     if (isIsolated){cout << endl; 
+//     cout << "  Type = " << RecoData[ichk]->particleType() << " Is isolated " << endl; }
+//     else {cout << endl; 
+//       cout << "  Type = " << RecoData[ichk]->particleType() << "  Is not isolated " << endl; }
+     isInJet = IsTauInJet(ichk, iJet, & sharedP);
+     sharedE = sqrt(sharedP.X()*sharedP.X()+sharedP.Y()*sharedP.Y()
+                   +sharedP.Z()*sharedP.Z());
+     sharedEt_em = sqrt(sharedP.X()*sharedP.X()+sharedP.Y()*sharedP.Y());
+     sharedEt_had = 0.;
+     sharedPt_tracks = 0.;
+     if (isInJet) {
+       sharedEt_had = RecoData[ichk]->et_had();
+       sharedPt_tracks = RecoData[ichk]->pt_tracks();
+     }
    }
    else if (RecoData[ichk]->particleType() == 4){
-     isInJet = IsPhotonInJet(ichk, iJet);
+//     if (isIsolated){cout << endl; 
+//     cout << "  Type = " << RecoData[ichk]->particleType() << " Is isolated " << endl; }
+//     else {cout << endl; 
+//       cout << "  Type = " << RecoData[ichk]->particleType() << "  Is not isolated " << endl; }
+     isInJet = IsEMObjectInJet(ichk, iJet, & sharedP);
+     sharedE = sqrt(sharedP.X()*sharedP.X()+sharedP.Y()*sharedP.Y()
+                   +sharedP.Z()*sharedP.Z());
+     sharedEt_em = sqrt(sharedP.X()*sharedP.X()+sharedP.Y()*sharedP.Y());
+     sharedEt_had = 0.;
+     sharedPt_tracks = 0.;
    }
    if (DEBUGLVL >= 2){
      if (isInJet){
@@ -1077,17 +1179,17 @@ bool Isolator::IsObjectMerged(int ichk, bool isIsolated)
    }
   
   if (isIsolated && isInJet){
-    RecoData[iJet]->setPx(RecoData[iJet]->px() - RecoData[ichk]->px());
-    RecoData[iJet]->setPy(RecoData[iJet]->py() - RecoData[ichk]->py());
-    RecoData[iJet]->setPz(RecoData[iJet]->pz() - RecoData[ichk]->pz());
-    RecoData[iJet]->setEnergy(RecoData[iJet]->energy() - RecoData[ichk]->energy());
+    RecoData[iJet]->setPx(RecoData[iJet]->px() - sharedP.X());
+    RecoData[iJet]->setPy(RecoData[iJet]->py() - sharedP.Y());
+    RecoData[iJet]->setPz(RecoData[iJet]->pz() - sharedP.Z());
+    RecoData[iJet]->setEnergy(RecoData[iJet]->energy() - sharedE);
    // ??? or do we want to keep the jets massless?
    //RecoData[iJet]->setEnergy(RecoData[iJet]->p() );
-    RecoData[iJet]->setPt_tracks(RecoData[iJet]->pt_tracks() - RecoData[ichk]->pt_tracks());
-    RecoData[iJet]->setEt_em(RecoData[iJet]->et_em() - RecoData[ichk]->et_em());
-    RecoData[iJet]->setEt_had(RecoData[iJet]->et_had() - RecoData[ichk]->et_had());
+    RecoData[iJet]->setPt_tracks(RecoData[iJet]->pt_tracks() - sharedPt_tracks);
+    RecoData[iJet]->setEt_em(RecoData[iJet]->et_em() - sharedEt_em);
+    RecoData[iJet]->setEt_had(RecoData[iJet]->et_had() - sharedEt_had);
     if (DEBUGLVL >= 2){
-      cout << "  subtracted from jet " << endl;
+      cout << "  Energy subtracted from jet = " << sharedE << endl;
     }
     if(RecoData[iJet]->energy() < RecoData[iJet]->p() ){
      float egy = RecoData[iJet]->energy();
@@ -1102,6 +1204,32 @@ bool Isolator::IsObjectMerged(int ichk, bool isIsolated)
     if(RecoData[iJet]->et_had() < 0.){RecoData[iJet]->setEt_had(0.);}
     isMerged = false;
   }
+  else if (!isIsolated && isInJet){
+    float diffPx = 0., diffPy = 0., diffPz = 0., diffE = 0.; 
+    float diffEt_em = 0., diffEt_had = 0., diffPt_tracks = 0.;
+    if (sharedE < RecoData[ichk]->energy() ){
+      diffPx = RecoData[ichk]->px() - sharedP.X();
+      diffPy = RecoData[ichk]->py() - sharedP.Y();
+      diffPz = RecoData[ichk]->pz() - sharedP.Z();
+      diffE = RecoData[ichk]->energy() - sharedE;
+      diffEt_em = RecoData[ichk]->et_em() - sharedEt_em;
+      diffEt_had = RecoData[ichk]->et_had() - sharedEt_had;
+      diffPt_tracks = RecoData[ichk]->pt_tracks() - sharedPt_tracks;
+      RecoData[iJet]->setPx(RecoData[iJet]->px() + diffPx);
+      RecoData[iJet]->setPy(RecoData[iJet]->py() + diffPy);
+      RecoData[iJet]->setPz(RecoData[iJet]->pz() + diffPz);
+      RecoData[iJet]->setEnergy(RecoData[iJet]->energy() + diffE);
+     // ??? or do we want to keep the jets massless?
+     //RecoData[iJet]->setEnergy(RecoData[iJet]->p() );
+      RecoData[iJet]->setPt_tracks(RecoData[iJet]->pt_tracks() + diffPt_tracks);
+      RecoData[iJet]->setEt_em(RecoData[iJet]->et_em() + diffEt_em);
+      RecoData[iJet]->setEt_had(RecoData[iJet]->et_had() + diffEt_had);
+    }
+    if (DEBUGLVL >= 2){
+      cout << "  Energy partially added to jet = " << diffE << endl;
+    }
+    isMerged = true;
+  }
   else if (!isIsolated && !isInJet){
     RecoData[iJet]->setPx(RecoData[iJet]->px() + RecoData[ichk]->px());
     RecoData[iJet]->setPy(RecoData[iJet]->py() + RecoData[ichk]->py());
@@ -1113,123 +1241,12 @@ bool Isolator::IsObjectMerged(int ichk, bool isIsolated)
     RecoData[iJet]->setEt_em(RecoData[iJet]->et_em() + RecoData[ichk]->et_em());
     RecoData[iJet]->setEt_had(RecoData[iJet]->et_had() + RecoData[ichk]->et_had());
     if (DEBUGLVL >= 2){
-      cout << "  added to jet " << endl;
+      cout << "  Energy added to jet = " << RecoData[ichk]->energy() << endl;
     }
     isMerged = true;
   }
   
   return isMerged;
-
-}
-
-//------------------------------------------------------------------------------
-
-bool Isolator::IsElecInJet(int ichk, int iJet)
-{
- // Check whether an electron is included in the jet energy
-
-  return false;
-
-}
-
-//------------------------------------------------------------------------------
-
-bool Isolator::IsMuonInJet(int ichk, int iJet)
-{
- // Check whether a muon is included in the jet energy
-
-  return false;
-
-}
-
-//------------------------------------------------------------------------------
-
-bool Isolator::IsTauInJet(int ichk, int iJet)
-{
- // Check whether a tau is included in the jet energy
-
-  return false;
-
-}
-
-//------------------------------------------------------------------------------
-
-bool Isolator::IsPhotonInJet(int ichk, int iJet)
-{
- // Check whether a photon is included in the jet energy
-
-  return false;
-
-}
-
-//------------------------------------------------------------------------------
-
-int Isolator::FindNearestJet(int ichk)
-{
-// Looks for the nearest jet in deltaR to a given object
-// and returns its RecoData index 
-// returns -1 if no nearest jet
-
-  int iJetMin = -1;
-  if (ichk < 0){return iJetMin;}
-  
-  float deltaRmin = 999.;
-  for(int i = 0; i < (int) RecoData.size(); i++){
-   if(RecoData[i]->particleType() >= 5
-      && RecoData[i]->particleType() <= 7){
-    float deltaR = GetDeltaR(RecoData[ichk]->eta(), RecoData[i]->eta(), 
-                             RecoData[ichk]->phi(), RecoData[i]->phi());
-    if (deltaR < deltaRmin && i != ichk){
-      deltaRmin = deltaR;
-      iJetMin = i;
-    }
-   }
-  }
-  
-  return iJetMin;
-
-}
-
-//------------------------------------------------------------------------------
-
-float Isolator::GetPtwrtJet(int ichk, int iJet)
-{
-// Computes the Pt of object ichk wrt the direction of object iJet
-  
-    if (ichk < 0 || iJet < 0){return -1.;}
-
-    float plwrtJet = (RecoData[ichk]->px()*RecoData[iJet]->px() +
-                      RecoData[ichk]->py()*RecoData[iJet]->py() +
-                      RecoData[ichk]->pz()*RecoData[iJet]->pz() )
-                    / RecoData[iJet]->p();
-//    cout << " plwrtJet = " << plwrtJet
-//         << " cosTheta = " << plwrtJet/RecoData[ichk]->p() << endl;
-    float ptwrtJet = sqrt(RecoData[ichk]->p()*RecoData[ichk]->p() -
-                          plwrtJet*plwrtJet);
-//    cout << " ptwrtJet = " << ptwrtJet << endl;
-
- return ptwrtJet;
-
-}
-
-//------------------------------------------------------------------------------
-
-float Isolator::DeltaPhi(float v1, float v2)
-{ // Computes the correctly normalized phi difference
-  // v1, v2 = phi of object 1 and 2
- float diff = fabs(v2 - v1);
- float corr = 2*acos(-1.) - diff;
- if (diff < acos(-1.)){ return diff;} else { return corr;} 
- 
-}
-
-//------------------------------------------------------------------------------
-
-float Isolator::GetDeltaR(float eta1, float eta2, float phi1, float phi2)
-{ // Computes the DeltaR of two objects from their eta and phi values
-
- return sqrt( (eta1-eta2)*(eta1-eta2) 
-            + DeltaPhi(phi1, phi2)*DeltaPhi(phi1, phi2) );
 
 }
 

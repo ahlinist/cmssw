@@ -14,7 +14,7 @@ myConfig(0), myEventData(pEvtData), MCData(*(myEventData->mcData())),
 DEBUGLVL(0), ana_elecPtMin2(10.), ana_muonPtMin2(10.),
 ana_tauPtMin2(5.), ana_photonPtMin2(20.), ana_jetPtMin2(30.),
 mc_numEvtPrnt(20), mc_PhotCalFac(1.), mc_JetCalFac(1.7), mc_JetDeltaRIC(0.5)
-{};
+{}
 
 MCProcessor::MCProcessor(MrEvent* pEvtData,
              Config_t * aConfig): 
@@ -46,7 +46,7 @@ myConfig(aConfig), myEventData(pEvtData), MCData(*(myEventData->mcData())), DEBU
   mc_JetCalFac = mcproc_params.getParameter<double>("mc_JetCalFac") ;
   mc_JetDeltaRIC = mcproc_params.getParameter<double>("mc_JetDeltaRIC") ;
  
-};
+}
 //------------------------------------------------------------------------------
 // Methods:
 

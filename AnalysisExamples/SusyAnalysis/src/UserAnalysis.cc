@@ -9,8 +9,18 @@ using std::endl;
 
 // Constructor:
 
-UserAnalysis::UserAnalysis(Config_t * theConfig) : myEventData(0)
+UserAnalysis::UserAnalysis(Config_t * theConfig) : 
+myConfig(theConfig), myEventData(0)
 {
+  
+  // get parameters for UserAnalysis
+  useranalysis_params = (*myConfig).useranalysis_params;
+  // load the parameters
+  user_metMin = useranalysis_params.getParameter<double>("user_metMin") ;
+  
+  cout << endl;
+  cout << "UserAnalysis parameters:" << endl;
+  cout << " user_metMin = " << user_metMin << endl;
 
    // initialize histograms
 
@@ -44,7 +54,7 @@ UserAnalysis::UserAnalysis(Config_t * theConfig) : myEventData(0)
 
 
 
-};
+}
 
 
 //------------------------------------------------------------------------------
@@ -61,6 +71,10 @@ void UserAnalysis::doAnalysis(MrEvent* theEventData)
   
   
     // This produces some simple plots as examples
+  
+    // Overall condition on MET (to illustrate usage of parameters)
+    float metchk = myEventData->metRecoilMod();
+    if (metchk < user_metMin){return;}
 
 
     // make multiplicity plots

@@ -12,9 +12,11 @@ using std::endl;
 RecoProcessor::RecoProcessor(MrEvent* pEvtData,
     const TrackCollection * Tracks,
     const VertexCollection* Vertices, const CaloTowerCollection* CaloTowers):
-myConfig(0), myEventData(pEvtData), RecoData(*(myEventData->recoData())), MCData(*(myEventData->mcData())),
-TrackData(Tracks), VertexData(Vertices), CaloTowerData(CaloTowers),
-DEBUGLVL(0),
+SusyRecoTools(myEventData->recoData(), Tracks, Vertices, CaloTowers),
+myConfig(0), myEventData(pEvtData), MCData(*(myEventData->mcData())), 
+//RecoData(*(myEventData->recoData())),
+//TrackData(Tracks), VertexData(Vertices), CaloTowerData(CaloTowers),
+//DEBUGLVL(0),
 ana_elecEtaMax(2.4), ana_elecPtMin1(0.), 
 ana_muonEtaMax(2.4), ana_muonPtMin1(0.), 
 ana_tauEtaMax(2.4), ana_tauPtMin1(0.), 
@@ -24,17 +26,20 @@ ana_elecPtMin2(10.), ana_muonPtMin2(10.),
 ana_tauPtMin2(5.), ana_photonPtMin2(20.), ana_jetPtMin2(30.),
 reco_elecD0ErrorThresh(0.), reco_elecDzErrorThresh(0.),
 reco_muonD0ErrorThresh(0.), reco_muonDzErrorThresh(0.),
-reco_jetD0ErrorThresh(0.), reco_jetDzErrorThresh(0.)
-{};
+reco_jetD0ErrorThresh(0.), reco_jetDzErrorThresh(0.),
+clean_distVxmax(5.)
+{}
 
 RecoProcessor::RecoProcessor(MrEvent* pEvtData, 
     const TrackCollection * Tracks,
     const VertexCollection* Vertices, const CaloTowerCollection* CaloTowers,
 //    const edm::ParameterSet& iConfig):
              Config_t * aConfig): 
-myConfig(aConfig), myEventData(pEvtData), RecoData(*(myEventData->recoData())), MCData(*(myEventData->mcData())),
-TrackData(Tracks), VertexData(Vertices), CaloTowerData(CaloTowers), 
-DEBUGLVL(0)
+SusyRecoTools(pEvtData->recoData(), Tracks, Vertices, CaloTowers),
+myConfig(aConfig), myEventData(pEvtData), MCData(*(myEventData->mcData()))
+//RecoData(*(myEventData->recoData())), 
+//TrackData(Tracks), VertexData(Vertices), CaloTowerData(CaloTowers), 
+//DEBUGLVL(0)
 {
 
   // get acceptance cuts
@@ -82,8 +87,10 @@ DEBUGLVL(0)
   reco_muonDzErrorThresh = acceptance_cuts.getParameter<double>("reco_muonDzErrorThresh") ;
   reco_jetD0ErrorThresh = acceptance_cuts.getParameter<double>("reco_jetD0ErrorThresh") ;
   reco_jetDzErrorThresh = acceptance_cuts.getParameter<double>("reco_jetDzErrorThresh") ;
- 
-};
+  
+  // load parameters for ObjectCleaner
+  clean_distVxmax = cleaner_params.getParameter<double>("clean_distVxmax") ;
+}
 //------------------------------------------------------------------------------
 // Methods:
 
@@ -362,7 +369,7 @@ bool RecoProcessor::RecoDriver()
      bool acceptObject = true;
      
      // Check that it is compatible with primary vertex
-     fromPrimaryVx = myCleaner->IsFromPrimaryVx(i);
+     fromPrimaryVx = myCleaner->IsFromPrimaryVx(i, clean_distVxmax);
      if (!fromPrimaryVx){
        numNotPrimaryTrk++;
        if (RecoData[i]->particleType() == 1){numElecNotPrimaryTrk++;}
@@ -545,7 +552,8 @@ bool RecoProcessor::RecoDriver()
   // ******************************************************** 
   // Apply lepton/photon isolation if more stringent criteria needed than in reconstruction
 
-    myIsolator = new  Isolator(&RecoData, TrackData, CaloTowerData, isolator_params);
+    myIsolator = new  Isolator(&RecoData, TrackData,
+                              VertexData, CaloTowerData, isolator_params);
     myIsolator->SetDebug(DEBUGLVL);
 
    if (DEBUGLVL >= 2){
@@ -853,190 +861,5 @@ bool RecoProcessor::RecoDriver()
 
 
 //------------------------------------------------------------------------------
-
-void RecoProcessor::PrintRecoInfo(void)
-{ 
- // Prints a summary of Reco information from the RecoData vector
- // Using MrParticle class;
-
-  cout << " Reco particles : " << endl;
-  for (unsigned int j=0; j<RecoData.size(); j++){
-   cout << " part " << j 
-   << ", type = " << RecoData[j]->particleType()
-//   << ", px = "<< RecoData[j]->px() 
-//   << ", py = "<< RecoData[j]->py() 
-//   << ", pz = "<< RecoData[j]->pz() 
-   << ", E = "<< RecoData[j]->energy() 
-   << ", pt = "<< RecoData[j]->pt() 
-   << ", eta = "<< RecoData[j]->eta() 
-   << ", phi = "<< RecoData[j]->phi() ;
-   if (RecoData[j]->particleType() <= 3){
-     cout << " Ch = " << RecoData[j]->charge();
-   }
-   cout << " et_em = " << RecoData[j]->et_em()
-   << " et_had = " << RecoData[j]->et_had();
-   cout << endl; 
-  };
-  cout << endl;
-
-/*  
-  for (unsigned int j=0; j<RecoData.size(); j++){
-   if (RecoData[j]->particleType() == 1) {
-      const Electron * pcand = RecoData[j]->electronCandidate();
-      reco::TrackRef tr2 = (RecoData[j]->electronCandidate())->track();
-      reco::TrackRef tr = (*pcand).track();
-      cout << " Information about the track of the electrons : " << endl;
-      cout << " Pt track = " << tr->outerPt() 
-      << " Eta track = " << tr->outerEta()
-      << " Phi track = " << tr->outerPhi() 
-      << endl;
-   }
-   
-  }
-*/
-  return;    
-}
-
-//------------------------------------------------------------------------------
-
-bool RecoProcessor::GetJetVx(int ichk)
-{ // computes the vertex of a jet from its tracks
-  // the coordinates are stored in the jet MrParticle
-  // if no vertex found, it returns false
-  
-  float dRTrkFromJet = 0.6;    // temporary
-  
-  vector<int> tracksFromJet;
-  
-  float etaJet = RecoData[ichk]->eta();
-  float phiJet = RecoData[ichk]->phi();
-//  cout << " Jet index = " << ichk << ", pT = " << RecoData[ichk]->pt()
-//       << ", eta = " << etaJet << ", phi = " << phiJet << endl;
-  
-  // Get the list of track indices inside a cone around the jet
-  GetJetTrks(etaJet, phiJet, dRTrkFromJet, & tracksFromJet);
-  if (tracksFromJet.size() <= 0){
-    tracksFromJet.clear();
-    return false;
-  }
-  
-  // make simple average of track ref point positions
-  // could be replaced by a vertex fit
-  float xv = 0.;
-  float yv = 0.;
-  float zv = 0.;
-  float dd0 = 0.;
-  float ddz = 0.;
-//  cout << "  Nber of associated tracks = " << tracksFromJet.size() 
-//       << ", indices = ";
-  for (int i = 0; i < (int) tracksFromJet.size(); i++) {
-//    cout << tracksFromJet[i] << ", ";
-    const Track* pTrack = &(*TrackData)[tracksFromJet[i]];
-    xv += pTrack->vx();
-    yv += pTrack->vy();
-    zv += pTrack->vz();
-    dd0 += pTrack->d0Error()*pTrack->d0Error();
-    ddz += pTrack->dzError()*pTrack->dzError();
-  }
-//  cout << endl;
-  float nberTracks = tracksFromJet.size();
-  RecoData[ichk]->setVx(xv / nberTracks);
-  RecoData[ichk]->setVy(yv / nberTracks);
-  RecoData[ichk]->setVz(zv / nberTracks);
-  RecoData[ichk]->setd0Error(sqrt(dd0) / nberTracks );
-  RecoData[ichk]->setdzError(sqrt(ddz) / nberTracks );
-
-  tracksFromJet.clear();
-  return true;
-}
-
-//------------------------------------------------------------------------------
-
-void RecoProcessor::GetJetTrks(float etaJet, float phiJet, float dRjet, 
-                              vector<int> * tracksFromJet)
-{ // makes a list of tracks compatible with coming from a jet
-  // it returns the indices in the track collection in a vector
-  
-  
-  for (int i=0; i< (int) TrackData->size(); i++){
-    const Track* pTrack = &(*TrackData)[i];
-    float eta = pTrack->eta();
-    float phi = pTrack->phi();
-    float DR = GetDeltaR(etaJet, eta, phiJet, phi);
-    if (DR < dRjet){
-      (*tracksFromJet).push_back(i);
-    }
-  }
-
-  return;
-}
-
-//------------------------------------------------------------------------------
-
-void RecoProcessor::AddToJet(int ichk)
-{ // adds an object to its nearest jet
- 
-  int iJet = FindNearestJet(ichk);
-  
-  if (ichk >= 0 && iJet >= 0) {
-   RecoData[iJet]->setPx(RecoData[iJet]->px() + RecoData[ichk]->px());
-   RecoData[iJet]->setPy(RecoData[iJet]->py() + RecoData[ichk]->py());
-   RecoData[iJet]->setPz(RecoData[iJet]->pz() + RecoData[ichk]->pz());
-   RecoData[iJet]->setEnergy(RecoData[iJet]->energy() + RecoData[ichk]->energy());
-   // ??? or do we want to keep the jets massless?
-   //RecoData[iJet]->setEnergy(RecoData[iJet]->p() );
-  }
-
-  return;
-}
-
-//------------------------------------------------------------------------------
-
-int RecoProcessor::FindNearestJet(int ichk)
-{
-// Looks for the nearest jet in deltaR to a given object
-// and returns its RecoData index 
-// returns -1 if no nearest jet
-
-  int iJetMin = -1;
-  if (ichk < 0){return iJetMin;}
-  
-  float deltaRmin = 999.;
-  for(int i = 0; i < (int) RecoData.size(); i++){
-   if(RecoData[i]->particleType() >= 5
-      && RecoData[i]->particleType() <= 7){
-    float deltaR = GetDeltaR(RecoData[ichk]->eta(), RecoData[i]->eta(), 
-                             RecoData[ichk]->phi(), RecoData[i]->phi());
-    if (deltaR < deltaRmin && i != ichk){
-      deltaRmin = deltaR;
-      iJetMin = i;
-    }
-   }
-  }
-  
-  return iJetMin;
-
-}
-
-//------------------------------------------------------------------------------
-
-float RecoProcessor::DeltaPhi(float v1, float v2)
-{ // Computes the correctly normalized phi difference
-  // v1, v2 = phi of object 1 and 2
- float diff = fabs(v2 - v1);
- float corr = 2*acos(-1.) - diff;
- if (diff < acos(-1.)){ return diff;} else { return corr;} 
- 
-}
-
-//------------------------------------------------------------------------------
-
-float RecoProcessor::GetDeltaR(float eta1, float eta2, float phi1, float phi2)
-{ // Computes the DeltaR of two objects from their eta and phi values
-
- return sqrt( (eta1-eta2)*(eta1-eta2) 
-            + DeltaPhi(phi1, phi2)*DeltaPhi(phi1, phi2) );
-
-}
 
 

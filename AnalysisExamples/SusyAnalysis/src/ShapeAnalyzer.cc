@@ -12,7 +12,7 @@ using std::endl;
 ShapeAnalyzer::ShapeAnalyzer(MrEvent* pEvtData):
 myEventData(pEvtData), RecoData(*(myEventData->recoData())), MCData(*(myEventData->mcData())),
 DEBUGLVL(0)
-{};
+{}
 
 /*
 // Destructor:
@@ -160,25 +160,7 @@ bool ShapeAnalyzer::AnalyzeHemi(void)
  
   return true;
 }
-//------------------------------------------------------------------------------
-
-float ShapeAnalyzer::DeltaPhi(float v1, float v2)
-{ // Computes the correctly normalized phi difference
-  // v1, v2 = phi of object 1 and 2
- float diff = fabs(v2 - v1);
- float corr = 2*acos(-1.) - diff;
- if (diff < acos(-1.)){ return diff;} else { return corr;} 
- 
-}
 
 //------------------------------------------------------------------------------
-
-float ShapeAnalyzer::GetDeltaR(float eta1, float eta2, float phi1, float phi2)
-{ // Computes the DeltaR of two objects from their eta and phi values
-
- return sqrt( (eta1-eta2)*(eta1-eta2) 
-            + DeltaPhi(phi1, phi2)*DeltaPhi(phi1, phi2) );
-
-}
 
 
