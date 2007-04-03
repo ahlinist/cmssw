@@ -1,4 +1,4 @@
-// $Id: DTMDisplayPlugins.h,v 1.1 2007/03/29 07:20:09 $
+// $Id: DTMDisplayPlugins.h,v 1.1 2007/03/29 09:08:57 gmasetti Exp $
 
 #ifndef  DTMDisplayPlugins_H
 # define DTMDisplayPlugins_H
@@ -8,12 +8,16 @@
   \brief Display Plugin for Quality Histograms (2D)
   \author G. Masetti 
   \version $Revision: 1.1 $
-  \date $Date: 2007/03/29 07:20:09 $
+  \date $Date: 2007/03/29 09:08:57 $
 */
 
 # include "VisMonitoring/VisDQMBase/interface/VisDQMDisplayPlugin.h"
+# include "DQM/DTMonitorDisplayPlugins/src/DTDigiDisplayPlugins.h"
+# include "DQM/DTMonitorDisplayPlugins/src/DTDataIntegrityDisplayPlugins.h"
+# include "DQM/DTMonitorDisplayPlugins/src/DTtTrigTestDisplayPlugins.h"
 # include <string>
 # include <TH2C.h>
+
 
 class DTMDisplayPlugins : public VisDQMDisplayPlugin {
 
@@ -35,8 +39,9 @@ class DTMDisplayPlugins : public VisDQMDisplayPlugin {
 
   std::string name;
 
-  std::string preDrawTH2F( DisplayData *data );
-  std::string preDrawTH1F( DisplayData *data );
+  DTDigiDisplayPlugins DigiME;
+  DTDataIntegrityDisplayPlugins DataIntegrityME;
+  DTtTrigTestDisplayPlugins tTrigTestME;
 
 };
 
