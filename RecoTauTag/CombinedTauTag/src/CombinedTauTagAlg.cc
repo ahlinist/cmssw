@@ -423,7 +423,7 @@ void CombinedTauTagAlg::FillTaggingVariableList(){
       (*theTaggingVariableList).push_back(tksEt_o_jetEt_TagVar);
     }
     if(use_leadtk_ipt_significance_case1signaltk_ && !couldnotobtain_leadtk_signedipt){
-      TaggingVariable leadtk_ipt_significance_TagVar(btau::trackip2d,fabs(the_leadtk_signedipt_significance));
+      TaggingVariable leadtk_ipt_significance_TagVar(btau::trackSip2d,fabs(the_leadtk_signedipt_significance));
       (*theTaggingVariableList).push_back(leadtk_ipt_significance_TagVar);
     }
   }
