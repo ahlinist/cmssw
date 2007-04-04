@@ -51,6 +51,10 @@ class Pi0MaterialConversion {
   //Estimated conversion position
   double getREst(){return ConversionREst_;}
   double getPhiEst(){return ConversionPhiEst_;}
+  // Stub quantities
+  int getNStub1Hits(){return NStub1Hits_;}
+  int getNStub2Hits(){return NStub2Hits_;}
+  
   ////////////////////////////////////////
   //Now quantities that may or may not be here
   //track1 quantities
@@ -83,6 +87,9 @@ class Pi0MaterialConversion {
   double getVtxChi2(){return VtxChi2_;}
 
   //Setters
+  void setNStub1Hits(int stub1){NStub1Hits_ = stub1;}
+  void setNStub2Hits(int stub2){NStub2Hits_=stub2;}
+
   void setTrk1PTIS(double PTIS){track1ptIS_ = PTIS;}
   void setTrk1PhiIS(double PhiIS){track1phiIS_ = PhiIS;}
   void setTrk1EtaIS(double EtaIS){track1etaIS_ = EtaIS;}
@@ -138,6 +145,9 @@ class Pi0MaterialConversion {
   //Estimated conversion position in R/Phi
   double ConversionREst_;
   double ConversionPhiEst_;
+  int NStub1Hits_;
+  int NStub2Hits_;
+  
   ////////////////////////////////////////
   //Now quantities that may or may not be here
   //track1 quantities

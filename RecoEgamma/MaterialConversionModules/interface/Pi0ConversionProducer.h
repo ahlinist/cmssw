@@ -50,6 +50,7 @@ class Pi0ConversionProducer : public edm::EDProducer
   Pi0ConversionAlgo::DebugLevel debugL;  
   Float_t GetSep(float eta1, float phi1, float eta2, float phi2);
   float pimass(float eta_g, float phi_g, float e_g, float eta_e, float phi_e, float e_e, float eta_p, float phi_p, float e_p);
+  float emIso(std::vector <reco::BasicCluster> clus, reco::BasicCluster sel1, reco::BasicCluster sel2, reco::BasicCluster sel3);
   bool counterExceeded() const { return ((nEvt_ > nMaxPrintout_) || (nMaxPrintout_ < 0));}
 };
 

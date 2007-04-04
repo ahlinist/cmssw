@@ -67,11 +67,13 @@ class Pi0ConversionAlgo
    ////////////////////////
    //These two functions, but for a couple of changes of my own
    //come from RoadSearchTrackCandidateMaker
-   reco::TrackCollection FitTrack( std::vector <TrackingRecHit*> Stub, 
-				   const MeasurementTracker *theMeasurementTracker, 
-				   const TransientTrackingRecHitBuilder *ttrhBuilder,
-				   const MagneticField *magField,
-				   const TrackerGeometry *geom, const edm::EventSetup& iSetup);
+   void FitTrack( std::vector <TrackingRecHit*> Stub, 
+		  const MeasurementTracker *theMeasurementTracker, 
+		  const TransientTrackingRecHitBuilder *ttrhBuilder,
+		  const MagneticField *magField,
+		  const TrackerGeometry *geom, const edm::EventSetup& iSetup, 
+		  reco::TrackCollection &trkCan,
+		  reco::TrackExtraCollection &trkColl);
 
    std::vector<TrajectoryMeasurement> FindBestHit(const TrajectoryStateOnSurface& tsosBefore,
 						 const std::set<const GeomDet*>& theDets,
