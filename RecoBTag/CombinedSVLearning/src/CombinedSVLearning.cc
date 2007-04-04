@@ -13,15 +13,23 @@ using namespace std;
 namespace {
   char getFlavor ( const JetFlavour & jf )
   {
+    cout << "[CombinedSVLearning] flavor: " << jf.flavour() << endl;
     char tag='b';
     switch ( jf.flavour() )
     {
-      case 21:
-        { tag='b'; break; };
-      case 11:
+      case 4:
         { tag='c'; break; };
-      case 13:
+      case 5:
+      case 7:
+        { tag='b'; break; };
+      case 2:
         { tag='u'; break; };
+      case 1:
+        { tag='d'; break; };
+      case 3:
+        { tag='s'; break; };
+      case 21:
+        { tag='g'; break; };
       default:
         tag='?';
      }
