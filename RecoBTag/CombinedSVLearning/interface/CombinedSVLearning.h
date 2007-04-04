@@ -5,7 +5,8 @@
 // #include "FWCore/Framework/interface/EDProducer.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "RecoBTag/CombinedSVLearning/interface/NCategoriesTeacher.h"
-#include "RecoBTag/MCTools/interface/JetFlavourIdentifier.h"                                                    
+#include "RecoBTag/MCTools/interface/JetFlavourIdentifier.h"
+#include "RecoBTag/CombinedSV/interface/BTagAlgorithmCalibration.h"
 
 class CombinedSVLearning : public /* edm::EDProducer */ edm::EDAnalyzer {
   /**
@@ -21,6 +22,9 @@ class CombinedSVLearning : public /* edm::EDProducer */ edm::EDAnalyzer {
    private:
       NCategoriesTeacher * theTeacher;
       JetFlavourIdentifier theIdentifier;
+      BTagAlgorithmCalibration * theReco;
+      BTagAlgorithmCalibration * thePseudo;
+      BTagAlgorithmCalibration * theNo;
 };
 
 #endif

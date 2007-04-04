@@ -7,8 +7,6 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "DataFormats/BTauReco/interface/CombinedSVTagInfo.h"
 #include "DataFormats/BTauReco/interface/CombinedSVTagInfoFwd.h"
-// #include "DataFormats/BTauReco/interface/JetTag.h"
-#include "RecoBTag/CombinedSV/interface/BTagAlgorithmCalibration.h"
 
 using namespace std;
 
@@ -33,12 +31,35 @@ namespace {
 
 CombinedSVLearning::CombinedSVLearning(const edm::ParameterSet& iconfig) : theTeacher(0),
   theIdentifier ( JetFlavourIdentifier (
-        iconfig.getParameter<edm::ParameterSet>("jetIdParameters") ) )
+        iconfig.getParameter<edm::ParameterSet>("jetIdParameters") ) ),
+  theReco(0), thePseudo(0), theNo(0)
 {
-  theTeacher = new NCategoriesTeacher ( 0, 0, 0 );
+  theReco = new BTagAlgorithmCalibration ( "reco.xml" );
+  thePseudo = new BTagAlgorithmCalibration ( "pseudo.xml" );
+  theNo = new BTagAlgorithmCalibration ( "no.xml" );
+  theTeacher = new NCategoriesTeacher ( theReco, thePseudo, theNo ) ;
 }
 
 CombinedSVLearning::~CombinedSVLearning() {
+  edm::LogInfo("") << "saving what has been learned!";
+  if ( theReco )
+  {
+    // theReco->saveCalibration ( "reco.xml" );
+    delete theReco;
+  }
+
+  if ( thePseudo )
+  {
+    // thePseudo->saveCalibration ( "pseudo.xml" );
+    delete thePseudo;
+  }
+
+  if ( theNo )
+  {
+    // theNo->saveCalibration ( "no.xml" );
+    delete theNo;
+  }
+
   if ( theTeacher ) delete theTeacher;
 }
 
