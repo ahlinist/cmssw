@@ -17,6 +17,7 @@
 
 #include "DataFormats/EgammaReco/interface/BasicCluster.h"
 #include "DataFormats/TrackCandidate/interface/TrackCandidate.h"
+#include "DataFormats/TrackReco/interface/TrackExtra.h"
 #include "DataFormats/TrackCandidate/interface/TrackCandidateCollection.h"
 #include "DataFormats/Common/interface/OwnVector.h"
  
@@ -110,47 +111,76 @@ float Pi0ConversionAlgo::GetConversionR(float phi1, float pt1, float phi2, float
 
 float Pi0ConversionAlgo::GetConversionPhi(float phi1, float pt1, float phi2, float pt2)
 {
-
+  //What the frack?  The range of phi is supposed to be 0, 2pi
+  if (phi1 < 0) phi1 +=TMath::Pi()*2.;
+  if (phi2 < 0) phi2 +=TMath::Pi()*2.;
+  
   float CONSTFORCURVE = 1e9 / 299792458.; //Need a constant to put everything into measurement units.
   float MAGFIELD = 4.;//In Tesla
   //  float RadiusOfECAL = 120.;//in cm.
   float RadiusOfCurvature1 = (pt1 * CONSTFORCURVE / MAGFIELD) * 100.;//in cm.
   float RadiusOfCurvature2 = (pt2 * CONSTFORCURVE / MAGFIELD) * 100.;
-  float Delta = 0; //Delta is defined as the magnitude of the difference between phi1 and phi2.
-  float DeltaRaw = fabs(phi2 - phi1);
-  if (DeltaRaw > TMath::Pi()) Delta = 2. * TMath::Pi() - DeltaRaw;
-  else Delta = DeltaRaw;
-  
-  //In all of the expressions actually WRITTEN DOWN: Phi1 == Larger phi.  R1 == Radius of em at higher phi.
-  //So if I want 
-  //Okay, the actual conversion phi position is PhiConv = phi1 - Delta1
-  //Again, Phi1 is supposed to be the larger of the two phi values.  Since this is effectively one
-  //of the only places it matters, this is 
-  float Delta1 =0;
-  if (phi1 > phi2)
-    Delta1 = (RadiusOfCurvature2/(RadiusOfCurvature1+RadiusOfCurvature2)) * Delta;
-  else
-    Delta1 = (RadiusOfCurvature1/(RadiusOfCurvature1+RadiusOfCurvature2)) * Delta;
+  //Before going any further, check if phi1 > phi2
+  float PHI1=0;
+  float PHI2=0;
+  float ARR1 =0;
+  float ARR2 =0;
+  float fidiff = fabs(phi1-phi2);
+  if (debug_){
+    std::cout << "Conversion phi calculation" << std::endl;
+    std::cout << "Radius1: " << RadiusOfCurvature1 << std::endl;
+    std::cout << "Radius2: " << RadiusOfCurvature2 << std::endl;
+    std::cout << "Phi1: " << phi1 << std::endl;
+    std::cout << "Phi2: " << phi2 << std::endl;
+  }
+  if (phi1 > phi2 && fidiff < TMath::Pi()){
+    PHI1 = phi1;
+    PHI2 = phi2;
+    ARR1 = RadiusOfCurvature1;
+    ARR2 = RadiusOfCurvature2;
+  }
+  if (phi2 > phi1 && fidiff < TMath::Pi()){
+    PHI1 = phi2;
+    PHI2 = phi1;
+    ARR1 = RadiusOfCurvature2;
+    ARR2 = RadiusOfCurvature1;
+  }
+  if (fidiff > TMath::Pi()){
+    if (phi1 < TMath::Pi()){
+      PHI1 = phi1 + TMath::Pi()*2.;
+      PHI2 = phi2;
+      ARR1 = RadiusOfCurvature1;
+      ARR2 = RadiusOfCurvature2;
+    }
+    else{
+      PHI1 = phi2 + TMath::Pi()*2.;
+      PHI2 = phi1;
+      ARR1 = RadiusOfCurvature2;
+      ARR2 = RadiusOfCurvature1;
+    }
+  }
+  if (debug_){
+    std::cout << "Chose: " << std::endl;
+    std::cout << "PHI1: " << PHI1 << std::endl;
+    std::cout << "PHI2: " << PHI2 << std::endl;
+    std::cout << "ARR1: " << ARR1 << std::endl;
+    std::cout << "ARR2: " << ARR2 << std::endl;
+  }
+
+  float Delta = PHI2 - PHI1;//This should be negative
+  float Delta1 = -1.*(ARR2/(ARR1+ARR2)) * Delta;
+
+  if (debug_) std::cout << "Delta1: " << Delta1 << endl;
+
   //Note that I cancelled the negative sign with Delta above.
 
   float PhiConv=-1;
-  
-  if (phi1 > phi2){
-    PhiConv = phi1 - Delta1;
-    if (PhiConv > TMath::Pi()*2.)
-      PhiConv -=TMath::Pi()*2.;
-    if (PhiConv < 0)
-      PhiConv +=TMath::Pi()*2.;
-  }
-
-  else{
-    PhiConv = phi2 - Delta1;
-    if (PhiConv > TMath::Pi()*2.)
-      PhiConv -=TMath::Pi()*2.;
-    if (PhiConv < 0)
-      PhiConv +=TMath::Pi()*2.;
-  }
-  
+  PhiConv = PHI1 - Delta1;
+  if (PhiConv > TMath::Pi()*2.)
+    PhiConv -=TMath::Pi()*2.;
+  if (PhiConv < 0)
+    PhiConv +=TMath::Pi()*2.;
+  if (debug_) std::cout << "returning: " << PhiConv << std::endl;
   return PhiConv;  
 }
 
@@ -179,16 +209,22 @@ void Pi0ConversionAlgo::GetStubHits(BasicCluster ele1, BasicCluster ele2,
   //Using this constructor, the roads should be created.  Remember to check this when debugging.  
   //Select hits that are in road.
 
-  
+  if (debug_) std::cout << "Total tracker hits: " << FullTracker->size() << std::endl;
   //Make one loop through the hits, and then you're done.
   for (int th=0;th < int(FullTracker->size()); ++th){
     //get globalpoint position, and feed hit to stubs
     TrackingRecHit *htr = (*FullTracker)[th];
+    
     GlobalPoint position = geom->idToDet( 
 					 htr->geographicalId()
 					 )->surface().toGlobal(
 							       htr->localPosition());
-
+    if (th==0 && debug_){
+      std::cout << "dumping first hit: " << std::endl;
+      std::cout << "X: " << position.x() << std::endl;
+      std::cout << "Y: " << position.y() << std::endl;
+      std::cout << "Z: " << position.z() << std::endl;
+    }
     //Can I auto stiletto-ize?  Get "IsHitInRoad", and Chi2XY for hit.  Whoever has smallest Chi2 gets the hit.
     bool Pos1 =   posstub1.IsInRoad(position);
     bool Pos2 =   posstub2.IsInRoad(position);
@@ -237,7 +273,7 @@ void Pi0ConversionAlgo::GetStubHits(BasicCluster ele1, BasicCluster ele2,
 	hits_pos_stub2.push_back((*FullTracker)[th]);
       }
     }
-    
+
   }//Done Looping over all the hits.
   
 
@@ -318,30 +354,35 @@ void Pi0ConversionAlgo::GetStubHits(BasicCluster ele1, BasicCluster ele2,
 }
 
 
-TrackCollection Pi0ConversionAlgo::FitTrack( vector <TrackingRecHit*> Stub, 
+void Pi0ConversionAlgo::FitTrack( vector <TrackingRecHit*> Stub, 
 					     const MeasurementTracker *theMeasurementTracker, 
 					     const TransientTrackingRecHitBuilder *ttrhBuilder,
 					     const MagneticField *magField,
 					     const TrackerGeometry *geom,
-					     const edm::EventSetup& es)
+					     const edm::EventSetup& es,
+					     reco::TrackCollection &trkCan,
+					     reco::TrackExtraCollection &trkColl)
 {
   //Around 900 lines of code regarding the fitting of the candidate hits into a track.  That is
   //of course, presuming that we've GOT the right hits.
-  
+  if (debug_) std::cout << "Creating output collection, trajectory cleaner, and Trajectory collection" << std::endl;
   TrackCandidateCollection output;
+  std::vector<reco::Track> trackvec; 
   // Create the trajectory cleaner 
   TrajectoryCleanerBySharedHits theTrajectoryCleaner;
   vector<Trajectory> FinalTrajectories;
- 
+  theEstimator = new Chi2MeasurementEstimator(100.);
+  theUpdator = new KFUpdator();
   // need this to sort recHits, sorting done after getting seed because propagationDirection is needed
   // get tracker geometry
-  
+  if (debug_) std::cout << "creating propagator, with electron mass" << std::endl;
   //Made this use the electron mass, make sure to check the number of 0s.
   thePropagator = new PropagatorWithMaterial(alongMomentum,.000511,&(*magField)); 
+  if (debug_) std::cout << "creating propagator with material" << std::endl;
   theRevPropagator = new PropagatorWithMaterial(oppositeToMomentum,.000511,&(*magField)); 
   AnalyticalPropagator prop(magField,anyDirection);
   TrajectoryStateTransform transformer;
-   
+  if (debug_) std::cout << "Prior to creating smoother." << std::endl;
   KFTrajectorySmoother theSmoother(*theRevPropagator, *theUpdator, *theEstimator);
  
   if (debug_) std::cout << std::endl << std::endl
@@ -1091,66 +1132,100 @@ TrackCollection Pi0ConversionAlgo::FitTrack( vector <TrackingRecHit*> Stub,
       state = *(transformer.persistentState(firstState,FirstHitId.rawId()));
       
       //std::cout<<"This track candidate has " << goodHits.size() << " hits "<<std::endl ;
-      
+      TrackCandidate canner = TrackCandidate(goodHits,it->seed(),state);
       output.push_back(TrackCandidate(goodHits,it->seed(),state));
+      //Try to make actual tracks:
+      //variable declarations
+      
+      std::vector<Trajectory> trajVec;
+      reco::Track * theTrack;
+      Trajectory * theTraj; 
+      KFTrajectoryFitter *theFitter = new KFTrajectoryFitter(thePropagator, theUpdator, theEstimator);
+      //perform the fit: the result's size is 1 if it succeded, 0 if fails
+      //This piece of code is MAGICALLY HORRIFIC
+      TransientTrackingRecHit::RecHitContainer hits;
+      const TrackCandidate::range& recHitVec=canner.recHits();
+      float ndof=0;       
+      for (edm::OwnVector<TrackingRecHit>::const_iterator i=recHitVec.first;
+	   i!=recHitVec.second; i++){
+	hits.push_back(ttrhBuilder->build(&(*i) ));
+	if ((*i).isValid()){
+	  ndof = ndof + (i->dimension())*(i->weight());
+	}
+      }
+      //
+      
+      //    TrajectoryStateOnSurface trajSOS(detstate.parameters(), (geom->idToDet(FirstHitId))->surface(), magField);
+
+      trajVec = theFitter->fit(canner.seed(), hits, firstState);
+    
+      TrajectoryStateOnSurface innertsos;
+      if (trajVec.size() != 0){
+      
+	theTraj = new Trajectory( trajVec.front() );
+	
+	if (theTraj->direction() == alongMomentum) {
+	  innertsos = theTraj->firstMeasurement().updatedState();
+	} else { 
+	  innertsos = theTraj->lastMeasurement().updatedState();
+	}
+	
+      
+	TSCPBuilderNoMaterial tscpBuilder;
+	//I'm a bit worried about this one...      
+	TrajectoryStateClosestToPoint tscp = tscpBuilder(*(innertsos.freeState()),
+							 GlobalPoint(0,0,0) );//FIXME Correct?
+	
+	PerigeeTrajectoryParameters::ParameterVector param = tscp.perigeeParameters();
+	
+	PerigeeTrajectoryError::CovarianceMatrix covar = tscp.perigeeError();
+	
+	theTrack = new reco::Track(theTraj->chiSquared(),
+				   int(ndof),//FIXME fix weight() in TrackingRecHit
+				   param,tscp.pt(),
+				   covar);
+	//sets the outermost and innermost TSOSs
+	TrajectoryStateOnSurface outertsos;
+	unsigned int innerId, outerId;
+	if (theTraj->direction() == alongMomentum) {
+	  outertsos = theTraj->lastMeasurement().updatedState();
+	  outerId = theTraj->lastMeasurement().recHit()->geographicalId().rawId();
+	  innerId = theTraj->firstMeasurement().recHit()->geographicalId().rawId();
+	} else { 
+	  outertsos = theTraj->firstMeasurement().updatedState();
+	  outerId = theTraj->firstMeasurement().recHit()->geographicalId().rawId();
+	  innerId = theTraj->lastMeasurement().recHit()->geographicalId().rawId();
+	}
+	//build the TrackExtra
+	GlobalPoint v = outertsos.globalParameters().position();
+	GlobalVector p = outertsos.globalParameters().momentum();
+	math::XYZVector outmom( p.x(), p.y(), p.z() );
+	math::XYZPoint  outpos( v.x(), v.y(), v.z() );
+	v = innertsos.globalParameters().position();
+	p = innertsos.globalParameters().momentum();
+	math::XYZVector inmom( p.x(), p.y(), p.z() );
+	math::XYZPoint  inpos( v.x(), v.y(), v.z() );
+
+	reco::TrackExtra extr(outpos, outmom, true, inpos, inmom, true,
+			      outertsos.curvilinearError(), outerId,
+			      innertsos.curvilinearError(), innerId);
+// 	for (int ju =0;ju<int(recHitVec.size());ju++)
+// 	  extr.add((*recHitVec[ju]).clone());
+
+
+	//	theTrack->setExtra( teref );
+	trkCan.push_back(*theTrack);
+	trkColl.push_back(extr);
+      
+      }
     }
   }
   
   if (debug_) std::cout<< "Found " << output.size() << " track candidates."<<std::endl;  
-  //Try to make actual tracks:
-  //variable declarations
-  std::vector<reco::Track> trackvec; 
-  std::vector<Trajectory> trajVec;
-  reco::Track * theTrack;
-  Trajectory * theTraj; 
-  KFTrajectoryFitter *theFitter = new KFTrajectoryFitter(thePropagator, theUpdator, theEstimator);
-  //perform the fit: the result's size is 1 if it succeded, 0 if fails
-  for (int ji=0;ji<int(output.size());ji++){
-
-    //This piece of code is MAGICALLY HORRIFIC
-    TransientTrackingRecHit::RecHitContainer hits;
-    const TrackCandidate::range& recHitVec=output[ji].recHits();
-    float ndof=0;       
-    for (edm::OwnVector<TrackingRecHit>::const_iterator i=recHitVec.first;
-	 i!=recHitVec.second; i++){
-      hits.push_back(ttrhBuilder->build(&(*i) ));
-      if ((*i).isValid()){
-	ndof = ndof + (i->dimension())*(i->weight());
-      }
-    }
-    //
-
-    trajVec = theFitter->fit(output[ji].seed(), hits);
-    
-    TrajectoryStateOnSurface innertsos;
-    if (trajVec.size() != 0){
-      
-      theTraj = new Trajectory( trajVec.front() );
-      
-      if (theTraj->direction() == alongMomentum) {
-	innertsos = theTraj->firstMeasurement().updatedState();
-      } else { 
-	innertsos = theTraj->lastMeasurement().updatedState();
-      }
-      
-      
-      TSCPBuilderNoMaterial tscpBuilder;
-      //I'm a bit worried about this one...      
-      TrajectoryStateClosestToPoint tscp = tscpBuilder(*(innertsos.freeState()),
-						       GlobalPoint(0,0,0) );//FIXME Correct?
-      
-      PerigeeTrajectoryParameters::ParameterVector param = tscp.perigeeParameters();
+  if (debug_) std::cout<< "Found " << trkCan.size() << " tracks."<<std::endl;  
   
-      PerigeeTrajectoryError::CovarianceMatrix covar = tscp.perigeeError();
-      
-      theTrack = new reco::Track(theTraj->chiSquared(),
-				 int(ndof),//FIXME fix weight() in TrackingRecHit
-				 param,tscp.pt(),
-				 covar);
-      trackvec.push_back(*theTrack);
-    }
-  }//loop over candidates
-  return trackvec;
+
+  //  return trackvec;
 }
 
 std::vector<TrajectoryMeasurement> Pi0ConversionAlgo::FindBestHit(const TrajectoryStateOnSurface& tsosBefore,
