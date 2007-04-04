@@ -42,9 +42,12 @@ CombinedSVLearning::CombinedSVLearning(const edm::ParameterSet& iconfig) : theTe
         iconfig.getParameter<edm::ParameterSet>("jetIdParameters") ) ),
   theReco(0), thePseudo(0), theNo(0)
 {
-  theReco = new BTagAlgorithmCalibration ( "reco.xml" );
-  thePseudo = new BTagAlgorithmCalibration ( "pseudo.xml" );
-  theNo = new BTagAlgorithmCalibration ( "no.xml" );
+  edm::FileInPath freco ( "RecoBTag/CombinedSVLearning/data/reco.xml" );
+  edm::FileInPath fpseudo ( "RecoBTag/CombinedSVLearning/data/pseudo.xml" );
+  edm::FileInPath fno ( "RecoBTag/CombinedSVLearning/data/no.xml" );
+  theReco = new BTagAlgorithmCalibration ( freco.fullPath().c_str() );
+  thePseudo = new BTagAlgorithmCalibration ( fpseudo.fullPath().c_str() );
+  theNo = new BTagAlgorithmCalibration ( fno.fullPath().c_str() );
   theTeacher = new NCategoriesTeacher ( theReco, thePseudo, theNo ) ;
 }
 
