@@ -18,10 +18,10 @@ bool JetFilter::operator() ( const reco::Particle & jet ) const
 
   if ( !ret )
   {
-    edm::LogInfo("JetFilter") << "NOT accepting jet (eta=" << jet.eta() 
+    LogDebug("") << "NOT accepting jet (eta=" << jet.eta() 
         << ", pt=" << jet.pt() << "). Discriminator=-1.";
   } else {
-    edm::LogInfo("JetFilter") << "accepting jet.";
+    LogDebug("") << "accepting jet.";
   }
   return ret;
 }
