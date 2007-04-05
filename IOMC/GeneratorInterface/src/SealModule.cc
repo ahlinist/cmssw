@@ -13,9 +13,9 @@
 #include "IOMC/GeneratorInterface/interface/PythiaFilterGammaJetWithOutBg.h"
 #include "IOMC/GeneratorInterface/interface/PythiaFilterZJetWithOutBg.h"
 #include "IOMC/GeneratorInterface/interface/PythiaFilterFourMu.h"
-#include "IOMC/GeneratorInterface/interface/tt4lFilter.h
-#include "IOMC/GeneratorInterface/interface/Zbb4lFilter.h
-#include "IOMC/GeneratorInterface/interface/ZZ4lFilter.h
+#include "IOMC/GeneratorInterface/interface/tt4lFilter.h"
+#include "IOMC/GeneratorInterface/interface/Zbb4lFilter.h"
+#include "IOMC/GeneratorInterface/interface/ZZ4lFilter.h"
 
   using edm::PythiaSource;
 
