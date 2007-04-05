@@ -25,6 +25,7 @@ bool SeedComparitorWithPixelStubs::compatible(const SeedingHitSet &seed) {
     PixelStub stub1(pix1, betaCutFactor_);
     for (unsigned int j=i+1; j<seed.hits().size(); ++j) {
       const SiPixelRecHit &pix2 = dynamic_cast<const SiPixelRecHit&>(*seed.hits()[j].RecHit());
+      if (pix1.geographicalId().subdetId() != pix2.geographicalId().subdetId()) continue;
       PixelStub stub2(pix2, betaCutFactor_);
       
       // Now make the comparison
