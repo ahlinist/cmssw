@@ -12,6 +12,10 @@
 #include "IOMC/GeneratorInterface/interface/PythiaFilterGammaJetWithBg.h"
 #include "IOMC/GeneratorInterface/interface/PythiaFilterGammaJetWithOutBg.h"
 #include "IOMC/GeneratorInterface/interface/PythiaFilterZJetWithOutBg.h"
+#include "IOMC/GeneratorInterface/interface/PythiaFilterFourMu.h"
+#include "IOMC/GeneratorInterface/interface/tt4lFilter.h
+#include "IOMC/GeneratorInterface/interface/Zbb4lFilter.h
+#include "IOMC/GeneratorInterface/interface/ZZ4lFilter.h
 
   using edm::PythiaSource;
 
@@ -27,4 +31,7 @@
   DEFINE_ANOTHER_FWK_MODULE(PythiaFilterGammaJetWithBg);
   DEFINE_ANOTHER_FWK_MODULE(PythiaFilterGammaJetWithOutBg);
   DEFINE_ANOTHER_FWK_MODULE(PythiaFilterZJetWithOutBg);
-
+  DEFINE_ANOTHER_FWK_MODULE(PythiaFilterFourMu);
+  DEFINE_ANOTHER_FWK_MODULE(tt4lFilter);
+  DEFINE_ANOTHER_FWK_MODULE(Zbb4lFilter);
+  DEFINE_ANOTHER_FWK_MODULE(ZZ4lFilter);
