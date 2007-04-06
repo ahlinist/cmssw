@@ -72,14 +72,14 @@ HepMC::IO_HEPEVT conv;
   static const unsigned long kNanoSecPerSec = 1000000000;
   static const unsigned long kAveEventPerSec = 200;
 
-MadGraphSource::MadGraphSource( const ParameterSet & pset, 
-			    InputSourceDescription const& desc) :
+using namespace edm;
+MadGraphSource::MadGraphSource( const ParameterSet & pset, InputSourceDescription const& desc) :
   GeneratedInputSource(pset, desc), evt(0),
   //  mcdbArticleID_ (pset.addParameter<int>("mcdbArticleID",0)),
 pythiaPylistVerbosity_ (pset.getUntrackedParameter<int>("pythiaPylistVerbosity",0)),pythiaHepMCVerbosity_ (pset.getUntrackedParameter<bool>("pythiaHepMCVerbosity",false)),maxEventsToPrint_ (pset.getUntrackedParameter<int>("maxEventsToPrint",0)),MGfile_ (pset.getParameter<std::string>("MadGraphInputFile")),getInputFromMCDB_ (pset.getUntrackedParameter<bool>("getInputFromMCDB",false)),MCDBArticleID_ (pset.getParameter<int>("MCDBArticleID")),firstEvent_(pset.getUntrackedParameter<unsigned int>("firstEvent", 0)),lhe_event_counter_(0){
 
-  ifstream file;
-  ofstream ofile;
+  std::ifstream file;
+  std::ofstream ofile;
 
   // Interface with the LCG MCDB
   if (getInputFromMCDB_)  mcdbGetInputFile(MGfile_, MCDBArticleID_);
@@ -97,7 +97,7 @@ pythiaPylistVerbosity_ (pset.getUntrackedParameter<int>("pythiaPylistVerbosity",
   edm::LogInfo("Generator|MadGraph")<< "MadGraph input file is " << MGfile_;
   
   //Write to file name and first event to be read in to a file which the MadGraph subroutine will read in
-  ofile.open("MGinput.dat",ios::out);
+  ofile.open("MGinput.dat",std::ios::out);
   ofile<<MGfile_;
   ofile<<"\n";
   ofile.close();
@@ -174,7 +174,7 @@ void MadGraphSource::clear() {
 
 
 bool MadGraphSource::produce(Event & e) {
-  auto_ptr<HepMCProduct> bare_product(new HepMCProduct());  
+  std::auto_ptr<HepMCProduct> bare_product(new HepMCProduct());  
 
   // skip LHE events - read firstEvent_ times <event>...</event> from the LHE file without returning from produce()
   for(;lhe_event_counter_<firstEvent_; ++lhe_event_counter_){

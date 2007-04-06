@@ -19,14 +19,8 @@
 #include <string>
 #include <stdlib.h>
 
-using namespace edm;
-using namespace std;
-using namespace seal;
-
 // Makes a local copy of a CASTOR file.
 // This code is a modified version of 
 // Utilities/StorageFactory/test/any.cpp by Vincenzo Innocente
-//
-void mcdbGetInputFile(string  &madGraphInputFile, int &mcdbArticleID);
-
+void mcdbGetInputFile(std::string  &madGraphInputFile, int &mcdbArticleID);
 
