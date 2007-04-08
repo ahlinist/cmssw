@@ -1,5 +1,5 @@
 #include "SimG4Core/Physics/interface/PhysicsListFactory.h"
-#include "PluginManager/ModuleDef.h"
+#include "FWCore/PluginManager/interface/ModuleDef.h"
 #include "QGSP_BERT.hh"
 
 #ifndef G4V7
