@@ -5,7 +5,7 @@
 #include "SimG4Core/UtilityAction/interface/UtilityActionMaker.h"
 
 #include "SealKernel/Component.h"
-#include "PluginManager/PluginFactory.h"
+#include "FWCore/PluginManager/interface/PluginFactory.h"
  
 class UtilityActionPluginFactory : 
     public seal::PluginFactory<UtilityActionMakerBase *()>
