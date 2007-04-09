@@ -21,7 +21,6 @@
 // constants, enums and typedefs
 //
 namespace edm {
-   namespace eventsetup {
 
 //
 // static data member definitions
@@ -100,5 +99,4 @@ IOVSyncValue::beginOfTime() {
    static IOVSyncValue s_beginOfTime(EventID(1,0), Timestamp::beginOfTime());
    return s_beginOfTime;
 }
-   }
 }
