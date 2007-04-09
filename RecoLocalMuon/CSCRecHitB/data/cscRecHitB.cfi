@@ -3,7 +3,7 @@
 module csc2DRecHits = CSCRecHitBProducer {
 
      untracked bool CSCIsRunningOnData           = true
-     untracked bool CSCUseCalibrations           = true
+     untracked bool CSCUseCalibrations           = false
      untracked bool CSCDebug                     = true
      FileInPath theMappingFile                   = "CondFormats/CSCObjects/data/csc_slice_test_map.txt"
      string CSCStripDigiProducer                 = "cscunpacker"
