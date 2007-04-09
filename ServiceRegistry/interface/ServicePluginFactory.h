@@ -29,29 +29,7 @@ namespace edm {
    namespace serviceregistry {
       class ServiceMakerBase;
       
-      class ServicePluginFactory :  public seal::PluginFactory< ServiceMakerBase* ()>
-      {
-
-public:
-         ServicePluginFactory();
-         //virtual ~ServicePluginFactory();
-
-         // ---------- const member functions ---------------------
-         
-         // ---------- static member functions --------------------
-         static ServicePluginFactory* get();
-         
-         // ---------- member functions ---------------------------
-         
-private:
-         ServicePluginFactory(const ServicePluginFactory&); // stop default
-         
-         const ServicePluginFactory& operator=(const ServicePluginFactory&); // stop default
-         
-         // ---------- member data --------------------------------
-         
-};
-
+     typedef edmplugin::PluginFactory< ServiceMakerBase* ()> ServicePluginFactory;
    }
 }
 
