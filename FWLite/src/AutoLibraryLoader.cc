@@ -14,14 +14,13 @@
 // system include files
 #include <iostream>
 #include "TROOT.h"
-#include "G__ci.h"
-#include "boost/regex.hpp"
 
 // user include files
 #include "FWCore/FWLite/interface/AutoLibraryLoader.h"
 #include "FWCore/RootAutoLibraryLoader/interface/RootAutoLibraryLoader.h"
 #include "FWCore/FWLite/src/BareRootProductGetter.h"
-
+#include "FWCore/PluginManager/interface/PluginManager.h"
+#include "FWCore/PluginManager/interface/standard.h"
 //
 // constants, enums and typedefs
 //
@@ -47,6 +46,7 @@ AutoLibraryLoader::AutoLibraryLoader()
 void
 AutoLibraryLoader::enable()
 {
+   edmplugin::PluginManager::configure(edmplugin::standard::config());
    static BareRootProductGetter s_getter;
    static edm::EDProductGetter::Operate s_op(&s_getter);
    edm::RootAutoLibraryLoader::enable();

@@ -15,7 +15,6 @@
 
 // user include files
 #include "FWCore/Integration/test/ValueExample.h"
-#include "FWCore/ServiceRegistry/interface/ServiceMaker.h"
 
 //
 // constants, enums and typedefs
@@ -65,6 +64,3 @@ ValueExample::~ValueExample()
 //
 // static member functions
 //
-using namespace edm::serviceregistry;
-DEFINE_SEAL_MODULE();
-DEFINE_ANOTHER_FWK_SERVICE_MAKER(ValueExample,ParameterSetMaker<ValueExample>);
