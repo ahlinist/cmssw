@@ -16,14 +16,14 @@ $Id$
 
 #include "DataFormats/Provenance/interface/LuminosityBlockAuxiliary.h"
 #include "DataFormats/Provenance/interface/RunID.h"
-#include "FWCore/Framework/interface/DataBlockImpl.h"
+#include "FWCore/Framework/interface/Principal.h"
 
 #include "boost/shared_ptr.hpp"
 
 namespace edm {
   class RunPrincipal;
-  class LuminosityBlockPrincipal : private DataBlockImpl {
-  typedef DataBlockImpl Base;
+  class LuminosityBlockPrincipal : private Principal {
+  typedef Principal Base;
   public:
     LuminosityBlockPrincipal(LuminosityBlockNumber_t const& id,
 	ProductRegistry const& reg,

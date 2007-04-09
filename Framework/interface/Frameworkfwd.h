@@ -16,7 +16,7 @@ namespace edm {
   class ConfigurableInputSource;
   class CurrentProcessingContext;
   class DelayedReader;
-  class DataBlockImpl;
+  class Principal;
   class DataViewImpl;
   class EDAnalyzer;
   class EDFilter;

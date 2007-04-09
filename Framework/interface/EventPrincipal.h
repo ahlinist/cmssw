@@ -15,7 +15,7 @@ $Id$
 ----------------------------------------------------------------------*/
 
 #include "DataFormats/Provenance/interface/EventAuxiliary.h"
-#include "FWCore/Framework/interface/DataBlockImpl.h"
+#include "FWCore/Framework/interface/Principal.h"
 #include "FWCore/Framework/interface/EPEventProvenanceFiller.h"
 #include "FWCore/Framework/interface/UnscheduledHandler.h"
 
@@ -25,8 +25,8 @@ namespace edm {
   class EventID;
   class LuminosityBlockPrincipal;
   class RunPrincipal;
-  class EventPrincipal : private DataBlockImpl {
-    typedef DataBlockImpl Base;
+  class EventPrincipal : private Principal {
+    typedef Principal Base;
   public:
     typedef Base::const_iterator const_iterator;
     typedef Base::SharedConstGroupPtr SharedConstGroupPtr;

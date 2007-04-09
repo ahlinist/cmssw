@@ -15,11 +15,11 @@ $Id$
 ----------------------------------------------------------------------*/
 
 #include "DataFormats/Provenance/interface/RunAuxiliary.h"
-#include "FWCore/Framework/interface/DataBlockImpl.h"
+#include "FWCore/Framework/interface/Principal.h"
 
 namespace edm {
-  class RunPrincipal : private DataBlockImpl {
-  typedef DataBlockImpl Base;
+  class RunPrincipal : private Principal {
+  typedef Principal Base;
   public:
     RunPrincipal(RunNumber_t const& id,
 	ProductRegistry const& reg,
