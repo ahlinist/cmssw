@@ -7,12 +7,12 @@ class FunctionInfo(object):
     """
     def __init__(self,attrList):
         self.address =attrList[0] 
-        self.name =os.popen("c++filt  "+attrList[1]).read().strip()
-        self.leafCount = int(attrList[2])
-        self.countOfFunctPlusChildWithRecursion = int(attrList[3])
-        self.countOfFunctPlusChild = int(attrList[4])
-        self.fractionInFunctionOnly = float(attrList[5])
-        self.fractionInPath = float(attrList[6])
+        self.name =os.popen("c++filt  "+attrList[-1]).read().strip()
+        self.leafCount = int(attrList[1])
+        self.countOfFunctPlusChildWithRecursion = int(attrList[2])
+        self.countOfFunctPlusChild = int(attrList[3])
+        self.fractionInFunctionOnly = float(attrList[4])
+        self.fractionInPath = float(attrList[5])
         self.__callerTemp = dict()
         self.__calleeTemp = dict()
     def addCaller(self,caller,weight):
@@ -33,10 +33,12 @@ class FunctionInfo(object):
         self.callerList.reverse()
         self.calleeList.sort()
         self.calleeList.reverse()
+
 class Path(object):
     def __init__(self,attrList):
         self.count = int(attrList[0])
         self.functionIds = [int(x) for x in attrList[1:] if x != '\n']
+
 class ProfileData(object):
     def __init__(self,filesToUseInfo,feedBackStream=None):
         #try to determine the filePrefix from the value given
@@ -55,7 +57,7 @@ class ProfileData(object):
             if feedBackStream and (0 == feedbackIndex % 100):
                 feedBackStream.write('.')
             feedbackIndex +=1
-            infoList = line.split(' ')
+            infoList = line.split('\t')
             self.idToFunctionInfo.setdefault( int(infoList[0]), FunctionInfo(infoList[1:]))
             self.functionNameToId.setdefault(self.idToFunctionInfo[int(infoList[0])].name, int(infoList[0]))
         if feedBackStream:
@@ -90,3 +92,4 @@ if __name__ == '__main__':
     import sys
     profile = ProfileData(sys.argv[1])
     print profile.idToFunctionInfo
+
