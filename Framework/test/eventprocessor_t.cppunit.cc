@@ -125,8 +125,8 @@ void testeventprocessor::asyncTest()
   try {
     theMessageServicePresence =
       boost::shared_ptr<edm::Presence>(edm::PresenceFactory::get()->makePresence("MessageServicePresence").release());
-  } catch(seal::Error& e) {
-    std::cerr << e.explainSelf() << std::endl;
+  } catch(std::exception& e) {
+    std::cerr << e.what() << std::endl;
     return;
   }
 

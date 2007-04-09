@@ -66,14 +66,15 @@ namespace edm {
       template< class TType>
          struct SourceMaker : public ComponentMaker<edm::eventsetup::SourceMakerTraits,TType> {};
       typedef  ComponentFactory<SourceMakerTraits> SourceFactory ;
+      
+      typedef edmplugin::PluginFactory<edm::eventsetup::ComponentMakerBase<edm::eventsetup::SourceMakerTraits>* ()> SourcePluginFactory;
    }
 }
 
 #define DEFINE_FWK_EVENTSETUP_SOURCE(type) \
-DEFINE_SEAL_MODULE (); \
-DEFINE_SEAL_PLUGIN (edm::eventsetup::SourceFactory,edm::eventsetup::SourceMaker<type>,#type)
+DEFINE_EDM_PLUGIN (edm::eventsetup::SourcePluginFactory,edm::eventsetup::SourceMaker<type>,#type)
 
 #define DEFINE_ANOTHER_FWK_EVENTSETUP_SOURCE(type) \
-DEFINE_SEAL_PLUGIN (edm::eventsetup::SourceFactory,edm::eventsetup::SourceMaker<type>,#type)
+DEFINE_EDM_PLUGIN (edm::eventsetup::SourcePluginFactory,edm::eventsetup::SourceMaker<type>,#type)
 
 #endif

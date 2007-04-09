@@ -41,15 +41,15 @@ namespace edm {
          struct ModuleMaker : public ComponentMaker<edm::eventsetup::ModuleMakerTraits,TType> {};
       
       typedef  ComponentFactory<ModuleMakerTraits> ModuleFactory ;
+      typedef edmplugin::PluginFactory<edm::eventsetup::ComponentMakerBase<ModuleMakerTraits>* ()> ModulePluginFactory;
    }
 }
 
 #define DEFINE_FWK_EVENTSETUP_MODULE(type) \
-DEFINE_SEAL_MODULE (); \
-DEFINE_SEAL_PLUGIN (edm::eventsetup::ModuleFactory,edm::eventsetup::ModuleMaker<type>,#type)
+DEFINE_EDM_PLUGIN (edm::eventsetup::ModulePluginFactory,edm::eventsetup::ModuleMaker<type>,#type)
 
 #define DEFINE_ANOTHER_FWK_EVENTSETUP_MODULE(type) \
-DEFINE_SEAL_PLUGIN (edm::eventsetup::ModuleFactory,edm::eventsetup::ModuleMaker<type>,#type)
+DEFINE_EDM_PLUGIN (edm::eventsetup::ModulePluginFactory,edm::eventsetup::ModuleMaker<type>,#type)
 
 #endif
 

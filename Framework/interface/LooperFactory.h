@@ -82,14 +82,15 @@ namespace edm {
       template< class TType>
          struct LooperMaker : public ComponentMaker<edm::eventsetup::LooperMakerTraits,TType> {};
       typedef  ComponentFactory<LooperMakerTraits> LooperFactory ;
+      
+      typedef edmplugin::PluginFactory<edm::eventsetup::ComponentMakerBase<LooperMakerTraits>* ()> LooperPluginFactory;
    }
 }
 
 #define DEFINE_FWK_LOOPER(type) \
-DEFINE_SEAL_MODULE (); \
-DEFINE_SEAL_PLUGIN (edm::eventsetup::LooperFactory,edm::eventsetup::LooperMaker<type>,#type)
+DEFINE_EDM_PLUGIN (edm::eventsetup::LooperPluginFactory,edm::eventsetup::LooperMaker<type>,#type)
 
 #define DEFINE_ANOTHER_FWK_LOOPER(type) \
-DEFINE_SEAL_PLUGIN (edm::eventsetup::LooperFactory,edm::eventsetup::LooperMaker<type>,#type)
+DEFINE_EDM_PLUGIN (edm::eventsetup::LooperPluginFactory,edm::eventsetup::LooperMaker<type>,#type)
 
 #endif
