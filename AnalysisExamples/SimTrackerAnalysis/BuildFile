@@ -7,7 +7,7 @@
 <use name=DataFormats/SiPixelDetId>
 <use name=DataFormats/SiStripDetId>
 <use name=FWCore/Framework>
-<use name=Foundation/PluginManager>
+<use name=FWCore/PluginManager>
 <use name=Geometry/TrackerGeometryBuilder>
 <use name=Geometry/CommonDetUnit>
 <use name=clhep> 
@@ -23,7 +23,7 @@
  <use name=DataFormats/SiPixelDetId>
  <use name=DataFormats/SiStripDetId>
  <use name=FWCore/Framework>
- <use name=Foundation/PluginManager>
+ <use name=FWCore/PluginManager>
  <use name=Geometry/TrackerGeometryBuilder>
  <use name=Geometry/CommonDetUnit>
  <use name=clhep>

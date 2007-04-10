@@ -1,7 +1,7 @@
 <use name=rootrflx>
 <use name=clhep>
 
-<use name=Foundation/PluginManager>
+<use name=FWCore/PluginManager>
 <use name=FWCore/Utilities>
 <use name=FWCore/Framework>
 <use name=FWCore/ParameterSet>

@@ -11,7 +11,7 @@
 <use name=DataFormats/SiStripDetId>
 <use name=RecoTracker/GeometryESProducer>
 <use name=RecoTracker/TkSeedingLayers>
-<use name=Foundation/PluginManager>
+<use name=FWCore/PluginManager>
 
 <export>
   <lib name=RecoTrackerPixelStubs>	 
