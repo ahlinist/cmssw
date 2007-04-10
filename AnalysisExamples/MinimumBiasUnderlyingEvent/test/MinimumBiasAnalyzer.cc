@@ -1,6 +1,4 @@
 // Authors: F. Ambroglini, L. Fano, F. Bechtel
-
-
 #include <iostream>
 
 #include "AnalysisExamples/MinimumBiasUnderlyingEvent/test/MinimumBiasAnalyzer.h"
@@ -55,8 +53,11 @@ MinimumBiasAnalyzer::MinimumBiasAnalyzer( const ParameterSet& pset )
    : fOutputFileName( pset.getUntrackedParameter<string>("HistOutFile",std::string("TestHiggsMass.root")) ),
      objectAnalyzed( pset.getUntrackedParameter<string>("UsedCandidate",std::string("MCCandidate")) ),
      fOutputFile(0), fHistPtDist(0), fHistEtaDist(0), fHistPhiDist(0), fHistChgDist(0), 
-     fHistChgSimm(0),pdN_vs_dphi(0),pdPt_vs_dphi(0), temp1(0), temp2(0), fHistPtDistJetChg(0),
-     fHistEtaDistJetChg(0), fHistPhiDistJetChg(0)
+     fHistChgSimm(0), pavgPt_vs_Nchg(0), pdN_vs_dphi(0),pdPt_vs_dphi(0), pdN_vs_dphiTrans(0),pdPt_vs_dphiTrans(0),
+     pdN_vs_dphiTransDiff(0),pdPt_vs_dphiTransDiff(0), pdN_vs_eta(0),pdN_vs_pt(0), pdN_vs_ptJTrans(0),  pdN_vs_ptJTransMax(0),
+     pdN_vs_ptJTransMin(0),  pdN_vs_ptJTransDiff(0), pdPt_vs_ptJTrans(0), pdPt_vs_ptJTransMax(0), 
+     pdPt_vs_ptJTransMin(0), pdPt_vs_ptJTransDiff(0), temp1(0), temp2(0), temp3(0), temp4(0),
+     fHistPtDistJetChg(0), fHistEtaDistJetChg(0), fHistPhiDistJetChg(0)
 {
 }
 
@@ -67,13 +68,29 @@ void MinimumBiasAnalyzer::beginJob( const EventSetup& )
    fHistPtDist   = new TH1D(  "HistPtDist"  , "Pt Spectra", 100,  0., 4. ) ;
    fHistEtaDist  = new TH1D(  "HistEtaDist" , "#eta Spectra", 100, -5., 5. ) ;
    fHistPhiDist  = new TH1D(  "HistPhiDist" , "#phi Spectra", 100, -4., 4. ) ;    
-   fHistChgDist  = new TH1D(  "HistChgDist" , "N chg particles per event",   125, 0., 250. ) ;    
+   fHistChgDist  = new TH1D(  "HistChgDist" , "N chg particles per event",   250, 0., 500. ) ;    
    fHistChgSimm  = new TH1D(  "HistChgSimm" , "Charge simmetry",   11, -5., 5. ) ;    
 
-   pdN_vs_dphi   = new TProfile("dN_vs_dphi","dN vs dphi",100,-180.,180.,0,100);
-   pdPt_vs_dphi  = new TProfile("dPt_vs_dphi","dPt vs dphi",100,-180.,180.,0,100);
-   pdN_vs_eta   = new TProfile("dN_vs_eta","dN vs eta",100,0.,5.);
-   pdN_vs_pt   = new TProfile("dN_vs_pt","dN vs PT",100,0.,4.);
+   pavgPt_vs_Nchg          = new TProfile("avgPt_vs_Nchg","<Pt> vs Nchg",250,0.,500.);
+   pdN_vs_dphi             = new TProfile("dN_vs_dphi","dN vs dphi",100,-180.,180.,0,100);
+   pdPt_vs_dphi            = new TProfile("dPt_vs_dphi","dPt vs dphi",100,-180.,180.,0,100);
+   pdN_vs_dphiTrans        = new TProfile("dN_vs_dphiTrans","dN vs dphi Trans",100,-180.,180.,0,100);
+   pdPt_vs_dphiTrans       = new TProfile("dPt_vs_dphiTrans","dPt vs dphi Trans",100,-180.,180.,0,100);
+   pdN_vs_dphiTransDiff    = new TProfile("dN_vs_dphiTransDiff","dN vs dphi TransDiff",50,0.,180.,0,100);
+   pdPt_vs_dphiTransDiff   = new TProfile("dPt_vs_dphiTransDiff","dPt vs dphi TransDiff",50,0.,180.,0,100);
+   pdN_vs_eta              = new TProfile("dN_vs_eta","dN vs eta",100,0.,5.);
+   pdN_vs_pt               = new TProfile("dN_vs_pt","dN vs PT",100,0.,4.);
+
+   pdN_vs_ptJTrans         = new TProfile("dN_vs_ptJT","dN vs PT Jet Trans",200,0.,400);
+   pdN_vs_ptJTransMax      = new TProfile("dN_vs_ptJTM","dN vs PT Jet Trans Max",200,0.,400);
+   pdN_vs_ptJTransMin      = new TProfile("dN_vs_ptJTm","dN vs PT Jet Trans Min",200,0.,400);
+   pdN_vs_ptJTransDiff     = new TProfile("dN_vs_ptJTD","dN vs PT Jet Trans Diff",200,0.,400);
+
+   pdPt_vs_ptJTrans        = new TProfile("dPt_vs_ptJT","dPt vs PT Jet Trans",200,0.,400);
+   pdPt_vs_ptJTransMax     = new TProfile("dPt_vs_ptJTM","dPt vs PT Jet Trans Max",200,0.,400);
+   pdPt_vs_ptJTransMin     = new TProfile("dPt_vs_ptJTm","dPt vs PT Jet Trans Min",200,0.,400);
+   pdPt_vs_ptJTransDiff    = new TProfile("dPt_vs_ptJTD","dPt vs PT Jet Trans Diff",200,0.,400);
+
 
    temp1 = new TH1D("temp1","temp",100,-180.,180.);
    temp2 = new TH1D("temp2","temp",100,-180.,180.);
@@ -102,7 +119,7 @@ void MinimumBiasAnalyzer::analyze( const Event& e, const EventSetup& ){
   if(objectAnalyzed == "MCCandidate" ){ 
     e.getByLabel( "iterativeCone7GenJets", GenJetsHandle );
   }else{
-    e.getByLabel( "iterativeCone5BasicJets", BasicJetsHandle );
+    e.getByLabel( "iterativeCone7BasicJets", BasicJetsHandle );
   }
 
   std::vector<math::XYZTLorentzVector> particles4Jet;
@@ -114,13 +131,19 @@ void MinimumBiasAnalyzer::analyze( const Event& e, const EventSetup& ){
   if(CandHandle->size()){ 
     
     int nchg = 0;
+    int all = 0;
+    float_t avgPt = 0.;
+    float_t avgPtChg = 0.;
       
     for(CandidateCollection::const_iterator it = CandHandle->begin();it!=CandHandle->end();it++){
+      all++;
       math::XYZTLorentzVector mom = it->p4();
       fHistPtDist->Fill(it->pt());
       fHistEtaDist->Fill(it->eta());
       fHistPhiDist->Fill(it->phi());
+      avgPt += it->pt();
       if(it->charge()!=0){
+	avgPtChg += mom.Pt();
 	temp3->Fill(fabs(mom.eta()));
 	temp4->Fill(fabs(mom.Pt()));
       
@@ -131,8 +154,12 @@ void MinimumBiasAnalyzer::analyze( const Event& e, const EventSetup& ){
       }
     }
     
+    avgPtChg = avgPtChg/float_t(nchg);
+
     fHistChgDist->Fill(nchg);
     
+    pavgPt_vs_Nchg->Fill(nchg,avgPtChg);
+
     for(int i=0;i<100;i++)
       {
 	pdN_vs_eta->Fill((i*0.05)+0.025,temp3->GetBinContent(i+1)/0.1,1); // 0.5 normalized to 0.25 bin in abs(eta) (2 times) -> 0.5
@@ -193,13 +220,86 @@ void MinimumBiasAnalyzer::analyze( const Event& e, const EventSetup& ){
  
 	  // fill profile histograms 
 	  // scale by binwidth ( = 360 degrees / 100 bins ) and by eta-range ( = 2 )
+	  float_t transN1=0;
+	  float_t transN2=0;
+	  float_t transP1=0;
+	  float_t transP2=0;
 	  for(int i=0;i<100;i++){
+	    if(i>14 && i<33 ){
+	      transN1 += temp1->GetBinContent(i+1);
+	      transP1 += temp2->GetBinContent(i+1);
+	    }
+	    if(i>64 && i<83 ){
+	      transN2 += temp1->GetBinContent(i+1);  
+	      transP2 += temp2->GetBinContent(i+1);  
+	    }  
 	    float_t bincont1_mc=temp1->GetBinContent(i+1);
 	    pdN_vs_dphi->Fill(-180.+i*3.6+1.8,bincont1_mc/(360./50.),1);
+
 	    float_t bincont2_mc=temp2->GetBinContent(i+1);
 	    pdPt_vs_dphi->Fill(-180.+i*3.6+1.8,bincont2_mc/(360./50.),1);
 	  }
 
+	  //fill transMIN transMAX e transDIFF
+	  // scale by binwidth ( = 360 degrees / 100 bins ) and by eta-range ( = 2 )
+	  bool orderedN = false; 
+	  bool orderedP = false; 
+	  
+	  if( transN1>=transN2 ) orderedN = true;
+	  if( transP1>=transP2 ) orderedP = true;
+	  pdN_vs_ptJTrans->Fill(pJ.pt(),(transN1+transN2)/(120./2.),1);
+	  pdPt_vs_ptJTrans->Fill(pJ.pt(),(transP1+transP2)/(120./2.),1);
+	  if(orderedN){
+	    pdN_vs_ptJTransMin->Fill(pJ.pt(),transN2/(60./2.),1);
+	    pdN_vs_ptJTransMax->Fill(pJ.pt(),transN1/(60./2.),1);
+	    pdN_vs_ptJTransDiff->Fill(pJ.pt(),((transN1-transN2)/transN1)/(60./2.),1);
+	    for(int i=0;i<100;i++){
+	      float_t bincont1_mc=temp1->GetBinContent(i+1);
+	      pdN_vs_dphiTrans->Fill(-180.+i*3.6+1.8,bincont1_mc/(360./50.),1);
+	    }
+	    for(int i=0;i<50;i++){
+	      float_t bincont1_mc= (temp1->GetBinContent(49-i) - temp1->GetBinContent(51+i))/temp1->GetBinContent(49-i);
+	      pdN_vs_dphiTransDiff->Fill(0.+i*3.6+1.8,bincont1_mc/(180./50.),1);
+	    }
+	  }else{
+	    pdN_vs_ptJTransMin->Fill(pJ.pt(),transN1/(60./2.),1);
+	    pdN_vs_ptJTransMax->Fill(pJ.pt(),transN2/(60./2.),1);
+	    pdN_vs_ptJTransDiff->Fill(pJ.pt(),((transN2-transN1)/transN2)/(60./2.),1);
+	    for(int i=100;i>0;i--){
+	      float_t bincont1_mc=temp1->GetBinContent(i+1);
+	      pdN_vs_dphiTrans->Fill(-180.+i*3.6+1.8,bincont1_mc/(360./50.),1);
+	    }
+	    for(int i=0;i<50;i++){
+	      float_t bincont1_mc= (temp1->GetBinContent(51+i) - temp1->GetBinContent(49-i))/temp1->GetBinContent(51+i);
+	      pdN_vs_dphiTransDiff->Fill(0.+i*3.6+1.8,bincont1_mc/(180./50.),1);
+	    }
+	  }
+
+	  if(orderedP){
+	    pdPt_vs_ptJTransMin->Fill(pJ.pt(),transP2/(60./2.),1);
+	    pdPt_vs_ptJTransMax->Fill(pJ.pt(),transP1/(60./2.),1);
+	    pdPt_vs_ptJTransDiff->Fill(pJ.pt(),((transP1-transP2)/transP1)/(60./2.),1);
+	    for(int i=0;i<100;i++){
+	      float_t bincont2_mc=temp2->GetBinContent(i+1);
+	      pdPt_vs_dphiTrans->Fill(-180.+i*3.6+1.8,bincont2_mc/(360./50.),1);
+	    }
+	    for(int i=0;i<50;i++){
+	      float_t bincont2_mc= (temp2->GetBinContent(49-i) - temp2->GetBinContent(51+i))/temp1->GetBinContent(49-i);
+	      pdPt_vs_dphiTransDiff->Fill(0.+i*3.6+1.8,bincont2_mc/(180./50.),1);
+	    }
+	  }else{
+	    pdPt_vs_ptJTransMin->Fill(pJ.pt(),transP1/(60./2.),1);
+	    pdPt_vs_ptJTransMax->Fill(pJ.pt(),transP2/(60./2.),1);
+	    pdPt_vs_ptJTransDiff->Fill(pJ.pt(),((transP2-transP1)/transP2)/(60./2.),1);
+	    for(int i=100;i>0;i--){
+	      float_t bincont2_mc=temp2->GetBinContent(i+1);
+	      pdPt_vs_dphiTrans->Fill(-180.+i*3.6+1.8,bincont2_mc/(360./50.),1);
+	    }
+	    for(int i=0;i<50;i++){
+	      float_t bincont2_mc= (temp2->GetBinContent(51+i) - temp2->GetBinContent(49-i))/temp1->GetBinContent(51+i);
+	      pdPt_vs_dphiTransDiff->Fill(0.+i*3.6+1.8,bincont2_mc/(180./50.),1);
+	    }
+	  }
 	  temp1->Reset();
 	  temp2->Reset();
 	}
@@ -252,14 +352,86 @@ void MinimumBiasAnalyzer::analyze( const Event& e, const EventSetup& ){
 	  
 	  // fill profile histograms 
 	  // scale by binwidth ( = 360 degrees / 100 bins ) and by eta-range ( = 2 )
+	  float_t transN1=0;
+	  float_t transN2=0;
+	  float_t transP1=0;
+	  float_t transP2=0;
 	  for(int i=0;i<100;i++){
+	    if(i>14 && i<33 ){
+	      transN1 += temp1->GetBinContent(i+1);
+	      transP1 += temp2->GetBinContent(i+1);
+	    }
+	    if(i>64 && i<83 ){
+	      transN2 += temp1->GetBinContent(i+1);  
+	      transP2 += temp2->GetBinContent(i+1);  
+	    }  
 	    float_t bincont1_mc=temp1->GetBinContent(i+1);
 	    pdN_vs_dphi->Fill(-180.+i*3.6+1.8,bincont1_mc/(360./50.),1);
 
 	    float_t bincont2_mc=temp2->GetBinContent(i+1);
 	    pdPt_vs_dphi->Fill(-180.+i*3.6+1.8,bincont2_mc/(360./50.),1);
 	  }
+
+	  //fill transMIN transMAX e transDIFF
+	  // scale by binwidth ( = 360 degrees / 100 bins ) and by eta-range ( = 2 )
+	  bool orderedN = false; 
+	  bool orderedP = false; 
 	  
+	  if( transN1>=transN2 ) orderedN = true;
+	  if( transP1>=transP2 ) orderedP = true;
+	  pdN_vs_ptJTrans->Fill(pJ.pt(),(transN1+transN2)/(120./2.),1);
+	  pdPt_vs_ptJTrans->Fill(pJ.pt(),(transP1+transP2)/(120./2.),1);
+	  if(orderedN){
+	    pdN_vs_ptJTransMin->Fill(pJ.pt(),transN2/(60./2.),1);
+	    pdN_vs_ptJTransMax->Fill(pJ.pt(),transN1/(60./2.),1);
+	    pdN_vs_ptJTransDiff->Fill(pJ.pt(),((transN1-transN2)/transN1)/(60./2.),1);
+	    for(int i=0;i<100;i++){
+	      float_t bincont1_mc=temp1->GetBinContent(i+1);
+	      pdN_vs_dphiTrans->Fill(-180.+i*3.6+1.8,bincont1_mc/(360./50.),1);
+	    }
+	    for(int i=0;i<50;i++){
+	      float_t bincont1_mc= (temp1->GetBinContent(49-i) - temp1->GetBinContent(51+i)/temp1->GetBinContent(49-i));
+	      pdN_vs_dphiTransDiff->Fill(0.+i*3.6+1.8,bincont1_mc/(180./50.),1);
+	    }
+	  }else{
+	    pdN_vs_ptJTransMin->Fill(pJ.pt(),transN1/(60./2.),1);
+	    pdN_vs_ptJTransMax->Fill(pJ.pt(),transN2/(60./2.),1);
+	    pdN_vs_ptJTransDiff->Fill(pJ.pt(),((transN2-transN1)/transN2)/(60./2.),1);
+	    for(int i=100;i>0;i--){
+	      float_t bincont1_mc=temp1->GetBinContent(i+1);
+	      pdN_vs_dphiTrans->Fill(-180.+i*3.6+1.8,bincont1_mc/(360./50.),1);
+	    }
+	    for(int i=0;i<50;i++){
+	      float_t bincont1_mc= (temp1->GetBinContent(51+i) - temp1->GetBinContent(49-i))/temp1->GetBinContent(51+i);
+	      pdN_vs_dphiTransDiff->Fill(0.+i*3.6+1.8,bincont1_mc/(180./50.),1);
+	    }
+	  }
+
+	  if(orderedP){
+	    pdPt_vs_ptJTransMin->Fill(pJ.pt(),transP2/(60./2.),1);
+	    pdPt_vs_ptJTransMax->Fill(pJ.pt(),transP1/(60./2.),1);
+	    pdPt_vs_ptJTransDiff->Fill(pJ.pt(),((transP1-transP2)/transP1)/(60./2.),1);
+	    for(int i=0;i<100;i++){
+	      float_t bincont2_mc=temp2->GetBinContent(i+1);
+	      pdPt_vs_dphiTrans->Fill(-180.+i*3.6+1.8,bincont2_mc/(360./50.),1);
+	    }
+	    for(int i=0;i<50;i++){
+	      float_t bincont2_mc= (temp2->GetBinContent(49-i) - temp2->GetBinContent(51+i))/temp1->GetBinContent(49-i);
+	      pdPt_vs_dphiTransDiff->Fill(0.+i*3.6+1.8,bincont2_mc/(180./50.),1);
+	    }
+	  }else{
+	    pdPt_vs_ptJTransMin->Fill(pJ.pt(),transP1/(60./2.),1);
+	    pdPt_vs_ptJTransMax->Fill(pJ.pt(),transP2/(60./2.),1);
+	    pdPt_vs_ptJTransDiff->Fill(pJ.pt(),((transP2-transP1)/transP2)/(60./2.),1);
+	    for(int i=100;i>0;i--){
+	      float_t bincont2_mc=temp2->GetBinContent(i+1);
+	      pdPt_vs_dphiTrans->Fill(-180.+i*3.6+1.8,bincont2_mc/(360./50.),1);
+	    }
+	    for(int i=0;i<50;i++){
+	      float_t bincont2_mc= (temp2->GetBinContent(51+i) - temp2->GetBinContent(49-i))/temp1->GetBinContent(51+i);
+	      pdPt_vs_dphiTransDiff->Fill(0.+i*3.6+1.8,bincont2_mc/(180./50.),1);
+	    }
+	  }
 	  temp1->Reset();
 	  temp2->Reset();
 	}
