@@ -37,10 +37,24 @@ class MinimumBiasAnalyzer : public edm::EDAnalyzer
      TH1D*       fHistPhiDist ;
      TH1D*       fHistChgDist ;
      TH1D*       fHistChgSimm ;
+     TProfile*   pavgPt_vs_Nchg;
      TProfile*   pdN_vs_dphi;
      TProfile*   pdPt_vs_dphi;
+     TProfile*   pdN_vs_dphiTrans;
+     TProfile*   pdPt_vs_dphiTrans;
+     TProfile*   pdN_vs_dphiTransDiff;
+     TProfile*   pdPt_vs_dphiTransDiff;
      TProfile*   pdN_vs_eta;
      TProfile*   pdN_vs_pt;
+
+     TProfile*   pdN_vs_ptJTrans;
+     TProfile*   pdN_vs_ptJTransMax;
+     TProfile*   pdN_vs_ptJTransMin;
+     TProfile*   pdN_vs_ptJTransDiff;
+     TProfile*   pdPt_vs_ptJTrans;
+     TProfile*   pdPt_vs_ptJTransMax;
+     TProfile*   pdPt_vs_ptJTransMin;
+     TProfile*   pdPt_vs_ptJTransDiff;
 
      TH1D*       temp1;
      TH1D*       temp2;
