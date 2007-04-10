@@ -10,6 +10,5 @@
 <export>
 	<lib name=DQMSiStripMonitorDisplayPlugins>
         <use name=CommonTools/TrackerMap>
-i
 </export>
 
