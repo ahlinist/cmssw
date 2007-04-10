@@ -1,7 +1,7 @@
 <use name="root">
 <use name=VisMonitoring/VisDQMBase>
 <use name=VisMonitoring/VisDQMDisplayPlugins>
-<use name=Foundation/SealBase>
+<use name=FWCore/SealBase>
 <use name=DQMServices/Core>
 <use name=CommonTools/TrackerMap>
 
@@ -10,6 +10,6 @@
 <export>
 	<lib name=DQMSiStripMonitorDisplayPlugins>
         <use name=CommonTools/TrackerMap>
-
+i
 </export>
 
