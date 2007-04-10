@@ -1,7 +1,7 @@
 /** \file
  *
- *  $Date: 2006/10/24 15:09:50 $
- *  $Revision: 1.9 $
+ *  $Date: 2007/03/12 01:04:51 $
+ *  $Revision: 1.10 $
  *  \author E. Meschi - CERN PH/CMD
  */
 
@@ -17,7 +17,7 @@
 #include <FWCore/ParameterSet/interface/ParameterSet.h>
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
-#include "PluginManager/ModuleDef.h"
+#include "FWCore/PluginManager/interface/ModuleDef.h"
 #include <IORawData/DaqSource/interface/DaqReaderPluginFactory.h>
 
 #include <string>

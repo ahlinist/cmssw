@@ -17,7 +17,7 @@
 #include <DataFormats/FEDRawData/interface/FEDRawData.h>
 #include <DataFormats/FEDRawData/interface/FEDRawDataCollection.h>
 
-#include "PluginManager/ModuleDef.h"
+#include "FWCore/PluginManager/interface/ModuleDef.h"
 #include <IORawData/DaqSource/interface/DaqReaderPluginFactory.h>
 
 
