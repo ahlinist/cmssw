@@ -2,13 +2,13 @@
 
     PSet HerwigParameters = {
         vstring parameterSets = {
-                "herwigMBUETune"
+                "herwigMBUETune170"
         }
 
-        vstring herwigMBUETune = {
+        vstring herwigMBUETune170 = {
                 'IPROC      = 1500       ! QCD 2->2 processes',
                 'JMUEO      = 1          ! multiparton interaction model',
-                'PTMIN      = 3.0      ! minimum pt in hadronic jet production',
+                'PTMIN      = 170.0      ! minimum pt in hadronic jet production',
                 'PTJIM      = 4.872      ! 2.8x(sqrt(S)/1.8Tev)^0.27',  
                 'JMRAD(73)  = 1.8        ! inverse proton radius squared',
                 'PRSOF      = 0.0        ! probability of a soft underlying event',
