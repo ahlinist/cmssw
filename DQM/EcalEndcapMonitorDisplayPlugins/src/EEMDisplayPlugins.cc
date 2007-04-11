@@ -1,15 +1,15 @@
-// $Id: EEMDisplayPlugins.cc,v 1.14 2007/02/08 15:24:00 benigno Exp $
+// $Id: EEMDisplayPlugins.cc,v 1.1 2007/04/02 16:27:51 dellaric Exp $
 
 /*!
   \file EEMDisplayPlugins
   \brief Display Plugin for Quality Histograms (2D)
   \author B. Gobbo 
-  \version $Revision: 1.14 $
-  \date $Date: 2007/02/08 15:24:00 $
+  \version $Revision: 1.1 $
+  \date $Date: 2007/04/02 16:27:51 $
 */
 
 #include "DQM/EcalEndcapMonitorDisplayPlugins/interface/EEMDisplayPlugins.h"
-#include "DQM/EcalEndcapMonitorDisplayPlugins/interface/ColorPalette.h"
+#include "DQM/EcalCommon/interface/ColorPalette.h"
 #include "DQMServices/Core/interface/MonitorElement.h"
 #include <iostream>
 #include <TROOT.h>
