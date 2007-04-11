@@ -7,17 +7,8 @@
 #include "SealKernel/Component.h"
 #include "FWCore/PluginManager/interface/PluginFactory.h"
  
-class UtilityActionPluginFactory : 
-    public seal::PluginFactory<UtilityActionMakerBase *()>
-{
-public:
-    static  UtilityActionPluginFactory* get();
-    virtual ~UtilityActionPluginFactory();
-private:
-    static UtilityActionPluginFactory s_instance;
-    UtilityActionPluginFactory();
-};
+typedef edmplugin::PluginFactory<UtilityActionMakerBase *()> UtilityActionPluginFactory ;
  
 #define DEFINE_UTILITYACTION(type) \
- DEFINE_SEAL_PLUGIN(UtilityActionPluginFactory,UtilityActionMaker<type>,"SimG4Core/UtilityAction/" #type)
+ DEFINE_EDM_PLUGIN(UtilityActionPluginFactory,UtilityActionMaker<type>,"SimG4Core/UtilityAction/" #type)
 #endif
