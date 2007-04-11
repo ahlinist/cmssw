@@ -1,4 +1,3 @@
-<Flags SEAL_PLUGIN_NAME="SimG4CoreUtilityAction">
 <export>
  <lib name=SimG4CoreUtilityAction>
 </export>
