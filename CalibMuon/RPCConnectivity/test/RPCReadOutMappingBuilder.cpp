@@ -4,8 +4,8 @@
  * Description:
  *      Class to read directly OMDS DB with OCCI and fill Offline DB
  *
- * $Date: 2007/01/26 16:52:36 $
- * $Revision: 1.9 $
+ * $Date: 2007/03/13 12:55:25 $
+ * $Revision: 1.10 $
  * \author Michal Bluj -- INS Warsaw
  *
  */
@@ -32,6 +32,7 @@
 #include <string>
 #include <sstream>
 #include <stdexcept>
+#include <time.h>
 #include "OnlineDB/Oracle/interface/Oracle.h"
 
 using namespace std;
@@ -58,6 +59,7 @@ private:
   RPCReadOutMapping *cabling;
     
   string record_;
+  string tag_;
   string version_;
                                                                                 
   // utilities
@@ -75,11 +77,21 @@ private:
 
 RPCReadOutMappingBuilder::RPCReadOutMappingBuilder(const edm::ParameterSet& iConfig) 
   : record_(iConfig.getParameter<std::string>("record")),
-    version_(iConfig.getUntrackedParameter<std::string>("tag",(string)"RPCReadOutMapping_v1"))
+    tag_(iConfig.getUntrackedParameter<std::string>("tag",(string)"RPCReadOutMapping_v1")),
+    version_(iConfig.getUntrackedParameter<std::string>("vesion",(string)"CreationTime"))
 {
   cout<<"CTor called"<<endl;
 
   cout <<" HERE record: "<<record_<<endl;
+  
+  if(version_==(string)"CreationTime"){
+    time_t rawtime;
+    time(&rawtime); //time since January 1, 1970
+    tm * ptm = gmtime(&rawtime);//GMT time
+    char buffer[20];
+    strftime(buffer,20,"%d/%m/%Y_%H:%M:%S",ptm);
+    version_=(string)buffer;
+  }
 
   string host = iConfig.getParameter<std::string>("host"); 
   string sid = iConfig.getParameter<std::string>("sid"); 
