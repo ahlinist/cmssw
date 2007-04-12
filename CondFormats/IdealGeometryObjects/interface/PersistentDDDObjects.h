@@ -225,6 +225,8 @@ class PSpecPar {
 
   bool newSpecParEntry ( const std::string& name , bool evaluated = false ) {
     std::vector<std::string>::const_iterator fit = find ( pValues.pNames.begin(), pValues.pNames.end(),  name );
+    //    std::cout << "adding new SpecParEntry " << name;
+    //    if ( evaluated ) std::cout << " evaluated " << std::endl; else std::cout << " not evaluated " << std::endl;
     if ( fit == pValues.pNames.end() ) {
       // add it in with 0 size, 0 offset
       size_t newOffset = 0;
@@ -232,11 +234,16 @@ class PSpecPar {
 	PValueOffset& pvo = pValues.pOffset.back();
 	newOffset = pvo.pOneOffset + pvo.pSize;
       }
+      //      std::cout << "newOffset = " << newOffset << std::endl;
       pValues.pOffset.push_back(PValueOffset());
       PValueOffset& pvoNew = pValues.pOffset.back();
       pvoNew.pOneOffset = newOffset;
       pvoNew.pIsEvaluated = evaluated;
+      pvoNew.pSize = 0;
+      pValues.pNames.push_back(name);
       return true;
+    } else {
+      //      std::cout << "WHAT TO DO HERE!?  CAN NOT ADD TO ONE ALREADY ADDED TO!" << std::endl;
     }
     return false;
   }
@@ -244,6 +251,7 @@ class PSpecPar {
   void addToCurrentSpecPar ( const std::string& strVal, const double& dblVal = 0.0 ) {
     PValueOffset& pvo = pValues.pOffset.back();
     ++(pvo.pSize);
+    //    std::cout << "\tadding " << strVal << " " << dblVal << std::endl;
     pValues.pValuePairs.push_back ( PValuePair (strVal, dblVal) );
   }
 
