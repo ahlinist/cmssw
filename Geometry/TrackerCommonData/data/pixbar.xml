@@ -125,7 +125,7 @@
        dz="[CoolT]/2"            startPhi="0*deg"        deltaPhi="360*deg"/>
  <Tubs name="PixelBarrelCool3"   rMin="[Cool3Rin]"       rMax="[Cool3Rout]"
        dz="[CoolT]/2"            startPhi="0*deg"        deltaPhi="360*deg"/>
- <Tubs name="PixelBarrelConn1"   rMin="[Conn1Rin]"       rMax="[Rin3]"
+ <Tubs name="PixelBarrelConn1"   rMin="[Conn1Rin]"       rMax="[Shield3Rin]"
        dz="[Conn1T]/2"           startPhi="0*deg"        deltaPhi="360*deg"/>
  <Tubs name="PixelBarrelConn2"   rMin="[Conn1Rin]"       rMax="[Rin3]"
        dz="[Conn1T]/2"           startPhi="0*deg"        deltaPhi="360*deg"/>

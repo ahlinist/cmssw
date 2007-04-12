@@ -38,8 +38,7 @@
  <Constant name="SensorX"           value="-([LadderWidth]-[SensorWidth])/2"/>
  <Constant name="SensorY"           value="[ROChipY]+
            ([pixbarladder:ROChipThick]+[pixbarladder:SensorThick])/2"/>
- <Constant name="HybridX"           value="[SensorEdge]-
-           ([LadderWidth]-[ActiveWidth])/2"/>
+ <Constant name="HybridX"           value="([HybridWidth]-[LadderWidth])/2"/>
  <Constant name="HybridY"           value="[SensorY]+
            ([pixbarladder:SensorThick]+[pixbarladder:HybridThick])/2"/>
  <Constant name="CapacitorX"           value="[HybridX]"/>
@@ -57,13 +56,13 @@
 
 <SolidSection label="pixbarladderhalf.xml">
  <Box name="PixelBarrelLadderHalf"       dx="[pixbarladderhalf:LadderWidth]/2"
-      dy="[pixbarladderhalf:LadderThick]/2" dz="[pixbarladder:Length]/2"/>
+      dy="[pixbarladderhalf:LadderThick]/2" dz="[pixbarladder:ExternalLength]/2"/>
  <Box name="PixelBarrelModuleBoxHalf"    dx="[pixbarladderhalf:LadderWidth]/2"
       dy="[pixbarladder:ModuleThick]/2"     dz="[pixbarladder:Length]/2"/>
  <Box name="PixelBarrelCFStripHalf"      dx="[pixbarladderhalf:CFStripWidth]/2"
       dy="[pixbarladderhalf:CFStripThick]/2" dz="[pixbarladder:Length]/2"/>
  <Box name="PixelBarrelCableBoxHalf"     dx="[pixbarladderhalf:LadderWidth]/2" 
-      dy="[pixbarladder:CableBoxThick]/2"   dz="[pixbarladder:Length]/2"/>
+      dy="[pixbarladder:CableBoxThick]/2"   dz="[pixbarladder:ExternalLength]/2"/>
  <Box name="PixelBarrelModuleHalf"       dx="[pixbarladderhalf:LadderWidth]/2" 
       dy="[pixbarladder:ModuleThick]/2"     dz="[pixbarladder:ModuleDz]/2"/>
  <Box name="PixelBarrelBaseHalf"         dx="[pixbarladderhalf:BaseWidth]/2"  
