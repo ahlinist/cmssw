@@ -1,4 +1,4 @@
-<flags SEAL_PLUGIN_NAME="RecoTrackerPixelStubs">
+<flags EDM_PLUGIN=1>
 <use name=DataFormats/SiPixelCluster>
 <use name=DataFormats/TrackerRecHit2D>
 <use name=RecoTracker/TkMSParametrization>

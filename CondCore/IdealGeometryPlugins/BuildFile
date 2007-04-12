@@ -3,7 +3,7 @@
 <use name=CondCore/PluginSystem>
 <use name=Geometry/Records>
 <use name=DetectorDescription/PersistentDDDObjects>
-<flags SEAL_PLUGIN_NAME="CondCoreIdealGeometryPlugins">
+<flags EDM_PLUGIN=1>
 <export>
    <lib name=CondCoreIdealGeometryPlugins>
    <use name=FWCore/Framework>

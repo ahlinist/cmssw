@@ -11,6 +11,6 @@
 
 <library file=TrackCountingAnalyzer.cc name=TrackCountingAnalyzer>
   <use name=FWCore/Framework>
-  <flags SEAL_PLUGIN_NAME="TrackCountingAnalyzer">
+  <flags EDM_PLUGIN=1>
 </library>
 

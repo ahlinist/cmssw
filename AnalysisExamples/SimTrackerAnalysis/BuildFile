@@ -1,4 +1,4 @@
-<flags SEAL_PLUGIN_NAME="AnalysisExamplesSimTrackerAnalysis">
+<flags EDM_PLUGIN=1>
 
 <use name=SimDataFormats/TrackingHit>
 <use name=SimDataFormats/Track>

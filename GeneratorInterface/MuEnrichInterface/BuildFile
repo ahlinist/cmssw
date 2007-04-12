@@ -4,7 +4,7 @@
 <use name=hepmc> 
 <use name=pythia6_227>
 
-<flags SEAL_PLUGIN_NAME="GeneratorInterfaceMuEnrichInterface">
+<flags EDM_PLUGIN=1>
 <export>
  <lib name=GeneratorInterfaceMuEnrichInterface> 
  <use name=boost>

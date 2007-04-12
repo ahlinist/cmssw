@@ -11,6 +11,6 @@
 
 <library file=AssociationAnalyzer.cc name=AssociationAnalyzer>
   <use name=FWCore/Framework>
-  <flags SEAL_PLUGIN_NAME="AssociationAnalyzer">
+  <flags EDM_PLUGIN=1>
 </library>
     
