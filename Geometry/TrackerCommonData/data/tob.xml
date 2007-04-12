@@ -54,7 +54,7 @@
  <Constant name="NomexInPhi7"    value="315.000*deg"/>
  <Constant name="NomexInPhi8"    value="356.785*deg"/>
  <Constant name="AlignTubeDx"    value="1.150*cm"/>
- <Constant name="AlignTubeDy"    value="1.350*cm"/>
+ <Constant name="AlignTubeDy"    value="1.338*cm"/>
  <Constant name="AlignTubeT"     value="0.200*cm"/>
  <Constant name="AlignPhi1"      value="22.500*deg"/>
  <Constant name="AlignPhi2"      value="73.928*deg"/>
@@ -101,17 +101,17 @@
  <Constant name="ConnectRout6"   value="57.90*cm"/>
  <Constant name="ConnectL6"      value="2.000*cm"/>
  <Constant name="ConnectDphi6"   value="6.93*deg"/>
- <Constant name="Layer0Rin"      value="58.30*cm"/>
+ <Constant name="Layer0Rin"      value="58.20*cm"/>
  <Constant name="Layer0Rout"     value="64.24*cm"/>
  <Constant name="Layer0LowR"     value="59.20*cm"/>
  <Constant name="Layer0HighR"    value="62.40*cm"/>
  <Constant name="Layer0CoolR"    value="65.40*cm"/>
- <Constant name="Layer1Rin"      value="66.90*cm"/>
+ <Constant name="Layer1Rin"      value="66.60*cm"/>
  <Constant name="Layer1Rout"     value="72.80*cm"/>
  <Constant name="Layer1LowR"     value="67.60*cm"/>
  <Constant name="Layer1HighR"    value="70.80*cm"/>
  <Constant name="Layer1CoolR"    value="74.00*cm"/>
- <Constant name="Layer2Rin"      value="75.50*cm"/>
+ <Constant name="Layer2Rin"      value="75.40*cm"/>
  <Constant name="Layer2Rout"     value="81.40*cm"/>
  <Constant name="Layer2LowR"     value="76.40*cm"/>
  <Constant name="Layer2HighR"    value="79.60*cm"/>

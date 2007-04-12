@@ -33,11 +33,11 @@ of the anchor point in the forward pixels endcap reference frame, and the
 [ZPixelForward] constant equal to the distance from CMS IP to the 
 anchor point. 
 
-Therefore, in the CMS globar reference frame,
+Therefore, in the CMS global reference frame,
 PixelForwardZPlus has to be positioned at 
-(0., 0., [pixfwd:ZPixelForward]-[pixfwd:AnchorZ]) with no rotation, and 
+(0., 0., 0.) with no rotation, and 
 PixelForwardZMinus has to be positioned at
-(0., 0., -[pixfwd:ZPixelForward]+[pixfwd:AnchorZ]) 
+(0., 0., 0.) 
 with pixfwdCommon:Y180 rotation (180 degrees around Y axis).
 
  -->
@@ -49,13 +49,17 @@ with pixfwdCommon:Y180 rotation (180 degrees around Y axis).
  <Constant name="RootRadius"     value="[pixfwdCylinder:CylindersOuterRmax]"/>
  <Constant name="RootHalfLength" value="[pixfwdCylinder:CylindersOuterLength]/2.+ [pixfwdCylinder:CylindersEndFlangeLength]/2."/>
 
- <Constant name="AnchorZ"        value="-[RootHalfLength]"/>
+ <Constant name="AnchorZ"        value="0.*mm"/>
  <Constant name="ZPixelForward"  value="325.*mm"/>
- 
+ <Constant name="RootEndZ"       value="[ZPixelForward]+2*[RootHalfLength]"/>
 </ConstantsSection>
 
 <SolidSection label="Root">
- <Tubs name="PixelForward" rMin="0." rMax="[RootRadius]" dz="[RootHalfLength]" startPhi="0." deltaPhi="360*deg"/>
+ <Polycone name="PixelForward" startPhi="0*deg" deltaPhi="360*deg" >
+ <ZSection z="[ZPixelForward]"   rMin="[cms:TrackBeamR1]" rMax="[RootRadius]"/>
+ <ZSection z="[cms:TrackBeamZ1]" rMin="[cms:TrackBeamR1]" rMax="[RootRadius]"/>
+ <ZSection z="[RootEndZ]"        rMin="[cms:TrackBeamR2]" rMax="[RootRadius]"/>
+ </Polycone>
 </SolidSection>
  
 <LogicalPartSection label="Root">
@@ -85,20 +89,20 @@ with pixfwdCommon:Y180 rotation (180 degrees around Y axis).
   <PosPart copyNumber="1">
     <rParent name="PixelForwardZPlus"/>
     <rChild name="pixfwdDisk:PixelForwardDiskZPlus"/>
-    <Translation x="0." y="0." z="-[RootHalfLength] + [Disk1Z]"/>
+    <Translation x="0." y="0." z="[ZPixelForward] + [Disk1Z]"/>
   </PosPart>
   
   <PosPart copyNumber="2">
     <rParent name="PixelForwardZPlus"/>
     <rChild name="pixfwdDisk:PixelForwardDiskZPlus"/>
-    <Translation x="0." y="0." z="-[RootHalfLength] + [Disk2Z]"/>
+    <Translation x="0." y="0." z="[ZPixelForward] + [Disk2Z]"/>
   </PosPart>
   
 <!-- UNCOMMENT TO SIMULATE THE THIRD DISK -->
 <!--  <PosPart copyNumber="3">-->
 <!--    <rParent name="PixelForwardZPlus"/>-->
 <!--    <rChild name="pixfwdDisk:PixelForwardDiskZPlus"/>-->
-<!--    <Translation x="0." y="0." z="-[RootHalfLength] + [Disk3Z]" />-->
+<!--    <Translation x="0." y="0." z="[ZPixelForward] + [Disk3Z]" />-->
 <!--  </PosPart>-->
 
   <!-- -Z endcap -->
@@ -106,20 +110,20 @@ with pixfwdCommon:Y180 rotation (180 degrees around Y axis).
   <PosPart copyNumber="1">
     <rParent name="PixelForwardZMinus"/>
     <rChild name="pixfwdDisk:PixelForwardDiskZMinus"/>
-    <Translation x="0." y="0." z="-[RootHalfLength] + [Disk1Z]"/>
+    <Translation x="0." y="0." z="[ZPixelForward] + [Disk1Z]"/>
   </PosPart>
   
   <PosPart copyNumber="2">
     <rParent name="PixelForwardZMinus"/>
     <rChild name="pixfwdDisk:PixelForwardDiskZMinus"/>
-    <Translation x="0." y="0." z="-[RootHalfLength] + [Disk2Z]"/>
+    <Translation x="0." y="0." z="[ZPixelForward] + [Disk2Z]"/>
   </PosPart>
   
 <!-- UNCOMMENT TO SIMULATE THE THIRD DISK -->
 <!--  <PosPart copyNumber="3">-->
 <!--    <rParent name="PixelForwardZMinus"/>-->
 <!--    <rChild name="pixfwdDisk:PixelForwardDiskZMinus"/>-->
-<!--    <Translation x="0." y="0." z="-[RootHalfLength] + [Disk3Z]" />-->
+<!--    <Translation x="0." y="0." z="[ZPixelForward] + [Disk3Z]" />-->
 <!--  </PosPart>-->
 
 </PosPartSection>
@@ -132,7 +136,7 @@ with pixfwdCommon:Y180 rotation (180 degrees around Y axis).
 -->
 
 <ConstantsSection label="ServiceCylinder" eval="true">
-  <Constant name="ZCylinder" value="-[RootHalfLength]"/>
+  <Constant name="ZCylinder" value="[ZPixelForward]"/>
 </ConstantsSection>
 
 <PosPartSection label="Cylinders">
@@ -141,8 +145,8 @@ with pixfwdCommon:Y180 rotation (180 degrees around Y axis).
 
   <PosPart copyNumber="1">
     <rParent name="pixfwd:PixelForwardZPlus"/>
-    <rChild name="pixfwdCylinder:PixelForwardCylinderOuterCyl"/>
-    <Translation x="0." y="0." z="[pixfwd:ZCylinder]+[pixfwdCylinder:CylindersOuterLength]/2."/>
+    <rChild name="pixfwdCylinder:PixelForwardServiceCylinder"/>
+    <Translation x="0." y="0." z="0."/>
   </PosPart>
 
   <PosPart copyNumber="1">
@@ -169,8 +173,8 @@ with pixfwdCommon:Y180 rotation (180 degrees around Y axis).
 
   <PosPart copyNumber="1">
     <rParent name="pixfwd:PixelForwardZMinus"/>
-    <rChild name="pixfwdCylinder:PixelForwardCylinderOuterCyl"/>
-    <Translation x="0." y="0." z="[pixfwd:ZCylinder]+[pixfwdCylinder:CylindersOuterLength]/2."/>
+    <rChild name="pixfwdCylinder:PixelForwardServiceCylinder"/>
+    <Translation x="0." y="0." z="0."/>
   </PosPart>
 
   <PosPart copyNumber="1">
