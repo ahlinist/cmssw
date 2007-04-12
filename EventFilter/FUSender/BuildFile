@@ -12,7 +12,7 @@
 <use name=FWCore/PluginManager>
 <use name=IOPool/Streamer>
 <use name=xdaq>
-<flags SEAL_PLUGIN_NAME="EventFilterFUSender">
+<flags EDM_PLUGIN=1>
 <export>
   <use name=DQMServices/Core>
   <use name=EventFilter/Utilities>

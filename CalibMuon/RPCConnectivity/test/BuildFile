@@ -5,6 +5,6 @@
   <use name=CondCore/DBOutputService>
   <use name=OnlineDB/Oracle>
   <library file=RPCReadOutMappingBuilder.cpp name=RPCReadOutMappingBuilder>
-    <flags SEAL_PLUGIN_NAME="RPCReadOutMappingBuilder">
+    <flags EDM_PLUGIN=1>
   </library>
 </environment>

@@ -1,4 +1,4 @@
-<Flags SEAL_PLUGIN_NAME="SimG4CoreQGSC">
+<Flags EDM_PLUGIN=1>
 <export>
  <use name=FWCore/Framework>
  <use name=Framework/SealKernel>

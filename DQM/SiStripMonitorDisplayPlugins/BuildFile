@@ -5,7 +5,7 @@
 <use name=DQMServices/Core>
 <use name=CommonTools/TrackerMap>
 
-<Flags SEAL_PLUGIN_NAME=DQMSiStripMonitorDisplayPlugins>
+<flags EDM_PLUGIN=1>
 
 <export>
 	<lib name=DQMSiStripMonitorDisplayPlugins>

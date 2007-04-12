@@ -16,4 +16,4 @@
   <lib name=GeometryReadersDBIdealGeometryESSource>
 </export>
 
-<flags SEAL_PLUGIN_NAME="GeometryReadersDBIdealGeometryESSource">
+<flags EDM_PLUGIN=1>

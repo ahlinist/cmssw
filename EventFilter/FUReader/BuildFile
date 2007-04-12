@@ -5,4 +5,4 @@
 <use name=DataFormats/Provenance>
 <use name=IORawData/DaqSource>
 <use name=EventFilter/Unit>
-<flags SEAL_PLUGIN_NAME="EventFilterFUReader">
+<flags EDM_PLUGIN=1>

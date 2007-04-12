@@ -7,7 +7,7 @@
 <use name=pythia6_227>
 <use name=charybdis1_002> 
 
-<flags SEAL_PLUGIN_NAME="GeneratorInterfaceCharybdisInterface">
+<flags EDM_PLUGIN=1>
 <export>
  <lib name=GeneratorInterfaceCharybdisInterface>
  <use name=boost>

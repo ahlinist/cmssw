@@ -4,14 +4,14 @@
 <use name=FWCore/Framework>
 <use name=FWCore/ParameterSet>
 <library file=stubs/CSCZSensorsDataPrinter.cc name=CSCZSensorsDataPrinter>
-        <flags SEAL_PLUGIN_NAME="CSCZSensorsDataPrinter">
+        <flags EDM_PLUGIN=1>
 </library>
 <library file=stubs/CSCRSensorsDataPrinter.cc name=CSCRSensorsDataPrinter>
-        <flags SEAL_PLUGIN_NAME="CSCRSensorsDataPrinter">
+        <flags EDM_PLUGIN=1>
 </library>
 <library file=stubs/InclinometersDataPrinter.cc name=InclinometersDataPrinter>
-    <flags SEAL_PLUGIN_NAME="InclinometersDataPrinter">
+    <flags EDM_PLUGIN=1>
 </library>   
 <library file=stubs/PXsensorsDataPrinter.cc name=PXsensorsDataPrinter>
-    <flags SEAL_PLUGIN_NAME="PXsensorsDataPrinter">
+    <flags EDM_PLUGIN=1>
 </library>

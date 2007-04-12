@@ -5,9 +5,9 @@
 <use name=DataFormats/HepMCCandidate>
 <use name=DataFormats/TrackCandidate>
 <use name=FWCore/Framework>
-<use name=Foundation/PluginManager>
+<use name=FWCore/PluginManager>
 <use name=clhep> 
 
-<flags SEAL_PLUGIN_NAME="MinimumBiasAnalyzer">
+<flags EDM_PLUGIN=1>
 <library file=MinimumBiasAnalyzer.cc name=MinimumBiasAnalyzer>
 </library>

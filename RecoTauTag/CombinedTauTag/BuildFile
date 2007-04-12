@@ -43,7 +43,7 @@
 <use name=boost>
 <use name=rootrflx>
 <use name=root>
-<flags SEAL_PLUGIN_NAME="RecoTauTagCombinedTauTag">
+<flags EDM_PLUGIN=1>
 <export>
    <lib name=RecoTauTagCombinedTauTag>
    <use name=FWCore/Framework>

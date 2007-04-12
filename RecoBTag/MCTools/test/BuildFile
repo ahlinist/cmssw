@@ -12,6 +12,6 @@
 
 <library file=BtagMCTest.cc name=BtagMCTest>
   <use name=FWCore/Framework>
-  <flags SEAL_PLUGIN_NAME="BtagMCTest">
+  <flags EDM_PLUGIN=1>
 </library>
 

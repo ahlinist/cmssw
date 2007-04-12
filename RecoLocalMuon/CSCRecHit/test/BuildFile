@@ -7,7 +7,7 @@
 <use name=root>
 
 <library file="CSCRecHitReader.cc" name=CSCRecHitReader>
-   <flags SEAL_PLUGIN_NAME="CSCRecHitReader"> 
+   <flags EDM_PLUGIN=1> 
 </library> 
 
 

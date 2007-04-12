@@ -2,7 +2,7 @@
 <use name=CondCore/DBOutputService>
 <use name=CondFormats/OptAlignObjects>
 <use name=CondCore/Utilities>
-<flags SEAL_PLUGIN_NAME="CondToolsCSCHACalibration">
+<flags EDM_PLUGIN=1>
 <export>
    <use name=CondCore/DBCommon>
    <use name=CondCore/DBOutputService>

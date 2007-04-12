@@ -35,6 +35,6 @@
 <use name=rootrflx>
 <library file=TauTagAnalyzer.cc name=TauTagAnalyzer>
   <use name=FWCore/Framework>
-  <flags SEAL_PLUGIN_NAME="TauTagAnalyzer">
+  <flags EDM_PLUGIN=1>
 </library>
 
