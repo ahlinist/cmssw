@@ -28,4 +28,4 @@ namespace edm {
    }
 }
 
-COMPONENTFACTORY_GET(edm::eventsetup::LooperMakerTraits)
+COMPONENTFACTORY_GET(edm::eventsetup::LooperMakerTraits);

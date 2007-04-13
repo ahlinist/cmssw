@@ -33,4 +33,4 @@ namespace edm {
       }
    }
 }
-COMPONENTFACTORY_GET(edm::eventsetup::ModuleMakerTraits)
+COMPONENTFACTORY_GET(edm::eventsetup::ModuleMakerTraits);
