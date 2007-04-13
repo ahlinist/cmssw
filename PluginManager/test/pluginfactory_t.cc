@@ -42,7 +42,7 @@ namespace edmplugintest {
 }
 
 typedef edmplugin::PluginFactory<edmplugintest::DummyBase*(void)> FactoryType;
-EDM_REGISTER_PLUGINFACTORY(FactoryType,"Test Dummy")
+EDM_REGISTER_PLUGINFACTORY(FactoryType,"Test Dummy");
 
 DEFINE_EDM_PLUGIN(FactoryType,edmplugintest::Dummy,"Dummy");
 
