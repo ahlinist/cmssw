@@ -26,7 +26,6 @@
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 
 #include "FWCore/Framework/interface/Event.h"
-#include "FWCore/Framework/interface/MakerMacros.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
@@ -94,6 +93,3 @@ void
 TestBeginEndJobAnalyzer::analyze(const edm::Event& /* iEvent */, const edm::EventSetup& /* iSetup */)
 {
 }
-
-//define this as a plug-in
-DEFINE_FWK_MODULE(TestBeginEndJobAnalyzer);
