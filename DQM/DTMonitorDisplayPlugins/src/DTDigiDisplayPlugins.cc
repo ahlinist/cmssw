@@ -1,15 +1,16 @@
-// $Id: DTDigiDisplayPlugins.cc,v 1.1 2007/03/29 09:10:24 gmasetti Exp $
+
+
+// $Id: DTDigiDisplayPlugins.cc,v 1.1 2007/04/03 09:29:44 gmasetti Exp $
 
 /*!
   \file DTDigiDisplayPlugins
   \brief Display Plugin for Digi Task Quality Histograms (2D)
   \author G. Masetti 
   \version $Revision: 1.1 $
-  \date $Date: 2007/03/29 09:10:24 $
+  \date $Date: 2007/04/03 09:29:44 $
 */
 
 #include "DQM/DTMonitorDisplayPlugins/src/DTDigiDisplayPlugins.h"
-//#include "DQM/DTMonitorDisplayPlugins/interface/ColorPalette.h"
 #include "DQMServices/Core/interface/MonitorElement.h"
 #include <iostream>
 #include <TROOT.h>
@@ -36,10 +37,14 @@ bool DTDigiDisplayPlugins::isDigiME (std::string name) {
     return true;
   }
 
-  if( name.find( "TimeBoxes" ) == 0 ) {
+  if( name.find( "TimeBox" ) == 0 ) {
     return true;
   }
 
+  if( name.find( "CathodPhotoPeak" ) == 0 ) {
+    return true;
+  }
+  
   return false;
 
 }
@@ -96,8 +101,8 @@ std::string DTDigiDisplayPlugins::preDrawTH2F( VisDQMDisplayPlugin::DisplayData 
     gStyle->SetPadBorderSize( 0 );
     //    (data->pad)->SetLogy( 0 );
     gStyle->SetOptStat( 0 );
-    obj->SetStats( kFALSE );
-
+    obj->SetStats(kFALSE );
+    obj->SetLineColor(2);
     obj->SetOption( "box" );
 
   }
@@ -110,7 +115,7 @@ std::string DTDigiDisplayPlugins::preDrawTH1F( VisDQMDisplayPlugin::DisplayData 
 
   TH1F* obj = dynamic_cast<TH1F*>( data->object );
 
-  //name = (data->object)->GetName();
+  name = (data->object)->GetName();
 
   if( obj ) {
 
@@ -120,7 +125,8 @@ std::string DTDigiDisplayPlugins::preDrawTH1F( VisDQMDisplayPlugin::DisplayData 
       gStyle->SetPadBorderSize( 0 );
       //      (data->pad)->SetLogy( 1 );
       gStyle->SetOptStat( 0 );
-      obj->SetStats( kFALSE );
+      obj->SetStats(kFALSE);
+      obj->SetLineColor(4);
       
   }
 
