@@ -5,7 +5,7 @@
   \brief Display Plugin for Data Local Reconstruction Histograms (2D)
   \author G. Mila 
   \version $Revision: 1.1 $
-  \date $Date: 2007/04/03 09:28:46 $
+  \date $Date: 2007/04/13 10:45:06 $
 */
 
 #include "DQM/DTMonitorDisplayPlugins/src/DTLocalRecoDisplayPlugins.h"
@@ -40,11 +40,15 @@ bool DTLocalRecoDisplayPlugins::isLocalRecoME (std::string name) {
     return true;
   }
 
-  if( name.find( "Efficiency" ) == 0 ) {
+  if( name.find( "hEffOccupancy" ) == 0 ) {
     return true;
   }
   
-  if( name.find( "UnassEfficiency" ) == 0 ) {
+  if( name.find( "hEffUnassOccupancy" ) == 0 ) {
+    return true;
+  }
+
+  if( name.find( "hRecSegmOccupancy" ) == 0 ) {
     return true;
   }
   
