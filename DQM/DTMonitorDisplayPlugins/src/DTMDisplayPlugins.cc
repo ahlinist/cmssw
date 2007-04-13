@@ -1,11 +1,11 @@
-// $Id: DTMDisplayPlugins.cc,v 1.2 2007/04/03 09:27:53 gmasetti Exp $
+// $Id: DTMDisplayPlugins.cc,v 1.3 2007/04/13 10:46:24 giorgia Exp $
 
 /*!
   \file DTMDisplayPlugins
   \brief Display Plugin for Quality Histograms (2D)
   \author G. Masetti 
-  \version $Revision: 1.2 $
-  \date $Date: 2007/04/03 09:27:53 $
+  \version $Revision: 1.3 $
+  \date $Date: 2007/04/13 10:46:24 $
 */
 
 #include "DQM/DTMonitorDisplayPlugins/interface/DTMDisplayPlugins.h"
@@ -49,6 +49,10 @@ bool DTMDisplayPlugins::applies( DisplayData *data ) {
   if (LocalRecoME.isLocalRecoME(name)) {
     return true;
   }
+  
+  if (LocalRecoTestME.isLocalRecoTestME(name)) {
+    return true;
+  }
 
   return false;
 
@@ -80,6 +84,12 @@ std::string DTMDisplayPlugins::preDraw( DisplayData *data ) {
   if (LocalRecoME.isLocalRecoME(name)) {
     
     return LocalRecoME.preDraw(data);
+    
+  }
+
+  if (LocalRecoTestME.isLocalRecoTestME(name)) {
+    
+    return LocalRecoTestME.preDraw(data);
     
   }
 
@@ -116,6 +126,13 @@ void DTMDisplayPlugins::postDraw( DisplayData *data ) {
     return LocalRecoME.postDraw(data);
     
   }
+
+  if (LocalRecoTestME.isLocalRecoTestME(name)) {
+    
+    return LocalRecoTestME.postDraw(data);
+    
+  }
+
 
   return ;    
 

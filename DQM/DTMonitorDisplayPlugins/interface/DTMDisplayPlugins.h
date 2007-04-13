@@ -1,4 +1,4 @@
-// $Id: DTMDisplayPlugins.h,v 1.2 2007/04/03 09:27:27 gmasetti Exp $
+// $Id: DTMDisplayPlugins.h,v 1.3 2007/04/13 10:46:41 giorgia Exp $
 
 #ifndef  DTMDisplayPlugins_H
 # define DTMDisplayPlugins_H
@@ -7,8 +7,8 @@
   \file DTMDisplayPlugins
   \brief Display Plugin for Quality Histograms (2D)
   \author G. Masetti 
-  \version $Revision: 1.2 $
-  \date $Date: 2007/04/03 09:27:27 $
+  \version $Revision: 1.3 $
+  \date $Date: 2007/04/13 10:46:41 $
 */
 
 # include "VisMonitoring/VisDQMBase/interface/VisDQMDisplayPlugin.h"
@@ -16,6 +16,7 @@
 # include "DQM/DTMonitorDisplayPlugins/src/DTDataIntegrityDisplayPlugins.h"
 # include "DQM/DTMonitorDisplayPlugins/src/DTtTrigTestDisplayPlugins.h"
 # include "DQM/DTMonitorDisplayPlugins/src/DTLocalRecoDisplayPlugins.h"
+# include "DQM/DTMonitorDisplayPlugins/src/DTLocalRecoTestDisplayPlugins.h"
 # include <string>
 # include <TH2C.h>
 
@@ -44,6 +45,7 @@ class DTMDisplayPlugins : public VisDQMDisplayPlugin {
   DTDataIntegrityDisplayPlugins DataIntegrityME;
   DTtTrigTestDisplayPlugins tTrigTestME;
   DTLocalRecoDisplayPlugins LocalRecoME;
+  DTLocalRecoTestDisplayPlugins LocalRecoTestME;
 
 };
 
