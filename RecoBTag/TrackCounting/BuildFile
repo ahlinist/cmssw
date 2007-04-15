@@ -9,7 +9,7 @@
 <use name=RecoVertex/PrimaryVertexProducer>
 <use name=TrackingTools/Records>
 <use name=TrackingTools/TransientTrack>
-<flags SEALPLUGIN=1>
+<flags EDM_PLUGIN=1>
 <export>
   <use name=DataFormats/BTauReco>
   <use name=DataFormats/JetReco>

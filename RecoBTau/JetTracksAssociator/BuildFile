@@ -7,7 +7,7 @@
 <use name=FWCore/MessageLogger>
 <use name=FWCore/ParameterSet>
 <use name=rootmath>
-<flags SEALPLUGIN=1>
+<flags EDM_PLUGIN=1>
 <export>
   <lib name=RecoBTauJetTracksAssociator>
 </export>
