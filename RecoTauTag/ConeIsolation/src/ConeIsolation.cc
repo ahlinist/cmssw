@@ -13,7 +13,7 @@
 //
 // Original Author:  Simone Gennai
 //      Created:  Thu Apr  6 09:56:23 CEST 2006
-// $Id: ConeIsolation.cc,v 1.19 2007/01/31 18:36:54 gennai Exp $
+// $Id: ConeIsolation.cc,v 1.20 2007/02/01 15:32:49 gennai Exp $
 //
 //
 
@@ -116,19 +116,20 @@ ConeIsolation::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
      }
 
 
-   std::auto_ptr<reco::JetTagCollection> resultBase(baseCollection);
-   edm::OrphanHandle <reco::JetTagCollection >  myJetTag =  iEvent.put(resultBase);
+
+  std::auto_ptr<reco::IsolatedTauTagInfoCollection> resultExt(extCollection);  
+   edm::OrphanHandle <reco::IsolatedTauTagInfoCollection >  myTagInfo =  iEvent.put(resultExt);
    int cc=0;
-   reco::IsolatedTauTagInfoCollection::iterator myInfo = extCollection->begin();   for(;myInfo!=extCollection->end();myInfo++)
+   reco::JetTagCollection::iterator myInfo = baseCollection->begin();   
+   for(;myInfo!=baseCollection->end();myInfo++)
      {
-       myInfo->setJetTag(JetTagRef(myJetTag,cc)); 
+       myInfo->setTagInfo(RefToBase<BaseTagInfo>(IsolatedTauTagInfoRef(myTagInfo,cc))); 
        cc++;
      }
 
 
-   
-   std::auto_ptr<reco::IsolatedTauTagInfoCollection> resultExt(extCollection);  
-   iEvent.put(resultExt);
+   std::auto_ptr<reco::JetTagCollection> resultBase(baseCollection);
+   iEvent.put(resultBase);
 
 }
 

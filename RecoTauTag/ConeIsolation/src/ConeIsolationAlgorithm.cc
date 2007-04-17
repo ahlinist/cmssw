@@ -64,7 +64,7 @@ for(;it!= tracks.end();it++)
 	 }
        }
    }
- IsolatedTauTagInfo resultExtended(myTracks);
+ IsolatedTauTagInfo resultExtended(myTracks,jetTracks);
 
  double r_sigCone = signal_cone;
  double energyJet = jetTracks->key->energy();
@@ -85,7 +85,7 @@ for(;it!= tracks.end();it++)
    //In this case the dZ_vertex is used to associate the tracks to the Z_imp parameter of the Leading Track
    discriminator =  resultExtended.discriminator(jetDir, matching_cone, r_sigCone, isolation_cone, pt_min_leadTrack, pt_min_isolation,  n_tracks_isolation_ring, dZ_vertex); 
  }
-   JetTag resultBase(discriminator,jetTracks);
+   JetTag resultBase(discriminator);
 
   return pair<JetTag,IsolatedTauTagInfo> (resultBase,resultExtended); 
 }
