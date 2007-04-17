@@ -43,7 +43,7 @@ using namespace edm;
 
 
 // Constructor
-CSCRecHitReader::CSCRecHitReader(const ParameterSet& pset){
+CSCRecHitReader::CSCRecHitReader(const edm::ParameterSet& pset){
 
   // Get the various input parameters
   debug            = pset.getUntrackedParameter<bool>("debug");

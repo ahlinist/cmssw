@@ -8,5 +8,5 @@
 
 DEFINE_SEAL_MODULE();
 DEFINE_ANOTHER_FWK_MODULE(CSCRecHit2DProducer);
-DEFINE_SEAL_PLUGIN(CSCRecHit2DBuilderPluginFactory, CSCRecHit2DFromStripsAndWires, "CSCRecHit2DFromStripsAndWires");
-DEFINE_SEAL_PLUGIN(CSCRecHit2DBuilderPluginFactory, CSCRecHit2DFromORedStrips, "CSCRecHit2DFromORedStrips");
+DEFINE_EDM_PLUGIN(CSCRecHit2DBuilderPluginFactory, CSCRecHit2DFromStripsAndWires, "CSCRecHit2DFromStripsAndWires");
+DEFINE_EDM_PLUGIN(CSCRecHit2DBuilderPluginFactory, CSCRecHit2DFromORedStrips, "CSCRecHit2DFromORedStrips");

@@ -1,7 +1,7 @@
 /** \file
  *
- *  $Date: 2007/03/12 01:04:51 $
- *  $Revision: 1.10 $
+ *  $Date: 2007/04/10 23:08:06 $
+ *  $Revision: 1.11 $
  *  \author E. Meschi - CERN PH/CMD
  */
 
@@ -157,5 +157,5 @@ void FUReader::onShutDown()
 }
 
 DEFINE_SEAL_MODULE();
-DEFINE_SEAL_PLUGIN (DaqReaderPluginFactory,FUReader,"FUReader");
+DEFINE_EDM_PLUGIN (DaqReaderPluginFactory,FUReader,"FUReader");
 
