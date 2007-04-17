@@ -74,7 +74,13 @@ reco::TaggingVariableList reco::TaggingVariablesComputer::compute (
         break;
 
       default:
-        edm::LogError("TaggingVariablesComputer") << "Trying to compute unknown variable";
+        string name="???";
+        if ( *v < reco::btau::lastTaggingVariable )
+        {
+          name=reco::TaggingVariableTokens[*v];
+        }
+        edm::LogError("TaggingVariablesComputer") << "Trying to compute unknown variable "
+                                                  << name << ".";
     }
   }
   return coll;

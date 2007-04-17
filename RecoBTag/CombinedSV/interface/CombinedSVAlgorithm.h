@@ -65,12 +65,6 @@ namespace combsv {
                             const reco::Particle & jet,
                             const std::vector < reco::TransientTrack > & tracks );
 
-    /**
-     *  Convenience method, fits primary vertex,
-     *  assumes jet axis to be = sum of track momenta
-     */
-    reco::CombinedSVTagInfo tag( const std::vector < reco::TransientTrack > & tracks );
-
     const CombinedSVTaggingVariables & variables() const;
 
   private:

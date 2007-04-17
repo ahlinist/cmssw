@@ -52,13 +52,17 @@ combsv::CombinedTrack TrackInfoBuilder::build( const reco::TransientTrack & tt )
   pair<bool,Measurement1D> ipReturnValue  =
     ip2DCalculator.apply(tt,jetdir_, pv_ );
 
-  float sgn = float ( d0Sign ( tt ) );
+  // float sgn = float ( d0Sign ( tt ) );
   Measurement1D ip2d;
   if (ipReturnValue.first)
   {
-    float value= copysign ( ipReturnValue.second.value(), sgn );
+    // float value= copysign ( ipReturnValue.second.value(), sgn );
+    /*
+    float value=ipReturnValue.second.value();
     float error=ipReturnValue.second.error();
     ip2d=Measurement1D ( value, error );
+    */
+    ip2d=ipReturnValue.second;
   }
 
   // compute lifetime-signed 3D impact parameter w.r.t primary Vertex

@@ -112,33 +112,6 @@ combsv::CombinedSVAlgorithm::~CombinedSVAlgorithm()
   delete discriminatorComputer_;
 }
 
-reco::CombinedSVTagInfo combsv::CombinedSVAlgorithm::tag ( const vector < reco::TransientTrack > & tracks )
-{
-  if ( tracks.size() < 2 )
-  {
-    edm::LogInfo ("CombinedSVAlgorithm" )
-      << "trying to tag with fewer than two tracks and no other info.";
-    reco::TaggingVariableList x;
-    return reco::CombinedSVTagInfo ( x, -1. );
-  }
-
-  edm::LogInfo ("CombinedSVAlgorithm") << "    --- *** --- ";
-  edm::LogInfo ("CombinedSVAlgorithm") << "tagging w/ tracks only";
-
-  try {
-    AdaptiveVertexFitter fitter;
-    TransientVertex pv = fitter.vertex ( tracks );
-    edm::LogInfo ( "CombinedSVAlgorithm") << "primary is at " << pv.position();
-    reco::Particle jet = sum ( tracks );
-    return tag ( pv, jet, tracks );
-  } catch ( ... ) {
-    edm::LogInfo ("CombinedSVAlgorithm" )
-      << "exception caught when trying to tag!";
-    reco::TaggingVariableList x;
-    return reco::CombinedSVTagInfo ( x, -1. );
-  }
-}
-
 void combsv::CombinedSVAlgorithm::adjust ( const reco::Vertex & primVertex,
     const reco::Particle & jet )
 {
@@ -154,6 +127,9 @@ reco::CombinedSVTagInfo combsv::CombinedSVAlgorithm::tag ( const reco::Vertex & 
                                     const reco::Particle & jet,
                                     const vector < reco::TransientTrack > & itracks )
 {
+  LogDebug("") << "Tagging with pv=" << primVertex.position() << ", jet="
+               << jet.px() << "," << jet.py() << "," << jet.pz()
+               << " and " << itracks.size() << " tracks.";
   /**
    * This is the main tagging routine for the combined b-tagging
    * algorithm
