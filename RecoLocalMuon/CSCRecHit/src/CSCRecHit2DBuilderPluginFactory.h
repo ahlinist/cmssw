@@ -12,13 +12,6 @@
 
 class edm::ParameterSet;
 
-class CSCRecHit2DBuilderPluginFactory : public seal::PluginFactory<CSCRecHit2DAlgo *(const edm::ParameterSet&)>{
- public:
-  CSCRecHit2DBuilderPluginFactory();
-    static CSCRecHit2DBuilderPluginFactory* get (void);
-
- private:
-   static CSCRecHit2DBuilderPluginFactory s_instance;
-};
+typedef edmplugin::PluginFactory<CSCRecHit2DAlgo *(const edm::ParameterSet &)> CSCRecHit2DBuilderPluginFactory;
 #endif
 

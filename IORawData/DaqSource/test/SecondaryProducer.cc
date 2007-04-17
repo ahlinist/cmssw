@@ -100,4 +100,4 @@ SecondaryProducer::makeSecInput(ParameterSet const& ps)
 
 DEFINE_SEAL_MODULE();
 typedef evf::SecondaryProducer RawDataPlayback;
-DEFINE_SEAL_PLUGIN(DaqReaderPluginFactory, RawDataPlayback, "RawDataPlayback");
+DEFINE_EDM_PLUGIN(DaqReaderPluginFactory, RawDataPlayback, "RawDataPlayback");
