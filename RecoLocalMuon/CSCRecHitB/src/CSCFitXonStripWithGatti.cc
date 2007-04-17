@@ -65,38 +65,27 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCLayer* layer, const CSCStri
   float t_peak = tmax * 50.;
   float t_zero = 0.;
   bool useFittedCharge = false;
-  for ( int i = 0; i < nStrips; i++ ) {
-    if ( i+1 == CenterStrip ) {
-      float adc[4];
-      for ( int t = 0; t < 4; t++ ) {
-        int k  = t + 4 * i;
-        adc[t] = adcs[k];
-      }
-      useFittedCharge = peakTimeFinder_->FindPeakTime( tmax, adc, t_zero, t_peak );
-    }
+  float adc[4];
+  for ( int t = 0; t < 4; ++t ) {
+    int k  = t + 4 * (CenterStrip-1);
+    adc[t] = adcs[k];
   }
-  if (debug) std::cout << "t_max is: " << tmax*50. << " and fitted peak is: " << t_peak+t_zero << std::endl;
+  useFittedCharge = peakTimeFinder_->FindPeakTime( tmax, adc, t_zero, t_peak );
+
   tpeak = t_peak+t_zero;
 
-  int j = 0;
 
   // Now fill with array with fitted charge or not, depending if managed to fit peaking time
-
-  for ( int i = 1; i <= nStrips; i++ ) {
+  int j = 0;
+  for ( int i = 1; i <= nStrips; ++i ) {
     if ( i > (CenterStrip-2) && i < (CenterStrip+2) ) {
       std::vector<float> adcsFit;
-      float adc[4];
-      for ( int t = 0; t < 4; t++ ) {
+      float sadc[4];
+      for ( int t = 0; t < 4; ++t ) {
         int k  = t + 4*(i-1);
-        adc[t] = adcs[k];  
-        // if ( !useFittedCharge && t < 3) d[j][t] = adc[t];
-        if ( t < 3) d[j][t] = adc[t];
+        sadc[t] = adcs[k];  
+        if ( t < 3) d[j][t] = sadc[t];
       }
-      /*      if ( useFittedCharge ) {
-       *        peakTimeFinder_->FitCharge( tmax, adc, t_zero, t_peak, adcsFit );
-       *        for ( int t = 0; t < 3; t++ ) d[j][t] = adcsFit[t];
-       *      }
-       */
       j++;
     }
   }
@@ -104,7 +93,7 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCLayer* layer, const CSCStri
   float dt = 50. * tmax - (t_peak + t_zero);
 
   if ( useCalib ) {
-    for ( int t = 0; t < 3; t++ ) {
+    for ( int t = 0; t < 3; ++t ) {
       xt_l[0][t] = xtalks[0] * (50.* (t-1) + dt) + xtalks[1] + xtalksOffset;
       xt_r[0][t] = xtalks[2] * (50.* (t-1) + dt) + xtalks[3] + xtalksOffset;
       xt_l[1][t] = xtalks[4] * (50.* (t-1) + dt) + xtalks[5] + xtalksOffset;
@@ -113,7 +102,7 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCLayer* layer, const CSCStri
       xt_r[2][t] = xtalks[10]* (50.* (t-1) + dt) + xtalks[11] + xtalksOffset;
     }
   } else { 
-    for ( int t = 0; t < 3; t++ ) {
+    for ( int t = 0; t < 3; ++t ) {
       xt_l[0][t] = xtalksOffset;
       xt_r[0][t] = xtalksOffset;
       xt_l[1][t] = xtalksOffset;
@@ -135,7 +124,7 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCLayer* layer, const CSCStri
 
   // Load in auto-correlation noise matrices
   if ( useCalib ) {
-    for ( int istrip =0; istrip < 3; istrip++ ) {
+    for ( int istrip =0; istrip < 3; ++istrip ) {
       a11[istrip] = nmatrix[0+tbin*3+istrip*15];
       a12[istrip] = nmatrix[1+tbin*3+istrip*15];
       a13[istrip] = nmatrix[2+tbin*3+istrip*15];
@@ -144,7 +133,7 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCLayer* layer, const CSCStri
       a33[istrip] = nmatrix[6+tbin*3+istrip*15];
     }
   } else {
-    for ( int istrip =0; istrip < 3; istrip++ ) {
+    for ( int istrip =0; istrip < 3; ++istrip ) {
       a11[istrip] = nmatrix[0+tbin*3];
       a12[istrip] = nmatrix[1+tbin*3];
       a13[istrip] = nmatrix[2+tbin*3];
@@ -217,7 +206,8 @@ void CSCFitXonStripWithGatti::runGattiFit( int istrt ) {
   float chi2min = 1.e12;
   float chi2last= 1.e12;
 
-  for ( int istep = 0; istep < 10000; istep++ ) {  // Prevent from blowing up !
+  while ( fabs(step) < 0.002 ) {
+//  while ( fabs(step) < 0.01 ) {
     
     chi2 = chisqrFromGatti( dx );
     
@@ -227,9 +217,7 @@ void CSCFitXonStripWithGatti::runGattiFit( int istrt ) {
       dx += step;
       continue;
     }
-    
-    if ( fabs(step) < 0.000002 ) break;
-    
+        
     dx = dx - 2. * step;
     step = step / 2.;
     chi2last = 1.e12;

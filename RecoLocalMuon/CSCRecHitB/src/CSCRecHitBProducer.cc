@@ -24,6 +24,9 @@
 #include <DataFormats/CSCDigi/interface/CSCStripDigiCollection.h>
 #include <DataFormats/CSCDigi/interface/CSCWireDigiCollection.h>
 
+#include <DataFormats/CSCDigi/interface/CSCALCTDigiCollection.h>
+#include <DataFormats/CSCDigi/interface/CSCCLCTDigiCollection.h>
+
 
 CSCRecHitBProducer::CSCRecHitBProducer( const edm::ParameterSet& ps ) : iev( 0 ) {
 	
@@ -84,13 +87,20 @@ void  CSCRecHitBProducer::produce( edm::Event& ev, const edm::EventSetup& setup 
   ev.getByLabel(stripDigiProducer_, "MuonCSCStripDigi", stripDigis);
   ev.getByLabel(wireDigiProducer_,  "MuonCSCWireDigi",  wireDigis);
 
+  // Get the collections of CLCTs and ALCTs
+  edm::Handle<CSCALCTDigiCollection> alcts;
+  edm::Handle<CSCCLCTDigiCollection> clcts;
+  ev.getByLabel(stripDigiProducer_,"MuonCSCALCTDigi",alcts);
+  ev.getByLabel(stripDigiProducer_,"MuonCSCCLCTDigi",clcts);
+
 
   // Create empty collection of rechits
   std::auto_ptr<CSCRecHit2DCollection> oc( new CSCRecHit2DCollection );
 
 
   // Fill the CSCRecHit2DCollection
-  recHitBuilder_->build( stripDigis.product(), wireDigis.product(), *oc);
+  recHitBuilder_->build( stripDigis.product(), wireDigis.product(), 
+                         alcts.product(), clcts.product(),*oc);
 
 
   // Put collection in event

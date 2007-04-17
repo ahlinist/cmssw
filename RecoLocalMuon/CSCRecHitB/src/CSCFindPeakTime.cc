@@ -39,7 +39,6 @@ bool CSCFindPeakTime::FindPeakTime( const int& tmax, const float* adc, float& t_
   int n_fit  = 4;
   if ( tmax == 6 ) n_fit = 3;
 
-  int i_count = 0;
   float chi_min  = 1.e10;
   float chi_last = 1.e10;
   float tt0      = 0.;
@@ -78,13 +77,6 @@ bool CSCFindPeakTime::FindPeakTime( const int& tmax, const float* adc, float& t_
       tt0      = tt0 + del_t;
       chi_last = 1.0e10;
     }
-    i_count++;
-    if (i_count > 10000) break;
-  }
-
-  if (i_count > 10000) {
-    std::cout << "Fit for finding peak time failed" << std::endl;
-    return false;
   }
 
   t_peak = t_peak;

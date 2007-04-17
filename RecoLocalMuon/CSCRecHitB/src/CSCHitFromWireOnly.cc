@@ -21,10 +21,10 @@
 
 CSCHitFromWireOnly::CSCHitFromWireOnly( const edm::ParameterSet& ps ) {
   
-  debug      = ps.getUntrackedParameter<bool>("CSCDebug");
-  deltaT     = ps.getUntrackedParameter<int>("CSCWireClusterDeltaT");
-  clusterSize= ps.getUntrackedParameter<int>("CSCWireClusterMaxSize");
-  
+  debug                  = ps.getUntrackedParameter<bool>("CSCDebug");
+  deltaT                 = ps.getUntrackedParameter<int>("CSCWireClusterDeltaT");
+  clusterSize            = ps.getUntrackedParameter<int>("CSCWireClusterMaxSize");
+  useCleanWireCollection = ps.getUntrackedParameter<bool>("CSCuseCleanWireCollection");  
 }
 
 
@@ -34,19 +34,31 @@ CSCHitFromWireOnly::~CSCHitFromWireOnly(){}
 /* runWire
  *
  */
-std::vector<CSCWireHit> CSCHitFromWireOnly::runWire( const CSCDetId& id, const CSCLayer* layer, const CSCWireDigiCollection::Range& rwired ) {
+std::vector<CSCWireHit> CSCHitFromWireOnly::runWire( const CSCDetId& id, const CSCLayer* layer, const CSCWireDigiCollection::Range& rwired, const CSCALCTDigiCollection* alcts ) {
   
   std::vector<CSCWireHit> hitsInLayer;
+
+  std::vector<int> alctWgroup;
     
   layer_ = layer;
   layergeom_ = layer->geometry();
   bool any_digis = true;
   int n_wgroup = 0;
+  
 
+  // Get wire groups which are part of the ALCT
+  if ( useCleanWireCollection ) alctWgroup = getALCTWgroup( id, alcts );
+
+  // Loop over wire digi collection
   for ( CSCWireDigiCollection::const_iterator it = rwired.first; it != rwired.second; ++it ) {
     
     const CSCWireDigi wdigi = *it;
-    
+
+    // If useCleanWireCollection == true, test if wire digi fits ALCT wire condition
+    if ( useCleanWireCollection ) {
+      if ( !foundALCTMatch( wdigi, alctWgroup ) ) continue;
+    }
+
     if ( any_digis ) {
       any_digis = false;
       n_wgroup = 1;
@@ -135,5 +147,44 @@ float CSCHitFromWireOnly::findWireHitPosition() {
 
   return wiregpos;
 
+}
+
+
+/*  
+ * Get wire groups which are part of ALCT(s) for this DetId (layer)
+ */
+std::vector<int> CSCHitFromWireOnly::getALCTWgroup( const CSCDetId& id, const CSCALCTDigiCollection* alcts ) {
+  std::vector<int> wg;
+
+  for ( CSCALCTDigiCollection::DigiRangeIterator it = alcts->begin(); it != alcts->end(); ++it ) {
+
+    // Test if within same chamber
+    // note that ALCT wiregroup is average over all 6 layers !!!
+    const CSCDetId& alctId = (*it).first;
+    if ( (alctId.chamber() == id.chamber()) &&
+	 (alctId.station() == id.station()) &&
+	 (alctId.ring()    == id.ring())    &&
+	 (alctId.endcap()  == id.endcap())  ) {
+      for ( std::vector<CSCALCTDigi>::const_iterator itr = (*it).second.first; itr != (*it).second.second; ++itr) {
+	wg.push_back( int( itr->getKeyWG() ) );
+      }
+    }       
+  }
+  return wg;
+}
+
+/*  
+ * Test if wire digi has matching ALCT digi
+ */
+bool  CSCHitFromWireOnly::foundALCTMatch( const CSCWireDigi& wdigi, std::vector<int> wgALCT ) {
+
+  bool foundMatch = false;
+  int wiregroup = wdigi.getWireGroup();
+
+  // Note: ALCT id start at zero whereas wgroup # start at 1...
+  for (unsigned i = 0; i < wgALCT.size(); i++ )
+    if (abs(wiregroup - wgALCT[i] - 1) < 4 ) return true;
+
+  return foundMatch;
 }
 

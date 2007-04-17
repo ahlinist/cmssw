@@ -25,6 +25,8 @@
 #include <DataFormats/CSCRecHit/interface/CSCRecHit2DCollection.h>
 #include <DataFormats/CSCDigi/interface/CSCStripDigiCollection.h>
 #include <DataFormats/CSCDigi/interface/CSCWireDigiCollection.h>
+#include <DataFormats/CSCDigi/interface/CSCALCTDigiCollection.h>
+#include <DataFormats/CSCDigi/interface/CSCCLCTDigiCollection.h>
 
 #include <FWCore/ParameterSet/interface/ParameterSet.h>
 
@@ -61,6 +63,7 @@ class CSCRecHitBBuilder
    */
   
   void build( const CSCStripDigiCollection* stripds, const CSCWireDigiCollection* wireds,
+              const CSCALCTDigiCollection* alcts, const CSCCLCTDigiCollection* clcts,
 	      CSCRecHit2DCollection& oc );
   
   /*
