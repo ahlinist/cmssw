@@ -117,11 +117,11 @@ double LikelihoodRatio::compute ( const reco::TaggingVariableList & s ) const
 
     if ( fabs(b) < numl::min() )
     {
-      cout << "[LikelihoodRatio] warning: probability of zero for B ("
+      edm::LogWarning( "LikelihoodRatio" ) << "probability of zero for B ("
            << combsv::Partons::B << "), "
            << " vertex type " << reco::btag::Vertices::name (vtxtype_) << "("
            << vtxtype_ << "), " << reco::TaggingVariableTokens [ taggingVar ] << " ("
-           << taggingVar << ") value=" << variableValue << "?" << endl;
+           << taggingVar << ") value=" << variableValue << "?";
     }
 
     bLikelihood    *= b;
