@@ -20,6 +20,7 @@
 #include <RecoLocalMuon/CSCRecHitB/interface/CSCWireHit.h>
 
 #include <DataFormats/CSCDigi/interface/CSCWireDigiCollection.h>
+#include <DataFormats/CSCDigi/interface/CSCALCTDigiCollection.h>
 
 #include <FWCore/Framework/interface/Frameworkfwd.h>
 #include <FWCore/ParameterSet/interface/ParameterSet.h>
@@ -38,7 +39,7 @@ class CSCHitFromWireOnly
   
   ~CSCHitFromWireOnly();
   
-  std::vector<CSCWireHit> runWire( const CSCDetId& id, const CSCLayer* layer, const CSCWireDigiCollection::Range& rwired ); 
+  std::vector<CSCWireHit> runWire( const CSCDetId& id, const CSCLayer* layer, const CSCWireDigiCollection::Range& rwired, const CSCALCTDigiCollection* alcts ); 
   void makeWireCluster(const CSCWireDigi& digi);
   bool addToCluster(const CSCWireDigi& digi); 
   float findWireHitPosition();
@@ -47,7 +48,14 @@ class CSCHitFromWireOnly
   const CSCLayerGeometry * layergeom_;
   
  private:
-  
+
+  /// Get wire groups which are part of ALCT(s) for this DetId (layer)
+  std::vector<int> getALCTWgroup( const CSCDetId& id, const CSCALCTDigiCollection* alcts );
+   
+  /// Check if found matching between ALCT trigger and wiregroup
+  bool foundALCTMatch( const CSCWireDigi& digi, std::vector<int> wgALCT );
+
+
   std::vector<CSCWireDigi> wire_cluster;
   std::vector<int> wire_in_cluster;
   std::vector<float> wire_spacing;
@@ -57,6 +65,7 @@ class CSCHitFromWireOnly
   bool debug;
   int deltaT;
   int clusterSize;
+  bool useCleanWireCollection;
 };
 
 #endif

@@ -6,10 +6,10 @@
 #include <RecoLocalMuon/CSCRecHitB/src/CSCStripData.h>
 #include <RecoLocalMuon/CSCRecHitB/src/CSCStripHitData.h>
 #include <RecoLocalMuon/CSCRecHitB/interface/CSCStripHit.h>
-#include <RecoLocalMuon/CSCRecHitB/interface/CSCStripHitCollection.h>
+//#include <RecoLocalMuon/CSCRecHitB/interface/CSCStripHitCollection.h>
 
 #include <DataFormats/MuonDetId/interface/CSCDetId.h>
-#include <DataFormats/CSCDigi/interface/CSCStripDigi.h>
+//#include <DataFormats/CSCDigi/interface/CSCStripDigi.h>
 
 #include <Geometry/CSCGeometry/interface/CSCLayer.h>
 #include <Geometry/CSCGeometry/interface/CSCChamberSpecs.h>
@@ -34,6 +34,7 @@ CSCHitFromStripOnly::CSCHitFromStripOnly( const edm::ParameterSet& ps ) {
   theClusterSize             = ps.getUntrackedParameter<int>("CSCStripClusterSize");
   theThresholdForAPeak       = ps.getUntrackedParameter<double>("CSCStripPeakThreshold");
   theThresholdForCluster     = ps.getUntrackedParameter<double>("CSCStripClusterChargeCut");
+  useCleanStripCollection    = ps.getUntrackedParameter<bool>("CSCuseCleanStripCollection");
 
   pulseheightOnStripFinder_  = new CSCPeakBinOfStripPulse( ps );
   stripGain_                 = new CSCStripGain( ps );
@@ -54,7 +55,8 @@ CSCHitFromStripOnly::~CSCHitFromStripOnly() {
  * a Strip Hit out of these clusters by finding the center-of-mass position of the hit
  */
 std::vector<CSCStripHit> CSCHitFromStripOnly::runStrip( const CSCDetId& id, const CSCLayer* layer,
-                                                        const CSCStripDigiCollection::Range& rstripd ) {	
+                                                        const CSCStripDigiCollection::Range& rstripd, 
+                                                        const CSCCLCTDigiCollection* clcts ) {	
 
   std::vector<CSCStripHit> hitsInLayer;
   
@@ -64,6 +66,11 @@ std::vector<CSCStripHit> CSCHitFromStripOnly::runStrip( const CSCDetId& id, cons
   layergeom_ = layer_->geometry();
   specs_     = layer->chamber()->specs();  
   Nstrips    = specs_->nStrips();
+
+  // Get strips which are part of the CLCT
+  std::vector<int> clctStrips;
+  if ( useCleanStripCollection ) clctStrips = getCLCTStrips( id, clcts );
+
 
   TmaxOfCluster = 5;
 
@@ -80,7 +87,7 @@ std::vector<CSCStripHit> CSCHitFromStripOnly::runStrip( const CSCDetId& id, cons
   }
   
   // Fill adc map and find maxima (potential hits)
-  fillPulseHeights( rstripd );
+  fillPulseHeights( rstripd, clctStrips );
   findMaxima();      
 
   // Make a Strip Hit out of each strip local maximum
@@ -237,7 +244,7 @@ CSCStripHitData CSCHitFromStripOnly::makeStripData(int centerStrip, int offset) 
 /* fillPulseHeights
  *
  */
-void CSCHitFromStripOnly::fillPulseHeights( const CSCStripDigiCollection::Range& rstripd ) {
+void CSCHitFromStripOnly::fillPulseHeights( const CSCStripDigiCollection::Range& rstripd, std::vector<int> clctStrips ) {
   
   // Loop over strip digis and fill the pulseheight map
   
@@ -248,10 +255,25 @@ void CSCHitFromStripOnly::fillPulseHeights( const CSCStripDigiCollection::Range&
     bool fill            = true;
     int  thisChannel     = (*it).getStrip(); 
     std::vector<int> sca = (*it).getADCCounts();
-
     float height[6];
     float hmax = 0.;
     int   tmax = -1;
+
+    // If using CLCT, test if strip is near CLCT strips (within +/-2 strips)
+    if ( useCleanStripCollection ) {
+      if ( !foundCLCTMatch( thisChannel, clctStrips) ) {
+        // Don't forget that the ME_11/a strips are ganged !!!
+        // Have to loop 2 more times to populate strips 17-48.
+        if ( id_.station() == 1 && id_.ring() == 4 ) {
+          for ( int j = 0; j < 3; j++ ) {
+            thePulseHeightMap[thisChannel+16*j-1] = CSCStripData( float(thisChannel+16*j), hmax, tmax, 0., 0., 0., 0., 0., 0.);
+          }
+        } else {
+          thePulseHeightMap[thisChannel-1] = CSCStripData( float(thisChannel), hmax, tmax, 0., 0., 0., 0., 0., 0.);
+        }
+        continue;
+      }
+    }
     
     fill = pulseheightOnStripFinder_->peakAboveBaseline( (*it), hmax, tmax, height );
 
@@ -372,7 +394,45 @@ float CSCHitFromStripOnly::findHitOnStripPosition( const std::vector<CSCStripHit
     strippos = sum / sum_w;    
   } 
 
-
   return strippos;
+}
+
+
+/*
+ * Get strips which are part of CLCT(s) for this DetId (layer)
+ */
+std::vector<int> CSCHitFromStripOnly::getCLCTStrips( const CSCDetId& id, const CSCCLCTDigiCollection* clcts ) {
+  std::vector<int> strips;
+
+  for ( CSCCLCTDigiCollection::DigiRangeIterator it = clcts->begin(); it != clcts->end(); ++it ) {
+  
+    // Test if within same chamber
+    // note that CLCT wiregroup is average over all 6 layers !!!
+    const CSCDetId& clctId = (*it).first;
+    if ( (clctId.chamber() == id.chamber()) &&
+         (clctId.station() == id.station()) &&
+         (clctId.ring()    == id.ring())    &&
+         (clctId.endcap()  == id.endcap())  ) {
+      for ( std::vector<CSCCLCTDigi>::const_iterator itr = (*it).second.first; itr != (*it).second.second; ++itr) {
+        strips.push_back( int(itr->getKeyStrip()) );      
+      }
+    }  
+  }    
+  return strips;
+}
+
+
+/* Look at strips which matches CLCT(s)
+ *
+ */
+bool CSCHitFromStripOnly::foundCLCTMatch( int stripId, std::vector<int> clctStrips ) {
+
+  bool foundMatch = false;
+
+  // Note: CSCT Key strip is 1/2 strip # and start at 0 whereas stripId start at 1 and is full strip Id
+  for (unsigned i = 0; i < clctStrips.size(); i++ )
+    if (abs(stripId - clctStrips[i]/2) < 3 ) return true;
+
+  return foundMatch;
 }
 

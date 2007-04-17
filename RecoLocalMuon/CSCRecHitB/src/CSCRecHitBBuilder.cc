@@ -6,8 +6,8 @@
 #include <RecoLocalMuon/CSCRecHitB/src/CSCWireSegments.h>
 #include <RecoLocalMuon/CSCRecHitB/src/CSCStripSegments.h>
 #include <RecoLocalMuon/CSCRecHitB/src/CSCMake2DRecHit.h>
-#include <RecoLocalMuon/CSCRecHitB/interface/CSCWireHitCollection.h>
-#include <RecoLocalMuon/CSCRecHitB/interface/CSCStripHitCollection.h>
+//#include <RecoLocalMuon/CSCRecHitB/interface/CSCWireHitCollection.h>
+//#include <RecoLocalMuon/CSCRecHitB/interface/CSCStripHitCollection.h>
 #include <RecoLocalMuon/CSCRecHitB/interface/CSCRangeMapForRecHit.h>
 
 #include <Geometry/CSCGeometry/interface/CSCChamberSpecs.h>
@@ -15,8 +15,8 @@
 #include <Geometry/CSCGeometry/interface/CSCGeometry.h>
 
 #include <DataFormats/MuonDetId/interface/CSCDetId.h>
-#include <DataFormats/CSCDigi/interface/CSCStripDigi.h>
-#include <DataFormats/CSCDigi/interface/CSCWireDigi.h>
+//#include <DataFormats/CSCDigi/interface/CSCStripDigi.h>
+//#include <DataFormats/CSCDigi/interface/CSCWireDigi.h>
 
 #include <CondFormats/CSCObjects/interface/CSCGains.h>
 #include <CondFormats/DataRecord/interface/CSCGainsRcd.h>
@@ -43,8 +43,8 @@ CSCRecHitBBuilder::CSCRecHitBBuilder( const edm::ParameterSet& ps ) : geom_(0) {
   isData                 = ps.getUntrackedParameter<bool>("CSCIsRunningOnData"); 
   debug                  = ps.getUntrackedParameter<bool>("CSCDebug");
   stripWireDeltaT        = ps.getUntrackedParameter<int>("CSCstripWireDeltaTime");
-  useCleanStripCollection= ps.getUntrackedParameter<bool>("CSCuseCleanStripCollection");
-  useCleanWireCollection = ps.getUntrackedParameter<bool>("CSCuseCleanWireCollection");
+//  useCleanStripCollection= ps.getUntrackedParameter<bool>("CSCuseCleanStripCollection");
+//  useCleanWireCollection = ps.getUntrackedParameter<bool>("CSCuseCleanWireCollection");
   makePseudo2DHits       = ps.getUntrackedParameter<bool>("CSCproduce1DHits");
   
   HitsFromStripOnly_     = new CSCHitFromStripOnly( ps ); 
@@ -70,6 +70,7 @@ CSCRecHitBBuilder::~CSCRecHitBBuilder() {
  *
  */
 void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCWireDigiCollection* wiredc,
+   	                       const CSCALCTDigiCollection* alcts, const CSCCLCTDigiCollection* clcts,
                                CSCRecHit2DCollection& oc ) {
 
   if ( useCalib ) {
@@ -81,7 +82,7 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
 
   
   // Make collection of wire only hits !  
-  CSCWireHitCollection woc;
+  CSCWireHitCollection clean_woc;
   
   for ( CSCWireDigiCollection::DigiRangeIterator it = wiredc->begin(); it != wiredc->end(); ++it ){
     const CSCDetId& id = (*it).first;
@@ -91,27 +92,30 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
     // Skip if no wire digis in this layer
     if ( rwired.second == rwired.first ) continue;
     
-    std::vector<CSCWireHit> rhv = HitsFromWireOnly_->runWire( id, layer, rwired );
+    std::vector<CSCWireHit> rhv = HitsFromWireOnly_->runWire( id, layer, rwired, alcts );
     
     // Add the wire hits to master collection
-    woc.put( id, rhv.begin(), rhv.end() );
+    clean_woc.put( id, rhv.begin(), rhv.end() );
   }
 
-  // Clean up the wire hit collection by trying to build wire segments
-  CSCWireHitCollection clean_woc;  
-  if ( useCleanWireCollection ) {
-    // First pass geometry
-    HitsFromWireSegments_->setGeometry( geom_ );
-    // Now try building segments
-    clean_woc = HitsFromWireSegments_->cleanWireHits(woc);
-  } else {
-    clean_woc = woc;
-  }
+/* Cleaning of wire hits is now done using ALCTs
+ *
+ *  // Clean up the wire hit collection by trying to build wire segments
+ * CSCWireHitCollection clean_woc;  
+ * if ( useCleanWireCollection ) {
+ *   // First pass geometry
+ *   HitsFromWireSegments_->setGeometry( geom_ );
+ *   // Now try building segments
+ *   clean_woc = HitsFromWireSegments_->cleanWireHits(woc);
+ * } else {
+ *   clean_woc = woc;
+ * }
+ */
 
-  
+
   // Make collection of strip only hits
   
-  CSCStripHitCollection soc;  
+  CSCStripHitCollection clean_soc;  
   for ( CSCStripDigiCollection::DigiRangeIterator it = stripdc->begin(); it != stripdc->end(); ++it ){
     const CSCDetId& id = (*it).first;
     const CSCLayer* layer = getLayer( id );
@@ -120,22 +124,24 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
     // Skip if no strip digis in this layer
     if ( rstripd.second == rstripd.first ) continue;
     
-    std::vector<CSCStripHit> rhv = HitsFromStripOnly_->runStrip( id, layer, rstripd );
+    std::vector<CSCStripHit> rhv = HitsFromStripOnly_->runStrip( id, layer, rstripd, clcts );
     
     // Add the strip hits to master collection
-    soc.put( id, rhv.begin(), rhv.end() );
+    clean_soc.put( id, rhv.begin(), rhv.end() );
   }
 
-  // Now clean up the strip hit collection by trying to build strip segments  
-  CSCStripHitCollection clean_soc;
-  if ( useCleanStripCollection ) {
-    // First pass geometry
-    HitsFromStripSegments_->setGeometry( geom_ );
-    clean_soc = HitsFromStripSegments_->cleanStripHits(soc);
-  } else {
-    clean_soc = soc;
-  }
-
+/* Now use CLCT to clean strip collection instead
+ *
+ * // Now clean up the strip hit collection by trying to build strip segments  
+ * CSCStripHitCollection clean_soc;
+ * if ( useCleanStripCollection ) {
+ *   // First pass geometry
+ *   HitsFromStripSegments_->setGeometry( geom_ );
+ *   clean_soc = HitsFromStripSegments_->cleanStripHits(soc);
+ * } else {
+ *   clean_soc = soc;
+ * }
+ */
 
   // Sort clean hit collections by layer    
 

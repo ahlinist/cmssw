@@ -23,6 +23,7 @@
 #include <RecoLocalMuon/CSCRecHitB/interface/CSCStripHit.h>
 
 #include <DataFormats/CSCDigi/interface/CSCStripDigiCollection.h>
+#include <DataFormats/CSCDigi/interface/CSCCLCTDigiCollection.h>
 
 #include <FWCore/Framework/interface/Frameworkfwd.h>
 #include <FWCore/ParameterSet/interface/ParameterSet.h>
@@ -49,14 +50,14 @@ class CSCHitFromStripOnly
   
   ~CSCHitFromStripOnly();
   
-  std::vector<CSCStripHit> runStrip( const CSCDetId& id, const CSCLayer* layer, const CSCStripDigiCollection::Range& rstripd);
+  std::vector<CSCStripHit> runStrip( const CSCDetId& id, const CSCLayer* layer, const CSCStripDigiCollection::Range& rstripd, const CSCCLCTDigiCollection* clcts);
 
   void setCalibration( const CSCGains* gains ) { gains_ = gains; }
 
  protected:
   
   /// Go through strip in layers and build a table with 
-  void fillPulseHeights( const CSCStripDigiCollection::Range& );  
+  void fillPulseHeights( const CSCStripDigiCollection::Range&, std::vector<int> clctStrips );  
 
   /// Find local maxima
   void findMaxima();    
@@ -80,6 +81,11 @@ class CSCHitFromStripOnly
   
   CSCStripHitData makeStripData( int centerStrip, int offset );
 
+  /// Get strip(s) which are part of CLCT(s) for this DetId (layer)
+  std::vector<int> getCLCTStrips( const CSCDetId& id, const CSCCLCTDigiCollection* clcts );
+
+  /// Check if found matching between ALCT trigger and central strip of strip cluster
+  bool foundCLCTMatch( int stripId, std::vector<int> clctStrips );
 
   // Variables entering the CSCStripHit construction:
   int tmax_cluster;
@@ -93,6 +99,7 @@ class CSCHitFromStripOnly
   int theClusterSize;
   float theThresholdForAPeak;
   float theThresholdForCluster;
+  bool useCleanStripCollection;
 
   /// These are the gain correction weights and X-talks read in from database.
   float globalGainAvg;
@@ -102,6 +109,7 @@ class CSCHitFromStripOnly
   int TmaxOfCluster;            // in time bins;
   // Number of strips in layer
   unsigned Nstrips;
+
 
   /* Cache calibrations for current event
    *
