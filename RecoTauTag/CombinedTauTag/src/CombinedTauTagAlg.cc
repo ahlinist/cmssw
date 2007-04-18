@@ -70,7 +70,6 @@ pair<JetTag,CombinedTauTagInfo> CombinedTauTagAlg::tag(const IsolatedTauTagInfoR
   double the_neutralECALclus_esum=0.;
   double the_neutralECALclus_isolband_esum=0.;
   double filtered_chargedpicand_fromtk_esum=0.;
-  CombinedTauTagInfo resultExtended;
   
   // *************rec. tracks info filling ***************
   // *********************begin***************************
@@ -253,6 +252,8 @@ pair<JetTag,CombinedTauTagInfo> CombinedTauTagAlg::tag(const IsolatedTauTagInfoR
     infact_GoodMuonCand=true;
   }
   // ******* end 1 pi-prong/e/mu/discrimination *******
+  const JetTracksAssociationRef& theJetTracksAssociationRef=theIsolatedTauTagInfoRef->jtaRef();
+  CombinedTauTagInfo resultExtended(theJetTracksAssociationRef);
   resultExtended.setisolatedtautaginfoRef(theIsolatedTauTagInfoRef);
   resultExtended.setpassed_trackerselection(passed_tracker_selection);
   resultExtended.setis_GoodTauCandidate(is_GoodTauCand);
@@ -277,19 +278,18 @@ pair<JetTag,CombinedTauTagInfo> CombinedTauTagAlg::tag(const IsolatedTauTagInfoR
   if (!couldnotobtain_HCALEt_o_leadtkPt) resultExtended.setHCALEt_o_leadTkPt(HCALEt_o_leadtkPt);
   // *** overall tau selection ***
   // **********begin**************
-  const JetTracksAssociationRef& theJetTracksAssociationRef=theIsolatedTauTagInfoRef->jtaRef();
   if(!passed_tracker_selection){
-    JetTag resultBase(0.,theJetTracksAssociationRef);
+    JetTag resultBase(0.);
     return pair<JetTag,CombinedTauTagInfo> (resultBase,resultExtended);
   }else{
     if(passed_neutrale_selection) {
-      JetTag resultBase(1.,theJetTracksAssociationRef);
+      JetTag resultBase(1.);
       return pair<JetTag,CombinedTauTagInfo> (resultBase,resultExtended); 
     }else{
       FillTaggingVariableList();
       (*theLikelihoodRatio).setCandidateCategoryParameterValues((int)signalchargedpicand_fromtk_HepLV.size(),TauCandJet_ref_et);
-      (*theLikelihoodRatio).setCandidateTaggingVariableList(*theTaggingVariableList);
-      JetTag resultBase((*theLikelihoodRatio).value(),theJetTracksAssociationRef);
+      (*theLikelihoodRatio).setCandidateTaggingVariableList(theTaggingVariableList);
+      JetTag resultBase((*theLikelihoodRatio).value());
       return pair<JetTag,CombinedTauTagInfo> (resultBase,resultExtended); 
     }
   }
@@ -404,53 +404,53 @@ void CombinedTauTagAlg::FillTaggingVariableList(){
   if(signalchargedpicand_fromtk_HepLV.size()==1){
     if(use_neutralECALclus_number_case1signaltk_) {
       TaggingVariable neutralECALclus_number_TagVar(btau::neutralclusterNumber,(float)the_neutralECALclus_number);
-      (*theTaggingVariableList).push_back(neutralECALclus_number_TagVar);
+      theTaggingVariableList.push_back(neutralECALclus_number_TagVar);
     }	
     if(use_neutralECALclus_radius_case1signaltk_){
       TaggingVariable neutralECALclus_radius_TagVar(btau::neutralclusterRadius,the_neutralECALclus_radius);
-      (*theTaggingVariableList).push_back(neutralECALclus_radius_TagVar);
+      theTaggingVariableList.push_back(neutralECALclus_radius_TagVar);
     }
     if(use_neutralE_ratio_case1signaltk_){
       TaggingVariable neutralE_ratio_TagVar(btau::neutralEnergyRatio,the_neutralE_ratio);
-      (*theTaggingVariableList).push_back(neutralE_ratio_TagVar);
+      theTaggingVariableList.push_back(neutralE_ratio_TagVar);
     }
     if(use_isolneutrE_o_tkEneutrE_case1signaltk_){
       TaggingVariable isolneutrE_o_tksEneutrE_TagVar(btau::neutralIsolEnergyOverCombinedEnergy,the_isolneutrE_o_tksEneutrE);
-      (*theTaggingVariableList).push_back(isolneutrE_o_tksEneutrE_TagVar);
+      theTaggingVariableList.push_back(isolneutrE_o_tksEneutrE_TagVar);
     }
     if(use_tkEt_o_jetEt_case1signaltk_){
       TaggingVariable tksEt_o_jetEt_TagVar(btau::piontracksEtjetEtRatio,the_tksEt_o_jetEt);
-      (*theTaggingVariableList).push_back(tksEt_o_jetEt_TagVar);
+      theTaggingVariableList.push_back(tksEt_o_jetEt_TagVar);
     }
     if(use_leadtk_ipt_significance_case1signaltk_ && !couldnotobtain_leadtk_signedipt){
-      TaggingVariable leadtk_ipt_significance_TagVar(btau::trackSip2d,fabs(the_leadtk_signedipt_significance));
-      (*theTaggingVariableList).push_back(leadtk_ipt_significance_TagVar);
+      TaggingVariable leadtk_ipt_significance_TagVar(btau::trackip2d,fabs(the_leadtk_signedipt_significance));
+      theTaggingVariableList.push_back(leadtk_ipt_significance_TagVar);
     }
   }
   if(signalchargedpicand_fromtk_HepLV.size()==3){
     if(use_neutralECALclus_number_case3signaltks_){
       TaggingVariable neutralECALclus_number_TagVar(btau::neutralclusterNumber,(float)the_neutralECALclus_number);
-      (*theTaggingVariableList).push_back(neutralECALclus_number_TagVar);
+      theTaggingVariableList.push_back(neutralECALclus_number_TagVar);
     }
     if(use_neutralECALclus_radius_case3signaltks_){
       TaggingVariable neutralECALclus_radius_TagVar(btau::neutralclusterRadius,the_neutralECALclus_radius);
-      (*theTaggingVariableList).push_back(neutralECALclus_radius_TagVar);
+      theTaggingVariableList.push_back(neutralECALclus_radius_TagVar);
     }
     if(use_neutralE_ratio_case3signaltks_){
       TaggingVariable neutralE_ratio_TagVar(btau::neutralEnergyRatio,the_neutralE_ratio);
-      (*theTaggingVariableList).push_back(neutralE_ratio_TagVar);
+      theTaggingVariableList.push_back(neutralE_ratio_TagVar);
     }
     if(use_isolneutrE_o_tksEneutrE_case3signaltks_){
       TaggingVariable isolneutrE_o_tksEneutrE_TagVar(btau::neutralIsolEnergyOverCombinedEnergy,the_isolneutrE_o_tksEneutrE);
-      (*theTaggingVariableList).push_back(isolneutrE_o_tksEneutrE_TagVar);
+      theTaggingVariableList.push_back(isolneutrE_o_tksEneutrE_TagVar);
     }
     if(use_tksEt_o_jetEt_case3signaltks_){
       TaggingVariable tksEt_o_jetEt_TagVar(btau::piontracksEtjetEtRatio,the_tksEt_o_jetEt);
-      (*theTaggingVariableList).push_back(tksEt_o_jetEt_TagVar);
+      theTaggingVariableList.push_back(tksEt_o_jetEt_TagVar);
     }
     if(use_signedflightpath_significance_case3signaltks_ && !couldnotproduce_SV){
       TaggingVariable signedflightpath_significance_TagVar(btau::flightDistance3DSignificance,the_signedflightpath_significance);
-      (*theTaggingVariableList).push_back(signedflightpath_significance_TagVar);
+      theTaggingVariableList.push_back(signedflightpath_significance_TagVar);
     }
   }
 }
