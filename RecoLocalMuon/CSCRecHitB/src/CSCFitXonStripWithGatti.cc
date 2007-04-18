@@ -207,7 +207,7 @@ void CSCFitXonStripWithGatti::runGattiFit( int istrt ) {
   float chi2last= 1.e12;
 
 //  while ( fabs(step) < 0.002 ) {
-  while ( fabs(step) < 0.01 ) {
+  while ( fabs(step) < 0.02 ) {
     
     chi2 = chisqrFromGatti( dx );
     
@@ -269,7 +269,7 @@ float CSCFitXonStripWithGatti::chisqrFromGatti( float x ) {
   float sn1,sn2,sn3,n1,n2,n3;
 
   // Compute Gatti function for 3 positions and 3 time bins
-  for (int t = 0; t < 3; t++ ) getGatti( x, t );
+  for (int t = 0; t < 3; ++t ) getGatti( x, t );
 
   sn11 = v11[0]*q[0][0]*d[0][0] + v11[1]*q[1][0]*d[1][0] + v11[2]*q[2][0]*d[2][0];
   sd11 = v11[0]*q[0][0]*q[0][0] + v11[1]*q[1][0]*q[1][0] + v11[2]*q[2][0]*q[2][0];

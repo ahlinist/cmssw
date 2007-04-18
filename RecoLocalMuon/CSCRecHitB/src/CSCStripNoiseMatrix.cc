@@ -92,13 +92,13 @@ CSCStripNoiseMatrix::~CSCStripNoiseMatrix() {
 
       bool isFlawed = false;      
       // Test that elements make sense:
-      for ( int k = 0; k < 15; k++) {
+      for ( int k = 0; k < 15; ++k) {
         // make sure the number isn't too close to zero...
         if (elem[k] < 0.001) elem[k] = 0.001;
 	if (elem[k] > 50.) isFlawed = true; 
       }
       if ( isFlawed ) {
-        for ( int k = 0; k < 15; k++) { 
+        for ( int k = 0; k < 15; ++k) { 
           if ( k%3 == 0) {
             elem[k] = 1.;  
           } else {
@@ -106,8 +106,8 @@ CSCStripNoiseMatrix::~CSCStripNoiseMatrix() {
 	  } 
 	} 
       }
-      if ( isME1a && s_id > 63 ) for (int k = 0; k < 15; k++) nMatrix.push_back(elem[k]);
-      if ( !isME1a ) for (int k = 0; k < 15; k++) nMatrix.push_back(elem[k]);
+      if ( isME1a && s_id > 63 ) for (int k = 0; k < 15; ++k) nMatrix.push_back(elem[k]);
+      if ( !isME1a ) for (int k = 0; k < 15; ++k) nMatrix.push_back(elem[k]);
       s_id++;
     }
   }

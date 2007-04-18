@@ -91,7 +91,7 @@ std::vector<CSCStripHit> CSCHitFromStripOnly::runStrip( const CSCDetId& id, cons
   findMaxima();      
 
   // Make a Strip Hit out of each strip local maximum
-  for ( unsigned imax = 0; imax < theMaxima.size(); imax++ ) {
+  for ( unsigned imax = 0; imax < theMaxima.size(); ++imax ) {
 
     // Initialize parameters entering the CSCStripHit
     ClusterSize = theClusterSize;
@@ -134,7 +134,7 @@ float CSCHitFromStripOnly::makeCluster( int centerStrip ) {
     }
   }
 
-  for ( int i = -ClusterSize/2; i <= ClusterSize/2; i++ ) {
+  for ( int i = -ClusterSize/2; i <= ClusterSize/2; ++i ) {
     CSCStripHitData data = makeStripData(centerStrip, i);
     stripDataV.push_back( data );
     theStrips.push_back( centerStrip + i );
@@ -232,7 +232,7 @@ CSCStripHitData CSCHitFromStripOnly::makeStripData(int centerStrip, int offset) 
           adc[6] = 0.1;
           adc[7] = 0.1;
         }
-        for (int k = 0; k < 4; k++) adc[k]   = adc[k] * adc[k] / (adc[k]+adc[k+4]);
+        for (int k = 0; k < 4; ++k) adc[k]   = adc[k] * adc[k] / (adc[k]+adc[k+4]);
         prelimData = CSCStripHitData(thisStrip, adc[0], adc[1], adc[2], adc[3], TmaxOfCluster);
       }
     }
@@ -250,7 +250,15 @@ void CSCHitFromStripOnly::fillPulseHeights( const CSCStripDigiCollection::Range&
   
   thePulseHeightMap.clear();
   thePulseHeightMap.resize(100);
-  
+
+  // std::cout << "MaxStripADC " ;
+  float maxADC = 0;  
+  float maxADCCluster = 0;  
+  float adc_cluster[3];  
+  adc_cluster[0] = 0.;  
+  adc_cluster[1] = 0.;  
+  adc_cluster[2] = 0.;  
+
   for ( CSCStripDigiCollection::const_iterator it = rstripd.first; it != rstripd.second; ++it ) {
     bool fill            = true;
     int  thisChannel     = (*it).getStrip(); 
@@ -274,8 +282,20 @@ void CSCHitFromStripOnly::fillPulseHeights( const CSCStripDigiCollection::Range&
         continue;
       }
     }
+
     
     fill = pulseheightOnStripFinder_->peakAboveBaseline( (*it), hmax, tmax, height );
+    // std::cout << " " << hmax ;
+    float maxCluster = 0;
+
+    adc_cluster[2] = adc_cluster[1];
+    adc_cluster[1] = adc_cluster[0];
+    adc_cluster[0] = hmax;  
+
+    for (int j = 0; j < 3; ++j ) maxCluster += adc_cluster[j];   
+ 
+    if (hmax > maxADC) maxADC = hmax;
+    if (maxCluster > maxADCCluster ) maxADCCluster = maxCluster;
 
     // Don't forget that the ME_11/a strips are ganged !!!
     // Have to loop 2 more times to populate strips 17-48.
@@ -290,6 +310,9 @@ void CSCHitFromStripOnly::fillPulseHeights( const CSCStripDigiCollection::Range&
       if ( useCalib ) thePulseHeightMap[thisChannel-1] *= gainWeight[thisChannel-1];
     }
   }
+  // std::cout << std::endl;
+  // std::cout << "MAXADC " << maxADC << std::endl;
+  // std::cout << "MAXADCCluster " << maxADCCluster << std::endl;
 }
 
 
@@ -430,8 +453,8 @@ bool CSCHitFromStripOnly::foundCLCTMatch( int stripId, std::vector<int> clctStri
   bool foundMatch = false;
 
   // Note: CSCT Key strip is 1/2 strip # and start at 0 whereas stripId start at 1 and is full strip Id
-  for (unsigned i = 0; i < clctStrips.size(); i++ )
-    if (abs(stripId - clctStrips[i]/2) < 3 ) return true;
+  for (unsigned i = 0; i < clctStrips.size(); ++i )
+    if (abs(stripId - clctStrips[i]/2) < 6 ) return true;
 
   return foundMatch;
 }

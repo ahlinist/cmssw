@@ -45,7 +45,7 @@ bool CSCFindPeakTime::FindPeakTime( const int& tmax, const float* adc, float& t_
   float chi2     = 0.;
   float del_t    = 100.;
 
-  while ( del_t > 0.05 ) {
+  while ( del_t > 1. ) {
     
     float x[4];
     float sx2 = 0.;

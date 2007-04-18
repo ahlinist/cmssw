@@ -309,7 +309,7 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
       xtalks.push_back(interLeft[j]);
       xtalks.push_back(slopeRight[j]);
       xtalks.push_back(interRight[j]);
-      for ( int k = 0; k < 15; k++ ) nmatrix.push_back(nMatrix[j*15 + k]);
+      for ( int k = 0; k < 15; ++k ) nmatrix.push_back(nMatrix[j*15 + k]);
     }   
 
     xFitWithGatti_->findXOnStrip( layer_, sHit, x_to_gatti, stripWidth, xtalks, nmatrix, x_fit, tpeak, sigma_fit, chisq_fit );
@@ -456,7 +456,7 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripOnly(const CSCDetId& id, const CSCLayer
 
   std::vector<float> adcs = sHit.s_adc();
   std::vector<float> adc2;
-  for ( int t = 0; t < stripClusterSize*4; t++ ) {
+  for ( int t = 0; t < stripClusterSize*4; ++t ) {
     if ( t%4 == 0 ) adc2.clear();
     adc2.push_back(adcs[t]);
     if ( (t+1)%4 == 0) adcMap.put( strips[t/4], adc2.begin(), adc2.end() );
