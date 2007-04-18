@@ -74,7 +74,7 @@ const double chargedpi_mass=0.13957018;      //PDG Particle Physics Booklet, 200
   
 class CombinedTauTagAlg{
 public: 
-  CombinedTauTagAlg(const ParameterSet& parameters):theTransientTrackBuilder(0),theTaggingVariableList(0),theLikelihoodRatio(0){
+  CombinedTauTagAlg(const ParameterSet& parameters):theTransientTrackBuilder(0),theLikelihoodRatio(0){
     // --- parameters filled in RecoTauTag/CombinedTauTag/data/combinedTauTag.cfi
     // ------ tracker selection
     MinimumTransverseMomentum_                                = parameters.getParameter<double>("MinimumTransverseMomentum");
@@ -115,7 +115,7 @@ public:
     muon_selection_max_ECALEt_o_leadtkPt_                     = parameters.getParameter<double>("muon_selection_max_ECALEt_o_leadtkPt");
     muon_selection_max_HCALEt_o_leadtkPt_                     = parameters.getParameter<double>("muon_selection_max_HCALEt_o_leadtkPt");
   }
-  CombinedTauTagAlg():theTransientTrackBuilder(0),theTaggingVariableList(0),theLikelihoodRatio(0){
+  CombinedTauTagAlg():theTransientTrackBuilder(0),theLikelihoodRatio(0){
     // ------ tracker selection
     MinimumTransverseMomentum_                                = 1.;
     MatchingCone_                                             = 0.17;
@@ -156,7 +156,6 @@ public:
   } 
   ~CombinedTauTagAlg(){
     if (theTransientTrackBuilder!=0) delete theTransientTrackBuilder;
-    if (theTaggingVariableList!=0) delete theTaggingVariableList;
     if (theLikelihoodRatio!=0) delete theLikelihoodRatio;
   };
   pair<JetTag,CombinedTauTagInfo> tag(const IsolatedTauTagInfoRef&,const Vertex&,Event&,const EventSetup&);
@@ -189,7 +188,7 @@ public:
   double ECALclus_min_e_;
   double matchingECALclustrack_deltaR_;
   // ------ likelihood function selection
-  TaggingVariableList* theTaggingVariableList;
+  TaggingVariableList theTaggingVariableList;
   LikelihoodRatio* theLikelihoodRatio;
   bool use_neutralECALclus_number_case1signaltk_;	
   bool use_neutralECALclus_radius_case1signaltk_;
