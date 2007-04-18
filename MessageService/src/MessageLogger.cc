@@ -41,7 +41,6 @@
 #include "FWCore/MessageLogger/interface/ELseverityLevel.h"
 
 #include "DataFormats/Provenance/interface/ModuleDescription.h"
-#include "FWCore/ServiceRegistry/interface/Service.h"
 #include "DataFormats/Provenance/interface/EventID.h"
 #include "DataFormats/Provenance/interface/Timestamp.h"
 
