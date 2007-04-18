@@ -182,7 +182,7 @@ bool  CSCHitFromWireOnly::foundALCTMatch( const CSCWireDigi& wdigi, std::vector<
   int wiregroup = wdigi.getWireGroup();
 
   // Note: ALCT id start at zero whereas wgroup # start at 1...
-  for (unsigned i = 0; i < wgALCT.size(); i++ )
+  for (unsigned i = 0; i < wgALCT.size(); ++i )
     if (abs(wiregroup - wgALCT[i] - 1) < 4 ) return true;
 
   return foundMatch;
