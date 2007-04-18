@@ -136,7 +136,7 @@ float CSCHitFromWireOnly::findWireHitPosition() {
   
   float y = 0.0;
   
-  for ( unsigned i = 0; i < wire_cluster.size(); i++ ) {
+  for ( unsigned i = 0; i < wire_cluster.size(); ++i ) {
     CSCWireDigi wdigi = wire_cluster[i];
     int wgroup = wdigi.getWireGroup();
     wire_in_cluster.push_back( wgroup );
@@ -183,7 +183,7 @@ bool  CSCHitFromWireOnly::foundALCTMatch( const CSCWireDigi& wdigi, std::vector<
 
   // Note: ALCT id start at zero whereas wgroup # start at 1...
   for (unsigned i = 0; i < wgALCT.size(); ++i )
-    if (abs(wiregroup - wgALCT[i] - 1) < 4 ) return true;
+    if (abs(wiregroup - wgALCT[i] - 1) < 5 ) return true;
 
   return foundMatch;
 }
