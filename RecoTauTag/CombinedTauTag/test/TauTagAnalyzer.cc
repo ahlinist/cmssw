@@ -438,8 +438,9 @@ void TauTagAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     else CombinedTauTagInfo_leadtk_signedip3D_significance=-100.;
     if (!isnan(i->signedflightpath_significance())) CombinedTauTagInfo_signedflightpath_significance=i->signedflightpath_significance();
     else CombinedTauTagInfo_signedflightpath_significance=-100.;
-    if (!isnan(i->discriminator())) CombinedTauTagInfo_discriminator=i->discriminator();
-    else CombinedTauTagInfo_discriminator=-100.;
+    //if (!isnan(i->discriminator())) CombinedTauTagInfo_discriminator=i->discriminator();
+    //else CombinedTauTagInfo_discriminator=-100.;
+    CombinedTauTagInfo_discriminator=-100.;
     CombinedTauTagInfo_GenTau_visproducts_e=-100.;
     CombinedTauTagInfo_GenTau_visproducts_et=-100.;
     CombinedTauTagInfo_GenTau_visproducts_eta=-100.;
