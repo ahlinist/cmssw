@@ -150,7 +150,7 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
 
   std::vector<float> adcs = sHit.s_adc();
   std::vector<float> adc2;
-  for ( int t = 0; t < stripClusterSize*4; t++ ) {
+  for ( int t = 0; t < stripClusterSize*4; ++t ) {
     if ( t%4 == 0 ) adc2.clear();
     adc2.push_back(adcs[t]);
     if ( (t+1)%4 == 0) adcMap.put( strips[t/4], adc2.begin(), adc2.end() ); 
@@ -304,7 +304,7 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
     double sigma_fit, chisq_fit;
 
     std::vector<float> xtalks, nmatrix;
-    for ( int j = centerStrip -2; j < centerStrip + 1; j++) {  // Index of strip is starts at 1 whereas array 
+    for ( int j = centerStrip -2; j < centerStrip + 1; ++j) {  // Index of strip is starts at 1 whereas array 
       xtalks.push_back(slopeLeft[j]);                          // starts at 0 --> make use of this here
       xtalks.push_back(interLeft[j]);
       xtalks.push_back(slopeRight[j]);

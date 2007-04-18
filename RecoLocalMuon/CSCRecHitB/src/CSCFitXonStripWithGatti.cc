@@ -206,8 +206,8 @@ void CSCFitXonStripWithGatti::runGattiFit( int istrt ) {
   float chi2min = 1.e12;
   float chi2last= 1.e12;
 
-  while ( fabs(step) < 0.002 ) {
-//  while ( fabs(step) < 0.01 ) {
+//  while ( fabs(step) < 0.002 ) {
+  while ( fabs(step) < 0.01 ) {
     
     chi2 = chisqrFromGatti( dx );
     

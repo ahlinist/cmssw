@@ -31,7 +31,7 @@ bool CSCFindPeakTime::FindPeakTime( const int& tmax, const float* adc, float& t_
   if ( tmax < 2 || tmax > 6 ) return false;
 
   float tb[4], y[4];
-  for ( int time=0; time<4; time++ ){
+  for ( int time=0; time<4; ++time ){
     tb[time] = (tmax + time -1) * 50.;
     y[time] = adc[time];
   }
@@ -51,7 +51,7 @@ bool CSCFindPeakTime::FindPeakTime( const int& tmax, const float* adc, float& t_
     float sx2 = 0.;
     float sxy = 0.;
     
-    for ( int j=0; j < n_fit; j++ ) {
+    for ( int j=0; j < n_fit; ++j ) {
       float t = tb[j];
       x[j] = (t-tt0)*(t-tt0)*(t-tt0)*(t-tt0) * exp( -p0 * (t-tt0) );
       sx2  = sx2 + x[j] * x[j];
@@ -61,7 +61,7 @@ bool CSCFindPeakTime::FindPeakTime( const int& tmax, const float* adc, float& t_
     
     // Compute chi^2
     chi2 = 0.0;
-    for (int j=0; j < n_fit; j++) chi2 += (y[j] - NN * x[j]) * (y[j] - NN * x[j]);
+    for (int j=0; j < n_fit; ++j) chi2 += (y[j] - NN * x[j]) * (y[j] - NN * x[j]);
 
     // Test on chi^2 to decide what to do    
     if ( chi_last > chi2 ) {
@@ -97,7 +97,7 @@ void CSCFindPeakTime::FitCharge( const int& tmax, const float* adc, const float&
   if ( tmax == 6 ) n_fit=3;
   
   float tb[4], y[4];
-  for ( int t = 0; t < 4; t++ ){
+  for ( int t = 0; t < 4; ++t ){
     tb[t] = (tmax + t - 1) * 50.;
     y[t] = adc[t];
   }
@@ -106,7 +106,7 @@ void CSCFindPeakTime::FitCharge( const int& tmax, const float* adc, const float&
   float x[4];    
   float sx2 = 0.;
   float sxy = 0.;
-  for ( int j=0; j < n_fit; j++ ) {
+  for ( int j=0; j < n_fit; ++j ) {
     float t = tb[j];
     x[j] = (t-tt0)*(t-tt0)*(t-tt0)*(t-tt0) * exp( -p0 * (t-tt0) );
     sx2  = sx2 + x[j] * x[j];
@@ -116,7 +116,7 @@ void CSCFindPeakTime::FitCharge( const int& tmax, const float* adc, const float&
     
 
   // Now compute charge for a given t  --> only need charges at: tpeak-50, tpeak and tpeak+50
-  for ( int i = 0; i < 3; i++ ) {
+  for ( int i = 0; i < 3; ++i ) {
     float t = t_peak + (i - 1) * 50.;
     float q_fitted = N * (t-tt0)*(t-tt0)*(t-tt0)*(t-tt0) * exp( -p0 * (t-tt0) );
     adcsFit.push_back(q_fitted);

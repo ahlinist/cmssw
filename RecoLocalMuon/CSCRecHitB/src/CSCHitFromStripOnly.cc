@@ -125,7 +125,7 @@ float CSCHitFromStripOnly::makeCluster( int centerStrip ) {
   // We only want to use strip position in terms of strip # for the strip hit.
     
   // If the cluster size is such that you go beyond the edge of detector, shrink cluster appropriatly
-  for ( int i = 1; i < theClusterSize/2 + 1; i++) {
+  for ( int i = 1; i < theClusterSize/2 + 1; ++i) {
  
     if ( centerStrip - i < 1 || centerStrip + i > specs_->nStrips() ) {
 
@@ -195,7 +195,7 @@ CSCStripHitData CSCHitFromStripOnly::makeStripData(int centerStrip, int offset) 
     
     // If there's another maximum that would like to use part of this cluster, 
     // it gets shared in proportion to the height of the maxima
-    for ( int i = 1; i <= ClusterSize/2; i++ ) {
+    for ( int i = 1; i <= ClusterSize/2; ++i ) {
 
       // Find the direction of the offset
       int testStrip = thisStrip + sign*i;
@@ -265,7 +265,7 @@ void CSCHitFromStripOnly::fillPulseHeights( const CSCStripDigiCollection::Range&
         // Don't forget that the ME_11/a strips are ganged !!!
         // Have to loop 2 more times to populate strips 17-48.
         if ( id_.station() == 1 && id_.ring() == 4 ) {
-          for ( int j = 0; j < 3; j++ ) {
+          for ( int j = 0; j < 3; ++j ) {
             thePulseHeightMap[thisChannel+16*j-1] = CSCStripData( float(thisChannel+16*j), hmax, tmax, 0., 0., 0., 0., 0., 0.);
           }
         } else {
@@ -281,7 +281,7 @@ void CSCHitFromStripOnly::fillPulseHeights( const CSCStripDigiCollection::Range&
     // Have to loop 2 more times to populate strips 17-48.
     
     if ( id_.station() == 1 && id_.ring() == 4 ) {
-      for ( int j = 0; j < 3; j++ ) {
+      for ( int j = 0; j < 3; ++j ) {
         thePulseHeightMap[thisChannel+16*j-1] = CSCStripData( float(thisChannel+16*j), hmax, tmax, height[0], height[1], height[2], height[3], height[4], height[5]);
         if ( useCalib ) thePulseHeightMap[thisChannel+16*j-1] *= gainWeight[thisChannel-1];
       }
@@ -302,7 +302,7 @@ void CSCHitFromStripOnly::fillPulseHeights( const CSCStripDigiCollection::Range&
 void CSCHitFromStripOnly::findMaxima() {
   
   theMaxima.clear();
-  for ( size_t i = 0; i < thePulseHeightMap.size(); i++ ) {
+  for ( size_t i = 0; i < thePulseHeightMap.size(); ++i ) {
 
     float heightPeak = thePulseHeightMap[i].ymax();
 
@@ -359,7 +359,7 @@ float CSCHitFromStripOnly::findHitOnStripPosition( const std::vector<CSCStripHit
   float stripRight = 0.;
 
   
-  for ( unsigned i = 0; i != data.size(); i++ ) {
+  for ( unsigned i = 0; i != data.size(); ++i ) {
     float w0 = data[i].y0();
     float w1 = data[i].y1();
     float w2 = data[i].y2();
@@ -387,7 +387,7 @@ float CSCHitFromStripOnly::findHitOnStripPosition( const std::vector<CSCStripHit
 
   // CFEB trigger problem:
   // Test that we have readout entries on either side of the central strip
-  // What's the minimum ADC count ???  Try 5 for now..
+  // What's the minimum ADC count ???  Try 2 for now..
   if (int(strippos)%16 < 2) {
     if ( stripLeft > 2. && stripRight > 2. && sum_w > 0.) strippos = sum / sum_w;
   } else if ( sum_w > 0.) {
