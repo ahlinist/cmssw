@@ -167,8 +167,8 @@
     <String  name="SpmSideMat"    value="materials:Aluminium" />
     <Numeric name="SpmSideHigh"   value="38*cm"/>
     <Numeric name="SpmSideThick"  value="1*mm"/>
-    <Numeric name="SpmSideYOffM"  value="-5*mm"/>
-    <Numeric name="SpmSideYOffP"  value="-3*mm"/>
+    <Numeric name="SpmSideYOffM"  value="-4*mm"/>
+    <Numeric name="SpmSideYOffP"  value="-2.5*mm"/>
 
 
 <!--  Now start specificiation of "Inner Layer" materials which
@@ -270,11 +270,11 @@
       505*mm,  142*mm,  505*mm,  142*mm,  505*mm,  142*mm,  505*mm,  142*mm,
      1027*mm,  610*mm, 1027*mm,  610*mm, 1027*mm,  610*mm, 1027*mm,  610*mm,
      1155*mm, 1687*mm, 1155*mm, 1687*mm, 1155*mm, 1687*mm, 1155*mm,
-     2606*mm, 2554*mm, 1855*mm, 2400*mm, 1855*mm, 2554*mm, 1855*mm, 2606*mm,
+     2609*mm, 2554*mm, 1855*mm, 2400*mm, 1855*mm, 2554*mm, 1855*mm, 2606*mm,
        25*mm,   25*mm,   25*mm,   25*mm,   25*mm,   25*mm,   25*mm,   25*mm,   25*mm,
        51*mm,   51*mm,   51*mm,   51*mm,   51*mm,   51*mm,   51*mm,   51*mm,
       571*mm,  571*mm,  571*mm,  571*mm,  571*mm,  571*mm,  571*mm,  571*mm,
-     1778*mm, 1778*mm, 1778*mm, 1778*mm, 1778*mm, 1778*mm
+     1773*mm, 1773*mm, 1773*mm, 1773*mm, 1773*mm, 1773*mm
     </Vector>
 
     <Numeric name="IlyPTMHere"    value="1"/>
@@ -411,11 +411,11 @@
          gap/cosTheta. The first is before the 1st, then after the 1st,
          etc. These are in addition to the clearances around Webs.
     -->
-    <Vector name="GapAlvEta" type="numeric"      nEntries="17">
+    <Vector name="GapAlvEta" type="numeric"      nEntries="18">
      425*mum, 385*mum, 490*mum, 450*mum, 425*mum, 825*mum,
      400*mum, 500*mum, 325*mum, 1375*mum,
      425*mum, 350*mum, 400*mum, 1625*mum,
-     370*mum, 330*mum, 310*mum
+     370*mum, 330*mum, 310*mum, 200*mum
     </Vector>
 
     <Numeric name="NCryPerAlvEta"  value="5"         />
@@ -460,7 +460,7 @@
     </Vector>
 
     <Vector  name="WebLength" type="numeric" nEntries="5">
-      259*mm, 250*mm, 264*mm, 289*mm, 365*mm
+      259*mm, 250*mm, 264*mm, 287*mm, 365*mm
     </Vector>
 
     <!-- The crystals & web pieces get stacked inside the Half Alveolar
@@ -506,7 +506,7 @@
     <Numeric name="BackSideHeight"        value=" 148*mm" />
     <Numeric name="BackSideWidth"         value="  20*mm" />
     <Numeric name="BackSideYOff1"         value=" -18*mm" />
-    <Numeric name="BackSideYOff2"         value="  13*mm" />
+    <Numeric name="BackSideYOff2"         value="  14*mm" />
     <Numeric name="BackSideAngle"         value="82*deg" />
     <String  name="BackSideMat"           value="materials:E_Aluminium"  />
 
@@ -544,7 +544,7 @@
       146*mm, 156*mm, 167*mm, 167*mm, 196*mm, 196*mm, 222*mm, 231*mm
     </Vector>
     <Vector  name="GrilleZOff" type="numeric" nEntries="8">
-      0*mm, 680*mm,  720*mm, 1310*mm,  1350*mm, 2040*mm,  2080*mm, 2854*mm
+      1*mm, 680*mm,  720*mm, 1310*mm,  1350*mm, 2040*mm,  2080*mm, 2854*mm
     </Vector>
 
     <String  name="GrEdgeSlotName"       value="EGRES"  />
