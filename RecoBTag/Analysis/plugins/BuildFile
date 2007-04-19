@@ -1,0 +1,5 @@
+<use name=root>
+<use name=RecoBTag/Analysis>
+<library file="*.cc" name=RecoBTagAnalysisPlugins>
+      <flags EDM_PLUGIN=1>
+</library>
