@@ -269,7 +269,8 @@ float CSCFitXonStripWithGatti::chisqrFromGatti( float x ) {
   float sn1,sn2,sn3,n1,n2,n3;
 
   // Compute Gatti function for 3 positions and 3 time bins
-  for (int t = 0; t < 3; ++t ) getGatti( x, t );
+  //  for (int t = 0; t < 3; ++t ) {} // out
+  getGatti( x, 0 );
 
   sn11 = v11[0]*q[0][0]*d[0][0] + v11[1]*q[1][0]*d[1][0] + v11[2]*q[2][0]*d[2][0];
   sd11 = v11[0]*q[0][0]*q[0][0] + v11[1]*q[1][0]*q[1][0] + v11[2]*q[2][0]*q[2][0];
@@ -410,6 +411,7 @@ void CSCFitXonStripWithGatti::initChamberSpecs() {
 
   // Distance between anode and cathode
   h = specs_->anodeCathodeSpacing();
+  r = h / stripWidth;
 
   // Wire spacing
   double wspace = specs_->wireSpacing();
@@ -424,7 +426,7 @@ void CSCFitXonStripWithGatti::initChamberSpecs() {
       * ( parm[2]*wspace/wradius + parm[3] + parm[4]*(wspace/wradius)*(wspace/wradius) );
 
   sqrt_k_3 = sqrt( k_3 );
-  norm     = 0.5 / atan( sqrt_k_3 );
+  norm     = r * (0.5 / atan( sqrt_k_3 )); // changed from norm to r * norm
   k_2      = M_PI_2 * ( 1. - sqrt_k_3 /2. );
   k_1      = 0.25 * k_2 * sqrt_k_3 / atan( sqrt_k_3 );
 }
@@ -434,16 +436,14 @@ void CSCFitXonStripWithGatti::initChamberSpecs() {
  *
  * Compute expected charge for a given x and time bin
  */
-void CSCFitXonStripWithGatti::getGatti( float x, int t ) {
+void CSCFitXonStripWithGatti::getGatti( float x, int t_disabled ) {
 
-  double r = h / stripWidth;
-
-  double g0 = norm * r * atan( sqrt_k_3 * tanh( k_2 * (-x - 2.5)/r ) );
-  double g1 = norm * r * atan( sqrt_k_3 * tanh( k_2 * (-x - 1.5)/r ) );
-  double g2 = norm * r * atan( sqrt_k_3 * tanh( k_2 * (-x - 0.5)/r ) );
-  double g3 = norm * r * atan( sqrt_k_3 * tanh( k_2 * (-x + 0.5)/r ) );
-  double g4 = norm * r * atan( sqrt_k_3 * tanh( k_2 * (-x + 1.5)/r ) );
-  double g5 = norm * r * atan( sqrt_k_3 * tanh( k_2 * (-x + 2.5)/r ) );
+  double g0 = norm * atan( sqrt_k_3 * tanh( k_2 * (-x - 2.5)/r ) );
+  double g1 = norm * atan( sqrt_k_3 * tanh( k_2 * (-x - 1.5)/r ) );
+  double g2 = norm * atan( sqrt_k_3 * tanh( k_2 * (-x - 0.5)/r ) );
+  double g3 = norm * atan( sqrt_k_3 * tanh( k_2 * (-x + 0.5)/r ) );
+  double g4 = norm * atan( sqrt_k_3 * tanh( k_2 * (-x + 1.5)/r ) );
+  double g5 = norm * atan( sqrt_k_3 * tanh( k_2 * (-x + 2.5)/r ) );
 
   // These are the expected charges without x-talks
   double qt_ll = g1 - g0;
@@ -452,8 +452,10 @@ void CSCFitXonStripWithGatti::getGatti( float x, int t ) {
   double qt_r  = g4 - g3;
   double qt_rr = g5 - g4;
 
-  // Now correct for x-talks:
-  q[0][t] = qt_l * (1. - xt_l[0][t] - xt_r[0][t]) + qt_ll * xt_r[0][t] + qt    * xt_l[1][t];
-  q[1][t] = qt   * (1. - xt_l[1][t] - xt_r[1][t]) + qt_l  * xt_r[0][t] + qt_r  * xt_l[2][t];
-  q[2][t] = qt_r * (1. - xt_l[2][t] - xt_r[2][t]) + qt    * xt_r[1][t] + qt_rr * xt_l[2][t];
+  for(int t = 0; t < 3; ++t) {
+    // Now correct for x-talks:
+    q[0][t] = qt_l * (1. - xt_l[0][t] - xt_r[0][t]) + qt_ll * xt_r[0][t] + qt    * xt_l[1][t];
+    q[1][t] = qt   * (1. - xt_l[1][t] - xt_r[1][t]) + qt_l  * xt_r[0][t] + qt_r  * xt_l[2][t];
+    q[2][t] = qt_r * (1. - xt_l[2][t] - xt_r[2][t]) + qt    * xt_r[1][t] + qt_rr * xt_l[2][t];
+  }
 }
