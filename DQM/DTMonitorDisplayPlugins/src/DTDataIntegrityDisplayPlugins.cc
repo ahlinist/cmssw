@@ -1,11 +1,11 @@
-// $Id: DTDataIntegrityDisplayPlugins.cc,v 1.1 2007/03/29 09:10:24 gmasetti Exp $
+// $Id: DTDataIntegrityDisplayPlugins.cc,v 1.1 2007/04/03 09:28:46 gmasetti Exp $
 
 /*!
   \file DTDataIntegrityDisplayPlugins
   \brief Display Plugin for Data Integrity Quality Histograms (2D)
   \author G. Masetti 
   \version $Revision: 1.1 $
-  \date $Date: 2007/03/29 09:10:24 $
+  \date $Date: 2007/04/03 09:28:46 $
 */
 
 #include "DQM/DTMonitorDisplayPlugins/src/DTDataIntegrityDisplayPlugins.h"
@@ -92,9 +92,11 @@ std::string DTDataIntegrityDisplayPlugins::preDrawTH2F( VisDQMDisplayPlugin::Dis
     gStyle->SetPadBorderSize( 0 );
     //    (data->pad)->SetLogy( 0 );
     gStyle->SetOptStat( 0 );
+    gStyle->SetPalette( 1 );
     obj->SetStats( kFALSE );
 
-    obj->SetOption( "box" );
+    //obj->SetOption( "box" );
+    obj->SetOption( "colz" );
 
   }
 
@@ -119,19 +121,23 @@ std::string DTDataIntegrityDisplayPlugins::preDrawTH1F( VisDQMDisplayPlugin::Dis
       obj->SetStats( kFALSE );
 
 
-      if ( name.find( "FED770_DDUChannel" ) == 0 ) {
+      if ( name.find( "FED770TTSValues_Percent" ) ) {
 	
 	(data->pad)->SetLogy( 1 );
 	
-	obj->GetXaxis()->SetBinLabel(1,"ERR1");
-	obj->GetXaxis()->SetBinLabel(2,"ERR2");
-	obj->GetXaxis()->SetBinLabel(3,"ERR3");
-	obj->GetXaxis()->SetBinLabel(4,"ERR4");
-	obj->GetXaxis()->SetBinLabel(5,"ERR5");
-	obj->GetXaxis()->SetBinLabel(6,"ERR6");
-	obj->GetXaxis()->SetBinLabel(7,"ERR7");
-	obj->GetXaxis()->SetBinLabel(8,"ERR8");
+// 	obj->GetXaxis()->SetBinLabel(1,"ERR1");
+// 	obj->GetXaxis()->SetBinLabel(2,"ERR2");
+// 	obj->GetXaxis()->SetBinLabel(3,"ERR3");
+// 	obj->GetXaxis()->SetBinLabel(4,"ERR4");
+// 	obj->GetXaxis()->SetBinLabel(5,"ERR5");
+// 	obj->GetXaxis()->SetBinLabel(6,"ERR6");
+// 	obj->GetXaxis()->SetBinLabel(7,"ERR7");
+// 	obj->GetXaxis()->SetBinLabel(8,"ERR8");
 
+      }  
+      if ( name.find( "FED770_ROSList" )  ) {
+
+	obj->GetXaxis()->SetTitle("# of ROS");
       }
   }
   
