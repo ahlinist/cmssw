@@ -4,7 +4,7 @@
 //
 //--------------------------------------------
 
-#include "IORawData/DaqSource/test/SecondaryProducer.h"
+#include "SecondaryProducer.h"
 
 #include "FWCore/Framework/interface/EventPrincipal.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
