@@ -87,6 +87,8 @@ class CSCFitXonStripWithGatti
 
   double h;                                     // This is the distance between strip and wire planes
   float stripWidth;
+  double r;                                     // This is the ratio h/stripwidth
+  
   double k_1, k_2, k_3, sqrt_k_3, norm;         // See equation above for description
     
   // gatti fit data and error matrices
