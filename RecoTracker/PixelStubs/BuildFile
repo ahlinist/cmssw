@@ -9,7 +9,6 @@
 <use name=DataFormats/TrackerRecHit2D>
 <use name=FWCore/Framework> 
 <use name=DataFormats/SiStripDetId>
-<use name=RecoTracker/GeometryESProducer>
 <use name=RecoTracker/TkSeedingLayers>
 <use name=FWCore/PluginManager>
 
@@ -23,6 +22,5 @@
   <use name=FWCore/Framework>
   <use name=RecoTracker/TkDetLayers>
   <use name=DataFormats/SiStripDetId>
-  <use name=RecoTracker/GeometryESProducer>
   <use name=RecoTracker/TkSeedingLayers>
 </export>
