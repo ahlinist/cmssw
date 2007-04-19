@@ -100,6 +100,11 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCLayer* layer, const CSCStri
       xt_r[1][t] = xtalks[6] * (50.* (t-1) + dt) + xtalks[7] + xtalksOffset;
       xt_l[2][t] = xtalks[8] * (50.* (t-1) + dt) + xtalks[9] + xtalksOffset;
       xt_r[2][t] = xtalks[10]* (50.* (t-1) + dt) + xtalks[11] + xtalksOffset;
+
+      xt_lr0[t] = (1. - xt_l[0][t] - xt_r[0][t]);
+      xt_lr1[t] = (1. - xt_l[1][t] - xt_r[1][t]);
+      xt_lr2[t] = (1. - xt_l[2][t] - xt_r[2][t]);
+
     }
   } else { 
     for ( int t = 0; t < 3; ++t ) {
@@ -109,8 +114,15 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCLayer* layer, const CSCStri
       xt_r[1][t] = xtalksOffset;
       xt_l[2][t] = xtalksOffset;
       xt_r[2][t] = xtalksOffset;
+
+      xt_lr0[t] = (1. - xt_l[0][t] - xt_r[0][t]);
+      xt_lr1[t] = (1. - xt_l[1][t] - xt_r[1][t]);
+      xt_lr2[t] = (1. - xt_l[2][t] - xt_r[2][t]);
+
     } 
   }
+  
+
 
   // vector containing noise starts at tmax - 1, and tmax > 3, but....
   int tbin = tmax - 4;
@@ -454,8 +466,8 @@ void CSCFitXonStripWithGatti::getGatti( float x, int t_disabled ) {
 
   for(int t = 0; t < 3; ++t) {
     // Now correct for x-talks:
-    q[0][t] = qt_l * (1. - xt_l[0][t] - xt_r[0][t]) + qt_ll * xt_r[0][t] + qt    * xt_l[1][t];
-    q[1][t] = qt   * (1. - xt_l[1][t] - xt_r[1][t]) + qt_l  * xt_r[0][t] + qt_r  * xt_l[2][t];
-    q[2][t] = qt_r * (1. - xt_l[2][t] - xt_r[2][t]) + qt    * xt_r[1][t] + qt_rr * xt_l[2][t];
+    q[0][t] = qt_l * xt_lr0[t] + qt_ll * xt_r[0][t] + qt    * xt_l[1][t];
+    q[1][t] = qt   * xt_lr1[t] + qt_l  * xt_r[0][t] + qt_r  * xt_l[2][t];
+    q[2][t] = qt_r * xt_lr2[t] + qt    * xt_r[1][t] + qt_rr * xt_l[2][t];
   }
 }
