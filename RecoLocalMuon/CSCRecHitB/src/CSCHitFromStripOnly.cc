@@ -69,8 +69,12 @@ std::vector<CSCStripHit> CSCHitFromStripOnly::runStrip( const CSCDetId& id, cons
 
   // Get strips which are part of the CLCT
   std::vector<int> clctStrips;
-  if ( useCleanStripCollection ) clctStrips = getCLCTStrips( id, clcts );
-
+  if ( useCleanStripCollection ) {
+    clctStrips = getCLCTStrips( id, clcts );
+    if ( clctStrips.size() < 1) return hitsInLayer;
+//    unsigned Nclcts = clctStrips.size();
+//    if (Nclcts < 1 || Nclcts > 2) return hitsInLayer;
+  }
 
   TmaxOfCluster = 5;
 

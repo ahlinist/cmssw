@@ -30,10 +30,9 @@ bool CSCFindPeakTime::FindPeakTime( const int& tmax, const float* adc, float& t_
   // If outside physical range, exit
   if ( tmax < 2 || tmax > 6 ) return false;
 
-  float tb[4], y[4];
+  float tb[4];
   for ( int time=0; time<4; ++time ){
     tb[time] = (tmax + time -1) * 50.;
-    y[time] = adc[time];
   }
 
   int n_fit  = 4;
@@ -45,23 +44,25 @@ bool CSCFindPeakTime::FindPeakTime( const int& tmax, const float* adc, float& t_
   float chi2     = 0.;
   float del_t    = 100.;
 
+  float x[4];
+  float sx2 = 0.;
+  float sxy = 0.;
+  float NN = 0.;
+
   while ( del_t > 1. ) {
-    
-    float x[4];
-    float sx2 = 0.;
-    float sxy = 0.;
-    
+    sx2 = 0.;
+    sxy = 0.;
+        
     for ( int j=0; j < n_fit; ++j ) {
-      float t = tb[j];
-      x[j] = (t-tt0)*(t-tt0)*(t-tt0)*(t-tt0) * exp( -p0 * (t-tt0) );
-      sx2  = sx2 + x[j] * x[j];
-      sxy  = sxy + x[j] * y[j];
+      x[j] = (tb[j] - tt0) * (tb[j] - tt0) * (tb[j] - tt0) * (tb[j] - tt0) * exp( -p0 * (tb[j] - tt0) );
+      sx2  += x[j] * x[j];
+      sxy  += x[j] * adc[j];
     }
-    float NN = sxy / sx2;
+    NN = sxy / sx2;
     
     // Compute chi^2
     chi2 = 0.0;
-    for (int j=0; j < n_fit; ++j) chi2 += (y[j] - NN * x[j]) * (y[j] - NN * x[j]);
+    for (int j=0; j < n_fit; ++j) chi2 += (adc[j] - NN * x[j]) * (adc[j] - NN * x[j]);
 
     // Test on chi^2 to decide what to do    
     if ( chi_last > chi2 ) {
