@@ -62,7 +62,7 @@ PluginManager::PluginManager(const PluginManager::Config& iConfig) :
         continue;
       }
       alreadySeen.insert(*itPath);
-      boost::filesystem::path dir(*itPath);
+      boost::filesystem::path dir(*itPath,boost::filesystem::no_check);
       if( exists( dir) ) {
         if(not is_directory(dir) ) {
           throw cms::Exception("PluginManagerBadPath") <<"The path '"<<dir.native_file_string()<<"' for the PluginManager is not a directory";
