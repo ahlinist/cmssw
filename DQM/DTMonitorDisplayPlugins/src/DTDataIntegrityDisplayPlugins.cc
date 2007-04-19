@@ -1,11 +1,11 @@
-// $Id: DTDataIntegrityDisplayPlugins.cc,v 1.1 2007/04/03 09:28:46 gmasetti Exp $
+// $Id: DTDataIntegrityDisplayPlugins.cc,v 1.2 2007/04/19 10:09:50 sbologne Exp $
 
 /*!
   \file DTDataIntegrityDisplayPlugins
   \brief Display Plugin for Data Integrity Quality Histograms (2D)
   \author G. Masetti 
-  \version $Revision: 1.1 $
-  \date $Date: 2007/04/03 09:28:46 $
+  \version $Revision: 1.2 $
+  \date $Date: 2007/04/19 10:09:50 $
 */
 
 #include "DQM/DTMonitorDisplayPlugins/src/DTDataIntegrityDisplayPlugins.h"
@@ -120,8 +120,7 @@ std::string DTDataIntegrityDisplayPlugins::preDrawTH1F( VisDQMDisplayPlugin::Dis
       gStyle->SetOptStat( 0 );
       obj->SetStats( kFALSE );
 
-
-      if ( name.find( "FED770TTSValues_Percent" ) ) {
+      if ( name.find( "FED770TTSValues_Percent" ) == 0  ) {
 	
 	(data->pad)->SetLogy( 1 );
 	
@@ -135,7 +134,7 @@ std::string DTDataIntegrityDisplayPlugins::preDrawTH1F( VisDQMDisplayPlugin::Dis
 // 	obj->GetXaxis()->SetBinLabel(8,"ERR8");
 
       }  
-      if ( name.find( "FED770_ROSList" )  ) {
+      if ( name.find( "FED770_ROSList" ) == 0 ) {
 
 	obj->GetXaxis()->SetTitle("# of ROS");
       }
