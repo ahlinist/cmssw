@@ -123,7 +123,6 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCLayer* layer, const CSCStri
   }
   
 
-
   // vector containing noise starts at tmax - 1, and tmax > 3, but....
   int tbin = tmax - 4;
 
@@ -184,7 +183,7 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCLayer* layer, const CSCStri
       x_gatti   = ( tmp0_x + tmp1_x ) / 2.;
       dxl_gatti = fabs( tmp0_x - tmp1_x )/ sqrt(12.);
       dxh_gatti = dxl_gatti;
-      chi2_gatti = 9999.;
+      chi2_gatti = 10001.;
     }
   }    
 
@@ -218,8 +217,8 @@ void CSCFitXonStripWithGatti::runGattiFit( int istrt ) {
   float chi2min = 1.e12;
   float chi2last= 1.e12;
 
-//  while ( fabs(step) < 0.002 ) {
-  while ( fabs(step) < 0.02 ) {
+  while ( fabs(step) < 0.002 ) {
+//  while ( fabs(step) < 0.1 ) {
     
     chi2 = chisqrFromGatti( dx );
     
