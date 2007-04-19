@@ -653,18 +653,18 @@ EDMS Code EP 680-1174-200-C
 		density = 8.96 g/cm^3
 		--> volume = 0.176 cm^3
 
-(3-4) OptoHybrid Connectors NaiS
+(3-4) Connectors NaiS
 	socket + header
 	2 x ICC-Kapton bias PCB 16 pins (AXN316038S + AXN416330S)
-	2 x ICC-AOH             30 pins (AXN330038S + AXN430330S)
+	THIS GOES IN AOH 2 x ICC-AOH             30 pins (AXN330038S + AXN430330S)
 	2 x ICC-FEH             40 pins (AXN340038S + AXN440330S)
 	1 x ICC-ICB             50 pins (AXN350038S + AXN450330S)
-	copper: m = 2 x (0.0461 + 0.0515) g + 2 x (0.0865 + 0.0965) g + 2 x (0.1153 + 0.1287) g + 1 x (0.1442 + 0.1609) g = 1.3543 g
+	copper: m = 2 x (0.0461 + 0.0515) g + NULL x { 2 x (0.0865 + 0.0965) g } + 2 x (0.1153 + 0.1287) g + 1 x (0.1442 + 0.1609) g = 0.9883 g
 		density = 8.96 g/cm^3
-		--> volume = 0.151 cm^3
-	resin:  m = 2 x (0.0882 + 0.1085) g + 2 x (0.1445 + 0.1547) g + 2 x (0.1768 + 0.2013) g + 1 x (0.2329 + 0.2764) g = 2.2573 g
+		--> volume = 0.110 cm^3
+	resin:  m = 2 x (0.0882 + 0.1085) g + NULL x { 2 x (0.1445 + 0.1547) g } + 2 x (0.1768 + 0.2013) g + 1 x (0.2329 + 0.2764) g = 1.6589 g
 		density (epoxy) = 1.3 g/cm^3
-		--> volume = 1.736 cm^3
+		--> volume = 1.276 cm^3
 
 (5) HV stiffener (2 copies)
 	FR4:    m = 0.060 g
@@ -697,8 +697,8 @@ EDMS Code EP 680-1174-200-C
 # "TOB ICC Layer 1/2 (1 APV)"   "TOB_L12_ICC1"    25.96   51.92
 * 1 "PCB board"                 "T_G10"            4.305   1     ELE
 * 2 "PCB copper traces"         "Copper"           0.176   1     ELE	 
-* 3 "NAiS connectors"           "Copper"           0.151   1     ELE
-* 4 "NAiS connectors"           "Epoxy"            1.736   1     ELE
+* 3 "NAiS connectors"           "Copper"           0.110   1     ELE
+* 4 "NAiS connectors"           "Epoxy"            1.276   1     ELE
 * 5 "HV Stiffener"              "T_G10"            0.032   2     CAB
 * 6 "ICC Resistors"             "Ceramic"          0.025   1     ELE
 * 7 "ICC Capacitors"            "Barium Titanate"  0.254   1     ELE
@@ -726,18 +726,18 @@ EDMS Code EP 680-1174-210-D
 		density = 8.96 g/cm^3
 		--> volume = 0.274 cm^3
 
-(3-4) OptoHybrid Connectors NaiS
+(3-4) Connectors NaiS
 	socket + header
 	4 x ICC-Kapton bias PCB 16 pins (AXN316038S + AXN416330S)
-	4 x ICC-AOH             30 pins (AXN330038S + AXN430330S)
+	THIS GOES IN AOH 4 x ICC-AOH             30 pins (AXN330038S + AXN430330S)
 	4 x ICC-FEH             40 pins (AXN340038S + AXN440330S)
 	1 x ICC-ICB             50 pins (AXN350038S + AXN450330S)
-	copper: m = 4 x (0.0461 + 0.0515) g + 4 x (0.0865 + 0.0965) g + 4 x (0.1153 + 0.1287) g + 1 x (0.1442 + 0.1609) g = 2.4035 g
+	copper: m = 4 x (0.0461 + 0.0515) g + NULL x { 4 x (0.0865 + 0.0965) g } + 4 x (0.1153 + 0.1287) g + 1 x (0.1442 + 0.1609) g = 1.6715 g
 		density = 8.96 g/cm^3
-		--> volume = 0.268 cm^3
-	resin:  m = 4 x (0.0882 + 0.1085) g + 4 x (0.1445 + 0.1547) g + 4 x (0.1768 + 0.2013) g + 1 x (0.2329 + 0.2764) g = 4.0053 g
+		--> volume = 0.187 cm^3
+	resin:  m = 4 x (0.0882 + 0.1085) g + NULL x { 4 x (0.1445 + 0.1547) g } + 4 x (0.1768 + 0.2013) g + 1 x (0.2329 + 0.2764) g = 2.8085 g
 		density (epoxy) = 1.3 g/cm^3
-		--> volume = 3.081 cm^3
+		--> volume = 2.160 cm^3
 
 (5) HV stiffener (4 copies)
 	FR4:    m = 0.060 g
@@ -770,8 +770,8 @@ EDMS Code EP 680-1174-210-D
 # "TOB ICC Layer 1/2 (2 APVs)"  "TOB_L12_ICC2"    40.12   80.24
 * 1 "PCB board"                 "T_G10"            6.583   1     ELE
 * 2 "PCB copper traces"         "Copper"           0.274   1     ELE	 
-* 3 "NAiS connectors"           "Copper"           0.268   1     ELE
-* 4 "NAiS connectors"           "Epoxy"            3.081   1     ELE
+* 3 "NAiS connectors"           "Copper"           0.187   1     ELE
+* 4 "NAiS connectors"           "Epoxy"            2.160   1     ELE
 * 5 "HV Stiffener"              "T_G10"            0.032   4     CAB
 * 6 "ICC Resistors"             "Ceramic"          0.040   1     ELE
 * 7 "ICC Capacitors"            "Barium Titanate"  0.503   1     ELE
@@ -793,6 +793,8 @@ ICC1
 Circuit ICC3 (SS_ICC1)
 EDMS Code EP 680-1174-220-B
 
+MCVolume: ( x x ) cm^3 =  cm^3
+
 (1-2) PCBs
 	FR4:    m = 5.754 g
 		density (T_G10) = 1.90 g/cm^3
@@ -801,18 +803,18 @@ EDMS Code EP 680-1174-220-B
 		density = 8.96 g/cm^3
 		--> volume = 0.144 cm^3
 
-(3-4) OptoHybrid Connectors NaiS
+(3-4) Connectors NaiS
 	socket + header
 	1 x ICC-Kapton bias PCB 16 pins (AXN316038S + AXN416330S)
-	1 x ICC-AOH             30 pins (AXN330038S + AXN430330S)
+	THIS GOES IN AOH 1 x ICC-AOH             30 pins (AXN330038S + AXN430330S)
 	1 x ICC-FEH             40 pins (AXN340038S + AXN440330S)
 	1 x ICC-ICB             50 pins (AXN350038S + AXN450330S)
-	copper: m = 1 x (0.0461 + 0.0515) g + 1 x (0.0865 + 0.0965) g + 1 x (0.1153 + 0.1287) g + 1 x (0.1442 + 0.1609) g = 0.8297 g
+	copper: m = 1 x (0.0461 + 0.0515) g + NULL x { 1 x (0.0865 + 0.0965) g } + 1 x (0.1153 + 0.1287) g + 1 x (0.1442 + 0.1609) g = 0.6467 g
 		density = 8.96 g/cm^3
-		--> volume = 0.0926 cm^3
-	resin:  m = 1 x (0.0882 + 0.1085) g + 1 x (0.1445 + 0.1547) g + 1 x (0.1768 + 0.2013) g + 1 x (0.2329 + 0.2764) g = 1.3833 g
+		--> volume = 0.0722 cm^3
+	resin:  m = 1 x (0.0882 + 0.1085) g + NULL x { 1 x (0.1445 + 0.1547) g } + 1 x (0.1768 + 0.2013) g + 1 x (0.2329 + 0.2764) g = 1.0841 g
 		density (epoxy) = 1.3 g/cm^3
-		--> volume = 1.064 cm^3
+		--> volume = 1.019 cm^3
 
 (5) HV stiffener
 	FR4:    m = 0.060 g
@@ -857,16 +859,12 @@ EDMS Code EP 680-1174-220-B
 		density (brass) = 8.5 g/cm^3
 		--> volume = 0.011 cm^3
 
-
-@@@ HERE THE OPTOHYBRID SPECS ARE MISSING
-
-
 .......................................................................
 # "TOB ICC Layer 3/4 (1 APV)"   "TOB_L34_ICC1"    25.96   51.92
 * 1 "PCB board"                 "T_G10"            3.028   1     ELE
 * 2 "PCB copper traces"         "Copper"           0.144   1     ELE	 
-* 3 "NAiS connectors"           "Copper"           0.0926  1     ELE
-* 4 "NAiS connectors"           "Epoxy"            1.064   1     ELE
+* 3 "NAiS connectors"           "Copper"           0.0722  1     ELE
+* 4 "NAiS connectors"           "Epoxy"            1.019   1     ELE
 * 5 "HV Stiffener"              "T_G10"            0.032   1     CAB
 * 6 "ICC Resistors"             "Ceramic"          0.019   1     ELE
 * 7 "ICC Capacitors"            "Barium Titanate"  0.170   1     ELE
@@ -885,6 +883,8 @@ ICC2
 Circuit ICC4 (SS_ICC2)
 EDMS Code EP 680-1174-230-B
 
+MCVolume: ( x x ) cm^3 =  cm^3
+
 (1-2) PCBs
 	FR4:    m = 8.175 g
 		density (T_G10) = 1.90 g/cm^3
@@ -893,18 +893,18 @@ EDMS Code EP 680-1174-230-B
 		density = 8.96 g/cm^3
 		--> volume = 0.180 cm^3
 
-(3-4) OptoHybrid Connectors NaiS
+(3-4) Connectors NaiS
 	socket + header
 	2 x ICC-Kapton bias PCB 16 pins (AXN316038S + AXN416330S)
-	2 x ICC-AOH             30 pins (AXN330038S + AXN430330S)
+	THIS GOES IN AOH 2 x ICC-AOH             30 pins (AXN330038S + AXN430330S)
 	2 x ICC-FEH             40 pins (AXN340038S + AXN440330S)
 	1 x ICC-ICB             50 pins (AXN350038S + AXN450330S)
-	copper: m = 2 x (0.0461 + 0.0515) g + 2 x (0.0865 + 0.0965) g + 2 x (0.1153 + 0.1287) g + 1 x (0.1442 + 0.1609) g = 1.3543 g
+	copper: m = 2 x (0.0461 + 0.0515) g + NULL x { 2 x (0.0865 + 0.0965) g } + 2 x (0.1153 + 0.1287) g + 1 x (0.1442 + 0.1609) g = 0.9883 g
 		density = 8.96 g/cm^3
-		--> volume = 0.151 cm^3
-	resin:  m = 2 x (0.0882 + 0.1085) g + 2 x (0.1445 + 0.1547) g + 2 x (0.1768 + 0.2013) g + 1 x (0.2329 + 0.2764) g = 2.2573 g
+		--> volume = 0.110 cm^3
+	resin:  m = 2 x (0.0882 + 0.1085) g + NULL x { 2 x (0.1445 + 0.1547) g } + 2 x (0.1768 + 0.2013) g + 1 x (0.2329 + 0.2764) g = 1.6589 g
 		density (epoxy) = 1.3 g/cm^3
-		--> volume = 1.736 cm^3
+		--> volume = 1.276 cm^3
 
 (5) HV stiffener (2 copies)
 	FR4:    m = 0.060 g
@@ -949,14 +949,12 @@ EDMS Code EP 680-1174-230-B
 		density (brass) = 8.5 g/cm^3
 		--> volume = 0.011 cm^3
 
-@@@ HERE THE OPTOHYBRID SPECS ARE MISSING
-
 .......................................................................
 # "TOB ICC Layer 3/4 (2 APVs)"  "TOB_L34_ICC2"    40.12   80.24
 * 1 "PCB board"                 "T_G10"            4.302   1     ELE
 * 2 "PCB copper traces"         "Copper"           0.180   1     ELE	 
-* 3 "NAiS connectors"           "Copper"           0.151   1     ELE
-* 4 "NAiS connectors"           "Epoxy"            1.736   1     ELE
+* 3 "NAiS connectors"           "Copper"           0.110   1     ELE
+* 4 "NAiS connectors"           "Epoxy"            1.276   1     ELE
 * 5 "HV Stiffener"              "T_G10"            0.032   2     CAB
 * 6 "ICC Resistors"             "Ceramic"          0.027   1     ELE
 * 7 "ICC Capacitors"            "Barium Titanate"  0.336   1     ELE
@@ -969,8 +967,6 @@ EDMS Code EP 680-1174-230-B
 * 14 "HV pin (module)"          "TOB_Brass"        0.011   2     ELE
 .......................................................................
 =======================================================================
-
-
 
 	Layer 5/6
 	---------
@@ -1019,6 +1015,62 @@ Same as Layer 3/4.
 * 13 "Hybrid Tail Glue"         "Epoxy"            0.057   2     ELE
 .......................................................................
 =======================================================================
+
+
+o AOH
+  ---
+
+MCVolume: ( 2.3 x 3.0 x 0.2 ) cm^3 = 1.38 cm^3
+
+(1-2) PCBs
+	FR4:    m = 0.65 g
+		density (T_G10) = 1.90 g/cm^3
+		--> volume = 0.342 cm^3
+	copper: m = 0.497 g
+		density = 8.96 g/cm^3
+		--> volume = 0.055 cm^3
+
+(3-4) Connectors NaiS
+	socket + header
+	1 x ICC-AOH             30 pins (AXN330038S + AXN430330S)
+	copper: m = 1 x (0.0865 + 0.0965) g = 0.183 g
+		density = 8.96 g/cm^3
+		--> volume = 0.020 cm^3
+	resin:  m = 1 x (0.1445 + 0.1547) g = 0.2992 g
+		density (epoxy) = 1.3 g/cm^3
+		--> volume = 0.230 cm^3
+
+(5) AOH SMD Resistors, 6 x (0603) resistors, mostly Al2O3 (Aluminiumoxid, ceramic), the total mass is computed
+	m = 0.0127 g
+	density = 3.96525 g/cm^3
+	--> volume = 0.0032 cm^3
+
+(6) AOH SMD Capacitors, 3 x (0603) + 3 x (0805) mostly BaTiO3, the total mass is computed
+	m = 0.0687 g
+	density = 6.02 g/cm^3
+	--> volume = 0.0114 cm^3
+
+(7-8) AOH ASICs: 1 x ("LLD" 32 pin)
+	epoxy:	m = ( 1 x 0.027098 ) g = 0.027098 g
+		density = 1.3 g/cm^3
+		--> volume = 0.0208 cm^3
+	copper: m = [ ( 1 x 0.070 ) - 0.027098 ) g = 0.042902 g
+		density = 8.96 g/cm^3
+		--> volume = 0.0048 cm^3
+
+.......................................................................
+# "TOB AOH"                     "TOB_AOH"          1.38    6.90
+* 1 "PCB board"                 "T_G10"            0.342   1     ELE
+* 2 "PCB copper traces"         "Copper"           0.055   1     ELE	 
+* 3 "NAiS connectors"           "Copper"           0.020   1     ELE
+* 4 "NAiS connectors"           "Epoxy"            0.230   1     ELE
+* 5 "AOH Resistors"             "Ceramic"          0.0032  1     ELE
+* 6 "AOH Capacitors"            "Barium Titanate"  0.0114  1     ELE
+* 8 "AOH ASICs EMC"             "Epoxy"            0.0208  1     ELE
+* 9 "AOH ASICs copper"          "Copper"           0.0048  1     ELE
+.......................................................................
+=======================================================================
+
 
 
 o TOB_CCUM
