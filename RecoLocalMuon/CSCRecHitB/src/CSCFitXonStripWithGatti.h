@@ -98,6 +98,7 @@ class CSCFitXonStripWithGatti
 
   /// x-talks  0 = left, 1 = middle, 2 = right ; and then second [] is for time bin tmax-1, tmax, tmax+1
   float xt_l[3][3], xt_r[3][3];
+  float xt_lr0[3], xt_lr1[3], xt_lr2[3];
 
   /// Store elements of auto-correlation matrices:      0 = left, 1 = middle, 2 = right
   float a11[3], a12[3], a13[3], a22[3], a23[3], a33[3];
