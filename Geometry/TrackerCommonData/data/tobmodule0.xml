@@ -147,7 +147,7 @@
    <rParent name="tobmodule0:TOBModule0"/>
    <rChild name="tobmodpar:TOBPA2"/>
   <rRotation name="tobmodpar:PA"/>
-  <Translation x="[tobmodpar:PAX]"        y="[tobmodpar:PAY]" 
+  <Translation x="[tobmodpar:PAX]"        y="[tobmodpar:PAYst]" 
                z="[tobmodpar:PAZ]"  />
  </PosPart>
  <PosPart copyNumber="1">
@@ -157,11 +157,11 @@
   <Translation x="[zero]"                 y="-[tobmodpar:GluePAY]" 
                z="[tobmodpar:GluePAZ]"  />
  </PosPart>
- <PosPart copyNumber="2">
+ <PosPart copyNumber="1">
    <rParent name="tobmodule0:TOBModule0"/>
-   <rChild name="tobmodpar:TOBPAEncaps"/>
+   <rChild name="tobmodpar:TOBPAEncapsSt"/>
   <rRotation name="tobmodpar:Ster"/>
-  <Translation x="[tobmodpar:GluePAX]"    y="[tobmodpar:GluePAY]" 
+  <Translation x="[tobmodpar:GluePAX]"    y="[tobmodpar:GluePAYst]" 
                z="[tobmodpar:GluePAZ]"  />
  </PosPart>
  <PosPart copyNumber="1">

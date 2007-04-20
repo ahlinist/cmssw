@@ -30,7 +30,7 @@ root volume plus an anchor point for positioning.
 
 <ConstantsSection label="Cylinders" eval="true">
  <Constant name="CylindersOuterRmin" value="160.00*mm"/>
- <Constant name="CylindersOuterRmax" value="164.20*mm"/>
+ <Constant name="CylindersOuterRmax" value="168.50*mm"/>
  <Constant name="CylindersOuterLength" value="2101.09*mm"/> 
 
  <Constant name="CylindersEndFlangeRmin" value="132.50*mm"/>
@@ -45,9 +45,9 @@ root volume plus an anchor point for positioning.
  <Constant name="CylindersCoilFiberLength" value="582.97*mm"/>
  <Constant name="CylindersCoilFiberThickness" value="12.70*mm"/>
 
- <Constant name="CylinderPipeRmax" value="15.0*mm"/>
- <Constant name="CylinderPipeRmin" value="9.02*mm"/>
- <Constant name="CylinderPipeLength1" value="1177.16*mm"/>
+ <Constant name="CylinderPipeRmax" value="15.0/2.0*mm"/>
+ <Constant name="CylinderPipeRmin" value="9.02/2.0*mm"/>
+ <Constant name="CylinderPipeLength1" value="(1177.16-239.58)*mm"/>
  <Constant name="CylinderPipeLength2" value="823.60*mm"/>
 
  <Constant name="CylindersPortCardsWidth" value="60.0*mm"/>
@@ -55,10 +55,10 @@ root volume plus an anchor point for positioning.
  <Constant name="CylindersPortCardsLength2" value="355.60*mm"/>
  <Constant name="CylindersPortCardsThickness" value="5.40*mm"/>
 
- <Constant name="CylindersServiceZoff"   value="320.0*mm"/>
- <Constant name="CylindersServiceRmin"   value="100*mm"/>
- <Constant name="CylindersServiceZMin"   value="([CylindersServiceZoff]+[pixfwd:ZPixelForward])"/>
- <Constant name="CylindersServiceZMax"   value="([CylindersOuterLength]+[pixfwd:ZPixelForward])"/>
+ <Constant name="CylindersServiceZoff" value="320.0*mm"/>
+ <Constant name="CylindersServiceRmin" value="100*mm"/>
+ <Constant name="CylindersServiceZMin" value="([CylindersServiceZoff]+[pixfwd:ZPixelForward])"/>
+ <Constant name="CylindersServiceZMax" value="([CylindersOuterLength]+[pixfwd:ZPixelForward])"/>
 </ConstantsSection>
  
 
@@ -100,9 +100,9 @@ root volume plus an anchor point for positioning.
 
 <SolidSection label="Cylinders">
 
- <Polycone name="PixelForwardServiceCylinder" startPhi="0*deg" deltaPhi="360*deg" >
-  <ZSection z="[pixfwd:ZPixelForward]" rMin="[CylindersOuterRmin]"   rMax="[CylindersOuterRmax]"/>
-  <ZSection z="[CylindersServiceZMin]" rMin="[CylindersOuterRmin]"   rMax="[CylindersOuterRmax]"/>
+ <Polycone name="PixelForwardServiceCylinder" startPhi="0*deg" deltaPhi="360*deg">
+  <ZSection z="[pixfwd:ZPixelForward]" rMin="[CylindersOuterRmin]" rMax="[CylindersOuterRmax]"/>
+  <ZSection z="[CylindersServiceZMin]" rMin="[CylindersOuterRmin]" rMax="[CylindersOuterRmax]"/>
   <ZSection z="[CylindersServiceZMin]" rMin="[CylindersServiceRmin]" rMax="[CylindersOuterRmax]"/>
   <ZSection z="[CylindersServiceZMax]" rMin="[CylindersServiceRmin]" rMax="[CylindersOuterRmax]"/>
  </Polycone>
@@ -117,7 +117,7 @@ root volume plus an anchor point for positioning.
 
   <Tubs name="PixelForwardCylinderElectronics3" rMin="[CylindersElectronicsRmin]" rMax="[CylindersElectronicsRmax]" dz="[CylindersElectronicsLength]/2." startPhi="302.75*deg" deltaPhi="33.57*deg"/>
 
-  <Tubs name="PixelForwardCylinderElectronics4" rMin="[CylindersElectronicsRmin]" rMax="[CylindersElectronicsRmax]" dz="[CylindersElectronicsLength]/2." startPhi="237.25*deg" deltaPhi="33.57*deg"/>
+  <Tubs name="PixelForwardCylinderElectronics4" rMin="[CylindersElectronicsRmin]" rMax="[CylindersElectronicsRmax]" dz="[CylindersElectronicsLength]/2." startPhi="203.675*deg" deltaPhi="33.57*deg"/>
 
   <Box name="PixelForwardCylindersCoilFiber" dx="[CylindersCoilFiberWidth]/2." dy="[CylindersCoilFiberThickness]/2." dz="[CylindersCoilFiberLength]/2."/>
 
@@ -204,17 +204,19 @@ root volume plus an anchor point for positioning.
   <Constant name="CoilFilberToBeam" value="114.7*mm"/>
   <Constant name="CoilFilberAngle" value="47.19*deg"/>
   
-  <Constant name="FractionForPipe" value="0.9499"/>
+  <!--Constant name="FractionForPipe" value="0.9499"/-->
+  <Constant name="FractionForPipe" value="0.99"/>
   <Constant name="PipeX1" value="19.9*mm"/>
   <Constant name="PipeX2" value="151.7*mm"/>
   <Constant name="PipeY1" value="150.4*mm"/>
   <Constant name="PipeY2" value="16.9*mm"/>
-  <Constant name="PipeToIP1" value="975.19*mm"/> 
+  <Constant name="PipeToIP1" value="([CylindersServiceZMin]+[CylinderPipeLength1]/2)"/> 
   <Constant name="PipeToIP2" value="1994.38*mm"/>
 
   <Constant name="PortCardsToBeam" value="143.1*mm"/>
-  <Constant name="PortCardsAngle1" value="(22.5+4)*deg"/>
-  <Constant name="PortCardsAngle2" value="(67.5-4)*deg"/>
+  <Constant name="PortCardsAngle1" value="(22.5+1)*deg"/>
+  <Constant name="PortCardsAngle2" value="(67.5-1)*deg"/>
+
   <Constant name="PortCardsToIP" value="952.75*mm"/> 
 
 </ConstantsSection>

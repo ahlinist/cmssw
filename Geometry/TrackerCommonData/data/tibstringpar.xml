@@ -5,49 +5,51 @@
  <Constant name="StringL"        value="140.20*cm"/>
  <Constant name="MotherCableW"   value="2.40*cm"/>
  <Constant name="MotherCableT"   value="0.06*cm"/>
- <Constant name="MotherCableY"   value="0.12*cm"/>
+ <Constant name="MotherCableY"   value="0.11*cm"/>
  <Constant name="CoolTubeD"      value="2.8*mm"/>
  <Constant name="CoolTubeSep"    value="5.40*cm"/>
- <Constant name="ICCBoxW"        value="7.40*cm"/>
- <Constant name="ICCBoxT"        value="3.04*cm"/>
+ <Constant name="ICCBoxW"        value="6.54*cm"/>
+ <Constant name="ICCBoxT"        value="3.00*mm"/>
  <Constant name="ICCBoxL"        value="3.50*cm"/>
- <Constant name="ICCW"           value="7.20*cm"/>
+ <Constant name="ICCW"           value="6.54*cm"/>
  <Constant name="ICCT"           value="0.19*cm"/>
  <Constant name="ICCL"           value="3.50*cm"/>
- <Constant name="ICCY"           value="0.053*cm"/>
+ <Constant name="ICCY"           value="0.055*cm"/>
  <Constant name="ICCCool1W"      value="0.625*cm"/>
  <Constant name="ICCCool2W"      value="4.75*cm"/>
  <Constant name="ICCCoolT"       value="0.11*cm"/>
  <Constant name="ICCCool1L"      value="3.50*cm"/>
  <Constant name="ICCCool2L"      value="0.30*cm"/>
  <Constant name="ICCCoolX"       value="2.6875*cm"/>
- <Constant name="ICCCoolY"       value="-0.097*cm"/>
+ <Constant name="ICCCoolY"       value="-0.095*cm"/>
  <Constant name="ICCCoolZ"       value="1.60*cm"/>
  <Constant name="ICCBoxToMod"    value="6.0*mm"/>
  <Constant name="CCUML"          value="2.20*cm"/>
  <Constant name="CCUMZ"          value="69.0*cm"/>
  <Constant name="CoolTubeW"      value="[CoolTubeD]+[CoolTubeSep]"/>
+ <Constant name="SideCutDx"      value="[tibmodpar:DSModuleSideCutDx]"/>
+ <Constant name="SideCutX"       value="[tibmodpar:ModuleDx]-[SideCutDx]+0.3*mm"/>
 </ConstantsSection>
 
 <SolidSection label="tibstringpar.xml">
  <Box name="TIBSSString1"               dx="[tibmodpar:ModuleDx]"    
       dy="[tibmodpar:SSModuleDy]"       dz="[tibstringpar:StringL]/2"/>
 
- <Box name="TIBDSString1MainPart"            dx="[tibmodpar:ModuleDx]"    
-      dy="[tibmodpar:DSModuleDy]"   dz="[tibstringpar:StringL]/2"/>
- <Box name="TIBDSString1SideCutL"            dx="[tibmodpar:DSModuleSideCutDx]"    
+ <Box name="TIBDSString1MainPart"       dx="[tibmodpar:ModuleDx]"    
+      dy="[tibmodpar:DSModuleDy]"       dz="[tibstringpar:StringL]/2"/>
+ <Box name="TIBDSString1SideCutL"       dx="[SideCutDx]"    
       dy="[tibmodpar:DSModuleSideCutDy]"   dz="[tibstringpar:StringL]/2+[tibmodpar:SideCutExtraZ]"/>
- <Box name="TIBDSString1SideCutR"            dx="[tibmodpar:DSModuleSideCutDx]"    
+ <Box name="TIBDSString1SideCutR"       dx="[SideCutDx]"    
       dy="[tibmodpar:DSModuleSideCutDy]"   dz="[tibstringpar:StringL]/2+[tibmodpar:SideCutExtraZ]"/>
  <SubtractionSolid name="TIBDSString1LeftCutted">
    <rSolid name="TIBDSString1MainPart"/>
    <rSolid name="TIBDSString1SideCutL"/>
-   <Translation x="-[tibmodpar:DSModuleSideCutX]" y="[tibmodpar:DSModuleSideCutY]" z="0."/>
+   <Translation x="-[SideCutX]" y="[tibmodpar:DSModuleSideCutY]" z="0."/>
  </SubtractionSolid>
  <SubtractionSolid name="TIBDSString1">
    <rSolid name="TIBDSString1LeftCutted"/>
    <rSolid name="TIBDSString1SideCutR"/>
-   <Translation x="[tibmodpar:DSModuleSideCutX]" y="[tibmodpar:DSModuleSideCutY]" z="0."/>
+   <Translation x="[SideCutX]" y="[tibmodpar:DSModuleSideCutY]" z="0."/>
  </SubtractionSolid>
 
  <Box name="TIBString2"               dx="[tibstringpar:CoolTubeW]/2"    

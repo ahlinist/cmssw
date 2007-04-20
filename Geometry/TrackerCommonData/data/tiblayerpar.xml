@@ -20,10 +20,11 @@
  <Constant name="DOHMCarrierT"   value="1.15*mm"/>
  <Constant name="DOHM_PRIM_W"    value="5.0*cm"/>
  <Constant name="DOHM_PRIM_L"    value="28.5*cm"/>
- <Constant name="DOHM_PRIM_T"    value="1.2*mm"/>
+ <Constant name="DOHM_PRIM_T"    value="1.15*mm"/>
  <Constant name="DOHM_AUX_W"     value="5.0*cm"/>
  <Constant name="DOHM_AUX_L"     value="15.2*cm"/>
  <Constant name="DOHM_AUX_T"     value="1.8*mm"/>
+ <Constant name="Tol"            value="0.1*mm"/>
 </ConstantsSection>
 
 <RotationSection label="tiblayerpar.xml">

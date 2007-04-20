@@ -50,8 +50,8 @@
    <rParent name="tibmodule0a:TIBModule0A"/>
    <rChild name="tibmodule0:TIBPA2"/>
   <rRotation name="tibmodpar:PAA"/>
-  <Translation x="[tibmodule0:ShiftX]"     y="[tibmodule0:PASterY]" 
-               z="-[tibmodpar:PAZ]"  />
+  <Translation x="[zero]"     y="[tibmodule0:PASterY]" 
+               z="-([tibmodpar:PAZ]-[tibmodpar:Tol])"  />
  </PosPart>
  <PosPart copyNumber="1">
    <rParent name="tibmodule0a:TIBModule0A"/>

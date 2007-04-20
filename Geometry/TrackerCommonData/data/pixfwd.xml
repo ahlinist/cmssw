@@ -56,7 +56,7 @@ with pixfwdCommon:Y180 rotation (180 degrees around Y axis).
 
 <SolidSection label="Root">
  <Polycone name="PixelForward" startPhi="0*deg" deltaPhi="360*deg" >
- <ZSection z="[ZPixelForward]"   rMin="[cms:TrackBeamR1]" rMax="[RootRadius]"/>
+ <ZSection z="[ZPixelForward]-2*mm" rMin="[cms:TrackBeamR1]" rMax="[RootRadius]"/>
  <ZSection z="[cms:TrackBeamZ1]" rMin="[cms:TrackBeamR1]" rMax="[RootRadius]"/>
  <ZSection z="[RootEndZ]"        rMin="[cms:TrackBeamR2]" rMax="[RootRadius]"/>
  </Polycone>

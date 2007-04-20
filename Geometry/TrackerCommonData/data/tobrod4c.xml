@@ -10,7 +10,7 @@
        rMax="[tobrodpar:SideCoolLightR]" dz="[tobrodpar:SideCoolL]" 
        startPhi="0*deg"                  deltaPhi="360*deg"/>
  <Tubs name="TOBEndCool4"                rMin="[zero]" 
-       rMax="[tobrodpar:SideCoolLightR]" dz="[tobrodpar:EndCoolL]" 
+       rMax="[tobrodpar:EndCoolR]"       dz="[tobrodpar:EndCoolL]" 
        startPhi="0*deg"                  deltaPhi="360*deg"/>
  <Tubs name="TOBOptFibre4"               rMin="[zero]" 
        rMax="[tobrodpar:OptFibreR]"      dz="[tobrodpar:OptFibreL]" 
