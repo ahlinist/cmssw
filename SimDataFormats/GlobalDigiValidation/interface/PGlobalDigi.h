@@ -204,16 +204,21 @@ class PGlobalDigi
   ////////// 
   struct DTDigi
   {
-    DTDigi(): WIRE(0), TIME(0) {}
-    int WIRE; //layer (wire) number
+    DTDigi(): SLAYER(0), TIME(0), LAYER(0) {}
+    int SLAYER; //superlayer number
     float TIME; //time of hit
+    int LAYER; //layer number
   };
   typedef std::vector<DTDigi> DTDigiVector;
   //put functions
-  void putMB1Digis(std::vector<int> wire, std::vector<float> time);
-  void putMB2Digis(std::vector<int> wire, std::vector<float> time);
-  void putMB3Digis(std::vector<int> wire, std::vector<float> time);
-  void putMB4Digis(std::vector<int> wire, std::vector<float> time);
+  void putMB1Digis(std::vector<int> slayer, std::vector<float> time, 
+		   std::vector<int> layer);
+  void putMB2Digis(std::vector<int> slayer, std::vector<float> time, 
+		   std::vector<int> layer);
+  void putMB3Digis(std::vector<int> slayer, std::vector<float> time, 
+		   std::vector<int> layer);
+  void putMB4Digis(std::vector<int> slayer, std::vector<float> time, 
+		   std::vector<int> layer);
   //get functions
   int getnMB1Digis() {return nMB1Digis;}  
   int getnMB2Digis() {return nMB2Digis;}  

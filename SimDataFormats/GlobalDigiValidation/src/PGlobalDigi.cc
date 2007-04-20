@@ -451,53 +451,61 @@ void PGlobalDigi::putFWD2nDigis(std::vector<float> adc,
   return;
 }
 
-void PGlobalDigi::putMB1Digis(std::vector<int> wire,
-			      std::vector<float> time)
+void PGlobalDigi::putMB1Digis(std::vector<int> slayer,
+			      std::vector<float> time,
+			      std::vector<int> layer)
 {
-  nMB1Digis = wire.size();
+  nMB1Digis = slayer.size();
   MB1Digis.resize(nMB1Digis);
   for (int i = 0; i < nMB1Digis; ++i) {
-    MB1Digis[i].WIRE = wire[i];
+    MB1Digis[i].SLAYER = slayer[i];
     MB1Digis[i].TIME = time[i];
+    MB1Digis[i].LAYER = layer[i];
   }
 
   return;
 }
 
-void PGlobalDigi::putMB2Digis(std::vector<int> wire,
-			      std::vector<float> time)
+void PGlobalDigi::putMB2Digis(std::vector<int> slayer,
+			      std::vector<float> time,
+			      std::vector<int> layer)
 {
-  nMB2Digis = wire.size();
+  nMB2Digis = slayer.size();
   MB2Digis.resize(nMB2Digis);
   for (int i = 0; i < nMB2Digis; ++i) {
-    MB2Digis[i].WIRE = wire[i];
+    MB2Digis[i].SLAYER = slayer[i];
     MB2Digis[i].TIME = time[i];
+    MB2Digis[i].LAYER = layer[i];
   }
 
   return;
 }
 
-void PGlobalDigi::putMB3Digis(std::vector<int> wire,
-			      std::vector<float> time)
+void PGlobalDigi::putMB3Digis(std::vector<int> slayer,
+			      std::vector<float> time,
+			      std::vector<int> layer)
 {
-  nMB3Digis = wire.size();
+  nMB3Digis = slayer.size();
   MB3Digis.resize(nMB3Digis);
   for (int i = 0; i < nMB3Digis; ++i) {
-    MB3Digis[i].WIRE = wire[i];
+    MB3Digis[i].SLAYER = slayer[i];
     MB3Digis[i].TIME = time[i];
+    MB3Digis[i].LAYER = layer[i];
   }
 
   return;
 }
 
-void PGlobalDigi::putMB4Digis(std::vector<int> wire,
-			      std::vector<float> time)
+void PGlobalDigi::putMB4Digis(std::vector<int> slayer,
+			      std::vector<float> time,
+			      std::vector<int> layer)
 {
-  nMB4Digis = wire.size();
+  nMB4Digis = slayer.size();
   MB4Digis.resize(nMB4Digis);
   for (int i = 0; i < nMB4Digis; ++i) {
-    MB4Digis[i].WIRE = wire[i];
+    MB4Digis[i].SLAYER = slayer[i];
     MB4Digis[i].TIME = time[i];
+    MB4Digis[i].LAYER = layer[i];
   }
 
   return;
