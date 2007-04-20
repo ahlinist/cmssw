@@ -96,9 +96,9 @@
                   rMax="[R_MIN]+9*cm" 
                   rMin="[R_MAX]"/>
      </Polycone>
- <Tubs name="SFC7" rMin="1.23481*m" rMax="1.30481*m" dz="5*mm" startPhi="0*deg" deltaPhi="360*deg"/>
+ <Tubs name="SFC7" rMin="1.234814*m" rMax="1.30481*m" dz="5*mm" startPhi="0*deg" deltaPhi="360*deg"/>
  <Tubs name="SFC8" rMin="1.29981*m" rMax="1.30481*m" dz="4.25*cm" startPhi="0*deg" deltaPhi="360*deg"/>
- <Tubs name="SFC9" rMin="1.29981*m" rMax="1.33481*m" dz="5*mm" startPhi="0*deg" deltaPhi="360*deg"/>
+ <Tubs name="SFC9" rMin="1.299814*m" rMax="1.33481*m" dz="5*mm" startPhi="0*deg" deltaPhi="360*deg"/>
  <Tubs name="SFJ1" rMin="1.2*m" rMax="1.24981*m" dz="4.65*mm" startPhi="0*deg" deltaPhi="360*deg"/>
  <Tubs name="SFJ2" rMin="35.7248*cm" rMax="45.7*cm" dz="4.65*mm" startPhi="0*deg" deltaPhi="360*deg"/>
  <Tubs name="SFJ3" rMin="1.2*m" rMax="1.24981*m" dz="1.85*mm" startPhi="0*deg" deltaPhi="360*deg"/>
@@ -348,7 +348,7 @@
    <rParent name="esalgo:SFBX"/>
    <rChild name="esalgo:SFWX"/>
   <rRotation name="rotations:000D"/>
-  <Translation x="0*fm" y="-1.85*cm" z="-300*mum" />
+  <Translation x="0*fm" y="-1.85*cm" z="-295*mum" />
  </PosPart>
  <PosPart copyNumber="1">
    <rParent name="esalgo:SFWX"/>
@@ -366,7 +366,7 @@
    <rParent name="esalgo:SFBY"/>
    <rChild name="esalgo:SFWY"/>
   <rRotation name="rotations:000D"/>
-  <Translation x="-1.85*cm" y="0*fm" z="-300*mum" />
+  <Translation x="-1.85*cm" y="0*fm" z="-295*mum" />
  </PosPart>
 
  <PosPart copyNumber="1">
