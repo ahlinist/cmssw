@@ -41,7 +41,6 @@ c  about 5% in the energy range 10 GeV - 1000 GeV
 
 
 
-using namespace std;
 
 class CMSCGEN 
 {

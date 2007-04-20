@@ -2,10 +2,8 @@
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "FWCore/Utilities/interface/RandomNumberGenerator.h"
 
-using namespace edm;
-using namespace std;
 
-CosMuoGenSource::CosMuoGenSource( const ParameterSet & pset, InputSourceDescription const& desc ) :
+edm::CosMuoGenSource::CosMuoGenSource( const ParameterSet & pset, InputSourceDescription const& desc ) :
   GeneratedInputSource(pset, desc ) ,  
   //RanS(pset.getUntrackedParameter<int>("RanSeed", 123456)), //get seed now from Framework
   MinE(pset.getUntrackedParameter<double>("MinEn", 2.)),
@@ -54,16 +52,16 @@ CosMuoGenSource::CosMuoGenSource( const ParameterSet & pset, InputSourceDescript
     //  fEvt = new HepMC::GenEvent();
   }
 
-CosMuoGenSource::~CosMuoGenSource(){
+edm::CosMuoGenSource::~CosMuoGenSource(){
   CosMuoGen->terminate();
   delete CosMuoGen;
   //  delete fEvt;
   clear();
 }
 
-void CosMuoGenSource::clear(){}
+void edm::CosMuoGenSource::clear(){}
 
-bool CosMuoGenSource::produce(Event &e)
+bool edm::CosMuoGenSource::produce(Event &e)
 {  
   // generate event
   CosMuoGen->nextEvent();
@@ -85,7 +83,7 @@ bool CosMuoGenSource::produce(Event &e)
 
   if (cmVerbosity_) fEvt->print();
 
-  auto_ptr<HepMCProduct> CMProduct(new HepMCProduct());
+  std::auto_ptr<HepMCProduct> CMProduct(new HepMCProduct());
   CMProduct->addHepMCData( fEvt );
   e.put(CMProduct);
      

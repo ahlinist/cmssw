@@ -9,7 +9,6 @@
 #include "IOMC/CosmicMuonGenerator/src/Point5MaterialMap.cc"
 #include <iostream>
 
-using namespace std;
 
 class SingleParticleEvent{
 public:

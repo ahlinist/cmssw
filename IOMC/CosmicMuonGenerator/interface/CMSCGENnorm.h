@@ -28,7 +28,6 @@
 #include <iostream>
 #include "IOMC/CosmicMuonGenerator/interface/CosmicMuonParameters.h"
 
-using namespace std;
 
 class CMSCGENnorm 
 {

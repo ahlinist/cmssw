@@ -37,12 +37,12 @@ int CMSCGEN::initialize(float Emin_in, float Emax_in, float thetamin_in, float t
 
   if(Emin_in < Emin_min || Emin_in > Emin_max)
   { 
-    cout << " >>> CMSCGEN.initialize <<< warning: illegal Emin_in =" << Emin_in;
+    std::cout << " >>> CMSCGEN.initialize <<< warning: illegal Emin_in =" << Emin_in;
     return(-1);
   }
   else if(Emax_in > Emax_max )
   {
-   cout << " >>> CMSCGEN.initialize <<< warning: illegal Emax_in =" << Emax_in;
+   std::cout << " >>> CMSCGEN.initialize <<< warning: illegal Emax_in =" << Emax_in;
     return(-1);
   }else{   
     Emin = Emin_in;
@@ -54,12 +54,12 @@ int CMSCGEN::initialize(float Emin_in, float Emax_in, float thetamin_in, float t
   //set cmin and cmax
  if( TMath::Cos(thetamin_in) < cmax )
   { 
-    cout << " >>> CMSCGEN.initialize <<< warning: illegal thetamin_in =" << thetamin_in;
+    std::cout << " >>> CMSCGEN.initialize <<< warning: illegal thetamin_in =" << thetamin_in;
     return(-1);
   }
   else if(TMath::Cos(thetamax_in) < cmin_min || TMath::Cos(thetamax_in) > cmin_max)
   {
-    cout << " >>> CMSCGEN.initialize <<< warning: illegal thetamax_in =" << thetamax_in;
+    std::cout << " >>> CMSCGEN.initialize <<< warning: illegal thetamax_in =" << thetamax_in;
     return(-1);
   }else{   
     cmin = TMath::Cos(thetamax_in);//input angle already converted from Deg to Rad!
@@ -165,7 +165,7 @@ int CMSCGEN::generate()
 
   if(initialization==0)
     {
-      cout << " >>> CMSCGEN <<< warning: not initialized" << endl;
+      std::cout << " >>> CMSCGEN <<< warning: not initialized" << std::endl;
       return -1;
     }
 
@@ -342,7 +342,7 @@ int CMSCGEN::generate()
   if(cax >= 0.) c = -0.5*p - sqrt(0.25*p*p-q);
   if(cax < 0.) c = -0.5*p + sqrt(0.25*p*p-q);
 
-  if(c>cmax || c<cmin) cout << " >>> CMSCGEN <<< warning: generated cosmic with cos(theta) = " << c << " --> out of range "<< endl;
+  if(c>cmax || c<cmin) std::cout << " >>> CMSCGEN <<< warning: generated cosmic with cos(theta) = " << c << " --> out of range "<< std::endl;
 
   return 0;
 
@@ -358,7 +358,7 @@ float CMSCGEN::energy_times_charge()
   }
   else
   {
-    cout << " >>> CMSCGEN <<< warning: not initialized" << endl;
+    std::cout << " >>> CMSCGEN <<< warning: not initialized" << std::endl;
     return -9999.;
   }
 
@@ -373,7 +373,7 @@ float CMSCGEN::cos_theta()
   }
   else
   {
-    cout << " >>> CMSCGEN <<< warning: not initialized" << endl;
+    std::cout << " >>> CMSCGEN <<< warning: not initialized" << std::endl;
     return -0.9999;
   }
 

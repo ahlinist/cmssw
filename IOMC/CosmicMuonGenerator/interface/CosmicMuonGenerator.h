@@ -14,7 +14,6 @@
 #include "TRandom2.h"
 
 
-using namespace std;
 
 // class definitions
 class CosmicMuonGenerator{
@@ -56,15 +55,15 @@ public:
     Target3dRadius = 0.;
     SurfaceRadius = 0.;
 
-    cout << endl;
-    cout << "*********************************************************" << endl;
-    cout << "*********************************************************" << endl;
-    cout << "***                                                   ***" << endl;
-    cout << "***  C O S M I C  M U O N  G E N E R A T O R  (vC++)  ***" << endl;
-    cout << "***                                                   ***" << endl;
-    cout << "*********************************************************" << endl;
-    cout << "*********************************************************" << endl;
-    cout << endl;
+    std::cout << std::endl;
+    std::cout << "*********************************************************" << std::endl;
+    std::cout << "*********************************************************" << std::endl;
+    std::cout << "***                                                   ***" << std::endl;
+    std::cout << "***  C O S M I C  M U O N  G E N E R A T O R  (vC++)  ***" << std::endl;
+    std::cout << "***                                                   ***" << std::endl;
+    std::cout << "*********************************************************" << std::endl;
+    std::cout << "*********************************************************" << std::endl;
+    std::cout << std::endl;
   }
   // destructor
   ~CosmicMuonGenerator(){
