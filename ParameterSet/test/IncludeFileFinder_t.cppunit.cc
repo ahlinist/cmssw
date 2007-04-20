@@ -49,10 +49,10 @@ CPPUNIT_TEST_SUITE_REGISTRATION(IncludeFileFinderTest);
 
 void IncludeFileFinderTest::strippingTest()
 {
-  string original = "libSimCalorimetryCaloSimAlgos.so";
+  string original = "libSimCalorimetryCaloSimAlgosPlugins.so";
 
   string result = IncludeFileFinder::stripHeader(original);
-  CPPUNIT_ASSERT (result == "SimCalorimetryCaloSimAlgos.so");
+  CPPUNIT_ASSERT (result == "SimCalorimetryCaloSimAlgosPlugins.so");
    
   string result2 =  IncludeFileFinder::stripTrailer(result);
   CPPUNIT_ASSERT (result2 == "SimCalorimetryCaloSimAlgos");
