@@ -14,8 +14,6 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/Exception.h"
 
-using namespace edm;
-using namespace std;
 
 namespace edm
 {

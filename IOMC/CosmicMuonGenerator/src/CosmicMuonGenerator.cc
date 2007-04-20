@@ -22,9 +22,9 @@ void CosmicMuonGenerator::initialize(){
     Z_DistTargetEff = Z_DistTracker;
     }
     Target3dRadius = sqrt(RadiusTargetEff*RadiusTargetEff + Z_DistTargetEff*Z_DistTargetEff) + MinStepSize;
-    if (Debug) cout << "  radius of sphere  around  target = " << Target3dRadius << " mm" << endl;
+    if (Debug) std::cout << "  radius of sphere  around  target = " << Target3dRadius << " mm" << std::endl;
     SurfaceRadius = (SurfaceOfEarth+RadiusTargetEff)*tan(MaxTheta) + Target3dRadius;  
-    if (Debug) cout << "  starting point radius at surface = " << SurfaceRadius << " mm" << endl;
+    if (Debug) std::cout << "  starting point radius at surface = " << SurfaceRadius << " mm" << std::endl;
     
     //set energy and angle limits for CMSCGEN, give same seed as above 
     Cosmics->initialize(MinE, MaxE, MinTheta, MaxTheta, RanSeed, TIFOnly_constant, TIFOnly_linear);
@@ -37,8 +37,8 @@ void CosmicMuonGenerator::initialize(){
   TH3F* ver = new TH3F("ver","Z-X-Y coordinates",50,-25.,25.,20,-10.,10.,20,-10.,10.);
 #endif
     if (EventDisplay) initEvDis();
-    cout << endl;
-    cout << "  generating " << NumberOfEvents << " events with random seed " << RanSeed << endl;
+    std::cout << std::endl;
+    std::cout << "  generating " << NumberOfEvents << " events with random seed " << RanSeed << std::endl;
     NotInitialized = false;
   }
 }
@@ -46,7 +46,7 @@ void CosmicMuonGenerator::initialize(){
 void CosmicMuonGenerator::nextEvent(){
 
   double E = 0.; double Theta = 0.; double Phi = 0.; double RxzV = 0.; double PhiV = 0.;
-  if (int(Nsel)%100 == 0) cout << "    generated " << int(Nsel) << " events" << endl;
+  if (int(Nsel)%100 == 0) std::cout << "    generated " << int(Nsel) << " events" << std::endl;
   // generate cosmic (E,theta,phi)
   bool   notSelected = true;
   while (notSelected){
@@ -107,11 +107,11 @@ void CosmicMuonGenerator::nextEvent(){
   ver->Fill((OneMuoEvt.vz()/1000.),(OneMuoEvt.vx()/1000.),(OneMuoEvt.vy()/1000.));
 #endif
   if (Debug){
-    cout << "new event" << endl;
-    cout << "  Px,Py,Pz,E,m = " << OneMuoEvt.px() << ", " << OneMuoEvt.py() << ", "
-         << OneMuoEvt.pz() << ", " << OneMuoEvt.e() << ", " << OneMuoEvt.m() << " GeV" << endl;
-    cout << "  Vx,Vy,Vz,t0  = " << OneMuoEvt.vx() << ", " << OneMuoEvt.vy() << ", " 
-         << OneMuoEvt.vz() << ", " << OneMuoEvt.t0() << " mm" << endl;
+    std::cout << "new event" << std::endl;
+    std::cout << "  Px,Py,Pz,E,m = " << OneMuoEvt.px() << ", " << OneMuoEvt.py() << ", "
+         << OneMuoEvt.pz() << ", " << OneMuoEvt.e() << ", " << OneMuoEvt.m() << " GeV" << std::endl;
+    std::cout << "  Vx,Vy,Vz,t0  = " << OneMuoEvt.vx() << ", " << OneMuoEvt.vy() << ", " 
+         << OneMuoEvt.vz() << ", " << OneMuoEvt.t0() << " mm" << std::endl;
   }
   if (EventDisplay) displayEv();
   
@@ -119,32 +119,32 @@ void CosmicMuonGenerator::nextEvent(){
 
 void CosmicMuonGenerator::terminate(){
   if (NumberOfEvents > 0){
-    cout << endl;
-    cout << "*********************************************************" << endl;
-    cout << "*********************************************************" << endl;
-    cout << "***                                                   ***" << endl;
-    cout << "***    C O S M I C   M U O N   S T A T I S T I C S    ***" << endl;
-    cout << "***                                                   ***" << endl;
-    cout << "*********************************************************" << endl;
-    cout << "*********************************************************" << endl;
-    cout << endl;  
-    cout << "       number of initial cosmic events:  " << int(Ngen) << endl;
-    cout << "       number of actually diced events:  " << int(Ndiced) << endl;
-    cout << "       number of generated and accepted events:  " << int(Nsel) << endl;
+    std::cout << std::endl;
+    std::cout << "*********************************************************" << std::endl;
+    std::cout << "*********************************************************" << std::endl;
+    std::cout << "***                                                   ***" << std::endl;
+    std::cout << "***    C O S M I C   M U O N   S T A T I S T I C S    ***" << std::endl;
+    std::cout << "***                                                   ***" << std::endl;
+    std::cout << "*********************************************************" << std::endl;
+    std::cout << "*********************************************************" << std::endl;
+    std::cout << std::endl;  
+    std::cout << "       number of initial cosmic events:  " << int(Ngen) << std::endl;
+    std::cout << "       number of actually diced events:  " << int(Ndiced) << std::endl;
+    std::cout << "       number of generated and accepted events:  " << int(Nsel) << std::endl;
     double selEff = Nsel/Ngen; // selection efficiency
-    cout << "       event selection efficiency:  " << selEff*100. << "%" << endl;
+    std::cout << "       event selection efficiency:  " << selEff*100. << "%" << std::endl;
     int n100cos =  Norm->events_n100cos(0., 0.); //get final amount of cosmics in defined range for normalisation of flux
-    cout << "       events with ~100 GeV and 1 - cos(theta) < 1/2pi: " << n100cos << endl;
-    cout << endl;
-    cout << "       energy range:  " << MinE             << " ... " << MaxE << " GeV" << endl;
-    cout << "       theta  range:  " << MinTheta*Rad2Deg << " ... " << MaxTheta*Rad2Deg << " deg" << endl; 
-    cout << "       phi    range:  " << MinPhi*Rad2Deg   << " ... " << MaxPhi*Rad2Deg << " deg" << endl;
-    cout << "       time   range:  " << MinT0            << " ... " << MaxT0 << " ns" << endl;
-    cout << "       energy  loss:  " << ElossScaleFactor*100. << "%" << endl;
-    cout << endl;
+    std::cout << "       events with ~100 GeV and 1 - cos(theta) < 1/2pi: " << n100cos << std::endl;
+    std::cout << std::endl;
+    std::cout << "       energy range:  " << MinE             << " ... " << MaxE << " GeV" << std::endl;
+    std::cout << "       theta  range:  " << MinTheta*Rad2Deg << " ... " << MaxTheta*Rad2Deg << " deg" << std::endl; 
+    std::cout << "       phi    range:  " << MinPhi*Rad2Deg   << " ... " << MaxPhi*Rad2Deg << " deg" << std::endl;
+    std::cout << "       time   range:  " << MinT0            << " ... " << MaxT0 << " ns" << std::endl;
+    std::cout << "       energy  loss:  " << ElossScaleFactor*100. << "%" << std::endl;
+    std::cout << std::endl;
     double area = 1.e-6*Pi*SurfaceRadius*SurfaceRadius; // area on surface [m^2] 
-    cout << "       area of initial cosmics on surface:   " << area << " m^2" << endl;
-    cout << "       depth of CMS detector:   " << SurfaceOfEarth/1000 << " m" << endl;
+    std::cout << "       area of initial cosmics on surface:   " << area << " m^2" << std::endl;
+    std::cout << "       depth of CMS detector:   " << SurfaceOfEarth/1000 << " m" << std::endl;
        
     if(n100cos>0){
       // rate: corrected for area and selection-Eff. and normalized to known flux, integration over solid angle (dOmega) is implicit
@@ -169,44 +169,44 @@ void CosmicMuonGenerator::terminate(){
       EventRate=Nsel; //no info as no muons at 100 GeV
       rateErr_stat =Nsel;
       rateErr_syst =Nsel;
-      cout << endl;
-      cout << " !!! Not enough statistics to apply normalisation (rate=1 +- 1) !!!" << endl;
+      std::cout << std::endl;
+      std::cout << " !!! Not enough statistics to apply normalisation (rate=1 +- 1) !!!" << std::endl;
     } 
     
-    cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
-    cout << "       rate is " << EventRate << " +-" << rateErr_stat <<" (stat) " << "+-" << 
-      rateErr_syst << " (syst) " <<" muons per second" << endl;
-    if(EventRate!=0) cout << "       number of events corresponds to " << Nsel/EventRate << " s" << endl;  //runtime at CMS = Nsel/rate
-    cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
-    cout << endl;
-    cout << "*********************************************************" << endl;
-    cout << "*********************************************************" << endl;
+    std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
+    std::cout << "       rate is " << EventRate << " +-" << rateErr_stat <<" (stat) " << "+-" << 
+      rateErr_syst << " (syst) " <<" muons per second" << std::endl;
+    if(EventRate!=0) std::cout << "       number of events corresponds to " << Nsel/EventRate << " s" << std::endl;  //runtime at CMS = Nsel/rate
+    std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
+    std::cout << std::endl;
+    std::cout << "*********************************************************" << std::endl;
+    std::cout << "*********************************************************" << std::endl;
   }
 }
 
 void CosmicMuonGenerator::checkIn(){
   if (MinE < 0.){ NumberOfEvents = 0;
-    cout << "  CMG-ERR: min.energy is out of range (0 GeV ... inf]" << endl << endl; }
+    std::cout << "  CMG-ERR: min.energy is out of range (0 GeV ... inf]" << std::endl << std::endl; }
   if (MaxE < 0.){ NumberOfEvents = 0;
-    cout << "  CMG-ERR: max.energy is out of range (0 GeV ... inf]" << endl << endl; }
+    std::cout << "  CMG-ERR: max.energy is out of range (0 GeV ... inf]" << std::endl << std::endl; }
   if (MaxE <= MinE){ NumberOfEvents = 0;
-    cout << "  CMG-ERR: max.energy is not greater than min.energy" << endl << endl; }
+    std::cout << "  CMG-ERR: max.energy is not greater than min.energy" << std::endl << std::endl; }
   if (MinTheta < 0.){ NumberOfEvents = 0;
-    cout << "  CMG-ERR: min.theta is out of range [0 deg ... 90 deg)" << endl << endl; }
+    std::cout << "  CMG-ERR: min.theta is out of range [0 deg ... 90 deg)" << std::endl << std::endl; }
   if (MaxTheta < 0.){ NumberOfEvents = 0;
-    cout << "  CMG-ERR: max.theta is out of range [0 deg ... 90 deg)" << endl << endl; }
+    std::cout << "  CMG-ERR: max.theta is out of range [0 deg ... 90 deg)" << std::endl << std::endl; }
   if (MaxTheta <= MinTheta){ NumberOfEvents = 0;
-    cout << "  CMG-ERR: max.theta is not greater than min.theta" << endl << endl; }
+    std::cout << "  CMG-ERR: max.theta is not greater than min.theta" << std::endl << std::endl; }
   if (MinPhi < 0.){ NumberOfEvents = 0;
-    cout << "  CMG-ERR: min.phi is out of range [0 deg ... 360 deg]" << endl << endl; }
+    std::cout << "  CMG-ERR: min.phi is out of range [0 deg ... 360 deg]" << std::endl << std::endl; }
   if (MaxPhi < 0.){ NumberOfEvents = 0;
-    cout << "  CMG-ERR: max.phi is out of range [0 deg ... 360 deg]" << endl << endl; }
+    std::cout << "  CMG-ERR: max.phi is out of range [0 deg ... 360 deg]" << std::endl << std::endl; }
   if (MaxPhi <= MinPhi){ NumberOfEvents = 0;
-    cout << "  CMG-ERR: max.phi is not greater than min.phi" << endl << endl; }
+    std::cout << "  CMG-ERR: max.phi is not greater than min.phi" << std::endl << std::endl; }
   if (MaxT0 <= MinT0){ NumberOfEvents = 0;
-    cout << "  CMG-ERR: max.t0 is not greater than min.t0" << endl << endl; }
+    std::cout << "  CMG-ERR: max.t0 is not greater than min.t0" << std::endl << std::endl; }
   if (ElossScaleFactor < 0.){ NumberOfEvents = 0;
-    cout << "  CMG-ERR: E-loss scale factor is out of range [0 ... inf)" << endl << endl; }
+    std::cout << "  CMG-ERR: E-loss scale factor is out of range [0 ... inf)" << std::endl << std::endl; }
 }
 
 bool CosmicMuonGenerator::goodOrientation(){
@@ -224,8 +224,8 @@ bool CosmicMuonGenerator::goodOrientation(){
   double Theta = OneMuoEvt.theta();
   double ThetaV = asin(RxzV/rVY);
   double dTheta = Pi; if (rVY > Target3dRadius) dTheta = asin(Target3dRadius/rVY);
-  //cout << "    dPhi = " <<   dPhi << "  (" <<   Phi << " <p|V> " <<   PhiV << ")" << endl;
-  //cout << "  dTheta = " << dTheta << "  (" << Theta << " <p|V> " << ThetaV << ")" << endl;
+  //std::cout << "    dPhi = " <<   dPhi << "  (" <<   Phi << " <p|V> " <<   PhiV << ")" << std::endl;
+  //std::cout << "  dTheta = " << dTheta << "  (" << Theta << " <p|V> " << ThetaV << ")" << std::endl;
   if (fabs(Theta-ThetaV) < dTheta) thetaaccepted = true;
   if (phiaccepted && thetaaccepted) goodAngles = true;
   return goodAngles;
