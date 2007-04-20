@@ -15,8 +15,8 @@
  <Constant name="CableT"       value="0.30*cm"/>
  <Constant name="SupportT"     value="1.50*cm"/>
  <Constant name="SupportDR"    value="1.50*cm"/>
- <Constant name="SupportRin"   value="53.05*cm"/>
- <Constant name="SupportRout"  value="53.10*cm"/>
+ <Constant name="SupportRin"   value="53.15*cm"/>
+ <Constant name="SupportRout"  value="53.20*cm"/>
  <Constant name="SupportZ"     value="71.00*cm"/>
  <Constant name="AxCables"     value="14"/>
  <Constant name="AxCabW"       value="18.0*deg"/>

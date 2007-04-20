@@ -7,6 +7,7 @@
 
  @version 3.02.01 May 30, 2006
  @created Dmitry Onoprienko
+ @modified Vesna Cuplov (fix overlaps 04.14.07)
 
 == Subsystem or component described by the file ==
 
@@ -87,10 +88,14 @@ This seems to be a problem for visualization only, not for tracking at simulatio
 
   <!-- Root volume dimensions (may need to be changed later) -->
 
+ <Constant name="Fix_Overlap1" value="3.0*mm" />
+ <Constant name="Fix_Overlap2" value="1.0*mm" />
+ <Constant name="Tol" value="0.2*mm" />
+
  <Constant name="RootHalfLength" value="([L04]+[L03]+[L01]+[W03]/2.)/2." />
  <Constant name="RootHalfWidth" value="([L02]+[W03])/2." />
- <Constant name="RootHalfThickness" value="[BladeHalfThickness]" />
- 
+ <Constant name="RootHalfThickness" value="[BladeHalfThickness]+0.1*mm" />
+
  <!-- Coordinates of ancor point  -->
  
  <Constant name="AnchorX" value="0." />
@@ -114,9 +119,27 @@ This seems to be a problem for visualization only, not for tracking at simulatio
  
 <!-- Root volume for the blade. This volume is positioned by pixfwdDisk.xml -->
 
+<!--
 <SolidSection label="Root">
   <Box name="PixelForwardBlade" dx="[RootHalfWidth]" dy="[RootHalfLength]" dz="[RootHalfThickness]" />
 </SolidSection>
+-->
+
+<SolidSection label="Root">
+  <Trapezoid name="PixelForwardBlade" dz="[RootHalfThickness]"
+                                    bl1="[RootHalfWidth]-[Fix_Overlap1]"  bl2="[RootHalfWidth]-[Fix_Overlap1]" 
+                                    tl1="[RootHalfWidth]+[Fix_Overlap2]"  tl2="[RootHalfWidth]+[Fix_Overlap2]" 
+                                    h1="[RootHalfLength]-[Tol]"         h2="[RootHalfLength]-[Tol]"
+                                    alp1="0.0"  alp2="0.0" phi="90*deg" />
+
+
+</SolidSection>
+
+
+
+
+
+
 
 <LogicalPartSection label="Root">
  <LogicalPart name="PixelForwardBlade" category="envelope">

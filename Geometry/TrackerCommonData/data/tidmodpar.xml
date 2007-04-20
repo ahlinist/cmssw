@@ -30,6 +30,7 @@
  <Constant name="PitchThick"        value="0.050*cm"/>
  <Constant name="PitchZDS"          value="0.110*cm"/>
  <Constant name="PitchZSS"          value="-0.030*cm"/>
+ <Constant name="Tolerance"         value="0.01*mm"/>
 </ConstantsSection>
 
 <RotationSection label="tidmodpar.xml">

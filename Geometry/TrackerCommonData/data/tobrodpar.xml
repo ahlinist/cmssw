@@ -21,6 +21,7 @@
  <Constant name="SideCoolL"      value="53.95*cm"/>
  <Constant name="SideCoolX"      value="6.550*cm"/>
  <Constant name="SideCoolZ"      value="56.85*cm"/>
+ <Constant name="EndCoolR"       value="0.1025*cm"/>
  <Constant name="EndCoolL"       value="6.250*cm"/>
  <Constant name="EndCoolZ"       value="3.100*cm"/>
  <Constant name="OptFibreR"      value="0.075*cm"/>
@@ -82,6 +83,7 @@
  <Constant name="ICCZ11"         value="96.60*cm"/>
  <Constant name="ICCZ12"         value="105.00*cm"/>
  <Constant name="zero"           value="0.0*fm"/>
+ <Constant name="Tol"            value="0.0*mm"/>
 </ConstantsSection>
 
 <RotationSection label="tobrodpar.xml">
@@ -111,10 +113,10 @@
  <Box name="TOBConn"      dx="[ConnDx]"      dy="[ConnDy]"    dz="[ConnDz]"/>
  <Box name="TOBCCUM"      dx="[CCUMDx]"      dy="[CCUMDy]"    dz="[CCUMDz]"/>
  <Box name="TOBRod"       dx="[RodW]"        dy="[RodT]"      dz="[RodL]"/>
- <Box name="TOBRodout"    dx="[RodW]"        
-                          dy="[RodT]"        dz="([RodL]+[RodDL])/2"/>
- <Box name="TOBRodin"     dx="[RodW]" 
-                          dy="[RodT]/2"      dz="[RodDL]/2"/>
+ <Box name="TOBRodout"    dx="[RodW]"        dy="[RodT]"
+                          dz="([RodL]+[RodDL])/2"/>
+ <Box name="TOBRodin"     dx="[RodW]+[Tol]"  dy="([RodT]/2+[Tol])"
+                          dz="[RodDL]/2"/>
  <SubtractionSolid name="TOBRodL">
    <rSolid name="TOBRodout"/>
    <rSolid name="TOBRodin"/>
@@ -127,10 +129,10 @@
    <rRotation name="tobrodpar:000D"/>
    <Translation x="[zero]" y="-[RodT]/2" z="-[RodL]/2"/>
  </SubtractionSolid>
- <Box name="TOBRod1Cent"  dx="[CentralRodW]" 
-                          dy="[RodT]"        dz="([RodL]+[RodDL])/2"/>
- <Box name="TOBRod2Cent"  dx="[CentralRodW]" 
-                          dy="[RodT]/2"      dz="[RodDL]/2"/>
+ <Box name="TOBRod1Cent"  dx="[CentralRodW]"         dy="[RodT]"
+                          dz="([RodL]+[RodDL])/2"/>
+ <Box name="TOBRod2Cent"  dx="([CentralRodW]+[Tol])" dy="([RodT]/2+[Tol])" 
+                          dz="[RodDL]/2"/>
  <SubtractionSolid name="TOBRodCentralL">
    <rSolid name="TOBRod1Cent"/>
    <rSolid name="TOBRod2Cent"/>

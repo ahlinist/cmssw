@@ -8,10 +8,11 @@
  @version 3.02.01 May 30, 2006
  @created Victoria Martin
  @modified Dmitry Onoprienko
+ @modified Vesna Cuplov (fixing overlaps in panels 04.17.07)
 
 == Subsystem or component described by the file ==
 
-Beryllium panel with VHDI (no plaquettes).
+Beryllium panel with HDI (no plaquettes).
 
 == Root volume and its reference frame ==
 
@@ -60,11 +61,14 @@ Currently, [AnchorX] = [AnchorZ] = 0.
    <Constant name="X9"   value = "26.100*mm"/>
    <Constant name="X10"  value = "34.376*mm"/>
 
-   <Constant name="EarHeihgt" value ="5.000*mm"/>
-
    <Constant name="BeThickness"    value="0.508*mm"/>
    <Constant name="HDIThickness"   value="0.191*mm"/>
    <Constant name="FilmThickness"  value="0.051*mm"/>
+
+   <Constant name="TanPanelAngle"  value="([X3]-[X1])/([Y8]-[Y2])" />
+   <Constant name="PanelAngle"     value="atan([TanPanelAngle])" />
+
+
 </ConstantsSection>
 
 <ConstantsSection  label="Common" eval="true">
@@ -85,15 +89,87 @@ Currently, [AnchorX] = [AnchorZ] = 0.
    <Constant name="zFilm"   value="([BeThickness]-[FilmThickness])/2." />
    <Constant name="zHDI"    value="([BeThickness]+[FilmThickness])/2." />
    
+   <Constant name="EarWidth" value="[X10]+[X3]-([Y7]-[Y2])*[TanPanelAngle]" />
+   <Constant name="EarLength"  value="[Y7]-[Y6]" />
+
 </ConstantsSection>
 
 <!-- Root volume for the panel and its layers (Be, Film, HDI) -->
-
+<!--
 <SolidSection label="Root">
   <Box name="PixelForwardPanelBase" dx="[RootHalfWidth]" dy="[RootHalfLength]" dz="[RootHalfThickness]" />
   <Box name="PixelForwardPanelBaseBe"   dx="[RootHalfWidth]" dy="[RootHalfLength]" dz="[BeThickness]/2." />
   <Box name="PixelForwardPanelBaseFilm" dx="[RootHalfWidth]" dy="[RootHalfLength]" dz="[FilmThickness]/2." />
   <Box name="PixelForwardPanelBaseHDI"  dx="[RootHalfWidth]" dy="[RootHalfLength]" dz="[HDIThickness]/2." />
+</SolidSection>
+-->
+
+<SolidSection label="Root">
+  <Trapezoid name="PixelForwardPanelBaseMain" dz="[RootHalfThickness]"
+                                    bl1="[MainHalfWidthBottom]+4.0*mm"  bl2="[MainHalfWidthBottom]+4.0*mm" 
+                                    tl1="[MainHalfWidthTop]+4.0*mm"     tl2="[MainHalfWidthTop]+4.0*mm" 
+                                    h1="[RootHalfLength]"         h2="[RootHalfLength]"
+                                    alp1="0.0"  alp2="0.0" phi="90*deg" />
+  <Trapezoid name="PixelForwardPanelBaseEar" dz="[RootHalfThickness]"
+                                   bl1="[MainHalfWidthBottom]+[EarWidth]/2.+12.0*mm"  bl2="[MainHalfWidthBottom]+[EarWidth]/2.+12.0*mm" 
+                                   tl1="[MainHalfWidthTop]+[EarWidth]/2.+4.0*mm"  tl2="[MainHalfWidthTop]+[EarWidth]/2.+4.0*mm"
+                                    h1="[EarLength]/2.+3.0*mm"         h2="[EarLength]/2.+3.0*mm"
+                                    alp1="0.0"  alp2="0.0" phi="90*deg" />
+  <UnionSolid name="PixelForwardPanelBase">
+    <rSolid name="PixelForwardPanelBaseMain" />
+    <rSolid name="PixelForwardPanelBaseEar" />
+    <Translation x="0." y="29.0" z="0." />
+  </UnionSolid>
+
+  <Trapezoid name="PixelForwardPanelBaseBeMain" dz="[BeThickness]/2."
+                                    bl1="[MainHalfWidthBottom]+4.0*mm"  bl2="[MainHalfWidthBottom]+4.0*mm" 
+                                    tl1="[MainHalfWidthTop]+4.0*mm"     tl2="[MainHalfWidthTop]+4.0*mm" 
+                                    h1="[RootHalfLength]"         h2="[RootHalfLength]"
+                                    alp1="0.0"  alp2="0.0" phi="90*deg" />
+  <Trapezoid name="PixelForwardPanelBaseBeEar" dz="[BeThickness]/2."
+                                   bl1="[MainHalfWidthBottom]+[EarWidth]/2.+12.0*mm"  bl2="[MainHalfWidthBottom]+[EarWidth]/2.+12.0*mm" 
+                                   tl1="[MainHalfWidthTop]+[EarWidth]/2.+4.0*mm"  tl2="[MainHalfWidthTop]+[EarWidth]/2.+4.0*mm"
+                                    h1="[EarLength]/2.+3.0*mm"         h2="[EarLength]/2.+3.0*mm"
+                                    alp1="0.0"  alp2="0.0" phi="90*deg" />
+  <UnionSolid name="PixelForwardPanelBaseBe">
+    <rSolid name="PixelForwardPanelBaseBeMain" />
+    <rSolid name="PixelForwardPanelBaseBeEar" />
+    <Translation x="0." y="29.0" z="0." />
+  </UnionSolid>
+
+
+  <Trapezoid name="PixelForwardPanelBaseFilmMain" dz="[FilmThickness]/2."
+                                    bl1="[MainHalfWidthBottom]+4.0*mm"  bl2="[MainHalfWidthBottom]+4.0*mm" 
+                                    tl1="[MainHalfWidthTop]+4.0*mm"     tl2="[MainHalfWidthTop]+4.0*mm" 
+                                    h1="[RootHalfLength]"         h2="[RootHalfLength]"
+                                    alp1="0.0"  alp2="0.0" phi="90*deg" />
+  <Trapezoid name="PixelForwardPanelBaseFilmEar" dz="[FilmThickness]/2."
+                                   bl1="[MainHalfWidthBottom]+[EarWidth]/2.+12.0*mm"  bl2="[MainHalfWidthBottom]+[EarWidth]/2.+12.0*mm" 
+                                   tl1="[MainHalfWidthTop]+[EarWidth]/2.+4.0*mm"  tl2="[MainHalfWidthTop]+[EarWidth]/2.+4.0*mm"
+                                    h1="[EarLength]/2.+3.0*mm"         h2="[EarLength]/2.+3.0*mm"
+                                    alp1="0.0"  alp2="0.0" phi="90*deg" />
+  <UnionSolid name="PixelForwardPanelBaseFilm">
+    <rSolid name="PixelForwardPanelBaseFilmMain" />
+    <rSolid name="PixelForwardPanelBaseFilmEar" />
+    <Translation x="0." y="29.0" z="0." />
+  </UnionSolid>
+
+  <Trapezoid name="PixelForwardPanelBaseHDIMain" dz="[HDIThickness]/2."
+                                    bl1="[MainHalfWidthBottom]+4.0*mm"  bl2="[MainHalfWidthBottom]+4.0*mm" 
+                                    tl1="[MainHalfWidthTop]+4.0*mm"     tl2="[MainHalfWidthTop]+4.0*mm" 
+                                    h1="[RootHalfLength]"         h2="[RootHalfLength]"
+                                    alp1="0.0"  alp2="0.0" phi="90*deg" />
+  <Trapezoid name="PixelForwardPanelBaseHDIEar" dz="[HDIThickness]/2."
+                                   bl1="[MainHalfWidthBottom]+[EarWidth]/2.+12.0*mm"  bl2="[MainHalfWidthBottom]+[EarWidth]/2.+12.0*mm" 
+                                   tl1="[MainHalfWidthTop]+[EarWidth]/2.+4.0*mm"  tl2="[MainHalfWidthTop]+[EarWidth]/2.+4.0*mm"
+                                    h1="[EarLength]/2.+3.0*mm"         h2="[EarLength]/2.+3.0*mm"
+                                    alp1="0.0"  alp2="0.0" phi="90*deg" />
+  <UnionSolid name="PixelForwardPanelBaseHDI">
+    <rSolid name="PixelForwardPanelBaseHDIMain" />
+    <rSolid name="PixelForwardPanelBaseHDIEar" />
+    <Translation x="0." y="29.0" z="0." />
+  </UnionSolid>
+
 </SolidSection>
 
 <LogicalPartSection label="Root">

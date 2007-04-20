@@ -33,8 +33,8 @@
  <Constant name="InTubeRin2"      value="30.50*cm"/>
  <Constant name="InTubeRout1"     value="22.80*cm"/>
  <Constant name="InTubeRout2"     value="30.80*cm"/>
- <Constant name="InTubeZ1"        value="162.40*cm"/>
- <Constant name="InTubeZ2"        value="169.03*cm"/>
+ <Constant name="InTubeZ1"        value="166.40*cm"/>
+ <Constant name="InTubeZ2"        value="173.03*cm"/>
  <Constant name="ServiceRin"      value="110.60*cm"/>
  <Constant name="ServiceRout"     value="113.00*cm"/>
  <Constant name="ServiceZ1"       value="124.00*cm"/>

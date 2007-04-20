@@ -53,7 +53,7 @@
  <Constant name="ModCoolComp1Z"  value="2.125*cm"/>
  <Constant name="ModCoolComp2Dx" value="0.800*cm"/>
  <Constant name="ModCoolComp2Dz" value="1.300*cm"/>
- <Constant name="ModCoolComp2X"  value="5.250*cm"/>
+ <Constant name="ModCoolComp2X"  value="5.200*cm"/>
  <Constant name="ModCoolComp2Y"  value="0.130*cm"/>
  <Constant name="ModCoolComp2Z"  value="10.325*cm"/>
  <Constant name="Tilt"       value="5.7296*deg"/>
@@ -66,7 +66,8 @@
  <Constant name="ActiveDx"   value="4.6848*cm"/>
  <Constant name="ActiveDy"   value="9.3067*cm"/>
  <Constant name="InactiveDy" value="0.1553*cm"/>
- <Constant name="GlueDx"     value="4.6848*cm"/>
+ <Constant name="GlueDx1"    value="4.6848*cm"/>
+ <Constant name="GlueDx2"    value="4.30*cm"/>
  <Constant name="GlueDy"     value="0.275*cm"/>
  <Constant name="GlueDz"     value="0.1*cm"/>
  <Constant name="GlueSi1Y"   value="0.340*cm"/>
@@ -75,6 +76,8 @@
  <Constant name="GluePAZ"    value="7.435*cm"/>
  <Constant name="PAX"        value="[WaferDy]*sin([Tilt])"/>
  <Constant name="GluePAX"    value="[WaferDy]*sin([Tilt])"/>
+ <Constant name="PAYst"      value="0.260*cm"/>
+ <Constant name="GluePAYst"  value="0.390*cm"/>
 </ConstantsSection>
 
 <SolidSection label="tobmodpar.xml">
@@ -91,7 +94,9 @@
                           tl1="[PA2Dz1]" h1="[PADy]"    alp2="0*deg" 
                           bl2="[PA2Dz2]" tl2="[PA2Dz2]" h2="[PADy]" 
 			  phi="0*deg"    theta="[PA2Theta]" />
- <Box name="TOBEncapsulant" dx="[GlueDx]"    dy="[GlueDy]"    dz="[GlueDz]"/>
+ <Box name="TOBEncapsulant1" dx="[GlueDx1]"   dy="[GlueDy]"    dz="[GlueDz]"/>
+ <Box name="TOBEncapsulant2" dx="[GlueDx2]"   dy="[GlueDy]"    dz="[GlueDz]"/>
+ <Box name="TOBEncapsulant3" dx="[GlueDx1]"   dy="[GlueDy]*2"  dz="[GlueDz]/2"/>
  <Box name="TOBSideRailL" dx="[SideRailDx]" 
                           dy="[SideRailDy]" dz="[SideRailDz]"/>
  <Box name="TOBSideRailR" dx="[SideRailDx]" 
@@ -122,7 +127,11 @@
   <rMaterial name="tobmaterial:TOB_PA_ster"/>
  </LogicalPart>
  <LogicalPart name="TOBPAEncaps" category="unspecified">
-  <rSolid name="TOBEncapsulant"/>
+  <rSolid name="TOBEncapsulant1"/>
+  <rMaterial name="tobmaterial:TOB_Sens_Interface"/>
+ </LogicalPart>
+ <LogicalPart name="TOBPAEncapsSt" category="unspecified">
+  <rSolid name="TOBEncapsulant3"/>
   <rMaterial name="tobmaterial:TOB_Sens_Interface"/>
  </LogicalPart>
  <LogicalPart name="TOBSideRailL" category="unspecified">
@@ -170,11 +179,11 @@
   <rMaterial name="materials:Silicon"/>
  </LogicalPart>
  <LogicalPart name="TOBSiEncaps" category="unspecified">
-  <rSolid name="TOBEncapsulant"/>
+  <rSolid name="TOBEncapsulant1"/>
   <rMaterial name="tobmaterial:TOB_Sens_Interface"/>
  </LogicalPart>
  <LogicalPart name="TOBSiBackEncaps" category="unspecified">
-  <rSolid name="TOBEncapsulant"/>
+  <rSolid name="TOBEncapsulant2"/>
   <rMaterial name="materials:Silicone_Gel"/>
  </LogicalPart>
 </LogicalPartSection>

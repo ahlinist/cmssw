@@ -8,8 +8,8 @@
  <Constant name="PA2Dz1"     value="0.300*cm"/>
  <Constant name="PA2Dz2"     value="0.600*cm"/>
  <Constant name="PA2Theta"   value="-2.86241*deg"/>
- <Constant name="PARPhiY"       value="[tibmodule0:SpacerDy]+2*[tibmodpar:CFFrameDy]+[tibmodpar:PADy]"/>
- <Constant name="PASterY"       value="-[tibmodule0:SpacerDy]-2*[tibmodpar:CFFrameDy]-[tibmodpar:PADy]"/>
+ <Constant name="PARPhiY"    value="[tibmodule0:SpacerDy]+2*[tibmodpar:CFFrameDy]+[tibmodpar:PADy]"/>
+ <Constant name="PASterY"    value="-[tibmodule0:SpacerDy]-2*[tibmodpar:CFFrameDy]-[tibmodpar:PADy]"/>
  <Constant name="LedgeDz1"   value="0.500*cm"/>
  <Constant name="LedgeDz2"   value="0.225*cm"/>
  <Constant name="LedgeTheta" value="-2.62422*deg"/>
@@ -26,10 +26,10 @@
  <Constant name="SpacerSideX"  value="[SpacerHybDx]+[SpacerSideDx]"/>
  <Constant name="SpacerSideZ"  value="[tibmodpar:ModuleDz]-[SpacerSideDz]-25.8*mm"/>
  <Constant name="SpacerLedgeZ" value="[tibmodpar:ModuleDz]-[SpacerLedgeDz]"/>
- <Constant name="SpacerHybZ"   value="[tibmodpar:ModuleDz]-[SpacerHybDz]"/>
+ <Constant name="SpacerHybZ"    value="[tibmodpar:ModuleDz]-[SpacerHybDz]"/>
  <Constant name="SideRailSterY" value="[SpacerY]-[SpacerDy]-[tibmodpar:SideRailDy]"/>
  <Constant name="SideRailRPhiY" value="[SpacerY]+[SpacerDy]+[tibmodpar:SideRailDy]"/>
- <Constant name="ModCoolY"   value="-0.127*cm"/>
+ <Constant name="ModCoolY"      value="-0.1945*cm"/>
  <Constant name="WaferRPhiY"    value="1.135*mm"/> 
  <Constant name="WaferSterY"    value="-1.135*mm"/>
 </ConstantsSection>

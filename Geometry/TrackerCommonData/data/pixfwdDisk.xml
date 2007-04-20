@@ -7,6 +7,7 @@
 
  @version 3.02.01 May 30, 2006
  @created Dmitry Onoprienko
+ @modified Vesna Cuplov 04.17.07
 
 == Subsystem or component described by the file ==
 
@@ -72,7 +73,7 @@ Disks are positioned into endcaps without any rotations.
 </ConstantsSection>
  
 <SolidSection label="Root">
- <Tubs name="PixelForwardDisk" rMin="[DiskRmin]" rMax="[DiskRmax]" dz="[DiskHalfWidth]" startPhi="0." deltaPhi="360*deg" />
+ <Tubs name="PixelForwardDisk" rMin="[DiskRmin]" rMax="[DiskRmax]" dz="[DiskHalfWidth]+2.0*mm" startPhi="0." deltaPhi="360*deg" />
 </SolidSection>
  
 <LogicalPartSection label="Root">

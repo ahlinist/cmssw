@@ -13,6 +13,7 @@
   <rParent name="tidmodule2:TIDModule2"/>
   <String name="GeneralMaterial"    value="materials:Air"/>
   <Numeric name="DetectorNumber"    value="1"/>
+  <Numeric name="Tolerance"         value="[tidmodpar:Tolerance]"/>
   <Numeric name="ModuleThick"       value="[tidmodpar:ModuleThickSS]"/>
   <Numeric name="DetTilt"           value="[tidmodpar:DetTilt]"/>
   <Numeric name="FullHeight"        value="[tidmodule2:FullHeight]"/>
