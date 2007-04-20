@@ -1,13 +1,13 @@
 
 
-// $Id: DTDigiDisplayPlugins.cc,v 1.1 2007/04/03 09:29:44 gmasetti Exp $
+// $Id: DTDigiDisplayPlugins.cc,v 1.2 2007/04/13 13:35:33 mzanetti Exp $
 
 /*!
   \file DTDigiDisplayPlugins
   \brief Display Plugin for Digi Task Quality Histograms (2D)
   \author G. Masetti 
-  \version $Revision: 1.1 $
-  \date $Date: 2007/04/03 09:29:44 $
+  \version $Revision: 1.2 $
+  \date $Date: 2007/04/13 13:35:33 $
 */
 
 #include "DQM/DTMonitorDisplayPlugins/src/DTDigiDisplayPlugins.h"
@@ -103,7 +103,18 @@ std::string DTDigiDisplayPlugins::preDrawTH2F( VisDQMDisplayPlugin::DisplayData 
     gStyle->SetOptStat( 0 );
     obj->SetStats(kFALSE );
     obj->SetLineColor(2);
-    obj->SetOption( "box" );
+    //    obj->SetOption( "lego" );
+    gStyle->SetPalette(1);
+//     TColor* color;
+//     const Int_t n = 100;
+//     int pCol4[n];
+//     for( Int_t i=0; i<n; i++ ) {
+//       Float_t grey = Float_t((i*100.)/(10000));
+//       color = new TColor(401+i,grey,1.-grey,0.,"");
+//       pCol4[i] = i+401;
+//     }
+//     gStyle->SetPalette( n, pCol4 );
+    obj->SetOption( "colz" );
 
   }
 
