@@ -1,11 +1,11 @@
-// $Id: DTDataIntegrityDisplayPlugins.cc,v 1.2 2007/04/19 10:09:50 sbologne Exp $
+// $Id: DTDataIntegrityDisplayPlugins.cc,v 1.3 2007/04/19 16:30:29 sbologne Exp $
 
 /*!
   \file DTDataIntegrityDisplayPlugins
   \brief Display Plugin for Data Integrity Quality Histograms (2D)
   \author G. Masetti 
-  \version $Revision: 1.2 $
-  \date $Date: 2007/04/19 10:09:50 $
+  \version $Revision: 1.3 $
+  \date $Date: 2007/04/19 16:30:29 $
 */
 
 #include "DQM/DTMonitorDisplayPlugins/src/DTDataIntegrityDisplayPlugins.h"
@@ -32,7 +32,7 @@ DTDataIntegrityDisplayPlugins::DTDataIntegrityDisplayPlugins () {
 
 bool DTDataIntegrityDisplayPlugins::isDataIntegrityME (std::string name) {
 
-  if( name.find( "FED770" ) == 0 ) {
+  if( name.find( "FED730" ) == 0 ) {
     return true;
   }
 
@@ -96,7 +96,28 @@ std::string DTDataIntegrityDisplayPlugins::preDrawTH2F( VisDQMDisplayPlugin::Dis
     obj->SetStats( kFALSE );
 
     //obj->SetOption( "box" );
+    gStyle->SetPalette(1);
     obj->SetOption( "colz" );
+
+
+      if ( name.find( "FED730_ROS" ) == 0 ) {
+	
+// 	(data->pad)->SetLogy( 1 );
+	
+	obj->GetXaxis()->SetBinLabel(1,"Link TimeOut");
+	obj->GetXaxis()->SetBinLabel(2,"Ev.Id.Mis.");
+	obj->GetXaxis()->SetBinLabel(3,"FIFO almost full");
+	obj->GetXaxis()->SetBinLabel(4,"FIFO full");
+	obj->GetXaxis()->SetBinLabel(5," ");
+	obj->GetXaxis()->SetBinLabel(6,"Max. wds");
+	obj->GetXaxis()->SetBinLabel(7,"L1A FF");
+	obj->GetXaxis()->SetBinLabel(8,"PC from TDC");
+	obj->GetXaxis()->SetBinLabel(9,"BX ID Mis.");
+	obj->GetXaxis()->SetBinLabel(10," ");
+	obj->GetXaxis()->SetBinLabel(11,"TDC Fatal");
+	obj->GetXaxis()->SetBinLabel(12,"TDC FIFO Ov.");
+	obj->GetXaxis()->SetBinLabel(13,"L1 Buffer Ov.");
+      }
 
   }
 
