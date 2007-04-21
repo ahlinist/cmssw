@@ -52,7 +52,10 @@ class CSCHitFromStripOnly
   
   std::vector<CSCStripHit> runStrip( const CSCDetId& id, const CSCLayer* layer, const CSCStripDigiCollection::Range& rstripd, const CSCCLCTDigiCollection* clcts);
 
-  void setCalibration( const CSCGains* gains ) { gains_ = gains; }
+  void setCalibration( float gainAvg, const CSCGains* gains ) { 
+    globalGainAvg  = gainAvg;
+    gains_ = gains; 
+  }
 
  protected:
   
@@ -102,8 +105,7 @@ class CSCHitFromStripOnly
   bool useCleanStripCollection;
 
   /// These are the gain correction weights and X-talks read in from database.
-  float globalGainAvg;
-  float gainWeight[100];
+  float gainWeight[80];
 
   // Peaking time for strip hit
   int TmaxOfCluster;            // in time bins;
@@ -115,7 +117,7 @@ class CSCHitFromStripOnly
    *
    */
   const CSCGains*       gains_;
-
+  float globalGainAvg;
 
   CSCPeakBinOfStripPulse* pulseheightOnStripFinder_;
   CSCStripGain*           stripGain_;

@@ -18,9 +18,6 @@
 
 #include <FWCore/ParameterSet/interface/ParameterSet.h>
 
-#include <vector>
-#include <string>
-
 
 class CSCStripGain
 {
@@ -33,13 +30,13 @@ class CSCStripGain
   // Member functions
 
   /// Load in the gains, X-talk and noise matrix and store in memory
-  void setCalibration( const CSCGains* gains ) { Gains = gains; }
+  void setCalibration( float GlobalGainAvg, const CSCGains* gains ) { 
+    globalGainAvg = GlobalGainAvg;
+    Gains_ = const_cast<CSCGains*> (gains); 
+  }
  
-  /// Computes the average gain for the whole CSC system.
-  float getStripGainAvg();
-
   /// Get the gains out of the database for each of the strips within a cluster.
-  void getStripGain( const CSCDetId& id, const float& globalGainAvg, float* weights );
+  void getStripGain( const CSCDetId& id, float* weights );
 
  private:
 
@@ -47,7 +44,8 @@ class CSCStripGain
   CSCReadoutMappingFromFile theCSCMap;
 
   // Store in memory Gains
-  const CSCGains         * Gains;
+  float globalGainAvg;
+  CSCGains         * Gains_;
 
 };
 

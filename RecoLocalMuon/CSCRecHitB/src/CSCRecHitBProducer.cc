@@ -1,5 +1,6 @@
 #include <RecoLocalMuon/CSCRecHitB/src/CSCRecHitBProducer.h>
 #include <RecoLocalMuon/CSCRecHitB/src/CSCRecHitBBuilder.h>
+#include <RecoLocalMuon/CSCRecHitB/src/CSCStripGainAvg.h>
 
 #include <FWCore/Framework/interface/Frameworkfwd.h>
 #include <FWCore/Framework/interface/EDProducer.h>
@@ -36,6 +37,7 @@ CSCRecHitBProducer::CSCRecHitBProducer( const edm::ParameterSet& ps ) : iev( 0 )
   debug              = ps.getUntrackedParameter<bool>("CSCDebug");
  
   recHitBuilder_     = new CSCRecHitBBuilder( ps ); // pass on the Parameter Settings
+  stripGainAvg_      = new CSCStripGainAvg( ps ); // pass on the Parameter Settings
 
   // register what this produces
   produces<CSCRecHit2DCollection>();
@@ -44,14 +46,12 @@ CSCRecHitBProducer::CSCRecHitBProducer( const edm::ParameterSet& ps ) : iev( 0 )
 
 CSCRecHitBProducer::~CSCRecHitBProducer()
 {
-  LogDebug("CSC") << "deleting recHitBuilder_ after " << iev << " events.";
   delete recHitBuilder_;
 }
 
 
 void  CSCRecHitBProducer::produce( edm::Event& ev, const edm::EventSetup& setup )
 {
-  LogDebug("CSC") << "[CSCRecHitBProducer::produce] start producing rechits for event " << ++iev;
 
 	
   // find the geometry & calibrations for this event & cache it in the builder
@@ -61,7 +61,6 @@ void  CSCRecHitBProducer::produce( edm::Event& ev, const edm::EventSetup& setup 
   setup.get<MuonGeometryRecord>().get( h );
   const CSCGeometry* pgeom = &*h;
   recHitBuilder_->setGeometry( pgeom );
-
 
   // Only for data can you load in calibration constants !
   if ( useCalib ) {  
@@ -77,8 +76,12 @@ void  CSCRecHitBProducer::produce( edm::Event& ev, const edm::EventSetup& setup 
     edm::ESHandle<CSCNoiseMatrix> hNoiseMatrix;
     setup.get<CSCNoiseMatrixRcd>().get(hNoiseMatrix);
     const CSCNoiseMatrix* pNoiseMatrix = &*hNoiseMatrix.product();
+
     // Pass set of calibrations to builder all at once
-    recHitBuilder_->setCalibration( pGains, pCrosstalk, pNoiseMatrix );
+    stripGainAvg_->setCalibration( pGains );
+    CSCstripGainAvg = stripGainAvg_->getStripGainAvg();
+
+    recHitBuilder_->setCalibration( CSCstripGainAvg, pGains, pCrosstalk, pNoiseMatrix );
   }
 	
   // Get the collections of strip & wire digis from event

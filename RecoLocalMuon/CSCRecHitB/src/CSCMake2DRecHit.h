@@ -54,9 +54,11 @@ class CSCMake2DRecHit
   bool isHitInFiducial( const CSCLayer* layer, const CSCRecHit2D& rh );
 
   /// Load in X-Talks and Noise Matrix
-  void setCalibration( const CSCGains* gains,
+  void setCalibration( float GlobalGainAvg,
+                       const CSCGains* gains,
                        const CSCcrosstalk* xtalk,
                        const CSCNoiseMatrix* noise ) {
+    globalGainAvg = GlobalGainAvg;
     gains_ = gains;
     xtalk_ = xtalk;
     noise_ = noise;
@@ -79,14 +81,14 @@ class CSCMake2DRecHit
   /* Cache calibrations for current event
    *
    */
+  float globalGainAvg;
   const CSCGains*       gains_;
   const CSCcrosstalk*   xtalk_;
   const CSCNoiseMatrix* noise_;
 
   CSCStripCrosstalk*       stripCrosstalk_; 
   CSCStripNoiseMatrix*     stripNoiseMatrix_;
-  CSCFitXonStripWithGatti* xFitWithGatti_;
-  
+  CSCFitXonStripWithGatti* xFitWithGatti_;  
 };
 
 #endif

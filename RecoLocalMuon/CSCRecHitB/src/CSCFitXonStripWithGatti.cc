@@ -1,12 +1,22 @@
 // This is CSCFitXonStripWithGatti.cc
 
 #include <RecoLocalMuon/CSCRecHitB/src/CSCFitXonStripWithGatti.h>
+#include <RecoLocalMuon/CSCRecHitB/src/CSCStripCrosstalk.h>
+#include <RecoLocalMuon/CSCRecHitB/src/CSCStripNoiseMatrix.h>
 #include <RecoLocalMuon/CSCRecHitB/src/CSCFindPeakTime.h>
 #include <RecoLocalMuon/CSCRecHitB/src/probab.h>
 #include <RecoLocalMuon/CSCRecHitB/interface/CSCStripHit.h>
 
 #include <Geometry/CSCGeometry/interface/CSCLayer.h>
 #include <Geometry/CSCGeometry/interface/CSCChamberSpecs.h>
+
+#include <CondFormats/CSCObjects/interface/CSCGains.h>
+#include <CondFormats/DataRecord/interface/CSCGainsRcd.h>
+#include <CondFormats/CSCObjects/interface/CSCcrosstalk.h>
+#include <CondFormats/DataRecord/interface/CSCcrosstalkRcd.h>
+#include <CondFormats/CSCObjects/interface/CSCNoiseMatrix.h> 
+#include <CondFormats/DataRecord/interface/CSCNoiseMatrixRcd.h>
+
 
 #include <FWCore/MessageLogger/interface/MessageLogger.h>
 #include <FWCore/Utilities/interface/Exception.h>
@@ -26,13 +36,17 @@ CSCFitXonStripWithGatti::CSCFitXonStripWithGatti(const edm::ParameterSet& ps){
   useCalib                   = ps.getUntrackedParameter<bool>("CSCUseCalibrations");
   adcSystematics             = ps.getUntrackedParameter<double>("CSCCalibrationSystematics");        
   xtalksOffset               = ps.getUntrackedParameter<double>("CSCStripxtalksOffset");
+  minGattiStepSize           = ps.getUntrackedParameter<double>("CSCminGattiStepSize");
+  stripCrosstalk_            = new CSCStripCrosstalk( ps );
+  stripNoiseMatrix_          = new CSCStripNoiseMatrix( ps );
 
   peakTimeFinder_            = new CSCFindPeakTime();
 }
 
 
 CSCFitXonStripWithGatti::~CSCFitXonStripWithGatti(){
-
+  delete stripCrosstalk_;
+  delete stripNoiseMatrix_;
   delete peakTimeFinder_;
 }
 
@@ -40,9 +54,8 @@ CSCFitXonStripWithGatti::~CSCFitXonStripWithGatti(){
 /* findPosition
  *
  */
-void CSCFitXonStripWithGatti::findXOnStrip( const CSCLayer* layer, const CSCStripHit& stripHit, 
-                                            float& xCenterStrip, float& sWidth, 
-                                            std::vector<float> xtalks, std::vector<float> nmatrix,
+void CSCFitXonStripWithGatti::findXOnStrip( const CSCDetId& id, const CSCLayer* layer, const CSCStripHit& stripHit, 
+                                            int centralStrip, float& xCenterStrip, float& sWidth, 
                                             float& xGatti, float& tpeak, double& sigma, double& chisq ) {
 
   // Initialize Gatti parameters using chamberSpecs
@@ -80,45 +93,48 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCLayer* layer, const CSCStri
   for ( int i = 1; i <= nStrips; ++i ) {
     if ( i > (CenterStrip-2) && i < (CenterStrip+2) ) {
       std::vector<float> adcsFit;
-      float sadc[4];
       for ( int t = 0; t < 4; ++t ) {
         int k  = t + 4*(i-1);
-        sadc[t] = adcs[k];  
-        if ( t < 3) d[j][t] = sadc[t];
+        adc[t] = adcs[k];  
+        if ( t < 3) d[j][t] = adc[t];
       }
       j++;
     }
   }
+
+
   // Load in x-talks:
   float dt = 50. * tmax - (t_peak + t_zero);
 
   if ( useCalib ) {
+    std::vector<float> xtalks;
+    stripCrosstalk_->setCrossTalk( xtalk_ );
+    stripCrosstalk_->getCrossTalk( id, centralStrip, xtalks);
+
     for ( int t = 0; t < 3; ++t ) {
       xt_l[0][t] = xtalks[0] * (50.* (t-1) + dt) + xtalks[1] + xtalksOffset;
       xt_r[0][t] = xtalks[2] * (50.* (t-1) + dt) + xtalks[3] + xtalksOffset;
       xt_l[1][t] = xtalks[4] * (50.* (t-1) + dt) + xtalks[5] + xtalksOffset;
       xt_r[1][t] = xtalks[6] * (50.* (t-1) + dt) + xtalks[7] + xtalksOffset;
       xt_l[2][t] = xtalks[8] * (50.* (t-1) + dt) + xtalks[9] + xtalksOffset;
-      xt_r[2][t] = xtalks[10]* (50.* (t-1) + dt) + xtalks[11] + xtalksOffset;
+      xt_r[2][t] = xtalks[10]* (50.* (t-1) + dt) + xtalks[11]+ xtalksOffset;
 
       xt_lr0[t] = (1. - xt_l[0][t] - xt_r[0][t]);
       xt_lr1[t] = (1. - xt_l[1][t] - xt_r[1][t]);
       xt_lr2[t] = (1. - xt_l[2][t] - xt_r[2][t]);
-
     }
   } else { 
     for ( int t = 0; t < 3; ++t ) {
-      xt_l[0][t] = xtalksOffset;
-      xt_r[0][t] = xtalksOffset;
-      xt_l[1][t] = xtalksOffset;
-      xt_r[1][t] = xtalksOffset;
-      xt_l[2][t] = xtalksOffset;
-      xt_r[2][t] = xtalksOffset;
+      xt_l[0][t] = 0.02;
+      xt_r[0][t] = 0.02;
+      xt_l[1][t] = 0.02; 
+      xt_r[1][t] = 0.02; 
+      xt_l[2][t] = 0.02; 
+      xt_r[2][t] = 0.02; 
 
       xt_lr0[t] = (1. - xt_l[0][t] - xt_r[0][t]);
       xt_lr1[t] = (1. - xt_l[1][t] - xt_r[1][t]);
       xt_lr2[t] = (1. - xt_l[2][t] - xt_r[2][t]);
-
     } 
   }
   
@@ -135,6 +151,10 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCLayer* layer, const CSCStri
 
   // Load in auto-correlation noise matrices
   if ( useCalib ) {
+    std::vector<float> nmatrix;
+    stripNoiseMatrix_->setNoiseMatrix( globalGainAvg, gains_, noise_ );
+    stripNoiseMatrix_->getNoiseMatrix( id, centralStrip, nmatrix);
+
     for ( int istrip =0; istrip < 3; ++istrip ) {
       a11[istrip] = nmatrix[0+tbin*3+istrip*15];
       a12[istrip] = nmatrix[1+tbin*3+istrip*15];
@@ -144,13 +164,14 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCLayer* layer, const CSCStri
       a33[istrip] = nmatrix[6+tbin*3+istrip*15];
     }
   } else {
+    // FIXME:  NO HARD WIRED VALUES !!!
     for ( int istrip =0; istrip < 3; ++istrip ) {
-      a11[istrip] = nmatrix[0+tbin*3];
-      a12[istrip] = nmatrix[1+tbin*3];
-      a13[istrip] = nmatrix[2+tbin*3];
-      a22[istrip] = nmatrix[3+tbin*3];
-      a23[istrip] = nmatrix[4+tbin*3];
-      a33[istrip] = nmatrix[6+tbin*3];
+      a11[istrip] = 1.0;
+      a12[istrip] = 0.0;
+      a13[istrip] = 0.0;
+      a22[istrip] = 1.0;
+      a23[istrip] = 0.0;
+      a33[istrip] = 1.0;
     }
   }
   
@@ -183,7 +204,7 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCLayer* layer, const CSCStri
       x_gatti   = ( tmp0_x + tmp1_x ) / 2.;
       dxl_gatti = fabs( tmp0_x - tmp1_x )/ sqrt(12.);
       dxh_gatti = dxl_gatti;
-      chi2_gatti = 10001.;
+      chi2_gatti = 99999.;
     }
   }    
 
@@ -217,23 +238,24 @@ void CSCFitXonStripWithGatti::runGattiFit( int istrt ) {
   float chi2min = 1.e12;
   float chi2last= 1.e12;
 
-  while ( fabs(step) < 0.002 ) {
-//  while ( fabs(step) < 0.1 ) {
-    
+  while ( true ) {    
+
     chi2 = chisqrFromGatti( dx );
-    
+
     if ( chi2 < chi2last ) {
       chi2last = chi2;
       if ( chi2min > chi2) chi2min = chi2;
       dx += step;
       continue;
     }
+
+    if ( fabs(step) < minGattiStepSize ) break;
         
     dx = dx - 2. * step;
     step = step / 2.;
     chi2last = 1.e12;
   }
-  
+    
   dx = -dx;
  
   // Now compute errors

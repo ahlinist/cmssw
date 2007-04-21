@@ -75,9 +75,9 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
 
   if ( useCalib ) {
     // Pass gain constants to strip hit reconstruction package
-    HitsFromStripOnly_->setCalibration( gains_ );
+    HitsFromStripOnly_->setCalibration( gAvg_, gains_ );
     // Pass X-talks and noise matrix to 2-D hit builder (these are ultimately implemented in Gatti fit)
-    Make2DHits_->setCalibration( gains_, xtalk_, noise_ );
+    Make2DHits_->setCalibration( gAvg_, gains_, xtalk_, noise_ );
   }
 
 
