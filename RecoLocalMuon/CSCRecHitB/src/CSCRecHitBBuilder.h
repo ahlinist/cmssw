@@ -71,9 +71,11 @@ class CSCRecHitBBuilder
    * redistributed further downstream
    */
   void setGeometry   ( const CSCGeometry* geom ) {geom_ = geom;}
-  void setCalibration( const CSCGains* gains,
+  void setCalibration( float gainAvg,
+	               const CSCGains* gains,
                        const CSCcrosstalk* xtalk,
                        const CSCNoiseMatrix* noise ) {
+    gAvg_  = gainAvg;
     gains_ = gains;
     xtalk_ = xtalk;
     noise_ = noise;
@@ -107,6 +109,7 @@ class CSCRecHitBBuilder
    * Cache geometry and calibrations for current event
    */
   const CSCGeometry* geom_;
+  float gAvg_;
   const CSCGains* gains_;
   const CSCcrosstalk* xtalk_;
   const CSCNoiseMatrix* noise_;

@@ -72,8 +72,6 @@ std::vector<CSCStripHit> CSCHitFromStripOnly::runStrip( const CSCDetId& id, cons
   if ( useCleanStripCollection ) {
     clctStrips = getCLCTStrips( id, clcts );
     if ( clctStrips.size() < 1) return hitsInLayer;
-//    unsigned Nclcts = clctStrips.size();
-//    if (Nclcts < 1 || Nclcts > 2) return hitsInLayer;
   }
 
   TmaxOfCluster = 5;
@@ -85,9 +83,8 @@ std::vector<CSCStripHit> CSCHitFromStripOnly::runStrip( const CSCDetId& id, cons
   // Initialize weights to 1. and crosstalk to 0., in case database isn't populated or using MC
 
   if ( useCalib ) {
-    stripGain_->setCalibration( gains_ );
-    float globalGainAvg = stripGain_->getStripGainAvg();
-    stripGain_->getStripGain( id_, globalGainAvg, gainWeight );
+    stripGain_->setCalibration( globalGainAvg, gains_ );
+    stripGain_->getStripGain( id_, gainWeight );
   }
   
   // Fill adc map and find maxima (potential hits)

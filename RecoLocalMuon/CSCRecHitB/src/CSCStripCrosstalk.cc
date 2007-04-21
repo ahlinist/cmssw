@@ -32,64 +32,57 @@ CSCStripCrosstalk::~CSCStripCrosstalk() {
 /* getCrossTalk
  *
  */
-void CSCStripCrosstalk::getCrossTalk( const CSCDetId& id, float* m_left, float* b_left, float* m_right, float* b_right ) {
+void CSCStripCrosstalk::getCrossTalk( const CSCDetId& id, int centralStrip, std::vector<float>& xtalks) {
+
+  xtalks.clear();
+
+  int strip1 = centralStrip;  
 
   // Compute channel id used for retrieving gains from database
-  bool isME1a = false;
   int ec = id.endcap();
   int st = id.station();
   int rg = id.ring();
   int ch = id.chamber();
   int la = id.layer();
 
-  // Note that ME-1a constants are stored in ME-11 (ME-1b)
+  // Note that ME1/a constants are stored in ME1/1 which also constains ME1/b
+  // ME1/a constants are stored beginning at entry 64
+  // Also, only have only 16 strips to worry about for ME1a
   if ((id.station() == 1 ) && (id.ring() == 4 )) {   
     rg = 1;
-    isME1a = true;
+    strip1 = centralStrip%16 - 1;
+    if (strip1 < 0) strip1 = 15;
+    strip1 = strip1 + 64;
+  } else {
+    // In database, strip start at 0, whereas strip Id start at 1...	  
+    strip1 = centralStrip - 1;
   }
 
   int chId=220000000 + ec*100000 + st*10000 + rg*1000 + ch*10 + la;
 
-  // Build iterator which loops on all layer id:
-  std::map<int,std::vector<CSCcrosstalk::Item> >::const_iterator it;
+  float m_left = 0.;
+  float b_left = 0.;
+  float m_right = 0.;
+  float b_right = 0.;
 
-  for ( it=xTalk->crosstalk.begin(); it!=xTalk->crosstalk.end(); ++it ) {   
-
-    // Is it the right detector unit ?
-    if (it->first != chId) continue;
-
-    // Build iterator which loops on all channels and finds desired channel:
-    std::vector<CSCcrosstalk::Item>::const_iterator xtalk_i;
-
-    // N.B. in database, strip_id starts at 0, whereas it starts at 1 in detId
-    int s_id = 0;   
-    int me1a_id = 0;
-    for ( xtalk_i=it->second.begin(); xtalk_i!=it->second.end(); ++xtalk_i ) {
-      if ( isME1a ) {
-        if (s_id > 63 ) {
-	  m_left[me1a_id]     = xtalk_i->xtalk_slope_left; 
-	  b_left[me1a_id]     = xtalk_i->xtalk_intercept_left; 
-	  m_right[me1a_id]    = xtalk_i->xtalk_slope_right; 
-	  b_right[me1a_id]    = xtalk_i->xtalk_intercept_right;
-          m_left[me1a_id+16]  = xtalk_i->xtalk_slope_left;  
-          b_left[me1a_id+16]  = xtalk_i->xtalk_intercept_left;  
-          m_right[me1a_id+16] = xtalk_i->xtalk_slope_right;  
-          b_right[me1a_id+16] = xtalk_i->xtalk_intercept_right;  
-          m_left[me1a_id+32]  = xtalk_i->xtalk_slope_left;  
-          b_left[me1a_id+32]  = xtalk_i->xtalk_intercept_left;  
-          m_right[me1a_id+32] = xtalk_i->xtalk_slope_right;  
-          b_right[me1a_id+32] = xtalk_i->xtalk_intercept_right;  
-	  me1a_id++;
-	}
-      }
-      if ( !isME1a ) {
-	m_left[s_id]  = xtalk_i->xtalk_slope_left;
-	b_left[s_id]  = xtalk_i->xtalk_intercept_left;
-	m_right[s_id] = xtalk_i->xtalk_slope_right;
-	b_right[s_id] = xtalk_i->xtalk_intercept_right;
-      }
-      s_id++;
+  int idx = 0;
+  // Cluster of 3 strips, so get x-talks for these 3 strips
+  for ( int sid = strip1-1; sid < strip1+2; ++sid ) {
+    if (xTalk_->crosstalk.find(chId) != xTalk_->crosstalk.end( ) ) {
+      m_left  = xTalk_->crosstalk[chId][sid].xtalk_slope_left;
+      b_left  = xTalk_->crosstalk[chId][sid].xtalk_intercept_left;
+      m_right = xTalk_->crosstalk[chId][sid].xtalk_slope_right;
+      b_right = xTalk_->crosstalk[chId][sid].xtalk_intercept_right;
+    } else {
+      m_left  = 0.;
+      b_left  = 0.02;
+      m_right = 0.;
+      b_right = 0.02;
     }
+    xtalks.push_back(m_left);
+    xtalks.push_back(b_left);
+    xtalks.push_back(m_right);
+    xtalks.push_back(b_right);
+    idx++;
   }
-  return;
 }

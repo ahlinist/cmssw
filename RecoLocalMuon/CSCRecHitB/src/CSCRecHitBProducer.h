@@ -20,6 +20,7 @@
 #include <FWCore/ParameterSet/interface/ParameterSet.h>
 
 class CSCRecHitBBuilder; 
+class CSCStripGainAvg;
 
 class CSCRecHitBProducer : public edm::EDProducer {
 
@@ -36,11 +37,13 @@ public:
   bool useCalib;
   bool isData;
   bool debug;
+  float CSCstripGainAvg;
 
   std::string stripDigiProducer_;
   std::string wireDigiProducer_;
 
   CSCRecHitBBuilder* recHitBuilder_;
+  CSCStripGainAvg* stripGainAvg_;
 };
 
 #endif

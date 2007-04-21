@@ -1,8 +1,6 @@
 // This is CSCMake2DRecHit
 
 #include <RecoLocalMuon/CSCRecHitB/src/CSCMake2DRecHit.h>
-#include <RecoLocalMuon/CSCRecHitB/src/CSCStripCrosstalk.h>
-#include <RecoLocalMuon/CSCRecHitB/src/CSCStripNoiseMatrix.h>
 #include <RecoLocalMuon/CSCRecHitB/src/CSCFitXonStripWithGatti.h>
 #include <RecoLocalMuon/CSCRecHitB/src/probab.h>
 #include <RecoLocalMuon/CSCRecHitB/interface/CSCStripHit.h>
@@ -14,13 +12,6 @@
 #include <Geometry/CSCGeometry/interface/CSCLayer.h>
 #include <Geometry/CSCGeometry/interface/CSCChamberSpecs.h>
 #include <Geometry/CSCGeometry/interface/CSCLayerGeometry.h>
-
-#include <CondFormats/CSCObjects/interface/CSCGains.h>
-#include <CondFormats/DataRecord/interface/CSCGainsRcd.h>
-#include <CondFormats/CSCObjects/interface/CSCcrosstalk.h>
-#include <CondFormats/DataRecord/interface/CSCcrosstalkRcd.h>
-#include <CondFormats/CSCObjects/interface/CSCNoiseMatrix.h>
-#include <CondFormats/DataRecord/interface/CSCNoiseMatrixRcd.h>
 
 #include <FWCore/MessageLogger/interface/MessageLogger.h>
 #include <FWCore/Utilities/interface/Exception.h>
@@ -42,8 +33,6 @@ CSCMake2DRecHit::CSCMake2DRecHit(const edm::ParameterSet& ps){
   useGatti                   = ps.getUntrackedParameter<bool>("CSCUseGattiFit");
   maxGattiChi2               = ps.getUntrackedParameter<double>("CSCMaxGattiChi2");
 
-  stripCrosstalk_            = new CSCStripCrosstalk( ps );
-  stripNoiseMatrix_          = new CSCStripNoiseMatrix( ps );
   xFitWithGatti_             = new CSCFitXonStripWithGatti( ps );
 }   
 
@@ -52,8 +41,6 @@ CSCMake2DRecHit::CSCMake2DRecHit(const edm::ParameterSet& ps){
  *
  */
 CSCMake2DRecHit::~CSCMake2DRecHit() {
-  delete stripCrosstalk_;
-  delete stripNoiseMatrix_;
   delete xFitWithGatti_;
 }
 
@@ -64,13 +51,13 @@ CSCMake2DRecHit::~CSCMake2DRecHit() {
 CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLayer* layer,
                                                  const CSCWireHit& wHit, const CSCStripHit& sHit){
 
-  if (debug) std::cout <<"[CSCMake2DRecHit::hitFromStripAndWire] creating 2-D hit" << std::endl;  
 
   // Cache layer info for ease of access
   layer_        = layer;
   layergeom_    = layer_->geometry();
   specs_        = layer->chamber()->specs();
   id_           = id;
+
 
   double sigma, chisq, prob;
   sigma = chisq = 0.00;
@@ -87,37 +74,6 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
   LocalPoint lpFailed(-999., -999.);
   LocalError localerrFailed(dx2, dxy, dy2);  
   CSCRecHit2D failedHit( id, lpFailed, localerrFailed, channels, adcMap, wgroups, tpeak, chisq, prob );
-
-  float slopeRight[100];
-  float slopeLeft[100];
-  float interRight[100];
-  float interLeft[100];
-  std::vector<float> nMatrix;
-
-  // Fill x-talk and noise matrix at once:
-  if ( useCalib ) {
-    stripCrosstalk_->setCrossTalk( xtalk_ );
-    stripCrosstalk_->getCrossTalk( id, slopeLeft, interLeft, slopeRight, interRight );
-    stripNoiseMatrix_->setNoiseMatrix( gains_, noise_ );
-    stripNoiseMatrix_->getNoiseMatrix( id, nMatrix ); 
-  } else {
-    // FIXME:  NOT SUPPOSED TO HARDWIRE ANYTHING !!!
-    nMatrix.push_back(10.06);  // 3,3
-    nMatrix.push_back(3.85);   // 3,4
-    nMatrix.push_back(2.96);   // 3,5
-    nMatrix.push_back(8.53);   // 4,4
-    nMatrix.push_back(3.12);   // 4,5
-    nMatrix.push_back(2.05);   // 4,6
-    nMatrix.push_back(8.72);   // 5,5
-    nMatrix.push_back(3.29);   // 5,6
-    nMatrix.push_back(1.83);   // 5,7
-    nMatrix.push_back(7.65);   // 6,6
-    nMatrix.push_back(2.98);   // 6,7
-    nMatrix.push_back(0.);     // 6,8  <- does not exist
-    nMatrix.push_back(7.95);   // 7,7
-    nMatrix.push_back(0.);     // 7,8  <- does not exist
-    nMatrix.push_back(0.);     // 7,9  <- does not exist
-  }
 
   
   // Find wire hit position and wire properties
@@ -162,10 +118,9 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
   // chamber, or that one of the strip next to the central strip wasn't readout.  Flag these hits as
   // we don't want them to go through the Gatti fit procedure.
   bool hasCFEBProblem = false;
-  if (strip_offset == 0. && ch%16 < 2) { 
+//  if (strip_offset == 0. && ch%16 < 2) { 
+  if ( stripClusterSize < 2 ) { 
     hasCFEBProblem = true;
-    if (debug &&  ch > 1 && ch < specs_->nStrips() ) 
-      std::cout << "Have found potential CFEB problem for strip: " << ch << std::endl; 
   }
   
 
@@ -174,7 +129,8 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
 
 
   // If at the edge, then used 1 strip cluster only :
-  if ( ch <= 1 || ch >= specs_->nStrips() || hasCFEBProblem) {
+//  if ( ch <= 1 || ch >= specs_->nStrips() || hasCFEBProblem) {
+  if ( hasCFEBProblem) {
 
     LocalPoint lp1 = layergeom_->stripWireIntersection( centerStrip, the_wire1);
     LocalPoint lp2 = layergeom_->stripWireIntersection( centerStrip, the_wire2);
@@ -193,7 +149,6 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
     keepHit = keepHitInFiducial( lp3, lp0 );
 
     if ( !keepHit ) { 
-      if (debug) std::cout <<"[CSCMake2DRecHit::hitFromStripAndWire] failedHit" << std::endl;
       return failedHit;
     }
     sigma =  layergeom_->stripPitch(lp0)/sqrt(12);  
@@ -214,10 +169,6 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
     LocalError localerr(dx2, dxy, dy2);
 
     CSCRecHit2D rechit( id, lp0, localerr, strips, adcMap, wgroups, tpeak, chisq, prob );
-
-    if (debug) std::cout << "Found rechit in chamber ME" << id.station() << "/" << id.ring() << "-" << id.chamber() << " and layer " << id.layer() << " with local position:  x = " << x << "  y = " << y << std::endl; 
-
-    nMatrix.clear();
 
     return rechit;  
   } 
@@ -252,13 +203,11 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
   LocalPoint lp3;
   keepHit = keepHitInFiducial( lp1, lp3 );
   if ( !keepHit ) { 
-    if (debug) std::cout <<"[CSCMake2DRecHit::hitFromStripAndWire] failedHit" << std::endl;
     return failedHit;
   }
   LocalPoint lp4;
   keepHit = keepHitInFiducial( lp2, lp4 );
   if ( !keepHit ) { 
-    if (debug) std::cout <<"[CSCMake2DRecHit::hitFromStripAndWire] failedHit" << std::endl;
     return failedHit;
   }
 
@@ -274,9 +223,12 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
   float stripWidth = fabs(x2 - x1);  
   sigma =  stripWidth/sqrt(12);              
 
+
   // Here try to improve the strip position by applying Gatti fitter
 
   if ( useGatti ) {   
+
+    if (useCalib) xFitWithGatti_->setCalibration( globalGainAvg, gains_, xtalk_, noise_ );
 
     LocalPoint lp55  = layergeom_->stripWireIntersection( centerStrip, the_wire1);
     LocalPoint lp555 = layergeom_->stripWireIntersection( centerStrip, the_wire2);
@@ -293,8 +245,6 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
     LocalPoint lp6;
     keepHit = keepHitInFiducial( lp5, lp6 );
     if ( !keepHit ) { 
-      if (debug) std::cout <<"[CSCMake2DRecHit::hitFromStripAndWire] failedHit" << std::endl;
-      nMatrix.clear();
       return failedHit;
     }	
 
@@ -303,16 +253,9 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
     float x_fit;
     double sigma_fit, chisq_fit;
 
-    std::vector<float> xtalks, nmatrix;
-    for ( int j = centerStrip -2; j < centerStrip + 1; ++j) {  // Index of strip is starts at 1 whereas array 
-      xtalks.push_back(slopeLeft[j]);                          // starts at 0 --> make use of this here
-      xtalks.push_back(interLeft[j]);
-      xtalks.push_back(slopeRight[j]);
-      xtalks.push_back(interRight[j]);
-      for ( int k = 0; k < 15; ++k ) nmatrix.push_back(nMatrix[j*15 + k]);
-    }   
+    xFitWithGatti_->findXOnStrip( id, layer_, sHit, centerStrip, x_to_gatti, stripWidth, x_fit, tpeak, sigma_fit, chisq_fit );
 
-    xFitWithGatti_->findXOnStrip( layer_, sHit, x_to_gatti, stripWidth, xtalks, nmatrix, x_fit, tpeak, sigma_fit, chisq_fit );
+    if (debug) std::cout << "chi2 from Gatti: " << chisq_fit << " centroid x: " << x_to_gatti << " Gatti x: " << x_fit << std::endl;
 
     if ( chisq_fit < maxGattiChi2 ) {
       x     = x_fit;
@@ -347,8 +290,6 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
   CSCRecHit2D rechit( id, lp0, localerr, strips, adcMap, wgroups, tpeak, chisq, prob );
 
   if (debug) std::cout << "Found rechit in chamber ME" << id.station() << "/" << id.ring() << "-" << id.chamber() << " and layer " << id.layer() << " with local position:  x = " << x << "  y = " << y << std::endl; 
-
-  nMatrix.clear();
 
   return rechit;
 }

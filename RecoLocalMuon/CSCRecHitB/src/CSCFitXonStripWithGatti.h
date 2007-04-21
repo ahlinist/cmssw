@@ -49,6 +49,11 @@
 class CSCLayer;
 class CSCChamberSpecs;
 class CSCFindPeakTime;
+class CSCGains;
+class CSCcrosstalk;
+class CSCNoiseMatrix;
+class CSCStripCrosstalk;
+class CSCStripNoiseMatrix;
 
 class CSCFitXonStripWithGatti
 {
@@ -62,9 +67,8 @@ class CSCFitXonStripWithGatti
   // Member functions
   
   /// Returns fitted local x position and its estimated error.
-  void findXOnStrip( const CSCLayer* layer, const CSCStripHit& stripHit, 
-                     float& xCentroid, float& stripWidth,
-                     std::vector<float> xtalks, std::vector<float> nmatrix,
+  void findXOnStrip( const CSCDetId& id, const CSCLayer* layer, const CSCStripHit& stripHit,
+                     int centralStrip, float& xCentroid, float& stripWidth,
                      float& xGatti, float& tpeak, double& sigma, double& chisq );
 
   /// Use specs to setup Gatti parameters
@@ -82,8 +86,20 @@ class CSCFitXonStripWithGatti
   /// Evaluates the Gatti function for a given position on the strip
   void getGatti( float x, int t );
 
+  /// Load in x-Talks and Noise Matrix
+  void setCalibration( float GlobalGainAvg,
+                       const CSCGains* gains,
+                       const CSCcrosstalk* xtalk,
+                       const CSCNoiseMatrix* noise ) {
+    globalGainAvg = GlobalGainAvg;
+    gains_ = gains;
+    xtalk_ = xtalk;
+    noise_ = noise;
+  }
+
   
  private:
+
 
   double h;                                     // This is the distance between strip and wire planes
   float stripWidth;
@@ -119,8 +135,20 @@ class CSCFitXonStripWithGatti
   bool use3TimeBins;
   double adcSystematics;
   float xtalksOffset;
+  float minGattiStepSize;
 
-  CSCFindPeakTime* peakTimeFinder_;  
+  /* Cache calibrations for current event
+   *
+   */
+  float globalGainAvg;
+  const CSCGains*       gains_;
+  const CSCcrosstalk*   xtalk_;
+  const CSCNoiseMatrix* noise_;
+
+  // other classes used
+  CSCStripCrosstalk*       stripCrosstalk_;
+  CSCStripNoiseMatrix*     stripNoiseMatrix_;
+  CSCFindPeakTime*         peakTimeFinder_;  
 
 }; 
 

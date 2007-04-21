@@ -34,29 +34,29 @@ class CSCStripNoiseMatrix
   // Member functions
 
   /// Load in the noise matrix and store in memory
-  void setNoiseMatrix( const CSCGains* gains, const CSCNoiseMatrix* noise ) { 
-    Gains = gains;
-    Noise = noise; }
+  void setNoiseMatrix( float GlobalGainAvg, 
+                       const CSCGains* gains, 
+                       const CSCNoiseMatrix* noise ) { 
+    globalGainAvg = GlobalGainAvg;
+    Gains = const_cast<CSCGains*> (gains);
+    Noise = const_cast<CSCNoiseMatrix*> (noise); 
+  }
  
   /// Get the noise matrix out of the database for each of the strips within a cluster.
- void getNoiseMatrix( const CSCDetId& id, std::vector<float>& nMatrix );
-
-  /// Computes the average gain for the whole CSC system.
-  float getStripGainAvg();
+  void getNoiseMatrix( const CSCDetId& id, int centralStrip, std::vector<float>& nMatrix );
 
   /// Get the gains out of the database for each of the strips within a cluster.
-  void getStripGain( const CSCDetId& id, const float& globalGainAvg );
+  float getStripGain( int chId, int thisStrip );
 
  private:
 
   bool debug;
   CSCReadoutMappingFromFile theCSCMap;
 
-  float gainWeight[100];
-
   // Store in memory Gains and Noise matrix
-  const CSCGains         * Gains;
-  const CSCNoiseMatrix   * Noise;
+  float globalGainAvg;
+  CSCGains         * Gains;
+  CSCNoiseMatrix   * Noise;
 
 };
 

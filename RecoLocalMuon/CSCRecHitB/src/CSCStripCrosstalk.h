@@ -29,18 +29,20 @@ class CSCStripCrosstalk
   // Member functions
 
   /// Load in the gains, X-talk and noise matrix and store in memory
-  void setCrossTalk( const CSCcrosstalk* xtalk ) { xTalk = xtalk; }
+  void setCrossTalk( const CSCcrosstalk* xtalk ) { 
+    xTalk_ = const_cast<CSCcrosstalk*> (xtalk); 
+  }
  
   /// Get the Xtalks out of the database for each of the strips within layer.
-  void getCrossTalk( const CSCDetId& id, float* m_left, float* b_left, float* m_right, float* b_right);
+  void getCrossTalk( const CSCDetId& id, int centralStrip, std::vector<float>& xtalks);
 
  private:
 
   bool debug;
   CSCReadoutMappingFromFile theCSCMap;
 
-  // Store in memory Gains, xtalks, and noise matrix
-  const CSCcrosstalk     * xTalk;
+  // Store in memory xtalks
+  CSCcrosstalk     * xTalk_;
 
 };
 
