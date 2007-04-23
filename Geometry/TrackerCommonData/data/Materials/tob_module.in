@@ -694,7 +694,7 @@ EDMS Code EP 680-1174-200-C
 (14) HV pin (2 copies)
 
 .......................................................................
-# "TOB ICC Layer 1/2 (1 APV)"   "TOB_L12_ICC1"    25.96   51.92
+# "TOB ICC Layer 1/2 (1 APV)"   "TOB_L12_ICC1"    12.98   51.92
 * 1 "PCB board"                 "T_G10"            4.305   1     ELE
 * 2 "PCB copper traces"         "Copper"           0.176   1     ELE	 
 * 3 "NAiS connectors"           "Copper"           0.110   1     ELE
@@ -767,7 +767,7 @@ EDMS Code EP 680-1174-210-D
 (14) HV pin (4 copies)
 
 .......................................................................
-# "TOB ICC Layer 1/2 (2 APVs)"  "TOB_L12_ICC2"    40.12   80.24
+# "TOB ICC Layer 1/2 (2 APVs)"  "TOB_L12_ICC2"    20.06   80.24
 * 1 "PCB board"                 "T_G10"            6.583   1     ELE
 * 2 "PCB copper traces"         "Copper"           0.274   1     ELE	 
 * 3 "NAiS connectors"           "Copper"           0.187   1     ELE
@@ -793,7 +793,7 @@ ICC1
 Circuit ICC3 (SS_ICC1)
 EDMS Code EP 680-1174-220-B
 
-MCVolume: ( x x ) cm^3 =  cm^3
+MCVolume: ( 11.8 x 4.4 x 0.25 ) cm^3 = 12.98 cm^3
 
 (1-2) PCBs
 	FR4:    m = 5.754 g
@@ -860,7 +860,7 @@ MCVolume: ( x x ) cm^3 =  cm^3
 		--> volume = 0.011 cm^3
 
 .......................................................................
-# "TOB ICC Layer 3/4 (1 APV)"   "TOB_L34_ICC1"    25.96   51.92
+# "TOB ICC Layer 3/4 (1 APV)"   "TOB_L34_ICC1"    12.98   51.92
 * 1 "PCB board"                 "T_G10"            3.028   1     ELE
 * 2 "PCB copper traces"         "Copper"           0.144   1     ELE	 
 * 3 "NAiS connectors"           "Copper"           0.0722  1     ELE
@@ -883,7 +883,7 @@ ICC2
 Circuit ICC4 (SS_ICC2)
 EDMS Code EP 680-1174-230-B
 
-MCVolume: ( x x ) cm^3 =  cm^3
+MCVolume: ( 11.8 x 6.8 x 0.25 ) cm^3 = 20.06 cm^3
 
 (1-2) PCBs
 	FR4:    m = 8.175 g
@@ -950,7 +950,7 @@ MCVolume: ( x x ) cm^3 =  cm^3
 		--> volume = 0.011 cm^3
 
 .......................................................................
-# "TOB ICC Layer 3/4 (2 APVs)"  "TOB_L34_ICC2"    40.12   80.24
+# "TOB ICC Layer 3/4 (2 APVs)"  "TOB_L34_ICC2"    20.06   80.24
 * 1 "PCB board"                 "T_G10"            4.302   1     ELE
 * 2 "PCB copper traces"         "Copper"           0.180   1     ELE	 
 * 3 "NAiS connectors"           "Copper"           0.110   1     ELE
@@ -976,7 +976,7 @@ ICC1
 Same as Layer 3/4.
 	
 .......................................................................
-# "TOB ICC Layer 5/6 (1 APV)"   "TOB_L56_ICC1"    25.96   51.92
+# "TOB ICC Layer 5/6 (1 APV)"   "TOB_L56_ICC1"    12.98   51.92
 * 1 "PCB board"                 "T_G10"            3.028   1     ELE
 * 2 "PCB copper traces"         "Copper"           0.144   1     ELE	 
 * 3 "NAiS connectors"           "Copper"           0.0926  1     ELE
@@ -999,7 +999,7 @@ ICC2
 Same as Layer 3/4.
 	
 .......................................................................
-# "TOB ICC Layer 5/6 (2 APVs)"  "TOB_L56_ICC2"    40.12   80.24
+# "TOB ICC Layer 5/6 (2 APVs)"  "TOB_L56_ICC2"    20.06   80.24
 * 1 "PCB board"                 "T_G10"            4.302   1     ELE
 * 2 "PCB copper traces"         "Copper"           0.180   1     ELE	 
 * 3 "NAiS connectors"           "Copper"           0.151   1     ELE
