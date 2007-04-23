@@ -80,11 +80,18 @@ class CSCFitXonStripWithGatti
   /// Computes chi^2 by comparing expected charge distribution with measured
   float chisqrFromGatti( float x );
 
+  /// Computes chi^2 by comparing expected charge distribution with measured (use x-talks + auto-correlation matrix)
+  float chisqrFromGattiCalib( float x );
+
   /// Set matrix with autocorrelation to compute chi^2
   void setupMatrix();
 
-  /// Evaluates the Gatti function for a given position on the strip
+  /// Evaluates the Gatti function for a given position on the strip without x-talks (deprecated)
   void getGatti( float x, int t );
+
+  /// Evaluates the Gatti function for a given position on the strip and consider x-talks (deprecated)
+  void getGattiCalib( float x, int t );
+
 
   /// Load in x-Talks and Noise Matrix
   void setCalibration( float GlobalGainAvg,

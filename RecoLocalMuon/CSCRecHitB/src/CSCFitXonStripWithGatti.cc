@@ -238,22 +238,47 @@ void CSCFitXonStripWithGatti::runGattiFit( int istrt ) {
   float chi2min = 1.e12;
   float chi2last= 1.e12;
 
-  while ( true ) {    
+  // This is using the full calibration method 
+  if (useCalib) {
 
-    chi2 = chisqrFromGatti( dx );
+    while ( true ) {    
 
-    if ( chi2 < chi2last ) {
-      chi2last = chi2;
-      if ( chi2min > chi2) chi2min = chi2;
-      dx += step;
-      continue;
+      chi2 = chisqrFromGattiCalib( dx );
+
+      if ( chi2 < chi2last ) {
+        chi2last = chi2;
+        if ( chi2min > chi2) chi2min = chi2;
+        dx += step;
+        continue;
+      }
+
+      if ( fabs(step) < minGattiStepSize ) break;
+        
+      dx = dx - 2. * step;
+      step = step / 2.;
+      chi2last = 1.e12;
     }
 
-    if ( fabs(step) < minGattiStepSize ) break;
+  // Don't use the calibrations
+  } else {
+
+    while ( true ) {    
+
+      chi2 = chisqrFromGatti( dx );
+
+      if ( chi2 < chi2last ) {
+        chi2last = chi2;
+        if ( chi2min > chi2) chi2min = chi2;
+        dx += step;
+        continue;
+      }
+
+      if ( fabs(step) < minGattiStepSize ) break;
         
-    dx = dx - 2. * step;
-    step = step / 2.;
-    chi2last = 1.e12;
+      dx = dx - 2. * step;
+      step = step / 2.;
+      chi2last = 1.e12;
+    }
   }
     
   dx = -dx;
@@ -290,11 +315,76 @@ void CSCFitXonStripWithGatti::runGattiFit( int istrt ) {
 }
 
 
-
 /* chisqrFromGatti
  *
  */
 float CSCFitXonStripWithGatti::chisqrFromGatti( float x ) {
+
+  float chi2, dd;
+  float sn11,sn22,sn33;
+  float sd11,sd22,sd33;
+  float sn1,sn2,sn3,n1,n2,n3;
+
+  // Compute Gatti function for 3 positions and 3 time bins
+  //  getGatti( x, 0 ); // deprecated
+
+  double   g1 = norm * atan( sqrt_k_3 * tanh( k_2 * (-x - 1.5)/r ) );
+  double   g2 = norm * atan( sqrt_k_3 * tanh( k_2 * (-x - 0.5)/r ) );
+  double   g3 = norm * atan( sqrt_k_3 * tanh( k_2 * (-x + 0.5)/r ) );
+  double   g4 = norm * atan( sqrt_k_3 * tanh( k_2 * (-x + 1.5)/r ) );
+
+  q[0][0] = q[0][1] = q[0][2] = g2 - g1; 
+  q[1][0] = q[1][1] = q[1][2] = g3 - g2;
+  q[2][0] = q[2][1] = q[2][2] = g4 - g3;
+
+
+  sn11 = v11[0]*q[0][0]*d[0][0] + v11[1]*q[1][0]*d[1][0] + v11[2]*q[2][0]*d[2][0];
+  sd11 = v11[0]*q[0][0]*q[0][0] + v11[1]*q[1][0]*q[1][0] + v11[2]*q[2][0]*q[2][0];
+  
+  sn22 = v22[0]*q[0][1]*d[0][1] + v22[1]*q[1][1]*d[1][1] + v22[2]*q[2][1]*d[2][1];
+  sd22 = v22[0]*q[0][1]*q[0][1] + v22[1]*q[1][1]*q[1][1] + v22[2]*q[2][1]*q[2][1];
+  
+  sn33 = v33[0]*q[0][2]*d[0][2] + v33[1]*q[1][2]*d[1][2] + v33[2]*q[2][2]*d[2][2];
+  sd33 = v33[0]*q[0][2]*q[0][2] + v33[1]*q[1][2]*q[1][2] + v33[2]*q[2][2]*q[2][2];
+
+  sn1 = sn11;
+  sn2 = sn22;
+  sn3 = sn33;
+
+/* These are the normalization factors, solutions to:
+ *     sd11*N1+sd21*N2+sd31*N3-sn1=0
+ *     sd12*N1+sd22*N2+sd32*N3-sn2=0
+ *     sd13*N1+sd23*N2+sd33*N3-sn3=0
+ */
+
+  dd = (sd11*sd22*sd33);
+  n1 = (sn1*sd22*sd33)/dd;
+  n2 = (sd11*sd33*sn2)/dd;
+  n3 = (sd11*sd22*sn3)/dd;
+      
+  // Now compute chi^2
+  chi2  = 0.0;
+
+  chi2 +=        v11[0] * (d[0][0] - n1*q[0][0]) * (d[0][0] - n1*q[0][0]) 
+               + v11[1] * (d[1][0] - n1*q[1][0]) * (d[1][0] - n1*q[1][0])
+               + v11[2] * (d[2][0] - n1*q[2][0]) * (d[2][0] - n1*q[2][0]);
+
+  chi2 +=        v22[0] * (d[0][1] - n2*q[0][1]) * (d[0][1] - n2*q[0][1])
+               + v22[1] * (d[1][1] - n2*q[1][1]) * (d[1][1] - n2*q[1][1])
+               + v22[2] * (d[2][1] - n2*q[2][1]) * (d[2][1] - n2*q[2][1]);
+
+  chi2 +=        v33[0] * (d[0][2] - n3*q[0][2]) * (d[0][2] - n3*q[0][2])
+               + v33[1] * (d[1][2] - n3*q[1][2]) * (d[1][2] - n3*q[1][2])
+               + v33[2] * (d[2][2] - n3*q[2][2]) * (d[2][2] - n3*q[2][2]);
+
+  return chi2;
+}
+
+
+/* chisqrFromGattiCalib
+ *
+ */
+float CSCFitXonStripWithGatti::chisqrFromGattiCalib( float x ) {
 
   float chi2, dd;
   float sn11,sn12,sn13,sn21,sn22,sn23,sn31,sn32,sn33;
@@ -302,29 +392,42 @@ float CSCFitXonStripWithGatti::chisqrFromGatti( float x ) {
   float sn1,sn2,sn3,n1,n2,n3;
 
   // Compute Gatti function for 3 positions and 3 time bins
-  //  for (int t = 0; t < 3; ++t ) {} // out
-  getGatti( x, 0 );
+  //  getGatti( x, 0 );  // deprecated
 
-  sn11 = v11[0]*q[0][0]*d[0][0] + v11[1]*q[1][0]*d[1][0] + v11[2]*q[2][0]*d[2][0];
-  sd11 = v11[0]*q[0][0]*q[0][0] + v11[1]*q[1][0]*q[1][0] + v11[2]*q[2][0]*q[2][0];
-  sn12 = v12[0]*q[0][0]*d[0][1] + v12[1]*q[1][0]*d[1][1] + v12[2]*q[2][0]*d[2][1];
-  sd12 = v12[0]*q[0][0]*q[0][1] + v12[1]*q[1][0]*q[1][1] + v12[2]*q[2][0]*q[2][1];
-  sn13 = v13[0]*q[0][0]*d[0][2] + v13[1]*q[1][0]*d[1][2] + v13[2]*q[2][0]*d[2][2];
-  sd13 = v13[0]*q[0][0]*q[0][2] + v13[1]*q[1][0]*q[1][2] + v13[2]*q[2][0]*q[2][2];
+  double   g0 = norm * atan( sqrt_k_3 * tanh( k_2 * (-x - 2.5)/r ) );
+  double   g1 = norm * atan( sqrt_k_3 * tanh( k_2 * (-x - 1.5)/r ) );
+  double   g2 = norm * atan( sqrt_k_3 * tanh( k_2 * (-x - 0.5)/r ) );
+  double   g3 = norm * atan( sqrt_k_3 * tanh( k_2 * (-x + 0.5)/r ) );
+  double   g4 = norm * atan( sqrt_k_3 * tanh( k_2 * (-x + 1.5)/r ) );
+  double   g5 = norm * atan( sqrt_k_3 * tanh( k_2 * (-x + 2.5)/r ) ); 
+
+   // Now correct for x-talks:
+  for (int t = 0; t < 3; ++t) {
+    q[0][t] = (g2 - g1) * xt_lr0[t] + (g1 - g0) * xt_r[0][t] + (g3 - g2) * xt_l[1][t]; 
+    q[1][t] = (g3 - g2) * xt_lr1[t] + (g2 - g1)  * xt_r[0][t] +(g4 - g3) * xt_l[2][t];
+    q[2][t] = (g4 - g3) * xt_lr2[t] + (g3 - g2) * xt_r[1][t] + (g5 - g4) * xt_l[2][t];
+  }
+
+     sn11 = v11[0]*q[0][0]*d[0][0] + v11[1]*q[1][0]*d[1][0] + v11[2]*q[2][0]*d[2][0];
+     sd11 = v11[0]*q[0][0]*q[0][0] + v11[1]*q[1][0]*q[1][0] + v11[2]*q[2][0]*q[2][0];
+     sn12 = v12[0]*q[0][0]*d[0][1] + v12[1]*q[1][0]*d[1][1] + v12[2]*q[2][0]*d[2][1];
+     sd12 = v12[0]*q[0][0]*q[0][1] + v12[1]*q[1][0]*q[1][1] + v12[2]*q[2][0]*q[2][1];
+     sn13 = v13[0]*q[0][0]*d[0][2] + v13[1]*q[1][0]*d[1][2] + v13[2]*q[2][0]*d[2][2];
+     sd13 = v13[0]*q[0][0]*q[0][2] + v13[1]*q[1][0]*q[1][2] + v13[2]*q[2][0]*q[2][2];
   
-  sn21 = v12[0]*q[0][1]*d[0][0] + v12[1]*q[1][1]*d[1][0] + v12[2]*q[2][1]*d[2][0];
-  sd21 = v12[0]*q[0][1]*q[0][0] + v12[1]*q[1][1]*q[1][0] + v12[2]*q[2][1]*q[2][0];
-  sn22 = v22[0]*q[0][1]*d[0][1] + v22[1]*q[1][1]*d[1][1] + v22[2]*q[2][1]*d[2][1];
-  sd22 = v22[0]*q[0][1]*q[0][1] + v22[1]*q[1][1]*q[1][1] + v22[2]*q[2][1]*q[2][1];
-  sn23 = v23[0]*q[0][1]*d[0][2] + v23[1]*q[1][1]*d[1][2] + v23[2]*q[2][1]*d[2][2];
-  sd23 = v23[0]*q[0][1]*q[0][2] + v23[1]*q[1][1]*q[1][2] + v23[2]*q[2][1]*q[2][2];
+     sn21 = v12[0]*q[0][1]*d[0][0] + v12[1]*q[1][1]*d[1][0] + v12[2]*q[2][1]*d[2][0];
+     sd21 = v12[0]*q[0][1]*q[0][0] + v12[1]*q[1][1]*q[1][0] + v12[2]*q[2][1]*q[2][0];
+     sn22 = v22[0]*q[0][1]*d[0][1] + v22[1]*q[1][1]*d[1][1] + v22[2]*q[2][1]*d[2][1];
+     sd22 = v22[0]*q[0][1]*q[0][1] + v22[1]*q[1][1]*q[1][1] + v22[2]*q[2][1]*q[2][1];
+     sn23 = v23[0]*q[0][1]*d[0][2] + v23[1]*q[1][1]*d[1][2] + v23[2]*q[2][1]*d[2][2];
+     sd23 = v23[0]*q[0][1]*q[0][2] + v23[1]*q[1][1]*q[1][2] + v23[2]*q[2][1]*q[2][2];
   
-  sn31 = v13[0]*q[0][2]*d[0][0] + v13[1]*q[1][2]*d[1][0] + v13[2]*q[2][2]*d[2][0];
-  sd31 = v13[0]*q[0][2]*q[0][0] + v13[1]*q[1][2]*q[1][0] + v13[2]*q[2][2]*q[2][0];
-  sn32 = v23[0]*q[0][2]*d[0][1] + v23[1]*q[1][2]*d[1][1] + v23[2]*q[2][2]*d[2][1];
-  sd32 = v23[0]*q[0][2]*q[0][1] + v23[1]*q[1][2]*q[1][1] + v23[2]*q[2][2]*q[2][1];
-  sn33 = v33[0]*q[0][2]*d[0][2] + v33[1]*q[1][2]*d[1][2] + v33[2]*q[2][2]*d[2][2];
-  sd33 = v33[0]*q[0][2]*q[0][2] + v33[1]*q[1][2]*q[1][2] + v33[2]*q[2][2]*q[2][2];
+     sn31 = v13[0]*q[0][2]*d[0][0] + v13[1]*q[1][2]*d[1][0] + v13[2]*q[2][2]*d[2][0];
+     sd31 = v13[0]*q[0][2]*q[0][0] + v13[1]*q[1][2]*q[1][0] + v13[2]*q[2][2]*q[2][0];
+     sn32 = v23[0]*q[0][2]*d[0][1] + v23[1]*q[1][2]*d[1][1] + v23[2]*q[2][2]*d[2][1];
+     sd32 = v23[0]*q[0][2]*q[0][1] + v23[1]*q[1][2]*q[1][1] + v23[2]*q[2][2]*q[2][1];
+     sn33 = v33[0]*q[0][2]*d[0][2] + v33[1]*q[1][2]*d[1][2] + v33[2]*q[2][2]*d[2][2];
+     sd33 = v33[0]*q[0][2]*q[0][2] + v33[1]*q[1][2]*q[1][2] + v33[2]*q[2][2]*q[2][2];
 
   sn1 = sn11 + sn12 + sn13;
   sn2 = sn21 + sn22 + sn23;
@@ -344,29 +447,29 @@ float CSCFitXonStripWithGatti::chisqrFromGatti( float x ) {
   // Now compute chi^2
   chi2  = 0.0;
 
-  chi2 +=       v11[0] * (d[0][0] - n1*q[0][0]) * (d[0][0] - n1*q[0][0]) 
-              + v11[1] * (d[1][0] - n1*q[1][0]) * (d[1][0] - n1*q[1][0])
-              + v11[2] * (d[2][0] - n1*q[2][0]) * (d[2][0] - n1*q[2][0]);
+   chi2 +=       v11[0] * (d[0][0] - n1*q[0][0]) * (d[0][0] - n1*q[0][0]) 
+               + v11[1] * (d[1][0] - n1*q[1][0]) * (d[1][0] - n1*q[1][0])
+               + v11[2] * (d[2][0] - n1*q[2][0]) * (d[2][0] - n1*q[2][0]);
 
-  chi2 += 2.* ( v12[0] * (d[0][0] - n1*q[0][0]) * (d[0][1] - n2*q[0][1])
-              + v12[1] * (d[1][0] - n1*q[1][0]) * (d[1][1] - n2*q[1][1])
-              + v12[2] * (d[2][0] - n1*q[2][0]) * (d[2][1] - n2*q[2][1]) );
+   chi2 += 2.* ( v12[0] * (d[0][0] - n1*q[0][0]) * (d[0][1] - n2*q[0][1])
+               + v12[1] * (d[1][0] - n1*q[1][0]) * (d[1][1] - n2*q[1][1])
+               + v12[2] * (d[2][0] - n1*q[2][0]) * (d[2][1] - n2*q[2][1]) );
 
-  chi2 += 2.* ( v13[0] * (d[0][0] - n1*q[0][0]) * (d[0][2] - n3*q[0][2])
-              + v13[1] * (d[1][0] - n1*q[1][0]) * (d[1][2] - n3*q[1][2])
-              + v13[2] * (d[2][0] - n1*q[2][0]) * (d[2][2] - n3*q[2][2]) );
+   chi2 += 2.* ( v13[0] * (d[0][0] - n1*q[0][0]) * (d[0][2] - n3*q[0][2])
+               + v13[1] * (d[1][0] - n1*q[1][0]) * (d[1][2] - n3*q[1][2])
+               + v13[2] * (d[2][0] - n1*q[2][0]) * (d[2][2] - n3*q[2][2]) );
 
-  chi2 +=       v22[0] * (d[0][1] - n2*q[0][1]) * (d[0][1] - n2*q[0][1])
-              + v22[1] * (d[1][1] - n2*q[1][1]) * (d[1][1] - n2*q[1][1])
-              + v22[2] * (d[2][1] - n2*q[2][1]) * (d[2][1] - n2*q[2][1]);
+   chi2 +=       v22[0] * (d[0][1] - n2*q[0][1]) * (d[0][1] - n2*q[0][1])
+               + v22[1] * (d[1][1] - n2*q[1][1]) * (d[1][1] - n2*q[1][1])
+               + v22[2] * (d[2][1] - n2*q[2][1]) * (d[2][1] - n2*q[2][1]);
 
-  chi2 += 2.* ( v23[0] * (d[0][1] - n2*q[0][1]) * (d[0][2] - n3*q[0][2])
-              + v23[1] * (d[1][1] - n2*q[1][1]) * (d[1][2] - n3*q[1][2])
-              + v23[2] * (d[2][1] - n2*q[2][1]) * (d[2][2] - n3*q[2][2]) ); 
+   chi2 += 2.* ( v23[0] * (d[0][1] - n2*q[0][1]) * (d[0][2] - n3*q[0][2])
+               + v23[1] * (d[1][1] - n2*q[1][1]) * (d[1][2] - n3*q[1][2])
+               + v23[2] * (d[2][1] - n2*q[2][1]) * (d[2][2] - n3*q[2][2]) ); 
 
-  chi2 +=       v33[0] * (d[0][2] - n3*q[0][2]) * (d[0][2] - n3*q[0][2])
-              + v33[1] * (d[1][2] - n3*q[1][2]) * (d[1][2] - n3*q[1][2])
-              + v33[2] * (d[2][2] - n3*q[2][2]) * (d[2][2] - n3*q[2][2]);
+   chi2 +=       v33[0] * (d[0][2] - n3*q[0][2]) * (d[0][2] - n3*q[0][2])
+               + v33[1] * (d[1][2] - n3*q[1][2]) * (d[1][2] - n3*q[1][2])
+               + v33[2] * (d[2][2] - n3*q[2][2]) * (d[2][2] - n3*q[2][2]);
 
   return chi2;
 }
@@ -471,24 +574,43 @@ void CSCFitXonStripWithGatti::initChamberSpecs() {
  */
 void CSCFitXonStripWithGatti::getGatti( float x, int t_disabled ) {
 
-  double g0 = norm * atan( sqrt_k_3 * tanh( k_2 * (-x - 2.5)/r ) );
-  double g1 = norm * atan( sqrt_k_3 * tanh( k_2 * (-x - 1.5)/r ) );
-  double g2 = norm * atan( sqrt_k_3 * tanh( k_2 * (-x - 0.5)/r ) );
-  double g3 = norm * atan( sqrt_k_3 * tanh( k_2 * (-x + 0.5)/r ) );
-  double g4 = norm * atan( sqrt_k_3 * tanh( k_2 * (-x + 1.5)/r ) );
-  double g5 = norm * atan( sqrt_k_3 * tanh( k_2 * (-x + 2.5)/r ) );
+  std::cout << "This should not be called anymore !!!!!!!!!!!!!" << std::endl;  
+  return;
+  double   g1 = norm * atan( sqrt_k_3 * tanh( k_2 * (-x - 1.5)/r ) );
+  double   g2 = norm * atan( sqrt_k_3 * tanh( k_2 * (-x - 0.5)/r ) );
+  double   g3 = norm * atan( sqrt_k_3 * tanh( k_2 * (-x + 0.5)/r ) );
+  double   g4 = norm * atan( sqrt_k_3 * tanh( k_2 * (-x + 1.5)/r ) );
+  
+  q[0][0] = q[0][1] = q[0][2] = g2 - g1;
+  q[1][0] = q[1][1] = q[1][2] = g3 - g2;
+  q[2][0] = q[2][1] = q[2][2] = g4 - g3;
 
-  // These are the expected charges without x-talks
-  double qt_ll = g1 - g0;
-  double qt_l  = g2 - g1;
-  double qt    = g3 - g2;
-  double qt_r  = g4 - g3;
-  double qt_rr = g5 - g4;
 
-  for(int t = 0; t < 3; ++t) {
-    // Now correct for x-talks:
-    q[0][t] = qt_l * xt_lr0[t] + qt_ll * xt_r[0][t] + qt    * xt_l[1][t];
-    q[1][t] = qt   * xt_lr1[t] + qt_l  * xt_r[0][t] + qt_r  * xt_l[2][t];
-    q[2][t] = qt_r * xt_lr2[t] + qt    * xt_r[1][t] + qt_rr * xt_l[2][t];
-  }
 }
+
+
+/* getGattiCalib
+ *
+ * Compute expected charge for a given x and time bin using x-talks !
+ */
+void CSCFitXonStripWithGatti::getGattiCalib( float x, int t_disabled ) {
+
+  std::cout << "This should not be called anymore !!!!!!!!!!!!!" << std::endl;
+  return;
+  double   g0 = norm * atan( sqrt_k_3 * tanh( k_2 * (-x - 2.5)/r ) );
+  double   g1 = norm * atan( sqrt_k_3 * tanh( k_2 * (-x - 1.5)/r ) );
+  double   g2 = norm * atan( sqrt_k_3 * tanh( k_2 * (-x - 0.5)/r ) );
+  double   g3 = norm * atan( sqrt_k_3 * tanh( k_2 * (-x + 0.5)/r ) );
+  double   g4 = norm * atan( sqrt_k_3 * tanh( k_2 * (-x + 1.5)/r ) );
+  double   g5 = norm * atan( sqrt_k_3 * tanh( k_2 * (-x + 2.5)/r ) );
+   
+   // Now correct for x-talks: 
+  for (int t = 0; t < 3; ++t) {
+    q[0][t] = (g2 - g1) * xt_lr0[t] + (g1 - g0) * xt_r[0][t] + (g3 - g2) * xt_l[1][t];
+    q[1][t] = (g3 - g2) * xt_lr1[t] + (g2 - g1)  * xt_r[0][t] +(g4 - g3) * xt_l[2][t];
+    q[2][t] = (g4 - g3) * xt_lr2[t] + (g3 - g2) * xt_r[1][t] + (g5 - g4) * xt_l[2][t];
+  }
+
+
+}
+
