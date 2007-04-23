@@ -56,8 +56,8 @@ void SusyRecoTools::PrintRecoInfo(void)
   for (unsigned int j=0; j<RecoData.size(); j++){
    if (RecoData[j]->particleType() == 1) {
       const Electron * pcand = RecoData[j]->electronCandidate();
-      reco::TrackRef tr2 = (RecoData[j]->electronCandidate())->track();
-      reco::TrackRef tr = (*pcand).track();
+      reco::TrackRef tr2 = (RecoData[j]->electronCandidate())->gsfTrack();
+      reco::TrackRef tr = (*pcand).gsfTrack();
       cout << " Information about the track of the electrons : " << endl;
       cout << " Pt track = " << tr->outerPt() 
       << " Eta track = " << tr->outerEta()
@@ -547,7 +547,10 @@ bool SusyRecoTools::IsEMObjectInJet(int ichk, int iJet, math::XYZVector* sharedM
  }
   
  // Collect the CaloTowers detIds for the jet 
- vector<CaloTowerDetId> jetDetId = jetcand->getTowerIndices();
+ // the following line does not work for 130
+ //vector<CaloTowerDetId> jetDetId = jetcand->getTowerIndices();
+ vector<CaloTowerRef> jetCaloRefs = jetcand->getConstituents();
+ 
  if (DEBUGLVL >= 2){
    cout << "  Jet energy = " << jetcand->energy() << endl;
  }
@@ -559,9 +562,9 @@ bool SusyRecoTools::IsEMObjectInJet(int ichk, int iJet, math::XYZVector* sharedM
  float sharedPz = 0.;
  for (unsigned int i = 0; i < eleDetId.size(); i++){
    // find whether this detId is in the jet detId list
-   for (unsigned int j = 0; j < jetDetId.size(); j++){
+   for (unsigned int j = 0; j < jetCaloRefs.size(); j++){
    // if yes, add its energy to the sum
-     if (eleDetId[i] == jetDetId[j]){
+     if (eleDetId[i] == jetCaloRefs[j]->id()){
        sharedEnergy += eleTowerEnergy[i];
        float eleTowerTheta = 2. * atan(exp(-eleTowerEta[i]));
        if (eleTowerTheta < 0.) {eleTowerTheta += 3.141592654;}
@@ -582,7 +585,7 @@ bool SusyRecoTools::IsEMObjectInJet(int ichk, int iJet, math::XYZVector* sharedM
  eleTowerEnergy.clear();
  eleTowerEta.clear();
  eleTowerPhi.clear();
- jetDetId.clear();
+ jetCaloRefs.clear();
 
  sharedMomentum->SetXYZ(sharedPx,sharedPy,sharedPz);
  

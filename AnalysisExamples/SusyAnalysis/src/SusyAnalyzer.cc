@@ -603,71 +603,7 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
 
 
-   // access to MC jets. similar for reco jets and tracks
- //  for (size_t j = 0; j < jetsgen->size(); j++)
- //    {
- //      cout << "->   Jet " << j << " pT: " << (*jetsgen)[j].pt() 
- //	    << " eta: " << (*jetsgen)[j].eta() 
-//	    << " phi: " << (*jetsgen)[j].phi() << endl;
-//     }
-//   hJetEt->Fill((*jetsgen)[0].pt());
-
-
-
-
- //  for (size_t j = 0; j < tracks->size(); j++)
- //    {
- //      cout << "->   Track " << j << " pT: " << (*tracks)[j].pt() 
-//	    << " eta: " << (*tracks)[j].eta() 
-//	    << " phi: " << (*tracks)[j].phi() << endl;
- //    }
-
-//  IsolatedTauTagInfoCollection::const_iterator i = tauTagInfo.begin();
-//  for (; i != tauTagInfo.end(); ++i) {
-//    cout <<" ---> tau jet: discr = " << i->discriminator() << endl;
-//  }
-
-   /*
-  for (size_t j = 0; j < jets->size(); j++)
-     {
-       cout << "->   Jet " << j << " pT: " << (*jets)[j].pt() 
-	    << " eta: " << (*jets)[j].eta() 
-	    << " phi: " << (*jets)[j].phi() << endl;
-
-       hJetEt->Fill((*jets)[j].pt());
-       hJetEta->Fill((*jets)[j].eta(),(*jets)[j].eta());
-
-       int nconstituents = (*jets)[j].nConstituents();
-       cout <<" Number of jet constituents (towers) = " << nconstituents << endl;
-       const vector<CaloTowerDetId> calodetid = (*jets)[j].getTowerIndices();
-       for (vector<CaloTowerDetId>::const_iterator it=calodetid.begin();it!=calodetid.end();it++)
-	 {
-	   CaloTowerCollection::const_iterator ict = calotowers->find(*it);
-	   if(ict != calotowers->end()) {	
-	     cout<<" Et = "<<(*ict).et()
-		 <<" Number of constituents "<< (*ict).constituentsSize()
-		 <<" eta = " << (*ict).eta()
-		 <<" phi = " << (*ict).phi()
-		 <<" emE = " << (*ict).emEnergy()
-		 <<" emEt = " << (*ict).emEt()
-		 <<" hadEt = " << (*ict).hadEt() << endl;
-	     for(size_t icell = 0; icell < (*ict).constituentsSize(); icell++)
-	       {
-		 DetId cell = (*ict).constituent(icell);
-		 cout <<"      icell = " << icell 
-		      <<" det = " << cell.det() 
-		      <<" subdetId = "<< cell.subdetId() 
-		      << endl; 
-	       }
-	   }
-	   else
-	     {
-	       cout<<" No such Tower "<<endl;
-	     }  
-	 }
-     }
-   */
-
+ 
  
  
   // clean memory

@@ -318,8 +318,8 @@ bool ObjectCleaner::CleanElectron(int ichk)
    float ele_eta = elecand->superCluster()->eta();
    float ele_phi = elecand->superCluster()->phi();
    float ele_theta = 2. * atan(exp(-ele_eta));
-   float p_track = elecand->track()->p();
-   float pt_track = elecand->track()->pt();
+   float p_track = elecand->gsfTrack()->p();
+   float pt_track = elecand->gsfTrack()->pt();
    float et_em = fabs(elenergy*sin(ele_theta));
    float e_had = 0.;                       
    float et_had = 0.;
@@ -461,7 +461,11 @@ bool ObjectCleaner::CleanMuon(int ichk)
    // Verify the muon quality
 // cout << " Comb muon address " << &(*(muoncand->combinedMuon())) << endl;
    float pt_track = muoncand->combinedMuon()->pt();
-   float dpt_track = muoncand->combinedMuon()->ptError();
+
+//   following does not work anymore in 130    
+//   float dpt_track = muoncand->combinedMuon()->ptError(); 
+   float dpt_track = muoncand->combinedMuon()->error(0)/(muoncand->combinedMuon()->qoverp())*(muoncand->combinedMuon()->pt());
+                                                                                                              
    float chisq = muoncand->combinedMuon()->normalizedChi2();
    int nHitsValid = muoncand->combinedMuon()->numberOfValidHits();
 //   int nHitsLost = muoncand->combinedMuon()->numberOfLostHits();
@@ -547,7 +551,9 @@ bool ObjectCleaner::DuplicateMuon(int ichk)
 
  const Muon* muoncand = RecoData[ichk]->muonCandidate();
  float ptmuon = muoncand->combinedMuon()->pt();
- float dptmuon = muoncand->combinedMuon()->ptError();
+ //   following does not work anymore in 130    
+//   float dptmuon = muoncand->combinedMuon()->ptError(); 
+ float dptmuon = muoncand->combinedMuon()->error(0)/(muoncand->combinedMuon()->qoverp())*(muoncand->combinedMuon()->pt());
 
  for (int j = 0; j < (int) RecoData.size(); j++){
    if (j != ichk){
@@ -562,7 +568,9 @@ bool ObjectCleaner::DuplicateMuon(int ichk)
    
           const Muon* muonnew = RecoData[j]->muonCandidate();
           float ptnew = muonnew->combinedMuon()->pt();
-          float dptnew = muonnew->combinedMuon()->ptError();
+	  //   following does not work anymore in 130    
+          //   float dptnew = muoncand->combinedMuon()->ptError(); 
+	  float dptnew = muoncand->combinedMuon()->error(0)/(muoncand->combinedMuon()->qoverp())*(muoncand->combinedMuon()->pt());
           if (dptmuon/ptmuon >= dptnew/ptnew){
             if (DEBUGLVL >= 2){
               cout << " Muon " << ichk 

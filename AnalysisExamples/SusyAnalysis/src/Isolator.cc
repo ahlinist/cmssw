@@ -242,7 +242,7 @@ bool Isolator::IsoElectron(int ichk)
     float pSum = 0.;
     float ptest = 0.;
     if (idet == 2 || idet == 3){
-      const GsfTrack* eletrack = &(*(elecand->track()));
+      const Track* eletrack = &(*(elecand->gsfTrack()));
 //      cout << " pointer to electron track " << eletrack;
       if (itra == 1) {
         ptest = eletrack->pt();
