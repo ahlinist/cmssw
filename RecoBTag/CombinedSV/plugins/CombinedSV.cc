@@ -216,17 +216,17 @@ void CombinedSV::produce(edm::Event& iEvent,
          << endl;
   }
 
-  std::auto_ptr<reco::CombinedSVTagInfoCollection> resultExt(extCollection);                               
-  edm::OrphanHandle <reco::CombinedSVTagInfoCollection > tagInfoHandle =  iEvent.put(resultExt);           
+  std::auto_ptr<reco::CombinedSVTagInfoCollection> resultExt(extCollection);
+  edm::OrphanHandle <reco::CombinedSVTagInfoCollection > tagInfoHandle =  iEvent.put(resultExt);
 
 
-  reco::JetTagCollection::iterator it_jt =baseCollection->begin();                                            
-  int cc=0;                                                                                                   
-  for(;it_jt!=baseCollection->end();it_jt++)                                                                  
-  {                                                                                                         
-    it_jt->setTagInfo(RefToBase<BaseTagInfo>(CombinedSVTagInfoRef(tagInfoHandle,cc)));                   
-    cc++;                                                                                                   
-  }       
+  reco::JetTagCollection::iterator it_jt =baseCollection->begin();
+  int cc=0;
+  for(;it_jt!=baseCollection->end();it_jt++)
+  {
+    it_jt->setTagInfo(RefToBase<BaseTagInfo>(CombinedSVTagInfoRef(tagInfoHandle,cc)));
+    cc++;
+  }
 
   /*
   reco::CombinedSVTagInfoCollection::iterator it_ext =extCollection->begin();
@@ -238,8 +238,8 @@ void CombinedSV::produce(edm::Event& iEvent,
     cc++;
   }*/
 
-  std::auto_ptr<reco::JetTagCollection> resultBase(baseCollection);                                           
-  iEvent.put(resultBase);      
+  std::auto_ptr<reco::JetTagCollection> resultBase(baseCollection);
+  iEvent.put(resultBase);
 }
 
 //define this as a plug-in
