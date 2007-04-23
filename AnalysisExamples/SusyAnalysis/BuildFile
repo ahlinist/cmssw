@@ -3,6 +3,7 @@
 <use name=FWCore/ParameterSet>
 <use name=DataFormats/Common>
 <use name=DataFormats/JetReco>
+<use name=DataFormats/VertexReco>
 <use name=DataFormats/METReco>
 <use name=SimDataFormats/HepMCProduct>
 <use name=clhep> 
@@ -14,6 +15,7 @@
    <use name=DataFormats/Common>
    <use name=DataFormats/JetReco>
    <use name=DataFormats/METReco>
+   <use name=DataFormats/VertexReco>
    <use name=clhep>
    <use name=root> 
    <use name=FWCore/Framework>
