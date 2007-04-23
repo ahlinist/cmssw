@@ -46,7 +46,7 @@
  <Constant name="CableDz"        value="38.25*cm"/>
  <Constant name="CableZ"         value="62.25*cm"/>
  <Constant name="ICCDx"          value="5.900*cm"/>
- <Constant name="ICCDy"          value="0.250*cm"/>
+ <Constant name="ICCDy"          value="0.125*cm"/>
  <Constant name="ICC1Dz"         value="2.200*cm"/>
  <Constant name="ICC2Dz"         value="3.400*cm"/>
  <Constant name="ConnDx"         value="5.900*cm"/>
@@ -84,6 +84,12 @@
  <Constant name="ICCZ12"         value="105.00*cm"/>
  <Constant name="zero"           value="0.0*fm"/>
  <Constant name="Tol"            value="0.0*mm"/>
+ <Constant name="AOHDx"          value="0.5*3.000*cm"/>
+ <Constant name="AOHDy"          value="0.5*0.200*cm"/>
+ <Constant name="AOHDz"          value="0.5*2.300*cm"/>
+ <Constant name="AOHx"           value="[ICCDx]-[AOHDx]-13*mm"/>
+ <Constant name="AOHy"           value="[ICCDy]+[AOHDy]+[Tol]"/>
+ <Constant name="AOHz"           value="12*mm"/>
 </ConstantsSection>
 
 <RotationSection label="tobrodpar.xml">
@@ -117,6 +123,8 @@
                           dz="([RodL]+[RodDL])/2"/>
  <Box name="TOBRodin"     dx="[RodW]+[Tol]"  dy="([RodT]/2+[Tol])"
                           dz="[RodDL]/2"/>
+ <Box name="TOBAOH"       dx="[AOHDx]"       dy="[AOHDy]"     dz="[AOHDz]"/>
+
  <SubtractionSolid name="TOBRodL">
    <rSolid name="TOBRodout"/>
    <rSolid name="TOBRodin"/>
@@ -171,6 +179,10 @@
  <LogicalPart name="TOBCable" category="unspecified">
   <rSolid name="TOBCable"/>
   <rMaterial name="tobmaterial:TOB_ICB"/>
+ </LogicalPart>
+ <LogicalPart name="TOBAOH" category="unspecified">
+  <rSolid name="TOBAOH"/>
+  <rMaterial name="tobmaterial:TOB_AOH"/>
  </LogicalPart>
 </LogicalPartSection>
 
