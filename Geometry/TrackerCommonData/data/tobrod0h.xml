@@ -28,7 +28,8 @@
   <Numeric name="Shift"      value="-([tobrodpar:RodL]-[tobrodpar:RodDL])/2"/>
   <String name="CentralName" value="tobrod0h:TOBRodCentral0H"/>
   <Vector name="SideRodName" type="string" nEntries="2">
-    tobrodpar:TOBSideRod1, tobrodpar:TOBSideRod2</Vector>
+    tobrodpar:TOBSideRod1, tobrodpar:TOBSideRod2
+  </Vector>
   <Vector name="SideRodX" type="numeric" nEntries="2">
     -[tobrodpar:SideRodX],  [tobrodpar:SideRodX]
   </Vector>
@@ -110,7 +111,8 @@
   </Vector>
   <Vector name="ICCName" type="string" nEntries="6">
      tobrod0c:TOBICC01, tobrod0c:TOBICC01, tobrod0c:TOBICC02, 
-     tobrod0c:TOBICC02, tobrod0c:TOBCCUM0, tobrod0c:TOBConn0</Vector>
+     tobrod0c:TOBICC02, tobrod0c:TOBCCUM0, tobrod0c:TOBConn0
+  </Vector>
   <Vector name="ICCY" type="numeric" nEntries="6">
     [tobrodpar:ICCY1], -[tobrodpar:ICCY1],  [tobrodpar:ICCY1],
    -[tobrodpar:ICCY1],  [tobrodpar:ICCY2],  [tobrodpar:ICCY1]
@@ -118,6 +120,25 @@
   <Vector name="ICCZ" type="numeric" nEntries="6">
     [tobrodpar:ICCZ07], [tobrodpar:ICCZ08], [tobrodpar:ICCZ09],
     [tobrodpar:ICCZ10], [tobrodpar:ICCZ11], [tobrodpar:ICCZ12]
+  </Vector>
+  <String name="AOHName" value="tobrodpar:TOBAOH"/>
+  <Vector name="AOHCopies" type="numeric" nEntries="6">
+    2 , 2 , 4 , 4 , 0 , 0
+  </Vector>
+  <Vector name="AOHx" type="numeric" nEntries="6">
+    -[tobrodpar:AOHx] , [tobrodpar:AOHx] ,
+    [tobrodpar:AOHx]  , [tobrodpar:AOHx] ,
+    [zero] , [zero]
+  </Vector>
+  <Vector name="AOHy" type="numeric" nEntries="6">
+    [tobrodpar:AOHy] , -[tobrodpar:AOHy] ,
+    [tobrodpar:AOHy] , -[tobrodpar:AOHy] ,
+    [zero] , [zero]
+  </Vector>
+  <Vector name="AOHz" type="numeric" nEntries="6">
+    [zero] , [zero] ,
+    [tobrodpar:AOHz] , -[tobrodpar:AOHz] ,
+    [zero] , [zero]
   </Vector>
 </Algorithm>
  
