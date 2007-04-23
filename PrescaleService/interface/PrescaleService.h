@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
-// Package:     Services
-// Class  :     PrescaleServices
+// Package:     PrescaleService
+// Class  :     PrescaleService
 //
 // Implementation:
 //     Cache and make prescale factors available online.
@@ -12,8 +12,8 @@
 //
 
 
-#ifndef Services_PrescaleService_h
-#define Services_PrescaleService_h
+#ifndef FWCore_PrescaleService_PrescaleService_h
+#define FWCore_PrescaleService_PrescaleService_h
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ServiceRegistry/interface/ActivityRegistry.h"

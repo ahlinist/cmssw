@@ -13,7 +13,7 @@
 
 #include "FWCore/Framework/interface/Event.h"
 
-#include "FWCore/Modules/src/PrescaleService.h"
+#include "FWCore/PrescaleService/interface/PrescaleService.h"
 #include "DataFormats/Provenance/interface/ModuleDescription.h"
 #include "DataFormats/Provenance/interface/EventID.h"
 #include "DataFormats/Provenance/interface/Timestamp.h"
