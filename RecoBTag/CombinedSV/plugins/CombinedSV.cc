@@ -160,8 +160,8 @@ void CombinedSV::produce(edm::Event& iEvent,
   algorithm_->setMagneticField ( &( *magneticField) );
   algorithm_->setTransientTrackBuilder ( &( *builder ) );
 
-  reco::JetTagCollection *baseColl = new reco::JetTagCollection();
-  reco::CombinedSVTagInfoCollection *extColl  = new reco::CombinedSVTagInfoCollection();
+  reco::JetTagCollection *baseCollection = new reco::JetTagCollection();
+  reco::CombinedSVTagInfoCollection *extCollection  = new reco::CombinedSVTagInfoCollection();
 
   reco::Vertex primaryVertex = getPrimaryVertex ( iEvent, iSetup );
   cout << "[CombinedSV] primary vertex is at " << primaryVertex.position() << endl;
@@ -183,8 +183,10 @@ void CombinedSV::produce(edm::Event& iEvent,
       // get jet part from jet with tracks association
       int i=jetNTrks->key.index();
 
+      /*
       const edm::Ref<reco::JetTracksAssociationCollection> & jta =
         edm::Ref<reco::JetTracksAssociationCollection>(jetWithTrackColl,i);
+        */
 
       edm::LogInfo("") << endl << endl
            << "[CombinedSV]     ---<  now analyzing jet #" << i << "  >---";
@@ -199,9 +201,9 @@ void CombinedSV::produce(edm::Event& iEvent,
       }
 
       reco::CombinedSVTagInfo btag = algorithm_->tag(primaryVertex, *( jetNTrks->key ), trks );
-      reco::JetTag jettag( btag.discriminator(), jta );
-      baseColl->push_back(jettag);
-      extColl->push_back(btag);
+      reco::JetTag jettag( btag.discriminator() );
+      baseCollection->push_back(jettag);
+      extCollection->push_back(btag);
     }
   } catch ( edm::Exception & e ) {
     cout << "[CombinedSV] Exception caught: " << e.what() << ", ignore this event"
@@ -214,19 +216,30 @@ void CombinedSV::produce(edm::Event& iEvent,
          << endl;
   }
 
-  auto_ptr<reco::JetTagCollection> resultBase(baseColl);
-  edm::OrphanHandle <reco::JetTagCollection > jetTagHandle =  iEvent.put(resultBase);
+  std::auto_ptr<reco::CombinedSVTagInfoCollection> resultExt(extCollection);                               
+  edm::OrphanHandle <reco::CombinedSVTagInfoCollection > tagInfoHandle =  iEvent.put(resultExt);           
 
-  reco::CombinedSVTagInfoCollection::iterator it_ext =extColl->begin();
+
+  reco::JetTagCollection::iterator it_jt =baseCollection->begin();                                            
+  int cc=0;                                                                                                   
+  for(;it_jt!=baseCollection->end();it_jt++)                                                                  
+  {                                                                                                         
+    it_jt->setTagInfo(RefToBase<BaseTagInfo>(CombinedSVTagInfoRef(tagInfoHandle,cc)));                   
+    cc++;                                                                                                   
+  }       
+
+  /*
+  reco::CombinedSVTagInfoCollection::iterator it_ext =extCollection->begin();
   int cc=0;
-  for(;it_ext!=extColl->end();it_ext++)
+  for(;it_ext!=extCollection->end();it_ext++)
   {
-    it_ext->setJetTag(reco::JetTagRef(jetTagHandle,cc));
+    // it_ext->setJetTag(reco::JetTagRef(jetTagHandle,cc));
+    it_ext->setJTARef(reco::JetTagRef(jetTagHandle,cc));
     cc++;
-  }
+  }*/
 
-  std::auto_ptr<reco::CombinedSVTagInfoCollection> resultExt(extColl);
-  iEvent.put(resultExt);
+  std::auto_ptr<reco::JetTagCollection> resultBase(baseCollection);                                           
+  iEvent.put(resultBase);      
 }
 
 //define this as a plug-in
