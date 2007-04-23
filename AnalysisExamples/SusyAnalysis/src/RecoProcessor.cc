@@ -203,26 +203,27 @@ bool RecoProcessor::RecoDriver()
    while (i< (int) RecoData.size()){
      bool acceptObject = false;
      bool withRefPoint = true;
-//     cout << "Particle " << i << " type " << RecoData[i]->particleType() << endl;
+     //cout << "Particle " << i << " type " << RecoData[i]->particleType() << endl;
      // for electrons
      if (RecoData[i]->particleType() == 1){
-//       cout << "elecand pointer " << RecoData[i]->electronCandidate() << endl;
+       //cout << "elecand pointer " << RecoData[i]->electronCandidate() << endl;
        const PixelMatchGsfElectron* elecand = RecoData[i]->electronCandidate();
+   
 
        // Apply first acceptance cuts
        if (fabs(RecoData[i]->eta()) < ana_elecEtaMax && 
            RecoData[i]->pt() > ana_elecPtMin1){   
-         RecoData[i]->setVx(elecand->track()->vx() );
-         RecoData[i]->setVy(elecand->track()->vy() );
-         RecoData[i]->setVz(elecand->track()->vz() );
-         float d0Error = elecand->track()->d0Error();
-         float dzError = elecand->track()->dzError();
+         RecoData[i]->setVx(elecand->gsfTrack()->vx() );
+         RecoData[i]->setVy(elecand->gsfTrack()->vy() );
+         RecoData[i]->setVz(elecand->gsfTrack()->vz() );
+         float d0Error = elecand->gsfTrack()->d0Error();
+         float dzError = elecand->gsfTrack()->dzError();
          if (d0Error < reco_elecD0ErrorThresh){d0Error = reco_elecD0ErrorThresh;}
          if (dzError < reco_elecDzErrorThresh){dzError = reco_elecDzErrorThresh;}
          RecoData[i]->setd0Error(d0Error);
          RecoData[i]->setdzError(dzError);
-//         cout << "Electron vertex: x = " << (elecand)->track()->vx() << ", y = " << (elecand)->track()->vy() 
-//             << ", z = " << (elecand)->track()->vz() << endl;
+  //       cout << "Electron vertex: x = " << (elecand)->gsfTrack()->vx() << ", y = " << (elecand)->gsfTrack()->vy() 
+  //           << ", z = " << (elecand)->gsfTrack()->vz() << endl;
          acceptObject = true;
          numElectrons++;
          counter++;
@@ -244,8 +245,8 @@ bool RecoProcessor::RecoDriver()
          if (dzError < reco_muonDzErrorThresh){dzError = reco_muonDzErrorThresh;}
          RecoData[i]->setd0Error(d0Error);
          RecoData[i]->setdzError(dzError);
-//        cout << "Muon vertex: x = " << (*muons)[j].vx() << ", y = " << (*muons)[j].vy() 
-//             << ", z = " << (*muons)[j].vz() << endl;
+   //     cout << "Muon vertex: x = " << muoncand->vx() << ", y = " << muoncand->vy() 
+    //         << ", z = " << muoncand->vz() << endl;
          acceptObject = true;
          numMuons++;
          counter++;
@@ -281,7 +282,6 @@ bool RecoProcessor::RecoDriver()
      // Apply first acceptance cuts
        if (fabs(RecoData[i]->eta()) < ana_jetEtaMax && 
            RecoData[i]->pt() > ana_jetPtMin1){   
-
          withRefPoint = GetJetVx(i);
          float d0Error = RecoData[i]->d0Error();
          float dzError = RecoData[i]->dzError();
@@ -289,8 +289,7 @@ bool RecoProcessor::RecoDriver()
          if (dzError < reco_jetDzErrorThresh){dzError = reco_jetDzErrorThresh;}
          RecoData[i]->setd0Error(d0Error);
          RecoData[i]->setdzError(dzError);
-//        cout << "Jet vertex: x = " << (*jets)[j].vx() << ", y = " << (*jets)[j].vy() 
-//             << ", z = " << (*jets)[j].vz() << endl;
+    //    cout << "Jet vertex found: " <<  withRefPoint << endl;
          acceptObject = true;
          numJets++;
          counter++;
