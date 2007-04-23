@@ -395,7 +395,7 @@
 
     <Numeric name="WallThAlv"      value="  70*mum"  />
     <Numeric name="WrapThAlv"      value="  30*mum"  />
-    <Numeric name="ClrThAlv"       value=" 100*mum"  />
+    <Numeric name="ClrThAlv"       value=" 120*mum"  />
 
     <Numeric name="WallFrAlv"      value=" 100*mum"  />
     <Numeric name="WrapFrAlv"      value="  30*mum"  />
@@ -412,10 +412,10 @@
          etc. These are in addition to the clearances around Webs.
     -->
     <Vector name="GapAlvEta" type="numeric"      nEntries="18">
-     425*mum, 385*mum, 490*mum, 450*mum, 425*mum, 825*mum,
-     400*mum, 500*mum, 325*mum, 1375*mum,
-     425*mum, 350*mum, 400*mum, 1625*mum,
-     370*mum, 330*mum, 310*mum, 200*mum
+     430*mum,  30*mum,  10*mum,  10*mum,  10*mum, 255*mum,
+      10*mum,  10*mum,  10*mum,  915*mum,
+      25*mum,  10*mum,  10*mum, 1330*mum,
+      10*mum,  90*mum,  10*mum, 100*mum
     </Vector>
 
     <Numeric name="NCryPerAlvEta"  value="5"         />
@@ -456,7 +456,7 @@
     </Vector>
 
     <Vector  name="WebClrTh" type="numeric" nEntries="5">
-      1*mm, 2*mm, 2*mm, 2*mm, 2*mm
+      0.7*mm, 2*mm, 2*mm, 2*mm, 2*mm
     </Vector>
 
     <Vector  name="WebLength" type="numeric" nEntries="5">
