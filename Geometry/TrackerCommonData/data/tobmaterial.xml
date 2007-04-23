@@ -397,7 +397,7 @@
     <MaterialFraction fraction="0.17904">
       <rMaterial name="materials:Copper"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.0818">
+    <MaterialFraction fraction="0.08818">
       <rMaterial name="materials:Epoxy"/>
     </MaterialFraction>
     <MaterialFraction fraction="0.00313">
