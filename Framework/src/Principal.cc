@@ -196,9 +196,14 @@ namespace edm {
   Principal::put(auto_ptr<EDProduct> edp,
 		     auto_ptr<Provenance> prov) {
 
-    if (! prov->productID().isValid()) {
+    if (!prov->productID().isValid()) {
       throw edm::Exception(edm::errors::InsertFailure,"Null Product ID")
 	<< "put: Cannot put product with null Product ID."
+	<< "\n";
+    }
+    if (edp.get() == 0) {
+      throw edm::Exception(edm::errors::InsertFailure,"Null Pointer")
+	<< "put: Cannot put because auto_ptr to product is null."
 	<< "\n";
     }
     // Group assumes ownership
