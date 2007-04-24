@@ -19,27 +19,30 @@ For items in a compound: Item number, Comment, Material (has to be
 ..................................................................... 
 
 
-o TOB Cooling pipes DS (per 1 cm length)
-  --------------------
-(1) Cooling pipes: material CuNi 2.5 mm OD, 2.3 mm ID 
-(2) Coolant: C6F14
-.....................................................................
-# "TOB cooling pipes DS"    "TOB_cool_DS"    0.0491   0.196
-* 1 "CuNi pipe"             "TOB_CuNi"       7.6E-3    1    COL
-* 2 "Coolant"               "C6F14"          0.0415    1    COL
-.....................................................................
-=====================================================================
+	[WAS:
+		o TOB Cooling pipes DS (per 1 cm length)
+		  --------------------
+		(1) Cooling pipes: material CuNi 2.5 mm OD, 2.3 mm ID 
+		(2) Coolant: C6F14
+		.....................................................................
+		 "TOB cooling pipes DS"    "TOB_cool_DS"    0.0491   0.196
+		 1 "CuNi pipe"             "TOB_CuNi"       7.6E-3    1    COL
+		 2 "Coolant"               "C6F14"          0.0415    1    COL
+		.....................................................................
+		=====================================================================
+		
+		o TOB Cooling pipes SS (per 1 cm length)
+		  --------------------
+		(1) Cooling pipes: material CuNi 2.2 mm OD, 2.0 mm ID 
+		(2) Coolant: C6F14
+		.....................................................................
+		 "TOB cooling pipes SS"    "TOB_cool_SS"    0.038   0.173
+		 1 "CuNi pipe"             "TOB_CuNi"       0.007    1     COL
+		 2 "Coolant"               "C6F14"          0.031    1     COL
+		.....................................................................
+		=====================================================================
+	]		
 
-o TOB Cooling pipes SS (per 1 cm length)
-  --------------------
-(1) Cooling pipes: material CuNi 2.2 mm OD, 2.0 mm ID 
-(2) Coolant: C6F14
-.....................................................................
-# "TOB cooling pipes SS"    "TOB_cool_SS"    0.038   0.173
-* 1 "CuNi pipe"             "TOB_CuNi"       0.007    1     COL
-* 2 "Coolant"               "C6F14"          0.031    1     COL
-.....................................................................
-=====================================================================
 
 o Rod carbon fibre frame
   -----------------------
