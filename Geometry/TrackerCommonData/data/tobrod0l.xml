@@ -60,15 +60,19 @@
     -[tobrodpar:ClampZ1], -[tobrodpar:ClampZ2], -[tobrodpar:ClampZ1],
     -[tobrodpar:ClampZ2]
   </Vector>
-  <String name="SideCoolName"   value="tobrod0c:TOBSideCool0"/>
+  <String name="SideCoolName"   value="tobrod0c:TOBSideCoolTube0"/>
   <Vector name="SideCoolX" type="numeric" nEntries="2">
     -[tobrodpar:SideCoolX],  [tobrodpar:SideCoolX]
+  </Vector>
+  <Vector name="SideCoolY" type="numeric" nEntries="2">
+     [tobrodpar:SideCoolY],  [tobrodpar:SideCoolY]
   </Vector>
   <Vector name="SideCoolZ" type="numeric" nEntries="2">
     -[tobrodpar:SideCoolZ], -[tobrodpar:SideCoolZ]
   </Vector>
-  <String name="EndCoolName"    value="tobrod0c:TOBEndCool0"/>
+  <String name="EndCoolName"    value="tobrod0c:TOBEndCoolTube0"/>
   <String name="EndCoolRot"     value="tobrodpar:90XD"/>
+  <Numeric name="EndCoolY"      value="[tobrodpar:EndCoolY]"/>
   <Numeric name="EndCoolZ"      value="-[tobrodpar:EndCoolZ]"/>
   <String name="OptFibreName"   value="tobrod0c:TOBOptFibre0"/>
   <Vector name="optFibreX" type="numeric" nEntries="2">
