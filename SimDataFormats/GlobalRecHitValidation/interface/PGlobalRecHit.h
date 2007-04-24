@@ -47,16 +47,21 @@ class PGlobalRecHit
   ////////////
   struct HCalRecHit
   {
-    HCalRecHit(): REC(0), SHE(0) {}
-    float REC; //reconstructed energy in cone
-    float SHE; //simhit energy sum
+    HCalRecHit(): REC(0), R(0), SHE(0) {}
+    float REC; // reconstructed energy
+    float R;   // distance in cone 
+    float SHE; // simhit energy
   };
   typedef std::vector<HCalRecHit> HCalRecHitVector;
   //put functions
-  void putHBCalRecHits(std::vector<float> rec, std::vector<float> she);
-  void putHECalRecHits(std::vector<float> rec, std::vector<float> she);
-  void putHOCalRecHits(std::vector<float> rec, std::vector<float> she);
-  void putHFCalRecHits(std::vector<float> rec, std::vector<float> she);
+  void putHBCalRecHits(std::vector<float> rec, std::vector<float> r, 
+		       std::vector<float> she);
+  void putHECalRecHits(std::vector<float> rec, std::vector<float> r, 
+		       std::vector<float> she);
+  void putHOCalRecHits(std::vector<float> rec, std::vector<float> r, 
+		       std::vector<float> she);
+  void putHFCalRecHits(std::vector<float> rec, std::vector<float> r, 
+		       std::vector<float> she);
   //get functions
   int getnHBCalRecHits() {return nHBCalRecHits;}  
   int getnHECalRecHits() {return nHECalRecHits;}  
