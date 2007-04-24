@@ -40,12 +40,14 @@ void PGlobalRecHit::putESCalRecHits(std::vector<float> re,
 }
 
 void PGlobalRecHit::putHBCalRecHits(std::vector<float> rec,
-				std::vector<float> she)
+				    std::vector<float> r,
+				    std::vector<float> she)
 {
   nHBCalRecHits = rec.size();
   HBCalRecHits.resize(nHBCalRecHits);
   for (int i = 0; i < nHBCalRecHits; ++i) {
     HBCalRecHits[i].REC = rec[i];
+    HBCalRecHits[i].R = r[i];
     HBCalRecHits[i].SHE = she[i];
   }
 
@@ -53,12 +55,14 @@ void PGlobalRecHit::putHBCalRecHits(std::vector<float> rec,
 }
 
 void PGlobalRecHit::putHECalRecHits(std::vector<float> rec,
-				std::vector<float> she)
+				    std::vector<float> r,
+				    std::vector<float> she)
 {
   nHECalRecHits = rec.size();
   HECalRecHits.resize(nHECalRecHits);
   for (int i = 0; i < nHECalRecHits; ++i) {
     HECalRecHits[i].REC = rec[i];
+    HECalRecHits[i].R = r[i];
     HECalRecHits[i].SHE = she[i];
   }
 
@@ -66,12 +70,14 @@ void PGlobalRecHit::putHECalRecHits(std::vector<float> rec,
 }
 
 void PGlobalRecHit::putHOCalRecHits(std::vector<float> rec,
-				std::vector<float> she)
+				    std::vector<float> r,
+				    std::vector<float> she)
 {
   nHOCalRecHits = rec.size();
   HOCalRecHits.resize(nHOCalRecHits);
   for (int i = 0; i < nHOCalRecHits; ++i) {
     HOCalRecHits[i].REC = rec[i];
+    HOCalRecHits[i].R = r[i];
     HOCalRecHits[i].SHE = she[i];
   }
 
@@ -79,12 +85,14 @@ void PGlobalRecHit::putHOCalRecHits(std::vector<float> rec,
 }
 
 void PGlobalRecHit::putHFCalRecHits(std::vector<float> rec,
-				std::vector<float> she)
+				    std::vector<float> r,
+				    std::vector<float> she)
 {
   nHFCalRecHits = rec.size();
   HFCalRecHits.resize(nHFCalRecHits);
   for (int i = 0; i < nHFCalRecHits; ++i) {
     HFCalRecHits[i].REC = rec[i];
+    HFCalRecHits[i].R = r[i];
     HFCalRecHits[i].SHE = she[i];
   }
 
