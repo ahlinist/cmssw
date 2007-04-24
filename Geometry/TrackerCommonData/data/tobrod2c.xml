@@ -6,12 +6,18 @@
 </ConstantsSection>
 
 <SolidSection label="tobrod2c.xml">
- <Tubs name="TOBSideCool2"               rMin="[zero]" 
-       rMax="[tobrodpar:SideCoolLightR]" dz="[tobrodpar:SideCoolL]" 
-       startPhi="0*deg"                  deltaPhi="360*deg"/>
- <Tubs name="TOBEndCool2"                rMin="[zero]" 
-       rMax="[tobrodpar:EndCoolR]"       dz="[tobrodpar:EndCoolL]" 
-       startPhi="0*deg"                  deltaPhi="360*deg"/>
+ <Tubs name="TOBSideCoolTube2"            rMin="[zero]" 
+       rMax="[tobrodpar:CoolTubeLightR]"  dz="[tobrodpar:SideCoolL]" 
+       startPhi="0*deg"                   deltaPhi="360*deg"/>
+ <Tubs name="TOBSideCoolFluid2"           rMin="[zero]" 
+       rMax="[tobrodpar:CoolFluidLightR]" dz="[tobrodpar:SideCoolL]" 
+       startPhi="0*deg"                   deltaPhi="360*deg"/>
+ <Tubs name="TOBEndCoolTube2"             rMin="[zero]" 
+       rMax="[tobrodpar:CoolTubeLightR]"  dz="[tobrodpar:EndCoolL]" 
+       startPhi="0*deg"                   deltaPhi="360*deg"/>
+ <Tubs name="TOBEndCoolFluid2"            rMin="[zero]" 
+       rMax="[tobrodpar:CoolFluidLightR]" dz="[tobrodpar:EndCoolL]" 
+       startPhi="0*deg"                   deltaPhi="360*deg"/>
  <Tubs name="TOBOptFibre2"               rMin="[zero]" 
        rMax="[tobrodpar:OptFibreR]"      dz="[tobrodpar:OptFibreL]" 
        startPhi="0*deg"                  deltaPhi="360*deg"/>
@@ -22,13 +28,21 @@
 </SolidSection>
 
 <LogicalPartSection label="tobrod2c.xml">
- <LogicalPart name="TOBSideCool2" category="unspecified">
-  <rSolid name="TOBSideCool2"/>
-  <rMaterial name="tobmaterial:TOB_cool_SS"/>
+ <LogicalPart name="TOBSideCoolTube2" category="unspecified">
+  <rSolid name="TOBSideCoolTube2"/>
+  <rMaterial name="materials:CuNi"/>
  </LogicalPart>
- <LogicalPart name="TOBEndCool2" category="unspecified">
-  <rSolid name="TOBEndCool2"/>
-  <rMaterial name="tobmaterial:TOB_cool_SS"/>
+ <LogicalPart name="TOBSideCoolFluid2" category="unspecified">
+  <rSolid name="TOBSideCoolFluid2"/>
+  <rMaterial name="materials:C6F14_F2_-30C"/>
+ </LogicalPart>
+ <LogicalPart name="TOBEndCoolTube2" category="unspecified">
+  <rSolid name="TOBEndCoolTube2"/>
+  <rMaterial name="materials:CuNi"/>
+ </LogicalPart>
+ <LogicalPart name="TOBEndCoolFluid2" category="unspecified">
+  <rSolid name="TOBEndCoolFluid2"/>
+  <rMaterial name="materials:C6F14_F2_-30C"/>
  </LogicalPart>
  <LogicalPart name="TOBOptFibre2" category="unspecified">
   <rSolid name="TOBOptFibre2"/>
@@ -60,4 +74,15 @@
  </LogicalPart>
 </LogicalPartSection>
  
+<PosPartSection label="tobrod2c.xml">
+ <PosPart copyNumber="1">
+   <rParent name="tobrod2c:TOBSideCoolTube2"/>
+   <rChild name="tobrod2c:TOBSideCoolFluid2"/>
+ </PosPart>
+ <PosPart copyNumber="1">
+   <rParent name="tobrod2c:TOBEndCoolTube2"/>
+   <rChild name="tobrod2c:TOBEndCoolFluid2"/>
+ </PosPart>
+</PosPartSection>
+
 </DDDefinition>
