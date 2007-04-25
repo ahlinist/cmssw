@@ -1,8 +1,6 @@
 #include "FWCore/Framework/interface/MakerMacros.h"
 DEFINE_SEAL_MODULE();
 
-using cms::SiStripOfflinePedNoiseToDb;
-
 #include "CalibTracker/SiStripPedestals/interface/SiStripPedDB.h"
 DEFINE_ANOTHER_FWK_MODULE(SiStripPedDB);
 
@@ -10,4 +8,5 @@ DEFINE_ANOTHER_FWK_MODULE(SiStripPedDB);
 DEFINE_ANOTHER_FWK_MODULE(SiStripNoiseDB);
 
 #include "CalibTracker/SiStripPedestals/interface/SiStripOfflinePedNoiseToDb.h"
+using cms::SiStripOfflinePedNoiseToDb;
 DEFINE_ANOTHER_FWK_MODULE(SiStripOfflinePedNoiseToDb);
