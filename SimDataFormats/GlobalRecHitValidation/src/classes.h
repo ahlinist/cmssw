@@ -5,7 +5,7 @@
 namespace {
   namespace {
     std::vector<PGlobalRecHit::ECalRecHit> dummy1;
-    std::vector<PGlobalRecHit::HCalRecHit> dummy32;
+    std::vector<PGlobalRecHit::HCalRecHit> dummy2;
     std::vector<PGlobalRecHit::SiStripRecHit> dummy3;
     std::vector<PGlobalRecHit::SiPixelRecHit> dummy4;
     std::vector<PGlobalRecHit::DTRecHit> dummy5;
