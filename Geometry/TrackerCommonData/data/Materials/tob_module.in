@@ -285,7 +285,7 @@ EDMS Code EP 680-1174-080-A (ss) and EP 680-1174-060-D (ds)
 * 6 "Soldering"               "BGA"                      0.0034   1   ELE
 * 7 "Thermistor Caps"         "T_Kapton"                 0.0071   1   ELE
 * 8 "Thermistor Stiffeners"   "T_G10"                    0.021    1   ELE
-* 9 "Capacitors"              "Barium Titanate"          0.015    1   ELE
+* 9 "Capacitors"              "Barium_Titanate"          0.015    1   ELE
 * 10 "Resistors"              "Ceramic"                  0.0126   1   ELE
 ..........................................................................
 ========================================================================== 
@@ -407,7 +407,7 @@ EDMS Code EP 680-1174-080-A
 * 6 "Soldering"                "BGA"                      0.0034   1   ELE
 * 7 "Thermistor Caps"          "T_Kapton"                 0.0071   1   ELE
 * 8 "Thermistor Stiffeners"    "T_G10"                    0.021    1   ELE
-* 9 "Capacitors"               "Barium Titanate"          0.015    1   ELE
+* 9 "Capacitors"               "Barium_Titanate"          0.015    1   ELE
 * 10 "Resistors"               "Ceramic"                  0.0126   1   ELE
 ...........................................................................
 =========================================================================== 
@@ -701,7 +701,7 @@ EDMS Code EP 680-1174-200-C
 * 4 "NAiS connectors"           "Epoxy"            1.276   1     ELE
 * 5 "HV Stiffener"              "T_G10"            0.032   2     CAB
 * 6 "ICC Resistors"             "Ceramic"          0.025   1     ELE
-* 7 "ICC Capacitors"            "Barium Titanate"  0.254   1     ELE
+* 7 "ICC Capacitors"            "Barium_Titanate"  0.254   1     ELE
 * 8 "ICC ASICs EMC"             "Epoxy"            0.071   1     ELE
 * 9 "ICC ASICs copper"          "Copper"           0.011   1     ELE
 * 10 "Hybrid Tail Kapton"       "T_Kapton"         0.028   2     ELE
@@ -774,7 +774,7 @@ EDMS Code EP 680-1174-210-D
 * 4 "NAiS connectors"           "Epoxy"            2.160   1     ELE
 * 5 "HV Stiffener"              "T_G10"            0.032   4     CAB
 * 6 "ICC Resistors"             "Ceramic"          0.040   1     ELE
-* 7 "ICC Capacitors"            "Barium Titanate"  0.503   1     ELE
+* 7 "ICC Capacitors"            "Barium_Titanate"  0.503   1     ELE
 * 8 "ICC ASICs EMC"             "Epoxy"            0.131   1     ELE
 * 9 "ICC ASICs copper"          "Copper"           0.031   1     ELE
 * 10 "Hybrid Tail Kapton"       "T_Kapton"         0.028   4     ELE
@@ -867,7 +867,7 @@ MCVolume: ( 11.8 x 4.4 x 0.25 ) cm^3 = 12.98 cm^3
 * 4 "NAiS connectors"           "Epoxy"            1.019   1     ELE
 * 5 "HV Stiffener"              "T_G10"            0.032   1     CAB
 * 6 "ICC Resistors"             "Ceramic"          0.019   1     ELE
-* 7 "ICC Capacitors"            "Barium Titanate"  0.170   1     ELE
+* 7 "ICC Capacitors"            "Barium_Titanate"  0.170   1     ELE
 * 8 "ICC ASICs EMC"             "Epoxy"            0.042   1     ELE
 * 9 "ICC ASICs copper"          "Copper"           0.007   1     ELE
 * 10 "Hybrid Tail Kapton"       "T_Kapton"         0.028   1     ELE
@@ -957,7 +957,7 @@ MCVolume: ( 11.8 x 6.8 x 0.25 ) cm^3 = 20.06 cm^3
 * 4 "NAiS connectors"           "Epoxy"            1.276   1     ELE
 * 5 "HV Stiffener"              "T_G10"            0.032   2     CAB
 * 6 "ICC Resistors"             "Ceramic"          0.027   1     ELE
-* 7 "ICC Capacitors"            "Barium Titanate"  0.336   1     ELE
+* 7 "ICC Capacitors"            "Barium_Titanate"  0.336   1     ELE
 * 8 "ICC ASICs EMC"             "Epoxy"            0.0713  1     ELE
 * 9 "ICC ASICs copper"          "Copper"           0.011   1     ELE
 * 10 "Hybrid Tail Kapton"       "T_Kapton"         0.028   2     ELE
@@ -983,7 +983,7 @@ Same as Layer 3/4.
 * 4 "NAiS connectors"           "Epoxy"            1.064   1     ELE
 * 5 "HV Stiffener"              "T_G10"            0.032   1     CAB
 * 6 "ICC Resistors"             "Ceramic"          0.019   1     ELE
-* 7 "ICC Capacitors"            "Barium Titanate"  0.170   1     ELE
+* 7 "ICC Capacitors"            "Barium_Titanate"  0.170   1     ELE
 * 8 "ICC ASICs EMC"             "Epoxy"            0.042   1     ELE
 * 9 "ICC ASICs copper"          "Copper"           0.007   1     ELE
 * 10 "Hybrid Tail Kapton"       "T_Kapton"         0.028   1     ELE
@@ -1006,7 +1006,7 @@ Same as Layer 3/4.
 * 4 "NAiS connectors"           "Epoxy"            1.736   1     ELE
 * 5 "HV Stiffener"              "T_G10"            0.032   2     CAB
 * 6 "ICC Resistors"             "Ceramic"          0.027   1     ELE
-* 7 "ICC Capacitors"            "Barium Titanate"  0.336   1     ELE
+* 7 "ICC Capacitors"            "Barium_Titanate"  0.336   1     ELE
 * 8 "ICC ASICs EMC"             "Epoxy"            0.0713  1     ELE
 * 9 "ICC ASICs copper"          "Copper"           0.011   1     ELE
 * 10 "Hybrid Tail Kapton"       "T_Kapton"         0.028   2     ELE
@@ -1079,7 +1079,7 @@ MCVolume: ( 2.3 x 3.0 x 0.2 ) cm^3 = 1.38 cm^3
 * 3 "NAiS connectors"           "Copper"           0.020   1     ELE
 * 4 "NAiS connectors"           "Epoxy"            0.230   1     ELE
 * 5 "AOH Resistors"             "Ceramic"          0.0032  1     ELE
-* 6 "AOH Capacitors"            "Barium Titanate"  0.0114  1     ELE
+* 6 "AOH Capacitors"            "Barium_Titanate"  0.0114  1     ELE
 * 7 "AOH ASICs EMC"             "Epoxy"            0.0208  1     ELE
 * 8 "AOH ASICs copper"          "Copper"           0.0048  1     ELE
 * 9 "Laser Cover"               "Ceramic"          0.0875  1     ELE
@@ -1152,7 +1152,7 @@ The wires are in TOB_Conn[12/34/56]
 * 3 "CCUM-ICB NAiS connector" "Copper"                    0.054    1   ELE
 * 4 "CCUM-ICB NAiS connector" "Epoxy"                     0.558    1   ELE
 * 5 "CCUM Resistors"          "Ceramic"                   0.015    1   ELE
-* 6 "CCUM Capacitors"         "Barium Titanate"           0.095    1   ELE
+* 6 "CCUM Capacitors"         "Barium_Titanate"           0.095    1   ELE
 * 7 "CCUM ASICs BGA"          "BGA"                       0.013    1   ELE
 * 8 "CCUM ASICs EMC"          "Epoxy"                     0.328    1   ELE
 * 9 "CCUM ASICs copper"       "Copper"                    0.015    1   ELE
