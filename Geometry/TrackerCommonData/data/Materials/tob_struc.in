@@ -139,7 +139,7 @@ HVLAC and LVLAC will go outside with the CCUM ones.
 * 1 "ICB substrate"            "T_G10"           45.737      1    ELE
 * 2 "ICB copper traces"        "Copper"           3.419      1    ELE
 * 3 "ICB Resistors"            "Ceramic"          0.146      1    ELE
-* 4 "ICB Capacitors"           "Barium Titanate"  0.434      1    ELE
+* 4 "ICB Capacitors"           "Barium_Titanate"  0.434      1    ELE
 * 5 "ICB ASICs EMC"            "Epoxy"            0.1185     1    ELE
 * 6 "ICB ASICs copper"         "Copper"           0.0167     1    ELE
 * 7 "NAiS connector"           "Copper"           0.016      1    ELE

@@ -85,7 +85,7 @@ PI - is polymide (kapton)
 * 7 "Solder Pb"             "Lead"              0.001958  1  ELE
 * 8 "Solder Pb"             "Tin"               0.005185  1  ELE
 * 9 "Glue"                  "Epoxy"             0.008000  1  SUP
-* 10 "Capacitors"           "Barium Titanate"   0.00025   8  ELE
+* 10 "Capacitors"           "Barium_Titanate"   0.00025   8  ELE
 * 11 "Resistors"            "Alumina"           0.00025   2  ELE
 .....................................................................
 =====================================================================
@@ -112,7 +112,7 @@ Size: 10.3(w) * 65(l) * 0.044(h) mm.
 * 7 "Solder Pb"             "Lead"              0.001958  1  ELE
 * 8 "Solder Pb"             "Tin"               0.005185  1  ELE
 * 9 "Glue"                  "Epoxy"             0.008000  1  SUP
-* 10 "Capacitors"           "Barium Titanate"   0.00025   8  ELE
+* 10 "Capacitors"           "Barium_Titanate"   0.00025   8  ELE
 * 11 "Resistors"            "Alumina"           0.00025   2  ELE
 .....................................................................
 =====================================================================
@@ -126,7 +126,7 @@ MC Volume: 0.05 x 6.5 x 0.05 cm = 0.01625
 (1) 24 Capacitors : 0.05 x 0.10 x 0.05 cm = 0.00025
 ......................................................................
 # "Pixel barrel HVcapacitor"  "Pix_Bar_Capacitor"    0.01625     0.32
-* 1 "SMD Capacitor"         "Barium Titanate"        0.00025     24  ELE
+* 1 "SMD Capacitor"         "Barium_Titanate"        0.00025     24  ELE
 .....................................................................
 =====================================================================
 
