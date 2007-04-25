@@ -27,10 +27,11 @@
  <Constant name="EndCoolL"            value="6.250*cm"/>
  <Constant name="EndCoolY"            value="0.200*cm"/>
  <Constant name="EndCoolZ"            value="3.100*cm"/>
- <Constant name="OptFibreR"           value="0.075*cm"/>
- <Constant name="OptFibreL"           value="53.95*cm"/>
+ <Constant name="OptFibreW"           value="0.150*cm"/>
+ <Constant name="OptFibreH"           value="0.330*cm"/>
+ <Constant name="OptFibreL"           value="37.50*cm"/>
  <Constant name="OptFibreX"           value="7.100*cm"/>
- <Constant name="OptFibreZ"           value="56.85*cm"/>
+ <Constant name="OptFibreZ"           value="63.35*cm"/>
  <Constant name="ClampDx"             value="0.350*cm"/>
  <Constant name="ClampDy"             value="0.780*cm"/>
  <Constant name="ClampDz"             value="0.850*cm"/>

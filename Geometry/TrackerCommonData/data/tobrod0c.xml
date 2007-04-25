@@ -18,9 +18,8 @@
  <Tubs name="TOBEndCoolFluid0"            rMin="[zero]" 
        rMax="[tobrodpar:CoolFluidHeavyR]" dz="[tobrodpar:EndCoolL]" 
        startPhi="0*deg"                   deltaPhi="360*deg"/>
- <Tubs name="TOBOptFibre0"               rMin="[zero]" 
-       rMax="[tobrodpar:OptFibreR]"      dz="[tobrodpar:OptFibreL]" 
-       startPhi="0*deg"                  deltaPhi="360*deg"/>
+ <Box name="TOBOptFibre0"                dx="[tobrodpar:OptFibreW]" 
+       dy="[tobrodpar:OptFibreH]"        dz="[tobrodpar:OptFibreL]"/>
  <Box name="TOBPlate01"                  dx="[tobrodpar:SideClampDx]" 
       dy="[tobrodpar:SideClampDy]"       dz="[tobrodpar:SideClampHDz]"/>
  <Box name="TOBPlate02"                  dx="[tobrodpar:SideClampDx]" 
@@ -46,7 +45,7 @@
  </LogicalPart>
  <LogicalPart name="TOBOptFibre0" category="unspecified">
   <rSolid name="TOBOptFibre0"/>
-  <rMaterial name="tobmaterial:TOB_optfib_DS"/>
+  <rMaterial name="tobmaterial:TOB_optfib_L12"/>
  </LogicalPart>
  <LogicalPart name="TOBPlate01" category="unspecified">
   <rSolid name="TOBPlate01"/>
