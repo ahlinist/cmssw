@@ -239,6 +239,7 @@ void DQMSenderService::postEventProcessing(const edm::Event &event,
     // create the message
     DQMEventMsgBuilder dqmMsgBuilder(&messageBuffer_[0], messageBuffer_.size(),
                                      event.id().run(), event.id().event(),
+                                     event.time(),
                                      lumiSectionTag, updateNumber,
                                      edm::getReleaseVersion(), dirName,
                                      toTable);
