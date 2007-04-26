@@ -48,7 +48,7 @@
  </LogicalPart>
 </LogicalPartSection>
 
-<Algorithm name="track:DDTECPhiAltAlgo">
+<Algorithm name="track:DDTECPhiAlgo">
   <rParent name="tecring6b:TECRing6B"/>
   <String name="ParentName"   value="tecring6b:TECRing6B"/>
   <String name="ChildName"    value="tecmodule6:TECModule6"/>

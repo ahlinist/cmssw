@@ -1,23 +1,17 @@
 <?xml version="1.0"?>
 <DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../DetectorDescription/Schema/DDLSchema.xsd">
 
-<ConstantsSection label="tecmodule4s.xml" eval="true">
- <Constant name="isStereo"           value="1"/>
- <Constant name="TopFrameTopWidth"   value="90.7*mm"/>
- <Constant name="TopFrameBotWidth"   value="145.3*mm"/>
- <Constant name="TopFrameHeight"     value="25.6*mm"/>
- <Constant name="TopFrame2Width"     value="121.7*mm"/>
- <Constant name="TopFrame2LHeight"   value="19.4*mm"/>
- <Constant name="TopFrame2RHeight"   value="7.3*mm"/>
- <Constant name="SideFrameRtheta"    value="-0.139*rad"/>
- <Constant name="SideFrameRHeight"   value="153.4*mm"/>
- <Constant name="SideFrameRWidthLow" value="7.8*mm"/>
- <Constant name="SideFrameRWidth"    value="21.8*mm"/>
- <Constant name="SideFrameLtheta"    value="0.047*rad"/>
- <Constant name="SideFrameLHeight"   value="153.4*mm"/>
- <Constant name="SideFrameLWidthLow" value="21.1*mm"/>
- <Constant name="SideFrameLWidth"    value="10.8*mm"/>
- <Constant name="PosCorrectionR"     value="-0.262*mm"/>
+<ConstantsSection label="tecmodule4r.xml" eval="true">
+ <Constant name="isStereo"         value="0"/>
+ <Constant name="TopFrameTopWidth" value="95.6*mm"/>
+ <Constant name="TopFrameBotWidth" value="[tecmodule4:TopFrameBotWidth]"/>
+ <Constant name="TopFrameHeight"   value="37.2*mm"/>
+ <Constant name="SideFrameRtheta"  value="0.080*rad"/>
+ <Constant name="SideFrameRHeight" value="158.9*mm"/>
+ <Constant name="SideFrameRWidth"  value="14.5*mm"/>
+ <Constant name="SideFrameLtheta"  value="-0.080*rad"/>
+ <Constant name="SideFrameLHeight" value="159.0*mm"/>
+ <Constant name="SideFrameLWidth"  value="16.4*mm"/>
 </ConstantsSection>
 
 <Algorithm name="track:DDTECModuleAlgo">
@@ -37,49 +31,44 @@
   <Numeric name="TopFrameTopWidth"   value="[TopFrameTopWidth]"/>
   <Numeric name="TopFrameBotWidth"   value="[TopFrameBotWidth]"/>
   <Numeric name="TopFrameHeight"     value="[TopFrameHeight]"/>
-  <Numeric name="TopFrame2Width"     value="[TopFrame2Width]"/>
-  <Numeric name="TopFrame2LHeight"   value="[TopFrame2LHeight]"/>
-  <Numeric name="TopFrame2RHeight"   value="[TopFrame2RHeight]"/>
   <Numeric name="TopFrameThick"      value="[tecmodpar:TopFrameThick]"/>
-  <Numeric name="TopFrameZ"          value="-[tecmodule4:TopFrameZ]"/>
+  <Numeric name="TopFrameZ"          value="[tecmodule4:TopFrameZ]"/>
   <String name="SideFrameMaterial"   value="tecmaterial:TEC_frame_side_5_7"/>
   <Numeric name="SideFrameThick"     value="[tecmodpar:SideFrameThick]"/>
   <String name="SiFrSuppBoxMaterial" value="tecmaterial:TEC_SideFrSupBox"/> 
   <Numeric name="SideFrameRtheta"    value="[SideFrameRtheta]"/>
   <Numeric name="SideFrameRHeight"   value="[SideFrameRHeight]"/>
-  <Numeric name="SideFrameRWidthLow" value="[SideFrameRWidthLow]"/>
   <Numeric name="SideFrameRWidth"    value="[SideFrameRWidth]"/>
   <Numeric name="SideFrameLtheta"    value="[SideFrameLtheta]"/>
   <Numeric name="SideFrameLHeight"   value="[SideFrameLHeight]"/>
-  <Numeric name="SideFrameLWidthLow" value="[SideFrameLWidthLow]"/>
   <Numeric name="SideFrameLWidth"    value="[SideFrameLWidth]"/>
   <Numeric name="SiFrSuppBoxThick"   value="[tecmodpar:SiFrSuppBoxThick]"/>
   <Vector name="SiFrSuppBoxYPos"   type="numeric" nEntries = "2">
-   34.4*mm, 110.5*mm </Vector>
+   37.8*mm, 112.3*mm </Vector>
   <Vector name="SiFrSuppBoxHeight" type="numeric" nEntries = "2">
-   33.1*mm, 26.3*mm  </Vector>
+   30.7*mm, 26.5*mm </Vector>
   <Vector name="SiFrSuppBoxWidth"  type="numeric" nEntries = "2">
-   16.2*mm, 15.3*mm  </Vector>
-  <Numeric name="SideFrameZ"         value="-[tecmodule4:SideFrameZ]"/>
+   16.0*mm, 15.2*mm </Vector>
+  <Numeric name="SideFrameZ"         value="[tecmodule4:SideFrameZ]"/>  
   <String name="WaferMaterial"       value="materials:Silicon"/>
   <Numeric name="SideWidthTop"       value="[tecmodule4:SideWidthTop]"/>
   <Numeric name="SideWidthBottom"    value="[tecmodule4:SideWidthBottom]"/>
-  <String name="WaferRotation"       value="tecmodpar:STER"/>
+  <String name="WaferRotation"       value="tecmodpar:RPHI"/>
   <String name="ActiveMaterial"      value="materials:Silicon"/>
   <Numeric name="ActiveHeight"       value="[tecmodule4:ActiveHeight]"/>
   <Numeric name="ActiveThick"        value="[tecmodpar:ActiveThick2]"/>
   <String name="ActiveRotation"      value="tecmodpar:AR05"/>
-  <Numeric name="ActiveZ"            value="-[tecmodule4:ActiveZ]"/>
+  <Numeric name="ActiveZ"            value="[tecmodule4:ActiveZ]"/>
   <String name="HybridMaterial"      value="tecmaterial:TEC_Hybrid6APV"/>
   <Numeric name="HybridHeight"       value="[tecmodpar:HybridHeight]"/>
   <Numeric name="HybridWidth"        value="[tecmodpar:HybridWidth]"/>
   <Numeric name="HybridThick"        value="[tecmodpar:HybridThick]"/>
-  <Numeric name="HybridZ"            value="-[tecmodule4:HybridZ]"/>
+  <Numeric name="HybridZ"            value="[tecmodule4:HybridZ]"/>  
   <String name="PitchMaterial"       value="tecmaterial:TEC_PitchAdapter"/>
-  <Numeric name="PitchHeight"        value="[tecmodpar:PitchStereoHeight]"/>
+  <Numeric name="PitchHeight"        value="[tecmodpar:PitchHeight]"/>
   <Numeric name="PitchThick"         value="[tecmodpar:PitchThick]"/>
   <Numeric name="PitchWidth"         value="[tecmodule4:PitchWidth]"/>
-  <Numeric name="PitchZ"             value="-[tecmodule4:PitchZ]"/>
+  <Numeric name="PitchZ"             value="[tecmodule4:PitchZ]"/>  
   <String name="PitchRotation"       value="tecmodpar:PITC"/>
   <Numeric name="BridgeWidth"        value="[tecmodule4:BridgeWidth]"/>
   <Numeric name="BridgeThick"        value="[tecmodule4:BridgeThick]"/>
@@ -88,15 +77,15 @@
   <String name="BridgeMaterial"      value="materials:Aluminium"/>
   <Numeric name="WaferPosition"      value="[tecmodpar:TopFrameHeight]"/>
   <Vector name="SiReenforcementHeight" type="numeric" nEntries = "2">
-   4.4*mm, 8.0*mm  </Vector>
+   3.8*mm, 8.1*mm  </Vector>
   <Vector name="SiReenforcementWidth"  type="numeric" nEntries = "2">
-   106.0*mm, 99.5*mm  </Vector>
+   102.0*mm, 98.0*mm  </Vector>
   <Vector name="SiReenforcementPosY"   type="numeric" nEntries = "2">
    0.0001*mm, 66.1*mm </Vector>
   <String name="SiReenforcementMaterial" value="tecmaterial:TEC_SiReenforcment"/> 
   <Numeric name="SiReenforcementThick" value="[tecmodpar:SiReenforcementThick]"/>
   <Numeric name="NoOverlapShift"     value="[tecmodpar:NoOverlapShift]"/>
-  <Numeric name="RPos"               value="0.5*([tecmodule4:Rin]+[tecmodule4:Rout])+[PosCorrectionR]"/>
+  <Numeric name="RPos"               value="0.5*([tecmodule4:Rin]+[tecmodule4:Rout])"/>
   <String name="StandardRotation"    value="tecmodpar:RPHI"/>
 </Algorithm>
  

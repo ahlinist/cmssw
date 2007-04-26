@@ -7,6 +7,7 @@
 
   @version 3.02.01 May 30, 2006
   @created Dmitry Onoprienko
+  @modified Vesna Cuplov april 2007
 
 == Subsystem or component described by the file ==
 
@@ -69,6 +70,8 @@ than they are on the drawings.
     <Constant name="L07"   value="1.00*mm"/>
     <Constant name="L08"   value="1.00*mm"/>
     <Constant name="A01"   value="60*deg"/>
+
+    <Constant name="RootHalfThickness"  value="[pixfwdPanelBase:RootHalfThickness]" />
   
   </ConstantsSection>
   
@@ -101,9 +104,9 @@ than they are on the drawings.
  
   <SolidSection label="Root">
   
-    <Tubs name="PixelForwardNipple_01" rMin="0.*mm" rMax="[R08]" dz="[JK]/2." startPhi="0." deltaPhi="360*deg" />
-    <Tubs name="PixelForwardNippleSubtract" rMin="0.*mm" rMax="[Rsub]" dz="[Dsub]/2." startPhi="0." deltaPhi="360*deg" />
-
+<!-- Previous description (Dima)    
+<Tubs name="PixelForwardNipple_01" rMin="0.*mm" rMax="[R08]" dz="[JK]/2." startPhi="0." deltaPhi="360*deg" />
+    <Tubs name="PixelForwardNippleSubtract" rMin="0.*mm" rMax="[Rsub]" dz="[Dsub]/2." startPhi="0." deltaPhi="360*deg" /> 
     <SubtractionSolid name="PixelForwardNipple_int01">
       <rSolid name="PixelForwardNipple_01" />
       <rSolid name="PixelForwardNippleSubtract" />
@@ -116,19 +119,52 @@ than they are on the drawings.
       <Translation x="0." y="0." z="[JK]/2.+[DeltaBody]" />
       <rRotation name="NippleToBodyZPlus" />
     </SubtractionSolid>
+-->
+
+    <Tubs name="PixelForwardNipple_01" rMin="0.*mm" rMax="[R08]-0.9*mm" dz="[L04]/2+3.7*mm" startPhi="0." deltaPhi="360*deg" />
+    <Tubs name="PixelForwardNippleSubtract" rMin="0.*mm" rMax="[Rsub]-0.9*mm" dz="[Dsub]/2." startPhi="0." deltaPhi="360*deg" />
+    <Tubs name="PixelForwardNippleMiddle" rMin="0.*mm" rMax="[R08]" dz="[L04]/2.+0.4*mm" startPhi="0." deltaPhi="360*deg" />
+
+
+
+    <SubtractionSolid name="PixelForwardNipple_int01">
+      <rSolid name="PixelForwardNipple_01" />
+      <rSolid name="PixelForwardNippleSubtract" />
+      <Translation x="0." y="0." z="-[L04]/2.-3.7*mm-[DeltaCover]" />
+      <rRotation name="NippleToCoverZPlus" />
+    </SubtractionSolid>
+    <SubtractionSolid name="PixelForwardNippleZPlus_01">
+      <rSolid name="PixelForwardNipple_int01" />
+      <rSolid name="PixelForwardNippleSubtract" />
+      <Translation x="0." y="0." z="[L04]/2.+3.7*mm+[DeltaBody]" />
+      <rRotation name="NippleToBodyZPlus" />
+    </SubtractionSolid>
     
+    <UnionSolid name="PixelForwardNippleZPlus">
+    <rSolid name="PixelForwardNippleZPlus_01" />
+      <rSolid name="PixelForwardNippleMiddle" />
+      <Translation x="0." y="0." z="0." />
+    </UnionSolid>
+ 
     <SubtractionSolid name="PixelForwardNipple_int02">
       <rSolid name="PixelForwardNipple_01" />
       <rSolid name="PixelForwardNippleSubtract" />
-      <Translation x="0." y="0." z="-[JK]/2.-[DeltaCover]" />
+      <Translation x="0." y="0." z="-[L04]/2.-3.7*mm-[DeltaCover]" />
       <rRotation name="NippleToCoverZMinus" />
     </SubtractionSolid>
-    <SubtractionSolid name="PixelForwardNippleZMinus">
+    <SubtractionSolid name="PixelForwardNippleZMinus_01">
       <rSolid name="PixelForwardNipple_int02" />
       <rSolid name="PixelForwardNippleSubtract" />
-      <Translation x="0." y="0." z="[JK]/2.+[DeltaBody]" />
+      <Translation x="0." y="0." z="[L04]/2.+3.7*mm+[DeltaBody]" />
       <rRotation name="NippleToBodyZMinus" />
     </SubtractionSolid>
+
+    <UnionSolid name="PixelForwardNippleZMinus">
+    <rSolid name="PixelForwardNippleZMinus_01" />
+      <rSolid name="PixelForwardNippleMiddle" />
+      <Translation x="0." y="0." z="0." />
+    </UnionSolid>
+
 
   </SolidSection>
  

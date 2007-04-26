@@ -72,6 +72,9 @@ Currently, [AnchorX] = [AnchorZ] = 0.
    <Constant name="MainHalfWidthBottom"  value="[pixfwdPanelBase:MainHalfWidthBottom]" />
    <Constant name="MainHalfWidthTop"  value="[pixfwdPanelBase:MainHalfWidthTop]" />
    <Constant name="PanelAngle"  value="[pixfwdPanelBase:PanelAngle]" />
+   <Constant name="MainLength"  value="[pixfwdPanelBase:]MainLength" />
+   <Constant name="NoseLength"  value="[pixfwdPanelBase:]NoseLength" />
+
 
 
 </ConstantsSection>
@@ -79,18 +82,17 @@ Currently, [AnchorX] = [AnchorZ] = 0.
 
 <!-- Root volumes for 4 types panels -->
 
-<!-- 
+<!-- previous description (Dima)
 <SolidSection label="Root">
   <Box name="PixelForwardPanel" dx="[RootHalfWidth]" dy="[RootHalfLength]" dz="[RootHalfThickness]" />
 </SolidSection>
 -->
 
 <SolidSection label="Root">
-
   <Trapezoid name="PixelForwardPanelMain" dz="[RootHalfThickness]"
                                     bl1="[MainHalfWidthBottom]+4.0*mm"  bl2="[MainHalfWidthBottom]+4.0*mm" 
                                     tl1="[MainHalfWidthTop]+4.0*mm"     tl2="[MainHalfWidthTop]+4.0*mm" 
-                                    h1="[RootHalfLength]"         h2="[RootHalfLength]"
+                                    h1="[MainLength]/2.+[NoseLength]/2."         h2="[MainLength]/2.+[NoseLength]/2."
                                     alp1="0.0"  alp2="0.0" phi="90*deg" />
   <Trapezoid name="PixelForwardPanelEar" dz="[RootHalfThickness]"
                                    bl1="[MainHalfWidthBottom]+[EarWidth]/2.+12.0*mm"  bl2="[MainHalfWidthBottom]+[EarWidth]/2.+12.0*mm" 
@@ -102,6 +104,7 @@ Currently, [AnchorX] = [AnchorZ] = 0.
     <rSolid name="PixelForwardPanelEar" />
     <Translation x="0." y="29.0" z="0." />
   </UnionSolid>
+
 
 </SolidSection>
 

@@ -46,7 +46,7 @@
  </LogicalPart>
 </LogicalPartSection>
 
-<Algorithm name="track:DDTECPhiAltAlgo">
+<Algorithm name="track:DDTECPhiAlgo">
   <rParent name="tecring5f:TECRing5F"/>
   <String name="ChildName"    value="tecmodule5:TECModule5"/>
   <Numeric name="StartAngle"  value="[Phi0]"/>

@@ -46,7 +46,7 @@
  </LogicalPart>
 </LogicalPartSection>
 
-<Algorithm name="track:DDTECPhiAltAlgo">
+<Algorithm name="track:DDTECPhiAlgo">
   <rParent name="tecring0f:TECRing0F"/>
   <String name="ChildName"    value="tecmodule0:TECModule0"/>
   <Numeric name="StartAngle"  value="[Phi0]"/>
@@ -61,7 +61,7 @@
 
 <Algorithm name="track:DDTECPhiAltAlgo">
   <rParent name="tecring0f:TECRing0BridgeF"/>
-  <String name="ChildName"    value="tecmodule0:TECModule0Bridge"/>
+  <String name="ChildName"    value="tecmodule0r:TECModule0Bridge"/>
   <Numeric name="StartAngle"  value="[PhiBridge]"/>
   <Numeric name="IncrAngle"   value="2*[DPhi]"/>
   <Numeric name="Radius"      value="[tecring0:BridgeR]"/>

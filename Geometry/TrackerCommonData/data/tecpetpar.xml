@@ -4,8 +4,9 @@
 <ConstantsSection label="tecpetpar.xml" eval="true">
  <Constant name="zero"           value="0.0*fm"/>
  <Constant name="PetalContThick" value="50.5*mm"/>
- <Constant name="PetalContWidth" value="35.0*deg"/>
+ <Constant name="PetalContWidth" value="37.0*deg"/>
  <Constant name="PetalContRmax"  value="110.17*cm"/>
+ <Constant name="HybridWidthS"   value="27.9*mm"/>
  <Constant name="HybridWidth"    value="30.5*mm"/>
  <Constant name="HybridHeight"   value="30.5*mm"/>
  <Constant name="HybridThick"    value="2.55*mm"/>
@@ -32,20 +33,22 @@
 </RotationSection>
 
 <SolidSection label="tecpetpar.xml">
- <Tubs name="TECCool1"               rMin="[tecpetpar:zero]"
-       rMax="[tecpetpar:CoolR1]"     dz="[tecpetpar:CoolL]/2"
-       startPhi="0*deg"              deltaPhi="360.*deg"/>
- <Tubs name="TECCool2"               rMin="[tecpetpar:zero]"
-       rMax="[tecpetpar:CoolR2]"     dz="[tecpetpar:CoolL]/2"
-       startPhi="0*deg"              deltaPhi="360.*deg"/>
- <Tubs name="TECCool3"               rMin="[tecpetpar:zero]"
-       rMax="[tecpetpar:CoolR3]"     dz="[tecpetpar:CoolL]/2"
-       startPhi="0*deg"              deltaPhi="360.*deg"/>
- <Tubs name="TECCool4"               rMin="[tecpetpar:zero]"
-       rMax="[tecpetpar:CoolR4]"     dz="[tecpetpar:CoolL]/2"
-       startPhi="0*deg"              deltaPhi="360.*deg"/>
- <Box name="TECOptoHybrid"           dx="[tecpetpar:HybridHeight]/2"    
-      dy="[tecpetpar:HybridWidth]/2" dz="[tecpetpar:HybridThick]/2"/>
+ <Tubs name="TECCool1"                rMin="[tecpetpar:zero]"
+       rMax="[tecpetpar:CoolR1]"      dz="[tecpetpar:CoolL]/2"
+       startPhi="0*deg"               deltaPhi="360.*deg"/>
+ <Tubs name="TECCool2"                rMin="[tecpetpar:zero]"
+       rMax="[tecpetpar:CoolR2]"      dz="[tecpetpar:CoolL]/2"
+       startPhi="0*deg"               deltaPhi="360.*deg"/>
+ <Tubs name="TECCool3"                rMin="[tecpetpar:zero]"
+       rMax="[tecpetpar:CoolR3]"      dz="[tecpetpar:CoolL]/2"
+       startPhi="0*deg"               deltaPhi="360.*deg"/>
+ <Tubs name="TECCool4"                rMin="[tecpetpar:zero]"
+       rMax="[tecpetpar:CoolR4]"      dz="[tecpetpar:CoolL]/2"
+       startPhi="0*deg"               deltaPhi="360.*deg"/>
+ <Box name="TECOptoHybrid"            dx="[tecpetpar:HybridHeight]/2"    
+      dy="[tecpetpar:HybridWidth]/2"  dz="[tecpetpar:HybridThick]/2"/>
+ <Box name="TECOptoHybridShort"       dx="[tecpetpar:HybridHeight]/2"    
+      dy="[tecpetpar:HybridWidthS]/2" dz="[tecpetpar:HybridThick]/2"/>
 </SolidSection>
 
 <LogicalPartSection label="tecpetpar.xml">
@@ -67,6 +70,10 @@
  </LogicalPart>
  <LogicalPart name="TECOptoHybrid" category="unspecified">
   <rSolid name="tecpetpar:TECOptoHybrid"/>
+  <rMaterial name="tecmaterial:TEC_OptoH"/>
+ </LogicalPart>
+ <LogicalPart name="TECOptoHybridShort" category="unspecified">
+  <rSolid name="tecpetpar:TECOptoHybridShort"/>
   <rMaterial name="tecmaterial:TEC_OptoH"/>
  </LogicalPart>
 </LogicalPartSection>
