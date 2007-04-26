@@ -51,14 +51,16 @@ with pixfwdCommon:Y180 rotation (180 degrees around Y axis).
 
  <Constant name="AnchorZ"        value="0.*mm"/>
  <Constant name="ZPixelForward"  value="325.*mm"/>
- <Constant name="RootEndZ"       value="[ZPixelForward]+2*[RootHalfLength]"/>
+ <Constant name="RootStartZ"     value="-2*mm"/>
+ <Constant name="RootMidZ"       value="[cms:TrackBeamZ1]-[ZPixelForward]"/>
+ <Constant name="RootEndZ"       value="2*[RootHalfLength]"/>
 </ConstantsSection>
 
 <SolidSection label="Root">
  <Polycone name="PixelForward" startPhi="0*deg" deltaPhi="360*deg" >
- <ZSection z="[ZPixelForward]-2*mm" rMin="[cms:TrackBeamR1]" rMax="[RootRadius]"/>
- <ZSection z="[cms:TrackBeamZ1]" rMin="[cms:TrackBeamR1]" rMax="[RootRadius]"/>
- <ZSection z="[RootEndZ]"        rMin="[cms:TrackBeamR2]" rMax="[RootRadius]"/>
+ <ZSection z="[RootStartZ]"  rMin="[cms:TrackBeamR1]" rMax="[RootRadius]"/>
+ <ZSection z="[RootMidZ]"    rMin="[cms:TrackBeamR1]" rMax="[RootRadius]"/>
+ <ZSection z="[RootEndZ]"    rMin="[cms:TrackBeamR2]" rMax="[RootRadius]"/>
  </Polycone>
 </SolidSection>
  
@@ -89,20 +91,20 @@ with pixfwdCommon:Y180 rotation (180 degrees around Y axis).
   <PosPart copyNumber="1">
     <rParent name="PixelForwardZPlus"/>
     <rChild name="pixfwdDisk:PixelForwardDiskZPlus"/>
-    <Translation x="0." y="0." z="[ZPixelForward] + [Disk1Z]"/>
+    <Translation x="0." y="0." z="[AnchorZ]+[Disk1Z]"/>
   </PosPart>
   
   <PosPart copyNumber="2">
     <rParent name="PixelForwardZPlus"/>
     <rChild name="pixfwdDisk:PixelForwardDiskZPlus"/>
-    <Translation x="0." y="0." z="[ZPixelForward] + [Disk2Z]"/>
+    <Translation x="0." y="0." z="[AnchorZ]+[Disk2Z]"/>
   </PosPart>
   
 <!-- UNCOMMENT TO SIMULATE THE THIRD DISK -->
 <!--  <PosPart copyNumber="3">-->
 <!--    <rParent name="PixelForwardZPlus"/>-->
 <!--    <rChild name="pixfwdDisk:PixelForwardDiskZPlus"/>-->
-<!--    <Translation x="0." y="0." z="[ZPixelForward] + [Disk3Z]" />-->
+<!--    <Translation x="0." y="0." z="[AnchorZ]+ [Disk3Z]" />-->
 <!--  </PosPart>-->
 
   <!-- -Z endcap -->
@@ -110,20 +112,20 @@ with pixfwdCommon:Y180 rotation (180 degrees around Y axis).
   <PosPart copyNumber="1">
     <rParent name="PixelForwardZMinus"/>
     <rChild name="pixfwdDisk:PixelForwardDiskZMinus"/>
-    <Translation x="0." y="0." z="[ZPixelForward] + [Disk1Z]"/>
+    <Translation x="0." y="0." z="[AnchorZ]+[Disk1Z]"/>
   </PosPart>
   
   <PosPart copyNumber="2">
     <rParent name="PixelForwardZMinus"/>
     <rChild name="pixfwdDisk:PixelForwardDiskZMinus"/>
-    <Translation x="0." y="0." z="[ZPixelForward] + [Disk2Z]"/>
+    <Translation x="0." y="0." z="[AnchorZ]+[Disk2Z]"/>
   </PosPart>
   
 <!-- UNCOMMENT TO SIMULATE THE THIRD DISK -->
 <!--  <PosPart copyNumber="3">-->
 <!--    <rParent name="PixelForwardZMinus"/>-->
 <!--    <rChild name="pixfwdDisk:PixelForwardDiskZMinus"/>-->
-<!--    <Translation x="0." y="0." z="[ZPixelForward] + [Disk3Z]" />-->
+<!--    <Translation x="0." y="0." z="[AnchorZ]+[Disk3Z]" />-->
 <!--  </PosPart>-->
 
 </PosPartSection>
@@ -136,7 +138,7 @@ with pixfwdCommon:Y180 rotation (180 degrees around Y axis).
 -->
 
 <ConstantsSection label="ServiceCylinder" eval="true">
-  <Constant name="ZCylinder" value="[ZPixelForward]"/>
+  <Constant name="ZCylinder" value="[AnchorZ]"/>
 </ConstantsSection>
 
 <PosPartSection label="Cylinders">

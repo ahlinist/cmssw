@@ -465,7 +465,7 @@
 
 <Algorithm name="track:DDTECOptoHybAlgo">
   <rParent name="tecpetal0f:TECICBCont0F2"/>
-  <String name="ChildName"     value="tecpetpar:TECOptoHybrid"/>
+  <String name="ChildName"     value="tecpetpar:TECOptoHybridShort"/>
   <Numeric name="Rmin"         value="[tecring0f:RminICC]"/>
   <Numeric name="Rmax"         value="[tecring0f:RmaxICC]"/>
   <Numeric name="Zpos"         value="[tecpetpar:HybridZ]"/>

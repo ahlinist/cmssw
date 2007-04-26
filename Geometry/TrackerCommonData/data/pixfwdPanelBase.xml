@@ -95,7 +95,8 @@ Currently, [AnchorX] = [AnchorZ] = 0.
 </ConstantsSection>
 
 <!-- Root volume for the panel and its layers (Be, Film, HDI) -->
-<!--
+
+<!--previous description (Dima)
 <SolidSection label="Root">
   <Box name="PixelForwardPanelBase" dx="[RootHalfWidth]" dy="[RootHalfLength]" dz="[RootHalfThickness]" />
   <Box name="PixelForwardPanelBaseBe"   dx="[RootHalfWidth]" dy="[RootHalfLength]" dz="[BeThickness]/2." />
@@ -105,10 +106,11 @@ Currently, [AnchorX] = [AnchorZ] = 0.
 -->
 
 <SolidSection label="Root">
+
   <Trapezoid name="PixelForwardPanelBaseMain" dz="[RootHalfThickness]"
                                     bl1="[MainHalfWidthBottom]+4.0*mm"  bl2="[MainHalfWidthBottom]+4.0*mm" 
                                     tl1="[MainHalfWidthTop]+4.0*mm"     tl2="[MainHalfWidthTop]+4.0*mm" 
-                                    h1="[RootHalfLength]"         h2="[RootHalfLength]"
+                                    h1="[MainLength]/2.+[NoseLength]/2."         h2="[MainLength]/2.+[NoseLength]/2."
                                     alp1="0.0"  alp2="0.0" phi="90*deg" />
   <Trapezoid name="PixelForwardPanelBaseEar" dz="[RootHalfThickness]"
                                    bl1="[MainHalfWidthBottom]+[EarWidth]/2.+12.0*mm"  bl2="[MainHalfWidthBottom]+[EarWidth]/2.+12.0*mm" 
@@ -124,7 +126,7 @@ Currently, [AnchorX] = [AnchorZ] = 0.
   <Trapezoid name="PixelForwardPanelBaseBeMain" dz="[BeThickness]/2."
                                     bl1="[MainHalfWidthBottom]+4.0*mm"  bl2="[MainHalfWidthBottom]+4.0*mm" 
                                     tl1="[MainHalfWidthTop]+4.0*mm"     tl2="[MainHalfWidthTop]+4.0*mm" 
-                                    h1="[RootHalfLength]"         h2="[RootHalfLength]"
+                                    h1="[MainLength]/2.+[NoseLength]/2."         h2="[MainLength]/2.+[NoseLength]/2."
                                     alp1="0.0"  alp2="0.0" phi="90*deg" />
   <Trapezoid name="PixelForwardPanelBaseBeEar" dz="[BeThickness]/2."
                                    bl1="[MainHalfWidthBottom]+[EarWidth]/2.+12.0*mm"  bl2="[MainHalfWidthBottom]+[EarWidth]/2.+12.0*mm" 
@@ -141,7 +143,7 @@ Currently, [AnchorX] = [AnchorZ] = 0.
   <Trapezoid name="PixelForwardPanelBaseFilmMain" dz="[FilmThickness]/2."
                                     bl1="[MainHalfWidthBottom]+4.0*mm"  bl2="[MainHalfWidthBottom]+4.0*mm" 
                                     tl1="[MainHalfWidthTop]+4.0*mm"     tl2="[MainHalfWidthTop]+4.0*mm" 
-                                    h1="[RootHalfLength]"         h2="[RootHalfLength]"
+                                    h1="[MainLength]/2.+[NoseLength]/2."         h2="[MainLength]/2.+[NoseLength]/2."
                                     alp1="0.0"  alp2="0.0" phi="90*deg" />
   <Trapezoid name="PixelForwardPanelBaseFilmEar" dz="[FilmThickness]/2."
                                    bl1="[MainHalfWidthBottom]+[EarWidth]/2.+12.0*mm"  bl2="[MainHalfWidthBottom]+[EarWidth]/2.+12.0*mm" 
@@ -154,10 +156,11 @@ Currently, [AnchorX] = [AnchorZ] = 0.
     <Translation x="0." y="29.0" z="0." />
   </UnionSolid>
 
+
   <Trapezoid name="PixelForwardPanelBaseHDIMain" dz="[HDIThickness]/2."
                                     bl1="[MainHalfWidthBottom]+4.0*mm"  bl2="[MainHalfWidthBottom]+4.0*mm" 
                                     tl1="[MainHalfWidthTop]+4.0*mm"     tl2="[MainHalfWidthTop]+4.0*mm" 
-                                    h1="[RootHalfLength]"         h2="[RootHalfLength]"
+                                    h1="[MainLength]/2.+[NoseLength]/2."         h2="[MainLength]/2.+[NoseLength]/2."
                                     alp1="0.0"  alp2="0.0" phi="90*deg" />
   <Trapezoid name="PixelForwardPanelBaseHDIEar" dz="[HDIThickness]/2."
                                    bl1="[MainHalfWidthBottom]+[EarWidth]/2.+12.0*mm"  bl2="[MainHalfWidthBottom]+[EarWidth]/2.+12.0*mm" 
@@ -169,6 +172,7 @@ Currently, [AnchorX] = [AnchorZ] = 0.
     <rSolid name="PixelForwardPanelBaseHDIEar" />
     <Translation x="0." y="29.0" z="0." />
   </UnionSolid>
+
 
 </SolidSection>
 

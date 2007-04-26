@@ -1056,7 +1056,7 @@
         <rMaterial name="materials:Aluminium"/>
     </MaterialFraction>
   </CompositeMaterial>
-    <CompositeMaterial density="1.144*g/cm3" method="mixture by weight" name="TEC_frame_side" symbol=" ">
+    <CompositeMaterial density="1.192*g/cm3" method="mixture by weight" name="TEC_frame_side" symbol=" ">
       <MaterialFraction fraction="0.79441247">
         <rMaterial name="materials:Carbon"/>
     </MaterialFraction>
@@ -1189,7 +1189,7 @@
         <rMaterial name="materials:Oxygen"/>
     </MaterialFraction>
   </CompositeMaterial>
-    <CompositeMaterial Symbol=" " density="4.086000*g/cm^3" method="mixture by weight" name="TEC_Hybrid4APV">
+    <CompositeMaterial Symbol=" " density="4.853000*g/cm^3" method="mixture by weight" name="TEC_Hybrid4APV">
       <MaterialFraction fraction="0.082900">
         <rMaterial name="materials:T_Kapton"/>
       </MaterialFraction>
@@ -1218,7 +1218,9 @@
         <rMaterial name="materials:Ceramic"/>
       </MaterialFraction>
     </CompositeMaterial>
-    <CompositeMaterial Symbol=" " density="4.086000*g/cm^3" method="mixture by weight" name="TEC_Hybrid6APV">
+
+4.086000
+    <CompositeMaterial Symbol=" " density="4.853000*g/cm^3" method="mixture by weight" name="TEC_Hybrid6APV">
       <MaterialFraction fraction="0.080510">
         <rMaterial name="materials:T_Kapton"/>
       </MaterialFraction>

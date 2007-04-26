@@ -28,7 +28,7 @@
  <Constant name="BackPlateFixZ"   value="274.20*cm"/>
  <Constant name="BeamSupportRin"  value="30.00*cm"/>
  <Constant name="BeamSupportRout" value="30.10*cm"/>
- <Constant name="BeamSupportZ1"   value="169.50*cm"/>
+ <Constant name="BeamSupportZ1"   value="173.10*cm"/>
  <Constant name="InTubeRin1"      value="22.50*cm"/>
  <Constant name="InTubeRin2"      value="30.50*cm"/>
  <Constant name="InTubeRout1"     value="22.80*cm"/>
