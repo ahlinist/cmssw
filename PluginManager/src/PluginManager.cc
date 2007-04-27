@@ -182,6 +182,7 @@ PluginManager::load(const std::string& iCategory,
     boost::shared_ptr<SharedLibrary> ptr( new SharedLibrary(p.native_file_string()) );
     loadables_[p]=ptr;
     justLoaded_(*ptr);
+    loadingLibraryNamed_()="<loaded by another plugin system>";
     return *ptr;
   }
   return *(itLoaded->second);
