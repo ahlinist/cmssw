@@ -65,7 +65,7 @@ void
 PluginFactoryBase::newPlugin(const std::string& iName)
 {
   PluginInfo info;
-  info.loadable_=PluginManager::loadingFile();
+  info.loadable_=boost::filesystem::path(PluginManager::loadingFile(),boost::filesystem::no_check);
   info.name_=iName;
   newPluginAdded_(category(),info);
 }
