@@ -10,7 +10,8 @@
 #include "HepMC/SimpleVector.h"
 
 #include "DataFormats/Common/interface/Ref.h"
-//#include "CLHEP/Vector/LorentzVector.h"
+
+#include "TMatrixD.h"
 
 namespace edm {
 
@@ -23,9 +24,12 @@ namespace edm {
     virtual ~HepMCProduct();
     
     void addHepMCData( HepMC::GenEvent  *evt);
-    //void applyVtxGen( CLHEP::Hep3Vector* vtxShift ) const ; 
-    void applyVtxGen( HepMC::FourVector* vtxShift ) const ;
     
+    void applyVtxGen( HepMC::FourVector* vtxShift ) const ;
+	
+	void boostToLab( TMatrixD* lorentz, std::string type  ) const;
+	
+	
     const HepMC::GenEvent& getHepMCData() const ;
  
     const HepMC::GenEvent * GetEvent() const {
@@ -33,14 +37,20 @@ namespace edm {
     }
     
     bool isVtxGenApplied() const { return isVtxGenApplied_ ; }
-
+	bool isVtxBoostApplied() const { return isVtxBoostApplied_; }
+	bool isPBoostApplied() const { return isPBoostApplied_; }
+	
     HepMCProduct(HepMCProduct const& x);
     void swap(HepMCProduct & other);
     HepMCProduct& operator=(HepMCProduct const& other);
 
   private:
+		
     HepMC::GenEvent * evt_;
     mutable bool      isVtxGenApplied_ ;
+	mutable bool      isVtxBoostApplied_;
+	mutable bool      isPBoostApplied_;
+	
   };
 
   //This allows edm::Refs to work with HepMCProduct
