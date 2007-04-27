@@ -1,6 +1,7 @@
 <use name=DataFormats/Common>
 <use name=hepmc>
 <use name=rootrflx>
+<use name=root>
 <export>
   <use name=DataFormats/Common>
   <use name=hepmc>
