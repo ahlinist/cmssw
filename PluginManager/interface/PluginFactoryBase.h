@@ -82,7 +82,7 @@ class PluginFactoryBase
           if (itFound->second.front().second != PluginManager::staticallyLinkedLoadingFileName() &&
               PluginManager::isAvailable()) {
             if( itFound->second.front().second != PluginManager::get()->loadableFor(category(),iName).native_file_string() ) {
-              throw cms::Exception("WrongPluginLoaded")<<"The plugin '"<<iName<<"'should have been loaded from\n '"
+              throw cms::Exception("WrongPluginLoaded")<<"The plugin '"<<iName<<"' should have been loaded from\n '"
               <<PluginManager::get()->loadableFor(category(),iName).native_file_string()
               <<"'\n but instead it was already loaded from\n '"
               <<itFound->second.front().second<<"'\n because some other plugin was loaded from the latter loadables.\n"
