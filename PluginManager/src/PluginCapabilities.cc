@@ -73,10 +73,16 @@ PluginCapabilities::tryToFind(const SharedLibrary& iLoadable)
   //reinterpret_cast<void (*)(const char**&,int&)>(sym)(names,size);
   ((void (*)(const char**&,int&))(sym))(names,size);
 
+  PluginInfo info;
   for(int i=0; i < size; ++i) {
     std::string name(names[i]);
     classToLoadable_[name]=iLoadable.path();
-    newPlugin(name);
+    
+    //NOTE: can't use newPlugin(name) to do the work since it assumes
+    //  we haven't yet returned from PluginManager::load method
+    info.name_ = name;
+    info.loadable_ = iLoadable.path();
+    this->newPluginAdded_(category(),info);
   }
   return true;
 }
