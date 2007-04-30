@@ -6,7 +6,7 @@
 <use name=SimDataFormats/HepMCProduct>
 <use name=clhep> 
 <use name=hepmc>
-<use name=pythia6_227>
+<use name=pythia6>
 <use name=root>
 <use name=Utilities/StorageFactory>
 
@@ -22,7 +22,7 @@
  <use name=SimDataFormats/HepMCProduct>
  <use name=clhep> 
  <use name=hepmc>
- <use name=pythia6_227>
+ <use name=pythia6>
  <use name=root>
  <use name=Utilities/StorageFactory>
 </export>
