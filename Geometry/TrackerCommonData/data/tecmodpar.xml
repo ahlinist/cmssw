@@ -49,7 +49,7 @@ compatibility-->
                        phiY="0*deg"         thetaZ="90*deg"    phiZ="270*deg"/>
  <Rotation name="RPHI" thetaX="90*deg"      phiX="90*deg"       thetaY="0*deg"
                        phiY="0*deg"         thetaZ="90*deg"     phiZ="0*deg"/>
- <Rotation name="STER" thetaX="90*deg"      phiX="95.7296*deg"  thetaY="0*deg"
+ <Rotation name="STER" thetaX="90*deg"      phiX="-84.2704*deg" thetaY="180*deg"
                        phiY="0*deg"         thetaZ="90*deg"     phiZ="5.7296*deg"/>
  <Rotation name="RFI2" thetaX="90*deg"      phiX="-90*deg"     thetaY="180*deg"
                        phiY="0*deg"         thetaZ="90*deg"     phiZ="0*deg" />

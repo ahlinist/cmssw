@@ -34,6 +34,7 @@
  <Constant name="ActiveZ"            value="([tecmodpar:ActiveZ2]+[ShiftZ])"/>
  <Constant name="PitchWidth"         value="74.1*mm"/>
  <Constant name="dPhi"               value="2.2*asin(0.5*[TopFrameBotWidth]/([Rin]+[TopFrameHeight]))"/>
+ <Constant name="PosCorrectionR"     value="-0.5332*mm"/>
 </ConstantsSection>
 
 <SolidSection label="tecmodule6.xml">
@@ -120,7 +121,7 @@
   <String name="SiReenforcementMaterial" value="tecmaterial:TEC_SiReenforcment"/> 
   <Numeric name="SiReenforcementThick" value="[tecmodpar:SiReenforcementThick]"/>
   <Numeric name="NoOverlapShift"     value="[tecmodpar:NoOverlapShift]"/>
-  <Numeric name="RPos"               value="0.5*([tecmodule6:Rin]+[tecmodule6:Rout])"/>
+  <Numeric name="RPos"               value="0.5*([tecmodule6:Rin]+[tecmodule6:Rout])+[PosCorrectionR]"/>
   <String name="StandardRotation"    value="tecmodpar:RPHI"/>
 </Algorithm>
  
