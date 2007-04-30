@@ -1,6 +1,15 @@
 #ifndef PGlobalRecHit_h
 #define PGlobalRecHit_h
 
+/** \class PGlobalRecHit
+ *  
+ *  DataFormat class to hold the information for the Global RecHit Validation
+ *
+ *  $Date: 2007/04/30 13:49:00 $
+ *  $Revision: 1.3 $
+ *  \author M. Strang SUNY-Buffalo
+ */
+
 #include <vector>
 #include <memory>
 

@@ -1,6 +1,15 @@
 #ifndef PGlobalDigi_h
 #define PGlobalDigi_h
 
+/** \class PGlobalDigi
+ *  
+ *  DataFormat class to hold the information for the Global Digi Validation
+ *
+ *  $Date: 2007/04/30 13:49:00 $
+ *  $Revision: 1.3 $
+ *  \author M. Strang SUNY-Buffalo
+ */
+
 #include <vector>
 #include <memory>
 
