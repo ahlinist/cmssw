@@ -1,3 +1,12 @@
+/** \file PGlobalRecHit.cc
+ *  
+ *  See header file for description of class
+ *
+ *  $Date: 2007/04/30 13:49:00 $
+ *  $Revision: 1.3 $
+ *  \author M. Strang SUNY-Buffalo
+ */
+
 #include "SimDataFormats/GlobalRecHitValidation/interface/PGlobalRecHit.h"
 
 void PGlobalRecHit::putEBCalRecHits(std::vector<float> re,
