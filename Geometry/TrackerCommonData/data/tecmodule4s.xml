@@ -9,15 +9,16 @@
  <Constant name="TopFrame2Width"     value="121.7*mm"/>
  <Constant name="TopFrame2LHeight"   value="19.4*mm"/>
  <Constant name="TopFrame2RHeight"   value="7.3*mm"/>
- <Constant name="SideFrameRtheta"    value="-0.139*rad"/>
+ <Constant name="SideFrameRtheta"    value="0.139*rad"/>
  <Constant name="SideFrameRHeight"   value="153.4*mm"/>
  <Constant name="SideFrameRWidthLow" value="7.8*mm"/>
  <Constant name="SideFrameRWidth"    value="21.8*mm"/>
- <Constant name="SideFrameLtheta"    value="0.047*rad"/>
+ <Constant name="SideFrameLtheta"    value="-0.047*rad"/>
  <Constant name="SideFrameLHeight"   value="153.4*mm"/>
  <Constant name="SideFrameLWidthLow" value="21.1*mm"/>
  <Constant name="SideFrameLWidth"    value="10.8*mm"/>
- <Constant name="PosCorrectionR"     value="-0.262*mm"/>
+ <Constant name="PosCorrectionR"     value="-1.664*mm"/>
+ <Constant name="PosCorrectionPhi"   value="-0.0003755*rad"/>
 </ConstantsSection>
 
 <Algorithm name="track:DDTECModuleAlgo">
@@ -98,6 +99,7 @@
   <Numeric name="NoOverlapShift"     value="[tecmodpar:NoOverlapShift]"/>
   <Numeric name="RPos"               value="0.5*([tecmodule4:Rin]+[tecmodule4:Rout])+[PosCorrectionR]"/>
   <String name="StandardRotation"    value="tecmodpar:RPHI"/>
+  <Numeric name="PosCorrectionPhi"   value="[PosCorrectionPhi]"/>
 </Algorithm>
  
 </DDDefinition>

@@ -11,6 +11,7 @@
   <Constant name="SideFrameLtheta"  value="-.134*rad"/>
   <Constant name="SideFrameLHeight" value="97.6*mm"/>
   <Constant name="SideFrameLWidth"  value="15.4*mm"/>
+ <Constant name="PosCorrectionR"     value="-2.388*mm"/>
 </ConstantsSection>
 
 <Algorithm name="track:DDTECModuleAlgo">
@@ -85,7 +86,7 @@
   <String name="SiReenforcementMaterial" value="tecmaterial:TEC_SiReenforcment"/> 
   <Numeric name="SiReenforcementThick" value="[tecmodpar:SiReenforcementThick]"/> 
   <Numeric name="NoOverlapShift"     value="[tecmodpar:NoOverlapShift]"/>
-  <Numeric name="RPos"               value="0.5*([tecmodule0:Rin]+[tecmodule0:Rout])"/>
+  <Numeric name="RPos"               value="0.5*([tecmodule0:Rin]+[tecmodule0:Rout])+[PosCorrectionR]"/>
   <String name="StandardRotation"    value="tecmodpar:RPHI"/>
 </Algorithm>
 
