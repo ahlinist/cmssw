@@ -1,6 +1,15 @@
 #ifndef PGlobalSimHit_h
 #define PGlobalSimHit_h
 
+/** \class PGlobalSimHit
+ *  
+ *  DataFormat class to hold the information for the Global Hit Validation
+ *
+ *  $Date: 2007/04/30 13:49:00 $
+ *  $Revision: 1.3 $
+ *  \author M. Strang SUNY-Buffalo
+ */
+
 #include <vector>
 #include <memory>
 
