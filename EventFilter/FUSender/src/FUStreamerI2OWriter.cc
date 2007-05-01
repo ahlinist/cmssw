@@ -5,7 +5,7 @@
      destination is hardwired and provided through a global variable.
      See the CMS EvF Storage Manager wiki page for further notes.
 
-   $Id: FUStreamerI2OWriter.cc,v 1.2 2007/03/06 19:41:34 wmtan Exp $
+   $Id: FUStreamerI2OWriter.cc,v 1.3 2007/03/26 22:24:06 hcheung Exp $
 */
 
 #include "EventFilter/Utilities/interface/i2oEvfMsgs.h"
@@ -160,6 +160,11 @@ namespace edm
     FDEBUG(10) << "FUStreamerI2OWriter: event sz = " << sz << std::endl;
 
     writeI2OData(eventMessage);
+  }
+
+  void FUStreamerI2OWriter::start()
+  {
+    edm::LogInfo("FUStreamerI2OWriter") << "start called - doing nothing!";
   }
 
   void FUStreamerI2OWriter::stop()
