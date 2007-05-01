@@ -6,7 +6,7 @@
      Header file for I2O class to be used with StreamerOutputModule.
      See CMS EvF Storage Manager wiki page for further notes.
 
-   $Id$
+   $Id: FUStreamerI2OWriter.h,v 1.1 2007/02/04 06:15:24 hcheung Exp $
 */
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
@@ -28,6 +28,7 @@ namespace edm
 
     void doOutputHeader(InitMsgBuilder const& initMessage);
     void doOutputEvent(EventMsgBuilder const& eventMessage);
+    void start();
     void stop();
 
   private:
