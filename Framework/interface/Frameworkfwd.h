@@ -25,9 +25,7 @@ namespace edm {
   class Event;
   class EventPrincipal;
   class EventSetup;
-  class ExternalInputSource;
   class GeneratedInputSource;
-  class EDInputSource;
   class Group;
   class InputSource;
   class InputSourceDescription;
@@ -38,7 +36,6 @@ namespace edm {
   class Principal;
   class ProcessNameSelector;
   class ProductRegistryHelper;
-  class RawInputSource;
   class Run;
   class RunPrincipal;
   class Schedule;
@@ -46,7 +43,6 @@ namespace edm {
   class SelectorBase;
   class TypeID;
   class UnsheduledHandler;
-  class VectorInputSource;
 
   struct EventSummary;
   struct PathSummary;
