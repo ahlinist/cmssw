@@ -33,7 +33,7 @@ public:
  private:
 
   // Counting events processed
-  int iev; 
+  unsigned iRun; 
   bool useCalib;
   bool isData;
   bool debug;
