@@ -29,7 +29,7 @@
 #include <DataFormats/CSCDigi/interface/CSCCLCTDigiCollection.h>
 
 
-CSCRecHitBProducer::CSCRecHitBProducer( const edm::ParameterSet& ps ) : iev( 0 ) {
+CSCRecHitBProducer::CSCRecHitBProducer( const edm::ParameterSet& ps ) : iRun( 0 ), CSCstripGainAvg( 1 ) {
 	
   stripDigiProducer_ = ps.getParameter<std::string>("CSCStripDigiProducer");
   wireDigiProducer_  = ps.getParameter<std::string>("CSCWireDigiProducer");
@@ -79,8 +79,10 @@ void  CSCRecHitBProducer::produce( edm::Event& ev, const edm::EventSetup& setup 
 
     // Pass set of calibrations to builder all at once
     stripGainAvg_->setCalibration( pGains );
-    CSCstripGainAvg = stripGainAvg_->getStripGainAvg();
-
+    if (ev.id().run() != iRun) {
+      CSCstripGainAvg = stripGainAvg_->getStripGainAvg();
+      iRun = ev.id().run();
+    }
     recHitBuilder_->setCalibration( CSCstripGainAvg, pGains, pCrosstalk, pNoiseMatrix );
   }
 	

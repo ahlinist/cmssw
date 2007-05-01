@@ -74,28 +74,29 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCDetId& id, const CSCLayer* 
   std::vector<float> adcs = stripHit.s_adc();
   int tmax = stripHit.tmax();
 
-  // Fit peaking time  
-  float t_peak = tmax * 50.;
+  // Fit peaking time only if using calibrations
+  float t_peak = tpeak;
   float t_zero = 0.;
-  bool useFittedCharge = false;
   float adc[4];
-  for ( int t = 0; t < 4; ++t ) {
-    int k  = t + 4 * (CenterStrip-1);
-    adc[t] = adcs[k];
+
+  if ( useCalib ) {
+    bool useFittedCharge = false;
+    for ( int t = 0; t < 4; ++t ) {
+      int k  = t + 4 * (CenterStrip-1);
+      adc[t] = adcs[k];
+    }
+    useFittedCharge = peakTimeFinder_->FindPeakTime( tmax, adc, t_zero, t_peak );  // Clumsy...  can remove t_peak ?
+    tpeak = t_peak+t_zero;
   }
-  useFittedCharge = peakTimeFinder_->FindPeakTime( tmax, adc, t_zero, t_peak );
-
-  tpeak = t_peak+t_zero;
-
-
-  // Now fill with array with fitted charge or not, depending if managed to fit peaking time
+      
+  // Now fill with array for Gatti fitting
   int j = 0;
   for ( int i = 1; i <= nStrips; ++i ) {
     if ( i > (CenterStrip-2) && i < (CenterStrip+2) ) {
       std::vector<float> adcsFit;
       for ( int t = 0; t < 4; ++t ) {
         int k  = t + 4*(i-1);
-        adc[t] = adcs[k];  
+        adc[t] = adcs[k];
         if ( t < 3) d[j][t] = adc[t];
       }
       j++;
@@ -104,12 +105,12 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCDetId& id, const CSCLayer* 
 
 
   // Load in x-talks:
-  float dt = 50. * tmax - (t_peak + t_zero);
 
   if ( useCalib ) {
     std::vector<float> xtalks;
     stripCrosstalk_->setCrossTalk( xtalk_ );
     stripCrosstalk_->getCrossTalk( id, centralStrip, xtalks);
+    float dt = 50. * tmax - (t_peak + t_zero);  // QUESTION:  should it be only - (t_peak) ???
 
     for ( int t = 0; t < 3; ++t ) {
       xt_l[0][t] = xtalks[0] * (50.* (t-1) + dt) + xtalks[1] + xtalksOffset;

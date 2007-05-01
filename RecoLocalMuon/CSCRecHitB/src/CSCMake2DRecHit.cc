@@ -95,7 +95,7 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
 
   // Find strip position and properties
   CSCRecHit2D::ChannelContainer strips = sHit.strips();
-  tpeak = sHit.tmax() * 50.;
+  int tmax = sHit.tmax();
   int stripClusterSize = strips.size();
   float strip_pos = sHit.sHitPos();
   int ch = int(strip_pos);
@@ -106,10 +106,12 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
 
   std::vector<float> adcs = sHit.s_adc();
   std::vector<float> adc2;
-  for ( int t = 0; t < stripClusterSize*4; ++t ) {
-    if ( t%4 == 0 ) adc2.clear();
-    adc2.push_back(adcs[t]);
-    if ( (t+1)%4 == 0) adcMap.put( strips[t/4], adc2.begin(), adc2.end() ); 
+  for ( int iStrip = 0; iStrip < stripClusterSize; ++iStrip) {
+    adc2.clear();
+    for ( int t = 0; t < 4; ++t ) adc2.push_back(adcs[t+iStrip*4]);    
+    adcMap.put( strips[iStrip], adc2.begin(), adc2.end() ); 
+    if (iStrip == stripClusterSize/2 ) 
+      tpeak = 50. * ( adc2[0]*(tmax-1) + adc2[1]*tmax + adc2[2]*(tmax+1) ) / (adc2[0]+adc2[1]+adc2[2]);
   }
 
 
