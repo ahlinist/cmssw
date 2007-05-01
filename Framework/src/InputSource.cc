@@ -31,19 +31,11 @@ namespace edm {
     }
     int maxEventsOldStyle = pset.getUntrackedParameter<int>("maxEvents", improbable);
     if (maxEventsOldStyle != improbable) {
-      if (unlimited_) {
-        maxEvents_ = maxEventsOldStyle;
-	remainingEvents_ = maxEventsOldStyle;
-	unlimited_ = (maxEvents_ < 0);
-        LogWarning("maxEvents deprecated") << "The 'maxEvents' parameter"
-	  << " for sources has been deprecated.\n"
-	  << "Please use instead the process level block\n"
-          << "'untracked PSet maxEvents = {untracked int32 input = " << maxEvents_ << "}'\n";
-      } else {
-        LogWarning("maxEvents deprecated") << "The deprecated 'maxEvents' parameter\n"
-	  << "for sources has been overidden by\n"
-          << "'untracked PSet maxEvents = {untracked int32 input = " << maxEvents_ << "}'\n";
-      }
+      throw edm::Exception(edm::errors::Configuration)
+        << "InputSource::InputSource()\n"
+	<< "The 'maxEvents' parameter for sources is no longer supported.\n"
+        << "Please use instead the process level parameter set\n"
+        << "'untracked PSet maxEvents = {untracked int32 input = " << maxEventsOldStyle << "}'\n";
     }
   }
 
