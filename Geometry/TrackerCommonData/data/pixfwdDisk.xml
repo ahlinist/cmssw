@@ -72,8 +72,9 @@ Disks are positioned into endcaps without any rotations.
  <Constant name="DiskHalfWidth"    value="[OuterRingHalfWidth]"/> 
 </ConstantsSection>
  
+<!-- New description (modification) 04/17/07 : Panel3R, 4R and 4L were going through the Disk, so 2mm were added to the Width of the mother volume of the Disk -->
 <SolidSection label="Root">
- <Tubs name="PixelForwardDisk" rMin="[DiskRmin]" rMax="[DiskRmax]" dz="[DiskHalfWidth]+2.0*mm" startPhi="0." deltaPhi="360*deg" />
+<Tubs name="PixelForwardDisk" rMin="[DiskRmin]" rMax="[DiskRmax]" dz="[DiskHalfWidth]+2.0*mm" startPhi="0." deltaPhi="360*deg" /> 
 </SolidSection>
  
 <LogicalPartSection label="Root">

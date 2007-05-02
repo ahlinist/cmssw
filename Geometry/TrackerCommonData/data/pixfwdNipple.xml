@@ -104,7 +104,7 @@ than they are on the drawings.
  
   <SolidSection label="Root">
   
-<!-- Previous description (Dima)    
+<!-- Previous description (D. Onoprienko)    
 <Tubs name="PixelForwardNipple_01" rMin="0.*mm" rMax="[R08]" dz="[JK]/2." startPhi="0." deltaPhi="360*deg" />
     <Tubs name="PixelForwardNippleSubtract" rMin="0.*mm" rMax="[Rsub]" dz="[Dsub]/2." startPhi="0." deltaPhi="360*deg" /> 
     <SubtractionSolid name="PixelForwardNipple_int01">
@@ -121,11 +121,11 @@ than they are on the drawings.
     </SubtractionSolid>
 -->
 
+<!-- New description (I used the description of D. Onoprienko as a basement) to fix overlaps of panels with nipples: Previously there was only one shape as a Tub with special angles for the extremities, but this shape was overlaping with panels. I had to split into 2 shapes: the first shape is like the previous Tub with special angles for extremities but with a smaller rMax and the second shape that I add is a basic Tub (no angles for the extremities) that covers the largest part of the nipple. -->
+
     <Tubs name="PixelForwardNipple_01" rMin="0.*mm" rMax="[R08]-0.9*mm" dz="[L04]/2+3.7*mm" startPhi="0." deltaPhi="360*deg" />
     <Tubs name="PixelForwardNippleSubtract" rMin="0.*mm" rMax="[Rsub]-0.9*mm" dz="[Dsub]/2." startPhi="0." deltaPhi="360*deg" />
     <Tubs name="PixelForwardNippleMiddle" rMin="0.*mm" rMax="[R08]" dz="[L04]/2.+0.4*mm" startPhi="0." deltaPhi="360*deg" />
-
-
 
     <SubtractionSolid name="PixelForwardNipple_int01">
       <rSolid name="PixelForwardNipple_01" />
@@ -189,41 +189,34 @@ than they are on the drawings.
   <SolidSection label="Sleeve">
     
     <Polycone name="PixelForwardNippleSleeve" startPhi="0.*deg" deltaPhi="360*deg">
-      <RZPoint r="0." z="-[L04]/2" />
-      <RZPoint r="[R08]" z="-[L04]/2" />
-      <RZPoint r="[R08]" z="[L04]/2 - ([R08]-[R07])*tan([A01])" />
-      <RZPoint r="[R07]" z="[L04]/2" />
-      <RZPoint r="0." z="[L04]/2" />
+     <ZSection z="-[L04]/2"                          rMin="0." rMax="[R08]"/>
+     <ZSection z="[L04]/2-([R08]-[R07])*tan([A01])"  rMin="0." rMax="[R08]"/>
+     <ZSection z="[L04]/2"                           rMin="0." rMax="[R07]"/>
     </Polycone>
     
     <Polycone name="PixelForwardNippleEpoxyCover" startPhi="0.*deg" deltaPhi="360*deg">
-      <RZPoint r="[R05]" z="-[L06]/2" />
-      <RZPoint r="[R11]" z="-[L06]/2" />
-      <RZPoint r="[R11]" z="[L06]/2 - [L07] - ([R10]-[R11])" />
-      <RZPoint r="[R10]" z="[L06]/2 - [L07]" />
-      <RZPoint r="[R10]" z="[L06]/2" />
-      <RZPoint r="[R05]" z="[L06]/2" />
+     <ZSection z="-[L06]/2"                     rMin="[R05]" rMax="[R11]"/>
+     <ZSection z="[L06]/2-[L07]-([R10]-[R11])"  rMin="[R05]" rMax="[R11]"/>
+     <ZSection z="[L06]/2-[L07]"                rMin="[R05]" rMax="[R10]"/>
+     <ZSection z="[L06]/2"                      rMin="[R05]" rMax="[R10]"/>
     </Polycone>
     <Polycone name="PixelForwardNippleEpoxyBody" startPhi="0.*deg" deltaPhi="360*deg">
-      <RZPoint r="[R02]" z="-[L05]/2" />
-      <RZPoint r="[R09]" z="-[L05]/2" />
-      <RZPoint r="[R09]" z="-[L05]/2 + [L08]" />
-      <RZPoint r="[R06]" z="-[L05]/2 + [L08] + ([R09]-[R06])" />
-      <RZPoint r="[R06]" z="[L05]/2" />
-      <RZPoint r="[R02]" z="[L05]/2" />
+     <ZSection z="-[L05]/2"                     rMin="[R02]" rMax="[R09]"/>
+     <ZSection z="-[L05]/2+[L08]"               rMin="[R02]" rMax="[R09]"/>
+     <ZSection z="-[L05]/2+[L08]+([R09]-[R06])" rMin="[R02]" rMax="[R06]"/>
+     <ZSection z="[L05]/2"                      rMin="[R02]" rMax="[R06]"/>
     </Polycone>
     
     <Polycone name="PixelForwardNippleSleeveCoolant" startPhi="0.*deg" deltaPhi="360*deg">
-      <RZPoint r="0."    z="-[L04]/2" />
-      <RZPoint r="[R04]" z="-[L04]/2" />
-      <RZPoint r="[R04]" z="-[L04]/2 + [L06] - ([L02]-[L03])" />
-      <RZPoint r="[R03]" z="-[L04]/2 + [L06] - ([L02]-[L03]) + ([R04]-[R03])" />
-      <RZPoint r="[R03]" z="-[L04]/2 + [L06]" />
-      <RZPoint r="[R02]" z="-[L04]/2 + [L06]" />
-      <RZPoint r="[R02]" z="-[L04]/2 + [L06] + [e01]" />
-      <RZPoint r="[R01]" z="-[L04]/2 + [L06] + [e01]" />
-      <RZPoint r="[R01]" z="[L04]/2" />
-      <RZPoint r="0."    z="[L04]/2" />
+     <ZSection z="-[L04]/2"                     rMin="0.0" rMax="[R04]"/>
+     <ZSection z="-[L04]/2+[L06]-([L02]-[L03])" rMin="0.0" rMax="[R04]"/>
+     <ZSection z="-[L04]/2+[L06]-([L02]-[L03])+([R04]-[R03])" 
+                                                rMin="0.0" rMax="[R03]"/>
+     <ZSection z="-[L04]/2+[L06]"               rMin="0.0" rMax="[R03]"/>
+     <ZSection z="-[L04]/2+[L06]"               rMin="0.0" rMax="[R02]"/>
+     <ZSection z="-[L04]/2+[L06]+[e01]"         rMin="0.0" rMax="[R02]"/>
+     <ZSection z="-[L04]/2+[L06]+[e01]"         rMin="0.0" rMax="[R01]"/>
+     <ZSection z="[L04]/2"                      rMin="0.0" rMax="[R01]"/>
     </Polycone>
     
   </SolidSection>

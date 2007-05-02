@@ -96,7 +96,7 @@ Currently, [AnchorX] = [AnchorZ] = 0.
 
 <!-- Root volume for the panel and its layers (Be, Film, HDI) -->
 
-<!--previous description (Dima)
+<!--previous description (D. Onoprienko)
 <SolidSection label="Root">
   <Box name="PixelForwardPanelBase" dx="[RootHalfWidth]" dy="[RootHalfLength]" dz="[RootHalfThickness]" />
   <Box name="PixelForwardPanelBaseBe"   dx="[RootHalfWidth]" dy="[RootHalfLength]" dz="[BeThickness]/2." />
@@ -105,6 +105,8 @@ Currently, [AnchorX] = [AnchorZ] = 0.
 </SolidSection>
 -->
 
+
+<!-- New Description (april 2007): I used a Trapezoid for the main part of the panel and added a trapezoid for the part made of the panel ear -->
 <SolidSection label="Root">
 
   <Trapezoid name="PixelForwardPanelBaseMain" dz="[RootHalfThickness]"

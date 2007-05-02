@@ -7,7 +7,7 @@
 
  @version 3.02.01 May 30, 2006
  @created Dmitry Onoprienko
- @modified Vesna Cuplov (fix overlaps 04.14.07)
+ @modified Vesna Cuplov (fix overlaps 05.02.07)
 
 == Subsystem or component described by the file ==
 
@@ -88,9 +88,6 @@ This seems to be a problem for visualization only, not for tracking at simulatio
 
   <!-- Root volume dimensions (may need to be changed later) -->
 
- <Constant name="Fix_Overlap1" value="3.0*mm" />
- <Constant name="Fix_Overlap2" value="1.0*mm" />
-
  <Constant name="RootHalfLength" value="([L04]+[L03]+[L01]+[W03]/2.)/2." />
  <Constant name="RootHalfWidth" value="([L02]+[W03])/2." />
  <Constant name="RootHalfThickness" value="[BladeHalfThickness]+0.1*mm" />
@@ -118,31 +115,33 @@ This seems to be a problem for visualization only, not for tracking at simulatio
  
 <!-- Root volume for the blade. This volume is positioned by pixfwdDisk.xml -->
 
-<!--
+<!-- Previous description from D. Onoprienko
 <SolidSection label="Root">
   <Box name="PixelForwardBlade" dx="[RootHalfWidth]" dy="[RootHalfLength]" dz="[RootHalfThickness]" />
 </SolidSection>
 -->
 
+<!-- New Description (05/02/07): Two overlaps were fixed. The overlap with the Nipples was fixed by removing 0.1*mm in the mother volume thickness. The second overlap was: The corners of the box describing the mother volume were going outside the DiskOuterRing, so we remove these corners with a little box for simplicity. -->
+
 <SolidSection label="Root">
 
-<!--  <Trapezoid name="PixelForwardBlade" dz="[RootHalfThickness]-0.1*mm"
-                                    bl1="[RootHalfWidth]-[Fix_Overlap1]"  bl2="[RootHalfWidth]-[Fix_Overlap1]" 
-                                    tl1="[RootHalfWidth]+[Fix_Overlap2]"  tl2="[RootHalfWidth]+[Fix_Overlap2]" 
-                                    h1="[RootHalfLength]"         h2="[RootHalfLength]"
-                                    alp1="0.0"  alp2="0.0" phi="90*deg" />
--->
+  <Box name="PixelForwardBlade_main" dx="[RootHalfWidth]" dy="[RootHalfLength]" dz="[RootHalfThickness]-0.1*mm"/>
+  <Box name="PixelForwardBlade_box" dx="1.5*mm" dy="1.5*mm" dz="[RootHalfThickness]"/>
 
-  <Box name="PixelForwardBlade" dx="[RootHalfWidth]" dy="[RootHalfLength]" dz="[RootHalfThickness]-0.1*mm"/>
+ <SubtractionSolid name="PixelForwardBlade_Left_subtraction">
+   <rSolid name="PixelForwardBlade_main" />
+   <rSolid name="PixelForwardBlade_box" />
+   <Translation x="-[RootHalfWidth]" y="[RootHalfLength]" z="0." />
+ </SubtractionSolid>
+
+ <SubtractionSolid name="PixelForwardBlade">
+   <rSolid name="PixelForwardBlade_Left_subtraction" />
+   <rSolid name="PixelForwardBlade_box" />
+   <Translation x="[RootHalfWidth]" y="[RootHalfLength]" z="0." />
+ </SubtractionSolid>
 
 
 </SolidSection>
-
-
-
-
-
-
 
 <LogicalPartSection label="Root">
  <LogicalPart name="PixelForwardBlade" category="envelope">
