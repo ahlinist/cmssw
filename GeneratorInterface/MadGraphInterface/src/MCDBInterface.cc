@@ -7,6 +7,8 @@
 //* 
 //************************************
 #include "GeneratorInterface/MadGraphInterface/interface/MCDBInterface.h"
+#include "FWCore/PluginManager/interface/PluginManager.h"
+#include "FWCore/PluginManager/interface/standard.h"
 
 // Makes a local copy of a CASTOR file.
 // This code is a modified version of 
@@ -26,7 +28,7 @@ void mcdbGetInputFile(std::string  &madGraphInputFile, int &mcdbArticleID) {
   std::cout << "MCDBInterface: MCDB input file..." << std::endl;
   
   // Makes the local copy of the CASTOR file 
-  seal::PluginManager::get()->initialise ();
+  edmplugin::PluginManager::configure(edmplugin::standard::config());
   
   seal::IOOffset    mcdbFileSize = -1;
   StorageFactory::get()->enableAccounting(true);
