@@ -9,7 +9,7 @@
 #<use name=tauola27_121_1> 
 #<use name=photos215> 
 
-<flags EDM_PLUGIN=1>
+<flags SEAL_PLUGIN_NAME="GeneratorInterfaceTopRexInterface">
 <export>
  <lib name=GeneratorInterfaceTopRexInterface> 
  <use name=boost>
