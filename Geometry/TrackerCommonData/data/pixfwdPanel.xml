@@ -7,7 +7,7 @@
 
  @version 3.02.01 May 30, 2006
  @created Dmitry Onoprienko
- @modified Vesna Cuplov (Fix overlaps 04.17.07)
+ @modified Vesna Cuplov (to Fix overlaps 04.17.07)
 
 == Subsystem or component described by the file ==
 
@@ -82,12 +82,13 @@ Currently, [AnchorX] = [AnchorZ] = 0.
 
 <!-- Root volumes for 4 types panels -->
 
-<!-- previous description (Dima)
+<!-- previous description (D. Onoprienko)
 <SolidSection label="Root">
   <Box name="PixelForwardPanel" dx="[RootHalfWidth]" dy="[RootHalfLength]" dz="[RootHalfThickness]" />
 </SolidSection>
 -->
 
+<!-- New description (april 2007): As for the PanelBase, I used a trapezoid for the main panel volume and a second trapezoid for the part made of the ear -->
 <SolidSection label="Root">
   <Trapezoid name="PixelForwardPanelMain" dz="[RootHalfThickness]"
                                     bl1="[MainHalfWidthBottom]+4.0*mm"  bl2="[MainHalfWidthBottom]+4.0*mm" 
