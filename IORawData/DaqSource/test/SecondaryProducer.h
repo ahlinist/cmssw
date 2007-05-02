@@ -12,7 +12,7 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Framework/interface/EventSetup.h"
-#include "FWCore/Framework/interface/VectorInputSource.h"
+#include "FWCore/Sources/interface/VectorInputSource.h"
 #include "DataFormats/Common/interface/Handle.h"
 #include "IORawData/DaqSource/interface/DaqBaseReader.h"
 

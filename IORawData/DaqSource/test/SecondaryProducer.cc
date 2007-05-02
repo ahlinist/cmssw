@@ -12,7 +12,7 @@
 #include "FWCore/Utilities/interface/TypeID.h"
 #include "DataFormats/Common/interface/BasicHandle.h"
 #include "DataFormats/Provenance/interface/ProductRegistry.h"
-#include "FWCore/Framework/src/VectorInputSourceFactory.h"
+#include "FWCore/Sources/interface/VectorInputSourceFactory.h"
 
 #include <DataFormats/FEDRawData/interface/FEDRawData.h>
 #include <DataFormats/FEDRawData/interface/FEDRawDataCollection.h>
