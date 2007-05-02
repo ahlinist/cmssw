@@ -3,7 +3,7 @@ REM Table GAINS
 REM
 create table GAINS (
 record_id         number NOT NULL,
-run_num           number UNIQUE NOT NULL,
+runs           number UNIQUE NOT NULL,
 data_taking_time  date DEFAULT sysdate NOT NULL,
 insertion_time    date DEFAULT sysdate NOT NULL,
 flag              number,
