@@ -10,7 +10,7 @@
 <use name=root>
 <use name=Utilities/StorageFactory>
 
-<flags SEAL_PLUGIN_NAME="GeneratorInterfaceMadGraphInterface">
+<flags EDM_PLUGIN=1>
 <flags FFLAGS="-w">
 
 <export>
