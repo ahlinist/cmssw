@@ -279,26 +279,26 @@
     </MaterialFraction>
   </CompositeMaterial>
 
-  <CompositeMaterial name="TOB_L34_ICC1" density="0.84799*g/cm3" symbol=" " method="mixture by weight">
-    <MaterialFraction fraction="0.52821">
+  <CompositeMaterial name="TOB_L34_ICC1" density="0.82946*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="0.54002">
       <rMaterial name="materials:T_G10"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.22646">
+    <MaterialFraction fraction="0.23153">
       <rMaterial name="materials:Copper"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.13204">
+    <MaterialFraction fraction="0.11265">
       <rMaterial name="materials:Epoxy"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.00684">
+    <MaterialFraction fraction="0.007">
       <rMaterial name="materials:Ceramic"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.09298">
+    <MaterialFraction fraction="0.09505">
       <rMaterial name="materials:Barium_Titanate"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.00496">
+    <MaterialFraction fraction="0.00507">
       <rMaterial name="materials:T_Kapton"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.00849">
+    <MaterialFraction fraction="0.00868">
       <rMaterial name="materials:TOB_Brass"/>
     </MaterialFraction>
   </CompositeMaterial>
@@ -327,26 +327,26 @@
     </MaterialFraction>
   </CompositeMaterial>
 
-  <CompositeMaterial name="TOB_L56_ICC1" density="0.86658*g/cm3" symbol=" " method="mixture by weight">
-    <MaterialFraction fraction="0.51689">
+  <CompositeMaterial name="TOB_L56_ICC1" density="0.82946*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="0.54002">
       <rMaterial name="materials:T_G10"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.23786">
+    <MaterialFraction fraction="0.23153">
       <rMaterial name="materials:Copper"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.13441">
+    <MaterialFraction fraction="0.11265">
       <rMaterial name="materials:Epoxy"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.0067">
+    <MaterialFraction fraction="0.007">
       <rMaterial name="materials:Ceramic"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.09098">
+    <MaterialFraction fraction="0.09505">
       <rMaterial name="materials:Barium_Titanate"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.00486">
+    <MaterialFraction fraction="0.00507">
       <rMaterial name="materials:T_Kapton"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.00831">
+    <MaterialFraction fraction="0.00868">
       <rMaterial name="materials:TOB_Brass"/>
     </MaterialFraction>
   </CompositeMaterial>
