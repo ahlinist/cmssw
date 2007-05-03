@@ -1097,12 +1097,12 @@ MCVolume: (11.8 x 7.0 x 0.25) cm^3 = 20.65 cm^3
 
 	CCUM
 	-----
-(1) CCUM carbon fibre EDMS Code EDA-00036-V1
+(1) CCUM FR4 (G10) EDMS Code EDA-00036-V1
 	m = 13.190 g
 	density = 1.90 g/cm^3
 	--> volume = 6.942 cm^3
 
-(2) CCUM copper traces  EDMS Code EDA-0036-V1
+(2) CCUM copper traces  EDMS Code EDA-00036-V1
 	m = 2.787 g
 	density = 8.96 g/cm^3
 	--> volume = 0.311 cm^3
