@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrea Rizzi
 //         Created:  Wed Apr 12 11:12:49 CEST 2006
-// $Id: TrackCountingAnalyzer.cc,v 1.3 2006/10/26 23:35:49 wmtan Exp $
+// $Id: TrackCountingAnalyzer.cc,v 1.4 2006/11/17 15:07:45 tboccali Exp $
 //
 //
 
@@ -84,14 +84,14 @@ TrackCountingAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
     cout << jets[i].discriminator() <<endl;
     cout  << "Number of associated tracks " << jets[i].tracks().size() << endl;
 
-   /* //Accessing tracks crash right now 
-    const TrackCollection & tracks= * (jets[i].tracks().product());
-   cout << "Product: " <<    jets[i].tracks().product()  << endl;
+    //Accessing tracks crash right now 
+    const TrackRefVector & tracks= jets[i].tracks();
+   //cout << "Product: " <<    jets[i].tracks().product()  << endl;
    cout  << "Size is " << tracks.size() << endl;
     for (TrackCollection::size_type j = 0; j < tracks.size(); ++j) {
-      cout << "   " << tracks[j].pt() << endl;
+      cout << "   " << tracks[j]->pt() << endl;
     }
-   */
+   
   }
 
 }
