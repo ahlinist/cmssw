@@ -160,11 +160,11 @@ MCVolume: (pi 0.075^2 x 107.9) cm^3 = 1.90675 cm^3
 		density = 8.96 g/cm^3
 		--> volume = 0.713 cm^3
 	TPE-06:	m = ( 1.7376 + 1.3440 + 1.1520 + 0.7334 + 0.2304 ) g = 5.1974 g
-		density (take polyrthylene) = 0.95 g/cm^3
+		density (take polyethylene) = 0.95 g/cm^3
 		--> volume = 5.471 cm^3
 
-(3) HV Wire sleeve (l=15 cm, ext diameter=3.0 mm, 15 piece) + (l=20 mm, ext diameter=3.0 mm, 1 pieces)
-	 + LVLAC wires sleeve (l=10 cm, ext diameter=3.0 mm, 1 piece) Polyethylene and Polyolefin (take polyethylene):
+(3) HV Wire sleeve (l=15 mm, ext diameter=3.0 mm, 15 pieces) + (l=20 mm, ext diameter=3.0 mm, 1 piece)
+	 + LVLAC wires sleeve (l=10 mm, ext diameter=3.0 mm, 1 piece) Polyethylene and Polyolefin (take polyethylene):
 	total mass
 	m = ( 0.54 + 0.20 + 0.10 ) g = 0.84 g
 	density = 0.95 g/cm^3
@@ -233,11 +233,11 @@ MCVolume: ( 0.300 x 0.660 x 75.0 ) cm^3 = 1.90675 cm^3
 		density = 8.96 g/cm^3
 		--> volume = 0.470 cm^3
 	TPE-06:	m = ( 0.8688 + 0.6720 + 1.1520 + 0.7334 + 0 ) g = 3.4262 g
-		density (take polyrthylene) = 0.95 g/cm^3
+		density (take polyethylene) = 0.95 g/cm^3
 		--> volume = 3.6065 cm^3
 
-(3) HV Wire sleeve (l=15 cm, ext diameter=3.0 mm, 9 piece) + (l=20 mm, ext diameter=3.0 mm, 1 pieces)
-	 + LVLAC wires sleeve (l=10 cm, ext diameter=3.0 mm, 1 piece) Polyethylene and Polyolefin (take polyethylene):
+(3) HV Wire sleeve (l=15 mm, ext diameter=3.0 mm, 9 pieces) + (l=20 mm, ext diameter=3.0 mm, 1 piece)
+	 + LVLAC wires sleeve (l=10 mm, ext diameter=3.0 mm, 1 piece) Polyethylene and Polyolefin (take polyethylene):
 	total mass
 	m = ( 0.32 + 0.20 + 0.10 ) g = 0.62 g
 	density = 0.95 g/cm^3
