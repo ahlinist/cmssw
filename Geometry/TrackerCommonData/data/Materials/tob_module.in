@@ -1054,7 +1054,7 @@ MCVolume: ( 2.3 x 3.0 x 0.2 ) cm^3 = 1.38 cm^3
 	epoxy:	m = ( 1 x 0.027098 ) g = 0.027098 g
 		density = 1.3 g/cm^3
 		--> volume = 0.0208 cm^3
-	copper: m = [ ( 1 x 0.070 ) - 0.027098 ) g = 0.042902 g
+	copper: m = [ ( 1 x 0.070 ) - 0.027098 ) ] g = 0.042902 g
 		density = 8.96 g/cm^3
 		--> volume = 0.0048 cm^3
 
@@ -1221,8 +1221,8 @@ Different for different layers
 * 9 "BUS wires PEI"                        "Silicone_Gel"    0.144   1    CAB
 * 10 "BUS wires SILTEM"                    "Polyethylene"    2.365   1    CAB
 * 11 "SCLAC glue"                          "Epoxy"           0.202   1    SUP
-* 12 "Output cable Shield"                 "Aluminium"       0.642   1    CAB
-* 13 "Output cable Sleeve"                 "Polyethylene"    0.064   1    CAB
+* 12 "Output cable Shield"                 "Aluminium"       0.089   1    CAB
+* 13 "Output cable Sleeve"                 "Polyethylene"    0.642   1    CAB
 * 14 "Input and Output cable Tie"          "T_Kapton"        0.195   1    CAB
 * 15 "Input and Output cable Solder Paste" "BGA"             0.038   1    CAB
 * 16 "ICB,LVLAC,HVLAC glue"                "Epoxy"           0.181   1    SUP
@@ -1250,7 +1250,7 @@ Ladder Adapter Card
 Composition taken from G.Magazzù measurements: http://test-gmagazzu.web.cern.ch/test%2Dgmagazzu/TOB/MB/CCUM_MB.htm
 EDMS Code EP 680-1174-510
 
-(1) SCLAC carbon fibre
+(1) SCLAC FR4
 	m = 0.400 g
 	density = 1.90 g/cm^3
 	--> volume = 0.211 cm^3
@@ -1289,7 +1289,7 @@ Short tail (to be multiplied by 2, the difference 'long tail'-1x'short tail' wil
 	Shielded Twisted pair (112 mm), 4 pieces
 	+ Shielded Twisted pair (135 mm), 2 pieces
 	+ 1.0 mm^2 Copper wire, 4 pieces 112 mm
-	+ 0.5 mm^2 Copper wire, 1 pieces 112 mm, 1 piece 147 mm, 1 piece 149 mm
+	+ 0.5 mm^2 Copper wire, 1 piece 112 mm, 1 piece 147 mm, 1 piece 149 mm
 	+ 1.0 mm^2 Copper wire, 1 piece 290 mm, only 80 mm here, the rest outside the rod
 	total mass; 1 only copy in the mixture
 	Copper:	m = ( 0.1519 + 0.0915 + 3.8976 + 0.4928 + 0.6468 + 0.6556 + 80/290 x 2.5230 ) g = 6.6322 g
@@ -1318,7 +1318,7 @@ Short tail (to be multiplied by 2, the difference 'long tail'-1x'short tail' wil
 (12) Output cable shield Aluminium: 1/2 here, (1/2 outside)
 	m = 0.480 g / 2 = 0.240 g
 	density = 2.7 g/cm^3
-	volume = 0.178 cm^3
+	volume = 0.089 cm^3
 
 (13) Output cable sleeve (l=55 cm, ext diameter=9.5 mm, 1 piece) + (l=10 mm, ext diameter=3.0 mm, 4 pieces) Polyolefin (take polyethylene):
 	total mass, 1/2 here, (1/2 outside)
@@ -1424,8 +1424,8 @@ Different for different layers
 * 9 "BUS wires PEI"                        "Silicone_Gel"    0.144   1    CAB
 * 10 "BUS wires SILTEM"                    "Polyethylene"    2.365   1    CAB
 * 11 "SCLAC glue"                          "Epoxy"           0.202   1    SUP
-* 12 "Output cable Shield"                 "Aluminium"       0.642   1    CAB
-* 13 "Output cable Sleeve"                 "Polyethylene"    0.064   1    CAB
+* 12 "Output cable Shield"                 "Aluminium"       0.089   1    CAB
+* 13 "Output cable Sleeve"                 "Polyethylene"    0.642   1    CAB
 * 14 "Input and Output cable Tie"          "T_Kapton"        0.195   1    CAB
 * 15 "Input and Output cable Solder Paste" "BGA"             0.038   1    CAB
 * 16 "ICB,LVLAC,HVLAC glue"                "Epoxy"           0.181   1    SUP
@@ -1498,8 +1498,8 @@ Different for different layers
 * 9 "BUS wires PEI"                        "Silicone_Gel"    0.144   1    CAB
 * 10 "BUS wires SILTEM"                    "Polyethylene"    2.365   1    CAB
 * 11 "SCLAC glue"                          "Epoxy"           0.202   1    SUP
-* 12 "Output cable Shield"                 "Aluminium"       0.642   1    CAB
-* 13 "Output cable Sleeve"                 "Polyethylene"    0.064   1    CAB
+* 12 "Output cable Shield"                 "Aluminium"       0.089   1    CAB
+* 13 "Output cable Sleeve"                 "Polyethylene"    0.642   1    CAB
 * 14 "Input and Output cable Tie"          "T_Kapton"        0.195   1    CAB
 * 15 "Input and Output cable Solder Paste" "BGA"             0.038   1    CAB
 * 16 "ICB,LVLAC,HVLAC glue"                "Epoxy"           0.181   1    SUP
