@@ -132,7 +132,10 @@ BareRootProductGetter::getIt(edm::ProductID const& iID) const  {
 	<<"\n Please contact the developers since this message should not happen.";
     return 0;
   }
-  buffer->branch_->GetEntry( eventEntry_ );
+  if(buffer->eventEntry_ != eventEntry_) {
+    buffer->branch_->GetEntry( eventEntry_ );
+    buffer->eventEntry_=eventEntry_;
+  }
   if(0 == buffer->product_.get()) {
      throw cms::Exception("BranchGetEntryFailed")
 	<<"Calling GetEntry with index "<<eventEntry_ 
