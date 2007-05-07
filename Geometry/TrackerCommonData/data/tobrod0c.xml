@@ -63,8 +63,8 @@
   <rSolid name="tobrodpar:TOBICC2"/>
   <rMaterial name="tobmaterial:TOB_L12_ICC2"/>
  </LogicalPart>
- <LogicalPart name="TOBConn0" category="unspecified">
-  <rSolid name="tobrodpar:TOBConn"/>
+ <LogicalPart name="TOBRodConn0" category="unspecified">
+  <rSolid name="tobrodpar:TOBRodConn"/>
   <rMaterial name="tobmaterial:TOB_CONN12"/>
  </LogicalPart>
  <LogicalPart name="TOBCCUM0" category="unspecified">

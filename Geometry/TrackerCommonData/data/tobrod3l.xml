@@ -114,7 +114,7 @@
     [tobrodpar:ModuleZ04], [tobrodpar:ModuleZ05], [tobrodpar:ModuleZ06]
   </Vector>
   <Vector name="ICCName" type="string" nEntries="6">
-     tobrod2c:TOBConn2, tobrod2c:TOBCCUM2, tobrod2c:TOBICC22, 
+     tobrod2c:TOBRodConn2, tobrod2c:TOBCCUM2, tobrod2c:TOBICC22, 
      tobrod2c:TOBICC22, tobrod2c:TOBICC21, tobrod2c:TOBICC21
   </Vector>
   <Vector name="ICCY" type="numeric" nEntries="6">

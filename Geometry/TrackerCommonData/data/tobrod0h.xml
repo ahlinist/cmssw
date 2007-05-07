@@ -115,7 +115,7 @@
   </Vector>
   <Vector name="ICCName" type="string" nEntries="6">
      tobrod0c:TOBICC01, tobrod0c:TOBICC01, tobrod0c:TOBICC02, 
-     tobrod0c:TOBICC02, tobrod0c:TOBCCUM0, tobrod0c:TOBConn0
+     tobrod0c:TOBICC02, tobrod0c:TOBCCUM0, tobrod0c:TOBRodConn0
   </Vector>
   <Vector name="ICCY" type="numeric" nEntries="6">
     [tobrodpar:ICCY1], -[tobrodpar:ICCY1],  [tobrodpar:ICCY1],
