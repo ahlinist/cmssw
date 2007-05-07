@@ -120,7 +120,7 @@
  <Box name="TOBCable"     dx="[CableDx]"     dy="[CableDy]"   dz="[CableDz]"/>
  <Box name="TOBICC1"      dx="[ICCDx]"       dy="[ICCDy]"     dz="[ICC1Dz]"/>
  <Box name="TOBICC2"      dx="[ICCDx]"       dy="[ICCDy]"     dz="[ICC2Dz]"/>
- <Box name="TOBConn"      dx="[ConnDx]"      dy="[ConnDy]"    dz="[ConnDz]"/>
+ <Box name="TOBRodConn"      dx="[ConnDx]"      dy="[ConnDy]"    dz="[ConnDz]"/>
  <Box name="TOBCCUM"      dx="[CCUMDx]"      dy="[CCUMDy]"    dz="[CCUMDz]"/>
  <Box name="TOBRod"       dx="[RodW]"        dy="[RodT]"      dz="[RodL]"/>
  <Box name="TOBRodout"    dx="[RodW]"        dy="[RodT]"
