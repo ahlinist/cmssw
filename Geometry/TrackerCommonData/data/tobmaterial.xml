@@ -33,7 +33,7 @@
     </MaterialFraction>
   </CompositeMaterial>
 
-  <CompositeMaterial name="TOB_mod_cool_1" density="3.96724*g/cm3" symbol=" " method="mixture by weight">
+  <CompositeMaterial name="TOB_mod_cool1" density="3.96724*g/cm3" symbol=" " method="mixture by weight">
     <MaterialFraction fraction="0.81568">
       <rMaterial name="materials:Aluminium"/>
     </MaterialFraction>
@@ -42,7 +42,7 @@
     </MaterialFraction>
   </CompositeMaterial>
 
-  <CompositeMaterial name="TOB_mod_cool_2" density="4.39847*g/cm3" symbol=" " method="mixture by weight">
+  <CompositeMaterial name="TOB_mod_cool2" density="4.39847*g/cm3" symbol=" " method="mixture by weight">
     <MaterialFraction fraction="0.65993">
       <rMaterial name="materials:Aluminium"/>
     </MaterialFraction>

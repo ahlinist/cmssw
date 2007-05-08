@@ -160,11 +160,11 @@
  </LogicalPart>
  <LogicalPart name="TOBModCool1" category="unspecified">
   <rSolid name="TOBModCool1"/>
-  <rMaterial name="tobmaterial:TOB_mod_cool_1"/>
+  <rMaterial name="tobmaterial:TOB_mod_cool1"/>
  </LogicalPart>
  <LogicalPart name="TOBModCool2" category="unspecified">
   <rSolid name="TOBModCool2"/>
-  <rMaterial name="tobmaterial:TOB_mod_cool_2"/>
+  <rMaterial name="tobmaterial:TOB_mod_cool2"/>
  </LogicalPart>
  <LogicalPart name="TOBModCoolComp1" category="unspecified">
   <rSolid name="TOBModCoolComp1"/>
