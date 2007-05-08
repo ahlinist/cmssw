@@ -142,6 +142,60 @@
  <Constant name="AxCableT"       value="0.210*cm"/>
  <Constant name="AxCableW"       value="22.5*deg"/>
  <Constant name="AxCableZ"       value="([Zv1]+[Zv3])/2"/>
+ <Constant name="DOHMsDz"        value="0.5*cm"/>
+ <Constant name="DOHMW"          value="47*mm"/>
+ <Constant name="DOHML"          value="71.5*mm"/>
+ <Constant name="DOHMT"          value="4.0*mm"/>
+ <Constant name="DOHMRadius1"    value="690*mm"/>
+ <Constant name="DOHMRadius2"    value="860*mm"/>
+ <Constant name="DOHMRadius3"    value="1040*mm"/>
+ <Constant name="DOHM_R1_phi1"   value="9.417*deg"/>
+ <Constant name="DOHM_R1_phi2"   value="45.383*deg"/>
+ <Constant name="DOHM_R1_phi3"   value="65.583*deg"/>
+ <Constant name="DOHM_R1_phi4"   value="85.118*deg"/>
+ <Constant name="DOHM_R1_phi5"   value="108.583*deg"/>
+ <Constant name="DOHM_R1_phi6"   value="135.918*deg"/>
+ <Constant name="DOHM_R1_phi7"   value="162.083*deg"/>
+ <Constant name="DOHM_R1_phi8"   value="186.918*deg"/>
+ <Constant name="DOHM_R1_phi9"   value="208.083*deg"/>
+ <Constant name="DOHM_R1_phi10"  value="227.418*deg"/>
+ <Constant name="DOHM_R1_phi11"  value="251.083*deg"/>
+ <Constant name="DOHM_R1_phi12"  value="282.418*deg"/>
+ <Constant name="DOHM_R1_phi13"  value="302.083*deg"/>
+ <Constant name="DOHM_R1_phi14"  value="325.918*deg"/>
+ <Constant name="DOHM_R1_phi15"  value="346.083*deg"/>
+ <Constant name="DOHM_R2_phi1"   value="4.066*deg"/>
+ <Constant name="DOHM_R2_phi2"   value="20.066*deg"/>
+ <Constant name="DOHM_R2_phi3"   value="52.066*deg"/>
+ <Constant name="DOHM_R2_phi4"   value="68.066*deg"/>
+ <Constant name="DOHM_R2_phi5"   value="105.567*deg"/>
+ <Constant name="DOHM_R2_phi6"   value="134.067*deg"/>
+ <Constant name="DOHM_R2_phi7"   value="153.067*deg"/>
+ <Constant name="DOHM_R2_phi8"   value="176.067*deg"/>
+ <Constant name="DOHM_R2_phi9"   value="194.067*deg"/>
+ <Constant name="DOHM_R2_phi10"  value="225.567*deg"/>
+ <Constant name="DOHM_R2_phi11"  value="244.067*deg"/>
+ <Constant name="DOHM_R2_phi12"  value="276.067*deg"/>
+ <Constant name="DOHM_R2_phi13"  value="291.067*deg"/>
+ <Constant name="DOHM_R2_phi14"  value="322.067*deg"/>
+ <Constant name="DOHM_R2_phi15"  value="341.067*deg"/>
+ <Constant name="DOHM_R3_phi1"   value="4.055*deg"/>
+ <Constant name="DOHM_R3_phi2"   value="36.055*deg"/>
+ <Constant name="DOHM_R3_phi3"   value="50.055*deg"/>
+ <Constant name="DOHM_R3_phi4"   value="78.055*deg"/>
+ <Constant name="DOHM_R3_phi5"   value="92.055*deg"/>
+ <Constant name="DOHM_R3_phi6"   value="125.055*deg"/>
+ <Constant name="DOHM_R3_phi7"   value="140.055*deg"/>
+ <Constant name="DOHM_R3_phi8"   value="176.055*deg"/>
+ <Constant name="DOHM_R3_phi9"   value="189.055*deg"/>
+ <Constant name="DOHM_R3_phi10"  value="218.055*deg"/>
+ <Constant name="DOHM_R3_phi11"  value="231.055*deg"/>
+ <Constant name="DOHM_R3_phi12"  value="257.055*deg"/>
+ <Constant name="DOHM_R3_phi13"  value="270.055*deg"/>
+ <Constant name="DOHM_R3_phi14"  value="303.055*deg"/>
+ <Constant name="DOHM_R3_phi15"  value="317.055*deg"/>
+ <Constant name="DOHM_R3_phi16"  value="350.055*deg"/>
+ <Constant name="Tol"            value="0.0*mm"/>
 </ConstantsSection>
 
 <SolidSection label="tob.xml">
@@ -324,6 +378,12 @@
  <Tubs name="TOBAxCable"    rMin="([Rout1]-[AxCableT])"
                             rMax="[Rout1]"          dz="([Zv3]-[Zv1])/2"
                             startPhi="-[AxCableW]/2" deltaPhi="[AxCableW]"/>
+ <Tubs name="TOBDOHMs"      rMin="[Rin1]"           rMax="[Rin2]"
+                            dz="[DOHMsDz]"          startPhi="0*deg"
+                            deltaPhi="360*deg"/>
+ <Box name="TOBDOHM"        dx="[DOHMW]" 
+                            dy="[DOHML]"
+                            dz="[DOHMT]"/>
 </SolidSection>
 
 <LogicalPartSection label="tob.xml">
@@ -525,6 +585,11 @@
   <rMaterial name="tobmaterial:TOB_middle_ribs"/>
  </LogicalPart>
 
+ <LogicalPart name="TOBDOHM" category="unspecified">
+  <rSolid name="TOBDOHM"/>
+  <rMaterial name="tobmaterial:TOB_DOHM"/>
+ </LogicalPart>
+
  <LogicalPart name="TOBLayer0" category="unspecified">
   <rSolid name="TOBLayer0"/>
   <rMaterial name="materials:Air"/>
@@ -561,6 +626,10 @@
  <LogicalPart name="TOBAxCable" category="unspecified">
   <rSolid name="TOBAxCable"/>
   <rMaterial name="tobmaterial:TOB_ax_cable"/>
+ </LogicalPart>
+ <LogicalPart name="TOBDOHMs" category="unspecified">
+  <rSolid name="TOBDOHMs"/>
+  <rMaterial name="materials:Air"/>
  </LogicalPart>
 </LogicalPartSection>
 
@@ -719,6 +788,18 @@
    <rChild name="tob:TOBSideDisk"/>
   <rRotation name="tobrodpar:180D"/>
   <Translation x="[zero]" y="[zero]" z="-[SideDiskZ]" />
+ </PosPart>
+
+ <PosPart copyNumber="1">
+   <rParent name="tob:TOB"/>
+   <rChild name="tob:TOBDOHMs"/>
+  <Translation x="[zero]" y="[zero]" z="[SideDiskZ]+[SideDiskDz]+[DOHMsDz]+[Tol]" />
+ </PosPart>
+ <PosPart copyNumber="2">
+   <rParent name="tob:TOB"/>
+   <rChild name="tob:TOBDOHMs"/>
+  <rRotation name="tobrodpar:180D"/>
+  <Translation x="[zero]" y="[zero]" z="-([SideDiskZ]+[SideDiskDz]+[DOHMsDz]+[Tol])" />
  </PosPart>
 
  <PosPart copyNumber="1">
@@ -1194,12 +1275,14 @@
   <Vector name="CableMaterial" type="string" nEntries="6">
    tobmaterial:TOB_rad_cable1, tobmaterial:TOB_rad_cable2, 
    tobmaterial:TOB_rad_cable3, tobmaterial:TOB_rad_cable4, 
-   tobmaterial:TOB_rad_cable5, tobmaterial:TOB_rad_cable6</Vector>
+   tobmaterial:TOB_rad_cable5, tobmaterial:TOB_rad_cable6
+  </Vector>
   <Numeric name="ConnW"       value="4.0*cm"/>
   <Numeric name="ConnT"       value="2.3*cm"/>
   <Vector name="ConnMaterial" type="string" nEntries="6">
    tobmaterial:TOB_rib1, tobmaterial:TOB_rib2, tobmaterial:TOB_rib3, 
-   tobmaterial:TOB_rib4, tobmaterial:TOB_rib5, tobmaterial:TOB_rib6</Vector>
+   tobmaterial:TOB_rib4, tobmaterial:TOB_rib5, tobmaterial:TOB_rib6
+  </Vector>
   <Numeric name="CoolW"       value="1.2*cm"/>
   <Numeric name="CoolT"       value="0.6*cm"/>
   <Vector name="CoolR" type="numeric" nEntries="6">
@@ -1211,7 +1294,8 @@
    tobmaterial:TOB_coolmanifold3, tobmaterial:TOB_coolmanifold4, 
    tobmaterial:TOB_coolmanifold5, tobmaterial:TOB_coolmanifold6</Vector>
   <Vector name="RingName" type="string" nEntries="6">
-   0, 1, 2, 3, 4, 5</Vector>
+   0, 1, 2, 3, 4, 5
+  </Vector>
 </Algorithm>
 
 <Algorithm name="track:DDTrackerAngular">
@@ -1226,4 +1310,57 @@
   <Vector name="Center" type="numeric" nEntries="3"> 0, 0, 0  </Vector>
 </Algorithm>
  
+<Algorithm name="track:DDTrackerPhiAlgo">
+  <rParent name="tob:TOBDOHMs"/>
+  <String name="ChildName"    value="tob:TOBDOHM"/>
+  <Numeric name="Radius"      value="[DOHMRadius1]"/>
+  <Numeric name="Tilt"        value="0*deg"/>
+  <Vector name="Phi" type="numeric" nEntries="15">
+   [DOHM_R1_phi1]  , [DOHM_R1_phi2]  , [DOHM_R1_phi3]  , [DOHM_R1_phi4]  , [DOHM_R1_phi5]  ,
+   [DOHM_R1_phi6]  , [DOHM_R1_phi7]  , [DOHM_R1_phi8]  , [DOHM_R1_phi9]  , [DOHM_R1_phi10] ,
+   [DOHM_R1_phi11] , [DOHM_R1_phi12] , [DOHM_R1_phi13] , [DOHM_R1_phi14] , [DOHM_R1_phi15]
+  </Vector>
+  <Vector name="ZPos" type="numeric" nEntries="15">
+   [zero] , [zero] , [zero] , [zero] , [zero] ,
+   [zero] , [zero] , [zero] , [zero] , [zero] ,
+   [zero] , [zero] , [zero] , [zero] , [zero]
+  </Vector>
+</Algorithm>
+
+<Algorithm name="track:DDTrackerPhiAlgo">
+  <rParent name="tob:TOBDOHMs"/>
+  <String name="ChildName"    value="tob:TOBDOHM"/>
+  <Numeric name="Radius"      value="[DOHMRadius2]"/>
+  <Numeric name="Tilt"        value="0*deg"/>
+  <Vector name="Phi" type="numeric" nEntries="15">
+   [DOHM_R2_phi1]  , [DOHM_R2_phi2]  , [DOHM_R2_phi3]  , [DOHM_R2_phi4]  , [DOHM_R2_phi5]  ,
+   [DOHM_R2_phi6]  , [DOHM_R2_phi7]  , [DOHM_R2_phi8]  , [DOHM_R2_phi9]  , [DOHM_R2_phi10] ,
+   [DOHM_R2_phi11] , [DOHM_R2_phi12] , [DOHM_R2_phi13] , [DOHM_R2_phi14] , [DOHM_R2_phi15]
+  </Vector>
+  <Vector name="ZPos" type="numeric" nEntries="15">
+   [zero] , [zero] , [zero] , [zero] , [zero] ,
+   [zero] , [zero] , [zero] , [zero] , [zero] ,
+   [zero] , [zero] , [zero] , [zero] , [zero]
+  </Vector>
+</Algorithm>
+
+<Algorithm name="track:DDTrackerPhiAlgo">
+  <rParent name="tob:TOBDOHMs"/>
+  <String name="ChildName"    value="tob:TOBDOHM"/>
+  <Numeric name="Radius"      value="[DOHMRadius3]"/>
+  <Numeric name="Tilt"        value="0*deg"/>
+  <Vector name="Phi" type="numeric" nEntries="16">
+   [DOHM_R3_phi1]  , [DOHM_R3_phi2]  , [DOHM_R3_phi3]  , [DOHM_R3_phi4]  , [DOHM_R3_phi5]  ,
+   [DOHM_R3_phi6]  , [DOHM_R3_phi7]  , [DOHM_R3_phi8]  , [DOHM_R3_phi9]  , [DOHM_R3_phi10] ,
+   [DOHM_R3_phi11] , [DOHM_R3_phi12] , [DOHM_R3_phi13] , [DOHM_R3_phi14] , [DOHM_R3_phi15] ,
+   [DOHM_R3_phi16]
+  </Vector>
+  <Vector name="ZPos" type="numeric" nEntries="16">
+   [zero] , [zero] , [zero] , [zero] , [zero] ,
+   [zero] , [zero] , [zero] , [zero] , [zero] ,
+   [zero] , [zero] , [zero] , [zero] , [zero] ,
+   [zero]
+  </Vector>
+</Algorithm>
+
 </DDDefinition>
