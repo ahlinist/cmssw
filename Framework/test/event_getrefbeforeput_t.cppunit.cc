@@ -32,7 +32,6 @@ $Id$
 #include "FWCore/Framework/interface/Event.h"
 #undef private
 
-#include "SealBase/Error.h"
 #include <cppunit/extensions/HelperMacros.h>
 
 class testEventGetRefBeforePut: public CppUnit::TestFixture {
@@ -127,10 +126,6 @@ void testEventGetRefBeforePut::getRefTest() {
   catch (cms::Exception& x) {
     std::cerr << x.explainSelf()<< std::endl;
     CPPUNIT_ASSERT("Threw exception unexpectedly" == 0);
-  }
-  catch(seal::Error& x){
-     std::cerr <<x.explainSelf()<<std::endl;
-     CPPUNIT_ASSERT("Threw seal Error"==0);
   }
   catch(std::exception& x){
      std::cerr <<x.what()<<std::endl;

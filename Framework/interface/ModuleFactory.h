@@ -10,7 +10,7 @@
  Description: Factory which is dynamically loadable and used to create an eventstore module
 
  Usage:
-    Used by the SEAL plugin-manager
+    Used by the EDM plugin-manager
 
 */
 //

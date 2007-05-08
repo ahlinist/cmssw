@@ -68,7 +68,7 @@ template<typename T>
               <<" of type "<< modtype <<" has not been registered.\n"
               << "Perhaps your module type is misspelled or is not a "
               << "framework plugin.\n"
-              << "Try running SealPluginDump to obtain a list of "
+              << "Try running EdmPluginDump to obtain a list of "
               << "available Plugins.";            
             }
             

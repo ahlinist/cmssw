@@ -54,11 +54,6 @@ void testeventprocessor2::eventprocessor2Test()
 		<< e.explainSelf() << std::endl;
       rc = 1;
   }
-  catch (seal::Error& e) {
-      std::cerr << "Application exception caught: "
-		<< e.explainSelf() << std::endl;
-      rc = 1;
-  }
   catch (std::runtime_error& e) {
       std::cerr << "Standard library exception caught: "
 		<< e.what() << std::endl;

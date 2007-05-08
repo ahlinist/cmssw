@@ -7,7 +7,7 @@
 // 
 /**\class LoadAllDictionaries LoadAllDictionaries.h FWCore/Services/interface/LoadAllDictionaries.h
 
- Description: Loads all seal Capability dictionaries
+ Description: Loads all Capability dictionaries
 
  Usage:
     <usage>

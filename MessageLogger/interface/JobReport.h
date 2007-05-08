@@ -242,8 +242,8 @@ namespace edm {
 
       ///
       /// Report an exception, providing details of the problem as
-      /// a short description (Eg "SEALError") and a long description 
-      /// (Eg "Seal crashed because...")
+      /// a short description (Eg "XXXError") and a long description 
+      /// (Eg "XXX crashed because...")
       /// Also overload this method to accept an optional standard exit code
       void  reportError(std::string const& shortDesc,
 			std::string const& longDesc);

@@ -34,7 +34,7 @@ namespace edm {
       (*this) << "Module " << moduletype << " was not registered \n"
 	"Perhaps your module type is misspelled or is not a "
 	"framework plugin \n"
-	"Try running SealPluginDump to obtain a list "
+	"Try running EdmPluginDump to obtain a list "
 	"of available Plugins\n";
     }
     ~UnknownModuleException() throw(){}
