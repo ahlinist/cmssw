@@ -17,8 +17,8 @@
 #include "G4DataQuestionaire.hh"
 #endif
 
-FTFP::FTFP(const edm::ParameterSet & p) : PhysicsList(p)
-{
+FTFP::FTFP(G4LogicalVolumeToDDLogicalPartMap& map,
+	   const edm::ParameterSet & p) : PhysicsList(map, p) {
   G4DataQuestionaire it(photon);
 #ifdef G4V7
   std::cout << "You are using the simulation engine: FTFP 2.8" << std::endl;

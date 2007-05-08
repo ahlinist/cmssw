@@ -11,9 +11,8 @@
 #include "G4DataQuestionaire.hh"
 #include "HadronPhysicsQGSP_BERT.hh"
 
-QGSP_BERT::QGSP_BERT(const edm::ParameterSet & p)
-    : PhysicsList(p)
-{
+QGSP_BERT::QGSP_BERT(G4LogicalVolumeToDDLogicalPartMap& map,
+		     const edm::ParameterSet & p) : PhysicsList(map, p) {
 
   G4DataQuestionaire it(photon);
   std::cout << "<<< Geant4 Physics List simulation engine: QGSP_BERT 3.1" << std::endl;

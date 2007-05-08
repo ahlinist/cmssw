@@ -7,7 +7,7 @@
 class QGSP: public PhysicsList
 {
 public:
-    QGSP(const edm::ParameterSet & p);
+  QGSP(G4LogicalVolumeToDDLogicalPartMap& map, const edm::ParameterSet & p);
 };
 
 #endif

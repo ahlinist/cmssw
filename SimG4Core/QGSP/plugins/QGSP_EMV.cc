@@ -11,9 +11,8 @@
  
 #include "G4DataQuestionaire.hh"
  
-QGSP_EMV::QGSP_EMV(const edm::ParameterSet & p) 
-    : PhysicsList(p)
-{
+QGSP_EMV::QGSP_EMV(G4LogicalVolumeToDDLogicalPartMap& map,
+		   const edm::ParameterSet & p) : PhysicsList(map, p) {
     G4DataQuestionaire it(photon);
     std::cout << "You are using the simulation engine: QGSP_EMV 3.1" << std::endl;
   

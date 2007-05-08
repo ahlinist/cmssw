@@ -7,7 +7,7 @@
 class QGSP_BERT_HP: public PhysicsList
 {
 public:
-    QGSP_BERT_HP(const edm::ParameterSet & p);
+  QGSP_BERT_HP(G4LogicalVolumeToDDLogicalPartMap& map, const edm::ParameterSet & p);
 };
 
 #endif

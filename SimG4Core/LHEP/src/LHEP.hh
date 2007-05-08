@@ -7,7 +7,7 @@
 class LHEP: public PhysicsList
 {
 public:
-    LHEP(const edm::ParameterSet & p);
+  LHEP(G4LogicalVolumeToDDLogicalPartMap& map, const edm::ParameterSet & p);
 };
 
 #endif

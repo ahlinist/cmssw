@@ -9,7 +9,7 @@
 class QGSP_EMV: public PhysicsList
 {
 public:
-    QGSP_EMV(const edm::ParameterSet & p);
+  QGSP_EMV(G4LogicalVolumeToDDLogicalPartMap& map, const edm::ParameterSet & p);
 };
 
 #endif

@@ -6,9 +6,9 @@
 #include "G4DecayPhysics.hh"
 #endif
 
-DummyPhysics::DummyPhysics(const edm::ParameterSet & p) 
-    : PhysicsList(p)
-{ 
+DummyPhysics::DummyPhysics(G4LogicalVolumeToDDLogicalPartMap& map,
+			   const edm::ParameterSet & p) 
+  : PhysicsList(map, p) { 
 #ifdef G4V7
     RegisterPhysics(new GeneralPhysics("general"));
 #else

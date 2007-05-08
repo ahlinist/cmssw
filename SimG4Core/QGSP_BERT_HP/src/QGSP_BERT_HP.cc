@@ -9,9 +9,8 @@
 #include "G4HadronElasticPhysics.hh"
 #include "G4DataQuestionaire.hh"
 
-QGSP_BERT_HP::QGSP_BERT_HP(const edm::ParameterSet & p) 
-    : PhysicsList(p)
-{
+QGSP_BERT_HP::QGSP_BERT_HP(G4LogicalVolumeToDDLogicalPartMap& map,
+			   const edm::ParameterSet & p) : PhysicsList(map, p) {
     G4DataQuestionaire it(photon);
     std::cout << "You are using the simulation engine: QGSP_BERT_HP 1.0" << std::endl;
   

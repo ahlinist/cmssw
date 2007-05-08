@@ -8,8 +8,8 @@
 class DummyPhysics : public PhysicsList
 {
 public:
-    DummyPhysics(const edm::ParameterSet & p);
-    virtual ~DummyPhysics();
+  DummyPhysics(G4LogicalVolumeToDDLogicalPartMap&, const edm::ParameterSet &);
+  virtual ~DummyPhysics();
 };
  
 #endif
