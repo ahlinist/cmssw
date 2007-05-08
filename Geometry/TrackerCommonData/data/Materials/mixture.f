@@ -308,22 +308,22 @@ C... set density and radiation lenght and nuclear interaction length
 
       if (match.ne.1)then
          write(*,*) "Couldn't find match for material  ",
-     +        Material(Index)
+     +        Index, Material(Index)
          write(*,*) "Exiting !!"
          stop
       else
          if(Radl(Index).le.0.) then
             write(*,*) "Radiation length is zero for material ",
-     +           Material(Index)
+     +           Index, Material(Index)
          endif
          if(Density(Index).le.0) then
              write(*,*) "Density is zero for material ",
-     +           Material(Index)
+     +           Index, Material(Index)
           endif
          if(Intl(Index).le.0.) then
             write(*,*)
      +           "Nuclear Interaction length is zero for material ",
-     +           Material(Index)
+     +           Index, Material(Index)
          endif
       endif
 
@@ -530,8 +530,8 @@ C--------------------New big table START
 C
       stringmatname = GMIXName
       call LatexUnderscore(stringmatname)
-      write(LUN,1000) Nmix,MixtureName,stringmatname
- 1000 Format('\\subsection*{\\underline{',I3,2X,A40,2X,
+      write(LUN,1000) MixtureName,stringmatname
+ 1000 Format('\\subsection*{\\underline{',2X,A40,2X,
      +     '(Material name: ',A40,')',' }}')
       
 C      write(LUN,*) "\\begin{table}[ht]"

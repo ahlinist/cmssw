@@ -708,7 +708,7 @@ EDMS Code EP 680-1174-200-C
 * 11 "Hybrid Tail Copper"       "Copper"           0.055   2     ELE
 * 12 "Hybrid Tail Solder Mask"  "T_Kapton"         0.011   2     ELE
 * 13 "Hybrid Tail Glue"         "Epoxy"            0.057   2     ELE
-* 14 "HV pin (module)"          "TOB_Brass"        0.011   2     ELE
+* 14 "HV pin (module)"          "Brass"            0.011   2     ELE
 .......................................................................
 =======================================================================
 
@@ -781,7 +781,7 @@ EDMS Code EP 680-1174-210-D
 * 11 "Hybrid Tail Copper"       "Copper"           0.055   4     ELE
 * 12 "Hybrid Tail Solder Mask"  "T_Kapton"         0.011   4     ELE
 * 13 "Hybrid Tail Glue"         "Epoxy"            0.057   4     ELE
-* 14 "HV pin (module)"          "TOB_Brass"        0.011   4     ELE
+* 14 "HV pin (module)"          "Brass"            0.011   4     ELE
 .......................................................................
 =======================================================================
 
@@ -874,7 +874,7 @@ MCVolume: ( 11.8 x 4.4 x 0.25 ) cm^3 = 12.98 cm^3
 * 11 "Hybrid Tail Copper"       "Copper"           0.055   1     ELE
 * 12 "Hybrid Tail Solder Mask"  "T_Kapton"         0.011   1     ELE
 * 13 "Hybrid Tail Glue"         "Epoxy"            0.057   1     ELE
-* 14 "HV pin (module)"          "TOB_Brass"        0.011   1     ELE
+* 14 "HV pin (module)"          "Brass"            0.011   1     ELE
 .......................................................................
 =======================================================================
 
@@ -964,7 +964,7 @@ MCVolume: ( 11.8 x 6.8 x 0.25 ) cm^3 = 20.06 cm^3
 * 11 "Hybrid Tail Copper"       "Copper"           0.055   2     ELE
 * 12 "Hybrid Tail Solder Mask"  "T_Kapton"         0.011   2     ELE
 * 13 "Hybrid Tail Glue"         "Epoxy"            0.057   2     ELE
-* 14 "HV pin (module)"          "TOB_Brass"        0.011   2     ELE
+* 14 "HV pin (module)"          "Brass"            0.011   2     ELE
 .......................................................................
 =======================================================================
 
@@ -990,7 +990,7 @@ Same as Layer 3/4.
 * 11 "Hybrid Tail Copper"       "Copper"           0.055   1     ELE
 * 12 "Hybrid Tail Solder Mask"  "T_Kapton"         0.011   1     ELE
 * 13 "Hybrid Tail Glue"         "Epoxy"            0.057   1     ELE
-* 14 "HV pin (module)"          "TOB_Brass"        0.011   1     ELE
+* 14 "HV pin (module)"          "Brass"            0.011   1     ELE
 .......................................................................
 =======================================================================
 
@@ -1058,7 +1058,7 @@ MCVolume: ( 2.3 x 3.0 x 0.2 ) cm^3 = 1.38 cm^3
 		density = 8.96 g/cm^3
 		--> volume = 0.0048 cm^3
 
-(9-[10]) Laser
+(9-10) Laser
 	MISSING:m = xxx g
 		density = xxx g/cm^3
 		--> volume = xxx cm^3
@@ -1082,8 +1082,9 @@ MCVolume: ( 2.3 x 3.0 x 0.2 ) cm^3 = 1.38 cm^3
 * 6 "AOH Capacitors"            "Barium_Titanate"  0.0114  1     ELE
 * 7 "AOH ASICs EMC"             "Epoxy"            0.0208  1     ELE
 * 8 "AOH ASICs copper"          "Copper"           0.0048  1     ELE
-* 9 "Laser Cover"               "Ceramic"          0.0875  1     ELE
-* 10 "AOH 3D Label"             "T_Kapton"         0.0143  1     ELE
+* 9 "Laser"                     "Air"              0.0000  1     ELE
+* 10 "Laser Cover"              "Ceramic"          0.0875  1     ELE
+* 11 "AOH 3D Label"             "T_Kapton"         0.0143  1     ELE
 .......................................................................
 =======================================================================
 
