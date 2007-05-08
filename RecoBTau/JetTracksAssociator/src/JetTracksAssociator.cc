@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrea Rizzi
 //         Created:  Wed Apr 12 11:12:49 CEST 2006
-// $Id: JetTracksAssociator.cc,v 1.9 2006/10/27 01:35:36 wmtan Exp $
+// $Id: JetTracksAssociator.cc,v 1.10 2006/10/28 17:10:54 fwyzard Exp $
 //
 //
 
@@ -127,19 +127,22 @@ JetTracksAssociationCollection * JetTracksAssociator::associate( const edm::Hand
 #ifdef DEBUG
     LogDebug("JetTracksAssociator") << "->   Jet " << setw(2) << j << " pT: " << setprecision(2) << setw(6) << (*jets)[j].pt() << " eta: " << setprecision(2) << setw(5) << (*jets)[j].eta() << " phi: " << setprecision(2) << setw(5) << (*jets)[j].phi();
 #endif
+    TrackRefVector assoTracks;
     for (size_t t=0; t < tracks->size() ; t++) {
       double delta  = ROOT::Math::VectorUtil::DeltaR((*jets)[j].p4().Vect(), (*tracks)[t].momentum());
       bool   inside = (delta < m_deltaRCut);
 #ifdef DEBUG
        LogDebug("JetTracksAssociator") << "   Track " << setw(2) << t << " pT: " << setprecision(2) << setw(6) << (*tracks)[t].pt() << " eta: " << setprecision(2) << setw(5) << (*tracks)[t].eta() << " phi: " << setprecision(2) << setw(5) << (*tracks)[t].phi()
-				       << "   delta R: " << setprecision(2) << setw(4) << delta << " is inside: " << inside;
+                                       << "   delta R: " << setprecision(2) << setw(4) << delta << " is inside: " << inside;
 #endif
-      if (inside) 
-        outputCollection->insert(edm::Ref<CaloJetCollection>(jets, j), edm::Ref<TrackCollection>(tracks, t));
+      if (inside)
+        assoTracks.push_back(edm::Ref<TrackCollection>(tracks, t));
     }
-  } 
+        outputCollection->push_back(JetTracksAssociation(edm::Ref<CaloJetCollection>(jets, j), assoTracks));
+  }
 
   return outputCollection;
+
 }
 
 //define this as a plug-in
