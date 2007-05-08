@@ -9,6 +9,7 @@
 <use name=RecoVertex/PrimaryVertexProducer>
 <use name=TrackingTools/Records>
 <use name=TrackingTools/TransientTrack>
+<use name=RecoBTau/JetTagComputer>
 <flags EDM_PLUGIN=1>
 <export>
   <use name=DataFormats/BTauReco>
@@ -18,6 +19,7 @@
   <use name=FWCore/Framework>
   <use name=FWCore/ParameterSet>
   <use name=MagneticField/Engine>
+  <use name=RecoBTau/JetTagComputer>
   <lib name=RecoBTagTrackCounting>
 </export>
 
