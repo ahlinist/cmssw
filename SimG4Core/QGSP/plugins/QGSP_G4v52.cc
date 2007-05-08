@@ -10,8 +10,8 @@
 #include "G4DataQuestionaire.hh"
 #include "SimG4Core/QGSP/src/HadronPhysicsQGSP.hh"
 
-QGSP_G4v52::QGSP_G4v52(const edm::ParameterSet & p)
-    : PhysicsList(p)
+QGSP_G4v52::QGSP_G4v52(G4LogicalVolumeToDDLogicalPartMap& map,
+		       const edm::ParameterSet & p) : PhysicsList(map, p)
 {
 
   G4DataQuestionaire it(photon);

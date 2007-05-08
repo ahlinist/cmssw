@@ -7,7 +7,7 @@
 class QGSC: public PhysicsList
 {
 public:
-    QGSC(const edm::ParameterSet & p);
+  QGSC(G4LogicalVolumeToDDLogicalPartMap& map, const edm::ParameterSet & p);
 };
 
 #endif

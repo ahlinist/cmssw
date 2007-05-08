@@ -16,8 +16,8 @@
 #include "G4DataQuestionaire.hh"
 #endif
 
-LHEP::LHEP(const edm::ParameterSet & p) : PhysicsList(p)
-{
+LHEP::LHEP(G4LogicalVolumeToDDLogicalPartMap& map, 
+	   const edm::ParameterSet & p) : PhysicsList(map, p) {
   G4DataQuestionaire it(photon);
 #ifdef G4V7
   std::cout << "You are using the simulation engine: LHEP 3.7" << std::endl;

@@ -7,7 +7,7 @@
 class FTFP: public PhysicsList
 {
 public:
-    FTFP(const edm::ParameterSet & p);
+  FTFP(G4LogicalVolumeToDDLogicalPartMap& map, const edm::ParameterSet & p);
 };
 
 #endif

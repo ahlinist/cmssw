@@ -17,9 +17,8 @@
 #include "G4DataQuestionaire.hh"
 #endif
 
-QGSP::QGSP(const edm::ParameterSet & p) 
-    : PhysicsList(p)
-{
+QGSP::QGSP(G4LogicalVolumeToDDLogicalPartMap& map, 
+	   const edm::ParameterSet & p) : PhysicsList(map, p) {
     G4DataQuestionaire it(photon);
 #ifdef G4V7
     std::cout << "You are using the simulation engine: QGSP 2.8" << std::endl;
