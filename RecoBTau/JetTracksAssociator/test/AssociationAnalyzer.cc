@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrea Rizzi
 //         Created:  Wed Apr 12 11:12:49 CEST 2006
-// $Id: AssociationAnalyzer.cc,v 1.6 2006/11/19 08:49:35 tboccali Exp $
+// $Id: AssociationAnalyzer.cc,v 1.7 2007/05/08 16:33:09 arizzi Exp $
 //
 //
 
@@ -92,7 +92,7 @@ AssociationAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   for (CaloJetCollection::size_type i = 0; i < jets.size(); ++i) {
     CaloJetRef jet(jetsHandle, i);
     try {
-      if(association[i].first != jet)
+      if(association[i].first.get() != jet.get())
          {
           cout << "ERRORR: JET REFS NOT MATCHING!!!" << endl;   
          } 
