@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrea Rizzi
 //         Created:  Wed Apr 12 11:12:49 CEST 2006
-// $Id: TrackCountingAnalyzer.cc,v 1.4 2006/11/17 15:07:45 tboccali Exp $
+// $Id: TrackCountingAnalyzer.cc,v 1.5 2007/05/03 11:45:23 arizzi Exp $
 //
 //
 
@@ -83,7 +83,7 @@ TrackCountingAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   for (JetTagCollection::size_type i = 0; i < jets.size(); ++i) {
     cout << jets[i].discriminator() <<endl;
     cout  << "Number of associated tracks " << jets[i].tracks().size() << endl;
-
+    //dynamic_cast<const JTATagInfo *>(jets[i].tagInfoRef().get())->tracks().size() << endl;
     //Accessing tracks crash right now 
     const TrackRefVector & tracks= jets[i].tracks();
    //cout << "Product: " <<    jets[i].tracks().product()  << endl;
