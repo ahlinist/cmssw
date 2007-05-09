@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrea Rizzi
 //         Created:  Wed Apr 12 11:12:49 CEST 2006
-// $Id: JetTracksAssociator.cc,v 1.10 2006/10/28 17:10:54 fwyzard Exp $
+// $Id: JetTracksAssociator.cc,v 1.11 2007/05/08 16:33:08 arizzi Exp $
 //
 //
 
@@ -138,7 +138,7 @@ JetTracksAssociationCollection * JetTracksAssociator::associate( const edm::Hand
       if (inside)
         assoTracks.push_back(edm::Ref<TrackCollection>(tracks, t));
     }
-        outputCollection->push_back(JetTracksAssociation(edm::Ref<CaloJetCollection>(jets, j), assoTracks));
+        outputCollection->push_back(JetTracksAssociation(edm::RefToBase<Jet>(edm::Ref<CaloJetCollection>(jets, j)), assoTracks));
   }
 
   return outputCollection;
