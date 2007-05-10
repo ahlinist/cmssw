@@ -13,7 +13,7 @@
 //
 // Original Author:  Simone Gennai
 //      Created:  Thu Apr  6 09:56:23 CEST 2006
-// $Id: ConeIsolation.cc,v 1.20 2007/02/01 15:32:49 gennai Exp $
+// $Id: ConeIsolation.cc,v 1.21 2007/04/17 12:34:20 gennai Exp $
 //
 //
 
@@ -107,7 +107,9 @@ ConeIsolation::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   JetTracksAssociationCollection::const_iterator it = jetTracksAssociation->begin();
   for(; it != jetTracksAssociation->end(); it++)
      {
-       int i = it->key.index();
+       int i = it->first.castTo<edm::Ref<std::vector<reco::Jet> > >().index();
+
+       //       int i = it->first.castTo<reco::Jet>().index();
        pair<JetTag,IsolatedTauTagInfo> myPair =m_algo->tag(edm::Ref<JetTracksAssociationCollection>(jetTracksAssociation,i),myPV); 
        baseCollection->push_back(myPair.first);    
        //still need to set the JetTag
