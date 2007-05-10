@@ -38,7 +38,7 @@ ConeIsolationAlgorithm::ConeIsolationAlgorithm(const ParameterSet & parameters)
 pair<JetTag,IsolatedTauTagInfo> ConeIsolationAlgorithm::tag(const  JetTracksAssociationRef & jetTracks, const Vertex & pv) 
 {
 
- edm::RefVector<reco::TrackCollection> tracks=jetTracks->val;
+ edm::RefVector<reco::TrackCollection> tracks=jetTracks->second;
  edm::RefVector<reco::TrackCollection> myTracks;
 
  //Selection of the Tracks
@@ -67,7 +67,7 @@ for(;it!= tracks.end();it++)
  IsolatedTauTagInfo resultExtended(myTracks,jetTracks);
 
  double r_sigCone = signal_cone;
- double energyJet = jetTracks->key->energy();
+ double energyJet = jetTracks->first->energy();
  if(!useFixedSizeCone){
    r_sigCone = std::min(variableMaxCone, variableConeParameter / energyJet);
    r_sigCone = std::max((double)r_sigCone, variableMinCone);
@@ -76,7 +76,7 @@ for(;it!= tracks.end();it++)
 
 
  //now I can use it for the discriminator;
- math::XYZVector jetDir(jetTracks->key->px(),jetTracks->key->py(),jetTracks->key->pz());   
+ math::XYZVector jetDir(jetTracks->first->px(),jetTracks->first->py(),jetTracks->first->pz());   
  double discriminator = 0;
  if(useVertexConstrain_) {
    //In this case all the selected tracks comes from the same vertex, so no need to pass the dZ_vertex requirement to the discriminator 
