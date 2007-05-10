@@ -44,7 +44,10 @@ namespace edm {
     class FWLiteDelayedReader : public DelayedReader {
      public:
       FWLiteDelayedReader(): entry_(-1),eventTree_(0),reg_(0) {}
-      virtual std::auto_ptr<EDProduct> get(BranchKey const& k, EDProductGetter const* ep) const;
+      virtual std::auto_ptr<EDProduct> getProduct(BranchKey const& k, EDProductGetter const* ep) const;
+      virtual std::auto_ptr<BranchEntryDescription> getProvenance(BranchKey const&, EDProductGetter const*) const {
+        return std::auto_ptr<BranchEntryDescription>();
+      }
       void setEntry(Long64_t iEntry) { entry_ = iEntry; }
       void setTree(TTree* iTree) {eventTree_ = iTree;}
       void set(const edm::ProductRegistry* iReg) { reg_ = iReg;}
@@ -55,7 +58,7 @@ namespace edm {
     };
     
     std::auto_ptr<EDProduct> 
-    FWLiteDelayedReader::get(BranchKey const& k, EDProductGetter const* ep) const
+    FWLiteDelayedReader::getProduct(BranchKey const& k, EDProductGetter const* ep) const
     {
       edm::ProductRegistry::ProductList::const_iterator itFind= reg_->productList().find(k);
       if(itFind == reg_->productList().end()) {

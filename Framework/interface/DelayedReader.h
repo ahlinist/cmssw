@@ -12,17 +12,17 @@ $Id$
 
 #include <memory>
 
-#include "DataFormats/Common/interface/EDProduct.h"
-
-
 namespace edm {
   class BranchKey;
+  class BranchEntryDescription;
+  class EDProduct;
   class EDProductGetter;
   class DelayedReader {
   public:
     virtual ~DelayedReader();
 
-    virtual std::auto_ptr<EDProduct> get(BranchKey const& k, EDProductGetter const* ep) const = 0;
+    virtual std::auto_ptr<EDProduct> getProduct(BranchKey const& k, EDProductGetter const* ep) const = 0;
+    virtual std::auto_ptr<BranchEntryDescription> getProvenance(BranchKey const& k, EDProductGetter const* ep) const = 0;
   };
 }
 
