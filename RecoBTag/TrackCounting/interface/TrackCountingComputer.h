@@ -23,9 +23,9 @@ class TrackCountingComputer : public JetTagComputer
              //FIXME:add extra cuts here
              significances.insert(it->significance());
            }
-          std::multiset<float>::iterator nth=significances.begin();
-          for(int i=0;i<2 && nth!=significances.end();i++) nth++;  //3rd track, FIXME:configurable
-          if(nth!=significances.end()) return *nth; else return -10.;
+          std::multiset<float>::reverse_iterator nth=significances.rbegin();
+          for(int i=0;i<2 && nth!=significances.rend();i++) nth++;  //3rd track, FIXME:configurable
+          if(nth!=significances.rend()) return *nth; else return -10.;
         }
         else {    //FIXME: exceptions
                  abort();
