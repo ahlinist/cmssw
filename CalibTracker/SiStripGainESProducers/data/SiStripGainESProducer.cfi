@@ -1,1 +1,5 @@
-es_module = SiStripGainESProducer {}
+es_module = SiStripGainESProducer {
+
+  double "NormalizationFactor = 1.
+
+}
