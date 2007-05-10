@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrea Rizzi
 //         Created:  Thu Apr  6 09:56:23 CEST 2006
-// $Id: JetTagProducer.cc,v 1.22 2007/04/16 08:32:00 arizzi Exp $
+// $Id: JetTagProducer.cc,v 1.1 2007/05/07 16:36:35 arizzi Exp $
 //
 //
 
@@ -95,8 +95,11 @@ typename   ConcreteTagInfoCollection::const_iterator it = tagInfoHandle->begin()
 }
 
 
+#include "DataFormats/BTauReco/interface/TrackIPTagInfo.h"
 #include "DataFormats/BTauReco/interface/TrackCountingTagInfo.h"
 //define this as a plug-in
 typedef JetTagProducer<TrackCountingTagInfoCollection>  JetTagProducerTrackCounting ;
 DEFINE_FWK_MODULE(JetTagProducerTrackCounting);
+typedef JetTagProducer<TrackIPTagInfoCollection>  JetTagProducerImpactParameter ;
+DEFINE_FWK_MODULE(JetTagProducerImpactParameter);
 
