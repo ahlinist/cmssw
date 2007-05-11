@@ -1,5 +1,5 @@
 #include "RecoBTag/CombinedSV/interface/PseudoVertexBuilder.h"
-#include "RecoVertex/VertexTools/interface/BeamSpot.h"
+#include "RecoVertex/VertexPrimitives/interface/BeamSpot.h"
 #include "RecoVertex/VertexPrimitives/interface/TransientVertex.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
