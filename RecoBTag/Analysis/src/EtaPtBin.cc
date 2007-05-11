@@ -43,7 +43,7 @@ TString EtaPtBin::buildDescriptionString
 
 bool EtaPtBin::inBin(const reco::JetTag & jetTag) const
 {
-  return inBin(jetTag.jet().eta(), jetTag.jet().pt());
+  return inBin(jetTag.jet()->eta(), jetTag.jet()->pt());
 }
 
 bool EtaPtBin::inBin(const JetFlavour & jetFlavour) const
