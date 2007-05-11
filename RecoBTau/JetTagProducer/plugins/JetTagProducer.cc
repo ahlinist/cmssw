@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrea Rizzi
 //         Created:  Thu Apr  6 09:56:23 CEST 2006
-// $Id: JetTagProducer.cc,v 1.1 2007/05/07 16:36:35 arizzi Exp $
+// $Id: JetTagProducer.cc,v 1.2 2007/05/10 22:05:58 arizzi Exp $
 //
 //
 
@@ -78,7 +78,8 @@ JetTagProducer<ConcreteTagInfoCollection>::produce(edm::Event& iEvent, const edm
    edm::ESHandle<JetTagComputer> computer;
    iSetup.get<JetTagComputerRecord>().get( m_jetTagComputer, computer );
    m_computer = computer.product() ;
-   
+   m_computer->setEventSetup(iSetup);
+
  reco::JetTagCollection * jetTagCollection = new reco::JetTagCollection();
    
 typename   ConcreteTagInfoCollection::const_iterator it = tagInfoHandle->begin();
