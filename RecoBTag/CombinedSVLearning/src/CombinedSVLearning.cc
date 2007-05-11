@@ -95,7 +95,7 @@ void CombinedSVLearning::analyze( const edm::Event& iEvent,
 
   for ( reco::CombinedSVTagInfoCollection::size_type i = 0; i < tags.size(); ++i)
   {
-    JetFlavour jf = theIdentifier.identifyBasedOnPartons ( tags[i].jet() );
+    JetFlavour jf = theIdentifier.identifyBasedOnPartons ( *(tags[i].jet()) );
     cout << tags[i].discriminator() << endl;
     char tag= getFlavor ( jf );
     theTeacher->teach ( tags[i].variables(), tag );
