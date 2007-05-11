@@ -34,8 +34,8 @@ bool AcceptJet::operator() (const reco::JetTag & jetTag, const JetFlavour & jetF
   // temporary fudge to correct for double loop error
   //  jetPartonMomentum /= 2.0;
 
-  if ( fabs(jetTag.jet().eta()) < etaMin  ||
-       fabs(jetTag.jet().eta()) > etaMax  ) accept = false;
+  if ( fabs(jetTag.jet()->eta()) < etaMin  ||
+       fabs(jetTag.jet()->eta()) > etaMax  ) accept = false;
 
   if ( jetFlavour.underlyingParton4Vec().P() < pPartonMin  ||
        jetFlavour.underlyingParton4Vec().P() > pPartonMax  ) accept = false;
@@ -43,11 +43,11 @@ bool AcceptJet::operator() (const reco::JetTag & jetTag, const JetFlavour & jetF
   if ( jetFlavour.underlyingParton4Vec().Pt() < ptPartonMin  ||
        jetFlavour.underlyingParton4Vec().Pt() > ptPartonMax  ) accept = false;
 
-  if ( jetTag.jet().pt() < ptRecJetMin ||
-       jetTag.jet().pt() > ptRecJetMax ) accept = false;
+  if ( jetTag.jet()->pt() < ptRecJetMin ||
+       jetTag.jet()->pt() > ptRecJetMax ) accept = false;
 
-  if ( jetTag.jet().p() < pRecJetMin ||
-       jetTag.jet().p() > pRecJetMax ) accept = false;
+  if ( jetTag.jet()->p() < pRecJetMin ||
+       jetTag.jet()->p() > pRecJetMax ) accept = false;
 
   return accept;
 }
