@@ -438,17 +438,16 @@ void CSCRecHit2DInALayer::findMaxima() {
   // A typical value is 30.
 
   theMaxima.clear();
-
-  for(size_t i = 1; i < thePulseHeightMap.size(); ++i) {
-    // sum 3 strips so that hits between strips are not suppressed
-    float height = thePulseHeightMap[i-1].y() +
-                   thePulseHeightMap[i].y() +
-                   thePulseHeightMap[i+1].y();
+  size_t nchan = thePulseHeightMap.size();
+  for(size_t i = 1; i < nchan; ++i) {
+    // sum 3 strips - if possible - so that hits between strips are not suppressed
+    float height = thePulseHeightMap[i-1].y() + thePulseHeightMap[i].y();
+    if ( i < (nchan-1) ) height += thePulseHeightMap[i+1].y(); // ensure we have an element!
     if( height > theThresholdForAPeak ) {
-      // check neighbors of strip i  Don't worry about bounds;
-      // should be OK at 0 and beyond last strip
+      // check strip i is greater than neighbors i-1 and i+1
+      size_t imax = std::min(i+1, nchan-1); // never exceed bounds
       if( thePulseHeightMap[i].y() > thePulseHeightMap[i-1].y() &&
-          thePulseHeightMap[i].y() >= thePulseHeightMap[i+1].y() &&
+          thePulseHeightMap[i].y() >= thePulseHeightMap[imax].y() &&
           thePulseHeightMap[i].tmax() > 1 && 
           thePulseHeightMap[i].tmax() < 7 ) {
         theMaxima.push_back(i);
