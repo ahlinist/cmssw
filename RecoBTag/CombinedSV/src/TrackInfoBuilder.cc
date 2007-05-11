@@ -2,7 +2,7 @@
 #include "RecoBTag/BTagTools/interface/SignedTransverseImpactParameter.h"
 #include "RecoBTag/BTagTools/interface/SignedImpactParameter3D.h"
 #include "MagneticField/Engine/interface/MagneticField.h"
-#include "RecoVertex/VertexTools/interface/BeamSpot.h"
+#include "RecoVertex/VertexPrimitives/interface/BeamSpot.h"
 #include "RecoBTag/CombinedSV/interface/ParticleMasses.h"
 #include "CLHEP/Vector/LorentzVector.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
