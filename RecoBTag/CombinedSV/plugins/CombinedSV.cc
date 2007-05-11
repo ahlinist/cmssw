@@ -7,7 +7,8 @@
 #include "RecoVertex/AdaptiveVertexFit/interface/AdaptiveVertexFitter.h"
 #include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
 #include "TrackingTools/Records/interface/TransientTrackRecord.h"
-#include "RecoVertex/VertexPrimitives/interface/BeamSpot.h"
+// #include "RecoVertex/VertexPrimitives/interface/BeamSpot.h"
+#include "DataFormats/BeamSpot/interface/BeamSpot.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "DataFormats/BTauReco/interface/CombinedSVTagInfoFwd.h"
 #include "DataFormats/BTauReco/interface/JetTag.h"
@@ -109,9 +110,14 @@ reco::Vertex CombinedSV::getPrimaryVertex ( const edm::Event & iEvent,
 
   cout << "[CombinedSV] No primary vertex found, use geometric origin (beamspot)"
        << endl;
+  /*
   BeamSpot s;
   TransientVertex vtx ( s.position(), s.error(), ttks, -1. );
   return static_cast < reco::Vertex > ( vtx );
+  */
+  reco::BeamSpot s;
+  math::XYZPoint p ( s.position().x(), s.position().y(), s.position().z() );
+  return reco::Vertex ( s.position(), s.covariance3D(), -1., -1., 0 );
 }
 
 
@@ -181,21 +187,23 @@ void CombinedSV::produce(edm::Event& iEvent,
           jetWithTrackColl->begin(); jetNTrks != jetWithTrackColl->end(); jetNTrks++)
     {
       // get jet part from jet with tracks association
-      int i=jetNTrks->key.index();
+      // int i=jetNTrks->first.index();
 
       /*
       const edm::Ref<reco::JetTracksAssociationCollection> & jta =
         edm::Ref<reco::JetTracksAssociationCollection>(jetWithTrackColl,i);
         */
 
+      /*
       edm::LogInfo("") << endl << endl
            << "[CombinedSV]     ---<  now analyzing jet #" << i << "  >---";
+           */
 
       vector < reco::TransientTrack > trks;
       edm::ESHandle<TransientTrackBuilder> builder;
       iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder", builder );
       for ( edm::RefVector < reco::TrackCollection >::const_iterator i=jetNTrks->second.begin();
-            i!=jetNTrks->val.end() ; ++i )
+            i!=jetNTrks->second.end() ; ++i )
       {
         trks.push_back ( builder->build ( &(*i) ) );
       }
