@@ -72,10 +72,10 @@ void BtagMCTest::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
   int size = tagColl.size();
   for (int i = 0; i != size; ++i) {
-    JetFlavour jetFlavour = jfi.identifyBasedOnPartons(tagColl[i].jet());
+    JetFlavour jetFlavour = jfi.identifyBasedOnPartons(* tagColl[i].jet());
     cout << "Tag with discriminator " << tagColl[i].discriminator() 
          << " - Associated Parton flavour: "<< jetFlavour.flavour() << endl;
-    cout << "  Eta/phi of reconstructed jet: " << tagColl[i].jet().eta()<<" , "<< tagColl[i].jet().phi() <<endl;
+    cout << "  Eta/phi of reconstructed jet: " << tagColl[i].jet()->eta()<<" , "<< tagColl[i].jet()->phi() <<endl;
     cout << "  Eta/phi of parton:            " << jetFlavour.underlyingParton4Vec().eta()
 	 <<" , "<< jetFlavour.underlyingParton4Vec().phi()<<endl;
   }
