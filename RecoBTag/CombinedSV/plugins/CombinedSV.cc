@@ -7,7 +7,7 @@
 #include "RecoVertex/AdaptiveVertexFit/interface/AdaptiveVertexFitter.h"
 #include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
 #include "TrackingTools/Records/interface/TransientTrackRecord.h"
-#include "RecoVertex/VertexTools/interface/BeamSpot.h"
+#include "RecoVertex/VertexPrimitives/interface/BeamSpot.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "DataFormats/BTauReco/interface/CombinedSVTagInfoFwd.h"
 #include "DataFormats/BTauReco/interface/JetTag.h"
@@ -194,13 +194,13 @@ void CombinedSV::produce(edm::Event& iEvent,
       vector < reco::TransientTrack > trks;
       edm::ESHandle<TransientTrackBuilder> builder;
       iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder", builder );
-      for ( edm::RefVector < reco::TrackCollection >::const_iterator i=jetNTrks->val.begin();
+      for ( edm::RefVector < reco::TrackCollection >::const_iterator i=jetNTrks->second.begin();
             i!=jetNTrks->val.end() ; ++i )
       {
         trks.push_back ( builder->build ( &(*i) ) );
       }
 
-      reco::CombinedSVTagInfo btag = algorithm_->tag(primaryVertex, *( jetNTrks->key ), trks );
+      reco::CombinedSVTagInfo btag = algorithm_->tag(primaryVertex, *( jetNTrks->first ), trks );
       reco::JetTag jettag( btag.discriminator() );
       baseCollection->push_back(jettag);
       extCollection->push_back(btag);
