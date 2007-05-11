@@ -798,7 +798,6 @@
  <PosPart copyNumber="2">
    <rParent name="tob:TOB"/>
    <rChild name="tob:TOBDOHMs"/>
-  <rRotation name="tobrodpar:180D"/>
   <Translation x="[zero]" y="[zero]" z="-([SideDiskZ]+[SideDiskDz]+[DOHMsDz]+[Tol])" />
  </PosPart>
 
