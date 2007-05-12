@@ -17,7 +17,6 @@
 <use name=CondFormats/BTauObjects>
 <use name=CondFormats/DataRecord>
 <use name=CondCore/DBOutputService>
-<use name=CondCore/BTauPlugins>
 <use name=MagneticField/Engine>
 <use name=MagneticField/Records>
 <use name=Geometry/TrackerGeometryBuilder>
