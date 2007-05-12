@@ -1,0 +1,36 @@
+module pfConeIsolation=PFConeIsolation {
+    string PFJetmodule        = "iterativeCone5PFJets"
+    double PFJetConeSize      = 0.5       # temporary parameter
+    string PFCandidatemodule  = "particleFlow"
+    #string PVmodule           = "pixelVertices"
+    string PVmodule           = "offlinePrimaryVerticesFromCTFTracks"
+    double smearedPVsigmaX    = 0.0015
+    double smearedPVsigmaY    = 0.0015
+    double smearedPVsigmaZ    = 0.0050
+    # parameters of the considered charged hadr. cand.'s, based on their rec. tk properties :
+    double ChargedHadrCand_tkminPt            = 1.
+    int32 ChargedHadrCand_tkminPixelHitsn     = 2
+    int32 ChargedHadrCand_tkminTrackerHitsn   = 8
+    double ChargedHadrCand_tkmaxipt           = 0.03
+    double ChargedHadrCand_tkmaxChi2          = 100.
+    double ChargedHadrCand_tkmaxPVtxDZ        = 0.2
+    # parameters of the considered neutral hadr. cand.'s, based on their rec. HCAL clus. properties : 
+    double NeutrHadrCand_HcalclusminE         = 1.
+    # parameters of the considered gamma cand.'s, based on their rec. ECAL clus. properties :
+    double GammaCand_EcalclusminE             = 1.
+    # 
+    bool UseOnlyChargedHadrCand               = true
+    double Cand_minPt                         = 1.
+    double MatchingConeSize                   = 0.1
+    double SignalConeSize                     = 0.07
+    double IsolConeSize                       = 0.45
+    bool UseOnlyChargedHadr_for_LeadCand      = true
+    double LeadCand_minPt                     = 6.
+    int32 IsolRing_Candsn                     = 0 
+    bool UseSignalConeVariableSize            = false
+    double SignalConeVariableSize_Parameter   = 3.5
+    double SignalConeVariableSize_max         = 0.17
+    double SignalConeVariableSize_min         = 0.05
+ }
+
+  
