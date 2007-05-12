@@ -1,0 +1,14 @@
+<use name=root>
+<use name=clhep>
+<use name=Foundation/PluginManager>
+<use name=FWCore/Utilities>
+<use name=FWCore/Framework>
+<use name=FWCore/ParameterSet>
+<use name=DataFormats/Math>
+<use name=DataFormats/BTauReco>
+<library file=PFTauTagTest.cc name=PFTauTagTest>
+  <use name=FWCore/Framework>
+ <flags SEAL_PLUGIN_NAME="PFTauTagTest">
+</library>
+
+
