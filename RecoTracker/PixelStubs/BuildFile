@@ -1,12 +1,7 @@
 <flags EDM_PLUGIN=1>
 <use name=DataFormats/SiPixelCluster>
 <use name=DataFormats/TrackerRecHit2D>
-<use name=RecoTracker/TkMSParametrization>
-<use name=RecoTracker/Record>
-<use name=RecoTracker/TkDetLayers>
 <use name=FWCore/ParameterSet>
-<use name=TrackingTools/DetLayers>
-<use name=DataFormats/TrackerRecHit2D>
 <use name=FWCore/Framework> 
 <use name=DataFormats/SiStripDetId>
 <use name=RecoTracker/TkSeedingLayers>
@@ -15,12 +10,5 @@
 <export>
   <lib name=RecoTrackerPixelStubs>	 
   <use name=DataFormats/TrackerRecHit2D>
-  <use name=RecoTracker/Record>
-  <use name=TrackingTools/DetLayers>
-  <use name=FWCore/ParameterSet>
-  <use name=DataFormats/TrackerRecHit2D>
-  <use name=FWCore/Framework>
-  <use name=RecoTracker/TkDetLayers>
-  <use name=DataFormats/SiStripDetId>
   <use name=RecoTracker/TkSeedingLayers>
 </export>
