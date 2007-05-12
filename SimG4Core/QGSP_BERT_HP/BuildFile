@@ -1,14 +1,9 @@
-<Flags EDM_PLUGIN=1>
-<export>
- <use name=FWCore/Framework>
- <use name=Framework/SealKernel>
- <use name=SimG4Core/Physics>
- <lib name=SimG4CoreQGSP_BERT_HP>
-</export>
-
-<use name=FWCore/Framework>
-<use name=Framework/SealKernel>
+<use name=FWCore/ParameterSet>
+<use name=FWCore/PluginManager>
 <use name=SimG4Core/Physics>
 <use name=geant4>
-<use name=clhep>
-<use name=boost>
+<flags EDM_PLUGIN=1>
+<export>
+  <lib name=SimG4CoreQGSP_BERT_HP>
+</export>
+
