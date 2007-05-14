@@ -21,10 +21,10 @@ SeedComparitorWithPixelStubs::~SeedComparitorWithPixelStubs()
 bool SeedComparitorWithPixelStubs::compatible(const SeedingHitSet &seed) {
   bool good=true;
   for (unsigned int i=0; i<seed.hits().size()-1; ++i) {
-    const SiPixelRecHit &pix1 = dynamic_cast<const SiPixelRecHit&>(*seed.hits()[i].RecHit());
+    const SiPixelRecHit &pix1 = dynamic_cast<const SiPixelRecHit&>(*(seed.hits()[i]));
     PixelStub stub1(pix1, betaCutFactor_);
     for (unsigned int j=i+1; j<seed.hits().size(); ++j) {
-      const SiPixelRecHit &pix2 = dynamic_cast<const SiPixelRecHit&>(*seed.hits()[j].RecHit());
+      const SiPixelRecHit &pix2 = dynamic_cast<const SiPixelRecHit&>(*(seed.hits()[j]));
       if (pix1.geographicalId().subdetId() != pix2.geographicalId().subdetId()) continue;
       PixelStub stub2(pix2, betaCutFactor_);
       
