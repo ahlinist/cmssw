@@ -412,7 +412,7 @@ other components:
 		--> volume = 0.0143 cm^3
 	
 
-(12) Optical fibers
+(12-18) Optical fibers
 	two different types
 	- transparents (polyethylene)
 	- green (acrylate)
@@ -420,19 +420,18 @@ other components:
 
 	masses are per DOH, multiplicity will be given by the number of DOHs
 	( 4 x DOH_2t_2g ) [56 mm]
-	( 4 x DOH_4t_0g ) [56 mm]
-	Buffer (Polyethylene):	m = 0.5 x [ 0.6181 + 0.6181 ] g = 1.2362 g
+	Buffer (Polyethylene):	m = 0.5 x 0.6181 g = 0.30905 g
 		density = 0.95 g/cm^3
-		--> volume = 1.301 cm^3
-	Buffer (Acrylate):	m = 0.5 x [ 0.7693 + 0.7693 ] g = 1.5386 g
+		--> volume = 0.325 cm^3
+	Buffer (Acrylate):	m = 0.5 x 0.7693 g = 0.38465 g
 		density = 1.17 g/cm^3
-		--> volume = 1.315 cm^3
-	Coating (Acrylate):	m = ( 0.0482 + 0.0482 ) g = 0.0964 g
+		--> volume = 0.329 cm^3
+	Coating (Acrylate):	m = 0.0482 g
 		density = 1.17 g/cm^3
-		--> volume = 0.082 cm^3
-	Cladding+Core (take SiO2):	m = [ ( 0.0301 + 0.0002 ) + ( 0.0301 + 0.0002 ) ] g = 0.0606 g 
+		--> volume = 0.041 cm^3
+	Cladding+Core (take SiO2):	m = ( 0.0301 + 0.0002 ) g = 0.0303 g 
 		density = 2.64 g/cm^3
-		--> volume = 0.023 cm^3
+		--> volume = 0.0115 cm^3
 	3D label tags (kapton): m = 4 x 0.110 g = 0.440 g
 		density = 1.40 g/cm^3
 		--> volume = 0.314 cm^3
@@ -441,7 +440,7 @@ other components:
 		--> volume = 2.349 cm^3
 
 ..................................................................................
-# "TOB DOH"                                "TOB_DOH"          5.9996   2.9998
+# "TOB DOH"                                "TOB_DOH"          3.9851   2.9998
 * 1 "DOH PCB board"                        "T_G10"            0.367    1      ELE
 * 2 "DOH PCB copper traces"                "Copper"           0.064    1      ELE
 * 3 "DOH NAiS connector"                   "Copper"           0.0093   1      ELE
@@ -454,10 +453,10 @@ other components:
 * 10 "Photodiodes"                         "Air"              0.000    1      ELE
 * 11 "Covers"                              "Air"              0.000    1      ELE
 * 12 "DOH 3D Label"                        "T_Kapton"         0.0143   1      ELE
-* 13 "Optical fibers buffer (transparent)" "Polyethylene"     1.301    1      CAB
-* 14 "Optical fibers buffer (green)"       "Acrylate"         1.315    1      CAB
-* 15 "Optical fibers coating"              "Acrylate"         0.082    1      CAB
-* 16 "Optical fibers cladding+core"        "Quartz"           0.023    1      CAB
+* 13 "Optical fibers buffer (transparent)" "Polyethylene"     0.325    1      CAB
+* 14 "Optical fibers buffer (green)"       "Acrylate"         0.329    1      CAB
+* 15 "Optical fibers coating"              "Acrylate"         0.041    1      CAB
+* 16 "Optical fibers cladding+core"        "Quartz"           0.0115   1      CAB
 * 17 "Optical fibers 3D label tag"         "T_Kapton"         0.314    1      CAB
 * 18 "Optical fibers MU connectors"        "T_Kapton"         2.349    1      CAB
 ..................................................................................
@@ -469,7 +468,7 @@ o DOHM
   ----
 TOB Digital Opto-Hybrid Module with DOHs (Digital Opto-Hybrids)
 
-MCVolume: ( 94 x 143 x 8 ) mm^3 = 67.210 cm^3
+MCVolume: ( 94 x 143 x 6 ) mm^3 = 80.652 cm^3
 
 		DOHM
 		----
@@ -585,7 +584,7 @@ data taken from http://test-gmagazzu.web.cern.ch/test%2Dgmagazzu/TOB/MB/DOHM_MB.
 		--> volume = 0.0203 cm^3
 
 ..................................................................................
-# "TOB DOHM"                               "TOB_DOHM"       107.536   13.442
+# "TOB DOHM"                               "TOB_DOHM"        80.652   13.442
 * 1 "DOHM PCB board"                       "T_G10"           19.816    1      ELE
 * 2 "DOHM PCB copper traces"               "Copper"           0.716    1      ELE
 * 3 "DOHM NAiS connectors"                 "Copper"           0.127    1      ELE
@@ -603,7 +602,7 @@ data taken from http://test-gmagazzu.web.cern.ch/test%2Dgmagazzu/TOB/MB/DOHM_MB.
 * 15 "DOHM Aluminium supports"             "Aluminium"        4.215    1      SUP
 * 16 "DOHM Screws"                         "Brass"            0.248    1      SUP
 * 17 "DOHM Washers"                        "Brass"            0.0203   1      SUP
-* 18 "DOHs"                                "TOB_DOH"          5.9996   2      ELE
+* 18 "DOHs"                                "TOB_DOH"          3.9851   2      ELE
 ..................................................................................
 ==================================================================================
 
