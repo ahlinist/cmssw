@@ -10,7 +10,7 @@ using std::endl;
 // Constructor:
 
 UserAnalysis::UserAnalysis(Config_t * theConfig) : 
-myConfig(theConfig), myEventData(0)
+myConfig(theConfig), EventData(0)
 {
   
   // get parameters for UserAnalysis
@@ -56,6 +56,17 @@ myConfig(theConfig), myEventData(0)
 
 }
 
+// Called from Destructor:
+
+void UserAnalysis::endAnalysis() {
+
+// Print the user statistics here
+
+ return;
+ 
+} 
+ 
+
 
 //------------------------------------------------------------------------------
 // Methods:
@@ -64,16 +75,16 @@ myConfig(theConfig), myEventData(0)
 // this method is called for every event
 void UserAnalysis::doAnalysis(MrEvent* theEventData)
 {
-  myEventData = theEventData;
-  std::vector<MrParticle*> & RecoData = *(myEventData->recoData());
-  //std::vector<MrParticle*> & MCData = *(myEventData->mcData());
+  EventData = theEventData;
+  std::vector<MrParticle*> & RecoData = *(EventData->recoData());
+  //std::vector<MrParticle*> & MCData = *(EventData->mcData());
   
   
   
     // This produces some simple plots as examples
   
     // Overall condition on MET (to illustrate usage of parameters)
-    float metchk = myEventData->metRecoilMod();
+    float metchk = EventData->metRecoilMod();
     if (metchk < user_metMin){return;}
 
 
@@ -111,10 +122,10 @@ void UserAnalysis::doAnalysis(MrEvent* theEventData)
         hPtMuon->Fill(RecoData[i]->pt());
       }
     }
-    int nJets = myEventData->numJets();
+    int nJets = EventData->numJets();
     if (nJets > 3){nJets = 3;}
     for (int iJet = 1; iJet <= nJets; iJet++){
-      float ptjet = myEventData->ptJet(iJet);
+      float ptjet = EventData->ptJet(iJet);
       if (iJet == 1){hPtJet1->Fill(ptjet);}
       if (iJet == 2){hPtJet2->Fill(ptjet);}
       if (iJet == 3){hPtJet3->Fill(ptjet);}
@@ -122,20 +133,20 @@ void UserAnalysis::doAnalysis(MrEvent* theEventData)
     
     if (nJets > 0){
       // make plots of Missing energy from MC and recoil
-      float metmc = myEventData->metMCMod();
+      float metmc = EventData->metMCMod();
       hMissingETmc->Fill(metmc);
-      float metrec = myEventData->metRecoilMod();
+      float metrec = EventData->metRecoilMod();
       hMissingET->Fill(metrec);
   
       // make a plot of ETsum and HT (using the MET from recoil)
-      float etSum = myEventData->etSumRecoil();
-      float ht = myEventData->htRecoil();
+      float etSum = EventData->etSumRecoil();
+      float ht = EventData->htRecoil();
       hEtSum->Fill(etSum);
       hHT->Fill(ht);
   
       // make a plot of the largest hemisphere mass
-      float mass1 = myEventData->hemiMass1();
-      float mass2 = myEventData->hemiMass2();
+      float mass1 = EventData->hemiMass1();
+      float mass2 = EventData->hemiMass2();
       float mass = mass1 > mass2 ? mass1 : mass2;
       hHemiMass->Fill(mass);
     }
@@ -145,12 +156,12 @@ void UserAnalysis::doAnalysis(MrEvent* theEventData)
     // example of access to the hemisphere information
     if (nJets >= 2) {
       int firstsusymother[2] = {-1, -1};
-//    cout << " pointer to myEventData " << myEventData << endl;
-      firstsusymother[0] = myEventData->indexMatchedSusyMother1();
-      firstsusymother[1] = myEventData->indexMatchedSusyMother2();
+//    cout << " pointer to EventData " << EventData << endl;
+      firstsusymother[0] = EventData->indexMatchedSusyMother1();
+      firstsusymother[1] = EventData->indexMatchedSusyMother2();
 //    cout << " firstsusymother done " << endl;
-      int indjet1 = myEventData->indexRecoJet(1);
-      int indjet2 = myEventData->indexRecoJet(2);
+      int indjet1 = EventData->indexRecoJet(1);
+      int indjet2 = EventData->indexRecoJet(2);
 //    cout << " indjet done " << indjet1 << " " << indjet2 << endl;
       int hemijet1 = RecoData[indjet1]->hemisphere();
       int hemijet2 = RecoData[indjet2]->hemisphere();
@@ -159,7 +170,7 @@ void UserAnalysis::doAnalysis(MrEvent* theEventData)
       int susymotherjet2 = FindTopSusyMother(RecoData[indjet2]->partonIndex());
 //    cout << " susymotherjet done " << endl;
       if (hemijet1 > 0) {
-        float ptjet1 = myEventData->ptJet(1);
+        float ptjet1 = EventData->ptJet(1);
         if (susymotherjet1 > 0 && susymotherjet1 == firstsusymother[hemijet1-1]) {
           hJetGoodEt->Fill(ptjet1);
         }
@@ -168,7 +179,7 @@ void UserAnalysis::doAnalysis(MrEvent* theEventData)
         }
       }
       if (hemijet2 > 0) {
-        float ptjet2 = myEventData->ptJet(2);
+        float ptjet2 = EventData->ptJet(2);
         if (susymotherjet2 > 0 && susymotherjet2 == firstsusymother[hemijet2-1]) {
            hJetGoodEt->Fill(ptjet2);
         }
@@ -191,7 +202,7 @@ void UserAnalysis::doAnalysis(MrEvent* theEventData)
 int UserAnalysis::FindProducedSusyParticles(int firstsusy[])
 { // finds the produced susy particles
   // and returns their index IN MCData into an array
-  std::vector<MrParticle*> & MCData = *(myEventData->mcData());
+  std::vector<MrParticle*> & MCData = *(EventData->mcData());
 
   int nfound = 0;
   for (int j = 0; j < (int) MCData.size(); j++){
@@ -212,7 +223,7 @@ int UserAnalysis::FindTopSusyMother(int current)
 { // goes up to highest susy particle
   // current = index of current object in the MCData vector
   //using MrParticle class;
-  std::vector<MrParticle*> & MCData = *(myEventData->mcData());
+  std::vector<MrParticle*> & MCData = *(EventData->mcData());
 
  if(current <2) return -1;
  int mother = MCData[current]->motherIndex();
@@ -232,7 +243,7 @@ int UserAnalysis::FindLowSusyMother(int current)
 { // goes up to the first squark (including stop) or gluino on the path
   // current = index of current object in the MCData vector
   //using MrParticle class;
- std::vector<MrParticle*> & MCData = *(myEventData->mcData());
+ std::vector<MrParticle*> & MCData = *(EventData->mcData());
 
  if(current <2) return -1;
  int mother = MCData[current]->motherIndex();
@@ -253,7 +264,7 @@ int UserAnalysis::FirstSMParton(int current)
 { // goes up to the first quark produced in squark or gluino decay
   // current = index of current object in the MCData vector
   //using MrParticle class;
-  std::vector<MrParticle*> & MCData = *(myEventData->mcData());
+  std::vector<MrParticle*> & MCData = *(EventData->mcData());
 
 
  if(current <2) return -1;
@@ -279,7 +290,7 @@ bool UserAnalysis::ComesFromSquark(int imc)
  // returns true if the LowSusyMother is a squark
  // imc = index of current object in the MCData vector
  //using MrParticle class;
-  std::vector<MrParticle*> & MCData = *(myEventData->mcData());
+  std::vector<MrParticle*> & MCData = *(EventData->mcData());
 
 
  int mother = FindLowSusyMother(imc);
@@ -297,7 +308,7 @@ bool UserAnalysis::ComesFromGluino(int imc)
  // returns true if the LowSusyMother is a gluino
  // imc = index of current object in the MCData vector
  //using MrParticle class;
- std::vector<MrParticle*> & MCData = *(myEventData->mcData());
+ std::vector<MrParticle*> & MCData = *(EventData->mcData());
 
  int mother = FindLowSusyMother(imc);
  if (mother<2) {return false;}
@@ -314,7 +325,7 @@ int UserAnalysis::FindNearestJet(int ichk)
 // and returns its RecoData index 
 // returns -1 if no nearest jet
 
-  std::vector<MrParticle*> & RecoData = *(myEventData->recoData());
+  std::vector<MrParticle*> & RecoData = *(EventData->recoData());
 
   int iJetMin = -1;
   if (ichk < 0){return iJetMin;}
@@ -341,7 +352,7 @@ int UserAnalysis::FindNearestJet(int ichk)
 float UserAnalysis::GetPtwrtJet(int ichk, int iJet)
 {
 // Computes the Pt of object ichk wrt the direction of object iJet
-    std::vector<MrParticle*> & RecoData = *(myEventData->recoData());
+    std::vector<MrParticle*> & RecoData = *(EventData->recoData());
   
     if (ichk < 0 || iJet < 0){return -1.;}
     
@@ -363,7 +374,7 @@ float UserAnalysis::GetPtwrtJet(int ichk, int iJet)
 
 void UserAnalysis::AddToJet(int ichk)
 { // adds an object to its nearest jet
-  std::vector<MrParticle*> & RecoData = *(myEventData->recoData());
+  std::vector<MrParticle*> & RecoData = *(EventData->recoData());
  
   int iJet = FindNearestJet(ichk);
   

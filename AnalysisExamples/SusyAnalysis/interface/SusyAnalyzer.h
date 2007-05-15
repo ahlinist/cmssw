@@ -80,7 +80,7 @@ class SusyAnalyzer : public edm::EDAnalyzer {
   
   // The pointer to the MrEvent data
      
-     MrEvent * myEventData;
+     MrEvent * EventData;
   
   // names of parameter sets  
      
@@ -132,6 +132,7 @@ class SusyAnalyzer : public edm::EDAnalyzer {
   int numTotEvtNoCalo;
   int numTotEvtEmpty;
   int numTotEvtNoPrimary;
+  int numTotEvtBadHardJet;
   int numTotEvtCleanEmpty;
   int numTotEvtFinalEmpty;
   int numTotEvtBadNoisy;

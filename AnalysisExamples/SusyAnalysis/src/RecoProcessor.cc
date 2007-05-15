@@ -9,12 +9,10 @@ using std::endl;
 
 // Constructor:
 
-RecoProcessor::RecoProcessor(MrEvent* pEvtData,
-    const TrackCollection * Tracks,
-    const VertexCollection* Vertices, const CaloTowerCollection* CaloTowers):
-SusyRecoTools(myEventData->recoData(), Tracks, Vertices, CaloTowers),
-myConfig(0), myEventData(pEvtData), MCData(*(myEventData->mcData())), 
-//RecoData(*(myEventData->recoData())),
+RecoProcessor::RecoProcessor(MrEvent* pEvtData):
+SusyRecoTools(pEvtData), 
+myConfig(0), MCData(*(pEvtData->mcData())), 
+//RecoData(*(EventData->recoData())),
 //TrackData(Tracks), VertexData(Vertices), CaloTowerData(CaloTowers),
 //DEBUGLVL(0),
 ana_elecEtaMax(2.4), ana_elecPtMin1(0.), 
@@ -27,17 +25,17 @@ ana_tauPtMin2(5.), ana_photonPtMin2(20.), ana_jetPtMin2(30.),
 reco_elecD0ErrorThresh(0.), reco_elecDzErrorThresh(0.),
 reco_muonD0ErrorThresh(0.), reco_muonDzErrorThresh(0.),
 reco_jetD0ErrorThresh(0.), reco_jetDzErrorThresh(0.),
-clean_distVxmax(5.)
+clean_distVxmax(5.), clean_methodTksInJetVx(1), clean_nJetVxTkHitsmin(8),
+clean_jetVxCaloTowEFracmin(0.005), clean_dRTrkFromJetVx(0.6),
+clean_rejEvtBadJetPtmin(100.)
 {}
 
 RecoProcessor::RecoProcessor(MrEvent* pEvtData, 
-    const TrackCollection * Tracks,
-    const VertexCollection* Vertices, const CaloTowerCollection* CaloTowers,
 //    const edm::ParameterSet& iConfig):
              Config_t * aConfig): 
-SusyRecoTools(pEvtData->recoData(), Tracks, Vertices, CaloTowers),
-myConfig(aConfig), myEventData(pEvtData), MCData(*(myEventData->mcData()))
-//RecoData(*(myEventData->recoData())), 
+SusyRecoTools(pEvtData), 
+myConfig(aConfig), MCData(*(pEvtData->mcData()))
+//RecoData(*(EventData->recoData())), 
 //TrackData(Tracks), VertexData(Vertices), CaloTowerData(CaloTowers), 
 //DEBUGLVL(0)
 {
@@ -90,6 +88,11 @@ myConfig(aConfig), myEventData(pEvtData), MCData(*(myEventData->mcData()))
   
   // load parameters for ObjectCleaner
   clean_distVxmax = cleaner_params.getParameter<double>("clean_distVxmax") ;
+  clean_methodTksInJetVx = cleaner_params.getParameter<int>("clean_methodTksInJetVx") ;
+  clean_nJetVxTkHitsmin = cleaner_params.getParameter<int>("clean_nJetVxTkHitsmin") ;
+  clean_jetVxCaloTowEFracmin = cleaner_params.getParameter<double>("clean_jetVxCaloTowEFracmin") ;
+  clean_dRTrkFromJetVx = cleaner_params.getParameter<double>("clean_dRTrkFromJetVx") ;
+  clean_rejEvtBadJetPtmin = cleaner_params.getParameter<double>("clean_rejEvtBadJetPtmin") ;
 }
 //------------------------------------------------------------------------------
 // Methods:
@@ -107,6 +110,7 @@ bool RecoProcessor::RecoDriver()
   numEvtNoCalo = 0;
   numEvtEmpty = 0;
   numEvtNoPrimary = 0;
+  numEvtBadHardJet = 0;
   numEvtCleanEmpty = 0;
   numEvtFinalEmpty = 0;
   numEvtBadNoisy = 0;
@@ -203,16 +207,16 @@ bool RecoProcessor::RecoDriver()
    while (i< (int) RecoData.size()){
      bool acceptObject = false;
      bool withRefPoint = true;
-     //cout << "Particle " << i << " type " << RecoData[i]->particleType() << endl;
+//     cout << "Particle " << i << " type " << RecoData[i]->particleType() << endl;
      // for electrons
      if (RecoData[i]->particleType() == 1){
-       //cout << "elecand pointer " << RecoData[i]->electronCandidate() << endl;
+//       cout << "elecand pointer " << RecoData[i]->electronCandidate() << endl;
        const PixelMatchGsfElectron* elecand = RecoData[i]->electronCandidate();
-   
 
        // Apply first acceptance cuts
        if (fabs(RecoData[i]->eta()) < ana_elecEtaMax && 
            RecoData[i]->pt() > ana_elecPtMin1){   
+         RecoData[i]->setNumTracks(1);
          RecoData[i]->setVx(elecand->gsfTrack()->vx() );
          RecoData[i]->setVy(elecand->gsfTrack()->vy() );
          RecoData[i]->setVz(elecand->gsfTrack()->vz() );
@@ -222,8 +226,8 @@ bool RecoProcessor::RecoDriver()
          if (dzError < reco_elecDzErrorThresh){dzError = reco_elecDzErrorThresh;}
          RecoData[i]->setd0Error(d0Error);
          RecoData[i]->setdzError(dzError);
-  //       cout << "Electron vertex: x = " << (elecand)->gsfTrack()->vx() << ", y = " << (elecand)->gsfTrack()->vy() 
-  //           << ", z = " << (elecand)->gsfTrack()->vz() << endl;
+//         cout << "Electron vertex: x = " << (elecand)->track()->vx() << ", y = " << (elecand)->track()->vy() 
+//             << ", z = " << (elecand)->gsfTrack()->vz() << endl;
          acceptObject = true;
          numElectrons++;
          counter++;
@@ -236,6 +240,7 @@ bool RecoProcessor::RecoDriver()
        if (fabs(RecoData[i]->eta()) < ana_muonEtaMax && 
            RecoData[i]->pt() > ana_muonPtMin1){   
       
+         RecoData[i]->setNumTracks(1);
          RecoData[i]->setVx(muoncand->vx() );
          RecoData[i]->setVy(muoncand->vy() );
          RecoData[i]->setVz(muoncand->vz() );
@@ -262,6 +267,7 @@ bool RecoProcessor::RecoDriver()
        if (fabs(RecoData[i]->eta()) < ana_photonEtaMax && 
            RecoData[i]->pt() > ana_photonPtMin1){   
       
+         RecoData[i]->setNumTracks(0);
          RecoData[i]->setVx(0. );
          RecoData[i]->setVy(0. );
          RecoData[i]->setVz(0. );
@@ -282,14 +288,19 @@ bool RecoProcessor::RecoDriver()
      // Apply first acceptance cuts
        if (fabs(RecoData[i]->eta()) < ana_jetEtaMax && 
            RecoData[i]->pt() > ana_jetPtMin1){   
-         withRefPoint = GetJetVx(i);
+
+         if (clean_methodTksInJetVx == 1){
+           withRefPoint = GetJetVx(i, 1, clean_nJetVxTkHitsmin, clean_jetVxCaloTowEFracmin);
+         }
+         else if (clean_methodTksInJetVx == 1){
+           withRefPoint = GetJetVx(i, 2, clean_nJetVxTkHitsmin, clean_dRTrkFromJetVx);
+         }
          float d0Error = RecoData[i]->d0Error();
          float dzError = RecoData[i]->dzError();
          if (d0Error < reco_jetD0ErrorThresh){d0Error = reco_jetD0ErrorThresh;}
          if (dzError < reco_jetDzErrorThresh){dzError = reco_jetDzErrorThresh;}
          RecoData[i]->setd0Error(d0Error);
          RecoData[i]->setdzError(dzError);
-    //    cout << "Jet vertex found: " <<  withRefPoint << endl;
          acceptObject = true;
          numJets++;
          counter++;
@@ -333,14 +344,17 @@ bool RecoProcessor::RecoDriver()
   // ******************************************************** 
   // Perform the cleaning of the objects
 
-   myCleaner = new  ObjectCleaner(&RecoData, 
-                    TrackData, VertexData, CaloTowerData, cleaner_params);
+   myCleaner = new  ObjectCleaner(EventData, cleaner_params);
    myCleaner->SetDebug(DEBUGLVL);
 
    if (DEBUGLVL >= 1){
      cout << endl;
      cout << "Cleaning step: " << endl;
    }
+   
+//   cout << endl;
+//   cout << " Run " << EventData->run() << ", Event " << EventData->event() << endl;
+//   cout << " Total number of tracks = " << EventData->trackCollection()->size() << endl;
    
    // First, check the quality of the primary vertex
    bool acceptPrimaryVx = true;
@@ -369,6 +383,9 @@ bool RecoProcessor::RecoDriver()
      
      // Check that it is compatible with primary vertex
      fromPrimaryVx = myCleaner->IsFromPrimaryVx(i, clean_distVxmax);
+     //LP only for testing
+//     if (RecoData[i]->particleType() >= 5
+//              && RecoData[i]->particleType() <= 7){fromPrimaryVx = true;}
      if (!fromPrimaryVx){
        numNotPrimaryTrk++;
        if (RecoData[i]->particleType() == 1){numElecNotPrimaryTrk++;}
@@ -402,6 +419,16 @@ bool RecoProcessor::RecoDriver()
              << " Pt = " << RecoData[i]->pt()
              << " eta = "<< RecoData[i]->eta()
              << " Ch = " << RecoData[i]->charge() << endl;
+       }
+       if (RecoData[i]->pt() > clean_rejEvtBadJetPtmin
+                && RecoData[i]->particleType() >= 5
+                && RecoData[i]->particleType() <= 7){
+         numEvtBadHardJet++;
+         if (DEBUGLVL >= 1){
+           cout << " Event rejected for bad hard jet " << endl;
+         }
+         delete myCleaner;
+         return false;
        }
        if (RecoData[i]->particleType() == 1){numElectrons--;}
        else if (RecoData[i]->particleType() == 2){numMuons--;}
@@ -551,8 +578,7 @@ bool RecoProcessor::RecoDriver()
   // ******************************************************** 
   // Apply lepton/photon isolation if more stringent criteria needed than in reconstruction
 
-    myIsolator = new  Isolator(&RecoData, TrackData,
-                              VertexData, CaloTowerData, isolator_params);
+    myIsolator = new  Isolator(EventData, isolator_params);
     myIsolator->SetDebug(DEBUGLVL);
 
    if (DEBUGLVL >= 2){
@@ -741,8 +767,8 @@ bool RecoProcessor::RecoDriver()
 
   // Getting MET from calo
     float metcalo[] = {0., 0., 0.};
-    metcalo[0] = myEventData->metCalovect().x();
-    metcalo[1] = myEventData->metCalovect().y();
+    metcalo[0] = EventData->metCalovect().x();
+    metcalo[1] = EventData->metCalovect().y();
     if (DEBUGLVL >= 1){
      float metcal = sqrt(metcalo[0]*metcalo[0]+metcalo[1]*metcalo[1]);
      cout << " MET from calo     = " << metcal << endl;
@@ -760,7 +786,7 @@ bool RecoProcessor::RecoDriver()
      metrecoil[2] -= RecoData[i]->pz();
     }
     metRecoilvector = math::XYZVector(metrecoil[0],metrecoil[1],metrecoil[2]);
-    myEventData->setMetRecoil(metRecoilvector);
+    EventData->setMetRecoil(metRecoilvector);
     if (DEBUGLVL >= 1){
      float metrec = sqrt(metrecoil[0]*metrecoil[0]+metrecoil[1]*metrecoil[1]);
      cout << " MET from recoil     = " << metrec << endl;

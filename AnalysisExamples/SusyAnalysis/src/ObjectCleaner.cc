@@ -9,9 +9,8 @@ using std::endl;
 
 // Constructor:
 
-ObjectCleaner::ObjectCleaner(vector<MrParticle*>* pData, const TrackCollection * Tracks,
-const VertexCollection* Vertices, const CaloTowerCollection* CaloTowers):
-SusyRecoTools(pData, Tracks, Vertices, CaloTowers),
+ObjectCleaner::ObjectCleaner(MrEvent* pEvtData):
+SusyRecoTools(pEvtData), 
 //RecoData(*pData), TrackData(Tracks), VertexData(Vertices), CaloTowerData(CaloTowers),
 //primVx(NULL), 
 clean_chisqVxmax(10.), clean_dRVxmax(0.24), clean_dzVxmax(10.),
@@ -24,17 +23,17 @@ clean_dRMuonTowermax(0.4), clean_dRSSmuonmax(0.1),
 clean_dRPhotTowermax(0.4), clean_PhotHoEmax(0.05), 
 clean_dRPhotElemax(10.), clean_dRPhotDupmax(10.),
 clean_deltaRElecJetmax(0.5), clean_elecbyJetEratio(0.9),
+clean_methodTksInJet(1), clean_nJetTkHitsmin(7), 
+clean_jetCaloTowEFracmin(0.005), 
 clean_dRTrkFromJet(0.6), clean_FracChminJet(0.1), clean_FracEmmaxJet(0.9),
 clean_dROSelecmax(0.2), clean_MOSelecmax(5.),
 clean_FracChmin(0.1), clean_FracEmmin(0.175),
 clean_METmin(50.), clean_dPhiJetMETmin(0.), clean_dR12min(0.5), clean_dR21min(0.5)
 {}
 
-ObjectCleaner::ObjectCleaner(vector<MrParticle*>* pData, const TrackCollection * Tracks,
-const VertexCollection* Vertices, const CaloTowerCollection* CaloTowers, 
-edm::ParameterSet param):
+ObjectCleaner::ObjectCleaner(MrEvent* pEvtData, edm::ParameterSet param):
 //RecoData(*pData), TrackData(Tracks), VertexData(Vertices), CaloTowerData(CaloTowers),
-SusyRecoTools(pData, Tracks, Vertices, CaloTowers)
+SusyRecoTools(pEvtData) 
 //primVx(NULL)
 {
 clean_chisqVxmax = param.getParameter<double>("clean_chisqVxmax") ;
@@ -59,6 +58,9 @@ clean_dRPhotElemax = param.getParameter<double>("clean_dRPhotElemax") ;
 clean_dRPhotDupmax = param.getParameter<double>("clean_dRPhotDupmax") ;
 clean_deltaRElecJetmax = param.getParameter<double>("clean_deltaRElecJetmax") ;
 clean_elecbyJetEratio = param.getParameter<double>("clean_elecbyJetEratio") ;
+clean_methodTksInJet = param.getParameter<int>("clean_methodTksInJet") ;
+clean_nJetTkHitsmin = param.getParameter<int>("clean_nJetTkHitsmin") ;
+clean_jetCaloTowEFracmin = param.getParameter<double>("clean_jetCaloTowEFracmin") ;
 clean_dRTrkFromJet = param.getParameter<double>("clean_dRTrkFromJet") ;
 clean_FracChminJet = param.getParameter<double>("clean_FracChminJet") ;
 clean_FracEmmaxJet = param.getParameter<double>("clean_FracEmmaxJet") ;
@@ -86,8 +88,8 @@ bool ObjectCleaner::CleanPrimaryVertex(void)
    cout << " Check Primary Vertex: " << endl;
    cout << " Number of vertices in collection = " << VertexData->size() << endl;
  }
- int indPrim = GetPrimaryVertex();
-// int indPrim = GetPrimaryVertex();
+ int indPrim = GetPrimaryVertex(clean_etaTkfromVxmax);
+
  if (indPrim < 0) {
    if (DEBUGLVL >= 2){
      cout << "  No primary vertex found " << endl;
@@ -100,10 +102,14 @@ bool ObjectCleaner::CleanPrimaryVertex(void)
  primVx = &(*VertexData)[indPrim];
 // cout << " pointer to primary vertex " << primVx << endl;
  
+ // Check that there are tracks at the Primary Vertex
+// if (primVx->tracksSize() <= 0){return false;}
+ if (EventData->pvnTracks() <= 0){return false;}
+ 
  // Check the chisq/ndof
- float chisq = primVx->chi2();
- float ndof = primVx->ndof();
- float chisqnorm = primVx->normalizedChi2();
+ float chisq = EventData->chi2();
+ float ndof = EventData->ndof();
+ float chisqnorm = EventData->normalizedChi2();
  if (chisqnorm > clean_chisqVxmax) {
    if (DEBUGLVL >= 2){
      cout << " Bad Vx chisquared = " << chisq 
@@ -113,9 +119,9 @@ bool ObjectCleaner::CleanPrimaryVertex(void)
  }
  
  // Check compatibility of vertex with beam spot
- float xVx = primVx->x();
- float yVx = primVx->y();
- float zVx = primVx->z();
+ float xVx = EventData->pvx();
+ float yVx = EventData->pvy();
+ float zVx = EventData->pvz();
  float rVx = sqrt(xVx*xVx + yVx*yVx);
  if (rVx > clean_dRVxmax || fabs(zVx) > clean_dzVxmax) {
    if (DEBUGLVL >= 2){
@@ -126,18 +132,7 @@ bool ObjectCleaner::CleanPrimaryVertex(void)
  }
  
  // Check that there is sufficient Et in the tracks
- if (primVx->tracksSize() <= 0){return false;}
-
- float ptsum = 0.;
- track_iterator itk = primVx->tracks_begin();
- for (; itk != primVx->tracks_end(); ++itk) {
-   float eta = (*itk)->eta();
-   if (fabs(eta) < clean_etaTkfromVxmax){
-     float pt = (*itk)->pt();
-//     cout << "  track PT = " << pt << ", eta = " << eta << endl;
-     ptsum += pt;
-   }
- }
+ float ptsum = EventData->pvPtsum();
  if (DEBUGLVL >= 2){
    cout << " Primary vertex coordinates: x = " << xVx 
         << ", y = " << yVx << ", z = " << zVx << endl;
@@ -461,11 +456,10 @@ bool ObjectCleaner::CleanMuon(int ichk)
    // Verify the muon quality
 // cout << " Comb muon address " << &(*(muoncand->combinedMuon())) << endl;
    float pt_track = muoncand->combinedMuon()->pt();
-
-//   following does not work anymore in 130    
-//   float dpt_track = muoncand->combinedMuon()->ptError(); 
-   float dpt_track = muoncand->combinedMuon()->error(0)/(muoncand->combinedMuon()->qoverp())*(muoncand->combinedMuon()->pt());
-                                                                                                              
+//   following does not work anymore in 130
+//   float dpt_track = muoncand->combinedMuon()->ptError();
+   float dpt_track = muoncand->combinedMuon()->error(0) /
+    (muoncand->combinedMuon()->qoverp())*(muoncand->combinedMuon()->pt());
    float chisq = muoncand->combinedMuon()->normalizedChi2();
    int nHitsValid = muoncand->combinedMuon()->numberOfValidHits();
 //   int nHitsLost = muoncand->combinedMuon()->numberOfLostHits();
@@ -551,9 +545,10 @@ bool ObjectCleaner::DuplicateMuon(int ichk)
 
  const Muon* muoncand = RecoData[ichk]->muonCandidate();
  float ptmuon = muoncand->combinedMuon()->pt();
- //   following does not work anymore in 130    
-//   float dptmuon = muoncand->combinedMuon()->ptError(); 
- float dptmuon = muoncand->combinedMuon()->error(0)/(muoncand->combinedMuon()->qoverp())*(muoncand->combinedMuon()->pt());
+//   following does not work anymore in 130
+// float dptmuon = muoncand->combinedMuon()->ptError();
+ float dptmuon = muoncand->combinedMuon()->error(0) /
+   (muoncand->combinedMuon()->qoverp())*(muoncand->combinedMuon()->pt());
 
  for (int j = 0; j < (int) RecoData.size(); j++){
    if (j != ichk){
@@ -568,9 +563,10 @@ bool ObjectCleaner::DuplicateMuon(int ichk)
    
           const Muon* muonnew = RecoData[j]->muonCandidate();
           float ptnew = muonnew->combinedMuon()->pt();
-	  //   following does not work anymore in 130    
-          //   float dptnew = muoncand->combinedMuon()->ptError(); 
-	  float dptnew = muoncand->combinedMuon()->error(0)/(muoncand->combinedMuon()->qoverp())*(muoncand->combinedMuon()->pt());
+          //   following does not work anymore in 130
+//          float dptnew = muonnew->combinedMuon()->ptError();
+          float dptnew = muoncand->combinedMuon()->error(0) /
+           (muoncand->combinedMuon()->qoverp())*(muoncand->combinedMuon()->pt());
           if (dptmuon/ptmuon >= dptnew/ptnew){
             if (DEBUGLVL >= 2){
               cout << " Muon " << ichk 
@@ -765,6 +761,12 @@ bool ObjectCleaner::CleanJet(int ichk)
   
  MrParticle * recopart = RecoData[ichk];
 
+//         cout << " Cleaning jet, index =  " << ichk
+//              << " Type = " << RecoData[ichk]->particleType()
+//              << " Pt = " << RecoData[ichk]->pt()
+//              << " eta = "<< RecoData[ichk]->eta()
+//              << " phi = " << RecoData[ichk]->phi() << endl;
+
  // veto jets with E<p
  if(recopart->energy() < recopart->p() ){
    if (DEBUGLVL >= 1){
@@ -782,14 +784,20 @@ bool ObjectCleaner::CleanJet(int ichk)
  
    // Verify the jet quality
    // to be completed by Maria, Taylan, Michael
-  float etaJet = RecoData[ichk]->eta();
-  float phiJet = RecoData[ichk]->phi();
-  float pt_track = GetJetTrkPtsum(etaJet, phiJet, clean_dRTrkFromJet);
+  float ptJet = RecoData[ichk]->pt();
+  float pt_track = 0.;
+  if (clean_methodTksInJet == 1){
+    pt_track = GetJetTrkPtsum(ichk, 1, clean_nJetTkHitsmin, clean_jetCaloTowEFracmin);
+  }
+  else if (clean_methodTksInJet == 2){
+    pt_track = GetJetTrkPtsum(ichk, 2, clean_nJetTkHitsmin, clean_dRTrkFromJet);
+  }
   float eFractEm = jetcand->emEnergyFraction();
   
-  if (pt_track / jetcand->pt() < clean_FracChminJet){
+  float etaJet = fabs(RecoData[ichk]->eta() );
+  if (pt_track / ptJet < clean_FracChminJet && etaJet < 2.4){
     if (DEBUGLVL >= 2){
-      cout << " Jet rejected due to bad Ftrk :" << pt_track / jetcand->pt() << endl;
+      cout << " Jet rejected due to bad Ftrk :" << pt_track / ptJet << endl;
     }
     return false;
   }
@@ -805,8 +813,8 @@ bool ObjectCleaner::CleanJet(int ichk)
 //  cout << "  Jet " << ichk << " pt = " << RecoData[ichk]->pt()
 //       << ", Energy fraction em = " << eFractEm
 //       << ", had = " << eFractHad << endl;
-  float et_em = eFractEm * jetcand->pt();
-  float et_had = eFractHad * jetcand->pt();
+  float et_em = eFractEm * RecoData[ichk]->pt();
+  float et_had = eFractHad * RecoData[ichk]->pt();
   RecoData[ichk]->setPt_tracks(pt_track);
   RecoData[ichk]->setEt_em(et_em);
   RecoData[ichk]->setEt_had(et_had);
@@ -913,6 +921,7 @@ bool ObjectCleaner::CleanEvent()
   
   int nMuon = 0;
   int nPhot = 0;
+  int nChObj = 0;
   float pt_track = 0.;
   float et_em = 0.;
   float et_had = 0.;
@@ -922,9 +931,13 @@ bool ObjectCleaner::CleanEvent()
     et_had += RecoData[i]->et_had();
     if (RecoData[i]->particleType() == 2){
       nMuon++;
+      nChObj++;
     }
     else if (RecoData[i]->particleType() == 4){
       nPhot++;
+    }
+    else if (RecoData[i]->particleType() <= 7){
+      nChObj++;
     }
   }
   if (DEBUGLVL >= 1){
@@ -947,7 +960,7 @@ bool ObjectCleaner::CleanEvent()
     fracCh = pt_track / (et_em + et_had);
     fracEm = et_em / (et_em + et_had);
   }
-  if (fracCh < clean_FracChmin && nPhot < 1){
+  if (fracCh < clean_FracChmin && (nPhot < 1 || nChObj > 0) ){
     if (DEBUGLVL >= 2){
       cout << " Insufficient event charged fraction " << fracCh << endl;
     }

@@ -2,7 +2,7 @@
 #define RecoProcessor_h
 
 
-/*  \class PrepareData
+/*  \class RecoProcessor
 *
 *  Class which does the cleaning, isolation, final cuts and matching 
 *  of MrParticle objects
@@ -49,10 +49,8 @@ class RecoProcessor : public SusyRecoTools {
 public:
 
 // Constructor:
-RecoProcessor(MrEvent *, const TrackCollection *, 
-    const VertexCollection*, const CaloTowerCollection*);
-RecoProcessor(MrEvent *, const TrackCollection *, 
-    const VertexCollection*, const CaloTowerCollection*, 
+RecoProcessor(MrEvent *);
+RecoProcessor(MrEvent *, 
 //    const edm::ParameterSet&);
     Config_t *);
 
@@ -69,6 +67,7 @@ virtual int NumEvtNoTracks(void) {return numEvtNoTracks; }
 virtual int NumEvtNoCalo(void) {return numEvtNoCalo; }
 virtual int NumEvtEmpty(void) {return numEvtEmpty; }
 virtual int NumEvtNoPrimary(void) {return numEvtNoPrimary; }
+virtual int NumEvtBadHardJet(void) {return numEvtBadHardJet; }
 virtual int NumEvtCleanEmpty(void) {return numEvtCleanEmpty; }
 virtual int NumEvtFinalEmpty(void) {return numEvtFinalEmpty; }
 virtual int NumEvtBadNoisy(void) {return numEvtBadNoisy; }
@@ -129,7 +128,7 @@ private:
   edm::ParameterSet isolator_params;
   edm::ParameterSet objectmatch_params;
   
-  MrEvent * myEventData;
+//  MrEvent * EventData;
 //  std::vector<MrParticle*> & RecoData;
   std::vector<MrParticle*> & MCData;
 //  const TrackCollection * TrackData;
@@ -170,6 +169,11 @@ private:
   float reco_jetDzErrorThresh;
   // Define the parameters for ObjectCleaner
   float clean_distVxmax;
+  int clean_methodTksInJetVx;
+  int clean_nJetVxTkHitsmin;
+  float clean_jetVxCaloTowEFracmin;
+  float clean_dRTrkFromJetVx;
+  float clean_rejEvtBadJetPtmin;
   
   // Define the counters per event
   // counters of events
@@ -178,6 +182,7 @@ private:
   int numEvtNoCalo;
   int numEvtEmpty;
   int numEvtNoPrimary;
+  int numEvtBadHardJet;
   int numEvtCleanEmpty;
   int numEvtFinalEmpty;
   int numEvtBadNoisy;

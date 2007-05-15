@@ -9,9 +9,8 @@ using std::endl;
 
 // Constructor:
 
-Isolator::Isolator(vector<MrParticle*>* pData, const TrackCollection * Tracks,
-const VertexCollection* Vertices, const CaloTowerCollection* CaloTowers):
-SusyRecoTools(pData, Tracks, Vertices, CaloTowers),
+Isolator::Isolator(MrEvent* pEvtData):
+SusyRecoTools(pEvtData), 
 //RecoData(*pData), TrackData(Tracks), CaloTowerData(CaloTowers),
 //DEBUGLVL(0),
 iso_MethodElec(1100), iso_jetbyElEmin(1.), iso_ptElwrtJetmin(7.),
@@ -29,9 +28,8 @@ iso_PhTkDRin(0.), iso_PhTkDRout(0.1), iso_PhTkSeed(0.1),
 iso_PhCalWeight(0.75), iso_PhIsoValue(0.5)
 {}
 
-Isolator::Isolator(vector<MrParticle*>* pData, const TrackCollection * Tracks,
-const VertexCollection* Vertices, const CaloTowerCollection* CaloTowers, edm::ParameterSet param):
-SusyRecoTools(pData, Tracks, Vertices, CaloTowers)
+Isolator::Isolator(MrEvent* pEvtData, edm::ParameterSet param):
+SusyRecoTools(pEvtData) 
 //RecoData(*pData), TrackData(Tracks), CaloTowerData(CaloTowers),
 //DEBUGLVL(0)
 {

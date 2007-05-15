@@ -31,11 +31,14 @@ public:
 UserAnalysis(Config_t *);
 
 // Destructor:
-virtual ~UserAnalysis(){};
+virtual ~UserAnalysis(){
+  endAnalysis();
+};
 
 // Methods:
 
 virtual void doAnalysis(MrEvent*);
+void endAnalysis();
 
 private:
  
@@ -69,7 +72,7 @@ private:
      TH1D*       hJetWrongEt;
  
 
-  MrEvent * myEventData;
+  MrEvent * EventData;
   //std::vector<MrParticle*> & RecoData;
   //std::vector<MrParticle*> & MCData;
 
