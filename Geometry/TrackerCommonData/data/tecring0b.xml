@@ -29,7 +29,7 @@
  </LogicalPart>
  <LogicalPart name="TECICC0B1" category="unspecified">
   <rSolid name="tecring0b:TECICC0B1"/>
-  <rMaterial name="tecmaterial:TEC_ICC21"/>
+  <rMaterial name="materials:Air"/>
  </LogicalPart>
  <LogicalPart name="TECICC0B2" category="unspecified">
   <rSolid name="tecring0b:TECICC0B2"/>
