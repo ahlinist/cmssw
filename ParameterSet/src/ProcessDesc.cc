@@ -158,22 +158,24 @@ namespace edm
     if (node->type() == "operand") {
       SeqMap::iterator seqIt = sequences.find(node->name()); 
       if (seqIt != sequences.end()) {
-        node = seqIt->second->wrapped();
-        sequenceSubstitution(node, sequences);
+        NodePtr substituteNode = seqIt->second->wrapped();
+        //substituteNode->setParent(node->getParent());
+        sequenceSubstitution(substituteNode, sequences);
       }
     } // if operator
     else {
       edm::pset::OperatorNode* onode = dynamic_cast<edm::pset::OperatorNode*>(node.get());
     
-    
       SeqMap::iterator seqIt = sequences.find(onode->left()->name()); 
       if (seqIt != sequences.end()) {
-        onode->left()= seqIt->second->wrapped();
+        //onode->left()= seqIt->second->wrapped();
+        onode->left()= NodePtr(seqIt->second->wrapped()->clone());
         onode->left()->setParent(onode);
       }
       seqIt = sequences.find(onode->right()->name()); 
       if (seqIt != sequences.end()) {
-        onode->right()= seqIt->second->wrapped(); 
+        //onode->right()= seqIt->second->wrapped(); 
+        onode->right()= NodePtr(seqIt->second->wrapped()->clone());
         onode->right()->setParent(onode);
       }
       sequenceSubstitution(onode->left(), sequences);
