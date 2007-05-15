@@ -9,9 +9,14 @@ using std::endl;
 
 // Constructor:
 
-SusyRecoTools::SusyRecoTools(vector<MrParticle*>* pData, const TrackCollection * Tracks,
-const VertexCollection* Vertices, const CaloTowerCollection* CaloTowers):
-RecoData(*pData), TrackData(Tracks), VertexData(Vertices), CaloTowerData(CaloTowers),
+SusyRecoTools::SusyRecoTools(MrEvent* pEvtData):
+//SusyRecoTools::SusyRecoTools(vector<MrParticle*>* pData, const TrackCollection * Tracks,
+//const VertexCollection* Vertices, const CaloTowerCollection* CaloTowers):
+EventData(pEvtData),
+RecoData(*pEvtData->recoData()), 
+TrackData(pEvtData->trackCollection()), 
+VertexData(pEvtData->vertexCollection()), 
+CaloTowerData(pEvtData->caloTowerCollection()),
 primVx(NULL),DEBUGLVL(0)
 {}
 
@@ -73,36 +78,74 @@ void SusyRecoTools::PrintRecoInfo(void)
 
 //------------------------------------------------------------------------------
 
-int SusyRecoTools::GetPrimaryVertex(void)
+int SusyRecoTools::GetPrimaryVertex(float clean_etaTkfromVxmax)
 {
   // Returns the index in VertexCollection of the primary vertex
   // at present, it returns the 1st vertex (assumes they are ordered)
-
+  // Also fills relevant vertex quantities in the MrEvent
+ 
  int nVx = VertexData->size();
- if (nVx <= 0) {return -1;}
+ if (nVx <= 0) {
+   EventData->setNormalizedChi2(-1.);
+   return -1;
+ }
+ 
+ // Store the relevant Primary Vertex quantities in MrEvent
+ int indPrim = 0;
+ primVx = &(*VertexData)[indPrim];
+ EventData->setIndexPrimaryVx(indPrim);
+ EventData->setChi2(primVx->chi2() );
+ EventData->setNdof(primVx->ndof() );
+ EventData->setNormalizedChi2(primVx->normalizedChi2() );
+ EventData->setPVx(primVx->x() );
+ EventData->setPVy(primVx->y() );
+ EventData->setPVz(primVx->z() );
+ EventData->setPVdx(primVx->xError() );
+ EventData->setPVdy(primVx->yError() );
+ EventData->setPVdz(primVx->zError() );
+ 
+ // Store also the number and scalar pt sum of all associated tracks
+ EventData->setPvnTracks(primVx->tracksSize() );
+ float ptsum = 0.;
+ track_iterator itk = primVx->tracks_begin();
+ for (; itk != primVx->tracks_end(); ++itk) {
+   float eta = (*itk)->eta();
+   if (fabs(eta) < clean_etaTkfromVxmax){
+     float pt = (*itk)->pt();
+//     cout << "  track PT = " << pt << ", eta = " << eta << endl;
+     ptsum += pt;
+   }
+ }
+ EventData->setPvPtsum(ptsum);
 
- return 0;
+ return indPrim;
 
 }
 
 //------------------------------------------------------------------------------
 
-bool SusyRecoTools::GetJetVx(int ichk)
+bool SusyRecoTools::GetJetVx(int ichk, int imethod, 
+                             int nJetTkHitsmin, float paramTksInJet)
 { // computes the vertex of a jet from its tracks
   // the coordinates are stored in the jet MrParticle
   // if no vertex found, it returns false
   
-  float dRTrkFromJet = 0.6;    // temporary
-  
   vector<int> tracksFromJet;
   
-  float etaJet = RecoData[ichk]->eta();
-  float phiJet = RecoData[ichk]->phi();
 //  cout << " Jet index = " << ichk << ", pT = " << RecoData[ichk]->pt()
-//       << ", eta = " << etaJet << ", phi = " << phiJet << endl;
+//       << ", eta = " << RecoData[ichk]->eta() 
+//       << ", phi = " << RecoData[ichk]->phi() << endl;
   
   // Get the list of track indices inside a cone around the jet
-  GetJetTrks(etaJet, phiJet, dRTrkFromJet, & tracksFromJet);
+  if (imethod == 1){
+    GetJetTrksFromCalo(ichk, nJetTkHitsmin, paramTksInJet, & tracksFromJet);
+  }
+  else if (imethod == 2){
+    GetJetTrksInCone(ichk, nJetTkHitsmin, paramTksInJet, & tracksFromJet);
+  }
+  float nberTracks = tracksFromJet.size();
+  RecoData[ichk]->setNumTracks(tracksFromJet.size() );
+  
   if (tracksFromJet.size() <= 0){
     tracksFromJet.clear();
     return false;
@@ -127,7 +170,6 @@ bool SusyRecoTools::GetJetVx(int ichk)
     ddz += pTrack->dzError()*pTrack->dzError();
   }
 //  cout << endl;
-  float nberTracks = tracksFromJet.size();
   RecoData[ichk]->setVx(xv / nberTracks);
   RecoData[ichk]->setVy(yv / nberTracks);
   RecoData[ichk]->setVz(zv / nberTracks);
@@ -140,23 +182,186 @@ bool SusyRecoTools::GetJetVx(int ichk)
 
 //------------------------------------------------------------------------------
 
-void SusyRecoTools::GetJetTrks(float etaJet, float phiJet, float dRjet, 
+void SusyRecoTools::GetJetTrksFromCalo(int iJet, int nJetTkHitsmin,
+                      float CaloTowEFracmin, vector<int> * tracksFromJet)
+{ // makes a list of all tracks compatible with coming from a jet
+  // within a specified cone defined by the associated CaloTowers
+  // it returns the indices in the track collection in a vector
+ 
+ // Get the jet candidate and the CaloJet
+ const CaloJet* jetcand = dynamic_cast<const CaloJet*>(RecoData[iJet]->jetCandidate());
+ if (jetcand == NULL) {
+   if (DEBUGLVL >= 2){
+     cout << " GetJetTrksFromCalo: No jet candidate given, index = " 
+          << iJet << endl;
+   }
+   return;
+ }
+  
+ // Define a window in eta,phi from the jet CaloTowers
+ // First, find the extremes from the CaloTowers positions
+ float phimin=0., phimax=0., etamin=10., etamax=-10.;
+ float pi    = 3.141592654;
+ float twopi = 6.283185307;
+ vector<CaloTowerRef> jetCaloRefs = jetcand->getConstituents();
+//   cout << " Jet id = " << iJet 
+//   << ", E = "<< RecoData[iJet]->energy() 
+//   << ", pt = "<< RecoData[iJet]->pt() 
+//   << ", eta = "<< RecoData[iJet]->eta() 
+//   << ", phi = "<< RecoData[iJet]->phi() << endl;
+//   cout << "  Number of CaloTowers in jet = " << jetDetId.size() << endl;
+ CaloTowerCollection::const_iterator calo;
+ for (calo = CaloTowerData->begin(); calo != CaloTowerData->end(); ++calo ){
+   if (calo->energy() > CaloTowEFracmin * RecoData[iJet]->energy() ){
+     for (unsigned int j = 0; j < jetCaloRefs.size(); j++){
+       if (calo->id() == jetCaloRefs[j]->id() ){
+         float tow_eta = calo->eta();
+         float tow_phi = calo->phi();
+//      cout << "  Tower id = " << calo->id()
+//           << ", eta = " << tow_eta << ", phi = " << tow_phi 
+//           << ", energy = " << calo->energy() << endl;
+         if (etamin > tow_eta){etamin = tow_eta;}
+         if (etamax < tow_eta){etamax = tow_eta;}
+         if (phimin == 0. && phimax == 0.){
+           phimin = tow_phi;
+           phimax = tow_phi;
+         } else {
+           phimin = GetPhiMin(phimin, tow_phi);
+           phimax = GetPhiMax(phimax, tow_phi);
+         }
+       }
+     }
+   }
+ }
+ jetCaloRefs.clear();
+
+//   cout << "  First Window for track search"
+//        << "  phimin, phimax = " << phimin << ", " << phimax
+//        << "  etamin, etamax = " << etamin << ", " << etamax << endl;
+
+ // Then put a tolerance for the caloTowers size
+ // (adding 1/2 of the caloTower size)
+ float etamean = fabs(0.5*(etamin+etamax) );
+ phimin -= CaloTowerSizePhi(etamean);
+ phimax += CaloTowerSizePhi(etamean);
+ etamin -= CaloTowerSizeEta(etamin);
+ etamax += CaloTowerSizeEta(etamax);
+ // Check that they are still correctly normalized (-pi < phi < pi)
+ if (phimin < -pi) {phimin += twopi;}
+ if (phimax >  pi) {phimax -= twopi;}
+ if (DEBUGLVL >= 2){
+   cout << "  Window for track search"
+        << "  phimin, phimax = " << phimin << ", " << phimax
+        << "  etamin, etamax = " << etamin << ", " << etamax << endl;
+ }
+  
+ for (int i=0; i< (int) TrackData->size(); i++){
+   const Track* pTrack = &(*TrackData)[i];
+   if ((int)pTrack->recHitsSize() >= nJetTkHitsmin){
+     float tkOuterX = pTrack->outerX();
+     float tkOuterY = pTrack->outerY();
+     float tkOuterZ = pTrack->outerZ();
+     float eta = 0.;
+     if (fabs(tkOuterZ) > 1.0e-5) {
+       float theta = atan(sqrt(tkOuterX*tkOuterX+tkOuterY*tkOuterY)/tkOuterZ);
+       if (theta < 0.) {theta = theta + 3.141592654;}
+       eta = -log(tan(0.5*theta));
+     }
+     float phi = atan2(tkOuterY,tkOuterX);
+     if (IsInPhiWindow (phi, phimin, phimax) 
+          && (eta-etamin)*(eta-etamax) <= 0.){
+       (*tracksFromJet).push_back(i);
+     }
+   }
+ }
+ if (DEBUGLVL >= 2){
+   float ptsum = 0.;
+   for (int i = 0; i < (int) tracksFromJet->size(); i++) {
+     const Track* pTrack = &(*TrackData)[(*tracksFromJet)[i]];
+     ptsum += pTrack->pt();
+   }
+   cout << "  Number of tracks in jet = " << tracksFromJet->size()
+        << ", Pt sum = " << ptsum << endl;
+ }
+ 
+  return;
+}
+
+//------------------------------------------------------------------------------
+
+void SusyRecoTools::GetJetTrksInCone(int ichk, int nJetTkHitsmin, float dRjet,
                               vector<int> * tracksFromJet)
-{ // makes a list of tracks compatible with coming from a jet
+{ // makes a list of all tracks compatible with coming from a jet
+  // within a specified DR cone
   // it returns the indices in the track collection in a vector
   
   
+//   cout << " Jet id = " << ichk
+//   << ", E = "<< RecoData[ichk]->energy() 
+//   << ", pt = "<< RecoData[ichk]->pt() 
+//   << ", eta = "<< RecoData[ichk]->eta() 
+//   << ", phi = "<< RecoData[ichk]->phi() << endl;
+  
+  float etaJet = RecoData[ichk]->eta();
+  float phiJet = RecoData[ichk]->phi();
+  
   for (int i=0; i< (int) TrackData->size(); i++){
     const Track* pTrack = &(*TrackData)[i];
-    float eta = pTrack->eta();
-    float phi = pTrack->phi();
-    float DR = GetDeltaR(etaJet, eta, phiJet, phi);
-    if (DR < dRjet){
-      (*tracksFromJet).push_back(i);
+    if ((int)pTrack->recHitsSize() >= nJetTkHitsmin){
+      float eta = pTrack->eta();
+      float phi = pTrack->phi();
+      float DR = GetDeltaR(etaJet, eta, phiJet, phi);
+      if (DR < dRjet){
+        (*tracksFromJet).push_back(i);
+      }
     }
   }
-
+  if (DEBUGLVL >= 2){
+    float ptsum = 0.;
+    for (int i = 0; i < (int) tracksFromJet->size(); i++) {
+      const Track* pTrack = &(*TrackData)[(*tracksFromJet)[i]];
+      ptsum += pTrack->pt();
+    }
+    cout << "  Number of tracks in jet = " << tracksFromJet->size()
+         << ", Pt sum = " << ptsum << endl;
+  }
+  
   return;
+}
+
+//------------------------------------------------------------------------------
+
+float SusyRecoTools::CaloTowerSizePhi(float eta)
+{ // Returns the half size of a CaloTower in phi
+  // numbers from ptdr1, p.201
+
+ float sizePhi = 0.;
+ if (fabs(eta) <= 1.74){
+   sizePhi = 0.0435;
+ } else {
+   sizePhi = 0.087;
+ }
+
+ return sizePhi;
+}
+
+//------------------------------------------------------------------------------
+
+float SusyRecoTools::CaloTowerSizeEta(float eta)
+{ // Returns the half size of a CaloTower in eta
+  // numbers from ptdr1, p.201
+
+ float abseta = fabs(eta);
+ float sizeEta = 0.;
+ if (abseta <= 1.74){
+   sizeEta = 0.0435;
+ } else if (abseta <= 2.5){
+   sizeEta = 0.0435 + 0.0678*(abseta-1.74);
+ } else {
+   sizeEta = 0.0875;
+ }
+
+ return sizeEta;
 }
 
 //------------------------------------------------------------------------------
@@ -165,21 +370,17 @@ bool SusyRecoTools::IsFromPrimaryVx(int ichk, float distVxmax)
 {
   // Checks whether the object is compatible with the primary vertex
 
- int indPrim = -1;
- if (primVx == NULL) {
-   indPrim = GetPrimaryVertex();
-   primVx = &(*VertexData)[indPrim];
- }
-// cout << "Pointer to Prim Vx " << primVx << endl;
- if (primVx == NULL) {return true;}
  if (RecoData[ichk]->particleType() == 4) {return true;}
  
- float xVx = primVx->x();
- float yVx = primVx->y();
- float zVx = primVx->z();
- float dxVx = primVx->xError();
- float dyVx = primVx->yError();
- float dzVx = primVx->zError();
+ int indPrim = EventData->indexPrimaryVx();
+ if (indPrim < 0) {return true;}
+ 
+ float xVx = EventData->pvx();
+ float yVx = EventData->pvy();
+ float zVx = EventData->pvz();
+ float dxVx = EventData->pvdx();
+ float dyVx = EventData->pvdy();
+ float dzVx = EventData->pvdz();
  float xTk = RecoData[ichk]->vx();
  float yTk = RecoData[ichk]->vy();
  float zTk = RecoData[ichk]->vz();
@@ -275,20 +476,37 @@ float SusyRecoTools::GetPtwrtJet(int ichk, int iJet)
 
 //------------------------------------------------------------------------------
 
-float SusyRecoTools::GetJetTrkPtsum(float etaJet, float phiJet, float dRjet)
+float SusyRecoTools::GetJetTrkPtsum(int ichk, int imethod, 
+                             int nJetTkHitsmin, float paramTksInJet)
 { // computes the Pt sum of tracks compatible with coming from a jet
   
-  float ptsum = 0.;
-  for (int i=0; i< (int) TrackData->size(); i++){
-    const Track* pTrack = &(*TrackData)[i];
-    float eta = pTrack->eta();
-    float phi = pTrack->phi();
-    float DR = GetDeltaR(etaJet, eta, phiJet, phi);
-    if (DR < dRjet){
-      ptsum += pTrack->pt();
-    }
+  vector<int> tracksFromJet;
+  
+  // Get the list of track indices inside a cone around the jet
+  if (imethod == 1){
+    GetJetTrksFromCalo(ichk, nJetTkHitsmin, paramTksInJet, & tracksFromJet);
+  }
+  else if (imethod == 2){
+    GetJetTrksInCone(ichk, nJetTkHitsmin, paramTksInJet, & tracksFromJet);
   }
 
+  if (tracksFromJet.size() <= 0){
+    tracksFromJet.clear();
+    return 0.;
+  }
+  
+//  cout << " Jet = " << ichk << endl;
+  float ptsum = 0.;
+  for (int i = 0; i < (int) tracksFromJet.size(); i++) {
+    const Track* pTrack = &(*TrackData)[tracksFromJet[i]];
+    ptsum += pTrack->pt();
+//    cout << "  Track energy " << pTrack->p() << " pt " << pTrack->pt()
+//         << " eta " << pTrack->eta() << " phi " << pTrack->phi()
+//         << " charge " <<  pTrack->charge()
+//         << " nhits " << pTrack->recHitsSize() << endl;
+  }
+
+  tracksFromJet.clear();
   return ptsum;
 }
 
@@ -464,6 +682,8 @@ bool SusyRecoTools::IsEMObjectInJet(int ichk, int iJet, math::XYZVector* sharedM
  // Define a window in eta,phi for the SuperCluster
  // First, find the extremes from the basicCluster positions
  float phimin=0., phimax=0., etamin=0., etamax=0.;
+ float pi    = 3.141592654;
+ float twopi = 6.283185307;
  float clusterEsum = 0.;
  basicCluster_iterator iCluster;
  for (iCluster = superCluster->clustersBegin(); 
@@ -482,36 +702,27 @@ bool SusyRecoTools::IsEMObjectInJet(int ichk, int iJet, math::XYZVector* sharedM
 //        << " phi = " << clusterphi << " theta = " << clustertheta
 //        << " eta = " << clustereta << endl;
    if (iCluster == superCluster->clustersBegin() ){
-     phimin = clusterphi;
-     phimax = clusterphi;
      etamin = clustereta;
      etamax = clustereta;
+     phimin = clusterphi;
+     phimax = clusterphi;
    } else {
-     if (phimin > clusterphi){phimin = clusterphi;}
-     if (phimax < clusterphi){phimax = clusterphi;}
      if (etamin > clustereta){etamin = clustereta;}
      if (etamax < clustereta){etamax = clustereta;}
+     phimin = GetPhiMin(phimin, clusterphi);
+     phimax = GetPhiMax(phimax, clusterphi);
    }
  }
  // Then put a tolerance for the bigger caloTowers
  // (adding 1/2 of the caloTower size)
  float etamean = fabs(0.5*(etamin+etamax) );
- if (etamean <= 1.74){
-   phimin -= 0.0435;
-   phimax += 0.0435;
-   etamin -= 0.0435;
-   etamax += 0.0435;
- } else if (etamean <= 2.4){
-   phimin -= 0.087;
-   phimax += 0.087;
-   etamin -= 0.0435 + 0.0782*(etamin-1.74);
-   etamax += 0.0435 + 0.0782*(etamax-1.74);
- } else {
-   phimin -= 0.087;
-   phimax += 0.087;
-   etamin -= 0.0875;
-   etamax += 0.0875;
- }
+ phimin -= CaloTowerSizePhi(etamean);
+ phimax += CaloTowerSizePhi(etamean);
+ etamin -= CaloTowerSizePhi(etamin);
+ etamax += CaloTowerSizePhi(etamax);
+ // Check that they are still correctly normalized (-pi < phi < pi)
+ if (phimin < -pi) {phimin += twopi;}
+ if (phimax >  pi) {phimax -= twopi;}
  if (DEBUGLVL >= 2){
    cout << "  Cluster energy sum = " << clusterEsum << endl;
    cout << "  phimin, phimax = " << phimin << ", " << phimax
@@ -528,9 +739,8 @@ bool SusyRecoTools::IsEMObjectInJet(int ichk, int iJet, math::XYZVector* sharedM
  for (calo = CaloTowerData->begin(); calo != CaloTowerData->end(); ++calo ){
    float tow_eta = calo->eta();
    float tow_phi = calo->phi();
-   float dphimin = DeltaPhiSigned(tow_phi, phimin);
-   float dphimax = DeltaPhiSigned(tow_phi, phimax);
-   if (dphimin*dphimax <= 0. && (tow_eta-etamin)*(tow_eta-etamax) <= 0.){
+   if (IsInPhiWindow (tow_phi, phimin, phimax) 
+       && (tow_eta-etamin)*(tow_eta-etamax) <= 0.){
 //     cout << "  Tower eta = " << tow_eta << " phi = " << tow_phi
 //          << " dphimin = " << dphimin << " dphimax = " << dphimax << endl;
      eleDetId.push_back(calo->id());
@@ -547,10 +757,9 @@ bool SusyRecoTools::IsEMObjectInJet(int ichk, int iJet, math::XYZVector* sharedM
  }
   
  // Collect the CaloTowers detIds for the jet 
- // the following line does not work for 130
- //vector<CaloTowerDetId> jetDetId = jetcand->getTowerIndices();
+  // the following line does not work for 130
+// vector<CaloTowerDetId> jetDetId = jetcand->getTowerIndices();
  vector<CaloTowerRef> jetCaloRefs = jetcand->getConstituents();
- 
  if (DEBUGLVL >= 2){
    cout << "  Jet energy = " << jetcand->energy() << endl;
  }
@@ -564,7 +773,7 @@ bool SusyRecoTools::IsEMObjectInJet(int ichk, int iJet, math::XYZVector* sharedM
    // find whether this detId is in the jet detId list
    for (unsigned int j = 0; j < jetCaloRefs.size(); j++){
    // if yes, add its energy to the sum
-     if (eleDetId[i] == jetCaloRefs[j]->id()){
+     if (eleDetId[i] == jetCaloRefs[j]->id() ){
        sharedEnergy += eleTowerEnergy[i];
        float eleTowerTheta = 2. * atan(exp(-eleTowerEta[i]));
        if (eleTowerTheta < 0.) {eleTowerTheta += 3.141592654;}
@@ -639,12 +848,44 @@ void SusyRecoTools::AddToJet(int ichk)
 
 //------------------------------------------------------------------------------
 
+float SusyRecoTools::GetPhiMin(float phi1, float phi2)
+{ // Computes the minimum of two phi values
+ 
+ float pi    = 3.141592654;
+ float phimin = phi1;
+ if ((phimin-phi2)>0. && (phimin-phi2)< pi){phimin = phi2;}
+ else if ((phimin-phi2)<-pi){phimin = phi2;}
+
+ return phimin;
+
+}
+
+//------------------------------------------------------------------------------
+
+float SusyRecoTools::GetPhiMax(float phi1, float phi2)
+{ // Computes the minimum of two phi values
+ 
+ float pi    = 3.141592654;
+ float phimax = phi1;
+ if ((phimax-phi2)<0. && (phimax-phi2)>-pi){phimax = phi2;}
+ else if ((phimax-phi2)> pi){phimax = phi2;}
+
+ return phimax;
+
+}
+
+//------------------------------------------------------------------------------
+
 float SusyRecoTools::DeltaPhi(float v1, float v2)
 { // Computes the correctly normalized phi difference
   // v1, v2 = phi of object 1 and 2
+ 
+ float pi    = 3.141592654;
+ float twopi = 6.283185307;
+ 
  float diff = fabs(v2 - v1);
- float corr = 2*acos(-1.) - diff;
- if (diff < acos(-1.)){ return diff;} else { return corr;} 
+ float corr = twopi - diff;
+ if (diff < pi){ return diff;} else { return corr;} 
  
 }
 
@@ -653,10 +894,28 @@ float SusyRecoTools::DeltaPhi(float v1, float v2)
 float SusyRecoTools::DeltaPhiSigned(float v1, float v2)
 { // Computes the clockwise phi difference v1-v2
   // v1, v2 = phi of object 1 and 2
+ 
+ float pi    = 3.141592654;
  float twopi = 6.283185307;
- if (v1 < 0.){v1 += twopi;}
- if (v2 < 0.){v2 += twopi;}
- return v1 - v2; 
+ 
+ float diff = v2 - v1;
+ if (diff >  pi){ diff -= twopi;}
+ else if (diff < -pi){ diff += twopi;}
+ return diff;
+ 
+}
+
+//------------------------------------------------------------------------------
+
+bool SusyRecoTools::IsInPhiWindow(float phi, float phimin, float phimax)
+{ // Checks whether phi is inside a given window
+ 
+ float dphimin = DeltaPhiSigned(phi, phimin);
+ float dphimax = DeltaPhiSigned(phi, phimax);
+ 
+ float pi    = 3.141592654;
+ if (dphimin*dphimax <= 0. && fabs(dphimin-dphimax) < pi){return true;}
+ else {return false;}
  
 }
 

@@ -43,6 +43,7 @@ MCParton(0), PID(0), Status(0), Mother1(0) {};
 virtual ~MrParticle(){};
 
 // access methods
+// object kinematical quantities
 float eta(){if (fabs(Pz) <1.0e-5 ) {return 0;}
             float theta = atan(sqrt(Px*Px+Py*Py)/Pz);
             if (theta < 0.) {theta = theta + 3.141592654;}
@@ -55,9 +56,10 @@ float py() {return Py;}
 float pz() {return Pz;}
 float energy() {return E;}
 float mass() {return sqrt(E*E-Px*Px-Py*Py-Pz*Pz);}
+float charge() {return Charge;}
+// two-particle invariant mass
 float invmass(MrParticle* part) {
    return sqrt(E*part->energy()-Px*part->px()-Py*part->py()-Pz*part->pz());}
-float charge() {return Charge;}
 // coordinates of reference point (closest approach to beam)
 float vx() {return Vx;}
 float vy() {return Vy;}
@@ -79,16 +81,25 @@ float dzError() {return DzError;}
 //                  11 for MET from recoil
 //
 int particleType() {return ParticleType;}
+// isolation flag
 bool particleIso() {return ParticleIso;}
+// hemisphere (1 or 2) to which the object is associated
 int hemisphere() {return Hemi;} 
+// number of tracks (useful for jets) and scalar sum of their pt
+int numTracks() {return NumTracks;}
 float pt_tracks() {return Pt_tracks;}
+// electromagnetic and hadronic energy fractions
 float et_em() {return Et_em;}
 float et_had() {return Et_had;}
+// for Reco: index in MCData of the matched MC particle
 int partonIndex() {return MCParton;} 
-// PDG particle identification
+// for MC: PDG particle identification
 int pid() {return PID;} 
+// for MC: Pythia status
 int status() {return Status;}
+// for MC: index in MCData of the mother
 int motherIndex() {return Mother1;}
+
 virtual const PixelMatchGsfElectron* electronCandidate() {
 //                   cout << "Pointer to electron candidate not defined." << endl;
                    return NULL;}
@@ -117,6 +128,7 @@ void setdzError(float ddz) {DzError = ddz;}
 virtual void setParticleType(int ptype) {ParticleType = ptype;}
 void setParticleIso(bool piso) {ParticleIso = piso;}
 void setHemisphere(int hem) {Hemi = hem;}
+void setNumTracks(int ntk) {NumTracks = ntk;}
 void setPt_tracks(float apt_tracks) {Pt_tracks = apt_tracks;}
 void setEt_em(float aet_em){Et_em = aet_em;} 
 void setEt_had(float aet_had){Et_had = aet_had;}
@@ -139,7 +151,8 @@ private:
 float Px, Py, Pz, E;
 float Charge; 
 float Vx, Vy, Vz, D0Error, DzError;
-int ParticleType, ParticleIso, Hemi; 
+int ParticleType, ParticleIso, Hemi;
+int NumTracks;
 float Pt_tracks, Et_em, Et_had;
 int MCParton, PID, Status, Mother1;
 

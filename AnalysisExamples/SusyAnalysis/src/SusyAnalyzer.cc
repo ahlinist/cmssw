@@ -108,6 +108,7 @@ void SusyAnalyzer::beginJob( const edm::EventSetup& )
    numTotEvtNoCalo = 0;
    numTotEvtEmpty = 0;
    numTotEvtNoPrimary = 0;
+   numTotEvtBadHardJet = 0;
    numTotEvtCleanEmpty = 0;
    numTotEvtFinalEmpty = 0;
    numTotEvtBadNoisy = 0;
@@ -199,6 +200,8 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 {
   try{
   // Variables and counters valid per event
+  
+//  if (iEvent.id().run() != 5002 || iEvent.id().event() != 28) {return;}
 
   int mccounter = 0;
   
@@ -208,7 +211,9 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
      cout << "Event number: " << numTotEvt << endl;
   }  
   
-  myEventData = new MrEvent();
+  EventData = new MrEvent();
+  EventData->setRun(iEvent.id().run());
+  EventData->setEvent(iEvent.id().event());
 
 
   // ******************************************************** 
@@ -267,12 +272,12 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   barMoth.clear();
   
   // Save the MCData in the Event data
-  myEventData->setMCData(&MCData);
+  EventData->setMCData(&MCData);
   
 
    // handle MC and make MC printout
   
-  myMCProcessor = new  MCProcessor(myEventData, &myConfig);
+  myMCProcessor = new  MCProcessor(EventData, &myConfig);
   myMCProcessor->SetDebug(DEBUGLVL);
 
   bool acceptMC = true;
@@ -396,8 +401,11 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
      cout << "Track collection: " << endl;
      for (int i=0; i< (int) TrackData->size(); i++){
        const Track* pTrack = &(*TrackData)[i];
-       if (pTrack->pt() > 1.) {
-         cout << " Track index = " << i << ", pT = " << pTrack->pt() << endl;
+       if (pTrack->pt() > 0.9) {
+         cout << " Track index = " << i << ", p = " << pTrack->p()
+              << ", pT = " << pTrack->pt() 
+              << ", eta " << pTrack->eta() << ", phi " << pTrack->phi()
+              << ", Charge " << pTrack->charge() << endl;
        }
      }
    }
@@ -431,7 +439,12 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
        }
      }
    }
-
+   
+   // Save the pointers to vertex, track and calotower collections in MrEvent
+   
+   EventData->setTrackCollection(TrackData); 
+   EventData->setVertexCollection(VertexData); 
+   EventData->setCaloTowerCollection(CaloTowerData); 
 
    // get gen jet collection
    // Handle<GenJetCollection> jetsgen;
@@ -462,7 +475,7 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
  
   // Save the RecoData in the Event data
  
-   myEventData->setRecoData(&RecoData);
+   EventData->setRecoData(&RecoData);
 
   // ******************************************************** 
 
@@ -473,13 +486,12 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
    const CaloMETCollection *calometcol = calomethandle.product();
    const CaloMET calomet = calometcol->front();
    math::XYZVector calometvector = math::XYZVector(calomet.px(),calomet.py(),0.);
-   myEventData->setMetCalo(calometvector);
+   EventData->setMetCalo(calometvector);
 
   // ******************************************************** 
  
   // Handle the Reco event data and check their quality
-   myRecoProcessor = new  RecoProcessor(myEventData, 
-                          TrackData, VertexData, CaloTowerData, &myConfig);
+   myRecoProcessor = new  RecoProcessor(EventData, &myConfig);
    myRecoProcessor->SetDebug(DEBUGLVL);
 
    bool acceptData = true;
@@ -492,6 +504,7 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       numTotEvtNoCalo += myRecoProcessor->NumEvtNoCalo();
       numTotEvtEmpty += myRecoProcessor->NumEvtEmpty();
       numTotEvtNoPrimary += myRecoProcessor->NumEvtNoPrimary();
+      numTotEvtBadHardJet += myRecoProcessor->NumEvtBadHardJet();
       numTotEvtCleanEmpty += myRecoProcessor->NumEvtCleanEmpty();
       numTotEvtFinalEmpty += myRecoProcessor->NumEvtFinalEmpty();
       numTotEvtBadNoisy += myRecoProcessor->NumEvtBadNoisy();
@@ -512,7 +525,7 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   // ******************************************************** 
   // Recontruct and match the hemispheres 
     
-   myHemiAna = new ShapeAnalyzer(myEventData);
+   myHemiAna = new ShapeAnalyzer(EventData);
    myHemiAna->SetDebug(DEBUGLVL);
    
    bool acceptHemi = true;
@@ -592,7 +605,7 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   // Now start the analysis
   // ******************************************************** 
   
-  myUserAnalysis->doAnalysis(myEventData);
+  myUserAnalysis->doAnalysis(EventData);
   
   // ******************************************************** 
   // End of the event analysis
@@ -600,10 +613,6 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
 
 
-
-
-
- 
  
  
   // clean memory
@@ -668,7 +677,8 @@ void SusyAnalyzer::PrintStatistics(void)
  cout << "Total number of events processed = " << numTotEvt << endl;
  int numTotEvtReject = numTotEvtExceptCaught+numTotEvtNoTrigger+numTotEvtNoReco
                       +numTotEvtNoTracks+numTotEvtNoCalo+numTotEvtEmpty
-                      +numTotEvtNoPrimary+numTotEvtCleanEmpty+numTotEvtFinalEmpty
+                      +numTotEvtNoPrimary+numTotEvtBadHardJet
+                      +numTotEvtCleanEmpty+numTotEvtFinalEmpty
                       +numTotEvtBadNoisy+numTotEvtBadMET+numTotEvtBadHemi;
  cout << "   events accepted                  = " 
       << numTotEvt-numTotEvtReject << endl;
@@ -688,6 +698,8 @@ void SusyAnalyzer::PrintStatistics(void)
       << "  = " << 100.*(float)numTotEvtEmpty / (float)numTotEvt << " %" << endl;
  cout << "    without good primary Vx         = " << numTotEvtNoPrimary
       << "  = " << 100.*(float)numTotEvtNoPrimary / (float)numTotEvt << " %" << endl;
+ cout << "    with  rejected bad hard jet     = " << numTotEvtBadHardJet
+      << "  = " << 100.*(float)numTotEvtBadHardJet / (float)numTotEvt << " %" << endl;
  cout << "    empty after cleaning            = " << numTotEvtCleanEmpty
       << "  = " << 100.*(float)numTotEvtCleanEmpty / (float)numTotEvt << " %" << endl;
  cout << "    empty after final acceptance    = " << numTotEvtFinalEmpty
@@ -880,7 +892,7 @@ void SusyAnalyzer::CleanMemory()
   RecoData.clear();
  }
  
- delete myEventData;
+ delete EventData;
 
 
  return;

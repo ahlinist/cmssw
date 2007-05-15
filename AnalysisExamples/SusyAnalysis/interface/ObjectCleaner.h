@@ -12,7 +12,6 @@
 */
 
 
-#include "AnalysisExamples/SusyAnalysis/interface/MrParticle.h" 
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/EgammaCandidates/interface/Electron.h"
 #include "DataFormats/MuonReco/interface/Muon.h"
@@ -25,6 +24,8 @@
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
+#include "AnalysisExamples/SusyAnalysis/interface/MrEvent.h" 
+#include "AnalysisExamples/SusyAnalysis/interface/MrParticle.h" 
 #include "AnalysisExamples/SusyAnalysis/interface/SusyRecoTools.h"
 
 #include <vector>
@@ -36,10 +37,8 @@ class ObjectCleaner : public SusyRecoTools {
 public:
 
 // Constructor:
-ObjectCleaner(vector<MrParticle*>*, const TrackCollection *, 
-    const VertexCollection*, const CaloTowerCollection*);
-ObjectCleaner(vector<MrParticle*>*, const TrackCollection *, 
-    const VertexCollection*, const CaloTowerCollection*, edm::ParameterSet);
+ObjectCleaner(MrEvent*);
+ObjectCleaner(MrEvent*, edm::ParameterSet);
 
 // Destructor:
 virtual ~ObjectCleaner(){};
@@ -97,6 +96,9 @@ float clean_dRPhotElemax;
 float clean_dRPhotDupmax;
 float clean_deltaRElecJetmax;
 float clean_elecbyJetEratio;
+int clean_methodTksInJet;
+int clean_nJetTkHitsmin;
+float clean_jetCaloTowEFracmin;
 float clean_dRTrkFromJet;
 float clean_FracChminJet;
 float clean_FracEmmaxJet;
