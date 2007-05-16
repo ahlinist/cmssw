@@ -21,6 +21,8 @@
 #include "FWCore/FWLite/src/BareRootProductGetter.h"
 #include "FWCore/PluginManager/interface/PluginManager.h"
 #include "FWCore/PluginManager/interface/standard.h"
+
+#include "FWCore/FWLite/interface/setRefStreamer.h"
 //
 // constants, enums and typedefs
 //
@@ -50,6 +52,10 @@ AutoLibraryLoader::enable()
    static BareRootProductGetter s_getter;
    static edm::EDProductGetter::Operate s_op(&s_getter);
    edm::RootAutoLibraryLoader::enable();
+   //this function must be called after enabling the autoloader
+   // so that the Reflex dictionaries will be converted to ROOT 
+   // dictionaries and the TClass we need will be available
+   fwlite::setRefStreamer(&s_getter);
 }
 
 
