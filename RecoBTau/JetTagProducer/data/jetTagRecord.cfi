@@ -1,0 +1,7 @@
+    es_source BTagRecord = EmptyESSource {
+        string recordName = "JetTagComputerRecord"
+        vuint32 firstValid = { 1 }
+        bool iovIsRunNotTime = true
+    }
+
+    
