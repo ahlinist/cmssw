@@ -304,6 +304,7 @@ bool RecoProcessor::RecoDriver()
          acceptObject = true;
          numJets++;
          counter++;
+         if (RecoData[i]->particleType() == 6){numBJets++;}
      }
      }         
 
@@ -435,7 +436,10 @@ bool RecoProcessor::RecoDriver()
        else if (RecoData[i]->particleType() == 3){numTaus--;}
        else if (RecoData[i]->particleType() == 4){numPhotons--;}
        else if (RecoData[i]->particleType() >= 5
-              && RecoData[i]->particleType() <= 7){numJets--;}
+              && RecoData[i]->particleType() <= 7){
+         numJets--;
+         if (RecoData[i]->particleType() == 6){numBJets--;}
+       }
        counter--; 
        delete RecoData[i];
        RecoData.erase(RecoData.begin() + i);
@@ -466,7 +470,11 @@ bool RecoProcessor::RecoDriver()
        else if (RecoData[i]->particleType() == 3){numTaus--; numTauDupl++;}
        else if (RecoData[i]->particleType() == 4){numPhotons--; numPhotDupl++;}
        else if (RecoData[i]->particleType() >= 5
-              && RecoData[i]->particleType() <= 7){numJets--; numJetDupl++;}
+              && RecoData[i]->particleType() <= 7){
+         numJets--; 
+         numJetDupl++;
+         if (RecoData[i]->particleType() == 6){numBJets--;}
+       }
        counter--; 
        delete RecoData[i];
        RecoData.erase(RecoData.begin() + i);

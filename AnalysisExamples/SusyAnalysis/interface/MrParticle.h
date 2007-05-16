@@ -16,7 +16,7 @@
 #include "DataFormats/EgammaCandidates/interface/Photon.h"
 #include "DataFormats/JetReco/interface/Jet.h"
 #include "DataFormats/EgammaReco/interface/SuperCluster.h"
-
+#include "DataFormats/BTauReco/interface/JetTag.h"
 
 using namespace reco;
 using namespace std;
@@ -30,13 +30,13 @@ MrParticle() : Px(0.), Py(0.), Pz(0.), E(0.), Charge(0.),
 Vx(0.), Vy(0.), Vz(0.), D0Error(0.), DzError(0.),
 ParticleType(0), ParticleIso(true), Hemi(0),
 Pt_tracks(0.), Et_em(0.), Et_had(0.),
-MCParton(0), PID(0), Status(0), Mother1(0) {};
+MCParton(0), PID(0), Status(0), Mother1(0), BtagDiscriminator(-10) {};
 
 MrParticle(float px, float py, float pz, float e) : Px(px), Py(py), Pz(pz), E(e), Charge(0.),  
 Vx(0.), Vy(0.), Vz(0.), D0Error(0.), DzError(0.),
 ParticleType(0), ParticleIso(true), Hemi(0),
 Pt_tracks(0.), Et_em(0.), Et_had(0.),
-MCParton(0), PID(0), Status(0), Mother1(0) {};
+MCParton(0), PID(0), Status(0), Mother1(0), BtagDiscriminator(-10) {};
 
 
 // destructor
@@ -91,6 +91,8 @@ float pt_tracks() {return Pt_tracks;}
 // electromagnetic and hadronic energy fractions
 float et_em() {return Et_em;}
 float et_had() {return Et_had;}
+// get b-tagging discriminator
+double getBtagDiscriminator(){return BtagDiscriminator;}
 // for Reco: index in MCData of the matched MC particle
 int partonIndex() {return MCParton;} 
 // for MC: PDG particle identification
@@ -112,7 +114,9 @@ virtual const Photon* photonCandidate() {
 virtual const Jet* jetCandidate() {
                    cout << "Pointer to jet candidate not defined." << endl;
                    return NULL;}
-
+virtual const JetTag* jetTag() {
+                   cout << "Pointer to jetTag candidate not defined." << endl;
+                   return NULL;}
 
 // set methods
 void setPx(float px) {Px = px;}
@@ -144,6 +148,7 @@ void setPID(int pid) {PID = pid;
 } 
 void setStatus(int stat) {Status = stat;}
 void setMotherIndex(int m1) {Mother1 = m1;} 
+void setBtagDiscriminator(double discri) {BtagDiscriminator = discri;}
 
 private:
 
@@ -155,7 +160,7 @@ int ParticleType, ParticleIso, Hemi;
 int NumTracks;
 float Pt_tracks, Et_em, Et_had;
 int MCParton, PID, Status, Mother1;
-
+double BtagDiscriminator;
 
 };
 
@@ -269,14 +274,15 @@ public:
 // constructors
 MrJet() : MrParticle(),  PCandidate(0) {MrParticle::setParticleType(5);};
 
-MrJet(float px, float py, float pz, float e, const Jet* mycand) : MrParticle(px,py,pz,e), 
- PCandidate(mycand) {MrParticle::setParticleType(5);};
+MrJet(float px, float py, float pz, float e, const Jet* mycand, const JetTag* myjettag) : MrParticle(px,py,pz,e), 
+ PCandidate(mycand), PJetTag(myjettag) {MrParticle::setParticleType(5);};
 
 
 virtual ~MrJet() {};
 
 //access methods
 const Jet* jetCandidate() {return PCandidate;}
+const JetTag* jetTag() {return PJetTag;}
 
 //set methods
 void setCandidate (const Jet* mycand) {PCandidate = mycand;}
@@ -284,12 +290,13 @@ virtual void setParticleType(int ptype) {
                if (ptype <= 2 || ptype == 4 || ptype > 7){ cout << "Changing type to non-jet not allowed." << endl;}
                else { MrParticle::setParticleType(ptype); }
                 }
+void setBtagDiscriminator(double discri) {MrParticle::setBtagDiscriminator(discri);}
 
 private:
 
 // data members
 const Jet* PCandidate;
-
+const JetTag* PJetTag;
 
 };
 

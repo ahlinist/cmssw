@@ -68,6 +68,7 @@ class SusyAnalyzer : public edm::EDAnalyzer {
      string m_tautaginfo;
      string m_photonSrc;
      string m_calometSrc;
+     string m_jettag;  // for b-tagging
 
   // names of histogram output file
      TFile*      hOutputFile ;
@@ -83,7 +84,7 @@ class SusyAnalyzer : public edm::EDAnalyzer {
      MrEvent * EventData;
   
   // names of parameter sets  
-     
+      
      edm::ParameterSet acceptance_cuts;
      edm::ParameterSet cleaner_params;
      edm::ParameterSet isolator_params;
@@ -105,6 +106,7 @@ class SusyAnalyzer : public edm::EDAnalyzer {
   
   int DEBUGLVL;
 
+
   // Define the acceptance cuts
   float ana_elecEtaMax;
   float ana_elecPtMin1;
@@ -121,6 +123,7 @@ class SusyAnalyzer : public edm::EDAnalyzer {
   float ana_tauPtMin2;
   float ana_photonPtMin2;
   float ana_jetPtMin2;
+  double ana_minBtagDiscriminator; 
 
     // global counters
     
