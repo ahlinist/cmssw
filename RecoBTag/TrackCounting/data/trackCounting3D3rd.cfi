@@ -1,0 +1,9 @@
+    es_module  trackCounting3D3rd = TrackCountingESProducer {
+        string ComponentName = "trackCounting3D3rd"
+     PSet JetTagComputerPSet = {
+     int32 nthTrack = 3
+     int32 impactParamterType = 0 
+       }
+    }
+
+    
