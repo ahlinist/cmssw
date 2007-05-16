@@ -171,8 +171,10 @@ std::vector<CSCWireCluster> CSCRecHit2DInALayer::findWireClusters( const CSCWire
 
 CSCRecHit2D CSCRecHit2DInALayer::makeCluster( const CSCWireCluster & wireCluster, int centerStrip) {
 
-  // fit for the local precise coordinate
-  // fit an rhit for every wire group that was hit
+  // fit the strip info for the local precise coordinate.
+
+  // fit the strips for every wire group that was hit
+
   float centerWire = wireCluster.centerWire();
 
   double u, sigma, chisq, prob;
@@ -200,11 +202,11 @@ CSCRecHit2D CSCRecHit2DInALayer::makeCluster( const CSCWireCluster & wireCluster
     std::vector<CSCFitData> fitDataV;
     // this routine will share strips if they're both going into
     // a cluster
-    LogDebug("CSC") << "check channels centred on " << centerStrip << "\n";
+    LogTrace("CSC") << "check channels centred on " << centerStrip << "\n";
     for(int i = -theClusterSize/2; i <= theClusterSize/2; ++i) {
-      LogDebug("CSC") << "try channel " << i << " in fit" << "\n";
+      LogTrace("CSC") << "try channel " << i << " in fit" << "\n";
       if(centerStrip+i > 0 && centerStrip+i <= specs_->nStrips()) { 
-        LogDebug("CSC") << "use channel " << i << " in fit" << "\n";
+        LogTrace("CSC") << "use channel " << i << " in fit" << "\n";
         CSCFitData data = makeFitData(centerStrip, centerWire, i);
         std::vector<float> adcs_ = data.adcs();
         adcMap.put(centerStrip+i, adcs_.begin(), adcs_.end());
@@ -227,12 +229,13 @@ CSCRecHit2D CSCRecHit2DInALayer::makeCluster( const CSCWireCluster & wireCluster
   }
 
   float v = layergeom_->yOfWire(centerWire, u);
-    LocalPoint localPoint(u, v); 
+  
+  LocalPoint localPoint(u, v); 
 
-  float strangle = layergeom_->stripAngle(centerStrip);
-  float du = sigma/sin(strangle); // since sigma is in local x units
-
-  if(useAverageErrors) {
+  //@@ Old old values just kept here for old times' sake
+  
+  if( useAverageErrors ) {
+    float du = 0.;
     int stat = id_.station();
     int ring = id_.ring();
     if ( stat == 1 ) {
@@ -251,50 +254,24 @@ CSCRecHit2D CSCRecHit2DInALayer::makeCluster( const CSCWireCluster & wireCluster
         du = 0.0216;
       }
     }
+    // Av. errors don't  make a lot of sense anyway, but at least be consistent...
+    float strangle = layergeom_->stripAngle(centerStrip);
+    sigma = du * sin(strangle); // since localError will scale it out!
   }
   
-  // Now calculate approximate x and y resolutions, and xy correlation,
-  // from strip measurement resolution (above) and wire measurement resolution
+  float sigmaWire = wireCluster.width()/sqrt(12.);
+  LocalError le = layergeom_->localError( centerStrip, sigma, sigmaWire );
 
-  //	  du = du * sin(layerGeometry->stripAngle(centerStrip)); 
-  //      float dv = layerGeometry->yResolution(); 
-  //      float duv = du * dv * sin(layerGeometry->wireAngle());
-
-  //  float strangle = layergeom_->stripAngle(centerStrip);
-  float wangle   = layergeom_->wireAngle();
-
-  float dv = wireCluster.width()/sqrt(12.);
-
-  float sinangdif = sin(strangle-wangle);
-  float sin2angdif = sinangdif * sinangdif;
-  
-  // The notation is
-  // wsins = wire resol  * sin(strip angle)
-  // wcoss = wire resol  * cos(strip angle)
-  // ssinw = strip resol * sin(wire angle)
-  // scosw = strip resol * cos(wire angle)
-
-  float wsins = dv * sin(strangle);
-  float wcoss = dv * cos(strangle);
-  float ssinw = du * sin(wangle);
-  float scosw = du * cos(wangle);
-
-  float dx2 = (scosw*scosw + wcoss*wcoss)/sin2angdif;
-  float dy2 = (ssinw*ssinw + wsins*wsins)/sin2angdif;
-  float dxy = (scosw*ssinw + wcoss*wsins)/sin2angdif;
-          
-  LocalError localError(dx2, dxy, dy2);
-
-  CSCRecHit2D rechit( id_, localPoint, localError, channels, adcMap, wgroups, tpeak, chisq, prob );
+  CSCRecHit2D rechit( id_, localPoint, le, channels, adcMap, wgroups, tpeak, chisq, prob );
 
   if( infoV ) {
     edm::LogInfo("CSC") << "new CSCRecHit2D ME" <<
         id_.station() << "/" << id_.ring() << " C " << 
         id_.chamber() << " L " << id_.layer() << " local point: " << localPoint << "\n";
     edm::LogInfo("CSC") << " errors:" << 
-         " sqrt(dx2)=" << sqrt(dx2) <<
-         " sqrt(dy2)=" << sqrt(dy2) << " dxy=" << dxy << 
-         " strip du=" << du << "\n";
+         " sqrt(dx2)=" << sqrt(le.xx()) <<
+         " sqrt(dy2)=" << sqrt(le.yy()) << " dxy=" << le.xy() << 
+         " strip sigma=" << sigma << " wire sigma=" << sigmaWire << "\n";
   }
   return rechit;
 }
