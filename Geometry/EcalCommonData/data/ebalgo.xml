@@ -25,13 +25,13 @@
     <String  name="BarName" value="EBAR"/>
     <String  name="BarMat"  value="materials:Air"/>
     <Vector  name="BarZPts" type="numeric" nEntries="4">
-      -3045*mm, -2686.7*mm, 2686.7*mm, 3045*mm
+    [ebcon:BarZPts01], [ebcon:BarZPts02], [ebcon:BarZPts03], [ebcon:BarZPts04]
     </Vector>
     <Vector  name="BarRMin" type="numeric" nEntries="4">
-      1455.22*mm, 1238*mm, 1238*mm, 1455.22*mm
+    [ebcon:BarRMin01], [ebcon:BarRMin02], [ebcon:BarRMin03], [ebcon:BarRMin04]
     </Vector>
     <Vector  name="BarRMax" type="numeric" nEntries="4">
-      1775*mm, 1775*mm, 1775*mm, 1775*mm
+    [ebcon:BarRMax01], [ebcon:BarRMax02], [ebcon:BarRMax03], [ebcon:BarRMax04]
     </Vector>
     <Vector  name="BarTran" type="numeric" nEntries="3">
       [ebcon:BarTranX], [ebcon:BarTranY], [ebcon:BarTranZ]
