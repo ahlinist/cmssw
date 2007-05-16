@@ -158,9 +158,8 @@ namespace edm
     if (node->type() == "operand") {
       SeqMap::iterator seqIt = sequences.find(node->name()); 
       if (seqIt != sequences.end()) {
-        NodePtr substituteNode = seqIt->second->wrapped();
-        //substituteNode->setParent(node->getParent());
-        sequenceSubstitution(substituteNode, sequences);
+        node = seqIt->second->wrapped();
+        sequenceSubstitution(node, sequences);
       }
     } // if operator
     else {
