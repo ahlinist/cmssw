@@ -33,7 +33,8 @@ SusyAnalyzer::SusyAnalyzer(const edm::ParameterSet& iConfig)
   m_tautaginfo = iConfig.getParameter<string>("taujet");
   m_photonSrc  = iConfig.getParameter<string>("photons");
   m_calometSrc = iConfig.getParameter<string>("calomet");
-
+  m_jettag = iConfig.getParameter<string>("jettag");
+ 
   // get acceptance cuts
   // save them in a structure Config
   acceptance_cuts =
@@ -86,6 +87,7 @@ void SusyAnalyzer::beginJob( const edm::EventSetup& )
   ana_tauPtMin2 = acceptance_cuts.getParameter<double>("ana_tauPtMin2") ;
   ana_photonPtMin2 = acceptance_cuts.getParameter<double>("ana_photonPtMin2") ;
   ana_jetPtMin2 = acceptance_cuts.getParameter<double>("ana_jetPtMin2") ;
+  ana_minBtagDiscriminator = acceptance_cuts.getParameter<double>("ana_minBtagDiscriminator");
 
   PrintCuts();
 
@@ -381,13 +383,40 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
    Handle<CaloJetCollection> jets;
    iEvent.getByLabel(m_jetsSrc, jets);
 
+   //information for b-tagging
+   Handle<JetTagCollection> jetsAndTracks;
+   iEvent.getByLabel(m_jettag,jetsAndTracks);
+
+   const JetTag* jetTag = NULL; 
+
+   //simply a sufficiently small number as == might give problems with probable float double comparison
+   double EPSILON_BT = 0.00001;
+   double btagdiscriminator = -10;
+
   for (unsigned int j = 0; j < jets->size(); j++)
   {
  
-   MrJet* recopart = new MrJet((*jets)[j].px(),
-           (*jets)[j].py(),(*jets)[j].pz(),(*jets)[j].energy(), &(*jets)[j]);
+    for (unsigned int i = 0; i < jetsAndTracks->size(); i++){
+   
+      if ( fabs( ((*jets)[j].px() - (*jetsAndTracks)[i].jet().px())/  (*jets)[j].px()) < EPSILON_BT && 
+	   fabs( ((*jets)[j].py() - (*jetsAndTracks)[i].jet().py())/  (*jets)[j].py()) < EPSILON_BT &&
+	   fabs( ((*jets)[j].pz() - (*jetsAndTracks)[i].jet().pz())/  (*jets)[j].pz()) < EPSILON_BT &&
+	   fabs( ((*jets)[j].energy() - (*jetsAndTracks)[i].jet().energy())/  (*jets)[j].pz()) < EPSILON_BT ) 
+	{
+	  btagdiscriminator =  (*jetsAndTracks)[i].discriminator();
+	  jetTag = &(*jetsAndTracks)[i];
+	  break;
+	}
+    }
+    MrJet* recopart = new MrJet((*jets)[j].px(),
+           (*jets)[j].py(),(*jets)[j].pz(),(*jets)[j].energy(), &(*jets)[j],jetTag);
+
   
-   RecoData.push_back(recopart);
+  
+    recopart->setBtagDiscriminator(btagdiscriminator);
+    if(btagdiscriminator > ana_minBtagDiscriminator) {recopart->setParticleType(6);}
+   
+    RecoData.push_back(recopart);
  
   }
 
@@ -466,10 +495,6 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
      //cout << " number of jetsgen    "<< jetsgen->size() << endl;
    }
 
-
-  // ******************************************************** 
-  // Look up the b-tagging information
-   
 
   // ******************************************************** 
  
