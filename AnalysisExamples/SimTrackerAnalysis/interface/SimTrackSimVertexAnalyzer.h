@@ -8,7 +8,10 @@
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "SimDataFormats/Track/interface/SimTrack.h"
+#include "SimDataFormats/Vertex/interface/SimVertex.h"
 
+#include <vector>
 // forward declarations
 class TFile;
 class TH1D;
@@ -20,11 +23,16 @@ class SimTrackSimVertexAnalyzer : public edm::EDAnalyzer{
   
   virtual void analyze( const edm::Event&, const edm::EventSetup& );
   virtual void beginJob( const edm::EventSetup& );
+  void association(std::vector<SimTrack>,std::vector<SimVertex>);  
   virtual void endJob();
    private:
   std::string fOutputFileName;
   std::string SimTkLabel;
   std::string SimVtxLabel;
+  bool associate;
+  double luminosityZ;
+  double luminosityR;
+
 
   TH1D* numbTk;
   TH1D* momentumX;

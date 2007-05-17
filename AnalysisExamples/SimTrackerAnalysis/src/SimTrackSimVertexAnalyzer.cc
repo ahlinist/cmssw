@@ -49,6 +49,9 @@ SimTrackSimVertexAnalyzer::SimTrackSimVertexAnalyzer( const edm::ParameterSet& i
   fOutputFileName(iConfig.getUntrackedParameter("HistOutFile",std::string("TestHiggsMass.root"))),
   SimTkLabel(iConfig.getUntrackedParameter("moduleLabelTk",std::string("g4SimHits"))),
   SimVtxLabel(iConfig.getUntrackedParameter("moduleLabelVtx",std::string("g4SimHits"))),
+  associate(iConfig.getUntrackedParameter("TkVtxAssociation",bool(true))),
+  luminosityZ(iConfig.getUntrackedParameter("LuminosityZ",double(11))),
+  luminosityR(iConfig.getUntrackedParameter("LuminosityR",double(0.004))),
   numbTk(0),momentumX(0),momentumY(0),momentumZ(0),momentumPERP(0),trackID(0),type(0),
   numbVtx(0),positionZ(0),parentInd(0),histoPlot(0)
 {
@@ -117,8 +120,39 @@ SimTrackSimVertexAnalyzer::analyze( const edm::Event& iEvent, const edm::EventSe
      parentInd->Fill(isimvtx->parentIndex());
    }
 
+   if(associate) association(theSimTracks, theSimVertexes);
+
    return;
 
+}
+
+void SimTrackSimVertexAnalyzer::association(std::vector<SimTrack> trackContainer, 
+					    std::vector<SimVertex> vertexsContainer){
+
+  for (int isimvtx = 0; isimvtx < vertexsContainer.size();isimvtx++){
+    if(vertexsContainer[isimvtx].noParent() && 
+       fabs(vertexsContainer[isimvtx].position().z()) > luminosityZ && 
+       vertexsContainer[isimvtx].position().perp() > luminosityR){
+      std::cout<<"SimVertex without a parent tracks it could be 'Primary Vertex'"<<std::endl;
+      std::cout<<"but position is outside the luminosity region = "<<std::endl;
+      std::cout<<vertexsContainer[isimvtx]<<std::endl;
+      for (std::vector<SimTrack>::iterator isimtk = trackContainer.begin();
+	   isimtk != trackContainer.end(); ++isimtk){
+	if(isimtk->vertIndex() == isimvtx){
+	  std::cout<<"SimTrack that start from this Vertex = "<< *isimtk <<std::endl;
+	}
+      }
+    }
+  }
+  
+  for (std::vector<SimTrack>::iterator isimtk = trackContainer.begin();
+       isimtk != trackContainer.end(); ++isimtk){
+    if(isimtk->noVertex()){
+      std::cout<<"SimTrack without an associated Vertex = "<< *isimtk <<std::endl;
+    }
+  }
+  
+  return;
 }
 
 
