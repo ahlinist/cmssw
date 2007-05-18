@@ -1,8 +1,8 @@
 #include "RecoBTag/Analysis/interface/TrackProbabilityTagPlotter.h"
 
-TrackProbabilityTagPlotter::TrackProbabilityTagPlotter(JetTagPlotter *jetTagPlotter,
-	bool update) :
-    BaseBTagPlotter(jetTagPlotter->etaPtBin()), jetTagPlotter_(jetTagPlotter)
+TrackProbabilityTagPlotter::TrackProbabilityTagPlotter(const EtaPtBin & etaPtBin,
+	int nBinEffPur, double startEffPur, double endEffPur, bool update) :
+    BaseBTagPlotter(etaPtBin, nBinEffPur, startEffPur, endEffPur)
 {
   finalized = false;
   if (update){
@@ -56,8 +56,6 @@ TrackProbabilityTagPlotter::TrackProbabilityTagPlotter(JetTagPlotter *jetTagPlot
 TrackProbabilityTagPlotter::~TrackProbabilityTagPlotter ()
 {
 
-  delete jetTagPlotter_;
-
   for(int n=0; n <= 4; n++) {
     delete tkcntHistosSig2D[n];
     delete tkcntHistosSig3D[n];
@@ -68,57 +66,46 @@ TrackProbabilityTagPlotter::~TrackProbabilityTagPlotter ()
 }
 
 
-void TrackProbabilityTagPlotter::analyzeTag (const reco::TrackProbabilityTagInfo & tagInfo,
-	const reco::JetTag & jetTag, const JetFlavour & jetFlavour)
+void TrackProbabilityTagPlotter::analyzeTag (const reco::JetTag & jetTag,
+	const JetFlavour & jetFlavour)
 {
+  const reco::TrackProbabilityTagInfo * tagInfo = 
+	dynamic_cast<const reco::TrackProbabilityTagInfo *>(jetTag.tagInfoRef().get());
 
   int jetFlav = jetFlavour.flavour();
 
-  jetTagPlotter_->analyzeJetTag(jetTag, jetFlavour);
-
-  // check if properly initialized
-
-    //fixme: method to set 2d or 3d:
-
   int numberOfTracks = jetTag.tracks().size();
 
-  for(int n=0; n < numberOfTracks && n < 4; n++) {
-    if (tagInfo.probability(n,1)!= -10.0 ) tkcntHistosSig2D[n]->fill(jetFlav, tagInfo.probability(n,1));
-    if (tagInfo.probability(n,0)!= -10.0 ) tkcntHistosSig3D[n]->fill(jetFlav, tagInfo.probability(n,0));
+  for(int n=0; n < tagInfo->selectedTracks(1) && n < 4; n++) {
+    tkcntHistosSig2D[n]->fill(jetFlav, tagInfo->probability(n,1));
+    tkcntHistosSig2D[4]->fill(jetFlav, tagInfo->probability(n,1));
   }
-  for(int n=0; n < numberOfTracks; n++){
-    if (tagInfo.probability(n,1)!= -10.0 )   tkcntHistosSig2D[4]->fill(jetFlav, tagInfo.probability(n,1));
-    if (tagInfo.probability(n,0)!= -10.0 )   tkcntHistosSig3D[4]->fill(jetFlav, tagInfo.probability(n,0));
+  for(int n=0; n < tagInfo->selectedTracks(0); n++){
+    tkcntHistosSig3D[n]->fill(jetFlav, tagInfo->probability(n,0));
+    tkcntHistosSig3D[4]->fill(jetFlav, tagInfo->probability(n,0));
   }
 }
 
 void TrackProbabilityTagPlotter::finalize ()
 {
-  jetTagPlotter_->finalize();
   //
   // final processing:
   // produce the misid. vs. eff histograms
   //
   effPurFromHistos[0] = new EffPurFromHistos (tkcntHistosSig3D[1],
-		jetTagPlotter_->nBinEffPur(), jetTagPlotter_->startEffPur(),
-		jetTagPlotter_->endEffPur());
+		nBinEffPur(), startEffPur(), endEffPur());
   effPurFromHistos[1] = new EffPurFromHistos (tkcntHistosSig3D[2],
-		jetTagPlotter_->nBinEffPur(), jetTagPlotter_->startEffPur(),
-		jetTagPlotter_->endEffPur());
+		nBinEffPur(), startEffPur(), endEffPur());
   effPurFromHistos[2] = new EffPurFromHistos (tkcntHistosSig2D[1],
-		jetTagPlotter_->nBinEffPur(), jetTagPlotter_->startEffPur(),
-		jetTagPlotter_->endEffPur());
+		nBinEffPur(), startEffPur(), endEffPur());
   effPurFromHistos[3] = new EffPurFromHistos (tkcntHistosSig2D[2],
-		jetTagPlotter_->nBinEffPur(), jetTagPlotter_->startEffPur(),
-		jetTagPlotter_->endEffPur());
+		nBinEffPur(), startEffPur(), endEffPur());
   for(int n=0; n < 4; n++) effPurFromHistos[n]->compute();
   finalized = true;
 }
 
 void TrackProbabilityTagPlotter::psPlot(const TString & name)
 {
-  jetTagPlotter_->psPlot(name);
-
   TString cName = "TrackProbabilityPlots"+ theExtensionString;
   setTDRStyle()->cd();
   TCanvas canvas(cName, "TrackProbabilityPlots"+ theExtensionString, 600, 900);
@@ -170,8 +157,6 @@ void TrackProbabilityTagPlotter::psPlot(const TString & name)
 
 void TrackProbabilityTagPlotter::write()
 {
-  jetTagPlotter_->write();
-
   TString dir= "TrackProbability"+theExtensionString;
   gFile->cd();
   gFile->mkdir(dir);
@@ -188,7 +173,6 @@ void TrackProbabilityTagPlotter::write()
 
 void TrackProbabilityTagPlotter::epsPlot(const TString & name)
 {
-  jetTagPlotter_->epsPlot(name);
   for(int n=0; n <= 4; n++) {
     tkcntHistosSig2D[n]->epsPlot(name);
     tkcntHistosSig3D[n]->epsPlot(name);

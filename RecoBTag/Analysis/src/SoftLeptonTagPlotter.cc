@@ -3,10 +3,10 @@
 static const char* ordinal[] = { "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th" };
 
 SoftLeptonTagPlotter::SoftLeptonTagPlotter(
-    JetTagPlotter *jetTagPlotter,
+    const EtaPtBin & etaPtBin, int nBinEffPur, double startEffPur, double endEffPur, 
     bool update
 ) :
-    BaseBTagPlotter( jetTagPlotter->etaPtBin()), m_plotter(jetTagPlotter )
+    BaseBTagPlotter(etaPtBin, nBinEffPur, startEffPur, endEffPur)
 {
   if (update) {
     TString dir = "SoftLepton" + theExtensionString;
@@ -56,8 +56,6 @@ SoftLeptonTagPlotter::SoftLeptonTagPlotter(
 
 SoftLeptonTagPlotter::~SoftLeptonTagPlotter ()
 {
-  delete m_plotter;
-
   for (int i = 0; i < s_leptons; i++) {
     delete m_discriminant[i];
     delete m_leptonId[i];
@@ -72,35 +70,33 @@ SoftLeptonTagPlotter::~SoftLeptonTagPlotter ()
 }
 
 void SoftLeptonTagPlotter::analyzeTag(
-    const reco::SoftLeptonTagInfo & tagInfo,
     const reco::JetTag &            jetTag,
     const JetFlavour &              jetFlavour )
 {
 
-  int flavour = jetFlavour.flavour();
-  m_plotter->analyzeJetTag(jetTag, jetFlavour);
+  const reco::SoftLeptonTagInfo * tagInfo = 
+	dynamic_cast<const reco::SoftLeptonTagInfo *>(jetTag.tagInfoRef().get());
 
+  int flavour = jetFlavour.flavour();
   // check if properly initialized
 
-  int n_leptons = tagInfo.leptons();
+  int n_leptons = tagInfo->leptons();
 
   for (int i = 0; i < n_leptons && i < s_leptons; i++) {
-    m_discriminant[i]->fill( flavour, tagInfo.properties(i).tag );
+    m_discriminant[i]->fill( flavour, tagInfo->properties(i).tag );
     m_leptonId[i]->fill( flavour, 1.0 );
-    m_leptonPt[i]->fill( flavour, tagInfo.lepton(i)->pt() );
-    m_sip3d[i]->fill(    flavour, tagInfo.properties(i).sip3d );
-    m_ptRel[i]->fill(    flavour, tagInfo.properties(i).ptRel );
-    m_etaRel[i]->fill(   flavour, tagInfo.properties(i).etaRel );
-    m_deltaR[i]->fill(   flavour, tagInfo.properties(i).deltaR );
-    m_ratio[i]->fill(    flavour, tagInfo.properties(i).ratio );
-    m_ratioRel[i]->fill( flavour, tagInfo.properties(i).ratioRel );
+    m_leptonPt[i]->fill( flavour, tagInfo->lepton(i)->pt() );
+    m_sip3d[i]->fill(    flavour, tagInfo->properties(i).sip3d );
+    m_ptRel[i]->fill(    flavour, tagInfo->properties(i).ptRel );
+    m_etaRel[i]->fill(   flavour, tagInfo->properties(i).etaRel );
+    m_deltaR[i]->fill(   flavour, tagInfo->properties(i).deltaR );
+    m_ratio[i]->fill(    flavour, tagInfo->properties(i).ratio );
+    m_ratioRel[i]->fill( flavour, tagInfo->properties(i).ratioRel );
   }
 }
 
 void SoftLeptonTagPlotter::psPlot(const TString & name)
 {
-  m_plotter->psPlot(name);
-
   TString cName = "SoftLeptonPlots" + theExtensionString;
   setTDRStyle()->cd();
   TCanvas canvas(cName, "SoftLeptonPlots" + theExtensionString, 600, 900);
@@ -138,8 +134,6 @@ void SoftLeptonTagPlotter::psPlot(const TString & name)
 
 void SoftLeptonTagPlotter::write()
 {
-  m_plotter->write();
-
   TString dir= "SoftLepton" + theExtensionString;
   gFile->cd();
   gFile->mkdir(dir);
@@ -160,7 +154,6 @@ void SoftLeptonTagPlotter::write()
 
 void SoftLeptonTagPlotter::epsPlot(const TString & name)
 {
-  m_plotter->epsPlot( name );
   for (int i=0; i < s_leptons; i++) {
     m_discriminant[i]->epsPlot( name );
     m_leptonId[i]->epsPlot( name );

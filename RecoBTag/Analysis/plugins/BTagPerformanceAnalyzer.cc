@@ -1,7 +1,5 @@
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "DataFormats/BTauReco/interface/TrackCountingTagInfoFwd.h"
-#include "DataFormats/BTauReco/interface/SoftLeptonTagInfoFwd.h"
 #include "RecoBTag/Analysis/interface/BTagPerformanceAnalyzer.h"
 #include "RecoBTag/Analysis/interface/BaseBTagPlotter.h"
 #include "RecoBTag/Analysis/interface/JetTagPlotter.h"
@@ -14,11 +12,11 @@ BTagPerformanceAnalyzer::BTagPerformanceAnalyzer(const edm::ParameterSet& pSet)
 {
   std::string algorithm = pSet.getParameter<std::string>( "algorithm" );
   if (algorithm == "TrackCounting") {
-    petBase = new BTagPABase<reco::TrackCountingTagInfo, TrackCountingTagPlotter>(pSet);
+    petBase = new BTagPABase<TrackCountingTagPlotter>(pSet);
   } else if (algorithm == "TrackProbability") {
-    petBase = new BTagPABase<reco::TrackProbabilityTagInfo, TrackProbabilityTagPlotter>(pSet);
+    petBase = new BTagPABase<TrackProbabilityTagPlotter>(pSet);
   } else if (algorithm == "SoftLepton") {
-    petBase = new BTagPABase<reco::SoftLeptonTagInfo, SoftLeptonTagPlotter>(pSet);
+    petBase = new BTagPABase<SoftLeptonTagPlotter>(pSet);
   } else {
     throw cms::Exception("Configuration")
       << "BTagPerformanceAnalyzer: Unknown algorithm " << algorithm << endl

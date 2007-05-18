@@ -9,11 +9,11 @@ using namespace RecoBTag;
 
 JetTagPlotter::JetTagPlotter (const EtaPtBin & etaPtBin,
 		       double discrStart, double discrEnd,
-		       int nBinEffPur, double startEffPur, double endEffPur, bool update) :
-		       BaseBTagPlotter(etaPtBin),
-		       discrStart_(discrStart),
-		       discrEnd_(discrEnd), nBinEffPur_(nBinEffPur),
-		       startEffPur_(startEffPur ), endEffPur_(endEffPur)  {
+		       int nBinEffPur, double startEffPur, double endEffPur,
+		       bool update, BaseBTagPlotter *extTagPlotter) :
+		       BaseBTagPlotter(etaPtBin, nBinEffPur, startEffPur, endEffPur),
+		       extTagPlotter_(extTagPlotter), discrStart_(discrStart),
+		       discrEnd_(discrEnd) {
 
   if (update){
     TString dir= "JetTag"+theExtensionString;
@@ -85,6 +85,7 @@ JetTagPlotter::JetTagPlotter (const EtaPtBin & etaPtBin,
 
 
 JetTagPlotter::~JetTagPlotter () {
+  if (extTagPlotter_) delete extTagPlotter_;
   delete dDiscriminatorFC;
   delete dJetFlav;
   delete dJetMultiplicity;
@@ -103,6 +104,7 @@ JetTagPlotter::~JetTagPlotter () {
 
 void JetTagPlotter::epsPlot(const TString & name)
 {
+  if (extTagPlotter_) extTagPlotter_->epsPlot(name);
   dDiscriminatorFC->epsPlot(name);
   dJetFlav->epsPlot(name);
   dJetMultiplicity->epsPlot(name);
@@ -121,6 +123,8 @@ void JetTagPlotter::epsPlot(const TString & name)
 
 void JetTagPlotter::psPlot(const TString & name)
 {
+  if (extTagPlotter_) extTagPlotter_->psPlot(name);
+
   TString cName = "JetTagPlots"+ theExtensionString;
   setTDRStyle()->cd();
   TCanvas canvas(cName, "JetTagPlors"+ theExtensionString, 600, 900);
@@ -167,9 +171,12 @@ void JetTagPlotter::psPlot(const TString & name)
   canvas.Print(name + cName + ".ps]");
 }
 
-void JetTagPlotter::analyzeJetTag(const reco::JetTag & jetTag,
+void JetTagPlotter::analyzeTag(const reco::JetTag & jetTag,
 	const JetFlavour & jetFlavour)
 {
+
+  if (extTagPlotter_) extTagPlotter_->analyzeTag(jetTag, jetFlavour);
+
   int jetFlav = jetFlavour.flavour();
 
   dDiscriminatorFC->fill(jetFlav, jetTag.discriminator());
@@ -189,6 +196,7 @@ void JetTagPlotter::analyzeJetTag(const reco::JetTag & jetTag,
 
 
 void JetTagPlotter::finalize() {
+  if (extTagPlotter_) extTagPlotter_->finalize();
   //
   // final processing:
   // produce the misid. vs. eff histograms
@@ -198,8 +206,12 @@ void JetTagPlotter::finalize() {
   effPurFromHistos->compute();
   finalized = true;
 }
+
+
 void JetTagPlotter::write()
 {
+  if (extTagPlotter_) extTagPlotter_->write();
+
   TString dir= "JetTag"+theExtensionString;
 
   gFile->cd();
