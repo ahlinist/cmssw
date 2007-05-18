@@ -70,6 +70,9 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ServiceRegistry/interface/ActivityRegistry.h"
 
+#include <map>
+#include <vector>
+#include <fenv.h>
 
 namespace edm {
    namespace service {
@@ -77,8 +80,11 @@ namespace edm {
 public:
          EnableFloatingPointExceptions(const ParameterSet&,ActivityRegistry&);
          
+	 void postEndJob();
+
          void preModule(const ModuleDescription&);
          void postModule(const ModuleDescription&);
+
 private:
 	 void controlFpe();
 
@@ -88,6 +94,14 @@ private:
 	 bool enableUnderFlowEx_;
 
          bool setPrecisionDouble_;
+
+	 bool reportSettings_;
+
+	 typedef std::string              String;
+	 typedef std::vector<std::string> VString;
+	 typedef ParameterSet             PSet;
+	 fenv_t fpuState_;
+         std::map<String, fenv_t> stateMap_;
       };
    }
 }
