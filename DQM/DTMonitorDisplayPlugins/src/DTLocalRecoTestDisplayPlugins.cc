@@ -4,7 +4,7 @@
   \brief Display Plugin for Local Recontruction Client test Quality Histograms
   \author G. Mila
   \version $Revision: 1.1 $
-  \date $Date: 2007/04/03 09:30:52 $
+  \date $Date: 2007/04/13 15:11:00 $
 */
 
 #include "DQM/DTMonitorDisplayPlugins/src/DTLocalRecoTestDisplayPlugins.h"
@@ -45,6 +45,18 @@ bool DTLocalRecoTestDisplayPlugins::isLocalRecoTestME (std::string name) {
   }
 
   if( name.find( "UnassEfficiency" ) == 0 ) {
+    return true;
+  }  
+
+  if( name.find( "xEfficiency" ) == 0 ) {
+    return true;
+  }  
+
+  if( name.find( "yEfficiency" ) == 0 ) {
+    return true;
+  }  
+
+  if( name.find( "OccupancyDiff_" ) == 0 ) {
     return true;
   }  
 
@@ -110,33 +122,40 @@ std::string DTLocalRecoTestDisplayPlugins::preDrawTH1F( VisDQMDisplayPlugin::Dis
     gStyle->SetPadBorderSize( 0 );
     //      (data->pad)->SetLogy( 1 );
     gStyle->SetOptStat( 0 );
-    obj->SetStats( kFALSE );
+    obj->SetStats( kFALSE ); 
     
-    TAttLine *line = dynamic_cast<TAttLine *> (data->object);
-    
-    if (line) {
+    if( name.find( "MeanTest" ) == 0 ||
+	name.find( "SigmaTest" ) == 0 ||
+	name.find( "xEfficiency" ) == 0 ||
+	name.find( "yEfficiency" ) == 0 ||
+	name.find( "Efficiency_" ) == 0 ||
+	name.find( "OccupancyDiff_" ) == 0 ) {
+
+      TAttLine *line = dynamic_cast<TAttLine *> (data->object);
       
-      MonitorElement* me = data->me;
-      
-      if (me->hasError()) {
-	line->SetLineColor(TColor::GetColor("#CC0000"));
-	//	  std::cout << name << " has error" << std::endl;
-      }
-      else if (me->hasWarning()) {
+      if (line) {
+	
+	MonitorElement* me = data->me;
+	
+	if (me->hasError()) {
+	  line->SetLineColor(TColor::GetColor("#CC0000"));
+	  //	  std::cout << name << " has error" << std::endl;
+	}
+	else if (me->hasWarning()) {
 	  line->SetLineColor(TColor::GetColor("#993300"));
 	  //	  std::cout << name << " has worning" << std::endl;
-      }
-      else if (me->hasOtherReport()) { 
-	line->SetLineColor(TColor::GetColor("#FFCC00"));
-	//	  std::cout << name << " has other report" << std::endl;
-      }
-      else {
-	line->SetLineColor(TColor::GetColor("#000000"));
-	//	  std::cout << name << " has nothing" << std::endl;
-	
-      }
-    }   
-    
+	}
+	else if (me->hasOtherReport()) { 
+	  line->SetLineColor(TColor::GetColor("#FFCC00"));
+	  //	  std::cout << name << " has other report" << std::endl;
+	}
+	else {
+	  line->SetLineColor(TColor::GetColor("#000000"));
+	  //	  std::cout << name << " has nothing" << std::endl;	  
+	}
+
+      }   
+    }
   }
   
   return "";    

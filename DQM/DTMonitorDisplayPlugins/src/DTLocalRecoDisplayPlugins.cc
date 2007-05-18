@@ -4,8 +4,8 @@
   \file DTLocalRecoDisplayPlugins
   \brief Display Plugin for Data Local Reconstruction Histograms (2D)
   \author G. Mila 
-  \version $Revision: 1.1 $
-  \date $Date: 2007/04/13 10:45:06 $
+  \version $Revision: 1.2 $
+  \date $Date: 2007/04/13 15:10:16 $
 */
 
 #include "DQM/DTMonitorDisplayPlugins/src/DTLocalRecoDisplayPlugins.h"
@@ -134,11 +134,35 @@ std::string DTLocalRecoDisplayPlugins::preDrawTH1F( VisDQMDisplayPlugin::Display
       gStyle->SetOptStat( 0 );
       obj->SetStats( kFALSE );
 
-
+      if( name.find( "hResDist" ) == 0 ) {
+	
+	TAttLine *line = dynamic_cast<TAttLine *> (data->object);
+	
+	if (line) {
+      
+	  MonitorElement* me = data->me;
+	  if (me->hasError()) {
+	    line->SetLineColor(TColor::GetColor("#CC0000"));
+	    //	  std::cout << name << " has error" << std::endl;
+	  }
+	  else if (me->hasWarning()) {
+	    line->SetLineColor(TColor::GetColor("#993300"));
+	    //	  std::cout << name << " has worning" << std::endl;
+	  }
+	  else if (me->hasOtherReport()) { 
+	    line->SetLineColor(TColor::GetColor("#FFCC00"));
+	    //	  std::cout << name << " has other report" << std::endl;
+	  }
+	  else {
+	    line->SetLineColor(TColor::GetColor("#000000"));
+	    //	  std::cout << name << " has nothing" << std::endl; 
+	  }  
+	}   
+      }
   }
   
   return "";    
-
+  
 }
 
 
