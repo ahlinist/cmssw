@@ -1,7 +1,9 @@
 include "RecoBTau/JetTagProducer/data/jetTagRecord.cfi"
 
-include "RecoBTag/TrackCounting/data/standardComputer.cfi"
-include "RecoBTau/JetTagProducer/data/trackCountingJetTags.cfi"
+include "RecoBTag/TrackCounting/data/trackCounting3D2nd.cfi"
+include "RecoBTag/TrackCounting/data/trackCounting3D3rd.cfi"
+include "RecoBTau/JetTagProducer/data/trackCountingHighEffJetTags.cfi"
+include "RecoBTau/JetTagProducer/data/trackCountingHighPurJetTags.cfi"
 
 include "RecoBTag/TrackProbability/data/jetProbabilityComputer.cfi"
 include "RecoBTau/JetTagProducer/data/jetProbabilityJetTags.cfi"
