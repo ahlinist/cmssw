@@ -14,11 +14,11 @@ BTagPerformanceAnalyzer::BTagPerformanceAnalyzer(const edm::ParameterSet& pSet)
 {
   std::string algorithm = pSet.getParameter<std::string>( "algorithm" );
   if (algorithm == "TrackCounting") {
-    petBase = new BTagPABase<reco::TrackCountingTagInfoCollection, TrackCountingTagPlotter>(pSet);
+    petBase = new BTagPABase<reco::TrackCountingTagInfo, TrackCountingTagPlotter>(pSet);
   } else if (algorithm == "TrackProbability") {
-    petBase = new BTagPABase<reco::TrackProbabilityTagInfoCollection, TrackProbabilityTagPlotter>(pSet);
+    petBase = new BTagPABase<reco::TrackProbabilityTagInfo, TrackProbabilityTagPlotter>(pSet);
   } else if (algorithm == "SoftLepton") {
-    petBase = new BTagPABase<reco::SoftLeptonTagInfoCollection, SoftLeptonTagPlotter>(pSet);
+    petBase = new BTagPABase<reco::SoftLeptonTagInfo, SoftLeptonTagPlotter>(pSet);
   } else {
     throw cms::Exception("Configuration")
       << "BTagPerformanceAnalyzer: Unknown algorithm " << algorithm << endl
