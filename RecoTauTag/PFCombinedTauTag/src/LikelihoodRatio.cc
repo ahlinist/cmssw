@@ -26,18 +26,18 @@ double LikelihoodRatio::value(){
   TagVarfakepdf_vector.clear();
   int i_recjetEtslice=0;
   bool aCalibratedHistogram_notempty=true;
-  while((int)truthmatched_candidatesnumber_inrecjetEtslice<minnumbercandidates_inpdf_byrecjetEtslice || (int)fake_candidatesnumber_inrecjetEtslice<minnumbercandidates_inpdf_byrecjetEtslice || aCalibratedHistogram_notempty){
+  while(((int)truthmatched_candidatesnumber_inrecjetEtslice<minnumbercandidates_inpdf_byrecjetEtslice || (int)fake_candidatesnumber_inrecjetEtslice<minnumbercandidates_inpdf_byrecjetEtslice) && aCalibratedHistogram_notempty){
     aCalibratedHistogram_notempty=false;
     int i_TagVar=0;
     for (TaggingVariableList::const_iterator iTagVar=m_TaggingVariableList.begin();iTagVar!=m_TaggingVariableList.end();++iTagVar){
       int TagVarNumber=getTagVarNumber(*iTagVar);
       if (TagVarNumber==-1)continue;
-      CategoryDataInputCondDB theInput_truthmatchedcandidates(1,m_signaltks_n,m_TauCandidate_et,TagVarNumber,i_recjetEtslice);
-      const CalibratedHistogram* theCalibratedHistogram_truthmatchedcandidates=(*m_CalibrationInterface).getCalibData(theInput_truthmatchedcandidates);
       if (i_recjetEtslice==0){ 
 	TagVartruthmatchedpdf_vector.push_back(0.);
 	TagVarfakepdf_vector.push_back(0.);
       }
+      CategoryDataInputCondDB theInput_truthmatchedcandidates(1,m_signaltks_n,m_TauCandidate_et,TagVarNumber,i_recjetEtslice);
+      const CalibratedHistogram* theCalibratedHistogram_truthmatchedcandidates=(*m_CalibrationInterface).getCalibData(theInput_truthmatchedcandidates);
       if (theCalibratedHistogram_truthmatchedcandidates!=0){
 	TagVartruthmatchedpdf_vector[i_TagVar]+=(*theCalibratedHistogram_truthmatchedcandidates).value((*iTagVar).second);
 	if (i_TagVar==0){
@@ -95,15 +95,15 @@ double LikelihoodRatio::value(){
 }
 int LikelihoodRatio::getTagVarNumber(TaggingVariable x){
   int theTagVarNumber=-1;
-  if (x.first==8) theTagVarNumber=0;
-  if (x.first==21) theTagVarNumber=1;
-  if (x.first==23) theTagVarNumber=2;
-  if (x.first==25) theTagVarNumber=3;
-  if (x.first==26) theTagVarNumber=4;
-  if (x.first==27) theTagVarNumber=5;
-  if (x.first==28) theTagVarNumber=6;
-  if (x.first==29) theTagVarNumber=7;
-  if (x.first==30) theTagVarNumber=8;
-  if (x.first==31) theTagVarNumber=9;
+  if (x.first==7) theTagVarNumber=0;
+  if (x.first==20) theTagVarNumber=1;
+  if (x.first==22) theTagVarNumber=2;
+  if (x.first==24) theTagVarNumber=3;
+  if (x.first==25) theTagVarNumber=4;
+  if (x.first==26) theTagVarNumber=5;
+  if (x.first==27) theTagVarNumber=6;
+  if (x.first==28) theTagVarNumber=7;
+  if (x.first==29) theTagVarNumber=8;
+  if (x.first==30) theTagVarNumber=9;
   return (theTagVarNumber);
 }
