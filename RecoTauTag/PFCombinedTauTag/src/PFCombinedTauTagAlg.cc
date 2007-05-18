@@ -249,11 +249,10 @@ PFCombinedTauTagInfo PFCombinedTauTagAlg::tag(const PFIsolatedTauTagInfoRef& the
       resultExtended.setdiscriminator(1.);
       return resultExtended; 
     }else{
-      FillTaggingVariableList();
       // computing likelihood ratios temporarily not available
       /*
 	(*LikelihoodRatio_).setCandidateCategoryParameterValues(signalChargedHadrCands_.size(),TauCandJet_ref_et);
-	(*LikelihoodRatio_).setCandidateTaggingVariableList(TaggingVariableList_);
+	(*LikelihoodRatio_).setCandidateTaggingVariableList(taggingvariablesList());
 	resultExtended.setdiscriminator((*LikelihoodRatio_).value());
       */
       resultExtended.setdiscriminator(-100.);
@@ -263,59 +262,61 @@ PFCombinedTauTagInfo PFCombinedTauTagAlg::tag(const PFIsolatedTauTagInfoRef& the
   // * end of overall tau selection *
 }
 
-void PFCombinedTauTagAlg::FillTaggingVariableList(){
+TaggingVariableList PFCombinedTauTagAlg::taggingvariablesList(){
+  TaggingVariableList the_taggingvariables_list;
   if(signalChargedHadrCands_.size()==1){
     if(Use_GammaCands_number_case1signalChargedHadrCand_) {
       TaggingVariable GammaCands_number_TagVar(btau::neutralclusterNumber,(float)GammaCands_number_);
-      TaggingVariableList_.push_back(GammaCands_number_TagVar);
+      the_taggingvariables_list.push_back(GammaCands_number_TagVar);
     }	
     if(Use_GammaCands_radius_case1signalChargedHadrCand_){
       TaggingVariable GammaCands_radius_TagVar(btau::neutralclusterRadius,GammaCands_radius_);
-      TaggingVariableList_.push_back(GammaCands_radius_TagVar);
+      the_taggingvariables_list.push_back(GammaCands_radius_TagVar);
     }
     if(Use_GammaCandsE_ratio_case1signalChargedHadrCand_){
       TaggingVariable GammaCandsE_ratio_TagVar(btau::neutralEnergyRatio,GammaCands_Eratio_);
-      TaggingVariableList_.push_back(GammaCandsE_ratio_TagVar);
+      the_taggingvariables_list.push_back(GammaCandsE_ratio_TagVar);
     }
     if(Use_isolGammaCandsE_o_jetalternatE_case1signalChargedHadrCand_){
       TaggingVariable isolGammaCandsE_o_jetalternatE_TagVar(btau::neutralIsolEnergyOverCombinedEnergy,isolGammaCandsE_o_jetalternatE_);
-      TaggingVariableList_.push_back(isolGammaCandsE_o_jetalternatE_TagVar);
+      the_taggingvariables_list.push_back(isolGammaCandsE_o_jetalternatE_TagVar);
     }
     if(Use_ChargedHadrCandEt_o_jetEt_case1signalChargedHadrCand_){
       TaggingVariable ChargedHadrCandsEt_o_jetEt_TagVar(btau::piontracksEtjetEtRatio,ChargedHadrCandsEt_o_jetEt_);
-      TaggingVariableList_.push_back(ChargedHadrCandsEt_o_jetEt_TagVar);
+      the_taggingvariables_list.push_back(ChargedHadrCandsEt_o_jetEt_TagVar);
     }
     if(Use_ChargedHadrCand_ipt_significance_case1signalChargedHadrCand_ && !couldnotobtain_LeadChargedHadrCand_signedipt){
       TaggingVariable LeadChargedHadrCand_ipt_significance_TagVar(btau::trackip2d,fabs(LeadChargedHadrCand_signedipt_significance_));
-      TaggingVariableList_.push_back(LeadChargedHadrCand_ipt_significance_TagVar);
+      the_taggingvariables_list.push_back(LeadChargedHadrCand_ipt_significance_TagVar);
     }
   }
   if(signalChargedHadrCands_.size()==3){
     if(Use_GammaCands_number_case3signalChargedHadrCands_){
       TaggingVariable GammaCands_number_TagVar(btau::neutralclusterNumber,(float)GammaCands_number_);
-      TaggingVariableList_.push_back(GammaCands_number_TagVar);
+      the_taggingvariables_list.push_back(GammaCands_number_TagVar);
     }
     if(Use_GammaCands_radius_case3signalChargedHadrCands_){
       TaggingVariable GammaCands_radius_TagVar(btau::neutralclusterRadius,GammaCands_radius_);
-      TaggingVariableList_.push_back(GammaCands_radius_TagVar);
+      the_taggingvariables_list.push_back(GammaCands_radius_TagVar);
     }
     if(Use_GammaCandsE_ratio_case3signalChargedHadrCands_){
       TaggingVariable GammaCandsE_ratio_TagVar(btau::neutralEnergyRatio,GammaCands_Eratio_);
-      TaggingVariableList_.push_back(GammaCandsE_ratio_TagVar);
+      the_taggingvariables_list.push_back(GammaCandsE_ratio_TagVar);
     }
     if(Use_isolGammaCandsE_o_jetalternatE_case3signalChargedHadrCands_){
       TaggingVariable isolGammaCandsE_o_jetalternatE_TagVar(btau::neutralIsolEnergyOverCombinedEnergy,isolGammaCandsE_o_jetalternatE_);
-      TaggingVariableList_.push_back(isolGammaCandsE_o_jetalternatE_TagVar);
+      the_taggingvariables_list.push_back(isolGammaCandsE_o_jetalternatE_TagVar);
     }
     if(Use_ChargedHadrCandsEt_o_jetEt_case3signalChargedHadrCands_){
       TaggingVariable ChargedHadrCandsEt_o_jetEt_TagVar(btau::piontracksEtjetEtRatio,ChargedHadrCandsEt_o_jetEt_);
-      TaggingVariableList_.push_back(ChargedHadrCandsEt_o_jetEt_TagVar);
+      the_taggingvariables_list.push_back(ChargedHadrCandsEt_o_jetEt_TagVar);
     }
     if(Use_signedflightpath_significance_case3signalChargedHadrCands_ && !couldnotproduce_SV){
       TaggingVariable signedflightpath_significance_TagVar(btau::flightDistance3DSignificance,signedflightpath_significance_);
-      TaggingVariableList_.push_back(signedflightpath_significance_TagVar);
+      the_taggingvariables_list.push_back(signedflightpath_significance_TagVar);
     }
   }
+  return the_taggingvariables_list;
 }
 double PFCombinedTauTagAlg::ChargedHadrCand_signedipt_significance(const Vertex& thePV,const PFCandidateRef PFChargedHadrCand){
   TrackRef PFChargedHadrCand_rectk;

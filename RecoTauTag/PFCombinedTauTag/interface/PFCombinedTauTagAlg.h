@@ -156,7 +156,7 @@ public:
   void setLikelihoodRatio(LikelihoodRatio* x){LikelihoodRatio_=x;}
  private:
   void init(const EventSetup&);
-  void FillTaggingVariableList();
+  TaggingVariableList taggingvariablesList();
   double ChargedHadrCand_signedipt_significance(const Vertex&,const PFCandidateRef);
   double ChargedHadrCand_signedip3D_significance(const Vertex&,const PFCandidateRef);
   double signedflightpath_significance(const Vertex&);
@@ -181,7 +181,6 @@ public:
   // ------ PF gamma cand. selection
   double GammaCandLeadChargedHadrCand_ConeSize_;
   // ------ likelihood function selection
-  TaggingVariableList TaggingVariableList_;
   LikelihoodRatio* LikelihoodRatio_;
   bool Use_GammaCands_number_case1signalChargedHadrCand_;	
   bool Use_GammaCands_radius_case1signalChargedHadrCand_;
