@@ -13,18 +13,14 @@ class TrackProbabilityTagPlotter : public BaseBTagPlotter {
 
  public:
 
-  TrackProbabilityTagPlotter (JetTagPlotter *jetTagPlotter, bool update = false);
+  TrackProbabilityTagPlotter (const EtaPtBin & etaPtBin, int nBinEffPur,
+	double startEffPur, double endEffPur, bool update = false);
 
   ~TrackProbabilityTagPlotter () ;
 
-  void analyzeTag (const reco::TrackProbabilityTagInfo & tagInfo,
-  	const reco::JetTag & jetTag, const JetFlavour & jetFlavour);
+  void analyzeTag (const reco::JetTag & jetTag, const JetFlavour & jetFlavour);
 
   virtual void finalize ();
-
-  // get "2d" histograms for misid. vs. b-eff
-  virtual EffPurFromHistos * getEffPurFromHistos ()
-	{return jetTagPlotter_->getEffPurFromHistos();}
 
   virtual void write ();
 
@@ -33,8 +29,6 @@ class TrackProbabilityTagPlotter : public BaseBTagPlotter {
   void psPlot(const TString & name);
 
  private:
-
-  JetTagPlotter *jetTagPlotter_;
 
   FlavourHistorgrams<double> * tkcntHistosSig3D[5];
   FlavourHistorgrams<double> * tkcntHistosSig2D[5];

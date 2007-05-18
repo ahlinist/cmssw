@@ -1,8 +1,7 @@
 #include "RecoBTag/Analysis/interface/TrackCountingTagPlotter.h"
 
-TrackCountingTagPlotter::TrackCountingTagPlotter(JetTagPlotter *jetTagPlotter,
-	bool update) :
-    BaseBTagPlotter(jetTagPlotter->etaPtBin()), jetTagPlotter_(jetTagPlotter)
+TrackCountingTagPlotter::TrackCountingTagPlotter(const EtaPtBin & etaPtBin, int nBinEffPur, double startEffPur, double endEffPur, bool update) :
+    BaseBTagPlotter(etaPtBin, nBinEffPur, startEffPur, endEffPur)
 {
   finalized = false;
   if (update){
@@ -68,7 +67,6 @@ TrackCountingTagPlotter::TrackCountingTagPlotter(JetTagPlotter *jetTagPlotter,
 TrackCountingTagPlotter::~TrackCountingTagPlotter ()
 {
 
-  delete jetTagPlotter_;
   delete trkNbr3D;
   delete trkNbr2D;
 
@@ -82,60 +80,58 @@ TrackCountingTagPlotter::~TrackCountingTagPlotter ()
 }
 
 
-void TrackCountingTagPlotter::analyzeTag (const reco::TrackCountingTagInfo & tagInfo,
-	const reco::JetTag & jetTag, const JetFlavour & jetFlavour)
+void TrackCountingTagPlotter::analyzeTag (const reco::JetTag & jetTag,
+	const JetFlavour & jetFlavour)
 {
+
+  const reco::TrackCountingTagInfo * tagInfo = 
+	dynamic_cast<const reco::TrackCountingTagInfo *>(jetTag.tagInfoRef().get());
 
   int jetFlav = jetFlavour.flavour();
 
-  jetTagPlotter_->analyzeJetTag(jetTag, jetFlavour);
+  trkNbr3D->fill(jetFlav, tagInfo->selectedTracks(0));
+  trkNbr2D->fill(jetFlav, tagInfo->selectedTracks(1));
 
-  trkNbr3D->fill(jetFlav, tagInfo.selectedTracks(0));
-  trkNbr2D->fill(jetFlav, tagInfo.selectedTracks(1));
-
-  for(int n=0; n < tagInfo.selectedTracks(1) && n < 4; n++)
-    tkcntHistosSig2D[n]->fill(jetFlav, tagInfo.significance(n,1));
-  for(int n=tagInfo.selectedTracks(1); n < 4; n++)
+  for(int n=0; n < tagInfo->selectedTracks(1) && n < 4; n++)
+    tkcntHistosSig2D[n]->fill(jetFlav, tagInfo->significance(n,1));
+  for(int n=tagInfo->selectedTracks(1); n < 4; n++)
     tkcntHistosSig2D[n]->fill(jetFlav, lowerIPSBound-1.0);
 
-  for(int n=0; n < tagInfo.selectedTracks(0) && n < 4; n++)
-    tkcntHistosSig3D[n]->fill(jetFlav, tagInfo.significance(n,0));
-  for(int n=tagInfo.selectedTracks(0); n < 4; n++)
+  for(int n=0; n < tagInfo->selectedTracks(0) && n < 4; n++)
+    tkcntHistosSig3D[n]->fill(jetFlav, tagInfo->significance(n,0));
+  for(int n=tagInfo->selectedTracks(0); n < 4; n++)
     tkcntHistosSig3D[n]->fill(jetFlav, lowerIPSBound-1.0);
 
-  for(int n=0; n < tagInfo.selectedTracks(1); n++)
-    tkcntHistosSig2D[4]->fill(jetFlav, tagInfo.significance(n,1));
-  for(int n=0; n < tagInfo.selectedTracks(0); n++)
-    tkcntHistosSig3D[4]->fill(jetFlav, tagInfo.significance(n,0));
+  for(int n=0; n < tagInfo->selectedTracks(1); n++)
+    tkcntHistosSig2D[4]->fill(jetFlav, tagInfo->significance(n,1));
+  for(int n=0; n < tagInfo->selectedTracks(0); n++)
+    tkcntHistosSig3D[4]->fill(jetFlav, tagInfo->significance(n,0));
 }
 
 void TrackCountingTagPlotter::finalize ()
 {
-  jetTagPlotter_->finalize();
   //
   // final processing:
   // produce the misid. vs. eff histograms
   //
   effPurFromHistos[0] = new EffPurFromHistos (tkcntHistosSig3D[1],
-		jetTagPlotter_->nBinEffPur(), jetTagPlotter_->startEffPur(),
-		jetTagPlotter_->endEffPur());
+		nBinEffPur(), startEffPur(),
+		endEffPur());
   effPurFromHistos[1] = new EffPurFromHistos (tkcntHistosSig3D[2],
-		jetTagPlotter_->nBinEffPur(), jetTagPlotter_->startEffPur(),
-		jetTagPlotter_->endEffPur());
+		nBinEffPur(), startEffPur(),
+		endEffPur());
   effPurFromHistos[2] = new EffPurFromHistos (tkcntHistosSig2D[1],
-		jetTagPlotter_->nBinEffPur(), jetTagPlotter_->startEffPur(),
-		jetTagPlotter_->endEffPur());
+		nBinEffPur(), startEffPur(),
+		endEffPur());
   effPurFromHistos[3] = new EffPurFromHistos (tkcntHistosSig2D[2],
-		jetTagPlotter_->nBinEffPur(), jetTagPlotter_->startEffPur(),
-		jetTagPlotter_->endEffPur());
+		nBinEffPur(), startEffPur(),
+		endEffPur());
   for(int n=0; n < 4; n++) effPurFromHistos[n]->compute();
   finalized = true;
 }
 
 void TrackCountingTagPlotter::psPlot(const TString & name)
 {
-  jetTagPlotter_->psPlot(name);
-
   TString cName = "TrackCountingPlots"+ theExtensionString;
   setTDRStyle()->cd();
   TCanvas canvas(cName, "TrackCountingPlots"+ theExtensionString, 600, 900);
@@ -191,8 +187,6 @@ void TrackCountingTagPlotter::psPlot(const TString & name)
 
 void TrackCountingTagPlotter::write()
 {
-  jetTagPlotter_->write();
-
   TString dir= "TrackCounting"+theExtensionString;
   gFile->cd();
   gFile->mkdir(dir);
@@ -211,7 +205,6 @@ void TrackCountingTagPlotter::write()
 
 void TrackCountingTagPlotter::epsPlot(const TString & name)
 {
-  jetTagPlotter_->epsPlot(name);
   trkNbr2D->epsPlot(name);
   trkNbr3D->epsPlot(name);
   for(int n=0; n <= 4; n++) {

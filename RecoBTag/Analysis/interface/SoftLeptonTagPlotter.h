@@ -10,23 +10,16 @@
 class SoftLeptonTagPlotter : public BaseBTagPlotter {
 public:
 
-  SoftLeptonTagPlotter( JetTagPlotter *jetTagPlotter, bool update = false );
+  SoftLeptonTagPlotter(const EtaPtBin & etaPtBin, int nBinEffPur, double startEffPur,
+	double endEffPur, bool update = false );
   
   ~SoftLeptonTagPlotter( void ) ;
 
   void analyzeTag (
-      const reco::SoftLeptonTagInfo & tagInfo,
       const reco::JetTag &            jetTag, 
       const JetFlavour &              jetFlavour);
 
-  virtual void finalize( void ) { 
-    m_plotter->finalize(); 
-  }
-
-  // get "2d" histograms for misid. vs. b-eff
-  virtual EffPurFromHistos * getEffPurFromHistos( void ) {
-    return m_plotter->getEffPurFromHistos(); 
-  }
+  virtual void finalize( void ) {}
 
   virtual void write( void );
 
@@ -34,8 +27,6 @@ public:
   void epsPlot( const TString & name );
 
 private:
-
-  JetTagPlotter * m_plotter;
 
   // keep plots for up to 3 leptons per jet
   static const int s_leptons = 3;

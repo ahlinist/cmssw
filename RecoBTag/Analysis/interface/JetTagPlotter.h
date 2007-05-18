@@ -6,11 +6,7 @@
 
 #include <vector>
 #include "RecoBTag/Analysis/interface/FlavourHistorgrams.h"
-#include "RecoBTag/Analysis/interface/EffPurFromHistos.h"
-#include "DataFormats/BTauReco/interface/JetTag.h"
 #include "RecoBTag/Analysis/interface/BaseBTagPlotter.h"
-#include "RecoBTag/MCTools/interface/JetFlavour.h"
-
 
 
 class JetTagPlotter : public BaseBTagPlotter {
@@ -19,14 +15,12 @@ class JetTagPlotter : public BaseBTagPlotter {
  public:
 
   JetTagPlotter (const EtaPtBin & etaPtBin, double discrStart, double discrEnd,
-		 int nBinEffPur, double startEffPur, double endEffPur, bool update = false);
+		 int nBinEffPur, double startEffPur, double endEffPur,
+		 bool update = false, BaseBTagPlotter *extTagPlotter = 0);
 
   virtual ~JetTagPlotter () ;
 
-//   virtual void analyzeEvent (const edm::Event& iEvent) ;
-  void analyzeJetTag (const reco::JetTag & jetTag, const JetFlavour & jetFlavour) ;
-  void analyzeTag (const reco::JetTag & jetTag, const JetFlavour & jetFlavour)
-	{return analyzeJetTag(jetTag, jetFlavour);}
+  void analyzeTag (const reco::JetTag & jetTag, const JetFlavour & jetFlavour);
 
   // final computation, plotting, printing .......
   void finalize () ;
@@ -40,11 +34,9 @@ class JetTagPlotter : public BaseBTagPlotter {
 
   void psPlot(const TString & name);
 
-  int nBinEffPur() const {return nBinEffPur_;}
-  double startEffPur() const {return startEffPur_;}
-  double endEffPur() const {return endEffPur_;}
-
  protected:
+
+  BaseBTagPlotter * extTagPlotter_;
 
   // binning and bounds
   // 1) for 'efficiency' versus discriminator cut histos
@@ -52,10 +44,6 @@ class JetTagPlotter : public BaseBTagPlotter {
   double discrStart_ ;
   double discrEnd_   ;
 
-  int   nBinEffPur_ ;
-  double startEffPur_ ; 
-  double endEffPur_ ; 
-  
   bool finalized;
 
   // for the misid vs. eff plots
