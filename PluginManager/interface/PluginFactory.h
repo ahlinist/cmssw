@@ -40,6 +40,7 @@ class PluginFactory<R * (void)> : public PluginFactoryBase
    public:
       struct PMakerBase {
         virtual R* create(void) const = 0;
+        virtual ~PMakerBase() {}
       };
       template<class TPlug>
       struct PMaker : public PMakerBase {
@@ -96,6 +97,7 @@ class PluginFactory<R * (Arg)> : public PluginFactoryBase
 public:
   struct PMakerBase {
     virtual R* create(Arg) const = 0;
+    virtual ~PMakerBase() {}
   };
   template<class TPlug>
     struct PMaker : public PMakerBase {
@@ -152,6 +154,7 @@ class PluginFactory<R * (Arg1, Arg2)> : public PluginFactoryBase
 public:
   struct PMakerBase {
     virtual R* create(Arg1, Arg2) const = 0;
+    virtual ~PMakerBase() {}
   };
   template<class TPlug>
     struct PMaker : public PMakerBase {
