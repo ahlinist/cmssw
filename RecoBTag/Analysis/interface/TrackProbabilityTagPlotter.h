@@ -13,8 +13,8 @@ class TrackProbabilityTagPlotter : public BaseBTagPlotter {
 
  public:
 
-  TrackProbabilityTagPlotter (const EtaPtBin & etaPtBin, int nBinEffPur,
-	double startEffPur, double endEffPur, bool update = false);
+  TrackProbabilityTagPlotter (const TString & tagName, const EtaPtBin & etaPtBin,
+	int nBinEffPur, double startEffPur, double endEffPur, bool update = false);
 
   ~TrackProbabilityTagPlotter () ;
 

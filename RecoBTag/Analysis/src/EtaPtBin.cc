@@ -22,19 +22,19 @@ TString EtaPtBin::buildDescriptionString
   TString descr ( "" );
 
   if ( etaActive_ ) {
-    descr += "__ETA_";
+    descr += "_ETA_";
     descr += etaMin_;
     descr += "-";
     descr += etaMax_;
   }
 
   if ( ptActive_ ) {
-    descr += "__PT_";
+    descr += "_PT_";
     descr += ptMin_;
     descr += "-";
     descr += ptMax_;
   }
-  if (!(etaActive_||ptActive_)) descr="__GLOBAL";
+  if (!(etaActive_||ptActive_)) descr="_GLOBAL";
   // remove blanks which are introduced when adding doubles
   descr.ReplaceAll ( " " , "" );
 

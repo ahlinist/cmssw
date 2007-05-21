@@ -10,8 +10,8 @@
 class SoftLeptonTagPlotter : public BaseBTagPlotter {
 public:
 
-  SoftLeptonTagPlotter(const EtaPtBin & etaPtBin, int nBinEffPur, double startEffPur,
-	double endEffPur, bool update = false );
+  SoftLeptonTagPlotter(const TString & tagName, const EtaPtBin & etaPtBin,
+	int nBinEffPur, double startEffPur, double endEffPur, bool update = false);
   
   ~SoftLeptonTagPlotter( void ) ;
 
