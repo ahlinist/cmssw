@@ -23,8 +23,16 @@
   </Class >
   <Class name="DTT0">
   </Class>
+  <Class name="DTRangeT0">
+  </Class>
   <Class name="DTTtrig">
   </Class>
+  <Class name="DTMtime">
+  </Class>
   <Class name="DTStatusFlag">
+  </Class>
+  <Class name="DTStatusFlag">
+  </Class>
+  <Class name="DTPerformance">
   </Class>
 </Mapping >

@@ -7,10 +7,19 @@
    <HomogeneousContainer name="DTT0Rcd">
       <Class name="DTT0" mappingVersion="DTObjects_CMSSW150"/>
    </HomogeneousContainer >
+   <HomogeneousContainer name="DTRangeT0">
+      <Class name="DTRangeT0Rcd" mappingVersion="DTObjects_CMSSW150"/>
+   </HomogeneousContainer >
    <HomogeneousContainer name="DTTtrigRcd">
       <Class name="DTTtrig" mappingVersion="DTObjects_CMSSW150"/>
    </HomogeneousContainer >
+   <HomogeneousContainer name="DTMtimeRcd">
+      <Class name="DTMtime" mappingVersion="DTObjects_CMSSW150"/>
+   </HomogeneousContainer >
    <HomogeneousContainer name="DTStatusFlagRcd">
       <Class name="DTStatusFlag" mappingVersion="DTObjects_CMSSW150"/>
+   </HomogeneousContainer >
+   <HomogeneousContainer name="DTPerformanceRcd">
+      <Class name="DTPerformance" mappingVersion="DTObjects_CMSSW150"/>
    </HomogeneousContainer >
 </Database >
