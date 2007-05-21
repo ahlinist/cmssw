@@ -44,7 +44,6 @@ std::vector<CSCWireHit> CSCHitFromWireOnly::runWire( const CSCDetId& id, const C
   layergeom_ = layer->geometry();
   bool any_digis = true;
   int n_wgroup = 0;
-  
 
   // Get wire groups which are part of the ALCT
   if ( useCleanWireCollection ) alctWgroup = getALCTWgroup( id, alcts );
@@ -61,19 +60,11 @@ std::vector<CSCWireHit> CSCHitFromWireOnly::runWire( const CSCDetId& id, const C
 
     if ( any_digis ) {
       any_digis = false;
+      makeWireCluster( wdigi );
       n_wgroup = 1;
-      if ( rwired.second - rwired.first == 1) {
-	makeWireCluster( wdigi );
-	float whit_pos = findWireHitPosition();
-	CSCWireHit whit(id, whit_pos, wire_in_cluster, theTime); 
-	hitsInLayer.push_back( whit );
-      } else { 
-	makeWireCluster( wdigi );
-      }
     } else {
       if ( !addToCluster( wdigi ) ) {
 	// Make Wire Hit from cluster, delete old cluster and start new one
-	if (debug && n_wgroup > 2) std::cout << "Found wire cluster of " << n_wgroup << " wire groups " << std::endl;
 	float whit_pos = findWireHitPosition();
 	CSCWireHit whit(id, whit_pos, wire_in_cluster, theTime);
 	hitsInLayer.push_back( whit );	
@@ -88,9 +79,33 @@ std::vector<CSCWireHit> CSCHitFromWireOnly::runWire( const CSCDetId& id, const C
       float whit_pos = findWireHitPosition();
       CSCWireHit whit(id, whit_pos, wire_in_cluster, theTime);
       hitsInLayer.push_back( whit );
+      n_wgroup++;
     }
   }
-  return hitsInLayer;
+
+  int nHits = hitsInLayer.size();
+
+  if (nHits < 2) return hitsInLayer;
+
+  // Loop over the wire hits to ensure don't have twice same wire hit
+  // This is a problem in MTCC data
+
+  std::vector<CSCWireHit> whits;
+
+  bool isDuplicate = false;
+  for ( int i = 0; i < nHits; ++i ) {
+    isDuplicate = false;
+    float w1 = hitsInLayer[i].wHitPos();
+
+    for ( int j = 0; j < nHits; ++j ) {
+      float w2 = hitsInLayer[j].wHitPos();	
+      if ( w1 == w2 && i > j) isDuplicate = true;
+    }
+
+    if ( !isDuplicate ) whits.push_back(hitsInLayer[i]);
+  }
+
+  return whits;
 }
 
 
