@@ -7,8 +7,8 @@
    <HomogeneousContainer name="DTT0Rcd">
       <Class name="DTT0" mappingVersion="DTObjects_CMSSW150"/>
    </HomogeneousContainer >
-   <HomogeneousContainer name="DTRangeT0">
-      <Class name="DTRangeT0Rcd" mappingVersion="DTObjects_CMSSW150"/>
+   <HomogeneousContainer name="DTRangeT0Rcd">
+      <Class name="DTRangeT0" mappingVersion="DTObjects_CMSSW150"/>
    </HomogeneousContainer >
    <HomogeneousContainer name="DTTtrigRcd">
       <Class name="DTTtrig" mappingVersion="DTObjects_CMSSW150"/>
