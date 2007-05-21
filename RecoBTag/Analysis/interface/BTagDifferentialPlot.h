@@ -21,7 +21,7 @@ class BTagDifferentialPlot {
 
   enum ConstVarType {constPT, constETA };
 
-  BTagDifferentialPlot ( double bEff, ConstVarType constVariable) ;
+  BTagDifferentialPlot ( double bEff, ConstVarType constVariable, const TString & tagName) ;
 
   ~BTagDifferentialPlot () ;
 

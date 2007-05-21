@@ -12,8 +12,8 @@ class TrackCountingTagPlotter : public BaseBTagPlotter {
 
  public:
 
-  TrackCountingTagPlotter (const EtaPtBin & etaPtBin, int nBinEffPur,
-	double startEffPur, double endEffPur, bool update = false);
+  TrackCountingTagPlotter (const TString & tagName, const EtaPtBin & etaPtBin,
+	int nBinEffPur, double startEffPur, double endEffPur, bool update = false);
 
   ~TrackCountingTagPlotter () ;
 

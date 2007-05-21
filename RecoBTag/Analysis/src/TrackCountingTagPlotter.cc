@@ -1,7 +1,9 @@
 #include "RecoBTag/Analysis/interface/TrackCountingTagPlotter.h"
 
-TrackCountingTagPlotter::TrackCountingTagPlotter(const EtaPtBin & etaPtBin, int nBinEffPur, double startEffPur, double endEffPur, bool update) :
-    BaseBTagPlotter(etaPtBin, nBinEffPur, startEffPur, endEffPur)
+TrackCountingTagPlotter::TrackCountingTagPlotter(const TString & tagName,
+	const EtaPtBin & etaPtBin, int nBinEffPur, double startEffPur,
+	double endEffPur, bool update) :
+	BaseBTagPlotter(tagName, etaPtBin, nBinEffPur, startEffPur, endEffPur)
 {
   finalized = false;
   if (update){

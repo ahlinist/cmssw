@@ -11,8 +11,10 @@ class BaseBTagPlotter {
 
  public:
 
-  BaseBTagPlotter ( const EtaPtBin & etaPtBin, int nBinEffPur, double startEffPur, double endEffPur) :
-	etaPtBin_(etaPtBin), theExtensionString (etaPtBin.getDescriptionString()),
+  BaseBTagPlotter ( const TString & tagName, const EtaPtBin & etaPtBin,
+	int nBinEffPur, double startEffPur, double endEffPur) :
+	etaPtBin_(etaPtBin), tagName_(tagName),
+	theExtensionString ("_"+tagName+etaPtBin.getDescriptionString()),
 	nBinEffPur_(nBinEffPur), startEffPur_(startEffPur ), endEffPur_(endEffPur) {};
 
   virtual ~BaseBTagPlotter () {};
@@ -41,7 +43,7 @@ class BaseBTagPlotter {
 
   // the extension string to be used in histograms etc.
   const EtaPtBin etaPtBin_;
-  const TString theExtensionString ;
+  const TString tagName_, theExtensionString,  ;
   const int   nBinEffPur_ ;
   const double startEffPur_ ; 
   const double endEffPur_ ; 

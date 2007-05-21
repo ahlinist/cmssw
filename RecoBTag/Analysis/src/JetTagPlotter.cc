@@ -7,11 +7,11 @@ using namespace std;
 using namespace RecoBTag;
 
 
-JetTagPlotter::JetTagPlotter (const EtaPtBin & etaPtBin,
+JetTagPlotter::JetTagPlotter (const TString & tagName, const EtaPtBin & etaPtBin,
 		       double discrStart, double discrEnd,
 		       int nBinEffPur, double startEffPur, double endEffPur,
 		       bool update, BaseBTagPlotter *extTagPlotter) :
-		       BaseBTagPlotter(etaPtBin, nBinEffPur, startEffPur, endEffPur),
+		       BaseBTagPlotter(tagName, etaPtBin, nBinEffPur, startEffPur, endEffPur),
 		       extTagPlotter_(extTagPlotter), discrStart_(discrStart),
 		       discrEnd_(discrEnd) {
 
@@ -174,7 +174,6 @@ void JetTagPlotter::psPlot(const TString & name)
 void JetTagPlotter::analyzeTag(const reco::JetTag & jetTag,
 	const JetFlavour & jetFlavour)
 {
-
   if (extTagPlotter_) extTagPlotter_->analyzeTag(jetTag, jetFlavour);
 
   int jetFlav = jetFlavour.flavour();
@@ -191,11 +190,11 @@ void JetTagPlotter::analyzeTag(const reco::JetTag & jetTag,
   dJetPartonMomentum->fill(jetFlav, jetFlavour.underlyingParton4Vec().P() );
   dJetPartonPt->fill(jetFlav, jetFlavour.underlyingParton4Vec().Pt() );
   dJetPartonPseudoRapidity->fill(jetFlav, jetFlavour.underlyingParton4Vec().Eta() );
-
 }
 
 
-void JetTagPlotter::finalize() {
+void JetTagPlotter::finalize()
+{
   if (extTagPlotter_) extTagPlotter_->finalize();
   //
   // final processing:

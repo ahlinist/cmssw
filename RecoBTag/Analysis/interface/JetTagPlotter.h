@@ -14,7 +14,7 @@ class JetTagPlotter : public BaseBTagPlotter {
 
  public:
 
-  JetTagPlotter (const EtaPtBin & etaPtBin, double discrStart, double discrEnd,
+  JetTagPlotter (const TString & tagName, const EtaPtBin & etaPtBin, double discrStart, double discrEnd,
 		 int nBinEffPur, double startEffPur, double endEffPur,
 		 bool update = false, BaseBTagPlotter *extTagPlotter = 0);
 

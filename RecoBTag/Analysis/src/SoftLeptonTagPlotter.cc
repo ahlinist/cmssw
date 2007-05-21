@@ -2,11 +2,10 @@
 
 static const char* ordinal[] = { "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th" };
 
-SoftLeptonTagPlotter::SoftLeptonTagPlotter(
-    const EtaPtBin & etaPtBin, int nBinEffPur, double startEffPur, double endEffPur, 
-    bool update
-) :
-    BaseBTagPlotter(etaPtBin, nBinEffPur, startEffPur, endEffPur)
+SoftLeptonTagPlotter::SoftLeptonTagPlotter(const TString & tagName,
+	const EtaPtBin & etaPtBin, int nBinEffPur, double startEffPur,
+	double endEffPur, bool update) :
+    BaseBTagPlotter(tagName, etaPtBin, nBinEffPur, startEffPur, endEffPur)
 {
   if (update) {
     TString dir = "SoftLepton" + theExtensionString;

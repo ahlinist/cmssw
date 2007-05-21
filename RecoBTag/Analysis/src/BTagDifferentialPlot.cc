@@ -10,11 +10,12 @@ using namespace std ;
 
 
 
-BTagDifferentialPlot::BTagDifferentialPlot (double bEff, ConstVarType constVariable) :
+BTagDifferentialPlot::BTagDifferentialPlot (double bEff, ConstVarType constVariable,
+	const TString & tagName) :
 	fixedBEfficiency     ( bEff )  ,
 	noProcessing         ( false ) , processed(false), constVar(constVariable),
 	constVariableName    ( "" )    , diffVariableName     ( "" )    ,
-	constVariableValue   ( 999.9 , 999.9 ) , commonName( "MisidForBEff_" ) ,
+	constVariableValue   ( 999.9 , 999.9 ) , commonName( "MisidForBEff_" + tagName+"_") ,
 	theDifferentialHistoB_d    ( 0 ) ,
 	theDifferentialHistoB_u    ( 0 ) ,
 	theDifferentialHistoB_s    ( 0 ) ,
