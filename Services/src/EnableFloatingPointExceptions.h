@@ -87,6 +87,7 @@ public:
 
 private:
 	 void controlFpe();
+	 void echoState();
 
          bool enableDivByZeroEx_;
          bool enableInvalidEx_;
