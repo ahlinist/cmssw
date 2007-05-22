@@ -8,7 +8,7 @@
 // prerequisite source files and headers
 // ----------------------------------------------------------------------
 
-#include "SealZip/MD5Digest.h"
+#include "FWCore/Utilities/interface/Digest.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
@@ -33,9 +33,9 @@ namespace edm {
   ParameterSet::validate() const
   {
     std::string stringrep = this->toStringOfTracked();
-    seal::MD5Digest md5alg;
-    md5alg.update(stringrep.data(), stringrep.size());
-    id_ = ParameterSetID(md5alg.format());
+    cms::Digest md5alg(stringrep);
+    id_ = ParameterSetID(md5alg.digest().toString());
+    
   }  // ParameterSet::validate()
 
   void
