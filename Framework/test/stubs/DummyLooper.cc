@@ -51,7 +51,7 @@ class DummyLooper : public edm::ESProducerLooper {
       
       }
       Status duringLoop(const edm::Event&, const edm::EventSetup&) {
-         return kContinue;
+        return issueStop_? kStop : kContinue;
       }
       Status endOfLoop(const edm::EventSetup&, unsigned int) {
          (data_->value_)++;
@@ -62,6 +62,7 @@ class DummyLooper : public edm::ESProducerLooper {
       // ----------member data ---------------------------
       ReturnType data_;
       int counter_;
+      bool issueStop_;
 };
 
 //
@@ -76,7 +77,8 @@ class DummyLooper : public edm::ESProducerLooper {
 // constructors and destructor
 //
 DummyLooper::DummyLooper(const edm::ParameterSet& iConfig)
-            : data_(new DummyData(iConfig.getUntrackedParameter<int>("value"))), counter_(0)
+            : data_(new DummyData(iConfig.getUntrackedParameter<int>("value"))), counter_(0),
+issueStop_(iConfig.getUntrackedParameter<bool>("issueStop",false))
 {
    //the following line is needed to tell the framework what
    // data is being produced
