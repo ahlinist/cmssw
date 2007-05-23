@@ -607,6 +607,464 @@ data taken from http://test-gmagazzu.web.cern.ch/test%2Dgmagazzu/TOB/MB/DOHM_MB.
 ==================================================================================
 
 
+o Endflange Connectors
+  --------------------
+Rings at z = 111.95 cm of radial thickness 4 cm and z thickness 2.3 cm
+Include SCACC and SCLAC connectors, DOHM legs.
+
+Layer R_in [mm] R_out [mm] Rods  DOHMs
+   1    588      628        42     7
+   2    672      712        48   + 8 = 15
+   3    760      800        54     7
+   4    848      888        60   + 8 = 15
+   5    945      985        66     8
+   6   1060     1100        74   + 8 = 16
+
+		SCCAC
+		-----
+	EDMS code EP-680-1174-500
+data taken from http://test-gmagazzu.web.cern.ch/test%2Dgmagazzu/TOB/MB/DOHM_MB.htm
+One per each DOHM.
+
+(1-2) PCBs
+	FR4:    m = 0.38 g
+		density (T_G10) = 1.90 g/cm^3
+		--> volume = 0.200 cm^3
+	copper: m = 0.048 g
+		density = 8.96 g/cm^3
+		--> volume = 0.0054 cm^3
+
+(3-4) Connectors NaiS
+	socket
+	1 x SCCAC-SCLAC  (Binder 31-F)
+        the total mass is computed
+	copper: m = 1.590 g
+		density = 8.96 g/cm^3
+		--> volume = 0.177 cm^3
+	resin:  m = 1.015 g
+		density (epoxy) = 1.3 g/cm^3
+		--> volume = 0.781 cm^3
+
+		SCLAC
+		-----
+	EDMS code EP-680-1174-510
+data taken from http://test-gmagazzu.web.cern.ch/test%2Dgmagazzu/TOB/MB/DOHM_MB.htm
+One per each DOHM.
+
+(5-6) PCBs
+	FR4:    m = 0.40 g
+		density (T_G10) = 1.90 g/cm^3
+		--> volume = 0.211 cm^3
+	copper: m = 0.061 g
+		density = 8.96 g/cm^3
+		--> volume = 0.0068 cm^3
+
+(7-8) Connectors NaiS
+	header
+	1 x SCCAC-SCLAC  (Binder 31-M)
+        the total mass is computed
+	copper: m = 1.137 g
+		density = 8.96 g/cm^3
+		--> volume = 0.127 cm^3
+	resin:  m = 1.205 g
+		density (epoxy) = 1.3 g/cm^3
+		--> volume = 0.927 cm^3
+
+
+		Wires
+		-----
+(9-13) DOHM wires
+	Shielded Twisted pair, 9 pieces (mass per 1000 mm length)
+	+ 0.5 mm^2 Copper wire, 3 pieces (mass per 1000 mm length)
+	+ Polyamide Braid, 1 piece (mass per 1000 mm length)
+	mass per meter; (total length)/(1000 mm) copies in the mixture
+	Copper:	m = ( 3051.0 + 13200.0 + 0.0 ) mg = 16.251 g 
+		density = 8.96 g/cm^3
+		--> volume = 1.814 cm^3
+	Aluminium:
+	 	m = ( 2970.0 + 0 + 0 ) mg = 2.970 g
+		density = 2.7 g/cm^3
+		--> volume = 1.100 cm^3
+	PEI: 	m = ( 1746.0 + 0 + 0 ) mg = 1.746 g
+		density (silicone gel) = 0.965 g/cm^3
+		--> volume = 1.809 cm^3
+	SILTEM:	m = ( 0 + 7200.0 + 0 ) mg = 7.200 g
+		density (polyethylene) = 0.95 g/cm^3
+		--> volume = 7.579 cm^3
+	Polyamide:	m = ( 0 + 0 + 9745.0 ) mg = 9.745 g
+		density (polyethylene) = 0.95 g/cm^3
+		--> volume = 10.258 cm^3
+
+
+
+		Other components
+		----------------
+o From DOHM
+
+(14) SCCAC screw holder (2 per each SCACC => 2 per each DOHM), total mass per SCCAC is computed
+	FR4:    m = 0.72 g
+		density (T_G10) = 1.90 g/cm^3
+		--> volume = 0.379 cm^3
+
+(15) SCCAC screws (2 per each SCACC => 2 per each DOHM), total mass per SCCAC is computed
+	brass: m = 0.44 g
+		density = 8.5 g/cm^3
+		--> volume = 0.052 cm^3
+
+(16) Araldite glue (take epoxy), 1 per DOHM: (1/2 DOHM), 1/2 RIB
+	TO BE CONFIRMED
+	m = 1.05 g / 2 = 0.525 g
+	density = 1.3 g/cm^3
+	volume = 0.404 cm^3
+
+(17) Solder paste (BGA), 1 per DOHM: (1/2 DOHM), 1/2 RIB
+	TO BE CONFIRMED
+	m = 0.67 g / 2 = 0.335 g
+	density = 8.82 g/cm^3
+	volume = 0.038 cm^3
+
+o From Rod cables
+
+(18) Output cable sleeve (l=55 mm, ext diameter=9.5 mm, 4 pieces) Polyolefin (take polyethylene), 1 per rod:
+	total mass, (1/2 TOB_CONN12/34/56), 1/2 outside
+	m = ( 0.90 + 0.32 ) g / 2 = 0.61 g
+	density = 0.95 g/cm^3
+	volume = 0.642 cm^3
+
+
+Wires from TOB_CONN12/34/56
+The difference 'long tail'-1x'short tail' is included here (Short tail in TOB_CONN12/34/56)
+
+(19)  - Connected to CCUM
+	Tinned copper wire 100%, 1 piece 90 mm diameter 0.50 mm, totally outside the rod.
+	total mass; 2 copies in the mixture per each Rod
+	Copper:	m = 1.576 g
+		density = 8.96 g/cm^3
+		--> volume = 0.176 cm^3
+
+(20-21) - Connected to BUS
+	+ 1.0 mm^2 Copper wire, 1 piece 290 mm, 80 mm in TOB_CONN12/34/56, the rest 210 mm outside the rod
+	total mass; 1 only copy per Rod in the mixture
+	Copper:	m = ( 210/290 x 2.5230 ) g = 1.827 g
+		density = 8.96 g/cm^3
+		--> volume = 0.204 cm^3
+	SILTEM:	m = ( 210/290 x 0.6960 ) g = 0.504 g
+		density (polyethylene) = 0.95 g/cm^3
+		--> volume = 0.531 cm^3
+
+(22) Output cable shield Aluminium: (1/2 TOB_CONN12/34/56), 1/2 outside
+	1 copy per rod
+	m = 0.480 g / 2 = 0.240 g
+	density = 2.7 g/cm^3
+	volume = 0.089 cm^3
+
+(23) Output cable sleeve (l=55 mm, ext diameter=9.5 mm, 1 piece) + (l=10 mm, ext diameter=3.0 mm, 4 pieces) Polyolefin (take polyethylene):
+	total mass, (1/2 TOB_CONN12/34/56), 1/2 outside per each rod
+	m = ( 0.90 + 0.32 ) g / 2 = 0.61 g
+	density = 0.95 g/cm^3
+	volume = 0.642 cm^3
+
+(24) Input & Output cable tie Kapton: (2/3 TOB_CONN12/34/56), 1/3 outside per each rod
+	m = 0.41 g * (1/3) = 0.137 g
+	density = 1.40 g/cm^3
+	volume = 0.098 cm^3
+
+(25) Input & Output cable solder paste (BGA): (1/2 TOB_CONN12/34/56), 1/2 outside per each rod
+	m = 0.67 g / 2 = 0.335 g
+	density = 8.82 g/cm^3
+	volume = 0.038 cm^3
+
+(26) From Rod CCUM (one per rod): araldite glue (take epoxy): (1/2 CCUM), (1/4 SCLAC), 1/4 SCACC
+	m = 1.05 g / 4 = 0.2625 g
+	density = 1.3 g/cm^3
+	volume = 0.202 cm^3
+
+
+....................................................................................
+# "TOB endflange connectors Layer 1"       "TOB_rib1"     3514.5625  1528.0707
+* 1 "SCCAC PCB board"                      "T_G10"           0.200      7      ELE
+* 2 "SCCAC PCB copper traces"              "Copper"          0.0054     7      ELE
+* 3 "SCCAC NAiS connectors"                "Copper"          0.177      7      ELE
+* 4 "SCCAC NAiS connectors"                "Epoxy"           0.781      7      ELE
+* 5 "SCLAC PCB board"                      "T_G10"           0.211      7      ELE
+* 6 "SCLAC PCB copper traces"              "Copper"          0.0068     7      ELE
+* 7 "SCLAC NAiS connectors"                "Copper"          0.127      7      ELE
+* 8 "SCLAC NAiS connectors"                "Epoxy"           0.927      7      ELE
+* 9 "DOHM wires Cu"                        "Copper"          1.814      1      CAB
+* 10 "DOHM wires Al"                       "Aluminium"       1.100      1      CAB
+* 11 "DOHM wires PEI"                      "Silicone_Gel"    1.809      1      CAB
+* 12 "DOHM wires SILTEM"                   "Polyethylene"    7.579      1      CAB
+* 13 "DOHM wires Polyamide"                "Polyethylene"   10.258      1      CAB
+* 14 "SCCAC screw holder"                  "T_G10"           0.379      7      SUP
+* 15 "SCCAC screws"                        "Brass"           0.202      7      SUP
+* 16 "SCCAC,SCLAC,DOHM glue"               "Epoxy"           0.404      7      SUP
+* 17 "SCCAC,SCLAC,DOHM Solder Paste"       "BGA"             0.038      7      SUP
+* 18 "Output cable Sleeve"                 "Polyethylene"    0.642     42      CAB
+* 19 "CCUM wires Cu"                       "Copper"          0.176     84      CAB
+* 20 "BUS wires Cu"                        "Copper"          0.204     42      CAB
+* 21 "BUS wires SILTEM"                    "Polyethylene"    0.531     42      CAB
+* 22 "Output cable Shield"                 "Aluminium"       0.089     42      CAB
+* 23 "Output cable Sleeve"                 "Polyethylene"    0.642     42      CAB
+* 24 "Input and Output cable Tie"          "T_Kapton"        0.098     42      CAB
+* 25 "Input and Output cable Solder Paste" "BGA"             0.038     42      CAB
+* 26 "SCCAC glue"                          "Epoxy"           0.202     42      SUP
+....................................................................................
+====================================================================================
+
+....................................................................................
+# "TOB endflange connectors Layer 2"       "TOB_rib2"     4000.1271  1739.1857
+* 1 "SCCAC PCB board"                      "T_G10"           0.200      8      ELE
+* 2 "SCCAC PCB copper traces"              "Copper"          0.0054     8      ELE
+* 3 "SCCAC NAiS connectors"                "Copper"          0.177      8      ELE
+* 4 "SCCAC NAiS connectors"                "Epoxy"           0.781      8      ELE
+* 5 "SCLAC PCB board"                      "T_G10"           0.211      8      ELE
+* 6 "SCLAC PCB copper traces"              "Copper"          0.0068     8      ELE
+* 7 "SCLAC NAiS connectors"                "Copper"          0.127      8      ELE
+* 8 "SCLAC NAiS connectors"                "Epoxy"           0.927      8      ELE
+* 9 "DOHM wires Cu"                        "Copper"          1.814      1      CAB
+* 10 "DOHM wires Al"                       "Aluminium"       1.100      1      CAB
+* 11 "DOHM wires PEI"                      "Silicone_Gel"    1.809      1      CAB
+* 12 "DOHM wires SILTEM"                   "Polyethylene"    7.579      1      CAB
+* 13 "DOHM wires Polyamide"                "Polyethylene"   10.258      1      CAB
+* 14 "SCCAC screw holder"                  "T_G10"           0.379      8      SUP
+* 15 "SCCAC screws"                        "Brass"           0.202      8      SUP
+* 16 "SCCAC,SCLAC,DOHM glue"               "Epoxy"           0.404      8      SUP
+* 17 "SCCAC,SCLAC,DOHM Solder Paste"       "BGA"             0.038      8      SUP
+* 18 "Output cable Sleeve"                 "Polyethylene"    0.642     48      CAB
+* 19 "CCUM wires Cu"                       "Copper"          0.176     96      CAB
+* 20 "BUS wires Cu"                        "Copper"          0.204     48      CAB
+* 21 "BUS wires SILTEM"                    "Polyethylene"    0.531     48      CAB
+* 22 "Output cable Shield"                 "Aluminium"       0.089     48      CAB
+* 23 "Output cable Sleeve"                 "Polyethylene"    0.642     48      CAB
+* 24 "Input and Output cable Tie"          "T_Kapton"        0.098     48      CAB
+* 25 "Input and Output cable Solder Paste" "BGA"             0.038     48      CAB
+* 26 "SCCAC glue"                          "Epoxy"           0.202     48      SUP
+....................................................................................
+====================================================================================
+
+....................................................................................
+# "TOB endflange connectors Layer 3"       "TOB_rib3"     4508.8138  1960.3538
+* 1 "SCCAC PCB board"                      "T_G10"           0.200      7      ELE
+* 2 "SCCAC PCB copper traces"              "Copper"          0.0054     7      ELE
+* 3 "SCCAC NAiS connectors"                "Copper"          0.177      7      ELE
+* 4 "SCCAC NAiS connectors"                "Epoxy"           0.781      7      ELE
+* 5 "SCLAC PCB board"                      "T_G10"           0.211      7      ELE
+* 6 "SCLAC PCB copper traces"              "Copper"          0.0068     7      ELE
+* 7 "SCLAC NAiS connectors"                "Copper"          0.127      7      ELE
+* 8 "SCLAC NAiS connectors"                "Epoxy"           0.927      7      ELE
+* 9 "DOHM wires Cu"                        "Copper"          1.814      1      CAB
+* 10 "DOHM wires Al"                       "Aluminium"       1.100      1      CAB
+* 11 "DOHM wires PEI"                      "Silicone_Gel"    1.809      1      CAB
+* 12 "DOHM wires SILTEM"                   "Polyethylene"    7.579      1      CAB
+* 13 "DOHM wires Polyamide"                "Polyethylene"   10.258      1      CAB
+* 14 "SCCAC screw holder"                  "T_G10"           0.379      7      SUP
+* 15 "SCCAC screws"                        "Brass"           0.202      7      SUP
+* 16 "SCCAC,SCLAC,DOHM glue"               "Epoxy"           0.404      7      SUP
+* 17 "SCCAC,SCLAC,DOHM Solder Paste"       "BGA"             0.038      7      SUP
+* 18 "Output cable Sleeve"                 "Polyethylene"    0.642     54      CAB
+* 19 "CCUM wires Cu"                       "Copper"          0.176    108      CAB
+* 20 "BUS wires Cu"                        "Copper"          0.204     54      CAB
+* 21 "BUS wires SILTEM"                    "Polyethylene"    0.531     54      CAB
+* 22 "Output cable Shield"                 "Aluminium"       0.089     54      CAB
+* 23 "Output cable Sleeve"                 "Polyethylene"    0.642     54      CAB
+* 24 "Input and Output cable Tie"          "T_Kapton"        0.098     54      CAB
+* 25 "Input and Output cable Solder Paste" "BGA"             0.038     54      CAB
+* 26 "SCCAC glue"                          "Epoxy"           0.202     54      SUP
+....................................................................................
+====================================================================================
+
+....................................................................................
+# "TOB endflange connectors Layer 4"       "TOB_rib4"     5017.5005  2181.5219
+* 1 "SCCAC PCB board"                      "T_G10"           0.200      8      ELE
+* 2 "SCCAC PCB copper traces"              "Copper"          0.0054     8      ELE
+* 3 "SCCAC NAiS connectors"                "Copper"          0.177      8      ELE
+* 4 "SCCAC NAiS connectors"                "Epoxy"           0.781      8      ELE
+* 5 "SCLAC PCB board"                      "T_G10"           0.211      8      ELE
+* 6 "SCLAC PCB copper traces"              "Copper"          0.0068     8      ELE
+* 7 "SCLAC NAiS connectors"                "Copper"          0.127      8      ELE
+* 8 "SCLAC NAiS connectors"                "Epoxy"           0.927      8      ELE
+* 9 "DOHM wires Cu"                        "Copper"          1.814      1      CAB
+* 10 "DOHM wires Al"                       "Aluminium"       1.100      1      CAB
+* 11 "DOHM wires PEI"                      "Silicone_Gel"    1.809      1      CAB
+* 12 "DOHM wires SILTEM"                   "Polyethylene"    7.579      1      CAB
+* 13 "DOHM wires Polyamide"                "Polyethylene"   10.258      1      CAB
+* 14 "SCCAC screw holder"                  "T_G10"           0.379      8      SUP
+* 15 "SCCAC screws"                        "Brass"           0.202      8      SUP
+* 16 "SCCAC,SCLAC,DOHM glue"               "Epoxy"           0.404      8      SUP
+* 17 "SCCAC,SCLAC,DOHM Solder Paste"       "BGA"             0.038      8      SUP
+* 18 "Output cable Sleeve"                 "Polyethylene"    0.642     60      CAB
+* 19 "CCUM wires Cu"                       "Copper"          0.176    120      CAB
+* 20 "BUS wires Cu"                        "Copper"          0.204     60      CAB
+* 21 "BUS wires SILTEM"                    "Polyethylene"    0.531     60      CAB
+* 22 "Output cable Shield"                 "Aluminium"       0.089     60      CAB
+* 23 "Output cable Sleeve"                 "Polyethylene"    0.642     60      CAB
+* 24 "Input and Output cable Tie"          "T_Kapton"        0.098     60      CAB
+* 25 "Input and Output cable Solder Paste" "BGA"             0.038     60      CAB
+* 26 "SCCAC glue"                          "Epoxy"           0.202     60      SUP
+....................................................................................
+====================================================================================
+
+....................................................................................
+# "TOB endflange connectors Layer 5"       "TOB_rib5"     5578.2119  2425.3095
+* 1 "SCCAC PCB board"                      "T_G10"           0.200      8      ELE
+* 2 "SCCAC PCB copper traces"              "Copper"          0.0054     8      ELE
+* 3 "SCCAC NAiS connectors"                "Copper"          0.177      8      ELE
+* 4 "SCCAC NAiS connectors"                "Epoxy"           0.781      8      ELE
+* 5 "SCLAC PCB board"                      "T_G10"           0.211      8      ELE
+* 6 "SCLAC PCB copper traces"              "Copper"          0.0068     8      ELE
+* 7 "SCLAC NAiS connectors"                "Copper"          0.127      8      ELE
+* 8 "SCLAC NAiS connectors"                "Epoxy"           0.927      8      ELE
+* 9 "DOHM wires Cu"                        "Copper"          1.814      1      CAB
+* 10 "DOHM wires Al"                       "Aluminium"       1.100      1      CAB
+* 11 "DOHM wires PEI"                      "Silicone_Gel"    1.809      1      CAB
+* 12 "DOHM wires SILTEM"                   "Polyethylene"    7.579      1      CAB
+* 13 "DOHM wires Polyamide"                "Polyethylene"   10.258      1      CAB
+* 14 "SCCAC screw holder"                  "T_G10"           0.379      8      SUP
+* 15 "SCCAC screws"                        "Brass"           0.202      8      SUP
+* 16 "SCCAC,SCLAC,DOHM glue"               "Epoxy"           0.404      8      SUP
+* 17 "SCCAC,SCLAC,DOHM Solder Paste"       "BGA"             0.038      8      SUP
+* 18 "Output cable Sleeve"                 "Polyethylene"    0.642     66      CAB
+* 19 "CCUM wires Cu"                       "Copper"          0.176    132      CAB
+* 20 "BUS wires Cu"                        "Copper"          0.204     66      CAB
+* 21 "BUS wires SILTEM"                    "Polyethylene"    0.531     66      CAB
+* 22 "Output cable Shield"                 "Aluminium"       0.089     66      CAB
+* 23 "Output cable Sleeve"                 "Polyethylene"    0.642     66      CAB
+* 24 "Input and Output cable Tie"          "T_Kapton"        0.098     66      CAB
+* 25 "Input and Output cable Solder Paste" "BGA"             0.038     66      CAB
+* 26 "SCCAC glue"                          "Epoxy"           0.202     66      SUP
+....................................................................................
+====================================================================================
+
+....................................................................................
+# "TOB endflange connectors Layer 6"       "TOB_rib6"     6242.9729  2714.3361
+* 1 "SCCAC PCB board"                      "T_G10"           0.200      8      ELE
+* 2 "SCCAC PCB copper traces"              "Copper"          0.0054     8      ELE
+* 3 "SCCAC NAiS connectors"                "Copper"          0.177      8      ELE
+* 4 "SCCAC NAiS connectors"                "Epoxy"           0.781      8      ELE
+* 5 "SCLAC PCB board"                      "T_G10"           0.211      8      ELE
+* 6 "SCLAC PCB copper traces"              "Copper"          0.0068     8      ELE
+* 7 "SCLAC NAiS connectors"                "Copper"          0.127      8      ELE
+* 8 "SCLAC NAiS connectors"                "Epoxy"           0.927      8      ELE
+* 9 "DOHM wires Cu"                        "Copper"          1.814      1      CAB
+* 10 "DOHM wires Al"                       "Aluminium"       1.100      1      CAB
+* 11 "DOHM wires PEI"                      "Silicone_Gel"    1.809      1      CAB
+* 12 "DOHM wires SILTEM"                   "Polyethylene"    7.579      1      CAB
+* 13 "DOHM wires Polyamide"                "Polyethylene"   10.258      1      CAB
+* 14 "SCCAC screw holder"                  "T_G10"           0.379      8      SUP
+* 15 "SCCAC screws"                        "Brass"           0.202      8      SUP
+* 16 "SCCAC,SCLAC,DOHM glue"               "Epoxy"           0.404      8      SUP
+* 17 "SCCAC,SCLAC,DOHM Solder Paste"       "BGA"             0.038      8      SUP
+* 18 "Output cable Sleeve"                 "Polyethylene"    0.642     74      CAB
+* 19 "CCUM wires Cu"                       "Copper"          0.176    148      CAB
+* 20 "BUS wires Cu"                        "Copper"          0.204     74      CAB
+* 21 "BUS wires SILTEM"                    "Polyethylene"    0.531     74      CAB
+* 22 "Output cable Shield"                 "Aluminium"       0.089     74      CAB
+* 23 "Output cable Sleeve"                 "Polyethylene"    0.642     74      CAB
+* 24 "Input and Output cable Tie"          "T_Kapton"        0.098     74      CAB
+* 25 "Input and Output cable Solder Paste" "BGA"             0.038     74      CAB
+* 26 "SCCAC glue"                          "Epoxy"           0.202     74      SUP
+....................................................................................
+====================================================================================
+
+	[WAS:
+		These are rings at z = 110.8 cm, of radial thickness 4 cm and  
+		thickness in z of 23 mm.
+		
+		Included are all the connectors at the rod end, and also the
+		digital optohybrid (that I don't know much about !)
+		
+		Per rod:
+		(1-2) Connectors:
+		      1 x LV connector pair (Micro-T 37 pin) 
+		        Plastic: 2.578 g -> 1.84 cm^3 Kapton
+		        Cu     : 3.46  g -> 0.385 cm^3
+		      1 x HV connector pair (Micro-T 25 pin)
+		        Plastic: 1.742 g -> 1.244 cm^3
+		        Cu     : 2.38 g  -> 0.266 cm^3
+		      2 x Control loop connector pair (Micro-T 31 pin)
+		        Plastic: 2.16 g -> 1.543 cm^3  each
+		        Cu     : 2.92 g -> 0.326 cm^3  each
+		     -->    total 6.17 cm^3 Kapton, 1.303 Cu 
+		(3) Support boards 
+		         G10, 0.5 mm, 3*1.75x2, 1* 1.75x2.5 = 0.744 cm^3 
+		(4-5) Digital OH
+		
+		    No idea !! Assume: 3.2 x 3.2 cm^2, 400 um G10, 20 % Cu
+		    No components, since I don't know them !
+		
+		(6-10) Only for layers 9/10:  
+		        (5/6 no longer since APV number has been reduced 15/03/02)
+		        1/2 optoconnector per rod
+		        46.8 g plastic, 8.4 g Cu  NO !!! see tie_struc.in
+		        take 15 cm^3 plastic !
+		
+		Layer 5: r = 61 cm, 42 rods, 8 DOHs
+		.........................................................................
+		# "TOB endflange connectors 5"   "TOB_rib1"      3526.1   1533.    
+		* 1 "Connectors"                 "T_Kapton"        6.17     42   CAB
+		* 2 "Connector pins"             "Copper"          1.303    42   CAB
+		* 3 "Cable support"              "G10"             0.744    42   CAB
+		* 4 "Digital OH"                 "G10"             0.41      8   ELE
+		* 5 "Digital OH"                 "Copper"          0.08      8   ELE
+		C-- * 6 "Optoconnector"              "T_Kapton"       15.0     21    CAB
+		C-- * 7 "Optoconnector"              "Copper"         0.446    21    CAB
+		.........................................................................
+		Layer 6: r = 69.6 cm, 48 rods, 8 DOHs
+		.........................................................................
+		# "TOB endflange connectors 6"   "TOB_rib2"        4023.2  1749.    
+		* 1 "Connectors"                 "T_Kapton"        6.17     48   CAB
+		* 2 "Connector pins"             "Copper"          1.303    48   CAB
+		* 3 "Cable support"              "G10"             0.744    48   CAB
+		* 4 "Digital OH"                 "G10"             0.41      8   ELE
+		* 5 "Digital OH"                 "Copper"          0.08      8   ELE
+		C-- * 6 "Optoconnector"              "T_Kapton"       15.00     24   CAB
+		C-- * 7 "Optoconnector"              "Copper"         0.446     24   CAB
+		.........................................................................
+		Layer 7: r = 78.2 cm, 54 rods, 9 DOHs
+		.........................................................................
+		# "TOB endflange connectors 7"   "TOB_rib3"        4520.4  1965.    
+		* 1 "Connectors"                 "T_Kapton"        6.17     54   CAB
+		* 2 "Connector pins"             "Copper"          1.303    54   CAB
+		* 3 "Cable support"              "G10"             0.744    54   CAB
+		* 4 "Digital OH"                 "G10"             0.41      9   ELE
+		* 5 "Digital OH"                 "Copper"          0.08      9   ELE
+		.........................................................................
+		Layer 8: r = 86.8 cm, 60 rods, 8 DOHs
+		.........................................................................
+		# "TOB endflange connectors 8"   "TOB_rib4"        5017.5  2182.    
+		* 1 "Connectors"                 "T_Kapton"        6.17     60   CAB
+		* 2 "Connector pins"             "Copper"          1.303    60   CAB
+		* 3 "Cable support"              "G10"             0.744    60   CAB
+		* 4 "Digital OH"                 "G10"             0.41      8   ELE
+		* 5 "Digital OH"                 "Copper"          0.08      8   ELE
+		.........................................................................
+		Layer 9: r = 96.5 cm, 66 rods, 12 DOHs
+		.........................................................................
+		# "TOB endflange connectors 9"   "TOB_rib5"        5578.2  2425.    
+		* 1 "Connectors"                 "T_Kapton"        6.17     66   CAB
+		* 2 "Connector pins"             "Copper"          1.303    66   CAB
+		* 3 "Cable support"              "G10"             0.744    66   CAB
+		* 4 "Digital OH"                 "G10"             0.41     12   ELE
+		* 5 "Digital OH"                 "Copper"          0.08     12   ELE
+		* 6 "Optoconnector"              "T_Kapton"       15.00     33   CAB
+		* 7 "Optoconnector"              "Copper"         0.446     33   CAB
+		.........................................................................
+		Layer 10: r = 108 cm, 74 rods, 10 DOHs
+		.........................................................................
+		# "TOB endflange connectors 10"  "TOB_rib6"        6243.0  2714.    
+		* 1 "Connectors"                 "T_Kapton"        6.17     74   CAB
+		* 2 "Connector pins"             "Copper"          1.303    74   CAB
+		* 3 "Cable support"              "G10"             0.744    74   CAB
+		* 4 "Digital OH"                 "G10"             0.41     10   ELE
+		* 5 "Digital OH"                 "Copper"          0.08     10   ELE
+		* 6 "Optoconnector"              "T_Kapton"       15.00     37   CAB
+		* 7 "Optoconnector"              "Copper"         0.446     37   CAB
+		.........................................................................
+		=========================================================================
+	]
+      
+
+
 o TOB rod fixation to disk
   ------------------------
 These attach the rod to the disk. There are 8 /full-length-rod
@@ -702,103 +1160,6 @@ C* 4 "Cool pipe solder"        "TOB_cool_solder"    0.042    74      COL
 .....................................................................
 =====================================================================
 
-o Endflange Connectors
-  --------------------
-These are rings at z = 110.8 cm, of radial thickness 4 cm and  
-thickness in z of 23 mm.
-
-Included are all the connectors at the rod end, and also the
-digital optohybrid (that I don't know much about !)
-
-Per rod:
-(1-2) Connectors:
-      1 x LV connector pair (Micro-T 37 pin) 
-        Plastic: 2.578 g -> 1.84 cm^3 Kapton
-        Cu     : 3.46  g -> 0.385 cm^3
-      1 x HV connector pair (Micro-T 25 pin)
-        Plastic: 1.742 g -> 1.244 cm^3
-        Cu     : 2.38 g  -> 0.266 cm^3
-      2 x Control loop connector pair (Micro-T 31 pin)
-        Plastic: 2.16 g -> 1.543 cm^3  each
-        Cu     : 2.92 g -> 0.326 cm^3  each
-     -->    total 6.17 cm^3 Kapton, 1.303 Cu 
-(3) Support boards 
-         G10, 0.5 mm, 3*1.75x2, 1* 1.75x2.5 = 0.744 cm^3 
-(4-5) Digital OH
-
-    No idea !! Assume: 3.2 x 3.2 cm^2, 400 um G10, 20 % Cu
-    No components, since I don't know them !
-
-(6-10) Only for layers 9/10:  
-        (5/6 no longer since APV number has been reduced 15/03/02)
-        1/2 optoconnector per rod
-        46.8 g plastic, 8.4 g Cu  NO !!! see tie_struc.in
-        take 15 cm^3 plastic !
-
-Layer 5: r = 61 cm, 42 rods, 8 DOHs
-.........................................................................
-# "TOB endflange connectors 5"   "TOB_rib1"      3526.1   1533.    
-* 1 "Connectors"                 "T_Kapton"        6.17     42   CAB
-* 2 "Connector pins"             "Copper"          1.303    42   CAB
-* 3 "Cable support"              "G10"             0.744    42   CAB
-* 4 "Digital OH"                 "G10"             0.41      8   ELE
-* 5 "Digital OH"                 "Copper"          0.08      8   ELE
-C-- * 6 "Optoconnector"              "T_Kapton"       15.0     21    CAB
-C-- * 7 "Optoconnector"              "Copper"         0.446    21    CAB
-.........................................................................
-Layer 6: r = 69.6 cm, 48 rods, 8 DOHs
-.........................................................................
-# "TOB endflange connectors 6"   "TOB_rib2"        4023.2  1749.    
-* 1 "Connectors"                 "T_Kapton"        6.17     48   CAB
-* 2 "Connector pins"             "Copper"          1.303    48   CAB
-* 3 "Cable support"              "G10"             0.744    48   CAB
-* 4 "Digital OH"                 "G10"             0.41      8   ELE
-* 5 "Digital OH"                 "Copper"          0.08      8   ELE
-C-- * 6 "Optoconnector"              "T_Kapton"       15.00     24   CAB
-C-- * 7 "Optoconnector"              "Copper"         0.446     24   CAB
-.........................................................................
-Layer 7: r = 78.2 cm, 54 rods, 9 DOHs
-.........................................................................
-# "TOB endflange connectors 7"   "TOB_rib3"        4520.4  1965.    
-* 1 "Connectors"                 "T_Kapton"        6.17     54   CAB
-* 2 "Connector pins"             "Copper"          1.303    54   CAB
-* 3 "Cable support"              "G10"             0.744    54   CAB
-* 4 "Digital OH"                 "G10"             0.41      9   ELE
-* 5 "Digital OH"                 "Copper"          0.08      9   ELE
-.........................................................................
-Layer 8: r = 86.8 cm, 60 rods, 8 DOHs
-.........................................................................
-# "TOB endflange connectors 8"   "TOB_rib4"        5017.5  2182.    
-* 1 "Connectors"                 "T_Kapton"        6.17     60   CAB
-* 2 "Connector pins"             "Copper"          1.303    60   CAB
-* 3 "Cable support"              "G10"             0.744    60   CAB
-* 4 "Digital OH"                 "G10"             0.41      8   ELE
-* 5 "Digital OH"                 "Copper"          0.08      8   ELE
-.........................................................................
-Layer 9: r = 96.5 cm, 66 rods, 12 DOHs
-.........................................................................
-# "TOB endflange connectors 9"   "TOB_rib5"        5578.2  2425.    
-* 1 "Connectors"                 "T_Kapton"        6.17     66   CAB
-* 2 "Connector pins"             "Copper"          1.303    66   CAB
-* 3 "Cable support"              "G10"             0.744    66   CAB
-* 4 "Digital OH"                 "G10"             0.41     12   ELE
-* 5 "Digital OH"                 "Copper"          0.08     12   ELE
-* 6 "Optoconnector"              "T_Kapton"       15.00     33   CAB
-* 7 "Optoconnector"              "Copper"         0.446     33   CAB
-.........................................................................
-Layer 10: r = 108 cm, 74 rods, 10 DOHs
-.........................................................................
-# "TOB endflange connectors 10"  "TOB_rib6"        6243.0  2714.    
-* 1 "Connectors"                 "T_Kapton"        6.17     74   CAB
-* 2 "Connector pins"             "Copper"          1.303    74   CAB
-* 3 "Cable support"              "G10"             0.744    74   CAB
-* 4 "Digital OH"                 "G10"             0.41     10   ELE
-* 5 "Digital OH"                 "Copper"          0.08     10   ELE
-* 6 "Optoconnector"              "T_Kapton"       15.00     37   CAB
-* 7 "Optoconnector"              "Copper"         0.446     37   CAB
-.........................................................................
-=========================================================================
-      
 o TOB radial cables
   -----------------
 One for each layer, disks of constant Xsection (2*pi*r*t)
