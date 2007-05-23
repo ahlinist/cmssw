@@ -71,7 +71,7 @@
 #include "FWCore/ServiceRegistry/interface/ActivityRegistry.h"
 
 #include <map>
-#include <vector>
+#include <stack>
 #include <fenv.h>
 
 namespace edm {
@@ -102,7 +102,9 @@ private:
 	 typedef std::vector<std::string> VString;
 	 typedef ParameterSet             PSet;
 	 fenv_t fpuState_;
+	 fenv_t OSdefault_;
          std::map<String, fenv_t> stateMap_;
+	 std::stack<fenv_t> stateStack_;
       };
    }
 }
