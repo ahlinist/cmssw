@@ -10,17 +10,22 @@
 
 BTagPerformanceAnalyzer::BTagPerformanceAnalyzer(const edm::ParameterSet& pSet)
 {
-  std::string algorithm = pSet.getParameter<std::string>( "algorithm" );
-  if (algorithm == "TrackCounting") {
+  bool useTagInfo = pSet.getParameter<bool>( "useTagInfo" );
+  if (!useTagInfo) {
     petBase = new BTagPABase<TrackCountingTagPlotter>(pSet);
-  } else if (algorithm == "TrackProbability") {
-    petBase = new BTagPABase<TrackProbabilityTagPlotter>(pSet);
-  } else if (algorithm == "SoftLepton") {
-    petBase = new BTagPABase<SoftLeptonTagPlotter>(pSet);
   } else {
-    throw cms::Exception("Configuration")
-      << "BTagPerformanceAnalyzer: Unknown algorithm " << algorithm << endl
-      << "Choose between JetTag, TrackCounting, TrackProbability, SoftLepton\n";
+    std::string algorithm = pSet.getParameter<std::string>( "algorithm" );
+    if (algorithm == "TrackCounting") {
+      petBase = new BTagPABase<TrackCountingTagPlotter>(pSet);
+    } else if (algorithm == "TrackProbability") {
+      petBase = new BTagPABase<TrackProbabilityTagPlotter>(pSet);
+    } else if (algorithm == "SoftLepton") {
+      petBase = new BTagPABase<SoftLeptonTagPlotter>(pSet);
+    } else {
+      throw cms::Exception("Configuration")
+	<< "BTagPerformanceAnalyzer: Unknown algorithm " << algorithm << endl
+	<< "Choose between JetTag, TrackCounting, TrackProbability, SoftLepton\n";
+    }
   }
 }
 
