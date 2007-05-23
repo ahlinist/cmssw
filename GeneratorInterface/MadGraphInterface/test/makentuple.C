@@ -6,7 +6,7 @@
   // open event tree
 #include "Riostream.h"
   ifstream in;
-  TString etree="/nfs/cms/mass8/USERS/d/dorian/2007_05_22_Johan_Simon/Zmumujets_xqcut20_qcut30_50K.tree";
+  TString etree="events.tree";
   std::cout<<" using input file "<<etree<<std::endl;
   in.open(etree);
   // open root file and book ntuple
