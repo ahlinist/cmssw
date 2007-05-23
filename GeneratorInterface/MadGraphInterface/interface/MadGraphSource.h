@@ -14,6 +14,7 @@
  * Dorian Kcira : change to new Les Houches format.
  * Dorian Kcira : add automatic end of event processing when hitting
  *                the end of the lhe file (29/01/07)
+ * Dorian Kcira : added ME-PS matching (22/05/2007)
  ***************************************/
 
 #define PYCOMP pycomp_
@@ -59,6 +60,10 @@ namespace edm
     int MCDBArticleID_;
     unsigned int firstEvent_;
     unsigned int lhe_event_counter_;
+
+    //MEMAIN
+    double MEMAIN_etaclmax;
+    double MEMAIN_qcut;
   };
 } 
 
