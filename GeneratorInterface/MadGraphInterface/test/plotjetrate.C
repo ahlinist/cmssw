@@ -1,6 +1,14 @@
 {
 TFile f("eventtree.root");
 gStyle->SetOptStat(0);
+// use plain black on white colors
+gStyle->SetFrameBorderMode(0);
+gStyle->SetCanvasBorderMode(0);
+gStyle->SetPadBorderMode(0);
+gStyle->SetPadColor(0);
+gStyle->SetCanvasColor(0);
+gStyle->SetStatColor(0);
+gStyle->SetFillColor(0);
 TCanvas *myCanvas = new TCanvas("zc","zC",500,0,900,700);
 myCanvas->SetLogy(1);
 myCanvas->SetLogx(1);
