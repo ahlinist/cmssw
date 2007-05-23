@@ -1,0 +1,12 @@
+<use name=FWCore/Framework>
+<use name=DQMServices/Core>
+<use name=DQMServices/ClientConfig>
+<use name=DataFormats/FEDRawData>
+<use name=EventFilter/Utilities>
+<use name=xdaq>
+
+<flags SEAL_PLUGIN_NAME="DQMFEDMonitor"> 
+
+<export>
+<lib name=DQMFEDMonitor>
+</export>
