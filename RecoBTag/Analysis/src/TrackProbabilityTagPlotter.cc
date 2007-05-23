@@ -73,6 +73,12 @@ void TrackProbabilityTagPlotter::analyzeTag (const reco::JetTag & jetTag,
   const reco::TrackProbabilityTagInfo * tagInfo = 
 	dynamic_cast<const reco::TrackProbabilityTagInfo *>(jetTag.tagInfoRef().get());
 
+  if (!tagInfo) {
+    throw cms::Exception("Configuration")
+      << "BTagPerformanceAnalyzer: Extended TagInfo attached to selected JetTag not of type TrackProbabilityTagInfo. " << endl
+      << "Select a different JetTag collection or change the algorithm parameter to TrackProbability in the configuration\n";
+  }
+
   int jetFlav = jetFlavour.flavour();
 
   int numberOfTracks = jetTag.tracks().size();

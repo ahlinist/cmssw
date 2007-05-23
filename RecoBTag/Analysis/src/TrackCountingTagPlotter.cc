@@ -89,6 +89,12 @@ void TrackCountingTagPlotter::analyzeTag (const reco::JetTag & jetTag,
   const reco::TrackCountingTagInfo * tagInfo = 
 	dynamic_cast<const reco::TrackCountingTagInfo *>(jetTag.tagInfoRef().get());
 
+  if (!tagInfo) {
+    throw cms::Exception("Configuration")
+      << "BTagPerformanceAnalyzer: Extended TagInfo attached to selected JetTag not of type TrackCountingTagInfo. " << endl
+      << "Select a different JetTag collection or change the algorithm parameter to TrackCounting in the configuration\n";
+  }
+
   int jetFlav = jetFlavour.flavour();
 
   trkNbr3D->fill(jetFlav, tagInfo->selectedTracks(0));
