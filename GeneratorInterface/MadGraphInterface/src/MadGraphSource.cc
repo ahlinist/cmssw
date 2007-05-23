@@ -10,6 +10,7 @@
  * Hector Naves : added the MCDB Interface (25/10/06)
  * Dorian Kcira : add automatic end of event processing when hitting
  *                the end of the lhe file (29/01/07)
+ * Dorian Kcira : added ME-PS matching (22/05/2007)
  ***************************************/
 #include "GeneratorInterface/MadGraphInterface/interface/MadGraphSource.h"
 #include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
@@ -23,10 +24,10 @@
 #include "time.h"
 
 // Generator modifications
-#include "HepMC/PythiaWrapper6_2.h"
-//#include "HepMC/ConvertHEPEVT.h"
+#include "CLHEP/HepMC/include/PythiaWrapper6_2.h"
+//#include "CLHEP/HepMC/ConvertHEPEVT.h"
 #include "HepMC/IO_HEPEVT.h"
-//#include "HepMC/CBhepevt.h"
+//#include "CLHEP/HepMC/CBhepevt.h"
 
 // MCDB Interface 
 #include "GeneratorInterface/MadGraphInterface/interface/MCDBInterface.h"
@@ -34,6 +35,10 @@
 #define PYGIVE pygive_
 extern "C" {
   void PYGIVE(const char*,int length);
+}
+
+extern "C"{
+ void eventtree_();
 }
 
 /*
@@ -64,19 +69,41 @@ extern "C" {
  }hepeup_;
 }
 
+/*
+ME2Pythia.f
+      double precision etcjet,rclmax,etaclmax,qcut,clfact
+      integer maxjets,minjets,iexcfile,ktsche
+      common/MEMAIN/etcjet,rclmax,etaclmax,qcut,clfact,
+     $   maxjets,minjets,iexcfile,ktsche
+      DATA ktsche/0/
+      DATA qcut,clfact/0d0,0d0/
+*/
+extern "C" {
+ extern struct MEMAIN{
+ double etcjet;
+ double rclmax;
+ double etaclmax;
+ double qcut;
+ double clfact;
+ int maxjets;
+ int minjets;
+ int iexcfile;
+ int ktsche;
+ }memain_;
+}
 
 //HepMC::ConvertHEPEVT conv;
-HepMC::IO_HEPEVT conv;
+ HepMC::IO_HEPEVT conv;
 
-//used for defaults
+//used for defaults - change these to defines? TODO
   static const unsigned long kNanoSecPerSec = 1000000000;
   static const unsigned long kAveEventPerSec = 200;
 
 using namespace edm;
-MadGraphSource::MadGraphSource( const ParameterSet & pset, InputSourceDescription const& desc) :
-  GeneratedInputSource(pset, desc), evt(0),
+
+MadGraphSource::MadGraphSource( const ParameterSet & pset, InputSourceDescription const& desc) : GeneratedInputSource(pset, desc), evt(0),
   //  mcdbArticleID_ (pset.addParameter<int>("mcdbArticleID",0)),
-pythiaPylistVerbosity_ (pset.getUntrackedParameter<int>("pythiaPylistVerbosity",0)),pythiaHepMCVerbosity_ (pset.getUntrackedParameter<bool>("pythiaHepMCVerbosity",false)),maxEventsToPrint_ (pset.getUntrackedParameter<int>("maxEventsToPrint",0)),MGfile_ (pset.getParameter<std::string>("MadGraphInputFile")),getInputFromMCDB_ (pset.getUntrackedParameter<bool>("getInputFromMCDB",false)),MCDBArticleID_ (pset.getParameter<int>("MCDBArticleID")),firstEvent_(pset.getUntrackedParameter<unsigned int>("firstEvent", 0)),lhe_event_counter_(0){
+pythiaPylistVerbosity_ (pset.getUntrackedParameter<int>("pythiaPylistVerbosity",0)),pythiaHepMCVerbosity_ (pset.getUntrackedParameter<bool>("pythiaHepMCVerbosity",false)),maxEventsToPrint_ (pset.getUntrackedParameter<int>("maxEventsToPrint",0)),MGfile_ (pset.getParameter<std::string>("MadGraphInputFile")),getInputFromMCDB_ (pset.getUntrackedParameter<bool>("getInputFromMCDB",false)),MCDBArticleID_ (pset.getParameter<int>("MCDBArticleID")),firstEvent_(pset.getUntrackedParameter<unsigned int>("firstEvent", 0)),lhe_event_counter_(0),MEMAIN_etaclmax(pset.getUntrackedParameter<double>("MEMAIN_etaclmax",0.)),MEMAIN_qcut(pset.getUntrackedParameter<double>("MEMAIN_qcut",0.)) {
 
   std::ifstream file;
   std::ofstream ofile;
@@ -102,6 +129,22 @@ pythiaPylistVerbosity_ (pset.getUntrackedParameter<int>("pythiaPylistVerbosity",
   ofile<<"\n";
   ofile.close();
   
+  // first set to default values, mostly zeros
+  memain_.etcjet=0.;
+  memain_.rclmax=0.;
+  memain_.etaclmax=0.;
+  memain_.qcut=0.;
+  memain_.clfact=0.;
+  memain_.maxjets=0;
+  memain_.minjets=0;
+  memain_.iexcfile=0;
+  memain_.ktsche=0;
+  // then set (some) values from cards
+  memain_.etaclmax=MEMAIN_etaclmax;
+  memain_.qcut=MEMAIN_qcut;
+  // print out
+  edm::LogInfo("Generator|MadGraph")<<"MEMAIN before ME2pythia initialization - etcjet ="<<memain_.etcjet<<" rclmax ="<<memain_.rclmax<<" etaclmax ="<<memain_.etaclmax<<" qcut ="<<memain_.qcut<<" clfact ="<<memain_.clfact<<" maxjets ="<<memain_.maxjets<<" minjets ="<<memain_.minjets<<" iexcfile ="<<memain_.iexcfile<<" ktsche ="<<memain_.ktsche;
+
   edm::LogInfo("Generator|MadGraph")<<"MadGraphSource: initializing Pythia.";
   // PYLIST Verbosity Level
   // Valid PYLIST arguments are: 1, 2, 3, 5, 7, 11, 12, 13
@@ -157,7 +200,9 @@ pythiaPylistVerbosity_ (pset.getUntrackedParameter<int>("pythiaPylistVerbosity",
   call_pygive(sRandomSet.str());
   // Call pythia initialisation with user defined upinit subroutine
   call_pyinit( "USER", "", "", 0.);
-  
+
+  edm::LogInfo("Generator|MadGraph")<<"MEMAIN after ME2pythia initialization - etcjet ="<<memain_.etcjet<<" rclmax ="<<memain_.rclmax<<" etaclmax ="<<memain_.etaclmax<<" qcut ="<<memain_.qcut<<" clfact ="<<memain_.clfact<<" maxjets ="<<memain_.maxjets<<" minjets ="<<memain_.minjets<<" iexcfile ="<<memain_.iexcfile<<" ktsche ="<<memain_.ktsche;
+
   produces<HepMCProduct>();
   edm::LogInfo("Generator|MadGraph")<<"starting event generation ...";
 }
@@ -185,7 +230,8 @@ bool MadGraphSource::produce(Event & e) {
     
   call_pyevnt();      // generate one event with Pythia
   call_pyhepc( 1 );
-//  ++lhe_event_counter_; // count this here later if needed
+
+  eventtree_();
 
 //  HepMC::GenEvent* evt = conv.getGenEventfromHEPEVT();
   HepMC::GenEvent* evt = conv.read_next_event();
