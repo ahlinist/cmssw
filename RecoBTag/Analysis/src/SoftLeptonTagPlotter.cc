@@ -76,6 +76,12 @@ void SoftLeptonTagPlotter::analyzeTag(
   const reco::SoftLeptonTagInfo * tagInfo = 
 	dynamic_cast<const reco::SoftLeptonTagInfo *>(jetTag.tagInfoRef().get());
 
+  if (!tagInfo) {
+    throw cms::Exception("Configuration")
+      << "BTagPerformanceAnalyzer: Extended TagInfo attached to selected JetTag not of type SoftLeptonTagInfo. " << endl
+      << "Select a different JetTag collection or change the algorithm parameter to SoftLepton in the configuration\n";
+  }
+
   int flavour = jetFlavour.flavour();
   // check if properly initialized
 
