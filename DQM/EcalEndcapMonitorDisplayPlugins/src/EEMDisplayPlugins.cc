@@ -1,11 +1,11 @@
-// $Id: EEMDisplayPlugins.cc,v 1.1 2007/04/02 16:27:51 dellaric Exp $
+// $Id: EEMDisplayPlugins.cc,v 1.2 2007/04/11 05:55:52 dellaric Exp $
 
 /*!
   \file EEMDisplayPlugins
   \brief Display Plugin for Quality Histograms (2D)
   \author B. Gobbo 
-  \version $Revision: 1.1 $
-  \date $Date: 2007/04/02 16:27:51 $
+  \version $Revision: 1.2 $
+  \date $Date: 2007/04/11 05:55:52 $
 */
 
 #include "DQM/EcalEndcapMonitorDisplayPlugins/interface/EEMDisplayPlugins.h"
@@ -131,6 +131,14 @@ bool EEMDisplayPlugins::applies( DisplayData *data ) {
 }
 
 std::string EEMDisplayPlugins::preDraw( DisplayData *data ) {
+
+  MonitorElement* me = data->me;
+  if( me  ) {
+    data->pad->SetFrameFillColor( 10 );
+    if (me->hasOtherReport()) data->pad->SetFillColor( 16 );
+    if (me->hasWarning()) data->pad->SetFillColor( 5 );
+    if (me->hasError()) data->pad->SetFillColor( 2 );
+  }
 
   if( dynamic_cast<TProfile2D*>( data->object ) ) {
     return preDrawTProfile2D( data );

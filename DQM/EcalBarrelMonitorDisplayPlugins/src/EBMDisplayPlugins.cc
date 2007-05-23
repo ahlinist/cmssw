@@ -1,11 +1,11 @@
-// $Id: EBMDisplayPlugins.cc,v 1.15 2007/03/31 07:58:59 dellaric Exp $
+// $Id: EBMDisplayPlugins.cc,v 1.16 2007/04/11 05:55:51 dellaric Exp $
 
 /*!
   \file EBMDisplayPlugins
   \brief Display Plugin for Quality Histograms (2D)
   \author B. Gobbo 
-  \version $Revision: 1.15 $
-  \date $Date: 2007/03/31 07:58:59 $
+  \version $Revision: 1.16 $
+  \date $Date: 2007/04/11 05:55:51 $
 */
 
 #include "DQM/EcalBarrelMonitorDisplayPlugins/interface/EBMDisplayPlugins.h"
@@ -131,6 +131,14 @@ bool EBMDisplayPlugins::applies( DisplayData *data ) {
 }
 
 std::string EBMDisplayPlugins::preDraw( DisplayData *data ) {
+
+  MonitorElement* me = data->me;
+  if( me  ) {
+    data->pad->SetFrameFillColor( 10 );
+    if (me->hasOtherReport()) data->pad->SetFillColor( 16 );
+    if (me->hasWarning()) data->pad->SetFillColor( 5 );
+    if (me->hasError()) data->pad->SetFillColor( 2 );
+  }
 
   if( dynamic_cast<TProfile2D*>( data->object ) ) {
     return preDrawTProfile2D( data );
