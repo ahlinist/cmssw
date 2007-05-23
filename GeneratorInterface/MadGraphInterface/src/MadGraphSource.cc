@@ -102,8 +102,7 @@ extern "C" {
 using namespace edm;
 
 MadGraphSource::MadGraphSource( const ParameterSet & pset, InputSourceDescription const& desc) : GeneratedInputSource(pset, desc), evt(0),
-  //  mcdbArticleID_ (pset.addParameter<int>("mcdbArticleID",0)),
-pythiaPylistVerbosity_ (pset.getUntrackedParameter<int>("pythiaPylistVerbosity",0)),pythiaHepMCVerbosity_ (pset.getUntrackedParameter<bool>("pythiaHepMCVerbosity",false)),maxEventsToPrint_ (pset.getUntrackedParameter<int>("maxEventsToPrint",0)),MGfile_ (pset.getParameter<std::string>("MadGraphInputFile")),getInputFromMCDB_ (pset.getUntrackedParameter<bool>("getInputFromMCDB",false)),MCDBArticleID_ (pset.getParameter<int>("MCDBArticleID")),firstEvent_(pset.getUntrackedParameter<unsigned int>("firstEvent", 0)),lhe_event_counter_(0),MEMAIN_etaclmax(pset.getUntrackedParameter<double>("MEMAIN_etaclmax",0.)),MEMAIN_qcut(pset.getUntrackedParameter<double>("MEMAIN_qcut",0.)) {
+pythiaPylistVerbosity_ (pset.getUntrackedParameter<int>("pythiaPylistVerbosity",0)),pythiaHepMCVerbosity_ (pset.getUntrackedParameter<bool>("pythiaHepMCVerbosity",false)),maxEventsToPrint_ (pset.getUntrackedParameter<int>("maxEventsToPrint",0)),MGfile_ (pset.getParameter<std::string>("MadGraphInputFile")),getInputFromMCDB_ (pset.getUntrackedParameter<bool>("getInputFromMCDB",false)),MCDBArticleID_ (pset.getParameter<int>("MCDBArticleID")),firstEvent_(pset.getUntrackedParameter<unsigned int>("firstEvent", 0)),lhe_event_counter_(0),MEMAIN_etaclmax(pset.getUntrackedParameter<double>("MEMAIN_etaclmax",0.)),MEMAIN_qcut(pset.getUntrackedParameter<double>("MEMAIN_qcut",0.)),MEMAIN_iexcfile(pset.getUntrackedParameter<unsigned int>("MEMAIN_iexcfile",0)), produceEventTreeFile_ (pset.getUntrackedParameter<bool>("produceEventTreeFile",false)) {
 
   std::ifstream file;
   std::ofstream ofile;
@@ -140,6 +139,7 @@ pythiaPylistVerbosity_ (pset.getUntrackedParameter<int>("pythiaPylistVerbosity",
   memain_.iexcfile=0;
   memain_.ktsche=0;
   // then set (some) values from cards
+  memain_.iexcfile=MEMAIN_iexcfile;
   memain_.etaclmax=MEMAIN_etaclmax;
   memain_.qcut=MEMAIN_qcut;
   // print out
@@ -231,7 +231,7 @@ bool MadGraphSource::produce(Event & e) {
   call_pyevnt();      // generate one event with Pythia
   call_pyhepc( 1 );
 
-  eventtree_();
+  if(produceEventTreeFile_) eventtree_(); // write out an event tree file
 
 //  HepMC::GenEvent* evt = conv.getGenEventfromHEPEVT();
   HepMC::GenEvent* evt = conv.read_next_event();
