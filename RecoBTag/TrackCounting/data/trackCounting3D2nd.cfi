@@ -3,7 +3,8 @@
      PSet JetTagComputerPSet = {
      int32 nthTrack = 2
      int32 impactParamterType = 0 
-       }
+     double deltaR = 10. # use default cut in ImpactParameterProducer 
+      }
     }
 
     
