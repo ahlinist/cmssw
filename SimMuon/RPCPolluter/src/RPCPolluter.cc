@@ -1,79 +1,104 @@
 
-#include "../interface/RPCPolluter.h"
+#include "SimMuon/RPCPolluter/interface/RPCPolluter.h"
+#include <time.h>
+#include <algorithm>
+#include <iterator>
+
+#include "CLHEP/Geometry/Point3D.h"
+
+#include "CLHEP/config/CLHEP.h"
+#include "CLHEP/Random/Random.h"
+#include "CLHEP/Random/RandFlat.h"
+#include "CLHEP/Random/RandPoisson.h"
+
+#include "Geometry/RPCGeometry/interface/RPCRoll.h"
+#include "Geometry/RPCGeometry/interface/RPCRollSpecs.h"
+#include "Geometry/RPCGeometry/interface/RPCGeometry.h"
+#include "Geometry/Records/interface/MuonGeometryRecord.h"
+#include <Geometry/RPCGeometry/interface/RPCGeometry.h>
+#include <Geometry/CommonTopologies/interface/RectangularStripTopology.h>
+#include <Geometry/CommonTopologies/interface/TrapezoidalStripTopology.h>
+
+#include <DataFormats/RPCDigi/interface/RPCDigiCollection.h>
+#include <FWCore/Framework/interface/ESHandle.h>
+#include <FWCore/Framework/interface/MakerMacros.h>
+
+
 
 
 // RPCPolluter
 
-
 // Constructor of RPCPolluter
 
-RPCPolluter::RPCPolluter(const RPCRoll* roll,double rate,int nbxing)
+RPCPolluter::RPCPolluter(const edm::ParameterSet& iConfig)
 {
 
-  int i;
+  produces<RPCDigiCollection>();
 
-  int strip;
+  rate=iConfig.getParameter<double>("Rate");
 
-  double time_hit;
+  nbxing=iConfig.getParameter<int>("Nbxing");
 
-  std::vector<int>::iterator pos_strip;
+  gate=iConfig.getParameter<double>("Gate");
 
-  std::vector<double>::iterator pos_time;
+}
 
 
-  strip_vector.reserve(100);
-  time_vector.reserve(100);
+void RPCPolluter::produce(edm::Event& e, const edm::EventSetup& es)
+{
 
-  double area = 0.0;
 
-  RPCDetId rpcId = roll->id();
+  edm::ESHandle<RPCGeometry> rpcGeo;
+  es.get<MuonGeometryRecord>().get(rpcGeo);
 
-  double gate = 25.0;
+  std::auto_ptr<RPCDigiCollection> pDigis(new RPCDigiCollection());
 
-  int nstrips = roll->nstrips();
 
- if ( rpcId.region() == 0 )
-    {
-      const RectangularStripTopology* top_ = dynamic_cast<const
-      RectangularStripTopology*>(&(roll->topology()));
-      float xmin = (top_->localPosition(0.)).x();
-      float xmax = (top_->localPosition((float)roll->nstrips())).x();
-      std::cout<<"Xmin="<<xmin<<"cm    Xmax="<<xmax<<"cm"<<std::endl;
-      float striplength = (top_->stripLength());
-      std::cout<<"Strip Length="<<striplength<<"cm"<<std::endl;
-      area = striplength*(xmax-xmin);
-      std::cout<<"Area del Roll= "<<area<<"cm2"<<std::endl;
-    }
+  for (TrackingGeometry::DetContainer::const_iterator it=rpcGeo->dets().begin();it<rpcGeo->dets().end();it++){
+    
+    RPCRoll* roll = dynamic_cast<RPCRoll*>(*it);
+    if (roll) {
+    RPCDetId rpcId = roll->id();
 
- else
-    {
-      const TrapezoidalStripTopology* top_=dynamic_cast<const TrapezoidalStripTopology*>(&(roll->topology()));
-       float xmin = (top_->localPosition(0.)).x();
-      float xmax = (top_->localPosition((float)roll->nstrips())).x();
-      std::cout<<"Xmin="<<xmin<<"cm    Xmax="<<xmax<<"cm"<<std::endl;
-      float striplength = (top_->stripLength());
-      std::cout<<"Strip Length="<<striplength<<"cm"<<std::endl;
-      area = striplength*(xmax-xmin);
-      std::cout<<"Area del Roll= "<<area<<"cm2"<<std::endl;
-    }
+    int nstrips = roll->nstrips();
 
-  double ave = rate*nbxing*gate*area*1.0e-9;
+    double area = 0.0;
 
-  N_hits = RandPoisson::shoot(ave);
+    if ( rpcId.region() == 0 )
+      {
+	const RectangularStripTopology* top_ = dynamic_cast<const
+	  RectangularStripTopology*>(&(roll->topology()));
+	float xmin = (top_->localPosition(0.)).x();
+	float xmax = (top_->localPosition((float)roll->nstrips())).x();
+	float striplength = (top_->stripLength());
+	area = striplength*(xmax-xmin);
+      }
 
-  pos_strip = strip_vector.begin();
-  pos_time = time_vector.begin();
+    else
+      {
+	const TrapezoidalStripTopology* top_=dynamic_cast<const TrapezoidalStripTopology*>(&(roll->topology()));
+	float xmin = (top_->localPosition(0.)).x();
+	float xmax = (top_->localPosition((float)roll->nstrips())).x();
+	float striplength = (top_->stripLength());
+	area = striplength*(xmax-xmin);
+      }
 
-  for ( i = 0; i < N_hits; i++ )
-    {
-      strip = RandFlat::shootInt(nstrips);
-      strip_vector.insert(pos_strip,strip);
-      ++pos_strip;
-      time_hit = RandFlat::shoot((nbxing*gate));
-      time_vector.insert(pos_time,time_hit);
-      ++pos_time;
-    }
+    double ave = rate*nbxing*gate*area*1.0e-9;
 
+    N_hits = RandPoisson::shoot(ave);
+    std::cout <<" Number of hits "<<N_hits<<std::endl;
+    for (int i = 0; i < N_hits; i++ )
+      {
+	int strip = RandFlat::shootInt(nstrips);
+	int time_hit = static_cast<int>(RandFlat::shoot((nbxing*gate))/gate);
+	RPCDigi rpcDigi(strip,time_hit);
+	pDigis->insertDigi(rpcId,rpcDigi);
+      }
+    }    
+  }
+  std::cout <<"Storing the data on the event "<<std::endl;
+  e.put(pDigis);
+  std::cout <<"Done !! "<<std::endl;
 
 }  // End Constructor of RPCPolluter
 
@@ -89,3 +114,5 @@ RPCPolluter::~RPCPolluter()
 
 }  // End Destructor of RPCPolluter
 
+#include <FWCore/Framework/interface/MakerMacros.h>
+DEFINE_FWK_MODULE(RPCPolluter);

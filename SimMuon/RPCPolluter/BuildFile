@@ -1,0 +1,22 @@
+
+<use name=FWCore/Framework>
+<use name=Foundation/PluginManager>
+<use name=FWCore/ParameterSet>
+<use name=Geometry/RPCGeometry>
+<use name=Geometry/Records>
+<use name=DataFormats/RPCDigi>
+<use name=DataFormats/MuonDetId>
+<use name=boost>
+<flags SEAL_PLUGIN_NAME="SimMuonRPCPolluter">
+<export>
+  <lib name=SimMuonRPCPolluterer>
+<use name=FWCore/Framework>
+<use name=Foundation/PluginManager>
+<use name=FWCore/ParameterSet>
+<use name=Geometry/RPCGeometry>
+<use name=Geometry/Records>
+<use name=DataFormats/RPCDigi>
+<use name=DataFormats/MuonDetId>
+<use name=boost>
+</export>
+
