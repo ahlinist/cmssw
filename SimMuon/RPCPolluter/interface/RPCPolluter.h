@@ -1,35 +1,14 @@
 #ifndef SimMuon_RPCPolluter_h
 #define SimMuon_RPCPolluter_h
 
+#include "FWCore/Framework/interface/Frameworkfwd.h"
+#include "FWCore/Framework/interface/EDProducer.h"
 
-#include <time.h>
-#include <vector>
-#include <algorithm>
-#include <iterator>
+#include "FWCore/Framework/interface/Event.h"
+#include "FWCore/Framework/interface/MakerMacros.h"
 
-#include "CLHEP/Geometry/Point3D.h"
+#include "FWCore/ParameterSet/interface/ParameterSet.h"
 
-#include "CLHEP/config/CLHEP.h"
-#include "CLHEP/Random/Random.h"
-#include "CLHEP/Random/RandFlat.h"
-#include "CLHEP/Random/RandPoisson.h"
-
-#include "Geometry/RPCGeometry/interface/RPCRoll.h"
-#include "Geometry/RPCGeometry/interface/RPCRollSpecs.h"
-#include "Geometry/RPCGeometry/interface/RPCGeometry.h"
-#include "Geometry/Records/interface/MuonGeometryRecord.h"
-#include <Geometry/RPCGeometry/interface/RPCGeometry.h>
-#include <Geometry/CommonTopologies/interface/RectangularStripTopology.h>
-#include <Geometry/CommonTopologies/interface/TrapezoidalStripTopology.h>
-/*
-#include <DataFormats/RPCDigi/interface/RPCDigiCollection.h>
-#include "DataFormats/Common/interface/Handle.h"
-#include <FWCore/Framework/interface/Event.h>
-#include <FWCore/Framework/interface/ESHandle.h>
-#include <FWCore/Framework/interface/EventSetup.h>
-#include <FWCore/Framework/interface/MakerMacros.h>
-#include <FWCore/Framework/interface/EDProducer.h>
-*/
 
 /*  class RPCPolluter
  *
@@ -41,21 +20,27 @@
  */
 
 
-class RPCPolluter
+class RPCPolluter : public edm::EDProducer
 {
 
  public :
 
-  int N_hits;
-
-  std::vector<int> strip_vector;
-
-  std::vector<double> time_vector;
-
-
-  RPCPolluter(const RPCRoll*,double rate,int nbxing);
+  explicit RPCPolluter(const edm::ParameterSet& iConfig);
 
   ~RPCPolluter();
+
+ private:
+
+  int N_hits;
+
+  int nbxing;
+
+  double rate;
+
+  double gate;
+
+  virtual void produce(edm::Event&, const edm::EventSetup&);
+
 
 };
 
