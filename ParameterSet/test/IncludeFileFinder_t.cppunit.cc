@@ -81,11 +81,11 @@ void IncludeFileFinderTest::ultimateTest()
 {
   string moduleClass = "CSCDigiProducer";
   IncludeFileFinder finder;
-  string library = finder.libraryOf(moduleClass);
+//  string library = finder.libraryOf(moduleClass);
 //  CPPUNIT_ASSERT (library == "libSimMuonCSCDigitizer.so");
 
   string moduleLabel = "muoncscdigi";
-  edm::FileInPath file = finder.find(moduleClass, moduleLabel);
+//  edm::FileInPath file = finder.find(moduleClass, moduleLabel);
   // will throw if can't find
 }
 
