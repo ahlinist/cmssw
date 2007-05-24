@@ -3,7 +3,8 @@
      PSet JetTagComputerPSet = {
      int32 nthTrack = 3
      int32 impactParamterType = 0 
-       }
+     double deltaR = 10. #use default 0.5 from JTA  
+     }
     }
 
     

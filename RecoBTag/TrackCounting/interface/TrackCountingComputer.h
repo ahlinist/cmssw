@@ -1,6 +1,7 @@
 #include "RecoBTau/JetTagComputer/interface/JetTagComputer.h"
 #include "DataFormats/BTauReco/interface/TrackCountingTagInfo.h"
 #include "DataFormats/BTauReco/interface/TrackIPTagInfo.h"
+#include "Math/GenVector/VectorUtil.h"
 
 class TrackCountingComputer : public JetTagComputer
 {
@@ -9,6 +10,7 @@ class TrackCountingComputer : public JetTagComputer
   {
      m_nthTrack         = parameters.getParameter<int>("nthTrack");
      m_ipType           = parameters.getParameter<int>("impactParamterType");
+     m_deltaR          = parameters.getParameter<double>("deltaR");
   }
  
   float discriminator(const reco::BaseTagInfo & ti) const 
@@ -21,11 +23,16 @@ class TrackCountingComputer : public JetTagComputer
         const reco::TrackIPTagInfo * tkip = dynamic_cast<const reco::TrackIPTagInfo *>(&ti);
       if(tkip!=0)  {
           const std::vector<Measurement1D> & impactParameters((tkip->impactParameters(m_ipType))); 
+          const edm::RefVector<reco::TrackCollection> & tracks(tkip->selectedTracks());          
           std::multiset<float> significances;
-          for(std::vector<Measurement1D>::const_iterator it = impactParameters.begin(); it!=impactParameters.end(); ++it)
+          int i=0;
+          for(std::vector<Measurement1D>::const_iterator it = impactParameters.begin(); it!=impactParameters.end(); ++it, i++)
            {
              //FIXME:add extra cuts here
-             significances.insert(it->significance());
+          //   if(tracks[i])
+                double delta  = ROOT::Math::VectorUtil::DeltaR((*tkip->jet()).p4().Vect(), (*tracks[i]).momentum());
+                if(delta < m_deltaR)
+                significances.insert(it->significance());
            }
           std::multiset<float>::reverse_iterator nth=significances.rbegin();
           for(int i=0;i<m_nthTrack-1 && nth!=significances.rend();i++) nth++;  
@@ -41,5 +48,5 @@ class TrackCountingComputer : public JetTagComputer
  private:
    int m_nthTrack;
    int m_ipType;
-
+   double m_deltaR;
 };
