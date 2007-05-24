@@ -1,0 +1,8 @@
+module tagEmObjects = EmObjectProducer {
+   string AlgorithmName = "TagEmObjectAlgo"
+
+   PSet AlgoParams = {
+      string InputProducer = "pixelMatchGsfElectrons"
+   }
+}
+

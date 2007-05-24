@@ -1,0 +1,8 @@
+<lcgdict>
+   <class name="EgEff::EmObject"/>
+   <class name="std::vector<EgEff::EmObject>"/>
+   <class name="edm::Wrapper<std::vector<EgEff::EmObject> >"/>
+   <class name="edm::Ref<std::vector<EgEff::EmObject>, EgEff::EmObject, edm::refhelper::FindUsingAdvance<std::vector<EgEff::EmObject>, EgEff::EmObject> >" />
+   <class name="edm::RefProd<std::vector<EgEff::EmObject> >" />
+   <class name="edm::RefVector<std::vector<EgEff::EmObject>, EgEff::EmObject, edm::refhelper::FindUsingAdvance<std::vector<EgEff::EmObject>, EgEff::EmObject> >"/>
+</lcgdict>
