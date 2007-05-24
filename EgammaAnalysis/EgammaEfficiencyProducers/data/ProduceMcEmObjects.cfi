@@ -1,0 +1,10 @@
+module mcEmObjects = EmObjectProducer {
+   string AlgorithmName = "McEmObjectAlgo"
+
+   PSet AlgoParams = {
+      string InputProducer = "VtxSmeared"
+      bool FromMother = true
+      int32 MotherPdgId = 23
+   }
+}
+
