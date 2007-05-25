@@ -1,0 +1,12 @@
+<use name=FWCore/Framework>
+<use name=Foundation/PluginManager>
+<use name=FWCore/ParameterSet>
+<use name=EgammaAnalysis/EgammaEfficiencyAlgos>
+<flags SEAL_PLUGIN_NAME="EgammaAnalysisEgammaEfficiencyProducers">
+<export>
+   <lib name=EgammaAnalysisEgammaEfficiencyProducers>
+   <use name=FWCore/Framework>
+   <use name=Foundation/PluginManager>
+   <use name=FWCore/ParameterSet>
+   <use name=EgammaAnalysis/EgammaEfficiencyAlgos>
+</export>
