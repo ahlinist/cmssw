@@ -29,19 +29,28 @@
   in.close();
 
   // fill some histograms
+  int nbins=50; float lox = log10(2.); float hix = log10(600.);
   std::cout<<"Filling some histograms"<<std::endl;
-  TH1F *hq2_all = new TH1F("hq2_all","1->2 jet rate sum",100,-1.,400.);
-  TH1F *hq2_0   = new TH1F("hq2_0",  "1->2 jet rate 0",100,-1.,400.);
-  TH1F *hq2_1   = new TH1F("hq2_1",  "1->2 jet rate 1",100,-1.,400.);
-  TH1F *hq2_2   = new TH1F("hq2_2",  "1->2 jet rate 2",100,-1.,400.);
-  TH1F *hq2_3   = new TH1F("hq2_3",  "1->2 jet rate 3",100,-1.,400.);
-  TH1F *hq2_4   = new TH1F("hq2_4",  "1->2 jet rate 4",100,-1.,400.);
-  eventtree->Draw("Qpar2>>hq2_all","","goff");          // goff = no graphics is generated
-  eventtree->Draw("Qpar2>>hq2_0","Npart==0","goff");
-  eventtree->Draw("Qpar2>>hq2_1","Npart==1","goff");
-  eventtree->Draw("Qpar2>>hq2_2","Npart==2","goff");
-  eventtree->Draw("Qpar2>>hq2_3","Npart==3","goff");
-  eventtree->Draw("Qpar2>>hq2_4","Npart==4","goff");
+  TH1F *hq2_all = new TH1F("hq2_all","1->2 jet rate sum",nbins,lox,hix);
+  TH1F *hq2_0   = new TH1F("hq2_0",  "1->2 jet rate 0",  nbins,lox,hix);
+  TH1F *hq2_1   = new TH1F("hq2_1",  "1->2 jet rate 1",  nbins,lox,hix);
+  TH1F *hq2_2   = new TH1F("hq2_2",  "1->2 jet rate 2",  nbins,lox,hix);
+  TH1F *hq2_3   = new TH1F("hq2_3",  "1->2 jet rate 3",  nbins,lox,hix);
+  TH1F *hq1_all = new TH1F("hq1_all","0->1 jet rate sum",nbins,lox,hix);
+  TH1F *hq1_0   = new TH1F("hq1_0",  "0->1 jet rate 0",  nbins,lox,hix);
+  TH1F *hq1_1   = new TH1F("hq1_1",  "0->1 jet rate 1",  nbins,lox,hix);
+  TH1F *hq1_2   = new TH1F("hq1_2",  "0->1 jet rate 2",  nbins,lox,hix);
+  TH1F *hq1_3   = new TH1F("hq1_3",  "0->1 jet rate 3",  nbins,lox,hix);
+  eventtree->Draw("log10(Qpar1)>>hq1_all","","goff");          // goff = no graphics is generated
+  eventtree->Draw("log10(Qpar1)>>hq1_0","Npart==0","goff");
+  eventtree->Draw("log10(Qpar1)>>hq1_1","Npart==1","goff");
+  eventtree->Draw("log10(Qpar1)>>hq1_2","Npart==2","goff");
+  eventtree->Draw("log10(Qpar1)>>hq1_3","Npart==3","goff");
+  eventtree->Draw("log10(Qpar2)>>hq2_all","","goff");          // goff = no graphics is generated
+  eventtree->Draw("log10(Qpar2)>>hq2_0","Npart==0","goff");
+  eventtree->Draw("log10(Qpar2)>>hq2_1","Npart==1","goff");
+  eventtree->Draw("log10(Qpar2)>>hq2_2","Npart==2","goff");
+  eventtree->Draw("log10(Qpar2)>>hq2_3","Npart==3","goff");
 
   // write ntuple and histos to root file
   f->Write();
