@@ -21,6 +21,6 @@
   hq2_0->SetLineColor(2);   hq2_0->SetLineWidth(2);   hq2_0->SetLineStyle(2);   legend2->AddEntry(hq2_0,process+" + 0 jets","l");
   hq2_1->SetLineColor(3);   hq2_1->SetLineWidth(2);   hq2_1->SetLineStyle(3);   legend2->AddEntry(hq2_1,process+" + 1 jets","l");
   hq2_2->SetLineColor(1);   hq2_2->SetLineWidth(2);   hq2_2->SetLineStyle(4);   legend2->AddEntry(hq2_2,process+" + 2 jets","l");
-  hq2_3->SetLineColor(1);   hq2_2->SetLineWidth(2);   hq2_2->SetLineStyle(5);   legend2->AddEntry(hq2_3,process+" + 3 jets","l");
+  hq2_3->SetLineColor(1);   hq2_3->SetLineWidth(1);   hq2_3->SetLineStyle(1);   legend2->AddEntry(hq2_3,process+" + 3 jets","l");
   hq2_all->Draw(""); hq2_0->Draw("same"); hq2_1->Draw("same"); hq2_2->Draw("same"); hq2_3->Draw("same"); legend2->Draw(); zc->Draw(); zc->Print(process+"jetrate12.gif");
 }
