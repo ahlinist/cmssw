@@ -616,6 +616,7 @@ c        CALL PYLIST(1)
       do ihep=3,nup
         if(ISTUP(ihep).ne.1.or.
      $     (iabs(IDUP(ihep)).ge.6.and.IDUP(ihep).ne.21)) cycle
+        if(MOTHUP(1,ihep).gt.2) cycle
         i=i+1
         do j=1,4
           p(j,i)=pup(j,ihep)
@@ -933,7 +934,9 @@ C...Cluster particles with |eta| < etamax for histograms
             PTJET=sqrt(PHEP(1,IHEP)**2+PHEP(2,IHEP)**2)
             ETAJET=ABS(LOG(MIN((SQRT(PTJET**2+PHEP(3,IHEP)**2)+
      $           ABS(PHEP(3,IHEP)))/PTJET,1d5)))
-            IF(ETAJET.GT.ETAMAX) cycle
+c            IF(ETAJET.GT.ETAMAX) cycle
+cDKC - recommended from Johan for doing check plots for the matching
+            IF(ETAJET.GT.etaclmax) cycle
             NN=NN+1
             IF (NN.GT.NMAX) then
                CALL PYLIST(2)
