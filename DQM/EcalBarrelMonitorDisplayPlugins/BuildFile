@@ -2,6 +2,7 @@
 <use name=DQMServices/UI>
 <use name=VisMonitoring/VisDQMBase>
 <use name=Iguana/Framework>
+<use name=DQM/EcalCommon>
 <use name=rootcore>
 <export>
   <use name=VisMonitoring/VisDQMBase>
