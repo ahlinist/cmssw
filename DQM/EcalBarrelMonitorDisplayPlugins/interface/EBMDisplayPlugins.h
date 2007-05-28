@@ -1,4 +1,4 @@
-// $Id: EBMDisplayPlugins.h,v 1.3 2007/01/10 06:55:54 dellaric Exp $
+// $Id: EBMDisplayPlugins.h,v 1.4 2007/01/22 07:20:09 dellaric Exp $
 
 #ifndef  EBMDisplayPlugins_H
 # define EBMDisplayPlugins_H
@@ -7,8 +7,8 @@
   \file EBMDisplayPlugins
   \brief Display Plugin for Quality Histograms (2D)
   \author B. Gobbo 
-  \version $Revision: 1.3 $
-  \date $Date: 2007/01/10 06:55:54 $
+  \version $Revision: 1.4 $
+  \date $Date: 2007/01/22 07:20:09 $
 */
 
 # include "VisMonitoring/VisDQMBase/interface/VisDQMDisplayPlugin.h"
@@ -51,6 +51,7 @@ class EBMDisplayPlugins : public VisDQMDisplayPlugin {
   TH2C* text3;
   TH2C* text4;
   TH2C* text5;
+  TH2C* text6;
 
   int pCol3[6]; 
   int pCol4[10];
