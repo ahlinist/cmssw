@@ -50,6 +50,8 @@ myConfig(theConfig), EventData(0)
    hJetGoodEt = new TH1D( "JetGoodEt", "Et spectrum of Jets correctly ID'ed", 80, 0.0, 800.0);
    hJetWrongEt = new TH1D( "JetWrongEt", "Et spectrum of Jets wrongly ID'ed", 80, 0.0, 800.0);
    
+  // Initialize user counters
+  nTotEvtSelUser = 0;
 
 
 
@@ -61,6 +63,11 @@ myConfig(theConfig), EventData(0)
 void UserAnalysis::endAnalysis() {
 
 // Print the user statistics here
+ 
+ cout << endl;
+ cout << "User statistics:" << endl;
+ 
+ cout << " number of User selected events = " << nTotEvtSelUser << endl;
 
  return;
  
@@ -70,6 +77,66 @@ void UserAnalysis::endAnalysis() {
 
 //------------------------------------------------------------------------------
 // Methods:
+
+//------------------------------------------------------------------------------
+// this method checks whether the L1 trigger is accepted
+bool UserAnalysis::L1Driver(MrEvent* EventData)
+{ 
+  
+  // this module is dummy and accepts the OR of all L1 trigger bits
+  // note that, if the L1 trigger bit vector does not exist, the event is accepted
+  // (behaviour can be changed below)
+  
+  unsigned int fired(0);
+  bool acceptedL1 = false;
+  
+  std::vector<int> bits = EventData->l1Bits();
+  //  cout << "TriggerProcessor: bits = ";
+  if (bits.size() > 0){
+    for(unsigned int i=0; i<bits.size(); i++) {
+      //    cout << bits[i];
+      if(bits[i]) fired++;
+    }
+  }
+  //  cout << endl;
+  
+  if(fired > 0) acceptedL1 = true;
+  //cout << "TriggerProcessor: acceptedL1 = " << (int) acceptedL1 << endl;
+  EventData->setTriggeredL1(acceptedL1);
+  
+  return acceptedL1;
+
+}
+
+//------------------------------------------------------------------------------
+// this method checks whether the HLT is accepted
+bool UserAnalysis::HLTDriver(MrEvent* EventData)
+{ 
+   
+  // this module is dummy and accepts the OR of all HLT trigger bits
+  // note that, if the HLT trigger bit vector does not exist, the event is accepted
+  // (behaviour can be changed below)
+
+
+  unsigned int fired(0);
+  bool acceptedHLT = false;
+  
+  std::vector<int> bits = EventData->hltBits();
+  //  cout << "TriggerProcessor: bits = ";
+  if (bits.size() > 0){
+    for(unsigned int i=0; i<bits.size(); i++) {
+      //    cout << bits[i];
+      if(bits[i]) fired++;
+    }
+  }
+  //  cout << endl;
+  
+  if(fired > 0) acceptedHLT = true;
+  //cout << "TriggerProcessor: acceptedHLT = " << (int) acceptedHLT << endl;
+  EventData->setTriggeredHLT(acceptedHLT);
+  return acceptedHLT;
+
+}
 
 //------------------------------------------------------------------------------
 // this method is called for every event
@@ -83,9 +150,13 @@ void UserAnalysis::doAnalysis(MrEvent* theEventData)
   
     // This produces some simple plots as examples
   
+  // Put your event selection here *****************
     // Overall condition on MET (to illustrate usage of parameters)
     float metchk = EventData->metRecoilMod();
     if (metchk < user_metMin){return;}
+    
+    // count number of selected events for final statistics
+    nTotEvtSelUser++;
 
 
     // make multiplicity plots
