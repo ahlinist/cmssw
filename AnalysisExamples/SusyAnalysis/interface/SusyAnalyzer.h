@@ -15,6 +15,10 @@
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
+#include "DataFormats/HLTReco/interface/HLTFilterObject.h"
+#include "DataFormats/Common/interface/TriggerResults.h"
+#include "DataFormats/L1Trigger/interface/L1ParticleMap.h"
+
 #include "DataFormats/Common/interface/Ref.h"
 #include "DataFormats/EgammaCandidates/interface/PixelMatchGsfElectron.h"
 #include "DataFormats/EgammaCandidates/interface/Photon.h"
@@ -69,6 +73,7 @@ class SusyAnalyzer : public edm::EDAnalyzer {
      string m_photonSrc;
      string m_calometSrc;
      string m_jettag;  // for b-tagging
+     edm::InputTag m_hlTriggerResults;
 
   // names of histogram output file
      TFile*      hOutputFile ;
@@ -85,6 +90,7 @@ class SusyAnalyzer : public edm::EDAnalyzer {
   
   // names of parameter sets  
       
+     edm::ParameterSet rejectEvent_params;
      edm::ParameterSet acceptance_cuts;
      edm::ParameterSet cleaner_params;
      edm::ParameterSet isolator_params;
@@ -105,27 +111,19 @@ class SusyAnalyzer : public edm::EDAnalyzer {
      UserAnalysis * myUserAnalysis;
   
   int DEBUGLVL;
-
-
-  // Define the acceptance cuts
-  float ana_elecEtaMax;
-  float ana_elecPtMin1;
-  float ana_muonEtaMax;
-  float ana_muonPtMin1;
-  float ana_tauEtaMax;
-  float ana_tauPtMin1;
-  float ana_photonEtaMax;
-  float ana_photonPtMin1;
-  float ana_jetEtaMax;
-  float ana_jetPtMin1;
-  float ana_elecPtMin2;
-  float ana_muonPtMin2;
-  float ana_tauPtMin2;
-  float ana_photonPtMin2;
-  float ana_jetPtMin2;
-  double ana_minBtagDiscriminator; 
+  
+  // Define the event rejection parameters
+  bool rej_NoTriggerData;
+  bool rej_NoL1fired;
+  bool rej_NoHLTfired;
+  bool rej_BadHemis;
 
     // global counters
+
+  //counters for L1
+  std::vector<int> numTotL1BitsBeforeCuts;
+  //counters for HLT
+  std::vector<int> numTotHltBitsBeforeCuts;
     
   int numTotEvt;
   int numTotEvtExceptCaught;
@@ -187,12 +185,21 @@ class SusyAnalyzer : public edm::EDAnalyzer {
   int numTotJetsfinal;  
   int numTotBJetsfinal;  
   int numTotJetsMatched;
+  
+  int numTotEventsAfterCuts;
 
   int firstsusymother[2];
     
 
   // private methods
-  virtual void PrintCuts(void);
+  virtual void PrintTitle(void);
+  virtual void PrintEvtRej(void);
+  virtual void PrintAccCuts(void);
+  virtual void PrintExtrapCuts(void);
+  virtual void PrintMCCuts(void);
+  virtual void PrintCleanerCuts(void);
+  virtual void PrintIsolatorCuts(void);
+  virtual void PrintObjectMatchingCuts(void);
   virtual bool AcceptTrigger();  // could become a class once implemented
   virtual void PrintStatistics(void);
   virtual void CleanMemory();

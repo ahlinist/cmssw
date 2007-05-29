@@ -24,6 +24,8 @@
 #include "DataFormats/CaloTowers/interface/CaloTowerCollection.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/TrackReco/interface/Track.h"
+#include "DataFormats/Common/interface/TriggerResults.h"
+#include "DataFormats/L1Trigger/interface/L1ParticleMap.h"
 
 #include "AnalysisExamples/SusyAnalysis/interface/MrParticle.h" 
 
@@ -37,10 +39,23 @@ public:
 // constructor
 MrEvent() : pMcData(0), pRecoData(0), TrackData(0), VertexData(0), CaloTowerData(0), jetsprocessed(false)
 {
+  RunNumber = 0;
+  EventNumber = 0;
   TrigL1 = 0;
   TrigHLT = 0;
   EventQuality = 0;
+  Chi2  = -1.;
+  Ndof  = -1.;
+  NormalizedChi2  = -1.;
+  PVx  = 0.;
+  PVy  = 0.;
+  PVz  = 0.;
+  PVdx = 0.;
+  PVdy = 0.;
+  PVdz = 0.;
+  PvPtsum = 0.;
   IndexPVx = -1;
+  PvnTracks = 0;
   MetMC.SetXYZ(0.,0.,0.);
   MetCalo.SetXYZ(0.,0.,0.);
   MetRecoil.SetXYZ(0.,0.,0.);
@@ -50,6 +65,11 @@ MrEvent() : pMcData(0), pRecoData(0), TrackData(0), VertexData(0), CaloTowerData
   }
   IndexMatchedSusyMother1 = -1;
   IndexMatchedSusyMother2 = -1;
+  for (int i=0; i<Njetsmax; i++){
+    LeadJets[i] = -1;
+  }
+  NumJets = 0;
+  PtSumLeadJets = 0.;
 };
 
 // destructor
@@ -69,8 +89,28 @@ int event() {return EventNumber;}
 // Triggering status
 int triggeredL1(){return TrigL1;}
 int triggeredHLT(){return TrigHLT;}
-// quality index (0 if good event; 1 or higher for pathologies)
-int quality() {return EventQuality;}
+//Trigger Vectors
+std::vector<int> l1Bits() {return L1Bits;} 
+std::vector<int> hltBits() {return HltBits;} 
+// quality index (=0 if good event) is a long integer
+long quality() {return EventQuality;} // but individual settings are preferred
+bool qualNoTriggerfired(){return IsSomeBitSet (7);} // globally for L1 and HLT
+bool qualNoData(){return IsSomeBitSet (56);} // globally for all input data
+bool qualBadEvent(){return IsSomeBitSet (16320);} // globally for all cleaning/isolation
+bool qualNoTriggerData(){return IsBitSet (1);}
+bool qualNoL1fired(){return IsBitSet (2);}
+bool qualNoHLTfired(){return IsBitSet (4);}
+bool qualMissingRecoData(){return IsBitSet (8);}
+bool qualMissingTrackData(){return IsBitSet (16);}
+bool qualMissingCaloTowers(){return IsBitSet (32);}
+bool qualEmpty(){return IsBitSet (64);}
+bool qualNoPrimary(){return IsBitSet (128);}
+bool qualBadHardJet(){return IsBitSet (256);}
+bool qualCleanEmpty(){return IsBitSet (512);}
+bool qualFinalEmpty(){return IsBitSet (1024);}
+bool qualBadNoisy(){return IsBitSet (2048);}
+bool qualBadMET(){return IsBitSet (4096);}
+bool qualBadHemis(){return IsBitSet (8192);}
 // Primary vertex chisquared, ndof and normalized chisquared (chisq = -1. if no primary vertex)
 int indexPrimaryVx() {return IndexPVx;}
 float chi2(){return Chi2;}
@@ -142,7 +182,23 @@ void setRun(int run) {RunNumber = run;}
 void setEvent(int ev) {EventNumber = ev;}
 void setTriggeredL1(int trig){TrigL1 = trig;}
 void setTriggeredHLT(int trig){TrigHLT = trig;}
-void setQuality(int qual) {EventQuality = qual;}
+void setL1Bits(std::vector<int> l1bits) {L1Bits = l1bits;}
+void setHltBits(std::vector<int> hltbits) {HltBits = hltbits;}
+void setQuality(int qual) {EventQuality |= qual;} // but individual settings are preferred
+void setNoTriggerData(){EventQuality |= 1;}
+void setNoL1fired(){EventQuality |= 2;}
+void setNoHLTfired(){EventQuality |= 4;}
+void setMissingRecoData(){EventQuality |= 8;}
+void setMissingTrackData(){EventQuality |= 16;}
+void setMissingCaloTowers(){EventQuality |= 32;}
+void setEmpty(){EventQuality |= 64;}
+void setNoPrimary(){EventQuality |= 128;}
+void setBadHardJet(){EventQuality |= 256;}
+void setCleanEmpty(){EventQuality |= 512;}
+void setFinalEmpty(){EventQuality |= 1024;}
+void setBadNoisy(){EventQuality |= 2048;}
+void setBadMET(){EventQuality |= 4096;}
+void setBadHemis(){EventQuality |= 8192;}
 void setIndexPrimaryVx(int index) {IndexPVx = index;}
 void setChi2(float chi){Chi2 = chi;}
 void setNdof(float nd){Ndof = nd;}
@@ -175,9 +231,11 @@ const CaloTowerCollection * CaloTowerData;
 
 int RunNumber, EventNumber;
 int TrigL1, TrigHLT;
+std::vector<int> L1Bits;
+std::vector<int> HltBits;
 int EventQuality;
 float Chi2, Ndof, NormalizedChi2, PVx, PVy, PVz, PVdx, PVdy, PVdz, PvPtsum;
-int IndexPVx, PvnTracks;
+long IndexPVx, PvnTracks;
 math::XYZVector MetMC, MetCalo, MetRecoil;
 std::vector<float> HemiAxis1, HemiAxis2;
 int IndexMatchedSusyMother1, IndexMatchedSusyMother2;
@@ -189,6 +247,16 @@ bool jetsprocessed;
 
 
 // methods
+bool IsBitSet (int value){
+  if ( (EventQuality & value) == value){return true;}
+  else {return false;}
+}
+
+bool IsSomeBitSet (int value){
+  if ( (EventQuality & value) != 0){return true;}
+  else {return false;}
+}
+
 void GetLeadingJets(){
 // saves the indices of the 15 leading jets
 // and computes the scalar PtSum of the leading jets

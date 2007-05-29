@@ -34,9 +34,16 @@ SusyAnalyzer::SusyAnalyzer(const edm::ParameterSet& iConfig)
   m_photonSrc  = iConfig.getParameter<string>("photons");
   m_calometSrc = iConfig.getParameter<string>("calomet");
   m_jettag = iConfig.getParameter<string>("jettag");
+  m_hlTriggerResults = iConfig.getParameter<edm::InputTag>("HLTriggerResults");
  
+  // get parameters, save them in a structure Config
+  
+  // get event rejection decisions
+  rejectEvent_params =
+    iConfig.getParameter<ParameterSet>("RejectEventParams");
+  myConfig.rejectEvent_params = rejectEvent_params;
+  
   // get acceptance cuts
-  // save them in a structure Config
   acceptance_cuts =
     iConfig.getParameter<ParameterSet>("AcceptanceCuts");
   myConfig.acceptance_cuts = acceptance_cuts;
@@ -64,32 +71,26 @@ SusyAnalyzer::SusyAnalyzer(const edm::ParameterSet& iConfig)
   
   // get debug level
   DEBUGLVL = iConfig.getUntrackedParameter<int>("debuglvl", 0);  
-
+  
+  rej_NoTriggerData = rejectEvent_params.getParameter<bool>("rej_NoTriggerData") ;
+  rej_NoL1fired = rejectEvent_params.getParameter<bool>("rej_NoL1fired") ;
+  rej_NoHLTfired = rejectEvent_params.getParameter<bool>("rej_NoHLTfired") ;
+  rej_NoHLTfired = rejectEvent_params.getParameter<bool>("rej_NoHLTfired") ;
+  rej_BadHemis = rejectEvent_params.getParameter<bool>("rej_BadHemis") ;
 
 }
 
 void SusyAnalyzer::beginJob( const edm::EventSetup& )
 {
- 
-  // load acceptance cuts
-  ana_elecEtaMax = acceptance_cuts.getParameter<double>("ana_elecEtaMax") ;
-  ana_elecPtMin1 = acceptance_cuts.getParameter<double>("ana_elecPtMin1") ;
-  ana_muonEtaMax = acceptance_cuts.getParameter<double>("ana_muonEtaMax") ;
-  ana_muonPtMin1 = acceptance_cuts.getParameter<double>("ana_muonPtMin1") ;
-  ana_tauEtaMax = acceptance_cuts.getParameter<double>("ana_tauEtaMax") ;
-  ana_tauPtMin1 = acceptance_cuts.getParameter<double>("ana_tauPtMin1") ;
-  ana_photonEtaMax = acceptance_cuts.getParameter<double>("ana_photonEtaMax") ;
-  ana_photonPtMin1 = acceptance_cuts.getParameter<double>("ana_photonPtMin1") ;
-  ana_jetEtaMax = acceptance_cuts.getParameter<double>("ana_jetEtaMax") ;
-  ana_jetPtMin1 = acceptance_cuts.getParameter<double>("ana_jetPtMin1") ;
-  ana_elecPtMin2 = acceptance_cuts.getParameter<double>("ana_elecPtMin2") ;
-  ana_muonPtMin2 = acceptance_cuts.getParameter<double>("ana_muonPtMin2") ;
-  ana_tauPtMin2 = acceptance_cuts.getParameter<double>("ana_tauPtMin2") ;
-  ana_photonPtMin2 = acceptance_cuts.getParameter<double>("ana_photonPtMin2") ;
-  ana_jetPtMin2 = acceptance_cuts.getParameter<double>("ana_jetPtMin2") ;
-  ana_minBtagDiscriminator = acceptance_cuts.getParameter<double>("ana_minBtagDiscriminator");
-
-  PrintCuts();
+  
+  PrintTitle();
+  PrintEvtRej();
+  PrintAccCuts();
+  PrintExtrapCuts();
+  PrintMCCuts();
+  PrintCleanerCuts();
+  PrintIsolatorCuts();
+  PrintObjectMatchingCuts();
 
   cout << endl;
   cout << "Debug Level = " << DEBUGLVL << endl;
@@ -102,6 +103,17 @@ void SusyAnalyzer::beginJob( const edm::EventSetup& )
 
 
    // initialize global counters 
+   numTotL1BitsBeforeCuts.clear();
+   for(int i=0; i<28; i++) {
+     numTotL1BitsBeforeCuts.push_back(0);
+   }
+
+   numTotHltBitsBeforeCuts.clear();
+   for(int i=0; i<47; i++) {
+     numTotHltBitsBeforeCuts.push_back(0);
+   }
+   numTotEventsAfterCuts = 0;
+   
    numTotEvt = 0;
    numTotEvtExceptCaught = 0;
    numTotEvtNoTrigger = 0;
@@ -162,6 +174,8 @@ void SusyAnalyzer::beginJob( const edm::EventSetup& )
    numTotJetsfinal = 0;  
    numTotBJetsfinal = 0;  
    numTotJetsMatched = 0;
+   
+   numTotEventsAfterCuts = 0;
 
    return ;
 }
@@ -303,23 +317,89 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   delete myMCProcessor;
      
   // ******************************************************** 
-  // Input the Reconstructed data and store them as MrParticle objects
+  // Input the Trigger data and check whether the event is accepted
   // ******************************************************** 
   
-  // Check whether event is accepted by trigger
+  bool triggerExists = true;
+  // Get the L1 Info
+  Handle<l1extra::L1ParticleMapCollection> L1PMC;
+  try {iEvent.getByType(L1PMC);} catch (...) {;}
+  std::vector<int> l1bits;
+  if (!L1PMC.isValid()) {
+    triggerExists = false;
+    EventData->setNoTriggerData();
+    if (DEBUGLVL >= 1){
+      cout << "L1ParticleMapCollection Not Valid!" << endl;
+    }
+  }
+  else {  
+   int nL1size = L1PMC->size();
+   for (int i=0; i<nL1size; ++i) {
+     l1bits.push_back((*L1PMC)[i].triggerDecision());
+     if((*L1PMC)[i].triggerDecision()) numTotL1BitsBeforeCuts[i]++;
+   }
+  }
+  EventData->setL1Bits(l1bits);
+
+  // Get the HLT Info
+  //vector<Handle<TriggerResults> > trhv;
+  //try {iEvent.getManyByType(trhv);} catch (...) {;}
+  Handle<TriggerResults> trh;
+  try {iEvent.getByLabel(m_hlTriggerResults, trh);} catch (...) {;}
+  //const unsigned int n(trhv.size());
+  //if(n>1) cout << "More than one trigger table! Please check you are using the correct one" << endl;
+  std::vector<int> hltbits;
+  if (!trh.isValid()) {
+    triggerExists = false;
+    EventData->setNoTriggerData();
+    if (DEBUGLVL >= 1){
+      cout << "HLTriggerResult Not Valid!" << endl;
+    }
+  }
+  else {  
+   for(unsigned int i=0; i< trh->size(); i++) {
+     hltbits.push_back((*trh)[i].accept());
+     if((*trh)[i].accept()) numTotHltBitsBeforeCuts[i]++;
+   }
+  }
+  EventData->setHltBits(hltbits);
+
+  // Check whether event is accepted by L1 and HLT triggers
   
   bool acctrigger = true;
-  acctrigger = AcceptTrigger();
+  
+  bool accL1  = myUserAnalysis->L1Driver(EventData);
+  bool accHLT = myUserAnalysis->HLTDriver(EventData);
+  acctrigger = (triggerExists && accL1 && accHLT);
+ 
   if (!acctrigger){
     numTotEvtNoTrigger++;
+    if (!accL1){EventData->setNoL1fired();}
+    if (!accHLT){EventData->setNoHLTfired();}
     if (DEBUGLVL >= 1){
-     cout << " Event rejected by trigger " << endl;
+     cout << " No trigger accept for this event " << endl;
+    }
+  }
+//  if ( EventData->qualNoTriggerData() ){ cout << " No trigger data " << endl;}
+//  if ( EventData->qualNoL1fired() ){ cout << " No L1 fired " << endl;}
+//  if ( EventData->qualNoHLTfired() ){ cout << " No HLT fired " << endl;}
+  // keep or reject event according to decision in cfg file
+  if ( (rej_NoTriggerData && !triggerExists) 
+     || (rej_NoL1fired && !accL1)
+     || (rej_NoHLTfired && !accHLT) ){
+    if (DEBUGLVL >= 1){
+      cout << " No trigger, Event rejected " << endl;
     }
     CleanMemory ();
     return;
   }
+  
 
 //  cout << "Size of Recodata at beginning of filling " << RecoData.size() << endl;
+     
+  // ******************************************************** 
+  // Input the Reconstructed data and store them as MrParticle objects
+  // ******************************************************** 
 
   // get electron collection
   Handle<PixelMatchGsfElectronCollection> electrons; 
@@ -383,7 +463,7 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
    Handle<CaloJetCollection> jets;
    iEvent.getByLabel(m_jetsSrc, jets);
 
-   //information for b-tagging
+   // collect information for b-tagging
    Handle<JetTagCollection> jetsAndTracks;
    iEvent.getByLabel(m_jettag,jetsAndTracks);
 
@@ -401,7 +481,8 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       if ( fabs( ((*jets)[j].px() - (*jetsAndTracks)[i].jet().px())/  (*jets)[j].px()) < EPSILON_BT && 
 	   fabs( ((*jets)[j].py() - (*jetsAndTracks)[i].jet().py())/  (*jets)[j].py()) < EPSILON_BT &&
 	   fabs( ((*jets)[j].pz() - (*jetsAndTracks)[i].jet().pz())/  (*jets)[j].pz()) < EPSILON_BT &&
-	   fabs( ((*jets)[j].energy() - (*jetsAndTracks)[i].jet().energy())/  (*jets)[j].pz()) < EPSILON_BT ) 
+//	   fabs( ((*jets)[j].energy() - (*jetsAndTracks)[i].jet().energy())/  (*jets)[j].pz()) < EPSILON_BT ) 
+	   fabs( ((*jets)[j].energy() - (*jetsAndTracks)[i].jet().energy())/  (*jets)[j].energy()) < EPSILON_BT ) 
 	{
 	  btagdiscriminator =  (*jetsAndTracks)[i].discriminator();
 	  jetTag = &(*jetsAndTracks)[i];
@@ -414,7 +495,7 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   
   
     recopart->setBtagDiscriminator(btagdiscriminator);
-    if(btagdiscriminator > ana_minBtagDiscriminator) {recopart->setParticleType(6);}
+//    if(btagdiscriminator > ana_minBtagDiscriminator) {recopart->setParticleType(6);}
    
     RecoData.push_back(recopart);
  
@@ -455,7 +536,7 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
    // get calo towers collection
    Handle<CaloTowerCollection> calotowers; 
-   iEvent.getByType(calotowers);
+   iEvent.getByLabel(m_calotowers,calotowers);
    CaloTowerData = calotowers.product();
    if (DEBUGLVL >= 3){
      cout << "CaloTower collection: " << endl;
@@ -471,6 +552,8 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
    
    // Save the pointers to vertex, track and calotower collections in MrEvent
    
+//   const TrackCollection * tc;
+//   EventData->setTrackCollection(tc); 
    EventData->setTrackCollection(TrackData); 
    EventData->setVertexCollection(VertexData); 
    EventData->setCaloTowerCollection(CaloTowerData); 
@@ -522,19 +605,20 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
    bool acceptData = true;
    acceptData = myRecoProcessor->RecoDriver();
   
+   // Update Event counters for final statistics
+   numTotEvtNoReco += myRecoProcessor->NumEvtNoReco();
+   numTotEvtNoTracks += myRecoProcessor->NumEvtNoTracks();
+   numTotEvtNoCalo += myRecoProcessor->NumEvtNoCalo();
+   numTotEvtEmpty += myRecoProcessor->NumEvtEmpty();
+   numTotEvtNoPrimary += myRecoProcessor->NumEvtNoPrimary();
+   numTotEvtBadHardJet += myRecoProcessor->NumEvtBadHardJet();
+   numTotEvtCleanEmpty += myRecoProcessor->NumEvtCleanEmpty();
+   numTotEvtFinalEmpty += myRecoProcessor->NumEvtFinalEmpty();
+   numTotEvtBadNoisy += myRecoProcessor->NumEvtBadNoisy();
+   numTotEvtBadMET += myRecoProcessor->NumEvtBadMET();
+      
    // Abandon the event if it is bad
    if (!acceptData){
-      numTotEvtNoReco += myRecoProcessor->NumEvtNoReco();
-      numTotEvtNoTracks += myRecoProcessor->NumEvtNoTracks();
-      numTotEvtNoCalo += myRecoProcessor->NumEvtNoCalo();
-      numTotEvtEmpty += myRecoProcessor->NumEvtEmpty();
-      numTotEvtNoPrimary += myRecoProcessor->NumEvtNoPrimary();
-      numTotEvtBadHardJet += myRecoProcessor->NumEvtBadHardJet();
-      numTotEvtCleanEmpty += myRecoProcessor->NumEvtCleanEmpty();
-      numTotEvtFinalEmpty += myRecoProcessor->NumEvtFinalEmpty();
-      numTotEvtBadNoisy += myRecoProcessor->NumEvtBadNoisy();
-      numTotEvtBadMET += myRecoProcessor->NumEvtBadMET();
-      
       delete myRecoProcessor;
       CleanMemory();
       if (DEBUGLVL >= 1){
@@ -557,15 +641,16 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
    acceptHemi = myHemiAna->AnalyzeHemi();
   
    if (!acceptHemi){
-     
-//      delete myHemiAna;
-//      CleanMemory();
-//      numTotEvtBadHemi++;
+      numTotEvtBadHemi++;
+      EventData->setBadHemis();
       if (DEBUGLVL >= 1){
-//       cout << " Event rejected, bad hemispheres *** " << endl;
-       cout << " Bad hemispheres *** " << endl;
+       cout << " Bad hemispheres matching *** " << endl;
       }
-//      return;
+      if (rej_BadHemis) {
+        delete myHemiAna;
+        CleanMemory();
+        return;
+      }
    }
    
    delete myHemiAna;
@@ -574,7 +659,7 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   
   
   // ******************************************************** 
-  // Add event counters to run counters for end of job statistics
+  // Update run counters if event is accepted for end of job statistics
   
   numTotMCElec += NumMCElecTrue;
   numTotMCMuon += NumMCMuonTrue;
@@ -621,7 +706,9 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   numTotJetsfinal += myRecoProcessor->NumJetsfinal();  
   numTotBJetsfinal += myRecoProcessor->NumBJetsfinal();  
   numTotJetsMatched += myRecoProcessor->NumJetsMatched();
-   
+  
+  numTotEventsAfterCuts++;
+  
   delete myRecoProcessor;
    
 
@@ -631,6 +718,7 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   // ******************************************************** 
   
   myUserAnalysis->doAnalysis(EventData);
+  
   
   // ******************************************************** 
   // End of the event analysis
@@ -659,14 +747,98 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
 //------------------------------------------------------------------------------
 
-void SusyAnalyzer::PrintCuts()
+void SusyAnalyzer::PrintTitle()
 { 
- // Prints a summary of the cuts and constants initialized
+ // Prints a Title for SusyAnalysis
 
   cout << endl;
   cout << "*****************************" << endl;
   cout << "*** Start of SUSYBSM Analysis" << endl;
   cout << "*****************************" << endl;
+  
+  return;
+}
+
+
+//------------------------------------------------------------------------------
+
+void SusyAnalyzer::PrintEvtRej()
+{ 
+ // Prints a summary of event rejection decisions
+
+ bool rej_NoTriggerData = rejectEvent_params.getParameter<bool>("rej_NoTriggerData") ;
+ bool rej_NoL1fired = rejectEvent_params.getParameter<bool>("rej_NoL1fired") ;
+ bool rej_NoHLTfired = rejectEvent_params.getParameter<bool>("rej_NoHLTfired") ;
+ bool rej_MissingRecoData = rejectEvent_params.getParameter<bool>("rej_MissingRecoData") ;
+ bool rej_MissingTrackData = rejectEvent_params.getParameter<bool>("rej_MissingTrackData") ;
+ bool rej_MissingCaloTowers = rejectEvent_params.getParameter<bool>("rej_MissingCaloTowers") ;
+ bool rej_Empty = rejectEvent_params.getParameter<bool>("rej_Empty") ;
+ bool rej_NoPrimary = rejectEvent_params.getParameter<bool>("rej_NoPrimary") ;
+ bool rej_BadHardJet = rejectEvent_params.getParameter<bool>("rej_BadHardJet") ;
+ bool rej_CleanEmpty = rejectEvent_params.getParameter<bool>("rej_CleanEmpty") ;
+ bool rej_FinalEmpty = rejectEvent_params.getParameter<bool>("rej_FinalEmpty") ;
+ bool rej_BadNoisy = rejectEvent_params.getParameter<bool>("rej_BadNoisy") ;
+ bool rej_BadMET = rejectEvent_params.getParameter<bool>("rej_BadMET") ;
+ bool rej_BadHemis = rejectEvent_params.getParameter<bool>("rej_BadHemis") ;
+  
+  cout << endl;
+  cout << "Event rejection decisions: " << endl;
+  cout << "  Reject if no trigger data       = ";
+  if (rej_NoTriggerData){cout << " true";} else {cout << " false";} cout << endl;
+  cout << "  Reject if L1 did not fire       = ";
+  if (rej_NoL1fired){cout << " true";} else {cout << " false";} cout << endl;
+  cout << "  Reject if HLT did not fire      = ";
+  if (rej_NoHLTfired){cout << " true";} else {cout << " false";} cout << endl;
+  cout << "  Reject if no Reco Data exist    = ";
+  if (rej_MissingRecoData){cout << " true";} else {cout << " false";} cout << endl;
+  cout << "  Reject if no Track Data exist   = ";
+  if (rej_MissingTrackData){cout << " true";} else {cout << " false";} cout << endl;
+  cout << "  Reject if no CaloTowers exist   = ";
+  if (rej_MissingCaloTowers){cout << " true";} else {cout << " false";} cout << endl;
+  cout << "  Reject if empty after 1st acc   = ";
+  if (rej_Empty){cout << " true";} else {cout << " false";} cout << endl;
+  cout << "  Reject if no Primary Vertex     = ";
+  if (rej_NoPrimary){cout << " true";} else {cout << " false";} cout << endl;
+  cout << "  Reject if bad hard Jet found    = ";
+  if (rej_BadHardJet){cout << " true";} else {cout << " false";} cout << endl;
+  cout << "  Reject if empty after cleaning  = ";
+  if (rej_CleanEmpty){cout << " true";} else {cout << " false";} cout << endl;
+  cout << "  Reject if empty after final acc = ";
+  if (rej_FinalEmpty){cout << " true";} else {cout << " false";} cout << endl;
+  cout << "  Reject if event bad or noisy    = ";
+  if (rej_BadNoisy){cout << " true";} else {cout << " false";} cout << endl;
+  cout << "  Reject if event with bad MET    = ";
+  if (rej_BadMET){cout << " true";} else {cout << " false";} cout << endl;
+  cout << "  Reject if event with bad hemi   = ";
+  if (rej_BadHemis){cout << " true";} else {cout << " false";} cout << endl;
+  
+  return;
+}
+
+
+//------------------------------------------------------------------------------
+
+void SusyAnalyzer::PrintAccCuts()
+{ 
+ // Prints a summary of the acceptance cuts
+ 
+  // load acceptance cuts
+  float ana_elecEtaMax = acceptance_cuts.getParameter<double>("ana_elecEtaMax") ;
+  float ana_elecPtMin1 = acceptance_cuts.getParameter<double>("ana_elecPtMin1") ;
+  float ana_muonEtaMax = acceptance_cuts.getParameter<double>("ana_muonEtaMax") ;
+  float ana_muonPtMin1 = acceptance_cuts.getParameter<double>("ana_muonPtMin1") ;
+  float ana_tauEtaMax = acceptance_cuts.getParameter<double>("ana_tauEtaMax") ;
+  float ana_tauPtMin1 = acceptance_cuts.getParameter<double>("ana_tauPtMin1") ;
+  float ana_photonEtaMax = acceptance_cuts.getParameter<double>("ana_photonEtaMax") ;
+  float ana_photonPtMin1 = acceptance_cuts.getParameter<double>("ana_photonPtMin1") ;
+  float ana_jetEtaMax = acceptance_cuts.getParameter<double>("ana_jetEtaMax") ;
+  float ana_jetPtMin1 = acceptance_cuts.getParameter<double>("ana_jetPtMin1") ;
+  float ana_elecPtMin2 = acceptance_cuts.getParameter<double>("ana_elecPtMin2") ;
+  float ana_muonPtMin2 = acceptance_cuts.getParameter<double>("ana_muonPtMin2") ;
+  float ana_tauPtMin2 = acceptance_cuts.getParameter<double>("ana_tauPtMin2") ;
+  float ana_photonPtMin2 = acceptance_cuts.getParameter<double>("ana_photonPtMin2") ;
+  float ana_jetPtMin2 = acceptance_cuts.getParameter<double>("ana_jetPtMin2") ;
+  float ana_minBtagDiscriminator = acceptance_cuts.getParameter<double>("ana_minBtagDiscriminator");
 
   cout << endl;
   cout << "Primary acceptance cuts for objects: " << endl;
@@ -680,6 +852,7 @@ void SusyAnalyzer::PrintCuts()
   cout << "  Minimum Pt for photons, first   = " << ana_photonPtMin1 << endl;
   cout << "  Maximum Eta for jets            = " << ana_jetEtaMax << endl;
   cout << "  Minimum Pt for jets, first      = " << ana_jetPtMin1 << endl;
+  cout << "  Minimum b-tag discriminator     = " << ana_minBtagDiscriminator << endl;
   cout << endl;
   cout << "Final acceptance cuts for objects: " << endl;
   cout << "  Minimum Pt for electrons, final = " << ana_elecPtMin2 << endl;
@@ -692,19 +865,351 @@ void SusyAnalyzer::PrintCuts()
     return;    
 }
 
+
+//------------------------------------------------------------------------------
+
+void SusyAnalyzer::PrintExtrapCuts()
+{ 
+ // Prints a summary of the parameters for extrapolation error adjustment (in cm)
+ 
+  // load extrapolation error adjustment cuts
+ float reco_elecD0ErrorThresh  = acceptance_cuts.getParameter<double>("reco_elecD0ErrorThresh") ;
+ float reco_elecDzErrorThresh  = acceptance_cuts.getParameter<double>("reco_elecDzErrorThresh") ;
+ float reco_muonD0ErrorThresh  = acceptance_cuts.getParameter<double>("reco_muonD0ErrorThresh") ;
+ float reco_muonDzErrorThresh  = acceptance_cuts.getParameter<double>("reco_muonDzErrorThresh") ;
+ float reco_jetD0ErrorThresh  = acceptance_cuts.getParameter<double>("reco_jetD0ErrorThresh") ;
+ float reco_jetDzErrorThresh  = acceptance_cuts.getParameter<double>("reco_jetDzErrorThresh") ;
+
+  cout << endl;
+  cout << "Parameters for extrapolation error adjustment (in cm): " << endl;
+  cout << "  reco_elecD0ErrorThresh          = " << reco_elecD0ErrorThresh << endl;
+  cout << "  reco_elecDzErrorThresh          = " << reco_elecDzErrorThresh << endl;
+  cout << "  reco_muonD0ErrorThresh          = " << reco_muonD0ErrorThresh << endl;
+  cout << "  reco_muonDzErrorThresh          = " << reco_muonDzErrorThresh << endl;
+  cout << "  reco_jetD0ErrorThresh           = " << reco_jetD0ErrorThresh << endl;
+  cout << "  reco_jetDzErrorThresh           = " << reco_jetDzErrorThresh << endl;
+
+
+    return;    
+}
+
+
+//------------------------------------------------------------------------------
+
+void SusyAnalyzer::PrintMCCuts()
+{ 
+ // Prints a summary of the parameters for MCProcessor
+ 
+  // load the parameters for MCProcessor
+  int   mc_numEvtPrnt = mcproc_params.getParameter<int>("mc_numEvtPrnt") ;
+  float mc_PhotCalFac = mcproc_params.getParameter<double>("mc_PhotCalFac") ;
+  float mc_JetCalFac = mcproc_params.getParameter<double>("mc_JetCalFac") ;
+  float mc_JetDeltaRIC = mcproc_params.getParameter<double>("mc_JetDeltaRIC") ;
+
+  cout << endl;
+  cout << "Parameters for MCProcessor: " << endl;
+  cout << "  mc_numEvtPrnt                   = " << mc_numEvtPrnt << endl;
+  cout << "  mc_PhotCalFac                   = " << mc_PhotCalFac << endl;
+  cout << "  mc_JetCalFac                    = " << mc_JetCalFac << endl;
+  cout << "  mc_JetDeltaRIC                  = " << mc_JetDeltaRIC << endl;
+
+
+    return;    
+}
+
+
+//------------------------------------------------------------------------------
+
+void SusyAnalyzer::PrintCleanerCuts()
+{ 
+ // Prints a summary of the parameters for ObjectCleaner
+ 
+  // load the parameters for ObjectCleaner
+  float clean_chisqVxmax = cleaner_params.getParameter<double>("clean_chisqVxmax") ;
+  float clean_dRVxmax = cleaner_params.getParameter<double>("clean_dRVxmax") ;
+  float clean_dzVxmax = cleaner_params.getParameter<double>("clean_dzVxmax") ;
+  float clean_etaTkfromVxmax = cleaner_params.getParameter<double>("clean_etaTkfromVxmax") ;
+  float clean_sumPtTkfromVxmin = cleaner_params.getParameter<double>("clean_sumPtTkfromVxmin") ;
+  int   clean_methodTksInJetVx = cleaner_params.getParameter<int>("clean_methodTksInJetVx") ;
+  int   clean_nJetVxTkHitsmin = cleaner_params.getParameter<int>("clean_nJetVxTkHitsmin") ;
+  float clean_jetVxCaloTowEFracmin = cleaner_params.getParameter<double>("clean_jetVxCaloTowEFracmin") ;
+  float clean_dRTrkFromJetVx = cleaner_params.getParameter<double>("clean_dRTrkFromJetVx") ;
+  float clean_distVxmax = cleaner_params.getParameter<double>("clean_distVxmax") ;
+  float clean_ElecEoPmin = cleaner_params.getParameter<double>("clean_ElecEoPmin") ;
+  float clean_ElecEoPinvmax = cleaner_params.getParameter<double>("clean_ElecEoPinvmax") ;
+  float clean_dRElecTowermax = cleaner_params.getParameter<double>("clean_dRElecTowermax") ;
+  float clean_ElecHoEmax = cleaner_params.getParameter<double>("clean_ElecHoEmax") ;
+  float clean_dRSSelecmax = cleaner_params.getParameter<double>("clean_dRSSelecmax") ;
+  float clean_MuonDPbyPmax = cleaner_params.getParameter<double>("clean_MuonDPbyPmax") ;
+  float clean_MuonChi2max = cleaner_params.getParameter<double>("clean_MuonChi2max") ;
+  float clean_MuonNHitsmin = cleaner_params.getParameter<double>("clean_MuonNHitsmin") ;
+  float clean_dRMuonTowermax = cleaner_params.getParameter<double>("clean_dRMuonTowermax") ;
+  float clean_dRSSmuonmax = cleaner_params.getParameter<double>("clean_dRSSmuonmax") ;
+  float clean_dRPhotTowermax = cleaner_params.getParameter<double>("clean_dRPhotTowermax") ;
+  float clean_PhotHoEmax = cleaner_params.getParameter<double>("clean_PhotHoEmax") ;
+  float clean_dRPhotElemax = cleaner_params.getParameter<double>("clean_dRPhotElemax") ;
+  float clean_dRPhotDupmax = cleaner_params.getParameter<double>("clean_dRPhotDupmax") ;
+  float clean_deltaRElecJetmax =cleaner_params.getParameter<double>("clean_deltaRElecJetmax") ;
+  float clean_elecbyJetEratio = cleaner_params.getParameter<double>("clean_elecbyJetEratio") ;
+  int   clean_methodTksInJet = cleaner_params.getParameter<int>("clean_methodTksInJet") ;
+  int   clean_nJetTkHitsmin = cleaner_params.getParameter<int>("clean_nJetTkHitsmin") ;
+  float clean_jetCaloTowEFracmin = cleaner_params.getParameter<double>("clean_jetCaloTowEFracmin") ;
+  float clean_dRTrkFromJet = cleaner_params.getParameter<double>("clean_dRTrkFromJet") ;
+  float clean_FracChminJet = cleaner_params.getParameter<double>("clean_FracChminJet") ;
+  float clean_FracEmmaxJet = cleaner_params.getParameter<double>("clean_FracEmmaxJet") ;
+  float clean_rejEvtBadJetPtmin = cleaner_params.getParameter<double>("clean_rejEvtBadJetPtmin") ;
+  float clean_dROSelecmax = cleaner_params.getParameter<double>("clean_dROSelecmax") ;
+  float clean_MOSelecmax = cleaner_params.getParameter<double>("clean_MOSelecmax") ;
+  float clean_FracChmin = cleaner_params.getParameter<double>("clean_FracChmin") ;
+  float clean_FracEmmin = cleaner_params.getParameter<double>("clean_FracEmmin") ;
+  float clean_METmin = cleaner_params.getParameter<double>("clean_METmin") ;
+  float clean_dPhiJetMETmin = cleaner_params.getParameter<double>("clean_dPhiJetMETmin") ;
+  float clean_dR12min = cleaner_params.getParameter<double>("clean_dR12min") ;
+  float clean_dR21min = cleaner_params.getParameter<double>("clean_dR21min") ;
+
+  cout << endl;
+  cout << "Parameters for ObjectCleaner: " << endl;
+  cout << "  clean_chisqVxmax                = " << clean_chisqVxmax << endl;
+  cout << "  clean_dRVxmax                   = " << clean_dRVxmax << endl;
+  cout << "  clean_dzVxmax                   = " << clean_dzVxmax << endl;
+  cout << "  clean_etaTkfromVxmax            = " << clean_etaTkfromVxmax << endl;
+  cout << "  clean_sumPtTkfromVxmin          = " << clean_sumPtTkfromVxmin << endl;
+  cout << "  clean_methodTksInJetVx          = " << clean_methodTksInJetVx << endl;
+  cout << "  clean_nJetVxTkHitsmin           = " << clean_nJetVxTkHitsmin << endl;
+  cout << "  clean_jetVxCaloTowEFracmin      = " << clean_jetVxCaloTowEFracmin << endl;
+  cout << "  clean_dRTrkFromJetVx            = " << clean_dRTrkFromJetVx << endl;
+  cout << "  clean_distVxmax                 = " << clean_distVxmax << endl;
+  cout << "  clean_ElecEoPmin                = " << clean_ElecEoPmin << endl;
+  cout << "  clean_ElecEoPinvmax             = " << clean_ElecEoPinvmax << endl;
+  cout << "  clean_dRElecTowermax            = " << clean_dRElecTowermax << endl;
+  cout << "  clean_ElecHoEmax                = " << clean_ElecHoEmax << endl;
+  cout << "  clean_dRSSelecmax               = " << clean_dRSSelecmax << endl;
+  cout << "  clean_MuonDPbyPmax              = " << clean_MuonDPbyPmax << endl;
+  cout << "  clean_MuonChi2max               = " << clean_MuonChi2max << endl;
+  cout << "  clean_MuonNHitsmin              = " << clean_MuonNHitsmin << endl;
+  cout << "  clean_dRMuonTowermax            = " << clean_dRMuonTowermax << endl;
+  cout << "  clean_dRSSmuonmax               = " << clean_dRSSmuonmax << endl;
+  cout << "  clean_dRPhotTowermax            = " << clean_dRPhotTowermax << endl;
+  cout << "  clean_PhotHoEmax                = " << clean_PhotHoEmax << endl;
+  cout << "  clean_dRPhotElemax              = " << clean_dRPhotElemax << endl;
+  cout << "  clean_dRPhotDupmax              = " << clean_dRPhotDupmax << endl;
+  cout << "  clean_deltaRElecJetmax          = " << clean_deltaRElecJetmax << endl;
+  cout << "  clean_elecbyJetEratio           = " << clean_elecbyJetEratio << endl;
+  cout << "  clean_methodTksInJet            = " << clean_methodTksInJet << endl;
+  cout << "  clean_nJetTkHitsmin             = " << clean_nJetTkHitsmin << endl;
+  cout << "  clean_jetCaloTowEFracmin        = " << clean_jetCaloTowEFracmin << endl;
+  cout << "  clean_dRTrkFromJet              = " << clean_dRTrkFromJet << endl;
+  cout << "  clean_FracChminJet              = " << clean_FracChminJet << endl;
+  cout << "  clean_FracEmmaxJet              = " << clean_FracEmmaxJet << endl;
+  cout << "  clean_rejEvtBadJetPtmin         = " << clean_rejEvtBadJetPtmin << endl;
+  cout << "  clean_dROSelecmax               = " << clean_dROSelecmax << endl;
+  cout << "  clean_MOSelecmax                = " << clean_MOSelecmax << endl;
+  cout << "  clean_FracChmin                 = " << clean_FracChmin << endl;
+  cout << "  clean_FracEmmin                 = " << clean_FracEmmin << endl;
+  cout << "  clean_METmin                    = " << clean_METmin << endl;
+  cout << "  clean_dPhiJetMETmin             = " << clean_dPhiJetMETmin << endl;
+  cout << "  clean_dR12min                   = " << clean_dR12min << endl;
+  cout << "  clean_dR21min                   = " << clean_dR21min << endl;
+
+
+    return;    
+}
+
+
+//------------------------------------------------------------------------------
+
+void SusyAnalyzer::PrintIsolatorCuts()
+{ 
+ // Prints a summary of the parameters for the Isolator
+ 
+  // load the parameters for the Isolator
+  int   iso_MethodElec = isolator_params.getParameter<int>("iso_MethodElec") ;
+  float iso_jetbyElEmin = isolator_params.getParameter<double>("iso_jetbyElEmin") ;
+  float iso_ptElwrtJetmin = isolator_params.getParameter<double>("iso_ptElwrtJetmin") ;
+  float iso_ElCalDRin = isolator_params.getParameter<double>("iso_ElCalDRin") ;
+  float iso_ElCalDRout = isolator_params.getParameter<double>("iso_ElCalDRout") ;
+  float iso_ElCalSeed = isolator_params.getParameter<double>("iso_ElCalSeed") ;
+  float iso_ElTkDRin = isolator_params.getParameter<double>("iso_ElTkDRin") ;
+  float iso_ElTkDRout = isolator_params.getParameter<double>("iso_ElTkDRout") ;
+  float iso_ElTkSeed = isolator_params.getParameter<double>("iso_ElTkSeed") ;
+  float iso_ElCalWeight = isolator_params.getParameter<double>("iso_ElCalWeight") ;
+  float iso_ElIsoValue = isolator_params.getParameter<double>("iso_ElIsoValue") ;
+  int   iso_MethodMuon = isolator_params.getParameter<int>("iso_MethodMuon") ;
+  float iso_jetbyMuEmin = isolator_params.getParameter<double>("iso_jetbyMuEmin") ;
+  float iso_ptMuwrtJetmin = isolator_params.getParameter<double>("iso_ptMuwrtJetmin") ;
+  float iso_MuCalDRin = isolator_params.getParameter<double>("iso_MuCalDRin") ;
+  float iso_MuCalDRout = isolator_params.getParameter<double>("iso_MuCalDRout") ;
+  float iso_MuCalSeed = isolator_params.getParameter<double>("iso_MuCalSeed") ;
+  float iso_MuTkDRin = isolator_params.getParameter<double>("iso_MuTkDRin") ;
+  float iso_MuTkDRout = isolator_params.getParameter<double>("iso_MuTkDRout") ;
+  float iso_MuTkSeed = isolator_params.getParameter<double>("iso_MuTkSeed") ;
+  float iso_MuCalWeight = isolator_params.getParameter<double>("iso_MuCalWeight") ;
+  float iso_MuIsoValue = isolator_params.getParameter<double>("iso_MuIsoValue") ;
+  int   iso_MethodTau = isolator_params.getParameter<int>("iso_MethodTau") ;
+  float iso_jetbyTauEmin = isolator_params.getParameter<double>("iso_jetbyTauEmin") ;
+  float iso_ptTauwrtJetmin = isolator_params.getParameter<double>("iso_ptTauwrtJetmin") ;
+  float iso_TauCalDRin = isolator_params.getParameter<double>("iso_TauCalDRin") ;
+  float iso_TauCalDRout = isolator_params.getParameter<double>("iso_TauCalDRout") ;
+  float iso_TauCalSeed = isolator_params.getParameter<double>("iso_TauCalSeed") ;
+  float iso_TauTkDRin = isolator_params.getParameter<double>("iso_TauTkDRin") ;
+  float iso_TauTkDRout = isolator_params.getParameter<double>("iso_TauTkDRout") ;
+  float iso_TauTkSeed = isolator_params.getParameter<double>("iso_TauTkSeed") ;
+  float iso_TauCalWeight = isolator_params.getParameter<double>("iso_TauCalWeight") ;
+  float iso_TauIsoValue = isolator_params.getParameter<double>("iso_TauIsoValue") ;
+  int   iso_MethodPhot = isolator_params.getParameter<int>("iso_MethodPhot") ;
+  float iso_jetbyPhotEmin = isolator_params.getParameter<double>("iso_jetbyPhotEmin") ;
+  float iso_ptPhotwrtJetmin = isolator_params.getParameter<double>("iso_ptPhotwrtJetmin") ;
+  float iso_PhCalDRin = isolator_params.getParameter<double>("iso_PhCalDRin") ;
+  float iso_PhCalDRout = isolator_params.getParameter<double>("iso_PhCalDRout") ;
+  float iso_PhCalSeed = isolator_params.getParameter<double>("iso_PhCalSeed") ;
+  float iso_PhTkDRin = isolator_params.getParameter<double>("iso_PhTkDRin") ;
+  float iso_PhTkDRout = isolator_params.getParameter<double>("iso_PhTkDRout") ;
+  float iso_PhTkSeed = isolator_params.getParameter<double>("iso_PhTkSeed") ;
+  float iso_PhCalWeight = isolator_params.getParameter<double>("iso_PhCalWeight") ;
+  float iso_PhIsoValue = isolator_params.getParameter<double>("iso_PhIsoValue") ;
+
+  cout << endl;
+  cout << "Parameters for Isolator: " << endl;
+  cout << "  iso_MethodElec                  = " << iso_MethodElec << endl;
+  cout << "  iso_jetbyElEmin                 = " << iso_jetbyElEmin << endl;
+  cout << "  iso_ptElwrtJetmin               = " << iso_ptElwrtJetmin << endl;
+  cout << "  iso_ElCalDRin                   = " << iso_ElCalDRin << endl;
+  cout << "  iso_ElCalDRout                  = " << iso_ElCalDRout << endl;
+  cout << "  iso_ElCalSeed                   = " << iso_ElCalSeed << endl;
+  cout << "  iso_ElTkDRin                    = " << iso_ElTkDRin << endl;
+  cout << "  iso_ElTkDRout                   = " << iso_ElTkDRout << endl;
+  cout << "  iso_ElTkSeed                    = " << iso_ElTkSeed << endl;
+  cout << "  iso_ElCalWeight                 = " << iso_ElCalWeight << endl;
+  cout << "  iso_ElIsoValue                  = " << iso_ElIsoValue << endl;
+  cout << "  iso_MethodMuon                  = " << iso_MethodMuon << endl;
+  cout << "  iso_jetbyMuEmin                 = " << iso_jetbyMuEmin << endl;
+  cout << "  iso_ptMuwrtJetmin               = " << iso_ptMuwrtJetmin << endl;
+  cout << "  iso_MuCalDRin                   = " <<iso_MuCalDRin  << endl;
+  cout << "  iso_MuCalDRout                  = " << iso_MuCalDRout << endl;
+  cout << "  iso_MuCalSeed                   = " << iso_MuCalSeed << endl;
+  cout << "  iso_MuTkDRin                    = " << iso_MuTkDRin << endl;
+  cout << "  iso_MuTkDRout                   = " << iso_MuTkDRout << endl;
+  cout << "  iso_MuTkSeed                    = " << iso_MuTkSeed << endl;
+  cout << "  iso_MuCalWeight                 = " << iso_MuCalWeight << endl;
+  cout << "  iso_MuIsoValue                  = " << iso_MuIsoValue << endl;
+  cout << "  iso_MethodTau                   = " << iso_MethodTau << endl;
+  cout << "  iso_jetbyTauEmin                = " << iso_jetbyTauEmin << endl;
+  cout << "  iso_ptTauwrtJetmin              = " << iso_ptTauwrtJetmin << endl;
+  cout << "  iso_TauCalDRin                  = " << iso_TauCalDRin << endl;
+  cout << "  iso_TauCalDRout                 = " << iso_TauCalDRout << endl;
+  cout << "  iso_TauCalSeed                  = " << iso_TauCalSeed << endl;
+  cout << "  iso_TauTkDRin                   = " << iso_TauTkDRin << endl;
+  cout << "  iso_TauTkDRout                  = " << iso_TauTkDRout << endl;
+  cout << "  iso_TauTkSeed                   = " << iso_TauTkSeed << endl;
+  cout << "  iso_TauCalWeight                = " << iso_TauCalWeight << endl;
+  cout << "  iso_TauIsoValue                 = " << iso_TauIsoValue << endl;
+  cout << "  iso_MethodPhot                  = " << iso_MethodPhot << endl;
+  cout << "  iso_jetbyPhotEmin               = " << iso_jetbyPhotEmin << endl;
+  cout << "  iso_ptPhotwrtJetmin             = " << iso_ptPhotwrtJetmin << endl;
+  cout << "  iso_PhCalDRin                   = " << iso_PhCalDRin << endl;
+  cout << "  iso_PhCalDRout                  = " << iso_PhCalDRout << endl;
+  cout << "  iso_PhCalSeed                   = " << iso_PhCalSeed << endl;
+  cout << "  iso_PhTkDRin                    = " << iso_PhTkDRin << endl;
+  cout << "  iso_PhTkDRout                   = " << iso_PhTkDRout << endl;
+  cout << "  iso_PhTkSeed                    = " << iso_PhTkSeed << endl;
+  cout << "  iso_PhCalWeight                 = " << iso_PhCalWeight << endl;
+  cout << "  iso_PhIsoValue                  = " << iso_PhIsoValue << endl;
+
+
+    return;    
+}
+
+
+//------------------------------------------------------------------------------
+
+void SusyAnalyzer::PrintObjectMatchingCuts()
+{ 
+ // Prints a summary of the parameters for MatchObjects
+ 
+  // load the parameters for MCProcessor
+  float mo_elecDRmax = objectmatch_params.getParameter<double>("mo_elecDRmax") ;
+  float mo_elecDPbyPmax = objectmatch_params.getParameter<double>("mo_elecDPbyPmax") ;
+  float mo_muonDRmax = objectmatch_params.getParameter<double>("mo_muonDRmax") ;
+  float mo_muonDPbyPmax = objectmatch_params.getParameter<double>("mo_muonDPbyPmax") ;
+  float mo_photonDRmax = objectmatch_params.getParameter<double>("mo_photonDRmax") ;
+  float mo_photonDPbyPmax = objectmatch_params.getParameter<double>("mo_photonDPbyPmax") ;
+  float mo_jetDRmax = objectmatch_params.getParameter<double>("mo_jetDRmax") ;
+  float mo_jetDPbyPmax = objectmatch_params.getParameter<double>("mo_jetDPbyPmax") ;
+  float mo_celecDRmax = objectmatch_params.getParameter<double>("mo_celecDRmax") ;
+  float mo_cmuonDRmax = objectmatch_params.getParameter<double>("mo_cmuonDRmax") ;
+  float mo_cphotonDRmax = objectmatch_params.getParameter<double>("mo_cphotonDRmax") ;
+  float mo_cjetDRmax = objectmatch_params.getParameter<double>("mo_cjetDRmax") ;
+
+  cout << endl;
+  cout << "Parameters for : MatchObjects" << endl;
+  cout << "  mo_elecDRmax                    = " << mo_elecDRmax << endl;
+  cout << "  mo_elecDPbyPmax                 = " << mo_elecDPbyPmax << endl;
+  cout << "  mo_muonDRmax                    = " << mo_muonDRmax << endl;
+  cout << "  mo_muonDPbyPmax                 = " << mo_muonDPbyPmax << endl;
+  cout << "  mo_photonDRmax                  = " << mo_photonDRmax << endl;
+  cout << "  mo_photonDPbyPmax               = " << mo_photonDPbyPmax << endl;
+  cout << "  mo_jetDRmax                     = " << mo_jetDRmax << endl;
+  cout << "  mo_jetDPbyPmax                  = " << mo_jetDPbyPmax << endl;
+  cout << "  mo_celecDRmax                   = " << mo_celecDRmax << endl;
+  cout << "  mo_cmuonDRmax                   = " << mo_cmuonDRmax << endl;
+  cout << "  mo_cphotonDRmax                 = " << mo_cphotonDRmax << endl;
+  cout << "  mo_cjetDRmax                    = " << mo_cjetDRmax << endl;
+
+
+    return;    
+}
+
 //------------------------------------------------------------------------------
 
 void SusyAnalyzer::PrintStatistics(void)
 { 
   // Final output of the run statistics
   
+ bool rej_NoTriggerData = rejectEvent_params.getParameter<bool>("rej_NoTriggerData") ;
+// bool rej_NoL1fired = rejectEvent_params.getParameter<bool>("rej_NoL1fired") ;
+// bool rej_NoHLTfired = rejectEvent_params.getParameter<bool>("rej_NoHLTfired") ;
+ bool rej_MissingRecoData = rejectEvent_params.getParameter<bool>("rej_MissingRecoData") ;
+ bool rej_MissingTrackData = rejectEvent_params.getParameter<bool>("rej_MissingTrackData") ;
+ bool rej_MissingCaloTowers = rejectEvent_params.getParameter<bool>("rej_MissingCaloTowers") ;
+ bool rej_Empty = rejectEvent_params.getParameter<bool>("rej_Empty") ;
+ bool rej_NoPrimary = rejectEvent_params.getParameter<bool>("rej_NoPrimary") ;
+ bool rej_BadHardJet = rejectEvent_params.getParameter<bool>("rej_BadHardJet") ;
+ bool rej_CleanEmpty = rejectEvent_params.getParameter<bool>("rej_CleanEmpty") ;
+ bool rej_FinalEmpty = rejectEvent_params.getParameter<bool>("rej_FinalEmpty") ;
+ bool rej_BadNoisy = rejectEvent_params.getParameter<bool>("rej_BadNoisy") ;
+ bool rej_BadMET = rejectEvent_params.getParameter<bool>("rej_BadMET") ;
+ bool rej_BadHemis = rejectEvent_params.getParameter<bool>("rej_BadHemis") ;
+ 
+ cout << endl;
+ cout << "Trigger Statistics : " << endl;
+ cout << "   ***L1          : " << endl;
+ cout << "        Before Any Cut: " << endl;
+ for (int i=0; i<(int)numTotL1BitsBeforeCuts.size(); i++) {
+   cout << "      Bit n. " << i << "\t Fired " << numTotL1BitsBeforeCuts[i] << 
+     " \t times \t (" << 100.*(float)numTotL1BitsBeforeCuts[i]/(float)numTotEvt << " %) " << endl;
+ }
+ cout << "   ***HLT          : " << endl;
+ cout << "        Before Any Cut: " << endl;
+ for (int i=0; i<(int)numTotHltBitsBeforeCuts.size(); i++) {
+   cout << "      Bit n. " << i << "\t Fired " << numTotHltBitsBeforeCuts[i] << 
+     " \t times \t (" << 100.*(float)numTotHltBitsBeforeCuts[i]/(float)numTotEvt << " %) " << endl;
+ }
+ 
  cout << endl;
  cout << "Total number of events processed = " << numTotEvt << endl;
- int numTotEvtReject = numTotEvtExceptCaught+numTotEvtNoTrigger+numTotEvtNoReco
-                      +numTotEvtNoTracks+numTotEvtNoCalo+numTotEvtEmpty
-                      +numTotEvtNoPrimary+numTotEvtBadHardJet
-                      +numTotEvtCleanEmpty+numTotEvtFinalEmpty
-                      +numTotEvtBadNoisy+numTotEvtBadMET+numTotEvtBadHemi;
+ int numTotEvtReject = numTotEvtExceptCaught;
+ if (rej_NoTriggerData){numTotEvtReject += numTotEvtNoTrigger;}
+ if (rej_MissingRecoData){numTotEvtReject += numTotEvtNoReco;}
+ if (rej_MissingTrackData){numTotEvtReject += numTotEvtNoTracks;}
+ if (rej_MissingCaloTowers){numTotEvtReject += numTotEvtNoCalo;}
+ if (rej_Empty){numTotEvtReject += numTotEvtEmpty;}
+ if (rej_NoPrimary){numTotEvtReject += numTotEvtNoPrimary;}
+ if (rej_BadHardJet){numTotEvtReject += numTotEvtBadHardJet;}
+ if (rej_CleanEmpty){numTotEvtReject += numTotEvtCleanEmpty;}
+ if (rej_FinalEmpty){numTotEvtReject += numTotEvtFinalEmpty;}
+ if (rej_BadNoisy){numTotEvtReject += numTotEvtBadNoisy;}
+ if (rej_BadMET){numTotEvtReject += numTotEvtBadMET;}
+ if (rej_BadHemis){numTotEvtReject += numTotEvtBadHemi;}
  cout << "   events accepted                  = " 
       << numTotEvt-numTotEvtReject << endl;
  cout << "   events rejected (total)          = " << numTotEvtReject
@@ -712,31 +1217,56 @@ void SusyAnalyzer::PrintStatistics(void)
  cout << "    rejected as exception           = " << numTotEvtExceptCaught 
       << "  = " << 100.*(float)numTotEvtExceptCaught / (float)numTotEvt  << "  % *****" << endl;
  cout << "    without trigger                 = " << numTotEvtNoTrigger
-      << "  = " << 100.*(float)numTotEvtNoTrigger / (float)numTotEvt << " %" << endl;
+      << "  = " << 100.*(float)numTotEvtNoTrigger / (float)numTotEvt << " %";
+ if (rej_NoTriggerData){cout << " rejected ";}
+ cout << endl;
  cout << "    without Reco Data               = " << numTotEvtNoReco
-      << "  = " << 100.*(float)numTotEvtNoReco / (float)numTotEvt << " %" << endl;
+      << "  = " << 100.*(float)numTotEvtNoReco / (float)numTotEvt << " %";
+ if (rej_MissingRecoData){cout << " rejected ";}
+ cout << endl;
  cout << "    without Track Data              = " << numTotEvtNoTracks
-      << "  = " << 100.*(float)numTotEvtNoTracks / (float)numTotEvt << " %" << endl;
+      << "  = " << 100.*(float)numTotEvtNoTracks / (float)numTotEvt << " %";
+ if (rej_MissingTrackData){cout << " rejected ";}
+ cout << endl;
  cout << "    without Calo Tower Data         = " << numTotEvtNoCalo
-      << "  = " << 100.*(float)numTotEvtNoCalo / (float)numTotEvt << " %" << endl;
+      << "  = " << 100.*(float)numTotEvtNoCalo / (float)numTotEvt << " %";
+ if (rej_MissingCaloTowers){cout << " rejected ";}
+ cout << endl;
  cout << "    empty after primary acceptance  = " << numTotEvtEmpty
-      << "  = " << 100.*(float)numTotEvtEmpty / (float)numTotEvt << " %" << endl;
+      << "  = " << 100.*(float)numTotEvtEmpty / (float)numTotEvt << " %";
+ if (rej_Empty){cout << " rejected ";}
+ cout << endl;
  cout << "    without good primary Vx         = " << numTotEvtNoPrimary
-      << "  = " << 100.*(float)numTotEvtNoPrimary / (float)numTotEvt << " %" << endl;
+      << "  = " << 100.*(float)numTotEvtNoPrimary / (float)numTotEvt << " %";
+ if (rej_NoPrimary){cout << " rejected ";}
+ cout << endl;
  cout << "    with  rejected bad hard jet     = " << numTotEvtBadHardJet
-      << "  = " << 100.*(float)numTotEvtBadHardJet / (float)numTotEvt << " %" << endl;
+      << "  = " << 100.*(float)numTotEvtBadHardJet / (float)numTotEvt << " %";
+ if (rej_BadHardJet){cout << " rejected ";}
+ cout << endl;
  cout << "    empty after cleaning            = " << numTotEvtCleanEmpty
-      << "  = " << 100.*(float)numTotEvtCleanEmpty / (float)numTotEvt << " %" << endl;
+      << "  = " << 100.*(float)numTotEvtCleanEmpty / (float)numTotEvt << " %";
+ if (rej_CleanEmpty){cout << " rejected ";}
+ cout << endl;
  cout << "    empty after final acceptance    = " << numTotEvtFinalEmpty
-      << "  = " << 100.*(float)numTotEvtFinalEmpty / (float)numTotEvt << " %" << endl;
- cout << "    rejected as bad/noisy           = " << numTotEvtBadNoisy
-      << "  = " << 100.*(float)numTotEvtBadNoisy / (float)numTotEvt << " %" << endl;
- cout << "    rejected for bad MET            = " << numTotEvtBadMET
-      << "  = " << 100.*(float)numTotEvtBadMET / (float)numTotEvt << " %" << endl;
- cout << "    rejected due to bad hemispheres = " << numTotEvtBadHemi
-      << "  = " << 100.*(float)numTotEvtBadHemi / (float)numTotEvt << " %" << endl;
+      << "  = " << 100.*(float)numTotEvtFinalEmpty / (float)numTotEvt << " %";
+ if (rej_FinalEmpty){cout << " rejected ";}
+ cout << endl;
+ cout << "    event is bad or noisy           = " << numTotEvtBadNoisy
+      << "  = " << 100.*(float)numTotEvtBadNoisy / (float)numTotEvt << " %";
+ if (rej_BadNoisy){cout << " rejected ";}
+ cout << endl;
+ cout << "    event has bad MET               = " << numTotEvtBadMET
+      << "  = " << 100.*(float)numTotEvtBadMET / (float)numTotEvt << " %";
+ if (rej_BadMET){cout << " rejected ";}
+ cout << endl;
+ cout << "    bad hemispheres matching        = " << numTotEvtBadHemi
+      << "  = " << 100.*(float)numTotEvtBadHemi / (float)numTotEvt << " %";
+ if (rej_BadHemis){cout << " rejected ";}
+ cout << endl;
 
  cout << endl;
+ cout << "Statistics for the accepted events:" << endl;
  cout << "Objects within first acceptance cuts:" << endl;
  int numTotReject = numTotNotPrimaryTrk+numTotNotClean+numTotDuplicate;
  cout << "Rejected: " << numTotReject << endl;
@@ -870,7 +1400,11 @@ void SusyAnalyzer::PrintStatistics(void)
   cout << " % efficiency (very crude)";
  }
  cout << endl;
- 
+
+ cout << endl;
+ cout << "Analysis Statistics : " << endl;
+ cout << " Total Number of Events selected after SusyAnalysis cuts : " << numTotEventsAfterCuts << " (" << 100.*(float)numTotEventsAfterCuts / (float)numTotEvt << " %) " << endl;
+ cout << endl;
  
  cout << "***  " << endl;
  cout << "*** End of Job " << endl;

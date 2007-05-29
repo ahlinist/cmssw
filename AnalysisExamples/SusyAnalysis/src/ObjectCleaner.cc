@@ -60,6 +60,7 @@ clean_deltaRElecJetmax = param.getParameter<double>("clean_deltaRElecJetmax") ;
 clean_elecbyJetEratio = param.getParameter<double>("clean_elecbyJetEratio") ;
 clean_methodTksInJet = param.getParameter<int>("clean_methodTksInJet") ;
 clean_nJetTkHitsmin = param.getParameter<int>("clean_nJetTkHitsmin") ;
+clean_JetTkPtmin = param.getParameter<double>("clean_JetTkPtmin") ;
 clean_jetCaloTowEFracmin = param.getParameter<double>("clean_jetCaloTowEFracmin") ;
 clean_dRTrkFromJet = param.getParameter<double>("clean_dRTrkFromJet") ;
 clean_FracChminJet = param.getParameter<double>("clean_FracChminJet") ;
@@ -787,10 +788,12 @@ bool ObjectCleaner::CleanJet(int ichk)
   float ptJet = RecoData[ichk]->pt();
   float pt_track = 0.;
   if (clean_methodTksInJet == 1){
-    pt_track = GetJetTrkPtsum(ichk, 1, clean_nJetTkHitsmin, clean_jetCaloTowEFracmin);
+    pt_track = GetJetTrkPtsum(ichk, 1, 
+       clean_nJetTkHitsmin, clean_JetTkPtmin, clean_jetCaloTowEFracmin);
   }
   else if (clean_methodTksInJet == 2){
-    pt_track = GetJetTrkPtsum(ichk, 2, clean_nJetTkHitsmin, clean_dRTrkFromJet);
+    pt_track = GetJetTrkPtsum(ichk, 2, 
+       clean_nJetTkHitsmin, clean_JetTkPtmin, clean_dRTrkFromJet);
   }
   float eFractEm = jetcand->emEnergyFraction();
   

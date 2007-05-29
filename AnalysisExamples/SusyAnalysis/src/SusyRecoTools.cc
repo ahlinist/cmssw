@@ -125,7 +125,7 @@ int SusyRecoTools::GetPrimaryVertex(float clean_etaTkfromVxmax)
 //------------------------------------------------------------------------------
 
 bool SusyRecoTools::GetJetVx(int ichk, int imethod, 
-                             int nJetTkHitsmin, float paramTksInJet)
+         int nJetTkHitsmin, float jetVxTkPtmin, float paramTksInJet)
 { // computes the vertex of a jet from its tracks
   // the coordinates are stored in the jet MrParticle
   // if no vertex found, it returns false
@@ -138,10 +138,12 @@ bool SusyRecoTools::GetJetVx(int ichk, int imethod,
   
   // Get the list of track indices inside a cone around the jet
   if (imethod == 1){
-    GetJetTrksFromCalo(ichk, nJetTkHitsmin, paramTksInJet, & tracksFromJet);
+    GetJetTrksFromCalo(ichk, nJetTkHitsmin, jetVxTkPtmin, paramTksInJet, 
+                       & tracksFromJet);
   }
   else if (imethod == 2){
-    GetJetTrksInCone(ichk, nJetTkHitsmin, paramTksInJet, & tracksFromJet);
+    GetJetTrksInCone(ichk, nJetTkHitsmin, jetVxTkPtmin, paramTksInJet, 
+                     & tracksFromJet);
   }
   float nberTracks = tracksFromJet.size();
   RecoData[ichk]->setNumTracks(tracksFromJet.size() );
@@ -183,7 +185,7 @@ bool SusyRecoTools::GetJetVx(int ichk, int imethod,
 //------------------------------------------------------------------------------
 
 void SusyRecoTools::GetJetTrksFromCalo(int iJet, int nJetTkHitsmin,
-                      float CaloTowEFracmin, vector<int> * tracksFromJet)
+         float tkPtmin, float CaloTowEFracmin, vector<int> * tracksFromJet)
 { // makes a list of all tracks compatible with coming from a jet
   // within a specified cone defined by the associated CaloTowers
   // it returns the indices in the track collection in a vector
@@ -257,7 +259,8 @@ void SusyRecoTools::GetJetTrksFromCalo(int iJet, int nJetTkHitsmin,
   
  for (int i=0; i< (int) TrackData->size(); i++){
    const Track* pTrack = &(*TrackData)[i];
-   if ((int)pTrack->recHitsSize() >= nJetTkHitsmin){
+   if ((int)pTrack->recHitsSize() >= nJetTkHitsmin
+      && pTrack->pt() >= tkPtmin){
      float tkOuterX = pTrack->outerX();
      float tkOuterY = pTrack->outerY();
      float tkOuterZ = pTrack->outerZ();
@@ -289,8 +292,8 @@ void SusyRecoTools::GetJetTrksFromCalo(int iJet, int nJetTkHitsmin,
 
 //------------------------------------------------------------------------------
 
-void SusyRecoTools::GetJetTrksInCone(int ichk, int nJetTkHitsmin, float dRjet,
-                              vector<int> * tracksFromJet)
+void SusyRecoTools::GetJetTrksInCone(int ichk,  int nJetTkHitsmin, 
+                    float tkPtmin, float dRjet, vector<int> * tracksFromJet)
 { // makes a list of all tracks compatible with coming from a jet
   // within a specified DR cone
   // it returns the indices in the track collection in a vector
@@ -307,7 +310,8 @@ void SusyRecoTools::GetJetTrksInCone(int ichk, int nJetTkHitsmin, float dRjet,
   
   for (int i=0; i< (int) TrackData->size(); i++){
     const Track* pTrack = &(*TrackData)[i];
-    if ((int)pTrack->recHitsSize() >= nJetTkHitsmin){
+    if ((int)pTrack->recHitsSize() >= nJetTkHitsmin
+        && pTrack->pt() >= tkPtmin){
       float eta = pTrack->eta();
       float phi = pTrack->phi();
       float DR = GetDeltaR(etaJet, eta, phiJet, phi);
@@ -477,17 +481,19 @@ float SusyRecoTools::GetPtwrtJet(int ichk, int iJet)
 //------------------------------------------------------------------------------
 
 float SusyRecoTools::GetJetTrkPtsum(int ichk, int imethod, 
-                             int nJetTkHitsmin, float paramTksInJet)
+          int nJetTkHitsmin, float jetTkPtmin, float paramTksInJet)
 { // computes the Pt sum of tracks compatible with coming from a jet
   
   vector<int> tracksFromJet;
   
   // Get the list of track indices inside a cone around the jet
   if (imethod == 1){
-    GetJetTrksFromCalo(ichk, nJetTkHitsmin, paramTksInJet, & tracksFromJet);
+    GetJetTrksFromCalo(ichk, nJetTkHitsmin, jetTkPtmin, paramTksInJet, 
+                       & tracksFromJet);
   }
   else if (imethod == 2){
-    GetJetTrksInCone(ichk, nJetTkHitsmin, paramTksInJet, & tracksFromJet);
+    GetJetTrksInCone(ichk, nJetTkHitsmin, jetTkPtmin, paramTksInJet, 
+                     & tracksFromJet);
   }
 
   if (tracksFromJet.size() <= 0){

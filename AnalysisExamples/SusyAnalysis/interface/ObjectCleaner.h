@@ -98,6 +98,7 @@ float clean_deltaRElecJetmax;
 float clean_elecbyJetEratio;
 int clean_methodTksInJet;
 int clean_nJetTkHitsmin;
+float clean_JetTkPtmin;
 float clean_jetCaloTowEFracmin;
 float clean_dRTrkFromJet;
 float clean_FracChminJet;

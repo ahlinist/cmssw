@@ -123,6 +123,7 @@ private:
    // names of parameter sets  
 //  edm::ParameterSet& iConfig;
   Config_t * myConfig;
+  edm::ParameterSet rejectEvent_params;
   edm::ParameterSet acceptance_cuts;
   edm::ParameterSet cleaner_params;
   edm::ParameterSet isolator_params;
@@ -144,6 +145,19 @@ private:
 
 //  int DEBUGLVL;
 
+  
+  // Define the event rejection parameters
+  bool rej_MissingRecoData;
+  bool rej_MissingTrackData;
+  bool rej_MissingCaloTowers;
+  bool rej_Empty;
+  bool rej_NoPrimary;
+  bool rej_BadHardJet;
+  bool rej_CleanEmpty;
+  bool rej_FinalEmpty;
+  bool rej_BadNoisy;
+  bool rej_BadMET;
+  
   // Define the acceptance cuts
   float ana_elecEtaMax;
   float ana_elecPtMin1;
@@ -155,6 +169,7 @@ private:
   float ana_photonPtMin1;
   float ana_jetEtaMax;
   float ana_jetPtMin1;
+  float ana_minBtagDiscriminator;
   float ana_elecPtMin2;
   float ana_muonPtMin2;
   float ana_tauPtMin2;
@@ -171,6 +186,7 @@ private:
   float clean_distVxmax;
   int clean_methodTksInJetVx;
   int clean_nJetVxTkHitsmin;
+  float clean_JetVxTkPtmin;
   float clean_jetVxCaloTowEFracmin;
   float clean_dRTrkFromJetVx;
   float clean_rejEvtBadJetPtmin;

@@ -59,7 +59,10 @@ float mass() {return sqrt(E*E-Px*Px-Py*Py-Pz*Pz);}
 float charge() {return Charge;}
 // two-particle invariant mass
 float invmass(MrParticle* part) {
-   return sqrt(E*part->energy()-Px*part->px()-Py*part->py()-Pz*part->pz());}
+   return sqrt( (E+part->energy())*(E+part->energy()) -
+                (Px+part->px())*(Px+part->px())       -
+                (Py+part->py())*(Py+part->py())       -
+                (Pz+part->pz())*(Pz+part->pz()) );}
 // coordinates of reference point (closest approach to beam)
 float vx() {return Vx;}
 float vy() {return Vy;}
@@ -307,6 +310,7 @@ const JetTag* PJetTag;
 // It may be a temporary solution.
 
 struct Config_t {
+     edm::ParameterSet rejectEvent_params;
      edm::ParameterSet acceptance_cuts;
      edm::ParameterSet cleaner_params;
      edm::ParameterSet isolator_params;

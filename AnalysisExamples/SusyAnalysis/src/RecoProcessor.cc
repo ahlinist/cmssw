@@ -25,7 +25,8 @@ ana_tauPtMin2(5.), ana_photonPtMin2(20.), ana_jetPtMin2(30.),
 reco_elecD0ErrorThresh(0.), reco_elecDzErrorThresh(0.),
 reco_muonD0ErrorThresh(0.), reco_muonDzErrorThresh(0.),
 reco_jetD0ErrorThresh(0.), reco_jetDzErrorThresh(0.),
-clean_distVxmax(5.), clean_methodTksInJetVx(1), clean_nJetVxTkHitsmin(8),
+clean_distVxmax(5.), 
+clean_methodTksInJetVx(1), clean_nJetVxTkHitsmin(8),clean_JetVxTkPtmin(0.9),
 clean_jetVxCaloTowEFracmin(0.005), clean_dRTrkFromJetVx(0.6),
 clean_rejEvtBadJetPtmin(100.)
 {}
@@ -40,27 +41,38 @@ myConfig(aConfig), MCData(*(pEvtData->mcData()))
 //DEBUGLVL(0)
 {
 
+  // get event rejection decisions
+  rejectEvent_params =
+    (*myConfig).rejectEvent_params;
+  
   // get acceptance cuts
   acceptance_cuts =
     (*myConfig).acceptance_cuts;
-//  acceptance_cuts =
-//    iConfig.getParameter<edm::ParameterSet>("AcceptanceCuts");
     
   // get parameters for ObjectCleaner
   cleaner_params = (*myConfig).cleaner_params;
-//  cleaner_params = iConfig.getParameter<edm::ParameterSet>("CleaningParams");
   
   // get parameters for Isolator
     isolator_params = (*myConfig).isolator_params;
-//  isolator_params = iConfig.getParameter<edm::ParameterSet>("IsolationParams");
 
   // get parameters for ObjectMatcher
    objectmatch_params = (*myConfig).objectmatch_params;
-//  objectmatch_params = iConfig.getParameter<edm::ParameterSet>("ObjectMatchingParams");
 
   // get debug level
 //  DEBUGLVL = iConfig.getUntrackedParameter<int>("debuglvl", 0);  
  
+   // load event rejection decisions
+ rej_MissingRecoData = rejectEvent_params.getParameter<bool>("rej_MissingRecoData") ;
+ rej_MissingTrackData = rejectEvent_params.getParameter<bool>("rej_MissingTrackData") ;
+ rej_MissingCaloTowers = rejectEvent_params.getParameter<bool>("rej_MissingCaloTowers") ;
+ rej_Empty = rejectEvent_params.getParameter<bool>("rej_Empty") ;
+ rej_NoPrimary = rejectEvent_params.getParameter<bool>("rej_NoPrimary") ;
+ rej_BadHardJet = rejectEvent_params.getParameter<bool>("rej_BadHardJet") ;
+ rej_CleanEmpty = rejectEvent_params.getParameter<bool>("rej_CleanEmpty") ;
+ rej_FinalEmpty = rejectEvent_params.getParameter<bool>("rej_FinalEmpty") ;
+ rej_BadNoisy = rejectEvent_params.getParameter<bool>("rej_BadNoisy") ;
+ rej_BadMET = rejectEvent_params.getParameter<bool>("rej_BadMET") ;
+   
    // load acceptance cuts
   ana_elecEtaMax = acceptance_cuts.getParameter<double>("ana_elecEtaMax") ;
   ana_elecPtMin1 = acceptance_cuts.getParameter<double>("ana_elecPtMin1") ;
@@ -72,6 +84,7 @@ myConfig(aConfig), MCData(*(pEvtData->mcData()))
   ana_photonPtMin1 = acceptance_cuts.getParameter<double>("ana_photonPtMin1") ;
   ana_jetEtaMax = acceptance_cuts.getParameter<double>("ana_jetEtaMax") ;
   ana_jetPtMin1 = acceptance_cuts.getParameter<double>("ana_jetPtMin1") ;
+  ana_minBtagDiscriminator = acceptance_cuts.getParameter<double>("ana_minBtagDiscriminator");
   ana_elecPtMin2 = acceptance_cuts.getParameter<double>("ana_elecPtMin2") ;
   ana_muonPtMin2 = acceptance_cuts.getParameter<double>("ana_muonPtMin2") ;
   ana_tauPtMin2 = acceptance_cuts.getParameter<double>("ana_tauPtMin2") ;
@@ -90,6 +103,7 @@ myConfig(aConfig), MCData(*(pEvtData->mcData()))
   clean_distVxmax = cleaner_params.getParameter<double>("clean_distVxmax") ;
   clean_methodTksInJetVx = cleaner_params.getParameter<int>("clean_methodTksInJetVx") ;
   clean_nJetVxTkHitsmin = cleaner_params.getParameter<int>("clean_nJetVxTkHitsmin") ;
+  clean_JetVxTkPtmin = cleaner_params.getParameter<double>("clean_JetVxTkPtmin") ;
   clean_jetVxCaloTowEFracmin = cleaner_params.getParameter<double>("clean_jetVxCaloTowEFracmin") ;
   clean_dRTrkFromJetVx = cleaner_params.getParameter<double>("clean_dRTrkFromJetVx") ;
   clean_rejEvtBadJetPtmin = cleaner_params.getParameter<double>("clean_rejEvtBadJetPtmin") ;
@@ -171,24 +185,27 @@ bool RecoProcessor::RecoDriver()
   // Make simple checks on existence of data
    if (RecoData.size() <= 0){
      numEvtNoReco++;
+     EventData->setMissingRecoData();
      if (DEBUGLVL >= 1){
        cout << " No Reco Data in event " << endl;
      }
-     return false;
+     if (rej_MissingRecoData) {return false;}
    }
    if (TrackData->size() <=0){
      numEvtNoTracks++;
+     EventData->setMissingTrackData();
      if (DEBUGLVL >= 1){
        cout << " No Track Data in event " << endl;
      }
-     return false;
+     if (rej_MissingTrackData) {return false;}
    }
    if (CaloTowerData->size() <=0){
      numEvtNoCalo++;
+     EventData->setMissingCaloTowers();
      if (DEBUGLVL >= 1){
        cout << " No Calo Tower Data in event " << endl;
      }
-     return false;
+     if (rej_MissingCaloTowers) {return false;}
    }
 
   // ******************************************************** 
@@ -289,11 +306,18 @@ bool RecoProcessor::RecoDriver()
        if (fabs(RecoData[i]->eta()) < ana_jetEtaMax && 
            RecoData[i]->pt() > ana_jetPtMin1){   
 
-         if (clean_methodTksInJetVx == 1){
-           withRefPoint = GetJetVx(i, 1, clean_nJetVxTkHitsmin, clean_jetVxCaloTowEFracmin);
+     // set the jet as b-jet if the discriminator is good enough
+         if (RecoData[i]->getBtagDiscriminator() > ana_minBtagDiscriminator) {
+           RecoData[i]->setParticleType(6);
          }
-         else if (clean_methodTksInJetVx == 1){
-           withRefPoint = GetJetVx(i, 2, clean_nJetVxTkHitsmin, clean_dRTrkFromJetVx);
+         
+         if (clean_methodTksInJetVx == 1){
+           withRefPoint = GetJetVx(i, 1, 
+              clean_nJetVxTkHitsmin, clean_JetVxTkPtmin, clean_jetVxCaloTowEFracmin);
+         }
+         else if (clean_methodTksInJetVx == 2){
+           withRefPoint = GetJetVx(i, 2, 
+              clean_nJetVxTkHitsmin, clean_JetVxTkPtmin, clean_dRTrkFromJetVx);
          }
          float d0Error = RecoData[i]->d0Error();
          float dzError = RecoData[i]->dzError();
@@ -336,10 +360,11 @@ bool RecoProcessor::RecoDriver()
 
    if (RecoData.size() <= 0){
      numEvtEmpty++;
+     EventData->setEmpty();
      if (DEBUGLVL >= 1){
        cout << " No objects left in primary acceptance " << endl;
      }
-     return false;
+     if (rej_Empty) {return false;}
    }
 
   // ******************************************************** 
@@ -363,11 +388,14 @@ bool RecoProcessor::RecoDriver()
   
    if (!acceptPrimaryVx){
       numEvtNoPrimary++;
+      EventData->setNoPrimary();
       if (DEBUGLVL >= 1){
-       cout << " Event rejected for bad primary vertex " << endl;
+       cout << " Event has bad primary vertex " << endl;
       }
-      delete myCleaner;
-      return false;
+      if (rej_NoPrimary) {
+        delete myCleaner;
+        return false;
+      }
    }
    
 
@@ -425,11 +453,14 @@ bool RecoProcessor::RecoDriver()
                 && RecoData[i]->particleType() >= 5
                 && RecoData[i]->particleType() <= 7){
          numEvtBadHardJet++;
+         EventData->setBadHardJet();
          if (DEBUGLVL >= 1){
-           cout << " Event rejected for bad hard jet " << endl;
+           cout << " Event has bad hard jet " << endl;
          }
-         delete myCleaner;
-         return false;
+         if (rej_BadHardJet) {
+           delete myCleaner;
+           return false;
+         }
        }
        if (RecoData[i]->particleType() == 1){numElectrons--;}
        else if (RecoData[i]->particleType() == 2){numMuons--;}
@@ -503,11 +534,14 @@ bool RecoProcessor::RecoDriver()
 
    if (RecoData.size() <= 0){
      numEvtCleanEmpty++;
+     EventData->setCleanEmpty();
      if (DEBUGLVL >= 1){
        cout << " No objects left after cleaning " << endl;
      }
-     delete myCleaner;
-     return false;
+     if (rej_CleanEmpty) {
+       delete myCleaner;
+       return false;
+     }
    }
 
    // end of cleaning
@@ -724,11 +758,14 @@ bool RecoProcessor::RecoDriver()
     
     if (RecoData.size() <= 0){
       numEvtFinalEmpty++;
+      EventData->setFinalEmpty();
       if (DEBUGLVL >= 1){
         cout << " No objects left after final acceptance cuts " << endl;
       }
-      delete myCleaner;
-      return false;
+      if (rej_FinalEmpty) {
+        delete myCleaner;
+        return false;
+      }
     }
 
    
@@ -744,12 +781,15 @@ bool RecoProcessor::RecoDriver()
   
    if (!cleanevt){
       numEvtBadNoisy++;
+      EventData->setBadNoisy();
       if (DEBUGLVL >= 1){
-       cout << " Event rejected for bad/noisy " << endl;
+       cout << " Event is bad or noisy " << endl;
       }
 //      PrintRecoInfo();
-      delete myCleaner;
-      return false;
+      if (rej_BadNoisy) {
+        delete myCleaner;
+        return false;
+      }
    }
 
   // make Reco printout of final objects
@@ -808,11 +848,14 @@ bool RecoProcessor::RecoDriver()
     
     if (!cleanmet) {
       numEvtBadMET++;
+      EventData->setBadMET();
       if (DEBUGLVL >= 1){
-       cout << " Event rejected for bad MET " << endl;
+       cout << " Event has bad MET " << endl;
       }
-      delete myCleaner;
-      return false;
+      if (rej_BadMET) {
+        delete myCleaner;
+        return false;
+      }
     }
 
 

@@ -37,6 +37,8 @@ virtual ~UserAnalysis(){
 
 // Methods:
 
+virtual bool L1Driver(MrEvent*);
+virtual bool HLTDriver(MrEvent*);
 virtual void doAnalysis(MrEvent*);
 void endAnalysis();
 
@@ -75,6 +77,9 @@ private:
   MrEvent * EventData;
   //std::vector<MrParticle*> & RecoData;
   //std::vector<MrParticle*> & MCData;
+
+// number of User selected events for final statistics
+  int nTotEvtSelUser;
 
 // Some (possibly) useful functions:
 // Based on MCData
