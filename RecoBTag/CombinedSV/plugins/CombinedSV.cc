@@ -208,7 +208,10 @@ void CombinedSV::produce(edm::Event& iEvent,
         trks.push_back ( builder->build ( &(*i) ) );
       }
 
-      reco::CombinedSVTagInfo btag = algorithm_->tag(primaryVertex, *( jetNTrks->first ), trks );
+      unsigned int index = jetNTrks - jetWithTrackColl->begin();
+      reco::CombinedSVTagInfo btag = algorithm_->tag(
+		primaryVertex, *( jetNTrks->first ), trks,
+		edm::Ref<JetTracksAssociationCollection>(jetWithTrackColl, index) );
       reco::JetTag jettag( btag.discriminator() );
       baseCollection->push_back(jettag);
       extCollection->push_back(btag);

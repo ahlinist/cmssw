@@ -125,7 +125,8 @@ void combsv::CombinedSVAlgorithm::adjust ( const reco::Vertex & primVertex,
 
 reco::CombinedSVTagInfo combsv::CombinedSVAlgorithm::tag ( const reco::Vertex & primVertex,
                                     const reco::Particle & jet,
-                                    const vector < reco::TransientTrack > & itracks )
+                                    const vector < reco::TransientTrack > & itracks,
+                                    const JetTracksAssociationRef & jtaRef )
 {
   LogDebug("") << "Tagging with pv=" << primVertex.position() << ", jet="
                << jet.px() << "," << jet.py() << "," << jet.pz()
@@ -139,7 +140,7 @@ reco::CombinedSVTagInfo combsv::CombinedSVAlgorithm::tag ( const reco::Vertex & 
   {
     // did not pass the jet filter
     reco::TaggingVariableList x;
-    return reco::CombinedSVTagInfo ( x, -1. );
+    return reco::CombinedSVTagInfo ( x, -1., jtaRef );
   }
 
   // adjust all builders and filters to the new jet
@@ -204,7 +205,7 @@ reco::CombinedSVTagInfo combsv::CombinedSVAlgorithm::tag ( const reco::Vertex & 
    * finally compute the discriminator computer
    */
   double d = discriminatorComputer_->compute ( singleVarVector, vertexType );
-  return reco::CombinedSVTagInfo ( singleVarVector, d );
+  return reco::CombinedSVTagInfo ( singleVarVector, d, jtaRef );
 }
 
 double combsv::CombinedSVAlgorithm::minFlightDistanceSignificance2D ( 

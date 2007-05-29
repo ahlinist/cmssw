@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "RecoBTag/CombinedSV/interface/CombinedSVTaggingVariables.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
@@ -9,7 +11,13 @@ CombinedSVTaggingVariables::CombinedSVTaggingVariables (
     const vector < TaggingVariableName > & pseudovertex,
     const vector < TaggingVariableName > & novertex ) :
   theRecoVars ( recovertex ), thePseudoVars ( pseudovertex ), theNoVars ( novertex )
-{}
+{
+  // the variables in TaggingVariableList have to be sorted
+  // by the TaggingVariableName
+  std::sort(theRecoVars.begin(),   theRecoVars.end());
+  std::sort(thePseudoVars.begin(), thePseudoVars.end());
+  std::sort(theNoVars.begin(),     theNoVars.end());
+}
 
 const vector < TaggingVariableName > & CombinedSVTaggingVariables::variables ( 
     reco::btag::Vertices::VertexType t ) const
