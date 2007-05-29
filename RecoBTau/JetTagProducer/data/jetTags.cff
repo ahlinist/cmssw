@@ -9,9 +9,13 @@ include "RecoBTag/TrackProbability/data/jetProbabilityComputer.cfi"
 include "RecoBTau/JetTagProducer/data/jetProbabilityJetTags.cfi"
 
 include "RecoBTau/JetTagProducer/data/softMuonNoIPJetTags.cfi"
+include "RecoBTag/SoftLepton/data/softMuonNoIPES.cfi"
 
 include "RecoBTau/JetTagProducer/data/softMuonJetTags.cfi"
+include "RecoBTag/SoftLepton/data/softMuonES.cfi"
 
 include "RecoBTau/JetTagProducer/data/softElectronJetTags.cfi"
+include "RecoBTag/SoftLepton/data/softElectronES.cfi"
 
 # include "RecoBTau/JetTagProducer/data/softLeptonByPtJetTags.cfi"
+# include "RecoBTag/SoftLepton/data/softLeptonByPtES.cfi"
