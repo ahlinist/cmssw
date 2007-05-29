@@ -13,7 +13,7 @@ vector < reco::TransientTrack > TTracksFromRecoVertex::create ( const reco::Vert
   vector < reco::TransientTrack > ret;
   for ( reco::track_iterator i=v.tracks_begin(); i!=v.tracks_end() ; ++i )
   {
-    reco::TransientTrack tmp = builder.build ( &(*i) );
+    reco::TransientTrack tmp = builder.build ( &(**i) );
     ret.push_back ( tmp );
   }
   return ret;
