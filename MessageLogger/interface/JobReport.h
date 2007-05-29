@@ -323,8 +323,8 @@ namespace edm {
       /// No special chars in the value string. 
       void reportGeneratorInfo(std::string  name, std::string  value);
       
-      
-      
+      /// debug/test util
+      std::string dumpFiles(void);
 
    protected:
       boost::scoped_ptr<JobReportImpl>& impl() {return impl_;}
