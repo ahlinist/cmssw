@@ -1,5 +1,5 @@
-#ifndef Framework_RunPrincipal_h
-#define Framework_RunPrincipal_h
+#ifndef FWCore_Framework_RunPrincipal_h
+#define FWCore_Framework_RunPrincipal_h
 
 /*----------------------------------------------------------------------
   
@@ -50,7 +50,7 @@ namespace edm {
     using Base::get;
     using Base::getBySelector;
     using Base::getByType;
-    using Base::getGroup;
+    using Base::getForOutput;
     using Base::getIt;
     using Base::getMany;
     using Base::getManyByType;
@@ -66,7 +66,7 @@ namespace edm {
     using Base::store;
 
   private:
-    virtual bool unscheduledFill(Group const&) const {return false;}
+    virtual bool unscheduledFill(Provenance const&) const {return false;}
 
     RunAuxiliary aux_;
   };

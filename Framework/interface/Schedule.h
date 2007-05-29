@@ -250,7 +250,7 @@ namespace edm
     RunStopwatch::StopwatchPointer   stopwatch_;
 
     boost::shared_ptr<UnscheduledCallProducer> unscheduled_;
-    std::vector<boost::shared_ptr<Group> >     demandGroups_;
+    std::vector<boost::shared_ptr<Provenance> >     demandBranches_;
 
     volatile bool       endpathsAreActive_;
   };

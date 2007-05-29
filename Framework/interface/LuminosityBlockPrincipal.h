@@ -1,5 +1,5 @@
-#ifndef Framework_LuminosityBlockPrincipal_h
-#define Framework_LuminosityBlockPrincipal_h
+#ifndef FWCore_Framework_LuminosityBlockPrincipal_h
+#define FWCore_Framework_LuminosityBlockPrincipal_h
 
 /*----------------------------------------------------------------------
   
@@ -78,8 +78,8 @@ namespace edm {
     using Base::get;
     using Base::getBySelector;
     using Base::getByType;
-    using Base::getGroup;
     using Base::getIt;
+    using Base::getForOutput;
     using Base::getMany;
     using Base::getManyByType;
     using Base::getProvenance;
@@ -94,7 +94,7 @@ namespace edm {
     using Base::store;
 
   private:
-    virtual bool unscheduledFill(Group const&) const {return false;}
+    virtual bool unscheduledFill(Provenance const&) const {return false;}
 
     boost::shared_ptr<RunPrincipal> runPrincipal_;
     LuminosityBlockAuxiliary aux_;

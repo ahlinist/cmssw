@@ -93,7 +93,7 @@ namespace edm {
     using Base::get;
     using Base::getBySelector;
     using Base::getByType;
-    using Base::getGroup;
+    using Base::getForOutput;
     using Base::getIt;
     using Base::getMany;
     using Base::getManyByType;
@@ -112,7 +112,7 @@ namespace edm {
 
   private:
 
-    virtual bool unscheduledFill(Group const& group) const;
+    virtual bool unscheduledFill(Provenance const& prov) const;
 
     EventAuxiliary aux_;
     boost::shared_ptr<LuminosityBlockPrincipal> luminosityBlockPrincipal_;

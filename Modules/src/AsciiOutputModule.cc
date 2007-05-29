@@ -11,6 +11,7 @@ $Id$
 #include "FWCore/Framework/interface/EventPrincipal.h"
 #include "FWCore/Framework/interface/OutputModule.h"
 #include "DataFormats/Provenance/interface/ProductRegistry.h"
+#include "DataFormats/Provenance/interface/Provenance.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 namespace edm {
@@ -51,12 +52,17 @@ namespace edm {
     // ... collision id
     *pout_ << '\n' << e.id() << '\n';
     
-    // Loop over groups, and write some output for each...
+    // Loop over products, and write some output for each...
 
-    for(EventPrincipal::const_iterator i = e.begin(), iEnd = e.end(); i != iEnd; ++i) {
-      BranchDescription const& desc = (*i)->productDescription();
+    std::vector<Provenance const *> provs;
+    e.getAllProvenance(provs);
+    for(std::vector<Provenance const *>::const_iterator i = provs.begin(),
+	 iEnd = provs.end();
+	 i != iEnd;
+	 ++i) {
+      BranchDescription const& desc = (*i)->product();
       if (selected(desc)) {
-        *pout_ << *i << '\n';
+        *pout_ << **i << '\n';
       }
     }
   }
