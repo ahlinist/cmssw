@@ -84,7 +84,7 @@ public:
    type_(prod.TypeOf()),
    prod_(prod),
    prov_(prov),
-   id_(prov->event().productID_) { 
+   id_(prov->productID()) { 
       assert(prod_);
       assert(prov_);
       assert(id_ != ProductID());
