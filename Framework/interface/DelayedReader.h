@@ -1,5 +1,5 @@
-#ifndef Framework_DelayedReader_h
-#define Framework_DelayedReader_h
+#ifndef FWCore_Framework_DelayedReader_h
+#define FWCore_Framework_DelayedReader_h
 
 /*----------------------------------------------------------------------
   
@@ -11,18 +11,17 @@ $Id$
 ----------------------------------------------------------------------*/
 
 #include <memory>
+#include "DataFormats/Provenance/interface/ProvenanceDelayedReader.h"
 
 namespace edm {
   class BranchKey;
-  class BranchEntryDescription;
   class EDProduct;
   class EDProductGetter;
-  class DelayedReader {
+  class DelayedReader : public ProvenanceDelayedReader {
   public:
     virtual ~DelayedReader();
 
     virtual std::auto_ptr<EDProduct> getProduct(BranchKey const& k, EDProductGetter const* ep) const = 0;
-    virtual std::auto_ptr<BranchEntryDescription> getProvenance(BranchKey const& k, EDProductGetter const* ep) const = 0;
   };
 }
 
