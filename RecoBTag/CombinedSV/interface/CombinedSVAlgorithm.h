@@ -13,6 +13,7 @@
 #include "RecoBTag/CombinedSV/interface/CombinedVertex.h"
 #include "RecoBTag/CombinedSV/interface/CombinedSVTaggingVariables.h"
 #include "RecoBTag/CombinedSV/interface/BTagVertexReconstructor.h"
+#include "DataFormats/BTauReco/interface/JetTracksAssociation.h"
 #include "DataFormats/BTauReco/interface/CombinedSVTagInfo.h"
 #include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
 #include <vector>
@@ -63,7 +64,8 @@ namespace combsv {
      */
     reco::CombinedSVTagInfo tag( const reco::Vertex & primVertex,
                             const reco::Particle & jet,
-                            const std::vector < reco::TransientTrack > & tracks );
+                            const std::vector < reco::TransientTrack > & tracks,
+                            const reco::JetTracksAssociationRef & jtaRef );
 
     const CombinedSVTaggingVariables & variables() const;
 
