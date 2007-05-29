@@ -1,0 +1,4 @@
+module softElectronJetTags = ElectronTaggerESProducer { 
+  InputTag tagInfo        = softElectronTagInfos
+  string   jetTagComputer = "softElectron"
+}

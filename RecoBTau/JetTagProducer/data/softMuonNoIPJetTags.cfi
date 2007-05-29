@@ -1,0 +1,4 @@
+module softMuonNoIPJetTags = MuonTaggerNoIPESProducer { 
+  InputTag tagInfo        = softMuonTagInfos
+  string   jetTagComputer = "softMuonNoIP"
+}
