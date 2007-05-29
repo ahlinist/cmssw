@@ -1,4 +1,4 @@
-module softMuonJetTags = MuonTaggerESProducer { 
+module softMuonJetTags = JetTagProducerSoftLepton { 
   InputTag tagInfo        = softMuonTagInfos
   string   jetTagComputer = "softMuon"
 }
