@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrea Rizzi
 //         Created:  Thu Apr  6 09:56:23 CEST 2006
-// $Id: JetTagProducer.cc,v 1.3 2007/05/11 14:18:15 saout Exp $
+// $Id: JetTagProducer.cc,v 1.4 2007/05/28 02:52:56 saout Exp $
 //
 //
 
@@ -72,38 +72,39 @@ void
 JetTagProducer<ConcreteTagInfoCollection>::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   using namespace edm;
-   Handle<ConcreteTagInfoCollection> tagInfoHandle;
-   iEvent.getByLabel(m_tagInfo,tagInfoHandle);
+  Handle<ConcreteTagInfoCollection> tagInfoHandle;
+  iEvent.getByLabel(m_tagInfo,tagInfoHandle);
        
-   edm::ESHandle<JetTagComputer> computer;
-   iSetup.get<JetTagComputerRecord>().get( m_jetTagComputer, computer );
-   m_computer = computer.product() ;
-   m_computer->setEventSetup(iSetup);
+  edm::ESHandle<JetTagComputer> computer;
+  iSetup.get<JetTagComputerRecord>().get( m_jetTagComputer, computer );
+  m_computer = computer.product() ;
+  m_computer->setEventSetup(iSetup);
 
- reco::JetTagCollection * jetTagCollection = new reco::JetTagCollection();
+  std::auto_ptr<reco::JetTagCollection> jetTagCollection(new reco::JetTagCollection());
    
-typename   ConcreteTagInfoCollection::const_iterator it = tagInfoHandle->begin();
-   for(int cc=0; it != tagInfoHandle->end(); it++, cc++)
-     {
-      JetTag jt(m_computer->discriminator(*it));
-      jt.setTagInfo(RefToBase<BaseTagInfo>(edm::Ref<ConcreteTagInfoCollection>(tagInfoHandle,cc)));
-      jetTagCollection->push_back(jt);    
-     }
+  typename ConcreteTagInfoCollection::const_iterator it = tagInfoHandle->begin();
+  for (int cc=0; it != tagInfoHandle->end(); it++, cc++)
+  {
+    JetTag jt(m_computer->discriminator(*it));
+    jt.setTagInfo(RefToBase<BaseTagInfo>(edm::Ref<ConcreteTagInfoCollection>(tagInfoHandle,cc)));
+    jetTagCollection->push_back(jt);    
+  }
   
-    std::auto_ptr<reco::JetTagCollection> results(jetTagCollection);
-    iEvent.put(results);
-   
+  iEvent.put(jetTagCollection);
 }
 
 
 #include "DataFormats/BTauReco/interface/TrackIPTagInfo.h"
 #include "DataFormats/BTauReco/interface/TrackCountingTagInfo.h"
 #include "DataFormats/BTauReco/interface/CombinedSVTagInfo.h"
-//define this as a plug-in
-typedef JetTagProducer<TrackCountingTagInfoCollection>  JetTagProducerTrackCounting ;
-DEFINE_FWK_MODULE(JetTagProducerTrackCounting);
-typedef JetTagProducer<TrackIPTagInfoCollection>  JetTagProducerImpactParameter ;
-DEFINE_FWK_MODULE(JetTagProducerImpactParameter);
-typedef JetTagProducer<CombinedSVTagInfoCollection>  JetTagProducerCombinedSV ;
-DEFINE_FWK_MODULE(JetTagProducerCombinedSV);
+#include "DataFormats/BTauReco/interface/SoftLeptonTagInfo.h"
 
+// define these as plug-ins
+typedef JetTagProducer<TrackCountingTagInfoCollection>  JetTagProducerTrackCounting;
+DEFINE_FWK_MODULE(JetTagProducerTrackCounting);
+typedef JetTagProducer<TrackIPTagInfoCollection>        JetTagProducerImpactParameter;
+DEFINE_FWK_MODULE(JetTagProducerImpactParameter);
+typedef JetTagProducer<CombinedSVTagInfoCollection>     JetTagProducerCombinedSV;
+DEFINE_FWK_MODULE(JetTagProducerCombinedSV);
+typedef JetTagProducer<SoftLeptonTagInfoCollection>     JetTagProducerSoftLepton;
+DEFINE_FWK_MODULE(JetTagProducerSoftLepton);
