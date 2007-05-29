@@ -31,6 +31,7 @@ namespace edm {
   class InputSourceDescription;
   class LuminosityBlock;
   class LuminosityBlockPrincipal;
+  struct NoDelayedReader;
   class OutputModule;
   class ParameterSet;
   class Principal;
@@ -43,6 +44,7 @@ namespace edm {
   class SelectorBase;
   class TypeID;
   class UnsheduledHandler;
+  class ViewBase;
 
   struct EventSummary;
   struct PathSummary;
