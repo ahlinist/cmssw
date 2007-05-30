@@ -31,9 +31,13 @@ class CSCLayer;
 class CSCLayerGeometry;
 class CSCDetId;
 
+
 class CSCHitFromWireOnly 
 {
  public:
+
+  typedef std::vector<int> ChannelContainer;
+
   
   explicit CSCHitFromWireOnly( const edm::ParameterSet& ps );
   
