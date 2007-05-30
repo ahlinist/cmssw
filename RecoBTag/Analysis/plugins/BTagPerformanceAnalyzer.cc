@@ -25,8 +25,8 @@ BTagPerformanceAnalyzer::BTagPerformanceAnalyzer(const edm::ParameterSet& pSet)
       petBase = new BTagPABase<TrackIPTagPlotter>(pSet);
     } else {
       throw cms::Exception("Configuration")
-	<< "BTagPerformanceAnalyzer: Unknown algorithm " << algorithm << endl
-	<< "Choose between JetTag, TrackCounting, TrackProbability, SoftLepton\n";
+	<< "BTagPerformanceAnalyzer: Unknown ExtendedTagInfo " << algorithm << endl
+	<< "Choose between JetTag, TrackCounting, TrackProbability, SoftLepton, TrackIP\n";
     }
   }
 }
