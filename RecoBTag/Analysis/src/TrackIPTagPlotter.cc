@@ -65,56 +65,56 @@ TrackIPTagPlotter::TrackIPTagPlotter(const TString & tagName,
 
   tkcntHistosProb3D[4] = new FlavourHistorgrams<float>
        ("prob_3D" + theExtensionString, "3D Probability of impact parameter",
-	50, -1.0, 1.0, false, true, true, "b", update) ;
+	50, -1.1, 1.1, false, true, true, "b", update) ;
 
   tkcntHistosProb3D[0] = new FlavourHistorgrams<float>
        ("prob1_3D" + theExtensionString, "3D Probability of impact parameter 1st trk",
-	50, -1.0, 1.0, false, true, true, "b", update) ;
+	50, -1.1, 1.1, false, true, true, "b", update) ;
 
   tkcntHistosProb3D[1] = new FlavourHistorgrams<float>
        ("prob2_3D" + theExtensionString, "3D Probability of impact parameter 2nd trk",
-	50, -1.0, 1.0, false, true, true, "b", update) ;
+	50, -1.1, 1.1, false, true, true, "b", update) ;
 
   tkcntHistosProb3D[2] = new FlavourHistorgrams<float>
        ("prob3_3D" + theExtensionString, "3D Probability of impact parameter 3rd trk",
-	50, -1.0, 1.0, false, true, true, "b", update) ;
+	50, -1.1, 1.1, false, true, true, "b", update) ;
 
   tkcntHistosProb3D[3] = new FlavourHistorgrams<float>
        ("prob4_3D" + theExtensionString, "3D Probability of impact parameter 4th trk",
-	50, -1.0, 1.0, false, true, true, "b", update) ;
+	50, -1.1, 1.1, false, true, true, "b", update) ;
 
   tkcntHistosProb2D[4] = new FlavourHistorgrams<float>
        ("prob_2D" + theExtensionString, "2D Probability of impact parameter",
-	50, -1.0, 1.0, false, true, true, "b", update) ;
+	50, -1.1, 1.1, false, true, true, "b", update) ;
 
   tkcntHistosProb2D[0] = new FlavourHistorgrams<float>
        ("prob1_2D" + theExtensionString, "2D Probability of impact parameter 1st trk",
-	50, -1.0, 1.0, false, true, true, "b", update) ;
+	50, -1.1, 1.1, false, true, true, "b", update) ;
 
   tkcntHistosProb2D[1] = new FlavourHistorgrams<float>
        ("prob2_2D" + theExtensionString, "2D Probability of impact parameter 2nd trk",
-	50, -1.0, 1.0, false, true, true, "b", update) ;
+	50, -1.1, 1.1, false, true, true, "b", update) ;
 
   tkcntHistosProb2D[2] = new FlavourHistorgrams<float>
        ("prob3_2D" + theExtensionString, "2D Probability of impact parameter 3rd trk",
-	50, -1.0, 1.0, false, true, true, "b", update) ;
+	50, -1.1, 1.1, false, true, true, "b", update) ;
 
   tkcntHistosProb2D[3] = new FlavourHistorgrams<float>
        ("prob4" + theExtensionString, "2D Probability of impact parameter 4th trk",
-	50, -1.0, 1.0, false, true, true, "b", update) ;
+	50, -1.1, 1.1, false, true, true, "b", update) ;
 
   decayLengthValuHisto = new FlavourHistorgrams<double>
        ("decLen" + theExtensionString, "Decay Length",
-	50, -1.0, 1.0, false, true, true, "b", update) ;
+	50, -5.0, 5.0, false, true, true, "b", update);
   decayLengthSignHisto = new FlavourHistorgrams<double>
-       ("decLen" + theExtensionString, "Decay Length significance",
-	50, -10.0, 10.0, false, true, true, "b", update) ;
+       ("decLenSign" + theExtensionString, "Decay Length significance",
+	50, -2000.0, 2000.0, false, true, true, "b", update);
   jetDistanceValuHisto = new FlavourHistorgrams<double>
        ("jetDist" + theExtensionString, "JetDistance",
-	50, -1.0, 1.0, false, true, true, "b", update) ;;
+	50, -0.1, 0.1, false, true, true, "b", update);
   jetDistanceSignHisto = new FlavourHistorgrams<double>
-       ("jetDist" + theExtensionString, "JetDistance significance",
-	50, -10.0, 10.0, false, true, true, "b", update) ;;
+       ("jetDistSign" + theExtensionString, "JetDistance significance",
+	50, -100.0, 100.0, false, true, true, "b", update);
 
 }
 
@@ -125,8 +125,8 @@ TrackIPTagPlotter::~TrackIPTagPlotter ()
   delete trkNbr3D;
   delete trkNbr2D;
   delete decayLengthValuHisto;
-  delete jetDistanceSignHisto;
-  delete decayLengthValuHisto;
+  delete decayLengthSignHisto;
+  delete jetDistanceValuHisto;
   delete jetDistanceSignHisto;
 
   for(int n=0; n <= 4; n++) {
@@ -198,7 +198,7 @@ void TrackIPTagPlotter::analyzeTag (const reco::JetTag & jetTag,
   }
   for(unsigned int n=0; n < jetDistance.size(); n++) {
     jetDistanceValuHisto->fill(jetFlav, jetDistance[n].value());
-    jetDistanceSignHisto->fill(jetFlav, jetDistance[n].significance());
+//    jetDistanceSignHisto->fill(jetFlav, jetDistance[n].significance());
   }
 
 }
@@ -325,8 +325,8 @@ void TrackIPTagPlotter::write()
   trkNbr2D->write();
   trkNbr3D->write();
   decayLengthValuHisto->write();
-  jetDistanceSignHisto->write();
-  decayLengthValuHisto->write();
+  decayLengthSignHisto->write();
+  jetDistanceValuHisto->write();
   jetDistanceSignHisto->write();
   for(int n=0; n <= 4; n++) {
     tkcntHistosSig2D[n]->write();
@@ -345,8 +345,8 @@ void TrackIPTagPlotter::epsPlot(const TString & name)
   trkNbr2D->epsPlot(name);
   trkNbr3D->epsPlot(name);
   decayLengthValuHisto->epsPlot(name);
-  jetDistanceSignHisto->epsPlot(name);
-  decayLengthValuHisto->epsPlot(name);
+  decayLengthSignHisto->epsPlot(name);
+  jetDistanceValuHisto->epsPlot(name);
   jetDistanceSignHisto->epsPlot(name);
   for(int n=0; n <= 4; n++) {
     tkcntHistosSig2D[n]->epsPlot(name);
