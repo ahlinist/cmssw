@@ -569,7 +569,7 @@ C      write(LUN,*) "\\hline\\hline"
          write(LUN,*) "\\hline"
       enddo
  1001 Format(1X,I4,2X,' & ',A60,' & ',A20,' & ',
-     +     8(1X,F8.3,' & '),1X,F8.3,
+     +     8(1X,F12.3,' & '),1X,F12.3,
      +     '\\','\\')
 
 C
@@ -597,7 +597,7 @@ C      write(LUN,*) "\\vskip 0.1cm"
          write(LUN,1002) "Norm. Mixture $\\lambda_0$ (\\%)",100*PIntl
       endif
       write(LUN,1002) "Total weight (g)",weight
- 1002 Format(A40," & ",F11.5," \\","\\")
+ 1002 Format(A40," & ",F15.5," \\","\\")
 
       write(LUN,*) "\\end{tabular}} & \\fbox{\\begin{tabular}{rl}"
       
