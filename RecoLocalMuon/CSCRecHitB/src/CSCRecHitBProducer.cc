@@ -62,7 +62,6 @@ void  CSCRecHitBProducer::produce( edm::Event& ev, const edm::EventSetup& setup 
   const CSCGeometry* pgeom = &*h;
   recHitBuilder_->setGeometry( pgeom );
 
-  // Only for data can you load in calibration constants !
   if ( useCalib ) {  
     // Strip gains
     edm::ESHandle<CSCGains> hGains;
@@ -95,9 +94,13 @@ void  CSCRecHitBProducer::produce( edm::Event& ev, const edm::EventSetup& setup 
   // Get the collections of CLCTs and ALCTs
   edm::Handle<CSCALCTDigiCollection> alcts;
   edm::Handle<CSCCLCTDigiCollection> clcts;
-  ev.getByLabel(stripDigiProducer_,"MuonCSCALCTDigi",alcts);
-  ev.getByLabel(stripDigiProducer_,"MuonCSCCLCTDigi",clcts);
-
+  try {
+    ev.getByLabel(stripDigiProducer_,"MuonCSCALCTDigi",alcts);
+    ev.getByLabel(stripDigiProducer_,"MuonCSCCLCTDigi",clcts);
+  }
+  catch ( cms::Exception& ex ) {
+    edm::LogError("CSCRecHitBProducer") << "Warning: L1 trigger info not available " ;
+  }
 
   // Create empty collection of rechits
   std::auto_ptr<CSCRecHit2DCollection> oc( new CSCRecHit2DCollection );
