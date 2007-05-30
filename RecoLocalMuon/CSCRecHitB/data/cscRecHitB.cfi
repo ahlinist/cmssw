@@ -14,7 +14,7 @@ module csc2DRecHits = CSCRecHitBProducer {
      untracked int32  CSCWireClusterDeltaT       = 1
      untracked int32  CSCWireClusterMaxSize      = 999
 
-     untracked bool   CSCuseCleanWireCollection  = true
+     untracked bool   CSCuseCleanWireCollection  = false
 
 # parameter for strip hit building
      untracked double CSCStripPeakThreshold      = 20.
