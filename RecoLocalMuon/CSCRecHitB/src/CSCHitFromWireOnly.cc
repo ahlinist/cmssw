@@ -19,6 +19,7 @@
 
 #include <iostream>
 
+
 CSCHitFromWireOnly::CSCHitFromWireOnly( const edm::ParameterSet& ps ) {
   
   debug                  = ps.getUntrackedParameter<bool>("CSCDebug");
@@ -95,11 +96,12 @@ std::vector<CSCWireHit> CSCHitFromWireOnly::runWire( const CSCDetId& id, const C
   bool isDuplicate = false;
   for ( int i = 0; i < nHits; ++i ) {
     isDuplicate = false;
-    float w1 = hitsInLayer[i].wHitPos();
-
-    for ( int j = 0; j < nHits; ++j ) {
-      float w2 = hitsInLayer[j].wHitPos();	
-      if ( w1 == w2 && i > j) isDuplicate = true;
+    ChannelContainer wg1 = hitsInLayer[i].wgroups();
+    int w1 = wg1[0];
+    for ( int j = i+1; j < nHits; ++j ) {
+      ChannelContainer wg2 = hitsInLayer[j].wgroups();
+      int w2 = wg2[0];
+      if ( w1 == w2 ) isDuplicate = true;
     }
 
     if ( !isDuplicate ) whits.push_back(hitsInLayer[i]);
