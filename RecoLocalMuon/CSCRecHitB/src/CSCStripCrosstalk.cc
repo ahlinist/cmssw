@@ -21,7 +21,7 @@ CSCStripCrosstalk::CSCStripCrosstalk( const edm::ParameterSet & ps ) {
 
   debug                  = ps.getUntrackedParameter<bool>("CSCDebug");  
   theCSCMap              = CSCReadoutMappingFromFile( ps );                                              
-
+  chamberIdPrefix        = ps.getUntrackedParameter<int>("CSCchamberIdPrefix");
 }
 
 CSCStripCrosstalk::~CSCStripCrosstalk() {
@@ -58,7 +58,7 @@ void CSCStripCrosstalk::getCrossTalk( const CSCDetId& id, int centralStrip, std:
     strip1 = centralStrip - 1;
   }
 
-  int chId=220000000 + ec*100000 + st*10000 + rg*1000 + ch*10 + la;
+  int chId= chamberIdPrefix + ec*100000 + st*10000 + rg*1000 + ch*10 + la;
 
   float m_left = 0.;
   float b_left = 0.;

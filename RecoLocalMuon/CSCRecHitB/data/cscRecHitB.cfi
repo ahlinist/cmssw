@@ -9,6 +9,11 @@ module csc2DRecHits = CSCRecHitBProducer {
      string CSCStripDigiProducer                 = "cscunpacker"
      string CSCWireDigiProducer                  = "cscunpacker"
      untracked bool CSCproduce1DHits             = false
+# DB chamber index prefix for MTCC:
+     untracked int32  CSCchamberIdPrefix         = 220000000
+# New DB chamber index prefix
+#     untracked int32  CSCchamberIdPrefix         = 0
+
 
 # parameter for wire clustering/segment building
      untracked int32  CSCWireClusterDeltaT       = 1
