@@ -45,6 +45,26 @@ CSCStripNoiseMatrix::~CSCStripNoiseMatrix() {
 
   int strip1 = centralStrip;
 
+  // Initialize values in case can't find chamber with constants
+  float elem[15];
+  elem[0] = 1.;
+  elem[1] = 0.;
+  elem[2] = 0.;
+  elem[3] = 1.;
+  elem[4] = 0.;
+  elem[5] = 0.;
+  elem[6] = 1.;
+  elem[7] = 0.;
+  elem[8] = 0.;
+  elem[9] = 1.;
+  elem[10] = 0.;
+  elem[11] = 0.;
+  elem[12] = 1.;
+  elem[13] = 0.;
+  elem[14] = 0.;
+
+
+
   // Note that ME-1a constants are stored in ME-11 (ME-1b)
   // Note that ME1/a constants are stored beginning at entry 64
   // Also, only have only 16 strips to worry about for ME1a
@@ -60,8 +80,6 @@ CSCStripNoiseMatrix::~CSCStripNoiseMatrix() {
 
   int chId=220000000 + ec*100000 + st*10000 + rg*1000 + ch*10 + la;
   
-  float elem[15];
-
   int idx = 0;
   for ( int sid = strip1-1; sid < strip1+2; sid++ ) {
     if (Noise->matrix.find(chId) != Noise->matrix.end( ) ) {
