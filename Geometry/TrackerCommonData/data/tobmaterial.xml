@@ -1172,17 +1172,6 @@
       <rMaterial name="materials:Fluorine"/>
     </MaterialFraction>
   </CompositeMaterial>
-  <CompositeMaterial name="TOB_rail" density="1.69*g/cm3" symbol=" " method="mixture by weight">
-    <MaterialFraction fraction="0.84491305">
-      <rMaterial name="materials:Carbon"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.042542086">
-      <rMaterial name="materials:Hydrogen"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.11254487">
-      <rMaterial name="materials:Oxygen"/>
-    </MaterialFraction>
-  </CompositeMaterial>
 
   <CompositeMaterial name="TOB_rib1" density="0.12077*g/cm3" symbol=" " method="mixture by weight">
     <MaterialFraction fraction="0.00627">

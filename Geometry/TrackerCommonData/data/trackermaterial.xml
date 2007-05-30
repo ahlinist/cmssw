@@ -2,20 +2,25 @@
 <DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../DetectorDescription/Schema/DDLSchema.xsd">
 
 <MaterialSection label="trackermaterial.xml">
-  <CompositeMaterial name="active_screen" density="11.197*g/cm3" symbol=" " method="mixture by weight">
-    <MaterialFraction fraction="0.025418913">
-      <rMaterial name="materials:Hydrogen"/>
+
+  <CompositeMaterial name="TS_Cooling" density="1.95053*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="0.69168">
+      <rMaterial name="materials:Aluminium"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.085235146">
-      <rMaterial name="materials:Oxygen"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.50483588">
-      <rMaterial name="materials:Carbon"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.38451007">
-      <rMaterial name="materials:Fluorine"/>
+    <MaterialFraction fraction="0.30832">
+      <rMaterial name="materials:C6F14_3M_-15C"/>
     </MaterialFraction>
   </CompositeMaterial>
+
+  <CompositeMaterial name="TS_Shield" density="0.35161*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="0.60198">
+      <rMaterial name="materials:Inconel600"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.39802">
+      <rMaterial name="materials:T_Kapton"/>
+    </MaterialFraction>
+  </CompositeMaterial>
+
   <CompositeMaterial name="Tk_panels_in" density="1.69*g/cm3" symbol=" " method="mixture by weight">
     <MaterialFraction fraction="0.84491305">
       <rMaterial name="materials:Carbon"/>

@@ -5,8 +5,8 @@
  <Constant name="zero"           value="0.0*fm"/>
  <Constant name="Rin1"           value="54.0*cm"/>
  <Constant name="Rin2"           value="1.160*m"/>
- <Constant name="Rout1"          value="1.170*m"/>
- <Constant name="Rout2"          value="1.182*m"/>
+ <Constant name="Rout1"          value="1.169*m"/>
+ <Constant name="Rout2"          value="1.169*m"/>
  <Constant name="Zv1"            value="1.160*m"/>
  <Constant name="Zv2"            value="1.210*m"/>
  <Constant name="Zv3"            value="2.820*m"/>
@@ -14,12 +14,9 @@
  <Constant name="RailInR"        value="0.300*cm"/>
  <Constant name="RailInX"        value="54.433*cm"/>
  <Constant name="RailInY"        value="2.700*cm"/>
- <Constant name="RailOutR"       value="0.500*cm"/>
- <Constant name="RailOutX"       value="1.17673*m"/>
- <Constant name="RailOutY"       value="2.506*cm"/>
  <Constant name="AlPieceR0"      value="1.161*m"/>
  <Constant name="AlPieceR1"      value="1.164*m"/>
- <Constant name="AlPieceR2"      value="1.182*m"/>
+ <Constant name="AlPieceR2"      value="1.169*m"/>
  <Constant name="AlPiecePhi1"    value="1.535*deg"/>
  <Constant name="AlPiecePhi2"    value="175.535*deg"/>
  <Constant name="AlPiecePhi3"    value="1.580*deg"/>
@@ -213,8 +210,6 @@
  </Polycone> 
  <Tubs name="TOBRailIn"     rMin="[zero]"           rMax="[RailInR]" 
        dz="[RailL]"         startPhi="0*deg"        deltaPhi="360*deg"/>
- <Tubs name="TOBRailOut"    rMin="[zero]"           rMax="[RailOutR]" 
-       dz="[RailL]"         startPhi="0*deg"        deltaPhi="360*deg"/>
  <Tubs name="TOBAlPiece1"   rMin="[AlPieceR0]"      rMax="[AlPieceR1]" 
                             dz="[AlPieceDz1]"       startPhi="[AlPiecePhi1]"
                             deltaPhi="[AlPieceDPhi1]"/>
@@ -394,10 +389,6 @@
  <LogicalPart name="TOBRailIn" category="unspecified">
   <rSolid name="TOBRailIn"/>
   <rMaterial name="tobmaterial:TIB_rail"/>
- </LogicalPart>
- <LogicalPart name="TOBRailOut" category="unspecified">
-  <rSolid name="TOBRailOut"/>
-  <rMaterial name="tobmaterial:TOB_rail"/>
  </LogicalPart>
  <LogicalPart name="TOBAlPiece1" category="unspecified">
   <rSolid name="TOBAlPiece1"/>
@@ -643,17 +634,6 @@
    <rParent name="tob:TOB"/>
    <rChild name="tob:TOBRailIn"/>
   <Translation x="-[RailInX]" y="[RailInY]" z="[zero]" />
- </PosPart>
-
- <PosPart copyNumber="1">
-   <rParent name="tob:TOB"/>
-   <rChild name="tob:TOBRailOut"/>
-  <Translation x="[RailOutX]" y="[RailOutY]" z="[zero]" />
- </PosPart>
- <PosPart copyNumber="2">
-   <rParent name="tob:TOB"/>
-   <rChild name="tob:TOBRailOut"/>
-  <Translation x="-[RailOutX]" y="[RailOutY]" z="[zero]" />
  </PosPart>
 
  <PosPart copyNumber="1">

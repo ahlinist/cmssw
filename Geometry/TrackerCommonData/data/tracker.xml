@@ -19,8 +19,12 @@
 </LogicalPartSection>
  
 <RotationSection label="tracker.xml">
-  <Rotation name="180D" thetaX="90*deg" phiX="180*deg"   thetaY="90*deg"
-                        phiY="90*deg"   thetaZ="180*deg" phiZ="0*deg" />
+  <Rotation name="180D" thetaX="90*deg"  phiX="180*deg"   thetaY="90*deg"
+                        phiY="90*deg"    thetaZ="180*deg" phiZ="0*deg" />
+  <Rotation name="R180" thetaX="90*deg"  phiX="180*deg"   thetaY="90*deg" 
+                        phiY="-90*deg"   thetaZ="0*deg"   phiZ="0*deg" />
+  <Rotation name="PAA"  thetaX="180*deg" phiX="0*deg"     thetaY="90*deg" 
+                        phiY="90*deg"    thetaZ="90*deg"  phiZ="0*deg" />
 </RotationSection>
 
 </DDDefinition>
