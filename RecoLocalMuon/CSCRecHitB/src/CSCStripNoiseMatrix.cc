@@ -21,6 +21,7 @@ CSCStripNoiseMatrix::CSCStripNoiseMatrix( const edm::ParameterSet & ps ) {
 
   debug                  = ps.getUntrackedParameter<bool>("CSCDebug");  
   theCSCMap              = CSCReadoutMappingFromFile( ps );                                              
+  chamberIdPrefix        = ps.getUntrackedParameter<int>("CSCchamberIdPrefix");
 }
 
 
@@ -78,7 +79,8 @@ CSCStripNoiseMatrix::~CSCStripNoiseMatrix() {
     strip1 = centralStrip - 1;
   }
 
-  int chId=220000000 + ec*100000 + st*10000 + rg*1000 + ch*10 + la;
+  int chId= chamberIdPrefix + ec*100000 + st*10000 + rg*1000 + ch*10 + la;
+  // 220000000 + ec*100000 + st*10000 + rg*1000 + ch*10 + la;
   
   int idx = 0;
   for ( int sid = strip1-1; sid < strip1+2; sid++ ) {

@@ -52,6 +52,7 @@ class CSCStripNoiseMatrix
 
   bool debug;
   CSCReadoutMappingFromFile theCSCMap;
+  int chamberIdPrefix;
 
   // Store in memory Gains and Noise matrix
   float globalGainAvg;

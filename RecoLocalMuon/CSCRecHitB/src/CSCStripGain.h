@@ -42,6 +42,7 @@ class CSCStripGain
 
   bool debug;
   CSCReadoutMappingFromFile theCSCMap;
+  int chamberIdPrefix;
 
   // Store in memory Gains
   float globalGainAvg;

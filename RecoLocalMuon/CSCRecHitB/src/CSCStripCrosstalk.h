@@ -40,10 +40,10 @@ class CSCStripCrosstalk
 
   bool debug;
   CSCReadoutMappingFromFile theCSCMap;
+  int chamberIdPrefix; 
 
   // Store in memory xtalks
   CSCcrosstalk     * xTalk_;
-
 };
 
 #endif

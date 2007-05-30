@@ -20,6 +20,7 @@ CSCStripGain::CSCStripGain( const edm::ParameterSet & ps ) {
 
   debug                  = ps.getUntrackedParameter<bool>("CSCDebug");  
   theCSCMap              = CSCReadoutMappingFromFile( ps );                                              
+  chamberIdPrefix        = ps.getUntrackedParameter<int>("CSCchamberIdPrefix");
 }
 
 CSCStripGain::~CSCStripGain() {
@@ -46,7 +47,7 @@ void CSCStripGain::getStripGain( const CSCDetId& id, float* weights ) {
     isME1a = true;
   }
 
-  int chId=220000000 + ec*100000 + st*10000 + rg*1000 + ch*10 + la;
+  int chId= chamberIdPrefix + ec*100000 + st*10000 + rg*1000 + ch*10 + la;
 
   int nStrips = 80;
   if ( st == 1 && rg == 1) nStrips = 64;
