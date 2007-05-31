@@ -76,11 +76,17 @@ namespace dqm{
     void FEDMonitorClient::defaultWebPage(xgi::Input *in, xgi::Output *out)
     {
 
+      std::string path;
+      std::string mname;
       try 
 	{
 	  cgicc::Cgicc cgi(in);
-	  if ( xgi::Utils::hasFormElement(cgi,"autorefresh_") )
-	    autorefresh_ = xgi::Utils::getFormElement(cgi, "autorefresh_")->getIntegerValue()  != 0;
+	  if ( xgi::Utils::hasFormElement(cgi,"autorefresh") )
+	    autorefresh_ = xgi::Utils::getFormElement(cgi, "autorefresh")->getIntegerValue()  != 0;
+	  if ( xgi::Utils::hasFormElement(cgi,"module") )
+	    mname = xgi::Utils::getFormElement(cgi, "module")->getValue();
+	  cgicc::CgiEnvironment cgie(in);
+	  path = cgie.getPathInfo() + "?" + cgie.getQueryString();
 	}
       catch (const std::exception & e) 
     {
@@ -101,9 +107,11 @@ namespace dqm{
 	*out << "</head>"                                                  << endl;
 	*out << "<body>"                                                   << endl;
 
-	*out << cgicc::form().set("method","GET").set("action", std::string("/moduleWeb\?module=FEDMonitorClient") ) 
+	*out << cgicc::form().set("method","GET").set("action", path ) 
 	     << std::endl;
-	*out << cgicc::input().set("type","hidden").set("name","module=FEDMonitorClient\?autorefresh_").set("value", autorefresh_?"0":"1") 
+	*out << cgicc::input().set("type","hidden").set("name","module").set("value", mname) 
+	     << std::endl;
+	*out << cgicc::input().set("type","hidden").set("name","autorefresh").set("value", autorefresh_?"0":"1") 
 	     << std::endl;
 	*out << cgicc::input().set("type","submit").set("value",autorefresh_?"Toggle AutoRefresh OFF":"Toggle AutoRefresh ON")  
 	     << std::endl;
