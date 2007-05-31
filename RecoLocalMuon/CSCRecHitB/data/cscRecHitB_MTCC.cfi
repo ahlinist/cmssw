@@ -1,0 +1,60 @@
+# parameters for CSC rechit building
+# ==================================
+module csc2DRecHits = CSCRecHitBProducer {
+
+     untracked bool CSCIsRunningOnData           = true
+     untracked bool CSCUseCalibrations           = true
+     untracked bool CSCDebug                     = false
+     FileInPath theMappingFile                   = "CondFormats/CSCObjects/data/csc_slice_test_map.txt"
+     string CSCStripDigiProducer                 = "cscunpacker"
+     string CSCWireDigiProducer                  = "cscunpacker"
+     untracked bool CSCproduce1DHits             = false
+# DB chamber index prefix for MTCC:
+     untracked int32  CSCchamberIdPrefix         = 220000000
+# New DB chamber index prefix
+#     untracked int32  CSCchamberIdPrefix         = 0
+
+# parameter for wire clustering/segment building
+     untracked int32  CSCWireClusterDeltaT       = 1
+     untracked int32  CSCWireClusterMaxSize      = 999
+
+     untracked bool   CSCuseCleanWireCollection  = false
+
+# parameter for strip hit building
+     untracked double CSCStripPeakThreshold      = 20.
+     untracked double CSCStripClusterChargeCut   = 45.
+     untracked int32  CSCStripClusterSize        = 3
+     untracked bool   CSCUseGattiFit             = true
+     # the step size is in units of strip width
+     untracked double CSCminGattiStepSize        = 0.002
+     untracked double CSCMaxGattiChi2            = 10000.
+     untracked double CSCCalibrationSystematics  = 0.015
+     untracked double CSCStripxtalksOffset       = 0.03
+
+     untracked bool   CSCuseCleanStripCollection = false
+	
+# common parameters for segment and rechit building
+     untracked int32  CSCSegmentPerChamberMax    = 3
+
+# parameter for rechit building
+     untracked int32  CSCstripWireDeltaTime      = 8
+
+# Unused parameters
+
+# wire segments:
+     untracked int32  CSCWireminLayersApart      = 2
+     untracked double CSCWireMaxDistance         = 2.
+     untracked int32  CSCWireSegmentDeltaT       = 1
+     untracked int32  CSCminWireHitsPerSegment   = 3
+     untracked bool   CSCuseLeftOverWireHits     = false
+     untracked bool   CSCuseWireHitsFromFits     = false
+# strip segments:
+     untracked int32  CSCStripminLayersApart     = 2
+     untracked double CSCStripMaxDistance        = 5.
+     untracked double CSCStripCloseToSegment     = 8.
+     untracked int32  CSCStripSegmentDeltaT      = 1
+     untracked int32  CSCminStripHitsPerSegment  = 3
+     untracked bool   CSCuseLeftOverStripHits    = false
+     untracked bool   CSCuseStripHitsFromFits    = false
+
+ }
