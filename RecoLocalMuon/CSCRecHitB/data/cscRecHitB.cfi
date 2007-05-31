@@ -2,18 +2,19 @@
 # ==================================
 module csc2DRecHits = CSCRecHitBProducer {
 
-     untracked bool CSCIsRunningOnData           = true
+     untracked bool CSCIsRunningOnData           = false
      untracked bool CSCUseCalibrations           = false
      untracked bool CSCDebug                     = false
      FileInPath theMappingFile                   = "CondFormats/CSCObjects/data/csc_slice_test_map.txt"
-     string CSCStripDigiProducer                 = "cscunpacker"
-     string CSCWireDigiProducer                  = "cscunpacker"
+#     string CSCStripDigiProducer                 = "cscunpacker"
+#     string CSCWireDigiProducer                  = "cscunpacker"
+     string CSCStripDigiProducer                 = "muonCSCDigis"
+     string CSCWireDigiProducer                  = "muonCSCDigis"
      untracked bool CSCproduce1DHits             = false
 # DB chamber index prefix for MTCC:
-     untracked int32  CSCchamberIdPrefix         = 220000000
+#     untracked int32  CSCchamberIdPrefix         = 220000000
 # New DB chamber index prefix
-#     untracked int32  CSCchamberIdPrefix         = 0
-
+     untracked int32  CSCchamberIdPrefix         = 0
 
 # parameter for wire clustering/segment building
      untracked int32  CSCWireClusterDeltaT       = 1
