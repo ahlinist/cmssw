@@ -1,13 +1,13 @@
 
 
-// $Id: DTLocalTriggerDisplayPlugins.cc,v 1.2 2007/04/13 13:35:33 mzanetti Exp $
+// $Id: DTLocalTriggerDisplayPlugins.cc,v 1.1 2007/04/20 17:58:22 gmasetti Exp $
 
 /*!
   \file DTLocalTriggerDisplayPlugins
   \brief Display Plugin for LocalTrigger Task Quality Histograms (2D)
   \author G. Masetti 
-  \version $Revision: 1.2 $
-  \date $Date: 2007/04/13 13:35:33 $
+  \version $Revision: 1.1 $
+  \date $Date: 2007/04/20 17:58:22 $
 */
 
 #include "DQM/DTMonitorDisplayPlugins/src/DTLocalTriggerDisplayPlugins.h"
@@ -37,7 +37,7 @@ bool DTLocalTriggerDisplayPlugins::isLocalTriggerME (std::string name) {
     return true;
   }
 
-  if( name.find( "DDU_BXvsThQual" ) == 0 ) {
+  if( name.find( "DDU_ThetaBXvsQual" ) == 0 ) {
     return true;
   }
 
@@ -115,10 +115,15 @@ std::string DTLocalTriggerDisplayPlugins::preDrawTH2F( VisDQMDisplayPlugin::Disp
 //       pCol4[i] = i+401;
 //     }
 //     gStyle->SetPalette( n, pCol4 );
-//    obj->SetOption( "colz" );
-    obj->SetOption( "lego" );
+    obj->SetOption( "colz" );
+    //    obj->SetOption( "lego" );
 
   if( name.find( "DDU_BXvs" ) == 0 ) {
+    (data->pad)->SetLogz( 1 );
+
+    //    return true;
+  }
+  if( name.find( "DDU_Theta" ) == 0 ) {
     (data->pad)->SetLogz( 1 );
 
     //    return true;

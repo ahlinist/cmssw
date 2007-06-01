@@ -1,11 +1,11 @@
-// $Id: DTDataIntegrityDisplayPlugins.cc,v 1.3 2007/04/19 16:30:29 sbologne Exp $
+// $Id: DTDataIntegrityDisplayPlugins.cc,v 1.4 2007/04/20 17:53:43 gmasetti Exp $
 
 /*!
   \file DTDataIntegrityDisplayPlugins
   \brief Display Plugin for Data Integrity Quality Histograms (2D)
   \author G. Masetti 
-  \version $Revision: 1.3 $
-  \date $Date: 2007/04/19 16:30:29 $
+  \version $Revision: 1.4 $
+  \date $Date: 2007/04/20 17:53:43 $
 */
 
 #include "DQM/DTMonitorDisplayPlugins/src/DTDataIntegrityDisplayPlugins.h"
@@ -32,7 +32,7 @@ DTDataIntegrityDisplayPlugins::DTDataIntegrityDisplayPlugins () {
 
 bool DTDataIntegrityDisplayPlugins::isDataIntegrityME (std::string name) {
 
-  if( name.find( "FED730" ) == 0 ) {
+  if( name.find( "FED770" ) == 0 ) {
     return true;
   }
 
