@@ -856,7 +856,8 @@ namespace edm {
     void Entry::throwValueError(const char* expectedType) const
     {
       throw edm::Exception(errors::Configuration, "ValueError")
-        << "type of " << name_ << " is not " << expectedType;
+        << "type of " << name_ << " is expected to be " << expectedType
+        << " but declared as " << sTypeTranslations.table_[type];
     }
 
     void Entry::throwEntryError(const char* expectedType,
