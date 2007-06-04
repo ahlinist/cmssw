@@ -1,26 +1,36 @@
 # parameters for CSC rechit building
-# ==================================
-module csc2DRecHits = CSCRecHitBProducer {
 
+module csc2DRecHits = CSCRecHitBProducer {
      untracked bool CSCIsRunningOnData           = true
-     untracked bool CSCUseCalibrations           = true
      untracked bool CSCDebug                     = false
-     FileInPath theMappingFile                   = "CondFormats/CSCObjects/data/csc_slice_test_map.txt"
+###########################################################
+#    Which digis:
+###########################################################
+###  When using data from unpacker
      string CSCStripDigiProducer                 = "cscunpacker"
      string CSCWireDigiProducer                  = "cscunpacker"
-     untracked bool CSCproduce1DHits             = false
-# DB chamber index prefix for MTCC:
+###########################################################
+#    Calibration info:
+###########################################################
+     untracked bool CSCUseCalibrations           = true
+###  Old DB chamber index prefix (new is 0)
      untracked int32  CSCchamberIdPrefix         = 220000000
-# New DB chamber index prefix
-#     untracked int32  CSCchamberIdPrefix         = 0
-
-# parameter for wire clustering/segment building
+     FileInPath theMappingFile                   = "CondFormats/CSCObjects/data/csc_slice_test_map.txt"
+###########################################################
+#    LCT info:
+###########################################################
+###  This is to use the CLCT info:
+     untracked bool   CSCuseCleanStripCollection = false
+###  This is to use the ALCT info:
+     untracked bool   CSCuseCleanWireCollection  = false
+###########################################################
+#    Parameters for wire hits
+###########################################################
      untracked int32  CSCWireClusterDeltaT       = 1
      untracked int32  CSCWireClusterMaxSize      = 999
-
-     untracked bool   CSCuseCleanWireCollection  = false
-
-# parameter for strip hit building
+###########################################################
+#    Parameters for strip hits
+###########################################################
      untracked double CSCStripPeakThreshold      = 20.
      untracked double CSCStripClusterChargeCut   = 45.
      untracked int32  CSCStripClusterSize        = 3
@@ -30,17 +40,18 @@ module csc2DRecHits = CSCRecHitBProducer {
      untracked double CSCMaxGattiChi2            = 10000.
      untracked double CSCCalibrationSystematics  = 0.015
      untracked double CSCStripxtalksOffset       = 0.03
-
-     untracked bool   CSCuseCleanStripCollection = false
-	
-# common parameters for segment and rechit building
-     untracked int32  CSCSegmentPerChamberMax    = 3
-
-# parameter for rechit building
+###########################################################
+#    Parameters for 2-D hits
+###########################################################
+###  To be set once wire digis have timing info:
      untracked int32  CSCstripWireDeltaTime      = 8
-
-# Unused parameters
-
+###  This was not fully developed and currently NOT working
+###  Use false always to avoid crash
+     untracked bool CSCproduce1DHits             = false
+##############################################################
+# Currently unused parameters
+##############################################################
+     untracked int32  CSCSegmentPerChamberMax    = 3
 # wire segments:
      untracked int32  CSCWireminLayersApart      = 2
      untracked double CSCWireMaxDistance         = 2.
@@ -56,5 +67,4 @@ module csc2DRecHits = CSCRecHitBProducer {
      untracked int32  CSCminStripHitsPerSegment  = 3
      untracked bool   CSCuseLeftOverStripHits    = false
      untracked bool   CSCuseStripHitsFromFits    = false
-
  }
