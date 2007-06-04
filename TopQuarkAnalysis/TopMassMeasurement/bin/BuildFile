@@ -7,4 +7,5 @@
  <use name=root> 
  <bin file="TtSemiTopMass.cpp"> </bin>
  <bin file="TtSemiCombBackFit.cpp"> </bin>
+ <bin file="TtSemiChannelBackFit.cpp"> </bin>
 </environment>
