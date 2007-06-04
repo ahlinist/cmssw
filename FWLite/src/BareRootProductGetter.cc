@@ -76,6 +76,7 @@ BareRootProductGetter::~BareRootProductGetter()
 //
 edm::EDProduct const*
 BareRootProductGetter::getIt(edm::ProductID const& iID) const  {
+  //std::cout <<"getIt called"<<std::endl;
   TFile* currentFile = dynamic_cast<TFile*>(gROOT->GetListOfFiles()->Last());
 
   if(currentFile !=presentFile_) {
@@ -133,6 +134,11 @@ BareRootProductGetter::getIt(edm::ProductID const& iID) const  {
     return 0;
   }
   if(buffer->eventEntry_ != eventEntry_) {
+    //NOTE: Need to reset address because user could have set the address themselves
+    //std::cout <<"new event"<<std::endl;
+    void* address = &(buffer->address_);
+    buffer->branch_->SetAddress( address );
+
     buffer->branch_->GetEntry( eventEntry_ );
     buffer->eventEntry_=eventEntry_;
   }
