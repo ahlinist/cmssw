@@ -7,6 +7,8 @@ TtSemiIdeogramProducer::TtSemiIdeogramProducer(const edm::ParameterSet& iConfig)
 {
    solChoice_ 	  	= iConfig.getParameter< string > ("solChoice");
    hadWProbChi2Cut_ 	= iConfig.getParameter< double > ("hadWProbChi2Cut");
+   corrJetCombProb_ 	= iConfig.getParameter< double > ("corrJetCombProb");
+   signalEvtProb_    	= iConfig.getParameter< double > ("signalEvtProb");
    mtvals_ 	  	= iConfig.getParameter< vector<double> > ("mtValues");
    myDMtopCalc    	= new MtopUncertaintyCalc();
    myIdeogramScan 	= new TtSemiIdeogramScan(mtvals_);
@@ -54,7 +56,8 @@ TtSemiIdeogramProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
    
    // event selection cuts
    if(massSol.getProbChi2() <= hadWProbChi2Cut_) return;
-   //if(solChoice_ == "LR" && massSol.getCombLR() <= hadWProbChi2Cut_) return;
+   if(solChoice_ == "LR" && massSol.getLRCorrJetCombProb() > -1. && massSol.getLRCorrJetCombProb() <= corrJetCombProb_) return;
+   if(massSol.getLRSignalEvtProb() > -1. && massSol.getLRSignalEvtProb() <= signalEvtProb_) return;
    
    // Calculate the top mass uncertainty by error propagation (to be used in the construction of the gausian ideogram)
    (*myDMtopCalc)(massSol);
