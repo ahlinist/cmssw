@@ -4,5 +4,5 @@
 module ideoSol = TtSemiIdeogramProducer {
   vdouble mtValues 		= {160,163,166,169,172,175,178,181,184,187,190}
   string  solChoice 		= "simple"		// "MCtrue", "simple", "LR"
-  double  hadWProbChi2Cut	= 0.
+  using EventSelection
 } 

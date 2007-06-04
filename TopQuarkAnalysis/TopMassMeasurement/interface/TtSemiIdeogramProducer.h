@@ -13,7 +13,7 @@
 //
 // Original Author:  Jan Heyninck
 //         Created:  Tue Apr  10 12:01:49 CEST 2007
-// $Id: TtSemiIdeogramProducer.h,v 1.1 2007/05/02 15:10:44 lowette Exp $
+// $Id: TtSemiIdeogramProducer.h,v 1.1 2007/06/01 09:16:16 heyninck Exp $
 //
 //
 
@@ -49,7 +49,7 @@ class TtSemiIdeogramProducer : public edm::EDProducer {
       
    private:
       string solChoice_;
-      double hadWProbChi2Cut_;
+      double hadWProbChi2Cut_, corrJetCombProb_, signalEvtProb_;
       vector<double> mtvals_;
       MtopUncertaintyCalc *myDMtopCalc;
       TtSemiIdeogramScan  *myIdeogramScan;
