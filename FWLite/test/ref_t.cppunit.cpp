@@ -82,6 +82,7 @@ static void checkMatch(const edmtest::OtherThingCollection* pOthers,
   for( ; itThing != itThingEnd; ++itThing, ++itOther) {
     //I'm assuming the following is true
     CPPUNIT_ASSERT(itOther->ref.key() == static_cast<unsigned int>(itThing - pThings->begin()));
+    //std::cout <<" ref "<<itOther->ref.get()->a<<" thing "<<itThing->a<<std::endl;
     if(itOther->ref.get()->a != itThing->a) {
       std::cout <<" *PROBLEM: ref "<<itOther->ref.get()->a<<"!= thing "<<itThing->a<<std::endl;
     }
@@ -158,7 +159,7 @@ void testRefInROOT::testGoodChain()
 {
   TChain eventChain("Events");
   eventChain.Add("good.root");
-  eventChain.Add("good2.root");
+  eventChain.Add("good_delta5.root");
 
   edm::Wrapper<edmtest::OtherThingCollection> *pOthers =0;
   TBranch* othersBranch = 0;
