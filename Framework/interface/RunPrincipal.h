@@ -18,6 +18,7 @@ $Id$
 #include "FWCore/Framework/interface/Principal.h"
 
 namespace edm {
+  class UnscheduledHandler;
   class RunPrincipal : private Principal {
   typedef Principal Base;
   public:
@@ -64,6 +65,8 @@ namespace edm {
     using Base::put;
     using Base::size;
     using Base::store;
+
+    void setUnscheduledHandler(boost::shared_ptr<UnscheduledHandler>) {}
 
   private:
     virtual bool unscheduledFill(Provenance const&) const {return false;}

@@ -1,5 +1,5 @@
-#ifndef Framework_WorkerInPath_h
-#define Framework_WorkerInPath_h
+#ifndef FWCore_Framework_WorkerInPath_h
+#define FWCore_Framework_WorkerInPath_h
 
 /*
 
@@ -16,18 +16,17 @@
 #include "FWCore/Framework/src/RunStopwatch.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 
-namespace edm
-{
+namespace edm {
 
-  class WorkerInPath
-  {
+  class WorkerInPath {
   public:
     enum FilterAction { Normal=0, Ignore, Veto };
 
     explicit WorkerInPath(Worker*);
     WorkerInPath(Worker*, FilterAction theAction);
 
-    bool runWorker(EventPrincipal&, EventSetup const&,
+    template <typename T>
+    bool runWorker(T&, EventSetup const&,
 		   BranchActionType const&,
 		   CurrentProcessingContext const* cpc);
 
@@ -54,6 +53,44 @@ namespace edm
     FilterAction filterAction_;
     Worker* worker_;
   };
+
+  template <typename T>
+  bool WorkerInPath::runWorker(T& ep, EventSetup const & es,
+			       BranchActionType const& bat,
+			       CurrentProcessingContext const* cpc) {
+    bool const isEvent = (bat == BranchActionEvent);
+
+    // A RunStopwatch, but only if we are processing an event.
+    std::auto_ptr<RunStopwatch> stopwatch(isEvent ? new RunStopwatch(stopwatch_) : 0);
+
+    if (isEvent) {
+      ++timesVisited_;
+    }
+    bool rc = true;
+
+    try {
+	// may want to change the return value from the worker to be 
+	// the Worker::FilterAction so conditions in the path will be easier to 
+	// identify
+	rc = worker_->doWork(ep, es, bat, cpc);
+
+        // Ignore return code for non-event (e.g. run, lumi) calls
+	if (!isEvent) rc = true;
+	else if (filterAction_ == Veto) rc = !rc;
+        else if (filterAction_ == Ignore) rc = true;
+
+	if (isEvent) {
+	  if(rc) ++timesPassed_; else ++timesFailed_;
+	}
+    }
+    catch(...) {
+	if (isEvent) ++timesExcept_;
+	throw;
+    }
+
+    return rc;
+  }
+
 }
 
 #endif

@@ -22,6 +22,7 @@ $Id$
 
 namespace edm {
   class RunPrincipal;
+  class UnscheduledHandler;
   class LuminosityBlockPrincipal : private Principal {
   typedef Principal Base;
   public:
@@ -92,6 +93,8 @@ namespace edm {
     using Base::put;
     using Base::size;
     using Base::store;
+
+    void setUnscheduledHandler(boost::shared_ptr<UnscheduledHandler>) {}
 
   private:
     virtual bool unscheduledFill(Provenance const&) const {return false;}

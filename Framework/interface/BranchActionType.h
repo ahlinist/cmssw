@@ -9,14 +9,11 @@ $Id$
 ----------------------------------------------------------------------*/
 
 namespace edm {
-  // Note: These enum values are used as subscripts for a fixed size array, so they must not change.
   enum BranchActionType {
     BranchActionEvent = 0,
-    BranchActionBeginLumi = 1,
-    BranchActionEndLumi = 2,
-    BranchActionBeginRun = 3,
-    BranchActionEndRun = 4,
-    EndBranchActionType = 5
+    BranchActionBegin = 1,
+    BranchActionEnd = 2,
+    EndBranchActionType = 3
   };
 }
 #endif
