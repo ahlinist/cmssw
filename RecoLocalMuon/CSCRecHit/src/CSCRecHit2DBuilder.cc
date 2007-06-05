@@ -65,10 +65,10 @@ CSCRecHit2DBuilder::CSCRecHit2DBuilder( const edm::ParameterSet& ps ) :
 }
 
 CSCRecHit2DBuilder::~CSCRecHit2DBuilder() {
-  //@@ Can I delete the algorithms I had the factory build??
-  //	for ( size_t i = 0; i < algos_.size(); ++i ){
-  //		delete algos_[i];
-  //	}
+  // Delete the algorithms the factory built
+  for ( size_t i = 0; i < algos_.size(); ++i ){
+    delete algos_[i];
+  }
 }
 
 void CSCRecHit2DBuilder::build( const CSCStripDigiCollection* stripdc,
