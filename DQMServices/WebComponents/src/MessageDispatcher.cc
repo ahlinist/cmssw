@@ -1,5 +1,5 @@
 #include "DQMServices/WebComponents/interface/MessageDispatcher.h"
-
+#include <iostream>
 
 std::string Message::getType() 
 { 

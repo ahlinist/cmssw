@@ -4,8 +4,8 @@
 #include <vector>
 #include <string>
 
-#include "xgi/include/xgi/Utils.h"
-#include "xgi/include/xgi/Method.h"
+#include "xgi/Utils.h"
+#include "xgi/Method.h"
 
 
 enum MessageType { info = 0, warning = 1, error = 2 };

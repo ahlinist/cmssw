@@ -1,8 +1,8 @@
 #ifndef _WebElement_
 #define _WebElement_
 
-#include "xgi/include/xgi/Utils.h"
-#include "xgi/include/xgi/Method.h"
+#include "xgi/Utils.h"
+#include "xgi/Method.h"
 
 
 class WebElement
