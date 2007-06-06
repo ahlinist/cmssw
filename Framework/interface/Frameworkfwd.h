@@ -43,7 +43,7 @@ namespace edm {
   class Selector;
   class SelectorBase;
   class TypeID;
-  class UnsheduledHandler;
+  class UnscheduledHandler;
   class ViewBase;
 
   struct EventSummary;
