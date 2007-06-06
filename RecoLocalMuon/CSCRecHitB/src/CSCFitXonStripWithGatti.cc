@@ -21,7 +21,7 @@
 #include <FWCore/MessageLogger/interface/MessageLogger.h>
 #include <FWCore/Utilities/interface/Exception.h>
 
-#include <vector>                                                                                                 
+#include <vector>
 #include <cmath>
 #include <iostream>
                                                                                                  
@@ -36,7 +36,9 @@ CSCFitXonStripWithGatti::CSCFitXonStripWithGatti(const edm::ParameterSet& ps){
   useCalib                   = ps.getUntrackedParameter<bool>("CSCUseCalibrations");
   adcSystematics             = ps.getUntrackedParameter<double>("CSCCalibrationSystematics");        
   xtalksOffset               = ps.getUntrackedParameter<double>("CSCStripxtalksOffset");
+  xtalksSystematics          = ps.getUntrackedParameter<double>("CSCStripxtalksSystematics");
   minGattiStepSize           = ps.getUntrackedParameter<double>("CSCminGattiStepSize");
+  minGattiError              = ps.getUntrackedParameter<double>("CSCminGattiError");
   stripCrosstalk_            = new CSCStripCrosstalk( ps );
   stripNoiseMatrix_          = new CSCStripNoiseMatrix( ps );
 
@@ -63,6 +65,8 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCDetId& id, const CSCLayer* 
   specs_ = layer->chamber()->specs();
   stripWidth = sWidth;
   initChamberSpecs();
+
+  int ring = id.ring();
 
   // Initialize output parameters just in case the fit fails  
   xGatti = xCenterStrip;  
@@ -126,12 +130,12 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCDetId& id, const CSCLayer* 
     }
   } else { 
     for ( int t = 0; t < 3; ++t ) {
-      xt_l[0][t] = 0.02;
-      xt_r[0][t] = 0.02;
-      xt_l[1][t] = 0.02; 
-      xt_r[1][t] = 0.02; 
-      xt_l[2][t] = 0.02; 
-      xt_r[2][t] = 0.02; 
+      xt_l[0][t] = xtalksOffset;
+      xt_r[0][t] = xtalksOffset;
+      xt_l[1][t] = xtalksOffset; 
+      xt_r[1][t] = xtalksOffset; 
+      xt_l[2][t] = xtalksOffset; 
+      xt_r[2][t] = xtalksOffset; 
 
       xt_lr0[t] = (1. - xt_l[0][t] - xt_r[0][t]);
       xt_lr1[t] = (1. - xt_l[1][t] - xt_r[1][t]);
@@ -167,12 +171,12 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCDetId& id, const CSCLayer* 
   } else {
     // FIXME:  NO HARD WIRED VALUES !!!
     for ( int istrip =0; istrip < 3; ++istrip ) {
-      a11[istrip] = 1.0;
+      a11[istrip] = 10.0;
       a12[istrip] = 0.0;
       a13[istrip] = 0.0;
-      a22[istrip] = 1.0;
+      a22[istrip] = 10.0;
       a23[istrip] = 0.0;
-      a33[istrip] = 1.0;
+      a33[istrip] = 10.0;
     }
   }
   
@@ -182,35 +186,60 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCDetId& id, const CSCLayer* 
   // Run Gatti for offset = 0
   runGattiFit( 0 );
 
+//  if (ring < 2 ) std::cout << "Gatti_0  " << x_gatti << " " << chi2_gatti << " " << dxl_gatti << " " << dxh_gatti << std::endl;
+  
   float tmp0_x      = x_gatti;
   float tmp0_chi2   = chi2_gatti;
   float tmp0_dl     = dxl_gatti;
   float tmp0_dh     = dxh_gatti;
 
-
   // Run Gatti for offset = 1
   runGattiFit( 1 );
 
+//  if (ring < 2 ) std::cout << "Gatti_1  " << x_gatti << " " << chi2_gatti << " " << dxl_gatti << " " << dxh_gatti << std::endl;
+
   float tmp1_x      = x_gatti;
   float tmp1_chi2   = chi2_gatti;
-  if ( fabs( tmp1_x - tmp0_x ) > 0.005 ) {
-    if ( fabs( tmp1_chi2 - tmp0_chi2 ) > 3.){
-      if ( tmp0_chi2 < tmp1_chi2 ){
-        x_gatti    = tmp0_x;
-	chi2_gatti = tmp0_chi2;
-	dxl_gatti  = tmp0_dl;
-	dxh_gatti  = tmp0_dh;
-      }
+  float tmp1_dl     = dxl_gatti;
+  float tmp1_dh     = dxh_gatti;
+
+  float test        = fabs( tmp1_x - tmp0_x );
+
+  if ( test < 2.1 * minGattiStepSize ) {
+    // Two fits are close to one another
+    x_gatti    = ( tmp0_x + tmp1_x ) / 2.;
+    dxl_gatti  = ( tmp0_dl + tmp1_dl ) / 2.;  //  equivalent of * 1/sqrt(12)
+    dxh_gatti  = ( tmp0_dh + tmp1_dh ) / 2.;
+    chi2_gatti = ( tmp1_chi2 + tmp0_chi2 ) / 2.;
+  }
+  else if ( test < 0.1 ) {
+    // One of the fits didn't fit as well.
+    if ( tmp0_chi2 < tmp1_chi2 ){
+      x_gatti    = tmp0_x;
+      chi2_gatti = tmp0_chi2;
+      dxl_gatti  = tmp0_dl;
+      dxh_gatti  = tmp0_dh;
     } else {
-      x_gatti   = ( tmp0_x + tmp1_x ) / 2.;
-      dxl_gatti = fabs( tmp0_x - tmp1_x )/ sqrt(12.);
-      dxh_gatti = dxl_gatti;
-      chi2_gatti = 99999.;
-    }
-  }    
+      x_gatti    = tmp1_x;
+      chi2_gatti = tmp1_chi2;
+      dxl_gatti  = tmp1_dl;
+      dxh_gatti  = tmp1_dh;
+    }  
+  } else {  
+    // One of the fits failed completely:  set to center of strip
+    x_gatti    = 0.;      
+    dxl_gatti  = 0.2887;  // This is 1/sqrt(12)
+    dxh_gatti  = dxl_gatti;
+    chi2_gatti = 9999.;
+  }
 
   float dx_gatti = ( dxl_gatti + dxh_gatti ) /2.;
-  if ( dx_gatti < 0.003 ) dx_gatti = 0.003;
+
+  if ( dx_gatti < minGattiError ) dx_gatti =  minGattiError;
+  if ( dx_gatti > 0.2887 ) dx_gatti =  0.2887; // this is 1/sqrt(12)
+
+//  if ( ring < 2 )  std::cout << "GattiFit " << x_gatti << " " << chi2_gatti << " " << dx_gatti << std::endl;
+
 
   xGatti = xCenterStrip - x_gatti * stripWidth;
   sigma  = dx_gatti * stripWidth;      
@@ -265,7 +294,7 @@ void CSCFitXonStripWithGatti::runGattiFit( int istrt ) {
 
     while ( true ) {    
 
-      chi2 = chisqrFromGatti( dx );
+      chi2 = chisqrFromGattiCalib( dx );
 
       if ( chi2 < chi2last ) {
         chi2last = chi2;
@@ -284,26 +313,27 @@ void CSCFitXonStripWithGatti::runGattiFit( int istrt ) {
     
   dx = -dx;
  
-  // Now compute errors
-  float errl = .001;
-  float errh = .001;
+  // Now compute errors --> What's the proper interval to look at ???
+  // Picked the values below which correspond to the 1-sigma resolution observed in MC
+  float errl = 0.02;
+  float errh = 0.02;
   
-  // Look at chi^2 for dx - 0.001
+  // Look at chi^2 for dx - errl
   float dxl = -dx - errl;
   float chi2l = chisqrFromGatti( dxl );
-  chi2l = chi2l - chi2;
-  if ( chi2l > 0. ) {
+  chi2l = fabs(chi2l - chi2);
+  if ( chi2l != 0. ) {
     errl = errl * sqrt( 1.0 / chi2l );
   } else {
     errl = 1000.;
   }
 
 
-  // Look at chi^2 for dx + 0.001
+  // Look at chi^2 for dx + errh
   float dxh = errh - dx;
   float chi2h = chisqrFromGatti( dxh );
-  chi2h = chi2h - chi2;
-  if ( chi2h > 0. ) {
+  chi2h = fabs(chi2h - chi2);
+  if ( chi2h != 0. ) {
     errh = errh * sqrt( 1.0/chi2h );
   } else {
     errh = 1000.;
@@ -483,7 +513,7 @@ void CSCFitXonStripWithGatti::setupMatrix() {
 
   double dd, a11t, a12t, a13t, a22t, a23t, a33t;
   double syserr = adcSystematics;
-  double xtlk_err=0.01;
+  double xtlk_err = xtalksSystematics;
 
   // Left strip
   a11t = a11[0] + syserr*syserr * d[0][0]*d[0][0] + xtlk_err*xtlk_err*d[1][0]*d[1][0];
