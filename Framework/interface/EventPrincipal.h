@@ -1,5 +1,5 @@
-#ifndef Framework_EventPrincipal_h
-#define Framework_EventPrincipal_h
+#ifndef FWCore_Framework_EventPrincipal_h
+#define FWCore_Framework_EventPrincipal_h
 
 /*----------------------------------------------------------------------
   
@@ -14,11 +14,11 @@ $Id$
 
 ----------------------------------------------------------------------*/
 
+#include "boost/shared_ptr.hpp"
+
 #include "DataFormats/Provenance/interface/EventAuxiliary.h"
 #include "FWCore/Framework/interface/Principal.h"
 #include "FWCore/Framework/interface/UnscheduledHandler.h"
-
-#include "boost/shared_ptr.hpp"
 
 namespace edm {
   class EventID;
@@ -33,14 +33,14 @@ namespace edm {
     typedef Base::SharedConstGroupPtr SharedConstGroupPtr;
     EventPrincipal(EventID const& id,
 	Timestamp const& time,
-	ProductRegistry const& reg,
+	boost::shared_ptr<ProductRegistry const> reg,
         boost::shared_ptr<LuminosityBlockPrincipal> lbp,
         ProcessConfiguration const& pc,
 	ProcessHistoryID const& hist = ProcessHistoryID(),
 	boost::shared_ptr<DelayedReader> rtrv = boost::shared_ptr<DelayedReader>(new NoDelayedReader));
     EventPrincipal(EventID const& id,
 	Timestamp const& time,
-	ProductRegistry const& reg,
+	boost::shared_ptr<ProductRegistry const> reg,
 	LuminosityBlockNumber_t lumi,
         ProcessConfiguration const& pc,
 	ProcessHistoryID const& hist = ProcessHistoryID(),

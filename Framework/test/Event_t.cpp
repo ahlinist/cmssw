@@ -263,7 +263,6 @@ testEvent::testEvent() :
 
 testEvent::~testEvent()
 {
-  delete availableProducts_;
   delete principal_;
   delete currentEvent_;
   delete currentModuleDescription_;
@@ -334,9 +333,10 @@ void testEvent::setUp()
   // and that is used to create the group in the principal used to
   // look up the object.
 
+  boost::shared_ptr<ProductRegistry const> preg = boost::shared_ptr<ProductRegistry const>(availableProducts_);
   principal_  = new EventPrincipal(make_id(),
 				   make_timestamp(),
-				   *availableProducts_,
+				   preg,
                                    1,
                                    currentModuleDescription_->processConfiguration(),
                                    processHistoryID);

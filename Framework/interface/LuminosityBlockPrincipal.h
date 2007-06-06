@@ -14,11 +14,11 @@ $Id$
 
 ----------------------------------------------------------------------*/
 
+#include "boost/shared_ptr.hpp"
+
 #include "DataFormats/Provenance/interface/LuminosityBlockAuxiliary.h"
 #include "DataFormats/Provenance/interface/RunID.h"
 #include "FWCore/Framework/interface/Principal.h"
-
-#include "boost/shared_ptr.hpp"
 
 namespace edm {
   class RunPrincipal;
@@ -27,14 +27,14 @@ namespace edm {
   typedef Principal Base;
   public:
     LuminosityBlockPrincipal(LuminosityBlockNumber_t const& id,
-	ProductRegistry const& reg,
+	boost::shared_ptr<ProductRegistry const> reg,
         boost::shared_ptr<RunPrincipal> rp,
         ProcessConfiguration const& pc,
 	ProcessHistoryID const& hist = ProcessHistoryID(),
 	boost::shared_ptr<DelayedReader> rtrv = boost::shared_ptr<DelayedReader>(new NoDelayedReader));
 
     LuminosityBlockPrincipal(LuminosityBlockNumber_t const& id,
-	ProductRegistry const& reg,
+	boost::shared_ptr<ProductRegistry const> reg,
         RunNumber_t run,
         ProcessConfiguration const& pc,
 	ProcessHistoryID const& hist = ProcessHistoryID(),

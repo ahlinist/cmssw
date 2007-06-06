@@ -14,6 +14,8 @@ $Id$
 
 ----------------------------------------------------------------------*/
 
+#include "boost/shared_ptr.hpp"
+
 #include "DataFormats/Provenance/interface/RunAuxiliary.h"
 #include "FWCore/Framework/interface/Principal.h"
 
@@ -23,7 +25,7 @@ namespace edm {
   typedef Principal Base;
   public:
     RunPrincipal(RunNumber_t const& id,
-	ProductRegistry const& reg,
+	boost::shared_ptr<ProductRegistry const> reg,
 	ProcessConfiguration const& pc,
 	ProcessHistoryID const& hist = ProcessHistoryID(),
 	boost::shared_ptr<DelayedReader> rtrv = boost::shared_ptr<DelayedReader>(new NoDelayedReader)) :

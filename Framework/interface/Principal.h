@@ -65,7 +65,7 @@ namespace edm {
       Iter iterEnd_;
     };
 
-    Principal(ProductRegistry const& reg,
+    Principal(boost::shared_ptr<ProductRegistry const> reg,
 	      ProcessConfiguration const& pc,
               ProcessHistoryID const& hist = ProcessHistoryID(),
               boost::shared_ptr<DelayedReader> rtrv = boost::shared_ptr<DelayedReader>(new NoDelayedReader));
@@ -211,7 +211,7 @@ namespace edm {
 
     // Pointer to the product registry. There is one entry in the registry
     // for each EDProduct in the event.
-    ProductRegistry const* preg_;
+    boost::shared_ptr<ProductRegistry const> preg_;
 
     // Pointer to the 'source' that will be used to obtain EDProducts
     // from the persistent store.
