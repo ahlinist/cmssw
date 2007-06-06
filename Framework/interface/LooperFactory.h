@@ -59,6 +59,16 @@ namespace edm {
         void addFinderTo(EventSetupProvider& iProvider, boost::shared_ptr<T> iComponent, const EventSetupRecordIntervalFinder*) 
       {
           boost::shared_ptr<EventSetupRecordIntervalFinder> pFinder(iComponent);
+
+          ComponentDescription description = pFinder->descriptionForFinder();
+          description.isSource_=true;
+          description.isLooper_=true;
+          if(description.label_ =="@main_looper") {
+            //remove the 'hidden' label so that es_prefer statements will work
+            description.label_ ="";
+          }
+          pFinder->setDescriptionForFinder(description);
+          
           iProvider.add(pFinder);
       }
       template<class T>
