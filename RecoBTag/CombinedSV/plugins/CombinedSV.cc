@@ -84,8 +84,10 @@ reco::Vertex CombinedSV::getPrimaryVertex ( const edm::Event & iEvent,
     iEvent.getByLabel( vertexcoll_, retColl);
     int numVertices = retColl->size();
     if (numVertices > 0) {
+      #ifdef DEBUG
       cout << "[CombinedSV] Persistent primary vertex found, will use it"
            << endl;
+      #endif // DEBUG
       return *(retColl->begin());
     }
 
@@ -104,12 +106,16 @@ reco::Vertex CombinedSV::getPrimaryVertex ( const edm::Event & iEvent,
     edm::LogWarning("CombinedSV::getPrimaryVertex") << "No primary vertex found, fitting all "
                         << tks->size() << " ttracks with avf";
     TransientVertex ret = fitter.vertex ( ttks );
+    #ifdef DEBUG
     cout << "[CombinedSV] fitted vertex has weight map: " << ret.hasTrackWeight() << endl;
+    #endif // DEBUG
     return static_cast < reco::Vertex > (ret);
   } catch (...) {};
 
+  #ifdef DEBUG
   cout << "[CombinedSV] No primary vertex found, use geometric origin (beamspot)"
        << endl;
+  #endif // DEBUG
   /*
   BeamSpot s;
   TransientVertex vtx ( s.position(), s.error(), ttks, -1. );
@@ -154,10 +160,12 @@ void CombinedSV::produce(edm::Event& iEvent,
                            const edm::EventSetup& iSetup)
 {
   int evt=iEvent.id().event();
+  #ifdef DEBUG
   cout << endl
        << "[CombinedSV] next event: " << evt << endl
        << "=============================" << endl
        << endl;
+  #endif // DEBUG
   edm::ESHandle<MagneticField> magneticField;
   iSetup.get<IdealMagneticFieldRecord>().get(magneticField);
   edm::ESHandle<TransientTrackBuilder> builder;
@@ -170,7 +178,9 @@ void CombinedSV::produce(edm::Event& iEvent,
   reco::CombinedSVTagInfoCollection *extCollection  = new reco::CombinedSVTagInfoCollection();
 
   reco::Vertex primaryVertex = getPrimaryVertex ( iEvent, iSetup );
+  #ifdef DEBUG
   cout << "[CombinedSV] primary vertex is at " << primaryVertex.position() << endl;
+  #endif // DEBUG
 
   edm::Handle<reco::JetTracksAssociationCollection> jetWithTrackColl;
 
@@ -180,9 +190,11 @@ void CombinedSV::produce(edm::Event& iEvent,
     iEvent.getByLabel(associatorID_,jetWithTrackColl);
 
     // int numJets = jetWithTrackColl->size();
+    #ifdef DEBUG
     cout << "[CombinedSV] need to analyze " << jetWithTrackColl->size()
          << " jets." << endl;
-
+    #endif // DEBUG
+    
     for ( reco::JetTracksAssociationCollection::const_iterator jetNTrks =
           jetWithTrackColl->begin(); jetNTrks != jetWithTrackColl->end(); jetNTrks++)
     {
@@ -217,14 +229,20 @@ void CombinedSV::produce(edm::Event& iEvent,
       extCollection->push_back(btag);
     }
   } catch ( edm::Exception & e ) {
+    #ifdef DEBUG
     cout << "[CombinedSV] Exception caught: " << e.what() << ", ignore this event"
          << endl;
+    #endif // DEBUG
   } catch ( cms::Exception & e ) {
+    #ifdef DEBUG
     cout << "[CombinedSV] Exception caught: " << e.what() << ", ignore this event"
          << endl;
+    #endif // DEBUG
   } catch (...) {
+    #ifdef DEBUG
     cout << "[CombinedSV] Unknown exception caught. No jets found, ignore this event"
          << endl;
+    #endif // DEBUG
   }
 
   std::auto_ptr<reco::CombinedSVTagInfoCollection> resultExt(extCollection);
