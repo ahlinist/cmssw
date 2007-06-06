@@ -7,6 +7,9 @@
 //
 //  Modification history:
 //    $Log: FilterUnitFramework.cc,v $
+//    Revision 1.23  2007/02/14 09:48:03  meschi
+//    removed using directive, added stopAction
+//
 //    Revision 1.22  2006/11/14 10:10:02  meschi
 //    fix bug for queueSize = 1, added bu range
 //
@@ -115,18 +118,38 @@
 //
 //
 
-#include "toolbox/include/toolbox/Chrono.h"
-#include "xcept/include/xcept/tools.h"
-#include "xoap/include/xoap/MessageFactory.h"
-#include "xoap/include/xoap/Method.h"
-#include "xgi/include/xgi/Method.h"
+#include "toolbox/Chrono.h"
+#include "xcept/tools.h"
+#include "xoap/MessageFactory.h"
+#include "xoap/Method.h"
+#include "xgi/Method.h"
 
 #include "EventFilter/Unit/interface/FilterUnitFramework.h"
 #include "EventFilter/Unit/interface/FURawEventFactory.h"
 
+#include "EventFilter/Utilities/interface/DebugUtils.h"
+#include "EventFilter/Unit/interface/FURawEvent.h"
+
+#include "i2o/utils/AddressMap.h"
+#include "cgicc/CgiDefs.h"
+#include "cgicc/Cgicc.h"
+#include "cgicc//FormEntry.h"
+#include "cgicc/HTTPHTMLHeader.h"
+#include "cgicc/HTMLClasses.h"
+#include <stdio.h>
+
+#include <typeinfo>
+#include <unistd.h>
+#include <sys/utsname.h>
+
 #include <pthread.h>
 #include <sys/types.h>
 #include <time.h>
+
+#include <signal.h>
+
+
+using namespace std;
 
 FilterUnitFramework::FilterUnitFramework(xdaq::ApplicationStub *s) : FUAdapter(s),
 								     nbEvents_(0),
@@ -135,7 +158,7 @@ FilterUnitFramework::FilterUnitFramework(xdaq::ApplicationStub *s) : FUAdapter(s
 {
   cout << "Entered constructor " << endl;
   Monitor_timer_=0;  
-  mutex_ = new BSem(BSem::FULL);
+  mutex_ = new toolbox::BSem(toolbox::BSem::FULL);
   
   fsm_ = new evf::EPStateMachine(getApplicationLogger());
   fsm_->init<FilterUnitFramework>(this);
@@ -234,10 +257,6 @@ FilterUnitFramework::~FilterUnitFramework()
   delete dump_;
 }
 
-#include <typeinfo>
-
-#include <unistd.h>
-#include <sys/utsname.h>
 
 void FilterUnitFramework::configureAction(toolbox::Event::Reference e) throw (toolbox::fsm::exception::Exception)
 {
@@ -326,9 +345,6 @@ void FilterUnitFramework::resumeAction(toolbox::Event::Reference e) throw (toolb
   LOG4CPLUS_INFO(this->getApplicationLogger(),"Run Resumed...");
 }
 
-#include <pthread.h>
-#include <sys/types.h>
-#include <signal.h>
 void FilterUnitFramework::haltAction(toolbox::Event::Reference e) throw (toolbox::fsm::exception::Exception)
 {
   flush_ = true;
@@ -399,13 +415,6 @@ xoap::MessageReference FilterUnitFramework::getStateMsg(xoap::MessageReference m
 }
 
 
-#include "i2o/utils/include/i2o/utils/AddressMap.h"
-#include "extern/cgicc/linuxx86/include/cgicc/CgiDefs.h"
-#include "extern/cgicc/linuxx86/include/cgicc/Cgicc.h"
-#include "extern/cgicc/linuxx86/include/cgicc//FormEntry.h"
-#include "extern/cgicc/linuxx86/include/cgicc/HTTPHTMLHeader.h"
-#include "extern/cgicc/linuxx86/include/cgicc/HTMLClasses.h"
-#include <stdio.h>
 
 
 void FilterUnitFramework::defaultWebPage(xgi::Input *in, xgi::Output *out)
@@ -478,11 +487,6 @@ void FilterUnitFramework::defaultWebPage(xgi::Input *in, xgi::Output *out)
 
 }
 
-#include "extern/cgicc/linuxx86/include/cgicc/CgiDefs.h"
-#include "extern/cgicc/linuxx86/include/cgicc/Cgicc.h"
-#include "EventFilter/Utilities/interface/DebugUtils.h"
-#include "extern/cgicc/linuxx86/include/cgicc/FormEntry.h"
-#include "extern/cgicc/linuxx86/include/cgicc/HTMLClasses.h"
 
 void FilterUnitFramework::debugWebPage(xgi::Input *in, xgi::Output *out) 
   throw (xgi::exception::Exception)
@@ -877,7 +881,7 @@ void FilterUnitFramework::timeExpired (toolbox::task::TimerEvent& e)
   mutex_->give();
 }
 
-#include "EventFilter/Unit/interface/FURawEvent.h"
+
 void FilterUnitFramework::flushBuiltQueue()
 {
   // flushed events are considered as processed by the eventfactory but the local counter is not incremented

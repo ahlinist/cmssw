@@ -9,6 +9,9 @@
 //
 //  Modification history:
 //    $Log: FilterUnitFramework.h,v $
+//    Revision 1.15  2007/02/14 09:46:12  meschi
+//    removed using directive
+//
 //    Revision 1.14  2006/11/14 10:06:30  meschi
 //    fix bug where some values of queueSize can cause a crash
 //
@@ -87,21 +90,21 @@
 #include <deque>
 #include <pthread.h>
 
-#include "toolbox/include/toolbox/task/TimerFactory.h"
-#include "toolbox/include/Task.h"
-#include "toolbox/include/TaskGroup.h"
-#include "toolbox/include/toolbox/Chrono.h"
-#include "xdata/include/xdata/UnsignedInteger32.h"
-#include "xoap/include/xoap/SOAPEnvelope.h"
-#include "xdata/include/xdata/Float.h"
-#include "xdata/include/xdata/Double.h"
-#include "xdata/include/xdata/String.h"
-#include "xoap/include/xoap/SOAPBody.h"
-#include "xoap/include/xoap/domutils.h"
-#include "xgi/include/xgi/Input.h"
-#include "xgi/include/xgi/Output.h"
-#include "xgi/include/xgi/exception/Exception.h"
-#include "xdaq/include/xdaq/NamespaceURI.h"
+#include "toolbox/task/TimerFactory.h"
+#include "toolbox/Task.h"
+#include "toolbox/TaskGroup.h"
+#include "toolbox/Chrono.h"
+#include "xdata/UnsignedInteger32.h"
+#include "xoap/SOAPEnvelope.h"
+#include "xdata/Float.h"
+#include "xdata/Double.h"
+#include "xdata/String.h"
+#include "xoap/SOAPBody.h"
+#include "xoap/domutils.h"
+#include "xgi/Input.h"
+#include "xgi/Output.h"
+#include "xgi/exception/Exception.h"
+#include "xdaq/NamespaceURI.h"
 
 #include "EventFilter/Unit/interface/FUAdapter.h"
 #include "EventFilter/Utilities/interface/EPStateMachine.h"
@@ -179,10 +182,10 @@ private:
   std::vector<int> runs;
   std::vector<int> events;
   // locks
-  BSem *mutex_;
-  BSem *ack_;
+  toolbox::BSem *mutex_;
+  toolbox::BSem *ack_;
   sem_t empty_; // a POSIX counting semaphore
-  BSem *comm_;
+  toolbox::BSem *comm_;
   pthread_cond_t ready_;
   pthread_mutex_t lock_;
 
@@ -192,7 +195,7 @@ private:
   // components (see inheritance tree for more components
   // pool of filter tasks
 
-  TaskGroup             *taskGroup_;
+  toolbox::TaskGroup             *taskGroup_;
 
   // private service methods
 

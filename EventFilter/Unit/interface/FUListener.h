@@ -7,6 +7,9 @@
 //
 //  MODIFICATION:
 //  $Log: FUListener.h,v $
+//  Revision 1.1  2005/10/19 09:10:35  meschi
+//  first import from COSINE
+//
 //  Revision 1.1  2004/05/14 13:23:58  meschi
 //  set of Listener/Adapter/Proxy for new BU/FU
 //
@@ -19,7 +22,7 @@
     (replaces i2oFUListener)
 */
 
-#include "i2oListener.h" //from daq/xdaq/include
+#include "xdaq/i2oListener.h" //from daq/xdaq/include
 
 class FUListener:  public virtual i2oListener {
  public:

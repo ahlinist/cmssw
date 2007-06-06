@@ -7,6 +7,9 @@
 //
 //  MODIFICATION:
 //  $Log: FUAdapter.h,v $
+//  Revision 1.9  2006/09/26 16:26:01  schiefer
+//  ready for xdaq 3.7 / CMSSW_1_1_0
+//
 //  Revision 1.8  2006/09/04 15:00:10  schiefer
 //  FUAdapter::doCrcCheck_=n indicates now that every n-th event will have its crc values checked, not every n-th superfragment
 //
@@ -69,12 +72,12 @@
     (replaces i2oFUAdapter)
 */
 
-#include "interface/evb/include/i2oEVBMsgs.h"
-#include "toolbox/include/BSem.h"
-#include "xdata/include/xdata/String.h"
-#include "xdata/include/xdata/Integer.h"
-#include "xdata/include/xdata/Boolean.h"
-#include "xdaq/include/xdaq/Application.h"
+#include "interface/evb/i2oEVBMsgs.h"
+#include "toolbox/BSem.h"
+#include "xdata/String.h"
+#include "xdata/Integer.h"
+#include "xdata/Boolean.h"
+#include "xdaq/Application.h"
 #include "EventFilter/Utilities/interface/RunBase.h"
 
 #include <vector>
@@ -171,7 +174,7 @@ class FUAdapter: public xdaq::Application, public evf::RunBase
   std::vector<BUProxy*> bu_;
   std::string           buName_;
   unsigned long         bufSize_;
-  BSem                  bSem_;
+  toolbox::BSem         bSem_;
 
   std::vector<toolbox::mem::Reference *> toGo_;
   
