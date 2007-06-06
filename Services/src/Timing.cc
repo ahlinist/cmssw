@@ -64,7 +64,7 @@ namespace edm {
     {
       //edm::LogInfo("TimeReport")
       if (not summary_only_) {
-        edm::LogSystem("TimeReport")
+        edm::LogAbsolute("TimeReport")
 	<< "TimeReport> Report activated" << "\n"
 	<< "TimeReport> Report columns headings for events: "
 	<< "eventnum runnum timetaken\n"
@@ -79,7 +79,7 @@ namespace edm {
       double t = getTime() - curr_job_;
       double average_event_t = t / total_event_count_;
       //edm::LogInfo("TimeReport")
-      edm::LogSystem("TimeReport")
+      edm::LogAbsolute("TimeReport")
 	<< "TimeReport> Time report complete in "
 	<< t << " seconds"
 	<< "\n"
@@ -112,7 +112,7 @@ namespace edm {
     {
       double t = getTime() - curr_event_time_;
       if (not summary_only_) {
-        edm::LogSystem("TimeEvent")
+        edm::LogAbsolute("TimeEvent")
 	<< "TimeEvent> "
 	<< curr_event_.event() << " "
 	<< curr_event_.run() << " "
@@ -138,7 +138,7 @@ namespace edm {
       double t = getTime() - curr_module_time_;
       //edm::LogInfo("TimeModule")
       if (not summary_only_) {
-        edm::LogSystem("TimeModule") << "TimeModule> "
+        edm::LogAbsolute("TimeModule") << "TimeModule> "
 	   << curr_event_.event() << " "
 	   << curr_event_.run() << " "
 	   << desc.moduleLabel_ << " "
