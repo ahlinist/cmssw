@@ -6,14 +6,14 @@
 #include "EventFilter/Utilities/interface/Crc.h"
 
 #include <netinet/in.h>
-
+#include <sys/time.h>
 #include <iostream>
-
+#include <vector>
 
 #define REAL_SOID_MASK 0x0003FF00
 #define FED_RBIT_MASK  0x2
 
-
+using namespace std;
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -463,8 +463,6 @@ FURawEvent::RawData *FURawEvent::operator[](int fedid)
     }
   return retVal;
 }
-
-#include <sys/time.h>
 
 
 //______________________________________________________________________________

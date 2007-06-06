@@ -1,17 +1,25 @@
 #include "EventFilter/Unit/interface/FUAdapter.h"
 
-#include "i2o/include/i2o/Method.h"
-#include "xdaq/include/xdaq/ApplicationGroup.h"
+#include "i2o/Method.h"
+#include "xdaq/ApplicationGroup.h"
+#include "xcept/tools.h"
+#include "toolbox/fsm/exception/Exception.h"
+#include "toolbox/net/URN.h"
+#include "toolbox/mem/MemoryPoolFactory.h"
+#include "toolbox/mem/HeapAllocator.h"
 
 
 #include "EventFilter/Unit/interface/BUProxy.h"
 #include "EventFilter/Unit/interface/FURawEventFactory.h"
 #include "EventFilter/Unit/interface/EventSink.h"
+#include "EventFilter/Unit/interface/FURawEvent.h"
 
+using namespace std;
 
 FUAdapter::FUAdapter(xdaq::ApplicationStub *s, string buClassName, 
 		     unsigned long outsize) : xdaq::Application(s),
-  factory_(0), buName_(buClassName), bufSize_(outsize), bSem_(BSem::FULL), 
+  factory_(0), buName_(buClassName), bufSize_(outsize), 
+  bSem_(toolbox::BSem::FULL), 
   pendingRequests_(0), nbReceivedFragments_(0), nbReceivedEvents_(0), 
 					      nbDataErrors_(0), 
 					      nbCrcErrors_(0), 
@@ -60,8 +68,6 @@ void FUAdapter::clearBUArray()
   bu_.clear();
 }
 
-#include "xcept/include/xcept/tools.h"
-#include "toolbox/include/toolbox/fsm/exception/Exception.h"
 
 void FUAdapter::createBUArray()
   {
@@ -150,7 +156,6 @@ void FUAdapter::createBUArray()
   }
 
 
-#include "EventFilter/Unit/interface/FURawEvent.h"
 
 /** the actual message slot, reimplemented from FUListener */
 void FUAdapter::realTake(toolbox::mem::Reference *bufRef)
@@ -360,9 +365,6 @@ void FUAdapter::sendDiscard(unsigned long buInstance, FURawEvent *event)
   //event is recycled by factory after issuing a discard
 }
 
-#include "toolbox/include/toolbox/net/URN.h"
-#include "toolbox/include/toolbox/mem/MemoryPoolFactory.h"
-#include "toolbox/include/toolbox/mem/HeapAllocator.h"
 
 void FUAdapter::findOrCreateMemoryPool() throw (xcept::Exception)
 {

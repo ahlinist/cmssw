@@ -7,6 +7,9 @@
 //
 //  MODIFICATION:
 //  $Log: BUProxy.h,v $
+//  Revision 1.3  2006/09/26 16:26:01  schiefer
+//  ready for xdaq 3.7 / CMSSW_1_1_0
+//
 //  Revision 1.2  2006/09/21 12:39:44  schiefer
 //  fix crc check performed in FURawEvent
 //
@@ -39,19 +42,19 @@
     (replaces i2oBUProxy)
 */
 
-#include "toolbox/include/toolbox/mem/Reference.h"
-#include "toolbox/include/toolbox/mem/MemoryPoolFactory.h"
-#include "toolbox/include/toolbox/mem/exception/Exception.h"
+#include "toolbox/mem/Reference.h"
+#include "toolbox/mem/MemoryPoolFactory.h"
+#include "toolbox/mem/exception/Exception.h"
 
-#include "i2o/include/i2o/Method.h"
-#include "i2o/utils/include/i2o/utils/AddressMap.h"
+#include "i2o/Method.h"
+#include "i2o/utils/AddressMap.h"
 
-#include "xcept/include/xcept/tools.h"
+#include "xcept/tools.h"
 
-#include "xdaq/include/xdaq/ApplicationDescriptor.h"
+#include "xdaq/ApplicationDescriptor.h"
 
-#include "interface/evb/include/i2oEVBMsgs.h" 
-#include "interface/shared/include/i2oXFunctionCodes.h"
+#include "interface/evb/i2oEVBMsgs.h" 
+#include "interface/shared/i2oXFunctionCodes.h"
 
 
 #include <iostream>

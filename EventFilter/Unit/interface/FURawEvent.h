@@ -1,9 +1,9 @@
 #ifndef FURAWEVENT_H
 #define FURAWEVENT_H
 
-#include "interface/shared/include/frl_header.h"
-#include "interface/shared/include/fed_header.h"
-#include "interface/shared/include/fed_trailer.h"
+#include "interface/shared/frl_header.h"
+#include "interface/shared/fed_header.h"
+#include "interface/shared/fed_trailer.h"
 
 #include <string>
 #include <vector>
