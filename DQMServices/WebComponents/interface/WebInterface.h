@@ -5,9 +5,9 @@
 #include "xdata/UnsignedLong.h"
 #include "cgicc/HTMLClasses.h"
 
-#include "xdaq/include/xdaq/Application.h"
-#include "xgi/include/xgi/Utils.h"
-#include "xgi/include/xgi/Method.h"
+#include "xdaq/Application.h"
+#include "xgi/Utils.h"
+#include "xgi/Method.h"
 
 #include "DQMServices/UI/interface/MonitorUIRoot.h"
 
@@ -15,6 +15,8 @@
 #include "DQMServices/WebComponents/interface/MessageDispatcher.h"
 #include "DQMServices/WebComponents/interface/ME_map.h"
 
+#include <string>
+#include <map>
 
 class WebInterface
 {

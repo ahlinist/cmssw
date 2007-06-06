@@ -4,10 +4,12 @@
 #include "DQMServices/WebComponents/interface/ContentReader.h"
 
 
+
 #include <SealBase/Callback.h>
 
+using namespace std;
 
-std::string WebInterface::get_from_multimap(std::multimap<string, string> &mymap, std::string key)
+std::string WebInterface::get_from_multimap(std::multimap<std::string, std::string> &mymap, std::string key)
 {
   std::multimap<std::string, std::string>::iterator it;
   it = mymap.find(key);

@@ -3,8 +3,8 @@
 
 #include <string>
 
-#include "xgi/include/xgi/Utils.h"
-#include "xgi/include/xgi/Method.h"
+#include "xgi/Utils.h"
+#include "xgi/Method.h"
 
 #include "cgicc/CgiDefs.h"
 #include "cgicc/Cgicc.h"

@@ -10,7 +10,7 @@ void ContentReader::give_subdirs(std::string dir, std::list<std::string> &subdir
 
   std::vector<std::string> all_subdirs = mui->getSubdirs();
 
-  std::cout << "The directory " << mui->pwd() << " contains " << all_subdirs.size() << " subdirectories!" << endl;
+  std::cout << "The directory " << mui->pwd() << " contains " << all_subdirs.size() << " subdirectories!" << std::endl;
 
   subdirs.push_back("..");
   for (unsigned int i = 0; i < all_subdirs.size(); i++)
@@ -35,7 +35,8 @@ void ContentReader::give_subdirs(std::string dir, std::list<std::string> &subdir
 // fills the list with existing files in dir
 void ContentReader::give_files(std::string dir, std::list<std::string> &files, bool only_contents)
 {
-  cout << "ContentReader was asked to find the subfiles of : " << dir << endl;
+  std::cout << "ContentReader was asked to find the subfiles of : " 
+	    << dir << std::endl;
 
   // for the interesting directory
   std::string old = mui->pwd();
