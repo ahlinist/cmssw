@@ -142,7 +142,9 @@ class CSCFitXonStripWithGatti
   bool use3TimeBins;
   double adcSystematics;
   float xtalksOffset;
+  float xtalksSystematics;
   float minGattiStepSize;
+  float minGattiError;
 
   /* Cache calibrations for current event
    *
