@@ -6,7 +6,7 @@
      XDAQ application used for FU I2O frame output module.
      See CMS EvF Storage Manager wiki page for further notes.
 
-   $Id: FUi2oSender.h,v 1.5 2007/02/01 20:35:12 hcheung Exp $
+   $Id: FUi2oSender.h,v 1.1 2007/02/04 06:13:15 hcheung Exp $
 */
 
 #include "xdaq/Application.h"
@@ -14,9 +14,9 @@
 #include "toolbox/mem/MemoryPoolFactory.h"
 #include "xdata/UnsignedInteger32.h"
 
-#include "xgi/include/xgi/Input.h"
-#include "xgi/include/xgi/Output.h"
-#include "xgi/include/xgi/exception/Exception.h"
+#include "xgi/Input.h"
+#include "xgi/Output.h"
+#include "xgi/exception/Exception.h"
 #include "EventFilter/Utilities/interface/Css.h"
 
 class FUi2oSender: public xdaq::Application
@@ -55,7 +55,7 @@ class FUi2oSender: public xdaq::Application
     {css_.css(in,out);}
 
   toolbox::mem::Pool          *pool_;
-  set<xdaq::ApplicationDescriptor*> destinations_;
+  std::set<xdaq::ApplicationDescriptor*> destinations_;
   xdaq::ApplicationDescriptor* firstDestination_;
   xdata::UnsignedInteger32          committedpoolsize_;
   xdata::UnsignedInteger32     primarysm_;

@@ -7,7 +7,7 @@
      chain of fragments and ensuring sufficient space in the memory pool.
      See the CMS EvF Storage Manager wiki page for further notes.
 
-   $Id: FUi2oSender.cc,v 1.1 2007/02/04 06:14:02 hcheung Exp $
+   $Id: FUi2oSender.cc,v 1.2 2007/03/26 22:24:06 hcheung Exp $
 */
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -32,7 +32,7 @@
 #include "xgi/Method.h"
 
 #include "i2o/Method.h"
-#include "i2o/utils/include/i2o/utils/AddressMap.h"
+#include "i2o/utils/AddressMap.h"
 
 #include <exception>
 #include <iostream>
@@ -41,7 +41,7 @@
 #include <vector>
 
 
-//using namespace std;
+using namespace std;
 
 ////////////////////////// global variable for interaction with I2OConsumer ///////////////
 struct SMFU_data
