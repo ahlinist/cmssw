@@ -1,5 +1,5 @@
-#ifndef Framework_EDProducer_h
-#define Framework_EDProducer_h
+#ifndef FWCore_Framework_EDProducer_h
+#define FWCore_Framework_EDProducer_h
 
 /*----------------------------------------------------------------------
   
@@ -12,10 +12,12 @@ $Id$
 
 #include "FWCore/Framework/interface/ProducerBase.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
+#include "DataFormats/Provenance/interface/ModuleDescription.h"
 
 namespace edm {
   class EDProducer : public ProducerBase {
   public:
+    friend class ProducerWorker;
     typedef EDProducer ModuleType;
 
     EDProducer ();
@@ -49,6 +51,10 @@ namespace edm {
     virtual void beginLuminosityBlock(LuminosityBlock &, EventSetup const&){}
     virtual void endLuminosityBlock(LuminosityBlock &, EventSetup const&){}
 
+    void setModuleDescription(ModuleDescription const& md) {
+      moduleDescription_ = md;
+    }
+    ModuleDescription moduleDescription_;
     CurrentProcessingContext const* current_context_;
   };
 }

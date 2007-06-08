@@ -1,5 +1,5 @@
-#ifndef Framework_OutputModule_h
-#define Framework_OutputModule_h
+#ifndef FWCore_Framework_OutputModule_h
+#define FWCore_Framework_OutputModule_h
 
 /*----------------------------------------------------------------------
   
@@ -36,6 +36,7 @@ namespace edm {
 
   class OutputModule {
   public:
+    friend class OutputWorker;
     typedef OutputModule ModuleType;
     typedef std::vector<BranchDescription const *> Selections;
     typedef boost::array<Selections, EndBranchType> SelectionsArray;
@@ -116,6 +117,11 @@ namespace edm {
     //std::vector<NamedEventSelector> eventSelectors_;
     //ProcessNameSelector selectResult_;
     
+    void setModuleDescription(ModuleDescription const& md) {
+      moduleDescription_ = md;
+    }
+    ModuleDescription moduleDescription_;
+
     // We do not own the pointed-to CurrentProcessingContext.
     CurrentProcessingContext const* current_context_;
 

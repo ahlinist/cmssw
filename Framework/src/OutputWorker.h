@@ -60,9 +60,11 @@ namespace edm {
   };
 
   template <class ModType>
-  std::auto_ptr<OutputModule> OutputWorker::makeOne(ModuleDescription const&,
+  std::auto_ptr<OutputModule> OutputWorker::makeOne(ModuleDescription const& md,
 						    WorkerParams const& wp) {
-    return std::auto_ptr<OutputModule>(new ModType(*wp.pset_));
+    std::auto_ptr<ModType> module = std::auto_ptr<ModType>(new ModType(*wp.pset_));
+    module->setModuleDescription(md);
+    return std::auto_ptr<OutputModule>(module.release());
   }
 
 }

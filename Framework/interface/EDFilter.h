@@ -1,5 +1,5 @@
-#ifndef Framework_EDFilter_h
-#define Framework_EDFilter_h
+#ifndef FWCore_Framework_EDFilter_h
+#define FWCore_Framework_EDFilter_h
 
 /*----------------------------------------------------------------------
   
@@ -14,14 +14,16 @@ $Id$
 
 #include "FWCore/Framework/interface/ProducerBase.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
+#include "DataFormats/Provenance/interface/ModuleDescription.h"
 
 namespace edm {
 
   class EDFilter : public ProducerBase {
   public:
+    friend class FilterWorker;
     typedef EDFilter ModuleType;
     
-    EDFilter() : ProducerBase() , current_context_(0) {}
+    EDFilter() : ProducerBase() , moduleDescription_(), current_context_(0) {}
     virtual ~EDFilter();
     bool doFilter(Event& e, EventSetup const& c,
 		  CurrentProcessingContext const* cpc);
@@ -51,6 +53,10 @@ namespace edm {
     virtual bool beginLuminosityBlock(LuminosityBlock &, EventSetup const&){return true;}
     virtual bool endLuminosityBlock(LuminosityBlock &, EventSetup const&){return true;}
 
+    void setModuleDescription(ModuleDescription const& md) {
+      moduleDescription_ = md;
+    }
+    ModuleDescription moduleDescription_;
     CurrentProcessingContext const* current_context_;
   };
 }

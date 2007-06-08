@@ -126,6 +126,7 @@ namespace edm {
     groupSelector_(pset),
     //eventSelectors_(),
     //selectResult_("*"),  // use the most recent process name
+    moduleDescription_(),
     current_context_(0),
     //prods_(),
     prodsValid_(false),

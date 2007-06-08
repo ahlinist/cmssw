@@ -9,7 +9,10 @@ $Id$
 #include "FWCore/Framework/src/CPCSentry.h"
 
 namespace edm {
-  EDProducer::EDProducer() : ProducerBase(), current_context_(0)  { }
+  EDProducer::EDProducer() :
+      ProducerBase(),
+      moduleDescription_(),
+      current_context_(0) {}
 
   EDProducer::~EDProducer() { }
 

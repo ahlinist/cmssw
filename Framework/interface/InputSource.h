@@ -1,5 +1,5 @@
-#ifndef Framework_InputSource_h
-#define Framework_InputSource_h
+#ifndef FWCore_Framework_InputSource_h
+#define FWCore_Framework_InputSource_h
 
 
 /*----------------------------------------------------------------------
@@ -118,7 +118,7 @@ namespace edm {
     int remainingEvents() const {return remainingEvents_;}
 
     /// Accessor for 'module' description.
-    ModuleDescription const& moduleDescription() const {return isDesc_.moduleDescription_;}
+    ModuleDescription const& moduleDescription() const {return moduleDescription_;}
 
     /// Accessor for Process Configuration
     ProcessConfiguration const& processConfiguration() const {return moduleDescription().processConfiguration();}
@@ -140,7 +140,7 @@ namespace edm {
     using ProductRegistryHelper::typeLabelList;
 
   protected:
-    ProductRegistry & productRegistryUpdate() const {return *isDesc_.productRegistry_;}
+    ProductRegistry & productRegistryUpdate() const {return const_cast<ProductRegistry &>(*productRegistry_);}
 
   private:
 
@@ -166,7 +166,7 @@ namespace edm {
     int remainingEvents_;
     int readCount_;
     bool unlimited_;
-    InputSourceDescription const isDesc_;
+    ModuleDescription const moduleDescription_;
     boost::shared_ptr<ProductRegistry const> productRegistry_;
     bool const primary_;
   };
