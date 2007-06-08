@@ -47,7 +47,6 @@ reco::Vertex PseudoVertexBuilder::build(
     VertexType & t ) const
 {
   t=PseudoVertex;
-  // cout << "[PseudoVertexBuilder] try PseudoVertex" << endl;
   reco::Vertex vtx;
   try {
     vtx = build ( t, trackColl);

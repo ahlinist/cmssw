@@ -59,7 +59,6 @@ combsv::KernelEstimatedHistogram::KernelEstimatedHistogram(
         i!=m_binValues.end() ; ++i )
   {
     float value = m_binULimits[c] + 0.5 * w;
-    // cout << " value=" << value;
     if (finite(value)) var+= (*i) * ( value - avg ) * ( value - avg );
     c++;
   }

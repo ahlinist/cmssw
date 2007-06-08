@@ -27,13 +27,6 @@ bool combsv::CombinedSVCalibrationCategory::match(const combsv::CombinedSVCalibI
       input.taggingVar() == taggingVar_)
     returnValue = true;
 
-  /*
-  cout << "[CombinedSVCalibrationCategory] " << jetPtMin_ << " < jetpt(" << input.jetPt()
-       << ") < " << jetPtMax_
-       << endl;
-  cout << "[CombinedSVCalibrationCategory] ::match: " << returnValue << endl;
-  */
-
   return returnValue;
 } // bool match
 
@@ -102,8 +95,6 @@ void combsv::CombinedSVCalibrationCategory::readFromDOM(DOMElement * dom)
 
   string tv = CalibrationXML::readAttribute<string>(dom,"TaggingVariable");
   taggingVar_ = reco::getTaggingVariableName ( tv );
-
-  // cout << "[CombinedSVCalibrationCategory] reading from DOM: " << *this << endl;
 }
 
 void combsv::CombinedSVCalibrationCategory::saveToDOM(DOMElement * dom) {

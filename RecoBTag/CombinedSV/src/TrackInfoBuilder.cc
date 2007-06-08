@@ -108,8 +108,6 @@ signed TrackInfoBuilder::d0Sign( const reco::TransientTrack & track ) const
                            trackPCA.y() - spot.position().y(),
                            trackPCA.z() - spot.position().z() );
   double angle = dir.angle(vPCA);
-  /* cout << "[TrackInfoBuilder] trk id=" << track.id() << " angle between " 
-       << dir << " and " << vPCA << " = " << angle << endl; */
   if (angle > M_PI / 2. ) sign = -1;
   return sign;
 }

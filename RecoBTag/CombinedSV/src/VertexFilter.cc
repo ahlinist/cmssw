@@ -88,10 +88,7 @@ double VertexFilter::reducedDistance ( const reco::Vertex & vertex ) const
   C.invert(fail);
   if ( fail )
   {
-    #ifdef DEBUG
-    cout << "[VertexFilter] matrix inversion failed. returning -1."
-         << endl;
-    #endif // DEBUG
+    LogDebug ( "matrix inversion failed. returning -1." );
     return -1.0;
   };
   return C.similarity ( d );

@@ -1,18 +1,20 @@
 #include "RecoBTag/CombinedSV/interface/CombinedVertex.h"
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 using namespace std;
 
 void combsv::CombinedVertex::print() const
 {
-  cout << "****** print CombinedVertex from extended bTag information (combined bTag) " << endl;
-  cout << "chi2                         " << chi2()       << endl;
-  cout << "ndof                         " << ndof()       << endl;
-  cout << "nTracks                      " << nTracks()    << endl; 
-  cout << "mass                         " << mass()       << endl;   
-  cout << "isV0                         " << isV0()       << endl;     
-  // cout << "fracPV                       " << fracPV()     << endl;    
-  cout << "flightDistanced2             " << flightDistance2D().value() << endl;
-  cout << "flightDistanced3             " << flightDistance3D().value() << endl;
+  LogDebug("") 
+    << "****** print CombinedVertex from extended bTag information (combined bTag) " << endl
+    << "chi2                         " << chi2()       << endl
+    << "ndof                         " << ndof()       << endl
+    << "nTracks                      " << nTracks()    << endl 
+    << "mass                         " << mass()       << endl   
+    << "isV0                         " << isV0()       << endl     
+  //   << "fracPV                       " << fracPV()     << endl    
+    << "flightDistanced2             " << flightDistance2D().value() << endl
+    << "flightDistanced3             " << flightDistance3D().value() << endl;
 }
 
 combsv::CombinedVertex::CombinedVertex( const reco::Vertex & vertex,
