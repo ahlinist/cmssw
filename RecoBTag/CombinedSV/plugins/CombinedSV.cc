@@ -217,7 +217,7 @@ void CombinedSV::produce(edm::Event& iEvent,
       for ( edm::RefVector < reco::TrackCollection >::const_iterator i=jetNTrks->second.begin();
             i!=jetNTrks->second.end() ; ++i )
       {
-        trks.push_back ( builder->build ( &(**i) ) );
+        trks.push_back ( builder->build ( *i ) );
       }
 
       unsigned int index = jetNTrks - jetWithTrackColl->begin();
