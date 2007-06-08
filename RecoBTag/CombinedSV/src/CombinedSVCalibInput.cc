@@ -17,7 +17,7 @@ combsv::CombinedSVCalibInput::CombinedSVCalibInput(
 
 void combsv::CombinedSVCalibInput::printMe() const
 {
-  cout << describe() << endl;
+  LogDebug("") << describe();
 }
 
 void combsv::CombinedSVCalibInput::setTaggingVariable ( reco::TaggingVariableName t )

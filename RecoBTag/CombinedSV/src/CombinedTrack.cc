@@ -27,22 +27,22 @@ combsv::CombinedTrack::CombinedTrack::CombinedTrack(
 
 void combsv::CombinedTrack::CombinedTrack::print() const
 {
-  cout << "*** printing trackData for combined b-tag info " << endl;
-  cout << "    aboveCharmMass   " << aboveCharmMass()   << endl;
-  cout << "    pt               " << track().pt()       << endl;
-  cout << "    rapidity         " << rapidity()         << endl;
-  cout << "    jetDistance      " << jetDistance()      << endl;
-  cout << "    nHitsTotal       " << nHitsTotal()       << endl;
-  cout << "    nHitsPixel       " << nHitsPixel()       << endl;
-  cout << "    firstHitPixel    " << firstHitPixel()    << endl;
-  cout << "    ip2D             " << ip2D().value()     << endl;
-  cout << "    ip3D             " << ip3D().value()     << endl;
+  LogDebug("") << "*** printing trackData for combined b-tag info " << endl
+    << "    aboveCharmMass   " << aboveCharmMass()   << endl
+    << "    pt               " << track().pt()       << endl
+    << "    rapidity         " << rapidity()         << endl
+    << "    jetDistance      " << jetDistance()      << endl
+    << "    nHitsTotal       " << nHitsTotal()       << endl
+    << "    nHitsPixel       " << nHitsPixel()       << endl
+    << "    firstHitPixel    " << firstHitPixel()    << endl
+    << "    ip2D             " << ip2D().value()     << endl
+    << "    ip3D             " << ip3D().value()     << endl;
 }
 
 int combsv::CombinedTrack::nHitsTotal() const
 {
   #ifdef RAVE
-  cout << "[CombinedTrack] nHitsTotal not available" << endl;
+  LogDebug("") << "nHitsTotal not available" << endl;
   return 0;
   #else
   return recHitsSize();
@@ -52,7 +52,7 @@ int combsv::CombinedTrack::nHitsTotal() const
 int combsv::CombinedTrack::nHitsPixel() const
 {
   #ifdef RAVE
-  cout << "[CombinedTrack] nHitsPixel not available" << endl;
+  LogDebug("") << "nHitsPixel not available" << endl;
   return 0;
   #else
   return hitPattern().numberOfValidPixelHits();
@@ -62,7 +62,7 @@ int combsv::CombinedTrack::nHitsPixel() const
 bool combsv::CombinedTrack::firstHitPixel() const
 {
   #ifdef RAVE
-  cout << "[CombinedTrack] firstHitPixel not available" << endl;
+  LogDebug("") << "firstHitPixel not available" << endl;
   return false;
   #else
   return hitPattern().hasValidHitInFirstPixelBarrel();
