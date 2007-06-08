@@ -29,7 +29,6 @@ namespace edm {
   class EventPrincipal : private Principal {
     typedef Principal Base;
   public:
-    typedef Base::const_iterator const_iterator;
     typedef Base::SharedConstGroupPtr SharedConstGroupPtr;
     EventPrincipal(EventID const& id,
 	Timestamp const& time,
@@ -86,8 +85,6 @@ namespace edm {
 
     using Base::addGroup;
     using Base::addToProcessHistory;
-    using Base::begin;
-    using Base::end;
     using Base::getAllProvenance;
     using Base::getByLabel;
     using Base::get;
