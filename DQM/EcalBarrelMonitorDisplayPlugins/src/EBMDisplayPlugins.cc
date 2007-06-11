@@ -1,27 +1,21 @@
-// $Id: EBMDisplayPlugins.cc,v 1.16 2007/04/11 05:55:51 dellaric Exp $
+// $Id: EBMDisplayPlugins.cc,v 1.18 2007/05/28 08:27:14 benigno Exp $
 
 /*!
   \file EBMDisplayPlugins
   \brief Display Plugin for Quality Histograms (2D)
   \author B. Gobbo 
-  \version $Revision: 1.16 $
-  \date $Date: 2007/04/11 05:55:51 $
+  \version $Revision: 1.18 $
+  \date $Date: 2007/05/28 08:27:14 $
 */
 
-#include <iostream>
-#include <TROOT.h>
-#include <TGraph.h>
-#include <TObject.h>
-#include <TH1.h>
-#include <TH2.h>
-#include <TProfile.h>
 #include <TProfile2D.h>
-#include <TVirtualPad.h>
+
 #include <TStyle.h>
 #include <TCanvas.h>
 #include <TColor.h>
 
 #include "DQMServices/Core/interface/MonitorElement.h"
+
 #include "DQM/EcalCommon/interface/ColorPalette.h"
 #include <DQM/EcalCommon/interface/Numbers.h>
 #include "DQM/EcalBarrelMonitorDisplayPlugins/interface/EBMDisplayPlugins.h"
@@ -143,6 +137,14 @@ bool EBMDisplayPlugins::applies( DisplayData *data ) {
 }
 
 std::string EBMDisplayPlugins::preDraw( DisplayData *data ) {
+
+  MonitorElement* me = data->me;
+  if( me  ) {
+    data->pad->SetFrameFillColor( 10 );
+    if (me->hasOtherReport()) data->pad->SetFillColor( 16 );
+    if (me->hasWarning()) data->pad->SetFillColor( 5 );
+    if (me->hasError()) data->pad->SetFillColor( 2 );
+  }
 
   if( dynamic_cast<TProfile2D*>( data->object ) ) {
     return preDrawTProfile2D( data );
