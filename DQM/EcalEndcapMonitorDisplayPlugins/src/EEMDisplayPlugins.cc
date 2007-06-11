@@ -1,28 +1,24 @@
-// $Id: EEMDisplayPlugins.cc,v 1.2 2007/04/11 05:55:52 dellaric Exp $
+// $Id: EEMDisplayPlugins.cc,v 1.3 2007/05/23 15:04:21 benigno Exp $
 
 /*!
   \file EEMDisplayPlugins
   \brief Display Plugin for Quality Histograms (2D)
   \author B. Gobbo 
-  \version $Revision: 1.2 $
-  \date $Date: 2007/04/11 05:55:52 $
+  \version $Revision: 1.3 $
+  \date $Date: 2007/05/23 15:04:21 $
 */
 
-#include "DQM/EcalEndcapMonitorDisplayPlugins/interface/EEMDisplayPlugins.h"
-#include "DQM/EcalCommon/interface/ColorPalette.h"
-#include "DQMServices/Core/interface/MonitorElement.h"
-#include <iostream>
-#include <TROOT.h>
-#include <TGraph.h>
-#include <TObject.h>
-#include <TH1.h>
-#include <TH2.h>
-#include <TProfile.h>
 #include <TProfile2D.h>
-#include <TVirtualPad.h>
+
 #include <TStyle.h>
 #include <TCanvas.h>
 #include <TColor.h>
+
+#include "DQMServices/Core/interface/MonitorElement.h"
+
+#include "DQM/EcalCommon/interface/ColorPalette.h"
+#include <DQM/EcalCommon/interface/Numbers.h>
+#include "DQM/EcalEndcapMonitorDisplayPlugins/interface/EEMDisplayPlugins.h"
 
 // Temporary: this class should be instantiated once, but due to bugs 
 // it happens that's instantiated more times...
@@ -123,7 +119,7 @@ bool EEMDisplayPlugins::applies( DisplayData *data ) {
  
   name = (data->object)->GetName();
 
-  // Ecal Barrel DQM related MEs start with "EE"
+  // Ecal Endcap DQM related MEs start with "EE"
   if( name.find( "EE" ) == 0 ) {
     return true;
   }
