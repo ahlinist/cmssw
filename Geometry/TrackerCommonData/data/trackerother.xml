@@ -26,6 +26,7 @@
  <Constant name="SupportTubeInsertZoff"   value="-2.574*m"/>
  <Constant name="SupportTubeInsertZpitch" value="143*mm"/>
  <Constant name="ThermalScreenManifoldL"  value="([SupportTubeL]-[ThermalScreenL])/2"/>
+ <Constant name="ThermalScreenPlaceholderL" value="3*mm"/>
  <Constant name="TrackerRailRout"         value="[ThermalScreenRout]"/>
  <Constant name="TrackerRailRin"          value="[TrackerRailRout]-24*mm"/>
  <Constant name="TrackerRailPhiLo"        value="-0.067*rad"/>
@@ -71,6 +72,12 @@
  <Tubs name="TrackerThermalScreenShield"      rMin="[ThermalScreenR2]+[Tol]" 
        rMax="[ThermalScreenRout]-[Tol]"       dz="[ThermalScreenL]" 
        startPhi="4*deg"                       deltaPhi="172*deg"/>
+ <Tubs name="TrackerThermalScreenManifold"    rMin="[ThermalScreenRin]+[Tol]" 
+       rMax="[ThermalScreenRout]-[Tol]"       dz="[ThermalScreenManifoldL]" 
+       startPhi="4*deg"                       deltaPhi="172*deg"/>
+ <Tubs name="TrackerThermalScreenPlaceholder" rMin="[ThermalScreenRin]+[Tol]" 
+       rMax="[ThermalScreenRout]-[Tol]"       dz="[ThermalScreenPlaceholderL]" 
+       startPhi="4*deg"                       deltaPhi="172*deg"/>
  <Tubs name="TrackerSupportTube"              rMin="[SupportTubeRin]+[Tol]" 
        rMax="[SupportTubeRout]-[Tol]"         dz="[SupportTubeL]" 
        startPhi="0*deg"                       deltaPhi="360*deg"/>
@@ -101,9 +108,6 @@
  <Tubs name="TrackerSupportTubeInsertShield"  rMin="[zero]" 
        rMax="[SupportTubeInsertR]"            dz="[SupportTubeInsert4Dz]" 
        startPhi="0*deg"                       deltaPhi="360*deg"/>
- <Tubs name="TrackerThermalScreenManifold"    rMin="[ThermalScreenRin]+[Tol]" 
-       rMax="[ThermalScreenRout]-[Tol]"       dz="[ThermalScreenManifoldL]" 
-       startPhi="4*deg"                       deltaPhi="172*deg"/>
  <Tubs name="TrackerRail"                     rMin="[TrackerRailRin]+[Tol]" 
        rMax="[TrackerRailRout]-[Tol]"         dz="[SupportTubeL]" 
        startPhi="[TrackerRailPhiLo]"          deltaPhi="[TrackerRailPhiRange]"/>
@@ -171,6 +175,14 @@
   <rSolid name="TrackerThermalScreenShield"/>
   <rMaterial name="trackermaterial:TS_Shield"/>
  </LogicalPart>
+ <LogicalPart name="TrackerThermalScreenManifold" category="unspecified">
+  <rSolid name="TrackerThermalScreenManifold"/>
+  <rMaterial name="materials:Air"/>
+ </LogicalPart>
+ <LogicalPart name="TrackerThermalScreenPlaceholder" category="unspecified">
+  <rSolid name="TrackerThermalScreenPlaceholder"/>
+  <rMaterial name="materials:StainlessSteel"/>
+ </LogicalPart>
  <LogicalPart name="TrackerSupportTube" category="unspecified">
   <rSolid name="TrackerSupportTube"/>
   <rMaterial name="materials:Air"/>
@@ -210,10 +222,6 @@
  <LogicalPart name="TrackerSupportTubeInsertShield" category="unspecified">
   <rSolid name="TrackerSupportTubeInsertShield"/>
   <rMaterial name="materials:Carbon fibre str."/>
- </LogicalPart>
- <LogicalPart name="TrackerThermalScreenManifold" category="unspecified">
-  <rSolid name="TrackerThermalScreenManifold"/>
-  <rMaterial name="materials:Air"/>
  </LogicalPart>
  <LogicalPart name="TrackerRail" category="unspecified">
   <rSolid name="TrackerRail"/>
@@ -320,6 +328,10 @@
  <PosPart copyNumber="1">
    <rParent name="trackerother:TrackerSupportTube"/>
    <rChild name="trackerother:TrackerSupportTubeShield"/>
+ </PosPart>
+ <PosPart copyNumber="1">
+   <rParent name="trackerother:TrackerThermalScreenManifold"/>
+   <rChild name="trackerother:TrackerThermalScreenPlaceholder"/>
  </PosPart>
  <PosPart copyNumber="1">
    <rParent name="trackerother:TrackerOuterCylinder"/>
