@@ -2,6 +2,7 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "DataFormats/BTauReco/interface/TaggingVariable.h"
 #include <cmath>
+#include <limits>
 
 using namespace std;
 
@@ -93,8 +94,8 @@ double LikelihoodRatio::compute ( const reco::TaggingVariableList & s ) const
       continue;
     }
 
-    combsv::CombinedSVCalibInput binfo ( vtxtype_, combsv::Partons::B, taggingVar, jetpt, jeteta );
-    combsv::CombinedSVCalibInput cinfo ( vtxtype_, combsv::Partons::C, taggingVar, jetpt, jeteta );
+    combsv::CombinedSVCalibInput binfo ( vtxtype_, combsv::Partons::B,    taggingVar, jetpt, jeteta );
+    combsv::CombinedSVCalibInput cinfo ( vtxtype_, combsv::Partons::C,    taggingVar, jetpt, jeteta );
     combsv::CombinedSVCalibInput uinfo ( vtxtype_, combsv::Partons::UDSG, taggingVar, jetpt, jeteta );
 
     long double b = getPDFValue( variableValue, binfo );
@@ -132,21 +133,8 @@ double LikelihoodRatio::compute ( const reco::TaggingVariableList & s ) const
 
   LogDebug ("LikelihoodRatio") << "b = " << bLikelihood << ", c = " << cLikelihood << ", udsg = " << udsgLikelihood;
 
-  long double ratioC = 0.0; 
-  if (bLikelihood == 0.0)
-    ratioC = 0.0;
-  else if (cLikelihood == 0.0) 
-    ratioC = 1.0;
-  else
-    ratioC = bLikelihood / (bLikelihood + cLikelihood);
-
-  long double ratioUDSG = 0.0; 
-  if (bLikelihood == 0.0)
-    ratioUDSG = 0.0;
-  else if (udsgLikelihood == 0.0) 
-    ratioUDSG = 1.0;
-  else
-    ratioUDSG = bLikelihood / (bLikelihood + udsgLikelihood);
+  long double ratioC    = (bLikelihood < std::numeric_limits<long double>::min()) ? 0.0 : bLikelihood / (bLikelihood + cLikelihood);
+  long double ratioUDSG = (bLikelihood < std::numeric_limits<long double>::min()) ? 0.0 : bLikelihood / (bLikelihood + udsgLikelihood);
 
   long double combinedVariable = priorCharmInBG_ * ratioC + priorUDSG_ * ratioUDSG;
 
