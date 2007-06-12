@@ -159,8 +159,8 @@ CombinedSV::~CombinedSV() {
 void CombinedSV::produce(edm::Event& iEvent,
                            const edm::EventSetup& iSetup)
 {
-  int evt=iEvent.id().event();
   #ifdef DEBUG
+  int evt=iEvent.id().event();
   cout << endl
        << "[CombinedSV] next event: " << evt << endl
        << "=============================" << endl
