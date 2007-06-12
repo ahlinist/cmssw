@@ -3,11 +3,11 @@
 
 <MaterialSection label="trackermaterial.xml">
 
-  <CompositeMaterial name="TS_Cooling" density="1.95053*g/cm3" symbol=" " method="mixture by weight">
-    <MaterialFraction fraction="0.69168">
+  <CompositeMaterial name="TS_Cooling" density="1.62562*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="0.82993">
       <rMaterial name="materials:Aluminium"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.30832">
+    <MaterialFraction fraction="0.17007">
       <rMaterial name="materials:C6F14_3M_-15C"/>
     </MaterialFraction>
   </CompositeMaterial>
