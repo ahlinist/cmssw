@@ -26,20 +26,20 @@ Tracker Thermal Screen (TS)
 
 - Cooling (volume thickness: 3 mm)
 
-MCVolume: ( pi x ( 1184^2 - 1181^2 ) x 4900 x ( 176 deg / 360 deg ) ) mm^3 = 53395.97482 cm^3
+MCVolume: ( pi x ( 1184^2 - 1181^2 ) x 4900 x ( 172 deg / 360 deg ) ) mm^3 = 52182.42993 cm^3
 
 (1) Aluminium cooling tubes
 	thickness: 1.5 mm
-	volume: ( pi x ( 1182.5^2 - 1181^2 ) x 4900 x ( 176 deg / 360 deg ) ) mm^3 = 26681.05422 cm^3
+	volume: ( pi x ( 1182.5^2 - 1181^2 ) x 4900 x ( 172 deg / 360 deg ) ) mm^3 = 26074.66663 cm^3
 
 (2) Cooling fluid ("3M", T=-15 C)
 	thickness: 1.0 mm
-	volume: ( pi x ( 1183.5^2 - 1182.5^2 ) x 4900 x ( 176 deg / 360 deg ) ) mm^3 = 17806.18413 cm^3
+	volume: 0.5 dm^3 per panel x 16 panels (per half sector) = 8 dm^3 = 8000 cm^3
 
 .......................................................................
-# "Thermal Screen Cooling" "TS_Cooling"      53395.97482  108.97
-* 1 "TS Cooling panels"    "Aluminium"       26681.05422    1      COL
-* 2 "TS Cooling fluid"     "C6F14_3M_-15C"   17806.18413    1      COL
+# "Thermal Screen Cooling" "TS_Cooling"      52182.42993  106.495
+* 1 "TS Cooling panels"    "Aluminium"       26074.66663    1      COL
+* 2 "TS Cooling fluid"     "C6F14_3M_-15C"    8000.00000    1      COL
 .......................................................................
 =======================================================================
 
@@ -48,16 +48,17 @@ MCVolume: ( pi x ( 1184^2 - 1181^2 ) x 4900 x ( 176 deg / 360 deg ) ) mm^3 = 533
 
 MCVolume: ( pi x ( 1192^2 - 1184^2 ) x 4900 ) mm^3 = 292605.4265 cm^3
 
-material: RohaCell (foam), not a mixture
-
+material: RohaCell51 (foam), not a mixture, density: 0.052 g/cm^3
+composition, see: http://ej.iop.org/links/rR_nWXXx8/3oWb6N8Y3BGeDTDFav5vpA/m20302.pdf
+C: 0.60; H: 0.08; O: 0.32 (fraction by weight)
 
 - High-Resistance shield (volume thickness: 1 mm)
 
-MCVolume: ( pi x ( 1193^2 - 1192^2 ) x 4900 x ( 176 deg / 360 deg ) ) mm^3 = 17949.17547 cm^3
+MCVolume: ( pi x ( 1193^2 - 1192^2 ) x 4900 x ( 172 deg / 360 deg ) ) mm^3 = 17541.23966 cm^3
 
 (1) Inconel600 (High resistance metal)
 	thickness: 25 um = 0.025 mm
-	volume: ( pi x ( 1192.025^2 - 1192^2 ) x 4900 x ( 176 deg / 360 deg ) ) mm^3 = 448.546 cm^3
+	volume: ( pi x ( 1192.025^2 - 1192^2 ) x 4900 x ( 172 deg / 360 deg ) ) mm^3 = 438.3517178 cm^3
 Inconel 600 is a nickel-chromium alloy with good oxidation resistance at high temperatures and resistance to chloride ion
 stress-corrosion cracking, corrosion by high-purity water, and caustic corrosion. Used for furnace components, in chemical and food
 processing, in nuclear engineering, and for sparking electrodes.
@@ -65,12 +66,12 @@ Properties taken from http://www.espimetals.com/tech/inconel600.pdf
 
 (2) Kapton
 	thickness: 100 um = 0.100 mm
-	volume: ( pi x ( 1192.125^2 - 1192.025^2 ) x 4900 x ( 176 deg / 360 deg ) ) mm^3 = 1794.278 cm^3
+	volume: ( pi x ( 1192.125^2 - 1192.025^2 ) x 4900 x ( 172 deg / 360 deg ) ) mm^3 = 1753.498807 cm^3
 
 .......................................................................
-# "Thermal Screen Shield"  "TS_Shield"       17949.17547   36.63
-* 1 "TS Inconel600"        "Inconel600"        448.546      1      SUP
-* 2 "TS Kapton"            "T_Kapton"         1794.278      1      SUP
+# "Thermal Screen Shield"  "TS_Shield"       17541.23966   35.798
+* 1 "TS Inconel600"        "Inconel600"        438.352      1      SUP
+* 2 "TS Kapton"            "T_Kapton"         1753.499      1      SUP
 .......................................................................
 =======================================================================
 
