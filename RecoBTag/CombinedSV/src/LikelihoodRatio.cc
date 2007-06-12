@@ -130,14 +130,23 @@ double LikelihoodRatio::compute ( const reco::TaggingVariableList & s ) const
 
   } //for varIter
 
-  LogDebug ("LikelihoodRatio") << "b=" << bLikelihood << ", c=" << cLikelihood
-       << ", udsg=" << udsgLikelihood;
+  LogDebug ("LikelihoodRatio") << "b = " << bLikelihood << ", c = " << cLikelihood << ", udsg = " << udsgLikelihood;
 
-  long double ratioC    = bLikelihood / (bLikelihood + cLikelihood);
-  if ( !finite ( ratioC ) ) ratioC=0.;
+  long double ratioC = 0.0; 
+  if (bLikelihood == 0.0)
+    ratioC = 0.0;
+  else if (cLikelihood == 0.0) 
+    ratioC = 1.0;
+  else
+    ratioC = bLikelihood / (bLikelihood + cLikelihood);
 
-  long double ratioUDSG = bLikelihood / (bLikelihood + udsgLikelihood);
-  if ( !finite ( ratioUDSG ) ) ratioUDSG=0.;
+  long double ratioUDSG = 0.0; 
+  if (bLikelihood == 0.0)
+    ratioUDSG = 0.0;
+  else if (udsgLikelihood == 0.0) 
+    ratioUDSG = 1.0;
+  else
+    ratioUDSG = bLikelihood / (bLikelihood + udsgLikelihood);
 
   long double combinedVariable = priorCharmInBG_ * ratioC + priorUDSG_ * ratioUDSG;
 
