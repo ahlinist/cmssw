@@ -49,6 +49,8 @@ class DependentRecordIntervalFinder : public EventSetupRecordIntervalFinder
 
       // ---------- member functions ---------------------------
       void addProviderWeAreDependentOn(boost::shared_ptr<EventSetupRecordProvider>);
+      
+      void setAlternateFinder(boost::shared_ptr<EventSetupRecordIntervalFinder>);
    protected:
       virtual void setIntervalFor(const EventSetupRecordKey&,
                                    const IOVSyncValue& , 
@@ -62,6 +64,8 @@ class DependentRecordIntervalFinder : public EventSetupRecordIntervalFinder
       // ---------- member data --------------------------------
       typedef std::vector< boost::shared_ptr<EventSetupRecordProvider> > Providers;
       Providers providers_;
+      
+      boost::shared_ptr<EventSetupRecordIntervalFinder> alternate_;
 };
 
    }
