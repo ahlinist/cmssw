@@ -1,5 +1,5 @@
-#ifndef ServiceRegistry_ServiceMakerBase_h
-#define ServiceRegistry_ServiceMakerBase_h
+#ifndef FWCore_ServiceRegistry_ServiceMakerBase_h
+#define FWCore_ServiceRegistry_ServiceMakerBase_h
 // -*- C++ -*-
 //
 // Package:     ServiceRegistry
@@ -20,7 +20,6 @@
 //
 
 // system include files
-#include "boost/shared_ptr.hpp"
 
 // user include files
 

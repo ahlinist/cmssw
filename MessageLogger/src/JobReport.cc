@@ -14,12 +14,7 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/Utilities/interface/EDMException.h"
 
-#include <iostream>
 #include <sstream>
-#include <algorithm>
-#include <iomanip>
-#include <iterator>
-#include <ostream>
 
 using std::string;
 using std::vector;

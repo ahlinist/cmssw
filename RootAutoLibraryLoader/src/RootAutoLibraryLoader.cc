@@ -12,6 +12,7 @@
 //
 
 // system include files
+#include <string>
 #include <iostream>
 #include "TROOT.h"
 #include "G__ci.h"

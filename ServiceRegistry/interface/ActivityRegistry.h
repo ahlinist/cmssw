@@ -1,5 +1,5 @@
-#ifndef ServiceRegistry_ActivityRegistry_h
-#define ServiceRegistry_ActivityRegistry_h
+#ifndef FWCore_ServiceRegistry_ActivityRegistry_h
+#define FWCore_ServiceRegistry_ActivityRegistry_h
 // -*- C++ -*-
 //
 // Package:     ServiceRegistry
@@ -22,7 +22,6 @@
 // system include files
 //#include "boost/signal.hpp"
 #include "sigc++/signal.h"
-#include "sigc++/bind.h"
 #include "boost/bind.hpp"
 #include "boost/mem_fn.hpp"
 
