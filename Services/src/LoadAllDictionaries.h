@@ -1,5 +1,5 @@
-#ifndef Services_LoadAllDictionaries_h
-#define Services_LoadAllDictionaries_h
+#ifndef FWCore_Services_LoadAllDictionaries_h
+#define FWCore_Services_LoadAllDictionaries_h
 // -*- C++ -*-
 //
 // Package:     Services

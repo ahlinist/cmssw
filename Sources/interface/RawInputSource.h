@@ -1,5 +1,5 @@
-#ifndef Framework_RawInputSource_h
-#define Framework_RawInputSource_h
+#ifndef FWCore_Sources_RawInputSource_h
+#define FWCore_Sources_RawInputSource_h
 
 /*----------------------------------------------------------------------
 $Id$

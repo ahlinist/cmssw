@@ -20,9 +20,6 @@
 #endif
 #endif
 
-#include <iomanip>
-#include <cmath>
-
 // user include files
 #include "FWCore/Services/src/EnableFloatingPointExceptions.h"
 #include "DataFormats/Provenance/interface/ModuleDescription.h"

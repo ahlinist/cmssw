@@ -11,14 +11,10 @@
 
 #include "FWCore/Services/src/Memory.h"
 #include "DataFormats/Provenance/interface/ModuleDescription.h"
-#include "DataFormats/Provenance/interface/EventID.h"
-#include "DataFormats/Provenance/interface/Timestamp.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/Utilities/interface/Exception.h"
 
-#include <iostream>
 #include <sstream>
-#include <algorithm>
 
 #ifdef __linux__
 #define LINUX 1
@@ -26,13 +22,6 @@
 
 #include <unistd.h>
 #include <fcntl.h>
-#include <sys/time.h>
-#include <sys/types.h>
-#include <sys/signal.h>
-#include <sys/syscall.h>
-#include <sys/procfs.h>
-
-using namespace std;
 
 namespace edm {
   namespace service {
@@ -158,7 +147,7 @@ namespace edm {
       count_()
     {
       // pg_size = (double)getpagesize();
-      ostringstream ost;
+      std::ostringstream ost;
 	
 #ifdef LINUX
       ost << "/proc/" << getpid() << "/stat";
@@ -167,7 +156,7 @@ namespace edm {
       if((fd_=open(ost.str().c_str(),O_RDONLY))<0)
 	{
 	  throw cms::Exception("Configuration")
-	    << "Memory checker server: Failed to open " << ost.str() << endl;
+	    << "Memory checker server: Failed to open " << ost.str() << std::endl;
 	}
 #endif
       iReg.watchPostBeginJob(this,&SimpleMemoryCheck::postBeginJob);

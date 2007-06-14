@@ -1,5 +1,5 @@
-#ifndef Framework_EDInputSource_h
-#define Framework_EDInputSource_h
+#ifndef FWCore_Sources_EDInputSource_h
+#define FWCore_Sources_EDInputSource_h
 
 /*----------------------------------------------------------------------
 $Id$

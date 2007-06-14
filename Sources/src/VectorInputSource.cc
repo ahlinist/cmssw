@@ -2,7 +2,6 @@
 $Id$
 ----------------------------------------------------------------------*/
 #include "FWCore/Sources/interface/VectorInputSource.h"
-#include "FWCore/Framework/interface/EventPrincipal.h"
 
 namespace edm {
 

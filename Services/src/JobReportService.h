@@ -1,5 +1,5 @@
-#ifndef Services_JobReportService_h
-#define Services_JobReportService_h
+#ifndef FWCore_Services_JobReportService_h
+#define FWCore_Services_JobReportService_h
 // -*- C++ -*-
 //
 // Package:     Services
@@ -22,16 +22,11 @@ through the MessageLogger.
 // $Id$
 //
 
-#include <cstddef>
 #include <string>
-
-#include "boost/scoped_ptr.hpp"
-
 
 #include "FWCore/MessageLogger/interface/JobReport.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ServiceRegistry/interface/ActivityRegistry.h"
-
 
 namespace edm {
   namespace service {

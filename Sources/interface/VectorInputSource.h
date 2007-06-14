@@ -1,5 +1,5 @@
-#ifndef Framework_VectorInputSource_h
-#define Framework_VectorInputSource_h
+#ifndef FWCore_Sources_VectorInputSource_h
+#define FWCore_Sources_VectorInputSource_h
 
 
 /*----------------------------------------------------------------------
@@ -16,7 +16,7 @@ $Id$
 #include "FWCore/Sources/interface/EDInputSource.h"
 
 namespace edm {
-  class EventPrincpal;
+  class EventPrincipal;
   class InputSourceDescription;
   class ParameterSet;
   class VectorInputSource : public EDInputSource {

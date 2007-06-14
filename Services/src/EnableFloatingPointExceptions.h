@@ -1,5 +1,5 @@
-#ifndef Services_FpeHandler_h
-#define Services_FpeHandler_h
+#ifndef FWCore_Services_FpeHandler_h
+#define FWCore_Services_FpeHandler_h
 // -*- C++ -*-
 //
 // Package:     Services

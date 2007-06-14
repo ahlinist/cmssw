@@ -23,8 +23,6 @@
 #include <iostream>
 #include <sys/time.h>
 
-using namespace std;
-
 namespace edm {
   namespace service {
 

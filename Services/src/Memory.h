@@ -1,5 +1,5 @@
-#ifndef Services_Memory_h
-#define Services_Memory_h
+#ifndef FWCore_Services_Memory_h
+#define FWCore_Services_Memory_h
 // -*- C++ -*-
 //
 // Package:     Services

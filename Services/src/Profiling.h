@@ -1,5 +1,5 @@
-#ifndef Services_SimpleProfiling_h
-#define Services_SimpleProfiling_h
+#ifndef FWCore_Services_Profiling_h
+#define FWCore_Services_Profiling_h
 // -*- C++ -*-
 //
 // Package:     Services

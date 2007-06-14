@@ -12,10 +12,8 @@
 //
 
 // system include files
-#include "TFile.h"
-#include "TTree.h"
-#include "TBranch.h"
-#include "TClass.h"
+class TBranch;
+class TClass;
 #include "TBranchBrowsable.h"
 
 // user include files
