@@ -1,5 +1,5 @@
-#ifndef Framework_DependentRecordImplementation_h
-#define Framework_DependentRecordImplementation_h
+#ifndef FWCore_Framework_DependentRecordImplementation_h
+#define FWCore_Framework_DependentRecordImplementation_h
 // -*- C++ -*-
 //
 // Package:     Framework
@@ -20,7 +20,6 @@
 //
 
 // system include files
-#include "boost/static_assert.hpp"
 #include "boost/mpl/begin_end.hpp"
 #include "boost/mpl/find.hpp"
 

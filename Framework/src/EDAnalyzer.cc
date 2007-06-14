@@ -5,7 +5,6 @@ $Id$
 ----------------------------------------------------------------------*/
 
 #include "FWCore/Framework/interface/EDAnalyzer.h"
-#include "FWCore/Framework/interface/CurrentProcessingContext.h"
 #include "FWCore/Framework/src/CPCSentry.h"
 
 namespace edm

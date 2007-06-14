@@ -1,5 +1,5 @@
-#ifndef Framework_MakeDataException_h
-#define Framework_MakeDataException_h
+#ifndef FWCore_Framework_MakeDataException_h
+#define FWCore_Framework_MakeDataException_h
 // -*- C++ -*-
 //
 // Package:     Framework
@@ -34,7 +34,6 @@ if(outOfBoundsValue) {
 
 // system include files
 #include <string>
-#include <exception>
 
 // user include files
 #include "FWCore/Framework/interface/HCTypeTagTemplate.h"

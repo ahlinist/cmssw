@@ -1,5 +1,5 @@
-#ifndef Framework_InputSourceDescription_h
-#define Framework_InputSourceDescription_h
+#ifndef FWCore_Framework_InputSourceDescription_h
+#define FWCore_Framework_InputSourceDescription_h
 
 /*----------------------------------------------------------------------
 
@@ -10,7 +10,6 @@ $Id$
 ----------------------------------------------------------------------*/
 #include <string>
 #include "DataFormats/Provenance/interface/ModuleDescription.h"
-#include "DataFormats/Provenance/interface/ProcessConfiguration.h"
 
 namespace edm {
   class ProductRegistry;

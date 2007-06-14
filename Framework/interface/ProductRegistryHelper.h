@@ -1,5 +1,5 @@
-#ifndef Framework_ProductRegistryHelper_h
-#define Framework_ProductRegistryHelper_h
+#ifndef FWCore_Framework_ProductRegistryHelper_h
+#define FWCore_Framework_ProductRegistryHelper_h
 
 /*----------------------------------------------------------------------
   
@@ -11,11 +11,9 @@ $Id$
 ----------------------------------------------------------------------*/
 
 #include "FWCore/Utilities/interface/TypeID.h"
-#include "DataFormats/Common/interface/EDProduct.h"
 #include "DataFormats/Provenance/interface/BranchType.h"
 #include <string>
 #include <list>
-#include "boost/shared_ptr.hpp"
 
 namespace edm {
   class EDProduct;

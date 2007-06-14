@@ -48,8 +48,6 @@ $Id$
 #include "boost/shared_ptr.hpp"
 
 #include "FWCore/Utilities/interface/GCCPrerequisite.h"
-#include "DataFormats/Provenance/interface/EventID.h"
-#include "DataFormats/Common/interface/EDProductfwd.h"
 #include "DataFormats/Provenance/interface/RunID.h"
 #include "DataFormats/Provenance/interface/LuminosityBlockID.h"
 #include "DataFormats/Provenance/interface/ModuleDescription.h"

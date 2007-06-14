@@ -15,7 +15,6 @@
 
 */
 
-#include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Framework/interface/CurrentProcessingContext.h"
 #include "FWCore/Framework/src/WorkerInPath.h"
 #include "FWCore/Framework/src/Worker.h"
@@ -23,15 +22,14 @@
 #include "DataFormats/Common/interface/TriggerResults.h"
 
 #include "boost/shared_ptr.hpp"
-#include "boost/signal.hpp"
 
 #include <string>
 #include <vector>
 
 #include "FWCore/Framework/src/RunStopwatch.h"
-#include "FWCore/Framework/interface/Frameworkfwd.h"
 
 namespace edm {
+  class ParameterSet;
 
   class Path {
   public:

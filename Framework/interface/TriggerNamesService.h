@@ -1,5 +1,5 @@
-#ifndef Services_TRIGGERNAMES_h
-#define Services_TRIGGERNAMES_h
+#ifndef FWCore_Framework_TriggerNamesService_h
+#define FWCore_Framework_TriggerNamesService_h
 
 // -*- C++ -*-
 /*
@@ -23,7 +23,6 @@
 #include <map>
 #include <vector>
 
-#include "DataFormats/Common/interface/TriggerResults.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 namespace edm {

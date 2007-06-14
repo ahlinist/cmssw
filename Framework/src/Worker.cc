@@ -3,13 +3,7 @@
 $Id$
 ----------------------------------------------------------------------*/
 
-#include <iostream>
 #include "FWCore/Framework/src/Worker.h"
-#include "FWCore/Framework/interface/EventPrincipal.h"
-#include "FWCore/Framework/interface/LuminosityBlockPrincipal.h"
-#include "FWCore/Framework/interface/RunPrincipal.h"
-
-#include "boost/signal.hpp"
 
 namespace edm {
   namespace {

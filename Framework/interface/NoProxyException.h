@@ -1,5 +1,5 @@
-#ifndef Framework_NoProxyException_h
-#define Framework_NoProxyException_h
+#ifndef FWCore_Framework_NoProxyException_h
+#define FWCore_Framework_NoProxyException_h
 // -*- C++ -*-
 //
 // Package:     Framework
@@ -21,14 +21,10 @@
 
 // system include files
 #include <string>
-#include <sstream>
 
 // user include files
 #include "FWCore/Framework/interface/NoDataException.h"
-//#include "DataHandler/interface/FrameRecordItr.h"
-//#include "DataHandler/interface/RecordKeyItr.h"
 #include "FWCore/Framework/interface/EventSetupRecord.h"
-#include "FWCore/Utilities/interface/Exception.h"
 
 // forward declarations
 namespace edm {

@@ -13,7 +13,6 @@
 
 // system include files
 #include <memory>
-#include <algorithm>
 
 // user include files
 #include "FWCore/Framework/interface/DataKey.h"

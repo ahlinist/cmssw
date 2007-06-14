@@ -1,5 +1,5 @@
-#ifndef Framework_EventProcessor_h
-#define Framework_EventProcessor_h
+#ifndef FWCore_Framework_EventProcessor_h
+#define FWCore_Framework_EventProcessor_h
 
 /*----------------------------------------------------------------------
 
@@ -47,14 +47,13 @@ $Id$
 #include "FWCore/ServiceRegistry/interface/ServiceToken.h"
 #include "FWCore/Framework/src/WorkerRegistry.h"
 #include "FWCore/Framework/src/SignallingProductRegistry.h"
-#include "FWCore/Framework/interface/EventSetupProvider.h"
 #include "FWCore/Framework/interface/Actions.h"
-#include "DataFormats/Provenance/interface/EventID.h"
 #include "DataFormats/Provenance/interface/PassID.h"
 #include "DataFormats/Provenance/interface/ReleaseVersion.h"
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EventHelperDescription.h"
+#include "FWCore/Framework/interface/EventSetup.h"
 
 namespace edm {
 

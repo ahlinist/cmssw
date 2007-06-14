@@ -18,7 +18,6 @@ $Id$
 
 #include "DataFormats/Provenance/interface/EventAuxiliary.h"
 #include "FWCore/Framework/interface/Principal.h"
-#include "FWCore/Framework/interface/UnscheduledHandler.h"
 
 namespace edm {
   class EventID;

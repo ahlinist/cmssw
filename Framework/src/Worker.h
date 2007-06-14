@@ -30,11 +30,8 @@ the worker is reset().
 #include "FWCore/Framework/interface/BranchActionType.h"
 #include "FWCore/ServiceRegistry/interface/ActivityRegistry.h"
 #include "FWCore/Utilities/interface/Exception.h"
-#include "FWCore/Utilities/interface/EDMException.h"
 
-#include "boost/scoped_ptr.hpp"
 #include "boost/shared_ptr.hpp"
-#include "boost/array.hpp"
 
 #include "FWCore/Framework/src/RunStopwatch.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"

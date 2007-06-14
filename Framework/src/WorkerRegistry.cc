@@ -17,10 +17,8 @@ static const char CVSId[] = "$Id$";
 #include "FWCore/Framework/src/Worker.h"
 #include "FWCore/Framework/src/Factory.h"
 
-#include <iostream>
 #include <sstream>
 
-using namespace std;
 using namespace edm;
 
 WorkerRegistry::WorkerRegistry() :
@@ -45,7 +43,7 @@ void WorkerRegistry::clear() {
 
 Worker* WorkerRegistry::getWorker(const WorkerParams& p) {
 
-  string workerid =
+  std::string workerid =
     mangleWorkerParameters(*p.pset_, p.processName_,
 			   p.releaseVersion_,p.passID_);
 
@@ -73,12 +71,12 @@ Worker* WorkerRegistry::getWorker(const WorkerParams& p) {
 }
 
 
-string WorkerRegistry::mangleWorkerParameters(ParameterSet const& parameterSet,
+std::string WorkerRegistry::mangleWorkerParameters(ParameterSet const& parameterSet,
 					      std::string const& processName,
 					      ReleaseVersion const& releaseVersion,
 					      PassID const& passID) {
 
-  stringstream mangled_parameters;
+  std::stringstream mangled_parameters;
   mangled_parameters<< parameterSet.toString()
                     << processName
                     << releaseVersion

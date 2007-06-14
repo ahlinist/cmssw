@@ -1,5 +1,5 @@
-#ifndef Framework_EventSetupRecordImplementation_h
-#define Framework_EventSetupRecordImplementation_h
+#ifndef FWCore_Framework_EventSetupRecordImplementation_h
+#define FWCore_Framework_EventSetupRecordImplementation_h
 // -*- C++ -*-
 //
 // Package:     Framework
@@ -21,12 +21,10 @@
 
 // system include files
 #include <string>
-#include <iostream>
 
 // user include files
 #include "FWCore/Framework/interface/EventSetupRecord.h"
 #include "FWCore/Framework/interface/EventSetupRecordKey.h"
-#include "FWCore/Framework/interface/DataKey.h"
 #include "FWCore/Framework/interface/DataProxy.h"
 
 // forward declarations

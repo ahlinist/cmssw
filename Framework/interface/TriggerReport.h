@@ -1,5 +1,5 @@
-#ifndef Framework_TriggerReport_h
-#define Framework_TriggerReport_h
+#ifndef FWCore_Framework_TriggerReport_h
+#define FWCore_Framework_TriggerReport_h
 
 /*----------------------------------------------------------------------
 
@@ -10,8 +10,6 @@ creation.
 $Id$
 
 ----------------------------------------------------------------------*/
-
-#include "FWCore/Framework/interface/Frameworkfwd.h"
 
 #include <string>
 #include <vector>

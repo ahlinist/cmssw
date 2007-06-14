@@ -1,5 +1,5 @@
-#ifndef Framework_UnknownModuleException_h
-#define Framework_UnknownModuleException_h
+#ifndef FWCore_Framework_UnknownModuleException_h
+#define FWCore_Framework_UnknownModuleException_h
 
 /**
    \file
@@ -11,8 +11,6 @@
 */
 
 #include "FWCore/Utilities/interface/Exception.h"
-
-#include <exception>
 
 namespace edm {
 

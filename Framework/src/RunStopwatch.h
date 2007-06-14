@@ -1,5 +1,5 @@
-#ifndef Framework_RunStopwatch_h
-#define Framework_RunStopwatch_h
+#ifndef FWCore_Framework_RunStopwatch_h
+#define FWCore_Framework_RunStopwatch_h
 
 /*----------------------------------------------------------------------
   
@@ -13,7 +13,6 @@ calls the destructor which stops the clock.
 ----------------------------------------------------------------------*/
 
 #include "boost/shared_ptr.hpp"
-#include "boost/scoped_ptr.hpp"
 #include "FWCore/Utilities/interface/CPUTimer.h"
 
 namespace edm {

@@ -1,5 +1,5 @@
-#ifndef Framework_ProducerBase_h
-#define Framework_ProducerBase_h
+#ifndef FWCore_Framework_ProducerBase_h
+#define FWCore_Framework_ProducerBase_h
 
 /*----------------------------------------------------------------------
   
@@ -15,8 +15,8 @@ $Id$
 #include "FWCore/Framework/interface/ProductRegistryHelper.h"
 #include "boost/bind.hpp"
 #include "boost/function.hpp"
+#include "boost/shared_ptr.hpp"
 #include <string>
-#include <utility>
 namespace edm {
   class BranchDescription;
   class ModuleDescription;

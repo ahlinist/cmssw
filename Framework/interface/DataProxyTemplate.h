@@ -1,5 +1,5 @@
-#ifndef Framework_DataProxyTemplate_h
-#define Framework_DataProxyTemplate_h
+#ifndef FWCore_Framework_DataProxyTemplate_h
+#define FWCore_Framework_DataProxyTemplate_h
 // -*- C++ -*-
 //
 // Package:     Framework
@@ -20,7 +20,6 @@
 //
 
 // system include files
-#include <cassert>
 
 // user include files
 #include "FWCore/Framework/interface/DataProxy.h"

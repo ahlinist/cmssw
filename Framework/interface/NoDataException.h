@@ -1,5 +1,5 @@
-#ifndef Framework_NoDataException_h
-#define Framework_NoDataException_h
+#ifndef FWCore_Framework_NoDataException_h
+#define FWCore_Framework_NoDataException_h
 // -*- C++ -*-
 //
 // Package:     Framework
@@ -65,7 +65,6 @@
 
 // system include files
 #include <string>
-#include <exception>
 
 // user include files
 #include "FWCore/Framework/interface/DataKey.h"

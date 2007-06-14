@@ -6,21 +6,14 @@
 // $Id$
 //
 
-#include "DataFormats/Common/interface/HLTGlobalStatus.h"
-#include "DataFormats/Provenance/interface/ModuleDescription.h"
-#include "DataFormats/Common/interface/TriggerResults.h"
 #include "FWCore/Framework/interface/TriggerNamesService.h"
-#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/Utilities/interface/Exception.h"
 
-#include <iostream>
-
-using namespace std;
 
 namespace edm {
   namespace service {
 
-    typedef vector<string> vstring;
+    typedef std::vector<std::string> vstring;
 
     void checkIfSubset(const vstring& in_all, const vstring& in_sub)
     {
@@ -79,7 +72,7 @@ namespace edm {
     // the options applied to it.
 
     TriggerNamesService::TriggerNamesService(const ParameterSet& pset) :
-      process_name_(pset.getParameter<string>("@process_name")),
+      process_name_(pset.getParameter<std::string>("@process_name")),
       trig_pset_(getTrigPSetFunc(pset)),
       trignames_(trig_pset_.getUntrackedParameter<vstring>("@trigger_paths")),
       trigpos_(),
