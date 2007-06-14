@@ -45,7 +45,6 @@ when random numbers are only generated in modules and not in the source).
 
 #include <vector>
 #include <string>
-#include "boost/cstdint.hpp"
 
 namespace CLHEP {
   class HepRandomEngine;

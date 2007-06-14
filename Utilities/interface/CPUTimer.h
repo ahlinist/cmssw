@@ -1,5 +1,5 @@
-#ifndef Utilities_CPUTimer_h
-#define Utilities_CPUTimer_h
+#ifndef FWCore_Utilities_CPUTimer_h
+#define FWCore_Utilities_CPUTimer_h
 // -*- C++ -*-
 //
 // Package:     Utilities
@@ -20,7 +20,6 @@
 //
 
 // system include files
-#include <unistd.h>
 #include <sys/time.h>
 
 // user include files

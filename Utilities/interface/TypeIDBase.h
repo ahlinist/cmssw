@@ -1,5 +1,5 @@
-#ifndef Utilities_TypeIDBase_h
-#define Utilities_TypeIDBase_h
+#ifndef FWCore_Utilities_TypeIDBase_h
+#define FWCore_Utilities_TypeIDBase_h
 // -*- C++ -*-
 //
 // Package:     Utilities
@@ -25,7 +25,6 @@
 #include <string>
 
 // user include files
-#include "FWCore/Utilities/interface/EDMException.h"
 
 // forward declarations
 namespace edm {

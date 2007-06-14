@@ -12,9 +12,7 @@
 //
 
 // system include files
-#include <sys/time.h>
 #include <sys/resource.h>
-#include <unistd.h>
 #include <errno.h>
 
 // user include files

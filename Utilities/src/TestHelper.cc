@@ -7,11 +7,9 @@
 #include <iostream>
 #include <string>
 
-#include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
-#include "boost/filesystem/convenience.hpp"
 #include "boost/filesystem/convenience.hpp"
 #include "boost/filesystem/path.hpp"
 

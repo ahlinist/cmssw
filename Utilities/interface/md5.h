@@ -1,5 +1,5 @@
-#ifndef Utilities_md5_h
-#define Utilities_md5_h
+#ifndef FWCore_Utilities_md5_h
+#define FWCore_Utilities_md5_h
 
 /*
   Copyright (C) 1999, 2002 Aladdin Enterprises.  All rights reserved.

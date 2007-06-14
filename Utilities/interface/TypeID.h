@@ -14,7 +14,6 @@ $Id$
 #include <iosfwd>
 #include <typeinfo>
 #include <string>
-#include "FWCore/Utilities/interface/EDMException.h"
 #include "FWCore/Utilities/interface/TypeIDBase.h"
 
 namespace edm {
