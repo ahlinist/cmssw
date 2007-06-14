@@ -1,3 +1,6 @@
+#ifndef FWCore_ParameterSet_types_h
+#define FWCore_ParameterSet_types_h
+
 // ----------------------------------------------------------------------
 // $Id$
 //
@@ -8,9 +11,6 @@
 // ----------------------------------------------------------------------
 // prolog
 
-#ifndef ParameterSet_types_h
-#define ParameterSet_types_h
-
 
 // ----------------------------------------------------------------------
 // prerequisite source files and headers
@@ -18,7 +18,6 @@
 #include <string>
 #include <vector>
 
-#include "FWCore/ParameterSet/interface/ParameterSetfwd.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 // ----------------------------------------------------------------------

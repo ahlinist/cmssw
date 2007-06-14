@@ -13,14 +13,10 @@
 #include "FWCore/Utilities/interface/EDMException.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ParameterSet/interface/types.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
 
-#include <algorithm>
-#include <cctype>
-#include <iterator>
+#include <map>
 #include <sstream>
 #include <string>
-#include <vector>
 #include <ostream>
 
 

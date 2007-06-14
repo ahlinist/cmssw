@@ -1,5 +1,5 @@
-#ifndef ParameterSet_FileInPath_h
-#define ParameterSet_FileInPath_h
+#ifndef FWCore_ParameterSet_FileInPath_h
+#define FWCore_ParameterSet_FileInPath_h
 
 /// $Id$
 ///
@@ -60,8 +60,7 @@
 // doesn't seem well-suited for ParameterSet.
 
 
-#include <istream>
-#include <ostream>
+#include <iosfwd>
 #include <string>
 
 

@@ -1,5 +1,5 @@
-#ifndef ParameterSet_Registry_h
-#define ParameterSet_Registry_h
+#ifndef FWCore_ParameterSet_Registry_h
+#define FWCore_ParameterSet_Registry_h
 
 // ----------------------------------------------------------------------
 // $Id$
@@ -13,7 +13,6 @@
 // ----------------------------------------------------------------------
 
 #include <map>
-#include <ostream>
 
 #include "DataFormats/Provenance/interface/ParameterSetID.h"
 #include "DataFormats/Provenance/interface/ParameterSetBlob.h"

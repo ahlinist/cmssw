@@ -1,5 +1,5 @@
-#ifndef ParameterSet_ParameterSet_h
-#define ParameterSet_ParameterSet_h
+#ifndef FWCore_ParameterSet_ParameterSet_h
+#define FWCore_ParameterSet_ParameterSet_h
 
 // ----------------------------------------------------------------------
 // $Id$
@@ -19,7 +19,6 @@
 #include "FWCore/ParameterSet/interface/FileInPath.h"
 #include <string>
 #include <map>
-#include <stdexcept>
 #include <vector>
 #include <iosfwd>
 

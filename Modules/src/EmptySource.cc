@@ -2,10 +2,6 @@
 $Id$
 ----------------------------------------------------------------------*/
 
-#include <stdexcept>
-#include <memory>
-
-
 #include "FWCore/Modules/src/EmptySource.h"
 
 namespace edm {

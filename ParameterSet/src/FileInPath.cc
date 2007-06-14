@@ -9,12 +9,10 @@
 // long the search path is allowed to be, and whether our only choices
 // for the "official" directory is CMSSW_RELEASE_BASE or CMSSW_DATA_PATH.
 
-#include <algorithm>
 #include <cstdlib>
-#include <iterator>
 #include <string>
 #include <vector>
-#include <iostream> // temporary
+#include <iosfwd>
 #include "boost/filesystem/path.hpp"
 #include "boost/filesystem/operations.hpp"
 

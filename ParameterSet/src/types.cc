@@ -12,13 +12,10 @@
 #include "FWCore/ParameterSet/interface/types.h"
 
 #include "boost/lexical_cast.hpp"
-#include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ParameterSet/interface/split.h"
 #include "FWCore/ParameterSet/interface/parse.h"
-#include <algorithm>
 #include <cctype>
 #include <cstdlib>
-#include <cstdio>
 
 #include <limits>
 #include <sstream>
