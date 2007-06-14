@@ -15,11 +15,9 @@
 #include <boost/bind.hpp>
 #include <boost/mem_fn.hpp>
 
-#include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
 
 #include <fstream>
-#include <iostream>
 #include <set>
 
 // user include files

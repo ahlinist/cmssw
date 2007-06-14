@@ -25,8 +25,7 @@ If a space exists in either of these three fields, it will be replaced with a %,
 //
 
 // system include files
-#include <istream>
-#include <ostream>
+#include <iosfwd>
 #include <string>
 #include <map>
 #include <vector>

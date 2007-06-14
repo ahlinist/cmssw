@@ -16,7 +16,6 @@
 // user include files
 #include "FWCore/PluginManager/interface/PluginFactoryBase.h"
 #include "FWCore/PluginManager/interface/PluginFactoryManager.h"
-#include "FWCore/PluginManager/interface/PluginManager.h"
 
 namespace edmplugin {
 //
