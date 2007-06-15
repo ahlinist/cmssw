@@ -99,8 +99,8 @@
      <Blob column="GAIN_IEND"   name="v_iend" />
      <Blob column="GAIN_DATA"   name="v_gains" />
   </Class >
-  <Class table="SISTRIPLORENTZANGLE" id_columns="ID" name="SiStripLorentzAngle" >   <Container table="SISTRIPLORENTZANGL_1" id_columns="ID_ID" name="m_LA"
-position_column="POS" >
+  <Class table="SISTRIPLORENTZANGLE" id_columns="IOV_VALUE_ID" name="SiStripLorentzAngle" >   
+   <Container table="SISTRIPLA_MAP" id_columns="ID_VALUE_ID" name="m_LA" position_column="POS" >
      <Primitive column="DETID" name="key_type" />
      <Primitive column="LANGLE" name="mapped_type" />
    </Container >
