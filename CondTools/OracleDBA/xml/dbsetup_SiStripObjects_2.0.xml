@@ -16,7 +16,7 @@
    <HomogeneousContainer name="SiStripBadStripRcd">
       <Class name="SiStripBadStrip" mappingVersion="SiStripObjects_2.0"/>
    </HomogeneousContainer >
-   </HomogeneousContainer > <HomogeneousContainer name="SiStripModuleHVRcd">
+   <HomogeneousContainer name="SiStripModuleHVRcd">
       <Class name="SiStripModuleHV" mappingVersion="SiStripObjects_2.0"/>
    </HomogeneousContainer >
 </Database >
