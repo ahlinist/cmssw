@@ -76,7 +76,6 @@ namespace edm {
     CurrentProcessingContext const* currentContext() const;
 
   private:
-    size_t getManyTriggerResults(EventPrincipal const& ep) const;
 
     unsigned int nextID_;
     // TODO: Make these data members private, and give OutputModule

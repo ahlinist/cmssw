@@ -10,6 +10,7 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/Common/interface/HLTPathStatus.h"
 #include "DataFormats/Common/interface/TriggerResults.h"
+#include "DataFormats/Provenance/interface/ParameterSetID.h"
 
 #include <vector>
 #include <string>
@@ -19,14 +20,17 @@ namespace edm
   class EventSelector
   {
   public:
-    EventSelector(std::vector<std::string> const& pathspecs,
-		  std::vector<std::string> const& names);
+
+    typedef std::vector<std::string> Strings;
+
+    EventSelector(Strings const& pathspecs,
+		  Strings const& names);
 
     explicit
-    EventSelector(std::vector<std::string> const& pathspecs);
+    EventSelector(Strings const& pathspecs);
 
     EventSelector(edm::ParameterSet const& pset,
-		  std::vector<std::string> const& triggernames);
+		  Strings const& triggernames);
 
     bool wantAll() const { return accept_all_; }
     bool acceptEvent(TriggerResults const&);
@@ -34,8 +38,8 @@ namespace edm
 
   private:
 
-    void init(std::vector<std::string> const& paths,
-	      std::vector<std::string> const& triggernames);
+    void init(Strings const& paths,
+	      Strings const& triggernames);
 
     struct BitInfo
     {
@@ -52,11 +56,13 @@ namespace edm
     Bits decision_bits_;
     bool results_from_current_process_;
 
-    std::vector<std::string> paths_;
+    bool psetID_initialized_;
+    ParameterSetID psetID_;
+
+    Strings paths_;
 
     bool acceptTriggerPath(HLTPathStatus const&, BitInfo const&) const;
   };
 }
 
 #endif
-

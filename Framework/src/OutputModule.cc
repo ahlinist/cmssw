@@ -237,21 +237,6 @@ namespace edm {
     return getTriggerResults(ev);
   }
 
-  size_t OutputModule::getManyTriggerResults(EventPrincipal const& ep) const {
-     assert(current_md_ == current_context_->moduleDescription());
-     size_t numFound = 0;
-
-     // Fill in selectors_ if it has not already been done for this event...
-     if (! prodsValid_) {
- 	// use module description and const_cast unless interface to
- 	// event is changed to just take a const EventPrincipal
- 	Event e(const_cast<EventPrincipal&>(ep), *current_md_);
-	numFound = selectors_.fill(e);
-     }
-     prodsValid_ = true;
-     return  numFound;
-  }
-
    namespace {
      class  PVSentry {
      public:
