@@ -1,0 +1,15 @@
+<use name=FWCore/Framework>
+<use name=DataFormats/HcalRecHit>
+<use name=DataFormats/EgammaReco>
+<use name=Geometry/CaloGeometry>
+<use name=RecoCaloTools/MetaCollections>
+<use name=RecoEgamma/EgammaElectronAlgos>
+<export>
+  <lib name=EgammaAnalysisElectronIDAlgos>
+  <use name=FWCore/Framework>
+  <use name=DataFormats/HcalRecHit>
+  <use name=DataFormats/EgammaReco>
+  <use name=Geometry/CaloGeometry>
+  <use name=RecoCaloTools/MetaCollections>
+  <use name=RecoCaloTools/Selectors>
+</export>

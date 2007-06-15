@@ -1,0 +1,11 @@
+<use name=FWCore/Framework>
+<use name=FWCore/PluginManager>
+<use name=AnalysisDataFormats/Egamma>
+<use name=EgammaAnalysis/ElectronIDAlgos>
+<flags EDM_PLUGIN=1>
+<export>
+  <lib name=EgammaAnalysisElectronIDProducers>
+  <use name=FWCore/Framework>
+  <use name=AnalysisDataFormats/Egamma>
+  <use name=EgammaAnalysis/ElectronIDAlgos>
+</export>
