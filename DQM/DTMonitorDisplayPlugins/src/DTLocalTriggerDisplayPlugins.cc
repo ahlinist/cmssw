@@ -1,13 +1,13 @@
 
 
-// $Id: DTLocalTriggerDisplayPlugins.cc,v 1.1 2007/04/20 17:58:22 gmasetti Exp $
+// $Id: DTLocalTriggerDisplayPlugins.cc,v 1.2 2007/06/01 15:23:02 mzanetti Exp $
 
 /*!
   \file DTLocalTriggerDisplayPlugins
   \brief Display Plugin for LocalTrigger Task Quality Histograms (2D)
   \author G. Masetti 
-  \version $Revision: 1.1 $
-  \date $Date: 2007/04/20 17:58:22 $
+  \version $Revision: 1.2 $
+  \date $Date: 2007/06/01 15:23:02 $
 */
 
 #include "DQM/DTMonitorDisplayPlugins/src/DTLocalTriggerDisplayPlugins.h"
@@ -33,18 +33,46 @@ DTLocalTriggerDisplayPlugins::DTLocalTriggerDisplayPlugins () {
 
 bool DTLocalTriggerDisplayPlugins::isLocalTriggerME (std::string name) {
 
-  if( name.find( "DDU_BXvsQual" ) == 0 ) {
+  if( name.find( "BXvsQual" ) == 4 ) {
     return true;
   }
 
-  if( name.find( "DDU_ThetaBXvsQual" ) == 0 ) {
+  if( name.find( "ThetaBXvsQual" ) == 4 ) {
     return true;
   }
 
-  if( name.find( "DDU_Flag1" ) == 0 ) {
+  if( name.find( "Flag1" ) == 4 ) {
+    return true;
+  }
+   
+  if( name.find( "Qualvs" ) == 4 ) {
+    return true;
+  }
+
+  if( name.find( "Positionvs" ) == 4 ) {
+    return true;
+  }
+
+  if( name.find( "TrigEff" ) == 0 ) {
     return true;
   }
   
+  if( name.find( "CorrectBX" ) == 0 ) {
+    return true;
+  }
+
+  if( name.find( "CorrFrac" ) == 0 ) {
+    return true;
+  }
+
+  if( name.find( "2ndFrac" ) == 0 ) {
+    return true;
+  }
+
+  if( name.find( "HFrac" ) == 0 ) {
+    return true;
+  }
+
   return false;
 
 }
@@ -118,12 +146,12 @@ std::string DTLocalTriggerDisplayPlugins::preDrawTH2F( VisDQMDisplayPlugin::Disp
     obj->SetOption( "colz" );
     //    obj->SetOption( "lego" );
 
-  if( name.find( "DDU_BXvs" ) == 0 ) {
+  if( name.find( "BXvs" ) == 4 ) {
     (data->pad)->SetLogz( 1 );
 
     //    return true;
   }
-  if( name.find( "DDU_Theta" ) == 0 ) {
+  if( name.find( "Theta" ) == 4 ) {
     (data->pad)->SetLogz( 1 );
 
     //    return true;
@@ -152,7 +180,13 @@ std::string DTLocalTriggerDisplayPlugins::preDrawTH1F( VisDQMDisplayPlugin::Disp
       gStyle->SetOptStat( 0 );
       obj->SetStats(kFALSE);
       obj->SetLineColor(4);
+      obj->GetXaxis()->LabelsOption("hd");
       
+  }
+  
+  if( name.find("TrigEff")==0 ) {
+    obj->GetYaxis()->SetRangeUser(0.,1.1);
+    
   }
 
   return "";    
