@@ -111,7 +111,6 @@
   </Class >
   <Class table="SISTRIPMODULEHV" id_columns="IOV_VALUE_ID" name="SiStripModuleHV" >
     <Blob column="MODULEHV" name="v_hvoff"/>
-    <Blob column="ALLMODULES" name="v_det_ids"/>
   </Class >
 </Mapping >
 
