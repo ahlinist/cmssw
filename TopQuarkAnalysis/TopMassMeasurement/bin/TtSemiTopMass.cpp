@@ -169,8 +169,8 @@ int main() {
 //
 void AnalyseSolution_SimpleMeasurement(TtSemiMassSolution &sol){
   if(combBFitFile.Contains("simple")) 			asciFile[measurement][sample] << sol.getFitHadt().mass() << 1. << endl;
-  if(combBFitFile.Contains("LR") && (!inclChannelBgr)) 	asciFile[measurement][sample] << sol.getFitHadt().mass() << sol.getLRCorrJetCombProb() << endl;
-  if(combBFitFile.Contains("LR") &&   inclChannelBgr)   asciFile[measurement][sample] << sol.getFitHadt().mass() << sol.getLRSignalEvtProb()*sol.getLRCorrJetCombProb() << endl;
+  if(combBFitFile.Contains("LR") && (!inclChannelBgr)) 	asciFile[measurement][sample] << sol.getFitHadt().mass() << sol.getLRJetCombProb() << endl;
+  if(combBFitFile.Contains("LR") &&   inclChannelBgr)   asciFile[measurement][sample] << sol.getFitHadt().mass() << sol.getLRSignalEvtProb()*sol.getLRJetCombProb() << endl;
 }
 
 
@@ -232,7 +232,7 @@ void AnalyseSolution_Likelihood(TtSemiMassSolution &sol){
       
       double combPurity = 1.;
       if(combBFitFile.Contains("simple")) combPurity = jetCombProbFixed;
-      if(combBFitFile.Contains("LR"))     combPurity = sol.getLRCorrJetCombProb();
+      if(combBFitFile.Contains("LR"))     combPurity = sol.getLRJetCombProb();
       double signalPurity = 1.;
       if(inclChannelBgr) combPurity = sol.getLRSignalEvtProb();
       
