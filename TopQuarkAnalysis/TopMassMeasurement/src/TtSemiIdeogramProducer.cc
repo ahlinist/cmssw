@@ -56,7 +56,7 @@ TtSemiIdeogramProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
    
    // event selection cuts
    if(massSol.getProbChi2() <= hadWProbChi2Cut_) return;
-   if(solChoice_ == "LR" && massSol.getLRCorrJetCombProb() > -1. && massSol.getLRCorrJetCombProb() <= corrJetCombProb_) return;
+   if(solChoice_ == "LR" && massSol.getLRJetCombProb() > -1. && massSol.getLRJetCombProb() <= corrJetCombProb_) return;
    if(massSol.getLRSignalEvtProb() > -1. && massSol.getLRSignalEvtProb() <= signalEvtProb_) return;
    
    // Calculate the top mass uncertainty by error propagation (to be used in the construction of the gausian ideogram)
