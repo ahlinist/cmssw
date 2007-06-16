@@ -7,7 +7,7 @@ void PFConeIsolation::produce(Event& iEvent, const EventSetup& iSetup){
   for(unsigned int i_BJ=0;i_BJ!=theGenericJetCollection->size();i_BJ++) { 
     theGenericJets.push_back(GenericJetRef(theGenericJetCollection,i_BJ));
   }
-  // *** access to the PFCandidate's directly trough Event would be temporary, access to the same objects would be through 'PFJet'.
+  // *** access to the PFCandidate's through Event would be temporary, access to the same objects would be through 'PFJet'.
   Handle<PFCandidateCollection> thePFCandidateCollection;
   iEvent.getByLabel(PFCandidatemodule_,thePFCandidateCollection);
   PFCandidateRefVector thePFCands;

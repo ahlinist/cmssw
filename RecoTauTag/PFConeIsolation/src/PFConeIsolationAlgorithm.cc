@@ -4,7 +4,7 @@ PFIsolatedTauTagInfo PFConeIsolationAlgorithm::tag(const GenericJetRef& theGener
   PFIsolatedTauTagInfo resultExtended(thePFCands);
   resultExtended.setgenericjetRef(theGenericJet);
 
-  resultExtended.filterPFChargedHadrCands(ChargedHadrCand_tkminPt_,ChargedHadrCand_tkminPixelHitsn_,ChargedHadrCand_tkminTrackerHitsn_,ChargedHadrCand_tkmaxipt_,ChargedHadrCand_tkmaxChi2_,ChargedHadrCand_tkmaxPVtxDZ_,thePV.z());
+  resultExtended.filterPFChargedHadrCands(ChargedHadrCand_tkminPt_,ChargedHadrCand_tkminPixelHitsn_,ChargedHadrCand_tkminTrackerHitsn_,ChargedHadrCand_tkmaxipt_,ChargedHadrCand_tkmaxChi2_,ChargedHadrCand_tktorefpointDZ_,UsePVconstraint_,thePV.z(),UseOnlyChargedHadr_for_LeadCand_,MatchingConeSize_,LeadCand_minPt_);
   resultExtended.filterPFNeutrHadrCands(NeutrHadrCand_HcalclusminE_);
   resultExtended.filterPFGammaCands(GammaCand_EcalclusminE_);
 
