@@ -8,7 +8,12 @@
 <use name=DataFormats/BTauReco>
 <library file=PFTauTagTest.cc name=PFTauTagTest>
   <use name=FWCore/Framework>
- <flags SEAL_PLUGIN_NAME="PFTauTagTest">
+  <flags SEAL_PLUGIN_NAME="PFTauTagTest">
+</library>
+<library file=PFConeIsolationAnalyzer.cc name=PFConeIsolationAnalyzer>
+  <use name=FWCore/Framework>
+  <use name=DataFormats/ParticleFlowCandidate>
+  <flags SEAL_PLUGIN_NAME="PFConeIsolationAnalyzer">
 </library>
 
 
