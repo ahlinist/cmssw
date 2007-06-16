@@ -20,12 +20,14 @@ class  PFConeIsolationAlgorithm  {
     ChargedHadrCand_tkminTrackerHitsn_  = parameters.getParameter<int>("ChargedHadrCand_tkminTrackerHitsn");
     ChargedHadrCand_tkmaxipt_           = parameters.getParameter<double>("ChargedHadrCand_tkmaxipt");
     ChargedHadrCand_tkmaxChi2_          = parameters.getParameter<double>("ChargedHadrCand_tkmaxChi2");
-    ChargedHadrCand_tkmaxPVtxDZ_        = parameters.getParameter<double>("ChargedHadrCand_tkmaxPVtxDZ");
+    ChargedHadrCand_tktorefpointDZ_     = parameters.getParameter<double>("ChargedHadrCand_tktorefpointDZ");
     // parameters of the considered neutral hadr. cand.'s, based on their rec. HCAL clus. properties : 
     NeutrHadrCand_HcalclusminE_         = parameters.getParameter<double>("NeutrHadrCand_HcalclusminE");
     // parameters of the considered gamma cand.'s, based on their rec. ECAL clus. properties :
     GammaCand_EcalclusminE_             = parameters.getParameter<double>("GammaCand_EcalclusminE");
     // 
+    UsePVconstraint_                    = parameters.getParameter<bool>("UsePVconstraint");
+    //
     UseOnlyChargedHadrCand_             = parameters.getParameter<bool>("UseOnlyChargedHadrCand"); 
     Cand_minPt_                         = parameters.getParameter<double>("Cand_minPt");
     MatchingConeSize_                   = parameters.getParameter<double>("MatchingConeSize");
@@ -48,12 +50,14 @@ class  PFConeIsolationAlgorithm  {
   int ChargedHadrCand_tkminTrackerHitsn_;
   double ChargedHadrCand_tkmaxipt_;
   double ChargedHadrCand_tkmaxChi2_;
-  double ChargedHadrCand_tkmaxPVtxDZ_;
+  double ChargedHadrCand_tktorefpointDZ_;
   // parameters of the considered neutral hadr. cand.'s, based on their rec. HCAL clus. properties : 
   double NeutrHadrCand_HcalclusminE_;
   // parameters of the considered gamma cand.'s, based on their rec. ECAL clus. properties :
   double GammaCand_EcalclusminE_;
   // 
+  bool UsePVconstraint_;
+  //
   bool UseOnlyChargedHadrCand_; 
   double MatchingConeSize_;
   double SignalConeSize_;
