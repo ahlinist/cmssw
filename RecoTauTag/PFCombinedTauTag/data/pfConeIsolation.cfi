@@ -2,6 +2,7 @@ module mypfConeIsolation=PFConeIsolation {
     string PFJetmodule        = "iterativeCone5PFJets"
     double PFJetConeSize      = 0.5       # temporary parameter
     string PFCandidatemodule  = "particleFlow"
+    bool UsePVconstraint      = false
     #string PVmodule           = "pixelVertices"
     string PVmodule           = "offlinePrimaryVerticesFromCTFTracks"
     double smearedPVsigmaX    = 0.0015
@@ -13,7 +14,7 @@ module mypfConeIsolation=PFConeIsolation {
     int32 ChargedHadrCand_tkminTrackerHitsn   = 8
     double ChargedHadrCand_tkmaxipt           = 0.05
     double ChargedHadrCand_tkmaxChi2          = 1000.
-    double ChargedHadrCand_tkmaxPVtxDZ        = 0.2
+    double ChargedHadrCand_tktorefpointDZ     = 0.2
     # parameters of the considered neutral hadr. cand.'s, based on their rec. HCAL clus. properties : 
     double NeutrHadrCand_HcalclusminE         = 1.
     # parameters of the considered gamma cand.'s, based on their rec. ECAL clus. properties :

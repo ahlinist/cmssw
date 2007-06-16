@@ -81,6 +81,8 @@ public:
     LeadChargedHadrCand_minPt_case3signalChargedHadrCands_     = parameters.getParameter<double>("LeadChargedHadrCand_minPt_case3signalChargedHadrCands"); 
     // ------ PF gamma cand. selection
     GammaCandLeadChargedHadrCand_ConeSize_                     = parameters.getParameter<double>("GammaCandLeadChargedHadrCand_ConeSize");
+    // ------ PF neutral hadron cand. selection
+    NeutrHadrCandLeadChargedHadrCand_ConeSize_                 = parameters.getParameter<double>("NeutrHadrCandLeadChargedHadrCand_ConeSize");
     // ------ likelihood function selection
     Use_GammaCands_number_case1signalChargedHadrCand_                = parameters.getParameter<bool>("Use_GammaCands_number_case1signalChargedHadrCand");	
     Use_GammaCands_radius_case1signalChargedHadrCand_                = parameters.getParameter<bool>("Use_GammaCands_radius_case1signalChargedHadrCand");
@@ -124,6 +126,8 @@ public:
     LeadChargedHadrCand_minPt_case3signalChargedHadrCands_     = 6.; 
     // ------ PF gamma cand. selection
     GammaCandLeadChargedHadrCand_ConeSize_                     = 0.45;
+    // ------ PF neutral hadron cand. selection
+    NeutrHadrCandLeadChargedHadrCand_ConeSize_                 = 0.45;
     // ------ likelihood function selection
     Use_GammaCands_number_case1signalChargedHadrCand_                = true;	
     Use_GammaCands_radius_case1signalChargedHadrCand_                = true;
@@ -180,6 +184,8 @@ public:
   double LeadChargedHadrCand_minPt_case3signalChargedHadrCands_; 
   // ------ PF gamma cand. selection
   double GammaCandLeadChargedHadrCand_ConeSize_;
+  // ------ PF neutral hadron cand. selection
+  double NeutrHadrCandLeadChargedHadrCand_ConeSize_;
   // ------ likelihood function selection
   LikelihoodRatio* LikelihoodRatio_;
   bool Use_GammaCands_number_case1signalChargedHadrCand_;	
@@ -221,6 +227,7 @@ public:
   double TauCandJet_ref_et;
   PFCandidateRefVector ChargedHadrCands_;
   PFCandidateRefVector signalChargedHadrCands_;
+  PFCandidateRefVector isolChargedHadrCands_;
   PFCandidateRefVector filteredChargedHadrCands_;
   math::XYZTLorentzVector filteredChargedHadrCands_XYZTLorentzVectorsum_;
   int GammaCands_number_;
@@ -228,6 +235,10 @@ public:
   PFCandidateRefVector GammaCands_;
   math::XYZTLorentzVector GammaCands_XYZTLorentzVectorsum_;
   math::XYZTLorentzVector isolGammaCands_XYZTLorentzVectorsum_;
+  int NeutrHadrCands_number_;
+  double NeutrHadrCands_radius_;
+  PFCandidateRefVector NeutrHadrCands_;
+  math::XYZTLorentzVector NeutrHadrCands_XYZTLorentzVectorsum_;
   double GammaCands_Eratio_;
   double ChargedHadrCandsEt_o_jetEt_;
   double GammaCandsE_o_jetalternatE_;

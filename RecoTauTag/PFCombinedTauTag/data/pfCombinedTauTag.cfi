@@ -25,6 +25,8 @@ module pfCombinedTauTag=PFCombinedTauTag {
     double LeadChargedHadrCand_minPt_case3signalChargedHadrCands   = 6. 
     // ------ PF gamma cand. selection parameters
     double GammaCandLeadChargedHadrCand_ConeSize                   = 0.45
+    // ------ PF neutral hadron cand. selection parameters
+    double NeutrHadrCandLeadChargedHadrCand_ConeSize               = 0.45
     // ------ likelihood function selection parameters
     int32 minnumbercandidates_inpdf_byrecjetEtslice_case1signalChargedHadrCand   = 1300
     int32 minnumbercandidates_inpdf_byrecjetEtslice_case3signalChargedHadrCands  = 600
