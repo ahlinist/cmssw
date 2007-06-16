@@ -5,8 +5,7 @@ void PFCombinedTauTag::produce(Event& iEvent, const EventSetup& iSetup) {
   Handle<PFIsolatedTauTagInfoCollection> thePFIsolatedTauTagInfoCollection;
   iEvent.getByLabel(PFIsolatedTauTagSrc_,thePFIsolatedTauTagInfoCollection);   
   vector<PFCombinedTauTagInfo>* extCollection=new vector<PFCombinedTauTagInfo>();
-  // temporarily removed the access to Conditions DB for retrieving the likelihood function PDFs : computing likelihood ratios not available 
-  /*
+  
   const EventSetupRecord& theEventSetupRcd=iSetup.get<CombinedTauTagRcd>();
   unsigned long long cacheId=theEventSetupRcd.cacheIdentifier();
   if(cacheId!=m_cacheId){
@@ -21,7 +20,7 @@ void PFCombinedTauTag::produce(Event& iEvent, const EventSetup& iSetup) {
     (*thePFCombinedTauTagAlg).setLikelihoodRatio(theLikelihoodRatio);
   }
   m_cacheId=cacheId;
-  */
+ 
   // query a sim/rec PV
   Vertex::Error PVError;
   PVError(0,0)=smearedPVsigmaX_*smearedPVsigmaX_;

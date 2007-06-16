@@ -20,6 +20,7 @@ void PFCombinedTauTagAlg::init(const EventSetup& theEventSetup){
   TauCandJet_ref_et=NAN;
   ChargedHadrCands_.clear();
   signalChargedHadrCands_.clear();
+  isolChargedHadrCands_.clear();
   filteredChargedHadrCands_.clear();
   filteredChargedHadrCands_XYZTLorentzVectorsum_.SetPx(0.);
   filteredChargedHadrCands_XYZTLorentzVectorsum_.SetPy(0.);
@@ -36,6 +37,13 @@ void PFCombinedTauTagAlg::init(const EventSetup& theEventSetup){
   isolGammaCands_XYZTLorentzVectorsum_.SetPy(0.);
   isolGammaCands_XYZTLorentzVectorsum_.SetPz(0.);
   isolGammaCands_XYZTLorentzVectorsum_.SetE(0.);
+  NeutrHadrCands_number_=0;
+  NeutrHadrCands_radius_=NAN;
+  NeutrHadrCands_.clear();
+  NeutrHadrCands_XYZTLorentzVectorsum_.SetPx(0.);
+  NeutrHadrCands_XYZTLorentzVectorsum_.SetPy(0.);
+  NeutrHadrCands_XYZTLorentzVectorsum_.SetPz(0.);
+  NeutrHadrCands_XYZTLorentzVectorsum_.SetE(0.);  
   GammaCands_Eratio_=NAN;
   ChargedHadrCandsEt_o_jetEt_=NAN;
   GammaCandsE_o_jetalternatE_=NAN;
@@ -96,6 +104,14 @@ PFCombinedTauTagInfo PFCombinedTauTagAlg::tag(const PFIsolatedTauTagInfoRef& the
   }
   // ***********end of rec. PF gamma candidates info filling *************
   
+  // *************rec. PF neutral hadron candidates info filling ***************
+  // ************************begin*****************************
+  for(PFCandidateRefVector::const_iterator i_NeutrHadrCand=(*thePFIsolatedTauTagInfoRef).PFNeutrHadrCands().begin();i_NeutrHadrCand!=(*thePFIsolatedTauTagInfoRef).PFNeutrHadrCands().end();i_NeutrHadrCand++){
+    if(ROOT::Math::VectorUtil::DeltaR((**i_NeutrHadrCand).p4(),refAxis_XYZTLorentzVector)>NeutrHadrCandLeadChargedHadrCand_ConeSize_) continue;
+    NeutrHadrCands_.push_back(*i_NeutrHadrCand);
+  }
+  // ***********end of rec. PF neutral hadron candidates info filling *************
+   
   // ************* recjet_alternatXYZTLorentzVector(tau candidate alternative math::XYZTLorentzVector) filling *************
   for (PFCandidateRefVector::const_iterator iGammaCand=GammaCands_.begin();iGammaCand!=GammaCands_.end();iGammaCand++) recjet_alternatXYZTLorentzVector_+=(**iGammaCand).p4();
   for (PFCandidateRefVector::const_iterator iChargedHadrCand=ChargedHadrCands_.begin();iChargedHadrCand!=ChargedHadrCands_.end();iChargedHadrCand++) recjet_alternatXYZTLorentzVector_+=(**iChargedHadrCand).p4();
@@ -121,6 +137,8 @@ PFCombinedTauTagInfo PFCombinedTauTagAlg::tag(const PFIsolatedTauTagInfoRef& the
   double ChargedHadrPFCand_isolation_discriminator=(*thePFIsolatedTauTagInfoRef).discriminatorByIsolPFChargedHadrCandsN(recjet_XYZVector,MatchingConeSize_,ChargedHadrCand_SignalConeSize,IsolConeSize_,UseOnlyChargedHadr_for_LeadCand_,LeadChargedHadrCand_minPt_,ChargedHadrCand_minPt_,IsolRing_Candsmaxn_); 
   if(ChargedHadrPFCand_isolation_discriminator==1.) passed_ChargedHadrCand_isolationring_selection=true;
   signalChargedHadrCands_=(*thePFIsolatedTauTagInfoRef).PFChargedHadrCandsInCone(refAxis_XYZVector,ChargedHadrCand_SignalConeSize,ChargedHadrCand_minPt_);
+  isolChargedHadrCands_=(*thePFIsolatedTauTagInfoRef).PFChargedHadrCandsInBand(refAxis_XYZVector,ChargedHadrCand_SignalConeSize,IsolConeSize_,ChargedHadrCand_minPt_);
+  
   int ChargedHadrCands_qsum=0;
   if((int)(signalChargedHadrCands_.size())!=0){
     for(PFCandidateRefVector::const_iterator i_ChargedHadrCand=signalChargedHadrCands_.begin();i_ChargedHadrCand!=signalChargedHadrCands_.end();i_ChargedHadrCand++) ChargedHadrCands_qsum+=(**i_ChargedHadrCand).charge();
@@ -145,6 +163,20 @@ PFCombinedTauTagInfo PFCombinedTauTagAlg::tag(const PFIsolatedTauTagInfoRef& the
   // *** rec. PF gamma candidates selection
   if(GammaCands_XYZTLorentzVectorsum_.E()==0.) passed_noGammaCand_selection=true;
   // *****************************end of PF gamma candidates treatment*******************************
+  
+  // *************************** rec. PF neutral hadron candidates treatment**************************
+  // ***************************************** begin ****************************************
+  if((int)NeutrHadrCands_.size()!=0){
+    NeutrHadrCands_radius_=0.;
+    for (PFCandidateRefVector::const_iterator iNeutrHadrCand=NeutrHadrCands_.begin();iNeutrHadrCand!=NeutrHadrCands_.end();iNeutrHadrCand++) {
+      ++NeutrHadrCands_number_;
+      NeutrHadrCands_radius_+=ROOT::Math::VectorUtil::DeltaR((**iNeutrHadrCand).p4(),refAxis_XYZTLorentzVector)*(**iNeutrHadrCand).energy();
+      NeutrHadrCands_XYZTLorentzVectorsum_+=(**iNeutrHadrCand).p4();
+    }  
+    if(NeutrHadrCands_XYZTLorentzVectorsum_.E()!=0.) NeutrHadrCands_radius_=NeutrHadrCands_radius_/NeutrHadrCands_XYZTLorentzVectorsum_.E();
+  }
+  // *****************************end of PF neutral hadron candidates treatment*******************************
+  
   if(passed_ChargedHadrCand_selection && passed_noGammaCand_selection) is_GoodTauCand=true;
   if(passed_ChargedHadrCand_selection && !passed_noGammaCand_selection) needs_LikelihoodRatio_discrimination=true;
   
@@ -222,6 +254,7 @@ PFCombinedTauTagInfo PFCombinedTauTagAlg::tag(const PFIsolatedTauTagInfoRef& the
   resultExtended.setselectedByPFChargedHadrCands(passed_ChargedHadrCand_selection);
   resultExtended.setPFChargedHadrCands(ChargedHadrCands_);
   resultExtended.setsignalPFChargedHadrCands(signalChargedHadrCands_);
+  resultExtended.setisolPFChargedHadrCands(isolChargedHadrCands_);
   resultExtended.setselectedPFChargedHadrCands(filteredChargedHadrCands_);
   if (!couldnotobtain_LeadChargedHadrCand_signedipt) resultExtended.setleadPFChargedHadrCandsignedSipt(LeadChargedHadrCand_signedipt_significance_);
   if (!couldnotobtain_LeadChargedHadrCand_signedip3D) resultExtended.setleadPFChargedHadrCandsignedSip3D(LeadChargedHadrCand_signedip3D_significance_);
@@ -231,6 +264,9 @@ PFCombinedTauTagInfo PFCombinedTauTagAlg::tag(const PFIsolatedTauTagInfoRef& the
   resultExtended.setisolPFGammaCandsE(isolGammaCands_XYZTLorentzVectorsum_.E());
   resultExtended.setPFGammaCandsN(GammaCands_number_);
   if (GammaCands_XYZTLorentzVectorsum_.E()!=0.) resultExtended.setPFGammaCandsRadius(GammaCands_radius_);
+  resultExtended.setPFNeutrHadrCandsE(NeutrHadrCands_XYZTLorentzVectorsum_.E());
+  resultExtended.setPFNeutrHadrCandsN(NeutrHadrCands_number_);
+  if (NeutrHadrCands_XYZTLorentzVectorsum_.E()!=0.) resultExtended.setPFNeutrHadrCandsRadius(NeutrHadrCands_radius_);
   resultExtended.setPFGammaCandsEJetalternatERatio(GammaCandsE_o_jetalternatE_);
   resultExtended.setisolPFGammaCandsEJetalternatERatio(isolGammaCandsE_o_jetalternatE_);
   if (GammaCands_XYZTLorentzVectorsum_.E()!=0.) resultExtended.setPFGammaCandsERatio(GammaCands_Eratio_);
@@ -249,13 +285,9 @@ PFCombinedTauTagInfo PFCombinedTauTagAlg::tag(const PFIsolatedTauTagInfoRef& the
       resultExtended.setdiscriminator(1.);
       return resultExtended; 
     }else{
-      // computing likelihood ratios temporarily not available
-      /*
-	(*LikelihoodRatio_).setCandidateCategoryParameterValues(signalChargedHadrCands_.size(),TauCandJet_ref_et);
-	(*LikelihoodRatio_).setCandidateTaggingVariableList(taggingvariablesList());
-	resultExtended.setdiscriminator((*LikelihoodRatio_).value());
-      */
-      resultExtended.setdiscriminator(-100.);
+      (*LikelihoodRatio_).setCandidateCategoryParameterValues(signalChargedHadrCands_.size(),TauCandJet_ref_et);
+      (*LikelihoodRatio_).setCandidateTaggingVariableList(taggingvariablesList());
+      resultExtended.setdiscriminator((*LikelihoodRatio_).value());
       return resultExtended; 
     }
   }
