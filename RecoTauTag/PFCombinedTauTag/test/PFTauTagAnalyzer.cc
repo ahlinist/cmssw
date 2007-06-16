@@ -116,11 +116,12 @@ private:
   float PFCombinedTauTagInfo_et;
   float PFCombinedTauTagInfo_eta;
   float PFCombinedTauTagInfo_phi;
+  float PFCombinedTauTagInfo_invmass;
   float PFCombinedTauTagInfo_mode;
   float PFCombinedTauTagInfo_modet;
   float PFCombinedTauTagInfo_modeta;
   float PFCombinedTauTagInfo_modphi;
-  float PFCombinedTauTagInfo_invmass;
+  float PFCombinedTauTagInfo_modinvmass;
   float PFCombinedTauTagInfo_mode_bis;
   float PFCombinedTauTagInfo_modet_bis;
   float PFCombinedTauTagInfo_modeta_bis;
@@ -132,8 +133,11 @@ private:
   float PFCombinedTauTagInfo_HCALEt_o_leadtkPt;
   int PFCombinedTauTagInfo_rectks_number;
   int PFCombinedTauTagInfo_signalrectks_number;
+  int PFCombinedTauTagInfo_isolrectks_number;
   int PFCombinedTauTagInfo_neutralECALclus_number;
   float PFCombinedTauTagInfo_neutralECALclus_radius;
+  int PFCombinedTauTagInfo_neutralHCALclus_number;
+  float PFCombinedTauTagInfo_neutralHCALclus_radius;
   float PFCombinedTauTagInfo_neutrE_ratio;
   float PFCombinedTauTagInfo_isolneutrE_o_tksEneutrE_ratio;
   float PFCombinedTauTagInfo_tksEtJetEt_ratio;
@@ -148,9 +152,11 @@ private:
   static const int NeutrHadrCands_nmax=100;
   int NeutrHadrCands_n;
   float PFCombinedTauTagInfo_NHCandDR[NeutrHadrCands_nmax];
+  float PFCombinedTauTagInfo_NHCandEt[NeutrHadrCands_nmax];
   static const int GammaCands_nmax=100;
   int GammaCands_n;
   float PFCombinedTauTagInfo_GCandDR[GammaCands_nmax];
+  float PFCombinedTauTagInfo_GCandEt[GammaCands_nmax];
   float PFCombinedTauTagInfo_GenTau_visproducts_e;
   float PFCombinedTauTagInfo_GenTau_visproducts_et;
   float PFCombinedTauTagInfo_GenTau_visproducts_eta;
@@ -219,11 +225,12 @@ PFTauTagAnalyzer::PFTauTagAnalyzer(const edm::ParameterSet& iConfig){
   thePFCombinedTauTagInfoTree->Branch("PFCombinedTauTagInfo_et",&PFCombinedTauTagInfo_et,"PFCombinedTauTagInfo_et/F");
   thePFCombinedTauTagInfoTree->Branch("PFCombinedTauTagInfo_eta",&PFCombinedTauTagInfo_eta,"PFCombinedTauTagInfo_eta/F");
   thePFCombinedTauTagInfoTree->Branch("PFCombinedTauTagInfo_phi",&PFCombinedTauTagInfo_phi,"PFCombinedTauTagInfo_phi/F");
+  thePFCombinedTauTagInfoTree->Branch("PFCombinedTauTagInfo_invmass",&PFCombinedTauTagInfo_invmass,"PFCombinedTauTagInfo_invmass/F");
   thePFCombinedTauTagInfoTree->Branch("PFCombinedTauTagInfo_mode",&PFCombinedTauTagInfo_mode,"PFCombinedTauTagInfo_mode/F");
   thePFCombinedTauTagInfoTree->Branch("PFCombinedTauTagInfo_modet",&PFCombinedTauTagInfo_modet,"PFCombinedTauTagInfo_modet/F");
   thePFCombinedTauTagInfoTree->Branch("PFCombinedTauTagInfo_modeta",&PFCombinedTauTagInfo_modeta,"PFCombinedTauTagInfo_modeta/F");
   thePFCombinedTauTagInfoTree->Branch("PFCombinedTauTagInfo_modphi",&PFCombinedTauTagInfo_modphi,"PFCombinedTauTagInfo_modphi/F");
-  thePFCombinedTauTagInfoTree->Branch("PFCombinedTauTagInfo_invmass",&PFCombinedTauTagInfo_invmass,"PFCombinedTauTagInfo_invmass/F");
+  thePFCombinedTauTagInfoTree->Branch("PFCombinedTauTagInfo_modinvmass",&PFCombinedTauTagInfo_modinvmass,"PFCombinedTauTagInfo_modinvmass/F");
   thePFCombinedTauTagInfoTree->Branch("PFCombinedTauTagInfo_mode_bis",&PFCombinedTauTagInfo_mode_bis,"PFCombinedTauTagInfo_mode_bis/F");
   thePFCombinedTauTagInfoTree->Branch("PFCombinedTauTagInfo_modet_bis",&PFCombinedTauTagInfo_modet_bis,"PFCombinedTauTagInfo_modet_bis/F");
   thePFCombinedTauTagInfoTree->Branch("PFCombinedTauTagInfo_modeta_bis",&PFCombinedTauTagInfo_modeta_bis,"PFCombinedTauTagInfo_modeta_bis/F");
@@ -231,8 +238,11 @@ PFTauTagAnalyzer::PFTauTagAnalyzer(const edm::ParameterSet& iConfig){
   thePFCombinedTauTagInfoTree->Branch("PFCombinedTauTagInfo_passed_tracksel",&PFCombinedTauTagInfo_passed_tracksel,"PFCombinedTauTagInfo_passed_tracksel/I");
   thePFCombinedTauTagInfoTree->Branch("PFCombinedTauTagInfo_rectks_number",&PFCombinedTauTagInfo_rectks_number,"PFCombinedTauTagInfo_rectks_number/I");
   thePFCombinedTauTagInfoTree->Branch("PFCombinedTauTagInfo_signalrectks_number",&PFCombinedTauTagInfo_signalrectks_number,"PFCombinedTauTagInfo_signalrectks_number/I");
+  thePFCombinedTauTagInfoTree->Branch("PFCombinedTauTagInfo_isolrectks_number",&PFCombinedTauTagInfo_isolrectks_number,"PFCombinedTauTagInfo_isolrectks_number/I");
   thePFCombinedTauTagInfoTree->Branch("PFCombinedTauTagInfo_neutralECALclus_number",&PFCombinedTauTagInfo_neutralECALclus_number,"PFCombinedTauTagInfo_neutralECALclus_number/I");
   thePFCombinedTauTagInfoTree->Branch("PFCombinedTauTagInfo_neutralECALclus_radius",&PFCombinedTauTagInfo_neutralECALclus_radius,"PFCombinedTauTagInfo_neutralECALclus_radius/F");
+  thePFCombinedTauTagInfoTree->Branch("PFCombinedTauTagInfo_neutralHCALclus_number",&PFCombinedTauTagInfo_neutralHCALclus_number,"PFCombinedTauTagInfo_neutralHCALclus_number/I");
+  thePFCombinedTauTagInfoTree->Branch("PFCombinedTauTagInfo_neutralHCALclus_radius",&PFCombinedTauTagInfo_neutralHCALclus_radius,"PFCombinedTauTagInfo_neutralHCALclus_radius/F");
   thePFCombinedTauTagInfoTree->Branch("PFCombinedTauTagInfo_neutrE_ratio",&PFCombinedTauTagInfo_neutrE_ratio,"PFCombinedTauTagInfo_neutrE_ratio/F");
   thePFCombinedTauTagInfoTree->Branch("PFCombinedTauTagInfo_tksEtJetEt_ratio",&PFCombinedTauTagInfo_tksEtJetEt_ratio,"PFCombinedTauTagInfo_tksEtJetEt_ratio/F");
   thePFCombinedTauTagInfoTree->Branch("PFCombinedTauTagInfo_neutrEtksE_ratio",&PFCombinedTauTagInfo_neutrEtksE_ratio,"PFCombinedTauTagInfo_neutrEtksE_ratio/F");
@@ -249,8 +259,10 @@ PFTauTagAnalyzer::PFTauTagAnalyzer(const edm::ParameterSet& iConfig){
   thePFCombinedTauTagInfoTree->Branch("PFCombinedTauTagInfo_CHCandDR",PFCombinedTauTagInfo_CHCandDR,"PFCombinedTauTagInfo_CHCandDR[ChargedHadrCands_n]/F");
   thePFCombinedTauTagInfoTree->Branch("NeutrHadrCands_n",&NeutrHadrCands_n,"NeutrHadrCands_n/I");
   thePFCombinedTauTagInfoTree->Branch("PFCombinedTauTagInfo_NHCandDR",PFCombinedTauTagInfo_NHCandDR,"PFCombinedTauTagInfo_NHCandDR[NeutrHadrCands_n]/F");
+  thePFCombinedTauTagInfoTree->Branch("PFCombinedTauTagInfo_NHCandEt",PFCombinedTauTagInfo_NHCandEt,"PFCombinedTauTagInfo_NHCandEt[NeutrHadrCands_n]/F");
   thePFCombinedTauTagInfoTree->Branch("GammaCands_n",&GammaCands_n,"GammaCands_n/I");
   thePFCombinedTauTagInfoTree->Branch("PFCombinedTauTagInfo_GCandDR",PFCombinedTauTagInfo_GCandDR,"PFCombinedTauTagInfo_GCandDR[GammaCands_n]/F");
+  thePFCombinedTauTagInfoTree->Branch("PFCombinedTauTagInfo_GCandEt",PFCombinedTauTagInfo_GCandEt,"PFCombinedTauTagInfo_GCandEt[GammaCands_n]/F");
   thePFCombinedTauTagInfoTree->Branch("PFCombinedTauTagInfo_GenTau_visproducts_e",&PFCombinedTauTagInfo_GenTau_visproducts_e,"PFCombinedTauTagInfo_GenTau_visproducts_e/F");
   thePFCombinedTauTagInfoTree->Branch("PFCombinedTauTagInfo_GenTau_visproducts_et",&PFCombinedTauTagInfo_GenTau_visproducts_et,"PFCombinedTauTagInfo_GenTau_visproducts_et/F");
   thePFCombinedTauTagInfoTree->Branch("PFCombinedTauTagInfo_GenTau_visproducts_eta",&PFCombinedTauTagInfo_GenTau_visproducts_eta,"PFCombinedTauTagInfo_GenTau_visproducts_eta/F");
@@ -376,7 +388,7 @@ void PFTauTagAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
 	HepMC::GenVertex::particles_out_const_iterator i_1sttaudaughter=TheParticle->end_vertex()->particles_out_const_begin();
 	HepMC::GenVertex::particles_out_const_iterator i_2ndtaudaughter=++TheParticle->end_vertex()->particles_out_const_begin();
 	HepMC::GenVertex::particles_out_const_iterator i_3rdtaudaughter=++i_2ndtaudaughter;
-	HepMC::GenVertex::particles_out_const_iterator i_4thtaudaughter=TheParticle->end_vertex()->particles_out_const_begin();
+	HepMC::GenVertex::particles_out_const_iterator i_4thtaudaughter=++i_3rdtaudaughter;
 	if ((abs((**i_1sttaudaughter).pdg_id())==16 && abs((**i_2ndtaudaughter).pdg_id())==211 && abs((**i_3rdtaudaughter).pdg_id())==211 && abs((**i_4thtaudaughter).pdg_id())==211)
 	    || (abs((**i_2ndtaudaughter).pdg_id())==16 && abs((**i_1sttaudaughter).pdg_id())==211 && abs((**i_3rdtaudaughter).pdg_id())==211 && abs((**i_4thtaudaughter).pdg_id())==211)
 	    || (abs((**i_3rdtaudaughter).pdg_id())==16 && abs((**i_1sttaudaughter).pdg_id())==211 && abs((**i_2ndtaudaughter).pdg_id())==211 && abs((**i_4thtaudaughter).pdg_id())==211)
@@ -528,7 +540,6 @@ void PFTauTagAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   SimTausnumber=iSimTau;
   
   int iGenJet05 = 0;  
-  /*
   Handle<GenJetCollection> genIter05Jets;
   iEvent.getByLabel("iterativeCone5GenJets",genIter05Jets);   
   for(GenJetCollection::const_iterator i_genIter05Jet=genIter05Jets->begin();i_genIter05Jet!=genIter05Jets->end();++i_genIter05Jet) {
@@ -540,7 +551,6 @@ void PFTauTagAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
     GenJet05_HepLV.push_back(myGenJet05_HepLV);
     ++iGenJet05;
   }
-  */
   GenJet05snumber=iGenJet05;
   stable_sort(GenJet05_HepLV.begin(),GenJet05_HepLV.end(),BydecreasingEt());
   
@@ -570,11 +580,12 @@ void PFTauTagAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
     PFCombinedTauTagInfo_et=ThePFCombinedTauTagJet_HepLV.et();
     PFCombinedTauTagInfo_eta=ThePFCombinedTauTagJet_HepLV.eta();
     PFCombinedTauTagInfo_phi=ThePFCombinedTauTagJet_HepLV.phi();
+    PFCombinedTauTagInfo_invmass=ThePFCombinedTauTagJet_HepLV.m();
     PFCombinedTauTagInfo_mode=(*i).alternatLorentzVect().E();
     PFCombinedTauTagInfo_modet=(*i).alternatLorentzVect().Et();
     PFCombinedTauTagInfo_modeta=(*i).alternatLorentzVect().Eta();
     PFCombinedTauTagInfo_modphi=(*i).alternatLorentzVect().Phi();
-    PFCombinedTauTagInfo_invmass=(*i).alternatLorentzVect().M();
+    PFCombinedTauTagInfo_modinvmass=(*i).alternatLorentzVect().M();
     PFCombinedTauTagInfo_passed_tracksel=(*i).selectedByPFChargedHadrCands();
     PFCombinedTauTagInfo_infact_GoodElectronCandidate=(*i).electronTagged();
     PFCombinedTauTagInfo_infact_GoodMuonCandidate=(*i).muonTagged();
@@ -583,9 +594,13 @@ void PFTauTagAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
     if (!isnan((*i).HCALEtleadPFChargedHadrCandPtRatio())) PFCombinedTauTagInfo_HCALEt_o_leadtkPt=(*i).HCALEtleadPFChargedHadrCandPtRatio();
     else PFCombinedTauTagInfo_HCALEt_o_leadtkPt=-100.;
     PFCombinedTauTagInfo_signalrectks_number=(int)(*i).signalPFChargedHadrCands().size();
+    PFCombinedTauTagInfo_isolrectks_number=(int)(*i).isolPFChargedHadrCands().size();
     PFCombinedTauTagInfo_neutralECALclus_number=(*i).PFGammaCandsN();
     if (!isnan((*i).PFGammaCandsRadius())) PFCombinedTauTagInfo_neutralECALclus_radius=(*i).PFGammaCandsRadius();
     else PFCombinedTauTagInfo_neutralECALclus_radius=-100.;
+    PFCombinedTauTagInfo_neutralHCALclus_number=(*i).PFNeutrHadrCandsN();
+    if (!isnan((*i).PFNeutrHadrCandsRadius())) PFCombinedTauTagInfo_neutralHCALclus_radius=(*i).PFNeutrHadrCandsRadius();
+    else PFCombinedTauTagInfo_neutralHCALclus_radius=-100.;
     if (!isnan((*i).PFGammaCandsERatio())) PFCombinedTauTagInfo_neutrE_ratio=(*i).PFGammaCandsERatio();
     else PFCombinedTauTagInfo_neutrE_ratio=-100.;
     PFCombinedTauTagInfo_isolneutrE_o_tksEneutrE_ratio=(*i).isolPFGammaCandsEJetalternatERatio();
@@ -620,11 +635,13 @@ void PFTauTagAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
       }
       for (PFCandidateRefVector::const_iterator iNeutrHadrCand=(*i).isolatedtautaginfoRef()->PFNeutrHadrCands().begin();iNeutrHadrCand!=(*i).isolatedtautaginfoRef()->PFNeutrHadrCands().end();++iNeutrHadrCand){
 	PFCombinedTauTagInfo_NHCandDR[NeutrHadrCands_n]=ROOT::Math::VectorUtil::DeltaR((**iNeutrHadrCand).p4(),(*theleadPFCand).p4());
+	PFCombinedTauTagInfo_NHCandEt[NeutrHadrCands_n]=(**iNeutrHadrCand).et();
 	++NeutrHadrCands_n;
       }
       for (PFCandidateRefVector::const_iterator iGammaCand=(*i).isolatedtautaginfoRef()->PFGammaCands().begin();iGammaCand!=(*i).isolatedtautaginfoRef()->PFGammaCands().end();++iGammaCand){
 	recjet_alternatXYZTLorentzVector+=(**iGammaCand).p4();
 	PFCombinedTauTagInfo_GCandDR[GammaCands_n]=ROOT::Math::VectorUtil::DeltaR((**iGammaCand).p4(),(*theleadPFCand).p4());
+	PFCombinedTauTagInfo_GCandEt[GammaCands_n]=(**iGammaCand).et();
 	++GammaCands_n;
       }      
     }else PFCombinedTauTagInfo_rectks_number=0;
