@@ -2,16 +2,16 @@
 #define private public
 #include "G4VEnergyLossProcess.hh"
 #define private private
-#include "G4eMuIonisation.hh"
+#include "SimG4Core/Geant4e/interface/G4eMuIonisation.hh"
 #include "G4VMuEnergyLoss.hh"
-#include "G4eIonisationChange.hh"
+#include "SimG4Core/Geant4e/interface/G4eIonisationChange.hh"
 #include "G4ios.hh"
 #include "G4Track.hh"
 #include "G4Step.hh"
 #include "G4VParticleChange.hh"
 #include "G4ParticleChange.hh"
 
-#include "G4eManager.hh"
+#include "SimG4Core/Geant4e/interface/G4eManager.hh"
 
 G4eMuIonisation::G4eMuIonisation(const G4String& name)
   : G4MuIonisation(name)

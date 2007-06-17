@@ -1,14 +1,14 @@
 //
-#include "G4eTrajStateFree.hh"
-#include "G4eTrajParamFree.hh"
-#include "G4eTrajStateOnSurface.hh"
+#include "SimG4Core/Geant4e/interface/G4eTrajStateFree.hh"
+#include "SimG4Core/Geant4e/interface/G4eTrajParamFree.hh"
+#include "SimG4Core/Geant4e/interface/G4eTrajStateOnSurface.hh"
 
 #include "G4Field.hh"
 #include "G4FieldManager.hh"
 #include "G4TransportationManager.hh"
 #include "CLHEP/Matrix/Matrix.h"
 #include "G4Material.hh"
-#include "G4eManager.hh"
+#include "SimG4Core/Geant4e/interface/G4eManager.hh"
 #include <iomanip>
 
 //------------------------------------------------------------------------

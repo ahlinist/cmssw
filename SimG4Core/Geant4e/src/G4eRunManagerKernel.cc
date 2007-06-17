@@ -4,12 +4,11 @@
 // loaded *before* globals.hh...
 #include "G4Timer.hh"
 
-#include "G4eRunManagerKernel.hh"
+#include "SimG4Core/Geant4e/interface/G4eRunManagerKernel.hh"
 
 #include "G4RunManagerKernel.hh"
 #include "G4VUserDetectorConstruction.hh"
-#include "G4ePhysicsList.hh"
-#include "ExN02PhysicsList.hh"
+#include "SimG4Core/Geant4e/interface/G4ePhysicsList.hh"
 #include "G4TransportationManager.hh"
 #include "G4RunManager.hh"
 

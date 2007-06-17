@@ -1,10 +1,10 @@
 //
-#include "G4eNavigator.hh"
+#include "SimG4Core/Geant4e/interface/G4eNavigator.hh"
 #include "G4Navigator.hh"
 #include "globals.hh"
 
-#include "G4eManager.hh"
-#include "G4eTargetSurface.hh"
+#include "SimG4Core/Geant4e/interface/G4eManager.hh"
+#include "SimG4Core/Geant4e/interface/G4eTargetSurface.hh"
 
 #include "G4ThreeVector.hh"
 

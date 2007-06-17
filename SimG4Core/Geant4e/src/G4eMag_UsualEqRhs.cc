@@ -1,6 +1,6 @@
 //
-#include "G4eMag_UsualEqRhs.hh"
-#include "G4eManager.hh"
+#include "SimG4Core/Geant4e/interface/G4eMag_UsualEqRhs.hh"
+#include "SimG4Core/Geant4e/interface/G4eManager.hh"
 
 
 void

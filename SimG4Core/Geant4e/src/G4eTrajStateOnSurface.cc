@@ -1,5 +1,5 @@
-#include "G4eTrajStateOnSurface.hh"
-#include "G4eManager.hh"
+#include "SimG4Core/Geant4e/interface/G4eTrajStateOnSurface.hh"
+#include "SimG4Core/Geant4e/interface/G4eManager.hh"
 
 #include "G4Field.hh"
 #include "G4FieldManager.hh"

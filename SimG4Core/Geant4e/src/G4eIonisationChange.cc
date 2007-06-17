@@ -5,12 +5,12 @@
 //      History: September 2001, P. Arce
 // --------------------------------------------------------------
  
-#include "G4eIonisationChange.hh"
+#include "SimG4Core/Geant4e/interface/G4eIonisationChange.hh"
 
 #include "G4Track.hh"
 #include "G4ParticleChangeForLoss.hh"
 
-#include "G4eManager.hh"
+#include "SimG4Core/Geant4e/interface/G4eManager.hh"
 
 // constructor and destructor
  G4eIonisationChange::G4eIonisationChange(const G4String& )

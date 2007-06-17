@@ -1,6 +1,6 @@
-#include "G4eMagneticFieldLimitsProcess.hh"
+#include "SimG4Core/Geant4e/interface/G4eMagneticFieldLimitsProcess.hh"
 #include "G4UnitsTable.hh"
-#include "G4eMagneticFieldLimitsMessenger.hh"
+#include "SimG4Core/Geant4e/interface/G4eMagneticFieldLimitsMessenger.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 G4eMagneticFieldLimitsProcess::G4eMagneticFieldLimitsProcess(const G4String& processName)
