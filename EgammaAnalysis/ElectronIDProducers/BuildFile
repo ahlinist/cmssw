@@ -2,7 +2,7 @@
 <use name=FWCore/PluginManager>
 <use name=AnalysisDataFormats/Egamma>
 <use name=EgammaAnalysis/ElectronIDAlgos>
-<flags EDM_PLUGIN=1>
+<flags SEAL_PLUGIN_NAME="EgammaAnalysisElectronIDProducers">
 <export>
   <lib name=EgammaAnalysisElectronIDProducers>
   <use name=FWCore/Framework>
