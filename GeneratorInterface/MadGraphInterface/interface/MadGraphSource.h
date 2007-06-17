@@ -19,7 +19,7 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include <map>
 #include <string>
-#include "HepMC/GenEvent.h"
+#include "CLHEP/HepMC/GenEvent.h"
 namespace edm
 {
   class MadGraphSource : public GeneratedInputSource {

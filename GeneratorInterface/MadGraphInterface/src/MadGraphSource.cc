@@ -24,10 +24,8 @@
 #include "time.h"
 
 // Generator modifications
-#include "HepMC/PythiaWrapper6_2.h"
-//#include "CLHEP/HepMC/ConvertHEPEVT.h"
-#include "HepMC/IO_HEPEVT.h"
-//#include "CLHEP/HepMC/CBhepevt.h"
+#include "CLHEP/HepMC/include/PythiaWrapper6_2.h"
+#include "CLHEP/HepMC/ConvertHEPEVT.h"
 
 // MCDB Interface 
 #include "GeneratorInterface/MadGraphInterface/interface/MCDBInterface.h"
@@ -231,8 +229,8 @@ bool MadGraphSource::produce(Event & e) {
   if(produceEventTreeFile_) eventtree_(); // write out an event tree file
 
 
-  HepMC::IO_HEPEVT conv;
-  HepMC::GenEvent* evt = conv.read_next_event();
+  HepMC::ConvertHEPEVT conv;
+  HepMC::GenEvent* evt = conv.getGenEventfromHEPEVT();
   evt->set_signal_process_id(pypars.msti[0]);
   evt->set_event_number(numberEventsInRun() - remainingEvents() - 1);
 
