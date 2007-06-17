@@ -1,6 +1,6 @@
 
-#include "G4eMagneticFieldLimitsMessenger.hh"
-#include "G4eMagneticFieldLimitsProcess.hh"
+#include "SimG4Core/Geant4e/interface/G4eMagneticFieldLimitsMessenger.hh"
+#include "SimG4Core/Geant4e/interface/G4eMagneticFieldLimitsProcess.hh"
 
 #include "G4UIdirectory.hh"
 #include "G4UIcmdWithADoubleAndUnit.hh"

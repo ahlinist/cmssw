@@ -1,5 +1,5 @@
-#include "G4eTargetG4Volume.hh"
-#include "G4eManager.hh" //for verbosity checking
+#include "SimG4Core/Geant4e/interface/G4eTargetG4Volume.hh"
+#include "SimG4Core/Geant4e/interface/G4eManager.hh" //for verbosity checking
 #include "G4Point3D.hh"
 #include "G4ThreeVector.hh"
 #include "G4Step.hh"

@@ -1,5 +1,5 @@
-#include "G4eTargetPlaneSurface.hh"
-#include "G4eManager.hh" //for verbosity checking
+#include "SimG4Core/Geant4e/interface/G4eTargetPlaneSurface.hh"
+#include "SimG4Core/Geant4e/interface/G4eManager.hh" //for verbosity checking
 #include "G4Point3D.hh"
 #include "G4ThreeVector.hh"
 

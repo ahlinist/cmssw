@@ -13,8 +13,8 @@
 //
 ////////////////////////////////////////////////////////////////////////
 
-#include "G4eEnergyLossProcess.hh"
-#include "G4eManager.hh"
+#include "SimG4Core/Geant4e/interface/G4eEnergyLossProcess.hh"
+#include "SimG4Core/Geant4e/interface/G4eManager.hh"
 #include "G4EnergyLossForExtrapolator.hh"
 
 //--------------------------------------------------------------------------

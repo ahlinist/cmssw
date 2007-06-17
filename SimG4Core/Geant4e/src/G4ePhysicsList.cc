@@ -3,7 +3,7 @@
 
 #include "globals.hh"
 #include "G4eMuIonisation.hh"
-#include "G4ePhysicsList.hh"
+#include "SimG4Core/Geant4e/interface/G4ePhysicsList.hh"
 #include "G4ComptonScattering.hh"
 #include "G4GammaConversion.hh"
 #include "G4PhotoElectricEffect.hh"
@@ -38,7 +38,7 @@
 #include "G4Transportation.hh"
 
 //#include "G4ePhysListEmModel.hh"
-#include "G4eEnergyLossProcess.hh"
+#include "SimG4Core/Geant4e/interface/G4eEnergyLossProcess.hh"
 
 G4ePhysicsList::G4ePhysicsList():  G4VUserPhysicsList()
 {
@@ -122,7 +122,7 @@ void G4ePhysicsList::ConstructProcess()
 
 #include "G4MuIonisation.hh"
 
-#include "G4eMagneticFieldLimitsProcess.hh"
+#include "SimG4Core/Geant4e/interface/G4eMagneticFieldLimitsProcess.hh"
 
 void G4ePhysicsList::ConstructEM()
 {

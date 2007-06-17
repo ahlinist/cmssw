@@ -1,5 +1,5 @@
 
-#include "G4eTrajParamFree.hh"
+#include "SimG4Core/Geant4e/interface/G4eTrajParamFree.hh"
 #include "G4ThreeVector.hh"
 #include <iomanip>
 
