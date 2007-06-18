@@ -2,7 +2,7 @@
 // no annihilation
 
 #include "globals.hh"
-#include "G4eMuIonisation.hh"
+#include "SimG4Core/Geant4e/interface/G4eMuIonisation.hh"
 #include "SimG4Core/Geant4e/interface/G4ePhysicsList.hh"
 #include "G4ComptonScattering.hh"
 #include "G4GammaConversion.hh"
