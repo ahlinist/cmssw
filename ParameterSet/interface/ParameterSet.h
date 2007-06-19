@@ -78,6 +78,9 @@ namespace edm {
 
     std::vector<std::string> getParameterNames() const;
 
+    /// checks if a parameter exists
+    bool exists(const std::string & parameterName) const;
+
     template <class T>
     std::vector<std::string> getParameterNamesForType(bool trackiness = 
 						      true) const

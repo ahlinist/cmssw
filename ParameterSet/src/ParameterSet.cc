@@ -279,6 +279,13 @@ namespace edm {
     return returnValue;
   }
 
+
+  bool ParameterSet::exists(const std::string & parameterName) const
+  {
+    return( tbl_.find(parameterName) != tbl_.end() );
+  }
+
+
   ParameterSet
   ParameterSet::trackedPart() const
   {
