@@ -235,6 +235,8 @@ void testps::mapByIdTest()
   edm::ParameterSet a;
   a.addParameter<double>("pi",3.14);
   a.addParameter<std::string>("name", "Bub");
+  CPPUNIT_ASSERT( a.exists("pi") );
+  CPPUNIT_ASSERT( !a.exists("pie") );
 
   edm::ParameterSet b;
   b.addParameter<bool>("b", false);
