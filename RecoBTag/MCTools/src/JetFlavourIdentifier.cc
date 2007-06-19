@@ -15,23 +15,26 @@ using namespace math;
 
 JetFlavourIdentifier::JetFlavourIdentifier(const edm::ParameterSet& iConfig)
 {
-  moduleLabel = iConfig.getParameter<std::string>( "mcSource" );
-  fillPartons =  iConfig.getParameter<bool>("fillPartons");
-  fillHeavyHadrons =  iConfig.getParameter<bool>("fillHeavyHadrons");
-  fillLeptons =  iConfig.getParameter<bool>("fillLeptons");
-  coneSizeToAssociate =  iConfig.getParameter<double>("coneSizeToAssociate");
-  physDefinition =  iConfig.getParameter<bool>("physicsDefinition");
-  rejectBCSplitting =  iConfig.getParameter<bool>("rejectBCSplitting");
-  vector<string> veto = iConfig.getParameter< vector<string> >("vetoFlavour");
-  vetoB = false;vetoC = false;vetoL = false;vetoG = false;
+  moduleLabel           = iConfig.getParameter<std::string>( "mcSource" );
+  fillPartons           = iConfig.getParameter<bool>("fillPartons");
+  fillHeavyHadrons      = iConfig.getParameter<bool>("fillHeavyHadrons");
+  fillLeptons           = iConfig.getParameter<bool>("fillLeptons");
+  coneSizeToAssociate   = iConfig.getParameter<double>("coneSizeToAssociate");
+  physDefinition        = iConfig.getParameter<bool>("physicsDefinition");
+  rejectBCSplitting     = iConfig.getParameter<bool>("rejectBCSplitting");
+  vector<string> veto   = iConfig.getParameter< vector<string> >("vetoFlavour");
+  vetoB = false;
+  vetoC = false;
+  vetoL = false;
+  vetoG = false;
   for (vector<string>::iterator iVeto = veto.begin(); iVeto!=veto.end(); ++iVeto)
   {
-    if (*iVeto=="B") vetoB = true;
-    if (*iVeto=="C") vetoC = true;
-    if (*iVeto=="UDS") vetoL = true;
-    if (*iVeto=="G") vetoG = true;
+    if (*iVeto == "B")   vetoB = true;
+    if (*iVeto == "C")   vetoC = true;
+    if (*iVeto == "UDS") vetoL = true;
+    if (*iVeto == "G")   vetoG = true;
   }
-  generated_event=0;
+  generated_event = 0;
 }
 
 void JetFlavourIdentifier::readEvent(const edm::Event& iEvent)
@@ -145,22 +148,24 @@ void JetFlavourIdentifier::fillInfo ( const HepMC::GenEvent * event ) {
   
 }
 
-JetFlavour  JetFlavourIdentifier::identifyBasedOnPartons (const Jet & theJet) const
+JetFlavour JetFlavourIdentifier::identifyBasedOnPartons (const Jet & theJet) const
 {
-  JetFlavour jetFlavour = basicIdentityBasedOnPartons(theJet.p4(), coneSizeToAssociate);//Hep3Vector(theJet.p4().x(),theJet.p4().y(),theJet.p4().z())
-  if (physDefinition) fillPhysicsDefinition(jetFlavour, theJet.p4());
-    else fillAlgorithmicDefinition(jetFlavour);
-  if ( jetFlavour.flavour()==5   && vetoB ) jetFlavour.flavour(0);
-  if ( jetFlavour.flavour()==4   && vetoC ) jetFlavour.flavour(0);
-  if ( jetFlavour.flavour()==1   && vetoL ) jetFlavour.flavour(0);
-  if ( jetFlavour.flavour()==2   && vetoL ) jetFlavour.flavour(0);
-  if ( jetFlavour.flavour()==3   && vetoL ) jetFlavour.flavour(0);
-  if ( jetFlavour.flavour()==21  && vetoG ) jetFlavour.flavour(0);
+  JetFlavour jetFlavour = basicIdentityBasedOnPartons(theJet.p4(), coneSizeToAssociate);
+  if (physDefinition) 
+    fillPhysicsDefinition(jetFlavour, theJet.p4());
+  else 
+    fillAlgorithmicDefinition(jetFlavour);
+  if ( jetFlavour.flavour() ==  1 && vetoL ) jetFlavour.flavour(0);
+  if ( jetFlavour.flavour() ==  2 && vetoL ) jetFlavour.flavour(0);
+  if ( jetFlavour.flavour() ==  3 && vetoL ) jetFlavour.flavour(0);
+  if ( jetFlavour.flavour() ==  4 && vetoC ) jetFlavour.flavour(0);
+  if ( jetFlavour.flavour() ==  5 && vetoB ) jetFlavour.flavour(0);
+  if ( jetFlavour.flavour() == 21 && vetoG ) jetFlavour.flavour(0);
   return jetFlavour;
 }
 
 
-JetFlavour  JetFlavourIdentifier::basicIdentityBasedOnPartons
+JetFlavour JetFlavourIdentifier::basicIdentityBasedOnPartons
 	(const XYZTLorentzVector & jet4Vec, const double coneSize) const
 {
   JetFlavour jetFlavour;
@@ -229,7 +234,7 @@ JetFlavour  JetFlavourIdentifier::basicIdentityBasedOnPartons
 	
 	
 	// main flavour is given to Parton with highest |p|
-	if ( pAbsParton     > jetFlavour.pMainParton()          ) {
+	if ( pAbsParton > jetFlavour.pMainParton() ) {
 	  jetFlavour.mainFlavour     (theFlavour);//cout <<"P "<<jetFlavour.pMainParton()<<endl;
 	  jetFlavour.pMainParton     (pAbsParton);
 	  jetFlavour.vec4MainParton  (itP->fourVector());	  
@@ -245,19 +250,19 @@ JetFlavour  JetFlavourIdentifier::basicIdentityBasedOnPartons
 	}
 // 	cout << jetFlavour.heaviestFlavour()<<" ";
 	
-	if ( deltaR     < jetFlavour.deltaRClosestParton() ) {
+	if ( deltaR < jetFlavour.deltaRClosestParton() ) {
 	  jetFlavour.minimumDeltaRFlavour(theFlavour);
 	  jetFlavour.pClosestParton      (pAbsParton);	  
 	  jetFlavour.vec4ClosestParton   (itP->fourVector());	  
 	  jetFlavour.deltaRClosestParton (deltaR);
 	}
 
-	if ( theFlavour == 1 ) nDown++; 
-	if ( theFlavour == 2 ) nUp++; 
-	if ( theFlavour == 3 ) nStrange++; 
-	if ( theFlavour == 4 ) nCharm++; 
-	if ( theFlavour == 5 ) nBottom++; 
-	if ( theFlavour == 21) nGluon++; 
+	if ( theFlavour ==  1 ) nDown++; 
+	if ( theFlavour ==  2 ) nUp++; 
+	if ( theFlavour ==  3 ) nStrange++; 
+	if ( theFlavour ==  4 ) nCharm++; 
+	if ( theFlavour ==  5 ) nBottom++; 
+	if ( theFlavour == 21 ) nGluon++; 
       
       } // end deltaR-if 
     } // end primary-if 
@@ -308,17 +313,17 @@ void JetFlavourIdentifier::fillAlgorithmicDefinition(JetFlavour & jetFlavour) co
   // if the heaviest flavour is a b or c, give that one
   if ( jetFlavour.heaviestFlavour() == 5 || jetFlavour.heaviestFlavour() == 4 ) {
     jetFlavour.flavour(jetFlavour.heaviestFlavour() );
-    jetFlavour.underlyingParton4Vec(jetFlavour.vec4SummedPartons() );
   }
   else {
     // take the main parton
     jetFlavour.flavour(jetFlavour.mainFlavour() );
-    jetFlavour.underlyingParton4Vec(jetFlavour.vec4SummedPartons() );
   }
+  jetFlavour.underlyingParton4Vec(jetFlavour.vec4SummedPartons() );
 }
 
-void JetFlavourIdentifier::fillPhysicsDefinition(JetFlavour & jetFlavour,
-	const math::XYZTLorentzVector & jet4Vec) const
+void JetFlavourIdentifier::fillPhysicsDefinition(
+    JetFlavour & jetFlavour,
+    const math::XYZTLorentzVector & jet4Vec) const
 {
   int flavour = jetFlavour.initialFlavour() ;
   // clean: do not accept if final state heavy partons from many sources -> take bigger cone here

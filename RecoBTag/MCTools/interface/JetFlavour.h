@@ -80,47 +80,47 @@ public:
   void flavour(const int a) {m_flavour = a;}
   void underlyingParton4Vec(const math::XYZTLorentzVector a) {m_underlyingParton4Vec = a;}
 
-  void mainFlavour 		 (const int a)  {m_mainFlavour = a; }
-  void heaviestFlavour		 (const int a)  {m_heaviestFlavour = a; }
-  void minimumDeltaRFlavour	 (const int a)  {m_minimumDeltaRFlavour = a; }
+  void mainFlavour              (const int a)    { m_mainFlavour = a; }
+  void heaviestFlavour          (const int a)    { m_heaviestFlavour = a; }
+  void minimumDeltaRFlavour     (const int a)    { m_minimumDeltaRFlavour = a; }
 
-  void mainOrigFlavour		 (const int a)  {m_mainOrigFlavour = a; }
-  void originFlavour		 (const int a)  {m_originFlavour = a; }
-  void initialFlavour		 (const int a)  {m_initialFlavour = a; }
+  void mainOrigFlavour          (const int a)    { m_mainOrigFlavour = a; }
+  void originFlavour            (const int a)    { m_originFlavour = a; }
+  void initialFlavour           (const int a)    { m_initialFlavour = a; }
 
-  void initialPartonSplitsToC	(const bool a)  {m_initialPartonSplitsToC = a; }
-  void initialPartonSplitsToB	(const bool a)  {m_initialPartonSplitsToB = a; }
+  void initialPartonSplitsToC   (const bool a)   { m_initialPartonSplitsToC = a; }
+  void initialPartonSplitsToB   (const bool a)   { m_initialPartonSplitsToB = a; }
 
-  void pMainParton  	      (const double a)  {m_pMainParton = a; }
-  void pClosestParton	      (const double a)  {m_pClosestParton = a; }
-  void pHeaviestParton	      (const double a)  {m_pHeaviestParton = a; }
-  void deltaRMainParton	      (const double a)  {m_deltaRMainParton = a; }
-  void deltaRClosestParton        (const double a)  {m_deltaRClosestParton = a; }
-  void vec4MainParton      (const math::XYZTLorentzVector a)  {m_Vec4MainParton = a; }
-  void vec4ClosestParton   (const math::XYZTLorentzVector a)  {m_Vec4ClosestParton = a; }
-  void vec4HeaviestParton  (const math::XYZTLorentzVector a)  {m_Vec4HeaviestParton = a; }
+  void pMainParton              (const double a) { m_pMainParton = a; }
+  void pClosestParton           (const double a) { m_pClosestParton = a; }
+  void pHeaviestParton          (const double a) { m_pHeaviestParton = a; }
+  void deltaRMainParton         (const double a) { m_deltaRMainParton = a; }
+  void deltaRClosestParton      (const double a) { m_deltaRClosestParton = a; }
+  void vec4MainParton           (const math::XYZTLorentzVector a)  {m_Vec4MainParton = a; }
+  void vec4ClosestParton        (const math::XYZTLorentzVector a)  {m_Vec4ClosestParton = a; }
+  void vec4HeaviestParton       (const math::XYZTLorentzVector a)  {m_Vec4HeaviestParton = a; }
 
-  void vec4SummedPartons   (const math::XYZTLorentzVector a)  {m_Vec4SummedPartons = a; }
-  void vec4OriginParton    (const math::XYZTLorentzVector a)  {m_Vec4OriginParton = a; }
+  void vec4SummedPartons        (const math::XYZTLorentzVector a)  {m_Vec4SummedPartons = a; }
+  void vec4OriginParton         (const math::XYZTLorentzVector a)  {m_Vec4OriginParton = a; }
 
   // if based on heavy hadrons
 
-  void hasDown		       (const bool a)  {m_hasDown = a; }
-  void hasUp 		       (const bool a)  {m_hasUp = a; }
-  void hasStrange		       (const bool a)  {m_hasStrange = a; }
-  void hasCharm		       (const bool a)  {m_hasCharm = a; }
-  void hasBottom		       (const bool a)  {m_hasBottom = a; }
-  void hasGluon		       (const bool a)  {m_hasGluon = a; }
+  void hasDown          (const bool a)  { m_hasDown = a; }
+  void hasUp            (const bool a)  { m_hasUp = a; }
+  void hasStrange       (const bool a)  { m_hasStrange = a; }
+  void hasCharm         (const bool a)  { m_hasCharm = a; }
+  void hasBottom        (const bool a)  { m_hasBottom = a; }
+  void hasGluon         (const bool a)  { m_hasGluon = a; }
 
-  void nDown			 (const int a)  {m_nDown = a; }
-  void nUp 			 (const int a)  {m_nUp = a; }
-  void nStrange			 (const int a)  {m_nStrange = a; }
-  void nCharm			 (const int a)  {m_nCharm = a; }
-  void nBottom			 (const int a)  {m_nBottom = a; }
-  void nGluon			 (const int a)  {m_nGluon = a; }
+  void nDown            (const int a)   { m_nDown = a; }
+  void nUp              (const int a)   { m_nUp = a; }
+  void nStrange         (const int a)   { m_nStrange = a; }
+  void nCharm           (const int a)   { m_nCharm = a; }
+  void nBottom          (const int a)   { m_nBottom = a; }
+  void nGluon           (const int a)   { m_nGluon = a; }
 
-  void numberOfSources		 (const int a)  {m_numberOfSources = a; }
-  void flavourSources   (const std::vector<int> a)  {m_flavourSources = a; }
+  void numberOfSources  (const int a)   { m_numberOfSources = a; }
+  void flavourSources   (const std::vector<int> a) { m_flavourSources = a; }
 
 private:
 
