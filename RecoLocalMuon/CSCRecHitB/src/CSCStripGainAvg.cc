@@ -60,8 +60,8 @@ float CSCStripGainAvg::getStripGainAvg() {
 
   // Avg Gain has been around ~7.5 so far in MTCC:  so can do consistency test
   if (gain_avg < 6.0) {
-    std::cout << "[CSCMakeStripDigiCollections] Check global CSC strip gain: "
-              << gain_avg << "  should be ~7.5 " << std::endl;
+    LogTrace("CSC") << "[CSCMakeStripDigiCollections] Check global CSC strip gain: "
+		    << gain_avg << "  should be ~7.5 ";
     gain_avg = 7.5;
   }
   return gain_avg;
