@@ -3,7 +3,7 @@
 #include "EgammaAnalysis/EgammaEfficiencyProducers/interface/EmObjectProducer.h"
 #include "EgammaAnalysis/EgammaEfficiencyAlgos/interface/EmObjectAlgo.h"
 #include "EgammaAnalysis/EgammaEfficiencyAlgos/interface/TagEmObjectAlgo.h"
-#include "EgammaAnalysis/EgammaEfficiencyAlgos/interface/ProbeEmObjectAlgo.h"
+#include "EgammaAnalysis/EgammaEfficiencyAlgos/interface/EcalTrackEmObjectAlgo.h"
 #include "EgammaAnalysis/EgammaEfficiencyAlgos/interface/McEmObjectAlgo.h"
 #include "AnalysisDataFormats/ElectronEfficiency/interface/EmObjectFwd.h"
 #include <string>
@@ -24,9 +24,9 @@ void EmObjectProducer::beginJob(const edm::EventSetup &setup)
       std::auto_ptr<EmObjectAlgo> pt(new TagEmObjectAlgo());
       algo_ = pt;
    }
-   else if(algoName == "ProbeEmObjectAlgo")
+   else if(algoName == "EcalTrackEmObjectAlgo")
    {
-      std::auto_ptr<EmObjectAlgo> pt(new ProbeEmObjectAlgo());
+      std::auto_ptr<EmObjectAlgo> pt(new EcalTrackEmObjectAlgo());
       algo_ = pt;
    }
    else if(algoName == "McEmObjectAlgo")
