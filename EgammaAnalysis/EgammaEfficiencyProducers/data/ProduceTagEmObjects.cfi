@@ -1,8 +1,12 @@
+include "EgammaAnalysis/ElectronIDProducers/data/electronId.cfi"
+
 module tagEmObjects = EmObjectProducer {
    string AlgorithmName = "TagEmObjectAlgo"
 
    PSet AlgoParams = {
       string InputProducer = "pixelMatchGsfElectrons"
+      string ElectronIDAssociationProducer = "electronId"
    }
 }
 
+sequence tagEmObjectsSequence = {electronId, tagEmObjects}

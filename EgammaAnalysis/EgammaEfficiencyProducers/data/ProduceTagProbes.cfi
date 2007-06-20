@@ -1,0 +1,12 @@
+#include "EgammaAnalysis/EgammaEfficiencyProducers/data/ProduceEcalTrackEmObjects.cfi"
+#include "EgammaAnalysis/EgammaEfficiencyProducers/data/ProduceTagEmObjects.cfi"
+
+module tagProbes = TagProbeProducer {
+   string TagProducer = "tagEmObjects"
+   string ProbeProducer = "ecalTrackEmObjects"
+   double MassWindowMin = 80.0
+   double MassWindowMax = 120.0
+}
+
+sequence produceTagProbes = {tagEmObjectsSequence, ecalTrackEmObjects, tagProbes}
+
