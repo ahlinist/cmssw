@@ -14,6 +14,7 @@ class TagEmObjectAlgo : public EmObjectAlgo
 
    protected:
       std::string _inputProducer;
+      std::string _electronIDAssocProducer;
 };
 
 #endif
