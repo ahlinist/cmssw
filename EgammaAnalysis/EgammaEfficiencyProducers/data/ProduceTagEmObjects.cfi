@@ -1,5 +1,3 @@
-include "EgammaAnalysis/ElectronIDProducers/data/electronId.cfi"
-
 module tagEmObjects = EmObjectProducer {
    string AlgorithmName = "TagEmObjectAlgo"
 
@@ -9,4 +7,3 @@ module tagEmObjects = EmObjectProducer {
    }
 }
 
-sequence tagEmObjectsSequence = {electronId, tagEmObjects}
