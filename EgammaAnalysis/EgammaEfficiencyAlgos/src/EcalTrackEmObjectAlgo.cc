@@ -14,6 +14,11 @@ void EcalTrackEmObjectAlgo::initialise(const edm::ParameterSet &params)
    eeSuperClusterProducer_ = params.getParameter<std::string>("EESuperClusterProducer");
    ebSuperClusterProducer_ = params.getParameter<std::string>("EBSuperClusterProducer");
    trackAssociation_ = params.getParameter<bool>("TrackAssociation");
+   minSuperClusterEnergy_ = params.getParameter<double>("MinSuperClusterEnergy");
+   if(trackAssociation_)
+   {
+      minTrackPt_ = params.getParameter<double>("MinTrackPt");
+   }
 }
 
 void EcalTrackEmObjectAlgo::run(const edm::Event &event, EgEff::EmObjectCollection &outCol)
@@ -55,26 +60,30 @@ void EcalTrackEmObjectAlgo::processSCCollection(const math::XYZPoint &pvPos, edm
       // Get the SC seed
       const reco::SuperClusterRef seed = edm::Ref<reco::SuperClusterCollection>(scHandle, i);
 
-      // Get the index of highest pT track with pT > 10GeV and dR < 0.2
-      if(trackAssociation_)
+      // Check SC is of high enough energy
+      if(seed->energy() > minSuperClusterEnergy_)
       {
-	 int trackFound = findTrack(seed, trackHandle.product());
-         if(trackFound != -1)
-	 {
-	    const reco::TrackRef track = edm::Ref<reco::TrackCollection>(trackHandle, trackFound);
-	    math::XYZTLorentzVector p4 = initP4(pvPos, seed);
+         // Get the index of highest pT track with pT > 10GeV and dR < 0.2
+         if(trackAssociation_)
+         {
+	    int trackFound = findTrack(seed, trackHandle.product());
+            if(trackFound != -1)
+	    {
+	       const reco::TrackRef track = edm::Ref<reco::TrackCollection>(trackHandle, trackFound);
+	       math::XYZTLorentzVector p4 = initP4(pvPos, seed);
+	       EgEff::EmObject obj(0, p4, pvPos);
+	       obj.setTrack(track);
+	       obj.setSuperCluster(seed);
+	       outCol.push_back(obj);
+	    }
+         }
+         else
+         {
+            math::XYZTLorentzVector p4 = initP4(pvPos, seed);
 	    EgEff::EmObject obj(0, p4, pvPos);
-	    obj.setTrack(track);
 	    obj.setSuperCluster(seed);
 	    outCol.push_back(obj);
-	 }
-      }
-      else
-      {
-         math::XYZTLorentzVector p4 = initP4(pvPos, seed);
-	 EgEff::EmObject obj(0, p4, pvPos);
-	 obj.setSuperCluster(seed);
-	 outCol.push_back(obj);
+         }
       }
    }
 }
