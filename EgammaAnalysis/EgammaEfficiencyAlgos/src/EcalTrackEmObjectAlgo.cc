@@ -1,4 +1,4 @@
-#include "EgammaAnalysis/EgammaEfficiencyAlgos/interface/ProbeEmObjectAlgo.h"
+#include "EgammaAnalysis/EgammaEfficiencyAlgos/interface/EcalTrackEmObjectAlgo.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
@@ -7,7 +7,7 @@
 #include "DataFormats/EgammaReco/interface/SuperCluster.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
 
-void ProbeEmObjectAlgo::initialise(const edm::ParameterSet &params)
+void EcalTrackEmObjectAlgo::initialise(const edm::ParameterSet &params)
 {
    trackProducer_ = params.getParameter<std::string>("TrackProducer");
    vertexProducer_ = params.getParameter<std::string>("VertexProducer");
@@ -16,7 +16,7 @@ void ProbeEmObjectAlgo::initialise(const edm::ParameterSet &params)
    trackAssociation_ = params.getParameter<bool>("TrackAssociation");
 }
 
-void ProbeEmObjectAlgo::run(const edm::Event &event, EgEff::EmObjectCollection &outCol)
+void EcalTrackEmObjectAlgo::run(const edm::Event &event, EgEff::EmObjectCollection &outCol)
 {
   // Get the input collections
    edm::Handle<reco::VertexCollection> vertexHandle;
@@ -47,7 +47,7 @@ void ProbeEmObjectAlgo::run(const edm::Event &event, EgEff::EmObjectCollection &
    }
 }
 
-void ProbeEmObjectAlgo::processSCCollection(const math::XYZPoint &pvPos, edm::Handle<reco::SuperClusterCollection> &scHandle, edm::Handle<reco::TrackCollection> &trackHandle, EgEff::EmObjectCollection &outCol)
+void EcalTrackEmObjectAlgo::processSCCollection(const math::XYZPoint &pvPos, edm::Handle<reco::SuperClusterCollection> &scHandle, edm::Handle<reco::TrackCollection> &trackHandle, EgEff::EmObjectCollection &outCol)
 {
    const reco::SuperClusterCollection *scs = scHandle.product();
    for(unsigned int i = 0; i < scs->size(); ++i)
@@ -79,7 +79,7 @@ void ProbeEmObjectAlgo::processSCCollection(const math::XYZPoint &pvPos, edm::Ha
    }
 }
 
-math::XYZTLorentzVector ProbeEmObjectAlgo::initP4(const math::XYZPoint &pvPos, const reco::SuperClusterRef &sc)
+math::XYZTLorentzVector EcalTrackEmObjectAlgo::initP4(const math::XYZPoint &pvPos, const reco::SuperClusterRef &sc)
 {
    math::XYZVector scPos(sc->x(), sc->y(), sc->z());
    math::XYZVector pvPosVec(pvPos.x(), pvPos.y(), pvPos.z());
@@ -88,7 +88,7 @@ math::XYZTLorentzVector ProbeEmObjectAlgo::initP4(const math::XYZPoint &pvPos, c
    return math::XYZTLorentzVector(objPosition.x() * scale, objPosition.y() * scale, objPosition.z() * scale, sc->energy());
 }
 
-int ProbeEmObjectAlgo::findTrack(const reco::SuperClusterRef &seed, const reco::TrackCollection *tracks)
+int EcalTrackEmObjectAlgo::findTrack(const reco::SuperClusterRef &seed, const reco::TrackCollection *tracks)
 {
    int retTrack = -1;
    
@@ -112,14 +112,14 @@ int ProbeEmObjectAlgo::findTrack(const reco::SuperClusterRef &seed, const reco::
    return retTrack;
 }
 
-double ProbeEmObjectAlgo::dPhi(double phi1, double phi2)
+double EcalTrackEmObjectAlgo::dPhi(double phi1, double phi2)
 {
    double diff = fabs(phi2 - phi1);
    double corr = 2*acos(-1.) - diff;
    if (diff < acos(-1.)){ return diff;} else { return corr;}
 }
 
-double ProbeEmObjectAlgo::dR(double eta1, double phi1, double eta2, double phi2)
+double EcalTrackEmObjectAlgo::dR(double eta1, double phi1, double eta2, double phi2)
 {
    return sqrt(((eta1-eta2)*(eta1-eta2)) + (dPhi(phi1, phi2) * dPhi(phi1, phi2)));
 }
