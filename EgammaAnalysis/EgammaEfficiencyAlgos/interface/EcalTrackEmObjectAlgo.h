@@ -12,8 +12,8 @@
 class EcalTrackEmObjectAlgo : public EmObjectAlgo
 {
    public:
-      virtual ~ProbeEmObjectAlgo(){};
-      explicit ProbeEmObjectAlgo(){};
+      virtual ~EcalTrackEmObjectAlgo(){};
+      explicit EcalTrackEmObjectAlgo(){};
 
       virtual void initialise(const edm::ParameterSet&);
       virtual void run(const edm::Event&, EgEff::EmObjectCollection&);
