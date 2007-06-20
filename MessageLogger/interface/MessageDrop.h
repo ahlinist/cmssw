@@ -42,6 +42,9 @@
 //
 //  5  mf 2/22/07	jobreport_name to have a way to convey content
 //			of jobreport option from cmsRun to MessageLogger class
+//
+//  6  mf 6/18/07	jobMode to have a way to convey choice of hardwired
+//			MessageLogger defaults
 
 // user include files
 
@@ -53,6 +56,7 @@ private:
   : moduleName ("")
   , runEvent("pre-events")
   , jobreport_name()					// change log 5
+  , jobMode("")						// change log 6
   , debugEnabled(true) 					// change log 1
   , infoEnabled(true) 					// change log 3
   , warningEnabled(true)				// change log 3
@@ -62,6 +66,7 @@ public:
   std::string moduleName;
   std::string runEvent;
   std::string jobreport_name;				// change log 5
+  std::string jobMode;					// change log 6
   bool debugEnabled;
   bool infoEnabled;
   bool warningEnabled;
