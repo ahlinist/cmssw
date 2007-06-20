@@ -367,7 +367,7 @@ void CSCRecHit2DInALayer::correctForCrosstalk( const CSCStripDigiCollection::Ran
     if( thePulseHeightMap[istrip].y() > 0 ) {
       // find the digis corresponding to this strip and nearest neighbors.
 	  for ( CSCStripDigiCollection::const_iterator it = rstripd.first; it != rstripd.second; ++it ) {
-        CSCStripDigi digi = *it;
+        const CSCStripDigi& digi = *it;
         unsigned int jstrip = digi.getStrip();
         if( jstrip == istrip ) {
           // add back in what got removed
