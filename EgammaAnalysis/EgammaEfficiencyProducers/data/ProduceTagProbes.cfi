@@ -1,3 +1,4 @@
+#include "EgammaAnalysis/ElectronIDProducers/data/electronId.cfi"
 #include "EgammaAnalysis/EgammaEfficiencyProducers/data/ProduceEcalTrackEmObjects.cfi"
 #include "EgammaAnalysis/EgammaEfficiencyProducers/data/ProduceTagEmObjects.cfi"
 
@@ -8,5 +9,5 @@ module tagProbes = TagProbeProducer {
    double MassWindowMax = 120.0
 }
 
-sequence produceTagProbes = {tagEmObjectsSequence, ecalTrackEmObjects, tagProbes}
+sequence produceTagProbes = {electronId, tagEmObjects, ecalTrackEmObjects, tagProbes}
 

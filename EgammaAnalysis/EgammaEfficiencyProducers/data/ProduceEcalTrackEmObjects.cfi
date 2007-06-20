@@ -7,6 +7,8 @@ module ecalTrackEmObjects = EmObjectProducer {
       string EESuperClusterProducer = "correctedEndcapSuperClustersWithPreshower"
       string EBSuperClusterProducer = "correctedHybridSuperClusters"
       bool TrackAssociation = true
+      double MinSuperClusterEnergy = 10.0
+      double MinTrackPt = 10.0
    }
 }
 
