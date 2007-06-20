@@ -36,6 +36,7 @@ void TagEmObjectAlgo::run(const edm::Event &event, EgEff::EmObjectCollection &ou
    catch(cms::Exception &ex)
    {
       edm::LogError("TagEmObjectAlgo") << "Error! Can't get collection " << _electronIDAssocProducer;
+      throw ex;
    }
 
    // Loop over electrons
