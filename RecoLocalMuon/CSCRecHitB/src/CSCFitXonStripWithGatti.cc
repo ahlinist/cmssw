@@ -66,7 +66,7 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCDetId& id, const CSCLayer* 
   stripWidth = sWidth;
   initChamberSpecs();
 
-  int ring = id.ring();
+  //  int ring = id.ring();
 
   // Initialize output parameters just in case the fit fails  
   xGatti = xCenterStrip;  
