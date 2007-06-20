@@ -5,7 +5,8 @@
    <class name="edm::Ref<std::vector<EgEff::EmObject>, EgEff::EmObject, edm::refhelper::FindUsingAdvance<std::vector<EgEff::EmObject>, EgEff::EmObject> >" />
    <class name="edm::RefProd<std::vector<EgEff::EmObject> >" />
    <class name="edm::RefVector<std::vector<EgEff::EmObject>, EgEff::EmObject, edm::refhelper::FindUsingAdvance<std::vector<EgEff::EmObject>, EgEff::EmObject> >"/>
-
+   
+   <class name="edm::helpers::KeyVal<edm::RefProd<std::vector<EgEff::EmObject> >,edm::RefProd<std::vector<EgEff::EmObject> > >" />
    <class name="edm::AssociationMap<edm::OneToMany<std::vector<EgEff::EmObject>, std::vector<EgEff::EmObject>, unsigned int> >">
      <field name="transientMap_" transient="true" />
    </class>
