@@ -1,0 +1,12 @@
+module ecalTrackEmObjects = EmObjectProducer {
+   string AlgorithmName = "EcalTrackEmObjectAlgo"
+
+   PSet AlgoParams = {
+      string TrackProducer = "ctfWithMaterialTracks"
+      string VertexProducer = "pixelVertices"
+      string EESuperClusterProducer = "correctedEndcapSuperClustersWithPreshower"
+      string EBSuperClusterProducer = "correctedHybridSuperClusters"
+      bool TrackAssociation = true
+   }
+}
+
