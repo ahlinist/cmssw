@@ -129,7 +129,7 @@ namespace
   template <class T> void kill_and_clear(T*& p) { delete p; p = 0; }
 }
 
-EventID   make_id() { return EventID(2112, 25, true); }
+EventID   make_id() { return EventID(2112, 25); }
 Timestamp make_timestamp() { return Timestamp(1); }
 
 template <class T>
@@ -339,6 +339,7 @@ void testEvent::setUp()
 				   preg,
                                    1,
                                    currentModuleDescription_->processConfiguration(),
+                                   true,
                                    processHistoryID);
 
   currentEvent_ = new Event(*principal_, *currentModuleDescription_);

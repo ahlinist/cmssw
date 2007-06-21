@@ -64,6 +64,7 @@ namespace edm {
     }
 
     LuminosityBlockAuxiliary const& aux() const {
+      aux_.processHistoryID_ = processHistoryID();
       return aux_;
     }
 

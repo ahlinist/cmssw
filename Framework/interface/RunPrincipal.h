@@ -33,6 +33,7 @@ namespace edm {
     ~RunPrincipal() {}
 
     RunAuxiliary const& aux() const {
+      aux_.processHistoryID_ = processHistoryID();
       return aux_;
     }
 

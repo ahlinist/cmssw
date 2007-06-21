@@ -57,7 +57,7 @@ void testEventGetRefBeforePut::failGetProductNotRegisteredTest() {
   edm::Timestamp fakeTime;
   edm::ProcessConfiguration pc("PROD", edm::ParameterSetID(), edm::getReleaseVersion(), edm::getPassID());
   boost::shared_ptr<edm::ProductRegistry const> pregc(preg);
-  edm::EventPrincipal ep(col, fakeTime, pregc, 1, pc);
+  edm::EventPrincipal ep(col, fakeTime, pregc, 1, pc, true);
   try {
      edm::ModuleDescription modDesc;
      modDesc.moduleName_ = "Blah";
@@ -108,7 +108,7 @@ void testEventGetRefBeforePut::getRefTest() {
   edm::Timestamp fakeTime;
   edm::ProcessConfiguration pc(processName, edm::ParameterSetID(), edm::getReleaseVersion(), edm::getPassID());
   boost::shared_ptr<edm::ProductRegistry const> pregc(preg);
-  edm::EventPrincipal ep(col, fakeTime, pregc, 1, pc);
+  edm::EventPrincipal ep(col, fakeTime, pregc, 1, pc, true);
 
   edm::RefProd<edmtest::IntProduct> refToProd;
   try {
