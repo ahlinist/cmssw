@@ -25,7 +25,7 @@
  </LogicalPart>
  <LogicalPart name="TIBHybrid2" category="unspecified">
   <rSolid name="tibmodpar:TIBHybrid"/>
-  <rMaterial name="tibmaterial:TIB_ele3"/>
+  <rMaterial name="tibtidcommonmaterial:TIBTID_ele3"/>
  </LogicalPart>
  <LogicalPart name="TIBLedge2" category="unspecified">
   <rSolid name="tibmodule2:TIBLedge2"/>

@@ -58,7 +58,7 @@
 <LogicalPartSection label="tibmodule0.xml">
  <LogicalPart name="TIBHybrid0" category="unspecified">
   <rSolid name="tibmodpar:TIBHybrid"/>
-  <rMaterial name="tibmaterial:TIB_ele1"/>
+  <rMaterial name="tibtidcommonmaterial:TIBTID_ele1"/>
  </LogicalPart>
  <LogicalPart name="TIBPA2" category="unspecified">
   <rSolid name="tibmodule0:TIBPA2"/>

@@ -541,7 +541,7 @@ Contains:
                  1 x MOLEX  24 pin [33.2x10.9x9.75 mm3] 1 x 3528.330 = 3528.330 mm3   1 x 24 =  24 pin
     TOTAL VOLUME = 11055.430 mm3
     TOTAL PIN #  = 348
-    From CCU in tib_module.in: 2x50 pins = 100 pins correspond to 0.037 mm3 ==> 0.037 mm3 x 348 / 100 = 0.129 mm3
+    From CCU in tibtid_common.in: 2x50 pins = 100 pins correspond to 0.037 mm3 ==> 0.037 mm3 x 348 / 100 = 0.129 mm3
     ... but it is better to calculate the fraction of plastic/bronze per connector
                  7 x ERNI   26 pin [missing info on material]         0.273 g Plastic, 0.1001 g Bronze = 1.911 g Plastic + 0.7007 g Bronze
                  1 x ERNI   50 pin [missing info on material]         0.525 g Plastic, 0.1925 g Bronze = 0.525 g Plastic + 0.1925 g Bronze
@@ -562,7 +562,7 @@ Contains:
                       TOTAL PIN VOLUME = 24 x 2.542 mm3 = 61.008 mm3 = 0.061 cm3
                   TOTAL SOLDER VOLUME = 0.085155 +  0.061 = 0.146 cm3
 
-9) CCU [from tib_module.in: volume = 4.949 cm3, material = "TIB_CCUM"]
+9) CCU [from tibtid_common.in: volume = 4.949 cm3, material = "TIBTID_CCUM"]
 
 10-17) Optohybrid (two copies per primary DOHM, taken from tib_module.in TIB_ICC1 and TIB_ICC2)
     FR4 22 x 30 mm, 400 um 
@@ -583,7 +583,7 @@ Contains:
 * 6 "Resistors (0805)"        "Carbon"           3.625E-3 11      ELE
 * 7 "Capacitors (0805)"       "Alumina"          3.625E-3 18      ELE
 * 8 "Solder ball"             "SMD_metal"        0.146     1      ELE
-* 9 "CCU"                     "TIB_CCUM"         4.949     1      ELE
+* 9 "CCU"                     "TIBTID_CCUM"      4.949     1      ELE
 * 10 "Optohybrid Substrate"   "T_FR4"            0.264     2      ELE
 * 11 "Optohybrid copper"      "Copper"           0.037     2      ELE
 * 12 "OH capacitors (0603)"   "Alumina"          1.15E-3  34      ELE

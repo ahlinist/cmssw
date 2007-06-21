@@ -35,6 +35,7 @@
  <Constant name="ConnectorT"    value="10.00*cm"/>
  <Constant name="ConnectorZ"    value="[Zv2]+[ConnectorT]/2"/>
  <Constant name="WheelFixRin"   value="46.20*cm"/>
+ <Constant name="WheelFixRout"  value="50.90*cm"/>
  <Constant name="WheelFixT"     value="0.70*cm"/>
  <Constant name="WheelFixW"     value="6.25*deg"/>
  <Constant name="WheelFixPhi"   value="90.0*deg"/>
@@ -79,7 +80,7 @@
  <Tubs name="TIDConnector"  rMin="[Rin2]"           rMax="[ConnectorRout]"
                             dz="[ConnectorT]/2"     startPhi="0*deg"
                             deltaPhi="360*deg"/>
- <Tubs name="TIDWheelFix"   rMin="[WheelFixRin]"    rMax="[WheelRout]"
+ <Tubs name="TIDWheelFix"   rMin="[WheelFixRin]"    rMax="[WheelFixRout]"
                             dz="[WheelFixT]/2"      startPhi="-[WheelFixW]/2"
                             deltaPhi="[WheelFixW]"/>
 </SolidSection>

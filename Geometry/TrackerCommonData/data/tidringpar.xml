@@ -3,37 +3,39 @@
 
 <ConstantsSection label="tidringpar.xml" eval="true">
  <Constant name="Rin"               value="22.50*cm"/>
- <Constant name="Rout"              value="51.20*cm"/>
+ <Constant name="Rout"              value="50.90*cm"/>
  <Constant name="RingT"             value="3.00*cm"/>
  <Constant name="StructureT"        value="0.80*cm"/>
- <Constant name="ICBW"              value="2.40*cm"/>
- <Constant name="ICBT"              value="0.06*cm"/>
- <Constant name="ICBZ"              value="0.43*cm"/>
+ <Constant name="ICBW"              value="2.50*cm"/>
+ <Constant name="ICBT"              value="0.12*cm"/>
+ <Constant name="ICBZ"              value="([StructureT]+[ICBT])/2"/>
  <Constant name="ICCH"              value="3.00*cm"/>
  <Constant name="ICCW"              value="6.00*cm"/>
  <Constant name="ICCT"              value="0.15*cm"/>
- <Constant name="ICCZ"              value="0.535*cm"/>
- <Constant name="ICBTailH"          value="3.20*cm"/>
- <Constant name="ICBTailT"          value="0.06*cm"/>
+ <Constant name="ICCZ"              value="([StructureT]+2*[ICBT]+[ICCT])/2"/>
+ <Constant name="ICBTailH"          value="3.26*cm"/>
+ <Constant name="ICBTailT"          value="[ICBT]"/>
  <Constant name="ICBTailTol"        value="0.05*cm"/>
  <Constant name="CoolW"             value="0.30*cm"/>
  <Constant name="CoolT"             value="0.30*cm"/>
- <Constant name="CoolZ"             value="0.61*cm"/>
+ <Constant name="CoolZ"             value="([StructureT]+2*[ICBT]+[CoolT])/2"/>
  <Constant name="CoolInsertH"       value="1.50*cm"/>
  <Constant name="CoolInsertW"       value="0.80*cm"/>
- <Constant name="CoolInsertT"       value="0.38*cm"/>
- <Constant name="CoolInsertZ"       value="0.95*cm"/>
+ <Constant name="CoolInsertT"       value="0.300*cm"/>
+ <Constant name="CoolInsertZ"       value="0.970*cm"/>
  <Constant name="CoolManifoldRin"   value="46.00*cm"/>
  <Constant name="CoolManifoldRout"  value="49.00*cm"/>
  <Constant name="CoolManifoldT"     value="0.70*cm"/>
  <Constant name="CoolManifoldW"     value="18.50*deg"/>
  <Constant name="ModuleZDS"         value="1.365*cm"/>
  <Constant name="ModuleZSS"         value="1.195*cm"/>
+ <Constant name="DOHMT"             value="0.22*cm"/>
+ <Constant name="DOHMZ"             value="([StructureT]+[DOHMT])/2"/>
 </ConstantsSection>
 
 <SolidSection label="tidringpar.xml">
  <Tubs name="TIDRing"                 rMin="[Rin]" 
-       rMax="[Rout]"                  dz="[RingT]/2" 
+       rMax="[tid:WheelRout]"         dz="[RingT]/2" 
        startPhi="0*deg"               deltaPhi="360.*deg"/>
  <Tubs name="TIDStructure"            rMin="[Rin]" 
        rMax="[Rout]"                  dz="[StructureT]/2" 

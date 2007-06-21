@@ -6,11 +6,11 @@
  <Constant name="Rmin"           value="35.300*cm"/>
  <Constant name="NPhi"           value="40"/>
  <Constant name="PhiOff"         value="0*deg"/>
- <Constant name="ICBR"           value="34.000*cm"/>
+ <Constant name="ICBR"           value="33.350*cm"/>
  <Constant name="CoolR1"         value="46.148*cm"/>
  <Constant name="CoolR2"         value="38.871*cm"/>
  <Constant name="CoolSide"       value="2"/>
- <Constant name="ICBTailR"       value="35.20*cm"/>
+ <Constant name="ICBTailR"       value="[ICBR]+[tidringpar:ICBW]/2"/>
  <Constant name="ICCRPos"        value="33.80*cm"/>
  <Constant name="RPos"           value="[Rmin]+([tidmodule2:FullHeight]+
            [tidmodpar:TopFrameHeight]+[tidmodpar:BottomFrameHeight]-
@@ -19,6 +19,12 @@
            [tidringpar:ICBTailTol])"/>
  <Constant name="ICBTailRPos"    value="([tidringpar:Rout]+[ICBTailR]-
            [tidringpar:ICBTailTol])/2"/>
+ <Constant name="DOHMrIn"        value="22.8*cm"/>
+ <Constant name="DOHMrMed"       value="26.5*cm"/>
+ <Constant name="DOHMrOut"       value="29.5*cm"/>
+ <Constant name="DOHMdPhiIn"     value="37*deg"/>
+ <Constant name="DOHMdPhiOut"    value="55*deg"/>
+ <Constant name="DOHMrOff"       value="-0.15*cm"/>
 </ConstantsSection>
 
 <SolidSection label="tidring2.xml">
@@ -33,6 +39,12 @@
  <Tubs name="TIDRing2Cool2"           rMin="([CoolR2]-[tidringpar:CoolW]/2)" 
        rMax="([CoolR2]+[tidringpar:CoolW]/2)" dz="[tidringpar:CoolT]/2" 
        startPhi="0*deg"               deltaPhi="360.*deg"/>
+ <Tubs name="TIDRing2DOHMIn"          rMin="[DOHMrIn]" 
+       rMax="[DOHMrMed]" dz="[tidringpar:DOHMT]/2" 
+       startPhi="-[DOHMdPhiIn]/2"     deltaPhi="[DOHMdPhiIn]"/>
+ <Tubs name="TIDRing2DOHMOut"         rMin="[DOHMrMed]" 
+       rMax="[DOHMrOut]" dz="[tidringpar:DOHMT]/2" 
+       startPhi="-[DOHMdPhiOut]/2"        deltaPhi="[DOHMdPhiOut]"/>
 </SolidSection>
 
 <LogicalPartSection label="tidring2.xml">
@@ -55,6 +67,14 @@
  <LogicalPart name="TIDRing2ICB" category="unspecified">
   <rSolid name="tidring2:TIDRing2ICB"/>
   <rMaterial name="tidmaterial:TID_ICB3"/>
+ </LogicalPart>
+ <LogicalPart name="TIDRing2DOHMIn" category="unspecified">
+  <rSolid name="tidring2:TIDRing2DOHMIn"/>
+  <rMaterial name="tidmaterial:TID_DOHM2"/>
+ </LogicalPart>
+ <LogicalPart name="TIDRing2DOHMOut" category="unspecified">
+  <rSolid name="tidring2:TIDRing2DOHMOut"/>
+  <rMaterial name="tidmaterial:TID_DOHM2"/>
  </LogicalPart>
  <LogicalPart name="TIDRing2Cool1" category="unspecified">
   <rSolid name="tidring2:TIDRing2Cool1"/>
@@ -108,13 +128,42 @@
   <String name="ChildName"    value="tidring2:TIDRing2ICBTail"/>
   <Numeric name="Radius"      value="[ICBTailRPos]"/>
   <Numeric name="Tilt"        value="-90*deg"/>
-  <Vector name="Phi" type="numeric" nEntries="4">
-   100.0*deg,         109.0*deg,          280.0*deg,         289.0*deg
+  <Vector name="Phi" type="numeric" nEntries="8">
+     0.0*deg,          45.0*deg,           54.0*deg,         171.0*deg,
+   180.0*deg,         225.0*deg,          234.0*deg,         351.0*deg
   </Vector>
-  <Vector name="ZPos" type="numeric" nEntries="4">
-  -[tidringpar:ICBZ], [tidringpar:ICBZ], -[tidringpar:ICBZ], [tidringpar:ICBZ]
+  <Vector name="ZPos" type="numeric" nEntries="8">
+   [tidringpar:ICBZ], -[tidringpar:ICBZ], [tidringpar:ICBZ], -[tidringpar:ICBZ],
+   [tidringpar:ICBZ], -[tidringpar:ICBZ], [tidringpar:ICBZ], -[tidringpar:ICBZ]
   </Vector>
 </Algorithm>
+
+
+<Algorithm name="track:DDTrackerPhiAlgo">
+  <rParent name="tidring2:TIDRing2"/>
+  <String name="ChildName"    value="tidring2:TIDRing2DOHMIn"/>
+  <Numeric name="Radius"      value="[tidring2:DOHMrOff]"/>
+  <Numeric name="Tilt"        value="0*deg"/>
+  <Vector name="Phi" type="numeric" nEntries="2">
+    22.5*deg,         202.5*deg
+  </Vector>
+  <Vector name="ZPos" type="numeric" nEntries="2">
+  -[tidringpar:DOHMZ], [tidringpar:DOHMZ]
+  </Vector>
+</Algorithm>
+<Algorithm name="track:DDTrackerPhiAlgo">
+  <rParent name="tidring2:TIDRing2"/>
+  <String name="ChildName"    value="tidring2:TIDRing2DOHMOut"/>
+  <Numeric name="Radius"      value="[tidring2:DOHMrOff]"/>
+  <Numeric name="Tilt"        value="0*deg"/>
+  <Vector name="Phi" type="numeric" nEntries="2">
+    22.5*deg,         202.5*deg
+  </Vector>
+  <Vector name="ZPos" type="numeric" nEntries="2">
+  -[tidringpar:DOHMZ], [tidringpar:DOHMZ]
+  </Vector>
+</Algorithm>
+
 
 <Algorithm name="track:DDTrackerAngular">
   <rParent name="tidring2:TIDStructure2"/>
