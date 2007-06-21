@@ -45,7 +45,7 @@
     [tidmodpar:ActiveThick],   [tidmodpar:ActiveThick] </Vector>
   <String name="ActiveRotation"     value="tidmodpar:90ZD"/>
   <String name="HybridName"         value="tidmodule1:TIDModule1Hybrid"/>
-  <String name="HybridMaterial"     value="tidmaterial:TID_ele2"/>
+  <String name="HybridMaterial"     value="tidmaterial:TID_ele1"/>
   <Numeric name="HybridHeight"      value="[tidmodpar:HybridHeight]"/>
   <Numeric name="HybridWidth"       value="[tidmodpar:HybridWidth]"/>
   <Numeric name="HybridThick"       value="[tidmodpar:HybridThick]"/>

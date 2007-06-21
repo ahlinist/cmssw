@@ -54,11 +54,26 @@
   <String name="ChildName"    value="tidring1:TIDRing1ICBTail"/>
   <Numeric name="Radius"      value="[tidring1:ICBTailRPos]"/>
   <Numeric name="Tilt"        value="-90*deg"/>
-  <Vector name="Phi" type="numeric" nEntries="4">
-   165.0*deg,         180.0*deg,          345.0*deg,         360.0*deg
+  <Vector name="Phi" type="numeric" nEntries="8">
+    12.5*deg,          62.5*deg,          102.5*deg,         152.5*deg,
+   192.5*deg,         242.5*deg,          282.5*deg,         332.5*deg
   </Vector>
-  <Vector name="ZPos" type="numeric" nEntries="4">
+  <Vector name="ZPos" type="numeric" nEntries="8">
+  -[tidringpar:ICBZ], [tidringpar:ICBZ], -[tidringpar:ICBZ], [tidringpar:ICBZ],
   -[tidringpar:ICBZ], [tidringpar:ICBZ], -[tidringpar:ICBZ], [tidringpar:ICBZ]
+  </Vector>
+</Algorithm>
+
+<Algorithm name="track:DDTrackerPhiAlgo">
+  <rParent name="tidring1b:TIDRing1B"/>
+  <String name="ChildName"    value="tidring1:TIDRing1DOHM"/>
+  <Numeric name="Radius"      value="[tidring1:DOHMrOff]"/>
+  <Numeric name="Tilt"        value="0*deg"/>
+  <Vector name="Phi" type="numeric" nEntries="2">
+    127.5*deg,         307.5*deg
+  </Vector>
+  <Vector name="ZPos" type="numeric" nEntries="2">
+  -[tidringpar:DOHMZ], [tidringpar:DOHMZ]
   </Vector>
 </Algorithm>
 

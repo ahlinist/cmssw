@@ -1,0 +1,169 @@
+TIB TID COMMON COMPONENTS
+=========================
+
+$$  This includes all the volumes that make up the TIB modules
+$$  as well as the electronics on the module string !
+
+
+Input file for mixture.f
+Start new mixtures with a '#' in the first column
+Start the components with a '*' in the first column
+You can type any kind of comment in as long as you don't start it
+with '#' or '*' !
+.....................................................................
+For mixture declaration: Name of Mixture, Name of GMIX for title file, 
+                         Monte Carlo Volume, MC Area
+For items in a compound: Item number, Comment, Material (has to be 
+                 written exactly as in material.input file), 
+                 Volume, Multiplicity, type
+      Type is one of the following:  SUP for support
+                                     SEN for sensitive volumes
+                                     CAB for cables
+                                     COL for cooling
+                                     ELE for electronics
+..................................................................... 
+
+
+... EM 18Jun07
+
+... This file should include materials common to TIB and TID
+... By now only CCUM is actually commonly defined
+... as MCvolume of TIB hybrids are twice those of TID hybrids 
+
+
+o TIB/TID CCU Board
+  --------------
+
+MCVolume:  7.4 x 2.2 x 0.304 mm 
+
+Nothing is really know about the cold ledge. 
+For the time being, just smear it over the full volume !
+
+CCUM board: FR4 32 x 22 x 1 mm
+4 layer Cu 17 um, 50 % occ
+CCU in plastic housing, 15 x 15 x 1mm
+196 solder "balls" diameter 0.5 mm
+2 more plastic ship carriers, 7 x 7 x 0.3 mm
+4 caps, half size of 0402
+8 R     "   
+Connectors: 2 pairs QT(S)E-020-01-L-D-A
+      SAMTEC info not available.
+ For the moment: take double of FTSH/CLP-110 pair plus 10 %.
+    -> 0.9 g plastic, 0.33 g Bronze
+
+Cooling ledge: I make a fantasy guess of 0.27 cm^3 Aluminium !
+
+in addition: FR4 reenforcement of mothercable:
+  45 x 32 mm, 200 um thickness
+
+........................................................................
+# "TIB TID CCUM Board"        "TIBTID_CCUM"        4.949   16.28
+* 1 "CCUM Board"              "T_FR4"           0.704    1     ELE
+* 2 "Copper traces"           "Copper"          0.024    1     ELE
+* 3 "CCU in housing"          "T_Kapton"        0.225    1     ELE
+* 4 "Solder balls"            "SMD_metal"       0.01     1     ELE
+* 5 "Other chips"             "T_Kapton"        0.015    2     ELE 
+* 6 "Capacitors"              "Alumina"         1.E-4    4     ELE
+* 7 "Resistors"               "Carbon"          1.E-4    8     ELE     
+* 8 "Solder"                  "SMD_metal"       1.E-4    12    ELE
+* 9 "Connector"               "T_Kapton"        0.643    2     ELE
+* 10 "Connector pins"         "T_Bronze"        0.037    2     ELE
+* 11 "Cold ledge (guess!)"    "Aluminium"       0.27     1     COL
+* 12 "Mothercable FR4"        "T_FR4"           0.288    1     CAB
+.......................................................................
+=======================================================================
+
+o  Hybrid for single sided module 
+   ------------------------------
+
+Wedge shape, max dimensions 47 x 25 mm^2
+Actual surface (mm): 47*12 + 35*13 + 6*6 = 
+                   = 1055 mm^2 = 10.55 cm^2  
+
+Hybrid is changed to FR 4 !! (Mail from Uli 7/05/02)
+(1) Estimate: 300 mu FR4,
+          3 x 25 mu Cu
+          ~300 mu Kapton
+
+//******* (1) Ceramic hybrid (Al2O3) with gold 
+-thickness of ceramic: 380 um 
+                      120 um insulation (also ceramic)
+-4 conductive layers Au (8 um each)
+             occupancy 3 x 75 % of surrounding rectangle (JD Berst)
+                    assume 47 x 28 mm^2) => 987 mm^2
+                       1 x 35 %  ==> 460 mm^2
+//*************//
+-Pt-Au layer: tbd
+(2) Hybrid components
+    R: (14 + n_APV)   0402 size  material: carbon   -> 18 
+    C: 2 x 1206 large ones
+       (5 + 2*n_APV)  0402 size    -> 13
+                 0402: 1 x 0.5 x 0.5 mm^3
+                 1206: 3 x 1.5 x 1.5 mm^3
+    APV25:     7.1 x 8.1 x 0.3 mm^3     4 per hybrid
+    PLL+MUX  : 2.0 x 7.1 x 0.3 mm^3     1 per hybrid
+    DCU  :     2.0 x 2.0 x 0.3 mm^3     1 per hybrid
+
+(3) Carbon fibre frame piece: 2.5 x 4.7 x 0.05 cm = 0.5875 cm^3
+
+.................................................................
+# "TIB Hybrid SS"    "TIB_ele3/4"        1.316        11.75
+Actual hybrid
+* 1  "Hybrid FR4"         "T_FR4"           0.3165      1   ELE
+* 2  "Hybrid Kapton"      "T_Kapton"        0.3165      1   ELE
+* 3  "Hybrid Copper"      "Copper"          0.0791      1   ELE 
+Components:  Resistors
+* 4  "Resistors"          "Carbon"          2.5E-4      18  ELE
+* 5  "R metal"            "SMD_metal"       1.E-4       18  ELE
+Capacitors
+* 6  "Small caps"         "Alumina"         2.5E-4      13  ELE
+* 7  "C metal"            "SMD_metal"       1.E-4       13  ELE
+* 8  "Large caps"         "Alumina"         0.00675     2   ELE
+* 9  "C metal large"      "SMD_metal"       1.E-3       2   ELE
+* 10  "APV25"              "Silicon"         1.7253E-2   4   ELE
+* 11 "PLL+MUX"            "Silicon"         4.26E-3     1   ELE
+* 12 "DCU"                "Silicon"         1.2E-3      1   ELE
+* 13 "CF frame piece"     "Carbon fibre str." 0.5875    1   SUP
+..................................................................
+
+==================================================================
+
+o  Hybrid for double sided module 
+   ------------------------------
+
+(1) Hybrid as single-sided one 
+     
+(3-11) Hybrid components
+    R: (14 + n_APV)   0402 size  --> 20 
+    C: 2 x 1206 large ones
+       (5 + 2*n_APV)  0402 size   --> 17
+    APV25:        6 per hybrid
+    PLL+MUX  :    1 per hybrid
+    DCU  :        1 per hybrid
+
+(12) Carbon fibre frame piece: same surface as hybrid, 10.55 cm^2
+
+.................................................................
+# "TIB Hybrid DS"    "TIB_ele1/2"         1.316        11.75
+Actual hybrid
+* 1  "Hybrid FR4"         "T_FR4"           0.3165      1   ELE
+* 2  "Hybrid Kapton"      "T_Kapton"        0.3165      1   ELE
+* 3  "Hybrid Copper"      "Copper"          0.0791      1   ELE 
+Components:  Resistors
+* 4  "Resistors"          "Carbon"          2.5E-4      20   ELE
+* 5  "R metal"            "SMD_metal"       1.E-4       20   ELE
+Capacitors
+* 6  "Small caps"         "Alumina"         2.5E-4      17   ELE
+* 7  "C metal"            "SMD_metal"       1.E-4       17   ELE
+* 8  "Large caps"         "Alumina"         0.00675     2    ELE
+* 9  "C metal large"      "SMD_metal"       1.E-3       2    ELE
+* 10 "APV25"              "Silicon"         1.7253E-2   6    ELE
+* 11 "PLL+MUX"            "Silicon"         4.26E-3     1    ELE
+* 12 "DCU"                "Silicon"         1.2E-3      1    ELE
+* 13 "CF frame piece"     "Carbon fibre str." 0.5275    1    SUP
+..................................................................
+
+==================================================================
+
+# "END"  "END"  0.  0.   
+this has to be the last line !

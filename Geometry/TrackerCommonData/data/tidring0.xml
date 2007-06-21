@@ -6,11 +6,11 @@
  <Constant name="Rmin"           value="22.530*cm"/>
  <Constant name="NPhi"           value="24"/>
  <Constant name="PhiOff"         value="0*deg"/>
- <Constant name="ICBR"           value="39.950*cm"/>
+ <Constant name="ICBR"           value="40.250*cm"/>
  <Constant name="CoolR1"         value="27.930*cm"/>
  <Constant name="CoolR2"         value="36.641*cm"/>
  <Constant name="CoolSide"       value="2"/>
- <Constant name="ICBTailR"       value="41.15*cm"/>
+ <Constant name="ICBTailR"       value="[ICBR]+[tidringpar:ICBW]/2"/>
  <Constant name="ICCRPos"        value="39.62*cm"/>
  <Constant name="RPos"           value="[Rmin]+([tidmodule0:FullHeight]+
            [tidmodpar:TopFrameHeight]+[tidmodpar:BottomFrameHeight]-
@@ -19,6 +19,10 @@
            [tidringpar:ICBTailTol])"/>
  <Constant name="ICBTailRPos"    value="([tidringpar:Rout]+[ICBTailR]-
            [tidringpar:ICBTailTol])/2"/>
+ <Constant name="DOHMrIn"          value="44.5*cm"/>
+ <Constant name="DOHMrOut"         value="50.5*cm"/>
+ <Constant name="DOHMrOff"         value="-0.5*cm"/>
+ <Constant name="DOHMdPhi"         value="18*deg"/>
 </ConstantsSection>
 
 <SolidSection label="tidring0.xml">
@@ -33,6 +37,9 @@
  <Tubs name="TIDRing0Cool2"           rMin="([CoolR2]-[tidringpar:CoolW]/2)" 
        rMax="([CoolR2]+[tidringpar:CoolW]/2)" dz="[tidringpar:CoolT]/2" 
        startPhi="0*deg"               deltaPhi="360.*deg"/>
+ <Tubs name="TIDRing0DOHM"             rMin="([DOHMrIn])" 
+       rMax="([DOHMrOut])" dz="[tidringpar:DOHMT]/2" 
+       startPhi="-[DOHMdPhi]/2"        deltaPhi="[DOHMdPhi]"/>
 </SolidSection>
 
 <LogicalPartSection label="tidring0.xml">
@@ -51,6 +58,10 @@
  <LogicalPart name="TIDRing0ICB" category="unspecified">
   <rSolid name="tidring0:TIDRing0ICB"/>
   <rMaterial name="tidmaterial:TID_ICB1"/>
+ </LogicalPart>
+ <LogicalPart name="TIDRing0DOHM" category="unspecified">
+  <rSolid name="tidring0:TIDRing0DOHM"/>
+  <rMaterial name="tidmaterial:TID_DOHM1"/>
  </LogicalPart>
  <LogicalPart name="TIDRing0Cool1" category="unspecified">
   <rSolid name="tidring0:TIDRing0Cool1"/>

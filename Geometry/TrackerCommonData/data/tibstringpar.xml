@@ -77,7 +77,7 @@
  </LogicalPart>
  <LogicalPart name="TIBCCUM" category="unspecified">
   <rSolid name="TIBCCUM"/>
-  <rMaterial name="tibmaterial:TIB_CCUM"/>
+  <rMaterial name="tibtidcommonmaterial:TIBTID_CCUM"/>
  </LogicalPart>
 </LogicalPartSection>
 
