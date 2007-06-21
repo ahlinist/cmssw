@@ -6,7 +6,7 @@ module tagProbes = TagProbeProducer {
    string TagProducer = "tagEmObjects"
    string ProbeProducer = "ecalTrackEmObjects"
    double MassCutMin = 80.0
-   double MassCutMax = 120.0
+   double MassCutMax = 102.0
 }
 
 sequence produceTagProbes = {electronId, tagEmObjects, ecalTrackEmObjects, tagProbes}
