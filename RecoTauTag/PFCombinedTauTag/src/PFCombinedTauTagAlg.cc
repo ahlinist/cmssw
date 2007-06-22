@@ -354,7 +354,7 @@ double PFCombinedTauTagAlg::ChargedHadrCand_signedipt_significance(const Vertex&
   TrackRef PFChargedHadrCand_rectk;
   if ((*PFChargedHadrCand).blockRef()->elements().size()!=0){
     for (OwnVector<PFBlockElement>::const_iterator iPFBlock=(*PFChargedHadrCand).blockRef()->elements().begin();iPFBlock!=(*PFChargedHadrCand).blockRef()->elements().end();iPFBlock++){
-      if ((*iPFBlock).type()==PFRecTrack_codenumber) PFChargedHadrCand_rectk=(*iPFBlock).trackRef();
+      if ((*iPFBlock).type()==PFRecTrack_codenumber && ROOT::Math::VectorUtil::DeltaR((*PFChargedHadrCand).momentum(),(*iPFBlock).trackRef()->momentum())<0.001) PFChargedHadrCand_rectk=(*iPFBlock).trackRef();
     }
   }else{
     string exception_message="In PFCombinedTauTagAlg::ChargedHadrCand_signedipt_significance(.,.) - could not retrieve reco::track from the charged hadron candidate.";  
@@ -379,7 +379,7 @@ double PFCombinedTauTagAlg::ChargedHadrCand_signedip3D_significance(const Vertex
   TrackRef PFChargedHadrCand_rectk;
   if ((*PFChargedHadrCand).blockRef()->elements().size()!=0){
     for (OwnVector<PFBlockElement>::const_iterator iPFBlock=(*PFChargedHadrCand).blockRef()->elements().begin();iPFBlock!=(*PFChargedHadrCand).blockRef()->elements().end();iPFBlock++){
-      if ((*iPFBlock).type()==PFRecTrack_codenumber) PFChargedHadrCand_rectk=(*iPFBlock).trackRef();
+      if ((*iPFBlock).type()==PFRecTrack_codenumber && ROOT::Math::VectorUtil::DeltaR((*PFChargedHadrCand).momentum(),(*iPFBlock).trackRef()->momentum())<0.001) PFChargedHadrCand_rectk=(*iPFBlock).trackRef();
     }
   }else{
     string exception_message="In PFCombinedTauTagAlg::ChargedHadrCand_signedip3D_significance(.,.) - could not retrieve reco::track from the charged hadron candidate.";  
@@ -408,7 +408,7 @@ double PFCombinedTauTagAlg::signedflightpath_significance(const Vertex& iPV){
       TrackRef PFChargedHadrCand_rectk;
       if ((**i_ChargedHadrCand).blockRef()->elements().size()!=0){
 	for (OwnVector<PFBlockElement>::const_iterator iPFBlock=(**i_ChargedHadrCand).blockRef()->elements().begin();iPFBlock!=(**i_ChargedHadrCand).blockRef()->elements().end();iPFBlock++){
-	  if ((*iPFBlock).type()==PFRecTrack_codenumber) PFChargedHadrCand_rectk=(*iPFBlock).trackRef();
+	  if ((*iPFBlock).type()==PFRecTrack_codenumber && ROOT::Math::VectorUtil::DeltaR((**i_ChargedHadrCand).momentum(),(*iPFBlock).trackRef()->momentum())<0.001) PFChargedHadrCand_rectk=(*iPFBlock).trackRef();
 	}
       }else continue;
       if (PFChargedHadrCand_rectk.isNull())continue;
