@@ -28,18 +28,24 @@ class  PFConeIsolationAlgorithm  {
     // 
     UsePVconstraint_                    = parameters.getParameter<bool>("UsePVconstraint");
     //
-    UseOnlyChargedHadrCand_             = parameters.getParameter<bool>("UseOnlyChargedHadrCand"); 
-    Cand_minPt_                         = parameters.getParameter<double>("Cand_minPt");
-    MatchingConeSize_                   = parameters.getParameter<double>("MatchingConeSize");
-    SignalConeSize_                     = parameters.getParameter<double>("SignalConeSize");
-    IsolConeSize_                       = parameters.getParameter<double>("IsolConeSize"); 
     UseOnlyChargedHadr_for_LeadCand_    = parameters.getParameter<bool>("UseOnlyChargedHadr_for_LeadCand"); 
     LeadCand_minPt_                     = parameters.getParameter<double>("LeadCand_minPt"); 
-    IsolRing_Candsn_                    = parameters.getParameter<int>("IsolRing_Candsn");   
-    UseSignalConeVariableSize_          = parameters.getParameter<bool>("UseSignalConeVariableSize"); 
-    SignalConeVariableSize_Parameter_   = parameters.getParameter<double>("SignalConeVariableSize_Parameter");
-    SignalConeVariableSize_max_         = parameters.getParameter<double>("SignalConeVariableSize_max");
-    SignalConeVariableSize_min_         = parameters.getParameter<double>("SignalConeVariableSize_min");
+    MatchingConeSize_                   = parameters.getParameter<double>("MatchingConeSize");
+    //
+    ChargedHadrCand_minPt_              = parameters.getParameter<double>("ChargedHadrCand_minPt");
+    TrackerSignalConeSize_              = parameters.getParameter<double>("TrackerSignalConeSize");
+    UseTrackerSignalConeVariableSize_          = parameters.getParameter<bool>("UseTrackerSignalConeVariableSize"); 
+    TrackerSignalConeVariableSize_Parameter_   = parameters.getParameter<double>("TrackerSignalConeVariableSize_Parameter");
+    TrackerSignalConeVariableSize_max_         = parameters.getParameter<double>("TrackerSignalConeVariableSize_max");
+    TrackerSignalConeVariableSize_min_         = parameters.getParameter<double>("TrackerSignalConeVariableSize_min");
+    TrackerIsolConeSize_                = parameters.getParameter<double>("TrackerIsolConeSize"); 
+    TrackerIsolRing_Candsn_             = parameters.getParameter<int>("TrackerIsolRing_Candsn");   
+    //
+    UseGammaCand_                       = parameters.getParameter<bool>("UseGammaCand"); 
+    GammaCand_minPt_                    = parameters.getParameter<double>("GammaCand_minPt");       
+    ECALSignalConeSize_                 = parameters.getParameter<double>("ECALSignalConeSize");    
+    ECALIsolConeSize_                   = parameters.getParameter<double>("ECALIsolConeSize");      
+    ECALIsolRing_Candsn_                = parameters.getParameter<int>("ECALIsolRing_Candsn");
   }
   ~PFConeIsolationAlgorithm(){}
   PFIsolatedTauTagInfo tag(const GenericJetRef&,const PFCandidateRefVector&,const Vertex&); // access to PFCandidateRefVector which composes the GenericJet through tag(.,.) member function input parameter would be temporary. Access would become trough the GenericJet.
@@ -58,18 +64,24 @@ class  PFConeIsolationAlgorithm  {
   // 
   bool UsePVconstraint_;
   //
-  bool UseOnlyChargedHadrCand_; 
-  double MatchingConeSize_;
-  double SignalConeSize_;
-  double IsolConeSize_; 
-  double Cand_minPt_; 
   bool UseOnlyChargedHadr_for_LeadCand_; 
   double LeadCand_minPt_; 
-  int IsolRing_Candsn_;   
-  bool UseSignalConeVariableSize_; 
-  double SignalConeVariableSize_Parameter_;
-  double SignalConeVariableSize_max_;
-  double SignalConeVariableSize_min_; 
+  double MatchingConeSize_;
+  //
+  double TrackerSignalConeSize_;
+  bool UseTrackerSignalConeVariableSize_; 
+  double TrackerSignalConeVariableSize_Parameter_;
+  double TrackerSignalConeVariableSize_max_;
+  double TrackerSignalConeVariableSize_min_; 
+  double TrackerIsolConeSize_; 
+  double ChargedHadrCand_minPt_; 
+  int TrackerIsolRing_Candsn_;   
+  //
+  bool UseGammaCand_; 
+  double GammaCand_minPt_;
+  double ECALSignalConeSize_;  
+  double ECALIsolConeSize_;  
+  double ECALIsolRing_Candsn_;    
 };
 #endif 
 
