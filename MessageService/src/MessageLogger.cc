@@ -257,6 +257,8 @@ MessageLogger::preSource()
     MessageDrop::instance()->debugEnabled = 
     			debugEnabledModules_.count("source");
   }
+  MessageDrop::instance()->infoEnabled = true;
+  MessageDrop::instance()->warningEnabled = true;
 }
 
 
