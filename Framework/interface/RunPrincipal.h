@@ -59,6 +59,7 @@ namespace edm {
     using Base::getProvenance;
     using Base::groupGetter;
     using Base::numEDProducts;
+    using Base::processConfiguration;
     using Base::processHistory;
     using Base::processHistoryID;
     using Base::prodGetter;

@@ -118,6 +118,8 @@ namespace edm {
 
     void addGroup(std::auto_ptr<EDProduct> prod, std::auto_ptr<Provenance> prov);
 
+    ProcessConfiguration const& processConfiguration() const {return processConfiguration_;}
+
     ProductRegistry const& productRegistry() const {return *preg_;}
 
     boost::shared_ptr<DelayedReader> store() const {return store_;}
