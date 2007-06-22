@@ -118,8 +118,14 @@ private:
   float PFIsolatedTauTagInfo_eta;
   float PFIsolatedTauTagInfo_phi;
   float PFIsolatedTauTagInfo_invmass;
+  float PFIsolatedTauTagInfo_mode;
+  float PFIsolatedTauTagInfo_modet;
+  float PFIsolatedTauTagInfo_modeta;
+  float PFIsolatedTauTagInfo_modphi;
+  float PFIsolatedTauTagInfo_modinvmass;
   int PFIsolatedTauTagInfo_passed_tracksel;
   int PFIsolatedTauTagInfo_passed_trackisolsel;
+  int PFIsolatedTauTagInfo_passed_ECALisolsel;
   float PFIsolatedTauTagInfo_leadrectk_pt;
   int PFIsolatedTauTagInfo_rectks_number;
   int PFIsolatedTauTagInfo_signalrectks_number;
@@ -207,8 +213,14 @@ PFConeIsolationAnalyzer::PFConeIsolationAnalyzer(const edm::ParameterSet& iConfi
   thePFIsolatedTauTagInfoTree->Branch("PFIsolatedTauTagInfo_eta",&PFIsolatedTauTagInfo_eta,"PFIsolatedTauTagInfo_eta/F");
   thePFIsolatedTauTagInfoTree->Branch("PFIsolatedTauTagInfo_phi",&PFIsolatedTauTagInfo_phi,"PFIsolatedTauTagInfo_phi/F");
   thePFIsolatedTauTagInfoTree->Branch("PFIsolatedTauTagInfo_invmass",&PFIsolatedTauTagInfo_invmass,"PFIsolatedTauTagInfo_invmass/F");
+  thePFIsolatedTauTagInfoTree->Branch("PFIsolatedTauTagInfo_mode",&PFIsolatedTauTagInfo_mode,"PFIsolatedTauTagInfo_mode/F");
+  thePFIsolatedTauTagInfoTree->Branch("PFIsolatedTauTagInfo_modet",&PFIsolatedTauTagInfo_modet,"PFIsolatedTauTagInfo_modet/F");
+  thePFIsolatedTauTagInfoTree->Branch("PFIsolatedTauTagInfo_modeta",&PFIsolatedTauTagInfo_modeta,"PFIsolatedTauTagInfo_modeta/F");
+  thePFIsolatedTauTagInfoTree->Branch("PFIsolatedTauTagInfo_modphi",&PFIsolatedTauTagInfo_modphi,"PFIsolatedTauTagInfo_modphi/F");
+  thePFIsolatedTauTagInfoTree->Branch("PFIsolatedTauTagInfo_modinvmass",&PFIsolatedTauTagInfo_modinvmass,"PFIsolatedTauTagInfo_modinvmass/F");
   thePFIsolatedTauTagInfoTree->Branch("PFIsolatedTauTagInfo_passed_tracksel",&PFIsolatedTauTagInfo_passed_tracksel,"PFIsolatedTauTagInfo_passed_tracksel/I");
   thePFIsolatedTauTagInfoTree->Branch("PFIsolatedTauTagInfo_passed_trackisolsel",&PFIsolatedTauTagInfo_passed_trackisolsel,"PFIsolatedTauTagInfo_passed_trackisolsel/I");
+  thePFIsolatedTauTagInfoTree->Branch("PFIsolatedTauTagInfo_passed_ECALisolsel",&PFIsolatedTauTagInfo_passed_ECALisolsel,"PFIsolatedTauTagInfo_passed_ECALisolsel/I");
   thePFIsolatedTauTagInfoTree->Branch("PFIsolatedTauTagInfo_leadrectk_pt",&PFIsolatedTauTagInfo_leadrectk_pt,"PFIsolatedTauTagInfo_leadrectk_pt/F");
   thePFIsolatedTauTagInfoTree->Branch("PFIsolatedTauTagInfo_rectks_number",&PFIsolatedTauTagInfo_rectks_number,"PFIsolatedTauTagInfo_rectks_number/I");
   thePFIsolatedTauTagInfoTree->Branch("PFIsolatedTauTagInfo_signalrectks_number",&PFIsolatedTauTagInfo_signalrectks_number,"PFIsolatedTauTagInfo_signalrectks_number/I");
@@ -540,6 +552,13 @@ void PFConeIsolationAnalyzer::analyze(const edm::Event& iEvent, const edm::Event
     PFIsolatedTauTagInfo_eta=ThePFIsolatedTauTagJet_HepLV.eta();
     PFIsolatedTauTagInfo_phi=ThePFIsolatedTauTagJet_HepLV.phi();
     PFIsolatedTauTagInfo_invmass=ThePFIsolatedTauTagJet_HepLV.m(); 
+    PFIsolatedTauTagInfo_mode=(*i).alternatLorentzVect().E();
+    PFIsolatedTauTagInfo_modet=(*i).alternatLorentzVect().Et();
+    PFIsolatedTauTagInfo_modeta=(*i).alternatLorentzVect().Eta();
+    PFIsolatedTauTagInfo_modphi=(*i).alternatLorentzVect().Phi();
+    PFIsolatedTauTagInfo_modinvmass=(*i).alternatLorentzVect().M(); 
+    PFIsolatedTauTagInfo_passed_trackisolsel=(*i).passedtrackerisolation();
+    PFIsolatedTauTagInfo_passed_ECALisolsel=(*i).passedECALisolation();
     PFIsolatedTauTagInfo_discriminator=(*i).discriminator();
     PFIsolatedTauTagInfo_rectks_number=0;   
     ChargedHadrCands_n=0;
@@ -571,14 +590,11 @@ void PFConeIsolationAnalyzer::analyze(const edm::Event& iEvent, const edm::Event
       
       if (PFIsolatedTauTagInfo_isolrectks_number==0 && (PFIsolatedTauTagInfo_signalrectks_number==1 || PFIsolatedTauTagInfo_signalrectks_number==3)) PFIsolatedTauTagInfo_passed_tracksel=1;
       else PFIsolatedTauTagInfo_passed_tracksel=0;
-      if (PFIsolatedTauTagInfo_isolrectks_number==0) PFIsolatedTauTagInfo_passed_trackisolsel=1;
-      else PFIsolatedTauTagInfo_passed_trackisolsel=0;
     }else{
       PFIsolatedTauTagInfo_signalrectks_number=0;
       PFIsolatedTauTagInfo_isolrectks_number=-100;
       PFIsolatedTauTagInfo_leadrectk_pt=-100.;
       PFIsolatedTauTagInfo_passed_tracksel=0;
-      PFIsolatedTauTagInfo_passed_trackisolsel=0;
     }
     PFIsolatedTauTagInfo_GenTau_visproducts_e=-100.;
     PFIsolatedTauTagInfo_GenTau_visproducts_et=-100.;
