@@ -13,23 +13,29 @@ module mypfConeIsolation=PFConeIsolation {
     int32 ChargedHadrCand_tkminPixelHitsn     = 2
     int32 ChargedHadrCand_tkminTrackerHitsn   = 8
     double ChargedHadrCand_tkmaxipt           = 0.05
-    double ChargedHadrCand_tkmaxChi2          = 1000.
+    double ChargedHadrCand_tkmaxChi2          = 100.
     double ChargedHadrCand_tktorefpointDZ     = 0.2
     # parameters of the considered neutral hadr. cand.'s, based on their rec. HCAL clus. properties : 
     double NeutrHadrCand_HcalclusminE         = 1.
     # parameters of the considered gamma cand.'s, based on their rec. ECAL clus. properties :
     double GammaCand_EcalclusminE             = 1.
     # 
-    bool UseOnlyChargedHadrCand               = true
-    double Cand_minPt                         = 1.
     double MatchingConeSize                   = 0.17
-    double SignalConeSize                     = 0.60
-    double IsolConeSize                       = 0.60
     bool UseOnlyChargedHadr_for_LeadCand      = true
     double LeadCand_minPt                     = 6.
-    int32 IsolRing_Candsn                     = 0 
-    bool UseSignalConeVariableSize            = false
-    double SignalConeVariableSize_Parameter   = 3.5
-    double SignalConeVariableSize_max         = 0.17
-    double SignalConeVariableSize_min         = 0.05
+    #
+    double ChargedHadrCand_minPt              = 1.
+    double TrackerSignalConeSize              = 0.07
+    bool UseTrackerSignalConeVariableSize            = false
+    double TrackerSignalConeVariableSize_Parameter   = 3.5
+    double TrackerSignalConeVariableSize_max         = 0.17
+    double TrackerSignalConeVariableSize_min         = 0.05
+    double TrackerIsolConeSize                = 0.45
+    int32 TrackerIsolRing_Candsn              = 0 
+    #
+    bool UseGammaCand                         = true
+    double GammaCand_minPt                    = 1.
+    double ECALSignalConeSize                 = 0.15
+    double ECALIsolConeSize                   = 0.45
+    int32 ECALIsolRing_Candsn                 = 0 
 }
