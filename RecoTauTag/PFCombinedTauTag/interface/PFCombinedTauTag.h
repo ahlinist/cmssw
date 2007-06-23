@@ -18,6 +18,7 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
+#include "DataFormats/BTauReco/interface/JetTag.h"
 #include "DataFormats/BTauReco/interface/PFCombinedTauTagInfo.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
@@ -53,6 +54,7 @@ class PFCombinedTauTag : public EDProducer {
 	smearedPVsigmaZ_           = iConfig.getParameter<double>("smearedPVsigmaZ");
 	thePFCombinedTauTagAlg=new PFCombinedTauTagAlg(iConfig);
 	string modulname="PFCombinedTauTag";
+	produces<JetTagCollection>().setBranchAlias(modulname);
 	string infoBranchName=modulname+"Info";
 	produces<PFCombinedTauTagInfoCollection>().setBranchAlias(infoBranchName);
 	theLikelihoodRatio=new LikelihoodRatio(iConfig);  

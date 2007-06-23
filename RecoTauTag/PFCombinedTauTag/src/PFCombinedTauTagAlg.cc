@@ -1,3 +1,10 @@
+#include "RecoVertex/VertexPrimitives/interface/VertexFitter.h"
+#include "RecoVertex/VertexPrimitives/interface/TransientVertex.h"
+#include "RecoVertex/VertexPrimitives/interface/ConvertError.h"
+#include "RecoVertex/VertexPrimitives/interface/VertexException.h"
+#include "RecoVertex/AdaptiveVertexFit/interface/AdaptiveVertexFitter.h"
+#include "RecoVertex/VertexTools/interface/VertexDistance3D.h"
+
 #include "RecoTauTag/PFCombinedTauTag/interface/PFCombinedTauTagAlg.h"
 
 void PFCombinedTauTagAlg::init(const EventSetup& theEventSetup){
@@ -63,13 +70,13 @@ void PFCombinedTauTagAlg::init(const EventSetup& theEventSetup){
   TransientTrackBuilder_=builder.product();
 }
 
-PFCombinedTauTagInfo PFCombinedTauTagAlg::tag(const PFIsolatedTauTagInfoRef& thePFIsolatedTauTagInfoRef,const Vertex& iPV,Event& theEvent,const EventSetup& theEventSetup) {
+pair<JetTag,PFCombinedTauTagInfo> PFCombinedTauTagAlg::tag(const PFIsolatedTauTagInfoRef& thePFIsolatedTauTagInfoRef,const Vertex& iPV,Event& theEvent,const EventSetup& theEventSetup) {
   // ---
   init(theEventSetup);
   // ---
-  math::XYZVector recjet_XYZVector((*thePFIsolatedTauTagInfoRef).genericjetRef()->px(),(*thePFIsolatedTauTagInfoRef).genericjetRef()->py(),(*thePFIsolatedTauTagInfoRef).genericjetRef()->pz());
-  math::XYZTLorentzVector recjet_XYZTLorentzVector=(*thePFIsolatedTauTagInfoRef).genericjetRef()->p4();
-  Global3DVector recjet_G3DV((*thePFIsolatedTauTagInfoRef).genericjetRef()->px(),(*thePFIsolatedTauTagInfoRef).genericjetRef()->py(),(*thePFIsolatedTauTagInfoRef).genericjetRef()->pz());
+  math::XYZVector recjet_XYZVector((*thePFIsolatedTauTagInfoRef).pfjetRef()->px(),(*thePFIsolatedTauTagInfoRef).pfjetRef()->py(),(*thePFIsolatedTauTagInfoRef).pfjetRef()->pz());
+  math::XYZTLorentzVector recjet_XYZTLorentzVector=(*thePFIsolatedTauTagInfoRef).pfjetRef()->p4();
+  Global3DVector recjet_G3DV((*thePFIsolatedTauTagInfoRef).pfjetRef()->px(),(*thePFIsolatedTauTagInfoRef).pfjetRef()->py(),(*thePFIsolatedTauTagInfoRef).pfjetRef()->pz());
   recjet_G3DV_=&recjet_G3DV;
   
   math::XYZVector refAxis_XYZVector=recjet_XYZVector;
@@ -249,7 +256,7 @@ PFCombinedTauTagInfo PFCombinedTauTagAlg::tag(const PFIsolatedTauTagInfoRef& the
   */
 
   // ******* end 1 pi-prong/e/mu/discrimination *******
-  resultExtended.setgenericjetRef((*thePFIsolatedTauTagInfoRef).genericjetRef());  
+  resultExtended.setpfjetRef((*thePFIsolatedTauTagInfoRef).pfjetRef());  
   resultExtended.setisolatedtautaginfoRef(thePFIsolatedTauTagInfoRef);
   resultExtended.setselectedByPFChargedHadrCands(passed_ChargedHadrCand_selection);
   resultExtended.setPFChargedHadrCands(ChargedHadrCands_);
@@ -278,17 +285,17 @@ PFCombinedTauTagInfo PFCombinedTauTagAlg::tag(const PFIsolatedTauTagInfoRef& the
   // *** overall tau selection ***
   // **********begin**************
   if(!passed_ChargedHadrCand_selection){
-    resultExtended.setdiscriminator(0.);
-    return resultExtended;
+    JetTag resultBase(0.);
+    return pair<JetTag,PFCombinedTauTagInfo> (resultBase,resultExtended);
   }else{
     if(passed_noGammaCand_selection) {
-      resultExtended.setdiscriminator(1.);
-      return resultExtended; 
+      JetTag resultBase(1.);
+      return pair<JetTag,PFCombinedTauTagInfo> (resultBase,resultExtended); 
     }else{
       (*LikelihoodRatio_).setCandidateCategoryParameterValues(signalChargedHadrCands_.size(),TauCandJet_ref_et);
       (*LikelihoodRatio_).setCandidateTaggingVariableList(taggingvariablesList());
-      resultExtended.setdiscriminator((*LikelihoodRatio_).value());
-      return resultExtended; 
+      JetTag resultBase((*LikelihoodRatio_).value());
+      return pair<JetTag,PFCombinedTauTagInfo> (resultBase,resultExtended); 
     }
   }
   // * end of overall tau selection *

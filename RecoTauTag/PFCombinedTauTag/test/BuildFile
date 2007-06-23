@@ -2,7 +2,7 @@
 <use name=FWCore/ParameterSet>
 <use name=FWCore/Utilities>
 <use name=FWCore/ServiceRegistry>
-<use name=Foundation/PluginManager>
+<use name=FWCore/PluginManager>
 <use name=SimDataFormats/HepMCProduct>
 <use name=DataFormats/HepMCCandidate>
 <use name=DataFormats/Common>
@@ -17,7 +17,6 @@
 <use name=CondFormats/BTauObjects>
 <use name=CondFormats/DataRecord>
 <use name=CondCore/DBOutputService>
-<use name=CondCore/BTauPlugins>
 <use name=MagneticField/Engine>
 <use name=MagneticField/Records>
 <use name=Geometry/TrackerGeometryBuilder>
@@ -35,6 +34,6 @@
 <use name=rootrflx>
 <library file=PFTauTagAnalyzer.cc name=PFTauTagAnalyzer>
   <use name=FWCore/Framework>
-  <flags SEAL_PLUGIN_NAME="PFTauTagAnalyzer">
+  <flags EDM_PLUGIN=1>
 </library>
 
