@@ -1,8 +1,8 @@
 #include "RecoTauTag/PFConeIsolation/interface/PFConeIsolationAlgorithm.h"
 
-PFIsolatedTauTagInfo PFConeIsolationAlgorithm::tag(const GenericJetRef& theGenericJet,const PFCandidateRefVector& thePFCands,const Vertex& thePV){
+pair<JetTag,PFIsolatedTauTagInfo> PFConeIsolationAlgorithm::tag(const PFJetRef& thePFJet,const PFCandidateRefVector& thePFCands,const Vertex& thePV){
   PFIsolatedTauTagInfo resultExtended(thePFCands);
-  resultExtended.setgenericjetRef(theGenericJet);
+  resultExtended.setpfjetRef(thePFJet);
 
   math::XYZTLorentzVector alternatLorentzVect;
   alternatLorentzVect.SetPx(0.);
@@ -18,25 +18,26 @@ PFIsolatedTauTagInfo PFConeIsolationAlgorithm::tag(const GenericJetRef& theGener
   resultExtended.filterPFGammaCands(GammaCand_EcalclusminE_);
 
   double theTrackerSignalConeSize=TrackerSignalConeSize_;
-  double theJet_E=(*theGenericJet).energy();
+  double theJet_E=(*thePFJet).energy();
   if(UseTrackerSignalConeVariableSize_){
     theTrackerSignalConeSize=min(TrackerSignalConeVariableSize_max_,TrackerSignalConeVariableSize_Parameter_/theJet_E);
     theTrackerSignalConeSize=max(theTrackerSignalConeSize,TrackerSignalConeVariableSize_min_);   
   }  
-  math::XYZVector GenericJet_XYZVector=(*theGenericJet).momentum();   
+  math::XYZVector PFJet_XYZVector=(*thePFJet).momentum();   
   
-  double trackerdiscriminator=resultExtended.discriminatorByIsolPFChargedHadrCandsN(GenericJet_XYZVector,MatchingConeSize_,theTrackerSignalConeSize,TrackerIsolConeSize_,UseOnlyChargedHadr_for_LeadCand_,LeadCand_minPt_,ChargedHadrCand_minPt_,TrackerIsolRing_Candsn_);
+  double trackerdiscriminator=resultExtended.discriminatorByIsolPFChargedHadrCandsN(PFJet_XYZVector,MatchingConeSize_,theTrackerSignalConeSize,TrackerIsolConeSize_,UseOnlyChargedHadr_for_LeadCand_,LeadCand_minPt_,ChargedHadrCand_minPt_,TrackerIsolRing_Candsn_);
   if (trackerdiscriminator==1) resultExtended.setpassedtrackerisolation(true);
   else resultExtended.setpassedtrackerisolation(false);
-  double ECALdiscriminator=resultExtended.discriminatorByIsolPFGammaCandsN(GenericJet_XYZVector,MatchingConeSize_,ECALSignalConeSize_,ECALIsolConeSize_,UseOnlyChargedHadr_for_LeadCand_,LeadCand_minPt_,GammaCand_minPt_,ECALIsolRing_Candsn_);
+  double ECALdiscriminator=resultExtended.discriminatorByIsolPFGammaCandsN(PFJet_XYZVector,MatchingConeSize_,ECALSignalConeSize_,ECALIsolConeSize_,UseOnlyChargedHadr_for_LeadCand_,LeadCand_minPt_,GammaCand_minPt_,ECALIsolRing_Candsn_);
   if (ECALdiscriminator==1) resultExtended.setpassedECALisolation(true);
   else resultExtended.setpassedECALisolation(false);
 
   double discriminator;
   if ((!UseGammaCand_ && trackerdiscriminator==1) || (UseGammaCand_ && trackerdiscriminator==1 && ECALdiscriminator==1)) discriminator=1.;
   else discriminator=0.;
-  resultExtended.setdiscriminator(discriminator);
-  return resultExtended; 
+  JetTag resultBase(discriminator);
+
+  return pair<JetTag,PFIsolatedTauTagInfo>(resultBase,resultExtended); 
 }
 
 

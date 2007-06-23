@@ -1,19 +1,18 @@
 <use name=root>
 <use name=clhep>
-<use name=Foundation/PluginManager>
+<use name=FWCore/PluginManager>
 <use name=FWCore/Utilities>
 <use name=FWCore/Framework>
 <use name=FWCore/ParameterSet>
+<use name=SimDataFormats/HepMCProduct>
 <use name=DataFormats/Math>
 <use name=DataFormats/BTauReco>
 <library file=PFTauTagTest.cc name=PFTauTagTest>
   <use name=FWCore/Framework>
-  <flags SEAL_PLUGIN_NAME="PFTauTagTest">
+  <flags EDM_PLUGIN=1>
 </library>
 <library file=PFConeIsolationAnalyzer.cc name=PFConeIsolationAnalyzer>
   <use name=FWCore/Framework>
-  <use name=DataFormats/ParticleFlowCandidate>
-  <flags SEAL_PLUGIN_NAME="PFConeIsolationAnalyzer">
+  <flags EDM_PLUGIN=1>
 </library>
-
 
