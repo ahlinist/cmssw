@@ -1,11 +1,11 @@
 #include "RecoTauTag/PFConeIsolation/interface/PFConeIsolation.h"
 
 void PFConeIsolation::produce(Event& iEvent, const EventSetup& iSetup){
-  Handle<GenericJetCollection> theGenericJetCollection;
-  iEvent.getByLabel(PFJetmodule_,theGenericJetCollection);
-  GenericJetRefVector theGenericJets;
-  for(unsigned int i_BJ=0;i_BJ!=theGenericJetCollection->size();i_BJ++) { 
-    theGenericJets.push_back(GenericJetRef(theGenericJetCollection,i_BJ));
+  Handle<PFJetCollection> thePFJetCollection;
+  iEvent.getByLabel(PFJetmodule_,thePFJetCollection);
+  PFJetRefVector thePFJets;
+  for(unsigned int i_BJ=0;i_BJ!=thePFJetCollection->size();i_BJ++) { 
+    thePFJets.push_back(PFJetRef(thePFJetCollection,i_BJ));
   }
   // *** access to the PFCandidate's through Event would be temporary, access to the same objects would be through 'PFJet'.
   Handle<PFCandidateCollection> thePFCandidateCollection;
@@ -37,20 +37,30 @@ void PFConeIsolation::produce(Event& iEvent, const EventSetup& iSetup){
   const VertexCollection vertCollection=*(vertices.product());
   if(vertCollection.size()) myPV=*(vertCollection.begin());
   
+  JetTagCollection* baseCollection=new JetTagCollection();
   PFIsolatedTauTagInfoCollection* extCollection=new PFIsolatedTauTagInfoCollection();
-  
+
   unsigned int iGJ=0;
-  for(GenericJetRefVector::const_iterator i_GJ=theGenericJets.begin();i_GJ!=theGenericJets.end();i_GJ++) { 
+  for(PFJetRefVector::const_iterator i_GJ=thePFJets.begin();i_GJ!=thePFJets.end();i_GJ++) { 
     PFCandidateRefVector thefilteredPFCands;
     for(PFCandidateRefVector::const_iterator i_PFCand=thePFCands.begin();i_PFCand!=thePFCands.end();i_PFCand++) { 
       if (ROOT::Math::VectorUtil::DeltaR((**i_GJ).momentum(),(**i_PFCand).momentum())<PFJetConeSize_) thefilteredPFCands.push_back((*i_PFCand));
     }
-    GenericJetRef theGenericJetRef(theGenericJetCollection,iGJ);
-    PFIsolatedTauTagInfo myPFIsolatedTauTagInfo=PFConeIsolationAlgo_->tag(theGenericJetRef,thefilteredPFCands,myPV); 
-    extCollection->push_back(myPFIsolatedTauTagInfo);
+    PFJetRef thePFJetRef(thePFJetCollection,iGJ);
+    pair<JetTag,PFIsolatedTauTagInfo> myPair=PFConeIsolationAlgo_->tag(thePFJetRef,thefilteredPFCands,myPV);
+    baseCollection->push_back(myPair.first);    
+    extCollection->push_back(myPair.second);
     ++iGJ;
   }
   
   auto_ptr<PFIsolatedTauTagInfoCollection> resultExt(extCollection);  
-  iEvent.put(resultExt);  
+  OrphanHandle<PFIsolatedTauTagInfoCollection> myPFIsolatedTauTagInfoCollection=iEvent.put(resultExt);
+  
+  int iJetTag=0;
+  for(JetTagCollection::iterator i_JetTag=baseCollection->begin();i_JetTag!=baseCollection->end();i_JetTag++){
+    i_JetTag->setTagInfo(RefToBase<BaseTagInfo>(PFIsolatedTauTagInfoRef(myPFIsolatedTauTagInfoCollection,iJetTag))); 
+    ++iJetTag;
+  }
+  auto_ptr<JetTagCollection> resultBase(baseCollection);
+  iEvent.put(resultBase);
 }

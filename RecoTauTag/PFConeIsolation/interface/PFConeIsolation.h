@@ -11,6 +11,7 @@
  */
 
 #include "DataFormats/BTauReco/interface/PFIsolatedTauTagInfo.h"
+#include "DataFormats/BTauReco/interface/JetTag.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 
 #include "SimDataFormats/Vertex/interface/SimVertexContainer.h"

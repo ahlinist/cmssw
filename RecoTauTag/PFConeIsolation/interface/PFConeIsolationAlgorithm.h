@@ -2,6 +2,7 @@
 #define PFConeIsolationAlgorithm_H
 
 #include "DataFormats/BTauReco/interface/PFIsolatedTauTagInfo.h"
+#include "DataFormats/BTauReco/interface/JetTag.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
@@ -48,7 +49,7 @@ class  PFConeIsolationAlgorithm  {
     ECALIsolRing_Candsn_                = parameters.getParameter<int>("ECALIsolRing_Candsn");
   }
   ~PFConeIsolationAlgorithm(){}
-  PFIsolatedTauTagInfo tag(const GenericJetRef&,const PFCandidateRefVector&,const Vertex&); // access to PFCandidateRefVector which composes the GenericJet through tag(.,.) member function input parameter would be temporary. Access would become trough the GenericJet.
+  pair<JetTag,PFIsolatedTauTagInfo> tag(const PFJetRef&,const PFCandidateRefVector&,const Vertex&); // access to PFCandidateRefVector which composes the PFJet through tag(.,.) member function input parameter would be temporary. Access would become trough the PFJet.
  private:
   // parameters of the considered charged hadr. cand.'s, based on their rec. tk properties :
   double ChargedHadrCand_tkminPt_;

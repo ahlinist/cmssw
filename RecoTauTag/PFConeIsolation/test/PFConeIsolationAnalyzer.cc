@@ -18,10 +18,11 @@
 #include "DataFormats/Math/interface/Vector3D.h"
 #include "DataFormats/JetReco/interface/CaloJetCollection.h"
 #include "DataFormats/JetReco/interface/CaloJet.h"
-#include "DataFormats/JetReco/interface/GenericJet.h"
+#include "DataFormats/JetReco/interface/PFJet.h"
 #include "DataFormats/JetReco/interface/GenJet.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
+#include "DataFormats/BTauReco/interface/JetTag.h"
 #include "DataFormats/BTauReco/interface/PFIsolatedTauTagInfo.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/GeometryVector/interface/GlobalTag.h"
@@ -539,12 +540,12 @@ void PFConeIsolationAnalyzer::analyze(const edm::Event& iEvent, const edm::Event
     cout<<"(*iPFRecTrack).trackRef()->pt() "<<(*iPFRecTrack).trackRef()->pt()<<endl;
   }
   */
-  
-  Handle<PFIsolatedTauTagInfoCollection> tauTagInfoHandle;
-  iEvent.getByLabel(PFConeIsolationProd_,tauTagInfoHandle);  
-  const PFIsolatedTauTagInfoCollection& tauTagInfo=*(tauTagInfoHandle.product());
-  for (PFIsolatedTauTagInfoCollection::const_iterator i=tauTagInfo.begin();i!=tauTagInfo.end();++i) {
-    HepLorentzVector ThePFIsolatedTauTagJet_HepLV((*i).genericjetRef()->px(),(*i).genericjetRef()->py(),(*i).genericjetRef()->pz(),(*i).genericjetRef()->energy());
+  Handle<JetTagCollection> jetTagHandle;
+  iEvent.getByLabel(PFConeIsolationProd_,jetTagHandle);
+  const JetTagCollection& myJetTagCollection=*(jetTagHandle.product()); 
+  for (JetTagCollection::const_iterator iJetTag=myJetTagCollection.begin();iJetTag!=myJetTagCollection.end();++iJetTag) {
+    PFIsolatedTauTagInfoRef thePFIsolatedTauTagInfo=(*iJetTag).tagInfoRef().castTo<PFIsolatedTauTagInfoRef>();
+    HepLorentzVector ThePFIsolatedTauTagJet_HepLV((*thePFIsolatedTauTagInfo).pfjetRef()->px(),(*thePFIsolatedTauTagInfo).pfjetRef()->py(),(*thePFIsolatedTauTagInfo).pfjetRef()->pz(),(*thePFIsolatedTauTagInfo).pfjetRef()->energy());
     PFIsolatedTauTagInfo_eventgets_recPV=gets_recPV;
     PFIsolatedTauTagInfo_event_scale=event_scale;
     PFIsolatedTauTagInfo_e=ThePFIsolatedTauTagJet_HepLV.e();
@@ -552,40 +553,40 @@ void PFConeIsolationAnalyzer::analyze(const edm::Event& iEvent, const edm::Event
     PFIsolatedTauTagInfo_eta=ThePFIsolatedTauTagJet_HepLV.eta();
     PFIsolatedTauTagInfo_phi=ThePFIsolatedTauTagJet_HepLV.phi();
     PFIsolatedTauTagInfo_invmass=ThePFIsolatedTauTagJet_HepLV.m(); 
-    PFIsolatedTauTagInfo_mode=(*i).alternatLorentzVect().E();
-    PFIsolatedTauTagInfo_modet=(*i).alternatLorentzVect().Et();
-    PFIsolatedTauTagInfo_modeta=(*i).alternatLorentzVect().Eta();
-    PFIsolatedTauTagInfo_modphi=(*i).alternatLorentzVect().Phi();
-    PFIsolatedTauTagInfo_modinvmass=(*i).alternatLorentzVect().M(); 
-    PFIsolatedTauTagInfo_passed_trackisolsel=(*i).passedtrackerisolation();
-    PFIsolatedTauTagInfo_passed_ECALisolsel=(*i).passedECALisolation();
-    PFIsolatedTauTagInfo_discriminator=(*i).discriminator();
+    PFIsolatedTauTagInfo_mode=(*thePFIsolatedTauTagInfo).alternatLorentzVect().E();
+    PFIsolatedTauTagInfo_modet=(*thePFIsolatedTauTagInfo).alternatLorentzVect().Et();
+    PFIsolatedTauTagInfo_modeta=(*thePFIsolatedTauTagInfo).alternatLorentzVect().Eta();
+    PFIsolatedTauTagInfo_modphi=(*thePFIsolatedTauTagInfo).alternatLorentzVect().Phi();
+    PFIsolatedTauTagInfo_modinvmass=(*thePFIsolatedTauTagInfo).alternatLorentzVect().M(); 
+    PFIsolatedTauTagInfo_passed_trackisolsel=(*thePFIsolatedTauTagInfo).passedtrackerisolation();
+    PFIsolatedTauTagInfo_passed_ECALisolsel=(*thePFIsolatedTauTagInfo).passedECALisolation();
+    PFIsolatedTauTagInfo_discriminator=(*iJetTag).discriminator();
     PFIsolatedTauTagInfo_rectks_number=0;   
     ChargedHadrCands_n=0;
     NeutrHadrCands_n=0;
     GammaCands_n=0;
     PFCandidateRef theleadPFCand;
-    if (test_useOnlyChargedHadrforleadPFCand_) theleadPFCand=(*i).leadPFChargedHadrCand(test_matchingcone_size_,test_leadCand_minpt_);
-    else theleadPFCand=(*i).leadPFCand(test_matchingcone_size_,test_leadCand_minpt_);
+    if (test_useOnlyChargedHadrforleadPFCand_) theleadPFCand=(*thePFIsolatedTauTagInfo).leadPFChargedHadrCand(test_matchingcone_size_,test_leadCand_minpt_);
+    else theleadPFCand=(*thePFIsolatedTauTagInfo).leadPFCand(test_matchingcone_size_,test_leadCand_minpt_);
     if(!theleadPFCand.isNull()){
-      PFIsolatedTauTagInfo_rectks_number=(int)(*i).PFChargedHadrCandsInCone((*theleadPFCand).momentum(),test_trackercone_size_,test_Cand_minpt_).size();
-      for (PFCandidateRefVector::const_iterator iChargedHadrCand=(*i).PFChargedHadrCands().begin();iChargedHadrCand!=(*i).PFChargedHadrCands().end();++iChargedHadrCand){
+      PFIsolatedTauTagInfo_rectks_number=(int)(*thePFIsolatedTauTagInfo).PFChargedHadrCandsInCone((*theleadPFCand).momentum(),test_trackercone_size_,test_Cand_minpt_).size();
+      for (PFCandidateRefVector::const_iterator iChargedHadrCand=(*thePFIsolatedTauTagInfo).PFChargedHadrCands().begin();iChargedHadrCand!=(*thePFIsolatedTauTagInfo).PFChargedHadrCands().end();++iChargedHadrCand){
 	PFIsolatedTauTagInfo_CHCandDR[ChargedHadrCands_n]=-100.;
 	if ((*iChargedHadrCand)!=theleadPFCand) PFIsolatedTauTagInfo_CHCandDR[ChargedHadrCands_n]=ROOT::Math::VectorUtil::DeltaR((**iChargedHadrCand).p4(),(*theleadPFCand).p4());
 	++ChargedHadrCands_n;
       }
-      for (PFCandidateRefVector::const_iterator iNeutrHadrCand=(*i).PFNeutrHadrCands().begin();iNeutrHadrCand!=(*i).PFNeutrHadrCands().end();++iNeutrHadrCand){
+      for (PFCandidateRefVector::const_iterator iNeutrHadrCand=(*thePFIsolatedTauTagInfo).PFNeutrHadrCands().begin();iNeutrHadrCand!=(*thePFIsolatedTauTagInfo).PFNeutrHadrCands().end();++iNeutrHadrCand){
 	PFIsolatedTauTagInfo_NHCandDR[NeutrHadrCands_n]=ROOT::Math::VectorUtil::DeltaR((**iNeutrHadrCand).p4(),(*theleadPFCand).p4());
 	PFIsolatedTauTagInfo_NHCandEt[NeutrHadrCands_n]=(**iNeutrHadrCand).et();
 	++NeutrHadrCands_n;
       }
-      for (PFCandidateRefVector::const_iterator iGammaCand=(*i).PFGammaCands().begin();iGammaCand!=(*i).PFGammaCands().end();++iGammaCand){
+      for (PFCandidateRefVector::const_iterator iGammaCand=(*thePFIsolatedTauTagInfo).PFGammaCands().begin();iGammaCand!=(*thePFIsolatedTauTagInfo).PFGammaCands().end();++iGammaCand){
 	PFIsolatedTauTagInfo_GCandDR[GammaCands_n]=ROOT::Math::VectorUtil::DeltaR((**iGammaCand).p4(),(*theleadPFCand).p4());
 	PFIsolatedTauTagInfo_GCandEt[GammaCands_n]=(**iGammaCand).et();
 	++GammaCands_n;
       }
-      PFIsolatedTauTagInfo_signalrectks_number=(int)(*i).PFChargedHadrCandsInCone(theleadPFCand->momentum(),test_trackersignalcone_size_,test_Cand_minpt_).size();
-      PFIsolatedTauTagInfo_isolrectks_number=(int)(*i).PFChargedHadrCandsInBand(theleadPFCand->momentum(),test_trackersignalcone_size_,test_trackerisolcone_size_,test_Cand_minpt_).size();
+      PFIsolatedTauTagInfo_signalrectks_number=(int)(*thePFIsolatedTauTagInfo).PFChargedHadrCandsInCone(theleadPFCand->momentum(),test_trackersignalcone_size_,test_Cand_minpt_).size();
+      PFIsolatedTauTagInfo_isolrectks_number=(int)(*thePFIsolatedTauTagInfo).PFChargedHadrCandsInBand(theleadPFCand->momentum(),test_trackersignalcone_size_,test_trackerisolcone_size_,test_Cand_minpt_).size();
       PFIsolatedTauTagInfo_leadrectk_pt=theleadPFCand->momentum().Rho();
       
       if (PFIsolatedTauTagInfo_isolrectks_number==0 && (PFIsolatedTauTagInfo_signalrectks_number==1 || PFIsolatedTauTagInfo_signalrectks_number==3)) PFIsolatedTauTagInfo_passed_tracksel=1;
