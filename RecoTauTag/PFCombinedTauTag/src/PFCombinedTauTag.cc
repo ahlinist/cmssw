@@ -4,6 +4,7 @@
 void PFCombinedTauTag::produce(Event& iEvent, const EventSetup& iSetup) {
   Handle<PFIsolatedTauTagInfoCollection> thePFIsolatedTauTagInfoCollection;
   iEvent.getByLabel(PFIsolatedTauTagSrc_,thePFIsolatedTauTagInfoCollection);   
+  JetTagCollection* baseCollection=new JetTagCollection();
   vector<PFCombinedTauTagInfo>* extCollection=new vector<PFCombinedTauTagInfo>();
   
   const EventSetupRecord& theEventSetupRcd=iSetup.get<CombinedTauTagRcd>();
@@ -46,10 +47,19 @@ void PFCombinedTauTag::produce(Event& iEvent, const EventSetup& iSetup) {
   for(PFIsolatedTauTagInfoCollection::const_iterator iPFIsolatedTauTagInfo=thePFIsolatedTauTagInfoCollection->begin();iPFIsolatedTauTagInfo!=thePFIsolatedTauTagInfoCollection->end();iPFIsolatedTauTagInfo++){
     //int i=iPFIsolatedTauTagInfo->jtaRef()->key.index();  // failure 
     //pair<JetTag,PFCombinedTauTagInfo> myPair=thePFCombinedTauTagAlg->tag(Ref<PFIsolatedTauTagInfoCollection>(thePFIsolatedTauTagInfoCollection,i),myPV,iEvent,iSetup); 
-    PFCombinedTauTagInfo myPFCombinedTauTagInfo=thePFCombinedTauTagAlg->tag(Ref<PFIsolatedTauTagInfoCollection>(thePFIsolatedTauTagInfoCollection,iPFIsolatedTauTagInfo_key),myPV,iEvent,iSetup);
-    extCollection->push_back(myPFCombinedTauTagInfo);
+    pair<JetTag,PFCombinedTauTagInfo> myPair=thePFCombinedTauTagAlg->tag(Ref<PFIsolatedTauTagInfoCollection>(thePFIsolatedTauTagInfoCollection,iPFIsolatedTauTagInfo_key),myPV,iEvent,iSetup);
+    baseCollection->push_back(myPair.first);    
+    extCollection->push_back(myPair.second);
     ++iPFIsolatedTauTagInfo_key;
   }
-  auto_ptr<vector<PFCombinedTauTagInfo> > resultExt(extCollection);  
-  iEvent.put(resultExt);  
+
+  auto_ptr<PFCombinedTauTagInfoCollection> resultExt(extCollection); 
+  OrphanHandle<PFCombinedTauTagInfoCollection> myPFCombinedTauTagInfoCollection=iEvent.put(resultExt); 
+  int iJetTag_key=0;
+  for(JetTagCollection::iterator ibaseCollection=baseCollection->begin();ibaseCollection!=baseCollection->end();ibaseCollection++){ 
+    ibaseCollection->setTagInfo(RefToBase<BaseTagInfo>(PFCombinedTauTagInfoRef(myPFCombinedTauTagInfoCollection,iJetTag_key))); 
+    iJetTag_key++; 
+  }  
+  auto_ptr<JetTagCollection> resultBase(baseCollection);
+  iEvent.put(resultBase); 
 }

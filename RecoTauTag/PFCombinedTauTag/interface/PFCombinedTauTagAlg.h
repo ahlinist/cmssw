@@ -1,19 +1,16 @@
 #ifndef PFCombinedTauTagAlg_H
 #define PFCombinedTauTagAlg_H
 
+#include "TrackingTools/GeomPropagators/interface/AnalyticalPropagator.h"
 #include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
 #include "TrackingTools/TransientTrack/interface/TransientTrack.h"
 #include "TrackingTools/Records/interface/TransientTrackRecord.h"
 
-#include "RecoVertex/VertexPrimitives/interface/TransientVertex.h"
-#include "RecoVertex/VertexPrimitives/interface/ConvertError.h"
-#include "RecoVertex/VertexPrimitives/interface/VertexException.h"
-#include "RecoVertex/AdaptiveVertexFit/interface/AdaptiveVertexFitter.h"
-#include "RecoVertex/VertexTools/interface/VertexDistance3D.h"
-
+#include "DataFormats/BTauReco/interface/JetTag.h"
 #include "DataFormats/BTauReco/interface/PFCombinedTauTagInfo.h"
 #include "DataFormats/BTauReco/interface/PFIsolatedTauTagInfo.h"
 #include "DataFormats/BTauReco/interface/TaggingVariable.h"
+#include "DataFormats/BeamSpot/interface/BeamSpot.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/CaloTowers/interface/CaloTower.h"
 #include "DataFormats/DetId/interface/DetId.h"
@@ -156,7 +153,7 @@ public:
     if (TransientTrackBuilder_!=0) delete TransientTrackBuilder_;
     if (LikelihoodRatio_!=0) delete LikelihoodRatio_;
   }
-  PFCombinedTauTagInfo tag(const PFIsolatedTauTagInfoRef&,const Vertex&,Event&,const EventSetup&);
+  pair<JetTag,PFCombinedTauTagInfo> tag(const PFIsolatedTauTagInfoRef&,const Vertex&,Event&,const EventSetup&);
   void setLikelihoodRatio(LikelihoodRatio* x){LikelihoodRatio_=x;}
  private:
   void init(const EventSetup&);

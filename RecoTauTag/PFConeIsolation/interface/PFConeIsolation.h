@@ -47,6 +47,7 @@ class PFConeIsolation : public EDProducer {
     smearedPVsigmaY_    = iConfig.getParameter<double>("smearedPVsigmaY");
     smearedPVsigmaZ_    = iConfig.getParameter<double>("smearedPVsigmaZ");	
     PFConeIsolationAlgo_=new PFConeIsolationAlgorithm(iConfig);
+    produces<JetTagCollection>(); 
     produces<PFIsolatedTauTagInfoCollection>();      
   }
   ~PFConeIsolation(){

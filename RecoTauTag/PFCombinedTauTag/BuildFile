@@ -2,7 +2,7 @@
 <use name=FWCore/ParameterSet>
 <use name=FWCore/Utilities>
 <use name=FWCore/MessageLogger>
-<use name=Foundation/PluginManager>
+<use name=FWCore/PluginManager>
 <use name=DataFormats/Common>
 <use name=DataFormats/BTauReco>
 <use name=DataFormats/VertexReco>
@@ -43,14 +43,14 @@
 <use name=boost>
 <use name=rootrflx>
 <use name=root>
-<flags SEAL_PLUGIN_NAME="RecoTauTagPFCombinedTauTag">
+<flags EDM_PLUGIN=1>
 <export>
    <lib name=RecoTauTagPFCombinedTauTag>
    <use name=FWCore/Framework>
    <use name=FWCore/Utilities>
    <use name=FWCore/MessageLogger>
    <use name=FWCore/ParameterSet>
-   <use name=Foundation/PluginManager>
+   <use name=FWCore/PluginManager>
    <use name=DataFormats/Common>
    <use name=DataFormats/VertexReco>
    <use name=DataFormats/BTauReco>
