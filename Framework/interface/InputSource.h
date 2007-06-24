@@ -114,6 +114,9 @@ namespace edm {
     /// Reset the remaining number of events to the maximum number.
     void repeat() {remainingEvents_ = maxEvents_;}
 
+    /// Reset the remaining number of events to zero.
+    void noMoreInput() {remainingEvents_ = 0;}
+
     /// Accessor for maximum number of events to be read.
     /// -1 is used for unlimited.
     int maxEvents() const {return maxEvents_;}
