@@ -42,9 +42,9 @@ module csc2DRecHits = CSCRecHitBProducer {
      untracked double CSCminGattiStepSize        = 0.002
      untracked double CSCminGattiError           = 0.02
      untracked double CSCMaxGattiChi2            = 99999.
-     untracked double CSCCalibrationSystematics  = 0.015
-     untracked double CSCStripxtalksOffset       = 0.03
-     untracked double CSCStripxtalksSystematics  = 0.01
+     untracked double CSCCalibrationSystematics  = 0.00
+     untracked double CSCStripxtalksOffset       = 0.00
+     untracked double CSCStripxtalksSystematics  = 0.00
 ###########################################################
 #    Parameters for 2-D hits
 ###########################################################
