@@ -230,10 +230,8 @@ namespace edm
         // no duplicates
         if(found)
         {
-          std::ostringstream trace;
-          (*pathIt)->printTrace(trace);
           throw edm::Exception(errors::Configuration,"duplicate schedule")
-             << "Second schedule statement found at " << trace.str();
+             << "Second schedule statement found at " << (*pathIt)->traceback();
         }
         else 
         {
