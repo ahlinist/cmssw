@@ -14,6 +14,7 @@
 // system include files
 
 // user include files
+#include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Modules/src/IterateNTimesLooper.h"
 
 

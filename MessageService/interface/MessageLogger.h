@@ -33,7 +33,6 @@
 
 #include "FWCore/MessageLogger/interface/ErrorObj.h"
 
-#include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ServiceRegistry/interface/ActivityRegistry.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "DataFormats/Provenance/interface/EventID.h"
@@ -42,6 +41,7 @@
 // forward declarations
 
 namespace edm  {
+class ParameterSet;
 namespace service  {
 
 

@@ -21,6 +21,9 @@
 // Revision history
 //
 // $Log$
+// Revision 1.5  2007/06/14 17:52:15  wmtan
+// Remove unnecessary includes
+//
 // Revision 1.4  2007/03/04 06:00:22  wmtan
 // Move Provenance classes to DataFormats/Provenance
 //
@@ -40,11 +43,7 @@
 
 // user include files
 #include "DataFormats/Provenance/interface/PassID.h"
-#include "FWCore/Framework/interface/ProducerBase.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDLooperHelper.h"
-#include "FWCore/Framework/interface/Event.h"
-#include "FWCore/Framework/interface/EventSetup.h"
 
 // forward declarations
 

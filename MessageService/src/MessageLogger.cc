@@ -39,6 +39,8 @@
 // system include files
 // user include files
 
+#include "FWCore/ParameterSet/interface/ParameterSet.h"
+
 #include "FWCore/MessageService/interface/ELcontextSupplier.h"
 #include "FWCore/MessageService/interface/MessageLogger.h"
 

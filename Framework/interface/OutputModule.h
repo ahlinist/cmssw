@@ -13,19 +13,13 @@ $Id$
 #include "boost/array.hpp"
 #include <vector>
 
-#include "DataFormats/Provenance/interface/BranchDescription.h"
 #include "DataFormats/Provenance/interface/BranchType.h"
 #include "DataFormats/Provenance/interface/ModuleDescription.h"
-#include "DataFormats/Provenance/interface/Provenance.h"
+#include "DataFormats/Provenance/interface/ProvenanceFwd.h"
 
 #include "FWCore/Framework/interface/CachedProducts.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EventSelector.h"
 #include "FWCore/Framework/interface/GroupSelector.h"
-#include "FWCore/Framework/interface/Selector.h"
-
-#include "DataFormats/Common/interface/TriggerResults.h"
-#include "DataFormats/Common/interface/Handle.h"
 
 namespace edm {
 
