@@ -86,7 +86,7 @@ Currently, [AnchorX] = [AnchorZ] = 0.
    <!-- Z-positions of layers -->
 
    <Constant name="zBe"     value="-([HDIThickness]+[FilmThickness])/2." />
-   <Constant name="zFilm"   value="([BeThickness]-[FilmThickness])/2." />
+   <Constant name="zFilm"   value="([BeThickness]-[HDIThickness])/2." />
    <Constant name="zHDI"    value="([BeThickness]+[FilmThickness])/2." />
    
    <Constant name="EarWidth" value="[X10]+[X3]-([Y7]-[Y2])*[TanPanelAngle]" />
