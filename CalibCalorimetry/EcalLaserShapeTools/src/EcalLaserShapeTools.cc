@@ -1,8 +1,8 @@
 /*
  * \file EcalLaserShapeTools.cc
  *
- * $Date: 2006/08/15 00:05:10 $
- * $Revision: 1.9 $
+ * $Date: 2006/10/02 15:36:23 $
+ * $Revision: 1.10 $
  * \author P. Jarry
  * \author G. Franzoni
  *
@@ -18,6 +18,7 @@ EcalLaserShapeTools::EcalLaserShapeTools(const edm::ParameterSet& iConfig)
   rootFile_                  = iConfig.getUntrackedParameter<std::string>("rootOutFile");
   txtFile_                     = iConfig.getUntrackedParameter<std::string>("txtOutFile");
   histFile_                   = iConfig.getUntrackedParameter<std::string>("HistogramOutFile");
+  digiCollection_          = iConfig.getParameter<std::string>("digiCollection");
   digiProducer_         = iConfig.getParameter<std::string>("digiProducer");
   pndiodeProducer_  = iConfig.getParameter<std::string>("pndiodeProducer");
   hitCollection_          = iConfig.getParameter<std::string>("hitCollection");
@@ -121,7 +122,7 @@ void EcalLaserShapeTools::analyze(const edm::Event& iEvent, const edm::EventSetu
   // to be used channel-wise in endJob()
   edm::Handle<EBDigiCollection>  digis;
   try{ 
-    iEvent.getByLabel(digiProducer_, digis);
+    iEvent.getByLabel(digiProducer_, digiCollection_, digis);
     // gio: systematize logs!
     //    LogDebug("EcalLaserShapeTools") << "Got product:  EBDigiCollection from: " 
     LogDebug("EcalLaserShapeTools") << "Got product:  EBDigiCollection from: " 

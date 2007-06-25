@@ -13,7 +13,7 @@
 //
 // Original Author:  Patrick Jarry
 //         Created:  Sun May 21 18:42:33 CEST 2006
-// $Id: EcalLaserShapeTools.h,v 1.6 2006/07/23 17:44:40 franzoni Exp $
+// $Id: EcalLaserShapeTools.h,v 1.7 2006/08/15 00:05:11 franzoni Exp $
 //
 //
 
@@ -130,6 +130,7 @@ class EcalLaserShapeTools : public edm::EDAnalyzer {
   string histFile_ ;
   string hitCollection_ ;
   string hitProducer_ ;
+  string digiCollection_ ;
   string digiProducer_ ;
   string pndiodeProducer_;
 
