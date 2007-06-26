@@ -145,6 +145,8 @@ namespace edm {
        */
     void endJob();
 
+    /**Member functions to support asynchronous interface.
+       */
 
     char const* currentStateName() const;
     char const* stateName(event_processor::State s) const;
@@ -175,7 +177,12 @@ namespace edm {
     // or timeout occurs (See StatusCode for return values)
     StatusCode waitTillDoneAsync(unsigned int timeout_seconds=0);
 
+    // Both of these calls move the EP to the ready to run state but only
+    // the first actually sets the run number, the other one just stores
+    // the run number set externally in order to later compare to the one
+    // read from the input source for verification
     void setRunNumber(RunNumber_t runNumber);
+    void declareRunNumber(RunNumber_t runNumber);
 
     // -------------
 
