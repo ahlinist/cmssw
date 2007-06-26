@@ -3,6 +3,11 @@
 <use name=DataFormats/Common>
 <use name=DataFormats/Math>
 <use name=DataFormats/TrackReco>
+<use name=FWCore/Utilities>
+<use name=DataFormats/EcalRecHit>
+<use name=DataFormats/EgammaReco>
+<use name=DataFormats/DetId>
+<use name=DataFormats/EcalDetId>
 <use name=rootrflx>
 <export>
    <lib name=AnalysisDataFormatsElectronEfficiency>
@@ -11,4 +16,5 @@
    <use name=DataFormats/Common>
    <use name=DataFormats/Math>
    <use name=DataFormats/TrackReco>
+   <use name=DataFormats/EgammaReco>
 </export>

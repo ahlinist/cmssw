@@ -1,6 +1,7 @@
 #ifndef EgammaEfficiency_Electron_h
 #define EgammaEfficiency_Electron_h
 
+#include "DataFormats/EgammaReco/interface/SuperCluster.h"
 #include "DataFormats/RecoCandidate/interface/RecoCandidate.h"
 #include "DataFormats/GsfTrackReco/interface/GsfTrack.h"
 #include "DataFormats/GsfTrackReco/interface/GsfTrackFwd.h"
@@ -25,7 +26,7 @@ namespace EgEff
          virtual EmObject *clone() const;
 
          // Track references
-         reco::TrackRef genericTrack(); // Returns a reco::TrackRef instance of present track
+         reco::TrackRef genericTrack() const; // Returns a reco::TrackRef instance of present track
          virtual reco::TrackRef track() const;
          virtual reco::GsfTrackRef gsfTrack() const;
          void setTrack(const reco::TrackRef &r){track_ = r; hasTrack_ = true;}
@@ -36,8 +37,11 @@ namespace EgEff
          void setSuperCluster(const reco::SuperClusterRef &r){superCluster_ = r; hasSc_ = true;}
 
          // Safety check for cuts
-         bool hasTrack(){return hasTrack_ || hasGsfTrack_;}
-         bool hasSuperCluster(){return hasSc_;}
+         bool hasTrack() const {return hasTrack_ || hasGsfTrack_;}
+         bool hasSuperCluster() const {return hasSc_;}
+
+	 // For histogramming help
+	 bool isBarrel() const;
 
       private:
          virtual bool overlap(const Candidate&) const;

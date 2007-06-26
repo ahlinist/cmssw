@@ -1,4 +1,11 @@
 #include "AnalysisDataFormats/ElectronEfficiency/interface/EmObject.h"
+#include "FWCore/Utilities/interface/Exception.h"
+#include "DataFormats/EcalRecHit/interface/EcalRecHit.h"
+#include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
+#include "DataFormats/EgammaReco/interface/SuperCluster.h"
+#include "DataFormats/EgammaReco/interface/BasicCluster.h"
+#include "DataFormats/DetId/interface/DetId.h"
+#include "DataFormats/EcalDetId/interface/EcalSubdetector.h"
 
 namespace EgEff
 {
@@ -7,7 +14,7 @@ namespace EgEff
       return new EmObject(*this);
    }
 
-   reco::TrackRef EmObject::genericTrack()
+   reco::TrackRef EmObject::genericTrack() const
    {
       reco::TrackRef trackRef;
       if(hasGsfTrack_)
@@ -45,4 +52,24 @@ namespace EgEff
          checkOverlap(superCluster(), o->superCluster())));
       return false;
    }
+
+  bool EmObject::isBarrel() const
+  {
+    bool retVal = false;
+    if(hasSuperCluster())
+      {
+	retVal = (superCluster()->seed()->getHitsByDetId()[0].subdetId() == EcalBarrel);
+      }
+    else if(hasTrack())
+      {
+	reco::TrackRef track = genericTrack();
+	retVal = (fabs(track->eta()) < 1.479);
+      }
+    else
+      {
+	throw new cms::Exception("No supercluster or track in EmObject");
+      }
+
+    return retVal;
+  }
 }
