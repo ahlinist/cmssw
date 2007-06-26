@@ -52,6 +52,29 @@ class ESDCCHeaderBlock {
   void setOptoRX1(const int& optoRX1) { optoRX1_ = optoRX1; };
   void setOptoRX2(const int& optoRX2) { optoRX2_ = optoRX2; };
   void setFEChannelStatus(const vector<int>& FEch) { FEch_ = FEch; };
+  // crepe thing 
+  void setPacketLength(const int & packetLen) { packetLen_ = packetLen; };  
+  void setBC(const int & bc) { bc_ = bc; };  
+  void setEV(const int & ev) { ev_ = ev; };  
+  // top level supervisor
+  void setBMMeasurements(const int & BMMeasurements) { BMMeasurements_ = BMMeasurements; };     
+  void setBeginOfSpillSec(const int & beginOfSpillSec) { beginOfSpillSec_ = beginOfSpillSec; };
+  void setBeginOfSpillMilliSec(const int & beginOfSpillMilliSec) { beginOfSpillMilliSec_ = beginOfSpillMilliSec; };
+  void setEndOfSpillSec(const int & endOfSpillSec) { endOfSpillSec_ = endOfSpillSec; };
+  void setEndOfSpillMilliSec(const int & endOfSpillMilliSec) { endOfSpillMilliSec_ = endOfSpillMilliSec; };
+  void setBeginOfSpillLV1(const int & beginOfSpillLV1) { beginOfSpillLV1_ = beginOfSpillLV1; };
+  void setEndOfSpillLV1(const int & endOfSpillLV1) { endOfSpillLV1_ = endOfSpillLV1; };
+  // Cosmic Trigger Supervisor
+  void setTimeStampSec(const int & timestamp_sec) { timestamp_sec_ = timestamp_sec; };
+  void setTimeStampUSec(const int & timestamp_usec) { timestamp_usec_ = timestamp_usec; };
+  void setSpillNumber(const int & spillNum) { spillNum_ = spillNum; };
+  void setEventInSpill(const int & evtInSpill) { evtInSpill_ = evtInSpill; };
+  void setCAMACError(const int & camacErr) { camacErr_ = camacErr; };
+  void setVMEError(const int & vmeErr) { vmeErr_ = vmeErr; };
+  void setADCChannelStatus(const vector<int>& ADCch_status) { ADCch_status_ = ADCch_status; }; 
+  void setADCChannel(const vector<int>& ADCch) { ADCch_ = ADCch; }; 
+  void setTDCChannelStatus(const vector<int>& TDCch_status) { TDCch_status_ = TDCch_status; }; 
+  void setTDCChannel(const vector<int>& TDCch) { TDCch_ = TDCch; }; 
 
   int getLV1() const { return LV1_; }
   int getBX() const { return BX_; }
@@ -68,9 +91,29 @@ class ESDCCHeaderBlock {
   int getOptoRX1() const { return optoRX1_; }
   int getOptoRX2() const { return optoRX2_; }
   vector<int> getFEChannelStatus() const { return FEch_; }
-
+  int getPacketLength() const { return packetLen_; }
+  int getBC() const { return bc_; }
+  int getEV() const { return ev_; }
+  int getBMMeasurements() const { return BMMeasurements_; }
+  int getBeginOfSpillSec() const { return beginOfSpillSec_; }
+  int getBeginOfSpillMiliSec() const { return beginOfSpillMilliSec_; }
+  int getEndOfSpillSec() const { return endOfSpillSec_; }
+  int getEndOfSpillMiliSec() const { return endOfSpillMilliSec_; }
+  int getBeginOfSpillLV1() const { return beginOfSpillLV1_; }
+  int getEndOfSpillLV1() const { return endOfSpillLV1_; }
+  int getTimeStampSec() const { return timestamp_sec_; } 
+  int getTimeStampUSec() const { return timestamp_usec_; }
+  int getSpillNumber() const { return spillNum_; }
+  int getEventInSpill() const { return evtInSpill_; }
+  int getCAMACError() const { return camacErr_; }
+  int getVMEError() const { return vmeErr_; }
+  vector<int> getADCChannelStatus() const { return ADCch_status_; }
+  vector<int> getADCChannel() const { return ADCch_; }
+  vector<int> getTDCChannelStatus() const { return TDCch_status_; }
+  vector<int> getTDCChannel() const { return TDCch_; }
+  
   private :
-
+    
   int dccId_;
   int fedId_;
   int LV1_;
@@ -88,6 +131,26 @@ class ESDCCHeaderBlock {
   int optoRX1_;
   int optoRX2_;
   vector<int> FEch_;
+  int packetLen_;
+  int bc_;
+  int ev_;
+  int BMMeasurements_;
+  int beginOfSpillSec_;
+  int beginOfSpillMilliSec_;
+  int endOfSpillSec_;
+  int endOfSpillMilliSec_;
+  int beginOfSpillLV1_;
+  int endOfSpillLV1_;
+  int timestamp_sec_;
+  int timestamp_usec_;
+  int spillNum_;
+  int evtInSpill_;
+  int camacErr_;
+  int vmeErr_;
+  vector<int> ADCch_status_;
+  vector<int> ADCch_;
+  vector<int> TDCch_status_;
+  vector<int> TDCch_;
 
 };
 

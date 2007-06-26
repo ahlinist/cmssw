@@ -20,6 +20,26 @@ ESDCCHeaderBlock::ESDCCHeaderBlock()
   optoRX1_ = -1;
   optoRX2_ = -1;
   FEch_.reserve(36);
+  packetLen_ = -1;
+  bc_ = -1;
+  ev_ = -1;
+  BMMeasurements_ = -1;
+  beginOfSpillSec_ = -1;
+  beginOfSpillMilliSec_ = -1;
+  endOfSpillSec_ = -1;
+  endOfSpillMilliSec_ = -1;
+  beginOfSpillLV1_ = -1;
+  endOfSpillLV1_ = -1;
+  timestamp_sec_ = -1;
+  timestamp_usec_ = -1;
+  spillNum_ = -1;
+  evtInSpill_ = -1;
+  camacErr_ = -1;
+  vmeErr_ = -1;
+  ADCch_status_.reserve(12);
+  ADCch_.reserve(12);
+  TDCch_status_.reserve(8);
+  TDCch_.reserve(8);
 
 }
 
@@ -43,5 +63,25 @@ ESDCCHeaderBlock::ESDCCHeaderBlock(const int& dccId)
   optoRX1_ = -1;
   optoRX2_ = -1;
   FEch_.reserve(36);
+  packetLen_ = -1;
+  bc_ = -1;
+  ev_ = -1;
+  BMMeasurements_ = -1;
+  beginOfSpillSec_ = -1;
+  beginOfSpillMilliSec_ = -1;
+  endOfSpillSec_ = -1;
+  endOfSpillMilliSec_ = -1;
+  beginOfSpillLV1_ = -1;
+  endOfSpillLV1_ = -1;
+  timestamp_sec_ = -1;
+  timestamp_usec_ = -1;
+  spillNum_ = -1;
+  evtInSpill_ = -1;
+  camacErr_ = -1;
+  vmeErr_ = -1;
+  ADCch_status_.reserve(12);
+  ADCch_.reserve(12);
+  TDCch_status_.reserve(8);
+  TDCch_.reserve(8);
 
 }
