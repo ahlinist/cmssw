@@ -6,16 +6,12 @@ module csc2DRecHits = CSCRecHitBProducer {
 ###########################################################
 #    Which digis:
 ###########################################################
-###  When using data from unpacker
-#    string CSCStripDigiProducer                 = "cscunpacker"
-#    string CSCWireDigiProducer                  = "cscunpacker"
-###  When accessing MC digis
      string CSCStripDigiProducer                 = "muonCSCDigis"
      string CSCWireDigiProducer                  = "muonCSCDigis"
 ###########################################################
 #    Calibration info:
 ###########################################################
-     untracked bool CSCUseCalibrations           = false
+     untracked bool CSCUseCalibrations           = true
 ###  New DB chamber index prefix (was 220000000)
      untracked int32  CSCchamberIdPrefix         = 0
      FileInPath theMappingFile                   = "CondFormats/CSCObjects/data/csc_slice_test_map.txt"
