@@ -37,7 +37,7 @@
      [tobrodpar:RodY],     -[tobrodpar:RodY]
   </Vector>
   <Vector name="SideRodZ" type="numeric" nEntries="2">
-     [zero],                [tobrodpar:RodDL]/2
+     [zero],                [tobrodpar:RodDL]
   </Vector>
   <String name="EndRod1Name"    value="tobrodpar:TOBEndRod1"/>
   <Vector name="EndRod1Y" type="numeric" nEntries="2">
