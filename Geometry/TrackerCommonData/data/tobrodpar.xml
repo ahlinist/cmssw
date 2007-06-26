@@ -113,49 +113,49 @@
  <Box name="TOBSideRod1"  dx="[SideRodW]" 
                           dy="[SideRodT]"    dz="([RodL]+[RodDL])/2"/>
  <Box name="TOBSideRod2"  dx="[SideRodW]" 
-                          dy="[SideRodT]"    dz="[RodL]/2"/>
+                          dy="[SideRodT]"    dz="([RodL]-[RodDL])/2"/>
  <Box name="TOBEndRod1"   dx="[CentralRodW]" dy="[SideRodT]"  dz="[SideRodW]"/>
  <Box name="TOBEndRod2"   dx="[CentralRodW]" dy="[EndRodT]"   dz="[EndRodL]"/>
  <Box name="TOBClamp"     dx="[ClampDx]"     dy="[ClampDy]"   dz="[ClampDz]"/>
  <Box name="TOBCable"     dx="[CableDx]"     dy="[CableDy]"   dz="[CableDz]"/>
  <Box name="TOBICC1"      dx="[ICCDx]"       dy="[ICCDy]"     dz="[ICC1Dz]"/>
  <Box name="TOBICC2"      dx="[ICCDx]"       dy="[ICCDy]"     dz="[ICC2Dz]"/>
- <Box name="TOBRodConn"      dx="[ConnDx]"      dy="[ConnDy]"    dz="[ConnDz]"/>
+ <Box name="TOBRodConn"   dx="[ConnDx]"      dy="[ConnDy]"    dz="[ConnDz]"/>
  <Box name="TOBCCUM"      dx="[CCUMDx]"      dy="[CCUMDy]"    dz="[CCUMDz]"/>
  <Box name="TOBRod"       dx="[RodW]"        dy="[RodT]"      dz="[RodL]"/>
  <Box name="TOBRodout"    dx="[RodW]"        dy="[RodT]"
                           dz="([RodL]+[RodDL])/2"/>
  <Box name="TOBRodin"     dx="[RodW]+[Tol]"  dy="([RodT]/2+[Tol])"
-                          dz="[RodDL]/2"/>
+                          dz="[RodDL]"/>
  <Box name="TOBAOH"       dx="[AOHDx]"       dy="[AOHDy]"     dz="[AOHDz]"/>
 
  <SubtractionSolid name="TOBRodL">
    <rSolid name="TOBRodout"/>
    <rSolid name="TOBRodin"/>
    <rRotation name="tobrodpar:000D"/>
-   <Translation x="[zero]" y="[RodT]/2"  z="[RodL]/2"/>
+   <Translation x="[zero]" y="[RodT]/2"  z="([RodL]-[RodDL])/2"/>
  </SubtractionSolid>
  <SubtractionSolid name="TOBRodH">
    <rSolid name="TOBRodout"/>
    <rSolid name="TOBRodin"/>
    <rRotation name="tobrodpar:000D"/>
-   <Translation x="[zero]" y="-[RodT]/2" z="-[RodL]/2"/>
+   <Translation x="[zero]" y="-[RodT]/2" z="-([RodL]-[RodDL])/2"/>
  </SubtractionSolid>
  <Box name="TOBRod1Cent"  dx="[CentralRodW]"         dy="[RodT]"
                           dz="([RodL]+[RodDL])/2"/>
  <Box name="TOBRod2Cent"  dx="([CentralRodW]+[Tol])" dy="([RodT]/2+[Tol])" 
-                          dz="[RodDL]/2"/>
+                          dz="[RodDL]"/>
  <SubtractionSolid name="TOBRodCentralL">
    <rSolid name="TOBRod1Cent"/>
    <rSolid name="TOBRod2Cent"/>
    <rRotation name="tobrodpar:000D"/>
-   <Translation x="[zero]" y="[RodT]/2"  z="[RodL]/2"/>
+   <Translation x="[zero]" y="[RodT]/2"  z="([RodL]-[RodDL])/2"/>
  </SubtractionSolid>
  <SubtractionSolid name="TOBRodCentralH">
    <rSolid name="TOBRod1Cent"/>
    <rSolid name="TOBRod2Cent"/>
    <rRotation name="tobrodpar:000D"/>
-   <Translation x="[zero]" y="-[RodT]/2" z="-[RodL]/2"/>
+   <Translation x="[zero]" y="-[RodT]/2" z="-([RodL]-[RodDL])/2"/>
  </SubtractionSolid>
 </SolidSection>
 
