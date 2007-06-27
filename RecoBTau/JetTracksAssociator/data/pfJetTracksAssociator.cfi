@@ -1,0 +1,6 @@
+    # Test tracks to jets association
+    module pfJetTracksAssociator = JetTracksAssociator {
+      InputTag tracks = ctfWithMaterialTracks
+      InputTag jets   = iterativeCone5PFJets
+      double coneSize = 0.5
+    }
