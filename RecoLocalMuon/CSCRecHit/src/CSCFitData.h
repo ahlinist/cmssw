@@ -2,7 +2,7 @@
 #define CSCRecHit_CSCFitData_h
 
 /** \class CSCFitData
- * Hold data for fitting while RecHit building.
+ * Hold data for fitting while building CSCRecHit2D's in CSCRecHit.
  */
 #include <vector>
 
@@ -17,9 +17,9 @@ class CSCFitData
 
   typedef std::vector<float> StripHitADCContainer;
 
-  //@@ Value for dy should be tuned/settable in input
-  std::vector<float> dummy;
-  CSCFitData() : x_(-99.), y_( 0. ), dy_( 8. ), tmax_( 0 ), adcs_( dummy ), bx_(-99) {};
+  //@@ Value for dy really should be tuned/settable in input
+
+  CSCFitData() : x_(-99.), y_( 0. ), dy_( 8. ), tmax_( 0 ), adcs_( StripHitADCContainer() ), bx_(-99) {};
   CSCFitData(float x, float y, float dy, int tmax, StripHitADCContainer adcs, int bx = 0) 
    : x_(x), y_(y), dy_(dy), tmax_(tmax), adcs_(adcs), bx_(bx) {};
 
@@ -38,8 +38,7 @@ private:
   float dy_;
   int tmax_;
   StripHitADCContainer adcs_;
-  int   bx_;
-  StripHitADCContainer theadcs;
+  int bx_;
 };
 
 #endif
