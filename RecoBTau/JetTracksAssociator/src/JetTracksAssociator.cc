@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrea Rizzi
 //         Created:  Wed Apr 12 11:12:49 CEST 2006
-// $Id: JetTracksAssociator.cc,v 1.11 2007/05/08 16:33:08 arizzi Exp $
+// $Id: JetTracksAssociator.cc,v 1.12 2007/05/09 08:09:20 arizzi Exp $
 //
 //
 
@@ -38,7 +38,7 @@ using namespace std;
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/BTauReco/interface/JetTracksAssociation.h"
 #include "DataFormats/Math/interface/Vector3D.h"
-
+#include "FWCore/Framework/interface/View.h"
 // Math
 #include "Math/GenVector/VectorUtil.h"
 #include "Math/GenVector/PxPyPzE4D.h"
@@ -57,7 +57,7 @@ class JetTracksAssociator : public edm::EDProducer {
 
       virtual void produce(edm::Event&, const edm::EventSetup&);
    private:
-     JetTracksAssociationCollection * associate(const edm::Handle<CaloJetCollection> & jets,
+     JetTracksAssociationCollection * associate(const edm::Handle<edm::View<Jet> > & jets,
                                 const edm::Handle<TrackCollection> & tracks ) const;
      bool trackIsInJetCone( const Jet & jet , const Track & track ) const;
 
@@ -105,7 +105,7 @@ void
 JetTracksAssociator::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
    using namespace edm;
-   Handle<CaloJetCollection> jets;
+   Handle<View<Jet> > jets;
    iEvent.getByLabel(m_jetsSrc, jets);
    Handle<TrackCollection> tracks;
    iEvent.getByLabel(m_tracksSrc, tracks);
@@ -114,7 +114,7 @@ JetTracksAssociator::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    iEvent.put(jetTracks);
 }
 
-JetTracksAssociationCollection * JetTracksAssociator::associate( const edm::Handle<CaloJetCollection> & jets,
+JetTracksAssociationCollection * JetTracksAssociator::associate( const edm::Handle<edm::View<Jet> > & jets,
                                                                  const edm::Handle<TrackCollection>   & tracks ) const
 {
   JetTracksAssociationCollection * outputCollection = new JetTracksAssociationCollection();
@@ -124,21 +124,15 @@ JetTracksAssociationCollection * JetTracksAssociator::associate( const edm::Hand
     //cout << boolalpha;
     //cout << fixed;
 
-#ifdef DEBUG
-    LogDebug("JetTracksAssociator") << "->   Jet " << setw(2) << j << " pT: " << setprecision(2) << setw(6) << (*jets)[j].pt() << " eta: " << setprecision(2) << setw(5) << (*jets)[j].eta() << " phi: " << setprecision(2) << setw(5) << (*jets)[j].phi();
-#endif
     TrackRefVector assoTracks;
     for (size_t t=0; t < tracks->size() ; t++) {
       double delta  = ROOT::Math::VectorUtil::DeltaR((*jets)[j].p4().Vect(), (*tracks)[t].momentum());
       bool   inside = (delta < m_deltaRCut);
-#ifdef DEBUG
-       LogDebug("JetTracksAssociator") << "   Track " << setw(2) << t << " pT: " << setprecision(2) << setw(6) << (*tracks)[t].pt() << " eta: " << setprecision(2) << setw(5) << (*tracks)[t].eta() << " phi: " << setprecision(2) << setw(5) << (*tracks)[t].phi()
-                                       << "   delta R: " << setprecision(2) << setw(4) << delta << " is inside: " << inside;
-#endif
-      if (inside)
+      
+    if (inside)
         assoTracks.push_back(edm::Ref<TrackCollection>(tracks, t));
     }
-        outputCollection->push_back(JetTracksAssociation(edm::RefToBase<Jet>(edm::Ref<CaloJetCollection>(jets, j)), assoTracks));
+        outputCollection->push_back(JetTracksAssociation(jets->refAt(j), assoTracks));
   }
 
   return outputCollection;
