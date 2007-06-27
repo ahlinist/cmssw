@@ -53,6 +53,7 @@ class RecoAnalyzerExample : public edm::EDAnalyzer {
 
 using namespace edm;
 using namespace reco;
+using namespace std;
 
 RecoAnalyzerExample::RecoAnalyzerExample( const ParameterSet & cfg ) :
   outputFileName_( cfg.getUntrackedParameter<string>("histoutputFile") ),
