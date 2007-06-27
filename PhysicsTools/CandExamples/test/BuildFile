@@ -5,6 +5,7 @@
 </bin>
 
 <bin name="candPlots" file="candPlots.cpp">
+ <use name=FWCore/FWLite>
  <use name=DataFormats/RecoCandidate>
  <use name=root>
  <use name=rootcintex>
