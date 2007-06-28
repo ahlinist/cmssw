@@ -18,7 +18,7 @@
   <Numeric name="CoolSide"         value="[pixbarlayer:CoolSide]"/>
   <Numeric name="CoolThick"        value="[pixbarlayer:CoolThick]"/>
   <Numeric name="CoolDist"         value="[pixbarlayer1:CoolDist]"/>
-  <String name="CoolMaterial"      value="pixbarmaterial:Pix_Bar_Cool"/>
+  <String name="CoolMaterial"      value="materials:C6F14_F2_-20C"/>
   <String name="CoolTubeMaterial"  value="materials:Aluminium"/>
   <Vector name="LadderName" type="string" nEntries="2">
     pixbarladderfull:PixelBarrelLadderFull, 
