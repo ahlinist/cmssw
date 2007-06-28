@@ -83,5 +83,4 @@ void BtagMCTest::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
 
 //define this as a plug-in
-DEFINE_SEAL_MODULE();
-DEFINE_ANOTHER_FWK_MODULE(BtagMCTest);
+DEFINE_FWK_MODULE(BtagMCTest);
