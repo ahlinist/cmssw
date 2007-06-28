@@ -17,8 +17,6 @@ $Id$
 #include <boost/shared_ptr.hpp>
 #include <boost/program_options.hpp>
 
-#include "SealBase/Error.h"
-
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Framework/interface/EventProcessor.h"
 #include "FWCore/PluginManager/interface/PluginManager.h"
@@ -244,17 +242,6 @@ int main(int argc, char* argv[])
     proc.off();
     proc->endJob();
     rc = 0;
-  }
-  catch (seal::Error& e) {
-    std::string shortDesc("SEALException");
-    std::ostringstream longDesc;
-    longDesc << "seal::Exception caught in "
-             << kProgramName
-             << "\n"
-             << e.explainSelf();
-    rc = 8000;
-    jobRep->reportError(shortDesc, longDesc.str(), rc);
-    edm::LogSystem(shortDesc) << longDesc.str() << "\n";
   }
   catch (cms::Exception& e) {
     std::string shortDesc("CMSException");
