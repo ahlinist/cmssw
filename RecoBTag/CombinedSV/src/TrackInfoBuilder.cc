@@ -2,7 +2,7 @@
 #include "RecoBTag/BTagTools/interface/SignedTransverseImpactParameter.h"
 #include "RecoBTag/BTagTools/interface/SignedImpactParameter3D.h"
 #include "MagneticField/Engine/interface/MagneticField.h"
-#include "RecoVertex/VertexPrimitives/interface/BeamSpot.h"
+#include "DataFormats/BeamSpot/interface/BeamSpot.h"
 #include "RecoBTag/CombinedSV/interface/ParticleMasses.h"
 #include "CLHEP/Vector/LorentzVector.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -103,7 +103,7 @@ signed TrackInfoBuilder::d0Sign( const reco::TransientTrack & track ) const
   int sign = +1;
   GlobalPoint trackPCA = track.impactPointState().freeState()->position();
   CLHEP::Hep3Vector dir ( jetdir_.x(), jetdir_.y(), jetdir_.z() );
-  BeamSpot spot;
+  reco::BeamSpot spot;
   CLHEP::Hep3Vector vPCA ( trackPCA.x() - spot.position().x(),
                            trackPCA.y() - spot.position().y(),
                            trackPCA.z() - spot.position().z() );
