@@ -75,6 +75,10 @@ class CSCRecHit2DBuilder
       /** Map chamber type to algorithm by chamber type index
        */
       std::vector<CSCRecHit2DAlgo*> algos_;
+
+      /** Store algorithms we build
+       */
+      std::vector<CSCRecHit2DAlgo*> algobuf_;
 };
 
 #endif
