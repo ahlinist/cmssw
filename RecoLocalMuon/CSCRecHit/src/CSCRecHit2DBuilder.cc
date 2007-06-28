@@ -18,7 +18,7 @@
 #include <FWCore/MessageLogger/interface/MessageLogger.h> 
 
 CSCRecHit2DBuilder::CSCRecHit2DBuilder( const edm::ParameterSet& ps ) : 
-   geom_(0), algos_( std::vector<CSCRecHit2DAlgo*>() ) {
+   geom_(0), algos_( std::vector<CSCRecHit2DAlgo*>() ), algobuf_( std::vector<CSCRecHit2DAlgo*>() ) {
 	// Receives ParameterSet percolated down from EDProducer
 	
   // Find names of algorithms
@@ -32,7 +32,7 @@ CSCRecHit2DBuilder::CSCRecHit2DBuilder( const edm::ParameterSet& ps ) :
 
   // How many chamber types do we have? This seems hard-wirable, but what the heck
   int ntypes = ps.getParameter<int>("no_of_chamber_types");
-  LogDebug("CSC") << "no. of chamber types = " << ntypes;
+  LogTrace("CSC") << "no. of chamber types = " << ntypes;
 
   if ( ntypes <= 0 ) {
 	 throw cms::Exception("ParameterSetError") << "No. of chamber types=" << ntypes << " is invalid" << std::endl;
@@ -47,27 +47,26 @@ CSCRecHit2DBuilder::CSCRecHit2DBuilder( const edm::ParameterSet& ps ) :
    }
 
   // Instantiate the requested algorithm(s) and buffer them
-  std::vector<CSCRecHit2DAlgo*> algobuf;
 
   // Ask factory to build this algorithm, giving it appropriate ParameterSet
   for ( size_t i = 0; i < algoNames.size(); ++i ) {
 	CSCRecHit2DAlgo* pAlgo = CSCRecHit2DBuilderPluginFactory::get()->
 	        create( algoNames[i], algoPSets[i] );
-	algobuf.push_back( pAlgo );
-	LogDebug("CSC") << "algorithm [" << i << "] named " << algoNames[i] << " has address " << pAlgo;
+	algobuf_.push_back( pAlgo );
+	LogTrace("CSC") << "algorithm [" << i << "] named " << algoNames[i] << " has address " << pAlgo;
   }
 
 	// Register appropriate algorithm for each chamber type
   for ( size_t i = 0; i < algoToType.size(); ++i ) {
-	algos_[i] = algobuf[ algoToType[i] - 1 ]; // Care! std::vector index is type-1
-	LogDebug("CSC") << "address of algorithm for chamber type " << i << " is " << algos_[i];
+	algos_[i] = algobuf_[ algoToType[i] - 1 ]; // Care! std::vector index is type-1
+	LogTrace("CSC") << "address of algorithm for chamber type " << i << " is " << algos_[i];
   }
 }
 
 CSCRecHit2DBuilder::~CSCRecHit2DBuilder() {
   // Delete the algorithms the factory built
-  for ( size_t i = 0; i < algos_.size(); ++i ){
-    delete algos_[i];
+  for ( size_t i = 0; i < algobuf_.size(); ++i ){
+    delete algobuf_[i];
   }
 }
 
@@ -84,7 +83,7 @@ void CSCRecHit2DBuilder::build( const CSCStripDigiCollection* stripdc,
 
     CSCWireDigiCollection::Range rwired = wiredc->get( id );
 
-    LogDebug("CSC") << "found " << rwired.second - rwired.first << " wire digi(s) in layer";
+    LogTrace("CSC") << "found " << rwired.second - rwired.first << " wire digi(s) in layer";
 
     // Skip if no wire digis in this layer
     // But for ME11, real wire digis are labelled as belonging to ME1b, so that's where ME1a must look
@@ -98,24 +97,24 @@ void CSCRecHit2DBuilder::build( const CSCStripDigiCollection* stripdc,
       CSCDetId idw( endcap, 1, 1, chamber, layer ); // Set idw to same layer in ME1b
       //      CSCWireDigiCollection::Range rwired = wiredc->get( idw );
       rwired = wiredc->get( idw );
-      LogDebug("CSC") << "found " << rwired.second - rwired.first << " me11 wire digi(s) in layer";
+      LogTrace("CSC") << "found " << rwired.second - rwired.first << " me11 wire digi(s) in layer";
       if ( rwired.second == rwired.first ) continue; // Nothing there either, skip
     }
 
     const CSCStripDigiCollection::Range& rstripd = (*it).second;
 
-    LogDebug("CSC") << "found " << rstripd.second - rstripd.first << " strip digi(s) in layer";
+    LogTrace("CSC") << "found " << rstripd.second - rstripd.first << " strip digi(s) in layer";
 
     // Build rechits in one layer by running appropriate algorithm
     const CSCLayer* layer = getLayer( id );
-    LogDebug("CSC") << "CSCDetId " << id << " adr CSCLayer=" << layer << "\n";
+    LogTrace("CSC") << "CSCDetId " << id << " adr CSCLayer=" << layer << "\n";
 
     //    int chamberType = dynamic_cast<const CSCChamberSpecs&>(layer->type()).chamberType(); 
     int chamberType = layer->chamber()->specs()->chamberType();
-    LogDebug("CSC") << "chambertype=" << chamberType;
+    LogTrace("CSC") << "chambertype=" << chamberType;
 
     CSCRecHit2DAlgo* theAlgo = getAlgo(chamberType);
-    LogDebug("CSC") << "use algo w. adr=" << theAlgo;
+    LogTrace("CSC") << "use algo w. adr=" << theAlgo;
 
     std::vector<CSCRecHit2D> rhv = theAlgo->run( id, layer, rstripd, rwired );
    
