@@ -6,11 +6,10 @@
 #include "RecoBTag/TrackCounting/interface/TrackCountingComputer.h"
 #include "RecoBTag/TrackCounting/interface/TrackCounting.h"
 
-
 DEFINE_FWK_MODULE(TrackCounting);
 
-typedef JetTagComputerESProducer<TrackCountingComputer>       TrackCountingESProducer;
-DEFINE_ANOTHER_FWK_EVENTSETUP_MODULE(TrackCountingESProducer);
-typedef JetTagComputerESProducer<NegativeTrackCountingComputer>       NegativeTrackCountingESProducer;
-DEFINE_ANOTHER_FWK_EVENTSETUP_MODULE(NegativeTrackCountingESProducer);
+typedef JetTagComputerESProducer<TrackCountingComputer>         TrackCountingESProducer;
+DEFINE_FWK_EVENTSETUP_MODULE(TrackCountingESProducer);
 
+typedef JetTagComputerESProducer<NegativeTrackCountingComputer> NegativeTrackCountingESProducer;
+DEFINE_FWK_EVENTSETUP_MODULE(NegativeTrackCountingESProducer);
