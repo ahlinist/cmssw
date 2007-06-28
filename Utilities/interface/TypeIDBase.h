@@ -22,7 +22,6 @@
 
 // system include files
 #include <typeinfo>
-#include <string>
 
 // user include files
 

@@ -8,7 +8,6 @@ $Id$
 #include "FWCore/Utilities/interface/FriendlyName.h"
 #include "FWCore/Utilities/interface/EDMException.h"
 #include "Reflex/Type.h"
-#include <string>
 #include "boost/thread/tss.hpp"
 
 namespace edm {
