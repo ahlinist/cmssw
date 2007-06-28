@@ -1,5 +1,5 @@
 #include "RecoBTag/CombinedSV/interface/PseudoVertexBuilder.h"
-#include "RecoVertex/VertexPrimitives/interface/BeamSpot.h"
+#include "DataFormats/BeamSpot/interface/BeamSpot.h"
 #include "RecoVertex/VertexPrimitives/interface/TransientVertex.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
@@ -97,14 +97,16 @@ reco::Vertex PseudoVertexBuilder::build( VertexType t,
   double ndof = 2*nTracks-3;
 
   // now setup vertex
-  BeamSpot s;
+  reco::BeamSpot s;
   vector< reco::TransientTrack > trks;
   for ( vector< combsv::CombinedTrack >::const_iterator i=tracks_.begin(); 
         i!=tracks_.end() ; ++i )
   {
     trks.push_back ( *i );
   }
-  TransientVertex vtx ( s.position(), s.error(), trks, chi2, ndof );
+  VertexState vs ( s );
+
+  TransientVertex vtx ( vs, trks, chi2, ndof );
   return vtx;
 }
 
