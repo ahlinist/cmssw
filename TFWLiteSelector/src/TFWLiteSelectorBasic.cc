@@ -18,7 +18,6 @@
 #include "TBranch.h"
 #include "TClass.h"
 #include "Reflex/Type.h"
-#include "Reflex/Object.h"
 #include "boost/shared_ptr.hpp"
 
 // user include files

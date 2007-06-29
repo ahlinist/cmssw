@@ -41,17 +41,12 @@
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
-#include "FWCore/MessageService/interface/ELcontextSupplier.h"
 #include "FWCore/MessageService/interface/MessageLogger.h"
 
-#include "FWCore/MessageLogger/interface/MessageSender.h"
 #include "FWCore/MessageLogger/interface/MessageLoggerQ.h"
 #include "FWCore/MessageLogger/interface/MessageDrop.h"
-#include "FWCore/MessageLogger/interface/ELseverityLevel.h"
 
 #include "DataFormats/Provenance/interface/ModuleDescription.h"
-#include "DataFormats/Provenance/interface/EventID.h"
-#include "DataFormats/Provenance/interface/Timestamp.h"
 
 #include <sstream>
 

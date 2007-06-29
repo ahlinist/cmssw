@@ -17,8 +17,6 @@
 // user include files
 #include "FWCore/ServiceRegistry/interface/ServiceRegistry.h"
 #include "FWCore/ParameterSet/interface/MakeParameterSets.h"
-#include "FWCore/ParameterSet/interface/ParameterSet.h"
-
 
 //
 // constants, enums and typedefs

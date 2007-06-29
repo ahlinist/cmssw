@@ -15,8 +15,6 @@
 
 // user include files
 #include "FWCore/Framework/interface/LooperFactory.h"
-#include "FWCore/Framework/interface/EventSetupProvider.h"
-
 
 //
 // static member functions
