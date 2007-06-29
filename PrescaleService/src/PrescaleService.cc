@@ -14,14 +14,9 @@
 #include "FWCore/Framework/interface/Event.h"
 
 #include "FWCore/PrescaleService/interface/PrescaleService.h"
-#include "DataFormats/Provenance/interface/ModuleDescription.h"
-#include "DataFormats/Provenance/interface/EventID.h"
-#include "DataFormats/Provenance/interface/Timestamp.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
-#include "FWCore/Utilities/interface/Exception.h"
 
 #include <iostream>
-#include <string>
 #include <sstream>
 #include <algorithm>
 

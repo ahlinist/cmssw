@@ -18,13 +18,11 @@
 #include "TBranch.h"
 #include "TClass.h"
 #include "Reflex/Type.h"
-#include "Reflex/Object.h"
 
 // user include files
 #include "FWCore/FWLite/src/BareRootProductGetter.h"
 #include "DataFormats/Provenance/interface/ProductRegistry.h"
 #include "DataFormats/Provenance/interface/BranchType.h"
-#include "DataFormats/Common/interface/EDProduct.h"
 #include "DataFormats/Common/interface/Wrapper.h"
 #include "FWCore/Utilities/interface/Exception.h"
 

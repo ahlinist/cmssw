@@ -2,10 +2,7 @@
 $Id$
 ----------------------------------------------------------------------*/
 
-#include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Sources/interface/EDInputSource.h"
-#include "FWCore/Framework/interface/EventPrincipal.h"
-#include "FWCore/Framework/interface/Event.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 namespace edm {

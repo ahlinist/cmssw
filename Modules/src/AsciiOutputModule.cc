@@ -3,14 +3,11 @@ $Id$
 ----------------------------------------------------------------------*/
 
 #include <algorithm>
-#include <iostream>
 #include <iterator>
 #include <ostream>
 
 #include "FWCore/Modules/src/AsciiOutputModule.h"
 #include "FWCore/Framework/interface/EventPrincipal.h"
-#include "FWCore/Framework/interface/OutputModule.h"
-#include "DataFormats/Provenance/interface/ProductRegistry.h"
 #include "DataFormats/Provenance/interface/Provenance.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 

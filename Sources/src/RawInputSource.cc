@@ -2,7 +2,6 @@
 $Id$
 ----------------------------------------------------------------------*/
 
-#include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Sources/interface/RawInputSource.h"
 #include "FWCore/Framework/interface/EventPrincipal.h"
 #include "FWCore/Framework/interface/LuminosityBlockPrincipal.h"

@@ -20,19 +20,12 @@
 
 // system include files
 #include <memory>
-#include <map>
-#include <vector>
 #include <iostream>
 
 // user include files
 #include "FWCore/Modules/src/EventSetupRecordDataGetter.h"
 
-#include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
-#include "FWCore/Framework/interface/EventSetupRecord.h"
-
-#include "FWCore/ParameterSet/interface/ParameterSet.h"
-
 
 //
 // class decleration
