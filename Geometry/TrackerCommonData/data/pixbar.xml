@@ -16,7 +16,7 @@
  <Constant name="SupportRin"        value="21.65*cm"/>
  <Constant name="SupportW"          value="20.00*cm"/>
  <Constant name="SupportT"          value="0.350*cm"/>
- <Constant name="SupportY"          value="19.25*cm"/>
+ <Constant name="SupportY"          value="19.00*cm"/>
  <Constant name="ShieldL"           value="55.40*cm"/>
  <Constant name="Shield1Rin"        value="3.700*cm"/>
  <Constant name="Shield1Rout"       value="3.705*cm"/>
