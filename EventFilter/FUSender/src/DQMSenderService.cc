@@ -28,7 +28,7 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 #include "i2o/Method.h"
-#include "i2o/utils/include/i2o/utils/AddressMap.h"
+#include "i2o/utils/AddressMap.h"
 #include "toolbox/mem/MemoryPoolFactory.h"
 #include "xcept/tools.h"
 
