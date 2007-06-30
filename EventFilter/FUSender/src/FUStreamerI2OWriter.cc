@@ -5,7 +5,7 @@
      destination is hardwired and provided through a global variable.
      See the CMS EvF Storage Manager wiki page for further notes.
 
-   $Id: FUStreamerI2OWriter.cc,v 1.3 2007/03/26 22:24:06 hcheung Exp $
+   $Id: FUStreamerI2OWriter.cc,v 1.4 2007/05/01 22:38:13 hcheung Exp $
 */
 
 #include "EventFilter/Utilities/interface/i2oEvfMsgs.h"
@@ -21,8 +21,8 @@
 #include "xdaq/ApplicationContext.h"
 #include "xdaq/ApplicationGroup.h"
 
-#include "xcept/include/xcept/Exception.h"
-#include "toolbox/include/toolbox/fsm/exception/Exception.h"
+#include "xcept/Exception.h"
+#include "toolbox/fsm/exception/Exception.h"
 
 #include "toolbox/mem/MemoryPoolFactory.h"
 #include "toolbox/mem/HeapAllocator.h"
@@ -36,7 +36,7 @@
 #include "xcept/tools.h"
 
 #include "i2o/Method.h"
-#include "i2o/utils/include/i2o/utils/AddressMap.h"
+#include "i2o/utils/AddressMap.h"
 
 #include "xgi/Method.h"
 
