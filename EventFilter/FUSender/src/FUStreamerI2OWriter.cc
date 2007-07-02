@@ -5,12 +5,13 @@
      destination is hardwired and provided through a global variable.
      See the CMS EvF Storage Manager wiki page for further notes.
 
-   $Id: FUStreamerI2OWriter.cc,v 1.4 2007/05/01 22:38:13 hcheung Exp $
+   $Id: FUStreamerI2OWriter.cc,v 1.5 2007/06/30 16:17:22 hcheung Exp $
 */
 
 #include "EventFilter/Utilities/interface/i2oEvfMsgs.h"
 #include "EventFilter/FUSender/src/FUStreamerI2OWriter.h"
 #include "DataFormats/Provenance/interface/EventID.h"
+#include "IOPool/Streamer/interface/EventMessage.h"
 #include "EventFilter/FUSender/interface/FUi2oSender.h"
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
