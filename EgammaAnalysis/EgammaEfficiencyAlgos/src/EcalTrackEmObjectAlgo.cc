@@ -18,6 +18,7 @@ void EcalTrackEmObjectAlgo::initialise(const edm::ParameterSet &params)
    if(trackAssociation_)
    {
       minTrackPt_ = params.getParameter<double>("MinTrackPt");
+      dRSuperClusterTrack_ = params.getParameter<double>("dRSuperClusterTrack");
    }
 }
 
@@ -107,7 +108,7 @@ int EcalTrackEmObjectAlgo::findTrack(const reco::SuperClusterRef &seed, const re
 
    for(unsigned int j = 0; j < numTracks; j++)
     {
-      if(dR((*tracks)[j].eta(), (*tracks)[j].phi(), seed->position().Eta(), seed->position().Phi()) < 0.2)
+      if(dR((*tracks)[j].eta(), (*tracks)[j].phi(), seed->position().Eta(), seed->position().Phi()) < dRSuperClusterTrack_)
       {
          double trackPt = (*tracks)[j].pt();
          if((trackPt > 10) && (trackPt > highestPt))
