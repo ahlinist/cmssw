@@ -1173,488 +1173,488 @@
     </MaterialFraction>
   </CompositeMaterial>
 
-  <CompositeMaterial name="TOB_rib1" density="0.12077*g/cm3" symbol=" " method="mixture by weight">
-    <MaterialFraction fraction="0.00627">
+  <CompositeMaterial name="TOB_rib1" density="0.17090*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="0.00443">
       <rMaterial name="materials:T_G10"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.0008">
+    <MaterialFraction fraction="0.00056">
       <rMaterial name="materials:Copper"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.02615">
+    <MaterialFraction fraction="0.01848">
       <rMaterial name="materials:Copper"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.01674">
+    <MaterialFraction fraction="0.01183">
       <rMaterial name="materials:Epoxy"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.00661">
+    <MaterialFraction fraction="0.00467">
       <rMaterial name="materials:T_G10"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.001">
+    <MaterialFraction fraction="0.00071">
       <rMaterial name="materials:Copper"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.01877">
+    <MaterialFraction fraction="0.01326">
       <rMaterial name="materials:Copper"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.01987">
+    <MaterialFraction fraction="0.01404">
       <rMaterial name="materials:Epoxy"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.03829">
+    <MaterialFraction fraction="0.15281">
       <rMaterial name="materials:Copper"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.007">
+    <MaterialFraction fraction="0.02792">
       <rMaterial name="materials:Aluminium"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.00411">
+    <MaterialFraction fraction="0.01641">
       <rMaterial name="materials:Silicone_Gel"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.01696">
+    <MaterialFraction fraction="0.06769">
       <rMaterial name="materials:Polyethylene"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.02296">
+    <MaterialFraction fraction="0.09162">
       <rMaterial name="materials:Polyethylene"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.01188">
+    <MaterialFraction fraction="0.00839">
       <rMaterial name="materials:T_G10"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.02832">
+    <MaterialFraction fraction="0.02001">
       <rMaterial name="materials:Brass"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.00866">
+    <MaterialFraction fraction="0.00612">
       <rMaterial name="materials:Epoxy"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.00553">
+    <MaterialFraction fraction="0.00391">
       <rMaterial name="materials:BGA"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.06035">
+    <MaterialFraction fraction="0.04265">
       <rMaterial name="materials:Polyethylene"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.31208">
+    <MaterialFraction fraction="0.22054">
       <rMaterial name="materials:Copper"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.18087">
+    <MaterialFraction fraction="0.12781">
       <rMaterial name="materials:Copper"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.04992">
+    <MaterialFraction fraction="0.03527">
       <rMaterial name="materials:Polyethylene"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.02378">
+    <MaterialFraction fraction="0.0168">
       <rMaterial name="materials:Aluminium"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.06035">
+    <MaterialFraction fraction="0.04265">
       <rMaterial name="materials:Polyethylene"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.01358">
+    <MaterialFraction fraction="0.00959">
       <rMaterial name="materials:T_Kapton"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.03316">
+    <MaterialFraction fraction="0.02344">
       <rMaterial name="materials:BGA"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.02598">
+    <MaterialFraction fraction="0.01836">
       <rMaterial name="materials:Epoxy"/>
     </MaterialFraction>
   </CompositeMaterial>
 
-  <CompositeMaterial name="TOB_rib2" density="0.11991*g/cm3" symbol=" " method="mixture by weight">
-    <MaterialFraction fraction="0.00634">
+  <CompositeMaterial name="TOB_rib2" density="0.17160*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="0.00443">
       <rMaterial name="materials:T_G10"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.00081">
+    <MaterialFraction fraction="0.00056">
       <rMaterial name="materials:Copper"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.02645">
+    <MaterialFraction fraction="0.01848">
       <rMaterial name="materials:Copper"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.01693">
+    <MaterialFraction fraction="0.01183">
       <rMaterial name="materials:Epoxy"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.00669">
+    <MaterialFraction fraction="0.00467">
       <rMaterial name="materials:T_G10"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.00102">
+    <MaterialFraction fraction="0.00071">
       <rMaterial name="materials:Copper"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.01898">
+    <MaterialFraction fraction="0.01326">
       <rMaterial name="materials:Copper"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.0201">
+    <MaterialFraction fraction="0.01405">
       <rMaterial name="materials:Epoxy"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.03388">
+    <MaterialFraction fraction="0.1528">
       <rMaterial name="materials:Copper"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.00619">
+    <MaterialFraction fraction="0.02792">
       <rMaterial name="materials:Aluminium"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.00364">
+    <MaterialFraction fraction="0.01641">
       <rMaterial name="materials:Silicone_Gel"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.01501">
+    <MaterialFraction fraction="0.06769">
       <rMaterial name="materials:Polyethylene"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.02032">
+    <MaterialFraction fraction="0.09161">
       <rMaterial name="materials:Polyethylene"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.01201">
+    <MaterialFraction fraction="0.00839">
       <rMaterial name="materials:T_G10"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.02864">
+    <MaterialFraction fraction="0.02001">
       <rMaterial name="materials:Brass"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.00876">
+    <MaterialFraction fraction="0.00612">
       <rMaterial name="materials:Epoxy"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.00559">
+    <MaterialFraction fraction="0.00391">
       <rMaterial name="materials:BGA"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.06103">
+    <MaterialFraction fraction="0.04265">
       <rMaterial name="materials:Polyethylene"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.31561">
+    <MaterialFraction fraction="0.22055">
       <rMaterial name="materials:Copper"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.18291">
+    <MaterialFraction fraction="0.12782">
       <rMaterial name="materials:Copper"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.05048">
+    <MaterialFraction fraction="0.03528">
       <rMaterial name="materials:Polyethylene"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.02405">
+    <MaterialFraction fraction="0.0168">
       <rMaterial name="materials:Aluminium"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.06103">
+    <MaterialFraction fraction="0.04265">
       <rMaterial name="materials:Polyethylene"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.01373">
+    <MaterialFraction fraction="0.00959">
       <rMaterial name="materials:T_Kapton"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.03354">
+    <MaterialFraction fraction="0.02344">
       <rMaterial name="materials:BGA"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.02628">
+    <MaterialFraction fraction="0.01836">
       <rMaterial name="materials:Epoxy"/>
     </MaterialFraction>
   </CompositeMaterial>
 
-  <CompositeMaterial name="TOB_rib3" density="0.11458*g/cm3" symbol=" " method="mixture by weight">
-    <MaterialFraction fraction="0.00515">
+  <CompositeMaterial name="TOB_rib3" density="0.16145*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="0.00365">
       <rMaterial name="materials:T_G10"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.00066">
+    <MaterialFraction fraction="0.00047">
       <rMaterial name="materials:Copper"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.02149">
+    <MaterialFraction fraction="0.01525">
       <rMaterial name="materials:Copper"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.01376">
-      <rMaterial name="materials:Epoxy"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.00543">
-      <rMaterial name="materials:T_G10"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.00083">
-      <rMaterial name="materials:Copper"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.01542">
-      <rMaterial name="materials:Copper"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.01633">
-      <rMaterial name="materials:Epoxy"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.03146">
-      <rMaterial name="materials:Copper"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.00575">
-      <rMaterial name="materials:Aluminium"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.00338">
-      <rMaterial name="materials:Silicone_Gel"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.01394">
-      <rMaterial name="materials:Polyethylene"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.01886">
-      <rMaterial name="materials:Polyethylene"/>
     </MaterialFraction>
     <MaterialFraction fraction="0.00976">
-      <rMaterial name="materials:T_G10"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.02326">
-      <rMaterial name="materials:Brass"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.00712">
       <rMaterial name="materials:Epoxy"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.00454">
-      <rMaterial name="materials:BGA"/>
+    <MaterialFraction fraction="0.00386">
+      <rMaterial name="materials:T_G10"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.06375">
-      <rMaterial name="materials:Polyethylene"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.32966">
+    <MaterialFraction fraction="0.00059">
       <rMaterial name="materials:Copper"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.19105">
+    <MaterialFraction fraction="0.01094">
       <rMaterial name="materials:Copper"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.05273">
-      <rMaterial name="materials:Polyethylene"/>
+    <MaterialFraction fraction="0.01159">
+      <rMaterial name="materials:Epoxy"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.02512">
+    <MaterialFraction fraction="0.14678">
+      <rMaterial name="materials:Copper"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.02682">
       <rMaterial name="materials:Aluminium"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.06375">
+    <MaterialFraction fraction="0.01576">
+      <rMaterial name="materials:Silicone_Gel"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.06502">
       <rMaterial name="materials:Polyethylene"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.01434">
-      <rMaterial name="materials:T_Kapton"/>
+    <MaterialFraction fraction="0.08801">
+      <rMaterial name="materials:Polyethylene"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.03503">
+    <MaterialFraction fraction="0.00692">
+      <rMaterial name="materials:T_G10"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.01651">
+      <rMaterial name="materials:Brass"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.00505">
+      <rMaterial name="materials:Epoxy"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.00322">
       <rMaterial name="materials:BGA"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.02745">
+    <MaterialFraction fraction="0.04524">
+      <rMaterial name="materials:Polyethylene"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.23396">
+      <rMaterial name="materials:Copper"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.13559">
+      <rMaterial name="materials:Copper"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.03742">
+      <rMaterial name="materials:Polyethylene"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.01783">
+      <rMaterial name="materials:Aluminium"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.04524">
+      <rMaterial name="materials:Polyethylene"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.01018">
+      <rMaterial name="materials:T_Kapton"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.02486">
+      <rMaterial name="materials:BGA"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.01948">
       <rMaterial name="materials:Epoxy"/>
     </MaterialFraction>
   </CompositeMaterial>
 
-  <CompositeMaterial name="TOB_rib4" density="0.11397*g/cm3" symbol=" " method="mixture by weight">
-    <MaterialFraction fraction="0.00532">
+  <CompositeMaterial name="TOB_rib4" density="0.16319*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="0.00371">
       <rMaterial name="materials:T_G10"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.00068">
+    <MaterialFraction fraction="0.00047">
       <rMaterial name="materials:Copper"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.02219">
+    <MaterialFraction fraction="0.0155">
       <rMaterial name="materials:Copper"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.0142">
+    <MaterialFraction fraction="0.00992">
       <rMaterial name="materials:Epoxy"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.00561">
+    <MaterialFraction fraction="0.00392">
       <rMaterial name="materials:T_G10"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.00085">
+    <MaterialFraction fraction="0.0006">
       <rMaterial name="materials:Copper"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.01592">
+    <MaterialFraction fraction="0.01112">
       <rMaterial name="materials:Copper"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.01686">
+    <MaterialFraction fraction="0.01177">
       <rMaterial name="materials:Epoxy"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.02842">
+    <MaterialFraction fraction="0.14914">
       <rMaterial name="materials:Copper"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.00519">
+    <MaterialFraction fraction="0.02725">
       <rMaterial name="materials:Aluminium"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.00305">
+    <MaterialFraction fraction="0.01602">
       <rMaterial name="materials:Silicone_Gel"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.01259">
+    <MaterialFraction fraction="0.06607">
       <rMaterial name="materials:Polyethylene"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.01704">
+    <MaterialFraction fraction="0.08942">
       <rMaterial name="materials:Polyethylene"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.01007">
+    <MaterialFraction fraction="0.00704">
       <rMaterial name="materials:T_G10"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.02402">
+    <MaterialFraction fraction="0.01678">
       <rMaterial name="materials:Brass"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.00735">
+    <MaterialFraction fraction="0.00513">
       <rMaterial name="materials:Epoxy"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.00469">
+    <MaterialFraction fraction="0.00327">
       <rMaterial name="materials:BGA"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.06399">
+    <MaterialFraction fraction="0.04469">
       <rMaterial name="materials:Polyethylene"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.33092">
+    <MaterialFraction fraction="0.23112">
       <rMaterial name="materials:Copper"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.19178">
+    <MaterialFraction fraction="0.13394">
       <rMaterial name="materials:Copper"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.05293">
+    <MaterialFraction fraction="0.03697">
       <rMaterial name="materials:Polyethylene"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.02521">
+    <MaterialFraction fraction="0.01761">
       <rMaterial name="materials:Aluminium"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.06399">
+    <MaterialFraction fraction="0.04469">
       <rMaterial name="materials:Polyethylene"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.0144">
+    <MaterialFraction fraction="0.01005">
       <rMaterial name="materials:T_Kapton"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.03517">
+    <MaterialFraction fraction="0.02456">
       <rMaterial name="materials:BGA"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.02755">
+    <MaterialFraction fraction="0.01924">
       <rMaterial name="materials:Epoxy"/>
     </MaterialFraction>
   </CompositeMaterial>
 
-  <CompositeMaterial name="TOB_rib5" density="0.11078*g/cm3" symbol=" " method="mixture by weight">
-    <MaterialFraction fraction="0.00492">
+  <CompositeMaterial name="TOB_rib5" density="0.16110*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="0.00338">
       <rMaterial name="materials:T_G10"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.00063">
+    <MaterialFraction fraction="0.00043">
       <rMaterial name="materials:Copper"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.02053">
+    <MaterialFraction fraction="0.01412">
       <rMaterial name="materials:Copper"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.01314">
+    <MaterialFraction fraction="0.00904">
       <rMaterial name="materials:Epoxy"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.00519">
+    <MaterialFraction fraction="0.00357">
       <rMaterial name="materials:T_G10"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.00079">
+    <MaterialFraction fraction="0.00054">
       <rMaterial name="materials:Copper"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.01473">
+    <MaterialFraction fraction="0.01013">
       <rMaterial name="materials:Copper"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.0156">
+    <MaterialFraction fraction="0.01073">
       <rMaterial name="materials:Epoxy"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.0263">
+    <MaterialFraction fraction="0.152">
       <rMaterial name="materials:Copper"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.00481">
+    <MaterialFraction fraction="0.02777">
       <rMaterial name="materials:Aluminium"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.00283">
+    <MaterialFraction fraction="0.01633">
       <rMaterial name="materials:Silicone_Gel"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.01165">
+    <MaterialFraction fraction="0.06733">
       <rMaterial name="materials:Polyethylene"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.01577">
+    <MaterialFraction fraction="0.09113">
       <rMaterial name="materials:Polyethylene"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.00932">
+    <MaterialFraction fraction="0.00641">
       <rMaterial name="materials:T_G10"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.02223">
+    <MaterialFraction fraction="0.01529">
       <rMaterial name="materials:Brass"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.0068">
+    <MaterialFraction fraction="0.00468">
       <rMaterial name="materials:Epoxy"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.00434">
+    <MaterialFraction fraction="0.00298">
       <rMaterial name="materials:BGA"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.06514">
+    <MaterialFraction fraction="0.04479">
       <rMaterial name="materials:Polyethylene"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.33686">
+    <MaterialFraction fraction="0.23163">
       <rMaterial name="materials:Copper"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.19523">
+    <MaterialFraction fraction="0.13424">
       <rMaterial name="materials:Copper"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.05388">
+    <MaterialFraction fraction="0.03705">
       <rMaterial name="materials:Polyethylene"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.02567">
+    <MaterialFraction fraction="0.01765">
       <rMaterial name="materials:Aluminium"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.06514">
+    <MaterialFraction fraction="0.04479">
       <rMaterial name="materials:Polyethylene"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.01465">
+    <MaterialFraction fraction="0.01008">
       <rMaterial name="materials:T_Kapton"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.0358">
+    <MaterialFraction fraction="0.02462">
       <rMaterial name="materials:BGA"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.02805">
+    <MaterialFraction fraction="0.01929">
       <rMaterial name="materials:Epoxy"/>
     </MaterialFraction>
   </CompositeMaterial>
 
-  <CompositeMaterial name="TOB_rib6" density="0.10882*g/cm3" symbol=" " method="mixture by weight">
-    <MaterialFraction fraction="0.00447">
+  <CompositeMaterial name="TOB_rib6" density="0.15379*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="0.00317">
       <rMaterial name="materials:T_G10"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.00057">
+    <MaterialFraction fraction="0.0004">
       <rMaterial name="materials:Copper"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.01867">
+    <MaterialFraction fraction="0.01321">
       <rMaterial name="materials:Copper"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.01196">
+    <MaterialFraction fraction="0.00846">
       <rMaterial name="materials:Epoxy"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.00472">
+    <MaterialFraction fraction="0.00334">
       <rMaterial name="materials:T_G10"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.00072">
+    <MaterialFraction fraction="0.00051">
       <rMaterial name="materials:Copper"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.0134">
+    <MaterialFraction fraction="0.00948">
       <rMaterial name="materials:Copper"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.01419">
+    <MaterialFraction fraction="0.01004">
       <rMaterial name="materials:Epoxy"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.02392">
+    <MaterialFraction fraction="0.14227">
       <rMaterial name="materials:Copper"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.00437">
+    <MaterialFraction fraction="0.026">
       <rMaterial name="materials:Aluminium"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.00257">
+    <MaterialFraction fraction="0.01528">
       <rMaterial name="materials:Silicone_Gel"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.0106">
+    <MaterialFraction fraction="0.06302">
       <rMaterial name="materials:Polyethylene"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.01434">
+    <MaterialFraction fraction="0.0853">
       <rMaterial name="materials:Polyethylene"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.00848">
+    <MaterialFraction fraction="0.006">
       <rMaterial name="materials:T_G10"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.02022">
+    <MaterialFraction fraction="0.01431">
       <rMaterial name="materials:Brass"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.00618">
+    <MaterialFraction fraction="0.00438">
       <rMaterial name="materials:Epoxy"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.00395">
+    <MaterialFraction fraction="0.00279">
       <rMaterial name="materials:BGA"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.06643">
+    <MaterialFraction fraction="0.04701">
       <rMaterial name="materials:Polyethylene"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.34353">
+    <MaterialFraction fraction="0.24309">
       <rMaterial name="materials:Copper"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.19909">
+    <MaterialFraction fraction="0.14088">
       <rMaterial name="materials:Copper"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.05495">
+    <MaterialFraction fraction="0.03888">
       <rMaterial name="materials:Polyethylene"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.02617">
+    <MaterialFraction fraction="0.01852">
       <rMaterial name="materials:Aluminium"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.06643">
+    <MaterialFraction fraction="0.04701">
       <rMaterial name="materials:Polyethylene"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.01494">
+    <MaterialFraction fraction="0.01057">
       <rMaterial name="materials:T_Kapton"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.03651">
+    <MaterialFraction fraction="0.02583">
       <rMaterial name="materials:BGA"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.0286">
+    <MaterialFraction fraction="0.02024">
       <rMaterial name="materials:Epoxy"/>
     </MaterialFraction>
   </CompositeMaterial>
