@@ -60,7 +60,7 @@ namespace EgEff
       {
 	retVal = (superCluster()->seed()->getHitsByDetId()[0].subdetId() == EcalBarrel);
       }
-    else if(hasTrack())
+    else if(hasGenericTrack())
       {
 	reco::TrackRef track = genericTrack();
 	retVal = (fabs(track->eta()) < 1.479);

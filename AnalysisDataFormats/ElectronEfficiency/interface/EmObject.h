@@ -37,7 +37,9 @@ namespace EgEff
          void setSuperCluster(const reco::SuperClusterRef &r){superCluster_ = r; hasSc_ = true;}
 
          // Safety check for cuts
-         bool hasTrack() const {return hasTrack_ || hasGsfTrack_;}
+	 bool hasGenericTrack() const {return hasTrack_ || hasGsfTrack_;}
+	 bool hasGsfTrack() const {return hasGsfTrack_;}
+         bool hasTrack() const {return hasTrack_;}
          bool hasSuperCluster() const {return hasSc_;}
 
 	 // For histogramming help
