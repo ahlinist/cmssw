@@ -612,13 +612,20 @@ o Endflange Connectors
 Rings at z = 111.95 cm of radial thickness 4 cm and z thickness 2.3 cm
 Include SCACC and SCLAC connectors, DOHM legs.
 
-Layer R_in [mm] R_out [mm] Rods  DOHMs
-   1    588      628        42     7
-   2    672      712        48   + 8 = 15
-   3    760      800        54     7
-   4    848      888        60   + 8 = 15
-   5    945      985        66     8
-   6   1060     1100        74   + 8 = 16
+Layer R_in [mm] R_out [mm] Rods  DOHMs     DOHM legs [mm]
+   1    588      628        42     7         (7/15)*12100.0 = 5647 mm
+   2    672      712        48   + 8 = 15    (8/15)*12100.0 = 6453 mm
+   3    760      800        54     7         (7/15)*14087.5 = 6574 mm
+   4    848      888        60   + 8 = 15    (8/15)*14087.5 = 7513 mm
+   5    945      985        66     8         (8/16)*16807.5 = 8404 mm
+   6   1060     1100        74   + 8 = 16    (8/16)*16807.5 = 8404 mm
+
+DOHM legs length
+DOHM Ring   TOB+ [mm]  TOB- [mm]  Average [mm]
+        1     11875      12325     12100.0
+        2     13925      14250     14087.5
+        3     16670      16945     16807.5
+
 
 		SCCAC
 		-----
@@ -790,11 +797,11 @@ The difference 'long tail'-1x'short tail' is included here (Short tail in TOB_CO
 * 6 "SCLAC PCB copper traces"              "Copper"          0.0068     7      ELE
 * 7 "SCLAC NAiS connectors"                "Copper"          0.127      7      ELE
 * 8 "SCLAC NAiS connectors"                "Epoxy"           0.927      7      ELE
-* 9 "DOHM wires Cu"                        "Copper"          1.814      1      CAB
-* 10 "DOHM wires Al"                       "Aluminium"       1.100      1      CAB
-* 11 "DOHM wires PEI"                      "Silicone_Gel"    1.809      1      CAB
-* 12 "DOHM wires SILTEM"                   "Polyethylene"    7.579      1      CAB
-* 13 "DOHM wires Polyamide"                "Polyethylene"   10.258      1      CAB
+* 9 "DOHM wires Cu"                        "Copper"          1.814      5.647  CAB
+* 10 "DOHM wires Al"                       "Aluminium"       1.100      5.647  CAB
+* 11 "DOHM wires PEI"                      "Silicone_Gel"    1.809      5.647  CAB
+* 12 "DOHM wires SILTEM"                   "Polyethylene"    7.579      5.647  CAB
+* 13 "DOHM wires Polyamide"                "Polyethylene"   10.258      5.647  CAB
 * 14 "SCCAC screw holder"                  "T_G10"           0.379      7      SUP
 * 15 "SCCAC screws"                        "Brass"           0.202      7      SUP
 * 16 "SCCAC,SCLAC,DOHM glue"               "Epoxy"           0.404      7      SUP
@@ -821,11 +828,11 @@ The difference 'long tail'-1x'short tail' is included here (Short tail in TOB_CO
 * 6 "SCLAC PCB copper traces"              "Copper"          0.0068     8      ELE
 * 7 "SCLAC NAiS connectors"                "Copper"          0.127      8      ELE
 * 8 "SCLAC NAiS connectors"                "Epoxy"           0.927      8      ELE
-* 9 "DOHM wires Cu"                        "Copper"          1.814      1      CAB
-* 10 "DOHM wires Al"                       "Aluminium"       1.100      1      CAB
-* 11 "DOHM wires PEI"                      "Silicone_Gel"    1.809      1      CAB
-* 12 "DOHM wires SILTEM"                   "Polyethylene"    7.579      1      CAB
-* 13 "DOHM wires Polyamide"                "Polyethylene"   10.258      1      CAB
+* 9 "DOHM wires Cu"                        "Copper"          1.814      6.453  CAB
+* 10 "DOHM wires Al"                       "Aluminium"       1.100      6.453  CAB
+* 11 "DOHM wires PEI"                      "Silicone_Gel"    1.809      6.453  CAB
+* 12 "DOHM wires SILTEM"                   "Polyethylene"    7.579      6.453  CAB
+* 13 "DOHM wires Polyamide"                "Polyethylene"   10.258      6.453  CAB
 * 14 "SCCAC screw holder"                  "T_G10"           0.379      8      SUP
 * 15 "SCCAC screws"                        "Brass"           0.202      8      SUP
 * 16 "SCCAC,SCLAC,DOHM glue"               "Epoxy"           0.404      8      SUP
@@ -852,11 +859,11 @@ The difference 'long tail'-1x'short tail' is included here (Short tail in TOB_CO
 * 6 "SCLAC PCB copper traces"              "Copper"          0.0068     7      ELE
 * 7 "SCLAC NAiS connectors"                "Copper"          0.127      7      ELE
 * 8 "SCLAC NAiS connectors"                "Epoxy"           0.927      7      ELE
-* 9 "DOHM wires Cu"                        "Copper"          1.814      1      CAB
-* 10 "DOHM wires Al"                       "Aluminium"       1.100      1      CAB
-* 11 "DOHM wires PEI"                      "Silicone_Gel"    1.809      1      CAB
-* 12 "DOHM wires SILTEM"                   "Polyethylene"    7.579      1      CAB
-* 13 "DOHM wires Polyamide"                "Polyethylene"   10.258      1      CAB
+* 9 "DOHM wires Cu"                        "Copper"          1.814      6.574  CAB
+* 10 "DOHM wires Al"                       "Aluminium"       1.100      6.574  CAB
+* 11 "DOHM wires PEI"                      "Silicone_Gel"    1.809      6.574  CAB
+* 12 "DOHM wires SILTEM"                   "Polyethylene"    7.579      6.574  CAB
+* 13 "DOHM wires Polyamide"                "Polyethylene"   10.258      6.574  CAB
 * 14 "SCCAC screw holder"                  "T_G10"           0.379      7      SUP
 * 15 "SCCAC screws"                        "Brass"           0.202      7      SUP
 * 16 "SCCAC,SCLAC,DOHM glue"               "Epoxy"           0.404      7      SUP
@@ -883,11 +890,11 @@ The difference 'long tail'-1x'short tail' is included here (Short tail in TOB_CO
 * 6 "SCLAC PCB copper traces"              "Copper"          0.0068     8      ELE
 * 7 "SCLAC NAiS connectors"                "Copper"          0.127      8      ELE
 * 8 "SCLAC NAiS connectors"                "Epoxy"           0.927      8      ELE
-* 9 "DOHM wires Cu"                        "Copper"          1.814      1      CAB
-* 10 "DOHM wires Al"                       "Aluminium"       1.100      1      CAB
-* 11 "DOHM wires PEI"                      "Silicone_Gel"    1.809      1      CAB
-* 12 "DOHM wires SILTEM"                   "Polyethylene"    7.579      1      CAB
-* 13 "DOHM wires Polyamide"                "Polyethylene"   10.258      1      CAB
+* 9 "DOHM wires Cu"                        "Copper"          1.814      7.513  CAB
+* 10 "DOHM wires Al"                       "Aluminium"       1.100      7.513  CAB
+* 11 "DOHM wires PEI"                      "Silicone_Gel"    1.809      7.513  CAB
+* 12 "DOHM wires SILTEM"                   "Polyethylene"    7.579      7.513  CAB
+* 13 "DOHM wires Polyamide"                "Polyethylene"   10.258      7.513  CAB
 * 14 "SCCAC screw holder"                  "T_G10"           0.379      8      SUP
 * 15 "SCCAC screws"                        "Brass"           0.202      8      SUP
 * 16 "SCCAC,SCLAC,DOHM glue"               "Epoxy"           0.404      8      SUP
@@ -914,11 +921,11 @@ The difference 'long tail'-1x'short tail' is included here (Short tail in TOB_CO
 * 6 "SCLAC PCB copper traces"              "Copper"          0.0068     8      ELE
 * 7 "SCLAC NAiS connectors"                "Copper"          0.127      8      ELE
 * 8 "SCLAC NAiS connectors"                "Epoxy"           0.927      8      ELE
-* 9 "DOHM wires Cu"                        "Copper"          1.814      1      CAB
-* 10 "DOHM wires Al"                       "Aluminium"       1.100      1      CAB
-* 11 "DOHM wires PEI"                      "Silicone_Gel"    1.809      1      CAB
-* 12 "DOHM wires SILTEM"                   "Polyethylene"    7.579      1      CAB
-* 13 "DOHM wires Polyamide"                "Polyethylene"   10.258      1      CAB
+* 9 "DOHM wires Cu"                        "Copper"          1.814      8.404  CAB
+* 10 "DOHM wires Al"                       "Aluminium"       1.100      8.404  CAB
+* 11 "DOHM wires PEI"                      "Silicone_Gel"    1.809      8.404  CAB
+* 12 "DOHM wires SILTEM"                   "Polyethylene"    7.579      8.404  CAB
+* 13 "DOHM wires Polyamide"                "Polyethylene"   10.258      8.404  CAB
 * 14 "SCCAC screw holder"                  "T_G10"           0.379      8      SUP
 * 15 "SCCAC screws"                        "Brass"           0.202      8      SUP
 * 16 "SCCAC,SCLAC,DOHM glue"               "Epoxy"           0.404      8      SUP
@@ -945,11 +952,11 @@ The difference 'long tail'-1x'short tail' is included here (Short tail in TOB_CO
 * 6 "SCLAC PCB copper traces"              "Copper"          0.0068     8      ELE
 * 7 "SCLAC NAiS connectors"                "Copper"          0.127      8      ELE
 * 8 "SCLAC NAiS connectors"                "Epoxy"           0.927      8      ELE
-* 9 "DOHM wires Cu"                        "Copper"          1.814      1      CAB
-* 10 "DOHM wires Al"                       "Aluminium"       1.100      1      CAB
-* 11 "DOHM wires PEI"                      "Silicone_Gel"    1.809      1      CAB
-* 12 "DOHM wires SILTEM"                   "Polyethylene"    7.579      1      CAB
-* 13 "DOHM wires Polyamide"                "Polyethylene"   10.258      1      CAB
+* 9 "DOHM wires Cu"                        "Copper"          1.814      8.404  CAB
+* 10 "DOHM wires Al"                       "Aluminium"       1.100      8.404  CAB
+* 11 "DOHM wires PEI"                      "Silicone_Gel"    1.809      8.404  CAB
+* 12 "DOHM wires SILTEM"                   "Polyethylene"    7.579      8.404  CAB
+* 13 "DOHM wires Polyamide"                "Polyethylene"   10.258      8.404  CAB
 * 14 "SCCAC screw holder"                  "T_G10"           0.379      8      SUP
 * 15 "SCCAC screws"                        "Brass"           0.202      8      SUP
 * 16 "SCCAC,SCLAC,DOHM glue"               "Epoxy"           0.404      8      SUP
