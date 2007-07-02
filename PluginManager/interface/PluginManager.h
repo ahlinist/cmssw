@@ -89,6 +89,7 @@ class PluginManager
       // ---------- member functions ---------------------------
       sigc::signal<void,const boost::filesystem::path&> goingToLoad_;
       sigc::signal<void,const SharedLibrary&> justLoaded_;
+      sigc::signal<void,const std::string&,const std::string&> askedToLoadCategoryWithPlugin_;
    private:
       PluginManager(const Config&);
       PluginManager(const PluginManager&); // stop default
