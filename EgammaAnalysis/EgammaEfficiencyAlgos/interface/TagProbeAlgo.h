@@ -11,6 +11,7 @@ class TagProbeAlgo
    private:
       std::string tagProducer_;
       std::string probeProducer_;
+      bool singleProbe_;
       double massCutMin_;
       double massCutMax_;
       double invariantMass(const EgEff::EmObjectRef&, const EgEff::EmObjectRef&);
