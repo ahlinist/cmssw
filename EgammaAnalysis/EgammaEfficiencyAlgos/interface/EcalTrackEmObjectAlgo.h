@@ -25,6 +25,7 @@ class EcalTrackEmObjectAlgo : public EmObjectAlgo
       std::string ebSuperClusterProducer_;
       double minSuperClusterEnergy_;
       double minTrackPt_;
+      double dRSuperClusterTrack_;
       bool trackAssociation_;
 
       void processSCCollection(const math::XYZPoint&, edm::Handle<reco::SuperClusterCollection>&, edm::Handle<reco::TrackCollection>&, EgEff::EmObjectCollection&);
