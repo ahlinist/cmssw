@@ -186,6 +186,7 @@ const SharedLibrary&
 PluginManager::load(const std::string& iCategory,
                       const std::string& iPlugin)
 {
+  askedToLoadCategoryWithPlugin_(iCategory,iPlugin);
   const boost::filesystem::path& p = loadableFor(iCategory,iPlugin);
   
   //have we already loaded this?
@@ -195,7 +196,8 @@ PluginManager::load(const std::string& iCategory,
     //try to make one
     goingToLoad_(p);
     Sentry s(loadingLibraryNamed_(), p.native_file_string());
-    boost::shared_ptr<SharedLibrary> ptr( new SharedLibrary(p.native_file_string()) );
+    //boost::filesystem::path native(p.native_file_string(),boost::filesystem::no_check);
+    boost::shared_ptr<SharedLibrary> ptr( new SharedLibrary(p) );
     loadables_[p]=ptr;
     justLoaded_(*ptr);
     return *ptr;
