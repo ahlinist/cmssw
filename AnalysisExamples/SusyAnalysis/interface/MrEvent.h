@@ -263,8 +263,8 @@ void GetLeadingJets(){
   
   int nsaved = -1;
   for(int i = 0; i < (int) pRecoData->size() ;i++){
-    if ((*pRecoData)[i]->particleType() == 5 
-       || (*pRecoData)[i]->particleType() == 6){
+    if ((*pRecoData)[i]->particleType() == 50 
+       || (*pRecoData)[i]->particleType() == 60){
       if (nsaved < 0){
         nsaved++;
         LeadJets[nsaved] = i;

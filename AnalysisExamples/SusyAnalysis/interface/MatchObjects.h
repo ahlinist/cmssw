@@ -50,10 +50,13 @@ float mo_photonDRmax;
 float mo_photonDPbyPmax;
 float mo_jetDRmax;
 float mo_jetDPbyPmax;
+float mo_ufoDRmax;
+float mo_ufoDPbyPmax;
 float mo_celecDRmax;
 float mo_cmuonDRmax;
 float mo_cphotonDRmax;
 float mo_cjetDRmax;
+float mo_cufoDRmax;
 
 virtual int BestMatch(int, int, int);
 virtual void ResolveMatchObjects(void);

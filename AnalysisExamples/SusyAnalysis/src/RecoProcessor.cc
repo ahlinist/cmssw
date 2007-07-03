@@ -19,16 +19,20 @@ ana_elecEtaMax(2.4), ana_elecPtMin1(0.),
 ana_muonEtaMax(2.4), ana_muonPtMin1(0.), 
 ana_tauEtaMax(2.4), ana_tauPtMin1(0.), 
 ana_photonEtaMax(2.4), ana_photonPtMin1(0.), 
-ana_jetEtaMax(3.0), ana_jetPtMin1(20.), 
-ana_elecPtMin2(10.), ana_muonPtMin2(10.),
-ana_tauPtMin2(5.), ana_photonPtMin2(20.), ana_jetPtMin2(30.),
+ana_jetEtaMax(5.0), ana_jetPtMin1(20.), ana_minBtagDiscriminator(3.),
+ana_ufoSelMethod(0), 
+ana_ufoTkHitsmin(7), ana_ufoCaloTowEFracmin(0.005), ana_ufodRTrkFromJet(0.6),
+ana_ufoEtaMax(2.4), ana_ufoPtMin1(3.), ana_ufoDRmin(0.3),
+ana_elecPtMin2(10.), ana_muonPtMin2(10.),ana_tauPtMin2(5.), 
+ana_photonPtMin2(20.), ana_jetPtMin2(30.), ana_ufoPtMin2(10.),
 reco_elecD0ErrorThresh(0.), reco_elecDzErrorThresh(0.),
 reco_muonD0ErrorThresh(0.), reco_muonDzErrorThresh(0.),
 reco_jetD0ErrorThresh(0.), reco_jetDzErrorThresh(0.),
+reco_ufoD0ErrorThresh(0.), reco_ufoDzErrorThresh(0.),
 clean_distVxmax(5.), 
 clean_methodTksInJetVx(1), clean_nJetVxTkHitsmin(8),clean_JetVxTkPtmin(0.9),
 clean_jetVxCaloTowEFracmin(0.005), clean_dRTrkFromJetVx(0.6),
-clean_rejEvtBadJetPtmin(100.)
+clean_rejEvtBadJetPtmin(30.)
 {}
 
 RecoProcessor::RecoProcessor(MrEvent* pEvtData, 
@@ -85,19 +89,34 @@ myConfig(aConfig), MCData(*(pEvtData->mcData()))
   ana_jetEtaMax = acceptance_cuts.getParameter<double>("ana_jetEtaMax") ;
   ana_jetPtMin1 = acceptance_cuts.getParameter<double>("ana_jetPtMin1") ;
   ana_minBtagDiscriminator = acceptance_cuts.getParameter<double>("ana_minBtagDiscriminator");
+  ana_minTauTagDiscriminator = acceptance_cuts.getParameter<double>("ana_minTauTagDiscriminator");
+  ana_ufoSelMethod = acceptance_cuts.getParameter<int>("ana_ufoSelMethod") ;
+  ana_ufoTkHitsmin = acceptance_cuts.getParameter<int>("ana_ufoTkHitsmin") ;
+  ana_ufoCaloTowEFracmin = acceptance_cuts.getParameter<double>("ana_ufoCaloTowEFracmin") ;
+  ana_ufodRTrkFromJet = acceptance_cuts.getParameter<double>("ana_ufodRTrkFromJet") ;
+  ana_ufoEtaMax = acceptance_cuts.getParameter<double>("ana_ufoEtaMax") ;
+  ana_ufoPtMin1 = acceptance_cuts.getParameter<double>("ana_ufoPtMin1") ;
+  ana_ufoDRmin = acceptance_cuts.getParameter<double>("ana_ufoDRmin") ;
   ana_elecPtMin2 = acceptance_cuts.getParameter<double>("ana_elecPtMin2") ;
   ana_muonPtMin2 = acceptance_cuts.getParameter<double>("ana_muonPtMin2") ;
   ana_tauPtMin2 = acceptance_cuts.getParameter<double>("ana_tauPtMin2") ;
   ana_photonPtMin2 = acceptance_cuts.getParameter<double>("ana_photonPtMin2") ;
   ana_jetPtMin2 = acceptance_cuts.getParameter<double>("ana_jetPtMin2") ;
+  ana_ufoPtMin2 = acceptance_cuts.getParameter<double>("ana_ufoPtMin2") ;
 
    // load parameters for extrapolation error adjustment
   reco_elecD0ErrorThresh = acceptance_cuts.getParameter<double>("reco_elecD0ErrorThresh") ;
   reco_elecDzErrorThresh = acceptance_cuts.getParameter<double>("reco_elecDzErrorThresh") ;
   reco_muonD0ErrorThresh = acceptance_cuts.getParameter<double>("reco_muonD0ErrorThresh") ;
   reco_muonDzErrorThresh = acceptance_cuts.getParameter<double>("reco_muonDzErrorThresh") ;
+  reco_tauD0ErrorThresh = acceptance_cuts.getParameter<double>("reco_tauD0ErrorThresh") ;
+  reco_tauDzErrorThresh = acceptance_cuts.getParameter<double>("reco_tauDzErrorThresh") ;
   reco_jetD0ErrorThresh = acceptance_cuts.getParameter<double>("reco_jetD0ErrorThresh") ;
   reco_jetDzErrorThresh = acceptance_cuts.getParameter<double>("reco_jetDzErrorThresh") ;
+  reco_bjetD0ErrorThresh = acceptance_cuts.getParameter<double>("reco_bjetD0ErrorThresh") ;
+  reco_bjetDzErrorThresh = acceptance_cuts.getParameter<double>("reco_bjetDzErrorThresh") ;
+  reco_ufoD0ErrorThresh = acceptance_cuts.getParameter<double>("reco_ufoD0ErrorThresh") ;
+  reco_ufoDzErrorThresh = acceptance_cuts.getParameter<double>("reco_ufoDzErrorThresh") ;
   
   // load parameters for ObjectCleaner
   clean_distVxmax = cleaner_params.getParameter<double>("clean_distVxmax") ;
@@ -136,40 +155,89 @@ bool RecoProcessor::RecoDriver()
   numDuplicate = 0;
   numElectrons = 0;
   numElecNotPrimaryTrk = 0;
-  numElecNotClean = 0;
+  numElecNotCleanHOE = 0;
+  numElecNotCleanShsh = 0;
+  numElecNotCleanTmat = 0;
   numElecDupl = 0;
+  numElecDuplBadHOE = 0;
+  numElecDuplBadShsh = 0;
+  numElecDuplBadTmat = 0;
   numElectronsNonIso = 0;
+  numElectronsNonIsoBadHOE = 0;
+  numElectronsNonIsoBadShsh = 0;
+  numElectronsNonIsoBadTmat = 0;
   numElectronsfinal = 0;
+  numElectronsfinalBadHOE = 0;
+  numElectronsfinalBadShsh = 0;
+  numElectronsfinalBadTmat = 0;
   numElectronsMatched = 0;
+  numElectronsMatchedBadHOE = 0;
+  numElectronsMatchedBadShsh = 0;
+  numElectronsMatchedBadTmat = 0;
   numMuons = 0;
   numMuonNotPrimaryTrk = 0;
   numMuonNotClean = 0;
   numMuonDupl = 0;
+  numMuonDuplBad = 0;
   numMuonsNonIso = 0;
+  numMuonsNonIsoBad = 0;
   numMuonsfinal = 0;
+  numMuonsfinalBad = 0;
   numMuonsMatched = 0;
+  numMuonsMatchedBad = 0;
   numTaus = 0;
   numTauNotPrimaryTrk = 0;
   numTauNotClean = 0;
   numTauDupl = 0;
+  numTauDuplBad = 0;
   numTausNonIso = 0;
+  numTausNonIsoBad = 0;
   numTausfinal = 0;
+  numTausfinalBad = 0;
   numTausMatched = 0;
+  numTausMatchedBad = 0;
   numPhotons = 0;
   numPhotNotPrimaryTrk = 0;
-  numPhotNotClean = 0;
+  numPhotNotCleanHOE = 0;
+  numPhotNotCleanShsh = 0;
   numPhotDupl = 0;
+  numPhotDuplBadHOE = 0;
+  numPhotDuplBadShsh = 0;
   numPhotonsNonIso = 0;
+  numPhotonsNonIsoBadHOE = 0;
+  numPhotonsNonIsoBadShsh = 0;
   numPhotonsfinal = 0;
+  numPhotonsfinalBadHOE = 0;
+  numPhotonsfinalBadShsh = 0;
   numPhotonsMatched = 0;
+  numPhotonsMatchedBadHOE = 0;
+  numPhotonsMatchedBadShsh = 0;
   numJets = 0;
   numJetNotPrimaryTrk = 0;
-  numJetNotClean = 0;
+  numJetNotCleanFem = 0;
+  numJetNotCleanFtk = 0;
   numJetDupl = 0;
+  numJetDuplBadFem = 0;
+  numJetDuplBadFtk = 0;
   numBJets = 0;
   numJetsfinal = 0;
+  numJetsfinalBadFem = 0;
+  numJetsfinalBadFtk = 0;
   numBJetsfinal = 0;
   numJetsMatched = 0;
+  numJetsMatchedBadFem = 0;
+  numJetsMatchedBadFtk = 0;
+  numUfos = 0;
+  numUfosNotPrimaryTrk = 0;
+  numUfosNotClean = 0;
+  numUfosDupl = 0;
+  numUfosDuplBad = 0;
+  numUfosNonIso = 0;
+  numUfosNonIsoBad = 0;
+  numUfosfinal = 0;
+  numUfosfinalBad = 0;
+  numUfosMatched = 0;
+  numUfosMatchedBad = 0;
 
   counter = 0;
 
@@ -226,7 +294,7 @@ bool RecoProcessor::RecoDriver()
      bool withRefPoint = true;
 //     cout << "Particle " << i << " type " << RecoData[i]->particleType() << endl;
      // for electrons
-     if (RecoData[i]->particleType() == 1){
+     if (RecoData[i]->particleType() == 10){
 //       cout << "elecand pointer " << RecoData[i]->electronCandidate() << endl;
        const PixelMatchGsfElectron* elecand = RecoData[i]->electronCandidate();
 
@@ -251,7 +319,7 @@ bool RecoProcessor::RecoDriver()
        }
      }
      // for muons
-     else if (RecoData[i]->particleType() == 2){
+     else if (RecoData[i]->particleType() == 20){
        const Muon* muoncand = RecoData[i]->muonCandidate();
        // Apply first acceptance cuts
        if (fabs(RecoData[i]->eta()) < ana_muonEtaMax && 
@@ -274,24 +342,20 @@ bool RecoProcessor::RecoDriver()
          counter++;
        }
      }
-     // for taus
-     else if (RecoData[i]->particleType() == 3){
-     }
      // for photons
-     else if (RecoData[i]->particleType() == 4){
+     else if (RecoData[i]->particleType() == 40){
 //       const Photon* photcand = RecoData[i]->photonCandidate();
        // Apply first acceptance cuts
        if (fabs(RecoData[i]->eta()) < ana_photonEtaMax && 
            RecoData[i]->pt() > ana_photonPtMin1){   
-      
          RecoData[i]->setNumTracks(0);
          RecoData[i]->setVx(0. );
          RecoData[i]->setVy(0. );
          RecoData[i]->setVz(0. );
          float d0Error = 0.;
          float dzError = 0.;
-//         if (d0Error < reco_muonD0ErrorThresh){d0Error = reco_muonD0ErrorThresh;}
-//         if (dzError < reco_muonDzErrorThresh){dzError = reco_muonDzErrorThresh;}
+//         if (d0Error < reco_photD0ErrorThresh){d0Error = reco_photD0ErrorThresh;}
+//         if (dzError < reco_photDzErrorThresh){dzError = reco_photDzErrorThresh;}
          RecoData[i]->setd0Error(d0Error);
          RecoData[i]->setdzError(dzError);
          acceptObject = true;
@@ -300,17 +364,31 @@ bool RecoProcessor::RecoDriver()
        }
      }
      // for jets
-     else if (RecoData[i]->particleType() >= 5
-              && RecoData[i]->particleType() <= 7){
-     // Apply first acceptance cuts
-       if (fabs(RecoData[i]->eta()) < ana_jetEtaMax && 
-           RecoData[i]->pt() > ana_jetPtMin1){   
+     else if (RecoData[i]->particleType() >= 50
+              && RecoData[i]->particleType() <= 70){
 
      // set the jet as b-jet if the discriminator is good enough
-         if (RecoData[i]->getBtagDiscriminator() > ana_minBtagDiscriminator) {
-           RecoData[i]->setParticleType(6);
-         }
+       if (RecoData[i]->getBtagDiscriminator() >= ana_minBtagDiscriminator) {
+         RecoData[i]->setParticleType(60);
+       }
          
+     // set the jet as tau-jet if the discriminator is good enough
+       if (RecoData[i]->getTauTagDiscriminator() >= ana_minTauTagDiscriminator) {
+         if(DEBUGLVL >= 2 && RecoData[i]->particleType() == 60) {
+           cout << "Warning: particle both tagged as b and as tau!! Choosing tau." << endl;
+         }
+         RecoData[i]->setParticleType(30);
+         
+       }
+         
+     // Apply first acceptance cuts
+       if ( (RecoData[i]->particleType() == 30 &&
+           fabs(RecoData[i]->eta()) < ana_tauEtaMax && 
+           RecoData[i]->pt() > ana_tauPtMin1)  ||
+           (RecoData[i]->particleType() != 30 &&
+           fabs(RecoData[i]->eta()) < ana_jetEtaMax && 
+           RecoData[i]->pt() > ana_jetPtMin1) ){   
+
          if (clean_methodTksInJetVx == 1){
            withRefPoint = GetJetVx(i, 1, 
               clean_nJetVxTkHitsmin, clean_JetVxTkPtmin, clean_jetVxCaloTowEFracmin);
@@ -319,17 +397,34 @@ bool RecoProcessor::RecoDriver()
            withRefPoint = GetJetVx(i, 2, 
               clean_nJetVxTkHitsmin, clean_JetVxTkPtmin, clean_dRTrkFromJetVx);
          }
+         else if (clean_methodTksInJetVx == 3){
+           withRefPoint = GetJetVx(i, 3, 
+              clean_nJetVxTkHitsmin, clean_JetVxTkPtmin, 0.);
+         }
+
          float d0Error = RecoData[i]->d0Error();
          float dzError = RecoData[i]->dzError();
-         if (d0Error < reco_jetD0ErrorThresh){d0Error = reco_jetD0ErrorThresh;}
-         if (dzError < reco_jetDzErrorThresh){dzError = reco_jetDzErrorThresh;}
+         if (RecoData[i]->particleType() == 30){
+           if (d0Error < reco_tauD0ErrorThresh){d0Error = reco_tauD0ErrorThresh;}
+           if (dzError < reco_tauDzErrorThresh){dzError = reco_tauDzErrorThresh;}
+         }
+         else if (RecoData[i]->particleType() == 50){
+           if (d0Error < reco_jetD0ErrorThresh){d0Error = reco_jetD0ErrorThresh;}
+           if (dzError < reco_jetDzErrorThresh){dzError = reco_jetDzErrorThresh;}
+         }
+         else if (RecoData[i]->particleType() == 60){
+           if (d0Error < reco_bjetD0ErrorThresh){d0Error = reco_bjetD0ErrorThresh;}
+           if (dzError < reco_bjetDzErrorThresh){dzError = reco_bjetDzErrorThresh;}
+         }
          RecoData[i]->setd0Error(d0Error);
          RecoData[i]->setdzError(dzError);
          acceptObject = true;
-         numJets++;
          counter++;
-         if (RecoData[i]->particleType() == 6){numBJets++;}
-     }
+         if (RecoData[i]->particleType() == 30){numTaus++;}
+         else {numJets++;
+           if (RecoData[i]->particleType() == 60){numBJets++;}
+         }
+       }
      }         
 
      // remove the object if not accepted
@@ -368,6 +463,85 @@ bool RecoProcessor::RecoDriver()
    }
 
   // ******************************************************** 
+  // Now look for candidate UFO particles
+  
+    if (ana_ufoSelMethod > 0){
+      if (DEBUGLVL >= 2){
+        cout << " Looking for UFOs" << endl;
+      }
+      vector<int> selTrkIndices;
+      vector<int> selJetIndices;
+//      cout << " Next event ************ " << endl;
+//      GetNonLeptonicTracks(& selTrkIndices); // does not work
+         
+      if (ana_ufoSelMethod == 1){
+        GetIsoCandInJets(1, ana_ufoTkHitsmin, ana_ufoPtMin1,
+                    ana_ufoCaloTowEFracmin, ana_ufoDRmin,
+                    & selTrkIndices, & selJetIndices);
+      }
+      else if (ana_ufoSelMethod == 2){
+           GetIsoCandInJets(2, ana_ufoTkHitsmin, ana_ufoPtMin1,
+                    ana_ufodRTrkFromJet, ana_ufoDRmin,
+                    & selTrkIndices, & selJetIndices);
+      }
+      else if (ana_ufoSelMethod == 3){
+        GetIsoCandInJets(3, ana_ufoTkHitsmin, ana_ufoPtMin1,
+                    0., ana_ufoDRmin,
+                    & selTrkIndices, & selJetIndices);
+      }
+      
+      // Apply first acceptance cuts (Pt cut was already applied)
+      for (i = 0; i < (int) selTrkIndices.size(); ++i){
+        const Track* pTrack = &(*TrackData)[selTrkIndices[i]];
+        if (fabs(pTrack->eta()) > ana_ufoEtaMax){
+          selTrkIndices.erase(selTrkIndices.begin() + i);
+          selJetIndices.erase(selJetIndices.begin() + i);
+        }
+      }
+//      cout << " length of track list " << selTrkIndices.size() << endl;
+      // Now create the MrParticle and complete it
+      for (i = 0; i < (int) selTrkIndices.size(); ++i){
+        const Track* pTrack = &(*TrackData)[selTrkIndices[i]];
+        MrUFO* recopart = new MrUFO(pTrack->px(),
+             pTrack->py(),pTrack->pz(),pTrack->p(), pTrack );
+      
+        recopart->setNumTracks(1);
+        recopart->setVx(pTrack->vx() );
+        recopart->setVy(pTrack->vy() );
+        recopart->setVz(pTrack->vz() );
+        float d0Error = pTrack->d0Error();
+        float dzError = pTrack->dzError();
+        if (d0Error < reco_ufoD0ErrorThresh){d0Error = reco_muonD0ErrorThresh;}
+        if (dzError < reco_ufoDzErrorThresh){dzError = reco_muonDzErrorThresh;}
+        recopart->setd0Error(d0Error);
+        recopart->setdzError(dzError);
+      
+        recopart->setPt_tracks(pTrack->pt());
+        recopart->setEt_em(0.);   // temporary, to be improved
+        recopart->setEt_had(0.);  // temporary, to be improved
+  
+        RecoData.push_back(recopart);
+        numUfos++;
+      
+        int iUFO = RecoData.size() - 1;
+        int iJet = selJetIndices[i];
+        if (DEBUGLVL >= 2){
+         cout << "  UFO candidate in Jet " << iJet << " with ET = " << RecoData[iJet]->pt() << endl;
+         cout << "  Object " << iUFO << " type = " << RecoData[iUFO]->particleType()
+              << " ET = " << RecoData[iUFO]->pt()
+              << " ref point x = " << RecoData[iUFO]->vx()
+              << ", y = " << RecoData[iUFO]->vy() << ", z = " << RecoData[iUFO]->vz() << endl;
+        }
+        SubtrFromJet(iUFO, iJet);
+      }
+//      cout << " UFOs in event " << numUfos << endl;
+    
+      selTrkIndices.clear();
+      selJetIndices.clear();
+    }
+
+
+  // ******************************************************** 
   // Perform the cleaning of the objects
 
    myCleaner = new  ObjectCleaner(EventData, cleaner_params);
@@ -401,7 +575,7 @@ bool RecoProcessor::RecoDriver()
 
    // Second, check the quality of the objects
    if (DEBUGLVL >= 2){
-     cout<< " Check individual objects: " << endl;
+     cout<< " Check individual objects, except jets: " << endl;
    }
    
    i = 0;
@@ -413,72 +587,85 @@ bool RecoProcessor::RecoDriver()
      // Check that it is compatible with primary vertex
      fromPrimaryVx = myCleaner->IsFromPrimaryVx(i, clean_distVxmax);
      //LP only for testing
-//     if (RecoData[i]->particleType() >= 5
-//              && RecoData[i]->particleType() <= 7){fromPrimaryVx = true;}
+//     if (RecoData[i]->particleType() >= 50
+//              && RecoData[i]->particleType() <= 70){fromPrimaryVx = true;}
      if (!fromPrimaryVx){
-       numNotPrimaryTrk++;
-       if (RecoData[i]->particleType() == 1){numElecNotPrimaryTrk++;}
-       else if (RecoData[i]->particleType() == 2){numMuonNotPrimaryTrk++;}
-       else if (RecoData[i]->particleType() == 3){numTauNotPrimaryTrk++;}
-       else if (RecoData[i]->particleType() == 4){numPhotNotPrimaryTrk++;}
-       else if (RecoData[i]->particleType() >= 5
-              && RecoData[i]->particleType() <= 7){numJetNotPrimaryTrk++;}
-     }
-     
-     // perform the object cleaning
-     if (fromPrimaryVx){
-       acceptObject = myCleaner->CleanObject(i);
-       if (!acceptObject){
-         numNotClean++;
-         if (RecoData[i]->particleType() == 1){numElecNotClean++;}
-         else if (RecoData[i]->particleType() == 2){numMuonNotClean++;}
-         else if (RecoData[i]->particleType() == 3){numTauNotClean++;}
-         else if (RecoData[i]->particleType() == 4){numPhotNotClean++;}
-         else if (RecoData[i]->particleType() >= 5
-                && RecoData[i]->particleType() <= 7){numJetNotClean++;}
-       }
-     }
-
-     if (fromPrimaryVx && acceptObject){
-       i++;
-     } else {
        if (DEBUGLVL >= 2){
-        cout << " Object rejected as bad, index =  " << i
+        cout << " Object rejected not from Primary Vx, index =  " << i
              << " Type = " << RecoData[i]->particleType()
              << " Pt = " << RecoData[i]->pt()
              << " eta = "<< RecoData[i]->eta()
              << " Ch = " << RecoData[i]->charge() << endl;
        }
-       if (RecoData[i]->pt() > clean_rejEvtBadJetPtmin
-                && RecoData[i]->particleType() >= 5
-                && RecoData[i]->particleType() <= 7){
-         numEvtBadHardJet++;
-         EventData->setBadHardJet();
-         if (DEBUGLVL >= 1){
-           cout << " Event has bad hard jet " << endl;
-         }
-         if (rej_BadHardJet) {
-           delete myCleaner;
-           return false;
-         }
-       }
-       if (RecoData[i]->particleType() == 1){numElectrons--;}
-       else if (RecoData[i]->particleType() == 2){numMuons--;}
-       else if (RecoData[i]->particleType() == 3){numTaus--;}
-       else if (RecoData[i]->particleType() == 4){numPhotons--;}
-       else if (RecoData[i]->particleType() >= 5
-              && RecoData[i]->particleType() <= 7){
+     }
+     
+     // perform the object cleaning for all objects except jets
+     if (fromPrimaryVx){
+       acceptObject = myCleaner->CleanObject(i);
+     }
+     // update counters of good and bad objects
+     if (!fromPrimaryVx || !acceptObject){
+       int ptype = RecoData[i]->particleType()/10;
+       if (ptype == 1){numElectrons--;}
+       else if (ptype == 2){numMuons--;}
+       else if (ptype == 3){numTaus--;}
+       else if (ptype == 4){numPhotons--;}
+       else if (ptype >= 5 && ptype <= 7){
          numJets--;
-         if (RecoData[i]->particleType() == 6){numBJets--;}
+         if (ptype == 6){numBJets--;}
        }
+       else if (ptype == 8){numUfos--;}
        counter--; 
+     }
+     if (!fromPrimaryVx){
+       numNotPrimaryTrk++;
+       if (RecoData[i]->particleType() == 10){numElecNotPrimaryTrk++;}
+       else if (RecoData[i]->particleType() == 20){numMuonNotPrimaryTrk++;}
+       else if (RecoData[i]->particleType() == 30){numTauNotPrimaryTrk++;}
+       else if (RecoData[i]->particleType() == 40){numPhotNotPrimaryTrk++;}
+       else if (RecoData[i]->particleType() >= 50
+              && RecoData[i]->particleType() <= 70){numJetNotPrimaryTrk++;}
+       else if (RecoData[i]->particleType() == 80){numUfosNotPrimaryTrk++;}
+     }
+     else if (!acceptObject){
+         numNotClean++;
+         int ptype = RecoData[i]->particleType();
+         if (ptype == 11){numElecNotCleanHOE++;}
+         else if (ptype == 12){numElecNotCleanShsh++;}
+         else if (ptype == 13){numElecNotCleanTmat++;}
+         else if (ptype == 21){numMuonNotClean++;}
+         else if (ptype == 31){numTauNotClean++;}
+         else if (ptype == 41){numPhotNotCleanHOE++;}
+         else if (ptype == 42){numPhotNotCleanShsh++;}
+         else if (ptype == 81){numUfosNotClean++;}
+         else{cout << " Anomalous not clean object type ********" << ptype << endl;}
+     }
+     // remove an object or go to next one
+     if (!fromPrimaryVx){
+       if (RecoData[i]->particleType()/10 == 8){
+         int iJet = FindNearestJet(i);
+         AddToJet(i, iJet);
+       }
        delete RecoData[i];
        RecoData.erase(RecoData.begin() + i);
+     } else {
+       i++;
      }
    }
-   
+   if (DEBUGLVL >= 2){
+     cout << " After object cleaning, RecoData.size = " << RecoData.size() << endl;
+     cout << " Number of clean electrons in first acceptance = " << numElectrons << endl;
+     cout << " Number of clean muons in first acceptance =     " << numMuons << endl;
+     cout << " Number of clean taus in first acceptance =      " << numTaus << endl;
+     cout << " Number of clean photons in first acceptance =   " << numPhotons << endl;
+     cout << " Number of clean UFOs in first acceptance =      " << numUfos << endl;
+   }
 
    // Third, check that objects are not duplicated
+   if (DEBUGLVL >= 2){
+     cout<< " Check for duplicated objects (except jets): " << endl;
+   }
+   
    i = 0;
    while (i< (int) RecoData.size()){
    
@@ -495,16 +682,31 @@ bool RecoProcessor::RecoDriver()
              << " eta = "<< RecoData[i]->eta()
              << " Ch = " << RecoData[i]->charge() << endl;
        }
-       numDuplicate++;
-       if (RecoData[i]->particleType() == 1){numElectrons--; numElecDupl++;}
-       else if (RecoData[i]->particleType() == 2){numMuons--; numMuonDupl++;}
-       else if (RecoData[i]->particleType() == 3){numTaus--; numTauDupl++;}
-       else if (RecoData[i]->particleType() == 4){numPhotons--; numPhotDupl++;}
-       else if (RecoData[i]->particleType() >= 5
-              && RecoData[i]->particleType() <= 7){
-         numJets--; 
-         numJetDupl++;
-         if (RecoData[i]->particleType() == 6){numBJets--;}
+       int ptype = RecoData[i]->particleType();
+       int pptype = ptype/10;
+       if (ptype%10 == 0){numDuplicate++;}
+       if (pptype == 1){ 
+         if (ptype == 10){numElecDupl++; numElectrons--;}
+         else if (ptype == 11){numElecDuplBadHOE++;}
+         else if (ptype == 12){numElecDuplBadShsh++;}
+         else if (ptype == 13){numElecDuplBadTmat++;}
+       }
+       else if (pptype == 2){
+         if (ptype == 20){numMuonDupl++; numMuons--;}
+         else if (ptype == 21){numMuonDuplBad++;}
+       }
+       else if (pptype == 3){
+         if (ptype == 30){numTauDupl++; numTaus--;}
+         else if (ptype == 31){numTauDuplBad++;}
+       }
+       else if (pptype == 4){
+         if (ptype == 40){numPhotDupl++; numPhotons--;}
+         else if (ptype == 41){numPhotDuplBadHOE++;}
+         else if (ptype == 42){numPhotDuplBadShsh++;}
+       }
+       else if (pptype == 8){
+         if (ptype == 80){numUfosDupl++; numUfos--;}
+         else if (ptype == 81){numUfosDuplBad++;}
        }
        counter--; 
        delete RecoData[i];
@@ -513,16 +715,16 @@ bool RecoProcessor::RecoDriver()
    }
 
    if (DEBUGLVL >= 1){
-     cout << " After object cleaning, RecoData.size = " << RecoData.size() << endl;
+     cout << " After object cleaning+duplication, RecoData.size = " << RecoData.size() << endl;
      cout << " Number of clean electrons in first acceptance = " << numElectrons << endl;
      cout << " Number of clean muons in first acceptance =     " << numMuons << endl;
      cout << " Number of clean taus in first acceptance =      " << numTaus << endl;
      cout << " Number of clean photons in first acceptance =   " << numPhotons << endl;
-     cout << " Number of clean jets in first acceptance =      " << numJets << endl;
+     cout << " Number of clean UFOs in first acceptance =      " << numUfos << endl;
    }
 
   // make Reco printout after first acceptance cuts and cleaning 
-
+/*
    if (DEBUGLVL >= 2){
      cout << endl;
      cout << "After object cleaning : " << endl;
@@ -531,7 +733,7 @@ bool RecoProcessor::RecoDriver()
        PrintRecoInfo();
      }
    }
-
+*/
    if (RecoData.size() <= 0){
      numEvtCleanEmpty++;
      EventData->setCleanEmpty();
@@ -545,7 +747,8 @@ bool RecoProcessor::RecoDriver()
    }
 
    // end of cleaning
-   // keep the myCleaner object, as it is still used below
+
+   // keep myCleaner as it is still used below
 
 
   // ******************************************************** 
@@ -553,9 +756,9 @@ bool RecoProcessor::RecoDriver()
 
     i = 0;
     while (i < (int) RecoData.size()){
-     if (RecoData[i]->particleType() == 1){
+     if (RecoData[i]->particleType() == 10){
        for (int j=i+1; j < (int) RecoData.size(); j++){
-         if (RecoData[j]->particleType() == 1){                   
+         if (RecoData[j]->particleType() == 10){                   
            if (myCleaner->ConvertedPhoton(i, j)){            
             float px = RecoData[i]->px()+RecoData[j]->px();   
             float py = RecoData[i]->py()+RecoData[j]->py();   
@@ -636,30 +839,42 @@ bool RecoProcessor::RecoDriver()
       bool iso = myIsolator->IsObjectIsolated(i);
       RecoData[i]->setParticleIso(iso);
       if (!iso){
-        if (RecoData[i]->particleType() == 1){numElectronsNonIso++;}
-        else if (RecoData[i]->particleType() == 2){numMuonsNonIso++;}
-        else if (RecoData[i]->particleType() == 3){numTausNonIso++;}
-        else if (RecoData[i]->particleType() == 4){numPhotonsNonIso++;}
-      }
-      if (DEBUGLVL >= 2){
-        if (iso){
-          cout << " part " << i << " is isolated " << endl;
-        } else{
-          cout << " part " << i << " is not isolated " << endl;
-        }
+        int ptype = RecoData[i]->particleType();
+        if (ptype == 10){numElectronsNonIso++;}
+        else if (ptype == 11){numElectronsNonIsoBadHOE++;}
+        else if (ptype == 12){numElectronsNonIsoBadShsh++;}
+        else if (ptype == 13){numElectronsNonIsoBadTmat++;}
+        else if (ptype == 20){numMuonsNonIso++;}
+        else if (ptype == 21){numMuonsNonIsoBad++;}
+        else if (ptype == 30){numTausNonIso++;}
+        else if (ptype == 31){numTausNonIsoBad++;}
+        else if (ptype == 40){numPhotonsNonIso++;}
+        else if (ptype == 41){numPhotonsNonIsoBadHOE++;}
+        else if (ptype == 42){numPhotonsNonIsoBadShsh++;}
+        else if (ptype == 80){numUfosNonIso++;}
+        else if (ptype == 81){numUfosNonIsoBad++;}
       }
     }
     
     // Now add/remove from the nearest jet if needed
+    if (DEBUGLVL >= 2){
+      cout << " Merging non-isolated objects with nearest jet: " << endl;
+    }
     i = 0;
     while (i < (int) RecoData.size()){
       bool iso = RecoData[i]->particleIso();
       bool isMerged = myIsolator->IsObjectMerged(i, iso);
+//  if (RecoData[i]->particleType()%10 != 0 && isMerged && iso){
+//  cout << " particle type " << RecoData[i]->particleType()
+//       << " PT " <<  RecoData[i]->pt() << " Merged " << (int)isMerged << endl;
+//  }
       if (DEBUGLVL >= 2){
         if (isMerged){
-          cout << " part " << i << " is merged with jet " << endl;
+          cout << " object index = " << i << " type = " << RecoData[i]->particleType()
+               << " is merged with jet " << endl;
         } else{
-          cout << " part " << i << " is not merged with jet " << endl;
+          cout << " object index = " << i << " type = " << RecoData[i]->particleType()
+               << " is not merged with jet " << endl;
         }
       }
       if (!iso){
@@ -678,6 +893,143 @@ bool RecoProcessor::RecoDriver()
   delete myIsolator;
    
   // ******************************************************** 
+  // Perform jet cleaning, now that they will not be modified any more
+   
+    if (DEBUGLVL >= 2){
+      cout << endl;
+      cout << "Make the jet cleaning:" << endl;
+    }
+    
+    for (int i = 0; i < (int) RecoData.size(); i++){
+      int ptype = RecoData[i]->particleType()/10;
+      int pptype = RecoData[i]->particleType()%10;
+      if (ptype >= 5 && ptype <= 7){
+        bool acceptObject = myCleaner->CleanJet(i);
+
+        if (DEBUGLVL >= 2){   
+          if (acceptObject){
+            cout << " Is clean object, index =  " << i
+                 << " Type = " << RecoData[i]->particleType()
+                 << " Pt = " << RecoData[i]->pt()
+                 << " eta = "<< RecoData[i]->eta()
+                 << " Ch = " << RecoData[i]->charge() << endl;
+           } else {
+             cout << " Is bad object, index =  " << i
+                 << " Type = " << RecoData[i]->particleType()
+                 << " Pt = " << RecoData[i]->pt()
+                 << " eta = "<< RecoData[i]->eta()
+                 << " Ch = " << RecoData[i]->charge() << endl;
+          }
+        }
+        
+        if (!acceptObject){
+          cout << " Bad hard jet type " << RecoData[i]->particleType() << endl;
+          numJets--;
+          if (ptype == 6){numBJets--;}
+          if (pptype == 1){numJetNotCleanFem++;}
+          else if (pptype == 2){numJetNotCleanFtk++;}
+          
+          // if bad hard jet, event may be rejected
+          if (RecoData[i]->pt() > clean_rejEvtBadJetPtmin){
+            numEvtBadHardJet++;
+            EventData->setBadHardJet();
+            if (DEBUGLVL >= 1){
+              cout << " Event has bad hard jet " << endl;
+            }
+            if (rej_BadHardJet) {
+              delete myCleaner;
+              return false;
+            }
+          }
+        }
+      }
+    }
+    
+    if (DEBUGLVL >= 2){
+     cout << " Number of clean jets in first acceptance =      " << numJets << endl;
+    }
+
+   // Now check that jets are not duplicated with electrons
+   if (DEBUGLVL >= 2){
+     cout << endl;
+     cout << "Check duplication of jets with electrons:" << endl;
+   }
+   i = 0;
+   while (i< (int) RecoData.size()){
+     bool acceptObject = true;
+     int ptype = RecoData[i]->particleType()/10;
+     int pptype = RecoData[i]->particleType()%10;
+     if (ptype >= 5 && ptype <= 7){
+   
+       acceptObject = !myCleaner->ElectronJet(i);
+     
+       if (DEBUGLVL >= 2){
+         if (acceptObject){
+           cout << " Not an electron jet, index =  " << i
+                << " Type = " << RecoData[i]->particleType()
+                << " Pt = " << RecoData[i]->pt()
+                << " eta = "<< RecoData[i]->eta()
+                << " Ch = " << RecoData[i]->charge() << endl;
+         } else {
+           cout << " Jet rejected electron-jet, index =  " << i
+                << " Type = " << RecoData[i]->particleType()
+                << " Pt = " << RecoData[i]->pt()
+                << " eta = "<< RecoData[i]->eta()
+                << " Ch = " << RecoData[i]->charge() << endl;
+         }
+       }
+       
+       if (!acceptObject){
+         if (ptype == 6){numBJets--;}
+         if (pptype == 0){numJetDupl++; numJets--;}
+         else if (pptype == 1){numJetDuplBadFem++;}
+         else if (pptype == 2){numJetDuplBadFtk++;}
+         counter--; 
+         delete RecoData[i];
+         RecoData.erase(RecoData.begin() + i);
+         i--;
+       }
+     }
+     i++;
+//     cout << " Outside jet if, i= " << i << " RecoData = " << RecoData.size() << endl;
+   }
+
+   if (DEBUGLVL >= 1){
+     cout << endl;
+     cout << "After object cleaning+duplication+isolation, RecoData.size = " << RecoData.size() << endl;
+     cout << " Number of clean electrons in first acceptance = " << numElectrons << endl;
+     cout << " Number of clean muons in first acceptance =     " << numMuons << endl;
+     cout << " Number of clean taus in first acceptance =      " << numTaus << endl;
+     cout << " Number of clean photons in first acceptance =   " << numPhotons << endl;
+     cout << " Number of clean jets in first acceptance =      " << numJets << endl;
+     cout << " Number of clean UFOs in first acceptance =      " << numUfos << endl;
+   }
+
+  // make Reco printout after first acceptance cuts, cleaning and isolation
+
+   if (DEBUGLVL >= 2){
+     cout << endl;
+     cout << "After object cleaning : " << endl;
+     cout << " Number of Objects remaining = " << RecoData.size() << endl;
+     if (RecoData.size() > 0){
+       PrintRecoInfo();
+     }
+   }
+   
+   if (RecoData.size() <= 0){
+     numEvtCleanEmpty++;
+     EventData->setCleanEmpty();
+     if (DEBUGLVL >= 1){
+       cout << " No objects left after cleaning and isolation " << endl;
+     }
+     if (rej_CleanEmpty) {
+       delete myCleaner;
+       return false;
+     }
+   }
+   
+   
+  // ******************************************************** 
   // Apply the final acceptance cuts
    
     if (DEBUGLVL >= 2){
@@ -685,27 +1037,34 @@ bool RecoProcessor::RecoDriver()
       cout << "Apply the final acceptance cuts" << endl;
     }
     
+    // First loop over the non-jet objects
     i = 0;
     while (i < (int) RecoData.size()){
-      if (RecoData[i]->particleType() < 5){
+      int ptype = RecoData[i]->particleType()/10;
+      if (ptype < 5 || ptype > 7){
         bool iaccept = false;
-        if (RecoData[i]->particleType() == 1){
+        if (ptype == 1){
           if (RecoData[i]->pt() > ana_elecPtMin2){  
             iaccept = true;
           }
         }
-        else if (RecoData[i]->particleType() == 2){
+        else if (ptype == 2){
           if (RecoData[i]->pt() > ana_muonPtMin2){  
             iaccept = true;
           }
         }
-        else if (RecoData[i]->particleType() == 3){
+        else if (ptype == 3){
           if (RecoData[i]->pt() > ana_tauPtMin2){  
             iaccept = true;
           }
         }
-        else if (RecoData[i]->particleType() == 4){
+        else if (ptype == 4){
           if (RecoData[i]->pt() > ana_photonPtMin2){  
+            iaccept = true;
+          }
+        } 
+        else if (ptype == 8){
+          if (RecoData[i]->pt() > ana_ufoPtMin2){  
             iaccept = true;
           }
         } 
@@ -713,29 +1072,32 @@ bool RecoProcessor::RecoDriver()
           iaccept = true;
         }
       
+        // If isolated, keep object, else add it to nearest jet and remove it
         if (iaccept){
-          if (DEBUGLVL >= 2 && RecoData[i]->particleType() < 5){
+          if (DEBUGLVL >= 2 && RecoData[i]->particleType() < 50){
             cout << " part " << i << ", type = " << RecoData[i]->particleType()
             << " inside acceptance, is kept" << endl;
           }
           i++;
         }
         else{
-          if (DEBUGLVL >= 2 && RecoData[i]->particleType() < 5){
+          if (DEBUGLVL >= 2 && RecoData[i]->particleType() < 50){
             cout << " part " << i << ", type = " << RecoData[i]->particleType()
             << " outside acceptance, is added to nearest jet and removed" << endl;
-          }
-          AddToJet(i);
+          }  
+          int iJet = FindNearestJet(i);
+          AddToJet(i, iJet);
           delete RecoData[i];
           RecoData.erase(RecoData.begin() + i);
         }
       } else {i++;}
     }
    
+    // Then loop over the jets
     i = 0;
     while (i < (int) RecoData.size()){
-      if (RecoData[i]->particleType() >= 5
-          && RecoData[i]->particleType() <= 7){
+      if (RecoData[i]->particleType() >= 50
+          && RecoData[i]->particleType() <= 79){
         if (RecoData[i]->pt() > ana_jetPtMin2){  
           if (DEBUGLVL >= 2){
             cout << " part " << i 
@@ -776,6 +1138,7 @@ bool RecoProcessor::RecoDriver()
      cout << endl;
      cout << "Event cleaning: " << endl;
    }
+   
    bool cleanevt = true; 
    cleanevt = myCleaner->CleanEvent(); 
   
@@ -824,7 +1187,6 @@ bool RecoProcessor::RecoDriver()
  
   // ******************************************************** 
   // Compute the missing ET as recoil to all objects
-
     
     float metrecoil[] = {0., 0., 0.};
    
@@ -837,7 +1199,7 @@ bool RecoProcessor::RecoDriver()
     EventData->setMetRecoil(metRecoilvector);
     if (DEBUGLVL >= 1){
      float metrec = sqrt(metrecoil[0]*metrecoil[0]+metrecoil[1]*metrecoil[1]);
-     cout << " MET from recoil     = " << metrec << endl;
+     cout << " MET from recoil   = " << metrec << endl;
     }
     
   // ******************************************************** 
@@ -845,6 +1207,8 @@ bool RecoProcessor::RecoDriver()
    
     bool cleanmet = true;
     cleanmet = myCleaner->CleanMET(metrecoil);
+
+    delete myCleaner;
     
     if (!cleanmet) {
       numEvtBadMET++;
@@ -853,13 +1217,10 @@ bool RecoProcessor::RecoDriver()
        cout << " Event has bad MET " << endl;
       }
       if (rej_BadMET) {
-        delete myCleaner;
         return false;
       }
     }
 
-
-    delete myCleaner;
 
   // ******************************************************** 
   // Matching of reconstructed objects to the MC truth
@@ -882,54 +1243,72 @@ bool RecoProcessor::RecoDriver()
   // recompute the counters for finally retained objects
     
     for (int i = 0; i < (int) RecoData.size(); i++){
-      if (RecoData[i]->particleType() == 1){
-        numElectronsfinal++;
-        if (RecoData[i]->partonIndex() >= 0){
-          numElectronsMatched++;
-        }
+      if (RecoData[i]->particleType() == 10){numElectronsfinal++;
+        if (RecoData[i]->partonIndex() >= 0){numElectronsMatched++;}
       }
-      if (RecoData[i]->particleType() == 2){
-        numMuonsfinal++;
-        if (RecoData[i]->partonIndex() >= 0){
-          numMuonsMatched++;
-        }
+      else if (RecoData[i]->particleType() == 11){numElectronsfinalBadHOE++;
+        if (RecoData[i]->partonIndex() >= 0){numElectronsMatchedBadHOE++;}
       }
-      if (RecoData[i]->particleType() == 3){
-        numTausfinal++;
-        if (RecoData[i]->partonIndex() >= 0){
-          numTausMatched++;
-        }
+      else if (RecoData[i]->particleType() == 12){numElectronsfinalBadShsh++;
+        if (RecoData[i]->partonIndex() >= 0){numElectronsMatchedBadShsh++;}
       }
-      if (RecoData[i]->particleType() == 4){
-        numPhotonsfinal++;
-        if (RecoData[i]->partonIndex() >= 0){
-          numPhotonsMatched++;
-        }
+      else if (RecoData[i]->particleType() == 13){numElectronsfinalBadTmat++;
+        if (RecoData[i]->partonIndex() >= 0){numElectronsMatchedBadTmat++;}
       }
-      if (RecoData[i]->particleType() >= 5
-          && RecoData[i]->particleType() <= 7){
-        numJetsfinal++;
-        if (RecoData[i]->particleType() == 6){
-          numBJetsfinal++;
-        }
-        if (RecoData[i]->partonIndex() >= 0){
-          numJetsMatched++;
-        }
+      else if (RecoData[i]->particleType() == 20){numMuonsfinal++;
+        if (RecoData[i]->partonIndex() >= 0){numMuonsMatched++;}
+      }
+      else if (RecoData[i]->particleType() == 21){numMuonsfinalBad++;
+        if (RecoData[i]->partonIndex() >= 0){numMuonsMatchedBad++;}
+      }
+      else if (RecoData[i]->particleType() == 30){numTausfinal++;
+        if (RecoData[i]->partonIndex() >= 0){numTausMatched++;}
+      }
+      else if (RecoData[i]->particleType() == 31){numTausfinalBad++;
+        if (RecoData[i]->partonIndex() >= 0){numTausMatchedBad++;}
+      }
+      else if (RecoData[i]->particleType() == 40){numPhotonsfinal++;
+        if (RecoData[i]->partonIndex() >= 0){numPhotonsMatched++;}
+      }
+      else if (RecoData[i]->particleType() == 41){numPhotonsfinalBadHOE++;
+        if (RecoData[i]->partonIndex() >= 0){numPhotonsMatchedBadHOE++;}
+      }
+      else if (RecoData[i]->particleType() == 42){numPhotonsfinalBadShsh++;
+        if (RecoData[i]->partonIndex() >= 0){numPhotonsMatchedBadShsh++;}
+      }
+      else if (RecoData[i]->particleType() >= 50
+          && RecoData[i]->particleType() <= 79){numJetsfinal++;
+        if (RecoData[i]->particleType() == 60){numBJetsfinal++;}
+        if (RecoData[i]->partonIndex() >= 0){numJetsMatched++;}
+      }
+      else if (RecoData[i]->particleType() == 51){numJetsfinalBadFem++;
+        if (RecoData[i]->partonIndex() >= 0){numJetsMatchedBadFem++;}
+      }
+      else if (RecoData[i]->particleType() == 52){numJetsfinalBadFtk++;
+        if (RecoData[i]->partonIndex() >= 0){numJetsMatchedBadFtk++;}
+      }
+      else if (RecoData[i]->particleType() == 80){numUfosfinal++;
+        if (RecoData[i]->partonIndex() >= 0){numUfosMatched++;}
+      }
+      else if (RecoData[i]->particleType() == 81){numUfosfinalBad++;
+        if (RecoData[i]->partonIndex() >= 0){numUfosMatchedBad++;}
       }
     }
   
     if (DEBUGLVL >= 1){
      cout << "Inside final acceptance: " << endl;
-     cout << " Number of electrons = " << numElectronsfinal
+     cout << " Number of good electrons = " << numElectronsfinal
       << ", matched = " << numElectronsMatched << endl;
-     cout << " Number of muons     = " << numMuonsfinal
+     cout << " Number of good muons     = " << numMuonsfinal
       << ", matched = " << numMuonsMatched << endl;
-     cout << " Number of taus      = " << numTausfinal
+     cout << " Number of good taus      = " << numTausfinal
       << ", matched = " << numTausMatched << endl;
-     cout << " Number of photons   = " << numPhotonsfinal
+     cout << " Number of good photons   = " << numPhotonsfinal
       << ", matched = " << numPhotonsMatched << endl;
-     cout << " Number of jets      = " << numJetsfinal
+     cout << " Number of good jets      = " << numJetsfinal
       << ", matched = " << numJetsMatched << endl;
+     cout << " Number of good UFOs      = " << numUfosfinal
+      << ", matched = " << numUfosMatched << endl;
     }
     
   return goodData;

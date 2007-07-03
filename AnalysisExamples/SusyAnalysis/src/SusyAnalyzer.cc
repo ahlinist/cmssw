@@ -33,7 +33,8 @@ SusyAnalyzer::SusyAnalyzer(const edm::ParameterSet& iConfig)
   m_tautaginfo = iConfig.getParameter<string>("taujet");
   m_photonSrc  = iConfig.getParameter<string>("photons");
   m_calometSrc = iConfig.getParameter<string>("calomet");
-  m_jettag = iConfig.getParameter<string>("jettag");
+  m_bjettag = iConfig.getParameter<string>("bjettag");
+  m_tautag = iConfig.getParameter<string>("tautag");
   m_hlTriggerResults = iConfig.getParameter<edm::InputTag>("HLTriggerResults");
  
   // get parameters, save them in a structure Config
@@ -104,7 +105,7 @@ void SusyAnalyzer::beginJob( const edm::EventSetup& )
 
    // initialize global counters 
    numTotL1BitsBeforeCuts.clear();
-   for(int i=0; i<28; i++) {
+   for(int i=0; i<113; i++) {
      numTotL1BitsBeforeCuts.push_back(0);
    }
 
@@ -140,40 +141,89 @@ void SusyAnalyzer::beginJob( const edm::EventSetup& )
    numTotDuplicate = 0;
    numTotElectrons = 0;
    numTotElecNotPrimaryTrk = 0;
-   numTotElecNotClean = 0;
+   numTotElecNotCleanHOE = 0;
+   numTotElecNotCleanShsh = 0;
+   numTotElecNotCleanTmat = 0;
    numTotElecDupl = 0;
+   numTotElecDuplBadHOE = 0;
+   numTotElecDuplBadShsh = 0;
+   numTotElecDuplBadTmat = 0;
    numTotElectronsNonIso = 0;  
+   numTotElectronsNonIsoBadHOE = 0;  
+   numTotElectronsNonIsoBadShsh = 0;  
+   numTotElectronsNonIsoBadTmat = 0;  
    numTotElectronsfinal = 0;  
+   numTotElectronsfinalBadHOE = 0;  
+   numTotElectronsfinalBadShsh = 0;  
+   numTotElectronsfinalBadTmat = 0;  
    numTotElectronsMatched = 0;
+   numTotElectronsMatchedBadHOE = 0;
+   numTotElectronsMatchedBadShsh = 0;
+   numTotElectronsMatchedBadTmat = 0;
    numTotMuons = 0;  
    numTotMuonNotPrimaryTrk = 0;
    numTotMuonNotClean = 0;
    numTotMuonDupl = 0;
+   numTotMuonDuplBad = 0;
    numTotMuonsNonIso = 0;  
+   numTotMuonsNonIsoBad = 0;  
    numTotMuonsfinal = 0;  
+   numTotMuonsfinalBad = 0;  
    numTotMuonsMatched = 0;
+   numTotMuonsMatchedBad = 0;
    numTotTaus = 0;
    numTotTauNotPrimaryTrk = 0;
    numTotTauNotClean = 0;
    numTotTauDupl = 0;
+   numTotTauDuplBad = 0;
    numTotTausNonIso = 0;
+   numTotTausNonIsoBad = 0;
    numTotTausfinal = 0;
+   numTotTausfinalBad = 0;
    numTotTausMatched = 0;
+   numTotTausMatchedBad = 0;
    numTotPhotons = 0;  
    numTotPhotNotPrimaryTrk = 0;
-   numTotPhotNotClean = 0;
+   numTotPhotNotCleanHOE = 0;
+   numTotPhotNotCleanShsh = 0;
    numTotPhotDupl = 0;
+   numTotPhotDuplBadHOE = 0;
+   numTotPhotDuplBadShsh = 0;
    numTotPhotonsNonIso = 0;  
+   numTotPhotonsNonIsoBadHOE = 0;  
+   numTotPhotonsNonIsoBadShsh = 0;  
    numTotPhotonsfinal = 0;  
+   numTotPhotonsfinalBadHOE = 0;  
+   numTotPhotonsfinalBadShsh = 0;  
    numTotPhotonsMatched = 0;
+   numTotPhotonsMatchedBadHOE = 0;
+   numTotPhotonsMatchedBadShsh = 0;
    numTotJets = 0;  
    numTotJetNotPrimaryTrk = 0;
-   numTotJetNotClean = 0;
+   numTotJetNotCleanFem = 0;
+   numTotJetNotCleanFtk = 0;
    numTotJetDupl = 0;
+   numTotJetDuplBadFem = 0;
+   numTotJetDuplBadFtk = 0;
    numTotBJets = 0;  
    numTotJetsfinal = 0;  
+   numTotJetsfinalBadFem = 0;  
+   numTotJetsfinalBadFtk = 0;  
    numTotBJetsfinal = 0;  
    numTotJetsMatched = 0;
+   numTotJetsMatchedBadFem = 0;
+   numTotJetsMatchedBadFtk = 0;
+   numTotUfos = 0;
+   numTotUfosNotPrimaryTrk = 0;
+   numTotUfosNotClean = 0;
+   numTotUfosDupl = 0;
+   numTotUfosDuplBad = 0;
+   numTotUfosNonIso = 0;
+   numTotUfosNonIsoBad = 0;
+   numTotUfosfinal = 0;
+   numTotUfosfinalBad = 0;
+   numTotUfosMatched = 0;
+   numTotUfosMatchedBad = 0;
    
    numTotEventsAfterCuts = 0;
 
@@ -189,8 +239,10 @@ void SusyAnalyzer::endJob()
   // Final output of the run statistics
   
    PrintStatistics();
+   cout << " in SusyAnalyzer::endJob" << endl;
    
-   // delete UserAnalysis
+   // delete UserAnalysis, which prints its statistics
+   myUserAnalysis->setNtotEvtProc(numTotEvt);
    delete myUserAnalysis; 
    
    return ;
@@ -217,7 +269,7 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   try{
   // Variables and counters valid per event
   
-//  if (iEvent.id().run() != 5002 || iEvent.id().event() != 28) {return;}
+//  if (iEvent.id().run() != 3415 || iEvent.id().event() != 10) {return;}
 
   int mccounter = 0;
   
@@ -289,6 +341,10 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   
   // Save the MCData in the Event data
   EventData->setMCData(&MCData);
+
+   // get gen jet collection
+   // Handle<GenJetCollection> jetsgen;
+   // iEvent.getByLabel(m_jetsgenSrc, jetsgen);
   
 
    // handle MC and make MC printout
@@ -454,9 +510,10 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
    }
 
    // get Taus collection
-   //Handle<IsolatedTauTagInfoCollection> tauTagInfoHandle;
-   //iEvent.getByLabel(m_tautaginfo, tauTagInfoHandle);
-   //const IsolatedTauTagInfoCollection & tauTagInfo = *(tauTagInfoHandle.product());
+   Handle<IsolatedTauTagInfoCollection> tauTagInfoHandle;
+   iEvent.getByLabel(m_tautag, tauTagInfoHandle);
+   const IsolatedTauTagInfoCollection * tauTagInfo = tauTagInfoHandle.product();
+
 
 
    // get calo jet collection
@@ -465,25 +522,26 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
    // collect information for b-tagging
    Handle<JetTagCollection> jetsAndTracks;
-   iEvent.getByLabel(m_jettag,jetsAndTracks);
+   iEvent.getByLabel(m_bjettag,jetsAndTracks);
 
    const JetTag* jetTag = NULL; 
 
-   //simply a sufficiently small number as == might give problems with probable float double comparison
-   double EPSILON_BT = 0.00001;
    double btagdiscriminator = -10;
+   double tautagdiscriminator = -10;
 
   for (unsigned int j = 0; j < jets->size(); j++)
   {
+    for (unsigned int i = 0; i < tauTagInfo->size(); i++) {
+     if ( &(*tauTagInfo)[i].jet() == &(*jets)[j] ) {
+       tautagdiscriminator = (*tauTagInfo)[i].discriminator();
+       break;
+     }
+    }
+  
  
     for (unsigned int i = 0; i < jetsAndTracks->size(); i++){
+      if ( &(*jetsAndTracks)[i].jet() == &(*jets)[j] ) {
    
-      if ( fabs( ((*jets)[j].px() - (*jetsAndTracks)[i].jet().px())/  (*jets)[j].px()) < EPSILON_BT && 
-	   fabs( ((*jets)[j].py() - (*jetsAndTracks)[i].jet().py())/  (*jets)[j].py()) < EPSILON_BT &&
-	   fabs( ((*jets)[j].pz() - (*jetsAndTracks)[i].jet().pz())/  (*jets)[j].pz()) < EPSILON_BT &&
-//	   fabs( ((*jets)[j].energy() - (*jetsAndTracks)[i].jet().energy())/  (*jets)[j].pz()) < EPSILON_BT ) 
-	   fabs( ((*jets)[j].energy() - (*jetsAndTracks)[i].jet().energy())/  (*jets)[j].energy()) < EPSILON_BT ) 
-	{
 	  btagdiscriminator =  (*jetsAndTracks)[i].discriminator();
 	  jetTag = &(*jetsAndTracks)[i];
 	  break;
@@ -496,6 +554,9 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   
     recopart->setBtagDiscriminator(btagdiscriminator);
 //    if(btagdiscriminator > ana_minBtagDiscriminator) {recopart->setParticleType(6);}
+    recopart->setTauTagDiscriminator(tautagdiscriminator);
+  //  if (tautagdiscriminator > -5.0) {cout << "Found tau candidate with discrim = " << tautagdiscriminator 
+  //       << " and pt = " << recopart->pt() << " and eta = " << recopart->eta() << endl; }
    
     RecoData.push_back(recopart);
  
@@ -558,10 +619,6 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
    EventData->setVertexCollection(VertexData); 
    EventData->setCaloTowerCollection(CaloTowerData); 
 
-   // get gen jet collection
-   // Handle<GenJetCollection> jetsgen;
-   // iEvent.getByLabel(m_jetsgenSrc, jetsgen);
-
 
    // make printout of candidates, etc.
    if (DEBUGLVL >= 1){
@@ -570,7 +627,7 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
      cout << " number of electrons  "<< electrons->size() << endl;
      cout << " number of muons      "<< muons->size() << endl;
      //cout << " number of tau jets   " << tauTagInfo.size() << endl;
-     //cout << " number of photons    "<< photons->size() << endl;
+     cout << " number of photons    "<< photons->size() << endl;
      cout << " number of jets       "<< jets->size() << endl;
      cout << " number of tracks     "<< tracks->size() << endl;
      cout << " number of vertices   "<< vertices->size() << endl;
@@ -672,40 +729,89 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   numTotDuplicate += myRecoProcessor->NumDuplicate();
   numTotElectrons += myRecoProcessor->NumElectrons();
   numTotElecNotPrimaryTrk += myRecoProcessor->NumElecNotPrimaryTrk();
-  numTotElecNotClean += myRecoProcessor->NumElecNotClean();
+  numTotElecNotCleanHOE += myRecoProcessor->NumElecNotCleanHOE();
+  numTotElecNotCleanShsh += myRecoProcessor->NumElecNotCleanShsh();
+  numTotElecNotCleanTmat += myRecoProcessor->NumElecNotCleanTmat();
   numTotElecDupl += myRecoProcessor->NumElecDupl();
+  numTotElecDuplBadHOE += myRecoProcessor->NumElecDuplBadHOE();
+  numTotElecDuplBadShsh += myRecoProcessor->NumElecDuplBadShsh();
+  numTotElecDuplBadTmat += myRecoProcessor->NumElecDuplBadTmat();
   numTotElectronsNonIso += myRecoProcessor->NumElectronsNonIso();  
+  numTotElectronsNonIsoBadHOE += myRecoProcessor->NumElectronsNonIsoBadHOE();  
+  numTotElectronsNonIsoBadShsh += myRecoProcessor->NumElectronsNonIsoBadShsh();  
+  numTotElectronsNonIsoBadTmat += myRecoProcessor->NumElectronsNonIsoBadTmat();  
   numTotElectronsfinal += myRecoProcessor->NumElectronsfinal();  
+  numTotElectronsfinalBadHOE += myRecoProcessor->NumElectronsfinalBadHOE();  
+  numTotElectronsfinalBadShsh += myRecoProcessor->NumElectronsfinalBadShsh();  
+  numTotElectronsfinalBadTmat += myRecoProcessor->NumElectronsfinalBadTmat();  
   numTotElectronsMatched += myRecoProcessor->NumElectronsMatched();
+  numTotElectronsMatchedBadHOE += myRecoProcessor->NumElectronsMatchedBadHOE();
+  numTotElectronsMatchedBadShsh += myRecoProcessor->NumElectronsMatchedBadShsh();
+  numTotElectronsMatchedBadTmat += myRecoProcessor->NumElectronsMatchedBadTmat();
   numTotMuons += myRecoProcessor->NumMuons();  
   numTotMuonNotPrimaryTrk += myRecoProcessor->NumMuonNotPrimaryTrk();
   numTotMuonNotClean += myRecoProcessor->NumMuonNotClean();
   numTotMuonDupl += myRecoProcessor->NumMuonDupl();
+  numTotMuonDuplBad += myRecoProcessor->NumMuonDuplBad();
   numTotMuonsNonIso += myRecoProcessor->NumMuonsNonIso();  
+  numTotMuonsNonIsoBad += myRecoProcessor->NumMuonsNonIsoBad();  
   numTotMuonsfinal += myRecoProcessor->NumMuonsfinal();  
+  numTotMuonsfinalBad += myRecoProcessor->NumMuonsfinalBad();  
   numTotMuonsMatched += myRecoProcessor->NumMuonsMatched();
+  numTotMuonsMatchedBad += myRecoProcessor->NumMuonsMatchedBad();
   numTotTaus += myRecoProcessor->NumTaus();  
   numTotTauNotPrimaryTrk += myRecoProcessor->NumTauNotPrimaryTrk();
   numTotTauNotClean += myRecoProcessor->NumTauNotClean();
   numTotTauDupl += myRecoProcessor->NumTauDupl();
+  numTotTauDuplBad += myRecoProcessor->NumTauDuplBad();
   numTotTausNonIso += myRecoProcessor->NumTausNonIso();  
+  numTotTausNonIsoBad += myRecoProcessor->NumTausNonIsoBad();  
   numTotTausfinal += myRecoProcessor->NumTausfinal();  
+  numTotTausfinalBad += myRecoProcessor->NumTausfinalBad();  
   numTotTausMatched += myRecoProcessor->NumTausMatched();
+  numTotTausMatchedBad += myRecoProcessor->NumTausMatchedBad();
   numTotPhotons += myRecoProcessor->NumPhotons();  
   numTotPhotNotPrimaryTrk += myRecoProcessor->NumPhotNotPrimaryTrk();
-  numTotPhotNotClean += myRecoProcessor->NumPhotNotClean();
+  numTotPhotNotCleanHOE += myRecoProcessor->NumPhotNotCleanHOE();
+  numTotPhotNotCleanShsh += myRecoProcessor->NumPhotNotCleanShsh();
   numTotPhotDupl += myRecoProcessor->NumPhotDupl();
+  numTotPhotDuplBadHOE += myRecoProcessor->NumPhotDuplBadHOE();
+  numTotPhotDuplBadShsh += myRecoProcessor->NumPhotDuplBadShsh();
   numTotPhotonsNonIso += myRecoProcessor->NumPhotonsNonIso();  
+  numTotPhotonsNonIsoBadHOE += myRecoProcessor->NumPhotonsNonIsoBadHOE();  
+  numTotPhotonsNonIsoBadShsh += myRecoProcessor->NumPhotonsNonIsoBadShsh();  
   numTotPhotonsfinal += myRecoProcessor->NumPhotonsfinal();  
+  numTotPhotonsfinalBadHOE += myRecoProcessor->NumPhotonsfinalBadHOE();  
+  numTotPhotonsfinalBadShsh += myRecoProcessor->NumPhotonsfinalBadShsh();  
   numTotPhotonsMatched += myRecoProcessor->NumPhotonsMatched();
+  numTotPhotonsMatchedBadHOE += myRecoProcessor->NumPhotonsMatchedBadHOE();
+  numTotPhotonsMatchedBadShsh += myRecoProcessor->NumPhotonsMatchedBadShsh();
   numTotJets += myRecoProcessor->NumJets();  
   numTotJetNotPrimaryTrk += myRecoProcessor->NumJetNotPrimaryTrk();
-  numTotJetNotClean += myRecoProcessor->NumJetNotClean();
+  numTotJetNotCleanFem += myRecoProcessor->NumJetNotCleanFem();
+  numTotJetNotCleanFtk += myRecoProcessor->NumJetNotCleanFtk();
   numTotJetDupl += myRecoProcessor->NumJetDupl();
+  numTotJetDuplBadFem += myRecoProcessor->NumJetDuplBadFem();
+  numTotJetDuplBadFtk += myRecoProcessor->NumJetDuplBadFtk();
   numTotBJets += myRecoProcessor->NumBJets();  
   numTotJetsfinal += myRecoProcessor->NumJetsfinal();  
+  numTotJetsfinalBadFem += myRecoProcessor->NumJetsfinalBadFem();  
+  numTotJetsfinalBadFtk += myRecoProcessor->NumJetsfinalBadFtk();  
   numTotBJetsfinal += myRecoProcessor->NumBJetsfinal();  
   numTotJetsMatched += myRecoProcessor->NumJetsMatched();
+  numTotJetsMatchedBadFem += myRecoProcessor->NumJetsMatchedBadFem();
+  numTotJetsMatchedBadFtk += myRecoProcessor->NumJetsMatchedBadFtk();
+  numTotUfos += myRecoProcessor->NumUfos();
+  numTotUfosNotPrimaryTrk += myRecoProcessor->NumUfosNotPrimaryTrk();
+  numTotUfosNotClean += myRecoProcessor->NumUfosNotClean();
+  numTotUfosDupl += myRecoProcessor->NumUfosDupl();
+  numTotUfosDuplBad += myRecoProcessor->NumUfosDuplBad();
+  numTotUfosNonIso += myRecoProcessor->NumUfosNonIso();
+  numTotUfosNonIsoBad += myRecoProcessor->NumUfosNonIsoBad();
+  numTotUfosfinal += myRecoProcessor->NumUfosfinal();
+  numTotUfosfinalBad += myRecoProcessor->NumUfosfinalBad();
+  numTotUfosMatched += myRecoProcessor->NumUfosMatched();
+  numTotUfosMatchedBad += myRecoProcessor->NumUfosMatchedBad();
   
   numTotEventsAfterCuts++;
   
@@ -717,6 +823,9 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   // Now start the analysis
   // ******************************************************** 
   
+  if (DEBUGLVL >= 1){
+    cout << "Calling the User Analysis " << endl;
+  }
   myUserAnalysis->doAnalysis(EventData);
   
   
@@ -833,12 +942,20 @@ void SusyAnalyzer::PrintAccCuts()
   float ana_photonPtMin1 = acceptance_cuts.getParameter<double>("ana_photonPtMin1") ;
   float ana_jetEtaMax = acceptance_cuts.getParameter<double>("ana_jetEtaMax") ;
   float ana_jetPtMin1 = acceptance_cuts.getParameter<double>("ana_jetPtMin1") ;
+  int ana_ufoSelMethod = acceptance_cuts.getParameter<int>("ana_ufoSelMethod") ;
+  int ana_ufoTkHitsmin = acceptance_cuts.getParameter<int>("ana_ufoTkHitsmin") ;
+  float ana_ufoCaloTowEFracmin = acceptance_cuts.getParameter<double>("ana_ufoCaloTowEFracmin") ;
+  float ana_ufodRTrkFromJet = acceptance_cuts.getParameter<double>("ana_ufodRTrkFromJet") ;
+  float ana_ufoEtaMax = acceptance_cuts.getParameter<double>("ana_ufoEtaMax") ;
+  float ana_ufoPtMin1 = acceptance_cuts.getParameter<double>("ana_ufoPtMin1") ;
+  float ana_ufoDRmin = acceptance_cuts.getParameter<double>("ana_ufoDRmin") ;
   float ana_elecPtMin2 = acceptance_cuts.getParameter<double>("ana_elecPtMin2") ;
   float ana_muonPtMin2 = acceptance_cuts.getParameter<double>("ana_muonPtMin2") ;
   float ana_tauPtMin2 = acceptance_cuts.getParameter<double>("ana_tauPtMin2") ;
   float ana_photonPtMin2 = acceptance_cuts.getParameter<double>("ana_photonPtMin2") ;
   float ana_jetPtMin2 = acceptance_cuts.getParameter<double>("ana_jetPtMin2") ;
   float ana_minBtagDiscriminator = acceptance_cuts.getParameter<double>("ana_minBtagDiscriminator");
+  float ana_ufoPtMin2 = acceptance_cuts.getParameter<double>("ana_ufoPtMin2") ;
 
   cout << endl;
   cout << "Primary acceptance cuts for objects: " << endl;
@@ -853,6 +970,13 @@ void SusyAnalyzer::PrintAccCuts()
   cout << "  Maximum Eta for jets            = " << ana_jetEtaMax << endl;
   cout << "  Minimum Pt for jets, first      = " << ana_jetPtMin1 << endl;
   cout << "  Minimum b-tag discriminator     = " << ana_minBtagDiscriminator << endl;
+  cout << "  Method for UFO selection        = " << ana_ufoSelMethod << endl;
+  cout << "  Minimum hits on a track         = " << ana_ufoTkHitsmin << endl;
+  cout << "  Minimum CaloTow E Fraction      = " << ana_ufoCaloTowEFracmin << endl;
+  cout << "  DeltaR for Track search of Jet  = " << ana_ufodRTrkFromJet << endl;
+  cout << "  Maximum Eta for UFOs            = " << ana_ufoEtaMax << endl;
+  cout << "  Minimum Pt for UFOs, first      = " << ana_ufoPtMin1 << endl;
+  cout << "  Minimum DeltaR for UFOs in jets = " << ana_ufoDRmin << endl;
   cout << endl;
   cout << "Final acceptance cuts for objects: " << endl;
   cout << "  Minimum Pt for electrons, final = " << ana_elecPtMin2 << endl;
@@ -860,6 +984,7 @@ void SusyAnalyzer::PrintAccCuts()
   cout << "  Minimum Pt for taus, final      = " << ana_tauPtMin2 << endl;
   cout << "  Minimum Pt for photons, final   = " << ana_photonPtMin2 << endl;
   cout << "  Minimum Pt for jets, final      = " << ana_jetPtMin2 << endl;
+  cout << "  Minimum Pt for UFOs, final      = " << ana_ufoPtMin2 << endl;
 
 
     return;    
@@ -879,6 +1004,8 @@ void SusyAnalyzer::PrintExtrapCuts()
  float reco_muonDzErrorThresh  = acceptance_cuts.getParameter<double>("reco_muonDzErrorThresh") ;
  float reco_jetD0ErrorThresh  = acceptance_cuts.getParameter<double>("reco_jetD0ErrorThresh") ;
  float reco_jetDzErrorThresh  = acceptance_cuts.getParameter<double>("reco_jetDzErrorThresh") ;
+ float reco_ufoD0ErrorThresh  = acceptance_cuts.getParameter<double>("reco_ufoD0ErrorThresh") ;
+ float reco_ufoDzErrorThresh  = acceptance_cuts.getParameter<double>("reco_ufoDzErrorThresh") ;
 
   cout << endl;
   cout << "Parameters for extrapolation error adjustment (in cm): " << endl;
@@ -888,6 +1015,8 @@ void SusyAnalyzer::PrintExtrapCuts()
   cout << "  reco_muonDzErrorThresh          = " << reco_muonDzErrorThresh << endl;
   cout << "  reco_jetD0ErrorThresh           = " << reco_jetD0ErrorThresh << endl;
   cout << "  reco_jetDzErrorThresh           = " << reco_jetDzErrorThresh << endl;
+  cout << "  reco_ufoD0ErrorThresh           = " << reco_ufoD0ErrorThresh << endl;
+  cout << "  reco_ufoDzErrorThresh           = " << reco_ufoDzErrorThresh << endl;
 
 
     return;    
@@ -1067,6 +1196,17 @@ void SusyAnalyzer::PrintIsolatorCuts()
   float iso_PhTkSeed = isolator_params.getParameter<double>("iso_PhTkSeed") ;
   float iso_PhCalWeight = isolator_params.getParameter<double>("iso_PhCalWeight") ;
   float iso_PhIsoValue = isolator_params.getParameter<double>("iso_PhIsoValue") ;
+  int   iso_MethodUfo = isolator_params.getParameter<int>("iso_MethodUfo") ;
+  float iso_jetbyUfoEmin = isolator_params.getParameter<double>("iso_jetbyUfoEmin") ;
+  float iso_ptUfowrtJetmin = isolator_params.getParameter<double>("iso_ptUfowrtJetmin") ;
+  float iso_UfoCalDRin = isolator_params.getParameter<double>("iso_UfoCalDRin") ;
+  float iso_UfoCalDRout = isolator_params.getParameter<double>("iso_UfoCalDRout") ;
+  float iso_UfoCalSeed = isolator_params.getParameter<double>("iso_UfoCalSeed") ;
+  float iso_UfoTkDRin = isolator_params.getParameter<double>("iso_UfoTkDRin") ;
+  float iso_UfoTkDRout = isolator_params.getParameter<double>("iso_UfoTkDRout") ;
+  float iso_UfoTkSeed = isolator_params.getParameter<double>("iso_UfoTkSeed") ;
+  float iso_UfoCalWeight = isolator_params.getParameter<double>("iso_UfoCalWeight") ;
+  float iso_UfoIsoValue = isolator_params.getParameter<double>("iso_UfoIsoValue") ;
 
   cout << endl;
   cout << "Parameters for Isolator: " << endl;
@@ -1114,6 +1254,17 @@ void SusyAnalyzer::PrintIsolatorCuts()
   cout << "  iso_PhTkSeed                    = " << iso_PhTkSeed << endl;
   cout << "  iso_PhCalWeight                 = " << iso_PhCalWeight << endl;
   cout << "  iso_PhIsoValue                  = " << iso_PhIsoValue << endl;
+  cout << "  iso_MethodUfo                   = " << iso_MethodUfo << endl;
+  cout << "  iso_jetbyUfoEmin                 = " << iso_jetbyUfoEmin << endl;
+  cout << "  iso_ptUfowrtJetmin               = " << iso_ptUfowrtJetmin << endl;
+  cout << "  iso_UfoCalDRin                   = " <<iso_UfoCalDRin  << endl;
+  cout << "  iso_UfoCalDRout                  = " << iso_UfoCalDRout << endl;
+  cout << "  iso_UfoCalSeed                   = " << iso_UfoCalSeed << endl;
+  cout << "  iso_UfoTkDRin                    = " << iso_UfoTkDRin << endl;
+  cout << "  iso_UfoTkDRout                   = " << iso_UfoTkDRout << endl;
+  cout << "  iso_UfoTkSeed                    = " << iso_UfoTkSeed << endl;
+  cout << "  iso_UfoCalWeight                 = " << iso_UfoCalWeight << endl;
+  cout << "  iso_UfoIsoValue                  = " << iso_UfoIsoValue << endl;
 
 
     return;    
@@ -1135,10 +1286,13 @@ void SusyAnalyzer::PrintObjectMatchingCuts()
   float mo_photonDPbyPmax = objectmatch_params.getParameter<double>("mo_photonDPbyPmax") ;
   float mo_jetDRmax = objectmatch_params.getParameter<double>("mo_jetDRmax") ;
   float mo_jetDPbyPmax = objectmatch_params.getParameter<double>("mo_jetDPbyPmax") ;
+  float mo_ufoDRmax = objectmatch_params.getParameter<double>("mo_ufoDRmax") ;
+  float mo_ufoDPbyPmax = objectmatch_params.getParameter<double>("mo_ufoDPbyPmax") ;
   float mo_celecDRmax = objectmatch_params.getParameter<double>("mo_celecDRmax") ;
   float mo_cmuonDRmax = objectmatch_params.getParameter<double>("mo_cmuonDRmax") ;
   float mo_cphotonDRmax = objectmatch_params.getParameter<double>("mo_cphotonDRmax") ;
   float mo_cjetDRmax = objectmatch_params.getParameter<double>("mo_cjetDRmax") ;
+  float mo_cufoDRmax = objectmatch_params.getParameter<double>("mo_cufoDRmax") ;
 
   cout << endl;
   cout << "Parameters for : MatchObjects" << endl;
@@ -1150,10 +1304,13 @@ void SusyAnalyzer::PrintObjectMatchingCuts()
   cout << "  mo_photonDPbyPmax               = " << mo_photonDPbyPmax << endl;
   cout << "  mo_jetDRmax                     = " << mo_jetDRmax << endl;
   cout << "  mo_jetDPbyPmax                  = " << mo_jetDPbyPmax << endl;
+  cout << "  mo_ufoDRmax                     = " << mo_ufoDRmax << endl;
+  cout << "  mo_ufoDPbyPmax                  = " << mo_ufoDPbyPmax << endl;
   cout << "  mo_celecDRmax                   = " << mo_celecDRmax << endl;
   cout << "  mo_cmuonDRmax                   = " << mo_cmuonDRmax << endl;
   cout << "  mo_cphotonDRmax                 = " << mo_cphotonDRmax << endl;
   cout << "  mo_cjetDRmax                    = " << mo_cjetDRmax << endl;
+  cout << "  mo_cufoDRmax                   = " << mo_cufoDRmax << endl;
 
 
     return;    
@@ -1268,32 +1425,40 @@ void SusyAnalyzer::PrintStatistics(void)
  cout << endl;
  cout << "Statistics for the accepted events:" << endl;
  cout << "Objects within first acceptance cuts:" << endl;
- int numTotReject = numTotNotPrimaryTrk+numTotNotClean+numTotDuplicate;
+ int numTotReject = numTotNotPrimaryTrk+numTotDuplicate;
  cout << "Rejected: " << numTotReject << endl;
  cout << "  Total number incompatible with primary vertex = " 
-      << numTotNotPrimaryTrk << endl;
+      << numTotNotPrimaryTrk << " rejected" << endl;
  cout << "    Electrons = " << numTotElecNotPrimaryTrk << endl;
  cout << "    Muons     = " << numTotMuonNotPrimaryTrk << endl;
  cout << "    Taus      = " << numTotTauNotPrimaryTrk << endl;
  cout << "    Photons   = " << numTotPhotNotPrimaryTrk << endl;
  cout << "    Jets      = " << numTotJetNotPrimaryTrk << endl;
+ cout << "    UFOs      = " << numTotUfosNotPrimaryTrk << endl;
  cout << "  Total number of not-clean objects             = " 
-      << numTotNotClean << endl;
+      << numTotNotClean << " kept" << endl;
+ int numTotElecNotClean = numTotElecNotCleanHOE + numTotElecNotCleanShsh + numTotElecNotCleanTmat;
  cout << "    Electrons = " << numTotElecNotClean << endl;
  cout << "    Muons     = " << numTotMuonNotClean << endl;
  cout << "    Taus      = " << numTotTauNotClean << endl;
+ int numTotPhotNotClean = numTotPhotNotCleanHOE + numTotPhotNotCleanShsh;
  cout << "    Photons   = " << numTotPhotNotClean << endl;
+ int numTotJetNotClean = numTotJetNotCleanFem + numTotJetNotCleanFtk;
  cout << "    Jets      = " << numTotJetNotClean << endl;
- cout << "  Total number of duplicate objects             = " 
-      << numTotDuplicate << endl;
+ cout << "    UFOs      = " << numTotUfosNotClean << endl;
+ cout << "  Total number of clean duplicate objects       = " 
+      << numTotDuplicate << " rejected" << endl;
  cout << "    Electrons = " << numTotElecDupl << endl;
  cout << "    Muons     = " << numTotMuonDupl << endl;
  cout << "    Taus      = " << numTotTauDupl << endl;
  cout << "    Photons   = " << numTotPhotDupl << endl;
  cout << "    Jets      = " << numTotJetDupl << endl;
+ cout << "    UFOs      = " << numTotUfosDupl << endl;
+
+ cout << endl;
  int numTotAccept = numTotElectrons+numTotMuons+numTotTaus
-                   +numTotPhotons+numTotJets;
- cout << "Accepted: " << numTotAccept << endl;
+                   +numTotPhotons+numTotJets+numTotUfos;
+ cout << "Accepted good objects: " << numTotAccept << endl;
  cout << "Total number of electrons = " << numTotElectrons 
       << " per event = " << (float)numTotElectrons / (float)numTotEvt << endl;
  int numTotElectronsIso = numTotElectrons - numTotElectronsNonIso;
@@ -1316,8 +1481,13 @@ void SusyAnalyzer::PrintStatistics(void)
  cout << "   Non isolated           = " << numTotPhotonsNonIso << endl;
  cout << "Total number of jets      = " <<  numTotJets
       << " per event = " << (float)numTotJets / (float)numTotEvt << endl;
- cout << "Total number of b-jets    = " <<  numTotBJets
+ cout << "   Total number of b-jets = " <<  numTotBJets
       << " per event = " << (float)numTotBJets / (float)numTotEvt << endl;
+ cout << "Total number of UFOs      = " << numTotUfos 
+      << " per event = " << (float)numTotUfos / (float)numTotEvt << endl;
+ int numTotUfosIso = numTotUfos - numTotUfosNonIso;
+ cout << "   Isolated               = " << numTotUfosIso << endl;
+ cout << "   Non isolated           = " << numTotUfosNonIso << endl;
 
  cout << endl;
  cout << "Accepted objects within final acceptance cuts:" << endl;
@@ -1333,6 +1503,8 @@ void SusyAnalyzer::PrintStatistics(void)
       << " per event = " << (float)numTotJetsfinal / (float)numTotEvt << endl;
  cout << " Total number of b-jets   = " <<  numTotBJetsfinal
       << " per event = " << (float)numTotBJetsfinal / (float)numTotEvt << endl;
+ cout << "Total number of UFOs      = " <<  numTotUfosfinal
+      << " per event = " << (float)numTotUfosfinal / (float)numTotEvt << endl;
 
  cout << endl;
  cout << "Objects matched to MC truth:" << endl;
@@ -1363,6 +1535,12 @@ void SusyAnalyzer::PrintStatistics(void)
  cout << "Total number of matched jets      = " << numTotJetsMatched;
  if (numTotJetsfinal > 0){
   cout << "  = " << 100.*(float)numTotJetsMatched / (float)numTotJetsfinal; 
+  cout << " % of final";
+ }
+ cout << endl;
+ cout << "Total number of matched UFOs      = " << numTotUfosMatched;
+ if (numTotUfosfinal > 0){
+  cout << "  = " << 100.*(float)numTotUfosMatched / (float)numTotUfosfinal; 
   cout << " % of final";
  }
  cout << endl;
@@ -1400,7 +1578,100 @@ void SusyAnalyzer::PrintStatistics(void)
   cout << " % efficiency (very crude)";
  }
  cout << endl;
+ 
+ cout << endl;
+ cout << "Accepted not clean objects: " << numTotNotClean << endl;
+ cout << "    Electrons = " << numTotElecNotClean << endl;
+ cout << "      bad H/E                = " << numTotElecNotCleanHOE << endl;
+ cout << "        duplicate            = " << numTotElecDuplBadHOE << endl;
+ cout << "        non isolated         = " << numTotElectronsNonIsoBadHOE << endl;
+ cout << "        isolated             = " << numTotElecNotCleanHOE
+                                          -numTotElecDuplBadHOE-numTotElectronsNonIsoBadHOE << endl;
+ cout << "      bad shower shape       = " << numTotElecNotCleanShsh << endl;
+ cout << "        duplicate            = " << numTotElecDuplBadShsh << endl;
+ cout << "        non isolated         = " << numTotElectronsNonIsoBadShsh << endl;
+ cout << "        isolated             = " << numTotElecNotCleanShsh
+                                          -numTotElecDuplBadShsh-numTotElectronsNonIsoBadShsh << endl;
+ cout << "      bad track matching     = " << numTotElecNotCleanTmat << endl;
+ cout << "        duplicate            = " << numTotElecDuplBadTmat << endl;
+ cout << "        non isolated         = " << numTotElectronsNonIsoBadTmat << endl;
+ cout << "        isolated             = " << numTotElecNotCleanTmat
+                                          -numTotElecDuplBadTmat-numTotElectronsNonIsoBadTmat << endl;
+ cout << "    Muons     = " << numTotMuonNotClean << endl;
+ cout << "        duplicate            = " << numTotMuonDuplBad << endl;
+ cout << "        non isolated         = " << numTotMuonsNonIsoBad << endl;
+ cout << "        isolated             = " << numTotMuonNotClean
+                                          -numTotMuonDuplBad-numTotMuonsNonIsoBad << endl;
+ cout << "    Taus      = " << numTotTauNotClean << endl;
+ cout << "        duplicate            = " << numTotTauDuplBad << endl;
+ cout << "        non isolated         = " << numTotTausNonIsoBad << endl;
+ cout << "        isolated             = " << numTotTauNotClean
+                                          -numTotTauDuplBad-numTotTausNonIsoBad << endl;
+ cout << "    Photons   = " << numTotPhotNotClean << endl;
+ cout << "      bad H/E                = " << numTotPhotNotCleanHOE << endl;
+ cout << "        duplicate            = " << numTotPhotDuplBadHOE << endl;
+ cout << "        non isolated         = " << numTotPhotonsNonIsoBadHOE << endl;
+ cout << "        isolated             = " << numTotPhotNotCleanHOE
+                                          -numTotPhotDuplBadHOE-numTotPhotonsNonIsoBadHOE << endl;
+ cout << "      bad shower shape       = " << numTotPhotNotCleanShsh << endl;
+ cout << "        duplicate            = " << numTotPhotDuplBadShsh << endl;
+ cout << "        non isolated         = " << numTotPhotonsNonIsoBadShsh << endl;
+ cout << "        isolated             = " << numTotPhotNotCleanShsh
+                                          -numTotPhotDuplBadShsh-numTotPhotonsNonIsoBadShsh << endl;
+ cout << "    Jets      = " << numTotJetNotClean << endl;
+ cout << "      bad EM ET fraction     = " << numTotJetNotCleanFem << endl;
+ cout << "        duplicate            = " << numTotJetDuplBadFem << endl;
+ cout << "      bad track PT fraction  = " << numTotJetNotCleanFtk << endl;
+ cout << "        duplicate            = " << numTotJetDuplBadFtk << endl;
+ cout << "    UFOs      = " << numTotUfosNotClean << endl;
+ cout << "        duplicate            = " << numTotUfosDuplBad << endl;
+ cout << "        non isolated         = " << numTotUfosNonIsoBad << endl;
+ cout << "        isolated             = " << numTotUfosNotClean
+                                          -numTotUfosDuplBad-numTotUfosNonIsoBad << endl;
 
+ cout << endl;
+ cout << "Not clean objects within final acceptance cuts:" << endl;
+ cout << "electrons with bad H/E            = " <<  numTotElectronsfinalBadHOE
+      << " per event = " << (float)numTotElectronsfinalBadHOE / (float)numTotEvt << endl;
+ cout << "  matched                         = " <<  numTotElectronsMatchedBadHOE
+      << " per event = " << (float)numTotElectronsMatchedBadHOE / (float)numTotEvt << endl;
+ cout << "electrons with bad shower shape   = " <<  numTotElectronsfinalBadShsh
+      << " per event = " << (float)numTotElectronsfinalBadShsh / (float)numTotEvt << endl;
+ cout << "  matched                         = " <<  numTotElectronsMatchedBadShsh
+      << " per event = " << (float)numTotElectronsMatchedBadShsh / (float)numTotEvt << endl;
+ cout << "electrons with bad track matching = " <<  numTotElectronsfinalBadTmat
+      << " per event = " << (float)numTotElectronsfinalBadTmat / (float)numTotEvt << endl;
+ cout << "  matched                         = " <<  numTotElectronsMatchedBadTmat
+      << " per event = " << (float)numTotElectronsMatchedBadTmat / (float)numTotEvt << endl;
+ cout << "muons not clean                   = " << numTotMuonsfinalBad
+      << " per event = " << (float)numTotMuonsfinalBad / (float)numTotEvt << endl;
+ cout << "  matched                         = " <<  numTotMuonsMatchedBad
+      << " per event = " << (float)numTotMuonsMatchedBad / (float)numTotEvt << endl;
+ cout << "taus not clean                    = " << numTotTausfinalBad 
+      << " per event = " << (float)numTotTausfinalBad / (float)numTotEvt << endl;
+ cout << "  matched                         = " <<  numTotTausMatchedBad
+      << " per event = " << (float)numTotTausMatchedBad / (float)numTotEvt << endl;
+ cout << "photons with bad H/E              = " << numTotPhotonsfinalBadHOE 
+      << " per event = " << (float)numTotPhotonsfinalBadHOE / (float)numTotEvt << endl;
+ cout << "  matched                         = " <<  numTotPhotonsMatchedBadHOE
+      << " per event = " << (float)numTotPhotonsMatchedBadHOE / (float)numTotEvt << endl;
+ cout << "photons with bad shower shape     = " << numTotPhotonsfinalBadShsh 
+      << " per event = " << (float)numTotPhotonsfinalBadShsh / (float)numTotEvt << endl;
+ cout << "  matched                         = " <<  numTotPhotonsMatchedBadShsh
+      << " per event = " << (float)numTotPhotonsMatchedBadShsh / (float)numTotEvt << endl;
+ cout << "jets with bad EM ET fraction      = " <<  numTotJetsfinalBadFem
+      << " per event = " << (float)numTotJetsfinalBadFem / (float)numTotEvt << endl;
+ cout << "  matched                         = " <<  numTotJetsMatchedBadFem
+      << " per event = " << (float)numTotJetsMatchedBadFem / (float)numTotEvt << endl;
+ cout << "jets with bad track PT fraction   = " <<  numTotJetsfinalBadFtk
+      << " per event = " << (float)numTotJetsfinalBadFtk / (float)numTotEvt << endl;
+ cout << "  matched                         = " <<  numTotJetsMatchedBadFtk
+      << " per event = " << (float)numTotJetsMatchedBadFtk / (float)numTotEvt << endl;
+ cout << "UFOs not clean                    = " << numTotUfosfinalBad
+      << " per event = " << (float)numTotUfosfinalBad / (float)numTotEvt << endl;
+ cout << "  matched                         = " <<  numTotUfosMatchedBad
+      << " per event = " << (float)numTotUfosMatchedBad / (float)numTotEvt << endl;
+ 
  cout << endl;
  cout << "Analysis Statistics : " << endl;
  cout << " Total Number of Events selected after SusyAnalysis cuts : " << numTotEventsAfterCuts << " (" << 100.*(float)numTotEventsAfterCuts / (float)numTotEvt << " %) " << endl;

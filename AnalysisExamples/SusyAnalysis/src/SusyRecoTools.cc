@@ -38,7 +38,7 @@ void SusyRecoTools::PrintRecoInfo(void)
  // Using MrParticle class;
 
   cout << " Reco particles : " << endl;
-  for (unsigned int j=0; j<RecoData.size(); j++){
+  for (unsigned int j=0; j<RecoData.size(); ++j){
    cout << " part " << j 
    << ", type = " << RecoData[j]->particleType()
 //   << ", px = "<< RecoData[j]->px() 
@@ -48,7 +48,7 @@ void SusyRecoTools::PrintRecoInfo(void)
    << ", pt = "<< RecoData[j]->pt() 
    << ", eta = "<< RecoData[j]->eta() 
    << ", phi = "<< RecoData[j]->phi() ;
-   if (RecoData[j]->particleType() <= 3){
+   if (RecoData[j]->particleType() < 40){
      cout << " Ch = " << RecoData[j]->charge();
    }
    cout << " et_em = " << RecoData[j]->et_em()
@@ -59,7 +59,7 @@ void SusyRecoTools::PrintRecoInfo(void)
 
 /*  
   for (unsigned int j=0; j<RecoData.size(); j++){
-   if (RecoData[j]->particleType() == 1) {
+   if (RecoData[j]->particleType()/10 == 1) {
       const Electron * pcand = RecoData[j]->electronCandidate();
       reco::TrackRef tr2 = (RecoData[j]->electronCandidate())->gsfTrack();
       reco::TrackRef tr = (*pcand).gsfTrack();
@@ -136,6 +136,7 @@ bool SusyRecoTools::GetJetVx(int ichk, int imethod,
 //       << ", eta = " << RecoData[ichk]->eta() 
 //       << ", phi = " << RecoData[ichk]->phi() << endl;
   
+ 
   // Get the list of track indices inside a cone around the jet
   if (imethod == 1){
     GetJetTrksFromCalo(ichk, nJetTkHitsmin, jetVxTkPtmin, paramTksInJet, 
@@ -145,8 +146,23 @@ bool SusyRecoTools::GetJetVx(int ichk, int imethod,
     GetJetTrksInCone(ichk, nJetTkHitsmin, jetVxTkPtmin, paramTksInJet, 
                      & tracksFromJet);
   }
+  else if (imethod == 3){
+    GetJetTrksFromTag(ichk,  nJetTkHitsmin, jetVxTkPtmin, 
+                     & tracksFromJet);
+  }
   float nberTracks = tracksFromJet.size();
   RecoData[ichk]->setNumTracks(tracksFromJet.size() );
+
+  
+  if (DEBUGLVL >= 2){
+    float ptsum = 0.;
+    for (int i = 0; i < (int) tracksFromJet.size(); ++i) {
+      const Track* pTrack = &(*TrackData)[tracksFromJet[i]];
+      ptsum += pTrack->pt();
+    }
+    cout << "  Number of tracks in jet = " << tracksFromJet.size()
+         << ", Pt sum = " << ptsum << endl;
+  }
   
   if (tracksFromJet.size() <= 0){
     tracksFromJet.clear();
@@ -162,7 +178,7 @@ bool SusyRecoTools::GetJetVx(int ichk, int imethod,
   float ddz = 0.;
 //  cout << "  Nber of associated tracks = " << tracksFromJet.size() 
 //       << ", indices = ";
-  for (int i = 0; i < (int) tracksFromJet.size(); i++) {
+  for (int i = 0; i < (int) tracksFromJet.size(); ++i) {
 //    cout << tracksFromJet[i] << ", ";
     const Track* pTrack = &(*TrackData)[tracksFromJet[i]];
     xv += pTrack->vx();
@@ -180,6 +196,144 @@ bool SusyRecoTools::GetJetVx(int ichk, int imethod,
 
   tracksFromJet.clear();
   return true;
+}
+
+//------------------------------------------------------------------------------
+
+void SusyRecoTools::GetNonLeptonicTracks(vector<int> * selTrkIndices)
+{ // makes a list of all tracks which are not electron, muon 
+  
+  // **********this method does not work *********************
+  // because electrons and muons are not in the track list
+ 
+ float  ana_ufoEtaMax = 2.4, ana_ufoPtMin1 = 3.;
+ 
+ for (int i=0; i< (int) TrackData->size(); ++i){
+   const Track* pTrack = &(*TrackData)[i];
+   if (pTrack->eta() <= ana_ufoEtaMax && pTrack->pt() >= ana_ufoPtMin1){
+//     cout << " UFO track pT " << pTrack->pt() << endl;
+     bool keepTrack = true;
+     const Track* newTrack = NULL;
+     for(int j = 0; j < (int) RecoData.size(); ++j){
+       int ptype = RecoData[j]->particleType()/10;
+       if (ptype == 1) {
+         const PixelMatchGsfElectron* elecand = RecoData[j]->electronCandidate();
+         newTrack = &(*(elecand->gsfTrack()));
+//         cout << " ele track pT " << newTrack->pt() << endl;
+       } else if (ptype == 2) {
+       }
+       // Not possible: gsfTrack or combinedMuon are not in track list
+       float eps = 0.1;
+//       if (newTrack == pTrack){
+       if (newTrack != NULL &&
+           fabs(pTrack->px()-newTrack->px()) < eps &&
+           fabs(pTrack->py()-newTrack->py()) < eps &&
+           fabs(pTrack->pz()-newTrack->pz()) < eps){
+       cout << " ele track found pT " << newTrack->pt() << endl;
+       cout << " UFO track pT " << pTrack->pt() << endl;
+         keepTrack = false;
+         break;
+       }
+     }
+     if (keepTrack = true){
+//       cout << " UFO kept pT " << pTrack->pt() << endl;
+         selTrkIndices->push_back(i);
+     } else {cout << " UFO rejected " << endl;}
+   }
+ }
+
+ return;
+}
+
+//------------------------------------------------------------------------------
+
+void SusyRecoTools::GetIsoCandInJets(int ufoSelMethod, 
+     int ufoTkHitsmin, float ufoPtMin, float paramTksInJet, float ufoDRmin,
+     vector<int> * selTrkIndices, vector<int> * selJetIndices)
+{ // makes a list of all tracks inside a jet and isolated from others 
+  
+ 
+ // make a first list of tracks
+ vector<int> tracksFromJet;
+ for(int i = 0; i < (int) RecoData.size(); i++){
+   int ptype = RecoData[i]->particleType()/10;
+   if(ptype >= 5 && ptype <= 7){
+     if (ufoSelMethod == 1){
+       GetJetTrksFromCalo(i, ufoTkHitsmin, ufoPtMin, paramTksInJet, 
+                       & tracksFromJet);
+     } else if (ufoSelMethod == 2){
+       GetJetTrksInCone(i, ufoTkHitsmin, ufoPtMin, paramTksInJet, 
+                     & tracksFromJet);
+     } else if (ufoSelMethod == 3){
+       GetJetTrksFromTag(i, ufoTkHitsmin, ufoPtMin, & tracksFromJet);
+     }
+//     cout << " tracksFromJet " << tracksFromJet.size() << endl;
+     for (int itk = 0; itk < (int) tracksFromJet.size(); ++itk) {
+       const Track* pTrack = &(*TrackData)[tracksFromJet[itk]];
+       bool accept = true;
+       float etatrk = pTrack->eta();
+       float phitrk = pTrack->phi();
+       for (int jtk = 0; jtk < (int) tracksFromJet.size(); ++jtk) {
+         const Track* newTrack = &(*TrackData)[tracksFromJet[jtk]];
+         float etanew = newTrack->eta();
+         float phinew = newTrack->phi();
+         float DR = GetDeltaR(etatrk, etanew, phitrk, phinew);
+         if (itk != jtk && DR < ufoDRmin){
+           accept = false;
+           break;
+         }
+       }
+       if (accept){
+         selTrkIndices->push_back(tracksFromJet[itk]);
+         selJetIndices->push_back(i);
+//         cout << " Iso track found PT " << pTrack->pt() << endl;
+       }
+     }
+     tracksFromJet.clear();
+   }
+ }
+// cout << " track indices ";
+// for (int i = 0; i< (int) selTrkIndices->size(); ++i){
+//   cout << (*selTrkIndices)[i] << " " ;
+// }
+// cout << endl;
+  
+ // Now remove tracks which are duplicate (same track from 2 jets)
+  int i = 0;
+  while (i< (int) selTrkIndices->size()){
+    int indTrk1 = (*selTrkIndices)[i];
+    int j=i+1;
+    while (j < (int) selTrkIndices->size()){
+      int indTrk2 = (*selTrkIndices)[j];
+      if (indTrk1 == indTrk2){
+        const Track* pTrack = &(*TrackData)[indTrk1];
+        float etatrk = pTrack->eta();
+        float phitrk = pTrack->phi();
+        int indJet1 = (*selJetIndices)[i];
+        int indJet2 = (*selJetIndices)[j];
+        float etajet1 = RecoData[indJet1]->eta();
+        float phijet1 = RecoData[indJet1]->phi();
+        float etajet2 = RecoData[indJet2]->eta();
+        float phijet2 = RecoData[indJet2]->phi();
+        float DR1 = GetDeltaR(etatrk, etajet1, phitrk, phijet1);
+        float DR2 = GetDeltaR(etatrk, etajet2, phitrk, phijet2);
+        if (DR1 <= DR2){
+          selTrkIndices->erase(selTrkIndices->begin() + i);
+          selJetIndices->erase(selJetIndices->begin() + i);
+          i--;
+          break;
+        } else {
+          selTrkIndices->erase(selTrkIndices->begin() + j);
+          selJetIndices->erase(selJetIndices->begin() + j);
+        }
+      } else {j++;}
+    }
+    i++;
+  }
+ 
+ 
+
+ return;
 }
 
 //------------------------------------------------------------------------------
@@ -277,15 +431,6 @@ void SusyRecoTools::GetJetTrksFromCalo(int iJet, int nJetTkHitsmin,
      }
    }
  }
- if (DEBUGLVL >= 2){
-   float ptsum = 0.;
-   for (int i = 0; i < (int) tracksFromJet->size(); i++) {
-     const Track* pTrack = &(*TrackData)[(*tracksFromJet)[i]];
-     ptsum += pTrack->pt();
-   }
-   cout << "  Number of tracks in jet = " << tracksFromJet->size()
-        << ", Pt sum = " << ptsum << endl;
- }
  
   return;
 }
@@ -320,14 +465,38 @@ void SusyRecoTools::GetJetTrksInCone(int ichk,  int nJetTkHitsmin,
       }
     }
   }
-  if (DEBUGLVL >= 2){
-    float ptsum = 0.;
-    for (int i = 0; i < (int) tracksFromJet->size(); i++) {
-      const Track* pTrack = &(*TrackData)[(*tracksFromJet)[i]];
-      ptsum += pTrack->pt();
+  
+  return;
+}
+
+//------------------------------------------------------------------------------
+
+void SusyRecoTools::GetJetTrksFromTag(int ichk,  int nJetTkHitsmin, 
+                    float tkPtmin, vector<int> * tracksFromJet)
+{ // makes a list of all tracks compatible with coming from a jet
+  // using the list of tracks from jetTag
+  // it returns the indices in the track collection in a vector
+  
+  const JetTag * jetTag = RecoData[ichk]->jetTag();
+  if (jetTag == NULL){
+    cout << "Warning: No jetTag exists for a jet *******" << endl;
+    return;
+  }
+  TrackRefVector jetTracks = jetTag->tracks();
+//  unsigned int n = jetTracks.size();
+//  cout << " jetTag tracks size " << n << endl;
+  
+  for (int i=0; i< (int) jetTracks.size(); ++i){
+    int nHits = jetTracks[i]->recHitsSize();
+    float pt = jetTracks[i]->pt();
+    if ( nHits >= nJetTkHitsmin && pt >= tkPtmin){
+      for (int j=0; j< (int) TrackData->size(); ++j){
+        const Track* pTrack = &(*TrackData)[j];
+        if ( &(*jetTracks[i]) == pTrack ) {
+          (*tracksFromJet).push_back(j);
+        }
+      }
     }
-    cout << "  Number of tracks in jet = " << tracksFromJet->size()
-         << ", Pt sum = " << ptsum << endl;
   }
   
   return;
@@ -374,7 +543,7 @@ bool SusyRecoTools::IsFromPrimaryVx(int ichk, float distVxmax)
 {
   // Checks whether the object is compatible with the primary vertex
 
- if (RecoData[ichk]->particleType() == 4) {return true;}
+ if (RecoData[ichk]->particleType()/10 == 4) {return true;}
  
  int indPrim = EventData->indexPrimaryVx();
  if (indPrim < 0) {return true;}
@@ -441,8 +610,8 @@ int SusyRecoTools::FindNearestJet(int ichk)
   
   float deltaRmin = 999.;
   for(int i = 0; i < (int) RecoData.size(); i++){
-   if(RecoData[i]->particleType() >= 5
-      && RecoData[i]->particleType() <= 7){
+   int ptype = RecoData[i]->particleType()/10;
+   if(ptype >= 5 && ptype <= 7){
     float deltaR = GetDeltaR(RecoData[ichk]->eta(), RecoData[i]->eta(), 
                              RecoData[ichk]->phi(), RecoData[i]->phi());
     if (deltaR < deltaRmin && i != ichk){
@@ -493,6 +662,10 @@ float SusyRecoTools::GetJetTrkPtsum(int ichk, int imethod,
   }
   else if (imethod == 2){
     GetJetTrksInCone(ichk, nJetTkHitsmin, jetTkPtmin, paramTksInJet, 
+                     & tracksFromJet);
+  }
+  else if (imethod == 3){
+    GetJetTrksFromTag(ichk, nJetTkHitsmin, jetTkPtmin,
                      & tracksFromJet);
   }
 
@@ -633,61 +806,39 @@ float SusyRecoTools::IsoCandSum (int itra, float TrkEta, float TrkPhi,
 
 //------------------------------------------------------------------------------
 
-bool SusyRecoTools::IsEMObjectInJet(int ichk, int iJet, math::XYZVector* sharedMomentum)
+bool SusyRecoTools::EMCaloTowerWindow(int ichk, 
+             float & phimin, float & phimax, float & etamin, float & etamax)
 {
- // Check whether an electron or photon is included in the jet energy
+ // Define a window for CaloTowers around an electron or photon
  
  
- if (ichk < 0 || iJet < 0){return false;}
+ if (ichk < 0){return false;}
  
- if (DEBUGLVL >= 2){
-   cout << " Entering IsEMObjectInJet, electron/photon index = " << ichk
-        << ", jet index = " << iJet << endl;
- }
  const SuperCluster* superCluster = NULL;
- if (RecoData[ichk]->particleType() == 1){
+ int ptype = RecoData[ichk]->particleType()/10;
+ if (ptype == 1){
    // Get the electron candidate
    const PixelMatchGsfElectron* elecand = RecoData[ichk]->electronCandidate();
    if (elecand == NULL) {
-     if (DEBUGLVL >= 2){
-       cout << " IsEMObjectInJet: No electron candidate for this electron, index = " 
-            << ichk << endl;
-     }
      return false;
    }
-   if (DEBUGLVL >= 2){
-     cout << "  Electron energy = " << elecand->energy() << endl;
-   }
    superCluster = &(*(elecand->superCluster() ));
- } else if (RecoData[ichk]->particleType() == 4){
+ 
+ } else if (ptype == 4){
    // Get the photon candidate
    const Photon* photcand = RecoData[ichk]->photonCandidate();
    if (photcand == NULL) {
-     if (DEBUGLVL >= 2){
-       cout << " IsEMObjectInJet: No photon candidate for this photon, index = " 
-            << ichk << endl;
-     }
      return false;
-   }
-   if (DEBUGLVL >= 2){
-     cout << "  Photon energy = " << photcand->energy() << endl;
    }
    superCluster = &(*(photcand->superCluster() ));
  }
  
- // Get the jet candidate and the CaloJet
- const CaloJet* jetcand = dynamic_cast<const CaloJet*>(RecoData[iJet]->jetCandidate());
- if (jetcand == NULL) {
-   if (DEBUGLVL >= 2){
-     cout << " IsEMObjectInJet: No jet candidate for this electron, index = " 
-          << iJet << endl;
-   }
-   return false;
- }
- 
  // Define a window in eta,phi for the SuperCluster
  // First, find the extremes from the basicCluster positions
- float phimin=0., phimax=0., etamin=0., etamax=0.;
+ phimin=0.;
+ phimax=0.; 
+ etamin=0.; 
+ etamax=0.;
  float pi    = 3.141592654;
  float twopi = 6.283185307;
  float clusterEsum = 0.;
@@ -729,10 +880,108 @@ bool SusyRecoTools::IsEMObjectInJet(int ichk, int iJet, math::XYZVector* sharedM
  // Check that they are still correctly normalized (-pi < phi < pi)
  if (phimin < -pi) {phimin += twopi;}
  if (phimax >  pi) {phimax -= twopi;}
- if (DEBUGLVL >= 2){
+ if (DEBUGLVL > 2){
    cout << "  Cluster energy sum = " << clusterEsum << endl;
    cout << "  phimin, phimax = " << phimin << ", " << phimax
         << "  etamin, etamax = " << etamin << ", " << etamax << endl;
+ }
+ 
+ return true;
+ 
+ }
+  
+
+//------------------------------------------------------------------------------
+
+bool SusyRecoTools::GetEMCaloTowers(int ichk, vector<CaloTowerDetId>* eleDetId)
+{
+ // Collect the CaloTowers inside a window around an EM object
+
+ if (DEBUGLVL >= 2){
+   cout << " Entering GetEMCaloTowers, electron/photon index = " << ichk << endl;
+ }
+ 
+ // Define a search window
+ float phimin=0., phimax=0., etamin=0., etamax=0.;
+ bool window = EMCaloTowerWindow(ichk, phimin, phimax, etamin, etamax); 
+ if (!window){ return false;}
+ 
+  // Collect the CaloTowers inside this window, save their detId in a vector
+ CaloTowerCollection::const_iterator calo;
+ for (calo = CaloTowerData->begin(); calo != CaloTowerData->end(); ++calo ){
+   float tow_eta = calo->eta();
+   float tow_phi = calo->phi();
+   if (IsInPhiWindow (tow_phi, phimin, phimax) 
+       && (tow_eta-etamin)*(tow_eta-etamax) <= 0.){
+     (*eleDetId).push_back(calo->id());
+    }
+ }
+ 
+ if ( (*eleDetId).size() > 0.) {return true;}
+ else {return false;}
+
+}
+
+//------------------------------------------------------------------------------
+
+bool SusyRecoTools::IsEMObjectInJet(int ichk, int iJet, math::XYZVector* sharedMomentum)
+{
+ // Checks whether an electron or photon is included in the jet energy
+ // and if true, it returns the momentum vector shared by the two
+ 
+ 
+ if (ichk < 0 || iJet < 0){return false;}
+ 
+ if (DEBUGLVL >= 2){
+   cout << " object index = " << ichk
+         << " type = " << RecoData[ichk]->particleType()
+         << " compared with jet, index = " << iJet << endl;
+ }
+ const SuperCluster* superCluster = NULL;
+ int ptype = RecoData[ichk]->particleType()/10;
+ if (ptype == 1){
+   // Get the electron candidate
+   const PixelMatchGsfElectron* elecand = RecoData[ichk]->electronCandidate();
+   if (elecand == NULL) {
+     if (DEBUGLVL >= 2){
+       cout << " IsEMObjectInJet: No electron candidate for this electron, index = " 
+            << ichk << endl;
+     }
+     return false;
+   }
+   if (DEBUGLVL >= 2){
+     cout << "  Electron energy = " << elecand->energy() << endl;
+   }
+   superCluster = &(*(elecand->superCluster() ));
+ } else if (ptype == 4){
+   // Get the photon candidate
+   const Photon* photcand = RecoData[ichk]->photonCandidate();
+   if (photcand == NULL) {
+     if (DEBUGLVL >= 2){
+       cout << " IsEMObjectInJet: No photon candidate for this photon, index = " 
+            << ichk << endl;
+     }
+     return false;
+   }
+   if (DEBUGLVL >= 2){
+     cout << "  Photon energy = " << photcand->energy() << endl;
+   }
+   superCluster = &(*(photcand->superCluster() ));
+ }
+ 
+ // Define a window in eta,phi for the SuperCluster
+ float phimin=0., phimax=0., etamin=0., etamax=0.;
+ bool window = EMCaloTowerWindow(ichk, phimin, phimax, etamin, etamax); 
+ if (!window){ return false;}
+ 
+ // Get the jet candidate and the CaloJet
+ const CaloJet* jetcand = dynamic_cast<const CaloJet*>(RecoData[iJet]->jetCandidate());
+ if (jetcand == NULL) {
+   if (DEBUGLVL >= 2){
+     cout << " IsEMObjectInJet: No jet candidate for this electron, index = " 
+          << iJet << endl;
+   }
+   return false;
  }
   
   // Collect the CaloTowers inside this window, save their detId in a vector
@@ -758,7 +1007,7 @@ bool SusyRecoTools::IsEMObjectInJet(int ichk, int iJet, math::XYZVector* sharedM
 //          << ", Electron energy sum = " << eleEnergySum << endl;
     }
  }
- if (DEBUGLVL >= 2){
+ if (DEBUGLVL > 2){
    cout << "  Electron caloTower energy sum = " << eleEnergySum << endl;
  }
   
@@ -835,11 +1084,9 @@ bool SusyRecoTools::IsTauInJet(int ichk, int iJet, math::XYZVector* sharedMoment
 
 //------------------------------------------------------------------------------
 
-void SusyRecoTools::AddToJet(int ichk)
+void SusyRecoTools::AddToJet(int ichk, int iJet)
 { // adds an object to its nearest jet
  
-  int iJet = FindNearestJet(ichk);
-  
   if (ichk >= 0 && iJet >= 0) {
    RecoData[iJet]->setPx(RecoData[iJet]->px() + RecoData[ichk]->px());
    RecoData[iJet]->setPy(RecoData[iJet]->py() + RecoData[ichk]->py());
@@ -847,7 +1094,45 @@ void SusyRecoTools::AddToJet(int ichk)
    RecoData[iJet]->setEnergy(RecoData[iJet]->energy() + RecoData[ichk]->energy());
    // ??? or do we want to keep the jets massless?
    //RecoData[iJet]->setEnergy(RecoData[iJet]->p() );
+   RecoData[iJet]->setPt_tracks(RecoData[iJet]->pt_tracks() + RecoData[ichk]->pt_tracks());
+   RecoData[iJet]->setEt_em(RecoData[iJet]->et_em() + RecoData[ichk]->et_em());
+   RecoData[iJet]->setEt_had(RecoData[iJet]->et_had() + RecoData[ichk]->et_had());
+   if(RecoData[iJet]->energy() < RecoData[iJet]->p() ){
+     RecoData[iJet]->setEnergy(RecoData[iJet]->p());
+   }
   }
+
+  return;
+}
+
+//------------------------------------------------------------------------------
+
+void SusyRecoTools::SubtrFromJet(int ichk, int iJet)
+{ // adds an object to its nearest jet
+ 
+ if (ichk >= 0 && iJet >= 0) {
+   RecoData[iJet]->setPx(RecoData[iJet]->px() - RecoData[ichk]->px());
+   RecoData[iJet]->setPy(RecoData[iJet]->py() - RecoData[ichk]->py());
+   RecoData[iJet]->setPz(RecoData[iJet]->pz() - RecoData[ichk]->pz());
+   RecoData[iJet]->setEnergy(RecoData[iJet]->energy() - RecoData[ichk]->energy());
+   // ??? or do we want to keep the jets massless?
+   //RecoData[iJet]->setEnergy(RecoData[iJet]->p() );
+   RecoData[iJet]->setPt_tracks(RecoData[iJet]->pt_tracks() - RecoData[ichk]->pt_tracks());
+   RecoData[iJet]->setEt_em(RecoData[iJet]->et_em() - RecoData[ichk]->et_em());
+   RecoData[iJet]->setEt_had(RecoData[iJet]->et_had() - RecoData[ichk]->et_had());
+   if(RecoData[iJet]->energy() < RecoData[iJet]->p() ){
+     float egy = RecoData[iJet]->energy();
+     if (egy <= 0.){ egy = 0.001;}
+     float scale = egy / RecoData[iJet]->p();
+     RecoData[iJet]->setPx(RecoData[iJet]->px() * scale);
+     RecoData[iJet]->setPy(RecoData[iJet]->py() * scale);
+     RecoData[iJet]->setPz(RecoData[iJet]->pz() * scale);
+     RecoData[iJet]->setEnergy(RecoData[iJet]->p());
+   }
+   if(RecoData[iJet]->pt_tracks() < 0.){RecoData[iJet]->setPt_tracks(0.);}
+   if(RecoData[iJet]->et_em() < 0.){RecoData[iJet]->setEt_em(0.);}
+   if(RecoData[iJet]->et_had() < 0.){RecoData[iJet]->setEt_had(0.);}
+ }
 
   return;
 }

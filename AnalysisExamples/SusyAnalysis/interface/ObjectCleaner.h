@@ -57,8 +57,8 @@ virtual bool CleanPhoton(int);
 virtual bool DuplicatePhoton(int);
 virtual bool CleanJet(int);
 virtual bool ElectronJet(int);
-virtual bool CleanEvent();
 virtual bool ConvertedPhoton(int, int);
+virtual bool CleanEvent();
 virtual bool CleanMET(float*);
 
 void SetDebug(int debug)  { DEBUGLVL  = debug; } 

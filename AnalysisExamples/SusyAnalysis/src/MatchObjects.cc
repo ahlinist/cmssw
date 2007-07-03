@@ -37,6 +37,9 @@ mo_celecDRmax = param.getParameter<double>("mo_celecDRmax") ;
 mo_cmuonDRmax = param.getParameter<double>("mo_cmuonDRmax") ;
 mo_cphotonDRmax = param.getParameter<double>("mo_cphotonDRmax") ;
 mo_cjetDRmax = param.getParameter<double>("mo_cjetDRmax") ;
+mo_ufoDRmax = param.getParameter<double>("mo_ufoDRmax") ;
+mo_ufoDPbyPmax = param.getParameter<double>("mo_ufoDPbyPmax") ;
+mo_cufoDRmax = param.getParameter<double>("mo_cufoDRmax") ;
 }
 
 // Methods:
@@ -51,13 +54,14 @@ void MatchObjects::DoMatch(void)
 //  const float mojetDPbyPmax = 5.0;
   const bool useResolveMatch = true;
 
-    for(int i = 0; i < (int) RecoData.size() ;i++){
+    for(int i = 0; i < (int) RecoData.size() ;++i){
       int iMatch = -1;     
 
-      for (int j = 0; j<(int)MCData.size(); j++){
+      for (int j = 0; j<(int)MCData.size(); ++j){
 
       // matching electrons with MC truth
-        if (RecoData[i]->particleType() == 1 && abs(MCData[j]->pid()) == 11
+        int ptype = RecoData[i]->particleType()/10;
+        if (ptype == 1 && abs(MCData[j]->pid()) == 11
            &&  MCData[j]->status() == 1) {
           float deltaR = GetDeltaR(RecoData[i]->eta(), MCData[j]->eta(), 
                                    RecoData[i]->phi(), MCData[j]->phi());
@@ -76,7 +80,7 @@ void MatchObjects::DoMatch(void)
         }   
 
       // matching muons with MC truth
-        if (RecoData[i]->particleType() == 2 && abs(MCData[j]->pid()) == 13
+        if (ptype == 2 && abs(MCData[j]->pid()) == 13
            &&  MCData[j]->status() == 1) {
           float deltaR = GetDeltaR(RecoData[i]->eta(), MCData[j]->eta(), 
                                    RecoData[i]->phi(), MCData[j]->phi());
@@ -95,7 +99,7 @@ void MatchObjects::DoMatch(void)
         }   
 
       // matching photons with MC truth
-        if (RecoData[i]->particleType() == 4 && abs(MCData[j]->pid()) == 22
+        if (ptype == 4 && abs(MCData[j]->pid()) == 22
            &&  MCData[j]->status() == 1) {
           float deltaR = GetDeltaR(RecoData[i]->eta(), MCData[j]->eta(), 
                                    RecoData[i]->phi(), MCData[j]->phi());
@@ -114,7 +118,7 @@ void MatchObjects::DoMatch(void)
         }   
     
       // matching jets with MC truth
-        if ((RecoData[i]->particleType() >= 5 && RecoData[i]->particleType() <= 7) 
+        if ((ptype >= 5 && ptype <= 7) 
            && (abs(MCData[j]->pid()) == 21 || 
            (abs(MCData[j]->pid()) > 0 && abs(MCData[j]->pid()) < 6)) 
            &&  MCData[j]->status() == 2) {
@@ -134,6 +138,26 @@ void MatchObjects::DoMatch(void)
             }	  
 	  } 
         }
+
+      // matching UFOs with MC truth
+        if (ptype == 8 && 
+          (abs(MCData[j]->pid()) == 211 || abs(MCData[j]->pid()) == 321)
+           &&  MCData[j]->status() == 1) {
+          float deltaR = GetDeltaR(RecoData[i]->eta(), MCData[j]->eta(), 
+                                   RecoData[i]->phi(), MCData[j]->phi());
+          float dPtbyPt = 999.;
+          if (MCData[j]->pt() > 0.){
+            dPtbyPt = fabs(RecoData[i]->pt()-MCData[j]->pt())/MCData[j]->pt();
+          }
+
+          if (deltaR < mo_ufoDRmax && dPtbyPt < mo_ufoDPbyPmax) {	 
+            if (iMatch < 0) {
+	        iMatch = j;
+            } else {
+	        iMatch = BestMatch(iMatch, j, i);
+            }	  
+	  } 
+        }   
       }
 
       RecoData[i]->setPartonIndex(iMatch);
@@ -160,7 +184,7 @@ void MatchObjects::DoMatch(void)
     if (DEBUGLVL >= 1){
      int nMatched = 0;
      int nTried = 0;
-     for(int i = 0; i < (int) RecoData.size() ;i++){
+     for(int i = 0; i < (int) RecoData.size() ;++i){
        nTried++;
        if (RecoData[i]->partonIndex() >= 0) {nMatched++;}
      }
@@ -215,23 +239,31 @@ void MatchObjects::ResolveMatchObjects(void)
   // by resolving cases where different RecoData match to the same MCData
   // The updated matched MCData indices are stored in the RecoData
 
-//  const float mocjetDRmax = 0.9; // used for tests with event 9-11
+//  meaning of the vectors:
+// indOrig = index in MCData of all particles from the RecoData
+//           set to -1 if an ambiguous assignment is found
+//           reset to best assignment in MCData
+// indPart = index in RecoData of the particle being treated 
+//           and all its ambiguous particles
+// indNew  = initialized to -1
+//           set to the best matched MCData not used by another ambiguous particle
+//           after solving the ambiguities, this index is stored in RecoData
 
   vector<int> indOrig;
   vector<int> indPart;
   vector<int> indNew;
  
       // First collect all original MC indices in a vector
-    for(int i = 0; i < (int) RecoData.size() ;i++){
+    for(int i = 0; i < (int) RecoData.size() ;++i){
       indOrig.push_back(RecoData[i]->partonIndex());
     }
       
       // loop over the RecoData and collect objects with same MC into vectors
-    for(int i = 0; i < (int) RecoData.size() ;i++){
+    for(int i = 0; i < (int) RecoData.size() ;++i){
        int indcommon = -1;
        if (RecoData[i]->partonIndex() >= 0 ){
          bool newset = true;
-         for(int j = i+1; j < (int) RecoData.size() ;j++){
+         for(int j = i+1; j < (int) RecoData.size() ;++j){
            if (RecoData[i]->partonIndex() == RecoData[j]->partonIndex() ){
              if (newset){
                newset = false;
@@ -259,13 +291,14 @@ void MatchObjects::ResolveMatchObjects(void)
         float dPtbyPtmin = 999.;
         int kbest = -1;
         int mcbest = -1;
-        for (int k=0; k < (int) indPart.size(); k++){
+        for (int k=0; k < (int) indPart.size(); ++k){
           if (indNew[k] < 0){
             // find the MCData with smallest difference in momentum
             // and which is not yet used by others
             for (int m=0; m<(int)MCData.size(); m++){
+              // useind is a flag, true if this MCData can be used, false otherwise
               bool useind = true;
-              for (int n=0; n<(int)indOrig.size(); n++){
+              for (int n=0; n<(int)indOrig.size(); ++n){
                 if (m == indOrig[n]){
                   useind = false;
                 }
@@ -273,26 +306,33 @@ void MatchObjects::ResolveMatchObjects(void)
               float deltaR = 
                     GetDeltaR(RecoData[indPart[k]]->eta(), MCData[m]->eta(), 
                               RecoData[indPart[k]]->phi(), MCData[m]->phi());
-              if (RecoData[indPart[k]]->particleType() == 1) {
-                 if (abs(MCData[m]->pid()) != 11  
-                 || deltaR > mo_celecDRmax) {useind = false;}
+              int ptype = RecoData[indPart[k]]->particleType()/10;
+              if (ptype == 1) {
+                if (abs(MCData[m]->pid()) != 11  
+                || deltaR > mo_celecDRmax) {useind = false;}
               }
-              else if (RecoData[indPart[k]]->particleType() == 2){
-                 if (abs(MCData[m]->pid()) != 13
-                 || deltaR > mo_cmuonDRmax) {useind = false;}
+              else if (ptype == 2){
+                if (abs(MCData[m]->pid()) != 13
+                || deltaR > mo_cmuonDRmax) {useind = false;}
               }
-              else if (RecoData[indPart[k]]->particleType() == 4){
-                 if (abs(MCData[m]->pid()) != 22
-                 || deltaR > mo_cphotonDRmax) {useind = false;}
+              else if (ptype == 4){
+                if (abs(MCData[m]->pid()) != 22
+                || deltaR > mo_cphotonDRmax) {useind = false;}
               }
-              else if (RecoData[indPart[k]]->particleType() >= 5
-                       && RecoData[indPart[k]]->particleType() <= 7){
-                 if (!(abs(MCData[m]->pid()) == 21 || 
+              else if (ptype >= 5 && ptype <= 7){
+                if (!(abs(MCData[m]->pid()) == 21 || 
                  (abs(MCData[m]->pid()) > 0 && abs(MCData[m]->pid()) < 6)) 
                  ||  MCData[m]->status() != 2 
                  || deltaR > mo_cjetDRmax) {useind = false;}
               }
-              else {useind = false;}
+              else if (ptype == 8 ){
+                 if( !(abs(MCData[m]->pid()) == 11 
+                       || abs(MCData[m]->pid()) == 13
+                       || abs(MCData[m]->pid()) == 211 
+                       || abs(MCData[m]->pid()) == 321)
+                  ||  MCData[m]->status() != 1
+                  || deltaR > mo_cufoDRmax) {useind = false;}
+              }
               
               if (useind){
                float dPtbyPt = 999.;
@@ -309,6 +349,7 @@ void MatchObjects::ResolveMatchObjects(void)
             }
           }
         }
+        // keep the best of all solutions and try again to find the next one
         if (kbest >= 0){
           indNew[kbest] = mcbest;
           indOrig[indPart[kbest]] = mcbest; 
@@ -316,7 +357,7 @@ void MatchObjects::ResolveMatchObjects(void)
         }
       }
 
-      for (int k=0; k<(int)indPart.size(); k++){
+      for (int k=0; k<(int)indPart.size(); ++k){
         RecoData[indPart[k]]->setPartonIndex(indNew[k]);
         if (DEBUGLVL >= 2){
           int iMatch = RecoData[indPart[k]]->partonIndex();
