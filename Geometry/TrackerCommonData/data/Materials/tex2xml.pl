@@ -30,7 +30,7 @@ while (<>)
  }
 
 if(/Material name:\s*([\w\\]+)/) #new mixture
-    // OLD:    if(/Material name: ([\w\\]+)/) #new mixture
+# OLD:    if(/Material name: ([\w\\]+)/) #new mixture
   {
     $flushed=0;
     @compsname = ();
