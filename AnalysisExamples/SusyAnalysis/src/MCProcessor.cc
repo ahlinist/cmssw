@@ -76,6 +76,7 @@ bool MCProcessor::MCDriver()
     if (DEBUGLVL >= 1){
      float metMC =sqrt(metrecoil.perp2());
      cout << " MET from MC truth = " << metMC << endl;
+     cout << endl;
     }
     
 
@@ -167,12 +168,12 @@ void MCProcessor::MakeMCStatusInfo()
      if (jetIndex.size() > 1){
        for(int i=0; i<(int) jetIndex.size(); i++){
          if (jetIndex[i] >= 0){
-           int istatus = MCData[i]->status() - 1;
+           int istatus = MCData[jetIndex[i]]->status() - 1;
            float eta1 = MCData[jetIndex[i]]->eta();
            float phi1 = MCData[jetIndex[i]]->phi();
            for(int j=i+1; j<(int) jetIndex.size(); j++){
              if (jetIndex[j] >= 0 &&
-                 istatus == MCData[j]->status()-1){
+                 istatus == MCData[jetIndex[j]]->status()-1){
                float eta2 = MCData[jetIndex[j]]->eta();
                float phi2 = MCData[jetIndex[j]]->phi();
                float deltaR = GetDeltaR(eta1, eta2, phi1, phi2);

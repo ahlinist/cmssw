@@ -44,10 +44,7 @@ virtual ~Isolator(){};
 
 // Methods:
 virtual bool IsObjectIsolated(int);
-virtual bool IsoElectron(int);
-virtual bool IsoMuon(int);
-virtual bool IsoTau(int);
-virtual bool IsoPhoton(int);
+virtual bool IsoObject(int, int);
 virtual bool IsObjectMerged(int, bool);
 
 void SetDebug(int debug)  {DEBUGLVL  = debug; } 
@@ -120,7 +117,17 @@ float iso_PhTkDRout;
 float iso_PhTkSeed;
 float iso_PhCalWeight;
 float iso_PhIsoValue;
-
+int   iso_MethodUfo;
+float iso_jetbyUfoEmin;
+float iso_ptUfowrtJetmin;
+float iso_UfoCalDRin;
+float iso_UfoCalDRout;
+float iso_UfoCalSeed;
+float iso_UfoTkDRin;
+float iso_UfoTkDRout;
+float iso_UfoTkSeed;
+float iso_UfoCalWeight;
+float iso_UfoIsoValue;
 
 };
 

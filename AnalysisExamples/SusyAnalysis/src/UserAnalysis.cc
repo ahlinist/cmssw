@@ -167,12 +167,12 @@ void UserAnalysis::doAnalysis(MrEvent* theEventData)
     int NBJets=0;
 
     for (int i = 0; i < (int) RecoData.size(); i++){
-      if (RecoData[i]->particleType() == 1) { NElectrons++;}
-      if (RecoData[i]->particleType() == 2) { NMuons++;}
-      if (RecoData[i]->particleType() == 4) { NPhotons++;}
-      if (RecoData[i]->particleType() == 5 || RecoData[i]->particleType() == 6) {
+      if (RecoData[i]->particleType() == 10) { NElectrons++;}
+      if (RecoData[i]->particleType() == 20) { NMuons++;}
+      if (RecoData[i]->particleType() == 40) { NPhotons++;}
+      if (RecoData[i]->particleType() == 50 || RecoData[i]->particleType() == 60) {
 	NJets++;
-        if (RecoData[i]->particleType() == 6){
+        if (RecoData[i]->particleType() == 60){
           NBJets++;
 	}  	  
       }    
@@ -186,10 +186,10 @@ void UserAnalysis::doAnalysis(MrEvent* theEventData)
 
     // plot the pT of the leptons and the 3 leading jets
     for(int i = 0; i < (int) RecoData.size() ;i++){
-      if (RecoData[i]->particleType() == 1){
+      if (RecoData[i]->particleType() == 10){
         hPtElec->Fill(RecoData[i]->pt());
       }
-      if (RecoData[i]->particleType() == 2){
+      if (RecoData[i]->particleType() == 20){
         hPtMuon->Fill(RecoData[i]->pt());
       }
     }
@@ -403,8 +403,8 @@ int UserAnalysis::FindNearestJet(int ichk)
   
   float deltaRmin = 999.;
   for(int i = 0; i < (int) RecoData.size(); i++){
-   if(RecoData[i]->particleType() >= 5
-      && RecoData[i]->particleType() <= 7){
+   if(RecoData[i]->particleType() >= 50
+      && RecoData[i]->particleType() <= 79){
     float deltaR = GetDeltaR(RecoData[ichk]->eta(), RecoData[i]->eta(), 
                              RecoData[ichk]->phi(), RecoData[i]->phi());
     if (deltaR < deltaRmin && i != ichk){

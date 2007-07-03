@@ -138,6 +138,7 @@ bool MatchHemis::DoMatch(void)
       }
     }
 
+
     if (tsmctr < 2) {return false;}
     if (lspctr < 2) {return false;}
 

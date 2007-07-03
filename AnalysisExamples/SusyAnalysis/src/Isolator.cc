@@ -25,7 +25,11 @@ iso_MethodTau(1100), iso_jetbyTauEmin(1.), iso_ptTauwrtJetmin(7.),
 iso_MethodPhot(1100), iso_jetbyPhotEmin(1.), iso_ptPhotwrtJetmin(7.),
 iso_PhCalDRin(0.), iso_PhCalDRout(0.1), iso_PhCalSeed(0.1), 
 iso_PhTkDRin(0.), iso_PhTkDRout(0.1), iso_PhTkSeed(0.1), 
-iso_PhCalWeight(0.75), iso_PhIsoValue(0.5)
+iso_PhCalWeight(0.75), iso_PhIsoValue(0.5),
+iso_MethodUfo(1100), iso_jetbyUfoEmin(1.), iso_ptUfowrtJetmin(7.),
+iso_UfoCalDRin(0.), iso_UfoCalDRout(0.1), iso_UfoCalSeed(0.1), 
+iso_UfoTkDRin(0.), iso_UfoTkDRout(0.1), iso_UfoTkSeed(0.1), 
+iso_UfoCalWeight(0.75), iso_UfoIsoValue(0.5)
 {}
 
 Isolator::Isolator(MrEvent* pEvtData, edm::ParameterSet param):
@@ -77,6 +81,17 @@ iso_PhTkDRout = param.getParameter<double>("iso_PhTkDRout") ;
 iso_PhTkSeed = param.getParameter<double>("iso_PhTkSeed") ;
 iso_PhCalWeight = param.getParameter<double>("iso_PhCalWeight") ;
 iso_PhIsoValue = param.getParameter<double>("iso_PhIsoValue") ;
+iso_MethodUfo = param.getParameter<int>("iso_MethodUfo") ;
+iso_jetbyUfoEmin = param.getParameter<double>("iso_jetbyUfoEmin") ;
+iso_ptUfowrtJetmin = param.getParameter<double>("iso_ptUfowrtJetmin") ;
+iso_UfoCalDRin = param.getParameter<double>("iso_UfoCalDRin") ;
+iso_UfoCalDRout = param.getParameter<double>("iso_UfoCalDRout") ;
+iso_UfoCalSeed = param.getParameter<double>("iso_UfoCalSeed") ;
+iso_UfoTkDRin = param.getParameter<double>("iso_UfoTkDRin") ;
+iso_UfoTkDRout = param.getParameter<double>("iso_UfoTkDRout") ;
+iso_UfoTkSeed = param.getParameter<double>("iso_UfoTkSeed") ;
+iso_UfoCalWeight = param.getParameter<double>("iso_UfoCalWeight") ;
+iso_UfoIsoValue = param.getParameter<double>("iso_UfoIsoValue") ;
 }
 
 // Methods:
@@ -87,17 +102,21 @@ bool Isolator::IsObjectIsolated(int ichk)
    bool isIsolated = true;
    if (ichk < 0){return isIsolated;}
 
-   if (RecoData[ichk]->particleType() == 1){
-     isIsolated = IsoElectron(ichk);
+   int ptype = RecoData[ichk]->particleType()/10;
+   if (ptype == 1){
+     isIsolated = IsoObject(ichk, 1);
    }
-   else if (RecoData[ichk]->particleType() == 2){
-     isIsolated = IsoMuon(ichk);
+   else if (ptype == 2){
+     isIsolated = IsoObject(ichk, 2);
    }
-   else if (RecoData[ichk]->particleType() == 3){
-     isIsolated = IsoTau(ichk);
+   else if (ptype == 3){
+     isIsolated = IsoObject(ichk, 3);
    }
-   else if (RecoData[ichk]->particleType() == 4){
-     isIsolated = IsoPhoton(ichk);
+   else if (ptype == 4){
+     isIsolated = IsoObject(ichk, 4);
+   }
+   else if (ptype == 8){
+     isIsolated = IsoObject(ichk, 8);
    }
   
   return isIsolated;
@@ -106,54 +125,168 @@ bool Isolator::IsObjectIsolated(int ichk)
 
 //------------------------------------------------------------------------------
 
-bool Isolator::IsoElectron(int ichk)
+bool Isolator::IsoObject(int ichk, int itype)
 {
- // Check that electron with index ichk is isolated
- // Several isolation methods are available
- //  - isolation in a cone or in pT wrt nearest jet
- //  - calorimetric or tracker or weighted sum
- //  - using information in transverse plane or in 3D
- //  - cut on absolute value of Et or ratio or number of objects 
+ // Check that object with index ichk is isolated
+ // Several isolation methods are available, defined by iso_Methodxxx
+ // decoded in the following integers:
+ //  - imeth = 1 if isolation in pT wrt nearest jet, = 2 if in a cone
+ //  - idet = 1 if calorimetric, = 2 if tracker, = 3 if weighted sum
+ //  - itra = 1 if using Et, = 2 if E, = 3 if number of objects
+ //  - ival = 1 if cut on relative value of Et/E sum, = 2 if absolute value
  
-  int iElecFirst = 9999;
+ //parameters defined from the cfg file:
+  int iso_MethodObj = 0;
+  float iso_jetbyObjEmin = 0., iso_ptObjwrtJetmin = 0., 
+        iso_ObjCalDRin = 0., iso_ObjCalDRout = 0., iso_ObjCalSeed = 0., 
+        iso_ObjTkDRin = 0., iso_ObjTkDRout = 0., iso_ObjTkSeed = 0.,
+        iso_ObjCalWeight = 0., iso_ObjIsoValue = 0.;
+ 
+  int iElecFirst = 9999, iMuonFirst = 9999;
+  int iTauFirst = 9999, iPhotFirst = 9999, iUfoFirst = 9999;
  
   bool isIsolated = true;
-  if (DEBUGLVL >= 2 && ichk < iElecFirst){
-    iElecFirst = ichk;
-    cout << " Electron isolation method = " << iso_MethodElec << endl;
-  }
+  iso_MethodObj = 0;
 
-  if (RecoData[ichk]->particleType() != 1){
+  int ptype = RecoData[ichk]->particleType()/10;
+  if (ptype != itype){
     cout << " *** Particle given " << ichk 
       << " of type " << RecoData[ichk]->particleType()
-      << " does not correspond to the type for isolation method IsoElectron" << endl;
+      << " does not correspond to the type for isolation method " << itype << endl;
     return isIsolated;
   }
-  if (iso_MethodElec == 0){return isIsolated;}
+  
+  if (ptype == 1){
+    iso_MethodObj = iso_MethodElec;
+    iso_jetbyObjEmin = iso_jetbyElEmin;
+    iso_ptObjwrtJetmin = iso_ptElwrtJetmin;
+    iso_ObjCalDRin = iso_ElCalDRin;
+    iso_ObjCalDRout = iso_ElCalDRout;
+    iso_ObjCalSeed = iso_ElCalSeed;
+    iso_ObjTkDRin = iso_ElTkDRin;
+    iso_ObjTkDRout = iso_ElTkDRout;
+    iso_ObjTkSeed = iso_ElTkSeed;
+    iso_ObjCalWeight = iso_ElCalWeight;
+    iso_ObjIsoValue = iso_ElIsoValue;
+    if (DEBUGLVL >= 2 && ichk < iElecFirst){
+      iElecFirst = ichk;
+      cout << " Electron isolation method = " << iso_MethodElec << endl;
+    }
+  }
+  else if (ptype == 2){
+    iso_MethodObj = iso_MethodMuon;
+    iso_jetbyObjEmin = iso_jetbyMuEmin;
+    iso_ptObjwrtJetmin = iso_ptMuwrtJetmin;
+    iso_ObjCalDRin = iso_MuCalDRin;
+    iso_ObjCalDRout = iso_MuCalDRout;
+    iso_ObjCalSeed = iso_MuCalSeed;
+    iso_ObjTkDRin = iso_MuTkDRin;
+    iso_ObjTkDRout = iso_MuTkDRout;
+    iso_ObjTkSeed = iso_MuTkSeed;
+    iso_ObjCalWeight = iso_MuCalWeight;
+    iso_ObjIsoValue = iso_MuIsoValue;
+    if (DEBUGLVL >= 2 && ichk < iMuonFirst){
+      iMuonFirst = ichk;
+      cout << " Muon isolation method = " << iso_MethodMuon << endl;
+    }
+  }
+  else if (ptype == 3){
+    iso_MethodObj = iso_MethodTau;
+    iso_jetbyObjEmin = iso_jetbyTauEmin;
+    iso_ptObjwrtJetmin = iso_ptTauwrtJetmin;
+    iso_ObjCalDRin = iso_TauCalDRin;
+    iso_ObjCalDRout = iso_TauCalDRout;
+    iso_ObjCalSeed = iso_TauCalSeed;
+    iso_ObjTkDRin = iso_TauTkDRin;
+    iso_ObjTkDRout = iso_TauTkDRout;
+    iso_ObjTkSeed = iso_TauTkSeed;
+    iso_ObjCalWeight = iso_TauCalWeight;
+    iso_ObjIsoValue = iso_TauIsoValue;
+    if (DEBUGLVL >= 2 && ichk < iTauFirst){
+      iTauFirst = ichk;
+      cout << " Tau isolation method = " << iso_MethodTau << endl;
+    }
+  }
+  else if (ptype == 4){
+    iso_MethodObj = iso_MethodPhot;
+    iso_jetbyObjEmin = iso_jetbyPhotEmin;
+    iso_ptObjwrtJetmin = iso_ptPhotwrtJetmin;
+    iso_ObjCalDRin = iso_PhCalDRin;
+    iso_ObjCalDRout = iso_PhCalDRout;
+    iso_ObjCalSeed = iso_PhCalSeed;
+    iso_ObjTkDRin = iso_PhTkDRin;
+    iso_ObjTkDRout = iso_PhTkDRout;
+    iso_ObjTkSeed = iso_PhTkSeed;
+    iso_ObjCalWeight = iso_PhCalWeight;
+    iso_ObjIsoValue = iso_PhIsoValue;
+    if (DEBUGLVL >= 2 && ichk < iPhotFirst){
+      iPhotFirst = ichk;
+      cout << " Photon isolation method = " << iso_MethodPhot << endl;
+    }
+  }
+  else if (ptype == 8){
+    iso_MethodObj = iso_MethodUfo;
+    iso_jetbyObjEmin = iso_jetbyUfoEmin;
+    iso_ptObjwrtJetmin = iso_ptUfowrtJetmin;
+    iso_ObjCalDRin = iso_UfoCalDRin;
+    iso_ObjCalDRout = iso_UfoCalDRout;
+    iso_ObjCalSeed = iso_UfoCalSeed;
+    iso_ObjTkDRin = iso_UfoTkDRin;
+    iso_ObjTkDRout = iso_UfoTkDRout;
+    iso_ObjTkSeed = iso_UfoTkSeed;
+    iso_ObjCalWeight = iso_UfoCalWeight;
+    iso_ObjIsoValue = iso_UfoIsoValue;
+    if (DEBUGLVL >= 2 && ichk < iUfoFirst){
+      iUfoFirst = ichk;
+      cout << " UFO isolation method = " << iso_MethodUfo << endl;
+    }
+  }
+  
+  if (iso_MethodObj == 0){return isIsolated;}
+  
+  // Decode the isolation method:
+  // imeth = method: 1 for Pt iso, 2 for cone iso
+  // idet = 1 for calo iso, = 2 for tracker iso, = 3 for weighted sum
+  // itra = 1 for Et sum, = 2 for E sum, = 3 for #objects sum
+  // ival = 1 if cut on relative value of Et/E sum, = 2 if absolute value
+  int imeth = iso_MethodObj / 1000;
+  int idet = (iso_MethodObj - 2000) / 100;
+  int itra = (iso_MethodObj / 10) % 10;
+  int ival = (iso_MethodObj % 10);
+  if (imeth == 2) {
+    if (idet < 1 || idet > 4 || itra < 1 || itra > 3 || ival < 1 || ival > 2
+        || (itra == 3 && ival != 2) ) {
+      cout << " *** Chosen isolation method " << iso_MethodObj
+           << " is not implemented ***" << endl;
+      return isIsolated;
+    }
+  }
 
   // compute the isolation in pT wrt nearest jet
-  if (iso_MethodElec / 1000 == 1){
+  if (imeth == 1){
     int iJet = FindNearestJet(ichk);
    
     if (iJet >= 0){
 //      cout << " nearest jet index = " << iJet 
 //         << " type = " << RecoData[iJet]->particleType() << endl;
 
-      if (RecoData[iJet]->energy() < iso_jetbyElEmin * RecoData[ichk]->energy() )
+      if (RecoData[iJet]->energy() < iso_jetbyObjEmin * RecoData[ichk]->energy() )
         {isIsolated = true;}
 
       float ptwrtJet = GetPtwrtJet(ichk, iJet);
-//      cout << " ptwrtJet = " << ptwrtJet << endl;
-      if (ptwrtJet > iso_ptElwrtJetmin){
+      RecoData[ichk]->setParticleIsoValue(ptwrtJet);
+      if (ptwrtJet > iso_ptObjwrtJetmin){
         isIsolated = true;
         if (DEBUGLVL >= 2){
-          cout << " electron, index = " << ichk
+          cout << " object index = " << ichk
+          << "type = " << RecoData[ichk]->particleType()
           << " is isolated by Pt wrt jet, Pt = " << ptwrtJet << endl;
         }
       } else {
         isIsolated = false;
         if (DEBUGLVL >= 2){
-          cout << " electron, index = " << ichk
+          cout << " object index = " << ichk
+          << "type = " << RecoData[ichk]->particleType()
           << " is not isolated by Pt wrt jet, Pt = " << ptwrtJet << endl;
         }
       }
@@ -161,919 +294,266 @@ bool Isolator::IsoElectron(int ichk)
   }
 
   // compute the isolation by a cone algorithm
-  else if (iso_MethodElec / 1000 == 2){
-    int idet = (iso_MethodElec - 2000) / 100;
-    int itra = (iso_MethodElec / 100);
-    itra = (iso_MethodElec - 100*itra) / 10;
-    int ival = (iso_MethodElec / 10);
-    ival = iso_MethodElec - 10*ival;
-    const PixelMatchGsfElectron* elecand = RecoData[ichk]->electronCandidate();
-//    cout << " pointer to elec cand " << elecand;
-//    float elecmom = elecand->p();
-//    cout << " momentum " << elecmom << endl;
-
-    // using calorimeter information
-    float eSum = 0.;
-    float etest = 0.;
-    if (idet == 1 || idet == 3){
+  else if (imeth == 2){
+  
+    // Collect the information necessary for the calculation of isolation
+    float eSum = 0., etest = 0., eSubtr = 0.;
+    int ntkCalSubtr = 0;
+    float calEta = 0., calPhi = 0.;
+    float pSum = 0., ptest = 0., pSubtr = 0.;
+    int ntkTrkSubtr = 0;
+    float trkEta = 0., trkPhi = 0.;
+    
+    if (ptype == 1){
+      // for Calo isolation
+      const PixelMatchGsfElectron* elecand = RecoData[ichk]->electronCandidate();
       const SuperCluster* supercluster = &(*(elecand->superCluster()));
-//      cout << " pointer to supercluster " << supercluster;
-//      float elenergy = supercluster->energy();
-//      cout << " energy " << elenergy << endl;
       if (itra == 1) {
         float eta = supercluster->eta();
         float theta = 2. * atan(exp(-eta)); // pseudorapidity or rapidity?
         etest = supercluster->energy() * fabs(sin(theta));
-//        etest = supercluster->energy() / cosh(eta);
-//        cout << " eta = " << eta << ", Et " << etest << endl;
       } else if (itra == 2) {
         etest = supercluster->energy();
-//        cout << ", E " << etest << endl;
-      }
-      float elCalEta = supercluster->eta();
-      float elCalPhi = supercluster->phi();
-      eSum = IsoCalSum (itra, elCalEta, elCalPhi, 
-                              iso_ElCalDRin, iso_ElCalDRout, iso_ElCalSeed);
-      if (itra < 3 && ival == 1) {
-        if (iso_ElCalDRin == 0.) {eSum = (eSum-etest) / etest;}
-        else{eSum = eSum / etest;}
-        if (idet == 1 && eSum > iso_ElIsoValue){isIsolated = false;}
-      } else if (itra < 3 && ival == 2) {
-        if (iso_ElCalDRin == 0.) {eSum -= etest;}
-        if (idet == 1 && eSum > iso_ElIsoValue){isIsolated = false;}
       } else if (itra == 3) {
-        if (iso_ElCalDRin == 0.) {eSum = (int) eSum - 1;}
-        if (idet == 1 && eSum > iso_ElIsoValue){isIsolated = false;}
-      } else {
-        cout << " *** Chosen isolation method is not implemented for electron ***" << endl;
+        vector<CaloTowerDetId> eleDetId;
+        GetEMCaloTowers(ichk, & eleDetId);
+        etest = eleDetId.size();
+        eleDetId.clear();
       }
-      if (idet == 1 && DEBUGLVL >= 2){
-       if (itra < 3 && ival == 1) {
-        if (isIsolated){
-         cout << " electron, index = " << ichk
-         << " is isolated in calorimeter, Esum = " << eSum << endl;
-        } else {
-         cout << " electron, index = " << ichk
-         << " is not isolated in calorimeter, Esum = " << eSum << endl;
-        }
-       } else if (itra < 3 && ival == 2) {
-        if (isIsolated){
-         cout << " electron, index = " << ichk
-         << " is isolated in calorimeter, Etsum = " << eSum << endl;
-        } else {
-         cout << " electron, index = " << ichk
-         << " is not isolated in calorimeter, Etsum = " << eSum << endl;
-        }
-       } else if (itra == 3) {
-        if (isIsolated){
-         cout << " electron, index = " << ichk
-         << " is isolated in calorimeter, #towers = " << eSum << endl;
-        } else {
-         cout << " electron, index = " << ichk
-         << " is not isolated in calorimeter, #towers = " << eSum << endl;
-        }
-       }
-      }
-    } 
-
-    // using tracker information
-    float pSum = 0.;
-    float ptest = 0.;
-    if (idet == 2 || idet == 3){
+      eSubtr = etest;
+      ntkCalSubtr = (int)etest;
+      calEta = supercluster->eta();
+      calPhi = supercluster->phi();
+      // for Tracker isolation
       const Track* eletrack = &(*(elecand->gsfTrack()));
-//      cout << " pointer to electron track " << eletrack;
       if (itra == 1) {
         ptest = eletrack->pt();
-//        cout << ", Pt " << ptest << endl;
       } else if (itra == 2) {
         ptest = eletrack->p();
-//        cout << ", P " << ptest << endl;
-      }
-      float elTrkEta = eletrack->eta();
-      float elTrkPhi = eletrack->phi();
-      pSum = IsoTrkSum (itra, elTrkEta, elTrkPhi, 
-                              iso_ElTkDRin, iso_ElTkDRout, iso_ElTkSeed);
-      if (itra < 3 && ival == 1) {
-        if (iso_ElTkDRin == 0.) {pSum = (pSum-ptest) / ptest;}
-        else {pSum = pSum / ptest;}
-        if (idet == 2 && pSum > iso_ElIsoValue){isIsolated = false;}
-      } else if (itra < 3 && ival == 2) {
-        if (iso_ElTkDRin == 0.) {pSum -= ptest;}
-        if (idet == 2 && pSum > iso_ElIsoValue){isIsolated = false;}
       } else if (itra == 3) {
-        if (iso_ElTkDRin == 0.) {pSum = (int) pSum - 1;}
-        if (idet == 2 && pSum > iso_ElIsoValue){isIsolated = false;}
-      } else {
-        cout << " *** Chosen isolation method is not implemented for electron ***" << endl;
+        ptest = 1.;
       }
-      if (idet == 2 && DEBUGLVL >= 2){
-       if (itra < 3 && ival == 1) {
-        if (isIsolated){
-         cout << " electron, index = " << ichk
-         << " is isolated in tracker, Psum = " << pSum << endl;
-        } else {
-         cout << " electron, index = " << ichk
-         << " is not isolated in tracker, Psum = " << pSum << endl;
-        }
-       } else if (itra < 3 && ival == 2) {
-        if (isIsolated){
-         cout << " electron, index = " << ichk
-         << " is isolated in tracker, Ptsum = " << pSum << endl;
-        } else {
-         cout << " electron, index = " << ichk
-         << " is not isolated in tracker, Ptsum = " << pSum << endl;
-        }
-       } else if (itra == 3) {
-        if (isIsolated){
-         cout << " electron, index = " << ichk
-         << " is isolated in tracker, #trks = " << pSum << endl;
-        } else {
-         cout << " electron, index = " << ichk
-         << " is not isolated in tracker, #trks = " << pSum << endl;
-        }
-       }
+      pSubtr = ptest;
+      ntkTrkSubtr = 1;
+      trkEta = eletrack->eta();
+      trkPhi = eletrack->phi();
+    }
+    else if (ptype == 2){
+      // for Calo isolation
+      const Muon* mucand = RecoData[ichk]->muonCandidate();
+      const Track* mutrack = &(*(mucand->track()));
+      if (itra == 1) {
+        etest = mutrack->pt();
+      } else if (itra == 2) {
+        etest = mutrack->p();
+      } else if (itra == 3) {
+        etest = 0.;
       }
+      eSubtr = 0.;
+      ntkCalSubtr = 0;
+//      calEta = mutrack->outereta();
+//      calPhi = mutrack->outerphi();
+      calEta = mutrack->eta();
+      calPhi = mutrack->phi();
+      // for Tracker isolation
+      if (itra == 1) {
+        ptest = mutrack->pt();
+      } else if (itra == 2) {
+        ptest = mutrack->p();
+      } else if (itra == 3) {
+        ptest = 1.;
+      }
+      pSubtr = ptest;
+      ntkTrkSubtr = 1;
+      trkEta = mutrack->eta();
+      trkPhi = mutrack->phi();
     }
-
-    // using a weighted sum of calorimeter and tracker information
-    if (idet == 3){
-      pSum = pSum + iso_ElCalWeight*eSum;
-      if (pSum > iso_ElIsoValue){isIsolated = false;}
-      if (DEBUGLVL >= 2){
-       if (itra < 3 && ival == 1) {
-        if (isIsolated){
-         cout << " electron, index = " << ichk
-         << " is isolated in tracker+calo, Psum = " << pSum << endl;
-        } else {
-         cout << " electron, index = " << ichk
-         << " is not isolated in tracker+calo, Psum = " << pSum << endl;
-        }
-       } else if (itra < 3 && ival == 2) {
-        if (isIsolated){
-         cout << " electron, index = " << ichk
-         << " is isolated in tracker+calo, Ptsum = " << pSum << endl;
-        } else {
-         cout << " electron, index = " << ichk
-         << " is not isolated in tracker+calo, Ptsum = " << pSum << endl;
-        }
-       } else if (itra == 3) {
-        if (isIsolated){
-         cout << " electron, index = " << ichk
-         << " is isolated in tracker+calo, #objects = " << pSum << endl;
-        } else {
-         cout << " electron, index = " << ichk
-         << " is not isolated in tracker+calo, #objects = " << pSum << endl;
-        }
-       }
-      }      
-    }
-
-    // using candidate information
-    // uses the cuts defined for tracks
-    if (idet == 4){
-      float ptest = 0.;
+    else if (ptype == 3){
+      // for Calo isolation
+      if (itra == 1) {
+        etest = RecoData[ichk]->pt();
+      } else if (itra == 2) {
+        etest = RecoData[ichk]->p();
+      } else if (itra == 3) {
+        etest = 0.;
+      }
+      eSubtr = 0.;
+      ntkCalSubtr = 0;
+      calEta = RecoData[ichk]->eta();
+      calPhi = RecoData[ichk]->phi();
+      // for Tracker isolation
       if (itra == 1) {
         ptest = RecoData[ichk]->pt();
-//        cout << ", Pt " << ptest << endl;
       } else if (itra == 2) {
         ptest = RecoData[ichk]->p();
-//        cout << ", P " << ptest << endl;
-      }
-      float elCandEta = RecoData[ichk]->eta();
-      float elCandPhi = RecoData[ichk]->phi();
-      float pSum = IsoCandSum (itra, elCandEta, elCandPhi, 
-                              iso_ElTkDRin, iso_ElTkDRout, iso_ElTkSeed);
-      if (itra < 3 && ival == 1) {
-        if (iso_ElTkDRin == 0.) {pSum = (pSum-ptest) / ptest;}
-        else {pSum = pSum / ptest;}
-        if (pSum > iso_ElIsoValue){isIsolated = false;}
-      } else if (itra < 3 && ival == 2) {
-        if (iso_ElTkDRin == 0.) {pSum -= ptest;}
-        if (pSum > iso_ElIsoValue){isIsolated = false;}
       } else if (itra == 3) {
-        if (iso_ElTkDRin == 0.) {pSum = (int) pSum - 1;}
-        if (pSum > iso_ElIsoValue){isIsolated = false;}
+        ptest = 0.;
+      }
+      pSubtr = 0.;
+      ntkTrkSubtr = 0;
+      trkEta = RecoData[ichk]->eta();
+      trkPhi = RecoData[ichk]->phi();
+    }
+    else if (ptype == 4){
+      const Photon* photcand = RecoData[ichk]->photonCandidate();
+      if (photcand != NULL){
+        const SuperCluster* supercluster = &(*(photcand->superCluster()));
+        etest = supercluster->energy();
+        calEta = supercluster->eta();
+        calPhi = supercluster->phi();
       } else {
-        cout << " *** Chosen isolation method is not implemented for electron ***" << endl;
+        etest = RecoData[ichk]->energy();
+        calEta = RecoData[ichk]->eta();
+        calPhi = RecoData[ichk]->phi();
       }
-      if (DEBUGLVL >= 2){
-       if (itra < 3 && ival == 1) {
-        if (isIsolated){
-         cout << " electron, index = " << ichk
-         << " is isolated from candidates, Psum = " << pSum << endl;
-        } else {
-         cout << " electron, index = " << ichk
-         << " is not isolated from candidates, Psum = " << pSum << endl;
-        }
-       } else if (itra < 3 && ival == 2) {
-        if (isIsolated){
-         cout << " electron, index = " << ichk
-         << " is isolated from candidates, Ptsum = " << pSum << endl;
-        } else {
-         cout << " electron, index = " << ichk
-         << " is not isolated from candidates, Ptsum = " << pSum << endl;
-        }
-       } else if (itra == 3) {
-        if (isIsolated){
-         cout << " electron, index = " << ichk
-         << " is isolated from candidates, #trks = " << pSum << endl;
-        } else {
-         cout << " electron, index = " << ichk
-         << " is not isolated from candidates, #trks = " << pSum << endl;
-        }
-       }
-      }
-    }
-  }
-
-  else{
-    cout << " *** Chosen isolation method is not implemented for electron ***" << endl;
-  }
-
-  return isIsolated;
-
-}
-
-//------------------------------------------------------------------------------
-
-bool Isolator::IsoMuon(int ichk)
-{
- // Check that muon with index ichk is isolated
- // Several isolation methods should be available
- //  - isolation in a cone or in pT wrt nearest jet
- //  - calorimetric or tracker or weighted sum
- //  - using information in transverse plane or in 3D
- //  - cut on absolute value of Et or ratio or number of objects 
-  
-  int iMuonFirst = 9999;
- 
-  bool isIsolated = true;
-  if (DEBUGLVL >= 2 && ichk < iMuonFirst){
-    iMuonFirst = ichk;
-    cout << " Muon isolation method = " << iso_MethodMuon << endl;
-  }
-
-  if (RecoData[ichk]->particleType() != 2){
-    cout << " *** Particle given " << ichk 
-      << " of type " << RecoData[ichk]->particleType()
-      << " does not correspond to the type for isolation method IsoMuon" << endl;
-    return isIsolated;
-  }
-  if (iso_MethodMuon == 0){return isIsolated;}
-
-  // compute the isolation in pT wrt nearest jet
-  if (iso_MethodMuon / 1000 == 1){
-    int iJet = FindNearestJet(ichk);
- 
-    if (iJet > 0){
-//    cout << " nearest jet index = " << iJet 
-//         << " type = " << RecoData[iJet]->particleType() << endl;
-      if (RecoData[iJet]->energy() < iso_jetbyMuEmin * RecoData[ichk]->energy() )
-        {isIsolated = true;}
-
-      float ptwrtJet = GetPtwrtJet(ichk, iJet);
-//      cout << " ptwrtJet = " << ptwrtJet << endl;
-      if (ptwrtJet > iso_ptMuwrtJetmin){
-        isIsolated = true;
-        cout << " muon, index = " << ichk
-         << " is isolated by Pt wrt jet, Pt = " << ptwrtJet << endl;
-      } else {
-        isIsolated = false;
-        cout << " muon, index = " << ichk
-         << " is not isolated by Pt wrt jet, Pt = " << ptwrtJet << endl;
-      }
-    }
-  }
-
-  // compute the isolation by a cone algorithm
-  else if (iso_MethodMuon / 1000 == 2){
-    int idet = (iso_MethodMuon - 2000) / 100;
-    int itra = (iso_MethodMuon / 100);
-    itra = (iso_MethodMuon - 100*itra) / 10;
-    int ival = (iso_MethodMuon / 10);
-    ival = iso_MethodMuon - 10*ival;
-    const Muon* mucand = RecoData[ichk]->muonCandidate();
-//    cout << " pointer to muon cand " << mucand;
-//    float mumom = mucand->p();
-//    cout << " momentum " << mumom << endl;
-
-    const Track* mutrack = &(*(mucand->track()));
-//    cout << " pointer to muon track " << mutrack;
-    float ptest = 0.;
-    if (itra == 1) {
-      ptest = mutrack->pt();
-//      cout << ", Pt " << ptest << endl;
-    } else if (itra == 2) {
-      ptest = mutrack->p();
-//      cout << ", P " << ptest << endl;
-    }
-
-    // using calorimeter information
-    float eSum = 0.;
-    if (idet == 1 || idet == 3){
-      float muCalEta = mutrack->eta();
-      float muCalPhi = mutrack->phi();
-      eSum = IsoCalSum (itra, muCalEta, muCalPhi, 
-                              iso_MuCalDRin, iso_MuCalDRout, iso_MuCalSeed);
-      if (itra < 3 && ival == 1) {
-        eSum = eSum / ptest;
-        if (idet == 1 && eSum > iso_MuIsoValue){isIsolated = false;}
-      } else if (itra < 3 && ival == 2) {
-        if (idet == 1 && eSum > iso_MuIsoValue){isIsolated = false;}
-      } else if (itra == 3) {
-        if (idet == 1 && eSum > iso_MuIsoValue){isIsolated = false;}
-      } else {
-        cout << " *** Chosen isolation method is not implemented for muon ***" << endl;
-      }
-      if (idet == 1 && DEBUGLVL >= 2){
-       if (itra < 3 && ival == 1) {
-        if (isIsolated){
-         cout << " muon, index = " << ichk
-         << " is isolated in calorimeter, Esum = " << eSum << endl;
-        } else {
-         cout << " muon, index = " << ichk
-         << " is not isolated in calorimeter, Esum = " << eSum << endl;
-        }
-       } else if (itra < 3 && ival == 2) {
-        if (isIsolated){
-         cout << " muon, index = " << ichk
-         << " is isolated in calorimeter, Etsum = " << eSum << endl;
-        } else {
-         cout << " muon, index = " << ichk
-         << " is not isolated in calorimeter, Etsum = " << eSum << endl;
-        }
-       } else if (itra == 3) {
-        if (isIsolated){
-         cout << " muon, index = " << ichk
-         << " is isolated in calorimeter, #towers = " << eSum << endl;
-        } else {
-         cout << " muon, index = " << ichk
-         << " is not isolated in calorimeter, #towers = " << eSum << endl;
-        }
-       }
-      }
-    } 
-
-    // using tracker information
-    float pSum = 0.;
-    if (idet == 2 || idet == 3){
-      float muTrkEta = mutrack->eta();
-      float muTrkPhi = mutrack->phi();
-      pSum = IsoTrkSum (itra, muTrkEta, muTrkPhi, 
-                              iso_MuTkDRin, iso_MuTkDRout, iso_MuTkSeed);
-      if (itra < 3 && ival == 1) {
-        if (iso_MuTkDRin == 0.) {pSum = (pSum-ptest) / ptest;}
-        else {pSum = pSum / ptest;}
-        if (idet == 2 && pSum > iso_MuIsoValue){isIsolated = false;}
-      } else if (itra < 3 && ival == 2) {
-        if (iso_MuTkDRin == 0.) {pSum -= ptest;}
-        if (idet == 2 && pSum > iso_MuIsoValue){isIsolated = false;}
-      } else if (itra == 3) {
-        if (iso_MuTkDRin == 0.) {pSum = (int) pSum - 1;}
-        if (idet == 2 && pSum > iso_MuIsoValue){isIsolated = false;}
-      } else {
-        cout << " *** Chosen isolation method is not implemented for muon ***" << endl;
-      }
-      if (idet == 2 && DEBUGLVL >= 2){
-       if (itra < 3 && ival == 1) {
-        if (isIsolated){
-         cout << " muon, index = " << ichk
-         << " is isolated in tracker, Psum = " << pSum << endl;
-        } else {
-         cout << " muon, index = " << ichk
-         << " is not isolated in tracker, Psum = " << pSum << endl;
-        }
-       } else if (itra < 3 && ival == 2) {
-        if (isIsolated){
-         cout << " muon, index = " << ichk
-         << " is isolated in tracker, Ptsum = " << pSum << endl;
-        } else {
-         cout << " muon, index = " << ichk
-         << " is not isolated in tracker, Ptsum = " << pSum << endl;
-        }
-       } else if (itra == 3) {
-        if (isIsolated){
-         cout << " muon, index = " << ichk
-         << " is isolated in tracker, #trks = " << pSum << endl;
-        } else {
-         cout << " muon, index = " << ichk
-         << " is not isolated in tracker, #trks = " << pSum << endl;
-        }
-       }
-      }
-    }
-
-    // using a weighted sum of calorimeter and tracker information
-    if (idet == 3){
-      pSum = pSum + iso_MuCalWeight*eSum;
-      if (pSum > iso_MuIsoValue){isIsolated = false;}
-      if (DEBUGLVL >= 2){
-       if (itra < 3 && ival == 1) {
-        if (isIsolated){
-         cout << " muon, index = " << ichk
-         << " is isolated in tracker+calo, Psum = " << pSum << endl;
-        } else {
-         cout << " muon, index = " << ichk
-         << " is not isolated in tracker+calo, Psum = " << pSum << endl;
-        }
-       } else if (itra < 3 && ival == 2) {
-        if (isIsolated){
-         cout << " muon, index = " << ichk
-         << " is isolated in tracker+calo, Ptsum = " << pSum << endl;
-        } else {
-         cout << " muon, index = " << ichk
-         << " is not isolated in tracker+calo, Ptsum = " << pSum << endl;
-        }
-       } else if (itra == 3) {
-        if (isIsolated){
-         cout << " muon, index = " << ichk
-         << " is isolated in tracker+calo, #objects = " << pSum << endl;
-        } else {
-         cout << " muon, index = " << ichk
-         << " is not isolated in tracker+calo, #objects = " << pSum << endl;
-        }
-       }
-      }
-    }
-
-    // using candidate information
-    // uses the cuts defined for tracks
-    if (idet == 4){
-      float ptest = 0.;
       if (itra == 1) {
-        ptest = RecoData[ichk]->pt();
-//        cout << ", Pt " << ptest << endl;
+        float theta = 2. * atan(exp(-calEta)); // pseudorapidity or rapidity?
+        etest = etest * fabs(sin(theta));
+      } else if (itra == 3) {
+        vector<CaloTowerDetId> eleDetId;
+        GetEMCaloTowers(ichk, & eleDetId);
+        etest = eleDetId.size();
+        eleDetId.clear();
+      }
+      eSubtr = etest;
+      ntkCalSubtr = (int)etest;
+      ptest = etest;
+      pSubtr = 0.;
+      ntkTrkSubtr = 0;
+      trkEta = calEta;
+      trkPhi = calPhi;
+    }
+    else if (ptype == 8){
+      // for Calo isolation
+      const Track* ufotrack = RecoData[ichk]->ufoTrack();
+      if (itra == 1) {
+        etest = ufotrack->pt();
       } else if (itra == 2) {
-        ptest = RecoData[ichk]->p();
-//        cout << ", P " << ptest << endl;
-      }
-      float muCandEta = RecoData[ichk]->eta();
-      float muCandPhi = RecoData[ichk]->phi();
-      float pSum = IsoCandSum (itra, muCandEta, muCandPhi, 
-                              iso_MuTkDRin, iso_MuTkDRout, iso_MuTkSeed);
-      if (itra < 3 && ival == 1) {
-        if (iso_MuTkDRin == 0.) {pSum = (pSum-ptest) / ptest;}
-        else {pSum = pSum / ptest;}
-        if (pSum > iso_MuIsoValue){isIsolated = false;}
-      } else if (itra < 3 && ival == 2) {
-        if (iso_MuTkDRin == 0.) {pSum -= ptest;}
-        if (pSum > iso_MuIsoValue){isIsolated = false;}
+        etest = ufotrack->p();
       } else if (itra == 3) {
-        if (iso_MuTkDRin == 0.) {pSum = (int) pSum - 1;}
-        if (pSum > iso_MuIsoValue){isIsolated = false;}
-      } else {
-        cout << " *** Chosen isolation method is not implemented for muon ***" << endl;
+        etest = 0.;
       }
-      if (DEBUGLVL >= 2){
-       if (itra < 3 && ival == 1) {
-        if (isIsolated){
-         cout << " muon, index = " << ichk
-         << " is isolated from candidates, Psum = " << pSum << endl;
-        } else {
-         cout << " muon, index = " << ichk
-         << " is not isolated from candidates, Psum = " << pSum << endl;
-        }
-       } else if (itra < 3 && ival == 2) {
-        if (isIsolated){
-         cout << " muon, index = " << ichk
-         << " is isolated from candidates, Ptsum = " << pSum << endl;
-        } else {
-         cout << " muon, index = " << ichk
-         << " is not isolated from candidates, Ptsum = " << pSum << endl;
-        }
-       } else if (itra == 3) {
-        if (isIsolated){
-         cout << " muon, index = " << ichk
-         << " is isolated from candidates, #trks = " << pSum << endl;
-        } else {
-         cout << " muon, index = " << ichk
-         << " is not isolated from candidates, #trks = " << pSum << endl;
-        }
-       }
-      }
-    }
-  }
-
-  else{
-    cout << " *** Chosen isolation method is not implemented for muon ***" << endl;
-  }
-
-  return isIsolated;
-
-}
-
-//------------------------------------------------------------------------------
-
-bool Isolator::IsoTau(int ichk)
-{
- // Check that electron with index ichk is isolated
- // Several isolation methods should be available
- //  - isolation in a cone or in pT wrt nearest jet
- //  - calorimetric or tracker or weighted sum
- //  - using information in transverse plane or in 3D
- //  - cut on absolute value of Et or ratio or number of objects 
-  
-  int iTauFirst = 9999;
-  
-  bool isIsolated = true;
-  if (DEBUGLVL >= 2 && ichk < iTauFirst){
-    iTauFirst = ichk;
-    cout << " Tau isolation method = " << iso_MethodTau << endl;
-  }
-
-  if (RecoData[ichk]->particleType() != 3){
-    cout << " *** Particle given " << ichk 
-      << " of type " << RecoData[ichk]->particleType()
-      << " does not correspond to the type for isolation method IsoTau" << endl;
-    return isIsolated;
-  }
-  if (iso_MethodTau == 0){return isIsolated;}
-
-  // compute the isolation in pT wrt nearest jet
-  if (iso_MethodTau / 1000 == 1){
-    int iJet = FindNearestJet(ichk);
-
-    if (iJet > 0){
-//     cout << " nearest jet index = " << iJet 
-//         << " type = " << RecoData[iJet]->particleType() << endl;
-
-      if (RecoData[iJet]->energy() < iso_jetbyTauEmin * RecoData[ichk]->energy() )
-        {isIsolated = true;}
-
-      float ptwrtJet = GetPtwrtJet(ichk, iJet);
-//      cout << " ptwrtJet = " << ptwrtJet << endl;
-      if (ptwrtJet > iso_ptTauwrtJetmin){
-        isIsolated = true;
-        cout << " tau is isolated by Pt wrt jet, Pt = " << ptwrtJet << endl;
-      } else {
-        isIsolated = false;
-        cout << " tau is not isolated by Pt wrt jet, Pt = " << ptwrtJet << endl;
-      }
-    }
-  }
-
-  // compute the isolation by a cone algorithm
-  else if (iso_MethodTau / 1000 == 2){
-    int idet = (iso_MethodTau - 2000) / 100;
-    int itra = (iso_MethodTau / 100);
-    itra = (iso_MethodTau - 100*itra) / 10;
-    int ival = (iso_MethodTau / 10);
-    ival = iso_MethodTau - 10*ival;
-//    const Muon* mucand = RecoData[ichk]->muonCandidate();
-
-//    const Track* mutrack = &(*(mucand->track()));
-    float ptest = 0.;
-    if (itra == 1) {
-      ptest = RecoData[ichk]->pt();
-//      cout << ", Pt " << ptest << endl;
-    } else if (itra == 2) {
-      ptest = RecoData[ichk]->p();
-//      cout << ", P " << ptest << endl;
-    }
-
-    // using calorimeter information
-    float eSum = 0.;
-    if (idet == 1 || idet == 3){
-      float tauCalEta = RecoData[ichk]->eta();
-      float tauCalPhi = RecoData[ichk]->phi();
-      eSum = IsoCalSum (itra, tauCalEta, tauCalPhi, 
-                              iso_TauCalDRin, iso_TauCalDRout, iso_TauCalSeed);
-      if (itra < 3 && ival == 1) {
-        eSum = eSum / ptest;
-        if (idet == 1 && eSum > iso_TauIsoValue){isIsolated = false;}
-      } else if (itra < 3 && ival == 2) {
-        if (idet == 1 && eSum > iso_TauIsoValue){isIsolated = false;}
+      eSubtr = 0.;
+      ntkCalSubtr = 0;
+//      calEta = ufotrack->outereta();
+//      calPhi = ufotrack->outerphi();
+      calEta = ufotrack->eta();
+      calPhi = ufotrack->phi();
+      // for Tracker isolation
+      if (itra == 1) {
+        ptest = ufotrack->pt();
+      } else if (itra == 2) {
+        ptest = ufotrack->p();
       } else if (itra == 3) {
-        if (idet == 1 && eSum > iso_TauIsoValue){isIsolated = false;}
-      } else {
-        cout << " *** Chosen isolation method is not implemented for tau ***" << endl;
+        ptest = 1.;
       }
-      if (idet == 1 && DEBUGLVL >= 2){
-       if (itra < 3 && ival == 1) {
-        if (isIsolated){
-         cout << " tau, index = " << ichk
-         << " is isolated in calorimeter, Esum = " << eSum << endl;
-        } else {
-         cout << " tau, index = " << ichk
-         << " is not isolated in calorimeter, Esum = " << eSum << endl;
-        }
-       } else if (itra < 3 && ival == 2) {
-        if (isIsolated){
-         cout << " tau, index = " << ichk
-         << " is isolated in calorimeter, Etsum = " << eSum << endl;
-        } else {
-         cout << " tau, index = " << ichk
-         << " is not isolated in calorimeter, Etsum = " << eSum << endl;
-        }
-       } else if (itra == 3) {
-        if (isIsolated){
-         cout << " tau, index = " << ichk
-         << " is isolated in calorimeter, #towers = " << eSum << endl;
-        } else {
-         cout << " tau, index = " << ichk
-         << " is not isolated in calorimeter, #towers = " << eSum << endl;
-        }
-       }
-      }
-    } 
-
-    // using tracker information
-    float pSum = 0.;
-    if (idet == 2 || idet == 3){
-      float tauTrkEta = RecoData[ichk]->eta();
-      float tauTrkPhi = RecoData[ichk]->phi();
-      pSum = IsoTrkSum (itra, tauTrkEta, tauTrkPhi, 
-                              iso_TauTkDRin, iso_TauTkDRout, iso_TauTkSeed);
-      if (itra < 3 && ival == 1) {
-        if (iso_TauTkDRin == 0.) {pSum = (pSum-ptest) / ptest;}
-        else {pSum = pSum / ptest;}
-        if (idet == 2 && pSum > iso_TauIsoValue){isIsolated = false;}
-      } else if (itra < 3 && ival == 2) {
-        if (iso_TauTkDRin == 0.) {pSum -= ptest;}
-        if (idet == 2 && pSum > iso_TauIsoValue){isIsolated = false;}
-      } else if (itra == 3) {
-        if (iso_TauTkDRin == 0.) {pSum = (int) pSum - 1;}
-        if (idet == 2 && pSum > iso_TauIsoValue){isIsolated = false;}
-      } else {
-        cout << " *** Chosen isolation method is not implemented for tau ***" << endl;
-      }
-      if (idet == 2 && DEBUGLVL >= 2){
-       if (itra < 3 && ival == 1) {
-        if (isIsolated){
-         cout << " tau, index = " << ichk
-         << " is isolated in tracker, Psum = " << pSum << endl;
-        } else {
-         cout << " tau, index = " << ichk
-         << " is not isolated in tracker, Psum = " << pSum << endl;
-        }
-       } else if (itra < 3 && ival == 2) {
-        if (isIsolated){
-         cout << " tau, index = " << ichk
-         << " is isolated in tracker, Ptsum = " << pSum << endl;
-        } else {
-         cout << " tau, index = " << ichk
-         << " is not isolated in tracker, Ptsum = " << pSum << endl;
-        }
-       } else if (itra == 3) {
-        if (isIsolated){
-         cout << " tau, index = " << ichk
-         << " is isolated in tracker, #trks = " << pSum << endl;
-        } else {
-         cout << " tau, index = " << ichk
-         << " is not isolated in tracker, #trks = " << pSum << endl;
-        }
-       }
-      }
-    }
-
-    // using a weighted sum of calorimeter and tracker information
-    if (idet == 3){
-      pSum = pSum + iso_TauCalWeight*eSum;
-      if (pSum > iso_TauIsoValue){isIsolated = false;}
-      if (DEBUGLVL >= 2){
-       if (itra < 3 && ival == 1) {
-        if (isIsolated){
-         cout << " tau, index = " << ichk
-         << " is isolated in tracker+calo, Psum = " << pSum << endl;
-        } else {
-         cout << " tau, index = " << ichk
-         << " is not isolated in tracker+calo, Psum = " << pSum << endl;
-        }
-       } else if (itra < 3 && ival == 2) {
-        if (isIsolated){
-         cout << " tau, index = " << ichk
-         << " is isolated in tracker+calo, Ptsum = " << pSum << endl;
-        } else {
-         cout << " tau, index = " << ichk
-         << " is not isolated in tracker+calo, Ptsum = " << pSum << endl;
-        }
-       } else if (itra == 3) {
-        if (isIsolated){
-         cout << " tau, index = " << ichk
-         << " is isolated in tracker+calo, #objects = " << pSum << endl;
-        } else {
-         cout << " tau, index = " << ichk
-         << " is not isolated in tracker+calo, #objects = " << pSum << endl;
-        }
-       }
-      }
-    }
-  
-  }
-  
-  else{
-    cout << " *** Chosen isolation method is not implemented for tau ***" << endl;
-  }
-
-  return isIsolated;
-
-}
-
-//------------------------------------------------------------------------------
-
-bool Isolator::IsoPhoton(int ichk)
-{
- // Check that photon with index ichk is isolated
- // Several isolation methods should be available
- //  - isolation in a cone or in pT wrt nearest jet
- //  - calorimetric or tracker or weighted sum
- //  - using information in transverse plane or in 3D
- //  - cut on absolute value of Et or ratio or number of objects 
- 
-  bool isIsolated = true;
-
-  if (RecoData[ichk]->particleType() != 4){
-    cout << " *** Particle given " << ichk 
-      << " of type " << RecoData[ichk]->particleType()
-      << " does not correspond to the type for isolation method IsoPhoton" << endl;
-    return isIsolated;
-  }
-  if (iso_MethodPhot == 0){return isIsolated;}
-
-  // compute the isolation in pT wrt nearest jet
-  if (iso_MethodPhot / 1000 == 1){
-    int iJet = FindNearestJet(ichk);
- 
-    if (iJet > 0){
-//    cout << " nearest jet index = " << iJet 
-//         << " type = " << RecoData[iJet]->particleType() << endl;
-      if (RecoData[iJet]->energy() < iso_jetbyPhotEmin * RecoData[ichk]->energy() )
-        {isIsolated = true;}
-
-      float ptwrtJet = GetPtwrtJet(ichk, iJet);
-//      cout << " ptwrtJet = " << ptwrtJet << endl;
-      if (ptwrtJet > iso_ptPhotwrtJetmin){
-        isIsolated = true;
-//        cout << " photon is isolated by Pt wrt jet, Pt = " << ptwrtJet << endl;
-      } else {
-        isIsolated = false;
-//        cout << " photon is not isolated by Pt wrt jet, Pt = " << ptwrtJet << endl;
-      }
-    }
-  }
-
-  // compute the isolation by a cone algorithm
-  else if (iso_MethodPhot / 1000 == 2){
-    int idet = (iso_MethodPhot - 2000) / 100;
-    int itra = (iso_MethodPhot / 100);
-    itra = (iso_MethodPhot - 100*itra) / 10;
-    int ival = (iso_MethodPhot / 10);
-    ival = iso_MethodPhot - 10*ival;
-//    cout << " pointer to photon cand " << photcand;
-//    float photmom = photcand->p();
-//    cout << " momentum " << photmom << endl;
-
-    float eSum = 0.;
-    float etest = 0.;
-    float phCalEta = 0.;
-    float phCalPhi = 0.;
-    const Photon* photcand = RecoData[ichk]->photonCandidate();
-    if (photcand != NULL){
-      const SuperCluster* supercluster = &(*(photcand->superCluster()));
-//      cout << " pointer to supercluster " << supercluster;
-      etest = supercluster->energy();
-//      cout << ", E " << etest << endl;
-      phCalEta = supercluster->eta();
-      phCalPhi = supercluster->phi();
-    } else {
-      etest = RecoData[ichk]->energy();
-      phCalEta = RecoData[ichk]->eta();
-      phCalPhi = RecoData[ichk]->phi();
-    }
-    
-    if (idet >= 1 && idet <= 3 && itra == 1){
-      float theta = 2. * atan(exp(-phCalEta)); // pseudorapidity or rapidity?
-      etest = etest * fabs(sin(theta));
-//      etest = etest / cosh(phCalEta);
-//      cout << " eta = " << phCalEta << ", Et " << etest << endl;
+      pSubtr = ptest;
+      ntkTrkSubtr = 1;
+      trkEta = ufotrack->eta();
+      trkPhi = ufotrack->phi();
     }
     
     // using calorimeter information
-
     if (idet == 1 || idet == 3){
-      eSum = IsoCalSum (itra, phCalEta, phCalPhi, 
-                              iso_PhCalDRin, iso_PhCalDRout, iso_PhCalSeed);
+      eSum = IsoCalSum (itra, calEta, calPhi, 
+                              iso_ObjCalDRin, iso_ObjCalDRout, iso_ObjCalSeed);
+//    cout << " Iso etest " << etest << " esum " << eSum << " eSubtr " << eSubtr << endl;
       if (itra < 3 && ival == 1) {
-        if (iso_PhCalDRin == 0.) {eSum = (eSum-etest) / etest;}
-        else {eSum = eSum / etest;}
-        if (idet == 1 && eSum > iso_PhIsoValue){isIsolated = false;}
+        if (iso_ObjCalDRin == 0.) {eSum = (eSum-eSubtr) / etest;}
+        else{eSum = eSum / etest;}
       } else if (itra < 3 && ival == 2) {
-        if (iso_PhCalDRin == 0.) {eSum -= etest;}
-        if (idet == 1 && eSum > iso_PhIsoValue){isIsolated = false;}
+        if (iso_ObjCalDRin == 0.) {eSum -= eSubtr;}
       } else if (itra == 3) {
-        if (iso_PhCalDRin == 0.) {eSum = (int) eSum - 1;}
-        if (idet == 1 && eSum > iso_PhIsoValue){isIsolated = false;}
-      } else {
-        cout << " *** Chosen isolation method is not implemented for photon ***" << endl;
+        if (iso_ObjCalDRin == 0.) {eSum = (int) eSum - ntkCalSubtr;}
       }
+      
+      RecoData[ichk]->setParticleIsoValue(eSum);
+      if (idet == 1 && eSum > iso_ObjIsoValue){isIsolated = false;}
       if (idet == 1 && DEBUGLVL >= 2){
-       if (itra < 3 && ival == 1) {
         if (isIsolated){
-         cout << " photon, index = " << ichk
+         cout << " object index = " << ichk
+         << " type = " << RecoData[ichk]->particleType()
          << " is isolated in calorimeter, Esum = " << eSum << endl;
         } else {
-         cout << " photon, index = " << ichk
+         cout << " object index = " << ichk
+         << " type = " << RecoData[ichk]->particleType()
          << " is not isolated in calorimeter, Esum = " << eSum << endl;
         }
-       } else if (itra < 3 && ival == 2) {
-        if (isIsolated){
-         cout << " photon, index = " << ichk
-         << " is isolated in calorimeter, Etsum = " << eSum << endl;
-        } else {
-         cout << " photon, index = " << ichk
-         << " is not isolated in calorimeter, Etsum = " << eSum << endl;
-        }
-       } else if (itra == 3) {
-        if (isIsolated){
-         cout << " photon, index = " << ichk
-         << " is isolated in calorimeter, #towers = " << eSum << endl;
-        } else {
-         cout << " photon, index = " << ichk
-         << " is not isolated in calorimeter, #towers = " << eSum << endl;
-        }
-       }
       }
-    } 
+    }
 
     // using tracker information
-    float pSum = 0.;
-    float ptest = etest;
     if (idet == 2 || idet == 3){
-      pSum = IsoTrkSum (itra, phCalEta, phCalPhi, 
-                              iso_PhTkDRin, iso_PhTkDRout, iso_PhTkSeed);
+      pSum = IsoTrkSum (itra, trkEta, trkPhi, 
+                              iso_ObjTkDRin, iso_ObjTkDRout, iso_ObjTkSeed);
+//    cout << " Iso ptest " << ptest << " psum " << pSum << " pSubtr " << pSubtr << endl;
       if (itra < 3 && ival == 1) {
-        pSum = pSum / ptest;
-        if (idet == 2 && pSum > iso_PhIsoValue){isIsolated = false;}
+        if (iso_ObjTkDRin == 0.) {pSum = (pSum-pSubtr) / ptest;}
+        else {pSum = pSum / ptest;}
       } else if (itra < 3 && ival == 2) {
-        if (idet == 2 && pSum > iso_PhIsoValue){isIsolated = false;}
+        if (iso_ObjTkDRin == 0.) {pSum -= pSubtr;}
       } else if (itra == 3) {
-        if (idet == 2 && pSum > iso_PhIsoValue){isIsolated = false;}
-      } else {
-        cout << " *** Chosen isolation method is not implemented for photon ***" << endl;
+        if (iso_ObjTkDRin == 0.) {pSum = (int) pSum - ntkTrkSubtr;}
       }
+      
+      RecoData[ichk]->setParticleIsoValue(pSum);
+      if (idet == 2 && pSum > iso_ObjIsoValue){isIsolated = false;}
       if (idet == 2 && DEBUGLVL >= 2){
-       if (itra < 3 && ival == 1) {
         if (isIsolated){
-         cout << " photon, index = " << ichk
+         cout << " object index = " << ichk 
+         << " type = " << RecoData[ichk]->particleType()
          << " is isolated in tracker, Psum = " << pSum << endl;
         } else {
-         cout << " photon, index = " << ichk
+         cout << " object index = " << ichk
+         << " type = " << RecoData[ichk]->particleType()
          << " is not isolated in tracker, Psum = " << pSum << endl;
         }
-       } else if (itra < 3 && ival == 2) {
-        if (isIsolated){
-         cout << " photon, index = " << ichk
-         << " is isolated in tracker, Ptsum = " << pSum << endl;
-        } else {
-         cout << " photon, index = " << ichk
-         << " is not isolated in tracker, Ptsum = " << pSum << endl;
-        }
-       } else if (itra == 3) {
-        if (isIsolated){
-         cout << " photon, index = " << ichk
-         << " is isolated in tracker, #trks = " << pSum << endl;
-        } else {
-         cout << " photon, index = " << ichk
-         << " is not isolated in tracker, #trks = " << pSum << endl;
-        }
-       }
       }
     }
 
     // using a weighted sum of calorimeter and tracker information
     if (idet == 3){
-      pSum = pSum + iso_PhCalWeight*eSum;
-      if (pSum > iso_PhIsoValue){isIsolated = false;}
+      pSum = pSum + iso_ObjCalWeight*eSum;
+      RecoData[ichk]->setParticleIsoValue(pSum);
+      if (pSum > iso_ObjIsoValue){isIsolated = false;}
       if (DEBUGLVL >= 2){
-       if (itra < 3 && ival == 1) {
         if (isIsolated){
-         cout << " photon, index = " << ichk
+         cout << " object index = " << ichk
+         << "type = " << RecoData[ichk]->particleType()
          << " is isolated in tracker+calo, Psum = " << pSum << endl;
         } else {
-         cout << " photon, index = " << ichk
+         cout << " object index = " << ichk
+         << "type = " << RecoData[ichk]->particleType()
          << " is not isolated in tracker+calo, Psum = " << pSum << endl;
         }
-       } else if (itra < 3 && ival == 2) {
-        if (isIsolated){
-         cout << " photon, index = " << ichk
-         << " is isolated in tracker+calo, Ptsum = " << pSum << endl;
-        } else {
-         cout << " photon, index = " << ichk
-         << " is not isolated in tracker+calo, Ptsum = " << pSum << endl;
-        }
-       } else if (itra == 3) {
-        if (isIsolated){
-         cout << " photon, index = " << ichk
-         << " is isolated in tracker+calo, #objects = " << pSum << endl;
-        } else {
-         cout << " photon, index = " << ichk
-         << " is not isolated in tracker+calo, #objects = " << pSum << endl;
-        }
-       }
-      }      
+      }
     }
-  } else {
-    cout << " *** Chosen isolation method is not implemented for photon ***" << endl;
+
+    // using candidate information, not recommended, not advertized
+    // uses the cuts defined for tracks
+    if (idet == 4){
+      if (itra == 1) {
+        ptest = RecoData[ichk]->pt();
+      } else if (itra == 2) {
+        ptest = RecoData[ichk]->p();
+      }
+      pSubtr = 0.;
+      if (RecoData[ichk]->particleType()/10 != 4){pSubtr = ptest;}
+      trkEta = RecoData[ichk]->eta();
+      trkPhi = RecoData[ichk]->phi();
+      float pSum = IsoCandSum (itra,trkEta , trkPhi, 
+                              iso_ObjTkDRin, iso_ObjTkDRout, iso_ObjTkSeed);
+      if (itra < 3 && ival == 1) {
+        if (iso_ObjTkDRin == 0.) {pSum = (pSum-pSubtr) / ptest;}
+        else {pSum = pSum / ptest;}
+      } else if (itra < 3 && ival == 2) {
+        if (iso_ObjTkDRin == 0.) {pSum -= pSubtr;}
+      } else if (itra == 3) {
+        if (iso_ObjTkDRin == 0.) {pSum = (int) pSum - ntkTrkSubtr;}
+      }
+      RecoData[ichk]->setParticleIsoValue(pSum);
+      if (pSum > iso_ObjIsoValue){isIsolated = false;}
+    }
   }
 
   return isIsolated;
@@ -1094,6 +574,9 @@ bool Isolator::IsObjectMerged(int ichk, bool isIsolated)
 
   bool isMerged = false;
   if (ichk < 0) {return isMerged;}
+  
+  int ptype = RecoData[ichk]->particleType()/10;
+  if (ptype >= 5 && ptype <= 7) {return isMerged;}
 
   int iJet = FindNearestJet(ichk);
   if (iJet < 0) {return isMerged;}
@@ -1108,7 +591,7 @@ bool Isolator::IsObjectMerged(int ichk, bool isIsolated)
    float sharedEt_had = 0.;
    float sharedPt_tracks = 0.;
    
-   if (RecoData[ichk]->particleType() == 1){
+   if (ptype == 1){
 //     if (isIsolated){cout << endl; 
 //       cout << "  Type = " << RecoData[ichk]->particleType() << "  Is isolated " << endl; }
 //     else {cout << endl; 
@@ -1123,7 +606,7 @@ bool Isolator::IsObjectMerged(int ichk, bool isIsolated)
        sharedPt_tracks = RecoData[ichk]->pt();
      }
    }
-   else if (RecoData[ichk]->particleType() == 2){
+   else if (ptype == 2){
 //     if (isIsolated){cout << endl; 
 //     cout << "  Type = " << RecoData[ichk]->particleType() << " Is isolated " << endl; }
 //     else {cout << endl; 
@@ -1139,7 +622,7 @@ bool Isolator::IsObjectMerged(int ichk, bool isIsolated)
        sharedPt_tracks = RecoData[ichk]->pt_tracks();
      }
    }
-   else if (RecoData[ichk]->particleType() == 3){
+   else if (ptype == 3){
 //     if (isIsolated){cout << endl; 
 //     cout << "  Type = " << RecoData[ichk]->particleType() << " Is isolated " << endl; }
 //     else {cout << endl; 
@@ -1155,7 +638,7 @@ bool Isolator::IsObjectMerged(int ichk, bool isIsolated)
        sharedPt_tracks = RecoData[ichk]->pt_tracks();
      }
    }
-   else if (RecoData[ichk]->particleType() == 4){
+   else if (ptype == 4){
 //     if (isIsolated){cout << endl; 
 //     cout << "  Type = " << RecoData[ichk]->particleType() << " Is isolated " << endl; }
 //     else {cout << endl; 
@@ -1167,12 +650,15 @@ bool Isolator::IsObjectMerged(int ichk, bool isIsolated)
      sharedEt_had = 0.;
      sharedPt_tracks = 0.;
    }
+   else if (ptype == 8){
+     isInJet = false;
+   }
    if (DEBUGLVL >= 2){
      if (isInJet){
-       cout << " part " << ichk << " type = " << RecoData[ichk]->particleType()
+       cout << " object index = " << ichk << " type = " << RecoData[ichk]->particleType()
             << "  is in jet " << iJet << endl;}
      else {
-       cout << " part " << ichk << " type = " << RecoData[ichk]->particleType()
+       cout << " object index = " << ichk << " type = " << RecoData[ichk]->particleType()
             << "  is not in jet " << iJet << endl;}
    }
   
@@ -1196,6 +682,7 @@ bool Isolator::IsObjectMerged(int ichk, bool isIsolated)
      RecoData[iJet]->setPx(RecoData[iJet]->px() * scale);
      RecoData[iJet]->setPy(RecoData[iJet]->py() * scale);
      RecoData[iJet]->setPz(RecoData[iJet]->pz() * scale);
+     RecoData[iJet]->setEnergy(RecoData[iJet]->p());
     }
     if(RecoData[iJet]->pt_tracks() < 0.){RecoData[iJet]->setPt_tracks(0.);}
     if(RecoData[iJet]->et_em() < 0.){RecoData[iJet]->setEt_em(0.);}
@@ -1226,18 +713,22 @@ bool Isolator::IsObjectMerged(int ichk, bool isIsolated)
     if (DEBUGLVL >= 2){
       cout << "  Energy partially added to jet = " << diffE << endl;
     }
+    if(RecoData[iJet]->energy() < RecoData[iJet]->p() ){
+     float egy = RecoData[iJet]->energy();
+     if (egy <= 0.){ egy = 0.001;}
+     float scale = egy / RecoData[iJet]->p();
+     RecoData[iJet]->setPx(RecoData[iJet]->px() * scale);
+     RecoData[iJet]->setPy(RecoData[iJet]->py() * scale);
+     RecoData[iJet]->setPz(RecoData[iJet]->pz() * scale);
+     RecoData[iJet]->setEnergy(RecoData[iJet]->p());
+    }
+    if(RecoData[iJet]->pt_tracks() < 0.){RecoData[iJet]->setPt_tracks(0.);}
+    if(RecoData[iJet]->et_em() < 0.){RecoData[iJet]->setEt_em(0.);}
+    if(RecoData[iJet]->et_had() < 0.){RecoData[iJet]->setEt_had(0.);}
     isMerged = true;
   }
   else if (!isIsolated && !isInJet){
-    RecoData[iJet]->setPx(RecoData[iJet]->px() + RecoData[ichk]->px());
-    RecoData[iJet]->setPy(RecoData[iJet]->py() + RecoData[ichk]->py());
-    RecoData[iJet]->setPz(RecoData[iJet]->pz() + RecoData[ichk]->pz());
-    RecoData[iJet]->setEnergy(RecoData[iJet]->energy() + RecoData[ichk]->energy());
-   // ??? or do we want to keep the jets massless?
-   //RecoData[iJet]->setEnergy(RecoData[iJet]->p() );
-    RecoData[iJet]->setPt_tracks(RecoData[iJet]->pt_tracks() + RecoData[ichk]->pt_tracks());
-    RecoData[iJet]->setEt_em(RecoData[iJet]->et_em() + RecoData[ichk]->et_em());
-    RecoData[iJet]->setEt_had(RecoData[iJet]->et_had() + RecoData[ichk]->et_had());
+    AddToJet(ichk, iJet);
     if (DEBUGLVL >= 2){
       cout << "  Energy added to jet = " << RecoData[ichk]->energy() << endl;
     }
@@ -1248,4 +739,5 @@ bool Isolator::IsObjectMerged(int ichk, bool isIsolated)
 
 }
 
-
+  
+  

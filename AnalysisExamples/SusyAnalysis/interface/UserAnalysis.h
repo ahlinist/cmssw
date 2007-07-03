@@ -41,6 +41,7 @@ virtual bool L1Driver(MrEvent*);
 virtual bool HLTDriver(MrEvent*);
 virtual void doAnalysis(MrEvent*);
 void endAnalysis();
+void setNtotEvtProc(int n){ntotEvtProc = n;};
 
 private:
  
@@ -96,6 +97,9 @@ virtual void AddToJet(int);
 // Just kinematics
 virtual float DeltaPhi(float, float);
 virtual float GetDeltaR(float, float, float, float);
+
+// Define user counters
+  int ntotEvtProc;
 
 };
 
