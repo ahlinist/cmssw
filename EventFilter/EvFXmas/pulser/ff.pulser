@@ -4,5 +4,6 @@
                 <xmas:flash xlink:type="locator" tag="instant" xlink:href="#urn:xdaq-flashlist:EPStatus"	/>
                 <xmas:flash xlink:type="locator" tag="instant" xlink:href="#urn:xdaq-flashlist:RBRate"		/>
                 <xmas:flash xlink:type="locator" tag="instant" xlink:href="#urn:xdaq-flashlist:RBPerformance"	/>
+                <xmas:flash xlink:type="locator" tag="instant" xlink:href="#urn:xdaq-flashlist:SMPerformance"	/>
         </xmas:event>
 </xmas:pulser>
