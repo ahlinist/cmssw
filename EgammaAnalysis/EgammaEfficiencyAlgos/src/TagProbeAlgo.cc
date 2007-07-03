@@ -7,7 +7,6 @@ void TagProbeAlgo::initialise(const edm::ParameterSet &params)
    probeProducer_ = params.getParameter<std::string>("ProbeProducer");
    massCutMin_ = params.getParameter<double>("MassCutMin");
    massCutMax_ = params.getParameter<double>("MassCutMax");
-   singleProbe_ = params.getParameter<bool>("SingleProbe");
 }
 
 void TagProbeAlgo::run(const edm::Event &event, EgEff::TagProbeAssociationCollection &tagProbeCol)
@@ -36,7 +35,6 @@ void TagProbeAlgo::run(const edm::Event &event, EgEff::TagProbeAssociationCollec
    }
 
    // Iterate over all combinations of tags + probes, identifying candidates
-   std::vector<int> probeIds;
    for(unsigned int i = 0; i < tagCollection->size(); ++i)
    {
       // Get tag object EDM ref
@@ -48,19 +46,6 @@ void TagProbeAlgo::run(const edm::Event &event, EgEff::TagProbeAssociationCollec
          double invMass = invariantMass(tag, probe);
          if((invMass > massCutMin_) && (invMass < massCutMax_))
          {
-            probeIds.push_back(j);
-         }
-      }
-      // Add all probes depending on conditions
-      if(singleProbe_ && (probeIds.size() == 1))
-      {
-         const EgEff::EmObjectRef probe = edm::Ref<EgEff::EmObjectCollection>(probeCollection, 0);
-      }
-      else if(!singleProbe_)
-      {
-         for(unsigned int k = 0; k < probeIds.size(); ++k)
-         {
-            const EgEff::EmObjectRef probe = edm::Ref<EgEff::EmObjectCollection>(probeCollection, k);
             tagProbeCol.insert(tag, probe);
          }
       }
