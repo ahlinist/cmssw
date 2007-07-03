@@ -46,6 +46,9 @@ class PluginCapabilities : public PluginFactoryBase
       // ---------- member functions ---------------------------
       void load(const std::string& iName);
       
+      //returns false if loading fails because iName is unknown
+      bool tryToLoad(const std::string& iName);
+      
       ///Check to see if any capabilities are in the file, returns 'true' if found
       bool tryToFind(const SharedLibrary& iLoadable);
 

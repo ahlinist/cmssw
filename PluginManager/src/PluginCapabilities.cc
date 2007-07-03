@@ -108,6 +108,30 @@ PluginCapabilities::load(const std::string& iName)
   }
 }
 
+bool
+PluginCapabilities::tryToLoad(const std::string& iName)
+{
+  if(classToLoadable_.end() == classToLoadable_.find(iName) ) {
+    const SharedLibrary* lib = PluginManager::get()->tryToLoad(category(),
+                                                          iName);
+    if( 0 == lib) {
+      return false;
+    }
+    //read the items from the 'capabilities' symbol
+    if(not tryToFind(*lib) ) {
+      throw cms::Exception("PluginNotFound")<<"The dictionary for class '"<<iName <<"' is supposed to be in file\n '"
+      <<lib->path().native_file_string()<<"'\n but no dictionaries are in that file.\n"
+      "It appears like the cache is wrong.  Please do 'EdmPluginRefresh "<<lib->path().native_file_string()<<"'.";
+    }
+    
+    if(classToLoadable_.end() == classToLoadable_.find(iName)) {
+      throw cms::Exception("PluginNotFound")<<"The dictionary for class '"<<iName<<"' is supposed to be in file\n '"
+      <<lib->path().native_file_string()<<"'\n but was not found.\n"
+      "It appears like the cache is wrong.  Please do 'EdmPluginRefresh "<<lib->path().native_file_string()<<"'.";
+    }
+  }
+  return true;
+}
 //
 // const member functions
 //

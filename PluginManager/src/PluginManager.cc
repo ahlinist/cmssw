@@ -125,10 +125,27 @@ const boost::filesystem::path&
 PluginManager::loadableFor(const std::string& iCategory,
                              const std::string& iPlugin)
 {
+  bool throwIfFail = true;
+  return loadableFor_(iCategory, iPlugin,throwIfFail);
+}
+
+const boost::filesystem::path& 
+PluginManager::loadableFor_(const std::string& iCategory,
+                                            const std::string& iPlugin,
+                                            bool& ioThrowIfFailElseSucceedStatus)
+{
+  const bool throwIfFail = ioThrowIfFailElseSucceedStatus;
+  ioThrowIfFailElseSucceedStatus = true;
   CategoryToInfos::iterator itFound = categoryToInfos_.find(iCategory);
   if(itFound == categoryToInfos_.end()) {
-    throw cms::Exception("PluginNotFound")<<"Unable to find plugin '"<<iPlugin<<
-    "' because the category '"<<iCategory<<"' has no known plugins";
+    if(throwIfFail) {
+      throw cms::Exception("PluginNotFound")<<"Unable to find plugin '"<<iPlugin<<
+      "' because the category '"<<iCategory<<"' has no known plugins";
+    } else {
+      ioThrowIfFailElseSucceedStatus = false;
+      static boost::filesystem::path s_path;
+      return s_path;
+    }
   }
   
   PluginInfo i;
@@ -140,8 +157,14 @@ PluginManager::loadableFor(const std::string& iCategory,
                                                   PICompare() );
   
   if(range.first == range.second) {
-    throw cms::Exception("PluginNotFound")<<"Unable to find plugin '"<<iPlugin
-    <<"'. Please check spelling of name.";
+    if(throwIfFail) {
+      throw cms::Exception("PluginNotFound")<<"Unable to find plugin '"<<iPlugin
+      <<"'. Please check spelling of name.";
+    } else {
+      ioThrowIfFailElseSucceedStatus = false;
+      static boost::filesystem::path s_path;
+      return s_path;
+    }
   }
   
   if(range.second - range.first > 1 ) {
@@ -203,6 +226,34 @@ PluginManager::load(const std::string& iCategory,
     return *ptr;
   }
   return *(itLoaded->second);
+}
+
+const SharedLibrary* 
+PluginManager::tryToLoad(const std::string& iCategory,
+                         const std::string& iPlugin)
+{
+  askedToLoadCategoryWithPlugin_(iCategory,iPlugin);
+  bool ioThrowIfFailElseSucceedStatus = false;
+  const boost::filesystem::path& p = loadableFor_(iCategory,iPlugin, ioThrowIfFailElseSucceedStatus);
+  
+  if( not ioThrowIfFailElseSucceedStatus ) {
+    return 0;
+  }
+  
+  //have we already loaded this?
+  std::map<boost::filesystem::path, boost::shared_ptr<SharedLibrary> >::iterator itLoaded = 
+    loadables_.find(p);
+  if(itLoaded == loadables_.end()) {
+    //try to make one
+    goingToLoad_(p);
+    Sentry s(loadingLibraryNamed_(), p.native_file_string());
+    //boost::filesystem::path native(p.native_file_string(),boost::filesystem::no_check);
+    boost::shared_ptr<SharedLibrary> ptr( new SharedLibrary(p) );
+    loadables_[p]=ptr;
+    justLoaded_(*ptr);
+    return ptr.get();
+  }
+  return (itLoaded->second).get();
 }
 
 //
