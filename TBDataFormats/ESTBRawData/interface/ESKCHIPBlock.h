@@ -23,6 +23,9 @@ class ESKCHIPBlock {
   const int fedId() const { return fedId_; }
   void setFedId(const int& fedId) { fedId_ = fedId; };
 
+  const int fiberId() const { return fiberId_; }
+  void setFiberId(const int& fiberId) { fiberId_ = fiberId; };
+
   void setBC(const int& BC) { BC_ = BC; }
   void setEC(const int& EC) { EC_ = EC; }
   void setFlag1(const int& flag1) { flag1_ = flag1; };
@@ -40,6 +43,7 @@ class ESKCHIPBlock {
   int kId_;
   int dccId_;
   int fedId_;
+  int fiberId_;
   int BC_;
   int EC_;
   int flag1_;
