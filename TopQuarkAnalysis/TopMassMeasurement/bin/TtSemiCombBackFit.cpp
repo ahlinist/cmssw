@@ -85,8 +85,8 @@ int main() {
         if(sol.getSimpleCorrJetComb() > -1){
           ++nrAnalysed[sample];
 	  bool signal = false;
-	  if( (solChoiceInInput == "simple") && (sol.getSimpleCorrJetComb() == sol.getMCCorrJetComb()) && (sol.getSumDeltaRjp() < SumAlphaCut) ) signal = true;
-	  if( (solChoiceInInput == "LR")     && (sol.getLRCorrJetComb()     == sol.getMCCorrJetComb()) && (sol.getSumDeltaRjp() < SumAlphaCut) ) signal = true;
+	  if( (solChoiceInInput == "simple") && (sol.getSimpleCorrJetComb() == sol.getMCCorrJetComb()) && (sol.getMCBestSumAngles() < SumAlphaCut) ) signal = true;
+	  if( (solChoiceInInput == "LR")     && (sol.getLRCorrJetComb()     == sol.getMCCorrJetComb()) && (sol.getMCBestSumAngles() < SumAlphaCut) ) signal = true;
 	  if( signal) hmttrue -> Fill(sol.getFitHadt().mass());
 	  if(!signal) hmtcomb -> Fill(sol.getFitHadt().mass());
 	  hmtall -> Fill(sol.getFitHadt().mass());
