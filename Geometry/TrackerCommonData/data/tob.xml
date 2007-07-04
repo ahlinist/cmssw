@@ -1262,16 +1262,19 @@
    tobmaterial:TOB_rib1, tobmaterial:TOB_rib2, tobmaterial:TOB_rib3, 
    tobmaterial:TOB_rib4, tobmaterial:TOB_rib5, tobmaterial:TOB_rib6
   </Vector>
-  <Numeric name="CoolW"       value="1.2*cm"/>
-  <Numeric name="CoolT"       value="0.6*cm"/>
+  <Numeric name="CoolRin"       value="[zero]"/>
+  <Numeric name="CoolRout1"     value="3.0*mm"/>
+  <Numeric name="CoolRout2"     value="2.8*mm"/>
+  <Numeric name="CoolStartPhi1" value="0*deg"/>
+  <Numeric name="CoolDeltaPhi1" value="360*deg"/>
+  <Numeric name="CoolStartPhi2" value="0*deg"/>
+  <Numeric name="CoolDeltaPhi2" value="360*deg"/>
   <Vector name="CoolR" type="numeric" nEntries="6">
    [Layer0CoolR], [Layer1CoolR], [Layer2CoolR], 
    [Layer3CoolR], [Layer4CoolR], [Layer5CoolR]
   </Vector>
-  <Vector name="CoolMaterial" type="string" nEntries="6">
-   tobmaterial:TOB_coolmanifold1, tobmaterial:TOB_coolmanifold2, 
-   tobmaterial:TOB_coolmanifold3, tobmaterial:TOB_coolmanifold4, 
-   tobmaterial:TOB_coolmanifold5, tobmaterial:TOB_coolmanifold6</Vector>
+  <String  name="CoolMaterial1" value="materials:CuNi"/>
+  <String  name="CoolMaterial2" value="materials:C6F14_F2_-30C"/>
   <Vector name="RingName" type="string" nEntries="6">
    0, 1, 2, 3, 4, 5
   </Vector>
