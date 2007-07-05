@@ -48,6 +48,9 @@ namespace edm {
     // AUX functions.
     EventID id() const {return aux_.id();}
     Timestamp time() const {return aux_.time();}
+    LuminosityBlockNumber_t
+    luminosityBlock() const {return aux_.luminosityBlock();}
+    bool isRealData() const {return aux_.isRealData();}
 
     using DataViewImpl::get;
     using DataViewImpl::getAllProvenance;
@@ -66,10 +69,6 @@ namespace edm {
     getLuminosityBlock() const {
       return *luminosityBlock_;
     }
-
-
-    LuminosityBlockNumber_t
-    luminosityBlock() const {return aux_.luminosityBlock();}
 
     Run const&
     getRun() const;
