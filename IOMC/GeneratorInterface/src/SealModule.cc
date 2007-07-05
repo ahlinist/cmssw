@@ -17,6 +17,7 @@
 #include "IOMC/GeneratorInterface/interface/Zbb4lFilter.h"
 #include "IOMC/GeneratorInterface/interface/ZZ4lFilter.h"
 #include "IOMC/GeneratorInterface/interface/PythiaFilterGammaJetWithIsoPi0.h"
+#include "IOMC/GeneratorInterface/interface/BsandBoFilter.h"
 
   using edm::PythiaSource;
 
@@ -37,3 +38,4 @@
   DEFINE_ANOTHER_FWK_MODULE(Zbb4lFilter);
   DEFINE_ANOTHER_FWK_MODULE(ZZ4lFilter);
   DEFINE_ANOTHER_FWK_MODULE(PythiaFilterGammaJetWithIsoPi0);
+  DEFINE_ANOTHER_FWK_MODULE(BsandBoFilter);
