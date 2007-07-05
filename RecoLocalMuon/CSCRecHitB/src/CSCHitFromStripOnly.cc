@@ -332,22 +332,41 @@ void CSCHitFromStripOnly::findMaxima() {
 
     // sum 3 strips so that hits between strips are not suppressed
     float heightCluster;
+
+    // Left edge of chamber
     if ( i == 0 ) {
       heightCluster = thePulseHeightMap[i].ymax()+thePulseHeightMap[i+1].ymax();
+      // Have found a strip Hit if...
+      if (( heightPeak                   > theThresholdForAPeak         ) &&  
+          ( heightCluster                > theThresholdForCluster       ) && 
+	  ( thePulseHeightMap[i].ymax() >= thePulseHeightMap[i+1].ymax()) &&
+          ( thePulseHeightMap[i].t()     > 2                            ) &&
+          ( thePulseHeightMap[i].t()     < 7                            )) {
+        theMaxima.push_back(i);
+      }
+    // Right edge of chamber
     } else if ( i == thePulseHeightMap.size()-1) {  
       heightCluster = thePulseHeightMap[i-1].ymax()+thePulseHeightMap[i].ymax();
+      // Have found a strip Hit if...
+      if (( heightPeak                   > theThresholdForAPeak         ) &&  
+          ( heightCluster                > theThresholdForCluster       ) && 
+          ( thePulseHeightMap[i].ymax()  > thePulseHeightMap[i-1].ymax()) &&
+          ( thePulseHeightMap[i].t()     > 2                            ) &&
+          ( thePulseHeightMap[i].t()     < 7                            )) {
+        theMaxima.push_back(i);
+      }
+    // Any other strips
     } else {
       heightCluster = thePulseHeightMap[i-1].ymax()+thePulseHeightMap[i].ymax()+thePulseHeightMap[i+1].ymax();
-    }
-   
-    // Have found a strip Hit if...
-    if (( heightPeak                   > theThresholdForAPeak         ) &&  
-        ( heightCluster                > theThresholdForCluster       ) && 
-        ( thePulseHeightMap[i].ymax()  > thePulseHeightMap[i-1].ymax()) &&
-	( thePulseHeightMap[i].ymax() >= thePulseHeightMap[i+1].ymax()) &&
-        ( thePulseHeightMap[i].t()     > 2                            ) &&
-        ( thePulseHeightMap[i].t()     < 7                            )) {
-      theMaxima.push_back(i);
+      // Have found a strip Hit if...
+      if (( heightPeak                   > theThresholdForAPeak         ) &&  
+          ( heightCluster                > theThresholdForCluster       ) && 
+          ( thePulseHeightMap[i].ymax()  > thePulseHeightMap[i-1].ymax()) &&
+	  ( thePulseHeightMap[i].ymax() >= thePulseHeightMap[i+1].ymax()) &&
+          ( thePulseHeightMap[i].t()     > 2                            ) &&
+          ( thePulseHeightMap[i].t()     < 7                            )) {
+        theMaxima.push_back(i);
+      }
     }
   }
 }
