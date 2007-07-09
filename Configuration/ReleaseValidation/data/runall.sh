@@ -1,13 +1,13 @@
 #!/bin/bash
 
 #
-#$Id: runall.sh,v 1.2 2006/09/25 11:38:41 tboccali Exp $
+#$Id: runall.sh,v 1.3 2007/01/31 17:10:16 tboccali Exp $
 #
 #Dummy script to run all integration tests
 #
 #
 
-tests="single_mu_pt_100_positive_allReco.cfg single_mu_pt_100_negative_allReco.cfg single_mu_pt_10_positive_allReco.cfg single_mu_pt_10_negative_allReco.cfg single_mu_pt_1_positive_allReco.cfg single_mu_pt_1_negative_allReco.cfg h_zz_4mu_allReco.cfg Zprime_Dijets_700_allReco.cfg b_jets_gen_rec_50_120_allReco.cfg c_jets_gen_rec_50_120_allReco.cfg single_e_pt_35_allReco.cfg single_gamma_pt35_allReco.cfg single_gamma_pt35_allReco.cfg Zee_pythia_allReco.cfg H_ZZ_4e_pythia_allReco.cfg QCD_pt470_600_allReco.cfg QCD_pt600_800_allReco.cfg QCD_pt800_1000_allReco.cfg sim_rec_10muons_1-10GeV_allReco.cfg"
+tests="single_mu_pt_100_negative_allReco.cfg single_mu_pt_1_positive_allReco.cfg Zprime_Dijets_700_allReco.cfg b_jets_gen_rec_50_120_allReco.cfg c_jets_gen_rec_50_120_allReco.cfg single_e_pt_35_allReco.cfg single_gamma_pt35_allReco.cfg ttbar_gen_rec_allReco.cfg QCD_pt800_1000_allReco.cfg"
 
 report=""
 
