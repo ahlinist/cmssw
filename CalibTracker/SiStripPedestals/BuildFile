@@ -26,6 +26,7 @@
 <use name=DataFormats/SiStripDigi>
 <use name=CalibFormats/SiStripObjects>
 <use name=CalibTracker/Records>
+<use name=CalibTracker/SiStripCommon>
 
 <use name=DataFormats/SiStripDetId>
 <use name=DataFormats/FEDRawData> 
@@ -39,6 +40,7 @@
 
 <export>
    <lib name=CalibTrackerSiStripPedestals>
+   <use name=CalibTracker/SiStripCommon>
    <use name=FWCore/Framework>
    <use name=FWCore/ParameterSet>
    <use name=FWCore/MessageLogger>
