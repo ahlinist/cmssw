@@ -7,8 +7,6 @@ $Id$
 #include "FWCore/Framework/src/WorkerParams.h"
 #include "FWCore/Framework/src/OutputWorker.h"
 
-#include <iostream>
-
 namespace edm {
   OutputWorker::OutputWorker(std::auto_ptr<OutputModule> mod,
 			     ModuleDescription const& md,

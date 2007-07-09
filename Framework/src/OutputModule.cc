@@ -3,8 +3,6 @@
 $Id$
 ----------------------------------------------------------------------*/
 
-#include <iostream>
-
 #include "FWCore/Framework/interface/OutputModule.h"
 #include "DataFormats/Provenance/interface/BranchDescription.h"
 #include "DataFormats/Common/interface/Handle.h"
