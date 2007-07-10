@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrea Rizzi
 //         Created:  Wed Apr 12 11:12:49 CEST 2006
-// $Id: JetTracksAssociator.cc,v 1.12 2007/05/09 08:09:20 arizzi Exp $
+// $Id: JetTracksAssociator.cc,v 1.13 2007/06/27 15:41:33 arizzi Exp $
 //
 //
 
@@ -29,7 +29,7 @@ using namespace std;
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
-#include "FWCore/Framework/interface/MakerMacros.h"
+#include "FWCore/Framework/interface/View.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ParameterSet/interface/InputTag.h"
 
@@ -38,7 +38,6 @@ using namespace std;
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/BTauReco/interface/JetTracksAssociation.h"
 #include "DataFormats/Math/interface/Vector3D.h"
-#include "FWCore/Framework/interface/View.h"
 // Math
 #include "Math/GenVector/VectorUtil.h"
 #include "Math/GenVector/PxPyPzE4D.h"
@@ -58,8 +57,8 @@ class JetTracksAssociator : public edm::EDProducer {
       virtual void produce(edm::Event&, const edm::EventSetup&);
    private:
      JetTracksAssociationCollection * associate(const edm::Handle<edm::View<Jet> > & jets,
-                                const edm::Handle<TrackCollection> & tracks ) const;
-     bool trackIsInJetCone( const Jet & jet , const Track & track ) const;
+                                                const edm::Handle<TrackCollection> & tracks ) const;
+     bool trackIsInJetCone( const Jet & jet, const Track & track ) const;
 
      // ----------member data ---------------------------
      edm::InputTag m_tracksSrc;
@@ -115,7 +114,7 @@ JetTracksAssociator::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 }
 
 JetTracksAssociationCollection * JetTracksAssociator::associate( const edm::Handle<edm::View<Jet> > & jets,
-                                                                 const edm::Handle<TrackCollection>   & tracks ) const
+                                                                 const edm::Handle<TrackCollection> & tracks ) const
 {
   JetTracksAssociationCollection * outputCollection = new JetTracksAssociationCollection();
   //loop on jets and associate
@@ -140,4 +139,5 @@ JetTracksAssociationCollection * JetTracksAssociator::associate( const edm::Hand
 }
 
 //define this as a plug-in
+#include "FWCore/Framework/interface/MakerMacros.h"
 DEFINE_FWK_MODULE(JetTracksAssociator);
