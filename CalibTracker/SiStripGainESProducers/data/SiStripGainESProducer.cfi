@@ -1,6 +1,6 @@
 es_module = SiStripGainESProducer {
 
-  	bool AutomaticNormalization=true
+  	bool AutomaticNormalization=false
 	double NormalizationFactor=1.
 	untracked bool printDebug=false
 
