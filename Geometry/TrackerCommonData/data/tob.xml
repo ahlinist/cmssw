@@ -4,11 +4,13 @@
 <ConstantsSection label="tob.xml" eval="true">
  <Constant name="zero"           value="0.0*fm"/>
  <Constant name="Rin1"           value="54.0*cm"/>
- <Constant name="Rin2"           value="1.160*m"/>
+ <Constant name="Rin2"           value="58.0*cm"/>
+ <Constant name="Rin3"           value="1.160*m"/>
  <Constant name="Rout1"          value="1.169*m"/>
  <Constant name="Rout2"          value="1.169*m"/>
+ <Constant name="Zv0"            value="1.100*m"/>
  <Constant name="Zv1"            value="1.160*m"/>
- <Constant name="Zv2"            value="1.210*m"/>
+ <Constant name="Zv2"            value="1.180*m"/>
  <Constant name="Zv3"            value="2.820*m"/>
  <Constant name="RailL"          value="1.100*m"/>
  <Constant name="RailInR"        value="0.300*cm"/>
@@ -197,16 +199,20 @@
 
 <SolidSection label="tob.xml">
  <Polycone name="TOB" startPhi="0*deg" deltaPhi="360*deg" >
-  <ZSection z="-[Zv3]"  rMin="[Rin2]"  rMax="[Rout1]" />
+  <ZSection z="-[Zv3]"  rMin="[Rin3]"  rMax="[Rout1]" />
+  <ZSection z="-[Zv2]"  rMin="[Rin3]"  rMax="[Rout1]" />
   <ZSection z="-[Zv2]"  rMin="[Rin2]"  rMax="[Rout1]" />
-  <ZSection z="-[Zv2]"  rMin="[Rin1]"  rMax="[Rout1]" />
-  <ZSection z="-[Zv1]"  rMin="[Rin1]"  rMax="[Rout1]" />
-  <ZSection z="-[Zv1]"  rMin="[Rin1]"  rMax="[Rout2]" />
-  <ZSection z="[Zv1]"   rMin="[Rin1]"  rMax="[Rout2]" />
-  <ZSection z="[Zv1]"   rMin="[Rin1]"  rMax="[Rout1]" />
-  <ZSection z="[Zv2]"   rMin="[Rin1]"  rMax="[Rout1]" />
+  <ZSection z="-[Zv1]"  rMin="[Rin2]"  rMax="[Rout1]" />
+  <ZSection z="-[Zv1]"  rMin="[Rin2]"  rMax="[Rout2]" />
+  <ZSection z="-[Zv0]"  rMin="[Rin2]"  rMax="[Rout2]" />
+  <ZSection z="-[Zv0]"  rMin="[Rin1]"  rMax="[Rout2]" />
+  <ZSection z="[Zv0]"   rMin="[Rin1]"  rMax="[Rout2]" />
+  <ZSection z="[Zv0]"   rMin="[Rin2]"  rMax="[Rout2]" />
+  <ZSection z="[Zv1]"   rMin="[Rin2]"  rMax="[Rout2]" />
+  <ZSection z="[Zv1]"   rMin="[Rin2]"  rMax="[Rout1]" />
   <ZSection z="[Zv2]"   rMin="[Rin2]"  rMax="[Rout1]" />
-  <ZSection z="[Zv3]"   rMin="[Rin2]"  rMax="[Rout1]" />
+  <ZSection z="[Zv2]"   rMin="[Rin3]"  rMax="[Rout1]" />
+  <ZSection z="[Zv3]"   rMin="[Rin3]"  rMax="[Rout1]" />
  </Polycone> 
  <Tubs name="TOBRailIn"     rMin="[zero]"           rMax="[RailInR]" 
        dz="[RailL]"         startPhi="0*deg"        deltaPhi="360*deg"/>
@@ -364,16 +370,16 @@
  <Tubs name="TOBLayer5"     rMin="[Layer5Rin]"      rMax="[Layer5Rout]" 
                             dz="[tobrodpar:RodL]"   startPhi="0*deg"
                             deltaPhi="360*deg"/>
- <Tubs name="TOBSideDisk"   rMin="[Rin1]"           rMax="[Rin2]"
+ <Tubs name="TOBSideDisk"   rMin="[Rin2]"           rMax="[Rin3]"
                             dz="[SideDiskDz]"       startPhi="0*deg"
                             deltaPhi="360*deg"/>
- <Tubs name="TOBAxCabCont"  rMin="[Rin2]"           rMax="[Rout1]"
+ <Tubs name="TOBAxCabCont"  rMin="[Rin3]"           rMax="[Rout1]"
                             dz="([Zv3]-[Zv1])/2"
                             startPhi="0*deg"        deltaPhi="360*deg"/>
  <Tubs name="TOBAxCable"    rMin="([Rout1]-[AxCableT])"
                             rMax="[Rout1]"          dz="([Zv3]-[Zv1])/2"
                             startPhi="-[AxCableW]/2" deltaPhi="[AxCableW]"/>
- <Tubs name="TOBDOHMs"      rMin="[Rin1]"           rMax="[Rin2]"
+ <Tubs name="TOBDOHMs"      rMin="[Rin2]"           rMax="[Rin3]"
                             dz="[DOHMsDz]"          startPhi="0*deg"
                             deltaPhi="360*deg"/>
  <Box name="TOBDOHM"        dx="[DOHMW]" 
@@ -1241,7 +1247,7 @@
 <Algorithm name="track:DDTOBRadCableAlgo">
   <rParent name="tob:TOBSideDisk"/>
   <Numeric name="DiskDz"      value="[SideDiskDz]"/>
-  <Numeric name="RMax"        value="[Rin2]"/>
+  <Numeric name="RMax"        value="[Rin3]"/>
   <Numeric name="CableT"      value="0.7*cm"/>
   <Vector name="RodRin" type="numeric" nEntries="6">
    [Layer0LowR], [Layer1LowR], [Layer2LowR], 
