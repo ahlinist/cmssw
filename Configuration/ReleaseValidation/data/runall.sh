@@ -1,13 +1,13 @@
 #!/bin/bash
 
 #
-#$Id: runall.sh,v 1.3 2007/01/31 17:10:16 tboccali Exp $
+#$Id: runall.sh,v 1.4 2007/07/09 09:16:52 klute Exp $
 #
 #Dummy script to run all integration tests
 #
 #
 
-tests="single_mu_pt_100_negative_allReco.cfg single_mu_pt_1_positive_allReco.cfg Zprime_Dijets_700_allReco.cfg b_jets_gen_rec_50_120_allReco.cfg c_jets_gen_rec_50_120_allReco.cfg single_e_pt_35_allReco.cfg single_gamma_pt35_allReco.cfg ttbar_gen_rec_allReco.cfg QCD_pt800_1000_allReco.cfg"
+tests="single_mu_pt_100_negative_allReco.cfg single_mu_pt_1_positive_allReco.cfg Zprime_Dijets_700_allReco.cfg b_jets_gen_rec_50_120_allReco.cfg c_jets_gen_rec_50_120_allReco.cfg single_e_pt_35_allReco.cfg single_gamma_pt35_allReco.cfg ttbar_gen_rec_allReco.cfg QCD_pt800_1000_allReco.cfg single_e_pt_35_allReco_L1.cfg single_mu_pt_100_positive_allReco_L1.cfg  ttbar_gen_rec_allReco_L1.cfg"
 
 report=""
 
