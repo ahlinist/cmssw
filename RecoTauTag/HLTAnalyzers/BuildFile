@@ -7,12 +7,4 @@
 <use name=DataFormats/L1Trigger>
 <use name=root>
 <use name=SimDataFormats/HepMCProduct>
-<flags SEAL_PLUGIN_NAME="RecoTauTagHLTAnalyzers">
-<export>
-   <lib name=RecoTauTagHLTAnalyzers>
-   <use name=FWCore/Framework>
-   <use name=Foundation/PluginManager>
-   <use name=FWCore/ParameterSet>
-   <use name=DataFormats/VertexReco>
-   <use name=DataFormats/BTauReco>
-</export>
+<flags EDM_PLUGIN=1>
