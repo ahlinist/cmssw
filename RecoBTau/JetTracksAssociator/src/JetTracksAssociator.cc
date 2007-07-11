@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrea Rizzi
 //         Created:  Wed Apr 12 11:12:49 CEST 2006
-// $Id: JetTracksAssociator.cc,v 1.13 2007/06/27 15:41:33 arizzi Exp $
+// $Id: JetTracksAssociator.cc,v 1.14 2007/07/10 08:51:32 fwyzard Exp $
 //
 //
 
@@ -120,22 +120,16 @@ JetTracksAssociationCollection * JetTracksAssociator::associate( const edm::Hand
   //loop on jets and associate
   for (size_t j = 0; j < jets->size(); j++)
   {
-    //cout << boolalpha;
-    //cout << fixed;
-
     TrackRefVector assoTracks;
-    for (size_t t=0; t < tracks->size() ; t++) {
-      double delta  = ROOT::Math::VectorUtil::DeltaR((*jets)[j].p4().Vect(), (*tracks)[t].momentum());
-      bool   inside = (delta < m_deltaRCut);
-      
-    if (inside)
+    for (size_t t = 0; t < tracks->size(); t++) {
+      double delta = ROOT::Math::VectorUtil::DeltaR((*jets)[j].p4().Vect(), (*tracks)[t].momentum());
+      if (delta < m_deltaRCut)
         assoTracks.push_back(edm::Ref<TrackCollection>(tracks, t));
     }
-        outputCollection->push_back(JetTracksAssociation(jets->refAt(j), assoTracks));
+    outputCollection->push_back(JetTracksAssociation(jets->refAt(j), assoTracks));
   }
 
   return outputCollection;
-
 }
 
 //define this as a plug-in
