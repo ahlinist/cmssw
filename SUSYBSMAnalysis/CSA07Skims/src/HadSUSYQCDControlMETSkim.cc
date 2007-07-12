@@ -4,8 +4,8 @@
  * >= 2 barrel jets 100 GeV, (no MET) QCD control MET trigger turn on, 
  * MET tails (QCD trigger path)
  *
- * $Date:
- * $Revision:
+ * $Date:$
+ * $Revision:$
  *
  * \author Michael Tytgat, Maria Spiropulu - CERN
  *
@@ -22,7 +22,6 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "DataFormats/Common/interface/Handle.h"    
 
-//#include "DataFormats/JetReco/interface/CaloJetfwd.h" 
 #include "DataFormats/JetReco/interface/CaloJet.h"
 
 #include "SUSYBSMAnalysis/CSA07Skims/interface/HadSUSYQCDControlMETSkim.h"
