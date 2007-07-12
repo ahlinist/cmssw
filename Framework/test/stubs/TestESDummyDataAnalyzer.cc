@@ -47,9 +47,12 @@ class TestESDummyDataAnalyzer : public edm::EDAnalyzer {
 
       virtual void analyze(const edm::Event&, const edm::EventSetup&);
    private:
+         virtual void beginJob(const edm::EventSetup&) ;
          int m_expectedValue;
          int m_nEventsValue;
          int m_counter;
+         int m_totalCounter;
+         int m_totalNEvents;
       // ----------member data ---------------------------
 };
 
@@ -67,7 +70,9 @@ class TestESDummyDataAnalyzer : public edm::EDAnalyzer {
 TestESDummyDataAnalyzer::TestESDummyDataAnalyzer(const edm::ParameterSet& iConfig) :
 m_expectedValue(iConfig.getParameter<int>("expected")),
 m_nEventsValue(iConfig.getUntrackedParameter<int>("nEvents",0)),
-m_counter(0)
+m_counter(0),
+m_totalCounter(0),
+m_totalNEvents(iConfig.getUntrackedParameter<int>("totalNEvents",-1) )
 {
    //now do what ever initialization is needed
 
@@ -93,6 +98,7 @@ TestESDummyDataAnalyzer::analyze(const edm::Event&, const edm::EventSetup& iSetu
 {
    using namespace edm;
 
+   ++m_totalCounter;
 //   std::cout<<"before "<<m_expectedValue<<std::endl;
    if(m_nEventsValue) {
       ++m_counter;
@@ -112,5 +118,14 @@ TestESDummyDataAnalyzer::analyze(const edm::Event&, const edm::EventSetup& iSetu
    
 }
 
+void 
+TestESDummyDataAnalyzer::beginJob(const edm::EventSetup&)
+{
+  if (-1 != m_totalNEvents &&
+      m_totalNEvents != m_totalCounter) {
+    throw cms::Exception("WrongNumberOfEvents")<<"expected "<<m_totalNEvents<<" but instead saw "<<m_totalCounter
+					       <<"\n";
+  }
+}
 //define this as a plug-in
 DEFINE_FWK_MODULE(TestESDummyDataAnalyzer);
