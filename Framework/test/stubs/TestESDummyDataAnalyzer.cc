@@ -47,7 +47,7 @@ class TestESDummyDataAnalyzer : public edm::EDAnalyzer {
 
       virtual void analyze(const edm::Event&, const edm::EventSetup&);
    private:
-         virtual void beginJob(const edm::EventSetup&) ;
+         virtual void endJob();
          int m_expectedValue;
          int m_nEventsValue;
          int m_counter;
@@ -119,7 +119,7 @@ TestESDummyDataAnalyzer::analyze(const edm::Event&, const edm::EventSetup& iSetu
 }
 
 void 
-TestESDummyDataAnalyzer::beginJob(const edm::EventSetup&)
+TestESDummyDataAnalyzer::endJob()
 {
   if (-1 != m_totalNEvents &&
       m_totalNEvents != m_totalCounter) {
