@@ -2,7 +2,7 @@
 // Author:  Jan Heyninck
 // Created: Tue Apr  3 17:33:23 PDT 2007
 //
-// $Id: MtopUncertaintyCalc.cc,v 1.1 2007/05/08 14:03:05 heyninck Exp $
+// $Id: MtopUncertaintyCalc.cc,v 1.1 2007/06/01 09:16:17 heyninck Exp $
 //
 #include "TopQuarkAnalysis/TopMassMeasurement/interface/MtopUncertaintyCalc.h"
 
@@ -54,9 +54,9 @@ void MtopUncertaintyCalc::readInput(TtSemiMassSolution& s){
   
   // get the fitted top mass and the fitted jet fourvectors
   mtop     = s.getFitHadt().mass();
-  jet[0]   = s.getHadp().getFitJet();
-  jet[1]   = s.getHadq().getFitJet();
-  jet[2]   = s.getHadb().getFitJet();
+  jet[0]   = s.getFitHadp();
+  jet[1]   = s.getFitHadq();
+  jet[2]   = s.getFitHadb();
 
 
   // get the covariance matrices for the three hadronic jets
