@@ -2,8 +2,8 @@
  * \file EcalPedestalAnalyzer.h 
  * Dump in a file values of pedestal
  * 
- * $Date: 2006/07/19 21:57:31 $
- * $Revision: 1.2 $
+ * $Date: 2006/07/19 22:01:19 $
+ * $Revision: 1.3 $
  * \author R. Bruneliere'
  *
 */
@@ -101,7 +101,8 @@ void EcalPedestalAnalyzer::analyze(const edm::Event& e,
   
   // Get ecal barrel digis
   edm::Handle<EBDigiCollection> digis;
-  e.getByLabel("ecalEBunpacker", digis);
+  //e.getByLabel("ecalEBunpacker", digis);
+  e.getByLabel("ecalTBunpack", digis);
   
   // Initialize vectors if not already done
   if (int(digis->size()) > nChannels_) {
