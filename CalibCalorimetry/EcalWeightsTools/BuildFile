@@ -7,6 +7,8 @@
 <use name=DataFormats/EcalDetId>
 <use name=SimCalorimetry/EcalSimAlgos>
 <use name=SimCalorimetry/CaloSimAlgos>
+<use name=FWCore/MessageLogger>
+<use name=FWCore/MessageService>
 <export>
    <lib name=CalibCalorimetryEcalWeightsTools>
    <use name=clhep>
@@ -17,4 +19,6 @@
    <use name=DataFormats/EcalDetId>
    <use name=SimCalorimetry/EcalSimAlgos>
    <use name=SimCalorimetry/CaloSimAlgos>
+   <use name=FWCore/MessageLogger>
+   <use name=FWCore/MessageService>
 </export>
