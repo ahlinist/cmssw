@@ -5,8 +5,8 @@
  *
  * NOTE: this version can only run on Laser data!!
  *
- * $Date: 2006/07/23 17:13:05 $
- * $Revision: 1.1 $
+ * $Date: 2006/09/27 22:57:33 $
+ * $Revision: 1.2 $
  * Alexandre Zabi - Imperial College
 */
 
@@ -82,6 +82,8 @@ EcalProfileBuilder::EcalProfileBuilder(edm::ParameterSet const& pSet)
 
   //HODOSCOPE WINDOW CONSIDERED
   HodoWindow_           = pSet.getUntrackedParameter<double>("HodoWindow", 0.0);
+  //The hodoscope cuts depend on the run number
+  run_number_          = pSet.getUntrackedParameter<int>("run_number", 0);
 
   //NUMBER OF ITERATIONS
   nIter_                = pSet.getUntrackedParameter<int>("nIter", 1);
@@ -95,6 +97,7 @@ EcalProfileBuilder::EcalProfileBuilder(edm::ParameterSet const& pSet)
 
   //RETRIEVING HODOSCOPE POSITION FROM A FILE
   std::ifstream hodoin("../test/hodoscope.out");
+  std::cout << "LOOKING FOR HODOSCOPE CUTS IN RUN NUMBER=" << run_number_ << std::endl;
   double centerHodoX[1700];
   double centerHodoY[1700];
   for(int xt=0; xt<1700; ++xt)
@@ -111,32 +114,30 @@ EcalProfileBuilder::EcalProfileBuilder(edm::ParameterSet const& pSet)
   hodoin >> nXtalIn;
   for(int xt=0; xt < nXtalIn; ++xt)
     {
+      int runNb;
       int xtal;
       double centx;
       double centy;
-      hodoin >> xtal >> centx >> centy;
-      centerHodoX[xtal-1] = centx;
-      centerHodoY[xtal-1] = centy;
-      XlowerCut_[xtal-1] = centerHodoX[xtal-1] - HodoWindow_;
-      XupperCut_[xtal-1] = centerHodoX[xtal-1] + HodoWindow_;
-      YlowerCut_[xtal-1] = centerHodoY[xtal-1] - HodoWindow_;
-      YupperCut_[xtal-1] = centerHodoY[xtal-1] + HodoWindow_;
+      int entrieshodo;
+      hodoin >> runNb >> xtal >> centx >> centy >> entrieshodo;
+      if(runNb == run_number_){
+	centerHodoX[xtal-1] = centx;
+	centerHodoY[xtal-1] = centy;
+	XlowerCut_[xtal-1] = centerHodoX[xtal-1] - HodoWindow_;
+	XupperCut_[xtal-1] = centerHodoX[xtal-1] + HodoWindow_;
+	YlowerCut_[xtal-1] = centerHodoY[xtal-1] - HodoWindow_;
+	YupperCut_[xtal-1] = centerHodoY[xtal-1] + HodoWindow_;
+      }//checking for correct run number
     }//loop xtal
   hodoin.close();
-  //std::cout << "HODOSCOPE CENTRAL POSITION: X =" << centerHodoX << " Y =" << centerHodoY << std::endl;  
   std::cout << "HODOSCOPE WINDOW CONSIDERED is +/-" << HodoWindow_ << " mm" << std::endl; 
-  //XlowerCut_ = centerHodoX - HodoWindow_;
-  //XupperCut_ = centerHodoX + HodoWindow_;
-  //YlowerCut_ = centerHodoY - HodoWindow_;
-  //YupperCut_ = centerHodoY + HodoWindow_;
-  //std::cout << XlowerCut_[173] << " " << XupperCut_[173] << " " << YlowerCut_[173] << " " << YupperCut_[173] << std::endl;
-  
+
 }//CONSTRUCTOR
 
 EcalProfileBuilder::~EcalProfileBuilder()
 {
   //ouptut file
-//   TFile* fOut = new TFile(rootfile_.c_str(), "recreate");
+  TFile* fOut = new TFile(rootfile_.c_str(), "recreate");
 
   std::cout << "STARTING BUILDING PROFILES" << std::endl;
 
@@ -162,15 +163,15 @@ EcalProfileBuilder::~EcalProfileBuilder()
     std::cout << XtalIN[i] << " " << nEntries_[XtalIN[i]-1] << std::endl;
 
   //PROFILE OR TH2
-  //TH2F** h_Shape_TT   = new TH2F*[nShape_];
+  TH2F** h_Shape_TT   = new TH2F*[nShape_];
   //TProfile** h_Shape_TT = new TProfile*[nShape_];
 
   //DECLARING PROFILES
-  //for (unsigned int Xtal = 0; Xtal < XtalIN.size(); Xtal++) {
-  //std::string hTitle = Form("Shape Xtal%d", XtalIN[Xtal]);
-  //h_Shape_TT[Xtal] = new TH2F(Form("hShapeXtal_%d", XtalIN[Xtal]), hTitle.c_str(), 250,0,10,350,0,3500);
-  //h_Shape_TT[Xtal] = new TProfile(Form("hShapeXtal_%d", XtalIN[Xtal]), hTitle.c_str(), 250,0,10," ");
-  //}//loop xtal
+  for (unsigned int Xtal = 0; Xtal < XtalIN.size(); Xtal++) {
+    std::string hTitle = Form("Shape Xtal%d", XtalIN[Xtal]);
+    h_Shape_TT[Xtal] = new TH2F(Form("hShapeXtal_%d", XtalIN[Xtal]), hTitle.c_str(), 250,0,10,350,0,3500);
+    //h_Shape_TT[Xtal] = new TProfile(Form("hShapeXtal_%d", XtalIN[Xtal]), hTitle.c_str(), 250,0,10," ");
+  }//loop xtal
   
   //PEDESTALS
   //double *pedestals = new double[nShape_];
@@ -231,7 +232,7 @@ EcalProfileBuilder::~EcalProfileBuilder()
 	      if(iter == 0) {
 		profileData[ch*250+indS*25+int(tdc*25.0)] += dataP;
 		profileEntries[ch*250+indS*25+int(tdc*25.0)]++; 
-		//h_Shape_TT[ch]->Fill(double(indS)+tdc,dataP);
+		h_Shape_TT[ch]->Fill(double(indS)+tdc,dataP);
 	      }
 	      else {
 		if(dataP >= (profileMean[ch*250+indS*25+int(tdc*25.0)] - nRMS*profileRms[ch*250+indS*25+int(tdc*25.0)]) 
@@ -303,6 +304,12 @@ EcalProfileBuilder::~EcalProfileBuilder()
 		      if(iter == nIter_-1){
 			profileRms[ch*250+indS*25+int(tdc*25.0)] += (dataP/profileMax[ch] - profileMean[ch*250+indS*25+int(tdc*25.0)]/profileMax[ch])
 			  * (dataP/profileMax[ch] - profileMean[ch*250+indS*25+int(tdc*25.0)]/profileMax[ch]); 
+
+			//modif-beg
+			//profileRms[ch*250+indS*25+int(tdc*25.0)] += (dataP - profileMean[ch*250+indS*25+int(tdc*25.0)])
+			//  * (dataP - profileMean[ch*250+indS*25+int(tdc*25.0)]); 
+			//modif-end
+
 			//h_Shape_TT[ch]->Fill(double(indS)+tdc,dataP/profileMax[ch]);
 			//h_Shape_TT[ch]->Fill(double(indS)+tdc,dataP);
 		      }//normalize
@@ -334,14 +341,15 @@ EcalProfileBuilder::~EcalProfileBuilder()
   outProfile << XtalIN.size() << std::endl;
   for (unsigned int ch = 0; ch < XtalIN.size(); ++ch)
     {
-      outProfile << XtalIN[ch] << std::endl;
+      outProfile << XtalIN[ch] << std::endl;//" " << double(binMax[ch])/25.0 << std::endl;//modif
       for(unsigned int bin=0; bin < 250; ++bin)
 	outProfile << bin+1 << " " << profileMean[ch*250+bin]/profileMax[ch] << " " << profileRms[ch*250+bin] << std::endl;
+      //outProfile << bin+1 << " " << profileMean[ch*250+bin] << " " << profileRms[ch*250+bin] << std::endl;//modif
     }//loop xtal
   outProfile.close();
-
-//   fOut->Write();
-//   fOut->Close(); 
+  
+  fOut->Write();
+  fOut->Close(); 
   std::cout << "BUILDING PROFILE IS DONE" << std::endl;
 }//DESTRUCTOR
 
