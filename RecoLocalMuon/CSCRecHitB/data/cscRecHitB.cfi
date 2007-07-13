@@ -30,8 +30,8 @@ module csc2DRecHits = CSCRecHitBProducer {
 ###########################################################
 #    Parameters for strip hits
 ###########################################################
-     untracked double CSCStripPeakThreshold      = 20.
-     untracked double CSCStripClusterChargeCut   = 45.
+     untracked double CSCStripPeakThreshold      = 10.
+     untracked double CSCStripClusterChargeCut   = 30.
      untracked int32  CSCStripClusterSize        = 3
      untracked bool   CSCUseGattiFit             = true
      # the step size is in units of strip width
