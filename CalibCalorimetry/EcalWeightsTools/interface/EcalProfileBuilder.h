@@ -2,7 +2,7 @@
 #define ECALPROFILEBUILDER_H
 
 //Author: Alexandre Zabi - Imperial College
-//$Date: 2006/07/23 17:13:06 $
+//$Date: 2006/09/27 22:57:33 $
 
 // system include files
 #include <memory>
@@ -53,6 +53,7 @@ class EcalProfileBuilder : public edm::EDAnalyzer {
   int          maxIdRef_;
   int          evt_cnt_;
   int          nIter_;
+  int          run_number_;
   double       HodoWindow_;
   double       XlowerCut_[1700];
   double       XupperCut_[1700];
