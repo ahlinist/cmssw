@@ -1,10 +1,10 @@
-/**
+/**Smodfi
  * \file EcalWeightsBuilder.cc 
  * This module is used to produce the weights needed by
  * the reconstruction of amplitude (RecHits) in the ECAL.
  * 
- * $Date: 2006/07/27 18:20:25 $
- * $Revision: 1.4 $
+ * $Date: 2006/09/27 22:56:38 $
+ * $Revision: 1.5 $
  * Author Alexandre Zabi
  *
  * Modif-Alex Zabi 25/07/2006
@@ -154,9 +154,11 @@ void EcalWeightsBuilder::analyze(const edm::Event& evt, const edm::EventSetup& e
   double    thisPhase = parameterMap.simParameters(barrel).timePhase();
   EcalShape theShape(thisPhase);
 
-  std::cout << "Parameters for the ECAL MGPA shape \n"     << std::endl;
-  std::cout << "Rising time for ECAL shape (timePhase) = " << parameterMap.simParameters(barrel).timePhase()    << std::endl;
-  std::cout << "Bin of maximum = "                         << parameterMap.simParameters(barrel).binOfMaximum() << std::endl;
+  std::cout << "Parameters for the ECAL MGPA shape \n"           << std::endl;
+  std::cout << "Rising time for ECAL shape (timePhase) = " 
+	    << parameterMap.simParameters(barrel).timePhase()    << std::endl;
+  std::cout << "Bin of maximum = "                         
+	    << parameterMap.simParameters(barrel).binOfMaximum() << std::endl;
 
   double ToM        = theShape.computeTimeOfMaximum();
   double T0         = theShape.computeT0();
@@ -169,8 +171,10 @@ void EcalWeightsBuilder::analyze(const edm::Event& evt, const edm::EventSetup& e
   
   //time of maximum
   double tMax      = ToM/25.0;
+  //double tMax      = tMaxRef_; //modif
   double tMax_gain = tMax + 1;    
   std::cout << "TIME OF MAXIMUM =" << tMax << std::endl;
+  double tMax_loc   = tMax; //modif-SM06
 
   //STANDARD DATA BASE HEADER INFORMATION
   // for more information, look at EcalGroupIdBuilder code.
@@ -211,12 +215,14 @@ void EcalWeightsBuilder::analyze(const edm::Event& evt, const edm::EventSetup& e
 		    << " this is for SuperModule = " << supermodule_in << std::endl;
 
 	groupid_in >> nGroupId >> meanTiming;
+	if(SuperModule_ == 6)  meanTiming = 5.5; //modif-SM6 
 	std::cout << std::endl;
 	std::cout << "GENERATING WEIGHTS FOR GROUPIDs" << std::endl;
 	std::cout << "NGroup = " << nGroupId << " Mean Timing = " << meanTiming << std::endl;
 	//TMax is set to the mean timing 
 	tMax = meanTiming;
-	
+	//tMax = 6.0;//modif
+
 	//special crystals -> special weights to be generated
 	if(grouptype == "special")
 	  {
@@ -256,8 +262,9 @@ void EcalWeightsBuilder::analyze(const edm::Event& evt, const edm::EventSetup& e
   meanTimingGroup[1] = meanTiming;
   meanTimingGroup[2] = meanTiming + 0.08;
   if(nGroupId == 1) meanTimingGroup[0] = meanTiming;
-  if(gen_groupID_) {for(int i=0; i < 3; ++i) std::cout << meanTimingGroup[i] << std::endl;
-    std::cout << std::endl;}
+  if(gen_groupID_) 
+    {for(int i=0; i < 3; ++i) std::cout << meanTimingGroup[i] << std::endl;
+      std::cout << std::endl;}
 
   //
   //COMPUTING WEIGHTS ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -293,13 +300,17 @@ void EcalWeightsBuilder::analyze(const edm::Event& evt, const edm::EventSetup& e
   }//debug files
 
   // CREATE OBJECT TO COMPUTE GAIN 6 and GAIN 1 (high energy) WEIGHTS
-  ComputeWeights weights_gain(verbosity_, doFitBaseline_gain_, doFitTime_gain_, nPulseSamples_gain_, nPrePulseSamples_gain_);
-  ComputeWeights weights_time_gain(verbosity_, doFitBaseline_gain_, true, nPulseSamples_gain_, nPrePulseSamples_gain_);
+  ComputeWeights weights_gain(verbosity_, doFitBaseline_gain_, doFitTime_gain_, 
+			      nPulseSamples_gain_, nPrePulseSamples_gain_);
+  ComputeWeights weights_time_gain(verbosity_, doFitBaseline_gain_, true, 
+				   nPulseSamples_gain_, nPrePulseSamples_gain_);
 
 //   // CREATE OBJECT TO COMPUTE GAIN 6 and GAIN 1 (high energy) EXTRA WEIGHTS
 //   //For resonctruction at high energy
-//   ComputeWeights weights_gain_extra(verbosity_, doFitBaseline_gain_, doFitTime_gain_, nPulseSamples_gain_, nPrePulseSamples_gain_);
-//   ComputeWeights weights_time_gain_extra(verbosity_, doFitBaseline_gain_, true, nPulseSamples_gain_, nPrePulseSamples_gain_);
+//   ComputeWeights weights_gain_extra(verbosity_, doFitBaseline_gain_, doFitTime_gain_, 
+//  nPulseSamples_gain_, nPrePulseSamples_gain_);
+//   ComputeWeights weights_time_gain_extra(verbosity_, doFitBaseline_gain_, true, 
+//  nPulseSamples_gain_, nPrePulseSamples_gain_);
 
   // Create output files
   std::ofstream fAmpWeightsGain_TB, fPedWeightsGain_TB, fTimeWeightsGain_TB, fChi2Gain_TB; 
@@ -327,7 +338,8 @@ void EcalWeightsBuilder::analyze(const edm::Event& evt, const edm::EventSetup& e
 
   //LOOPING OVER GROUPIDs /////////////////////////////////
   for(int igroupId = 0; igroupId < nGroupId; ++igroupId){
-    if(debug_) std::cout << "%%%%%%%%%%%%%%%%%%%%%%%GROUPID " << igroupId << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << std::endl;
+    if(debug_) 
+      std::cout << "%%%%%%%%%%%%%%%%%%%%%%%GROUPID " << igroupId << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << std::endl;
 
     //loading new shape of special weights
     if(grouptype == "special" && igroupId > 2)
@@ -335,7 +347,7 @@ void EcalWeightsBuilder::analyze(const edm::Event& evt, const edm::EventSetup& e
 	std::cout << "LOADING SHAPE FOR XTAL=" << XtalSpecial_[igroupId - 3] << std::endl;
 	//Modif 27/09/06 The Load function is not implemented in EcalShape.cc yet.
 	// This is a temporary version.
-	//theShape.load(XtalSpecial_[igroupId - 3], SuperModule_);
+	theShape.load(XtalSpecial_[igroupId - 3], SuperModule_);
 	ToM        = theShape.computeTimeOfMaximum();
 	T0         = theShape.computeT0();
 	risingTime = theShape.computeRisingTime();
@@ -344,12 +356,19 @@ void EcalWeightsBuilder::analyze(const edm::Event& evt, const edm::EventSetup& e
 	std::cout << "\n Rising time from tabulated values  = " << risingTime << std::endl;
 	std::cout << std::endl;
 	//time of maximum
-	tMax      = ToM/25.0;
-	std::cout << "NEW TIME OF MAXIMUM =" << tMax << std::endl;
+	tMax_loc = ToM/25.0;
+	if(SuperModule_ != 6){ //modif-SM06
+	  tMax      = ToM/25.0;
+	  std::cout << "NEW TIME OF MAXIMUM =" << tMax << std::endl;}
+	else {
+	  std::cout << "SUPERMODULE 6, NOT CHANGING tMax=" << tMax 
+		    << "USING LOCAL TMAX =" << tMax_loc  <<std::endl;}
       }//special
 
     std::vector<double> pulseShape(nSamples_);
     std::vector<double> pulseShapeDerivative(nSamples_);
+    std::vector<double> pulseShape_gain(nSamples_);
+    std::vector<double> pulseShapeDerivative_gain(nSamples_);
 
     //vector to save the weights for high energy
     std::vector<double> extraWeights_amp; 
@@ -366,17 +385,39 @@ void EcalWeightsBuilder::analyze(const edm::Event& evt, const edm::EventSetup& e
     double shiftTime = 0.0; //;2.0; //shift to Tmax of Xtal 704
     if(gen_groupID_){
       double diff_time = (tMaxRef_ - meanTimingGroup[igroupId])*25.0;
-      if(grouptype == "special" && igroupId > 2)
-	diff_time = (tMaxRef_ -tMax)*25.0;
+      if(grouptype == "special" && igroupId > 2){	
+	if(SuperModule_ == 6) diff_time = (6.0 - tMax_loc)*25.0; //modif-SM6 
+	else diff_time = (tMaxRef_ - tMax)*25.0;
+      }//special
       shiftTime = (diff_time-(int)diff_time) <= 0.5 ? (int)diff_time : ((int)diff_time + 1); 
+      
+      //This needs to be uncommented if producing weights
+      // to reconstruct SM06 data runs above 17552
+      //shiftTime += 4.0; //modif-temp 
+
+      //shiftTime = -shiftTime;//modif
       std::cout << "Shifting shape by " << shiftTime << " ns" << std::endl;
     }// generating groupIds
 
     for (int unsigned iTdcBin = 0; iTdcBin < nTdcBins_; iTdcBin++) {
+      
+      int iTdcBin_local = iTdcBin;
+      if(SuperModule_ == 6){ //modif-SM6
+	if(iTdcBin <= 12)
+	  iTdcBin_local += 12;
+	else
+	  iTdcBin_local -= 13;
+      }//for Supermodule 6
+
       std::vector<double> sample_check;//for debugging purposes
 
       //Determination of tdcbin
-      double tdcbin = -0.5 + (iTdcBin * 0.04) + 0.02; //return value in bin center
+      //double tdcbin = -0.5 + (iTdcBin * 0.04) + 0.02; //return value in bin center
+      //double tdcbin = -0.5 + (12 * 0.04) + 0.02; //forcing same weights //modif!!!
+
+      //double tdcbin = (iTdcBin * 0.04);//modif
+      double tdcbin_gain = (iTdcBin * 0.04); //modif-SM06
+      double tdcbin      = -0.5 + (iTdcBin_local * 0.04) + 0.02; //return value in bin center
 
       //Determination of tzero
       //  double tzero = risingTime-(parameterMap.simParameters(barrel).binOfMaximum()-tdcbin)*25.;
@@ -388,16 +429,35 @@ void EcalWeightsBuilder::analyze(const edm::Event& evt, const edm::EventSetup& e
       for (int unsigned iSample = 0; iSample < nSamples_; iSample++) {
 
 	if(debug_)
-	  std::cout << iTdcBin << " " << tzero + iSample*nTdcBins_ << " Value=" << (theShape)(tzero + shiftTime + iSample*nTdcBins_) 
+	  std::cout << iTdcBin << " " << tzero + iSample*nTdcBins_ << " Value=" 
+		    << (theShape)(tzero + shiftTime + iSample*nTdcBins_) 
 		    << " DERVIATIVE=" << theShape.derivative(tzero + shiftTime + iSample*nTdcBins_) << std::endl;
 	
 	pulseShape[iSample]           = (theShape)(tzero + shiftTime + iSample*nTdcBins_);
 	pulseShapeDerivative[iSample] = theShape.derivative(tzero + shiftTime + iSample*nTdcBins_);
 	
+	//modif-SM06-begin
+	if(SuperModule_ == 6){
+	  if(iTdcBin <= 12){
+	    pulseShape_gain[iSample]           = (theShape)(tzero + shiftTime + iSample*nTdcBins_);
+	    pulseShapeDerivative_gain[iSample] = theShape.derivative(tzero + shiftTime + iSample*nTdcBins_);
+	  }
+	  else {
+	    double tzero_gain = risingTime -(BinOfMax_-tdcbin_gain)*25.;
+	    pulseShape_gain[iSample]           = (theShape)(tzero_gain + shiftTime + iSample*nTdcBins_);
+	    pulseShapeDerivative_gain[iSample] = theShape.derivative(tzero_gain + shiftTime + iSample*nTdcBins_);
+	  }
+	}//SM06
+	else {
+	  pulseShape_gain[iSample]           = pulseShape[iSample];
+	  pulseShapeDerivative_gain[iSample] = pulseShapeDerivative[iSample];
+	}
+	//modif-SM06-end
+
 	//saving sampling for sum checks
 	sample_check.push_back(pulseShape[iSample]); 
       }//loop sample
-      
+
       //COMPUTING WEIGHTS FOR LOW ENERGY
       if (!weights.compute(pulseShape, pulseShapeDerivative, tMax)) {
 	std::cout << "EcalWeightsBuilder::~EcalWeightsBuilder: Warning:"
@@ -412,6 +472,16 @@ void EcalWeightsBuilder::analyze(const edm::Event& evt, const edm::EventSetup& e
 	continue;
       }//compute time weights.
       
+      //VARIABLES SM06 --
+      unsigned int tdcbinmaximum = 12 - int(shiftTime);
+      if(debug_) std::cout << "TDCBIN MAX=" << tdcbinmaximum << std::endl;
+      unsigned int limit = 0; 
+      if(shiftTime  >= 0) limit = tdcbinmaximum + 13; 
+      else limit = tdcbinmaximum - 13; 
+      bool checkpos = (iTdcBin <= 12);// || iTdcBin >= limit);
+      bool checkneg = (iTdcBin <= 12);//&& iTdcBin >  limit);
+      //-----------------
+
       if(debug_){
 	//CHECKING SUMS
 	double sum_weights = 0.0;
@@ -421,31 +491,101 @@ void EcalWeightsBuilder::analyze(const edm::Event& evt, const edm::EventSetup& e
 	  sum_wf      += weights.getAmpWeight(iSample) * sample_check[iSample];	
 	}//loop sample
 	std::cout << "SUM WEIGHTS=" << sum_weights << " " << " SUM Wi*Fi=" <<  sum_wf << std::endl;
-	
-	//WRITING WEIGHTS INTO OUTPUT FILE
-	for (int unsigned iSample = 0; iSample < nSamples_; iSample++) {
-	  fAmpWeights_TB << std::setw(10) << std::setprecision(7) << weights.getAmpWeight(iSample) << " "; 
-	  if (doFitBaseline_)
-	    fPedWeights_TB << std::setw(10) << std::setprecision(7) << weights.getPedWeight(iSample) << " ";      
-	  if(default_weights_) fTimeWeights_TB << std::setw(10) << std::setprecision(7) << weights_time.getTimeWeight(iSample) << " "; 
-	  else if (doFitTime_) { fTimeWeights_TB << std::setw(10) << std::setprecision(7) << weights.getTimeWeight(iSample) << " ";}      
-	  for (int unsigned iSample2 = 0; iSample2 < nSamples_; iSample2++)
-	    fChi2_TB << std::setw(10) << std::setprecision(7) << weights.getChi2Matrix(iSample, iSample2) << " "; 
-	  fChi2_TB << std::endl;
-	}//loop sample
-	fAmpWeights_TB << std::endl;
-	if (doFitBaseline_) fPedWeights_TB << std::endl;
-	if (default_weights_ || doFitTime_) fTimeWeights_TB << std::endl;  
 
+	//if(!iTdcBin) fAmpWeights_TB << XtalSpecial_[igroupId - 3] << std::endl; //modif-last
+
+	//WRITING WEIGHTS INTO OUTPUT FILE
+	//MODIF-SM06-BEGIN
+	if(SuperModule_ == 6 && ((shiftTime >= 0 && checkpos) || (shiftTime < 0 && checkneg)))
+	  {
+	    //fAmpWeights_TB << std::setw(10) << iTdcBin << " " << iTdcBin_local << std::endl;//modif-SM6-debug
+	    for (int unsigned iSample = 0; iSample < nSamples_; iSample++) {
+	      if(iSample == 4)
+		{
+		  fAmpWeights_TB << std::setw(10) << std::setprecision(7) << 0.0 << " "; 
+		  if (doFitBaseline_)
+		    fPedWeights_TB << std::setw(10) << std::setprecision(7) << 0.0 << " ";      
+		  if(default_weights_) fTimeWeights_TB << std::setw(10) << std::setprecision(7) << 0.0 << " "; 
+		  else if (doFitTime_) { fTimeWeights_TB << std::setw(10) << std::setprecision(7) << 0.0 << " ";}      
+		  for (int unsigned iSample2 = 0; iSample2 < nSamples_; iSample2++)
+		    fChi2_TB << std::setw(10) << std::setprecision(7) << 0.0 << " "; 
+		  fChi2_TB << std::endl;
+		}//4th sample	    
+
+	      if(iSample <= 3)
+		{
+		  fAmpWeights_TB << std::setw(10) << std::setprecision(7) 
+				 << weights.getAmpWeight(iSample) << " "; 
+		  if (doFitBaseline_)
+		    fPedWeights_TB << std::setw(10) << std::setprecision(7) 
+				   << weights.getPedWeight(iSample) << " ";      
+		  if(default_weights_) fTimeWeights_TB << std::setw(10) << std::setprecision(7) 
+						       << weights_time.getTimeWeight(iSample) << " "; 
+		  else if (doFitTime_) { fTimeWeights_TB << std::setw(10) << std::setprecision(7) 
+							 << weights.getTimeWeight(iSample) << " ";}      
+		  for (int unsigned iSample2 = 0; iSample2 < nSamples_; iSample2++)
+		    fChi2_TB << std::setw(10) << std::setprecision(7) 
+			     << weights.getChi2Matrix(iSample, iSample2) << " "; 
+		  fChi2_TB << std::endl;
+		}//presamples
+	      if(iSample >  4)
+		{
+		  fAmpWeights_TB << std::setw(10) << std::setprecision(7) 
+				 << weights.getAmpWeight(iSample-1) << " "; 
+		  if (doFitBaseline_)
+		    fPedWeights_TB << std::setw(10) << std::setprecision(7) 
+				   << weights.getPedWeight(iSample-1) << " ";      
+		  if(default_weights_) fTimeWeights_TB << std::setw(10) << std::setprecision(7) 
+						       << weights_time.getTimeWeight(iSample-1) << " "; 
+		  else if (doFitTime_) { fTimeWeights_TB << std::setw(10) << std::setprecision(7) 
+							 << weights.getTimeWeight(iSample-1) << " ";}      
+		  for (int unsigned iSample2 = 0; iSample2 < nSamples_; iSample2++)
+		    fChi2_TB << std::setw(10) << std::setprecision(7) 
+			     << weights.getChi2Matrix(iSample-1, iSample2) << " "; 
+		  fChi2_TB << std::endl;
+		}//pic samples	      
+	    }//loop sample
+	    fAmpWeights_TB << std::endl;
+	    if (doFitBaseline_) fPedWeights_TB << std::endl;
+	    if (default_weights_ || doFitTime_) fTimeWeights_TB << std::endl;  	      
+	  }//for Supermodule 6	//MODIF-SM06-END
+	else
+	  {
+	    //fAmpWeights_TB << iTdcBin << " " << iTdcBin_local << std::endl;//modif-SM6-debug
+	    for (int unsigned iSample = 0; iSample < nSamples_; iSample++) {
+	      fAmpWeights_TB << std::setw(10) << std::setprecision(7) 
+			     << weights.getAmpWeight(iSample) << " "; 
+	      if (doFitBaseline_)
+		fPedWeights_TB << std::setw(10) << std::setprecision(7) 
+			       << weights.getPedWeight(iSample) << " ";      
+	      if(default_weights_) fTimeWeights_TB << std::setw(10) << std::setprecision(7) 
+						   << weights_time.getTimeWeight(iSample) << " "; 
+	      else if (doFitTime_) { fTimeWeights_TB << std::setw(10) << std::setprecision(7) 
+						     << weights.getTimeWeight(iSample) << " ";}      
+	      for (int unsigned iSample2 = 0; iSample2 < nSamples_; iSample2++)
+		fChi2_TB << std::setw(10) << std::setprecision(7) 
+			 << weights.getChi2Matrix(iSample, iSample2) << " "; 
+	      fChi2_TB << std::endl;
+	    }//loop sample
+	    fAmpWeights_TB << std::endl;
+	    if (doFitBaseline_) fPedWeights_TB << std::endl;
+	    if (default_weights_ || doFitTime_) fTimeWeights_TB << std::endl;  
+	  }
+	
 	if (iTdcBin == 12 && !gen_groupID_){
 	  for (int unsigned iSample = 0; iSample < nSamples_; iSample++) {
-	    fAmpWeights_CMS << std::setw(10) << std::setprecision(7) << weights.getAmpWeight(iSample) << " "; 
+	    fAmpWeights_CMS << std::setw(10) << std::setprecision(7) 
+			    << weights.getAmpWeight(iSample) << " "; 
 	    if (doFitBaseline_)
-	      fPedWeights_CMS << std::setw(10) << std::setprecision(7) << weights.getPedWeight(iSample) << " ";      
-	    if(default_weights_) fTimeWeights_CMS << std::setw(10) << std::setprecision(7) << weights_time.getTimeWeight(iSample) << " "; 
-	    else if (doFitTime_) { fTimeWeights_CMS << std::setw(10) << std::setprecision(7) << weights.getTimeWeight(iSample) << " ";}      
+	      fPedWeights_CMS << std::setw(10) << std::setprecision(7) 
+			      << weights.getPedWeight(iSample) << " ";      
+	    if(default_weights_) fTimeWeights_CMS << std::setw(10) << std::setprecision(7) 
+						  << weights_time.getTimeWeight(iSample) << " "; 
+	    else if (doFitTime_) { fTimeWeights_CMS << std::setw(10) << std::setprecision(7) 
+						    << weights.getTimeWeight(iSample) << " ";}      
 	    for (int unsigned iSample2 = 0; iSample2 < nSamples_; iSample2++)
-	      fChi2_CMS << std::setw(10) << std::setprecision(7) << weights.getChi2Matrix(iSample, iSample2) << " "; 
+	      fChi2_CMS << std::setw(10) << std::setprecision(7) 
+			<< weights.getChi2Matrix(iSample, iSample2) << " "; 
 	    fChi2_CMS << std::endl;
 	  }//loop sample
 	  fAmpWeights_CMS << std::endl;
@@ -457,14 +597,16 @@ void EcalWeightsBuilder::analyze(const edm::Event& evt, const edm::EventSetup& e
       //COMPUTING WEIGHTS FOR HIGH ENERGY
       //1st CONFIGURATION SAMPLES : samples 5 ,6 ,7 ,8 ,9 are in gain 6
       //In that case Tmax = Tmax + 1;
-      if (!weights_gain.compute(pulseShape, pulseShapeDerivative, tMax_gain)) { 
+      //if (!weights_gain.compute(pulseShape, pulseShapeDerivative, tMax_gain)) { 
+      if (!weights_gain.compute(pulseShape_gain, pulseShapeDerivative_gain, tMax_gain)) { //modif-SM6
 	if (verbosity_)
 	  std::cout << "EcalWeightsBuilder::~EcalWeightsBuilder: Warning:"
 		    << " Impossible to compute weights iTdcBin =" << iTdcBin
 		    << std::endl;
 	continue;
       }//compute weights.
-      if (!weights_time_gain.compute(pulseShape, pulseShapeDerivative, tMax_gain)) { 
+      //if (!weights_time_gain.compute(pulseShape, pulseShapeDerivative, tMax_gain)) { 
+      if (!weights_time_gain.compute(pulseShape_gain, pulseShapeDerivative_gain, tMax_gain)) { //modif-SM6
 	if (verbosity_)
 	  std::cout << "EcalWeightsBuilder::~EcalWeightsBuilder: Warning:"
 		    << " Impossible to compute time weights iTdcBin =" << iTdcBin
@@ -473,20 +615,66 @@ void EcalWeightsBuilder::analyze(const edm::Event& evt, const edm::EventSetup& e
       }//compute weights.
     
       if(debug_){
+	
+	//if(!iTdcBin) fAmpWeightsGain_TB << XtalSpecial_[igroupId - 3] << std::endl; //modif-last
+	
 	//WRITING HIGH GAIN WEIGHTS INTO OUTPUT FILE
-	for (int unsigned iSample = 0; iSample < nSamples_; iSample++) {
-	  fAmpWeightsGain_TB << std::setw(10) << std::setprecision(7) << weights_gain.getAmpWeight(iSample) << " "; 
-	  if (doFitBaseline_gain_)
-	    fPedWeightsGain_TB << std::setw(10) << std::setprecision(7) << weights_gain.getPedWeight(iSample) << " "; 
-	  if(default_weights_) fTimeWeightsGain_TB << std::setw(10) << std::setprecision(7) << weights_time_gain.getTimeWeight(iSample) << " "; 
-	  else if (doFitTime_gain_) { fTimeWeightsGain_TB << std::setw(10) << std::setprecision(7) << weights_gain.getTimeWeight(iSample) << " "; }
-	  for (int unsigned iSample2 = 0; iSample2 < nSamples_; iSample2++)
-	    fChi2Gain_TB << std::setw(10) << std::setprecision(7) << weights_gain.getChi2Matrix(iSample, iSample2) << " "; 
-	  fChi2Gain_TB << std::endl;
-	}
-	fAmpWeightsGain_TB << std::endl;
-	if (doFitBaseline_gain_) fPedWeightsGain_TB << std::endl;
-	if (default_weights_ || doFitTime_gain_) fTimeWeightsGain_TB << std::endl;
+	//MODIF-SM06-BEGIN
+	if(SuperModule_ == 6)
+	  {
+	    for (int unsigned iSample = 0; iSample < nSamples_; iSample++) {
+	      if(iSample == 0){
+		fAmpWeightsGain_TB << std::setw(10) << std::setprecision(7) << 0.0 << " "; 
+		if (doFitBaseline_gain_)
+		  fPedWeightsGain_TB << std::setw(10) << std::setprecision(7) << 0.0 << " "; 
+		if(default_weights_) fTimeWeightsGain_TB << std::setw(10) << std::setprecision(7) << 0.0 << " "; 
+		else if (doFitTime_gain_) { fTimeWeightsGain_TB << std::setw(10) << std::setprecision(7) << 0.0 << " "; }
+		for (int unsigned iSample2 = 0; iSample2 < nSamples_; iSample2++)
+		  fChi2Gain_TB << std::setw(10) << std::setprecision(7) << 0.0 << " "; 
+		fChi2Gain_TB << std::endl;
+	      }
+	      else {
+		fAmpWeightsGain_TB << std::setw(10) << std::setprecision(7) 
+				   << weights_gain.getAmpWeight(iSample-1) << " "; 
+		if (doFitBaseline_gain_)
+		  fPedWeightsGain_TB << std::setw(10) << std::setprecision(7) 
+				     << weights_gain.getPedWeight(iSample-1) << " "; 
+		if(default_weights_) fTimeWeightsGain_TB << std::setw(10) << std::setprecision(7) 
+							 << weights_time_gain.getTimeWeight(iSample-1) << " "; 
+		else if (doFitTime_gain_) { fTimeWeightsGain_TB << std::setw(10) << std::setprecision(7) 
+								<< weights_gain.getTimeWeight(iSample-1) << " "; }
+		for (int unsigned iSample2 = 0; iSample2 < nSamples_; iSample2++)
+		  fChi2Gain_TB << std::setw(10) << std::setprecision(7) 
+			       << weights_gain.getChi2Matrix(iSample-1, iSample2) 
+			       << " "; 
+		fChi2Gain_TB << std::endl;
+	      }
+	    }//loop samples
+	    fAmpWeightsGain_TB << std::endl;
+	    if (doFitBaseline_gain_) fPedWeightsGain_TB << std::endl;
+	    if (default_weights_ || doFitTime_gain_) fTimeWeightsGain_TB << std::endl;
+	  }//for Supermodule 6	//MODIF-SM06-END
+	else 
+	  {
+	    for (int unsigned iSample = 0; iSample < nSamples_; iSample++) {
+	      fAmpWeightsGain_TB << std::setw(10) << std::setprecision(7) 
+				 << weights_gain.getAmpWeight(iSample) << " "; 
+	      if (doFitBaseline_gain_)
+		fPedWeightsGain_TB << std::setw(10) << std::setprecision(7) 
+				   << weights_gain.getPedWeight(iSample) << " "; 
+	      if(default_weights_) fTimeWeightsGain_TB << std::setw(10) << std::setprecision(7) 
+						       << weights_time_gain.getTimeWeight(iSample) << " "; 
+	      else if (doFitTime_gain_) { fTimeWeightsGain_TB << std::setw(10) << std::setprecision(7) 
+							      << weights_gain.getTimeWeight(iSample) << " "; }
+	      for (int unsigned iSample2 = 0; iSample2 < nSamples_; iSample2++)
+		fChi2Gain_TB << std::setw(10) << std::setprecision(7) 
+			     << weights_gain.getChi2Matrix(iSample, iSample2) << " "; 
+	      fChi2Gain_TB << std::endl;
+	    }//loop samples
+	    fAmpWeightsGain_TB << std::endl;
+	    if (doFitBaseline_gain_) fPedWeightsGain_TB << std::endl;
+	    if (default_weights_ || doFitTime_gain_) fTimeWeightsGain_TB << std::endl;
+	  }
 
 	if (iTdcBin == 12 && !gen_groupID_){
 	  if(default_weights_) {
@@ -497,9 +685,11 @@ void EcalWeightsBuilder::analyze(const edm::Event& evt, const edm::EventSetup& e
 	      else fAmpWeightsGain_CMS << std::setw(10) << std::setprecision(7) << 0.0 << " ";
 	    }//loop sample
 	    fAmpWeightsGain_CMS << std::endl;
-	    for (int unsigned iSample = 0; iSample < nSamples_; iSample++) fPedWeightsGain_CMS << std::setw(10) << std::setprecision(7) << 0.0 << " ";
+	    for (int unsigned iSample = 0; iSample < nSamples_; iSample++) fPedWeightsGain_CMS 
+	      << std::setw(10) << std::setprecision(7) << 0.0 << " ";
 	    fPedWeightsGain_CMS << std::endl;
-	    for (int unsigned iSample = 0; iSample < nSamples_; iSample++) fTimeWeightsGain_CMS << std::setw(10) << std::setprecision(7) << 0.0 << " ";
+	    for (int unsigned iSample = 0; iSample < nSamples_; iSample++) fTimeWeightsGain_CMS 
+	      << std::setw(10) << std::setprecision(7) << 0.0 << " ";
 	    fTimeWeightsGain_CMS << std::endl;
 	    for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
 	      for (int unsigned iSample2 = 0; iSample2 < nSamples_; iSample2++)
@@ -510,13 +700,17 @@ void EcalWeightsBuilder::analyze(const edm::Event& evt, const edm::EventSetup& e
 	  else
 	    {
 	      for (int unsigned iSample = 0; iSample < nSamples_; iSample++) {
-		fAmpWeightsGain_CMS << std::setw(10) << std::setprecision(7) << weights_gain.getAmpWeight(iSample) << " "; 
+		fAmpWeightsGain_CMS << std::setw(10) << std::setprecision(7) 
+				    << weights_gain.getAmpWeight(iSample) << " "; 
 		if (doFitBaseline_gain_)
-		  fPedWeightsGain_CMS  << std::setw(10) << std::setprecision(7) << weights_gain.getPedWeight(iSample) << " "; 
+		  fPedWeightsGain_CMS  << std::setw(10) << std::setprecision(7) 
+				       << weights_gain.getPedWeight(iSample) << " "; 
 		if (doFitTime_gain_)
-		  fTimeWeightsGain_CMS << std::setw(10) << std::setprecision(7) << weights_gain.getTimeWeight(iSample) << " "; 
+		  fTimeWeightsGain_CMS << std::setw(10) << std::setprecision(7) 
+				       << weights_gain.getTimeWeight(iSample) << " "; 
 		for (int unsigned iSample2 = 0; iSample2 < nSamples_; iSample2++)
-		  fChi2Gain_CMS << std::setw(10) << std::setprecision(7) << weights_gain.getChi2Matrix(iSample, iSample2) << " "; 
+		  fChi2Gain_CMS << std::setw(10) << std::setprecision(7) 
+				<< weights_gain.getChi2Matrix(iSample, iSample2) << " "; 
 		fChi2Gain_CMS << std::endl;
 	      }//loop sample
 	      fAmpWeightsGain_CMS << std::endl;
@@ -525,7 +719,7 @@ void EcalWeightsBuilder::analyze(const edm::Event& evt, const edm::EventSetup& e
 	    }
 	}//CMS
       }//debug files
-      
+	
       //CREATING THE WEIGHTS FILE:
       if (!iTdcBin){
 	//STANDARD DATA BASE HEADER:
@@ -545,42 +739,153 @@ void EcalWeightsBuilder::analyze(const edm::Event& evt, const edm::EventSetup& e
       }//header
 
       //low energy
-      for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
-	WeightsFileTB << std::setw(10) << std::setprecision(7) << weights.getAmpWeight(iSample) << " "; }
-      WeightsFileTB << std::endl;
-      for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
-	if (doFitBaseline_) {WeightsFileTB << std::setw(10) << std::setprecision(7) << weights.getPedWeight(iSample) << " ";}
-	else               {WeightsFileTB << std::setw(10) << std::setprecision(7) << 0.0 << " ";}}
-      WeightsFileTB << std::endl;
-      for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
-	if(default_weights_) WeightsFileTB << std::setw(10) << std::setprecision(7) << weights_time.getTimeWeight(iSample) << " "; 
-	else { if (doFitTime_) WeightsFileTB << std::setw(10) << std::setprecision(7) << weights.getTimeWeight(iSample) << " ";
-	  else WeightsFileTB << std::setw(10) << std::setprecision(7) << 0.0 << " "; }}
-      WeightsFileTB << std::endl;
-      for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
-	for (int unsigned iSample2 = 0; iSample2 < nSamples_; iSample2++)
-	  WeightsFileTB << std::setw(10) << std::setprecision(7) << weights.getChi2Matrix(iSample, iSample2) << " "; 
-	WeightsFileTB << std::endl;
-      }//loop sample
+      if(SuperModule_ == 6 && ((shiftTime >= 0 && checkpos) || (shiftTime < 0 && checkneg)))
+	{
+	  for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
+	    if(iSample == 4) WeightsFileTB << std::setw(10) << std::setprecision(7) << 0.0 << " "; 
+	    if(iSample <= 3) WeightsFileTB << std::setw(10) << std::setprecision(7) 
+					   << weights.getAmpWeight(iSample)   << " "; 
+	    if(iSample >  4) WeightsFileTB << std::setw(10) << std::setprecision(7) 
+					   << weights.getAmpWeight(iSample-1) << " "; 
+	  } WeightsFileTB << std::endl;
+	  
+	  for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
+	    if (doFitBaseline_) 
+	      { if(iSample == 4) WeightsFileTB << std::setw(10) << std::setprecision(7) << 0.0 << " "; 
+		if(iSample <= 3) WeightsFileTB << std::setw(10) << std::setprecision(7) 
+					       << weights.getPedWeight(iSample) << " ";
+		if(iSample >  4) WeightsFileTB << std::setw(10) << std::setprecision(7) 
+					       << weights.getPedWeight(iSample-1) << " ";
+	      }
+	    else {WeightsFileTB << std::setw(10) << std::setprecision(7) << 0.0 << " ";}
+	  } WeightsFileTB << std::endl;
+
+	  for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
+	    if(default_weights_) 
+	      { if(iSample == 4) WeightsFileTB << std::setw(10) << std::setprecision(7) << 0.0 << " "; 
+		if(iSample <= 3) WeightsFileTB << std::setw(10) << std::setprecision(7) 
+					       << weights_time.getTimeWeight(iSample) << " "; 
+		if(iSample >  4) WeightsFileTB << std::setw(10) << std::setprecision(7) 
+					       << weights_time.getTimeWeight(iSample-1) << " "; 
+	      }
+	    else { 
+	      if (doFitTime_) 
+		{ if(iSample == 4) WeightsFileTB << std::setw(10) << std::setprecision(7) << 0.0 << " "; 
+		  if(iSample <= 3) WeightsFileTB << std::setw(10) << std::setprecision(7) 
+						 << weights.getTimeWeight(iSample) << " ";
+		  if(iSample >  4) WeightsFileTB << std::setw(10) << std::setprecision(7) 
+						 << weights.getTimeWeight(iSample-1) << " ";
+		}
+	      else WeightsFileTB << std::setw(10) << std::setprecision(7) << 0.0 << " "; }
+	  } WeightsFileTB << std::endl;
+
+	  for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
+	    if(iSample == 4){
+	      for (int unsigned iSample2 = 0; iSample2 < nSamples_; iSample2++)
+		WeightsFileTB << std::setw(10) << std::setprecision(7) << 0.0 << " "; 
+	      WeightsFileTB << std::endl;
+	    }
+	    if(iSample <= 3){
+	      for (int unsigned iSample2 = 0; iSample2 < nSamples_; iSample2++)
+		WeightsFileTB << std::setw(10) << std::setprecision(7) 
+			      << weights.getChi2Matrix(iSample, iSample2) << " "; 
+	      WeightsFileTB << std::endl;
+	    }
+	    if(iSample >  4){
+	      for (int unsigned iSample2 = 0; iSample2 < nSamples_; iSample2++)
+		WeightsFileTB << std::setw(10) << std::setprecision(7) 
+			      << weights.getChi2Matrix(iSample-1, iSample2) << " "; 
+	      WeightsFileTB << std::endl;
+	    }
+	  }//loop sample
+	}//for Supermodule 6	//MODIF-SM06-END
+      else
+	{
+	  for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
+	    WeightsFileTB << std::setw(10) << std::setprecision(7) << weights.getAmpWeight(iSample) << " "; }
+	  WeightsFileTB << std::endl;
+	  for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
+	    if (doFitBaseline_) {WeightsFileTB << std::setw(10) << std::setprecision(7) 
+					       << weights.getPedWeight(iSample) << " ";}
+	    else               {WeightsFileTB << std::setw(10) << std::setprecision(7) << 0.0 << " ";}}
+	  WeightsFileTB << std::endl;
+	  for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
+	    if(default_weights_) WeightsFileTB << std::setw(10) << std::setprecision(7) 
+					       << weights_time.getTimeWeight(iSample) << " "; 
+	    else { if (doFitTime_) WeightsFileTB << std::setw(10) << std::setprecision(7) 
+						 << weights.getTimeWeight(iSample) << " ";
+	      else WeightsFileTB << std::setw(10) << std::setprecision(7) << 0.0 << " "; }}
+	  WeightsFileTB << std::endl;
+	  for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
+	    for (int unsigned iSample2 = 0; iSample2 < nSamples_; iSample2++)
+	      WeightsFileTB << std::setw(10) << std::setprecision(7) 
+			    << weights.getChi2Matrix(iSample, iSample2) << " "; 
+	    WeightsFileTB << std::endl;
+	  }//loop sample
+	}
       
       //high energy
-      for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
-	WeightsFileTB << std::setw(10) << std::setprecision(7) << weights_gain.getAmpWeight(iSample) << " "; }
-      WeightsFileTB << std::endl;
-      for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
-	if (doFitBaseline_gain_) {WeightsFileTB << std::setw(10) << std::setprecision(7) << weights_gain.getPedWeight(iSample) << " "; }
-	else                    {WeightsFileTB << std::setw(10) << std::setprecision(7) << 0.0 << " ";}}
-      WeightsFileTB << std::endl;
-      for (int unsigned iSample = 0; iSample < nSamples_; iSample++) {
-	if(default_weights_)      WeightsFileTB << std::setw(10) << std::setprecision(7) << weights_time_gain.getTimeWeight(iSample) << " "; 
-	else { if (doFitTime_gain_) WeightsFileTB << std::setw(10) << std::setprecision(7) << weights_gain.getTimeWeight(iSample) << " ";
-	  else WeightsFileTB << std::setw(10) << std::setprecision(7) << 0.0 << " ";}}
-      WeightsFileTB << std::endl;
-      for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
-	for (int unsigned iSample2 = 0; iSample2 < nSamples_; iSample2++)
-	  WeightsFileTB << std::setw(10) << std::setprecision(7) << weights_gain.getChi2Matrix(iSample, iSample2) << " "; 
-	WeightsFileTB << std::endl;
-      }//loop sample      
+      if(SuperModule_ == 6)//modif-SM6
+	{
+	  for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
+	    if(iSample == 0) WeightsFileTB << std::setw(10) << std::setprecision(7) << 0.0 << " "; 
+	    else             WeightsFileTB << std::setw(10) << std::setprecision(7) 
+					   << weights_gain.getAmpWeight(iSample-1) << " "; }
+	  WeightsFileTB << std::endl;
+	  for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
+	    if (doFitBaseline_gain_) 
+	      { if(iSample == 0) WeightsFileTB << std::setw(10) << std::setprecision(7) << 0.0 << " "; 
+		else             WeightsFileTB << std::setw(10) << std::setprecision(7) 
+					       << weights_gain.getPedWeight(iSample-1) << " "; }
+	    else                {WeightsFileTB << std::setw(10) << std::setprecision(7) << 0.0 << " ";}}
+	  WeightsFileTB << std::endl;
+	  for (int unsigned iSample = 0; iSample < nSamples_; iSample++) {
+	    if(default_weights_)      
+	      { if(iSample == 0) WeightsFileTB << std::setw(10) << std::setprecision(7) << 0.0 << " "; 
+		else             WeightsFileTB << std::setw(10) << std::setprecision(7) 
+					       << weights_time_gain.getTimeWeight(iSample-1) << " ";}
+	    else 
+	      { if (doFitTime_gain_) 
+		  { if(iSample == 0) WeightsFileTB << std::setw(10) << std::setprecision(7) << 0.0 << " ";
+		    else WeightsFileTB << std::setw(10) << std::setprecision(7) 
+				       << weights_gain.getTimeWeight(iSample-1) << " ";}
+		else WeightsFileTB << std::setw(10) << std::setprecision(7) << 0.0 << " ";}}
+	  WeightsFileTB << std::endl;
+	  for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
+	    if(iSample == 0)
+	      for (int unsigned iSample2 = 0; iSample2 < nSamples_; iSample2++)
+		WeightsFileTB << std::setw(10) << std::setprecision(7) << 0.0 << " "; 
+	    else
+	      for (int unsigned iSample2 = 0; iSample2 < nSamples_; iSample2++)
+		WeightsFileTB << std::setw(10) << std::setprecision(7) 
+			      << weights_gain.getChi2Matrix(iSample-1, iSample2) << " "; 
+	    WeightsFileTB << std::endl;
+	  }
+	}
+      else
+	{
+	  for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
+	    WeightsFileTB << std::setw(10) << std::setprecision(7) << weights_gain.getAmpWeight(iSample) << " "; }
+	  WeightsFileTB << std::endl;
+	  for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
+	    if (doFitBaseline_gain_) {WeightsFileTB << std::setw(10) << std::setprecision(7) 
+						    << weights_gain.getPedWeight(iSample) << " "; }
+	    else                    {WeightsFileTB << std::setw(10) << std::setprecision(7) << 0.0 << " ";}}
+	  WeightsFileTB << std::endl;
+	  for (int unsigned iSample = 0; iSample < nSamples_; iSample++) {
+	    if(default_weights_)      WeightsFileTB << std::setw(10) << std::setprecision(7) 
+						    << weights_time_gain.getTimeWeight(iSample) << " "; 
+	    else { if (doFitTime_gain_) WeightsFileTB << std::setw(10) << std::setprecision(7) 
+						      << weights_gain.getTimeWeight(iSample) << " ";
+	      else WeightsFileTB << std::setw(10) << std::setprecision(7) << 0.0 << " ";}}
+	  WeightsFileTB << std::endl;
+	  for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
+	    for (int unsigned iSample2 = 0; iSample2 < nSamples_; iSample2++)
+	      WeightsFileTB << std::setw(10) << std::setprecision(7) 
+			    << weights_gain.getChi2Matrix(iSample, iSample2) << " "; 
+	    WeightsFileTB << std::endl;
+	  }//loop sample      
+	}
       
       // WEIGHTS FOR CMS /////////////////////////////////////////////////////////////////////////////
       if (iTdcBin == 12 && default_weights_ && !gen_groupID_){
@@ -588,17 +893,21 @@ void EcalWeightsBuilder::analyze(const edm::Event& evt, const edm::EventSetup& e
 	
 	//low energy
 	for (int unsigned iSample = 0; iSample < nSamples_; iSample++) 
-	  WeightsFileCMS << std::setw(10) << std::setprecision(7) << weights.getAmpWeight(iSample) << " ";
+	  WeightsFileCMS << std::setw(10) << std::setprecision(7) 
+			 << weights.getAmpWeight(iSample) << " ";
 	WeightsFileCMS << std::endl;
 	for (int unsigned iSample = 0; iSample < nSamples_; iSample++) 
-	  WeightsFileCMS << std::setw(10) << std::setprecision(7) << weights.getPedWeight(iSample) << " ";
+	  WeightsFileCMS << std::setw(10) << std::setprecision(7) 
+	    << weights.getPedWeight(iSample) << " ";
 	WeightsFileCMS << std::endl;
 	for (int unsigned iSample = 0; iSample < nSamples_; iSample++)
-	  WeightsFileCMS << std::setw(10) << std::setprecision(7) << weights_time.getTimeWeight(iSample) << " "; 
+	  WeightsFileCMS << std::setw(10) << std::setprecision(7) 
+			 << weights_time.getTimeWeight(iSample) << " "; 
 	WeightsFileCMS << std::endl;
 	for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
 	  for (int unsigned iSample2 = 0; iSample2 < nSamples_; iSample2++)
-	    WeightsFileCMS << std::setw(10) << std::setprecision(7) << weights.getChi2Matrix(iSample, iSample2) << " "; 
+	    WeightsFileCMS << std::setw(10) << std::setprecision(7) 
+			   << weights.getChi2Matrix(iSample, iSample2) << " "; 
 	  WeightsFileCMS << std::endl;
 	}//loop sample
 	
@@ -610,9 +919,11 @@ void EcalWeightsBuilder::analyze(const edm::Event& evt, const edm::EventSetup& e
 	  else WeightsFileCMS << std::setw(10) << std::setprecision(7) << 0.0 << " ";
 	}
 	WeightsFileCMS << std::endl;
-	for (int unsigned iSample = 0; iSample < nSamples_; iSample++) WeightsFileCMS << std::setw(10) << std::setprecision(7) << 0.0 << " ";
+	for (int unsigned iSample = 0; iSample < nSamples_; iSample++) 
+	  WeightsFileCMS << std::setw(10) << std::setprecision(7) << 0.0 << " ";
 	WeightsFileCMS << std::endl;
-	for (int unsigned iSample = 0; iSample < nSamples_; iSample++) WeightsFileCMS << std::setw(10) << std::setprecision(7) << 0.0 << " ";
+	for (int unsigned iSample = 0; iSample < nSamples_; iSample++) 
+	  WeightsFileCMS << std::setw(10) << std::setprecision(7) << 0.0 << " ";
 	WeightsFileCMS << std::endl;
 	for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
 	  for (int unsigned iSample2 = 0; iSample2 < nSamples_; iSample2++)
@@ -625,14 +936,16 @@ void EcalWeightsBuilder::analyze(const edm::Event& evt, const edm::EventSetup& e
       //EXTRA SETS OF WEIGHTS FOR RECONSTRUCTION AT HIGH ENERGY
       //2nd CONFIGURATION SAMPLES : samples 4, 5 ,6 ,7 ,8 are in gain 6
       //In that case Tmax = Tmax;
-      if (!weights_gain.compute(pulseShape, pulseShapeDerivative, tMax)) { 
+      //if (!weights_gain.compute(pulseShape, pulseShapeDerivative, tMax)) { 
+      if (!weights_gain.compute(pulseShape_gain, pulseShapeDerivative_gain, tMax)) {  //modif-SM6
 	if (verbosity_)
 	  std::cout << "EcalWeightsBuilder::~EcalWeightsBuilder: Warning:"
 		    << " Impossible to compute weights iTdcBin =" << iTdcBin
 		    << std::endl;
 	continue;
       }//compute weights.
-      if (!weights_time_gain.compute(pulseShape, pulseShapeDerivative, tMax)) { 
+      //if (!weights_time_gain.compute(pulseShape, pulseShapeDerivative, tMax)) { 
+      if (!weights_time_gain.compute(pulseShape_gain, pulseShapeDerivative_gain, tMax)) { //modif-SM6
 	if (verbosity_)
 	  std::cout << "EcalWeightsBuilder::~EcalWeightsBuilder: Warning:"
 		    << " Impossible to compute time weights iTdcBin =" << iTdcBin
@@ -641,13 +954,17 @@ void EcalWeightsBuilder::analyze(const edm::Event& evt, const edm::EventSetup& e
       }//compute weights.
 
       //saving these extra weights into a vector
-      for (int unsigned iSample = 0; iSample < nSamples_; iSample++)   extraWeights_amp.push_back(weights_gain.getAmpWeight(iSample));
+      for (int unsigned iSample = 0; iSample < nSamples_; iSample++)   
+	extraWeights_amp.push_back(weights_gain.getAmpWeight(iSample));
       if (doFitBaseline_gain_) 
-	for (int unsigned iSample = 0; iSample < nSamples_; iSample++) extraWeights_ped.push_back(weights_gain.getPedWeight(iSample));
+	for (int unsigned iSample = 0; iSample < nSamples_; iSample++) 
+	  extraWeights_ped.push_back(weights_gain.getPedWeight(iSample));
       if(default_weights_) 
-	for (int unsigned iSample = 0; iSample < nSamples_; iSample++) extraWeights_time.push_back(weights_time_gain.getTimeWeight(iSample));
+	for (int unsigned iSample = 0; iSample < nSamples_; iSample++) 
+	  extraWeights_time.push_back(weights_time_gain.getTimeWeight(iSample));
       else if (doFitTime_gain_) 
-	for (int unsigned iSample = 0; iSample < nSamples_; iSample++) extraWeights_time.push_back(weights_gain.getTimeWeight(iSample));
+	for (int unsigned iSample = 0; iSample < nSamples_; iSample++) 
+	  extraWeights_time.push_back(weights_gain.getTimeWeight(iSample));
       for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
 	for (int unsigned iSample2 = 0; iSample2 < nSamples_; iSample2++)
 	  extraWeights_chi2.push_back(weights_gain.getChi2Matrix(iSample, iSample2));
@@ -674,23 +991,71 @@ void EcalWeightsBuilder::analyze(const edm::Event& evt, const edm::EventSetup& e
 	if (default_weights_ || doFitTime_) fTimeWeights_TB << std::endl;  
 	
 	//WRITING HIGH GAIN WEIGHTS INTO OUTPUT FILE
-	for (int unsigned iSample = 0; iSample < nSamples_; iSample++)
-	  fAmpWeightsGain_TB << std::setw(10) << std::setprecision(7)   << extraWeights_amp[iSample+iTdcBin*nSamples_] << " "; 	
-	if (doFitBaseline_gain_) {
-	  for (int unsigned iSample = 0; iSample < nSamples_; iSample++) 
-	    fPedWeightsGain_TB << std::setw(10) << std::setprecision(7) << extraWeights_ped[iSample+iTdcBin*nSamples_] << " "; 
-	}//baseline	
-	if(default_weights_ || doFitTime_gain_) 
+	if(SuperModule_ == 6)//modif-SM6
+	  {
+	    for (int unsigned iSample = 0; iSample < nSamples_; iSample++){
+	      if(iSample == 0){
+		fAmpWeightsGain_TB << std::setw(10) << std::setprecision(7)   << 0.0 << " "; 	
+		if (doFitBaseline_gain_) {
+		  for (int unsigned iSample = 0; iSample < nSamples_; iSample++) 
+		    fPedWeightsGain_TB << std::setw(10) << std::setprecision(7) << 0.0 << " "; 
+		}//baseline	
+		if(default_weights_ || doFitTime_gain_) 
+		  for (int unsigned iSample = 0; iSample < nSamples_; iSample++)
+		    fTimeWeightsGain_TB << std::setw(10) << std::setprecision(7) << 0.0 << " "; 	
+		for (int unsigned iSample = 0; iSample < nSamples_; iSample++){
+		  for (int unsigned iSample2 = 0; iSample2 < nSamples_; iSample2++)
+		    fChi2Gain_TB << std::setw(10) << std::setprecision(7) << 0.0 << " "; 
+		  fChi2Gain_TB << std::endl;
+		}
+	      }
+	      else {
+		  fAmpWeightsGain_TB << std::setw(10) << std::setprecision(7)   
+				     << extraWeights_amp[iSample-1+iTdcBin*nSamples_] << " "; 	
+		if (doFitBaseline_gain_) {
+		  for (int unsigned iSample = 0; iSample < nSamples_; iSample++) 
+		    fPedWeightsGain_TB << std::setw(10) << std::setprecision(7) 
+				       << extraWeights_ped[iSample-1+iTdcBin*nSamples_] << " "; 
+		}//baseline	
+		if(default_weights_ || doFitTime_gain_) 
+		  for (int unsigned iSample = 0; iSample < nSamples_; iSample++)
+		    fTimeWeightsGain_TB << std::setw(10) << std::setprecision(7) 
+					<< extraWeights_time[iSample-1+iTdcBin*nSamples_] << " "; 	
+		for (int unsigned iSample = 0; iSample < nSamples_; iSample++){
+		  for (int unsigned iSample2 = 0; iSample2 < nSamples_; iSample2++)
+		    fChi2Gain_TB << std::setw(10) << std::setprecision(7) 
+				 << extraWeights_chi2[iSample2+(iSample-1)*nSamples_+iTdcBin*nSamples_*nSamples_] << " "; 
+		  fChi2Gain_TB << std::endl;
+		}//loop sample	
+	      }
+	    }//loop sample	
+	    fAmpWeightsGain_TB << std::endl;
+	    if (doFitBaseline_gain_) fPedWeightsGain_TB << std::endl;
+	    if (default_weights_ || doFitTime_gain_) fTimeWeightsGain_TB << std::endl;
+	  }
+	else {
 	  for (int unsigned iSample = 0; iSample < nSamples_; iSample++)
-	    fTimeWeightsGain_TB << std::setw(10) << std::setprecision(7) << extraWeights_time[iSample+iTdcBin*nSamples_] << " "; 	
-	for (int unsigned iSample = 0; iSample < nSamples_; iSample++){
-	  for (int unsigned iSample2 = 0; iSample2 < nSamples_; iSample2++)
-	    fChi2Gain_TB << std::setw(10) << std::setprecision(7) << extraWeights_chi2[iSample2+iSample*nSamples_+iTdcBin*nSamples_*nSamples_] << " "; 
-	  fChi2Gain_TB << std::endl;
-	}//loop sample	
-	fAmpWeightsGain_TB << std::endl;
-	if (doFitBaseline_gain_) fPedWeightsGain_TB << std::endl;
-	if (default_weights_ || doFitTime_gain_) fTimeWeightsGain_TB << std::endl;	
+	    fAmpWeightsGain_TB << std::setw(10) << std::setprecision(7)   
+			       << extraWeights_amp[iSample+iTdcBin*nSamples_] << " "; 	
+	  if (doFitBaseline_gain_) {
+	    for (int unsigned iSample = 0; iSample < nSamples_; iSample++) 
+	      fPedWeightsGain_TB << std::setw(10) << std::setprecision(7) 
+				 << extraWeights_ped[iSample+iTdcBin*nSamples_] << " "; 
+	  }//baseline	
+	  if(default_weights_ || doFitTime_gain_) 
+	    for (int unsigned iSample = 0; iSample < nSamples_; iSample++)
+	      fTimeWeightsGain_TB << std::setw(10) << std::setprecision(7) 
+				  << extraWeights_time[iSample+iTdcBin*nSamples_] << " "; 	
+	  for (int unsigned iSample = 0; iSample < nSamples_; iSample++){
+	    for (int unsigned iSample2 = 0; iSample2 < nSamples_; iSample2++)
+	      fChi2Gain_TB << std::setw(10) << std::setprecision(7) 
+			   << extraWeights_chi2[iSample2+iSample*nSamples_+iTdcBin*nSamples_*nSamples_] << " "; 
+	    fChi2Gain_TB << std::endl;
+	  }//loop sample	
+	  fAmpWeightsGain_TB << std::endl;
+	  if (doFitBaseline_gain_) fPedWeightsGain_TB << std::endl;
+	  if (default_weights_ || doFitTime_gain_) fTimeWeightsGain_TB << std::endl;	
+	}
       }//debug
 
      //low energy
@@ -710,22 +1075,61 @@ void EcalWeightsBuilder::analyze(const edm::Event& evt, const edm::EventSetup& e
       }//loop sample
       
       //high energy
-      for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
-	WeightsFileTB << std::setw(10) << std::setprecision(7) << extraWeights_amp[iSample+iTdcBin*nSamples_] << " "; }
-      WeightsFileTB << std::endl;
-      for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
-	if (doFitBaseline_gain_) {WeightsFileTB << std::setw(10) << std::setprecision(7) << extraWeights_ped[iSample+iTdcBin*nSamples_] << " "; }
-	else                     {WeightsFileTB << std::setw(10) << std::setprecision(7) << 0.0 << " ";}}
-      WeightsFileTB << std::endl;
-      for (int unsigned iSample = 0; iSample < nSamples_; iSample++) {
-	if(default_weights_ || doFitTime_gain_) WeightsFileTB << std::setw(10) << std::setprecision(7) << extraWeights_time[iSample+iTdcBin*nSamples_] << " "; 
-	else WeightsFileTB << std::setw(10) << std::setprecision(7) << 0.0 << " ";}
-      WeightsFileTB << std::endl;
-      for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
-	for (int unsigned iSample2 = 0; iSample2 < nSamples_; iSample2++)
-	  WeightsFileTB << std::setw(10) << std::setprecision(7) << extraWeights_chi2[iSample2+iSample*nSamples_+iTdcBin*nSamples_*nSamples_] << " "; 
-	WeightsFileTB << std::endl;
-      }//loop sample
+      if(SuperModule_ == 6) //modif-SM6
+	{
+	  for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
+	    if(iSample == 0) WeightsFileTB << std::setw(10) << std::setprecision(7) << 0.0 << " "; 
+	    else             WeightsFileTB << std::setw(10) << std::setprecision(7) 
+					   << extraWeights_amp[(iSample-1)+iTdcBin*nSamples_] << " "; }
+	  WeightsFileTB << std::endl;
+	  for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
+	    if (doFitBaseline_gain_) 
+	      { if(iSample == 0) WeightsFileTB << std::setw(10) << std::setprecision(7) << 0.0 << " "; 
+		else             WeightsFileTB << std::setw(10) << std::setprecision(7) 
+					       << extraWeights_ped[(iSample-1)+iTdcBin*nSamples_] << " "; }
+	    else
+	      {WeightsFileTB << std::setw(10) << std::setprecision(7) << 0.0 << " ";}}
+	  WeightsFileTB << std::endl;
+	  for (int unsigned iSample = 0; iSample < nSamples_; iSample++) {
+	    if(default_weights_ || doFitTime_gain_) 
+	      { if(iSample == 0) WeightsFileTB << std::setw(10) << std::setprecision(7) << 0.0 << " ";
+		else             WeightsFileTB << std::setw(10) << std::setprecision(7) 
+					       << extraWeights_time[(iSample-1)+iTdcBin*nSamples_] << " ";}
+	    else WeightsFileTB << std::setw(10) << std::setprecision(7) << 0.0 << " ";}
+	  WeightsFileTB << std::endl;
+	  for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
+	    if(iSample == 0)
+	      for (int unsigned iSample2 = 0; iSample2 < nSamples_; iSample2++)
+		WeightsFileTB << std::setw(10) << std::setprecision(7) << 0.0 << " "; 
+	    else
+	      for (int unsigned iSample2 = 0; iSample2 < nSamples_; iSample2++)
+		WeightsFileTB << std::setw(10) << std::setprecision(7) 
+			      << extraWeights_chi2[iSample2+(iSample-1)*nSamples_+iTdcBin*nSamples_*nSamples_] << " "; 
+	    WeightsFileTB << std::endl;
+	  }//loop sample
+	}
+      else
+	{
+	  for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
+	    WeightsFileTB << std::setw(10) << std::setprecision(7) << extraWeights_amp[iSample+iTdcBin*nSamples_] << " "; }
+	  WeightsFileTB << std::endl;
+	  for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
+	    if (doFitBaseline_gain_) {WeightsFileTB << std::setw(10) << std::setprecision(7) 
+						    << extraWeights_ped[iSample+iTdcBin*nSamples_] << " "; }
+	    else                     {WeightsFileTB << std::setw(10) << std::setprecision(7) << 0.0 << " ";}}
+	  WeightsFileTB << std::endl;
+	  for (int unsigned iSample = 0; iSample < nSamples_; iSample++) {
+	    if(default_weights_ || doFitTime_gain_) WeightsFileTB << std::setw(10) << std::setprecision(7) 
+								  << extraWeights_time[iSample+iTdcBin*nSamples_] << " "; 
+	    else WeightsFileTB << std::setw(10) << std::setprecision(7) << 0.0 << " ";}
+	  WeightsFileTB << std::endl;
+	  for (int unsigned iSample = 0; iSample < nSamples_; iSample++) { 
+	    for (int unsigned iSample2 = 0; iSample2 < nSamples_; iSample2++)
+	      WeightsFileTB << std::setw(10) << std::setprecision(7) 
+			    << extraWeights_chi2[iSample2+iSample*nSamples_+iTdcBin*nSamples_*nSamples_] << " "; 
+	    WeightsFileTB << std::endl;
+	  }//loop sample
+	}
     }//loop TDC 2nd
 
   }//loop group IDs
