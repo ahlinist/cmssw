@@ -308,8 +308,8 @@ namespace edm {
     StatusCode processRuns(int numberEventsToProcess,
 		     event_processor::Msg m);
     StatusCode doneAsync(event_processor::Msg m);
-    EventHelperDescription runOnce(boost::shared_ptr<RunPrincipal> rp,
-                                   boost::shared_ptr<LuminosityBlockPrincipal> lbp);
+    EventHelperDescription runOnce(boost::shared_ptr<RunPrincipal>& rp,
+                                   boost::shared_ptr<LuminosityBlockPrincipal>& lbp);
     
     void rewind();
 
