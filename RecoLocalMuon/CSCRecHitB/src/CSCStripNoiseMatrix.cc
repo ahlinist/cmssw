@@ -65,7 +65,6 @@ CSCStripNoiseMatrix::~CSCStripNoiseMatrix() {
   elem[14] = 0.;
 
 
-
   // Note that ME-1a constants are stored in ME-11 (ME-1b)
   // Note that ME1/a constants are stored beginning at entry 64
   // Also, only have only 16 strips to worry about for ME1a
@@ -80,7 +79,6 @@ CSCStripNoiseMatrix::~CSCStripNoiseMatrix() {
   }
 
   int chId= chamberIdPrefix + ec*100000 + st*10000 + rg*1000 + ch*10 + la;
-  // 220000000 + ec*100000 + st*10000 + rg*1000 + ch*10 + la;
   
   int idx = 0;
   for ( int sid = strip1-1; sid < strip1+2; sid++ ) {

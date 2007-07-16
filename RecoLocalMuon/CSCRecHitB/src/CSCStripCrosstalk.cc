@@ -45,10 +45,13 @@ void CSCStripCrosstalk::getCrossTalk( const CSCDetId& id, int centralStrip, std:
   int ch = id.chamber();
   int la = id.layer();
 
+  bool isME1a = false;
+
   // Note that ME1/a constants are stored in ME1/1 which also constains ME1/b
   // ME1/a constants are stored beginning at entry 64
   // Also, only have only 16 strips to worry about for ME1a
-  if ((id.station() == 1 ) && (id.ring() == 4 )) {   
+  if ( id.station() == 1  && id.ring() == 4 ) {   
+    isME1a = true;
     rg = 1;
     strip1 = centralStrip%16 - 1;
     if (strip1 < 0) strip1 = 15;
@@ -75,10 +78,11 @@ void CSCStripCrosstalk::getCrossTalk( const CSCDetId& id, int centralStrip, std:
       b_right = xTalk_->crosstalk[chId][sid].xtalk_intercept_right;
     } else {
       m_left  = 0.;
-      b_left  = 0.02;
+      b_left  = 0.035;
       m_right = 0.;
-      b_right = 0.02;
+      b_right = 0.035;
     }
+
     xtalks.push_back(m_left);
     xtalks.push_back(b_left);
     xtalks.push_back(m_right);

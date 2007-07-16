@@ -42,24 +42,23 @@ void CSCStripGain::getStripGain( const CSCDetId& id, float* weights ) {
   int ch = id.chamber();
   int la = id.layer();
 
-  int chId= chamberIdPrefix + ec*100000 + st*10000 + rg*1000 + ch*10 + la;
-
+  int strip1 = 0;
   int nStrips = 80;
   if ( st == 1 && rg == 1) nStrips = 64;
   if ( st == 1 && rg == 3) nStrips = 64;
 
   // Note that ME1/a constants are stored in ME1/1 (ME1/b) starting at entry 64
-  if ( st == 1  && rg == 4 ) {
+  if ( st == 1 && rg == 4 ) {
     rg = 1;
     isME1a = true;
+    strip1 = 64;
   } 
-  
-  int me1a_id = 0;
-  int strip1 = 0;
-  
-  if (isME1a) strip1 = 64;
 
+  int chId= chamberIdPrefix + ec*100000 + st*10000 + rg*1000 + ch*10 + la;
+
+    
   float w = 1.0;
+  int storeId = 0;
 
   for ( int sid = strip1; sid < nStrips; sid++ ) {
     if (Gains_->gains.find(chId) != Gains_->gains.end( ) ) {
@@ -72,14 +71,12 @@ void CSCStripGain::getStripGain( const CSCDetId& id, float* weights ) {
     if (w < 0.5) w = 0.5;
  
     if ( !isME1a ) {
-      weights[sid] = w;
+      weights[storeId] = w;
     } else {
-      if (sid > 63 ) {
-        weights[me1a_id]    = w;
-        weights[me1a_id+16] = w;
-        weights[me1a_id+32] = w;
-        me1a_id++;
-      }
+      weights[storeId]    = w;
+      weights[storeId+16] = w;
+      weights[storeId+32] = w;
     }
+    storeId++;
   }
 }
