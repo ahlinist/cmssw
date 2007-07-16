@@ -19,6 +19,7 @@
 CSCStripGain::CSCStripGain( const edm::ParameterSet & ps ) {
 
   debug                  = ps.getUntrackedParameter<bool>("CSCDebug");  
+  isData                 = ps.getUntrackedParameter<bool>("CSCIsRunningOnData");
   theCSCMap              = CSCReadoutMappingFromFile( ps );                                              
   chamberIdPrefix        = ps.getUntrackedParameter<int>("CSCchamberIdPrefix");
 }
@@ -41,12 +42,6 @@ void CSCStripGain::getStripGain( const CSCDetId& id, float* weights ) {
   int ch = id.chamber();
   int la = id.layer();
 
-  // Note that ME-1a constants are stored in ME-11 (ME-1b)
-  if (id.station() == 1 && id.ring() == 4 ) {
-    rg = 1;
-    isME1a = true;
-  }
-
   int chId= chamberIdPrefix + ec*100000 + st*10000 + rg*1000 + ch*10 + la;
 
   int nStrips = 80;
@@ -57,7 +52,7 @@ void CSCStripGain::getStripGain( const CSCDetId& id, float* weights ) {
   if ( st == 1  && rg == 4 ) {
     rg = 1;
     isME1a = true;
-  }
+  } 
   
   int me1a_id = 0;
   int strip1 = 0;
@@ -66,14 +61,13 @@ void CSCStripGain::getStripGain( const CSCDetId& id, float* weights ) {
 
   float w = 1.0;
 
-//  CSCGains *Gains_n = const_cast<CSCGains*> (Gains);
-
   for ( int sid = strip1; sid < nStrips; sid++ ) {
     if (Gains_->gains.find(chId) != Gains_->gains.end( ) ) {
       w = globalGainAvg/Gains_->gains[chId][sid].gain_slope;
     } else {
       w = 1.0;
     }
+
     if (w > 2.0) w = 2.0;
     if (w < 0.5) w = 0.5;
  
