@@ -103,6 +103,7 @@ class CSCHitFromStripOnly
   float theThresholdForAPeak;
   float theThresholdForCluster;
   bool useCleanStripCollection;
+  bool isData;
 
   /// These are the gain correction weights and X-talks read in from database.
   float gainWeight[80];

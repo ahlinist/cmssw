@@ -39,6 +39,7 @@ class CSCStripCrosstalk
  private:
 
   bool debug;
+  bool isData;
   CSCReadoutMappingFromFile theCSCMap;
   int chamberIdPrefix; 
 

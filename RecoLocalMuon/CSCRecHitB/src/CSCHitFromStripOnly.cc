@@ -31,6 +31,7 @@ CSCHitFromStripOnly::CSCHitFromStripOnly( const edm::ParameterSet& ps ) {
   
   debug                      = ps.getUntrackedParameter<bool>("CSCDebug");
   useCalib                   = ps.getUntrackedParameter<bool>("CSCUseCalibrations");
+  isData                     = ps.getUntrackedParameter<bool>("CSCIsRunningOnData");
   theClusterSize             = ps.getUntrackedParameter<int>("CSCStripClusterSize");
   theThresholdForAPeak       = ps.getUntrackedParameter<double>("CSCStripPeakThreshold");
   theThresholdForCluster     = ps.getUntrackedParameter<double>("CSCStripClusterChargeCut");
@@ -201,7 +202,7 @@ CSCStripHitData CSCHitFromStripOnly::makeStripData(int centerStrip, int offset) 
       // Find the direction of the offset
       int testStrip = thisStrip + sign*i;
 
-      std::vector<int>::iterator otherMax = find(theMaxima.begin(), theMaxima.end(), testStrip);
+      std::vector<int>::iterator otherMax = find(theMaxima.begin(), theMaxima.end(), testStrip-1);
 
       // No other maxima found, so just store
       if ( otherMax == theMaxima.end() ) {
@@ -233,6 +234,9 @@ CSCStripHitData CSCHitFromStripOnly::makeStripData(int centerStrip, int offset) 
           adc[6] = 0.1;
           adc[7] = 0.1;
         }
+        // Scale a = ADC[t] of strip A as  a = a * a / (a + b)
+        // Hence b = ADC[t] of strip b as  b = b * [1 - 1/(a + b)] = b * b / (a + b)
+        // where a[t] = adc[0, 3] ; b[t] = adc[4, 7]
         for (int k = 0; k < 4; ++k) adc[k]   = adc[k] * adc[k] / (adc[k]+adc[k+4]);
         prelimData = CSCStripHitData(thisStrip, adc[0], adc[1], adc[2], adc[3], TmaxOfCluster);
       }
@@ -272,8 +276,8 @@ void CSCHitFromStripOnly::fillPulseHeights( const CSCStripDigiCollection::Range&
     if ( useCleanStripCollection ) {
       if ( !foundCLCTMatch( thisChannel, clctStrips) ) {
         // Don't forget that the ME_11/a strips are ganged !!!
-        // Have to loop 2 more times to populate strips 17-48.
-        if ( id_.station() == 1 && id_.ring() == 4 ) {
+        // Have to loop 2 more times to populate strips 17-48 _IN DATA_.
+        if ( isData && id_.station() == 1 && id_.ring() == 4 ) {
           for ( int j = 0; j < 3; ++j ) {
             thePulseHeightMap[thisChannel+16*j-1] = CSCStripData( float(thisChannel+16*j), hmax, tmax, 0., 0., 0., 0., 0., 0.);
           }
@@ -299,9 +303,9 @@ void CSCHitFromStripOnly::fillPulseHeights( const CSCStripDigiCollection::Range&
     if (maxCluster > maxADCCluster ) maxADCCluster = maxCluster;
 
     // Don't forget that the ME_11/a strips are ganged !!!
-    // Have to loop 2 more times to populate strips 17-48.
+    // Have to loop 2 more times to populate strips 17-48 _IN DATA_.
     
-    if ( id_.station() == 1 && id_.ring() == 4 ) {
+    if ( isData && id_.station() == 1 && id_.ring() == 4 ) {
       for ( int j = 0; j < 3; ++j ) {
         thePulseHeightMap[thisChannel+16*j-1] = CSCStripData( float(thisChannel+16*j), hmax, tmax, height[0], height[1], height[2], height[3], height[4], height[5]);
         if ( useCalib ) thePulseHeightMap[thisChannel+16*j-1] *= gainWeight[thisChannel-1];
@@ -311,9 +315,6 @@ void CSCHitFromStripOnly::fillPulseHeights( const CSCStripDigiCollection::Range&
       if ( useCalib ) thePulseHeightMap[thisChannel-1] *= gainWeight[thisChannel-1];
     }
   }
-  // std::cout << std::endl;
-  // std::cout << "MAXADC " << maxADC << std::endl;
-  // std::cout << "MAXADCCluster " << maxADCCluster << std::endl;
 }
 
 
