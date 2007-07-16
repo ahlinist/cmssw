@@ -3,7 +3,7 @@
 
 <ConstantsSection label="tidringpar.xml" eval="true">
  <Constant name="Rin"               value="22.50*cm"/>
- <Constant name="Rout"              value="50.90*cm"/>
+ <Constant name="Rout"              value="51.20*cm"/>
  <Constant name="RingT"             value="3.00*cm"/>
  <Constant name="StructureT"        value="0.80*cm"/>
  <Constant name="ICBW"              value="2.50*cm"/>
