@@ -57,15 +57,6 @@
    <rChild name="tid:TIDSideDisk"/>
   <Translation x="[zero]" y="[zero]" z="[tid:SideDiskZ]" />
  </PosPart>
- <PosPart copyNumber="1">
-   <rParent name="tidf:TIDF"/>
-   <rChild name="tid:TIDConnector"/>
-  <Translation x="[zero]" y="[zero]" z="[tid:ConnectorZ]" />
- </PosPart>
- <PosPart copyNumber="1">
-   <rParent name="tidf:TIDF"/>
-   <rChild name="tid:TIDAxCabCont"/>
- </PosPart>
 </PosPartSection>
 
 </DDDefinition>
