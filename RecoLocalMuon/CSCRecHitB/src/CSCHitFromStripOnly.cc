@@ -160,7 +160,7 @@ CSCStripHitData CSCHitFromStripOnly::makeStripData(int centerStrip, int offset) 
   int tmax      = thePulseHeightMap[centerStrip-1].t();
   TmaxOfCluster = tmax;
 
-  float adc[8];
+  float adc[12];
 
   if ( tmax == 3 ) {
     adc[0] = thePulseHeightMap[thisStrip-1].y2();
@@ -213,31 +213,43 @@ CSCStripHitData CSCHitFromStripOnly::makeStripData(int centerStrip, int offset) 
           adc[5] = thePulseHeightMap[testStrip-1].y3();
           adc[6] = thePulseHeightMap[testStrip-1].y4();
           adc[7] = thePulseHeightMap[testStrip-1].y5();
+          adc[8] = thePulseHeightMap[centerStrip-1].y2();
+          adc[9] = thePulseHeightMap[centerStrip-1].y3();
+          adc[10] = thePulseHeightMap[centerStrip-1].y4();
+          adc[11] = thePulseHeightMap[centerStrip-1].y5();
         } else if ( tmax == 4 ) {
           adc[4] = thePulseHeightMap[testStrip-1].y3();
           adc[5] = thePulseHeightMap[testStrip-1].y4();
           adc[6] = thePulseHeightMap[testStrip-1].y5();
           adc[7] = thePulseHeightMap[testStrip-1].y6();
+          adc[8] = thePulseHeightMap[centerStrip-1].y3();
+          adc[9] = thePulseHeightMap[centerStrip-1].y4();
+          adc[10] = thePulseHeightMap[centerStrip-1].y5();
+          adc[11] = thePulseHeightMap[centerStrip-1].y6();
          } else if ( tmax == 5 ) {
           adc[4] = thePulseHeightMap[testStrip-1].y4();
           adc[5] = thePulseHeightMap[testStrip-1].y5();
           adc[6] = thePulseHeightMap[testStrip-1].y6();
           adc[7] = thePulseHeightMap[testStrip-1].y7();
+          adc[8] = thePulseHeightMap[centerStrip-1].y4();
+          adc[9] = thePulseHeightMap[centerStrip-1].y5();
+          adc[10] = thePulseHeightMap[centerStrip-1].y6();
+          adc[11] = thePulseHeightMap[centerStrip-1].y7();
          } else if ( tmax == 6 ) {
           adc[4] = thePulseHeightMap[testStrip-1].y5();
           adc[5] = thePulseHeightMap[testStrip-1].y6();
           adc[6] = thePulseHeightMap[testStrip-1].y7();
           adc[7] = 0.1;
+          adc[8] = thePulseHeightMap[centerStrip-1].y5();
+          adc[9] = thePulseHeightMap[centerStrip-1].y6();
+          adc[10] = thePulseHeightMap[centerStrip-1].y7();
+          adc[11] = 0.1;
         } else {
-          adc[4] = 0.1;
-          adc[5] = 0.1;
-          adc[6] = 0.1;
-          adc[7] = 0.1;
+          for (int k = 4; k < 12; ++k ) adc[k] = 0.1;
         }
-        // Scale a = ADC[t] of strip A as  a = a * a / (a + b)
-        // Hence b = ADC[t] of strip b as  b = b * [1 - 1/(a + b)] = b * b / (a + b)
-        // where a[t] = adc[0, 3] ; b[t] = adc[4, 7]
-        for (int k = 0; k < 4; ++k) adc[k]   = adc[k] * adc[k] / (adc[k]+adc[k+4]);
+        // Scale shared strip B by ratio of peak of ADC counts from central strip A
+        // and neighbouring maxima C
+        for (int k = 0; k < 4; ++k) adc[k] = adc[k] * adc[k+8] / (adc[k+4]+adc[k+8]);
         prelimData = CSCStripHitData(thisStrip, adc[0], adc[1], adc[2], adc[3], TmaxOfCluster);
       }
     }
