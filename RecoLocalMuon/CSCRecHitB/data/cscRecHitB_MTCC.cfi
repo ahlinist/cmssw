@@ -14,7 +14,8 @@ module csc2DRecHits = CSCRecHitBProducer {
 ###########################################################
      untracked bool CSCUseCalibrations           = true
 ###  Old DB chamber index prefix (new is 0)
-     untracked int32  CSCchamberIdPrefix         = 220000000
+##     untracked int32  CSCchamberIdPrefix         = 220000000
+     untracked int32  CSCchamberIdPrefix         = 0
      FileInPath theMappingFile                   = "CondFormats/CSCObjects/data/csc_slice_test_map.txt"
 ###########################################################
 #    LCT info:
