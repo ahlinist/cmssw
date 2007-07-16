@@ -1,0 +1,33 @@
+<use name=boost>
+
+<use name=CommonTools/ConditionDBWriter>
+<use name=CondCore/DBCommon>
+<use name=CondCore/DBOutputService>
+<use name=DataFormats/Common>
+<use name=FWCore/Framework>
+<use name=FWCore/MessageLogger>
+<use name=FWCore/ParameterSet>
+<use name=FWCore/PluginManager>
+<use name=FWCore/ServiceRegistry>
+<use name=FWcore/Utilities>
+<lib name=boost_serialization-gcc-mt>
+
+<flags EDM_PLUGIN=1>
+
+<export>
+  <lib name=CalibTrackerSiStripRunSummary>
+
+  <use name=boost>
+
+  <use name=CommonTools/ConditionDBWriter>
+  <use name=CondCore/DBCommon>
+  <use name=CondCore/DBOutputService>
+  <use name=DataFormats/Common>
+  <use name=FWCore/Framework>
+  <use name=FWCore/MessageLogger>
+  <use name=FWCore/ParameterSet>
+  <use name=FWCore/PluginManager>
+  <use name=FWCore/ServiceRegistry>
+  <use name=FWCore/Utilities>
+  <lib name=boost_serialization-gcc-mt>
+</export>
