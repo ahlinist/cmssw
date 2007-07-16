@@ -29,8 +29,6 @@ namespace edm {
 	pset.getUntrackedParameter<ParameterSet>("options", defopts);
       wantSummary_ =
 	opts.getUntrackedParameter("wantSummary",false);
-      makeTriggerResults_ = 
-	opts.getUntrackedParameter("makeTriggerResults",false);
 
       process_name_ = pset.getParameter<std::string>("@process_name");
 

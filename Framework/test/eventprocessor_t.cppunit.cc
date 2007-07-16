@@ -280,7 +280,7 @@ void testeventprocessor::prepostTest()
     edm::EventProcessor const& crProc(proc);
     typedef std::vector<edm::ModuleDescription const*> ModuleDescs;
     ModuleDescs  allModules = crProc.getAllModuleDescriptions();
-    CPPUNIT_ASSERT(1 == allModules.size());
+    CPPUNIT_ASSERT(2 == allModules.size()); // TestMod and TriggerResultsInserter
     std::cout << "\nModuleDescriptions in testeventprocessor::prepostTest()---\n";
     for (ModuleDescs::const_iterator i = allModules.begin(),
 	    e = allModules.end() ; 
