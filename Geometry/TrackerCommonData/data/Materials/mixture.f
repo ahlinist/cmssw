@@ -201,7 +201,8 @@ C     ========================
       CHARACTER*25 PureName(MaxPure)
       REAL Pureweight(MaxPure), Purenumber(MaxPure), Puredens(MaxPure),
      +     PureX0(MaxPure), PureL0(MaxPure)
-      SAVE NPure, Pureweight, Purenumber, Puredens, PureX0, PureL0
+      SAVE NPure, Pureweight, Purenumber, Puredens, PureX0, PureL0,
+     +     Purename
 
       Character*60 string,teststring
 
@@ -280,7 +281,8 @@ C
      +              PureNumber(j),PureDens(j), PureX0(j), PureL0(j)
             enddo
          endif
- 200     Format(A20,F10.5,F7.0,3F15.5)
+ 200     Format(A30,F10.5,F7.0,3F15.5)
+ 201     Format(A30,A30,F10.5,F7.0,3F15.5)
 
          FIRST = .FALSE.
       endif
@@ -296,7 +298,7 @@ C---> try to match material here !
          teststring = PureName(i)
          if(teststring(1:LENOCC(teststring)).eq.
      +        string(1:LENOCC(string))) then
-            if (debug)  write(*,200) PureName(i), Pureweight(i), 
+            if (debug)  write(*,201) string, PureName(i), Pureweight(i), 
      +           PureNumber(i), PureDens(i), PureX0(i), PureL0(i)
             match = 1
 C... set density and radiation lenght and nuclear interaction length
@@ -368,7 +370,9 @@ C.................................................................
 
       External LENOCC
       Integer LENOCC
-      
+
+      character*100 sformat
+
 C..................................................................
 
 C..initialize
@@ -561,15 +565,29 @@ C      write(LUN,*) "\\hline\\hline"
          string1 = Comment(k)
          call LatexUnderscore(string)
          call LatexUnderscore(string1)
-         write(LUN,1001) k,string1(1:LENOCC(string1)),
-     +        string(1:LENOCC(string)),Volume(k),100.*PVOL(k),
-     +        Density(k)*Volume(k),
-     +        100.*Pweight(k),Density(k),Radl(k),100.*PRAD(k),
-     +        Intl(k),100*PINT(k)
+         
+         if (Volume(k).ge.0.1) then
+            write(LUN,1001) k,string1(1:LENOCC(string1)),
+     +           string(1:LENOCC(string)),Volume(k),100.*PVOL(k),
+     +           Density(k)*Volume(k),
+     +           100.*Pweight(k),Density(k),Radl(k),100.*PRAD(k),
+     +           Intl(k),100*PINT(k)
+        else
+            write(LUN,2001) k,string1(1:LENOCC(string1)),
+     +           string(1:LENOCC(string)),Volume(k),100.*PVOL(k),
+     +           Density(k)*Volume(k),
+     +           100.*Pweight(k),Density(k),Radl(k),100.*PRAD(k),
+     +           Intl(k),100*PINT(k)
+       endif
          write(LUN,*) "\\hline"
       enddo
  1001 Format(1X,I4,2X,' & ',A60,' & ',A20,' & ',
-     +     8(1X,F12.3,' & '),1X,F12.3,
+     +     (1X,F10.4,' & '),(1X,F12.3,' & '),(1X,F10.4,' & '),
+     +     5(1X,F12.3,' & '),1X,F12.3,
+     +     '\\','\\')
+ 2001 Format(1X,I4,2X,' & ',A60,' & ',A20,' & ',
+     +     (1X,E10.4,' & '),(1X,F12.3,' & '),(1X,E10.4,' & '),
+     +     5(1X,F12.3,' & '),1X,F12.3,
      +     '\\','\\')
 
 C
