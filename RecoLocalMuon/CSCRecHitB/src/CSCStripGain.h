@@ -41,6 +41,7 @@ class CSCStripGain
  private:
 
   bool debug;
+  bool isData;
   CSCReadoutMappingFromFile theCSCMap;
   int chamberIdPrefix;
 
