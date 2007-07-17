@@ -1,0 +1,9 @@
+#
+# HEEP skim control sample
+#
+# Trigger is the same as for medium Et signal: std. single electron
+#
+
+module HEEPControlTrigger = HEEPSignalMedEtTrigger from "SUSYBSMAnalysis/CSA07Skims/data/HEEPSignalMedEtTrigger.cfi"
+
+

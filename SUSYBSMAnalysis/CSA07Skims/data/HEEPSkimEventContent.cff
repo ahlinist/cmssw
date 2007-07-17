@@ -34,3 +34,11 @@ block HEEPSignalMedEtEventSelection = {
 #
 # Loose Z selection developed by EWK group for control sample
 #
+block HEEPControlLooseZEventSelection = {
+  untracked PSet SelectEvents = {
+    vstring SelectEvents = {
+      "HEEPControlLooseZCluster",
+      "HEEPControlLooseZTrack"
+    }
+  }
+}
