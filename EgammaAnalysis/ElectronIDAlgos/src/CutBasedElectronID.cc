@@ -82,7 +82,7 @@ bool CutBasedElectronID::result(const reco::PixelMatchGsfElectron* electron,
   }
 
   if (useDeltaPhiOut_) {
-    double value = electron->deltaPhiSuperClusterTrackAtCalo();
+    double value = electron->deltaPhiSeedClusterTrackAtCalo();
     std::vector<double> maxcut = cuts_.getParameter<std::vector<double> >("deltaPhiOut");
     if (fabs(value)>maxcut[icut]) return false;
   }
