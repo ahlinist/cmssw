@@ -710,7 +710,7 @@ C     rr
       tzstring = GMIXName(1:LENOCC(GMIXName))
       write(Lunl0,1012) tzstring,PSUP2,PSEN2,PCAB2,PCOL2,PELE2
       write(Lunl0,*) "   "
- 1012 Format(A23,1X,F5.3,1X,F5.3,1X,F5.3,1X,F5.3,1X,F5.3)
+ 1012 Format(A32,1X,F5.3,1X,F5.3,1X,F5.3,1X,F5.3,1X,F5.3)
 C     rr
       
       return
