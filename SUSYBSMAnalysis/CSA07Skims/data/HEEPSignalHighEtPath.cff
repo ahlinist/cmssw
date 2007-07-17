@@ -1,0 +1,9 @@
+#
+#HEEP skim, high Et signal only
+#
+#The skim selects events based on HLT information alone
+#
+
+include "SUSYBSMAnalysis/CSA07Skims/data/HEEPSignalHighEtTrigger.cfi"
+
+path HEEPSignalHighEt = { HEEPSignalHighEtTrigger  }

@@ -1,0 +1,11 @@
+#
+#HEEP skim, high Et signal only
+#trigger selection
+#
+  module HEEPSignalHighEtTrigger = HLTHighLevel{
+        InputTag TriggerResultsTag = TriggerResults
+        bool byName = true
+        bool andOr= true
+        vstring HLTPaths =
+               {"HLT1EMHighEt","HLT1EMVeryHighEt"}
+        }
