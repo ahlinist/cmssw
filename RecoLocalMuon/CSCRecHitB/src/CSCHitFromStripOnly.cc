@@ -288,8 +288,8 @@ void CSCHitFromStripOnly::fillPulseHeights( const CSCStripDigiCollection::Range&
     if ( useCleanStripCollection ) {
       if ( !foundCLCTMatch( thisChannel, clctStrips) ) {
         // Don't forget that the ME_11/a strips are ganged !!!
-        // Have to loop 2 more times to populate strips 17-48 _IN DATA_.
-        if ( isData && id_.station() == 1 && id_.ring() == 4 ) {
+        // Have to loop 2 more times to populate strips 17-48.
+        if ( id_.station() == 1 && id_.ring() == 4 ) {
           for ( int j = 0; j < 3; ++j ) {
             thePulseHeightMap[thisChannel+16*j-1] = CSCStripData( float(thisChannel+16*j), hmax, tmax, 0., 0., 0., 0., 0., 0.);
           }
@@ -315,9 +315,9 @@ void CSCHitFromStripOnly::fillPulseHeights( const CSCStripDigiCollection::Range&
     if (maxCluster > maxADCCluster ) maxADCCluster = maxCluster;
 
     // Don't forget that the ME_11/a strips are ganged !!!
-    // Have to loop 2 more times to populate strips 17-48 _IN DATA_.
+    // Have to loop 2 more times to populate strips 17-48.
     
-    if ( isData && id_.station() == 1 && id_.ring() == 4 ) {
+    if ( id_.station() == 1 && id_.ring() == 4 ) {
       for ( int j = 0; j < 3; ++j ) {
         thePulseHeightMap[thisChannel+16*j-1] = CSCStripData( float(thisChannel+16*j), hmax, tmax, height[0], height[1], height[2], height[3], height[4], height[5]);
         if ( useCalib ) thePulseHeightMap[thisChannel+16*j-1] *= gainWeight[thisChannel-1];
