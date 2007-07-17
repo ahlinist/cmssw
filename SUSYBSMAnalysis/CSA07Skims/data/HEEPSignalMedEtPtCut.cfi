@@ -1,0 +1,11 @@
+#
+# HEEP skim, med Et signal
+#
+# pt cut to reduce sample size while retaining enough control events
+
+
+module HEEPSignalMedEtPtCut = PtMinPixelMatchGsfElectronCountFilter {
+    InputTag src = pixelMatchGsfElectrons
+    double ptMin = 40.
+    uint32 minNumber = 1
+  }

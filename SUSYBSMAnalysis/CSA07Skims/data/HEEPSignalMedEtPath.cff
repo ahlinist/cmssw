@@ -1,0 +1,13 @@
+#
+# HEEP skim 
+#
+# The skim selects events based on HLT information and a pt cut for the 
+# low pt trigger
+
+include "SUSYBSMAnalysis/CSA07Skims/data/HEEPSignalHighEtTrigger.cfi"
+
+path HEEPSignalMedEtHigh = { HEEPSignalHighEtTrigger  }
+
+include "SUSYBSMAnalysis/CSA07Skims/data/HEEPSignalMedEtSequence.cff"
+
+path HEEPSignalMedEtMed = { HEEPSignalMedEtSequence }
