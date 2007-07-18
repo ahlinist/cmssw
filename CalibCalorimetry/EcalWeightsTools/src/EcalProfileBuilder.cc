@@ -1,12 +1,13 @@
 /**
+ * 
  * \file EcalProfileBuilder.cc 
  * Determination of channel signal pulse profile to be used
  * in the calculation of optimized weights for Test Beam Anlysis
  *
  * NOTE: this version can only run on Laser data!!
  *
- * $Date: 2006/09/27 22:57:33 $
- * $Revision: 1.2 $
+ * $Date: 2007/07/13 14:43:14 $
+ * $Revision: 1.3 $
  * Alexandre Zabi - Imperial College
 */
 
