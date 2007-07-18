@@ -340,6 +340,7 @@ void testEvent::setUp()
                                    1,
                                    currentModuleDescription_->processConfiguration(),
                                    true,
+				   std::string("Unspecified"),
                                    processHistoryID);
 
   currentEvent_ = new Event(*principal_, *currentModuleDescription_);

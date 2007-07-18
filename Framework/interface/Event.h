@@ -51,6 +51,7 @@ namespace edm {
     LuminosityBlockNumber_t
     luminosityBlock() const {return aux_.luminosityBlock();}
     bool isRealData() const {return aux_.isRealData();}
+    std::string experimentType() const {return aux_.experimentType();}
 
     using DataViewImpl::get;
     using DataViewImpl::getAllProvenance;
