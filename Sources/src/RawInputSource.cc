@@ -79,7 +79,7 @@ namespace edm {
     eventId = EventID(runNumber_, eventId.event());
     ep_ = std::auto_ptr<EventPrincipal>(
 	new EventPrincipal(eventId, Timestamp(tstamp),
-	productRegistry(), lbp_, processConfiguration(), true, std::string("Unspecified")));
+	productRegistry(), lbp_, processConfiguration(), true, EventAuxiliary::Unspecified));
     std::auto_ptr<Event> e(new Event(*ep_, moduleDescription()));
     return e;
   }
