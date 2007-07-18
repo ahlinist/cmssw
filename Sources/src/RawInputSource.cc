@@ -51,11 +51,13 @@ namespace edm {
   boost::shared_ptr<LuminosityBlockPrincipal>
   RawInputSource::readLuminosityBlock_(boost::shared_ptr<RunPrincipal> rp) {
     if (newRun_) {
-      return boost::shared_ptr<LuminosityBlockPrincipal>();
-    }
-    newLumi_ = false;
-    return boost::shared_ptr<LuminosityBlockPrincipal>(
+      lbp_ = boost::shared_ptr<LuminosityBlockPrincipal>();
+    } else {
+      newLumi_ = false;
+      lbp_ = boost::shared_ptr<LuminosityBlockPrincipal>(
 	new LuminosityBlockPrincipal(luminosityBlockNumber_, productRegistry(), rp, processConfiguration()));
+    }
+    return lbp_;
   }
 
   std::auto_ptr<EventPrincipal>
