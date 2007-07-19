@@ -1,7 +1,7 @@
 /* class TauTagAnalyzer
  *  EDAnalyzer of the tagged TauJet with the CombinedTauTagAlgorithm, 
  *  created: Dec 18 2006,
- *  revised: Feb 20 2007,
+ *  revised: May 10 2007,
  *  author: Ludovic Houchu.
  */
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -227,39 +227,34 @@ void TauTagAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
      ******************************************************************* */
   Handle<HepMCProduct> evt;
   iEvent.getByLabel("VtxSmeared",evt);
-  HepMC::GenEvent* myGenEvent = new  HepMC::GenEvent(*(evt->GetEvent()));
-  event_scale=myGenEvent->event_scale();
-  
+  event_scale=(*(evt->GetEvent())).event_scale();
   // select susy processes
   /*
-  if (myGenEvent->signal_process_id()<200 ||  myGenEvent->signal_process_id()>300){
-    delete myGenEvent;
+  if ((*(evt->GetEvent())).signal_process_id()<200 ||  (*(evt->GetEvent())).signal_process_id()>300){
     return;
   }
   */
    
   // select gamma*/Z0 processes
   /*
-  if (myGenEvent->signal_process_id()!=1){
-    delete myGenEvent;
+  if ((*(evt->GetEvent())).signal_process_id()!=1){
     return;
   }
   */
   
   // select QCD-dijet processes
   /*   
-  if (myGenEvent->signal_process_id()!=11 
-      && myGenEvent->signal_process_id()!=12 
-      && myGenEvent->signal_process_id()!=13 
-      && myGenEvent->signal_process_id()!=68 
-      && myGenEvent->signal_process_id()!=28 
-      && myGenEvent->signal_process_id()!=53){
-    delete myGenEvent;
+  if ((*(evt->GetEvent())).signal_process_id()!=11 
+      && (*(evt->GetEvent())).signal_process_id()!=12 
+      && (*(evt->GetEvent())).signal_process_id()!=13 
+      && (*(evt->GetEvent())).signal_process_id()!=68 
+      && (*(evt->GetEvent())).signal_process_id()!=28 
+      && (*(evt->GetEvent())).signal_process_id()!=53){
     return;
   }
   */
   int iGenTau = 0;
-  for (HepMC::GenEvent::particle_iterator iter=myGenEvent->particles_begin();iter!=myGenEvent->particles_end();iter++) {
+  for (HepMC::GenEvent::particle_const_iterator iter=(*(evt->GetEvent())).particles_begin();iter!=(*(evt->GetEvent())).particles_end();iter++) {
     if ((**iter).status()==2 && (abs((**iter).pdg_id())==15)){
       HepMC::GenParticle* TheParticle=(*iter);
       Hep3Vector TheParticle_Hep3V(TheParticle->momentum().px(),TheParticle->momentum().py(),TheParticle->momentum().pz());
@@ -375,7 +370,6 @@ void TauTagAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     }		 
   }
   GenTausnumber=iGenTau;
-  delete myGenEvent;
   
   int iGenJet05 = 0;  
   Handle<GenJetCollection> genIter05Jets;
@@ -398,49 +392,49 @@ void TauTagAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   if(!vertCollection.size()) gets_recPV=0;
   else gets_recPV=1;
 
-  Handle<CombinedTauTagInfoCollection> tauTagInfoHandle;
-  iEvent.getByLabel(CombinedTauTagProd_,tauTagInfoHandle);  
-  const CombinedTauTagInfoCollection& tauTagInfo=*(tauTagInfoHandle.product());
-  for (CombinedTauTagInfoCollection::const_iterator i=tauTagInfo.begin();i!=tauTagInfo.end();++i) {
-    HepLorentzVector TheCombinedTauTagJet_HepLV((*i).jet().px(),(*i).jet().py(),(*i).jet().pz(),(*i).jet().energy());
+  Handle<JetTagCollection> jetTagHandle;
+  iEvent.getByLabel(CombinedTauTagProd_,jetTagHandle);
+  const JetTagCollection& myJetTagCollection=*(jetTagHandle.product()); 
+  for (JetTagCollection::const_iterator iJetTag=myJetTagCollection.begin();iJetTag!=myJetTagCollection.end();++iJetTag) {
+    CombinedTauTagInfoRef theCombinedTauTagInfo=(*iJetTag).tagInfoRef().castTo<CombinedTauTagInfoRef>();
+    HepLorentzVector TheCombinedTauTagJet_HepLV((*theCombinedTauTagInfo).jet()->px(),(*theCombinedTauTagInfo).jet()->py(),(*theCombinedTauTagInfo).jet()->pz(),(*theCombinedTauTagInfo).jet()->energy());
     CombinedTauTagInfo_eventgets_recPV=gets_recPV;
     CombinedTauTagInfo_event_scale=event_scale;
     CombinedTauTagInfo_e=TheCombinedTauTagJet_HepLV.e();
     CombinedTauTagInfo_et=TheCombinedTauTagJet_HepLV.et();
     CombinedTauTagInfo_eta=TheCombinedTauTagJet_HepLV.eta();
     CombinedTauTagInfo_phi=TheCombinedTauTagJet_HepLV.phi();
-    CombinedTauTagInfo_mode=i->alternatrecJet_HepLV().e();
-    CombinedTauTagInfo_modet=i->alternatrecJet_HepLV().et();
-    CombinedTauTagInfo_modeta=i->alternatrecJet_HepLV().eta();
-    CombinedTauTagInfo_modphi=i->alternatrecJet_HepLV().phi();
-    CombinedTauTagInfo_invmass=i->alternatrecJet_HepLV().m();
-    CombinedTauTagInfo_passed_tracksel=i->passed_trackerselection();
-    CombinedTauTagInfo_is_GoodTauCandidate=i->is_GoodTauCandidate();
-    CombinedTauTagInfo_infact_GoodElectronCandidate=i->infact_GoodElectronCandidate();
-    CombinedTauTagInfo_infact_GoodMuonCandidate=i->infact_GoodMuonCandidate();
-    if (!isnan(i->ECALEt_o_leadTkPt())) CombinedTauTagInfo_ECALEt_o_leadtkPt=i->ECALEt_o_leadTkPt();
+    CombinedTauTagInfo_mode=(*theCombinedTauTagInfo).alternatrecJet_HepLV().e();
+    CombinedTauTagInfo_modet=(*theCombinedTauTagInfo).alternatrecJet_HepLV().et();
+    CombinedTauTagInfo_modeta=(*theCombinedTauTagInfo).alternatrecJet_HepLV().eta();
+    CombinedTauTagInfo_modphi=(*theCombinedTauTagInfo).alternatrecJet_HepLV().phi();
+    CombinedTauTagInfo_invmass=(*theCombinedTauTagInfo).alternatrecJet_HepLV().m();
+    CombinedTauTagInfo_passed_tracksel=(*theCombinedTauTagInfo).passed_trackerselection();
+    CombinedTauTagInfo_is_GoodTauCandidate=(*theCombinedTauTagInfo).is_GoodTauCandidate();
+    CombinedTauTagInfo_infact_GoodElectronCandidate=(*theCombinedTauTagInfo).infact_GoodElectronCandidate();
+    CombinedTauTagInfo_infact_GoodMuonCandidate=(*theCombinedTauTagInfo).infact_GoodMuonCandidate();
+    if (!isnan((*theCombinedTauTagInfo).ECALEt_o_leadTkPt())) CombinedTauTagInfo_ECALEt_o_leadtkPt=(*theCombinedTauTagInfo).ECALEt_o_leadTkPt();
     else CombinedTauTagInfo_ECALEt_o_leadtkPt=-100.;
-    if (!isnan(i->HCALEt_o_leadTkPt())) CombinedTauTagInfo_HCALEt_o_leadtkPt=i->HCALEt_o_leadTkPt();
+    if (!isnan((*theCombinedTauTagInfo).HCALEt_o_leadTkPt())) CombinedTauTagInfo_HCALEt_o_leadtkPt=(*theCombinedTauTagInfo).HCALEt_o_leadTkPt();
     else CombinedTauTagInfo_HCALEt_o_leadtkPt=-100.;
-    CombinedTauTagInfo_needs_LikelihoodRatio_discrimination=i->needs_LikelihoodRatio_discrimination();
-    CombinedTauTagInfo_signalrectks_number=(int)i->signalTks().size();
-    CombinedTauTagInfo_neutralECALclus_number=i->neutralECALClus_number();
-    if (!isnan(i->neutralECALClus_radius())) CombinedTauTagInfo_neutralECALclus_radius=i->neutralECALClus_radius();
+    CombinedTauTagInfo_needs_LikelihoodRatio_discrimination=(*theCombinedTauTagInfo).needs_LikelihoodRatio_discrimination();
+    CombinedTauTagInfo_signalrectks_number=(int)(*theCombinedTauTagInfo).signalTks().size();
+    CombinedTauTagInfo_neutralECALclus_number=(*theCombinedTauTagInfo).neutralECALClus_number();
+    if (!isnan((*theCombinedTauTagInfo).neutralECALClus_radius())) CombinedTauTagInfo_neutralECALclus_radius=(*theCombinedTauTagInfo).neutralECALClus_radius();
     else CombinedTauTagInfo_neutralECALclus_radius=-100.;
-    if (!isnan(i->neutralE_ratio())) CombinedTauTagInfo_neutrE_ratio=i->neutralE_ratio();
+    if (!isnan((*theCombinedTauTagInfo).neutralE_ratio())) CombinedTauTagInfo_neutrE_ratio=(*theCombinedTauTagInfo).neutralE_ratio();
     else CombinedTauTagInfo_neutrE_ratio=-100.;
-    CombinedTauTagInfo_isolneutrE_o_tksEneutrE_ratio=i->isolneutralE_o_TksEneutralE();
-    CombinedTauTagInfo_tksEtJetEt_ratio=i->TksEt_o_JetEt();
-    CombinedTauTagInfo_neutrEtksE_ratio=i->neutralE_o_TksEneutralE();   
-    if (!isnan(i->leadTk_signedipt_significance())) CombinedTauTagInfo_leadtk_signedipt_significance=i->leadTk_signedipt_significance();
+    CombinedTauTagInfo_isolneutrE_o_tksEneutrE_ratio=(*theCombinedTauTagInfo).isolneutralE_o_TksEneutralE();
+    CombinedTauTagInfo_tksEtJetEt_ratio=(*theCombinedTauTagInfo).TksEt_o_JetEt();
+    CombinedTauTagInfo_neutrEtksE_ratio=(*theCombinedTauTagInfo).neutralE_o_TksEneutralE();   
+    if (!isnan((*theCombinedTauTagInfo).leadTk_signedipt_significance())) CombinedTauTagInfo_leadtk_signedipt_significance=(*theCombinedTauTagInfo).leadTk_signedipt_significance();
     else CombinedTauTagInfo_leadtk_signedipt_significance=-100.;
-    if (!isnan(i->leadTk_signedip3D_significance())) CombinedTauTagInfo_leadtk_signedip3D_significance=i->leadTk_signedip3D_significance();
+    if (!isnan((*theCombinedTauTagInfo).leadTk_signedip3D_significance())) CombinedTauTagInfo_leadtk_signedip3D_significance=(*theCombinedTauTagInfo).leadTk_signedip3D_significance();
     else CombinedTauTagInfo_leadtk_signedip3D_significance=-100.;
-    if (!isnan(i->signedflightpath_significance())) CombinedTauTagInfo_signedflightpath_significance=i->signedflightpath_significance();
+    if (!isnan((*theCombinedTauTagInfo).signedflightpath_significance())) CombinedTauTagInfo_signedflightpath_significance=(*theCombinedTauTagInfo).signedflightpath_significance();
     else CombinedTauTagInfo_signedflightpath_significance=-100.;
-    //if (!isnan(i->discriminator())) CombinedTauTagInfo_discriminator=i->discriminator();
-    //else CombinedTauTagInfo_discriminator=-100.;
-    CombinedTauTagInfo_discriminator=-100.;
+    if (!isnan((*iJetTag).discriminator())) CombinedTauTagInfo_discriminator=(*iJetTag).discriminator();
+    else CombinedTauTagInfo_discriminator=-100.;
     CombinedTauTagInfo_GenTau_visproducts_e=-100.;
     CombinedTauTagInfo_GenTau_visproducts_et=-100.;
     CombinedTauTagInfo_GenTau_visproducts_eta=-100.;

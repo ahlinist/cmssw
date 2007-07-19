@@ -9,7 +9,6 @@
 #include "RecoVertex/VertexPrimitives/interface/TransientVertex.h"
 #include "RecoVertex/VertexPrimitives/interface/ConvertError.h"
 #include "RecoVertex/VertexPrimitives/interface/VertexException.h"
-#include "RecoVertex/KalmanVertexFit/interface/KalmanVertexFitter.h"
 #include "RecoVertex/AdaptiveVertexFit/interface/AdaptiveVertexFitter.h"
 #include "RecoVertex/VertexTools/interface/VertexDistance3D.h"
 
@@ -82,6 +81,9 @@ public:
     TracksLeadingTrackCone_                                   = parameters.getParameter<double>("TracksLeadingTrackCone");
     EvolutiveSignalCone_                                      = parameters.getParameter<bool>("EvolutiveSignalCone");
     SignalCone_ifnotEvolutive_                                = parameters.getParameter<double>("SignalCone_ifnotEvolutive");
+    SignalConeVariableSize_Parameter_                         = parameters.getParameter<double>("SignalConeVariableSize_Parameter");
+    SignalConeVariableSize_max_                               = parameters.getParameter<double>("SignalConeVariableSize_max");
+    SignalConeVariableSize_min_                               = parameters.getParameter<double>("SignalConeVariableSize_min");
     IsolationCone_                                            = parameters.getParameter<double>("IsolationCone"); 
     MinimumTransverseMomentumLeadingTrack_                    = parameters.getParameter<double>("MinimumTransverseMomentumLeadingTrack"); 
     MinimumTransverseMomentumLeadingTrack_case1signalTrack_   = parameters.getParameter<double>("MinimumTransverseMomentumLeadingTrack_case1signalTrack"); 
@@ -122,6 +124,9 @@ public:
     TracksLeadingTrackCone_                                   = 0.6;
     EvolutiveSignalCone_                                      = true;
     SignalCone_ifnotEvolutive_                                = 0.07;
+    SignalConeVariableSize_Parameter_                         = 3.5;
+    SignalConeVariableSize_max_                               = 0.09;
+    SignalConeVariableSize_min_                               = 0.05;
     IsolationCone_                                            = 0.4;
     MinimumTransverseMomentumLeadingTrack_                    = 2.5;
     MinimumTransverseMomentumLeadingTrack_case1signalTrack_   = 5.;
@@ -164,7 +169,7 @@ public:
   void init(const EventSetup&);
   math::XYZPoint recTrackImpactPositiononECAL(Event&,const EventSetup&,TrackRef);
   void AssociateECALcluster_to_track();
-  void FillTaggingVariableList();
+  TaggingVariableList taggingvariablesList();
   double rectk_signedipt_significance(const Vertex&,const TrackRef);
   double rectk_signedip3D_significance(const Vertex&,const TrackRef);
   double signedflightpath_significance(const Vertex&);
@@ -178,6 +183,9 @@ public:
   double TracksLeadingTrackCone_;
   bool EvolutiveSignalCone_;
   double SignalCone_ifnotEvolutive_;
+  double SignalConeVariableSize_Parameter_;
+  double SignalConeVariableSize_max_;
+  double SignalConeVariableSize_min_;
   double IsolationCone_;
   double MinimumTransverseMomentumLeadingTrack_;
   double MinimumTransverseMomentumLeadingTrack_case1signalTrack_;
@@ -188,7 +196,6 @@ public:
   double ECALclus_min_e_;
   double matchingECALclustrack_deltaR_;
   // ------ likelihood function selection
-  TaggingVariableList theTaggingVariableList;
   LikelihoodRatio* theLikelihoodRatio;
   bool use_neutralECALclus_number_case1signaltk_;	
   bool use_neutralECALclus_radius_case1signaltk_;
