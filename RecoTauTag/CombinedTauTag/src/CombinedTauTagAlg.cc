@@ -59,9 +59,9 @@ pair<JetTag,CombinedTauTagInfo> CombinedTauTagAlg::tag(const IsolatedTauTagInfoR
   // ---
   init(theEventSetup);
   // ---
-  math::XYZVector recjet_XYZVector(theIsolatedTauTagInfoRef->jet().px(),theIsolatedTauTagInfoRef->jet().py(),theIsolatedTauTagInfoRef->jet().pz());
-  HepLorentzVector recjet_HepLV(theIsolatedTauTagInfoRef->jet().px(),theIsolatedTauTagInfoRef->jet().py(),theIsolatedTauTagInfoRef->jet().pz(),theIsolatedTauTagInfoRef->jet().energy());
-  Global3DVector recjet_G3DV(theIsolatedTauTagInfoRef->jet().px(),theIsolatedTauTagInfoRef->jet().py(),theIsolatedTauTagInfoRef->jet().pz());
+  math::XYZVector recjet_XYZVector(theIsolatedTauTagInfoRef->jet()->px(),theIsolatedTauTagInfoRef->jet()->py(),theIsolatedTauTagInfoRef->jet()->pz());
+  HepLorentzVector recjet_HepLV(theIsolatedTauTagInfoRef->jet()->px(),theIsolatedTauTagInfoRef->jet()->py(),theIsolatedTauTagInfoRef->jet()->pz(),theIsolatedTauTagInfoRef->jet()->energy());
+  Global3DVector recjet_G3DV(theIsolatedTauTagInfoRef->jet()->px(),theIsolatedTauTagInfoRef->jet()->py(),theIsolatedTauTagInfoRef->jet()->pz());
   the_recjet_G3DV=&recjet_G3DV;
   
   math::XYZVector refAxis_XYZVector=recjet_XYZVector;
@@ -69,6 +69,7 @@ pair<JetTag,CombinedTauTagInfo> CombinedTauTagAlg::tag(const IsolatedTauTagInfoR
   
   double the_neutralECALclus_esum=0.;
   double the_neutralECALclus_isolband_esum=0.;
+  double the_neutralECALclus_isolband_etsum=0.;
   double filtered_chargedpicand_fromtk_esum=0.;
   
   // *************rec. tracks info filling ***************
@@ -151,8 +152,8 @@ pair<JetTag,CombinedTauTagInfo> CombinedTauTagAlg::tag(const IsolatedTauTagInfoR
   neutralECALclus_signalconesize = max(neutralECALclus_signalconesize,0.08);
   double rectks_signalconesize = SignalCone_ifnotEvolutive_;
   if(EvolutiveSignalCone_){
-    rectks_signalconesize = min(0.17,3.5/TauCandJet_ref_et);
-    rectks_signalconesize = max(rectks_signalconesize,0.05);
+    rectks_signalconesize = min(SignalConeVariableSize_max_,SignalConeVariableSize_Parameter_/TauCandJet_ref_et);
+    rectks_signalconesize = max(rectks_signalconesize,SignalConeVariableSize_min_);
   }
   // **************************END*******************************
 
@@ -171,6 +172,12 @@ pair<JetTag,CombinedTauTagInfo> CombinedTauTagAlg::tag(const IsolatedTauTagInfoR
       signalchargedpicand_fromtk_HepLV.push_back(thechargedpicand_fromtk_HepLV);
     }
   }
+  RefVector<TrackCollection> isolrecTracks;  
+  RefVector<TrackCollection> isolrecTrackstmp=theIsolatedTauTagInfoRef->tracksInCone(refAxis_XYZVector,IsolationCone_,MinimumTransverseMomentum_);
+  for(RefVector<TrackCollection>::const_iterator iTrack=isolrecTrackstmp.begin();iTrack!=isolrecTrackstmp.end();iTrack++){
+    if(ROOT::Math::VectorUtil::DeltaR(refAxis_XYZVector,(*iTrack)->momentum())>=rectks_signalconesize) isolrecTracks.push_back(*iTrack);  
+  }
+  
   if((((int)(signalrecTracks.size())==1 && refAxis_XYZVector.Rho()>MinimumTransverseMomentumLeadingTrack_case1signalTrack_) || ((int)(signalrecTracks.size())==3 && refAxis_XYZVector.Rho()>MinimumTransverseMomentumLeadingTrack_case3signalTracks_)) && abs(chargedpicand_fromtk_qsum)==1) passed_tracker_signalcone_selection=true; 
     // *** tracker selection
   if(passed_leadtk_selection && passed_tracker_isolationring_selection && passed_tracker_signalcone_selection) passed_tracker_selection=true;
@@ -184,7 +191,10 @@ pair<JetTag,CombinedTauTagInfo> CombinedTauTagAlg::tag(const IsolatedTauTagInfoR
       ++the_neutralECALclus_number;
       the_neutralECALclus_radius+=(*igammacand_fromneutralECALclus_HepLV).deltaR(refAxis_HepLV)*(*igammacand_fromneutralECALclus_HepLV).e();
       the_neutralECALclus_esum+=(*igammacand_fromneutralECALclus_HepLV).e();
-      if((*igammacand_fromneutralECALclus_HepLV).deltaR(refAxis_HepLV)>neutralECALclus_signalconesize) the_neutralECALclus_isolband_esum+=(*igammacand_fromneutralECALclus_HepLV).e();
+      if((*igammacand_fromneutralECALclus_HepLV).deltaR(refAxis_HepLV)>neutralECALclus_signalconesize){
+	the_neutralECALclus_isolband_esum+=(*igammacand_fromneutralECALclus_HepLV).e();
+	the_neutralECALclus_isolband_etsum+=(*igammacand_fromneutralECALclus_HepLV).et();
+      }
     }  
     if(the_neutralECALclus_esum!=0.) the_neutralECALclus_radius=the_neutralECALclus_radius/the_neutralECALclus_esum;
   }
@@ -259,6 +269,7 @@ pair<JetTag,CombinedTauTagInfo> CombinedTauTagAlg::tag(const IsolatedTauTagInfoR
   resultExtended.setis_GoodTauCandidate(is_GoodTauCand);
   resultExtended.setneeds_LikelihoodRatio_discrimination(needs_LikelihoodRatio_discrimination);
   resultExtended.setsignalTks(signalrecTracks);
+  resultExtended.setisolTks(isolrecTracks);
   resultExtended.setselectedTks(filtered_chargedpicand_tk);
   if (!couldnotobtain_leadtk_signedipt) resultExtended.setleadTk_signedipt_significance(the_leadtk_signedipt_significance);
   if (!couldnotobtain_leadtk_signedip3D) resultExtended.setleadTk_signedip3D_significance(the_leadtk_signedip3D_significance);
@@ -266,6 +277,7 @@ pair<JetTag,CombinedTauTagInfo> CombinedTauTagAlg::tag(const IsolatedTauTagInfoR
   resultExtended.setTksEt_o_JetEt(the_tksEt_o_jetEt);
   resultExtended.setneutralE(the_neutralECALclus_esum);
   resultExtended.setisolneutralE(the_neutralECALclus_isolband_esum);
+  resultExtended.setisolneutralEtsum(the_neutralECALclus_isolband_etsum);
   resultExtended.setneutralECALClus_number(the_neutralECALclus_number);
   if (the_neutralECALclus_esum!=0.) resultExtended.setneutralECALClus_radius(the_neutralECALclus_radius);
   resultExtended.setneutralE_o_TksEneutralE(the_neutrE_o_tksEneutrE);
@@ -286,9 +298,8 @@ pair<JetTag,CombinedTauTagInfo> CombinedTauTagAlg::tag(const IsolatedTauTagInfoR
       JetTag resultBase(1.);
       return pair<JetTag,CombinedTauTagInfo> (resultBase,resultExtended); 
     }else{
-      FillTaggingVariableList();
       (*theLikelihoodRatio).setCandidateCategoryParameterValues((int)signalchargedpicand_fromtk_HepLV.size(),TauCandJet_ref_et);
-      (*theLikelihoodRatio).setCandidateTaggingVariableList(theTaggingVariableList);
+      (*theLikelihoodRatio).setCandidateTaggingVariableList(taggingvariablesList());
       JetTag resultBase((*theLikelihoodRatio).value());
       return pair<JetTag,CombinedTauTagInfo> (resultBase,resultExtended); 
     }
@@ -400,59 +411,61 @@ void CombinedTauTagAlg::AssociateECALcluster_to_track(){
   gammacand_fromneutralECALclus_HepLV=bisECALclus_withmass0_HepLV;
   gammacand_neutralECALclus=bisECALclus;
 }
-void CombinedTauTagAlg::FillTaggingVariableList(){
+TaggingVariableList CombinedTauTagAlg::taggingvariablesList(){
+  TaggingVariableList the_taggingvariables_list;
   if(signalchargedpicand_fromtk_HepLV.size()==1){
     if(use_neutralECALclus_number_case1signaltk_) {
       TaggingVariable neutralECALclus_number_TagVar(btau::neutralclusterNumber,(float)the_neutralECALclus_number);
-      theTaggingVariableList.push_back(neutralECALclus_number_TagVar);
+      the_taggingvariables_list.push_back(neutralECALclus_number_TagVar);
     }	
     if(use_neutralECALclus_radius_case1signaltk_){
       TaggingVariable neutralECALclus_radius_TagVar(btau::neutralclusterRadius,the_neutralECALclus_radius);
-      theTaggingVariableList.push_back(neutralECALclus_radius_TagVar);
+      the_taggingvariables_list.push_back(neutralECALclus_radius_TagVar);
     }
     if(use_neutralE_ratio_case1signaltk_){
       TaggingVariable neutralE_ratio_TagVar(btau::neutralEnergyRatio,the_neutralE_ratio);
-      theTaggingVariableList.push_back(neutralE_ratio_TagVar);
+      the_taggingvariables_list.push_back(neutralE_ratio_TagVar);
     }
     if(use_isolneutrE_o_tkEneutrE_case1signaltk_){
       TaggingVariable isolneutrE_o_tksEneutrE_TagVar(btau::neutralIsolEnergyOverCombinedEnergy,the_isolneutrE_o_tksEneutrE);
-      theTaggingVariableList.push_back(isolneutrE_o_tksEneutrE_TagVar);
+      the_taggingvariables_list.push_back(isolneutrE_o_tksEneutrE_TagVar);
     }
     if(use_tkEt_o_jetEt_case1signaltk_){
       TaggingVariable tksEt_o_jetEt_TagVar(btau::piontracksEtjetEtRatio,the_tksEt_o_jetEt);
-      theTaggingVariableList.push_back(tksEt_o_jetEt_TagVar);
+      the_taggingvariables_list.push_back(tksEt_o_jetEt_TagVar);
     }
     if(use_leadtk_ipt_significance_case1signaltk_ && !couldnotobtain_leadtk_signedipt){
       TaggingVariable leadtk_ipt_significance_TagVar(btau::trackip2d,fabs(the_leadtk_signedipt_significance));
-      theTaggingVariableList.push_back(leadtk_ipt_significance_TagVar);
+      the_taggingvariables_list.push_back(leadtk_ipt_significance_TagVar);
     }
   }
   if(signalchargedpicand_fromtk_HepLV.size()==3){
     if(use_neutralECALclus_number_case3signaltks_){
       TaggingVariable neutralECALclus_number_TagVar(btau::neutralclusterNumber,(float)the_neutralECALclus_number);
-      theTaggingVariableList.push_back(neutralECALclus_number_TagVar);
+      the_taggingvariables_list.push_back(neutralECALclus_number_TagVar);
     }
     if(use_neutralECALclus_radius_case3signaltks_){
       TaggingVariable neutralECALclus_radius_TagVar(btau::neutralclusterRadius,the_neutralECALclus_radius);
-      theTaggingVariableList.push_back(neutralECALclus_radius_TagVar);
+      the_taggingvariables_list.push_back(neutralECALclus_radius_TagVar);
     }
     if(use_neutralE_ratio_case3signaltks_){
       TaggingVariable neutralE_ratio_TagVar(btau::neutralEnergyRatio,the_neutralE_ratio);
-      theTaggingVariableList.push_back(neutralE_ratio_TagVar);
+      the_taggingvariables_list.push_back(neutralE_ratio_TagVar);
     }
     if(use_isolneutrE_o_tksEneutrE_case3signaltks_){
       TaggingVariable isolneutrE_o_tksEneutrE_TagVar(btau::neutralIsolEnergyOverCombinedEnergy,the_isolneutrE_o_tksEneutrE);
-      theTaggingVariableList.push_back(isolneutrE_o_tksEneutrE_TagVar);
+      the_taggingvariables_list.push_back(isolneutrE_o_tksEneutrE_TagVar);
     }
     if(use_tksEt_o_jetEt_case3signaltks_){
       TaggingVariable tksEt_o_jetEt_TagVar(btau::piontracksEtjetEtRatio,the_tksEt_o_jetEt);
-      theTaggingVariableList.push_back(tksEt_o_jetEt_TagVar);
+      the_taggingvariables_list.push_back(tksEt_o_jetEt_TagVar);
     }
     if(use_signedflightpath_significance_case3signaltks_ && !couldnotproduce_SV){
       TaggingVariable signedflightpath_significance_TagVar(btau::flightDistance3DSignificance,the_signedflightpath_significance);
-      theTaggingVariableList.push_back(signedflightpath_significance_TagVar);
+      the_taggingvariables_list.push_back(signedflightpath_significance_TagVar);
     }
   }
+  return the_taggingvariables_list;
 }
 double CombinedTauTagAlg::rectk_signedipt_significance(const Vertex& thePV,const TrackRef theTrack){ 
   TransientTrack the_transTrack=theTransientTrackBuilder->build(&(*theTrack));
@@ -487,8 +500,8 @@ double CombinedTauTagAlg::signedflightpath_significance(const Vertex& iPV){
        transientTracks.push_back(theTransientTrack);
      }
      try{
-       KalmanVertexFitter kvf;
-       TransientVertex tv = kvf.vertex(transientTracks); 
+       AdaptiveVertexFitter AVF;
+       TransientVertex tv = AVF.vertex(transientTracks); 
        VertexDistance3D theVertexDistance3D;
        double thesignedflightpath_significance=theVertexDistance3D.signedDistance(iPV,tv,*the_recjet_G3DV).significance();
        return(thesignedflightpath_significance);
@@ -514,7 +527,7 @@ double CombinedTauTagAlg::HCALtowersEtSum_around_rectk(const IsolatedTauTagInfoR
     math::XYZPoint therecTrackImpactPositiononECAL=recTrackImpactPositiononECAL(theEvent,theEventSetup,therecTrack);
     if(therecTrackImpactPositiononECAL.z()!=0.){
       thepropagatedrectk_Hep3V.setRThetaPhi((*therecTrack).momentum().r(),(double)therecTrackImpactPositiononECAL.theta(),(double)therecTrackImpactPositiononECAL.phi());
-      vector<CaloTowerRef> theCaloTowers=theIsolatedTauTagInfoRef->jtaRef()->key->getConstituents();
+      vector<CaloTowerRef> theCaloTowers=theIsolatedTauTagInfoRef->jtaRef()->first.castTo<CaloJetRef>()->getConstituents();
       for(vector<CaloTowerRef>::const_iterator i_Tower=theCaloTowers.begin();i_Tower!=theCaloTowers.end();i_Tower++){
 	size_t numRecHits = (**i_Tower).constituentsSize();       
 	for(size_t j=0;j<numRecHits;j++) {
@@ -554,7 +567,7 @@ double CombinedTauTagAlg::ECALcellsEtSum_around_rectk(const IsolatedTauTagInfoRe
     math::XYZPoint therecTrackImpactPositiononECAL=recTrackImpactPositiononECAL(theEvent,theEventSetup,therecTrack);
     if(therecTrackImpactPositiononECAL.z()!=0.){
       thepropagatedrectk_Hep3V.setRThetaPhi((*therecTrack).momentum().r(),(double)therecTrackImpactPositiononECAL.theta(),(double)therecTrackImpactPositiononECAL.phi());
-      vector<CaloTowerRef> theCaloTowers=theIsolatedTauTagInfoRef->jtaRef()->key->getConstituents();
+      vector<CaloTowerRef> theCaloTowers=theIsolatedTauTagInfoRef->jtaRef()->first.castTo<CaloJetRef>()->getConstituents();
       Handle<EBRecHitCollection> EBRecHits;
       Handle<EERecHitCollection> EERecHits;     
       theEvent.getByLabel("ecalRecHit","EcalRecHitsEB",EBRecHits );
