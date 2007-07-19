@@ -3,6 +3,7 @@
 <use name=CommonTools/ConditionDBWriter>
 <use name=CondCore/DBCommon>
 <use name=CondCore/DBOutputService>
+<use name=CondFormats/SiStripObjects>
 <use name=DataFormats/Common>
 <use name=FWCore/Framework>
 <use name=FWCore/MessageLogger>
@@ -22,6 +23,7 @@
   <use name=CommonTools/ConditionDBWriter>
   <use name=CondCore/DBCommon>
   <use name=CondCore/DBOutputService>
+  <use name=CondFormats/SiStripObjects>
   <use name=DataFormats/Common>
   <use name=FWCore/Framework>
   <use name=FWCore/MessageLogger>
