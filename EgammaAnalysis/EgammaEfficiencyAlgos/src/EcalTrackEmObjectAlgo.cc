@@ -111,7 +111,7 @@ int EcalTrackEmObjectAlgo::findTrack(const reco::SuperClusterRef &seed, const re
       if(dR((*tracks)[j].eta(), (*tracks)[j].phi(), seed->position().Eta(), seed->position().Phi()) < dRSuperClusterTrack_)
       {
          double trackPt = (*tracks)[j].pt();
-         if((trackPt > 10) && (trackPt > highestPt))
+         if((trackPt > minTrackPt_) && (trackPt > highestPt))
          {
             retTrack = j;
             highestPt = trackPt;
