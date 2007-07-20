@@ -43,6 +43,9 @@
 <use name=boost>
 <use name=rootrflx>
 <use name=root>
+<use name=rootcore>
+<flags LDFLAGS="-lXMLIO">
+<flags CXXFLAGS="-fpermissive">
 <flags EDM_PLUGIN=1>
 <export>
    <lib name=RecoTauTagCombinedTauTag>
