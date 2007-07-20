@@ -1,15 +1,8 @@
 <?xml version="1.0"?>
 <DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../../DetectorDescription/Schema/DDLSchema.xsd">
  
-<LogicalPartSection label="tidmodule0l.xml">
- <LogicalPart name="TIDModule0L" category="unspecified">
-  <rSolid name="tidmodule0:TIDModule0"/>
-  <rMaterial name="materials:Air"/>
- </LogicalPart>
-</LogicalPartSection>
- 
 <Algorithm name="track:DDTIDModulePosAlgo">
-  <rParent name="tidmodule0l:TIDModule0L"/>
+  <rParent name="tidmodule0:TIDModule0"/>
   <Numeric name="DetectorNumber"    value="2"/>
   <Numeric name="ModuleThick"       value="[tidmodpar:ModuleThickDS]"/>
   <Numeric name="DetTilt"           value="-[tidmodpar:DetTilt]"/>
