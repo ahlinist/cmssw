@@ -20,8 +20,6 @@ include "RecoBTag/SoftLepton/data/softElectronES.cfi"
 # include "RecoBTau/JetTagProducer/data/softLeptonByPtJetTags.cfi"
 # include "RecoBTag/SoftLepton/data/softLeptonByPtES.cfi"
 
-include "RecoBTau/JetTagProducer/data/MVAJetTagsPoolSource.cfi"
-
 include "RecoBTau/JetTagProducer/data/impactParameterMVAES.cfi"
 include "RecoBTau/JetTagProducer/data/impactParameterMVAJetTags.cfi"
 
