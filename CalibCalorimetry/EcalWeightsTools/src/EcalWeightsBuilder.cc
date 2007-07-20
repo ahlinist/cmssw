@@ -3,8 +3,8 @@
  * This module is used to produce the weights needed by
  * the reconstruction of amplitude (RecHits) in the ECAL.
  * 
- * $Date: 2007/07/13 14:45:29 $
- * $Revision: 1.6 $
+ * $Date: 2007/07/13 15:24:39 $
+ * $Revision: 1.7 $
  * Author Alexandre Zabi
  *
  * Modif-Alex Zabi 25/07/2006
@@ -345,9 +345,7 @@ void EcalWeightsBuilder::analyze(const edm::Event& evt, const edm::EventSetup& e
     if(grouptype == "special" && igroupId > 2)
       {
 	std::cout << "LOADING SHAPE FOR XTAL=" << XtalSpecial_[igroupId - 3] << std::endl;
-	//Modif 27/09/06 The Load function is not implemented in EcalShape.cc yet.
-	// This is a temporary version.
-	//theShape.load(XtalSpecial_[igroupId - 3], SuperModule_);
+	theShape.load(XtalSpecial_[igroupId - 3], SuperModule_);
 	ToM        = theShape.computeTimeOfMaximum();
 	T0         = theShape.computeT0();
 	risingTime = theShape.computeRisingTime();
