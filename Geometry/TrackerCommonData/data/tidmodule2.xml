@@ -55,13 +55,6 @@
   <Numeric name="PitchHeight"       value="[tidmodpar:PitchHeight]"/>
   <Numeric name="PitchThick"        value="[tidmodpar:PitchThick]"/>
 </Algorithm>
- 
-<LogicalPartSection label="tidmodule2.xml">
- <LogicalPart name="TIDModule2" category="unspecified">
-  <rSolid name="tidmodule2:TIDModule2"/>
-  <rMaterial name="materials:Air"/>
- </LogicalPart>
-</LogicalPartSection>
 
 <Algorithm name="track:DDTIDModulePosAlgo">
   <rParent name="tidmodule2:TIDModule2"/>
