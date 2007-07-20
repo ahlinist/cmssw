@@ -133,9 +133,9 @@ definire plus e minus
     </SpecPar>
 
     <SpecPar name="TIDSubDetGluedDetPar">
-      <PartSelector path="//TIDModule0L" />
+      <PartSelector path="//TIDModule0" />
       <PartSelector path="//TIDModule0R" />
-      <PartSelector path="//TIDModule1L" />
+      <PartSelector path="//TIDModule1" />
       <PartSelector path="//TIDModule1R" />
       <Parameter name="TkDDDStructure" value="TIDGluedDet"/>
     </SpecPar>

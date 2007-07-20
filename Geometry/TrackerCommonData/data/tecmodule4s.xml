@@ -86,7 +86,7 @@
   <Numeric name="BridgeThick"        value="[tecmodule4:BridgeThick]"/>
   <Numeric name="BridgeHeight"       value="[tecmodule4:BridgeHeight]"/>
   <Numeric name="BridgeSeparation"   value="[tecmodule4:BridgeSeparation]"/>
-  <String name="BridgeMaterial"      value="materials:Aluminium"/>
+  <String name="BridgeMaterial"      value="None"/>
   <Numeric name="WaferPosition"      value="[tecmodpar:TopFrameHeight]"/>
   <Vector name="SiReenforcementHeight" type="numeric" nEntries = "2">
    4.4*mm, 8.0*mm  </Vector>

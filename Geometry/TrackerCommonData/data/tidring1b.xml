@@ -80,7 +80,7 @@
 <Algorithm name="track:DDTIDRingAlgo">
   <rParent name="tidring1b:TIDRing1B"/>
   <Vector name="ModuleName" type="string" nEntries="2">
-   tidmodule1r:TIDModule1R, tidmodule1l:TIDModule1L</Vector>
+   tidmodule1r:TIDModule1R, tidmodule1:TIDModule1</Vector>
   <String name="ICCName"            value="tidring1:TIDICC1"/>
   <String name="CoolName"           value="tidringpar:TIDCoolInsert"/>
   <Numeric name="Number"            value="[tidring1:NPhi]" />
