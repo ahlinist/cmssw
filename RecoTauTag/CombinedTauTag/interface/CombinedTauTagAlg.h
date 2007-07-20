@@ -160,7 +160,6 @@ public:
     muon_selection_max_HCALEt_o_leadtkPt_                     = 0.4;  
   } 
   ~CombinedTauTagAlg(){
-    if (theTransientTrackBuilder!=0) delete theTransientTrackBuilder;
     if (theLikelihoodRatio!=0) delete theLikelihoodRatio;
   };
   pair<JetTag,CombinedTauTagInfo> tag(const IsolatedTauTagInfoRef&,const Vertex&,Event&,const EventSetup&);
