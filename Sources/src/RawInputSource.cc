@@ -43,14 +43,18 @@ namespace edm {
 
   boost::shared_ptr<RunPrincipal>
   RawInputSource::readRun_() {
-    newRun_ = false;
-    return boost::shared_ptr<RunPrincipal>(
+    if (!newRun_) {
+      return boost::shared_ptr<RunPrincipal>();
+    } else {
+      newRun_ = false;
+      return boost::shared_ptr<RunPrincipal>(
 	new RunPrincipal(runNumber_, productRegistry(), processConfiguration()));
+    }
   }
 
   boost::shared_ptr<LuminosityBlockPrincipal>
   RawInputSource::readLuminosityBlock_(boost::shared_ptr<RunPrincipal> rp) {
-    if (newRun_) {
+    if (newRun_ || !newLumi_) {
       lbp_ = boost::shared_ptr<LuminosityBlockPrincipal>();
     } else {
       newLumi_ = false;
@@ -79,7 +83,7 @@ namespace edm {
     eventId = EventID(runNumber_, eventId.event());
     ep_ = std::auto_ptr<EventPrincipal>(
 	new EventPrincipal(eventId, Timestamp(tstamp),
-	productRegistry(), lbp_, processConfiguration(), true, EventAuxiliary::Unspecified));
+	productRegistry(), lbp_, processConfiguration(), true));
     std::auto_ptr<Event> e(new Event(*ep_, moduleDescription()));
     return e;
   }
