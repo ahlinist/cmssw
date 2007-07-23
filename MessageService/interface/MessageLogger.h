@@ -34,7 +34,6 @@
 #include "FWCore/MessageLogger/interface/ErrorObj.h"
 
 #include "FWCore/ServiceRegistry/interface/ActivityRegistry.h"
-#include "FWCore/ServiceRegistry/interface/Service.h"
 #include "DataFormats/Provenance/interface/EventID.h"
 #include "FWCore/MessageLogger/interface/ELseverityLevel.h"
 

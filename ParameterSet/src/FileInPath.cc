@@ -10,9 +10,7 @@
 // for the "official" directory is CMSSW_RELEASE_BASE or CMSSW_DATA_PATH.
 
 #include <cstdlib>
-#include <string>
 #include <vector>
-#include <iosfwd>
 #include "boost/filesystem/path.hpp"
 #include "boost/filesystem/operations.hpp"
 

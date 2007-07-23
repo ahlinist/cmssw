@@ -13,7 +13,6 @@ static const char CVSId[] = "$Id$";
 #include "FWCore/ParameterSet/interface/ProcessDesc.h"
 #include "FWCore/ParameterSet/interface/ParseTree.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/ParameterSet/interface/Entry.h"
 
 #include "FWCore/ParameterSet/src/ScheduleValidator.h"
 #include "FWCore/ParameterSet/interface/OperatorNode.h"
