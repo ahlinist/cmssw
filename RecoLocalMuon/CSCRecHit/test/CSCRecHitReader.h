@@ -24,6 +24,7 @@
 #include <vector>
 #include <map>
 #include <string>
+#include "TH1F.h"
 
 namespace edm {
   class ParameterSet;
@@ -66,8 +67,13 @@ private:
   H2DRecHit *hRHPME4;
 
 
+  std::map<std::string, int> segMap1;
+  std::map<std::string, int> chaMap1;
+
+
   // The file which will store the histos
   TFile *theFile;
+  TH1F *heff0;
   // Switch for debug output
   bool debug;
   // Root file name

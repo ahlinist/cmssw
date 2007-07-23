@@ -12,7 +12,9 @@ void CSCRecHitPlotter(int segtype){
 
 TFile *file = TFile::Open("cscrechitplots.root");
 
-TString suffixps = ".eps";
+// Files for histogram output --> set suffixps to desired file type:  e.g. .eps, .jpg, ...
+
+TString suffixps = ".gif";
 
 TString segment = "ME_All";
 
@@ -26,8 +28,8 @@ TString segment = "ME_All";
  if (segtype == 32) TString segment = "ME_3_2";
  if (segtype == 40) TString segment = "ME_4_1";
 
-// Files for histogram output --> set suffixps to desired file type:  e.g. .eps, .jpg, ...
 
+ TString plot00 = "rechit_eff_"+suffixps;
  TString plot0 = "matched_pair_"+segment+suffixps;
 
  TString plot1a = "xrec_"+segment+suffixps;
@@ -36,6 +38,7 @@ TString segment = "ME_All";
  TString plot1d = "x_pulls_"+segment+suffixps;
  TString plot1e = "yrec_vs_xrec_"+segment+suffixps;
  TString plot1f = "ysim_vs_xsim_"+segment+suffixps;
+ TString plot1g = "unmatched_hit_ysim_vs_xsim_"+segment+suffixps;
 
  TString plot2a = "yrec_"+segment+suffixps; 
  TString plot2b = "ysim_"+segment+suffixps; 
@@ -54,6 +57,9 @@ TString segment = "ME_All";
 // ********************************************************************
 
 // 0) Matched pair
+ hRhiteff        = (TH1F *) file->Get("h0");
+
+// 0) Matched pair
  hHaveMatch        = (TH1F *) file->Get(segment+"_hHaveMatch");
 
 // 1) X
@@ -63,6 +69,7 @@ TString segment = "ME_All";
  hPullX            = (TH1F *) file->Get(segment+"_hPullX");
  hRecYvsX          = (TH2F *) file->Get(segment+"_hRecPositionYvsX");
  hSimYvsX          = (TH2F *) file->Get(segment+"_hSimPositionYvsX");
+ hMisYvsX          = (TH2F *) file->Get(segment+"_hMisPositionYvsX");
 
 // 2) Y
  hRecPositionY     = (TH1F *) file->Get(segment+"_hRecPositionY");
@@ -80,6 +87,18 @@ TString segment = "ME_All";
 // ***************************************************************** 
 // Have match
 // *****************************************************************
+
+ gStyle->SetOptStat(kTRUE);
+ gStyle->SetOptStat(kFALSE);
+ TCanvas *c1 = new TCanvas("c1","");
+ c1->SetFillColor(10);
+ c1->SetFillColor(10);
+ hRhiteff->SetTitle(segment);
+ hRhiteff->Draw();
+ hRhiteff->GetXaxis()->SetTitle("Chamber type");
+ hRhiteff->GetYaxis()->SetTitle("efficiency");
+ c1->Print(plot00);
+
 
  gStyle->SetOptStat(kTRUE);
  gStyle->SetOptStat(kFALSE);
@@ -138,6 +157,17 @@ TString segment = "ME_All";
  hSimYvsX->GetXaxis()->SetTitle("x_{sim} (cm) ");
  hSimYvsX->GetYaxis()->SetTitle("y_{sim} (cm) ");
  c1->Print(plot1f);
+
+// 1f) Simhits without matching rechits Ysim vs Xsim
+ gStyle->SetOptStat(kFALSE);
+ TCanvas *c1 = new TCanvas("c1","");
+ c1->SetFillColor(10);
+ c1->SetFillColor(10);
+ hMisYvsX->SetTitle(segment);
+ hMisYvsX->Draw("BOX");
+ hMisYvsX->GetXaxis()->SetTitle("x_{sim} (cm) ");
+ hMisYvsX->GetYaxis()->SetTitle("y_{sim} (cm) ");
+ c1->Print(plot1g);
 
 
 // *****************************************************************
