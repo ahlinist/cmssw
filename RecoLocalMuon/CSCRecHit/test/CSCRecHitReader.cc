@@ -80,13 +80,28 @@ CSCRecHitReader::CSCRecHitReader(const edm::ParameterSet& pset){
   hRHPME4  = new H2DRecHit("ME_4_1");
 }
 
+
 // Destructor
 CSCRecHitReader::~CSCRecHitReader(){
   
   if (debug) cout << "[CSCRecHitReader] Destructor called" << endl;
+
+  cout << "Rechit reconstruction efficiency" << endl;        
+  int ibin = 0;
+  heff0    = new TH1F("h0", "rechit efficiency", segMap1.size()*2 + 2, 0, segMap1.size()*2 + 2); 
+  for (map<string,int>::const_iterator it = segMap1.begin(); it != segMap1.end(); it++) {
+    ibin++;
+    float eff = (float)it->second/(float)chaMap1[it->first]; 
+    heff0->SetBinContent(ibin*2, eff);
+    heff0->GetXaxis()->SetBinLabel(ibin*2, (it->first).c_str());
+    cout << it->first << ": " << it->second << " " << chaMap1[it->first] 
+         << "  "      << eff  << endl;
+  }
+
   
   // Write the histos to file
   theFile->cd();
+  heff0->Write();
   hRHPME1a->Write();
   hRHPME1b->Write();
   hRHPME12->Write();
@@ -216,6 +231,7 @@ void CSCRecHitReader::analyze(const Event & event, const EventSetup& eventSetup)
     // Find out the corresponding wiregroup / strip #
     const CSCLayer* csclayer = cscGeom->layer( id );
     const CSCLayerGeometry* geom = csclayer->geometry();
+    const CSCChamber* chamber = cscGeom->chamber( id );
     int wire_shit = geom->nearestWire(shitlocal);
     int wiregrp_shit = geom->wireGroup(wire_shit);
     float stripWidth = geom->stripPitch(shitlocal);
@@ -254,6 +270,10 @@ void CSCRecHitReader::analyze(const Event & event, const EventSetup& eventSetup)
     int rwiregrp = 0; 
     int stripnum = 0; 
       
+
+    chaMap1[chamber->specs()->chamberTypeName()]++; 
+
+
     // Loop over rechits 
       
     // Build iterator for rechits and loop :
@@ -350,6 +370,8 @@ void CSCRecHitReader::analyze(const Event & event, const EventSetup& eventSetup)
       if (id.station() == 4) histo = hRHPME4;
 
       histo->FillHaveMatch(1);
+  
+      segMap1[chamber->specs()->chamberTypeName()]++;
 
 
       // Look at wire digi and find best match for selected rechit (see if it exists):
@@ -571,6 +593,7 @@ void CSCRecHitReader::analyze(const Event & event, const EventSetup& eventSetup)
       if (id.station() == 4) histo = hRHPME4;
           
       histo->FillHaveMatch(0);
+      histo->FillNoMatch(xsimu, ysimu );
     }
     idx_sim++;
   }

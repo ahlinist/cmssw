@@ -30,6 +30,7 @@ public:
     hPullX           = new TH1F(N+"_hPullX", "CSCHit x residual", 101, -5.05, 5.05);
     hRecPositionYvsX = new TH2F(N+"_hRecPositionYvsX", "CSCRecHit y vs x", 600, -60., 60., 600, -60., 60.);
     hSimPositionYvsX = new TH2F(N+"_hSimPositionYvsX", "CSCSimHit y vs x", 600, -60., 60., 600, -60., 60.);
+    hMisPositionYvsX = new TH2F(N+"_hMisPositionYvsX", "Un-matchedSimHit y vs x", 100, -50., 50., 280, -70., 70.);
 // Local Y position
     hRecPositionY    = new TH1F(N+"_hRecPositionY", "CSCRecHit y local", 200, -40., 40.);
     hSimPositionY    = new TH1F(N+"_hSimPositionY", "CSCSimHit y local", 200, -40., 40.);
@@ -56,6 +57,7 @@ public:
     hPullX            = (TH1F *) file->Get(name+"_PullX");
     hRecPositionYvsX  = (TH2F *) file->Get(name+"_RecPositionYvsX");
     hSimPositionYvsX  = (TH2F *) file->Get(name+"_SimPositionYvsX");
+    hMisPositionYvsX  = (TH2F *) file->Get(name+"_MisPositionYvsX");
 // Y
     hRecPositionY     = (TH1F *) file->Get(name+"_RecPositionY");
     hSimPositionY     = (TH1F *) file->Get(name+"_SimPositionY");
@@ -82,6 +84,7 @@ public:
     delete hPullX;
     delete hRecPositionYvsX;
     delete hSimPositionYvsX;
+    delete hMisPositionYvsX;
 // Y
     delete hRecPositionY;
     delete hSimPositionY;
@@ -97,6 +100,9 @@ public:
 
   // Operations
   void FillHaveMatch(int match) {hHaveMatch->Fill(match);}
+
+  // Operations
+  void FillNoMatch(float simx, float simy ) {hMisPositionYvsX->Fill(simx,simy);}
 
   /// Fill all the histos
   void Fill(float recx, float recy, float simx, float simy, float recphi, float simphi,
@@ -152,6 +158,7 @@ public:
     hPullX->Write();
     hRecPositionYvsX->Write();
     hSimPositionYvsX->Write();
+    hMisPositionYvsX->Write();
 // Y
     hRecPositionY->Write();
     hSimPositionY->Write();
@@ -175,6 +182,7 @@ public:
     TH1F *hPullX;
     TH2F *hRecPositionYvsX;
     TH2F *hSimPositionYvsX;
+    TH2F *hMisPositionYvsX;
 // Y
     TH1F *hRecPositionY;
     TH1F *hSimPositionY;
