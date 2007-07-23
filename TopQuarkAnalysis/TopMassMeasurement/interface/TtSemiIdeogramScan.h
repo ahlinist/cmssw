@@ -2,10 +2,10 @@
 #define TtSemiIdeogramScan_h
 
 // includes for kinematic fit
-#include "TopQuarkAnalysis/TopKinFitter/src/TFitConstraintM.hh"
-#include "TopQuarkAnalysis/TopKinFitter/src/TFitParticleEtThetaPhi.hh"
-#include "TopQuarkAnalysis/TopKinFitter/src/TFitConstraintEp.hh"
-#include "TopQuarkAnalysis/TopKinFitter/src/TKinFitter.hh"
+#include "PhysicsTools/KinFitter/interface/TFitConstraintM.h"
+#include "PhysicsTools/KinFitter/interface/TFitParticleEtThetaPhi.h"
+#include "PhysicsTools/KinFitter/interface/TFitConstraintEp.h"
+#include "PhysicsTools/KinFitter/interface/TKinFitter.h"
 #include "AnalysisDataFormats/TopObjects/interface/TtSemiEvtSolution.h"
 
 // Root stuff
