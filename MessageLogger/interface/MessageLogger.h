@@ -28,6 +28,8 @@
 //
 // 4 mf 6/1/07      Added LogAbsolute and LogProblem
 //
+// 5 mf 7/24/07      Added HaltMessageLogging
+//
 // =================================================
 
 // system include files
@@ -41,6 +43,7 @@
 
 #include "FWCore/MessageLogger/interface/MessageSender.h"
 #include "FWCore/MessageLogger/interface/MessageDrop.h"
+#include "FWCore/MessageLogger/interface/MessageLoggerQ.h"	// Change log 5
 #include "FWCore/MessageLogger/interface/ErrorObj.h"
 
 namespace edm  {
@@ -293,6 +296,8 @@ public:
   bool isDebugEnabled();
   bool isInfoEnabled();
   bool isWarningEnabled();
+  void HaltMessageLogging();
+
 
 }  // namespace edm
 
