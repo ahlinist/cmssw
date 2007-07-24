@@ -20,6 +20,7 @@
   <Numeric name="DlTop"             value="[tidmodule2:DlTop]"/>
   <Numeric name="DlBottom"          value="[tidmodule2:DlBottom]"/>
   <Numeric name="DlHybrid"          value="[tidmodule2:DlHybrid]"/>
+  <String name="DoComponents"       value="Yes"/>
   <String name="TopFrameName"       value="tidmodule2:TIDModule2TopFrame"/>
   <String name="TopFrameMaterial"   value="tidmaterial:TID_frame_top"/>
   <Numeric name="TopFrameHeight"    value="[tidmodpar:TopFrameHeight]"/>
