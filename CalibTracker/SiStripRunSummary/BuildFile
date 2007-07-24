@@ -1,6 +1,7 @@
 <use name=boost>
 
 <use name=CommonTools/ConditionDBWriter>
+<use name=CondFormats/DataRecord>
 <use name=CondCore/DBCommon>
 <use name=CondCore/DBOutputService>
 <use name=CondFormats/SiStripObjects>
@@ -21,6 +22,7 @@
   <use name=boost>
 
   <use name=CommonTools/ConditionDBWriter>
+<use name=CondFormats/DataRecord>
   <use name=CondCore/DBCommon>
   <use name=CondCore/DBOutputService>
   <use name=CondFormats/SiStripObjects>
