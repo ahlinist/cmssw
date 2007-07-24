@@ -1,11 +1,11 @@
-// $Id: EEMDisplayPlugins.cc,v 1.3 2007/05/23 15:04:21 benigno Exp $
+// $Id: EEMDisplayPlugins.cc,v 1.4 2007/06/11 12:41:19 dellaric Exp $
 
 /*!
   \file EEMDisplayPlugins
   \brief Display Plugin for Quality Histograms (2D)
   \author B. Gobbo 
-  \version $Revision: 1.3 $
-  \date $Date: 2007/05/23 15:04:21 $
+  \version $Revision: 1.4 $
+  \date $Date: 2007/06/11 12:41:19 $
 */
 
 #include <TProfile2D.h>
@@ -28,6 +28,7 @@ static TH2C* t2 = new TH2C( "eem_text2", "text2", 17, 0, 17,  4, 0,  4 );
 static TH2C* t3 = new TH2C( "eem_text3", "text3", 10, 0, 10,  5, 0,  5 );
 static TH2C* t4 = new TH2C( "eem_text4", "text4",  2, 0,  2,  1, 0,  1 );
 static TH2C* t5 = new TH2C( "eem_text5", "text5", 86, 1, 87,  1, 0,  1 );
+static TH2C* t6 = new TH2C( "eem_text6", "text6", 18, 0, 360,  2, -85, 85 );
 //
 
 template<class T> void EEMDisplayPlugins::adjustRange( T obj ) {
@@ -82,17 +83,20 @@ EEMDisplayPlugins::EEMDisplayPlugins( IgState *state ) : VisDQMDisplayPlugin( st
   text3 = t3;
   text4 = t4;
   text5 = t5;
+  text6 = t6;
   //text1 = 5ew TH2C( "text1", "text1", 85, 0, 85, 20, 0, 20 );
   //text2 = new TH2C( "text2", "text2", 17, 0, 17,  4, 0,  4 );
   //text3 = new TH2C( "text3", "text3", 10, 0, 10,  5, 0,  5 );
   //text4 = new TH2C( "text4", "text4",  2, 0,  2,  1, 0,  1 );
   //text5 = new TH2C( "text5", "text5", 86, 1, 87,  1, 0,  1 );
+  //text6 = new TH2C( "text6", "text6", 18, 0, 360,  2, -85, 85 );
 
   text1->SetMinimum( 0.1 );
   text2->SetMinimum( 0.1 );
   text3->SetMinimum( 0.1 );
   text4->SetMinimum( 0.1 );
   text5->SetMinimum( 0.1 );
+  text6->SetMinimum( -18.01 );
 
   // The use of "first" will be removed when multiple instantiation problem will be fixed
   if( first ) {
@@ -105,6 +109,11 @@ EEMDisplayPlugins::EEMDisplayPlugins( IgState *state ) : VisDQMDisplayPlugin( st
       text3->Fill( 2+i*5, 2, i+1+68 );
       text4->Fill( i, 0., i+1+68 );
     }
+    for ( short i=0; i<18; i++ ) {
+      int x = 1 + i%9;
+      int y = 1 + i/9;
+      text6->SetBinContent(x, y, Numbers::iEE(i+1));
+    }
   }
 
   text1->SetMarkerSize( 2 );
@@ -112,6 +121,7 @@ EEMDisplayPlugins::EEMDisplayPlugins( IgState *state ) : VisDQMDisplayPlugin( st
   text3->SetMarkerSize( 2 );
   text4->SetMarkerSize( 2 );
   text5->SetMarkerSize( 2 );
+  text6->SetMarkerSize( 2 );
 
 }
 
@@ -259,8 +269,26 @@ std::string EEMDisplayPlugins::preDrawTH2( DisplayData *data ) {
       obj->GetXaxis()->SetNdivisions( 2 );
       obj->GetYaxis()->SetNdivisions( 1 );
     }
+    else if( nbx == 360 && nby == 170 ) {
+      obj->GetXaxis()->SetNdivisions( 18 );
+      obj->GetYaxis()->SetNdivisions( 2 );
+    }
     (data->pad)->SetGridx();
     (data->pad)->SetGridy();
+
+    if( name.find( "summary" ) < name.size() ) {
+      gStyle->SetOptStat(" ");
+      obj->SetOption( "col" );
+      gStyle->SetPalette(6, pCol3);
+      obj->GetXaxis()->SetNdivisions(18, kFALSE);
+      obj->GetYaxis()->SetNdivisions(2);
+      (data->pad)->SetGridx();
+      (data->pad)->SetGridy();
+      obj->SetMinimum(-0.00000001);
+      obj->SetMaximum(6.0);
+      gStyle->SetPaintTextFormat("+g");
+      return "";
+    }
 
     // Atypical plot...
     if( name.find( "EEMM event" ) < name.size() ) {
@@ -466,7 +494,10 @@ void EEMDisplayPlugins::postDrawTH2( DisplayData *data ) {
   else if( nbx == 86 && nby == 1 ) {
     text5->Draw( "text90,same" );
   }
-
+  else if( nbx == 360 && nby == 170 ) {
+    text6->Draw( "text,same" );
+    gStyle->SetPaintTextFormat();
+  }
   return;    
 
 }
