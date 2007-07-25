@@ -1,0 +1,9 @@
+<environment>
+ <use name=TopQuarkAnalysis/TopTools>
+ <use name=AnalysisDataFormats/TopObjects>
+ <use name=FWCore/FWLite>
+ <use name=FWCore/Framework>
+ <use name=rootcintex>
+ <use name=root>
+ <bin file="JetRejCombLR_SoverSplusBLoop.cpp"> </bin>
+</environment>
