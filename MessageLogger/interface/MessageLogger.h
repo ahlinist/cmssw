@@ -28,7 +28,7 @@
 //
 // 4 mf 6/1/07      Added LogAbsolute and LogProblem
 //
-// 5 mf 7/24/07      Added HaltMessageLogging
+// 5 mf 7/24/07     Added HaltMessageLogging
 //
 // =================================================
 
