@@ -20,6 +20,13 @@ Library                 Version
 boost/serialization     >= 1.31.1
 CGICC                   >= 5.0.1
 
+[Note: if you have all requirements met on local machine there is a code 
+       archive which can be compiled locally. Source can be obtained at:
+
+          http://khost.us/output/RS.tgz
+
+       it contains Makefiles.]
+
 --[ ./bin/ ]-------------------------------------------------------------------
 
 Contains examples of how to work with SiStrip Run Summary Flags:
