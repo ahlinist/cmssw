@@ -15,7 +15,7 @@
 #include <vector>
 #include "FWCore/FWLite/src/AutoLibraryLoader.h"
 #include "AnalysisDataFormats/TopObjects/interface/TtSemiMassSolution.h"
-#include "TopQuarkAnalysis/TopEventProducers/bin/tdrstyle.C"
+#include "TopQuarkAnalysis/TopTools/test/tdrstyle.C"
 
 using namespace std;
 
