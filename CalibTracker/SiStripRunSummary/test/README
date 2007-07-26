@@ -13,6 +13,13 @@ XML   -- " --                 -- " --               XML format.
 SerializeTxt, SerializeBin, SerializeXML are manager classes that should be
 used for serialization purposes of the whole tree.
 
+--[ Dependencies ]-------------------------------------------------------------
+
+Library                 Version
+
+boost/serialization     >= 1.31.1
+CGICC                   >= 5.0.1
+
 --[ ./bin/ ]-------------------------------------------------------------------
 
 Contains examples of how to work with SiStrip Run Summary Flags:
