@@ -21,8 +21,7 @@ class SiStripRunSummaryWrite: public ConditionDBWriter<SiStripRunSummary> {
 
   protected:
     // Leave possibility of inheritance
-    void algoEndRun ( const edm::Event      &roEVENT,
-		      const edm::EventSetup &roEVENT_SETUP) ;
+    void algoEndJob();
   
   private:
     virtual SiStripRunSummary *getNewObject();
