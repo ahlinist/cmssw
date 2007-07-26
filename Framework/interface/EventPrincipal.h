@@ -35,7 +35,7 @@ namespace edm {
         boost::shared_ptr<LuminosityBlockPrincipal> lbp,
         ProcessConfiguration const& pc,
         bool isReal,
-	EventAuxiliary::ExperimentType const eType = EventAuxiliary::Unspecified,
+	EventAuxiliary::ExperimentType const eType = EventAuxiliary::Any,
 	ProcessHistoryID const& hist = ProcessHistoryID(),
 	boost::shared_ptr<DelayedReader> rtrv = boost::shared_ptr<DelayedReader>(new NoDelayedReader));
     EventPrincipal(EventID const& id,
@@ -44,7 +44,7 @@ namespace edm {
 	LuminosityBlockNumber_t lumi,
         ProcessConfiguration const& pc,
         bool isReal,
-	EventAuxiliary::ExperimentType const eType = EventAuxiliary::Unspecified,
+	EventAuxiliary::ExperimentType const eType = EventAuxiliary::Any,
 	ProcessHistoryID const& hist = ProcessHistoryID(),
 	boost::shared_ptr<DelayedReader> rtrv = boost::shared_ptr<DelayedReader>(new NoDelayedReader));
     ~EventPrincipal() {}

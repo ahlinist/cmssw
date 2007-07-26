@@ -340,7 +340,7 @@ void testEvent::setUp()
                                    1,
                                    currentModuleDescription_->processConfiguration(),
                                    true,
-				   EventAuxiliary::Unspecified,
+				   EventAuxiliary::Any,
                                    processHistoryID);
 
   currentEvent_ = new Event(*principal_, *currentModuleDescription_);
