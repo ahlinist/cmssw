@@ -1,3 +1,30 @@
+--[ Intro ]--------------------------------------------------------------------
+
+Each SiStrip Run Summary flag has two implementations (classes):
+
+  - TXT 
+  - XML
+
+The reason of separation is limitation of boost/serialization library.
+
+TXT  Flags that will be automatically serialized in text format.
+XML   -- " --                 -- " --               XML format.
+
+SerializeTxt, SerializeBin, SerializeXML are manager classes that should be
+used for serialization purposes of the whole tree.
+
+--[ ./bin/ ]-------------------------------------------------------------------
+
+Contains examples of how to work with SiStrip Run Summary Flags:
+
+  main_all.cc    Convert TXT based Flags to XML and vice versa
+  main_bin.cc    Save TXT Flags in binary streams such as string, file. Any 
+                 other may be used in the same way.
+  main_cgicc.cc  CGICC module for WEB server that fills Flags with values
+  main_txt.cc    The same as main_bin.cc but saves Flags in Test stream
+  main_xml.cc    Save Flags in XML format... Output is written to any stream:
+                 string, file, etc.
+
 --[ SiStripRunSummaryWrite ]---------------------------------------------------
 
 Read SiStrip Run Summary Flags tree from external XML file and save them in DB
