@@ -10,12 +10,12 @@
 #include "cgicc/HTMLClasses.h"
 #include "cgicc/HTTPHTMLHeader.h"
 
-#include "interface/Flag.h"
-#include "interface/FlagXML.h"
-#include "interface/DQMFlagXML.h"
-#include "interface/SerializeXML.h"
-#include "interface/TIBFlagXML.h"
-#include "interface/TOBFlagXML.h"
+#include "CalibTracker/SiStripRunSummary/Flag.h"
+#include "CalibTracker/SiStripRunSummary/FlagXML.h"
+#include "CalibTracker/SiStripRunSummary/DQMFlagXML.h"
+#include "CalibTracker/SiStripRunSummary/SerializeXML.h"
+#include "CalibTracker/SiStripRunSummary/TIBFlagXML.h"
+#include "CalibTracker/SiStripRunSummary/TOBFlagXML.h"
 
 const char *pcFILE_XML = "output/archive.xml";
 const char *pcPAGE_URL = "http://localhost:1906/index.cgi";
