@@ -56,6 +56,14 @@ bool DTLocalTriggerDisplayPlugins::isLocalTriggerME (std::string name) {
   if( name.find( "TrigEff" ) == 0 ) {
     return true;
   }
+
+  if( name.find( "TrigPos" ) == 0 ) {
+    return true;
+  }
+
+  if( name.find( "TrigDir" ) == 0 ) {
+    return true;
+  }
   
   if( name.find( "CorrectBX" ) == 0 ) {
     return true;
