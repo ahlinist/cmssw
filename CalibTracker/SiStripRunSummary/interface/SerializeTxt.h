@@ -10,7 +10,7 @@
 
 #include <iosfwd>
 
-#include "interface/SerializeBase.h"
+#include "CalibTracker/SiStripRunSummary/interface/SerializeBase.h"
 
 class FlagTxt;
 

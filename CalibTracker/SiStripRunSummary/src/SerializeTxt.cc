@@ -13,12 +13,12 @@
 
 // Next include is essential: this is the right place where all calsses are
 // registered for serialization: include all anchestors of FlagTxt.
-#include "interface/DQMFlagTxt.h"
-#include "interface/FlagTxt.h"
-#include "interface/TIBFlagTxt.h"
-#include "interface/TOBFlagTxt.h"
+#include "CalibTracker/SiStripRunSummary/interface/DQMFlagTxt.h"
+#include "CalibTracker/SiStripRunSummary/interface/FlagTxt.h"
+#include "CalibTracker/SiStripRunSummary/interface/TIBFlagTxt.h"
+#include "CalibTracker/SiStripRunSummary/interface/TOBFlagTxt.h"
 
-#include "interface/SerializeTxt.h"
+#include "CalibTracker/SiStripRunSummary/interface/SerializeTxt.h"
 
 // --[ TEXT ARCHIVE MANAGER ]--------------------------------------------------
 //                                                  --[ PUBLIC ]--

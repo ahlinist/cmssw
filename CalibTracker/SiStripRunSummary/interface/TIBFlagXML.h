@@ -10,8 +10,8 @@
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/export.hpp>
 
-#include "interface/FlagXML.h"
-#include "interface/ClassIDBase.h"
+#include "CalibTracker/SiStripRunSummary/interface/FlagXML.h"
+#include "CalibTracker/SiStripRunSummary/interface/ClassIDBase.h"
 
 class TIBFlagTxt;
 

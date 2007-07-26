@@ -4,7 +4,7 @@
 
 #include <ostream>
 
-#include "interface/Flag.h"
+#include "CalibTracker/SiStripRunSummary/interface/Flag.h"
 
 bool Flag::setState( const State &reSTATE) {
   // reSTATE may be any value of: 0, 1, 2, 3... e.g. 

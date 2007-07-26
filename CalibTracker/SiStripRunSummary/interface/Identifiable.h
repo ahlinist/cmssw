@@ -7,7 +7,7 @@
 #ifndef IDENTIFIABLE_H
 #define IDENTIFIABLE_H
 
-#include "interface/ClassIDBase.h"
+#include "CalibTracker/SiStripRunSummary/interface/ClassIDBase.h"
 
 // Interface for identifiable objects: objects that can return ID
 class Identifiable {

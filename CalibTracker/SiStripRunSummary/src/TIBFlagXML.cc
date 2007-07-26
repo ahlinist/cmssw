@@ -2,10 +2,10 @@
 // Created: 07/15/07
 // License: GPL
 
-#include "interface/ClassID.h"
+#include "CalibTracker/SiStripRunSummary/interface/ClassID.h"
 
-#include "interface/TIBFlagXML.h"
-#include "interface/TIBFlagTxt.h"
+#include "CalibTracker/SiStripRunSummary/interface/TIBFlagXML.h"
+#include "CalibTracker/SiStripRunSummary/interface/TIBFlagTxt.h"
 
 TIBFlagXML::TIBFlagXML( const TIBFlagTxt *poTIB_FLAGTXT)
   : FlagXML( *( dynamic_cast<const FlagTxt *>( poTIB_FLAGTXT) ) ) {}
