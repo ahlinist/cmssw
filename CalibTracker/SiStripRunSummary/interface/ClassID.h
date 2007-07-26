@@ -8,7 +8,7 @@
 #ifndef CLASS_ID_H
 #define CLASS_ID_H
 
-#include "CalibTracker/SiStripRunSummary/interface/ClassIDBase.h"
+#include "interface/ClassIDBase.h"
 
 template<class T>
   class ClassID: public ClassIDBase {

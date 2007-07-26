@@ -7,15 +7,13 @@
 #ifndef DQM_FLAG_TXT_H
 #define DQM_FLAG_TXT_H
 
-#include <ostream>
+#include <iosfwd>
 
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/export.hpp>
 
-#include "CalibTracker/SiStripRunSummary/interface/FlagTxt.h"
-#include "CalibTracker/SiStripRunSummary/interface/ClassID.h"
-#include "CalibTracker/SiStripRunSummary/interface/TIBFlagTxt.h"
-#include "CalibTracker/SiStripRunSummary/interface/TOBFlagTxt.h"
+#include "interface/FlagTxt.h"
+#include "interface/ClassIDBase.h"
 
 class DQMFlagXML;
 
@@ -24,6 +22,7 @@ class DQMFlagTxt: public FlagTxt {
     DQMFlagTxt() {}
     DQMFlagTxt( const DQMFlagXML *poDQM_FLAGXML);
 
+  protected:
     // Used in copying Tree
     inline virtual Clonable *clone() const {
       return new DQMFlagTxt( *this);
@@ -31,19 +30,11 @@ class DQMFlagTxt: public FlagTxt {
 
     virtual Clonable *cloneXML() const;
 
-  protected:
     // Used in serialization to get class ID
-    inline virtual ClassIDBase::ID getID() const {
-      return ClassID<DQMFlagTxt>::get();
-    }
+    ClassIDBase::ID getID() const;
 
     // Enable children
-    inline virtual int isChildValid( const FlagTxt *poCHILD_CANDIDATE) const {
-      return dynamic_cast<const TIBFlagTxt *>( poCHILD_CANDIDATE) ||
-             dynamic_cast<const TOBFlagTxt *>( poCHILD_CANDIDATE) ?
-             1 :
-             0;
-    }
+    virtual int isChildValid( const FlagTxt *poCHILD_CANDIDATE) const;
 
   private:
     // Serialization

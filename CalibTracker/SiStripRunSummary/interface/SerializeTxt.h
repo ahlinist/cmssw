@@ -5,45 +5,49 @@
 // Created: 06/01/07
 // License: GPL
 
-#ifndef SERIALIZE_TXT
-#define SERIALIZE_TXT
+#ifndef SERIALIZE_TXT_BIN
+#define SERIALIZE_TXT_BIN
 
-#include <string>
+#include <iosfwd>
 
-class DQMFlagTxt;
+#include "interface/SerializeBase.h"
 
-class SerializeTxt {
+class FlagTxt;
+
+// --[ TEXT ARCHIVE MANAGER ]--------------------------------------------------
+
+/** 
+* @brief 
+*   Generic Manager class that saves/reads any FlagTxt anchestor in/from
+*   output/input stream in form of Text Characters Sequence.
+*/
+class SerializeTxt: public SerializeBase {
   public:
-    SerializeTxt() { poFlagTxt_ = 0; }
-    ~SerializeTxt();
-
-    bool write   ( const char *pcFILE, const DQMFlagTxt &roDQM_FLAGTXT);
-    bool writeStr( std::string &roStringOut, const DQMFlagTxt &roDQM_FLAGTXT);
-
-    bool read   ( const char *pcFILE);
-    bool readStr( const std::string &roStringIn);
-
-    DQMFlagTxt *getFlag() { return poFlagTxt_; }
+    SerializeTxt(): SerializeBase() {}
 
   private:
-    DQMFlagTxt *poFlagTxt_;
+    virtual void writeFlag( std::ostream &roOut,
+                            const FlagTxt &roFLAGTXT) const;
+
+    virtual void readFlag ( FlagTxt *poFlagTxt, std::istream &roIn);
 };
 
-class SerializeBin {
+// --[ BINARY ARCHIVE MANAGER ]------------------------------------------------
+
+/** 
+* @brief 
+*   Generic Manager class that saves/reads any FlagTxt anchestor in/from
+*   output/input stream in form of Binary Characters Sequence.
+*/
+class SerializeBin: public SerializeBase {
   public:
-    SerializeBin() { poFlagTxt_ = 0; }
-    ~SerializeBin();
-
-    bool write   ( const char *pcFILE, const DQMFlagTxt &roDQM_FLAGTXT);
-    bool writeStr( std::string &roStringOut, const DQMFlagTxt &roDQM_FLAGTXT);
-
-    bool read   ( const char *pcFILE);
-    bool readStr( const std::string &roStringIn);
-
-    DQMFlagTxt *getFlag() { return poFlagTxt_; }
+    SerializeBin(): SerializeBase() {}
 
   private:
-    DQMFlagTxt *poFlagTxt_;
+    virtual void writeFlag( std::ostream &roOut,
+                            const FlagTxt &roFLAGTXT) const;
+
+    virtual void readFlag ( FlagTxt *poFlagTxt, std::istream &roIn);
 };
 
-#endif // SERIALIZE_TXT
+#endif // SERIALIZE_TXT_BIN

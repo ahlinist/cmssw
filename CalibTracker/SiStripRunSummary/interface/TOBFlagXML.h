@@ -10,8 +10,8 @@
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/export.hpp>
 
-#include "CalibTracker/SiStripRunSummary/interface/FlagXML.h"
-#include "CalibTracker/SiStripRunSummary/interface/ClassID.h"
+#include "interface/FlagXML.h"
+#include "interface/ClassIDBase.h"
 
 class TOBFlagTxt;
 
@@ -20,6 +20,7 @@ class TOBFlagXML: public FlagXML {
     TOBFlagXML() {}
     TOBFlagXML( const TOBFlagTxt *poTOB_FLAGTXT);
 
+  protected:
     // Used in copying Tree
     inline virtual Clonable *clone() const {
       return new TOBFlagXML( *this);
@@ -27,11 +28,8 @@ class TOBFlagXML: public FlagXML {
 
     virtual Clonable *cloneTxt() const;
 
-  protected:
     // Used in serialization to get class ID
-    inline virtual ClassIDBase::ID getID() const {
-      return ClassID<TOBFlagXML>::get();
-    }
+    virtual ClassIDBase::ID getID() const;
 
   private:
     // Serialization

@@ -12,6 +12,8 @@ class Clonable {
   public:
     virtual ~Clonable() {}
 
+  protected:
+    // Next methods are used by FlagTxt/FlagXML to copy it from another object
     virtual Clonable *clone() const = 0;
 
     inline virtual Clonable *cloneTxt() const { return clone(); }

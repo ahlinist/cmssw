@@ -9,11 +9,11 @@
 #ifndef FLAG_H
 #define FLAG_H
 
+#include <iosfwd>
 #include <string>
-#include <ostream>
 
-#include "CalibTracker/SiStripRunSummary/interface/Clonable.h"
-#include "CalibTracker/SiStripRunSummary/interface/Identifiable.h"
+#include "interface/Clonable.h"
+#include "interface/Identifiable.h"
 
 class Flag: public Clonable,
             public Identifiable {
@@ -38,6 +38,8 @@ class Flag: public Clonable,
       : eState_  ( roFLAG.eState_),
         oComment_( roFLAG.oComment_) {}
 
+    // Unfortunately all properties of Flag (that are going to be serialized)
+    // have to be protected. Otherwise Serialization won't work :(.
     State       eState_;
     std::string oComment_;
 

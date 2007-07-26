@@ -13,9 +13,9 @@
 #include <boost/serialization/string.hpp>
 #include <boost/serialization/list.hpp>
 
-#include "CalibTracker/SiStripRunSummary/interface/ClassIDBase.h"
-#include "CalibTracker/SiStripRunSummary/interface/ClassID.h"
-#include "CalibTracker/SiStripRunSummary/interface/Flag.h"
+#include "interface/ClassIDBase.h"
+#include "interface/ClassID.h"
+#include "interface/Flag.h"
 
 class FlagXML;
 
