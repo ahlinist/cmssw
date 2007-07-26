@@ -128,6 +128,9 @@ namespace edm {
     size_t getParameterSetVectorNames(std::vector<std::string>& output,
 				      bool trackiness=true) const;
 
+    // need a simple interface for python
+    std::string dump() const;
+
     friend std::ostream & operator<<(std::ostream & os, const ParameterSet & pset);
 
 private:
