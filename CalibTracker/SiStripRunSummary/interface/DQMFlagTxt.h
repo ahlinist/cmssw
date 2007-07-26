@@ -12,8 +12,8 @@
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/export.hpp>
 
-#include "interface/FlagTxt.h"
-#include "interface/ClassIDBase.h"
+#include "CalibTracker/SiStripRunSummary/interface/FlagTxt.h"
+#include "CalibTracker/SiStripRunSummary/interface/ClassIDBase.h"
 
 class DQMFlagXML;
 

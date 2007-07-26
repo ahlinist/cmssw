@@ -4,13 +4,13 @@
 
 #include <ostream>
 
-#include "interface/ClassID.h"
+#include "CalibTracker/SiStripRunSummary/interface/ClassID.h"
 
-#include "interface/TIBFlagXML.h"
-#include "interface/TOBFlagXML.h"
+#include "CalibTracker/SiStripRunSummary/interface/TIBFlagXML.h"
+#include "CalibTracker/SiStripRunSummary/interface/TOBFlagXML.h"
 
-#include "interface/DQMFlagXML.h"
-#include "interface/DQMFlagTxt.h"
+#include "CalibTracker/SiStripRunSummary/interface/DQMFlagXML.h"
+#include "CalibTracker/SiStripRunSummary/interface/DQMFlagTxt.h"
 
 DQMFlagXML::DQMFlagXML( const DQMFlagTxt *poDQM_FLAGTXT)
   : FlagXML( *( dynamic_cast<const FlagTxt *>( poDQM_FLAGTXT) ) ) {}

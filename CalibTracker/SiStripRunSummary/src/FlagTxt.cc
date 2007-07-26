@@ -2,8 +2,8 @@
 // Created: 05/31/07
 // License: GPL
 
-#include "interface/FlagTxt.h"
-#include "interface/FlagXML.h"
+#include "CalibTracker/SiStripRunSummary/interface/FlagTxt.h"
+#include "CalibTracker/SiStripRunSummary/interface/FlagXML.h"
 
 FlagTxt::~FlagTxt() {
   // Memory Clean Up: remove all children

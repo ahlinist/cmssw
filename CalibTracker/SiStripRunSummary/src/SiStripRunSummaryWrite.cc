@@ -24,6 +24,7 @@ SiStripRunSummaryWrite::SiStripRunSummaryWrite(
 }
 
 void SiStripRunSummaryWrite::algoEndRun( const edm::Event      &roEVENT, const edm::EventSetup &roEVENT_SETUP){
+  /*
   // Read Run Summary Flags XML file
   SerializeXML oSerializeXML;
   
@@ -37,7 +38,7 @@ void SiStripRunSummaryWrite::algoEndRun( const edm::Event      &roEVENT, const e
   // Get Txt Tree state string
   SerializeBin oSerializeBin;
   oSerializeBin.writeStr( oFlagTreeTxt_, oDQMFlagTxt);
-
+  */
 }
 
 SiStripRunSummary *SiStripRunSummaryWrite::getNewObject() {

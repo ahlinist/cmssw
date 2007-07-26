@@ -2,10 +2,10 @@
 // Created: 07/15/07
 // License: GPL
 
-#include "interface/ClassID.h"
+#include "CalibTracker/SiStripRunSummary/interface/ClassID.h"
 
-#include "interface/TOBFlagTxt.h"
-#include "interface/TOBFlagXML.h"
+#include "CalibTracker/SiStripRunSummary/interface/TOBFlagTxt.h"
+#include "CalibTracker/SiStripRunSummary/interface/TOBFlagXML.h"
 
 TOBFlagTxt::TOBFlagTxt( const TOBFlagXML *poTOB_FLAGXML)
   : FlagTxt( *( dynamic_cast<const FlagXML *>( poTOB_FLAGXML) ) ) {}

@@ -4,9 +4,9 @@
 
 #include <ostream>
 
-#include "interface/FlagTxt.h"
+#include "CalibTracker/SiStripRunSummary/interface/FlagTxt.h"
 
-#include "interface/SerializeBase.h"
+#include "CalibTracker/SiStripRunSummary/interface/SerializeBase.h"
 
 // --[ BASE ARCHIVE MANAGER ]--------------------------------------------------
 //                                                  --[ PUBLIC ]--

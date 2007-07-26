@@ -12,8 +12,8 @@
 #include <iosfwd>
 #include <string>
 
-#include "interface/Clonable.h"
-#include "interface/Identifiable.h"
+#include "CalibTracker/SiStripRunSummary/interface/Clonable.h"
+#include "CalibTracker/SiStripRunSummary/interface/Identifiable.h"
 
 class Flag: public Clonable,
             public Identifiable {
