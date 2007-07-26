@@ -7,7 +7,6 @@
 
 #include <string>
 
-// #include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "CommonTools/ConditionDBWriter/interface/ConditionDBWriter.h"
 #include "CondFormats/SiStripObjects/interface/SiStripRunSummary.h"
 
