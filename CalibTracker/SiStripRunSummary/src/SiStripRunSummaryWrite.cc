@@ -31,9 +31,7 @@ SiStripRunSummaryWrite::SiStripRunSummaryWrite(
   // [ToDo: Add file check for existance]
 }
 
-void SiStripRunSummaryWrite::algoEndRun( const edm::Event      &roEVENT, 
-                                         const edm::EventSetup &roEVENT_SETUP) {
-
+void SiStripRunSummaryWrite::algoEndJob() {
   std::ifstream oFileIn( oFileXMLIn_.c_str());
 
   // Read Run Summary Flags XML file
@@ -43,14 +41,16 @@ void SiStripRunSummaryWrite::algoEndRun( const edm::Event      &roEVENT,
     DQMFlagTxt oDQMFlagTxt( poFlagXML);
 
     // Get Txt Tree state string
-    std::ostringstream oOut( oFlagTreeTxt_);
+    std::ostringstream oOut;
 
-    SerializeTxt oSerialize;
-    if( !oSerialize.write( oOut, oDQMFlagTxt)) {
+    SerializeTxt oSerializeTxt;
+    if( !oSerializeTxt.write( oOut, oDQMFlagTxt)) {
       // Failed to serialize tree
       throw cms::Exception( "Run Summary Flags", 
                             "Failed to serialize Run Summary Flags Tree in string");
     }
+
+    oFlagTreeTxt_ = oOut.str();
   } else {
     // Failed to read Flags Tree from file
     throw cms::Exception( "Run Summary Flags", 
