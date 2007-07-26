@@ -47,7 +47,7 @@ namespace edm {
     } else {
       newRun_ = false;
       return boost::shared_ptr<RunPrincipal>(
-	new RunPrincipal(runNumber_, productRegistry(), processConfiguration()));
+	new RunPrincipal(runNumber_, Timestamp::invalidTimestamp(), productRegistry(), processConfiguration()));
     }
   }
 
@@ -58,7 +58,7 @@ namespace edm {
     } else {
       newLumi_ = false;
       lbp_ = boost::shared_ptr<LuminosityBlockPrincipal>(
-	new LuminosityBlockPrincipal(luminosityBlockNumber_, productRegistry(), rp, processConfiguration()));
+	new LuminosityBlockPrincipal(luminosityBlockNumber_, Timestamp::invalidTimestamp(), productRegistry(), rp, processConfiguration()));
     }
     return lbp_;
   }

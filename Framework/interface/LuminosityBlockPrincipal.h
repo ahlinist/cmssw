@@ -27,6 +27,7 @@ namespace edm {
   typedef Principal Base;
   public:
     LuminosityBlockPrincipal(LuminosityBlockNumber_t const& id,
+        Timestamp const& time,
 	boost::shared_ptr<ProductRegistry const> reg,
         boost::shared_ptr<RunPrincipal> rp,
         ProcessConfiguration const& pc,
@@ -34,6 +35,7 @@ namespace edm {
 	boost::shared_ptr<DelayedReader> rtrv = boost::shared_ptr<DelayedReader>(new NoDelayedReader));
 
     LuminosityBlockPrincipal(LuminosityBlockNumber_t const& id,
+	Timestamp const& time,
 	boost::shared_ptr<ProductRegistry const> reg,
         RunNumber_t run,
         ProcessConfiguration const& pc,
@@ -57,6 +59,10 @@ namespace edm {
 
     LuminosityBlockID id() const {
       return aux().id();
+    }
+
+    Timestamp const& time() const {
+      return aux().time();
     }
 
     LuminosityBlockNumber_t luminosityBlock() const {
