@@ -13,12 +13,12 @@
 class SiStripRunSummaryRead: public edm::EDAnalyzer {
   public:
     // Constructor
-    SiStripRunSummaryRead( const edm::ParameterSet &roCONFIG);
-    virtual ~SiStripRunSummaryRead() {}
+    SiStripRunSummaryRead( const edm::ParameterSet &roCONFIG) {}
 
   protected:
     // Leave possibility of inheritance
     virtual void beginJob( const edm::EventSetup &roEVENT_SETUP);
+
     inline virtual void analyze ( const edm::Event      &roEVENT,
                                   const edm::EventSetup &roEVENT_SETUP) {}
 };
