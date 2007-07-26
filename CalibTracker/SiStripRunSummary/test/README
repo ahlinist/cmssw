@@ -1,0 +1,19 @@
+--[ SiStripRunSummaryWrite ]---------------------------------------------------
+
+Read SiStrip Run Summary Flags tree from external XML file and save them in DB
+in form of regular string as a SiStripRunSummary Record.
+
+Input:  XML file that contains serialized SiStrip Run Summary flags tree. This
+        file can be created by running main_xml.cc file placed in 
+
+          CalibTracker/SiStripRunSummary/bin/
+
+        ]
+Output: test.db, test.xml files that specify DB written data
+
+--[ SiStripRunSummaryRead ]----------------------------------------------------
+
+Read SiStrip Run Summary Flags from DB and print them out on a screen.
+
+Input: test.db, test.xml files that were created by SiStripRunSummaryWrite
+       module
