@@ -47,14 +47,16 @@ void SiStripRunSummaryWrite::algoEndJob() {
     if( !oSerializeTxt.write( oOut, oDQMFlagTxt)) {
       // Failed to serialize tree
       throw cms::Exception( "Run Summary Flags", 
-                            "Failed to serialize Run Summary Flags Tree in string");
+                            "Failed to serialize Run Summary Flags Tree in \
+string");
     }
 
     oFlagTreeTxt_ = oOut.str();
   } else {
     // Failed to read Flags Tree from file
     throw cms::Exception( "Run Summary Flags", 
-                          "Failed to read Run Summary Flags Tree from XML File");
+                          "Failed to read Run Summary Flags Tree from XML \
+File");
   }
 }
 
