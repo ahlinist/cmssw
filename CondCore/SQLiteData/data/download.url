@@ -1,5 +1,9 @@
 http://cern.ch/cms-sdt/CondCore/SQLiteData/cmscond_build_localcatalog
 http://cern.ch/cms-sdt/CondCore/SQLiteData/mydata.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/MVAJetTags_CMSSW160validation.db
-
+http://cern.ch/cms-sdt/CondCore/SQLiteData/DTFullMap.db
+http://cern.ch/cms-sdt/CondCore/SQLiteData/RPCCabling.db
+http://cern.ch/cms-sdt/CondCore/SQLiteData/siPixelCabling.db
+http://cern.ch/cms-sdt/CondCore/SQLiteData/sistripfedcablingCSA07.db
+http://cern.ch/cms-sdt/CondCore/SQLiteData/sistripfedcabling.db
 
