@@ -5,7 +5,7 @@
 #include <iostream>
 
 #include "CalibTracker/SiStripRunSummary/interface/SerializeTxt.h"
-#include "CalibTracker/SiStripRunSummary/interface/DQMFlagTxt.h"
+#include "CalibTracker/SiStripRunSummary/interface/GlobalFlagTxt.h"
 #include "CondFormats/DataRecord/interface/SiStripRunSummaryRcd.h"
 #include "CondFormats/SiStripObjects/interface/SiStripRunSummary.h"
 #include "FWCore/Framework/interface/ESHandle.h"
@@ -23,7 +23,7 @@ void SiStripRunSummaryRead::beginJob( const edm::EventSetup &roEVENT_SETUP) {
     std::istringstream oIn( poESHRunSummary->getRunSummary());
 
     SerializeTxt oSerializeTxt;
-    if( DQMFlagTxt *poFlagTxt = oSerializeTxt.read<DQMFlagTxt>( oIn)) {
+    if( GlobalFlagTxt *poFlagTxt = oSerializeTxt.read<GlobalFlagTxt>( oIn)) {
       std::cout << "Read Flag Tree" << std::endl;
       std::cout << *poFlagTxt << std::endl;
     } else {
