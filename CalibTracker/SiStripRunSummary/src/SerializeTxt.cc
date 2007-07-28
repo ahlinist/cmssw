@@ -11,12 +11,8 @@
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>
 
-// Next include is essential: this is the right place where all calsses are
-// registered for serialization: include all anchestors of FlagTxt.
-#include "CalibTracker/SiStripRunSummary/interface/DQMFlagTxt.h"
 #include "CalibTracker/SiStripRunSummary/interface/FlagTxt.h"
-#include "CalibTracker/SiStripRunSummary/interface/TIBFlagTxt.h"
-#include "CalibTracker/SiStripRunSummary/interface/TOBFlagTxt.h"
+#include "CalibTracker/SiStripRunSummary/interface/RegisterFlagTxt.h"
 
 #include "CalibTracker/SiStripRunSummary/interface/SerializeTxt.h"
 
