@@ -5,8 +5,8 @@
 #include <fstream>
 #include <sstream>
 
-#include "CalibTracker/SiStripRunSummary/interface/DQMFlagTxt.h"
-#include "CalibTracker/SiStripRunSummary/interface/DQMFlagXML.h"
+#include "CalibTracker/SiStripRunSummary/interface/GlobalFlagTxt.h"
+#include "CalibTracker/SiStripRunSummary/interface/GlobalFlagXML.h"
 #include "CalibTracker/SiStripRunSummary/interface/SerializeTxt.h"
 #include "CalibTracker/SiStripRunSummary/interface/SerializeXML.h"
 #include "FWCore/Utilities/interface/Exception.h"
@@ -36,15 +36,15 @@ void SiStripRunSummaryWrite::algoEndJob() {
 
   // Read Run Summary Flags XML file
   SerializeXML oSerializeXML;
-  if( DQMFlagXML *poFlagXML = oSerializeXML.read<DQMFlagXML>( oFileIn)) {
+  if( GlobalFlagXML *poFlagXML = oSerializeXML.read<GlobalFlagXML>( oFileIn)) {
     // Convert XML to Txt Tree
-    DQMFlagTxt oDQMFlagTxt( poFlagXML);
+    GlobalFlagTxt oGlobalFlagTxt( poFlagXML);
 
     // Get Txt Tree state string
     std::ostringstream oOut;
 
     SerializeTxt oSerializeTxt;
-    if( !oSerializeTxt.write( oOut, oDQMFlagTxt)) {
+    if( !oSerializeTxt.write( oOut, oGlobalFlagTxt)) {
       // Failed to serialize tree
       throw cms::Exception( "Run Summary Flags", 
                             "Failed to serialize Run Summary Flags Tree in \
