@@ -1,5 +1,5 @@
 // Author : Samvel Khalatian (samvel at fnal dot gov)
-// Created: 07/15/07
+// Created: 07/27/07
 // License: GPL
 
 #include <ostream>
@@ -11,21 +11,21 @@
 #include "CalibTracker/SiStripRunSummary/interface/TIDFlagTxt.h"
 #include "CalibTracker/SiStripRunSummary/interface/TOBFlagTxt.h"
 
-#include "CalibTracker/SiStripRunSummary/interface/DQMFlagTxt.h"
-#include "CalibTracker/SiStripRunSummary/interface/DQMFlagXML.h"
+#include "CalibTracker/SiStripRunSummary/interface/DCSFlagTxt.h"
+#include "CalibTracker/SiStripRunSummary/interface/DCSFlagXML.h"
 
-DQMFlagTxt::DQMFlagTxt( const DQMFlagXML *poDQM_FLAGXML)
-  : FlagTxt( *( dynamic_cast<const FlagXML *>( poDQM_FLAGXML) ) ) {}
+DCSFlagTxt::DCSFlagTxt( const DCSFlagXML *poDCS_FLAGXML)
+  : FlagTxt( *( dynamic_cast<const FlagXML *>( poDCS_FLAGXML) ) ) {}
 
-Clonable *DQMFlagTxt::cloneXML() const {
-  return new DQMFlagXML( this);
+Clonable *DCSFlagTxt::cloneXML() const {
+  return new DCSFlagXML( this);
 }
 
-ClassIDBase::ID DQMFlagTxt::getID() const {
-  return ClassID<DQMFlagTxt>::get();
+ClassIDBase::ID DCSFlagTxt::getID() const {
+  return ClassID<DCSFlagTxt>::get();
 }
 
-int DQMFlagTxt::isChildValid( const FlagTxt *poCHILD_CANDIDATE) const {
+int DCSFlagTxt::isChildValid( const FlagTxt *poCHILD_CANDIDATE) const {
   return dynamic_cast<const TECFlagTxt *>( poCHILD_CANDIDATE) ||
          dynamic_cast<const TIBFlagTxt *>( poCHILD_CANDIDATE) ||
          dynamic_cast<const TIDFlagTxt *>( poCHILD_CANDIDATE) ||
@@ -35,9 +35,9 @@ int DQMFlagTxt::isChildValid( const FlagTxt *poCHILD_CANDIDATE) const {
 }
 
 std::ostream &
-  operator <<( std::ostream &roOut, const DQMFlagTxt &roFLAG) {
+  operator <<( std::ostream &roOut, const DCSFlagTxt &roFLAG) {
 
-  // Print DQM info
+  // Print DCS info
   roOut << static_cast<int>( roFLAG.getState()) << " : "
         << roFLAG.getComment();
 

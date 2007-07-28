@@ -6,34 +6,16 @@
 #include <fstream>
 #include <sstream>
 
-#include "CalibTracker/SiStripRunSummary/DQMFlagTxt.h"
-#include "CalibTracker/SiStripRunSummary/TIBFlagTxt.h"
-#include "CalibTracker/SiStripRunSummary/TOBFlagTxt.h"
-#include "CalibTracker/SiStripRunSummary/SerializeTxt.h"
+#include "CalibTracker/SiStripRunSummary/interface/GlobalFlagTxt.h"
+#include "CalibTracker/SiStripRunSummary/interface/SerializeTxt.h"
+#include "CalibTracker/SiStripRunSummary/interface/getFlagTree.h"
 
 const char  *pcFILE_TXT = "archive.txt";
 std::string  oFlagsStr  = "";
 
-DQMFlagTxt getFlagTree() {
-  DQMFlagTxt oDQMFlag;
-  oDQMFlag.setComment( "This is DQM Flag TXT");
-
-  if( FlagTxt *poFlag = oDQMFlag.createChild<TIBFlagTxt>()) {
-    poFlag->setState( Flag::OK);
-    poFlag->setComment( "DQMFlagTxt -> TIBFlagTxt");
-  }
-
-  if( FlagTxt *poFlag = oDQMFlag.createChild<TOBFlagTxt>()) {
-    poFlag->setState( Flag::OK);
-    poFlag->setComment( "DQMFlagTxt -> TOBFlagTxt");
-  }
-
-  return oDQMFlag;
-}
-
 void TXTtoFile() {
   std::cout << "--[ \033[1mTXTtoFile\033[0m ]----------------" << std::endl;
-  DQMFlagTxt oFlag( getFlagTree());
+  GlobalFlagTxt oFlag( getTXTFlagTree());
 
   std::ofstream oSFileOut( pcFILE_TXT);
 
@@ -50,7 +32,7 @@ void TXTtoFile() {
 
 void TXTtoStr() {
   std::cout << "--[ \033[1mTXTtoStr\033[0m ]----------------" << std::endl;
-  DQMFlagTxt oFlag( getFlagTree());
+  GlobalFlagTxt oFlag( getTXTFlagTree());
 
   std::ostringstream oSStrOut;
 
@@ -76,7 +58,7 @@ void FiletoTXT() {
   std::ifstream oSFileIn( pcFILE_TXT);
 
   SerializeTxt oSerializeTxt;
-  if( DQMFlagTxt *poFlag = oSerializeTxt.read<DQMFlagTxt>( oSFileIn)) {
+  if( GlobalFlagTxt *poFlag = oSerializeTxt.read<GlobalFlagTxt>( oSFileIn)) {
     std::cout << "Read Flags Tree from file: \033[1m"
               << pcFILE_TXT << "\033[0m" << std::endl;
     std::cout << "\033[1;32m" << *poFlag << "\033[0m" << std::endl;
@@ -94,7 +76,7 @@ void StrtoTXT() {
   std::istringstream oSStrIn( oFlagsStr);
 
   SerializeTxt oSerializeTxt;
-  if( DQMFlagTxt *poFlag = oSerializeTxt.read<DQMFlagTxt>( oSStrIn)) {
+  if( GlobalFlagTxt *poFlag = oSerializeTxt.read<GlobalFlagTxt>( oSStrIn)) {
     std::cout << "Read Flags Tree from string" << std::endl;
     std::cout << "\033[1;32m" << *poFlag << "\033[0m" << std::endl;
   } else {

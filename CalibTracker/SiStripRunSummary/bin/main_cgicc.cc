@@ -4,18 +4,25 @@
 
 #include <exception>
 #include <iostream>
+#include <fstream>
 
 #include "cgicc/Cgicc.h"
 #include "cgicc/FormEntry.h"
 #include "cgicc/HTMLClasses.h"
 #include "cgicc/HTTPHTMLHeader.h"
 
-#include "CalibTracker/SiStripRunSummary/Flag.h"
-#include "CalibTracker/SiStripRunSummary/FlagXML.h"
-#include "CalibTracker/SiStripRunSummary/DQMFlagXML.h"
-#include "CalibTracker/SiStripRunSummary/SerializeXML.h"
-#include "CalibTracker/SiStripRunSummary/TIBFlagXML.h"
-#include "CalibTracker/SiStripRunSummary/TOBFlagXML.h"
+#include "CalibTracker/SiStripRunSummary/interface/Flag.h"
+#include "CalibTracker/SiStripRunSummary/interface/FlagXML.h"
+#include "CalibTracker/SiStripRunSummary/interface/DAQFlagXML.h"
+#include "CalibTracker/SiStripRunSummary/interface/DCSFlagXML.h"
+#include "CalibTracker/SiStripRunSummary/interface/DQMFlagXML.h"
+#include "CalibTracker/SiStripRunSummary/interface/GlobalFlagXML.h"
+#include "CalibTracker/SiStripRunSummary/interface/SerializeXML.h"
+#include "CalibTracker/SiStripRunSummary/interface/TECFlagXML.h"
+#include "CalibTracker/SiStripRunSummary/interface/TIBFlagXML.h"
+#include "CalibTracker/SiStripRunSummary/interface/TIDFlagXML.h"
+#include "CalibTracker/SiStripRunSummary/interface/TOBFlagXML.h"
+#include "CalibTracker/SiStripRunSummary/interface/TriggerFlagXML.h"
 
 const char *pcFILE_XML = "output/archive.xml";
 const char *pcPAGE_URL = "http://localhost:1906/index.cgi";
@@ -69,17 +76,96 @@ void showForm() {
   cout << "<form>" << endl;
   cout << "  <table>" << endl;
   cout << "    <tr>" << endl;
-  cout << "      <th colspan='2' style='text-align:left'>DQM</th>" << endl;
+  cout << "      <th colspan='2' style='text-align:left'>Global</th>" << endl;
   cout << "    </tr>" << endl;
   cout << "    <tr>" << endl;
-  cout << "      <td style='padding-left:20px;vertical-align:top'>TIB</td>" 
+  cout << "      <th colspan='2' style='padding-left:20px;vertical-align:top;text-align:left'>DAQ</th>" << endl;
+  cout << "    </tr>" << endl;
+  cout << "    <tr>" << endl;
+  cout << "      <td style='padding-left:40px;vertical-align:top'>TEC</td>" 
+       << endl;
+  cout << "      <td>" << endl;
+  showFlagTable( "DAQ_TEC");
+  cout << "      </td>" << endl;
+  cout << "    </tr>" << endl;
+  cout << "    <tr>" << endl;
+  cout << "      <td style='padding-left:40px;vertical-align:top'>TIB</td>" 
+       << endl;
+  cout << "      <td>" << endl;
+  showFlagTable( "DAQ_TIB");
+  cout << "      </td>" << endl;
+  cout << "    </tr>" << endl;
+  cout << "    <tr>" << endl;
+  cout << "      <td style='padding-left:40px;vertical-align:top'>TID</td>" 
+       << endl;
+  cout << "      <td>" << endl;
+  showFlagTable( "DAQ_TID");
+  cout << "      </td>" << endl;
+  cout << "    </tr>" << endl;
+  cout << "    <tr>" << endl;
+  cout << "      <td style='padding-left:40px;vertical-align:top'>TOB</td>" 
+       << endl;
+  cout << "      <td>" << endl;
+  showFlagTable( "DAQ_TOB");
+  cout << "      </td>" << endl;
+  cout << "    </tr>" << endl;
+  cout << "    <tr>" << endl;
+  cout << "      <th colspan='2' style='padding-left:20px;vertical-align:top;text-align:left'>DCS</th>" << endl;
+  cout << "    </tr>" << endl;
+  cout << "    <tr>" << endl;
+  cout << "      <td style='padding-left:40px;vertical-align:top'>TEC</td>" 
+       << endl;
+  cout << "      <td>" << endl;
+  showFlagTable( "DCS_TEC");
+  cout << "      </td>" << endl;
+  cout << "    </tr>" << endl;
+  cout << "    <tr>" << endl;
+  cout << "      <td style='padding-left:40px;vertical-align:top'>TIB</td>" 
+       << endl;
+  cout << "      <td>" << endl;
+  showFlagTable( "DCS_TIB");
+  cout << "      </td>" << endl;
+  cout << "    </tr>" << endl;
+  cout << "    <tr>" << endl;
+  cout << "      <td style='padding-left:40px;vertical-align:top'>TID</td>" 
+       << endl;
+  cout << "      <td>" << endl;
+  showFlagTable( "DCS_TID");
+  cout << "      </td>" << endl;
+  cout << "    </tr>" << endl;
+  cout << "    <tr>" << endl;
+  cout << "      <td style='padding-left:40px;vertical-align:top'>TOB</td>" 
+       << endl;
+  cout << "      <td>" << endl;
+  showFlagTable( "DCS_TOB");
+  cout << "      </td>" << endl;
+  cout << "    </tr>" << endl;
+  cout << "    <tr>" << endl;
+  cout << "      <th colspan='2' style='padding-left:20px;vertical-align:top;text-align:left'>DQM</th>" << endl;
+  cout << "    </tr>" << endl;
+  cout << "    <tr>" << endl;
+  cout << "      <td style='padding-left:40px;vertical-align:top'>TEC</td>" 
+       << endl;
+  cout << "      <td>" << endl;
+  showFlagTable( "DQM_TEC");
+  cout << "      </td>" << endl;
+  cout << "    </tr>" << endl;
+  cout << "    <tr>" << endl;
+  cout << "      <td style='padding-left:40px;vertical-align:top'>TIB</td>" 
        << endl;
   cout << "      <td>" << endl;
   showFlagTable( "DQM_TIB");
   cout << "      </td>" << endl;
   cout << "    </tr>" << endl;
   cout << "    <tr>" << endl;
-  cout << "      <td style='padding-left:20px;vertical-align:top'>TOB</td>" 
+  cout << "      <td style='padding-left:40px;vertical-align:top'>TID</td>" 
+       << endl;
+  cout << "      <td>" << endl;
+  showFlagTable( "DQM_TID");
+  cout << "      </td>" << endl;
+  cout << "    </tr>" << endl;
+  cout << "    <tr>" << endl;
+  cout << "      <td style='padding-left:40px;vertical-align:top'>TOB</td>" 
        << endl;
   cout << "      <td>" << endl;
   showFlagTable( "DQM_TOB");
@@ -91,24 +177,100 @@ void showForm() {
        << endl;
   cout << "      </td>" << endl;
   cout << "    </tr>" << endl;
+  cout << "    <tr>" << endl;
+  cout << "      <td style='padding-left:20px;vertical-align:top'>Trigger</td>" 
+       << endl;
+  cout << "      <td>" << endl;
+  showFlagTable( "Trigger");
+  cout << "      </td>" << endl;
+  cout << "    </tr>" << endl;
   cout << "  </table>" << endl;
   cout << "</form>" << endl;
 }
 
 void processForm( cgicc::Cgicc &roCgi) {
-  DQMFlagXML oDQMFlagXML;
+  GlobalFlagXML oGlobalFlagXML;
 
-  // DQM - TIB: create Flag
-  if( FlagXML *poFlag = oDQMFlagXML.createChild<TIBFlagXML>()) {
-    setFlag( roCgi, poFlag, "DQM_TIB");
-  }
+  // DAQ
+  if( FlagXML *poDAQFlagXML = oGlobalFlagXML.createChild<DAQFlagXML>()) {
+    // DAQ - TEC: create Flag
+    if( FlagXML *poFlag = poDAQFlagXML->createChild<TECFlagXML>()) {
+      setFlag( roCgi, poFlag, "DAQ_TEC");
+    }
 
-  if( FlagXML *poFlag = oDQMFlagXML.createChild<TOBFlagXML>()) {
-    setFlag( roCgi, poFlag, "DQM_TOB");
-  }
+    // DAQ - TIB: create Flag
+    if( FlagXML *poFlag = poDAQFlagXML->createChild<TIBFlagXML>()) {
+      setFlag( roCgi, poFlag, "DAQ_TIB");
+    }
+
+    // DAQ - TID: create Flag
+    if( FlagXML *poFlag = poDAQFlagXML->createChild<TIDFlagXML>()) {
+      setFlag( roCgi, poFlag, "DAQ_TID");
+    }
+
+    // DAQ - TOB: create Flag
+    if( FlagXML *poFlag = poDAQFlagXML->createChild<TOBFlagXML>()) {
+      setFlag( roCgi, poFlag, "DAQ_TOB");
+    }
+  } // End DAQ
+
+  // DCS
+  if( FlagXML *poDCSFlagXML = oGlobalFlagXML.createChild<DCSFlagXML>()) {
+    // DCS - TEC: create Flag
+    if( FlagXML *poFlag = poDCSFlagXML->createChild<TECFlagXML>()) {
+      setFlag( roCgi, poFlag, "DCS_TEC");
+    }
+
+    // DCS - TIB: create Flag
+    if( FlagXML *poFlag = poDCSFlagXML->createChild<TIBFlagXML>()) {
+      setFlag( roCgi, poFlag, "DCS_TIB");
+    }
+
+    // DCS - TID: create Flag
+    if( FlagXML *poFlag = poDCSFlagXML->createChild<TIDFlagXML>()) {
+      setFlag( roCgi, poFlag, "DCS_TID");
+    }
+
+    // DCS - TOB: create Flag
+    if( FlagXML *poFlag = poDCSFlagXML->createChild<TOBFlagXML>()) {
+      setFlag( roCgi, poFlag, "DCS_TOB");
+    }
+  } // End DCS
+
+  // DQM
+  if( FlagXML *poDQMFlagXML = oGlobalFlagXML.createChild<DQMFlagXML>()) {
+    // DQM - TEC: create Flag
+    if( FlagXML *poFlag = poDQMFlagXML->createChild<TECFlagXML>()) {
+      setFlag( roCgi, poFlag, "DQM_TEC");
+    }
+
+    // DQM - TIB: create Flag
+    if( FlagXML *poFlag = poDQMFlagXML->createChild<TIBFlagXML>()) {
+      setFlag( roCgi, poFlag, "DQM_TIB");
+    }
+
+    // DQM - TID: create Flag
+    if( FlagXML *poFlag = poDQMFlagXML->createChild<TIDFlagXML>()) {
+      setFlag( roCgi, poFlag, "DQM_TID");
+    }
+
+    // DQM - TOB: create Flag
+    if( FlagXML *poFlag = poDQMFlagXML->createChild<TOBFlagXML>()) {
+      setFlag( roCgi, poFlag, "DQM_TOB");
+    }
+  } // End DQM
+
+  // Trigger
+  if( FlagXML *poTriggerFlagXML = 
+        oGlobalFlagXML.createChild<TriggerFlagXML>()) {
+
+    setFlag( roCgi, poTriggerFlagXML, "Trigger");
+  } // End Trigger
+
+  std::ofstream oOut( pcFILE_XML);
 
   SerializeXML oSerializeXML;
-  oSerializeXML.write( pcFILE_XML, oDQMFlagXML);
+  oSerializeXML.write( oOut, oGlobalFlagXML);
 }
 
 void setFlag( cgicc::Cgicc &roCgi, Flag *poFlag, const char *pcPREFIX) {
