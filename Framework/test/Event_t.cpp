@@ -341,6 +341,8 @@ void testEvent::setUp()
                                    currentModuleDescription_->processConfiguration(),
                                    true,
 				   EventAuxiliary::Any,
+				   999,
+				   0,
                                    processHistoryID);
 
   currentEvent_ = new Event(*principal_, *currentModuleDescription_);
