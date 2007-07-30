@@ -1,0 +1,10 @@
+
+module SUSYHighPtPhotonFilter = SUSYHighPtPhotonSkim {
+  InputTag Photonsrc = photons
+  InputTag Tracksrc = ctfWithMaterialTracks
+  untracked double Photon1Ptmin = 80
+  untracked double Photon2Ptmin = 20
+  untracked bool IsIsolated = 1   
+}
+
+sequence SUSYHighPtPhoton = { SUSYHighPtPhotonFilter }
