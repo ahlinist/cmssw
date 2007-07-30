@@ -4,8 +4,8 @@
  * Description:
  *      Class to read directly OMDS DB with OCCI and fill Offline DB
  *
- * $Date: 2007/03/13 12:55:25 $
- * $Revision: 1.10 $
+ * $Date: 2007/04/11 12:04:25 $
+ * $Revision: 1.11 $
  * \author Michal Bluj -- INS Warsaw
  *
  */
@@ -61,6 +61,7 @@ private:
   string record_;
   string tag_;
   string version_;
+  int runno_;
                                                                                 
   // utilities
   string IntToString(int num)
@@ -78,12 +79,14 @@ private:
 RPCReadOutMappingBuilder::RPCReadOutMappingBuilder(const edm::ParameterSet& iConfig) 
   : record_(iConfig.getParameter<std::string>("record")),
     tag_(iConfig.getUntrackedParameter<std::string>("tag",(string)"RPCReadOutMapping_v1")),
-    version_(iConfig.getUntrackedParameter<std::string>("vesion",(string)"CreationTime"))
+    version_(iConfig.getUntrackedParameter<std::string>("version",(string)"CreationTime")),
+    runno_(iConfig.getUntrackedParameter<int>("runnumber",0))
 {
   cout<<"CTor called"<<endl;
 
   cout <<" HERE record: "<<record_<<endl;
-  
+
+// this is not really used  
   if(version_==(string)"CreationTime"){
     time_t rawtime;
     time(&rawtime); //time since January 1, 1970
@@ -170,9 +173,13 @@ void RPCReadOutMappingBuilder::WritePoolDB()
   
   try {
     if( mydbservice->isNewTagRequest(record_) ) {
+      std::cout<<"Creating new tag for "<<record_<<std::endl;
       mydbservice->createNewIOV<RPCReadOutMapping>(cabling, mydbservice->endOfTime(), record_);
     } else {
-      mydbservice->appendSinceTime<RPCReadOutMapping>(cabling, mydbservice->currentTime(), record_);
+      int iov=mydbservice->currentTime();
+      if (runno_ > 0) iov=runno_;
+      std::cout<<"Current IOV is "<<iov<<std::endl;
+      mydbservice->appendSinceTime<RPCReadOutMapping>(cabling, iov, record_);
     }
   }
   catch (std::exception &e) { cout <<"std::exception:  "<< e.what(); }
@@ -353,7 +360,7 @@ void RPCReadOutMappingBuilder::readCablingMap()
 	  cout<< " Done." << endl;
 	  for(unsigned int iFEB=0; iFEB<theFEB.size(); iFEB++) {
 	    FebLocationSpec febLocation = {theFEB[iFEB].cmsEtaPart,theFEB[iFEB].posInCmsEtaPart,theFEB[iFEB].localEtaPart,theFEB[iFEB].posInLocalEtaPart};
-	    cout << " |    |    |    |    |-> Getting the Chamber and the Strips for FEB no. "<<  theFEB[iFEB].lbInputNum << " ... " << flush;
+//	    cout << " |    |    |    |    |-> Getting the Chamber and the Strips for FEB no. "<<  theFEB[iFEB].lbInputNum << " ... " << flush;
 	    // Get chamber 
 	    ChamberLocationSpec chamber;
 	    sqlQuery = "SELECT DiskOrWheel, Layer, Sector, Subsector,";
@@ -369,9 +376,11 @@ void RPCReadOutMappingBuilder::readCablingMap()
 	      chamber.layer=rset->getInt(2);
 	      chamber.sector=rset->getInt(3);
 	      chamber.subsector=rset->getString(4);
+              if (chamber.subsector=="") chamber.subsector="0";
 	      chamber.chamberLocationName=rset->getString(5);
 	      chamber.febZOrnt=rset->getString(6);
 	      chamber.febZRadOrnt=rset->getString(7);
+              if (chamber.febZRadOrnt=="") chamber.febZRadOrnt="N/A";
 	      chamber.barrelOrEndcap=rset->getString(8);
 	    }
 	    FebConnectorSpec febConnector(theFEB[iFEB].lbInputNum,chamber,febLocation);
@@ -386,7 +395,7 @@ void RPCReadOutMappingBuilder::readCablingMap()
 	    sqlQuery += " ORDER BY CableChannelNum";
 	    stmt->setSQL(sqlQuery.c_str());
 	    rset = stmt->executeQuery();
-	    cout << " Done." << endl;
+//	    cout << " Done." << endl;
 	    unsigned int iStripEntry=0;
 	    while (rset->next()) {
 	      cout << " |    |    |    |    |    |-> Adding the Strip no. "<< rset->getInt(1) << " ... " << flush;
