@@ -47,6 +47,7 @@ class WhatsItESProducer : public edm::ESProducer {
       ReturnType produce(const GadgetRcd &);
    private:
       // ----------member data ---------------------------
+      std::string dataLabel_;
 };
 
 //
@@ -60,7 +61,8 @@ class WhatsItESProducer : public edm::ESProducer {
 //
 // constructors and destructor
 //
-WhatsItESProducer::WhatsItESProducer(const edm::ParameterSet& /*iConfig*/)
+WhatsItESProducer::WhatsItESProducer(const edm::ParameterSet& iConfig)
+: dataLabel_(iConfig.exists("doodadLabel")? iConfig.getParameter<std::string>("doodadLabel"):std::string(""))
 {
    //the following line is needed to tell the framework what
    // data is being produced
@@ -90,7 +92,7 @@ WhatsItESProducer::produce(const GadgetRcd& iRecord)
    using namespace edmtest;
 
    edm::ESHandle<Doodad> doodad;
-   iRecord.get(doodad);
+   iRecord.get(dataLabel_,doodad);
    
    std::auto_ptr<WhatsIt> pWhatsIt(new WhatsIt) ;
 
