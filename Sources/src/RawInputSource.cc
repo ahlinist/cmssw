@@ -18,7 +18,8 @@ namespace edm {
     newRun_(true),
     newLumi_(true),
     ep_(),
-    lbp_()
+    lbp_(),
+    time_(Timestamp::beginOfTime())
   { }
 
   RawInputSource::~RawInputSource() {
@@ -48,7 +49,7 @@ namespace edm {
     } else {
       newRun_ = false;
       return boost::shared_ptr<RunPrincipal>(
-	new RunPrincipal(runNumber_, Timestamp::invalidTimestamp(), productRegistry(), processConfiguration()));
+	new RunPrincipal(runNumber_, time_, time_, productRegistry(), processConfiguration()));
     }
   }
 
@@ -59,7 +60,11 @@ namespace edm {
     } else {
       newLumi_ = false;
       lbp_ = boost::shared_ptr<LuminosityBlockPrincipal>(
-	new LuminosityBlockPrincipal(luminosityBlockNumber_, Timestamp::invalidTimestamp(), productRegistry(), rp, processConfiguration()));
+	new LuminosityBlockPrincipal(luminosityBlockNumber_,
+				     time_, time_,
+				     productRegistry(),
+				     rp,
+				     processConfiguration()));
     }
     return lbp_;
   }
@@ -80,9 +85,10 @@ namespace edm {
 
   std::auto_ptr<Event>
   RawInputSource::makeEvent(EventID & eventId, Timestamp const& tstamp) {
+    time_ = tstamp;
     eventId = EventID(runNumber_, eventId.event());
     ep_ = std::auto_ptr<EventPrincipal>(
-	new EventPrincipal(eventId, Timestamp(tstamp),
+	new EventPrincipal(eventId, tstamp,
 	productRegistry(), lbp_, processConfiguration(), true, EventAuxiliary::Data));
     std::auto_ptr<Event> e(new Event(*ep_, moduleDescription()));
     return e;
