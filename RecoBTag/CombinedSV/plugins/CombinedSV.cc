@@ -1,23 +1,22 @@
-#include "RecoBTag/CombinedSV/interface/CombinedSV.h"
+#include <vector>
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "MagneticField/Engine/interface/MagneticField.h"
+#include "DataFormats/BeamSpot/interface/BeamSpot.h"
+#include "DataFormats/BTauReco/interface/CombinedSVTagInfo.h"
+#include "DataFormats/BTauReco/interface/JetTag.h"
+#include "DataFormats/BTauReco/interface/TaggingVariable.h"
 #include "RecoVertex/ConfigurableVertexReco/interface/ConfigurableVertexReconstructor.h"
 #include "RecoVertex/AdaptiveVertexFit/interface/AdaptiveVertexFitter.h"
 #include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
 #include "TrackingTools/Records/interface/TransientTrackRecord.h"
-// #include "RecoVertex/VertexPrimitives/interface/BeamSpot.h"
-#include "DataFormats/BeamSpot/interface/BeamSpot.h"
-#include "FWCore/MessageLogger/interface/MessageLogger.h"
-#include "DataFormats/BTauReco/interface/CombinedSVTagInfoFwd.h"
-#include "DataFormats/BTauReco/interface/JetTag.h"
-#include <vector>
-#include "DataFormats/BTauReco/interface/TaggingVariable.h"
+#include "TrackingTools/Records/interface/TransientTrackRecord.h"
 #include "RecoBTag/CombinedSV/interface/LikelihoodRatio.h"
 #include "RecoBTag/CombinedSV/interface/NCategoriesDiscriminatorComputer.h"
-#include "TrackingTools/Records/interface/TransientTrackRecord.h"
 #include "RecoBTag/CombinedSV/interface/FilterFactory.h"
+#include "RecoBTag/CombinedSV/interface/CombinedSV.h"
 
 using namespace std;
 using namespace reco;

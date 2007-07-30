@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrea Rizzi
 //         Created:  Thu Apr  6 09:56:23 CEST 2006
-// $Id: JetTagProducer.cc,v 1.4 2007/05/28 02:52:56 saout Exp $
+// $Id: JetTagProducer.cc,v 1.5 2007/05/29 16:58:42 fwyzard Exp $
 //
 //
 
@@ -23,23 +23,21 @@
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "RecoBTau/JetTagProducer/interface/JetTagProducer.h"
-
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/Framework/interface/ESHandle.h"
-
+#include "FWCore/ParameterSet/interface/InputTag.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include "DataFormats/BTauReco/interface/JetTag.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/BTauReco/interface/BaseTagInfo.h"
-#include "DataFormats/BTauReco/interface/BaseTagInfoFwd.h"
 
+#include "RecoBTau/JetTagProducer/interface/JetTagProducer.h"
 #include "RecoBTau/JetTagComputer/interface/JetTagComputer.h"
 #include "RecoBTau/JetTagComputer/interface/JetTagComputerRecord.h"
+
 using namespace std;
 using namespace reco;
 using namespace edm;
