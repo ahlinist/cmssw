@@ -53,6 +53,7 @@ namespace edm {
     unsigned int nextID() const;
     void selectProducts();
     int eventCount() const {return eventCount_;}
+    std::string const& processName() const {return process_name_;}
 
   protected:
     //const Trig& getTriggerResults(Event const& ep) const;
