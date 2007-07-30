@@ -1,0 +1,6 @@
+  module SUSYHighPtPhotonOutputModule  = PoolOutputModule {
+    untracked string fileName = "output/SUSYHighPtPhotonSkim.root"
+    untracked PSet SelectEvents = {
+      vstring SelectEvents = { "skim" }
+    }
+  }
