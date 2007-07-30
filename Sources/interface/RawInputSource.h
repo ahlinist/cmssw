@@ -8,6 +8,7 @@ $Id$
 #include <memory>
 #include "boost/shared_ptr.hpp"
 
+#include "DataFormats/Provenance/interface/Timestamp.h"
 #include "FWCore/Framework/interface/InputSource.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 
@@ -41,6 +42,7 @@ namespace edm {
     bool newLumi_;
     std::auto_ptr<EventPrincipal> ep_;
     boost::shared_ptr<LuminosityBlockPrincipal> lbp_;
+    Timestamp time_;
   };
 }
 #endif
