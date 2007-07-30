@@ -13,7 +13,7 @@ include "SUSYBSMAnalysis/CSA07Skims/data/HEEPControlTrigger.cff"
 include "SUSYBSMAnalysis/CSA07Skims/data/HEEPControlZOneTrackEWKConf.cff"
 
 sequence HEEPControlZOneTrackReco ={
-# HEEPControlTrigger &    // no proper samples available at the moment
+  HEEPControlTrigger &    // no proper samples available at the moment
   HEEPControlZOneTrack &
   HEEPControlZOneTrackGenParticlesMatch &
   HEEPControlZOneTrackFilter 
@@ -22,7 +22,7 @@ sequence HEEPControlZOneTrackReco ={
 
 include "SUSYBSMAnalysis/CSA07Skims/data/HEEPControlZOneSuperClusterEWKConf.cff"
 sequence HEEPControlZOneSuperClusterReco ={
-# HEEPControlTrigger &    // no proper samples available at the moment
+  HEEPControlTrigger &    // no proper samples available at the moment
   HEEPControlZOneSuperCluster &
   HEEPControlZOneSuperClusterGenParticlesMatch &
   HEEPControlZOneSuperClusterFilter 
