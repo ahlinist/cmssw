@@ -13,7 +13,6 @@
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/BTauReco/interface/JetTag.h"
 #include "DataFormats/BTauReco/interface/CombinedSVTagInfo.h"
-#include "DataFormats/BTauReco/interface/CombinedSVTagInfoFwd.h"
 
 using namespace reco;
 using namespace std;

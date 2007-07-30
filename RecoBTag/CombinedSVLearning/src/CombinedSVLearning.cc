@@ -1,12 +1,11 @@
-#include "RecoBTag/CombinedSVLearning/interface/CombinedSVLearning.h"
-#include "RecoBTag/CombinedSV/interface/LikelihoodRatio.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "DataFormats/BTauReco/interface/CombinedSVTagInfo.h"
-#include "DataFormats/BTauReco/interface/CombinedSVTagInfoFwd.h"
+#include "RecoBTag/CombinedSVLearning/interface/CombinedSVLearning.h"
+#include "RecoBTag/CombinedSV/interface/LikelihoodRatio.h"
 
 using namespace std;
 
