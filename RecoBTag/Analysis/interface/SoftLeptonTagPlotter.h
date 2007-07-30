@@ -29,11 +29,11 @@ public:
 private:
 
   // keep plots for up to 3 leptons per jet
-  static const int s_leptons = 3;
-  FlavourHistorgrams<double> * m_discriminant[s_leptons];   // jet b tagging discriminant
+  static const int s_leptons = 2;
   FlavourHistorgrams<double> * m_leptonId[s_leptons];   // lepton identification discriminant
   FlavourHistorgrams<double> * m_leptonPt[s_leptons];   // lepton transverse momentum
   
+  FlavourHistorgrams<double> * m_sip2d[s_leptons];      // 2D signed inpact parameter
   FlavourHistorgrams<double> * m_sip3d[s_leptons];      // 3D signed inpact parameter
   FlavourHistorgrams<double> * m_ptRel[s_leptons];      // transverse momentum wrt. jet axis
   FlavourHistorgrams<double> * m_etaRel[s_leptons];     // (pseudo)rapidity along jet axis
