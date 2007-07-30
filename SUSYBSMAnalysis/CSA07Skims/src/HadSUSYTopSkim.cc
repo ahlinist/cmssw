@@ -4,8 +4,8 @@
  * >= 3 jets + 1 lepton (muon, elect), top candle calibration/monitoring
  * (lepton + jets trigger path)
  *
- * $Date: $
- * $Revision: $
+ * $Date: 2007/07/30 16:13:12 $
+ * $Revision: 1.1 $
  *
  * \author Michael Tytgat, Maria Spiropulu - CERN
  *
@@ -40,7 +40,7 @@ HadSUSYTopSkim::HadSUSYTopSkim( const edm::ParameterSet& iConfig ) :
     iConfig.getUntrackedParameter<double>( "CaloJetPtmin", 30. );
   NminCaloJet_ = iConfig.getUntrackedParameter<int>( "NminCaloJet", 3 );
 
-  Muonsrc_ = iConfig.getParameter<InputTag>(" Muonsrc" );
+  Muonsrc_ = iConfig.getParameter<InputTag>( "Muonsrc" );
   MuonPtmin_ = 
     iConfig.getUntrackedParameter<double>( "MuonPtmin", 20. );
   NminMuon_ = iConfig.getUntrackedParameter<int>( "NminMuon", 1 );
