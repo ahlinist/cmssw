@@ -27,8 +27,8 @@
  <Constant name="CoolManifoldRout"  value="49.00*cm"/>
  <Constant name="CoolManifoldT"     value="0.70*cm"/>
  <Constant name="CoolManifoldW"     value="18.50*deg"/>
- <Constant name="ModuleZDS"         value="1.365*cm"/>
- <Constant name="ModuleZSS"         value="1.195*cm"/>
+ <Constant name="ModuleZDS"         value="1.305*cm"/>
+ <Constant name="ModuleZSS"         value="1.226*cm"/>
  <Constant name="DOHMT"             value="0.22*cm"/>
  <Constant name="DOHMZ"             value="([StructureT]+[DOHMT])/2"/>
 </ConstantsSection>
