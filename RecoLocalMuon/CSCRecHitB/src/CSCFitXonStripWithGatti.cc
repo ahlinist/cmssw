@@ -39,6 +39,7 @@ CSCFitXonStripWithGatti::CSCFitXonStripWithGatti(const edm::ParameterSet& ps){
   xtalksSystematics          = ps.getUntrackedParameter<double>("CSCStripxtalksSystematics");
   minGattiStepSize           = ps.getUntrackedParameter<double>("CSCminGattiStepSize");
   minGattiError              = ps.getUntrackedParameter<double>("CSCminGattiError");
+  maxGattiChi2               = ps.getUntrackedParameter<double>("CSCMaxGattiChi2");
   stripCrosstalk_            = new CSCStripCrosstalk( ps );
   stripNoiseMatrix_          = new CSCStripNoiseMatrix( ps );
 
@@ -186,59 +187,68 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCDetId& id, const CSCLayer* 
   // Run Gatti for offset = 0
   runGattiFit( 0 );
 
-//  if (ring < 2 ) std::cout << "Gatti_0  " << x_gatti << " " << chi2_gatti << " " << dxl_gatti << " " << dxh_gatti << std::endl;
-  
   float tmp0_x      = x_gatti;
   float tmp0_chi2   = chi2_gatti;
   float tmp0_dl     = dxl_gatti;
   float tmp0_dh     = dxh_gatti;
 
-  // Run Gatti for offset = 1
-  runGattiFit( 1 );
+/* Since applying a maximum chi^2 cut on Gatti fit
+ * It doesn't make sense to try to values for binomial search
+ * Should also gain factor 2 in speed !
+ *
+ *  // Run Gatti for offset = 1
+ * runGattiFit( 1 );
+ *
+ * float tmp1_x      = x_gatti;
+ * float tmp1_chi2   = chi2_gatti;
+ * float tmp1_dl     = dxl_gatti;
+ * float tmp1_dh     = dxh_gatti;
+ *
+ * float test        = fabs( tmp1_x - tmp0_x );
+ *
+ * if ( test < 2.1 * minGattiStepSize ) {
+ *   // Two fits are close to one another
+ *   x_gatti    = ( tmp0_x + tmp1_x ) / 2.;
+ *   dxl_gatti  = ( tmp0_dl + tmp1_dl ) / 2.;  //  equivalent of * 1/sqrt(12)
+ *   dxh_gatti  = ( tmp0_dh + tmp1_dh ) / 2.;
+ *   chi2_gatti = ( tmp1_chi2 + tmp0_chi2 ) / 2.;
+ * }
+ * else if ( test < 0.1 ) {
+ *   // One of the fits didn't fit as well.
+ *   if ( tmp0_chi2 < tmp1_chi2 ){
+ *     x_gatti    = tmp0_x;
+ *     chi2_gatti = tmp0_chi2;
+ *     dxl_gatti  = tmp0_dl;
+ *     dxh_gatti  = tmp0_dh;
+ *   } else {
+ *     x_gatti    = tmp1_x;
+ *     chi2_gatti = tmp1_chi2;
+ *     dxl_gatti  = tmp1_dl;
+ *     dxh_gatti  = tmp1_dh;
+ *   }  
+ * } else {  
+ *   // One of the fits failed completely:  set to center of strip
+ *   x_gatti    = 0.;      
+ *   dxl_gatti  = 0.2887;  // This is 1/sqrt(12)
+ *   dxh_gatti  = dxl_gatti;
+ *   chi2_gatti = 9999.;
+ * }
+ *
+ * float dx_gatti = ( dxl_gatti + dxh_gatti ) /2.;
+ *
+ */
 
-//  if (ring < 2 ) std::cout << "Gatti_1  " << x_gatti << " " << chi2_gatti << " " << dxl_gatti << " " << dxh_gatti << std::endl;
+  float dx_gatti = dxl_gatti;
 
-  float tmp1_x      = x_gatti;
-  float tmp1_chi2   = chi2_gatti;
-  float tmp1_dl     = dxl_gatti;
-  float tmp1_dh     = dxh_gatti;
-
-  float test        = fabs( tmp1_x - tmp0_x );
-
-  if ( test < 2.1 * minGattiStepSize ) {
-    // Two fits are close to one another
-    x_gatti    = ( tmp0_x + tmp1_x ) / 2.;
-    dxl_gatti  = ( tmp0_dl + tmp1_dl ) / 2.;  //  equivalent of * 1/sqrt(12)
-    dxh_gatti  = ( tmp0_dh + tmp1_dh ) / 2.;
-    chi2_gatti = ( tmp1_chi2 + tmp0_chi2 ) / 2.;
-  }
-  else if ( test < 0.1 ) {
-    // One of the fits didn't fit as well.
-    if ( tmp0_chi2 < tmp1_chi2 ){
-      x_gatti    = tmp0_x;
-      chi2_gatti = tmp0_chi2;
-      dxl_gatti  = tmp0_dl;
-      dxh_gatti  = tmp0_dh;
-    } else {
-      x_gatti    = tmp1_x;
-      chi2_gatti = tmp1_chi2;
-      dxl_gatti  = tmp1_dl;
-      dxh_gatti  = tmp1_dh;
-    }  
-  } else {  
-    // One of the fits failed completely:  set to center of strip
+  if ( chi2_gatti > maxGattiChi2 ) {
     x_gatti    = 0.;      
-    dxl_gatti  = 0.2887;  // This is 1/sqrt(12)
-    dxh_gatti  = dxl_gatti;
-    chi2_gatti = 9999.;
+    dx_gatti  = 0.2887;  // This is 1/sqrt(12)
+    chi2_gatti = 0.;
   }
 
-  float dx_gatti = ( dxl_gatti + dxh_gatti ) /2.;
 
   if ( dx_gatti < minGattiError ) dx_gatti =  minGattiError;
   if ( dx_gatti > 0.2887 ) dx_gatti =  0.2887; // this is 1/sqrt(12)
-
-//  if ( ring < 2 )  std::cout << "GattiFit " << x_gatti << " " << chi2_gatti << " " << dx_gatti << std::endl;
 
 
   xGatti = xCenterStrip - x_gatti * stripWidth;

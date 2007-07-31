@@ -259,13 +259,15 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
 
     if (debug) std::cout << "chi2 from Gatti: " << chisq_fit << " centroid x: " << x_to_gatti << " Gatti x: " << x_fit << std::endl;
 
-    if ( chisq_fit < maxGattiChi2 ) {
-      x     = x_fit;
-      sigma = sigma_fit;
-      chisq = chisq_fit;
-      int ndof = 5;
+    x     = x_fit;
+    sigma = sigma_fit;
+    chisq = chisq_fit;
+    int ndof = 5;
+
+    if ( chisq_fit > 0.01 ) {
       prob  = probab(ndof, chisq_fit);
     }
+
   }
   LocalPoint lp0(x, y);
 

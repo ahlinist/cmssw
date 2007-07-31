@@ -145,6 +145,7 @@ class CSCFitXonStripWithGatti
   float xtalksSystematics;
   float minGattiStepSize;
   float minGattiError;
+  float maxGattiChi2;
 
   /* Cache calibrations for current event
    *
