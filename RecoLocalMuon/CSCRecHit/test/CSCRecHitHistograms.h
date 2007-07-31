@@ -42,6 +42,11 @@ public:
     hrDphi           = new TH1F(N+"_hrDphi", "r x Dphi", 101, -0.101, 0.101);
     hPullrDphi       = new TH1F(N+"_hPullrDphi", "Pull r x Dphi", 101, -5.05, 5.05);
     hrDphiSW         = new TH1F(N+"_hrDphiSW", "r x Dphi/stripWidth", 101, -0.101, 0.101);
+// chi^2 study
+    hChi2All         = new TH1F(N+"_hChi2All", "#chi^{2}", 200, 0., 1000.);    
+    hChi2Core        = new TH1F(N+"_hChi2Core", "#chi^{2}", 200, 0., 1000.);    
+    hChi2Out         = new TH1F(N+"_hChi2Out", "#chi^{2}", 200, 0., 1000.);    
+    hPullvsChi2      = new TH2F(N+"_hPullvsChi2", "#Delta r #phi / #sigma vs #chi^{2}", 50, 0., 1000., 51, -10.2, 10.2);    
   }
 
   /// Constructor from collection name and TFile.
@@ -69,6 +74,13 @@ public:
     hrDphi            = (TH1F *) file->Get(name+"_rDphi");
     hPullrDphi        = (TH1F *) file->Get(name+"_PullrDphi");
     hrDphiSW          = (TH1F *) file->Get(name+"_rDphiSW");
+
+// chi^2 study 
+    hChi2All         = (TH1F *) file->Get(name+"_hChi2All");
+    hChi2Core        = (TH1F *) file->Get(name+"_hChi2Core");
+    hChi2Out         = (TH1F *) file->Get(name+"_hChi2Out");
+    hPullvsChi2      = (TH2F *) file->Get(name+"_hPullvsChi2");
+
   }
 
 
@@ -96,6 +108,11 @@ public:
     delete hrDphi;    
     delete hPullrDphi;    
     delete hrDphiSW;
+// chi^2 study
+    delete hChi2All;
+    delete hChi2Core;
+    delete hChi2Out;
+    delete hPullvsChi2;
   }
 
   // Operations
@@ -106,7 +123,7 @@ public:
 
   /// Fill all the histos
   void Fill(float recx, float recy, float simx, float simy, float recphi, float simphi,
-            float r, float sigma_xreco, float sigma_yreco, float stripWidth, double dstrip, double sPhiPitch) {
+            float r, float sigma_xreco, float sigma_yreco, float stripWidth, double dstrip, double sPhiPitch, double chi2) {
 	
     float dphi = recphi - simphi;
     float dx = recx - simx;
@@ -122,6 +139,7 @@ public:
     float sigma_dphi =  sPhiPitch*dstrip/stripWidth;
  
     if (sigma_rdphi < 0.) sigma_rdphi =  -sigma_rdphi;
+    float rdphipull = r * dphi/sigma_rdphi;
 
 // X
     hRecPositionX->Fill(recx);
@@ -142,8 +160,14 @@ public:
     hResphi->Fill(resol*1000.);    // in mrads
     hPullDphi->Fill(resol/sigma_dphi);
     hrDphi->Fill(r * dphi);
-    hPullrDphi->Fill(r * dphi/sigma_rdphi);
+    hPullrDphi->Fill(rdphipull);
     hrDphiSW->Fill(r*dphi/stripWidth);
+// chi^2 study
+    hChi2All->Fill(chi2); 
+    if (fabs(rdphipull) < 2.) hChi2Core->Fill(chi2);  
+    if (fabs(rdphipull) > 3.) hChi2Out->Fill(chi2);
+    hPullvsChi2->Fill(chi2,rdphipull);
+
   }
 
   /// Write all the histos to currently opened file
@@ -170,6 +194,12 @@ public:
     hrDphi->Write();
     hPullrDphi->Write();
     hrDphiSW->Write();
+// chi^2 study
+    hChi2All->Write();
+    hChi2Core->Write();
+    hChi2Out->Write();
+    hPullvsChi2->Write();
+
   }
 
 
@@ -194,6 +224,11 @@ public:
     TH1F *hrDphi;
     TH1F *hPullrDphi;
     TH1F *hrDphiSW;
+// chi^2 study
+    TH1F *hChi2All;
+    TH1F *hChi2Core;
+    TH1F *hChi2Out;
+    TH2F *hPullvsChi2;
 
     TString name;
 };
