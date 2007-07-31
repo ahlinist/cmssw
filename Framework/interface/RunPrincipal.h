@@ -55,8 +55,8 @@ namespace edm {
       return aux().endTime();
     }
 
-    Timestamp const& updateEndTime(Timestamp const& time) {
-      return aux_.updateEndTime(time);
+    void setEndTime(Timestamp const& time) {
+      aux_.setEndTime(time);
     }
 
     using Base::addGroup;

@@ -71,7 +71,9 @@ namespace edm {
       return aux().endTime();
     }
 
-    Timestamp const& updateEndTime(Timestamp const& time);
+    void setEndTime(Timestamp const& time) {
+      aux_.setEndTime(time);
+    }
 
     LuminosityBlockNumber_t luminosityBlock() const {
       return aux().luminosityBlock();

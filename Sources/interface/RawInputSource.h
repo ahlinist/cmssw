@@ -42,7 +42,6 @@ namespace edm {
     bool newLumi_;
     std::auto_ptr<EventPrincipal> ep_;
     boost::shared_ptr<LuminosityBlockPrincipal> lbp_;
-    Timestamp time_;
   };
 }
 #endif
