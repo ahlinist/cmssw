@@ -1,9 +1,9 @@
 ##
-service = Timing { } 
-service = SimpleMemoryCheck {
-    untracked int32 ignoreTotal = 1 # default is one
-} 
-service = Tracer {} 
+#service = Timing { } 
+#service = SimpleMemoryCheck {
+#    untracked int32 ignoreTotal = 1 # default is one
+#} 
+#service = Tracer {} 
 #
 # not for the moment
 #include "FWCore/Services/data/EnableFloatingPointExceptions.cfi"
