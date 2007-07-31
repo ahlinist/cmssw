@@ -9,6 +9,18 @@ block HEEPSkimEventContent = {
 }
 
 #
+# keep only very high pt clusters for control studies
+#
+block HEEPControlVeryHighEtEventSelection = {
+  untracked PSet SelectEvents = {
+    vstring SelectEvents = {
+      "HEEPControlVeryHighEt"
+    }
+  }
+}
+
+
+#
 # keep only events triggered by High pt triggers
 #
 block HEEPSignalHighEtEventSelection = {
