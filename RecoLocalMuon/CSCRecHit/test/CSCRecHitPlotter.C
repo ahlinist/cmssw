@@ -51,6 +51,11 @@ TString segment = "ME_All";
  TString plot5d = "rdphi_pulls_"+segment+suffixps;
  TString plot5e = "rdphisw_"+segment+suffixps;
 
+ TString plot6a = "chi2all_"+segment+suffixps;
+ TString plot6b = "chi2Core_"+segment+suffixps;
+ TString plot6c = "chi2Out_"+segment+suffixps;
+ TString plot6d = "pull_vs_chi2_box_"+segment+suffixps;
+ TString plot6e = "pull_vs_chi2_profile_"+segment+suffixps;
 
 // ********************************************************************
 // Pointers to histograms
@@ -79,10 +84,16 @@ TString segment = "ME_All";
 
 // 5) Phi
  hResphi           = (TH1F *) file->Get(segment+"_hResphi");
- hPullDphi        = (TH1F *) file->Get(segment+"_hPullDphi");
+ hPullDphi         = (TH1F *) file->Get(segment+"_hPullDphi");
  hrDphi            = (TH1F *) file->Get(segment+"_hrDphi");
  hPullrDphi        = (TH1F *) file->Get(segment+"_hPullrDphi");
  hrDphiSW          = (TH1F *) file->Get(segment+"_hrDphiSW");
+
+// 6) chi^2 study
+ hChi2All          = (TH1F *) file->Get(segment+"_hChi2All");
+ hChi2Core         = (TH1F *) file->Get(segment+"_hChi2Core");
+ hChi2Out          = (TH1F *) file->Get(segment+"_hChi2Out");
+ hPullvsChi2       = (TH2F *) file->Get(segment+"_hPullvsChi2");
 
 // ***************************************************************** 
 // Have match
@@ -322,6 +333,72 @@ TString segment = "ME_All";
  hi = par1 + nsigmas * par2;
  hrDphiSW->Fit("gaus","R","",low,hi);
  c1->Print(plot5e);
+
+
+// *****************************************************************
+// 6) chi^2 study
+// *****************************************************************
+
+// 6a) Chi^2 for all rechits
+ gStyle->SetOptStat(kTRUE);
+ TCanvas *c1 = new TCanvas("c1","");
+ c1->SetFillColor(10);
+ c1->SetFillColor(10);
+ hChi2All->SetTitle(segment);
+ hChi2All->Draw();
+ hChi2All->GetXaxis()->SetTitle("#chi^{2}");
+ hChi2All->GetYaxis()->SetTitle("");
+ c1->Print(plot6a);
+
+
+// 6b) Chi^2 for rechits within core of pull distribution
+ gStyle->SetOptStat(kTRUE);
+ TCanvas *c1 = new TCanvas("c1","");
+ c1->SetFillColor(10);
+ c1->SetFillColor(10);
+ hChi2Core->SetTitle(segment);
+ hChi2Core->Draw();
+ hChi2Core->GetXaxis()->SetTitle("#chi^{2}  (core)");
+ hChi2Core->GetYaxis()->SetTitle("");
+ c1->Print(plot6b);
+
+// 6c) Chi^2 for rechits outside core of pull distribution
+ gStyle->SetOptStat(kTRUE);
+ TCanvas *c1 = new TCanvas("c1","");
+ c1->SetFillColor(10);
+ c1->SetFillColor(10);
+ hChi2Out->SetTitle(segment);
+ hChi2Out->Draw();
+ hChi2Out->GetXaxis()->SetTitle("#chi^{2}  (outliers)");
+ hChi2Out->GetYaxis()->SetTitle("");
+ c1->Print(plot6c);
+
+
+// 6d) pull vs chi^2 (box)
+ gStyle->SetOptStat(kFALSE);
+ TCanvas *c1 = new TCanvas("c1","");
+ c1->SetFillColor(10);
+ c1->SetFillColor(10);
+ hPullvsChi2->SetTitle(segment);
+ hPullvsChi2->Draw("BOX");
+ hPullvsChi2->GetXaxis()->SetTitle("#chi^{2}");
+ hPullvsChi2->GetYaxis()->SetTitle("R #Delta #phi/#sigma");
+ c1->Print(plot6d);
+
+
+// 6e) pull vs chi^2 (profile)
+ 
+ Tprofile hprofX = hPullvsChi2->ProfileX("hprofX"); 
+
+ gStyle->SetOptStat(kFALSE);
+ TCanvas *c1 = new TCanvas("c1","");
+ c1->SetFillColor(10);
+ c1->SetFillColor(10);
+ hprofX->SetTitle(segment);
+ hprofX->Draw("BOX");
+ hprofX->GetXaxis()->SetTitle("#chi^{2}");
+ hprofX->GetYaxis()->SetTitle("R #Delta #phi/#sigma");
+ c1->Print(plot6e);
 
 
 

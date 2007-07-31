@@ -137,12 +137,12 @@ void CSCRecHitReader::analyze(const Event & event, const EventSetup& eventSetup)
   
   // Get the CSC Digis :
   // Get collection of strip digis from event
-  Handle<CSCStripDigiCollection> stripDigis;
-  event.getByLabel(stripdigiLabel, "MuonCSCStripDigi", stripDigis);
+//  Handle<CSCStripDigiCollection> stripDigis;
+//  event.getByLabel(stripdigiLabel, "MuonCSCStripDigi", stripDigis);
   
   // Get the collection of wire digis from event
-  Handle<CSCWireDigiCollection> wireDigis;
-  event.getByLabel(wiredigiLabel,  "MuonCSCWireDigi",  wireDigis);
+//  Handle<CSCWireDigiCollection> wireDigis;
+//  event.getByLabel(wiredigiLabel,  "MuonCSCWireDigi",  wireDigis);
   
   
   // First loop over simhits and count how many simhits you have per chambers 
@@ -267,6 +267,7 @@ void CSCRecHitReader::analyze(const Event & event, const EventSetup& eventSetup)
     float sigma_xreco = 0.001;
     float sigma_yreco = 0.001;
     float sigma_xyreco = 0.0001;
+    double chi2 = -1;
     int rwiregrp = 0; 
     int stripnum = 0; 
       
@@ -318,6 +319,7 @@ void CSCRecHitReader::analyze(const Event & event, const EventSetup& eventSetup)
           sigma_xreco = (*recIt).localPositionError().xx();
           sigma_yreco = (*recIt).localPositionError().yy();
           sigma_xyreco = (*recIt).localPositionError().xy();
+          chi2 =  (*recIt).chi2();
 
           // Find out the corresponding wiregroup
           int wire_rhit = geom->nearestWire(rhitlocal);
@@ -374,108 +376,6 @@ void CSCRecHitReader::analyze(const Event & event, const EventSetup& eventSetup)
       segMap1[chamber->specs()->chamberTypeName()]++;
 
 
-      // Look at wire digi and find best match for selected rechit (see if it exists):
-
-      int wiregrp_digi = 999;
-
-      CSCWireDigiCollection::DigiRangeIterator wdigiIt;
-      for (wdigiIt = wireDigis->begin(); wdigiIt != wireDigis->end(); ++wdigiIt) {
-              
-        // Find chamber with rechits in CSC
-        CSCDetId id_wdigi = (*wdigiIt).first;
-            
-        if ((id_wdigi.endcap() == id.endcap()) &&  
-            (id_wdigi.ring() == id.ring()) &&
-            (id_wdigi.station() == id.station()) &&
-            (id_wdigi.chamber() == id.chamber()) &&
-            (id_wdigi.layer() == id.layer())) {
-            
-          const CSCWireDigiCollection::Range rwired = wireDigis->get(id_wdigi );
-          for ( CSCWireDigiCollection::const_iterator it = rwired.first; it != rwired.second; ++it ) {
-            CSCWireDigi wdigi = *it;
-            int wiregrp_digi_temp = wdigi.getWireGroup();
-           
-            // Look at ME type first then determine inner/outer ring
-            if (id.station() == 1) {
-              if (id.ring() == 1) histo = hRHPME1b;
-              if (id.ring() == 2) histo = hRHPME12; 
-              if (id.ring() == 3) histo = hRHPME13;
-              if (id.ring() == 4) histo = hRHPME1a;
-            }
-            if (id.station() == 2) {
-              if (id.ring() == 1) histo = hRHPME21;
-              if (id.ring() == 2) histo = hRHPME22;
-            }
-            if (id.station() == 3) {
-              if (id.ring() == 1) histo = hRHPME31;
-              if (id.ring() == 2) histo = hRHPME32;
-            }
-            if (id.station() == 4) histo = hRHPME4;
-        
-//            histo->FillWDigi(wiregrp_digi_temp);
-        
-            // Find best digi match according to selected rechit
-            if (abs(rwiregrp - wiregrp_digi) > abs(rwiregrp - wiregrp_digi_temp))
-              wiregrp_digi = wiregrp_digi_temp;
-          }
-        }
-      }         
-      if (debug) cout << "Best match:  w.g. digi = "
-                      << wiregrp_digi << "  w.g. reco = "
-                      << rwiregrp << endl;
-            
-
-      // Look at strip digi:
-
-      int stripnum_digi = 999;
-              
-      CSCStripDigiCollection::DigiRangeIterator sdigiIt;
-      for (sdigiIt = stripDigis->begin(); sdigiIt != stripDigis->end(); ++sdigiIt) {
-          
-        // Find chamber with rechits in CSC
-        CSCDetId id_sdigi = (*sdigiIt).first;
-             
-        if ((id_sdigi.endcap() == id.endcap()) &&
-            (id_sdigi.ring() == id.ring()) &&
-            (id_sdigi.station() == id.station()) &&
-            (id_sdigi.chamber() == id.chamber()) &&
-            (id_sdigi.layer() == id.layer())) {
-                      
-          const CSCStripDigiCollection::Range& rstrip = (*sdigiIt).second;
-            
-          for ( CSCStripDigiCollection::const_iterator it = rstrip.first; it != rstrip.second; ++it ) {
-            CSCStripDigi sdigi = *it;
-            int stripnum_digi_temp = sdigi.getStrip();
-           
-            // Look at ME type first then determine inner/outer ring
-            if (id.station() == 1) {
-              if (id.ring() == 1) histo = hRHPME1b;
-              if (id.ring() == 2) histo = hRHPME12;
-              if (id.ring() == 3) histo = hRHPME13;
-              if (id.ring() == 4) histo = hRHPME1a;
-            }
-            if (id.station() == 2) {
-              if (id.ring() == 1) histo = hRHPME21;
-              if (id.ring() == 2) histo = hRHPME22;
-            }
-            if (id.station() == 3) {
-              if (id.ring() == 1) histo = hRHPME31;
-              if (id.ring() == 2) histo = hRHPME32;
-            }
-            if (id.station() == 4) histo = hRHPME4;
-          
-//            histo->FillSDigi(stripnum_digi_temp);
-          
-            // Find best digi match according to selected rechit
-            if (abs(stripnum - stripnum_digi) > abs(stripnum - stripnum_digi_temp))
-              stripnum_digi = stripnum_digi_temp;
-          }
-        }
-      }
-      if (debug) cout << "Match:  strip# digi = "  
-                      << stripnum_digi << "  strip# reco = "
-                      << stripnum      << endl;
-             
       float x_resol = xreco - xsimu;
       float y_resol = yreco - ysimu;
               
@@ -570,7 +470,7 @@ void CSCRecHitReader::analyze(const Event & event, const EventSetup& eventSetup)
         histo = hRHPME4;
 	if (id.ring() != 1) cout << " invalid ring in ME 4 !!! ";
       }
-      histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, gsimphi, gsimr, sigma_xreco, sigma_yreco, stripWidth, dstrip, sPhiPitch);
+      histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, gsimphi, gsimr, sigma_xreco, sigma_yreco, stripWidth, dstrip, sPhiPitch, chi2);
 
     } else {
           
