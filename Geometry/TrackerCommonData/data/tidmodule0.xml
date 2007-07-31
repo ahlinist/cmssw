@@ -2,18 +2,19 @@
 <DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../../DetectorDescription/Schema/DDLSchema.xsd">
 
 <ConstantsSection label="tidmodule0.xml" eval="true">
- <Constant name="FullHeight"       value="11.290*cm"/>
- <Constant name="DlTop"            value="9.390*cm"/>
- <Constant name="DlBottom"         value="6.380*cm"/>
+ <Constant name="FullHeight"       value="11.2936000*cm"/>
+ <Constant name="ActiveHeight"     value="11.0858000*cm"/>
+ <Constant name="DlTop"            value="9.3754000*cm"/>
+ <Constant name="DlBottom"         value="6.3588000*cm"/>
+ <Constant name="SideWidthTop"     value="0.1082551*cm"/>
+ <Constant name="SideWidthBottom"  value="0.0836793*cm"/>
  <Constant name="DlHybrid"         value="10.403*cm"/>
- <Constant name="ActiveHeight"     value="11.070*cm"/>
 </ConstantsSection>
 
 <Algorithm name="track:DDTIDModuleAlgo">
   <rParent name="tidmodule0l:TIDModule0L"/>
   <String name="GeneralMaterial"    value="materials:Air"/>
   <Numeric name="DetectorNumber"    value="2"/>
-  <Numeric name="Tolerance"         value="[tidmodpar:Tolerance]"/>
   <Numeric name="ModuleThick"       value="[tidmodpar:ModuleThickDS]"/>
   <Numeric name="DetTilt"           value="[tidmodpar:DetTilt]"/>
   <Numeric name="FullHeight"        value="[tidmodule0:FullHeight]"/>
@@ -37,7 +38,8 @@
   <Vector name="WaferName"     type="string" nEntries="2">
     tidmodule0:TIDModule0RphiWafer,  tidmodule0:TIDModule0StereoWafer</Vector>
   <String name="WaferMaterial"      value="materials:Silicon"/>
-  <Numeric name="SideWidth"         value="[tidmodpar:SideWidth]"/>
+  <Numeric name="SideWidthTop"         value="[SideWidthTop]"/>
+  <Numeric name="SideWidthBottom"      value="[SideWidthBottom]"/>
   <Vector name="ActiveName"    type="string" nEntries="2">
     tidmodule0:TIDModule0RphiActive, tidmodule0:TIDModule0StereoActive</Vector>
   <String name="ActiveMaterial"     value="materials:Silicon"/>
@@ -61,7 +63,6 @@
   <rParent name="tidmodule0r:TIDModule0R"/>
   <String name="GeneralMaterial"    value="materials:Air"/>
   <Numeric name="DetectorNumber"    value="2"/>
-  <Numeric name="Tolerance"         value="[tidmodpar:Tolerance]"/>
   <Numeric name="ModuleThick"       value="[tidmodpar:ModuleThickDS]"/>
   <Numeric name="DetTilt"           value="[tidmodpar:DetTilt]"/>
   <Numeric name="FullHeight"        value="[tidmodule0:FullHeight]"/>
@@ -85,7 +86,8 @@
   <Vector name="WaferName"     type="string" nEntries="2">
     tidmodule0:TIDModule0RphiWafer,  tidmodule0:TIDModule0StereoWafer</Vector>
   <String name="WaferMaterial"      value="materials:Silicon"/>
-  <Numeric name="SideWidth"         value="[tidmodpar:SideWidth]"/>
+  <Numeric name="SideWidthTop"         value="[SideWidthTop]"/>
+  <Numeric name="SideWidthBottom"      value="[SideWidthBottom]"/>
   <Vector name="ActiveName"    type="string" nEntries="2">
     tidmodule0:TIDModule0RphiActive, tidmodule0:TIDModule0StereoActive</Vector>
   <String name="ActiveMaterial"     value="materials:Silicon"/>

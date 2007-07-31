@@ -3,7 +3,7 @@
 
 <ConstantsSection label="tidring1.xml" eval="true">
  <Constant name="zero"           value="0.0*fm"/>
- <Constant name="Rmin"           value="31.690*cm"/>
+ <Constant name="Rmin"           value="31.6962*cm"/>
  <Constant name="NPhi"           value="24"/>
  <Constant name="PhiOff"         value="0*deg"/>
  <Constant name="ICBR"           value="47.250*cm"/>

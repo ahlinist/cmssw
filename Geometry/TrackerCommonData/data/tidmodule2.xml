@@ -2,18 +2,19 @@
 <DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../../DetectorDescription/Schema/DDLSchema.xsd">
 
 <ConstantsSection label="tidmodule2.xml" eval="true">
- <Constant name="FullHeight"       value="11.280*cm"/>
- <Constant name="DlTop"            value="8.320*cm"/>
- <Constant name="DlBottom"         value="6.500*cm"/>
+ <Constant name="FullHeight"       value="11.2736000*cm"/>
+ <Constant name="ActiveHeight"     value="11.0660000*cm"/>
+ <Constant name="DlTop"            value="8.3012000*cm"/>
+ <Constant name="DlBottom"         value="6.4904000*cm"/>
+ <Constant name="SideWidthTop"     value="0.1006846*cm"/>
+ <Constant name="SideWidthBottom"  value="0.0866913*cm"/>
  <Constant name="DlHybrid"         value="5.887*cm"/>
- <Constant name="ActiveHeight"     value="11.060*cm"/>
 </ConstantsSection>
 
 <Algorithm name="track:DDTIDModuleAlgo">
   <rParent name="tidmodule2:TIDModule2"/>
   <String name="GeneralMaterial"    value="materials:Air"/>
   <Numeric name="DetectorNumber"    value="1"/>
-  <Numeric name="Tolerance"         value="[tidmodpar:Tolerance]"/>
   <Numeric name="ModuleThick"       value="[tidmodpar:ModuleThickSS]"/>
   <Numeric name="DetTilt"           value="[tidmodpar:DetTilt]"/>
   <Numeric name="FullHeight"        value="[tidmodule2:FullHeight]"/>
@@ -37,7 +38,8 @@
   <Vector name="WaferName"     type="string" nEntries="1">
     tidmodule2:TIDModule2RphiWafer</Vector>
   <String name="WaferMaterial"      value="materials:Silicon"/>
-  <Numeric name="SideWidth"         value="[tidmodpar:SideWidth]"/>
+  <Numeric name="SideWidthTop"         value="[SideWidthTop]"/>
+  <Numeric name="SideWidthBottom"      value="[SideWidthBottom]"/>
   <Vector name="ActiveName"    type="string" nEntries="1">
     tidmodule2:TIDModule2RphiActive</Vector>
   <String name="ActiveMaterial"     value="materials:Silicon"/>
