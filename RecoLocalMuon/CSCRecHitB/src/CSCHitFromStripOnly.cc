@@ -268,7 +268,6 @@ void CSCHitFromStripOnly::fillPulseHeights( const CSCStripDigiCollection::Range&
   thePulseHeightMap.clear();
   thePulseHeightMap.resize(100);
 
-  // std::cout << "MaxStripADC " ;
   float maxADC = 0;  
   float maxADCCluster = 0;  
   float adc_cluster[3];  
@@ -287,7 +286,7 @@ void CSCHitFromStripOnly::fillPulseHeights( const CSCStripDigiCollection::Range&
     // If using CLCT, test if strip is near CLCT strips (within +/-2 strips)
     if ( useCleanStripCollection ) {
       if ( !foundCLCTMatch( thisChannel, clctStrips) ) {
-        // Don't forget that the ME_11/a strips are ganged !!!
+        // Don't forget that the ME1/a strips are ganged !!!
         // Have to loop 2 more times to populate strips 17-48.
         if ( id_.station() == 1 && id_.ring() == 4 ) {
           for ( int j = 0; j < 3; ++j ) {
@@ -319,8 +318,8 @@ void CSCHitFromStripOnly::fillPulseHeights( const CSCStripDigiCollection::Range&
     
     if ( id_.station() == 1 && id_.ring() == 4 ) {
       for ( int j = 0; j < 3; ++j ) {
-        thePulseHeightMap[thisChannel+16*j-1] = CSCStripData( float(thisChannel+16*j), hmax, tmax, height[0], height[1], height[2], height[3], height[4], height[5]);
-        if ( useCalib ) thePulseHeightMap[thisChannel+16*j-1] *= gainWeight[thisChannel-1];
+        thePulseHeightMap[thisChannel-1+16*j] = CSCStripData( float(thisChannel+16*j), hmax, tmax, height[0], height[1], height[2], height[3], height[4], height[5]);
+        if ( useCalib ) thePulseHeightMap[thisChannel-1+16*j] *= gainWeight[thisChannel-1];
       }
     } else {
       thePulseHeightMap[thisChannel-1] = CSCStripData( float(thisChannel), hmax, tmax, height[0], height[1], height[2], height[3], height[4], height[5]);
@@ -407,13 +406,8 @@ float CSCHitFromStripOnly::findHitOnStripPosition( const std::vector<CSCStripHit
   float sum  = 0.;
   float sum_w= 0.;
 
-   
-  // CFEB trigger problem:
-  // Make sure there are non-zero entries on either side of the central strip
-  // otherwise, centroid will be biased.
   float stripLeft = 0.;
   float stripRight = 0.;
-
   
   for ( unsigned i = 0; i != data.size(); ++i ) {
     float w0 = data[i].y0();
@@ -421,6 +415,7 @@ float CSCHitFromStripOnly::findHitOnStripPosition( const std::vector<CSCStripHit
     float w2 = data[i].y2();
     float w3 = data[i].y3();
 
+    // Require ADC to be > 0.
     if (w0 < 0.) w0 = 0.001;
     if (w1 < 0.) w1 = 0.001;
     if (w2 < 0.) w2 = 0.001;
@@ -441,14 +436,7 @@ float CSCHitFromStripOnly::findHitOnStripPosition( const std::vector<CSCStripHit
     sum   += w1 * data[i].x();
   }
 
-  // CFEB trigger problem:
-  // Test that we have readout entries on either side of the central strip
-  // What's the minimum ADC count ???  Try 2 for now..
-  if (int(strippos)%16 < 2) {
-    if ( stripLeft > 2. && stripRight > 2. && sum_w > 0.) strippos = sum / sum_w;
-  } else if ( sum_w > 0.) {
-    strippos = sum / sum_w;    
-  } 
+  if ( sum_w > 0.) strippos = sum / sum_w;    
 
   return strippos;
 }
