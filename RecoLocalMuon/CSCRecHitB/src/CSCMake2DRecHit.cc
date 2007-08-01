@@ -115,24 +115,8 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
   }
 
 
-  // CFEB readout problem:
-  // If the strip positon and the channel # are the same, it means I'm either at the edge of the
-  // chamber, or that one of the strip next to the central strip wasn't readout.  Flag these hits as
-  // we don't want them to go through the Gatti fit procedure.
-  bool hasCFEBProblem = false;
-//  if (strip_offset == 0. && ch%16 < 2) { 
-  if ( stripClusterSize < 2 ) { 
-    hasCFEBProblem = true;
-  }
-  
-
-  // CFEB trigger problem:
-  // Also use the following if the hit is flagged as deficient
-
-
   // If at the edge, then used 1 strip cluster only :
-//  if ( ch <= 1 || ch >= specs_->nStrips() || hasCFEBProblem) {
-  if ( hasCFEBProblem) {
+  if ( ch <= 1 || ch >= specs_->nStrips() || stripClusterSize < 2 ) {
 
     LocalPoint lp1 = layergeom_->stripWireIntersection( centerStrip, the_wire1);
     LocalPoint lp2 = layergeom_->stripWireIntersection( centerStrip, the_wire2);
