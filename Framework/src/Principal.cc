@@ -63,7 +63,7 @@ namespace edm {
     if (groups_[index].get() != 0) {
       if(!groups_[index]->replace(*g)) {
 	throw edm::Exception(edm::errors::InsertFailure,"AlreadyPresent")
-	  << "addGroup_: Problem found while adding product provanence, "
+	  << "addGroup_: Problem found while adding product provenance, "
 	  << "product already exists for ("
 	  << bd.friendlyClassName() << ","
 	  << bd.moduleLabel() << ","
