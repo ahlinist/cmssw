@@ -1,0 +1,12 @@
+
+universe=vanilla
+
+executable=ttbar_fnal.csh
+
+output = /uscms_scratch/3DayLifetime/yarba_j/test_fnal_$(Process).out
+error = /uscms_scratch/3DayLifetime/yarba_j/test_fnal_$(Process).err
+log = /uscms_scratch/3DayLifetime/yarba_j/test_fnal_$(Process).log
+
+Arguments = $(Process)
+queue 2
+
