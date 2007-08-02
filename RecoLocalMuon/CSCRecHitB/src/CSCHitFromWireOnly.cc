@@ -128,6 +128,8 @@ void CSCHitFromWireOnly::makeWireCluster(const CSCWireDigi & digi) {
  */
 bool CSCHitFromWireOnly::addToCluster(const CSCWireDigi & digi) {
 
+  return false; 
+
   int iwg = digi.getWireGroup();
 
   if ( iwg == theLastChannel ) return true;  // Same wire group but different tbin -> ignore
