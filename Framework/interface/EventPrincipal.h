@@ -36,7 +36,7 @@ namespace edm {
         ProcessConfiguration const& pc,
         bool isReal,
 	EventAuxiliary::ExperimentType const eType = EventAuxiliary::Any,
-	int bunchXing = 999,
+	int bunchXing = -1,
 	int storeNo = 0,
 	ProcessHistoryID const& hist = ProcessHistoryID(),
 	boost::shared_ptr<DelayedReader> rtrv = boost::shared_ptr<DelayedReader>(new NoDelayedReader));
@@ -47,7 +47,7 @@ namespace edm {
         ProcessConfiguration const& pc,
         bool isReal,
 	EventAuxiliary::ExperimentType const eType = EventAuxiliary::Any,
-	int bunchXing = 999,
+	int bunchXing = -1,
 	int storeNo = 0,
 	ProcessHistoryID const& hist = ProcessHistoryID(),
 	boost::shared_ptr<DelayedReader> rtrv = boost::shared_ptr<DelayedReader>(new NoDelayedReader));
