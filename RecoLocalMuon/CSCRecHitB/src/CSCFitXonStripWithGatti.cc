@@ -187,14 +187,16 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCDetId& id, const CSCLayer* 
   // Run Gatti for offset = 0
   runGattiFit( 0 );
 
-  float tmp0_x      = x_gatti;
-  float tmp0_chi2   = chi2_gatti;
-  float tmp0_dl     = dxl_gatti;
-  float tmp0_dh     = dxh_gatti;
-
-/* Since applying a maximum chi^2 cut on Gatti fit
+/*
+ * Since applying a maximum chi^2 cut on Gatti fit
  * It doesn't make sense to try to values for binomial search
  * Should also gain factor 2 in speed !
+ *
+ * float tmp0_x      = x_gatti;
+ * float tmp0_chi2   = chi2_gatti;
+ * float tmp0_dl     = dxl_gatti;
+ * float tmp0_dh     = dxh_gatti;
+ *
  *
  *  // Run Gatti for offset = 1
  * runGattiFit( 1 );
@@ -234,15 +236,14 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCDetId& id, const CSCLayer* 
  *   chi2_gatti = 9999.;
  * }
  *
- * float dx_gatti = ( dxl_gatti + dxh_gatti ) /2.;
  *
  */
 
-  float dx_gatti = dxl_gatti;
+  float dx_gatti = ( dxl_gatti + dxh_gatti ) /2.;
 
   if ( chi2_gatti > maxGattiChi2 ) {
     x_gatti    = 0.;      
-    dx_gatti  = 0.2887;  // This is 1/sqrt(12)
+    dx_gatti   = 0.2887;  // This is 1/sqrt(12)
     chi2_gatti = 0.;
   }
 
@@ -251,7 +252,7 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCDetId& id, const CSCLayer* 
   if ( dx_gatti > 0.2887 ) dx_gatti =  0.2887; // this is 1/sqrt(12)
 
 
-  xGatti = xCenterStrip - x_gatti * stripWidth;
+  xGatti = xCenterStrip - (x_gatti * stripWidth);
   sigma  = dx_gatti * stripWidth;      
   chisq  = chi2_gatti;
 }
@@ -323,30 +324,34 @@ void CSCFitXonStripWithGatti::runGattiFit( int istrt ) {
     
   dx = -dx;
  
-  // Now compute errors --> What's the proper interval to look at ???
   // Picked the values below which correspond to the 1-sigma resolution observed in MC
-  float errl = 0.02;
-  float errh = 0.02;
+  float errl = 0.015;
+  float errh = 0.015;
   
   // Look at chi^2 for dx - errl
   float dxl = -dx - errl;
-  float chi2l = chisqrFromGatti( dxl );
+  float chi2l = 2. * chi2;
+
+  if ( fabs(dxl) < 0.5 ) chi2l = chisqrFromGatti( dxl );
+  
   chi2l = fabs(chi2l - chi2);
+
   if ( chi2l != 0. ) {
     errl = errl * sqrt( 1.0 / chi2l );
   } else {
-    errl = 1000.;
+    errl = errl;
   }
-
 
   // Look at chi^2 for dx + errh
   float dxh = errh - dx;
-  float chi2h = chisqrFromGatti( dxh );
+  float chi2h = 2.* chi2;
+  if (fabs(dxh) < 0.5) chi2h = chisqrFromGatti( dxh );
+
   chi2h = fabs(chi2h - chi2);
   if ( chi2h != 0. ) {
     errh = errh * sqrt( 1.0/chi2h );
   } else {
-    errh = 1000.;
+    errh = errh;
   }
  
   x_gatti    = dx;

@@ -393,7 +393,7 @@ float CSCHitFromStripOnly::findHitOnStripPosition( const std::vector<CSCStripHit
   float strippos = -1.;
   
   int nstrips = data.size();
-  if ( nstrips == 0 ) return strippos;
+  if ( nstrips < 1 ) return strippos;
   
   // biggestStrip is strip with largest pulse height 
   // Use pointer subtraction
@@ -431,6 +431,8 @@ float CSCHitFromStripOnly::findHitOnStripPosition( const std::vector<CSCStripHit
     strips_adc.push_back( w1 );
     strips_adc.push_back( w2 );
     strips_adc.push_back( w3 );
+
+    if ( data[i].x() < 1 ) std::cout << "problem in indexing of strip, strip id is: " << data[i].x() << std::endl;
  
     sum_w += w1;
     sum   += w1 * data[i].x();
