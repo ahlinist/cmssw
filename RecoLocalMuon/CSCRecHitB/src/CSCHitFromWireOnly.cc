@@ -84,30 +84,7 @@ std::vector<CSCWireHit> CSCHitFromWireOnly::runWire( const CSCDetId& id, const C
     }
   }
 
-  int nHits = hitsInLayer.size();
-
-  if (nHits < 2) return hitsInLayer;
-
-  // Loop over the wire hits to ensure don't have twice same wire hit
-  // This is a problem in MTCC data
-
-  std::vector<CSCWireHit> whits;
-
-  bool isDuplicate = false;
-  for ( int i = 0; i < nHits; ++i ) {
-    isDuplicate = false;
-    ChannelContainer wg1 = hitsInLayer[i].wgroups();
-    int w1 = wg1[0];
-    for ( int j = i+1; j < nHits; ++j ) {
-      ChannelContainer wg2 = hitsInLayer[j].wgroups();
-      int w2 = wg2[0];
-      if ( w1 == w2 ) isDuplicate = true;
-    }
-
-    if ( !isDuplicate ) whits.push_back(hitsInLayer[i]);
-  }
-
-  return whits;
+  return hitsInLayer;
 }
 
 
@@ -128,7 +105,8 @@ void CSCHitFromWireOnly::makeWireCluster(const CSCWireDigi & digi) {
  */
 bool CSCHitFromWireOnly::addToCluster(const CSCWireDigi & digi) {
 
-  return false; 
+  // Prevent wire hits from being clustered
+  //  return false; 
 
   int iwg = digi.getWireGroup();
 
