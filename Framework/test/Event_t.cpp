@@ -271,6 +271,9 @@ testEvent::~testEvent()
 void testEvent::setUp() 
 {
 
+  int invalidBunchXing = -1;
+  int invalidStoreNum = 0;
+
   // First build a fake process history, that says there
   // were previous processes named "EARLY" and "LATE".
   // This takes several lines of code but other than
@@ -341,8 +344,8 @@ void testEvent::setUp()
                                    currentModuleDescription_->processConfiguration(),
                                    true,
 				   EventAuxiliary::Any,
-				   999,
-				   0,
+				   invalidBunchXing,
+				   invalidStoreNum,
                                    processHistoryID);
 
   currentEvent_ = new Event(*principal_, *currentModuleDescription_);

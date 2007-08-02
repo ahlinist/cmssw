@@ -262,11 +262,13 @@ TFWLiteSelectorBasic::Process(Long64_t iEntry) {
       //     }
 
       try {
+	 int invalidBunchXing = -1;
+	 int invalidStoreNum = 0;
 	 m_->reader_->setEntry(iEntry);
 	 edm::ProcessConfiguration pc;
 	 boost::shared_ptr<edm::ProductRegistry const> reg(&m_->reg_);
-	 edm::EventPrincipal ep(aux.id(), aux.time(), reg,
-	     1, pc, true, edm::EventAuxiliary::Any, 999, 0, aux.processHistoryID(), m_->reader_);
+	 edm::EventPrincipal ep(aux.id(), aux.time(), reg, 1, pc, true, edm::EventAuxiliary::Any,
+                                invalidBunchXing, invalidStoreNum, aux.processHistoryID(), m_->reader_);
          m_->processNames_ = ep.processHistory();
 
 	 using namespace edm;
