@@ -247,6 +247,16 @@ namespace edm {
 	}
       }
     
+    catch(std::bad_alloc& bda) {
+	if (isEvent) ++timesExcept_;
+	state_ = Exception;
+	cached_exception_.reset(new cms::Exception("std::bad_alloc"));
+	*cached_exception_
+	  << "An std::bad_alloc exception occurred during a call to the module ";
+	exceptionContext(md_, ep, *cached_exception_) << "module.\n"
+	  << "The job has probably exhausted the virtual memory available to the process.\n";
+	throw *cached_exception_;
+    }
     catch(std::exception& e) {
 	if (isEvent) ++timesExcept_;
 	state_ = Exception;

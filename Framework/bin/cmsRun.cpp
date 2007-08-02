@@ -280,6 +280,18 @@ int main(int argc, char* argv[])
     jobRep->reportError(shortDesc, longDesc.str(), rc);
     edm::LogSystem(shortDesc) << longDesc.str() << "\n";
   }
+  catch(std::bad_alloc& bda) {
+    std::string shortDesc("std::bad_allocException");
+    std::ostringstream longDesc;
+    longDesc << "std::bad_alloc exception caught in "
+	     << kProgramName
+	     << "\n"
+	     << "The job has probably exhausted the virtual memory available to the process.\n";
+    rc = 8004;
+    jobRep->reportError(shortDesc, longDesc.str(), rc);
+    edm::LogSystem(shortDesc) << longDesc.str() << "\n";
+  }
+
   catch (std::exception& e) {
     std::string shortDesc("StdLibException");
     std::ostringstream longDesc;
