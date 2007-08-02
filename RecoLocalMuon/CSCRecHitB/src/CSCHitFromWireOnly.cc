@@ -106,7 +106,7 @@ void CSCHitFromWireOnly::makeWireCluster(const CSCWireDigi & digi) {
 bool CSCHitFromWireOnly::addToCluster(const CSCWireDigi & digi) {
 
   // Prevent wire hits from being clustered
-  //  return false; 
+  return false; 
 
   int iwg = digi.getWireGroup();
 
