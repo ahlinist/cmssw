@@ -29,6 +29,8 @@ namespace edm {
     typedef Principal Base;
   public:
     typedef Base::SharedConstGroupPtr SharedConstGroupPtr;
+    static int const invalidBunchXing = EventAuxiliary::invalidBunchXing;
+    static int const invalidStoreNumber = EventAuxiliary::invalidStoreNumber;
     EventPrincipal(EventID const& id,
 	Timestamp const& time,
 	boost::shared_ptr<ProductRegistry const> reg,
@@ -36,8 +38,8 @@ namespace edm {
         ProcessConfiguration const& pc,
         bool isReal,
 	EventAuxiliary::ExperimentType const eType = EventAuxiliary::Any,
-	int bunchXing = -1,
-	int storeNo = 0,
+	int bunchXing = invalidBunchXing,
+	int storeNumber = invalidStoreNumber,
 	ProcessHistoryID const& hist = ProcessHistoryID(),
 	boost::shared_ptr<DelayedReader> rtrv = boost::shared_ptr<DelayedReader>(new NoDelayedReader));
     EventPrincipal(EventID const& id,
@@ -47,8 +49,8 @@ namespace edm {
         ProcessConfiguration const& pc,
         bool isReal,
 	EventAuxiliary::ExperimentType const eType = EventAuxiliary::Any,
-	int bunchXing = -1,
-	int storeNo = 0,
+	int bunchXing = invalidBunchXing,
+	int storeNumber = invalidStoreNumber,
 	ProcessHistoryID const& hist = ProcessHistoryID(),
 	boost::shared_ptr<DelayedReader> rtrv = boost::shared_ptr<DelayedReader>(new NoDelayedReader));
     ~EventPrincipal() {}
