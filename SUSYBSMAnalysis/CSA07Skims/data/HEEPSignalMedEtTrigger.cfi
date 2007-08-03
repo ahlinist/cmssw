@@ -2,7 +2,7 @@
 #HEEP skim, med and high Et signal 
 #trigger selection
 #
-  module HEEPSignalMedEtTrigger = HLTHighLevel{
+  module hEEPSignalMedEtTrigger = HLTHighLevel{
         InputTag TriggerResultsTag = TriggerResults
         bool byName = true
         bool andOr= true

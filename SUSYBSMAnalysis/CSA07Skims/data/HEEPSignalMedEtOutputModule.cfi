@@ -1,0 +1,24 @@
+include "SUSYBSMAnalysis/CSA07Skims/data/HEEPSkimEventContent.cff"
+include "SUSYBSMAnalysis/CSA07Skims/data/AODSIMHEEPSkimEventContent.cff"
+include "SUSYBSMAnalysis/CSA07Skims/data/RECOSIMHEEPSkimEventContent.cff"
+
+module hEEPSignalMedEtOutputModuleAODSIM = PoolOutputModule {
+  untracked string fileName = "HeepSignalMedEtAODSIM.root"
+  using AODSIMHEEPSkimEventContent
+  using hEEPSignalMedEtEventSelection
+  untracked PSet datasets = {
+    untracked string dataTier = "USER"
+    untracked string filterName = "hEEPSignalMedEtAODSIM"
+  }
+}
+
+
+module hEEPSignalMedEtOutputModuleRECOSIM = PoolOutputModule {
+  untracked string fileName = "HeepSignalMedEtRECOSIM.root"
+  using RECOSIMHEEPSkimEventContent
+  using hEEPSignalMedEtEventSelection
+  untracked PSet datasets = {
+    untracked string dataTier = "USER"
+    untracked string filterName = "hEEPSignalMedEtRECOSIM"
+  }
+}

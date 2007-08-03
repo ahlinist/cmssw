@@ -9,6 +9,6 @@ block AODSIMHEEPSkimEventContent = {
 }
 
 replace AODSIMHEEPSkimEventContent.outputCommands += AODSIMEventContent.outputCommands
-replace AODSIMHEEPSkimEventContent.outputCommands += HEEPSkimEventContent.outputCommands
+replace AODSIMHEEPSkimEventContent.outputCommands += hEEPSkimEventContent.outputCommands
 
 
