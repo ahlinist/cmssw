@@ -6,4 +6,4 @@
 
 include "SUSYBSMAnalysis/CSA07Skims/data/HEEPSignalHighEtTrigger.cfi"
 
-path HEEPSignalHighEt = { HEEPSignalHighEtTrigger  }
+path hEEPSignalHighEt = { hEEPSignalHighEtTrigger  }

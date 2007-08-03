@@ -4,8 +4,9 @@
 # pt cut to reduce sample size while retaining enough control events
 
 
-module HEEPSignalMedEtPtCut = PtMinPixelMatchGsfElectronCountFilter {
+module hEEPSignalMedEtPtCut = PtMinPixelMatchGsfElectronCountFilter {
     InputTag src = pixelMatchGsfElectrons
     double ptMin = 40.
     uint32 minNumber = 1
   }
+

@@ -9,6 +9,6 @@ block RECOSIMHEEPSkimEventContent = {
 }
 
 replace RECOSIMHEEPSkimEventContent.outputCommands += RECOSIMEventContent.outputCommands
-replace RECOSIMHEEPSkimEventContent.outputCommands += HEEPSkimEventContent.outputCommands
+replace RECOSIMHEEPSkimEventContent.outputCommands += hEEPSkimEventContent.outputCommands
 
 

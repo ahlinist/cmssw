@@ -6,8 +6,9 @@
 
 include "SUSYBSMAnalysis/CSA07Skims/data/HEEPSignalHighEtTrigger.cfi"
 
-path HEEPSignalMedEtHigh = { HEEPSignalHighEtTrigger  }
+path hEEPSignalMedEtHigh = { hEEPSignalHighEtTrigger  }
 
 include "SUSYBSMAnalysis/CSA07Skims/data/HEEPSignalMedEtSequence.cff"
 
-path HEEPSignalMedEtMed = { HEEPSignalMedEtSequence }
+path hEEPSignalMedEtMed = { hEEPSignalMedEtSequence }
+
