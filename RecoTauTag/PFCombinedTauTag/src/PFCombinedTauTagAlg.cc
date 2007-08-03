@@ -4,7 +4,8 @@
 #include "RecoVertex/VertexPrimitives/interface/VertexException.h"
 #include "RecoVertex/AdaptiveVertexFit/interface/AdaptiveVertexFitter.h"
 #include "RecoVertex/VertexTools/interface/VertexDistance3D.h"
-
+#include "DataFormats/ParticleFlowReco/interface/PFBlock.h"
+#include <Math/GenVector/VectorUtil.h>
 #include "RecoTauTag/PFCombinedTauTag/interface/PFCombinedTauTagAlg.h"
 
 void PFCombinedTauTagAlg::init(const EventSetup& theEventSetup){
