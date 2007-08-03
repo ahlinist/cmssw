@@ -1,4 +1,5 @@
 #include "RecoTauTag/PFConeIsolation/interface/PFConeIsolation.h"
+#include <Math/GenVector/VectorUtil.h>
 
 void PFConeIsolation::produce(Event& iEvent, const EventSetup& iSetup){
   Handle<PFJetCollection> thePFJetCollection;
