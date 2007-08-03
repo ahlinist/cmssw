@@ -253,7 +253,7 @@ namespace edm {
 	cached_exception_.reset(new cms::Exception("std::bad_alloc"));
 	*cached_exception_
 	  << "An std::bad_alloc exception occurred during a call to the module ";
-	exceptionContext(md_, ep, *cached_exception_) << "module.\n"
+	exceptionContext(md_, ep, *cached_exception_)
 	  << "The job has probably exhausted the virtual memory available to the process.\n";
 	throw *cached_exception_;
     }
@@ -263,7 +263,7 @@ namespace edm {
 	cached_exception_.reset(new cms::Exception("StdException"));
 	*cached_exception_
 	  << "An std::exception occurred during a call to the module ";
-        exceptionContext(md_, ep, *cached_exception_) << "module and cannot be repropagated.\n"
+        exceptionContext(md_, ep, *cached_exception_) << "and cannot be repropagated.\n"
 	  << "Previous information:\n" << e.what();
 	throw *cached_exception_;
     }
