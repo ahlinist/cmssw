@@ -8,7 +8,11 @@ include "SUSYBSMAnalysis/CSA07Skims/data/HEEPSignalMedEtTrigger.cfi"
 include "SUSYBSMAnalysis/CSA07Skims/data/HEEPSignalMedEtPtCut.cfi"
 
 
-sequence hEEPSignalMedEtSequence = { 
+sequence hEEPSignalMedEtSequenceBarrel = { 
 	hEEPSignalMedEtTrigger & 
-	hEEPSignalMedEtPtCut
+	hEEPSignalMedEtPtCutBarrel
+}
+sequence hEEPSignalMedEtSequenceEndcap = { 
+	hEEPSignalMedEtTrigger & 
+	hEEPSignalMedEtPtCutEndcap
 }

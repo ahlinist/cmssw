@@ -10,5 +10,5 @@ path hEEPSignalMedEtHigh = { hEEPSignalHighEtTrigger  }
 
 include "SUSYBSMAnalysis/CSA07Skims/data/HEEPSignalMedEtSequence.cff"
 
-path hEEPSignalMedEtMed = { hEEPSignalMedEtSequence }
-
+path hEEPSignalMedEtMedBarrel = { hEEPSignalMedEtSequenceBarrel }
+path hEEPSignalMedEtMedEndcap = { hEEPSignalMedEtSequenceEndcap }
