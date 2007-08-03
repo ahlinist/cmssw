@@ -37,5 +37,8 @@
   <detector name='PIXEL' offline_connect='oracle://orcon/CMS_COND_PIXEL'>
      <poolsetup mapping='mapping_SiPixelObjects_CMSSW160.xml' dbsetup='dbsetup_SiPixelObjects_CMSSW160.xml' library='CondFormatsSiPixelObjects' />
   </detector>
-  
+
+  <detector name='RPC' offline_connect='oracle://orcon/CMS_COND_RPC'>
+     <poolsetup mapping='mapping_RPCObjects_CMSSW160.xml' dbsetup='dbsetup_RPCObjects_CMSSW160.xml' library='CondFormatsRPCObjects' />
+  </detector>  
 </dbconfiguration>
