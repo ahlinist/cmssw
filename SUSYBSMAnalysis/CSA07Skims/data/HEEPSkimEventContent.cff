@@ -28,7 +28,8 @@ block hEEPSignalMedEtEventSelection = {
   untracked PSet SelectEvents = {
     vstring SelectEvents = {
       "hEEPSignalMedEtHigh",
-      "hEEPSignalMedEtMed"
+      "hEEPSignalMedEtMedBarrel",
+      "hEEPSignalMedEtMedEndcap"
     }
   }
 }
