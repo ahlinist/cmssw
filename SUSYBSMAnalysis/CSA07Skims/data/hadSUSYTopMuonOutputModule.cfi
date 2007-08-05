@@ -1,0 +1,13 @@
+include "Configuration/EventContent/data/EventContent.cff"
+include "SUSYBSMAnalysis/CSA07Skims/data/hadSUSYTopMuonEventContent.cff"
+
+module hadSUSYTopMuonOutputModule = PoolOutputModule {
+  untracked string fileName = "hadSUSYTopMuon.root"
+  using AODSIMEventContent
+  using hadSUSYTopMuonEventSelection
+  untracked PSet datasets = {
+    untracked string dataTier = "USER"
+    untracked string filterName = "hadSUSYTopMuon"
+  }
+}
+

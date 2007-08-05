@@ -1,0 +1,10 @@
+module HadSUSYSMBackgrFilter = HadSUSYSMBackgrSkim {
+  InputTag CaloJetsrc = iterativeCone5CaloJets
+  untracked int32 NminCaloJet = 2  
+  untracked double CaloJetPtmin = 30.
+  untracked double CaloJet1Ptmin = 110.
+  InputTag CaloMETsrc = met
+  untracked double CaloMETmin = 100.
+}
+
+sequence HadSUSYSMBackgrSeq = { HadSUSYSMBackgrFilter }
