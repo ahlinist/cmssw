@@ -1,7 +1,7 @@
 #include "HLTrigger/Configuration/data/common/HLTSetup.cff"
 
 # Muon + jets 
-module HadSUSYTopMuonFilter = HadSUSYTopSkim {
+module hadSUSYTopMuonFilter = HadSUSYTopSkim {
   InputTag CaloJetsrc = iterativeCone5CaloJets
   untracked double CaloJetPtmin = 30.
   untracked int32 NminCaloJet = 3	
@@ -14,7 +14,7 @@ module HadSUSYTopMuonFilter = HadSUSYTopSkim {
 }
 
 # Electron + jets
-module HadSUSYTopElecFilter = HadSUSYTopSkim {
+module hadSUSYTopElecFilter = HadSUSYTopSkim {
   InputTag CaloJetsrc = iterativeCone5CaloJets
   untracked double CaloJetPtmin = 30.
   untracked int32 NminCaloJet = 3	
@@ -26,5 +26,5 @@ module HadSUSYTopElecFilter = HadSUSYTopSkim {
   untracked int32 NminElec = 1
 }
 
-sequence HadSUSYTopMuonSeq = { HadSUSYTopMuonFilter }
-sequence HadSUSYTopElecSeq = { HadSUSYTopElecFilter }
+sequence hadSUSYTopMuonSeq = { hadSUSYTopMuonFilter }
+sequence hadSUSYTopElecSeq = { hadSUSYTopElecFilter }

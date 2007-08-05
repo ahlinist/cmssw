@@ -1,10 +1,10 @@
 #include "HLTrigger/Configuration/data/common/HLTSetup.cff"
 
-module HadSUSYdiElecFilter = HadSUSYdiElecSkim {
+module hadSUSYdiElecFilter = HadSUSYdiElecSkim {
   InputTag Elecsrc = pixelMatchGsfElectrons
   untracked double ElecPtmin = 30.
   untracked int32 NminElec = 2  
   untracked double PtmindiElec = 150.
 }
 
-sequence HadSUSYdiElecSeq = { HadSUSYdiElecFilter }
+sequence hadSUSYdiElecSeq = { hadSUSYdiElecFilter }

@@ -1,10 +1,10 @@
 #include "HLTrigger/Configuration/data/common/HLTSetup.cff"
 
-module HadSUSYQCDFilter = HadSUSYQCDSkim {
+module hadSUSYQCDFilter = HadSUSYQCDSkim {
   InputTag CaloJetsrc = iterativeCone5CaloJets
   untracked double CaloJetPtmin = 100
   untracked int32 NminCaloJet = 2  
   InputTag CaloMETsrc = met
 }
 
-sequence HadSUSYQCDSeq = { HadSUSYQCDFilter }
+sequence hadSUSYQCDSeq = { hadSUSYQCDFilter }
