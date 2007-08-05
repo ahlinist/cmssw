@@ -9,10 +9,10 @@
 # include "HLTrigger/Egamma/data/SingleElectronL1Isolated_2e33.cff"
 # include "HLTrigger/Egamma/data/DoubleElectronL1Isolated_2e33.cff"
 
-module HadSUSYQCDControlMETFilter = HadSUSYQCDControlMETSkim {
+module hadSUSYQCDControlMETFilter = HadSUSYQCDControlMETSkim {
   InputTag CaloJetsrc = iterativeCone5CaloJets
   untracked double CaloJetPtmin = 100
   untracked int32 NminCaloJet = 2  
 }
 
-sequence HadSUSYQCDControlMETSeq = { HadSUSYQCDControlMETFilter }
+sequence hadSUSYQCDControlMETSeq = { hadSUSYQCDControlMETFilter }

@@ -1,4 +1,4 @@
-module HadSUSYSMBackgrFilter = HadSUSYSMBackgrSkim {
+module hadSUSYSMBackgrFilter = HadSUSYSMBackgrSkim {
   InputTag CaloJetsrc = iterativeCone5CaloJets
   untracked int32 NminCaloJet = 2  
   untracked double CaloJetPtmin = 30.
@@ -7,4 +7,4 @@ module HadSUSYSMBackgrFilter = HadSUSYSMBackgrSkim {
   untracked double CaloMETmin = 100.
 }
 
-sequence HadSUSYSMBackgrSeq = { HadSUSYSMBackgrFilter }
+sequence hadSUSYSMBackgrSeq = { hadSUSYSMBackgrFilter }
