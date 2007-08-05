@@ -1,0 +1,14 @@
+# Can insert block to customize what goes inside root file on top of AOD/RECO
+block hadSUSYdiElecEventContent = {
+  untracked vstring outputCommands = {
+  }
+}
+
+block hadSUSYdiElecEventSelection = {
+  untracked PSet SelectEvents = {
+    vstring SelectEvents = {
+      "hadSUSYdiElec"
+    }
+  }
+}
+

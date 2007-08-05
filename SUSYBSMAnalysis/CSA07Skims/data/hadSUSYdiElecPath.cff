@@ -1,0 +1,4 @@
+include "SUSYBSMAnalysis/CSA07Skims/data/hadSUSYdiElecSkim.cfi"
+
+path hadSUSYdiElec = { hadSUSYdiElecSeq }
+
