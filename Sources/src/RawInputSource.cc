@@ -3,6 +3,7 @@ $Id$
 ----------------------------------------------------------------------*/
 
 #include "FWCore/Sources/interface/RawInputSource.h"
+#include "DataFormats/Provenance/interface/Timestamp.h" 
 #include "FWCore/Framework/interface/EventPrincipal.h"
 #include "DataFormats/Provenance/interface/EventAuxiliary.h"
 #include "FWCore/Framework/interface/LuminosityBlockPrincipal.h"
