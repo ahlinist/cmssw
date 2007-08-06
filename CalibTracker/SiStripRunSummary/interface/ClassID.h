@@ -10,17 +10,30 @@
 
 #include "CalibTracker/SiStripRunSummary/interface/ClassIDBase.h"
 
+/** 
+* @brief 
+*   Manager that issues ID to any class [registration]. Implemented as a 
+*   template in order to achieve desired effect: once Manager is called to
+*   issue ID for some class compiler will generate appropriate class.
+*/
 template<class T>
   class ClassID: public ClassIDBase {
     public:
       /** 
-      * @brief  Get Class ID [all classes will have the same ID]
+      * @brief  Get Class ID [all classes (same ones) will have the same ID]
+      *         [Note: issued ID is runtime dependent - first to call 
+      *                registration will first to get id. For example map
+      *                of objects where keys are IDs can not be saved and
+      *                later read with assumption that classes stored will
+      *                have the same IDs except situations when classes are
+      *                registered in exactly the same sequence]
       * 
-      * @return  int that represent ID
+      * @return ClassIDBase::ID  that represent ID
       */
       static ID get();
 
     private:
+      // Registered class ID
       static ID nID_;
   };
 
@@ -32,7 +45,7 @@ template<class T>
   int ClassID<T>::get() {
     // Check if class was registered
     if( nINIT_CLASS_ID_ == nID_) {
-      // Class is not Registered: Register it 
+      // Class is not Registered: register it 
       nID_ = ++nLastClassID_;
     }
 

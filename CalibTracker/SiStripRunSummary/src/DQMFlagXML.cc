@@ -6,6 +6,7 @@
 
 #include "CalibTracker/SiStripRunSummary/interface/ClassID.h"
 
+// Include all subflags that current one may have
 #include "CalibTracker/SiStripRunSummary/interface/TECFlagXML.h"
 #include "CalibTracker/SiStripRunSummary/interface/TIBFlagXML.h"
 #include "CalibTracker/SiStripRunSummary/interface/TIDFlagXML.h"
@@ -14,9 +15,12 @@
 #include "CalibTracker/SiStripRunSummary/interface/DQMFlagXML.h"
 #include "CalibTracker/SiStripRunSummary/interface/DQMFlagTxt.h"
 
+// --[ DQM FLAG XML ]----------------------------------------------------------
+//                                                  --[ PUBLIC ]--
 DQMFlagXML::DQMFlagXML( const DQMFlagTxt *poDQM_FLAGTXT)
   : FlagXML( *( dynamic_cast<const FlagTxt *>( poDQM_FLAGTXT) ) ) {}
 
+//                                                  --[ PROTECTED ]--
 Clonable *DQMFlagXML::cloneTxt() const {
   return new DQMFlagTxt( this);
 }
@@ -34,12 +38,12 @@ int DQMFlagXML::isChildValid( const FlagXML *poCHILD_CANDIDATE) const {
          0;
 }
 
+// --[ HELPER FUNCTIONS ]------------------------------------------------------
 std::ostream &
   operator <<( std::ostream &roOut, const DQMFlagXML &roFLAG) {
 
-  // Print DQM info
-  roOut << static_cast<int>( roFLAG.getState()) << " : "
-        << roFLAG.getComment();
+  // Print DQM info: use Flag operator <<
+  roOut << dynamic_cast<const Flag &>( roFLAG);
 
   // Try TEC Child
   if( TECFlagXML *poTECFlagXML = dynamic_cast<TECFlagXML *>( roFLAG.getChild<TECFlagXML>())) {

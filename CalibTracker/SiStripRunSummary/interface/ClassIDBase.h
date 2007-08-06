@@ -5,8 +5,16 @@
 #ifndef CLASS_ID_BASE_H
 #define CLASS_ID_BASE_H
 
+/** 
+* @brief 
+*   Every ClassID has "static" base that holds ID of last registered class
+*/
 class ClassIDBase {
   public:
+    /** 
+    * @brief 
+    *   Used by Identifiable child as a return type.
+    */
     typedef int ID;
 
   private:

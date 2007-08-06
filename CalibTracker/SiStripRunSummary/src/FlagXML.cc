@@ -5,6 +5,8 @@
 #include "CalibTracker/SiStripRunSummary/interface/FlagXML.h"
 #include "CalibTracker/SiStripRunSummary/interface/FlagTxt.h"
 
+// --[ FLAGXML ]---------------------------------------------------------------
+//                                                  --[ PUBLIC ]--
 FlagXML::~FlagXML() {
   // Memory Clean Up: remove all children
   for( MChildFlags::const_iterator oIter = oMChildFlags_.begin();
@@ -18,6 +20,7 @@ FlagXML::~FlagXML() {
 bool FlagXML::setState( const State &reSTATE) {
   bool bResult = Flag::setState( reSTATE);
 
+  // Update parent value only in case child state modified and parent exists.
   if( bResult && poParentFlag_) {
     poParentFlag_->updateState( reSTATE);
   }
@@ -25,12 +28,11 @@ bool FlagXML::setState( const State &reSTATE) {
   return bResult;
 }
 
-// ----------------------------------------------------------------------------
-//   Protected
-
+//                                                  --[ PROTECTED ]--
 FlagXML::FlagXML( const FlagXML &roFLAGXML)
-  : Flag( roFLAGXML), 
-    poParentFlag_( 0) {
+  : Flag( roFLAGXML)
+{
+  poParentFlag_ = 0;
 
   // Clone all children.
   for( MChildFlags::const_iterator oIter = roFLAGXML.oMChildFlags_.begin();
@@ -38,8 +40,9 @@ FlagXML::FlagXML( const FlagXML &roFLAGXML)
        ++oIter) {
 
     FlagXML *poFlagClone = dynamic_cast<FlagXML *>( oIter->second->clone());
-    poFlagClone->poParentFlag_ = this;
-    oMChildFlags_[oIter->first] = poFlagClone;
+
+    // Parent will be set by addChild(...)
+    addChild( poFlagClone);
   }
 }
 
@@ -54,15 +57,13 @@ FlagXML::FlagXML( const FlagTxt &roFLAGTXT)
        ++oIter) {
 
     FlagXML *poNewChild = dynamic_cast<FlagXML *>( oIter->second->cloneXML());
-    poNewChild->poParentFlag_ = this;
 
-    oMChildFlags_[poNewChild->getID()] = poNewChild;
+    // Parent will be set by addChild(...)
+    addChild( poNewChild);
   }
 }
 
-// ----------------------------------------------------------------------------
-//   Private  
-
+//                                                  --[ PRIVATE ]--
 void FlagXML::updateState( const State &reCHILD_STATE) {
   switch( reCHILD_STATE) {
     case UNKNOWN:
@@ -79,7 +80,7 @@ void FlagXML::updateState( const State &reCHILD_STATE) {
       // Child changed to OK state
       State eNewState = OK;
 
-      // Loop over children and check if all of them are OK now.
+      // Loop over children and check if all of them are OK now or UNKNOWN.
       for( MChildFlags::const_iterator oIter = oMChildFlags_.begin();
            oIter != oMChildFlags_.end();
            ++oIter) {
@@ -91,7 +92,7 @@ void FlagXML::updateState( const State &reCHILD_STATE) {
           // state
           break;
         }
-      }
+      } // End loop over children
 
       // So, did state change?
       if( eNewState != eState_) {
@@ -100,7 +101,12 @@ void FlagXML::updateState( const State &reCHILD_STATE) {
       break;
     }
     default:
-      // Unknown State
+      // Unsupported State
       break;
   }
+}
+
+void FlagXML::addChild( FlagXML *poSubFlag) {
+  poSubFlag->poParentFlag_ = this;
+  oMChildFlags_.insert( std::make_pair( poSubFlag->getID(), poSubFlag));
 }

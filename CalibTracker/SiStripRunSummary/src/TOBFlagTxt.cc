@@ -7,9 +7,12 @@
 #include "CalibTracker/SiStripRunSummary/interface/TOBFlagTxt.h"
 #include "CalibTracker/SiStripRunSummary/interface/TOBFlagXML.h"
 
+// --[ TOB FLAG TXT ]----------------------------------------------------------
+//                                                  --[ PUBLIC ]--
 TOBFlagTxt::TOBFlagTxt( const TOBFlagXML *poTOB_FLAGXML)
   : FlagTxt( *( dynamic_cast<const FlagXML *>( poTOB_FLAGXML) ) ) {}
 
+//                                                  --[ PROTECTED ]--
 Clonable *TOBFlagTxt::cloneXML() const {
   return new TOBFlagXML( this);
 }

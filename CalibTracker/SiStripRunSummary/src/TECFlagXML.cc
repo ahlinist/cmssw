@@ -7,9 +7,12 @@
 #include "CalibTracker/SiStripRunSummary/interface/TECFlagXML.h"
 #include "CalibTracker/SiStripRunSummary/interface/TECFlagTxt.h"
 
+// --[ TEC FLAG XML ]----------------------------------------------------------
+//                                                  --[ PUBLIC ]--
 TECFlagXML::TECFlagXML( const TECFlagTxt *poTEC_FLAGTXT)
   : FlagXML( *( dynamic_cast<const FlagTxt *>( poTEC_FLAGTXT) ) ) {}
 
+//                                                  --[ PROTECTED ]--
 Clonable *TECFlagXML::cloneTxt() const {
   return new TECFlagTxt( this);
 }

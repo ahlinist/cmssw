@@ -6,6 +6,7 @@
 
 #include "CalibTracker/SiStripRunSummary/interface/ClassID.h"
 
+// Include all subflags that current one may have
 #include "CalibTracker/SiStripRunSummary/interface/DAQFlagXML.h"
 #include "CalibTracker/SiStripRunSummary/interface/DCSFlagXML.h"
 #include "CalibTracker/SiStripRunSummary/interface/DQMFlagXML.h"
@@ -14,9 +15,12 @@
 #include "CalibTracker/SiStripRunSummary/interface/GlobalFlagXML.h"
 #include "CalibTracker/SiStripRunSummary/interface/GlobalFlagTxt.h"
 
+// --[ GLOBAL FLAG XML ]-------------------------------------------------------
+//                                                  --[ PUBLIC ]--
 GlobalFlagXML::GlobalFlagXML( const GlobalFlagTxt *poGLOBAL_FLAGTXT)
   : FlagXML( *( dynamic_cast<const FlagTxt *>( poGLOBAL_FLAGTXT) ) ) {}
 
+//                                                  --[ PROTECTED ]--
 Clonable *GlobalFlagXML::cloneTxt() const {
   return new GlobalFlagTxt( this);
 }
@@ -34,12 +38,12 @@ int GlobalFlagXML::isChildValid( const FlagXML *poCHILD_CANDIDATE) const {
          0;
 }
 
+// --[ HELPER FUNCTIONS ]------------------------------------------------------
 std::ostream &
   operator <<( std::ostream &roOut, const GlobalFlagXML &roFLAG) {
 
-  // Print Global info
-  roOut << static_cast<int>( roFLAG.getState()) << " : "
-        << roFLAG.getComment();
+  // Print Global info: use Flag operator <<
+  roOut << dynamic_cast<const Flag &>( roFLAG);
 
   // Try DAQ Child
   if( DAQFlagXML *poDAQFlagXML = 

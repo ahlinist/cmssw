@@ -6,6 +6,7 @@
 
 #include "CalibTracker/SiStripRunSummary/interface/ClassID.h"
 
+// Include all subflags that current one may have
 #include "CalibTracker/SiStripRunSummary/interface/TECFlagTxt.h"
 #include "CalibTracker/SiStripRunSummary/interface/TIBFlagTxt.h"
 #include "CalibTracker/SiStripRunSummary/interface/TIDFlagTxt.h"
@@ -14,9 +15,12 @@
 #include "CalibTracker/SiStripRunSummary/interface/DCSFlagTxt.h"
 #include "CalibTracker/SiStripRunSummary/interface/DCSFlagXML.h"
 
+// --[ DCS FLAG TXT ]----------------------------------------------------------
+//                                                  --[ PUBLIC ]--
 DCSFlagTxt::DCSFlagTxt( const DCSFlagXML *poDCS_FLAGXML)
   : FlagTxt( *( dynamic_cast<const FlagXML *>( poDCS_FLAGXML) ) ) {}
 
+//                                                  --[ PROTECTED ]--
 Clonable *DCSFlagTxt::cloneXML() const {
   return new DCSFlagXML( this);
 }
@@ -34,12 +38,12 @@ int DCSFlagTxt::isChildValid( const FlagTxt *poCHILD_CANDIDATE) const {
          0;
 }
 
+// --[ HELPER FUNCTIONS ]------------------------------------------------------
 std::ostream &
   operator <<( std::ostream &roOut, const DCSFlagTxt &roFLAG) {
 
-  // Print DCS info
-  roOut << static_cast<int>( roFLAG.getState()) << " : "
-        << roFLAG.getComment();
+  // Print DCS info: use Flag operator <<
+  roOut << dynamic_cast<const Flag &>( roFLAG);
 
   // Try TEC Child
   if( TECFlagTxt *poTECFlagTxt = 
