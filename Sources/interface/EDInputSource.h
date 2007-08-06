@@ -9,6 +9,7 @@ $Id$
 #include "DataFormats/Provenance/interface/RunID.h"
 #include "FWCore/Framework/interface/InputSource.h"
 #include "FWCore/Catalog/interface/FileCatalog.h"
+#include "FWCore/Catalog/interface/InputFileCatalog.h"
 #include <vector>
 #include <string>
 
