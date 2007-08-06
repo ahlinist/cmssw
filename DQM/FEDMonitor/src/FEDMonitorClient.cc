@@ -7,12 +7,12 @@
 #include <map>
 #include <sstream>
 
-#include "xgi/include/xgi/Method.h"
-#include "xgi/include/xgi/Utils.h"
+#include "xgi/Method.h"
+#include "xgi/Utils.h"
 
-#include "extern/cgicc/linuxx86/include/cgicc/Cgicc.h"
-#include "extern/cgicc/linuxx86/include/cgicc/FormEntry.h"
-#include "extern/cgicc/linuxx86/include/cgicc/HTMLClasses.h"
+#include "cgicc/Cgicc.h"
+#include "cgicc/FormEntry.h"
+#include "cgicc/HTMLClasses.h"
 
 using namespace std;
 namespace dqm{

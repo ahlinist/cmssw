@@ -10,8 +10,10 @@
 //#include "DQMServices/Core/interface/DaqMonitorBEInterface.h"
 #include "DQMServices/ClientConfig/interface/QTestHandle.h"
 
-#include "xgi/include/xgi/Input.h"
-#include "xgi/include/xgi/Output.h"
+namespace xgi{
+  class Input;
+  class Output;
+}
 
 #include <string>
 
