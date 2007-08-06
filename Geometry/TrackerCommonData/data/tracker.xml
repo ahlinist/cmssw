@@ -1,8 +1,12 @@
 <?xml version="1.0"?>
 <DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../../DetectorDescription/Schema/DDLSchema.xsd">
 
-<SolidSection label="tracker.xml">
+<ConstantsSection label="tobrodpar.xml" eval="true">
+ <Constant name="BackPlaneDz" value="0.015*mm"/>
+</ConstantsSection>
 
+
+<SolidSection label="tracker.xml">
  <Polycone name="Tracker" startPhi="0*deg" deltaPhi="360*deg" >
   <ZSection z="-[cms:TrackBeamZ2]"  rMin="[cms:TrackBeamR2]"  rMax="[cms:TrackCalorR]" />
   <ZSection z="-[cms:TrackBeamZ1]"  rMin="[cms:TrackBeamR1]"  rMax="[cms:TrackCalorR]" />
