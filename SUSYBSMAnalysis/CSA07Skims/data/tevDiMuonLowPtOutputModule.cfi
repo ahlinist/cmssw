@@ -1,7 +1,7 @@
 include "SUSYBSMAnalysis/CSA07Skims/data/tevDiMuonLowPtEventContent.cff"
 
 module tevDiMuonLowPtOutputModule = PoolOutputModule {
-  string fileName = "TeVdiMuonLowPt.root"
+  untracked string fileName = "TeVdiMuonLowPt.root"
   using tevDiMuonLowPtEventContent
   using tevDiMuonLowPtEventSelection
   PSet datasets = {

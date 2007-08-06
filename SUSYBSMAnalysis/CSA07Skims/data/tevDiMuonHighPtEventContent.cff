@@ -1,7 +1,7 @@
 include "Configuration/EventContent/data/EventContent.cff"
 
 block tevDiMuonHighPtEventContent = {
-  vstring outputCommands = {
+  untracked vstring outputCommands = {
 
 # Keep the hits associated to the muon tracks
     "keep *_standAloneMuons_*_*",
@@ -23,8 +23,8 @@ block tevDiMuonHighPtEventContent = {
 replace tevDiMuonHighPtEventContent.outputCommands += AODSIMEventContent.outputCommands
 
 block tevDiMuonHighPtEventSelection = {
-  PSet SelectEvents = {
-    vstring SelectEvents = {
+    untracked PSet SelectEvents = {
+      vstring SelectEvents = {
       "tevDiMuonHighPt"
     }
   }
