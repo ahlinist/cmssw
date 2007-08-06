@@ -1,0 +1,3 @@
+include "SUSYBSMAnalysis/CSA07Skims/data/tevDiMuonHighPtSkim.cfi"
+
+path tevDiMuonHighPt = { tevDiMuonHighPtSeq }
