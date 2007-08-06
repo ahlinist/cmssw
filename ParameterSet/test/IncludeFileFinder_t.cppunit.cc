@@ -10,7 +10,6 @@
 #include <cppunit/extensions/HelperMacros.h>
 
 #include "FWCore/ParameterSet/interface/IncludeFileFinder.h"
-#include "FWCore/Utilities/interface/EDMException.h"
 
 #include "FWCore/PluginManager/interface/PluginManager.h"
 #include "FWCore/PluginManager/interface/standard.h"
