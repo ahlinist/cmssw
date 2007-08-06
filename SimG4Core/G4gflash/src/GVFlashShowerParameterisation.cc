@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: GVFlashShowerParameterisation.cc,v 1.1 2006/09/28 15:35:46 sunanda Exp $
+// $Id: GVFlashShowerParameterisation.cc,v 1.2 2006/11/14 23:05:24 wmtan Exp $
 // GEANT4 tag $Name:  $
 //
 //
@@ -43,7 +43,6 @@
 #include "Gamma.hh" // @@@@
 #include "G4MaterialTable.hh"
 
-#ifndef G4V7
 GVFlashShowerParameterisation::GVFlashShowerParameterisation()
   : thePar(0)
 {
@@ -120,4 +119,3 @@ G4double GVFlashShowerParameterisation::gam(G4double x, G4double a) const
   static MyGamma theG;
   return  theG.Gamma(a, x); 
 }
-#endif

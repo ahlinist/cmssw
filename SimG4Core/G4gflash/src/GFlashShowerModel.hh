@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: GFlashShowerModel.hh,v 1.3 2006/11/13 17:01:13 sunanda Exp $
+// $Id: GFlashShowerModel.hh,v 1.4 2006/11/14 23:05:24 wmtan Exp $
 // GEANT4 tag $Name:  $
 //
 //
@@ -54,23 +54,15 @@
 #include "GFlashHitMaker.hh"
 #include  <vector>
 
-#ifdef G4V7
-class GFlashHomoShowerParamterisation;
-#else
 class GVFlashShowerParameterisation;
 class GFlashHomoShowerParameterisation;
 class GFlashSamplingShowerParameterisation;
-#endif
 
 class GFlashShowerModel : public G4VFastSimulationModel
 {
   public:  // with description
 
-#ifdef G4V7
-    GFlashShowerModel (G4String, G4LogicalVolume*);
-#else
     GFlashShowerModel (G4String, G4Envelope*);
-#endif
     GFlashShowerModel (G4String);
     ~GFlashShowerModel ();  
       // Constructors, destructor
@@ -92,13 +84,8 @@ class GFlashShowerModel : public G4VFastSimulationModel
       { FlagParticleContainment = I; }
     inline void SetStepInX0(G4double Lenght)
       { StepInX0=Lenght; } 
-#ifdef G4V7
-    inline void SetParametrisation(GFlashHomoShowerParamterisation &DP)
-      { Parametrisation=&DP;}
-#else
     inline void SetParameterisation(GVFlashShowerParameterisation &DP)
       { Parameterisation=&DP;}
-#endif
     inline void SetHitMaker(GFlashHitMaker &Maker)
       { HMaker=&Maker; }
     inline void SetParticleBounds(GFlashParticleBounds &SpecificBound)
@@ -117,11 +104,7 @@ class GFlashShowerModel : public G4VFastSimulationModel
 
     // Gets ?  
     GFlashParticleBounds  *PBound;
-#ifdef G4V7
-    GFlashHomoShowerParamterisation *Parametrisation;	
-#else
     GVFlashShowerParameterisation *Parameterisation;  
-#endif
 
   private:
 
@@ -130,9 +113,6 @@ class GFlashShowerModel : public G4VFastSimulationModel
     //  void NeutrinoDoIt(const G4FastTrack&, G4FastStep&);
     G4bool CheckParticleDefAndContainment(const G4FastTrack &fastTrack);
     G4bool CheckContainment(const G4FastTrack &fastTrack);
-#ifdef G4V7
-    void KillParticle(const G4FastTrack& fastTrack, G4FastStep& fastStep);
-#endif
   
   private:
 

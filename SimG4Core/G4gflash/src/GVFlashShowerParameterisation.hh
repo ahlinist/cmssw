@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: GVFlashShowerParameterisation.hh,v 1.2 2006/11/13 17:01:13 sunanda Exp $
+// $Id: GVFlashShowerParameterisation.hh,v 1.3 2006/11/14 23:05:24 wmtan Exp $
 // GEANT4 tag $Name:  $
 //
 //
@@ -47,7 +47,6 @@
 
 class G4Material;
 
-#ifndef G4V7
 class GVFlashShowerParameterisation
 {
   public:  // with description
@@ -94,5 +93,4 @@ class GVFlashShowerParameterisation
     G4double NSpot;
 };
 
-#endif
 #endif

@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: GFlashSamplingShowerTuning.hh,v 1.2 2006/11/13 17:01:13 sunanda Exp $
+// $Id: GFlashSamplingShowerTuning.hh,v 1.3 2006/11/14 23:05:24 wmtan Exp $
 // GEANT4 tag $Name:  $
 //
 //
@@ -51,7 +51,7 @@
 #define GFlashSamplingShowerTuning_hh
 
 #include "GVFlashHomoShowerTuning.hh"
-#ifndef G4V7
+
 class GFlashSamplingShowerTuning : public GVFlashHomoShowerTuning
 {
   public: // with description
@@ -123,5 +123,4 @@ class GFlashSamplingShowerTuning : public GVFlashHomoShowerTuning
 
 };
 
-#endif
 #endif
