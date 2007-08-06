@@ -14,8 +14,6 @@
 // system include files
 #include <Utilities/Testing/interface/CppUnit_testdriver.icpp>
 #include <cppunit/extensions/HelperMacros.h>
-#include <boost/bind.hpp>
-#include <boost/mem_fn.hpp>
 #include <iostream>
 
 // user include files
