@@ -1,4 +1,4 @@
-#include "HLTrigger/Configuration/data/common/HLTSetup.cff"
+include "SUSYBSMAnalysis/CSA07Skims/data/hadSUSYHLTPaths.cfi"
 
 module hadSUSYdiElecFilter = HadSUSYdiElecSkim {
   InputTag Elecsrc = pixelMatchGsfElectrons
@@ -7,4 +7,7 @@ module hadSUSYdiElecFilter = HadSUSYdiElecSkim {
   untracked double PtmindiElec = 150.
 }
 
-sequence hadSUSYdiElecSeq = { hadSUSYdiElecFilter }
+sequence hadSUSYdiElecSeq = { 
+  hadSUSYHLTdiElecPath &
+  hadSUSYdiElecFilter 
+}

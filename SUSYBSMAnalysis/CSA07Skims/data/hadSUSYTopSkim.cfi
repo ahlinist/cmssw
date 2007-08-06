@@ -1,4 +1,4 @@
-#include "HLTrigger/Configuration/data/common/HLTSetup.cff"
+include "SUSYBSMAnalysis/CSA07Skims/data/hadSUSYHLTPaths.cfi"
 
 # Muon + jets 
 module hadSUSYTopMuonFilter = HadSUSYTopSkim {
@@ -26,5 +26,12 @@ module hadSUSYTopElecFilter = HadSUSYTopSkim {
   untracked int32 NminElec = 1
 }
 
-sequence hadSUSYTopMuonSeq = { hadSUSYTopMuonFilter }
-sequence hadSUSYTopElecSeq = { hadSUSYTopElecFilter }
+sequence hadSUSYTopMuonSeq = { 
+  hadSUSYHLTTopMuonPath &
+  hadSUSYTopMuonFilter 
+}
+
+sequence hadSUSYTopElecSeq = { 
+  hadSUSYHLTTopElecPath & 
+  hadSUSYTopElecFilter 
+}

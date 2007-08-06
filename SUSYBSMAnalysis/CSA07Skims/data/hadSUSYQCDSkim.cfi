@@ -1,4 +1,4 @@
-#include "HLTrigger/Configuration/data/common/HLTSetup.cff"
+include "SUSYBSMAnalysis/CSA07Skims/data/hadSUSYHLTPaths.cfi"
 
 module hadSUSYQCDFilter = HadSUSYQCDSkim {
   InputTag CaloJetsrc = iterativeCone5CaloJets
@@ -7,4 +7,7 @@ module hadSUSYQCDFilter = HadSUSYQCDSkim {
   InputTag CaloMETsrc = met
 }
 
-sequence hadSUSYQCDSeq = { hadSUSYQCDFilter }
+sequence hadSUSYQCDSeq = { 
+  hadSUSYHLTQCDPath &
+  hadSUSYQCDFilter 
+}

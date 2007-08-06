@@ -1,4 +1,4 @@
-#include "HLTrigger/Configuration/data/common/HLTSetup.cff"
+include "SUSYBSMAnalysis/CSA07Skims/data/hadSUSYHLTPaths.cfi"
 
 module hadSUSYdiMuonFilter = HadSUSYdiMuonSkim {
   InputTag Muonsrc = globalMuons
@@ -7,4 +7,7 @@ module hadSUSYdiMuonFilter = HadSUSYdiMuonSkim {
   untracked double PtmindiMuon = 150.
 }
 
-sequence hadSUSYdiMuonSeq = { hadSUSYdiMuonFilter }
+sequence hadSUSYdiMuonSeq = { 
+  hadSUSYHLTdiMuonPath & 
+  hadSUSYdiMuonFilter 
+}

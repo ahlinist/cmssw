@@ -1,13 +1,4 @@
-# === HLT sequence for the desired HLT path ===
-### HLT setup
-# include "HLTrigger/Configuration/data/common/HLTSetup.cff"
-### eg. Muons High L
-# include "HLTrigger/Muon/data/PathSingleMu_2x1033_Iso.cff"
-# include "HLTrigger/Muon/data/PathDiMuon_2x1033_Iso.cff"
-### eg. Electrons Local
-# include "HLTrigger/Egamma/data/EgammaHLTLocal_2e33.cff"
-# include "HLTrigger/Egamma/data/SingleElectronL1Isolated_2e33.cff"
-# include "HLTrigger/Egamma/data/DoubleElectronL1Isolated_2e33.cff"
+include "SUSYBSMAnalysis/CSA07Skims/data/hadSUSYHLTPaths.cfi"
 
 module hadSUSYQCDControlMETFilter = HadSUSYQCDControlMETSkim {
   InputTag CaloJetsrc = iterativeCone5CaloJets
@@ -15,4 +6,7 @@ module hadSUSYQCDControlMETFilter = HadSUSYQCDControlMETSkim {
   untracked int32 NminCaloJet = 2  
 }
 
-sequence hadSUSYQCDControlMETSeq = { hadSUSYQCDControlMETFilter }
+sequence hadSUSYQCDControlMETSeq = {
+  hadSUSYHLTQCDPath & 
+  hadSUSYQCDControlMETFilter 
+}

@@ -1,3 +1,5 @@
+include "SUSYBSMAnalysis/CSA07Skims/data/hadSUSYHLTPaths.cfi"
+
 module hadSUSYSMBackgrFilter = HadSUSYSMBackgrSkim {
   InputTag CaloJetsrc = iterativeCone5CaloJets
   untracked int32 NminCaloJet = 2  
@@ -7,4 +9,7 @@ module hadSUSYSMBackgrFilter = HadSUSYSMBackgrSkim {
   untracked double CaloMETmin = 100.
 }
 
-sequence hadSUSYSMBackgrSeq = { hadSUSYSMBackgrFilter }
+sequence hadSUSYSMBackgrSeq = { 
+  hadSUSYHLTJetMETPath &
+  hadSUSYSMBackgrFilter 
+}
