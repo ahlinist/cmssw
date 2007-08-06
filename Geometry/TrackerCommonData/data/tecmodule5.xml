@@ -95,6 +95,9 @@
   <Numeric name="ActiveThick"        value="[tecmodpar:ActiveThick2]"/>
   <String name="ActiveRotation"      value="tecmodpar:AR05"/>
   <Numeric name="ActiveZ"            value="[ActiveZ]"/>
+  <String name="BackPlaneMaterial"   value="materials:Silicon"/>
+  <Numeric name="BackPlaneThick"     value="2*[tracker:BackPlaneDz]"/>
+  <Numeric name="BackPlaneZ"         value="-0.5*[tecmodpar:ActiveThick2]+[tracker:BackPlaneDz]"/>
   <String name="HybridMaterial"      value="tecmaterial:TEC_Hybrid4APV"/>
   <Numeric name="HybridHeight"       value="[tecmodpar:HybridHeight]"/>
   <Numeric name="HybridWidth"        value="[tecmodpar:HybridWidth]"/>
