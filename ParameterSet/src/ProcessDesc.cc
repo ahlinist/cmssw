@@ -23,6 +23,14 @@ static const char CVSId[] = "$Id$";
 
 namespace edm
 {
+  ProcessDesc::ProcessDesc()
+  : validator_(0),
+    pathFragments_(),
+    pset_(new ParameterSet),
+    services_(new std::vector<ParameterSet>()),
+    bookkeeping_()
+  {
+  }
 
   ProcessDesc::~ProcessDesc()
   {
