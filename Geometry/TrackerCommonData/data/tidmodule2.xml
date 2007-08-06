@@ -36,24 +36,38 @@
   <Numeric name="SideFrameOver"     value="[tidmodpar:SideFrameOver]"/>
   <String name="DummyFrameName"     value="tidmodule2:TIDModule2Frame"/>
   <Vector name="WaferName"     type="string" nEntries="1">
-    tidmodule2:TIDModule2RphiWafer</Vector>
+    tidmodule2:TIDModule2RphiWafer
+  </Vector>
   <String name="WaferMaterial"      value="materials:Silicon"/>
   <Numeric name="SideWidthTop"         value="[SideWidthTop]"/>
   <Numeric name="SideWidthBottom"      value="[SideWidthBottom]"/>
   <Vector name="ActiveName"    type="string" nEntries="1">
-    tidmodule2:TIDModule2RphiActive</Vector>
+    tidmodule2:TIDModule2RphiActive
+  </Vector>
   <String name="ActiveMaterial"     value="materials:Silicon"/>
   <Numeric name="ActiveHeight"      value="[tidmodule2:ActiveHeight]"/>
   <Vector name="ActiveThick"   type="numeric" nEntries="1">
-    [tidmodpar:ActiveThick] </Vector>
+    [tidmodpar:ActiveThick]
+  </Vector>
   <String name="ActiveRotation"     value="tidmodpar:90ZD"/>
+  <Vector name="BackPlaneName"    type="string" nEntries="1">
+    tidmodule2:TIDModule2RphiBackPlane
+  </Vector>
+  <String name="BackPlaneMaterial"     value="materials:Silicon"/>
+  <Vector name="BackPlaneThick"   type="numeric" nEntries="1">
+    2*[tracker:BackPlaneDz]
+  </Vector>
+  <Vector name="BackPlaneZ"   type="numeric" nEntries="1">
+    -0.5*[tidmodpar:ActiveThick]+[tracker:BackPlaneDz]
+  </Vector>
   <String name="HybridName"         value="tidmodule2:TIDModule2Hybrid"/>
   <String name="HybridMaterial"     value="tidmaterial:TID_ele3"/>
   <Numeric name="HybridHeight"      value="[tidmodpar:HybridHeight]"/>
   <Numeric name="HybridWidth"       value="[tidmodpar:HybridWidth]"/>
   <Numeric name="HybridThick"       value="[tidmodpar:HybridThick]"/>
   <Vector name="PitchName"     type="string" nEntries="1">
-    tidmodule2:TIDModule2RphiPA</Vector>
+    tidmodule2:TIDModule2RphiPA
+  </Vector>
   <String name="PitchMaterial"      value="tidmaterial:TID_PitchAdapter"/>
   <Numeric name="PitchHeight"       value="[tidmodpar:PitchHeight]"/>
   <Numeric name="PitchThick"        value="[tidmodpar:PitchThick]"/>
@@ -71,29 +85,38 @@
   <String name="TopFrameName"       value="tidmodule2:TIDModule2TopFrame"/>
   <Numeric name="TopFrameHeight"    value="[tidmodpar:TopFrameHeight]"/>
   <Vector name="TopFrameZ"     type="numeric" nEntries="1">
-    [tidmodpar:TopFrameZSS] </Vector>
+    [tidmodpar:TopFrameZSS]
+  </Vector>
   <Numeric name="BottomFrameHeight" value="[tidmodpar:BottomFrameHeight]"/>
   <Numeric name="BottomFrameOver"   value="[tidmodpar:BottomFrameOver]"/>
   <String name="SideFrameName"      value="tidmodule2:TIDModule2SideFrame"/>
   <Vector name="SideFrameZ"    type="numeric" nEntries="1">
-    [tidmodpar:SideFrameZSS] </Vector>
+    [tidmodpar:SideFrameZSS]
+  </Vector>
   <Vector name="WaferName"     type="string" nEntries="1">
-    tidmodule2:TIDModule2RphiWafer</Vector>
+    tidmodule2:TIDModule2RphiWafer
+  </Vector>
   <Vector name="WaferZ"        type="numeric" nEntries="1">
-    [tidmodpar:ActiveZSS] </Vector>
+    [tidmodpar:ActiveZSS]
+  </Vector>
   <Vector name="WaferRotation" type="string" nEntries="1">
-    tidmodpar:RFI2</Vector>
+    tidmodpar:RFI2
+  </Vector>
   <String name="HybridName"         value="tidmodule2:TIDModule2Hybrid"/>
   <Numeric name="HybridHeight"      value="[tidmodpar:HybridHeight]"/>
   <Vector name="HybridZ"       type="numeric" nEntries="1">
-     [tidmodpar:HybridZSS] </Vector>
+     [tidmodpar:HybridZSS]
+  </Vector>
   <Vector name="PitchName"     type="string" nEntries="1">
-    tidmodule2:TIDModule2RphiPA</Vector>
+    tidmodule2:TIDModule2RphiPA
+  </Vector>
   <Numeric name="PitchHeight"       value="[tidmodpar:PitchHeight]"/>
   <Vector name="PitchZ"        type="numeric" nEntries="1">
-     [tidmodpar:PitchZSS] </Vector>
+     [tidmodpar:PitchZSS]
+  </Vector>
   <Vector name="PitchRotation" type="string" nEntries="1">
-    tidmodpar:NULL</Vector>
+    tidmodpar:NULL
+  </Vector>
 </Algorithm>
  
 </DDDefinition>

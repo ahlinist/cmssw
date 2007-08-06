@@ -36,24 +36,40 @@
   <Numeric name="SideFrameOver"     value="[tidmodpar:SideFrameOver]"/>
   <String name="DummyFrameName"     value="tidmodule1:TIDModule1Frame"/>
   <Vector name="WaferName"     type="string" nEntries="2">
-    tidmodule1:TIDModule1RphiWafer,  tidmodule1:TIDModule1StereoWafer</Vector>
+    tidmodule1:TIDModule1RphiWafer,  tidmodule1:TIDModule1StereoWafer
+  </Vector>
   <String name="WaferMaterial"      value="materials:Silicon"/>
   <Numeric name="SideWidthTop"         value="[SideWidthTop]"/>
   <Numeric name="SideWidthBottom"      value="[SideWidthBottom]"/>
   <Vector name="ActiveName"    type="string" nEntries="2">
-    tidmodule1:TIDModule1RphiActive, tidmodule1:TIDModule1StereoActive</Vector>
+    tidmodule1:TIDModule1RphiActive, tidmodule1:TIDModule1StereoActive
+  </Vector>
   <String name="ActiveMaterial"     value="materials:Silicon"/>
   <Numeric name="ActiveHeight"      value="[tidmodule1:ActiveHeight]"/>
   <Vector name="ActiveThick"   type="numeric" nEntries="2">
-    [tidmodpar:ActiveThick],   [tidmodpar:ActiveThick] </Vector>
+    [tidmodpar:ActiveThick],   [tidmodpar:ActiveThick]
+  </Vector>
   <String name="ActiveRotation"     value="tidmodpar:90ZD"/>
+  <Vector name="BackPlaneName"    type="string" nEntries="2">
+    tidmodule1:TIDModule1RphiBackPlane,
+    tidmodule1:TIDModule1StereoBackPlane
+  </Vector>
+  <String name="BackPlaneMaterial"     value="materials:Silicon"/>
+  <Vector name="BackPlaneThick"   type="numeric" nEntries="2">
+    2*[tracker:BackPlaneDz], 2*[tracker:BackPlaneDz]
+  </Vector>
+  <Vector name="BackPlaneZ"   type="numeric" nEntries="2">
+    -0.5*[tidmodpar:ActiveThick]+[tracker:BackPlaneDz],
+    -0.5*[tidmodpar:ActiveThick]+[tracker:BackPlaneDz]
+  </Vector>
   <String name="HybridName"         value="tidmodule1:TIDModule1Hybrid"/>
   <String name="HybridMaterial"     value="tidmaterial:TID_ele1"/>
   <Numeric name="HybridHeight"      value="[tidmodpar:HybridHeight]"/>
   <Numeric name="HybridWidth"       value="[tidmodpar:HybridWidth]"/>
   <Numeric name="HybridThick"       value="[tidmodpar:HybridThick]"/>
   <Vector name="PitchName"     type="string" nEntries="2">
-    tidmodule1:TIDModule1RphiPA,  tidmodule1:TIDModule1StereoPA</Vector>
+    tidmodule1:TIDModule1RphiPA,  tidmodule1:TIDModule1StereoPA
+  </Vector>
   <String name="PitchMaterial"      value="tidmaterial:TID_PitchAdapter"/>
   <Numeric name="PitchHeight"       value="[tidmodpar:PitchHeight]"/>
   <Numeric name="PitchThick"        value="[tidmodpar:PitchThick]"/>
@@ -84,24 +100,40 @@
   <Numeric name="SideFrameOver"     value="[tidmodpar:SideFrameOver]"/>
   <String name="DummyFrameName"     value="tidmodule1:TIDModule1Frame"/>
   <Vector name="WaferName"     type="string" nEntries="2">
-    tidmodule1:TIDModule1RphiWafer,  tidmodule1:TIDModule1StereoWafer</Vector>
+    tidmodule1:TIDModule1RphiWafer,  tidmodule1:TIDModule1StereoWafer
+  </Vector>
   <String name="WaferMaterial"      value="materials:Silicon"/>
   <Numeric name="SideWidthTop"         value="[SideWidthTop]"/>
   <Numeric name="SideWidthBottom"      value="[SideWidthBottom]"/>
   <Vector name="ActiveName"    type="string" nEntries="2">
-    tidmodule1:TIDModule1RphiActive, tidmodule1:TIDModule1StereoActive</Vector>
+    tidmodule1:TIDModule1RphiActive, tidmodule1:TIDModule1StereoActive
+  </Vector>
   <String name="ActiveMaterial"     value="materials:Silicon"/>
   <Numeric name="ActiveHeight"      value="[tidmodule1:ActiveHeight]"/>
   <Vector name="ActiveThick"   type="numeric" nEntries="2">
-    [tidmodpar:ActiveThick],   [tidmodpar:ActiveThick] </Vector>
+    [tidmodpar:ActiveThick],   [tidmodpar:ActiveThick]
+  </Vector>
   <String name="ActiveRotation"     value="tidmodpar:90ZD"/>
+  <Vector name="BackPlaneName"    type="string" nEntries="2">
+    tidmodule1:TIDModule1RphiBackPlane,
+    tidmodule1:TIDModule1StereoBackPlane
+  </Vector>
+  <String name="BackPlaneMaterial"     value="materials:Silicon"/>
+  <Vector name="BackPlaneThick"   type="numeric" nEntries="2">
+    2*[tracker:BackPlaneDz], 2*[tracker:BackPlaneDz]
+  </Vector>
+  <Vector name="BackPlaneZ"   type="numeric" nEntries="2">
+    -0.5*[tidmodpar:ActiveThick]+[tracker:BackPlaneDz],
+    -0.5*[tidmodpar:ActiveThick]+[tracker:BackPlaneDz]
+  </Vector>
   <String name="HybridName"         value="tidmodule1:TIDModule1Hybrid"/>
   <String name="HybridMaterial"     value="tidmaterial:TID_ele1"/>
   <Numeric name="HybridHeight"      value="[tidmodpar:HybridHeight]"/>
   <Numeric name="HybridWidth"       value="[tidmodpar:HybridWidth]"/>
   <Numeric name="HybridThick"       value="[tidmodpar:HybridThick]"/>
   <Vector name="PitchName"     type="string" nEntries="2">
-    tidmodule1:TIDModule1RphiPA,  tidmodule1:TIDModule1StereoPA</Vector>
+    tidmodule1:TIDModule1RphiPA,  tidmodule1:TIDModule1StereoPA
+  </Vector>
   <String name="PitchMaterial"      value="tidmaterial:TID_PitchAdapter"/>
   <Numeric name="PitchHeight"       value="[tidmodpar:PitchHeight]"/>
   <Numeric name="PitchThick"        value="[tidmodpar:PitchThick]"/>
