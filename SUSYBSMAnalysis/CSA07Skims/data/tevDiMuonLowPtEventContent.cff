@@ -1,0 +1,17 @@
+include "Configuration/EventContent/data/EventContent.cff"
+
+block tevDiMuonLowPtEventContent = {
+  vstring outputCommands = {
+  }
+}
+
+replace tevDiMuonLowPtEventContent.outputCommands += AODSIMEventContent.outputCommands
+
+block tevDiMuonLowPtEventSelection = {
+  PSet SelectEvents = {
+    vstring SelectEvents = {
+      "tevDiMuonLowPt"
+    }
+  }
+}
+

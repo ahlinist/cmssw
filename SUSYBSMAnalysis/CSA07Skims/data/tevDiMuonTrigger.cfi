@@ -1,0 +1,11 @@
+#
+#TDM skim, single and double muon HLT streams,
+#no isolation
+#
+
+module tevDiMuonTrigger = HLTHighLevel {
+        InputTag TriggerResultsTag = TriggerResults
+        bool byName = true
+        bool andOr= true
+        vstring HLTPaths = {"HLT1MuonNonIso","HLT2MuonNonIso"}
+}
