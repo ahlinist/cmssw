@@ -2,7 +2,7 @@ module hadSUSYHLTQCDPath = HLTHighLevel {
   InputTag TriggerResultsTag = TriggerResults
   bool byName = true
   bool andOr = true
-  vstring HLTPaths = {"HLT1jet","HLT2jet","HLT1jetPE1","HLT1jetPE3"
+  vstring HLTPaths = {"HLT1jet","HLT2jet","HLT1jetPE1","HLT1jetPE3",
     "HLT1jetPE5","HLT1Tau"}
 }
 
