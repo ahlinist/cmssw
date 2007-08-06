@@ -45,12 +45,20 @@
   <rSolid name="tobmodpar:TOBActiveRphi"/>
   <rMaterial name="materials:Silicon"/>
  </LogicalPart>
+ <LogicalPart name="TOBBackPlaneRphi0" category="unspecified">
+  <rSolid name="tobmodpar:TOBBackPlaneRphi"/>
+  <rMaterial name="materials:Silicon"/>
+ </LogicalPart>
  <LogicalPart name="TOBWaferSter0" category="unspecified">
   <rSolid name="TOBWaferSter0"/>
   <rMaterial name="materials:Silicon"/>
  </LogicalPart>
  <LogicalPart name="TOBActiveSter0" category="unspecified">
   <rSolid name="TOBActiveSter0"/>
+  <rMaterial name="materials:Silicon"/>
+ </LogicalPart>
+ <LogicalPart name="TOBBackPlaneSter0" category="unspecified">
+  <rSolid name="tobmodpar:TOBBackPlaneRphi"/>
   <rMaterial name="materials:Silicon"/>
  </LogicalPart>
  <LogicalPart name="TOBModCoolComp01" category="unspecified">
@@ -65,22 +73,39 @@
 
 <PosPartSection label="tobmodule0.xml">
  <PosPart copyNumber="1">
-   <rParent name="tobmodule0:TOBActiveRphi0"/>
-   <rChild name="tobmodpar:TOBInactive"/>
- </PosPart>
- <PosPart copyNumber="1">
    <rParent name="tobmodule0:TOBWaferRphi0"/>
    <rChild name="tobmodule0:TOBActiveRphi0"/>
   <rRotation name="tobmodpar:Activ"/>
  </PosPart>
  <PosPart copyNumber="1">
-   <rParent name="tobmodule0:TOBActiveSter0"/>
-   <rChild name="tobmodpar:TOBInactive"/>
+   <rParent name="tobmodule0:TOBActiveRphi0"/>
+   <rChild name="tobmodule0:TOBBackPlaneRphi0"/>
+  <Translation x="[zero]"  y="[zero]" 
+               z="-[tobmodpar:WaferDz]+[tracker:BackPlaneDz]" />
  </PosPart>
+ <PosPart copyNumber="1">
+   <rParent name="tobmodule0:TOBActiveRphi0"/>
+   <rChild name="tobmodpar:TOBInactive"/>
+  <Translation x="[zero]" y="[zero]" 
+               z="[tracker:BackPlaneDz]" />
+ </PosPart>
+
  <PosPart copyNumber="1">
    <rParent name="tobmodule0:TOBWaferSter0"/>
    <rChild name="tobmodule0:TOBActiveSter0"/>
   <rRotation name="tobmodpar:Activ"/>
+ </PosPart>
+ <PosPart copyNumber="1">
+   <rParent name="tobmodule0:TOBActiveSter0"/>
+   <rChild name="tobmodule0:TOBBackPlaneSter0"/>
+  <Translation x="[zero]"  y="[zero]" 
+               z="-[tobmodpar:WaferDz]+[tracker:BackPlaneDz]" />
+ </PosPart>
+ <PosPart copyNumber="1">
+   <rParent name="tobmodule0:TOBActiveSter0"/>
+   <rChild name="tobmodpar:TOBInactive"/>
+  <Translation x="[zero]" y="[zero]" 
+               z="[tracker:BackPlaneDz]" />
  </PosPart>
 
  <PosPart copyNumber="1">

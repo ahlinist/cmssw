@@ -89,6 +89,8 @@
       dy="[tobmodpar:WaferDy]"    dz="[tobmodpar:WaferDz]"/>
  <Box name="TOBActiveRphi"        dx="[tobmodpar:ActiveDx]" 
       dy="[tobmodpar:ActiveDy]"   dz="[tobmodpar:WaferDz]"/>
+ <Box name="TOBBackPlaneRphi"     dx="[tobmodpar:ActiveDx]" 
+      dy="[tobmodpar:ActiveDy]"   dz="[tracker:BackPlaneDz]"/>
  <Box name="TOBPA1"       dx="[PADx]"    dy="[PADy]"    dz="[PA1Dz]"/>
  <Trapezoid name="TOBPA2" dz="[PADx]"    alp1="0*deg"   bl1="[PA2Dz1]"
                           tl1="[PA2Dz1]" h1="[PADy]"    alp2="0*deg" 
@@ -114,7 +116,7 @@
  <Box name="TOBModCoolComp2"  dx="[ModCoolComp2Dx]" 
                           dy="[ModCoolCompDy]"  dz="[ModCoolComp2Dz]"/>
  <Box name="TOBInactive"  dx="[ActiveDx]" 
-                          dy="[InactiveDy]" dz="[WaferDz]"/>
+                          dy="[InactiveDy]" dz="[WaferDz]-[tracker:BackPlaneDz]"/>
 </SolidSection>
 
 <LogicalPartSection label="tobmodpar.xml">
