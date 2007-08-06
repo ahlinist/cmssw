@@ -1,0 +1,22 @@
+include "SUSYBSMAnalysis/CSA07Skims/data/lepSUSYHLTPaths.cfi"
+
+
+module lepSUSY_0Muon_1Elec_2Jets_MET_Filter = LepSUSYSkim {
+  InputTag Muonsrc = globalMuons
+  InputTag Elecsrc = pixelMatchGsfElectrons
+  InputTag CaloJetsrc = iterativeCone5CaloJets
+  InputTag CaloMETsrc = met
+  untracked int32 NminMuon = 0  
+  untracked int32 NminElec = 1  
+  untracked int32 NminCaloJet = 2  
+  untracked double MuonPtmin = 3.
+  untracked double ElecPtmin = 5.
+  untracked double CaloJet1Ptmin = 80
+  untracked double CaloJet2Ptmin = 30
+  untracked double CaloMetmin = 50
+}
+
+sequence lepSUSY_0Muon_1Elec_2Jets_MET_Seq = { 
+ 	lepSUSY_0Muon_1Elec_2Jets_MET_HLTPath &
+	lepSUSY_0Muon_1Elec_2Jets_MET_Filter 
+}

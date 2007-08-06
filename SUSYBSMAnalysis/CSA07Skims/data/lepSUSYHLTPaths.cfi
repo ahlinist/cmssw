@@ -1,0 +1,50 @@
+module lepSUSY_0Muon_1Elec_1Jets_MET_HLTPath = HLTHighLevel {
+  InputTag TriggerResultsTag = TriggerResults
+  bool byName = true
+  bool andOr = true
+  vstring HLTPaths = {"HLT1Electron","HLT1ElectronRelaxed","HLT2Electron","HLT2ElectronRelaxed","HLT1jet","HLT2jet","HLTXElectron1Jet"}
+}
+
+module lepSUSY_0Muon_1Elec_2Jets_MET_HLTPath = HLTHighLevel {
+  InputTag TriggerResultsTag = TriggerResults
+  bool byName = true
+  bool andOr = true
+  vstring HLTPaths = {"HLT1jet","HLT2jet","HLT3jet","HLT1jetPE1","HLT1jetPE3",
+    "HLT1jetPE5","HLT1jet1MET","HLT2jet1MET","HLT1MET1HT","HLTXElectron1Jet","HLTXElectron2Jet"}
+}
+
+module lepSUSY_0Muon_2Elec_2Jets_MET_HLTPath = HLTHighLevel {
+  InputTag TriggerResultsTag = TriggerResults
+  bool byName = true
+  bool andOr = true
+  vstring HLTPaths = {"HLT1Electron","HLT1ElectronRelaxed","HLT2Electron","HLT2ElectronRelaxed","HLTXElectron1Jet","HLTXElectron2Jet","HLTXElectron3Jet","HLT3jet","HLT4jet"}
+}
+
+module lepSUSY_1Muon_0Elec_1Jets_MET_HLTPath = HLTHighLevel {
+  InputTag TriggerResultsTag = TriggerResults
+  bool byName = true
+  bool andOr = true
+  vstring HLTPaths = {"HLT1MuonIso","HLT1MuonNonIso","HLT2MuonNonIso","HLT2MuonSameSign","HLTXMuonJets"}
+}
+
+module lepSUSY_1Muon_0Elec_2Jets_MET_HLTPath = HLTHighLevel {
+  InputTag TriggerResultsTag = TriggerResults
+  bool byName = true
+  bool andOr = true
+  vstring HLTPaths = {"HLT1jet","HLT2jet","HLT1jetPE1","HLT1jetPE3",
+    "HLT1jetPE5","HLT1jet1MET","HLT2jet1MET","HLT1MET1HT","HLTXMuonJets"}
+}
+
+module lepSUSY_1Muon_1Elec_2Jets_MET_HLTPath = HLTHighLevel {
+  InputTag TriggerResultsTag = TriggerResults
+  bool byName = true
+  bool andOr = true
+  vstring HLTPaths = {"HLT1MuonIso","HLT1MuonNonIso","HLT1Electron","HLT1ElectronRelaxed","HLTXElectronMuon","HLTXElectronMuonRelaxed","HLTXElectron1Jet","HLTXElectron2Jet","HLTXMuonJets"}
+}
+
+module lepSUSY_2Muon_0Elec_2Jets_MET_HLTPath = HLTHighLevel {
+  InputTag TriggerResultsTag = TriggerResults
+  bool byName = true
+  bool andOr = true
+  vstring HLTPaths = {"HLT1MuonIso","HLT1MuonNonIso","HLT2MuonNonIso","HLT2MuonSameSign","HLTXMuonJets"}
+}
