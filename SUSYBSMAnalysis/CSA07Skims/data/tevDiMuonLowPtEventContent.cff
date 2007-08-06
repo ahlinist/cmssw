@@ -1,14 +1,14 @@
 include "Configuration/EventContent/data/EventContent.cff"
 
 block tevDiMuonLowPtEventContent = {
-  vstring outputCommands = {
+  untracked vstring outputCommands = {
   }
 }
 
 replace tevDiMuonLowPtEventContent.outputCommands += AODSIMEventContent.outputCommands
 
 block tevDiMuonLowPtEventSelection = {
-  PSet SelectEvents = {
+  untracked PSet SelectEvents = {
     vstring SelectEvents = {
       "tevDiMuonLowPt"
     }
