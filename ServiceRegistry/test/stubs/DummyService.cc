@@ -15,7 +15,6 @@
 
 // user include files
 #include "FWCore/ServiceRegistry/test/stubs/DummyService.h"
-#include "FWCore/ServiceRegistry/interface/ServiceMaker.h"
 
 //
 // constants, enums and typedefs

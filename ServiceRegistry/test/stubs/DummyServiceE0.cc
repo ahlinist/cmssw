@@ -11,7 +11,6 @@
 
 #include "FWCore/ServiceRegistry/test/stubs/DummyServiceE0.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
-#include "FWCore/Utilities/interface/EDMException.h"
 
 #include <iostream>
 

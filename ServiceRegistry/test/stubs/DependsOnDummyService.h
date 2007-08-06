@@ -22,7 +22,6 @@
 // system include files
 
 // user include files
-#include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 // forward declarations
 namespace testserviceregistry {
