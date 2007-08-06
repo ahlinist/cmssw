@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: GFlashHomoShowerParameterisation.hh,v 1.2 2006/11/13 17:01:13 sunanda Exp $
+// $Id: GFlashHomoShowerParameterisation.hh,v 1.3 2006/11/14 23:05:24 wmtan Exp $
 // GEANT4 tag $Name:  $
 //
 //
@@ -42,7 +42,6 @@
 #ifndef GFlashHomoShowerParameterisation_h
 #define GFlashHomoShowerParameterisation_h 1
 
-#ifndef G4V7
 #include "globals.hh"
 #include "GVFlashHomoShowerTuning.hh"
 #include "GVFlashShowerParameterisation.hh"
@@ -132,7 +131,5 @@ class GFlashHomoShowerParameterisation : public GVFlashShowerParameterisation
     //Radial
     G4double RadiusCore, WeightCore,RadiusTail; 
 };
-
-#endif
 
 #endif

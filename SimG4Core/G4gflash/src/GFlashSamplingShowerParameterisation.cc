@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: GFlashSamplingShowerParameterisation.cc,v 1.1 2006/09/28 15:35:46 sunanda Exp $
+// $Id: GFlashSamplingShowerParameterisation.cc,v 1.2 2006/11/14 23:05:24 wmtan Exp $
 // GEANT4 tag $Name:  $
 //
 //
@@ -43,7 +43,6 @@
 #include "G4Material.hh"
 #include "G4MaterialTable.hh"
 
-#ifndef G4V7
 GFlashSamplingShowerParameterisation::
 GFlashSamplingShowerParameterisation(G4Material* aMat1, G4Material* aMat2,
                                      G4double dd1, G4double dd2,
@@ -408,4 +407,3 @@ GenerateExponential(const G4double /* Energy */ )
   G4double random  = -ParExp1*CLHEP::RandExponential::shoot() ;
   return random;
 }
-#endif
