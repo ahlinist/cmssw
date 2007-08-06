@@ -7,9 +7,12 @@
 #include "CalibTracker/SiStripRunSummary/interface/TIDFlagXML.h"
 #include "CalibTracker/SiStripRunSummary/interface/TIDFlagTxt.h"
 
+// --[ TID FLAG XML ]----------------------------------------------------------
+//                                                  --[ PUBLIC ]--
 TIDFlagXML::TIDFlagXML( const TIDFlagTxt *poTID_FLAGTXT)
   : FlagXML( *( dynamic_cast<const FlagTxt *>( poTID_FLAGTXT) ) ) {}
 
+//                                                  --[ PROTECTED ]--
 Clonable *TIDFlagXML::cloneTxt() const {
   return new TIDFlagTxt( this);
 }

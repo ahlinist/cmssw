@@ -8,7 +8,16 @@
 #include "CalibTracker/SiStripRunSummary/interface/GlobalFlagXML.h"
 #include "CalibTracker/SiStripRunSummary/interface/GlobalFlagTxt.h"
 
+/**
+* @brief
+*   Construct Tree of flags: TXT format. Used for testing in main_xxx.cc
+*/
 GlobalFlagTxt getTXTFlagTree();
+
+/**
+* @brief
+*   Construct Tree of flags: XML format. Used for testing in main_xxx.cc
+*/
 GlobalFlagXML getXMLFlagTree();
 
 #endif // GETFLAGTREE_H

@@ -1,5 +1,3 @@
-// Flag base made for serialization in XML streams
-//
 // Author : Samvel Khalatian (samvel at fnal dot gov)
 // Created: 06/01/06
 // License: GPL
@@ -18,36 +16,164 @@
 #include "CalibTracker/SiStripRunSummary/interface/ClassID.h"
 #include "CalibTracker/SiStripRunSummary/interface/Flag.h"
 
+// Declare class to save compilation time: used for conversion of flags
+// Txt -> XML
 class FlagTxt;
 
+/** 
+* @brief 
+*   Flags base that:
+*     1. Knows how to serialize Flags Tree in XML formats.
+*     2. Holds children and responsible for their creation and access.
+*     3. Tracks Children change state in order to update state of parent.
+*        [aka recursive set State].
+*/
 class FlagXML: public Flag {
   public:
-    FlagXML(): Flag(), poParentFlag_( 0) {}
+    typedef std::list<FlagXML *> LChildren;
+
+    FlagXML(): Flag() { poParentFlag_ = 0; }
     virtual ~FlagXML();
 
+    /** 
+    * @brief 
+    *   Method that is responsible for Child Flags creation. Its tasks are:
+    *     1. Check if Child Flag of given type is allowed
+    *     2. Create Child Flag in case (1.) is true
+    *     3. Set newly created child flags parent.
+    * 
+    * @return 
+    *   >0  Pointer to newly created flag
+    *   0   Invalid pointer in case child flag of given class is not allowed.
+    */
     template<class T> FlagXML *createChild();
+
+    /** 
+    * @brief 
+    *   Search for a specific child flag of given class if there is any
+    *   available among children. Flag should be first created with 
+    *   createChild() method.
+    * 
+    * @return 
+    *   >0  Pointer to child flag if there is any available.
+    *   0   Invalid pointer in case child flag does not exist.
+    */
     template<class T> FlagXML *getChild   () const;
 
+    /** 
+    * @brief 
+    *   Search for children that are instances of the same class. Flags should
+    *   be first created with createChild() method. Method also can be used as
+    *   a getChild but might be inconvenient since it adds std::list overhead
+    *
+    *   [CAUTION: Variable will be overwritten (!) Anything contained there
+    *             will be removed]
+    * 
+    * @return 
+    *   number of children available
+    */
+    template<class T> int getChildren( LChildren &roLChildren) const;
+
+    /** 
+    * @brief 
+    *   Override base setState method to update parents state.
+    * 
+    * @param reSTATE  State of flag to be set.
+    * 
+    * @return 
+    *   true   In case flag's state was changed
+    *   false  Otherwise
+    */
     virtual bool setState( const State &reSTATE);
 
   protected:
+    /** 
+    * @brief 
+    *   Construct flag from another. Used by cloneXXX().
+    * 
+    * @param roFLAGXML  Flag to be copied.
+    */
     FlagXML( const FlagXML &roFLAGXML);
+
+    /** 
+    * @brief 
+    *   Construct flag from another. Used by cloneXXX().
+    * 
+    * @param roFLAGTXT  Flag to be copied.
+    */
     FlagXML( const FlagTxt &roFLAGTXT);
 
-    inline virtual int isChildValid( const FlagXML *) const {
+    /** 
+    * @brief 
+    *   Specify policy of current flag: can it have any children? Should be
+    *   overriden by successors. Use:
+    *
+    *     dynamic_cast<const AllowedSubFlagClass *>( poCHILD_CANDIDATE)
+    *
+    *   expression to check if child is allowed.
+    * 
+    * @param poCHILD_CANDIDATE  Pointer to child candidate object that should
+    *                           be checked for validity.
+    * 
+    * @return 
+    *   Number of allowed children.
+    *     -1  No limit
+    *      0  No children allowed
+    *      1  One child only
+    *     ...
+    *      N  N children allowed (current number of children may be from zero
+    *         up to given number)
+    */
+    inline virtual 
+      int isChildValid( const FlagXML * /* poCHILD_CANDIDATE */) const {
+
       // No children are allowed by default
       return 0;
     }
 
   private:
+    /** 
+    * @brief 
+    *   Grant access of FlagTxt to children. Used in conversion: XML -> Txt.
+    */
     friend class FlagTxt;
 
-    // prevent copy assignment
+    typedef ClassIDBase::ID FlagID; 
+    typedef std::multimap<FlagID,FlagXML *> MChildFlags;
+
+    /** 
+    * @brief 
+    *   prevent copy assignment
+    * 
+    * @param roFLAGTXT  Flag to be copied
+    * 
+    * @return 
+    *   Reference to current flag.
+    */
     FlagXML &operator =( const FlagXML &roFLAGXML);
 
+    /** 
+    * @brief 
+    *   Update parents state. Given method specifies logic: how 
+    *   successors affect ancestors.
+    * 
+    * @param reCHILD_STATE  New state (changed) of Child flag
+    */
     void updateState( const State &reCHILD_STATE);
 
-    // XML Serialization
+    /** 
+    * @brief 
+    *   Add child flag into the container of subflags
+    * 
+    * @param poSubFlag  Flag to be added 
+    */
+    void addChild( FlagXML *poSubFlag);
+
+    /**
+    * @brief
+    *                                                   --[ BEGIN ]--
+    *   Serialization section: XML format
+    */
     friend class boost::serialization::access;
 
     template<class Archive>
@@ -57,49 +183,85 @@ class FlagXML: public Flag {
       void load( Archive &roArchive, const unsigned int &rnVersion);
 
     BOOST_SERIALIZATION_SPLIT_MEMBER()
-
-    typedef ClassIDBase::ID FlagID; 
-    typedef std::map<FlagID,FlagXML *> MChildFlags;
+    /**
+    * @brief
+    *                                                   --[ END ]--
+    */
 
     FlagXML     *poParentFlag_;
-    MChildFlags oMChildFlags_;
+    MChildFlags  oMChildFlags_;
 };
 
+// --[ TEMPLATES IMPLEMENTATION ]----------------------------------------------
+//                                                  --[ PUBLIC ]--
+/**
+* @brief
+*   Create child flag of desired class
+*/
 template<class T>
   FlagXML *FlagXML::createChild() {
     FlagXML *poResult = 0;
     
     try {
+      // Create object of requested class: may throw exception
       FlagXML *poFlag = new T();
 
+      // Get number of allowed children
       int nChildFlags = isChildValid( poFlag);
-      if( 1 == nChildFlags) {
-        // Get Class ID
-        FlagID nID = ClassID<T>::get();
 
-        // Check if Flag already exists
-        std::pair<MChildFlags::const_iterator, MChildFlags::const_iterator>
-          oFoundChildren = oMChildFlags_.equal_range( nID);
+      FlagID nID = ClassID<T>::get();
 
-        // We assume only one Flag is allowed in case any value other then
-        // 0 is returned
-        if( 1 > std::distance( oFoundChildren.first,
-                               oFoundChildren.second)) {
-
-          poFlag->poParentFlag_ = this;
-
-          // explicitly set state in order to update the parent state
-          poFlag->setState( UNKNOWN);
-          oMChildFlags_[nID] = poFlag;
-          poResult = poFlag;
-        } else {
-          // No more child flags are allowed
+      switch( nChildFlags) {
+        case 0:
+          // No child flags allowed
           delete poFlag;
-        }
-      } else {
-        // No children allowed
-        delete poFlag;
-      }
+          break;
+        case -1:
+          // No limit on child flags
+          {
+            // Parent will be set by addChild(...)
+            addChild( poFlag);
+
+            // Update parent state: child may be put into ERROR state by 
+            // default (this is specified in Flag class). Unfortunately
+            // parent won't be updated
+            updateState( poFlag->getState());
+
+            poResult = poFlag;
+          }
+          break;
+        default:
+          // All other cases
+          {
+            if( 0 < nChildFlags) {
+              // Check if Flag already exists
+              std::pair<MChildFlags::const_iterator, 
+                        MChildFlags::const_iterator> oFoundChildren = 
+                oMChildFlags_.equal_range( nID);
+
+              if( nChildFlags > std::distance( oFoundChildren.first,
+                                               oFoundChildren.second)) {
+
+                // Parent will be set by addChild(...)
+                addChild( poFlag);
+
+                // Update parent state: child may be put into ERROR state by 
+                // default (this is specified in Flag class). Unfortunately
+                // parent won't be updated
+                updateState( poFlag->getState());
+
+                poResult = poFlag;
+              } else {
+                // No more child tags are allowed
+                delete poFlag;
+              }
+            } else {
+              // Unsupported value of child flags returned
+              delete poFlag;
+            }// End check if nChildFlags is positive
+          }
+          break;
+      } // End switch( nChildFlags)
     } catch(...) {
       // Ups, trying to create child of Flag that is not inherited from
       // given class :[
@@ -108,6 +270,10 @@ template<class T>
     return poResult;
   }
 
+/**
+* @brief
+*   Extract child flag of desired class
+*/
 template<class T>
   FlagXML *FlagXML::getChild() const {
     // Get Class ID
@@ -127,14 +293,48 @@ template<class T>
     return poChild;
   }
 
+/**
+* @brief
+*   Extract child flags of desired class
+*/
+template<class T>
+  int FlagXML::getChildren( LChildren &roLChildren) const {
+    // Get Class ID
+    FlagID nID = ClassID<T>::get();
+
+    // Find appropriate children
+    std::pair<MChildFlags::const_iterator, MChildFlags::const_iterator>
+      oFoundChildren = oMChildFlags_.equal_range( nID);
+
+    // Return found child or invalid pointer in case child can not be found
+    // Return list of found children or empty one if children can not be
+    // found
+    roLChildren.clear();
+    if( 0 < std::distance( oFoundChildren.first, oFoundChildren.second)) {
+      // A number of children was found: copy them into a list and return it
+      while( oFoundChildren.first != oFoundChildren.second) {
+        roLChildren.push_back( ( oFoundChildren.first++)->second);
+      }
+    } // End check if any children are found
+
+    return roLChildren.size();
+  }
+
+//                                                  --[ PRIVATE ]--
+/**
+* @brief
+*                                                   --[ BEGIN ]--
+*   Serialization section: Text format
+*/
 template<class Archive>
   void FlagXML::save( Archive &roArchive, const unsigned int &rnVersion) const {
     roArchive & BOOST_SERIALIZATION_NVP( eState_);
     roArchive & BOOST_SERIALIZATION_NVP( oComment_);
-    roArchive & BOOST_SERIALIZATION_NVP( poParentFlag_);
 
-    // Copy Child Flags into list
-    std::list<FlagXML *> oLChildren;
+    // Copy Child Flags into list: we can not save map since IDs of classes
+    // are runtime dependent. Solution: save pure list of child flags. And
+    // Recreate map on reading the list from archive.
+    LChildren oLChildren;
     for( MChildFlags::const_iterator oIter = oMChildFlags_.begin();
          oIter != oMChildFlags_.end();
          ++oIter) {
@@ -150,20 +350,24 @@ template<class Archive>
   void FlagXML::load( Archive &roArchive, const unsigned int &rnVersion) {
     roArchive & BOOST_SERIALIZATION_NVP( eState_);
     roArchive & BOOST_SERIALIZATION_NVP( oComment_);
-    roArchive & BOOST_SERIALIZATION_NVP( poParentFlag_);
 
-    // Read Child Flags
-    std::list<FlagXML *> oLChildren;
+    // Read Child Flags: regular list will be extracted.
+    LChildren oLChildren;
     roArchive & BOOST_SERIALIZATION_NVP( oLChildren);
 
-    // Put all Read children to local map
-    for( std::list<FlagXML *>::const_iterator oIter = oLChildren.begin();
+    // Reconstruct map of child flags since IDs of classes are runtime
+    // dependent.
+    for( LChildren::const_iterator oIter = oLChildren.begin();
          oIter != oLChildren.end();
          ++oIter) {
 
-      // Get Class ID
-      oMChildFlags_[( *oIter)->getID()] = *oIter;
+      // Parent will be set by addChild(...)
+      addChild( *oIter);
     }
   }
+/**
+* @brief
+*                                                   --[ END ]--
+*/
 
 #endif

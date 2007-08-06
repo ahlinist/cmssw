@@ -5,6 +5,8 @@
 #include "CalibTracker/SiStripRunSummary/interface/FlagTxt.h"
 #include "CalibTracker/SiStripRunSummary/interface/FlagXML.h"
 
+// --[ FLAGTXT ]---------------------------------------------------------------
+//                                                  --[ PUBLIC ]--
 FlagTxt::~FlagTxt() {
   // Memory Clean Up: remove all children
   for( MChildFlags::const_iterator oIter = oMChildFlags_.begin();
@@ -18,6 +20,7 @@ FlagTxt::~FlagTxt() {
 bool FlagTxt::setState( const State &reSTATE) {
   bool bResult = Flag::setState( reSTATE);
 
+  // Update parent value only in case child state modified and parent exists.
   if( bResult && poParentFlag_) {
     poParentFlag_->updateState( reSTATE);
   }
@@ -25,12 +28,11 @@ bool FlagTxt::setState( const State &reSTATE) {
   return bResult;
 }
 
-// ----------------------------------------------------------------------------
-//   Protected
-
+//                                                  --[ PROTECTED ]--
 FlagTxt::FlagTxt( const FlagTxt &roFLAGTXT)
-  : Flag( roFLAGTXT), 
-    poParentFlag_( 0) {
+  : Flag( roFLAGTXT) 
+{
+  poParentFlag_ = 0;
 
   // Clone all children.
   for( MChildFlags::const_iterator oIter = roFLAGTXT.oMChildFlags_.begin();
@@ -38,14 +40,16 @@ FlagTxt::FlagTxt( const FlagTxt &roFLAGTXT)
        ++oIter) {
 
     FlagTxt *poFlagClone = dynamic_cast<FlagTxt *>( oIter->second->clone());
-    poFlagClone->poParentFlag_ = this;
-    oMChildFlags_[oIter->first] = poFlagClone;
+
+    // Parent will be set by addChild(...)
+    addChild( poFlagClone);
   }
 }
 
 FlagTxt::FlagTxt( const FlagXML &roFLAGXML)
-  : Flag( roFLAGXML),
-    poParentFlag_( 0) {
+  : Flag( roFLAGXML)
+{
+  poParentFlag_ = 0;
 
   // Take care of Children
   for( FlagXML::MChildFlags::const_iterator oIter = 
@@ -54,15 +58,13 @@ FlagTxt::FlagTxt( const FlagXML &roFLAGXML)
        ++oIter) {
 
     FlagTxt *poNewChild = dynamic_cast<FlagTxt *>( oIter->second->cloneTxt());
-    poNewChild->poParentFlag_ = this;
 
-    oMChildFlags_[poNewChild->getID()] = poNewChild;
+    // Parent will be set by addChild(...)
+    addChild( poNewChild);
   }
 }
 
-// ----------------------------------------------------------------------------
-//   Private  
-
+//                                                  --[ PRIVATE ]--
 void FlagTxt::updateState( const State &reCHILD_STATE) {
   switch( reCHILD_STATE) {
     case UNKNOWN:
@@ -79,7 +81,7 @@ void FlagTxt::updateState( const State &reCHILD_STATE) {
       // Child changed to OK state
       State eNewState = OK;
 
-      // Loop over children and check if all of them are OK now.
+      // Loop over children and check if all of them are OK now or UNKNOWN.
       for( MChildFlags::const_iterator oIter = oMChildFlags_.begin();
            oIter != oMChildFlags_.end();
            ++oIter) {
@@ -91,7 +93,7 @@ void FlagTxt::updateState( const State &reCHILD_STATE) {
           // state
           break;
         }
-      }
+      } // End loop over children
 
       // So, did state change?
       if( eNewState != eState_) {
@@ -100,7 +102,12 @@ void FlagTxt::updateState( const State &reCHILD_STATE) {
       break;
     }
     default:
-      // Unknown State
+      // Unsupported State
       break;
   }
+}
+
+void FlagTxt::addChild( FlagTxt *poSubFlag) {
+  poSubFlag->poParentFlag_ = this;
+  oMChildFlags_.insert( std::make_pair( poSubFlag->getID(), poSubFlag));
 }
