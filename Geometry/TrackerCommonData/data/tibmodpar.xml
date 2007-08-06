@@ -81,10 +81,14 @@
       dy="[tibmodpar:WaferDy]"    dz="[tibmodpar:WaferDz]"/>
  <Box name="TIBSSActive"            dx="[tibmodpar:SSActiveDx]" 
       dy="[tibmodpar:ActiveDy]"   dz="[tibmodpar:WaferDz]"/>
+ <Box name="TIBSSBackPlane"         dx="[tibmodpar:SSActiveDx]" 
+      dy="[tibmodpar:ActiveDy]"   dz="[tracker:BackPlaneDz]"/>
  <Box name="TIBDSWafer"             dx="[tibmodpar:DSWaferDx]" 
       dy="[tibmodpar:WaferDy]"    dz="[tibmodpar:WaferDz]"/>
  <Box name="TIBDSActive"            dx="[tibmodpar:DSActiveDx]" 
       dy="[tibmodpar:ActiveDy]"   dz="[tibmodpar:WaferDz]"/>
+ <Box name="TIBDSBackPlane"         dx="[tibmodpar:DSActiveDx]" 
+      dy="[tibmodpar:ActiveDy]"   dz="[tracker:BackPlaneDz]"/>
 </SolidSection>
 
 <LogicalPartSection label="tibmodpar.xml">
