@@ -111,7 +111,6 @@
  <PosPart copyNumber="1">
    <rParent name="tibmodule0b:TIBModule0B"/>
    <rChild name="tibmodule0:TIBSpacerHyb"/>
-   <rChild name="tibmodule0:TIBSpacerHyb"/>
   <Translation x="[zero]"                      y="[tibmodule0:SpacerY]" 
                z="-[tibmodule0:SpacerHybZ]" />
  </PosPart>
