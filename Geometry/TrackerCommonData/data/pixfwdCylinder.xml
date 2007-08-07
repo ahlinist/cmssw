@@ -199,7 +199,7 @@ root volume plus an anchor point for positioning.
 </LogicalPartSection>
 
 
-<ConstantsSection label="Cylinders" eval="true">
+<ConstantsSection label="CylindersPosition" eval="true">
   <Constant name="ZOuterCylinder" value="([pixfwd:AnchorZ]+[CylindersOuterLength]/2.0)"/>
   <Constant name="CoilFiblerToIP" value="1538.97*mm"/>
   <Constant name="CoilFilberToBeam" value="114.7*mm"/>

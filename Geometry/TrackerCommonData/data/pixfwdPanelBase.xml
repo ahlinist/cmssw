@@ -218,9 +218,6 @@ Currently, [AnchorX] = [AnchorZ] = 0.
 <ConstantsSection  label="Parts" eval="true">
 
    <!-- Shapes -->
-
-   <Constant name="TanPanelAngle"  value="([X3]-[X1])/([Y8]-[Y2])" />
-   <Constant name="PanelAngle"     value="atan([TanPanelAngle])" />
    <Constant name="TanNoseAngle"  value="([Y3]-[Y1])/([X8]-[X4])" />
    <Constant name="NoseAngle"     value="atan([TanNoseAngle])" />
 
@@ -231,9 +228,6 @@ Currently, [AnchorX] = [AnchorZ] = 0.
    <Constant name="NoseLength"           value="([Y2]-[Y1])"/>
    <Constant name="NoseHalfWidthBottom"  value="[X4]"/>
    <Constant name="NoseHalfWidthTop"     value="-[X3]"/>
-
-   <Constant name="EarLength"  value="[Y7]-[Y6]" />
-   <Constant name="EarWidth" value="[X10]+[X3]-([Y7]-[Y2])*[TanPanelAngle]" />
 
    <Constant name="ExtentionWidth"   value="[X8]+[X3]-([Y3]-[Y2])*[TanPanelAngle]"/>
    <Constant name="ExtentionHeight"  value = "[ExtentionWidth]*cos([PanelAngle])" />

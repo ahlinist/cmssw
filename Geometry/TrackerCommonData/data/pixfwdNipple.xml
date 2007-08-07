@@ -425,7 +425,7 @@ than they are on the drawings.
     
   </LogicalPartSection>
   
-  <PosPartSection label="Body">
+  <PosPartSection label="BodyPlus">
     <PosPart copyNumber="1">
       <rParent name="PixelForwardNippleZPlus"/>
       <rChild name="PixelForwardNippleBodyZPlus"/>
@@ -437,7 +437,7 @@ than they are on the drawings.
     </PosPart>
   </PosPartSection>
   
-  <PosPartSection label="Body">
+  <PosPartSection label="BodyMinus">
     <PosPart copyNumber="1">
       <rParent name="PixelForwardNippleZMinus"/>
       <rChild name="PixelForwardNippleBodyZMinus"/>

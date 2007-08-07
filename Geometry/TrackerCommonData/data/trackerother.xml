@@ -51,7 +51,6 @@
  <Constant name="PatchPannelR3"           value="1.105*m"/>
  <Constant name="PatchPannelZ"            value="2.865*m"/>
  <Constant name="Tol"                     value="0.0*mm"/>
- <Constant name="zero"                    value="0.0*fm"/>
 </ConstantsSection>
 
 <SolidSection label="trackerother.xml">
@@ -344,12 +343,12 @@
   <rRotation name="tracker:R180"/>
   <Translation x="[zero]" y="[zero]" z="[ThermalScreenL]+[ThermalScreenManifoldL]"/>
  </PosPart>
- <PosPart copyNumber="1">
+ <PosPart copyNumber="3">
    <rParent name="trackerother:TrackerOuterCylinder"/>
    <rChild name="trackerother:TrackerThermalScreenManifold"/>
   <Translation x="[zero]" y="[zero]" z="-([ThermalScreenL]+[ThermalScreenManifoldL])"/>
  </PosPart>
- <PosPart copyNumber="2">
+ <PosPart copyNumber="4">
    <rParent name="trackerother:TrackerOuterCylinder"/>
    <rChild name="trackerother:TrackerThermalScreenManifold"/>
   <rRotation name="tracker:R180"/>

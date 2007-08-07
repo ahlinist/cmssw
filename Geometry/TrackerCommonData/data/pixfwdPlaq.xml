@@ -70,7 +70,7 @@
 
 <!-- Readout chip with epoxy and bump bond -->
 
-<ConstantsSection label="Calculated">
+<ConstantsSection label="BumpROChipCalculated">
   <Constant name="BumpZ"   value="([BumpROChipEpoxyT]-[BumpT])/2."/>
   <Constant name="EpoxyZ"  value="(-[BumpROChipEpoxyT]+[EpoxyT])/2."/>
 </ConstantsSection>

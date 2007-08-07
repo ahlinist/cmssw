@@ -1180,7 +1180,7 @@
         <rMaterial name="materials:Oxygen"/>
     </MaterialFraction>
   </CompositeMaterial>
-    <CompositeMaterial Symbol=" " density="4.853000*g/cm^3" method="mixture by weight" name="TEC_Hybrid4APV">
+    <CompositeMaterial symbol=" " density="4.853000*g/cm^3" method="mixture by weight" name="TEC_Hybrid4APV">
       <MaterialFraction fraction="0.082900">
         <rMaterial name="materials:T_Kapton"/>
       </MaterialFraction>
@@ -1211,7 +1211,7 @@
     </CompositeMaterial>
 
 4.086000
-    <CompositeMaterial Symbol=" " density="4.853000*g/cm^3" method="mixture by weight" name="TEC_Hybrid6APV">
+    <CompositeMaterial symbol=" " density="4.853000*g/cm^3" method="mixture by weight" name="TEC_Hybrid6APV">
       <MaterialFraction fraction="0.080510">
         <rMaterial name="materials:T_Kapton"/>
       </MaterialFraction>
@@ -1240,7 +1240,7 @@
         <rMaterial name="materials:Ceramic"/>
       </MaterialFraction>
     </CompositeMaterial>
-    <CompositeMaterial Symbol=" " density="2.467000*g/cm^3" method="mixture by weight" name="TEC_PitchAdapter">
+    <CompositeMaterial symbol=" " density="2.467000*g/cm^3" method="mixture by weight" name="TEC_PitchAdapter">
       <MaterialFraction fraction="0.289990">
         <rMaterial name="materials:Silicon"/>
       </MaterialFraction>
@@ -1272,7 +1272,7 @@
         <rMaterial name="materials:Ceramic"/>
       </MaterialFraction>
     </CompositeMaterial>
-    <CompositeMaterial Symbol=" " density="2.084000*g/cm^3" method="mixture by weight" name="TEC_frame_side_1_4">
+    <CompositeMaterial symbol=" " density="2.084000*g/cm^3" method="mixture by weight" name="TEC_frame_side_1_4">
       <MaterialFraction fraction="0.747580">
         <rMaterial name="materials:Carbon"/>
       </MaterialFraction>
@@ -1289,7 +1289,7 @@
         <rMaterial name="materials:T_Kapton"/>
       </MaterialFraction>
     </CompositeMaterial>
-    <CompositeMaterial Symbol=" " density="1.144000*g/cm^3" method="mixture by weight" name="TEC_frame_side_5_7">
+    <CompositeMaterial symbol=" " density="1.144000*g/cm^3" method="mixture by weight" name="TEC_frame_side_5_7">
       <MaterialFraction fraction="0.775320">
         <rMaterial name="materials:Carbon fibre str."/>
       </MaterialFraction>
@@ -1306,7 +1306,7 @@
         <rMaterial name="materials:T_Kapton"/>
       </MaterialFraction>
     </CompositeMaterial>
-    <CompositeMaterial Symbol=" " density="1.420000*g/cm^3" method="mixture by weight" name="TEC_SideFrSupBox">
+    <CompositeMaterial symbol=" " density="1.420000*g/cm^3" method="mixture by weight" name="TEC_SideFrSupBox">
       <MaterialFraction fraction="0.047360">
         <rMaterial name="materials:Copper"/>
       </MaterialFraction>
@@ -1323,7 +1323,7 @@
         <rMaterial name="materials:Silver"/>
       </MaterialFraction>
     </CompositeMaterial>
-    <CompositeMaterial Symbol=" " density="1.806000*g/cm^3" method="mixture by weight" name="TEC_SideFrameTail">
+    <CompositeMaterial symbol=" " density="1.806000*g/cm^3" method="mixture by weight" name="TEC_SideFrameTail">
       <MaterialFraction fraction="0.102300">
         <rMaterial name="materials:Copper"/>
       </MaterialFraction>
@@ -1337,7 +1337,7 @@
         <rMaterial name="materials:T_Kapton"/>
       </MaterialFraction>
     </CompositeMaterial>
-    <CompositeMaterial Symbol=" " density="3.731000*g/cm^3" method="mixture by weight" name="TEC_SiReenforcment">
+    <CompositeMaterial symbol=" " density="3.731000*g/cm^3" method="mixture by weight" name="TEC_SiReenforcment">
       <MaterialFraction fraction="1.000000">
         <rMaterial name="materials:Ceramic"/>
       </MaterialFraction>
