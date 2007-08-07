@@ -17,7 +17,6 @@ $Id$
 #include <boost/shared_ptr.hpp>
 #include <boost/program_options.hpp>
 
-#include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ParameterSet/interface/MakeParameterSets.h"
 #include "FWCore/Framework/interface/EventProcessor.h"
 #include "FWCore/PluginManager/interface/PluginManager.h"
@@ -29,9 +28,7 @@ $Id$
 #include "FWCore/PluginManager/interface/PresenceFactory.h"
 #include "FWCore/MessageLogger/interface/JobReport.h"
 #include "FWCore/ServiceRegistry/interface/ServiceRegistry.h"
-#include "FWCore/ServiceRegistry/interface/Service.h"
 
-#include "FWCore/Framework/bin/pythonFileToConfigure.h"
 
 static char const* const kParameterSetOpt = "parameter-set";
 static char const* const kParameterSetCommandOpt = "parameter-set,p";

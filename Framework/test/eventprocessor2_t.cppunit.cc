@@ -9,7 +9,6 @@ $Id$
 #include <iostream>
 #include <string>
 #include <stdexcept>
-#include "FWCore/Utilities/interface/EDMException.h"
 #include "FWCore/Framework/interface/EventProcessor.h"
 #include <cppunit/extensions/HelperMacros.h>
 

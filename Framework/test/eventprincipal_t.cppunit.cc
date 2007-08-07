@@ -31,8 +31,6 @@ $Id$
 #include "FWCore/Utilities/interface/EDMException.h"
 #include "FWCore/Utilities/interface/GetPassID.h"
 #include "FWCore/Utilities/interface/GetReleaseVersion.h"
-#include "FWCore/Utilities/interface/PretendToUse.h"
-#include "FWCore/Utilities/interface/value_ptr.h"
 
 typedef edm::BasicHandle handle;
 

@@ -16,7 +16,6 @@ $Id$
 #define private public
 #include "FWCore/ServiceRegistry/interface/ServiceRegistry.h"
 #undef private
-#include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include "FWCore/Framework/interface/EventProcessor.h"
 #include "FWCore/Utilities/interface/Exception.h"
@@ -26,7 +25,6 @@ $Id$
 
 #include "FWCore/PluginManager/interface/ProblemTracker.h"
 
-#include "FWCore/Framework/interface/Frameworkfwd.h"
 
 #include "DataFormats/Provenance/interface/ModuleDescription.h"
 
