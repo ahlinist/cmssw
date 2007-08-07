@@ -18,7 +18,7 @@ used for serialization purposes of the whole tree.
 Library                 Version
 
 boost/serialization     >= 1.31.1
-CGICC                   >= 5.0.1
+CGICC                   >= 3.2.3
 
 [Note: if you have all requirements met on local machine there is a code 
        archive which can be compiled locally. Source can be obtained at:
