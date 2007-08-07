@@ -102,10 +102,6 @@ namespace edm
       }
 
 
-    // Load every ParameterSet into the Registry
-    pset::Registry* reg = pset::Registry::instance();
-    pset::loadAllNestedParameterSets(reg, *pset_);
-
     // It is very important that the @trigger_paths parameter set only
     // contain one parameter because the streamer input module needs to
     // be able to recreate it based on the header in the streamer files.
@@ -120,6 +116,11 @@ namespace edm
     validator_= 
       new ScheduleValidator(pathFragments_,*pset_); 
     validator_->validate();
+
+    // Load every ParameterSet into the Registry
+    pset::Registry* reg = pset::Registry::instance();
+    pset::loadAllNestedParameterSets(reg, *pset_);
+
   }
 
 
@@ -246,7 +247,6 @@ namespace edm
         std::string name = it->getParameter<std::string>("@service_type");
 
         if (name == service) {
-
           // If the service is already there move it to the end so
           // it will be created before all the others already there
           // This means we use the order from the default services list
