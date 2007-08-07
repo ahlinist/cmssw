@@ -7,7 +7,7 @@
 <use name=DataFormats/RPCDigi>
 <use name=DataFormats/MuonDetId>
 <use name=boost>
-<flags SEAL_PLUGIN_NAME="SimMuonRPCPolluter">
+<flags EDM_PLUGIN=1>
 <export>
   <lib name=SimMuonRPCPolluterer>
 <use name=FWCore/Framework>
