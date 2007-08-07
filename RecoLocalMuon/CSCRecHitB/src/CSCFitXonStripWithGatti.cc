@@ -67,8 +67,6 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCDetId& id, const CSCLayer* 
   stripWidth = sWidth;
   initChamberSpecs();
 
-  //  int ring = id.ring();
-
   // Initialize output parameters just in case the fit fails  
   xGatti = xCenterStrip;  
   sigma = chisq = 9999.;
@@ -187,61 +185,9 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCDetId& id, const CSCLayer* 
   // Run Gatti for offset = 0
   runGattiFit( 0 );
 
-/*
- * Since applying a maximum chi^2 cut on Gatti fit
- * It doesn't make sense to try to values for binomial search
- * Should also gain factor 2 in speed !
- *
- * float tmp0_x      = x_gatti;
- * float tmp0_chi2   = chi2_gatti;
- * float tmp0_dl     = dxl_gatti;
- * float tmp0_dh     = dxh_gatti;
- *
- *
- *  // Run Gatti for offset = 1
- * runGattiFit( 1 );
- *
- * float tmp1_x      = x_gatti;
- * float tmp1_chi2   = chi2_gatti;
- * float tmp1_dl     = dxl_gatti;
- * float tmp1_dh     = dxh_gatti;
- *
- * float test        = fabs( tmp1_x - tmp0_x );
- *
- * if ( test < 2.1 * minGattiStepSize ) {
- *   // Two fits are close to one another
- *   x_gatti    = ( tmp0_x + tmp1_x ) / 2.;
- *   dxl_gatti  = ( tmp0_dl + tmp1_dl ) / 2.;  //  equivalent of * 1/sqrt(12)
- *   dxh_gatti  = ( tmp0_dh + tmp1_dh ) / 2.;
- *   chi2_gatti = ( tmp1_chi2 + tmp0_chi2 ) / 2.;
- * }
- * else if ( test < 0.1 ) {
- *   // One of the fits didn't fit as well.
- *   if ( tmp0_chi2 < tmp1_chi2 ){
- *     x_gatti    = tmp0_x;
- *     chi2_gatti = tmp0_chi2;
- *     dxl_gatti  = tmp0_dl;
- *     dxh_gatti  = tmp0_dh;
- *   } else {
- *     x_gatti    = tmp1_x;
- *     chi2_gatti = tmp1_chi2;
- *     dxl_gatti  = tmp1_dl;
- *     dxh_gatti  = tmp1_dh;
- *   }  
- * } else {  
- *   // One of the fits failed completely:  set to center of strip
- *   x_gatti    = 0.;      
- *   dxl_gatti  = 0.2887;  // This is 1/sqrt(12)
- *   dxh_gatti  = dxl_gatti;
- *   chi2_gatti = 9999.;
- * }
- *
- *
- */
-
   float dx_gatti = ( dxl_gatti + dxh_gatti ) /2.;
 
-  if ( chi2_gatti > maxGattiChi2 ) {
+  if ( chi2_gatti > maxGattiChi2 || chi2_gatti <= 0. ) {
     x_gatti    = 0.;      
     dx_gatti   = 0.2887;  // This is 1/sqrt(12)
     chi2_gatti = 0.;
@@ -267,6 +213,15 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCDetId& id, const CSCLayer* 
  */
 void CSCFitXonStripWithGatti::runGattiFit( int istrt ) {
 
+  float errl = 0.015;
+  float errh = 0.015;
+
+  x_gatti    = 0.;
+  dxl_gatti  = errl;
+  dxh_gatti  = errh;
+  chi2_gatti = 0.;  
+
+
   float dx;  
   if ( istrt == 0 ) {
     dx   = -0.5;
@@ -279,54 +234,29 @@ void CSCFitXonStripWithGatti::runGattiFit( int istrt ) {
   float chi2min = 1.e12;
   float chi2last= 1.e12;
 
-  // This is using the full calibration method 
-  if (useCalib) {
+  while ( true ) {    
 
-    while ( true ) {    
+    chi2 = chisqrFromGattiCalib( dx );
 
-      chi2 = chisqrFromGattiCalib( dx );
-
-      if ( chi2 < chi2last ) {
-        chi2last = chi2;
-        if ( chi2min > chi2) chi2min = chi2;
-        dx += step;
-        continue;
-      }
-
-      if ( fabs(step) < minGattiStepSize ) break;
-        
-      dx = dx - 2. * step;
-      step = step / 2.;
-      chi2last = 1.e12;
+    if ( chi2 < chi2last ) {
+      chi2last = chi2;
+      if ( chi2min > chi2) chi2min = chi2;
+      dx += step;
+      continue;
     }
 
-  // Don't use the calibrations
-  } else {
-
-    while ( true ) {    
-
-      chi2 = chisqrFromGattiCalib( dx );
-
-      if ( chi2 < chi2last ) {
-        chi2last = chi2;
-        if ( chi2min > chi2) chi2min = chi2;
-        dx += step;
-        continue;
-      }
-
-      if ( fabs(step) < minGattiStepSize ) break;
-        
-      dx = dx - 2. * step;
-      step = step / 2.;
-      chi2last = 1.e12;
-    }
+    if ( fabs(step) < minGattiStepSize ) break;
+      
+    dx = dx - 2. * step;
+    step = step / 2.;
+    chi2last = 1.e12;
   }
-    
+
+  if (chi2 < 0. || chi2 > 9999. ) return;
+
   dx = -dx;
  
   // Picked the values below which correspond to the 1-sigma resolution observed in MC
-  float errl = 0.015;
-  float errh = 0.015;
   
   // Look at chi^2 for dx - errl
   float dxl = -dx - errl;
