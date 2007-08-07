@@ -9,6 +9,8 @@
 #include "SUSYBSMAnalysis/CSA07Skims/interface/SUSYHighPtPhotonSkim.h"
 #include "SUSYBSMAnalysis/CSA07Skims/interface/HadSUSYSMBackgrSkim.h"
 #include "SUSYBSMAnalysis/CSA07Skims/interface/HadSUSYTopSkim.h"
+#include "SUSYBSMAnalysis/CSA07Skims/interface/TeVdiMuonSkim.h"
+
 
 DEFINE_FWK_MODULE( LepSUSYSkim );
 DEFINE_FWK_MODULE( HadSUSYQCDControlMETSkim );
@@ -18,3 +20,4 @@ DEFINE_FWK_MODULE( HadSUSYdiElecSkim );
 DEFINE_FWK_MODULE( SUSYHighPtPhotonSkim );
 DEFINE_FWK_MODULE( HadSUSYSMBackgrSkim );
 DEFINE_FWK_MODULE( HadSUSYTopSkim );
+DEFINE_FWK_MODULE( TeVdiMuonSkim );
