@@ -1,0 +1,31 @@
+module hscpJetHLTPath = HLTHighLevel {
+  InputTag TriggerResultsTag = TriggerResults
+  bool byName = true
+  bool andOr = true
+  vstring HLTPaths = {"HLT1jet","HLT2jet","HLT3jet","HLT4jet"}
+}
+
+
+module hscpMuonHLTPath = HLTHighLevel {
+  InputTag TriggerResultsTag = TriggerResults
+  bool byName = true
+  bool andOr = true
+  vstring HLTPaths = {"HLT1MuonIso", "HLT1MuonNonIso", "HLT2MuonNonIso" , "HLT2MuonSameSign" }
+}
+
+module hscpMETHLTPath = HLTHighLevel {
+  InputTag TriggerResultsTag = TriggerResults
+  bool byName = true
+  bool andOr = true
+  vstring HLTPaths = {
+"HLT1MET", "HLT1jet1MET", "HLT2jet1MET" , "HLT2jetAco","HLT1jet1METAco",
+"HLT3jet1MET",
+"HLT4jet1MET",
+"HLT1MET1HT",
+"HLT2jetvbfMET",
+"HLT2jet1METNV"
+ }
+}
+
+
+
