@@ -8,6 +8,8 @@
 <use name=DataFormats/MuonReco>
 <use name=DataFormats/EgammaCandidates>
 <use name=TrackingTools/TrackAssociator>
+<flags EDM_PLUGIN="1">
+
 <export>
   <lib name=SUSYBSMAnalysisCSA07Skims>
   <use name=FWCore/Framework>
@@ -21,4 +23,3 @@
   <use name=DataFormats/EgammaCandidates>
   <use name=TrackingTools/TrackAssociator>
 </export>
-<flags SEAL_PLUGIN_NAME="SUSYBSMAnalysisCSA07Skims">  
