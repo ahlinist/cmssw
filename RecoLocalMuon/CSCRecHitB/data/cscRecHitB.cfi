@@ -36,7 +36,7 @@ module csc2DRecHits = CSCRecHitBProducer {
      untracked bool   CSCUseGattiFit             = true
      # the step size is in units of strip width
      untracked double CSCminGattiStepSize        = 0.0001
-     untracked double CSCminGattiError           = 0.016
+     untracked double CSCminGattiError           = 0.022
      untracked double CSCMaxGattiChi2            = 300.
      untracked double CSCCalibrationSystematics  = 0.00
      untracked double CSCStripxtalksOffset       = 0.00
