@@ -2,6 +2,9 @@
 <DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../../DetectorDescription/Schema/DDLSchema.xsd">
 
 <ConstantsSection label="esalgo.xml" eval="true">
+
+
+
   <Constant name="ECAL_Z" value="314.4*cm"/>
   <Constant name="PRESH_Z" value="295.7*cm"/>
   <Constant name="PRE_ETA_MIN" value="1.653"/>
@@ -79,6 +82,10 @@
   <Constant name="angle" value="2*[wedge_angle]" />
 
 
+  <Constant name="PRESH_Z_OFFSET"   value="3.0495*m"/>
+  <Constant name="PRESH_RMIN_BACK"  value="[R_MIN]+9*cm"/>
+  <Constant name="PRESH_RMAX_FRONT" value="130*cm"/>
+  <Constant name="PRESH_MID_Z"      value="1.8*cm"/>
 
 </ConstantsSection>
 
@@ -87,13 +94,13 @@
         <!-- Confusion: [R_MAX] ... radius corresponding to the larger eta-value
                                 -> corresponds to the innter radius of the polycone-->
 	<ZSection z="-[PRESH_Z_TOTAL]/2."
-                  rMax="130*cm" 
+                  rMax="[PRESH_RMAX_FRONT]" 
                   rMin="[R_MAX]"/>
-	<ZSection z="1.8*cm" 
-                  rMax="[R_MIN]+9*cm" 
+	<ZSection z="[PRESH_MID_Z]" 
+                  rMax="[PRESH_RMIN_BACK]" 
                   rMin="[R_MAX]"/>
 	<ZSection z="+[PRESH_Z_TOTAL]/2." 
-                  rMax="[R_MIN]+9*cm" 
+                  rMax="[PRESH_RMIN_BACK]" 
                   rMin="[R_MAX]"/>
      </Polycone>
  <Tubs name="SFC7" rMin="1.234814*m" rMax="1.30481*m" dz="5*mm" startPhi="0*deg" deltaPhi="360*deg"/>
@@ -277,7 +284,7 @@
    <rParent name="eregalgo:EREG"/>
    <rChild name="esalgo:SF"/>
   <rRotation name="rotations:000D"/>
-  <Translation x="0*fm" y="0*fm" z="3.0495*m" />
+  <Translation x="0*fm" y="0*fm" z="[PRESH_Z_OFFSET]" />
  </PosPart>
  <PosPart copyNumber="1">
    <rParent name="esalgo:SF"/>
