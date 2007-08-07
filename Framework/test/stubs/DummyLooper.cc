@@ -26,7 +26,6 @@
 #include "FWCore/Framework/interface/LooperFactory.h"
 #include "FWCore/Framework/interface/ESProducerLooper.h"
 
-#include "FWCore/Framework/interface/ESHandle.h"
 #include "FWCore/Framework/test/DummyData.h"
 #include "FWCore/Framework/test/DummyRecord.h"
 

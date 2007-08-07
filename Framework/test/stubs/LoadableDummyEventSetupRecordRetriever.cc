@@ -14,7 +14,6 @@
 // system include files
 
 // user include files
-#include "FWCore/Framework/test/DummyProxyProvider.h"
 
 #include "FWCore/Framework/test/DummyEventSetupRecordRetriever.h"
 #include "FWCore/Framework/interface/SourceFactory.h"
