@@ -216,6 +216,9 @@ void CSCFitXonStripWithGatti::runGattiFit( int istrt ) {
   float errl = 0.015;
   float errh = 0.015;
 
+  if (errl < minGattiError ) errl = minGattiError;
+  if (errh < minGattiError ) errh = minGattiError;
+
   x_gatti    = 0.;
   dxl_gatti  = errl;
   dxh_gatti  = errh;
