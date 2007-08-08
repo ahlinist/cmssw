@@ -3,6 +3,7 @@
 <use name=DataFormats/EgammaReco>
 <use name=Geometry/CaloGeometry>
 <use name=RecoCaloTools/MetaCollections>
+<use name=PhysicsTools/StatPatternRecognition>
 <use name=RecoEgamma/EgammaElectronAlgos>
 <export>
   <lib name=EgammaAnalysisElectronIDAlgos>
@@ -12,4 +13,5 @@
   <use name=Geometry/CaloGeometry>
   <use name=RecoCaloTools/MetaCollections>
   <use name=RecoCaloTools/Selectors>
+  <use name=PhysicsTools/StatPatternRecognition>
 </export>
