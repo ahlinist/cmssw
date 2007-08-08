@@ -20,14 +20,11 @@
 
 // system include files
 #include <memory>
-#include "boost/shared_ptr.hpp"
 
 // user include files
 #include "FWCore/Framework/interface/ModuleFactory.h"
 #include "FWCore/Framework/interface/ESProducer.h"
-#include "FWCore/Framework/interface/ESHandle.h"
 
-#include "FWCore/Integration/test/Doodad.h"
 #include "FWCore/Integration/test/Doodad.h"
 #include "FWCore/Integration/test/GadgetRcd.h"
 
