@@ -42,17 +42,6 @@ namespace edm {
 	int storeNumber = invalidStoreNumber,
 	ProcessHistoryID const& hist = ProcessHistoryID(),
 	boost::shared_ptr<DelayedReader> rtrv = boost::shared_ptr<DelayedReader>(new NoDelayedReader));
-    EventPrincipal(EventID const& id,
-	Timestamp const& time,
-	boost::shared_ptr<ProductRegistry const> reg,
-	LuminosityBlockNumber_t lumi,
-        ProcessConfiguration const& pc,
-        bool isReal,
-	EventAuxiliary::ExperimentType const eType = EventAuxiliary::Any,
-	int bunchXing = invalidBunchXing,
-	int storeNumber = invalidStoreNumber,
-	ProcessHistoryID const& hist = ProcessHistoryID(),
-	boost::shared_ptr<DelayedReader> rtrv = boost::shared_ptr<DelayedReader>(new NoDelayedReader));
     ~EventPrincipal() {}
 
     LuminosityBlockPrincipal const& luminosityBlockPrincipal() const {

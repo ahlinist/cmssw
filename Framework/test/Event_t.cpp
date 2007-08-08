@@ -27,6 +27,8 @@ $Id$
 #include "DataFormats/TestObjects/interface/ToyProducts.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventPrincipal.h"
+#include "FWCore/Framework/interface/LuminosityBlockPrincipal.h"
+#include "FWCore/Framework/interface/RunPrincipal.h"
 #include "DataFormats/Common/interface/Handle.h"
 #include "DataFormats/Common/interface/OrphanHandle.h"
 #include "FWCore/Framework/interface/Selector.h"
@@ -333,11 +335,16 @@ void testEvent::setUp()
   // look up the object.
 
   boost::shared_ptr<ProductRegistry const> preg = boost::shared_ptr<ProductRegistry const>(availableProducts_);
-  principal_  = new EventPrincipal(make_id(),
-				   make_timestamp(),
+  Timestamp time = make_timestamp();
+  EventID id = make_id();
+  ProcessConfiguration const& pc = currentModuleDescription_->processConfiguration();
+  boost::shared_ptr<RunPrincipal> rp(new RunPrincipal(id.run(), time, time, preg, pc));
+  boost::shared_ptr<LuminosityBlockPrincipal>lbp(new LuminosityBlockPrincipal(1, time, time, preg, rp, pc));
+  principal_  = new EventPrincipal(id,
+				   time,
 				   preg,
-                                   1,
-                                   currentModuleDescription_->processConfiguration(),
+                                   lbp,
+                                   pc,
                                    true,
 				   EventAuxiliary::Any,
 				   EventPrincipal::invalidBunchXing,
