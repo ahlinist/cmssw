@@ -11,7 +11,6 @@
 // Latest change by $Author$ on $Date$ 
 //
 
-#include "FWCore/Framework/interface/Event.h"
 
 #include "FWCore/PrescaleService/interface/PrescaleService.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
