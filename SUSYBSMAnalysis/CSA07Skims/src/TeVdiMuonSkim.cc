@@ -3,7 +3,7 @@
  * a skim for TeV dimuon analyses
  * requires 2 muon with a selectable Pt cut
  *
- * $Date: 2007/07/12 09:18:45 $
+ * $Date: 2007/08/06 17:32:19 $
  * $Revision: 1.1 $
  *
  * \author Piotr Traczyk - SINS Warsaw
@@ -32,7 +32,7 @@ TeVdiMuonSkim::TeVdiMuonSkim( const edm::ParameterSet& iConfig ) :
   nEvents_(0), nAccepted_(0)
 {
   Muonsrc_ = iConfig.getParameter<InputTag>( "Muonsrc" );
-  MuonPtmin_ = iConfig.getUntrackedParameter<double>( "MuonPtmin", 30. );
+  MuonPtmin_ = iConfig.getParameter<double>( "MuonPtmin");
 }
 
 /*------------------------------------------------------------------------*/
