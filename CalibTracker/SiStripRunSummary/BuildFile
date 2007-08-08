@@ -11,7 +11,7 @@
 <use name=FWCore/ParameterSet>
 <use name=FWCore/PluginManager>
 <use name=FWCore/ServiceRegistry>
-<use name=FWcore/Utilities>
+<use name=FWCore/Utilities>
 <lib name=boost_serialization-gcc-mt>
 
 <flags EDM_PLUGIN=1>
