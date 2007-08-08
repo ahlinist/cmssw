@@ -68,4 +68,19 @@ edm::DataViewImpl::getByLabel<GenericObject>(std::string const& label,
   gotProductIDs_.push_back(bh.id());
   convert_handle(bh, result);  // throws on conversion error
 }
+
+template<>
+void
+edm::DataViewImpl::getByLabel<GenericObject>(edm::InputTag const& tag,
+                                             Handle<GenericObject>& result) const
+{
+  if (tag.process().empty()) {
+    this->getByLabel(tag.label(), tag.instance(), result);
+  } else {
+    BasicHandle bh = this->getByLabel_(TypeID(result.type().TypeInfo()), tag.label(), tag.instance(),tag.process());
+    gotProductIDs_.push_back(bh.id());
+    convert_handle(bh, result);  // throws on conversion error
+  }
+}
+
 }

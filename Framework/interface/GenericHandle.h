@@ -147,5 +147,9 @@ edm::DataViewImpl::getByLabel<GenericObject>(std::string const& label,
                                       const std::string& productInstanceName,
                                       Handle<GenericObject>& result) const;
 
+template <> 	 
+void 	 
+edm::DataViewImpl::getByLabel(edm::InputTag const& tag, Handle<GenericObject>& result) const; 	 
+
 }
 #endif
