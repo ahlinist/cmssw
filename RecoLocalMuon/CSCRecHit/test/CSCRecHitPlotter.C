@@ -388,14 +388,15 @@ TString segment = "ME_All";
 
 // 6e) pull vs chi^2 (profile)
  
- Tprofile hprofX = hPullvsChi2->ProfileX("hprofX"); 
+// Tprofile hprofX = hPullvsChi2->ProfileX("hprofX", 0, 52, "s");
+ Tprofile hprofX = hPullvsChi2->ProfileX("hprofX");
 
  gStyle->SetOptStat(kFALSE);
  TCanvas *c1 = new TCanvas("c1","");
  c1->SetFillColor(10);
  c1->SetFillColor(10);
  hprofX->SetTitle(segment);
- hprofX->Draw("BOX");
+ hprofX->Draw();
  hprofX->GetXaxis()->SetTitle("#chi^{2}");
  hprofX->GetYaxis()->SetTitle("R #Delta #phi/#sigma");
  c1->Print(plot6e);

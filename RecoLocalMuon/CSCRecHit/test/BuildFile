@@ -10,6 +10,10 @@
    <flags EDM_PLUGIN=1> 
 </library> 
 
+<library file="CSCRecHitComparator.cc" name=CSCRecHitComparator>
+   <flags EDM_PLUGIN=1> 
+</library> 
+
 
 
 
