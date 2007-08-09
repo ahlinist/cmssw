@@ -3,14 +3,13 @@
 
 /** \class SUSYHighPtPhotonSkim
  *
- * all hadronic SUSY Skim
- * >= 2 barrel jets 100 GeV, (no MET) QCD control MET trigger turn on,
- * MET tails (QCD trigger path)
+ * High Energy Photon SUSY Skim
+ * one(two) photon(s) > xx GeV in barrel + isolation 
  *
- * $Date: 2007/07/12 09:18:45 $
+ * $Date: 2007/07/30 16:33:13 $
  * $Revision: 1.1 $
  *
- * \author Michael Tytgat, Maria Spiropulu - CERN
+ * \author Daniele del Re - Univ. La Sapienza & INFN
  *
  */
 
@@ -31,10 +30,11 @@ class SUSYHighPtPhotonSkim : public edm::EDFilter
 
  private:
   edm::InputTag Photonsrc_;
-  edm::InputTag Tracksrc_;
+/*   edm::InputTag Tracksrc_; */
   double Photon1Ptmin_;
   double Photon2Ptmin_;
   bool IsIsolated_;
+  double IsolationCut_;
   unsigned int nEvents_;
   unsigned int nAccepted_;
 };

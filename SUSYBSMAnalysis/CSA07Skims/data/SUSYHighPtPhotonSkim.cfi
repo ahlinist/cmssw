@@ -1,10 +1,37 @@
+include "SUSYBSMAnalysis/CSA07Skims/data/SUSYHighPtPhotonHLTPaths.cfi"
+include "SimGeneral/HepPDTESSource/data/pythiapdt.cfi"
 
-module SUSYHighPtPhotonFilter = SUSYHighPtPhotonSkim {
-  InputTag Photonsrc = photons
-  InputTag Tracksrc = ctfWithMaterialTracks
-  untracked double Photon1Ptmin = 80
-  untracked double Photon2Ptmin = 20
-  untracked bool IsIsolated = 1   
+module allTracks = ChargedCandidateProducer {
+  InputTag src = ctfWithMaterialTracks
+  string particleType = "pi+"
 }
 
-sequence SUSYHighPtPhoton = { SUSYHighPtPhotonFilter }
+module allPhotons = PhotonShallowCloneProducer {
+  InputTag src = photons
+}
+
+module allSuperClusterIsolations = CandPtIsolationProducer {
+  InputTag src = allPhotons
+  InputTag elements = allTracks
+  double dRMax = 0.2
+  double dRMin = 0.015
+  double dzMax = 1000000.0
+  double d0Max = 1000000.0
+  double ptMin = 1.5
+}
+
+module SUSYHighPtPhotonFilter = SUSYHighPtPhotonSkim {
+  InputTag Photonsrc = allSuperClusterIsolations  
+  untracked double Photon1Ptmin = 80
+  untracked double Photon2Ptmin = 20
+  untracked bool IsIsolated = 0   
+  untracked double IsolationCut = 9   
+}
+
+sequence SUSYHighPtPhotonSeq = { 
+#  SUSYHighPtPhotonHLTPath & 
+  allTracks &
+  allPhotons &
+  allSuperClusterIsolations &
+  SUSYHighPtPhotonFilter 
+}
