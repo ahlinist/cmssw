@@ -3,8 +3,8 @@
  * a skim for TeV dimuon analyses
  * requires 2 muon with a selectable Pt cut
  *
- * $Date: 2007/08/06 17:32:19 $
- * $Revision: 1.1 $
+ * $Date: 2007/08/08 13:18:38 $
+ * $Revision: 1.2 $
  *
  * \author Piotr Traczyk - SINS Warsaw
  *
@@ -48,13 +48,8 @@ bool TeVdiMuonSkim::filter( edm::Event& iEvent,
   nEvents_++;
 
   Handle<MuonCollection> MuonHandle;
-  try {
-    iEvent.getByLabel(Muonsrc_, MuonHandle);
-  }
-  catch (cms::Exception& ex) {
-    edm::LogError("TeVdiMuonSkim") << "Unable to get Muon collection " << Muonsrc_.label();
-    return false;
-  }
+  iEvent.getByLabel(Muonsrc_, MuonHandle);
+
   if (MuonHandle->empty()) return false;
   
   MuonCollection theMuonC = *MuonHandle;
