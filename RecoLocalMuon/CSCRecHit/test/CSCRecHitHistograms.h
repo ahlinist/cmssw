@@ -28,9 +28,9 @@ public:
     hSimPositionX    = new TH1F(N+"_hSimPositionX", "CSCSimHit x local", 200, -24., 24.);
     hResPositionX    = new TH1F(N+"_hResPositionX", "CSCHit local Dx", 101, -0.202, 0.202);
     hPullX           = new TH1F(N+"_hPullX", "CSCHit x residual", 101, -5.05, 5.05);
-    hRecPositionYvsX = new TH2F(N+"_hRecPositionYvsX", "CSCRecHit y vs x", 600, -60., 60., 600, -60., 60.);
-    hSimPositionYvsX = new TH2F(N+"_hSimPositionYvsX", "CSCSimHit y vs x", 600, -60., 60., 600, -60., 60.);
-    hMisPositionYvsX = new TH2F(N+"_hMisPositionYvsX", "Un-matchedSimHit y vs x", 100, -50., 50., 280, -70., 70.);
+    hRecPositionYvsX = new TH2F(N+"_hRecPositionYvsX", "CSCRecHit y vs x", 375, -75., 75., 800, -160., 160.);
+    hSimPositionYvsX = new TH2F(N+"_hSimPositionYvsX", "CSCSimHit y vs x", 375, -75., 75., 800, -160., 160.);
+    hMisPositionYvsX = new TH2F(N+"_hMisPositionYvsX", "Un-matchedSimHit y vs x", 50, -75., 75., 100, -160., 160.);
 // Local Y position
     hRecPositionY    = new TH1F(N+"_hRecPositionY", "CSCRecHit y local", 200, -40., 40.);
     hSimPositionY    = new TH1F(N+"_hSimPositionY", "CSCSimHit y local", 200, -40., 40.);
