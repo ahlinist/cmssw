@@ -1,13 +1,12 @@
-module hscpJetHLTPath = HLTHighLevel from "HLTrigger/HLTfilters/data/hltHighLevel.cfi"
+module hscpJetHLTPath = hltHighLevel from "HLTrigger/HLTfilters/data/hltHighLevel.cfi"
 replace hscpJetHLTPath.TriggerResultsTag = TriggerResults::HLT
 replace hscpJetHLTPath.HLTPaths = {"HLT1jet","HLT2jet","HLT3jet","HLT4jet"}
 
-
-module hscpMuonHLTPath = HLTHighLevel  from "HLTrigger/HLTfilters/data/hltHighLevel.cfi"
+module hscpMuonHLTPath = hltHighLevel  from "HLTrigger/HLTfilters/data/hltHighLevel.cfi"
 replace hscpMuonHLTPath.TriggerResultsTag = TriggerResults::HLT
 replace hscpMuonHLTPath.HLTPaths = {"HLT1MuonIso", "HLT1MuonNonIso", "HLT2MuonNonIso" , "HLT2MuonSameSign" }
 
-module hscpMETHLTPath = HLTHighLevel  from "HLTrigger/HLTfilters/data/hltHighLevel.cfi"
+module hscpMETHLTPath = hltHighLevel  from "HLTrigger/HLTfilters/data/hltHighLevel.cfi"
 replace hscpMETHLTPath.TriggerResultsTag = TriggerResults::HLT
 replace hscpMETHLTPath.HLTPaths = {
 "HLT1MET", "HLT1jet1MET", "HLT2jet1MET" , "HLT2jetAco","HLT1jet1METAco",
