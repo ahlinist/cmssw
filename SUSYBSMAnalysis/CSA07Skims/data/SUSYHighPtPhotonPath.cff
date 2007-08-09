@@ -1,0 +1,4 @@
+include "SUSYBSMAnalysis/CSA07Skims/data/SUSYHighPtPhotonSkim.cfi"
+
+path SUSYHighPtPhoton = { SUSYHighPtPhotonSeq }
+

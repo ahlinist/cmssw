@@ -1,0 +1,14 @@
+#module SUSYHighPtPhotonHLTPath = HLTHighLevel {
+#  InputTag TriggerResultsTag = TriggerResults
+#  bool byName = true
+#  bool andOr = true
+#  vstring HLTPaths = {"HLT1PhotonRelaxed","HLT2PhotonRelaxed"}
+#  vstring HLTPaths = {"HLT1Photon","HLT2Photon"}
+#}
+module SUSYHighPtPhotonHLTPath = hltHighLevel from "HLTrigger/HLTfilters/data/hltHighLevel.cfi"
+replace SUSYHighPtPhotonHLTPath.TriggerResultsTag = TriggerResults::HLT
+replace SUSYHighPtPhotonHLTPath.HLTPaths = {
+  "HLT1PhotonRelaxed","HLT2PhotonRelaxed",
+  "HLT1Photon","HLT2Photon"
+}
+

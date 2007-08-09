@@ -3,8 +3,8 @@
  * High Energy Photon SUSY Skim
  * one(two) photon(s) > xx GeV in barrel + isolation 
  *
- * $Date: 2007/07/12 09:24:45 $
- * $Revision: 1.2 $
+ * $Date: 2007/07/30 16:33:13 $
+ * $Revision: 1.1 $
  *
  * \author Daniele del Re - Univ. La Sapienza & INFN
  *
@@ -22,8 +22,10 @@
 #include "DataFormats/Common/interface/Handle.h"    
 
 #include "DataFormats/EgammaCandidates/interface/Photon.h"
-#include "TrackingTools/TrackAssociator/interface/TrackDetectorAssociator.h"
-#include "TrackingTools/TrajectoryState/interface/FreeTrajectoryState.h"
+#include "DataFormats/Candidate/interface/Candidate.h"
+#include "DataFormats/Common/interface/AssociationVector.h"
+// #include "TrackingTools/TrackAssociator/interface/TrackDetectorAssociator.h"
+// #include "TrackingTools/TrajectoryState/interface/FreeTrajectoryState.h"
 
 #include "SUSYBSMAnalysis/CSA07Skims/interface/SUSYHighPtPhotonSkim.h"
 
@@ -35,12 +37,12 @@ SUSYHighPtPhotonSkim::SUSYHighPtPhotonSkim( const edm::ParameterSet& iConfig ) :
   nEvents_(0), nAccepted_(0)
 {
   Photonsrc_ = iConfig.getParameter<InputTag>( "Photonsrc" );
-  Tracksrc_ = iConfig.getParameter<InputTag>( "Tracksrc" );
   Photon1Ptmin_ = 
     iConfig.getUntrackedParameter<double>( "Photon1Ptmin", 80. );
   Photon2Ptmin_ = 
     iConfig.getUntrackedParameter<double>( "Photon2Ptmin", 20. );
   IsIsolated_ = iConfig.getUntrackedParameter<bool>( "IsIsolated", 0);
+  IsolationCut_ = iConfig.getUntrackedParameter<double>( "IsolationCut", 9. );
 }
 
 /*------------------------------------------------------------------------*/
@@ -55,82 +57,38 @@ bool SUSYHighPtPhotonSkim::filter( edm::Event& iEvent,
 {
   nEvents_++;
 
-  Handle<PhotonCollection> PhotonHandle; 
-  Handle<TrackCollection> TrackHandle;
+  typedef AssociationVector<RefProd<CandidateCollection>, vector<double> > PhotonMapCollection;
+  Handle<PhotonMapCollection>  PhotonHandle;
 
-  try {
-    iEvent.getByLabel( Photonsrc_, PhotonHandle );
-  } 
-  catch ( cms::Exception& ex ) {
-    edm::LogError( "SUSYHighPtPhotonSkim" ) 
-      << "Unable to get Photon collection "
-      << Photonsrc_.label();
-    return false;
-  }
-
-  try {
-    iEvent.getByLabel( Tracksrc_, TrackHandle );
-  } 
-  catch ( cms::Exception& ex ) {
-    edm::LogError( "SUSYHighPtPhotonSkim" ) 
-      << "Unable to get Track collection "
-      << Tracksrc_.label();
-    return false;
-  }
+  iEvent.getByLabel( Photonsrc_, PhotonHandle );
 
   if ( PhotonHandle->empty() ) return false;
-  if ( TrackHandle->empty() ) return false;
-
-  TrackDetectorAssociator trackAssociator_;
-  TrackDetectorAssociator::AssociatorParameters parameters;
-  parameters.useEcal = false ;
-  parameters.useCalo = false ;
-  parameters.useHcal = false ;
-  parameters.useHO = false ;
-  parameters.useMuon = false ;
-  trackAssociator_.useDefaultPropagator();
 
   int nPhoton1 = 0;
   int nPhoton2 = 0;
-  
-  for ( PhotonCollection::const_iterator it = PhotonHandle->begin(); 
+  //  int counter = 0;
+
+  for ( PhotonMapCollection::const_iterator it = PhotonHandle->begin(); 
 	it != PhotonHandle->end(); it++ ) {
-        
-    double dummyPt = 0;    
-    int conetracks = 0;
 
-    if (IsIsolated_ && fabs(it->eta()) < 1.479 && it->pt() > Photon2Ptmin_) {
- 
-      for(TrackCollection::const_iterator it_track = TrackHandle->begin(); it_track != TrackHandle->end(); it_track++ ){ 
-	
-	const FreeTrajectoryState fts = trackAssociator_.getFreeTrajectoryState( iSetup , *it_track );
-	const TrackDetectorAssociator::AssociatorParameters myparameters = parameters;   
-	
-	TrackDetMatchInfo info = trackAssociator_.associate(iEvent, iSetup,fts,myparameters);      
-	
-	double deta = info.trkGlobPosAtEcal.eta() - it->eta();
-	double dphi = fabs( info.trkGlobPosAtEcal.phi() - it->phi());
-	double dr = sqrt(dphi*dphi+deta*deta);
-	
-	if ( fabs(dr) < 0.3 ){ 
-	  conetracks++; dummyPt += it_track->pt(); 
-	  //	  cout << dummyPt << "   "  << conetracks << "   " <<  it->pt() << endl;
-	} 
-	
-      } //end loop over tracks                     
+    bool iso = it->second < IsolationCut_;
+    if(!IsIsolated_) iso = 1; 
 
-    }
-
-    if (fabs(it->eta()) < 1.479 && dummyPt<9.){
-      if (it->pt() > Photon1Ptmin_)  nPhoton1++;
-      if (it->pt() > Photon2Ptmin_)  nPhoton2++;
+    //    counter++;
+    //    cout << counter << "  " << it->first->pt() << "  " << it->second << endl;
+    
+    if (iso && fabs(it->first->eta()) < 1.479 && it->first->pt() > Photon2Ptmin_) {
+       
+      if (fabs(it->first->eta()) < 1.479){
+	if (it->first->pt() > Photon1Ptmin_)  nPhoton1++;
+	if (it->first->pt() > Photon2Ptmin_)  nPhoton2++;
+      }
     }
   }
-  
+
   if ( !nPhoton1 ) return false;
   if ( nPhoton2<2 ) return false;
   
-  cout << nAccepted_ << "    "  <<  nPhoton1 << "    "  <<  nPhoton2 <<  endl;
   nAccepted_++;
 
   return true;
@@ -140,7 +98,8 @@ bool SUSYHighPtPhotonSkim::filter( edm::Event& iEvent,
 
 void SUSYHighPtPhotonSkim::endJob()
 {
-  edm::LogVerbatim( "SUSYHighPtPhotonSkim" ) 
+//   edm::LogVerbatim( "SUSYHighPtPhotonSkim" ) 
+  cout
     << "Events read " << nEvents_
     << " Events accepted " << nAccepted_
     << "\nEfficiency " << (double)(nAccepted_)/(double)(nEvents_) 
