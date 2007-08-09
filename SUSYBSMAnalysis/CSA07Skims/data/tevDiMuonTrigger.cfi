@@ -3,9 +3,6 @@
 #no isolation
 #
 
-module tevDiMuonTrigger = HLTHighLevel {
-        InputTag TriggerResultsTag = TriggerResults
-        bool byName = true
-        bool andOr= true
-        vstring HLTPaths = {"HLT1MuonNonIso","HLT2MuonNonIso"}
-}
+module tevDiMuonTrigger = hltHighLevel from "HLTrigger/HLTfilters/data/hltHighLevel.cfi"
+replace tevDiMuonTrigger.TriggerResultsTag = TriggerResults::HLT
+replace tevDiMuonTrigger.HLTPaths = {"HLT1MuonNonIso","HLT2MuonNonIso"}
