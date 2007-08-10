@@ -1,6 +1,10 @@
-  module SUSYHighPtPhotonOutputModule  = PoolOutputModule {
-    untracked string fileName = "output/SUSYHighPtPhotonSkim.root"
-    untracked PSet SelectEvents = {
-      vstring SelectEvents = { "SUSYHighPtPhoton" }
-    }
+include "Configuration/EventContent/data/EventContent.cff"
+
+module SUSYHighPtPhotonOutputModule  = PoolOutputModule {
+  untracked string fileName = "SUSYHighPtPhoton.root"
+  using AODSIMEventContent
+  untracked PSet SelectEvents = {
+    untracked string dataTier = "USER"
+    vstring SelectEvents = { "SUSYHighPtPhoton" }
   }
+}
