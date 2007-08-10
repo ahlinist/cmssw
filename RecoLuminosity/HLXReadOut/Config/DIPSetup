@@ -1,0 +1,10 @@
+#!/bin/bash
+
+export DIPBASE=${HOME}/TriDAS/lumi/HF/DIP
+#echo DIPBASE was set automatically to $DIPBASE
+export CLASSPATH=$CLASSPATH:$DIPBASE/lib/dip.jar
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$DIPBASE/lib
+#echo CLASSPATH was extended with $DIPBASE/lib/dip.jar
+#echo LD_LIBRARY_PATH was extended with $DIPBASE/lib
+export DIMDNSNODE=fwserv01.cern.ch
+export DIMDNSPORT=2506
