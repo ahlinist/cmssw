@@ -29,7 +29,7 @@ module SUSYHighPtPhotonFilter = SUSYHighPtPhotonSkim {
 }
 
 sequence SUSYHighPtPhotonSeq = { 
-#  SUSYHighPtPhotonHLTPath & 
+  SUSYHighPtPhotonHLTPath & 
   allTracks &
   allPhotons &
   allSuperClusterIsolations &
