@@ -32,7 +32,7 @@ namespace edm
     bookkeeping_()
   {
     setRegistry();
-    std::cout << pset << std::endl;
+    // std::cout << pset << std::endl;
   }
 
   ProcessDesc::~ProcessDesc()
@@ -65,7 +65,7 @@ namespace edm
     validator_->validate();
 
     setRegistry();
-    std::cout << *pset_ << std::endl;
+    // std::cout << *pset_ << std::endl;
 
   }
 
