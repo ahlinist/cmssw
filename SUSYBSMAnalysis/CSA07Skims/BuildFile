@@ -7,7 +7,6 @@
 <use name=DataFormats/METReco>
 <use name=DataFormats/MuonReco>
 <use name=DataFormats/EgammaCandidates>
-<use name=TrackingTools/TrackAssociator>
 <flags EDM_PLUGIN="1">
 
 <export>
@@ -21,5 +20,4 @@
   <use name=DataFormats/METReco>
   <use name=DataFormats/MuonReco>
   <use name=DataFormats/EgammaCandidates>
-  <use name=TrackingTools/TrackAssociator>
 </export>
