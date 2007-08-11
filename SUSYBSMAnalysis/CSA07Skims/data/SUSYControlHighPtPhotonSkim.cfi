@@ -1,0 +1,19 @@
+include "SUSYBSMAnalysis/CSA07Skims/data/SUSYHighPtPhotonHLTPaths.cfi"
+include "SUSYBSMAnalysis/CSA07Skims/data/SUSYHighPtPhotonCandidates.cfi"
+
+module SUSYControlHighPtPhotonFilter = SUSYControlHighPtPhotonSkim {
+  InputTag Photonsrc = allSuperClusterIsolations  
+  InputTag Electronsrc = pixelMatchGsfElectrons  
+  untracked double PhotonPtmin = 20
+  untracked double ElectronPtmin = 80
+  untracked bool IsIsolated = 1   
+  untracked double IsolationCut = 9   
+}
+
+sequence SUSYControlHighPtPhotonSeq = { 
+  SUSYControlHighPtPhotonHLTPath & 
+  allTracks &
+  allPhotons &
+  allSuperClusterIsolations &
+  SUSYControlHighPtPhotonFilter 
+}

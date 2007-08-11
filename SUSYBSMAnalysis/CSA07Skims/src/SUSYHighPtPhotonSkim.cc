@@ -3,8 +3,8 @@
  * High Energy Photon SUSY Skim
  * one(two) photon(s) > xx GeV in barrel + isolation 
  *
- * $Date: 2007/07/30 16:33:13 $
- * $Revision: 1.1 $
+ * $Date: 2007/08/09 21:03:25 $
+ * $Revision: 1.2 $
  *
  * \author Daniele del Re - Univ. La Sapienza & INFN
  *
@@ -24,8 +24,6 @@
 #include "DataFormats/EgammaCandidates/interface/Photon.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/Common/interface/AssociationVector.h"
-// #include "TrackingTools/TrackAssociator/interface/TrackDetectorAssociator.h"
-// #include "TrackingTools/TrajectoryState/interface/FreeTrajectoryState.h"
 
 #include "SUSYBSMAnalysis/CSA07Skims/interface/SUSYHighPtPhotonSkim.h"
 
@@ -77,12 +75,9 @@ bool SUSYHighPtPhotonSkim::filter( edm::Event& iEvent,
     //    counter++;
     //    cout << counter << "  " << it->first->pt() << "  " << it->second << endl;
     
-    if (iso && fabs(it->first->eta()) < 1.479 && it->first->pt() > Photon2Ptmin_) {
-       
-      if (fabs(it->first->eta()) < 1.479){
-	if (it->first->pt() > Photon1Ptmin_)  nPhoton1++;
-	if (it->first->pt() > Photon2Ptmin_)  nPhoton2++;
-      }
+    if (iso && fabs(it->first->eta()) < 1.479) {       
+      if (it->first->pt() > Photon1Ptmin_)  nPhoton1++;
+      if (it->first->pt() > Photon2Ptmin_)  nPhoton2++;
     }
   }
 
@@ -98,8 +93,7 @@ bool SUSYHighPtPhotonSkim::filter( edm::Event& iEvent,
 
 void SUSYHighPtPhotonSkim::endJob()
 {
-//   edm::LogVerbatim( "SUSYHighPtPhotonSkim" ) 
-  cout
+  edm::LogVerbatim( "SUSYHighPtPhotonSkim" ) 
     << "Events read " << nEvents_
     << " Events accepted " << nAccepted_
     << "\nEfficiency " << (double)(nAccepted_)/(double)(nEvents_) 
