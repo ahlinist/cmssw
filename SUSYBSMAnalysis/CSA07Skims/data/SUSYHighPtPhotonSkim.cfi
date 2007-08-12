@@ -5,7 +5,7 @@ module SUSYHighPtPhotonFilter = SUSYHighPtPhotonSkim {
   InputTag Photonsrc = allSuperClusterIsolations  
   untracked double Photon1Ptmin = 80
   untracked double Photon2Ptmin = 20
-  untracked bool IsIsolated = 0   
+  untracked bool IsIsolated = 1   
   untracked double IsolationCut = 9   
 }
 
