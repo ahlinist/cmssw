@@ -79,6 +79,7 @@ namespace edm {
     // public interface is asking for trouble
     friend class ConfigurableInputSource;
     friend class InputSource;
+    friend class DaqSource;
     friend class RawInputSource;
     friend class FilterWorker;
     friend class ProducerWorker;
