@@ -25,8 +25,8 @@ class ConfigurationTreeEditor extends DefaultTreeCellEditor
     /** Referencable to be edited */
     private Object toBeEdited = null;
     
-    /** the configuration being represented */
-    private Configuration config = null;
+    /** the configuration tree model */
+    private ConfigurationTreeModel treeModel = null;
     
 
     //
@@ -37,10 +37,9 @@ class ConfigurationTreeEditor extends DefaultTreeCellEditor
     public ConfigurationTreeEditor(JTree tree,DefaultTreeCellRenderer renderer)
     {
 	super(tree,renderer);
-	ConfigurationTreeModel model = (ConfigurationTreeModel)tree.getModel();
-	this.config = (Configuration)model.getRoot();
+	treeModel = (ConfigurationTreeModel)tree.getModel();
     }
-
+    
     
     //
     // member functions
@@ -60,6 +59,8 @@ class ConfigurationTreeEditor extends DefaultTreeCellEditor
 	String name  = value.toString();
 
 	if (toBeEdited == null) return null;
+	
+	Configuration config = (Configuration)treeModel.getRoot();
 	
 	if (toBeEdited instanceof Referencable) {
 	    Referencable referencable = (Referencable)toBeEdited;
