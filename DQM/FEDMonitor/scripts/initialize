@@ -91,19 +91,24 @@ print "make xdaq profile ...\n";
 my @EXproperties = ("logUrl",  "string","console",
 		    "logLevel","string","INFO");
 
+my @HTTPproperties = ("documentRoot","string",$ENV{"XDAQ_DOCUMENT_ROOT"},
+		      "aliasName","string","tmp",
+		      "aliasPath","string","/tmp");
+
 open (XML,">./xml/profile.xml") or die ("Can't open file: $!\n");
 print XML makeXmlHeader();
 print XML makeXmlProfileHeader();
-print XML makeXmlAppHeader(0,"Executive",0);
+print XML makeXmlAppHeader(0,"executive::Application",0,"executive");
 print XML makeXmlAppProperties("Executive",@EXproperties);
 print XML makeXmlAppTrailer(0,$ENV{"XDAQ_ROOT"}."/lib","libexecutive.so");
-print XML makeXmlAppHeader(0,"PeerTransportHTTP",1);
+print XML makeXmlAppHeader(0,"pt::http::PeerTransportHTTP",1);
+print XML makeXmlAppProperties("pt::http::PeerTransportHTTP",@HTTPproperties);
 print XML makeXmlAppTrailer(0,$ENV{"XDAQ_ROOT"}."/lib","libpthttp.so");
-print XML makeXmlAppHeader(0,"PeerTransportFifo",8);
+print XML makeXmlAppHeader(0,"pt::fifo::PeerTransportFifo",8);
 print XML makeXmlAppTrailer(0,$ENV{"XDAQ_ROOT"}."/lib","libptfifo.so");
-print XML makeXmlAppHeader(0,"XRelay",4);
-print XML makeXmlAppTrailer(0,$ENV{"XDAQ_ROOT"}."/lib","libxr.so");
-print XML makeXmlAppHeader(0,"HyperDAQ",3);
+print XML makeXmlAppHeader(0,"xrelay::Application",4);
+print XML makeXmlAppTrailer(0,$ENV{"XDAQ_ROOT"}."/lib","libxrelay.so");
+print XML makeXmlAppHeader(0,"hyperdaq::Application",3);
 print XML makeXmlAppTrailer(0,$ENV{"XDAQ_ROOT"}."/lib","libhyperdaq.so");
 print XML makeXmlProfileTrailer();
 
