@@ -5,16 +5,15 @@
 //--------------------------------------------
 
 #include "SecondaryProducer.h"
+#include "FWCore/Framework/interface/Event.h" 
+#include "FWCore/ParameterSet/interface/ParameterSet.h" 
 
 #include "FWCore/Framework/interface/EventPrincipal.h"
-#include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/Framework/interface/InputSourceDescription.h"
 #include "FWCore/Utilities/interface/TypeID.h"
 #include "DataFormats/Common/interface/BasicHandle.h"
-#include "DataFormats/Provenance/interface/ProductRegistry.h"
 #include "FWCore/Sources/interface/VectorInputSourceFactory.h"
 
-#include <DataFormats/FEDRawData/interface/FEDRawData.h>
 #include <DataFormats/FEDRawData/interface/FEDRawDataCollection.h>
 
 #include "FWCore/PluginManager/interface/ModuleDef.h"
