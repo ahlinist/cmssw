@@ -16,6 +16,7 @@
 
 #include "DataFormats/Provenance/interface/EventID.h"
 
+#include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventProcessor.h"
 #include "FWCore/Framework/interface/TriggerReport.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
