@@ -4,15 +4,15 @@ process Sim  = {
    untracked PSet maxEvents = {untracked int32 input = 150000}
 
    untracked PSet configurationMetadata = {
-           untracked string version = "$Revision: 1.1 $"
-           untracked string name = "$Source: /local/projects/CMSSW/rep/CMSSW/Configuration/CSA07Production/data/CSA07Example1_GEN_SIM.cfg,v $"
+           untracked string version = "\$Revision\$"
+           untracked string name = "\$Source\$"
            untracked string annotation = "back-to-back e+e-; flat pt spectrum between $1 and $2 GeV"
    }
 
 
    include "FWCore/MessageService/data/MessageLogger.cfi"
-#   replace MessageLogger.cout.threshold = "ERROR"
-#   replace MessageLogger.cerr.default.limit = 10
+   replace MessageLogger.cout.threshold = "ERROR"
+   replace MessageLogger.cerr.default.limit = 10
 
    service = RandomNumberGeneratorService
   {
