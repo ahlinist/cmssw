@@ -22,29 +22,19 @@
   <rSolid name="tobmodpar:TOBActiveRphi"/>
   <rMaterial name="materials:Silicon"/>
  </LogicalPart>
- <LogicalPart name="TOBBackPlaneRphi4" category="unspecified">
-  <rSolid name="tobmodpar:TOBBackPlaneRphi"/>
-  <rMaterial name="materials:Silicon"/>
- </LogicalPart>
 </LogicalPartSection>
 
 <PosPartSection label="tobmodule4.xml">
  <PosPart copyNumber="1">
    <rParent name="tobmodule4:TOBWaferRphi4"/>
    <rChild name="tobmodule4:TOBActiveRphi4"/>
+  <Translation x="[zero]" y="[zero]" 
+               z="[tracker:BackPlaneDz]" />
   <rRotation name="tobmodpar:Activ"/>
  </PosPart>
  <PosPart copyNumber="1">
    <rParent name="tobmodule4:TOBActiveRphi4"/>
-   <rChild name="tobmodule4:TOBBackPlaneRphi4"/>
-  <Translation x="[zero]"  y="[zero]" 
-               z="-[tobmodpar:WaferDz]+[tracker:BackPlaneDz]" />
- </PosPart>
- <PosPart copyNumber="1">
-   <rParent name="tobmodule4:TOBActiveRphi4"/>
    <rChild name="tobmodpar:TOBInactive"/>
-  <Translation x="[zero]" y="[zero]" 
-               z="[tracker:BackPlaneDz]" />
  </PosPart>
  <PosPart copyNumber="1">
    <rParent name="tobmodule4:TOBModule4"/>
