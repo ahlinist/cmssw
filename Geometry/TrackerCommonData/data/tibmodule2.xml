@@ -39,22 +39,14 @@
   <rSolid name="tibmodpar:TIBSSActive"/>
   <rMaterial name="materials:Silicon"/>
  </LogicalPart>
- <LogicalPart name="TIBBackPlaneRphi2" category="unspecified">
-  <rSolid name="tibmodpar:TIBSSBackPlane"/>
-  <rMaterial name="materials:Silicon"/>
- </LogicalPart>
 </LogicalPartSection>
 
 <PosPartSection label="tibmodule2.xml">
  <PosPart copyNumber="1">
    <rParent name="tibmodule2:TIBWaferRphi2"/>
    <rChild name="tibmodule2:TIBActiveRphi2"/>
- </PosPart>
- <PosPart copyNumber="1">
-   <rParent name="tibmodule2:TIBActiveRphi2"/>
-   <rChild name="tibmodule2:TIBBackPlaneRphi2"/>
   <Translation x="[zero]"  y="[zero]" 
-               z="-[tibmodpar:WaferDz]+[tracker:BackPlaneDz]" />
+               z="0.5*[tracker:BackPlaneDz]" />
  </PosPart>
  <PosPart copyNumber="1">
    <rParent name="tibmodule2:TIBModule2"/>

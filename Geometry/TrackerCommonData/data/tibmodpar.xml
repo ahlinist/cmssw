@@ -40,6 +40,7 @@
  <Constant name="DSWaferDx"           value="31.6640*mm"/>
  <Constant name="WaferDy"             value="59.4805*mm"/>
  <Constant name="WaferDz"             value="0.160*mm"/>
+ <Constant name="ActiveDz"            value="[WaferDz]-[tracker:BackPlaneDz]"/>
  <Constant name="SSActiveDx"          value="30.720*mm"/> <!-- Actual ActiveDx=30.750mm; 30.720=pitch(=120micron)*512 -->
  <Constant name="DSActiveDx"          value="30.720*mm"/> <!-- Actual ActiveDx=30.770mm; 30.720=pitch(=80micron)*768 -->
  <Constant name="ActiveDy"            value="58.4425*mm"/>
@@ -80,15 +81,11 @@
  <Box name="TIBSSWafer"             dx="[tibmodpar:SSWaferDx]" 
       dy="[tibmodpar:WaferDy]"    dz="[tibmodpar:WaferDz]"/>
  <Box name="TIBSSActive"            dx="[tibmodpar:SSActiveDx]" 
-      dy="[tibmodpar:ActiveDy]"   dz="[tibmodpar:WaferDz]"/>
- <Box name="TIBSSBackPlane"         dx="[tibmodpar:SSActiveDx]" 
-      dy="[tibmodpar:ActiveDy]"   dz="[tracker:BackPlaneDz]"/>
+      dy="[tibmodpar:ActiveDy]"   dz="[tibmodpar:ActiveDz]"/>
  <Box name="TIBDSWafer"             dx="[tibmodpar:DSWaferDx]" 
       dy="[tibmodpar:WaferDy]"    dz="[tibmodpar:WaferDz]"/>
  <Box name="TIBDSActive"            dx="[tibmodpar:DSActiveDx]" 
-      dy="[tibmodpar:ActiveDy]"   dz="[tibmodpar:WaferDz]"/>
- <Box name="TIBDSBackPlane"         dx="[tibmodpar:DSActiveDx]" 
-      dy="[tibmodpar:ActiveDy]"   dz="[tracker:BackPlaneDz]"/>
+      dy="[tibmodpar:ActiveDy]"   dz="[tibmodpar:ActiveDz]"/>
 </SolidSection>
 
 <LogicalPartSection label="tibmodpar.xml">

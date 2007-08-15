@@ -89,10 +89,6 @@
   <rSolid name="tibmodpar:TIBDSActive"/>
   <rMaterial name="materials:Silicon"/>
  </LogicalPart>
- <LogicalPart name="TIBBackPlaneRphi0" category="unspecified">
-  <rSolid name="tibmodpar:TIBDSBackPlane"/>
-  <rMaterial name="materials:Silicon"/>
- </LogicalPart>
  <LogicalPart name="TIBWaferSter0" category="unspecified">
   <rSolid name="tibmodpar:TIBDSWafer"/>
   <rMaterial name="materials:Silicon"/>
@@ -101,32 +97,20 @@
   <rSolid name="tibmodpar:TIBDSActive"/>
   <rMaterial name="materials:Silicon"/>
  </LogicalPart>
- <LogicalPart name="TIBBackPlaneSter0" category="unspecified">
-  <rSolid name="tibmodpar:TIBDSBackPlane"/>
-  <rMaterial name="materials:Silicon"/>
- </LogicalPart>
 </LogicalPartSection>
 
 <PosPartSection label="tibmodule0.xml">
  <PosPart copyNumber="1">
    <rParent name="tibmodule0:TIBWaferRphi0"/>
    <rChild name="tibmodule0:TIBActiveRphi0"/>
- </PosPart>
- <PosPart copyNumber="1">
-   <rParent name="tibmodule0:TIBActiveRphi0"/>
-   <rChild name="tibmodule0:TIBBackPlaneRphi0"/>
   <Translation x="[zero]"  y="[zero]" 
-               z="-[tibmodpar:WaferDz]+[tracker:BackPlaneDz]" />
+               z="0.5*[tracker:BackPlaneDz]" />
  </PosPart>
  <PosPart copyNumber="1">
    <rParent name="tibmodule0:TIBWaferSter0"/>
    <rChild name="tibmodule0:TIBActiveSter0"/>
- </PosPart>
- <PosPart copyNumber="1">
-   <rParent name="tibmodule0:TIBActiveSter0"/>
-   <rChild name="tibmodule0:TIBBackPlaneSter0"/>
   <Translation x="[zero]"  y="[zero]" 
-               z="-[tibmodpar:WaferDz]+[tracker:BackPlaneDz]" />
+               z="0.5*[tracker:BackPlaneDz]" />
  </PosPart>
 </PosPartSection>
 
