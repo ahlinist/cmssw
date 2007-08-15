@@ -18,7 +18,7 @@
  <Constant name="SideFrameZDS"      value="[TopFrameZDS]"/>
  <Constant name="SideFrameZSS"      value="[TopFrameZSS]"/>
  <Constant name="SideWidth"         value="0.100*cm"/>
- <Constant name="ActiveThick"       value="0.032*cm"/>
+ <Constant name="WaferThick"        value="0.032*cm"/>
  <Constant name="ActiveZDS"         value="0.121*cm"/>
  <Constant name="ActiveZSS"         value="0*cm"/>
  <Constant name="HybridHeight"      value="2.500*cm"/>

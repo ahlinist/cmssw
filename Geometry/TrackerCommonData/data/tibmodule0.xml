@@ -104,13 +104,13 @@
    <rParent name="tibmodule0:TIBWaferRphi0"/>
    <rChild name="tibmodule0:TIBActiveRphi0"/>
   <Translation x="[zero]"  y="[zero]" 
-               z="0.5*[tracker:BackPlaneDz]" />
+               z="[tracker:BackPlaneDz]" />
  </PosPart>
  <PosPart copyNumber="1">
    <rParent name="tibmodule0:TIBWaferSter0"/>
    <rChild name="tibmodule0:TIBActiveSter0"/>
   <Translation x="[zero]"  y="[zero]" 
-               z="0.5*[tracker:BackPlaneDz]" />
+               z="[tracker:BackPlaneDz]" />
  </PosPart>
 </PosPartSection>
 
