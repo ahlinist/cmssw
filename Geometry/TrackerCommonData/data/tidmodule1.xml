@@ -46,8 +46,8 @@
   </Vector>
   <String name="ActiveMaterial"     value="materials:Silicon"/>
   <Numeric name="ActiveHeight"      value="[tidmodule1:ActiveHeight]"/>
-  <Vector name="ActiveThick"   type="numeric" nEntries="2">
-    [tidmodpar:ActiveThick],   [tidmodpar:ActiveThick]
+  <Vector name="WaferThick"   type="numeric" nEntries="2">
+    [tidmodpar:WaferThick],   [tidmodpar:WaferThick]
   </Vector>
   <String name="ActiveRotation"     value="tidmodpar:90ZD"/>
   <Vector name="BackPlaneThick"   type="numeric" nEntries="2">
@@ -101,8 +101,8 @@
   </Vector>
   <String name="ActiveMaterial"     value="materials:Silicon"/>
   <Numeric name="ActiveHeight"      value="[tidmodule1:ActiveHeight]"/>
-  <Vector name="ActiveThick"   type="numeric" nEntries="2">
-    [tidmodpar:ActiveThick],   [tidmodpar:ActiveThick]
+  <Vector name="WaferThick"   type="numeric" nEntries="2">
+    [tidmodpar:WaferThick],   [tidmodpar:WaferThick]
   </Vector>
   <String name="ActiveRotation"     value="tidmodpar:90ZD"/>
   <Vector name="BackPlaneThick"   type="numeric" nEntries="2">
