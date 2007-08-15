@@ -24,8 +24,8 @@
 // ********************************************************************
 //
 //
-// $Id: GVFlashShowerParameterisation.hh,v 1.3 2006/11/14 23:05:24 wmtan Exp $
-// GEANT4 tag $Name:  $
+// $Id: GVFlashShowerParameterisation.hh,v 1.4 2007/08/06 19:21:27 sunanda Exp $
+// GEANT4 tag $Name: V00-03-01 $
 //
 //
 //---------------------------------------------------------------

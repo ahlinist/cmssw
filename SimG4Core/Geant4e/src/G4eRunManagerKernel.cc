@@ -2,13 +2,13 @@
 #include "G4Navigator.hh"
 // On Sun, to prevent conflict with ObjectSpace, G4Timer.hh has to be
 // loaded *before* globals.hh...
-#include "G4Timer.hh"
 
 #include "SimG4Core/Geant4e/interface/G4eRunManagerKernel.hh"
 
 #include "G4RunManagerKernel.hh"
 #include "G4VUserDetectorConstruction.hh"
 #include "SimG4Core/Geant4e/interface/G4ePhysicsList.hh"
+#include "globals.hh" 
 #include "G4TransportationManager.hh"
 #include "G4RunManager.hh"
 

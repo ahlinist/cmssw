@@ -1,4 +1,6 @@
 #include "SimG4Core/Geant4e/interface/G4ePropagatorG4.hh"
+#include "globals.hh" 
+#include "G4ThreeVector.hh" 
 #include "SimG4Core/Geant4e/interface/G4eManager.hh"
 #include "SimG4Core/Geant4e/interface/G4eTrajStateFree.hh"
 #include "SimG4Core/Geant4e/interface/G4eTrajStateOnSurface.hh"
@@ -7,18 +9,13 @@
 
 #include "G4DynamicParticle.hh"
 #include "G4Track.hh"
-#include "G4UserTrackingAction.hh"
 #include "G4SteppingManager.hh"
 #include "G4EventManager.hh"
-#include "G4TrackingManager.hh"
 #include "G4StepStatus.hh"
-#include "G4GeometryManager.hh"
 #include "G4ParticleTable.hh"
 #include "G4UnitsTable.hh"
 #include "G4StateManager.hh"
 
-#include "G4VPhysicalVolume.hh"
-#include "G4PhysicalVolumeStore.hh"
 #include <vector>
 
 

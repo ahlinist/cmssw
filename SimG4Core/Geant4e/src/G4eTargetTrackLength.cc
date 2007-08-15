@@ -1,7 +1,7 @@
 
 #include "SimG4Core/Geant4e/interface/G4eTargetTrackLength.hh"
-#include "G4UnitsTable.hh"
-#include "SimG4Core/Geant4e/interface/G4eMagneticFieldLimitsMessenger.hh"
+#include "G4ios.hh"  
+#include "globals.hh" 
 
 #include "G4ParticleTable.hh"
 #include "G4ParticleDefinition.hh"

@@ -3,6 +3,8 @@
 
 #include "globals.hh"
 #include "SimG4Core/Geant4e/interface/G4eMuIonisation.hh"
+#include "G4VEnergyLossProcess.hh" 
+#include "G4VProcess.hh" 
 #include "SimG4Core/Geant4e/interface/G4ePhysicsList.hh"
 #include "G4ComptonScattering.hh"
 #include "G4GammaConversion.hh"
@@ -10,7 +12,6 @@
  
 #include "G4eIonisation.hh"
 #include "G4eBremsstrahlung.hh"
-#include "G4eplusAnnihilation.hh"
 
 #include "G4MuIonisation.hh"
 #include "G4MuBremsstrahlung.hh"
@@ -18,23 +19,14 @@
 
 #include "G4hIonisation.hh"
 
-#include "G4MuIonisation.hh"
-#include "G4MuBremsstrahlung.hh"
-#include "G4MuPairProduction.hh"
 
-#include "G4hIonisation.hh"
 
 #include "G4ParticleDefinition.hh"
-#include "G4ParticleWithCuts.hh"
 #include "G4ProcessManager.hh"
-#include "G4ProcessVector.hh"
 #include "G4ParticleTypes.hh"
 #include "G4ParticleTable.hh"
-#include "G4Material.hh"
-#include "G4MaterialTable.hh"
 #include "G4ios.hh"
 #include <iomanip.h>                
-#include "G4PhysicsTable.hh"
 #include "G4Transportation.hh"
 
 //#include "G4ePhysListEmModel.hh"
@@ -103,26 +95,17 @@ void G4ePhysicsList::ConstructProcess()
   ConstructEM();
 }
 
-#include "G4eBremsstrahlung.hh"
-#include "G4eIonisation.hh"
 
-#include "G4eIonisation.hh"
 
-#include "G4MuBremsstrahlung.hh"
-#include "G4MuIonisation.hh"
-#include "G4MuPairProduction.hh"
 
 //#include "G4eMuIonisation"
 
-#include "G4PhysicsTable.hh"
 
-#include "G4VeEnergyLoss.hh"
-#include "G4VEnergyLoss.hh"
-#include "G4VMuEnergyLoss.hh"
 
-#include "G4MuIonisation.hh"
 
 #include "SimG4Core/Geant4e/interface/G4eMagneticFieldLimitsProcess.hh"
+#include "G4Gamma.hh"  
+#include "G4Electron.hh" 
 
 void G4ePhysicsList::ConstructEM()
 {

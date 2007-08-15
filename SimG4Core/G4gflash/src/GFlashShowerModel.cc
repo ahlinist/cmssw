@@ -24,22 +24,11 @@
 
 #include "G4Electron.hh"
 #include "G4Positron.hh"
-#include "G4Gamma.hh"
-#include "G4NeutrinoE.hh"
-#include "G4NeutrinoMu.hh"
-#include "G4NeutrinoTau.hh"
-#include "G4AntiNeutrinoE.hh"
-#include "G4AntiNeutrinoMu.hh"
-#include "G4AntiNeutrinoTau.hh"
-#include "G4PionZero.hh"
 #include "G4VProcess.hh"
-#include "G4ios.hh"
-#include "G4LogicalVolume.hh"
 #include "geomdefs.hh"
 
 #include "GFlashShowerModel.hh"
-#include "GFlashEnergySpot.hh"
-#include "GFlashHomoShowerParameterisation.hh"
+#include "SimG4Core/G4gflash/src/GFlashEnergySpot.hh" 
 #include "GFlashSamplingShowerParameterisation.hh"
 
 GFlashShowerModel::GFlashShowerModel(G4String modelName,

@@ -22,7 +22,6 @@
 // History:
 // - Created. Pedro Arce, June 2001
 
-#include "globals.hh"
 #include "G4ePropagator.hh"
 #include "G4TrackingManager.hh"
 

@@ -24,8 +24,8 @@
 // ********************************************************************
 //
 //
-// $Id: GFlashShowerModel.hh,v 1.4 2006/11/14 23:05:24 wmtan Exp $
-// GEANT4 tag $Name:  $
+// $Id: GFlashShowerModel.hh,v 1.5 2007/08/06 19:21:27 sunanda Exp $
+// GEANT4 tag $Name: V00-03-01 $
 //
 //
 //---------------------------------------------------------------
@@ -44,13 +44,10 @@
 
 //G4 Standard
 #include "G4VFastSimulationModel.hh"
-#include "G4VPhysicalVolume.hh"
-#include "G4ios.hh"
 
 //GFlash
 #include "GFlashShowerModelMessenger.hh"
 #include "GFlashParticleBounds.hh"
-#include "GFlashEnergySpot.hh"
 #include "GFlashHitMaker.hh"
 #include  <vector>
 

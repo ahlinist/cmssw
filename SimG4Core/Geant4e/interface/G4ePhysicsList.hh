@@ -16,7 +16,6 @@
 #define G4ePhysicsList_h 1
 
 #include "G4VUserPhysicsList.hh"
-#include "globals.hh"
 
 class G4ePhysicsList: public G4VUserPhysicsList
 {

@@ -13,15 +13,7 @@
 #ifndef G4eMagneticFieldLimitsProcess_h
 #define G4eMagneticFieldLimitsProcess_h 1
 
-#include "G4ios.hh" 
-#include "globals.hh"
 #include "G4VDiscreteProcess.hh"
-#include "G4PhysicsTable.hh"
-#include "G4PhysicsLogVector.hh"
-#include "G4ElementTable.hh"
-#include "G4Gamma.hh" 
-#include "G4Electron.hh"
-#include "G4Step.hh" 
 class G4eMagneticFieldLimitsMessenger;
 
 //-----------------------------------------------------------------

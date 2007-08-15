@@ -27,15 +27,9 @@
 #ifndef G4eMuIonisation_h
 #define G4eMuIonisation_h 1
 #define private public
-#include "G4VEnergyLossProcess.hh"
 #define private private
 
-#include "globals.hh"
 #include "G4eIonisationChange.hh"
-#include "G4MuIonisation.hh"
-#include "G4VParticleChange.hh"
-#include "G4VProcess.hh"
-#include "G4ParticleChange.hh"
 class G4Track;
 class G4Step;
 

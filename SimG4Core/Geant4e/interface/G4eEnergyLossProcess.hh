@@ -13,7 +13,6 @@
 #ifndef G4eEnergyLossProcess_h
 #define G4eEnergyLossProcess_h 1
 
-#include "globals.hh"
 #include "G4VContinuousProcess.hh"
 class G4EnergyLossForExtrapolator;
 

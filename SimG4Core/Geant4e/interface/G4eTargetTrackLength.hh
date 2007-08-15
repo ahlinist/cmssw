@@ -12,13 +12,7 @@
 #ifndef G4eTargetTrackLength_h
 #define G4eTargetTrackLength_h 1
 
-#include "G4ios.hh" 
-#include "globals.hh"
 #include "G4VDiscreteProcess.hh"
-#include "G4PhysicsTable.hh"
-#include "G4PhysicsLogVector.hh"
-#include "G4ElementTable.hh"
-#include "G4Step.hh" 
 #include "G4eTarget.hh"
 
 //---------------------------------------------------------------------------- 

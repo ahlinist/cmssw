@@ -1,6 +1,6 @@
 
 #include "SimG4Core/Geant4e/interface/G4eTrajParamOnSurface.hh"
-#include "G4ThreeVector.hh"
+#include "G4Track.hh" 
 #include <iomanip>
 
 //------------------------------------------------------------------------

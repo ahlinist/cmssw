@@ -23,8 +23,8 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: GFlashShowerModelMessenger.cc,v 1.6 2006/06/29 19:14:24 gunter Exp $
-// GEANT4 tag $Name: geant4-08-01-patch-01 $
+// $Id: GFlashShowerModelMessenger.cc,v 1.2 2006/09/28 15:35:46 sunanda Exp $
+// GEANT4 tag $Name: V00-03-01 $
 //
 //
 // ------------------------------------------------------------
@@ -39,13 +39,10 @@
 #include "GFlashShowerModel.hh"
 #include "GFlashParticleBounds.hh"
 #include "G4UIdirectory.hh"
-#include "G4UIcmdWithAString.hh"
 #include "G4UIcmdWithADoubleAndUnit.hh" 
 #include "G4UIcmdWithADouble.hh"
 #include "G4UIcmdWithAnInteger.hh"
 #include "G4Electron.hh"
-#include "G4Positron.hh"
-#include "globals.hh"
 
 #include <iomanip>                
 #include <sstream>
