@@ -57,12 +57,10 @@
   <String name="WaferRotation"       value="tecmodpar:RPHI"/>
   <String name="ActiveMaterial"      value="materials:Silicon"/>
   <Numeric name="ActiveHeight"       value="[tecmodule4:ActiveHeight]"/>
-  <Numeric name="ActiveThick"        value="[tecmodpar:ActiveThick2]"/>
+  <Numeric name="WaferThick"         value="[tecmodpar:WaferThick2]"/>
   <String name="ActiveRotation"      value="tecmodpar:AR05"/>
   <Numeric name="ActiveZ"            value="[tecmodule4:ActiveZ]"/>
-  <String name="BackPlaneMaterial"   value="materials:Silicon"/>
   <Numeric name="BackPlaneThick"     value="2*[tracker:BackPlaneDz]"/>
-  <Numeric name="BackPlaneZ"         value="-0.5*[tecmodpar:ActiveThick2]+[tracker:BackPlaneDz]"/>
   <String name="HybridMaterial"      value="tecmaterial:TEC_Hybrid6APV"/>
   <Numeric name="HybridHeight"       value="[tecmodpar:HybridHeight]"/>
   <Numeric name="HybridWidth"        value="[tecmodpar:HybridWidth]"/>

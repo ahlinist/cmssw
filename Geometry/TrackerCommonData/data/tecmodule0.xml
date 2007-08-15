@@ -17,7 +17,7 @@
  <Constant name="BridgeSeparation" value="4.800*cm"/>
  <Constant name="ModuleThick"      value="[tecmodpar:ModuleThickDS]"/>
  <Constant name="ShiftZ"           value="-([tecmodpar:ModuleThick]+[tecmodpar:GapModule])/2"/>
- <Constant name="HybridZ"          value="[ActiveZ]+ 0.5*(-[tecmodpar:ActiveThick1] + [tecmodpar:HybridThick])"/>
+ <Constant name="HybridZ"          value="[ActiveZ]+ 0.5*(-[tecmodpar:WaferThick1] + [tecmodpar:HybridThick])"/>
  <Constant name="TopFrameZ"        value="[HybridZ]+ 0.5*([tecmodpar:HybridThick]+[tecmodpar:TopFrameThick])"/>
  <Constant name="SideFrameZ"       value="[TopFrameZ]+0.5*(-[tecmodpar:TopFrameThick]+[tecmodpar:SideFrameThick])"/>
  <Constant name="PitchZ"           value="[TopFrameZ] - 0.5*([tecmodpar:TopFrameThick] + [tecmodpar:PitchThick])"/>

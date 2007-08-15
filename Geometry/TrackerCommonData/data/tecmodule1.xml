@@ -10,7 +10,7 @@
  <Constant name="DlBottom"         value="8.8096000*cm"/>
  <Constant name="SideWidthTop"     value="0.1076928*cm"/>
  <Constant name="SideWidthBottom"  value="0.0822066*cm"/>
- <Constant name="HybridZ"          value="[ActiveZ]+0.5*(-[tecmodpar:ActiveThick1] + [tecmodpar:HybridThick])"/>
+ <Constant name="HybridZ"          value="[ActiveZ]+0.5*(-[tecmodpar:WaferThick1] + [tecmodpar:HybridThick])"/>
  <Constant name="TopFrameZ"        value="[HybridZ]+0.5*([tecmodpar:HybridThick]+[tecmodpar:TopFrameThick])"/>
  <Constant name="SideFrameZ"       value="[TopFrameZ]+0.5*(-[tecmodpar:TopFrameThick]+[tecmodpar:SideFrameThick])"/>
  <Constant name="PitchZ"           value="[TopFrameZ]-0.5*([tecmodpar:TopFrameThick] + [tecmodpar:PitchThick])"/>
