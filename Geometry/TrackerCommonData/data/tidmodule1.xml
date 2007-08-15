@@ -50,17 +50,8 @@
     [tidmodpar:ActiveThick],   [tidmodpar:ActiveThick]
   </Vector>
   <String name="ActiveRotation"     value="tidmodpar:90ZD"/>
-  <Vector name="BackPlaneName"    type="string" nEntries="2">
-    tidmodule1:TIDModule1RphiBackPlane,
-    tidmodule1:TIDModule1StereoBackPlane
-  </Vector>
-  <String name="BackPlaneMaterial"     value="materials:Silicon"/>
   <Vector name="BackPlaneThick"   type="numeric" nEntries="2">
     2*[tracker:BackPlaneDz], 2*[tracker:BackPlaneDz]
-  </Vector>
-  <Vector name="BackPlaneZ"   type="numeric" nEntries="2">
-    -0.5*[tidmodpar:ActiveThick]+[tracker:BackPlaneDz],
-    -0.5*[tidmodpar:ActiveThick]+[tracker:BackPlaneDz]
   </Vector>
   <String name="HybridName"         value="tidmodule1:TIDModule1Hybrid"/>
   <String name="HybridMaterial"     value="tidmaterial:TID_ele1"/>
@@ -114,17 +105,8 @@
     [tidmodpar:ActiveThick],   [tidmodpar:ActiveThick]
   </Vector>
   <String name="ActiveRotation"     value="tidmodpar:90ZD"/>
-  <Vector name="BackPlaneName"    type="string" nEntries="2">
-    tidmodule1:TIDModule1RphiBackPlane,
-    tidmodule1:TIDModule1StereoBackPlane
-  </Vector>
-  <String name="BackPlaneMaterial"     value="materials:Silicon"/>
   <Vector name="BackPlaneThick"   type="numeric" nEntries="2">
     2*[tracker:BackPlaneDz], 2*[tracker:BackPlaneDz]
-  </Vector>
-  <Vector name="BackPlaneZ"   type="numeric" nEntries="2">
-    -0.5*[tidmodpar:ActiveThick]+[tracker:BackPlaneDz],
-    -0.5*[tidmodpar:ActiveThick]+[tracker:BackPlaneDz]
   </Vector>
   <String name="HybridName"         value="tidmodule1:TIDModule1Hybrid"/>
   <String name="HybridMaterial"     value="tidmaterial:TID_ele1"/>
