@@ -14,8 +14,8 @@ compatibility-->
  <Constant name="TopFrameZ"      value="0.275*mm"/>
  <Constant name="SideFrameThick" value="0.764*mm"/>
  <Constant name="SideFrameZ"     value="0.025*mm"/>
- <Constant name="ActiveThick1"   value="0.320*mm"/>
- <Constant name="ActiveThick2"   value="0.500*mm"/>
+ <Constant name="WaferThick1"    value="0.320*mm"/>
+ <Constant name="WaferThick2"    value="0.500*mm"/>
  <Constant name="ActiveZ1"       value="-0.606*mm"/>
  <Constant name="ActiveZ2"       value="-0.525*mm"/>
  <Constant name="HybridHeight"   value="2.526*cm"/>

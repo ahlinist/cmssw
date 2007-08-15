@@ -11,7 +11,7 @@
  <Constant name="DlBottom"           value="7.4012000*cm"/>
  <Constant name="SideWidthTop"       value="0.1376009*cm"/>
  <Constant name="SideWidthBottom"    value="0.1262048*cm"/>
- <Constant name="HybridZ"            value="[ActiveZ]+ 0.5*(-[tecmodpar:ActiveThick2] + [tecmodpar:HybridThick])"/>
+ <Constant name="HybridZ"            value="[ActiveZ]+ 0.5*(-[tecmodpar:WaferThick2] + [tecmodpar:HybridThick])"/>
  <Constant name="TopFrameZ"          value="[HybridZ]+ 0.5*([tecmodpar:HybridThick]+[tecmodpar:TopFrameThick])"/>
  <Constant name="SideFrameZ"         value="[TopFrameZ]+0.5*(-[tecmodpar:TopFrameThick]+[tecmodpar:SideFrameThick])"/>
  <Constant name="PitchZ"             value="[TopFrameZ] - 0.5*([tecmodpar:TopFrameThick] + [tecmodpar:PitchThick])"/>
@@ -92,12 +92,10 @@
   <String name="WaferRotation"       value="tecmodpar:RFI2"/>
   <String name="ActiveMaterial"      value="materials:Silicon"/>
   <Numeric name="ActiveHeight"       value="[ActiveHeight]"/>
-  <Numeric name="ActiveThick"        value="[tecmodpar:ActiveThick2]"/>
+  <Numeric name="WaferThick"         value="[tecmodpar:WaferThick2]"/>
   <String name="ActiveRotation"      value="tecmodpar:ART6"/>
   <Numeric name="ActiveZ"            value="[ActiveZ]"/>
-  <String name="BackPlaneMaterial"   value="materials:Silicon"/>
   <Numeric name="BackPlaneThick"     value="2*[tracker:BackPlaneDz]"/>
-  <Numeric name="BackPlaneZ"         value="-0.5*[tecmodpar:ActiveThick2]+[tracker:BackPlaneDz]"/>
   <String name="HybridMaterial"      value="tecmaterial:TEC_Hybrid4APV"/>
   <Numeric name="HybridHeight"       value="[tecmodpar:HybridHeight]"/>
   <Numeric name="HybridWidth"        value="[tecmodpar:HybridWidth]"/>
