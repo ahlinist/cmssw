@@ -1,7 +1,5 @@
 #include "SimG4Core/Geant4e/interface/G4eTargetPlaneSurface.hh"
-#include "SimG4Core/Geant4e/interface/G4eManager.hh" //for verbosity checking
 #include "G4Point3D.hh"
-#include "G4ThreeVector.hh"
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 G4eTargetPlaneSurface::G4eTargetPlaneSurface(G4double a, G4double b, G4double c, G4double d)

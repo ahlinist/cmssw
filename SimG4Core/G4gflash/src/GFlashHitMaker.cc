@@ -23,8 +23,8 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: GFlashHitMaker.cc,v 1.7 2006/06/29 19:14:12 gunter Exp $
-// GEANT4 tag $Name: geant4-08-01-patch-01 $
+// $Id: GFlashHitMaker.cc,v 1.3 2006/09/28 15:35:46 sunanda Exp $
+// GEANT4 tag $Name: V00-03-01 $
 //
 //
 // ------------------------------------------------------------
@@ -38,11 +38,10 @@
 #include "G4ios.hh"
 #include "G4TransportationManager.hh"
 #include "G4VSensitiveDetector.hh"
-#include "G4TouchableHandle.hh"
 #include "G4VGFlashSensitiveDetector.hh"
 
 #include "GFlashHitMaker.hh"
-#include "G4GFlashSpot.hh"
+#include "SimG4Core/G4gflash/src/G4GFlashSpot.hh" 
 
 GFlashHitMaker::GFlashHitMaker()
 {

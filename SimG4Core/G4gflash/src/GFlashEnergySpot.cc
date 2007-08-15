@@ -23,8 +23,8 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: GFlashEnergySpot.cc,v 1.5 2006/06/29 19:14:10 gunter Exp $
-// GEANT4 tag $Name: geant4-08-01-patch-01 $
+// $Id: GFlashEnergySpot.cc,v 1.2 2006/09/28 15:35:46 sunanda Exp $
+// GEANT4 tag $Name: V00-03-01 $
 //
 //
 // ------------------------------------------------------------
@@ -35,11 +35,6 @@
 // Author: Joanna Weng - 9.11.2004
 // ------------------------------------------------------------
 
-#include "G4VisAttributes.hh"
-#include "G4Colour.hh"
-#include "G4Polyline.hh"
-#include "G4VVisManager.hh"
-#include "G4Step.hh"
 #include "GFlashEnergySpot.hh"
 
 GFlashEnergySpot::GFlashEnergySpot() {}

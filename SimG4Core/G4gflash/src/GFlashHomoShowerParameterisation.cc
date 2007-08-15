@@ -23,8 +23,8 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: GFlashHomoShowerParameterisation.cc,v 1.2 2006/11/14 23:05:24 wmtan Exp $
-// GEANT4 tag $Name:  $
+// $Id: GFlashHomoShowerParameterisation.cc,v 1.3 2007/08/06 19:21:27 sunanda Exp $
+// GEANT4 tag $Name: V00-03-01 $
 //
 //
 // ------------------------------------------------------------
@@ -35,13 +35,11 @@
 // Authors: E.Barberio & Joanna Weng - 9.11.2004
 // ------------------------------------------------------------
 
-#include "GVFlashShowerParameterisation.hh"
 #include "GFlashHomoShowerParameterisation.hh"
 #include <cmath>
 #include "Randomize.hh"
 #include "G4ios.hh"
 #include "G4Material.hh"
-#include "G4MaterialTable.hh"
 
 GFlashHomoShowerParameterisation::
 GFlashHomoShowerParameterisation(G4Material * aMat,

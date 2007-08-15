@@ -15,11 +15,9 @@
 #include "G4Navigator.hh"
 #define private private
 
-#include "G4eManager.hh"
 class G4eTargetSurface;
 class G4edd;
 #include "G4ThreeVector.hh"
-#include "geomdefs.hh"
 class G4eTargetSurface;
 
 #include <iostream>

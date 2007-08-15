@@ -14,7 +14,6 @@
 #include "G4Point3D.hh"
 #include "G4Vector3D.hh"
 
-#include "globals.hh"
 #include "G4Track.hh"
 
 class G4eTrajParamFree

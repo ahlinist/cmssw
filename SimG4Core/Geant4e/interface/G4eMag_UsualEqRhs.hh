@@ -14,7 +14,6 @@
 #define G4EMAG_USUAL_EQRHS
 
 #include "G4Mag_UsualEqRhs.hh"
-#include "G4MagneticField.hh"
 
 class G4eMag_UsualEqRhs : public G4Mag_UsualEqRhs
 {

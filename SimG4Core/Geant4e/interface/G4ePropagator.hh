@@ -25,7 +25,6 @@ class G4eTarget;
 
 #include "G4eManager.hh"
 #include "globals.hh"
-#include "G4ThreeVector.hh"
 
 class G4ePropagator
 {

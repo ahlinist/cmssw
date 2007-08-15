@@ -23,15 +23,14 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: Gamma.cc,v 1.6 2006/06/29 19:14:28 gunter Exp $
-// GEANT4 tag $Name: geant4-08-01-patch-01 $
+// $Id: Gamma.cc,v 1.2 2006/09/28 15:35:46 sunanda Exp $
+// GEANT4 tag $Name: V00-03-01 $
 //
 //
 // ------------------------------------------------------------
 // GEANT 4 class implementation
 // ------------------------------------------------------------
 
-#include <cmath>
 #include <string.h>
 #include "Gamma.hh"
 

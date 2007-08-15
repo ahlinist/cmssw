@@ -21,7 +21,6 @@
 #ifndef G4eTrajStateFree_hh
 #define G4eTrajStateFree_hh
 
-#include "globals.hh"
 
 #include "G4eTrajState.hh"
 #include "G4eTrajParamFree.hh"

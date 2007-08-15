@@ -24,8 +24,8 @@
 // ********************************************************************
 //
 //
-// $Id: G4VGFlashSensitiveDetector.hh,v 1.5 2006/06/29 19:13:40 gunter Exp $
-// GEANT4 tag $Name: geant4-08-01-patch-01 $
+// $Id: G4VGFlashSensitiveDetector.hh,v 1.2 2006/09/28 15:35:46 sunanda Exp $
+// GEANT4 tag $Name: V00-03-01 $
 //
 //
 //---------------------------------------------------------------

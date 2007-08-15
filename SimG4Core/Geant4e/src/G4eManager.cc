@@ -7,8 +7,6 @@
 #include "G4MagIntegratorDriver.hh"
 
 #include "G4ClassicalRK4.hh"
-#include "G4ExactHelixStepper.hh"
-#include "G4HelixExplicitEuler.hh"
 
 #include "SimG4Core/Geant4e/interface/G4eManager.hh"
 
@@ -16,11 +14,8 @@
 #include "SimG4Core/Geant4e/interface/G4eRunManagerKernel.hh"
 #include "SimG4Core/Geant4e/interface/G4ePropagatorG4.hh"
 #include "SimG4Core/Geant4e/interface/G4eMag_UsualEqRhs.hh"
+#include "G4MagneticField.hh" 
 
-#include "G4VParticleChange.hh"
-#include "G4ParticleChangeForMSC.hh"
-#include "G4ParticleChange.hh"
-#include "G4Track.hh"
 #include "G4TransportationManager.hh"
 #include "SimG4Core/Geant4e/interface/G4eNavigator.hh"
 #include "G4GeometryManager.hh"
@@ -28,7 +23,6 @@
 #include "G4ChordFinder.hh"
 #include "G4EquationOfMotion.hh"
 #include "G4FieldManager.hh"
-#include "G4VParticleChange.hh"
 
 G4eManager* G4eManager::theG4eManager = 0;
 

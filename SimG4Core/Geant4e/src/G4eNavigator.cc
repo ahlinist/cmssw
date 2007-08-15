@@ -1,12 +1,10 @@
 //
 #include "SimG4Core/Geant4e/interface/G4eNavigator.hh"
-#include "G4Navigator.hh"
 #include "globals.hh"
 
 #include "SimG4Core/Geant4e/interface/G4eManager.hh"
 #include "SimG4Core/Geant4e/interface/G4eTargetSurface.hh"
 
-#include "G4ThreeVector.hh"
 
 #define geant4e
 
@@ -18,7 +16,6 @@ G4eNavigator::~G4eNavigator()
 {
 }
 
-#include "G4VisExtent.hh"
 
 G4double G4eNavigator::ComputeStep (const G4ThreeVector &pGlobalPoint,
 			   const G4ThreeVector &pDirection,

@@ -13,7 +13,6 @@
 #ifndef G4eTrajState_h
 #define G4eTrajState_h
 
-#include "globals.hh"
 #include "G4Track.hh"
 #include "G4Point3D.hh"
 #include "G4Vector3D.hh"

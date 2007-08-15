@@ -16,7 +16,6 @@
 #ifndef G4eTrajStateOnSurface_hh
 #define G4eTrajStateOnSurface_hh
 
-#include "globals.hh"
 
 #include "G4eTrajState.hh"
 #include "G4eTrajParamOnSurface.hh"

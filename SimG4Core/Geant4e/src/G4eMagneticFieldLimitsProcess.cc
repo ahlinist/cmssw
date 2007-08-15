@@ -1,5 +1,4 @@
 #include "SimG4Core/Geant4e/interface/G4eMagneticFieldLimitsProcess.hh"
-#include "G4UnitsTable.hh"
 #include "SimG4Core/Geant4e/interface/G4eMagneticFieldLimitsMessenger.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

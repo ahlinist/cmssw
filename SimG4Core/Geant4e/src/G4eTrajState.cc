@@ -1,4 +1,5 @@
 #include "SimG4Core/Geant4e/interface/G4eTrajState.hh"
+#include "globals.hh" 
 #include "G4ParticleTable.hh"
 #include "G4ParticleDefinition.hh"
 #include "SimG4Core/Geant4e/interface/G4eManager.hh"

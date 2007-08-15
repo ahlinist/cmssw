@@ -16,7 +16,6 @@
 #include "G4ThreeVector.hh"
 
 #include "globals.hh"
-#include "G4Track.hh"
 
 class G4eTrajParamOnSurface
 {

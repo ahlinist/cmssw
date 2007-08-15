@@ -1,9 +1,7 @@
 //
 #include "SimG4Core/Geant4e/interface/G4eTargetCylindricalSurface.hh"
-#include "SimG4Core/Geant4e/interface/G4eManager.hh" //for verbosity checking
 #include "geomdefs.hh"
 
-#include "G4Plane3D.hh"
 
       // Initialise a single volume, positioned in a frame which is rotated by
       // *pRot and traslated by tlate, relative to the coordinate system of the
