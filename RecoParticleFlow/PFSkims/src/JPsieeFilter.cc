@@ -34,7 +34,7 @@ void  JPsieeFilter::beginJob(const edm::EventSetup & c){
 
 JPsieeFilter::~JPsieeFilter()
 {  
-  std::cout << "Total number of accepted events = " << noAccepted << std::endl;
+  //std::cout << "Total number of accepted events = " << noAccepted << std::endl;
 }
 
 void JPsieeFilter::endJob()
