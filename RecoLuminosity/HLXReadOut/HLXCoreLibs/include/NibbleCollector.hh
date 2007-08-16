@@ -54,7 +54,7 @@ namespace HCAL_HLX
     u32 GetNumGoodPackets();
     u32 GetNumBadPackets();
     u32 GetNumLostPackets();
-    u32 GetTotalDataVolume();
+    double GetTotalDataVolume();
     u32 GetNumGoodETSumNibbles();
     u32 GetNumBadETSumNibbles();
     u32 GetNumGoodOccupancyNibbles();
@@ -95,7 +95,7 @@ namespace HCAL_HLX
     u32 mNumGoodPackets;
     u32 mNumBadPackets;
     u32 mNumLostPackets;
-    u32 mTotalDataVolume;
+    double mTotalDataVolume;
     u32 mNumGoodOccupancyNibbles;
     u32 mNumBadOccupancyNibbles;
     u32 mNumGoodLHCNibbles;
