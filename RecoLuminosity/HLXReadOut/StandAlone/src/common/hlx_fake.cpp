@@ -31,7 +31,7 @@ using namespace std;
 using namespace ICCoreUtils;
 using namespace HCAL_HLX;
 
-const u32 TIMEOUT_PERIOD = 10;
+const u32 TIMEOUT_PERIOD = 1;
 
 // Variables (global)
 u8 **crcTable;
@@ -48,7 +48,7 @@ void CleanupChecksum() {
   // CRC table
   for ( u32 i = 0 ; i != 256 ; i++ ) {
     if ( crcTable[i] ) {
-      delete []crcTable;
+      delete []crcTable[i];
       crcTable[i] = 0;
     }
   }
@@ -180,17 +180,18 @@ int main(int argc, char ** argv)
     }
 
     // Create local port and ip structure
-    sockaddr_in sa_local;
-    sa_local.sin_port = sourcePort;
-    sa_local.sin_addr.s_addr = inet_addr(sourceAddress);
-    sa_local.sin_family = AF_INET;
+    //sockaddr_in sa_local;
+    //sa_local.sin_port = sourcePort;
+    //sa_local.sin_addr.s_addr = inet_addr(sourceAddress);
+    //sa_local.sin_family = AF_INET;
 
     // Bind to a local port to receive data
-    int ret = bind(udp_socket,(struct sockaddr *)&sa_local,sizeof(sa_local));
-    if ( ret == -1 ) {
-      cerr << "Socket could not be bound" << endl;
-      return 1;
-    }
+    int ret;
+    //int ret = bind(udp_socket,(struct sockaddr *)&sa_local,sizeof(sa_local));
+    //if ( ret == -1 ) {
+     // cerr << "Socket could not be bound" << endl;
+     // return 1;
+   // }
     
     int j=0;
     int startTime, tempTime, interTime = 0;
@@ -217,7 +218,7 @@ int main(int argc, char ** argv)
 	lumiHeader.startOrbit += lumiHeader.numOrbits+1;
 	timeoutCount--;
 	if ( timeoutCount == 0 ) {
-	  Sleep(1);
+	  Sleep(1000);
           timeoutCount = TIMEOUT_PERIOD;
 	}
       }	else {
