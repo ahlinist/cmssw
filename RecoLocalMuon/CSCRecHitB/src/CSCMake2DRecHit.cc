@@ -58,7 +58,7 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
   specs_        = layer->chamber()->specs();
   id_           = id;
 
-  float sqrt_12 = sqrt(12.);
+  float sqrt_12 = 3.4641;
 
   double sigma, chisq, prob;
   sigma = 0.00;
@@ -72,22 +72,35 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
 
 
   // Find wire hit position and wire properties
-
   wgroups = wHit.wgroups();
   int nWG = wgroups.size();
   int wireg1 = wgroups[0];
   int wireg2 = wgroups[nWG-1];
 
-  float sigmaWire  = (layergeom_->yResolution(wireg1) + layergeom_->yResolution(wireg2)) / 2.;
+  int Nwires1 = layergeom_->numberOfWiresPerGroup( wireg1 );
+  int Nwires2 = layergeom_->numberOfWiresPerGroup( wireg2 );
+
+  float Mwire1 = layergeom_->middleWireOfGroup( wireg1 );
+  float Mwire2 = layergeom_->middleWireOfGroup( wireg2 );
+
+  int wire1 = (int) (Mwire1 - Nwires1 / 2. + 0.5);
+  int wire2 = (int) (Mwire2 + Nwires2 / 2.);
+
+  float centerWire = (wire1 + wire2) / 2.;
+
+  float sigmaWire  = (layergeom_->yResolution( wireg1 ) + layergeom_->yResolution( wireg2 )) / 2.;
+
 
   // Find strips position and properties
 
   CSCRecHit2D::ChannelContainer strips = sHit.strips();
-  float strip_pos = sHit.sHitPos(); // centroid, in units of strip #
   int tmax = sHit.tmax();
   int nStrip = strips.size();
-  int ch = strips[nStrip/2];
+  int idCenterStrip = nStrip/2;
+  int ch = strips[idCenterStrip];
   int centerStrip = ch;
+  float strip_pos = sHit.sHitPos(); // centroid, in units of strip #
+
 
   // Setup ADCs
   std::vector<float> adcs = sHit.s_adc();
@@ -104,11 +117,10 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
   // If at the edge, then used 1 strip cluster only :
   if ( ch == 1 || ch == specs_->nStrips() || nStrip < 2 ) {
 
-    LocalPoint lp1 = layergeom_->stripWireGroupIntersection( centerStrip, wireg1);
-    LocalPoint lp2 = layergeom_->stripWireGroupIntersection( centerStrip, wireg2);
+    LocalPoint lp1 = layergeom_->stripWireIntersection( centerStrip, centerWire);
 
-    float x = ( lp1.x() + lp2.x() )/2.;
-    float y = ( lp1.y() + lp2.y() )/2.;
+    float x = lp1.x();
+    float y = lp1.y();
 
     LocalPoint lp0(x, y);
 
@@ -125,19 +137,15 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
 
   // If not at the edge, used cluster of size ClusterSize:
 
-  int ch0 = strips[nStrip/2];
-  int ch1 = strips[0];
-  LocalPoint lp11  = layergeom_->stripWireGroupIntersection( ch0, wireg1);
-  LocalPoint lp111 = layergeom_->stripWireGroupIntersection( ch0, wireg2);
-  LocalPoint lp22  = layergeom_->stripWireGroupIntersection( ch1, wireg1);
-  LocalPoint lp222 = layergeom_->stripWireGroupIntersection( ch1, wireg2);
+  int ch0 = strips[idCenterStrip];
+  LocalPoint lp11  = layergeom_->stripWireIntersection( ch0, centerWire);
 
-  float x = ( lp11.x() + lp111.x() )/2.;
-  float y = ( lp11.y() + lp111.y() )/2.;
+  float x = lp11.x();
+  float y = lp11.y();
 
-  float x2 = ( lp22.x() + lp222.x() )/2.;
-  
-  float stripWidth = fabs(x2 - x);  
+  LocalPoint lpTest(x, y);
+
+  float stripWidth = layergeom_->stripPitch( lpTest );  
   sigma =  stripWidth / sqrt_12;
 
 
@@ -154,20 +162,52 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
 
     xFitWithGatti_->findXOnStrip( id, layer_, sHit, centerStrip, x_to_gatti, stripWidth, x_fit, tpeak, sigma_fit, chisq_fit );
 
-    x     = x_fit;
-    sigma = sigma_fit;
-    chisq = chisq_fit;
-    int ndof = 5;
-
-    if ( chisq_fit > 0.01 ) {
+    // Did fit pass ?
+    if ( chisq_fit > 0.00001 ) {
+      x     = x_fit;
+      sigma = sigma_fit;
+      chisq = chisq_fit;
+      int ndof = 5;
       prob  = probab(ndof, chisq_fit);
+
+    } else {
+
+      // Position from central strip
+      x = x;
+      sigma = stripWidth/2.;      // use half-strip resolution 
+      chisq = 0.;
+      prob = 1.0;
     }
 
   } else {
+
     // Position from centroid
-    x = x + (strip_pos - centerStrip) * stripWidth;
+
+    int ch1 = strips[idCenterStrip-1]; // Left strip
+    int ch2 = strips[idCenterStrip+1]; // Right strip
+
+    LocalPoint lp22  = layergeom_->stripWireIntersection( ch1, centerWire);
+    LocalPoint lp33  = layergeom_->stripWireIntersection( ch2, centerWire);
+
+    float x2 = lp22.x();
+    float x3 = lp33.x();
+
+    float w = strip_pos - centerStrip;
+
+    if (w < 0.) {
+      w = - w;
+      x = x2 * w + x * (1 - w);
+    } else {
+      x = x * w + x3 * (1 - w);
+    }
+ 
+    sigma = stripWidth/sqrt_12;
+    chisq = 0.;
+    prob = 1.0;
 
   }   
+
+  y = layergeom_->yOfWire(centerWire, x);
 
   LocalPoint lp0(x, y);
 
