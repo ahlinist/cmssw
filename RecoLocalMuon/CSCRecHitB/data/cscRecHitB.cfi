@@ -36,8 +36,8 @@ module csc2DRecHits = CSCRecHitBProducer {
      untracked bool   CSCUseGattiFit             = true
      # the step size is in units of strip width
      untracked double CSCminGattiStepSize        = 0.0001
-     untracked double CSCminGattiError           = 0.022
-     untracked double CSCMaxGattiChi2            = 300.
+     untracked double CSCminGattiError           = 0.015
+     untracked double CSCMaxGattiChi2            = 200.
      untracked double CSCCalibrationSystematics  = 0.00
      untracked double CSCStripxtalksOffset       = 0.00
      untracked double CSCStripxtalksSystematics  = 0.00
@@ -45,7 +45,7 @@ module csc2DRecHits = CSCRecHitBProducer {
 #    Parameters for 2-D hits
 ###########################################################
 ###  To be set once wire digis have timing info:
-     untracked int32  CSCstripWireDeltaTime      = 8
+     untracked int32  CSCstripWireDeltaTime      = 1
 ###  This was not fully developed and currently NOT working
 ###  Use false always to avoid crash
      untracked bool CSCproduce1DHits             = false
