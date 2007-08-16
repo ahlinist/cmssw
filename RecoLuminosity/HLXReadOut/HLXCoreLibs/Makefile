@@ -1,11 +1,15 @@
+# Packages to be built
+Project=RecoLuminosity/HLXReadOut
+Package=HLXCoreLibs
+
 IncludeDirs = \
-	$(XDAQ_ROOT)/lumi/HF/HLXReadout/include \
-	$(XDAQ_ROOT)/lumi/HF/CoreUtils/include \
-	$(XDAQ_ROOT)/lumi/HF/DIP/include \
-	$(ORACLE_HOME)/rdbms/demo \
-	$(ORACLE_HOME)/plsql/public \
-	$(ORACLE_HOME)/rdbms/public \
-	$(ORACLE_HOME)/network/public \
+	$(XDAQ_ROOT)/$(Project)/$(Package)/include \
+	$(XDAQ_ROOT)/$(Project)/CoreUtils/include \
+	$(XDAQ_ROOT)/$(Project)/DIP/include \
+	$(ORACLE_ROOT)/rdbms/demo \
+	$(ORACLE_ROOT)/plsql/public \
+	$(ORACLE_ROOT)/rdbms/public \
+	$(ORACLE_ROOT)/network/public \
 	$(ROOTSYS)/include
 
 Sources = \
@@ -24,20 +28,16 @@ Sources = \
 include $(XDAQ_ROOT)/config/mfAutoconf.rules
 include $(XDAQ_ROOT)/config/mfDefs.$(XDAQ_OS)
 
-# Packages to be built
-Project=lumi/HF
-Package=HLXReadout
-
 # compiler flags
 UserCFlags =
-UserCCFlags = -D$(PLATFORM)
+UserCCFlags = 
 UserDynamicLinkFlags =
 UserStaticLinkFlags =
 UserExecutableLinkFlags =
 
 ExternalObjects = 
 
-DynamicLibrary= HLXReadout
+DynamicLibrary= HLXCoreLibs
 StaticLibrary=
 Executables= 
 Libraries= CoreUtils dip dl
