@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export DIPBASE=${HOME}/TriDAS/lumi/HF/DIP
+export DIPBASE=${HOME}/TriDAS/$Project/DIP
 #echo DIPBASE was set automatically to $DIPBASE
 export CLASSPATH=$CLASSPATH:$DIPBASE/lib/dip.jar
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$DIPBASE/lib
