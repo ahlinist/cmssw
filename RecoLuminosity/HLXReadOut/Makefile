@@ -1,7 +1,7 @@
 include $(XDAQ_ROOT)/config/mfAutoconf.rules
 include $(XDAQ_ROOT)/config/mfDefs.$(XDAQ_OS)
 
-Project=lumi/HF
+Project=RecoLuminosity/HLXReadOut
 
 Packages= \
 	CoreUtils \
