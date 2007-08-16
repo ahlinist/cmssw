@@ -319,7 +319,7 @@ namespace HCAL_HLX
       mNumGoodPackets=0;
       mNumBadPackets=0;
       mNumLostPackets=0;
-      mTotalDataVolume=0;
+      mTotalDataVolume=0.0;
       mNumGoodETSumNibbles=0;
       mNumBadETSumNibbles=0;
       mNumGoodOccupancyNibbles=0;
@@ -351,7 +351,7 @@ namespace HCAL_HLX
   u32 NibbleCollector::GetNumLostPackets() {
     return mNumLostPackets;
   }
-  u32 NibbleCollector::GetTotalDataVolume() {
+  double NibbleCollector::GetTotalDataVolume() {
     return mTotalDataVolume;
   }
   u32 NibbleCollector::GetNumGoodETSumNibbles() {
