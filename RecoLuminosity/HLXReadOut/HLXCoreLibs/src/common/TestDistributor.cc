@@ -39,7 +39,10 @@ namespace HCAL_HLX
 	bool bExit = false;
 	for ( i = 0 ; i != lumiSection.hdr.numBunches ; i++ ) {
 	  for ( u32 j = 0 ; j != 6 ; j++ ) {
-	    //cout << lumiSection.occupancy[j].hdr.numNibbles << endl;
+	    if ( lumiSection.occupancy[k].hdr.numNibbles == 0 ) {
+	      cout << "Occupancy " << dec << k << " lumi section contains no nibbles!!!" << endl;
+	      break;
+	    }
 	    value = i * lumiSection.hdr.numOrbits / lumiSection.occupancy[k].hdr.numNibbles;
 	    if ( value > 0xFFFF ) value = 0xFFFF;
 	    value *= lumiSection.occupancy[k].hdr.numNibbles;
@@ -57,12 +60,14 @@ namespace HCAL_HLX
 	}
 	
 	for ( i = 0 ; i != lumiSection.hdr.numBunches ; i++ ) {
+	  if ( lumiSection.lhc[k].hdr.numNibbles == 0 ) {
+	    cout << "LHC " << dec << k << " lumi section contains no nibbles!" << endl;
+	    break;
+	  }
 	  value = i * lumiSection.hdr.numOrbits / lumiSection.lhc[k].hdr.numNibbles;
 	  if ( value > 0xFFFF ) value = 0xFFFF;
 	  value *= lumiSection.lhc[k].hdr.numNibbles;
 	  if ( lumiSection.lhc[k].data[i] != value ) {
-	    //cout << static_cast<u16>(k) << "\t" << j << "\t" << i << "\t" << lumiSection.occupancy[k][j].data[i]
-	    //<< "\t" << value << endl;
 	    break;
 	  }
 	}	
@@ -72,6 +77,10 @@ namespace HCAL_HLX
 	}
 
 	for ( i = 0 ; i != lumiSection.hdr.numBunches ; i++ ) {
+	  if ( lumiSection.etSum[k].hdr.numNibbles == 0 ) {
+	    cout << "etSum " << dec << k << " lumi section contains no nibbles!!!" << endl;
+	    break;
+	  }
 	  value = i * lumiSection.hdr.numOrbits;
 	  if ( lumiSection.etSum[k].data[i] != value ) {
 	    break;
