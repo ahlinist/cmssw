@@ -30,6 +30,8 @@
 //
 // 5 mf 7/24/07     Added HaltMessageLogging
 //
+// 6 mf 8/7/07      Added FlushMessageLog
+//
 // =================================================
 
 // system include files
@@ -297,6 +299,7 @@ public:
   bool isInfoEnabled();
   bool isWarningEnabled();
   void HaltMessageLogging();
+  void FlushMessageLog();
 
 
 }  // namespace edm
