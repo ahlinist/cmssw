@@ -32,6 +32,8 @@
 //
 // 6 mf 8/7/07      Added FlushMessageLog
 //
+// 7 mf 8/7/07      Added GroupLogStatistics(category)
+//
 // =================================================
 
 // system include files
@@ -235,7 +237,6 @@ private:
 };  // LogAbsolute
 
 
-
 void LogStatistics(); 
 
 class LogDebug_
@@ -300,7 +301,7 @@ public:
   bool isWarningEnabled();
   void HaltMessageLogging();
   void FlushMessageLog();
-
+  void GroupLogStatistics(std::string const & category);
 
 }  // namespace edm
 
