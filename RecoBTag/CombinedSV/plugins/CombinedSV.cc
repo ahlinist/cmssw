@@ -162,8 +162,6 @@ void CombinedSV::produce(edm::Event& iEvent,
   int evt=iEvent.id().event();
   cout << endl
        << "[CombinedSV] next event: " << evt << endl
-       << "=============================" << endl
-       << endl;
   #endif // DEBUG
   edm::ESHandle<MagneticField> magneticField;
   iSetup.get<IdealMagneticFieldRecord>().get(magneticField);
@@ -210,6 +208,9 @@ void CombinedSV::produce(edm::Event& iEvent,
            << "[CombinedSV]     ---<  now analyzing jet #" << i << "  >---";
            */
 
+      #ifdef DEBUG
+      cout << "[CombinedSV] found " << jetNTrks->second.size() << " tracks in jet " << jetNTrks - jetWithTrackColl->begin() << endl;
+      #endif // DEBUG
       vector < reco::TransientTrack > trks;
       edm::ESHandle<TransientTrackBuilder> builder;
       iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder", builder );
@@ -218,28 +219,39 @@ void CombinedSV::produce(edm::Event& iEvent,
       {
         trks.push_back ( builder->build ( *i ) );
       }
+      #ifdef DEBUG
+      cout << "[CombinedSV] built " << trks.size() << " TransientTracks" << endl;
+      #endif // DEBUG
 
       unsigned int index = jetNTrks - jetWithTrackColl->begin();
       reco::CombinedSVTagInfo btag = algorithm_->tag(
 		primaryVertex, *( jetNTrks->first ), trks,
 		edm::Ref<JetTracksAssociationCollection>(jetWithTrackColl, index) );
+      #ifdef DEBUG
+      cout << "[CombinedSV] jet " << index << " tag value: " << btag.discriminator() << endl;
+      #endif // DEBUG
       reco::JetTag jettag( btag.discriminator() );
       baseCollection->push_back(jettag);
       extCollection->push_back(btag);
     }
   } catch ( edm::Exception & e ) {
     #ifdef DEBUG
-    cout << "[CombinedSV] Exception caught: " << e.what() << ", ignore this event"
+    cout << "[CombinedSV] EDM exception caught: " << e.what() << ", ignore this event"
          << endl;
     #endif // DEBUG
   } catch ( cms::Exception & e ) {
     #ifdef DEBUG
-    cout << "[CombinedSV] Exception caught: " << e.what() << ", ignore this event"
+    cout << "[CombinedSV] CMS exception caught: " << e.what() << ", ignore this event"
+         << endl;
+    #endif // DEBUG
+  } catch ( std::exception & e ) {
+    #ifdef DEBUG
+    cout << "[CombinedSV] STL exception caught: " << e.what() << ", ignore this event"
          << endl;
     #endif // DEBUG
   } catch (...) {
     #ifdef DEBUG
-    cout << "[CombinedSV] Unknown exception caught. No jets found, ignore this event"
+    cout << "[CombinedSV] Unknown exception caught. Ignore this event"
          << endl;
     #endif // DEBUG
   }
