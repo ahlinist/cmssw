@@ -1,42 +1,19 @@
-module hadSUSYHLTQCDPath = HLTHighLevel {
-  InputTag TriggerResultsTag = TriggerResults
-  bool byName = true
-  bool andOr = true
-  vstring HLTPaths = {"HLT1jet","HLT2jet","HLT1jetPE1","HLT1jetPE3",
+
+module hadSUSYHLTQCDPath = hltHighLevel from "HLTrigger/HLTfilters/data/hltHighLevel.cfi"
+  replace hadSUSYHLTQCDPath.HLTPaths = {"HLT1jet","HLT2jet","HLT1jetPE1","HLT1jetPE3",
     "HLT1jetPE5","HLT1Tau"}
-}
 
-module hadSUSYHLTdiMuonPath = HLTHighLevel {
-  InputTag TriggerResultsTag = TriggerResults
-  bool byName = true
-  bool andOr = true
-  vstring HLTPaths = {"HLT2MuonNonIso"}
-}
+module hadSUSYHLTdiMuonPath = hltHighLevel from "HLTrigger/HLTfilters/data/hltHighLevel.cfi"
+ replace hadSUSYHLTdiMuonPath.HLTPaths = {"HLT2MuonNonIso"}
 
-module hadSUSYHLTdiElecPath = HLTHighLevel {
-  InputTag TriggerResultsTag = TriggerResults
-  bool byName = true
-  bool andOr = true
-  vstring HLTPaths = {"HLT2ElectronRelaxed"}
-}
+module hadSUSYHLTdiElecPath = hltHighLevel from "HLTrigger/HLTfilters/data/hltHighLevel.cfi"
+ replace hadSUSYHLTdiElecPath.HLTPaths = {"HLT2ElectronRelaxed"}
 
-module hadSUSYHLTJetMETPath = HLTHighLevel {
-  InputTag TriggerResultsTag = TriggerResults
-  bool byName = true
-  bool andOr = true
-  vstring HLTPaths = {"HLT3jet","HLT1MET1HT","HLT2jet1METNV"}
-}
+module hadSUSYHLTJetMETPath = hltHighLevel from "HLTrigger/HLTfilters/data/hltHighLevel.cfi"
+ replace hadSUSYHLTJetMETPath.HLTPaths = {"HLT3jet","HLT1MET1HT","HLT2jet1METNV"}
 
-module hadSUSYHLTTopMuonPath = HLTHighLevel {
-  InputTag TriggerResultsTag = TriggerResults
-  bool byName = true
-  bool andOr = true
-  vstring HLTPaths = {"HLTXMuonJets"}
-}
+module hadSUSYHLTTopMuonPath =  hltHighLevel from "HLTrigger/HLTfilters/data/hltHighLevel.cfi"
+ replace hadSUSYHLTTopMuonPath.HLTPaths = {"HLTXMuonJets"}
 
-module hadSUSYHLTTopElecPath = HLTHighLevel {
-  InputTag TriggerResultsTag = TriggerResults
-  bool byName = true
-  bool andOr = true
-  vstring HLTPaths = {"HLTXElectron1Jet"}
-}
+module hadSUSYHLTTopElecPath = hltHighLevel from "HLTrigger/HLTfilters/data/hltHighLevel.cfi"
+ replace hadSUSYHLTTopElecPath.HLTPaths = {"HLTXElectron1Jet"}

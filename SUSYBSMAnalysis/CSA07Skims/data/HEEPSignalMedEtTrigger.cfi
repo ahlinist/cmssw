@@ -2,9 +2,5 @@
 #HEEP skim, med and high Et signal 
 #trigger selection
 #
-  module hEEPSignalMedEtTrigger = HLTHighLevel{
-        InputTag TriggerResultsTag = TriggerResults
-        bool byName = true
-        bool andOr= true
-        vstring HLTPaths = {"HLT1ElectronRelaxed"}
-        }
+  module hEEPSignalMedEtTrigger =  hltHighLevel from "HLTrigger/HLTfilters/data/hltHighLevel.cfi"
+replace hEEPSignalMedEtTrigger.HLTPaths = {"HLT1ElectronRelaxed"}
