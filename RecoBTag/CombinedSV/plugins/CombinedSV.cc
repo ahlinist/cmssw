@@ -161,7 +161,7 @@ void CombinedSV::produce(edm::Event& iEvent,
   #ifdef DEBUG
   int evt=iEvent.id().event();
   cout << endl
-       << "[CombinedSV] next event: " << evt << endl
+       << "[CombinedSV] next event: " << evt << endl;
   #endif // DEBUG
   edm::ESHandle<MagneticField> magneticField;
   iSetup.get<IdealMagneticFieldRecord>().get(magneticField);
