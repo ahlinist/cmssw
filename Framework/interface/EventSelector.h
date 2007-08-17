@@ -61,6 +61,9 @@ namespace edm
 
     Strings paths_;
 
+    int nTriggerNames_;
+    bool notStarPresent_;
+
     bool acceptTriggerPath(HLTPathStatus const&, BitInfo const&) const;
   };
 }
