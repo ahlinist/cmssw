@@ -144,4 +144,14 @@ process.looper = cms.Looper("ALooper",
   nLoops = cms.uint32(10)
 )
 
+process.mix = cms.EDProducer("MixingModule",
+    input = cms.SecSource("PoolSource",
+      fileNames = cms.untracked.vstring("file:pileup.root")
+    ),
+    mixtyp = cms.string("fixed"),
+    average_number = cms.double(14.3),
+    min_bunch = cms.int32(-5),
+    max_bunch = cms.int32(3)
+  )
+
 
