@@ -8,8 +8,8 @@
  * MET>50 GeV
  * Cuts values in the cfi files in the data directory 
  *
- * $Date: 2007/07/23$
- * $Revision: 1.0 $
+ * $Date: 2007/07/27 17:52:39 $
+ * $Revision: 1.1 $
  *
  * \author Massimiliano Chioboli, Universita' and INFN, Catania
  *         Maria Spiropulu - CERN
@@ -78,58 +78,58 @@ bool LepSUSYSkim::filter( edm::Event& iEvent,
   
   // Get the muon collection
   Handle<MuonCollection> MuonHandle;
-  try {
+//  try {
     iEvent.getByLabel( Muonsrc_, MuonHandle );
-  }
-  catch ( cms::Exception& ex ) {
-    edm::LogError( "LepSUSYSkim" ) 
-      << "Unable to get Muon collection "
-      << Muonsrc_.label();
-    return false;
-  }
+//  }
+//  catch ( cms::Exception& ex ) {
+//    edm::LogError( "LepSUSYSkim" ) 
+//      << "Unable to get Muon collection "
+//      << Muonsrc_.label();
+//    return false;
+//  }
   MuonCollection TheMuons = *MuonHandle;
   std::stable_sort( TheMuons.begin(), TheMuons.end(), PtSorter() );
 
   // Get the electron collection
   Handle<PixelMatchGsfElectronCollection> ElecHandle;
-  try {
+//  try {
     iEvent.getByLabel( Elecsrc_, ElecHandle );
-  }
-  catch ( cms::Exception& ex ) {
-    edm::LogError( "LepSUSYSFOSElecSkim" ) 
-      << "Unable to get Elec collection "
-      << Elecsrc_.label();
-    return false;
-  }
+//  }
+//  catch ( cms::Exception& ex ) {
+//    edm::LogError( "LepSUSYSFOSElecSkim" ) 
+//      << "Unable to get Elec collection "
+//      << Elecsrc_.label();
+//    return false;
+//  }
   PixelMatchGsfElectronCollection TheElecs = *ElecHandle;
   std::stable_sort( TheElecs.begin(), TheElecs.end(), PtSorter() );
 
 
   // Get the caloJet collection
   Handle<CaloJetCollection> CaloJetsHandle;
-  try {
+//  try {
     iEvent.getByLabel( CaloJetsrc_, CaloJetsHandle );
-  } 
-  catch ( cms::Exception& ex ) {
-    edm::LogError( "LepSUSYSkim" ) 
-      << "Unable to get CaloJet collection "
-      << CaloJetsrc_.label();
-    return false;
-  }
+//  } 
+//  catch ( cms::Exception& ex ) {
+//    edm::LogError( "LepSUSYSkim" ) 
+//      << "Unable to get CaloJet collection "
+//      << CaloJetsrc_.label();
+//    return false;
+//  }
   CaloJetCollection TheCaloJets = *CaloJetsHandle;
   std::stable_sort( TheCaloJets.begin(), TheCaloJets.end(), PtSorter() );
 
   // Get the caloMetCollection
   Handle<CaloMETCollection> METHandle;
-  try {
+//  try {
     iEvent.getByLabel( CaloMETsrc_, METHandle );
-  }
-  catch ( cms::Exception& ex ) {
-    edm::LogError( "HadSUSYQCDSkim" )
-      << "Unable to get CaloMET collection "
-      << CaloMETsrc_.label();
-    return false;
-  }
+//  }
+//  catch ( cms::Exception& ex ) {
+//    edm::LogError( "HadSUSYQCDSkim" )
+//      << "Unable to get CaloMET collection "
+//      << CaloMETsrc_.label();
+//    return false;
+//  }
   if ( METHandle->empty() ) return false;
 
 

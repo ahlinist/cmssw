@@ -4,8 +4,8 @@
  * >= 2 barrel jets 100 GeV, dphi, R1, R2 cuts
  * QCD control, test L1 acoplanar path (QCD trigger path)
  *
- * $Date: 2007/07/12 09:07:46 $
- * $Revision: 1.1 $
+ * $Date: 2007/07/27 21:04:22 $
+ * $Revision: 1.2 $
  *
  * \author Michael Tytgat, Maria Spiropulu - CERN
  *
@@ -75,29 +75,29 @@ bool HadSUSYQCDSkim::filter( edm::Event& iEvent,
   nEvents_++;
 
   Handle<CaloJetCollection> CaloJetsHandle;
-  try {
+//  try {
     iEvent.getByLabel( CaloJetsrc_, CaloJetsHandle );
-  } 
-  catch ( cms::Exception& ex ) {
-    edm::LogError( "HadSUSYQCDSkim" ) 
-      << "Unable to get CaloJet collection "
-      << CaloJetsrc_.label();
-    return false;
-  }
+//  } 
+//  catch ( cms::Exception& ex ) {
+//    edm::LogError( "HadSUSYQCDSkim" ) 
+//      << "Unable to get CaloJet collection "
+//      << CaloJetsrc_.label();
+//    return false;
+//  }
   if ( CaloJetsHandle->empty() ) return false;
   CaloJetCollection TheCaloJets = *CaloJetsHandle;
   std::stable_sort( TheCaloJets.begin(), TheCaloJets.end(), PtSorter() );
 
   Handle<CaloMETCollection> METHandle;
-  try {
+//  try {
     iEvent.getByLabel( CaloMETsrc_, METHandle );
-  }
-  catch ( cms::Exception& ex ) {
-    edm::LogError( "HadSUSYQCDSkim" )
-      << "Unable to get CaloMET collection "
-      << CaloMETsrc_.label();
-    return false;
-  }
+//  }
+//  catch ( cms::Exception& ex ) {
+//    edm::LogError( "HadSUSYQCDSkim" )
+//      << "Unable to get CaloMET collection "
+//      << CaloMETsrc_.label();
+//    return false;
+//  }
   if ( METHandle->empty() ) return false;
   double METphi = METHandle->begin()->phi();
 

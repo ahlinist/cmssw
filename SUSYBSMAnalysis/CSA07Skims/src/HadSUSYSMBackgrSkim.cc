@@ -4,8 +4,8 @@
  * >= 2 jets, 1st jet 110 GeV + MET 100 GeV
  * Total SM background (JetMet trigger path)
  *
- * $Date: $
- * $Revision: $
+ * $Date: 2007/07/28 16:07:06 $
+ * $Revision: 1.1 $
  *
  * \author Michael Tytgat, Maria Spiropulu - CERN
  *
@@ -65,29 +65,29 @@ bool HadSUSYSMBackgrSkim::filter( edm::Event& iEvent,
 
   Handle<CaloJetCollection> CaloJetsHandle;
 
-  try {
+//  try {
     iEvent.getByLabel( CaloJetsrc_, CaloJetsHandle );
-  } 
-  catch ( cms::Exception& ex ) {
-    edm::LogError( "HadSUSYSMBackgrSkim" ) 
-      << "Unable to get CaloJet collection "
-      << CaloJetsrc_.label();
-    return false;
-  }
+//  } 
+//  catch ( cms::Exception& ex ) {
+//    edm::LogError( "HadSUSYSMBackgrSkim" ) 
+//      << "Unable to get CaloJet collection "
+//      << CaloJetsrc_.label();
+//    return false;
+//  }
 
   if ( CaloJetsHandle->empty() ) return false;
 
   Handle<CaloMETCollection> CaloMETHandle;
 
-  try {
+//  try {
     iEvent.getByLabel( CaloMETsrc_, CaloMETHandle );
-  }
-  catch ( cms::Exception& ex ) {
-    edm::LogError( "HadSUSYSMBackgrSkim" )
-      << "Unable to get CaloMET collection "
-      << CaloMETsrc_.label();
-    return false;
-  }
+//  }
+//  catch ( cms::Exception& ex ) {
+//    edm::LogError( "HadSUSYSMBackgrSkim" )
+//      << "Unable to get CaloMET collection "
+//      << CaloMETsrc_.label();
+//    return false;
+//  }
 
   // MET cut
   if ( (CaloMETHandle->begin())->et() < CaloMETmin_ ) return false;

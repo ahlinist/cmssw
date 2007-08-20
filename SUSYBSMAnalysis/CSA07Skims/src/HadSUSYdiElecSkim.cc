@@ -4,8 +4,8 @@
  * >= 2 barrel muons 30 GeV, Pt(2muons)>150
  * Z-Candle, dimuon/Z trigger path
  *
- * $Date:$
- * $Revision:$
+ * $Date: 2007/07/12 09:17:22 $
+ * $Revision: 1.1 $
  *
  * \author Michael Tytgat, Maria Spiropulu - CERN
  *
@@ -58,15 +58,15 @@ bool HadSUSYdiElecSkim::filter( edm::Event& iEvent,
   nEvents_++;
 
   Handle<PixelMatchGsfElectronCollection> ElecHandle;
-  try {
+//  try {
     iEvent.getByLabel( Elecsrc_, ElecHandle );
-  }
-  catch ( cms::Exception& ex ) {
-    edm::LogError( "HadSUSYdiElecSkim" ) 
-      << "Unable to get Elec collection "
-      << Elecsrc_.label();
-    return false;
-  }
+//  }
+//  catch ( cms::Exception& ex ) {
+//    edm::LogError( "HadSUSYdiElecSkim" ) 
+//      << "Unable to get Elec collection "
+//      << Elecsrc_.label();
+//    return false;
+//  }
   if ( ElecHandle->empty() ) return false;
   PixelMatchGsfElectronCollection TheElecs = *ElecHandle;
   std::stable_sort( TheElecs.begin(), TheElecs.end(), PtSorter() );

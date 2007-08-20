@@ -4,8 +4,8 @@
  * >= 3 jets + 1 lepton (muon, elect), top candle calibration/monitoring
  * (lepton + jets trigger path)
  *
- * $Date: 2007/07/30 16:13:12 $
- * $Revision: 1.1 $
+ * $Date: 2007/07/30 16:26:17 $
+ * $Revision: 1.2 $
  *
  * \author Michael Tytgat, Maria Spiropulu - CERN
  *
@@ -64,15 +64,15 @@ bool HadSUSYTopSkim::filter( edm::Event& iEvent,
 
   // jet cuts
   Handle<CaloJetCollection> CaloJetsHandle;
-  try {
+//  try {
     iEvent.getByLabel( CaloJetsrc_, CaloJetsHandle );
-  } 
-  catch ( cms::Exception& ex ) {
-    edm::LogError( "HadSUSYTopSkim" ) 
-      << "Unable to get CaloJet collection "
-      << CaloJetsrc_.label();
-    return false;
-  }
+//  } 
+//  catch ( cms::Exception& ex ) {
+//    edm::LogError( "HadSUSYTopSkim" ) 
+//      << "Unable to get CaloJet collection "
+//      << CaloJetsrc_.label();
+//    return false;
+//  }
   if ( CaloJetsHandle->empty() ) return false;
 
   int nJet = 0;
@@ -84,15 +84,15 @@ bool HadSUSYTopSkim::filter( edm::Event& iEvent,
 
   // muon cuts
   Handle<MuonCollection> MuonHandle;
-  try {
+//  try {
     iEvent.getByLabel( Muonsrc_, MuonHandle );
-  }
-  catch ( cms::Exception& ex ) {
-    edm::LogError( "HadSUSYdiMuonSkim" )
-      << "Unable to get Muon collection "
-      << Muonsrc_.label();
-    return false;
-  }
+//  }
+//  catch ( cms::Exception& ex ) {
+//    edm::LogError( "HadSUSYdiMuonSkim" )
+//      << "Unable to get Muon collection "
+//      << Muonsrc_.label();
+//    return false;
+//  }
   if ( MuonHandle->empty() ) return false;
   //  MuonCollection TheMuons = *MuonHandle;
 
@@ -105,15 +105,15 @@ bool HadSUSYTopSkim::filter( edm::Event& iEvent,
 
   // electron cuts
   Handle<PixelMatchGsfElectronCollection> ElecHandle;
-  try {
+//  try {
     iEvent.getByLabel( Elecsrc_, ElecHandle );
-  }
-  catch ( cms::Exception& ex ) {
-    edm::LogError( "HadSUSYdiElecSkim" )
-      << "Unable to get Elec collection "
-      << Elecsrc_.label();
-    return false;
-  }
+//  }
+//  catch ( cms::Exception& ex ) {
+//    edm::LogError( "HadSUSYdiElecSkim" )
+//      << "Unable to get Elec collection "
+//      << Elecsrc_.label();
+//    return false;
+//  }
   if ( ElecHandle->empty() ) return false;
 
   int nElec = 0;
