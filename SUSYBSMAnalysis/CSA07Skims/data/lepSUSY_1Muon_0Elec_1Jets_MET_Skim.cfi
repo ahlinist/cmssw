@@ -2,7 +2,7 @@ include "SUSYBSMAnalysis/CSA07Skims/data/lepSUSYHLTPaths.cfi"
 
 
 module lepSUSY_1Muon_0Elec_1Jets_MET_Filter = LepSUSYSkim {
-  InputTag Muonsrc = globalMuons
+  InputTag Muonsrc = muons
   InputTag Elecsrc = pixelMatchGsfElectrons
   InputTag CaloJetsrc = iterativeCone5CaloJets
   InputTag CaloMETsrc = met
