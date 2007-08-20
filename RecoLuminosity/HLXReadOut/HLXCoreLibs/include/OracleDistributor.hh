@@ -65,6 +65,9 @@ namespace HCAL_HLX
     // Database location
     static const string mOracleDBLocation;
 
+    // Oracle schema
+    static const string mOracleSchema;
+
     // Oracle DB variables
     oracle::occi::Environment *mOracleEnvironment;
     oracle::occi::Connection *mOracleConnection;

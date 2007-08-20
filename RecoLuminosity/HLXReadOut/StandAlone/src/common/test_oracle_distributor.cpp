@@ -27,17 +27,20 @@ using namespace std;
 using namespace HCAL_HLX;
 using namespace ICCoreUtils;
 
+#define NUM_HLXS 1
+
 int main(int argc, char ** argv) {
   signal(SIGINT,CtrlC);
   SectionCollector *lSectionCollector = 0;
   NibbleCollector *lNibbleCollector = 0;
   OracleDistributor *lOracleDistributor = 0;
   try {
+    // send approximately every 10 seconds
     lSectionCollector = new SectionCollector(300, // Num bunches
 					     10,  // Num nibbles per section
 					     1,   // Num orbits in lumi nibble
-					     1);  // Num HLXs*/
-    lNibbleCollector = new NibbleCollector(1);
+					     NUM_HLXS);  // Num HLXs
+    lNibbleCollector = new NibbleCollector(NUM_HLXS);
     lNibbleCollector->AttachSectionCollector(lSectionCollector);
     lOracleDistributor = new OracleDistributor;
     lSectionCollector->AttachDistributor(lOracleDistributor);

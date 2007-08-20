@@ -1,8 +1,8 @@
 include $(XDAQ_ROOT)/config/mfAutoconf.rules
 include $(XDAQ_ROOT)/config/mfDefs.$(XDAQ_OS)
 
-Project=lumi/HF
-Package=HLXReadoutXDAQ
+Project=RecoLuminosity/HLXReadOut
+Package=XDAQ
 
 Sources = \
 	HLXReadoutSupervisor.cc \
