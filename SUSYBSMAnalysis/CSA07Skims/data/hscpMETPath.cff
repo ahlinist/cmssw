@@ -1,0 +1,4 @@
+include "SUSYBSMAnalysis/CSA07Skims/data/hscpMETSkim.cfi"
+
+path hscpMET = { hscpMETSeq }
+
