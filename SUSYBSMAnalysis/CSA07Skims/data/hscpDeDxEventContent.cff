@@ -5,8 +5,8 @@ block hscpDeDxEventContent = {
        "keep *_dt1DRecHits_*_*",
        "keep *_dt2DSegments_*_*",
        "keep *_dt4DSegments_*_*",
-       "keep *_ctfWithMaterialTracks_*_*",
-       "keep *_TrackRefitter_*_*",
+#       "keep *_ctfWithMaterialTracks_*_*",
+       "keep recoTracks_TrackRefitter_*_*",
        "keep *_dedxHitsFromRefitter_*_*",
        "keep *_dedxTruncated40_*_*" 
   }
