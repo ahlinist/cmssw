@@ -4,13 +4,13 @@
 # pt cut to reduce sample size while retaining enough control events
 
 
-module hEEPSignalMedEtPtCutBarrel = EtMinSuperClusterCountFilter {
+module hEEPSignalMedEtPtCutBarrel = EtMinSuperClusterCountFilterHeepSkim {
     InputTag src = correctedHybridSuperClusters
     double etMin = 40.
     uint32 minNumber = 1
   }
 
-module hEEPSignalMedEtPtCutEndcap = EtMinSuperClusterCountFilter {
+module hEEPSignalMedEtPtCutEndcap = EtMinSuperClusterCountFilterHeepSkim {
     InputTag src = correctedEndcapSuperClustersWithPreshower
     double etMin = 40.
     uint32 minNumber = 1
