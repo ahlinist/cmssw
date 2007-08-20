@@ -16,7 +16,6 @@
 #include "FWCore/ParameterSet/interface/parse.h"
 #include <cctype>
 #include <cstdlib>
-
 #include <limits>
 #include <sstream>
 #include <stdexcept>
@@ -606,6 +605,7 @@ bool
                             ,  e = from.end();
 
   to = "";
+  to.reserve((e-b)/2);
   char  c = '\0';
   for(bool  even_pos = true
      ;  b != e ; ++b, even_pos = ! even_pos)
@@ -636,7 +636,6 @@ bool
     }
   }
   /*std::cerr << "Decoded: " << to << '\n'; //DEBUG*/
-
   return true;
 }  // decode to String
 
