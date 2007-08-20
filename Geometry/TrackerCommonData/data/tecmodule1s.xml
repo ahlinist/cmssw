@@ -23,6 +23,7 @@
 
 <Algorithm name="track:DDTECModuleAlgo">
   <rParent name="tecmodule1:TECModule1"/>
+  <Numeric name="RingNo"            value="1"/>
   <Numeric name="isStereo"           value="[isStereo]"/>
   <String name="GeneralMaterial"     value="materials:Air"/>
   <Numeric name="ModuleThick"        value="[tecmodpar:ModuleThick]"/>

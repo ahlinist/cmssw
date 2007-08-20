@@ -1,16 +1,16 @@
 <?xml version="1.0"?>
-<DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../../DetectorDescription/Schema/DDLSchema.xsd">
+<DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../DetectorDescription/Schema/DDLSchema.xsd">
 
 <ConstantsSection label="tec.xml" eval="true">
  <Constant name="zero"            value="0.0*fm"/>
- <Constant name="Rin"             value="22.20*cm"/>
- <Constant name="Rout"            value="113.05*cm"/>
- <Constant name="ZStart"          value="123.00*cm"/>
- <Constant name="ZEnd"            value="282.00*cm"/>
+ <Constant name="Rin"             value="22.30*cm"/>
+ <Constant name="Rout"            value="113.50*cm"/>
+ <Constant name="ZStart"          value="124.00*cm"/>
+ <Constant name="ZEnd"            value="281.27*cm"/>
  <Constant name="WheelR"          value="110.30*cm"/>
- <Constant name="OuterSkinRin"    value="113.00*cm"/>
+ <Constant name="OuterSkinRin"    value="113.46*cm"/>
  <Constant name="BackPlateRin"    value="30.90*cm"/>
- <Constant name="BackPlateZ1"     value="273.70*cm"/>
+ <Constant name="BackPlateZ1"     value="274.67*cm"/>
  <Constant name="FrontPlateRin"   value="22.90*cm"/>
  <Constant name="FrontPlateZ1"    value="124.00*cm"/>
  <Constant name="FrontPlateZ2"    value="124.54*cm"/>
@@ -24,20 +24,26 @@
  <Constant name="TiltmeterZ"      value="278.70*cm"/>
  <Constant name="FixFrameDR"      value="2.30*cm"/>
  <Constant name="FixServiceRin"   value="108.80*cm"/>
- <Constant name="BackPlateFixDz"  value="0.50*cm"/>
+ <Constant name="BackPlateFixDz"  value="([ZEnd]-[BackPlateZ1])/2"/>
  <Constant name="BackPlateFixZ"   value="274.20*cm"/>
  <Constant name="BeamSupportRin"  value="30.00*cm"/>
  <Constant name="BeamSupportRout" value="30.10*cm"/>
  <Constant name="BeamSupportZ1"   value="173.10*cm"/>
- <Constant name="InTubeRin1"      value="22.50*cm"/>
+ <Constant name="InTubeRin1"      value="22.30*cm"/>
  <Constant name="InTubeRin2"      value="30.50*cm"/>
- <Constant name="InTubeRout1"     value="22.80*cm"/>
+ <Constant name="InTubeRout1"     value="22.60*cm"/>
  <Constant name="InTubeRout2"     value="30.80*cm"/>
- <Constant name="InTubeZ1"        value="166.40*cm"/>
- <Constant name="InTubeZ2"        value="173.03*cm"/>
+ <Constant name="InTubeZ1"        value="166.36*cm"/>
+ <Constant name="InTubeZ2"        value="172.03*cm"/>
  <Constant name="ServiceRin"      value="110.60*cm"/>
- <Constant name="ServiceRout"     value="113.00*cm"/>
+ <Constant name="ServiceRout"     value="[OuterSkinRin]"/>
  <Constant name="ServiceZ1"       value="124.00*cm"/>
+ <Constant name="TECRailsADz"     value="15.30*cm"/>
+ <Constant name="TECRailsAZ"      value="160.25*cm"/>
+ <Constant name="TECRailsBDz"     value="26.65*cm"/>
+ <Constant name="TECRailsBZ"      value="250.10*cm"/>
+ <Constant name="RailsStartPhi"   value="-0.664*deg"/>
+ <Constant name="RailsDeltaPhi"   value="7.409*deg"/>
  <Constant name="RailsRin"        value="112.70*cm"/>
  <Constant name="Wheel0Z"         value="132.25*cm"/>
  <Constant name="Wheel1Z"         value="146.25*cm"/>
@@ -57,11 +63,26 @@
  <Constant name="BackFixRout"     value="[BackPlateRin]+[FixFrameDR]"/>
  <Constant name="FrontFixRout"    value="[FrontPlateRin]+[FixFrameDR]"/>
  <Constant name="FrontPlateDz"    value="([FrontPlateZ2]-[FrontPlateZ1])/2"/>
- <Constant name="PeriZ"         value="([ZEnd]+[BackPlateZ1])/2-[PeriscopeZ]"/>
+ <Constant name="PeriZ"           value="([ZEnd]+[BackPlateZ1])/2-[PeriscopeZ]"/>
  <Constant name="DPhi"            value="[AxialCableW]+0.05*deg"/>
  <Constant name="AxialCableDz"    value="[tecpetpar:PetalThick]+
                                          [tecpetpar:ICCThick]"/>
+ <Constant name="RailsInsARin"	  value="0.3*cm"/>
+ <Constant name="RailsInsARout"	  value="0.95*cm"/>
+ <Constant name="RailsInsADz"	  value="([ServiceRout]-[ServiceRin])/2-2"/>
+ <Constant name="RailsInsBRin"	  value="0.75*cm"/>
+ <Constant name="RailsInsBRout"	  value="0.95*cm"/>
+ <Constant name="RailsInsBDz"	  value="([ServiceRout]-[ServiceRin])/2-2"/>
+ <Constant name="RailsInsXup"	  value="([ServiceRout]+[ServiceRin])/2-1"/>
+ <Constant name="RailsInsXmid"	  value="([ServiceRout]+[ServiceRin])/2-2"/>
+ <Constant name="RailsInsXdown"	  value="([ServiceRout]+[ServiceRin])/2-4"/>
+
 </ConstantsSection>
+
+<RotationSection label="tec.xml">
+ <Rotation name="90Y" thetaX="180*deg" phiX="0*deg" thetaY="90*deg"
+			phiY="90*deg" thetaZ="90*deg" phiZ="0*deg"/>
+</RotationSection>
 
 <SolidSection label="tec.xml">
  <Tubs name="TEC"                 rMin="[Rin]" 
@@ -91,9 +112,6 @@
  <Tubs name="TECFrontPlateFixT"   rMin="[FixServiceRin]" 
        rMax="[WheelR]"            dz="[FrontPlateDz]" 
        startPhi="-2.50*deg"       deltaPhi="5.00*deg"/>
- <Tubs name="TECPeriscope"        rMin="[PeriscopeRin]" 
-       rMax="[PeriscopeRout]"     dz="[PeriscopeDz]" 
-       startPhi="-5.0*deg"        deltaPhi="10*deg"/>
  <Tubs name="TECTiltmeter"        rMin="[TiltmeterRin]" 
        rMax="[TiltmeterRout]"     dz="[TiltmeterDz]" 
        startPhi="-1.8*deg"        deltaPhi="3.6*deg"/>
@@ -104,7 +122,7 @@
   <ZSection z="-[TECDz]"            rMin="[InTubeRin1]" rMax="[InTubeRout1]" />
   <ZSection z="([InTubeZ1]-[ZPos])" rMin="[InTubeRin1]" rMax="[InTubeRout1]" />
   <ZSection z="([InTubeZ2]-[ZPos])" rMin="[InTubeRin2]" rMax="[InTubeRout2]" />
-  <ZSection z="[TECDz]"             rMin="[InTubeRin2]" rMax="[InTubeRout2]" />
+  <ZSection z="[TECDz]-2.97"        rMin="[InTubeRin2]" rMax="[InTubeRout2]" />
  </Polycone> 
  <Tubs name="TECCableService"     rMin="[WheelR]"
        rMax="[ServiceRin]"        dz="[TECDz]"
@@ -115,9 +133,19 @@
  <Tubs name="TECServiceRods"      rMin="[ServiceRin]"
        rMax="[ServiceRout]"       dz="([ZEnd]-[ServiceZ1])/2"
        startPhi="-2.32*deg"       deltaPhi="4.64*deg"/>
- <Tubs name="TECRails"            rMin="[ServiceRin]"
-       rMax="[ServiceRout]"       dz="([ZEnd]-[ServiceZ1])/2"
-       startPhi="-2.527*deg"      deltaPhi="5.054*deg"/>
+ <Tubs name="TECRailsA"           rMin="[ServiceRin]"
+       rMax="[ServiceRout]"       dz="[TECRailsADz]"
+       startPhi="[RailsStartPhi]" deltaPhi="[RailsDeltaPhi]"/>
+ <Tubs name="TECRailsB"           rMin="[ServiceRin]"
+       rMax="[ServiceRout]"       dz="[TECRailsBDz]"
+       startPhi="[RailsStartPhi]" deltaPhi="[RailsDeltaPhi]"/>
+ <Tubs name="TECRailsInsertA"     rMin="[RailsInsARin]"
+       rMax="[RailsInsARout]"     dz="[RailsInsADz]"
+       startPhi="0*deg"           deltaPhi="360*deg"/>
+ <Tubs name="TECRailsInsertB"     rMin="[RailsInsBRin]"
+       rMax="[RailsInsBRout]"     dz="[RailsInsBDz]"
+       startPhi="0*deg"           deltaPhi="360*deg"/>
+
 </SolidSection>
 
 <LogicalPartSection label="tec.xml">
@@ -157,10 +185,6 @@
   <rSolid name="tec:TECFrontPlateFixT"/>
   <rMaterial name="tecmaterial:TEC_FixServ"/>
  </LogicalPart>
- <LogicalPart name="TECPeriscope" category="unspecified">
-  <rSolid name="tec:TECPeriscope"/>
-  <rMaterial name="tecmaterial:TEC_periscopes"/>
- </LogicalPart>
  <LogicalPart name="TECTiltmeter" category="unspecified">
   <rSolid name="tec:TECTiltmeter"/>
   <rMaterial name="tecmaterial:TEC_tiltmeter"/>
@@ -185,8 +209,20 @@
   <rSolid name="tec:TECServiceRods"/>
   <rMaterial name="tecmaterial:TEC_rods"/>
  </LogicalPart>
- <LogicalPart name="TECRails" category="unspecified">
-  <rSolid name="tec:TECRails"/>
+ <LogicalPart name="TECRailsA" category="unspecified">
+  <rSolid name="tec:TECRailsA"/>
+  <rMaterial name="tecmaterial:Tk_SO_FC_F"/>
+ </LogicalPart>
+ <LogicalPart name="TECRailsB" category="unspecified">
+  <rSolid name="tec:TECRailsB"/>
+  <rMaterial name="tecmaterial:Tk_SO_FC_F"/>
+ </LogicalPart>
+ <LogicalPart name="TECRailsInsertA" category="unspecified">
+  <rSolid name="tec:TECRailsInsertA"/>
+  <rMaterial name="tecmaterial:Tk_SO_FC_F"/>
+ </LogicalPart>
+ <LogicalPart name="TECRailsInsertB" category="unspecified">
+  <rSolid name="tec:TECRailsInsertB"/>
   <rMaterial name="tecmaterial:Tk_SO_FC_F"/>
  </LogicalPart>
 </LogicalPartSection>
@@ -274,20 +310,135 @@
    <rChild name="tecwheeld:TECWheelD"/>
   <Translation x="[zero]" y="[zero]" z="[Wheel8Z]-[ZPos]"/>
  </PosPart>
+<!-- TECRailsInsert-->
+ <PosPart copyNumber="1">
+   <rParent name="tec:TECRailsA"/>
+   <rChild name="tec:TECRailsInsertA"/>
+   <rRotation name="90Y"/>
+   <Translation x="[RailsInsXmid]" y="5.69*cm" z="-14.0*cm"/>	
+ </PosPart>
+ <PosPart copyNumber="2">
+   <rParent name="tec:TECRailsA"/>
+   <rChild name="tec:TECRailsInsertA"/>
+   <rRotation name="90Y"/>
+   <Translation x="[RailsInsXmid]" y="5.69*cm" z="0*fm"/>	
+ </PosPart>
+ <PosPart copyNumber="3">
+   <rParent name="tec:TECRailsA"/>
+   <rChild name="tec:TECRailsInsertA"/>
+   <rRotation name="90Y"/>
+   <Translation x="[RailsInsXmid]" y="5.69*cm" z="14.0*cm"/>	
+ </PosPart>
+ <PosPart copyNumber="1">
+   <rParent name="tec:TECRailsA"/>
+   <rChild name="tec:TECRailsInsertB"/>
+   <rRotation name="90Y"/>
+   <Translation x="[RailsInsXup]" y="1.69*cm" z="-14.0*cm"/>	
+ </PosPart>
+ <PosPart copyNumber="2">
+   <rParent name="tec:TECRailsA"/>
+   <rChild name="tec:TECRailsInsertB"/>
+   <rRotation name="90Y"/>
+   <Translation x="[RailsInsXup]" y="1.69*cm" z="0*fm"/>	
+ </PosPart>
+ <PosPart copyNumber="3">
+   <rParent name="tec:TECRailsA"/>
+   <rChild name="tec:TECRailsInsertB"/>
+   <rRotation name="90Y"/>
+   <Translation x="[RailsInsXup]" y="1.69*cm" z="14.0*cm"/>	
+ </PosPart>
+ <PosPart copyNumber="4">
+   <rParent name="tec:TECRailsA"/>
+   <rChild name="tec:TECRailsInsertB"/>
+   <rRotation name="90Y"/>
+   <Translation x="[RailsInsXdown]" y="9.69*cm" z="-14.0*cm"/>	
+ </PosPart>
+ <PosPart copyNumber="5">
+   <rParent name="tec:TECRailsA"/>
+   <rChild name="tec:TECRailsInsertB"/>
+   <rRotation name="90Y"/>
+   <Translation x="[RailsInsXdown]" y="9.69*cm" z="0*fm"/>	
+ </PosPart>
+ <PosPart copyNumber="6">
+   <rParent name="tec:TECRailsA"/>
+   <rChild name="tec:TECRailsInsertB"/>
+   <rRotation name="90Y"/>
+   <Translation x="[RailsInsXdown]" y="9.69*cm" z="14.0*cm"/>	
+ </PosPart>
+ <PosPart copyNumber="1">
+   <rParent name="tec:TECRailsB"/>
+   <rChild name="tec:TECRailsInsertA"/>
+   <rRotation name="90Y"/>
+   <Translation x="[RailsInsXmid]" y="5.69*cm" z="-25.35*cm"/>	
+ </PosPart>
+ <PosPart copyNumber="2">
+   <rParent name="tec:TECRailsB"/>
+   <rChild name="tec:TECRailsInsertA"/>
+   <rRotation name="90Y"/>
+   <Translation x="[RailsInsXmid]" y="5.69*cm" z="-4.85*cm"/>	
+ </PosPart>
+ <PosPart copyNumber="3">
+   <rParent name="tec:TECRailsB"/>
+   <rChild name="tec:TECRailsInsertA"/>
+   <rRotation name="90Y"/>
+   <Translation x="[RailsInsXmid]" y="5.69*cm" z="16.65*cm"/>	
+ </PosPart>
+ <PosPart copyNumber="4">
+   <rParent name="tec:TECRailsB"/>
+   <rChild name="tec:TECRailsInsertA"/>
+   <rRotation name="90Y"/>
+   <Translation x="[RailsInsXmid]" y="5.69*cm" z="25.39*cm"/>	
+ </PosPart>
+ <PosPart copyNumber="1">
+   <rParent name="tec:TECRailsB"/>
+   <rChild name="tec:TECRailsInsertB"/>
+   <rRotation name="90Y"/>
+   <Translation x="[RailsInsXup]" y="1.69*cm" z="-25.35*cm"/>	
+ </PosPart>
+ <PosPart copyNumber="2">
+   <rParent name="tec:TECRailsB"/>
+   <rChild name="tec:TECRailsInsertB"/>
+   <rRotation name="90Y"/>
+   <Translation x="[RailsInsXup]" y="1.69*cm" z="-4.85*cm"/>	
+ </PosPart>
+ <PosPart copyNumber="3">
+   <rParent name="tec:TECRailsB"/>
+   <rChild name="tec:TECRailsInsertB"/>
+   <rRotation name="90Y"/>
+   <Translation x="[RailsInsXup]" y="1.69*cm" z="16.65*cm"/>	
+ </PosPart>
+ <PosPart copyNumber="4">
+   <rParent name="tec:TECRailsB"/>
+   <rChild name="tec:TECRailsInsertB"/>
+   <rRotation name="90Y"/>
+   <Translation x="[RailsInsXup]" y="1.69*cm" z="25.39*cm"/>	
+ </PosPart>
+ <PosPart copyNumber="5">
+   <rParent name="tec:TECRailsB"/>
+   <rChild name="tec:TECRailsInsertB"/>
+   <rRotation name="90Y"/>
+   <Translation x="[RailsInsXdown]" y="9.69*cm" z="-25.35*cm"/>	
+ </PosPart>
+ <PosPart copyNumber="6">
+   <rParent name="tec:TECRailsB"/>
+   <rChild name="tec:TECRailsInsertB"/>
+   <rRotation name="90Y"/>
+   <Translation x="[RailsInsXdown]" y="9.69*cm" z="-4.85*cm"/>	
+ </PosPart>
+ <PosPart copyNumber="7">
+   <rParent name="tec:TECRailsB"/>
+   <rChild name="tec:TECRailsInsertB"/>
+   <rRotation name="90Y"/>
+   <Translation x="[RailsInsXdown]" y="9.69*cm" z="16.65*cm"/>	
+ </PosPart>
+ <PosPart copyNumber="8">
+   <rParent name="tec:TECRailsB"/>
+   <rChild name="tec:TECRailsInsertB"/>
+   <rRotation name="90Y"/>
+   <Translation x="[RailsInsXdown]" y="9.69*cm" z="25.35*cm"/>	
+ </PosPart>
 </PosPartSection>
 
-<Algorithm name="track:DDTrackerPhiAlgo">
-  <rParent name="tec:TECBackPlate"/>
-  <String name="ChildName"    value="tec:TECPeriscope"/>
-  <Numeric name="Radius"      value="[zero]"/>
-  <Numeric name="Tilt"        value="0*deg"/>
-  <Vector name="Phi" type="numeric" nEntries="6">
-   18.75*deg, 71.25*deg, 123.75*deg, 198.75*deg, 251.25*deg, 303.75*deg
-  </Vector>
-  <Vector name="ZPos" type="numeric" nEntries="6">
-   [PeriZ], [PeriZ], [PeriZ], [PeriZ], [PeriZ], [PeriZ]
-  </Vector>
-</Algorithm>
 <Algorithm name="track:DDTrackerAngular">
   <rParent name="tec:TECBackPlate"/>
   <String  name="ChildName"   value="tec:TECTiltmeter"/>
@@ -298,7 +449,7 @@
   <Numeric name="StartAngle"  value="10*deg"/>
   <Numeric name="Radius"      value="[zero]"/>
   <Vector name="Center" type="numeric" nEntries="3">
-    0, 0, ([ZEnd]+[BackPlateZ1])/2-[TiltmeterZ]  </Vector>
+    0, 0, 0  </Vector>
 </Algorithm>
 <Algorithm name="track:DDTrackerAngular">
   <rParent name="tec:TECBackPlate"/>
@@ -310,7 +461,7 @@
   <Numeric name="StartAngle"  value="67.5*deg"/>
   <Numeric name="Radius"      value="[zero]"/>
   <Vector name="Center" type="numeric" nEntries="3">
-    0, 0, ([ZEnd]+[BackPlateZ1])/2-[BackPlateFixZ]  </Vector>
+    0, 0, 0  </Vector>
 </Algorithm>
 <Algorithm name="track:DDTrackerAngular">
   <rParent name="tec:TECBackPlate"/>
@@ -322,7 +473,7 @@
   <Numeric name="StartAngle"  value="11.25*deg"/>
   <Numeric name="Radius"      value="[zero]"/>
   <Vector name="Center" type="numeric" nEntries="3">
-    0, 0, ([ZEnd]+[BackPlateZ1])/2-[BackPlateFixZ]  </Vector>
+    0, 0, 0  </Vector>
 </Algorithm>
 
 <Algorithm name="track:DDTrackerAngular">
@@ -361,14 +512,27 @@
 </Algorithm>
 <Algorithm name="track:DDTrackerAngular">
   <rParent name="tec:TECOtherService"/>
-  <String  name="ChildName"   value="tec:TECRails"/>
+  <String  name="ChildName"   value="tec:TECRailsA"/>
   <Numeric name="N"           value="2" />
   <Numeric name="StartCopyNo" value="1" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
-  <Numeric name="StartAngle"  value="90.0*deg"/>
+  <Numeric name="StartAngle"  value="0.0*deg"/>
   <Numeric name="Radius"      value="[zero]"/>
-  <Vector name="Center" type="numeric" nEntries="3"> 0, 0, 0 </Vector>
+  <Vector name="Center" type="numeric" nEntries="3">
+	0, 0, [TECRailsAZ]-[ZPos] </Vector>
+</Algorithm>
+<Algorithm name="track:DDTrackerAngular">
+  <rParent name="tec:TECOtherService"/>
+  <String  name="ChildName"   value="tec:TECRailsB"/>
+  <Numeric name="N"           value="2" />
+  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="IncrCopyNo"  value="1" />
+  <Numeric name="RangeAngle"  value="360*deg"/>
+  <Numeric name="StartAngle"  value="0.0*deg"/>
+  <Numeric name="Radius"      value="[zero]"/>
+  <Vector name="Center" type="numeric" nEntries="3">
+	0, 0, [TECRailsBZ]-[ZPos] </Vector>
 </Algorithm>
 
 <Algorithm name="track:DDTECAxialCableAlgo">
