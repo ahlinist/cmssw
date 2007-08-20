@@ -28,7 +28,8 @@ namespace HCAL_HLX
   const string OracleDistributor::mOracleDBUserName = "cms_lumi_writer"; //CMS_LUMI_HF_WRITER";
   const string OracleDistributor::mOracleDBPassword = "July4th07_W"; //CMS_LUM_0RITER";
   const string OracleDistributor::mOracleDBLocation = "omds"; //cmscalir";
-  
+  const string OracleDistributor::mOracleSchema = "CMS_LUMI_OWNER"; //schema_owner
+
   u32 OracleDistributor::GetErrorCount() {
     return mErrorCount;
   }
@@ -37,16 +38,13 @@ namespace HCAL_HLX
   OracleDistributor::OracleDistributor() {
     try{
       mErrorCount=0;
-    // TODO - add exception handling for this
       mOracleEnvironment = Environment::createEnvironment(Environment::DEFAULT);
       mOracleConnection = mOracleEnvironment->createConnection(mOracleDBUserName,
 							       mOracleDBPassword,
 							       mOracleDBLocation);
-      cout << hex << mOracleConnection << endl;
+      //cout << hex << mOracleConnection << endl;
 
     } catch (SQLException & aExc) {
-      //cout << "SQL exception found" << endl;
-      //cout << aExc.getMessage() << endl;
       HardwareAccessException lExc(aExc.getMessage());
       RAISE(lExc);
     }
@@ -68,41 +66,46 @@ namespace HCAL_HLX
 
   void OracleDistributor::ProcessSection(const LUMI_SECTION & lumiSection) {
     try {
-      std::string sqlStmt = "insert into schema_owner.lumi_sections(IS_DATA_TAKING,BEGIN_ORBIT_NUMBER,RUN_NUMBER) VALUES (:bDataTaking, :mStartOrbit, :mRunNumber)";
-      // FILL_NUMBER, SEC_START_TIME, SEC_STOP_TIME, COMMENTS)
-      // VALUES (:sid, :bit ,:th,:setVnum, :dataTk, :bO, :eO,:run, :lsNum,
-      // :fNum,:secStratT,:secStopT,:comm )";
-      
-
+      // SQL statement for luminosity header information
+      std::string sqlStmt =
+	"insert into " + mOracleSchema + ".lumi_sections(SECTION_ID,"
+	"SET_VERSION_NUMBER, IS_DATA_TAKING, BEGIN_ORBIT_NUMBER,"
+	"END_ORBIT_NUMBER, RUN_NUMBER, LUMI_SECTION_NUMBER,"
+	"FILL_NUMBER, SEC_START_TIME, SEC_STOP_TIME, COMMENTS)"
+	"VALUES (:sid, :setVnum, :dataTk, :bO, :eO,:run, :lsNum,"
+	":fNum,:secStratT,:secStopT,:comm )";
 
       // Create the SQL statement
       cout << "Create SQL statement" << endl; 
-      /*"insert into " + _dbOwner + ".lumi_sections(SECTION_ID,"
-                     "SET_VERSION_NUMBER, IS_DATA_TAKING, BEGIN_ORBIT_NUMBER,"
-                     "END_ORBIT_NUMBER, RUN_NUMBER, LUMI_SECTION_NUMBER,"
-                     "FILL_NUMBER, SEC_START_TIME, SEC_STOP_TIME, COMMENTS)"
-                     "VALUES (:sid, :setVnum, :dataTk, :bO, :eO,:run, :lsNum,"
-                     ":fNum,:secStratT,:secStopT,:comm )";*/
       Statement *mOracleStatement =  mOracleConnection->createStatement(sqlStmt);
-      /*cout << mOracleStatement << endl;
+      //cout << mOracleStatement << endl;
 
-      mOracleStatement->setUInt(1, static_cast<unsigned int>(lumiSection.hdr.bCMSLive));
-      mOracleStatement->setUInt(2, static_cast<unsigned int>(lumiSection.hdr.startOrbit));
-      //mOracleStatement->setUInt(3, static_cast<unsigned int>(lumiSection.hdr.numOrbits));
-      //mOracleStatement->setUInt(4, static_cast<unsigned int>(lumiSection.hdr.numBunches));
-      //mOracleStatement->setUInt(5, static_cast<unsigned int>(lumiSection.hdr.numHLXs));
-      mOracleStatement->setUInt(3, static_cast<unsigned int>(lumiSection.hdr.runNumber));
-
-      //mOracleStatement->setInt (7, endObt);
-      //mOracleStatement->setInt (8, runNum);
-      //mOracleStatement->setInt (9, lsNum);
-      //mOracleStatement->setInt (10, fillNum);
-      //mOracleStatement->setInt (11, lsStartT);
-      //mOracleStatement->setInt (12, lsStopT);
-      //mOracleStatement->setString (13, comment);
+      // Load the data into the payload
+      cout << "Loading data" << endl;
+      static int sectionId = 0;
+      sectionId++;
+      cout << "section id: " << dec << sectionId << endl;
+      mOracleStatement->setInt(1,sectionId); // section id?
+      mOracleStatement->setInt(2,0); // version number?
+      // Is CMS taking data?
+      mOracleStatement->setInt(3, static_cast<unsigned int>(lumiSection.hdr.bCMSLive));
+      // Begin orbit number
+      mOracleStatement->setInt(4, static_cast<unsigned int>(lumiSection.hdr.startOrbit));
+      // End orbit number
+      mOracleStatement->setInt(5, static_cast<unsigned int>(lumiSection.hdr.startOrbit+lumiSection.hdr.numOrbits-1));
+      // Run number
+      mOracleStatement->setInt(6, static_cast<unsigned int>(lumiSection.hdr.runNumber));      
+      // Lumi section number
+      mOracleStatement->setInt(7,sectionId);
+      mOracleStatement->setInt(8,0); // Fill number???
+      mOracleStatement->setInt(9,0); // Fill number???      
+      mOracleStatement->setInt(10,0); // Fill number???
+      const string tempString = "debug test of OracleDistributor";
+      mOracleStatement->setString(11,tempString);
 
       // Execute the SQL statement
-      mOracleStatement->executeUpdate();*/
+      cout << "Executing SQL request" << endl;
+      mOracleStatement->executeUpdate();
 
       // Delete the SQL statement
       cout << "Terminate statement" << endl;

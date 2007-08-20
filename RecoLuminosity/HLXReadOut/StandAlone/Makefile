@@ -35,7 +35,8 @@ StaticLibrary =
 Executables = \
 	hlx_fake.cpp \
 	test_distribution.cpp \
-	test_oracle_distributor.cpp
+	test_oracle_distributor.cpp \
+	test_DIP_distributor.cpp
 #	test_debug_cout.cpp \
 #	test_section.cpp \
 #	tcp_receiver2.cpp \

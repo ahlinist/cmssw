@@ -1,10 +1,14 @@
 #!/bin/bash
 
 export DIPBASE=${HOME}/TriDAS/$Project/DIP
-#echo DIPBASE was set automatically to $DIPBASE
-export CLASSPATH=$CLASSPATH:$DIPBASE/lib/dip.jar
+echo DIPBASE set to $DIPBASE
+export CLASSPATH=$DIPBASE/lib/dip.jar
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$DIPBASE/lib
 #echo CLASSPATH was extended with $DIPBASE/lib/dip.jar
 #echo LD_LIBRARY_PATH was extended with $DIPBASE/lib
-export DIMDNSNODE=fwserv01.cern.ch
-export DIMDNSPORT=2506
+export DIPNS=cms-cent-dcs-02  #fwserv01.cern.ch
+#export DIPPORT=2506
+#export DIM_DNS_PORT=2505
+#export DIM_DNS_NODE=fwserv01.cern.ch
+#export DIMDNSNODE=$DIM_DNS_NODE
+#export DIMDNSPORT=$DIM_DNS_PORT
