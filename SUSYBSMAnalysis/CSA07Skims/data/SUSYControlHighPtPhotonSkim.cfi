@@ -6,7 +6,7 @@ module SUSYControlHighPtPhotonFilter = SUSYControlHighPtPhotonSkim {
   InputTag Electronsrc = pixelMatchGsfElectrons  
   untracked double PhotonPtmin = 20
   untracked double ElectronPtmin = 80
-  untracked bool IsIsolated = 1   
+  untracked bool IsIsolated = 0   
   untracked double IsolationCut = 9   
 }
 
