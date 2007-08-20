@@ -9,6 +9,7 @@
  <Constant name="ActiveHeight"       value="18.4088000*cm"/>
  <Constant name="DlTop"              value="10.7285000*cm"/>
  <Constant name="DlBottom"           value="8.6184000*cm"/>
+ <Constant name="InactiveStart"        value="87.840*mm"/>
  <Constant name="SideWidthTop"       value="0.1287673*cm"/>
  <Constant name="SideWidthBottom"    value="0.1315619*cm"/>
  <Constant name="HybridZ"            value="[ActiveZ]+ 0.5*(-[tecmodpar:WaferThick2] + [tecmodpar:HybridThick])"/>
@@ -52,6 +53,7 @@
 
 <Algorithm name="track:DDTECModuleAlgo">
   <rParent name="tecmodule5:TECModule5"/>
+  <Numeric name="RingNo"            value="5"/>
   <Numeric name="isStereo"           value="[isStereo]"/>
   <String name="GeneralMaterial"     value="materials:Air"/>
   <Numeric name="ModuleThick"        value="[tecmodpar:ModuleThick]"/>
@@ -96,6 +98,9 @@
   <String name="ActiveRotation"      value="tecmodpar:AR05"/>
   <Numeric name="ActiveZ"            value="[ActiveZ]"/>
   <Numeric name="BackPlaneThick"     value="2*[tracker:BackPlaneDz]"/>
+  <Numeric name="InactiveDy"         value="[tecmodpar:InactiveDy]"/>
+  <Numeric name="InactivePos"        value="[tecmodule5:InactiveStart]+[tecmodpar:InactiveDy]"/>
+  <String name="InactiveMaterial"    value="materials:Air"/>
   <String name="HybridMaterial"      value="tecmaterial:TEC_Hybrid4APV"/>
   <Numeric name="HybridHeight"       value="[tecmodpar:HybridHeight]"/>
   <Numeric name="HybridWidth"        value="[tecmodpar:HybridWidth]"/>

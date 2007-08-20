@@ -39,7 +39,7 @@
  <Constant name="PetalConnRmin"  value="108.50*cm"/>
  <Constant name="PetalConnRmax"  value="109.25*cm"/>
  <Constant name="PetalConnW"     value="10.00*deg"/>
- <Constant name="PetalConnT"     value="0.4*cm"/>
+ <Constant name="PetalConnT"     value="[tecpetpar:ICBThick]"/>
  <Constant name="OptConnRmin"    value="95.65*cm"/>
  <Constant name="OptConnRmax"    value="107.60*cm"/>
  <Constant name="OptConnW"       value="1.60*deg"/>
@@ -61,7 +61,7 @@
  <Constant name="CableFi2"       value="11.25*deg"/>
  <Constant name="FixServRmin"    value="[WheelRmax]-[FixServR]"/>
  <Constant name="CableRmax"      value="[WheelRmax]-[CableTolerR]"/>
- <Constant name="PetalConnZ"  value="([tecpetpar:PetalThick]+[PetalConnT])/2"/>
+ <Constant name="PetalConnZ"  value="0"/>
 </ConstantsSection>
 
 <SolidSection label="tecwheel.xml">

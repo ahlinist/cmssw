@@ -2,12 +2,20 @@
 <DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../../DetectorDescription/Schema/DDLSchema.xsd">
 
 <ConstantsSection label="tecpetalf.xml" eval="true">
- <Constant name="PetalWidth0"    value="34.6*deg"/>
- <Constant name="PetalWidth1"    value="30.2*deg"/>
- <Constant name="PetalWidth2"    value="27.0*deg"/>
+ <Constant name="PetalWidth0"    value="37.4*deg"/>
+ <Constant name="PetalWidth1"    value="30.3*deg"/>
+ <Constant name="PetalWidth2"    value="26.9*deg"/>
  <Constant name="PetalR1"        value="53.60*cm"/>
  <Constant name="PetalR2"        value="88.20*cm"/>
 </ConstantsSection>
+
+
+<!-- TECPetal0F is defined in tecpetal{N}f.xml so that the inner radius can be altered
+ it would be most usefull to introduce i.e. TECPetal0Flong and TECPetal0Fshort with their 
+ logical definitions here. then the CoolAlgo would not have to be called so often and 
+ everything would be much tidier. However changing the names of anything seems to be no
+good idea so it will stay this way
+                                    Matthias-->
   
 <SolidSection label="tecpetalf.xml">
  <Tubs name="TECPetal1F"             rMin="[tecpetalf:PetalR1]"
@@ -18,7 +26,6 @@
        rMax="[tecpetpar:PetalRmax]"  dz="[tecpetpar:PetalThick]/2"
        startPhi="-[tecpetalf:PetalWidth2]/2"
        deltaPhi="[tecpetalf:PetalWidth2]"/>
-</SolidSection>
+</SolidSection> 
 
 </DDDefinition>
-  

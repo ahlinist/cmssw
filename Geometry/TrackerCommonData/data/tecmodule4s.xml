@@ -23,6 +23,7 @@
 
 <Algorithm name="track:DDTECModuleAlgo">
   <rParent name="tecmodule4:TECModule4"/>
+  <Numeric name="RingNo"            value="4"/>
   <Numeric name="isStereo"           value="[isStereo]"/>
   <String name="GeneralMaterial"     value="materials:Air"/>
   <Numeric name="ModuleThick"        value="[tecmodpar:ModuleThick]"/>
@@ -72,6 +73,9 @@
   <String name="ActiveRotation"      value="tecmodpar:AR05"/>
   <Numeric name="ActiveZ"            value="-[tecmodule4:ActiveZ]"/>
   <Numeric name="BackPlaneThick"     value="2*[tracker:BackPlaneDz]"/>
+  <Numeric name="InactiveDy"         value="[tecmodpar:InactiveDy]"/>
+  <Numeric name="InactivePos"        value="[tecmodule4:InactiveStart]+[tecmodpar:InactiveDy]"/>
+  <String name="InactiveMaterial"    value="materials:Air"/>
   <String name="HybridMaterial"      value="tecmaterial:TEC_Hybrid6APV"/>
   <Numeric name="HybridHeight"       value="[tecmodpar:HybridHeight]"/>
   <Numeric name="HybridWidth"        value="[tecmodpar:HybridWidth]"/>

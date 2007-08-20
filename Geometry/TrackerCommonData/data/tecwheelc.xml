@@ -68,22 +68,22 @@
    <rChild name="tecwheelc:TECWheelNomexC"/>
  </PosPart>
  <PosPart copyNumber="1">
-   <rParent name="tecpetal6f:TECPetalCont6F"/>
+   <rParent name="tecpetal6f:TECICBCont6F2"/>
    <rChild name="tecwheel:TECPetalConnector"/>
   <Translation x="[zero]" y="[zero]" z="-[tecwheel:PetalConnZ]"/>
  </PosPart>
  <PosPart copyNumber="2">
-   <rParent name="tecpetal6f:TECPetalCont6F"/>
+   <rParent name="tecpetal6f:TECICBCont6F1"/>
    <rChild name="tecwheel:TECPetalConnector"/>
   <Translation x="[zero]" y="[zero]" z="[tecwheel:PetalConnZ]"/>
  </PosPart>
  <PosPart copyNumber="1">
-   <rParent name="tecpetal6b:TECPetalCont6B"/>
+   <rParent name="tecpetal6b:TECICBCont6B2"/>
    <rChild name="tecwheel:TECPetalConnector"/>
   <Translation x="[zero]" y="[zero]" z="-[tecwheel:PetalConnZ]"/>
  </PosPart>
  <PosPart copyNumber="2">
-   <rParent name="tecpetal6b:TECPetalCont6B"/>
+   <rParent name="tecpetal6b:TECICBCont6B1"/>
    <rChild name="tecwheel:TECPetalConnector"/>
   <Translation x="[zero]" y="[zero]" z="[tecwheel:PetalConnZ]"/>
  </PosPart>

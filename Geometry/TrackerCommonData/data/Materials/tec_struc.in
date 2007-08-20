@@ -140,6 +140,20 @@ o TEC petal
 .......................................................................
 =======================================================================
 
+o TEC cooling Inserts
+  ---------
+  MC Volume:
+
+  (1) Inserts themselves pure aluminium
+  (2) Glue
+  (3) Screws&Washers
+.......................................................................
+# "TEC cooling Inserts"                  "TEC_petalinsert"      2635.     2635.     
+* 1 "Inserts		 "               "Aluminium"       2635.     1    COL
+
+.......................................................................
+=======================================================================
+
 o Petal connectors
   ----------------
  
@@ -164,24 +178,6 @@ o Petal connectors
 * 6 "Power connector pins"     "Copper"             0.01     110  CAB
 .....................................................................
 =====================================================================
-
-o Alignment periscopes
-  --------------------
-
-  MC Volume: r=30.9 - 39.9, dphi = 10, dz = 6 cm
-
-  (1) 10 g of glass
-  (2) 100 g CF
-  (3) 2 * 60 g CF for the mounting
-  (4) 2 * 10 g Al for the mounting
-......................................................................
-# "TEC Alignment Periscopes"        "TEC_periscopes"     333.6   55.6 
-* 1 "Glass prism"                   "Silica"             4.545   1  SUP
-* 2 "Connection"               "Carbon fibre str."       59.2    1  SUP
-* 3 "Mounting platform"        "Carbon fibre str."       35.5    2  SUP
-* 4 "Mounting platform"            "Aluminium"            3.7    2  SUP
-........................................................................
-========================================================================
 
 o TEC tiltmeters
   --------------
@@ -234,35 +230,16 @@ o TEC axial cables
 .......................................................................
 =======================================================================
 
-o TEC radial cable
-  ----------------
+o TEC Digital Optohybrid Module
+  -----------------------------
 
-  this includes the optical fibers.
-  There are on average 56.77 fibers/petal. Most of them will only
-  run a very short distance. I think it is fair to cut the number
-  by a factor of 3 ==> 18 fibers.
+ A lot of stuff has to be specified
 .......................................................................
-# "TEC radial cables"        "TEC_rad_cable"     0.105     -1.
+# "TEC digital Optohybrid Module" "TEC_DOHM"     0.105     -1.
 * 1 "Optical fibers"           "Quartz"          1.27E-4   18   CAB
-* 2 "Optical fibers"           "Polyethylene"    6.23E-3   18   CAB 
+
 .......................................................................
 =======================================================================
 
 # "END"  "END"  0.  0.   
 this has to be the last line !
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

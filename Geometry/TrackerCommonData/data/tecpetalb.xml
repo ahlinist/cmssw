@@ -2,9 +2,9 @@
 <DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../../DetectorDescription/Schema/DDLSchema.xsd">
 
 <ConstantsSection label="tecpetalb.xml" eval="true">
- <Constant name="PetalWidth0"    value="26.0*deg"/>
- <Constant name="PetalWidth1"    value="30.0*deg"/>
- <Constant name="PetalWidth2"    value="27.0*deg"/>
+ <Constant name="PetalWidth0"    value="25.8*deg"/>
+ <Constant name="PetalWidth1"    value="29.9*deg"/>
+ <Constant name="PetalWidth2"    value="26.9*deg"/>
  <Constant name="PetalR1"        value="55.50*cm"/>
  <Constant name="PetalR2"        value="75.60*cm"/>
 </ConstantsSection>
