@@ -4,8 +4,8 @@
  * >= 2 barrel jets 100 GeV, (no MET) QCD control MET trigger turn on, 
  * MET tails (QCD trigger path)
  *
- * $Date:$
- * $Revision:$
+ * $Date: 2007/07/12 09:24:45 $
+ * $Revision: 1.2 $
  *
  * \author Michael Tytgat, Maria Spiropulu - CERN
  *
@@ -53,15 +53,15 @@ bool HadSUSYQCDControlMETSkim::filter( edm::Event& iEvent,
 
   Handle<CaloJetCollection> CaloJetsHandle;
 
-  try {
+//  try {
     iEvent.getByLabel( CaloJetsrc_, CaloJetsHandle );
-  } 
-  catch ( cms::Exception& ex ) {
-    edm::LogError( "HadSUSYQCDControlMETSkim" ) 
-      << "Unable to get CaloJet collection "
-      << CaloJetsrc_.label();
-    return false;
-  }
+//  } 
+//  catch ( cms::Exception& ex ) {
+//    edm::LogError( "HadSUSYQCDControlMETSkim" ) 
+//      << "Unable to get CaloJet collection "
+//      << CaloJetsrc_.label();
+//    return false;
+//  }
 
   if ( CaloJetsHandle->empty() ) return false;
 
