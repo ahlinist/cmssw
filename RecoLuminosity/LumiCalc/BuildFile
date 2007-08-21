@@ -1,0 +1,4 @@
+<Flags CXXFLAGS="-g">
+<export>
+	<lib name=RecoLuminosityLumiCalc>
+</export>
