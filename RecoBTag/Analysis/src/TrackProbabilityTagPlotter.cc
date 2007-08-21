@@ -1,4 +1,5 @@
 #include "RecoBTag/Analysis/interface/TrackProbabilityTagPlotter.h"
+#include "DataFormats/TrackReco/interface/Track.h"
 
 TrackProbabilityTagPlotter::TrackProbabilityTagPlotter(const TString & tagName,
 	const EtaPtBin & etaPtBin, int nBinEffPur, double startEffPur, double endEffPur,
