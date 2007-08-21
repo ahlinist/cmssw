@@ -59,14 +59,14 @@ namespace HCAL_HLX
     u32 mErrorCount;
 
     // User name and password are hard-coded
-    static const string mOracleDBUserName;
-    static const string mOracleDBPassword;
+    string *mOracleDBUserName;
+    string *mOracleDBPassword;
 
     // Database location
-    static const string mOracleDBLocation;
+    string *mOracleDBLocation;
 
     // Oracle schema
-    static const string mOracleSchema;
+    string *mOracleDBSchema;
 
     // Oracle DB variables
     oracle::occi::Environment *mOracleEnvironment;

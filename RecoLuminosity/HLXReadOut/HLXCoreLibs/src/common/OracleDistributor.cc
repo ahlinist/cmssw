@@ -23,29 +23,36 @@ namespace HCAL_HLX
   using namespace std;
   using namespace oracle::occi;
 
-  // Location, username and password for DB access (hard coded)
-  // cms_lumi_reader/everyoneneedsLUMI
-  const string OracleDistributor::mOracleDBUserName = "cms_lumi_writer"; //CMS_LUMI_HF_WRITER";
-  const string OracleDistributor::mOracleDBPassword = "July4th07_W"; //CMS_LUM_0RITER";
-  const string OracleDistributor::mOracleDBLocation = "omds"; //cmscalir";
-  const string OracleDistributor::mOracleSchema = "CMS_LUMI_OWNER"; //schema_owner
-
   u32 OracleDistributor::GetErrorCount() {
     return mErrorCount;
   }
 
   // Default constructor
   OracleDistributor::OracleDistributor() {
+    mOracleDBUserName = 0;
+    mOracleDBLocation = 0;
+    mOracleDBPassword = 0;
+    mOracleDBSchema = 0;
     try{
+      // Database is publicly visible to anyone on CERN network,
+      // so information is stored only locally on readout server
+      // inside a private network...
+      mOracleDBUserName = new string(getenv("HLX_ORACLE_DB_USER_NAME"));
+      mOracleDBPassword = new string(getenv("HLX_ORACLE_DB_PASSWORD"));
+      mOracleDBLocation = new string(getenv("HLX_ORACLE_DB_LOCATION"));
+      mOracleDBSchema = new string(getenv("HLX_ORACLE_DB_SCHEMA"));
+
+      // Initialisation of DB connection
       mErrorCount=0;
       mOracleEnvironment = Environment::createEnvironment(Environment::DEFAULT);
-      mOracleConnection = mOracleEnvironment->createConnection(mOracleDBUserName,
-							       mOracleDBPassword,
-							       mOracleDBLocation);
-      //cout << hex << mOracleConnection << endl;
+      mOracleConnection = mOracleEnvironment->createConnection(*mOracleDBUserName,
+							       *mOracleDBPassword,							       *mOracleDBLocation);
 
     } catch (SQLException & aExc) {
       HardwareAccessException lExc(aExc.getMessage());
+      RAISE(lExc);
+    } catch (std::exception & aExc) {
+      HardwareAccessException lExc(aExc.what());
       RAISE(lExc);
     }
 
@@ -62,13 +69,17 @@ namespace HCAL_HLX
       Environment::terminateEnvironment(mOracleEnvironment);
       mOracleEnvironment = 0;
     }
+    delete mOracleDBUserName; mOracleDBUserName = 0;
+    delete mOracleDBPassword; mOracleDBPassword = 0;
+    delete mOracleDBLocation; mOracleDBLocation = 0;
+    delete mOracleDBSchema; mOracleDBSchema = 0;
   }
 
   void OracleDistributor::ProcessSection(const LUMI_SECTION & lumiSection) {
     try {
       // SQL statement for luminosity header information
       std::string sqlStmt =
-	"insert into " + mOracleSchema + ".lumi_sections(SECTION_ID,"
+	"insert into " + *mOracleDBSchema + ".lumi_sections(SECTION_ID,"
 	"SET_VERSION_NUMBER, IS_DATA_TAKING, BEGIN_ORBIT_NUMBER,"
 	"END_ORBIT_NUMBER, RUN_NUMBER, LUMI_SECTION_NUMBER,"
 	"FILL_NUMBER, SEC_START_TIME, SEC_STOP_TIME, COMMENTS)"
@@ -76,15 +87,15 @@ namespace HCAL_HLX
 	":fNum,:secStratT,:secStopT,:comm )";
 
       // Create the SQL statement
-      cout << "Create SQL statement" << endl; 
+      //cout << "Create SQL statement" << endl; 
       Statement *mOracleStatement =  mOracleConnection->createStatement(sqlStmt);
       //cout << mOracleStatement << endl;
 
       // Load the data into the payload
-      cout << "Loading data" << endl;
+      //cout << "Loading data" << endl;
       static int sectionId = 0;
       sectionId++;
-      cout << "section id: " << dec << sectionId << endl;
+      //cout << "section id: " << dec << sectionId << endl;
       mOracleStatement->setInt(1,sectionId); // section id?
       mOracleStatement->setInt(2,0); // version number?
       // Is CMS taking data?
@@ -104,11 +115,11 @@ namespace HCAL_HLX
       mOracleStatement->setString(11,tempString);
 
       // Execute the SQL statement
-      cout << "Executing SQL request" << endl;
+      //cout << "Executing SQL request" << endl;
       mOracleStatement->executeUpdate();
 
       // Delete the SQL statement
-      cout << "Terminate statement" << endl;
+      //cout << "Terminate statement" << endl;
       mOracleConnection->terminateStatement(mOracleStatement);
 
     } catch (SQLException & aExc) {
