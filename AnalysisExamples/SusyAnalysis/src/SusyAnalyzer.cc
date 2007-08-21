@@ -30,7 +30,6 @@ SusyAnalyzer::SusyAnalyzer(const edm::ParameterSet& iConfig)
   m_jetsSrc    = iConfig.getParameter<string>("jets");
   m_jetsgenSrc = iConfig.getParameter<string>("jetsgen");
   m_calotowers = iConfig.getParameter<string>("calotowers");
-  m_tautaginfo = iConfig.getParameter<string>("taujet");
   m_photonSrc  = iConfig.getParameter<string>("photons");
   m_calometSrc = iConfig.getParameter<string>("calomet");
   m_bjettag = iConfig.getParameter<string>("bjettag");
@@ -288,8 +287,8 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   // Input the MC data and store them as MrParticle
   // ******************************************************** 
 
-
-  // get MC info
+/*
+  // get MC info from HepMC
   Handle<HepMCProduct> EvtHandle ;
   iEvent.getByLabel( "VtxSmeared", EvtHandle ) ;
   const HepMC::GenEvent* evt = EvtHandle->GetEvent() ;
@@ -338,6 +337,44 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
   barPart.clear();
   barMoth.clear();
+  
+  */
+  
+   // get MC info from GenParticleCandidates 
+    Handle<CandidateCollection> genParticles;
+    iEvent.getByLabel( "genParticleCandidates", genParticles );
+  
+    for( size_t i = 0; i < genParticles->size(); ++ i ) {
+    
+     const Candidate & p = (*genParticles)[ i ];
+     
+     MrParticle* mcpart = new MrParticle(p.px(),p.py(),p.pz(),p.energy());
+  
+     mcpart->setPID(p.pdgId());
+     mcpart->setStatus(p.status());
+     mcpart->setMotherIndex(0);
+     
+     MCData.push_back(mcpart);  
+     mccounter++;
+ 
+     if (p.numberOfMothers() > 0 ) { 
+       const Candidate * mom = p.mother();
+       for( size_t j = 0; j < genParticles->size(); ++ j ) {
+ 	const Candidate * ref = &((*genParticles)[j]);
+ 	if (mom->px() == ref->px() && mom->py() == ref->py() && mom->pz()==ref->pz() 
+ 	    && mom->status() == ref->status() && mom->pdgId()==ref->pdgId())
+ 	  {
+ 	    MCData[i]->setMotherIndex(j);
+ 	  }
+ 	//if (ref == mom) MCData[i]->setMotherIndex(j);
+       }  
+     } else {
+       MCData[i]->setMotherIndex(-1);
+    }
+
+  }
+  
+  
   
   // Save the MCData in the Event data
   EventData->setMCData(&MCData);
@@ -524,15 +561,23 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
    Handle<JetTagCollection> jetsAndTracks;
    iEvent.getByLabel(m_bjettag,jetsAndTracks);
 
-   const JetTag* jetTag = NULL; 
-
+   const JetTag* jetTag = NULL;
+    
+   double EPSILON_BT = 0.00001;
    double btagdiscriminator = -10;
    double tautagdiscriminator = -10;
 
   for (unsigned int j = 0; j < jets->size(); j++)
   {
     for (unsigned int i = 0; i < tauTagInfo->size(); i++) {
-     if ( &(*tauTagInfo)[i].jet() == &(*jets)[j] ) {
+     if (
+    //  &(*tauTagInfo)[i].jet() == &(*jets)[j] 
+          fabs( ((*jets)[j].px() - (*tauTagInfo)[i].jet()->px())/  (*jets)[j].px()) < EPSILON_BT && 
+	   fabs( ((*jets)[j].py() - (*tauTagInfo)[i].jet()->py())/  (*jets)[j].py()) < EPSILON_BT &&
+	   fabs( ((*jets)[j].pz() - (*tauTagInfo)[i].jet()->pz())/  (*jets)[j].pz()) < EPSILON_BT &&
+	   fabs( ((*jets)[j].energy() - (*tauTagInfo)[i].jet()->energy())/  (*jets)[j].energy()) < EPSILON_BT
+     
+     ) {
        tautagdiscriminator = (*tauTagInfo)[i].discriminator();
        break;
      }
@@ -540,7 +585,12 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   
  
     for (unsigned int i = 0; i < jetsAndTracks->size(); i++){
-      if ( &(*jetsAndTracks)[i].jet() == &(*jets)[j] ) {
+      if (
+      //  &(*jetsAndTracks)[i].jet() == &(*jets)[j] )
+          fabs( ((*jets)[j].px() - (*jetsAndTracks)[i].jet()->px())/  (*jets)[j].px()) < EPSILON_BT && 
+	   fabs( ((*jets)[j].py() - (*jetsAndTracks)[i].jet()->py())/  (*jets)[j].py()) < EPSILON_BT &&
+	   fabs( ((*jets)[j].pz() - (*jetsAndTracks)[i].jet()->pz())/  (*jets)[j].pz()) < EPSILON_BT &&
+	   fabs( ((*jets)[j].energy() - (*jetsAndTracks)[i].jet()->energy())/  (*jets)[j].energy()) < EPSILON_BT )  {
    
 	  btagdiscriminator =  (*jetsAndTracks)[i].discriminator();
 	  jetTag = &(*jetsAndTracks)[i];

@@ -11,10 +11,11 @@
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "FWCore/Framework/interface/Event.h"
-#include "FWCore/Framework/interface/Handle.h"
+//#include "FWCore/Framework/interface/Handle.h"
+
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-
+#include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/HLTReco/interface/HLTFilterObject.h"
 #include "DataFormats/Common/interface/TriggerResults.h"
 #include "DataFormats/L1Trigger/interface/L1ParticleMap.h"
