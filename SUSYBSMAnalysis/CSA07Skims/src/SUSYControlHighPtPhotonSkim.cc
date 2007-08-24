@@ -3,8 +3,8 @@
  * High Energy Photon SUSY Skim (control sample)
  * one photon and one electron > xx GeV in barrel + isolation 
  *
- * $Date: 2007/08/09 21:03:25 $
- * $Revision: 1.2 $
+ * $Date: 2007/08/11 15:35:39 $
+ * $Revision: 1.1 $
  *
  * \author Daniele del Re - Univ. La Sapienza & INFN
  *
@@ -72,7 +72,7 @@ bool SUSYControlHighPtPhotonSkim::filter( edm::Event& iEvent,
 
   int nPhoton = 0;
   int nElectron = 0;
-  int counter = 0;
+//  int counter = 0;
 
   for ( PhotonMapCollection::const_iterator it = PhotonHandle->begin(); 
 	it != PhotonHandle->end(); it++ ) {
