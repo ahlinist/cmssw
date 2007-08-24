@@ -3,8 +3,8 @@
  * High Energy Photon SUSY Skim
  * one(two) photon(s) > xx GeV in barrel + isolation 
  *
- * $Date: 2007/08/09 21:03:25 $
- * $Revision: 1.2 $
+ * $Date: 2007/08/11 15:35:39 $
+ * $Revision: 1.3 $
  *
  * \author Daniele del Re - Univ. La Sapienza & INFN
  *
@@ -64,16 +64,12 @@ bool SUSYHighPtPhotonSkim::filter( edm::Event& iEvent,
 
   int nPhoton1 = 0;
   int nPhoton2 = 0;
-  //  int counter = 0;
 
   for ( PhotonMapCollection::const_iterator it = PhotonHandle->begin(); 
 	it != PhotonHandle->end(); it++ ) {
 
     bool iso = it->second < IsolationCut_;
     if(!IsIsolated_) iso = 1; 
-
-    //    counter++;
-    //    cout << counter << "  " << it->first->pt() << "  " << it->second << endl;
     
     if (iso && fabs(it->first->eta()) < 1.479) {       
       if (it->first->pt() > Photon1Ptmin_)  nPhoton1++;
