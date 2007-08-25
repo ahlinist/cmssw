@@ -299,15 +299,14 @@ void PFTauTagAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   GenJet05snumber=0;
   /* *******************************************************************
      generation step
-     ******************************************************************* */
+     ******************************************************************* */  
   Handle<HepMCProduct> evt;
   iEvent.getByLabel("VtxSmeared",evt);
-  HepMC::GenEvent* myGenEvent = new  HepMC::GenEvent(*(evt->GetEvent()));
-  event_scale=myGenEvent->event_scale();
+  event_scale=(*(evt->GetEvent())).event_scale();
   
   // select susy processes
   /*
-  if (myGenEvent->signal_process_id()<200 ||  myGenEvent->signal_process_id()>300){
+  if ((*(evt->GetEvent())).signal_process_id()<200 ||  (*(evt->GetEvent())).signal_process_id()>300){
     delete myGenEvent;
     return;
   }
@@ -315,7 +314,7 @@ void PFTauTagAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
    
   // select gamma*/Z0 processes
   /*
-  if (myGenEvent->signal_process_id()!=1){
+  if ((*(evt->GetEvent())).signal_process_id()!=1){
     delete myGenEvent;
     return;
   }
@@ -323,18 +322,18 @@ void PFTauTagAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   
   // select QCD-dijet processes
   /*   
-  if (myGenEvent->signal_process_id()!=11 
-      && myGenEvent->signal_process_id()!=12 
-      && myGenEvent->signal_process_id()!=13 
-      && myGenEvent->signal_process_id()!=68 
-      && myGenEvent->signal_process_id()!=28 
-      && myGenEvent->signal_process_id()!=53){
+  if ((*(evt->GetEvent())).signal_process_id()!=11 
+      && (*(evt->GetEvent())).signal_process_id()!=12 
+      && (*(evt->GetEvent())).signal_process_id()!=13 
+      && (*(evt->GetEvent())).signal_process_id()!=68 
+      && (*(evt->GetEvent())).signal_process_id()!=28 
+      && (*(evt->GetEvent())).signal_process_id()!=53){
     delete myGenEvent;
     return;
   }
   */
   int iGenTau = 0;
-  for (HepMC::GenEvent::particle_iterator iter=myGenEvent->particles_begin();iter!=myGenEvent->particles_end();iter++) {
+  for (HepMC::GenEvent::particle_const_iterator iter=(*(evt->GetEvent())).particles_begin();iter!=(*(evt->GetEvent())).particles_end();iter++) {
     if ((**iter).status()==2 && (abs((**iter).pdg_id())==15)){
       HepMC::GenParticle* TheParticle=(*iter);
       Hep3Vector TheParticle_Hep3V(TheParticle->momentum().px(),TheParticle->momentum().py(),TheParticle->momentum().pz());
@@ -450,7 +449,6 @@ void PFTauTagAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
     }		 
   }
   GenTausnumber=iGenTau;
-  delete myGenEvent;
   
   int iSimTau = 0;
   Handle<PFSimParticleCollection> thePFSimParticleCollectionHandle;

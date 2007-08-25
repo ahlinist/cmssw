@@ -1,12 +1,17 @@
+#include "DataFormats/ParticleFlowReco/interface/PFBlock.h"
+
 #include "RecoVertex/VertexPrimitives/interface/VertexFitter.h"
 #include "RecoVertex/VertexPrimitives/interface/TransientVertex.h"
 #include "RecoVertex/VertexPrimitives/interface/ConvertError.h"
 #include "RecoVertex/VertexPrimitives/interface/VertexException.h"
 #include "RecoVertex/AdaptiveVertexFit/interface/AdaptiveVertexFitter.h"
 #include "RecoVertex/VertexTools/interface/VertexDistance3D.h"
-#include "DataFormats/ParticleFlowReco/interface/PFBlock.h"
-#include <Math/GenVector/VectorUtil.h>
+
 #include "RecoTauTag/PFCombinedTauTag/interface/PFCombinedTauTagAlg.h"
+
+#include "TrackingTools/IPTools/interface/IPTools.h"
+
+#include "Math/GenVector/VectorUtil.h"
 
 void PFCombinedTauTagAlg::init(const EventSetup& theEventSetup){
   passed_LeadChargedHadrCand_selection=false;
@@ -20,7 +25,7 @@ void PFCombinedTauTagAlg::init(const EventSetup& theEventSetup){
   infact_GoodElectronCand=false;
   passed_cutmuon=false;  
   infact_GoodMuonCand=false;
-  recjet_G3DV_=0;
+  recjet_GV_=0;
   recjet_alternatXYZTLorentzVector_.SetPx(0.);
   recjet_alternatXYZTLorentzVector_.SetPy(0.);
   recjet_alternatXYZTLorentzVector_.SetPz(0.);
@@ -77,8 +82,8 @@ pair<JetTag,PFCombinedTauTagInfo> PFCombinedTauTagAlg::tag(const PFIsolatedTauTa
   // ---
   math::XYZVector recjet_XYZVector((*thePFIsolatedTauTagInfoRef).pfjetRef()->px(),(*thePFIsolatedTauTagInfoRef).pfjetRef()->py(),(*thePFIsolatedTauTagInfoRef).pfjetRef()->pz());
   math::XYZTLorentzVector recjet_XYZTLorentzVector=(*thePFIsolatedTauTagInfoRef).pfjetRef()->p4();
-  Global3DVector recjet_G3DV((*thePFIsolatedTauTagInfoRef).pfjetRef()->px(),(*thePFIsolatedTauTagInfoRef).pfjetRef()->py(),(*thePFIsolatedTauTagInfoRef).pfjetRef()->pz());
-  recjet_G3DV_=&recjet_G3DV;
+  GlobalVector recjet_GV((*thePFIsolatedTauTagInfoRef).pfjetRef()->px(),(*thePFIsolatedTauTagInfoRef).pfjetRef()->py(),(*thePFIsolatedTauTagInfoRef).pfjetRef()->pz());
+  recjet_GV_=&recjet_GV;
   
   math::XYZVector refAxis_XYZVector=recjet_XYZVector;
   math::XYZTLorentzVector refAxis_XYZTLorentzVector=recjet_XYZTLorentzVector;
@@ -373,10 +378,9 @@ double PFCombinedTauTagAlg::ChargedHadrCand_signedipt_significance(const Vertex&
     throw cms::Exception(exception_message);
   }  
   TransientTrack the_transTrack=TransientTrackBuilder_->build(&(*PFChargedHadrCand_rectk));
-  SignedTransverseImpactParameter the_Track_STIP;
   double the_signedipt_significance;
-  if(the_Track_STIP.apply(the_transTrack,*recjet_G3DV_,thePV).first)
-    the_signedipt_significance=the_Track_STIP.apply(the_transTrack,*recjet_G3DV_,thePV).second.significance();
+  if(IPTools::signedTransverseImpactParameter(the_transTrack,*recjet_GV_,thePV).first)
+    the_signedipt_significance=IPTools::signedTransverseImpactParameter(the_transTrack,*recjet_GV_,thePV).second.significance();
   else {
     string exception_message="In PFCombinedTauTagAlg::ChargedHadrCand_signedipt_significance(.,.) - could not obtain the charged hadron candidate signed ipt.";
     throw cms::Exception(exception_message);
@@ -398,10 +402,9 @@ double PFCombinedTauTagAlg::ChargedHadrCand_signedip3D_significance(const Vertex
     throw cms::Exception(exception_message);
   }    
   TransientTrack the_transTrack=TransientTrackBuilder_->build(&(*PFChargedHadrCand_rectk));
-  SignedImpactParameter3D the_Track_STIP;
   double the_signedip3D_significance;
-  if(the_Track_STIP.apply(the_transTrack,*recjet_G3DV_,thePV).first)
-    the_signedip3D_significance=the_Track_STIP.apply(the_transTrack,*recjet_G3DV_,thePV).second.significance();
+  if(IPTools::signedImpactParameter3D(the_transTrack,*recjet_GV_,thePV).first)
+    the_signedip3D_significance=IPTools::signedImpactParameter3D(the_transTrack,*recjet_GV_,thePV).second.significance();
   else{
     string exception_message="In PFCombinedTauTagAlg::ChargedHadrCand_signedip3D_significance(.,.) - could not obtain the charged hadron candidate signed ip3D.";
     throw cms::Exception(exception_message);
@@ -427,7 +430,7 @@ double PFCombinedTauTagAlg::signedflightpath_significance(const Vertex& iPV){
       AdaptiveVertexFitter AVF;
       TransientVertex tv=AVF.vertex(transientTracks); 
       VertexDistance3D theVertexDistance3D;
-      double thesignedflightpath_significance=theVertexDistance3D.signedDistance(iPV,tv,*recjet_G3DV_).significance();
+      double thesignedflightpath_significance=theVertexDistance3D.signedDistance(iPV,tv,*recjet_GV_).significance();
       return(thesignedflightpath_significance);
     }catch(cms::Exception& exception){
       throw exception;

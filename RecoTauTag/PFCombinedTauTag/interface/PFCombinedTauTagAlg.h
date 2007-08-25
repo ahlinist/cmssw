@@ -17,9 +17,8 @@
 #include "DataFormats/EcalDetId/interface/EBDetId.h"
 #include "DataFormats/EcalDetId/interface/EEDetId.h"
 #include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
-#include "DataFormats/GeometryVector/interface/GlobalTag.h"
-#include "DataFormats/GeometryVector/interface/Vector3DBase.h"
-#include "DataFormats/GeometryVector/interface/Point3DBase.h"
+#include "DataFormats/GeometryVector/interface/GlobalPoint.h"
+#include "DataFormats/GeometryVector/interface/GlobalVector.h"
 
 #include "MagneticField/Engine/interface/MagneticField.h"
 #include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
@@ -35,9 +34,6 @@
 #include "Geometry/CaloGeometry/interface/CaloCellGeometry.h"
 #include "Geometry/CaloGeometry/interface/CaloSubdetectorGeometry.h"
 
-#include "RecoBTag/BTagTools/interface/SignedTransverseImpactParameter.h"
-#include "RecoBTag/BTagTools/interface/SignedImpactParameter3D.h"
-
 #include "RecoTauTag/PFCombinedTauTag/interface/LikelihoodRatio.h"
 
 #include "Math/GenVector/VectorUtil.h"
@@ -52,9 +48,6 @@
 using namespace std; 
 using namespace edm;
 using namespace reco;
-
-typedef Vector3DBase<float,GlobalTag> Global3DVector;
-typedef Point3DBase<float,GlobalTag> Global3DPoint;
 
 class PFCombinedTauTagAlg{
 public: 
@@ -150,7 +143,6 @@ public:
     muon_selection_max_HCALEt_o_LeadChargedHadrCandPt_         = 0.4;  
   } 
   ~PFCombinedTauTagAlg(){
-    if (TransientTrackBuilder_!=0) delete TransientTrackBuilder_;
     if (LikelihoodRatio_!=0) delete LikelihoodRatio_;
   }
   pair<JetTag,PFCombinedTauTagInfo> tag(const PFIsolatedTauTagInfoRef&,const Vertex&,Event&,const EventSetup&);
@@ -174,7 +166,7 @@ public:
   double SignalConeVariableSize_max_;
   double SignalConeVariableSize_min_; 
   double IsolConeSize_; 
-  double IsolRing_Candsmaxn_; 
+  int IsolRing_Candsmaxn_; 
   bool UseOnlyChargedHadr_for_LeadCand_; 
   double LeadChargedHadrCand_minPt_; 
   double LeadChargedHadrCand_minPt_case1signalChargedHadrCand_; 
@@ -219,7 +211,7 @@ public:
   bool infact_GoodElectronCand;
   bool passed_cutmuon;  
   bool infact_GoodMuonCand;
-  Global3DVector* recjet_G3DV_;
+  GlobalVector* recjet_GV_;
   math::XYZTLorentzVector recjet_alternatXYZTLorentzVector_;
   double TauCandJet_ref_et;
   PFCandidateRefVector ChargedHadrCands_;
