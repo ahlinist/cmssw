@@ -94,16 +94,40 @@ double LikelihoodRatio::value(){
   }else return (NAN); 
 }
 int LikelihoodRatio::getTagVarNumber(TaggingVariable x){
-  int theTagVarNumber=-1;
-  if (x.first==7) theTagVarNumber=0;
-  if (x.first==20) theTagVarNumber=1;
-  if (x.first==22) theTagVarNumber=2;
-  if (x.first==24) theTagVarNumber=3;
-  if (x.first==25) theTagVarNumber=4;
-  if (x.first==26) theTagVarNumber=5;
-  if (x.first==27) theTagVarNumber=6;
-  if (x.first==28) theTagVarNumber=7;
-  if (x.first==29) theTagVarNumber=8;
-  if (x.first==30) theTagVarNumber=9;
-  return (theTagVarNumber);
+  int TagVarNumber=-1;
+  switch (x.first){
+  case btau::trackip2d: 
+    TagVarNumber=0;
+    break;
+  case btau::flightDistance3DSignificance:
+    TagVarNumber=1;
+    break;
+  case btau::piontracksEtjetEtRatio:
+    TagVarNumber=2;
+    break;
+  case btau::neutralEnergy:
+    TagVarNumber=3;
+    break;
+  case btau::neutralEnergyOverCombinedEnergy:
+    TagVarNumber=4;
+    break;
+  case btau::neutralIsolEnergy:
+    TagVarNumber=5;
+    break;
+  case btau::neutralIsolEnergyOverCombinedEnergy:
+    TagVarNumber=6;
+    break;
+  case btau::neutralEnergyRatio:
+    TagVarNumber=7;
+    break;
+  case btau::neutralclusterNumber:
+    TagVarNumber=8;
+    break;
+  case btau::neutralclusterRadius:
+    TagVarNumber=9;
+    break;
+  default:
+    break;    
+  }
+  return (TagVarNumber);
 }
