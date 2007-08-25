@@ -26,9 +26,8 @@
 #include "DataFormats/EcalDetId/interface/EBDetId.h"
 #include "DataFormats/EcalDetId/interface/EEDetId.h"
 #include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
-#include "DataFormats/GeometryVector/interface/GlobalTag.h"
-#include "DataFormats/GeometryVector/interface/Vector3DBase.h"
-#include "DataFormats/GeometryVector/interface/Point3DBase.h"
+#include "DataFormats/GeometryVector/interface/GlobalPoint.h"
+#include "DataFormats/GeometryVector/interface/GlobalVector.h"
 
 #include "MagneticField/Engine/interface/MagneticField.h"
 #include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
@@ -43,9 +42,6 @@
 #include "Geometry/CaloGeometry/interface/CaloGeometry.h"
 #include "Geometry/CaloGeometry/interface/CaloCellGeometry.h"
 #include "Geometry/CaloGeometry/interface/CaloSubdetectorGeometry.h"
-
-#include "RecoBTag/BTagTools/interface/SignedTransverseImpactParameter.h"
-#include "RecoBTag/BTagTools/interface/SignedImpactParameter3D.h"
 
 #include "RecoTauTag/CombinedTauTag/interface/ECALBounds.h"
 #include "RecoTauTag/CombinedTauTag/interface/LikelihoodRatio.h"
@@ -64,9 +60,6 @@
 using namespace std; 
 using namespace edm;
 using namespace reco;
-
-typedef Vector3DBase<float,GlobalTag> Global3DVector;
-typedef Point3DBase<float,GlobalTag> Global3DPoint;
 
 const double pi=3.14159265358979323846264;
 const double chargedpi_mass=0.13957018;      //PDG Particle Physics Booklet, 2004
@@ -230,7 +223,7 @@ public:
   bool infact_GoodElectronCand;
   bool passed_cutmuon;  
   bool infact_GoodMuonCand;
-  Global3DVector* the_recjet_G3DV;
+  GlobalVector* the_recjet_GV;
   HepLorentzVector the_recjet_alternatHepLV;
   double TauCandJet_ref_et;
   vector<HepLorentzVector> chargedpicand_fromtk_HepLV;

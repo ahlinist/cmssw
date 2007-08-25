@@ -1,5 +1,7 @@
 #include "RecoTauTag/CombinedTauTag/interface/CombinedTauTagAlg.h"
 
+#include "TrackingTools/IPTools/interface/IPTools.h"
+
 void CombinedTauTagAlg::init(const EventSetup& theEventSetup){
   passed_leadtk_selection=false;
   passed_tracker_signalcone_selection=false;
@@ -12,7 +14,7 @@ void CombinedTauTagAlg::init(const EventSetup& theEventSetup){
   infact_GoodElectronCand=false;
   passed_cutmuon=false;  
   infact_GoodMuonCand=false;
-  the_recjet_G3DV=0;    
+  the_recjet_GV=0;    
   the_recjet_alternatHepLV.setPx(0.);
   the_recjet_alternatHepLV.setPy(0.);
   the_recjet_alternatHepLV.setPz(0.);
@@ -61,8 +63,8 @@ pair<JetTag,CombinedTauTagInfo> CombinedTauTagAlg::tag(const IsolatedTauTagInfoR
   // ---
   math::XYZVector recjet_XYZVector(theIsolatedTauTagInfoRef->jet()->px(),theIsolatedTauTagInfoRef->jet()->py(),theIsolatedTauTagInfoRef->jet()->pz());
   HepLorentzVector recjet_HepLV(theIsolatedTauTagInfoRef->jet()->px(),theIsolatedTauTagInfoRef->jet()->py(),theIsolatedTauTagInfoRef->jet()->pz(),theIsolatedTauTagInfoRef->jet()->energy());
-  Global3DVector recjet_G3DV(theIsolatedTauTagInfoRef->jet()->px(),theIsolatedTauTagInfoRef->jet()->py(),theIsolatedTauTagInfoRef->jet()->pz());
-  the_recjet_G3DV=&recjet_G3DV;
+  GlobalVector recjet_GV(theIsolatedTauTagInfoRef->jet()->px(),theIsolatedTauTagInfoRef->jet()->py(),theIsolatedTauTagInfoRef->jet()->pz());
+  the_recjet_GV=&recjet_GV;
   
   math::XYZVector refAxis_XYZVector=recjet_XYZVector;
   HepLorentzVector refAxis_HepLV=recjet_HepLV;
@@ -315,20 +317,20 @@ math::XYZPoint CombinedTauTagAlg::recTrackImpactPositiononECAL(Event& theEvent,c
   math::XYZPoint proprecTrack_XYZPoint(0.,0.,0.);
   
   // get the initial rec. tk FreeTrajectoryState - at outermost point position if possible, else at innermost point position:
-  Global3DVector therecTrack_initialG3DV(0.,0.,0.);
-  Global3DPoint therecTrack_initialG3DP(0.,0.,0.);
+  GlobalVector therecTrack_initialGV(0.,0.,0.);
+  GlobalPoint therecTrack_initialGP(0.,0.,0.);
   if(therecTrack->outerOk()){
-    Global3DVector therecTrack_initialoutermostG3DV(therecTrack->outerMomentum().x(),therecTrack->outerMomentum().y(),therecTrack->outerMomentum().z());
-    Global3DPoint therecTrack_initialoutermostG3DP(therecTrack->outerPosition().x(),therecTrack->outerPosition().y(),therecTrack->outerPosition().z());
-    therecTrack_initialG3DV=therecTrack_initialoutermostG3DV;
-    therecTrack_initialG3DP=therecTrack_initialoutermostG3DP;
+    GlobalVector therecTrack_initialoutermostGV(therecTrack->outerMomentum().x(),therecTrack->outerMomentum().y(),therecTrack->outerMomentum().z());
+    GlobalPoint therecTrack_initialoutermostGP(therecTrack->outerPosition().x(),therecTrack->outerPosition().y(),therecTrack->outerPosition().z());
+    therecTrack_initialGV=therecTrack_initialoutermostGV;
+    therecTrack_initialGP=therecTrack_initialoutermostGP;
   } else if(therecTrack->innerOk()){
-    Global3DVector therecTrack_initialinnermostG3DV(therecTrack->innerMomentum().x(),therecTrack->innerMomentum().y(),therecTrack->innerMomentum().z());
-    Global3DPoint therecTrack_initialinnermostG3DP(therecTrack->innerPosition().x(),therecTrack->innerPosition().y(),therecTrack->innerPosition().z());
-    therecTrack_initialG3DV=therecTrack_initialinnermostG3DV;
-    therecTrack_initialG3DP=therecTrack_initialinnermostG3DP;
+    GlobalVector therecTrack_initialinnermostGV(therecTrack->innerMomentum().x(),therecTrack->innerMomentum().y(),therecTrack->innerMomentum().z());
+    GlobalPoint therecTrack_initialinnermostGP(therecTrack->innerPosition().x(),therecTrack->innerPosition().y(),therecTrack->innerPosition().z());
+    therecTrack_initialGV=therecTrack_initialinnermostGV;
+    therecTrack_initialGP=therecTrack_initialinnermostGP;
   } else return (proprecTrack_XYZPoint);
-  GlobalTrajectoryParameters therecTrack_initialGTPs(therecTrack_initialG3DP,therecTrack_initialG3DV,therecTrack->charge(),&*theMF);
+  GlobalTrajectoryParameters therecTrack_initialGTPs(therecTrack_initialGP,therecTrack_initialGV,therecTrack->charge(),&*theMF);
   // FIX THIS !!!
   // need to convert from perigee to global or helix (curvilinear) frame
   // for now just an arbitrary matrix.
@@ -469,10 +471,9 @@ TaggingVariableList CombinedTauTagAlg::taggingvariablesList(){
 }
 double CombinedTauTagAlg::rectk_signedipt_significance(const Vertex& thePV,const TrackRef theTrack){ 
   TransientTrack the_transTrack=theTransientTrackBuilder->build(&(*theTrack));
-  SignedTransverseImpactParameter the_Track_STIP;
   double the_signedipt_significance;
-  if(the_Track_STIP.apply(the_transTrack,*the_recjet_G3DV,thePV).first)
-    the_signedipt_significance=the_Track_STIP.apply(the_transTrack,*the_recjet_G3DV,thePV).second.significance();
+  if(IPTools::signedTransverseImpactParameter(the_transTrack,*the_recjet_GV,thePV).first)
+    the_signedipt_significance=IPTools::signedTransverseImpactParameter(the_transTrack,*the_recjet_GV,thePV).second.significance();
   else {
     string exception_message="In CombinedTauTagAlg::rectk_signedipt_significance(.,.) - could not obtain the lead tk signed ipt.";
     throw cms::Exception(exception_message);
@@ -481,10 +482,9 @@ double CombinedTauTagAlg::rectk_signedipt_significance(const Vertex& thePV,const
 }
 double CombinedTauTagAlg::rectk_signedip3D_significance(const Vertex& thePV,const TrackRef theTrack){ 
   TransientTrack the_transTrack=theTransientTrackBuilder->build(&(*theTrack));
-  SignedImpactParameter3D the_Track_STIP;
   double the_signedip3D_significance;
-  if(the_Track_STIP.apply(the_transTrack,*the_recjet_G3DV,thePV).first)
-    the_signedip3D_significance=the_Track_STIP.apply(the_transTrack,*the_recjet_G3DV,thePV).second.significance();
+  if(IPTools::signedImpactParameter3D(the_transTrack,*the_recjet_GV,thePV).first)
+    the_signedip3D_significance=IPTools::signedImpactParameter3D(the_transTrack,*the_recjet_GV,thePV).second.significance();
   else{
     string exception_message="In CombinedTauTagAlg::rectk_signedip3D_significance(.,.) - could not obtain the lead tk signed ip3D.";
     throw cms::Exception(exception_message);
@@ -503,7 +503,7 @@ double CombinedTauTagAlg::signedflightpath_significance(const Vertex& iPV){
        AdaptiveVertexFitter AVF;
        TransientVertex tv = AVF.vertex(transientTracks); 
        VertexDistance3D theVertexDistance3D;
-       double thesignedflightpath_significance=theVertexDistance3D.signedDistance(iPV,tv,*the_recjet_G3DV).significance();
+       double thesignedflightpath_significance=theVertexDistance3D.signedDistance(iPV,tv,*the_recjet_GV).significance();
        return(thesignedflightpath_significance);
      }catch(cms::Exception& exception){
        throw exception;
