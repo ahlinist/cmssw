@@ -16,5 +16,5 @@
   <class name="std::vector<PGlobalDigi::DTDigi>"/>
   <class name="std::vector<PGlobalDigi::CSCstripDigi>"/>
   <class name="std::vector<PGlobalDigi::CSCwireDigi>"/>
-  <class name="edm::Wrapper<PGlobalDigi>"/>
+  <class name="edm::Wrapper<PGlobalDigi>" splitLevel="0"/>
 </lcgdict>
