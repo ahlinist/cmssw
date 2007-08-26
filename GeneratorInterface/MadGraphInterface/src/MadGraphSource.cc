@@ -24,7 +24,7 @@
 #include "time.h"
 
 // Generator modifications
-#include "CLHEP/HepMC/include/PythiaWrapper6_2.h"
+#include "HepMC/PythiaWrapper6_2.h"
 //#include "CLHEP/HepMC/ConvertHEPEVT.h"
 #include "HepMC/IO_HEPEVT.h"
 //#include "CLHEP/HepMC/CBhepevt.h"
