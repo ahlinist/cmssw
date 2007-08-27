@@ -94,6 +94,9 @@ namespace HCAL_HLX
     // Run number
     u32 mRunNumber;
 
+    // Section number
+    u32 mSectionNumber;
+
     // Number of HLXs in system;
     u32 mNumHLXs;
 

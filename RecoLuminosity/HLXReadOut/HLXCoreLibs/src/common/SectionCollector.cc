@@ -39,9 +39,6 @@ namespace HCAL_HLX
       mNumOrbitsPerNibble = aNumOrbitsPerNibble;
       mNumOrbits = aNumOrbitsPerNibble * aNumNibblesPerSection;
       mNumBunches = aNumBunches;
-      mNumIncompleteLumiSections = 0;
-      mNumCompleteLumiSections = 0;
-      mNumLostLumiSections = 0;
       mRunNumber = 0;
       this->Init();
       // Initialise the lumi section structures
@@ -50,6 +47,9 @@ namespace HCAL_HLX
 	mLumiSections[i].hdr.numOrbits = mNumOrbits;
 	mLumiSections[i].hdr.numBunches = mNumBunches;
 	}*/
+
+      // Reset the luminosity section collector
+      this->Reset();
 
       // Initialise the worker thread
       mWorkerThreadContinue=true;
@@ -74,16 +74,16 @@ namespace HCAL_HLX
   // Destructor deletes the hardware interface
   SectionCollector::~SectionCollector() {
     try {
-      mWorkerThreadContinue=false;
-
-      //cout << "cleaning up section collector" << endl;
-      this->CleanUp();
 
       // Rejoin the original thread
+      mWorkerThreadContinue=false;
       pthread_join(mThreadId,NULL);
       mThreadId=0;
       mBufferTransmit=false;
       mTransmitComplete=false;
+
+      // Clean up afterwards or we can have thread collisions
+      this->CleanUp();
 
     } catch (ICException & aExc) {
       RETHROW(aExc);
@@ -125,6 +125,8 @@ namespace HCAL_HLX
     try {
       mNumCompleteLumiSections = 0;
       mNumIncompleteLumiSections = 0;
+      mNumLostLumiSections = 0;
+      mSectionNumber = 0;
     } catch (ICException & aExc) {
       RETHROW(aExc);
     }
@@ -168,6 +170,7 @@ namespace HCAL_HLX
 	// Move on to next lumi section as the previous one has to be complete by now...
 	
 	if ( mLumiSection->hdr.startOrbit != 0 ) {
+	  mSectionNumber++;
 	  mNumCompleteLumiSections++;
 	  if ( !mTransmitComplete ) {
 	    // Copy the data into the buffer
@@ -182,6 +185,7 @@ namespace HCAL_HLX
 	// Initialise the lumi section
 	memset(mLumiSection,0,sizeof(LUMI_SECTION));	
 	mLumiSection->hdr.numHLXs = mNumHLXs;
+	mLumiSection->hdr.sectionNumber = mSectionNumber;
 	mLumiSection->hdr.runNumber = mRunNumber;
 	mLumiSection->hdr.numOrbits = mNumOrbits;
 	mLumiSection->hdr.numBunches = mNumBunches;
@@ -259,6 +263,7 @@ namespace HCAL_HLX
 
 	// Move on to next lumi section as the previous one has to be complete by now...	
 	if ( mLumiSection->hdr.startOrbit != 0 ) {
+	  mSectionNumber++;
 	  mNumCompleteLumiSections++;
 	  if ( !mTransmitComplete ) {
 	    // Copy the data into the buffer
@@ -272,6 +277,7 @@ namespace HCAL_HLX
 
 	memset(mLumiSection,0,sizeof(LUMI_SECTION));
 	mLumiSection->hdr.numHLXs = mNumHLXs;
+	mLumiSection->hdr.sectionNumber = mSectionNumber;
 	mLumiSection->hdr.runNumber = mRunNumber;
 	mLumiSection->hdr.numOrbits = mNumOrbits;
 	mLumiSection->hdr.numBunches = mNumBunches;
@@ -317,6 +323,7 @@ namespace HCAL_HLX
 
 	// Move on to next lumi section as the previous one has to be complete by now...	
 	if ( mLumiSection->hdr.startOrbit != 0 ) {
+	  mSectionNumber++;
 	  mNumCompleteLumiSections++;
 	  if ( !mTransmitComplete ) {
 	    // Copy the data into the buffer
@@ -330,6 +337,7 @@ namespace HCAL_HLX
 
 	memset(mLumiSection,0,sizeof(LUMI_SECTION));
 	mLumiSection->hdr.numHLXs = mNumHLXs;
+	mLumiSection->hdr.sectionNumber = mSectionNumber;
 	mLumiSection->hdr.runNumber = mRunNumber;
 	mLumiSection->hdr.numOrbits = mNumOrbits;
 	mLumiSection->hdr.numBunches = mNumBunches;

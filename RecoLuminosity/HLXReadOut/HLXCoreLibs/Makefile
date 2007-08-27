@@ -3,6 +3,7 @@ Project=RecoLuminosity/HLXReadOut
 Package=HLXCoreLibs
 
 IncludeDirs = \
+	$(XDAQ_ROOT)/$(Project)/LumiDBLib/include \
 	$(XDAQ_ROOT)/$(Project)/$(Package)/include \
 	$(XDAQ_ROOT)/$(Project)/CoreUtils/include \
 	$(XDAQ_ROOT)/$(Project)/DIP/include \
@@ -40,7 +41,7 @@ ExternalObjects =
 DynamicLibrary= HLXCoreLibs
 StaticLibrary=
 Executables= 
-Libraries= CoreUtils dip dl
+Libraries= CoreUtils dip dl LumiDBLib
 TestExecutables= 
 TestLibraries= 
 
