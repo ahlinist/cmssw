@@ -11,13 +11,72 @@
 #include <string>
 
 // Type definitions used by the HAL, etc...
+#ifndef ICTypeDefs_HH  // CMSSW compatible
 #include "ICTypeDefs.hh"
+#endif
+
+#define HCAL_HLX_MAX_BUNCHES 4096
+#define HCAL_HLX_MAX_HLXS 36
+
+//#define HCAL_HLX_NUM_BUNCHES 3564
+//#define HCAL_HLX_NUM_HLXS 36
 
 // Namespace for the HCAL HLX
 namespace HCAL_HLX
 {
-  // We shall be using the IC core utility library
+  // We will be using the IC core utility library
   using namespace ICCoreUtils;
+
+  struct LUMI_SUMMARY {
+    double DeadtimeNormalization;
+    double Normalization;
+    double InstantLumi;
+    double InstantLumiErr;
+    double InstantLumiQlty;
+    double InstantETLumi;
+    double InstantETLumiErr;
+    double InstantETLumiQlty;
+    double InstantOccLumi[2];
+    double InstantOccLumiErr[2];
+    double InstantOccLumiQlty[2];
+  };
+
+  struct LUMI_THRESHOLD {
+    double Threshold1Set1;
+    double Threshold2Set1;
+    double Threshold1Set2;
+    double Threshold2Set2;
+    double ET;
+  };
+
+  struct LUMI_BUNCH_CROSSING {
+    double ETLumi[HCAL_HLX_MAX_BUNCHES];
+    double ETLumiErr[HCAL_HLX_MAX_BUNCHES];
+    double ETLumiQlty[HCAL_HLX_MAX_BUNCHES];
+    double OccLumi[2][HCAL_HLX_MAX_BUNCHES];
+    double OccLumiErr[2][HCAL_HLX_MAX_BUNCHES];
+    double OccLumiQlty[2][HCAL_HLX_MAX_BUNCHES];
+  };
+  
+  struct LEVEL1_HLT_TRIGGER {
+    int TriggerValue;
+    int TriggerBitNumber;    
+  };
+
+  struct TRIGGER_DEADTIME {
+    int TriggerDeadtime;
+  };
+
+  struct LUMI_SECTION_HST {
+    bool IsDataTaking;
+    int BeginOrbitNumber;
+    int EndOrbitNumber;
+    int RunNumber;
+    int LumiSectionNumber;
+    int FillNumber;
+    int SecStopTime;
+    int SecStartTime;
+  };
 
   struct LUMI_RAW_HEADER {
     u16 marker;
@@ -43,19 +102,19 @@ namespace HCAL_HLX
   struct ET_SUM_NIBBLE {
     LUMI_NIBBLE_HEADER hdr;
     bool bIsComplete;
-    unsigned long data[4096];
+    unsigned long data[HCAL_HLX_MAX_BUNCHES];
   };
   
   struct OCCUPANCY_NIBBLE {
     LUMI_NIBBLE_HEADER hdr;
     bool bIsComplete[6];
-    unsigned short data[6][4096];
+    unsigned short data[6][HCAL_HLX_MAX_BUNCHES];
   };
 
   struct LHC_NIBBLE {
     LUMI_NIBBLE_HEADER hdr;
     bool bIsComplete;
-    unsigned short data[4096];
+    unsigned short data[HCAL_HLX_MAX_BUNCHES];
   };
 
   struct LUMI_SECTION_HEADER {
@@ -75,24 +134,24 @@ namespace HCAL_HLX
 
   struct ET_SUM_SECTION {
     LUMI_SECTION_SUB_HEADER hdr;
-    unsigned long data[4096];
+    unsigned long data[HCAL_HLX_MAX_BUNCHES];
   };
 
   struct OCCUPANCY_SECTION {
     LUMI_SECTION_SUB_HEADER hdr;
-    unsigned long data[6][4096];
+    unsigned long data[6][HCAL_HLX_MAX_BUNCHES];
   };
 
   struct LHC_SECTION {
     LUMI_SECTION_SUB_HEADER hdr;
-    unsigned long data[4096];
+    unsigned long data[HCAL_HLX_MAX_BUNCHES];
   };
 
   struct LUMI_SECTION {
     LUMI_SECTION_HEADER hdr;
-    ET_SUM_SECTION etSum[36];
-    OCCUPANCY_SECTION occupancy[36];
-    LHC_SECTION lhc[36];
+    ET_SUM_SECTION etSum[HCAL_HLX_MAX_HLXS];
+    OCCUPANCY_SECTION occupancy[HCAL_HLX_MAX_HLXS];
+    LHC_SECTION lhc[HCAL_HLX_MAX_HLXS];
   };
 
 }//~namespace HCAL_HLX
