@@ -12,6 +12,7 @@
 #include "ICException.hh"
 #include "HardwareAccessException.hh"
 #include "MemoryAllocationException.hh"
+#include "OracleDBException.hh"
 //#include "ArgumentOutOfRangeException.hh"
 
 // HCAL HLX namespace
@@ -29,28 +30,45 @@ namespace HCAL_HLX
 
   // Default constructor
   OracleDistributor::OracleDistributor() {
-    mOracleDBUserName = 0;
-    mOracleDBLocation = 0;
-    mOracleDBPassword = 0;
-    mOracleDBSchema = 0;
+    mDBWriter = 0;
+    mErrorCount = 0;
+    mLumiBXData.aEtLumi = 0;
+    mLumiBXData.aEtErr = 0;
+    mLumiBXData.aEtQ = 0;
+    mLumiBXData.aOccLumi = 0;
+    mLumiBXData.aOccErr = 0;
+    mLumiBXData.aOccQ = 0;
     try{
       // Database is publicly visible to anyone on CERN network,
       // so information is stored only locally on readout server
       // inside a private network...
-      mOracleDBUserName = new string(getenv("HLX_ORACLE_DB_USER_NAME"));
-      mOracleDBPassword = new string(getenv("HLX_ORACLE_DB_PASSWORD"));
-      mOracleDBLocation = new string(getenv("HLX_ORACLE_DB_LOCATION"));
-      mOracleDBSchema = new string(getenv("HLX_ORACLE_DB_SCHEMA"));
+      string mOracleDBUserName(getenv("HLX_ORACLE_DB_USER_NAME"));
+      string mOracleDBPassword(getenv("HLX_ORACLE_DB_PASSWORD"));
+      string mOracleDBLocation(getenv("HLX_ORACLE_DB_LOCATION"));
+      string mOracleDBSchema(getenv("HLX_ORACLE_DB_SCHEMA"));
 
       // Initialisation of DB connection
-      mErrorCount=0;
-      mOracleEnvironment = Environment::createEnvironment(Environment::DEFAULT);
-      mOracleConnection = mOracleEnvironment->createConnection(*mOracleDBUserName,
-							       *mOracleDBPassword,							       *mOracleDBLocation);
+      mDBWriter = new DBWriter(mOracleDBUserName,
+			       mOracleDBPassword,
+			       mOracleDBLocation,
+			       mOracleDBSchema);
+	      
+      //mOracleEnvironment = Environment::createEnvironment(Environment::DEFAULT);
+      //mOracleConnection = mOracleEnvironment->createConnection(*mOracleDBUserName,
+      //						       *mOracleDBPassword,
+      //						       *mOracleDBLocation);
+      
+      // Create the initial data structures
+      mLumiBXData.aBX = new int[4096];
+      mLumiBXData.aEtLumi = new double[4096];
+      mLumiBXData.aEtErr = new double[4096];
+      mLumiBXData.aEtQ = new int[4096];
+      mLumiBXData.aOccLumi = new double[4096];
+      mLumiBXData.aOccErr = new double[4096];
+      mLumiBXData.aOccQ = new int[4096];
 
-    } catch (SQLException & aExc) {
-      HardwareAccessException lExc(aExc.getMessage());
-      RAISE(lExc);
+    } catch (OracleDBException & aExc) {
+      RETHROW(aExc);
     } catch (std::exception & aExc) {
       HardwareAccessException lExc(aExc.what());
       RAISE(lExc);
@@ -61,73 +79,78 @@ namespace HCAL_HLX
   // Destructor deletes the hardware interface
   OracleDistributor::~OracleDistributor() {
     // Terminate the connection
-    if ( mOracleConnection ) {
-      mOracleEnvironment->terminateConnection(mOracleConnection);
-      mOracleConnection = 0;
-    }
-    if ( mOracleEnvironment ) {
-      Environment::terminateEnvironment(mOracleEnvironment);
-      mOracleEnvironment = 0;
-    }
-    delete mOracleDBUserName; mOracleDBUserName = 0;
-    delete mOracleDBPassword; mOracleDBPassword = 0;
-    delete mOracleDBLocation; mOracleDBLocation = 0;
-    delete mOracleDBSchema; mOracleDBSchema = 0;
+    delete mDBWriter; mDBWriter = 0;
+
+    // Delete the data structures
+    delete []mLumiBXData.aBX; mLumiBXData.aBX = 0;
+    delete []mLumiBXData.aEtLumi; mLumiBXData.aEtLumi = 0;
+    delete []mLumiBXData.aEtErr; mLumiBXData.aEtErr = 0;
+    delete []mLumiBXData.aEtQ; mLumiBXData.aEtQ = 0;
+    delete []mLumiBXData.aOccLumi; mLumiBXData.aOccLumi = 0;
+    delete []mLumiBXData.aOccErr; mLumiBXData.aOccErr = 0;
+    delete []mLumiBXData.aOccQ; mLumiBXData.aOccQ = 0;
   }
 
   void OracleDistributor::ProcessSection(const LUMI_SECTION & lumiSection) {
     try {
-      // SQL statement for luminosity header information
-      std::string sqlStmt =
-	"insert into " + *mOracleDBSchema + ".lumi_sections(SECTION_ID,"
-	"SET_VERSION_NUMBER, IS_DATA_TAKING, BEGIN_ORBIT_NUMBER,"
-	"END_ORBIT_NUMBER, RUN_NUMBER, LUMI_SECTION_NUMBER,"
-	"FILL_NUMBER, SEC_START_TIME, SEC_STOP_TIME, COMMENTS)"
-	"VALUES (:sid, :setVnum, :dataTk, :bO, :eO,:run, :lsNum,"
-	":fNum,:secStratT,:secStopT,:comm )";
+      // Get the next sequence ID
+      long lumiSectionID = mDBWriter->getLumiSectionSeq();
+      cout << "Section ID: " << dec << lumiSectionID << endl;
+      cout << "Run number: " << dec << lumiSection.hdr.runNumber << endl;
+      cout << "Section number: " << dec << lumiSection.hdr.sectionNumber << endl;
 
-      // Create the SQL statement
-      //cout << "Create SQL statement" << endl; 
-      Statement *mOracleStatement =  mOracleConnection->createStatement(sqlStmt);
-      //cout << mOracleStatement << endl;
+      // Format the luminosity section
+      // TODO - consider making the commits uints rather than ints...
+      mLumiSectionData.dataTaking = static_cast<int>(lumiSection.hdr.bCMSLive);
+      mLumiSectionData.beginObt = static_cast<int>(lumiSection.hdr.startOrbit);
+      mLumiSectionData.totalObts = static_cast<int>(lumiSection.hdr.numOrbits);
+      mLumiSectionData.runNum = static_cast<int>(lumiSection.hdr.runNumber);
+      mLumiSectionData.lsNum = static_cast<int>(lumiSection.hdr.sectionNumber);
 
-      // Load the data into the payload
-      //cout << "Loading data" << endl;
-      static int sectionId = 0;
-      sectionId++;
-      //cout << "section id: " << dec << sectionId << endl;
-      mOracleStatement->setInt(1,sectionId); // section id?
-      mOracleStatement->setInt(2,0); // version number?
-      // Is CMS taking data?
-      mOracleStatement->setInt(3, static_cast<unsigned int>(lumiSection.hdr.bCMSLive));
-      // Begin orbit number
-      mOracleStatement->setInt(4, static_cast<unsigned int>(lumiSection.hdr.startOrbit));
-      // End orbit number
-      mOracleStatement->setInt(5, static_cast<unsigned int>(lumiSection.hdr.startOrbit+lumiSection.hdr.numOrbits-1));
-      // Run number
-      mOracleStatement->setInt(6, static_cast<unsigned int>(lumiSection.hdr.runNumber));      
-      // Lumi section number
-      mOracleStatement->setInt(7,sectionId);
-      mOracleStatement->setInt(8,0); // Fill number???
-      mOracleStatement->setInt(9,0); // Fill number???      
-      mOracleStatement->setInt(10,0); // Fill number???
-      const string tempString = "debug test of OracleDistributor";
-      mOracleStatement->setString(11,tempString);
+      // Write the lumi section data into the DB      
+      cout << "OracleDistributor: Inserting luminosity section" << endl;
+      mDBWriter->insertBind_LumiSec(lumiSectionID,
+				    mLumiSectionData);
 
-      // Execute the SQL statement
-      //cout << "Executing SQL request" << endl;
-      mOracleStatement->executeUpdate();
+      // Format the lumi summary data
+      mLumiSummaryData.dTimeNorm = 0.0;
+      mLumiSummaryData.norm = 0.0;
+      mLumiSummaryData.instLumi = 0.0;
+      mLumiSummaryData.instLumiQ = 0;
+      mLumiSummaryData.instEtLumi = 0.0;
+      mLumiSummaryData.instEtLumiErr = 0.0;
+      mLumiSummaryData.instEtLumiQ = 0;
+      mLumiSummaryData.instOccLumi = 0.0;
+      mLumiSummaryData.instOccLumiErr = 0.0;
+      mLumiSummaryData.instOccLumiQ = 0;
 
-      // Delete the SQL statement
-      //cout << "Terminate statement" << endl;
-      mOracleConnection->terminateStatement(mOracleStatement);
+      // Write the lumi summary data
+      cout << "OracleDistributor: Inserting luminosity summary data" << endl;
+      mDBWriter->insertBind_LumiSummary(lumiSectionID,
+					mLumiSummaryData);
 
-    } catch (SQLException & aExc) {
-      cout << "SQL exception caught:" << endl;
-      cout << aExc.getMessage() << endl;
+      // Format the lumi BX data
+      mLumiBXData.aLen = static_cast<int>(lumiSection.hdr.numBunches);
+      // Set up the BX indices (do we really need these?)
+      for ( int i = 0 ; i != mLumiBXData.aLen ; i++ ) {
+	mLumiBXData.aBX[i] = i;
+	// Jimmy the rest of the data now
+	mLumiBXData.aEtLumi[i] = 0.0;
+	mLumiBXData.aEtErr[i] = 0.0;
+	mLumiBXData.aEtQ[i] = i;
+	mLumiBXData.aOccLumi[i] = 0.0;
+	mLumiBXData.aOccErr[i] = 0.0;
+	mLumiBXData.aOccQ[i] = i;
+      }
+
+      // Write the lumi BX data
+      cout << "OracleDistributor: Inserting luminosity bx data" << endl;
+      mDBWriter->insertArray_LumiBX(lumiSectionID,
+				    mLumiBXData);
+
+    } catch (OracleDBException & aExc) {
+      cout << aExc.what() << endl;
       mErrorCount++;
-      //HardwareAccessException lExc(aExc.getMessage());
-      //RAISE(lExc);
     } catch (...) {
       cout << "Unknown exception caught" << endl;
       mErrorCount++;

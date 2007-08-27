@@ -25,6 +25,9 @@
 // Standard high-level data structures for luminosity
 #include "LumiStructures.hh"
 
+// DB writer API
+#include "DBWriter.hh"
+
 // Namespace for the HCAL HLX
 namespace HCAL_HLX
 {
@@ -58,19 +61,27 @@ namespace HCAL_HLX
     // be rethrown across multithreaded apps...
     u32 mErrorCount;
 
+    // DB writer instance
+    DBWriter *mDBWriter;
+
+    // Luminosity DB data structures
+    DBWriter::DBLumiSection mLumiSectionData;
+    DBWriter::DBLumiBX mLumiBXData;
+    DBWriter::DBLumiSummary mLumiSummaryData;
+
     // User name and password are hard-coded
-    string *mOracleDBUserName;
-    string *mOracleDBPassword;
+    //string *mOracleDBUserName;
+    //string *mOracleDBPassword;
 
     // Database location
-    string *mOracleDBLocation;
+    //string *mOracleDBLocation;
 
     // Oracle schema
-    string *mOracleDBSchema;
+    //string *mOracleDBSchema;
 
     // Oracle DB variables
-    oracle::occi::Environment *mOracleEnvironment;
-    oracle::occi::Connection *mOracleConnection;
+    //oracle::occi::Environment *mOracleEnvironment;
+    //oracle::occi::Connection *mOracleConnection;
 	//    oracle::occi::Statement *mOracleStatement;
 
   }; //~class OracleDistributor
