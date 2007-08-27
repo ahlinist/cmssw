@@ -6,9 +6,10 @@ export CLASSPATH=$DIPBASE/lib/dip.jar
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$DIPBASE/lib
 #echo CLASSPATH was extended with $DIPBASE/lib/dip.jar
 #echo LD_LIBRARY_PATH was extended with $DIPBASE/lib
-export DIPNS=cms-cent-dcs-02  #fwserv01.cern.ch
+#export DIPNS=cms-cent-dcs-02  #fwserv01.cern.ch
 #export DIPPORT=2506
+export DIPNS=cms-cent-dcs-02
 #export DIM_DNS_PORT=2505
-#export DIM_DNS_NODE=fwserv01.cern.ch
+#export DIM_DNS_NODE=cms-cent-dcs-02
 #export DIMDNSNODE=$DIM_DNS_NODE
 #export DIMDNSPORT=$DIM_DNS_PORT

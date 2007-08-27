@@ -38,7 +38,7 @@ int main(int argc, char ** argv) {
   try {
 
     lSectionCollector = new SectionCollector(300, // Num bunches
-					     2, // Num nibbles per section
+					     3, // Num nibbles per section
 					     1, // Num orbits in lumi nibble
 					     NUM_HLXS);  // Num HLXs
     lNibbleCollector = new NibbleCollector(NUM_HLXS);
@@ -67,7 +67,7 @@ int main(int argc, char ** argv) {
 	cout << "Average data rate (Mb/s): " << (double)lNibbleCollector->GetTotalDataVolume()*8.0/(1024.0*1024.0*(double)(tempTime-startTime)) << endl;
 	interTime = tempTime;
       }
-      usleep(1000);
+      Sleep(1);
     }
 
   }catch(ICException & aExc){

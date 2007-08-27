@@ -1,12 +1,14 @@
 include $(XDAQ_ROOT)/config/mfAutoconf.rules
 include $(XDAQ_ROOT)/config/mfDefs.$(XDAQ_OS)
 
-Project = RecoLuminosity/HLXReadOut
+ProjectGroup = RecoLuminosity
+Project = $(ProjectGroup)/HLXReadOut
 Package = StandAlone
 Sources = 
 
 UserSourcePath =
 IncludeDirs = \
+	$(XDAQ_ROOT)/$(ProjectGroup)/LumiDBLib/include \
 	$(XDAQ_ROOT)/$(Project)/CoreUtils/include \
 	$(XDAQ_ROOT)/$(Project)/HLXCoreLibs/include \
 	$(XDAQ_ROOT)/$(Project)/DIP/include \
@@ -16,6 +18,7 @@ IncludeDirs = \
 	$(ORACLE_HOME)/network/public
 
 LibraryDirs = \
+	$(XDAQ_ROOT)/$(ProjectGroup)/LumiDBLib/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM)/ \
 	$(XDAQ_ROOT)/$(Project)/CoreUtils/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM)/ \
 	$(XDAQ_ROOT)/$(Project)/HLXCoreLibs/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM)/ \
 	$(XDAQ_ROOT)/$(Project)/DIP/lib/ \
@@ -28,7 +31,8 @@ UserCCFlags =
 UserDynamicLinkFlags =
 UserStaticLinkFlags =
 UserExecutableLinkFlags =
-Libraries = CoreUtils HLXCoreLibs pthread dip dl clntsh occi10 nnz10 n10 \
+Libraries = LumiDBLib CoreUtils HLXCoreLibs pthread dip dl clntsh occi10 \
+	nnz10 n10 \
 	Hist MathCore Matrix Core Cint Gpad Graf RIO
 DynamicLibrary = 
 StaticLibrary =
@@ -36,6 +40,7 @@ Executables = \
 	hlx_fake.cpp \
 	test_distribution.cpp \
 	test_oracle_distributor.cpp \
+	test_oracle_distributor_fake.cpp \
 	test_DIP_distributor.cpp
 #	test_debug_cout.cpp \
 #	test_section.cpp \

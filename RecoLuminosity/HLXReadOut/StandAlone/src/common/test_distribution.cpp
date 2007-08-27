@@ -7,6 +7,7 @@
 #include <signal.h>
 
 #include "ICException.hh"
+#include "ICUtilityToolbox.hh"
 
 // NibbleCollector class
 #include "TestDistributor.hh"
@@ -24,7 +25,7 @@ using namespace std;
 using namespace HCAL_HLX;
 using namespace ICCoreUtils;
 
-#define NUM_HLXS 12
+#define NUM_HLXS 13
 
 int main(int argc, char ** argv) {
   signal(SIGINT,CtrlC);
@@ -32,6 +33,8 @@ int main(int argc, char ** argv) {
   NibbleCollector *lNibbleCollector = 0;
   TestDistributor *lTestDistributor = 0;
   try {
+
+cout << "NUM HLXS " << dec << NUM_HLXS << endl;
     lSectionCollector = new SectionCollector(3564, //3564, // Num bunches
 					     3,    // Num nibbles per section
 					     4096,  //280,  // Num orbits in lumi nibble
@@ -63,6 +66,7 @@ int main(int argc, char ** argv) {
 	cout << "Average data rate (Mb/s): " << (double)lNibbleCollector->GetTotalDataVolume()*8.0/(1024.0*1024.0*(double)(tempTime-startTime)) << endl;
 	interTime = tempTime;
       }
+      Sleep(1);
     }
 
   }catch(ICException & aExc){

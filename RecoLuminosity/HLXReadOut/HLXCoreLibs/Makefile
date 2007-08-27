@@ -1,9 +1,10 @@
 # Packages to be built
-Project=RecoLuminosity/HLXReadOut
+ProjectGroup=RecoLuminosity
+Project=$(ProjectGroup)/HLXReadOut
 Package=HLXCoreLibs
 
 IncludeDirs = \
-	$(XDAQ_ROOT)/$(Project)/LumiDBLib/include \
+	$(XDAQ_ROOT)/$(ProjectGroup)/LumiDBLib/include \
 	$(XDAQ_ROOT)/$(Project)/$(Package)/include \
 	$(XDAQ_ROOT)/$(Project)/CoreUtils/include \
 	$(XDAQ_ROOT)/$(Project)/DIP/include \
@@ -23,7 +24,8 @@ Sources = \
 	GIFDistributor.cc \
         SectionCollector.cc \
 	TestSectionCollector.cc \
-        TCPDistributor.cc
+        TCPDistributor.cc \
+        LumiCalc.cc
 
 # some XDAQ-required stuff
 include $(XDAQ_ROOT)/config/mfAutoconf.rules

@@ -5,6 +5,7 @@ Project=RecoLuminosity/HLXReadOut
 
 Packages= \
 	CoreUtils \
+        LumiDBLib \
 	HLXCoreLibs \
 	StandAlone \
 	XDAQ

@@ -17,6 +17,7 @@ Sources = \
 	ICUtilityToolbox.cc \
 	InvalidArgumentException.cc \
 	MemoryAllocationException.cc \
+	OracleDBException.cc \
 	MyLog.cc \
 	TimeStamp.cc
 
