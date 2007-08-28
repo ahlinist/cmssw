@@ -10,7 +10,7 @@ module hadSUSYHLTdiElecPath = hltHighLevel from "HLTrigger/HLTfilters/data/hltHi
  replace hadSUSYHLTdiElecPath.HLTPaths = {"HLT2ElectronRelaxed"}
 
 module hadSUSYHLTJetMETPath = hltHighLevel from "HLTrigger/HLTfilters/data/hltHighLevel.cfi"
- replace hadSUSYHLTJetMETPath.HLTPaths = {"HLT3jet","HLT1MET1HT","HLT2jet1METNV"}
+ replace hadSUSYHLTJetMETPath.HLTPaths = {"HLT3jet","HLT1MET1HT","HLTS2jet1METNV"}
 
 module hadSUSYHLTTopMuonPath =  hltHighLevel from "HLTrigger/HLTfilters/data/hltHighLevel.cfi"
  replace hadSUSYHLTTopMuonPath.HLTPaths = {"HLTXMuonJets"}
