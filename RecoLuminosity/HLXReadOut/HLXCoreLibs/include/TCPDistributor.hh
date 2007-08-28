@@ -11,7 +11,7 @@
 // The string and stream definitions
 //#include <fstream>
 //#include <string>
-//#include <vector>
+#include <list>
 
 // Include AbstractDistributor definition
 #include "AbstractDistributor.hh"
@@ -22,13 +22,41 @@
 // Standard high-level data structures for luminosity
 #include "LumiStructures.hh"
 
+// pthreads
+#include <pthread.h>
+
+// networking
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <sys/types.h>
+
 // Namespace for the HCAL HLX
-namespace HCAL_HLX
-{
+namespace HCAL_HLX {
 
   // We shall be using the IC core utility library
   using namespace ICCoreUtils;
   using namespace std;
+
+  struct ClientConnectionData {
+    // Client connection socket
+    int socket;
+
+    // Always a lumi section data structure for this
+    u8 lumiSection[sizeof(LUMI_SECTION)];
+
+    // Number of bytes left in the send
+    u32 nBytesLeft;
+  };
+
+  struct TCPThreadInterlockData {
+    // Flag for update
+    bool bDataUpdate;
+
+    // Data structure to copy data into
+    LUMI_SECTION lumiSection;
+  };
 
   // Prototype class definition
   class TCPDistributor : public AbstractDistributor {
@@ -36,7 +64,8 @@ namespace HCAL_HLX
   public:
 
     // Constructor
-    TCPDistributor(const char * serverName = "127.0.0.1", unsigned short port = 50002);
+    TCPDistributor(const char * serverName = "127.0.0.1",
+		   u16 port = 50002);
 
     // Destructor
     ~TCPDistributor();
@@ -45,8 +74,28 @@ namespace HCAL_HLX
     void ProcessSection(const LUMI_SECTION & lumiSection);
 
   private:
+    // File descriptor setup
+    void SetupFDs();
 
+    // Thread worker function stuff
+    static void WorkerThread(void *thisPtr);
+    pthread_t mThreadId;
+    pthread_mutex_t mDataMutex;
+    bool mWorkerThreadContinue;
+
+    // Thread interlock data structure
+    TCPThreadInterlockData *mInterlockData;
+
+    // Listener socket
     int mSocket;
+
+    // FD sets
+    fd_set fdsRead;
+    fd_set fdsWrite;
+    fd_set fdsExcept;
+
+    // Client connection information
+    std::list<HCAL_HLX::ClientConnectionData> clientList;
 
   }; //~class TCPDistributor
 
