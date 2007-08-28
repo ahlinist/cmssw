@@ -4,7 +4,8 @@ Project=$(ProjectGroup)/HLXReadOut
 Package=HLXCoreLibs
 
 IncludeDirs = \
-	$(XDAQ_ROOT)/$(ProjectGroup)/LumiDBLib/include \
+	$(XDAQ_ROOT)/$(ProjectGroup)/LumiDB/include \
+	$(XDAQ_ROOT)/$(ProjectGroup)/LumiCalc/include \
 	$(XDAQ_ROOT)/$(Project)/$(Package)/include \
 	$(XDAQ_ROOT)/$(Project)/CoreUtils/include \
 	$(XDAQ_ROOT)/$(Project)/DIP/include \
@@ -24,8 +25,7 @@ Sources = \
 	GIFDistributor.cc \
         SectionCollector.cc \
 	TestSectionCollector.cc \
-        TCPDistributor.cc \
-        LumiCalc.cc
+        TCPDistributor.cc
 
 # some XDAQ-required stuff
 include $(XDAQ_ROOT)/config/mfAutoconf.rules
@@ -43,7 +43,7 @@ ExternalObjects =
 DynamicLibrary= HLXCoreLibs
 StaticLibrary=
 Executables= 
-Libraries= CoreUtils dip dl LumiDBLib
+Libraries= CoreUtils dip dl LumiDB LumiCalc
 TestExecutables= 
 TestLibraries= 
 

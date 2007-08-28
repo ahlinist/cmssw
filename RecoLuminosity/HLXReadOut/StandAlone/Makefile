@@ -8,7 +8,7 @@ Sources =
 
 UserSourcePath =
 IncludeDirs = \
-	$(XDAQ_ROOT)/$(ProjectGroup)/LumiDBLib/include \
+	$(XDAQ_ROOT)/$(ProjectGroup)/LumiDB/include \
 	$(XDAQ_ROOT)/$(Project)/CoreUtils/include \
 	$(XDAQ_ROOT)/$(Project)/HLXCoreLibs/include \
 	$(XDAQ_ROOT)/$(Project)/DIP/include \
@@ -18,7 +18,7 @@ IncludeDirs = \
 	$(ORACLE_HOME)/network/public
 
 LibraryDirs = \
-	$(XDAQ_ROOT)/$(ProjectGroup)/LumiDBLib/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM)/ \
+	$(XDAQ_ROOT)/$(ProjectGroup)/LumiDB/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM)/ \
 	$(XDAQ_ROOT)/$(Project)/CoreUtils/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM)/ \
 	$(XDAQ_ROOT)/$(Project)/HLXCoreLibs/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM)/ \
 	$(XDAQ_ROOT)/$(Project)/DIP/lib/ \
@@ -31,7 +31,7 @@ UserCCFlags =
 UserDynamicLinkFlags =
 UserStaticLinkFlags =
 UserExecutableLinkFlags =
-Libraries = LumiDBLib CoreUtils HLXCoreLibs pthread dip dl clntsh occi10 \
+Libraries = LumiDB CoreUtils HLXCoreLibs pthread dip dl clntsh occi10 \
 	nnz10 n10 \
 	Hist MathCore Matrix Core Cint Gpad Graf RIO
 DynamicLibrary = 
@@ -41,7 +41,10 @@ Executables = \
 	test_distribution.cpp \
 	test_oracle_distributor.cpp \
 	test_oracle_distributor_fake.cpp \
-	test_DIP_distributor.cpp
+	test_DIP_distributor.cpp \
+	tcp_server.cpp \
+        tcp_client.cpp \
+	test_tcp_distributor.cpp
 #	test_debug_cout.cpp \
 #	test_section.cpp \
 #	tcp_receiver2.cpp \
