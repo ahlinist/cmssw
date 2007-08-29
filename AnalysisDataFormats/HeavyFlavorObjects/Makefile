@@ -96,7 +96,7 @@ runTrigReader: test/trigReader.cc test/trigReader.cc
 
 # ================================================================================
 links:
-	cd ../../../lib/$(SCRAM_ARCH)/ && rm -f libAna00.so && ln -s ../../AnalysisDataFormats/HeavyFlavorObjects/lib/libAna00.so && cd -
+	cd ../../../lib/$(SCRAM_ARCH)/ && rm -f libAna00.so && ln -s ../../src/AnalysisDataFormats/HeavyFlavorObjects/lib/libAna00.so && cd -
 
 # ================================================================================
 clean:
