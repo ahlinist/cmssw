@@ -25,7 +25,9 @@ Sources = \
 	GIFDistributor.cc \
         SectionCollector.cc \
 	TestSectionCollector.cc \
-        TCPDistributor.cc
+        TCPDistributor.cc \
+	ROOTDistributor.cc \
+	ROOTDistributor_Dict.cc
 
 # some XDAQ-required stuff
 include $(XDAQ_ROOT)/config/mfAutoconf.rules

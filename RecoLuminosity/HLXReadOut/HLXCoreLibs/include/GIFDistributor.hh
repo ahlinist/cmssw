@@ -52,4 +52,4 @@ namespace HCAL_HLX
 
 } //~namespace HCAL_HLX
 
-#endif //DIPDISTRIBUTOR_HH
+#endif //GIFDISTRIBUTOR_HH

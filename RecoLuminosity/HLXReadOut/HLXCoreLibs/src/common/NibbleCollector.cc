@@ -172,19 +172,19 @@ namespace HCAL_HLX
       }
 
       // This has to be dynamically allocated or it won't work
-      circularBuffer = new HLX_CB_TYPE[256];
+      circularBuffer = new HLX_CB_TYPE[65536];
       if ( circularBuffer == 0 ) {
 	MemoryAllocationException lExc("Circular buffer");
 	RAISE(lExc);
       }
 
       // Initialise the array
-      for ( u32 i = 0 ; i != 256 ; i++ ) {
+      for ( u32 i = 0 ; i != 65536 ; i++ ) {
 	circularBuffer[i].data = 0;
       }
 
       // Allocate the circular buffer
-      for ( u32 i = 0 ; i != 256 ; i++ ) {
+      for ( u32 i = 0 ; i != 65536 ; i++ ) {
 	circularBuffer[i].data = new u8[1500];
 	if ( circularBuffer[i].data == 0 ) {
 	  MemoryAllocationException lExc("Circular buffer");
@@ -222,9 +222,9 @@ namespace HCAL_HLX
       mLHCNibbles = 0;
 
       // Circular buffer
-      for ( u32 i = 0 ; i != 256 ; i++ ) {
+      for ( u32 i = 0 ; i != 65536 ; i++ ) {
 	if ( circularBuffer[i].data ) {
-	  delete []circularBuffer;
+	  delete []circularBuffer[i].data;
 	  circularBuffer[i].data = 0;
 	}
       }
