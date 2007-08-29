@@ -60,6 +60,112 @@ Weight/cm inferred from direct measurements, see http://test-gmagazzu.web.cern.c
 ..............................................................................
 ==============================================================================
 
+o Ruggedized 12-fibers Ribbon 
+  ---------------------------
+
+20070710 GSguazzoni
+
+MCVolume: (4.3mm*2.0mm)*1cm = 0.086000 cm^3
+
+Total Weight/cm and fractional composition from direct measurement.
+Fractional composition of bare ribbon from data sheets.
+
+Nominal outer dimensions: 4.3mm*2.0mm
+(1) Plastic sheath (PE) ==> 4.95/0.95/100 = 0.051205 cm^3 
+(2) Aramide filler (=kevlar) ==> 1/1.44/100 = 0.006944 cm^3 
+(3) Ribbon matrix coating (Acrylate) ==> 0.004030 cm^3
+(4) 12x Core (quartz) 0<diam<9micron +
+    12x Cladding (quartz) 9<diam<125micron ==> 0.001476 cm^3
+(5) 12x Coating (acrylate) 125<diam<250micron ==> 0.004416 cm^3
+
+Volumes per centimeter.
+.....................................................................
+# "Ruggedized Ribbon"       "T_RuggRibbon"          8.6000E-2 -1.
+* 1 "Plastic Sheath"        "Polyethylene"          5.1205E-2  1  CAB
+* 2 "Filler"                "Kevlar"                0.6944E-2  1  CAB
+* 3 "Matrix coating"        "Acrylate"              0.4030E-2  1  CAB
+* 4 "12x Core+Cladding"     "Silica"                0.1476E-2  1  CAB
+* 5 "12x Coating"           "Acrylate"              0.4416E-2  1  CAB
+......................................................................
+======================================================================
+
+o Ruggedized Ribbon 12x Female MU Connector
+  -----------------------------------------
+
+20070710 GSguazzoni
+20070829 rranieri
+
+MCVolume: (6.0*2.0*1.0) cm^3 = 12.0 cm^3
+
+Total Weight and fractional composition from direct measurement.
+MC Volume roughly external dimensions.
+
+(1) Plastic Case (Polyethylene) ==> (10-1.9)/0.95 = 8.5263 cm^3
+(2) Ceramic Sleeve (Ceramic) ==> 1.9/3.96525 = 0.4792 cm^3
+(3) Plastic 2D tag (Polyethylene) ==> 0.12/0.95 = 0.1263 cm^3
+(4) 2x Fixing Screws (Iron) ==> 0.2/7.87 = 0.0254 cm^3
+
+Volumes per piece.
+.....................................................................
+# "Ribbon 12x MU connector"  "T_Ribbon12xMUConn"    12.0     -1.
+* 1 "Plastic"                "Polyethylene"          8.5263   1  CAB
+* 2 "Ceramic"                "Ceramic"               0.4792   1  CAB
+* 3 "2D tags"                "Polyethylene"          0.1263   1  CAB
+* 4 "Screws"		     "Iron"		     0.0254   1  SUP
+......................................................................
+======================================================================
+
+
+o Ruggedized Ribbon 12x Female MU Connector for TOB
+  --------------------------------------------------
+
+20070829 rranieri
+
+MCVolume: (6.0*2.0*1.0) cm^3 = 12.0 cm^3
+
+Total Weight and fractional composition from direct measurement.
+MC Volume roughly external dimensions.
+
+(1) Plastic Case (Polyethylene) ==> (9-1.9)/0.95 = 7.4737 cm^3
+(2) Ceramic Sleeve (Ceramic) ==> 1.9/3.96525 = 0.4792 cm^3
+(3) Plastic 2D tag (Polyethylene) ==> 0.12/0.95 = 0.1263 cm^3
+(4) 2x Fixing Screws (Iron) ==> 0.2/7.87 = 0.0254 cm^3
+
+Volumes per piece.
+........................................................................
+# "TOB Ribbon 12x MU connector" "TOB_Ribbon12xMUConn"  12.0     -1.
+* 1 "Plastic"                   "Polyethylene"          7.4737   1  CAB
+* 2 "Ceramic"                   "Ceramic"               0.4792   1  CAB
+* 3 "2D tags"                   "Polyethylene"          0.1263   1  CAB
+* 4 "Screws"		        "Iron"		        0.0254   1  SUP
+........................................................................
+========================================================================
+
+
+o TOB DOHM power connector 
+  -------------------------
+
+20070829 rranieri
+
+Total Weight/cm and fractional composition from direct measurement.
+Fractional composition of bare ribbon from data sheets.
+
+Nominal outer dimensions: 4.3mm*2.0mm
+(1) Kapton ==> (0.9485 g/m) / (1.4 g/cm^3) --> 0.6775 cm^3 / m
+(2) Aluminium ==> (1.863 g/m) / (2.7 g/cm^3) --> 0.69 cm^3 / m
+(3) Polyethylene ==> (4.680564 g/m) / (0.95 g/cm^3) --> 4.9269 cm^3 / m
+(4) Copper ==> (27.5109 g/m) / (8.96 g/cm^3) --> 3.0704 cm^3 / m
+
+MCVolume: (0.6775 + 0.69 + 4.9269 + 3.0704) cm^3 / m = 9.3648 cm^3 / m = 0.093648 cm^3 / cm
+
+........................................................................
+# "TOB DOHM Power Connector" "TOB_DOHM_PowerConnector" 9.3648E-2 -1.
+* 1 "Kapton"                 "T_Kapton"                0.6775E-2  1 CAB
+* 2 "Aluminium"              "Aluminium"               0.6900E-2  1 CAB
+* 3 "Polyethylene"           "Polyethylene"            4.9269E-2  1 CAB
+* 4 "Copper"                 "Copper"                  3.0704E-2  1 CAB
+........................................................................
+========================================================================
 
 
 
