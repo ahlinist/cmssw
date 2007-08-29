@@ -504,28 +504,33 @@ data taken from http://test-gmagazzu.web.cern.ch/test%2Dgmagazzu/TOB/MB/DOHM_MB.
 		density = 8.5 g/cm^3
 		--> volume = 0.0203 cm^3
 
-..................................................................................
-# "TOB DOHM"                               "TOB_DOHM"        80.652   13.442
-* 1 "DOHM PCB board"                       "T_G10"           19.816    1      ELE
-* 2 "DOHM PCB copper traces"               "Copper"           0.716    1      ELE
-* 3 "DOHM NAiS connectors"                 "Copper"           0.127    1      ELE
-* 4 "DOHM NAiS connectors"                 "Epoxy"            2.765    1      ELE
-* 5 "DOHM Resistors"                       "Ceramic"          0.0065   1      ELE
-* 6 "DOHM Capacitors"                      "Barium_Titanate"  0.0919   1      ELE
-* 7 "DOHM ASICs EMC"                       "Epoxy"            0.4050   1      ELE
-* 8 "DOHM ASICs copper"                    "Copper"           0.0376   1      ELE
-* 9 "DOHM fiber holder"                    "T_G10"            2.147    1      ELE
-* 10 "DOHM Thermistor"                     "Air"              0.000    1      ELE
-* 11 "SCCAC,SCLAC,DOHM glue"               "Epoxy"            0.404    1      SUP
-* 12 "SCCAC,SCLAC,DOHM Solder Paste"       "BGA"              0.038    1      SUP
-* 13 "DOHM grounding strips"               "Copper"           0.021    1      ELE
-* 14 "DOHM Aluminium shields"              "Aluminium"       10.781    1      SUP
-* 15 "DOHM Aluminium supports"             "Aluminium"        4.215    1      SUP
-* 16 "DOHM Screws"                         "Brass"            0.248    1      SUP
-* 17 "DOHM Washers"                        "Brass"            0.0203   1      SUP
-* 18 "DOHs"                                "TOB_DOH"          3.9851   2      ELE
-..................................................................................
-==================================================================================
+(18) Ribbon connectors (2 copies)
+
+(19) DOHs (2 copies)
+
+....................................................................................
+# "TOB DOHM"                               "TOB_DOHM"          80.652   13.442
+* 1 "DOHM PCB board"                       "T_G10"             19.816    1      ELE
+* 2 "DOHM PCB copper traces"               "Copper"             0.716    1      ELE
+* 3 "DOHM NAiS connectors"                 "Copper"             0.127    1      ELE
+* 4 "DOHM NAiS connectors"                 "Epoxy"              2.765    1      ELE
+* 5 "DOHM Resistors"                       "Ceramic"            0.0065   1      ELE
+* 6 "DOHM Capacitors"                      "Barium_Titanate"    0.0919   1      ELE
+* 7 "DOHM ASICs EMC"                       "Epoxy"              0.4050   1      ELE
+* 8 "DOHM ASICs copper"                    "Copper"             0.0376   1      ELE
+* 9 "DOHM fiber holder"                    "T_G10"              2.147    1      ELE
+* 10 "DOHM Thermistor"                     "Air"                0.000    1      ELE
+* 11 "SCCAC,SCLAC,DOHM glue"               "Epoxy"              0.404    1      SUP
+* 12 "SCCAC,SCLAC,DOHM Solder Paste"       "BGA"                0.038    1      SUP
+* 13 "DOHM grounding strips"               "Copper"             0.021    1      ELE
+* 14 "DOHM Aluminium shields"              "Aluminium"         10.781    1      SUP
+* 15 "DOHM Aluminium supports"             "Aluminium"          4.215    1      SUP
+* 16 "DOHM Screws"                         "Brass"              0.248    1      SUP
+* 17 "DOHM Washers"                        "Brass"              0.0203   1      SUP
+* 18 "Ribbon Connectors"                   "T_Ribbon12xMUConn" 12.0      2      CAB
+* 19 "DOHs"                                "TOB_DOH"            3.9851   2      ELE
+....................................................................................
+====================================================================================
 
 
 o Endflange Connectors

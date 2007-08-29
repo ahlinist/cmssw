@@ -1220,35 +1220,40 @@ Different for different layers
 		density = 1.40 g/cm^3
 		--> volume = 14.091 cm^3
 
+(25) Ribbon connectors (2 copies)
 
-..................................................................................
-# "TOB Rod Connections Layer 1/2"          "TOB_CONN12"     44.25       88.5
-* 1 "SCLAC board"                          "T_G10"           0.211       1    ELE
-* 2 "SCLAC copper traces"                  "Copper"          0.007       1    ELE
-* 3 "CCUM wires Cu"                        "Copper"          0.191       2    CAB
-* 4 "CCUM wires Al"                        "Aluminium"       0.123       2    CAB
-* 5 "CCUM wires PEI"                       "Silicone_Gel"    0.203       2    CAB
-* 6 "CCUM wires SILTEM"                    "Polyethylene"    0.788       2    CAB
-* 7 "BUS wires Cu"                         "Copper"          0.740       1    CAB
-* 8 "BUS wires Al"                         "Aluminium"       0.0877      1    CAB
-* 9 "BUS wires PEI"                        "Silicone_Gel"    0.144       1    CAB
-* 10 "BUS wires SILTEM"                    "Polyethylene"    2.365       1    CAB
-* 11 "SCLAC glue"                          "Epoxy"           0.202       1    SUP
-* 12 "Output cable Shield"                 "Aluminium"       0.089       1    CAB
-* 13 "Output cable Sleeve"                 "Polyethylene"    0.642       1    CAB
-* 14 "Input and Output cable Tie"          "T_Kapton"        0.195       1    CAB
-* 15 "Input and Output cable Solder Paste" "BGA"             0.038       1    CAB
-* 16 "ICB,LVLAC,HVLAC glue"                "Epoxy"           0.181       1    SUP
-* 17 "ICB Solder Paste"                    "BGA"             0.005       1    CAB
-* 18 "LVLAC substrate"                     "T_G10"           0.242       1    ELE
-* 19 "LVLAC copper traces"                 "Copper"          0.0126      1    ELE
-* 20 "HVLAC substrate"                     "T_G10"           0.174       1    ELE
-* 21 "HVLAC copper traces"                 "Copper"          0.0036      1    ELE
-* 22 "Optical fibers"                      "Optical_Fiber"   6.362E-3  120    CAB
-* 23 "Optical fibers 3D label tag"         "T_Kapton"        1.714       1    CAB
-* 24 "Optical fibers MU connectors"        "T_Kapton"       14.091       1    CAB
-..................................................................................
-==================================================================================
+(26) Ruggedized ribbon: total length 80 mm 
+
+.....................................................................................
+# "TOB Rod Connections Layer 1/2"          "TOB_CONN12"        44.25       88.5
+* 1 "SCLAC board"                          "T_G10"              0.211       1    ELE
+* 2 "SCLAC copper traces"                  "Copper"             0.007       1    ELE
+* 3 "CCUM wires Cu"                        "Copper"             0.191       2    CAB
+* 4 "CCUM wires Al"                        "Aluminium"          0.123       2    CAB
+* 5 "CCUM wires PEI"                       "Silicone_Gel"       0.203       2    CAB
+* 6 "CCUM wires SILTEM"                    "Polyethylene"       0.788       2    CAB
+* 7 "BUS wires Cu"                         "Copper"             0.740       1    CAB
+* 8 "BUS wires Al"                         "Aluminium"          0.0877      1    CAB
+* 9 "BUS wires PEI"                        "Silicone_Gel"       0.144       1    CAB
+* 10 "BUS wires SILTEM"                    "Polyethylene"       2.365       1    CAB
+* 11 "SCLAC glue"                          "Epoxy"              0.202       1    SUP
+* 12 "Output cable Shield"                 "Aluminium"          0.089       1    CAB
+* 13 "Output cable Sleeve"                 "Polyethylene"       0.642       1    CAB
+* 14 "Input and Output cable Tie"          "T_Kapton"           0.195       1    CAB
+* 15 "Input and Output cable Solder Paste" "BGA"                0.038       1    CAB
+* 16 "ICB,LVLAC,HVLAC glue"                "Epoxy"              0.181       1    SUP
+* 17 "ICB Solder Paste"                    "BGA"                0.005       1    CAB
+* 18 "LVLAC substrate"                     "T_G10"              0.242       1    ELE
+* 19 "LVLAC copper traces"                 "Copper"             0.0126      1    ELE
+* 20 "HVLAC substrate"                     "T_G10"              0.174       1    ELE
+* 21 "HVLAC copper traces"                 "Copper"             0.0036      1    ELE
+* 22 "Optical fibers"                      "Optical_Fiber"      6.362E-3  120    CAB
+* 23 "Optical fibers 3D label tag"         "T_Kapton"           1.714       1    CAB
+* 24 "Optical fibers MU connectors"        "T_Kapton"          14.091       1    CAB
+* 25 "Ribbon Connectors"                   "T_Ribbon12xMUConn" 12.0         2    CAB
+* 26 "Ruggedized ribbons"                  "T_RuggRibbon"       0.086       8    CAB
+.....................................................................................
+=====================================================================================
 
 
 Layer 3/4
@@ -1405,34 +1410,40 @@ Different for different layers
 		density = 1.40 g/cm^3
 		--> volume = 7.046 cm^3
 
-..................................................................................
-# "TOB Rod Connections Layer 3/4"          "TOB_CONN34"     44.25       88.5
-* 1 "SCLAC board"                          "T_G10"           0.211       1    ELE
-* 2 "SCLAC copper traces"                  "Copper"          0.007       1    ELE
-* 3 "CCUM wires Cu"                        "Copper"          0.191       2    CAB
-* 4 "CCUM wires Al"                        "Aluminium"       0.123       2    CAB
-* 5 "CCUM wires PEI"                       "Silicone_Gel"    0.203       2    CAB
-* 6 "CCUM wires SILTEM"                    "Polyethylene"    0.788       2    CAB
-* 7 "BUS wires Cu"                         "Copper"          0.740       1    CAB
-* 8 "BUS wires Al"                         "Aluminium"       0.0877      1    CAB
-* 9 "BUS wires PEI"                        "Silicone_Gel"    0.144       1    CAB
-* 10 "BUS wires SILTEM"                    "Polyethylene"    2.365       1    CAB
-* 11 "SCLAC glue"                          "Epoxy"           0.202       1    SUP
-* 12 "Output cable Shield"                 "Aluminium"       0.089       1    CAB
-* 13 "Output cable Sleeve"                 "Polyethylene"    0.642       1    CAB
-* 14 "Input and Output cable Tie"          "T_Kapton"        0.195       1    CAB
-* 15 "Input and Output cable Solder Paste" "BGA"             0.038       1    CAB
-* 16 "ICB,LVLAC,HVLAC glue"                "Epoxy"           0.181       1    SUP
-* 17 "ICB Solder Paste"                    "BGA"             0.005       1    CAB
-* 18 "LVLAC substrate"                     "T_G10"           0.242       1    ELE
-* 19 "LVLAC copper traces"                 "Copper"          0.0126      1    ELE
-* 20 "HVLAC substrate"                     "T_G10"           0.174       1    ELE
-* 21 "HVLAC copper traces"                 "Copper"          0.0036      1    ELE
-* 22 "Optical fibers"                      "Optical_Fiber"   6.362E-3   60    CAB
-* 23 "Optical fibers 3D label tag"         "T_Kapton"        0.943       1    CAB
-* 24 "Optical fibers MU connectors"        "T_Kapton"        7.046       1    CAB
-..................................................................................
-==================================================================================
+(25) Ribbon connectors (1 copy)
+
+(26) Ruggedized ribbon: total length 40 mm 
+
+.....................................................................................
+# "TOB Rod Connections Layer 3/4"          "TOB_CONN34"        44.25       88.5
+* 1 "SCLAC board"                          "T_G10"              0.211       1    ELE
+* 2 "SCLAC copper traces"                  "Copper"             0.007       1    ELE
+* 3 "CCUM wires Cu"                        "Copper"             0.191       2    CAB
+* 4 "CCUM wires Al"                        "Aluminium"          0.123       2    CAB
+* 5 "CCUM wires PEI"                       "Silicone_Gel"       0.203       2    CAB
+* 6 "CCUM wires SILTEM"                    "Polyethylene"       0.788       2    CAB
+* 7 "BUS wires Cu"                         "Copper"             0.740       1    CAB
+* 8 "BUS wires Al"                         "Aluminium"          0.0877      1    CAB
+* 9 "BUS wires PEI"                        "Silicone_Gel"       0.144       1    CAB
+* 10 "BUS wires SILTEM"                    "Polyethylene"       2.365       1    CAB
+* 11 "SCLAC glue"                          "Epoxy"              0.202       1    SUP
+* 12 "Output cable Shield"                 "Aluminium"          0.089       1    CAB
+* 13 "Output cable Sleeve"                 "Polyethylene"       0.642       1    CAB
+* 14 "Input and Output cable Tie"          "T_Kapton"           0.195       1    CAB
+* 15 "Input and Output cable Solder Paste" "BGA"                0.038       1    CAB
+* 16 "ICB,LVLAC,HVLAC glue"                "Epoxy"              0.181       1    SUP
+* 17 "ICB Solder Paste"                    "BGA"                0.005       1    CAB
+* 18 "LVLAC substrate"                     "T_G10"              0.242       1    ELE
+* 19 "LVLAC copper traces"                 "Copper"             0.0126      1    ELE
+* 20 "HVLAC substrate"                     "T_G10"              0.174       1    ELE
+* 21 "HVLAC copper traces"                 "Copper"             0.0036      1    ELE
+* 22 "Optical fibers"                      "Optical_Fiber"      6.362E-3   60    CAB
+* 23 "Optical fibers 3D label tag"         "T_Kapton"           0.943       1    CAB
+* 24 "Optical fibers MU connectors"        "T_Kapton"           7.046       1    CAB
+* 25 "Ribbon Connectors"                   "T_Ribbon12xMUConn" 12.0         1    CAB
+* 26 "Ruggedized ribbons"                  "T_RuggRibbon"       0.086       4    CAB
+.....................................................................................
+=====================================================================================
 
 
 Layer 5/6
@@ -1460,34 +1471,40 @@ Different for different layers
 		density = 1.40 g/cm^3
 		--> volume = 10.569 cm^3
 
-..................................................................................
-# "TOB Rod Connections Layer 5/6"          "TOB_CONN56"     44.25       88.5
-* 1 "SCLAC board"                          "T_G10"           0.211       1    ELE
-* 2 "SCLAC copper traces"                  "Copper"          0.007       1    ELE
-* 3 "CCUM wires Cu"                        "Copper"          0.191       2    CAB
-* 4 "CCUM wires Al"                        "Aluminium"       0.123       2    CAB
-* 5 "CCUM wires PEI"                       "Silicone_Gel"    0.203       2    CAB
-* 6 "CCUM wires SILTEM"                    "Polyethylene"    0.788       2    CAB
-* 7 "BUS wires Cu"                         "Copper"          0.740       1    CAB
-* 8 "BUS wires Al"                         "Aluminium"       0.0877      1    CAB
-* 9 "BUS wires PEI"                        "Silicone_Gel"    0.144       1    CAB
-* 10 "BUS wires SILTEM"                    "Polyethylene"    2.365       1    CAB
-* 11 "SCLAC glue"                          "Epoxy"           0.202       1    SUP
-* 12 "Output cable Shield"                 "Aluminium"       0.089       1    CAB
-* 13 "Output cable Sleeve"                 "Polyethylene"    0.642       1    CAB
-* 14 "Input and Output cable Tie"          "T_Kapton"        0.195       1    CAB
-* 15 "Input and Output cable Solder Paste" "BGA"             0.038       1    CAB
-* 16 "ICB,LVLAC,HVLAC glue"                "Epoxy"           0.181       1    SUP
-* 17 "ICB Solder Paste"                    "BGA"             0.005       1    CAB
-* 18 "LVLAC substrate"                     "T_G10"           0.242       1    ELE
-* 19 "LVLAC copper traces"                 "Copper"          0.0126      1    ELE
-* 20 "HVLAC substrate"                     "T_G10"           0.174       1    ELE
-* 21 "HVLAC copper traces"                 "Copper"          0.0036      1    ELE
-* 22 "Optical fibers"                      "Optical_Fiber"   6.362E-3   90    CAB
-* 23 "Optical fibers 3D label tag"         "T_Kapton"        1.414       1    CAB
-* 24 "Optical fibers MU connectors"        "T_Kapton"       10.569       1    CAB
-..................................................................................
-==================================================================================
+(25) Ribbon connectors (2 copies)
+
+(26) Ruggedized ribbon: total length 60 mm 
+
+.....................................................................................
+# "TOB Rod Connections Layer 5/6"          "TOB_CONN56"        44.25       88.5
+* 1 "SCLAC board"                          "T_G10"              0.211       1    ELE
+* 2 "SCLAC copper traces"                  "Copper"             0.007       1    ELE
+* 3 "CCUM wires Cu"                        "Copper"             0.191       2    CAB
+* 4 "CCUM wires Al"                        "Aluminium"          0.123       2    CAB
+* 5 "CCUM wires PEI"                       "Silicone_Gel"       0.203       2    CAB
+* 6 "CCUM wires SILTEM"                    "Polyethylene"       0.788       2    CAB
+* 7 "BUS wires Cu"                         "Copper"             0.740       1    CAB
+* 8 "BUS wires Al"                         "Aluminium"          0.0877      1    CAB
+* 9 "BUS wires PEI"                        "Silicone_Gel"       0.144       1    CAB
+* 10 "BUS wires SILTEM"                    "Polyethylene"       2.365       1    CAB
+* 11 "SCLAC glue"                          "Epoxy"              0.202       1    SUP
+* 12 "Output cable Shield"                 "Aluminium"          0.089       1    CAB
+* 13 "Output cable Sleeve"                 "Polyethylene"       0.642       1    CAB
+* 14 "Input and Output cable Tie"          "T_Kapton"           0.195       1    CAB
+* 15 "Input and Output cable Solder Paste" "BGA"                0.038       1    CAB
+* 16 "ICB,LVLAC,HVLAC glue"                "Epoxy"              0.181       1    SUP
+* 17 "ICB Solder Paste"                    "BGA"                0.005       1    CAB
+* 18 "LVLAC substrate"                     "T_G10"              0.242       1    ELE
+* 19 "LVLAC copper traces"                 "Copper"             0.0126      1    ELE
+* 20 "HVLAC substrate"                     "T_G10"              0.174       1    ELE
+* 21 "HVLAC copper traces"                 "Copper"             0.0036      1    ELE
+* 22 "Optical fibers"                      "Optical_Fiber"      6.362E-3   90    CAB
+* 23 "Optical fibers 3D label tag"         "T_Kapton"           1.414       1    CAB
+* 24 "Optical fibers MU connectors"        "T_Kapton"          10.569       1    CAB
+* 25 "Ribbon Connectors"                   "T_Ribbon12xMUConn" 12.0         2    CAB
+* 26 "Ruggedized ribbons"                  "T_RuggRibbon"       0.086       6    CAB
+.....................................................................................
+=====================================================================================
 
 
 
