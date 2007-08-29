@@ -107,5 +107,5 @@ cleanall:
 	@$(MAKE) clean
 	rm -f bin/writeA00Event bin/readA00Event
 	rm -f bin/runTreeReader bin/runTrigReader
-
+	rm -f ../../../lib/$(SCRAM_ARCH)/libAna00.so
 
