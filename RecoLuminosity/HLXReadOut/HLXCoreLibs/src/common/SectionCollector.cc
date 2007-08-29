@@ -235,6 +235,7 @@ namespace HCAL_HLX
 	
 	  for ( u32 i = 0 ; i != theClass->mDistributors.size() ; i++ ) {
 	    theClass->mDistributors[i]->ProcessSection(*theClass->mLumiSectionBuffer);
+	    Sleep(1);
 	  }
 	  theClass->mTransmitComplete = true;
 
