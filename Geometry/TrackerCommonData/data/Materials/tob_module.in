@@ -982,6 +982,14 @@ MCVolume: ( 11.8 x 6.8 x 0.25 ) cm^3 = 20.06 cm^3
 ICC1
 ----
 Same as Layer 3/4.
+
+(15-16) Laser Diodes (1 additional copy for the L56 AOH, AOHs have only 2 copies)
+	MISSING:m = xxx g
+		density = xxx g/cm^3
+		--> volume = xxx cm^3
+	Covers (Al2O3 Aluminiumoxid, ceramic): m = 0.347 g
+		density = 3.96525 g/cm^3
+		--> volume = 0.0875 cm^3
 	
 .......................................................................
 # "TOB ICC Layer 5/6 (1 APV)"   "TOB_L56_ICC1"    12.98   51.92
@@ -999,6 +1007,8 @@ Same as Layer 3/4.
 * 12 "Hybrid Tail Solder Mask"  "T_Kapton"         0.011   1     ELE
 * 13 "Hybrid Tail Glue"         "Epoxy"            0.057   1     ELE
 * 14 "HV pin (module)"          "Brass"            0.011   1     ELE
+* 15 "Laser Diode"              "Air"              0.0000  1     ELE
+* 16 "Laser Cover"              "Ceramic"          0.0875  1     ELE
 .......................................................................
 =======================================================================
 
@@ -1006,6 +1016,14 @@ ICC2
 ----
 Same as Layer 3/4.
 	
+(14-15) Laser Diodes (2 additional copies for the L56 AOH, AOHs have only 2 copies)
+	MISSING:m = xxx g
+		density = xxx g/cm^3
+		--> volume = xxx cm^3
+	Covers (Al2O3 Aluminiumoxid, ceramic): m = 0.347 g
+		density = 3.96525 g/cm^3
+		--> volume = 0.0875 cm^3
+
 .......................................................................
 # "TOB ICC Layer 5/6 (2 APVs)"  "TOB_L56_ICC2"    20.06   80.24
 * 1 "PCB board"                 "T_G10"            4.302   1     ELE
@@ -1021,6 +1039,8 @@ Same as Layer 3/4.
 * 11 "Hybrid Tail Copper"       "Copper"           0.055   2     ELE
 * 12 "Hybrid Tail Solder Mask"  "T_Kapton"         0.011   2     ELE
 * 13 "Hybrid Tail Glue"         "Epoxy"            0.057   2     ELE
+* 14 "Laser Diode"              "Air"              0.0000  2     ELE
+* 15 "Laser Cover"              "Ceramic"          0.0875  2     ELE
 .......................................................................
 =======================================================================
 
@@ -1066,7 +1086,7 @@ MCVolume: ( 2.3 x 3.0 x 0.2 ) cm^3 = 1.38 cm^3
 		density = 8.96 g/cm^3
 		--> volume = 0.0048 cm^3
 
-(9-10) Laser
+(9-10) Laser Diodes (2 copies per each AOH + 2 additional copies for the L56 AOH directly in TOB_L56_ICC1/2)
 	MISSING:m = xxx g
 		density = xxx g/cm^3
 		--> volume = xxx cm^3
@@ -1090,8 +1110,8 @@ MCVolume: ( 2.3 x 3.0 x 0.2 ) cm^3 = 1.38 cm^3
 * 6 "AOH Capacitors"            "Barium_Titanate"  0.0114  1     ELE
 * 7 "AOH ASICs EMC"             "Epoxy"            0.0208  1     ELE
 * 8 "AOH ASICs copper"          "Copper"           0.0048  1     ELE
-* 9 "Laser"                     "Air"              0.0000  1     ELE
-* 10 "Laser Cover"              "Ceramic"          0.0875  1     ELE
+* 9 "Laser Diode"               "Air"              0.0000  2     ELE
+* 10 "Laser Cover"              "Ceramic"          0.0875  2     ELE
 * 11 "AOH 3D Label"             "T_Kapton"         0.0143  1     ELE
 .......................................................................
 =======================================================================
@@ -1182,32 +1202,16 @@ As Layer 3/4, except optical components.
 	Optical components
 	------------------
 Different for different layers
-(22-27) Optical fibers
-	two different types
-	- transparents (polyethylene)
-	- green (acrylate)
-	take 1/2 polyethilane and 1/2 acrylate composition
-
+(22-24) Optical fibers
 	masses are per AOH, multiplicity will be given by the number of AOHs
 	AOH x ( #fibers x type ) x length_fraction
 		length_fraction: (total_length-5) cm per each fiber is in TOB_optfib_L12 
-	2 x ( 2 x TOB_2_088 ) x 5/88
-	2 x ( 2 x TOB_2_070 ) x 5/70
-	4 x ( 2 x TOB_2_056 ) x 5/56
-	4 x ( 2 x TOB_2_035 ) x 5/35
-	Buffer (Polyethylene):	m = 0.5 x [ ( 2 x 0.9713 x 5/88 ) + ( 2 x 0.7726 x 5/70 ) + ( 4 x 0.6181 x 5/56 ) + ( 4 x 0.3863 x 5/35 ) ] = 0.331120 g
-		density = 0.95 g/cm^3
-		--> volume = 0.349 cm^3
-	Buffer (Acrylate):	m = 0.5 x [ ( 2 x 1.2089 x 5/88 ) + ( 2 x 0.9616 x 5/70 ) + ( 4 x 0.7693 x 5/56 ) + ( 4 x 0.4808 x 5/35 ) ] = 0.412120 g
-		density = 1.17 g/cm^3
-		--> volume = 0.352 cm^3
-	Coating (Acrylate):	m = [ ( 2 x 0.0758 x 5/88 ) + ( 2 x 0.0603 x 5/70 ) + ( 4 x 0.0482 x 5/56 ) + ( 4 x 0.0188 x 5/35 ) ] = 0.045184 g
-		density = 1.17 g/cm^3
-		--> volume = 0.0386 cm^3
-	Cladding+Core (take SiO2):	m = [ ( 2 x (0.0472+0.0002) x 5/88 ) + ( 2 x (0.0376+0.0002) x 5/70 )
-					    + ( 4 x (0.0301+0.0002) x 5/56 ) + ( 4 x (0.0188+0.0001) x 5/35 ) ] = 0.032408 g
-		density = 2.64 g/cm^3
-		--> volume = 0.0123 cm^3
+	2 x ( TOB_2_088 ) x 5/88 = 2 x 2 x 88 cm x 5/88 = 20 cm
+	2 x ( TOB_2_070 ) x 5/70 = 2 x 2 x 70 cm x 5/70 = 20 cm
+	4 x ( TOB_2_056 ) x 5/56 = 4 x 2 x 56 cm x 5/56 = 40 cm
+	4 x ( TOB_2_035 ) x 5/35 = 4 x 2 x 35 c mx 5/35 = 40 cm
+	Total optical fibers length: 120 cm
+
 	All here:
 	3D label tags (kapton): m = [ (2 x 2) + (2 x 2) + (4 x 2) + (4 x 2) ] x 0.110 g = 24 x 0.110 g = 2.64 g
 		density = 1.40 g/cm^3
@@ -1217,37 +1221,34 @@ Different for different layers
 		--> volume = 14.091 cm^3
 
 
-..............................................................................
-# "TOB Rod Connections Layer 1/2"          "TOB_CONN12"     44.25   88.5
-* 1 "SCLAC board"                          "T_G10"           0.211   1    ELE
-* 2 "SCLAC copper traces"                  "Copper"          0.007   1    ELE
-* 3 "CCUM wires Cu"                        "Copper"          0.191   2    CAB
-* 4 "CCUM wires Al"                        "Aluminium"       0.123   2    CAB
-* 5 "CCUM wires PEI"                       "Silicone_Gel"    0.203   2    CAB
-* 6 "CCUM wires SILTEM"                    "Polyethylene"    0.788   2    CAB
-* 7 "BUS wires Cu"                         "Copper"          0.740   1    CAB
-* 8 "BUS wires Al"                         "Aluminium"       0.0877  1    CAB
-* 9 "BUS wires PEI"                        "Silicone_Gel"    0.144   1    CAB
-* 10 "BUS wires SILTEM"                    "Polyethylene"    2.365   1    CAB
-* 11 "SCLAC glue"                          "Epoxy"           0.202   1    SUP
-* 12 "Output cable Shield"                 "Aluminium"       0.089   1    CAB
-* 13 "Output cable Sleeve"                 "Polyethylene"    0.642   1    CAB
-* 14 "Input and Output cable Tie"          "T_Kapton"        0.195   1    CAB
-* 15 "Input and Output cable Solder Paste" "BGA"             0.038   1    CAB
-* 16 "ICB,LVLAC,HVLAC glue"                "Epoxy"           0.181   1    SUP
-* 17 "ICB Solder Paste"                    "BGA"             0.005   1    CAB
-* 18 "LVLAC substrate"                     "T_G10"           0.242   1    ELE
-* 19 "LVLAC copper traces"                 "Copper"          0.0126  1    ELE
-* 20 "HVLAC substrate"                     "T_G10"           0.174   1    ELE
-* 21 "HVLAC copper traces"                 "Copper"          0.0036  1    ELE
-* 22 "Optical fibers buffer (transparent)" "Polyethylene"    0.349   1    CAB
-* 23 "Optical fibers buffer (green)"       "Acrylate"        0.352   1    CAB
-* 24 "Optical fibers coating"              "Acrylate"        0.0386  1    CAB
-* 25 "Optical fibers cladding+core"        "Quartz"          0.0123  1    CAB
-* 26 "Optical fibers 3D label tag"         "T_Kapton"        1.714   1    CAB
-* 27 "Optical fibers MU connectors"        "T_Kapton"       14.091   1    CAB
-..............................................................................
-==============================================================================
+..................................................................................
+# "TOB Rod Connections Layer 1/2"          "TOB_CONN12"     44.25       88.5
+* 1 "SCLAC board"                          "T_G10"           0.211       1    ELE
+* 2 "SCLAC copper traces"                  "Copper"          0.007       1    ELE
+* 3 "CCUM wires Cu"                        "Copper"          0.191       2    CAB
+* 4 "CCUM wires Al"                        "Aluminium"       0.123       2    CAB
+* 5 "CCUM wires PEI"                       "Silicone_Gel"    0.203       2    CAB
+* 6 "CCUM wires SILTEM"                    "Polyethylene"    0.788       2    CAB
+* 7 "BUS wires Cu"                         "Copper"          0.740       1    CAB
+* 8 "BUS wires Al"                         "Aluminium"       0.0877      1    CAB
+* 9 "BUS wires PEI"                        "Silicone_Gel"    0.144       1    CAB
+* 10 "BUS wires SILTEM"                    "Polyethylene"    2.365       1    CAB
+* 11 "SCLAC glue"                          "Epoxy"           0.202       1    SUP
+* 12 "Output cable Shield"                 "Aluminium"       0.089       1    CAB
+* 13 "Output cable Sleeve"                 "Polyethylene"    0.642       1    CAB
+* 14 "Input and Output cable Tie"          "T_Kapton"        0.195       1    CAB
+* 15 "Input and Output cable Solder Paste" "BGA"             0.038       1    CAB
+* 16 "ICB,LVLAC,HVLAC glue"                "Epoxy"           0.181       1    SUP
+* 17 "ICB Solder Paste"                    "BGA"             0.005       1    CAB
+* 18 "LVLAC substrate"                     "T_G10"           0.242       1    ELE
+* 19 "LVLAC copper traces"                 "Copper"          0.0126      1    ELE
+* 20 "HVLAC substrate"                     "T_G10"           0.174       1    ELE
+* 21 "HVLAC copper traces"                 "Copper"          0.0036      1    ELE
+* 22 "Optical fibers"                      "Optical_Fiber"   6.362E-3  120    CAB
+* 23 "Optical fibers 3D label tag"         "T_Kapton"        1.714       1    CAB
+* 24 "Optical fibers MU connectors"        "T_Kapton"       14.091       1    CAB
+..................................................................................
+==================================================================================
 
 
 Layer 3/4
@@ -1386,32 +1387,16 @@ It will go 100% outside
 	Optical components
 	------------------
 Different for different layers
-(22-27) Optical fibers
-	two different types
-	- transparents (polyethylene)
-	- green (acrylate)
-	take 1/2 polyethilane and 1/2 acrylate composition
-
+(22-24) Optical fibers
 	masses are per AOH, multiplicity will be given by the number of AOHs
 	AOH x ( #fibers x type ) x length_fraction
 		length_fraction: (total_length-5) cm per each fiber is in TOB_optfib_L34 
-	1 x ( 2 x TOB_2_088 ) x 5/88
-	1 x ( 2 x TOB_2_070 ) x 5/70
-	2 x ( 2 x TOB_2_056 ) x 5/56
-	2 x ( 2 x TOB_2_035 ) x 5/35
-	Buffer (Polyethylene):	m = 0.5 x [ ( 1 x 0.9713 x 5/88 ) + ( 1 x 0.7726 x 5/70 ) + ( 2 x 0.6181 x 5/56 ) + ( 2 x 0.3863 x 5/35 ) ] = 0.165560 g
-		density = 0.95 g/cm^3
-		--> volume = 0.174 cm^3
-	Buffer (Acrylate):	m = 0.5 x [ ( 1 x 1.2089 x 5/88 ) + ( 1 x 0.9616 x 5/70 ) + ( 2 x 0.7693 x 5/56 ) + ( 2 x 0.4808 x 5/35 ) ] = 0.206060 g
-		density = 1.17 g/cm^3
-		--> volume = 0.176 cm^3
-	Coating (Acrylate):	m = [ ( 1 x 0.0758 x 5/88 ) + ( 1 x 0.0603 x 5/70 ) + ( 2 x 0.0482 x 5/56 ) + ( 2 x 0.0188 x 5/35 ) ] = 0.022592 g
-		density = 1.17 g/cm^3
-		--> volume = 0.0193 cm^3
-	Cladding+Core (take SiO2):	m = [ ( 1 x (0.0472+0.0002) x 5/88 ) + ( 1 x (0.0376+0.0002) x 5/70 )
-					    + ( 2 x (0.0301+0.0002) x 5/56 ) + ( 2 x (0.0188+0.0001) x 5/35 ) ] = 0.016204 g
-		density = 2.64 g/cm^3
-		--> volume = 0.00614 cm^3
+	1 x ( TOB_2_088 ) x 5/88 = 1 x 2 x 88 cm x 5/88 = 10 cm
+	1 x ( TOB_2_070 ) x 5/70 = 1 x 2 x 70 cm x 5/70 = 10 cm
+	2 x ( TOB_2_056 ) x 5/56 = 2 x 2 x 56 cm x 5/56 = 20 cm
+	2 x ( TOB_2_035 ) x 5/35 = 2 x 2 x 35 c mx 5/35 = 20 cm
+	Total optical fibers length: 60 cm
+
 	All here:
 	3D label tags (kapton): m = [ (1 x 2) + (1 x 2) + (2 x 2) + (2 x 2) ] x 0.110 g = 12 x 0.110 g = 1.32 g
 		density = 1.40 g/cm^3
@@ -1420,37 +1405,34 @@ Different for different layers
 		density = 1.40 g/cm^3
 		--> volume = 7.046 cm^3
 
-..............................................................................
-# "TOB Rod Connections Layer 3/4"          "TOB_CONN34"     44.25   88.5
-* 1 "SCLAC board"                          "T_G10"           0.211   1    ELE
-* 2 "SCLAC copper traces"                  "Copper"          0.007   1    ELE
-* 3 "CCUM wires Cu"                        "Copper"          0.191   2    CAB
-* 4 "CCUM wires Al"                        "Aluminium"       0.123   2    CAB
-* 5 "CCUM wires PEI"                       "Silicone_Gel"    0.203   2    CAB
-* 6 "CCUM wires SILTEM"                    "Polyethylene"    0.788   2    CAB
-* 7 "BUS wires Cu"                         "Copper"          0.740   1    CAB
-* 8 "BUS wires Al"                         "Aluminium"       0.0877  1    CAB
-* 9 "BUS wires PEI"                        "Silicone_Gel"    0.144   1    CAB
-* 10 "BUS wires SILTEM"                    "Polyethylene"    2.365   1    CAB
-* 11 "SCLAC glue"                          "Epoxy"           0.202   1    SUP
-* 12 "Output cable Shield"                 "Aluminium"       0.089   1    CAB
-* 13 "Output cable Sleeve"                 "Polyethylene"    0.642   1    CAB
-* 14 "Input and Output cable Tie"          "T_Kapton"        0.195   1    CAB
-* 15 "Input and Output cable Solder Paste" "BGA"             0.038   1    CAB
-* 16 "ICB,LVLAC,HVLAC glue"                "Epoxy"           0.181   1    SUP
-* 17 "ICB Solder Paste"                    "BGA"             0.005   1    CAB
-* 18 "LVLAC substrate"                     "T_G10"           0.242   1    ELE
-* 19 "LVLAC copper traces"                 "Copper"          0.0126  1    ELE
-* 20 "HVLAC substrate"                     "T_G10"           0.174   1    ELE
-* 21 "HVLAC copper traces"                 "Copper"          0.0036  1    ELE
-* 22 "Optical fibers buffer (transparent)" "Polyethylene"    0.174   1    CAB
-* 23 "Optical fibers buffer (green)"       "Acrylate"        0.176   1    CAB
-* 24 "Optical fibers coating"              "Acrylate"        0.0193  1    CAB
-* 25 "Optical fibers cladding+core"        "Quartz"          0.00614 1    CAB
-* 26 "Optical fibers 3D label tag"         "T_Kapton"        0.943   1    CAB
-* 27 "Optical fibers MU connectors"        "T_Kapton"        7.046   1    CAB
-..............................................................................
-==============================================================================
+..................................................................................
+# "TOB Rod Connections Layer 3/4"          "TOB_CONN34"     44.25       88.5
+* 1 "SCLAC board"                          "T_G10"           0.211       1    ELE
+* 2 "SCLAC copper traces"                  "Copper"          0.007       1    ELE
+* 3 "CCUM wires Cu"                        "Copper"          0.191       2    CAB
+* 4 "CCUM wires Al"                        "Aluminium"       0.123       2    CAB
+* 5 "CCUM wires PEI"                       "Silicone_Gel"    0.203       2    CAB
+* 6 "CCUM wires SILTEM"                    "Polyethylene"    0.788       2    CAB
+* 7 "BUS wires Cu"                         "Copper"          0.740       1    CAB
+* 8 "BUS wires Al"                         "Aluminium"       0.0877      1    CAB
+* 9 "BUS wires PEI"                        "Silicone_Gel"    0.144       1    CAB
+* 10 "BUS wires SILTEM"                    "Polyethylene"    2.365       1    CAB
+* 11 "SCLAC glue"                          "Epoxy"           0.202       1    SUP
+* 12 "Output cable Shield"                 "Aluminium"       0.089       1    CAB
+* 13 "Output cable Sleeve"                 "Polyethylene"    0.642       1    CAB
+* 14 "Input and Output cable Tie"          "T_Kapton"        0.195       1    CAB
+* 15 "Input and Output cable Solder Paste" "BGA"             0.038       1    CAB
+* 16 "ICB,LVLAC,HVLAC glue"                "Epoxy"           0.181       1    SUP
+* 17 "ICB Solder Paste"                    "BGA"             0.005       1    CAB
+* 18 "LVLAC substrate"                     "T_G10"           0.242       1    ELE
+* 19 "LVLAC copper traces"                 "Copper"          0.0126      1    ELE
+* 20 "HVLAC substrate"                     "T_G10"           0.174       1    ELE
+* 21 "HVLAC copper traces"                 "Copper"          0.0036      1    ELE
+* 22 "Optical fibers"                      "Optical_Fiber"   6.362E-3   60    CAB
+* 23 "Optical fibers 3D label tag"         "T_Kapton"        0.943       1    CAB
+* 24 "Optical fibers MU connectors"        "T_Kapton"        7.046       1    CAB
+..................................................................................
+==================================================================================
 
 
 Layer 5/6
@@ -1460,32 +1442,16 @@ As Layer 3/4, except optical components.
 	Optical components
 	------------------
 Different for different layers
-(22-27) Optical fibers
-	two different types
-	- transparents (polyethylene)
-	- green (acrylate)
-	take 1/2 polyethilane and 1/2 acrylate composition
-
+(22-24) Optical fibers
 	masses are per AOH, multiplicity will be given by the number of AOHs
 	AOH x ( #fibers x type ) x length_fraction
 		length_fraction: (total_length-5) cm per each fiber is in TOB_optfib_L56 
-	1 x ( 2 x TOB_3_088 ) x 5/88
-	1 x ( 2 x TOB_3_070 ) x 5/70
-	2 x ( 2 x TOB_3_056 ) x 5/56
-	2 x ( 2 x TOB_3_035 ) x 5/35
-	Buffer (Polyethylene):	m = 0.5 x [ ( 1 x 1.4724 x 5/88 ) + ( 1 x 1.1589 x 5/70 ) + ( 2 x 0.9271 x 5/56 ) + ( 2 x 0.5795 x 5/35 ) ] = 0.248781 g
-		density = 0.95 g/cm^3
-		--> volume = 0.262 cm^3
-	Buffer (Acrylate):	m = 0.5 x [ ( 1 x 1.8134 x 5/88 ) + ( 1 x 1.4425 x 5/70 ) + ( 2 x 1.1540 x 5/56 ) + ( 2 x 0.7212 x 5/35 ) ] = 0.309099 g
-		density = 1.17 g/cm^3
-		--> volume = 0.264 cm^3
-	Coating (Acrylate):	m = [ ( 1 x 0.1137 x 5/88 ) + ( 1 x 0.0905 x 5/70 ) + ( 2 x 0.0724 x 5/56 ) + ( 2 x 0.0452 x 5/35 ) ] = 0.038767 g
-		density = 1.17 g/cm^3
-		--> volume = 0.0331 cm^3
-	Cladding+Core (take SiO2):	m = [ ( 1 x (0.0708+0.0004) x 5/88 ) + ( 1 x (0.0564+0.0003) x 5/70 )
-					    + ( 2 x (0.0451+0.0002) x 5/56 ) + ( 2 x (0.0282+0.0001) x 5/35 ) ] = 0.024270 g
-		density = 2.64 g/cm^3
-		--> volume = 0.00919 cm^3
+	1 x ( TOB_3_088 ) x 5/88 = 1 x 3 x 88 cm x 5/88 = 15 cm
+	1 x ( TOB_3_070 ) x 5/70 = 1 x 3 x 70 cm x 5/70 = 15 cm
+	2 x ( TOB_3_056 ) x 5/56 = 2 x 3 x 56 cm x 5/56 = 30 cm
+	2 x ( TOB_3_035 ) x 5/35 = 2 x 3 x 35 c mx 5/35 = 30 cm
+	Total optical fibers length: 90 cm
+
 	All here:
 	3D label tags (kapton): m = [ (1 x 3) + (1 x 3) + (2 x 3) + (2 x 3) ] x 0.110 g = 18 x 0.110 g = 1.98 g
 		density = 1.40 g/cm^3
@@ -1494,37 +1460,34 @@ Different for different layers
 		density = 1.40 g/cm^3
 		--> volume = 10.569 cm^3
 
-..............................................................................
-# "TOB Rod Connections Layer 5/6"          "TOB_CONN56"     44.25   88.5
-* 1 "SCLAC board"                          "T_G10"           0.211   1    ELE
-* 2 "SCLAC copper traces"                  "Copper"          0.007   1    ELE
-* 3 "CCUM wires Cu"                        "Copper"          0.191   2    CAB
-* 4 "CCUM wires Al"                        "Aluminium"       0.123   2    CAB
-* 5 "CCUM wires PEI"                       "Silicone_Gel"    0.203   2    CAB
-* 6 "CCUM wires SILTEM"                    "Polyethylene"    0.788   2    CAB
-* 7 "BUS wires Cu"                         "Copper"          0.740   1    CAB
-* 8 "BUS wires Al"                         "Aluminium"       0.0877  1    CAB
-* 9 "BUS wires PEI"                        "Silicone_Gel"    0.144   1    CAB
-* 10 "BUS wires SILTEM"                    "Polyethylene"    2.365   1    CAB
-* 11 "SCLAC glue"                          "Epoxy"           0.202   1    SUP
-* 12 "Output cable Shield"                 "Aluminium"       0.089   1    CAB
-* 13 "Output cable Sleeve"                 "Polyethylene"    0.642   1    CAB
-* 14 "Input and Output cable Tie"          "T_Kapton"        0.195   1    CAB
-* 15 "Input and Output cable Solder Paste" "BGA"             0.038   1    CAB
-* 16 "ICB,LVLAC,HVLAC glue"                "Epoxy"           0.181   1    SUP
-* 17 "ICB Solder Paste"                    "BGA"             0.005   1    CAB
-* 18 "LVLAC substrate"                     "T_G10"           0.242   1    ELE
-* 19 "LVLAC copper traces"                 "Copper"          0.0126  1    ELE
-* 20 "HVLAC substrate"                     "T_G10"           0.174   1    ELE
-* 21 "HVLAC copper traces"                 "Copper"          0.0036  1    ELE
-* 22 "Optical fibers buffer (transparent)" "Polyethylene"    0.262   1    CAB
-* 23 "Optical fibers buffer (green)"       "Acrylate"        0.264   1    CAB
-* 24 "Optical fibers coating"              "Acrylate"        0.0331  1    CAB
-* 25 "Optical fibers cladding+core"        "Quartz"          0.00919 1    CAB
-* 26 "Optical fibers 3D label tag"         "T_Kapton"        1.414   1    CAB
-* 27 "Optical fibers MU connectors"        "T_Kapton"       10.569   1    CAB
-..............................................................................
-==============================================================================
+..................................................................................
+# "TOB Rod Connections Layer 5/6"          "TOB_CONN56"     44.25       88.5
+* 1 "SCLAC board"                          "T_G10"           0.211       1    ELE
+* 2 "SCLAC copper traces"                  "Copper"          0.007       1    ELE
+* 3 "CCUM wires Cu"                        "Copper"          0.191       2    CAB
+* 4 "CCUM wires Al"                        "Aluminium"       0.123       2    CAB
+* 5 "CCUM wires PEI"                       "Silicone_Gel"    0.203       2    CAB
+* 6 "CCUM wires SILTEM"                    "Polyethylene"    0.788       2    CAB
+* 7 "BUS wires Cu"                         "Copper"          0.740       1    CAB
+* 8 "BUS wires Al"                         "Aluminium"       0.0877      1    CAB
+* 9 "BUS wires PEI"                        "Silicone_Gel"    0.144       1    CAB
+* 10 "BUS wires SILTEM"                    "Polyethylene"    2.365       1    CAB
+* 11 "SCLAC glue"                          "Epoxy"           0.202       1    SUP
+* 12 "Output cable Shield"                 "Aluminium"       0.089       1    CAB
+* 13 "Output cable Sleeve"                 "Polyethylene"    0.642       1    CAB
+* 14 "Input and Output cable Tie"          "T_Kapton"        0.195       1    CAB
+* 15 "Input and Output cable Solder Paste" "BGA"             0.038       1    CAB
+* 16 "ICB,LVLAC,HVLAC glue"                "Epoxy"           0.181       1    SUP
+* 17 "ICB Solder Paste"                    "BGA"             0.005       1    CAB
+* 18 "LVLAC substrate"                     "T_G10"           0.242       1    ELE
+* 19 "LVLAC copper traces"                 "Copper"          0.0126      1    ELE
+* 20 "HVLAC substrate"                     "T_G10"           0.174       1    ELE
+* 21 "HVLAC copper traces"                 "Copper"          0.0036      1    ELE
+* 22 "Optical fibers"                      "Optical_Fiber"   6.362E-3   90    CAB
+* 23 "Optical fibers 3D label tag"         "T_Kapton"        1.414       1    CAB
+* 24 "Optical fibers MU connectors"        "T_Kapton"       10.569       1    CAB
+..................................................................................
+==================================================================================
 
 
 

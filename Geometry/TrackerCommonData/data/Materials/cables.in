@@ -22,6 +22,48 @@ For items in a compound: Item number, Comment, Material (has to be
 
 =====================================================================
 
+o Optical Fibers
+  ---------------
+20070829 rranieri
+
+Outer diameter: 900 um = 0.9 mm = 0.09 cm
+
+MCVolume: (pi*(0.09/2)^2 cm^2) * 1 cm = 6.362 x 10^-3 cm^3
+
+Weight/cm inferred from direct measurements, see http://test-gmagazzu.web.cern.ch/test%2Dgmagazzu/TOB/MB/AOH_MB.htm.
+
+ Optical fibers
+	two different types
+	- transparents (polyethylene)
+	- green (acrylate)
+	take 1/2 polyethilane and 1/2 acrylate composition
+
+(1) Buffer (Polyethylene): m = 0.5 x [ ( 0.9713 / 88 / 2 ) ] = 2.759 x 10^-3 g
+			density = 0.95 g/cm^3
+			--> volume = 2.904 x 10^-3 cm^3
+(2) Buffer (Acrylate):	m = 0.5 x [ ( 1.2089 / 88 / 2 ) ] = 3.434 x 10^-3 g
+			density = 1.17 g/cm^3
+			--> volume = 2.935 x 10^-3 cm^3
+(3) Coating (Acrylate):	m = [ ( 0.0758 / 88 / 2 ) ] = 4.307 x 10^-4 g
+			density = 1.17 g/cm^3
+			--> volume = 0.368 x 10^-3 cm^3
+(4) Cladding+Core (take SiO2):	m = [ ( 0.0472+0.0002 ) / 88 / 2 ) ] = 2.693 x 10^-4 g
+			density = 2.20 g/cm^3
+			--> volume = 0.122 x 10^-3 cm^3
+
+..............................................................................
+# "Optical fiber"                         "Optical_Fiber"   6.362E-3  -1
+* 1 "Optical fibers buffer (transparent)" "Polyethylene"    2.904E-3   1  CAB
+* 2 "Optical fibers buffer (green)"       "Acrylate"        2.935E-3   1  CAB
+* 3 "Optical fibers coating"              "Acrylate"        0.368E-3   1  CAB
+* 4 "Optical fibers cladding+core"        "Silica"          0.122E-3   1  CAB
+..............................................................................
+==============================================================================
+
+
+
+
+
 o Optical Ribbon
   --------------
 This is 12 optical fibers together in a plastic shield

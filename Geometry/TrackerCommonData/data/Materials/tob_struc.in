@@ -170,32 +170,15 @@ MCVolume: (pi 0.075^2 x 107.9) cm^3 = 1.90675 cm^3
 	density = 0.95 g/cm^3
 	volume = 0.884 cm^3
 
-(4-7) Optical fibers
-	two different types
-	- transparents (polyethylene)
-	- green (acrylate)
-	take 1/2 polyethilane and 1/2 acrylate composition
-
+(4) Optical fibers
 	masses are per AOH, multiplicity will be given by the number of AOHs
 	AOH x ( #fibers x type ) x length_fraction
 		length_fraction: 5 cm per each fiber will be put into TOB_CONN12
-	2 x ( 2 x TOB_2_088 ) x (88-5)/88
-	2 x ( 2 x TOB_2_070 ) x (70-5)/70
-	4 x ( 2 x TOB_2_056 ) x (56-5)/56
-	4 x ( 2 x TOB_2_035 ) x (35-5)/35
-	Buffer (Polyethylene):	m = 0.5 x [ ( 2 x 0.9713 x 83/88 ) + ( 2 x 0.7726 x 65/70 ) + ( 4 x 0.6181 x 51/56 ) + ( 4 x 0.3863 x 30/35 ) ] = 2.825574 g
-		density = 0.95 g/cm^3
-		--> volume = 2.974 cm^3
-	Buffer (Acrylate):	m = 0.5 x [ ( 2 x 1.2089 x 83/88 ) + ( 2 x 0.9616 x 65/70 ) + ( 4 x 0.7693 x 51/56 ) + ( 4 x 0.4808 x 30/35 ) ] = 3.145854 g
-		density = 1.17 g/cm^3
-		--> volume = 2.689 cm^3
-	Coating (Acrylate):	m = [ ( 2 x 0.0758 x 83/88 ) + ( 2 x 0.0603 x 65/70 ) + ( 4 x 0.0482 x 51/56 ) + ( 4 x 0.0188 x 30/35 ) ] = 0.495014 g
-		density = 1.17 g/cm^3
-		--> volume = 0.423 cm^3
-	Cladding+Core (take SiO2):	m = [ ( 2 x (0.0472+0.0002) x 83/88 ) + ( 2 x (0.0376+0.0002) x 65/70 )
-					    + ( 4 x (0.0301+0.0002) x 51/56 ) + ( 4 x (0.0188+0.0001) x 30/35 ) ] = 0.334792 g
-		density = 2.64 g/cm^3
-		--> volume = 0.127 cm^3
+	2 x ( TOB_2_088 ) x (88-5)/88 = 2 x 2 x 88 cm x 83/88 = 332 cm
+	2 x ( TOB_2_070 ) x (70-5)/70 = 2 x 2 x 70 cm x 65/70 = 260 cm
+	4 x ( TOB_2_056 ) x (56-5)/56 = 4 x 2 x 56 cm x 51/56 = 408 cm
+	4 x ( TOB_2_035 ) x (35-5)/35 = 4 x 2 x 35 cm x 30/35 = 480 cm
+	Total optical fibers length: 1480 cm
 
 	[WAS:
 		These run in 2 tubes next to the cooling pipes. 
@@ -211,17 +194,14 @@ MCVolume: (pi 0.075^2 x 107.9) cm^3 = 1.90675 cm^3
 		    take 16 (difference in length), i.e.  8/side
 	]
 
-...................................................................................
-# "TOB HV and opt. fibers L12 (DS)"       "TOB_optfib_L12" 14.85       0.198
-* 1 "HV Wires"                            "Copper"          0.713      1       CAB
-* 2 "HV Wires insulation"                 "Polyethylene"    5.471      1       CAB
-* 3 "Wire Sleeve"                         "Polyethylene"    0.884      1       CAB
-* 4 "Optical fibers buffer (transparent)" "Polyethylene"    2.974      1       CAB
-* 5 "Optical fibers buffer (green)"       "Acrylate"        2.689      1       CAB
-* 6 "Optical fibers coating"              "Acrylate"        0.423      1       CAB
-* 7 "Optical fibers cladding+core"        "Quartz"          0.127      1       CAB
-...................................................................................
-===================================================================================
+.............................................................................
+# "TOB HV and opt. fibers L12 (DS)" "TOB_optfib_L12" 14.85         0.198
+* 1 "HV Wires"                      "Copper"          0.713        1     CAB
+* 2 "HV Wires insulation"           "Polyethylene"    5.471        1     CAB
+* 3 "Wire Sleeve"                   "Polyethylene"    0.884        1     CAB
+* 4 "Optical fibers"                "Optical_Fiber"   6.362E-3  1480     CAB
+.............................................................................
+=============================================================================
     
 o HV and Optical fibers Layers 3,4 (SS 4 APVs)
   ---------------------------------------------
@@ -243,33 +223,15 @@ MCVolume: ( 0.300 x 0.660 x 75.0 ) cm^3 = 1.90675 cm^3
 	density = 0.95 g/cm^3
 	volume = 0.653 cm^3
 
-(4-7) Optical fibers
-	two different types
-	- transparents (polyethylene)
-	- green (acrylate)
-	take 1/2 polyethilane and 1/2 acrylate composition
-
+(4) Optical fibers
 	masses are per AOH, multiplicity will be given by the number of AOHs
 	AOH x ( #fibers x type ) x length_fraction
 		length_fraction: 5 cm per each fiber will be put into TOB_CONN34
-	1 x ( 2 x TOB_2_088 ) x (88-5)/88
-	1 x ( 2 x TOB_2_070 ) x (70-5)/70
-	2 x ( 2 x TOB_2_056 ) x (56-5)/56
-	2 x ( 2 x TOB_2_035 ) x (35-5)/35
-	Buffer (Polyethylene):	m = 0.5 x [ ( 1 x 0.9713 x 83/88 ) + ( 1 x 0.7726 x 65/70 ) + ( 2 x 0.6181 x 51/56 ) + ( 2 x 0.3863 x 30/35 ) ] = 1.412787 g
-		density = 0.95 g/cm^3
-		--> volume = 1.487 cm^3
-	Buffer (Acrylate):	m = 0.5 x [ ( 1 x 1.2089 x 83/88 ) + ( 1 x 0.9616 x 65/70 ) + ( 2 x 0.7693 x 51/56 ) + ( 2 x 0.4808 x 30/35 ) ] = 1.572927 g
-		density = 1.17 g/cm^3
-		--> volume = 1.344 cm^3
-	Coating (Acrylate):	m = [ ( 1 x 0.0758 x 83/88 ) + ( 1 x 0.0603 x 65/70 ) + ( 2 x 0.0482 x 51/56 ) + ( 2 x 0.0188 x 30/35 ) ] = 0.247507 g
-		density = 1.17 g/cm^3
-		--> volume = 0.212 cm^3
-	Cladding+Core (take SiO2):	m = [ ( 1 x (0.0472+0.0002) x 83/88 ) + ( 1 x (0.0376+0.0002) x 65/70 )
-					    + ( 2 x (0.0301+0.0002) x 51/56 ) + ( 2 x (0.0188+0.0001) x 30/35 ) ] = 0.167396 g
-		density = 2.64 g/cm^3
-		--> volume = 0.0634 cm^3
-
+	1 x ( TOB_2_088 ) x (88-5)/88 = 1 x 2 x 88 cm x 83/88 = 166 cm
+	1 x ( TOB_2_070 ) x (70-5)/70 = 1 x 2 x 70 cm x 65/70 = 130 cm
+	2 x ( TOB_2_056 ) x (56-5)/56 = 2 x 2 x 56 cm x 51/56 = 204 cm
+	2 x ( TOB_2_035 ) x (35-5)/35 = 2 x 2 x 35 cm x 30/35 = 120 cm
+	Total optical fibers length: 620 cm
 
 	[WAS:
 		These run in 2 tubes next to the cooling pipes. 
@@ -287,17 +249,14 @@ MCVolume: ( 0.300 x 0.660 x 75.0 ) cm^3 = 1.90675 cm^3
 		    15 -> 10 -> 5/side
 	]
 
-....................................................................................
-# "TOB HV and opt. fibers L34 (SS)"       "TOB_optfib_L34" 14.85       0.198
-* 1 "HV Wires"                            "Copper"          0.470      1       CAB
-* 2 "HV Wires insulation"                 "Polyethylene"    3.6065     1       CAB
-* 3 "Wire Sleeve"                         "Polyethylene"    0.653      1       CAB
-* 4 "Optical fibers buffer (transparent)" "Polyethylene"    1.487      1       CAB
-* 5 "Optical fibers buffer (green)"       "Acrylate"        1.344      1       CAB
-* 6 "Optical fibers coating"              "Acrylate"        0.212      1       CAB
-* 7 "Optical fibers cladding+core"        "Quartz"          0.0634     1       CAB
-....................................................................................
-====================================================================================
+.............................................................................
+# "TOB HV and opt. fibers L34 (SS)" "TOB_optfib_L34" 14.85         0.198
+* 1 "HV Wires"                      "Copper"          0.470        1     CAB
+* 2 "HV Wires insulation"           "Polyethylene"    3.6065       1     CAB
+* 3 "Wire Sleeve"                   "Polyethylene"    0.653        1     CAB
+* 4 "Optical fibers"                "Optical_Fiber"   6.362E-3   740     CAB
+.............................................................................
+=============================================================================
 
 o HV and Optical fibers Layers 5,6 (SS 6 APVs)
   ---------------------------------------------
@@ -305,44 +264,25 @@ MCVolume: ( 0.300 x 0.660 x 75.0 ) cm^3 = 1.90675 cm^3
 
 Same as Layers 3,4 except oprical fibers
 
-(4-7) Optical fibers
-	two different types
-	- transparents (polyethylene)
-	- green (acrylate)
-	take 1/2 polyethilane and 1/2 acrylate composition
-
+(4) Optical fibers
 	masses are per AOH, multiplicity will be given by the number of AOHs
 	AOH x ( #fibers x type ) x length_fraction
-		length_fraction: 5 cm per each fiber will be put into TOB_CONN56
-	1 x ( 2 x TOB_3_088 ) x (88-5)/88
-	1 x ( 2 x TOB_3_070 ) x (70-5)/70
-	2 x ( 2 x TOB_3_056 ) x (56-5)/56
-	2 x ( 2 x TOB_3_035 ) x (35-5)/35
-	Buffer (Polyethylene):	m = 0.5 x [ ( 1 x 1.4724 x 83/88 ) + ( 1 x 1.1589 x 65/70 ) + ( 2 x 0.9271 x 51/56 ) + ( 2 x 0.5795 x 30/35 ) ] = 2.573469 g
-		density = 0.95 g/cm^3
-		--> volume = 2.709 cm^3
-	Buffer (Acrylate):	m = 0.5 x [ ( 1 x 1.8134 x 83/88 ) + ( 1 x 1.4425 x 65/70 ) + ( 2 x 1.1540 x 51/56 ) + ( 2 x 0.7212 x 30/35 ) ] = 3.194051 g
-		density = 1.17 g/cm^3
-		--> volume = 2.730 cm^3
-	Coating (Acrylate):	m = [ ( 1 x 0.1137 x 83/88 ) + ( 1 x 0.0905 x 65/70 ) + ( 2 x 0.0724 x 51/56 ) + ( 2 x 0.0452 x 30/35 ) ] = 0.400633 g
-		density = 1.17 g/cm^3
-		--> volume = 0.342 cm^3
-	Cladding+Core (take SiO2):	m = [ ( 1 x (0.0708+0.0004) x 83/88 ) + ( 1 x (0.0564+0.0003) x 65/70 )
-					    + ( 2 x (0.0451+0.0002) x 51/56 ) + ( 2 x (0.0282+0.0001) x 30/35 ) ] = 0.250830 g
-		density = 2.64 g/cm^3
-		--> volume = 0.0950 cm^3
+		length_fraction: 5 cm per each fiber will be put into TOB_CONN34
+	1 x ( TOB_3_088 ) x (88-5)/88 = 1 x 3 x 88 cm x 83/88 = 249 cm
+	1 x ( TOB_3_070 ) x (70-5)/70 = 1 x 3 x 70 cm x 65/70 = 195 cm
+	2 x ( TOB_3_056 ) x (56-5)/56 = 2 x 3 x 56 cm x 51/56 = 306 cm
+	2 x ( TOB_3_035 ) x (35-5)/35 = 2 x 3 x 35 cm x 30/35 = 180 cm
+	Total optical fibers length: 930 cm
 
-....................................................................................
-# "TOB HV and opt. fibers L56 (SS)"       "TOB_optfib_L56" 14.85       0.198
-* 1 "HV Wires"                            "Copper"          0.470      1       CAB
-* 2 "HV Wires insulation"                 "Polyethylene"    3.6065     1       CAB
-* 3 "Wire Sleeve"                         "Polyethylene"    0.653      1       CAB
-* 4 "Optical fibers buffer (transparent)" "Polyethylene"    2.709      1       CAB
-* 5 "Optical fibers buffer (green)"       "Acrylate"        2.730      1       CAB
-* 6 "Optical fibers coating"              "Acrylate"        0.342      1       CAB
-* 7 "Optical fibers cladding+core"        "Quartz"          0.0950     1       CAB
-....................................................................................
-====================================================================================
+
+.............................................................................
+# "TOB HV and opt. fibers L56 (SS)" "TOB_optfib_L56" 14.85         0.198
+* 1 "HV Wires"                      "Copper"          0.470        1     CAB
+* 2 "HV Wires insulation"           "Polyethylene"    3.6065       1     CAB
+* 3 "Wire Sleeve"                   "Polyethylene"    0.653        1     CAB
+* 4 "Optical fibers"                "Optical_Fiber"   6.362E-3   930     CAB
+.............................................................................
+=============================================================================
 
 		DOH
 		---
@@ -380,7 +320,7 @@ The volume is the sum of the volume components, this material is part of the DOH
 	density = 6.02 g/cm^3
 	--> volume = 0.0056 cm^3
 
-(7) DOHM ASICs: 1 x ("LLD") + 1 x ("RX40")
+(7-8) DOHM ASICs: 1 x ("LLD") + 1 x ("RX40")
 	epoxy:	m = 54.2 mg = 0.0542 g
 		density = 1.3 g/cm^3
 		--> volume = 0.0417 cm^3
@@ -390,48 +330,32 @@ The volume is the sum of the volume components, this material is part of the DOH
 
 other components:
 
-(8) Laser
+(9) Laser Diodes (2 copies)
 	MISSING:m = xxx g
 		density = xxx g/cm^3
 		--> volume = xxx cm^3
 	
-(9) Photodiodes
+(10) Photodiodes (2 copies)
 	MISSING:m = xxx g
 		density = xxx g/cm^3
 		--> volume = xxx cm^3
 	
-(10) Covers
+(11) Covers
 	MISSING:m = xxx g
 		density = xxx g/cm^3
 		--> volume = xxx cm^3
 
 	
-(11) 3D Label
+(12) 3D Label
 	Plastic (kapton): m = 0.020 g
 		density = 1.40 g/cm^3
 		--> volume = 0.0143 cm^3
 	
 
-(12-18) Optical fibers
-	two different types
-	- transparents (polyethylene)
-	- green (acrylate)
-	take 1/2 polyethilane and 1/2 acrylate composition
-
+(13-15) Optical fibers
 	masses are per DOH, multiplicity will be given by the number of DOHs
-	( 4 x DOH_2t_2g ) [56 mm]
-	Buffer (Polyethylene):	m = 0.5 x 0.6181 g = 0.30905 g
-		density = 0.95 g/cm^3
-		--> volume = 0.325 cm^3
-	Buffer (Acrylate):	m = 0.5 x 0.7693 g = 0.38465 g
-		density = 1.17 g/cm^3
-		--> volume = 0.329 cm^3
-	Coating (Acrylate):	m = 0.0482 g
-		density = 1.17 g/cm^3
-		--> volume = 0.041 cm^3
-	Cladding+Core (take SiO2):	m = ( 0.0301 + 0.0002 ) g = 0.0303 g 
-		density = 2.64 g/cm^3
-		--> volume = 0.0115 cm^3
+	( 4 x DOH_2t_2g ) [56 cm] = 4 x 56 cm = 224 cm
+
 	3D label tags (kapton): m = 4 x 0.110 g = 0.440 g
 		density = 1.40 g/cm^3
 		--> volume = 0.314 cm^3
@@ -439,28 +363,25 @@ other components:
 		density = 1.40 g/cm^3
 		--> volume = 2.349 cm^3
 
-..................................................................................
-# "TOB DOH"                                "TOB_DOH"          3.9851   2.9998
-* 1 "DOH PCB board"                        "T_G10"            0.367    1      ELE
-* 2 "DOH PCB copper traces"                "Copper"           0.064    1      ELE
-* 3 "DOH NAiS connector"                   "Copper"           0.0093   1      ELE
-* 4 "DOH NAiS connector"                   "Epoxy"            0.103    1      ELE
-* 5 "DOH Resistors"                        "Ceramic"          0.0011   1      ELE
-* 6 "DOH Capacitors"                       "Barium_Titanate"  0.0056   1      ELE
-* 7 "DOH ASICs EMC"                        "Epoxy"            0.0417   1      ELE
-* 8 "DOH ASICs copper"                     "Copper"           0.0096   1      ELE
-* 9 "Laser"                                "Air"              0.000    1      ELE
-* 10 "Photodiodes"                         "Air"              0.000    1      ELE
-* 11 "Covers"                              "Air"              0.000    1      ELE
-* 12 "DOH 3D Label"                        "T_Kapton"         0.0143   1      ELE
-* 13 "Optical fibers buffer (transparent)" "Polyethylene"     0.325    1      CAB
-* 14 "Optical fibers buffer (green)"       "Acrylate"         0.329    1      CAB
-* 15 "Optical fibers coating"              "Acrylate"         0.041    1      CAB
-* 16 "Optical fibers cladding+core"        "Quartz"           0.0115   1      CAB
-* 17 "Optical fibers 3D label tag"         "T_Kapton"         0.314    1      CAB
-* 18 "Optical fibers MU connectors"        "T_Kapton"         2.349    1      CAB
-..................................................................................
-==================================================================================
+....................................................................................
+# "TOB DOH"                                "TOB_DOH"          3.9851     2.9998
+* 1 "DOH PCB board"                        "T_G10"            0.367      1      ELE
+* 2 "DOH PCB copper traces"                "Copper"           0.064      1      ELE
+* 3 "DOH NAiS connector"                   "Copper"           0.0093     1      ELE
+* 4 "DOH NAiS connector"                   "Epoxy"            0.103      1      ELE
+* 5 "DOH Resistors"                        "Ceramic"          0.0011     1      ELE
+* 6 "DOH Capacitors"                       "Barium_Titanate"  0.0056     1      ELE
+* 7 "DOH ASICs EMC"                        "Epoxy"            0.0417     1      ELE
+* 8 "DOH ASICs copper"                     "Copper"           0.0096     1      ELE
+* 9 "Laser Diode"                          "Air"              0.000      2      ELE
+* 10 "Photodiode"                          "Air"              0.000      2      ELE
+* 11 "Covers"                              "Air"              0.000      1      ELE
+* 12 "DOH 3D Label"                        "T_Kapton"         0.0143     1      ELE
+* 13 "Optical fibers"                      "Optical_Fiber"    6.362E-3 224      CAB
+* 14 "Optical fibers 3D label tag"         "T_Kapton"         0.314      1      CAB
+* 15 "Optical fibers MU connectors"        "T_Kapton"         2.349      1      CAB
+....................................................................................
+====================================================================================
 
 
 
