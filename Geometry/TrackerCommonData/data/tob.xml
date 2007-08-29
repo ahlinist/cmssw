@@ -104,32 +104,38 @@
  <Constant name="Layer0Rout"     value="64.24*cm"/>
  <Constant name="Layer0LowR"     value="59.20*cm"/>
  <Constant name="Layer0HighR"    value="62.40*cm"/>
- <Constant name="Layer0CoolR"    value="65.40*cm"/>
+ <Constant name="Layer0CoolRa"   value="65.40*cm"/>
+ <Constant name="Layer0CoolRr"   value="66.40*cm"/>
  <Constant name="Layer1Rin"      value="66.60*cm"/>
  <Constant name="Layer1Rout"     value="72.80*cm"/>
  <Constant name="Layer1LowR"     value="67.60*cm"/>
  <Constant name="Layer1HighR"    value="70.80*cm"/>
- <Constant name="Layer1CoolR"    value="74.00*cm"/>
+ <Constant name="Layer1CoolRa"   value="74.00*cm"/>
+ <Constant name="Layer1CoolRr"   value="75.00*cm"/>
  <Constant name="Layer2Rin"      value="75.40*cm"/>
  <Constant name="Layer2Rout"     value="81.40*cm"/>
  <Constant name="Layer2LowR"     value="76.40*cm"/>
  <Constant name="Layer2HighR"    value="79.60*cm"/>
- <Constant name="Layer2CoolR"    value="82.50*cm"/>
+ <Constant name="Layer2CoolRa"   value="82.50*cm"/>
+ <Constant name="Layer2CoolRr"   value="83.50*cm"/>
  <Constant name="Layer3Rin"      value="84.10*cm"/>
  <Constant name="Layer3Rout"     value="89.90*cm"/>
  <Constant name="Layer3LowR"     value="85.20*cm"/>
  <Constant name="Layer3HighR"    value="88.40*cm"/>
- <Constant name="Layer3CoolR"    value="91.10*cm"/>
+ <Constant name="Layer3CoolRa"   value="91.10*cm"/>
+ <Constant name="Layer3CoolRr"   value="92.10*cm"/>
  <Constant name="Layer4Rin"      value="93.80*cm"/>
  <Constant name="Layer4Rout"     value="99.60*cm"/>
  <Constant name="Layer4LowR"     value="94.90*cm"/>
  <Constant name="Layer4HighR"    value="98.10*cm"/>
- <Constant name="Layer4CoolR"    value="100.70*cm"/>
+ <Constant name="Layer4CoolRa"   value="100.70*cm"/>
+ <Constant name="Layer4CoolRr"   value="101.70*cm"/>
  <Constant name="Layer5Rin"      value="105.30*cm"/>
  <Constant name="Layer5Rout"     value="111.10*cm"/>
  <Constant name="Layer5LowR"     value="106.40*cm"/>
  <Constant name="Layer5HighR"    value="109.60*cm"/>
- <Constant name="Layer5CoolR"    value="112.20*cm"/>
+ <Constant name="Layer5CoolRa"   value="112.20*cm"/>
+ <Constant name="Layer5CoolRr"   value="113.20*cm"/>
  <Constant name="RibRin"         value="58.10*cm"/>
  <Constant name="RibRout"        value="115.70*cm"/>
  <Constant name="RibDZ"          value="0.350*cm"/>
@@ -1275,9 +1281,13 @@
   <Numeric name="CoolDeltaPhi1" value="360*deg"/>
   <Numeric name="CoolStartPhi2" value="0*deg"/>
   <Numeric name="CoolDeltaPhi2" value="360*deg"/>
-  <Vector name="CoolR" type="numeric" nEntries="6">
-   [Layer0CoolR], [Layer1CoolR], [Layer2CoolR], 
-   [Layer3CoolR], [Layer4CoolR], [Layer5CoolR]
+  <Vector name="CoolR1" type="numeric" nEntries="6">
+   [Layer0CoolRa], [Layer1CoolRa], [Layer2CoolRa], 
+   [Layer3CoolRa], [Layer4CoolRa], [Layer5CoolRa]
+  </Vector>
+  <Vector name="CoolR2" type="numeric" nEntries="6">
+   [Layer0CoolRr], [Layer1CoolRr], [Layer2CoolRr], 
+   [Layer3CoolRr], [Layer4CoolRr], [Layer5CoolRr]
   </Vector>
   <String  name="CoolMaterial1" value="materials:CuNi"/>
   <String  name="CoolMaterial2" value="materials:C6F14_F2_-30C"/>
