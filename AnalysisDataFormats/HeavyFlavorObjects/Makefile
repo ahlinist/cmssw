@@ -40,7 +40,7 @@ all:
 	@$(MAKE) readA00Event
 	@$(MAKE) runTreeReader
 	@$(MAKE) runTrigReader
-
+	@$(MAKE) links
 
 # ================================================================================
 ana00: $(addprefix obj/,$(ANA00))
@@ -93,6 +93,10 @@ runTrigReader: test/trigReader.cc test/trigReader.cc
 	cd test && $(CXX) $(CXXFLAGS) -o ../obj/runTrigReader.o -c runTrigReader.cc && cd - 
 	cd test && $(LD) $(LDFLAGS)  -o ../bin/runTrigReader $(GLIBS) ../lib/libAna00.so ../obj/runTrigReader.o ../obj/trigReader.o
 
+
+# ================================================================================
+links:
+	cd ../../../lib/$(SCRAM_ARCH)/ && rm -f libAna00.so && ln -s ../../AnalysisDataFormats/HeavyFlavorObjects/lib/libAna00.so && cd -
 
 # ================================================================================
 clean:
