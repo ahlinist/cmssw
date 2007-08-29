@@ -993,6 +993,262 @@ The difference 'long tail'-1x'short tail' is included here (Short tail in TOB_CO
       
 
 
+
+o TOB radial services
+  -------------------
+
+One ring per layer containing cables, ribbons and cooling radial pipes
+
+Layer R_in [mm] R_out [mm] z [mm] MC Volume [cm^3]
+   1    608         692      7.0     2401.4
+   2    692         780      7.0     2848.6
+   3    780         868      7.0     3189.2
+   4    868         965      7.0     3910.0
+   5    965        1080      7.0     5171.7
+   6   1080        1160      7.0     3940.8
+
+(1-2) cables
+
+- CAB48
+Layer  TOB+ [mm]  TOB- [mm]  Average [mm]
+  1       3492       3525       3508.5
+  2       7935       7872       7903.5
+  3       7935       7872       7903.5
+  4       8746       8677       8711.5
+  5      10369      10288      10328.5
+  6       7213       7157       7185
+
+- CAB36
+Layer  TOB+ [mm]  TOB- [mm]  Average [mm]
+  1          0          0          0
+  2          0          0          0
+  3       4734       4742       4738
+  4      11202      10952      11077
+  5      21146      21028      21087
+  6      20508      20404      20456
+
+- Ruggedized Ribbon
+
+(3) ribbon
+Layer  TOB+ [mm]  TOB- [mm]  Average [mm]
+  1       8036       8092       8064       
+  2      18074      17773      17923.5
+  3      24119      23694      23906.5
+  4      35371      34271      34281
+  5      65478      64999      65238.5
+  6      90994      89482      90238
+
+(4) DOHM ribbons
+Layer  Tot [mm]
+  1       1187
+  2       2710
+  3       4204
+  4       6776
+  5      12289
+  6      15764
+
+(5) spare ribbons
+Layer  Tot [mm]
+  1       3074       
+  2       3220
+  3       3220
+  4       3550
+  5       4208
+  6       2928
+
+(6) spare ribbon connectors
+Layer  Tot
+  1     3       
+  2     3
+  3     3
+  4     3
+  5     3
+  6     3
+
+(7) DOHM Power Connectors 
+Layer  Tot [mm]
+  1        448       
+  2       1022
+  3       1472
+  4       2268
+  5       3469
+  6       3735
+
+(8-9) Radial Cooling Pipes (unit length = 1 cm)
+ Inner diameter = 10.0 mm
+ Outer diameter =  9.0 mm
+ Volume per unit length: pi x (0.50 - 0.45)^2 cm^2 x 1 cm = 7.854 x 10^-3 cm^3 
+ Material: pure copper
+ 
+ Cooling Fluid
+ Inner diameter =  0.0 mm
+ Outer diameter =  9.0 mm
+ Volume per unit length: pi x 0.45^2 cm^2 x 1 cm = 0.6362 cm^3 
+ Material: C6F14_F2_-30C
+
+Layer  Tot [mm]
+  1     1027       
+  2     2152
+  3     2959
+  4     4152
+  5     6329
+  6     5381
+
+
+...................................................................................
+# "TOB radial services Layer 1"   "TOB_rad_services1"      2401.4       3430.6
+* 1 "Multi Service Cable CAB48"   "MS_Al48"                   0.567      351   CAB
+* 2 "Multi Service Cable CAB36"   "MS_Al36"                   0.515        0   CAB
+* 3 "Ruggedized ribbons"          "T_RuggRibbon"              0.086      806   CAB
+* 4 "DOHM ribbons"                "T_RuggRibbon"              0.086      119   CAB
+* 5 "Spare ribbons"               "T_RuggRibbon"              0.086      307   CAB
+* 6 "Spare ribbons connectors"    "TOB_Ribbon12xMUConn"      12.0          3   CAB
+* 7 "DOHM Power Connectors"       "TOB_DOHM_PowerConnector"   9.3648E-2  448   CAB
+* 8 "Cooling Pipes"               "Copper"                    7.854E-3  1027   COL
+* 9 "Cooling Fluid"               "C6F14_F2_-30C"             0.6362    1027   COL
+...................................................................................
+===================================================================================
+
+...................................................................................
+# "TOB radial services Layer 2"   "TOB_rad_services2"      2848.6       4069.4
+* 1 "Multi Service Cable CAB48"   "MS_Al48"                   0.567      790   CAB
+* 2 "Multi Service Cable CAB36"   "MS_Al36"                   0.515        0   CAB
+* 3 "Ruggedized ribbons"          "T_RuggRibbon"              0.086     1792   CAB
+* 4 "DOHM ribbons"                "T_RuggRibbon"              0.086      271   CAB
+* 5 "Spare ribbons"               "T_RuggRibbon"              0.086      322   CAB
+* 6 "Spare ribbons connectors"    "TOB_Ribbon12xMUConn"      12.0          3   CAB
+* 7 "DOHM Power Connectors"       "TOB_DOHM_PowerConnector"   9.3648E-2 1022   CAB
+* 8 "Cooling Pipes"               "Copper"                    7.854E-3  2152   COL
+* 9 "Cooling Fluid"               "C6F14_F2_-30C"             0.6362    2152   COL
+...................................................................................
+===================================================================================
+
+...................................................................................
+# "TOB radial services Layer 3"   "TOB_rad_services3"      3189.2       4556.0
+* 1 "Multi Service Cable CAB48"   "MS_Al48"                   0.567      790   CAB
+* 2 "Multi Service Cable CAB36"   "MS_Al36"                   0.515      474   CAB
+* 3 "Ruggedized ribbons"          "T_RuggRibbon"              0.086     2391   CAB
+* 4 "DOHM ribbons"                "T_RuggRibbon"              0.086      420   CAB
+* 5 "Spare ribbons"               "T_RuggRibbon"              0.086      322   CAB
+* 6 "Spare ribbons connectors"    "TOB_Ribbon12xMUConn"      12.0          3   CAB
+* 7 "DOHM Power Connectors"       "TOB_DOHM_PowerConnector"   9.3648E-2 1472   CAB
+* 8 "Cooling Pipes"               "Copper"                    7.854E-3  2959   COL
+* 9 "Cooling Fluid"               "C6F14_F2_-30C"             0.6362    2959   COL
+...................................................................................
+===================================================================================
+
+...................................................................................
+# "TOB radial services Layer 4"   "TOB_rad_services4"      3910.0       5585.7
+* 1 "Multi Service Cable CAB48"   "MS_Al48"                   0.567      871   CAB
+* 2 "Multi Service Cable CAB36"   "MS_Al36"                   0.515     1108   CAB
+* 3 "Ruggedized ribbons"          "T_RuggRibbon"              0.086     3428   CAB
+* 4 "DOHM ribbons"                "T_RuggRibbon"              0.086      678   CAB
+* 5 "Spare ribbons"               "T_RuggRibbon"              0.086      355   CAB
+* 6 "Spare ribbons connectors"    "TOB_Ribbon12xMUConn"      12.0          3   CAB
+* 7 "DOHM Power Connectors"       "TOB_DOHM_PowerConnector"   9.3648E-2 2268   CAB
+* 8 "Cooling Pipes"               "Copper"                    7.854E-3  4152   COL
+* 9 "Cooling Fluid"               "C6F14_F2_-30C"             0.6362    4152   COL
+...................................................................................
+===================================================================================
+
+...................................................................................
+# "TOB radial services Layer 5"   "TOB_rad_services5"      5171.7       7388.1
+* 1 "Multi Service Cable CAB48"   "MS_Al48"                   0.567     1033   CAB
+* 2 "Multi Service Cable CAB36"   "MS_Al36"                   0.515     2109   CAB
+* 3 "Ruggedized ribbons"          "T_RuggRibbon"              0.086     6524   CAB
+* 4 "DOHM ribbons"                "T_RuggRibbon"              0.086     1229   CAB
+* 5 "Spare ribbons"               "T_RuggRibbon"              0.086      421   CAB
+* 6 "Spare ribbons connectors"    "TOB_Ribbon12xMUConn"      12.0          3   CAB
+* 7 "DOHM Power Connectors"       "TOB_DOHM_PowerConnector"   9.3648E-2 3469   CAB
+* 8 "Cooling Pipes"               "Copper"                    7.854E-3  6329   COL
+* 9 "Cooling Fluid"               "C6F14_F2_-30C"             0.6362    6329   COL
+...................................................................................
+===================================================================================
+
+...................................................................................
+# "TOB radial services Layer 6"   "TOB_rad_services6"      3940.8       5629.7
+* 1 "Multi Service Cable CAB48"   "MS_Al48"                   0.567      719   CAB
+* 2 "Multi Service Cable CAB36"   "MS_Al36"                   0.515     2046   CAB
+* 3 "Ruggedized ribbons"          "T_RuggRibbon"              0.086     9024   CAB
+* 4 "DOHM ribbons"                "T_RuggRibbon"              0.086     1576   CAB
+* 5 "Spare ribbons"               "T_RuggRibbon"              0.086      293   CAB
+* 6 "Spare ribbons connectors"    "TOB_Ribbon12xMUConn"      12.0          3   CAB
+* 7 "DOHM Power Connectors"       "TOB_DOHM_PowerConnector"   9.3648E-2 3735   CAB
+* 8 "Cooling Pipes"               "Copper"                    7.854E-3  5381   COL
+* 9 "Cooling Fluid"               "C6F14_F2_-30C"             0.6362    5381   COL
+...................................................................................
+===================================================================================
+
+
+
+
+	[WAS: One for each layer, disks of constant Xsection (2*pi*r*t)
+		Cross sections for the various service cables
+		
+		(1) Al MS Cables 
+		(2) Control cables:  MS_cntrl_cables, OD 6.0 mm
+		    (number of groups taken from Duccio's TOB page, final layout 21/11/01)
+		(3) Optical ribbons (include also for control signals)
+		(4) Cooling pipes:  11 mm OD, 10 mm ID
+		          CuNi:  0.16 cm^2
+		          C6F14: 0.785 cm^2
+		
+		Layer 5: 42 MS Al cables for 48 APVs, 7 control cables 
+		.......................................................................
+		 "TOB radial cables layer 5"   "TOB_rad_cable1"      268.292  -1.
+		 1 "MS cable 60 APVs"          "MS_Al48"             0.567    42   CAB
+		 2 "Control cables"            "MS_cntrl_cable"      0.283     7   CAB
+		 3 "Optical ribbon"            "Fibre_Ribbon"        9.61E-3   107 CAB
+		 4 "Cooling pipes"             "TOB_CuNi"              0.16    8   COL
+		 5 "Coolant"                   "C6F14"                0.785    8   COL
+		.......................................................................
+		Layer 6: 48 MS Al cables for 48 APVs, 8 control cables
+		.......................................................................
+		 "TOB radial cables layer 6"   "TOB_rad_cable2"      306.117  -1.
+		 1 "MS cable 60 APVs"          "MS_Al48"             0.567    48   CAB
+		 2 "Control cables"            "MS_cntrl_cable"      0.283     8   CAB
+		 3 "Optical ribbon"            "Fibre_Ribbon"        9.61E-3   122 CAB
+		 4 "Cooling pipes"             "TOB_CuNi"              0.16    8   COL
+		 5 "Coolant"                   "C6F14"                0.785    8   COL
+		.......................................................................
+		Layer 7: 54 MS Al cables for 24 APVs, 7 control cables
+		.......................................................................
+		 "TOB radial cables layer 7"   "TOB_rad_cable3"      343.942  -1.
+		 1 "MS cable 36 APVs"          "MS_Al36"             0.515    54   CAB
+		 2 "Control cables"            "MS_cntrl_cable"      0.283     7   CAB
+		 3 "Optical ribbon"            "Fibre_Ribbon"        9.61E-3   56  CAB
+		 4 "Cooling pipes"             "TOB_CuNi"              0.16    6   COL
+		 5 "Coolant"                   "C6F14"                0.785    6   COL
+		.......................................................................
+		Layer 8: 60 MS Al cables for 24 APVs, 8 control cables
+		.......................................................................
+		 "TOB radial cables layer 8"   "TOB_rad_cable4"      381.766  -1.
+		 1 "MS cable 36 APVs"          "MS_Al36"             0.515    60   CAB
+		 2 "Control cables"            "MS_cntrl_cable"      0.283     8   CAB
+		 3 "Optical ribbon"            "Fibre_Ribbon"        9.61E-3   62  CAB
+		 4 "Cooling pipes"             "TOB_CuNi"              0.16    8   COL
+		 5 "Coolant"                   "C6F14"                0.785    8   COL
+		.......................................................................
+		Layer 9: 66 MS Al cables for 36 APVs, 8 control cables
+		.......................................................................
+		 "TOB radial cables layer 9"   "TOB_rad_cable5"      424.429  -1.
+		 1 "MS cable 36 APVs"          "MS_Al36"             0.515    66   CAB
+		 2 "Control cables"            "MS_cntrl_cable"      0.283     8   CAB
+		 3 "Optical ribbon"            "Fibre_Ribbon"        9.61E-3   101 CAB
+		 4 "Cooling pipes"             "TOB_CuNi"              0.16    8   COL
+		 5 "Coolant"                   "C6F14"                0.785    8   COL
+		.......................................................................
+		Layer 10: 74 MS Al cables for 36 APVs, 8 control cables
+		.......................................................................
+		 "TOB radial cables layer 10"  "TOB_rad_cable6"      475.009  -1.
+		 1 "MS cable 36 APVs"          "MS_Al36"             0.515    74   CAB
+		 2 "Control cables"            "MS_cntrl_cable"      0.283     8   CAB
+		 3 "Optical ribbon"            "Fibre_Ribbon"        9.61E-3  113  CAB
+		 4 "Cooling pipes"             "TOB_CuNi"              0.16    8   COL
+		 5 "Coolant"                   "C6F14"                0.785    8   COL
+		.......................................................................
+		=======================================================================     ]
+
 o TOB rod fixation to disk
   ------------------------
 These attach the rod to the disk. There are 8 /full-length-rod
@@ -1088,75 +1344,7 @@ C* 4 "Cool pipe solder"        "TOB_cool_solder"    0.042    74      COL
 .....................................................................
 =====================================================================
 
-o TOB radial cables
-  -----------------
-One for each layer, disks of constant Xsection (2*pi*r*t)
-Cross sections for the various service cables
-
-(1) Al MS Cables 
-(2) Control cables:  MS_cntrl_cables, OD 6.0 mm
-    (number of groups taken from Duccio's TOB page, final layout 21/11/01)
-(3) Optical ribbons (include also for control signals)
-(4) Cooling pipes:  11 mm OD, 10 mm ID
-          CuNi:  0.16 cm^2
-          C6F14: 0.785 cm^2
-
-Layer 5: 42 MS Al cables for 48 APVs, 7 control cables 
-.......................................................................
-# "TOB radial cables layer 5"   "TOB_rad_cable1"      268.292  -1.
-* 1 "MS cable 60 APVs"          "MS_Al48"             0.567    42   CAB
-* 2 "Control cables"            "MS_cntrl_cable"      0.283     7   CAB
-* 3 "Optical ribbon"            "Fibre_Ribbon"        9.61E-3   107 CAB
-* 4 "Cooling pipes"             "TOB_CuNi"              0.16    8   COL
-* 5 "Coolant"                   "C6F14"                0.785    8   COL
-.......................................................................
-Layer 6: 48 MS Al cables for 48 APVs, 8 control cables
-.......................................................................
-# "TOB radial cables layer 6"   "TOB_rad_cable2"      306.117  -1.
-* 1 "MS cable 60 APVs"          "MS_Al48"             0.567    48   CAB
-* 2 "Control cables"            "MS_cntrl_cable"      0.283     8   CAB
-* 3 "Optical ribbon"            "Fibre_Ribbon"        9.61E-3   122 CAB
-* 4 "Cooling pipes"             "TOB_CuNi"              0.16    8   COL
-* 5 "Coolant"                   "C6F14"                0.785    8   COL
-.......................................................................
-Layer 7: 54 MS Al cables for 24 APVs, 7 control cables
-.......................................................................
-# "TOB radial cables layer 7"   "TOB_rad_cable3"      343.942  -1.
-* 1 "MS cable 36 APVs"          "MS_Al36"             0.515    54   CAB
-* 2 "Control cables"            "MS_cntrl_cable"      0.283     7   CAB
-* 3 "Optical ribbon"            "Fibre_Ribbon"        9.61E-3   56  CAB
-* 4 "Cooling pipes"             "TOB_CuNi"              0.16    6   COL
-* 5 "Coolant"                   "C6F14"                0.785    6   COL
-.......................................................................
-Layer 8: 60 MS Al cables for 24 APVs, 8 control cables
-.......................................................................
-# "TOB radial cables layer 8"   "TOB_rad_cable4"      381.766  -1.
-* 1 "MS cable 36 APVs"          "MS_Al36"             0.515    60   CAB
-* 2 "Control cables"            "MS_cntrl_cable"      0.283     8   CAB
-* 3 "Optical ribbon"            "Fibre_Ribbon"        9.61E-3   62  CAB
-* 4 "Cooling pipes"             "TOB_CuNi"              0.16    8   COL
-* 5 "Coolant"                   "C6F14"                0.785    8   COL
-.......................................................................
-Layer 9: 66 MS Al cables for 36 APVs, 8 control cables
-.......................................................................
-# "TOB radial cables layer 9"   "TOB_rad_cable5"      424.429  -1.
-* 1 "MS cable 36 APVs"          "MS_Al36"             0.515    66   CAB
-* 2 "Control cables"            "MS_cntrl_cable"      0.283     8   CAB
-* 3 "Optical ribbon"            "Fibre_Ribbon"        9.61E-3   101 CAB
-* 4 "Cooling pipes"             "TOB_CuNi"              0.16    8   COL
-* 5 "Coolant"                   "C6F14"                0.785    8   COL
-.......................................................................
-Layer 10: 74 MS Al cables for 36 APVs, 8 control cables
-.......................................................................
-# "TOB radial cables layer 10"  "TOB_rad_cable6"      475.009  -1.
-* 1 "MS cable 36 APVs"          "MS_Al36"             0.515    74   CAB
-* 2 "Control cables"            "MS_cntrl_cable"      0.283     8   CAB
-* 3 "Optical ribbon"            "Fibre_Ribbon"        9.61E-3  113  CAB
-* 4 "Cooling pipes"             "TOB_CuNi"              0.16    8   COL
-* 5 "Coolant"                   "C6F14"                0.785    8   COL
-.......................................................................
-=======================================================================
-
+		
 o TOB axial cables
   ----------------
 MC Xsection is only 8 bundles with 9.64 cm^2 => 77.12 cm^2
