@@ -278,7 +278,7 @@ namespace HCAL_HLX
 
 	// Grab a packet if one is available
 	// Need to hack this as a static u8 otherwise it treats it as a u32...
-	if ( static_cast<u8>(theClass->mWriteBufferPointer+1) == theClass->mReadBufferPointer ) {
+	if ( static_cast<u16>(theClass->mWriteBufferPointer+1) == theClass->mReadBufferPointer ) {
 	  // About to overflow
 	  // Read the packet and dump it and flag the counter
 	  ret = recv(mUdpSocket,rData,1500,0);

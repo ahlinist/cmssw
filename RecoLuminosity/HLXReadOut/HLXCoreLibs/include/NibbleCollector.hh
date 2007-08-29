@@ -125,8 +125,8 @@ namespace HCAL_HLX
     u32 mNumHLXs;
 
     // Circular buffer pointers
-    u8 mWriteBufferPointer;
-    u8 mReadBufferPointer;
+    u16 mWriteBufferPointer;
+    u16 mReadBufferPointer;
 
     // Circular buffers
     HLX_CB_TYPE *circularBuffer;
