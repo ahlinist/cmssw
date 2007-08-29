@@ -390,7 +390,7 @@
 <LogicalPartSection label="tob.xml">
  <LogicalPart name="TOB" category="unspecified">
   <rSolid name="TOB"/>
-  <rMaterial name="materials:Air"/>
+  <rMaterial name="trackermaterial:Optical_Fiber"/>
  </LogicalPart>
  <LogicalPart name="TOBRailIn" category="unspecified">
   <rSolid name="TOBRailIn"/>
@@ -1258,9 +1258,9 @@
    [Layer3HighR], [Layer4HighR], [Layer5HighR]
   </Vector>
   <Vector name="CableMaterial" type="string" nEntries="6">
-   tobmaterial:TOB_rad_cable1, tobmaterial:TOB_rad_cable2, 
-   tobmaterial:TOB_rad_cable3, tobmaterial:TOB_rad_cable4, 
-   tobmaterial:TOB_rad_cable5, tobmaterial:TOB_rad_cable6
+   tobmaterial:TOB_rad_services1, tobmaterial:TOB_rad_services2, 
+   tobmaterial:TOB_rad_services3, tobmaterial:TOB_rad_services4, 
+   tobmaterial:TOB_rad_services5, tobmaterial:TOB_rad_services6
   </Vector>
   <Numeric name="ConnW"       value="4.0*cm"/>
   <Numeric name="ConnT"       value="2.3*cm"/>
@@ -1282,7 +1282,7 @@
   <String  name="CoolMaterial1" value="materials:CuNi"/>
   <String  name="CoolMaterial2" value="materials:C6F14_F2_-30C"/>
   <Vector name="RingName" type="string" nEntries="6">
-   0, 1, 2, 3, 4, 5
+   1, 2, 3, 4, 5, 6
   </Vector>
 </Algorithm>
 
