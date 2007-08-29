@@ -35,15 +35,6 @@ namespace edm {
 	ProcessHistoryID const& hist = ProcessHistoryID(),
 	boost::shared_ptr<DelayedReader> rtrv = boost::shared_ptr<DelayedReader>(new NoDelayedReader));
 
-    LuminosityBlockPrincipal(LuminosityBlockNumber_t const& id,
-        Timestamp const& beginTm,
-        Timestamp const& endTm,
-	boost::shared_ptr<ProductRegistry const> reg,
-        RunNumber_t run,
-        ProcessConfiguration const& pc,
-	ProcessHistoryID const& hist = ProcessHistoryID(),
-	boost::shared_ptr<DelayedReader> rtrv = boost::shared_ptr<DelayedReader>(new NoDelayedReader));
-
     ~LuminosityBlockPrincipal() {}
 
     RunPrincipal const& runPrincipal() const {
