@@ -404,7 +404,7 @@ data taken from http://test-gmagazzu.web.cern.ch/test%2Dgmagazzu/TOB/MB/DOHM_MB.
 		density = 8.96 g/cm^3
 		--> volume = 0.716 cm^3
 
-(3-4) Connectors NaiS
+(3-4) Connectors
 	socket
 	2 x DOHM-DOH    (NAiS 26)
                  Binder
