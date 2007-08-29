@@ -1103,7 +1103,7 @@ Layer  Tot [mm]
 * 4 "DOHM ribbons"                "T_RuggRibbon"              0.086      119   CAB
 * 5 "Spare ribbons"               "T_RuggRibbon"              0.086      307   CAB
 * 6 "Spare ribbons connectors"    "TOB_Ribbon12xMUConn"      12.0          3   CAB
-* 7 "DOHM Power Connectors"       "TOB_DOHM_PowerConnector"   9.3648E-2  448   CAB
+* 7 "DOHM Power Connectors"       "TOB_DOHM_PowerConn"   9.3648E-2  448   CAB
 * 8 "Cooling Pipes"               "Copper"                    7.854E-3  1027   COL
 * 9 "Cooling Fluid"               "C6F14_F2_-30C"             0.6362    1027   COL
 ...................................................................................
@@ -1117,7 +1117,7 @@ Layer  Tot [mm]
 * 4 "DOHM ribbons"                "T_RuggRibbon"              0.086      271   CAB
 * 5 "Spare ribbons"               "T_RuggRibbon"              0.086      322   CAB
 * 6 "Spare ribbons connectors"    "TOB_Ribbon12xMUConn"      12.0          3   CAB
-* 7 "DOHM Power Connectors"       "TOB_DOHM_PowerConnector"   9.3648E-2 1022   CAB
+* 7 "DOHM Power Connectors"       "TOB_DOHM_PowerConn"   9.3648E-2 1022   CAB
 * 8 "Cooling Pipes"               "Copper"                    7.854E-3  2152   COL
 * 9 "Cooling Fluid"               "C6F14_F2_-30C"             0.6362    2152   COL
 ...................................................................................
@@ -1131,7 +1131,7 @@ Layer  Tot [mm]
 * 4 "DOHM ribbons"                "T_RuggRibbon"              0.086      420   CAB
 * 5 "Spare ribbons"               "T_RuggRibbon"              0.086      322   CAB
 * 6 "Spare ribbons connectors"    "TOB_Ribbon12xMUConn"      12.0          3   CAB
-* 7 "DOHM Power Connectors"       "TOB_DOHM_PowerConnector"   9.3648E-2 1472   CAB
+* 7 "DOHM Power Connectors"       "TOB_DOHM_PowerConn"   9.3648E-2 1472   CAB
 * 8 "Cooling Pipes"               "Copper"                    7.854E-3  2959   COL
 * 9 "Cooling Fluid"               "C6F14_F2_-30C"             0.6362    2959   COL
 ...................................................................................
@@ -1145,7 +1145,7 @@ Layer  Tot [mm]
 * 4 "DOHM ribbons"                "T_RuggRibbon"              0.086      678   CAB
 * 5 "Spare ribbons"               "T_RuggRibbon"              0.086      355   CAB
 * 6 "Spare ribbons connectors"    "TOB_Ribbon12xMUConn"      12.0          3   CAB
-* 7 "DOHM Power Connectors"       "TOB_DOHM_PowerConnector"   9.3648E-2 2268   CAB
+* 7 "DOHM Power Connectors"       "TOB_DOHM_PowerConn"   9.3648E-2 2268   CAB
 * 8 "Cooling Pipes"               "Copper"                    7.854E-3  4152   COL
 * 9 "Cooling Fluid"               "C6F14_F2_-30C"             0.6362    4152   COL
 ...................................................................................
@@ -1159,7 +1159,7 @@ Layer  Tot [mm]
 * 4 "DOHM ribbons"                "T_RuggRibbon"              0.086     1229   CAB
 * 5 "Spare ribbons"               "T_RuggRibbon"              0.086      421   CAB
 * 6 "Spare ribbons connectors"    "TOB_Ribbon12xMUConn"      12.0          3   CAB
-* 7 "DOHM Power Connectors"       "TOB_DOHM_PowerConnector"   9.3648E-2 3469   CAB
+* 7 "DOHM Power Connectors"       "TOB_DOHM_PowerConn"   9.3648E-2 3469   CAB
 * 8 "Cooling Pipes"               "Copper"                    7.854E-3  6329   COL
 * 9 "Cooling Fluid"               "C6F14_F2_-30C"             0.6362    6329   COL
 ...................................................................................
@@ -1173,7 +1173,7 @@ Layer  Tot [mm]
 * 4 "DOHM ribbons"                "T_RuggRibbon"              0.086     1576   CAB
 * 5 "Spare ribbons"               "T_RuggRibbon"              0.086      293   CAB
 * 6 "Spare ribbons connectors"    "TOB_Ribbon12xMUConn"      12.0          3   CAB
-* 7 "DOHM Power Connectors"       "TOB_DOHM_PowerConnector"   9.3648E-2 3735   CAB
+* 7 "DOHM Power Connectors"       "TOB_DOHM_PowerConn"   9.3648E-2 3735   CAB
 * 8 "Cooling Pipes"               "Copper"                    7.854E-3  5381   COL
 * 9 "Cooling Fluid"               "C6F14_F2_-30C"             0.6362    5381   COL
 ...................................................................................

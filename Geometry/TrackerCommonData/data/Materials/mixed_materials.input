@@ -71,5 +71,5 @@
 "TIBTID_TSTCabAxial"        -1.    -1.      0.89388    23.3415       112.9118
 "TIBTID_TSTCabRadial"       -1.    -1.      0.30374    65.1367       327.6815
 "Optical_Fiber"             -1.    -1.      1.08326    37.7942        67.3451 
-"TOB_DOHM_PowerConnector"   -1.    -1.      3.73770     3.99320       30.87385  
+"TOB_DOHM_PowerConn"        -1.    -1.      3.73770     3.99320       30.87385  
 "dummy"                     -1.    -1.      0.00001    500000         -1.0
