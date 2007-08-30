@@ -13,7 +13,7 @@
 #include <TGaxis.h>
 #include <fstream>
 #include <vector>
-#include "FWCore/FWLite/src/AutoLibraryLoader.h"
+#include "FWCore/FWLite/interface/AutoLibraryLoader.h"
 #include "AnalysisDataFormats/TopObjects/interface/TtSemiMassSolution.h"
 #include "TopQuarkAnalysis/TopTools/test/tdrstyle.C"
 
@@ -57,7 +57,7 @@ int main() {
   TGaxis::SetMaxDigits(3);
   
   // define histograms & fit
-  hmttrue = new TH1F("hmttrue","",nrMtHistBins,minMtHist,maxMtHist);
+  hmttrue = new TH1F("hmttrue","",nrMtHistBins,minMtHist,maxMtHist);
   hmtcomb = new TH1F("hmtcomb","",nrMtHistBins,minMtHist,maxMtHist);
   hmtall  = new TH1F("hmtall","",nrMtHistBins,minMtHist,maxMtHist);
   fmtcomb  = new TF1("fmtcomb","landau",minMtHist,maxMtHist);
@@ -82,11 +82,11 @@ int main() {
       int nev = events->GetEntries();
       for( int ev = 0; ev < nev; ++ ev ) {
         solBranch    -> GetEntry( ev );
-        if(sol.getSimpleCorrJetComb() > -1){
+        if(sol.getSimpleBestJetComb() > -1){
           ++nrAnalysed[sample];
 	  bool signal = false;
-	  if( (solChoiceInInput == "simple") && (sol.getSimpleCorrJetComb() == sol.getMCCorrJetComb()) && (sol.getMCBestSumAngles() < SumAlphaCut) ) signal = true;
-	  if( (solChoiceInInput == "LR")     && (sol.getLRCorrJetComb()     == sol.getMCCorrJetComb()) && (sol.getMCBestSumAngles() < SumAlphaCut) ) signal = true;
+	  if( (solChoiceInInput == "simple") && (sol.getSimpleBestJetComb() == sol.getMCBestJetComb()) && (sol.getMCBestSumAngles() < SumAlphaCut) ) signal = true;
+	  if( (solChoiceInInput == "LR")     && (sol.getLRBestJetComb()     == sol.getMCBestJetComb()) && (sol.getMCBestSumAngles() < SumAlphaCut) ) signal = true;
 	  if( signal) hmttrue -> Fill(sol.getFitHadt().mass());
 	  if(!signal) hmtcomb -> Fill(sol.getFitHadt().mass());
 	  hmtall -> Fill(sol.getFitHadt().mass());

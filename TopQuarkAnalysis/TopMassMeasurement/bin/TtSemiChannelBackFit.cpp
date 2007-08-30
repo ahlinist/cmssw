@@ -13,7 +13,7 @@
 #include <TGaxis.h>
 #include <fstream>
 #include <vector>
-#include "FWCore/FWLite/src/AutoLibraryLoader.h"
+#include "FWCore/FWLite/interface/AutoLibraryLoader.h"
 #include "AnalysisDataFormats/TopObjects/interface/TtSemiMassSolution.h"
 #include "TopQuarkAnalysis/TopTools/test/tdrstyle.C"
 
@@ -79,7 +79,7 @@ int main() {
       int nev = events->GetEntries();
       for( int ev = 0; ev < nev; ++ ev ) {
         solBranch    -> GetEntry( ev );
-        if(sol.getSimpleCorrJetComb() > -1){
+        if(sol.getSimpleBestJetComb() > -1){
           ++nrAnalysed[sample];
 	  if( samples[sample].Contains("semimu"))  hmtsign    -> Fill(sol.getFitHadt().mass());
 	  if( samples[sample].Contains("otherTt")) hmtotherTt -> Fill(sol.getFitHadt().mass());

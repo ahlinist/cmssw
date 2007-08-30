@@ -39,17 +39,17 @@ TtSemiIdeogramProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
    int bestSol = -999;
    if(solChoice_ == "MCtrue"){
      //get MCtrue bestSol
-     bestSol = (*sols)[0].getMCCorrJetComb();
+     bestSol = (*sols)[0].getMCBestJetComb();
      if(bestSol < -1) return;
      massSol = TtSemiMassSolution((*sols)[bestSol]);
    }
    else if(solChoice_ == "simple"){
-     bestSol = (*sols)[0].getSimpleCorrJetComb();
+     bestSol = (*sols)[0].getSimpleBestJetComb();
      if(bestSol < -1) return;
      massSol = TtSemiMassSolution((*sols)[bestSol]);
    }
    else if(solChoice_ == "LR"){
-     bestSol = (*sols)[0].getLRCorrJetComb();
+     bestSol = (*sols)[0].getLRBestJetComb();
      if(bestSol < -1) return;
      massSol = TtSemiMassSolution((*sols)[bestSol]);
    }

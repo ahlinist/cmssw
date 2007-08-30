@@ -12,7 +12,7 @@
 #include <TLegend.h>
 #include <fstream>
 #include <vector>
-#include "FWCore/FWLite/src/AutoLibraryLoader.h"
+#include "FWCore/FWLite/interface/AutoLibraryLoader.h"
 #include "AnalysisDataFormats/TopObjects/interface/TtSemiMassSolution.h"
 #include "TopQuarkAnalysis/TopTools/test/tdrstyle.C"
 
@@ -122,7 +122,7 @@ int main() {
       int nev = events->GetEntries();
       for( int ev = 0; ev < nev; ++ ev ) {
         solBranch    -> GetEntry( ev );
-        if(sol.getSimpleCorrJetComb() > -1){
+        if(sol.getSimpleBestJetComb() > -1){
           ++nrAnalysed[sample];
 	  
 	  // Read the nr of scanned points, and the range

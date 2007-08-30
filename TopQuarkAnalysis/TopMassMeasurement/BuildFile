@@ -4,7 +4,7 @@
 <use name=AnalysisDataFormats/TopObjects>
 <use name=TopQuarkAnalysis/TopKinFitter>
 <use name=root>
-<flags SEAL_PLUGIN_NAME="TopQuarkAnalysisTopMassMeasurement">
+<flags EDM_PLUGIN=1>
 <export>
   <use name=FWCore/Framework>
   <use name=FWCore/ParameterSet>
