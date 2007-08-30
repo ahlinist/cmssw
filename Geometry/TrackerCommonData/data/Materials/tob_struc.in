@@ -748,14 +748,14 @@ Layer  Tot [mm]
   6     3540
 
 (28-29) HVCAC-LVCAC Connectors
-	[Binder 25-F + Binder 37-F]
+	[Binder 25-M+F + Binder 37-M+F]
         the total mass is computed
-	copper: m = ( 1.2825 + 1.8981 ) g = 3.1806 g
+	copper: m = [ ( 0.9167 + 1.2825 ) + ( 1.356716 + 1.8981 ) ] g = 5.454016 g
 		density = 8.96 g/cm^3
-		--> volume = 0.355 cm^3
-	resin:  m = ( 0.825 + 1.221 ) g = 2.046 g
+		--> volume = 0.609 cm^3
+	resin:  m = [ ( 1.000 + 0.825 ) + ( 1.480 + 1.221 ) ] g = 4.526 g
 		density (epoxy) = 1.3 g/cm^3
-		--> volume = 1.574 cm^3
+		--> volume = 3.482 cm^3
 Layer  Tot [mm]
   1     42+42
   2     48+48
@@ -793,8 +793,8 @@ Layer  Tot [mm]
 * 25 "Multi Service Cable CAB48"           "MS_Al48"         0.567    126      CAB
 * 26 "Multi Service Cable CAB36"           "MS_Al36"         0.515      0      CAB
 * 27 "Ruggedized ribbons"                  "T_RuggRibbon"    0.086    252      CAB
-* 28 "HV/LVCAC Binder connectors"          "Copper"          0.355     42      ELE
-* 29 "HV/LVCAC Binder connectors"          "Epoxy"           1.574     42      ELE
+* 28 "HV/LVCAC Binder connectors"          "Copper"          0.609     42      ELE
+* 29 "HV/LVCAC Binder connectors"          "Epoxy"           3.482     42      ELE
 ....................................................................................
 ====================================================================================
 
@@ -827,8 +827,8 @@ Layer  Tot [mm]
 * 25 "Multi Service Cable CAB48"           "MS_Al48"         0.567    144      CAB
 * 26 "Multi Service Cable CAB36"           "MS_Al36"         0.515      0      CAB
 * 27 "Ruggedized ribbons"                  "T_RuggRibbon"    0.086    288      CAB
-* 28 "HV/LVCAC Binder connectors"          "Copper"          0.355     48      ELE
-* 29 "HV/LVCAC Binder connectors"          "Epoxy"           1.574     48      ELE
+* 28 "HV/LVCAC Binder connectors"          "Copper"          0.609     48      ELE
+* 29 "HV/LVCAC Binder connectors"          "Epoxy"           3.482     48      ELE
 ....................................................................................
 ====================================================================================
 
@@ -861,8 +861,8 @@ Layer  Tot [mm]
 * 25 "Multi Service Cable CAB48"           "MS_Al48"         0.567      0      CAB
 * 26 "Multi Service Cable CAB36"           "MS_Al36"         0.515    162      CAB
 * 27 "Ruggedized ribbons"                  "T_RuggRibbon"    0.086    162      CAB
-* 28 "HV/LVCAC Binder connectors"          "Copper"          0.355     54      ELE
-* 29 "HV/LVCAC Binder connectors"          "Epoxy"           1.574     54      ELE
+* 28 "HV/LVCAC Binder connectors"          "Copper"          0.609     54      ELE
+* 29 "HV/LVCAC Binder connectors"          "Epoxy"           3.482     54      ELE
 ....................................................................................
 ====================================================================================
 
@@ -895,8 +895,8 @@ Layer  Tot [mm]
 * 25 "Multi Service Cable CAB48"           "MS_Al48"         0.567      0      CAB
 * 26 "Multi Service Cable CAB36"           "MS_Al36"         0.515    180      CAB
 * 27 "Ruggedized ribbons"                  "T_RuggRibbon"    0.086    180      CAB
-* 28 "HV/LVCAC Binder connectors"          "Copper"          0.355     60      ELE
-* 29 "HV/LVCAC Binder connectors"          "Epoxy"           1.574     60      ELE
+* 28 "HV/LVCAC Binder connectors"          "Copper"          0.609     60      ELE
+* 29 "HV/LVCAC Binder connectors"          "Epoxy"           3.482     60      ELE
 ....................................................................................
 ====================================================================================
 
@@ -929,8 +929,8 @@ Layer  Tot [mm]
 * 25 "Multi Service Cable CAB48"           "MS_Al48"         0.567      0      CAB
 * 26 "Multi Service Cable CAB36"           "MS_Al36"         0.515    198      CAB
 * 27 "Ruggedized ribbons"                  "T_RuggRibbon"    0.086    312      CAB
-* 28 "HV/LVCAC Binder connectors"          "Copper"          0.355     66      ELE
-* 29 "HV/LVCAC Binder connectors"          "Epoxy"           1.574     66      ELE
+* 28 "HV/LVCAC Binder connectors"          "Copper"          0.609     66      ELE
+* 29 "HV/LVCAC Binder connectors"          "Epoxy"           3.482     66      ELE
 ....................................................................................
 ====================================================================================
 
@@ -963,8 +963,8 @@ Layer  Tot [mm]
 * 25 "Multi Service Cable CAB48"           "MS_Al48"         0.567      0      CAB
 * 26 "Multi Service Cable CAB36"           "MS_Al36"         0.515    222      CAB
 * 27 "Ruggedized ribbons"                  "T_RuggRibbon"    0.086    354      CAB
-* 28 "HV/LVCAC Binder connectors"          "Copper"          0.355     74      ELE
-* 29 "HV/LVCAC Binder connectors"          "Epoxy"           1.574     74      ELE
+* 28 "HV/LVCAC Binder connectors"          "Copper"          0.609     74      ELE
+* 29 "HV/LVCAC Binder connectors"          "Epoxy"           3.482     74      ELE
 ....................................................................................
 ====================================================================================
 
