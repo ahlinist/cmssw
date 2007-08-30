@@ -4,4 +4,7 @@ PSet vertexreco =
   double primcut = 1.8
   double seccut = 6.0
   double minweight = 0.5
+  double DMin = 0.01
+  double DMax = 2.5
+  double RDMin = 3.0
 }
