@@ -144,7 +144,10 @@
  <Constant name="SideDiskDz"     value="3.250*cm"/>
  <Constant name="SideDiskZ"      value="114.05*cm"/>
  <Constant name="DetectorTilt"   value="0*deg"/>
+ <Constant name="AxCableRin"     value="[Rin3]"/>
+ <Constant name="AxCableRout"    value="[Rout1]"/>
  <Constant name="AxCableT"       value="0.210*cm"/>
+ <Constant name="AxCableDz"      value="([Zv3]-[Zv1])/2"/>
  <Constant name="AxCableW"       value="22.5*deg"/>
  <Constant name="AxCableZ"       value="([Zv1]+[Zv3])/2"/>
  <Constant name="DOHMsDz"        value="0.3*cm"/>
@@ -379,12 +382,9 @@
  <Tubs name="TOBSideDisk"   rMin="[Rin2]"           rMax="[Rin3]"
                             dz="[SideDiskDz]"       startPhi="0*deg"
                             deltaPhi="360*deg"/>
- <Tubs name="TOBAxCabCont"  rMin="[Rin3]"           rMax="[Rout1]"
-                            dz="([Zv3]-[Zv1])/2"
+ <Tubs name="TOBAxCabCont"  rMin="[AxCableRin]"     rMax="[AxCableRout]"
+                            dz="[AxCableDz]"
                             startPhi="0*deg"        deltaPhi="360*deg"/>
- <Tubs name="TOBAxCable"    rMin="([Rout1]-[AxCableT])"
-                            rMax="[Rout1]"          dz="([Zv3]-[Zv1])/2"
-                            startPhi="-[AxCableW]/2" deltaPhi="[AxCableW]"/>
  <Tubs name="TOBDOHMs"      rMin="[Rin2]"           rMax="[Rin3]"
                             dz="[DOHMsDz]"          startPhi="0*deg"
                             deltaPhi="360*deg"/>
@@ -626,10 +626,6 @@
   <rSolid name="TOBAxCabCont"/>
   <rMaterial name="materials:Air"/>
  </LogicalPart>
- <LogicalPart name="TOBAxCable" category="unspecified">
-  <rSolid name="TOBAxCable"/>
-  <rMaterial name="tobmaterial:TOB_ax_cable"/>
- </LogicalPart>
  <LogicalPart name="TOBDOHMs" category="unspecified">
   <rSolid name="TOBDOHMs"/>
   <rMaterial name="materials:Air"/>
@@ -801,7 +797,6 @@
  <PosPart copyNumber="2">
    <rParent name="tob:TOB"/>
    <rChild name="tob:TOBAxCabCont"/>
-  <rRotation name="tobrodpar:180D"/>
   <Translation x="[zero]" y="[zero]" z="-[AxCableZ]" />
  </PosPart>
 </PosPartSection>
@@ -1296,18 +1291,57 @@
   </Vector>
 </Algorithm>
 
-<Algorithm name="track:DDTrackerAngular">
+<Algorithm name="track:DDTOBAxCableAlgo">
   <rParent name="tob:TOBAxCabCont"/>
-  <String  name="ChildName"   value="tob:TOBAxCable"/>
-  <Numeric name="N"           value="8" />
-  <Numeric name="StartCopyNo" value="1" />
-  <Numeric name="IncrCopyNo"  value="1" />
-  <Numeric name="RangeAngle"  value="360*deg"/>
-  <Numeric name="StartAngle"  value="13*deg"/>
-  <Numeric name="Radius"      value="0"/>
-  <Vector name="Center" type="numeric" nEntries="3"> 0, 0, 0  </Vector>
+  <Vector name="SectorNumber" type="string" nEntries="18">
+    1 ,  2 ,  3 ,  4 ,  5 ,  6 ,
+    7 ,  8 ,  9 , 10 , 11 , 12 ,
+   13 , 14 , 15 , 16 , 17 , 18
+  </Vector>
+  <Numeric name="SectorRin"        value="[AxCableRin]"/>
+  <Numeric name="SectorRout"       value="[AxCableRout]"/>
+  <Numeric name="SectorDz"         value="[AxCableDz]"/>
+  <Numeric name="SectorDeltaPhi_B" value="2*deg"/>
+  <Vector name="SectorStartPhi" type="numeric" nEntries="18">
+    -10*deg ,  10*deg ,  30*deg ,  50*deg ,  70*deg ,  90*deg ,
+    110*deg , 130*deg , 150*deg , 170*deg , 190*deg , 210*deg ,
+    230*deg , 250*deg , 270*deg , 290*deg , 310*deg , 330*deg
+  </Vector>
+  <Vector name="SectorMaterial_A" type="string" nEntries="18">
+   materials:Air                    , tobmaterial:TOB_ax_services_A2  ,
+   tobmaterial:TOB_ax_services_A3   , tobmaterial:TOB_ax_services_A4  ,
+   tobmaterial:TOB_ax_services_A5   , materials:Air                   , 
+   tobmaterial:TOB_ax_services_A7   , tobmaterial:TOB_ax_services_A8  ,
+   tobmaterial:TOB_ax_services_A9   , materials:Air                   ,
+   tobmaterial:TOB_ax_services_A11  , tobmaterial:TOB_ax_services_A12 ,
+   tobmaterial:TOB_ax_services_A13  , tobmaterial:TOB_ax_services_A14 ,
+   materials:Air                    , tobmaterial:TOB_ax_services_A16 ,
+   tobmaterial:TOB_ax_services_A17  , tobmaterial:TOB_ax_services_A18
+  </Vector>
+  <Vector name="SectorMaterial_B" type="string" nEntries="18">
+   materials:Air                    , tobmaterial:TOB_ax_services_B2  ,
+   tobmaterial:TOB_ax_services_B3   , tobmaterial:TOB_ax_services_B4  ,
+   tobmaterial:TOB_ax_services_B5   , tobmaterial:TOB_ax_services_B6  ,
+   tobmaterial:TOB_ax_services_B7   , tobmaterial:TOB_ax_services_B8  ,
+   tobmaterial:TOB_ax_services_B9   , materials:Air                   ,
+   tobmaterial:TOB_ax_services_B11  , tobmaterial:TOB_ax_services_B12 ,
+   tobmaterial:TOB_ax_services_B13  , tobmaterial:TOB_ax_services_B14 ,
+   tobmaterial:TOB_ax_services_B15  , tobmaterial:TOB_ax_services_B16 ,
+   tobmaterial:TOB_ax_services_B17  , tobmaterial:TOB_ax_services_B18
+  </Vector>
+  <Vector name="SectorMaterial_C" type="string" nEntries="18">
+   materials:Air                    , tobmaterial:TOB_ax_services_C2  ,
+   tobmaterial:TOB_ax_services_C3   , tobmaterial:TOB_ax_services_C4  ,
+   materials:Air                    , tobmaterial:TOB_ax_services_C6  ,
+   tobmaterial:TOB_ax_services_C7   , tobmaterial:TOB_ax_services_C8  ,
+   tobmaterial:TOB_ax_services_C9   , materials:Air                   ,
+   tobmaterial:TOB_ax_services_C11  , tobmaterial:TOB_ax_services_C12 ,
+   tobmaterial:TOB_ax_services_C13  , materials:Air                   ,
+   tobmaterial:TOB_ax_services_C15  , tobmaterial:TOB_ax_services_C16 ,
+   tobmaterial:TOB_ax_services_C17  , tobmaterial:TOB_ax_services_C18
+  </Vector>
 </Algorithm>
- 
+
 <Algorithm name="track:DDTrackerPhiAlgo">
   <rParent name="tob:TOBDOHMs"/>
   <String name="ChildName"    value="tob:TOBDOHM"/>
