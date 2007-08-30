@@ -1323,6 +1323,678 @@ Layer  Tot [mm]
 		.......................................................................
 		=======================================================================     ]
 
+
+o TOB axial services
+
+18 cylinder sectors divided in 3 parts
+- part A: cables and cooling pipes (phi = 9 deg)
+- part B: optical fibers with Aluminium rails (phi = 2 deg)
+- part C: cables and cooling pipes (phi = 9 deg)
+
+MC Volume for parts A/C: (9/360) [ pi x (1169^2-1160^2) ] mm^2 x 1660 mm = 1646.27309 mm^2 x 1660 mm =
+				=  2372813.329 mm^3 = 2732.8 cm^3
+MC Volume for parts B: (2/360) [ pi x (1169^2-1160^2) ] mm^2 x 1660 mm = 365.8384645 mm^2 x 1660 mm =
+				=  607291.8511 mm^3 = 607.3 cm^3
+The length 1660 mm is used to compute the length of the cables and ribbons.
+
+
+	 Part A
+	--------
+
+(1-2) cables
+
+- CAB36
+Sector  Cables  Length [mm]
+   1       EMPTY [Air]
+   2      10      16600
+   3       9      14940
+   4       8      13280
+   5      11      18260
+   6       PIXEL [temporarily Air]
+   7       8      13280
+   8       8      13280
+   9       9      14940
+  10       EMPTY [Air]
+  11      10      16600
+  12       8      13280
+  13       9      14940
+  14      11      18260
+  15       PIXEL [temporarily Air]
+  16       9      14940
+  17       8      13280
+  18       9      14940
+
+- CAB48
+Sector  Cables  Length [mm]
+   1       EMPTY [Air]
+   2       3       4980
+   3       4       6640
+   4       3       4980
+   5       2       3320
+   6       PIXEL [temporarily Air]
+   7       5       8300
+   8       4       6640
+   9       4       6640
+  10       EMPTY [Air]
+  11       3       4980
+  12       2       3320
+  13       4       6640
+  14       2       3320
+  15       PIXEL [temporarily Air]
+  16       4       6640
+  17       3       4980
+  18       4       6640
+
+
+(3) DOHM Power Connectors 
+
+Sector  Cables  Length [mm]
+   1       EMPTY [Air]
+   2       3       4980
+   3       0          0
+   4       0          0
+   5       3       4980
+   6       PIXEL [temporarily Air]
+   7       0          0
+   8       3       4980
+   9       0          0
+  10       EMPTY [Air]
+  11       3       4980
+  12       2       3320
+  13       0          0
+  14       3       4980
+  15       PIXEL [temporarily Air]
+  16       3       4980
+  17       0          0
+  18       0          0
+
+(4-5) Axial Cooling Pipes (unit length = 1 cm)
+ Inner diameter = 10.0 mm
+ Outer diameter =  9.0 mm
+ Volume per unit length: pi x (0.50 - 0.45)^2 cm^2 x 1 cm = 7.854 x 10^-3 cm^3 
+ Material: pure copper
+ 
+ Cooling Fluid
+ Inner diameter =  0.0 mm
+ Outer diameter =  9.0 mm
+ Volume per unit length: pi x 0.45^2 cm^2 x 1 cm = 0.6362 cm^3 
+ Material: C6F14_F2_-30C
+
+Sector  Pipes  Length [mm]
+   1       EMPTY [Air]
+   2       2       3320
+   3       2       3320
+   4       1       1660
+   5       2       3320
+   6       PIXEL [temporarily Air]
+   7       1       1660
+   8       2       3220
+   9       1       1660
+  10       EMPTY [Air]
+  11       2       3320
+  12       2       3320
+  13       1       1660
+  14       2       3220
+  15       PIXEL [temporarily Air]
+  16       1       1660
+  17       2       3320
+  18       1       1660
+
+
+	 Part B
+	--------
+
+(1) Ruggedized Ribbon
+
+Sector  Cables  Length [mm]
+   1       EMPTY [Air]
+   2      39      64740
+   3      32      53120
+   4      32      53120
+   5      38      63080
+   6      40      66400
+   7      28      46480
+   8      31      51460
+   9      40      66400
+  10       EMPTY [Air]
+  11      29      48140
+  12      40      66400
+  13      40      66400
+  14      40      66400
+  15      39      64740
+  16      36      59760
+  17      38      63080
+  18      38      63080
+
+(2) Aluminium rail
+1.5 mm thickness over the whole surface
+Area = [ (2/360) x ( 2pi x Rin x h ) ] + [ (2/360) x ( 2pi x Rout x h ) ]
+	 + 2 x [ (Rout-Rin) x z ] + 2 x [ (2/360) x pi x (Rout^2-Rin^2) ]
+Volume = Area x thickness
+
+Rin  = 1160 mm
+Rout = 1169 mm
+h    = 1660 mm
+t    = 1.5 mm
+
+Area = 108608.5749 mm^2 = 1086.1 cm^2
+Volume = Area x t = 162912.8624 mm^3 = 162.9 cm^3
+
+
+	 Part C
+	--------
+
+(1-2) cables
+
+- CAB36
+Sector  Cables  Length [mm]
+   1       EMPTY [Air]
+   2       9      14940
+   3       8      13280
+   4       8      13280
+   5       PIXEL [temporarily Air]
+   6      11      18260
+   7      10      16600
+   8       7      11620
+   9      11      18260
+  10       EMPTY [Air]
+  11       9      14940
+  12       7      11620
+  13       9      14940
+  14       PIXEL [temporarily Air]
+  15      11      18260
+  16       9      14940
+  17       7      11620
+  18      11      18260
+
+- CAB48
+Sector  Cables  Length [mm]
+   1       EMPTY [Air]
+   2       4       6640
+   3       2       3320
+   4       4       6640
+   5       PIXEL [temporarily Air]
+   6       2       3320
+   7       3       4980
+   8       3       4980
+   9       2       3320
+  10       EMPTY [Air]
+  11       4       6640
+  12       3       4980
+  13       4       6640
+  14       PIXEL [temporarily Air]
+  15       2       3320
+  16       4       6640
+  17       4       6640
+  18       2       3320
+
+
+(3) DOHM Power Connectors 
+
+Sector  Cables  Length [mm]
+   1       EMPTY [Air]
+   2       2       3320
+   3       3       4980
+   4       2       3320
+   5       PIXEL [temporarily Air]
+   6       2       3320
+   7       0          0
+   8       2       3320
+   9       3       4980
+  10       EMPTY [Air]
+  11       0          0
+  12       3       4980
+  13       0          0
+  14       PIXEL [temporarily Air]
+  15       3       4980
+  16       0          0
+  17       3       4980
+  18       3       4980
+
+(4-5) Axial Cooling Pipes (unit length = 1 cm)
+ Inner diameter = 10.0 mm
+ Outer diameter =  9.0 mm
+ Volume per unit length: pi x (0.50 - 0.45)^2 cm^2 x 1 cm = 7.854 x 10^-3 cm^3 
+ Material: pure copper
+ 
+ Cooling Fluid
+ Inner diameter =  0.0 mm
+ Outer diameter =  9.0 mm
+ Volume per unit length: pi x 0.45^2 cm^2 x 1 cm = 0.6362 cm^3 
+ Material: C6F14_F2_-30C
+
+Sector  Pipes  Length [mm]
+   1       EMPTY [Air]
+   2       2       3320
+   3       2       3320
+   4       1       1660
+   5       PIXEL [temporarily Air]
+   6       2       3320
+   7       1       1660
+   8       2       3220
+   9       1       1660
+  10       EMPTY [Air]
+  11       2       3320
+  12       2       3320
+  13       1       1660
+  14       PIXEL [temporarily Air]
+  15       2       3220
+  16       1       1660
+  17       2       3320
+  18       1       1660
+
+..........................................................................................
+# "TOB axial services Sector 2 Part A"  "TOB_ax_services_A2"   2732.8          16.46
+* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1660   CAB
+* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       498   CAB
+* 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2   498   CAB
+* 4 "Cooling Pipes"                     "Copper"                  7.854E-3    332   COL
+* 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      332   COL
+..........................................................................................
+==========================================================================================
+
+..........................................................................................
+# "TOB axial services Sector 3 Part A"  "TOB_ax_services_A3"   2732.8          16.46
+* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1494   CAB
+* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       664   CAB
+* 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2     0   CAB
+* 4 "Cooling Pipes"                     "Copper"                  7.854E-3    332   COL
+* 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      332   COL
+..........................................................................................
+==========================================================================================
+
+..........................................................................................
+# "TOB axial services Sector 4 Part A"  "TOB_ax_services_A4"   2732.8          16.46
+* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1328   CAB
+* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       498   CAB
+* 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2     0   CAB
+* 4 "Cooling Pipes"                     "Copper"                  7.854E-3    166   COL
+* 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      166   COL
+..........................................................................................
+==========================================================================================
+
+..........................................................................................
+# "TOB axial services Sector 5 Part A"  "TOB_ax_services_A5"   2732.8          16.46
+* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1826   CAB
+* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       332   CAB
+* 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2   498   CAB
+* 4 "Cooling Pipes"                     "Copper"                  7.854E-3    332   COL
+* 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      332   COL
+..........................................................................................
+==========================================================================================
+
+..........................................................................................
+# "TOB axial services Sector 7 Part A"  "TOB_ax_services_A7"   2732.8          16.46
+* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1328   CAB
+* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       830   CAB
+* 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2     0   CAB
+* 4 "Cooling Pipes"                     "Copper"                  7.854E-3    166   COL
+* 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      166   COL
+..........................................................................................
+==========================================================================================
+
+..........................................................................................
+# "TOB axial services Sector 8 Part A"  "TOB_ax_services_A8"   2732.8          16.46
+* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1328   CAB
+* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       664   CAB
+* 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2   498   CAB
+* 4 "Cooling Pipes"                     "Copper"                  7.854E-3    332   COL
+* 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      332   COL
+..........................................................................................
+==========================================================================================
+
+..........................................................................................
+# "TOB axial services Sector 9 Part A"  "TOB_ax_services_A9"   2732.8          16.46
+* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1494   CAB
+* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       664   CAB
+* 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2     0   CAB
+* 4 "Cooling Pipes"                     "Copper"                  7.854E-3    166   COL
+* 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      166   COL
+..........................................................................................
+==========================================================================================
+
+..........................................................................................
+# "TOB axial services Sector 11 Part A" "TOB_ax_services_A11"  2732.8          16.46
+* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1660   CAB
+* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       498   CAB
+* 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2   498   CAB
+* 4 "Cooling Pipes"                     "Copper"                  7.854E-3    332   COL
+* 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      332   COL
+..........................................................................................
+==========================================================================================
+
+..........................................................................................
+# "TOB axial services Sector 12 Part A" "TOB_ax_services_A12"  2738          16.46
+* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1328   CAB
+* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       332   CAB
+* 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2   332   CAB
+* 4 "Cooling Pipes"                     "Copper"                  7.854E-3    332   COL
+* 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      332   COL
+..........................................................................................
+==========================================================================================
+
+..........................................................................................
+# "TOB axial services Sector 13 Part A" "TOB_ax_services_A13"  2732.8          16.46
+* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1494   CAB
+* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       664   CAB
+* 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2     0   CAB
+* 4 "Cooling Pipes"                     "Copper"                  7.854E-3    166   COL
+* 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      166   COL
+..........................................................................................
+==========================================================================================
+
+..........................................................................................
+# "TOB axial services Sector 14 Part A" "TOB_ax_services_A14"  2732.8          16.46
+* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1826   CAB
+* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       332   CAB
+* 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2   498   CAB
+* 4 "Cooling Pipes"                     "Copper"                  7.854E-3    332   COL
+* 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      332   COL
+..........................................................................................
+==========================================================================================
+
+..........................................................................................
+# "TOB axial services Sector 16 Part A" "TOB_ax_services_A16"  2732.8          16.46
+* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1494   CAB
+* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       664   CAB
+* 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2   498   CAB
+* 4 "Cooling Pipes"                     "Copper"                  7.854E-3    166   COL
+* 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      166   COL
+..........................................................................................
+==========================================================================================
+
+..........................................................................................
+# "TOB axial services Sector 17 Part A" "TOB_ax_services_A17"  2732.8          16.46
+* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1328   CAB
+* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       498   CAB
+* 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2     0   CAB
+* 4 "Cooling Pipes"                     "Copper"                  7.854E-3    332   COL
+* 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      332   COL
+..........................................................................................
+==========================================================================================
+
+..........................................................................................
+# "TOB axial services Sector 18 Part A" "TOB_ax_services_A18"  2732.8          16.46
+* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1494   CAB
+* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       664   CAB
+* 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2     0   CAB
+* 4 "Cooling Pipes"                     "Copper"                  7.854E-3    166   COL
+* 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      166   COL
+..........................................................................................
+==========================================================================================
+
+
+..........................................................................................
+# "TOB axial services Sector 2 Part B"  "TOB_ax_services_B2"    607.3           3.65
+* 1 "Ruggedized ribbons"                "T_RuggRibbon"            0.086     64740    CAB
+* 2 "Aluminium Rail"                    "Aluminium"             162.9           1    SUP
+..........................................................................................
+==========================================================================================
+
+..........................................................................................
+# "TOB axial services Sector 3 Part B"  "TOB_ax_services_B3"    607.3           3.65
+* 1 "Ruggedized ribbons"                "T_RuggRibbon"            0.086     53120    CAB
+* 2 "Aluminium Rail"                    "Aluminium"             162.9           1    SUP
+..........................................................................................
+==========================================================================================
+
+..........................................................................................
+# "TOB axial services Sector 4 Part B"  "TOB_ax_services_B4"    607.3           3.65
+* 1 "Ruggedized ribbons"                "T_RuggRibbon"            0.086     53120    CAB
+* 2 "Aluminium Rail"                    "Aluminium"             162.9           1    SUP
+..........................................................................................
+==========================================================================================
+
+..........................................................................................
+# "TOB axial services Sector 5 Part B"  "TOB_ax_services_B5"    607.3           3.65
+* 1 "Ruggedized ribbons"                "T_RuggRibbon"            0.086     63080    CAB
+* 2 "Aluminium Rail"                    "Aluminium"             162.9           1    SUP
+..........................................................................................
+==========================================================================================
+
+..........................................................................................
+# "TOB axial services Sector 6 Part B"  "TOB_ax_services_B6"    607.3           3.65
+* 1 "Ruggedized ribbons"                "T_RuggRibbon"            0.086     66400    CAB
+* 2 "Aluminium Rail"                    "Aluminium"             162.9           1    SUP
+..........................................................................................
+==========================================================================================
+
+..........................................................................................
+# "TOB axial services Sector 7 Part B"  "TOB_ax_services_B7"    607.3           3.65
+* 1 "Ruggedized ribbons"                "T_RuggRibbon"            0.086     46480    CAB
+* 2 "Aluminium Rail"                    "Aluminium"             162.9           1    SUP
+..........................................................................................
+==========================================================================================
+
+..........................................................................................
+# "TOB axial services Sector 8 Part B"  "TOB_ax_services_B8"    607.3           3.65
+* 1 "Ruggedized ribbons"                "T_RuggRibbon"            0.086     51460    CAB
+* 2 "Aluminium Rail"                    "Aluminium"             162.9           1    SUP
+..........................................................................................
+==========================================================================================
+
+..........................................................................................
+# "TOB axial services Sector 9 Part B"  "TOB_ax_services_B9"    607.3           3.65
+* 1 "Ruggedized ribbons"                "T_RuggRibbon"            0.086     66400    CAB
+* 2 "Aluminium Rail"                    "Aluminium"             162.9           1    SUP
+..........................................................................................
+==========================================================================================
+
+..........................................................................................
+# "TOB axial services Sector 11 Part B" "TOB_ax_services_B11"   607.3           3.65
+* 1 "Ruggedized ribbons"                "T_RuggRibbon"            0.086     48140    CAB
+* 2 "Aluminium Rail"                    "Aluminium"             162.9           1    SUP
+..........................................................................................
+==========================================================================================
+
+..........................................................................................
+# "TOB axial services Sector 12 Part B" "TOB_ax_services_B12"   607.3           3.65
+* 1 "Ruggedized ribbons"                "T_RuggRibbon"            0.086     66400    CAB
+* 2 "Aluminium Rail"                    "Aluminium"             162.9           1    SUP
+..........................................................................................
+==========================================================================================
+
+..........................................................................................
+# "TOB axial services Sector 13 Part B" "TOB_ax_services_B13"   607.3           3.65
+* 1 "Ruggedized ribbons"                "T_RuggRibbon"            0.086     66400    CAB
+* 2 "Aluminium Rail"                    "Aluminium"             162.9           1    SUP
+..........................................................................................
+==========================================================================================
+
+..........................................................................................
+# "TOB axial services Sector 14 Part B" "TOB_ax_services_B14"   607.3           3.65
+* 1 "Ruggedized ribbons"                "T_RuggRibbon"            0.086     66400    CAB
+* 2 "Aluminium Rail"                    "Aluminium"             162.9           1    SUP
+..........................................................................................
+==========================================================================================
+
+..........................................................................................
+# "TOB axial services Sector 15 Part B" "TOB_ax_services_B15"   607.3           3.65
+* 1 "Ruggedized ribbons"                "T_RuggRibbon"            0.086     64740    CAB
+* 2 "Aluminium Rail"                    "Aluminium"             162.9           1    SUP
+..........................................................................................
+==========================================================================================
+
+..........................................................................................
+# "TOB axial services Sector 16 Part B" "TOB_ax_services_B16"   607.3           3.65
+* 1 "Ruggedized ribbons"                "T_RuggRibbon"            0.086     59760    CAB
+* 2 "Aluminium Rail"                    "Aluminium"             162.9           1    SUP
+..........................................................................................
+==========================================================================================
+
+..........................................................................................
+# "TOB axial services Sector 17 Part B" "TOB_ax_services_B17"   607.3           3.65
+* 1 "Ruggedized ribbons"                "T_RuggRibbon"            0.086     63080    CAB
+* 2 "Aluminium Rail"                    "Aluminium"             162.9           1    SUP
+..........................................................................................
+==========================================================================================
+
+..........................................................................................
+# "TOB axial services Sector 18 Part B" "TOB_ax_services_B18"   607.3           3.65
+* 1 "Ruggedized ribbons"                "T_RuggRibbon"            0.086     63080    CAB
+* 2 "Aluminium Rail"                    "Aluminium"             162.9           1    SUP
+..........................................................................................
+==========================================================================================
+
+
+..........................................................................................
+# "TOB axial services Sector 2 Part C"  "TOB_ax_services_C2"   2732.8          16.46
+* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1494   CAB
+* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       664   CAB
+* 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2   332   CAB
+* 4 "Cooling Pipes"                     "Copper"                  7.854E-3    332   COL
+* 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      332   COL
+..........................................................................................
+==========================================================================================
+
+..........................................................................................
+# "TOB axial services Sector 3 Part C"  "TOB_ax_services_C3"   2732.8          16.46
+* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1328   CAB
+* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       332   CAB
+* 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2   498   CAB
+* 4 "Cooling Pipes"                     "Copper"                  7.854E-3    332   COL
+* 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      332   COL
+..........................................................................................
+==========================================================================================
+
+..........................................................................................
+# "TOB axial services Sector 4 Part C"  "TOB_ax_services_C4"   2732.8          16.46
+* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1328   CAB
+* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       664   CAB
+* 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2   332   CAB
+* 4 "Cooling Pipes"                     "Copper"                  7.854E-3    166   COL
+* 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      166   COL
+..........................................................................................
+==========================================================================================
+
+..........................................................................................
+# "TOB axial services Sector 6 Part C"  "TOB_ax_services_C6"   2732.8          16.46
+* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1826   CAB
+* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       332   CAB
+* 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2   332   CAB
+* 4 "Cooling Pipes"                     "Copper"                  7.854E-3    332   COL
+* 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      332   COL
+..........................................................................................
+==========================================================================================
+
+..........................................................................................
+# "TOB axial services Sector 7 Part C"  "TOB_ax_services_C7"   2732.8          16.46
+* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1660   CAB
+* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       498   CAB
+* 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2     0   CAB
+* 4 "Cooling Pipes"                     "Copper"                  7.854E-3    166   COL
+* 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      166   COL
+..........................................................................................
+==========================================================================================
+
+..........................................................................................
+# "TOB axial services Sector 8 Part C"  "TOB_ax_services_C8"   2732.8          16.46
+* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1162   CAB
+* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       498   CAB
+* 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2   332   CAB
+* 4 "Cooling Pipes"                     "Copper"                  7.854E-3    332   COL
+* 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      332   COL
+..........................................................................................
+==========================================================================================
+
+..........................................................................................
+# "TOB axial services Sector 9 Part C"  "TOB_ax_services_C9"   2732.8          16.46
+* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1826   CAB
+* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       332   CAB
+* 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2   498   CAB
+* 4 "Cooling Pipes"                     "Copper"                  7.854E-3    166   COL
+* 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      166   COL
+..........................................................................................
+==========================================================================================
+
+..........................................................................................
+# "TOB axial services Sector 11 Part C" "TOB_ax_services_C11"  2732.8          16.46
+* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1494   CAB
+* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       664   CAB
+* 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2     0   CAB
+* 4 "Cooling Pipes"                     "Copper"                  7.854E-3    332   COL
+* 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      332   COL
+..........................................................................................
+==========================================================================================
+
+..........................................................................................
+# "TOB axial services Sector 12 Part C" "TOB_ax_services_C12"  2732.8          16.46
+* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1162   CAB
+* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       498   CAB
+* 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2   498   CAB
+* 4 "Cooling Pipes"                     "Copper"                  7.854E-3    332   COL
+* 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      332   COL
+..........................................................................................
+==========================================================================================
+
+..........................................................................................
+# "TOB axial services Sector 13 Part C" "TOB_ax_services_C13"  2732.8          16.46
+* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1494   CAB
+* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       664   CAB
+* 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2     0   CAB
+* 4 "Cooling Pipes"                     "Copper"                  7.854E-3    166   COL
+* 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      166   COL
+..........................................................................................
+==========================================================================================
+
+..........................................................................................
+# "TOB axial services Sector 15 Part C" "TOB_ax_services_C15"  2732.8          16.46
+* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1826   CAB
+* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       332   CAB
+* 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2   498   CAB
+* 4 "Cooling Pipes"                     "Copper"                  7.854E-3    332   COL
+* 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      332   COL
+..........................................................................................
+==========================================================================================
+
+..........................................................................................
+# "TOB axial services Sector 16 Part C" "TOB_ax_services_C16"  2732.8          16.46
+* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1494   CAB
+* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       664   CAB
+* 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2     0   CAB
+* 4 "Cooling Pipes"                     "Copper"                  7.854E-3    166   COL
+* 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      166   COL
+..........................................................................................
+==========================================================================================
+
+..........................................................................................
+# "TOB axial services Sector 17 Part C" "TOB_ax_services_C17"  2732.8          16.46
+* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1162   CAB
+* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       664   CAB
+* 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2   498   CAB
+* 4 "Cooling Pipes"                     "Copper"                  7.854E-3    332   COL
+* 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      332   COL
+..........................................................................................
+==========================================================================================
+
+..........................................................................................
+# "TOB axial services Sector 18 Part C" "TOB_ax_services_C18"  2732.8          16.46
+* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1826   CAB
+* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       332   CAB
+* 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2   498   CAB
+* 4 "Cooling Pipes"                     "Copper"                  7.854E-3    166   COL
+* 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      166   COL
+..........................................................................................
+==========================================================================================
+
+	[WAS: o TOB axial cables
+		  ----------------
+		MC Xsection is only 8 bundles with 9.64 cm^2 => 77.12 cm^2
+		
+		Cables are just the sum of all cables above !
+		.......................................................................
+		 "TOB axial cables"            "TOB_ax_cable"        77.12  -1.
+		 1 "MS cable 60 APVs"          "MS_Al48"             0.567    90   CAB
+		 2 "MS cable 36 APVs"          "MS_Al36"             0.515    254  CAB
+		 3 "Control cables"            "MS_cntrl_cable"      0.283    46   CAB
+		 4 "Optical ribbon"            "Fibre_Ribbon"        9.61E-3  561  CAB
+		 5 "Cooling pipes"             "TOB_CuNi"              0.16   46   COL
+		 6 "Coolant"                   "C6F14"                0.785   46   COL
+		.......................................................................
+		======================================================================= 
+	]
+
+
 o TOB rod fixation to disk
   ------------------------
 These attach the rod to the disk. There are 8 /full-length-rod
@@ -1419,22 +2091,7 @@ C* 4 "Cool pipe solder"        "TOB_cool_solder"    0.042    74      COL
 =====================================================================
 
 		
-o TOB axial cables
-  ----------------
-MC Xsection is only 8 bundles with 9.64 cm^2 => 77.12 cm^2
-
-Cables are just the sum of all cables above !
-.......................................................................
-# "TOB axial cables"            "TOB_ax_cable"        77.12  -1.
-* 1 "MS cable 60 APVs"          "MS_Al48"             0.567    90   CAB
-* 2 "MS cable 36 APVs"          "MS_Al36"             0.515    254  CAB
-* 3 "Control cables"            "MS_cntrl_cable"      0.283    46   CAB
-* 4 "Optical ribbon"            "Fibre_Ribbon"        9.61E-3  561  CAB
-* 5 "Cooling pipes"             "TOB_CuNi"              0.16   46   COL
-* 6 "Coolant"                   "C6F14"                0.785   46   COL
-.......................................................................
-======================================================================= 
-
+		
 # "END"  "END"  0.  0.   
 this has to be the last line !
 
