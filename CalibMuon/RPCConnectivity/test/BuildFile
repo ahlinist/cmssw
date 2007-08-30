@@ -4,7 +4,11 @@
   <use name=CondFormats/RPCObjects>
   <use name=CondCore/DBOutputService>
   <use name=OnlineDB/Oracle>
+  <use name=L1Trigger/RPCTrigger>
   <library file=RPCReadOutMappingBuilder.cpp name=RPCReadOutMappingBuilder>
+    <flags EDM_PLUGIN=1>
+  </library>
+  <library file=RPCTriggerPatternBuilder.cpp name=RPCTriggerPatternBuilder>
     <flags EDM_PLUGIN=1>
   </library>
 </environment>
