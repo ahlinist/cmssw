@@ -48,6 +48,9 @@ namespace edm {
     // encode
     std::string toString() const;
     std::string toStringOfTracked() const;
+    // decode
+    bool fromString(std::string const&);
+
 
     template <class T>
     T
@@ -150,9 +153,6 @@ private:
     // make the id invalid.  This function is logically const, because
     // it affects only the cached value of the id_.
     void invalidate() const;
-
-    // decode
-    bool fromString(std::string const&);
 
     // get the untracked Entry object, throwing an exception if it is
     // not found.
