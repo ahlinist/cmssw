@@ -9,7 +9,7 @@ class JetFilter {
    */
 
    public:
-     JetFilter ( float eta_min=0., float eta_max=2.5, float pt_min=10., float p_min=15. );
+     JetFilter ( float eta_min=0., float eta_max=5.0, float pt_min=1., float p_min=1.5 );
 
      /**
       *  Returns true for an acceptable jet,
