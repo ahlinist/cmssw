@@ -405,18 +405,19 @@ data taken from http://test-gmagazzu.web.cern.ch/test%2Dgmagazzu/TOB/MB/DOHM_MB.
 		--> volume = 0.716 cm^3
 
 (3-4) Connectors
-	socket
+	[ socket
 	2 x DOHM-DOH    (NAiS 26)
-                 Binder
 	header
-	1 x DOHM-cable  (Binder 21-M)
+	1 x DOHM-cable  (Binder 21-M) ]
+		+
+	[1 x DOHM-cable  (Binder 21-F)]
         the total mass is computed
-	copper: m = 2 x 0.570 g = 1.14 g
+	copper: m = ( 0.570 + 1.0773 ) g = 1.6473 g
 		density = 8.96 g/cm^3
-		--> volume = 0.127 cm^3
-	resin:  m = 2 x 1.797 g = 3.594 g
+		--> volume = 0.184 cm^3
+	resin:  m = ( 1.797 + 0.693 ) g = 2.490 g
 		density (epoxy) = 1.3 g/cm^3
-		--> volume = 2.765 cm^3
+		--> volume = 1.915 cm^3
 
 (5) DOHM SMD Resistors, 12 x (0603) resistors, mostly Al2O3 (Aluminiumoxid, ceramic), the total mass is computed
 	m = 25.7 mg = 0.0257 g
@@ -512,8 +513,8 @@ data taken from http://test-gmagazzu.web.cern.ch/test%2Dgmagazzu/TOB/MB/DOHM_MB.
 # "TOB DOHM"                               "TOB_DOHM"          80.652   13.442
 * 1 "DOHM PCB board"                       "T_G10"             19.816    1      ELE
 * 2 "DOHM PCB copper traces"               "Copper"             0.716    1      ELE
-* 3 "DOHM NAiS connectors"                 "Copper"             0.127    1      ELE
-* 4 "DOHM NAiS connectors"                 "Epoxy"              2.765    1      ELE
+* 3 "DOHM NAiS connectors"                 "Copper"             0.184    1      ELE
+* 4 "DOHM NAiS connectors"                 "Epoxy"              1.915    1      ELE
 * 5 "DOHM Resistors"                       "Ceramic"            0.0065   1      ELE
 * 6 "DOHM Capacitors"                      "Barium_Titanate"    0.0919   1      ELE
 * 7 "DOHM ASICs EMC"                       "Epoxy"              0.4050   1      ELE
@@ -567,24 +568,13 @@ One per each DOHM.
 		density = 8.96 g/cm^3
 		--> volume = 0.0054 cm^3
 
-(3-4) Connectors NaiS
-	socket
-	1 x SCCAC-SCLAC  (Binder 31-F)
-        the total mass is computed
-	copper: m = 1.590 g
-		density = 8.96 g/cm^3
-		--> volume = 0.177 cm^3
-	resin:  m = 1.015 g
-		density (epoxy) = 1.3 g/cm^3
-		--> volume = 0.781 cm^3
-
 		SCLAC
 		-----
 	EDMS code EP-680-1174-510
 data taken from http://test-gmagazzu.web.cern.ch/test%2Dgmagazzu/TOB/MB/DOHM_MB.htm
 One per each DOHM.
 
-(5-6) PCBs
+(3-4) PCBs
 	FR4:    m = 0.40 g
 		density (T_G10) = 1.90 g/cm^3
 		--> volume = 0.211 cm^3
@@ -592,7 +582,9 @@ One per each DOHM.
 		density = 8.96 g/cm^3
 		--> volume = 0.0068 cm^3
 
-(7-8) Connectors NaiS
+(5-6) SCLAC and SCCAC Connectors
+
+- SCCAC Connectors NaiS
 	header
 	1 x SCCAC-SCLAC  (Binder 31-M)
         the total mass is computed
@@ -603,10 +595,25 @@ One per each DOHM.
 		density (epoxy) = 1.3 g/cm^3
 		--> volume = 0.927 cm^3
 
+- SCLAC Connectors NaiS
+	socket
+	1 x SCCAC-SCLAC  (Binder 31-F)
+        the total mass is computed
+	copper: m = 1.590 g
+		density = 8.96 g/cm^3
+		--> volume = 0.177 cm^3
+	resin:  m = 1.015 g
+		density (epoxy) = 1.3 g/cm^3
+		--> volume = 0.781 cm^3
+
+Total NaiS connectors SCCAC/SCLAC:
+	copper: volume = 0.304 cm^3
+	resin:  volume = 1.708 cm^3
+
 
 		Wires
 		-----
-(9-13) DOHM wires
+(7-11) DOHM wires
 	Shielded Twisted pair, 9 pieces (mass per 1000 mm length)
 	+ 0.5 mm^2 Copper wire, 3 pieces (mass per 1000 mm length)
 	+ Polyamide Braid, 1 piece (mass per 1000 mm length)
@@ -634,23 +641,23 @@ One per each DOHM.
 		----------------
 o From DOHM
 
-(14) SCCAC screw holder (2 per each SCACC => 2 per each DOHM), total mass per SCCAC is computed
+(12) SCCAC screw holder (2 per each SCACC => 2 per each DOHM), total mass per SCCAC is computed
 	FR4:    m = 0.72 g
 		density (T_G10) = 1.90 g/cm^3
 		--> volume = 0.379 cm^3
 
-(15) SCCAC screws (2 per each SCACC => 2 per each DOHM), total mass per SCCAC is computed
+(13) SCCAC screws (2 per each SCACC => 2 per each DOHM), total mass per SCCAC is computed
 	brass: m = 0.44 g
 		density = 8.5 g/cm^3
 		--> volume = 0.052 cm^3
 
-(16) Araldite glue (take epoxy), 1 per DOHM: (1/2 DOHM), 1/2 RIB
+(14) Araldite glue (take epoxy), 1 per DOHM: (1/2 DOHM), 1/2 RIB
 	TO BE CONFIRMED
 	m = 1.05 g / 2 = 0.525 g
 	density = 1.3 g/cm^3
 	volume = 0.404 cm^3
 
-(17) Solder paste (BGA), 1 per DOHM: (1/2 DOHM), 1/2 RIB
+(15) Solder paste (BGA), 1 per DOHM: (1/2 DOHM), 1/2 RIB
 	TO BE CONFIRMED
 	m = 0.67 g / 2 = 0.335 g
 	density = 8.82 g/cm^3
@@ -658,7 +665,7 @@ o From DOHM
 
 o From Rod cables
 
-(18) Output cable sleeve (l=55 mm, ext diameter=9.5 mm, 4 pieces) Polyolefin (take polyethylene), 1 per rod:
+(16) Output cable sleeve (l=55 mm, ext diameter=9.5 mm, 4 pieces) Polyolefin (take polyethylene), 1 per rod:
 	total mass, (1/2 TOB_CONN12/34/56), 1/2 outside
 	m = ( 0.90 + 0.32 ) g / 2 = 0.61 g
 	density = 0.95 g/cm^3
@@ -668,14 +675,14 @@ o From Rod cables
 Wires from TOB_CONN12/34/56
 The difference 'long tail'-1x'short tail' is included here (Short tail in TOB_CONN12/34/56)
 
-(19)  - Connected to CCUM
+(17)  - Connected to CCUM
 	Tinned copper wire 100%, 1 piece 90 mm diameter 0.50 mm, totally outside the rod.
 	total mass; 2 copies in the mixture per each Rod
 	Copper:	m = 1.576 g
 		density = 8.96 g/cm^3
 		--> volume = 0.176 cm^3
 
-(20-21) - Connected to BUS
+(18-19) - Connected to BUS
 	+ 1.0 mm^2 Copper wire, 1 piece 290 mm, 80 mm in TOB_CONN12/34/56, the rest 210 mm outside the rod
 	total mass; 1 only copy per Rod in the mixture
 	Copper:	m = ( 210/290 x 2.5230 ) g = 1.827 g
@@ -685,62 +692,109 @@ The difference 'long tail'-1x'short tail' is included here (Short tail in TOB_CO
 		density (polyethylene) = 0.95 g/cm^3
 		--> volume = 0.531 cm^3
 
-(22) Output cable shield Aluminium: (1/2 TOB_CONN12/34/56), 1/2 outside
+(20) Output cable shield Aluminium: (1/2 TOB_CONN12/34/56), 1/2 outside
 	1 copy per rod
 	m = 0.480 g / 2 = 0.240 g
 	density = 2.7 g/cm^3
 	volume = 0.089 cm^3
 
-(23) Output cable sleeve (l=55 mm, ext diameter=9.5 mm, 1 piece) + (l=10 mm, ext diameter=3.0 mm, 4 pieces) Polyolefin (take polyethylene):
+(21) Output cable sleeve (l=55 mm, ext diameter=9.5 mm, 1 piece) + (l=10 mm, ext diameter=3.0 mm, 4 pieces) Polyolefin (take polyethylene):
 	total mass, (1/2 TOB_CONN12/34/56), 1/2 outside per each rod
 	m = ( 0.90 + 0.32 ) g / 2 = 0.61 g
 	density = 0.95 g/cm^3
 	volume = 0.642 cm^3
 
-(24) Input & Output cable tie Kapton: (2/3 TOB_CONN12/34/56), 1/3 outside per each rod
+(22) Input & Output cable tie Kapton: (2/3 TOB_CONN12/34/56), 1/3 outside per each rod
 	m = 0.41 g * (1/3) = 0.137 g
 	density = 1.40 g/cm^3
 	volume = 0.098 cm^3
 
-(25) Input & Output cable solder paste (BGA): (1/2 TOB_CONN12/34/56), 1/2 outside per each rod
+(23) Input & Output cable solder paste (BGA): (1/2 TOB_CONN12/34/56), 1/2 outside per each rod
 	m = 0.67 g / 2 = 0.335 g
 	density = 8.82 g/cm^3
 	volume = 0.038 cm^3
 
-(26) From Rod CCUM (one per rod): araldite glue (take epoxy): (1/2 CCUM), (1/4 SCLAC), 1/4 SCACC
+(24) From Rod CCUM (one per rod): araldite glue (take epoxy): (1/2 CCUM), (1/4 SCLAC), 1/4 SCACC
 	m = 1.05 g / 4 = 0.2625 g
 	density = 1.3 g/cm^3
 	volume = 0.202 cm^3
 
+(25-26) Multi Service Cables
+- CAB48
+Layer  Tot [mm]
+  1     1260
+  2     1440
+  3        0
+  4        0
+  5        0
+  6        0
+
+- CAB36
+Layer  Tot [mm]
+  1        0
+  2        0
+  3     1620
+  4     1800
+  5     1980
+  6     2220
+
+(27) Ruggedized Ribbon
+Layer  Tot [mm]
+  1     2520
+  2     2880
+  3     1620
+  4     1800
+  5     3120
+  6     3540
+
+(28-29) HVCAC-LVCAC Connectors
+	[Binder 25-F + Binder 37-F]
+        the total mass is computed
+	copper: m = ( 1.2825 + 1.8981 ) g = 3.1806 g
+		density = 8.96 g/cm^3
+		--> volume = 0.355 cm^3
+	resin:  m = ( 0.825 + 1.221 ) g = 2.046 g
+		density (epoxy) = 1.3 g/cm^3
+		--> volume = 1.574 cm^3
+Layer  Tot [mm]
+  1     42+42
+  2     48+48
+  3     54+54
+  4     60+60
+  5     66+66
+  6     74+74
 
 ....................................................................................
 # "TOB endflange connectors Layer 1"       "TOB_rib1"     3514.5625  1528.0707
 * 1 "SCCAC PCB board"                      "T_G10"           0.200      7      ELE
 * 2 "SCCAC PCB copper traces"              "Copper"          0.0054     7      ELE
-* 3 "SCCAC NAiS connectors"                "Copper"          0.177      7      ELE
-* 4 "SCCAC NAiS connectors"                "Epoxy"           0.781      7      ELE
-* 5 "SCLAC PCB board"                      "T_G10"           0.211      7      ELE
-* 6 "SCLAC PCB copper traces"              "Copper"          0.0068     7      ELE
-* 7 "SCLAC NAiS connectors"                "Copper"          0.127      7      ELE
-* 8 "SCLAC NAiS connectors"                "Epoxy"           0.927      7      ELE
-* 9 "DOHM wires Cu"                        "Copper"          1.814      5.647  CAB
-* 10 "DOHM wires Al"                       "Aluminium"       1.100      5.647  CAB
-* 11 "DOHM wires PEI"                      "Silicone_Gel"    1.809      5.647  CAB
-* 12 "DOHM wires SILTEM"                   "Polyethylene"    7.579      5.647  CAB
-* 13 "DOHM wires Polyamide"                "Polyethylene"   10.258      5.647  CAB
-* 14 "SCCAC screw holder"                  "T_G10"           0.379      7      SUP
-* 15 "SCCAC screws"                        "Brass"           0.202      7      SUP
-* 16 "SCCAC,SCLAC,DOHM glue"               "Epoxy"           0.404      7      SUP
-* 17 "SCCAC,SCLAC,DOHM Solder Paste"       "BGA"             0.038      7      SUP
-* 18 "Output cable Sleeve"                 "Polyethylene"    0.642     42      CAB
-* 19 "CCUM wires Cu"                       "Copper"          0.176     84      CAB
-* 20 "BUS wires Cu"                        "Copper"          0.204     42      CAB
-* 21 "BUS wires SILTEM"                    "Polyethylene"    0.531     42      CAB
-* 22 "Output cable Shield"                 "Aluminium"       0.089     42      CAB
-* 23 "Output cable Sleeve"                 "Polyethylene"    0.642     42      CAB
-* 24 "Input and Output cable Tie"          "T_Kapton"        0.098     42      CAB
-* 25 "Input and Output cable Solder Paste" "BGA"             0.038     42      CAB
-* 26 "SCCAC glue"                          "Epoxy"           0.202     42      SUP
+* 3 "SCLAC PCB board"                      "T_G10"           0.211      7      ELE
+* 4 "SCLAC PCB copper traces"              "Copper"          0.0068     7      ELE
+* 5 "SCCAC/SCLAC NAiS connectors"          "Copper"          0.304      7      ELE
+* 6 "SCCAC/SCLAC NAiS connectors"          "Epoxy"           1.708      7      ELE
+* 7 "DOHM wires Cu"                        "Copper"          1.814      5.647  CAB
+* 8 "DOHM wires Al"                        "Aluminium"       1.100      5.647  CAB
+* 9 "DOHM wires PEI"                       "Silicone_Gel"    1.809      5.647  CAB
+* 10 "DOHM wires SILTEM"                   "Polyethylene"    7.579      5.647  CAB
+* 11 "DOHM wires Polyamide"                "Polyethylene"   10.258      5.647  CAB
+* 12 "SCCAC screw holder"                  "T_G10"           0.379      7      SUP
+* 13 "SCCAC screws"                        "Brass"           0.202      7      SUP
+* 14 "SCCAC,SCLAC,DOHM glue"               "Epoxy"           0.404      7      SUP
+* 15 "SCCAC,SCLAC,DOHM Solder Paste"       "BGA"             0.038      7      SUP
+* 16 "Output cable Sleeve"                 "Polyethylene"    0.642     42      CAB
+* 17 "CCUM wires Cu"                       "Copper"          0.176     84      CAB
+* 18 "BUS wires Cu"                        "Copper"          0.204     42      CAB
+* 19 "BUS wires SILTEM"                    "Polyethylene"    0.531     42      CAB
+* 20 "Output cable Shield"                 "Aluminium"       0.089     42      CAB
+* 21 "Output cable Sleeve"                 "Polyethylene"    0.642     42      CAB
+* 22 "Input and Output cable Tie"          "T_Kapton"        0.098     42      CAB
+* 23 "Input and Output cable Solder Paste" "BGA"             0.038     42      CAB
+* 24 "SCCAC glue"                          "Epoxy"           0.202     42      SUP
+* 25 "Multi Service Cable CAB48"           "MS_Al48"         0.567    126      CAB
+* 26 "Multi Service Cable CAB36"           "MS_Al36"         0.515      0      CAB
+* 27 "Ruggedized ribbons"                  "T_RuggRibbon"    0.086    252      CAB
+* 28 "HV/LVCAC Binder connectors"          "Copper"          0.355     42      ELE
+* 29 "HV/LVCAC Binder connectors"          "Epoxy"           1.574     42      ELE
 ....................................................................................
 ====================================================================================
 
@@ -748,30 +802,33 @@ The difference 'long tail'-1x'short tail' is included here (Short tail in TOB_CO
 # "TOB endflange connectors Layer 2"       "TOB_rib2"     4000.1271  1739.1857
 * 1 "SCCAC PCB board"                      "T_G10"           0.200      8      ELE
 * 2 "SCCAC PCB copper traces"              "Copper"          0.0054     8      ELE
-* 3 "SCCAC NAiS connectors"                "Copper"          0.177      8      ELE
-* 4 "SCCAC NAiS connectors"                "Epoxy"           0.781      8      ELE
-* 5 "SCLAC PCB board"                      "T_G10"           0.211      8      ELE
-* 6 "SCLAC PCB copper traces"              "Copper"          0.0068     8      ELE
-* 7 "SCLAC NAiS connectors"                "Copper"          0.127      8      ELE
-* 8 "SCLAC NAiS connectors"                "Epoxy"           0.927      8      ELE
-* 9 "DOHM wires Cu"                        "Copper"          1.814      6.453  CAB
-* 10 "DOHM wires Al"                       "Aluminium"       1.100      6.453  CAB
-* 11 "DOHM wires PEI"                      "Silicone_Gel"    1.809      6.453  CAB
-* 12 "DOHM wires SILTEM"                   "Polyethylene"    7.579      6.453  CAB
-* 13 "DOHM wires Polyamide"                "Polyethylene"   10.258      6.453  CAB
-* 14 "SCCAC screw holder"                  "T_G10"           0.379      8      SUP
-* 15 "SCCAC screws"                        "Brass"           0.202      8      SUP
-* 16 "SCCAC,SCLAC,DOHM glue"               "Epoxy"           0.404      8      SUP
-* 17 "SCCAC,SCLAC,DOHM Solder Paste"       "BGA"             0.038      8      SUP
-* 18 "Output cable Sleeve"                 "Polyethylene"    0.642     48      CAB
-* 19 "CCUM wires Cu"                       "Copper"          0.176     96      CAB
-* 20 "BUS wires Cu"                        "Copper"          0.204     48      CAB
-* 21 "BUS wires SILTEM"                    "Polyethylene"    0.531     48      CAB
-* 22 "Output cable Shield"                 "Aluminium"       0.089     48      CAB
-* 23 "Output cable Sleeve"                 "Polyethylene"    0.642     48      CAB
-* 24 "Input and Output cable Tie"          "T_Kapton"        0.098     48      CAB
-* 25 "Input and Output cable Solder Paste" "BGA"             0.038     48      CAB
-* 26 "SCCAC glue"                          "Epoxy"           0.202     48      SUP
+* 3 "SCLAC PCB board"                      "T_G10"           0.211      8      ELE
+* 4 "SCLAC PCB copper traces"              "Copper"          0.0068     8      ELE
+* 5 "SCCAC/SCLAC NAiS connectors"          "Copper"          0.304      8      ELE
+* 6 "SCCAC/SCLAC NAiS connectors"          "Epoxy"           1.708      8      ELE
+* 7 "DOHM wires Cu"                        "Copper"          1.814      6.453  CAB
+* 8 "DOHM wires Al"                        "Aluminium"       1.100      6.453  CAB
+* 9 "DOHM wires PEI"                       "Silicone_Gel"    1.809      6.453  CAB
+* 10 "DOHM wires SILTEM"                   "Polyethylene"    7.579      6.453  CAB
+* 11 "DOHM wires Polyamide"                "Polyethylene"   10.258      6.453  CAB
+* 12 "SCCAC screw holder"                  "T_G10"           0.379      8      SUP
+* 13 "SCCAC screws"                        "Brass"           0.202      8      SUP
+* 14 "SCCAC,SCLAC,DOHM glue"               "Epoxy"           0.404      8      SUP
+* 15 "SCCAC,SCLAC,DOHM Solder Paste"       "BGA"             0.038      8      SUP
+* 16 "Output cable Sleeve"                 "Polyethylene"    0.642     48      CAB
+* 17 "CCUM wires Cu"                       "Copper"          0.176     96      CAB
+* 18 "BUS wires Cu"                        "Copper"          0.204     48      CAB
+* 19 "BUS wires SILTEM"                    "Polyethylene"    0.531     48      CAB
+* 20 "Output cable Shield"                 "Aluminium"       0.089     48      CAB
+* 21 "Output cable Sleeve"                 "Polyethylene"    0.642     48      CAB
+* 22 "Input and Output cable Tie"          "T_Kapton"        0.098     48      CAB
+* 23 "Input and Output cable Solder Paste" "BGA"             0.038     48      CAB
+* 24 "SCCAC glue"                          "Epoxy"           0.202     48      SUP
+* 25 "Multi Service Cable CAB48"           "MS_Al48"         0.567    144      CAB
+* 26 "Multi Service Cable CAB36"           "MS_Al36"         0.515      0      CAB
+* 27 "Ruggedized ribbons"                  "T_RuggRibbon"    0.086    288      CAB
+* 28 "HV/LVCAC Binder connectors"          "Copper"          0.355     48      ELE
+* 29 "HV/LVCAC Binder connectors"          "Epoxy"           1.574     48      ELE
 ....................................................................................
 ====================================================================================
 
@@ -779,30 +836,33 @@ The difference 'long tail'-1x'short tail' is included here (Short tail in TOB_CO
 # "TOB endflange connectors Layer 3"       "TOB_rib3"     4508.8138  1960.3538
 * 1 "SCCAC PCB board"                      "T_G10"           0.200      7      ELE
 * 2 "SCCAC PCB copper traces"              "Copper"          0.0054     7      ELE
-* 3 "SCCAC NAiS connectors"                "Copper"          0.177      7      ELE
-* 4 "SCCAC NAiS connectors"                "Epoxy"           0.781      7      ELE
-* 5 "SCLAC PCB board"                      "T_G10"           0.211      7      ELE
-* 6 "SCLAC PCB copper traces"              "Copper"          0.0068     7      ELE
-* 7 "SCLAC NAiS connectors"                "Copper"          0.127      7      ELE
-* 8 "SCLAC NAiS connectors"                "Epoxy"           0.927      7      ELE
-* 9 "DOHM wires Cu"                        "Copper"          1.814      6.574  CAB
-* 10 "DOHM wires Al"                       "Aluminium"       1.100      6.574  CAB
-* 11 "DOHM wires PEI"                      "Silicone_Gel"    1.809      6.574  CAB
-* 12 "DOHM wires SILTEM"                   "Polyethylene"    7.579      6.574  CAB
-* 13 "DOHM wires Polyamide"                "Polyethylene"   10.258      6.574  CAB
-* 14 "SCCAC screw holder"                  "T_G10"           0.379      7      SUP
-* 15 "SCCAC screws"                        "Brass"           0.202      7      SUP
-* 16 "SCCAC,SCLAC,DOHM glue"               "Epoxy"           0.404      7      SUP
-* 17 "SCCAC,SCLAC,DOHM Solder Paste"       "BGA"             0.038      7      SUP
-* 18 "Output cable Sleeve"                 "Polyethylene"    0.642     54      CAB
-* 19 "CCUM wires Cu"                       "Copper"          0.176    108      CAB
-* 20 "BUS wires Cu"                        "Copper"          0.204     54      CAB
-* 21 "BUS wires SILTEM"                    "Polyethylene"    0.531     54      CAB
-* 22 "Output cable Shield"                 "Aluminium"       0.089     54      CAB
-* 23 "Output cable Sleeve"                 "Polyethylene"    0.642     54      CAB
-* 24 "Input and Output cable Tie"          "T_Kapton"        0.098     54      CAB
-* 25 "Input and Output cable Solder Paste" "BGA"             0.038     54      CAB
-* 26 "SCCAC glue"                          "Epoxy"           0.202     54      SUP
+* 3 "SCLAC PCB board"                      "T_G10"           0.211      7      ELE
+* 4 "SCLAC PCB copper traces"              "Copper"          0.0068     7      ELE
+* 5 "SCCAC/SCLAC NAiS connectors"          "Copper"          0.304      7      ELE
+* 6 "SCCAC/SCLAC NAiS connectors"          "Epoxy"           1.708      7      ELE
+* 7 "DOHM wires Cu"                        "Copper"          1.814      6.574  CAB
+* 8 "DOHM wires Al"                        "Aluminium"       1.100      6.574  CAB
+* 9 "DOHM wires PEI"                       "Silicone_Gel"    1.809      6.574  CAB
+* 10 "DOHM wires SILTEM"                   "Polyethylene"    7.579      6.574  CAB
+* 11 "DOHM wires Polyamide"                "Polyethylene"   10.258      6.574  CAB
+* 12 "SCCAC screw holder"                  "T_G10"           0.379      7      SUP
+* 13 "SCCAC screws"                        "Brass"           0.202      7      SUP
+* 14 "SCCAC,SCLAC,DOHM glue"               "Epoxy"           0.404      7      SUP
+* 15 "SCCAC,SCLAC,DOHM Solder Paste"       "BGA"             0.038      7      SUP
+* 16 "Output cable Sleeve"                 "Polyethylene"    0.642     54      CAB
+* 17 "CCUM wires Cu"                       "Copper"          0.176    108      CAB
+* 18 "BUS wires Cu"                        "Copper"          0.204     54      CAB
+* 19 "BUS wires SILTEM"                    "Polyethylene"    0.531     54      CAB
+* 20 "Output cable Shield"                 "Aluminium"       0.089     54      CAB
+* 21 "Output cable Sleeve"                 "Polyethylene"    0.642     54      CAB
+* 22 "Input and Output cable Tie"          "T_Kapton"        0.098     54      CAB
+* 23 "Input and Output cable Solder Paste" "BGA"             0.038     54      CAB
+* 24 "SCCAC glue"                          "Epoxy"           0.202     54      SUP
+* 25 "Multi Service Cable CAB48"           "MS_Al48"         0.567      0      CAB
+* 26 "Multi Service Cable CAB36"           "MS_Al36"         0.515    162      CAB
+* 27 "Ruggedized ribbons"                  "T_RuggRibbon"    0.086    162      CAB
+* 28 "HV/LVCAC Binder connectors"          "Copper"          0.355     54      ELE
+* 29 "HV/LVCAC Binder connectors"          "Epoxy"           1.574     54      ELE
 ....................................................................................
 ====================================================================================
 
@@ -810,30 +870,33 @@ The difference 'long tail'-1x'short tail' is included here (Short tail in TOB_CO
 # "TOB endflange connectors Layer 4"       "TOB_rib4"     5017.5005  2181.5219
 * 1 "SCCAC PCB board"                      "T_G10"           0.200      8      ELE
 * 2 "SCCAC PCB copper traces"              "Copper"          0.0054     8      ELE
-* 3 "SCCAC NAiS connectors"                "Copper"          0.177      8      ELE
-* 4 "SCCAC NAiS connectors"                "Epoxy"           0.781      8      ELE
-* 5 "SCLAC PCB board"                      "T_G10"           0.211      8      ELE
-* 6 "SCLAC PCB copper traces"              "Copper"          0.0068     8      ELE
-* 7 "SCLAC NAiS connectors"                "Copper"          0.127      8      ELE
-* 8 "SCLAC NAiS connectors"                "Epoxy"           0.927      8      ELE
-* 9 "DOHM wires Cu"                        "Copper"          1.814      7.513  CAB
-* 10 "DOHM wires Al"                       "Aluminium"       1.100      7.513  CAB
-* 11 "DOHM wires PEI"                      "Silicone_Gel"    1.809      7.513  CAB
-* 12 "DOHM wires SILTEM"                   "Polyethylene"    7.579      7.513  CAB
-* 13 "DOHM wires Polyamide"                "Polyethylene"   10.258      7.513  CAB
-* 14 "SCCAC screw holder"                  "T_G10"           0.379      8      SUP
-* 15 "SCCAC screws"                        "Brass"           0.202      8      SUP
-* 16 "SCCAC,SCLAC,DOHM glue"               "Epoxy"           0.404      8      SUP
-* 17 "SCCAC,SCLAC,DOHM Solder Paste"       "BGA"             0.038      8      SUP
-* 18 "Output cable Sleeve"                 "Polyethylene"    0.642     60      CAB
-* 19 "CCUM wires Cu"                       "Copper"          0.176    120      CAB
-* 20 "BUS wires Cu"                        "Copper"          0.204     60      CAB
-* 21 "BUS wires SILTEM"                    "Polyethylene"    0.531     60      CAB
-* 22 "Output cable Shield"                 "Aluminium"       0.089     60      CAB
-* 23 "Output cable Sleeve"                 "Polyethylene"    0.642     60      CAB
-* 24 "Input and Output cable Tie"          "T_Kapton"        0.098     60      CAB
-* 25 "Input and Output cable Solder Paste" "BGA"             0.038     60      CAB
-* 26 "SCCAC glue"                          "Epoxy"           0.202     60      SUP
+* 3 "SCLAC PCB board"                      "T_G10"           0.211      8      ELE
+* 4 "SCLAC PCB copper traces"              "Copper"          0.0068     8      ELE
+* 5 "SCCAC/SCLAC NAiS connectors"          "Copper"          0.304      8      ELE
+* 6 "SCCAC/SCLAC NAiS connectors"          "Epoxy"           1.708      8      ELE
+* 7 "DOHM wires Cu"                        "Copper"          1.814      7.513  CAB
+* 8 "DOHM wires Al"                        "Aluminium"       1.100      7.513  CAB
+* 9 "DOHM wires PEI"                       "Silicone_Gel"    1.809      7.513  CAB
+* 10 "DOHM wires SILTEM"                   "Polyethylene"    7.579      7.513  CAB
+* 11 "DOHM wires Polyamide"                "Polyethylene"   10.258      7.513  CAB
+* 12 "SCCAC screw holder"                  "T_G10"           0.379      8      SUP
+* 13 "SCCAC screws"                        "Brass"           0.202      8      SUP
+* 14 "SCCAC,SCLAC,DOHM glue"               "Epoxy"           0.404      8      SUP
+* 15 "SCCAC,SCLAC,DOHM Solder Paste"       "BGA"             0.038      8      SUP
+* 16 "Output cable Sleeve"                 "Polyethylene"    0.642     60      CAB
+* 17 "CCUM wires Cu"                       "Copper"          0.176    120      CAB
+* 18 "BUS wires Cu"                        "Copper"          0.204     60      CAB
+* 19 "BUS wires SILTEM"                    "Polyethylene"    0.531     60      CAB
+* 20 "Output cable Shield"                 "Aluminium"       0.089     60      CAB
+* 21 "Output cable Sleeve"                 "Polyethylene"    0.642     60      CAB
+* 22 "Input and Output cable Tie"          "T_Kapton"        0.098     60      CAB
+* 23 "Input and Output cable Solder Paste" "BGA"             0.038     60      CAB
+* 24 "SCCAC glue"                          "Epoxy"           0.202     60      SUP
+* 25 "Multi Service Cable CAB48"           "MS_Al48"         0.567      0      CAB
+* 26 "Multi Service Cable CAB36"           "MS_Al36"         0.515    180      CAB
+* 27 "Ruggedized ribbons"                  "T_RuggRibbon"    0.086    180      CAB
+* 28 "HV/LVCAC Binder connectors"          "Copper"          0.355     60      ELE
+* 29 "HV/LVCAC Binder connectors"          "Epoxy"           1.574     60      ELE
 ....................................................................................
 ====================================================================================
 
@@ -841,30 +904,33 @@ The difference 'long tail'-1x'short tail' is included here (Short tail in TOB_CO
 # "TOB endflange connectors Layer 5"       "TOB_rib5"     5578.2119  2425.3095
 * 1 "SCCAC PCB board"                      "T_G10"           0.200      8      ELE
 * 2 "SCCAC PCB copper traces"              "Copper"          0.0054     8      ELE
-* 3 "SCCAC NAiS connectors"                "Copper"          0.177      8      ELE
-* 4 "SCCAC NAiS connectors"                "Epoxy"           0.781      8      ELE
-* 5 "SCLAC PCB board"                      "T_G10"           0.211      8      ELE
-* 6 "SCLAC PCB copper traces"              "Copper"          0.0068     8      ELE
-* 7 "SCLAC NAiS connectors"                "Copper"          0.127      8      ELE
-* 8 "SCLAC NAiS connectors"                "Epoxy"           0.927      8      ELE
-* 9 "DOHM wires Cu"                        "Copper"          1.814      8.404  CAB
-* 10 "DOHM wires Al"                       "Aluminium"       1.100      8.404  CAB
-* 11 "DOHM wires PEI"                      "Silicone_Gel"    1.809      8.404  CAB
-* 12 "DOHM wires SILTEM"                   "Polyethylene"    7.579      8.404  CAB
-* 13 "DOHM wires Polyamide"                "Polyethylene"   10.258      8.404  CAB
-* 14 "SCCAC screw holder"                  "T_G10"           0.379      8      SUP
-* 15 "SCCAC screws"                        "Brass"           0.202      8      SUP
-* 16 "SCCAC,SCLAC,DOHM glue"               "Epoxy"           0.404      8      SUP
-* 17 "SCCAC,SCLAC,DOHM Solder Paste"       "BGA"             0.038      8      SUP
-* 18 "Output cable Sleeve"                 "Polyethylene"    0.642     66      CAB
-* 19 "CCUM wires Cu"                       "Copper"          0.176    132      CAB
-* 20 "BUS wires Cu"                        "Copper"          0.204     66      CAB
-* 21 "BUS wires SILTEM"                    "Polyethylene"    0.531     66      CAB
-* 22 "Output cable Shield"                 "Aluminium"       0.089     66      CAB
-* 23 "Output cable Sleeve"                 "Polyethylene"    0.642     66      CAB
-* 24 "Input and Output cable Tie"          "T_Kapton"        0.098     66      CAB
-* 25 "Input and Output cable Solder Paste" "BGA"             0.038     66      CAB
-* 26 "SCCAC glue"                          "Epoxy"           0.202     66      SUP
+* 3 "SCLAC PCB board"                      "T_G10"           0.211      8      ELE
+* 4 "SCLAC PCB copper traces"              "Copper"          0.0068     8      ELE
+* 5 "SCCAC/SCLAC NAiS connectors"          "Copper"          0.304      8      ELE
+* 6 "SCCAC/SCLAC NAiS connectors"          "Epoxy"           1.708      8      ELE
+* 7 "DOHM wires Cu"                        "Copper"          1.814      8.404  CAB
+* 8 "DOHM wires Al"                        "Aluminium"       1.100      8.404  CAB
+* 9 "DOHM wires PEI"                       "Silicone_Gel"    1.809      8.404  CAB
+* 10 "DOHM wires SILTEM"                   "Polyethylene"    7.579      8.404  CAB
+* 11 "DOHM wires Polyamide"                "Polyethylene"   10.258      8.404  CAB
+* 12 "SCCAC screw holder"                  "T_G10"           0.379      8      SUP
+* 13 "SCCAC screws"                        "Brass"           0.202      8      SUP
+* 14 "SCCAC,SCLAC,DOHM glue"               "Epoxy"           0.404      8      SUP
+* 15 "SCCAC,SCLAC,DOHM Solder Paste"       "BGA"             0.038      8      SUP
+* 16 "Output cable Sleeve"                 "Polyethylene"    0.642     66      CAB
+* 17 "CCUM wires Cu"                       "Copper"          0.176    132      CAB
+* 18 "BUS wires Cu"                        "Copper"          0.204     66      CAB
+* 19 "BUS wires SILTEM"                    "Polyethylene"    0.531     66      CAB
+* 20 "Output cable Shield"                 "Aluminium"       0.089     66      CAB
+* 21 "Output cable Sleeve"                 "Polyethylene"    0.642     66      CAB
+* 22 "Input and Output cable Tie"          "T_Kapton"        0.098     66      CAB
+* 23 "Input and Output cable Solder Paste" "BGA"             0.038     66      CAB
+* 24 "SCCAC glue"                          "Epoxy"           0.202     66      SUP
+* 25 "Multi Service Cable CAB48"           "MS_Al48"         0.567      0      CAB
+* 26 "Multi Service Cable CAB36"           "MS_Al36"         0.515    198      CAB
+* 27 "Ruggedized ribbons"                  "T_RuggRibbon"    0.086    312      CAB
+* 28 "HV/LVCAC Binder connectors"          "Copper"          0.355     66      ELE
+* 29 "HV/LVCAC Binder connectors"          "Epoxy"           1.574     66      ELE
 ....................................................................................
 ====================================================================================
 
@@ -872,30 +938,33 @@ The difference 'long tail'-1x'short tail' is included here (Short tail in TOB_CO
 # "TOB endflange connectors Layer 6"       "TOB_rib6"     6242.9729  2714.3361
 * 1 "SCCAC PCB board"                      "T_G10"           0.200      8      ELE
 * 2 "SCCAC PCB copper traces"              "Copper"          0.0054     8      ELE
-* 3 "SCCAC NAiS connectors"                "Copper"          0.177      8      ELE
-* 4 "SCCAC NAiS connectors"                "Epoxy"           0.781      8      ELE
-* 5 "SCLAC PCB board"                      "T_G10"           0.211      8      ELE
-* 6 "SCLAC PCB copper traces"              "Copper"          0.0068     8      ELE
-* 7 "SCLAC NAiS connectors"                "Copper"          0.127      8      ELE
-* 8 "SCLAC NAiS connectors"                "Epoxy"           0.927      8      ELE
-* 9 "DOHM wires Cu"                        "Copper"          1.814      8.404  CAB
-* 10 "DOHM wires Al"                       "Aluminium"       1.100      8.404  CAB
-* 11 "DOHM wires PEI"                      "Silicone_Gel"    1.809      8.404  CAB
-* 12 "DOHM wires SILTEM"                   "Polyethylene"    7.579      8.404  CAB
-* 13 "DOHM wires Polyamide"                "Polyethylene"   10.258      8.404  CAB
-* 14 "SCCAC screw holder"                  "T_G10"           0.379      8      SUP
-* 15 "SCCAC screws"                        "Brass"           0.202      8      SUP
-* 16 "SCCAC,SCLAC,DOHM glue"               "Epoxy"           0.404      8      SUP
-* 17 "SCCAC,SCLAC,DOHM Solder Paste"       "BGA"             0.038      8      SUP
-* 18 "Output cable Sleeve"                 "Polyethylene"    0.642     74      CAB
-* 19 "CCUM wires Cu"                       "Copper"          0.176    148      CAB
-* 20 "BUS wires Cu"                        "Copper"          0.204     74      CAB
-* 21 "BUS wires SILTEM"                    "Polyethylene"    0.531     74      CAB
-* 22 "Output cable Shield"                 "Aluminium"       0.089     74      CAB
-* 23 "Output cable Sleeve"                 "Polyethylene"    0.642     74      CAB
-* 24 "Input and Output cable Tie"          "T_Kapton"        0.098     74      CAB
-* 25 "Input and Output cable Solder Paste" "BGA"             0.038     74      CAB
-* 26 "SCCAC glue"                          "Epoxy"           0.202     74      SUP
+* 3 "SCLAC PCB board"                      "T_G10"           0.211      8      ELE
+* 4 "SCLAC PCB copper traces"              "Copper"          0.0068     8      ELE
+* 5 "SCCAC/SCLAC NAiS connectors"          "Copper"          0.304      8      ELE
+* 6 "SCCAC/SCLAC NAiS connectors"          "Epoxy"           1.708      8      ELE
+* 7 "DOHM wires Cu"                        "Copper"          1.814      8.404  CAB
+* 8 "DOHM wires Al"                        "Aluminium"       1.100      8.404  CAB
+* 9 "DOHM wires PEI"                       "Silicone_Gel"    1.809      8.404  CAB
+* 10 "DOHM wires SILTEM"                   "Polyethylene"    7.579      8.404  CAB
+* 11 "DOHM wires Polyamide"                "Polyethylene"   10.258      8.404  CAB
+* 12 "SCCAC screw holder"                  "T_G10"           0.379      8      SUP
+* 13 "SCCAC screws"                        "Brass"           0.202      8      SUP
+* 14 "SCCAC,SCLAC,DOHM glue"               "Epoxy"           0.404      8      SUP
+* 15 "SCCAC,SCLAC,DOHM Solder Paste"       "BGA"             0.038      8      SUP
+* 16 "Output cable Sleeve"                 "Polyethylene"    0.642     74      CAB
+* 17 "CCUM wires Cu"                       "Copper"          0.176    148      CAB
+* 18 "BUS wires Cu"                        "Copper"          0.204     74      CAB
+* 19 "BUS wires SILTEM"                    "Polyethylene"    0.531     74      CAB
+* 20 "Output cable Shield"                 "Aluminium"       0.089     74      CAB
+* 21 "Output cable Sleeve"                 "Polyethylene"    0.642     74      CAB
+* 22 "Input and Output cable Tie"          "T_Kapton"        0.098     74      CAB
+* 23 "Input and Output cable Solder Paste" "BGA"             0.038     74      CAB
+* 24 "SCCAC glue"                          "Epoxy"           0.202     74      SUP
+* 25 "Multi Service Cable CAB48"           "MS_Al48"         0.567      0      CAB
+* 26 "Multi Service Cable CAB36"           "MS_Al36"         0.515    222      CAB
+* 27 "Ruggedized ribbons"                  "T_RuggRibbon"    0.086    354      CAB
+* 28 "HV/LVCAC Binder connectors"          "Copper"          0.355     74      ELE
+* 29 "HV/LVCAC Binder connectors"          "Epoxy"           1.574     74      ELE
 ....................................................................................
 ====================================================================================
 
