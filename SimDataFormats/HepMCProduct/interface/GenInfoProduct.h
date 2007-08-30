@@ -18,7 +18,7 @@ namespace edm {
     virtual ~GenInfoProduct() { }
     
     const double cross_section() const {return cs_ ; }
-    const double external_cross_section() const {return cs_ ; }
+    const double external_cross_section() const {return cs2_ ; }
     const double filter_efficiency() const {return fe_ ; }
  
     void set_cross_section(double cross_section) { cs_ = cross_section ; }
