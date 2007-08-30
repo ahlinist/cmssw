@@ -13,11 +13,18 @@ class VertexFilter {
    */
 
    public:
+     /**
+      *  \paramname dmin minimum distance primary vtx - secondary vtx
+      *  \paramname dmax maximum distance primary vtx - secondary vtx
+      *  \paramnane rdmin minimum reduced distance (primary - secondary)
+      */
      VertexFilter ( 
          const TransientTrackBuilder * builder = 0,
          float vertexV0MassWindow=0.05,
          float vertexMassMax=6.5, int vertexMultiplicityMin=2,
-         float vertexFracPV=0.65 );
+         float vertexFracPV=0.65,
+         float dmin=0.01, float dmax=2.5,
+         float rdmin=3.0 );
 
      /**
       *  this sets the primary vertex
@@ -69,6 +76,9 @@ class VertexFilter {
      float vertexMassMax_;
      unsigned vertexMultiplicityMin_;
      float vertexFracPV_;
+     float dmin_;
+     float dmax_;
+     float rdmin_;
 };
 
 #endif

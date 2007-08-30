@@ -23,10 +23,11 @@ namespace {
 VertexFilter::VertexFilter( 
          const TransientTrackBuilder * builder,
          float vertexV0MassWindow,
-         float vertexMassMax, int vertexMultiplicityMin, float vertexFracPV ) :
+         float vertexMassMax, int vertexMultiplicityMin, float vertexFracPV,
+         float dmin, float dmax, float rdmin ) :
   builder_ ( builder ), v0Checker_ ( vertexV0MassWindow), 
   vertexMassMax_(vertexMassMax), vertexMultiplicityMin_(vertexMultiplicityMin), 
-  vertexFracPV_(vertexFracPV)
+  vertexFracPV_(vertexFracPV), dmin_ ( dmin ), dmax_ ( dmax ), rdmin_ (rdmin)
 {}
 
 void VertexFilter::setPrimary ( const reco::Vertex & primary )
@@ -42,8 +43,9 @@ const reco::Vertex & VertexFilter::primaryVertex() const
 bool VertexFilter::checkDistance ( const reco::Vertex & vertex ) const
 {
   double dt = distance ( vertex );
-  bool ret = ( dt > 0.01 && dt < 2.5 );
-  if (!ret) LogDebug ("") << "distance from primary: 0.01 < " << dt << " < 2.5 " << toString(ret);
+  bool ret = ( dt > dmin_ && dt < dmax_ );
+  if (!ret) LogDebug ("") << "distance from primary: " << dmin_ 
+                          << "<" << dt << "<" << dmax_ << toString(ret);
   return ret;
 }
 
@@ -57,10 +59,10 @@ double VertexFilter::distance ( const reco::Vertex & vertex ) const
 bool VertexFilter::checkReducedDistance ( const reco::Vertex & vertex ) const
 {
   double rd=reducedDistance ( vertex );
-  bool ret=(rd>3.0);
+  bool ret=(rd>rdmin_);
   if ( !ret )
   {
-    LogDebug ("") << "reduced distance: " << rd << " > 3.0 " << toString(ret);
+    LogDebug ("") << "reduced distance: " << rd << ">" << rdmin_ << toString(ret);
   }
   return ret;
 }
