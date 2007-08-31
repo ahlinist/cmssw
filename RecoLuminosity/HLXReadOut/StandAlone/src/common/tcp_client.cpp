@@ -104,7 +104,7 @@ int main(int argc, char ** argv)
     unsigned char *rData = new unsigned char[1000000];
     unsigned short port = 50002;
 
-restart_client:
+//restart_client:
 
     // Constructor connects to the TCP/IP loopback
     // Server must be active for this to run
@@ -190,8 +190,8 @@ restart_client:
 		InterpretSection(localSection);
 		z++;
 		localCount = 0;
-                shutdown(tcp_socket,SHUT_RDWR);
-                goto restart_client;
+                //shutdown(tcp_socket,SHUT_RDWR);
+                //goto restart_client;
 	      }
 	    }
 	  }

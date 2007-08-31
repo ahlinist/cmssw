@@ -5,12 +5,14 @@
 #include <fstream>
 #include <sstream>
 #include <signal.h>
+#include <unistd.h>
 
 #include "ICException.hh"
-#include "ICUtilityToolbox.hh"
+#include "HardwareAccessException.hh"
+#include "MemoryAllocationException.hh"
 
-// NibbleCollector class
-#include "TestDistributor.hh"
+// HLX interface classes
+#include "OracleDistributor.hh"
 #include "NibbleCollector.hh"
 #include "SectionCollector.hh"
 
@@ -25,66 +27,70 @@ using namespace std;
 using namespace HCAL_HLX;
 using namespace ICCoreUtils;
 
-#define NUM_HLXS 13
+#define NUM_HLXS 1
 
 int main(int argc, char ** argv) {
   signal(SIGINT,CtrlC);
   SectionCollector *lSectionCollector = 0;
   NibbleCollector *lNibbleCollector = 0;
-  TestDistributor *lTestDistributor = 0;
-  try {
+  OracleDistributor *lOracleDistributor = 0;
 
-cout << "NUM HLXS " << dec << NUM_HLXS << endl;
-    lSectionCollector = new SectionCollector(3564, //3564, // Num bunches
-					     3,    // Num nibbles per section
-					     4096,  //280,  // Num orbits in lumi nibble
-					     NUM_HLXS);   // Num HLXs
+  // Get the run number
+  if ( argc != 2 ) {
+    cerr << "Expected 1 argument but found " << argc-1 << endl;
+    return 1;
+  }
+  u32 runNumber = atol(argv[1]);
+
+  try {
+    // send approximately every 10 seconds
+    lSectionCollector = new SectionCollector(300, // Num bunches
+					     10,  // Num nibbles per section
+					     1,   // Num orbits in lumi nibble
+					     NUM_HLXS);  // Num HLXs
+    // Set the run number
+    lSectionCollector->SetRunNumber(runNumber);
     lNibbleCollector = new NibbleCollector(NUM_HLXS);
-    lTestDistributor = new TestDistributor;
     lNibbleCollector->AttachSectionCollector(lSectionCollector);
-    lSectionCollector->AttachDistributor(lTestDistributor);
+    lOracleDistributor = new OracleDistributor;
+    lSectionCollector->AttachDistributor(lOracleDistributor);
 
     int startTime, tempTime, interTime = 0;
     time((time_t*)&startTime);
     tempTime=startTime;
 
     while (gContinue) {
+      Sleep(1);
       lNibbleCollector->RunServiceHandler();
       time((time_t*)&tempTime);
       if ( tempTime != interTime ) {
 	cout << endl << tempTime-startTime << endl;
 	cout << "Good packet count: " << lNibbleCollector->GetNumGoodPackets() << endl;
 	cout << "Bad packet count: " << lNibbleCollector->GetNumBadPackets() << endl;
-
-	cout << "Good ET nibble count: " << lNibbleCollector->GetNumGoodETSumNibbles() << endl;
-	cout << "Bad ET nibble count: " << lNibbleCollector->GetNumBadETSumNibbles() << endl;
-	cout << "Good LHC nibble count: " << lNibbleCollector->GetNumGoodLHCNibbles() << endl;
-	cout << "Bad LHC nibble count: " << lNibbleCollector->GetNumBadLHCNibbles() << endl;
-	cout << "Good occupancy nibble count: " << lNibbleCollector->GetNumGoodOccupancyNibbles() << endl;
-	cout << "Bad occupancy nibble count: " << lNibbleCollector->GetNumBadOccupancyNibbles() << endl;
-	
-        cout << "Good section count:" << lSectionCollector->GetNumCompleteLumiSections() << endl;
+	cout << "Good et nibble count: " << lNibbleCollector->GetNumGoodETSumNibbles() << endl;
+	cout << "Bad et nibble count: " << lNibbleCollector->GetNumBadETSumNibbles() << endl;
+	cout << "Good section count:" << lSectionCollector->GetNumCompleteLumiSections() << endl;
 	cout << "Bad section count: " << lSectionCollector->GetNumIncompleteLumiSections() << endl;
-	cout << "Good section data count: " << lTestDistributor->GetNumGoodSections() << endl;
-	cout << "Bad section data count: " << lTestDistributor->GetNumBadSections() << endl;
+	cout << "Lost section count: " << lSectionCollector->GetNumLostLumiSections() << endl;
 	cout << "Lost packet count: " << lNibbleCollector->GetNumLostPackets() << endl;
 	cout << "Total data volume: " << lNibbleCollector->GetTotalDataVolume() << endl;
 	cout << "Average data rate (Mb/s): " << (double)lNibbleCollector->GetTotalDataVolume()*8.0/(1024.0*1024.0*(double)(tempTime-startTime)) << endl;
 	interTime = tempTime;
       }
-      Sleep(1);
+      usleep(1000);
     }
-
+        
   }catch(ICException & aExc){
-    cerr<<aExc.what()<<endl;
+    cerr << aExc.what() << endl;
   }catch(std::exception & aExc){
-    std::cerr<<aExc.what()<<std::endl;
+    cerr << aExc.what()<<std::endl;
   }catch(...){
-    std::cerr<<"Unknown exception caught."<<std::endl;
+    cerr <<"Unknown exception caught."<<std::endl;
   }
 
   delete lNibbleCollector;
   delete lSectionCollector;
-  delete lTestDistributor;
+  delete lOracleDistributor;
+    
   return 0;
 }

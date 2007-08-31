@@ -17,7 +17,6 @@
 #include "DIPDistributor.hh"
 #include "TCPDistributor.hh"
 #include "DebugCoutDistributor.hh"
-#include "DebugFileDistributor.hh"
 #include "GIFDistributor.hh"
 #include "WedgeGIFDistributor.hh"
 
@@ -35,11 +34,11 @@ using namespace std;
 using namespace HCAL_HLX;
 using namespace ICCoreUtils;
 
-#define NUM_HLXS 13
-#define SHORT_LENGTH 3 //50 //10 //3
-#define LONG_LENGTH 30 //50 //10 //45
-#define NUM_BUNCHES 3564
-#define NUM_ORBITS 4096
+#define NUM_HLXS 1
+#define SHORT_LENGTH 1000
+#define LONG_LENGTH 10000
+#define NUM_BUNCHES 300 //3564
+#define NUM_ORBITS 1 //4096
 
 int main(int argc, char ** argv) {
   signal(SIGINT,CtrlC);
@@ -53,7 +52,6 @@ int main(int argc, char ** argv) {
   TCPDistributor *lTCPDistributor = 0;
   DebugCoutDistributor *lDebugCoutDistributor = 0;
   GIFDistributor *lGIFDistributor = 0;
-  DebugFileDistributor *lDebugFileDistributor = 0;
   WedgeGIFDistributor *lWedgeGIFDistributor[NUM_HLXS] = {0};
 
   // Get the run number
@@ -74,7 +72,6 @@ int main(int argc, char ** argv) {
 						 LONG_LENGTH,   // Num nibbles per section
 						 NUM_ORBITS,   // Num orbits in lumi nibble
 						 NUM_HLXS);  // Num HLXs
-
     // Set the run number
     lSectionCollectorShort->SetRunNumber(runNumber);
     lSectionCollectorLong->SetRunNumber(runNumber);
@@ -84,20 +81,18 @@ int main(int argc, char ** argv) {
     lROOTDistributor = new ROOTDistributor(runNumber);
     lSectionCollectorLong->AttachDistributor(lROOTDistributor);
     lDebugCoutDistributor = new DebugCoutDistributor;
-    lDebugFileDistributor = new DebugFileDistributor("debug.txt");
     lSectionCollectorLong->AttachDistributor(lDebugCoutDistributor);
-    lSectionCollectorLong->AttachDistributor(lDebugFileDistributor);
 
     lGIFDistributor = new GIFDistributor;
-    lSectionCollectorShort->AttachDistributor(lGIFDistributor);
+    lSectionCollectorLong->AttachDistributor(lGIFDistributor);
     lDIPDistributor = new DIPDistributor;
-    lSectionCollectorShort->AttachDistributor(lDIPDistributor);
+    lSectionCollectorLong->AttachDistributor(lDIPDistributor);
     lTCPDistributor = new TCPDistributor;
-    lSectionCollectorShort->AttachDistributor(lTCPDistributor);
-    //for ( u32 i = 0 ; i != NUM_HLXS ; i++ ) {
-    //  lWedgeGIFDistributor[i] = new WedgeGIFDistributor(i);  
-    //  lSectionCollectorLong->AttachDistributor(lWedgeGIFDistributor[i]);
-    // }
+    lSectionCollectorLong->AttachDistributor(lTCPDistributor);
+    for ( u32 i = 0 ; i != NUM_HLXS ; i++ ) {
+      lWedgeGIFDistributor[i] = new WedgeGIFDistributor(i);
+      lSectionCollectorLong->AttachDistributor(lWedgeGIFDistributor[i]);
+    }
 
     lNibbleCollector = new NibbleCollector(NUM_HLXS);
     lNibbleCollector->AttachSectionCollector(lSectionCollectorShort);
@@ -112,13 +107,11 @@ int main(int argc, char ** argv) {
       Sleep(1);
       lNibbleCollector->RunServiceHandler();
       time((time_t*)&tempTime);
-      if ( tempTime-interTime >= 1 ) {
+      if ( tempTime-interTime >= 5 ) {
 	cout << endl << endl;
 	cout << "-------------------------------------------------------" << endl;
 	cout << "Debug Information (time = " << dec << tempTime-startTime << "s)" << endl;
 	cout << "-------------------------------------------------------" << endl;
-	cout << "Write buffer pointer: " << lNibbleCollector->GetWriteBufferPointer() << endl;
-	cout << "Read buffer pointer: " << lNibbleCollector->GetReadBufferPointer() << endl;
 	cout << "Good packet count: " << lNibbleCollector->GetNumGoodPackets() << endl;
 	cout << "Bad packet count: " << lNibbleCollector->GetNumBadPackets() << endl;
 	cout << "Good et nibble count: " << lNibbleCollector->GetNumGoodETSumNibbles() << endl;
@@ -127,14 +120,14 @@ int main(int argc, char ** argv) {
 	cout << "Bad occupancy nibble count: " << lNibbleCollector->GetNumBadOccupancyNibbles() << endl;
 	cout << "Good LHC nibble count: " << lNibbleCollector->GetNumGoodLHCNibbles() << endl;
 	cout << "Bad LHC nibble count: " << lNibbleCollector->GetNumBadLHCNibbles() << endl;
-	cout << "Good section count:" << lSectionCollectorShort->GetNumCompleteLumiSections() << endl;
-	cout << "Bad section count: " << lSectionCollectorShort->GetNumIncompleteLumiSections() << endl;
-	cout << "Lost section count: " << lSectionCollectorShort->GetNumLostLumiSections() << endl;
+	cout << "Good section count:" << lSectionCollectorLong->GetNumCompleteLumiSections() << endl;
+	cout << "Bad section count: " << lSectionCollectorLong->GetNumIncompleteLumiSections() << endl;
+	cout << "Lost section count: " << lSectionCollectorLong->GetNumLostLumiSections() << endl;
 	cout << "Lost packet count: " << lNibbleCollector->GetNumLostPackets() << endl;
 	cout << "Total data volume: " << lNibbleCollector->GetTotalDataVolume() << endl;
 	cout << "Average data rate (Mb/s): " << (double)lNibbleCollector->GetTotalDataVolume()*8.0/(1024.0*1024.0*(double)(tempTime-startTime)) << endl;
 	interTime = tempTime;
-	}
+      }
     }
         
   }catch(ICException & aExc){
@@ -151,18 +144,12 @@ int main(int argc, char ** argv) {
   delete lDIPDistributor;
   delete lDebugCoutDistributor;
   delete lTCPDistributor;
-  delete lGIFDistributor;
+  delete lROOTDistributor;
   delete lOracleDistributor;
-  delete lDebugFileDistributor;
+  delete lGIFDistributor;
   for ( u32 i = 0 ; i != NUM_HLXS ; i++ ) {
     delete lWedgeGIFDistributor[i];
   }
-
-  /*delete lDIPDistributor;
-  delete lROOTDistributor;
-  delete lTCPDistributor;
-  delete lDebugCoutDistributor;
-  delete lGIFDistributor;*/
     
   return 0;
 }

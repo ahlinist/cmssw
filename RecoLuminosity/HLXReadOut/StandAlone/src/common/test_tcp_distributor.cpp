@@ -5,12 +5,14 @@
 #include <fstream>
 #include <sstream>
 #include <signal.h>
+#include <unistd.h>
 
 #include "ICException.hh"
-#include "ICUtilityToolbox.hh"
+#include "HardwareAccessException.hh"
+#include "MemoryAllocationException.hh"
 
 // NibbleCollector class
-#include "TestDistributor.hh"
+#include "TCPDistributor.hh"
 #include "NibbleCollector.hh"
 #include "SectionCollector.hh"
 
@@ -25,24 +27,17 @@ using namespace std;
 using namespace HCAL_HLX;
 using namespace ICCoreUtils;
 
-#define NUM_HLXS 13
-
 int main(int argc, char ** argv) {
   signal(SIGINT,CtrlC);
-  SectionCollector *lSectionCollector = 0;
-  NibbleCollector *lNibbleCollector = 0;
-  TestDistributor *lTestDistributor = 0;
   try {
-
-cout << "NUM HLXS " << dec << NUM_HLXS << endl;
-    lSectionCollector = new SectionCollector(3564, //3564, // Num bunches
-					     3,    // Num nibbles per section
-					     4096,  //280,  // Num orbits in lumi nibble
-					     NUM_HLXS);   // Num HLXs
-    lNibbleCollector = new NibbleCollector(NUM_HLXS);
-    lTestDistributor = new TestDistributor;
+    SectionCollector *lSectionCollector = new SectionCollector(300, // Num bunches
+							       5,   // Num nibbles per section
+							       1,   // Num orbits in lumi nibble
+							       1);  // Num HLXs
+    NibbleCollector *lNibbleCollector = new NibbleCollector(1);
     lNibbleCollector->AttachSectionCollector(lSectionCollector);
-    lSectionCollector->AttachDistributor(lTestDistributor);
+    TCPDistributor *lTCPDistributor = new TCPDistributor("127.0.0.1",50002);
+    lSectionCollector->AttachDistributor(lTCPDistributor);
 
     int startTime, tempTime, interTime = 0;
     time((time_t*)&startTime);
@@ -55,36 +50,27 @@ cout << "NUM HLXS " << dec << NUM_HLXS << endl;
 	cout << endl << tempTime-startTime << endl;
 	cout << "Good packet count: " << lNibbleCollector->GetNumGoodPackets() << endl;
 	cout << "Bad packet count: " << lNibbleCollector->GetNumBadPackets() << endl;
-
-	cout << "Good ET nibble count: " << lNibbleCollector->GetNumGoodETSumNibbles() << endl;
-	cout << "Bad ET nibble count: " << lNibbleCollector->GetNumBadETSumNibbles() << endl;
-	cout << "Good LHC nibble count: " << lNibbleCollector->GetNumGoodLHCNibbles() << endl;
-	cout << "Bad LHC nibble count: " << lNibbleCollector->GetNumBadLHCNibbles() << endl;
-	cout << "Good occupancy nibble count: " << lNibbleCollector->GetNumGoodOccupancyNibbles() << endl;
-	cout << "Bad occupancy nibble count: " << lNibbleCollector->GetNumBadOccupancyNibbles() << endl;
-	
-        cout << "Good section count:" << lSectionCollector->GetNumCompleteLumiSections() << endl;
+	cout << "Good nibble count: " << lNibbleCollector->GetNumGoodETSumNibbles() << endl;
+	cout << "Bad nibble count: " << lNibbleCollector->GetNumBadETSumNibbles() << endl;
+	cout << "Good section count:" << lSectionCollector->GetNumCompleteLumiSections() << endl;
 	cout << "Bad section count: " << lSectionCollector->GetNumIncompleteLumiSections() << endl;
-	cout << "Good section data count: " << lTestDistributor->GetNumGoodSections() << endl;
-	cout << "Bad section data count: " << lTestDistributor->GetNumBadSections() << endl;
+	cout << "Lost section count: " << lSectionCollector->GetNumLostLumiSections() << endl;
 	cout << "Lost packet count: " << lNibbleCollector->GetNumLostPackets() << endl;
 	cout << "Total data volume: " << lNibbleCollector->GetTotalDataVolume() << endl;
 	cout << "Average data rate (Mb/s): " << (double)lNibbleCollector->GetTotalDataVolume()*8.0/(1024.0*1024.0*(double)(tempTime-startTime)) << endl;
 	interTime = tempTime;
       }
-      Sleep(1);
+      usleep(1000);
     }
 
   }catch(ICException & aExc){
-    cerr<<aExc.what()<<endl;
+    // doesn't work if you print the exception!
+    cerr << aExc.what() << endl;
   }catch(std::exception & aExc){
     std::cerr<<aExc.what()<<std::endl;
   }catch(...){
     std::cerr<<"Unknown exception caught."<<std::endl;
   }
 
-  delete lNibbleCollector;
-  delete lSectionCollector;
-  delete lTestDistributor;
   return 0;
 }
