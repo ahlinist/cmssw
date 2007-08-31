@@ -19,11 +19,11 @@ using namespace std;
 using namespace HCAL_HLX;
 
 #define XDAQ_PAGE_HEADER "HCAL HLX Supervisor"
-#define NUM_HLXS 1
-#define LONG_LUMI_NIBBLE 8192
-#define SHORT_LUMI_NIBBLE 512
-#define NUM_BUNCHES 200
-#define NUM_ORBITS 300
+#define NUM_HLXS 13
+#define LONG_LUMI_NIBBLE 50 //256
+#define SHORT_LUMI_NIBBLE 6 //3
+#define NUM_BUNCHES 3564
+#define NUM_ORBITS 4096
 
 // Standard instansiator for HLXReadoutSupervisor
 XDAQ_INSTANTIATOR_IMPL(HLXReadoutSupervisor)
@@ -43,6 +43,8 @@ HLXReadoutSupervisor::HLXReadoutSupervisor(xdaq::ApplicationStub * s) throw (xda
     mOracleDistributor=0;
     mGIFDistributor=0;
     mDIPDistributor=0;
+    mROOTDistributor=0;
+    mTCPDistributor=0;
     mDebugCoutDistributor=0;
     mWorkerThreadContinue = true;
 
@@ -68,9 +70,14 @@ HLXReadoutSupervisor::HLXReadoutSupervisor(xdaq::ApplicationStub * s) throw (xda
     mOracleDistributor = new OracleDistributor;
     mGIFDistributor = new GIFDistributor;
     mDebugCoutDistributor = new DebugCoutDistributor;
+    mTCPDistributor = new TCPDistributor;
+    mROOTDistributor = new ROOTDistributor;
 
     mSectionCollectorShort->AttachDistributor(mDIPDistributor);
     mSectionCollectorShort->AttachDistributor(mGIFDistributor);
+
+    mSectionCollectorLong->AttachDistributor(mROOTDistributor);
+    mSectionCollectorLong->AttachDistributor(mTCPDistributor);
     mSectionCollectorLong->AttachDistributor(mDebugCoutDistributor);
     mSectionCollectorLong->AttachDistributor(mOracleDistributor);
 
@@ -149,6 +156,22 @@ HLXReadoutSupervisor::~HLXReadoutSupervisor() {
     mThreadId=0;
     delete mNibbleCollector;
     mNibbleCollector=0;
+    delete mSectionCollectorLong;
+    mSectionCollectorLong = 0;
+    delete mSectionCollectorShort;
+    mSectionCollectorShort = 0;
+    delete mDIPDistributor;
+    mDIPDistributor = 0;
+    delete mOracleDistributor;
+    mOracleDistributor = 0;
+    delete mGIFDistributor;
+    mGIFDistributor = 0;
+    delete mDebugCoutDistributor;
+    mDebugCoutDistributor = 0;
+    delete mTCPDistributor;
+    mTCPDistributor = 0;
+    delete mROOTDistributor;
+    mROOTDistributor = 0;
   } catch(ICException &aExc) {
     XCEPT_RAISE(xdaq::exception::Exception,aExc.what());
   } catch(xgi::exception::Exception &e) {

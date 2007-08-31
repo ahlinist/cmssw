@@ -1,11 +1,11 @@
 <?xml version='1.0'?>
 <xc:Partition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:xc="http://xdaq.web.cern.ch/xdaq/xsd/2004/XMLConfiguration-30">
-	<xc:Context url="http://phy-lumi0:54125">
+	<xc:Context url="http://vmepcs2f17-18:54125">
 	  <xc:Application class="HLXReadoutSupervisor" id="50" network="local">
 	    <properties xmlns="urn:xdaq-application:HLXReadoutSupervisor" xsi:type="soapenc:Struct">
 	      <configFile xsi:type="xsd:string">${XDAQ_ROOT}/lumi/HF/HLXReadoutXDAQ/config/default.cfg</configFile>
 	    </properties>
 	  </xc:Application>
-	  <xc:Module>${XDAQ_ROOT}/lumi/HF/HLXReadoutXDAQ/lib/${XDAQ_OS}/${XDAQ_PLATFORM}/libHLXReadoutXDAQ.so</xc:Module>
+	  <xc:Module>${XDAQ_ROOT}/RecoLuminosity/HLXReadOut/XDAQ/lib/${XDAQ_OS}/${XDAQ_PLATFORM}/libHLXReadoutXDAQ.so</xc:Module>
 	</xc:Context>
 </xc:Partition>

@@ -50,6 +50,8 @@
 #include "DebugCoutDistributor.hh"
 #include "GIFDistributor.hh"
 #include "OracleDistributor.hh"
+#include "ROOTDistributor.hh"
+#include "TCPDistributor.hh"
 
 //#include "HLXInterface.hh"
 
@@ -104,12 +106,16 @@ using namespace HCAL_HLX;
 
     // Collector instances
     NibbleCollector *mNibbleCollector;
+
     SectionCollector *mSectionCollectorShort;
     SectionCollector *mSectionCollectorLong;
+
     DIPDistributor *mDIPDistributor;
     DebugCoutDistributor *mDebugCoutDistributor;
     GIFDistributor *mGIFDistributor;
     OracleDistributor *mOracleDistributor;
+    ROOTDistributor *mROOTDistributor;
+    TCPDistributor *mTCPDistributor;
 
 
 

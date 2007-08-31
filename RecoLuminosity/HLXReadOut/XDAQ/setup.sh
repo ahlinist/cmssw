@@ -1,11 +1,11 @@
 #!/bin/sh
 
 # XDAQ basics
-export XDAQ_ROOT=$HOME/TriDAS
-export XDAQ_OS=linux
-export XDAQ_PLATFORM=x86
+#export XDAQ_ROOT=$HOME/TriDAS
+#export XDAQ_OS=linux
+#export XDAQ_PLATFORM=x86
 
-export LD_LIBRARY_PATH
+#export LD_LIBRARY_PATH
 export LD_LIBRARY_PATH="./:$XDAQ_ROOT/daq/xdaq/lib/linux/x86/:$XDAQ_ROOT/daq/extern/xerces/linuxx86/lib:$LD_LIBRARY_PATH"
 export LD_LIBRARY_PATH="$XDAQ_ROOT/daq/xtuple/lib/linux/x86/:$LD_LIBRARY_PATH"
 export LD_LIBRARY_PATH="$XDAQ_ROOT/daq/extern/asyncresolv/linuxx86/lib:$LD_LIBRARY_PATH"
