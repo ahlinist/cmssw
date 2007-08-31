@@ -16,7 +16,6 @@
 #include "RecoVertex/VertexPrimitives/interface/TransientVertex.h"
 #include "RecoVertex/VertexTools/interface/VertexDistanceXY.h"
 // #include "RecoVertex/VertexTools/interface/VertexDistance3D.h"
-#include "RecoVertex/AdaptiveVertexFit/interface/AdaptiveVertexFitter.h"
 
 #include "DataFormats/GeometryCommonDetAlgo/interface/Measurement1D.h"
 #include "CLHEP/Vector/LorentzVector.h"
@@ -128,84 +127,90 @@ reco::CombinedSVTagInfo combsv::CombinedSVAlgorithm::tag ( const reco::Vertex & 
                                     const vector < reco::TransientTrack > & itracks,
                                     const JetTracksAssociationRef & jtaRef )
 {
-  LogDebug("") << "Tagging with pv=" << primVertex.position() << ", jet="
-               << jet.px() << "," << jet.py() << "," << jet.pz()
-               << " and " << itracks.size() << " tracks.";
-  /**
-   * This is the main tagging routine for the combined b-tagging
-   * algorithm
-   */
+  try  {
+    LogDebug("") << "Tagging with pv=" << primVertex.position() << ", jet="
+                 << jet.px() << "," << jet.py() << "," << jet.pz()
+                 << " and " << itracks.size() << " tracks.";
+    /**
+     * This is the main tagging routine for the combined b-tagging
+     * algorithm
+     */
 
-  if ( ! ( filters_.jetFilter() ( jet ) ) )
-  {
-    // did not pass the jet filter
+    if ( ! ( filters_.jetFilter() ( jet ) ) )
+    {
+      // did not pass the jet filter
+      reco::TaggingVariableList x;
+      return reco::CombinedSVTagInfo ( x, -1., jtaRef );
+    }
+
+    // adjust all builders and filters to the new jet
+    adjust ( primVertex, jet );
+
+    // filter tracks
+    std::vector < CombinedTrack > etracks;
+    std::vector < reco::TransientTrack > tracks;
+    for ( vector< reco::TransientTrack >::const_iterator i=itracks.begin();
+          i!=itracks.end() ; ++i )
+    {
+      combsv::CombinedTrack t = trackInfoBuilder_.build ( *i );
+      // if ( filters_.trackFilter() ( t, trackIpSignificanceMin2DMin_ ) )
+      if ( filters_.trackFilter() ( t, false ) )
+      {
+        etracks.push_back ( t );
+        tracks.push_back ( *i );
+      }
+    }
+
+    LogDebug("") << tracks.size() << " out of "
+                 << itracks.size() << " tracks survived track filter.";
+
+    pair < reco::btag::Vertices::VertexType, vector < combsv::CombinedVertex > > svtces = 
+      btagRector_.vertices ( tracks, etracks, filters_.vertexFilter(), vtxBuilder_ );
+
+    reco::btag::Vertices::VertexType vertexType = svtces.first;
+    const vector < combsv::CombinedVertex > & vtces = svtces.second;
+
+    /*
+    if ( vertexType != reco::btag::Vertices::RecoVertex )
+    {
+      // the filter is different now, so redo the tracks
+      etracks=getSecondaryTracks ( vtces );
+      tracks.clear();
+      for ( vector< combsv::CombinedTrack >::const_iterator i=etracks.begin(); i!=etracks.end() ; ++i )
+      { 
+        tracks.push_back ( *i );
+      }
+    }
+
+    LogDebug("") << "we have " << vtces.size() << " vertices of type "
+                 << reco::btag::Vertices::name ( vertexType ) << " and a total of "
+                 << etracks.size() << " secondary tracks.";
+                 */
+
+    /* edm::LogError("CombinedSVAlgorithm" ) <<
+      "createJetInfo different API. Compute both hard-assigned and soft-assigned energies!";
+      */
+    combsv::CombinedJet cjet = createJetInfo ( etracks, vtces, vertexType );
+
+    combsv::CombinedData data ( primVertex, jet, vtces, vertexType, 
+        tracks, etracks, cjet, jet.pt(), jet.eta() );
+
+    /* 
+     * So now we can compute the tagging variables
+    */
+    reco::TaggingVariableList singleVarVector = TaggingVariablesComputer::compute 
+         ( variables_, data );
+
+    /*
+     * finally compute the discriminator computer
+     */
+    double d = discriminatorComputer_->compute ( singleVarVector, vertexType );
+    return reco::CombinedSVTagInfo ( singleVarVector, d, jtaRef );
+  } catch ( ... ) {
+    edm::LogWarning("CombinedSVAlgorithm" ) << "Unknown exception! Will return -1 tag!";
     reco::TaggingVariableList x;
     return reco::CombinedSVTagInfo ( x, -1., jtaRef );
   }
-
-  // adjust all builders and filters to the new jet
-  adjust ( primVertex, jet );
-
-  // filter tracks
-  std::vector < CombinedTrack > etracks;
-  std::vector < reco::TransientTrack > tracks;
-  for ( vector< reco::TransientTrack >::const_iterator i=itracks.begin();
-        i!=itracks.end() ; ++i )
-  {
-    combsv::CombinedTrack t = trackInfoBuilder_.build ( *i );
-    // if ( filters_.trackFilter() ( t, trackIpSignificanceMin2DMin_ ) )
-    if ( filters_.trackFilter() ( t, false ) )
-    {
-      etracks.push_back ( t );
-      tracks.push_back ( *i );
-    }
-  }
-
-  LogDebug("") << tracks.size() << " out of "
-               << itracks.size() << " tracks survived track filter.";
-
-  pair < reco::btag::Vertices::VertexType, vector < combsv::CombinedVertex > > svtces = 
-    btagRector_.vertices ( tracks, etracks, filters_.vertexFilter(), vtxBuilder_ );
-
-  reco::btag::Vertices::VertexType vertexType = svtces.first;
-  const vector < combsv::CombinedVertex > & vtces = svtces.second;
-
-  /*
-  if ( vertexType != reco::btag::Vertices::RecoVertex )
-  {
-    // the filter is different now, so redo the tracks
-    etracks=getSecondaryTracks ( vtces );
-    tracks.clear();
-    for ( vector< combsv::CombinedTrack >::const_iterator i=etracks.begin(); i!=etracks.end() ; ++i )
-    { 
-      tracks.push_back ( *i );
-    }
-  }
-
-  LogDebug("") << "we have " << vtces.size() << " vertices of type "
-               << reco::btag::Vertices::name ( vertexType ) << " and a total of "
-               << etracks.size() << " secondary tracks.";
-               */
-
-  /* edm::LogError("CombinedSVAlgorithm" ) <<
-    "createJetInfo different API. Compute both hard-assigned and soft-assigned energies!";
-    */
-  combsv::CombinedJet cjet = createJetInfo ( etracks, vtces, vertexType );
-
-  combsv::CombinedData data ( primVertex, jet, vtces, vertexType, 
-      tracks, etracks, cjet, jet.pt(), jet.eta() );
-
-  /* 
-   * So now we can compute the tagging variables
-  */
-  reco::TaggingVariableList singleVarVector = TaggingVariablesComputer::compute 
-       ( variables_, data );
-
-  /*
-   * finally compute the discriminator computer
-   */
-  double d = discriminatorComputer_->compute ( singleVarVector, vertexType );
-  return reco::CombinedSVTagInfo ( singleVarVector, d, jtaRef );
 }
 
 double combsv::CombinedSVAlgorithm::minFlightDistanceSignificance2D ( 
