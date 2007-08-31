@@ -396,7 +396,7 @@
 <LogicalPartSection label="tob.xml">
  <LogicalPart name="TOB" category="unspecified">
   <rSolid name="TOB"/>
-  <rMaterial name="trackermaterial:Optical_Fiber"/>
+  <rMaterial name="materials:Air"/>
  </LogicalPart>
  <LogicalPart name="TOBRailIn" category="unspecified">
   <rSolid name="TOBRailIn"/>
