@@ -28,7 +28,7 @@ LibraryDirs = \
 	$(ROOTSYS)/lib
 
 UserCFlags =
-UserCCFlags = 
+UserCCFlags = -D_REENTRANT
 UserDynamicLinkFlags =
 UserStaticLinkFlags =
 UserExecutableLinkFlags =
@@ -47,7 +47,9 @@ Executables = \
         tcp_client.cpp \
 	test_tcp_distributor.cpp \
 	test_ROOT_distributor.cpp \
-	global_run.cpp
+	global_run.cpp \
+	global_run_fake.cpp \
+        test_distribution_fake.cpp
 #	test_debug_cout.cpp \
 #	test_section.cpp \
 #	tcp_receiver2.cpp \
