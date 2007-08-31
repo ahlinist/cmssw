@@ -83,10 +83,7 @@ reco::Vertex CombinedSV::getPrimaryVertex ( const edm::Event & iEvent,
     iEvent.getByLabel( vertexcoll_, retColl);
     int numVertices = retColl->size();
     if (numVertices > 0) {
-      #ifdef DEBUG
-      cout << "[CombinedSV] Persistent primary vertex found, will use it"
-           << endl;
-      #endif // DEBUG
+      LogDebug("") << "Persistent primary vertex found, will use it";
       return *(retColl->begin());
     }
 
@@ -105,16 +102,11 @@ reco::Vertex CombinedSV::getPrimaryVertex ( const edm::Event & iEvent,
     edm::LogWarning("CombinedSV::getPrimaryVertex") << "No primary vertex found, fitting all "
                         << tks->size() << " ttracks with avf";
     TransientVertex ret = fitter.vertex ( ttks );
-    #ifdef DEBUG
-    cout << "[CombinedSV] fitted vertex has weight map: " << ret.hasTrackWeight() << endl;
-    #endif // DEBUG
+    LogDebug ("") << "fitted vertex has weight map: " << ret.hasTrackWeight();
     return static_cast < reco::Vertex > (ret);
   } catch (...) {};
 
-  #ifdef DEBUG
-  cout << "[CombinedSV] No primary vertex found, use geometric origin (beamspot)"
-       << endl;
-  #endif // DEBUG
+  LogDebug ("") << "No primary vertex found, use geometric origin (beamspot)";
   /*
   BeamSpot s;
   TransientVertex vtx ( s.position(), s.error(), ttks, -1. );
@@ -158,11 +150,8 @@ CombinedSV::~CombinedSV() {
 void CombinedSV::produce(edm::Event& iEvent,
                            const edm::EventSetup& iSetup)
 {
-  #ifdef DEBUG
   int evt=iEvent.id().event();
-  cout << endl
-       << "[CombinedSV] next event: " << evt << endl;
-  #endif // DEBUG
+  LogDebug("") << "next event: " << evt;
   edm::ESHandle<MagneticField> magneticField;
   iSetup.get<IdealMagneticFieldRecord>().get(magneticField);
   edm::ESHandle<TransientTrackBuilder> builder;
@@ -175,9 +164,7 @@ void CombinedSV::produce(edm::Event& iEvent,
   reco::CombinedSVTagInfoCollection *extCollection  = new reco::CombinedSVTagInfoCollection();
 
   reco::Vertex primaryVertex = getPrimaryVertex ( iEvent, iSetup );
-  #ifdef DEBUG
-  cout << "[CombinedSV] primary vertex is at " << primaryVertex.position() << endl;
-  #endif // DEBUG
+  LogDebug ("") << "primary vertex is at " << primaryVertex.position();
 
   edm::Handle<reco::JetTracksAssociationCollection> jetWithTrackColl;
 
@@ -187,10 +174,7 @@ void CombinedSV::produce(edm::Event& iEvent,
     iEvent.getByLabel(associatorID_,jetWithTrackColl);
 
     // int numJets = jetWithTrackColl->size();
-    #ifdef DEBUG
-    cout << "[CombinedSV] need to analyze " << jetWithTrackColl->size()
-         << " jets." << endl;
-    #endif // DEBUG
+    LogDebug("") << "need to analyze " << jetWithTrackColl->size() << " jets.";
     
     for ( reco::JetTracksAssociationCollection::const_iterator jetNTrks =
           jetWithTrackColl->begin(); jetNTrks != jetWithTrackColl->end(); jetNTrks++)
@@ -208,9 +192,10 @@ void CombinedSV::produce(edm::Event& iEvent,
            << "[CombinedSV]     ---<  now analyzing jet #" << i << "  >---";
            */
 
-      #ifdef DEBUG
-      cout << "[CombinedSV] found " << jetNTrks->second.size() << " tracks in jet " << jetNTrks - jetWithTrackColl->begin() << endl;
-      #endif // DEBUG
+      LogDebug ("") << "found " << jetNTrks->second.size() << " tracks in jet "
+                    << jetNTrks - jetWithTrackColl->begin() << " pt="
+                    << jetNTrks->first->pt() << " p=" << jetNTrks->first->p() << " eta="
+                    << jetNTrks->first->eta();
       vector < reco::TransientTrack > trks;
       edm::ESHandle<TransientTrackBuilder> builder;
       iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder", builder );
@@ -219,41 +204,24 @@ void CombinedSV::produce(edm::Event& iEvent,
       {
         trks.push_back ( builder->build ( *i ) );
       }
-      #ifdef DEBUG
-      cout << "[CombinedSV] built " << trks.size() << " TransientTracks" << endl;
-      #endif // DEBUG
+      LogDebug("") << "built " << trks.size() << " TransientTracks.";
 
       unsigned int index = jetNTrks - jetWithTrackColl->begin();
-      reco::CombinedSVTagInfo btag = algorithm_->tag(
-		primaryVertex, *( jetNTrks->first ), trks,
-		edm::Ref<JetTracksAssociationCollection>(jetWithTrackColl, index) );
-      #ifdef DEBUG
-      cout << "[CombinedSV] jet " << index << " tag value: " << btag.discriminator() << endl;
-      #endif // DEBUG
+      reco::CombinedSVTagInfo btag = algorithm_->tag( primaryVertex, *( jetNTrks->first ), trks,
+          		edm::Ref<JetTracksAssociationCollection>(jetWithTrackColl, index) );
+      LogDebug("") << "jet " << index << " tag value: " << btag.discriminator();
       reco::JetTag jettag( btag.discriminator() );
       baseCollection->push_back(jettag);
       extCollection->push_back(btag);
     }
   } catch ( edm::Exception & e ) {
-    #ifdef DEBUG
-    cout << "[CombinedSV] EDM exception caught: " << e.what() << ", ignore this event"
-         << endl;
-    #endif // DEBUG
+    LogDebug("") << "EDM exception caught: " << e.what() << ", ignore this event";
   } catch ( cms::Exception & e ) {
-    #ifdef DEBUG
-    cout << "[CombinedSV] CMS exception caught: " << e.what() << ", ignore this event"
-         << endl;
-    #endif // DEBUG
+    LogDebug("") << "CMS exception caught: " << e.what() << ", ignore this event";
   } catch ( std::exception & e ) {
-    #ifdef DEBUG
-    cout << "[CombinedSV] STL exception caught: " << e.what() << ", ignore this event"
-         << endl;
-    #endif // DEBUG
+    LogDebug("") << "std::exception caught: " << e.what() << ", ignore this event";
   } catch (...) {
-    #ifdef DEBUG
-    cout << "[CombinedSV] Unknown exception caught. Ignore this event"
-         << endl;
-    #endif // DEBUG
+    LogDebug("") << "Unknown exception caught. Ignore this event" ;
   }
 
   std::auto_ptr<reco::CombinedSVTagInfoCollection> resultExt(extCollection);
