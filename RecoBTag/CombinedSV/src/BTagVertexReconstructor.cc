@@ -69,26 +69,32 @@ vector< combsv::CombinedVertex > BTagVertexReconstructor::fit (
     const VertexFilter & filter, const TrackInfoBuilder & trackinfobuilder ) const
 {
   vector< combsv::CombinedVertex > ret;
-  vector < TransientVertex > fittedSVColl = vtxrector_->vertices( tracks );
-  int nFittedVertices = fittedSVColl.size();
 
-  edm::LogInfo ( "BTagVertexReconstructor" ) << "found " << nFittedVertices << " vertices at:";
-  for ( vector< TransientVertex >::const_iterator i=fittedSVColl.begin();
-        i!=fittedSVColl.end() ; ++i )
-  {
-    edm::LogInfo ( "BTagVertexReconstructor" ) << "      " <<  i->position();
-  }
+  try {
+    vector < TransientVertex > fittedSVColl = vtxrector_->vertices( tracks );
+    int nFittedVertices = fittedSVColl.size();
 
-  // apply vertex cuts, filter out primary vertex if found again
-  for ( vector<TransientVertex>::const_iterator vtx = fittedSVColl.begin();
-        vtx != fittedSVColl.end(); vtx++ )
-  {
-    if ( filter ( *vtx, reco::btag::Vertices::RecoVertex ))
+    edm::LogInfo ( "BTagVertexReconstructor" ) << "found " << nFittedVertices << " vertices at:";
+    for ( vector< TransientVertex >::const_iterator i=fittedSVColl.begin();
+          i!=fittedSVColl.end() ; ++i )
     {
-      ret.push_back( buildVertexInfo ( *vtx, reco::btag::Vertices::RecoVertex,
-            filter, trackinfobuilder ) );
+      edm::LogInfo ( "BTagVertexReconstructor" ) << "      " <<  i->position();
     }
+
+    // apply vertex cuts, filter out primary vertex if found again
+    for ( vector<TransientVertex>::const_iterator vtx = fittedSVColl.begin();
+          vtx != fittedSVColl.end(); vtx++ )
+    {
+      if ( filter ( *vtx, reco::btag::Vertices::RecoVertex ))
+      {
+        ret.push_back( buildVertexInfo ( *vtx, reco::btag::Vertices::RecoVertex,
+              filter, trackinfobuilder ) );
+      }
+    }
+  } catch ( std::exception & s ) {
+    edm::LogWarning ( "BTagVertexReconstructor" ) << "Exception: " << s.what();
   }
+  
   return ret;
 }
 
@@ -99,26 +105,33 @@ pair < reco::btag::Vertices::VertexType, vector< combsv::CombinedVertex > >
         const VertexFilter & vfilter,
         const PseudoVertexBuilder & pvtxbuilder ) const
 {
-  vector< combsv::CombinedVertex > ret = 
-    fit ( tracks, vfilter, pvtxbuilder.trackInfoBuilder() );
-  reco::btag::Vertices::VertexType type=reco::btag::Vertices::UndefVertex;
+  try {
+    vector< combsv::CombinedVertex > ret = 
+      fit ( tracks, vfilter, pvtxbuilder.trackInfoBuilder() );
+    reco::btag::Vertices::VertexType type=reco::btag::Vertices::UndefVertex;
 
-  if (ret.size() > 0)
-  {
-    type=reco::btag::Vertices::RecoVertex;
-  } else {
-    reco::Vertex vtx = pvtxbuilder.build ( etracks, vfilter, type ); 
-    /* LogDebug("") << "BTagVertexReconstructor::vertices building from " << etracks.size() 
-                 << " tracks a vertex with " << vtx.tracksSize() << " tracks"; */
-    combsv::CombinedVertex cvtx = buildVertexInfo ( vtx, pvtxbuilder.lastTracks(), 
-          reco::btag::Vertices::PseudoVertex, vfilter, pvtxbuilder.trackInfoBuilder() );
-    // LogDebug("") << "We return " << cvtx.bTagTracks().size() << " tracks.";
-    ret.push_back( cvtx );
+    if (ret.size() > 0)
+    {
+      type=reco::btag::Vertices::RecoVertex;
+    } else {
+      reco::Vertex vtx = pvtxbuilder.build ( etracks, vfilter, type ); 
+      /* LogDebug("") << "building from " << etracks.size() 
+                   << " tracks a vertex with " << vtx.tracksSize() << " tracks"; */
+      combsv::CombinedVertex cvtx = buildVertexInfo ( vtx, pvtxbuilder.lastTracks(), 
+            reco::btag::Vertices::PseudoVertex, vfilter, pvtxbuilder.trackInfoBuilder() );
+      // LogDebug("") << "We return " << cvtx.bTagTracks().size() << " tracks.";
+      ret.push_back( cvtx );
 
-    // combsv::CombinedVertex cvtx ( vtx );
-    // ret.push_back ( cvtx, etracks,  );
+      // combsv::CombinedVertex cvtx ( vtx );
+      // ret.push_back ( cvtx, etracks,  );
+    }
+
+    return pair < reco::btag::Vertices::VertexType, vector< combsv::CombinedVertex > >
+              ( type, ret );
+  } catch ( ... ) {
+    vector< combsv::CombinedVertex > ret;
+    reco::btag::Vertices::VertexType type=reco::btag::Vertices::NoVertex;
+    return pair < reco::btag::Vertices::VertexType, vector< combsv::CombinedVertex > >
+      ( type, ret );
   }
-
-  return pair < reco::btag::Vertices::VertexType, vector< combsv::CombinedVertex > >
-            ( type, ret );
 }
