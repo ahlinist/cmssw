@@ -4,8 +4,8 @@
  * >= 2 barrel jets 100 GeV, dphi, R1, R2 cuts
  * QCD control, test L1 acoplanar path (QCD trigger path)
  *
- * $Date: 2007/08/20 12:13:01 $
- * $Revision: 1.3 $
+ * $Date: 2007/08/31 14:17:19 $
+ * $Revision: 1.4 $
  *
  * \author Michael Tytgat, Maria Spiropulu - CERN
  *
@@ -105,7 +105,7 @@ bool HadSUSYQCDSkim::filter( edm::Event& iEvent,
   int nJet = 0;
   double phiJet[2];
   for ( CaloJetCollection::const_iterator it = TheCaloJets.begin(); 
-	it != TheCaloJets.end(); it++ ) {
+	it != TheCaloJets.end() && nJet < 2; it++ ) {
     if ( (fabs(it->eta()) < 3.0) &&
 	 (it->pt() > CaloJetPtmin_) ) {
       phiJet[nJet++] = it->phi();
