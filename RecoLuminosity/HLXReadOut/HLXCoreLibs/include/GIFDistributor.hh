@@ -46,7 +46,8 @@ namespace HCAL_HLX
     void CleanUp();
 
     // Buffers for insertion into DIP data structure
-    u32 *mHistogramData;
+    double *mETHistogramData;
+    double *mLHCHistogramData;
 
   };
 
