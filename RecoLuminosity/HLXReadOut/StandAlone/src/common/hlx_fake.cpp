@@ -31,7 +31,7 @@ using namespace std;
 using namespace ICCoreUtils;
 using namespace HCAL_HLX;
 
-const u32 TIMEOUT_PERIOD = 1;
+const u32 TIMEOUT_PERIOD = 10;
 
 // Variables (global)
 u8 **crcTable;
@@ -218,8 +218,8 @@ int main(int argc, char ** argv)
 	lumiHeader.startOrbit += lumiHeader.numOrbits+1;
 	timeoutCount--;
 	if ( timeoutCount == 0 ) {
-	  Sleep(1000);
           timeoutCount = TIMEOUT_PERIOD;
+	  Sleep(1);
 	}
       }	else {
 	lumiHeader.histogramSet++;
