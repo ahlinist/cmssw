@@ -4,8 +4,8 @@
  * >= 2 jets, 1st jet 110 GeV + MET 100 GeV
  * Total SM background (JetMet trigger path)
  *
- * $Date: 2007/07/28 16:07:06 $
- * $Revision: 1.1 $
+ * $Date: 2007/08/20 12:13:01 $
+ * $Revision: 1.2 $
  *
  * \author Michael Tytgat, Maria Spiropulu - CERN
  *
@@ -42,13 +42,13 @@ HadSUSYSMBackgrSkim::HadSUSYSMBackgrSkim( const edm::ParameterSet& iConfig ) :
   nEvents_(0), nAccepted_(0)
 {
   CaloJetsrc_ = iConfig.getParameter<InputTag>( "CaloJetsrc" );
-  NminCaloJet_ = iConfig.getUntrackedParameter<int>( "NminCaloJet", 2 );
+  NminCaloJet_ = iConfig.getParameter<int>( "NminCaloJet");
   CaloJetPtmin_ = 
-    iConfig.getUntrackedParameter<double>( "CaloJetPtmin", 30. );
+    iConfig.getParameter<double>( "CaloJetPtmin");
   CaloJet1Ptmin_ = 
-    iConfig.getUntrackedParameter<double>( "CaloJet1Ptmin", 110. );
+    iConfig.getParameter<double>( "CaloJet1Ptmin");
   CaloMETsrc_ = iConfig.getParameter<InputTag>( "CaloMETsrc" );
-  CaloMETmin_ = iConfig.getUntrackedParameter<double>( "CaloMETmin", 100. );
+  CaloMETmin_ = iConfig.getParameter<double>( "CaloMETmin");
 }
 
 /*------------------------------------------------------------------------*/

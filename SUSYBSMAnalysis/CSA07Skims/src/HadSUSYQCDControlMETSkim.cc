@@ -4,8 +4,8 @@
  * >= 2 barrel jets 100 GeV, (no MET) QCD control MET trigger turn on, 
  * MET tails (QCD trigger path)
  *
- * $Date: 2007/07/12 09:24:45 $
- * $Revision: 1.2 $
+ * $Date: 2007/08/20 12:13:01 $
+ * $Revision: 1.3 $
  *
  * \author Michael Tytgat, Maria Spiropulu - CERN
  *
@@ -35,8 +35,8 @@ HadSUSYQCDControlMETSkim::HadSUSYQCDControlMETSkim( const edm::ParameterSet& iCo
 {
   CaloJetsrc_ = iConfig.getParameter<InputTag>( "CaloJetsrc" );
   CaloJetPtmin_ = 
-    iConfig.getUntrackedParameter<double>( "CaloJetPtmin", 100. );
-  NminCaloJet_ = iConfig.getUntrackedParameter<int>( "NminCaloJet", 2 );
+    iConfig.getParameter<double>( "CaloJetPtmin");
+  NminCaloJet_ = iConfig.getParameter<int>( "NminCaloJet");
 }
 
 /*------------------------------------------------------------------------*/

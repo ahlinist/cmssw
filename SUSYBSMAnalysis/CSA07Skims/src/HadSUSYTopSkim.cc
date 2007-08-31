@@ -4,8 +4,8 @@
  * >= 3 jets + 1 lepton (muon, elect), top candle calibration/monitoring
  * (lepton + jets trigger path)
  *
- * $Date: 2007/07/30 16:26:17 $
- * $Revision: 1.2 $
+ * $Date: 2007/08/20 12:13:02 $
+ * $Revision: 1.3 $
  *
  * \author Michael Tytgat, Maria Spiropulu - CERN
  *
@@ -37,17 +37,17 @@ HadSUSYTopSkim::HadSUSYTopSkim( const edm::ParameterSet& iConfig ) :
 {
   CaloJetsrc_ = iConfig.getParameter<InputTag>( "CaloJetsrc" );
   CaloJetPtmin_ = 
-    iConfig.getUntrackedParameter<double>( "CaloJetPtmin", 30. );
-  NminCaloJet_ = iConfig.getUntrackedParameter<int>( "NminCaloJet", 3 );
+    iConfig.getParameter<double>( "CaloJetPtmin");
+  NminCaloJet_ = iConfig.getParameter<int>( "NminCaloJet");
 
   Muonsrc_ = iConfig.getParameter<InputTag>( "Muonsrc" );
   MuonPtmin_ = 
-    iConfig.getUntrackedParameter<double>( "MuonPtmin", 20. );
-  NminMuon_ = iConfig.getUntrackedParameter<int>( "NminMuon", 1 );
+    iConfig.getParameter<double>( "MuonPtmin");
+  NminMuon_ = iConfig.getParameter<int>( "NminMuon");
 
   Elecsrc_ = iConfig.getParameter<InputTag>( "Elecsrc" );
-  NminElec_ = iConfig.getUntrackedParameter<int>( "NminElec", 1 );
-  ElecPtmin_ = iConfig.getUntrackedParameter<double>( "ElecPtmin", 20. );
+  NminElec_ = iConfig.getParameter<int>( "NminElec");
+  ElecPtmin_ = iConfig.getParameter<double>( "ElecPtmin");
 }
 
 /*------------------------------------------------------------------------*/

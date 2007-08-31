@@ -4,8 +4,8 @@
  * >= 2 barrel jets 100 GeV, dphi, R1, R2 cuts
  * QCD control, test L1 acoplanar path (QCD trigger path)
  *
- * $Date: 2007/07/27 21:04:22 $
- * $Revision: 1.2 $
+ * $Date: 2007/08/20 12:13:01 $
+ * $Revision: 1.3 $
  *
  * \author Michael Tytgat, Maria Spiropulu - CERN
  *
@@ -52,8 +52,8 @@ HadSUSYQCDSkim::HadSUSYQCDSkim( const edm::ParameterSet& iConfig ) :
 {
   CaloJetsrc_ = iConfig.getParameter<InputTag>( "CaloJetsrc" );
   CaloJetPtmin_ = 
-    iConfig.getUntrackedParameter<double>( "CaloJetPtmin", 100. );
-  NminCaloJet_ = iConfig.getUntrackedParameter<int>( "NminCaloJet", 2 );
+    iConfig.getParameter<double>( "CaloJetPtmin");
+  NminCaloJet_ = iConfig.getParameter<int>( "NminCaloJet");
   if ( NminCaloJet_ < 2 ) {
     edm::LogError( "HadSUSYQCDSkim" ) 
       << "Setting NminCaloJet to 2 !!";

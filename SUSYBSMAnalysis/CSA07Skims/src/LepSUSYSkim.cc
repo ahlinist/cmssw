@@ -8,8 +8,8 @@
  * MET>50 GeV
  * Cuts values in the cfi files in the data directory 
  *
- * $Date: 2007/07/27 17:52:39 $
- * $Revision: 1.1 $
+ * $Date: 2007/08/20 12:13:02 $
+ * $Revision: 1.2 $
  *
  * \author Massimiliano Chioboli, Universita' and INFN, Catania
  *         Maria Spiropulu - CERN
@@ -52,14 +52,14 @@ LepSUSYSkim::LepSUSYSkim( const edm::ParameterSet& iConfig ) :
   Elecsrc_       = iConfig.getParameter<InputTag>( "Elecsrc" );
   CaloJetsrc_    = iConfig.getParameter<InputTag>( "CaloJetsrc" );
   CaloMETsrc_    = iConfig.getParameter<InputTag>( "CaloMETsrc" );
-  NminMuon_      = iConfig.getUntrackedParameter<int>( "NminMuon", 1 );
-  MuonPtmin_     = iConfig.getUntrackedParameter<double>( "MuonPtmin", 3. );
-  NminElec_      = iConfig.getUntrackedParameter<int>( "NminElec", 1 );
-  ElecPtmin_     = iConfig.getUntrackedParameter<double>( "ElecPtmin", 5. );
-  NminCaloJet_   = iConfig.getUntrackedParameter<int>( "NminCaloJet", 1 );
-  CaloJet1Ptmin_ = iConfig.getUntrackedParameter<double>( "CaloJet1Ptmin", 80.);
-  CaloJet2Ptmin_ = iConfig.getUntrackedParameter<double>( "CaloJet2Ptmin", 30. );
-  CaloMetmin_    = iConfig.getUntrackedParameter<double>( "CaloMetmin"   , 50. );
+  NminMuon_      = iConfig.getParameter<int>( "NminMuon");
+  MuonPtmin_     = iConfig.getParameter<double>( "MuonPtmin");
+  NminElec_      = iConfig.getParameter<int>( "NminElec");
+  ElecPtmin_     = iConfig.getParameter<double>( "ElecPtmin");
+  NminCaloJet_   = iConfig.getParameter<int>( "NminCaloJet");
+  CaloJet1Ptmin_ = iConfig.getParameter<double>( "CaloJet1Ptmin");
+  CaloJet2Ptmin_ = iConfig.getParameter<double>( "CaloJet2Ptmin");
+  CaloMetmin_    = iConfig.getParameter<double>( "CaloMetmin"   );
   
 }
 

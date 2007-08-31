@@ -4,8 +4,8 @@
  * >= 2 barrel muons 30 GeV, Pt(2muons)>150
  * Z-Candle, dimuon/Z trigger path
  *
- * $Date: 2007/07/12 09:17:22 $
- * $Revision: 1.1 $
+ * $Date: 2007/08/20 12:13:02 $
+ * $Revision: 1.2 $
  *
  * \author Michael Tytgat, Maria Spiropulu - CERN
  *
@@ -40,9 +40,9 @@ HadSUSYdiMuonSkim::HadSUSYdiMuonSkim( const edm::ParameterSet& iConfig ) :
   nEvents_(0), nAccepted_(0)
 {
   Muonsrc_ = iConfig.getParameter<InputTag>( "Muonsrc" );
-  NminMuon_ = iConfig.getUntrackedParameter<int>( "NminMuon", 2 );
-  MuonPtmin_ = iConfig.getUntrackedParameter<double>( "MuonPtmin", 30. );
-  PtmindiMuon_ = iConfig.getUntrackedParameter<double>( "PtmindiMuon", 150. );
+  NminMuon_ = iConfig.getParameter<int>( "NminMuon");
+  MuonPtmin_ = iConfig.getParameter<double>( "MuonPtmin");
+  PtmindiMuon_ = iConfig.getParameter<double>( "PtmindiMuon");
 }
 
 /*------------------------------------------------------------------------*/

@@ -4,10 +4,10 @@ include "SUSYBSMAnalysis/CSA07Skims/data/SUSYHighPtPhotonCandidates.cfi"
 module SUSYControlHighPtPhotonFilter = SUSYControlHighPtPhotonSkim {
   InputTag Photonsrc = allSuperClusterIsolations  
   InputTag Electronsrc = pixelMatchGsfElectrons  
-  untracked double PhotonPtmin = 20
-  untracked double ElectronPtmin = 80
-  untracked bool IsIsolated = 0   
-  untracked double IsolationCut = 9   
+  double PhotonPtmin = 20
+  double ElectronPtmin = 80
+  bool IsIsolated = 0   
+  double IsolationCut = 9   
 }
 
 sequence SUSYControlHighPtPhotonSeq = { 
