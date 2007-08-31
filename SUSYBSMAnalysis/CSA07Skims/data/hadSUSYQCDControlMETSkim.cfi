@@ -2,8 +2,8 @@ include "SUSYBSMAnalysis/CSA07Skims/data/hadSUSYHLTPaths.cfi"
 
 module hadSUSYQCDControlMETFilter = HadSUSYQCDControlMETSkim {
   InputTag CaloJetsrc = iterativeCone5CaloJets
-  untracked double CaloJetPtmin = 100
-  untracked int32 NminCaloJet = 2  
+  double CaloJetPtmin = 100
+  int32 NminCaloJet = 2  
 }
 
 sequence hadSUSYQCDControlMETSeq = {

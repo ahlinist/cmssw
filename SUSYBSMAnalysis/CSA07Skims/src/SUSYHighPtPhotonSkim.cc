@@ -3,8 +3,8 @@
  * High Energy Photon SUSY Skim
  * one(two) photon(s) > xx GeV in barrel + isolation 
  *
- * $Date: 2007/08/11 15:35:39 $
- * $Revision: 1.3 $
+ * $Date: 2007/08/24 12:44:18 $
+ * $Revision: 1.4 $
  *
  * \author Daniele del Re - Univ. La Sapienza & INFN
  *
@@ -36,11 +36,11 @@ SUSYHighPtPhotonSkim::SUSYHighPtPhotonSkim( const edm::ParameterSet& iConfig ) :
 {
   Photonsrc_ = iConfig.getParameter<InputTag>( "Photonsrc" );
   Photon1Ptmin_ = 
-    iConfig.getUntrackedParameter<double>( "Photon1Ptmin", 80. );
+    iConfig.getParameter<double>( "Photon1Ptmin");
   Photon2Ptmin_ = 
-    iConfig.getUntrackedParameter<double>( "Photon2Ptmin", 20. );
-  IsIsolated_ = iConfig.getUntrackedParameter<bool>( "IsIsolated", 0);
-  IsolationCut_ = iConfig.getUntrackedParameter<double>( "IsolationCut", 9. );
+    iConfig.getParameter<double>( "Photon2Ptmin");
+  IsIsolated_ = iConfig.getParameter<bool>( "IsIsolated");
+  IsolationCut_ = iConfig.getParameter<double>( "IsolationCut");
 }
 
 /*------------------------------------------------------------------------*/

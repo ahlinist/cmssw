@@ -2,9 +2,9 @@ include "SUSYBSMAnalysis/CSA07Skims/data/hadSUSYHLTPaths.cfi"
 
 module hadSUSYdiMuonFilter = HadSUSYdiMuonSkim {
   InputTag Muonsrc = muons
-  untracked double MuonPtmin = 30.
-  untracked int32 NminMuon = 2  
-  untracked double PtmindiMuon = 150.
+  double MuonPtmin = 30.
+  int32 NminMuon = 2  
+  double PtmindiMuon = 150.
 }
 
 sequence hadSUSYdiMuonSeq = { 

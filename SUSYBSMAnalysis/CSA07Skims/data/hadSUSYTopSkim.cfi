@@ -3,27 +3,27 @@ include "SUSYBSMAnalysis/CSA07Skims/data/hadSUSYHLTPaths.cfi"
 # Muon + jets 
 module hadSUSYTopMuonFilter = HadSUSYTopSkim {
   InputTag CaloJetsrc = iterativeCone5CaloJets
-  untracked double CaloJetPtmin = 30.
-  untracked int32 NminCaloJet = 3	
+  double CaloJetPtmin = 30.
+  int32 NminCaloJet = 3	
   InputTag Muonsrc = muons
-  untracked double MuonPtmin = 20.
-  untracked int32 NminMuon = 1
+  double MuonPtmin = 20.
+  int32 NminMuon = 1
   InputTag Elecsrc = pixelMatchGsfElectrons
-  untracked double ElecPtmin = 20.
-  untracked int32 NminElec = 0
+  double ElecPtmin = 20.
+  int32 NminElec = 0
 }
 
 # Electron + jets
 module hadSUSYTopElecFilter = HadSUSYTopSkim {
   InputTag CaloJetsrc = iterativeCone5CaloJets
-  untracked double CaloJetPtmin = 30.
-  untracked int32 NminCaloJet = 3	
+  double CaloJetPtmin = 30.
+  int32 NminCaloJet = 3	
   InputTag Muonsrc = muons
-  untracked double MuonPtmin = 20.
-  untracked int32 NminMuon = 0
+  double MuonPtmin = 20.
+  int32 NminMuon = 0
   InputTag Elecsrc = pixelMatchGsfElectrons
-  untracked double ElecPtmin = 20.
-  untracked int32 NminElec = 1
+  double ElecPtmin = 20.
+  int32 NminElec = 1
 }
 
 sequence hadSUSYTopMuonSeq = { 
