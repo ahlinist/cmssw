@@ -1,0 +1,6 @@
+#!/bin/bash
+
+source /nfshome0/jaj99/.bashrc
+pushd /home/localtest &> /dev/null
+/nfshome0/jaj99/TriDAS/RecoLuminosity/HLXReadOut/StandAlone/bin/linux/x86_slc3/global_run.exe 1
+popd &> /dev/null
