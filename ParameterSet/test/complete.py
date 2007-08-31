@@ -105,6 +105,8 @@ process.p2 = cms.Path(process.s1+ (process.s3*process.s2) )
   
 process.ep1 = cms.EndPath(process.y*process.z)
 
+process.schedule = cms.Schedule(process.p1, process.p2, process.ep1)
+
 process.ess1 = cms.ESSource("ESSType1",
     b=cms.int32(2)
   )
