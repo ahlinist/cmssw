@@ -8,8 +8,8 @@
  * MET>50 GeV
  * Cuts values in the cfi files in the data directory 
  *
- * $Date: 2007/08/20 12:13:02 $
- * $Revision: 1.2 $
+ * $Date: 2007/08/31 14:17:19 $
+ * $Revision: 1.3 $
  *
  * \author Massimiliano Chioboli, Universita' and INFN, Catania
  *         Maria Spiropulu - CERN
@@ -133,59 +133,59 @@ bool LepSUSYSkim::filter( edm::Event& iEvent,
   if ( METHandle->empty() ) return false;
 
 
-  cout << "****************************************************" << endl;
+//  cout << "****************************************************" << endl;
 
   // Apply cuts on muons
   int nMuon = 0;
   for ( MuonCollection::const_iterator it = TheMuons.begin();
 	it != TheMuons.end(); it++ ) {
-    cout << "muon pt = " << it->pt() << endl;
-    cout << "muon eta = " << it->eta() << endl;
+//    cout << "muon pt = " << it->pt() << endl;
+//    cout << "muon eta = " << it->eta() << endl;
     if ( (it->pt() > MuonPtmin_) && 
 	 (fabs(it->eta()) < 3.0) ) {
       nMuon++;
     }
   }
-  cout << "nMuon = " << nMuon << endl;
+//  cout << "nMuon = " << nMuon << endl;
   if ( nMuon < NminMuon_ ) return false;
    
   // Apply cuts on electrons
   int nElec = 0;
   for ( PixelMatchGsfElectronCollection::const_iterator it = TheElecs.begin();
 	it != TheElecs.end(); it++ ) {
-    cout << "elec pt = " << it->pt() << endl;
-    cout << "elec eta = " << it->eta() << endl;
+//    cout << "elec pt = " << it->pt() << endl;
+//    cout << "elec eta = " << it->eta() << endl;
     if ( (it->pt() > ElecPtmin_) && 
 	 (fabs(it->eta()) < 3.0) ) {
       nElec++;
     }
   }
-  cout << "nElec = " << nElec << endl;
+//  cout << "nElec = " << nElec << endl;
   if ( nElec < NminElec_ ) return false;
 
-  cout << "-----------------------------------------------------" << endl;
+//  cout << "-----------------------------------------------------" << endl;
   // Apply cuts on Jets
   int nJet = 0;
   for ( CaloJetCollection::const_iterator it = TheCaloJets.begin(); 
 	it != TheCaloJets.end(); it++ ) {
-    cout << "jet pt = " << it->pt() << endl;
-    cout << "jet eta = " << it->eta() << endl;
+//    cout << "jet pt = " << it->pt() << endl;
+//    cout << "jet eta = " << it->eta() << endl;
     if (fabs(it->eta()) < 3.0) nJet++;
   }
-  cout << "nJet = " << nJet << endl;
+//  cout << "nJet = " << nJet << endl;
   if ( nJet < NminCaloJet_ ) return false;
-  cout << "TheCaloJets[0].pt() = " << TheCaloJets[0].pt() << endl;
-  cout << "TheCaloJets[1].pt() = " << TheCaloJets[1].pt() << endl;
+//  cout << "TheCaloJets[0].pt() = " << TheCaloJets[0].pt() << endl;
+//  cout << "TheCaloJets[1].pt() = " << TheCaloJets[1].pt() << endl;
   if(NminCaloJet_ > 0)  {if ( TheCaloJets[0].pt() < CaloJet1Ptmin_ ) return false;}
   if(NminCaloJet_ > 1)  {if ( TheCaloJets[1].pt() < CaloJet2Ptmin_ ) return false;}
 
   
-  cout << "-----------------------------------------------------" << endl;
+//  cout << "-----------------------------------------------------" << endl;
   
 
   //apply cuts on MET
   double MetValue = METHandle->begin()->pt();
-  cout << " met = " << MetValue << endl;
+//  cout << " met = " << MetValue << endl;
   if(MetValue < CaloMetmin_ ) return false;
  
   nAccepted_++;
