@@ -254,7 +254,7 @@ MCVolume: ( 0.300 x 0.660 x 75.0 ) cm^3 = 1.90675 cm^3
 * 1 "HV Wires"                      "Copper"          0.470        1     CAB
 * 2 "HV Wires insulation"           "Polyethylene"    3.6065       1     CAB
 * 3 "Wire Sleeve"                   "Polyethylene"    0.653        1     CAB
-* 4 "Optical fibers"                "Optical_Fiber"   6.362E-3   740     CAB
+* 4 "Optical fibers"                "Optical_Fiber"   6.362E-3   620     CAB
 .............................................................................
 =============================================================================
 
