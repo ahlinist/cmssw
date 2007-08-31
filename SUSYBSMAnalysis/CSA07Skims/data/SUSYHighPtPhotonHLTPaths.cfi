@@ -1,12 +1,10 @@
 module SUSYHighPtPhotonHLTPath = hltHighLevel from "HLTrigger/HLTfilters/data/hltHighLevel.cfi"
-replace SUSYHighPtPhotonHLTPath.TriggerResultsTag = TriggerResults::HLT
 replace SUSYHighPtPhotonHLTPath.HLTPaths = {
   "HLT1PhotonRelaxed","HLT2PhotonRelaxed",
   "HLT1Photon","HLT2Photon"
 }
 
 module SUSYControlHighPtPhotonHLTPath = hltHighLevel from "HLTrigger/HLTfilters/data/hltHighLevel.cfi"
-replace SUSYControlHighPtPhotonHLTPath.TriggerResultsTag = TriggerResults::HLT
 replace SUSYControlHighPtPhotonHLTPath.HLTPaths = {
   "HLT1Electron"
 }
