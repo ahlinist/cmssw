@@ -57,36 +57,45 @@ namespace HCAL_HLX
       sa_local.sin_addr.s_addr = inet_addr(sourceAddress);
       sa_local.sin_family = AF_INET;
 
-      // Bind to a local port to receive data
-      int ret = bind(mUdpSocket,(struct sockaddr *)&sa_local,sizeof(sa_local));
-      if ( ret == -1 ) {
-	HardwareAccessException lExc("Socket could not be bound to local port");
-	RAISE(lExc);
-      }
- 
+      // Has to be done before bind!!!
       unsigned long tempNum = 1000000;
       socklen_t txa = 4;
       setsockopt(mUdpSocket,SOL_SOCKET,SO_RCVBUF,
 		 &tempNum,txa);
       getsockopt(mUdpSocket,SOL_SOCKET,SO_RCVBUF,
 		 &tempNum,&txa);
-      //cout << tempNum << endl;
+      cout << dec << "SO_RCVBUF set to " << tempNum << endl;
+
+      // Bind to a local port to receive data
+      int ret = bind(mUdpSocket,(struct sockaddr *)&sa_local,sizeof(sa_local));
+      if ( ret == -1 ) {
+	HardwareAccessException lExc("Socket could not be bound to local port");
+	RAISE(lExc);
+      }
 
       // Initialise the worker thread
       mWorkerThreadContinue=true;
       mWriteBufferPointer = 0;
       mReadBufferPointer = 0;
-      
-      // Thread attribute initialisation
-      //pthread_attr_t attr;
-      //ret = pthread_attr_init(&attr);
-      //if ( ret == 0 ) {
-      //	MemoryAllocationException lExc("Cannot initialise worker thread attributes");
-      //	RAISE(lExc);
-      //}
+      pthread_mutex_init(&mDataMutex,0);
 
-      // Thread stack initialisation
-      //pthread_attr_setschedpolicy(&attr,SCHED_RR);
+      // Thread attribute initialisation
+      pthread_attr_t attr;
+      ret = pthread_attr_init(&attr);
+      if ( ret != 0 ) {
+      	MemoryAllocationException lExc("Cannot initialise worker thread attributes");
+      	RAISE(lExc);
+      }
+
+      // Thread priority initialisation
+
+      //schedparam.sched_priority = sched_get_priority_max(SCHED_FIFO);
+
+      //pthread_attr_setschedpolicy(&attr,SCHED_FIFO);
+      //pthread_attr_setinheritsched(&attr,PTHREAD_EXPLICIT_SCHED);
+      //pthread_attr_setschedparam(&attr,&schedparam);
+
+
       //ret = pthread_attr_setstacksize(&attr,stacksize);
 
       // Create the worker thread
@@ -98,7 +107,22 @@ namespace HCAL_HLX
 	MemoryAllocationException lExc("Cannot create worker thread");
 	RAISE(lExc);
       }
-      //			   (void*(*)(void*))
+
+      int policy;
+      sched_param schedparam;
+      policy = SCHED_FIFO;
+      cout << "Thread policy set to SCHED_FIFO" << endl;
+      schedparam.sched_priority = sched_get_priority_max(SCHED_FIFO);
+      cout << "Thread priority set to " << schedparam.sched_priority << endl;
+      pthread_setschedparam(mThreadId,
+			    policy,
+			    &schedparam);
+      pthread_getschedparam(mThreadId,
+			    &policy,
+			    &schedparam);
+      cout << "Policy is now: " << policy << endl;
+      cout << "Priority is now: " << schedparam.sched_priority << endl;
+
     } catch (ICException & aExc) {
       RETHROW(aExc);
     }
@@ -114,10 +138,11 @@ namespace HCAL_HLX
 	mUdpSocket=-1;
       }
       pthread_join(mThreadId,NULL);
-      cout << "rejoined" << endl;
+      //cout << "rejoined" << endl;a
       mThreadId=0;
+      pthread_mutex_destroy(&mDataMutex);
       this->CleanUp();
-      cout << "cleanup" << endl;
+      //cout << "cleanup" << endl;
     } catch (ICException & aExc) {
       RETHROW(aExc);
     }
@@ -171,7 +196,29 @@ namespace HCAL_HLX
 	}
       }
 
+#ifdef HCAL_HLX_U8_BUFFER
       // This has to be dynamically allocated or it won't work
+      circularBuffer = new HLX_CB_TYPE[256];
+      if ( circularBuffer == 0 ) {
+	MemoryAllocationException lExc("Circular buffer");
+	RAISE(lExc);
+      }
+
+      // Initialise the array
+      for ( u32 i = 0 ; i != 256 ; i++ ) {
+	circularBuffer[i].data = 0;
+      }
+
+      // Allocate the circular buffer
+      for ( u32 i = 0 ; i != 256 ; i++ ) {
+	circularBuffer[i].data = new u8[1500];
+	if ( circularBuffer[i].data == 0 ) {
+	  MemoryAllocationException lExc("Circular buffer");
+	  RAISE(lExc);
+	}
+      }
+#else
+     // This has to be dynamically allocated or it won't work
       circularBuffer = new HLX_CB_TYPE[65536];
       if ( circularBuffer == 0 ) {
 	MemoryAllocationException lExc("Circular buffer");
@@ -191,6 +238,7 @@ namespace HCAL_HLX
 	  RAISE(lExc);
 	}
       }
+#endif
 
       // Initialise the CRC table
       this->InitialiseChecksum();
@@ -221,6 +269,19 @@ namespace HCAL_HLX
       delete []mLHCNibbles;
       mLHCNibbles = 0;
 
+#ifdef HCAL_HLX_U8_BUFFER
+      // Circular buffer
+      for ( u32 i = 0 ; i != 256 ; i++ ) {
+	if ( circularBuffer[i].data ) {
+	  delete []circularBuffer[i].data;
+	  circularBuffer[i].data = 0;
+	}
+      }
+      if ( circularBuffer ) {
+	delete []circularBuffer;
+	circularBuffer = 0;
+      }
+#else
       // Circular buffer
       for ( u32 i = 0 ; i != 65536 ; i++ ) {
 	if ( circularBuffer[i].data ) {
@@ -232,6 +293,7 @@ namespace HCAL_HLX
 	delete []circularBuffer;
 	circularBuffer = 0;
       }
+#endif
 
       // CRC table
       for ( u32 i = 0 ; i != 256 ; i++ ) {
@@ -275,10 +337,15 @@ namespace HCAL_HLX
 
       // Check to see if a packet is ready
       if (FD_ISSET(mUdpSocket, &fds)) {
+	//pthread_mutex_lock(&theClass->mDataMutex);
 
 	// Grab a packet if one is available
 	// Need to hack this as a static u8 otherwise it treats it as a u32...
+#ifdef HCAL_HLX_U8_BUFFER
+	if ( static_cast<u8>(theClass->mWriteBufferPointer+1) == theClass->mReadBufferPointer ) {
+#else
 	if ( static_cast<u16>(theClass->mWriteBufferPointer+1) == theClass->mReadBufferPointer ) {
+#endif
 	  // About to overflow
 	  // Read the packet and dump it and flag the counter
 	  ret = recv(mUdpSocket,rData,1500,0);
@@ -296,21 +363,22 @@ namespace HCAL_HLX
 	    //RAISE(lExc);
 	    cout << "ERROR in " << __PRETTY_FUNCTION__ << endl;
 	  } else {
-	    /*for ( u32 i = 0 ; i != ret ; i++ ) {
-	      cout << dec << i << "\t" << hex << static_cast<u16>(theClass->circularBuffer[theClass->mWriteBufferPointer].data[i]) << endl;
-	      }*/
+
 	    // Update the packet length
 	    theClass->circularBuffer[theClass->mWriteBufferPointer].len = ret;
 	    // Increment the data counter
 	    theClass->mTotalDataVolume+=ret;
 	    // Increment the circular buffer pointer
 	    theClass->mWriteBufferPointer++;
+
 	  }
 	}
+
+	//pthread_mutex_unlock(&theClass->mDataMutex);
       }
     }
 
-    cout << "Worker thread complete" << endl;
+    //cout << "Worker thread complete" << endl;
   }
 
   // Reset function
@@ -342,6 +410,12 @@ namespace HCAL_HLX
   }
 
   // Statistics registers
+  u16 NibbleCollector::GetWriteBufferPointer() {
+    return static_cast<u16>(mWriteBufferPointer);
+  }
+  u16 NibbleCollector::GetReadBufferPointer() {
+    return static_cast<u16>(mReadBufferPointer);
+  }
   u32 NibbleCollector::GetNumGoodPackets() {
     return mNumGoodPackets;
   }
@@ -387,6 +461,7 @@ namespace HCAL_HLX
   // This could be an interlock with a service thread, if needed
   void NibbleCollector::RunServiceHandler() {
     try {
+      //pthread_mutex_lock(&mDataMutex);
       while (mWriteBufferPointer!=mReadBufferPointer) {
 	// Validate the checksum
 	if ( this->ValidateChecksum(circularBuffer[mReadBufferPointer].data,
@@ -400,15 +475,16 @@ namespace HCAL_HLX
 	  this->ProcessPacket(lumiHdr,
 			      circularBuffer[mReadBufferPointer].data+sizeof(LUMI_RAW_HEADER),
 			      circularBuffer[mReadBufferPointer].len-1-sizeof(LUMI_RAW_HEADER));
-	} else {
+	  } else {
 	  // Increment the bad packet counter
 	  //cout << "bad checksum" << endl;
-	  mNumBadPackets++;
-	}
+	    mNumBadPackets++;
+	  }
       	mReadBufferPointer++;
       }
-
+      //pthread_mutex_unlock(&mDataMutex);
     } catch (ICException & aExc) {
+      //pthread_mutex_unlock(&mDataMutex);
       RETHROW(aExc);
     }
   }
@@ -428,18 +504,20 @@ namespace HCAL_HLX
 	    // Check for incomplete histogram
 	    if ( mETSumNibbles[hlxID].hdr.startOrbit != 0 ) {
 	      if ( mETSumNibbles[hlxID].bIsComplete == false ) { 
-		cout << "Bad ET sum nibble" << endl;
+		cout << "Incomplete ET sum nibble" << endl;
+		cout << "HLX ID: " << static_cast<u16>(hlxID) << endl;
 		mNumBadETSumNibbles++;
 	      } else {
 		// LHC nibble is good, ship it...
 		mNumGoodETSumNibbles++;
 		// Push the nibble into the section collector whether good or bad
+		//cout << "Before process et nibble, HLX " << static_cast<u16>(hlxID) << endl;
 		for ( u32 i = 0 ; i != mSectionCollectors.size() ; i++ ) {
 		  mSectionCollectors[i]->ProcessETSumNibble(mETSumNibbles[hlxID],
 							    hlxID);
 		}
+		//cout << "After process et nibble" << endl;
 	      }
-
 	    }
 	    
 	    // Clear data counter and reset startOrbit marker
@@ -472,7 +550,8 @@ namespace HCAL_HLX
 	    // Check for incomplete histogram
 	    if ( mLHCNibbles[hlxID].hdr.startOrbit != 0 ) {
 	      if ( mLHCNibbles[hlxID].bIsComplete == false ) {
-		cout << "Bad LHC nibble" << endl;
+		cout << "Incomplete LHC nibble" << endl;
+		cout << "HLX ID: " << static_cast<u16>(hlxID) << endl;
 		mNumBadLHCNibbles++;
 	      } else {
 		// LHC nibble is good, ship it...
@@ -515,6 +594,9 @@ namespace HCAL_HLX
 	      bool bAllComplete = true;
 	      for ( u32 i = 0 ; i != 6 ; i++ ) {
 		if ( !mOccupancyNibbles[hlxID].bIsComplete[i] ) {
+		  cout << "Incomplete occupancy nibble" << endl;
+		  cout << "HLX ID: " << dec << static_cast<u16>(hlxID) << endl;
+		  cout << "Occupancy component: " << i << endl;
 		  bAllComplete = false;
 		  break;
 		}
@@ -527,7 +609,6 @@ namespace HCAL_HLX
 		}
 		mNumGoodOccupancyNibbles++;
 	      } else {
-		cout << "Bad occupancy nibble" << endl;
 		mNumBadOccupancyNibbles++;
 	      }
 	    }

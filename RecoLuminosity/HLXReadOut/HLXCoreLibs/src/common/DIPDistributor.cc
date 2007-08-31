@@ -117,7 +117,8 @@ namespace HCAL_HLX
   }
 
   void DIPDistributor::ProcessSection(const LUMI_SECTION & lumiSection) { 
-    
+    //cout << "Begin " << __PRETTY_FUNCTION__ << endl;
+
     for ( u32 j = 0 ; j != lumiSection.hdr.numBunches ; j++ ) {
       mHistogramData[j] = 0; 
       for ( u32 i = 0 ; i != lumiSection.hdr.numHLXs ; i++ ) {
@@ -156,6 +157,7 @@ namespace HCAL_HLX
 	/*} catch (DipException e){
 	printf("Failed to send dip data\n");
 	}*/
+    //cout << "End " << __PRETTY_FUNCTION__ << endl;
   }
 
 }

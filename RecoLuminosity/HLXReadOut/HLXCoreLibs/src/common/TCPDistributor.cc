@@ -45,6 +45,9 @@ namespace HCAL_HLX
 	     hostInfo->h_length);
       sa_local.sin_port = htons(port);
 
+      int on = 1;
+      setsockopt(mSocket, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on));
+
       // Bind to a local port to receive data
       int ret = bind(mSocket,(struct sockaddr *)&sa_local,sizeof(sa_local));
       if ( ret == -1 ) {
@@ -96,6 +99,12 @@ namespace HCAL_HLX
 	delete mInterlockData;
 	mInterlockData = 0;
       }
+      std::list<ClientConnectionData>::iterator it = clientList.begin();
+      while (it != clientList.end()) {
+	shutdown(it->socket, SHUT_RDWR);
+	++it;
+      }
+      clientList.clear();
       // Just close the socket
       if ( mSocket >= 0 ) {
 	shutdown(mSocket, SHUT_RDWR);
@@ -140,8 +149,6 @@ namespace HCAL_HLX
     // Manager the server in this thread...
     TCPDistributor *theClass = reinterpret_cast<TCPDistributor *>(thisPtr);
     struct timeval tv;
-    tv.tv_sec = 0;
-    tv.tv_usec = 500000;
     int fdChangeCount;
     u8 readDataBuffer[100000];
     int ret;
@@ -155,6 +162,10 @@ namespace HCAL_HLX
       // DON'T REMOVE THIS
       pthread_mutex_unlock(&theClass->mDataMutex);
 
+      // Reinitialise timer
+      tv.tv_sec = 1;
+      tv.tv_usec = 0;
+
       // Check for updates
       fdChangeCount = select(1000000,
 			     &theClass->fdsRead,
@@ -162,8 +173,8 @@ namespace HCAL_HLX
 			     &theClass->fdsExcept,
 			     &tv);
       if ( fdChangeCount > 0 ) {
-	cout << "Something happened" << endl;
-	cout << "Pre-lock mutex" << endl;
+	//cout << "Something happened" << endl;
+	//cout << "Pre-lock mutex" << endl;
 	// DON'T REMOVE THIS
 	pthread_mutex_lock(&theClass->mDataMutex);
 	if ( FD_ISSET(theClass->mSocket, &theClass->fdsRead) ) {
@@ -196,7 +207,7 @@ namespace HCAL_HLX
 	    theClass->clientList.erase(itold);
 	    continue;
 	  } else if ( FD_ISSET(it->socket, &theClass->fdsRead) ) {
-	    cout << "Client socket became readable" << endl;
+	    //cout << "Client socket became readable" << endl;
 	    ret = recv(it->socket, readDataBuffer, 100000, 0);
 	    if ( ret < 0 ) {
 	      cout << "Error on socket " << it->socket << endl;
@@ -216,10 +227,10 @@ namespace HCAL_HLX
 	      theClass->clientList.erase(itold);
 	      continue;
 	    } else {
-	      cout << "Read (discarded) " << dec << ret << " bytes of data" << endl;
+	      //cout << "Read (discarded) " << dec << ret << " bytes of data" << endl;
 	    } 
 	  } else if ( FD_ISSET(it->socket, &theClass->fdsWrite) ) {
-	    cout << "Client socket became writable" << endl;
+	    //cout << "Client socket became writable" << endl;
 	    ret = send(it->socket,
 		      it->lumiSection + sizeof(LUMI_SECTION) - it->nBytesLeft,
 		      it->nBytesLeft,
@@ -233,29 +244,31 @@ namespace HCAL_HLX
 	      theClass->clientList.erase(itold);
 	      continue;
 	    } else {
-	      cout << "Sent " << dec << ret
-		   << " bytes to client on socket "
-		   << it->socket << endl;
+	      //cout << "Sent " << dec << ret
+	      //   << " bytes to client on socket "
+	      //   << it->socket << endl;
 	      it->nBytesLeft -= ret;
 	    }
 	  }
 	  ++it;
 	}
-	cout << "Pre-unlock mutex" << endl;
+	//cout << "Pre-unlock mutex" << endl;
 	// DON'T REMOVE THIS
 	pthread_mutex_unlock(&theClass->mDataMutex);
       }
-      Sleep(1);
+      //Sleep(1);
     }
 
-    cout << "TCPDistributor: INFO - Worker thread complete" << endl;
+    //cout << "TCPDistributor: INFO - Worker thread complete" << endl;
   }
 
   void TCPDistributor::ProcessSection(const LUMI_SECTION & lumiSection) {
+    cout << "Begin " << __PRETTY_FUNCTION__ << endl;
     // TODO - modify so list held by section collector
     // Stalls are then also flagged in the section collector *not* here
     try {
       // DON'T REMOVE THIS
+      //cout << "Before mutex lock" << endl;
       pthread_mutex_lock(&mDataMutex);
 
       // Data structure copy
@@ -274,10 +287,12 @@ namespace HCAL_HLX
       }
 
       // DON'T REMOVE THIS
+      //cout << "Before mutex unlock" << endl;
       pthread_mutex_unlock(&mDataMutex);
     } catch (ICException & aExc) {
       RETHROW(aExc);
     }
+    cout << "End " << __PRETTY_FUNCTION__ << endl;
   }
 
 

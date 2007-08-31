@@ -92,6 +92,7 @@ namespace HCAL_HLX
   }
 
   void OracleDistributor::ProcessSection(const LUMI_SECTION & lumiSection) {
+    cout << "Begin " << __PRETTY_FUNCTION__ << endl;
     try {
       // Get the next sequence ID
       long lumiSectionID = mDBWriter->getLumiSectionSeq();
@@ -155,6 +156,7 @@ namespace HCAL_HLX
       cout << "Unknown exception caught" << endl;
       mErrorCount++;
     }
+    cout << "End " << __PRETTY_FUNCTION__ << endl;
   }
 
 

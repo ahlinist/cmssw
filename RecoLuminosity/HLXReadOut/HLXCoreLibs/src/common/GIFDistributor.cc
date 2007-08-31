@@ -41,35 +41,49 @@ namespace HCAL_HLX
   }
 
   void GIFDistributor::Init() {
-    mHistogramData = new u32[4096];
-    if ( !mHistogramData ) {
-      this->CleanUp();
-      MemoryAllocationException lExc("Unable to allocate memory");
+    mETHistogramData = new double[4096];
+    if ( !mETHistogramData ) {
+      //this->CleanUp();
+      MemoryAllocationException lExc("Unable to allocate memory for ET histogram");
+      RAISE(lExc);
+    }
+    mLHCHistogramData = new double[4096];
+    if ( !mLHCHistogramData ) {
+      //this->CleanUp();
+      MemoryAllocationException lExc("Unable to allocate memory for LHC histogram");
       RAISE(lExc);
     }
   }
 
   void GIFDistributor::CleanUp() { 
-    if ( mHistogramData ) {
-      delete []mHistogramData;
-      mHistogramData = 0;
+    if ( mETHistogramData ) {
+      delete []mETHistogramData;
+      mETHistogramData = 0;
+    }
+    if ( mLHCHistogramData ) {
+      delete []mLHCHistogramData;
+      mLHCHistogramData = 0;
     }
   }
 
   void GIFDistributor::ProcessSection(const LUMI_SECTION & lumiSection) { 
+    //cout << "Begin " << __PRETTY_FUNCTION__ << endl;
 
     // Done before histogram fill - worried about
     // root using dynamic allocation of memory...slower
     for ( u32 j = 0 ; j != lumiSection.hdr.numBunches ; j++ ) {
-      mHistogramData[j] = 0; 
+      mETHistogramData[j] = 0.0;
+      mLHCHistogramData[j] = 0.0;
       for ( u32 i = 0 ; i != lumiSection.hdr.numHLXs ; i++ ) {
-	mHistogramData[j] += lumiSection.etSum[i].data[j];
+	mETHistogramData[j] += static_cast<double>(lumiSection.etSum[i].data[j]);
+	mLHCHistogramData[j] += static_cast<double>(lumiSection.lhc[i].data[j]);
       }
+     //cout << j << "\t" << mETHistogramData[j] << endl;
     }
 
-    TH1D histogram("tempHist","HLX ET Distribution",lumiSection.hdr.numBunches,0,lumiSection.hdr.numBunches);
+    TH1D histogramET("tempHist","HLX ET Distribution",lumiSection.hdr.numBunches,0,lumiSection.hdr.numBunches);
     for ( u32 j = 0 ; j != lumiSection.hdr.numBunches ; j++ ) {
-      histogram.Fill(j,mHistogramData[j]);
+      histogramET.Fill(j,mETHistogramData[j]);
     }
 
     TCanvas canvas("tempCanvas","tempCanvas",200,10,600,400);
@@ -78,12 +92,30 @@ namespace HCAL_HLX
     canvas.SetLogy();
     canvas.SetGridx();
     canvas.SetGridy();
-    histogram.SetLineWidth(2);
-    histogram.GetXaxis()->SetTitle("BX Number");
-    histogram.GetYaxis()->SetTitle("ET Count");
-    histogram.Draw();
+    histogramET.SetLineWidth(2);
+    histogramET.GetXaxis()->SetTitle("BX Number");
+    histogramET.GetYaxis()->SetTitle("ET Count");
+    histogramET.Draw();
     canvas.SaveAs("tmp/et.gif");
 
+    //TH1D histogramLHC("tempHist","HLX LHC Distribution",lumiSection.hdr.numBunches,0,lumiSection.hdr.numBunches);
+    //for ( u32 j = 0 ; j != lumiSection.hdr.numBunches ; j++ ) {
+    //  histogramLHC.Fill(j,mLHCHistogramData[j]);
+   // }
+
+    //TCanvas canvas2("tempCanvas","tempCanvas",200,10,600,400);
+    //canvas.cd();
+    //canvas.SetFillColor(10);
+    //canvas.SetLogy();
+    //canvas.SetGridx();
+    //canvas.SetGridy();
+    //histogramLHC.SetLineWidth(2);
+    //histogramLHC.GetXaxis()->SetTitle("BX Number");
+    //histogramLHC.GetYaxis()->SetTitle("ET Count");
+    //histogramLHC.Draw();
+    //canvas2.SaveAs("tmp/lhc.gif");
+
+    //cout << "End " << __PRETTY_FUNCTION__ << endl;
   }
 
 }

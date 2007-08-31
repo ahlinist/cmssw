@@ -22,6 +22,8 @@
 // Abstract base class for Lumi Section
 #include "AbstractSectionCollector.hh"
 
+//#define HCAL_HLX_U8_BUFFER
+
 // Namespace for the HCAL HLX
 namespace HCAL_HLX
 {
@@ -61,6 +63,10 @@ namespace HCAL_HLX
     u32 GetNumBadOccupancyNibbles();
     u32 GetNumGoodLHCNibbles();
     u32 GetNumBadLHCNibbles();
+    
+    // Pointer debug
+    u16 GetWriteBufferPointer();
+    u16 GetReadBufferPointer();
 
     // Service handler function
     void RunServiceHandler();
@@ -125,8 +131,13 @@ namespace HCAL_HLX
     u32 mNumHLXs;
 
     // Circular buffer pointers
+#ifdef HCAL_HLX_U8_BUFFER
+    u8 mWriteBufferPointer;
+    u8 mReadBufferPointer;
+#else
     u16 mWriteBufferPointer;
     u16 mReadBufferPointer;
+#endif
 
     // Circular buffers
     HLX_CB_TYPE *circularBuffer;
@@ -136,6 +147,9 @@ namespace HCAL_HLX
 
     // Worker thread ID
     pthread_t mThreadId;
+
+    // Mutex 
+    pthread_mutex_t mDataMutex;
 
     // Hardware abstraction layer
     //HLX_HAL::HLXVMEILInterface * mHardwareInterface;

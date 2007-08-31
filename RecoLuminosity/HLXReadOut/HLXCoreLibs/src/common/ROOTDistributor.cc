@@ -58,8 +58,7 @@ namespace HCAL_HLX {
   }
   
   void ROOTDistributor::ProcessSection(const HCAL_HLX::LUMI_SECTION& localSection){
-    cout << "In " << __PRETTY_FUNCTION__ << endl;
-    cout << "Committing summary data" << endl;
+    cout << "Begin " << __PRETTY_FUNCTION__ << endl;
 
     unsigned int i, j;
 
@@ -99,15 +98,20 @@ namespace HCAL_HLX {
     }
     
     // Section Header
-    for(i=0; i < 36; i ++){
-      for(j =0; j <3564; j ++){
-	LumiSection->etSum[i].data[j] = localSection.etSum[i].data[j] ;
-      }
+    // TODO: memcpy?!
+    //    for(i=0; i < 36; i ++){
+    // for(j =0; j <3564; j ++){
+    //	LumiSection->etSum[i].data[j] = localSection.etSum[i].data[j] ;
+    // }
       
-    }
+    //}
+    
+    memcpy(LumiSection, &localSection, sizeof(localSection));
+    
     m_tree->Fill();
     //m_tree->Print();
     
+    cout << "End " << __PRETTY_FUNCTION__ << endl;
   }
 
 }

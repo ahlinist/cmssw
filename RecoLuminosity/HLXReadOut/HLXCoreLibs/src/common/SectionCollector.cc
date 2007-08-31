@@ -235,7 +235,6 @@ namespace HCAL_HLX
 	
 	  for ( u32 i = 0 ; i != theClass->mDistributors.size() ; i++ ) {
 	    theClass->mDistributors[i]->ProcessSection(*theClass->mLumiSectionBuffer);
-	    Sleep(1);
 	  }
 	  theClass->mTransmitComplete = true;
 
@@ -246,11 +245,11 @@ namespace HCAL_HLX
 	}
       }
 
-      usleep(1000);
+      Sleep(1);
 
     }
 
-    cout << "Worker thread complete" << endl;
+    //cout << "Worker thread complete" << endl;
   }
 
   void SectionCollector::ProcessLHCNibble(const LHC_NIBBLE & lhcNibble,

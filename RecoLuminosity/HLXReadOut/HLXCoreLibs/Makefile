@@ -23,6 +23,7 @@ Sources = \
 	TestDistributor.cc \
 	DIPDistributor.cc \
 	GIFDistributor.cc \
+        WedgeGIFDistributor.cc \
         SectionCollector.cc \
 	TestSectionCollector.cc \
         TCPDistributor.cc \
@@ -35,7 +36,7 @@ include $(XDAQ_ROOT)/config/mfDefs.$(XDAQ_OS)
 
 # compiler flags
 UserCFlags =
-UserCCFlags = 
+UserCCFlags = -D_REENTRANT
 UserDynamicLinkFlags =
 UserStaticLinkFlags =
 UserExecutableLinkFlags =
