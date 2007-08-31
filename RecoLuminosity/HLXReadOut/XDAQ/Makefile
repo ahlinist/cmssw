@@ -1,7 +1,8 @@
 include $(XDAQ_ROOT)/config/mfAutoconf.rules
 include $(XDAQ_ROOT)/config/mfDefs.$(XDAQ_OS)
 
-Project=RecoLuminosity/HLXReadOut
+ProjectGroup=RecoLuminosity
+Project=$(ProjectGroup)/HLXReadOut
 Package=XDAQ
 
 Sources = \
@@ -29,21 +30,23 @@ IncludeDirs = \
         $(XDAQ_ROOT)/daq/xdaq/include \
         $(XDAQ_ROOT)/daq/xdaq/include/solaris \
         $(XDAQ_ROOT)/daq/xdaq/include/linux \
-	$(XDAQ_ROOT)/lumi/HF/CoreUtils/include \
-	$(XDAQ_ROOT)/lumi/HF/HLXReadout/include \
 	$(XDAQ_ROOT)/daq/extern/log4cplus/$(XDAQ_OS)$(XDAQ_PLATFORM)/include/log4cplus/helpers \
 	$(XDAQ_ROOT)/daq/extern/log4cplus/$(XDAQ_OS)$(XDAQ_PLATFORM)/include/log4cplus/spi \
-	$(XDAQ_ROOT)/lumi/HF/DIP/include \
+	$(XDAQ_ROOT)/$(ProjectGroup)/LumiDB/include \
+	$(XDAQ_ROOT)/$(Project)/CoreUtils/include \
+	$(XDAQ_ROOT)/$(Project)/HLXCoreLibs/include \
+	$(XDAQ_ROOT)/$(Project)/DIP/include \
 	$(ORACLE_HOME)/rdbms/demo \
-        $(ORACLE_HOME)/rdbms/public \
-        $(ORACLE_HOME)/plsql/public \
-        $(ORACLE_HOME)/network/public \
+	$(ORACLE_HOME)/rdbms/public \
+	$(ORACLE_HOME)/plsql/public \
+	$(ORACLE_HOME)/network/public \
 	$(ROOTSYS)/include
+
 
 LibraryDirs = \
 
 UserCFlags = 
-UserCCFlags = -D$(PLATFORM)
+UserCCFlags = -D_REENTRANT
 UserDynamicLinkFlags =  
 
 DependentLibraryDirs = \
@@ -52,16 +55,18 @@ DependentLibraryDirs = \
 			$(XDAQ_ROOT)/daq/toolbox/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM) \
 			$(XDAQ_ROOT)/daq/xcept/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM)/ \
 			$(XDAQ_ROOT)/daq/extern/log4cplus/$(XDAQ_OS)$(XDAQ_PLATFORM)/lib/ \
-		        $(XDAQ_ROOT)/lumi/HF/CoreUtils/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM)/ \
-	        	$(XDAQ_ROOT)/lumi/HF/HLXReadout/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM)/ \
-		        $(XDAQ_ROOT)/lumi/HF/DIP/lib/ \
-			$(ORACLE_HOME)/lib/ \
-			$(ORACLE_HOME)/rdbms/lib/ \
-			$(ROOTSYS)/lib/
+			$(XDAQ_ROOT)/$(ProjectGroup)/LumiDB/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM) \
+			$(XDAQ_ROOT)/$(Project)/CoreUtils/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM) \
+			$(XDAQ_ROOT)/$(Project)/HLXCoreLibs/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM) \
+			$(XDAQ_ROOT)/$(Project)/DIP/lib \
+			$(ORACLE_HOME)/lib \
+			$(ORACLE_HOME)/rdbms/lib \
+			$(ROOTSYS)/lib
 
+DependentLibraries = LumiDB toolbox xcept xerces-c log4cplus xoap CoreUtils HLXCoreLibs \
+	pthread dip dl clntsh occi10 nnz10 n10 \
+	Hist MathCore Matrix Core Cint Gpad Graf RIO Tree Net
 
-DependentLibraries = toolbox xcept xerces-c log4cplus xoap CoreUtils HLXReadout pthread dip dl clntsh occi10 nnz10 n10 \
-	Hist MathCore Matrix Core Cint Gpad Graf RIO
 UserStaticLinkFlags =
 UserExecutableLinkFlags =
 

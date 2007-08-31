@@ -27,8 +27,8 @@ else
     while :
 	do
 	  CONFIG_FILE="HLXReadoutXDAQConfig.xml" #`hostname`
-	  echo "Run xdaq with options -l ${Label} -h ${Host} -p ${Port} -c ${XDAQ_ROOT}/lumi/HF/HLXReadoutXDAQ/xml/HLXReadoutXDAQConfig.xml"
-	  ${XDAQ_ROOT}/daq/xdaq/bin/linux/x86/xdaq.exe -l $Label -h $Host -p $Port -c ${XDAQ_ROOT}/lumi/HF/HLXReadoutXDAQ/xml/${CONFIG_FILE}
+	  echo "Run xdaq with options -l ${Label} -h ${Host} -p ${Port} -c ${XDAQ_ROOT}/RecoLuminosity/HLXReadOut/XDAQ/xml/HLXReadoutXDAQConfig.xml"
+	  ${XDAQ_ROOT}/daq/xdaq/bin/linux/x86/xdaq.exe -l $Label -h $Host -p $Port -c ${XDAQ_ROOT}/RecoLuminosity/HLXReadOut/XDAQ/xml/${CONFIG_FILE}
 	  if [ "$?" -ne "10" ]; then
 	  	  echo Exit "$?"
 		  exit "$?"
