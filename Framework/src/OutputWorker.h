@@ -35,6 +35,12 @@ namespace edm {
 
     int eventCount() const;
 
+    // Call maybeEndFile() on the controlled OutputModule.
+    void maybeEndFile();
+
+    // Call doEndFile() on the controlled OutputModule.
+    void doEndFile();
+
   private:
     virtual bool implDoWork(EventPrincipal& e, EventSetup const& c,
 			    BranchActionType,

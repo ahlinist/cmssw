@@ -107,9 +107,13 @@ namespace edm {
     typedef boost::shared_ptr<Worker> WorkerPtr;
     typedef boost::shared_ptr<ActivityRegistry> ActivityRegistryPtr;
     typedef std::set<Worker*> AllWorkers;
-    typedef std::pair<int, OutputWorker const*> OneOutputWorker;
-    typedef std::vector<OneOutputWorker> AllOutputWorkers;
+    typedef std::vector<OutputWorker*> AllOutputWorkers;
+
+    typedef std::pair<int, OutputWorker const*> OneLimitedOutputWorker;
+
+    typedef std::vector<OneLimitedOutputWorker> AllLimitedOutputWorkers;
     typedef std::vector<Worker*> Workers;
+
     typedef std::vector<WorkerInPath> PathWorkers;
 
     Schedule(ParameterSet const& processDesc,
@@ -128,6 +132,12 @@ namespace edm {
 
     void beginJob(EventSetup const&);
     void endJob();
+
+    // Call maybeEndFile() on all OutputModules.
+    void maybeEndFile();
+
+    // Call doEndFile() on all OutputModules.
+    void doEndFile();
 
     std::pair<double,double> timeCpuReal() const {
       return std::pair<double,double>(stopwatch_->cpuTime(),stopwatch_->realTime());
@@ -238,11 +248,12 @@ namespace edm {
     TrigResPtr   results_;
     TrigResPtr   endpath_results_;
 
-    WorkerPtr   results_inserter_;
-    AllWorkers  all_workers_;
-    AllOutputWorkers  all_output_workers_;
-    TrigPaths   trig_paths_;
-    TrigPaths   end_paths_;
+    WorkerPtr                results_inserter_;
+    AllWorkers               all_workers_;
+    AllOutputWorkers         all_output_workers_;
+    AllLimitedOutputWorkers  limited_output_workers_;
+    TrigPaths                trig_paths_;
+    TrigPaths                end_paths_;
 
     PathWorkers tmp_wrongly_placed_;
 

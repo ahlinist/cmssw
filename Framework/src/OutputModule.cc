@@ -338,6 +338,25 @@ namespace edm {
     endLuminosityBlock(lbp);
   }
 
+  void OutputModule::maybeEndFile()
+  {
+    if (isFileOpen() && isFileFull()) doEndFile();
+    // Where should we open a new file? It does not seem that here is
+    // the right place...
+  }
+  
+  void OutputModule::doEndFile()
+  {
+    startEndFile();
+    writeFileFormatVersion();
+    writeProcessConfigurationRegistry();
+    writeProcessHistoryRegistry();
+    writeModuleDescriptionRegistry();
+    writeParameterSetRegistry();
+    writeProductDescriptionRegistry();
+    finishEndFile();
+  }
+
   CurrentProcessingContext const*
   OutputModule::currentContext() const
   {
