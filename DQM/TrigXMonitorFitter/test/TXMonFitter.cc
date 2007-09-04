@@ -26,7 +26,7 @@ int main(Int_t argc, char **argv)
   TriggerLineInfo::setMatchname (Triggername);
   TriggerLineInfo::setRunList (RunVector);
   // set mode, this must be done after setRunList
-  TriggerLineInfo::setMode(TriggerLineInfo::TLIc_TXMonRoot); 
+  TriggerLineInfo::setMode(TriggerLineInfo::TLI_kTXMonRoot); 
 
 
   string firstTXMRfile = RunVector[0];

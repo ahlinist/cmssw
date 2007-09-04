@@ -23,7 +23,7 @@ int main(int argc, char **argv)
   double p1 = 0;
   double p2 = 0;
   double p3 = 0;
-  double pn = 0;
+//  double pn = 0;
   double Error = 0;
   
   if ( third == "-f" )
@@ -39,6 +39,7 @@ int main(int argc, char **argv)
       p1  = atof( argv[5] );
       p2  = atof( argv[6] );
       p3  = atof( argv[7] );
+   // pn = atof( argv[n] );
       Error = atof( argv[8] );
       offset = 6; // we used 1 for '-f' and 5 for parameters
       TriggerLineInfo::useOfficialFit (p0, p1, p2, p3, Error);
@@ -60,7 +61,7 @@ int main(int argc, char **argv)
   TriggerLineInfo::setRunList (RunVector);
   
   // set mode MUST be done after setRunList
-  TriggerLineInfo::setMode(TriggerLineInfo::TLIc_TXMonRoot);
+  TriggerLineInfo::setMode(TriggerLineInfo::TLI_kTXMonRoot);
   
   //TriggerLineInfo::ProcessOneTXMonRootTrigger(Triggername);
   TriggerLineInfo::ProcessOneTXMonRootTrigger(Triggername, basename, true);

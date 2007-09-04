@@ -1,3 +1,16 @@
+/*
+  Module name: TriggerLineInfo.cc
+  Author: Charles Plager (CDF)
+  Modified by: Nagesh Kulkarni
+  Date Modified: 2007/09/25
+  Modified by: Richard Ruiz (CMS)
+  Date Modified: (On going)
+  Modifications: 
+   Made fitter capable of handling n trigger levels
+   and n fit paramters  
+*/
+
+
 // -*- C++ -*-
 #include <iostream>
 #include <fstream>
@@ -23,7 +36,7 @@ TriggerLineInfo::IVector TriggerLineInfo::sTLI_RunNumbers;
 vector <TriggerLineInfo> TriggerLineInfo::sTLI_Vector;
 vector <TriggerLineInfo> TriggerLineInfo::sTLI_MergedVector;
 vector <TriggerLineInfo> TriggerLineInfo::sTLI_OrigVector;
-TriggerLineInfo::modeType TriggerLineInfo::sTLI_mode = TriggerLineInfo::TLIc_RootFile;
+TriggerLineInfo::modeType TriggerLineInfo::sTLI_mode = TriggerLineInfo::TLI_kRootFile;
 
 Double_t TriggerLineInfo::sTLI_minX;
 Double_t TriggerLineInfo::sTLI_maxX;
@@ -31,12 +44,12 @@ Double_t TriggerLineInfo::sTLI_p0;
 Double_t TriggerLineInfo::sTLI_p1;
 Double_t TriggerLineInfo::sTLI_p2;
 Double_t TriggerLineInfo::sTLI_p3;
-Double_t TriggerLineInfo::sTLI_pn;
+// Double_t TriggerLineInfo::sTLI_pn;
 Double_t TriggerLineInfo::sTLI_e0;
 Double_t TriggerLineInfo::sTLI_e1;
 Double_t TriggerLineInfo::sTLI_e2;
 Double_t TriggerLineInfo::sTLI_e3;
-Double_t TriggerLineInfo::sTLI_en;
+// Double_t TriggerLineInfo::sTLI_en;
 Double_t TriggerLineInfo::sTLI_fitError;
 
 Double_t TriggerLineInfo::sTLI_origMaxy1;        
@@ -45,19 +58,19 @@ Double_t TriggerLineInfo::sTLI_orig_p0;
 Double_t TriggerLineInfo::sTLI_orig_p1;
 Double_t TriggerLineInfo::sTLI_orig_p2;
 Double_t TriggerLineInfo::sTLI_orig_p3;
-Double_t TriggerLineInfo::sTLI_orig_pn;
+// Double_t TriggerLineInfo::sTLI_orig_pn;
 Double_t TriggerLineInfo::sTLI_orig_e0;
 Double_t TriggerLineInfo::sTLI_orig_e1;
 Double_t TriggerLineInfo::sTLI_orig_e2;
 Double_t TriggerLineInfo::sTLI_orig_e3;
-Double_t TriggerLineInfo::sTLI_orig_en;
+// Double_t TriggerLineInfo::sTLI_orig_en;
 Double_t TriggerLineInfo::sTLI_orig_fitError;
 
 Double_t TriggerLineInfo::sTLI_off_p0;
 Double_t TriggerLineInfo::sTLI_off_p1;
 Double_t TriggerLineInfo::sTLI_off_p2;
 Double_t TriggerLineInfo::sTLI_off_p3;
-Double_t TriggerLineInfo::sTLI_off_pn;
+// Double_t TriggerLineInfo::sTLI_off_pn;
 Double_t TriggerLineInfo::sTLI_off_fitError;
 
 Int_t TriggerLineInfo::sTLI_minRun = 0;
@@ -113,11 +126,11 @@ bool TriggerLineInfo::sTLI_useGrid = true;
 
 #ifndef __CINT_T__  // Because CINT_T is a little goofy        
 // Numbers for colors found in Root Users Guide 4.08 page 151
-const Int_t TriggerLineInfo::sTLI_colorArray[TriggerLineInfo::TLIc_NumberColors] = 
+const Int_t TriggerLineInfo::sTLI_colorArray[TriggerLineInfo::TLI_kNumberColors] = 
   {   2,   3,   4,   5,   6,   7,  28,
       102, 103, 104, 105, 106, 107, 128};
 // Numbers for styles found in Root Users Guide 4.08 page 125
-const Int_t TriggerLineInfo::sTLI_styleArray[TriggerLineInfo::TLIc_NumberStyles] = 
+const Int_t TriggerLineInfo::sTLI_styleArray[TriggerLineInfo::TLI_kNumberStyles] = 
   { 20, 21, 22, 23, 29 };
 string TriggerLineInfo::sTLI_Triggername = "Triggername";
 string TriggerLineInfo::sTLI_basename = "Triggername";
@@ -126,10 +139,10 @@ string TriggerLineInfo::sTLI_VersionTag = "0";
 string TriggerLineInfo::sTLI_RunNumberFilename = "RunNumbers.txt";
 
 // Filenames with Run Numbers to avoid
-const string TriggerLineInfo::TLIc_BadSingleFile = "BadSingle.txt";
-const string TriggerLineInfo::TLIc_BadDoubleFile = "BadDouble.txt";
-const string TriggerLineInfo::TLIc_RunRangeFile  = "RunRanges.txt";
-const string TriggerLineInfo::TLIc_nameExclude   = "NameExclude.txt";
+const string TriggerLineInfo::TLI_kBadSingleFile = "BadSingle.txt";
+const string TriggerLineInfo::TLI_kBadDoubleFile = "BadDouble.txt";
+const string TriggerLineInfo::TLI_kRunRangeFile  = "RunRanges.txt";
+const string TriggerLineInfo::TLI_knameExclude   = "NameExclude.txt";
 
 #endif
 
@@ -189,9 +202,9 @@ void TriggerLineInfo::reset()
   setEy (0.);
   setRunNumber (0);
   setTable ("table");
-  setUsedInFit (TLIc_Used);
+  setUsedInFit (TLI_kUsed);
   setGroup (-1);
-  setTime (TLIc_NoTime);
+  setTime (TLI_kNoTime);
 }
 
 
@@ -231,7 +244,7 @@ Double_t TriggerLineInfo::fit() const
 // is used in fit (bool)
 bool TriggerLineInfo::isUsedInFit() const
 {
-  return ( TLI_usedInFit == TLIc_Used );
+  return ( TLI_usedInFit == TLI_kUsed );
 }
 
 
@@ -241,10 +254,10 @@ string TriggerLineInfo::usedInFitString() const
 {
   switch (TLI_usedInFit)
     {
-    case TLIc_Used:      return "Used";
-    case TLIc_Five:      return "**Five**";
-    case TLIc_BadRun:    return "**Bad Run**";
-    case TLIc_Excluded:  return "**Excluded**";
+    case TLI_kUsed:      return "Used";
+    case TLI_kFive:      return "**Five**";
+    case TLI_kBadRun:    return "**Bad Run**";
+    case TLI_kExcluded:  return "**Excluded**";
 
     default:             return "**Unknown**";
     }
@@ -309,14 +322,14 @@ void TriggerLineInfo::setTriggername(std::string name)
 //
 // get MergedPoint (withouth time)
 bool TriggerLineInfo::getMergedPoint(Int_t index, 
-				       Int_t &RunNumber,
-				       Double_t &x,
-				       Double_t &y,
-				       Double_t &ex, 
-				       Double_t &ey,
-				       Int_t &group,
-				       Double_t &residual,
-				       Double_t &residualError)
+				     Int_t &RunNumber,
+				     Double_t &x,
+				     Double_t &y,
+				     Double_t &ex, 
+				     Double_t &ey,
+				     Int_t &group,
+				     Double_t &residual,
+				     Double_t &residualError)
 {
   Int_t NumberOfEntries = sTLI_MergedVector.size();
   if ((index < 0) || (index >= NumberOfEntries))
@@ -392,14 +405,14 @@ bool TriggerLineInfo::getOrigPoint(Int_t index,
 //
 // Get Point
 bool TriggerLineInfo::getPoint(Int_t index, 
-				 Int_t &RunNumber,
-				 Double_t &x, 
-				 Double_t &y,
-				 Double_t &ex, 
-				 Double_t &ey,
-				 Int_t &group,
-				 Double_t &residual,
-				 Double_t &residualError)
+			       Int_t &RunNumber,
+			       Double_t &x, 
+			       Double_t &y,
+			       Double_t &ex, 
+			       Double_t &ey,
+			       Int_t &group,
+			       Double_t &residual,
+			       Double_t &residualError)
 {
   Int_t NumberOfEntries = sTLI_Vector.size();
   if ((index < 0) || (index >= NumberOfEntries))
@@ -433,17 +446,25 @@ bool TriggerLineInfo::getPoint(Int_t index,
 //
 // Get Point with (time)
 bool TriggerLineInfo::getPoint (Int_t index,
-				  Int_t &RunNumber, 
-				  Double_t &x, 
-				  Double_t &y,
-				  Double_t &ex,
-				  Double_t &ey,
-				  Int_t &group, 
-				  Double_t &residual,
-				  Double_t &residualError,
-				  Int_t &time)
+				Int_t &RunNumber, 
+				Double_t &x, 
+				Double_t &y,
+				Double_t &ex,
+				Double_t &ey,
+				Int_t &group, 
+				Double_t &residual,
+				Double_t &residualError,
+				Int_t &time)
 {
-  if ( !(getPoint (index, RunNumber, x, y, ex, ey, group, residual, residualError)) )
+  if ( !(getPoint (index,
+		   RunNumber,
+		   x, 
+		   y,
+		   ex,
+		   ey,
+		   group,
+		   residual,
+		   residualError)) )
     {
       time = 0;
       return false;
@@ -456,9 +477,10 @@ bool TriggerLineInfo::getPoint (Int_t index,
 
 //
 // Calculate Fit Info
-void TriggerLineInfo::CalculateFitInfo (Double_t &Error, std::list< Int_t > &badRunList)
+void TriggerLineInfo::CalculateFitInfo (Double_t &Error, 
+					IList &badRunList)
 {
-  std::list <Double_t> absPercentDeviation;
+  DList absPercentDeviation;
   badRunList.clear();
   
   Int_t NumberOfEntries = sTLI_Vector.size();
@@ -572,8 +594,8 @@ Double_t TriggerLineInfo::fit(Double_t x)
       // don't bother dividing by 0
       return 0.;
     }
-
-  return sTLI_p0 + (sTLI_p1 / x) + sTLI_p2 * x + sTLI_p3 * x * x;  ////// This can be changed
+  ////// This is the official fit
+  return sTLI_p0 + (sTLI_p1 / x) + sTLI_p2 * x + sTLI_p3 * x * x;  
 }
 
 
@@ -590,12 +612,12 @@ void TriggerLineInfo::resetStaticEntries()
   sTLI_p1 = sTLI_orig_p1 = 0;
   sTLI_p2 = sTLI_orig_p2 = 0;
   sTLI_p3 = sTLI_orig_p3 = 0;
-  sTLI_pn = sTLI_orig_pn = 0;
+  //  sTLI_pn = sTLI_orig_pn = 0;
   sTLI_e0 = sTLI_orig_e0 = 0;
   sTLI_e1 = sTLI_orig_e1 = 0;
   sTLI_e2 = sTLI_orig_e2 = 0;
   sTLI_e3 = sTLI_orig_e3 = 0;
-  sTLI_en = sTLI_orig_en = 0;
+  //  sTLI_en = sTLI_orig_en = 0;
   sTLI_fitError = sTLI_orig_fitError = 1;
   sTLI_minX = 1000; // something ridiculously big
   sTLI_maxX = 0;
@@ -635,15 +657,27 @@ void TriggerLineInfo::addMergedEntry(Int_t RunNumber,
     }
   //dout << "time " << time << endl;
 
-  if (TLIc_NoTime == time)
+  if (TLI_kNoTime == time)
     {
-      sTLI_MergedVector.push_back ( TriggerLineInfo (RunNumber, x, y, ex, ey, table) );
+      sTLI_MergedVector.push_back ( TriggerLineInfo (RunNumber, 
+						     x,
+						     y,
+						     ex,
+						     ey,
+						     table) );
       sTLI_yErrorSum += ey;
       sTLI_yErrorAvg = ( sTLI_yErrorSum / sTLI_MergedVector.size() );
     } //time isn't entered
   else 
     {
-      sTLI_MergedVector.push_back ( TriggerLineInfo (RunNumber, x, y, ex, ey, table, TLIc_Used, time) );
+      sTLI_MergedVector.push_back ( TriggerLineInfo (RunNumber,
+						     x, 
+						     y, 
+						     ex,
+						     ey,
+						     table,
+						     TLI_kUsed,
+						     time) );
       sTLI_yErrorSum += ey;
       sTLI_yErrorAvg = ( sTLI_yErrorSum / sTLI_MergedVector.size() );
     } //if time < 0 (if time is a variable)
@@ -673,15 +707,27 @@ void TriggerLineInfo::addEntry(Int_t RunNumber,
     }
   //dout << "time " << time << endl;
 
-  if (TLIc_NoTime == time)
+  if (TLI_kNoTime == time)
     {
-      sTLI_Vector.push_back ( TriggerLineInfo (RunNumber, x, y, ex, ey, table) );
+      sTLI_Vector.push_back ( TriggerLineInfo (RunNumber,
+					       x,
+					       y,
+					       ex,
+					       ey,
+					       table) );
       sTLI_yErrorSum += ey;
       sTLI_yErrorAvg = (sTLI_yErrorSum / sTLI_Vector.size() );
     } //time isn't entered
   else
     {
-      sTLI_Vector.push_back ( TriggerLineInfo (RunNumber, x, y, ex, ey, table, TLIc_Used, time) );
+      sTLI_Vector.push_back ( TriggerLineInfo (RunNumber,
+					       x, 
+					       y,
+					       ex,
+					       ey,
+					       table,
+					       TLI_kUsed,
+					       time) );
       sTLI_yErrorSum += ey;
       sTLI_yErrorAvg = sTLI_yErrorSum / sTLI_Vector.size();
     } //if time < 0 (if time is a variable)
@@ -793,12 +839,13 @@ void TriggerLineInfo::Calculate()
       if( (loop >0) )
         if(sTLI_Vector[loop-1].y()==0.00)
 	  {
-            sTLI_Vector[loop].setUsedInFit(TLIc_Excluded);
+            sTLI_Vector[loop].setUsedInFit(TLI_kExcluded);
             continue;
 	  }           
       y1 = sTLI_Vector[loop].y();
 
-      if( (loop < NumberOfEntries) && (sTLI_Vector[loop + 1].RunNumber() == thisRunNumber) )
+      if( (loop < NumberOfEntries) && 
+	  (sTLI_Vector[loop + 1].RunNumber() == thisRunNumber) )
 	{
 	  y2 = sTLI_Vector[loop + 1].y();
 	}
@@ -807,7 +854,8 @@ void TriggerLineInfo::Calculate()
 	  y2 = sTLI_Vector[loop - 1].y();
 	}
       
-      if( (loop < NumberOfEntries-1) && (sTLI_Vector[loop + 2].RunNumber() == thisRunNumber) )
+      if( (loop < NumberOfEntries-1) && 
+	  (sTLI_Vector[loop + 2].RunNumber() == thisRunNumber) )
 	{
 	  y3 = sTLI_Vector[loop + 2].y();
 	}
@@ -816,7 +864,8 @@ void TriggerLineInfo::Calculate()
 	  y3 = sTLI_Vector[loop - 2].y();
 	}
       
-      if( (loop < NumberOfEntries-2) && (sTLI_Vector[loop + 3].RunNumber() == thisRunNumber) )
+      if( (loop < NumberOfEntries-2) && 
+	  (sTLI_Vector[loop + 3].RunNumber() == thisRunNumber) )
 	{
 	  y4 = sTLI_Vector[loop + 3].y();
 	}
@@ -840,7 +889,7 @@ void TriggerLineInfo::Calculate()
 
       if( (percent1 > thresh) & (percent2 > thresh) & (percent3 > thresh) )
 	{ 
-	  sTLI_Vector[loop].setUsedInFit(TLIc_Excluded);
+	  sTLI_Vector[loop].setUsedInFit(TLI_kExcluded);
 	  cout << loop << " Excluded!" << endl;
 	  continue;
 	}
@@ -899,7 +948,7 @@ void TriggerLineInfo::Calculate()
 	  if ( RunNumber == sTLI_singleBadList[inner] )
 	    {
 	      // don't fit this puppy
-	      sTLI_Vector[loop].setUsedInFit(TLIc_BadRun);
+	      sTLI_Vector[loop].setUsedInFit(TLI_kBadRun);
 	      //sTLI_Vector[loop].setGroup(-1);
 	      badPoint = true;
 	      break;
@@ -916,12 +965,12 @@ void TriggerLineInfo::Calculate()
 	      if (index < NumberDoubleBadRun)
 		{
 		  // This is from one of the bad Run ranges
-		  sTLI_Vector[loop].setUsedInFit(TLIc_BadRun);
+		  sTLI_Vector[loop].setUsedInFit(TLI_kBadRun);
 		}
 	      else
 		{
 		  // this must be for this Trigger line specifically
-		  sTLI_Vector[loop].setUsedInFit(TLIc_Excluded);
+		  sTLI_Vector[loop].setUsedInFit(TLI_kExcluded);
 		}
 	      //sTLI_Vector[loop].setGroup(-1);
 	      badPoint = true;
@@ -934,7 +983,7 @@ void TriggerLineInfo::Calculate()
 	    {
 	      if (0. == y)
 		{
-		  sTLI_Vector[loop].setUsedInFit(TLIc_Five);
+		  sTLI_Vector[loop].setUsedInFit(TLI_kFive);
 		  badPoint = true;
 		}
 	    }
@@ -943,14 +992,14 @@ void TriggerLineInfo::Calculate()
 	      if ( ( y > maxY ) || ( y < minY ))
 		{
 		  // don't fit this puppy
-		  sTLI_Vector[loop].setUsedInFit(TLIc_Five);
+		  sTLI_Vector[loop].setUsedInFit(TLI_kFive);
 		  badPoint = true;
 		  //sTLI_Vector[loop].setGroup(-1);
 		} 
 	    }
 	} // if not badPoint
       
-      if (TLIc_RootFile == sTLI_mode)
+      if (TLI_kRootFile == sTLI_mode)
 	{
 	  for (Int_t groupIndex = 0; groupIndex < sTLI_NumberRunRanges; ++groupIndex)
 	    {
@@ -963,7 +1012,7 @@ void TriggerLineInfo::Calculate()
 	    } // for groupIndex;
 	}
       else
-	if ((TLIc_TXMonRoot == sTLI_mode) || (TLIc_DataBase == sTLI_mode))
+	if ((TLI_kTXMonRoot == sTLI_mode) || (TLI_kDataBase == sTLI_mode))
 	  {
 	    sTLI_Vector[loop].setGroup( findGroup(RunNumber) );
 	  } // if in root file mode or database mode
@@ -1069,18 +1118,18 @@ Int_t TriggerLineInfo::getRunArrays (Double_t *xArray,
   Int_t NumberOfEntries = sTLI_Vector.size();
   for (Int_t loop = 0; loop < NumberOfEntries; ++loop)
     {
-      if (TLIc_RootFile == sTLI_mode)
+      if (TLI_kRootFile == sTLI_mode)
 	{
 	  xArray[index] = sTLI_Vector[loop].RunNumber();
 	}
       else
-	if (TLIc_DataBase == sTLI_mode)
+	if (TLI_kDataBase == sTLI_mode)
 	  {
 	    //xArray[index] = sTLI_Vector[loop].time();
 	    xArray[index] = ++sTLI_Index + 2 * sTLI_Vector[loop].group();
 	  }
 	else
-	  if (TLIc_TXMonRoot == sTLI_mode)
+	  if (TLI_kTXMonRoot == sTLI_mode)
 	    {
 	      xArray[index] = sTLI_Vector[loop].time();
 	    }
@@ -1099,12 +1148,13 @@ Int_t TriggerLineInfo::getRunArrays (Double_t *xArray,
 TriggerLineInfo::SVector TriggerLineInfo::legendnames()
 {
   std::vector< std::string > retval;
-  if (TLIc_RootFile == sTLI_mode)
+  if (TLI_kRootFile == sTLI_mode)
     {
       for (Int_t loop = 0; loop < sTLI_NumberRunRanges; ++loop)
 	{
 	  char cstring[100];
-	  if ( (sTLI_minRun == sTLI_RunRanges[loop]) && (sTLI_maxRun == sTLI_RunRanges[loop + 1]) )
+	  if ( (sTLI_minRun == sTLI_RunRanges[loop]) && 
+	       (sTLI_maxRun == sTLI_RunRanges[loop + 1]) )
 	    {
 	      // should only happen when we have only 1 category
 	      sprintf (cstring, "Used in fit");
@@ -1133,7 +1183,7 @@ TriggerLineInfo::SVector TriggerLineInfo::legendnames()
     }
   
   else
-    if ( (TLIc_TXMonRoot == sTLI_mode) || (TLIc_DataBase == sTLI_mode) )
+    if ( (TLI_kTXMonRoot == sTLI_mode) || (TLI_kDataBase == sTLI_mode) )
       {
 	for (Int_t RunIndex = 0; RunIndex < NumberRunNumbers(); ++RunIndex)
 	  {
@@ -1158,28 +1208,32 @@ string TriggerLineInfo::baseFilename()
   LevelType type = Level();
   string filename;
 
-  if (type == TLIc_L1)
+
+  if ( (Level1TriggerSwitch == 1) && (type == TLI_kL1) )
     {
-      return "L1/" + sTLI_basename;
+      return "L1/" + sTLI_basename;		
     }
   else
-    if (type == TLIc_L2)
+    if ( (Level2TriggerSwitch == 1) && (type == TLI_kL2) )
     {
-      return "L2/" + sTLI_basename;
+      return "L2/" + sTLI_basename;      
     }
     else
-      if (type == TLIc_L3)
-      {
-	return "L3/" + sTLI_basename;
-      }
-      else
-  // 	{
-  //	  return "Ln/" + sTLI_basename;
-  //	}
+      if ( (Level3TriggerSwitch == 1) && (type == TLI_kL3) )
 	{
 	  return "L3/" + sTLI_basename;
-	}
-  
+	}      
+      else  
+	if ( (LevelnTriggerSwitch == 1) && (type == TLI_kLn) )
+	  {      
+	    return "Ln/" + sTLI_basename;
+	  }  
+	else
+	  {
+	    return "NotUsed/" + sTLI_basename;
+	  }
+
+
 }
 
 
@@ -1188,27 +1242,34 @@ string TriggerLineInfo::baseFilename()
 TriggerLineInfo::LevelType TriggerLineInfo::Level()
 {
   string part = sTLI_Triggername.substr(0, 2);
+
   if (part == "L1") 
     {
-      return TLIc_L1;
+      return TLI_kL1;
     } 
   else
     if (part == "L2") 
       {
-	return TLIc_L2;
+	return TLI_kL2;
       }
     else 
       if (part == "L3")
       {
-	return TLIc_L3;
+	return TLI_kL3;
       }
       else
-	//{
-	//  return TLIc_Ln;
-	//}
-	{
-	  return TLIc_L3; 
-	}
+	if (part == "Ln")
+	  {
+	    return TLI_kLn;
+	  }
+
+  /// Currently, all L3 triggers do not have prefixes! so we need this:
+
+	else
+	  {
+	    return TLI_kL3; 
+	  }
+
 }
 
 
@@ -1219,7 +1280,7 @@ void TriggerLineInfo::setMode(modeType mode)
   sTLI_mode = mode;
   // If we're not getting the info only one point per Run,
   //don't bother checking to see if they are too high or too low. Reject zero points only.
-  if (TLIc_RootFile != sTLI_mode)
+  if (TLI_kRootFile != sTLI_mode)
     {
       sTLI_rejectZeroOnly = true;
     }
@@ -1234,14 +1295,14 @@ void TriggerLineInfo::initialize()
 {
   atexit(TriggerLineInfo::memoryCleanUp);
   // get single list of bad Runs
-  getSingleListFromFile (sTLI_singleBadList, TLIc_BadSingleFile); // vector ,string
-  getDoubleListFromFile (sTLI_lowerDoubleBadList, sTLI_upperDoubleBadList, TLIc_BadDoubleFile);
-  getThreeListsFromFile (sTLI_Excludenames, sTLI_lowerExclude, sTLI_upperExclude, TLIc_nameExclude);
+  getSingleListFromFile (sTLI_singleBadList, TLI_kBadSingleFile); // vector ,string
+  getDoubleListFromFile (sTLI_lowerDoubleBadList, sTLI_upperDoubleBadList, TLI_kBadDoubleFile);
+  getThreeListsFromFile (sTLI_Excludenames, sTLI_lowerExclude, sTLI_upperExclude, TLI_knameExclude);
 
-  if (TLIc_RootFile == mode())
+  if (TLI_kRootFile == mode())
     {
       // get Run ranges from file
-      getSingleListFromFile (sTLI_RunRanges, TLIc_RunRangeFile);
+      getSingleListFromFile (sTLI_RunRanges, TLI_kRunRangeFile);
       sTLI_NumberRunRanges = sTLI_RunRanges.size() - 1;
       if (sTLI_NumberRunRanges < 1)
 	{
@@ -1254,9 +1315,9 @@ void TriggerLineInfo::initialize()
       setMaxRun(sTLI_RunRanges[sTLI_NumberRunRanges]);
     }
   else
-    if ( (mode() == TLIc_DataBase) || (mode() == TLIc_TXMonRoot) )
+    if ( (mode() == TLI_kDataBase) || (mode() == TLI_kTXMonRoot) )
       {
-	if (mode() == TLIc_DataBase)
+	if (mode() == TLI_kDataBase)
 	  {
 	    // this was already done if we're in XMonRoot mode
 	    getSingleListFromFile(sTLI_RunNumbers, sTLI_RunNumberFilename);
@@ -1287,7 +1348,7 @@ void TriggerLineInfo::initialize()
 	sTLI_NumberRunRanges = sTLI_RunNumbers.size();
 	setPhysicsTables();
       
-	if (mode() == TLIc_TXMonRoot)
+	if (mode() == TLI_kTXMonRoot)
 	  {
 	    // I don't need to do the stuff below for XMonRoot mode
 	    makeLegend();
@@ -1380,15 +1441,15 @@ void TriggerLineInfo::makeLegend ()
   for (Int_t loop = NumberLegendEntries - 1; loop >= 0; --loop)
     {
       TGraphErrors *point = new TGraphErrors(1, &zerod, &zerod, &zerod, &zerod);
-      point->SetMarkerColor(sTLI_colorArray[loop % TLIc_NumberColors]);
-      point->SetMarkerStyle(sTLI_styleArray[loop % TLIc_NumberStyles]);
+      point->SetMarkerColor(sTLI_colorArray[loop % TLI_kNumberColors]);
+      point->SetMarkerStyle(sTLI_styleArray[loop % TLI_kNumberStyles]);
       sTLI_leg->AddEntry(point, legendnamesVector[loop].c_str(), "p");
       sTLI_legendList.push_back( point );
     } // for each entry in legend 
 
   TGraphErrors *point =  new TGraphErrors(1, &zerod, &zerod, &zerod, &zerod);
-  point->SetMarkerColor( TLIc_BadPointsColor );
-  point->SetMarkerStyle( TLIc_BadPointsStyle );
+  point->SetMarkerColor( TLI_kBadPointsColor );
+  point->SetMarkerStyle( TLI_kBadPointsStyle );
   sTLI_leg->AddEntry(point, "Not used in the fit", "p");
   sTLI_legendList.push_back( point );
 } // makeLegend()
@@ -1569,7 +1630,8 @@ string TriggerLineInfo::getFilenameForTrigger (Int_t Level, Int_t RunNumber)
 {
   Int_t RunStart = RunNumber / 1000;
   stringstream ss;
-  ss << "data/" << RunStart << "/" << RunNumber << "/L" << Level << "/" << Triggername(); 
+  ss << "data/" << RunStart << "/" << RunNumber << "/L" << Level << "/" 
+     << Triggername(); 
   return ss.str();
 } //getFilenameForL1(Int_t RuNumber)
 
@@ -1654,11 +1716,11 @@ bool TriggerLineInfo::checkBeforeFit ()
   
   if ((NumberHi < 2) || (NumberLo < 2))
     {
-      sTLI_dontFit |= 1 << TLIc_HiLo;
+      sTLI_dontFit |= 1 << TLI_kHiLo;
     } //if too few points high or low
   if (NumberOfGoodPoints() < 6)
     {
-      sTLI_dontFit |= 1 << TLIc_GoodPoints;
+      sTLI_dontFit |= 1 << TLI_kGoodPoints;
     } // if not enough points to fit
    
   if (sTLI_dontFit)
@@ -1683,10 +1745,10 @@ void TriggerLineInfo::makeGraphs()
     {
       cout << "I'm going to fit this puppy." << endl;
     }
-  Double_t xArray[TLIc_MaxEntries];
-  Double_t exArray[TLIc_MaxEntries];
-  Double_t yArray[TLIc_MaxEntries];
-  Double_t eyArray[TLIc_MaxEntries];
+  Double_t xArray[TLI_kMaxEntries];
+  Double_t exArray[TLI_kMaxEntries];
+  Double_t yArray[TLI_kMaxEntries];
+  Double_t eyArray[TLI_kMaxEntries];
   
   float xHi = TriggerLineInfo::xHi();
   float xLo = TriggerLineInfo::xLo();
@@ -1728,11 +1790,11 @@ void TriggerLineInfo::makeGraphs()
   float minx = gr->GetXaxis()->GetXmin();
   float maxx = gr->GetXaxis()->GetXmax();
   Double_t maxprob = -1., bestchidf = 9999999.;
-  const Int_t TLIc_NumberFits = 5;
+  const Int_t TLI_kNumberFits = 5;
   Int_t imax = 0;
 
   // If we are going to use the official fit, don't bother Running the fitting part
-  for (Int_t loop = 0; loop < TLIc_NumberFits && !sTLI_useOfficialFit; ++loop)
+  for (Int_t loop = 0; loop < TLI_kNumberFits && !sTLI_useOfficialFit; ++loop)
     {
       TF1 *func =  new TF1("fun1", "[0] + [1] / x + [2] * x + [3] * x * x", minx, maxx);
       
@@ -1808,7 +1870,7 @@ void TriggerLineInfo::makeGraphs()
       
       cout << "fit " << loop + 1 << ": chi2 " << chi2 << " prob " << prob << endl;
 
-      for (Int_t inner = 0; inner < TLIc_NumberParams; ++inner)
+      for (Int_t inner = 0; inner < TLI_kNumberParams; ++inner)
 	{      
 	  Double_t params = sTLI_functionList[loop]->GetParameter(inner);
 	  Double_t Errors = sTLI_functionList[loop]->GetParError(inner);
@@ -1827,8 +1889,8 @@ void TriggerLineInfo::makeGraphs()
 	}
       
       Double_t chidf = chi2/ndf;
-      cout << loop << ") " << "prob " << prob << " maxprob " << maxprob << " chidf " << chidf
-	   << " bestchidf " << bestchidf << endl;
+      cout << loop << ") " << "prob " << prob << " maxprob " << maxprob << " chidf " 
+	   << chidf << " bestchidf " << bestchidf << endl;
       // We want to take the fit with the best (highest) probability.  If
       // two fits have the same probability (usually 0), we want the
       // best (lowest) chi^2 / df
@@ -1849,7 +1911,7 @@ void TriggerLineInfo::makeGraphs()
   // /////////////////////// //
   /////////////////////////////
 
-    float params[TLIc_NumberParams];
+    float params[TLI_kNumberParams];
     Double_t Error;
 
     if (sTLI_useOfficialFit)
@@ -1875,10 +1937,10 @@ void TriggerLineInfo::makeGraphs()
 	float chi2 = sTLI_functionList[imax]->GetChisquare();
 	float ndf = sTLI_functionList[imax]->GetNDF();
 	cout <<"Chi**2 of " << chi2 << " for " << ndf << " degrees of Freedom" << endl;
-	float Errors[TLIc_NumberParams];
+	float Errors[TLI_kNumberParams];
 	cout << "params: " << endl;
 
-	for (Int_t loop = 0; loop < TLIc_NumberParams; ++loop)
+	for (Int_t loop = 0; loop < TLI_kNumberParams; ++loop)
 	  {      
 	    params[loop] = sTLI_functionList[imax]->GetParameter(loop);
 	    Errors[loop] = sTLI_functionList[imax]->GetParError(loop);
@@ -1899,15 +1961,17 @@ void TriggerLineInfo::makeGraphs()
 
     TF1 *upper = new TF1("fun1", "[0] + [1] / x + [2] * x + [3] * x * x", minx, maxx);
     TF1 *lower = new TF1("fun1", "[0] + [1] / x + [2] * x + [3] * x * x", minx, maxx);
-    TF1 *main  = new TF1("fun1", "[0] + [1] / x + [2] * x + [3] * x * x", minx, maxx);   
+    TF1 *main  = new TF1("fun1", "[0] + [1] / x + [2] * x + [3] * x * x", minx, maxx);
 
     sTLI_functionList.push_back(upper);
     sTLI_functionList.push_back(lower);
     sTLI_functionList.push_back(main);
-    float upperfactor = 1 + Error;   //////// Upper factor = 120% of fit cross section value
-    float lowerfactor = 1 - Error;   //////// Lower factor = 80%  of fit cross section value
+    //////// Upper factor = 120% of fit cross section value
+    float upperfactor = 1 + Error;
+    //////// Lower factor = 80%  of fit cross section value   
+    float lowerfactor = 1 - Error;
      
-    for (Int_t loop = 0; loop < TLIc_NumberParams; ++loop)
+    for (Int_t loop = 0; loop < TLI_kNumberParams; ++loop)
       {      
 	upper->SetParameter(loop, upperfactor * params[loop]);
 	lower->SetParameter(loop, lowerfactor * params[loop]);
@@ -1917,9 +1981,9 @@ void TriggerLineInfo::makeGraphs()
       }
 
 
-    upper->SetLineWidth(TLIc_LineWidth + 1); //Width =2+1=3
-    lower->SetLineWidth(TLIc_LineWidth + 1); //Width =2+1=3
-    main->SetLineWidth(TLIc_LineWidth);      //Width =2
+    upper->SetLineWidth(TLI_kLineWidth + 1); //Width =2+1=3
+    lower->SetLineWidth(TLI_kLineWidth + 1); //Width =2+1=3
+    main->SetLineWidth(TLI_kLineWidth);      //Width =2
     upper->SetLineColor(41);
     lower->SetLineColor(41);
     main->SetLineColor(1);
@@ -2002,10 +2066,26 @@ void TriggerLineInfo::makeGraphs()
 	Double_t x, y, ex, ey, residual, residualError;
 	Int_t group, RunNumber;
 	//Nagesh
-	bool isUsedInFit = getPoint (loop, RunNumber, x, y, ex, ey, group, residual, residualError);
+	bool isUsedInFit = getPoint (loop, 
+				     RunNumber, 
+				     x, 
+				     y, 
+				     ex, 
+				     ey,
+				     group,
+				     residual,
+				     residualError);
         if( sTLI_plotOriginalPoints && sTLI_fitOriginalPoints )
 	  {
-	    isUsedInFit = getPoint (loop, RunNumber, x, y, ex, ey, group, residual, residualError);
+	    isUsedInFit = getPoint (loop,
+				    RunNumber,
+				    x, 
+				    y,
+				    ex,
+				    ey,
+				    group,
+				    residual,
+				    residualError);
             // This will create .eps file
 	    drawLegend = true;
 	  }
@@ -2029,13 +2109,15 @@ void TriggerLineInfo::makeGraphs()
 	 sTLI_pointList.push_back( gg );
 	 if (isUsedInFit)
 	   {
-	     gg->SetMarkerColor(sTLI_colorArray[ (group + TLIc_NumberColors) % TLIc_NumberColors]);
-	     gg->SetMarkerStyle(sTLI_styleArray[ (group + TLIc_NumberStyles) % TLIc_NumberStyles]);
+	     gg->SetMarkerColor(sTLI_colorArray[ (group + TLI_kNumberColors) % 
+						 TLI_kNumberColors]);
+	     gg->SetMarkerStyle(sTLI_styleArray[ (group + TLI_kNumberStyles) % 
+						 TLI_kNumberStyles]);
 	   }
 	 else
 	   {
-	     gg->SetMarkerColor( TLIc_BadPointsColor );
-	     gg->SetMarkerStyle( TLIc_BadPointsStyle );
+	     gg->SetMarkerColor( TLI_kBadPointsColor );
+	     gg->SetMarkerStyle( TLI_kBadPointsStyle );
 	   } // if bad point or not
 	 gg->Draw("P"); // Draw single point.
       } // for loop
@@ -2066,12 +2148,12 @@ void TriggerLineInfo::makeGraphs()
     TGraphErrors *gr2 = new TGraphErrors(Number, xArray, yArray, exArray, eyArray);
     sTLI_pointList.push_back( gr2 );
 
-    if (sTLI_mode == TLIc_RootFile)
+    if (sTLI_mode == TLI_kRootFile)
       {
 	name = Triggername() + " Residual vs. Run Number";
       }
     else
-      if (sTLI_mode == TLIc_DataBase)
+      if (sTLI_mode == TLI_kDataBase)
 	{
 	  name = Triggername() + " Residual vs. Chronological Order";
 	} // title based on mode
@@ -2092,7 +2174,7 @@ void TriggerLineInfo::makeGraphs()
 	gr2->SetMinimum(-7.);
 	gr2->SetMaximum(11.);
       }
-    if (TLIc_RootFile == sTLI_mode)
+    if (TLI_kRootFile == sTLI_mode)
       {
 	gr2->GetXaxis()->SetTitle ("Run Number");
       }
@@ -2115,16 +2197,24 @@ void TriggerLineInfo::makeGraphs()
 	Double_t indexDouble_T;
 	bool isUsedInFit = false;
 
-	if (TLIc_RootFile == sTLI_mode)
+	if (TLI_kRootFile == sTLI_mode)
 	  {
-	    isUsedInFit = getPoint (loop, RunNumber, x, y, ex, ey, group, residual, residualError);
+	    isUsedInFit = getPoint (loop,
+				    RunNumber,
+				    x,
+				    y,
+				    ex,
+				    ey,
+				    group,
+				    residual,
+				    residualError);
 	    sTLI_ResidualStatMap[RunNumber].Add (residual);//sums up resid. over Run
 	    RunDouble_T = RunNumber;
 	    residualError = 0;
 	    gg = new TGraphErrors(1, &RunDouble_T, &residual, &ex, &residualError);
 	  }
 	else
-	  if ((TLIc_TXMonRoot == sTLI_mode) || (TLIc_DataBase == sTLI_mode))
+	  if ((TLI_kTXMonRoot == sTLI_mode) || (TLI_kDataBase == sTLI_mode))
 	    {
 	      isUsedInFit = getPoint (loop,
 					RunNumber,
@@ -2147,13 +2237,15 @@ void TriggerLineInfo::makeGraphs()
 
 	if (isUsedInFit)
 	  {
-	    gg->SetMarkerColor(sTLI_colorArray[ (group + TLIc_NumberColors) % TLIc_NumberColors]);
-	    gg->SetMarkerStyle(sTLI_styleArray[ (group + TLIc_NumberStyles) % TLIc_NumberStyles]);
+	    gg->SetMarkerColor(sTLI_colorArray[ (group + TLI_kNumberColors) % 
+						TLI_kNumberColors]);
+	    gg->SetMarkerStyle(sTLI_styleArray[ (group + TLI_kNumberStyles) % 
+						TLI_kNumberStyles]);
 	  }
 	else
 	  {
-	    gg->SetMarkerColor( TLIc_BadPointsColor );
-	    gg->SetMarkerStyle( TLIc_BadPointsStyle );     
+	    gg->SetMarkerColor( TLI_kBadPointsColor );
+	    gg->SetMarkerStyle( TLI_kBadPointsStyle );     
 	  } // if bad point or not
 	gg->Draw("P"); // Draw single point.
       } // for loop
@@ -2172,16 +2264,16 @@ void TriggerLineInfo::makeGraphs()
     if (sTLI_useGrid) 
       {
 	// consider making these lines dashed
-	zero.SetLineWidth (2 * TLIc_LineWidth);
-	plus.SetLineWidth (2 * TLIc_LineWidth);
-	minus.SetLineWidth(2 * TLIc_LineWidth);
+	zero.SetLineWidth (2 * TLI_kLineWidth);
+	plus.SetLineWidth (2 * TLI_kLineWidth);
+	minus.SetLineWidth(2 * TLI_kLineWidth);
       }
     else 
       {
 	// these are just fine as is.
-	zero.SetLineWidth (TLIc_LineWidth);
-	plus.SetLineWidth (TLIc_LineWidth);
-	minus.SetLineWidth(TLIc_LineWidth);
+	zero.SetLineWidth (TLI_kLineWidth);
+	plus.SetLineWidth (TLI_kLineWidth);
+	minus.SetLineWidth(TLI_kLineWidth);
       }
     
     zero.Draw();
@@ -2243,7 +2335,7 @@ string TriggerLineInfo::getTable(Int_t RunNumber)
 // Check Triggername
 bool TriggerLineInfo::checkTriggername()
 {
-  if (TLIc_DataBase == sTLI_mode) 
+  if (TLI_kDataBase == sTLI_mode) 
     {
       return true;
     } // database mode checks and corrects for bad name earlier
@@ -2259,7 +2351,7 @@ bool TriggerLineInfo::checkTriggername()
        (string::npos != Triggername().find("ERROROR")) )
     {
       cout << "not fitting " << Triggername() << " because you told me not to." << endl;
-      sTLI_dontFit |= 1 << TLIc_name;
+      sTLI_dontFit |= 1 << TLI_kname;
       return false;
 
     } // if Triggername matches bad Triggers
@@ -2338,7 +2430,8 @@ void TriggerLineInfo::getSingleListFromFile (IVector &iList, string filename)
 
 // 
 // get Single List From File
-void TriggerLineInfo::getSingleListFromFile (std::vector< std::string > &finalList, string filename)
+void TriggerLineInfo::getSingleListFromFile (std::vector< std::string > &finalList,
+					     string filename)
 {
   finalList.clear();
   ifstream source(filename.c_str(), ios::in);
@@ -2372,7 +2465,9 @@ void TriggerLineInfo::getSingleListFromFile (std::vector< std::string > &finalLi
 
 //
 // get Double_T List From File
-void TriggerLineInfo::getDoubleListFromFile (IVector  &lowerList,IVector  &upperList, string filename)
+void TriggerLineInfo::getDoubleListFromFile (IVector  &lowerList,
+					     IVector  &upperList,
+					     string filename)
 {
   lowerList.clear();
   upperList.clear();
@@ -2685,16 +2780,16 @@ void TriggerLineInfo::writeFitInfo()
 		 << basename() << ".gif\"></a></td>" << endl;
 	  target << "<td>" << "  <table><tr><td>This line NOT fit:</td></tr>" << endl;
 
-	  if (sTLI_dontFit & (1 << TLIc_name))
+	  if (sTLI_dontFit & (1 << TLI_kname))
 	    {
 	      target << "  <tr><td>Bad name</td></tr>" << endl;
 	    }
-	  if (sTLI_dontFit & (1 << TLIc_GoodPoints))
+	  if (sTLI_dontFit & (1 << TLI_kGoodPoints))
 	    {
 	      target << "  <tr><td>Not Enough Good Points</td></tr>" << endl;
 	    }
 	  else
-	    if (sTLI_dontFit & (1 << TLIc_HiLo))
+	    if (sTLI_dontFit & (1 << TLI_kHiLo))
 	      {
 		target << "  <tr><td>Not Enough High/Low points</td></tr>" << endl;
 	      }
@@ -2728,7 +2823,8 @@ void TriggerLineInfo::writeFitInfo()
       
       if(loop1 < NumberOfEntries_merged)
 	{
-          target << "                     "<< sTLI_Vector[loop1].x() <<"       "<< sTLI_Vector[loop1].y() << endl;
+          target << "                     "<< sTLI_Vector[loop1].x() <<"       "
+		 << sTLI_Vector[loop1].y() << endl;
           loop1++;
 	}
       else
@@ -2743,7 +2839,7 @@ void TriggerLineInfo::writeFitInfo()
   string name = "TRIGGER_NAME";
   string tag = "TRIGGER_TAG";
   string firstname = "TRIGGER_NAME";
-  if (TLIc_L3 == Level())
+  if (TLI_kL3 == Level())
     {
       // used by L3
       name = "PATH_NAME";
@@ -2933,11 +3029,11 @@ void TriggerLineInfo::noFitPlots()
   // we have.  Let's plot them and get on to real work
   TCanvas *canvas = new TCanvas("Canvas", "canvas");
   if (sTLI_useGrid) canvas->SetGrid();
-  Double_t xArray[TLIc_MaxEntries];
-  Double_t exArray[TLIc_MaxEntries];
-  Double_t yArray[TLIc_MaxEntries];
-  Double_t eyArray[TLIc_MaxEntries];
-  Int_t Number = TriggerLineInfo::getArrays(xArray, exArray, yArray, eyArray,true); // return all points
+  Double_t xArray[TLI_kMaxEntries];
+  Double_t exArray[TLI_kMaxEntries];
+  Double_t yArray[TLI_kMaxEntries];
+  Double_t eyArray[TLI_kMaxEntries];
+  Int_t Number = TriggerLineInfo::getArrays(xArray, exArray, yArray, eyArray,true);
 
   if (0 == Number)
     {
@@ -2965,13 +3061,15 @@ void TriggerLineInfo::noFitPlots()
       pointList.push_back( gg );
       if (isUsedInFit)
 	{
-	  gg->SetMarkerColor(sTLI_colorArray[ (group + TLIc_NumberColors) % TLIc_NumberColors]);
-	  gg->SetMarkerStyle(sTLI_styleArray[ (group + TLIc_NumberStyles) % TLIc_NumberStyles]);
+	  gg->SetMarkerColor(sTLI_colorArray[ (group + TLI_kNumberColors) %
+					      TLI_kNumberColors]);
+	  gg->SetMarkerStyle(sTLI_styleArray[ (group + TLI_kNumberStyles) %
+					      TLI_kNumberStyles]);
 	}
       else
 	{
-	  gg->SetMarkerColor( TLIc_BadPointsColor );
-	  gg->SetMarkerStyle( TLIc_BadPointsStyle );
+	  gg->SetMarkerColor( TLI_kBadPointsColor );
+	  gg->SetMarkerStyle( TLI_kBadPointsStyle );
 	} // if bad point or not
       gg->Draw("P"); // Draw single point.
     } // for loop
@@ -3003,24 +3101,24 @@ TriggerLineInfo::LevelType TriggerLineInfo::decodeLevelType (string name)
   string prefix = name.substr(0, 2);
   if ("L1" == prefix)
     {
-      return TLIc_L1;
+      return TLI_kL1;
     }
   else
     if ("L2" == prefix)
       {
-	return TLIc_L2;
+	return TLI_kL2;
       }
     else
       if (prefix == "L3")
 	{
-	  return TLIc_L3;
+	  return TLI_kL3;
 	}
       else
 	//  {
-	//   return TLIc_Ln;
+	//   return TLI_kLn;
 	//  }
 	{
-	  return TLIc_L3;
+	  return TLI_kL3;
 	}
 }
 
@@ -3053,28 +3151,28 @@ Int_t TriggerLineInfo::getPositionOfname (TriggerLineInfo::LevelType Level,
 {
   Version = -1;
   string treename;
-  if (TLIc_L1 == Level)
+  if (TLI_kL1 == Level)
     {
       treename = "l1names";
     }
   else
-    if (TLIc_L2 == Level)
+    if (TLI_kL2 == Level)
       {
 	treename = "l2names";
       }
     else
-      if (TLIc_L3 == Level)
+      if (TLI_kL3 == Level)
 	{
 	  treename = "l3names";
 	} 
   //  else
-  //	if (TLIc_Ln == Level)
+  //	if (TLI_kLn == Level)
   //	  {
   //	    treename == "lnnames";
   //	  }
       else
 	{
-	  cerr << "TriggerLineInfo::getPositionOfname called with invalid Level" << endl;
+	  cerr <<"TriggerLineInfo::getPositionOfname called with invalid Level" <<endl;
 	  return -1;
 	}
 
@@ -3089,8 +3187,8 @@ Int_t TriggerLineInfo::getPositionOfname (TriggerLineInfo::LevelType Level,
   TTree *tree = (TTree*) file.Get(treename.c_str());
   if (! tree)
     {
-      cerr << "TriggerLineInfo::getPositionOfname: Couldn't find " << treename << " in " 
-	   << XMonRootFile << ".  Aborting" << endl;
+      cerr << "TriggerLineInfo::getPositionOfname: Couldn't find " 
+	   << treename << " in " << XMonRootFile << ".  Aborting" << endl;
       return -1;
     }
 
@@ -3142,7 +3240,9 @@ Int_t TriggerLineInfo::getRunNumberFromname (std::string name)
 
 // 
 // Process one trigger
-void TriggerLineInfo::ProcessOneTXMonRootTrigger(string Triggername, string basename, bool fitBadnames)
+void TriggerLineInfo::ProcessOneTXMonRootTrigger(string Triggername, 
+						 string basename,
+						 bool fitBadnames)
 {
   if (! Triggername.size())
     {
@@ -3185,22 +3285,22 @@ void TriggerLineInfo::ProcessOneTXMonRootTrigger(string Triggername, string base
 
   // set tree name    // xsec will be changed to txsec
   TString treename;  
-  if (TLIc_L1 == Level)
+  if (TLI_kL1 == Level)
     {
       treename = "l1xsec";
     }
   else
-    if (TLIc_L2 == Level)
+    if (TLI_kL2 == Level)
       {
 	treename = "l2xsec";
       }
     else
-      if (TLIc_L3 == Level)
+      if (TLI_kL3 == Level)
 	{
 	  treename = "l3xsec";
 	}
   //  else
-  //	if (TLIc_Ln == Level)
+  //	if (TLI_kLn == Level)
   //	  {
   //	    treename = "lnxsec";
   //	  }
@@ -3211,7 +3311,7 @@ void TriggerLineInfo::ProcessOneTXMonRootTrigger(string Triggername, string base
 	}
   
   // let's get our points, baby...
-  unsigned int NumberFiles = sTLI_RunListVector.size();  ///////////2881
+  unsigned int NumberFiles = sTLI_RunListVector.size();
   // We want to start with the oldest file first.
   // The files are loaded in newest first, so....
   // we loop over the files backwards

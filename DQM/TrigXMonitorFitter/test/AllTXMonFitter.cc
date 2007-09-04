@@ -36,7 +36,7 @@ int main(int argc, char **argv)
   
   //
   // set mode, this must be done after setting the run list
-  TriggerLineInfo::setMode(TriggerLineInfo::TLIc_TXMonRoot);  // set mode MUST be done after setRunList
+  TriggerLineInfo::setMode(TriggerLineInfo::TLI_kTXMonRoot);  // set mode MUST be done after setRunList
   
   
   vector<string> names = TriggerLineInfo::allTriggerLinesInRootFile (RunVector[0]);
