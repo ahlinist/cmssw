@@ -5,14 +5,9 @@ module hscpMuonHLTPath = hltHighLevel  from "HLTrigger/HLTfilters/data/hltHighLe
 replace hscpMuonHLTPath.HLTPaths = {"HLT1MuonIso", "HLT1MuonNonIso", "HLT2MuonNonIso" , "HLT2MuonSameSign" }
 
 module hscpMETHLTPath = hltHighLevel  from "HLTrigger/HLTfilters/data/hltHighLevel.cfi"
-replace hscpMETHLTPath.HLTPaths = {
-"HLT1MET", "HLT1jet1MET", "HLT2jet1MET" , "HLT2jetAco","HLT1jet1METAco",
-"HLT3jet1MET",
-"HLT4jet1MET",
-"HLT1MET1HT",
-"HLT2jetvbfMET",
-"HLTS2jet1METNV"
- }
+replace hscpMETHLTPath.HLTPaths = {"HLT1MET", "HLT1jet1MET", "HLT2jet1MET", "HLT3jet1MET","HLT4jet1MET",
+                                   "HLT1MET1HT","HLT2jetvbfMET", "HLT2jetAco","HLT1jet1METAco","HLTS2jet1METNV",
+                                   "HLTS2jet1METAco","CandHLTSjet1MET1Aco","CandHLTSjet2MET1Aco","CandHLTS2jetAco"}
 
 
 
