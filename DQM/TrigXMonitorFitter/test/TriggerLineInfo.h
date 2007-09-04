@@ -41,51 +41,58 @@
    // Public Constants //
    //////////////////////
    
-      
+
+   // Level n Trigger Switches (turns on or off processing power of trigger level)
+   enum { Level1TriggerSwitch = 1 }; // 0 for off and 1 for on
+   enum { Level2TriggerSwitch = 1 };
+   enum { Level3TriggerSwitch = 1 };
+   enum { LevelnTriggerSwitch = 1 };
+ 
+ 
    // Type of Data File
    enum modeType  
      {
-       TLIc_RootFile,
-       TLIc_DataBase,
-       TLIc_TXMonRoot
+       TLI_kRootFile,
+       TLI_kDataBase,
+       TLI_kTXMonRoot
      }; //'c' is for constant
    
    // Trigger Level Type
    enum LevelType 
      {
-       TLIc_L1, 
-       TLIc_L2, 
-       TLIc_L3,
-       TLIc_Ln,
-       TLIc_NoLevel
+       TLI_kL1, 
+       TLI_kL2, 
+       TLI_kL3,
+       TLI_kLn,
+       TLI_kNoLevel
      }; //TXMon is set up for 3 + n trigger levels
 
    enum NotFittingType       
      {
-       TLIc_name,       // NOT fit because of name
-       TLIc_HiLo,       // NOT fit because not enough high/low points
-       TLIc_GoodPoints  // NOT fit because not enough good points
+       TLI_kname,       // NOT fit because of name
+       TLI_kHiLo,       // NOT fit because not enough high/low points
+       TLI_kGoodPoints  // NOT fit because not enough good points
      };
    
    // Used in fit type
    enum UsedFitType
      {
-       TLIc_Used,    // Used in the fit      
-       TLIc_Five,    // Not used in fit: factor of 5 above/below average
-       TLIc_BadRun,  // Run marked as bad
-       TLIc_Excluded // explicity Excluded for this Trigger line
+       TLI_kUsed,    // Used in the fit      
+       TLI_kFive,    // Not used in fit: factor of 5 above/below average
+       TLI_kBadRun,  // Run marked as bad
+       TLI_kExcluded // explicity Excluded for this Trigger line
      };
    
 
-   enum { TLIc_NumberParams = 10 };       // p0, p1, p2, p3 (Intentionally set higher than official fit)
-   enum { TLIc_MaxEntries = 9000 };       // Set this greater than total number of Runs             
-   enum { TLIc_LineWidth = 2 };           // width of lines on plots     
-   enum { TLIc_NoTime = -1 };             // using time or not 
-   enum { TLIc_NumberColors = 14 };       // number of colors used in graphs
-   enum { TLIc_NumberStyles = 5 };        // number of styles used in graphs
-   enum { TLIc_BadPointsColor = 1 };      // color of bad points
-   enum { TLIc_BadPointsStyle = 23 };     // style of bad points 
-   enum { TLIc_MaxNumberTrigger = 384 };  // maximum number of Triggers, matches TXMon's max
+   enum { TLI_kNumberParams = 10 };       // p0, p1, p2, p3 (Intentionally set higher than official fit)
+   enum { TLI_kMaxEntries = 9000 };       // Set this greater than total number of Runs             
+   enum { TLI_kLineWidth = 2 };           // width of lines on plots     
+   enum { TLI_kNoTime = -1 };             // using time or not 
+   enum { TLI_kNumberColors = 14 };       // number of colors used in graphs
+   enum { TLI_kNumberStyles = 5 };        // number of styles used in graphs
+   enum { TLI_kBadPointsColor = 1 };      // color of bad points
+   enum { TLI_kBadPointsStyle = 23 };     // style of bad points 
+   enum { TLI_kMaxNumberTrigger = 384 };  // maximum number of Triggers, matches TXMon's max
    
    
    /////////////
@@ -113,8 +120,8 @@
 		   Double_t ex,
 		   Double_t ey,
 		   const std::string& table,
-		   UsedFitType used = TLIc_Used,
-		   Int_t time = TLIc_NoTime);
+		   UsedFitType used = TLI_kUsed,
+		   Int_t time = TLI_kNoTime);
 
 
    ////////////////
@@ -151,13 +158,14 @@
    static Double_t p1()       { return sTLI_p1; }
    static Double_t p2()       { return sTLI_p2; }
    static Double_t p3()       { return sTLI_p3; }
-   static Double_t pn()       { return sTLI_pn; }  ///the nth paramters
+   //   static Double_t pn()       { return sTLI_pn; }  ///the nth paramters
    static Double_t fitError() { return sTLI_fitError; }
    static Int_t NumberRunNumbers()   { return sTLI_RunNumbers.size(); }
    static Int_t RunNumber(Int_t index) { return sTLI_RunNumbers[index]; }
    static Int_t NumberL1Triggers()   { return sTLI_L1TriggerMap.size(); }
    static Int_t NumberL2Triggers()   { return sTLI_L2TriggerMap.size(); }
-   static Int_t NumberLnTriggers()   { return sTLI_L3TriggerMap.size(); }
+   static Int_t NumberL3Triggers()   { return sTLI_L3TriggerMap.size(); }
+   static Int_t NumberLnTriggers()   { return sTLI_LnTriggerMap.size(); }
    static Double_t sq(Double_t value)  { return (value * value); }
 
    Int_t    sumN(Int_t RunNumber)  { return sTLI_ResidualStatMap[RunNumber].sumN(); }
@@ -183,20 +191,27 @@
 			     Double_t p1 = 0.,
 			     Double_t p2 = 0.,
 			     Double_t p3 = 0.,
-			     Double_t Error = 1.)  // Sets all four fit parameters. Add 'Double_t pn = 0
+			  // Double_t pn = 0.,
+			     Double_t Error = 1.)  // Sets all four fit parameters
      { sTLI_p0 = p0;
        sTLI_p1 = p1;
        sTLI_p2 = p2;
        sTLI_p3 = p3;
-       sTLI_fitError = Error; } //add 'stTLI_pn = p0
+    // sTLI_pn = pn;
+       sTLI_fitError = Error; } 
+
    static void setFitParamErrors (Double_t e0,
 				  Double_t e1,
 				  Double_t e2,
-				  Double_t e3) //add 'Double_t en'
+				  Double_t e3
+                  	       // , Double_t en
+				  ) 
      { sTLI_e0 = e0;
        sTLI_e1 = e1;
        sTLI_e2 = e2;
-       sTLI_e3 = e3; } //add 'sTLI_en = en'
+       sTLI_e3 = e3;
+    // sTLI_en = en;
+     }
    static void setFitError(Double_t Error)   { sTLI_fitError = Error; }
    static void setMinRun(Int_t minRun) { sTLI_minRun = minRun; }    // set min and max Runs
    static void setMaxRun(Int_t maxRun) { sTLI_maxRun = maxRun; }    // set min and max Runs
@@ -211,10 +226,14 @@
    static void setNumberOfGoodPoints(Int_t NumberOfGoodPoints)
      { sTLI_NumberOfGoodPoints = NumberOfGoodPoints; }
    static void setLineIsFit(bool fit)    { sTLI_lineIsFit = fit; }
-   static void setVersionTag(std::string VersionTag)           { sTLI_VersionTag = VersionTag; }
-   static void setNoVersionname(std::string noVersionname)     { sTLI_noVersionname = noVersionname; }
-   static void setDontFit (unsigned int dontFit)             { sTLI_dontFit = dontFit; }
-   static void setRunNumberFilename (std::string filename)     { sTLI_RunNumberFilename = filename; }
+   static void setVersionTag(std::string VersionTag)           
+     { sTLI_VersionTag = VersionTag; }
+   static void setNoVersionname(std::string noVersionname)     
+     { sTLI_noVersionname = noVersionname; }
+   static void setDontFit (unsigned int dontFit)             
+     { sTLI_dontFit = dontFit; }
+   static void setRunNumberFilename (std::string filename)     
+     { sTLI_RunNumberFilename = filename; }
  
 
    //////////////////////////////
@@ -287,7 +306,7 @@
 	std::string table = "",
 	Double_t ey = -1,
 	Double_t ex = 0.,
-	Int_t time = TLIc_NoTime);   
+	Int_t time = TLI_kNoTime);   
 
      static void addEntry 
        (Int_t RunNumber,
@@ -296,7 +315,7 @@
 	std::string table = "",
 	Double_t ey = -1,
 	Double_t ex = 0.,
-	Int_t time = TLIc_NoTime);
+	Int_t time = TLI_kNoTime);
  
     // get arrays for a TGraphWithErrors 
      static Int_t getArrays
@@ -470,6 +489,7 @@
 	Double_t p1,
 	Double_t p2,
 	Double_t p3,
+//      Double_t pn,
 	Double_t fitError); 
      
      
@@ -514,14 +534,14 @@
    static Double_t sTLI_p1;
    static Double_t sTLI_p2;
    static Double_t sTLI_p3;
-   static Double_t sTLI_pn;
+   //   static Double_t sTLI_pn;
 
    static Double_t sTLI_fitError;
    static Double_t sTLI_e0;
    static Double_t sTLI_e1;
    static Double_t sTLI_e2;
    static Double_t sTLI_e3;
-   static Double_t sTLI_en;
+   //   static Double_t sTLI_en;
 
    static Double_t sTLI_origMaxy1;
    static Double_t sTLI_origMiny1;
@@ -530,14 +550,14 @@
    static Double_t sTLI_orig_p1;
    static Double_t sTLI_orig_p2;
    static Double_t sTLI_orig_p3;
-   static Double_t sTLI_orig_pn;
+   //   static Double_t sTLI_orig_pn;
 
    static Double_t sTLI_orig_fitError;
    static Double_t sTLI_orig_e0;
    static Double_t sTLI_orig_e1;
    static Double_t sTLI_orig_e2;
    static Double_t sTLI_orig_e3;
-   static Double_t sTLI_orig_en;
+   //   static Double_t sTLI_orig_en;
 
    static Double_t sTLI_minX;
    static Double_t sTLI_maxX;
@@ -589,8 +609,8 @@
    static std::map< Int_t, std::string > sTLI_physicsTables; 
    static Int_t sTLI_Index;
    static TLegend* sTLI_leg;
-   static const Int_t sTLI_colorArray[TLIc_NumberColors];
-   static const Int_t sTLI_styleArray[TLIc_NumberStyles];
+   static const Int_t sTLI_colorArray[TLI_kNumberColors];
+   static const Int_t sTLI_styleArray[TLI_kNumberStyles];
    static bool sTLI_useOtherFilename;
    static std::string sTLI_otherFilename;
    static bool sTLI_rejectZeroOnly;
@@ -603,7 +623,7 @@
    static Double_t sTLI_off_p1;
    static Double_t sTLI_off_p2;
    static Double_t sTLI_off_p3;
-   static Double_t sTLI_off_pn;
+   //   static Double_t sTLI_off_pn;
    static Double_t sTLI_off_fitError;
    
    // drawing options
@@ -611,10 +631,10 @@
    
    
    // private static constants
-   static const std::string TLIc_BadSingleFile;
-   static const std::string TLIc_BadDoubleFile;
-   static const std::string TLIc_RunRangeFile;
-   static const std::string TLIc_nameExclude;
+   static const std::string TLI_kBadSingleFile;
+   static const std::string TLI_kBadDoubleFile;
+   static const std::string TLI_kRunRangeFile;
+   static const std::string TLI_knameExclude;
 
  };
  

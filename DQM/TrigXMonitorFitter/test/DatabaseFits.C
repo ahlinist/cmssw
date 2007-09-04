@@ -21,7 +21,7 @@ void DatabaseFits(int allTriggers = 1, int defaultRunNumbers = 1)
   
   //
   // set mode 
-  TriggerLineInfo::setMode(TriggerLineInfo::TLIc_DataBase);
+  TriggerLineInfo::setMode(TriggerLineInfo::TLI_kDataBase);
   
 
   //
