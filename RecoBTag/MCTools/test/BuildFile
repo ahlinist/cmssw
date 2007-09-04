@@ -15,3 +15,8 @@
   <flags EDM_PLUGIN=1>
 </library>
 
+<library file=JetPartonAssocTest.cc name=JetPartonAssocTest>
+  <use name=FWCore/Framework>
+  <flags EDM_PLUGIN=1>
+</library>
+
