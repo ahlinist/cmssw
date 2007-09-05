@@ -20,7 +20,7 @@
 
 namespace edm {
   InputFileCatalog::InputFileCatalog(ParameterSet const& pset, bool noThrow) :
-    FileCatalog(pset),
+    FileCatalog(),
     logicalFileNames_(pset.getUntrackedParameter<std::vector<std::string> >("fileNames")),
     fileNames_(logicalFileNames_),
     fileCatalogItems_() {
@@ -46,12 +46,8 @@ namespace edm {
       } else {
         boost::trim(*lt);
 	if (!active()) {
-	  if (url().empty()) {
-	    // For reading use the catalog specified in the site-local config file
-	    url() = Service<edm::SiteLocalConfig>()->dataCatalog();
-	  } else {
-	    url() = toPhysical(url());
-	  }
+	  // For reading use the catalog specified in the site-local config file
+	  url() = Service<edm::SiteLocalConfig>()->dataCatalog();
 	  pool::URIParser parser(url());
 	  parser.parse();
 
