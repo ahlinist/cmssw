@@ -12,9 +12,6 @@ $Id$
 
 #include <memory>
 #include "DataFormats/Provenance/interface/ProvenanceDelayedReader.h"
-#include "boost/shared_ptr.hpp"
-
-class TFile;
 
 namespace edm {
   class BranchKey;
@@ -23,11 +20,7 @@ namespace edm {
   class DelayedReader : public ProvenanceDelayedReader {
   public:
     virtual ~DelayedReader();
-    boost::shared_ptr<TFile const> filePtr() const {return filePtrImpl();}
     virtual std::auto_ptr<EDProduct> getProduct(BranchKey const& k, EDProductGetter const* ep) const = 0;
-
-  private:
-    virtual boost::shared_ptr<TFile const> filePtrImpl() const {return boost::shared_ptr<TFile const>();}
   };
 }
 
