@@ -21,7 +21,7 @@ JetTagPlotter::JetTagPlotter (const TString & tagName, const EtaPtBin & etaPtBin
     gFile->cd(dir);
   }
   // fixed now:
-  discrBins = 100;
+  discrBins = 400;
   finalized = false;
 
   // to have a shorter name .....
