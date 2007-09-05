@@ -1,0 +1,18 @@
+<use name=FWCore/Utilities>
+<use name=FWCore/Framework>
+<use name=SimDataFormats/HepMCProduct>
+<use name=boost>
+<use name=root>
+<use name=GeneratorInterface/EvtGenInterface>
+<use name=hepmc>
+<flags EDM_PLUGIN=1>
+
+<library file=FindEvtGenParts.cc name=FindEvtGenParts>
+  <use name=FWCore/Framework>
+</library>
+
+<library file=BsAnalyzer.cc name=BsAnalyzer>
+  <use name=root>
+  <use name=FWCore/Framework>
+  <use name=SimDataFormats/HepMCProduct>
+</library>
