@@ -1,0 +1,8 @@
+Alias      MyK*0       K*0
+Decay B0
+  1.000        MyK*0     mu+     mu-               BTOSLLBALL;
+Enddecay
+Decay MyK*0
+  1.000        K+        pi-                    VSS;
+Enddecay
+End

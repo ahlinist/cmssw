@@ -1,0 +1,11 @@
+Alias myPhi phi
+Decay D_s+
+1.000    myPhi   pi+                      SVS;      
+Enddecay
+Decay D_s-
+1.000    myPhi   pi-                      SVS;
+Enddecay
+Decay myPhi
+1.000 K+      K-                              VSS;
+Enddecay
+End

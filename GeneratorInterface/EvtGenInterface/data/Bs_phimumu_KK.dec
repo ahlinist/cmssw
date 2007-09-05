@@ -1,0 +1,8 @@
+Alias myPhi phi
+Decay B_s0
+1.000 myPhi   mu+  mu-                        BTOSLLALI;
+Enddecay
+Decay myPhi
+1.000 K+      K-                              VSS;
+Enddecay
+End
