@@ -4,7 +4,7 @@
 <use name=clhep> 
 <use name=hepmc>
 <use name=pythia6>
-<use name=evtgen_8_14>
+<use name=evtgen_8_15_1>
 <flags EDM_PLUGIN=1>
 
 <export>
@@ -13,7 +13,7 @@
  <use name=clhep> 
  <use name=hepmc>
  <use name=pythia6>
- <use name=evtgen_8_14>
+ <use name=evtgen_8_15_1>
 </export>
 
  <lib name=g2c></lib>
