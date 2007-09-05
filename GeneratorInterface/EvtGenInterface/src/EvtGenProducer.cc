@@ -14,7 +14,7 @@
 //
 // Original Author:  Nello Nappi
 //         Created:  Fri May 11 15:19:32 CEST 2007
-// $Id: EvtGenProducer.cc,v 1.2 2007/07/03 13:29:15 covarell Exp $
+// $Id: EvtGenProducer.cc,v 1.1 2007/09/05 11:25:22 covarell Exp $
 //
 //
 #include "FWCore/PluginManager/interface/PluginManager.h"
@@ -237,8 +237,8 @@ void EvtGenProducer::decay(HepMC::GenParticle* partHep, EvtId idEvt, HepMC::GenE
     evtstdhep.init();
     partEvt->makeStdHep(evtstdhep);
 
-    // if (ntotal % 2000 == 0) {     // DEBUG
-    if (abs( partHep->pdg_id() ) == 511 || abs( partHep->pdg_id() ) == 513) {
+    if (ntotal % 2000 == 0) {     // DEBUG
+    // if (abs( partHep->pdg_id() ) == 511 || abs( partHep->pdg_id() ) == 513) {
       partEvt->printParticle();                
       partEvt->printTree();
       std::cout << evtstdhep << "\n"  <<
