@@ -109,7 +109,7 @@ if (@rootfiles)
 
     my $command = "(./AllTXMonFitter.exe @rootfiles $htmlcommand $convert) >& all.out &";
     print $command,"\n";
-    system $command;
+#    system $command;
 
   }
 
