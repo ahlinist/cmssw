@@ -6,7 +6,8 @@ use warnings;
 
 my $directory = "./";
 my @dirs = qw (./txmon_new ./txmon_old);
-my $prefix = "TXMon_xsec";
+my $prefix = "TXMon_txsec";
+my $depositdir = "./singles";
 
 
 (my $prog = $0) =~ s|.+/||g;
@@ -16,10 +17,11 @@ Options:
 -f filename       => use the Run Numbers in 'filename'
 -h                => this Help screen
 -nc               => do Not Convert eps to gifs
+-i                => do not copy input files to ./singles
 -param 1 2 3 4 5  => use 1 2 3 4 5 as the fit PARAMeters (p0..p3, error)
 ";
 
-my ($filename, $base, $noconvert);
+my ($filename, $base, $noconvert, $noinput);
 my @params = ();
 while (@ARGV && $ARGV[0] =~ /^-/)
 {
@@ -52,6 +54,12 @@ while (@ARGV && $ARGV[0] =~ /^-/)
         $noconvert = "true";
         next;
     }
+    if ($arg =~ /^-i/i)
+    {
+        $noconvert = "true";
+        next;
+    }
+
     warn "I don't understand '$arg'.\n";
 }
 
@@ -68,7 +76,7 @@ if (! $base)
 {
     ($base = $triggername) =~ s/\&/_and_/g;
     $base .= ".$$";
-    $base = "./singles/$base";
+    $base = "$depositdir/$base";
 }
 
 
@@ -126,16 +134,30 @@ if (@params)
     $fit = "-f @params";
 }
 
+
 if (@rootfiles)
 {
-    my $command = "./SingleTXMonFitter.exe \"$triggername\" "
-        ."$base $fit @rootfiles";
-    print $command,"\n";
-    system $command;
-    if (!$noconvert)
+
+  my $command = "./SingleTXMonFitter.exe \"$triggername\" "
+    ."$base $fit @rootfiles";
+  print $command,"\n";
+  system $command;
+
+  if (!$noconvert)
     {
-	system "./convertAllEps.pl -m $base -r --dpi=50";
+      my $convertcommand = "./convertAllEps.pl -m $base -r --dpi=50";
+      print $convertcommand, "\n";
+      system $convertcommand;
+      print "Done converting images\n";
     }
+  if (!$noinput)
+    {
+      my $inputcommand = "cp @rootfiles $depositdir/";
+      print $inputcommand, "\n";
+      system $inputcommand;
+      print "Done copying input root files\n";
+    }
+
 }
 
 
