@@ -5,12 +5,12 @@
 void ContentReader::give_subdirs(std::string dir, std::list<std::string> &subdirs, std::string mode)
 {
 
-  std::string old = mui->pwd();
-  mui->setCurrentFolder(dir);
+  std::string old = bei->pwd();
+  bei->setCurrentFolder(dir);
 
-  std::vector<std::string> all_subdirs = mui->getSubdirs();
+  std::vector<std::string> all_subdirs = bei->getSubdirs();
 
-  std::cout << "The directory " << mui->pwd() << " contains " << all_subdirs.size() << " subdirectories!" << std::endl;
+  std::cout << "The directory " << bei->pwd() << " contains " << all_subdirs.size() << " subdirectories!" << std::endl;
 
   subdirs.push_back("..");
   for (unsigned int i = 0; i < all_subdirs.size(); i++)
@@ -18,7 +18,7 @@ void ContentReader::give_subdirs(std::string dir, std::list<std::string> &subdir
       std::string subdir = dir + all_subdirs[i];
       if (mode == "User")
 	{
-	  if (mui->containsAnyMonitorable(subdir))
+	  if (bei->containsAnyMonitorable(subdir))
 	    {
 	      subdirs.push_back(all_subdirs[i]);
 	    }
@@ -29,7 +29,7 @@ void ContentReader::give_subdirs(std::string dir, std::list<std::string> &subdir
 	}
     }
 
-  mui->setCurrentFolder(old);
+  bei->setCurrentFolder(old);
 }
 
 // fills the list with existing files in dir
@@ -39,36 +39,36 @@ void ContentReader::give_files(std::string dir, std::list<std::string> &files, b
 	    << dir << std::endl;
 
   // for the interesting directory
-  std::string old = mui->pwd();
-  mui->setCurrentFolder(dir);
+  std::string old = bei->pwd();
+  bei->setCurrentFolder(dir);
   // get the monitorable files
-  std::vector<std::string> all_files = mui->getMEs();  
+  std::vector<std::string> all_files = bei->getMEs();  
 
   if (only_contents)
     {
       // and copy those that exist in the files list
       for (unsigned int i = 0; i < all_files.size(); i++)
 	{
-	  std::string filename = mui->pwd() + "/" + all_files[i];
+	  std::string filename = bei->pwd() + "/" + all_files[i];
 	  // if it does exist
-	  if (mui->get(filename) != NULL) 
+	  if (bei->get(filename) != NULL) 
 	    {
 	      files.push_back(filename);
 	    }
 	}
       // go back to original folder:  
-      mui->setCurrentFolder(old);
+      bei->setCurrentFolder(old);
     }
   else
     {
       // and copy those that exist in the files list
       for (unsigned int i = 0; i < all_files.size(); i++)
 	{
-	  std::string filename = mui->pwd() + "/" + all_files[i];
+	  std::string filename = bei->pwd() + "/" + all_files[i];
 	  files.push_back(filename);
 	}
       // go back to original folder:  
-      mui->setCurrentFolder(old);
+      bei->setCurrentFolder(old);
 
     }
 }
@@ -77,6 +77,6 @@ void ContentReader::give_files(std::string dir, std::list<std::string> &files, b
 // returns a pointer to a requested filename, or NULL if not available
 MonitorElement * ContentReader::give_ME(std::string filename)
 {
-  MonitorElement *requested = mui->get(filename);
+  MonitorElement *requested = bei->get(filename);
   return requested;
 }
