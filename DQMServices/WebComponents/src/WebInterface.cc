@@ -112,28 +112,30 @@ void WebInterface::Open(xgi::Input * in, xgi::Output * out) throw (xgi::exceptio
 	    }	  
 	}
     }
+
+  DaqMonitorBEInterface * myBei = (*mui_p)->getBEInterface();
   
   std::cout << "will try to open " << to_open << std::endl;
   if (*mui_p)
     {
       if (to_open == "top") 
 	{
-	  (*mui_p)->cd();
+	  myBei->cd();
 	}
       else if (to_open == "..")
 	{
-	  (*mui_p)->goUp();
+	  myBei->goUp();
 	}
       else 
 	{
-	  (*mui_p)->setCurrentFolder(to_open); 
+	  myBei->setCurrentFolder(to_open); 
 	}
     }
   else 
     {
       std::cout << "no MUI object, subscription to " << to_open << " failed!" << std::endl;
     }
-  printNavigatorXML((*mui_p)->pwd(), out); 
+  printNavigatorXML(myBei->pwd(), out); 
 }
 void WebInterface::Subscribe(xgi::Input * in, xgi::Output * out) throw (xgi::exception::Exception)
 {
@@ -207,7 +209,8 @@ void WebInterface::printNavigatorXML(std::string current, xgi::Output * out)
   
   *out << "<current>" << current << "</current>" << endl;
   
-  ContentReader reader((*mui_p));
+  DaqMonitorBEInterface * myBei = (*mui_p)->getBEInterface();
+  ContentReader reader(myBei);
   
   std::list<std::string>::iterator it;
   
@@ -272,28 +275,30 @@ void WebInterface::ContentsOpen(xgi::Input * in, xgi::Output * out) throw (xgi::
 	    }	  
 	}
     }
+
+  DaqMonitorBEInterface * myBei = (*mui_p)->getBEInterface();
   
   std::cout << "will try to open " << to_open << std::endl;
   if (*mui_p)
     {
       if (to_open == "top") 
 	{
-	  (*mui_p)->cd();
+	  myBei->cd();
 	}
       else if (to_open == "..")
 	{
-	  (*mui_p)->goUp();
+	  myBei->goUp();
 	}
       else 
 	{
-	  (*mui_p)->setCurrentFolder(to_open); 
+	  myBei->setCurrentFolder(to_open); 
 	}
     }
   else 
     {
       std::cout << "no MUI object, subscription to " << to_open << " failed!" << std::endl;
     }
-  printContentViewerXML((*mui_p)->pwd(), out); 
+  printContentViewerXML(myBei->pwd(), out); 
 }
 
 void WebInterface::printContentViewerXML(std::string current, xgi::Output * out)
@@ -312,7 +317,8 @@ void WebInterface::printContentViewerXML(std::string current, xgi::Output * out)
   
   *out << "<current>" << current << "</current>" << endl;
   
-  ContentReader reader((*mui_p));
+  DaqMonitorBEInterface * myBei = (*mui_p)->getBEInterface();
+  ContentReader reader(myBei);
   
   std::list<std::string>::iterator it;
   
@@ -340,8 +346,6 @@ void WebInterface::DrawGif(xgi::Input * in, xgi::Output * out) throw (xgi::excep
 
   std::string current = get_from_multimap(view_multimap, "Current");
   
-  DaqMonitorBEInterface * myBei = (*mui_p)->getBEInterface();
-  myBei->lock();
 
   if (!(*mui_p)) 
     {
@@ -349,7 +353,10 @@ void WebInterface::DrawGif(xgi::Input * in, xgi::Output * out) throw (xgi::excep
       return;
     }
 
-  ContentReader con_reader(*mui_p);  
+  DaqMonitorBEInterface * myBei = (*mui_p)->getBEInterface();
+  myBei->lock();
+
+  ContentReader con_reader(myBei);  
   multimap<string,string>::iterator lower = view_multimap.lower_bound("View");
   multimap<string,string>::iterator upper = view_multimap.upper_bound("View");
   multimap<string,string>::iterator it;

@@ -2,20 +2,20 @@
 #define _ContentReader_h_
 
 #include "xdaq/Application.h"
-#include "DQMServices/UI/interface/MonitorUIRoot.h"
+#include "DQMServices/CoreROOT/interface/DaqMonitorROOTBackEnd.h"
 
 
 class ContentReader
 {
 private:
 
-  MonitorUserInterface *mui;
+  DaqMonitorBEInterface *bei;
 
 public:	
 
-  ContentReader(MonitorUserInterface *the_mui)
+  ContentReader(DaqMonitorBEInterface *the_bei)
     {
-      mui = the_mui;
+      bei = the_bei;
     }
 
   ~ContentReader(){}
