@@ -43,11 +43,13 @@
    
 
    // Level n Trigger Switches (turns on or off processing power of trigger level)
-   enum { Level1TriggerSwitch = 1 }; // 0 for off and 1 for on
-   enum { Level2TriggerSwitch = 1 };
-   enum { Level3TriggerSwitch = 1 };
-   enum { LevelnTriggerSwitch = 1 };
+   enum { TLI_kLeveL1TriggerSwitch = 1 }; // 0 for off and 1 for on
+   enum { TLI_kLeveL2TriggerSwitch = 1 };
+   enum { TLI_kLeveL3TriggerSwitch = 1 };
+   enum { TLI_kLeveLnTriggerSwitch = 1 };
  
+   // Luminosity Exponent 10^??
+   enum { TLI_kLumiExponent = 30 }; // 10^LumiExponent
  
    // Type of Data File
    enum modeType  

@@ -1209,22 +1209,22 @@ string TriggerLineInfo::baseFilename()
   string filename;
 
 
-  if ( (Level1TriggerSwitch == 1) && (type == TLI_kL1) )
+  if ( (TLI_kLeveL1TriggerSwitch == 1) && (type == TLI_kL1) )
     {
       return "L1/" + sTLI_basename;		
     }
   else
-    if ( (Level2TriggerSwitch == 1) && (type == TLI_kL2) )
+    if ( (TLI_kLeveL2TriggerSwitch == 1) && (type == TLI_kL2) )
     {
       return "L2/" + sTLI_basename;      
     }
     else
-      if ( (Level3TriggerSwitch == 1) && (type == TLI_kL3) )
+      if ( (TLI_kLeveL3TriggerSwitch == 1) && (type == TLI_kL3) )
 	{
 	  return "L3/" + sTLI_basename;
 	}      
       else  
-	if ( (LevelnTriggerSwitch == 1) && (type == TLI_kLn) )
+	if ( (TLI_kLeveLnTriggerSwitch == 1) && (type == TLI_kLn) )
 	  {      
 	    return "Ln/" + sTLI_basename;
 	  }  
@@ -2037,9 +2037,13 @@ void TriggerLineInfo::makeGraphs()
 
 
     // start drawing
-    string name = Triggername() + " Cross Section vs. Avg. Inst. Lum";
+    string name = Triggername() + " Cross Section vs. Avg. Inst. Lumi";
     gr->SetTitle(name.c_str());
-    gr->GetXaxis()->SetTitle ("Avg. Inst. Luminosity (E 30 cm-2 s-1)");
+
+    char name2[50] ;
+    sprintf(name2,"Avg. Inst. Lumi (E%i cm-2 s-1)",(int)TLI_kLumiExponent);
+
+    gr->GetXaxis()->SetTitle (name2);
     gr->GetYaxis()->SetTitle ("Cross Section (nb)");
     gr->Draw("AP");
     upper->Draw("same");
@@ -2684,7 +2688,7 @@ void TriggerLineInfo::writeFitInfo()
       if (sTLI_useOfficialFit)
 	{
          // Official fit
-	  target << "<td><table>" << endl;
+	  target << "<td><table>" << endl;	  
 	  target << "<tr><td colspan=2><b>Official Fit Used</b></td></tr>" << endl
 		 << "<tr><td><b>p0</b></td><td>" << sTLI_orig_p0 << "</td></tr>" << endl
 		 << "<tr><td><b>p1</b></td><td>" << sTLI_orig_p1 << "</td></tr>" << endl
@@ -2693,8 +2697,7 @@ void TriggerLineInfo::writeFitInfo()
 	  //     << "<tr><td><b>pn</b></td><td>" << sTLI_orig_pn << "</td></tr>" << endl;
 
 	  target << "<tr><td><b>Fit Error</b></td>" 
-		 << "<td>" << sTLI_orig_fitError
-		 << "</td></tr>"<< endl
+		 << "<td>" << sTLI_orig_fitError << "</td></tr>"<< endl
 		 << "<tr><td><a href=\"" << basename() 
 		 << ".html\">html</a></td></tr>" << endl
 		 << "</table>" << endl;
@@ -2804,35 +2807,39 @@ void TriggerLineInfo::writeFitInfo()
 	}
     }
   
-  target << "<!-- End Common -->" << endl << endl << "<pre>" << endl;
+  target << "<!-- End Common -->" << endl << endl;
+
+
+  target << "<pre>" << endl;
   Int_t NumberOfEntries = sTLI_OrigVector.size();
   Int_t NumberOfEntries_merged = sTLI_Vector.size();// this is actually merged Vector now
   
   if (NumberOfEntries)
     {
-      // prInt_t out header
-      //         33.3317     3.07986    179103   0.23  PHYSICS_2_01_v-4,424            Used      
-      target << "     Lum       xsec      Run #   Residual                 Table            Used in Fit               Ave lum(/10e30)       Ave xsec" << endl;
+      // print out header
+      //         33.3317     3.07986    179103     0.23           PHYSICS_2_01_v-4,424            Used      
+      target << "     Lumi       txsec      Run #   Residual                 Table            Used in Fit               Avg lumi (10<sup>" 
+	     << TLI_kLumiExponent << "</sup>)      Avg txsec    " << endl;
     }
   
-  Int_t loop1 = 0;
-  
+  Int_t loop1 = 0;  
   for (Int_t loop = 0; loop < NumberOfEntries; ++loop)
     {
-      target << sTLI_OrigVector[loop] ;
+      target << sTLI_OrigVector[loop] ; // Lum  txsec  Run # Residual table Used in Fit
       
       if(loop1 < NumberOfEntries_merged)
 	{
-          target << "                     "<< sTLI_Vector[loop1].x() <<"       "
-		 << sTLI_Vector[loop1].y() << endl;
-          loop1++;
+          target << "                     "<< sTLI_Vector[loop1].x() <<"                 " << sTLI_Vector[loop1].y() << endl;
+          loop1++; // Avg lumi Avg txsec
 	}
       else
         target << endl;
       
     } // for loop
-  
   target << "</pre>" << endl;
+
+
+
   // Put in the SQL info 
   target << "<!-- Start SQL" << setprecision(-1) << endl;
   // used by L1 and L2
@@ -2885,13 +2892,19 @@ void TriggerLineInfo::MakeStatisticsWebsite ()
   for (itr = sTLI_ResidualStatMap.begin(); 
        itr != sTLI_ResidualStatMap.end(); itr++)
     {
-      Double_t mean, RMS;
-      RMS = itr->second.CalculateRMS();
+      Double_t mean;
+      Double_t RMS;
+      Double_t SDOM;
+
+      RMS  = itr->second.CalculateRMS();
       mean = itr->second.CalculateMean();
+      SDOM = itr->second.CalculateSDOM();
+
       R_SMap[ mean ] = itr->first;
       R_RMSMap[ RMS ] = itr->first;
       R_BadMap [ itr->second.sumBad() ] = itr->first;
-      GoodBadMap[ itr->first ] = "&nbsp;";         
+      GoodBadMap[ itr->first ] = "&nbsp;";  
+       
       for (unsigned int i = 0; i < sTLI_singleBadList.size(); i++)
 	if (sTLI_singleBadList[i] == itr->first ) 
 	  GoodBadMap[ itr->first ] = "bad";
@@ -2914,7 +2927,7 @@ void TriggerLineInfo::MakeStatisticsWebsite ()
            << "<td>  " << rItr->first << "  </td>"
            << "<td>  " << GoodBadMap[ rItr->second ] << "  </td>"
            << "</tr>" << endl;
-   }//prInt_ts highest ten residuals
+   }//prints highest ten residuals
 
   file << "</table>" << endl;
   
@@ -2932,7 +2945,7 @@ void TriggerLineInfo::MakeStatisticsWebsite ()
            << "<td>  " << rItr->first << "  </td>"
            << "<td>  " << GoodBadMap[ rItr->second ] << "  </td>"
            << "</tr>" << endl;
-    }//prInt_ts highest ten RMS of residuals
+    }//prints highest ten RMS of residuals
   file << "</table>" << endl;
    
   file << "<h2><center> Most Bad Triggers </h2></center>" << endl
@@ -2951,7 +2964,7 @@ void TriggerLineInfo::MakeStatisticsWebsite ()
            << "<td>  " << rItrI->first << "  </td>"
            << "<td>  " << GoodBadMap[ rItrI->second ] << "  </td>"
            << "</tr>" << endl;
-    }//prInt_ts most Triggers over 1 residual
+    }//prints most Triggers over 1 residual
 
    file << "</table><br><br>" << endl;
 
