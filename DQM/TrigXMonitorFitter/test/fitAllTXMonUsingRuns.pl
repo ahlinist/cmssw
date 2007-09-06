@@ -6,8 +6,7 @@ use warnings;
 
 
 my @dirs = qw (./txmon_new ./txmon_old);
-my $prefix1 = "XMon_xsec";
-my $prefix2 = "TXMon_txsec";
+my $prefix = "TXMon_xsec";
 # set prefix2 to prefix1 and delete the original prefix 1 when ready
 
 
@@ -86,7 +85,7 @@ foreach my $run (@runs)
   {
     foreach my $dir (@dirs)
       {
-        my @files = glob ("$dir/$prefix1$run*root");
+        my @files = glob ("$dir/$prefix$run*root");
         if (@files)
 	  {
             push @rootfiles, @files;
@@ -106,9 +105,10 @@ if (@rootfiles)
         $convert = "; ./makeImgs.tcsh";
       }
 
-    my $htmlcommand = "; ./moveHtml.pl";
+    my $htmlcommand = "; ./moveHtml.pl ";
+    my $rootcommand = "; ./copyRoot.pl -f $filename";
 
-    my $command = "(./AllTXMonFitter.exe @rootfiles $htmlcommand $convert) >& all.out &";
+    my $command = "(./AllTXMonFitter.exe @rootfiles $htmlcommand $rootcommand $convert) >& all.out &";
     print $command,"\n";
     system $command;
 

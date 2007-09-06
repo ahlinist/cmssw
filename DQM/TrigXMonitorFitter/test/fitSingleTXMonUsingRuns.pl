@@ -6,7 +6,7 @@ use warnings;
 
 my $directory = "./";
 my @dirs = qw (./txmon_new ./txmon_old);
-my $prefix = "XMon_xsec";
+my $prefix = "TXMon_xsec";
 
 
 (my $prog = $0) =~ s|.+/||g;
