@@ -55,6 +55,9 @@ namespace edm {
       return aux_.id();
     }
 
+    Timestamp const& beginTime() const {return aux_.beginTime();}
+    Timestamp const& endTime() const {return aux_.endTime();}
+
     using DataViewImpl::get;
     using DataViewImpl::getAllProvenance;
     using DataViewImpl::getByLabel;
