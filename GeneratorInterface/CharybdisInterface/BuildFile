@@ -3,9 +3,8 @@
 <use name=SimDataFormats/HepMCProduct>
 <use name=clhep> 
 <use name=hepmc> 
-<use name=charybdis1_002> 
+<use name=charybdis> 
 <use name=pythia6>
-<use name=charybdis1_002> 
 
 <flags EDM_PLUGIN=1>
 <export>
@@ -15,9 +14,8 @@
  <use name=SimDataFormats/HepMCProduct>
  <use name=clhep> 
  <use name=hepmc> 
- <use name=charybdis1_002> 
+ <use name=charybdis> 
  <use name=pythia6>
- <use name=charybdis1_002> 
 </export>
 
  <lib name=g2c></lib>

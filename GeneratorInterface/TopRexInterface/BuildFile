@@ -4,10 +4,7 @@
 <use name=clhep> 
 <use name=hepmc> 
 <use name=pythia6>
-<use name=toprex421>
-#<use name=tauola27_121_1_aux1> 
-#<use name=tauola27_121_1> 
-#<use name=photos215> 
+<use name=toprex>
 
 <flags EDM_PLUGIN=1>
 <export>
@@ -18,10 +15,7 @@
  <use name=clhep> 
  <use name=hepmc> 
  <use name=pythia6>
- <use name=toprex421>
-# <use name=tauola27_121_1_aux1> 
-# <use name=tauola27_121_1> 
-# <use name=photos215> 
+ <use name=toprex>
 </export>
 
  <lib name=g2c></lib>
