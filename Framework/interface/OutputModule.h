@@ -63,6 +63,10 @@ namespace edm {
     std::string const& processName() const {return process_name_;}
     SelectionsArray const& descVec() const {return descVec_;}
     SelectionsArray const& droppedVec() const {return droppedVec_;}
+    SelectionsArray const& descProducedVec() const {return descProducedVec_;}
+    SelectionsArray const& droppedProducedVec() const {return droppedProducedVec_;}
+    SelectionsArray const& descPriorVec() const {return descPriorVec_;}
+    SelectionsArray const& droppedPriorVec() const {return droppedPriorVec_;}
     boost::array<bool, EndBranchType> const& hasNewlyDroppedBranch() const {return hasNewlyDroppedBranch_;}
 
   protected:
@@ -102,6 +106,23 @@ namespace edm {
     // We do not own the BranchDescriptions to which we point.
     SelectionsArray descVec_;
     SelectionsArray droppedVec_;
+
+    // descProducedVec_ is the subset of descVec_ describing only the branches
+    // newly produced in the current process.
+    // droppedProducedVec_ is the subset of droppedVec_ describing only the branches
+    // newly produced in the current process.
+    //
+    SelectionsArray descProducedVec_;
+    SelectionsArray droppedProducedVec_;
+
+    // descPriorVec_ is the subset of descVec_ describing only the branches
+    // produced in prior processes.
+    // droppedPriorVec_ is the subset of droppedVec_ describing only the branches
+    // produced in prior processes.
+    //
+    SelectionsArray descPriorVec_;
+    SelectionsArray droppedPriorVec_;
+
     boost::array<bool, EndBranchType> hasNewlyDroppedBranch_;
 
     virtual void write(EventPrincipal const& e) = 0;
