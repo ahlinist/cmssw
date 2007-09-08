@@ -1,5 +1,7 @@
 #include "RecoTauTag/CombinedTauTag/interface/CombinedTauTagAlg.h"
 
+#include "DataFormats/EgammaReco/interface/BasicClusterFwd.h"
+
 #include "TrackingTools/IPTools/interface/IPTools.h"
 
 void CombinedTauTagAlg::init(const EventSetup& theEventSetup){
