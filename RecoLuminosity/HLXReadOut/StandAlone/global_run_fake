@@ -1,4 +1,4 @@
-\#!/bin/bash
+#!/bin/bash
 
 source /nfshome0/jaj99/.bashrc
 pushd /home/localtest &> /dev/null

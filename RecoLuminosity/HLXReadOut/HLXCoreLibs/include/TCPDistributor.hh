@@ -71,7 +71,7 @@ namespace HCAL_HLX {
     ~TCPDistributor();
 
     // Processing function for ET sum histogram
-    void ProcessSection(const LUMI_SECTION & lumiSection);
+    bool ProcessSection(const LUMI_SECTION & lumiSection);
 
   private:
     // File descriptor setup

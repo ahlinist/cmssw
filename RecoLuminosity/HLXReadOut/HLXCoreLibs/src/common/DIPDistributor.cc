@@ -97,7 +97,7 @@ namespace HCAL_HLX
     // }
     //memset(mHistogramData,0,sizeof(DipInt *)*36);
     //for ( u32 i = 0 ; i != 36 ; i++ ) {
-    mHistogramData = new DipInt[4096];
+    mHistogramData = new DipDouble[4096];
     if ( !mHistogramData ) {
       this->CleanUp();
       MemoryAllocationException lExc("Unable to allocate memory");
@@ -116,26 +116,31 @@ namespace HCAL_HLX
     }
   }
 
-  void DIPDistributor::ProcessSection(const LUMI_SECTION & lumiSection) { 
+  bool DIPDistributor::ProcessSection(const LUMI_SECTION & lumiSection) { 
     //cout << "Begin " << __PRETTY_FUNCTION__ << endl;
 
-    for ( u32 j = 0 ; j != lumiSection.hdr.numBunches ; j++ ) {
-      mHistogramData[j] = 0; 
-      for ( u32 i = 0 ; i != lumiSection.hdr.numHLXs ; i++ ) {
-	mHistogramData[j] += lumiSection.lhc[i].data[j];
-      }
+    //for ( u32 j = 0 ; j != lumiSection.hdr.numBunches ; j++ ) {
+    //  mHistogramData[j] = 0; 
+    //  for ( u32 i = 0 ; i != lumiSection.hdr.numHLXs ; i++ ) {
+    //mHistogramData[j] += lumiSection.lhc[i].data[j];
+    // }
+    //}
+
+    for ( u32 i = 0 ; i != lumiSection.hdr.numBunches ; i++ ) {
+      mHistogramData[i] = lumiSection.lumiBunchCrossing.LHCLumi[i];
     }
 
     // Load the DIP header information
     mRunNumber = lumiSection.hdr.runNumber;
+    mSectionNumber = lumiSection.hdr.sectionNumber;
     mNumHLXs = lumiSection.hdr.numHLXs;
     mStartOrbit = lumiSection.hdr.startOrbit;
     mNumOrbits = lumiSection.hdr.numOrbits;
     mNumBunches = lumiSection.hdr.numBunches;
-    // CMS live? to add
 
     mDIPData->insert(mNumHLXs, "Number of HLXs");
     mDIPData->insert(mRunNumber, "Run number");
+    mDIPData->insert(mSectionNumber, "Section number");
     mDIPData->insert(mStartOrbit, "Start orbit");
     mDIPData->insert(mNumOrbits, "Number of orbits");
     mDIPData->insert(mNumBunches, "Number of bunches");
@@ -145,15 +150,7 @@ namespace HCAL_HLX
     DipTimestamp time;
     mDIPPublisher->send(*mDIPData,time);
 
-	//DIPInt array[3564];      
-
-	/*
-	  DipTimestamp time;
-	_pub[0]->send(run, time); // ***Don't have this yet
-	_pub[1]->send(*_data, time);
-	_pub[2]->send(&(_dipArray[0]),3564,time);*/
-
-       
+    return true;
 	/*} catch (DipException e){
 	printf("Failed to send dip data\n");
 	}*/

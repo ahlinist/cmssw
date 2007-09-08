@@ -23,6 +23,11 @@
 // Standard high-level data structures for luminosity
 #include "LumiStructures.hh"
 
+// Lumi calculator
+#include "LumiCalc.hh"
+
+#define HCAL_HLX_DISTRIBUTOR_BUFFER_DEPTH 10
+
 // Namespace for the HCAL HLX
 namespace HCAL_HLX
 {
@@ -54,7 +59,7 @@ namespace HCAL_HLX
     // Statistics
     u32 GetNumIncompleteLumiSections();
     u32 GetNumCompleteLumiSections();
-    u32 GetNumLostLumiSections();
+    //u32 GetNumLostLumiSections();
 
     // Processing function for ET sum histogram
     void ProcessETSumNibble(const ET_SUM_NIBBLE & etSumNibble,
@@ -73,20 +78,36 @@ namespace HCAL_HLX
 
   protected:
 
+    struct WorkerPlayground {
+      pthread_t threadId;
+      SectionCollector *thisPtr;
+      AbstractDistributor *distributor;
+      LUMI_SECTION sectionBuffer[HCAL_HLX_DISTRIBUTOR_BUFFER_DEPTH];
+      u32 writeIndex;
+      u32 readIndex;
+    };
+
     // Init/cleanup
     void Init();
     void CleanUp();
 
     // Thread worker function
-    static void WorkerThread(void *thisPtr);
-    pthread_t mThreadId;
+    static void WorkerThread(void *ptr);
+    //pthread_t mThreadId;
+
+    // Lumi calculator stuff
+    LumiCalc *mLumiCalculator;
 
     // Holds all lumi section data
     LUMI_SECTION *mLumiSection;
+
     // Buffer for distribution
     LUMI_SECTION *mLumiSectionBuffer;
+
     // Thread interlocks
-    bool mBufferTransmit, mTransmitComplete, mWorkerThreadContinue;
+    //bool mBufferTransmit, mTransmitComplete;
+    
+    bool mWorkerThreadContinue;
 
     // Number of nibbles per lumi section
     u32 mNumNibblesPerSection;
@@ -108,10 +129,10 @@ namespace HCAL_HLX
     // Statistics counters
     u32 mNumCompleteLumiSections;
     u32 mNumIncompleteLumiSections;
-    u32 mNumLostLumiSections;
+    //u32 mNumLostLumiSections;
 
     // Distributor list
-    std::vector<AbstractDistributor *> mDistributors;
+    std::vector<WorkerPlayground *> mDistributors;
 
   }; //~class SectionCollector
 

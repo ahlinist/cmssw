@@ -26,6 +26,14 @@ namespace HCAL_HLX
   
   // Default constructor
   GIFDistributor::GIFDistributor() {
+    mETHistogramData = 0;
+    mLHCHistogramData = 0;
+    mBelowTopHistogramData = 0;
+    mBetweenTopHistogramData = 0;
+    mAboveTopHistogramData = 0;
+    mBelowBottomHistogramData = 0;
+    mBetweenBottomHistogramData = 0;
+    mAboveBottomHistogramData = 0;
     try {
       // Initialise the data structures
       this->Init();
@@ -53,20 +61,219 @@ namespace HCAL_HLX
       MemoryAllocationException lExc("Unable to allocate memory for LHC histogram");
       RAISE(lExc);
     }
+    mBelowTopHistogramData = new double[4096];
+    if ( !mBelowTopHistogramData ) {
+      //this->CleanUp();
+      MemoryAllocationException lExc("Unable to allocate memory for below-top histogram");
+      RAISE(lExc);
+    }
+    mBetweenTopHistogramData = new double[4096];
+    if ( !mBetweenTopHistogramData ) {
+      //this->CleanUp();
+      MemoryAllocationException lExc("Unable to allocate memory for between-top histogram");
+      RAISE(lExc);
+    }
+    mAboveTopHistogramData = new double[4096];
+    if ( !mAboveTopHistogramData ) {
+      //this->CleanUp();
+      MemoryAllocationException lExc("Unable to allocate memory for above-top histogram");
+      RAISE(lExc);
+    }
+    mBelowBottomHistogramData = new double[4096];
+    if ( !mBelowBottomHistogramData ) {
+      //this->CleanUp();
+      MemoryAllocationException lExc("Unable to allocate memory for below-bottom histogram");
+      RAISE(lExc);
+    }
+    mBetweenBottomHistogramData = new double[4096];
+    if ( !mBetweenBottomHistogramData ) {
+      //this->CleanUp();
+      MemoryAllocationException lExc("Unable to allocate memory for between-bottom histogram");
+      RAISE(lExc);
+    }
+    mAboveBottomHistogramData = new double[4096];
+    if ( !mAboveBottomHistogramData ) {
+      //this->CleanUp();
+      MemoryAllocationException lExc("Unable to allocate memory for above-bottom histogram");
+      RAISE(lExc);
+    }
   }
 
   void GIFDistributor::CleanUp() { 
-    if ( mETHistogramData ) {
-      delete []mETHistogramData;
-      mETHistogramData = 0;
-    }
-    if ( mLHCHistogramData ) {
-      delete []mLHCHistogramData;
-      mLHCHistogramData = 0;
-    }
+    delete []mETHistogramData;
+    mETHistogramData = 0;
+    delete []mLHCHistogramData;
+    mLHCHistogramData = 0;
+    delete []mBelowTopHistogramData;
+    mBelowTopHistogramData = 0;
+    delete []mBetweenTopHistogramData;
+    mBetweenTopHistogramData = 0;
+    delete []mAboveTopHistogramData;
+    mAboveTopHistogramData = 0;
+    delete []mBelowBottomHistogramData;
+    mBelowBottomHistogramData = 0;
+    delete []mBetweenBottomHistogramData;
+    mBetweenBottomHistogramData = 0;
+    delete []mAboveBottomHistogramData;
+    mAboveBottomHistogramData = 0;
   }
 
-  void GIFDistributor::ProcessSection(const LUMI_SECTION & lumiSection) { 
+  void GIFDistributor::DoETSumHistogram(u32 numBunches) {
+
+    TH1D histogramET("gifHist","HLX ET Distribution",numBunches,0,numBunches);
+    for ( u32 j = 0 ; j != numBunches ; j++ ) {
+      histogramET.Fill(j,mETHistogramData[j]);
+    }
+
+    TCanvas canvas("gifCanvas","gifCanvas",200,10,800,600);
+    canvas.SetFillColor(10);
+    canvas.SetLogy();
+    canvas.SetGridx();
+    canvas.SetGridy();
+    histogramET.SetLineWidth(2);
+    histogramET.GetXaxis()->SetTitle("BX Number");
+    histogramET.GetYaxis()->SetTitle("ET Sum");
+    histogramET.Draw();
+    canvas.SaveAs("tmp/et.png");
+  }
+
+  void GIFDistributor::DoLHCHistogram(u32 numBunches) {
+
+    TH1D histogramET("gifHist2","HLX LHC Distribution",numBunches,0,numBunches);
+    for ( u32 j = 0 ; j != numBunches ; j++ ) {
+      histogramET.Fill(j,mLHCHistogramData[j]);
+    }
+
+    TCanvas canvas("gifCanvas2","gifCanvas2",200,10,800,600);
+    canvas.SetFillColor(10);
+    canvas.SetLogy();
+    canvas.SetGridx();
+    canvas.SetGridy();
+    histogramET.SetLineWidth(2);
+    histogramET.GetXaxis()->SetTitle("BX Number");
+    histogramET.GetYaxis()->SetTitle("Count");
+    histogramET.Draw();
+    canvas.SaveAs("tmp/lhc.png");
+  }
+
+  void GIFDistributor::DoBelowOccTopHistogram(u32 numBunches) {
+
+    TH1D histogramET("gifHist3","HLX Below Threshold Top",numBunches,0,numBunches);
+    for ( u32 j = 0 ; j != numBunches ; j++ ) {
+      histogramET.Fill(j,mBelowTopHistogramData[j]);
+    }
+
+    TCanvas canvas("gifCanvas3","gifCanvas3",200,10,800,600);
+    canvas.SetFillColor(10);
+    canvas.SetLogy();
+    canvas.SetGridx();
+    canvas.SetGridy();
+    histogramET.SetLineWidth(2);
+    histogramET.GetXaxis()->SetTitle("BX Number");
+    histogramET.GetYaxis()->SetTitle("Count");
+    histogramET.Draw();
+    canvas.SaveAs("tmp/occ_below_threshold_top.png");
+  }
+
+  void GIFDistributor::DoBetweenOccTopHistogram(u32 numBunches) {
+
+    TH1D histogramET("gifHist4","HLX Between Thresholds Top",numBunches,0,numBunches);
+    for ( u32 j = 0 ; j != numBunches ; j++ ) {
+      histogramET.Fill(j,mBetweenTopHistogramData[j]);
+    }
+
+    TCanvas canvas("gifCanvas4","gifCanvas4",200,10,800,600);
+    canvas.SetFillColor(10);
+    canvas.SetLogy();
+    canvas.SetGridx();
+    canvas.SetGridy();
+    histogramET.SetLineWidth(2);
+    histogramET.GetXaxis()->SetTitle("BX Number");
+    histogramET.GetYaxis()->SetTitle("Count");
+    histogramET.Draw();
+    canvas.SaveAs("tmp/occ_between_thresholds_top.png");
+
+  }
+
+  void GIFDistributor::DoAboveOccTopHistogram(u32 numBunches) {
+
+    TH1D histogramET("gifHist5","HLX Above Threshold Top",numBunches,0,numBunches);
+    for ( u32 j = 0 ; j != numBunches ; j++ ) {
+      histogramET.Fill(j,mAboveTopHistogramData[j]);
+    }
+
+    TCanvas canvas("gifCanvas5","gifCanvas5",200,10,800,600);
+    canvas.SetFillColor(10);
+    canvas.SetLogy();
+    canvas.SetGridx();
+    canvas.SetGridy();
+    histogramET.SetLineWidth(2);
+    histogramET.GetXaxis()->SetTitle("BX Number");
+    histogramET.GetYaxis()->SetTitle("Count");
+    histogramET.Draw();
+    canvas.SaveAs("tmp/occ_above_threshold_top.png");
+  }
+
+  void GIFDistributor::DoBelowOccBottomHistogram(u32 numBunches) {
+
+    TH1D histogramET("gifHist6","HLX Below Threshold Top",numBunches,0,numBunches);
+    for ( u32 j = 0 ; j != numBunches ; j++ ) {
+      histogramET.Fill(j,mBelowBottomHistogramData[j]);
+    }
+
+    TCanvas canvas("gifCanvas6","gifCanvas6",200,10,800,600);
+    canvas.SetFillColor(10);
+    canvas.SetLogy();
+    canvas.SetGridx();
+    canvas.SetGridy();
+    histogramET.SetLineWidth(2);
+    histogramET.GetXaxis()->SetTitle("BX Number");
+    histogramET.GetYaxis()->SetTitle("Count");
+    histogramET.Draw();
+    canvas.SaveAs("tmp/occ_below_threshold_bottom.png");
+
+  }
+
+  void GIFDistributor::DoBetweenOccBottomHistogram(u32 numBunches) {
+
+    TH1D histogramET("gifHist7","HLX Between Thresholds Top",numBunches,0,numBunches);
+    for ( u32 j = 0 ; j != numBunches ; j++ ) {
+      histogramET.Fill(j,mBetweenBottomHistogramData[j]);
+    }
+
+    TCanvas canvas("gifCanvas7","gifCanvas7",200,10,800,600);
+    canvas.SetFillColor(10);
+    canvas.SetLogy();
+    canvas.SetGridx();
+    canvas.SetGridy();
+    histogramET.SetLineWidth(2);
+    histogramET.GetXaxis()->SetTitle("BX Number");
+    histogramET.GetYaxis()->SetTitle("Count");
+    histogramET.Draw();
+    canvas.SaveAs("tmp/occ_between_thresholds_bottom.png");
+  }
+
+  void GIFDistributor::DoAboveOccBottomHistogram(u32 numBunches) {
+    TH1D histogram("gifHist8","HLX Above Threshold Top",numBunches,0,numBunches);
+    for ( u32 j = 0 ; j != numBunches ; j++ ) {
+      histogram.Fill(j,mAboveBottomHistogramData[j]);
+    }
+
+    TCanvas canvas("gifCanvas8","gifCanvas8",200,10,800,600);
+    canvas.SetFillColor(10);
+    canvas.SetLogy();
+    canvas.SetGridx();
+    canvas.SetGridy();
+    
+    histogram.SetLineWidth(2);
+    histogram.GetXaxis()->SetTitle("BX Number");
+    histogram.GetYaxis()->SetTitle("Count");
+    histogram.Draw();
+    
+    canvas.SaveAs("tmp/occ_above_threshold_bottom.png");
+  }
+
+  bool GIFDistributor::ProcessSection(const LUMI_SECTION & lumiSection) { 
     //cout << "Begin " << __PRETTY_FUNCTION__ << endl;
 
     // Done before histogram fill - worried about
@@ -74,47 +281,42 @@ namespace HCAL_HLX
     for ( u32 j = 0 ; j != lumiSection.hdr.numBunches ; j++ ) {
       mETHistogramData[j] = 0.0;
       mLHCHistogramData[j] = 0.0;
+      mBelowBottomHistogramData[j] = 0.0;
+      mBetweenBottomHistogramData[j] = 0.0;
+      mAboveBottomHistogramData[j] = 0.0;
+      mBelowTopHistogramData[j] = 0.0;
+      mBetweenTopHistogramData[j] = 0.0;
+      mAboveTopHistogramData[j] = 0.0;
       for ( u32 i = 0 ; i != lumiSection.hdr.numHLXs ; i++ ) {
 	mETHistogramData[j] += static_cast<double>(lumiSection.etSum[i].data[j]);
 	mLHCHistogramData[j] += static_cast<double>(lumiSection.lhc[i].data[j]);
+	mBelowTopHistogramData[j] += static_cast<double>(lumiSection.occupancy[i].data[0][j]);
+	mBetweenTopHistogramData[j] += static_cast<double>(lumiSection.occupancy[i].data[1][j]);
+	mAboveTopHistogramData[j] += static_cast<double>(lumiSection.occupancy[i].data[2][j]);
+	mBelowBottomHistogramData[j] += static_cast<double>(lumiSection.occupancy[i].data[3][j]);
+	mBetweenBottomHistogramData[j] += static_cast<double>(lumiSection.occupancy[i].data[4][j]);
+	mAboveBottomHistogramData[j] += static_cast<double>(lumiSection.occupancy[i].data[5][j]);
       }
      //cout << j << "\t" << mETHistogramData[j] << endl;
     }
 
-    TH1D histogramET("tempHist","HLX ET Distribution",lumiSection.hdr.numBunches,0,lumiSection.hdr.numBunches);
-    for ( u32 j = 0 ; j != lumiSection.hdr.numBunches ; j++ ) {
-      histogramET.Fill(j,mETHistogramData[j]);
-    }
+    // Lock the ROOT mutex to stop the other distributors
+    // accessing ROOT at the same time...
+    mROOTMutex.Lock();
 
-    TCanvas canvas("tempCanvas","tempCanvas",200,10,600,400);
-    canvas.cd();
-    canvas.SetFillColor(10);
-    canvas.SetLogy();
-    canvas.SetGridx();
-    canvas.SetGridy();
-    histogramET.SetLineWidth(2);
-    histogramET.GetXaxis()->SetTitle("BX Number");
-    histogramET.GetYaxis()->SetTitle("ET Count");
-    histogramET.Draw();
-    canvas.SaveAs("tmp/et.gif");
+    this->DoETSumHistogram(lumiSection.hdr.numBunches);
+    this->DoLHCHistogram(lumiSection.hdr.numBunches);
+    this->DoBelowOccTopHistogram(lumiSection.hdr.numBunches);
+    this->DoBetweenOccTopHistogram(lumiSection.hdr.numBunches);
+    this->DoAboveOccTopHistogram(lumiSection.hdr.numBunches);
+    this->DoBelowOccBottomHistogram(lumiSection.hdr.numBunches);
+    this->DoBetweenOccBottomHistogram(lumiSection.hdr.numBunches);
+    this->DoAboveOccBottomHistogram(lumiSection.hdr.numBunches);
 
-    //TH1D histogramLHC("tempHist","HLX LHC Distribution",lumiSection.hdr.numBunches,0,lumiSection.hdr.numBunches);
-    //for ( u32 j = 0 ; j != lumiSection.hdr.numBunches ; j++ ) {
-    //  histogramLHC.Fill(j,mLHCHistogramData[j]);
-   // }
+    // Unlock the ROOT mutex
+    mROOTMutex.Unlock();
 
-    //TCanvas canvas2("tempCanvas","tempCanvas",200,10,600,400);
-    //canvas.cd();
-    //canvas.SetFillColor(10);
-    //canvas.SetLogy();
-    //canvas.SetGridx();
-    //canvas.SetGridy();
-    //histogramLHC.SetLineWidth(2);
-    //histogramLHC.GetXaxis()->SetTitle("BX Number");
-    //histogramLHC.GetYaxis()->SetTitle("ET Count");
-    //histogramLHC.Draw();
-    //canvas2.SaveAs("tmp/lhc.gif");
-
+    return true;
     //cout << "End " << __PRETTY_FUNCTION__ << endl;
   }
 

@@ -36,10 +36,19 @@ namespace HCAL_HLX
     AbstractDistributor() {}
 
     // Destructor
-    virtual ~AbstractDistributor() {};
+    virtual ~AbstractDistributor() {}
 
     // Processing function for ET sum histogram
-    virtual void ProcessSection(const LUMI_SECTION & lumiSection) = 0;
+    virtual bool ProcessSection(const LUMI_SECTION & lumiSection) = 0;
+
+    // Get the number of lost lumi sections
+    u32 GetNumLostLumiSections() { return mNumLostLumiSections; }
+
+  private:
+    u32 mNumLostLumiSections;
+
+    // This allows access to the error variable
+    friend class SectionCollector;
     
   }; //~class AbstractDistributor
   

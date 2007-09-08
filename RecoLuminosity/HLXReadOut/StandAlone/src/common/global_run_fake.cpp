@@ -36,7 +36,7 @@ using namespace ICCoreUtils;
 
 #define NUM_HLXS 1
 #define SHORT_LENGTH 1000
-#define LONG_LENGTH 10000
+#define LONG_LENGTH 15000
 #define NUM_BUNCHES 300 //3564
 #define NUM_ORBITS 1 //4096
 
@@ -76,9 +76,9 @@ int main(int argc, char ** argv) {
     lSectionCollectorShort->SetRunNumber(runNumber);
     lSectionCollectorLong->SetRunNumber(runNumber);
 
-    //lOracleDistributor = new OracleDistributor;
-    //lSectionCollectorLong->AttachDistributor(lOracleDistributor);
-    lROOTDistributor = new ROOTDistributor(runNumber);
+    lOracleDistributor = new OracleDistributor;
+    lSectionCollectorLong->AttachDistributor(lOracleDistributor);
+    lROOTDistributor = new ROOTDistributor;
     lSectionCollectorLong->AttachDistributor(lROOTDistributor);
     lDebugCoutDistributor = new DebugCoutDistributor;
     lSectionCollectorLong->AttachDistributor(lDebugCoutDistributor);
@@ -86,9 +86,9 @@ int main(int argc, char ** argv) {
     lGIFDistributor = new GIFDistributor;
     lSectionCollectorLong->AttachDistributor(lGIFDistributor);
     lDIPDistributor = new DIPDistributor;
-    lSectionCollectorLong->AttachDistributor(lDIPDistributor);
+    lSectionCollectorShort->AttachDistributor(lDIPDistributor);
     lTCPDistributor = new TCPDistributor;
-    lSectionCollectorLong->AttachDistributor(lTCPDistributor);
+    lSectionCollectorShort->AttachDistributor(lTCPDistributor);
     for ( u32 i = 0 ; i != NUM_HLXS ; i++ ) {
       lWedgeGIFDistributor[i] = new WedgeGIFDistributor(i);
       lSectionCollectorLong->AttachDistributor(lWedgeGIFDistributor[i]);
@@ -122,7 +122,7 @@ int main(int argc, char ** argv) {
 	cout << "Bad LHC nibble count: " << lNibbleCollector->GetNumBadLHCNibbles() << endl;
 	cout << "Good section count:" << lSectionCollectorLong->GetNumCompleteLumiSections() << endl;
 	cout << "Bad section count: " << lSectionCollectorLong->GetNumIncompleteLumiSections() << endl;
-	cout << "Lost section count: " << lSectionCollectorLong->GetNumLostLumiSections() << endl;
+	//cout << "Lost section count: " << lSectionCollectorLong->GetNumLostLumiSections() << endl;
 	cout << "Lost packet count: " << lNibbleCollector->GetNumLostPackets() << endl;
 	cout << "Total data volume: " << lNibbleCollector->GetTotalDataVolume() << endl;
 	cout << "Average data rate (Mb/s): " << (double)lNibbleCollector->GetTotalDataVolume()*8.0/(1024.0*1024.0*(double)(tempTime-startTime)) << endl;
@@ -147,9 +147,9 @@ int main(int argc, char ** argv) {
   delete lROOTDistributor;
   delete lOracleDistributor;
   delete lGIFDistributor;
-  for ( u32 i = 0 ; i != NUM_HLXS ; i++ ) {
-    delete lWedgeGIFDistributor[i];
-  }
+  //for ( u32 i = 0 ; i != NUM_HLXS ; i++ ) {
+  //  delete lWedgeGIFDistributor[i];
+ // }
     
   return 0;
 }

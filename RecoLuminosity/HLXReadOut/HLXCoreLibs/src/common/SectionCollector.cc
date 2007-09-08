@@ -18,6 +18,8 @@
 #include "MemoryAllocationException.hh"
 //#include "ArgumentOutOfRangeException.hh"
 
+//#define HCAL_HLX_SECTION_COLLECTOR_DEBUG
+
 // HCAL HLX namespace
 namespace HCAL_HLX
 {
@@ -33,13 +35,19 @@ namespace HCAL_HLX
 				     u32 aNumHLXs) {
     try {
       // Distributor thread
-      mThreadId=0;
       mNumHLXs = aNumHLXs;
       mNumNibblesPerSection = aNumNibblesPerSection;
       mNumOrbitsPerNibble = aNumOrbitsPerNibble;
       mNumOrbits = aNumOrbitsPerNibble * aNumNibblesPerSection;
       mNumBunches = aNumBunches;
       mRunNumber = 0;
+
+      mLumiCalculator = new LumiCalc;
+      if ( !mLumiCalculator ) {
+	MemoryAllocationException lExc("Cannot allocate LumiCalc module");
+	RAISE(lExc);
+      }
+
       this->Init();
       // Initialise the lumi section structures
       /*for ( u32 i = 0 ; i != mNumHLXs ; i++ ) {
@@ -53,18 +61,9 @@ namespace HCAL_HLX
 
       // Initialise the worker thread
       mWorkerThreadContinue=true;
-      mBufferTransmit=false;
-      mTransmitComplete=false;
+      //mBufferTransmit=false;
+      //mTransmitComplete=false;
 
-      // Create the worker thread
-      int ret = pthread_create(&mThreadId,
-			   NULL,
-			   (void*(*)(void*))SectionCollector::WorkerThread,
-			   reinterpret_cast<void *>(this));
-      if ( ret != 0 ) {
-	MemoryAllocationException lExc("Cannot create worker thread");
-	RAISE(lExc);
-      }
 
     } catch (ICException & aExc) {
       RETHROW(aExc);
@@ -77,13 +76,16 @@ namespace HCAL_HLX
 
       // Rejoin the original thread
       mWorkerThreadContinue=false;
-      pthread_join(mThreadId,NULL);
-      mThreadId=0;
-      mBufferTransmit=false;
-      mTransmitComplete=false;
+      for ( u32 i = 0 ; i != mDistributors.size() ; i++ ) {
+	pthread_join(mDistributors[i]->threadId,NULL);
+	mDistributors[i]->threadId = 0;
+      }
 
       // Clean up afterwards or we can have thread collisions
-      this->CleanUp();
+      CleanUp();
+
+      // Delete the lumi calculator
+      delete mLumiCalculator;
 
     } catch (ICException & aExc) {
       RETHROW(aExc);
@@ -111,6 +113,10 @@ namespace HCAL_HLX
   // Clean up function
   void SectionCollector::CleanUp() {
     try {
+      for ( u32 i = 0 ; i != mDistributors.size() ; i++ ) {
+	delete mDistributors[i];
+      }
+      mDistributors.clear();
       delete mLumiSection;
       mLumiSection = 0;
       delete mLumiSectionBuffer;
@@ -125,7 +131,6 @@ namespace HCAL_HLX
     try {
       mNumCompleteLumiSections = 0;
       mNumIncompleteLumiSections = 0;
-      mNumLostLumiSections = 0;
       mSectionNumber = 0;
     } catch (ICException & aExc) {
       RETHROW(aExc);
@@ -144,24 +149,98 @@ namespace HCAL_HLX
   u32 SectionCollector::GetNumCompleteLumiSections() {
     return mNumCompleteLumiSections;
   }
-  u32 SectionCollector::GetNumLostLumiSections() {
-    return mNumLostLumiSections;
-  }
+  //u32 SectionCollector::GetNumLostLumiSections() {
+  // return mNumLostLumiSections;
+  //}
 
   // Distributor attachment function
   void SectionCollector::AttachDistributor(AbstractDistributor *aDistributor) {
     try {
+      WorkerPlayground *tempPlayground = new WorkerPlayground;
+      if ( tempPlayground == 0 ) {
+	MemoryAllocationException lExc("Unable to allocate playground for new distributor");
+	RAISE(lExc);
+      }
+
+      tempPlayground->distributor = aDistributor;
+      tempPlayground->writeIndex = 0;
+      tempPlayground->readIndex = 0;
+      tempPlayground->thisPtr = this;
+
+      // Create the worker thread
+      int ret = pthread_create(&tempPlayground->threadId,
+			   NULL,
+			   (void*(*)(void*))SectionCollector::WorkerThread,
+			   reinterpret_cast<void *>(tempPlayground));
+      if ( ret != 0 ) {
+	MemoryAllocationException lExc("Cannot create worker thread");
+	RAISE(lExc);
+      }
+
       // Add the distributor to the list
-      this->mDistributors.push_back(aDistributor);
+      mDistributors.push_back(tempPlayground);
     } catch (ICException & aExc) {
       RETHROW(aExc);
     }
   }
 
+  void SectionCollector::WorkerThread(void *ptr) {
+    // Poll for data here    
+    // No exceptions, just plain-vanilla C++
+    WorkerPlayground *thePlayground = reinterpret_cast<WorkerPlayground *>(ptr);
+    SectionCollector *theClass = thePlayground->thisPtr;
+    AbstractDistributor *theDistributor = thePlayground->distributor;
+    u32 nextIndex;
+    bool bRet;
+
+    while (theClass->mWorkerThreadContinue) {
+
+      //if ( !theClass->mTransmitComplete ) {
+      //	if ( theClass->mBufferTransmit ) {
+	
+	  //for ( u32 i = 0 ; i != theClass->mDistributors.size() ; i++ ) {
+
+      if ( thePlayground->readIndex != thePlayground->writeIndex ) {
+	bRet = theDistributor->ProcessSection(*(thePlayground->sectionBuffer+thePlayground->readIndex));
+	if ( bRet ) {
+	  nextIndex = thePlayground->readIndex;
+#ifdef HCAL_HLX_SECTION_COLLECTOR_DEBUG
+	  cout << "Worker thread: Submitting packet to distributor" << endl;
+#endif
+	  if ( nextIndex == HCAL_HLX_DISTRIBUTOR_BUFFER_DEPTH-1 ) {
+	    nextIndex = 0;
+	  } else {
+	    nextIndex++;
+	  }
+	  thePlayground->readIndex = nextIndex;
+	}
+      }
+
+
+
+	    //	  }
+    //theClass->mTransmitComplete = true;
+
+	  //}
+  //} else {
+  //	if ( !theClass->mBufferTransmit ) {
+  //  theClass->mTransmitComplete = false;
+  //	}
+  //  }
+
+      Sleep(1);
+
+    }
+
+    //cout << "Worker thread complete" << endl;
+  }
+
   // Processing function for ET sum nibbles
   void SectionCollector::ProcessETSumNibble(const ET_SUM_NIBBLE & etSumNibble,
 					    u8 hlxID) {
-    if ( mTransmitComplete ) mBufferTransmit = false;
+    //cout << mDistributors[0]->writeIndex << endl;
+    //cout << mDistributors[0]->readIndex << endl;
+    //if ( mTransmitComplete ) mBufferTransmit = false;
 
     // Check for incomplete previous lumi section
     if ( etSumNibble.hdr.numOrbits == mNumOrbitsPerNibble ) {
@@ -172,13 +251,26 @@ namespace HCAL_HLX
 	if ( mLumiSection->hdr.startOrbit != 0 ) {
 	  mSectionNumber++;
 	  mNumCompleteLumiSections++;
-	  if ( !mTransmitComplete ) {
-	    // Copy the data into the buffer
-	    memcpy(mLumiSectionBuffer,mLumiSection,sizeof(LUMI_SECTION));
-	    // Flag the new data
-	    mBufferTransmit = true;
-	  } else {
-	    mNumLostLumiSections++;
+	  
+	  for ( u32 i = 0 ; i != mDistributors.size() ; i++ ) {
+	    u32 nextIndex = mDistributors[i]->writeIndex;
+	    if ( nextIndex == HCAL_HLX_DISTRIBUTOR_BUFFER_DEPTH-1 ) {
+	      nextIndex = 0;
+	    } else {
+	      nextIndex++;
+	    }
+	    if ( nextIndex == mDistributors[i]->readIndex ) {
+	      mDistributors[i]->distributor->mNumLostLumiSections++;	    
+	    } else {
+	      // Do the luminosity calculation
+	      mLumiCalculator->DoCalc(*mLumiSection);
+	      // Copy the data into the buffer
+	      memcpy(mDistributors[i]->sectionBuffer+mDistributors[i]->writeIndex,
+		     mLumiSection,
+		     sizeof(LUMI_SECTION));  
+	      // Set the new write pipeline address
+	      mDistributors[i]->writeIndex = nextIndex;
+	    }
 	  }
 	}
 
@@ -223,38 +315,9 @@ namespace HCAL_HLX
     
   }
 
-  void SectionCollector::WorkerThread(void *thisPtr) {
-    // Poll for data here    
-    // No exceptions, just plain-vanilla C++
-    SectionCollector *theClass = reinterpret_cast<SectionCollector *>(thisPtr);
-
-    while (theClass->mWorkerThreadContinue) {
-
-      if ( !theClass->mTransmitComplete ) {
-	if ( theClass->mBufferTransmit ) {
-	
-	  for ( u32 i = 0 ; i != theClass->mDistributors.size() ; i++ ) {
-	    theClass->mDistributors[i]->ProcessSection(*theClass->mLumiSectionBuffer);
-	  }
-	  theClass->mTransmitComplete = true;
-
-	}
-      } else {
-	if ( !theClass->mBufferTransmit ) {
-	  theClass->mTransmitComplete = false;
-	}
-      }
-
-      Sleep(1);
-
-    }
-
-    //cout << "Worker thread complete" << endl;
-  }
-
   void SectionCollector::ProcessLHCNibble(const LHC_NIBBLE & lhcNibble,
 					  u8 hlxID) {
-    if ( mTransmitComplete ) mBufferTransmit = false;
+    //if ( mTransmitComplete ) mBufferTransmit = false;
 
     // Check for incomplete previous lumi section
     if ( lhcNibble.hdr.numOrbits == mNumOrbitsPerNibble ) {
@@ -265,13 +328,43 @@ namespace HCAL_HLX
 	if ( mLumiSection->hdr.startOrbit != 0 ) {
 	  mSectionNumber++;
 	  mNumCompleteLumiSections++;
-	  if ( !mTransmitComplete ) {
-	    // Copy the data into the buffer
-	    memcpy(mLumiSectionBuffer,mLumiSection,sizeof(LUMI_SECTION));
-	    // Flag the new data
-	    mBufferTransmit = true;
-	  } else {
-	    mNumLostLumiSections++;
+
+	  for ( u32 i = 0 ; i != mDistributors.size() ; i++ ) {
+	    u32 nextIndex = mDistributors[i]->writeIndex;
+	    if ( nextIndex == HCAL_HLX_DISTRIBUTOR_BUFFER_DEPTH-1 ) {
+	      nextIndex = 0;
+	    } else {
+	      nextIndex++;
+	    }
+#ifdef HCAL_HLX_SECTION_COLLECTOR_DEBUG
+	    cout << "Write index is: " << dec << mDistributors[i]->writeIndex << endl;
+	    cout << "Read index is: " << dec << mDistributors[i]->readIndex << endl;
+	    cout << "Next index is: " << dec << nextIndex << endl;
+#endif
+	    if ( nextIndex == mDistributors[i]->readIndex ) {
+#ifdef HCAL_HLX_SECTION_COLLECTOR_DEBUG
+	      cout << "Section dropped" << endl;
+#endif
+	      mDistributors[i]->distributor->mNumLostLumiSections++;
+	    } else {
+	      // Do the luminosity calculation
+#ifdef HCAL_HLX_SECTION_COLLECTOR_DEBUG
+	      cout << "Running LumiCalc" << endl;
+#endif
+	      mLumiCalculator->DoCalc(*mLumiSection);
+	      // Copy the data into the buffer
+#ifdef HCAL_HLX_SECTION_COLLECTOR_DEBUG
+	      cout << "Copying data into circular buffer" << endl;
+#endif
+	      memcpy(mDistributors[i]->sectionBuffer+mDistributors[i]->writeIndex,
+		     mLumiSection,
+		     sizeof(LUMI_SECTION));  
+	      // Set the new write pipeline address
+#ifdef HCAL_HLX_SECTION_COLLECTOR_DEBUG
+	      cout << "Submit" << endl;
+#endif
+	      mDistributors[i]->writeIndex = nextIndex;
+	    }
 	  }
 	}
 
@@ -314,7 +407,7 @@ namespace HCAL_HLX
 
   void SectionCollector::ProcessOccupancyNibble(const OCCUPANCY_NIBBLE & occupancyNibble,
 						u8 hlxID) {
-    if ( mTransmitComplete ) mBufferTransmit = false;
+    //if ( mTransmitComplete ) mBufferTransmit = false;
 
     // Check for incomplete previous lumi section
     if ( occupancyNibble.hdr.numOrbits == mNumOrbitsPerNibble ) {
@@ -325,13 +418,43 @@ namespace HCAL_HLX
 	if ( mLumiSection->hdr.startOrbit != 0 ) {
 	  mSectionNumber++;
 	  mNumCompleteLumiSections++;
-	  if ( !mTransmitComplete ) {
-	    // Copy the data into the buffer
-	    memcpy(mLumiSectionBuffer,mLumiSection,sizeof(LUMI_SECTION));
-	    // Flag the new data
-	    mBufferTransmit = true;
-	  } else {
-	    mNumLostLumiSections++;
+	  
+	  for ( u32 i = 0 ; i != mDistributors.size() ; i++ ) {
+	    u32 nextIndex = mDistributors[i]->writeIndex;
+	    if ( nextIndex == HCAL_HLX_DISTRIBUTOR_BUFFER_DEPTH-1 ) {
+	      nextIndex = 0;
+	    } else {
+	      nextIndex++;
+	    }
+#ifdef HCAL_HLX_SECTION_COLLECTOR_DEBUG
+	    cout << "Write index is: " << dec << mDistributors[i]->writeIndex << endl;
+	    cout << "Read index is: " << dec << mDistributors[i]->readIndex << endl;
+	    cout << "Next index is: " << dec << nextIndex << endl;
+#endif
+	    if ( nextIndex == mDistributors[i]->readIndex ) {
+#ifdef HCAL_HLX_SECTION_COLLECTOR_DEBUG
+	      cout << "Section dropped" << endl;
+#endif
+	      mDistributors[i]->distributor->mNumLostLumiSections++;
+	    } else {
+	      // Do the luminosity calculation
+#ifdef HCAL_HLX_SECTION_COLLECTOR_DEBUG
+	      cout << "Running LumiCalc" << endl;
+#endif
+	      mLumiCalculator->DoCalc(*mLumiSection);
+	      // Copy the data into the buffer
+#ifdef HCAL_HLX_SECTION_COLLECTOR_DEBUG
+	      cout << "Copying data into circular buffer" << endl;
+#endif
+	      memcpy(mDistributors[i]->sectionBuffer+mDistributors[i]->writeIndex,
+		     mLumiSection,
+		     sizeof(LUMI_SECTION));  
+	      // Set the new write pipeline address
+#ifdef HCAL_HLX_SECTION_COLLECTOR_DEBUG
+	      cout << "Submit" << endl;
+#endif
+	      mDistributors[i]->writeIndex = nextIndex;
+	    }
 	  }
 	}
 

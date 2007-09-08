@@ -12,6 +12,7 @@
 #include "MemoryAllocationException.hh"
 //#include "ArgumentOutOfRangeException.hh"
 
+//#define HCAL_HLX_TCP_DISTRIBUTOR_DEBUG
 
 // HCAL HLX namespace
 namespace HCAL_HLX
@@ -178,7 +179,9 @@ namespace HCAL_HLX
 	// DON'T REMOVE THIS
 	pthread_mutex_lock(&theClass->mDataMutex);
 	if ( FD_ISSET(theClass->mSocket, &theClass->fdsRead) ) {
+#ifdef HCAL_HLX_TCP_DISTRIBUTOR_DEBUG
 	  cout << "Client connecting" << endl;
+#endif
 	  struct sockaddr_in clientAddress;
 	  socklen_t clientAddressLength = sizeof(clientAddress);
 	  ClientConnectionData tempConnData;
@@ -187,9 +190,13 @@ namespace HCAL_HLX
 				       (struct sockaddr *) & clientAddress,
 				       &clientAddressLength); 
 	  if ( tempConnData.socket < 0 ) {
+#ifdef HCAL_HLX_TCP_DISTRIBUTOR_DEBUG
 	    cout << "Couldn't accept incoming connection" << endl;
+#endif
 	  } else {
+#ifdef HCAL_HLX_TCP_DISTRIBUTOR_DEBUG
 	    cout << "Client connected" << endl;  
+#endif
 	    theClass->clientList.push_back(tempConnData);
 	    //cout << "Post-push_back" << endl;
 	  }
@@ -199,7 +206,9 @@ namespace HCAL_HLX
 	std::list<ClientConnectionData>::iterator it = theClass->clientList.begin();
 	while ( it != theClass->clientList.end() ) {
 	  if ( FD_ISSET(it->socket, &theClass->fdsExcept) ) {
+#ifdef HCAL_HLX_TCP_DISTRIBUTOR_DEBUG
 	    cout << "Error on socket " << it->socket << endl;
+#endif
 	    // Shut down the socket
 	    shutdown(it->socket, SHUT_RDWR);
 	    // Remove this client from the list
@@ -210,7 +219,9 @@ namespace HCAL_HLX
 	    //cout << "Client socket became readable" << endl;
 	    ret = recv(it->socket, readDataBuffer, 100000, 0);
 	    if ( ret < 0 ) {
+#ifdef HCAL_HLX_TCP_DISTRIBUTOR_DEBUG
 	      cout << "Error on socket " << it->socket << endl;
+#endif
 	      // Shut down the socket
 	      shutdown(it->socket, SHUT_RDWR);
 	      // Remove this client from the list
@@ -218,8 +229,10 @@ namespace HCAL_HLX
 	      theClass->clientList.erase(itold);
 	      continue;
 	    } else if ( ret == 0 ) {
+#ifdef HCAL_HLX_TCP_DISTRIBUTOR_DEBUG
 	      cout << "Socket " << it->socket 
 		   << " closed at client side" << endl;
+#endif
 	      // Shut down the socket
 	      shutdown(it->socket, SHUT_RDWR);
 	      // Remove this client from the list
@@ -236,7 +249,9 @@ namespace HCAL_HLX
 		      it->nBytesLeft,
 		      0);
 	    if ( ret < 0 ) {
+#ifdef HCAL_HLX_TCP_DISTRIBUTOR_DEBUG
 	      cout << "ERROR - write to client socket " << it->socket << " failed" << endl;
+#endif
 	      // Shut down the socket
 	      shutdown(it->socket, SHUT_RDWR);
 	      // Remove this client from the list
@@ -262,11 +277,13 @@ namespace HCAL_HLX
     //cout << "TCPDistributor: INFO - Worker thread complete" << endl;
   }
 
-  void TCPDistributor::ProcessSection(const LUMI_SECTION & lumiSection) {
+  bool TCPDistributor::ProcessSection(const LUMI_SECTION & lumiSection) {
+#ifdef HCAL_HLX_TCP_DISTRIBUTOR_DEBUG
     cout << "Begin " << __PRETTY_FUNCTION__ << endl;
+#endif
     // TODO - modify so list held by section collector
     // Stalls are then also flagged in the section collector *not* here
-    try {
+//    try {
       // DON'T REMOVE THIS
       //cout << "Before mutex lock" << endl;
       pthread_mutex_lock(&mDataMutex);
@@ -278,6 +295,8 @@ namespace HCAL_HLX
 	  // Flag an error (not done properly yet)
 	  cout << "TCPDistributor: ERROR - server interlock copy failed" << endl;
 	  cout << "                Client socket " << dec << it->socket << endl;
+	  pthread_mutex_unlock(&mDataMutex);
+          return false;
 	} else {
 	  // Copy the data into the interlock buffer
 	  it->nBytesLeft = sizeof(LUMI_SECTION);
@@ -289,10 +308,14 @@ namespace HCAL_HLX
       // DON'T REMOVE THIS
       //cout << "Before mutex unlock" << endl;
       pthread_mutex_unlock(&mDataMutex);
-    } catch (ICException & aExc) {
-      RETHROW(aExc);
-    }
+    //} catch (ICException & aExc) {
+    //  RETHROW(aExc);
+   // }
+
+   return true;
+#ifdef HCAL_HLX_TCP_DISTRIBUTOR_DEBUG
     cout << "End " << __PRETTY_FUNCTION__ << endl;
+#endif
   }
 
 

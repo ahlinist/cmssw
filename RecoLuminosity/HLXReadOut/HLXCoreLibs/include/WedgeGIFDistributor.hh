@@ -18,6 +18,9 @@
 // Standard high-level data structures for luminosity
 #include "LumiStructures.hh"
 
+// ROOT mutex
+#include "ROOTMutex.hh"
+
 // Namespace for the HCAL HLX
 namespace HCAL_HLX
 {
@@ -38,7 +41,7 @@ namespace HCAL_HLX
     ~WedgeGIFDistributor();
 
     // Processing function
-    void ProcessSection(const LUMI_SECTION & lumiSection);
+    bool ProcessSection(const LUMI_SECTION & lumiSection);
 
   private:
 
@@ -61,7 +64,9 @@ namespace HCAL_HLX
 
     // Buffers for insertion into DIP data structure
     double *mHistogramData;
-    //double *mLHCHistogramData;
+
+    // ROOT mutex
+    ROOTMutex mROOTMutex;
 
   };
 

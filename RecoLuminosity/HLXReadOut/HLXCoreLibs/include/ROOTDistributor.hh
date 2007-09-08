@@ -1,15 +1,15 @@
 #ifndef ROOTDISTRIBUTOR_HH
 #define ROOTDISTRIBUTOR_HH
 
-//include <TROOT.h>
-// Joy of ROOT
+#include "TROOT.h"
 #include "TFile.h"
 #include "TTree.h"
 
-// HLXCoreLibs stuff
+// HLXCoreLibs headers
 #include "ICTypeDefs.hh"
 #include "LumiStructures.hh"
 #include "AbstractDistributor.hh"
+#include "ROOTMutex.hh"
 
 namespace HCAL_HLX {
 
@@ -28,14 +28,18 @@ namespace HCAL_HLX {
     LEVEL1_HLT_TRIGGER *L1HLTrigger;
     TRIGGER_DEADTIME *TriggerDeadtime;
     
-    ROOTDistributor(const int & runNumber = 0,
-                    std::string filename = "LumiSchema",
+    ROOTDistributor(std::string filename = "LumiSchema",
 		    std::string treename = "LumiTree");
     ~ROOTDistributor();
 
     // Called by SectionCollector
-    void ProcessSection(const LUMI_SECTION & lumiSection);
+    bool ProcessSection(const LUMI_SECTION & lumiSection);
     //void FillTree(const HCAL_HLX::LUMI_SECTION&);
+
+  private:
+    ROOTMutex mROOTMutex;
+    std::string mBaseFileName;
+    std::string mBaseTreeName;
 
   }; //~class ROOTDistributor
 

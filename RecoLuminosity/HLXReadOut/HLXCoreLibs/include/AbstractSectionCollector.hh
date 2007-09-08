@@ -37,7 +37,7 @@ namespace HCAL_HLX
     AbstractSectionCollector() {}
 
     // Destructor
-    virtual ~AbstractSectionCollector() {};
+    virtual ~AbstractSectionCollector() {}
 
     // Processing function for ET sum histogram
     virtual void ProcessETSumNibble(const ET_SUM_NIBBLE & etSumNibble,

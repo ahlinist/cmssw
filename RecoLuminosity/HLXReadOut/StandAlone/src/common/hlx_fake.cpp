@@ -31,7 +31,8 @@ using namespace std;
 using namespace ICCoreUtils;
 using namespace HCAL_HLX;
 
-const u32 TIMEOUT_PERIOD = 10;
+const u32 TIMEOUT_PERIOD = 20;
+const u32 SLEEP_TIME = 1;
 
 // Variables (global)
 u8 **crcTable;
@@ -132,11 +133,11 @@ LUMI_RAW_HEADER lumiHeader = {
   0xFFFF, // marker (always ffff)
   0,      // hlx ID (always zero as only one for fake)
   0,      // packet ID
-  1,      // start orbit
+  0,      // start orbit
   0,      // num orbits
   0,      // start bunch (always zero for short orbit)
   299,    // num bunches
-  0,      // histogram set
+  7,      // histogram set
   0,      // histogram sequence
   0xAAAA,
   0xFFFF
@@ -219,7 +220,7 @@ int main(int argc, char ** argv)
 	timeoutCount--;
 	if ( timeoutCount == 0 ) {
           timeoutCount = TIMEOUT_PERIOD;
-	  Sleep(1);
+	  Sleep(SLEEP_TIME);
 	}
       }	else {
 	lumiHeader.histogramSet++;
