@@ -42,7 +42,7 @@ namespace HCAL_HLX
     ~DebugCoutDistributor();
 
     // Processing function for ET sum histogram
-    void ProcessSection(const LUMI_SECTION & lumiSection);
+    bool ProcessSection(const LUMI_SECTION & lumiSection);
 
   }; //~class DebugCoutDistributor
 

@@ -31,7 +31,7 @@ namespace HCAL_HLX
   // Destructor deletes the hardware interface
   TestDistributor::~TestDistributor() {}
 
-  void TestDistributor::ProcessSection(const LUMI_SECTION & lumiSection) {
+  bool TestDistributor::ProcessSection(const LUMI_SECTION & lumiSection) {
     try {
 
       for ( u8 k = 0 ; k != lumiSection.hdr.numHLXs ; k++ ) {
@@ -56,7 +56,7 @@ namespace HCAL_HLX
 	}
 	if ( i != lumiSection.hdr.numBunches ) {
 	  mNumBadSections++;
-	  return;
+	  return true;
 	}
 	
 	for ( i = 0 ; i != lumiSection.hdr.numBunches ; i++ ) {
@@ -73,7 +73,7 @@ namespace HCAL_HLX
 	}	
 	if ( i != lumiSection.hdr.numBunches ) {
 	  mNumBadSections++;
-	  return;
+	  return true;
 	}
 
 	for ( i = 0 ; i != lumiSection.hdr.numBunches ; i++ ) {
@@ -92,9 +92,11 @@ namespace HCAL_HLX
 	  mNumGoodSections++;
 	}
       }
-
+      return true;
     } catch (ICException & aExc) {
-      RETHROW(aExc);
+      cerr << aExc.what() << endl;
+      return false;
+      //RETHROW(aExc);
     }
   }
 

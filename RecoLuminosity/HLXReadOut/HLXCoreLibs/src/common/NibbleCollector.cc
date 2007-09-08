@@ -325,7 +325,7 @@ namespace HCAL_HLX
     while (theClass->mWorkerThreadContinue) {
   
       // Sock is an intialized socket handle
-      tv.tv_sec = 1;
+      tv.tv_sec = 0;
       tv.tv_usec = 0;
       
       // Reset the descriptors
@@ -492,14 +492,16 @@ namespace HCAL_HLX
   void NibbleCollector::ProcessPacket(const LUMI_RAW_HEADER *lumiHdr,
 				      const u8 *data,
 				      u32 nBytes) {
+    //	return;
     try {
       u8 hlxID = lumiHdr->hlxID;
 
       if ( hlxID < mNumHLXs ) {
 	if ( lumiHdr->histogramSet == 7 ) {
 	  // ET sum histogram
-	  
-	  // First check to see if the start orbit matches the previous one, otherwise we discard
+
+	  // First check to see if the start orbit matches the
+	  // previous one, otherwise we discard
 	  if ( lumiHdr->startOrbit != mETSumNibbles[hlxID].hdr.startOrbit ) {
 	    // Check for incomplete histogram
 	    if ( mETSumNibbles[hlxID].hdr.startOrbit != 0 ) {
@@ -583,8 +585,7 @@ namespace HCAL_HLX
 	    mLHCNibbles[hlxID].bIsComplete = true;
 	  }
 
-	} else if ( lumiHdr->histogramSet < 7 ) {
-	  
+	} else if ( lumiHdr->histogramSet < 6 ) {
 	  // Occupancy histograms
 	  // First check to see if the start orbit matches the previous one, otherwise we discard
 	  if ( lumiHdr->startOrbit != mOccupancyNibbles[hlxID].hdr.startOrbit ) {

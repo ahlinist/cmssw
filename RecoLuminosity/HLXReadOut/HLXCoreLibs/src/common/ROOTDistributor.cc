@@ -10,55 +10,32 @@ using namespace std;
 
 namespace HCAL_HLX {
 
-  ROOTDistributor::ROOTDistributor(const int& runNumber,
-                                   std::string filename,
-				   std::string treename) {
-    std::ostringstream outputString;
-    outputString << "data/" << filename << dec << runNumber << ".root";
-    filename = outputString.str();
+  ROOTDistributor::ROOTDistributor(std::string baseFileName,
+				   std::string baseTreeName) {
+    mBaseFileName = baseFileName;
+    mBaseTreeName = baseTreeName;
 
-    cout << "Output file is " << filename << endl;    
-    //    filename = "data/" + filename + IntToString(runNumber) + ".root";
-    m_file          = new TFile(filename.c_str(), "RECREATE");  
-    m_file->cd();
-    
-    m_tree          = new TTree(treename.c_str(), "Lumi Section",1);
-    
     Summary         = new LUMI_SUMMARY;
     BX              = new LUMI_BUNCH_CROSSING;
     Threshold       = new LUMI_THRESHOLD;
-    // JJ LUMI_SECTION_HEADER
-    LumiSection     = new LUMI_SECTION();
-    
+    LumiSection     = new LUMI_SECTION;
     LumiSectionHist = new LUMI_SECTION_HST;
     L1HLTrigger     = new LEVEL1_HLT_TRIGGER;
     TriggerDeadtime = new TRIGGER_DEADTIME;
-    
-    m_tree->Bronch("Summary.",          "HCAL_HLX::LUMI_SUMMARY",       &Summary, sizeof(HCAL_HLX::LUMI_SUMMARY));
-    m_tree->Bronch("BunchCrossing.",    "HCAL_HLX::LUMI_BUNCH_CROSSING",&BX);
-    m_tree->Bronch("Threshold.",        "HCAL_HLX::LUMI_THRESHOLD",     &Threshold);
-    m_tree->Bronch("LumiSection.",      "HCAL_HLX::LUMI_SECTION",       &LumiSection, sizeof(HCAL_HLX::LUMI_SECTION));
-    m_tree->Bronch("Lumi_Section_Hist.","HCAL_HLX::LUMI_SECTION_HST",   &LumiSectionHist);  
-    m_tree->Bronch("Level1_HLTrigger.", "HCAL_HLX::LEVEL1_HLT_TRIGGER", &L1HLTrigger);
-    m_tree->Bronch("Trigger_Deadtime.", "HCAL_HLX::TRIGGER_DEADTIME",   &TriggerDeadtime);
-}
-  
-  ROOTDistributor::~ROOTDistributor(){   
-    m_file->Write();
-    m_file->Close();
-    //delete m_tree; // NO!!! root does this when you delete m_file
-    delete m_file;
-    //delete Summary;
-    //delete BX;
-    //delete Threshold;
-    //delete LumiSection;
-    //delete LumiSectionHist;
-    //delete L1HLTrigger;
-    //delete TriggerDeadtime;
   }
   
-  void ROOTDistributor::ProcessSection(const HCAL_HLX::LUMI_SECTION& localSection){
-    cout << "Begin " << __PRETTY_FUNCTION__ << endl;
+  ROOTDistributor::~ROOTDistributor(){   
+    delete Summary;
+    delete BX;
+    delete Threshold;
+    delete LumiSection;
+    delete LumiSectionHist;
+    delete L1HLTrigger;
+    delete TriggerDeadtime;
+  }
+  
+  bool ROOTDistributor::ProcessSection(const HCAL_HLX::LUMI_SECTION& localSection){
+    //cout << "Begin " << __PRETTY_FUNCTION__ << endl;
 
     unsigned int i, j;
 
@@ -105,13 +82,44 @@ namespace HCAL_HLX {
     // }
       
     //}
-    
-    memcpy(LumiSection, &localSection, sizeof(localSection));
+
+    std::ostringstream outputString;
+    outputString << "data/" << mBaseFileName << "_" 
+		 << dec << localSection.hdr.runNumber 
+		 << "_" << localSection.hdr.sectionNumber << ".root";
+
+    string fileName = outputString.str();
+    cout << "Output file is " << fileName << endl;    
+
+    mROOTMutex.Lock();
+    m_file          = new TFile(fileName.c_str(), "RECREATE");  
+    m_file->cd();    
+    m_tree          = new TTree(mBaseTreeName.c_str(), "Lumi Section",1);
+    m_tree->Bronch("Summary.",          "HCAL_HLX::LUMI_SUMMARY",       &Summary, sizeof(HCAL_HLX::LUMI_SUMMARY));
+    m_tree->Bronch("BunchCrossing.",    "HCAL_HLX::LUMI_BUNCH_CROSSING",&BX);
+    m_tree->Bronch("Threshold.",        "HCAL_HLX::LUMI_THRESHOLD",     &Threshold);
+    m_tree->Bronch("LumiSection.",      "HCAL_HLX::LUMI_SECTION",       &LumiSection, sizeof(HCAL_HLX::LUMI_SECTION));
+    m_tree->Bronch("Lumi_Section_Hist.","HCAL_HLX::LUMI_SECTION_HST",   &LumiSectionHist);  
+    m_tree->Bronch("Level1_HLTrigger.", "HCAL_HLX::LEVEL1_HLT_TRIGGER", &L1HLTrigger);
+    m_tree->Bronch("Trigger_Deadtime.", "HCAL_HLX::TRIGGER_DEADTIME",   &TriggerDeadtime);
+
+    memcpy(LumiSection, &localSection, sizeof(localSection));    
     
     m_tree->Fill();
+    m_file->Write();
+    m_file->Close();
+
+    //delete m_tree; // NO!!! root does this when you delete m_file
+    delete m_file;
+
+
+
+ 
+    mROOTMutex.Unlock();
+
+    return true;
     //m_tree->Print();
-    
-    cout << "End " << __PRETTY_FUNCTION__ << endl;
+    //cout << "End " << __PRETTY_FUNCTION__ << endl;
   }
 
 }

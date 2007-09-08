@@ -9,6 +9,7 @@ Sources =
 UserSourcePath =
 IncludeDirs = \
 	$(XDAQ_ROOT)/$(ProjectGroup)/LumiDB/include \
+	$(XDAQ_ROOT)/$(ProjectGroup)/LumiCalc/interface \
 	$(XDAQ_ROOT)/$(Project)/CoreUtils/include \
 	$(XDAQ_ROOT)/$(Project)/HLXCoreLibs/include \
 	$(XDAQ_ROOT)/$(Project)/DIP/include \
@@ -20,6 +21,7 @@ IncludeDirs = \
 
 LibraryDirs = \
 	$(XDAQ_ROOT)/$(ProjectGroup)/LumiDB/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM) \
+	$(XDAQ_ROOT)/$(ProjectGroup)/LumiCalc/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM) \
 	$(XDAQ_ROOT)/$(Project)/CoreUtils/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM) \
 	$(XDAQ_ROOT)/$(Project)/HLXCoreLibs/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM) \
 	$(XDAQ_ROOT)/$(Project)/DIP/lib \
@@ -32,12 +34,21 @@ UserCCFlags = -D_REENTRANT
 UserDynamicLinkFlags =
 UserStaticLinkFlags =
 UserExecutableLinkFlags =
-Libraries = LumiDB CoreUtils HLXCoreLibs pthread dip dl clntsh occi10 \
-	nnz10 n10 Tree Net \
-	Hist MathCore Matrix Core Cint Gpad Graf RIO
+Libraries = LumiCalc LumiDB CoreUtils HLXCoreLibs pthread dip dl clntsh occi10 \
+	nnz10 n10 XrdSec Core Cint Hist Matrix Gpad Graf Tree Netx
+	#ASImageGui ASImage ASPluginGS Cintex Cint Core dequeDict EG FitPanel Foam Fumili Ged GeomBuilder \
+	#GeomPainter Geom Gpad Graf3d Graf GuiBld Gui GX11 GX11TTF HistPainter Hist Html listDict map2Dict \
+	#mapDict MathCore Matrix Minuit2 Minuit MLP multimap2Dict multimapDict multisetDict Netx Physics \
+	#Postscript ProofGui Proof Quadp Reflex RGL Rint setDict Smatrix SpectrumPainter \
+	#Spectrum SPlot SQL Table Thread TMVA TreePlayer Tree TreeViewer  \
+	#XrdSec
+
+
+#	Hist MathCore Matrix Core Cint Gpad Graf
 DynamicLibrary = 
 StaticLibrary =
 Executables = \
+	global_run.cpp \
 	hlx_fake.cpp \
 	test_distribution.cpp \
 	test_oracle_distributor.cpp \

@@ -91,8 +91,8 @@ namespace HCAL_HLX
     delete []mLumiBXData.aOccQ; mLumiBXData.aOccQ = 0;
   }
 
-  void OracleDistributor::ProcessSection(const LUMI_SECTION & lumiSection) {
-    cout << "Begin " << __PRETTY_FUNCTION__ << endl;
+  bool OracleDistributor::ProcessSection(const LUMI_SECTION & lumiSection) {
+    //cout << "Begin " << __PRETTY_FUNCTION__ << endl;
     try {
       // Get the next sequence ID
       long lumiSectionID = mDBWriter->getLumiSectionSeq();
@@ -109,7 +109,7 @@ namespace HCAL_HLX
       mLumiSectionData.lsNum = static_cast<int>(lumiSection.hdr.sectionNumber);
 
       // Write the lumi section data into the DB      
-      cout << "OracleDistributor: Inserting luminosity section" << endl;
+      //cout << "OracleDistributor: Inserting luminosity section" << endl;
       mDBWriter->insertBind_LumiSec(lumiSectionID,
 				    mLumiSectionData);
 
@@ -126,7 +126,7 @@ namespace HCAL_HLX
       mLumiSummaryData.instOccLumiQ = 0;
 
       // Write the lumi summary data
-      cout << "OracleDistributor: Inserting luminosity summary data" << endl;
+      //cout << "OracleDistributor: Inserting luminosity summary data" << endl;
       mDBWriter->insertBind_LumiSummary(lumiSectionID,
 					mLumiSummaryData);
 
@@ -145,18 +145,21 @@ namespace HCAL_HLX
       }
 
       // Write the lumi BX data
-      cout << "OracleDistributor: Inserting luminosity bx data" << endl;
+      //cout << "OracleDistributor: Inserting luminosity bx data" << endl;
       mDBWriter->insertArray_LumiBX(lumiSectionID,
 				    mLumiBXData);
-
+      return true;
     } catch (OracleDBException & aExc) {
       cout << aExc.what() << endl;
       mErrorCount++;
-    } catch (...) {
+      // TODO: decide whether to return true or false depending on DB exception!
+      return true;
+    } /*catch (...) {
       cout << "Unknown exception caught" << endl;
       mErrorCount++;
-    }
-    cout << "End " << __PRETTY_FUNCTION__ << endl;
+      return true;
+    }*/
+    //cout << "End " << __PRETTY_FUNCTION__ << endl;
   }
 
 

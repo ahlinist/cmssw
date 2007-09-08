@@ -61,7 +61,7 @@ int main(int argc, char ** argv) {
 	cout << "Bad et nibble count: " << lNibbleCollector->GetNumBadETSumNibbles() << endl;
 	cout << "Good section count:" << lSectionCollector->GetNumCompleteLumiSections() << endl;
 	cout << "Bad section count: " << lSectionCollector->GetNumIncompleteLumiSections() << endl;
-	cout << "Lost section count: " << lSectionCollector->GetNumLostLumiSections() << endl;
+	//cout << "Lost section count: " << lSectionCollector->GetNumLostLumiSections() << endl;
 	cout << "Lost packet count: " << lNibbleCollector->GetNumLostPackets() << endl;
 	cout << "Total data volume: " << lNibbleCollector->GetTotalDataVolume() << endl;
 	cout << "Average data rate (Mb/s): " << (double)lNibbleCollector->GetTotalDataVolume()*8.0/(1024.0*1024.0*(double)(tempTime-startTime)) << endl;

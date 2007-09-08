@@ -26,7 +26,7 @@ namespace HCAL_HLX
   // Destructor deletes the hardware interface
   DebugCoutDistributor::~DebugCoutDistributor() {}
 
-  void DebugCoutDistributor::ProcessSection(const LUMI_SECTION & lumiSection) {
+  bool DebugCoutDistributor::ProcessSection(const LUMI_SECTION & lumiSection) {
     try {
 
       cout << dec;
@@ -40,9 +40,11 @@ namespace HCAL_HLX
       cout << "Num bunches: " << lumiSection.hdr.numBunches << endl;
       cout << "Start orbit: " << lumiSection.hdr.startOrbit << endl;
       cout << "CMS live: " << lumiSection.hdr.bCMSLive << endl;
-
+      return true;
     } catch (ICException & aExc) {
-      RETHROW(aExc);
+      cerr << aExc.what() << endl;
+      return false;
+      //RETHROW(aExc);
     }
   }
 

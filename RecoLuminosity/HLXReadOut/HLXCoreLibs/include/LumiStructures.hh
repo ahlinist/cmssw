@@ -50,6 +50,7 @@ namespace HCAL_HLX
   };
 
   struct LUMI_BUNCH_CROSSING {
+    double LHCLumi[HCAL_HLX_MAX_BUNCHES];
     double ETLumi[HCAL_HLX_MAX_BUNCHES];
     double ETLumiErr[HCAL_HLX_MAX_BUNCHES];
     double ETLumiQlty[HCAL_HLX_MAX_BUNCHES];
@@ -134,21 +135,24 @@ namespace HCAL_HLX
 
   struct ET_SUM_SECTION {
     LUMI_SECTION_SUB_HEADER hdr;
-    unsigned long data[HCAL_HLX_MAX_BUNCHES];
+    double data[HCAL_HLX_MAX_BUNCHES];
   };
 
   struct OCCUPANCY_SECTION {
     LUMI_SECTION_SUB_HEADER hdr;
-    unsigned long data[6][HCAL_HLX_MAX_BUNCHES];
+    double data[6][HCAL_HLX_MAX_BUNCHES];
   };
 
   struct LHC_SECTION {
     LUMI_SECTION_SUB_HEADER hdr;
-    unsigned long data[HCAL_HLX_MAX_BUNCHES];
+    double data[HCAL_HLX_MAX_BUNCHES];
   };
 
   struct LUMI_SECTION {
     LUMI_SECTION_HEADER hdr;
+    LUMI_SUMMARY lumiSummary;
+    LUMI_BUNCH_CROSSING lumiBunchCrossing;
+    double lumiNoise[2];
     ET_SUM_SECTION etSum[HCAL_HLX_MAX_HLXS];
     OCCUPANCY_SECTION occupancy[HCAL_HLX_MAX_HLXS];
     LHC_SECTION lhc[HCAL_HLX_MAX_HLXS];

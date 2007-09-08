@@ -49,7 +49,7 @@ namespace HCAL_HLX
     ~OracleDistributor();
 
     // Processing function for ET sum histogram
-    void ProcessSection(const LUMI_SECTION & lumiSection);
+    bool ProcessSection(const LUMI_SECTION & lumiSection);
 
     // Error count retrieval
     u32 GetErrorCount();

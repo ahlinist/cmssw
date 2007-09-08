@@ -5,7 +5,7 @@ Package=HLXCoreLibs
 
 IncludeDirs = \
 	$(XDAQ_ROOT)/$(ProjectGroup)/LumiDB/include \
-	$(XDAQ_ROOT)/$(ProjectGroup)/LumiCalc/include \
+	$(XDAQ_ROOT)/$(ProjectGroup)/LumiCalc/interface \
 	$(XDAQ_ROOT)/$(Project)/$(Package)/include \
 	$(XDAQ_ROOT)/$(Project)/CoreUtils/include \
 	$(XDAQ_ROOT)/$(Project)/DIP/include \
@@ -28,7 +28,8 @@ Sources = \
 	TestSectionCollector.cc \
         TCPDistributor.cc \
 	ROOTDistributor.cc \
-	ROOTDistributor_Dict.cc
+	ROOTDistributor_Dict.cc \
+        ROOTMutex.cc
 
 # some XDAQ-required stuff
 include $(XDAQ_ROOT)/config/mfAutoconf.rules

@@ -42,7 +42,7 @@ namespace HCAL_HLX
     }
   }
 
-  void DebugFileDistributor::ProcessSection(const LUMI_SECTION & lumiSection) {
+  bool DebugFileDistributor::ProcessSection(const LUMI_SECTION & lumiSection) {
     try {
       mOutFile << dec;
       mOutFile << endl << "-----------------------------------------------" << endl;
@@ -79,9 +79,11 @@ namespace HCAL_HLX
 	  }
 	}
       }
-
+      return true;
     } catch (ICException & aExc) {
-      RETHROW(aExc);
+      cerr << aExc.what() << endl;
+      return false;
+      //RETHROW(aExc);
     }
   }
 
