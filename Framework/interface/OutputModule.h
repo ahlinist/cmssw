@@ -69,6 +69,8 @@ namespace edm {
     SelectionsArray const& droppedPriorVec() const {return droppedPriorVec_;}
     boost::array<bool, EndBranchType> const& hasNewlyDroppedBranch() const {return hasNewlyDroppedBranch_;}
 
+    bool const& wantAllEvents() const {return wantAllEvents_;}
+
   protected:
     //const Trig& getTriggerResults(Event const& ep) const;
     Trig getTriggerResults(Event const& ep) const;
