@@ -15,6 +15,7 @@ $Id$
 
 #include "DataFormats/Provenance/interface/BranchType.h"
 #include "DataFormats/Provenance/interface/ModuleDescription.h"
+#include "DataFormats/Provenance/interface/Selections.h"
 
 #include "FWCore/Framework/interface/CachedProducts.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -31,8 +32,6 @@ namespace edm {
   public:
     friend class OutputWorker;
     typedef OutputModule ModuleType;
-    typedef std::vector<BranchDescription const *> Selections;
-    typedef boost::array<Selections, EndBranchType> SelectionsArray;
 
     explicit OutputModule(ParameterSet const& pset);
     virtual ~OutputModule();
