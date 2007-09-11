@@ -164,11 +164,6 @@ namespace edm {
     // mutable std::vector<Trig> prods_;
     mutable bool prodsValid_;
 
-    //Store the current Module Desc
-    //  *** This should be superfluous, because current_context_->moduleDescription()
-    // returns a pointer to the current ModuleDescription.
-    ModuleDescription const* current_md_;  
-
     bool wantAllEvents_;
     mutable detail::CachedProducts selectors_;
 
