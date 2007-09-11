@@ -13,7 +13,7 @@
 //
 // Original Author:  Simone Gennai
 //      Created:  Thu Apr  6 09:56:23 CEST 2006
-// $Id: ConeIsolation.cc,v 1.23 2007/05/13 22:01:44 gennai Exp $
+// $Id: ConeIsolation.cc,v 1.25 2007/06/03 18:21:47 gennai Exp $
 //
 //
 
@@ -35,6 +35,7 @@
 #include "DataFormats/BTauReco/interface/IsolatedTauTagInfo.h"
 
 #include <DataFormats/VertexReco/interface/Vertex.h>
+#include <DataFormats/VertexReco/interface/VertexFwd.h>
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 //#include "MagneticField/Engine/interface/MagneticField.h"

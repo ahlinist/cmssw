@@ -25,6 +25,7 @@
 #include "DataFormats/BTauReco/interface/JetTag.h"
 #include "DataFormats/BTauReco/interface/PFIsolatedTauTagInfo.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "DataFormats/GeometryVector/interface/GlobalTag.h"
 #include "DataFormats/GeometryVector/interface/Vector3DBase.h"
 #include "DataFormats/GeometryVector/interface/Point3DBase.h"

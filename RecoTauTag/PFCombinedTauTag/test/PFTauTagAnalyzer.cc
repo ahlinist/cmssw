@@ -25,6 +25,7 @@
 #include "DataFormats/BTauReco/interface/JetTag.h"
 #include "DataFormats/BTauReco/interface/PFCombinedTauTagInfo.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "DataFormats/ParticleFlowReco/interface/PFSimParticle.h"
 #include "DataFormats/ParticleFlowReco/interface/PFSimParticleFwd.h"
 #include "DataFormats/ParticleFlowReco/interface/PFRecTrack.h"
