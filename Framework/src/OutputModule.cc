@@ -347,8 +347,11 @@ namespace edm {
   void OutputModule::maybeEndFile()
   {
     if (isFileOpen() && isFileFull()) doEndFile();
-    // Where should we open a new file? It does not seem that here is
-    // the right place...
+  }
+
+  void OutputModule::maybeOpenFile()
+  {
+    if (!isFileOpen()) doOpenFile();
   }
   
   void OutputModule::doEndFile()

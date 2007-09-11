@@ -41,6 +41,8 @@ namespace edm {
     // Call doEndFile() on the controlled OutputModule.
     void doEndFile();
 
+    void openNewFileIfNeeded();
+
   private:
     virtual bool implDoWork(EventPrincipal& e, EventSetup const& c,
 			    BranchActionType,

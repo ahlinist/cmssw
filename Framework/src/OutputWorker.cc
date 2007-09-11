@@ -29,6 +29,11 @@ namespace edm {
     mod_->doEndFile();
   }
 
+  void
+  OutputWorker::openNewFileIfNeeded() {
+    mod_->maybeOpenFile();
+  }
+
 
   bool 
   OutputWorker::implDoWork(EventPrincipal& ep, EventSetup const&,
