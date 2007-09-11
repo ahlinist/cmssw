@@ -22,6 +22,7 @@
 #include "DataFormats/BTauReco/interface/JetTag.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
 
 #include "CondFormats/BTauObjects/interface/CalibratedHistogram.h"
 #include "CondFormats/BTauObjects/interface/CombinedTauTagCalibration.h"
