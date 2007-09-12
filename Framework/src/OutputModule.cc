@@ -346,7 +346,7 @@ namespace edm {
 
   void OutputModule::maybeEndFile()
   {
-    if (isFileOpen() && isFileFull()) doEndFile();
+    if (isFileOpen() && isFileFull()) reallyEndFile();
   }
 
   void OutputModule::maybeOpenFile()
@@ -355,6 +355,11 @@ namespace edm {
   }
   
   void OutputModule::doEndFile()
+  {
+    if (isFileOpen()) reallyEndFile();
+  }
+
+  void OutputModule::reallyEndFile()
   {
     startEndFile();
     writeFileFormatVersion();

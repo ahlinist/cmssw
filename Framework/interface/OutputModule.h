@@ -130,6 +130,10 @@ namespace edm {
 
     boost::array<bool, EndBranchType> hasNewlyDroppedBranch_;
 
+    // Do the end-of-file tasks; this is only called internally, after
+    // the appropriate tests have been done.
+    void reallyEndFile();
+
     virtual void write(EventPrincipal const& e) = 0;
     //bool wantEvent(Event const& e);
     virtual void beginJob(EventSetup const&){}
