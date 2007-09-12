@@ -1,5 +1,5 @@
 C--------------------------------------------------------------------------
-C $Id: begevtgenstorex.F,v 1.4 2004/05/06 17:49:32 robbep Exp $
+C $Id: begevtgenstorex.F,v 1.1 2007/09/05 11:25:22 covarell Exp $
 C
 C Environment:
 C      This software is part of the EvtGen package developed jointly
@@ -42,11 +42,17 @@ C------------------------------------------------------------------------
 
       integer stdhepnum,i
       
-      double precision px,py,pz,e,m,x,y,z,t
+      double precision px,py,pz,e,m
+      double precision x,y,z,t
       
+      logical yesdebug 
+      yesdebug = .false.
+  
       stdhepnum=partnum
-C      print *, 'Mi blocco qui - 3' 
-      
+      if (yesdebug.eqv..true.) print *, 'Screwed up here - 3' 
+      if (yesdebug.eqv..true.) print *,  d_h_phep(5,1)
+      if (yesdebug.eqv..true.) print *,  d_h_vhep(4,1)
+
       d_h_nevhep=eventnum
       d_h_nhep=numparticle
       d_h_isthep(entry)=istat
@@ -55,33 +61,33 @@ C      print *, 'Mi blocco qui - 3'
       d_h_jmohep(2,entry)=0
       d_h_jdahep(1,entry)=daugfirst
       d_h_jdahep(2,entry)=dauglast
-C      print *, 'Mi blocco qui - 4' 
-C      print *, entry, ' ', px 
+      if (yesdebug.eqv..true.) print *, 'Screwed up here - 4' 
+      if (yesdebug.eqv..true.) print *, entry, ' ', px 
       d_h_phep(1,entry)=px
-C      print *, 'Mi blocco qui - 5' 
-C      print *, entry, ' ', py
+      if (yesdebug.eqv..true.) print *, 'Screwed up here - 5' 
+      if (yesdebug.eqv..true.) print *, entry, ' ', py
       d_h_phep(2,entry)=py
-C      print *, 'Mi blocco qui - 6' 
-C      print *, entry, ' ', pz
+      if (yesdebug.eqv..true.) print *, 'Screwed up here - 6' 
+      if (yesdebug.eqv..true.) print *, entry, ' ', pz
       d_h_phep(3,entry)=pz
-C      print *, 'Mi blocco qui - 7' 
-C      print *, entry, ' ', e
+      if (yesdebug.eqv..true.) print *, 'Screwed up here - 7' 
+      if (yesdebug.eqv..true.) print *, entry, ' ', e
       d_h_phep(4,entry)=e
-C      print *, 'Mi blocco qui - 8' 
-C      print *, entry, ' ', m 
+      if (yesdebug.eqv..true.) print *, 'Screwed up here - 8' 
+      if (yesdebug.eqv..true.) print *, entry, ' ', m 
       d_h_phep(5,entry)=m
-C      print *, 'Mi blocco qui - 9' 
-C      print *, entry, ' ', x
+      if (yesdebug.eqv..true.) print *, 'Screwed up here - 9' 
+      if (yesdebug.eqv..true.) print *, entry, ' ', x
       d_h_vhep(1,entry)=x
-C      print *, 'Mi blocco qui - 10' 
-C      print *, entry, ' ', y
+      if (yesdebug.eqv..true.) print *, 'Screwed up here - 10' 
+      if (yesdebug.eqv..true.) print *, entry, ' ', y
       d_h_vhep(2,entry)=y
-C      print *, 'Mi blocco qui - 11' 
-C      print *, entry, ' ', z
+      if (yesdebug.eqv..true.) print *, 'Screwed up here - 11' 
+      if (yesdebug.eqv..true.) print *, entry, ' ', z
       d_h_vhep(3,entry)=z
-C      print *, 'Mi blocco qui - 12' 
-C      print *, entry, ' ', t
-      d_h_vhep(4,entry)=t 
+      if (yesdebug.eqv..true.) print *, 'Screwed up here - 12' 
+      if (yesdebug.eqv..true.) print *, entry, ' ', t
+      d_h_vhep(4,entry)=t
 
       qedrad(entry)=.true.
       if (daugfirst.gt.0 .and. dauglast.gt.0) THEN
@@ -89,7 +95,7 @@ C      print *, entry, ' ', t
           qedrad(i) = .true.
         end do
       end if
-C      print *, 'Mi blocco qui - 6' 
+      if (yesdebug.eqv..true.) print *, 'Screwed up here - 13' 
       return
       
       end

@@ -104,19 +104,19 @@ void BsAnalyzer::analyze( const Event& e, const EventSetup& )
      GenVertex* prodvert = (*p)->production_vertex();
      float gamma = (*p)->momentum().e()/(*p)->generated_mass();
      float dectime = 0.0 ;
-     int mixed = 0;   // mixed is: 0 = unmixed
-                      //           1 = mixed (before mixing)
-                      //           2 = mixed (after mixing)
+     int mixed = -1;   // mixed is: -1 = unmixed
+                      //           0 = mixed (before mixing)
+                      //           1 = mixed (after mixing)
      if (endvert && prodvert) {
        dectime = (endvert->position().t() - prodvert->position().t())*mmcToPs/gamma;
 
        // Mixed particle ?
        for ( GenVertex::particles_out_const_iterator ap = endvert->particles_out_const_begin(); ap != endvert->particles_out_const_end(); ++ap ) {
-	 if ( (*p)->pdg_id() + (*ap)->pdg_id() == 0) mixed = 1;
+	 if ( (*p)->pdg_id() + (*ap)->pdg_id() == 0) mixed = 0;
        }
        for ( GenVertex::particles_in_const_iterator p2 = prodvert->particles_in_const_begin(); p2 != prodvert->particles_in_const_end(); ++p2 ) { 
 	 if ( (*p)->pdg_id() + (*p2)->pdg_id() == 0) {
-	   mixed = 2;
+	   mixed = 1;
            gamma = (*p2)->momentum().e()/(*p2)->generated_mass();
            GenVertex* mixvert = (*p2)->production_vertex();
            dectime = (prodvert->position().t() - mixvert->position().t())*mmcToPs/gamma;
@@ -147,9 +147,9 @@ void BsAnalyzer::analyze( const Event& e, const EventSetup& )
 	 if ( (*p)->pdg_id() > 0 ) hIdBsDaugs->Fill((*ap)->pdg_id());
        }
        
-       if (mixed == 2) {
+       if (mixed == 1) {
 	 htbsMix->Fill( dectime );
-       } else if (mixed == 0) {
+       } else if (mixed == -1) {
          htbsUnmix->Fill( dectime );
        }
        
@@ -165,20 +165,20 @@ void BsAnalyzer::analyze( const Event& e, const EventSetup& )
        }
         
        if (isSemilept) {
-	 if (mixed == 2) {
+	 if (mixed == 1) {
 	   htbMix->Fill( dectime );
            if ( (*p)->pdg_id() > 0 ) { 
 	     htbMixPlus->Fill( dectime );
 	   } else {
              htbMixMinus->Fill( dectime );
 	   }
-	 } else if (mixed == 0) {
+	 } else if (mixed == -1) {
 	   htbUnmix->Fill( dectime );
 	 }
        }
 
        if (isJpsiKs == 2) {
-	 if ( (*p)->pdg_id() > 0 ) { 
+	 if ( (*p)->pdg_id()*mixed < 0 ) { 
 	   htbbarJpsiKs->Fill( dectime );
 	 } else {
            htbJpsiKs->Fill( dectime );
