@@ -79,5 +79,5 @@ void CSCMonitorWebClient::onUpdate() const
 {
   // put here the code that needs to be executed on every update:
   std::vector<std::string> uplist;
-  mui_->getUpdatedContents(uplist);
+  // mui_->getUpdatedContents(uplist);
 }
