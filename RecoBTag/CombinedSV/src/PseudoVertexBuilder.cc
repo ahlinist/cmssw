@@ -87,7 +87,7 @@ reco::Vertex PseudoVertexBuilder::build( VertexType t,
 
   tracks_ = filterTracks ( trackColl, ipSigni2DCut );
   int nTracks = tracks_.size();
-  edm::LogInfo ( "PseudoVertexBuilder" ) << nTracks << " tracks accepted for " 
+  LogDebug ( "PseudoVertexBuilder" ) << nTracks << " tracks accepted for " 
     << reco::btag::Vertices::name( t ) << endl;
   if ( t == reco::btag::Vertices::PseudoVertex && nTracks < 2) {
     throw cms::Exception ("cannot build pseudo vertex" );
