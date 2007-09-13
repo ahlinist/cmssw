@@ -66,7 +66,7 @@ double LikelihoodRatio::compute ( const reco::TaggingVariableList & s ) const
   double jetpt=getPt ( s );
   double jeteta= getEta ( s );
 
-  edm::LogInfo ( "LikelihoodRatio") << "now perform computation for "
+  LogDebug ( "LikelihoodRatio") << "now perform computation for "
        << reco::btag::Vertices::name(vtxtype_) << "(" << vtxtype_ << "), pt="
        << jetpt << ", eta=" << jeteta;
   // iterate over vector of variable pairs to construct likelihoods,
@@ -138,7 +138,7 @@ double LikelihoodRatio::compute ( const reco::TaggingVariableList & s ) const
 
   long double combinedVariable = priorCharmInBG_ * ratioC + priorUDSG_ * ratioUDSG;
 
-  edm::LogInfo("LikelihoodRatio") << "tag ends, return " << combinedVariable
+  LogDebug("LikelihoodRatio") << "tag ends, return " << combinedVariable
        << " (ratioC=" << ratioC << ", ratioUDSG=" << ratioUDSG << ", priorCharm="
        << priorCharmInBG_ << ", priorUDSG=" << priorUDSG_ << ")" << endl;
 

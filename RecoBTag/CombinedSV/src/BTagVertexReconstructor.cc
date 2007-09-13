@@ -74,11 +74,11 @@ vector< combsv::CombinedVertex > BTagVertexReconstructor::fit (
     vector < TransientVertex > fittedSVColl = vtxrector_->vertices( tracks );
     int nFittedVertices = fittedSVColl.size();
 
-    edm::LogInfo ( "BTagVertexReconstructor" ) << "found " << nFittedVertices << " vertices at:";
+    LogDebug ( "BTagVertexReconstructor" ) << "found " << nFittedVertices << " vertices at:";
     for ( vector< TransientVertex >::const_iterator i=fittedSVColl.begin();
           i!=fittedSVColl.end() ; ++i )
     {
-      edm::LogInfo ( "BTagVertexReconstructor" ) << "      " <<  i->position();
+      LogDebug ( "BTagVertexReconstructor" ) << "      " <<  i->position();
     }
 
     // apply vertex cuts, filter out primary vertex if found again
