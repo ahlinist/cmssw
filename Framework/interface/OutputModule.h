@@ -70,7 +70,7 @@ namespace edm {
     SelectionsArray const& droppedProducedVec() const {return droppedProducedVec_;}
     SelectionsArray const& descPriorVec() const {return descPriorVec_;}
     SelectionsArray const& droppedPriorVec() const {return droppedPriorVec_;}
-    boost::array<bool, EndBranchType> const& hasNewlyDroppedBranch() const {return hasNewlyDroppedBranch_;}
+    boost::array<bool, NumBranchTypes> const& hasNewlyDroppedBranch() const {return hasNewlyDroppedBranch_;}
 
     bool const& wantAllEvents() const {return wantAllEvents_;}
 
@@ -128,7 +128,7 @@ namespace edm {
     SelectionsArray descPriorVec_;
     SelectionsArray droppedPriorVec_;
 
-    boost::array<bool, EndBranchType> hasNewlyDroppedBranch_;
+    boost::array<bool, NumBranchTypes> hasNewlyDroppedBranch_;
 
     // Do the end-of-file tasks; this is only called internally, after
     // the appropriate tests have been done.
@@ -163,8 +163,6 @@ namespace edm {
 
     std::string process_name_;
     GroupSelector groupSelector_;
-    //std::vector<NamedEventSelector> eventSelectors_;
-    //ProcessNameSelector selectResult_;
     
     void setModuleDescription(ModuleDescription const& md) {
       moduleDescription_ = md;
