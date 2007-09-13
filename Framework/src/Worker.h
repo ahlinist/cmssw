@@ -221,6 +221,7 @@ namespace edm {
 	  }
 
 	  case actions::FailModule: {
+	      rc=true;
 	      LogWarning("FailModule")
                 << "Module failed an event due to exception\n"
                 << e.what() << "\n";
