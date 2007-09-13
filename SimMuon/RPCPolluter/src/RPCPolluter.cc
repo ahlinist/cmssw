@@ -9,7 +9,7 @@
 #include "CLHEP/config/CLHEP.h"
 #include "CLHEP/Random/Random.h"
 #include "CLHEP/Random/RandFlat.h"
-#include "CLHEP/Random/RandPoisson.h"
+#include "CLHEP/Random/RandPoissonQ.h"
 
 #include "Geometry/RPCGeometry/interface/RPCRoll.h"
 #include "Geometry/RPCGeometry/interface/RPCRollSpecs.h"
@@ -85,7 +85,7 @@ void RPCPolluter::produce(edm::Event& e, const edm::EventSetup& es)
 
     double ave = rate*nbxing*gate*area*1.0e-9;
 
-    N_hits = RandPoisson::shoot(ave);
+    N_hits = RandPoissonQ::shoot(ave);
     std::cout <<" Number of hits "<<N_hits<<std::endl;
     for (int i = 0; i < N_hits; i++ )
       {
