@@ -18,6 +18,7 @@
 #include "TBranch.h"
 #include "TClass.h"
 #include "Reflex/Type.h"
+#include "TROOT.h"
 
 // user include files
 #include "FWCore/FWLite/src/BareRootProductGetter.h"
