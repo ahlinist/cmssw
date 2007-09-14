@@ -1,4 +1,7 @@
+#ifndef TrackCounting_TrackCountingComputer_h
+#define TrackCounting_TrackCountingComputer_h
 #include "DataFormats/TrackReco/interface/Track.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/BTauReco/interface/TrackCountingTagInfo.h"
 #include "DataFormats/BTauReco/interface/TrackIPTagInfo.h"
 #include "Math/GenVector/VectorUtil.h"
@@ -13,17 +16,19 @@ class TrackCountingComputer : public JetTagComputer
      m_ipType           = parameters.getParameter<int>("impactParamterType");
      m_deltaR          = parameters.getParameter<double>("deltaR");
 //   m_cutPixelHits     =  m_config.getParameter<int>("minimumNumberOfPixelHits"); //FIXME: use or remove
-     m_cutMaxTIP        =  m_config.getParameter<double>("maximumTransverseImpactParameter"); // used
-     m_cutMinPt         =  m_config.getParameter<double>("minimumTransverseMomentum"); // used
-     m_cutMaxDecayLen   =  m_config.getParameter<double>("maximumDecayLength"); //used
-     m_cutMaxDistToAxis =  m_config.getParameter<double>("maximumDistanceToJetAxis"); //used
+     m_cutMaxTIP        = parameters.getParameter<double>("maximumTransverseImpactParameter"); // used
+     m_cutMinPt         = parameters.getParameter<double>("minimumTransverseMomentum"); // used
+     m_cutMaxDecayLen   = parameters.getParameter<double>("maximumDecayLength"); //used
+     m_cutMaxDistToAxis = parameters.getParameter<double>("maximumDistanceToJetAxis"); //used
  
   }
 
  
   float discriminator(const reco::BaseTagInfo & ti) const 
    {
-          std::multiset<float> significances = orderedSignificances(ti);
+    const reco::TrackIPTagInfo * tkip = dynamic_cast<const reco::TrackIPTagInfo *>(&ti);
+      if(tkip!=0)  {
+          std::multiset<float> significances = orderedSignificances(*tkip);
           std::multiset<float>::reverse_iterator nth=significances.rbegin();
           for(int i=0;i<m_nthTrack-1 && nth!=significances.rend();i++) nth++;  
           if(nth!=significances.rend()) return *nth; else return -100.;
@@ -33,47 +38,37 @@ class TrackCountingComputer : public JetTagComputer
             //FIXME: report some error? 
             return -100. ;   
           }
-     }
    }
 
  protected:
-     std::multiset<float> orderedSignificances(const reco::BaseTagInfo & ti)    {
+     std::multiset<float> orderedSignificances(const reco::TrackIPTagInfo & tkip)   const  {
 
 
-    const reco::TrackCountingTagInfo * tkti = dynamic_cast<const reco::TrackCountingTagInfo *>(&ti);
-    if(tkti!=0)
-     return  tkti->discriminator(m_nthTrack,m_ipType);
-    else
-     {
-        const reco::TrackIPTagInfo * tkip = dynamic_cast<const reco::TrackIPTagInfo *>(&ti);
-      if(tkip!=0)  {
-          const std::vector<TrackIPTagInfo::TrackIPData> & impactParameters((tkip->impactParameterData()));
-          const edm::RefVector<reco::TrackCollection> & tracks(tkip->selectedTracks());
+          const std::vector<reco::TrackIPTagInfo::TrackIPData> & impactParameters((tkip.impactParameterData()));
+          const edm::RefVector<reco::TrackCollection> & tracks(tkip.selectedTracks());
           std::multiset<float> significances;
           int i=0;
-          for(std::vector<TrackIPTagInfo::TrackIPData>::const_iterator it = impactParameters.begin(); it!=impactParameters.end(); ++it, i++)
+          GlobalPoint pv((const GlobalPoint &)tkip.primaryVertex()->position());
+          for(std::vector<reco::TrackIPTagInfo::TrackIPData>::const_iterator it = impactParameters.begin(); it!=impactParameters.end(); ++it, i++)
            {
-          if( tracks[i].pt() > m_cutMinPt  &&                          // minimum pt
-                 fabs(tracks[i].d0()) < m_cutMaxTIP &&                // max transverse i.p.
+          if( tracks[i]->pt() > m_cutMinPt  &&                          // minimum pt
+                 fabs(tracks[i]->d0()) < m_cutMaxTIP &&                // max transverse i.p.
                  fabs(impactParameters[i].distanceToJetAxis) < m_cutMaxDistToAxis  &&        // distance to JetAxis
-                 (impactParameters[i].closestToJetAxis-tkip.primaryVertex().globalPosition()).mag() < m_cutMaxDecayLen// &&                 // max decay len
+                 (impactParameters[i].closestToJetAxis - pv).mag() < m_cutMaxDecayLen// &&                 // max decay len
 //                 track[i].hitPattern().numberOfValidPixelHits() >= m_cutPixelHits //min # pix hits
              )
               {
-                double delta  = ROOT::Math::VectorUtil::DeltaR((*tkip->jet()).p4().Vect(), (*tracks[i]).momentum());
+                double delta  = ROOT::Math::VectorUtil::DeltaR((*tkip.jet()).p4().Vect(), (*tracks[i]).momentum());
                 if(delta < m_deltaR)
-                 significances.insert( ((impactParamterType==0)?it->ip3d():it->ip2d()).significance() );
+                 significances.insert( ((m_ipType==0)?it->ip3d:it->ip2d).significance() );
               }
-           }
+          }
 
-
-
-
+         return significances;    
    }
 
 
     
- private:
    int m_nthTrack;
    int m_ipType;
    double m_deltaR;
@@ -85,3 +80,4 @@ class TrackCountingComputer : public JetTagComputer
     double m_cutMaxDistToAxis;
 
 };
+#endif
