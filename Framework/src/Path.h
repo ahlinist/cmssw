@@ -45,7 +45,8 @@ namespace edm {
 	 TrigResPtr trptr,
 	 ParameterSet const& proc_pset,
 	 ActionTable& actions,
-	 ActivityRegistryPtr reg);
+	 ActivityRegistryPtr reg,
+	 bool isEndPath);
 
     template <typename T>
     void runOneEvent(T&, EventSetup const&, BranchActionType const&);
@@ -91,6 +92,8 @@ namespace edm {
     ActionTable* act_table_;
 
     WorkersInPath workers_;
+
+    bool isEndPath_;
 
     // Helper functions
     // nwrwue = numWorkersRunWithoutUnhandledException (really!)
@@ -147,7 +150,7 @@ namespace edm {
 
     // nwrue =  numWorkersRunWithoutUnhandledException
     bool should_continue = true;
-    CurrentProcessingContext cpc(&name_, bitPosition());
+    CurrentProcessingContext cpc(&name_, bitPosition(), isEndPath_);
 
     WorkersInPath::size_type idx = 0;
     // It seems likely that 'nwrwue' and 'idx' can never differ ---
