@@ -14,17 +14,17 @@ vector < reco::TransientTrack > TTracksFromRecoVertex::create ( const reco::Vert
   */
   vector < reco::TransientTrack > ret;
 
-  #if 1 // CMSSW_VERSION < 170
+  #if 0 // CMSSW_VERSION < 170
   for ( reco::track_iterator i=v.tracks_begin(); i!=v.tracks_end() ; ++i )
   {
     reco::TransientTrack tmp = builder.build ( *i );
     ret.push_back ( tmp );
   }
   #else // CMSSW_VERSION >= 170!!
-  for ( reco::Vertex::trackRef_iterator i=v.tracks_begin(); i!=v.tracks_end() ; ++i )                           
-  {                                                                                                             
-    reco::TransientTrack tmp = builder.build ( *i );                                                            
-    ret.push_back ( tmp );                                                                                      
+  for ( reco::Vertex::trackRef_iterator i=v.tracks_begin(); i!=v.tracks_end() ; ++i )
+  {
+    reco::TransientTrack tmp = builder.build ( **i );
+    ret.push_back ( tmp );
   }
   #endif
 
