@@ -40,7 +40,7 @@ namespace edm {
       const std::vector<std::string> InitialConfig(iPS.getParameter< std::vector<std::string> >("InitialConfig"));
       for (unsigned int I=0; I!=InitialConfig.size(); ++I) {
 	const int i(putPrescale(InitialConfig[I]));
-	if (i-1!=I) LogDebug("PrescaleService")
+	if (i-1!=static_cast<int>(I)) LogDebug("PrescaleService")
 	  << "Invalid config string " << I << ": '"
 	  << InitialConfig[I] << "' - Ignored!";
       }
