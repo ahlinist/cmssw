@@ -35,7 +35,7 @@ using namespace std;
 using namespace HCAL_HLX;
 using namespace ICCoreUtils;
 
-#define NUM_HLXS 13
+#define NUM_HLXS 18
 #define SHORT_LENGTH 3 //50 //10 //3
 #define LONG_LENGTH 50 //50 //10 //45
 #define NUM_BUNCHES 3564
@@ -94,10 +94,10 @@ int main(int argc, char ** argv) {
     lSectionCollectorShort->AttachDistributor(lDIPDistributor);
     lTCPDistributor = new TCPDistributor;
     lSectionCollectorShort->AttachDistributor(lTCPDistributor);
-    for ( u32 i = 0 ; i != NUM_HLXS ; i++ ) {
-      lWedgeGIFDistributor[i] = new WedgeGIFDistributor(i);  
-      lSectionCollectorLong->AttachDistributor(lWedgeGIFDistributor[i]);
-    }
+    //for ( u32 i = 0 ; i != NUM_HLXS ; i++ ) {
+    //  lWedgeGIFDistributor[i] = new WedgeGIFDistributor(i);  
+    //  lSectionCollectorLong->AttachDistributor(lWedgeGIFDistributor[i]);
+    //}
 
     lNibbleCollector = new NibbleCollector(NUM_HLXS);
     lNibbleCollector->AttachSectionCollector(lSectionCollectorShort);

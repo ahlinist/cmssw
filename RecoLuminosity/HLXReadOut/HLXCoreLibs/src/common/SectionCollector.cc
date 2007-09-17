@@ -260,7 +260,7 @@ namespace HCAL_HLX
 	      nextIndex++;
 	    }
 	    if ( nextIndex == mDistributors[i]->readIndex ) {
-	      mDistributors[i]->distributor->mNumLostLumiSections++;	    
+	      mDistributors[i]->distributor->mNumLostLumiSections++;
 	    } else {
 	      // Do the luminosity calculation
 	      mLumiCalculator->DoCalc(*mLumiSection);
