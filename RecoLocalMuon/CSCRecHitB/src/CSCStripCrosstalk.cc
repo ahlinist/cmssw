@@ -71,11 +71,17 @@ void CSCStripCrosstalk::getCrossTalk( const CSCDetId& id, int centralStrip, std:
   int idx = 0;
   // Cluster of 3 strips, so get x-talks for these 3 strips
   for ( int sid = strip1-1; sid < strip1+2; ++sid ) {
+
+    int sid2 = sid;
+      
+    if (isME1a && sid < 64) sid2 = 79;
+    if (isME1a && sid > 79) sid2 = 64;
+
     if (xTalk_->crosstalk.find(chId) != xTalk_->crosstalk.end( ) ) {
-      m_left  = xTalk_->crosstalk[chId][sid].xtalk_slope_left;
-      b_left  = xTalk_->crosstalk[chId][sid].xtalk_intercept_left;
-      m_right = xTalk_->crosstalk[chId][sid].xtalk_slope_right;
-      b_right = xTalk_->crosstalk[chId][sid].xtalk_intercept_right;
+      m_left  = xTalk_->crosstalk[chId][sid2].xtalk_slope_left;
+      b_left  = xTalk_->crosstalk[chId][sid2].xtalk_intercept_left;
+      m_right = xTalk_->crosstalk[chId][sid2].xtalk_slope_right;
+      b_right = xTalk_->crosstalk[chId][sid2].xtalk_intercept_right;
     } else {
       m_left  = 0.;
       b_left  = 0.035;

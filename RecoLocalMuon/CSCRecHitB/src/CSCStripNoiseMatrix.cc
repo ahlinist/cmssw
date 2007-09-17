@@ -65,6 +65,8 @@ CSCStripNoiseMatrix::~CSCStripNoiseMatrix() {
   elem[14] = 0.;
 
 
+  bool isME1a = false;
+
   // Note that ME-1a constants are stored in ME-11 (ME-1b)
   // Note that ME1/a constants are stored beginning at entry 64
   // Also, only have only 16 strips to worry about for ME1a
@@ -73,6 +75,7 @@ CSCStripNoiseMatrix::~CSCStripNoiseMatrix() {
     strip1 = centralStrip%16 - 1;
     if (strip1 < 0) strip1 = 15; 
     strip1 = strip1 + 64;
+    isME1a = true;
   } else {
     // In database, strip start at 0, whereas strip Id start at 1...
     strip1 = centralStrip - 1;
@@ -81,24 +84,31 @@ CSCStripNoiseMatrix::~CSCStripNoiseMatrix() {
   int chId= chamberIdPrefix + ec*100000 + st*10000 + rg*1000 + ch*10 + la;
   
   int idx = 0;
+
   for ( int sid = strip1-1; sid < strip1+2; sid++ ) {
+  
+    int sid2 = sid;
+
+    if (isME1a && sid < 64) sid2 = 79;
+    if (isME1a && sid > 79) sid2 = 64;
+
     if (Noise->matrix.find(chId) != Noise->matrix.end( ) ) {
       float w = getStripGain( chId, sid );
       w *= w;
      
-      elem[0] = Noise->matrix[chId][sid].elem33 * w;
-      elem[1] = Noise->matrix[chId][sid].elem34 * w;
-      elem[2] = Noise->matrix[chId][sid].elem35 * w;
-      elem[3] = Noise->matrix[chId][sid].elem44 * w;
-      elem[4] = Noise->matrix[chId][sid].elem45 * w;
-      elem[5] = Noise->matrix[chId][sid].elem46 * w;
-      elem[6] = Noise->matrix[chId][sid].elem55 * w; 
-      elem[7] = Noise->matrix[chId][sid].elem56 * w; 
-      elem[8] = Noise->matrix[chId][sid].elem57 * w; 
-      elem[9] = Noise->matrix[chId][sid].elem66 * w; 
-      elem[10]= Noise->matrix[chId][sid].elem67 * w;
+      elem[0] = Noise->matrix[chId][sid2].elem33 * w;
+      elem[1] = Noise->matrix[chId][sid2].elem34 * w;
+      elem[2] = Noise->matrix[chId][sid2].elem35 * w;
+      elem[3] = Noise->matrix[chId][sid2].elem44 * w;
+      elem[4] = Noise->matrix[chId][sid2].elem45 * w;
+      elem[5] = Noise->matrix[chId][sid2].elem46 * w;
+      elem[6] = Noise->matrix[chId][sid2].elem55 * w; 
+      elem[7] = Noise->matrix[chId][sid2].elem56 * w; 
+      elem[8] = Noise->matrix[chId][sid2].elem57 * w; 
+      elem[9] = Noise->matrix[chId][sid2].elem66 * w; 
+      elem[10]= Noise->matrix[chId][sid2].elem67 * w;
       elem[11]= 0.; 
-      elem[12]= Noise->matrix[chId][sid].elem77 * w;
+      elem[12]= Noise->matrix[chId][sid2].elem77 * w;
       elem[13]= 0.;
       elem[14]= 0.;
  
