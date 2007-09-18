@@ -2,7 +2,7 @@
  *
  * \author Luca Lista, INFN
  *
- * \version $Id: TrackPlotsExample.cc,v 1.1 2007/02/02 13:59:10 llista Exp $
+ * \version $Id: TrackPlotsExample.cc,v 1.2 2007/03/07 11:17:13 llista Exp $
  *
  */
 #include "FWCore/Framework/interface/EDAnalyzer.h"
@@ -25,6 +25,7 @@ private:
 };
 
 #include "DataFormats/TrackReco/interface/Track.h"
+#include "DataFormats/TrackReco/interface/TrackFwd.h"
 #include "DataFormats/Common/interface/Handle.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
