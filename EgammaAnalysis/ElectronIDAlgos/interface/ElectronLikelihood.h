@@ -33,6 +33,7 @@
 #include "DataFormats/EgammaCandidates/interface/PixelMatchGsfElectron.h"
 #include "EgammaAnalysis/ElectronIDAlgos/interface/LikelihoodPdfProduct.h"
 #include "CondFormats/DataRecord/interface/ElectronLikelihoodRcd.h"
+#include "CondFormats/EgammaObjects/interface/ElectronLikelihoodCalibration.h"
 #include "FWCore/Framework/interface/data_default_record_trait.h"
 #include <TDirectory.h>
 #include <vector>
@@ -46,8 +47,7 @@ class ElectronLikelihood : ElectronIDAlgo {
   ElectronLikelihood () {} ;
 
   //! ctor
-  ElectronLikelihood (TDirectory *EBlt15dir, TDirectory *EElt15dir,
-		      TDirectory *EBgt15dir, TDirectory *EEgt15dir,
+  ElectronLikelihood (const ElectronLikelihoodCalibration *calibration,
 		      edm::FileInPath fisherEBFileName, edm::FileInPath fisherEEFileName,
 		      const std::vector<double> & eleFracsEBlt15,
 		      const std::vector<double> & piFracsEBlt15,
@@ -59,7 +59,11 @@ class ElectronLikelihood : ElectronIDAlgo {
 		      const std::vector<double> & piFracsEEgt15,
 		      double eleWeight,
 		      double piWeight,
-		      LikelihoodSwitches eleIDSwitches) ;
+		      LikelihoodSwitches eleIDSwitches,
+		      std::string signalWeightSplitting,
+		      std::string backgroundWeightSplitting,
+		      bool splitSignalPdfs,
+		      bool splitBackgroundPdfs) ;
 
   //! dtor
   virtual ~ElectronLikelihood () ;
@@ -75,8 +79,7 @@ class ElectronLikelihood : ElectronIDAlgo {
 
   //! build the likelihood model from histograms 
   //! in Barrel file and Endcap file
-  void Setup (TDirectory *EBlt15dir, TDirectory *EElt15dir,
-	      TDirectory *EBgt15dir, TDirectory *EEgt15dir,
+  void Setup (const ElectronLikelihoodCalibration *calibration,
 	      edm::FileInPath fisherEBFileName, edm::FileInPath fisherEEFileName,
 	      const std::vector<double> & eleFracsEBlt15,
 	      const std::vector<double> & piFracsEBlt15,
@@ -87,7 +90,11 @@ class ElectronLikelihood : ElectronIDAlgo {
 	      const std::vector<double> & eleFracsEEgt15,
 	      const std::vector<double> & piFracsEEgt15,  
               double eleWeight,
-              double piWeight) ;
+              double piWeight,
+	      std::string signalWeightSplitting,
+	      std::string backgroundWeightSplitting,
+	      bool splitSignalPdfs,
+	      bool splitBackgroundPdfs) ;
 
 
   //! get the input variables from the electron and the e-Setup
@@ -110,6 +117,13 @@ class ElectronLikelihood : ElectronIDAlgo {
 
   //! general parameters of all the ele id algorithms
   LikelihoodSwitches m_eleIDSwitches ;
+
+  //! splitting rule for PDF's
+  std::string m_signalWeightSplitting;
+  std::string m_backgroundWeightSplitting;
+  bool m_splitSignalPdfs;
+  bool m_splitBackgroundPdfs;
+
 };
 
 
