@@ -1,11 +1,21 @@
 #include "EgammaAnalysis/ElectronIDAlgos/interface/LikelihoodPdfProduct.h"
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include <iostream>
 
-LikelihoodPdfProduct::LikelihoodPdfProduct(const char* name) {
+
+
+LikelihoodPdfProduct::LikelihoodPdfProduct(const char* name, 
+					   int ecalsubdet, int ptbin) 
+{
   _name=std::string(name);
+  _ecalsubdet = ecalsubdet;
+  _ptbin = ptbin;
 }
 
-LikelihoodPdfProduct::~LikelihoodPdfProduct() {
+
+
+LikelihoodPdfProduct::~LikelihoodPdfProduct() 
+{
   // do the delete's 
   std::vector<LikelihoodSpecies*>::iterator specItr;
   for(specItr=_specList.begin(); specItr!=_specList.end(); specItr++) {
@@ -13,29 +23,47 @@ LikelihoodPdfProduct::~LikelihoodPdfProduct() {
   }
 }
 
-void LikelihoodPdfProduct::initFromFile(TDirectory *dir) {
-  _directory=dir;
+
+
+void 
+LikelihoodPdfProduct::initFromDB(const ElectronLikelihoodCalibration *calibration) 
+{
+  _calibration=calibration;
 }
 
-void LikelihoodPdfProduct::addSpecies(const char* name, float priorWeight) {
+
+
+void 
+LikelihoodPdfProduct::addSpecies(const char* name, float priorWeight) 
+{
   LikelihoodSpecies* species = new LikelihoodSpecies(name,priorWeight);
   _specList.push_back(species);
 }
 
-void LikelihoodPdfProduct::addPdf(const char* specname, const char* name, bool splitPdf) {
+
+
+void 
+LikelihoodPdfProduct::addPdf(const char* specname, 
+			     const char* name, 
+			     bool splitPdf) 
+{
   std::vector<LikelihoodSpecies*>::const_iterator specItr;
   for(specItr=_specList.begin();specItr!=_specList.end();specItr++) {
     LikelihoodSpecies* species = *specItr;
     if(strcmp(species->getName(),specname)==0) {
-      LikelihoodPdf *pdf = new LikelihoodPdf(name,species->getName());
+      LikelihoodPdf *pdf = new LikelihoodPdf(name,species->getName(),_ecalsubdet,_ptbin);
       pdf->split(species->getSplitFractions(),splitPdf);
-      pdf->initFromFile(_directory);
+      pdf->initFromDB(_calibration);
       species->addPdf(pdf);
     }
   }
 }
 
-void LikelihoodPdfProduct::setSplitFrac(const char* specname, const char* catName, float frac) {
+
+
+void 
+LikelihoodPdfProduct::setSplitFrac(const char* specname, 
+				   const char* catName, float frac) {
   std::vector<LikelihoodSpecies*>::const_iterator specItr;
   for(specItr=_specList.begin();specItr!=_specList.end();specItr++) {
     LikelihoodSpecies* species = *specItr;
@@ -46,20 +74,27 @@ void LikelihoodPdfProduct::setSplitFrac(const char* specname, const char* catNam
   }
 }
 
-float LikelihoodPdfProduct::getRatio(const char* specname, std::vector<float> measurements, std::string gsfClass) {
 
+
+float 
+LikelihoodPdfProduct::getRatio(const char* specname, 
+			       std::vector<float> measurements, 
+			       std::string gsfClass) 
+{
   float sigProb=0, bkgProb=0;
   std::vector<LikelihoodSpecies*>::const_iterator specItr;
   for(specItr=_specList.begin();specItr!=_specList.end();specItr++) {
     LikelihoodSpecies* species = *specItr;
     std::map<std::string,float> splitFractions = species->getSplitFractions();
     std::map<std::string,float>::iterator iter = splitFractions.find(gsfClass);
-    // if the pdf is not splitted, assign the split fraction = 1
+    //! if the pdf is not splitted, assign the split fraction = 1
     float splitFr= (splitFractions.size()==0) ? 1. : iter->second;
-    if(strcmp(species->getName(),specname)==0)
+    if(strcmp(species->getName(),specname)==0) {
       sigProb=splitFr*getSpeciesProb(specname,measurements,gsfClass);
-    else
+    }
+    else {
       bkgProb+=splitFr*getSpeciesProb(species->getName(),measurements,gsfClass);
+    } 
   }
   if(sigProb+bkgProb>0)
     return sigProb/(sigProb+bkgProb);
@@ -68,7 +103,12 @@ float LikelihoodPdfProduct::getRatio(const char* specname, std::vector<float> me
 }
 
 
-float LikelihoodPdfProduct::getSpeciesProb(const char* specName, std::vector<float> measurements, std::string gsfClass) {
+
+float 
+LikelihoodPdfProduct::getSpeciesProb(const char* specName, 
+				     std::vector<float> measurements, 
+				     std::string gsfClass) 
+{
   float bareProb=1.;
   float priorWeight=1.;
   std::vector<LikelihoodSpecies*>::const_iterator specItr;
@@ -82,5 +122,8 @@ float LikelihoodPdfProduct::getSpeciesProb(const char* specName, std::vector<flo
       break;
     }
   }
+  edm::LogInfo("LikelihoodPdfProduct") << "Species: " << specName
+				       << " bare probability = " << bareProb
+				       << " with a priori probability = " << priorWeight;
   return priorWeight*bareProb;
 }
