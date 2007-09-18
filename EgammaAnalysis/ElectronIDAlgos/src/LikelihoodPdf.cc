@@ -4,84 +4,115 @@
 #include "FWCore/Utilities/interface/Exception.h"
 #include <iostream>
 
-LikelihoodPdf::LikelihoodPdf(const char* name, const char* species) {
+
+
+
+LikelihoodPdf::LikelihoodPdf(const char* name, const char* species, int ecalsubdet, int ptbin) {
   _name = std::string(name);
   _species = std::string(species);
+  _ecalsubdet = ecalsubdet;
+  _ptbin = ptbin;
 }
+
+
 
 LikelihoodPdf::~LikelihoodPdf() {
-  //  delete _tdirectory;
 }
 
-void LikelihoodPdf::split(std::map<std::string,float> splitFractions, bool splitPdf) {
+
+
+void 
+LikelihoodPdf::split(std::map<std::string,float> splitFractions, 
+		     bool splitPdf) {
+
+  char buffer[100];
+  //! use different a-priori probabilities and different PDFs 
+  //! depending by category
   if(splitFractions.size()>0 && splitPdf) {
     std::map<std::string,float>::const_iterator splitCatItr;
     for(splitCatItr=splitFractions.begin();splitCatItr!=splitFractions.end();splitCatItr++) {
-      std::string totPdfName = _name + "_" + _species + "_" + splitCatItr->first;
+      sprintf(buffer,"%s_%s_subdet%d_ptbin%d_%s",_name.c_str(),_species.c_str(),_ecalsubdet,_ptbin,splitCatItr->first.c_str());
+      std::string totPdfName = std::string(buffer);
       _splitRule.insert( std::make_pair(splitCatItr->first,totPdfName) );
     }
   }
+
+  //! use different a-priori, but same PDFs for all categories
   else if(splitFractions.size()>0) {
     std::map<std::string,float>::const_iterator splitCatItr;
     for(splitCatItr=splitFractions.begin();splitCatItr!=splitFractions.end();splitCatItr++) {
-      std::string totPdfName = _name + "_" + _species;
+      sprintf(buffer,"%s_%s_subdet%d_ptbin%d",_name.c_str(),_species.c_str(),_ecalsubdet,_ptbin);
+      std::string totPdfName = std::string(buffer);
       _splitRule.insert( std::make_pair(splitCatItr->first,totPdfName) );
     }
   }
+
+  //! do not split at all (same PDF's, same a-priori for all categories)
   else {
-    std::string totPdfName = _name + "_" + _species;
-    _splitRule.insert( std::make_pair("NOSPLIT",totPdfName) );
+      sprintf(buffer,"%s_%s_subdet%d_ptbin%d",_name.c_str(),_species.c_str(),_ecalsubdet,_ptbin);
+      std::string totPdfName = std::string(buffer);
+      _splitRule.insert( std::make_pair("NOSPLIT",totPdfName) );
   }
 }
 
-void LikelihoodPdf::initFromFile(TDirectory *dir) {
-  _tdirectory = dir;
+
+
+void 
+LikelihoodPdf::initFromDB(const ElectronLikelihoodCalibration *calibration) {
+
   std::map<std::string,std::string>::const_iterator ruleItr;
   for(ruleItr=_splitRule.begin();ruleItr!=_splitRule.end();ruleItr++) {
-    TH1F *histo = (TH1F*)_tdirectory->Get(ruleItr->second.c_str());
-    if(!histo) {
-      throw cms::Exception("LikelihoodPdf") << "LikelihoodPdf ERROR\thisto " << ruleItr->first.c_str() << " not found";
+    // look for the requested PDF in the CondDB
+    std::vector<ElectronLikelihoodCalibration::Entry>::const_iterator entryItr;
+    bool foundPdf=false;
+    for(entryItr=calibration->data.begin(); entryItr!=calibration->data.end(); entryItr++) {
+      if(entryItr->category.label.compare(ruleItr->second)==0) { 
+	const CalibratedHistogram *histo = &(entryItr->histogram);
+	_splitPdf.insert( std::make_pair(ruleItr->first,histo) );
+	foundPdf=true;
+      }
     }
-    else {
-      _splitPdf.insert( std::make_pair(ruleItr->first,histo) );
+    if(!foundPdf) {
+      throw cms::Exception("LikelihoodPdf") << "The pdf requested: " << _name
+					    << " for species: " << _species
+					    << " is not present in the Conditions DB!";
     }
   }
 }
 
-float LikelihoodPdf::getVal(float x, std::string gsfClass, bool normalized) {
-  _tdirectory->cd();
-  TH1F *thePdf=0;
+
+
+float 
+LikelihoodPdf::getVal(float x, std::string gsfClass, 
+		      bool normalized) {
+  const CalibratedHistogram *thePdf=0;
   if(_splitPdf.size()>1) {
-    edm::LogInfo("LikelihoodPdf") << "The PDF is SPLITTED by GsfClass";
+    edm::LogInfo("LikelihoodPdf") << "The PDF " << _name
+				  << " is SPLITTED by category " << gsfClass;
     thePdf=_splitPdf.find(gsfClass)->second;
   }
   else {
-    edm::LogInfo("Gsf") << "It is UNSPLITTED";
+    edm::LogInfo("LikelihoodPdf") << "The PDF " << _name
+				  << " is UNSPLITTED";
     thePdf=_splitPdf.find("NOSPLIT")->second;
   }
   
   float prob=-1;
+
   if(normalized)
-    prob=thePdf->GetBinContent(findBin(x,thePdf))/thePdf->Integral();
+    prob=thePdf->value(x)/thePdf->normalization();
   else
-    prob=thePdf->GetBinContent(findBin(x,thePdf));
+    prob=thePdf->value(x);
 
   edm::LogInfo("LikelihoodPdf") << "sanity check: PDF name = " << _name
-			 << " for species = " << _species
-			 << " for class = " << gsfClass 
-			 << " bin content = " << thePdf->GetBinContent(findBin(x,thePdf))
-			 << " prob = " << prob;
+				<< " for species = " << _species
+				<< " for class = " << gsfClass 
+				<< " bin content = " << thePdf->binContent(thePdf->findBin(x))
+				<< " normalization = " << thePdf->normalization()
+				<< " prob = " << prob;
+  edm::LogInfo("LikelihoodPdf") << "From likelihood with ecalsubdet = " << _ecalsubdet
+				<< " ptbin = " << _ptbin;
+ 
 
   return prob;
 }
-
-int LikelihoodPdf::findBin(float x, TH1F* histo) {
-  if (x<histo->GetXaxis()->GetXmin())
-    return 0;
-  else if (x>histo->GetXaxis()->GetXmax())
-    return (histo->GetNbinsX()+1);
-  else
-    return histo->GetXaxis()->FindFixBin(x);
-}
-
-
