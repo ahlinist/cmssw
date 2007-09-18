@@ -7,6 +7,8 @@ $Id$
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "FWCore/Framework/src/CPCSentry.h"
 
+#include "FWCore/ParameterSet/interface/ParameterSetDescription.h"
+
 namespace edm
 {
   EDAnalyzer::~EDAnalyzer()
@@ -63,5 +65,10 @@ namespace edm
     return current_context_;
   }
 
+  void
+  EDAnalyzer::fillDescription(ParameterSetDescription& iDesc) {
+    iDesc.setUnknown();
+  }
+  
 }
   

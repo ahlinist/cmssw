@@ -15,6 +15,8 @@ $Id$
 #include "FWCore/Framework/interface/CurrentProcessingContext.h"
 #include "FWCore/Framework/src/CPCSentry.h"
 
+#include "FWCore/ParameterSet/interface/ParameterSetDescription.h"
+
 using std::vector;
 using std::string;
 
@@ -383,4 +385,10 @@ namespace edm {
   {
     return nextID_;
   }
+  
+  void
+  OutputModule::fillDescription(ParameterSetDescription& iDesc) {
+    iDesc.setUnknown();
+  }
+  
 }

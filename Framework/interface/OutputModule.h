@@ -20,6 +20,8 @@ $Id$
 #include "FWCore/Framework/interface/CachedProducts.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/GroupSelector.h"
+#include "FWCore/ParameterSet/interface/ParameterSetfwd.h"
+
 
 namespace edm {
 
@@ -72,6 +74,7 @@ namespace edm {
     SelectionsArray const& droppedPriorProducts() const {return droppedPriorProducts_;}
     boost::array<bool, NumBranchTypes> const& hasNewlyDroppedBranch() const {return hasNewlyDroppedBranch_;}
 
+    static void fillDescription(edm::ParameterSetDescription&);
     bool const& wantAllEvents() const {return wantAllEvents_;}
 
   protected:

@@ -7,6 +7,8 @@ $Id$
 #include "FWCore/Framework/interface/EDProducer.h"
 #include "FWCore/Framework/src/CPCSentry.h"
 
+#include "FWCore/ParameterSet/interface/ParameterSetDescription.h"
+
 namespace edm {
   EDProducer::EDProducer() :
       ProducerBase(),
@@ -66,5 +68,9 @@ namespace edm {
   {
     return current_context_;
   }
-  
+
+  void
+  EDProducer::fillDescription(ParameterSetDescription& iDesc) {
+    iDesc.setUnknown();
+  }
 }

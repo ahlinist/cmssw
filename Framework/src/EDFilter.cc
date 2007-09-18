@@ -7,6 +7,8 @@ $Id$
 #include "FWCore/Framework/interface/EDFilter.h"
 #include "FWCore/Framework/src/CPCSentry.h"
 
+#include "FWCore/ParameterSet/interface/ParameterSetDescription.h"
+
 namespace edm
 {
   EDFilter::~EDFilter()
@@ -62,6 +64,10 @@ namespace edm
     return current_context_;
   }
   
-   
+  void
+  EDFilter::fillDescription(ParameterSetDescription& iDesc) {
+    iDesc.setUnknown();
+  }
+  
 }
   
