@@ -55,8 +55,8 @@ namespace dqm{
     void FEDMonitorClient::bookQTests(const edm::ParameterSet &pset)
     {
       qtHandle_ = new QTestHandle;
-      qtHandle_->configureTests(pset.getUntrackedParameter<std::string>("qtList", "QualityTests.xml"),mui);
-      if(qtHandle_) qtHandle_->attachTests(mui);      
+      qtHandle_->configureTests(pset.getUntrackedParameter<std::string>("qtList", "QualityTests.xml"),dbe);
+      if(qtHandle_) qtHandle_->attachTests(dbe);      
     }
     
     void FEDMonitorClient::bookCollationMaybe()
@@ -125,7 +125,7 @@ namespace dqm{
 	*out << " FED Monitor status "		                           << endl;
 
 
-	int status = mui->getSystemStatus();
+	int status = dbe->getStatus();
 	switch(status)
 	  {
 	  case dqm::qstatus::ERROR:
@@ -161,7 +161,7 @@ namespace dqm{
 	  {
 	    ostringstream oss;
 	    oss << "FEDs/Collated/fed" << i;
-	    MonitorElement *me = mui->get(oss.str());
+	    MonitorElement *me = dbe->get(oss.str());
 	    if(me != 0)
 	      {
 		sstn++;
@@ -193,7 +193,7 @@ namespace dqm{
 	  {
 	    ostringstream oss;
 	    oss << "FEDs/Collated/fed" << i;
-	    MonitorElement *me = mui->get(oss.str());
+	    MonitorElement *me = dbe->get(oss.str());
 	    if(me != 0)
 	      {
 		sstn++;
@@ -225,7 +225,7 @@ namespace dqm{
 	  {
 	    ostringstream oss;
 	    oss << "FEDs/Collated/fed" << i;
-	    MonitorElement *me = mui->get(oss.str());
+	    MonitorElement *me = dbe->get(oss.str());
 	    if(me != 0)
 	      {
 		sstn++;
@@ -258,7 +258,7 @@ namespace dqm{
 	  {
 	    ostringstream oss;
 	    oss << "FEDs/Collated/fed" << i;
-	    MonitorElement *me = mui->get(oss.str());
+	    MonitorElement *me = dbe->get(oss.str());
 	    if(me != 0)
 	      {
 		sstn++;
@@ -290,7 +290,7 @@ namespace dqm{
 	  {
 	    ostringstream oss;
 	    oss << "FEDs/Collated/fed" << i;
-	    MonitorElement *me = mui->get(oss.str());
+	    MonitorElement *me = dbe->get(oss.str());
 	    if(me != 0)
 	      {
 		sstn++;
@@ -323,7 +323,7 @@ namespace dqm{
 	  {
 	    ostringstream oss;
 	    oss << "FEDs/Collated/fed" << i;
-	    MonitorElement *me = mui->get(oss.str());
+	    MonitorElement *me = dbe->get(oss.str());
 	    if(me != 0)
 	      {
 		sstn++;
@@ -355,7 +355,7 @@ namespace dqm{
 	  {
 	    ostringstream oss;
 	    oss << "FEDs/Collated/fed" << i;
-	    MonitorElement *me = mui->get(oss.str());
+	    MonitorElement *me = dbe->get(oss.str());
 	    if(me != 0)
 	      {
 		sstn++;
@@ -387,7 +387,7 @@ namespace dqm{
 	  {
 	    ostringstream oss;
 	    oss << "FEDs/Collated/fed" << i;
-	    MonitorElement *me = mui->get(oss.str());
+	    MonitorElement *me = dbe->get(oss.str());
 	    if(me != 0)
 	      {
 		sstn++;
@@ -419,7 +419,7 @@ namespace dqm{
 	  {
 	    ostringstream oss;
 	    oss << "FEDs/Collated/fed" << i;
-	    MonitorElement *me = mui->get(oss.str());
+	    MonitorElement *me = dbe->get(oss.str());
 	    if(me != 0)
 	      {
 		sstn++;
@@ -451,7 +451,7 @@ namespace dqm{
 	  {
 	    ostringstream oss;
 	    oss << "FEDs/Collated/fed" << i;
-	    MonitorElement *me = mui->get(oss.str());
+	    MonitorElement *me = dbe->get(oss.str());
 	    if(me != 0)
 	      {
 		sstn++;
@@ -483,7 +483,7 @@ namespace dqm{
 	  {
 	    ostringstream oss;
 	    oss << "FEDs/Collated/fed" << i;
-	    MonitorElement *me = mui->get(oss.str());
+	    MonitorElement *me = dbe->get(oss.str());
 	    if(me != 0)
 	      {
 		sstn++;
@@ -516,7 +516,7 @@ namespace dqm{
 	  {
 	    ostringstream oss;
 	    oss << "FEDs/Collated/fed" << i;
-	    MonitorElement *me = mui->get(oss.str());
+	    MonitorElement *me = dbe->get(oss.str());
 	    if(me != 0)
 	      {
 		sstn++;
@@ -548,7 +548,7 @@ namespace dqm{
 	  {
 	    ostringstream oss;
 	    oss << "FEDs/Collated/fed" << i;
-	    MonitorElement *me = mui->get(oss.str());
+	    MonitorElement *me = dbe->get(oss.str());
 	    if(me != 0)
 	      {
 		sstn++;
