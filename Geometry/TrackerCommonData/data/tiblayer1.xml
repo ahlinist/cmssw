@@ -4,6 +4,10 @@
 <ConstantsSection label="tiblayer1.xml" eval="true">
  <Constant name="RadiusUp"       value="([tiblayerpar:RadiusLo1]+
                                          [tiblayerpar:DRUpLo])"/>
+ <Constant name="CylinderT"             value="0.60*cm"/>
+ <Constant name="CylinderInR"           value="337.0*mm"/>
+ <Constant name="MFRingInR"             value="300.0*mm"/>
+ <Constant name="MFRingOutR"            value="75.75*mm+[MFRingInR]"/>
 </ConstantsSection>
 
 <Algorithm name="track:DDTIBLayerAlgo">
@@ -30,12 +34,26 @@
   <Numeric name="ROffsetDetUp"      value="-[tiblayerpar:ROffDet]"/>
   <String name="StringCabUpName"    value="tibstring1:TIBString1Up2"/>
   <Numeric name="ROffsetCabUp"      value="-[tiblayerpar:ROffCable]"/>   <!-- No more used -->
-  <Numeric name="CylinderThickness" value="[tiblayerpar:CylinderT]"/>
+  <Numeric name="CylinderThickness" value="[CylinderT]"/>
+  <Numeric name="CylinderInnerRadius" value="[CylinderInR]"/>
   <String name="CylinderMaterial"   value="tibmaterial:TIB_cylinder"/>
-  <Numeric name="SupportWidth"      value="[tiblayerpar:SupportW]"/>
+  <Numeric name="MFRingInnerRadius" value="[MFRingInR]"/>
+  <Numeric name="MFRingOuterRadius" value="[MFRingOutR]"/>
+  <Numeric name="MFRingThickness"   value="[tiblayerpar:MFRingT]"/>
+  <Numeric name="MFRingDeltaz"      value="[tiblayerpar:MFRingDz]"/>
+  <String name="MFIntRingMaterial"   value="tibmaterial:TIB_MFIntRing"/>
+  <String name="MFExtRingMaterial"   value="tibmaterial:TIB_MFExtRing"/>
   <Numeric name="SupportThickness"  value="[tiblayerpar:SupportT]"/>
-  <String name="SupportMaterial"    value="tibmaterial:TIB_cent_supp"/>
-  <String name="RibMaterial"        value="tibmaterial:TIB_Rib_in2"/>
+ 
+  <String name="CentRingMaterial"   value="tibmaterial:TIB_CentRing"/>
+  <Vector name="CentRing1" type="numeric" nEntries="4">
+  -3.805*mm, 4.*mm, [MFRingOutR]-[tiblayerpar:MFRingT], [MFRingOutR]
+  </Vector>
+  <Vector name="CentRing2" type="numeric" nEntries="4">
+  12.461*mm, 4.*mm, [MFRingOutR]-[tiblayerpar:MFRingT], [MFRingOutR]
+  </Vector>
+
+  <String name="RibMaterial"        value="materials:Carbon fibre str."/>
   <Vector name="RibWidth" type="numeric" nEntries="6">
    [tiblayerpar:RibWidth1], [tiblayerpar:RibWidth2], [tiblayerpar:RibWidth2], 
    [tiblayerpar:RibWidth1], [tiblayerpar:RibWidth2], [tiblayerpar:RibWidth2] 

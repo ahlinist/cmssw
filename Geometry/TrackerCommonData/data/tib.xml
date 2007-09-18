@@ -6,22 +6,21 @@
  <Constant name="Rin"          value="22.20*cm"/>
  <Constant name="Rin2"         value="53.00*cm"/>
  <Constant name="Rout"         value="54.00*cm"/>
- <Constant name="Zv1"          value="71.6*cm"/>
+ <Constant name="TIBDz"        value="716.00*mm"/>
  <Constant name="SupportT"     value="1.50*cm"/>
  <Constant name="SupportDR"    value="1.50*cm"/>
- <Constant name="SupportRin"   value="53.15*cm"/>
- <Constant name="SupportRout"  value="53.20*cm"/>
- <Constant name="SupportZ"     value="71.6*cm"/>
+ <Constant name="SupportRin"   value="[tiblayer3:MFRingOutR]"/>
+ <Constant name="SupportRout"  value="[SupportRin]+1.*mm"/>
  <Constant name="SideDiskT"    value="[SupportT]"/>
  <Constant name="SideDiskZ"    value="([tibstringpar:StringL]+[SideDiskT])/2"/>
 </ConstantsSection>
 
 <SolidSection label="tib.xml">
  <Tubs name="TIB"           rMin="[Rin]"  rMax="[Rout]"
-                            dz="[Zv1]"   
+                            dz="[tib:TIBDz]"   
                             startPhi="0*deg" deltaPhi="360*deg" />
  <Tubs name="TIBOutSupport" rMin="[SupportRin]"     rMax="[SupportRout]"
-                            dz="[SupportZ]"
+                            dz="[tib:TIBDz]"
                             startPhi="0*deg"        deltaPhi="360*deg"/>
  <Tubs name="TIBSideDisk"   rMin="[Rin]"           rMax="[Rin2]"
                             dz="[SideDiskT]/2"
@@ -66,6 +65,8 @@
  </PosPart>
 </PosPartSection>
 
+<!--
+
 <PosPart copyNumber="1">
    <rParent name="tib:TIB"/>
    <rChild name="tib:TIBSideDisk"/>
@@ -87,16 +88,15 @@
    [tiblayerpar:RadiusLo2], [tiblayerpar:RadiusLo3]
   </Vector>
   <Numeric name="DeltaR"         value="[tiblayerpar:DRUpLo]"/>
-  <Numeric name="CylinderThick"  value="[tiblayerpar:CylinderT]"/>
+  <Numeric name="CylinderThick"  value="0.8*cm"/>
   <Numeric name="SupportThick"   value="[tib:SupportT]"/>
   <Numeric name="SupportDR"      value="[tib:SupportDR]"/>
   <String name="SupportMaterial" value="tibmaterial:TIB_disk"/>
-
-
   <Vector name="StructureMaterial" type="string" nEntries="5">
    tibmaterial:TIB_rib0, tibmaterial:TIB_rib1, tibmaterial:TIB_rib2,
    tibmaterial:TIB_rib3, tibmaterial:TIB_rib4</Vector>
 </Algorithm>
 
+-->
 
 </DDDefinition>

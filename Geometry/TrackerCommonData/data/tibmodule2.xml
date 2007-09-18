@@ -3,20 +3,12 @@
 
 <ConstantsSection label="tibmodule2.xml" eval="true">
  <Constant name="zero"       value="0.0*fm"/>
- <Constant name="HybridY"    value="-0.041*cm"/>
- <Constant name="PAY"        value="-0.041*cm"/>
- <Constant name="SideRailY"  value="-[tibmodpar:SSModuleDy]+[tibmodpar:SideRailDy]"/>
- <Constant name="LedgeDz"    value="0.450*cm"/>
- <Constant name="LedgeY"     value="-0.086*cm"/>
- <Constant name="LedgeZ"     value="7.700*cm"/>
- <Constant name="ModCoolY"   value="-0.112*cm"/>
- <Constant name="WaferY"     value="-0.160*mm"/>
+ <Constant name="HybridY"    value="[CFFrameY]+[tibmodpar:CFFrameDy]+[tibmodpar:HybridDy]"/>
+ <Constant name="PAY"        value="[CFFrameY]+[tibmodpar:CFFrameDy]+[tibmodpar:PADy]"/>
+ <Constant name="CFFrameY"   value="-[tibmodpar:SSModuleDy]+[tibmodpar:CFFrameDy]"/>
+ <Constant name="KaptonBoxY" value="[CFFrameY]+[tibmodpar:CFFrameDy]+[tibmodpar:KaptonBoxDy]"/>
+ <Constant name="WaferY"     value="-0.140*mm"/>
 </ConstantsSection>
-
-<SolidSection label="tibmodule2.xml">
- <Box name="TIBLedge2"       dx="[tibmodpar:LedgeDx]" dy="[tibmodpar:LedgeDy]"
-                             dz="[LedgeDz]"/>
-</SolidSection>
 
 <LogicalPartSection label="tibmodule2.xml">
  <LogicalPart name="TIBModule2" category="unspecified">
@@ -25,11 +17,7 @@
  </LogicalPart>
  <LogicalPart name="TIBHybrid2" category="unspecified">
   <rSolid name="tibmodpar:TIBHybrid"/>
-  <rMaterial name="tibtidcommonmaterial:TIBTID_ele3"/>
- </LogicalPart>
- <LogicalPart name="TIBLedge2" category="unspecified">
-  <rSolid name="tibmodule2:TIBLedge2"/>
-  <rMaterial name="tibmaterial:TIB_ledge_bss"/>
+  <rMaterial name="tibtidcommonmaterial:TIBTID_Hybrid"/>
  </LogicalPart>
  <LogicalPart name="TIBWaferRphi2" category="unspecified">
   <rSolid name="tibmodpar:TIBSSWafer"/>
@@ -69,39 +57,21 @@
  </PosPart>
  <PosPart copyNumber="1">
    <rParent name="tibmodule2:TIBModule2"/>
-   <rChild name="tibmodpar:TIBSideRailL"/>
-  <Translation x="[tibmodpar:SideRailX]"   y="[tibmodule2:SideRailY]" 
-               z="[tibmodpar:SideRailZ]" />
+   <rChild name="tibmodpar:TIBModCFFrameRPhi"/>
+    <Translation x="[zero]"   y="[tibmodule2:CFFrameY]" 
+                 z="[tibmodpar:CFFrameZ]" />
  </PosPart>
  <PosPart copyNumber="1">
    <rParent name="tibmodule2:TIBModule2"/>
-   <rChild name="tibmodpar:TIBSideRailR"/>
-  <Translation x="-[tibmodpar:SideRailX]"  y="[tibmodule2:SideRailY]" 
-               z="[tibmodpar:SideRailZ]" />
+   <rChild name="tibmodpar:TIBModCFFrameHybRPhi"/>
+    <Translation x="[zero]"   y="[tibmodule2:CFFrameY]" 
+                 z="[tibmodpar:CFFrameHybZ]" />
  </PosPart>
  <PosPart copyNumber="1">
    <rParent name="tibmodule2:TIBModule2"/>
-   <rChild name="tibmodule2:TIBLedge2"/>
-  <Translation x="[zero]"                  y="[tibmodule2:LedgeY]" 
-               z="[tibmodule2:LedgeZ]"  />
- </PosPart>
- <PosPart copyNumber="1">
-   <rParent name="tibmodule2:TIBModule2"/>
-   <rChild name="tibmodpar:TIBModCoolTop"/>
-  <Translation x="[tibmodpar:ModCool1X]"   y="[tibmodule2:ModCoolY]" 
-               z="-[tibmodpar:ModCool1Z]" />
- </PosPart>
- <PosPart copyNumber="1">
-   <rParent name="tibmodule2:TIBModule2"/>
-   <rChild name="tibmodpar:TIBModCoolSide"/>
-  <Translation x="-[tibmodpar:ModCool2X]"  y="[tibmodule2:ModCoolY]" 
-               z="-[tibmodpar:ModCool2Z]" />
- </PosPart>
- <PosPart copyNumber="2">
-   <rParent name="tibmodule2:TIBModule2"/>
-   <rChild name="tibmodpar:TIBModCoolSide"/>
-  <Translation x="[tibmodpar:ModCool2X]"   y="[tibmodule2:ModCoolY]" 
-               z="-[tibmodpar:ModCool2Z]" />
+   <rChild name="tibmodpar:TIBModKaptonBoxRPhi"/>
+    <Translation x="[zero]"   y="[tibmodule2:KaptonBoxY]" 
+                 z="[tibmodpar:KaptonBoxZ]" />
  </PosPart>
 </PosPartSection>
 
