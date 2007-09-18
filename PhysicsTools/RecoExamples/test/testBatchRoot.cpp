@@ -10,6 +10,7 @@
 #include <TH1.h>
 #include <vector>
 #include "DataFormats/TrackReco/interface/Track.h"
+#include "DataFormats/TrackReco/interface/TrackFwd.h"
 #include "FWCore/FWLite/interface/AutoLibraryLoader.h"
 using namespace std;
 using namespace reco;
