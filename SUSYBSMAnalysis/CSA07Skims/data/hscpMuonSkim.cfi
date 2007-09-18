@@ -2,7 +2,7 @@
  module highPtMuons = PtMinMuonCountFilter {
     InputTag src = muons 
     uint32 minNumber = 1
-    double ptMin = 30.
+    double ptMin = 45.
  }
 
 include "SUSYBSMAnalysis/CSA07Skims/data/hscpHLTPaths.cfi"
