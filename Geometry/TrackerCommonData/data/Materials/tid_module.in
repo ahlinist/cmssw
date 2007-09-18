@@ -246,27 +246,32 @@ MCVolume 3.0 x 6.0 x 0.15 cm^3
 .......................................................................
 =======================================================================
 
+o TID HV kapton 
+  -------------
+
+20071013 GSguazzoni
+
+MCVolume: 40cm^2*0.3mm = 1.2 cm^3
+
+(1) Kapton thickness 120 micron
+(2) Copper traces and pad estimated 2.45cm^2 
+(3) SMD resistors
+(4) SMD capacitors (~0.2g)
+(5) Silicon sensor siliconic glue (0.5g)
+(6) Module aluminum fixings 
+(7) Stainless stell screws
+               
+......................................................................
+# "TID KaptonHV"            "T_TIDModKaptonBox"     1.20000   -1.
+* 1 "Kapton"                "T_Kapton"              0.01200   40   ELE
+* 2 "Copper"                "Copper"                0.00038   2.45 ELE
+* 3 "Resistors"             "Ceramic"               0.00320    1   ELE
+* 4 "Capacitors"            "Barium_Titanate"       0.01661    2   ELE
+* 5 "Glue"                  "Silicone_Gel"          0.51813    1   SUP
+* 6 "Inserts"               "Aluminium"             0.00926    2   SUP
+* 7 "Screws"                "Iron"                  0.00381    2   SUP
+......................................................................
+======================================================================
+
 # "END"  "END"  0.  0.   
 this has to be the last line !
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

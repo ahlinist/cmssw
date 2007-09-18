@@ -541,4 +541,28 @@
   </CompositeMaterial>
 </MaterialSection>
 
+  <CompositeMaterial name="T_TIDModKaptonBox" density="1.25249*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="0.44711">
+      <rMaterial name="materials:T_Kapton"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.00555">
+      <rMaterial name="materials:Copper"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.00844">
+      <rMaterial name="materials:Ceramic"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.13306">
+      <rMaterial name="materials:Barium_Titanate"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.33267">
+      <rMaterial name="materials:Silicone_Gel"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.03327">
+      <rMaterial name="materials:Aluminium"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.0399">
+      <rMaterial name="materials:Iron"/>
+    </MaterialFraction>
+  </CompositeMaterial>
+
 </DDDefinition>

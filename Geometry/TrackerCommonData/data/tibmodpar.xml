@@ -2,8 +2,9 @@
 <DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../../DetectorDescription/Schema/DDLSchema.xsd">
 
 <ConstantsSection label="tibmodpar.xml" eval="true">
+ <Constant name="zero"                value="0.0*fm"/>
  <Constant name="ModuleDx"            value="3.900*cm"/>
- <Constant name="SSModuleDy"          value="1.500*mm"/>
+ <Constant name="SSModuleDy"          value="1.100*mm"/>
  <Constant name="DSModuleDy"          value="2.475*mm"/>
  <Constant name="DSModuleSideCutDx"   value="3.3*mm"/>
  <Constant name="DSModuleSideCutDy"   value="0.8*mm"/>
@@ -11,22 +12,53 @@
  <Constant name="DSModuleSideCutY"    value="1.775*mm"/>
  <Constant name="SideCutExtraZ"       value="0.1*mm"/>
  <Constant name="ModuleDz"            value="81.65*mm"/>
- <Constant name="HybridDx"            value="2.350*cm"/>
- <Constant name="HybridDy"            value="0.056*cm"/>
- <Constant name="HybridDz"            value="1.250*cm"/>
- <Constant name="HybridZ"             value="6.900*cm"/>
- <Constant name="PADx"                value="3.000*cm"/>
- <Constant name="PADy"                value="0.490*mm"/>
- <Constant name="PA1Dz"               value="0.450*cm"/>
- <Constant name="PAZ"                 value="5.200*cm"/>
+ <Constant name="HybridDx"            value="23.50*mm"/>
+ <Constant name="HybridDy"            value="0.565*mm"/>
+ <Constant name="HybridDz"            value="12.65*mm"/>
+ <Constant name="HybridZ"             value="[ModuleDz]-[HybridDz]"/>
+ <Constant name="PARPhiDx"                value="32.00*mm"/>
+ <Constant name="PADy"                value="0.565*mm"/>
+ <Constant name="PARPhiDz"               value="4.500*mm"/>
+ <Constant name="PAZ"                 value="[ModuleDz]-2*[HybridDz]-[PARPhiDz]"/>
+ <Constant name="CFFrameHybDz"        value="12.40*mm"/>
+ <Constant name="CFFrameHybZ"         value="-[tibmodpar:ModuleDz]+[tibmodpar:CFFrameHybDz]"/>
+ <Constant name="CFFrameHybRPhiDx"    value="30.00*mm"/>
  <Constant name="CFFrameDy"           value="0.250*mm"/>
- <Constant name="SideRailDx"          value="0.450*cm"/>
- <Constant name="SideRailDy" value="[CFFrameDy]+0.110*mm"/> <!-- Extra thickness for glue and kapton bias circuit end its components-->
- <Constant name="SideRailDz"          value="6.365*cm"/>
- <Constant name="SideRailX"           value="3.450*cm"/>
- <Constant name="SideRailZ"           value="0.715*cm"/>
- <Constant name="LedgeDx"             value="3.000*cm"/>
- <Constant name="LedgeDy"             value="0.045*cm"/>
+ <Constant name="CFFrameDz"           value="[ModuleDz]-[CFFrameHybDz]"/>
+ <Constant name="CFFrameZ"            value="[ModuleDz]-[CFFrameDz]"/>
+ <Constant name="CFFrameHoleDx"       value="30.00*mm"/>
+ <Constant name="CFFrameHoleDz"       value="59.50*mm"/>
+ <Constant name="CFFrameHoleOffset"   value="1.000*mm"/>
+ <Constant name="CFFrameHoleZ"        value="[tibmodpar:WaferZ]-[tibmodpar:CFFrameHybDz]"/>
+ <Constant name="KaptonBoxDy"         value="0.150*mm"/>
+ <Constant name="KaptonBoxDz"         value="[ModuleDz]-[HybridDz]-[PARPhiDz]"/>
+ <Constant name="KaptonBoxZ"          value="[tibmodpar:HybridDz]+[tibmodpar:PARPhiDz]"/>
+ <Constant name="KaptonBoxHoleDx"     value="27.50*mm"/>
+ <Constant name="KaptonBoxHoleDz"     value="57.50*mm"/>
+ <Constant name="KaptonBoxHoleZ"      value="[tibmodpar:KaptonBoxHoleDz]-[tibmodpar:KaptonBoxDz]"/>
+ <Constant name="StereoAngle"         value="5.729578*deg"/>
+ <Constant name="TrapSterTheta"       value="atan(0.5*tan([tibmodpar:StereoAngle]))"/> <!-- Trapezoid parameter -->
+ <Constant name="HybLedgeDz"          value="3.60*mm"/>
+ <Constant name="HybLedgeSideDx"      value="3.0*mm"/>
+ <Constant name="HybLedgeSideDz"      value="12.0*mm"/>
+ <Constant name="DummyLedgeDz"        value="5.0*mm"/>
+ <Constant name="LedgeBoxDx"          value="[tibstringpar:CoolBoxDx]"/>
+ <Constant name="LedgeBoxDy"          value="[tibstringpar:CoolBoxDy]-[tibstringpar:CoolPipeDy]"/>
+ <Constant name="SSLedgeBoxY"         value="-[tibmodpar:SSModuleDy]-[tibmodpar:LedgeBoxDy]"/>
+ <Constant name="DSLedgeBoxY"         value="-[tibmodpar:DSModuleDy]-[tibmodpar:LedgeBoxDy]"/>
+ <Constant name="AOHLedgeDz"          value="1.5*mm"/>
+ <Constant name="AOHLedgeSideDx"      value="1.5*mm"/>
+ <Constant name="AOHLedgeSideDz"      value="15.0*mm"/>
+ <Constant name="AOHModOffset"        value="6.0*mm"/>
+ <Constant name="AOHLedgeModOffset"   value="[tibmodpar:AOHModOffset]+[tibmodpar:AOHLedgeSideDz]"/>
+ <Constant name="SSAOHBoxDx"          value="18.0*mm"/>
+ <Constant name="DSAOHBoxDx"          value="[tibstringpar:CoolBoxDx]"/>
+ <Constant name="AOHBoxDy"            value="[tibmodpar:SSModuleDy]"/>
+ <Constant name="AOHToMod"            value="6.0*mm"/>
+ <Constant name="AOHBoxDz"            value="[tibmodpar:AOHLedgeSideDz]+0.5*[tibmodpar:AOHToMod]"/>
+ <Constant name="SSAOHBoxY"           value="-[tibmodpar:SSModuleDy]+[tibmodpar:AOHBoxDy]"/>
+ <Constant name="SSAOHBoxX"           value="[tibmodpar:LedgeBoxDx]-[tibmodpar:SSAOHBoxDx]"/>
+ <Constant name="DSAOHBoxY"           value="-[tibmodpar:DSModuleDy]+[tibmodpar:AOHBoxDy]"/>
  <Constant name="ModCool1Dx"          value="2.350*cm"/>
  <Constant name="ModCoolDy"           value="0.015*cm"/>
  <Constant name="ModCool1Dz"          value="0.350*cm"/>
@@ -69,15 +101,7 @@
  </SubtractionSolid>
  <Box name="TIBHybrid"            dx="[tibmodpar:HybridDx]"    
       dy="[tibmodpar:HybridDy]"   dz="[tibmodpar:HybridDz]"/>
- <Box name="TIBPA1"          dx="[PADx]"    dy="[PADy]"    dz="[PA1Dz]"/>
- <Box name="TIBSideRailL"    dx="[SideRailDx]" 
-                             dy="[SideRailDy]" dz="[SideRailDz]"/>
- <Box name="TIBSideRailR"    dx="[SideRailDx]" 
-                             dy="[SideRailDy]" dz="[SideRailDz]"/>
- <Box name="TIBModCoolTop"   dx="[ModCool1Dx]" 
-                             dy="[ModCoolDy]"  dz="[ModCool1Dz]"/>
- <Box name="TIBModCoolSide"  dx="[ModCool2Dx]" 
-                             dy="[ModCoolDy]"  dz="[ModCool2Dz]"/>
+ <Box name="TIBPA1"          dx="[PARPhiDx]"    dy="[PADy]"    dz="[PARPhiDz]"/>
  <Box name="TIBSSWafer"             dx="[tibmodpar:SSWaferDx]" 
       dy="[tibmodpar:WaferDy]"    dz="[tibmodpar:WaferDz]"/>
  <Box name="TIBSSActive"            dx="[tibmodpar:SSActiveDx]" 
@@ -86,28 +110,101 @@
       dy="[tibmodpar:WaferDy]"    dz="[tibmodpar:WaferDz]"/>
  <Box name="TIBDSActive"            dx="[tibmodpar:DSActiveDx]" 
       dy="[tibmodpar:ActiveDy]"   dz="[tibmodpar:ActiveDz]"/>
+ <Box name="TIBModCFFrame"   dx="[tibmodpar:ModuleDx]" 
+			     dy="[tibmodpar:CFFrameDy]" dz="[tibmodpar:CFFrameDz]"/>
+ <Box name="TIBModCFFrameHole"   
+                             dx="[tibmodpar:CFFrameHoleDx]" 
+			     dy="[tibmodpar:CFFrameDy]" dz="[tibmodpar:CFFrameHoleDz]"/>
+ <Box name="TIBModCFFrameHybRPhi" 
+                             dx="[tibmodpar:CFFrameHybRPhiDx]" 
+			     dy="[tibmodpar:CFFrameDy]" dz="[tibmodpar:CFFrameHybDz]"/>
+ <Box name="TIBModKaptonBoxRPhi" dx="[tibmodpar:ModuleDx]" 
+			     dy="[tibmodpar:KaptonBoxDy]" dz="[tibmodpar:KaptonBoxDz]"/>
+ <Box name="TIBModKaptonBoxHole"   dx="[tibmodpar:KaptonBoxHoleDx]" 
+			     dy="[tibmodpar:KaptonBoxDy]" dz="[tibmodpar:KaptonBoxHoleDz]"/>
+
+<!-- Module Ledges definitions -->
+<Box name="TIBModLedgeBox"   dx="[tibmodpar:LedgeBoxDx]" 
+			     dy="[tibmodpar:LedgeBoxDy]" dz="[tibmodpar:ModuleDz]"/>
+<Box name="TIBModHybLedgeNoCut" dx="[tibmodpar:LedgeBoxDx]" 
+			        dy="[tibmodpar:LedgeBoxDy]"  dz="[tibmodpar:HybLedgeSideDz]"/>
+<Box name="TIBModHybLedgeCut"   dx="[tibmodpar:LedgeBoxDx]-2*[tibmodpar:HybLedgeSideDx]" 
+			        dy="[tibmodpar:LedgeBoxDy]"  dz="[tibmodpar:HybLedgeSideDz]-[tibmodpar:HybLedgeDz]"/>
+<SubtractionSolid name="TIBModHybLedge">
+   <rSolid name="TIBModHybLedgeNoCut"/>
+   <rSolid name="TIBModHybLedgeCut"/>
+   <Translation x="[zero]" y="[zero]" z="[tibmodpar:HybLedgeDz]"/>
+</SubtractionSolid>
+<Box name="TIBModDummyLedge"    dx="[tibmodpar:LedgeBoxDx]" 
+			        dy="[tibmodpar:LedgeBoxDy]"  dz="[tibmodpar:DummyLedgeDz]"/>
+
+<!-- AOH Ledges definitions -->
+<Box name="TIBAOHLedgeNoCut"    dx="[tibmodpar:LedgeBoxDx]" 
+			        dy="[tibmodpar:LedgeBoxDy]" dz="[tibmodpar:AOHLedgeSideDz]"/>
+<Box name="TIBAOHLedgeCut"      dx="[tibmodpar:LedgeBoxDx]-2*[tibmodpar:AOHLedgeSideDx]" 
+			        dy="[tibmodpar:LedgeBoxDy]"  dz="[tibmodpar:AOHLedgeSideDz]-[tibmodpar:AOHLedgeDz]"/>
+<SubtractionSolid name="TIBAOHLedge">
+   <rSolid name="TIBAOHLedgeNoCut"/>
+   <rSolid name="TIBAOHLedgeCut"/>
+   <Translation x="[zero]" y="[zero]" z="[tibmodpar:AOHLedgeDz]"/>
+</SubtractionSolid>
+
+<!-- AOH Boxes definitions -->
+<Box name="TIBSSAOHBox"    dx="[tibmodpar:SSAOHBoxDx]" 
+			   dy="[tibmodpar:AOHBoxDy]" dz="[tibmodpar:AOHBoxDz]"/>
+<Box name="TIBDSAOHBox"    dx="[tibmodpar:DSAOHBoxDx]" 
+			   dy="[tibmodpar:AOHBoxDy]" dz="[tibmodpar:AOHBoxDz]"/>
+
 </SolidSection>
 
 <LogicalPartSection label="tibmodpar.xml">
+ <LogicalPart name="TIBModCFFrameRPhi" category="unspecified">
+  <rSolid name="tibmodpar:TIBModCFFrame"/>
+  <rMaterial name="materials:Carbon fibre str."/>
+ </LogicalPart>
+ <LogicalPart name="TIBModCFFrameHybRPhi" category="unspecified">
+  <rSolid name="tibmodpar:TIBModCFFrameHybRPhi"/>
+  <rMaterial name="materials:Carbon fibre str."/>
+ </LogicalPart>
+ <LogicalPart name="TIBModCFFrameHole" category="unspecified">
+  <rSolid name="tibmodpar:TIBModCFFrameHole"/>
+  <rMaterial name="materials:Air"/>
+ </LogicalPart>
+ <LogicalPart name="TIBModKaptonBoxRPhi" category="unspecified">
+  <rSolid name="tibmodpar:TIBModKaptonBoxRPhi"/>
+  <rMaterial name="tibmaterial:TIB_ModKaptonBox"/>
+ </LogicalPart>
+ <LogicalPart name="TIBModKaptonBoxHole" category="unspecified">
+  <rSolid name="tibmodpar:TIBModKaptonBoxHole"/>
+  <rMaterial name="materials:Air"/>
+ </LogicalPart>
  <LogicalPart name="TIBPA1" category="unspecified">
   <rSolid name="TIBPA1"/>
-  <rMaterial name="tibmaterial:TIB_PA_rphi"/>
+  <rMaterial name="tibtidcommonmaterial:TIBTID_PA"/>
  </LogicalPart>
- <LogicalPart name="TIBSideRailL" category="unspecified">
-  <rSolid name="TIBSideRailL"/>
-  <rMaterial name="tibmaterial:TIB_sid_rail1"/>
+ <LogicalPart name="TIBModLedgeBox" category="unspecified">
+  <rSolid name="TIBModLedgeBox"/>
+  <rMaterial name="materials:Air"/>
  </LogicalPart>
- <LogicalPart name="TIBSideRailR" category="unspecified">
-  <rSolid name="TIBSideRailR"/>
-  <rMaterial name="tibmaterial:TIB_sid_rail2"/>
+ <LogicalPart name="TIBModHybLedge" category="unspecified">
+  <rSolid name="TIBModHybLedge"/>
+  <rMaterial name="tibmaterial:TIB_ModHybLedge"/>
  </LogicalPart>
- <LogicalPart name="TIBModCoolTop" category="unspecified">
-  <rSolid name="TIBModCoolTop"/>
-  <rMaterial name="tibmaterial:TIB_ledge_hybrid"/>
+ <LogicalPart name="TIBModDummyLedge" category="unspecified">
+  <rSolid name="TIBModDummyLedge"/>
+  <rMaterial name="tibmaterial:TIB_ModDummyLedge"/>
  </LogicalPart>
- <LogicalPart name="TIBModCoolSide" category="unspecified">
-  <rSolid name="TIBModCoolSide"/>
-  <rMaterial name="tibmaterial:TIB_ledge_side"/>
+ <LogicalPart name="TIBAOHLedge" category="unspecified">
+  <rSolid name="TIBAOHLedge"/>
+  <rMaterial name="tibmaterial:TIB_AOHLedge"/>
+ </LogicalPart>
+ <LogicalPart name="TIBSSAOHBox" category="unspecified">
+  <rSolid name="TIBSSAOHBox"/>
+  <rMaterial name="tibmaterial:TIB_SSAOHBox"/>
+ </LogicalPart>
+ <LogicalPart name="TIBDSAOHBox" category="unspecified">
+  <rSolid name="TIBDSAOHBox"/>
+  <rMaterial name="tibmaterial:TIB_DSAOHBox"/>
  </LogicalPart>
 </LogicalPartSection>
 
@@ -118,10 +215,52 @@
                          phiY="0*deg"     thetaZ="90*deg"  phiZ="270*deg" />
   <Rotation name="SterA" thetaX="84.2704*deg" phiX="0*deg" thetaY="-5.7296*deg"
                          phiY="0*deg"     thetaZ="90*deg"  phiZ="270*deg" />
+  <Rotation name="CFFrameSterB" 
+                         thetaX="90.*deg" phiX="180.*deg" 
+                         thetaY="90.*deg" phiY="270.*deg"     
+                         thetaZ="0.*deg"  phiZ="0.*deg" />
+  <Rotation name="CFFrameHoleSterA" 
+                             thetaX="90.*deg-[StereoAngle]" phiX="0.*deg" 
+                             thetaY="90.*deg"               phiY="90.*deg"     
+                             thetaZ="[StereoAngle]"         phiZ="180.*deg" />
+  <Rotation name="KaptonBoxHoleSterB" thetaX="84.2704*deg" phiX="0*deg" thetaY="-5.7296*deg"
+                         phiY="0*deg"     thetaZ="90*deg"  phiZ="270*deg" />
+  <Rotation name="KaptonBoxHoleSterA" 
+                             thetaX="[StereoAngle]"         phiX="180.*deg" 
+                             thetaY="90.*deg"               phiY="90.*deg"     
+                             thetaZ="90.*deg+[StereoAngle]" phiZ="180.*deg" />
   <Rotation name="PAB"   thetaX="180*deg" phiX="0*deg"     thetaY="90*deg"
                          phiY="270*deg"   thetaZ="90*deg"  phiZ="180*deg" />
   <Rotation name="PAA"   thetaX="180*deg" phiX="0*deg"     thetaY="90*deg" 
                          phiY="90*deg"    thetaZ="90*deg"  phiZ="0*deg" />
 </RotationSection>
+
+<PosPartSection>
+ <PosPart copyNumber="1">
+   <rParent name="tibmodpar:TIBModCFFrameRPhi"/>
+   <rChild name="tibmodpar:TIBModCFFrameHole"/>
+    <Translation x="[zero]"   y="[zero]" 
+                 z="[tibmodpar:CFFrameHoleZ]-[tibmodpar:CFFrameHoleOffset]" />
+ </PosPart>
+ <PosPart copyNumber="1">
+   <rParent name="tibmodpar:TIBModKaptonBoxRPhi"/>
+   <rChild name="tibmodpar:TIBModKaptonBoxHole"/>
+    <Translation x="[zero]"   y="[zero]" 
+                 z="[tibmodpar:KaptonBoxHoleZ]" />
+ </PosPart>
+ <PosPart copyNumber="1">
+   <rParent name="tibmodpar:TIBModLedgeBox"/>
+   <rChild name="tibmodpar:TIBModHybLedge"/>
+    <Translation x="[zero]"   y="[zero]" 
+                 z="-[tibmodpar:ModuleDz]+[tibmodpar:HybLedgeSideDz]" />
+ </PosPart>
+ <PosPart copyNumber="1">
+   <rParent name="tibmodpar:TIBModLedgeBox"/>
+   <rChild name="tibmodpar:TIBModDummyLedge"/>
+    <Translation x="[zero]" y="[zero]" 
+                 z="[tibmodpar:ModuleDz]-[tibmodpar:DummyLedgeDz]" />
+ </PosPart>
+
+</PosPartSection>
 
 </DDDefinition>

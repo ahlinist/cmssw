@@ -3,6 +3,12 @@
 
 <ConstantsSection label="tibstring2.xml" eval="true">
  <Constant name="zero"         value="0.0*fm"/>
+ <Constant name="StringIntOff" value="38.87*mm"/>
+ <Constant name="StringExtOff" value="-8.73*mm"/>
+ <Constant name="StringLoMinL" value="0.5*[tibstringpar:StringL]+[StringIntOff]"/>
+ <Constant name="StringUpMinL" value="0.5*[tibstringpar:StringL]+[StringExtOff]"/>
+ <Constant name="StringLoPlsL" value="0.5*[tibstringpar:StringL]-[StringIntOff]"/>
+ <Constant name="StringUpPlsL" value="0.5*[tibstringpar:StringL]-[StringExtOff]"/>
 </ConstantsSection>
 
 <LogicalPartSection label="tibstring2.xml">
@@ -10,16 +16,8 @@
   <rSolid name="tibstringpar:TIBSSString1"/>
   <rMaterial name="materials:Air"/>
  </LogicalPart>
- <LogicalPart name="TIBString2Lo2" category="unspecified">
-  <rSolid name="tibstringpar:TIBString2"/>
-  <rMaterial name="materials:Air"/>
- </LogicalPart>
  <LogicalPart name="TIBString2Up1" category="unspecified">
   <rSolid name="tibstringpar:TIBSSString1"/>
-  <rMaterial name="materials:Air"/>
- </LogicalPart>
- <LogicalPart name="TIBString2Up2" category="unspecified">
-  <rSolid name="tibstringpar:TIBString2"/>
   <rMaterial name="materials:Air"/>
  </LogicalPart>
 </LogicalPartSection>
@@ -28,42 +26,22 @@
  <PosPart copyNumber="1">
    <rParent name="tibstring2:TIBString2Lo1"/>
    <rChild name="tibstring2ll:TIBString2LoMin1"/>
-  <Translation x="[zero]"   y="[zero]"  z="-[tibstring2c:StringLoPlsL]/2" />
- </PosPart>
- <PosPart copyNumber="2">
-   <rParent name="tibstring2:TIBString2Lo1"/>
-   <rChild name="tibstring2lr:TIBString2LoPls1"/>
-  <Translation x="[zero]"   y="[zero]"  z="[tibstring2c:StringLoMinL]/2" />
+  <Translation x="[zero]"   y="[zero]"  z="-[tibstring2:StringLoPlsL]/2" />
  </PosPart>
  <PosPart copyNumber="1">
-   <rParent name="tibstring2:TIBString2Lo2"/>
-   <rChild name="tibstring2ll:TIBString2LoMin2"/>
-  <Translation x="[zero]"   y="[zero]"  z="-[tibstring2c:StringLoPlsL]/2" />
- </PosPart>
- <PosPart copyNumber="2">
-   <rParent name="tibstring2:TIBString2Lo2"/>
-   <rChild name="tibstring2lr:TIBString2LoPls2"/>
-  <Translation x="[zero]"   y="[zero]"  z="[tibstring2c:StringLoMinL]/2" />
+   <rParent name="tibstring2:TIBString2Lo1"/>
+   <rChild name="tibstring2lr:TIBString2LoPls1"/>
+  <Translation x="[zero]"   y="[zero]"  z="[tibstring2:StringLoMinL]/2" />
  </PosPart>
  <PosPart copyNumber="1">
    <rParent name="tibstring2:TIBString2Up1"/>
    <rChild name="tibstring2ul:TIBString2UpMin1"/>
-  <Translation x="[zero]"   y="[zero]"  z="-[tibstring2c:StringUpPlsL]/2" />
- </PosPart>
- <PosPart copyNumber="2">
-   <rParent name="tibstring2:TIBString2Up1"/>
-   <rChild name="tibstring2ur:TIBString2UpPls1"/>
-  <Translation x="[zero]"   y="[zero]"  z="[tibstring2c:StringUpMinL]/2" />
+  <Translation x="[zero]"   y="[zero]"  z="-[tibstring2:StringUpPlsL]/2" />
  </PosPart>
  <PosPart copyNumber="1">
-   <rParent name="tibstring2:TIBString2Up2"/>
-   <rChild name="tibstring2ul:TIBString2UpMin2"/>
-  <Translation x="[zero]"   y="[zero]"  z="-[tibstring2c:StringUpPlsL]/2" />
- </PosPart>
- <PosPart copyNumber="2">
-   <rParent name="tibstring2:TIBString2Up2"/>
-   <rChild name="tibstring2ur:TIBString2UpPls2"/>
-  <Translation x="[zero]"   y="[zero]"  z="[tibstring2c:StringUpMinL]/2" />
+   <rParent name="tibstring2:TIBString2Up1"/>
+   <rChild name="tibstring2ur:TIBString2UpPls1"/>
+  <Translation x="[zero]"   y="[zero]"  z="[tibstring2:StringUpMinL]/2" />
  </PosPart>
 </PosPartSection>
  
