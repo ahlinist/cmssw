@@ -45,7 +45,7 @@ int combsv::CombinedTrack::nHitsTotal() const
   LogDebug("") << "nHitsTotal not available" << endl;
   return 0;
   #else
-  return recHitsSize();
+  return hitPattern().numberOfValidHits();
   #endif
 }
 
