@@ -304,17 +304,17 @@ ElectronLikelihood::Setup (const ElectronLikelihoodCalibration *calibration,
 
 
 void 
-ElectronLikelihood::getInputVar (const PixelMatchGsfElectron *electron, 
+ElectronLikelihood::getInputVar (const PixelMatchGsfElectron &electron, 
                                  std::vector<float> &measurements, 
-                                 const edm::Event& iEvent) const 
+                                 const ClusterShape &sClShape) const 
 {
 
   // the variables entering the likelihood
-  measurements.push_back ( electron->deltaPhiSuperClusterTrackAtVtx () ) ;
-  measurements.push_back ( electron->deltaEtaSeedClusterTrackAtCalo () ) ;
-  measurements.push_back ( electron->eSeedClusterOverPout () ) ;
-  measurements.push_back ( electron->hadronicOverEm () ) ;
-  measurements.push_back ( CalculateFisher(electron, iEvent) ) ;
+  measurements.push_back ( electron.deltaPhiSuperClusterTrackAtVtx () ) ;
+  measurements.push_back ( electron.deltaEtaSeedClusterTrackAtCalo () ) ;
+  measurements.push_back ( electron.eSeedClusterOverPout () ) ;
+  measurements.push_back ( electron.hadronicOverEm () ) ;
+  measurements.push_back ( CalculateFisher(electron, sClShape) ) ;
 
 }
 
@@ -325,44 +325,18 @@ ElectronLikelihood::getInputVar (const PixelMatchGsfElectron *electron,
 
 
 double 
-ElectronLikelihood::CalculateFisher(const PixelMatchGsfElectron *electron,
-				    const edm::Event& iEvent) const
+ElectronLikelihood::CalculateFisher(const PixelMatchGsfElectron &electron,
+				    const ClusterShape& sClShape) const
 {
 
   // the variables entering the shape fisher
   double s9s25, sigmaEtaEta, lat, a20;
-  bool hasBarrel=true ;
-  bool hasEndcap=true ;
 
-  edm::Handle<BasicClusterShapeAssociationCollection> barrelClShpHandle ;
-  try { iEvent.getByLabel ("hybridSuperClusters","hybridShapeAssoc", barrelClShpHandle) ; }
-  catch ( cms::Exception& ex ) { edm::LogWarning ("ElectronLikelihood") << "Can't get ECAL barrel Cluster Shape Collection" ; }
-  const reco::BasicClusterShapeAssociationCollection& barrelClShpMap = *barrelClShpHandle ;
-  
-  edm::Handle<BasicClusterShapeAssociationCollection> endcapClShpHandle ;
-  try { iEvent.getByLabel ("islandBasicClusters","islandEndcapShapeAssoc", endcapClShpHandle) ; }
-  catch ( cms::Exception& ex ) { edm::LogWarning ("ElectronLikelihood") << "Can't get ECAL endcap Cluster Shape Collection" ; }
-  const reco::BasicClusterShapeAssociationCollection& endcapClShpMap = *endcapClShpHandle ;
+  s9s25=sClShape.e3x3 ()/sClShape.e5x5 () ;
+  sigmaEtaEta=sqrt (sClShape.covEtaEta ()) ;
+  lat=sClShape.lat () ;
+  a20=sClShape.zernike20 () ;
 
-  SuperClusterRef sclusRef = electron->get<SuperClusterRef> () ;
-  reco::BasicClusterShapeAssociationCollection::const_iterator seedShpItr ;
-  seedShpItr = barrelClShpMap.find (sclusRef->seed ()) ;
-  if (seedShpItr==barrelClShpMap.end ()) {
-    hasBarrel=false ;
-    seedShpItr=endcapClShpMap.find (sclusRef->seed ()) ;
-    if (seedShpItr==endcapClShpMap.end ()) hasEndcap=false ;
-  }
-  if (hasBarrel || hasEndcap) {
-    const ClusterShapeRef& sClShape = seedShpItr->val ;  
-    s9s25=sClShape->e3x3 ()/sClShape->e5x5 () ;
-    sigmaEtaEta=sqrt (sClShape->covEtaEta ()) ;
-    lat=sClShape->lat () ;
-    a20=sClShape->zernike20 () ;
-  }
-  else { 
-    edm::LogWarning ("ElectronLikelihood") << "Cannot find hits in ECAL barrel or ECAL encap."
-					   << "Why are you requesting filling ECAL infos?";
-  }
 
   vector<double> inputs;
   inputs.push_back(s9s25);
@@ -372,7 +346,7 @@ ElectronLikelihood::CalculateFisher(const PixelMatchGsfElectron *electron,
 
   // evaluate the Fisher discriminant
   double clusterShapeFisher;
-  std::vector<DetId> vecId=sclusRef->getHitsByDetId () ;
+  std::vector<DetId> vecId=electron.superCluster()->getHitsByDetId () ;
   EcalSubdetector subdet = EcalSubdetector (vecId[0].subdetId ()) ;
   
   if (subdet==EcalBarrel) {
@@ -389,7 +363,7 @@ ElectronLikelihood::CalculateFisher(const PixelMatchGsfElectron *electron,
   }
   else {
     clusterShapeFisher = -999 ;
-    edm::LogWarning ("ElectronLikelihood") << "Undefined electron, eta = " << electron->eta () << "!" ;
+    edm::LogWarning ("ElectronLikelihood") << "Undefined electron, eta = " << electron.eta () << "!" ;
   }
   return clusterShapeFisher;
 }
@@ -401,8 +375,8 @@ ElectronLikelihood::CalculateFisher(const PixelMatchGsfElectron *electron,
 
 
 float 
-ElectronLikelihood::result (const PixelMatchGsfElectron *electron, 
-                            const edm::Event& iEvent) const 
+ElectronLikelihood::result (const PixelMatchGsfElectron &electron, 
+                            const ClusterShape &sClShape) const 
 {
 
   //=======================================================
@@ -420,11 +394,11 @@ ElectronLikelihood::result (const PixelMatchGsfElectron *electron,
   //=======================================================
 
   std::vector<float> measurements ;
-  getInputVar (electron, measurements, iEvent) ;
+  getInputVar (electron, measurements, sClShape) ;
 
   // Split using only the 10^1 bit (golden/big brem/narrow/showering)
   int bitVal=-1 ;
-  int gsfclass=electron->classification () ;
+  int gsfclass=electron.classification () ;
   if (gsfclass<99) 
     bitVal=int (gsfclass)/10 ; 
   else
@@ -449,10 +423,10 @@ ElectronLikelihood::result (const PixelMatchGsfElectron *electron,
 				      << " splitting is implemented right now";
   }
 
-  SuperClusterRef sclusRef = electron->get<SuperClusterRef> () ;
+  SuperClusterRef sclusRef = electron.superCluster() ;
   std::vector<DetId> vecId=sclusRef->getHitsByDetId () ;
   EcalSubdetector subdet = EcalSubdetector (vecId[0].subdetId ()) ;
-  float thisPt = sqrt ( (electron->momentum ().x ()*electron->momentum ().x ()) + (electron->momentum ().y ()*electron->momentum ().y ()) ) ;
+  float thisPt =  electron.pt();
 
   if (subdet==EcalBarrel && thisPt<15.)
     return _EBlt15lh->getRatio ("electrons",measurements,std::string (className)) ;

@@ -72,8 +72,8 @@ class ElectronLikelihood : ElectronIDAlgo {
   void setup (const edm::ParameterSet& conf) {} ;
 
   //! get the result of the algorithm
-  float result (const reco::PixelMatchGsfElectron *, 
-                const edm::Event&) const ;
+  float result (const reco::PixelMatchGsfElectron &electron, 
+                const ClusterShape &sClShape) const ;
 
  private:
 
@@ -98,13 +98,13 @@ class ElectronLikelihood : ElectronIDAlgo {
 
 
   //! get the input variables from the electron and the e-Setup
-  void getInputVar (const PixelMatchGsfElectron *electron, 
+  void getInputVar (const reco::PixelMatchGsfElectron &electron, 
                     std::vector<float> &measuremnts, 
-                    const edm::Event& iEvent) const ;
+                    const ClusterShape &sClShape) const ;
 
   //! evaluate the shape Fisher discriminant
-  double CalculateFisher(const PixelMatchGsfElectron *electron,
-			 const edm::Event& iEvent) const;
+  double CalculateFisher(const reco::PixelMatchGsfElectron &electron,
+			 const ClusterShape &sClShape) const;
   
   //! likelihood below 15GeV/c
   LikelihoodPdfProduct *_EBlt15lh, *_EElt15lh;
