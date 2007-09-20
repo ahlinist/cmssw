@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrea Rizzi
 //         Created:  Thu Apr  6 09:56:23 CEST 2006
-// $Id: JetTagProducer.cc,v 1.5 2007/05/29 16:58:42 fwyzard Exp $
+// $Id: JetTagProducer.cc,v 1.6 2007/07/30 17:54:51 fwyzard Exp $
 //
 //
 
@@ -94,15 +94,18 @@ JetTagProducer<ConcreteTagInfoCollection>::produce(edm::Event& iEvent, const edm
 
 #include "DataFormats/BTauReco/interface/TrackIPTagInfo.h"
 #include "DataFormats/BTauReco/interface/TrackCountingTagInfo.h"
+#include "DataFormats/BTauReco/interface/SecondaryVertexTagInfo.h"
 #include "DataFormats/BTauReco/interface/CombinedSVTagInfo.h"
 #include "DataFormats/BTauReco/interface/SoftLeptonTagInfo.h"
 
 // define these as plug-ins
-typedef JetTagProducer<TrackCountingTagInfoCollection>  JetTagProducerTrackCounting;
+typedef JetTagProducer<TrackCountingTagInfoCollection>   JetTagProducerTrackCounting;
 DEFINE_FWK_MODULE(JetTagProducerTrackCounting);
-typedef JetTagProducer<TrackIPTagInfoCollection>        JetTagProducerImpactParameter;
+typedef JetTagProducer<TrackIPTagInfoCollection>         JetTagProducerImpactParameter;
 DEFINE_FWK_MODULE(JetTagProducerImpactParameter);
-typedef JetTagProducer<CombinedSVTagInfoCollection>     JetTagProducerCombinedSV;
+typedef JetTagProducer<SecondaryVertexTagInfoCollection> JetTagProducerSecondaryVertex;
+DEFINE_FWK_MODULE(JetTagProducerSecondaryVertex);
+typedef JetTagProducer<CombinedSVTagInfoCollection>      JetTagProducerCombinedSV;
 DEFINE_FWK_MODULE(JetTagProducerCombinedSV);
-typedef JetTagProducer<SoftLeptonTagInfoCollection>     JetTagProducerSoftLepton;
+typedef JetTagProducer<SoftLeptonTagInfoCollection>      JetTagProducerSoftLepton;
 DEFINE_FWK_MODULE(JetTagProducerSoftLepton);
