@@ -93,7 +93,7 @@ CSCStripNoiseMatrix::~CSCStripNoiseMatrix() {
     if (isME1a && sid > 79) sid2 = 64;
 
     if (Noise->matrix.find(chId) != Noise->matrix.end( ) ) {
-      float w = getStripGain( chId, sid );
+      float w = getStripGain( chId, sid2 );
       w *= w;
      
       elem[0] = Noise->matrix[chId][sid2].elem33 * w;
