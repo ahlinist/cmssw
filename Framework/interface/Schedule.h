@@ -235,7 +235,6 @@ namespace edm {
     void fillWorkers(std::string const& name, PathWorkers& out);
     void fillTrigPath(int bitpos, std::string const& name, TrigResPtr);
     void fillEndPath(int bitpos, std::string const& name);
-    void handleWronglyPlacedModules();
 
     ParameterSet        pset_;
     WorkerRegistry*     worker_reg_;
@@ -257,8 +256,6 @@ namespace edm {
     AllLimitedOutputWorkers  limited_output_workers_;
     TrigPaths                trig_paths_;
     TrigPaths                end_paths_;
-
-    PathWorkers tmp_wrongly_placed_;
 
     bool                             wantSummary_;
     int                              total_events_;

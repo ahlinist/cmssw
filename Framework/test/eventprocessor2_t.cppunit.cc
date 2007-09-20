@@ -35,7 +35,8 @@ void work()
 		    "module m1 = IntProducer { int32 ivalue = 10 }\n"
 		    "module m2 = DoubleProducer { double dvalue = 3.3 }\n"
 		    "module out = AsciiOutputModule { }\n"
-                    "path p1 = { m1,m2,out }\n"
+                    "path p1 = { m1,m2 }\n"
+                    "endpath ep1 = { out }\n"
 		    "}\n");
   edm::EventProcessor proc(configuration);
   proc.beginJob();
