@@ -1,13 +1,3 @@
-module combinedSVJetTags = CombinedSV
-{
-  string jetTracks = "jetTracksAssociator"
-  string vertexcoll = "offlinePrimaryVerticesFromCTFTracks"
-  # string vertexcoll = "none"
-  string trackcoll = "ctfWithMaterialTracks"
-  double charmPriorInBG = 0.25
-
-  include "RecoBTag/CombinedSV/data/vertexreco.cfi"
-  include "RecoBTag/CombinedSV/data/vertexcuts.cfi"
-  include "RecoBTag/CombinedSV/data/jetcuts.cfi"
-  include "RecoBTag/CombinedSV/data/trackcuts.cfi"
-}
+include "RecoBTag/CombinedSV/data/combined.cfi"
+include "RecoBTag/CombinedSV/data/combinedSVMVAES.cfi"
+include "RecoBTag/CombinedSV/data/combinedSVMVAJetTags.cfi"
