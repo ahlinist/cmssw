@@ -5,6 +5,6 @@
 <use name=DataFormats/BTauReco>
 <use name=RecoBTau/JetTagComputer>
 <use name=RecoBTau/JetTagProducer>
-<library file="*.cc2 name="JetTagProducerPlugin">
+<library file="*.cc name="JetTagProducerPlugin">
   <flags EDM_PLUGIN=1>
 </library>
