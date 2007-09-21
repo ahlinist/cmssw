@@ -10,11 +10,10 @@
 #include "FWCore/ParameterSet/interface/InputTag.h"
 #include "RecoBTau/JetTagComputer/interface/JetTagComputer.h"
 
-template <class ConcreteTagInfoCollection> class JetTagProducer : public edm::EDProducer {
+class JetTagProducer : public edm::EDProducer {
    public:
       explicit JetTagProducer(const edm::ParameterSet&);
       ~JetTagProducer();
-
 
       virtual void produce(edm::Event&, const edm::EventSetup&);
    private:
@@ -24,4 +23,3 @@ template <class ConcreteTagInfoCollection> class JetTagProducer : public edm::ED
     std::string m_jetTagComputer;
 };
 #endif
-

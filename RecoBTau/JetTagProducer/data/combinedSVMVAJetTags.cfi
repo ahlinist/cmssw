@@ -1,4 +1,4 @@
-module combinedSVMVAJetTags = JetTagProducerCombinedSV {
+module combinedSVMVAJetTags = JetTagProducer {
 	InputTag tagInfo	= combinedSVJetTags
 	string jetTagComputer   = "combinedSVMVAComputer"
 }

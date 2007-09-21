@@ -1,12 +1,8 @@
-<use name=DataFormats/BTauReco>
-<use name=DataFormats/JetReco>
-<use name=DataFormats/TrackReco>
-<use name=DataFormats/VertexReco>
 <use name=FWCore/Framework>
 <use name=FWCore/ParameterSet>
-<use name=MagneticField/Engine>
-<use name=RecoBTag/BTagTools>
-<use name=RecoVertex/PrimaryVertexProducer>
-<use name=TrackingTools/Records>
-<use name=TrackingTools/TransientTrack>
-
+<use name=RecoBTau/JetTagComputer>
+<export>
+  <use name=FWCore/Framework>
+  <use name=FWCore/ParameterSet>
+  <use name=RecoBTau/JetTagComputer>
+</export>
