@@ -11,7 +11,7 @@ namespace {
     {
       float sip2d=t->ip2D().significance();
       // sip2d=copysign ( sip2d, t->ip3D().significance() );
-      coll.push_back(reco::TaggingVariable( reco::btau::trackSip2d, sip2d) );
+      coll.push_back(reco::TaggingVariable( reco::btau::trackSip2dSig, sip2d) );
     }
   }
 
@@ -54,22 +54,22 @@ reco::TaggingVariableList reco::TaggingVariablesComputer::compute (
       case vertexMass:
         coll.push_back ( reco::TaggingVariable ( *v, data.jet().vertexMass() ) );
         break;
-      case vertexMultiplicity:
+      case vertexNTracks:
         coll.push_back ( reco::TaggingVariable ( *v, data.jet().vertexMultiplicity() ) );
         break;
-      case secondaryVtxEnergyRatio:
+      case vertexEnergyRatio:
         coll.push_back ( reco::TaggingVariable ( *v, data.jet().eSVXOverE() ) );
         break;
-      case flightDistance2DSignificance:
+      case flightDistance2dSig:
         coll.push_back ( reco::TaggingVariable ( *v, data.jet().minFlightDistanceSignificance2D() ) ); 
         break;
-      case trackSip2dAbCharm:
+      case trackSip2dSigAboveCharm:
         coll.push_back ( reco::TaggingVariable ( *v, data.jet().first2DSignedIPSigniAboveCut() ) ); 
         break;
       case trackEtaRel:
         addRapidities( coll, data.ctracks() );
         break;
-      case trackSip2d:
+      case trackSip2dSig:
         addIPs ( coll, data.ctracks() );
         break;
 

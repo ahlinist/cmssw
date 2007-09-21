@@ -26,16 +26,16 @@ void CombinedSVTaggingVariables::recoFromPseudo()
 void CombinedSVTaggingVariables::fullSet()
 {
   theNoVars.push_back ( reco::btau::vertexCategory );
-  theNoVars.push_back ( reco::btau::trackSip2d );
+  theNoVars.push_back ( reco::btau::trackSip2dSig );
   pseudoFromNo();
   thePseudoVars.push_back ( reco::btau::vertexMass );
-  thePseudoVars.push_back ( reco::btau::vertexMultiplicity );
-  thePseudoVars.push_back ( reco::btau::secondaryVtxEnergyRatio );
-  thePseudoVars.push_back ( reco::btau::trackSip2dAbCharm );
+  thePseudoVars.push_back ( reco::btau::vertexNTracks );
+  thePseudoVars.push_back ( reco::btau::vertexEnergyRatio );
+  thePseudoVars.push_back ( reco::btau::trackSip2dSigAboveCharm );
   thePseudoVars.push_back ( reco::btau::trackEtaRel );
   // thePseudoVars.push_back ( reco::btau::secondaryVtxWeightedEnergyRatio );
   recoFromPseudo();
-  theRecoVars.push_back ( reco::btau::flightDistance2DSignificance );
+  theRecoVars.push_back ( reco::btau::flightDistance2dSig );
   // theRecoVars.push_back ( reco::btau::jetNVertices );
 }
 
@@ -45,11 +45,11 @@ void CombinedSVTaggingVariables::vertexSet()
   pseudoFromNo();
   /*
   thePseudoVars.push_back ( reco::btau::vertexMass );
-  thePseudoVars.push_back ( reco::btau::vertexMultiplicity );
-  thePseudoVars.push_back ( reco::btau::secondaryVtxEnergyRatio );
+  thePseudoVars.push_back ( reco::btau::vertexNTracks );
+  thePseudoVars.push_back ( reco::btau::vertexEnergyRatio );
    */
   recoFromPseudo();
-  theRecoVars.push_back ( reco::btau::flightDistance2DSignificance );
+  theRecoVars.push_back ( reco::btau::flightDistance2dSig );
 }
 
 CombinedSVTaggingVariables::CombinedSVTaggingVariables ( 

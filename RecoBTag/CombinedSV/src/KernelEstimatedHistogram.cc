@@ -12,8 +12,8 @@ namespace {
 
 void combsv::KernelEstimatedHistogram::copyTrueHistogram()
 {
-  for ( vector< float >::const_iterator i=m_binValues.begin(); 
-        i!=m_binValues.end() ; ++i )
+  for ( vector< float >::const_iterator i=values().begin(); 
+        i!=values().end() ; ++i )
   {
     m_smoothed.push_back ( *i );
   }
@@ -29,21 +29,21 @@ combsv::KernelEstimatedHistogram::KernelEstimatedHistogram(
     return;
   }
 
-  if ( m_binULimits.size() < 2 )
+  if ( numberOfBins() < 1 )
   {
-    throw cms::Exception ( " m_binULimits.size() < 2" );
+    throw cms::Exception ( " numberOfBins() < 2" );
   }
 
   // FIXME only for now sqrt(2pi)=2.506628274631
   float avg= 0.;
   int c=0;
   float mtot=0.;
-  float w = m_binULimits[1] - m_binULimits[0];
-  for ( vector< float >::const_iterator i=m_binValues.begin(); 
-        i!=m_binValues.end() ; ++i )
+  float w = binRange(1).width();
+  for ( vector< float >::const_iterator i=values().begin(); 
+        i!=values().end() ; ++i )
   {
     m_smoothed.push_back ( 0. );
-    float add = (*i) * ( m_binULimits[c] + 0.5 * w );
+    float add = (*i) * ( upperLimits()[c] + 0.5 * w );
     if (finite( add ) )
     {
       avg+= add;
@@ -55,10 +55,10 @@ combsv::KernelEstimatedHistogram::KernelEstimatedHistogram(
 
   float var = 0.;
   c=0;
-  for ( vector< float >::const_iterator i=m_binValues.begin(); 
-        i!=m_binValues.end() ; ++i )
+  for ( vector< float >::const_iterator i=values().begin(); 
+        i!=values().end() ; ++i )
   {
-    float value = m_binULimits[c] + 0.5 * w;
+    float value = upperLimits()[c] + 0.5 * w;
     if (finite(value)) var+= (*i) * ( value - avg ) * ( value - avg );
     c++;
   }
@@ -76,17 +76,17 @@ combsv::KernelEstimatedHistogram::KernelEstimatedHistogram(
                */
 
   // float h = 2.0 * ( w );
-  float norm = 1. / ( 2.506628274631 * m_binULimits.size() * h ) ;
+  float norm = 1. / ( 2.506628274631 * upperLimits().size() * h ) ;
 
-  int b=0;
+  int b=1;
   for ( vector< float >::iterator s=m_smoothed.begin(); 
         s!=m_smoothed.end() ; ++s )
   {
-    c=0;
-    for ( vector< float >::const_iterator i=m_binValues.begin(); 
-          i!=m_binValues.end() ; ++i )
+    c=1;
+    for ( vector< float >::const_iterator i=values().begin(); 
+          i!=values().end() ; ++i )
     {
-      float dist = ( m_binULimits[c] - m_binULimits[b] ) ;
+      float dist = ( upperLimits()[c] - upperLimits()[b] ) ;
       float ex = norm * (*i) * exp ( -.5 * dist * dist / h / h );
       (*s)+=ex;
       c++;
