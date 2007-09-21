@@ -50,19 +50,19 @@ const combsv::CombinedSVCalibrationCategory &
 
 void combsv::CombinedSVCalibrationHistogram::addCount ( float x )
 {
-  if ( m_binULimits.size() != m_binValues.size()-1 )
+  if ( upperLimits().size() != numberOfBins() + 1 )
   {
     edm::LogError("CombinedSVCalibrationHistogram" )
-      << "bin size mismatch: " << m_binULimits.size()
-      << ":" << m_binValues.size();
+      << "bin size mismatch: " << upperLimits().size()
+      << ":" << numberOfBins();
     exit(-1);
   }
   int ctr=0;
   // normalize old data
-  for ( vector< float >::const_iterator i=m_binULimits.begin(); 
-        i!=m_binULimits.end() ; ++i )
+  for ( vector< float >::const_iterator i=upperLimits().begin(); 
+        i!=upperLimits().end() ; ++i )
   {
-    m_binValues[ctr]=m_binValues[ctr] * nentries_ / ( nentries_ + 1. );
+    setBinContent( ctr, binContent(ctr) * nentries_ / ( nentries_ + 1. ) );
     ctr++;
   }
 
@@ -85,25 +85,25 @@ int combsv::CombinedSVCalibrationHistogram::binCount ( int bin ) const
 
 void combsv::CombinedSVCalibrationHistogram::addBinCount ( int bin, int add )
 {
-  if ( m_binULimits.size() != m_binValues.size()-1 )
+  if ( upperLimits().size() != numberOfBins() + 1 )
   {
     edm::LogError("CombinedSVCalibrationHistogram" )
-      << "bin size mismatch: " << m_binULimits.size()
-      << ":" << m_binValues.size();
+      << "bin size mismatch: " << upperLimits().size()
+      << ":" << numberOfBins();
     exit(-1);
   }
   int ctr=0;
   // normalize old data
-  for ( vector< float >::const_iterator i=m_binULimits.begin(); 
-        i!=m_binULimits.end() ; ++i )
+  for ( vector< float >::const_iterator i=upperLimits().begin(); 
+        i!=upperLimits().end() ; ++i )
   {
-    float old=m_binValues[ctr];
+    float old=binContent(ctr);
     if ( finite(old) )
     {
-      m_binValues[ctr]=old * nentries_ / ( nentries_ + (float) add );
-      // LogDebug("Normalize old data") << old << "<->" << m_binValues[ctr]; 
+      setBinContent( ctr, old * nentries_ / ( nentries_ + (float) add ) );
+      // LogDebug("Normalize old data") << old << "<->" << binContent(ctr); 
     } else {
-      m_binValues[ctr]=0.;
+      setBinContent( ctr, 0. );
     }
     ctr++;
   }
@@ -121,5 +121,7 @@ void combsv::CombinedSVCalibrationHistogram::addBinCount ( int bin, int add )
   {
     setBinContent(bin, newcontent );
   }
+
+  totalValid = false;
 }
 

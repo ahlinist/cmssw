@@ -29,7 +29,7 @@ namespace {
     vector < reco::TaggingVariableName > ret;
     // NoVertex category has TrackIP2DSignificance only.
     ret.push_back ( reco::btau::vertexCategory );
-    ret.push_back ( reco::btau::trackSip2d );
+    ret.push_back ( reco::btau::trackSip2dSig );
     return ret;
   }
 
@@ -38,9 +38,9 @@ namespace {
     vector < reco::TaggingVariableName > ret=noVars();
     // PseudoVertex category = NoVertex Variables plus the ones below
     ret.push_back ( reco::btau::vertexMass );
-    ret.push_back ( reco::btau::vertexMultiplicity );
-    ret.push_back ( reco::btau::secondaryVtxEnergyRatio );
-    ret.push_back ( reco::btau::trackSip2dAbCharm );
+    ret.push_back ( reco::btau::vertexNTracks );
+    ret.push_back ( reco::btau::vertexEnergyRatio );
+    ret.push_back ( reco::btau::trackSip2dSigAboveCharm );
     ret.push_back ( reco::btau::trackEtaRel );
     return ret;
   }
@@ -49,7 +49,7 @@ namespace {
   {
     vector < reco::TaggingVariableName > ret=pseudoVars();
     // RecoVertex category = PseudoVertex Variables plus flightdistance.
-    ret.push_back ( reco::btau::flightDistance2DSignificance );
+    ret.push_back ( reco::btau::flightDistance2dSig );
     return ret;
   }
 
