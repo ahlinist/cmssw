@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrea Rizzi
 //         Created:  Thu Apr  6 09:56:23 CEST 2006
-// $Id: JetTagProducer.cc,v 1.6 2007/07/30 17:54:51 fwyzard Exp $
+// $Id: JetTagProducer.cc,v 1.7 2007/09/20 23:47:18 saout Exp $
 //
 //
 
@@ -30,6 +30,7 @@
 #include "FWCore/ParameterSet/interface/InputTag.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
+#include "DataFormats/Common/interface/View.h"
 #include "DataFormats/BTauReco/interface/JetTag.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/BTauReco/interface/BaseTagInfo.h"
@@ -45,8 +46,7 @@ using namespace edm;
 //
 // constructors and destructor
 //
-template <class ConcreteTagInfoCollection>
-JetTagProducer<ConcreteTagInfoCollection>::JetTagProducer(const edm::ParameterSet& iConfig) : 
+JetTagProducer::JetTagProducer(const edm::ParameterSet& iConfig) : 
   m_config(iConfig) {
 
   m_tagInfo = iConfig.getParameter<edm::InputTag>("tagInfo");
@@ -56,8 +56,7 @@ JetTagProducer<ConcreteTagInfoCollection>::JetTagProducer(const edm::ParameterSe
 
 }
 
-template <class ConcreteTagInfoCollection>
-JetTagProducer<ConcreteTagInfoCollection>::~JetTagProducer()
+JetTagProducer::~JetTagProducer()
 {
 }
 
@@ -65,12 +64,11 @@ JetTagProducer<ConcreteTagInfoCollection>::~JetTagProducer()
 // member functions
 //
 // ------------ method called to produce the data  ------------
-template <class ConcreteTagInfoCollection>
 void
-JetTagProducer<ConcreteTagInfoCollection>::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
+JetTagProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   using namespace edm;
-  Handle<ConcreteTagInfoCollection> tagInfoHandle;
+  Handle< View<BaseTagInfo> > tagInfoHandle;
   iEvent.getByLabel(m_tagInfo,tagInfoHandle);
        
   edm::ESHandle<JetTagComputer> computer;
@@ -80,32 +78,16 @@ JetTagProducer<ConcreteTagInfoCollection>::produce(edm::Event& iEvent, const edm
 
   std::auto_ptr<reco::JetTagCollection> jetTagCollection(new reco::JetTagCollection());
    
-  typename ConcreteTagInfoCollection::const_iterator it = tagInfoHandle->begin();
+  View<BaseTagInfo>::const_iterator it = tagInfoHandle->begin();
   for (int cc=0; it != tagInfoHandle->end(); it++, cc++)
   {
     JetTag jt(m_computer->discriminator(*it));
-    jt.setTagInfo(RefToBase<BaseTagInfo>(edm::Ref<ConcreteTagInfoCollection>(tagInfoHandle,cc)));
+    jt.setTagInfo(tagInfoHandle->refAt(cc));
     jetTagCollection->push_back(jt);    
   }
   
   iEvent.put(jetTagCollection);
 }
 
-
-#include "DataFormats/BTauReco/interface/TrackIPTagInfo.h"
-#include "DataFormats/BTauReco/interface/TrackCountingTagInfo.h"
-#include "DataFormats/BTauReco/interface/SecondaryVertexTagInfo.h"
-#include "DataFormats/BTauReco/interface/CombinedSVTagInfo.h"
-#include "DataFormats/BTauReco/interface/SoftLeptonTagInfo.h"
-
-// define these as plug-ins
-typedef JetTagProducer<TrackCountingTagInfoCollection>   JetTagProducerTrackCounting;
-DEFINE_FWK_MODULE(JetTagProducerTrackCounting);
-typedef JetTagProducer<TrackIPTagInfoCollection>         JetTagProducerImpactParameter;
-DEFINE_FWK_MODULE(JetTagProducerImpactParameter);
-typedef JetTagProducer<SecondaryVertexTagInfoCollection> JetTagProducerSecondaryVertex;
-DEFINE_FWK_MODULE(JetTagProducerSecondaryVertex);
-typedef JetTagProducer<CombinedSVTagInfoCollection>      JetTagProducerCombinedSV;
-DEFINE_FWK_MODULE(JetTagProducerCombinedSV);
-typedef JetTagProducer<SoftLeptonTagInfoCollection>      JetTagProducerSoftLepton;
-DEFINE_FWK_MODULE(JetTagProducerSoftLepton);
+// define it as plugin
+DEFINE_FWK_MODULE(JetTagProducer);
