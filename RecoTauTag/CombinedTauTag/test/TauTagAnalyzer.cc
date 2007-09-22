@@ -1,7 +1,7 @@
 /* class TauTagAnalyzer
  *  EDAnalyzer of the tagged TauJet with the CombinedTauTagAlgorithm, 
  *  created: Dec 18 2006,
- *  revised: May 10 2007,
+ *  revised: Sep 22 2007,
  *  author: Ludovic Houchu.
  */
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -291,7 +291,7 @@ void TauTagAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       if (tau_children_n==3) {
 	HepMC::GenVertex::particles_out_const_iterator i_1sttaudaughter=TheParticle->end_vertex()->particles_out_const_begin();
 	HepMC::GenVertex::particles_out_const_iterator i_2ndtaudaughter=++TheParticle->end_vertex()->particles_out_const_begin();
-	HepMC::GenVertex::particles_out_const_iterator i_3rdtaudaughter=++i_2ndtaudaughter;
+	HepMC::GenVertex::particles_out_const_iterator i_3rdtaudaughter=++(++TheParticle->end_vertex()->particles_out_const_begin());
 	if ((abs((**i_1sttaudaughter).pdg_id())==16 && abs((**i_2ndtaudaughter).pdg_id())==211 && (**i_3rdtaudaughter).pdg_id()==111)
 	    || (abs((**i_1sttaudaughter).pdg_id())==16 && abs((**i_3rdtaudaughter).pdg_id())==211 && (**i_2ndtaudaughter).pdg_id()==111)
 	    || (abs((**i_2ndtaudaughter).pdg_id())==16 && abs((**i_1sttaudaughter).pdg_id())==211 && (**i_3rdtaudaughter).pdg_id()==111)
@@ -310,8 +310,8 @@ void TauTagAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       if (tau_children_n==4) {
 	HepMC::GenVertex::particles_out_const_iterator i_1sttaudaughter=TheParticle->end_vertex()->particles_out_const_begin();
 	HepMC::GenVertex::particles_out_const_iterator i_2ndtaudaughter=++TheParticle->end_vertex()->particles_out_const_begin();
-	HepMC::GenVertex::particles_out_const_iterator i_3rdtaudaughter=++i_2ndtaudaughter;
-	HepMC::GenVertex::particles_out_const_iterator i_4thtaudaughter=TheParticle->end_vertex()->particles_out_const_begin();
+	HepMC::GenVertex::particles_out_const_iterator i_3rdtaudaughter=++(++TheParticle->end_vertex()->particles_out_const_begin());
+	HepMC::GenVertex::particles_out_const_iterator i_4thtaudaughter=++(++(++TheParticle->end_vertex()->particles_out_const_begin()));
 	if ((abs((**i_1sttaudaughter).pdg_id())==16 && abs((**i_2ndtaudaughter).pdg_id())==211 && abs((**i_3rdtaudaughter).pdg_id())==211 && abs((**i_4thtaudaughter).pdg_id())==211)
 	    || (abs((**i_2ndtaudaughter).pdg_id())==16 && abs((**i_1sttaudaughter).pdg_id())==211 && abs((**i_3rdtaudaughter).pdg_id())==211 && abs((**i_4thtaudaughter).pdg_id())==211)
 	    || (abs((**i_3rdtaudaughter).pdg_id())==16 && abs((**i_1sttaudaughter).pdg_id())==211 && abs((**i_2ndtaudaughter).pdg_id())==211 && abs((**i_4thtaudaughter).pdg_id())==211)
@@ -321,7 +321,7 @@ void TauTagAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       if (tau_children_n==3) {
 	HepMC::GenVertex::particles_out_const_iterator i_1sttaudaughter=TheParticle->end_vertex()->particles_out_const_begin();
 	HepMC::GenVertex::particles_out_const_iterator i_2ndtaudaughter=++TheParticle->end_vertex()->particles_out_const_begin();	
-	HepMC::GenVertex::particles_out_const_iterator i_3rdtaudaughter=++i_2ndtaudaughter;	
+	HepMC::GenVertex::particles_out_const_iterator i_3rdtaudaughter=++(++TheParticle->end_vertex()->particles_out_const_begin());	
 	if (abs((**i_1sttaudaughter).pdg_id())==12 || abs((**i_2ndtaudaughter).pdg_id())==12 || abs((**i_3rdtaudaughter).pdg_id())==12) {
 	  if (abs((**i_1sttaudaughter).pdg_id())==12) TheTauneutrinobar=(*i_1sttaudaughter);
 	  if (abs((**i_2ndtaudaughter).pdg_id())==12) TheTauneutrinobar=(*i_2ndtaudaughter);

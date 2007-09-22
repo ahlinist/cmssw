@@ -435,11 +435,11 @@ TaggingVariableList CombinedTauTagAlg::taggingvariablesList(){
       the_taggingvariables_list.push_back(isolneutrE_o_tksEneutrE_TagVar);
     }
     if(use_tkEt_o_jetEt_case1signaltk_){
-      TaggingVariable tksEt_o_jetEt_TagVar(btau::piontracksEtjetEtRatio,the_tksEt_o_jetEt);
+      TaggingVariable tksEt_o_jetEt_TagVar(btau::trackSumJetEtRatio,the_tksEt_o_jetEt);
       the_taggingvariables_list.push_back(tksEt_o_jetEt_TagVar);
     }
     if(use_leadtk_ipt_significance_case1signaltk_ && !couldnotobtain_leadtk_signedipt){
-      TaggingVariable leadtk_ipt_significance_TagVar(btau::trackip2d,fabs(the_leadtk_signedipt_significance));
+      TaggingVariable leadtk_ipt_significance_TagVar(btau::trackIp2dSig,fabs(the_leadtk_signedipt_significance));
       the_taggingvariables_list.push_back(leadtk_ipt_significance_TagVar);
     }
   }
@@ -461,11 +461,11 @@ TaggingVariableList CombinedTauTagAlg::taggingvariablesList(){
       the_taggingvariables_list.push_back(isolneutrE_o_tksEneutrE_TagVar);
     }
     if(use_tksEt_o_jetEt_case3signaltks_){
-      TaggingVariable tksEt_o_jetEt_TagVar(btau::piontracksEtjetEtRatio,the_tksEt_o_jetEt);
+      TaggingVariable tksEt_o_jetEt_TagVar(btau::trackSumJetEtRatio,the_tksEt_o_jetEt);
       the_taggingvariables_list.push_back(tksEt_o_jetEt_TagVar);
     }
     if(use_signedflightpath_significance_case3signaltks_ && !couldnotproduce_SV){
-      TaggingVariable signedflightpath_significance_TagVar(btau::flightDistance3DSignificance,the_signedflightpath_significance);
+      TaggingVariable signedflightpath_significance_TagVar(btau::flightDistance3dSig,the_signedflightpath_significance);
       the_taggingvariables_list.push_back(signedflightpath_significance_TagVar);
     }
   }
