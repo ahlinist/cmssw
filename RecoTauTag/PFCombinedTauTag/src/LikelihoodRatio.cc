@@ -96,13 +96,13 @@ double LikelihoodRatio::value(){
 int LikelihoodRatio::getTagVarNumber(TaggingVariable x){
   int TagVarNumber=-1;
   switch (x.first){
-  case btau::trackip2d: 
+  case btau::trackIp2dSig: 
     TagVarNumber=0;
     break;
-  case btau::flightDistance3DSignificance:
+  case btau::flightDistance3dSig:
     TagVarNumber=1;
     break;
-  case btau::piontracksEtjetEtRatio:
+  case btau::trackSumJetEtRatio:
     TagVarNumber=2;
     break;
   case btau::neutralEnergy:
