@@ -103,12 +103,14 @@ TrackIPTagPlotter::TrackIPTagPlotter(const TString & tagName,
        ("prob4" + theExtensionString, "2D Probability of impact parameter 4th trk",
 	50, -1.1, 1.1, false, true, true, "b", update) ;
 
+#if 0
   decayLengthValuHisto = new FlavourHistorgrams<double>
        ("decLen" + theExtensionString, "Decay Length",
 	50, -5.0, 5.0, false, true, true, "b", update);
   decayLengthSignHisto = new FlavourHistorgrams<double>
        ("decLenSign" + theExtensionString, "Decay Length significance",
 	50, -2000.0, 2000.0, false, true, true, "b", update);
+#endif
   jetDistanceValuHisto = new FlavourHistorgrams<double>
        ("jetDist" + theExtensionString, "JetDistance",
 	50, -0.1, 0.1, false, true, true, "b", update);
@@ -124,8 +126,10 @@ TrackIPTagPlotter::~TrackIPTagPlotter ()
 
   delete trkNbr3D;
   delete trkNbr2D;
+#if 0
   delete decayLengthValuHisto;
   delete decayLengthSignHisto;
+#endif
   delete jetDistanceValuHisto;
   delete jetDistanceSignHisto;
 
@@ -156,8 +160,7 @@ void TrackIPTagPlotter::analyzeTag (const reco::JetTag & jetTag,
 
   int jetFlav = jetFlavour.flavour();
 
-  vector<Measurement1D> ip2d = tagInfo->impactParameters(1);   
-  vector<Measurement1D> ip3d = tagInfo->impactParameters(0);   
+  vector<reco::TrackIPTagInfo::TrackIPData> ip = tagInfo->impactParameterData();
 
   vector<float> prob2d, prob3d;
   if (tagInfo->hasProbabilities()) {
@@ -165,40 +168,40 @@ void TrackIPTagPlotter::analyzeTag (const reco::JetTag & jetTag,
     prob3d = tagInfo->probabilities(1);	
   }
 
-  trkNbr3D->fill(jetFlav, ip2d.size());
-  trkNbr2D->fill(jetFlav, ip3d.size());
+  trkNbr3D->fill(jetFlav, ip.size());
+  trkNbr2D->fill(jetFlav, ip.size());
 
-  for(unsigned int n=0; n < ip2d.size() && n < 4; n++) {
-    tkcntHistosSig2D[n]->fill(jetFlav, ip2d[n].significance());
+  for(unsigned int n=0; n < ip.size() && n < 4; n++) {
+    tkcntHistosSig2D[n]->fill(jetFlav, ip[n].ip2d.significance());
     tkcntHistosProb2D[n]->fill(jetFlav, prob2d[n]);
   }
-  for(unsigned int n=ip2d.size(); n < 4; n++)
+  for(unsigned int n=ip.size(); n < 4; n++)
     tkcntHistosSig2D[n]->fill(jetFlav, lowerIPSBound-1.0);
 
-  for(unsigned int n=0; n < ip3d.size() && n < 4; n++) {
-    tkcntHistosSig3D[n]->fill(jetFlav, ip3d[n].significance());
+  for(unsigned int n=0; n < ip.size() && n < 4; n++) {
+    tkcntHistosSig3D[n]->fill(jetFlav, ip[n].ip3d.significance());
     tkcntHistosProb3D[n]->fill(jetFlav, prob3d[n]);
   }
-  for(unsigned int n=ip3d.size(); n < 4; n++)
+  for(unsigned int n=ip.size(); n < 4; n++)
     tkcntHistosSig3D[n]->fill(jetFlav, lowerIPSBound-1.0);
 
-  for(unsigned int n=0; n < ip2d.size(); n++) {
-    tkcntHistosSig2D[4]->fill(jetFlav, ip2d[n].significance());
+  for(unsigned int n=0; n < ip.size(); n++) {
+    tkcntHistosSig2D[4]->fill(jetFlav, ip[n].ip2d.significance());
     tkcntHistosProb2D[4]->fill(jetFlav, prob2d[n]);
   }
-  for(unsigned int n=0; n < ip3d.size(); n++) {
-    tkcntHistosSig3D[4]->fill(jetFlav, ip3d[n].significance());
+  for(unsigned int n=0; n < ip.size(); n++) {
+    tkcntHistosSig3D[4]->fill(jetFlav, ip[n].ip3d.significance());
     tkcntHistosProb3D[4]->fill(jetFlav, prob3d[n]);
   }
-  vector<Measurement1D> decayLen = tagInfo->decayLengths() ;
-  vector<Measurement1D> jetDistance = tagInfo->jetDistances();
-  for(unsigned int n=0; n < decayLen.size(); n++) {
-    decayLengthValuHisto->fill(jetFlav, decayLen[n].value());
-    decayLengthSignHisto->fill(jetFlav, decayLen[n].significance());
+#if 0
+  for(unsigned int n=0; n < ip.size(); n++) {
+    decayLengthValuHisto->fill(jetFlav, ip[n].decayLen.value());
+    decayLengthSignHisto->fill(jetFlav, ip[n].decayLen.significance());
   }
-  for(unsigned int n=0; n < jetDistance.size(); n++) {
-    jetDistanceValuHisto->fill(jetFlav, jetDistance[n].value());
-//    jetDistanceSignHisto->fill(jetFlav, jetDistance[n].significance());
+#endif
+  for(unsigned int n=0; n < ip.size(); n++) {
+    jetDistanceValuHisto->fill(jetFlav, ip[n].distanceToJetAxis);
+//    jetDistanceSignHisto->fill(jetFlav, ip[n].distanceToJetAxis.significance());
   }
 
 }
