@@ -327,11 +327,11 @@ TaggingVariableList PFCombinedTauTagAlg::taggingvariablesList(){
       the_taggingvariables_list.push_back(isolGammaCandsE_o_jetalternatE_TagVar);
     }
     if(Use_ChargedHadrCandEt_o_jetEt_case1signalChargedHadrCand_){
-      TaggingVariable ChargedHadrCandsEt_o_jetEt_TagVar(btau::piontracksEtjetEtRatio,ChargedHadrCandsEt_o_jetEt_);
+      TaggingVariable ChargedHadrCandsEt_o_jetEt_TagVar(btau::trackSumJetEtRatio,ChargedHadrCandsEt_o_jetEt_);
       the_taggingvariables_list.push_back(ChargedHadrCandsEt_o_jetEt_TagVar);
     }
     if(Use_ChargedHadrCand_ipt_significance_case1signalChargedHadrCand_ && !couldnotobtain_LeadChargedHadrCand_signedipt){
-      TaggingVariable LeadChargedHadrCand_ipt_significance_TagVar(btau::trackip2d,fabs(LeadChargedHadrCand_signedipt_significance_));
+      TaggingVariable LeadChargedHadrCand_ipt_significance_TagVar(btau::trackIp2dSig,fabs(LeadChargedHadrCand_signedipt_significance_));
       the_taggingvariables_list.push_back(LeadChargedHadrCand_ipt_significance_TagVar);
     }
   }
@@ -353,11 +353,11 @@ TaggingVariableList PFCombinedTauTagAlg::taggingvariablesList(){
       the_taggingvariables_list.push_back(isolGammaCandsE_o_jetalternatE_TagVar);
     }
     if(Use_ChargedHadrCandsEt_o_jetEt_case3signalChargedHadrCands_){
-      TaggingVariable ChargedHadrCandsEt_o_jetEt_TagVar(btau::piontracksEtjetEtRatio,ChargedHadrCandsEt_o_jetEt_);
+      TaggingVariable ChargedHadrCandsEt_o_jetEt_TagVar(btau::trackSumJetEtRatio,ChargedHadrCandsEt_o_jetEt_);
       the_taggingvariables_list.push_back(ChargedHadrCandsEt_o_jetEt_TagVar);
     }
     if(Use_signedflightpath_significance_case3signalChargedHadrCands_ && !couldnotproduce_SV){
-      TaggingVariable signedflightpath_significance_TagVar(btau::flightDistance3DSignificance,signedflightpath_significance_);
+      TaggingVariable signedflightpath_significance_TagVar(btau::flightDistance3dSig,signedflightpath_significance_);
       the_taggingvariables_list.push_back(signedflightpath_significance_TagVar);
     }
   }
