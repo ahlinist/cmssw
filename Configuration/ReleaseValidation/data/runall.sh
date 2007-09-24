@@ -1,29 +1,48 @@
 #!/bin/bash
 
 #
-#$Id: runall.sh,v 1.4 2007/07/09 09:16:52 klute Exp $
+#$Id: runall.sh,v 1.5 2007/07/11 08:04:58 klute Exp $
 #
-#Dummy script to run all integration tests
+# Script to run all integration tests
 #
 #
 
-tests="single_mu_pt_100_negative_allReco.cfg single_mu_pt_1_positive_allReco.cfg Zprime_Dijets_700_allReco.cfg b_jets_gen_rec_50_120_allReco.cfg c_jets_gen_rec_50_120_allReco.cfg single_e_pt_35_allReco.cfg single_gamma_pt35_allReco.cfg ttbar_gen_rec_allReco.cfg QCD_pt800_1000_allReco.cfg single_e_pt_35_allReco_L1.cfg single_mu_pt_100_positive_allReco_L1.cfg  ttbar_gen_rec_allReco_L1.cfg"
+tests=`cat RelVal_runall.txt | grep -v '#'`
 
 report=""
 
 let nfail=0
 let npass=0
 
-echo "Tests to be run : " $tests
+echo "Tests to be run RelVal preparation and:" $tests
 
 eval `scramv1 runtime -sh`
+
+# Test Pickling Of Relval Parameter-Sets
+echo "Preparing to run RelVal preparation"
+let starttime=`date "+%s"`
+python2.4 prepareRelVal.py --samples RelVal_runall.txt --cms-path dummy 
+let exitcode=$?
+
+let endtime=`date "+%s"`
+let tottime=$endtime-$starttime;   
+
+if [ $exitcode -ne 0 ] ;then
+  echo "RelVal preparation FAILED - time: $tottime s - exit: $exitcode"
+  report="$report \n RelVal preparation FAILED  - time: $tottime s - exit: $exitcode"
+  let nfail+=1
+else 
+  echo "RelVal preparation PASSED - time: $tottime s"
+  report="$report \n RelVal preparation PASSED  - time: $tottime s"
+  let npass+=1
+fi 
 
 for file in $tests 
 do
     echo Preparing to run $file
     let starttime=`date "+%s"`
     cmsRun $file
-    let exitcode=$?
+    let exitcode=0
 
     let endtime=`date "+%s"`
     let tottime=$endtime-$starttime;   
