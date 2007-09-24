@@ -1,7 +1,7 @@
 #combinedTauTag
 module combinedTauTag=CombinedTauTag {
 	#---initial tau candidate
-	string IsolatedTauTagSrc = "coneIsolationTauJetTags"            # use of standard iterativeConeJetProducer, jetTracksAssociator, ConeIsolation modules	
+	string IsolatedTauTagSrc = "coneIsolationTauJetTags"            # use of standard iterativeConeJetProducer, ic5JetTracksAssociatorAtVertex, ConeIsolation modules	
 	#---tracker selection parameters
 	#string PVSrc = "offlinePrimaryVerticesFromCTFTracks"
   	string PVSrc = "pixelVertices"

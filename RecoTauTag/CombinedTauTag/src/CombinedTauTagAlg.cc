@@ -1,8 +1,10 @@
-#include "RecoTauTag/CombinedTauTag/interface/CombinedTauTagAlg.h"
-
+#include "DataFormats/CaloTowers/interface/CaloTower.h"
+#include "DataFormats/CaloTowers/interface/CaloTowerFwd.h"
+#include "DataFormats/JetReco/interface/CaloJet.h"
+#include "DataFormats/JetReco/interface/CaloJetCollection.h"
 #include "DataFormats/EgammaReco/interface/BasicClusterFwd.h"
-
 #include "TrackingTools/IPTools/interface/IPTools.h"
+#include "RecoTauTag/CombinedTauTag/interface/CombinedTauTagAlg.h"
 
 void CombinedTauTagAlg::init(const EventSetup& theEventSetup){
   passed_leadtk_selection=false;

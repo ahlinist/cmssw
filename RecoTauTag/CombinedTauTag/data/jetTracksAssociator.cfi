@@ -1,6 +1,6 @@
 # test tracks to jets association
 include "RecoTauTag/CombinedTauTag/data/iterativeConeJetProducer.cfi"
-module jetTracksAssociator = JetTracksAssociator {
+module jetTracksAssociator = JetTracksAssociatorAtVertex {
   InputTag tracks = ctfWithMaterialTracks
   #InputTag jets = iterativeCone5CaloJets
   InputTag jets = iterativeConeJetProducer
