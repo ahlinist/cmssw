@@ -1,11 +1,11 @@
-// $Id: EBMDisplayPlugins.cc,v 1.19 2007/06/11 12:41:18 dellaric Exp $
+// $Id: EBMDisplayPlugins.cc,v 1.20 2007/08/23 11:41:52 dellaric Exp $
 
 /*!
   \file EBMDisplayPlugins
   \brief Display Plugin for Quality Histograms (2D)
   \author B. Gobbo 
-  \version $Revision: 1.19 $
-  \date $Date: 2007/06/11 12:41:18 $
+  \version $Revision: 1.20 $
+  \date $Date: 2007/08/23 11:41:52 $
 */
 
 #include <TProfile2D.h>
@@ -84,7 +84,7 @@ EBMDisplayPlugins::EBMDisplayPlugins( IgState *state ) : VisDQMDisplayPlugin( st
   text4 = t4;
   text5 = t5;
   text6 = t6;
-  //text1 = 5ew TH2C( "ebm_text1", "text1", 85, 0,  85, 20,   0, 20 );
+  //text1 = new TH2C( "ebm_text1", "text1", 85, 0,  85, 20,   0, 20 );
   //text2 = new TH2C( "ebm_text2", "text2", 17, 0,  17,  4,   0,  4 );
   //text3 = new TH2C( "ebm_text3", "text3", 10, 0,  10,  5,   0,  5 );
   //text4 = new TH2C( "ebm_text4", "text4",  2, 0,   2,  1,   0,  1 );
