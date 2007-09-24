@@ -44,6 +44,7 @@ class RecoAnalyzerExample : public edm::EDAnalyzer {
 #include "DataFormats/EgammaCandidates/interface/PixelMatchGsfElectron.h"
 #include "DataFormats/EgammaCandidates/interface/PixelMatchGsfElectronFwd.h"
 #include "DataFormats/MuonReco/interface/Muon.h"
+#include "DataFormats/MuonReco/interface/MuonFwd.h"
 #include "DataFormats/BTauReco/interface/IsolatedTauTagInfo.h"
 #include "DataFormats/CaloTowers/interface/CaloTowerCollection.h"
 #include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
