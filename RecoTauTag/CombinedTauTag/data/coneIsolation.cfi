@@ -1,6 +1,6 @@
 # apply tracker isolation
 module coneIsolation = ConeIsolation {
-	string JetTrackSrc = "jetTracksAssociator"
+	string JetTrackSrc = "ic5JetTracksAssociatorAtVertex"
 	#string vertexSrc = "offlinePrimaryVerticesFromCTFTracks"
 	string vertexSrc = "pixelVertices"
   	int32 MinimumNumberOfPixelHits = 2
