@@ -14,11 +14,12 @@
 
 #include "DataFormats/BTauReco/interface/CombinedTauTagInfo.h"
 #include "DataFormats/BTauReco/interface/JetTag.h"
+#include "DataFormats/JetReco/interface/CaloJetCollection.h"
+#include "DataFormats/JetReco/interface/Jet.h"
 #include "DataFormats/JetReco/interface/JetTracksAssociation.h"
 #include "DataFormats/BTauReco/interface/IsolatedTauTagInfo.h"
 #include "DataFormats/BTauReco/interface/TaggingVariable.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
-#include "DataFormats/JetReco/interface/Jet.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/EgammaReco/interface/BasicCluster.h" 
 #include "DataFormats/CaloTowers/interface/CaloTower.h"
