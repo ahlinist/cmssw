@@ -4,8 +4,8 @@
  * >= 2 barrel muons 30 GeV, Pt(2muons)>150
  * Z-Candle, dimuon/Z trigger path
  *
- * $Date: 2007/08/20 12:13:02 $
- * $Revision: 1.2 $
+ * $Date: 2007/08/31 14:17:19 $
+ * $Revision: 1.3 $
  *
  * \author Michael Tytgat, Maria Spiropulu - CERN
  *
@@ -24,6 +24,7 @@
 
 #include "SUSYBSMAnalysis/CSA07Skims/interface/HadSUSYdiMuonSkim.h"
 #include "DataFormats/MuonReco/interface/Muon.h"
+#include "DataFormats/MuonReco/interface/MuonFwd.h"
 
 using namespace edm;
 using namespace std;

@@ -4,8 +4,8 @@
  * >= 2 jets, 1st jet 110 GeV + MET 100 GeV
  * Total SM background (JetMet trigger path)
  *
- * $Date: 2007/08/20 12:13:01 $
- * $Revision: 1.2 $
+ * $Date: 2007/08/31 14:17:19 $
+ * $Revision: 1.3 $
  *
  * \author Michael Tytgat, Maria Spiropulu - CERN
  *
@@ -21,6 +21,7 @@
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "DataFormats/Common/interface/Handle.h"    
+#include "DataFormats/METReco/interface/CaloMET.h"
 
 #include "DataFormats/JetReco/interface/CaloJet.h"
 #include "DataFormats/METReco/interface/CaloMETCollection.h"

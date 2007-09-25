@@ -3,8 +3,8 @@
  * a skim for TeV dimuon analyses
  * requires 2 muon with a selectable Pt cut
  *
- * $Date: 2007/08/08 13:18:38 $
- * $Revision: 1.2 $
+ * $Date: 2007/08/09 10:35:49 $
+ * $Revision: 1.3 $
  *
  * \author Piotr Traczyk - SINS Warsaw
  *
@@ -23,6 +23,7 @@
 
 #include "SUSYBSMAnalysis/CSA07Skims/interface/TeVdiMuonSkim.h"
 #include "DataFormats/MuonReco/interface/Muon.h"
+#include "DataFormats/MuonReco/interface/MuonFwd.h"
 
 using namespace edm;
 using namespace std;
