@@ -1,11 +1,11 @@
-// $Id: EEMDisplayPlugins.cc,v 1.6 2007/08/23 11:42:33 dellaric Exp $
+// $Id: EEMDisplayPlugins.cc,v 1.7 2007/09/24 21:43:42 dellaric Exp $
 
 /*!
   \file EEMDisplayPlugins
   \brief Display Plugin for Quality Histograms (2D)
   \author B. Gobbo 
-  \version $Revision: 1.6 $
-  \date $Date: 2007/08/23 11:42:33 $
+  \version $Revision: 1.7 $
+  \date $Date: 2007/09/24 21:43:42 $
 */
 
 #include <TProfile2D.h>
@@ -196,6 +196,7 @@ std::string EEMDisplayPlugins::preDrawTProfile2D( DisplayData *data ) {
   }
 
   return "";
+
 }
 
 std::string EEMDisplayPlugins::preDrawTProfile( DisplayData *data ) {
@@ -233,6 +234,7 @@ std::string EEMDisplayPlugins::preDrawTProfile( DisplayData *data ) {
   }
 
   return "";
+
 }
 
 std::string EEMDisplayPlugins::preDrawTH2( DisplayData *data ) {
@@ -280,10 +282,10 @@ std::string EEMDisplayPlugins::preDrawTH2( DisplayData *data ) {
     if( ( name.find( "EEIT" ) < name.size() ||
 	  name.find( "EEOT" ) < name.size() ) &&
 	name.find( "quality" ) >= name.size() ) {
-    obj->SetMinimum( 0. );
-    gStyle->SetPalette( 4, pCol4 );
-    obj->SetOption( "colz" );
-    return "";
+      obj->SetMinimum( 0. );
+      gStyle->SetPalette( 4, pCol4 );
+      obj->SetOption( "colz" );
+      return "";
     }    
 
     if( name.find( "summary" ) < name.size() ) {
@@ -307,6 +309,13 @@ std::string EEMDisplayPlugins::preDrawTH2( DisplayData *data ) {
       return "";
     }
 
+    // Atypical plot...
+    if( name.find( "EECLT" ) < name.size() ) {
+      gStyle->SetPalette( 10, pCol4 );
+      obj->SetOption( "colz" );
+      return "";
+    }
+
     // Quality-like (green, yellow, red) plots
     if( name.find( "entries or read crystals errors" ) < name.size() ) {
       obj->GetXaxis()->SetNdivisions( 86 );
@@ -317,7 +326,7 @@ std::string EEMDisplayPlugins::preDrawTH2( DisplayData *data ) {
       obj->SetMaximum( 5.0 );
       gStyle->SetPalette( 6, pCol3 );
       obj->SetOption( "col" );
-    return "";
+      return "";
     }
 
     // Atypical plot...
@@ -363,7 +372,7 @@ std::string EEMDisplayPlugins::preDrawTH2( DisplayData *data ) {
       obj->SetMaximum( 5.0 );
       gStyle->SetPalette( 6, pCol3 );
       obj->SetOption( "col" );
-    return "";
+      return "";
     }
 
   }
@@ -433,6 +442,7 @@ std::string EEMDisplayPlugins::preDrawTH1( DisplayData *data ) {
   }
 
   return "";
+
 }
 
 void EEMDisplayPlugins::postDraw( DisplayData *data ) {
@@ -473,8 +483,6 @@ void EEMDisplayPlugins::postDrawTProfile2D( DisplayData *data ) {
 
   text1->Draw( "text,same" );
 
-  return;
-
 }
 
 
@@ -499,7 +507,6 @@ void EEMDisplayPlugins::postDrawTH2( DisplayData *data ) {
     text6->Draw( "text,same" );
     gStyle->SetPaintTextFormat();
   }
-  return;    
 
 }
 
