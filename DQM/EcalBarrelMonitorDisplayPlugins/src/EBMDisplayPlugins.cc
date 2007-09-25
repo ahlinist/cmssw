@@ -1,11 +1,11 @@
-// $Id: EBMDisplayPlugins.cc,v 1.22 2007/09/25 16:31:26 dellaric Exp $
+// $Id: EBMDisplayPlugins.cc,v 1.23 2007/09/25 16:35:50 dellaric Exp $
 
 /*!
   \file EBMDisplayPlugins
   \brief Display Plugin for Quality Histograms (2D)
   \author B. Gobbo 
-  \version $Revision: 1.22 $
-  \date $Date: 2007/09/25 16:31:26 $
+  \version $Revision: 1.23 $
+  \date $Date: 2007/09/25 16:35:50 $
 */
 
 #include <TProfile2D.h>
@@ -196,6 +196,7 @@ std::string EBMDisplayPlugins::preDrawTProfile2D( DisplayData *data ) {
   }
 
   return "";
+
 }
 
 std::string EBMDisplayPlugins::preDrawTProfile( DisplayData *data ) {
@@ -233,6 +234,7 @@ std::string EBMDisplayPlugins::preDrawTProfile( DisplayData *data ) {
   }
 
   return "";
+
 }
 
 std::string EBMDisplayPlugins::preDrawTH2( DisplayData *data ) {
@@ -440,6 +442,7 @@ std::string EBMDisplayPlugins::preDrawTH1( DisplayData *data ) {
   }
 
   return "";
+
 }
 
 void EBMDisplayPlugins::postDraw( DisplayData *data ) {
@@ -479,8 +482,6 @@ void EBMDisplayPlugins::postDrawTProfile2D( DisplayData *data ) {
   }
 
   text1->Draw( "text,same" );
-
-  return;
 
 }
 
