@@ -1,11 +1,11 @@
-// $Id: EBMDisplayPlugins.cc,v 1.24 2007/09/25 16:38:37 dellaric Exp $
+// $Id: EBMDisplayPlugins.cc,v 1.25 2007/09/25 16:53:56 dellaric Exp $
 
 /*!
   \file EBMDisplayPlugins
   \brief Display Plugin for Quality Histograms (2D)
   \author B. Gobbo 
-  \version $Revision: 1.24 $
-  \date $Date: 2007/09/25 16:38:37 $
+  \version $Revision: 1.25 $
+  \date $Date: 2007/09/25 16:53:56 $
 */
 
 #include <TProfile2D.h>
@@ -29,6 +29,7 @@ static TH2C* t3 = new TH2C( "ebm_text3", "text3", 10, 0,  10,  5,   0,  5 );
 static TH2C* t4 = new TH2C( "ebm_text4", "text4",  2, 0,   2,  1,   0,  1 );
 static TH2C* t5 = new TH2C( "ebm_text5", "text5", 86, 1,  87,  1,   0,  1 );
 static TH2C* t6 = new TH2C( "ebm_text6", "text6", 18, 0, 360,  2, -85, 85 );
+static TH2C* t7 = new TH2C( "ebm_text7", "text7", 18, -M_PI*(9+1.5)/9, M_PI*(9-1.5)/9, 2, -1.479, 1.479);
 //
 
 template<class T> void EBMDisplayPlugins::adjustRange( T obj ) {
@@ -84,12 +85,14 @@ EBMDisplayPlugins::EBMDisplayPlugins( IgState *state ) : VisDQMDisplayPlugin( st
   text4 = t4;
   text5 = t5;
   text6 = t6;
+  text7 = t7;
   //text1 = new TH2C( "ebm_text1", "text1", 85, 0,  85, 20,   0, 20 );
   //text2 = new TH2C( "ebm_text2", "text2", 17, 0,  17,  4,   0,  4 );
   //text3 = new TH2C( "ebm_text3", "text3", 10, 0,  10,  5,   0,  5 );
   //text4 = new TH2C( "ebm_text4", "text4",  2, 0,   2,  1,   0,  1 );
   //text5 = new TH2C( "ebm_text5", "text5", 86, 1,  87,  1,   0,  1 );
   //text6 = new TH2C( "ebm_text6", "text6", 18, 0, 360,  2, -85, 85 );
+  //text7 = new TH2C( "ebm_text7", "text7", 18, -M_PI*(9+1.5)/9, M_PI*(9-1.5)/9, 2, -1.479, 1.479);
 
   text1->SetMinimum(   0.1 );
   text2->SetMinimum(   0.1 );
@@ -97,6 +100,7 @@ EBMDisplayPlugins::EBMDisplayPlugins( IgState *state ) : VisDQMDisplayPlugin( st
   text4->SetMinimum(   0.1 );
   text5->SetMinimum(   0.1 );
   text6->SetMinimum( -18.01 );
+  text7->SetMinimum( -18.01 );
 
   // The use of "first" will be removed when multiple instantiation problem will be fixed
   if( first ) {
@@ -115,6 +119,17 @@ EBMDisplayPlugins::EBMDisplayPlugins( IgState *state ) : VisDQMDisplayPlugin( st
       text6->SetBinContent(x, y, Numbers::iEB(i+1));
     }
   }
+  for ( short i=0; i<36; i++ ) {
+    int x = 1 + i%18;
+    int y = 2 - i/18;
+    int z = x + 8;
+    if ( z > 18 ) z = z - 18;
+    if ( y == 1 ) {
+      text7->SetBinContent(x, y, -z);
+    } else {
+      text7->SetBinContent(x, y, +z);
+    }
+  }
 
   text1->SetMarkerSize( 2 );
   text2->SetMarkerSize( 2 );
@@ -122,6 +137,7 @@ EBMDisplayPlugins::EBMDisplayPlugins( IgState *state ) : VisDQMDisplayPlugin( st
   text4->SetMarkerSize( 2 );
   text5->SetMarkerSize( 2 );
   text6->SetMarkerSize( 2 );
+  text7->SetMarkerSize( 2 );
 
 }
 
@@ -313,6 +329,7 @@ std::string EBMDisplayPlugins::preDrawTH2( DisplayData *data ) {
     if( name.find( "EBCLT" ) < name.size() ) {
       gStyle->SetPalette( 10, pCol4 );
       obj->SetOption( "colz" );
+      gStyle->SetPaintTextFormat("+g");
       return "";
     }
 
@@ -498,23 +515,41 @@ void EBMDisplayPlugins::postDrawTH2( DisplayData *data ) {
     nby = obj->GetNbinsY();
     if( nbx == 85 && nby == 20 ) {
       text1->Draw( "text,same" );
+      return;
     }
-    else if( nbx == 17 && nby == 4 ) {
+
+    if( nbx == 17 && nby == 4 ) {
       text2->Draw( "text,same" );
+      return;
     }
-    else if( nbx == 10 && nby == 5 ) {
+
+    if( nbx == 10 && nby == 5 ) {
       text3->Draw( "text,same" );
+      return;
     }
-    else if( nbx == 2 && nby == 1 ) {
+
+    if( nbx == 2 && nby == 1 ) {
       text4->Draw( "text,same" );
+      return;
     }
-    else if( nbx == 86 && nby == 1 ) {
+
+    if( nbx == 86 && nby == 1 ) {
       text5->Draw( "text90,same" );
+      return;
     }
-    else if( nbx == 360 && nby == 170 ) {
+
+    if( name.find( "summary" ) < name.size() ) {
       text6->Draw( "text,same" );
       gStyle->SetPaintTextFormat();
+      return;
     }
+
+    if( name.find( "EBCLT" ) < name.size() ) {
+      text7->Draw( "text,same" );
+      gStyle->SetPaintTextFormat();
+      return;
+    }
+
   }
 
 }
