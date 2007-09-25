@@ -23,8 +23,8 @@
   <Constant name="elec_thick" value="0.15*cm"/>
   <Constant name="PRESH_ENCA_GAP" value="0.20*cm"/>
 
-  <Constant name="R_MIN" value="28.8*cm"/>
-  <Constant name="R_MIN_Layers" value="[R_MIN]+12.2*cm"/>
+  <Constant name="R_MIN" value="31.1*cm"/>
+  <Constant name="R_MIN_Layers" value="[R_MIN]+9.9*cm"/>
   <Constant name="R_MAX" value="140.0*cm"/>
   <Constant name="R_MAX_Layers" value="[R_MAX]-16*cm"/>
 
@@ -114,16 +114,11 @@
   <!-- Constants for preshower ladders -->
   <Constant name="ladder_thick" value="[box_thick]/cos([wedge_angle]*2) + [ceramic_length]*sin([wedge_angle]*2) + [wedge_front_thick]" />
   <Constant name="ladder_width" value="2*[waf_intra_col_sep]" />
-  <Constant name="subtr_length" value="[ceramic_length]" />
-  <Constant name="subtr_width" value="[ladder_width]" />
-  <Constant name="subtr_thick" value="4*[box_thick]" />
-  <Constant name="yladder_1stwedge_diff" value="[wedge_length]/2 + [box_thick]*sin([wedge_angle]*2)" />
   <Constant name="micromodule_length" value="[ceramic_length]*cos([wedge_angle]*2) + [box_thick]*sin([wedge_angle]*2)" />
-  <Constant name="ysubtr1_ladder_diff" value="([ceramic_length]/2)*cos([wedge_angle]*2)-([subtr_thick]/2)*sin([wedge_angle]*2)" />
-  <Constant name="zsubtr1_ladder_diff" value="-[ladder_thick]/2. + [zwedge_ceramic_diff] + ([subtr_thick]/2+[box_thick]/2)*cos([wedge_angle]*2)" />
-  <Constant name="ysubtr2_ladder_diff" value="-([ceramic_length]/2)*cos([wedge_angle]*2) + [waf_active] + ([subtr_thick]/2-[box_thick]/2)*sin([wedge_angle]*2)" />
-  <Constant name="zsubtr2_ladder_diff" value="-[ladder_thick]/2+ [zwedge_ceramic_diff]-([subtr_thick]/2-[box_thick]/2)*cos([wedge_angle]*2)" /> 
-  <Constant name="LaddMaterial" value="E_Air" />
+  <Constant name="LdrFrnt_Length" value="[ceramic_length]*cos([wedge_angle]*2)+[box_thick]*sin([wedge_angle]*2)" />
+  <Constant name="LdrFrnt_Offset" value="(2*[ladder_thick]-[ceramic_length]*sin([wedge_angle]*2))/4." />
+  <Constant name="LdrBck_Length" value="[ceramic_length]*cos([wedge_angle]*2)-[wedge_length]" />
+  <Constant name="LdrBck_Offset" value="([ladder_thick]-[wedge_back_thick]+[box_thick]/cos([wedge_angle]*2))/4.+[wedge_back_thick]+([LdrBck_Length]/2)*sin([wedge_angle]*2)" />
 
   <!-- derived constants -->
   <Constant name="THETA_MIN" value="2*atan(exp(-[PRE_ETA_MIN]))"/>
@@ -235,33 +230,6 @@
     <Box name="SFEY" dx="[elec_length]/2" 
 		     dy="[elec_width]/2"
                      dz="[elec_thick]/2"/>
-
-  <Trapezoid name="LDRFRNT" 
-               dz="([ceramic_length]*sin([wedge_angle]*2))/2"
-               theta="-[wedge_angle]"
-               phi="0"
-               h1="[ladder_width]/2"
-               bl1="[ladder_thick]/2"
-               tl1="[ladder_thick]/2"
-               alp1="0"
-               h2="[ladder_width]/2"
-               bl2="([ladder_thick]-[ceramic_length]*sin([wedge_angle]*2))/2"
-               tl2="([ladder_thick]-[ceramic_length]*sin([wedge_angle]*2))/2"
-               alp2="0"/>
-
-  <Trapezoid name="LDRBCK" 
-               dz="([ceramic_length]*cos([wedge_angle]*2)-[wedge_length])/2"
-               theta="-[wedge_angle]"
-               phi="0"
-               h1="[ladder_width]/2"
-               bl1="([ladder_thick]-[wedge_back_thick])/2"
-               tl1="([ladder_thick]-[wedge_back_thick])/2"
-               alp1="0"
-               h2="[ladder_width]/2"
-               bl2="([box_thick]/cos([wedge_angle]*2))/2"
-               tl2="([box_thick]/cos([wedge_angle]*2))/2"
-               alp2="0"/>
-
 
 </SolidSection>
 
@@ -497,7 +465,7 @@
  <Rotation name="RM1298" thetaX="90*deg" phiX="0*deg" thetaY="86.20004*deg" phiY="90*deg" thetaZ="3.79996*deg" phiZ="-90*deg" />
  <Rotation name="RM1299" thetaX="0*deg" phiX="0*deg" thetaY="90*deg" phiY="180*deg" thetaZ="90*deg" phiZ="-90*deg" />
  <Rotation name="RM1300A" thetaX="86.20004*deg" phiX="90*deg" thetaY="90*deg" phiY="180*deg" thetaZ="3.79996*deg" phiZ="-90*deg" />
-
+  
 </RotationSection>
 
  <Algorithm name="ecal:DDEcalPreshowerAlgo">
@@ -614,18 +582,18 @@
   <Numeric name="zwedge_ceramic_diff" value="[zwedge_ceramic_diff]"/>
 
   <Numeric name="ladder_thick" value="[ladder_thick]" />
-  <Numeric name="yladder_1stwedge_diff" value="[yladder_1stwedge_diff]" />
   <Numeric name="ladder_width" value="[ladder_width]" />
   <Numeric name="box_thick" value="[box_thick]" />
   <Numeric name="micromodule_length" value="[micromodule_length]" />
-  <Numeric name="subtr_length" value="[subtr_length]" />
-  <Numeric name="subtr_width" value="[subtr_width]" />
-  <Numeric name="subtr_thick" value="[subtr_thick]" />
   <Numeric name="box_thick" value="[box_thick]" />
-  <Numeric name="ysubtr1_ladder_diff" value="[ysubtr1_ladder_diff]" />
-  <Numeric name="zsubtr1_ladder_diff" value="[zsubtr1_ladder_diff]" />
-  <Numeric name="ysubtr2_ladder_diff" value="[ysubtr2_ladder_diff]" />
-  <Numeric name="zsubtr2_ladder_diff" value="[zsubtr2_ladder_diff]" />
+  <String  name="LadderMaterial"  value="materials:E_Air"/>
+  <Numeric name="LdrFrnt_Length" value="[LdrFrnt_Length]" />
+  <Numeric name="LdrFrnt_Offset" value="[LdrFrnt_Offset]" />
+  <Numeric name="LdrBck_Length" value="[LdrBck_Length]" />
+  <Numeric name="LdrBck_Offset" value="[LdrBck_Offset]" />
+  <Numeric name="ceramic_length" value="[ceramic_length]" />
+  <Numeric name="wedge_back_thick" value="[wedge_back_thick]" />
+
 
   <!-- a vector of layer thicknesses; simply for convenience -->
   <Vector name="Layers" type="numeric" nEntries="29">
@@ -657,7 +625,6 @@
     tmp_name_a, tmp_name_b, tmp_name_c, tmp_name_d, tmp_name_e
 </Vector>
 
-<String  name="LadderMaterial"  value="materials:E_Air"/>
 
   <!-- a vector of inner radii of the presh-layers -->
   <Vector name="R_MAX" type="numeric" nEntries="29">
