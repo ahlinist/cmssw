@@ -1,11 +1,11 @@
-// $Id: EBMDisplayPlugins.cc,v 1.23 2007/09/25 16:35:50 dellaric Exp $
+// $Id: EBMDisplayPlugins.cc,v 1.24 2007/09/25 16:38:37 dellaric Exp $
 
 /*!
   \file EBMDisplayPlugins
   \brief Display Plugin for Quality Histograms (2D)
   \author B. Gobbo 
-  \version $Revision: 1.23 $
-  \date $Date: 2007/09/25 16:35:50 $
+  \version $Revision: 1.24 $
+  \date $Date: 2007/09/25 16:38:37 $
 */
 
 #include <TProfile2D.h>
@@ -477,6 +477,7 @@ void EBMDisplayPlugins::postDrawTProfile2D( DisplayData *data ) {
       obj1->GetXaxis()->SetNdivisions(510);
       obj1->GetYaxis()->SetNdivisions(510);
       obj1->Draw();
+      delete obj1;
       return;
     }
   }
@@ -488,24 +489,32 @@ void EBMDisplayPlugins::postDrawTProfile2D( DisplayData *data ) {
 
 void EBMDisplayPlugins::postDrawTH2( DisplayData *data ) {
 
-  if( nbx == 85 && nby == 20 ) {
-    text1->Draw( "text,same" );
-  }
-  else if( nbx == 17 && nby == 4 ) {
-    text2->Draw( "text,same" );
-  }
-  else if( nbx == 10 && nby == 5 ) {
-    text3->Draw( "text,same" );
-  }
-  else if( nbx == 2 && nby == 1 ) {
-    text4->Draw( "text,same" );
-  }
-  else if( nbx == 86 && nby == 1 ) {
-    text5->Draw( "text90,same" );
-  }
-  else if( nbx == 360 && nby == 170 ) {
-    text6->Draw( "text,same" );
-    gStyle->SetPaintTextFormat();
+  TH2* obj = dynamic_cast<TH2*>( data->object );
+
+  name = (data->object)->GetName();
+
+  if( obj ) {
+    nbx = obj->GetNbinsX();
+    nby = obj->GetNbinsY();
+    if( nbx == 85 && nby == 20 ) {
+      text1->Draw( "text,same" );
+    }
+    else if( nbx == 17 && nby == 4 ) {
+      text2->Draw( "text,same" );
+    }
+    else if( nbx == 10 && nby == 5 ) {
+      text3->Draw( "text,same" );
+    }
+    else if( nbx == 2 && nby == 1 ) {
+      text4->Draw( "text,same" );
+    }
+    else if( nbx == 86 && nby == 1 ) {
+      text5->Draw( "text90,same" );
+    }
+    else if( nbx == 360 && nby == 170 ) {
+      text6->Draw( "text,same" );
+      gStyle->SetPaintTextFormat();
+    }
   }
 
 }
