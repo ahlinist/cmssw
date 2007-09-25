@@ -4,8 +4,8 @@
  * >= 2 barrel jets 100 GeV, dphi, R1, R2 cuts
  * QCD control, test L1 acoplanar path (QCD trigger path)
  *
- * $Date: 2007/08/31 14:20:55 $
- * $Revision: 1.5 $
+ * $Date: 2007/08/31 14:24:01 $
+ * $Revision: 1.6 $
  *
  * \author Michael Tytgat, Maria Spiropulu - CERN
  *
@@ -25,7 +25,7 @@
 //#include "DataFormats/JetReco/interface/CaloJetfwd.h" 
 #include "DataFormats/JetReco/interface/CaloJet.h"
 #include "DataFormats/METReco/interface/CaloMETCollection.h"
-
+#include "DataFormats/METReco/interface/CaloMET.h"
 #include "SUSYBSMAnalysis/CSA07Skims/interface/HadSUSYQCDSkim.h"
 
 using namespace edm;

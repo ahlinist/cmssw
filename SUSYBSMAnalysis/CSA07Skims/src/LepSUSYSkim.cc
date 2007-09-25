@@ -8,8 +8,8 @@
  * MET>50 GeV
  * Cuts values in the cfi files in the data directory 
  *
- * $Date: 2007/08/31 14:17:19 $
- * $Revision: 1.3 $
+ * $Date: 2007/08/31 14:25:05 $
+ * $Revision: 1.4 $
  *
  * \author Massimiliano Chioboli, Universita' and INFN, Catania
  *         Maria Spiropulu - CERN
@@ -33,6 +33,9 @@
 #include "DataFormats/EgammaCandidates/interface/PixelMatchGsfElectron.h"
 #include "DataFormats/JetReco/interface/CaloJet.h"
 #include "DataFormats/METReco/interface/CaloMETCollection.h"
+#include "DataFormats/MuonReco/interface/MuonFwd.h"
+#include "DataFormats/EgammaCandidates/interface/PixelMatchGsfElectronFwd.h"
+#include "DataFormats/METReco/interface/CaloMET.h"
 
 using namespace edm;
 using namespace std;

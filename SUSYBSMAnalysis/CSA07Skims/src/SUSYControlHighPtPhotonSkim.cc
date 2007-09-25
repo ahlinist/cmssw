@@ -3,8 +3,8 @@
  * High Energy Photon SUSY Skim (control sample)
  * one photon and one electron > xx GeV in barrel + isolation 
  *
- * $Date: 2007/08/24 12:44:18 $
- * $Revision: 1.3 $
+ * $Date: 2007/08/31 14:17:19 $
+ * $Revision: 1.4 $
  *
  * \author Daniele del Re - Univ. La Sapienza & INFN
  *
@@ -23,6 +23,8 @@
 
 #include "DataFormats/EgammaCandidates/interface/Photon.h"
 #include "DataFormats/EgammaCandidates/interface/PixelMatchGsfElectron.h"
+#include "DataFormats/EgammaCandidates/interface/PixelMatchGsfElectronFwd.h"
+
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/Common/interface/AssociationVector.h"
 
