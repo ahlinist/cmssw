@@ -5,7 +5,7 @@ module hadSUSYdiElecOutputModule = PoolOutputModule {
   untracked string fileName = "hadSUSYdiElec.root"
   using AODSIMEventContent
   using hadSUSYdiElecEventSelection
-  untracked PSet datasets = {
+  untracked PSet dataset = {
     untracked string dataTier = "USER"
     untracked string filterName = "hadSUSYdiElec"
   }

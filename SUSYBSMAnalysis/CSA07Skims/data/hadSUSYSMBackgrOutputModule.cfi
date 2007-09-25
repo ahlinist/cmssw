@@ -5,7 +5,7 @@ module hadSUSYSMBackgrOutputModule = PoolOutputModule {
   untracked string fileName = "hadSUSYSMBackgr.root"
   using AODSIMEventContent
   using hadSUSYSMBackgrEventSelection
-  untracked PSet datasets = {
+  untracked PSet dataset = {
     untracked string dataTier = "USER"
     untracked string filterName = "hadSUSYSMBackgr"
   }
