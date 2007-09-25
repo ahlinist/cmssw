@@ -1,11 +1,11 @@
-// $Id: EBMDisplayPlugins.cc,v 1.21 2007/09/24 21:44:13 dellaric Exp $
+// $Id: EBMDisplayPlugins.cc,v 1.22 2007/09/25 16:31:26 dellaric Exp $
 
 /*!
   \file EBMDisplayPlugins
   \brief Display Plugin for Quality Histograms (2D)
   \author B. Gobbo 
-  \version $Revision: 1.21 $
-  \date $Date: 2007/09/24 21:44:13 $
+  \version $Revision: 1.22 $
+  \date $Date: 2007/09/25 16:31:26 $
 */
 
 #include <TProfile2D.h>
@@ -311,7 +311,7 @@ std::string EBMDisplayPlugins::preDrawTH2( DisplayData *data ) {
     if( name.find( "EBCLT" ) < name.size() ) {
       gStyle->SetPalette( 10, pCol4 );
       obj->SetOption( "colz" );
-      return;
+      return "";
     }
 
     // Quality-like (green, yellow, red) plots
