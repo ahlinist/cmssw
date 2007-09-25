@@ -336,18 +336,26 @@ Volumes per centimeter.
 o TIB Flange mixture
   ------------------
 
-20070713 GSguazzoni
+20070922 GSguazzoni
 
 MCVolume:  15225.2 cm^3
 
 (1) Medusa wires 1796m
 (2) Cooling Pipes 11.64m
 (3) Fiber pigtail 664m
+(4) Al hardware
+(5) CF disk
+(6) Generic aluminum hardware
+(7) CF layer connecting hardware
 ......................................................................
 # "TIB Flange mixture"        "TIB_Flange"            15225.2 -1.
 * 1 "TIBTID Medusa wire"      "T_MedusaWire"   1.1310E-2  179600   CAB
 * 2 "TIBTID Al 6mm pipe"      "T_Al6mmPipe"    0.2827       1164   COL
 * 3 "AOH-DOH Fiber Pigtail"   "T_FiberPigtail" 0.7854E-2   66400   CAB
+* 4 "Amphenol cable 26cond"   "TIBTID_AmphCable" 0.1000     1348   CAB
+* 5 "CF disk"                 "Carbon fibre str." 95.51        1   SUP
+* 6 "Al hardware"             "Aluminium"          2.22       20   SUP
+* 7 "CF interconnecting plates" "Carbon fibre str."  8.00     12   SUP
 ......................................................................
 ======================================================================
 
