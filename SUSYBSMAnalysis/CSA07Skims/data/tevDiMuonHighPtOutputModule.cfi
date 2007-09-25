@@ -4,7 +4,7 @@ module tevDiMuonHighPtOutputModule = PoolOutputModule {
   untracked string fileName = "TeVdiMuonHighPt.root"
   using tevDiMuonHighPtEventContent
   using tevDiMuonHighPtEventSelection
-  untracked PSet datasets = {
+  untracked PSet dataset = {
     string dataTier = "USER"
     string filterName = "tevDiMuonHighPt"
   }

@@ -5,7 +5,7 @@ module lepSUSY_0Muon_1Elec_1Jets_MET_OutputModule = PoolOutputModule {
   untracked string fileName = "lepSUSY_0Muon_1Elec_1Jets_MET.root"
   using AODSIMEventContent
   using lepSUSY_0Muon_1Elec_1Jets_MET_EventSelection
-  untracked PSet datasets = {
+  untracked PSet dataset = {
     untracked string dataTier = "USER"
     untracked string filterName = "lepSUSY_0Muon_1Elec_1Jets_MET"
   }

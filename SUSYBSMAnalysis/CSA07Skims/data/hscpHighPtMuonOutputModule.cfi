@@ -6,7 +6,7 @@ module hscpHighPtMuonOutputModule = PoolOutputModule {
   using AODSIMEventContent
   using hscpHighPtMuonEventContent
   using hscpHighPtMuonOutputContent
-  untracked PSet datasets = {
+  untracked PSet dataset = {
     untracked string dataTier = "USER"
     untracked string filterName = "hscpHighPtMuon"
   }
