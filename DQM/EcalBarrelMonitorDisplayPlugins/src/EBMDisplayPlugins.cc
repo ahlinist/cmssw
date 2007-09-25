@@ -1,11 +1,11 @@
-// $Id: EBMDisplayPlugins.cc,v 1.20 2007/08/23 11:41:52 dellaric Exp $
+// $Id: EBMDisplayPlugins.cc,v 1.21 2007/09/24 21:44:13 dellaric Exp $
 
 /*!
   \file EBMDisplayPlugins
   \brief Display Plugin for Quality Histograms (2D)
   \author B. Gobbo 
-  \version $Revision: 1.20 $
-  \date $Date: 2007/08/23 11:41:52 $
+  \version $Revision: 1.21 $
+  \date $Date: 2007/09/24 21:44:13 $
 */
 
 #include <TProfile2D.h>
@@ -280,10 +280,10 @@ std::string EBMDisplayPlugins::preDrawTH2( DisplayData *data ) {
     if( ( name.find( "EBIT" ) < name.size() ||
 	  name.find( "EBOT" ) < name.size() ) &&
 	name.find( "quality" ) >= name.size() ) {
-    obj->SetMinimum( 0. );
-    gStyle->SetPalette( 4, pCol4 );
-    obj->SetOption( "colz" );
-    return "";
+      obj->SetMinimum( 0. );
+      gStyle->SetPalette( 4, pCol4 );
+      obj->SetOption( "colz" );
+      return "";
     }
 
     if( name.find( "summary" ) < name.size() ) {
@@ -307,6 +307,13 @@ std::string EBMDisplayPlugins::preDrawTH2( DisplayData *data ) {
       return "";
     }
 
+    // Atypical plot...
+    if( name.find( "EBCLT" ) < name.size() ) {
+      gStyle->SetPalette( 10, pCol4 );
+      obj->SetOption( "colz" );
+      return;
+    }
+
     // Quality-like (green, yellow, red) plots
     if( name.find( "entries or read crystals errors" ) < name.size() ) {
       obj->GetXaxis()->SetNdivisions( 86 );
@@ -317,7 +324,7 @@ std::string EBMDisplayPlugins::preDrawTH2( DisplayData *data ) {
       obj->SetMaximum( 5.0 );
       gStyle->SetPalette( 6, pCol3 );
       obj->SetOption( "col" );
-    return "";
+      return "";
     }
 
     // Atypical plot...
@@ -363,7 +370,7 @@ std::string EBMDisplayPlugins::preDrawTH2( DisplayData *data ) {
       obj->SetMaximum( 5.0 );
       gStyle->SetPalette( 6, pCol3 );
       obj->SetOption( "col" );
-    return "";
+      return "";
     }
 
   }
@@ -499,7 +506,6 @@ void EBMDisplayPlugins::postDrawTH2( DisplayData *data ) {
     text6->Draw( "text,same" );
     gStyle->SetPaintTextFormat();
   }
-  return;    
 
 }
 
