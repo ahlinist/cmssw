@@ -34,7 +34,7 @@
  </LogicalPart>
  <LogicalPart name="TIBOutSupport" category="unspecified">
   <rSolid name="TIBOutSupport"/>
-  <rMaterial name="tibmaterial:TIB_outer_supp"/>
+  <rMaterial name="materials:Carbon fibre str."/>
  </LogicalPart>
  <LogicalPart name="TIBSideDisk" category="unspecified">
    <rSolid name="TIBSideDisk"/>
@@ -65,38 +65,5 @@
  </PosPart>
 </PosPartSection>
 
-<!--
-
-<PosPart copyNumber="1">
-   <rParent name="tib:TIB"/>
-   <rChild name="tib:TIBSideDisk"/>
-  <Translation x="[zero]" y="[zero]" z="[SideDiskZ]" />
- </PosPart>
- <PosPart copyNumber="2">
-   <rParent name="tib:TIB"/>
-   <rChild name="tib:TIBSideDisk"/>
-  <rRotation name="tibstringpar:180D"/>
-  <Translation x="[zero]" y="[zero]" z="-[SideDiskZ]" />
- </PosPart>
-
-<Algorithm name="track:DDTIBRadCableAlgo">
-  <rParent name="tib:TIBSideDisk"/>
-  <Numeric name="RMin"           value="[tib:Rin]"/>
-  <Numeric name="RMax"           value="[tib:Rin2]"/>
-  <Vector name="RadiusLo" type="numeric" nEntries="4">
-   [tiblayerpar:RadiusLo0], [tiblayerpar:RadiusLo1],
-   [tiblayerpar:RadiusLo2], [tiblayerpar:RadiusLo3]
-  </Vector>
-  <Numeric name="DeltaR"         value="[tiblayerpar:DRUpLo]"/>
-  <Numeric name="CylinderThick"  value="0.8*cm"/>
-  <Numeric name="SupportThick"   value="[tib:SupportT]"/>
-  <Numeric name="SupportDR"      value="[tib:SupportDR]"/>
-  <String name="SupportMaterial" value="tibmaterial:TIB_disk"/>
-  <Vector name="StructureMaterial" type="string" nEntries="5">
-   tibmaterial:TIB_rib0, tibmaterial:TIB_rib1, tibmaterial:TIB_rib2,
-   tibmaterial:TIB_rib3, tibmaterial:TIB_rib4</Vector>
-</Algorithm>
-
--->
 
 </DDDefinition>

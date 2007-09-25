@@ -59,6 +59,31 @@ SMD passive components neglected
 ......................................................................
 ======================================================================
 
+o TIB/TID DOH
+  -----------
+
+20071014 GSguazzoni
+
+MCVolume: 0.5*2.2*3.5 cm^3
+
+......................................................................
+# "DOH"                    "TIBTID_DOH"             3.85000   -1.
+* 1 "PCB FR4"              "T_FR4"                  0.41059    1  ELE
+* 2 "PCB Copper traces"    "Copper"                 0.06384    1  ELE
+* 3 "NAIS Conn case"       "Polyethylene"           0.14105    1  ELE
+* 4 "NAIS Conn pins"       "T_Bronze"               0.00940    1  ELE
+* 5 "Resistors"            "Ceramic"                0.00111    1  ELE
+* 6 "Capacitors"           "Barium_Titanate"        0.00565    1  ELE
+* 7 "ASICs EMC"            "Epoxy"                  0.04154    1  ELE
+* 8 "ASICs Copper"         "Copper"                 0.00882    1  ELE
+* 9 "Laser"                "Silicon"                0.02106    2  ELE
+* 10 "Optodiodes"          "Ceramic"                0.03000    2  ELE
+* 11 "Optodiodes"          "Brass"                  0.01414    2  ELE
+* 12 "Fiber holder"        "T_FR4"                  0.38800    1  ELE
+* 13 "Plastic stuff"       "Polyethylene"           0.15789    1  ELE
+......................................................................
+======================================================================
+
 o  Hybrid for single sided module 
    ------------------------------
 

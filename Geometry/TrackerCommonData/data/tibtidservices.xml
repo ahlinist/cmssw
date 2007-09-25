@@ -196,7 +196,7 @@
  </LogicalPart>
  <LogicalPart name="TIBFlange" category="unspecified">
   <rSolid name="TIBFlange"/>
-  <rMaterial name="tibtidcommonmaterial:TIB_Flange"/>
+  <rMaterial name="tibmaterial:TIB_Flange"/>
  </LogicalPart>
  <LogicalPart name="TIBTIDServiceCylinder" category="unspecified">
   <rSolid name="ServiceCylinder"/>
