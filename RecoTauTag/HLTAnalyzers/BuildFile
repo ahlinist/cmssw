@@ -7,4 +7,11 @@
 <use name=DataFormats/L1Trigger>
 <use name=root>
 <use name=SimDataFormats/HepMCProduct>
+<use name=DataFormats/BTauReco>
+<use name=DataFormats/JetReco>
+<use name=DataFormats/METReco>
+<use name=DataFormats/EgammaReco>
+<use name=DataFormats/EgammaCandidates>
+<use name=DataFormats/MuonReco>
+<use name=PhysicsTools/UtilAlgos>
 <flags EDM_PLUGIN=1>
