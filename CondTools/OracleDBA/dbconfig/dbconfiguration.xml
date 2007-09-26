@@ -43,7 +43,7 @@
   </detector>  
 
   <detector name='HCAL' offline_connect='oracle://orcon/CMS_COND_HCAL'>
-     <poolsetup mapping='mapping_HCALObjects_CMSSW160.xml' dbsetup='dbsetup_HCALObjects_CMSSW160.xml' library='CondFormatsHCALObjects' />
+     <poolsetup mapping='mapping_HcalObjects_CMSSW160.xml' dbsetup='dbsetup_HcalObjects_CMSSW160.xml' library='CondFormatsHcalObjects' />
   </detector>  
 
 </dbconfiguration>
