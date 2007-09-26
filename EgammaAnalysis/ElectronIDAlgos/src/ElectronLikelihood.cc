@@ -350,14 +350,16 @@ ElectronLikelihood::CalculateFisher(const PixelMatchGsfElectron &electron,
   EcalSubdetector subdet = EcalSubdetector (vecId[0].subdetId ()) ;
   
   if (subdet==EcalBarrel) {
-    SprTrainedFisher *FisherEB = 
-      SprClassifierReader::readTrained<SprTrainedFisher>(m_fisherEBFileName.fullPath().c_str(), "Fisher");
+    SprAbsTrainedClassifier *ClassifierEB = 
+      SprClassifierReader::readTrained(m_fisherEBFileName.fullPath().c_str());
+    SprTrainedFisher *FisherEB = dynamic_cast<SprTrainedFisher*>(ClassifierEB);
     FisherEB->useStandard();
     clusterShapeFisher = FisherEB->response(inputs);
   }
   else if (subdet==EcalEndcap) {
-    SprTrainedFisher *FisherEE = 
-      SprClassifierReader::readTrained<SprTrainedFisher>(m_fisherEEFileName.fullPath().c_str(), "Fisher");
+    SprAbsTrainedClassifier *ClassifierEE = 
+      SprClassifierReader::readTrained(m_fisherEEFileName.fullPath().c_str());
+    SprTrainedFisher *FisherEE = dynamic_cast<SprTrainedFisher*>(ClassifierEE);
     FisherEE->useStandard();
     clusterShapeFisher = FisherEE->response(inputs);
   }
