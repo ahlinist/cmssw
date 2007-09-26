@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-#$Id: runall.sh,v 1.5 2007/07/11 08:04:58 klute Exp $
+#$Id: runall.sh,v 1.6 2007/09/24 23:34:31 gutsche Exp $
 #
 # Script to run all integration tests
 #
@@ -21,7 +21,7 @@ eval `scramv1 runtime -sh`
 # Test Pickling Of Relval Parameter-Sets
 echo "Preparing to run RelVal preparation"
 let starttime=`date "+%s"`
-python2.4 prepareRelVal.py --samples RelVal_runall.txt --cms-path dummy 
+#python2.4 prepareRelVal.py --samples RelVal_runall.txt --cms-path dummy 
 let exitcode=$?
 
 let endtime=`date "+%s"`
