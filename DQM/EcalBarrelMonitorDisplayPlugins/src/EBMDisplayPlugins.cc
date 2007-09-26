@@ -1,11 +1,11 @@
-// $Id: EBMDisplayPlugins.cc,v 1.25 2007/09/25 16:53:56 dellaric Exp $
+// $Id: EBMDisplayPlugins.cc,v 1.26 2007/09/25 17:06:09 dellaric Exp $
 
 /*!
   \file EBMDisplayPlugins
   \brief Display Plugin for Quality Histograms (2D)
   \author B. Gobbo 
-  \version $Revision: 1.25 $
-  \date $Date: 2007/09/25 16:53:56 $
+  \version $Revision: 1.26 $
+  \date $Date: 2007/09/25 17:06:09 $
 */
 
 #include <TProfile2D.h>
@@ -157,7 +157,6 @@ std::string EBMDisplayPlugins::preDraw( DisplayData *data ) {
   MonitorElement* me = data->me;
   if( me  ) {
     data->pad->SetFrameFillColor( 10 );
-    if (me->hasOtherReport()) data->pad->SetFillColor( 16 );
     if (me->hasWarning()) data->pad->SetFillColor( 5 );
     if (me->hasError()) data->pad->SetFillColor( 2 );
   }

@@ -1,11 +1,11 @@
-// $Id: EEMDisplayPlugins.cc,v 1.8 2007/09/25 16:38:44 dellaric Exp $
+// $Id: EEMDisplayPlugins.cc,v 1.9 2007/09/25 16:53:57 dellaric Exp $
 
 /*!
   \file EEMDisplayPlugins
   \brief Display Plugin for Quality Histograms (2D)
   \author B. Gobbo 
-  \version $Revision: 1.8 $
-  \date $Date: 2007/09/25 16:38:44 $
+  \version $Revision: 1.9 $
+  \date $Date: 2007/09/25 16:53:57 $
 */
 
 #include <TProfile2D.h>
@@ -141,7 +141,6 @@ std::string EEMDisplayPlugins::preDraw( DisplayData *data ) {
   MonitorElement* me = data->me;
   if( me  ) {
     data->pad->SetFrameFillColor( 10 );
-    if (me->hasOtherReport()) data->pad->SetFillColor( 16 );
     if (me->hasWarning()) data->pad->SetFillColor( 5 );
     if (me->hasError()) data->pad->SetFillColor( 2 );
   }
