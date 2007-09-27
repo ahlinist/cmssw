@@ -1,5 +1,4 @@
-#include "DataFormats/ParticleFlowReco/interface/PFRecTrack.h"
-#include "RecoParticleFlow/PFRootEvent/interface/GPFTrack.h"
+#include "RecoParticleFlow/PFRootEvent/interface/GPFSimParticle.h"
 #include "TPad.h"
 #include "TObject.h"
 #include "TGraph.h"
@@ -7,19 +6,20 @@
 
 
 //_______________________________________________________________________
-GPFTrack::GPFTrack() : track_(new reco::PFRecTrack())  {}
+GPFSimParticle::GPFSimParticle() : part_(new reco::PFSimParticle())
+{}
 //________________________________________________________________________
-GPFTrack::GPFTrack(reco::PFRecTrack *tra, int size, double *x, double *y,
-                     double pt,int linestyle, std::string option)
-		     : TGraph(size,x,y), track_(tra),pt_(pt), option_(option) 
+GPFSimParticle::GPFSimParticle(const reco::PFSimParticle *ptc, int size, double *x, double *y,
+                 double pt,int markerstyle, std::string option)
+		: TGraph(size,x,y), part_(ptc), pt_(pt), option_(option) 
 {
     
   ResetBit(kCanDelete);
   
-  int    markerstyle = 8;
+  int    color = 4;
+  int    linestyle = 2;
   double markersize = 0.8;
-  int    color = 103;
-
+  
   SetLineColor(color);
   SetLineStyle(linestyle);
   SetMarkerStyle(markerstyle);
@@ -28,15 +28,15 @@ GPFTrack::GPFTrack(reco::PFRecTrack *tra, int size, double *x, double *y,
   
 }		     
 //____________________________________________________________________________________________________________
-void GPFTrack::Print()
+void GPFSimParticle::Print()
 {
-  std::cout<<*track_<<std::endl;
+  std::cout<<*part_<<std::endl;
 }
 //_______________________________________________________________________________    
-void GPFTrack::ExecuteEvent(Int_t event, Int_t px, Int_t py)
+void GPFSimParticle::ExecuteEvent(Int_t event, Int_t px, Int_t py)
 {
  // Execute action corresponding to a left mouse button click 
- //on a GPFTrack object in the window
+ //on a GPFSimParticle object in the window
 
  gPad->SetCursor(kHand);
  switch (event) {
@@ -48,7 +48,7 @@ void GPFTrack::ExecuteEvent(Int_t event, Int_t px, Int_t py)
      
 }
 //______________________________________________________________________________
-void GPFTrack::Draw()
+void GPFSimParticle::Draw()
 {
  TGraph::Draw(option_.data());
 }
