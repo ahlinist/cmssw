@@ -1,8 +1,3 @@
-#include "FWCore/Framework/interface/EventSetup.h"
-#include "FWCore/Framework/interface/ESHandle.h"
-#include "FWCore/Framework/interface/EventSetupRecord.h"
-#include "FWCore/Framework/interface/EventSetupRecordImplementation.h"
-#include "FWCore/Framework/interface/EventSetupRecordKey.h"
 #include "FWCore/Utilities/interface/Exception.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "DataFormats/EgammaReco/interface/BasicClusterShapeAssociation.h"
@@ -304,9 +299,9 @@ ElectronLikelihood::Setup (const ElectronLikelihoodCalibration *calibration,
 
 
 void 
-ElectronLikelihood::getInputVar (const PixelMatchGsfElectron &electron, 
+ElectronLikelihood::getInputVar (const reco::PixelMatchGsfElectron &electron, 
                                  std::vector<float> &measurements, 
-                                 const ClusterShape &sClShape) const 
+                                 const reco::ClusterShape &sClShape) const 
 {
 
   // the variables entering the likelihood
@@ -325,8 +320,8 @@ ElectronLikelihood::getInputVar (const PixelMatchGsfElectron &electron,
 
 
 double 
-ElectronLikelihood::CalculateFisher(const PixelMatchGsfElectron &electron,
-				    const ClusterShape& sClShape) const
+ElectronLikelihood::CalculateFisher(const reco::PixelMatchGsfElectron &electron,
+				    const reco::ClusterShape& sClShape) const
 {
 
   // the variables entering the shape fisher
@@ -338,7 +333,7 @@ ElectronLikelihood::CalculateFisher(const PixelMatchGsfElectron &electron,
   a20=sClShape.zernike20 () ;
 
 
-  vector<double> inputs;
+  std::vector<double> inputs;
   inputs.push_back(s9s25);
   inputs.push_back(sigmaEtaEta);
   inputs.push_back(lat);
@@ -377,8 +372,8 @@ ElectronLikelihood::CalculateFisher(const PixelMatchGsfElectron &electron,
 
 
 float 
-ElectronLikelihood::result (const PixelMatchGsfElectron &electron, 
-                            const ClusterShape &sClShape) const 
+ElectronLikelihood::result (const reco::PixelMatchGsfElectron &electron, 
+                            const reco::ClusterShape &sClShape) const 
 {
 
   //=======================================================
@@ -425,7 +420,7 @@ ElectronLikelihood::result (const PixelMatchGsfElectron &electron,
 				      << " splitting is implemented right now";
   }
 
-  SuperClusterRef sclusRef = electron.superCluster() ;
+  reco::SuperClusterRef sclusRef = electron.superCluster() ;
   std::vector<DetId> vecId=sclusRef->getHitsByDetId () ;
   EcalSubdetector subdet = EcalSubdetector (vecId[0].subdetId ()) ;
   float thisPt =  electron.pt();

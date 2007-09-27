@@ -25,12 +25,9 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/EgammaCandidates/interface/PixelMatchGsfElectron.h"
+#include "DataFormats/EgammaReco/interface/ClusterShape.h"
 #include "EgammaAnalysis/ElectronIDAlgos/interface/ElectronIDAlgo.h"
 #include "EgammaAnalysis/ElectronIDAlgos/interface/LikelihoodSwitches.h"
-
-#include "DataFormats/METReco/interface/CaloMETCollection.h"
-#include "DataFormats/RecoCandidate/interface/RecoCandidate.h"
-#include "DataFormats/EgammaCandidates/interface/PixelMatchGsfElectron.h"
 #include "EgammaAnalysis/ElectronIDAlgos/interface/LikelihoodPdfProduct.h"
 #include "CondFormats/DataRecord/interface/ElectronLikelihoodRcd.h"
 #include "CondFormats/EgammaObjects/interface/ElectronLikelihoodCalibration.h"
@@ -73,7 +70,7 @@ class ElectronLikelihood : ElectronIDAlgo {
 
   //! get the result of the algorithm
   float result (const reco::PixelMatchGsfElectron &electron, 
-                const ClusterShape &sClShape) const ;
+                const reco::ClusterShape &sClShape) const ;
 
  private:
 
@@ -100,11 +97,11 @@ class ElectronLikelihood : ElectronIDAlgo {
   //! get the input variables from the electron and the e-Setup
   void getInputVar (const reco::PixelMatchGsfElectron &electron, 
                     std::vector<float> &measuremnts, 
-                    const ClusterShape &sClShape) const ;
+                    const reco::ClusterShape &sClShape) const ;
 
   //! evaluate the shape Fisher discriminant
   double CalculateFisher(const reco::PixelMatchGsfElectron &electron,
-			 const ClusterShape &sClShape) const;
+			 const reco::ClusterShape &sClShape) const;
   
   //! likelihood below 15GeV/c
   LikelihoodPdfProduct *_EBlt15lh, *_EElt15lh;
