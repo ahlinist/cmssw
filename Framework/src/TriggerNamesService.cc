@@ -41,10 +41,6 @@ namespace edm {
       }
     }
 
-    TriggerNamesService::~TriggerNamesService()
-    {
-    }
-
     bool
     TriggerNamesService::getTrigPaths(TriggerResults const& triggerResults,
                                       Strings& trigPaths,
