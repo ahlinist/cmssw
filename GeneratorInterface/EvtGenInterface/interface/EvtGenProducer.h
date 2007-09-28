@@ -13,7 +13,7 @@
 //
 // Original Author:  Nello Nappi
 //         Created:  Fri May 11 15:33:30 CEST 2007
-// $Id$
+// $Id: EvtGenProducer.h,v 1.5 2007/08/27 09:49:46 covarell Exp $
 //
 //
 
@@ -74,9 +74,13 @@ private:
 private:
   CLHEP::RandFlat* m_flat;   
   EvtGen *m_EvtGen;
-  std::vector<EvtId> forced_Evt;     // EvtId's of particels with forced decay
-  std::vector<int> forced_Hep;       // HepId's of particels with forced decay
-  int nforced;                       // number of particels with forced decay
+  std::vector<EvtId> forced_Evt;     // EvtId's of particles with forced decay
+  std::vector<int> forced_Hep;       // HepId's of particles with forced decay
+  int nforced;                       // number of particles with forced decay
   int ntotal;
+  int nlist;                         // number of candidates to be forced in an event 
+  HepMC::GenParticle *listp[10];    
+  int index[10];                     // identifed which of the nforced particles
+  void go_through_daughters(EvtParticle* part);
 };
 
