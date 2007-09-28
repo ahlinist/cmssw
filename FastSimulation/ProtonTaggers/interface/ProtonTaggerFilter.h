@@ -1,29 +1,35 @@
 #ifndef FastSimulation_ProtonTaggerFilter_H
 #define FastSimulation_ProtonTaggerFilter_H
 
-/// Parametrization of near-beam detector acceptance.
+/// Fast simulation of near-beam detector acceptance.
 
 /**
- * This class:
+ * This class defines an EDFilter which does the following:
  * - reads generated data (edm::HepMCProduct) from edm::Event
  * - selects forward protons
- * - makes a fast parametrized simulation of near-beam detector (FP420 and TOTEM) acceptance
- * - returns the acceptance as a boolean
+ * - determines (by means of AcceptanceTableHelper) the acceptance
+ *   of near-beam detectors: FP420 and TOTEM
+ * - returns a boolean value representing whether the proton(s) were seen
+ *   with certain detectors, several options are available to choose
+ *   between FP420/TOTEM detectors and their combinations
  *
- * This code is a port of the FastTotem module from ORCA-based FAMOS.
- * Thus, its physics performace is just the same as one of FastTotem.
- * Several options are available to choose between the FP420/TOTEM detectors
+ * Originally this code was meant as the FastTotem module from ORCA-based FAMOS,
+ * ported to the CMSSW framework. However it was eventually re-written from scratch.
+ * Nevelrtheless, the physics performace is just the same as one of FastTotem,
+ * as it (currently) uses the same acceptance tables.
  * 
  * Author: Dmitry Zaborov
  */
 
-// Version: $Id:  $
+// Version: $Id: ProtonTaggerFilter.h,v 1.1 2007/09/12 13:39:28 dzaborov Exp $
 
 #include "FWCore/Framework/interface/EDFilter.h"
 
-#include "FastSimulation/ProtonTaggers/interface/RPAcceptance.h"
+#include "FastSimulation/ProtonTaggers/interface/AcceptanceTableHelper.h"
 
 #include "HepMC/GenEvent.h"
+
+#include "TFile.h"
 
 class ProtonTaggerFilter : public edm::EDFilter
 {
@@ -56,11 +62,13 @@ class ProtonTaggerFilter : public edm::EDFilter
   /// choose how to combine data from the two beams (ask for 1/2 proton)
   unsigned int beamCombiningMode;
 
-  /// Path to text files with tabulated acceptance
-  std::string pathToAcceptanceTables; // path to the acceptance tables
-  
-  /// The object which actually computes the acceptance
-  RPAcceptance rpAcceptance;
+  /// Objects which actually compute the acceptance (one per detector or combination of detectors)
+  AcceptanceTableHelper helper420beam1;
+  AcceptanceTableHelper helper420beam2;
+  AcceptanceTableHelper helper220beam1;
+  AcceptanceTableHelper helper220beam2;
+  AcceptanceTableHelper helper420a220beam1;
+  AcceptanceTableHelper helper420a220beam2;
   
 };
 
