@@ -59,4 +59,20 @@
  </PosPart>
 </PosPartSection>
 
+
+
+<Algorithm name="track:DDTrackerAngular">
+  <rParent name="tidring0f:TIDRing0F"/>
+  <String  name="ChildName"   value="tid:TIDWheelFixCutted"/>
+  <Numeric name="N"           value="3" />
+  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="IncrCopyNo"  value="1" />
+  <Numeric name="RangeAngle"  value="360*deg"/>
+  <Numeric name="StartAngle"  value="[tid:WheelFixPhi]"/>
+  <Numeric name="Radius"      value="0"/>
+  <Vector name="Center" type="numeric" nEntries="3"> 
+   [zero], [zero], -([tidringpar:StructureT]+[tid:WheelFixDZ])/2
+  </Vector>
+</Algorithm>
+
 </DDDefinition>
