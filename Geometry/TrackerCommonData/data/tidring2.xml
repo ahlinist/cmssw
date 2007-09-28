@@ -3,28 +3,34 @@
 
 <ConstantsSection label="tidring2.xml" eval="true">
  <Constant name="zero"           value="0.0*fm"/>
- <Constant name="Rmin"           value="35.3062*cm"/>
+ <Constant name="Rmin"           value="35.6762*cm"/>
  <Constant name="NPhi"           value="40"/>
  <Constant name="PhiOff"         value="0*deg"/>
  <Constant name="ICBR"           value="33.350*cm"/>
- <Constant name="CoolR1"         value="46.148*cm"/>
- <Constant name="CoolR2"         value="38.871*cm"/>
- <Constant name="CoolSide"       value="2"/>
  <Constant name="ICBTailR"       value="[ICBR]+[tidringpar:ICBW]/2"/>
- <Constant name="ICCRPos"        value="33.80*cm"/>
- <Constant name="RPos"           value="[Rmin]+([tidmodule2:FullHeight]+
-           [tidmodpar:TopFrameHeight]+[tidmodpar:BottomFrameHeight]-
-           [tidmodpar:BottomFrameOver])/2"/> 
+ <Constant name="RPos"           value="[Rmin]+[tidmodule2:ModuleHeight]/2"/> 
+ <Constant name="ICCRPos"        value="[Rmin]-[tidringpar:ICCROffset]-[tidringpar:ICCH]/2"/> 
  <Constant name="ICBTailW"       value="([tidringpar:Rout]-[ICBTailR]-
            [tidringpar:ICBTailTol])"/>
  <Constant name="ICBTailRPos"    value="([tidringpar:Rout]+[ICBTailR]-
            [tidringpar:ICBTailTol])/2"/>
+ <Constant name="CoolR1"         value="[Rmin]+[tidmodpar:CoolInsertHeightSS]-[tidringpar:CoolD]/2"/>
+ <Constant name="CoolR2"         value="[Rmin]+[tidmodule2:CoolInsertShift]"/>
  <Constant name="DOHMrIn"        value="22.8*cm"/>
  <Constant name="DOHMrMed"       value="26.5*cm"/>
  <Constant name="DOHMrOut"       value="29.5*cm"/>
  <Constant name="DOHMdPhiIn"     value="37*deg"/>
  <Constant name="DOHMdPhiOut"    value="55*deg"/>
  <Constant name="DOHMrOff"       value="-0.15*cm"/>
+ <Constant name="DOHMphiPos"     value="157.5*deg" />
+ <Constant name="CoolManifoldL"  value="8.0*cm"/>
+ <Constant name="FlatCablerIn"        value="[tidringpar:Rin]"/>
+ <Constant name="FlatCablerOut"       value="[FlatCablerIn]+4*cm"/>
+ <Constant name="FlatCabledPhi"       value="35*deg"/>
+ <Constant name="FlatCablephiPosOff"   value="3*deg" /> 
+ <Constant name="FlatCablephiPosL"      value="[DOHMphiPos]-[FlatCablephiPosOff]-([DOHMdPhiOut]+[FlatCabledPhi])/2" />
+ <Constant name="FlatCablephiPosR"      value="[DOHMphiPos]+[FlatCablephiPosOff]+([DOHMdPhiOut]+[FlatCabledPhi])/2" />
+
 </ConstantsSection>
 
 <SolidSection label="tidring2.xml">
@@ -33,18 +39,33 @@
        startPhi="0*deg"               deltaPhi="360.*deg"/>
  <Box name="TIDRing2ICBTail"          dx="[tidringpar:ICBTailH]/2"
        dy="[ICBTailW]/2"              dz="[tidringpar:ICBTailT]/2"/>
- <Tubs name="TIDRing2Cool1"           rMin="([CoolR1]-[tidringpar:CoolW]/2)" 
-       rMax="([CoolR1]+[tidringpar:CoolW]/2)" dz="[tidringpar:CoolT]/2" 
+ <Torus name="TIDRing2Cool1"           
+       innerRadius="[zero]" outerRadius="[tidringpar:CoolD]/2" torusRadius="[CoolR1]" 
        startPhi="0*deg"               deltaPhi="360.*deg"/>
- <Tubs name="TIDRing2Cool2"           rMin="([CoolR2]-[tidringpar:CoolW]/2)" 
-       rMax="([CoolR2]+[tidringpar:CoolW]/2)" dz="[tidringpar:CoolT]/2" 
+ <Torus name="TIDRing2Cool2"         
+       innerRadius="[zero]" outerRadius="[tidringpar:CoolD]/2" torusRadius="[CoolR2]" 
        startPhi="0*deg"               deltaPhi="360.*deg"/>
+
  <Tubs name="TIDRing2DOHMIn"          rMin="[DOHMrIn]" 
        rMax="[DOHMrMed]" dz="[tidringpar:DOHMT]/2" 
        startPhi="-[DOHMdPhiIn]/2"     deltaPhi="[DOHMdPhiIn]"/>
  <Tubs name="TIDRing2DOHMOut"         rMin="[DOHMrMed]" 
        rMax="[DOHMrOut]" dz="[tidringpar:DOHMT]/2" 
        startPhi="-[DOHMdPhiOut]/2"        deltaPhi="[DOHMdPhiOut]"/>
+ <UnionSolid name="TIDRing2DOHM">
+   <rSolid name="TIDRing2DOHMIn"/>
+   <rSolid name="TIDRing2DOHMOut"/>
+ </UnionSolid>
+
+ <Tubs name="TIDRing2FiberLayer"       rMin="([ICBR]-[tidringpar:ICBW]/2)" 
+       rMax="([ICBR]+[tidringpar:ICBW]/2)" dz="[tidringpar:FiberLayerT]/2" 
+       startPhi="0*deg"               deltaPhi="360.*deg"/>
+ <Box name="TIDRing2CoolManifold"         
+       dx="[tidringpar:CoolManifoldW]/2"  dy="[CoolManifoldL]/2"  dz="[tidringpar:CoolManifoldT]/2"  />
+ <Tubs name="TIDRing2FlatCable"               rMin="[FlatCablerIn]" 
+       rMax="[FlatCablerOut]"                 dz="[tidringpar:FlatCableT]/2" 
+       startPhi="-[FlatCabledPhi]/2"            deltaPhi="[FlatCabledPhi]"/>
+
 </SolidSection>
 
 <LogicalPartSection label="tidring2.xml">
@@ -57,8 +78,8 @@
   <rMaterial name="tidmaterial:TID_mech"/>
  </LogicalPart>
  <LogicalPart name="TIDICC2" category="unspecified">
-  <rSolid name="tidringpar:TIDICC"/>
-  <rMaterial name="tidmaterial:TID_ICC2"/>
+  <rSolid name="tidringpar:TIDICCSS"/>
+  <rMaterial name="tidmaterial:TID_SSAOHBox"/>
  </LogicalPart>
  <LogicalPart name="TIDRing2ICBTail" category="unspecified">
   <rSolid name="tidring2:TIDRing2ICBTail"/>
@@ -68,22 +89,31 @@
   <rSolid name="tidring2:TIDRing2ICB"/>
   <rMaterial name="tidmaterial:TID_ICB3"/>
  </LogicalPart>
- <LogicalPart name="TIDRing2DOHMIn" category="unspecified">
-  <rSolid name="tidring2:TIDRing2DOHMIn"/>
-  <rMaterial name="tidmaterial:TID_DOHM2"/>
- </LogicalPart>
- <LogicalPart name="TIDRing2DOHMOut" category="unspecified">
-  <rSolid name="tidring2:TIDRing2DOHMOut"/>
+ <LogicalPart name="TIDRing2DOHM" category="unspecified">
+  <rSolid name="tidring2:TIDRing2DOHM"/>
   <rMaterial name="tidmaterial:TID_DOHM2"/>
  </LogicalPart>
  <LogicalPart name="TIDRing2Cool1" category="unspecified">
   <rSolid name="tidring2:TIDRing2Cool1"/>
-  <rMaterial name="tidmaterial:TID_Cool_ring"/>
+  <rMaterial name="tidmaterial:TID_CoolPipe"/>
  </LogicalPart>
  <LogicalPart name="TIDRing2Cool2" category="unspecified">
   <rSolid name="tidring2:TIDRing2Cool2"/>
-  <rMaterial name="tidmaterial:TID_Cool_ring"/>
+  <rMaterial name="tidmaterial:TID_CoolPipe"/>
  </LogicalPart>
+ <LogicalPart name="TIDRing2FiberLayer" category="unspecified">
+  <rSolid name="tidring2:TIDRing2FiberLayer"/>
+  <rMaterial name="tidmaterial:TID_FiberLayer"/>
+ </LogicalPart>
+ <LogicalPart name="TIDRing2CoolManifold" category="unspecified">
+  <rSolid name="tidring2:TIDRing2CoolManifold"/>
+  <rMaterial name="tidmaterial:TID_Cool_Manifold"/>
+ </LogicalPart>
+ <LogicalPart name="TIDRing2FlatCable" category="unspecified">
+  <rSolid name="tidring2:TIDRing2FlatCable"/>
+  <rMaterial name="tibtidcommonmaterial:TIBTID_AmphCable"/>
+ </LogicalPart>
+
 </LogicalPartSection>
 
 <PosPartSection label="tidring2.xml">
@@ -121,6 +151,16 @@
    <rChild name="tidring2:TIDRing2Cool2"/>
   <Translation x="[zero]" y="[zero]" z="[tidringpar:CoolZ]"/>
  </PosPart>
+ <PosPart copyNumber="1">
+   <rParent name="tidring2:TIDRing2"/>
+   <rChild name="tidring2:TIDRing2FiberLayer"/>
+  <Translation x="[zero]" y="[zero]" z="-[tidringpar:FiberLayerZ]"/>
+ </PosPart>
+ <PosPart copyNumber="2">
+   <rParent name="tidring2:TIDRing2"/>
+   <rChild name="tidring2:TIDRing2FiberLayer"/>
+  <Translation x="[zero]" y="[zero]" z="[tidringpar:FiberLayerZ]"/>
+ </PosPart>
 </PosPartSection>
 
 <Algorithm name="track:DDTrackerPhiAlgo">
@@ -129,8 +169,8 @@
   <Numeric name="Radius"      value="[ICBTailRPos]"/>
   <Numeric name="Tilt"        value="-90*deg"/>
   <Vector name="Phi" type="numeric" nEntries="8">
-     0.0*deg,          45.0*deg,           54.0*deg,         171.0*deg,
-   180.0*deg,         225.0*deg,          234.0*deg,         351.0*deg
+   180.0*deg,         135.0*deg,          126.0*deg,           9.0*deg,
+   360.0*deg,         315.0*deg,          306.0*deg,         189.0*deg
   </Vector>
   <Vector name="ZPos" type="numeric" nEntries="8">
    [tidringpar:ICBZ], -[tidringpar:ICBZ], [tidringpar:ICBZ], -[tidringpar:ICBZ],
@@ -141,39 +181,41 @@
 
 <Algorithm name="track:DDTrackerPhiAlgo">
   <rParent name="tidring2:TIDRing2"/>
-  <String name="ChildName"    value="tidring2:TIDRing2DOHMIn"/>
+  <String name="ChildName"    value="tidring2:TIDRing2DOHM"/>
   <Numeric name="Radius"      value="[tidring2:DOHMrOff]"/>
   <Numeric name="Tilt"        value="0*deg"/>
   <Vector name="Phi" type="numeric" nEntries="2">
-    22.5*deg,         202.5*deg
-  </Vector>
-  <Vector name="ZPos" type="numeric" nEntries="2">
-  -[tidringpar:DOHMZ], [tidringpar:DOHMZ]
-  </Vector>
-</Algorithm>
-<Algorithm name="track:DDTrackerPhiAlgo">
-  <rParent name="tidring2:TIDRing2"/>
-  <String name="ChildName"    value="tidring2:TIDRing2DOHMOut"/>
-  <Numeric name="Radius"      value="[tidring2:DOHMrOff]"/>
-  <Numeric name="Tilt"        value="0*deg"/>
-  <Vector name="Phi" type="numeric" nEntries="2">
-    22.5*deg,         202.5*deg
+   [DOHMphiPos], [DOHMphiPos]+180*deg
   </Vector>
   <Vector name="ZPos" type="numeric" nEntries="2">
   -[tidringpar:DOHMZ], [tidringpar:DOHMZ]
   </Vector>
 </Algorithm>
 
+<Algorithm name="track:DDTrackerPhiAlgo">
+  <rParent name="tidring2:TIDRing2"/>
+  <String name="ChildName"    value="tidring2:TIDRing2FlatCable"/>
+  <Numeric name="Radius"      value="[zero]"/>
+  <Numeric name="Tilt"        value="0*deg"/>
+  <Vector name="Phi" type="numeric" nEntries="8">
+   [FlatCablephiPosL], [FlatCablephiPosR], [FlatCablephiPosL]+180*deg, [FlatCablephiPosR]+180*deg,
+   [FlatCablephiPosL], [FlatCablephiPosR], [FlatCablephiPosL]+180*deg, [FlatCablephiPosR]+180*deg
+  </Vector>
+  <Vector name="ZPos" type="numeric" nEntries="8">
+  -[tidringpar:FlatCableZ], -[tidringpar:FlatCableZ],  -[tidringpar:FlatCableZ],  -[tidringpar:FlatCableZ], 
+   [tidringpar:FlatCableZ],  [tidringpar:FlatCableZ],   [tidringpar:FlatCableZ],   [tidringpar:FlatCableZ]
+  </Vector>
+</Algorithm>
 
 <Algorithm name="track:DDTrackerAngular">
   <rParent name="tidring2:TIDStructure2"/>
-  <String  name="ChildName"   value="tidringpar:TIDCoolManifold"/>
+  <String  name="ChildName"   value="tidring2:TIDRing2CoolManifold"/>
   <Numeric name="N"           value="2" />
   <Numeric name="StartCopyNo" value="1" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
-  <Numeric name="StartAngle"  value="14.50*deg"/>
-  <Numeric name="Radius"      value="[zero]"/>
+  <Numeric name="StartAngle"  value="63.0*deg"/>
+  <Numeric name="Radius"      value="[tidringpar:CoolManifoldR]"/>
   <Vector name="Center" type="numeric" nEntries="3"> 0, 0, 0 </Vector>
 </Algorithm>
 
@@ -182,32 +224,30 @@
   <Vector name="ModuleName" type="string" nEntries="2">
    tidmodule2:TIDModule2,   tidmodule2:TIDModule2</Vector>
   <String name="ICCName"            value="tidring2:TIDICC2"/>
-  <String name="CoolName"           value="tidringpar:TIDCoolInsert"/>
   <Numeric name="Number"            value="[NPhi]" />
   <Numeric name="StartAngle"        value="[PhiOff]" />
   <Numeric name="ModuleR"           value="[RPos]" />
   <Vector name="ModuleZ"    type="numeric" nEntries="2">
   -[tidringpar:ModuleZSS],    [tidringpar:ModuleZSS]   </Vector>
   <Numeric name="ICCR"              value="[ICCRPos]" />
+  <Numeric name="ICCShift"          value="[tidringpar:ICCW]/2" />
   <Vector name="ICCZ"       type="numeric" nEntries="2">
   -[tidringpar:ICCZ],         [tidringpar:ICCZ]        </Vector>
-  <Vector name="CoolR"      type="numeric" nEntries="2">
-   [tidring2:CoolR1],         [tidring2:CoolR2]        </Vector>
-  <Vector name="CoolZ"      type="numeric" nEntries="2">
-  -[tidringpar:CoolInsertZ],  [tidringpar:CoolInsertZ] </Vector>
-  <Numeric name="FullHeight"        value="[tidmodule2:FullHeight]"/>
-  <Numeric name="DlTop"             value="[tidmodule2:DlTop]"/>
-  <Numeric name="DlBottom"          value="[tidmodule2:DlBottom]"/>
-  <Numeric name="DlHybrid"          value="[tidmodule2:DlHybrid]"/>
-  <Numeric name="TopFrameHeight"    value="[tidmodpar:TopFrameHeight]"/>
-  <Numeric name="BottomFrameHeight" value="[tidmodpar:BottomFrameHeight]"/>
-  <Numeric name="BottomFrameOver"   value="[tidmodpar:BottomFrameOver]"/>
-  <Numeric name="SideFrameWidth"    value="[tidmodpar:SideFrameWidth]"/>
-  <Numeric name="SideFrameOver"     value="[tidmodpar:SideFrameOver]"/>
-  <Numeric name="HybridHeight"      value="[tidmodpar:HybridHeight]"/>
-  <Numeric name="HybridWidth"       value="[tidmodpar:HybridWidth]"/>
-  <Numeric name="CoolWidth"         value="[tidringpar:CoolInsertW]"/>
-  <Numeric name="CoolSide"          value="[tidring2:CoolSide]"/>
+</Algorithm>
+
+
+<Algorithm name="track:DDTrackerPhiAlgo">
+  <rParent name="tidring2:TIDRing2"/>
+  <String name="ChildName"    value="tidringpar:TIDManifoldFix"/>
+  <Numeric name="Radius"      value="[tidringpar:CoolManifoldR]"/>
+  <Numeric name="Tilt"        value="-90*deg"/>
+  <Vector name="Phi" type="numeric" nEntries="4">
+   63.0*deg,         63.0*deg,          243.0*deg,         243.0*deg
+  </Vector>
+  <Vector name="ZPos" type="numeric" nEntries="4">
+   [tidringpar:ManifoldFixZ], -[tidringpar:ManifoldFixZ],
+   [tidringpar:ManifoldFixZ], -[tidringpar:ManifoldFixZ]
+  </Vector>
 </Algorithm>
 
 </DDDefinition>

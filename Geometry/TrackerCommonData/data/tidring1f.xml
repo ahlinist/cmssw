@@ -47,6 +47,16 @@
    <rChild name="tidring1:TIDRing1Cool2"/>
   <Translation x="[zero]" y="[zero]" z="[tidringpar:CoolZ]"/>
  </PosPart>
+ <PosPart copyNumber="1">
+   <rParent name="tidring1f:TIDRing1F"/>
+   <rChild name="tidring1:TIDRing1FiberLayer"/>
+  <Translation x="[zero]" y="[zero]" z="-[tidringpar:FiberLayerZ]"/>
+ </PosPart>
+ <PosPart copyNumber="2">
+   <rParent name="tidring1f:TIDRing1F"/>
+   <rChild name="tidring1:TIDRing1FiberLayer"/>
+  <Translation x="[zero]" y="[zero]" z="[tidringpar:FiberLayerZ]"/>
+ </PosPart>
 </PosPartSection>
 
 <Algorithm name="track:DDTrackerPhiAlgo">
@@ -55,8 +65,8 @@
   <Numeric name="Radius"      value="[tidring1:ICBTailRPos]"/>
   <Numeric name="Tilt"        value="-90*deg"/>
   <Vector name="Phi" type="numeric" nEntries="8">
-    12.5*deg,          62.5*deg,          102.5*deg,         152.5*deg,
-   192.5*deg,         242.5*deg,          282.5*deg,         332.5*deg
+   167.5*deg,         117.5*deg,           77.5*deg,          27.5*deg,
+   347.5*deg,         297.5*deg,          257.5*deg,         207.5*deg
   </Vector>
   <Vector name="ZPos" type="numeric" nEntries="8">
   -[tidringpar:ICBZ], [tidringpar:ICBZ], -[tidringpar:ICBZ], [tidringpar:ICBZ],
@@ -70,10 +80,26 @@
   <Numeric name="Radius"      value="[tidring1:DOHMrOff]"/>
   <Numeric name="Tilt"        value="0*deg"/>
   <Vector name="Phi" type="numeric" nEntries="2">
-    127.5*deg,         307.5*deg
+   [tidring1:DOHMphiPos], [tidring1:DOHMphiPos]+180*deg
   </Vector>
   <Vector name="ZPos" type="numeric" nEntries="2">
   -[tidringpar:DOHMZ], [tidringpar:DOHMZ]
+  </Vector>
+</Algorithm>
+
+
+<Algorithm name="track:DDTrackerPhiAlgo">
+  <rParent name="tidring1f:TIDRing1F"/>
+  <String name="ChildName"    value="tidring1:TIDRing1FlatCable"/>
+  <Numeric name="Radius"      value="[zero]"/>
+  <Numeric name="Tilt"        value="0*deg"/>
+  <Vector name="Phi" type="numeric" nEntries="4">
+   [tidring1:FlatCablephiPosF], [tidring1:FlatCablephiPosF]+180*deg, 
+   [tidring1:FlatCablephiPosB], [tidring1:FlatCablephiPosB]+180*deg
+  </Vector>
+  <Vector name="ZPos" type="numeric" nEntries="4">
+  -[tidringpar:FlatCableZ], -[tidringpar:FlatCableZ], 
+   [tidringpar:FlatCableZ],  [tidringpar:FlatCableZ]
   </Vector>
 </Algorithm>
 
@@ -82,32 +108,31 @@
   <Vector name="ModuleName" type="string" nEntries="2">
    tidmodule1l:TIDModule1L, tidmodule1r:TIDModule1R</Vector>
   <String name="ICCName"            value="tidring1:TIDICC1"/>
-  <String name="CoolName"           value="tidringpar:TIDCoolInsert"/>
   <Numeric name="Number"            value="[tidring1:NPhi]" />
   <Numeric name="StartAngle"        value="[tidring1:PhiOff]" />
   <Numeric name="ModuleR"           value="[tidring1:RPos]" />
   <Vector name="ModuleZ"    type="numeric" nEntries="2">
   -[tidringpar:ModuleZDS],    [tidringpar:ModuleZDS]   </Vector>
   <Numeric name="ICCR"              value="[tidring1:ICCRPos]" />
+  <Numeric name="ICCShift"          value="[zero]" />
   <Vector name="ICCZ"       type="numeric" nEntries="2">
   -[tidringpar:ICCZ],         [tidringpar:ICCZ]        </Vector>
-  <Vector name="CoolR"      type="numeric" nEntries="2">
-   [tidring1:CoolR1],         [tidring1:CoolR2]        </Vector>
-  <Vector name="CoolZ"      type="numeric" nEntries="2">
-  -[tidringpar:CoolInsertZ],  [tidringpar:CoolInsertZ] </Vector>
-  <Numeric name="FullHeight"        value="[tidmodule1:FullHeight]"/>
-  <Numeric name="DlTop"             value="[tidmodule1:DlTop]"/>
-  <Numeric name="DlBottom"          value="[tidmodule1:DlBottom]"/>
-  <Numeric name="DlHybrid"          value="[tidmodule1:DlHybrid]"/>
-  <Numeric name="TopFrameHeight"    value="[tidmodpar:TopFrameHeight]"/>
-  <Numeric name="BottomFrameHeight" value="[tidmodpar:BottomFrameHeight]"/>
-  <Numeric name="BottomFrameOver"   value="[tidmodpar:BottomFrameOver]"/>
-  <Numeric name="SideFrameWidth"    value="[tidmodpar:SideFrameWidth]"/>
-  <Numeric name="SideFrameOver"     value="[tidmodpar:SideFrameOver]"/>
-  <Numeric name="HybridHeight"      value="[tidmodpar:HybridHeight]"/>
-  <Numeric name="HybridWidth"       value="[tidmodpar:HybridWidth]"/>
-  <Numeric name="CoolWidth"         value="[tidringpar:CoolInsertW]"/>
-  <Numeric name="CoolSide"          value="[tidring1:CoolSide]"/>
+</Algorithm>
+
+<Algorithm name="track:DDTrackerPhiAlgo">
+  <rParent name="tidring1f:TIDRing1F"/>
+  <String name="ChildName"    value="tidringpar:TIDManifoldFix"/>
+  <Numeric name="Radius"      value="[tidringpar:CoolManifoldR]"/>
+  <Numeric name="Tilt"        value="-90*deg"/>
+  <Vector name="Phi" type="numeric" nEntries="4">
+   52.5*deg,         52.5*deg,          232.5*deg,         232.5*deg
+  </Vector>
+  <Vector name="ZPos" type="numeric" nEntries="4">
+    [tidringpar:ManifoldFixZ]+[tidringpar:FiberLayerT]+[tidringpar:ICBT] , 
+  -([tidringpar:ManifoldFixZ]+[tidringpar:FiberLayerT]+[tidringpar:ICBT]),
+    [tidringpar:ManifoldFixZ]+[tidringpar:FiberLayerT]+[tidringpar:ICBT] , 
+  -([tidringpar:ManifoldFixZ]+[tidringpar:FiberLayerT]+[tidringpar:ICBT])
+  </Vector>
 </Algorithm>
 
 </DDDefinition>

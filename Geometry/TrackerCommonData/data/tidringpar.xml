@@ -3,34 +3,45 @@
 
 <ConstantsSection label="tidringpar.xml" eval="true">
  <Constant name="Rin"               value="22.50*cm"/>
- <Constant name="Rout"              value="51.20*cm"/>
- <Constant name="RingT"             value="3.00*cm"/>
+ <Constant name="Rout"              value="50.90*cm"/>
+ <Constant name="RingT"             value="3.40*cm"/>   <!-- MAX ALLOWED VALUE 3.5 cm -->
  <Constant name="StructureT"        value="0.80*cm"/>
+<!-- DOHM  -->
+ <Constant name="DOHMT"             value="0.22*cm"/>
+ <Constant name="DOHMZ"             value="([StructureT]+[DOHMT])/2"/>
+<!-- Flat Amphenol 26 --> 
+ <Constant name="FlatCableT"             value="0.06*cm"/>
+ <Constant name="FlatCableZ"             value="([StructureT]+[FlatCableT])/2"/>
+<!-- MotherCables -->
  <Constant name="ICBW"              value="2.50*cm"/>
  <Constant name="ICBT"              value="0.12*cm"/>
  <Constant name="ICBZ"              value="([StructureT]+[ICBT])/2"/>
- <Constant name="ICCH"              value="3.00*cm"/>
- <Constant name="ICCW"              value="6.00*cm"/>
- <Constant name="ICCT"              value="0.15*cm"/>
- <Constant name="ICCZ"              value="([StructureT]+2*[ICBT]+[ICCT])/2"/>
  <Constant name="ICBTailH"          value="3.26*cm"/>
  <Constant name="ICBTailT"          value="[ICBT]"/>
  <Constant name="ICBTailTol"        value="0.05*cm"/>
- <Constant name="CoolW"             value="0.30*cm"/>
- <Constant name="CoolT"             value="0.30*cm"/>
- <Constant name="CoolZ"             value="([StructureT]+2*[ICBT]+[CoolT])/2"/>
- <Constant name="CoolInsertH"       value="1.50*cm"/>
- <Constant name="CoolInsertW"       value="0.80*cm"/>
- <Constant name="CoolInsertT"       value="0.300*cm"/>
- <Constant name="CoolInsertZ"       value="0.970*cm"/>
- <Constant name="CoolManifoldRin"   value="46.00*cm"/>
- <Constant name="CoolManifoldRout"  value="49.00*cm"/>
- <Constant name="CoolManifoldT"     value="0.70*cm"/>
- <Constant name="CoolManifoldW"     value="18.50*deg"/>
+<!-- Layer of the Fiber Pigtails --> 
+ <Constant name="FiberLayerT"       value="0.05*cm"/>
+ <Constant name="FiberLayerZ"       value="([StructureT]+2*[ICBT]+[FiberLayerT])/2"/>
+<!-- Cooling Pipes -->
+ <Constant name="CoolD"             value="0.35*cm"/>  <!-- diameter of the pipe -->
+ <Constant name="CoolZ"             value="([StructureT]/2)+0.375*cm"/>
+<!-- Cooling Manifolds -->
+ <Constant name="CoolManifoldR"     value="49.00*cm"/>
+ <Constant name="CoolManifoldW"     value="2.00*cm"/>
+ <Constant name="CoolManifoldT"     value="0.80*cm"/>
+ <Constant name="ManifoldFixH"      value="4.0*cm"/>
+ <Constant name="ManifoldFixW"      value="5.6*cm"/>  
+ <Constant name="ManifoldFixT"      value="0.20*cm"/>
+ <Constant name="ManifoldFixZ"      value="([StructureT]+[ManifoldFixT])/2"/>
+<!-- AOH boxes (bottom side at the same height of cooling pipes) --> 
+ <Constant name="ICCH"              value="2.70*cm"/>
+ <Constant name="ICCW"              value="2.80*cm"/>
+ <Constant name="ICCT"              value="0.60*cm"/>
+ <Constant name="ICCZ"              value="[CoolZ]+([ICCT]-[CoolD])/2" />
+ <Constant name="ICCROffset"        value="0.60*cm"/>
+<!-- Modules -->
  <Constant name="ModuleZDS"         value="1.305*cm"/>
  <Constant name="ModuleZSS"         value="1.226*cm"/>
- <Constant name="DOHMT"             value="0.22*cm"/>
- <Constant name="DOHMZ"             value="([StructureT]+[DOHMT])/2"/>
 </ConstantsSection>
 
 <SolidSection label="tidringpar.xml">
@@ -40,24 +51,20 @@
  <Tubs name="TIDStructure"            rMin="[Rin]" 
        rMax="[Rout]"                  dz="[StructureT]/2" 
        startPhi="0*deg"               deltaPhi="360.*deg"/>
- <Box name="TIDICC"                   dx="[ICCW]/2"
+ <Box name="TIDICCSS"                 dx="[ICCW]/2"
        dy="[ICCT]/2"                  dz="[ICCH]/2"/>
- <Box name="TIDCoolInsert"            dx="[CoolInsertH]/2"
-       dy="[CoolInsertW]/2"           dz="[CoolInsertT]/2"/>
- <Tubs name="TIDCoolManifold"         rMin="[CoolManifoldRin]" 
-       rMax="[CoolManifoldRout]"      dz="[CoolManifoldT]/2" 
-       startPhi="-[CoolManifoldW]/2"  deltaPhi="[CoolManifoldW]"/>
+ <Box name="TIDICCDS"                 dx="[ICCW]"
+       dy="[ICCT]/2"                  dz="[ICCH]/2"/>
+ <Box name="TIDManifoldFix"           dx="[ManifoldFixW]/2"
+       dy="[ManifoldFixH]/2"          dz="[ManifoldFixT]/2"/>
 </SolidSection>
 
 <LogicalPartSection label="tidringpar.xml">
- <LogicalPart name="TIDCoolInsert" category="unspecified">
-  <rSolid name="tidringpar:TIDCoolInsert"/>
-  <rMaterial name="tidmaterial:TID_Cool_insert"/>
- </LogicalPart>
- <LogicalPart name="TIDCoolManifold" category="unspecified">
-  <rSolid name="tidringpar:TIDCoolManifold"/>
-  <rMaterial name="tidmaterial:TID_Cool_Manifold"/>
+ <LogicalPart name="TIDManifoldFix" category="unspecified">
+   <rSolid name="TIDManifoldFix"/>
+   <rMaterial name="materials:Aluminium"/>
  </LogicalPart>
 </LogicalPartSection>
+
 
 </DDDefinition>
