@@ -1,24 +1,20 @@
 /**
  * file ProtonTaggerFilter.cc
  *
- * Selection of two most forward going protons, one in clockwise
- * one in anti-clockwise direction.
- * Access to Roman Pot acceptances
+ * Selection of two most forward going protons, 
+ * one in clockwise and one in anti-clockwise beam direction.
+ * Access to near-beam detector acceptances.
  *
- * Authors: Marek Tasevsky, Patrick Janot, Dmitry Zaborov
- *
- * v1(famos): Nov 23, 2003
- * v2(famos): July 25, 2005
- * v3(cmssw): Sep 2007
- *
+ * Author: Dmitry Zaborov
  */
 
-// Version: $Id:  $
+// Version: $Id: ProtonTaggerFilter.cc,v 1.1 2007/09/12 13:41:12 dzaborov Exp $
 
 #include "FastSimulation/ProtonTaggers/interface/ProtonTaggerFilter.h"
 
 #include "FWCore/PluginManager/interface/PluginManager.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "FWCore/ParameterSet/interface/FileInPath.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/Framework/interface/EventSetup.h"
@@ -30,7 +26,9 @@
 
 #include "HepMC/GenEvent.h"
 
-#include "CLHEP/Random/RandGaussQ.h"
+//#include "CLHEP/Random/RandGaussQ.h"
+
+#include "TFile.h"
 
 #include <iostream>
 
@@ -38,30 +36,52 @@
 /** read (and verify) parameters */
 
 ProtonTaggerFilter::ProtonTaggerFilter(edm::ParameterSet const & p)      
-{    
+{
+  std::cout << "ProtonTaggerFilter: Initializing ..." << std::endl;
+  
   // ... get parameters
 
-  //pathToAcceptanceTables = p.getParameter<std::string>("pathToAcceptanceTables");
-  pathToAcceptanceTables = "FastSimulation/ProtonTaggers/data";
-  
   beam1mode = p.getParameter<unsigned int>("beam1mode");
   beam2mode = p.getParameter<unsigned int>("beam2mode");
 
   beamCombiningMode = p.getParameter<unsigned int>("beamCombiningMode");
   
-  if (beam1mode > 4) throw cms::Exception("FastSimulation/ProtonTaggers") 
+  switch (beam1mode)
+  {
+    case 1: std::cout << "Option chosen for beam 1: 420" << std::endl; break;
+    case 2: std::cout << "Option chosen for beam 1: 220" << std::endl; break;
+    case 3: std::cout << "Option chosen for beam 1: 420 and 220" << std::endl; break;
+    case 4: std::cout << "Option chosen for beam 1: 420 or 220" << std::endl; break;
+    default: throw cms::Exception("FastSimulation/ProtonTaggers") 
                            << "Error: beam1mode cannot be " << beam1mode;
-  if (beam2mode > 4) throw cms::Exception("FastSimulation/ProtonTaggers") 
+  }
+  
+  switch (beam2mode)
+  {
+    case 1: std::cout << "Option chosen for beam 2: 420" << std::endl; break;
+    case 2: std::cout << "Option chosen for beam 2: 220" << std::endl; break;
+    case 3: std::cout << "Option chosen for beam 2: 420 and 220" << std::endl; break;
+    case 4: std::cout << "Option chosen for beam 2: 420 or 220" << std::endl; break;
+    default: throw cms::Exception("FastSimulation/ProtonTaggers")
                            << "Error: beam2mode cannot be " << beam2mode;
+  }
 
-  if (beamCombiningMode > 3) throw cms::Exception("FastSimulation/ProtonTaggers") 
+  switch (beamCombiningMode)
+  {
+    case 1: std::cout << "Option chosen: one proton is sufficient" << std::endl; break;
+    case 2: std::cout << "Option chosen: two protons should be tagged" << std::endl; break;
+    case 3: std::cout << "Option chosen: two protons should be tagged as 220+220 or 420+420" << std::endl; break;
+    case 4: std::cout << "Option chosen: two protons should be tagged as 220+420 or 420+220" << std::endl; break;
+    default: throw cms::Exception("FastSimulation/ProtonTaggers") 
                              << "Error: beamCombiningMode cannot be " << beamCombiningMode;
+  }
 
-  if (((beam1mode != 4) || (beam2mode != 4)) && (beamCombiningMode > 1)) {
+  if (((beam1mode != 4) || (beam2mode != 4)) && (beamCombiningMode > 2)) {
     std::cerr << "Warning: beamCombiningMode = " << beamCombiningMode 
               << " only makes sence with beam1mode = beam2mode = 4" << std::endl;
-    //beamCombiningMode = 1;
   }
+
+  std::cout << "ProtonTaggerFilter: Initialized" << std::endl;
 }
 
 
@@ -74,7 +94,31 @@ ProtonTaggerFilter::~ProtonTaggerFilter() {;}
 
 void ProtonTaggerFilter::beginJob(const edm::EventSetup & es)
 {
-  rpAcceptance.InitRPA(pathToAcceptanceTables);
+  std::cout << "ProtonTaggerFilter: Getting ready ..." << std::endl;
+
+  edm::FileInPath myDataFile("FastSimulation/ProtonTaggers/data/acceptance_420_220.root");
+  std::string fullPath = myDataFile.fullPath();
+
+  std::cout << "Opening " << fullPath << std::endl;
+  TFile f(fullPath.c_str());
+
+  if (f.Get("description") != NULL)
+      std::cout << "Description found: " << f.Get("description")->GetTitle() << std::endl;
+  
+  std::cout << "Reading acceptance tables " << std::endl;
+  
+  helper420beam1.Init(f, "a420");
+  helper420beam2.Init(f, "a420_b2");
+
+  helper220beam1.Init(f, "a220");
+  helper220beam2.Init(f, "a220_b2");
+
+  helper420a220beam1.Init(f, "a420a220");
+  helper420a220beam2.Init(f, "a420a220_b2");
+
+  f.Close();
+
+  std::cout << "ProtonTaggerFilter: Ready" << std::endl;
 }
 
 
@@ -98,12 +142,12 @@ bool ProtonTaggerFilter::filter(edm::Event & iEvent, const edm::EventSetup & es)
   const double mp = 0.938272029; // just a proton mass
   const double Ebeam=7000.0;     // beam energy - would be better to read from parameters
  
-  double Pzpgen1 = 0.0;
-  double Pzpgen2 = 0.0;
-  double Ptgen1  = -10.0;
-  double Ptgen2  = -10.0;
-  double PhiGen1 = 0;
-  double PhiGen2 = 0;
+  double pz1 = 0.0;
+  double pz2 = 0.0;
+  double pt1  = -10.0;
+  double pt2  = -10.0;
+  double phi1 = 0;
+  double phi2 = 0;
 
   // ... loop over particles, find the most energetic proton in either direction
   
@@ -118,84 +162,86 @@ bool ProtonTaggerFilter::filter(edm::Event & iEvent, const edm::EventSetup & es)
       //std::cout << " pdg_id: "  << p->pdg_id() << " eta: " << p->momentum().eta() << " e: " 
       //          <<  p->momentum().e() << " pz: " << p->momentum().pz() << std::endl;
 
-      float Pzpgen = p->momentum().pz();
+      float pz = p->momentum().pz();
 
-      if (Pzpgen>Pzpgen1 && Pzpgen<Ebeam) {
-          Pzpgen1=Pzpgen;
-	  Ptgen1 = p->momentum().perp();
-          PhiGen1= p->momentum().phi();
+      if (pz>pz1 && pz<Ebeam) {
+          pz1 = pz;
+	  pt1 = p->momentum().perp();
+          phi1= p->momentum().phi();
       }
 
-      if (Pzpgen<Pzpgen2 && Pzpgen>-Ebeam) {
-          Pzpgen2=Pzpgen;
-	  Ptgen2 = p->momentum().perp();
-          PhiGen2= p->momentum().phi();
+      if (pz<pz2 && pz>-Ebeam) {
+          pz2 = pz;
+	  pt2 = p->momentum().perp();
+          phi2= p->momentum().phi();
       }
       
-      //std::cout << "Pzpgen1 " << Pzpgen1 << " Pzpgen2: "  << Pzpgen2 << " Pzpgen: " << Pzpgen << std::endl;
+      //std::cout << "pz1 " << pz1 << " pz2: "  << pz2 << " pz: " << pz << std::endl;
     }
   }
 
   // ... return false if no forward protons found
 
-  if ((Ptgen1<0) && (Ptgen2<0)) return false;
+  if ((pt1<0) && (pt2<0)) return false;
   
-  /* Detectors     beam1 (clwise)    beam2 (a-clwise)
-   *
-   * 420m              myAcc11           myAcc21
-   * 220m              myAcc12           myAcc22
-   * 420m.and.220m     myAcc13           myAcc23
-   * 420m.or.220m      myAcc14           myAcc24
-   */
+  // ... first set all acceptances to zero
 
-  float Acc11,Acc12,Acc13,Acc14,Acc21,Acc22,Acc23,Acc24;
-  Acc11=Acc12=Acc13=Acc14=Acc21=Acc22=Acc23=Acc24=0;
+  float acc420b1, acc220b1, acc420and220b1, acc420or220b1; // beam 1 (clockwise)
+  float acc420b2, acc220b2, acc420and220b2, acc420or220b2; // beam 2 (anti-clockwise)
 
-  // ... compute acceptance for any sensible proton 1
+  acc420b1 = acc220b1 = acc420and220b1 = acc420or220b1 = 0;
+  acc420b2 = acc220b2 = acc420and220b2 = acc420or220b2 = 0;
 
-  if (Ptgen1>0) {
+  // ... then compute acceptance for any sensible proton 1
 
-    // ... compute fractional momentum losses of the two protons
+  if (pt1>0) {
 
-    double XiGen1 = 1.0 - Pzpgen1/Ebeam;
+    // ... compute kinimatical variable
 
-    if (XiGen1<0.0) XiGen1=-10.0;
-    if (XiGen1>1.0) XiGen1=10.0;
-
-    // ... compute "t"
-
-    double tGen1=(-Ptgen1*Ptgen1-mp*mp*XiGen1*XiGen1)/(1-XiGen1);
-
+    double xi  = 1.0 - pz1/Ebeam;		    // fractional momentum loss
+    double t   = (-pt1*pt1 - mp*mp*xi*xi) / (1-xi); // "t"
+    double phi = phi1;
+    
+    if (xi<0.0) xi=-10.0;
+    if (xi>1.0) xi=10.0;
+    
     // ... get acceptance from tables
 
-    rpAcceptance.getRPAcceptance1(tGen1, XiGen1, PhiGen1, Acc11, Acc12, Acc13, Acc14); 
+    //std::cout << "pz1: " << pz1 << " pt1: " <<  pt1 << " xi: " << xi
+    //          << " t: " << t << " phi: " << phi << std::endl;
 
-    //std::cout << "Pzpgen1: " << Pzpgen1 << " Ptgen1: " <<  Ptgen1 << " XiGen1: " << XiGen1
-    //          << " tGen1: " << tGen1 << " PhiGen1: " << PhiGen1 << std::endl;
+    acc420b1       = helper420beam1.GetAcceptance(t, xi, phi);
+    acc220b1       = helper220beam1.GetAcceptance(t, xi, phi);
+    acc420and220b1 = helper420a220beam1.GetAcceptance(t, xi, phi);
+
+    acc420or220b1  = acc420b1 + acc220b1 - acc420and220b1;
+
+    //std::cout << "+acc420b1: " << acc420b1 << " acc220b1: " << acc220b1 << " acc420and220b1: " << acc420and220b1 << " acc420or220b1: " << acc420or220b1  << std::endl;
   }
 
   // ... the same for proton 2
 
-  if (Ptgen2>0) {
+  if (pt2>0) {
   
-    double XiGen2 = 1.0 + Pzpgen2/Ebeam; 
+    double xi  = 1.0 + pz2/Ebeam;		  // fractional momentum loss
+    double t   = (-pt2*pt2-mp*mp*xi*xi) / (1-xi); // "t"
+    double phi = phi2;
+    
+    if (xi<0.0) xi=-10.0;
+    if (xi>1.0) xi=10.0;
 
-    if (XiGen2<0.0) XiGen2=-10.0;
-    if (XiGen2>1.0) XiGen2=10.0;
+    //std::cout << "-pz2: " << pz2 << " pt2: " <<  pt2 << " xi: " << xi
+    //          << " t: " << t << " phi: " << phi << std::endl;
 
-    double tGen2=(-Ptgen2*Ptgen2-mp*mp*XiGen2*XiGen2)/(1-XiGen2);
+    acc420b2       = helper420beam2.GetAcceptance(t, xi, phi);
+    acc220b2       = helper220beam2.GetAcceptance(t, xi, phi);
+    acc420and220b2 = helper420a220beam2.GetAcceptance(t, xi, phi);
+    
+    acc420or220b2  = acc420b2 + acc220b2 - acc420and220b2;
 
-    rpAcceptance.getRPAcceptance2(tGen2, XiGen2, PhiGen2, Acc21, Acc22, Acc23, Acc24);
-
-    //std::cout << "Pzpgen2: " << Pzpgen2 << " Ptgen2: " <<  Ptgen2 << " XiGen2: " << XiGen2
-    //          << " tGen2: " << tGen2 << " PhiGen2: " << PhiGen2 << std::endl;
+    //std::cout << "+acc420b2: " << acc420b2 << " acc220b2: " << acc220b2 << " acc420and220b2: " << acc420and220b2 << " acc420or220b2: " << acc420or220b2 << std::endl;
   }
   
-  //std::cout << "Acc11: " << Acc11 << " Acc21: " << Acc21 << std::endl;
-  //std::cout << "Acc12: " << Acc12 << " Acc22: " << Acc22 << std::endl;
-  //std::cout << "Acc13: " << Acc13 << " Acc23: " << Acc23 << std::endl;
-  //std::cout << "Acc14: " << Acc14 << " Acc24: " << Acc24 << std::endl;
-
   // ... make a decision
   
   //float rnd1 = RandGauss::shoot(0.,1.);
@@ -209,13 +255,18 @@ bool ProtonTaggerFilter::filter(edm::Event & iEvent, const edm::EventSetup & es)
   bool p2at220m = false;
   bool p2at420m = false;
 
-  if (Acc13 > acceptThreshold) p1at220m = p1at420m = true;
-  if (Acc11 > acceptThreshold) p1at420m = true;
-  if (Acc12 > acceptThreshold) p1at220m = true;
+  if (acc420and220b1 > acceptThreshold) p1at220m = p1at420m = true;
+  if (acc420b1       > acceptThreshold) p1at420m = true;
+  if (acc220b1       > acceptThreshold) p1at220m = true;
   
-  if (Acc23 > acceptThreshold) p2at220m = p2at420m = true;
-  if (Acc21 > acceptThreshold) p2at420m = true;
-  if (Acc22 > acceptThreshold) p2at220m = true;
+  if (acc420and220b2 > acceptThreshold) p2at220m = p2at420m = true;
+  if (acc420b2       > acceptThreshold) p2at420m = true;
+  if (acc220b2       > acceptThreshold) p2at220m = true;
+
+  //if (p1at220m) std::cout << "got proton 1 at 220 m" << std::endl;
+  //if (p1at420m) std::cout << "got proton 1 at 420 m" << std::endl;
+  //if (p2at220m) std::cout << "got proton 2 at 220 m" << std::endl;
+  //if (p2at420m) std::cout << "got proton 2 at 420 m" << std::endl;
 
   bool p1accepted = false;
   bool p2accepted = false;
@@ -230,18 +281,21 @@ bool ProtonTaggerFilter::filter(edm::Event & iEvent, const edm::EventSetup & es)
   if ((beam2mode==3) &&  p2at220m && p2at420m ) p2accepted = true;
   if ((beam2mode==4) && (p2at220m || p2at420m)) p2accepted = true;
 
+  //if (p1accepted) std::cout << "proton 1 accepted" << std::endl;
+  //if (p2accepted) std::cout << "proton 2 accepted" << std::endl;
+
   switch (beamCombiningMode) {
 
-    case 0:  // ... either of two protons
+    case 1:  // ... either of two protons
      if (p1accepted || p2accepted) return true; else return false;
 
-    case 1:  // ... both protons
+    case 2:  // ... both protons
      if (p1accepted && p2accepted) return true; else return false;
 
-    case 2:  // ... 220+220 or 420+420
+    case 3:  // ... 220+220 or 420+420
      if ((p1at220m && p2at220m) || (p1at420m && p2at420m)) return true; else return false;
 
-    case 3:  // ... 220+420 or 420+220
+    case 4:  // ... 220+420 or 420+220
      if ((p1at220m && p2at420m) || (p1at420m && p2at220m)) return true; else return false;
 
   }
