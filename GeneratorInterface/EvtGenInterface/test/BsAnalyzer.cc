@@ -50,6 +50,9 @@ void BsAnalyzer::beginJob( const EventSetup& )
    fOutputFile   = new TFile( fOutputFileName.c_str(), "RECREATE" ) ;
    // fHist2muMass  = new TH1D(  "Hist2muMass", "2-mu inv. mass", 100,  60., 120. ) ;  
    hGeneralId = new TH1D( "hGeneralId","LundIDs of all particles",  100, -1000., 1000.) ;
+   hnB = new TH1D( "hnB", "N(B)", 10,  0., 10. ) ;
+   hnBz = new TH1D( "hnBz", "N(B0)", 10,  0., 10. ) ;
+   hnBzb = new TH1D( "hnBzb", "N(B0bar)", 10,  0., 10. ) ;
    hPtbs = new TH1D( "hPtbs", "Pt Bs", 100,  0., 50. ) ;
    hPbs  = new TH1D( "hPbs",  "P Bs",  100,  0., 200. ) ;
    hPhibs = new TH1D( "hPhibs","Phi Bs",  100,  -3.14, 3.14) ;
@@ -96,6 +99,9 @@ void BsAnalyzer::analyze( const Event& e, const EventSetup& )
    if (Evt) nevent++;
 
    const float mmcToPs = 3.3355; 
+   int nB=0;
+   int nBz=0;
+   int nBzb=0;
 
    for ( GenEvent::particle_const_iterator p = Evt->particles_begin(); p != Evt->particles_end(); ++p ) {
 
@@ -104,7 +110,7 @@ void BsAnalyzer::analyze( const Event& e, const EventSetup& )
      GenVertex* prodvert = (*p)->production_vertex();
      float gamma = (*p)->momentum().e()/(*p)->generated_mass();
      float dectime = 0.0 ;
-     int mixed = -1;   // mixed is: -1 = unmixed
+     int mixed = -1;  // mixed is: -1 = unmixed
                       //           0 = mixed (before mixing)
                       //           1 = mixed (after mixing)
      if (endvert && prodvert) {
@@ -156,6 +162,10 @@ void BsAnalyzer::analyze( const Event& e, const EventSetup& )
      }
      // --------------------------------------------------------------
      if ( abs((*p)->pdg_id()) == 511 ) {  // B0 
+       if (mixed != 0) {
+	 nB++;
+         if ( (*p)->pdg_id() > 0 ) {nBz++;} else {nBzb++;}
+       }
        int isJpsiKs = 0;
        int isSemilept = 0;
        for ( GenVertex::particles_out_const_iterator bp = endvert->particles_out_const_begin(); bp != endvert->particles_out_const_end(); ++bp ) {
@@ -259,6 +269,9 @@ void BsAnalyzer::analyze( const Event& e, const EventSetup& )
        }
      }
    }
+   hnB->Fill(nB);
+   hnBz->Fill(nBz);
+   hnBzb->Fill(nBzb);
    return ;   
 }
 

@@ -14,7 +14,7 @@
 //
 // Original Author:  Nello Nappi
 //         Created:  Fri May 11 15:19:32 CEST 2007
-// $Id: EvtGenProducer.cc,v 1.1 2007/09/05 11:25:22 covarell Exp $
+// $Id: EvtGenProducer.cc,v 1.6 2007/08/27 09:49:46 covarell Exp $
 //
 //
 #include "FWCore/PluginManager/interface/PluginManager.h"
@@ -122,23 +122,23 @@ void EvtGenProducer::produce(edm::Event & e, const edm::EventSetup & es)
   const HepMC::GenEvent* Evt = EvtHandle->GetEvent() ;
   HepMC::GenEvent* newEvt = new HepMC::GenEvent( *Evt );
 
-  // Loop through existing particles to find undecayed B's
-  int nlist = 0; 
-  HepMC::GenParticle *listp[10]; 
-  int index[10];       // list of candidates to be forced 
+  // First pass through undecayed Pythia particles to decay particles known to EvtGen left stable by Pythia
+  // except candidates to be forced which will be searched later to include EvtGen decay products
+
+  nlist = 0; 
   for (HepMC::GenEvent::particle_const_iterator p=newEvt->particles_begin(); p != newEvt->particles_end(); ++p)
     {
-      status = (*p)->status();
- 
+      status = (*p)->status(); 
       if(status!=2)                 // only not decayed (status = 2) particles
 	{ 
 	  idHep = (*p)->pdg_id();
 
 	  int do_force=0;
-	  for(int i=0;i<nforced;i++)           // First check if part with forced decay
-	    {                                  // In that case do not decay immediately 
-	      if(idHep==forced_Hep[i])         // (only 1 per event will be forced)	 
-		{                              // Fill list
+	  for(int i=0;i<nforced;i++)         
+	    {                                
+	      if(idHep==forced_Hep[i])       
+		{
+		  do_force = 1;
 		  if(nlist<10)                 // not nice ... but 10 is a reasonable maximum?
 		    {
 		      listp[nlist]=*p;
@@ -149,7 +149,7 @@ void EvtGenProducer::produce(edm::Event & e, const edm::EventSetup & es)
 		      throw cms::Exception("runtime")
 			<< "more than 10 candidates to be forced "; 
 		    }
-		  do_force=1;
+		  break;
 		}
 	    }
 	  if(do_force==0)         // particles with decays not forced are decayed immediately 
@@ -159,9 +159,10 @@ void EvtGenProducer::produce(edm::Event & e, const edm::EventSetup & es)
 	      if(ipart==-1)continue;                          // particle not known to EvtGen       
 	      if(EvtDecayTable::getNMode(ipart)==0)continue;  // particles stable for EvtGen
 	      decay(*p,idEvt,newEvt);                                 // generate decay
-	    }
+	    }  
 	}
     }
+  // Now go through list of candidates to be forced
   if(nlist!=0)
     {
       // decide randomly which one to decay as alias
@@ -171,11 +172,11 @@ void EvtGenProducer::produce(edm::Event & e, const edm::EventSetup & es)
 	    {
 	      if(k==which)
 		{
-		  decay(listp[k],forced_Evt[k],newEvt);           // decay as alias
+		  decay(listp[k],forced_Evt[index[k]],newEvt);           // decay as alias
 		}
 	      else
 		{
-		  int id_non_alias=forced_Evt[k].getId();
+		  int id_non_alias=forced_Evt[index[k]].getId();
 		  EvtId non_alias(id_non_alias,id_non_alias); // create new EvtId with id = alias
 		  decay(listp[k],non_alias,newEvt);                    // decay as standard (non alias
 		}
@@ -184,7 +185,6 @@ void EvtGenProducer::produce(edm::Event & e, const edm::EventSetup & es)
 
     new_product->addHepMCData( newEvt );
     e.put( new_product );
-
 }
 
 void EvtGenProducer::decay(HepMC::GenParticle* partHep, EvtId idEvt, HepMC::GenEvent* theEvent )
@@ -229,7 +229,11 @@ void EvtGenProducer::decay(HepMC::GenParticle* partHep, EvtId idEvt, HepMC::GenE
     posEvt.set(posHep.t(),posHep.x(),posHep.y(),posHep.z());
     partEvt->init(idEvt,momEvt);
     partEvt->setDiagonalSpinDensity();     
-    partEvt->decay();                    
+    partEvt->decay();
+                    
+    // extend the search of candidates to be forced to EvtGen decay products and delete their daughters  ** 
+    // otherwise they wouldn't get their chance to take part in the forced decay lottery                 **
+    go_through_daughters(partEvt);    // recursive function go_through_daughters will do the job         **
 
     // Change particle in stdHEP format
     static EvtStdHep evtstdhep;
@@ -238,7 +242,6 @@ void EvtGenProducer::decay(HepMC::GenParticle* partHep, EvtId idEvt, HepMC::GenE
     partEvt->makeStdHep(evtstdhep);
 
     if (ntotal % 2000 == 0) {     // DEBUG
-    // if (abs( partHep->pdg_id() ) == 511 || abs( partHep->pdg_id() ) == 513) {
       partEvt->printParticle();                
       partEvt->printTree();
       std::cout << evtstdhep << "\n"  <<
@@ -249,12 +252,12 @@ void EvtGenProducer::decay(HepMC::GenParticle* partHep, EvtId idEvt, HepMC::GenE
 
     // ********* Now add to the HepMC Event **********
 
+    // Then loop on evtstdhep to add vertexes... 
     HepMC::GenVertex* theVerts[100];
     for (int ivert = 0; ivert < 100; ivert++) { 
       theVerts[ivert] = 0;
     }
 
-    // Loop on evtstdhep to add vertexes... 
     for (int ipart = 0; ipart < evtstdhep.getNPart(); ipart++) {
       int theMum = evtstdhep.getFirstMother(ipart);
       if (theMum != -1 && !theVerts[theMum]) {
@@ -272,22 +275,65 @@ void EvtGenProducer::decay(HepMC::GenParticle* partHep, EvtId idEvt, HepMC::GenE
     theVerts[0]->add_particle_in( partHep );
 
     for (int ipart2 = 1; ipart2 < evtstdhep.getNPart(); ipart2++) {
+      int idHep=evtstdhep.getStdHepID(ipart2);
       HepMC::GenParticle* thePart = 
 	new HepMC::GenParticle( HepMC::FourVector(evtstdhep.getP4(ipart2).get(1),
 						  evtstdhep.getP4(ipart2).get(2),
 						  evtstdhep.getP4(ipart2).get(3),
 						  evtstdhep.getP4(ipart2).get(0)),
-				evtstdhep.getStdHepID(ipart2),
+				idHep,
 				evtstdhep.getIStat(ipart2));
       int theMum2 = evtstdhep.getFirstMother(ipart2);
       if (theMum2 != -1 && theVerts[theMum2]) theVerts[theMum2]->add_particle_out( thePart );
       if (theVerts[ipart2]) theVerts[ipart2]->add_particle_in( thePart );
+ 
+      // Update the list of candidates to be forced
+
+      for(int i=0;i<nforced;i++)
+	{                                
+	  if(idHep==forced_Hep[i])       
+	    {
+	      if(nlist<10)                 // not nice ... but 10 is a reasonable maximum?
+		{
+		  listp[nlist]=thePart;
+		  index[nlist++]=i;
+		}
+	      else
+		{
+		  throw cms::Exception("runtime")	
+		    << "more than 10 candidates to be forced ";
+		}
+	    }
+	}
     }
 
     for (int ipart3 = 0; ipart3 < evtstdhep.getNPart(); ipart3++) {
       if (theVerts[ipart3]) theEvent->add_vertex( theVerts[ipart3] );
     }
 }        
-
+void EvtGenProducer::go_through_daughters(EvtParticle* part)
+{
+  int k;                           // volatile loop index
+  int NDaug=part->getNDaug();
+  if(NDaug)
+    {
+      EvtParticle* Daughter;
+      for (int i=0;i<NDaug;i++)
+	{
+	  Daughter=part->getDaug(i);
+	  int id = Daughter->getId().getId(); // EvtParticle.getId() returns an EvtId ; EvtId.getId() returns an int
+	  int found=0;
+	  for(k=0;k<nforced;k++)         
+	    {
+	      if(id==forced_Evt[k].getId())
+		{ 
+		  found = 1;
+		  Daughter->deleteDaughters();
+		  break;
+		}
+	    }
+	  if(!found)go_through_daughters(Daughter);
+	}
+    }
+}
 // DEFINE_FWK_MODULE(EvtGenProducer);
- 

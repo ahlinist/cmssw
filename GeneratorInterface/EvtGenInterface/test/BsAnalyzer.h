@@ -29,6 +29,9 @@ class BsAnalyzer : public edm::EDAnalyzer
      TFile*      fOutputFile ;
      TH1D*       hGeneralId ;
      TH1D*       hIdPhiDaugs ;
+     TH1D*       hnB ;
+     TH1D*       hnBz ;
+     TH1D*       hnBzb ;
      TH1D*       hPtbs ;
      TH1D*       hPbs ;
      TH1D*       hPhibs ;
