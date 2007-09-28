@@ -251,8 +251,8 @@ void test_ep::failgetManyTest()
 
   edm::ProcessNameSelector sel("PROD");
   std::vector<edm::BasicHandle> handles;
-  CPPUNIT_ASSERT_THROW(pEvent_->getMany(tid, sel, handles),
-		       edm::Exception);
+  pEvent_->getMany(tid, sel, handles);
+  CPPUNIT_ASSERT(handles.empty());
 }
 
 void test_ep::failgetbyTypeTest() 
@@ -268,11 +268,9 @@ void test_ep::failgetManybyTypeTest()
   edm::TypeID tid(*pEvent_);
   std::vector<edm::BasicHandle> handles;
 
-  // TODO: Why does this throw? The design was for getManyByType NOT
-  // to throw if no matches were found -- it can just return an empty
-  // collection!
-  CPPUNIT_ASSERT_THROW(pEvent_->getManyByType(tid, handles),
-		       edm::Exception);
+  
+  pEvent_->getManyByType(tid, handles);
+  CPPUNIT_ASSERT(handles.empty());
 }
 
 void test_ep::failgetbyInvalidIdTest() 

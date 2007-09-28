@@ -416,7 +416,18 @@ namespace edm {
 			bool stopIfProcessHasMatch) const {
     assert(results.empty());
 
-    TypeLookup::const_iterator i = typeLookup.find(typeID.friendlyClassName());
+    TypeLookup::const_iterator i;
+    try
+      {
+	i = typeLookup.find(typeID.friendlyClassName());
+      }
+    catch (edm::Exception const& x)
+      {
+	if (x.categoryCode() == edm::errors::ProductNotFound)
+	  i = typeLookup.end();
+	else
+	  throw;	
+      }
 
     if (i == typeLookup.end()) return 0;
 
