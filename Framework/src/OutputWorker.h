@@ -43,6 +43,8 @@ namespace edm {
 
     void openNewFileIfNeeded();
 
+    bool wantAllEvents() const;
+
   private:
     virtual bool implDoWork(EventPrincipal& e, EventSetup const& c,
 			    BranchActionType,

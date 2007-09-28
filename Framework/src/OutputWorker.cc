@@ -89,4 +89,6 @@ namespace edm {
   int OutputWorker::eventCount() const {
     return mod_->eventCount();
   }
+
+  bool OutputWorker::wantAllEvents() const {return mod_->wantAllEvents();}
 }

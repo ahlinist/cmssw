@@ -75,7 +75,7 @@ namespace edm {
     boost::array<bool, NumBranchTypes> const& hasNewlyDroppedBranch() const {return hasNewlyDroppedBranch_;}
 
     static void fillDescription(edm::ParameterSetDescription&);
-    bool const& wantAllEvents() const {return wantAllEvents_;}
+    bool wantAllEvents() const {return wantAllEvents_;}
 
   protected:
     //const Trig& getTriggerResults(Event const& ep) const;
