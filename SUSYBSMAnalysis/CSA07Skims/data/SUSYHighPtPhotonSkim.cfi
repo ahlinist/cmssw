@@ -2,7 +2,7 @@ include "SUSYBSMAnalysis/CSA07Skims/data/SUSYHighPtPhotonHLTPaths.cfi"
 include "SUSYBSMAnalysis/CSA07Skims/data/SUSYHighPtPhotonCandidates.cfi"
 
 module SUSYHighPtPhotonFilter = SUSYHighPtPhotonSkim {
-  InputTag Photonsrc = allSuperClusterIsolations  
+  InputTag Photonsrc = allPhotonIsolations  
   double Photon1Ptmin = 80
   double Photon2Ptmin = 20
   bool IsIsolated = 0   
@@ -13,6 +13,6 @@ sequence SUSYHighPtPhotonSeq = {
   SUSYHighPtPhotonHLTPath & 
   allTracks &
   allPhotons &
-  allSuperClusterIsolations &
+  allPhotonIsolations &
   SUSYHighPtPhotonFilter 
 }
