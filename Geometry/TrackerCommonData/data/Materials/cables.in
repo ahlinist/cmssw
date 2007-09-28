@@ -182,13 +182,15 @@ This is 12 optical fibers together in a plastic shield
 .....................................................................
 =====================================================================
 
-o Control Cable
-  -------------
+o Multi Service Control Cable
+  ---------------------------
+
 Control cable connected to the digital Optohybrids
 From Robert's Habia  table (13-03-02)
 Outer diameter is 6.0  mm
 (1) Cu x-sec      3.82 mm^2
 (2) Insulation   12.54 mm^2
+
 .....................................................................
 # "Control Cable"           "MS_cntrl_cable"        0.283     -1.
 * 1 "Copper"                "Copper"                0.0382     1  CAB
@@ -196,67 +198,163 @@ Outer diameter is 6.0  mm
 ......................................................................
 ======================================================================
 
-o Multi Service Cable (60 APVs)
-  -----------------------------
-From Robert's Filotex table (13-03-02)
-Outer diameter: 10.7 mm
-(1) Al x-sect:  14.21 mm^2
-(2) Cu x-sect:   2.22 mm^2 
-(3) Insulation: 27.39 mm^2
-(4) Silver:      0.29 mm^2
-......................................................................
-# "MS Al Cable 60 APVs"         "MS_Al60"         0.899    -1.
-* 1 "Aluminium"                 "Aluminium"       0.1421    1   CAB
-* 2 "Copper"                    "Copper"          0.0222    1   CAB
-* 3 "Insulation"                "Polyethylene"    0.2739    1   CAB
-* 4 "Silver coating"            "Silver"          0.0029    1   CAB
+o Multi Service PLCC (CAB Control Cable) TIB/TID version
+  ------------------------------------------------------
+
+20070709 GSguazzoni
+
+MCVolume: (pi*(10/2)^2 mm^2)*1cm = 0.7854 cm^3
+
+Total Weight/cm from direct measurement.
+Fractional composition from data sheets.
+
+Nominal outer diameter: 9.45 mm
+MC outer diameter set to 1cm.
+(1) Cu xsect          6.249 mm^2
+(2) Insulation (PE)  66.841 mm^2
+(3) Shielding (Al)    1.847 mm^2 
+
+Volumes per centimeter.
+.....................................................................
+# "MS PLCC CAB Ctrl cable"  "MS_CntrlTIBTID"        0.7854    -1.
+* 1 "Copper"                "Copper"                6.249E-2   1  CAB
+* 2 "Insulation and sheath" "Polyethylene"         66.841E-2   1  CAB
+* 3 "Shielding"             "Aluminium"             1.847E-2   1  CAB
 ......................................................................
 ======================================================================
 
-o Multi Service Cable (48 APVs)
-  -----------------------------
-From Robert's Filotex table (13-03-02)
-Outer diameter:  8.5  mm
-(1) Al x-sect:  11.73 mm^2
-(2) Cu x-sect:   2.22 mm^2
-(3) Insulation: 25.02 mm^2
-(4) Silver:      0.24 mm^2
+
+o CAB60 Aluminum Multi Service Cable (60 APVs) TIB/TID version
+  ------------------------------------------------------------
+
+20070926 GSguazzoni
+
+MCVolume: (pi*(10/2)^2 mm^2)*1cm = 0.7854 cm^3
+
+Weight/cm inferred from direct measurement and 
+Habia data sheet.
+
+From direct measurement it is evident that the so-called Al
+conductors are not pure aluminium but an unknown alloy (effective
+density is ~3.4g/cm^3 instead of 2.7g/cm^3 of Al). Also the silver
+plating is not negligible. The "Al"-conductor composition has been
+computed assuming:
+- 4micron Ag plating on each 0.320mm yarn;
+- a Cu percentage to match the measured weight (~11.9%).
+
+Nominal outer diameter: 9.4 mm
+MC outer diameter set to 1cm.
+
+(1) Cu x-sect              3.085 mm^2 
+(2) Al x-sect             13.147 mm^2
+(3) Insulation (PE)       21.460 mm^2 
+(4) Insulation (Polymide)  1.519 mm^2 <== Polymide ~ Kapton
+(5) Silver                 0.564 mm^2
+
+Volumes per centimeter.
 ......................................................................
-# "MS Al Cable 48 APVs"         "MS_Al48"         0.567    -1.
-* 1 "Aluminium"                 "Aluminium"       0.1173    1   CAB
-* 2 "Copper"                    "Copper"          0.0222    1   CAB
-* 3 "Insulation"                "Polyethylene"    0.2502    1   CAB
-* 4 "Silver coating"            "Silver"          0.0024    1   CAB
+# "MS CAB 60 Al cable TIBTID"   "CAB_Al60TIBTID"  0.7854   -1.
+* 1 "Copper"                    "Copper"          3.085E-2  1   CAB
+* 2 "Aluminium"                 "Aluminium"      13.147E-2  1   CAB
+* 3 "Insulation"                "Polyethylene"   21.460E-2  1   CAB
+* 4 "Sheath"                    "T_Kapton"        1.519E-2  1   CAB
+* 5 "Silver coating"            "Silver"          0.564E-2  1   CAB
 ......................................................................
 ======================================================================
 
-o Multi Service Cable (36 APVs)
-  -----------------------------
-From Robert's Filotex table (13-03-02)
-Outer diameter:  8.1  mm
-(1) Al x-sect:  10.16 mm^2
-(2) Cu x-sect:   2.22 mm^2
-(3) Insulation: 23.83 mm^2
-(4) Silver:      0.22 mm^2
+o CAB60 Aluminum Multi Service Cable (60 APVs)
+  --------------------------------------------
+
+20070926 GSguazzoni
+
+MCVolume: (pi*(10/2)^2 mm^2)*1cm = 0.7854 cm^3
+
+Weight/cm inferred from direct measurement and 
+Habia data sheet.
+
+See "CAB_Al60TIBTID" comments above.
+
+Nominal outer diameter: 10.6 mm
+MC outer diameter set to 1cm.
+
+(1) Cu x-sect              3.599 mm^2 
+(2) Al x-sect             14.201 mm^2
+(3) Insulation (PE)       30.579 mm^2 
+(4) Insulation (Polymide)  1.715 mm^2 <== Polymide ~ Kapton
+(5) Silver                 0.564 mm^2
+
+Volumes per centimeter.
 ......................................................................
-# "MS Al Cable 36 APVs"         "MS_Al36"         0.515    -1.
-* 1 "Aluminium"                 "Aluminium"       0.1016    1   CAB
-* 2 "Copper"                    "Copper"          0.0222    1   CAB
-* 3 "Insulation"                "Polyethylene"    0.2383    1   CAB
-* 4 "Silver coating"            "Silver"          0.0022    1   CAB
+# "MS Al Cable 60 APVs"         "CAB_Al60"         0.7854    -1.
+* 1 "Copper"                    "Copper"           3.599E-2  1   CAB
+* 2 "Aluminium"                 "Aluminium"       14.201E-2  1   CAB
+* 3 "Insulation"                "Polyethylene"    30.579E-2  1   CAB
+* 4 "Sheath"                    "T_Kapton"         1.715E-2  1   CAB
+* 5 "Silver coating"            "Silver"           0.564E-2  1   CAB
 ......................................................................
 ======================================================================
 
-o Multi Service Cable Copper (60 APVs)
-  -----------------------------
-From Robert's HABIA table (13-03-02)
-Outer diameter: 12.3 mm
-(1) Cu x-sect:  26.87 mm^2 
-(2) Insulation: 44.42 mm^2
+o CAB60 Aluminum Multi Service Cable (48 APVs)
+  --------------------------------------------
+
+20070926 GSguazzoni
+
+MCVolume: (pi*(10/2)^2 mm^2)*1cm = 0.7854 cm^3
+
+Weight/cm inferred from direct measurement and 
+Habia data sheet.
+
+See "CAB_Al60TIBTID" comments above.
+
+Nominal outer diameter: 9.6 mm
+MC outer diameter set to 1cm.
+
+(1) Cu x-sect              3.208 mm^2 
+(2) Al x-sect             11.013 mm^2
+(3) Insulation (PE)       26.687 mm^2 
+(4) Insulation (Polymide)  1.552 mm^2 <== Polymide ~ Kapton
+(5) Silver                 0.393 mm^2
+
+Volumes per centimeter.
 ......................................................................
-# "MS Cu Cable 60 APVs"         "MS_Cu60"         1.188    -1.
-* 1 "Copper"                    "Copper"          0.2687    1   CAB
-* 2 "Insulation"                "Polyethylene"    0.4442    1   CAB
+# "MS Al Cable 48 APVs"         "CAB_Al48"          0.7854    -1.
+* 1 "Copper"                    "Copper"            3.208E-2  1   CAB
+* 2 "Aluminium"                 "Aluminium"        11.013E-2  1   CAB
+* 3 "Insulation"                "Polyethylene"     26.687E-2  1   CAB
+* 4 "Sheath"                    "T_Kapton"          1.552E-2  1   CAB
+* 5 "Silver coating"            "Silver"            0.393E-2  1   CAB
+......................................................................
+======================================================================
+
+o CAB60 Aluminum Multi Service Cable (36 APVs)
+  --------------------------------------------
+
+20070926 GSguazzoni
+
+MCVolume: (pi*(10/2)^2 mm^2)*1cm = 0.7854 cm^3
+
+Weight/cm inferred from direct measurement and 
+Habia data sheet.
+
+See "CAB_Al60TIBTID" comments above.
+
+Nominal outer diameter: 9.6 mm
+MC outer diameter set to 1cm.
+
+(1) Cu x-sect              3.044 mm^2 
+(2) Al x-sect              9.771 mm^2
+(3) Insulation (PE)       25.986 mm^2 
+(4) Insulation (Polymide)  1.536 mm^2 <== Polymide ~ Kapton
+(5) Silver                 0.322 mm^2
+
+Volumes per centimeter.
+......................................................................
+# "MS Al Cable 36 APVs"         "CAB_Al36"          0.7854    -1.
+* 1 "Copper"                    "Copper"            3.044E-2  1   CAB
+* 2 "Aluminium"                 "Aluminium"         9.771E-2  1   CAB
+* 3 "Insulation"                "Polyethylene"     25.986E-2  1   CAB
+* 4 "Sheath"                    "T_Kapton"          1.536E-2  1   CAB
+* 5 "Silver coating"            "Silver"            0.322E-2  1   CAB
 ......................................................................
 ======================================================================
 
@@ -331,18 +429,22 @@ MC Volume: tube segments, r = 30-62.5 cm, dz = 7.7 cm, dphi = 2*160 deg
 
 o Bulkhead cables: TEC cables
   ----------------------------------------
+
+20070928 GSguazzoni 
+Changed MS_Al.. to CAB_Al.. but probably everything else here
+needs to be updated!
+
 MC Volume: tube segments, r = 62.5-110.5 cm, dz = 7.7 cm, dphi = 4*70 deg
               ==> 156236 cm^3
 
 (1) Al MS cables, average length = 50 cm, 384 of them
-     X-sect 0.515 cm^2 ==> 25.75 cm^3
 (2) Cu MS cables, "         "           , 384 of them
 (3-4) Connectors: numbers from Horst 
         5.7 g plastic => 4.07 cm^3
         5.95 g Cu     => 0.664 cm^3
 ......................................................................
 # "Bulkhead TEC cables"  "Tk_panels_mid3"       156236    20290.
-* 1 "MS cable Al 36 APVs"       "MS_Al36"         25.75   384   CAB
+* 1 "MS cable Al 36 APVs"       "CAB_Al36"      0.7854  19200   CAB
 * 2 "MS cable Cu 60 APVs"       "MS_Cu60"         59.4    384   CAB
 * 3 "Connectors"                "T_Kapton"        4.07    384   CAB
 * 4 "Connectors"                "Copper"          0.664   384   CAB
@@ -351,6 +453,11 @@ MC Volume: tube segments, r = 62.5-110.5 cm, dz = 7.7 cm, dphi = 4*70 deg
 
 o Bulkhead cables: TEC/TOB/TID/TIB out...
   ---------------------------------------
+
+20070928 GSguazzoni 
+Changed MS_Al.. to CAB_Al.. but probably everything else here
+needs to be updated!
+
 All cables, fibers and cooling pipes of all subdetectors...
  
 MC Volume: r = 110.5-123.30 cm, dz = 9 cm
@@ -358,9 +465,9 @@ MC Volume: r = 110.5-123.30 cm, dz = 9 cm
 
                  TIB          TID     TOB     TEC  
 MS Cables:  
- MS_Al36         128           48     254      -
- MS_Al48          56           12      -       -
- MS_Al60          -            -       90      -
+ CAB_Al36         128           48     254      -
+ CAB_Al48          56           12      -       -
+ CAB_Al60          -            -       90      -
  MS_Cu60          -            -       -      384
  Control cabl.    42           15      46     144
  Fiber Ribbons   291           92     561     744
@@ -371,9 +478,9 @@ Cooling pipes: TIB+TID : 56 + 14 Steel pipes
 
 ......................................................................
 # "Bulkhead cables outlet"  "Tk_panels_up"         9401.   -1.
-* 1 "MS cable Al 36 APVs"       "MS_Al36"         0.515   430   CAB
-* 2 "MS cable Al 48 APVs"       "MS_Al48"         0.567    68   CAB
-* 3 "MS cable Al 60 APVs"       "MS_Al60"         0.899    90   CAB
+* 1 "MS cable Al 36 APVs"       "CAB_Al36"        0.7854  430   CAB
+* 2 "MS cable Al 48 APVs"       "CAB_Al48"        0.7854   68   CAB
+* 3 "MS cable Al 60 APVs"       "CAB_Al60"        0.7854   90   CAB
 * 4 "Control cables"            "MS_cntrl_cable"  0.283   247   CAB  
 * 5 "MS cable Cu 60 APVs"       "MS_Cu60"         1.188   384   CAB
 * 6 "Optical ribbon"         "Fibre_Ribbon"     0.00961  1688   CAB

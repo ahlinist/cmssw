@@ -91,70 +91,6 @@ Volumes per piece.
 ......................................................................
 ======================================================================
 
-
-
-o PLCC (CAB Control Cable)
-  ------------------------
-
-20070709 GSguazzoni
-
-MCVolume: (pi*(10/2)^2 mm^2)*1cm = 0.7854 cm^3
-
-Total Weight/cm from direct measurement.
-Fractional composition from data sheets.
-
-Nominal outer diameter: 9.45 mm
-MC outer diameter set to 1cm.
-(1) Cu xsect          6.249 mm^2
-(2) Insulation (PE)  66.512 mm^2
-(3) Shielding (Al)    1.847 mm^2 
-
-Volumes per centimeter.
-.....................................................................
-# "MS PLCC CAB Ctrl cable"  "T_MS_CABPLCC"          0.7854    -1.
-* 1 "Copper"                "Copper"                6.249E-2   1  CAB
-* 2 "Insulation and sheath" "Polyethylene"         66.512E-2   1  CAB
-* 3 "Shielding"             "Aluminium"             1.847E-2   1  CAB
-......................................................................
-======================================================================
-
-o CAB60 Aluminum Multi Service Cable (60 APVs)
-  --------------------------------------------
-
-20070703 GSguazzoni
-
-MCVolume: (pi*(10/2)^2 mm^2)*1cm = 0.7854 cm^3
-
-Weight/cm inferred from direct measurement and 
-Habia data sheet.
-
-From direct measurement it is evident that the so-called Al
-conductors are not pure aluminium but an unknown alloy (effective
-density is ~3.4g/cm^3 instead of 2.7g/cm^3 of Al). Also the silver
-plating is not negligible. The "Al"-conductor composition has been
-computed assuming:
-- 3micron Ag plating on each 0.320mm yarn;
-- a Cu percentage to match the measured weight (resulting to be 11%).
-
-Nominal outer diameter: 9.4 mm
-MC outer diameter set to 1cm.
-(1) Al x-sect             13.721 mm^2
-(2) Cu x-sect              3.049 mm^2 
-(3) Insulation (PE)       21.390 mm^2 
-(4) Insulation (Polymide)  1.461 mm^2 <== Polymide ~ Kapton
-(5) Silver                 0.424 mm^2
-
-Volumes per centimeter.
-......................................................................
-# "MS CAB 60 Al cable"          "T_MS_CAB60"      0.7854   -1.
-* 1 "Aluminium"                 "Aluminium"      13.721E-2  1   CAB
-* 2 "Copper"                    "Copper"          3.049E-2  1   CAB
-* 3 "Insulation"                "Polyethylene"   21.390E-2  1   CAB
-* 4 "Sheath"                    "T_Kapton"        1.461E-2  1   CAB
-* 5 "Silver coating"            "Silver"          0.424E-2  1   CAB
-......................................................................
-======================================================================
-
 o TST Copper 10mm cooling pipe with coolant
   -----------------------------------------
 
@@ -550,8 +486,8 @@ Average cable lenght computed from drawings...
 (5) PLCC Female connectors multi=60
 ......................................................................
 # "Pwr connectors ring mixture"    "TIBTID_PowerConnectors" 29614. -1.
-* 1 "MS CAB 60 Al cable"      "T_MS_CAB60"           0.7854   1537 CAB
-* 2 "MS PLCC CAB Ctrl cable"  "T_MS_CABPLCC"         0.7854    792 CAB
+* 1 "MS CAB 60 Al cable TIBD" "CAB_Al60TIBTID"        0.7854   1537 CAB
+* 2 "MS PLCC CAB Ctrl cable"  "MS_CntrlTIBTID"       0.7854    792 CAB
 * 3 "Ruggedized Ribbon"       "T_RuggRibbon"       8.6000E-2  8601 CAB
 * 4 "Medusa-CAB60 female connector" "T_MedCABFemaleConn"  12.4 244 CAB
 * 5 "Medusa-PLCC female connector" "T_MedPLCCFemaleConn"  16.4  60 CAB
@@ -579,8 +515,8 @@ Length L = 1420 mm = 142 cm
            10331.8 cm^3
 ......................................................................
 # "TST, axial part"           "TIBTID_TSTCabAxial"  113159.  -1.
-* 1 "MS CAB 60 Al cable"      "T_MS_CAB60"           0.7854  34648 CAB
-* 2 "MS PLCC CAB Ctrl cable"  "T_MS_CABPLCC"         0.7854   8520 CAB
+* 1 "MS CAB 60 Al cable TIBD" "CAB_Al60TIBTID"       0.7854  34648 CAB
+* 2 "MS PLCC CAB Ctrl cable"  "MS_CntrlTIBTID"       0.7854   8520 CAB
 * 3 "TST Cu 10mm pipe"        "T_Cu10mmPipe"         0.7854  10224 COL
 * 4 "Ruggedized Ribbon"       "T_RuggRibbon"       8.6000E-2 66740 CAB
 * 5 "Clips"                   "Copper"              3.571E-2  1128 SUP
@@ -604,8 +540,8 @@ Length L = (1157.5 - 950) mm = 20.75 cm
 (4) Ribbon, kfact=1, mult=470*L[cm]=9752
 ......................................................................
 # "TST, radial part"          "TIBTID_TSTCabRadial"  40208.6      -1.
-* 1 "MS CAB 60 Al cable"      "T_MS_CAB60"           0.7854  5569 CAB
-* 2 "MS PLCC CAB Ctrl cable"  "T_MS_CABPLCC"         0.7854  1370 CAB
+* 1 "MS CAB 60 Al cable TIBD" "CAB_Al60TIBTID"       0.7854  5569 CAB
+* 2 "MS PLCC CAB Ctrl cable"  "MS_CntrlTIBTID"       0.7854  1370 CAB
 * 3 "TST Cu 10mm pipe"        "T_Cu10mmPipe"         0.7854  1867 COL
 * 4 "Ruggedized Ribbon"       "T_RuggRibbon"       8.6000E-2 9752 CAB
 ......................................................................
