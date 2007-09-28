@@ -8,7 +8,7 @@
  * Author: Dmitry Zaborov
  */
 
-// Version: $Id: ProtonTaggerFilter.cc,v 1.1 2007/09/12 13:41:12 dzaborov Exp $
+// Version: $Id: ProtonTaggerFilter.cc,v 1.2 2007/09/28 08:50:13 dzaborov Exp $
 
 #include "FastSimulation/ProtonTaggers/interface/ProtonTaggerFilter.h"
 
@@ -247,7 +247,7 @@ bool ProtonTaggerFilter::filter(edm::Event & iEvent, const edm::EventSetup & es)
   //float rnd1 = RandGauss::shoot(0.,1.);
   //float rnd2 = RandGauss::shoot(0.,1.);
 
-  const float acceptThreshold = 0.9;
+  const float acceptThreshold = 0.5;
   
   bool p1at220m = false;
   bool p1at420m = false;
