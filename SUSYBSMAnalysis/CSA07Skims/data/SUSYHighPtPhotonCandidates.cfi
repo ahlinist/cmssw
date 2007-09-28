@@ -1,15 +1,16 @@
 include "SimGeneral/HepPDTESSource/data/pythiapdt.cfi"
 
-module allTracks = ChargedCandidateProducer {
-  InputTag src = ctfWithMaterialTracks
-  string particleType = "pi+"
-}
+include "PhysicsTools/RecoCandAlgos/data/allTracks.cfi"
+#module allTracks = ChargedCandidateProducer {
+#  InputTag src = ctfWithMaterialTracks
+#  string particleType = "pi+"
+#}
 
 module allPhotons = PhotonShallowCloneProducer {
   InputTag src = photons
 }
 
-module allSuperClusterIsolations = CandPtIsolationProducer {
+module allPhotonIsolations = CandPtIsolationProducer {
   InputTag src = allPhotons
   InputTag elements = allTracks
   double dRMax = 0.2
