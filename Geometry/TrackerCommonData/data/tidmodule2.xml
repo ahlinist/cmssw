@@ -9,6 +9,16 @@
  <Constant name="SideWidthTop"     value="0.1006846*cm"/>
  <Constant name="SideWidthBottom"  value="0.0866913*cm"/>
  <Constant name="DlHybrid"         value="5.887*cm"/>
+ <Constant name="PitchHeight"       value="0.90*cm"/>
+ <Constant name="BottomFrameHeight" value="[PitchHeight]+[tidmodpar:BottomFrameOverSS]"/>
+ <Constant name="TopFrameHeight"    value="[tidmodpar:TopFrameOverSS]+0.4*cm"/> 
+ <Constant name="BoxFrameHeight"    value="[tidmodpar:BoxFrameHeightSS]"/>
+ <Constant name="SideFrameWidth"    value="1.10*cm"/>
+ <Constant name="CoolInsertShift"   value="9.58*cm"/>
+ <Constant name="SideSpacersShift"  value="[CoolInsertShift]"/>
+<!-- alias for Module Height -->
+ <Constant name="ModuleHeight"      value="[BoxFrameHeight]+[BottomFrameHeight]+[FullHeight]+[TopFrameHeight]-
+                                           [tidmodpar:TopFrameOverSS]-[tidmodpar:BottomFrameOverSS]"/> 
 </ConstantsSection>
 
 <Algorithm name="track:DDTIDModuleAlgo">
@@ -22,19 +32,40 @@
   <Numeric name="DlBottom"          value="[tidmodule2:DlBottom]"/>
   <Numeric name="DlHybrid"          value="[tidmodule2:DlHybrid]"/>
   <String name="DoComponents"       value="Yes"/>
-  <String name="TopFrameName"       value="tidmodule2:TIDModule2TopFrame"/>
-  <String name="TopFrameMaterial"   value="tidmaterial:TID_frame_top"/>
-  <Numeric name="TopFrameHeight"    value="[tidmodpar:TopFrameHeight]"/>
-  <Numeric name="TopFrameWidth"     value="[tidmodpar:TopFrameWidth]"/>
-  <Numeric name="TopFrameThick"     value="[tidmodpar:TopFrameThick]"/>
-  <Numeric name="BottomFrameHeight" value="[tidmodpar:BottomFrameHeight]"/>
-  <Numeric name="BottomFrameOver"   value="[tidmodpar:BottomFrameOver]"/>
-  <String name="SideFrameName"      value="tidmodule2:TIDModule2SideFrame"/>
-  <String name="SideFrameMaterial"  value="tidmaterial:TID_frame_side"/>
-  <Numeric name="SideFrameWidth"    value="[tidmodpar:SideFrameWidth]"/>
+  <String name="BoxFrameName"       value="tidmodule2:TIDModule2BoxFrame"/>
+  <String name="BoxFrameMaterial"   value="materials:T_Carbon fibre str."/>
+  <Numeric name="BoxFrameWidth"     value="[tidmodpar:BoxFrameWidth]"/>
+  <Numeric name="BoxFrameThick"     value="[tidmodpar:BoxFrameThick]"/>
+  <Numeric name="BoxFrameHeight"    value="[tidmodule2:BoxFrameHeight]"/>
+  <Numeric name="BottomFrameHeight" value="[tidmodule2:BottomFrameHeight]"/>
+  <Numeric name="BottomFrameOver"   value="[tidmodpar:BottomFrameOverSS]"/>
+  <Numeric name="TopFrameHeight"    value="[tidmodule2:TopFrameHeight]"/>
+  <Numeric name="TopFrameOver"      value="[tidmodpar:TopFrameOverSS]"/>
+  <String name="SideFrameMaterial"  value="materials:T_Carbon fibre str."/>
+  <Numeric name="SideFrameWidth"    value="[tidmodule2:SideFrameWidth]"/>
   <Numeric name="SideFrameThick"    value="[tidmodpar:SideFrameThick]"/>
   <Numeric name="SideFrameOver"     value="[tidmodpar:SideFrameOver]"/>
-  <String name="DummyFrameName"     value="tidmodule2:TIDModule2Frame"/>
+   <Vector name="SideFrameName"     type="string" nEntries="1">
+    tidmodule2:TIDModule2RphiSideFrame
+  </Vector>
+  <Vector name="HoleFrameName"     type="string" nEntries="1">
+    tidmodule2:TIDModule2RphiFrameHole
+  </Vector>
+  <Vector name="HoleFrameRotation" type="string" nEntries="1">
+    tidmodpar:NULL
+  </Vector>
+  <String name="KaptonMaterial"  value="tidmaterial:T_TIDModKaptonBox"/>
+  <Numeric name="KaptonThick"    value="[tidmodpar:KaptonThick]"/>
+  <Numeric name="KaptonOver"     value="[tidmodpar:KaptonOver]"/>
+  <Vector name="KaptonName"     type="string" nEntries="1">
+    tidmodule2:TIDModule2RphiKapton
+  </Vector>
+  <Vector name="HoleKaptonName"     type="string" nEntries="1">
+    tidmodule2:TIDModule2RphiKaptonHole
+  </Vector>
+  <Vector name="HoleKaptonRotation" type="string" nEntries="1">
+    tidmodpar:NULL
+  </Vector>
   <Vector name="WaferName"     type="string" nEntries="1">
     tidmodule2:TIDModule2RphiWafer
   </Vector>
@@ -54,16 +85,22 @@
     2*[tracker:BackPlaneDz]
   </Vector>
   <String name="HybridName"         value="tidmodule2:TIDModule2Hybrid"/>
-  <String name="HybridMaterial"     value="tidmaterial:TID_ele3"/>
+  <String name="HybridMaterial"     value="tibtidcommonmaterial:TIBTID_Hybrid"/>
   <Numeric name="HybridHeight"      value="[tidmodpar:HybridHeight]"/>
   <Numeric name="HybridWidth"       value="[tidmodpar:HybridWidth]"/>
   <Numeric name="HybridThick"       value="[tidmodpar:HybridThick]"/>
   <Vector name="PitchName"     type="string" nEntries="1">
     tidmodule2:TIDModule2RphiPA
   </Vector>
-  <String name="PitchMaterial"      value="tidmaterial:TID_PitchAdapter"/>
-  <Numeric name="PitchHeight"       value="[tidmodpar:PitchHeight]"/>
+  <String name="PitchMaterial"      value="tibtidcommonmaterial:TIBTID_PA"/>
+  <Numeric name="PitchHeight"       value="[tidmodule2:PitchHeight]"/>
   <Numeric name="PitchThick"        value="[tidmodpar:PitchThick]"/>
+  <Numeric name="PitchStereoTolerance"    value="[tidmodpar:PitchStereoTolerance]"/>
+  <String name="CoolInsertName"        value="tidmodule2:TIDCoolInsert"/>
+  <String name="CoolInsertMaterial"    value="tidmaterial:TID_Cool_insert"/>
+  <Numeric name="CoolInsertHeight"     value="[tidmodpar:CoolInsertHeightSS]"/>
+  <Numeric name="CoolInsertThick"      value="[tidmodpar:CoolInsertThickSS]"/>
+  <Numeric name="CoolInsertWidth"      value="[tidmodpar:CoolInsertWidthSS]"/>
 </Algorithm>
 
 <Algorithm name="track:DDTIDModulePosAlgo">
@@ -75,16 +112,35 @@
   <Numeric name="DlTop"             value="[tidmodule2:DlTop]"/>
   <Numeric name="DlBottom"          value="[tidmodule2:DlBottom]"/>
   <Numeric name="DlHybrid"          value="[tidmodule2:DlHybrid]"/>
-  <String name="TopFrameName"       value="tidmodule2:TIDModule2TopFrame"/>
-  <Numeric name="TopFrameHeight"    value="[tidmodpar:TopFrameHeight]"/>
-  <Vector name="TopFrameZ"     type="numeric" nEntries="1">
-    [tidmodpar:TopFrameZSS]
+  <String name="BoxFrameName"       value="tidmodule2:TIDModule2BoxFrame"/>
+  <Numeric name="BoxFrameHeight"    value="[tidmodule2:BoxFrameHeight]"/>
+  <Numeric name="BoxFrameWidth"     value="[tidmodpar:BoxFrameWidth]"/>
+  <Vector name="BoxFrameZ"     type="numeric" nEntries="1">
+    [tidmodpar:BoxFrameZSS]
   </Vector>
-  <Numeric name="BottomFrameHeight" value="[tidmodpar:BottomFrameHeight]"/>
-  <Numeric name="BottomFrameOver"   value="[tidmodpar:BottomFrameOver]"/>
-  <String name="SideFrameName"      value="tidmodule2:TIDModule2SideFrame"/>
+  <Numeric name="BottomFrameHeight" value="[tidmodule2:BottomFrameHeight]"/>
+  <Numeric name="BottomFrameOver"   value="[tidmodpar:BottomFrameOverSS]"/>
+  <Numeric name="TopFrameHeight"    value="[tidmodule2:TopFrameHeight]"/>
+  <Numeric name="TopFrameOver"      value="[tidmodpar:TopFrameOverSS]"/>
+   <Vector name="SideFrameName"     type="string" nEntries="1">
+    tidmodule2:TIDModule2RphiSideFrame
+  </Vector>
   <Vector name="SideFrameZ"    type="numeric" nEntries="1">
     [tidmodpar:SideFrameZSS]
+  </Vector>
+  <Vector name="SideFrameRotation" type="string" nEntries="1">
+    tidmodpar:NULL
+  </Vector>
+  <Numeric name="SideFrameWidth"    value="[tidmodule2:SideFrameWidth]"/>
+  <Numeric name="SideFrameOver"     value="[tidmodpar:SideFrameOver]"/>
+  <Vector name="KaptonName"     type="string" nEntries="1">
+    tidmodule2:TIDModule2RphiKapton
+  </Vector>
+  <Vector name="KaptonZ"    type="numeric" nEntries="1">
+   [tidmodpar:KaptonZSS]
+  </Vector>
+  <Vector name="KaptonRotation" type="string" nEntries="1">
+    tidmodpar:NULL
   </Vector>
   <Vector name="WaferName"     type="string" nEntries="1">
     tidmodule2:TIDModule2RphiWafer
@@ -103,13 +159,33 @@
   <Vector name="PitchName"     type="string" nEntries="1">
     tidmodule2:TIDModule2RphiPA
   </Vector>
-  <Numeric name="PitchHeight"       value="[tidmodpar:PitchHeight]"/>
+  <Numeric name="PitchHeight"       value="[tidmodule2:PitchHeight]"/>
   <Vector name="PitchZ"        type="numeric" nEntries="1">
      [tidmodpar:PitchZSS]
   </Vector>
   <Vector name="PitchRotation" type="string" nEntries="1">
     tidmodpar:NULL
   </Vector>
+
+  <String name="CoolInsertName"          value="tidmodule2:TIDCoolInsert"/>
+  <Numeric name="CoolInsertHeight"       value="[tidmodpar:CoolInsertHeightSS]"/>
+  <Numeric name="CoolInsertWidth"        value="[tidmodpar:CoolInsertWidthSS]"/>
+  <Numeric name="CoolInsertZ"            value="[tidmodpar:CoolInsertZSS]"/>
+  <Vector name="CoolInsertShift"         type="numeric" nEntries="2">
+    [tid:zero],  [tidmodule2:CoolInsertShift]</Vector>
+
+  <String name="DoSpacers"                value="No"/>
+<!-- everything below is dummy for SS -->
+  <String name="BottomSpacersName"        value="tidmodpar:TIDBottomSpacers"/>
+  <Numeric name="BottomSpacersHeight"     value="[tidmodpar:BottomSpacersHeight]"/>
+  <Numeric name="BottomSpacersZ"          value="[tidmodpar:BottomSpacersZ]"/>
+  <String name="SideSpacersName"          value="tidmodpar:TIDSideSpacers"/>
+  <Numeric name="SideSpacersHeight"       value="[tidmodpar:SideSpacersHeight]"/>
+  <Numeric name="SideSpacersZ"            value="[tidmodpar:SideSpacersZ]"/>
+  <Numeric name="SideSpacersThick"        value="[tidmodpar:SideSpacersThick]"/>
+  <Numeric name="SideSpacersWidth"        value="[tidmodpar:SideSpacersWidth]"/>
+  <Numeric name="SideSpacersShift"        value="[tidmodule2:SideSpacersShift]"/>
+
 </Algorithm>
  
 </DDDefinition>
