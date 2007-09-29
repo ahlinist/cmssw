@@ -47,6 +47,8 @@ namespace edm {
 
     std::string friendlyClassName() const;
 
+    bool hasDictionary() const;
+
   private:
     TypeID& operator=(const TypeID&); // not implemented
    
