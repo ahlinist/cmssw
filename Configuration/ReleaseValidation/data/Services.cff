@@ -16,7 +16,7 @@ service = RandomNumberGeneratorService
 	untracked uint32 VtxSmeared = 98765432
         untracked uint32 g4SimHits  = 11
         untracked uint32 mix        = 12345   
-        untracked uint32 hcalDigis  = 11223344
+        untracked uint32 hcalUnsuppressedDigis  = 11223344
 
         untracked uint32 muonCSCDigis  = 11223344
 	untracked uint32 muonDTDigis = 1234567
