@@ -790,8 +790,8 @@ Layer  Tot [mm]
 * 22 "Input and Output cable Tie"          "T_Kapton"        0.098     42      CAB
 * 23 "Input and Output cable Solder Paste" "BGA"             0.038     42      CAB
 * 24 "SCCAC glue"                          "Epoxy"           0.202     42      SUP
-* 25 "Multi Service Cable CAB48"           "MS_Al48"         0.567    126      CAB
-* 26 "Multi Service Cable CAB36"           "MS_Al36"         0.515      0      CAB
+* 25 "Multi Service Cable CAB48"           "CAB_Al48"        0.7854   126      CAB
+* 26 "Multi Service Cable CAB36"           "CAB_Al36"        0.7854     0      CAB
 * 27 "Ruggedized ribbons"                  "T_RuggRibbon"    0.086    252      CAB
 * 28 "HV/LVCAC Binder connectors"          "Copper"          0.609     42      ELE
 * 29 "HV/LVCAC Binder connectors"          "Epoxy"           3.482     42      ELE
@@ -824,8 +824,8 @@ Layer  Tot [mm]
 * 22 "Input and Output cable Tie"          "T_Kapton"        0.098     48      CAB
 * 23 "Input and Output cable Solder Paste" "BGA"             0.038     48      CAB
 * 24 "SCCAC glue"                          "Epoxy"           0.202     48      SUP
-* 25 "Multi Service Cable CAB48"           "MS_Al48"         0.567    144      CAB
-* 26 "Multi Service Cable CAB36"           "MS_Al36"         0.515      0      CAB
+* 25 "Multi Service Cable CAB48"           "CAB_Al48"        0.7854   144      CAB
+* 26 "Multi Service Cable CAB36"           "CAB_Al36"        0.7854     0      CAB
 * 27 "Ruggedized ribbons"                  "T_RuggRibbon"    0.086    288      CAB
 * 28 "HV/LVCAC Binder connectors"          "Copper"          0.609     48      ELE
 * 29 "HV/LVCAC Binder connectors"          "Epoxy"           3.482     48      ELE
@@ -858,8 +858,8 @@ Layer  Tot [mm]
 * 22 "Input and Output cable Tie"          "T_Kapton"        0.098     54      CAB
 * 23 "Input and Output cable Solder Paste" "BGA"             0.038     54      CAB
 * 24 "SCCAC glue"                          "Epoxy"           0.202     54      SUP
-* 25 "Multi Service Cable CAB48"           "MS_Al48"         0.567      0      CAB
-* 26 "Multi Service Cable CAB36"           "MS_Al36"         0.515    162      CAB
+* 25 "Multi Service Cable CAB48"           "CAB_Al48"        0.7854     0      CAB
+* 26 "Multi Service Cable CAB36"           "CAB_Al36"        0.7854   162      CAB
 * 27 "Ruggedized ribbons"                  "T_RuggRibbon"    0.086    162      CAB
 * 28 "HV/LVCAC Binder connectors"          "Copper"          0.609     54      ELE
 * 29 "HV/LVCAC Binder connectors"          "Epoxy"           3.482     54      ELE
@@ -892,8 +892,8 @@ Layer  Tot [mm]
 * 22 "Input and Output cable Tie"          "T_Kapton"        0.098     60      CAB
 * 23 "Input and Output cable Solder Paste" "BGA"             0.038     60      CAB
 * 24 "SCCAC glue"                          "Epoxy"           0.202     60      SUP
-* 25 "Multi Service Cable CAB48"           "MS_Al48"         0.567      0      CAB
-* 26 "Multi Service Cable CAB36"           "MS_Al36"         0.515    180      CAB
+* 25 "Multi Service Cable CAB48"           "CAB_Al48"        0.7854     0      CAB
+* 26 "Multi Service Cable CAB36"           "CAB_Al36"        0.7854   180      CAB
 * 27 "Ruggedized ribbons"                  "T_RuggRibbon"    0.086    180      CAB
 * 28 "HV/LVCAC Binder connectors"          "Copper"          0.609     60      ELE
 * 29 "HV/LVCAC Binder connectors"          "Epoxy"           3.482     60      ELE
@@ -926,8 +926,8 @@ Layer  Tot [mm]
 * 22 "Input and Output cable Tie"          "T_Kapton"        0.098     66      CAB
 * 23 "Input and Output cable Solder Paste" "BGA"             0.038     66      CAB
 * 24 "SCCAC glue"                          "Epoxy"           0.202     66      SUP
-* 25 "Multi Service Cable CAB48"           "MS_Al48"         0.567      0      CAB
-* 26 "Multi Service Cable CAB36"           "MS_Al36"         0.515    198      CAB
+* 25 "Multi Service Cable CAB48"           "CAB_Al48"        0.7854     0      CAB
+* 26 "Multi Service Cable CAB36"           "CAB_Al36"        0.7854   198      CAB
 * 27 "Ruggedized ribbons"                  "T_RuggRibbon"    0.086    312      CAB
 * 28 "HV/LVCAC Binder connectors"          "Copper"          0.609     66      ELE
 * 29 "HV/LVCAC Binder connectors"          "Epoxy"           3.482     66      ELE
@@ -960,8 +960,8 @@ Layer  Tot [mm]
 * 22 "Input and Output cable Tie"          "T_Kapton"        0.098     74      CAB
 * 23 "Input and Output cable Solder Paste" "BGA"             0.038     74      CAB
 * 24 "SCCAC glue"                          "Epoxy"           0.202     74      SUP
-* 25 "Multi Service Cable CAB48"           "MS_Al48"         0.567      0      CAB
-* 26 "Multi Service Cable CAB36"           "MS_Al36"         0.515    222      CAB
+* 25 "Multi Service Cable CAB48"           "CAB_Al48"        0.7854     0      CAB
+* 26 "Multi Service Cable CAB36"           "CAB_Al36"        0.7854   222      CAB
 * 27 "Ruggedized ribbons"                  "T_RuggRibbon"    0.086    354      CAB
 * 28 "HV/LVCAC Binder connectors"          "Copper"          0.609     74      ELE
 * 29 "HV/LVCAC Binder connectors"          "Epoxy"           3.482     74      ELE
@@ -1171,8 +1171,8 @@ Layer  Tot [mm]
 
 ...................................................................................
 # "TOB radial services Layer 1"   "TOB_rad_services1"      2401.4       3430.6
-* 1 "Multi Service Cable CAB48"   "MS_Al48"                   0.567      351   CAB
-* 2 "Multi Service Cable CAB36"   "MS_Al36"                   0.515        0   CAB
+* 1 "Multi Service Cable CAB48"   "CAB_Al48"                  0.7854     351   CAB
+* 2 "Multi Service Cable CAB36"   "CAB_Al36"                  0.7854       0   CAB
 * 3 "Ruggedized ribbons"          "T_RuggRibbon"              0.086      806   CAB
 * 4 "DOHM ribbons"                "T_RuggRibbon"              0.086      119   CAB
 * 5 "Spare ribbons"               "T_RuggRibbon"              0.086      307   CAB
@@ -1185,8 +1185,8 @@ Layer  Tot [mm]
 
 ...................................................................................
 # "TOB radial services Layer 2"   "TOB_rad_services2"      2848.6       4069.4
-* 1 "Multi Service Cable CAB48"   "MS_Al48"                   0.567      790   CAB
-* 2 "Multi Service Cable CAB36"   "MS_Al36"                   0.515        0   CAB
+* 1 "Multi Service Cable CAB48"   "CAB_Al48"                  0.7854     790   CAB
+* 2 "Multi Service Cable CAB36"   "CAB_Al36"                  0.7854       0   CAB
 * 3 "Ruggedized ribbons"          "T_RuggRibbon"              0.086     1792   CAB
 * 4 "DOHM ribbons"                "T_RuggRibbon"              0.086      271   CAB
 * 5 "Spare ribbons"               "T_RuggRibbon"              0.086      322   CAB
@@ -1199,8 +1199,8 @@ Layer  Tot [mm]
 
 ...................................................................................
 # "TOB radial services Layer 3"   "TOB_rad_services3"      3189.2       4556.0
-* 1 "Multi Service Cable CAB48"   "MS_Al48"                   0.567      790   CAB
-* 2 "Multi Service Cable CAB36"   "MS_Al36"                   0.515      474   CAB
+* 1 "Multi Service Cable CAB48"   "CAB_Al48"                  0.7854     790   CAB
+* 2 "Multi Service Cable CAB36"   "CAB_Al36"                  0.7854     474   CAB
 * 3 "Ruggedized ribbons"          "T_RuggRibbon"              0.086     2391   CAB
 * 4 "DOHM ribbons"                "T_RuggRibbon"              0.086      420   CAB
 * 5 "Spare ribbons"               "T_RuggRibbon"              0.086      322   CAB
@@ -1213,8 +1213,8 @@ Layer  Tot [mm]
 
 ...................................................................................
 # "TOB radial services Layer 4"   "TOB_rad_services4"      3910.0       5585.7
-* 1 "Multi Service Cable CAB48"   "MS_Al48"                   0.567      871   CAB
-* 2 "Multi Service Cable CAB36"   "MS_Al36"                   0.515     1108   CAB
+* 1 "Multi Service Cable CAB48"   "CAB_Al48"                  0.7854     871   CAB
+* 2 "Multi Service Cable CAB36"   "CAB_Al36"                  0.7854    1108   CAB
 * 3 "Ruggedized ribbons"          "T_RuggRibbon"              0.086     3428   CAB
 * 4 "DOHM ribbons"                "T_RuggRibbon"              0.086      678   CAB
 * 5 "Spare ribbons"               "T_RuggRibbon"              0.086      355   CAB
@@ -1227,8 +1227,8 @@ Layer  Tot [mm]
 
 ...................................................................................
 # "TOB radial services Layer 5"   "TOB_rad_services5"      5171.7       7388.1
-* 1 "Multi Service Cable CAB48"   "MS_Al48"                   0.567     1033   CAB
-* 2 "Multi Service Cable CAB36"   "MS_Al36"                   0.515     2109   CAB
+* 1 "Multi Service Cable CAB48"   "CAB_Al48"                  0.7854    1033   CAB
+* 2 "Multi Service Cable CAB36"   "CAB_Al36"                  0.7854    2109   CAB
 * 3 "Ruggedized ribbons"          "T_RuggRibbon"              0.086     6524   CAB
 * 4 "DOHM ribbons"                "T_RuggRibbon"              0.086     1229   CAB
 * 5 "Spare ribbons"               "T_RuggRibbon"              0.086      421   CAB
@@ -1241,8 +1241,8 @@ Layer  Tot [mm]
 
 ...................................................................................
 # "TOB radial services Layer 6"   "TOB_rad_services6"      3940.8       5629.7
-* 1 "Multi Service Cable CAB48"   "MS_Al48"                   0.567      719   CAB
-* 2 "Multi Service Cable CAB36"   "MS_Al36"                   0.515     2046   CAB
+* 1 "Multi Service Cable CAB48"   "CAB_Al48"                  0.7854     719   CAB
+* 2 "Multi Service Cable CAB36"   "CAB_Al36"                  0.7854    2046   CAB
 * 3 "Ruggedized ribbons"          "T_RuggRibbon"              0.086     9024   CAB
 * 4 "DOHM ribbons"                "T_RuggRibbon"              0.086     1576   CAB
 * 5 "Spare ribbons"               "T_RuggRibbon"              0.086      293   CAB
@@ -1585,8 +1585,8 @@ Sector  Pipes  Length [mm]
 
 ..........................................................................................
 # "TOB axial services Sector 2 Part A"  "TOB_ax_services_A2"   2732.8          16.46
-* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1660   CAB
-* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       498   CAB
+* 1 "Multi Service Cable CAB36"         "CAB_Al36"                0.7854     1660   CAB
+* 2 "Multi Service Cable CAB48"         "CAB_Al48"                0.7854      498   CAB
 * 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2   498   CAB
 * 4 "Cooling Pipes"                     "Copper"                  7.854E-3    332   COL
 * 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      332   COL
@@ -1595,8 +1595,8 @@ Sector  Pipes  Length [mm]
 
 ..........................................................................................
 # "TOB axial services Sector 3 Part A"  "TOB_ax_services_A3"   2732.8          16.46
-* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1494   CAB
-* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       664   CAB
+* 1 "Multi Service Cable CAB36"         "CAB_Al36"                0.7854     1494   CAB
+* 2 "Multi Service Cable CAB48"         "CAB_Al48"                0.7854      664   CAB
 * 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2     0   CAB
 * 4 "Cooling Pipes"                     "Copper"                  7.854E-3    332   COL
 * 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      332   COL
@@ -1605,8 +1605,8 @@ Sector  Pipes  Length [mm]
 
 ..........................................................................................
 # "TOB axial services Sector 4 Part A"  "TOB_ax_services_A4"   2732.8          16.46
-* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1328   CAB
-* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       498   CAB
+* 1 "Multi Service Cable CAB36"         "CAB_Al36"                0.7854     1328   CAB
+* 2 "Multi Service Cable CAB48"         "CAB_Al48"                0.7854      498   CAB
 * 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2     0   CAB
 * 4 "Cooling Pipes"                     "Copper"                  7.854E-3    166   COL
 * 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      166   COL
@@ -1615,8 +1615,8 @@ Sector  Pipes  Length [mm]
 
 ..........................................................................................
 # "TOB axial services Sector 5 Part A"  "TOB_ax_services_A5"   2732.8          16.46
-* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1826   CAB
-* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       332   CAB
+* 1 "Multi Service Cable CAB36"         "CAB_Al36"                0.7854     1826   CAB
+* 2 "Multi Service Cable CAB48"         "CAB_Al48"                0.7854      332   CAB
 * 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2   498   CAB
 * 4 "Cooling Pipes"                     "Copper"                  7.854E-3    332   COL
 * 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      332   COL
@@ -1625,8 +1625,8 @@ Sector  Pipes  Length [mm]
 
 ..........................................................................................
 # "TOB axial services Sector 7 Part A"  "TOB_ax_services_A7"   2732.8          16.46
-* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1328   CAB
-* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       830   CAB
+* 1 "Multi Service Cable CAB36"         "CAB_Al36"                0.7854     1328   CAB
+* 2 "Multi Service Cable CAB48"         "CAB_Al48"                0.7854      830   CAB
 * 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2     0   CAB
 * 4 "Cooling Pipes"                     "Copper"                  7.854E-3    166   COL
 * 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      166   COL
@@ -1635,8 +1635,8 @@ Sector  Pipes  Length [mm]
 
 ..........................................................................................
 # "TOB axial services Sector 8 Part A"  "TOB_ax_services_A8"   2732.8          16.46
-* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1328   CAB
-* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       664   CAB
+* 1 "Multi Service Cable CAB36"         "CAB_Al36"                0.7854     1328   CAB
+* 2 "Multi Service Cable CAB48"         "CAB_Al48"                0.7854      664   CAB
 * 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2   498   CAB
 * 4 "Cooling Pipes"                     "Copper"                  7.854E-3    332   COL
 * 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      332   COL
@@ -1645,8 +1645,8 @@ Sector  Pipes  Length [mm]
 
 ..........................................................................................
 # "TOB axial services Sector 9 Part A"  "TOB_ax_services_A9"   2732.8          16.46
-* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1494   CAB
-* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       664   CAB
+* 1 "Multi Service Cable CAB36"         "CAB_Al36"                0.7854     1494   CAB
+* 2 "Multi Service Cable CAB48"         "CAB_Al48"                0.7854      664   CAB
 * 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2     0   CAB
 * 4 "Cooling Pipes"                     "Copper"                  7.854E-3    166   COL
 * 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      166   COL
@@ -1655,8 +1655,8 @@ Sector  Pipes  Length [mm]
 
 ..........................................................................................
 # "TOB axial services Sector 11 Part A" "TOB_ax_services_A11"  2732.8          16.46
-* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1660   CAB
-* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       498   CAB
+* 1 "Multi Service Cable CAB36"         "CAB_Al36"                0.7854     1660   CAB
+* 2 "Multi Service Cable CAB48"         "CAB_Al48"                0.7854      498   CAB
 * 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2   498   CAB
 * 4 "Cooling Pipes"                     "Copper"                  7.854E-3    332   COL
 * 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      332   COL
@@ -1665,8 +1665,8 @@ Sector  Pipes  Length [mm]
 
 ..........................................................................................
 # "TOB axial services Sector 12 Part A" "TOB_ax_services_A12"  2738          16.46
-* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1328   CAB
-* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       332   CAB
+* 1 "Multi Service Cable CAB36"         "CAB_Al36"                0.7854     1328   CAB
+* 2 "Multi Service Cable CAB48"         "CAB_Al48"                0.7854      332   CAB
 * 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2   332   CAB
 * 4 "Cooling Pipes"                     "Copper"                  7.854E-3    332   COL
 * 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      332   COL
@@ -1675,8 +1675,8 @@ Sector  Pipes  Length [mm]
 
 ..........................................................................................
 # "TOB axial services Sector 13 Part A" "TOB_ax_services_A13"  2732.8          16.46
-* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1494   CAB
-* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       664   CAB
+* 1 "Multi Service Cable CAB36"         "CAB_Al36"                0.7854     1494   CAB
+* 2 "Multi Service Cable CAB48"         "CAB_Al48"                0.7854      664   CAB
 * 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2     0   CAB
 * 4 "Cooling Pipes"                     "Copper"                  7.854E-3    166   COL
 * 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      166   COL
@@ -1685,8 +1685,8 @@ Sector  Pipes  Length [mm]
 
 ..........................................................................................
 # "TOB axial services Sector 14 Part A" "TOB_ax_services_A14"  2732.8          16.46
-* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1826   CAB
-* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       332   CAB
+* 1 "Multi Service Cable CAB36"         "CAB_Al36"                0.7854     1826   CAB
+* 2 "Multi Service Cable CAB48"         "CAB_Al48"                0.7854      332   CAB
 * 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2   498   CAB
 * 4 "Cooling Pipes"                     "Copper"                  7.854E-3    332   COL
 * 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      332   COL
@@ -1695,8 +1695,8 @@ Sector  Pipes  Length [mm]
 
 ..........................................................................................
 # "TOB axial services Sector 16 Part A" "TOB_ax_services_A16"  2732.8          16.46
-* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1494   CAB
-* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       664   CAB
+* 1 "Multi Service Cable CAB36"         "CAB_Al36"                0.7854     1494   CAB
+* 2 "Multi Service Cable CAB48"         "CAB_Al48"                0.7854      664   CAB
 * 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2   498   CAB
 * 4 "Cooling Pipes"                     "Copper"                  7.854E-3    166   COL
 * 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      166   COL
@@ -1705,8 +1705,8 @@ Sector  Pipes  Length [mm]
 
 ..........................................................................................
 # "TOB axial services Sector 17 Part A" "TOB_ax_services_A17"  2732.8          16.46
-* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1328   CAB
-* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       498   CAB
+* 1 "Multi Service Cable CAB36"         "CAB_Al36"                0.7854     1328   CAB
+* 2 "Multi Service Cable CAB48"         "CAB_Al48"                0.7854      498   CAB
 * 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2     0   CAB
 * 4 "Cooling Pipes"                     "Copper"                  7.854E-3    332   COL
 * 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      332   COL
@@ -1715,8 +1715,8 @@ Sector  Pipes  Length [mm]
 
 ..........................................................................................
 # "TOB axial services Sector 18 Part A" "TOB_ax_services_A18"  2732.8          16.46
-* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1494   CAB
-* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       664   CAB
+* 1 "Multi Service Cable CAB36"         "CAB_Al36"                0.7854     1494   CAB
+* 2 "Multi Service Cable CAB48"         "CAB_Al48"                0.7854      664   CAB
 * 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2     0   CAB
 * 4 "Cooling Pipes"                     "Copper"                  7.854E-3    166   COL
 * 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      166   COL
@@ -1839,8 +1839,8 @@ Sector  Pipes  Length [mm]
 
 ..........................................................................................
 # "TOB axial services Sector 2 Part C"  "TOB_ax_services_C2"   2732.8          16.46
-* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1494   CAB
-* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       664   CAB
+* 1 "Multi Service Cable CAB36"         "CAB_Al36"                0.7854     1494   CAB
+* 2 "Multi Service Cable CAB48"         "CAB_Al48"                0.7854      664   CAB
 * 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2   332   CAB
 * 4 "Cooling Pipes"                     "Copper"                  7.854E-3    332   COL
 * 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      332   COL
@@ -1849,8 +1849,8 @@ Sector  Pipes  Length [mm]
 
 ..........................................................................................
 # "TOB axial services Sector 3 Part C"  "TOB_ax_services_C3"   2732.8          16.46
-* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1328   CAB
-* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       332   CAB
+* 1 "Multi Service Cable CAB36"         "CAB_Al36"                0.7854     1328   CAB
+* 2 "Multi Service Cable CAB48"         "CAB_Al48"                0.7854      332   CAB
 * 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2   498   CAB
 * 4 "Cooling Pipes"                     "Copper"                  7.854E-3    332   COL
 * 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      332   COL
@@ -1859,8 +1859,8 @@ Sector  Pipes  Length [mm]
 
 ..........................................................................................
 # "TOB axial services Sector 4 Part C"  "TOB_ax_services_C4"   2732.8          16.46
-* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1328   CAB
-* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       664   CAB
+* 1 "Multi Service Cable CAB36"         "CAB_Al36"                0.7854     1328   CAB
+* 2 "Multi Service Cable CAB48"         "CAB_Al48"                0.7854      664   CAB
 * 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2   332   CAB
 * 4 "Cooling Pipes"                     "Copper"                  7.854E-3    166   COL
 * 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      166   COL
@@ -1869,8 +1869,8 @@ Sector  Pipes  Length [mm]
 
 ..........................................................................................
 # "TOB axial services Sector 6 Part C"  "TOB_ax_services_C6"   2732.8          16.46
-* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1826   CAB
-* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       332   CAB
+* 1 "Multi Service Cable CAB36"         "CAB_Al36"                0.7854     1826   CAB
+* 2 "Multi Service Cable CAB48"         "CAB_Al48"                0.7854      332   CAB
 * 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2   332   CAB
 * 4 "Cooling Pipes"                     "Copper"                  7.854E-3    332   COL
 * 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      332   COL
@@ -1879,8 +1879,8 @@ Sector  Pipes  Length [mm]
 
 ..........................................................................................
 # "TOB axial services Sector 7 Part C"  "TOB_ax_services_C7"   2732.8          16.46
-* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1660   CAB
-* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       498   CAB
+* 1 "Multi Service Cable CAB36"         "CAB_Al36"                0.7854     1660   CAB
+* 2 "Multi Service Cable CAB48"         "CAB_Al48"                0.7854      498   CAB
 * 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2     0   CAB
 * 4 "Cooling Pipes"                     "Copper"                  7.854E-3    166   COL
 * 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      166   COL
@@ -1889,8 +1889,8 @@ Sector  Pipes  Length [mm]
 
 ..........................................................................................
 # "TOB axial services Sector 8 Part C"  "TOB_ax_services_C8"   2732.8          16.46
-* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1162   CAB
-* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       498   CAB
+* 1 "Multi Service Cable CAB36"         "CAB_Al36"                0.7854     1162   CAB
+* 2 "Multi Service Cable CAB48"         "CAB_Al48"                0.7854      498   CAB
 * 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2   332   CAB
 * 4 "Cooling Pipes"                     "Copper"                  7.854E-3    332   COL
 * 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      332   COL
@@ -1899,8 +1899,8 @@ Sector  Pipes  Length [mm]
 
 ..........................................................................................
 # "TOB axial services Sector 9 Part C"  "TOB_ax_services_C9"   2732.8          16.46
-* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1826   CAB
-* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       332   CAB
+* 1 "Multi Service Cable CAB36"         "CAB_Al36"                0.7854     1826   CAB
+* 2 "Multi Service Cable CAB48"         "CAB_Al48"                0.7854      332   CAB
 * 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2   498   CAB
 * 4 "Cooling Pipes"                     "Copper"                  7.854E-3    166   COL
 * 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      166   COL
@@ -1909,8 +1909,8 @@ Sector  Pipes  Length [mm]
 
 ..........................................................................................
 # "TOB axial services Sector 11 Part C" "TOB_ax_services_C11"  2732.8          16.46
-* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1494   CAB
-* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       664   CAB
+* 1 "Multi Service Cable CAB36"         "CAB_Al36"                0.7854     1494   CAB
+* 2 "Multi Service Cable CAB48"         "CAB_Al48"                0.7854      664   CAB
 * 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2     0   CAB
 * 4 "Cooling Pipes"                     "Copper"                  7.854E-3    332   COL
 * 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      332   COL
@@ -1919,8 +1919,8 @@ Sector  Pipes  Length [mm]
 
 ..........................................................................................
 # "TOB axial services Sector 12 Part C" "TOB_ax_services_C12"  2732.8          16.46
-* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1162   CAB
-* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       498   CAB
+* 1 "Multi Service Cable CAB36"         "CAB_Al36"                0.7854     1162   CAB
+* 2 "Multi Service Cable CAB48"         "CAB_Al48"                0.7854      498   CAB
 * 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2   498   CAB
 * 4 "Cooling Pipes"                     "Copper"                  7.854E-3    332   COL
 * 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      332   COL
@@ -1929,8 +1929,8 @@ Sector  Pipes  Length [mm]
 
 ..........................................................................................
 # "TOB axial services Sector 13 Part C" "TOB_ax_services_C13"  2732.8          16.46
-* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1494   CAB
-* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       664   CAB
+* 1 "Multi Service Cable CAB36"         "CAB_Al36"                0.7854     1494   CAB
+* 2 "Multi Service Cable CAB48"         "CAB_Al48"                0.7854      664   CAB
 * 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2     0   CAB
 * 4 "Cooling Pipes"                     "Copper"                  7.854E-3    166   COL
 * 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      166   COL
@@ -1939,8 +1939,8 @@ Sector  Pipes  Length [mm]
 
 ..........................................................................................
 # "TOB axial services Sector 15 Part C" "TOB_ax_services_C15"  2732.8          16.46
-* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1826   CAB
-* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       332   CAB
+* 1 "Multi Service Cable CAB36"         "CAB_Al36"                0.7854     1826   CAB
+* 2 "Multi Service Cable CAB48"         "CAB_Al48"                0.7854      332   CAB
 * 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2   498   CAB
 * 4 "Cooling Pipes"                     "Copper"                  7.854E-3    332   COL
 * 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      332   COL
@@ -1949,8 +1949,8 @@ Sector  Pipes  Length [mm]
 
 ..........................................................................................
 # "TOB axial services Sector 16 Part C" "TOB_ax_services_C16"  2732.8          16.46
-* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1494   CAB
-* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       664   CAB
+* 1 "Multi Service Cable CAB36"         "CAB_Al36"                0.7854     1494   CAB
+* 2 "Multi Service Cable CAB48"         "CAB_Al48"                0.7854      664   CAB
 * 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2     0   CAB
 * 4 "Cooling Pipes"                     "Copper"                  7.854E-3    166   COL
 * 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      166   COL
@@ -1959,8 +1959,8 @@ Sector  Pipes  Length [mm]
 
 ..........................................................................................
 # "TOB axial services Sector 17 Part C" "TOB_ax_services_C17"  2732.8          16.46
-* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1162   CAB
-* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       664   CAB
+* 1 "Multi Service Cable CAB36"         "CAB_Al36"                0.7854     1162   CAB
+* 2 "Multi Service Cable CAB48"         "CAB_Al48"                0.7854      664   CAB
 * 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2   498   CAB
 * 4 "Cooling Pipes"                     "Copper"                  7.854E-3    332   COL
 * 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      332   COL
@@ -1969,8 +1969,8 @@ Sector  Pipes  Length [mm]
 
 ..........................................................................................
 # "TOB axial services Sector 18 Part C" "TOB_ax_services_C18"  2732.8          16.46
-* 1 "Multi Service Cable CAB36"         "MS_Al36"                 0.515      1826   CAB
-* 2 "Multi Service Cable CAB48"         "MS_Al48"                 0.567       332   CAB
+* 1 "Multi Service Cable CAB36"         "CAB_Al36"                0.7854     1826   CAB
+* 2 "Multi Service Cable CAB48"         "CAB_Al48"                0.7854      332   CAB
 * 3 "DOHM Power Connectors"             "TOB_DOHM_PowerConn"      9.3648E-2   498   CAB
 * 4 "Cooling Pipes"                     "Copper"                  7.854E-3    166   COL
 * 5 "Cooling Fluid"                     "C6F14_F2_-30C"           0.6362      166   COL
