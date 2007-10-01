@@ -21,7 +21,7 @@
 #include "DataFormats/GsfTrackReco/interface/GsfTrack.h"
 #include "SimDataFormats/Vertex/interface/SimVertex.h"
 #include "SimDataFormats/Vertex/interface/SimVertexContainer.h"
-
+#include "DataFormats/CaloTowers/interface/CaloTower.h"
 #include <vector>
  
 #define PI 3.141592654
@@ -248,6 +248,39 @@ double PixelMatchAnalysis::ecaletisol( const edm::Event& Evt, reco::SuperCluster
   return ecalIsol;
 }
 
+double PixelMatchAnalysis::hcaletisol(reco::SuperClusterRef maxsupercluster, const CaloTowerCollection* hbhe){
+
+  using namespace edm; // needed for all fwk related classes
+  using namespace std;
+  using namespace reco;
+
+  float hcalIsol=0.;
+
+  float candSCphi = maxsupercluster->phi();
+  float candSCeta = maxsupercluster->eta();
+
+  for(CaloTowerCollection::const_iterator hbheItr = hbhe->begin(); hbheItr != hbhe->end(); ++hbheItr){
+    double HcalHit_eta=hbheItr->eta();
+    double HcalHit_phi=hbheItr->phi();
+    float HcalHit_pth=hbheItr->hadEt();
+    if(HcalHit_pth>hcalptMin_) {
+      float deltaphi;
+      if(HcalHit_phi<0) HcalHit_phi+=TWOPI;
+      if(candSCphi<0) candSCphi+=TWOPI;
+      deltaphi=fabs(HcalHit_phi-candSCphi);
+      if(deltaphi>TWOPI) deltaphi-=TWOPI;
+      if(deltaphi>PI) deltaphi=TWOPI-deltaphi;
+      float deltaeta=fabs(HcalHit_eta-candSCeta);
+      float newDelta= sqrt(deltaphi*deltaphi+ deltaeta*deltaeta);
+      if(newDelta<hcalconesizemax_ && newDelta>hcalconesizemin_) hcalIsol+=HcalHit_pth;
+    }      
+  }
+  return hcalIsol;
+}
+
+
+
+
 
 //-------------------------------------------------------------------------
 double PixelMatchAnalysis::hcaletisol(reco::SuperClusterRef maxsupercluster, const HBHERecHitCollection* hbhe, const CaloGeometry* geometry){
@@ -454,9 +487,16 @@ void PixelMatchAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup
   histo_event->Fill(iEvent.id().event());
 
   // Get the barrel hcal hits
-  edm::Handle<HBHERecHitCollection> hhitBarrelHandle;
-  try {iEvent.getByLabel("hbhereco", hhitBarrelHandle);} catch (cms::Exception& ex) { }
-  const HBHERecHitCollection* hcalhitBarrelCollection = hhitBarrelHandle.product();
+  //edm::Handle<HBHERecHitCollection> hhitBarrelHandle;
+  //try {iEvent.getByLabel("hbhereco", hhitBarrelHandle);} catch (cms::Exception& ex) { }
+  //const HBHERecHitCollection* hcalhitBarrelCollection = hhitBarrelHandle.product();
+  // Hcal Rechits are unavailable in AOD => use CaloTowers instead
+  edm::Handle<CaloTowerCollection> hhitBarrelHandle;
+  //try {iEvent.getByLabel("caloTowers", hhitBarrelHandle);} catch (cms::Exception& ex) { }
+  iEvent.getByLabel("towerMaker", hhitBarrelHandle);
+  const CaloTowerCollection* towerCollection = hhitBarrelHandle.product();
+
+
 
   //Get Calo Geometry
   edm::ESHandle<CaloGeometry> pG;
@@ -676,8 +716,8 @@ void PixelMatchAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup
 
 
     // 2. HCAL isolation  
-    double elec_hcalisol = hcaletisol(scluselec,hcalhitBarrelCollection,caloGeom);
-    double posi_hcalisol = hcaletisol(sclusposi,hcalhitBarrelCollection,caloGeom);
+    double elec_hcalisol = hcaletisol(scluselec,towerCollection);
+    double posi_hcalisol = hcaletisol(sclusposi,towerCollection);
 
     gsf_el_hcal_isol_abs->Fill(elec_hcalisol);
     gsf_el_hcal_isol->Fill(elec_hcalisol/sc_el.et());
