@@ -38,6 +38,8 @@ Implementation:
 #include "Geometry/CaloGeometry/interface/CaloCellGeometry.h"
 #include "Geometry/CaloGeometry/interface/CaloGeometry.h"
 #include "Geometry/Records/interface/IdealGeometryRecord.h"
+#include "DataFormats/CaloTowers/interface/CaloTower.h"
+#include "DataFormats/CaloTowers/interface/CaloTowerFwd.h"
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/Utilities/interface/Exception.h"
@@ -81,6 +83,8 @@ class PixelMatchAnalysis : public edm::EDAnalyzer {
 
   double ecaletisol(const edm::Event& Evt, reco::SuperClusterRef maxsupercluster );
   double hcaletisol(reco::SuperClusterRef maxsupercluster, const HBHERecHitCollection* hbhe, const CaloGeometry* geometry);
+
+  double hcaletisol(reco::SuperClusterRef maxsupercluster, const CaloTowerCollection* hbhe);
   std::pair<int,float> trackisol(const reco::GsfTrackRef tr, const reco::TrackCollection* isoTracks, double zvtx);
   std::pair<int,float> findIsoTracks(GlobalVector mom, GlobalPoint vtx,  const reco::TrackCollection* isoTracks, bool isElectron, bool useVertex);
   void searchmax( const reco::PixelMatchGsfElectronCollection*, int &prime, int &second);
