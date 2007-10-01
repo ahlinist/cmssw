@@ -2,7 +2,7 @@
 
 module csc2DRecHits = CSCRecHitBProducer {
      untracked bool CSCIsRunningOnData           = false
-     untracked bool CSCDebug                     = true
+     untracked bool CSCDebug                     = false
 ###########################################################
 #    Which digis:
 ###########################################################
