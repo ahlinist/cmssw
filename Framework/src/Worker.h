@@ -213,7 +213,7 @@ namespace edm {
 	actions::ActionCodes action = actions_->find(e.rootCause());
 	// If we are processing an endpath, treat SkipEvent or FailPath
 	// as FailModule, so any subsequent OutputModules are still run.
-	if (cpc->isEndPath()) {
+	if (cpc && cpc->isEndPath()) {
 	  if (action == actions::SkipEvent || action == actions::FailPath) action = actions::FailModule;
 	}
 	switch(action) {
