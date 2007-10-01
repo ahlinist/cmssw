@@ -23,9 +23,9 @@ class CSCDetId;
 class CSCLayer;
 class CSCChamberSpecs;
 class CSCLayerGeometry;
-class CSCGains;
-class CSCcrosstalk;
-class CSCNoiseMatrix;
+class CSCDBGains;
+class CSCDBCrosstalk;
+class CSCDBNoiseMatrix;
 class CSCStripCrosstalk;
 class CSCStripNoiseMatrix;
 class CSCFitXonStripWithGatti;
@@ -55,15 +55,14 @@ class CSCMake2DRecHit
 
   /// Load in X-Talks and Noise Matrix
   void setCalibration( float GlobalGainAvg,
-                       const CSCGains* gains,
-                       const CSCcrosstalk* xtalk,
-                       const CSCNoiseMatrix* noise ) {
+                       const CSCDBGains* gains,
+                       const CSCDBCrosstalk* xtalk,
+                       const CSCDBNoiseMatrix* noise ) {
     globalGainAvg = GlobalGainAvg;
     gains_ = gains;
     xtalk_ = xtalk;
     noise_ = noise;
   }
-
  
   const CSCLayer*         layer_;
   const CSCLayerGeometry* layergeom_;
@@ -82,9 +81,9 @@ class CSCMake2DRecHit
    *
    */
   float globalGainAvg;
-  const CSCGains*       gains_;
-  const CSCcrosstalk*   xtalk_;
-  const CSCNoiseMatrix* noise_;
+  const CSCDBGains*       gains_;
+  const CSCDBCrosstalk*   xtalk_;
+  const CSCDBNoiseMatrix* noise_;
 
   CSCStripCrosstalk*       stripCrosstalk_; 
   CSCStripNoiseMatrix*     stripNoiseMatrix_;

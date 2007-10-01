@@ -10,22 +10,24 @@
  * \author Dominique Fortin - UCR
  */
 
-#include <CondFormats/CSCObjects/interface/CSCNoiseMatrix.h>
-#include <CondFormats/DataRecord/interface/CSCNoiseMatrixRcd.h>
-#include <CondFormats/CSCObjects/interface/CSCGains.h>
-#include <CondFormats/DataRecord/interface/CSCGainsRcd.h>
-#include <CondFormats/CSCObjects/interface/CSCReadoutMappingFromFile.h>
-#include <CondFormats/CSCObjects/interface/CSCReadoutMappingForSliceTest.h>
+#include <CondFormats/CSCObjects/interface/CSCDBNoiseMatrix.h>
+#include <CondFormats/DataRecord/interface/CSCDBNoiseMatrixRcd.h>
+#include <CondFormats/CSCObjects/interface/CSCDBGains.h>
+#include <CondFormats/DataRecord/interface/CSCDBGainsRcd.h>
 
 #include <FWCore/ParameterSet/interface/ParameterSet.h>
 
 #include <vector>
 #include <string>
 
+class CSCIndexer;
 
 class CSCStripNoiseMatrix
 {
  public:
+
+  typedef uint16_t IndexType;
+  typedef uint32_t LongIndexType;
 
   /// configurable parameters
   explicit CSCStripNoiseMatrix(const edm::ParameterSet & ps);  
@@ -35,30 +37,31 @@ class CSCStripNoiseMatrix
 
   /// Load in the noise matrix and store in memory
   void setNoiseMatrix( float GlobalGainAvg, 
-                       const CSCGains* gains, 
-                       const CSCNoiseMatrix* noise ) { 
+                       const CSCDBGains* gains, 
+                       const CSCDBNoiseMatrix* noise ) { 
+
     globalGainAvg = GlobalGainAvg;
-    Gains = const_cast<CSCGains*> (gains);
-    Noise = const_cast<CSCNoiseMatrix*> (noise); 
+    Gains = const_cast<CSCDBGains*> (gains);
+    Noise = const_cast<CSCDBNoiseMatrix*> (noise); 
   }
  
   /// Get the noise matrix out of the database for each of the strips within a cluster.
   void getNoiseMatrix( const CSCDetId& id, int centralStrip, std::vector<float>& nMatrix );
 
   /// Get the gains out of the database for each of the strips within a cluster.
-  float getStripGain( int chId, int thisStrip );
+  float getStripGain( LongIndexType thisStrip );
 
  private:
 
   bool debug;
   bool isData;
-  CSCReadoutMappingFromFile theCSCMap;
-  int chamberIdPrefix;
 
   // Store in memory Gains and Noise matrix
   float globalGainAvg;
-  CSCGains         * Gains;
-  CSCNoiseMatrix   * Noise;
+  CSCDBGains         * Gains;
+  CSCDBNoiseMatrix   * Noise;
+
+  CSCIndexer* theIndexer;
 
 };
 

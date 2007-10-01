@@ -18,12 +18,12 @@
 //#include <DataFormats/CSCDigi/interface/CSCStripDigi.h>
 //#include <DataFormats/CSCDigi/interface/CSCWireDigi.h>
 
-#include <CondFormats/CSCObjects/interface/CSCGains.h>
-#include <CondFormats/DataRecord/interface/CSCGainsRcd.h>
-#include <CondFormats/CSCObjects/interface/CSCcrosstalk.h>
-#include <CondFormats/DataRecord/interface/CSCcrosstalkRcd.h>
-#include <CondFormats/CSCObjects/interface/CSCNoiseMatrix.h>
-#include <CondFormats/DataRecord/interface/CSCNoiseMatrixRcd.h>
+#include <CondFormats/CSCObjects/interface/CSCDBGains.h>
+#include <CondFormats/DataRecord/interface/CSCDBGainsRcd.h>
+#include <CondFormats/CSCObjects/interface/CSCDBCrosstalk.h>
+#include <CondFormats/DataRecord/interface/CSCDBCrosstalkRcd.h>
+#include <CondFormats/CSCObjects/interface/CSCDBNoiseMatrix.h>
+#include <CondFormats/DataRecord/interface/CSCDBNoiseMatrixRcd.h>
 
 #include <FWCore/Utilities/interface/Exception.h>
 #include <FWCore/MessageLogger/interface/MessageLogger.h> 
@@ -108,6 +108,7 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
     clean_woc.put( id, rhv.begin(), rhv.end() );
   }
 
+  if ( debug ) std::cout << "Done producing wire hits " << std::endl;
 
   // Make collection of strip only hits
   
@@ -127,6 +128,8 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
     // Add the strip hits to master collection
     clean_soc.put( id, rhv.begin(), rhv.end() );
   }
+
+  if ( debug ) std::cout << "Done producing strip hits " << std::endl;
 
 
   // Now create 2-D hits by looking at superposition of strip and wire hit in a layer
@@ -230,11 +233,12 @@ void CSCRecHitBBuilder::build( const CSCStripDigiCollection* stripdc, const CSCW
       oc.put( sDetId, hitsInLayer.begin(), hitsInLayer.end() );
       hitsInLayer.clear();
     }
-    if ( debug ) std::cout << "# hits in layer: "<< hits_in_layer << std::endl;
     hits_in_layer = 0;
     layer_idx++;
     old_id = sDetId;
   }
+
+  if ( debug ) std::cout << "Done producing 2D-hits " << std::endl;
 
 }
 

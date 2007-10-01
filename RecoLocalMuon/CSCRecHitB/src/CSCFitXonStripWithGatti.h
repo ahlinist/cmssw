@@ -49,9 +49,9 @@
 class CSCLayer;
 class CSCChamberSpecs;
 class CSCFindPeakTime;
-class CSCGains;
-class CSCcrosstalk;
-class CSCNoiseMatrix;
+class CSCDBGains;
+class CSCDBCrosstalk;
+class CSCDBNoiseMatrix;
 class CSCStripCrosstalk;
 class CSCStripNoiseMatrix;
 
@@ -95,9 +95,9 @@ class CSCFitXonStripWithGatti
 
   /// Load in x-Talks and Noise Matrix
   void setCalibration( float GlobalGainAvg,
-                       const CSCGains* gains,
-                       const CSCcrosstalk* xtalk,
-                       const CSCNoiseMatrix* noise ) {
+                       const CSCDBGains* gains,
+                       const CSCDBCrosstalk* xtalk,
+                       const CSCDBNoiseMatrix* noise ) {
     globalGainAvg = GlobalGainAvg;
     gains_ = gains;
     xtalk_ = xtalk;
@@ -151,9 +151,9 @@ class CSCFitXonStripWithGatti
    *
    */
   float globalGainAvg;
-  const CSCGains*       gains_;
-  const CSCcrosstalk*   xtalk_;
-  const CSCNoiseMatrix* noise_;
+  const CSCDBGains*       gains_;
+  const CSCDBCrosstalk*   xtalk_;
+  const CSCDBNoiseMatrix* noise_;
 
   // other classes used
   CSCStripCrosstalk*       stripCrosstalk_;

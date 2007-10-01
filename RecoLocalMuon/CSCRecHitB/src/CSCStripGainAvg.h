@@ -9,17 +9,14 @@
  * \author Dominique Fortin - UCR
  */
 
-#include <CondFormats/CSCObjects/interface/CSCGains.h>
-#include <CondFormats/DataRecord/interface/CSCGainsRcd.h>
-#include <CondFormats/CSCObjects/interface/CSCReadoutMappingFromFile.h>
-#include <CondFormats/CSCObjects/interface/CSCReadoutMappingForSliceTest.h>
+#include <CondFormats/CSCObjects/interface/CSCDBGains.h>
+#include <CondFormats/DataRecord/interface/CSCDBGainsRcd.h>
 
 #include <FWCore/ParameterSet/interface/ParameterSet.h>
 
 
+class CSCStripGainAvg {
 
-class CSCStripGainAvg
-{
  public:
 
   /// configurable parameters
@@ -29,18 +26,17 @@ class CSCStripGainAvg
   // Member functions
 
   /// Load in the gains, X-talk and noise matrix and store in memory
-  void setCalibration( const CSCGains* gains ) { Gains = gains; }
+  void setCalibration( const CSCDBGains* gains ) { Gains = gains; }
  
   /// Computes the average gain for the whole CSC system.
   float getStripGainAvg();
 
  private:
 
-  CSCReadoutMappingFromFile theCSCMap;
-
   // Store in memory Gains
-  const CSCGains         * Gains;
+  const CSCDBGains         * Gains;
 
 };
+
 #endif
 

@@ -10,12 +10,12 @@
 #include <Geometry/CSCGeometry/interface/CSCLayer.h>
 #include <Geometry/CSCGeometry/interface/CSCChamberSpecs.h>
 
-#include <CondFormats/CSCObjects/interface/CSCGains.h>
-#include <CondFormats/DataRecord/interface/CSCGainsRcd.h>
-#include <CondFormats/CSCObjects/interface/CSCcrosstalk.h>
-#include <CondFormats/DataRecord/interface/CSCcrosstalkRcd.h>
-#include <CondFormats/CSCObjects/interface/CSCNoiseMatrix.h> 
-#include <CondFormats/DataRecord/interface/CSCNoiseMatrixRcd.h>
+#include <CondFormats/CSCObjects/interface/CSCDBGains.h>
+#include <CondFormats/DataRecord/interface/CSCDBGainsRcd.h>
+#include <CondFormats/CSCObjects/interface/CSCDBCrosstalk.h>
+#include <CondFormats/DataRecord/interface/CSCDBCrosstalkRcd.h>
+#include <CondFormats/CSCObjects/interface/CSCDBNoiseMatrix.h> 
+#include <CondFormats/DataRecord/interface/CSCDBNoiseMatrixRcd.h>
 
 
 #include <FWCore/MessageLogger/interface/MessageLogger.h>
