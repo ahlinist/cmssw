@@ -1,3 +1,4 @@
+
 // Read in strip digi collection and apply calibrations to ADC counts
 
 #include <RecoLocalMuon/CSCRecHitB/src/CSCStripCrosstalk.h>
@@ -7,25 +8,26 @@
 
 #include <DataFormats/MuonDetId/interface/CSCDetId.h>
 
-#include <CondFormats/CSCObjects/interface/CSCcrosstalk.h>
-#include <CondFormats/DataRecord/interface/CSCcrosstalkRcd.h>
-
-#include <CondFormats/CSCObjects/interface/CSCReadoutMappingFromFile.h>
-#include <CondFormats/CSCObjects/interface/CSCReadoutMappingForSliceTest.h>
+#include <CondFormats/CSCObjects/interface/CSCDBCrosstalk.h>
+#include <CondFormats/DataRecord/interface/CSCDBCrosstalkRcd.h>
+#include <DataFormats/MuonDetId/interface/CSCIndexer.h>
 
 #include <map>
 #include <vector>
-
+#include <iostream>
 
 CSCStripCrosstalk::CSCStripCrosstalk( const edm::ParameterSet & ps ) {
 
   debug                  = ps.getUntrackedParameter<bool>("CSCDebug");  
-  theCSCMap              = CSCReadoutMappingFromFile( ps );                                              
-  chamberIdPrefix        = ps.getUntrackedParameter<int>("CSCchamberIdPrefix");
+
+  theIndexer = new CSCIndexer;
+
 }
+
 
 CSCStripCrosstalk::~CSCStripCrosstalk() {
 
+  delete theIndexer;
 }
 
 
@@ -34,34 +36,50 @@ CSCStripCrosstalk::~CSCStripCrosstalk() {
  */
 void CSCStripCrosstalk::getCrossTalk( const CSCDetId& id, int centralStrip, std::vector<float>& xtalks) {
 
+  //  CSCIndexer* theIndexer = new CSCIndexer;
+
   xtalks.clear();
 
-  int strip1 = centralStrip;  
+  IndexType strip1 = centralStrip;  
+
+  std::vector<LongIndexType> sid2;
 
   // Compute channel id used for retrieving gains from database
-  int ec = id.endcap();
-  int st = id.station();
   int rg = id.ring();
-  int ch = id.chamber();
-  int la = id.layer();
 
   bool isME1a = false;
 
   // Note that ME1/a constants are stored in ME1/1 which also constains ME1/b
   // ME1/a constants are stored beginning at entry 64
   // Also, only have only 16 strips to worry about for ME1a
-  if ( id.station() == 1  && id.ring() == 4 ) {   
+  if ( id.ring() == 4 ) {   
     isME1a = true;
     rg = 1;
-    strip1 = centralStrip%16 - 1;
-    if (strip1 < 0) strip1 = 15;
+    strip1 = centralStrip%16;
+    if (strip1 == 0) strip1 = 16;
     strip1 = strip1 + 64;
-  } else {
-    // In database, strip start at 0, whereas strip Id start at 1...	  
-    strip1 = centralStrip - 1;
-  }
+    const CSCDetId testId( id.endcap(), 1, 1, id.chamber(), id.layer() );
+    LongIndexType idDB = theIndexer->stripChannelIndex( testId, strip1);
 
-  int chId= chamberIdPrefix + ec*100000 + st*10000 + rg*1000 + ch*10 + la;
+    if (strip1 == 65) {
+      sid2.push_back(idDB+15);
+      sid2.push_back(idDB);
+      sid2.push_back(idDB+1);
+    } else if (strip1 == 80) {
+      sid2.push_back(idDB-1);
+      sid2.push_back(idDB);
+      sid2.push_back(idDB-15);
+    } else {
+      sid2.push_back(idDB-1);
+      sid2.push_back(idDB);
+      sid2.push_back(idDB+1);
+    }
+  } else {
+    LongIndexType idDB = theIndexer->stripChannelIndex( id, strip1);
+    sid2.push_back(idDB-1);
+    sid2.push_back(idDB);
+    sid2.push_back(idDB+1);
+  }
 
   float m_left = 0.;
   float b_left = 0.;
@@ -69,25 +87,19 @@ void CSCStripCrosstalk::getCrossTalk( const CSCDetId& id, int centralStrip, std:
   float b_right = 0.;
 
   int idx = 0;
+
+
   // Cluster of 3 strips, so get x-talks for these 3 strips
-  for ( int sid = strip1-1; sid < strip1+2; ++sid ) {
+  for ( int i = 0; i < 3; ++i ) {
 
-    int sid2 = sid;
+    LongIndexType sid = sid2[i];
       
-    if (isME1a && sid < 64) sid2 = 79;
-    if (isME1a && sid > 79) sid2 = 64;
+    m_left  = xTalk_->crosstalk[sid].xtalk_slope_left;
+    b_left  = xTalk_->crosstalk[sid].xtalk_intercept_left;
+    m_right = xTalk_->crosstalk[sid].xtalk_slope_right;
+    b_right = xTalk_->crosstalk[sid].xtalk_intercept_right;
 
-    if (xTalk_->crosstalk.find(chId) != xTalk_->crosstalk.end( ) ) {
-      m_left  = xTalk_->crosstalk[chId][sid2].xtalk_slope_left;
-      b_left  = xTalk_->crosstalk[chId][sid2].xtalk_intercept_left;
-      m_right = xTalk_->crosstalk[chId][sid2].xtalk_slope_right;
-      b_right = xTalk_->crosstalk[chId][sid2].xtalk_intercept_right;
-    } else {
-      m_left  = 0.;
-      b_left  = 0.035;
-      m_right = 0.;
-      b_right = 0.035;
-    }
+    // std::cout << "X-talks are " << m_left << " " << b_left << " " << m_right << " " << b_right << std::endl;
 
     xtalks.push_back(m_left);
     xtalks.push_back(b_left);

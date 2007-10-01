@@ -1,5 +1,7 @@
 <use name=CondFormats/CSCObjects>
 <use name=CondFormats/DataRecord>
+<use name=CalibMuon/CSCCalibration>
+<use name=CalibMuon/Configuration>
 <use name=DataFormats/CSCDigi>
 <use name=DataFormats/CSCRecHit>
 <use name=DataFormats/Common>

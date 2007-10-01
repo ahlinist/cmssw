@@ -32,9 +32,9 @@
 
 class CSCLayer;
 class CSCGeometry;
-class CSCGains;
-class CSCcrosstalk;
-class CSCNoiseMatrix;
+class CSCDBGains;
+class CSCDBCrosstalk;
+class CSCDBNoiseMatrix;
 class CSCDetId;
 class CSCHitFromStripOnly;
 class CSCHitFromWireOnly;
@@ -72,9 +72,9 @@ class CSCRecHitBBuilder
    */
   void setGeometry   ( const CSCGeometry* geom ) {geom_ = geom;}
   void setCalibration( float gainAvg,
-	               const CSCGains* gains,
-                       const CSCcrosstalk* xtalk,
-                       const CSCNoiseMatrix* noise ) {
+	               const CSCDBGains* gains,
+                       const CSCDBCrosstalk* xtalk,
+                       const CSCDBNoiseMatrix* noise ) {
     gAvg_  = gainAvg;
     gains_ = gains;
     xtalk_ = xtalk;
@@ -110,9 +110,9 @@ class CSCRecHitBBuilder
    */
   const CSCGeometry* geom_;
   float gAvg_;
-  const CSCGains* gains_;
-  const CSCcrosstalk* xtalk_;
-  const CSCNoiseMatrix* noise_;
+  const CSCDBGains* gains_;
+  const CSCDBCrosstalk* xtalk_;
+  const CSCDBNoiseMatrix* noise_;
 
 };
 

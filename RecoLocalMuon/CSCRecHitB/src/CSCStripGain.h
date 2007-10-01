@@ -11,17 +11,20 @@
  * \author Dominique Fortin - UCR
  */
 
-#include <CondFormats/CSCObjects/interface/CSCGains.h>
-#include <CondFormats/DataRecord/interface/CSCGainsRcd.h>
-#include <CondFormats/CSCObjects/interface/CSCReadoutMappingFromFile.h>
-#include <CondFormats/CSCObjects/interface/CSCReadoutMappingForSliceTest.h>
+#include <CondFormats/CSCObjects/interface/CSCDBGains.h>
+#include <CondFormats/DataRecord/interface/CSCDBGainsRcd.h>
 
 #include <FWCore/ParameterSet/interface/ParameterSet.h>
+
+class CSCIndexer;
 
 
 class CSCStripGain
 {
  public:
+
+  typedef uint16_t IndexType;
+  typedef uint32_t LongIndexType;
 
   /// configurable parameters
   explicit CSCStripGain(const edm::ParameterSet & ps);  
@@ -30,9 +33,9 @@ class CSCStripGain
   // Member functions
 
   /// Load in the gains, X-talk and noise matrix and store in memory
-  void setCalibration( float GlobalGainAvg, const CSCGains* gains ) { 
+  void setCalibration( float GlobalGainAvg, const CSCDBGains* gains ) { 
     globalGainAvg = GlobalGainAvg;
-    Gains_ = const_cast<CSCGains*> (gains); 
+    Gains_ = const_cast<CSCDBGains*> (gains); 
   }
  
   /// Get the gains out of the database for each of the strips within a cluster.
@@ -42,12 +45,12 @@ class CSCStripGain
 
   bool debug;
   bool isData;
-  CSCReadoutMappingFromFile theCSCMap;
-  int chamberIdPrefix;
 
   // Store in memory Gains
   float globalGainAvg;
-  CSCGains         * Gains_;
+  CSCDBGains* Gains_;
+
+  CSCIndexer* theIndexer;
 
 };
 

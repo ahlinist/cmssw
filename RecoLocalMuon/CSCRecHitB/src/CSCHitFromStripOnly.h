@@ -33,7 +33,7 @@
 class CSCLayer;
 class CSCChamberSpecs;
 class CSCLayerGeometry;
-class CSCGains;
+class CSCDBGains;
 class CSCStripDigi;
 class CSCPeakBinOfStripPulse;
 class CSCStripGain;
@@ -52,7 +52,7 @@ class CSCHitFromStripOnly
   
   std::vector<CSCStripHit> runStrip( const CSCDetId& id, const CSCLayer* layer, const CSCStripDigiCollection::Range& rstripd, const CSCCLCTDigiCollection* clcts);
 
-  void setCalibration( float gainAvg, const CSCGains* gains ) { 
+  void setCalibration( float gainAvg, const CSCDBGains* gains ) { 
     globalGainAvg  = gainAvg;
     gains_ = gains; 
   }
@@ -117,7 +117,7 @@ class CSCHitFromStripOnly
   /* Cache calibrations for current event
    *
    */
-  const CSCGains*       gains_;
+  const CSCDBGains*       gains_;
   float globalGainAvg;
 
   CSCPeakBinOfStripPulse* pulseheightOnStripFinder_;
