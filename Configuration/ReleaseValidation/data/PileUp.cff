@@ -1,0 +1,12 @@
+#
+# PileUp include for PileUp RelVal samples
+#
+# currently using: /RelValMinBias/CMSSW_1_7_0_pre4-RelVal-1190567973/GEN-SIM-DIGI-RECO
+#
+
+replace mix.input.fileNames = {
+  '/store/mc/2007/9/23/RelVal-RelValMinBias-1190567973/0000/28628D71-3D6A-DC11-AC95-00304875AADD.root',
+  '/store/mc/2007/9/23/RelVal-RelValMinBias-1190567973/0000/38DCC14D-206A-DC11-B15B-001A92971B7C.root',
+  '/store/mc/2007/9/23/RelVal-RelValMinBias-1190567973/0000/AA688385-286A-DC11-89CE-0018F3D09686.root'
+}
+
