@@ -24,6 +24,10 @@
 #include "DataFormats/CaloTowers/interface/CaloTower.h"
 #include <vector>
  
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
+
+
+
 #define PI 3.141592654
 #define TWOPI 6.283185308
 
@@ -70,23 +74,23 @@ PixelMatchAnalysis::PixelMatchAnalysis(const edm::ParameterSet& iConfig)
   ecalisol_max_ = iConfig.getParameter<double>("ecalisol_max");
 
   if (debug) {
-    cout<<"drellyan_ = " << drellyan_ << endl;
-    cout<<"rootanalfile_ = " << rootanalfile_ << endl;
-    cout<<"ecalconesize_ = " << ecalconesize_ << endl;
-    cout<<"hcalconesizemin_ = " << hcalconesizemin_ << endl;
-    cout<<"hcalconesizemax_ = " << hcalconesizemax_ << endl;
-    cout<<"hcalptMin_ = " << hcalptMin_ << endl;
-    cout<<"trackptMin_ = " << trackptMin_ << endl;
-    cout<<"trackconesize_ = " <<trackconesize_<<endl;;
-    cout<<"rspan_ = "<<rspan_<<endl;;
-    cout<<"zspan_ = "<<zspan_<<endl;;
-    cout<<"vetoConesize_ = "<<vetoConesize_<<endl;;
-    cout<<"jet_ = "<<jet_<<endl;;
-    cout<<"ptrecmin_ = "<<ptrecmin_<<endl;;
-    cout<<"etarecmin_ = "<<etarecmin_<<endl;;
-    cout<<"trackisol_max_ = "<<trackisol_max_<<endl;;
-    cout<<"hcalisol_max_ = "<<hcalisol_max_<<endl;;
-    cout<<"ecalisol_max_ = "<<ecalisol_max_<<endl;;
+    LogDebug("Zprime2eeAna")<<"drellyan_ = " << drellyan_ ;
+    LogDebug("Zprime2eeAna")<<"rootanalfile_ = " << rootanalfile_ ;
+    LogDebug("Zprime2eeAna")<<"ecalconesize_ = " << ecalconesize_ ;
+    LogDebug("Zprime2eeAna")<<"hcalconesizemin_ = " << hcalconesizemin_ ;
+    LogDebug("Zprime2eeAna")<<"hcalconesizemax_ = " << hcalconesizemax_ ;
+    LogDebug("Zprime2eeAna")<<"hcalptMin_ = " << hcalptMin_ ;
+    LogDebug("Zprime2eeAna")<<"trackptMin_ = " << trackptMin_ ;
+    LogDebug("Zprime2eeAna")<<"trackconesize_ = " <<trackconesize_;;
+    LogDebug("Zprime2eeAna")<<"rspan_ = "<<rspan_;;
+    LogDebug("Zprime2eeAna")<<"zspan_ = "<<zspan_;;
+    LogDebug("Zprime2eeAna")<<"vetoConesize_ = "<<vetoConesize_;;
+    LogDebug("Zprime2eeAna")<<"jet_ = "<<jet_;;
+    LogDebug("Zprime2eeAna")<<"ptrecmin_ = "<<ptrecmin_;;
+    LogDebug("Zprime2eeAna")<<"etarecmin_ = "<<etarecmin_;;
+    LogDebug("Zprime2eeAna")<<"trackisol_max_ = "<<trackisol_max_;;
+    LogDebug("Zprime2eeAna")<<"hcalisol_max_ = "<<hcalisol_max_;;
+    LogDebug("Zprime2eeAna")<<"ecalisol_max_ = "<<ecalisol_max_;;
   }
 }
 
@@ -182,7 +186,7 @@ double PixelMatchAnalysis::ecaletisol( const edm::Event& Evt, reco::SuperCluster
     Evt.getByLabel("hybridSuperClusters","", pHybridBasicClusters);
     Evt.getByLabel("islandBasicClusters","islandEndcapBasicClusters", pIslandBasicClusters);
   } catch ( cms::Exception& ex ) {
-    cout<<"could not found the product with producer hybridSuperClusters or islandEndcapSuperClusters" << ex << endl;
+    LogDebug("Zprime2eeAna")<<"could not found the product with producer hybridSuperClusters or islandEndcapSuperClusters" << ex ;
   }
 
   const reco::BasicClusterCollection* hybridBasicClusters = pHybridBasicClusters.product();
@@ -199,11 +203,11 @@ double PixelMatchAnalysis::ecaletisol( const edm::Event& Evt, reco::SuperCluster
   float candSCphi = maxsupercluster->phi();
   float candSCeta = maxsupercluster->eta();
 
-  cout<<"energie(raw and presh) eta and phi of max SC "
+  LogDebug("Zprime2eeAna")<<"energie(raw and presh) eta and phi of max SC "
       <<maxsupercluster->rawEnergy()<<" "
       <<maxsupercluster->preshowerEnergy()<<" "
       <<maxsupercluster->eta()<<" "
-      <<maxsupercluster->phi()<<endl;
+      <<maxsupercluster->phi();
 
   bool MATCHEDSC = true;
 
@@ -239,7 +243,7 @@ double PixelMatchAnalysis::ecaletisol( const edm::Event& Evt, reco::SuperCluster
 	float deltaeta=fabs(ebc_bceta-candSCeta);
 	newDelta= sqrt(deltaphi*deltaphi+ deltaeta*deltaeta);
 	if(newDelta < ecalconesize_) {
-	  cout<<"found a new one with energy, eta and phi "<<ebc_bce<<" "<<ebc_bceta<<" "<<ebc_bcphi<<endl;
+	  LogDebug("Zprime2eeAna")<<"found a new one with energy, eta and phi "<<ebc_bce<<" "<<ebc_bceta<<" "<<ebc_bcphi;
 	  ecalIsol+=ebc_bcet;
 	}
       }
@@ -409,8 +413,8 @@ void PixelMatchAnalysis::searchmax(const reco::PixelMatchGsfElectronCollection* 
     Et = aClus->energy() * sin(theta);
     
     if (debug) {
-      cout<<"energie, eta, theta and phi and Et of the supercluster being processed in searchmax "<<icluster<<endl;
-      cout<<aClus->energy()<<"  "<<aClus->position().Eta()<<"  "<<theta<<"  "<<aClus->position().Phi()<<"  "<<Et<<endl;
+      LogDebug("Zprime2eeAna")<<"energie, eta, theta and phi and Et of the supercluster being processed in searchmax "<<icluster;
+      LogDebug("Zprime2eeAna")<<aClus->energy()<<"  "<<aClus->position().Eta()<<"  "<<theta<<"  "<<aClus->position().Phi()<<"  "<<Et;
     }
 
     if( Et > maxenergy1 ) {
@@ -424,7 +428,7 @@ void PixelMatchAnalysis::searchmax(const reco::PixelMatchGsfElectronCollection* 
     icluster++;
   }//end of loop over gsf collection
 
-  if (debug) { cout<<"found cluster number:  "<<icluster1<<" and  "<<icluster2<<" "<<endl; }
+  if (debug) { LogDebug("Zprime2eeAna")<<"found cluster number:  "<<icluster1<<" and  "<<icluster2<<" "; }
 
   prime=icluster1;
   second=icluster2;
@@ -448,16 +452,16 @@ void  PixelMatchAnalysis::vertexcorr(HepLorentzVector elecvector, HepLorentzVect
       elecvector_vtxcor.setE(elecvector.e());
 /*
       if(debug) {
-        cout<<"in PixelMatchAnalysis::vertexcorr method "<<endl;
-        cout<<" recovertex z  and tradius "<<recozvtx<<" "<<tradius<<endl;
-        cout << "  elecvector.theta() = " <<  elecvector.theta() <<  endl;
-        cout << "  elecvector.e()*sin(elecvector.theta() )  = " <<  elecvector.e()*sin(elecvector.theta() )  <<  endl;
-        cout << "  elecvector.et()/elecvector.e()= " << elecvector.et()/elecvector.e() <<  endl;
-        cout << "  tradius/radius = " << tradius/radius  <<  endl;
-        cout << "  elecvector_vtxcor.et()/elecvector_vtxcor.e()= " << elecvector_vtxcor.et()/elecvector_vtxcor.e() <<  endl;
-        cout << "  ptcor_el= " << ptcor_el <<  endl;
-        cout << "  radius= " << radius <<  endl;
-        cout << "  tradius= " << tradius <<  endl;
+        LogDebug("Zprime2eeAna")<<"in PixelMatchAnalysis::vertexcorr method ";
+        LogDebug("Zprime2eeAna")<<" recovertex z  and tradius "<<recozvtx<<" "<<tradius;
+        LogDebug("Zprime2eeAna") << "  elecvector.theta() = " <<  elecvector.theta() <<  endl;
+        LogDebug("Zprime2eeAna") << "  elecvector.e()*sin(elecvector.theta() )  = " <<  elecvector.e()*sin(elecvector.theta() )  <<  endl;
+        LogDebug("Zprime2eeAna") << "  elecvector.et()/elecvector.e()= " << elecvector.et()/elecvector.e() <<  endl;
+        LogDebug("Zprime2eeAna") << "  tradius/radius = " << tradius/radius  <<  endl;
+        LogDebug("Zprime2eeAna") << "  elecvector_vtxcor.et()/elecvector_vtxcor.e()= " << elecvector_vtxcor.et()/elecvector_vtxcor.e() <<  endl;
+        LogDebug("Zprime2eeAna") << "  ptcor_el= " << ptcor_el <<  endl;
+        LogDebug("Zprime2eeAna") << "  radius= " << radius <<  endl;
+        LogDebug("Zprime2eeAna") << "  tradius= " << tradius <<  endl;
       }
 */
 
@@ -479,9 +483,9 @@ void PixelMatchAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup
 
   if (debug)
    {
-    cout << "=======================================================" << endl; 
-    cout << "iEvent.id().run() = " << iEvent.id().run() << "  iEvent.id().event() = " << iEvent.id().event()  << endl; 
-    cout << "=======================================================" << endl; 
+    LogDebug("Zprime2eeAna") << "=======================================================" ; 
+    LogDebug("Zprime2eeAna") << "iEvent.id().run() = " << iEvent.id().run() << "  iEvent.id().event() = " << iEvent.id().event()  ; 
+    LogDebug("Zprime2eeAna") << "=======================================================" ; 
    }
   histo_run->Fill(iEvent.id().run());
   histo_event->Fill(iEvent.id().event());
@@ -566,7 +570,7 @@ void PixelMatchAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup
   for(reco::VertexCollection::const_iterator avertex = VertexData->begin();avertex != VertexData->end();++avertex) {
     recozvtx = avertex->z();
   }
-  if(debug) cout << " vxt:reco:   recozvtx= " << recozvtx <<  endl;
+  if(debug) LogDebug("Zprime2eeAna") << " vxt:reco:   recozvtx= " << recozvtx <<  endl;
   
 
 
@@ -576,11 +580,11 @@ void PixelMatchAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup
 
   Handle<reco::PixelMatchGsfElectronCollection> pixelmatchelec;
   try{ iEvent.getByLabel("pixelMatchGsfElectrons","",pixelmatchelec); } catch(cms::Exception& ex) {
-    cout<<"could not found the product with producer pixelMatchGsfElectrons" << ex << endl;
+    LogDebug("Zprime2eeAna")<<"could not found the product with producer pixelMatchGsfElectrons" << ex ;
   }
   const reco::PixelMatchGsfElectronCollection* collpixelmatchelec = pixelmatchelec.product();
 
-  if(debug) cout << "collpixelmatchelec->size() = " <<  collpixelmatchelec->size() << endl;
+  if(debug) LogDebug("Zprime2eeAna") << "collpixelmatchelec->size() = " <<  collpixelmatchelec->size() ;
   gsfcoll_size->Fill(collpixelmatchelec->size());
 
   typedef reco::PixelMatchGsfElectron myElectron;
@@ -611,11 +615,11 @@ void PixelMatchAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup
     chargetwo = gsfsndhottest->gsfTrack()->charge();
 
      if(debug) {
-      cout<<"gsfelec (hottest): raw e = "<<sclusterone->rawEnergy()<<" presh e = "<<sclusterone->preshowerEnergy() << " pt= " << superclusone.et() <<  " eta= "<<superclusone.eta()<<" phi= "<<superclusone.phi()<<endl;
-      cout<<"gsfelec (hottest): SC info:  e = "<<sclusterone->energy() <<  endl;
-      cout<<"gsfelec (second hottest): raw e = "<<sclustertwo->rawEnergy()<<" presh e = "<<sclustertwo->preshowerEnergy() << " pt= " << superclustwo.et() << " eta= "<<superclustwo.eta()<<" phi= "<<superclustwo.phi()<<endl;
-      cout<<"gsfelec (second hottest): SC info:  e = "<<sclustertwo->energy() << endl;
-      cout << " chargeone = " << chargeone <<  " chargetwo = " << chargetwo << endl;
+      LogDebug("Zprime2eeAna")<<"gsfelec (hottest): raw e = "<<sclusterone->rawEnergy()<<" presh e = "<<sclusterone->preshowerEnergy() << " pt= " << superclusone.et() <<  " eta= "<<superclusone.eta()<<" phi= "<<superclusone.phi();
+      LogDebug("Zprime2eeAna")<<"gsfelec (hottest): SC info:  e = "<<sclusterone->energy() <<  endl;
+      LogDebug("Zprime2eeAna")<<"gsfelec (second hottest): raw e = "<<sclustertwo->rawEnergy()<<" presh e = "<<sclustertwo->preshowerEnergy() << " pt= " << superclustwo.et() << " eta= "<<superclustwo.eta()<<" phi= "<<superclustwo.phi();
+      LogDebug("Zprime2eeAna")<<"gsfelec (second hottest): SC info:  e = "<<sclustertwo->energy() ;
+      LogDebug("Zprime2eeAna") << " chargeone = " << chargeone <<  " chargetwo = " << chargetwo ;
     }
      
   }
@@ -634,7 +638,7 @@ void PixelMatchAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup
   //check charges
   if( gsf_acc==1 && (chargeone * chargetwo ) < 0 ) {
     gsf_goodcharge++;
-    if(debug) { cout << " FOUND: 2 GSF electrons with opossit charge  "<< endl; }
+    if(debug) { LogDebug("Zprime2eeAna") << " FOUND: 2 GSF electrons with opossit charge  "; }
   
   if(chargeone < 0.) {
     sc_el=superclusone;
@@ -673,11 +677,11 @@ void PixelMatchAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup
     vertexcorr(sc_po, sc_po_vtxcor, recozvtx, rad_po, radt_po);
 
     if (debug) {
-      cout << "vertex correction for eta:" << endl;
-      cout << "el : et,e,eta,phi before: " << sc_el.et()<<" " <<sc_el.e()<<" " <<sc_el.eta()<<" " <<sc_el.phi()<<endl;
-      cout << "el : et,e,eta,phi  after: " << sc_el_vtxcor.et()<<" " <<sc_el_vtxcor.e()<<" " <<sc_el_vtxcor.eta()<<" " <<sc_el_vtxcor.phi()<<endl;
-      cout << "po : et,e,eta,phi before: " << sc_po.et()<<" " <<sc_po.e()<<" " <<sc_po.eta()<<" " <<sc_po.phi()<<endl;
-      cout << "po : et,e,eta,phi  after: " << sc_po_vtxcor.et()<<" " <<sc_po_vtxcor.e()<<" " <<sc_po_vtxcor.eta()<<" " <<sc_po_vtxcor.phi()<<endl;
+      LogDebug("Zprime2eeAna") << "vertex correction for eta:" ;
+      LogDebug("Zprime2eeAna") << "el : et,e,eta,phi before: " << sc_el.et()<<" " <<sc_el.e()<<" " <<sc_el.eta()<<" " <<sc_el.phi();
+      LogDebug("Zprime2eeAna") << "el : et,e,eta,phi  after: " << sc_el_vtxcor.et()<<" " <<sc_el_vtxcor.e()<<" " <<sc_el_vtxcor.eta()<<" " <<sc_el_vtxcor.phi();
+      LogDebug("Zprime2eeAna") << "po : et,e,eta,phi before: " << sc_po.et()<<" " <<sc_po.e()<<" " <<sc_po.eta()<<" " <<sc_po.phi();
+      LogDebug("Zprime2eeAna") << "po : et,e,eta,phi  after: " << sc_po_vtxcor.et()<<" " <<sc_po_vtxcor.e()<<" " <<sc_po_vtxcor.eta()<<" " <<sc_po_vtxcor.phi();
     }
 
     //Compute the invariant mass and fill histos before isolation cuts
@@ -706,12 +710,12 @@ void PixelMatchAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup
     gsf_po_numbertrackisol->Fill(testposi.first);
 
     if(debug) {
-      cout<<" gsf_el_track_isol_abs = "<<testelec.second<<endl;
-      cout<<" gsf_el_track_isol = "<<testelec.second/sc_el.et()<<endl;
-      cout<<" gsf_po_track_isol_abs = "<<testposi.second<<endl;
-      cout<<" gsf_po_track_isol = "<<testposi.second/sc_po.et()<<endl;
-      cout<<" #tracks for e- "<<testelec.first<<" and pt sum e-"<<testelec.second<<endl;
-      cout<<" #tracks for e+ "<<testposi.first<<" and pt sum e+"<<testposi.second<<endl;
+      LogDebug("Zprime2eeAna")<<" gsf_el_track_isol_abs = "<<testelec.second;
+      LogDebug("Zprime2eeAna")<<" gsf_el_track_isol = "<<testelec.second/sc_el.et();
+      LogDebug("Zprime2eeAna")<<" gsf_po_track_isol_abs = "<<testposi.second;
+      LogDebug("Zprime2eeAna")<<" gsf_po_track_isol = "<<testposi.second/sc_po.et();
+      LogDebug("Zprime2eeAna")<<" #tracks for e- "<<testelec.first<<" and pt sum e-"<<testelec.second;
+      LogDebug("Zprime2eeAna")<<" #tracks for e+ "<<testposi.first<<" and pt sum e+"<<testposi.second;
     }
 
 
@@ -725,10 +729,10 @@ void PixelMatchAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup
     gsf_po_hcal_isol->Fill(posi_hcalisol/sc_po.et());
 
     if(debug) {
-      cout<<" gsf_el_hcal_isol_abs = "<<elec_hcalisol<<endl;
-      cout<<" gsf_el_hcal_isol = "<<elec_hcalisol/sc_el.et()<<endl;
-      cout<<" gsf_po_hcal_isol_abs = "<<posi_hcalisol<<endl;
-      cout<<" gsf_po_hcal_isol = "<<posi_hcalisol/sc_po.et()<<endl;
+      LogDebug("Zprime2eeAna")<<" gsf_el_hcal_isol_abs = "<<elec_hcalisol;
+      LogDebug("Zprime2eeAna")<<" gsf_el_hcal_isol = "<<elec_hcalisol/sc_el.et();
+      LogDebug("Zprime2eeAna")<<" gsf_po_hcal_isol_abs = "<<posi_hcalisol;
+      LogDebug("Zprime2eeAna")<<" gsf_po_hcal_isol = "<<posi_hcalisol/sc_po.et();
     }
 
     // 3. ECAL isolation  
@@ -741,10 +745,10 @@ void PixelMatchAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup
     gsf_po_ecal_isol->Fill(posi_ecalisol/sc_po.et());
  
     if(debug) {
-      cout<<" gsf_el_ecal_isol_abs = "<< elec_ecalisol<<endl;
-      cout<<" gsf_el_ecal_isol = "<<elec_ecalisol/sc_el.et()<<endl;
-      cout<<" gsf_po_ecal_isol_abs = "<<posi_ecalisol<<endl;
-      cout<<" gsf_po_ecal_isol = "<<posi_ecalisol/sc_po.et()<<endl;
+      LogDebug("Zprime2eeAna")<<" gsf_el_ecal_isol_abs = "<< elec_ecalisol;
+      LogDebug("Zprime2eeAna")<<" gsf_el_ecal_isol = "<<elec_ecalisol/sc_el.et();
+      LogDebug("Zprime2eeAna")<<" gsf_po_ecal_isol_abs = "<<posi_ecalisol;
+      LogDebug("Zprime2eeAna")<<" gsf_po_ecal_isol = "<<posi_ecalisol/sc_po.et();
     }
 
 
@@ -812,21 +816,21 @@ void PixelMatchAnalysis::endJob() {
   double eff8=double(gsf_ecalisolated)/double(gsf_hcalisolated);
   double efffinal=double(gsf_ecalisolated)/double(event_tot);
 
-  cout<<""<<endl;
-  cout<<""<<endl;
-  printf("--------------------------------------------------------\n");
-  printf("SUMMARY of number of events\n");
-  printf("N tot                       =%5d,    eff=%3.2f \n",event_tot,1.00);
-  printf("--------------------------------------------------------\n");
-  printf("N >= 2e GSF REC:              =%5d,    eff=%3.2f \n",gsf_sizegreater1,eff1);
-  printf("     + pt>cut                 =%5d,    eff=%3.2f \n",gsf_el_po_ptmin,eff2);
-  printf("     + eta<cut                =%5d,    eff=%3.2f \n",gsf_el_po_acc,eff3);
-  printf("2GSF + good charge:           =%5d,    eff=%3.2f \n",gsf_goodcharge,eff4);
-  printf(" + gsf_ntkisolated            =%5d,    eff=%3.2f \n",gsf_ntkisolated,eff5);
-  printf(" + gsf_tkisolated             =%5d,    eff=%3.2f \n",gsf_tkisolated,eff6);
-  printf(" + gsf_hcalisolated           =%5d,    eff=%3.2f \n",gsf_hcalisolated,eff7);
-  printf(" + gsf_ecalisolated           =%5d,    eff=%3.2f \n",gsf_ecalisolated,eff8);
-  printf("--------------------------------------------------------\n");
-  printf("----------------- Totl eff              =%3.2f \n",efffinal);
-  cout << "" << endl;
+  edm::LogVerbatim("Zprime2eeAna")<<"";
+  edm::LogVerbatim("Zprime2eeAna")<<"";
+  edm::LogVerbatim("Zprime2eeAna")<<"--------------------------------------------------------";
+  edm::LogVerbatim("Zprime2eeAna")<<"SUMMARY of number of events";
+  edm::LogVerbatim("Zprime2eeAna")<<"N tot                       "<< event_tot <<",    eff=1.00";
+  edm::LogVerbatim("Zprime2eeAna")<<"--------------------------------------------------------";
+  edm::LogVerbatim("Zprime2eeAna")<<"N >= 2e GSF REC:              "<<gsf_sizegreater1<<",    eff="<<eff1 ; 
+  edm::LogVerbatim("Zprime2eeAna")<<"     + pt>cut                 "<<gsf_el_po_ptmin <<",    eff="<<eff2 ; 
+  edm::LogVerbatim("Zprime2eeAna")<<"     + eta<cut                "<<gsf_el_po_acc   <<",    eff="<<eff3 ;  
+  edm::LogVerbatim("Zprime2eeAna")<<"2GSF + good charge:           "<<gsf_goodcharge  <<",    eff="<<eff4 ;  
+  edm::LogVerbatim("Zprime2eeAna")<<" + gsf_ntkisolated            "<<gsf_ntkisolated <<",    eff="<<eff5 ;  
+  edm::LogVerbatim("Zprime2eeAna")<<" + gsf_tkisolated             "<<gsf_tkisolated  <<",    eff="<<eff6 ;  
+  edm::LogVerbatim("Zprime2eeAna")<<" + gsf_hcalisolated           "<<gsf_hcalisolated<<",    eff="<<eff7 ; 
+  edm::LogVerbatim("Zprime2eeAna")<<" + gsf_ecalisolated           "<<gsf_ecalisolated<<",    eff="<<eff8 ; 
+  edm::LogVerbatim("Zprime2eeAna")<<"--------------------------------------------------------";
+  edm::LogVerbatim("Zprime2eeAna")<<"----------------- Totl eff              ="<<efffinal;
+  edm::LogVerbatim("Zprime2eeAna") << "" ;
 }
