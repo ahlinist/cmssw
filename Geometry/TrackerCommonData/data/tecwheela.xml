@@ -5,8 +5,8 @@
  <Constant name="zero"        value="0.0*fm"/>
  <Constant name="FixSuppRmax" value="[tecpetal0:PetalContRmin]+
            [tecwheel:FixSuppR]"/>
- <Constant name="FixSuppW"    value="2*[tecwheel:FixSuppW]/
-           ([tecpetal0:PetalContRmin]+[FixSuppRmax])"/>
+ <Constant name="FixSuppW"    value="2*[tecwheel:FixSuppA]/([FixSuppRmax]*[FixSuppRmax]-[tecpetal0:PetalContRmin]*[tecpetal0:PetalContRmin])"/>
+<!-- calculate the width to fit the area at this specific radius! thus the volume will be constant!-->
  <Constant name="CableL"      value="([tecwheel:CableRmax]-[tecring0:Rin])"/>
  <Constant name="CableR"      value="([tecwheel:CableRmax]+[tecring0:Rin])/2"/>
 </ConstantsSection>
@@ -19,7 +19,7 @@
        rMax="[tecwheel:WheelRmax]"        dz="[tecwheel:DiskT]/2"
        startPhi="0*deg"                   deltaPhi="360.*deg"/>
  <Tubs name="TECWheelNomexA"              rMin="[tecpetal0:PetalContRmin]"
-       rMax="[tecwheel:WheelRmax]"        dz="[tecwheel:NomexT]/2"
+       rMax="[tecwheel:NomexRmax]"        dz="[tecwheel:NomexT]/2"
        startPhi="0*deg"                   deltaPhi="360.*deg"/>
  <Tubs name="TECFixSupportA"              rMin="[tecpetal0:PetalContRmin]"
        rMax="[FixSuppRmax]"               dz="[tecwheel:FixSuppT]/2"
@@ -27,8 +27,6 @@
  <Tubs name="TECOptConnectorA"            rMin="[tecwheel:OptConnRmin]" 
        rMax="[tecwheel:OptConnRmax]"      dz="[tecwheel:OptConnT1]/2" 
        startPhi="-[tecwheel:OptConnW]/2"  deltaPhi="[tecwheel:OptConnW]"/>
- <Box name="TECRadialCableA"              dx="[tecwheel:CableW]/2"
-       dy="[CableL]/2"                    dz="[tecwheel:CableT]/2"/>
 </SolidSection>
 
 <LogicalPartSection label="tecwheela.xml">
@@ -48,10 +46,6 @@
   <rSolid name="tecwheela:TECFixSupportA"/>
   <rMaterial name="tecmaterial:TEC_Fixframe"/>
  </LogicalPart>
- <LogicalPart name="TECRadialCableA" category="unspecified">
-  <rSolid name="tecwheela:TECRadialCableA"/>
-  <rMaterial name="tecmaterial:TEC_rad_cable"/>
- </LogicalPart>
  <LogicalPart name="TECOptConnectorA" category="unspecified">
   <rSolid name="tecwheela:TECOptConnectorA"/>
   <rMaterial name="tecmaterial:TEC_OptoCon"/>
@@ -68,24 +62,8 @@
    <rChild name="tecwheela:TECWheelNomexA"/>
  </PosPart>
  <PosPart copyNumber="1">
-   <rParent name="tecpetal0f:TECICBCont0F2"/>
-   <rChild name="tecwheel:TECPetalConnector"/>
-  <Translation x="[zero]" y="[zero]" z="-[tecwheel:PetalConnZ]"/>
- </PosPart>
- <PosPart copyNumber="2">
-   <rParent name="tecpetal0f:TECICBCont0F1"/>
-   <rChild name="tecwheel:TECPetalConnector"/>
-  <Translation x="[zero]" y="[zero]" z="[tecwheel:PetalConnZ]"/>
- </PosPart>
- <PosPart copyNumber="1">
-   <rParent name="tecpetal0b:TECICBCont0B2"/>
-   <rChild name="tecwheel:TECPetalConnector"/>
-  <Translation x="[zero]" y="[zero]" z="-[tecwheel:PetalConnZ]"/>
- </PosPart>
- <PosPart copyNumber="2">
-   <rParent name="tecpetal0b:TECICBCont0B1"/>
-   <rChild name="tecwheel:TECPetalConnector"/>
-  <Translation x="[zero]" y="[zero]" z="[tecwheel:PetalConnZ]"/>
+   <rParent name="tecwheela:TECWheelDiskA"/>
+   <rChild name="tecwheel:TECGroundingRing"/>
  </PosPart>
 </PosPartSection>
 
@@ -192,6 +170,7 @@
   <Numeric name="Radius"      value="[zero]"/>
   <Vector name="Center" type="numeric" nEntries="3"> 0, 0, 0  </Vector>
 </Algorithm>
+
 <Algorithm name="track:DDTrackerAngular">
   <rParent name="tecwheela:TECWheelNomexA"/>
   <String  name="ChildName"   value="tecwheel:TECFixService"/>
@@ -208,18 +187,6 @@
   <rParent name="tecwheela:TECWheelA"/>
   <String  name="ChildName"   value="tecwheela:TECOptConnectorA"/>
   <Numeric name="N"           value="[tecwheel:OptConnN]" />
-  <Numeric name="StartCopyNo" value="2" />
-  <Numeric name="IncrCopyNo"  value="2" />
-  <Numeric name="RangeAngle"  value="360*deg"/>
-  <Numeric name="StartAngle"  value="[tecwheel:OptConnFI1]"/>
-  <Numeric name="Radius"      value="[zero]"/>
-  <Vector name="Center" type="numeric" nEntries="3"> 
-    0, 0, -[tecwheel:OptConnZ1]  </Vector>
-</Algorithm>
-<Algorithm name="track:DDTrackerAngular">
-  <rParent name="tecwheela:TECWheelA"/>
-  <String  name="ChildName"   value="tecwheela:TECOptConnectorA"/>
-  <Numeric name="N"           value="[tecwheel:OptConnN]" />
   <Numeric name="StartCopyNo" value="1" />
   <Numeric name="IncrCopyNo"  value="2" />
   <Numeric name="RangeAngle"  value="360*deg"/>
@@ -229,31 +196,17 @@
     0, 0, [tecwheel:OptConnZ1]  </Vector>
 </Algorithm>
 
-<Algorithm name="track:DDTrackerPhiAltAlgo">
-  <rParent name="tecwheela:TECWheelA"/>
-  <String  name="ChildName"   value="tecwheela:TECRadialCableA"/>
-  <Numeric name="Number"      value="[tecwheel:PetalContN]" />
+<!-- Alignment Holder (Sphere holder) -->
+<Algorithm name="track:DDTrackerAngular">
+  <rParent name="tecwheela:TECWheelNomexA"/>
+  <String  name="ChildName"   value="tecwheel:TECAlignHolder"/>
+  <Numeric name="N"           value="4" />
   <Numeric name="StartCopyNo" value="1" />
-  <Numeric name="IncrCopyNo"  value="2" />
-  <Numeric name="Tilt"        value="180*deg"/>
+  <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
-  <Numeric name="StartAngle"  value="[tecwheel:CableFi1]"/>
-  <Numeric name="RadiusIn"    value="[tecwheela:CableR]"/>
-  <Numeric name="RadiusOut"   value="[tecwheela:CableR]"/>
-  <Numeric name="ZPosition"   value="[tecwheel:CableZ1]"/>
-</Algorithm>
-<Algorithm name="track:DDTrackerPhiAltAlgo">
-  <rParent name="tecwheela:TECWheelA"/>
-  <String  name="ChildName"   value="tecwheela:TECRadialCableA"/>
-  <Numeric name="Number"      value="[tecwheel:PetalContN]" />
-  <Numeric name="StartCopyNo" value="2" />
-  <Numeric name="IncrCopyNo"  value="2" />
-  <Numeric name="Tilt"        value="180*deg"/>
-  <Numeric name="RangeAngle"  value="360*deg"/>
-  <Numeric name="StartAngle"  value="[tecwheel:CableFi2]"/>
-  <Numeric name="RadiusIn"    value="[tecwheela:CableR]"/>
-  <Numeric name="RadiusOut"   value="[tecwheela:CableR]"/>
-  <Numeric name="ZPosition"   value="[tecwheel:CableZ2]"/>
+  <Numeric name="StartAngle"  value="[tecwheel:AlignHolderStartPhi]"/>
+  <Numeric name="Radius"      value="[zero]"/>
+  <Vector name="Center" type="numeric" nEntries="3"> 0, 0, 0  </Vector>
 </Algorithm>
 
 </DDDefinition>

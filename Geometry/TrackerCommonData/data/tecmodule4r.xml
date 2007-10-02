@@ -87,7 +87,7 @@
   <Vector name="SiReenforcementWidth"  type="numeric" nEntries = "2">
    102.0*mm, 98.0*mm  </Vector>
   <Vector name="SiReenforcementPosY"   type="numeric" nEntries = "2">
-   0.0001*mm, 66.1*mm </Vector>
+   0.0001*mm, [tecmodule4:InactiveStart] </Vector>
   <String name="SiReenforcementMaterial" value="tecmaterial:TEC_SiReenforcment"/> 
   <Numeric name="SiReenforcementThick" value="[tecmodpar:SiReenforcementThick]"/>
   <Numeric name="NoOverlapShift"     value="[tecmodpar:NoOverlapShift]"/>

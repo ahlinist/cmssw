@@ -94,7 +94,7 @@
   <Vector name="SiReenforcementWidth"  type="numeric" nEntries = "1">
    70.0*mm  </Vector>
   <Vector name="SiReenforcementPosY"   type="numeric" nEntries = "1">
-   0.0001*mm  </Vector>
+   2*mm  </Vector> <!-- they to be placed right! (are not due to problems with mother volume thickness)-->
   <String name="SiReenforcementMaterial" value="tecmaterial:TEC_SiReenforcment"/> 
   <Numeric name="SiReenforcementThick" value="[tecmodpar:SiReenforcementThick]"/>
   <Numeric name="NoOverlapShift"     value="[tecmodpar:NoOverlapShift]"/>

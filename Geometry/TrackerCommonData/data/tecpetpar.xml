@@ -9,11 +9,11 @@
  <Constant name="HybridWidth"    value="29.97*mm"/>
  <Constant name="HybridHeight"   value="22.99*mm"/>
  <Constant name="HybridThick"    value="2.55*mm"/>
- <Constant name="CoolR1"         value="5.136*mm"/>
- <Constant name="CoolR2"         value="5.677*mm"/>
- <Constant name="CoolR3"         value="5.487*mm"/>
- <Constant name="CoolR4"         value="6.962*mm"/>
- <Constant name="CoolR5"         value="4.178*mm"/>
+ <Constant name="CoolR1"         value="4.1791*mm"/>
+ <Constant name="CoolR2"         value="4.8276*mm"/>
+ <Constant name="CoolR3"         value="4.6029*mm"/>
+ <Constant name="CoolR4"         value="6.2889*mm"/>
+ <Constant name="CoolR5"         value="2.9221*mm"/>
  <Constant name="CoolL"          value="10.00*mm"/>
  <Constant name="PetalThick"     value="10.0*mm"/>
  <Constant name="PetalWidth"     value="37.4*deg"/>
@@ -28,6 +28,10 @@
  <Constant name="DOHMWidth"      value="76.12*mm"/>
  <Constant name="DOHMHeight"     value="40.82*mm"/>
  <Constant name="DOHMZ"          value="[zero]"/>
+ <Constant name="CCUMHeight" value="31*mm"/>
+ <Constant name="CCUMWidth" value="31*mm"/>
+ <Constant name="CCUMThick" value="2*mm"/>
+ <Constant name="CCUMZ"        value="([ICBThick]-[CCUMThick])/2"/>
 </ConstantsSection>
 
 <RotationSection label="tecpetpar.xml">
@@ -53,7 +57,7 @@
        startPhi="0*deg"               deltaPhi="360.*deg"/>
  <Box name="TECOptoHybrid"            dx="[tecpetpar:HybridHeight]/2"    
       dy="[tecpetpar:HybridWidth]/2"  dz="[tecpetpar:HybridThick]/2"/>
-<!-- this one is flipped bz 90 deg -->
+<!-- this one is flipped by 90*deg -->
  <Box name="TECOptoHybridShort"       dx="[tecpetpar:HybridWidth]/2"    
       dy="[tecpetpar:HybridHeight]/2" dz="[tecpetpar:HybridThick]/2"/>
  <Box name="TECDigiOptoHybModule"       dx="[tecpetpar:DOHMWidth]/2"    

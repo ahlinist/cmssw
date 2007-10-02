@@ -5,8 +5,8 @@
  <Constant name="zero"          value="0.0*fm"/>
  <Constant name="FixSuppRmax"   value="[tecpetal3:PetalContRmin]+
            [tecwheel:FixSuppR]"/>
- <Constant name="FixSuppW"      value="2*[tecwheel:FixSuppW]/
-           ([tecpetal3:PetalContRmin]+[FixSuppRmax])"/>
+ <Constant name="FixSuppW"    value="2*[tecwheel:FixSuppA]/([FixSuppRmax]*[FixSuppRmax]-[tecpetal3:PetalContRmin]*[tecpetal3:PetalContRmin])"/>
+<!-- calculate the width to fit the area at this specific radius! thus the volume will be constant!-->
  <Constant name="CableL"      value="([tecwheel:CableRmax]-[tecring1:Rin])"/>
  <Constant name="CableR"      value="([tecwheel:CableRmax]+[tecring1:Rin])/2"/>
 </ConstantsSection>
@@ -19,7 +19,7 @@
        rMax="[tecwheel:WheelRmax]"        dz="[tecwheel:DiskT]/2"
        startPhi="0*deg"                   deltaPhi="360.*deg"/>
  <Tubs name="TECWheelNomexB"              rMin="[tecpetal3:PetalContRmin]"
-       rMax="[tecwheel:WheelRmax]"        dz="[tecwheel:NomexT]/2"
+       rMax="[tecwheel:NomexRmax]"        dz="[tecwheel:NomexT]/2"
        startPhi="0*deg"                   deltaPhi="360.*deg"/>
  <Tubs name="TECFixSupportB"              rMin="[tecpetal3:PetalContRmin]"
        rMax="[FixSuppRmax]"               dz="[tecwheel:FixSuppT]/2"
@@ -27,8 +27,6 @@
  <Tubs name="TECOptConnectorB"            rMin="[tecwheel:OptConnRmin]" 
        rMax="[tecwheel:OptConnRmax]"      dz="[tecwheel:OptConnT2]/2" 
        startPhi="-[tecwheel:OptConnW]/2"  deltaPhi="[tecwheel:OptConnW]"/>
- <Box name="TECRadialCableB"              dx="[tecwheel:CableW]/2"
-       dy="[CableL]/2"                    dz="[tecwheel:CableT]/2"/>
 </SolidSection>
 
 <LogicalPartSection label="tecwheelb.xml">
@@ -48,10 +46,6 @@
   <rSolid name="tecwheelb:TECFixSupportB"/>
   <rMaterial name="tecmaterial:TEC_Fixframe"/>
  </LogicalPart>
- <LogicalPart name="TECRadialCableB" category="unspecified">
-  <rSolid name="tecwheelb:TECRadialCableB"/>
-  <rMaterial name="tecmaterial:TEC_rad_cable"/>
- </LogicalPart>
  <LogicalPart name="TECOptConnectorB" category="unspecified">
   <rSolid name="tecwheelb:TECOptConnectorB"/>
   <rMaterial name="tecmaterial:TEC_OptoCon"/>
@@ -67,25 +61,9 @@
    <rParent name="tecwheelb:TECWheelDiskB"/>
    <rChild name="tecwheelb:TECWheelNomexB"/>
  </PosPart>
- <PosPart copyNumber="1">
-   <rParent name="tecpetal3f:TECICBCont3F2"/>
-   <rChild name="tecwheel:TECPetalConnector"/>
-  <Translation x="[zero]" y="[zero]" z="-[tecwheel:PetalConnZ]"/>
- </PosPart>
  <PosPart copyNumber="2">
-   <rParent name="tecpetal3f:TECICBCont3F1"/>
-   <rChild name="tecwheel:TECPetalConnector"/>
-  <Translation x="[zero]" y="[zero]" z="[tecwheel:PetalConnZ]"/>
- </PosPart>
- <PosPart copyNumber="1">
-   <rParent name="tecpetal3b:TECICBCont3B2"/>
-   <rChild name="tecwheel:TECPetalConnector"/>
-  <Translation x="[zero]" y="[zero]" z="-[tecwheel:PetalConnZ]"/>
- </PosPart>
- <PosPart copyNumber="2">
-   <rParent name="tecpetal3b:TECICBCont3B1"/>
-   <rChild name="tecwheel:TECPetalConnector"/>
-  <Translation x="[zero]" y="[zero]" z="[tecwheel:PetalConnZ]"/>
+   <rParent name="tecwheelb:TECWheelDiskB"/>
+   <rChild name="tecwheel:TECGroundingRing"/>
  </PosPart>
 </PosPartSection>
 
@@ -229,31 +207,16 @@
     0, 0, [tecwheel:OptConnZ2]  </Vector>
 </Algorithm>
 
-<Algorithm name="track:DDTrackerPhiAltAlgo">
-  <rParent name="tecwheelb:TECWheelB"/>
-  <String  name="ChildName"   value="tecwheelb:TECRadialCableB"/>
-  <Numeric name="Number"      value="[tecwheel:PetalContN]" />
+<!-- Alignment Holder (Sphere holder) -->
+<Algorithm name="track:DDTrackerAngular">
+  <rParent name="tecwheelb:TECWheelNomexB"/>
+  <String  name="ChildName"   value="tecwheel:TECAlignHolder"/>
+  <Numeric name="N"           value="4" />
   <Numeric name="StartCopyNo" value="1" />
-  <Numeric name="IncrCopyNo"  value="2" />
-  <Numeric name="Tilt"        value="180*deg"/>
+  <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
-  <Numeric name="StartAngle"  value="[tecwheel:CableFi1]"/>
-  <Numeric name="RadiusIn"    value="[tecwheelb:CableR]"/>
-  <Numeric name="RadiusOut"   value="[tecwheelb:CableR]"/>
-  <Numeric name="ZPosition"   value="[tecwheel:CableZ1]"/>
+  <Numeric name="StartAngle"  value="[tecwheel:AlignHolderStartPhi]"/>
+  <Numeric name="Radius"      value="[zero]"/>
+  <Vector name="Center" type="numeric" nEntries="3"> 0, 0, 0  </Vector>
 </Algorithm>
-<Algorithm name="track:DDTrackerPhiAltAlgo">
-  <rParent name="tecwheelb:TECWheelB"/>
-  <String  name="ChildName"   value="tecwheelb:TECRadialCableB"/>
-  <Numeric name="Number"      value="[tecwheel:PetalContN]" />
-  <Numeric name="StartCopyNo" value="2" />
-  <Numeric name="IncrCopyNo"  value="2" />
-  <Numeric name="Tilt"        value="180*deg"/>
-  <Numeric name="RangeAngle"  value="360*deg"/>
-  <Numeric name="StartAngle"  value="[tecwheel:CableFi2]"/>
-  <Numeric name="RadiusIn"    value="[tecwheelb:CableR]"/>
-  <Numeric name="RadiusOut"   value="[tecwheelb:CableR]"/>
-  <Numeric name="ZPosition"   value="[tecwheel:CableZ2]"/>
-</Algorithm>
-
 </DDDefinition>

@@ -14,7 +14,7 @@
  <Constant name="ModuleZ"        value="([tecmodpar:ModuleThickSS]+
                                          [ModuleGap])/2"/>
  <Constant name="RingZ"          value="13.237*mm"/>
- <Constant name="BridgeR"        value="[Rmin]+[tecmodule3:FullHeight]/2"/>
+ <Constant name="BridgeR"        value="563.8*mm"/>
  <Constant name="BridgeZ"        value="([tecpetpar:BridgeThick]-
            [tecmodule3:BridgeThick])/2"/>
  <Constant name="BridgeFrameZ"   value="[RingZ]+([tecpetpar:BridgeThick]+
@@ -24,10 +24,6 @@
 <SolidSection label="tecring3.xml">
  <Tubs name="TECRing3"                rMin="[Rin]" 
        rMax="[Rout]"                  dz="[RingThick]/2" 
-       startPhi="-[tecpetpar:PetalContWidth]/2"
-       deltaPhi="[tecpetpar:PetalContWidth]"/>
- <Tubs name="TECRing3Bridge"          rMin="[Rin]" 
-       rMax="[Rout]"                  dz="[tecpetpar:BridgeThick]/2" 
        startPhi="-[tecpetpar:PetalContWidth]/2"
        deltaPhi="[tecpetpar:PetalContWidth]"/>
 </SolidSection>

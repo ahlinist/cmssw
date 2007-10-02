@@ -15,9 +15,9 @@
  <Constant name="SideFrameZ"       value="[TopFrameZ]+0.5*(-[tecmodpar:TopFrameThick]+[tecmodpar:SideFrameThick])"/>
  <Constant name="PitchZ"           value="[TopFrameZ]-0.5*([tecmodpar:TopFrameThick] + [tecmodpar:PitchThick])"/>
  <Constant name="DlHybrid"         value="12.240*cm"/>
- <Constant name="BridgeWidth"      value="2.616*cm"/>
+ <Constant name="BridgeWidth"      value="2.479*cm"/>
  <Constant name="BridgeThick"      value="0.204*cm"/>
- <Constant name="BridgeHeight"     value="2.130*cm"/>
+ <Constant name="BridgeHeight"     value="2.3460*cm"/>
  <Constant name="BridgeSeparation" value="7.150*cm"/>
  <Constant name="ModuleThick"      value="[tecmodpar:ModuleThickDS]"/>
  <Constant name="ShiftZ"           value="-([tecmodpar:ModuleThick]+
