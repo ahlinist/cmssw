@@ -11,10 +11,10 @@
  <Constant name="SideWidthBottom"  value="0.0839200*cm"/>
  <Constant name="ActiveZ"          value="([tecmodpar:ActiveZ1]+[ShiftZ])"/>
  <Constant name="DlHybrid"         value="9.749*cm"/>
- <Constant name="BridgeWidth"      value="2.600*cm"/>
+ <Constant name="BridgeWidth"      value="2.350*cm"/>
  <Constant name="BridgeThick"      value="0.194*cm"/>
- <Constant name="BridgeHeight"     value="2.118*cm"/>
- <Constant name="BridgeSeparation" value="4.800*cm"/>
+ <Constant name="BridgeHeight"     value="1.3*cm"/>
+ <Constant name="BridgeSeparation" value="4.856*cm"/>
  <Constant name="ModuleThick"      value="[tecmodpar:ModuleThickDS]"/>
  <Constant name="ShiftZ"           value="-([tecmodpar:ModuleThick]+[tecmodpar:GapModule])/2"/>
  <Constant name="HybridZ"          value="[ActiveZ]+ 0.5*(-[tecmodpar:WaferThick1] + [tecmodpar:HybridThick])"/>

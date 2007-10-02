@@ -6,8 +6,6 @@
  <Constant name="DPhi"      value="360*deg/[tecring5:NPhi]"/>
  <Constant name="Phi"       value="([Modules]-1)*[DPhi]"/>
  <Constant name="Phi0"      value="-[Phi]/2"/>
- <Constant name="RminICC"   value="79.10*cm"/>
- <Constant name="RmaxICC"   value="84.90*cm"/>
  <Constant name="AngleHyb0" value="-11.00*deg"/>
  <Constant name="AngleHyb1" value="-8.80*deg"/>
  <Constant name="AngleHyb2" value="-6.60*deg"/>
@@ -26,23 +24,10 @@
  <Constant name="CoolIns2"  value="2220"/>
 </ConstantsSection>
 
-<SolidSection label="tecring5b.xml">
- <Tubs name="TECICC5B1"              rMin="[RminICC]" 
-       rMax="[RmaxICC]"              dz="[tecpetpar:ICCThick]/2" 
-       startPhi="-12.5*deg"          deltaPhi="25.0*deg"/>
-</SolidSection>
 
 <LogicalPartSection label="tecring5b.xml">
  <LogicalPart name="TECRing5B" category="unspecified">
   <rSolid name="tecring5:TECRing5"/>
-  <rMaterial name="materials:Air"/>
- </LogicalPart>
- <LogicalPart name="TECICC5B1" category="unspecified">
-  <rSolid name="tecring5b:TECICC5B1"/>
-  <rMaterial name="tecmaterial:TEC_ICC26"/>
- </LogicalPart>
- <LogicalPart name="TECRing5BridgeB" category="unspecified">
-  <rSolid name="tecring5:TECRing5Bridge"/>
   <rMaterial name="materials:Air"/>
  </LogicalPart>
 </LogicalPartSection>
@@ -61,7 +46,7 @@
 </Algorithm>
 
 <Algorithm name="track:DDTECPhiAltAlgo">
-  <rParent name="tecring5b:TECRing5BridgeB"/>
+  <rParent name="tecring5b:TECRing5B"/>
   <String name="ChildName"    value="tecmodule5:TECModule5Bridge"/>
   <Numeric name="StartAngle"  value="[PhiBridge]"/>
   <Numeric name="IncrAngle"   value="2*[DPhi]"/>

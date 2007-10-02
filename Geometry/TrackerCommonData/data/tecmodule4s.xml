@@ -94,11 +94,11 @@
   <String name="BridgeMaterial"      value="None"/>
   <Numeric name="WaferPosition"      value="[tecmodpar:TopFrameHeight]"/>
   <Vector name="SiReenforcementHeight" type="numeric" nEntries = "2">
-   4.4*mm, 8.0*mm  </Vector>
+   4.4*mm, 8.47*mm  </Vector>
   <Vector name="SiReenforcementWidth"  type="numeric" nEntries = "2">
-   106.0*mm, 99.5*mm  </Vector>
+   106.0*mm, 94.0*mm  </Vector>
   <Vector name="SiReenforcementPosY"   type="numeric" nEntries = "2">
-   0.0001*mm, 66.1*mm </Vector>
+   2.*mm, [tecmodule4:InactiveStart]-8.47*mm/2 </Vector> <!-- they to be placed right! (are not due to problems with mother volume thickness)-->
   <String name="SiReenforcementMaterial" value="tecmaterial:TEC_SiReenforcment"/> 
   <Numeric name="SiReenforcementThick" value="[tecmodpar:SiReenforcementThick]"/>
   <Numeric name="NoOverlapShift"     value="[tecmodpar:NoOverlapShift]"/>

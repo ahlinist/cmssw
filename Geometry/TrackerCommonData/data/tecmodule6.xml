@@ -17,9 +17,9 @@
  <Constant name="SideFrameZ"         value="[TopFrameZ]+0.5*(-[tecmodpar:TopFrameThick]+[tecmodpar:SideFrameThick])"/>
  <Constant name="PitchZ"             value="[TopFrameZ] - 0.5*([tecmodpar:TopFrameThick] + [tecmodpar:PitchThick])"/>
  <Constant name="DlHybrid"           value="7.120*cm"/>
- <Constant name="BridgeWidth"        value="2.507*cm"/>
+ <Constant name="BridgeWidth"        value="2.474*cm"/>
  <Constant name="BridgeThick"        value="0.224*cm"/>
- <Constant name="BridgeHeight"       value="1.668*cm"/>
+ <Constant name="BridgeHeight"       value="1.888*cm"/>
  <Constant name="BridgeSeparation"   value="5.350*cm"/>
  <Constant name="ModuleThick"        value="[tecmodpar:ModuleThickSS]"/>
  <Constant name="TopFrameTopWidth"   value="77.1*mm"/>
@@ -123,7 +123,7 @@
   <Vector name="SiReenforcementWidth"  type="numeric" nEntries = "2">
    61.0*mm, 71.0*mm  </Vector>
   <Vector name="SiReenforcementPosY"   type="numeric" nEntries = "2">
-   0.0001*mm, 111.0*mm </Vector>
+   0.0001*mm, [tecmodule6:InactiveStart] -8.0*mm/2 </Vector>
   <String name="SiReenforcementMaterial" value="tecmaterial:TEC_SiReenforcment"/> 
   <Numeric name="SiReenforcementThick" value="[tecmodpar:SiReenforcementThick]"/>
   <Numeric name="NoOverlapShift"     value="[tecmodpar:NoOverlapShift]"/>
