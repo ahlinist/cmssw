@@ -22,6 +22,8 @@
 #include "SimDataFormats/Vertex/interface/SimVertex.h"
 #include "SimDataFormats/Vertex/interface/SimVertexContainer.h"
 #include "DataFormats/CaloTowers/interface/CaloTower.h"
+#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "PhysicsTools/UtilAlgos/interface/TFileService.h"
 #include <vector>
  
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -52,8 +54,6 @@ using namespace std;
 // ------------ constuctor   -------------------------------
 PixelMatchAnalysis::PixelMatchAnalysis(const edm::ParameterSet& iConfig)
 {
-  string rootanalfile_ = iConfig.getParameter<std::string>("rootanalfile");
-  rootfile = TFile::Open(rootanalfile_.c_str(),"recreate");
 
   drellyan_ = iConfig.getParameter<bool>("drellyan");
   ecalconesize_ = iConfig.getParameter<double>("ecalconesize");
@@ -98,14 +98,14 @@ PixelMatchAnalysis::PixelMatchAnalysis(const edm::ParameterSet& iConfig)
 // ------------ destructor  -------------------------------
 PixelMatchAnalysis::~PixelMatchAnalysis()
 {
-  delete rootfile;
 }
 
 
 // ------------ method called once each job just before starting event loop  ------------
 void PixelMatchAnalysis::beginJob(const edm::EventSetup&)
 {
-  rootfile->cd();
+  edm::Service<TFileService> fs;
+
 
   mytree = new TTree("test","test sur donnees");
   mybranch = mytree->Branch("essai",&valeur,"essai/F");
@@ -118,52 +118,52 @@ void PixelMatchAnalysis::beginJob(const edm::EventSetup&)
   gsfcoll_size = new TH1I("gsfcoll_size","gsfcoll_size",20,0.,20.);
 
 // histos: before isolation cuts:
-  gsf_Z_m= new TH1F("gsf_Z_m","gsf_Z_m",600,0.,3000.);
-  gsf_Z_vtxcor_m= new TH1F("gsf_Z_vtxcor_m","gsf_Z_vtxcor_m",600,0.,3000.);
-  gsf_el_pt= new TH1F("gsf_el_pt","gsf_el_pt",400,0.,2000.);
-  gsf_po_pt= new TH1F("gsf_po_pt","gsf_po_pt",400,0.,2000.);
-  gsf_el_vtxcor_pt= new TH1F("gsf_el_vtxcor_pt","gsf_el_vtxcor_pt",400,0.,2000.);
-  gsf_po_vtxcor_pt= new TH1F("gsf_po_vtxcor_pt","gsf_po_vtxcor_pt",400,0.,2000.);
+  gsf_Z_m= fs->make<TH1F>("gsf_Z_m","gsf_Z_m",600,0.,3000.);
+  gsf_Z_vtxcor_m= fs->make<TH1F>("gsf_Z_vtxcor_m","gsf_Z_vtxcor_m",600,0.,3000.);
+  gsf_el_pt= fs->make<TH1F>("gsf_el_pt","gsf_el_pt",400,0.,2000.);
+  gsf_po_pt= fs->make<TH1F>("gsf_po_pt","gsf_po_pt",400,0.,2000.);
+  gsf_el_vtxcor_pt= fs->make<TH1F>("gsf_el_vtxcor_pt","gsf_el_vtxcor_pt",400,0.,2000.);
+  gsf_po_vtxcor_pt= fs->make<TH1F>("gsf_po_vtxcor_pt","gsf_po_vtxcor_pt",400,0.,2000.);
 
   //histos for tracker isolation 
-  gsf_el_numbertrackisol = new TH1F("gsf_el_numbertrackisol","gsf_el_numbertrackisol",200,0.,20.);
-  gsf_el_track_isol_abs = new TH1F("gsf_el_track_isol_abs","gsf_el_track_isol_abs",200,0.,200.);
-  gsf_el_track_isol = new TH1F("gsf_el_track_isol","gsf_el_track_isol",200,0.,2.);
-  gsf_po_numbertrackisol = new TH1F("gsf_po_numbertrackisol","gsf_po_numbertrackisol",200,0.,20.);
-  gsf_po_track_isol_abs = new TH1F("gsf_po_track_isol_abs","gsf_po_track_isol_abs",200,0.,200.);
-  gsf_po_track_isol = new TH1F("gsf_po_track_isol","gsf_po_track_isol",200,0.,2.);
+  gsf_el_numbertrackisol = fs->make<TH1F>("gsf_el_numbertrackisol","gsf_el_numbertrackisol",200,0.,20.);
+  gsf_el_track_isol_abs = fs->make<TH1F>("gsf_el_track_isol_abs","gsf_el_track_isol_abs",200,0.,200.);
+  gsf_el_track_isol = fs->make<TH1F>("gsf_el_track_isol","gsf_el_track_isol",200,0.,2.);
+  gsf_po_numbertrackisol = fs->make<TH1F>("gsf_po_numbertrackisol","gsf_po_numbertrackisol",200,0.,20.);
+  gsf_po_track_isol_abs = fs->make<TH1F>("gsf_po_track_isol_abs","gsf_po_track_isol_abs",200,0.,200.);
+  gsf_po_track_isol = fs->make<TH1F>("gsf_po_track_isol","gsf_po_track_isol",200,0.,2.);
   //histos for hcal isolation 
-  gsf_el_hcal_isol = new TH1F("gsf_el_hcal_isol","gsf_el_hcal_isol",200,0.,2.);
-  gsf_el_hcal_isol_abs = new TH1F("gsf_el_hcal_isol_abs","gsf_el_hcal_isol_abs",200,0.,200.);
-  gsf_po_hcal_isol = new TH1F("gsf_po_hcal_isol","gsf_po_hcal_isol",200,0.,2.);
-  gsf_po_hcal_isol_abs = new TH1F("gsf_po_hcal_isol_abs","gsf_po_hcal_isol_abs",200,0.,200.);
+  gsf_el_hcal_isol = fs->make<TH1F>("gsf_el_hcal_isol","gsf_el_hcal_isol",200,0.,2.);
+  gsf_el_hcal_isol_abs = fs->make<TH1F>("gsf_el_hcal_isol_abs","gsf_el_hcal_isol_abs",200,0.,200.);
+  gsf_po_hcal_isol = fs->make<TH1F>("gsf_po_hcal_isol","gsf_po_hcal_isol",200,0.,2.);
+  gsf_po_hcal_isol_abs = fs->make<TH1F>("gsf_po_hcal_isol_abs","gsf_po_hcal_isol_abs",200,0.,200.);
   //histos for ecal isolation 
-  gsf_el_ecal_isol = new TH1F("gsf_el_ecal_isol","gsf_el_ecal_isol",200,0.,2.);
-  gsf_el_ecal_isol_abs = new TH1F("gsf_el_ecal_isol_abs","gsf_el_ecal_isol_abs",200,0.,200.);
-  gsf_po_ecal_isol = new TH1F("gsf_po_ecal_isol","gsf_po_ecal_isol",200,0.,2.);
-  gsf_po_ecal_isol_abs = new TH1F("gsf_po_ecal_isol_abs","gsf_po_ecal_isol_abs",200,0.,200.);
+  gsf_el_ecal_isol = fs->make<TH1F>("gsf_el_ecal_isol","gsf_el_ecal_isol",200,0.,2.);
+  gsf_el_ecal_isol_abs = fs->make<TH1F>("gsf_el_ecal_isol_abs","gsf_el_ecal_isol_abs",200,0.,200.);
+  gsf_po_ecal_isol = fs->make<TH1F>("gsf_po_ecal_isol","gsf_po_ecal_isol",200,0.,2.);
+  gsf_po_ecal_isol_abs = fs->make<TH1F>("gsf_po_ecal_isol_abs","gsf_po_ecal_isol_abs",200,0.,200.);
 
 // histos: after isolation cuts:
-  gsf_Z_iso_m= new TH1F("gsf_Z_iso_m","gsf_Z_iso_m",600,0.,3000.);
-  gsf_Z_vtxcor_iso_m= new TH1F("gsf_Z_vtxcor_iso_m","gsf_Z_vtxcor_iso_m",600,0.,3000.);
-  gsf_Z_iso_e= new TH1F("gsf_Z_iso_e","gsf_Z_iso_e",400,0.,4000.);
-  gsf_Z_iso_pt= new TH1F("gsf_Z_iso_pt","gsf_Z_iso_pt",400,0.,2000.);
-  gsf_Z_iso_eta= new TH1F("gsf_Z_iso_eta","gsf_Z_iso_eta",200,-10.,10.);
-  gsf_Z_iso_phi= new TH1F("gsf_Z_iso_phi","gsf_Z_iso_phi",160,-4.,4.);
+  gsf_Z_iso_m= fs->make<TH1F>("gsf_Z_iso_m","gsf_Z_iso_m",600,0.,3000.);
+  gsf_Z_vtxcor_iso_m= fs->make<TH1F>("gsf_Z_vtxcor_iso_m","gsf_Z_vtxcor_iso_m",600,0.,3000.);
+  gsf_Z_iso_e= fs->make<TH1F>("gsf_Z_iso_e","gsf_Z_iso_e",400,0.,4000.);
+  gsf_Z_iso_pt= fs->make<TH1F>("gsf_Z_iso_pt","gsf_Z_iso_pt",400,0.,2000.);
+  gsf_Z_iso_eta= fs->make<TH1F>("gsf_Z_iso_eta","gsf_Z_iso_eta",200,-10.,10.);
+  gsf_Z_iso_phi= fs->make<TH1F>("gsf_Z_iso_phi","gsf_Z_iso_phi",160,-4.,4.);
 
-  gsf_el_iso_pt= new TH1F("gsf_el_iso_pt","gsf_el_iso_pt",400,0.,2000.);
-  gsf_po_iso_pt= new TH1F("gsf_po_iso_pt","gsf_po_iso_pt",400,0.,2000.);
-  gsf_el_iso_eta = new TH1F("gsf_el_iso_eta","gsf_el_iso_eta",120,-3.,3.);
-  gsf_po_iso_eta = new TH1F("gsf_po_iso_eta","gsf_po_iso_eta",120,-3.,3.);
+  gsf_el_iso_pt= fs->make<TH1F>("gsf_el_iso_pt","gsf_el_iso_pt",400,0.,2000.);
+  gsf_po_iso_pt= fs->make<TH1F>("gsf_po_iso_pt","gsf_po_iso_pt",400,0.,2000.);
+  gsf_el_iso_eta = fs->make<TH1F>("gsf_el_iso_eta","gsf_el_iso_eta",120,-3.,3.);
+  gsf_po_iso_eta = fs->make<TH1F>("gsf_po_iso_eta","gsf_po_iso_eta",120,-3.,3.);
 
-  gsf_el_vtxcor_iso_pt= new TH1F("gsf_el_vtxcor_iso_pt","gsf_el_vtxcor_iso_pt",400,0.,2000.);
-  gsf_po_vtxcor_iso_pt= new TH1F("gsf_po_vtxcor_iso_pt","gsf_po_vtxcor_iso_pt",400,0.,2000.);
-  gsf_el_vtxcor_iso_eta = new TH1F("gsf_el_vtxcor_iso_eta","gsf_el_vtxcor_iso_eta",120,-3.,3.);
-  gsf_po_vtxcor_iso_eta = new TH1F("gsf_po_vtxcor_iso_eta","gsf_po_vtxcor_iso_eta",120,-3.,3.);
-  gsf_el_vtxcor_iso_e = new TH1F("gsf_el_vtxcor_iso_e","gsf_el_vtxcor_iso_e",400,0.,4000.);
-  gsf_po_vtxcor_iso_e = new TH1F("gsf_po_vtxcor_iso_e","gsf_po_vtxcor_iso_e",400,0.,4000.);
-  gsf_el_vtxcor_iso_phi = new TH1F("gsf_el_vtxcor_iso_phi","gsf_el_vtxcor_iso_phi",160,-4.,4.);
-  gsf_po_vtxcor_iso_phi = new TH1F("gsf_po_vtxcor_iso_phi","gsf_po_vtxcor_iso_phi",160,-4.,4.);
+  gsf_el_vtxcor_iso_pt= fs->make<TH1F>("gsf_el_vtxcor_iso_pt","gsf_el_vtxcor_iso_pt",400,0.,2000.);
+  gsf_po_vtxcor_iso_pt= fs->make<TH1F>("gsf_po_vtxcor_iso_pt","gsf_po_vtxcor_iso_pt",400,0.,2000.);
+  gsf_el_vtxcor_iso_eta = fs->make<TH1F>("gsf_el_vtxcor_iso_eta","gsf_el_vtxcor_iso_eta",120,-3.,3.);
+  gsf_po_vtxcor_iso_eta = fs->make<TH1F>("gsf_po_vtxcor_iso_eta","gsf_po_vtxcor_iso_eta",120,-3.,3.);
+  gsf_el_vtxcor_iso_e = fs->make<TH1F>("gsf_el_vtxcor_iso_e","gsf_el_vtxcor_iso_e",400,0.,4000.);
+  gsf_po_vtxcor_iso_e = fs->make<TH1F>("gsf_po_vtxcor_iso_e","gsf_po_vtxcor_iso_e",400,0.,4000.);
+  gsf_el_vtxcor_iso_phi = fs->make<TH1F>("gsf_el_vtxcor_iso_phi","gsf_el_vtxcor_iso_phi",160,-4.,4.);
+  gsf_po_vtxcor_iso_phi = fs->make<TH1F>("gsf_po_vtxcor_iso_phi","gsf_po_vtxcor_iso_phi",160,-4.,4.);
 
 }
 
@@ -800,11 +800,6 @@ void PixelMatchAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup
 
 // ------------ method called once each job just after ending the event loop  ------------
 void PixelMatchAnalysis::endJob() {
-
-  rootfile->cd();
-  mytree->Write();
-  rootfile->Write();
-  rootfile->Close();
 
   double eff1=double(gsf_sizegreater1)/double(event_tot);
   double eff2=double(gsf_el_po_ptmin)/double(gsf_sizegreater1);
