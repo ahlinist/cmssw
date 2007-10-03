@@ -181,6 +181,7 @@ namespace edm {
 
     virtual void startEndFile() {}
     virtual void writeFileFormatVersion() {}
+    virtual void writeFileIdentifier() {}
     virtual void writeProcessConfigurationRegistry() {}
     virtual void writeProcessHistoryRegistry() {}
     virtual void writeModuleDescriptionRegistry() {}
