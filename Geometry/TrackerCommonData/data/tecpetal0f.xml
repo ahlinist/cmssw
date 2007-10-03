@@ -110,7 +110,6 @@
    <rChild name="tecpetal0f:TECICBCont0F2"/>
   <Translation x="[zero]" y="[zero]" z="[tecpetpar:ICBZ]"/>
  </PosPart>
-
  <PosPart copyNumber="1">
    <rParent name="tecpetal0f:TECICBCont0F1"/>
    <rChild name="tecpetalf:TECICC0F1"/>
@@ -141,7 +140,6 @@
    <rChild name="tecpetalf:TECICC46F2"/>
   <Translation x="[zero]" y="[zero]"  z="[ICCZ]" />
  </PosPart>
- 
  <PosPart copyNumber="1">
    <rParent name="tecpetal0f:TECICBCont0F2"/>
    <rChild name="tecpetalf:TECICC01LF1"/>
@@ -187,25 +185,22 @@
    <rChild name="tecpetalf:TECICC35F5"/>
   <Translation x="[zero]" y="[zero]"  z="-[ICCZ]" />
  </PosPart>
-
  <PosPart copyNumber="1">
    <rParent name="tecpetal0f:TECPetal2F"/>
    <rChild name="tecwheel:TECInnerManifold"/>
   <Translation x="[zero]" y="[zero]" z="[zero]"/>
  </PosPart>
-
  <PosPart copyNumber="1">
    <rParent name="tecpetal0f:TECICBCont0F2"/>
    <rChild name="tecwheel:TECCCUM"/>
   <Translation x="1050*mm" y="100*mm" z="[tecpetpar:CCUMZ]"/>
  </PosPart>
-
  <PosPart copyNumber="1">
    <rParent name="tecpetal0f:TECICBCont0F2"/>
    <rChild name="tecwheel:TECCCUM"/>
   <Translation x="700*mm" y="[zero]" z="[tecpetpar:CCUMZ]"/>
  </PosPart>
- </PosPartSection>
+</PosPartSection>
 
 <Algorithm name="track:DDTECCoolAlgo">
   <rParent name="tecpetal0f:TECPetal0F"/>

@@ -282,7 +282,7 @@ than they are on the drawings.
   <!-- Cover side : -->
 
   <ConstantsSection label="Cover" eval="true">
-    <Constant name="e02" value="([L02]-[L06])/2" />   Half length of cover side 
+    <Constant name="e02" value="([L02]-[L06])/2" />   <!-- Half length of cover side -->
   </ConstantsSection>
  
   <SolidSection label="Cover">
@@ -367,7 +367,7 @@ than they are on the drawings.
   <!-- Body side : -->
 
   <ConstantsSection label="Body" eval="true">
-    <Constant name="e03" value="([JK]-[e02]*2-[L04])/2" />   Half length of body side 
+    <Constant name="e03" value="([JK]-[e02]*2-[L04])/2" />   <!--Half length of body side -->
   </ConstantsSection>
  
   <SolidSection label="Body">
