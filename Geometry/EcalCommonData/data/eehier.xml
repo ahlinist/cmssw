@@ -85,9 +85,6 @@
       <rSolid name="EEFrontQuad"/> <rMaterial  name="materials:E_Air"/> </LogicalPart>
  <LogicalPart name="EEBackQuad" category="unspecified">
       <rSolid name="EEBackQuad"/> <rMaterial  name="materials:E_Air"/> </LogicalPart>
- <LogicalPart name="EEBackPlate" category="unspecified">
-      <rSolid name="EEBackPlate"/> <rMaterial  name="materials:Aluminium"/> </LogicalPart>
-
 
 </LogicalPartSection>
 
