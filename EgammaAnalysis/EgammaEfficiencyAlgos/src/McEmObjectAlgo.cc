@@ -27,6 +27,7 @@ void McEmObjectAlgo::run(const edm::Event &event, EgEff::EmObjectCollection &out
    // Find all electrons in the collection
    const edm::HepMCProduct *mcProd = mcHandle.product();
    const HepMC::GenEvent *evt = mcProd->GetEvent();
+
    for(HepMC::GenEvent::particle_const_iterator pitr = evt->particles_begin(); pitr != evt->particles_end(); ++pitr)
    {
       // Only choose electrons
@@ -34,9 +35,14 @@ void McEmObjectAlgo::run(const edm::Event &event, EgEff::EmObjectCollection &out
       {
 	 if(fromMother_)
 	 {
-            if(((*pitr)->numParents() == 1) && ((*pitr)->listParents()[0]->pdg_id() == motherPdgId_))
+
+	    HepMC::GenVertex::particles_out_const_iterator mother
+               = (*pitr)->production_vertex()->particles_out_const_begin();
+
+            if(((*pitr)->production_vertex()->particles_out_size() == 1) 
+              && ((*mother)->pdg_id() == motherPdgId_))
 	    {
-               HepLorentzVector p = (*pitr)->momentum();
+               HepMC::FourVector p = (*pitr)->momentum();
 	       math::XYZTLorentzVector p4(p.x(), p.y(), p.z(), p.t());
 	       char charge = ((*pitr)->pdg_id() > 0 ? 1 : -1);
 	       math::XYZPoint vtx((*pitr)->production_vertex()->point3d().x(), (*pitr)->production_vertex()->point3d().y(), (*pitr)->production_vertex()->point3d().z());
@@ -46,7 +52,7 @@ void McEmObjectAlgo::run(const edm::Event &event, EgEff::EmObjectCollection &out
 	 }
 	 else
 	 {
-	    HepLorentzVector p = (*pitr)->momentum();
+	    HepMC::FourVector p = (*pitr)->momentum();
 	    math::XYZTLorentzVector p4(p.x(), p.y(), p.z(), p.t());
 	    char charge = ((*pitr)->pdg_id() > 0 ? 1 : -1);
 	    math::XYZPoint vtx((*pitr)->production_vertex()->point3d().x(), (*pitr)->production_vertex()->point3d().y(), (*pitr)->production_vertex()->point3d().z());
