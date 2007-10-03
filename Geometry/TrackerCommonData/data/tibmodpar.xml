@@ -235,7 +235,7 @@
                          phiY="90*deg"    thetaZ="90*deg"  phiZ="0*deg" />
 </RotationSection>
 
-<PosPartSection>
+<PosPartSection label="tibmodpar.xml">
  <PosPart copyNumber="1">
    <rParent name="tibmodpar:TIBModCFFrameRPhi"/>
    <rChild name="tibmodpar:TIBModCFFrameHole"/>
