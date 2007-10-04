@@ -86,12 +86,12 @@ void EfficiencyBase::InitialiseHistograms(const edm::ParameterSet &params)
 
 
   // init the tree
-  std::cout << "making new ttree" << std::endl;
-  std::string treeFile = params.getUntrackedParameter<std::string>("treeFile");
-  _file = new TFile(treeFile.c_str(), "RECREATE");
-  _file->cd();
-  _tree = 0;
-  _tree = new TTree("T", "Test Tree");
+  edm::LogInfo("tnp") << "making new ttree";
+//   std::string treeFile = params.getUntrackedParameter<std::string>("treeFile");
+//   _file = new TFile(treeFile.c_str(), "RECREATE");
+//   _file->cd();
+//   _tree = 0;
+  _tree = fs->make<TTree>("T", "Test Tree");
 
 //  const Int_t kMaxProbe = 5;
 //  pass_ = new Int_t[kMaxProbe];
@@ -113,7 +113,7 @@ void EfficiencyBase::InitialiseHistograms(const edm::ParameterSet &params)
   _tree->Branch("vz", &vz_, "vz/F");
   _tree->Branch("mass", &mass_, "mass/F");
 
-  std::cout << "done" << std::endl;
+  edm::LogInfo("tnp") << "done" ;
 
 }
 
@@ -266,29 +266,14 @@ void EfficiencyBase::FinishHistograms()
   CalculateEventEfficiency(eePass, eeTotal, eeEff, eeErr);
   CalculateEventEfficiency(pass, total, eff, err);
 
-  std::cout << "-------------------------" << std::endl << "Efficiencies for " << _name << std::endl;
-  std::cout << "EB:  " << ebEff << " ± " << ebErr << std::endl;
-  std::cout << "EE:  " << eeEff << " ± " << eeErr << std::endl;
-  std::cout << "All: " << eff << " ± " << err << std::endl;
-  std::cout << "-------------------------" << std::endl;
+  edm::LogInfo("tnp") << "-------------------------";
+  edm::LogInfo("tnp") <<"Efficiencies for " << _name ;
+  edm::LogInfo("tnp") << "EB:  " << ebEff << " ± " << ebErr ;
+  edm::LogInfo("tnp") << "EE:  " << eeEff << " ± " << eeErr ;
+  edm::LogInfo("tnp") << "All: " << eff << " ± " << err ;
+  edm::LogInfo("tnp") << "-------------------------" ;
 
-
-  std::cout << "writting tree" << std::endl;
-   _file->cd();
-   _tree->Write();
-   delete _tree;
-   _tree = 0;
-//   _file->Write();
-//   delete _file;
-//   _file = 0;
-
-//   delete os_;
-//   delete pass_;
-//   delete eta_; 
- //  delete phi_;
-//   delete pt_;
-
-  std::cout << "done" << std::endl;
+  edm::LogInfo("tnp") << "done";
 
 
 //  std::cout << std::endl;
