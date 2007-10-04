@@ -76,8 +76,6 @@
       <Parameter name="TkDDDStructure" value="TIBLayer"/>
     </SpecPar>
 
-definire plus e minus
-
     <SpecPar name="TIBSubDetStringPar">
       <PartSelector path="//TIBString0LoMin1" />
       <PartSelector path="//TIBString0LoPls1" />
