@@ -3,7 +3,7 @@
 <use name=Foundation/PluginManager>
 <use name=FWCore/ParameterSet>
 <use name=EgammaAnalysis/EgammaEfficiencyAlgos>
-<flags SEAL_PLUGIN_NAME="EgammaAnalysisEgammaEfficiencyProducers">
+<flags EDM_PLUGIN=1>
 <export>
    <lib name=EgammaAnalysisEgammaEfficiencyProducers>
    <use name=FWCore/Framework>

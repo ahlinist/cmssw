@@ -10,7 +10,7 @@ void McEmObjectAlgo::initialise(const edm::ParameterSet &params)
    motherPdgId_ = params.getParameter<int>("MotherPdgId");
 }
 
-void McEmObjectAlgo::run(const edm::Event &event, EgEff::EmObjectCollection &outCol)
+void McEmObjectAlgo::run(edm::Event &event, EgEff::EmObjectCollection &outCol)
 {
    // Get electron collection
    edm::Handle<edm::HepMCProduct> mcHandle;
