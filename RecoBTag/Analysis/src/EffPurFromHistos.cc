@@ -56,6 +56,25 @@ EffPurFromHistos::EffPurFromHistos
   effVersusDiscr_dus =  discrCutEfficScan->histo_dus ();
   effVersusDiscr_dusg = discrCutEfficScan->histo_dusg();
 
+  effVersusDiscr_d->SetXTitle ( "Discriminant" );
+  effVersusDiscr_d->GetXaxis()->SetTitleOffset ( 0.75 );
+  effVersusDiscr_u->SetXTitle ( "Discriminant" );
+  effVersusDiscr_u->GetXaxis()->SetTitleOffset ( 0.75 );
+  effVersusDiscr_s->SetXTitle ( "Discriminant" );
+  effVersusDiscr_s->GetXaxis()->SetTitleOffset ( 0.75 );
+  effVersusDiscr_c->SetXTitle ( "Discriminant" );
+  effVersusDiscr_c->GetXaxis()->SetTitleOffset ( 0.75 );
+  effVersusDiscr_b->SetXTitle ( "Discriminant" );
+  effVersusDiscr_b->GetXaxis()->SetTitleOffset ( 0.75 );
+  effVersusDiscr_g->SetXTitle ( "Discriminant" );
+  effVersusDiscr_g->GetXaxis()->SetTitleOffset ( 0.75 );
+  effVersusDiscr_ni->SetXTitle ( "Discriminant" );
+  effVersusDiscr_ni->GetXaxis()->SetTitleOffset ( 0.75 );
+  effVersusDiscr_dus->SetXTitle ( "Discriminant" );
+  effVersusDiscr_dus->GetXaxis()->SetTitleOffset ( 0.75 );
+  effVersusDiscr_dusg->SetXTitle ( "Discriminant" );
+  effVersusDiscr_dusg->GetXaxis()->SetTitleOffset ( 0.75 );
+
   // discr. for computation
   vector<TH1F*> discrCfHistos = dDiscriminatorFC->getHistoVector();
 
@@ -84,6 +103,9 @@ EffPurFromHistos::EffPurFromHistos
       double nJetsFlav = discrCfHistos[iFlav]->GetEntries ();
       discrNoCutHistos[iFlav]->SetBinContent ( iDiscr, nJetsFlav );
       discrNoCutHistos[iFlav]->SetBinError   ( iDiscr, sqrt(nJetsFlav) );
+	  discrNoCutHistos[iFlav]->SetXTitle ( "Discriminant" );
+      discrNoCutHistos[iFlav]->GetXaxis()->SetTitleOffset ( 0.75 );
+
       // fill jets fulfilling discriminator >= discriminatorCut in Cut histo
       double sum = 0.0;
       for ( int i = iDiscr; i <= nBins+1; i++ ) {  //+1 to get the overflow.
@@ -215,7 +237,7 @@ void EffPurFromHistos::plot (TPad * plotCanvas /* = 0 */) {
   // for the moment: plot c,dus,g
   EffFlavVsBEff_dus ->GetXaxis()->SetTitle ( "b-jet efficiency" );
   EffFlavVsBEff_dus ->GetYaxis()->SetTitle ( "non b-jet efficiency" );
-  EffFlavVsBEff_dus ->GetYaxis()->SetTitleOffset ( 1.25 );
+  EffFlavVsBEff_dus ->GetYaxis()->SetTitleOffset ( 0.25 );
   EffFlavVsBEff_dus ->SetMaximum     ( 1.1 );
   EffFlavVsBEff_dus ->SetMinimum     ( 1.e-5 );
   EffFlavVsBEff_dus ->SetMarkerColor ( col_dus );
@@ -238,6 +260,16 @@ void EffPurFromHistos::plot (TPad * plotCanvas /* = 0 */) {
   EffFlavVsBEff_c   ->SetMarkerStyle ( mStyle_c );
   EffFlavVsBEff_c   ->SetStats     ( false );
   EffFlavVsBEff_c   ->Draw("peSame");
+
+  EffFlavVsBEff_d -> SetMinimum(0.01);
+  EffFlavVsBEff_u -> SetMinimum(0.01);
+  EffFlavVsBEff_s -> SetMinimum(0.01);
+  EffFlavVsBEff_c -> SetMinimum(0.01);
+  EffFlavVsBEff_b -> SetMinimum(0.01);
+  EffFlavVsBEff_g -> SetMinimum(0.01);
+  EffFlavVsBEff_ni -> SetMinimum(0.01);
+  EffFlavVsBEff_dus -> SetMinimum(0.01);
+  EffFlavVsBEff_dusg -> SetMinimum(0.01);
 
   // plot separately u,d and s
 //  EffFlavVsBEff_d ->GetXaxis()->SetTitle ( "b-jet efficiency" );
@@ -380,6 +412,43 @@ void EffPurFromHistos::compute ()
   EffFlavVsBEff_ni   = new TH1F ( hB + "NI"   + hE , hB + "NI"   + hE , nBinOutput , startOutput , endOutput ) ;
   EffFlavVsBEff_dus  = new TH1F ( hB + "DUS"  + hE , hB + "DUS"  + hE , nBinOutput , startOutput , endOutput ) ;
   EffFlavVsBEff_dusg = new TH1F ( hB + "DUSG" + hE , hB + "DUSG" + hE , nBinOutput , startOutput , endOutput ) ;
+
+  EffFlavVsBEff_d->SetXTitle ( "b-jet efficiency" );
+  EffFlavVsBEff_d->SetYTitle ( "non b-jet efficiency" );
+  EffFlavVsBEff_d->GetXaxis()->SetTitleOffset ( 0.75 );
+  EffFlavVsBEff_d->GetYaxis()->SetTitleOffset ( 0.75 );
+  EffFlavVsBEff_u->SetXTitle ( "b-jet efficiency" );
+  EffFlavVsBEff_u->SetYTitle ( "non b-jet efficiency" );
+  EffFlavVsBEff_u->GetXaxis()->SetTitleOffset ( 0.75 );
+  EffFlavVsBEff_u->GetYaxis()->SetTitleOffset ( 0.75 );
+  EffFlavVsBEff_s->SetXTitle ( "b-jet efficiency" );
+  EffFlavVsBEff_s->SetYTitle ( "non b-jet efficiency" );
+  EffFlavVsBEff_s->GetXaxis()->SetTitleOffset ( 0.75 );
+  EffFlavVsBEff_s->GetYaxis()->SetTitleOffset ( 0.75 );
+  EffFlavVsBEff_c->SetXTitle ( "b-jet efficiency" );
+  EffFlavVsBEff_c->SetYTitle ( "non b-jet efficiency" );
+  EffFlavVsBEff_s->GetXaxis()->SetTitleOffset ( 0.75 );
+  EffFlavVsBEff_s->GetYaxis()->SetTitleOffset ( 0.75 );
+  EffFlavVsBEff_b->SetXTitle ( "b-jet efficiency" );
+  EffFlavVsBEff_b->SetYTitle ( "b-jet efficiency" );
+  EffFlavVsBEff_b->GetXaxis()->SetTitleOffset ( 0.75 );
+  EffFlavVsBEff_b->GetYaxis()->SetTitleOffset ( 0.75 );
+  EffFlavVsBEff_g->SetXTitle ( "b-jet efficiency" );
+  EffFlavVsBEff_g->SetYTitle ( "non b-jet efficiency" );
+  EffFlavVsBEff_g->GetXaxis()->SetTitleOffset ( 0.75 );
+  EffFlavVsBEff_g->GetYaxis()->SetTitleOffset ( 0.75 );
+  EffFlavVsBEff_ni->SetXTitle ( "b-jet efficiency" );
+  EffFlavVsBEff_ni->SetYTitle ( "non b-jet efficiency" );
+  EffFlavVsBEff_ni->GetXaxis()->SetTitleOffset ( 0.75 );
+  EffFlavVsBEff_ni->GetYaxis()->SetTitleOffset ( 0.75 );
+  EffFlavVsBEff_dus->SetXTitle ( "b-jet efficiency" );
+  EffFlavVsBEff_dus->SetYTitle ( "non b-jet efficiency" );
+  EffFlavVsBEff_dus->GetXaxis()->SetTitleOffset ( 0.75 );
+  EffFlavVsBEff_dus->GetYaxis()->SetTitleOffset ( 0.75 );
+  EffFlavVsBEff_dusg->SetXTitle ( "b-jet efficiency" );
+  EffFlavVsBEff_dusg->SetYTitle ( "non b-jet efficiency" );
+  EffFlavVsBEff_dusg->GetXaxis()->SetTitleOffset ( 0.75 );
+  EffFlavVsBEff_dusg->GetYaxis()->SetTitleOffset ( 0.75 );
 
 
   // loop over eff. vs. discriminator cut b-histo and look in which bin the closest entry is;
