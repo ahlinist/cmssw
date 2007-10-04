@@ -266,12 +266,12 @@ void EfficiencyBase::FinishHistograms()
   CalculateEventEfficiency(eePass, eeTotal, eeEff, eeErr);
   CalculateEventEfficiency(pass, total, eff, err);
 
-  edm::LogInfo("tnp") << "-------------------------";
-  edm::LogInfo("tnp") <<"Efficiencies for " << _name ;
-  edm::LogInfo("tnp") << "EB:  " << ebEff << " ± " << ebErr ;
-  edm::LogInfo("tnp") << "EE:  " << eeEff << " ± " << eeErr ;
-  edm::LogInfo("tnp") << "All: " << eff << " ± " << err ;
-  edm::LogInfo("tnp") << "-------------------------" ;
+  edm::LogVerbatim("tnp") << "-------------------------";
+  edm::LogVerbatim("tnp") <<"Efficiencies for " << _name ;
+  edm::LogVerbatim("tnp") << "EB:  " << ebEff << " ± " << ebErr ;
+  edm::LogVerbatim("tnp") << "EE:  " << eeEff << " ± " << eeErr ;
+  edm::LogVerbatim("tnp") << "All: " << eff << " ± " << err ;
+  edm::LogVerbatim("tnp") << "-------------------------" ;
 
   edm::LogInfo("tnp") << "done";
 
