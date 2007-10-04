@@ -195,7 +195,7 @@
    <rChild name="tecwheel:TECCCUM"/>
   <Translation x="1050*mm" y="100*mm" z="[tecpetpar:CCUMZ]"/>
  </PosPart>
- <PosPart copyNumber="1">
+ <PosPart copyNumber="2">
    <rParent name="tecpetal0f:TECICBCont0F2"/>
    <rChild name="tecwheel:TECCCUM"/>
   <Translation x="700*mm" y="[zero]" z="[tecpetpar:CCUMZ]"/>
