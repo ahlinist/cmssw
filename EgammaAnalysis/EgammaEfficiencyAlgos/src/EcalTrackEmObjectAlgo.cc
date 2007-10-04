@@ -22,7 +22,7 @@ void EcalTrackEmObjectAlgo::initialise(const edm::ParameterSet &params)
    }
 }
 
-void EcalTrackEmObjectAlgo::run(const edm::Event &event, EgEff::EmObjectCollection &outCol)
+void EcalTrackEmObjectAlgo::run(edm::Event &event, EgEff::EmObjectCollection &outCol)
 {
   // Get the input collections
    edm::Handle<reco::VertexCollection> vertexHandle;

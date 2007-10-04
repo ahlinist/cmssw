@@ -13,7 +13,7 @@ void TagEmObjectAlgo::initialise(const edm::ParameterSet &params)
    _electronIDAssocProducer = params.getParameter<std::string>("ElectronIDAssociationProducer");
 }
 
-void TagEmObjectAlgo::run(const edm::Event &event, EgEff::EmObjectCollection &outCol)
+void TagEmObjectAlgo::run(edm::Event &event, EgEff::EmObjectCollection &outCol)
 {
    // Get electrons
    edm::Handle<reco::PixelMatchGsfElectronCollection> eleCandidatesHandle;

@@ -5,6 +5,8 @@
 #include "EgammaAnalysis/EgammaEfficiencyAlgos/interface/TagEmObjectAlgo.h"
 #include "EgammaAnalysis/EgammaEfficiencyAlgos/interface/EcalTrackEmObjectAlgo.h"
 #include "EgammaAnalysis/EgammaEfficiencyAlgos/interface/McEmObjectAlgo.h"
+#include "EgammaAnalysis/EgammaEfficiencyAlgos/interface/CtfWithMaterialTrackEmObjectAlgo.h"
+#include "EgammaAnalysis/EgammaEfficiencyAlgos/interface/SuperClusterEmObjectAlgo.h"
 #include "AnalysisDataFormats/ElectronEfficiency/interface/EmObjectFwd.h"
 #include <string>
 #include <memory>
@@ -32,6 +34,14 @@ void EmObjectProducer::beginJob(const edm::EventSetup &setup)
    else if(algoName == "McEmObjectAlgo")
    {
       std::auto_ptr<EmObjectAlgo> pt(new McEmObjectAlgo());
+      algo_ = pt;
+   }
+   else if(algoName == "CtfWithMaterialTrackEmObjectAlgo") {
+      std::auto_ptr<EmObjectAlgo> pt(new CtfWithMaterialTrackEmObjectAlgo());
+      algo_ = pt;
+   }
+   else if(algoName == "SuperClusterEmObjectAlgo") {
+      std::auto_ptr<EmObjectAlgo> pt(new SuperClusterEmObjectAlgo());
       algo_ = pt;
    }
 

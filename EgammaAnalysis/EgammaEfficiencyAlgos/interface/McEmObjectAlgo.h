@@ -11,7 +11,7 @@ class McEmObjectAlgo : public EmObjectAlgo
       explicit McEmObjectAlgo(){};
 
       virtual void initialise(const edm::ParameterSet&);
-      virtual void run(const edm::Event&, EgEff::EmObjectCollection&);
+      virtual void run(edm::Event&, EgEff::EmObjectCollection&);
 
    protected:
       std::string inputProducer_;
