@@ -26,18 +26,22 @@
 #include "DataFormats/BTauReco/interface/TauMassTagInfo.h"
 #include "DataFormats/BTauReco/interface/TauImpactParameterInfo.h"
 
-#include "DataFormats/JetReco/interface/Jet.h"
-#include "DataFormats/JetReco/interface/CaloJet.h"
 #include "DataFormats/JetReco/interface/PFJet.h"
-#include "DataFormats/JetReco/interface/CaloJetCollection.h"
 #include "JetMETCorrections/Objects/interface/JetCorrector.h"
 
 #include "DataFormats/JetReco/interface/GenJet.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticleCandidate.h"
 #include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
 
+#include "DataFormats/JetReco/interface/Jet.h"
+#include "DataFormats/JetReco/interface/CaloJet.h"
+#include "DataFormats/JetReco/interface/CaloJetCollection.h"
+
 #include "Math/GenVector/VectorUtil.h"
 #include "Math/GenVector/PxPyPzE4D.h"
+
+#include "DataFormats/L1Trigger/interface/L1JetParticle.h"
+#include "DataFormats/L1Trigger/interface/L1JetParticleFwd.h"
 
 #include <TFile.h>
 
@@ -64,6 +68,8 @@ EWKTauAnalyser::EWKTauAnalyser(const ParameterSet& iConfig) {
                    muonSrc_ = iConfig.getUntrackedParameter<string>("muonSrc", "muons");
                   trackSrc_ = iConfig.getUntrackedParameter<string>("trackSrc", "ctfWithMaterialTracks");
                  vertexSrc_ = iConfig.getUntrackedParameter<string>("vertexSrc", "offlinePrimaryVerticesFromCTFTracks");
+		 hltJetSrc_  = iConfig.getUntrackedParameter<string>("hltJetSrc", "isolatedL25PixelTau");
+
               genParticles_ = iConfig.getUntrackedParameter<string>("genParticles", "source");
             caloInvMassSrc_ = iConfig.getUntrackedParameter<string>("caloMassTagSrc");
                      ipSrc_ = iConfig.getUntrackedParameter<string>("ipSrc", "impactParameter");
@@ -107,14 +113,20 @@ void EWKTauAnalyser::beginJob(const edm::EventSetup& iSetup) {
          tauCh1PrH = new TH1D("tauCh1Pr", "Tau Charge for 1-Prong Taus", 5, -0.5, 4.5);
          tauCh3PrH = new TH1D("tauCh3Pr", "Tau Charge for 3-Prong Taus", 5, -0.5, 4.5);
           tauDiscH = new TH1D("tauDisc", "Tau Discriminator", 2, -0.5, 1.5);
+tauDiscFirst2JetsH = new TH1D("tauDiscFirst2Jets", "Tau Discriminator for First Two Jets", 2, -0.5, 1.5);
  leadingTrackSiptH = new TH1D("LeadingTrkSipt", "Leading Track Signed IP Significance", 100, 0.0, 20.0);
+        ltIPSig1PH = new TH1D("LeadingTrkSipt1P", "Leading Track Signed IP Significance (1-prong)", 100, 0.0, 20.0);
+        ltIPSig3PH = new TH1D("LeadingTrkSipt3P", "Leading Track Signed IP Significance (3-prong)", 100, 0.0, 20.0);
    leadingTrackPtH = new TH1D("LeadingTrkPt", "Leading Track Pt", 100, 0.0, 100.0);
-          invMassH = new TH1D("InvMass", "Invariant Mass", 100, 0.0, 5.0);
-         invMass2H = new TH1D("InvMass2", "Invariant Mass (Signal Components)", 100, 0.0, 5.0);
-       invMassGenH = new TH1D("InvMassGen", "Invariant Mass from Generator Level", 100, 0.0, 5.0);
-        invMassMCH = new TH1D("InvMassMC", "Invariant Mass from HepMC (all)", 100, 0.0, 5.0);
-       invMassMC1H = new TH1D("InvMassMC1", "Invariant Mass from HepMC (1 prong)", 100, 0.0, 5.0);
-       invMassMC3H = new TH1D("InvMassMC3", "Invariant Mass from HepMC (multi promg)", 100, 0.0, 5.0);
+          invMassH = new TH1D("InvMass", "Invariant Mass", 100, 0.0, 10.0);
+         invMass2H = new TH1D("InvMass2", "Invariant Mass (Signal Components)", 100, 0.0, 10.0);
+         invMass3H = new TH1D("InvMass3", "Invariant Mass (custom I )", 100, 0.0, 10.0);
+         invMass4H = new TH1D("InvMass4", "Invariant Mass (custom II )", 100, 0.0, 10.0);
+         invMass5H = new TH1D("InvMass5", "Invariant Mass (custom III )", 100, 0.0, 10.0);
+       invMassGenH = new TH1D("InvMassGen", "Invariant Mass from Generator Level", 100, 0.0, 10.0);
+        invMassMCH = new TH1D("InvMassMC", "Invariant Mass from HepMC (all)", 100, 0.0, 10.0);
+       invMassMC1H = new TH1D("InvMassMC1", "Invariant Mass from HepMC (1 prong)", 100, 0.0, 10.0);
+       invMassMC3H = new TH1D("InvMassMC3", "Invariant Mass from HepMC (multi promg)", 100, 0.0, 10.0);
     maxHcalEnergyH = new TH1D("MaxHcalEnergy", "Maximum HCAL Energy", 100, 0.0, 100.0);
      emEnergyFracH = new TH1D("EMFracEnergy", "Fractional EM Energy", 100, 0.0, 1.0);
     emEnergyFrac2H = new TH1D("EMFracEnergy2", "Fractional EM Energy for non-hadronic Tau decays", 100, 0.0, 1.0);
@@ -144,7 +156,7 @@ void EWKTauAnalyser::beginJob(const edm::EventSetup& iSetup) {
            metSigH = new TH1D("metSig", "met Significance", 100, 0.0, 10.);
      tauDecayProdH = new TH1I("tauDecayProd", "Number of Decay products ", 20, -0.5, 20.5);
 
-      caloInvMassH = new TH1D("CaloInvariantMass","Invariant Mass from Caloremeter",100, 0, 5);
+      caloInvMassH = new TH1D("CaloInvariantMass","Invariant Mass from Caloremeter",100, 0, 10.0);
      tauDecayModeH = new TH1I("tauDecayMode"," Tau Decay Mode", 3, -0.5, 2.5);
              ip2DH = new TH1D("ip2D", "2D Impact parameter as Tau Tag(value)", 100, 0, 0.3);
           ip2DSigH = new TH1D("ip2DSig", "2D Impact parameter as Tau Tag(significance)", 100, 0, 20);
@@ -183,6 +195,18 @@ void EWKTauAnalyser::analyze(const Event& iEvent, const EventSetup& iSetup) {
   Handle<PFTauCollection> tauHandle;
   iEvent.getByLabel(PFTaus_, tauHandle);
   const PFTauCollection& myTauCollection = *(tauHandle.product()); 
+
+  // CaloJet collection from HLT
+  //  Handle<reco::HLTFilter> tauHLTHandle;
+  //  iEvent.getByLabel(hltJetSrc_,tauHLTHandle);
+  //  cout <<"Size "<<tauHLTHandle->size()<<endl;
+  //  for( unsigned int ic=0; ic <tauHLTHandle->size();ic++) {
+  //   Edm::RefToBase<reco::Candidate> tauCandRef = tauHLTHandle->getParticleRef(ic);
+  //   cout <<"Eta and Phi HLT "<<endl;
+  //  }
+  Handle<CaloJetCollection> tauHLTHandle;
+  iEvent.getByLabel(hltJetSrc_, tauHLTHandle);
+  const CaloJetCollection& myHLTJetCollection = *(tauHLTHandle.product()); 
 
   Handle<PFTauDiscriminatorByIsolation> theTauDiscriminatorByIsolation;
   iEvent.getByLabel(TauDiscriminatorByIsolationProducer_, theTauDiscriminatorByIsolation);
@@ -223,10 +247,19 @@ void EWKTauAnalyser::analyze(const Event& iEvent, const EventSetup& iSetup) {
     cout << "================" << endl
          << "Jet Number: "     << iTau << endl
          << "================" << endl;
+    double minDR = 99.9;
+    if (!matchWithHLTJet(tau,myHLTJetCollection, minDR)) {
+      cout << " dR of PFTauJet wrt nearest HLT Jet " << minDR << endl;
+      continue;
+    }
+
     double tau_disc = (*theTauDiscriminatorByIsolation)[theTau];
     if (debugFlg) cout << "DiscriminatorByIsolation value: " << tau_disc << endl;
     tauDiscH->Fill(tau_disc);
+    if (iTau <= 1) tauDiscFirst2JetsH->Fill(tau_disc);
+ 
     if (applyDisc && tau_disc < 1.0) continue;
+    
 
     double tau_pt = tau.pt();
     if (debugFlg) cout << "Pt of the Tau: " << tau_pt << endl;
@@ -241,11 +274,11 @@ void EWKTauAnalyser::analyze(const Event& iEvent, const EventSetup& iSetup) {
     double tau_charge               = tau.charge();
     double tau_had_energy           = tau.maximumHCALPFClusterEt();
 
-    const PFTauTagInfo& tagInfo = (*(tau.pfTauTagInfoRef()));
+    const PFTauTagInfo& tagInfo     = (*(tau.pfTauTagInfoRef()));
     double leading_trk_sipt         = fabs(tau.leadPFChargedHadrCandsignedSipt());
+
     double tau_inv_mass             = tau.p4().M();
     double tau_inv_mass2            = tau.alternatLorentzVect().M();
-    double tau_em_energy            = tagInfo.pfjetRef()->chargedEmEnergyFraction();
 
     int tau_ch_hadrons              = tagInfo.PFChargedHadrCands().size();
     int tau_neu_hadrons             = tagInfo.PFNeutrHadrCands().size();
@@ -261,6 +294,18 @@ void EWKTauAnalyser::analyze(const Event& iEvent, const EventSetup& iSetup) {
 
     double tau_sumpt_iso_ch_hadrons = tau.isolationPFChargedHadrCandsPtSum();
     double tau_sumpt_iso_photons    = tau.isolationPFGammaCandsEtSum();
+
+    const PFJet& pfJet              = (*(tagInfo.pfjetRef()));
+    double tau_em_energy            = pfJet.chargedEmEnergyFraction()+pfJet.neutralEmEnergyFraction();
+
+    double chHadEnergyJet           = pfJet.chargedHadronEnergy();
+    double chNeuEnergyJet           = pfJet.neutralHadronEnergy();
+    double chEMEnergyJet            = pfJet.chargedEmEnergy();
+    double chMuEnergyJet            = pfJet.chargedMuEnergy();
+    double neuEMEnergyJet           = pfJet.neutralEmEnergy();
+    float  chMultJet                = pfJet.chargedMultiplicity();
+    float  neuMultJet               = pfJet.neutralMultiplicity();
+    float  muMultJet                = pfJet.muonMultiplicity();
 
     if (debugFlg)
       cout << "                       Lead PFCand pt: " << tau_leading_trk_pt       << endl
@@ -278,6 +323,7 @@ void EWKTauAnalyser::analyze(const Event& iEvent, const EventSetup& iSetup) {
            << "       # of IsolationPFGammaCandidate: " << tau_iso_photons          << endl
            << "  Sum pT of Isolation Charged Hadrons: " << tau_sumpt_iso_ch_hadrons << endl
            << "Sum E_T of Isolation Gamma Candidates: " << tau_sumpt_iso_photons    << endl
+           << "                     PF Jet EM Energy: " << chEMEnergyJet+neuEMEnergyJet << endl
            << endl;
 
     invMassH->Fill(tau_inv_mass);
@@ -300,6 +346,13 @@ void EWKTauAnalyser::analyze(const Event& iEvent, const EventSetup& iSetup) {
     if (tau_sig_ch_hadrons == 1) tauCh1PrH->Fill(tau_charge);
     if (tau_sig_ch_hadrons == 3) tauCh3PrH->Fill(tau_charge);
     leadingTrackSiptH->Fill(leading_trk_sipt);
+    if (tau_ch_hadrons == 1) {
+      ltIPSig1PH->Fill(leading_trk_sipt);
+    }
+    else { // multi prong
+      ltIPSig3PH->Fill(leading_trk_sipt);
+    }
+
     invMass2H->Fill(tau_inv_mass2);
     maxHcalEnergyH->Fill(tau_had_energy);
     emEnergyFracH->Fill(tau_em_energy);
@@ -314,6 +367,9 @@ void EWKTauAnalyser::analyze(const Event& iEvent, const EventSetup& iSetup) {
     nNeuHadronIsoH->Fill(tau_iso_neu_hadrons);
     sumPtChHadIsoH->Fill(tau_sumpt_iso_ch_hadrons);
     sumPtGammaIsoH->Fill(tau_sumpt_iso_photons);
+
+    // calculate andfill customised invariant masses
+    findInvariantMass(tau);
 
     // Now apply further selection
     int iSelect = selectTau(tau);
@@ -785,6 +841,83 @@ pair<unsigned int, unsigned int> EWKTauAnalyser::getTauIndices(map<unsigned int,
     }      
   }
   return pair<unsigned int, unsigned int>(indx1, indx2);
+}
+//
+// -- Calculate Invariant Mass
+//
+void EWKTauAnalyser::findInvariantMass(const reco::PFTau& tau) {
+
+   PFCandidateRefVector sigCands = tau.signalPFCands();
+
+   math::XYZTLorentzVector p1;
+   for (PFCandidateRefVector::const_iterator iCand =sigCands.begin();iCand!=sigCands.end();iCand++){
+     p1 += (**iCand).p4();
+   }
+   invMass3H->Fill(p1.M());
+ 
+   math::XYZTLorentzVector p2;   
+
+   PFCandidateRefVector chHadCands   = tau.signalPFChargedHadrCands();
+   PFCandidateRefVector gammaCands   = tau.pfTauTagInfoRef()->PFGammaCands();
+   PFCandidateRefVector neutralCands = tau.pfTauTagInfoRef()->PFNeutrHadrCands();
+   
+   for (PFCandidateRefVector::const_iterator iHad = chHadCands.begin();iHad!=chHadCands.end();iHad++){
+     p2 += (**iHad).p4();
+   }
+
+   const TrackRef leadTrack =  tau.leadTrack();
+   math::XYZVector vec1(leadTrack->px(),leadTrack->py(),leadTrack->pz());
+
+   // Add photons only 
+   for (PFCandidateRefVector::const_iterator iGam = gammaCands.begin();iGam!=gammaCands.end();iGam++){
+     math::XYZVector vec2((**iGam).px(), (**iGam).py(), (**iGam).pz());
+     double deltaR = ROOT::Math::VectorUtil::DeltaR(vec1, vec2);
+     if (deltaR < 0.4) p2 += (**iGam).p4();
+   }
+   invMass4H->Fill(p2.M());
+   
+   // add also neutral hadrons
+   for (PFCandidateRefVector::const_iterator iNeu = neutralCands.begin();iNeu!=neutralCands.end();iNeu++){
+     math::XYZVector vec2((**iNeu).px(), (**iNeu).py(), (**iNeu).pz());
+     double deltaR = ROOT::Math::VectorUtil::DeltaR(vec1, vec2);
+     if (deltaR < 0.4) p2 += (**iNeu).p4();
+   }
+  
+   invMass5H->Fill(p2.M());
+}
+//
+// -- Match Tau Jet with HLT
+//
+/*bool EWKTauAnalyser::matchWithHLTJet(const PFTau& tau, const Handle<reco::HLTFilterObjectWithRefs>& hltHandle, double& dr)
+{
+  math::XYZVector tau3Vec(tau.momentum());
+ for( unsigned int ic=0; ic <hltHandle->size();ic++) {
+   edm::RefToBase<reco::Candidate> tauCandRef = hltHandle->getParticleRef(ic);
+   cout <<"Eta and Phi HLT "<<tauCandRef->eta() <<" "<<tauCandRef->phi()<<endl;
+   cout <<"Eta and Phi PFJets "<<tau.eta() <<" "<<tau.phi()<<endl;
+   double deltaR = ROOT::Math::VectorUtil::DeltaR(tau3Vec, tauCandRef->p4().Vect());
+    if (deltaR < dr) {
+      dr = deltaR;
+    }
+  }
+  if (dr > 0.1) return false;
+  else return true;
+}*/
+//
+// -- Match Tau Jet with HLT
+//
+bool EWKTauAnalyser::matchWithHLTJet(const PFTau& tau, const CaloJetCollection& caloJets, double& dr)
+{
+  math::XYZVector tau3Vec(tau.momentum());
+  for (CaloJetCollection::const_iterator ic  = caloJets.begin();
+                                        ic != caloJets.end(); ic++) {
+     double deltaR = ROOT::Math::VectorUtil::DeltaR(tau3Vec, ic->momentum());
+    if (deltaR < dr) {
+      dr = deltaR;
+    }
+  }
+  if (dr > 0.3) return false;
+  else return true;
 }
 DEFINE_SEAL_MODULE();
 DEFINE_ANOTHER_FWK_MODULE(EWKTauAnalyser);
