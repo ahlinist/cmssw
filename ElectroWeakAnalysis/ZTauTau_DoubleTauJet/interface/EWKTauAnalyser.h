@@ -12,7 +12,9 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include "DataFormats/TauReco/interface/PFTau.h"
-#include "DataFormats/JetReco/interface/GenJetCollection.h"
+#include "DataFormats/JetReco/interface/GenJet.h"
+
+//#include "DataFormats/HLTReco/interface/HLTFilterObject.h"
 
 
 #include <TH1.h>
@@ -56,7 +58,11 @@ protected:
   void findTauImpactParameter(const edm::Event& iEvent, const edm::EventSetup& iSetup); 
   int findTauDecayMode(const edm::Event& iEvent, const edm::EventSetup& iSetup, std::vector<int>& tauTypeList);
   int selectTau(const reco::PFTau& jet);
+  void findInvariantMass(const reco::PFTau& jet);
   std::pair<unsigned int, unsigned int> getTauIndices(std::map<unsigned int, unsigned int>& smap);
+  bool matchWithHLTJet(const reco::PFTau& tau, const reco::CaloJetCollection& caloJets, double& dr);
+  //  bool matchWithHLTJet(const PFTau& tau, const Handle<reco::HLTFilterObjectWithRefs>& hltHandle, double& dr);
+
 
 private:
 
@@ -75,6 +81,7 @@ private:
   std::string genParticles_;
   std::string ipSrc_;
   std::string statFile_;
+  std::string hltJetSrc_;
 
   double jetEtMinMETCorr_;
   double jetEMfracMETCorr_;
@@ -93,8 +100,13 @@ private:
   TH1I* nTauCandH;
   TH1D* leadingTrackPtH;  
   TH1D* leadingTrackSiptH;  
+  TH1D* ltIPSig1PH;  
+  TH1D* ltIPSig3PH;  
   TH1D* invMassH;
   TH1D* invMass2H;
+  TH1D* invMass3H;
+  TH1D* invMass4H;
+  TH1D* invMass5H;
   TH1D* invMassGenH;
   TH1D* invMassMCH;
   TH1D* invMassMC1H;
@@ -124,6 +136,7 @@ private:
   TH1D* tauCh1PrH;
   TH1D* tauCh3PrH;
   TH1D* tauDiscH;
+  TH1D* tauDiscFirst2JetsH;
   TH1D* sumPtChHadIsoH;
   TH1D* sumPtGammaIsoH;
 
