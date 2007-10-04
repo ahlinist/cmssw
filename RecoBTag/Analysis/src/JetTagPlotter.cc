@@ -31,6 +31,7 @@ JetTagPlotter::JetTagPlotter (const TString & tagName, const EtaPtBin & etaPtBin
   dDiscriminatorFC = new FlavourHistorgrams<double>
 	("discrFC" + es, "Discriminator for computations" + es,
 	discrBins, discrStart_, discrEnd_, true, true, true, "b", update);
+  dDiscriminatorFC->settitle("Discriminant");
   // jet flavour
   dJetFlav = new FlavourHistorgrams<int>
 	("jetFlavour" + es, "Jet Flavour" + es, 22, -0.5, 21.5,
@@ -45,7 +46,7 @@ JetTagPlotter::JetTagPlotter (const TString & tagName, const EtaPtBin & etaPtBin
   dDiscriminator = new FlavourHistorgrams<double>
 	("discr" + es, "Discriminator" + es, 50, discrStart_, discrEnd_,
 	false, true, true, "b", update);
-
+  dDiscriminator->settitle("Discriminant");
     // reconstructed jet momentum
   dJetRecMomentum = new FlavourHistorgrams<double>
 	("jetMomentum" + es, "jet momentum" + es, 200, 0.0, 200.0,

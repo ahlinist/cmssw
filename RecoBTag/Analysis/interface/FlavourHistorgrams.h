@@ -48,6 +48,8 @@ public:
   void fill ( const int & flavour,  const T * variable) const;
 
   void write () const ;
+
+  void settitle(const char* title) ;
   
   void plot (TPad * theCanvas = 0) ;
 
@@ -287,6 +289,21 @@ void FlavourHistorgrams<T>::write () const {
   theHisto_ni  ->Write() ; 
   theHisto_dus ->Write() ; 
   theHisto_dusg->Write() ;
+}
+
+template <class T>
+void FlavourHistorgrams<T>::settitle(const char* title) {
+  theHisto_all ->SetXTitle(title) ;
+  theHisto_d   ->SetXTitle(title) ;
+  theHisto_u   ->SetXTitle(title) ;
+  theHisto_s   ->SetXTitle(title) ;
+  theHisto_c   ->SetXTitle(title) ;
+  theHisto_b   ->SetXTitle(title) ;
+  theHisto_g   ->SetXTitle(title) ;
+  theHisto_ni  ->SetXTitle(title) ;
+  theHisto_dus ->SetXTitle(title) ;
+  theHisto_dusg->SetXTitle(title) ;
+
 }
 
   
