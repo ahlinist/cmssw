@@ -2,22 +2,20 @@
 #define RecoBTag_Analysis_SoftLeptonTagPlotter_h
 
 #include "DataFormats/BTauReco/interface/SoftLeptonTagInfo.h"
-#include "RecoBTag/Analysis/interface/BaseBTagPlotter.h"
-#include "RecoBTag/Analysis/interface/JetTagPlotter.h"
+#include "RecoBTag/Analysis/interface/BaseTagInfoPlotter.h"
 #include "RecoBTag/Analysis/interface/FlavourHistorgrams.h"
 #include "RecoBTag/MCTools/interface/JetFlavour.h"
+#include "FWCore/ParameterSet/interface/ParameterSet.h"
 
-class SoftLeptonTagPlotter : public BaseBTagPlotter {
+class SoftLeptonTagPlotter : public BaseTagInfoPlotter {
 public:
 
   SoftLeptonTagPlotter(const TString & tagName, const EtaPtBin & etaPtBin,
-	int nBinEffPur, double startEffPur, double endEffPur, bool update = false);
+	const edm::ParameterSet& pSet, bool update = false);
   
   ~SoftLeptonTagPlotter( void ) ;
 
-  void analyzeTag (
-      const reco::JetTag &            jetTag, 
-      const JetFlavour &              jetFlavour);
+  void analyzeTag (const reco::BaseTagInfo * baseTagInfo, const JetFlavour & jetFlavour);
 
   virtual void finalize( void ) {}
 

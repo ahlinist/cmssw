@@ -1,11 +1,14 @@
 #include "RecoBTag/Analysis/interface/TrackProbabilityTagPlotter.h"
-#include "DataFormats/TrackReco/interface/Track.h"
 
 TrackProbabilityTagPlotter::TrackProbabilityTagPlotter(const TString & tagName,
-	const EtaPtBin & etaPtBin, int nBinEffPur, double startEffPur, double endEffPur,
+	const EtaPtBin & etaPtBin, const edm::ParameterSet& pSet,
 	bool update) :
-    BaseBTagPlotter(tagName, etaPtBin, nBinEffPur, startEffPur, endEffPur)
+    BaseTagInfoPlotter(tagName, etaPtBin)
 {
+  nBinEffPur_  = pSet.getParameter<int>("nBinEffPur");
+  startEffPur_ = pSet.getParameter<double>("startEffPur");
+  endEffPur_   = pSet.getParameter<double>("endEffPur");
+
   finalized = false;
   if (update){
   TString dir= "TrackProbability"+theExtensionString;
@@ -68,21 +71,19 @@ TrackProbabilityTagPlotter::~TrackProbabilityTagPlotter ()
 }
 
 
-void TrackProbabilityTagPlotter::analyzeTag (const reco::JetTag & jetTag,
+void TrackProbabilityTagPlotter::analyzeTag (const reco::BaseTagInfo * baseTagInfo,
 	const JetFlavour & jetFlavour)
 {
   const reco::TrackProbabilityTagInfo * tagInfo = 
-	dynamic_cast<const reco::TrackProbabilityTagInfo *>(jetTag.tagInfoRef().get());
+	dynamic_cast<const reco::TrackProbabilityTagInfo *>(baseTagInfo);
 
   if (!tagInfo) {
     throw cms::Exception("Configuration")
-      << "BTagPerformanceAnalyzer: Extended TagInfo attached to selected JetTag not of type TrackProbabilityTagInfo. " << endl
-      << "Select a different JetTag collection or change the algorithm parameter to TrackProbability in the configuration\n";
+      << "BTagPerformanceAnalyzer: Extended TagInfo attached to selected tagInfo not of type TrackProbabilityTagInfo. " << endl
+      << "Select a different tagInfo collection or change the algorithm parameter to TrackProbability in the configuration\n";
   }
 
   int jetFlav = jetFlavour.flavour();
-
-  int numberOfTracks = jetTag.tracks().size();
 
   for(int n=0; n < tagInfo->selectedTracks(1) && n < 4; n++)
     tkcntHistosSig2D[n]->fill(jetFlav, tagInfo->probability(n,1));
@@ -102,13 +103,13 @@ void TrackProbabilityTagPlotter::finalize ()
   // produce the misid. vs. eff histograms
   //
   effPurFromHistos[0] = new EffPurFromHistos (tkcntHistosSig3D[1],
-		nBinEffPur(), startEffPur(), endEffPur());
+		nBinEffPur_, startEffPur_, endEffPur_);
   effPurFromHistos[1] = new EffPurFromHistos (tkcntHistosSig3D[2],
-		nBinEffPur(), startEffPur(), endEffPur());
+		nBinEffPur_, startEffPur_, endEffPur_);
   effPurFromHistos[2] = new EffPurFromHistos (tkcntHistosSig2D[1],
-		nBinEffPur(), startEffPur(), endEffPur());
+		nBinEffPur_, startEffPur_, endEffPur_);
   effPurFromHistos[3] = new EffPurFromHistos (tkcntHistosSig2D[2],
-		nBinEffPur(), startEffPur(), endEffPur());
+		nBinEffPur_, startEffPur_, endEffPur_);
   for(int n=0; n < 4; n++) effPurFromHistos[n]->compute();
   finalized = true;
 }

@@ -1,23 +1,24 @@
 #ifndef TrackCountingTagPlotter_H
 #define TrackCountingTagPlotter_H
 
-#include "RecoBTag/Analysis/interface/BaseBTagPlotter.h"
+#include "RecoBTag/Analysis/interface/BaseTagInfoPlotter.h"
 #include "DataFormats/BTauReco/interface/TrackCountingTagInfo.h"
 #include "RecoBTag/Analysis/interface/FlavourHistorgrams.h"
 #include "RecoBTag/MCTools/interface/JetFlavour.h"
+#include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 
-class TrackCountingTagPlotter : public BaseBTagPlotter {
+class TrackCountingTagPlotter : public BaseTagInfoPlotter {
 
 
  public:
 
   TrackCountingTagPlotter (const TString & tagName, const EtaPtBin & etaPtBin,
-	int nBinEffPur, double startEffPur, double endEffPur, bool update = false);
+	const edm::ParameterSet& pSet, bool update = false);
 
   ~TrackCountingTagPlotter () ;
 
-  void analyzeTag (const reco::JetTag & jetTag, const JetFlavour & jetFlavour);
+  void analyzeTag (const reco::BaseTagInfo * baseTagInfo, const JetFlavour & jetFlavour);
 
   virtual void finalize ();
 
@@ -28,6 +29,10 @@ class TrackCountingTagPlotter : public BaseBTagPlotter {
   void psPlot(const TString & name);
 
  private:
+
+  int	nBinEffPur_ ;
+  double startEffPur_ ; 
+  double endEffPur_ ; 
 
   FlavourHistorgrams<double> * tkcntHistosSig3D[5];
   FlavourHistorgrams<double> * tkcntHistosSig2D[5];

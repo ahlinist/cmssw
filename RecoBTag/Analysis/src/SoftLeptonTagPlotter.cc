@@ -4,9 +4,8 @@
 static const char* ordinal[] = { "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th" };
 
 SoftLeptonTagPlotter::SoftLeptonTagPlotter(const TString & tagName,
-	const EtaPtBin & etaPtBin, int nBinEffPur, double startEffPur,
-	double endEffPur, bool update) :
-    BaseBTagPlotter(tagName, etaPtBin, nBinEffPur, startEffPur, endEffPur)
+	const EtaPtBin & etaPtBin, const edm::ParameterSet& pSet, bool update) :
+    BaseTagInfoPlotter(tagName, etaPtBin)
 {
   if (update) {
     TString dir = "SoftLepton" + theExtensionString;
@@ -69,13 +68,12 @@ SoftLeptonTagPlotter::~SoftLeptonTagPlotter ()
   }
 }
 
-void SoftLeptonTagPlotter::analyzeTag(
-    const reco::JetTag &            jetTag,
-    const JetFlavour &              jetFlavour )
+void SoftLeptonTagPlotter::analyzeTag( const reco::BaseTagInfo * baseTagInfo,
+    const JetFlavour & jetFlavour )
 {
 
   const reco::SoftLeptonTagInfo * tagInfo = 
-	dynamic_cast<const reco::SoftLeptonTagInfo *>(jetTag.tagInfoRef().get());
+	dynamic_cast<const reco::SoftLeptonTagInfo *>(baseTagInfo);
 
   if (!tagInfo) {
     throw cms::Exception("Configuration")

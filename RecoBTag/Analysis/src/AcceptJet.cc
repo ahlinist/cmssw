@@ -26,7 +26,7 @@ AcceptJet::AcceptJet()
 // 'global' event selection based on basic variables
 
 
-bool AcceptJet::operator() (const reco::JetTag & jetTag, const JetFlavour & jetFlavour) const
+bool AcceptJet::operator() (const reco::Jet & jet, const JetFlavour & jetFlavour) const
 {
 
   bool accept = true;
@@ -34,8 +34,8 @@ bool AcceptJet::operator() (const reco::JetTag & jetTag, const JetFlavour & jetF
   // temporary fudge to correct for double loop error
   //  jetPartonMomentum /= 2.0;
 
-  if ( fabs(jetTag.jet()->eta()) < etaMin  ||
-       fabs(jetTag.jet()->eta()) > etaMax  ) accept = false;
+  if ( fabs(jet.eta()) < etaMin  ||
+       fabs(jet.eta()) > etaMax  ) accept = false;
 
   if ( jetFlavour.underlyingParton4Vec().P() < pPartonMin  ||
        jetFlavour.underlyingParton4Vec().P() > pPartonMax  ) accept = false;
@@ -43,11 +43,11 @@ bool AcceptJet::operator() (const reco::JetTag & jetTag, const JetFlavour & jetF
   if ( jetFlavour.underlyingParton4Vec().Pt() < ptPartonMin  ||
        jetFlavour.underlyingParton4Vec().Pt() > ptPartonMax  ) accept = false;
 
-  if ( jetTag.jet()->pt() < ptRecJetMin ||
-       jetTag.jet()->pt() > ptRecJetMax ) accept = false;
+  if ( jet.pt() < ptRecJetMin ||
+       jet.pt() > ptRecJetMax ) accept = false;
 
-  if ( jetTag.jet()->p() < pRecJetMin ||
-       jetTag.jet()->p() > pRecJetMax ) accept = false;
+  if ( jet.p() < pRecJetMin ||
+       jet.p() > pRecJetMax ) accept = false;
 
   return accept;
 }
