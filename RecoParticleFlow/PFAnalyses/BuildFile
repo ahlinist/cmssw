@@ -1,0 +1,16 @@
+<flags EDM_PLUGIN=1>
+<use name=FWCore/Framework>
+<use name=FWCore/PluginManager>
+<use name=FWCore/ParameterSet>
+<use name=SimDataFormats/TrackingAnalysis>
+<use name=SimTracker/TrackAssociation>
+<use name=DataFormats/ParticleFlowReco>
+<use name=clhep>
+<use name=root>
+<export>	
+<lib name=RecoParticleFlowPFAnalyses>
+<use name=FWCore/Framework>
+<use name=clhep>
+<use name=DataFormats/ParticleFlowReco>
+<use name=root>
+</export>
