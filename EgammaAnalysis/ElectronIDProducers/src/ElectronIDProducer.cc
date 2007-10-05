@@ -1,16 +1,13 @@
 #include "EgammaAnalysis/ElectronIDProducers/interface/ElectronIDProducer.h"
 #include "AnalysisDataFormats/Egamma/interface/ElectronID.h"
 #include "AnalysisDataFormats/Egamma/interface/ElectronIDAssociation.h"
+#include "DataFormats/EgammaReco/interface/BasicCluster.h"
+#include "DataFormats/EgammaReco/interface/ClusterShape.h"
+#include "DataFormats/EgammaReco/interface/BasicClusterShapeAssociation.h"
 
 void ElectronIDProducer::beginJob(edm::EventSetup const& iSetup) {
-
-  if (doPtdrId_) ptdrAlgo_->setup(conf_);
   if (doCutBased_) cutBasedAlgo_->setup(conf_);
-  if (doLikelihood_) likelihoodAlgo_->setup(conf_);
   if (doNeuralNet_) neuralNetAlgo_->setup(conf_);
-
-  if (doPtdrId_ && doCutBased_) 
-    throw(std::runtime_error("\n\nElectronIDProducer: you cannot choose both PTDR algo and CutBased Algo.\n\n"));
 }
 
 ElectronIDProducer::ElectronIDProducer(const edm::ParameterSet& conf) : conf_(conf) {
@@ -20,15 +17,15 @@ ElectronIDProducer::ElectronIDProducer(const edm::ParameterSet& conf) : conf_(co
   electronIDLabel_ = conf_.getParameter<std::string>("electronIDLabel");
   electronIDAssociation_ = conf_.getParameter<std::string>("electronIDAssociationLabel");
 
-  doPtdrId_ = conf_.getParameter<bool>("doPtdrId");
   doCutBased_ = conf_.getParameter<bool>("doCutBased");
   doLikelihood_ = conf_.getParameter<bool>("doLikelihood");
   doNeuralNet_ = conf_.getParameter<bool>("doNeuralNet");
 
-  ptdrAlgo_ = new PTDRElectronID();
   cutBasedAlgo_ = new CutBasedElectronID();
-  likelihoodAlgo_ = new ElectronLikelihood();
   neuralNetAlgo_ = new ElectronNeuralNet();
+
+  barrelClusterShapeAssociation_ = conf_.getParameter<edm::InputTag>("barrelClusterShapeAssociation");
+  endcapClusterShapeAssociation_ = conf.getParameter<edm::InputTag>("endcapClusterShapeAssociation");
 
   produces<reco::ElectronIDCollection>(electronIDLabel_);
   produces<reco::ElectronIDAssociationCollection>(electronIDAssociation_);
@@ -36,9 +33,7 @@ ElectronIDProducer::ElectronIDProducer(const edm::ParameterSet& conf) : conf_(co
 }
 
 ElectronIDProducer::~ElectronIDProducer() {
-  delete ptdrAlgo_;
   delete cutBasedAlgo_;
-  delete likelihoodAlgo_;
   delete neuralNetAlgo_;
 }
 
@@ -52,42 +47,71 @@ void ElectronIDProducer::produce(edm::Event& e, const edm::EventSetup& c) {
   reco::ElectronIDCollection electronIDCollection;
   std::auto_ptr<reco::ElectronIDCollection> electronIDCollection_p(new reco::ElectronIDCollection);
 
+  // get the association of the clusters to their shapes for EB
+  edm::Handle<reco::BasicClusterShapeAssociationCollection> barrelClShpHandle ;
+  try { e.getByLabel (barrelClusterShapeAssociation_, barrelClShpHandle) ; }
+  catch ( cms::Exception& ex ) { edm::LogError ("ElectronIDProducer") << "Can't get ECAL barrel Cluster Shape Collection" ; }
+  const reco::BasicClusterShapeAssociationCollection& barrelClShpMap = *barrelClShpHandle ;
+
+  // get the association of the clusters to their shapes for EE
+  edm::Handle<reco::BasicClusterShapeAssociationCollection> endcapClShpHandle ;
+  try { e.getByLabel (endcapClusterShapeAssociation_, endcapClShpHandle) ; }
+  catch ( cms::Exception& ex ) { edm::LogError ("ElectronIDLHProducer") << "Can't get ECAL endcap Cluster Shape Collection" ; }
+  const reco::BasicClusterShapeAssociationCollection& endcapClShpMap = *endcapClShpHandle ;
+
+
+
   // Loop over electrons and calculate electron ID using specified technique(s)
   reco::PixelMatchGsfElectronCollection::const_iterator electron;
   for (electron = (*electrons).begin();
        electron != (*electrons).end(); ++electron) {
 
-    bool boolDecision = -1;
-    bool ptdrDecision = -1;
+    
     bool cutBasedDecision = -1;
     double likelihood = -1.;
     double neuralNetOutput = -1.;
+    if (doCutBased_) cutBasedDecision = cutBasedAlgo_->result(&(*electron),e);
+    
+    if(doLikelihood_) {
 
-    if (doPtdrId_) ptdrDecision = ptdrAlgo_->result(&(*electron), e);
-    if (doCutBased_) cutBasedDecision = cutBasedAlgo_->result(&(*electron), e);
-    if (doLikelihood_) likelihood = likelihoodAlgo_->result(&(*electron), e);
-    if (doNeuralNet_) neuralNetOutput = neuralNetAlgo_->result(&(*electron), e);
+      bool hasBarrel=true ;
+      bool hasEndcap=true ;
 
-    if (doPtdrId_) 
-      boolDecision = ptdrDecision;
-    else
-      boolDecision = cutBasedDecision;
+      reco::SuperClusterRef sclusRef = electron->get<reco::SuperClusterRef> () ;
+      reco::BasicClusterShapeAssociationCollection::const_iterator seedShpItr ;
+      seedShpItr = barrelClShpMap.find (sclusRef->seed ()) ;
+      if (seedShpItr==barrelClShpMap.end ()) {
+	hasBarrel=false ;
+	seedShpItr=endcapClShpMap.find (sclusRef->seed ()) ;
+	if (seedShpItr==endcapClShpMap.end ()) hasEndcap=false ;
+      }
+      if (hasBarrel || hasEndcap) {
+	const reco::ClusterShapeRef& sClShape = seedShpItr->val ;
+	// get electron likelihood
+	edm::ESHandle<ElectronLikelihood> likelihoodAlgo ;
+	c.getData ( likelihoodAlgo ) ;
+	likelihood = likelihoodAlgo->result (*electron,*sClShape) ;
+      }
+    }
 
-    electronIDCollection.push_back(reco::ElectronID(boolDecision,
-                                                    likelihood,
-                                                    neuralNetOutput));
+    if (doNeuralNet_) neuralNetOutput = neuralNetAlgo_->result(&(*electron),e);
+    electronIDCollection.push_back(reco::ElectronID(cutBasedDecision,
+						    likelihood,
+						    neuralNetOutput));
+
+
   }
 
   // Add output electron ID collection to the event
   electronIDCollection_p->assign(electronIDCollection.begin(),
-                                 electronIDCollection.end());
-
-  edm::OrphanHandle<reco::ElectronIDCollection> electronIDHandle = e.put(electronIDCollection_p, electronIDLabel_);
+				 electronIDCollection.end());
+  edm::OrphanHandle<reco::ElectronIDCollection> electronIDHandle = e.put(electronIDCollection_p,electronIDLabel_);
 
   // Add electron ID AssociationMap to the event
   std::auto_ptr<reco::ElectronIDAssociationCollection> electronIDAssocs_p(new reco::ElectronIDAssociationCollection);
   for (unsigned int i = 0; i < electrons->size(); i++){
     electronIDAssocs_p->insert(edm::Ref<reco::PixelMatchGsfElectronCollection>(electrons,i),edm::Ref<reco::ElectronIDCollection>(electronIDHandle,i));
-  }  
+  }
   e.put(electronIDAssocs_p,electronIDAssociation_);
+
 }
