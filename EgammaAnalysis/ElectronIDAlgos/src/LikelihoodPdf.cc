@@ -67,7 +67,7 @@ LikelihoodPdf::initFromDB(const ElectronLikelihoodCalibration *calibration) {
     bool foundPdf=false;
     for(entryItr=calibration->data.begin(); entryItr!=calibration->data.end(); entryItr++) {
       if(entryItr->category.label.compare(ruleItr->second)==0) { 
-	const CalibratedHistogram *histo = &(entryItr->histogram);
+	const PhysicsTools::Calibration::HistogramF *histo = &(entryItr->histogram);
 	_splitPdf.insert( std::make_pair(ruleItr->first,histo) );
 	foundPdf=true;
       }
@@ -85,7 +85,7 @@ LikelihoodPdf::initFromDB(const ElectronLikelihoodCalibration *calibration) {
 float 
 LikelihoodPdf::getVal(float x, std::string gsfClass, 
 		      bool normalized) {
-  const CalibratedHistogram *thePdf=0;
+  const PhysicsTools::Calibration::HistogramF *thePdf=0;
   if(_splitPdf.size()>1) {
     edm::LogInfo("LikelihoodPdf") << "The PDF " << _name
 				  << " is SPLITTED by category " << gsfClass;

@@ -1,7 +1,7 @@
 <use name=FWCore/Framework>
 <use name=DataFormats/HcalRecHit>
 <use name=DataFormats/EgammaReco>
-<use name=CondFormats/BTauObjects>
+<use name=CondFormats/PhysicsToolsObjects>
 <use name=CondFormats/EgammaObjects>
 <use name=CondFormats/DataRecord>
 <use name=Geometry/CaloGeometry>
@@ -14,7 +14,7 @@
   <use name=FWCore/Framework>
   <use name=DataFormats/HcalRecHit>
   <use name=DataFormats/EgammaReco>
-  <use name=CondFormats/BTauObjects>
+  <use name=CondFormats/PhysicsToolsObjects>
   <use name=CondFormats/EgammaObjects>
   <use name=CondFormats/DataRecord>
   <use name=Geometry/CaloGeometry>
