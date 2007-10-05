@@ -89,7 +89,9 @@ reco::Vertex CombinedSV::getPrimaryVertex ( const edm::Event & iEvent,
     }
 
   } // try PrimaryVertex
-  catch(...) {};
+  catch( edm::Exception & e ) {
+    LogDebug("") << e.what() << " caught.";
+  };
 
   vector<reco::TransientTrack> ttks;
 
@@ -105,7 +107,9 @@ reco::Vertex CombinedSV::getPrimaryVertex ( const edm::Event & iEvent,
     TransientVertex ret = fitter.vertex ( ttks );
     LogDebug ("") << "fitted vertex has weight map: " << ret.hasTrackWeight();
     return static_cast < reco::Vertex > (ret);
-  } catch (...) {};
+  } catch ( edm::Exception & e ) {
+    LogDebug("") << e.what() << " caught.";
+  };
 
   LogDebug ("") << "No primary vertex found, use geometric origin (beamspot)";
   /*
@@ -221,8 +225,6 @@ void CombinedSV::produce(edm::Event& iEvent,
     LogDebug("") << "CMS exception caught: " << e.what() << ", ignore this event";
   } catch ( std::exception & e ) {
     LogDebug("") << "std::exception caught: " << e.what() << ", ignore this event";
-  } catch (...) {
-    LogDebug("") << "Unknown exception caught. Ignore this event" ;
   }
 
   std::auto_ptr<reco::CombinedSVTagInfoCollection> resultExt(extCollection);
