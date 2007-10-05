@@ -31,32 +31,32 @@ void drawAll(string suf = "")
   
   vector<TFile *> files;
   vector<string> algos;
-/*  algos.push_back("jetProbabilityJetTags");
+/*  algos.push_back("jetProbabilityBJetTags");
   files.push_back(_file0);
 
 */
-  algos.push_back("jetProbabilityJetTagsTestMass");
+  algos.push_back("jetProbabilityBJetTagsTestMass");
   files.push_back(_file0);
-  algos.push_back("jetProbabilityJetTags");
+  algos.push_back("jetProbabilityBJetTags");
   files.push_back(_file1);
-  algos.push_back("jetProbabilityJetTagsTest");
+  algos.push_back("jetProbabilityBJetTagsTest");
   files.push_back(_file1);
-  algos.push_back("jetProbabilityJetTagsTestMass");
+  algos.push_back("jetProbabilityBJetTagsTestMass");
   files.push_back(_file1);
   
-/*algos.push_back("trackCountingHighEffJetTags");
+/*algos.push_back("trackCountingHighEffBJetTags");
   files.push_back(_file0);
   
-  algos.push_back("trackCountingHighPurJetTags");
+  algos.push_back("trackCountingHighPurBJetTags");
   files.push_back(_file0);
   
-  algos.push_back("jetProbabilityJetTags");
+  algos.push_back("jetProbabilityBJetTags");
   files.push_back(_file1);
 
-  algos.push_back("trackCountingHighEffJetTags");
+  algos.push_back("trackCountingHighEffBJetTags");
   files.push_back(_file1);
   
-  algos.push_back("trackCountingHighPurJetTags");
+  algos.push_back("trackCountingHighPurBJetTags");
   files.push_back(_file1);
 */
 
