@@ -3,9 +3,14 @@
 #include "AnalysisDataFormats/Egamma/interface/ElectronIDAssociation.h"
 
 void ElectronIDProducer::beginJob(edm::EventSetup const& iSetup) {
+
+  if (doPtdrId_) ptdrAlgo_->setup(conf_);
   if (doCutBased_) cutBasedAlgo_->setup(conf_);
   if (doLikelihood_) likelihoodAlgo_->setup(conf_);
   if (doNeuralNet_) neuralNetAlgo_->setup(conf_);
+
+  if (doPtdrId_ && doCutBased_) 
+    throw(std::runtime_error("\n\nElectronIDProducer: you cannot choose both PTDR algo and CutBased Algo.\n\n"));
 }
 
 ElectronIDProducer::ElectronIDProducer(const edm::ParameterSet& conf) : conf_(conf) {
@@ -15,10 +20,12 @@ ElectronIDProducer::ElectronIDProducer(const edm::ParameterSet& conf) : conf_(co
   electronIDLabel_ = conf_.getParameter<std::string>("electronIDLabel");
   electronIDAssociation_ = conf_.getParameter<std::string>("electronIDAssociationLabel");
 
+  doPtdrId_ = conf_.getParameter<bool>("doPtdrId");
   doCutBased_ = conf_.getParameter<bool>("doCutBased");
   doLikelihood_ = conf_.getParameter<bool>("doLikelihood");
   doNeuralNet_ = conf_.getParameter<bool>("doNeuralNet");
 
+  ptdrAlgo_ = new PTDRElectronID();
   cutBasedAlgo_ = new CutBasedElectronID();
   likelihoodAlgo_ = new ElectronLikelihood();
   neuralNetAlgo_ = new ElectronNeuralNet();
@@ -29,6 +36,7 @@ ElectronIDProducer::ElectronIDProducer(const edm::ParameterSet& conf) : conf_(co
 }
 
 ElectronIDProducer::~ElectronIDProducer() {
+  delete ptdrAlgo_;
   delete cutBasedAlgo_;
   delete likelihoodAlgo_;
   delete neuralNetAlgo_;
@@ -48,21 +56,33 @@ void ElectronIDProducer::produce(edm::Event& e, const edm::EventSetup& c) {
   reco::PixelMatchGsfElectronCollection::const_iterator electron;
   for (electron = (*electrons).begin();
        electron != (*electrons).end(); ++electron) {
+
+    bool boolDecision = -1;
+    bool ptdrDecision = -1;
     bool cutBasedDecision = -1;
     double likelihood = -1.;
     double neuralNetOutput = -1.;
-    if (doCutBased_) cutBasedDecision = cutBasedAlgo_->result(&(*electron),e);
-    if (doLikelihood_) likelihood = likelihoodAlgo_->result(&(*electron),e);
-    if (doNeuralNet_) neuralNetOutput = neuralNetAlgo_->result(&(*electron),e);
-    electronIDCollection.push_back(reco::ElectronID(cutBasedDecision,
-						    likelihood,
-						    neuralNetOutput));
+
+    if (doPtdrId_) ptdrDecision = ptdrAlgo_->result(&(*electron), e);
+    if (doCutBased_) cutBasedDecision = cutBasedAlgo_->result(&(*electron), e);
+    if (doLikelihood_) likelihood = likelihoodAlgo_->result(&(*electron), e);
+    if (doNeuralNet_) neuralNetOutput = neuralNetAlgo_->result(&(*electron), e);
+
+    if (doPtdrId_) 
+      boolDecision = ptdrDecision;
+    else
+      boolDecision = cutBasedDecision;
+
+    electronIDCollection.push_back(reco::ElectronID(boolDecision,
+                                                    likelihood,
+                                                    neuralNetOutput));
   }
 
   // Add output electron ID collection to the event
   electronIDCollection_p->assign(electronIDCollection.begin(),
-				 electronIDCollection.end());
-  edm::OrphanHandle<reco::ElectronIDCollection> electronIDHandle = e.put(electronIDCollection_p,electronIDLabel_);
+                                 electronIDCollection.end());
+
+  edm::OrphanHandle<reco::ElectronIDCollection> electronIDHandle = e.put(electronIDCollection_p, electronIDLabel_);
 
   // Add electron ID AssociationMap to the event
   std::auto_ptr<reco::ElectronIDAssociationCollection> electronIDAssocs_p(new reco::ElectronIDAssociationCollection);
@@ -70,5 +90,4 @@ void ElectronIDProducer::produce(edm::Event& e, const edm::EventSetup& c) {
     electronIDAssocs_p->insert(edm::Ref<reco::PixelMatchGsfElectronCollection>(electrons,i),edm::Ref<reco::ElectronIDCollection>(electronIDHandle,i));
   }  
   e.put(electronIDAssocs_p,electronIDAssociation_);
-
 }
