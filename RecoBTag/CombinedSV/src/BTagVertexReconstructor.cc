@@ -128,7 +128,8 @@ pair < reco::btag::Vertices::VertexType, vector< combsv::CombinedVertex > >
 
     return pair < reco::btag::Vertices::VertexType, vector< combsv::CombinedVertex > >
               ( type, ret );
-  } catch ( ... ) {
+  } catch ( cms::Exception & e ) {
+    LogDebug("BTagVertexReconstructor" ) << e.what() << " caught.";
     vector< combsv::CombinedVertex > ret;
     reco::btag::Vertices::VertexType type=reco::btag::Vertices::NoVertex;
     return pair < reco::btag::Vertices::VertexType, vector< combsv::CombinedVertex > >
