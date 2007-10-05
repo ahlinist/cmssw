@@ -1,0 +1,4 @@
+module combinedSVMVABJetTags = JetTagProducer {
+	InputTag tagInfo	= combinedSVBJetTags
+	string jetTagComputer   = "combinedSVMVAComputer"
+}
