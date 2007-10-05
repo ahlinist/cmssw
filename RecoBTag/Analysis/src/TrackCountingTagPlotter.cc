@@ -1,10 +1,14 @@
 #include "RecoBTag/Analysis/interface/TrackCountingTagPlotter.h"
 
 TrackCountingTagPlotter::TrackCountingTagPlotter(const TString & tagName,
-	const EtaPtBin & etaPtBin, int nBinEffPur, double startEffPur,
-	double endEffPur, bool update) :
-	BaseBTagPlotter(tagName, etaPtBin, nBinEffPur, startEffPur, endEffPur)
+	const EtaPtBin & etaPtBin, const edm::ParameterSet& pSet, bool update) :
+	BaseTagInfoPlotter(tagName, etaPtBin)
 {
+
+  nBinEffPur_  = pSet.getParameter<int>("nBinEffPur");
+  startEffPur_ = pSet.getParameter<double>("startEffPur");
+  endEffPur_   = pSet.getParameter<double>("endEffPur");
+
   finalized = false;
   if (update){
   TString dir= "TrackCounting"+theExtensionString;
@@ -82,12 +86,12 @@ TrackCountingTagPlotter::~TrackCountingTagPlotter ()
 }
 
 
-void TrackCountingTagPlotter::analyzeTag (const reco::JetTag & jetTag,
+void TrackCountingTagPlotter::analyzeTag (const reco::BaseTagInfo * baseTagInfo,
 	const JetFlavour & jetFlavour)
 {
 
   const reco::TrackCountingTagInfo * tagInfo = 
-	dynamic_cast<const reco::TrackCountingTagInfo *>(jetTag.tagInfoRef().get());
+	dynamic_cast<const reco::TrackCountingTagInfo *>(baseTagInfo);
 
   if (!tagInfo) {
     throw cms::Exception("Configuration")
@@ -123,17 +127,17 @@ void TrackCountingTagPlotter::finalize ()
   // produce the misid. vs. eff histograms
   //
   effPurFromHistos[0] = new EffPurFromHistos (tkcntHistosSig3D[1],
-		nBinEffPur(), startEffPur(),
-		endEffPur());
+		nBinEffPur_, startEffPur_,
+		endEffPur_);
   effPurFromHistos[1] = new EffPurFromHistos (tkcntHistosSig3D[2],
-		nBinEffPur(), startEffPur(),
-		endEffPur());
+		nBinEffPur_, startEffPur_,
+		endEffPur_);
   effPurFromHistos[2] = new EffPurFromHistos (tkcntHistosSig2D[1],
-		nBinEffPur(), startEffPur(),
-		endEffPur());
+		nBinEffPur_, startEffPur_,
+		endEffPur_);
   effPurFromHistos[3] = new EffPurFromHistos (tkcntHistosSig2D[2],
-		nBinEffPur(), startEffPur(),
-		endEffPur());
+		nBinEffPur_, startEffPur_,
+		endEffPur_);
   for(int n=0; n < 4; n++) effPurFromHistos[n]->compute();
   finalized = true;
 }

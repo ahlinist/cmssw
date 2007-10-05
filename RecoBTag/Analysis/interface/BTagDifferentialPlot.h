@@ -11,7 +11,7 @@
 using namespace std ;
 
 #include "RecoBTag/Analysis/interface/EtaPtBin.h"
-#include "RecoBTag/Analysis/interface/BaseBTagPlotter.h"
+#include "RecoBTag/Analysis/interface/JetTagPlotter.h"
 
 class BTagDifferentialPlot {
 
@@ -26,7 +26,7 @@ class BTagDifferentialPlot {
   ~BTagDifferentialPlot () ;
 
 
-  void addBinPlotter ( BaseBTagPlotter * aPlotter ) { theBinPlotters.push_back ( aPlotter ) ; }
+  void addBinPlotter ( JetTagPlotter * aPlotter ) { theBinPlotters.push_back ( aPlotter ) ; }
 
   void process () ;
 
@@ -88,7 +88,7 @@ class BTagDifferentialPlot {
 
 
   // the input
-  vector<BaseBTagPlotter *> theBinPlotters ;
+  vector<JetTagPlotter *> theBinPlotters ;
 
   // the histo to create/fill
   TH1F * theDifferentialHistoB_d    ;

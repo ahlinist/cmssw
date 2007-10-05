@@ -2,7 +2,7 @@
 #define EtaPtBin_H
 
 #include "TString.h"
-#include "DataFormats/BTauReco/interface/JetTag.h"
+#include "DataFormats/JetReco/interface/Jet.h"
 #include "RecoBTag/MCTools/interface/JetFlavour.h"
 
 /** \class EtaPtBin
@@ -42,7 +42,7 @@ class EtaPtBin {
 
   /// Check if jet/parton are within rapidity/pt cuts.
   bool inBin(const double & eta , const double & pt) const;
-  bool inBin(const reco::JetTag & jetTag) const;
+  bool inBin(const reco::Jet & jet) const;
   bool inBin(const JetFlavour & jetFlavour) const;
 
  private:

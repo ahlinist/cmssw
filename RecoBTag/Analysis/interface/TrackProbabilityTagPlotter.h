@@ -1,24 +1,25 @@
 #ifndef TrackProbabilityTagPlotter_H
 #define TrackProbabilityTagPlotter_H
 
-#include "RecoBTag/Analysis/interface/BaseBTagPlotter.h"
-#include "RecoBTag/Analysis/interface/JetTagPlotter.h"
+#include "RecoBTag/Analysis/interface/BaseTagInfoPlotter.h"
+#include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/BTauReco/interface/TrackProbabilityTagInfo.h"
 #include "RecoBTag/Analysis/interface/FlavourHistorgrams.h"
 #include "RecoBTag/MCTools/interface/JetFlavour.h"
+#include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 
-class TrackProbabilityTagPlotter : public BaseBTagPlotter {
+class TrackProbabilityTagPlotter : public BaseTagInfoPlotter {
 
 
  public:
 
   TrackProbabilityTagPlotter (const TString & tagName, const EtaPtBin & etaPtBin,
-	int nBinEffPur, double startEffPur, double endEffPur, bool update = false);
+	const edm::ParameterSet& pSet, bool update = false);
 
   ~TrackProbabilityTagPlotter () ;
 
-  void analyzeTag (const reco::JetTag & jetTag, const JetFlavour & jetFlavour);
+  void analyzeTag (const reco::BaseTagInfo * tagInfo, const JetFlavour & jetFlavour);
 
   virtual void finalize ();
 
@@ -30,6 +31,9 @@ class TrackProbabilityTagPlotter : public BaseBTagPlotter {
 
  private:
 
+  int	nBinEffPur_ ;
+  double startEffPur_ ; 
+  double endEffPur_ ; 
   FlavourHistorgrams<double> * tkcntHistosSig3D[5];
   FlavourHistorgrams<double> * tkcntHistosSig2D[5];
   EffPurFromHistos * effPurFromHistos[4] ;

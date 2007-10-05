@@ -41,9 +41,9 @@ TString EtaPtBin::buildDescriptionString
   return descr;
 }
 
-bool EtaPtBin::inBin(const reco::JetTag & jetTag) const
+bool EtaPtBin::inBin(const reco::Jet & jet) const
 {
-  return inBin(jetTag.jet()->eta(), jetTag.jet()->pt());
+  return inBin(jet.eta(), jet.pt());
 }
 
 bool EtaPtBin::inBin(const JetFlavour & jetFlavour) const

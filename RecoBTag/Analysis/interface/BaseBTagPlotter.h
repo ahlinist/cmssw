@@ -11,23 +11,16 @@ class BaseBTagPlotter {
 
  public:
 
-  BaseBTagPlotter ( const TString & tagName, const EtaPtBin & etaPtBin,
-	int nBinEffPur, double startEffPur, double endEffPur) :
+  BaseBTagPlotter ( const TString & tagName, const EtaPtBin & etaPtBin) :
 	etaPtBin_(etaPtBin), tagName_(tagName),
-	theExtensionString ("_"+tagName+etaPtBin.getDescriptionString()),
-	nBinEffPur_(nBinEffPur), startEffPur_(startEffPur ), endEffPur_(endEffPur) {};
+	theExtensionString ("_"+tagName+etaPtBin.getDescriptionString()) {};
 
   virtual ~BaseBTagPlotter () {};
   
   const EtaPtBin& etaPtBin() { return etaPtBin_ ;}
   
-  virtual void analyzeTag(const reco::JetTag & jetTag, const JetFlavour & jetFlavour) = 0;
-
   // final computation, plotting, printing .......
   virtual void finalize () = 0;
-
-  // get "2d" histograms for misid. vs. b-eff
-  virtual EffPurFromHistos * getEffPurFromHistos () {return 0;}
 
   virtual void write () = 0 ;
 
@@ -35,18 +28,18 @@ class BaseBTagPlotter {
 
   virtual void psPlot(const TString & name) = 0;
 
-  int nBinEffPur() const {return nBinEffPur_;}
-  double startEffPur() const {return startEffPur_;}
-  double endEffPur() const {return endEffPur_;}
-
+//   int nBinEffPur() const {return nBinEffPur_;}
+//   double startEffPur() const {return startEffPur_;}
+//   double endEffPur() const {return endEffPur_;}
+// 
  protected:
 
   // the extension string to be used in histograms etc.
   const EtaPtBin etaPtBin_;
   const TString tagName_, theExtensionString,  ;
-  const int   nBinEffPur_ ;
-  const double startEffPur_ ; 
-  const double endEffPur_ ; 
+//   const int   nBinEffPur_ ;
+//   const double startEffPur_ ; 
+//   const double endEffPur_ ; 
   
   
 } ;

@@ -1,10 +1,13 @@
 #include "RecoBTag/Analysis/interface/TrackIPTagPlotter.h"
 
 TrackIPTagPlotter::TrackIPTagPlotter(const TString & tagName,
-	const EtaPtBin & etaPtBin, int nBinEffPur, double startEffPur,
-	double endEffPur, bool update) :
-	BaseBTagPlotter(tagName, etaPtBin, nBinEffPur, startEffPur, endEffPur)
+	const EtaPtBin & etaPtBin, const edm::ParameterSet& pSet, bool update) :
+	BaseTagInfoPlotter(tagName, etaPtBin)
 {
+  nBinEffPur_  = pSet.getParameter<int>("nBinEffPur");
+  startEffPur_ = pSet.getParameter<double>("startEffPur");
+  endEffPur_   = pSet.getParameter<double>("endEffPur");
+
   finalized = false;
   if (update){
   TString dir= "TrackIP"+theExtensionString;
@@ -145,12 +148,12 @@ TrackIPTagPlotter::~TrackIPTagPlotter ()
 }
 
 
-void TrackIPTagPlotter::analyzeTag (const reco::JetTag & jetTag,
+void TrackIPTagPlotter::analyzeTag (const reco::BaseTagInfo * baseTagInfo,
 	const JetFlavour & jetFlavour)
 {
 
   const reco::TrackIPTagInfo * tagInfo = 
-	dynamic_cast<const reco::TrackIPTagInfo *>(jetTag.tagInfoRef().get());
+	dynamic_cast<const reco::TrackIPTagInfo *>(baseTagInfo);
 
   if (!tagInfo) {
     throw cms::Exception("Configuration")
@@ -213,17 +216,17 @@ void TrackIPTagPlotter::finalize ()
   // produce the misid. vs. eff histograms
   //
   effPurFromHistos[0] = new EffPurFromHistos (tkcntHistosSig3D[1],
-		nBinEffPur(), startEffPur(),
-		endEffPur());
+		nBinEffPur_, startEffPur_,
+		endEffPur_);
   effPurFromHistos[1] = new EffPurFromHistos (tkcntHistosSig3D[2],
-		nBinEffPur(), startEffPur(),
-		endEffPur());
+		nBinEffPur_, startEffPur_,
+		endEffPur_);
   effPurFromHistos[2] = new EffPurFromHistos (tkcntHistosSig2D[1],
-		nBinEffPur(), startEffPur(),
-		endEffPur());
+		nBinEffPur_, startEffPur_,
+		endEffPur_);
   effPurFromHistos[3] = new EffPurFromHistos (tkcntHistosSig2D[2],
-		nBinEffPur(), startEffPur(),
-		endEffPur());
+		nBinEffPur_, startEffPur_,
+		endEffPur_);
   for(int n=0; n < 4; n++) effPurFromHistos[n]->compute();
   finalized = true;
 }
@@ -307,13 +310,16 @@ void TrackIPTagPlotter::psPlot(const TString & name)
   canvas.Clear();
   canvas.Divide(2,3);
   canvas.cd(1);
-  decayLengthValuHisto->plot();
-  canvas.cd(2);
-  decayLengthSignHisto->plot();
-  canvas.cd(3);
   jetDistanceValuHisto->plot();
-  canvas.cd(4);
+  canvas.cd(2);
   jetDistanceSignHisto->plot();
+#if 0
+  canvas.cd(3);
+  decayLengthValuHisto->plot();
+  canvas.cd(4);
+  decayLengthSignHisto->plot();
+#endif
+
 
   canvas.Print(name + cName + ".ps");
   canvas.Print(name + cName + ".ps]");
@@ -327,8 +333,10 @@ void TrackIPTagPlotter::write()
   gFile->cd(dir);
   trkNbr2D->write();
   trkNbr3D->write();
+#if 0
   decayLengthValuHisto->write();
   decayLengthSignHisto->write();
+#endif
   jetDistanceValuHisto->write();
   jetDistanceSignHisto->write();
   for(int n=0; n <= 4; n++) {

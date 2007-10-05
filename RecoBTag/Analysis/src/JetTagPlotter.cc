@@ -8,12 +8,21 @@ using namespace RecoBTag;
 
 
 JetTagPlotter::JetTagPlotter (const TString & tagName, const EtaPtBin & etaPtBin,
-		       double discrStart, double discrEnd,
-		       int nBinEffPur, double startEffPur, double endEffPur,
-		       bool update, BaseBTagPlotter *extTagPlotter) :
-		       BaseBTagPlotter(tagName, etaPtBin, nBinEffPur, startEffPur, endEffPur),
-		       extTagPlotter_(extTagPlotter), discrStart_(discrStart),
-		       discrEnd_(discrEnd) {
+		       const edm::ParameterSet& pSet, bool update) :
+		       BaseBTagPlotter(tagName, etaPtBin) {
+
+  // discriminator range: algorithm dependent
+
+  discrStart_ = pSet.getParameter<double>("discriminatorStart");
+  discrEnd_   = pSet.getParameter<double>("discriminatorEnd");
+  // binning and range for the misid. vs. efficiency plots
+  // for all lifetime based algos this should be 100, 0.005 , 1.005
+  // for the soft lepton tags the upper bound should (roughly) correspond to
+  // the probability to find a lepton within the jet
+
+  nBinEffPur_  = pSet.getParameter<int>("nBinEffPur");
+  startEffPur_ = pSet.getParameter<double>("startEffPur");
+  endEffPur_   = pSet.getParameter<double>("endEffPur");
 
   if (update){
     TString dir= "JetTag"+theExtensionString;
@@ -86,7 +95,6 @@ JetTagPlotter::JetTagPlotter (const TString & tagName, const EtaPtBin & etaPtBin
 
 
 JetTagPlotter::~JetTagPlotter () {
-  if (extTagPlotter_) delete extTagPlotter_;
   delete dDiscriminatorFC;
   delete dJetFlav;
   delete dJetMultiplicity;
@@ -105,7 +113,6 @@ JetTagPlotter::~JetTagPlotter () {
 
 void JetTagPlotter::epsPlot(const TString & name)
 {
-  if (extTagPlotter_) extTagPlotter_->epsPlot(name);
   dDiscriminatorFC->epsPlot(name);
   dJetFlav->epsPlot(name);
   dJetMultiplicity->epsPlot(name);
@@ -124,8 +131,6 @@ void JetTagPlotter::epsPlot(const TString & name)
 
 void JetTagPlotter::psPlot(const TString & name)
 {
-  if (extTagPlotter_) extTagPlotter_->psPlot(name);
-
   TString cName = "JetTagPlots"+ theExtensionString;
   setTDRStyle()->cd();
   TCanvas canvas(cName, "JetTagPlors"+ theExtensionString, 600, 900);
@@ -175,8 +180,6 @@ void JetTagPlotter::psPlot(const TString & name)
 void JetTagPlotter::analyzeTag(const reco::JetTag & jetTag,
 	const JetFlavour & jetFlavour)
 {
-  if (extTagPlotter_) extTagPlotter_->analyzeTag(jetTag, jetFlavour);
-
   int jetFlav = jetFlavour.flavour();
 
   dDiscriminatorFC->fill(jetFlav, jetTag.discriminator());
@@ -196,7 +199,6 @@ void JetTagPlotter::analyzeTag(const reco::JetTag & jetTag,
 
 void JetTagPlotter::finalize()
 {
-  if (extTagPlotter_) extTagPlotter_->finalize();
   //
   // final processing:
   // produce the misid. vs. eff histograms
@@ -210,8 +212,6 @@ void JetTagPlotter::finalize()
 
 void JetTagPlotter::write()
 {
-  if (extTagPlotter_) extTagPlotter_->write();
-
   TString dir= "JetTag"+theExtensionString;
 
   gFile->cd();
