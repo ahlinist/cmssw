@@ -24,7 +24,8 @@ vector < reco::Vertex > PseudoVertexBuilder::buildVector
   vector < reco::Vertex > ret;
   try {
     ret.push_back ( build ( t, trackColl ) );
-  } catch ( ... ) {
+  } catch ( cms::Exception & e ) {
+    LogDebug("") << "Exception " << e.what() << " caught.";
     if (t==PseudoVertex && ret.size()==0 )
     {
       // try NoVertex now
@@ -55,7 +56,8 @@ reco::Vertex PseudoVertexBuilder::build(
       t=NoVertex;
       vtx= build ( t, trackColl );
     }
-  } catch ( ... ) {
+  } catch ( cms::Exception & e ) {
+    LogDebug("") << "Exception " << e.what() << " caught.";
     t=NoVertex;
     vtx= build ( t, trackColl );
   }
