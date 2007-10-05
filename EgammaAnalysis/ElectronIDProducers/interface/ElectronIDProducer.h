@@ -8,6 +8,7 @@
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/EgammaCandidates/interface/PixelMatchGsfElectron.h"
+#include "EgammaAnalysis/ElectronIDAlgos/interface/PTDRElectronID.h"
 #include "EgammaAnalysis/ElectronIDAlgos/interface/CutBasedElectronID.h"
 #include "EgammaAnalysis/ElectronIDAlgos/interface/ElectronLikelihood.h"
 #include "EgammaAnalysis/ElectronIDAlgos/interface/ElectronNeuralNet.h"
@@ -24,6 +25,7 @@ class ElectronIDProducer : public edm::EDProducer
    
  private:
 
+  PTDRElectronID* ptdrAlgo_;
   CutBasedElectronID* cutBasedAlgo_;
   ElectronLikelihood* likelihoodAlgo_;
   ElectronNeuralNet* neuralNetAlgo_;
@@ -35,6 +37,7 @@ class ElectronIDProducer : public edm::EDProducer
   std::string electronIDLabel_;
   std::string electronIDAssociation_; //association map
 
+  bool doPtdrId_;
   bool doCutBased_;
   bool doLikelihood_;
   bool doNeuralNet_;
