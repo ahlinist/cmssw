@@ -4,124 +4,135 @@
 #include "DataFormats/EgammaReco/interface/BasicClusterShapeAssociation.h"
 
 void CutBasedElectronID::setup(const edm::ParameterSet& conf) {
-
+  
+  // Get all the parameters
   baseSetup(conf);
-
-  quality_ = conf.getParameter<std::string>("electronQuality");
-  if (quality_=="tight") {
-    cuts_ = conf.getParameter<edm::ParameterSet>("tightEleIDCuts");
-  } else if (quality_=="medium") {
-    cuts_ = conf.getParameter<edm::ParameterSet>("mediumEleIDCuts");
+  
+  // Select algo dependent set of parameters
+  std::vector<edm::ParameterSet> algoPSets = conf.getParameter<std::vector<edm::ParameterSet> >("algo_psets");
+  
+  quality_ = algoPSets[1].getParameter<std::string>("electronQuality");
+  
+  if (quality_ == "tight") {
+    cuts_ = algoPSets[1].getParameter<edm::ParameterSet>("tightEleIDCuts");
+  } else if (quality_=="robust") {
+    cuts_ = algoPSets[1].getParameter<edm::ParameterSet>("robustEleIDCuts");
   } else if (quality_=="loose") {
-    cuts_ = conf.getParameter<edm::ParameterSet>("looseEleIDCuts");
+    cuts_ = algoPSets[1].getParameter<edm::ParameterSet>("looseEleIDCuts");
   } else {
-    throw(std::runtime_error("\n\nElectronIDProducer: Invalid electronQuality parameter: must be tight, medium or loose.\n\n"));
+    throw(std::runtime_error("\n\nElectronIDProducer: Invalid electronQuality parameter: must be tight, loose or robust.\n\n"));
   }
+}
 
+int CutBasedElectronID::classify(const reco::PixelMatchGsfElectron* electron) {
+  
+  double eta = electron->p4().Eta();
+  double eOverP = electron->eSuperClusterOverP();
+  double pin  = electron->trackMomentumAtVtx().R(); 
+  double pout = electron->trackMomentumOut().R(); 
+  double fBrem = (pin-pout)/pin;
+  
+  int cat;
+  
+  if((fabs(eta)<1.479 && fBrem<0.06) || (fabs(eta)>1.479 && fBrem<0.1)) 
+    cat=1;
+  else if (eOverP < 1.2 && eOverP > 0.8) 
+    cat=0;
+  else 
+    cat=2;
+  
+  return cat;
 }
 
 bool CutBasedElectronID::result(const reco::PixelMatchGsfElectron* electron,
-				const edm::Event& e) {
+                                const edm::Event& e) { 
+  
+  double eta = fabs(electron->p4().Eta());
+  const reco::ClusterShapeRef& shapeRef = getClusterShape(electron, e);
+  
+  double eOverP = electron->eSuperClusterOverP();
+  double eSeed = electron->superCluster()->seed()->energy();
+  double pin  = electron->trackMomentumAtVtx().R();   
+  double eSeedOverPin = eSeed/pin; 
+  double pout = electron->trackMomentumOut().R(); 
+  double fBrem = (pin-pout)/pin;
+  
+  double hOverE = electron->hadronicOverEm();
+  double sigmaee = sqrt(shapeRef->covEtaEta());
+  double deltaPhiIn = electron->deltaPhiSuperClusterTrackAtVtx();
+  double deltaEtaIn = electron->deltaEtaSuperClusterTrackAtVtx();
+  
+  int eb;
+  if (eta < 1.479) 
+    eb = 0;
+  else 
+    eb = 1;
 
-  if (electron->classification()==40) return true;
+  sigmaee = sigmaee - 0.02*(fabs(eta) - 2.3);   //correct sigmaetaeta dependence on eta in endcap
+    
+  std::vector<double> cut;
+    
+  // ROBUST Selection
+  if (quality_ == "robust") {
 
-  //determine which element of the cut arrays in electronId.cfi to read
-  //depending on the electron classification
-  int icut=0;
-  switch (electron->classification()) {
-  case 0: icut=0; break;
-  case 10: icut=1; break;
-  case 20: icut=2; break;
-  case 30: icut=3; break;
-  case 31: icut=3; break;
-  case 32: icut=3; break;
-  case 33: icut=3; break;
-  case 34: icut=3; break;
-  case 100: icut=4; break;
-  case 110: icut=5; break;
-  case 120: icut=6; break;
-  case 130: icut=7; break;
-  case 131: icut=7; break;
-  case 132: icut=7; break;
-  case 133: icut=7; break;
-  case 134: icut=7; break;
-  default:
-    edm::LogError("CutBasedElectronID") << "Error: unrecognized electron classification ";
-    break;
+    // hoe, sigmaEtaEta, dPhiIn, dEtaIn
+    if (eta < 1.479)
+      cut = cuts_.getParameter<std::vector<double> >("barrel");
+    else
+      cut = cuts_.getParameter<std::vector<double> >("endcap");
+
+    if (hOverE > cut[0]) 
+      return false;    
+
+    if (sigmaee > cut[1]) 
+      return false;    
+
+    if (fabs(deltaPhiIn) > cut[2]) 
+      return false;    
+
+    if (fabs(deltaEtaIn) > cut[3]) 
+      return false;    
+    
+    return true;
   }
+  
+  int cat = classify(electron);
 
-  if (useEoverPIn_) {
-    double value = electron->eSuperClusterOverP();
-    std::vector<double> maxcut = cuts_.getParameter<std::vector<double> >("EoverPInMax");
-    std::vector<double> mincut = cuts_.getParameter<std::vector<double> >("EoverPInMin");
-    if (value<mincut[icut] || value>maxcut[icut]) return false;
+  // TIGHT Selection
+  if (quality_ == "tight") {
+    
+    if (eOverP < 0.9*(1-fBrem))
+      return false;
   }
+  
+    // LOOSE Selection
+  if ((eOverP < 0.8) && (fBrem < 0.2)) 
+    return false;
 
-  if (useDeltaEtaIn_) {
-    double value = electron->deltaEtaSuperClusterTrackAtVtx();
-    std::vector<double> maxcut = cuts_.getParameter<std::vector<double> >("deltaEtaIn");
-    if (fabs(value)>maxcut[icut]) return false;
+  cut = cuts_.getParameter<std::vector<double> >("hOverE");
+  if (hOverE > cut[cat+4*eb]) 
+    return false;    
+  
+  cut = cuts_.getParameter<std::vector<double> >("sigmaEtaEta");
+  if (sigmaee > cut[cat+4*eb]) 
+    return false;    
+  
+  cut = cuts_.getParameter<std::vector<double> >("deltaPhiIn");
+  if (eOverP < 1.5) {
+    if (deltaPhiIn > cut[cat+4*eb]) 
+      return false;    
+  } else {
+    if (deltaPhiIn > cut[3+4*eb])
+      return false;
   }
-
-  if (useDeltaPhiIn_) {
-    double value = electron->deltaPhiSuperClusterTrackAtVtx();
-    std::vector<double> maxcut = cuts_.getParameter<std::vector<double> >("deltaPhiIn");
-    if (fabs(value)>maxcut[icut]) return false;
-  }
-
-  if (useHoverE_) {
-    double value = electron->hadronicOverEm();
-    std::vector<double> maxcut = cuts_.getParameter<std::vector<double> >("HoverE");
-    if (fabs(value)>maxcut[icut]) return false;
-  }
-
-  if (useEoverPOut_) {
-    double value = electron->eSeedClusterOverPout();
-    std::vector<double> maxcut = cuts_.getParameter<std::vector<double> >("EoverPOutMax");
-    std::vector<double> mincut = cuts_.getParameter<std::vector<double> >("EoverPOutMin");
-    if (value<mincut[icut] || value>maxcut[icut]) return false;
-  }
-
-  if (useDeltaPhiOut_) {
-    double value = electron->deltaPhiSeedClusterTrackAtCalo();
-    std::vector<double> maxcut = cuts_.getParameter<std::vector<double> >("deltaPhiOut");
-    if (fabs(value)>maxcut[icut]) return false;
-  }
-
-  if (useInvEMinusInvP_) {
-    double value = (1./electron->caloEnergy())-(1./electron->trackMomentumAtVtx().R());
-    std::vector<double> maxcut = cuts_.getParameter<std::vector<double> >("invEMinusInvP");
-    if (value>maxcut[icut]) return false;
-  }
-
-  if (useBremFraction_) {
-    double value = electron->trackMomentumAtVtx().R()-electron->trackMomentumOut().R();
-    std::vector<double> mincut = cuts_.getParameter<std::vector<double> >("bremFraction");
-    if (value<mincut[icut]) return false;
-  }
-
-  const reco::ClusterShapeRef& shapeRef = getClusterShape(electron,e);
-
-  if (useE9overE25_) {
-    double value = shapeRef->e3x3()/shapeRef->e5x5();
-    std::vector<double> mincut = cuts_.getParameter<std::vector<double> >("E9overE25");
-    if (fabs(value)<mincut[icut]) return false;
-  }
-
-  if (useSigmaEtaEta_) {
-    double value = shapeRef->covEtaEta();
-    std::vector<double> maxcut = cuts_.getParameter<std::vector<double> >("sigmaEtaEtaMax");
-    std::vector<double> mincut = cuts_.getParameter<std::vector<double> >("sigmaEtaEtaMin");
-    if (sqrt(value)<mincut[icut] || sqrt(value)>maxcut[icut]) return false;
-  }
-
-  if (useSigmaPhiPhi_) {
-    double value = shapeRef->covPhiPhi();
-    std::vector<double> mincut = cuts_.getParameter<std::vector<double> >("sigmaPhiPhiMin");
-    std::vector<double> maxcut = cuts_.getParameter<std::vector<double> >("sigmaPhiPhiMax");
-    if (sqrt(value)<mincut[icut] || sqrt(value)>maxcut[icut]) return false;
-  }
-
-  return true;
-
+  
+  cut = cuts_.getParameter<std::vector<double> >("deltaEtaIn");
+  if (deltaEtaIn > cut[cat+4*eb]) 
+    return false;    
+  
+  cut = cuts_.getParameter<std::vector<double> >("eSeedOverPin");
+  if (eSeedOverPin < cut[cat+4*eb]) 
+    return false;  
+    
+  return true; 
 }
