@@ -39,6 +39,7 @@ namespace HCAL_HLX
     double InstantOccLumi[2];
     double InstantOccLumiErr[2];
     double InstantOccLumiQlty[2];
+    double lumiNoise[2];
   };
 
   struct LUMI_THRESHOLD {
@@ -152,7 +153,7 @@ namespace HCAL_HLX
     LUMI_SECTION_HEADER hdr;
     LUMI_SUMMARY lumiSummary;
     LUMI_BUNCH_CROSSING lumiBunchCrossing;
-    double lumiNoise[2];
+
     ET_SUM_SECTION etSum[HCAL_HLX_MAX_HLXS];
     OCCUPANCY_SECTION occupancy[HCAL_HLX_MAX_HLXS];
     LHC_SECTION lhc[HCAL_HLX_MAX_HLXS];
