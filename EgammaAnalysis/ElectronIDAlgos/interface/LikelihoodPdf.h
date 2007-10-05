@@ -20,7 +20,7 @@
 #ifndef LikelihoodPdf_H
 #define LikelihoodPdf_H
 
-#include "CondFormats/BTauObjects/interface/CalibratedHistogram.h"
+#include "CondFormats/PhysicsToolsObjects/interface/Histogram.h"
 #include "CondFormats/EgammaObjects/interface/ElectronLikelihoodCalibration.h"
 #include <TH1F.h>
 #include <TDirectory.h>
@@ -61,7 +61,7 @@ class LikelihoodPdf {
   int _ecalsubdet;
   int _ptbin;
 
-  std::map<std::string,const CalibratedHistogram*> _splitPdf;
+  std::map<std::string,const PhysicsTools::Calibration::HistogramF*> _splitPdf;
   std::map<std::string,std::string> _splitRule;
 
 };
