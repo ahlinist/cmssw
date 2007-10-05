@@ -51,7 +51,6 @@ namespace HCAL_HLX {
    //output
     LUMI_SUMMARY summary;
     LUMI_BUNCH_CROSSING perBX;
-    double noise[2];
     
     // Sum occupancy and energy over all HLXs, etc...
     void SumHLXs(const HCAL_HLX::LUMI_SECTION & localSection);    
