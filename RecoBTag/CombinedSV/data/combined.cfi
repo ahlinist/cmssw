@@ -1,4 +1,4 @@
-module combinedSVJetTags = CombinedSV
+module combinedSVBJetTags = CombinedSV
 {
   string jetTracks = "ic5JetTracksAssociatorAtVertex"
   string vertexcoll = "offlinePrimaryVerticesFromCTFTracks"
