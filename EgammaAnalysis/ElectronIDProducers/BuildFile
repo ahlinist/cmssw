@@ -1,11 +1,15 @@
 <use name=FWCore/Framework>
 <use name=FWCore/PluginManager>
+<use name=RecoEcal/EgammaCoreTools>
 <use name=AnalysisDataFormats/Egamma>
 <use name=EgammaAnalysis/ElectronIDAlgos>
-<flags SEAL_PLUGIN_NAME="EgammaAnalysisElectronIDProducers">
+<use name=EgammaAnalysis/ElectronIDESSources>
+<flags EDM_PLUGIN=1>
 <export>
   <lib name=EgammaAnalysisElectronIDProducers>
   <use name=FWCore/Framework>
+  <use name=RecoEcal/EgammaCoreTools>
   <use name=AnalysisDataFormats/Egamma>
   <use name=EgammaAnalysis/ElectronIDAlgos>
+  <use name=EgammaAnalysis/ElectronIDESSources>
 </export>
