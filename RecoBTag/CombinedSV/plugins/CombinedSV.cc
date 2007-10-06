@@ -165,7 +165,7 @@ void CombinedSV::produce(edm::Event& iEvent,
   algorithm_->setMagneticField ( &( *magneticField) );
   algorithm_->setTransientTrackBuilder ( &( *builder ) );
 
-  reco::JetTagCollection *baseCollection = new reco::JetTagCollection();
+  reco::JetTagCollection *baseCollection;
   reco::CombinedSVTagInfoCollection *extCollection  = new reco::CombinedSVTagInfoCollection();
 
   reco::Vertex primaryVertex = getPrimaryVertex ( iEvent, iSetup );
@@ -177,6 +177,13 @@ void CombinedSV::produce(edm::Event& iEvent,
   // loop over collection and run b-tagging
   try {
     iEvent.getByLabel(associatorID_,jetWithTrackColl);
+
+   if(jetWithTrackColl.product()->size() > 0) {
+         RefToBaseProd<reco::Jet> rtbp(jetWithTrackColl->begin()->first);
+         baseCollection = new JetTagCollection(RefToBaseProd<reco::Jet>(rtbp));
+    }
+   else baseCollection = new JetTagCollection();
+
 
     // int numJets = jetWithTrackColl->size();
     LogDebug("") << "need to analyze " << jetWithTrackColl->size() << " jets.";
@@ -215,8 +222,7 @@ void CombinedSV::produce(edm::Event& iEvent,
       reco::CombinedSVTagInfo btag = algorithm_->tag( primaryVertex, *( jetNTrks->first ), trks,
           		edm::Ref<JetTracksAssociationCollection>(jetWithTrackColl, index) );
       LogDebug("") << "jet " << index << " tag value: " << btag.discriminator();
-      reco::JetTag jettag( btag.discriminator() );
-      baseCollection->push_back(jettag);
+      (*baseCollection)[jetNTrks->first]=btag.discriminator();
       extCollection->push_back(btag);
     }
   } catch ( edm::Exception & e ) {
@@ -231,13 +237,6 @@ void CombinedSV::produce(edm::Event& iEvent,
   edm::OrphanHandle <reco::CombinedSVTagInfoCollection > tagInfoHandle =  iEvent.put(resultExt);
 
 
-  reco::JetTagCollection::iterator it_jt =baseCollection->begin();
-  int cc=0;
-  for(;it_jt!=baseCollection->end();it_jt++)
-  {
-    it_jt->setTagInfo(RefToBase<BaseTagInfo>(CombinedSVTagInfoRef(tagInfoHandle,cc)));
-    cc++;
-  }
 
   /*
   reco::CombinedSVTagInfoCollection::iterator it_ext =extCollection->begin();
