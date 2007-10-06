@@ -38,8 +38,8 @@ CombinedSVAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   const JetTagCollection & jets = *(jetsHandle.product());
 
   for (JetTagCollection::size_type i = 0; i < jets.size(); ++i) {
-    cout << " Discriminator=" << jets[i].discriminator() << endl;
-    cout  << "Number of associated tracks " << jets[i].tracks().size() << endl;
+    cout << " Discriminator=" << jets[i].second << endl;
+ //   cout  << "Number of associated tracks " << jets[i].tracks().size() << endl;
   }
 }
 
