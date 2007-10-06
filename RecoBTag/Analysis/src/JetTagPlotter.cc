@@ -182,14 +182,14 @@ void JetTagPlotter::analyzeTag(const reco::JetTag & jetTag,
 {
   int jetFlav = jetFlavour.flavour();
 
-  dDiscriminatorFC->fill(jetFlav, jetTag.discriminator());
+  dDiscriminatorFC->fill(jetFlav, jetTag.second);
   dJetFlav->fill(jetFlav, jetFlav);
-  dJetMultiplicity->fill(jetFlav, jetTag.tracks().size()); //fixme
-  dDiscriminator->fill(jetFlav, jetTag.discriminator() );
-  dJetRecMomentum->fill(jetFlav, jetTag.jet()->p() );
-  dJetRecPt->fill(jetFlav, jetTag.jet()->pt() );
-  dJetRecPseudoRapidity->fill(jetFlav, jetTag.jet()->eta() );
-  dJetRecPhi->fill(jetFlav, jetTag.jet()->phi());
+//  dJetMultiplicity->fill(jetFlav, jetTag.tracks().size()); //fixme
+  dDiscriminator->fill(jetFlav, jetTag.second );
+  dJetRecMomentum->fill(jetFlav, jetTag.first->p() );
+  dJetRecPt->fill(jetFlav, jetTag.first->pt() );
+  dJetRecPseudoRapidity->fill(jetFlav, jetTag.first->eta() );
+  dJetRecPhi->fill(jetFlav, jetTag.first->phi());
 
   dJetPartonMomentum->fill(jetFlav, jetFlavour.underlyingParton4Vec().P() );
   dJetPartonPt->fill(jetFlav, jetFlavour.underlyingParton4Vec().Pt() );

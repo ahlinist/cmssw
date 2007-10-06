@@ -278,13 +278,13 @@ void BTagPerformanceAnalyzer::analyze(const edm::Event& iEvent, const edm::Event
     int plotterSize =  binJetTagPlotters[iJetLabel].size();
     for (int i = 0; i != size; ++i) {
       // Identify parton associated to jet.
-      JetFlavour jetFlavour = getJetFlavour(tag[i].jet(), fastMC, flavours);
+      JetFlavour jetFlavour = getJetFlavour(tag[i].first, fastMC, flavours);
 
-      if (!jetSelector(*(tag[i].jet()), jetFlavour)) continue;
+      if (!jetSelector(*(tag[i].first), jetFlavour)) continue;
       for (int iPlotter = 0; iPlotter != plotterSize; ++iPlotter) {
 	bool inBin = false;
 	if (partonKinematics) inBin = binJetTagPlotters[iJetLabel][iPlotter]->etaPtBin().inBin(jetFlavour);
-	else inBin = binJetTagPlotters[iJetLabel][iPlotter]->etaPtBin().inBin(*(tag[i].jet()));
+	else inBin = binJetTagPlotters[iJetLabel][iPlotter]->etaPtBin().inBin(*(tag[i].first));
 	// Fill histograms if in desired pt/rapidity bin.
 	if ( inBin ) 
 	  binJetTagPlotters[iJetLabel][iPlotter]->analyzeTag(tag[i], jetFlavour);
