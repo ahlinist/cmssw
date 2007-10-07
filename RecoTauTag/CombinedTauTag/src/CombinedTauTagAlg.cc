@@ -61,7 +61,7 @@ void CombinedTauTagAlg::init(const EventSetup& theEventSetup){
   theTransientTrackBuilder=builder.product();
 }
 
-pair<JetTag,CombinedTauTagInfo> CombinedTauTagAlg::tag(const IsolatedTauTagInfoRef& theIsolatedTauTagInfoRef,const Vertex& iPV,Event& theEvent,const EventSetup& theEventSetup) {
+pair<float,CombinedTauTagInfo> CombinedTauTagAlg::tag(const IsolatedTauTagInfoRef& theIsolatedTauTagInfoRef,const Vertex& iPV,Event& theEvent,const EventSetup& theEventSetup) {
   // ---
   init(theEventSetup);
   // ---
@@ -296,20 +296,17 @@ pair<JetTag,CombinedTauTagInfo> CombinedTauTagAlg::tag(const IsolatedTauTagInfoR
   if (!couldnotobtain_HCALEt_o_leadtkPt) resultExtended.setHCALEt_o_leadTkPt(HCALEt_o_leadtkPt);
   // *** overall tau selection ***
   // **********begin**************
-  if(!passed_tracker_selection){
-    JetTag resultBase(0.);
-    return pair<JetTag,CombinedTauTagInfo> (resultBase,resultExtended);
-  }else{
-    if(passed_neutrale_selection) {
-      JetTag resultBase(1.);
-      return pair<JetTag,CombinedTauTagInfo> (resultBase,resultExtended); 
-    }else{
-      (*theLikelihoodRatio).setCandidateCategoryParameterValues((int)signalchargedpicand_fromtk_HepLV.size(),TauCandJet_ref_et);
-      (*theLikelihoodRatio).setCandidateTaggingVariableList(taggingvariablesList());
-      JetTag resultBase((*theLikelihoodRatio).value());
-      return pair<JetTag,CombinedTauTagInfo> (resultBase,resultExtended); 
-    }
+  float discriminator = 0.;
+  if (not passed_tracker_selection) {
+    discriminator = 0.;
+  } else if (passed_neutrale_selection) {
+    discriminator = 1.;
+  } else {
+    theLikelihoodRatio->setCandidateCategoryParameterValues( (int) signalchargedpicand_fromtk_HepLV.size(), TauCandJet_ref_et );
+    theLikelihoodRatio->setCandidateTaggingVariableList( taggingvariablesList() );
+    discriminator = theLikelihoodRatio->value();
   }
+  return make_pair(discriminator, resultExtended);
   // * end of overall tau selection *
 }
 
