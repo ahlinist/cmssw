@@ -68,14 +68,14 @@ void BtagMCTest::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
   edm::Handle<reco::JetTagCollection> tagHandle;
   iEvent.getByLabel(moduleLabel, tagHandle);
   const reco::JetTagCollection & tagColl = *(tagHandle.product());
-  cout << "Found " << tagColl.size() << " B candidates" << endl;
 
   int size = tagColl.size();
-  for (int i = 0; i != size; ++i) {
-    JetFlavour jetFlavour = jfi.identifyBasedOnPartons(* tagColl[i].jet());
-    cout << "Tag with discriminator " << tagColl[i].discriminator() 
+  cout << "Found " << size << " B candidates" << endl;
+  for (int i = 0; i < size; ++i) {
+    JetFlavour jetFlavour = jfi.identifyBasedOnPartons(* tagColl[i].first);
+    cout << "Tag with discriminator " << tagColl[i].second 
          << " - Associated Parton flavour: "<< jetFlavour.flavour() << endl;
-    cout << "  Eta/phi of reconstructed jet: " << tagColl[i].jet()->eta()<<" , "<< tagColl[i].jet()->phi() <<endl;
+    cout << "  Eta/phi of reconstructed jet: " << tagColl[i].first->eta()<<" , "<< tagColl[i].first->phi() <<endl;
     cout << "  Eta/phi of parton:            " << jetFlavour.underlyingParton4Vec().eta()
 	 <<" , "<< jetFlavour.underlyingParton4Vec().phi()<<endl;
   }
