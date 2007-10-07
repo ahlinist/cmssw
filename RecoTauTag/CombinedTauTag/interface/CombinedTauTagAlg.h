@@ -156,7 +156,7 @@ public:
   ~CombinedTauTagAlg(){
     if (theLikelihoodRatio!=0) delete theLikelihoodRatio;
   };
-  pair<JetTag,CombinedTauTagInfo> tag(const IsolatedTauTagInfoRef&,const Vertex&,Event&,const EventSetup&);
+  pair<float,CombinedTauTagInfo> tag(const IsolatedTauTagInfoRef&,const Vertex&,Event&,const EventSetup&);
   void setLikelihoodRatio(LikelihoodRatio* x){theLikelihoodRatio=x;}
  private:
   void init(const EventSetup&);
