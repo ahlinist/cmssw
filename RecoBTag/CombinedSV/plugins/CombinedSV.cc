@@ -165,8 +165,8 @@ void CombinedSV::produce(edm::Event& iEvent,
   algorithm_->setMagneticField ( &( *magneticField) );
   algorithm_->setTransientTrackBuilder ( &( *builder ) );
 
-  reco::JetTagCollection *baseCollection;
-  reco::CombinedSVTagInfoCollection *extCollection  = new reco::CombinedSVTagInfoCollection();
+  std::auto_ptr<reco::JetTagCollection> baseCollection;
+  std::auto_ptr<reco::CombinedSVTagInfoCollection> extCollection(new reco::CombinedSVTagInfoCollection());
 
   reco::Vertex primaryVertex = getPrimaryVertex ( iEvent, iSetup );
   LogDebug ("") << "primary vertex is at " << primaryVertex.position();
@@ -176,14 +176,12 @@ void CombinedSV::produce(edm::Event& iEvent,
   // obtain Jet with track associations from event,
   // loop over collection and run b-tagging
   try {
-    iEvent.getByLabel(associatorID_,jetWithTrackColl);
+    iEvent.getByLabel(associatorID_, jetWithTrackColl);
 
-   if(jetWithTrackColl.product()->size() > 0) {
-         RefToBaseProd<reco::Jet> rtbp(jetWithTrackColl->begin()->first);
-         baseCollection = new JetTagCollection(RefToBaseProd<reco::Jet>(rtbp));
-    }
-   else baseCollection = new JetTagCollection();
-
+    if (jetWithTrackColl.product()->size()) {
+       baseCollection = std::auto_ptr<reco::JetTagCollection>(new JetTagCollection(jetWithTrackColl->keyProduct()));
+    } else
+       baseCollection = std::auto_ptr<reco::JetTagCollection>(new JetTagCollection());
 
     // int numJets = jetWithTrackColl->size();
     LogDebug("") << "need to analyze " << jetWithTrackColl->size() << " jets.";
@@ -233,23 +231,11 @@ void CombinedSV::produce(edm::Event& iEvent,
     LogDebug("") << "std::exception caught: " << e.what() << ", ignore this event";
   }
 
-  std::auto_ptr<reco::CombinedSVTagInfoCollection> resultExt(extCollection);
-  edm::OrphanHandle <reco::CombinedSVTagInfoCollection > tagInfoHandle =  iEvent.put(resultExt);
+  if (!baseCollection.get())
+    baseCollection = std::auto_ptr<reco::JetTagCollection>(new JetTagCollection());
 
-
-
-  /*
-  reco::CombinedSVTagInfoCollection::iterator it_ext =extCollection->begin();
-  int cc=0;
-  for(;it_ext!=extCollection->end();it_ext++)
-  {
-    // it_ext->setJetTag(reco::JetTagRef(jetTagHandle,cc));
-    it_ext->setJTARef(reco::JetTagRef(jetTagHandle,cc));
-    cc++;
-  }*/
-
-  std::auto_ptr<reco::JetTagCollection> resultBase(baseCollection);
-  iEvent.put(resultBase);
+  iEvent.put(extCollection);
+  iEvent.put(baseCollection);
 }
 
 //define this as a plug-in
