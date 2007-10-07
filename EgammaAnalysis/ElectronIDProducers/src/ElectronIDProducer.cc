@@ -6,8 +6,11 @@
 #include "DataFormats/EgammaReco/interface/BasicClusterShapeAssociation.h"
 
 void ElectronIDProducer::beginJob(edm::EventSetup const& iSetup) {
+  if (doPtdrId_) ptdrAlgo_->setup(conf_);
   if (doCutBased_) cutBasedAlgo_->setup(conf_);
   if (doNeuralNet_) neuralNetAlgo_->setup(conf_);
+  if (doPtdrId_ && doCutBased_) 	 	     
+     throw(std::runtime_error("\n\nElectronIDProducer: you cannot choose both PTDR algo and CutBased Algo.\n\n"));
 }
 
 ElectronIDProducer::ElectronIDProducer(const edm::ParameterSet& conf) : conf_(conf) {
@@ -17,10 +20,12 @@ ElectronIDProducer::ElectronIDProducer(const edm::ParameterSet& conf) : conf_(co
   electronIDLabel_ = conf_.getParameter<std::string>("electronIDLabel");
   electronIDAssociation_ = conf_.getParameter<std::string>("electronIDAssociationLabel");
 
+  doPtdrId_ = conf_.getParameter<bool>("doPtdrId");
   doCutBased_ = conf_.getParameter<bool>("doCutBased");
   doLikelihood_ = conf_.getParameter<bool>("doLikelihood");
   doNeuralNet_ = conf_.getParameter<bool>("doNeuralNet");
 
+  ptdrAlgo_ = new PTDRElectronID();
   cutBasedAlgo_ = new CutBasedElectronID();
   neuralNetAlgo_ = new ElectronNeuralNet();
 
@@ -33,6 +38,7 @@ ElectronIDProducer::ElectronIDProducer(const edm::ParameterSet& conf) : conf_(co
 }
 
 ElectronIDProducer::~ElectronIDProducer() {
+  delete ptdrAlgo_;
   delete cutBasedAlgo_;
   delete neuralNetAlgo_;
 }
@@ -67,39 +73,48 @@ void ElectronIDProducer::produce(edm::Event& e, const edm::EventSetup& c) {
        electron != (*electrons).end(); ++electron) {
 
     
+    bool boolDecision = -1; 
+    bool ptdrDecision = -1;
     bool cutBasedDecision = -1;
     double likelihood = -1.;
     double neuralNetOutput = -1.;
-    if (doCutBased_) cutBasedDecision = cutBasedAlgo_->result(&(*electron),e);
+    if (doPtdrId_) 
+    	ptdrDecision = ptdrAlgo_->result(&(*electron), e);
+    if (doCutBased_) 
+    	cutBasedDecision = cutBasedAlgo_->result(&(*electron),e);
+    if (doLikelihood_) 
+      {
+	bool hasBarrel=true ;
+	bool hasEndcap=true ;
+
+	reco::SuperClusterRef sclusRef = electron->get<reco::SuperClusterRef> () ;
+	reco::BasicClusterShapeAssociationCollection::const_iterator seedShpItr ;
+	seedShpItr = barrelClShpMap.find (sclusRef->seed ()) ;
+	if ( seedShpItr==barrelClShpMap.end ())  {
+	  hasBarrel=false ;
+	  seedShpItr=endcapClShpMap.find (sclusRef->seed ()) ;
+	  if ( seedShpItr==endcapClShpMap.end () ) hasEndcap=false ;
+	}
+	if (hasBarrel || hasEndcap) {
+	  const reco::ClusterShapeRef& sClShape = seedShpItr->val ;
+	  // get electron likelihood
+	  edm::ESHandle<ElectronLikelihood> likelihoodAlgo ;
+	  c.getData ( likelihoodAlgo ) ;
+	  likelihood = likelihoodAlgo->result (*electron,*sClShape) ;
+	}
+      }
+
+    if (doNeuralNet_) 
+    	neuralNetOutput = neuralNetAlgo_->result(&(*electron),e);
     
-    if(doLikelihood_) {
-
-      bool hasBarrel=true ;
-      bool hasEndcap=true ;
-
-      reco::SuperClusterRef sclusRef = electron->get<reco::SuperClusterRef> () ;
-      reco::BasicClusterShapeAssociationCollection::const_iterator seedShpItr ;
-      seedShpItr = barrelClShpMap.find (sclusRef->seed ()) ;
-      if (seedShpItr==barrelClShpMap.end ()) {
-	hasBarrel=false ;
-	seedShpItr=endcapClShpMap.find (sclusRef->seed ()) ;
-	if (seedShpItr==endcapClShpMap.end ()) hasEndcap=false ;
-      }
-      if (hasBarrel || hasEndcap) {
-	const reco::ClusterShapeRef& sClShape = seedShpItr->val ;
-	// get electron likelihood
-	edm::ESHandle<ElectronLikelihood> likelihoodAlgo ;
-	c.getData ( likelihoodAlgo ) ;
-	likelihood = likelihoodAlgo->result (*electron,*sClShape) ;
-      }
-    }
-
-    if (doNeuralNet_) neuralNetOutput = neuralNetAlgo_->result(&(*electron),e);
-    electronIDCollection.push_back(reco::ElectronID(cutBasedDecision,
+    if (doPtdrId_)
+    	boolDecision = ptdrDecision ; 	 
+    else
+    	boolDecision = cutBasedDecision ;
+    
+    electronIDCollection.push_back(reco::ElectronID(boolDecision,
 						    likelihood,
 						    neuralNetOutput));
-
-
   }
 
   // Add output electron ID collection to the event
