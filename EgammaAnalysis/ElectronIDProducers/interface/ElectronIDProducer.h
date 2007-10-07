@@ -8,6 +8,7 @@
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/EgammaCandidates/interface/PixelMatchGsfElectron.h"
+#include "EgammaAnalysis/ElectronIDAlgos/interface/PTDRElectronID.h"
 #include "EgammaAnalysis/ElectronIDAlgos/interface/CutBasedElectronID.h"
 #include "EgammaAnalysis/ElectronIDAlgos/interface/ElectronLikelihood.h"
 #include "EgammaAnalysis/ElectronIDAlgos/interface/ElectronNeuralNet.h"
@@ -24,7 +25,8 @@ class ElectronIDProducer : public edm::EDProducer
    
  private:
 
-  CutBasedElectronID* cutBasedAlgo_;
+  PTDRElectronID* ptdrAlgo_;
+  CutBasedElectronID* cutBasedAlgo_; 	   
   ElectronNeuralNet* neuralNetAlgo_;
   // likelihood is already in the eventSetup
 
@@ -37,7 +39,8 @@ class ElectronIDProducer : public edm::EDProducer
 
   edm::InputTag barrelClusterShapeAssociation_;
   edm::InputTag endcapClusterShapeAssociation_;
-
+  
+  bool doPtdrId_;
   bool doCutBased_;
   bool doLikelihood_;
   bool doNeuralNet_;
