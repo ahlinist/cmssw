@@ -7,7 +7,7 @@ C...Sets values of commonblock variables.
       implicit none 
       Integer           Ipar     ! global TopRex integer parameters  
       double precision  Rpar     ! global TopRex real    parameters
-      common /TXPAR/Ipar(200), Rpar(200)
+      common /TXPAR/Ipar(512), Rpar(512)
       save   /TXPAR/
 **********
       integer ndch   ! maximum number of decay channels
@@ -32,12 +32,12 @@ C...Sets values of commonblock variables.
 ***
       integer IER, I, J, IL, k1, k2 , Iread
       integer lenk
-      parameter (lenk=132)
+      parameter (lenk=512)
       character *(*) chin
       character *60 inam, rnam
       character *20 cvi  ! , cvj
-      character *132 STRIN 
-      character *132 strin2
+      character *512 STRIN 
+      character *512 strin2
       data strin2/'PROCESS : not given'/
       save strin2
 
@@ -47,7 +47,7 @@ C...Sets values of commonblock variables.
       data pjak1/-1/, pjak2/ -1/, mdtau/-1/
       save /ki_taumod/ 
 *
-      character*132                            CXpar
+      character*512                            CXpar
       integer         Ixpar 
       double precision            RXpar
       common /EXGPAR/ IXpar(100), RXpar(100), CXpar(100)
