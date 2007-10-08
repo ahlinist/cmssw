@@ -71,7 +71,42 @@ double ParametrizationGammaJet::value(double e)const{
       enew=e/kjet;
       break;
     }
-
+  case 4:
+    {
+// CMSSW131
+       double x=e;
+       double kjet;      
+       if(x > p[0] && x < p[1] )
+       {
+// 10.<e<18.       
+          kjet = p[3]*sqrt(x +p[4]) + p[5];
+       } else
+       {
+// x<=10. or x >= 18.       
+          if(x <= p[0]) x = p[0];
+	  if(x >= p[1])
+	  {
+// x>=18.	  
+	     if( x < p[2] )
+	     {
+// x>=18. x<23.	     
+                  double a2 = p[6]/(sqrt(fabs(p[7]*p[2] + p[8]))) + p[9];
+                  double a1 = p[3]*sqrt(p[1] +p[4]) + p[5];
+		  double b0 = (a1*p[2] - a2*p[1])/(p[2]-p[1]);
+		  double b1 = (a2-a1)/(p[2]-p[1]);
+		  kjet = b1*x + b0;
+	     
+	     } else
+	     {
+// x >=23.	     
+                 kjet = p[6]/(sqrt(p[7]*x + p[8])) + p[9];
+		 
+	     }// x >=23.
+	  } // x>=18
+       } // 10.<e<18.
+       enew=e/kjet;
+       break;
+    }
 
   default:
     cerr<<"GammaJetCorrector: Error: unknown parametrization type '"<<type<<"' in GammaJetCorrector. No correction applied"<<endl;
@@ -106,7 +141,7 @@ JetCalibrationParameterSetGammaJet::JetCalibrationParameterSetGammaJet(string ta
   std::ifstream in( (f1.fullPath()).c_str() );
   
   //  if ( f1.isLocal() ){
-    cout << " Start to read file "<<file<<endl;
+//    cout << " Start to read file "<<file<<endl;
     string line;
     while( std::getline( in, line)){
       if(!line.size() || line[0]=='#') continue;
@@ -115,7 +150,7 @@ JetCalibrationParameterSetGammaJet::JetCalibrationParameterSetGammaJet(string ta
       int type;
       linestream>>par>>type;
       
-      cout<<" Parameter eta = "<<par<<" Type= "<<type<<endl;
+//      cout<<" Parameter eta = "<<par<<" Type= "<<type<<endl;
       
       etavector.push_back(par);
       typevector.push_back(type);
@@ -164,7 +199,7 @@ double GammaJetCorrector::correction( const LorentzVector& fJet) const
 
     //if(eta<10) { eta=fabs(fJet.getY()); }
     
-    cout<<" Et and eta of jet "<<et<<" "<<eta<<endl;
+//    cout<<" Et and eta of jet "<<et<<" "<<eta<<endl;
 
     double etnew;
     std::map<double,ParametrizationGammaJet*>::const_iterator ip=parametrization.upper_bound(eta);
@@ -187,7 +222,7 @@ double GammaJetCorrector::correction( const LorentzVector& fJet) const
           }
 	 //theJet*=etnew/et;
 	 
-	 cout<<" The new energy found "<<etnew<<" "<<et<<endl;
+//	 cout<<" The new energy found "<<etnew<<" "<<et<<endl;
 
      return etnew/et;
 }
