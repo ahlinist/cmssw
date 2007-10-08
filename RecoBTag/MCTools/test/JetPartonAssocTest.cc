@@ -23,8 +23,7 @@
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/Common/interface/Ref.h"
-#include "DataFormats/JetReco/interface/Jet.h"
-#include "DataFormats/BTauReco/interface/JetTag.h"
+#include "DataFormats/JetReco/interface/CaloJetCollection.h"
 
 #include "RecoBTag/MCTools/interface/JetFlavourIdentifier.h"
 
