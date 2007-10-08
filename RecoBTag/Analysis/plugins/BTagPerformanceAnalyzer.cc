@@ -183,11 +183,18 @@ void BTagPerformanceAnalyzer::init(const edm::ParameterSet& iConfig)
   jetTagModuleLabel = iConfig.getParameter< vector<edm::InputTag> >("jetTagModuleLabel");
   dataFormatType = iConfig.getParameter< vector<string> >("dataFormatType");
 
-  if (jetTagModuleLabel.size() != dataFormatType.size())
-    throw cms::Exception("Configuration")
-    << "BTagPerformanceAnalyzer: Number of jetTagModuleLabel (" << jetTagModuleLabel.size()
-    <<") does not match number of dataFormatType ("<< dataFormatType.size()
-    << ").\n";
+  if (jetTagModuleLabel.size() != dataFormatType.size()) {
+    if (dataFormatType.size() == 1) {
+      dataFormatType.insert(dataFormatType.end(), jetTagModuleLabel.size()-1,
+			    dataFormatType.front());
+    } else {
+      throw cms::Exception("Configuration")
+      << "BTagPerformanceAnalyzer: Number of jetTagModuleLabel (" << jetTagModuleLabel.size()
+      <<") does not match number of dataFormatType ("<< dataFormatType.size()
+      << ").\n";
+    }
+  }
+  
 
   rootFile = iConfig.getParameter<std::string>( "rootfile" );
   update = iConfig.getParameter<bool>( "update" );
@@ -271,23 +278,23 @@ void BTagPerformanceAnalyzer::analyze(const edm::Event& iEvent, const edm::Event
   for (unsigned int iJetLabel = 0; iJetLabel != jetTagInputTags.size(); ++iJetLabel) {
     edm::Handle<reco::JetTagCollection> tagHandle;
     iEvent.getByLabel(jetTagInputTags[iJetLabel], tagHandle);
-    const reco::JetTagCollection & tag = *(tagHandle.product());
-    LogDebug("Info") << "Found " << tag.size() << " B candidates in collection " << jetTagModuleLabel[iJetLabel];
+    const reco::JetTagCollection & tagColl = *(tagHandle.product());
+    LogDebug("Info") << "Found " << tagColl.size() << " B candidates in collection " << jetTagModuleLabel[iJetLabel];
 
-    int size = tag.size();
     int plotterSize =  binJetTagPlotters[iJetLabel].size();
-    for (int i = 0; i != size; ++i) {
+    for (JetTagCollection::const_iterator tagI = tagColl.begin();
+	tagI != tagColl.end(); ++tagI) {
       // Identify parton associated to jet.
-      JetFlavour jetFlavour = getJetFlavour(tag[i].first, fastMC, flavours);
+      JetFlavour jetFlavour = getJetFlavour(tagI->first, fastMC, flavours);
 
-      if (!jetSelector(*(tag[i].first), jetFlavour)) continue;
+      if (!jetSelector(*(tagI->first), jetFlavour)) continue;
       for (int iPlotter = 0; iPlotter != plotterSize; ++iPlotter) {
 	bool inBin = false;
 	if (partonKinematics) inBin = binJetTagPlotters[iJetLabel][iPlotter]->etaPtBin().inBin(jetFlavour);
-	else inBin = binJetTagPlotters[iJetLabel][iPlotter]->etaPtBin().inBin(*(tag[i].first));
+	else inBin = binJetTagPlotters[iJetLabel][iPlotter]->etaPtBin().inBin(*(tagI->first));
 	// Fill histograms if in desired pt/rapidity bin.
 	if ( inBin ) 
-	  binJetTagPlotters[iJetLabel][iPlotter]->analyzeTag(tag[i], jetFlavour);
+	  binJetTagPlotters[iJetLabel][iPlotter]->analyzeTag(*tagI, jetFlavour);
       }
     }
   }
@@ -297,23 +304,23 @@ void BTagPerformanceAnalyzer::analyze(const edm::Event& iEvent, const edm::Event
   for (unsigned int iJetLabel = 0; iJetLabel != tiDataFormatType.size(); ++iJetLabel) {
     edm::Handle< View<BaseTagInfo> > tagInfoHandle;
     iEvent.getByLabel(tagInfoInputTags[iJetLabel], tagInfoHandle);
-    const View<BaseTagInfo> & tag = *(tagInfoHandle.product());
-    LogDebug("Info") << "Found " << tag.size() << " B candidates in collection " << jetTagModuleLabel[iJetLabel];
+    const View<BaseTagInfo> & tagInfoColl = *(tagInfoHandle.product());
+    LogDebug("Info") << "Found " << tagInfoColl.size() << " B candidates in collection " << jetTagModuleLabel[iJetLabel];
 
-    int size = tag.size();
     int plotterSize =  binTagInfoPlotters[iJetLabel].size();
-    for (int i = 0; i != size; ++i) {
+    for (View<BaseTagInfo>::const_iterator tagI = tagInfoColl.begin();
+	tagI != tagInfoColl.end(); ++tagI) {
       // Identify parton associated to jet.
-      JetFlavour jetFlavour = getJetFlavour(tag[i].jet(), fastMC, flavours);
+      JetFlavour jetFlavour = getJetFlavour(tagI->jet(), fastMC, flavours);
 
-      if (!jetSelector(*(tag[i].jet()), jetFlavour)) continue;
+      if (!jetSelector(*(tagI->jet()), jetFlavour)) continue;
       for (int iPlotter = 0; iPlotter != plotterSize; ++iPlotter) {
 	bool inBin = false;
 	if (partonKinematics) inBin = binTagInfoPlotters[iJetLabel][iPlotter]->etaPtBin().inBin(jetFlavour);
-	else inBin = binTagInfoPlotters[iJetLabel][iPlotter]->etaPtBin().inBin(*(tag[i].jet()));
+	else inBin = binTagInfoPlotters[iJetLabel][iPlotter]->etaPtBin().inBin(*(tagI->jet()));
 	// Fill histograms if in desired pt/rapidity bin.
 	if ( inBin ) 
-	  binTagInfoPlotters[iJetLabel][iPlotter]->analyzeTag(&(tag[i]), jetFlavour);
+	  binTagInfoPlotters[iJetLabel][iPlotter]->analyzeTag(&(*tagI), jetFlavour);
       }
     }
   }
