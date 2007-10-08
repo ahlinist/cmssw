@@ -8,6 +8,7 @@
 #include "RecoBTag/Analysis/interface/FlavourHistorgrams.h"
 #include "RecoBTag/Analysis/interface/BaseBTagPlotter.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "DataFormats/BTauReco/interface/JetTag.h"
 
 
 class JetTagPlotter : public BaseBTagPlotter {
