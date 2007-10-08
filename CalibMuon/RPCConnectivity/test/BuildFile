@@ -8,6 +8,9 @@
   <library file=RPCReadOutMappingBuilder.cpp name=RPCReadOutMappingBuilder>
     <flags EDM_PLUGIN=1>
   </library>
+  <library file=RPCEMapBuilder.cpp name=RPCEMapBuilder>
+    <flags EDM_PLUGIN=1>
+  </library>
   <library file=RPCTriggerPatternBuilder.cpp name=RPCTriggerPatternBuilder>
     <flags EDM_PLUGIN=1>
   </library>
