@@ -87,7 +87,7 @@ TrackCountingTagPlotter::~TrackCountingTagPlotter ()
 
 
 void TrackCountingTagPlotter::analyzeTag (const reco::BaseTagInfo * baseTagInfo,
-	const JetFlavour & jetFlavour)
+	const BTagMCTools::JetFlavour & jetFlavour)
 {
 
   const reco::TrackCountingTagInfo * tagInfo = 

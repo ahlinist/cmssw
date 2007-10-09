@@ -270,7 +270,10 @@ void BTagPerformanceAnalyzer::analyze(const edm::Event& iEvent, const edm::Event
 	 iEvent.getByLabel(jetMCSrc, jetMC);
          for(JetFlavourMatchingCollection::const_iterator iter =
                  jetMC->begin(); iter != jetMC->end(); iter++)
-                 flavours.insert(*iter);
+               {
+                 unsigned int fl = iter->second.getFlavour();
+                 flavours.insert(FlavourMap::value_type(iter->first,fl));
+                }
   }
 
 // Look first at the jetTags
@@ -285,7 +288,7 @@ void BTagPerformanceAnalyzer::analyze(const edm::Event& iEvent, const edm::Event
     for (JetTagCollection::const_iterator tagI = tagColl.begin();
 	tagI != tagColl.end(); ++tagI) {
       // Identify parton associated to jet.
-      JetFlavour jetFlavour = getJetFlavour(tagI->first, fastMC, flavours);
+      BTagMCTools::JetFlavour jetFlavour = getJetFlavour(tagI->first, fastMC, flavours);
 
       if (!jetSelector(*(tagI->first), jetFlavour)) continue;
       for (int iPlotter = 0; iPlotter != plotterSize; ++iPlotter) {
@@ -311,7 +314,7 @@ void BTagPerformanceAnalyzer::analyze(const edm::Event& iEvent, const edm::Event
     for (View<BaseTagInfo>::const_iterator tagI = tagInfoColl.begin();
 	tagI != tagInfoColl.end(); ++tagI) {
       // Identify parton associated to jet.
-      JetFlavour jetFlavour = getJetFlavour(tagI->jet(), fastMC, flavours);
+        BTagMCTools::JetFlavour jetFlavour = getJetFlavour(tagI->jet(), fastMC, flavours);
 
       if (!jetSelector(*(tagI->jet()), jetFlavour)) continue;
       for (int iPlotter = 0; iPlotter != plotterSize; ++iPlotter) {
@@ -327,10 +330,10 @@ void BTagPerformanceAnalyzer::analyze(const edm::Event& iEvent, const edm::Event
 
 }
 
-JetFlavour BTagPerformanceAnalyzer::getJetFlavour(
+  BTagMCTools::JetFlavour BTagPerformanceAnalyzer::getJetFlavour(
 	edm::RefToBase<Jet> caloRefTB, bool fastMC, FlavourMap flavours)
 {
-  JetFlavour jetFlavour;
+    BTagMCTools::JetFlavour jetFlavour;
   if(! fastMC) {
     jetFlavour = jfi.identifyBasedOnPartons(*caloRefTB);
   } else {

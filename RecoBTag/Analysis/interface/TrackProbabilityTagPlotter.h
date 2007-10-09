@@ -19,7 +19,7 @@ class TrackProbabilityTagPlotter : public BaseTagInfoPlotter {
 
   ~TrackProbabilityTagPlotter () ;
 
-  void analyzeTag (const reco::BaseTagInfo * tagInfo, const JetFlavour & jetFlavour);
+  void analyzeTag (const reco::BaseTagInfo * tagInfo, const BTagMCTools::JetFlavour & jetFlavour);
 
   virtual void finalize ();
 

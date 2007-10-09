@@ -69,7 +69,7 @@ SoftLeptonTagPlotter::~SoftLeptonTagPlotter ()
 }
 
 void SoftLeptonTagPlotter::analyzeTag( const reco::BaseTagInfo * baseTagInfo,
-    const JetFlavour & jetFlavour )
+    const BTagMCTools::JetFlavour & jetFlavour )
 {
 
   const reco::SoftLeptonTagInfo * tagInfo = 

@@ -91,7 +91,7 @@ void JetPartonAssocTest::analyze(const edm::Event& iEvent, const edm::EventSetup
 
   for (unsigned int i = 0; i != jets.size(); ++i) {
     if (jets[i].et() > 40. && fabs(jets[i].eta()) < 2.5) {
-      JetFlavour jetFlavour = jfi.identifyBasedOnPartons(jets[i]);
+      BTagMCTools::JetFlavour jetFlavour = jfi.identifyBasedOnPartons(jets[i]);
       cout << i << " : Jet " << jetFlavour.flavour() << " Et="<<jets[i].et() << " ("<< 
 	jetFlavour.underlyingParton4Vec().Et() <<")"<< endl;
 

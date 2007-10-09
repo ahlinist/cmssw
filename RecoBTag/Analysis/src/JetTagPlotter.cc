@@ -178,7 +178,7 @@ void JetTagPlotter::psPlot(const TString & name)
 }
 
 void JetTagPlotter::analyzeTag(const reco::JetTag & jetTag,
-	const JetFlavour & jetFlavour)
+	const BTagMCTools::JetFlavour & jetFlavour)
 {
   int jetFlav = jetFlavour.flavour();
 

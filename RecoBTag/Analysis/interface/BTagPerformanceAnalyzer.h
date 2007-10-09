@@ -50,7 +50,7 @@ class BTagPerformanceAnalyzer : public edm::EDAnalyzer {
   void bookHistos(const edm::ParameterSet& pSet);
   EtaPtBin getEtaPtBin(int iEta, int iPt);
   typedef std::map<reco::CaloJetRef, unsigned int> FlavourMap;
-  JetFlavour getJetFlavour(
+  BTagMCTools::JetFlavour getJetFlavour(
 	edm::RefToBase<reco::Jet> caloRefTB, bool fastMC, FlavourMap flavours);
 
   std::string rootFile;

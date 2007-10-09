@@ -13,7 +13,7 @@ class BaseTagInfoPlotter : public BaseBTagPlotter {
 	    BaseBTagPlotter(tagName, etaPtBin) {};
 
   virtual ~BaseTagInfoPlotter () {};
-  virtual void analyzeTag(const reco::BaseTagInfo * tagInfo, const JetFlavour & jetFlavour) = 0;
+  virtual void analyzeTag(const reco::BaseTagInfo * tagInfo, const BTagMCTools::JetFlavour & jetFlavour) = 0;
   
 } ;
 

@@ -11,7 +11,7 @@
    * Class containing the main MC information on a jet, as extracted from the HepMC event.
    * Some information, see below, depends on the chosen definition, 'algorithmic' or 'physical'
    */
-
+namespace BTagMCTools {
 class JetFlavour {
 
 public:
@@ -173,5 +173,5 @@ private:
   bool m_initialPartonSplitsToB;
 
 };
+}
 #endif
-

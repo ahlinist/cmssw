@@ -1,5 +1,5 @@
 #include "RecoBTag/MCTools/interface/JetFlavour.h"
-
+namespace   BTagMCTools {
 JetFlavour::JetFlavour()
 {
   m_mainFlavour          = 0 ;
@@ -61,4 +61,5 @@ JetFlavour::JetFlavour()
   m_numberOfSources = 0 ;
 
   m_flavourSources.erase ( m_flavourSources.begin() , m_flavourSources.end() ) ;
+}
 }
