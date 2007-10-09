@@ -107,31 +107,6 @@ Material: "L" shaped CF piece with inserts in Aluminium.
 .......................................................................
 =======================================================================
 
-o TID axial cables
-  ----------------
-These are the cables that run outside the support cylinder 
-
-MC Volume: cross-section 12 bundles of 2.465 cm^2 ==> 29.58 cm^2
-
-Per TID half we have in total: 
-(1) Optical fiber ribbons : 1104 fibres ==> 92 ribbons
-(2-3) Take here the "Hans pipes": Stainless Steel OD 12 mm, ID 11 mm
-                                   number: 14
-(4) Control cables: 15
-(5) MS cables 48 APVs: 12
-(6) MS cables 36 APVs: 48
-.....................................................................
-# "TID axial cables"          "TID_ax_cable"        29.58    -1.
-* 1 "Optical ribbon"          "Fibre_Ribbon"        0.00961  92  CAB
-* 2 "Cooling pipes"           "Steel-008"           0.181   14    COL
-* 3 "Coolant"                 "C6F14"               0.950   14    COL
-* 4 "Control cables"          "MS_cntrl_cable"      0.283   15    CAB
-* 5 "Alu MS Cable 36 APVs"    "MS_Al36"             0.515   48   CAB
-* 6 "Alu MS Cable 48 APVs"    "MS_Al48"             0.567   12    CAB
-................................................................. 
-=================================================================
-
-
 o TID_Connector
   -------------
 These are the optical connector at the end of the TID. Total number: 398
