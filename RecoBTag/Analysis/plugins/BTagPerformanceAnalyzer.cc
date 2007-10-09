@@ -8,6 +8,7 @@
 
 using namespace reco;
 using namespace edm;
+//using namespace BTagMCTools;
 
 BTagPerformanceAnalyzer::BTagPerformanceAnalyzer(const edm::ParameterSet& pSet)
 {
@@ -57,20 +58,28 @@ void BTagPerformanceAnalyzer::bookHistos(const edm::ParameterSet& pSet)
 
   TagInfoPlotterFactory theFactory;
 
-  for (unsigned int iJetLabel = 0; iJetLabel != jetTagModuleLabel.size(); ++iJetLabel) {
+  for (unsigned int iModule = 0; iModule != moduleConfig.size(); ++iModule) {
 
-    if (dataFormatType[iJetLabel] == "JetTag") {
-      jetTagInputTags.push_back(jetTagModuleLabel[iJetLabel]);
+    string dataFormatType = "JetTag";
+    if (moduleConfig[iModule].exists("type"))
+    	 dataFormatType = moduleConfig[iModule].getParameter<string>("type");
+    InputTag moduleLabel = moduleConfig[iModule].getParameter<InputTag>("label");
+    if (dataFormatType == "JetTag") {
+      jetTagInputTags.push_back(moduleLabel);
       binJetTagPlotters.push_back(vector<JetTagPlotter*>()) ;
       // Contains plots for each bin of rapidity and pt.
       differentialPlots.push_back(vector<BTagDifferentialPlot*>());
+
+      // the constant b-efficiency for the differential plots versus pt and eta
+      double effBConst = 
+        moduleConfig[iModule].getParameter<edm::ParameterSet>("parameters").getParameter<double>("effBConst");
 
       // the objects for the differential plots vs. eta,pt for
 
       vector<BTagDifferentialPlot*> * differentialPlotsConstantEta = new vector<BTagDifferentialPlot*> () ;
       for ( int iEta = iEtaStart ; iEta < iEtaEnd ; iEta++ ) {
 	BTagDifferentialPlot * etaConstDifferentialPlot = new BTagDifferentialPlot
-	  (effBConst, BTagDifferentialPlot::constETA, jetTagModuleLabel[iJetLabel].label());
+	  (effBConst, BTagDifferentialPlot::constETA, moduleLabel.label());
 	differentialPlotsConstantEta->push_back ( etaConstDifferentialPlot );
       }
 
@@ -78,7 +87,7 @@ void BTagPerformanceAnalyzer::bookHistos(const edm::ParameterSet& pSet)
       for ( int iPt = iPtStart ; iPt < iPtEnd ; iPt++ ) {
 	// differentialPlots for this pt bin
 	BTagDifferentialPlot * ptConstDifferentialPlot = new BTagDifferentialPlot
-	  (effBConst, BTagDifferentialPlot::constPT, jetTagModuleLabel[iJetLabel].label());
+	  (effBConst, BTagDifferentialPlot::constPT, moduleLabel.label());
 	differentialPlotsConstantPt->push_back ( ptConstDifferentialPlot );
       }
 
@@ -91,8 +100,8 @@ void BTagPerformanceAnalyzer::bookHistos(const edm::ParameterSet& pSet)
 
 	  // Instantiate the genertic b tag plotter
 	  JetTagPlotter *jetTagPlotter = new JetTagPlotter(
-	    jetTagModuleLabel[iJetLabel].label(), etaPtBin,
-	    pSet.getParameter<edm::ParameterSet>("JetTag"), update);
+	    moduleLabel.label(), etaPtBin,
+	    moduleConfig[iModule].getParameter<edm::ParameterSet>("parameters"), update);
 	  binJetTagPlotters.back().push_back ( jetTagPlotter ) ;
 
 	  // Add to the corresponding differential plotters
@@ -109,15 +118,13 @@ void BTagPerformanceAnalyzer::bookHistos(const edm::ParameterSet& pSet)
       edm::LogInfo("Info")
 	<< "====>>>> ## sizeof differentialPlots = " << differentialPlots.size();
 
-  //     differentialPlots.back().pushd_back(iDifferentialPlots);
-
       // the intermediate ones are no longer needed
       delete differentialPlotsConstantEta ;
       delete differentialPlotsConstantPt  ;
 
     } else {
-      tagInfoInputTags.push_back(jetTagModuleLabel[iJetLabel]);
-      tiDataFormatType.push_back(dataFormatType[iJetLabel]);
+      tagInfoInputTags.push_back(moduleLabel);
+      tiDataFormatType.push_back(dataFormatType);
       binTagInfoPlotters.push_back(vector<BaseTagInfoPlotter*>()) ;
 
       // eta loop
@@ -126,11 +133,11 @@ void BTagPerformanceAnalyzer::bookHistos(const edm::ParameterSet& pSet)
 	for ( int iPt = iPtStart ; iPt < iPtEnd ; iPt++ ) {
 	  EtaPtBin etaPtBin = getEtaPtBin(iEta, iPt);
 
-	  // Instantiate the genertic b tag plotter and the specific one for this particular b tag.
+	  // Instantiate the tagInfo plotter
 
 	  BaseTagInfoPlotter *jetTagPlotter = theFactory.buildPlotter(
-	    dataFormatType[iJetLabel], jetTagModuleLabel[iJetLabel].label(), etaPtBin, 
-	    pSet.getParameter<edm::ParameterSet>(dataFormatType[iJetLabel]), update);
+	    dataFormatType, moduleLabel.label(), etaPtBin, 
+	    moduleConfig[iModule].getParameter<edm::ParameterSet>("parameters"), update);
 	  binTagInfoPlotters.back().push_back ( jetTagPlotter ) ;
 	}
       }
@@ -180,21 +187,7 @@ void BTagPerformanceAnalyzer::init(const edm::ParameterSet& iConfig)
 {
   // Get histogram plotting options from configuration.
 
-  jetTagModuleLabel = iConfig.getParameter< vector<edm::InputTag> >("jetTagModuleLabel");
-  dataFormatType = iConfig.getParameter< vector<string> >("dataFormatType");
-
-  if (jetTagModuleLabel.size() != dataFormatType.size()) {
-    if (dataFormatType.size() == 1) {
-      dataFormatType.insert(dataFormatType.end(), jetTagModuleLabel.size()-1,
-			    dataFormatType.front());
-    } else {
-      throw cms::Exception("Configuration")
-      << "BTagPerformanceAnalyzer: Number of jetTagModuleLabel (" << jetTagModuleLabel.size()
-      <<") does not match number of dataFormatType ("<< dataFormatType.size()
-      << ").\n";
-    }
-  }
-  
+  moduleConfig = iConfig.getParameter< vector<edm::ParameterSet> >("tagConfig");
 
   rootFile = iConfig.getParameter<std::string>( "rootfile" );
   update = iConfig.getParameter<bool>( "update" );
@@ -225,9 +218,6 @@ void BTagPerformanceAnalyzer::init(const edm::ParameterSet& iConfig)
   // eta and pt ranges (bins for differential plots)
   etaRanges = iConfig.getParameter< vector<double> >("etaRanges");
   ptRanges = iConfig.getParameter< vector<double> >("ptRanges");
-
- // the constant b-efficiency for the differential plots versus pt and eta
-  effBConst = iConfig.getParameter<double>("effBConst");
 
   fastMC = iConfig.getParameter<bool>("fastMC");
   jetMCSrc = iConfig.getParameter<edm::InputTag>("jetMCSrc");
@@ -273,7 +263,7 @@ void BTagPerformanceAnalyzer::analyze(const edm::Event& iEvent, const edm::Event
                {
                  unsigned int fl = iter->second.getFlavour();
                  flavours.insert(FlavourMap::value_type(iter->first,fl));
-                }
+               }
   }
 
 // Look first at the jetTags
@@ -282,7 +272,7 @@ void BTagPerformanceAnalyzer::analyze(const edm::Event& iEvent, const edm::Event
     edm::Handle<reco::JetTagCollection> tagHandle;
     iEvent.getByLabel(jetTagInputTags[iJetLabel], tagHandle);
     const reco::JetTagCollection & tagColl = *(tagHandle.product());
-    LogDebug("Info") << "Found " << tagColl.size() << " B candidates in collection " << jetTagModuleLabel[iJetLabel];
+    LogDebug("Info") << "Found " << tagColl.size() << " B candidates in collection " << jetTagInputTags[iJetLabel];
 
     int plotterSize =  binJetTagPlotters[iJetLabel].size();
     for (JetTagCollection::const_iterator tagI = tagColl.begin();
@@ -308,13 +298,13 @@ void BTagPerformanceAnalyzer::analyze(const edm::Event& iEvent, const edm::Event
     edm::Handle< View<BaseTagInfo> > tagInfoHandle;
     iEvent.getByLabel(tagInfoInputTags[iJetLabel], tagInfoHandle);
     const View<BaseTagInfo> & tagInfoColl = *(tagInfoHandle.product());
-    LogDebug("Info") << "Found " << tagInfoColl.size() << " B candidates in collection " << jetTagModuleLabel[iJetLabel];
+    LogDebug("Info") << "Found " << tagInfoColl.size() << " B candidates in collection " << tagInfoInputTags[iJetLabel];
 
     int plotterSize =  binTagInfoPlotters[iJetLabel].size();
     for (View<BaseTagInfo>::const_iterator tagI = tagInfoColl.begin();
 	tagI != tagInfoColl.end(); ++tagI) {
       // Identify parton associated to jet.
-        BTagMCTools::JetFlavour jetFlavour = getJetFlavour(tagI->jet(), fastMC, flavours);
+      BTagMCTools::JetFlavour jetFlavour = getJetFlavour(tagI->jet(), fastMC, flavours);
 
       if (!jetSelector(*(tagI->jet()), jetFlavour)) continue;
       for (int iPlotter = 0; iPlotter != plotterSize; ++iPlotter) {
@@ -330,10 +320,10 @@ void BTagPerformanceAnalyzer::analyze(const edm::Event& iEvent, const edm::Event
 
 }
 
-  BTagMCTools::JetFlavour BTagPerformanceAnalyzer::getJetFlavour(
+BTagMCTools::JetFlavour BTagPerformanceAnalyzer::getJetFlavour(
 	edm::RefToBase<Jet> caloRefTB, bool fastMC, FlavourMap flavours)
 {
-    BTagMCTools::JetFlavour jetFlavour;
+  BTagMCTools::JetFlavour jetFlavour;
   if(! fastMC) {
     jetFlavour = jfi.identifyBasedOnPartons(*caloRefTB);
   } else {

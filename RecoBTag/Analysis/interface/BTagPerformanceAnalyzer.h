@@ -54,17 +54,13 @@ class BTagPerformanceAnalyzer : public edm::EDAnalyzer {
 	edm::RefToBase<reco::Jet> caloRefTB, bool fastMC, FlavourMap flavours);
 
   std::string rootFile;
-  vector<edm::InputTag> jetTagModuleLabel;
-  vector<std::string> dataFormatType, tiDataFormatType;
+  vector<std::string> tiDataFormatType;
   bool partonKinematics;
   double etaMin, etaMax;
   double ptRecJetMin, ptRecJetMax;
   double ptPartonMin, ptPartonMax;
   AcceptJet jetSelector;   // Decides if jet and parton satisfy kinematic cuts.
   std::vector<double> etaRanges, ptRanges;
-  double discriminatorStart, discriminatorEnd, effBConst;
-  int   nBinEffPur;
-  double startEffPur, endEffPur;
   bool produceEps, producePs;
   TString psBaseName, epsBaseName, inputFile;
   bool update;
@@ -77,6 +73,8 @@ class BTagPerformanceAnalyzer : public edm::EDAnalyzer {
   // Contains plots for each bin of rapidity and pt.
   vector< vector<BTagDifferentialPlot*> > differentialPlots;
   JetFlavourIdentifier jfi;
+  vector<edm::ParameterSet> moduleConfig;
+
 };
 
 
