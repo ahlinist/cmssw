@@ -1,4 +1,4 @@
-#include "FEDMonitorModule.h"
+#include "FEDMonitor.h"
 #include "FEDMonitorClient.h"
 
 using namespace dqm;
