@@ -107,15 +107,15 @@ void PixelMatchAnalysis::beginJob(const edm::EventSetup&)
   edm::Service<TFileService> fs;
 
 
-  mytree = new TTree("test","test sur donnees");
-  mybranch = mytree->Branch("essai",&valeur,"essai/F");
+  //mytree = new TTree("test","test sur donnees");
+  //mybranch = mytree->Branch("essai",&valeur,"essai/F");
 
 //  HISTO INITIALISATION :
 
 // histos: on all events:
-  histo_run = new TH1I("histo_run","histo_run",2000,0.,2000.);
-  histo_event = new TH1I("histo_event","histo_event",100,0.,10000.);
-  gsfcoll_size = new TH1I("gsfcoll_size","gsfcoll_size",20,0.,20.);
+  histo_run = fs->make<TH1I>("histo_run","histo_run",2000,0.,2000.);
+  histo_event = fs->make<TH1I>("histo_event","histo_event",100,0.,10000.);
+  gsfcoll_size = fs->make<TH1I>("gsfcoll_size","gsfcoll_size",20,0.,20.);
 
 // histos: before isolation cuts:
   gsf_Z_m= fs->make<TH1F>("gsf_Z_m","gsf_Z_m",600,0.,3000.);
@@ -500,30 +500,37 @@ void PixelMatchAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup
   iEvent.getByLabel("towerMaker", hhitBarrelHandle);
   const CaloTowerCollection* towerCollection = hhitBarrelHandle.product();
 
-
-
+  LogDebug("Zprime2eeAna") << "calotowers";
   //Get Calo Geometry
   edm::ESHandle<CaloGeometry> pG;
   iSetup.get<IdealGeometryRecord>().get(pG);
   const CaloGeometry* caloGeom = pG.product();
+
+  LogDebug("Zprime2eeAna") << "calogeometry";
 
   //Reconstructed vertexes
   edm::Handle<reco::VertexCollection> vertices;
   try {iEvent.getByLabel("offlinePrimaryVerticesFromCTFTracks",vertices);} catch (cms::Exception& ex) { }
   const VertexCollection* VertexData = vertices.product();
 
+  LogDebug("Zprime2eeAna") << "vertex";
 
   // Get the general tracks
   edm::Handle<reco::TrackCollection> trackHandle;
   try {iEvent.getByLabel("ctfWithMaterialTracks", trackHandle);} catch (cms::Exception& ex) { }
   const reco::TrackCollection* trackcoll = trackHandle.product();
 
+  LogDebug("Zprime2eeAna") << "tracks";
+
   //totla number of events on which the code is runed:
   event_tot++;
 
   // test root tree:
   valeur=event_tot;
-  mybranch->Fill();
+  //mybranch->Fill();
+
+  
+  LogDebug("Zprime2eeAna") << "tree";
 
   // HepLorentzVector and SuperClusterRef initialisation:
   HepLorentzVector superclus;
@@ -567,10 +574,13 @@ void PixelMatchAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup
 
   // primary vertex reco:  -----------------------------
   double recozvtx = 0.;
+
+  LogDebug("Zprime2eeAna") << "vtxloop";
+
   for(reco::VertexCollection::const_iterator avertex = VertexData->begin();avertex != VertexData->end();++avertex) {
     recozvtx = avertex->z();
   }
-  if(debug) LogDebug("Zprime2eeAna") << " vxt:reco:   recozvtx= " << recozvtx <<  endl;
+  LogDebug("Zprime2eeAna") << " vxt:reco:   recozvtx= " << recozvtx <<  endl;
   
 
 
@@ -584,7 +594,7 @@ void PixelMatchAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup
   }
   const reco::PixelMatchGsfElectronCollection* collpixelmatchelec = pixelmatchelec.product();
 
-  if(debug) LogDebug("Zprime2eeAna") << "collpixelmatchelec->size() = " <<  collpixelmatchelec->size() ;
+  LogDebug("Zprime2eeAna") << "collpixelmatchelec->size() = " <<  collpixelmatchelec->size() ;
   gsfcoll_size->Fill(collpixelmatchelec->size());
 
   typedef reco::PixelMatchGsfElectron myElectron;
