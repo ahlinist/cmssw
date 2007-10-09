@@ -21,7 +21,7 @@ class JetTagPlotter : public BaseBTagPlotter {
 
   virtual ~JetTagPlotter () ;
 
-  void analyzeTag (const reco::JetTag & jetTag, const JetFlavour & jetFlavour);
+  void analyzeTag (const reco::JetTag & jetTag, const BTagMCTools::JetFlavour & jetFlavour);
 
   // final computation, plotting, printing .......
   void finalize () ;

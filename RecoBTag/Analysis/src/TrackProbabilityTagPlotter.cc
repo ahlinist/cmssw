@@ -72,7 +72,7 @@ TrackProbabilityTagPlotter::~TrackProbabilityTagPlotter ()
 
 
 void TrackProbabilityTagPlotter::analyzeTag (const reco::BaseTagInfo * baseTagInfo,
-	const JetFlavour & jetFlavour)
+	const BTagMCTools::JetFlavour & jetFlavour)
 {
   const reco::TrackProbabilityTagInfo * tagInfo = 
 	dynamic_cast<const reco::TrackProbabilityTagInfo *>(baseTagInfo);

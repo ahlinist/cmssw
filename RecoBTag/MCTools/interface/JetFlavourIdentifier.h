@@ -16,17 +16,17 @@ public:
   JetFlavourIdentifier(const edm::ParameterSet& iConfig);
   void readEvent(const edm::Event& iEvent);
 
-  JetFlavour identifyBasedOnPartons( const reco::Jet & jet ) const;
+  BTagMCTools::JetFlavour identifyBasedOnPartons( const reco::Jet & jet ) const;
   const std::vector<MCParton> & getListOfPartons() const  {return m_partons;}
 
 private:
   void fillInfo ( const HepMC::GenEvent * generated_event );
 
-  JetFlavour  basicIdentityBasedOnPartons
+  BTagMCTools::JetFlavour  basicIdentityBasedOnPartons
 	(const math::XYZTLorentzVector & jet4Vec, const double coneSize) const;
 
-  void fillAlgorithmicDefinition(JetFlavour & jetFlavour) const;
-  void fillPhysicsDefinition(JetFlavour & jetFlavour, const math::XYZTLorentzVector & jet4Vec) const;
+  void fillAlgorithmicDefinition(  BTagMCTools::JetFlavour & jetFlavour) const;
+  void fillPhysicsDefinition(  BTagMCTools::JetFlavour & jetFlavour, const math::XYZTLorentzVector & jet4Vec) const;
 
   double coneSizeToAssociate;
 

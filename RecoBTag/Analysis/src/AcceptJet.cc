@@ -26,7 +26,7 @@ AcceptJet::AcceptJet()
 // 'global' event selection based on basic variables
 
 
-bool AcceptJet::operator() (const reco::Jet & jet, const JetFlavour & jetFlavour) const
+bool AcceptJet::operator() (const reco::Jet & jet, const BTagMCTools::JetFlavour & jetFlavour) const
 {
 
   bool accept = true;

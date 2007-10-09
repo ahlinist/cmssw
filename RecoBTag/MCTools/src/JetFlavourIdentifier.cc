@@ -148,9 +148,9 @@ void JetFlavourIdentifier::fillInfo ( const HepMC::GenEvent * event ) {
   
 }
 
-JetFlavour JetFlavourIdentifier::identifyBasedOnPartons (const Jet & theJet) const
+BTagMCTools::JetFlavour JetFlavourIdentifier::identifyBasedOnPartons (const Jet & theJet) const
 {
-  JetFlavour jetFlavour = basicIdentityBasedOnPartons(theJet.p4(), coneSizeToAssociate);
+  BTagMCTools::JetFlavour jetFlavour = basicIdentityBasedOnPartons(theJet.p4(), coneSizeToAssociate);
   if (physDefinition) 
     fillPhysicsDefinition(jetFlavour, theJet.p4());
   else 
@@ -165,10 +165,10 @@ JetFlavour JetFlavourIdentifier::identifyBasedOnPartons (const Jet & theJet) con
 }
 
 
-JetFlavour JetFlavourIdentifier::basicIdentityBasedOnPartons
+BTagMCTools::JetFlavour JetFlavourIdentifier::basicIdentityBasedOnPartons
 	(const XYZTLorentzVector & jet4Vec, const double coneSize) const
 {
-  JetFlavour jetFlavour;
+  BTagMCTools::JetFlavour jetFlavour;
   // to count partons from how many sources
   jetFlavour.numberOfSources(0);
   vector<const GenParticle *> indicesSources;
@@ -308,7 +308,7 @@ JetFlavour JetFlavourIdentifier::basicIdentityBasedOnPartons
   return jetFlavour;
 }
 
-void JetFlavourIdentifier::fillAlgorithmicDefinition(JetFlavour & jetFlavour) const
+void JetFlavourIdentifier::fillAlgorithmicDefinition(BTagMCTools::JetFlavour & jetFlavour) const
 {
   // if the heaviest flavour is a b or c, give that one
   if ( jetFlavour.heaviestFlavour() == 5 || jetFlavour.heaviestFlavour() == 4 ) {
@@ -322,12 +322,12 @@ void JetFlavourIdentifier::fillAlgorithmicDefinition(JetFlavour & jetFlavour) co
 }
 
 void JetFlavourIdentifier::fillPhysicsDefinition(
-    JetFlavour & jetFlavour,
+    BTagMCTools::JetFlavour & jetFlavour,
     const math::XYZTLorentzVector & jet4Vec) const
 {
   int flavour = jetFlavour.initialFlavour() ;
   // clean: do not accept if final state heavy partons from many sources -> take bigger cone here
-  JetFlavour phIdentifierPartons = basicIdentityBasedOnPartons(jet4Vec, 0.7);
+  BTagMCTools::JetFlavour phIdentifierPartons = basicIdentityBasedOnPartons(jet4Vec, 0.7);
 
   // if there is heavy flavour content from another source we reject it 
   bool resetJetFlavour = false ;

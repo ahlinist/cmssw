@@ -15,7 +15,7 @@ public:
   
   ~SoftLeptonTagPlotter( void ) ;
 
-  void analyzeTag (const reco::BaseTagInfo * baseTagInfo, const JetFlavour & jetFlavour);
+  void analyzeTag (const reco::BaseTagInfo * baseTagInfo, const BTagMCTools::JetFlavour & jetFlavour);
 
   virtual void finalize( void ) {}
 

@@ -149,7 +149,7 @@ TrackIPTagPlotter::~TrackIPTagPlotter ()
 
 
 void TrackIPTagPlotter::analyzeTag (const reco::BaseTagInfo * baseTagInfo,
-	const JetFlavour & jetFlavour)
+	const BTagMCTools::JetFlavour & jetFlavour)
 {
 
   const reco::TrackIPTagInfo * tagInfo = 

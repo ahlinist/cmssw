@@ -15,7 +15,7 @@ class AcceptJet {
  public:
   AcceptJet();
   /// Returns true if jet and associated parton satisfy kinematic cuts.
-  bool operator() (const reco::Jet & jet, const JetFlavour & jetFlavour) const;
+  bool operator() (const reco::Jet & jet, const BTagMCTools::JetFlavour & jetFlavour) const;
 
   /// Set cut parameters
   void setEtaMin            ( double d ) { etaMin            = d ; } 
