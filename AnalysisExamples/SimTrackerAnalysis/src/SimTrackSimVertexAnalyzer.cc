@@ -108,7 +108,7 @@ SimTrackSimVertexAnalyzer::analyze( const edm::Event& iEvent, const edm::EventSe
      momentumX->Fill(isimtk->momentum().x());
      momentumY->Fill(isimtk->momentum().y());
      momentumZ->Fill(isimtk->momentum().z());
-     momentumPERP->Fill(isimtk->momentum().Pt());
+     momentumPERP->Fill(std::sqrt(isimtk->momentum().perp2()));
      trackID->Fill(double(isimtk->trackId()));
      type->Fill(isimtk->type());
    }
@@ -132,7 +132,7 @@ void SimTrackSimVertexAnalyzer::association(std::vector<SimTrack> trackContainer
   for (int isimvtx = 0; isimvtx < vertexsContainer.size();isimvtx++){
     if(vertexsContainer[isimvtx].noParent() && 
        fabs(vertexsContainer[isimvtx].position().z()) > luminosityZ && 
-       vertexsContainer[isimvtx].position().Pt() > luminosityR){
+       std::sqrt(vertexsContainer[isimvtx].position().perp2()) > luminosityR){
       std::cout<<"SimVertex without a parent tracks it could be 'Primary Vertex'"<<std::endl;
       std::cout<<"but position is outside the luminosity region = "<<std::endl;
       std::cout<<vertexsContainer[isimvtx]<<std::endl;
