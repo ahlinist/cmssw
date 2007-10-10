@@ -6,11 +6,12 @@
 #include "DataFormats/BTauReco/interface/CombinedSVTagInfo.h"
 #include "RecoBTag/CombinedSVLearning/interface/CombinedSVLearning.h"
 #include "RecoBTag/CombinedSV/interface/LikelihoodRatio.h"
+#include "RecoBTag/MCTools/interface/JetFlavour.h"
 
 using namespace std;
 
 namespace {
-  char getFlavor ( const JetFlavour & jf )
+  char getFlavor ( const BTagMCTools::JetFlavour & jf )
   {
     cout << "[CombinedSVLearning] flavor: " << jf.flavour() << endl;
     char tag='b';
@@ -94,7 +95,7 @@ void CombinedSVLearning::analyze( const edm::Event& iEvent,
 
   for ( reco::CombinedSVTagInfoCollection::size_type i = 0; i < tags.size(); ++i)
   {
-    JetFlavour jf = theIdentifier.identifyBasedOnPartons ( *(tags[i].jet()) );
+    BTagMCTools::JetFlavour jf = theIdentifier.identifyBasedOnPartons ( *(tags[i].jet()) );
     cout << tags[i].discriminator() << endl;
     char tag= getFlavor ( jf );
     theTeacher->teach ( tags[i].variables(), tag );
