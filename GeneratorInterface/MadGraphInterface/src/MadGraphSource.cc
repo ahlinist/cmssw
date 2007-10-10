@@ -29,6 +29,9 @@
 #include "HepMC/IO_HEPEVT.h"
 //#include "CLHEP/HepMC/CBhepevt.h"
 
+#include "GeneratorInterface/CommonInterface/interface/PythiaCMS.h"
+#include "GeneratorInterface/CommonInterface/interface/Txgive.h"
+
 // MCDB Interface 
 #include "GeneratorInterface/MadGraphInterface/interface/MCDBInterface.h"
 
@@ -98,8 +101,15 @@ extern "C" {
 
 using namespace edm;
 
-MadGraphSource::MadGraphSource( const ParameterSet & pset, InputSourceDescription const& desc) : GeneratedInputSource(pset, desc), evt(0),
-pythiaPylistVerbosity_ (pset.getUntrackedParameter<int>("pythiaPylistVerbosity",0)),pythiaHepMCVerbosity_ (pset.getUntrackedParameter<bool>("pythiaHepMCVerbosity",false)),maxEventsToPrint_ (pset.getUntrackedParameter<int>("maxEventsToPrint",0)),MGfile_ (pset.getParameter<std::string>("MadGraphInputFile")),getInputFromMCDB_ (pset.getUntrackedParameter<bool>("getInputFromMCDB",false)),MCDBArticleID_ (pset.getParameter<int>("MCDBArticleID")),firstEvent_(pset.getUntrackedParameter<unsigned int>("firstEvent", 0)),lhe_event_counter_(0),MEMAIN_etaclmax(pset.getUntrackedParameter<double>("MEMAIN_etaclmax",0.)),MEMAIN_qcut(pset.getUntrackedParameter<double>("MEMAIN_qcut",0.)),MEMAIN_iexcfile(pset.getUntrackedParameter<unsigned int>("MEMAIN_iexcfile",0)), produceEventTreeFile_ (pset.getUntrackedParameter<bool>("produceEventTreeFile",false)) {
+MadGraphSource::MadGraphSource( const ParameterSet & pset, InputSourceDescription const& desc) : ExternalInputSource(pset, desc), evt(0), pythiaPylistVerbosity_ (pset.getUntrackedParameter<int>("pythiaPylistVerbosity",0)),pythiaHepMCVerbosity_ (pset.getUntrackedParameter<bool>("pythiaHepMCVerbosity",false)),maxEventsToPrint_ (pset.getUntrackedParameter<int>("maxEventsToPrint",0)),getInputFromMCDB_ (pset.getUntrackedParameter<bool>("getInputFromMCDB",false)),MCDBArticleID_ (pset.getParameter<int>("MCDBArticleID")),firstEvent_(pset.getUntrackedParameter<unsigned int>("firstEvent", 0)),lhe_event_counter_(0),MEMAIN_etaclmax(pset.getUntrackedParameter<double>("MEMAIN_etaclmax",0.)),MEMAIN_qcut(pset.getUntrackedParameter<double>("MEMAIN_qcut",0.)),MEMAIN_iexcfile(pset.getUntrackedParameter<unsigned int>("MEMAIN_iexcfile",0)), produceEventTreeFile_ (pset.getUntrackedParameter<bool>("produceEventTreeFile",false)) {
+
+  
+  std::cout << "Les Houches input file: " << fileNames()[0] << std::endl;
+  MGfile_ = fileNames()[0];
+  // strip the file: 
+  if ( MGfile_.find("file:") || MGfile_.find("rfio:")){
+    MGfile_.erase(0,5);
+  }   
 
   std::ifstream file;
   std::ofstream ofile;
@@ -185,6 +195,23 @@ pythiaPylistVerbosity_ (pset.getUntrackedParameter<int>("pythiaPylistVerbosity",
       }
     }
   }
+
+
+//  // read External Generator parameters
+//  {   ParameterSet generator_params = 
+//	pset.getParameter<ParameterSet>("GeneratorParameters") ;
+//  std::vector<std::string> pars = generator_params.getParameter<std::vector<std::string> >("generator");
+//  std::cout << "----------------------------------------------" << std::endl;
+//  std::cout << "Read External Generator parameter set "  << std::endl;
+//  std::cout << "----------------------------------------------" << std::endl;
+//  for( std::vector<std::string>::const_iterator itPar = pars.begin(); itPar != pars.end(); ++itPar ) 
+//    {
+//      call_txgive(*itPar);
+//    }
+//  // giving to txgive a string with the alpgen filename
+//  std::string tmpstring = "UNWFILE = " + MGfile_;
+//  call_txgive(tmpstring);
+//  }
   
   //Setting random numer seed
   edm::LogInfo("Generator|MadGraph")<<"----------------------------------------------";
@@ -230,6 +257,7 @@ bool MadGraphSource::produce(Event & e) {
 
   if(produceEventTreeFile_) eventtree_(); // write out an event tree file
 
+
   HepMC::IO_HEPEVT conv;
   HepMC::GenEvent* evt = conv.read_next_event();
   evt->set_signal_process_id(pypars.msti[0]);
@@ -267,3 +295,9 @@ bool MadGraphSource::call_pygive(const std::string& iParm ) {
   return pydat1.mstu[26] == numWarn && pydat1.mstu[22] == numErr;
 }
 
+bool MadGraphSource::call_txgive(const std::string& iParm )
+   {
+    //call the fortran routine txgive with a fortran string
+    TXGIVE( iParm.c_str(), iParm.length() );
+    return 1;
+}

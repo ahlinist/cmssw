@@ -15,14 +15,18 @@
  * Dorian Kcira : added ME-PS matching (22/05/2007)
  ***************************************/
 #define PYCOMP pycomp_
-#include "FWCore/Framework/interface/GeneratedInputSource.h"
+//#include "FWCore/Framework/interface/GeneratedInputSource.h"
+#include "FWCore/Framework/interface/ExternalInputSource.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include <map>
 #include <string>
 #include "HepMC/GenEvent.h"
+
+
 namespace edm
 {
-  class MadGraphSource : public GeneratedInputSource {
+//  class MadGraphSource : public GeneratedInputSource {
+  class MadGraphSource : public ExternalInputSource{
   public:
     /// Constructor
     MadGraphSource(const ParameterSet &, const InputSourceDescription &);
@@ -31,6 +35,7 @@ namespace edm
   private:
     /// Interface to the PYGIVE pythia routine, with add'l protections
     bool call_pygive(const std::string& iParm );
+    bool call_txgive(const std::string& iParm );
     virtual bool produce(Event & e);
     void clear();
   private:
