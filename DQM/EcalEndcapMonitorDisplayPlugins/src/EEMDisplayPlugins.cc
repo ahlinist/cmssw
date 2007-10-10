@@ -1,11 +1,11 @@
-// $Id: EEMDisplayPlugins.cc,v 1.11 2007/10/10 18:48:13 dellaric Exp $
+// $Id: EEMDisplayPlugins.cc,v 1.12 2007/10/10 19:07:25 dellaric Exp $
 
 /*!
   \file EEMDisplayPlugins
   \brief Display Plugin for Quality Histograms (2D)
   \author B. Gobbo 
-  \version $Revision: 1.11 $
-  \date $Date: 2007/10/10 18:48:13 $
+  \version $Revision: 1.12 $
+  \date $Date: 2007/10/10 19:07:25 $
 */
 
 #include <TProfile2D.h>
@@ -465,9 +465,9 @@ void EEMDisplayPlugins::postDrawTProfile2D( DisplayData *data ) {
     if( name.find( "EEPDT" ) < name.size() || 
 	name.find( "EELT shape" ) < name.size() || 
 	name.find( "EETPT shape" ) < name.size() ) {
-      TH1D* obj1 = (TH1D*) gROOT->FindObject((name+"_py").c_str());
+      TH1D* obj1 = (TH1D*) gROOT->FindObject("shape");
       if( obj1) obj1->Delete();
-      obj1 = obj->ProjectionY( (name+"_py").c_str(), 1, 1, "e" );
+      obj1 = obj->ProjectionY( "shape", 1, 1, "e" );
       gStyle->SetOptStat( "euomr" );
       obj1->SetStats( kTRUE );
       obj1->SetMinimum( 0. );
