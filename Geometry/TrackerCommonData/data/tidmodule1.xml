@@ -33,7 +33,7 @@
   <Numeric name="DlHybrid"          value="[tidmodule1:DlHybrid]"/>
   <String name="DoComponents"       value="Yes"/>
   <String name="BoxFrameName"       value="tidmodule1:TIDModule1BoxFrame"/>
-  <String name="BoxFrameMaterial"   value="materials:T_Carbon fibre str."/>
+  <String name="BoxFrameMaterial"   value="materials:Carbon fibre str."/>
   <Numeric name="BoxFrameWidth"     value="[tidmodpar:BoxFrameWidth]"/>
   <Numeric name="BoxFrameThick"     value="[tidmodpar:BoxFrameThick]"/>
   <Numeric name="BoxFrameHeight"    value="[tidmodule1:BoxFrameHeight]"/>
@@ -41,7 +41,7 @@
   <Numeric name="BottomFrameOver"   value="[tidmodpar:BottomFrameOverDS]"/>
   <Numeric name="TopFrameHeight"    value="[tidmodule1:TopFrameHeight]"/>
   <Numeric name="TopFrameOver"      value="[tidmodpar:TopFrameOverDS]"/>
-  <String name="SideFrameMaterial"  value="materials:T_Carbon fibre str."/>
+  <String name="SideFrameMaterial"  value="materials:Carbon fibre str."/>
   <Numeric name="SideFrameWidth"    value="[tidmodule1:SideFrameWidth]"/>
   <Numeric name="SideFrameThick"    value="[tidmodpar:SideFrameThick]"/>
   <Numeric name="SideFrameOver"     value="[tidmodpar:SideFrameOver]"/>
@@ -115,7 +115,7 @@
   <Numeric name="DlHybrid"          value="[tidmodule1:DlHybrid]"/>
   <String name="DoComponents"       value="No"/>
   <String name="BoxFrameName"       value="tidmodule1:TIDModule1BoxFrame"/>
-  <String name="BoxFrameMaterial"   value="materials:T_Carbon fibre str."/>
+  <String name="BoxFrameMaterial"   value="materials:Carbon fibre str."/>
   <Numeric name="BoxFrameWidth"     value="[tidmodpar:BoxFrameWidth]"/>
   <Numeric name="BoxFrameThick"     value="[tidmodpar:BoxFrameThick]"/>
   <Numeric name="BoxFrameHeight"    value="[tidmodule1:BoxFrameHeight]"/>
@@ -123,7 +123,7 @@
   <Numeric name="BottomFrameOver"   value="[tidmodpar:BottomFrameOverDS]"/>
   <Numeric name="TopFrameHeight"    value="[tidmodule1:TopFrameHeight]"/>
   <Numeric name="TopFrameOver"      value="[tidmodpar:TopFrameOverDS]"/>
-  <String name="SideFrameMaterial"  value="materials:T_Carbon fibre str."/>
+  <String name="SideFrameMaterial"  value="materials:Carbon fibre str."/>
   <Numeric name="SideFrameWidth"    value="[tidmodule1:SideFrameWidth]"/>
   <Numeric name="SideFrameThick"    value="[tidmodpar:SideFrameThick]"/>
   <Numeric name="SideFrameOver"     value="[tidmodpar:SideFrameOver]"/>
