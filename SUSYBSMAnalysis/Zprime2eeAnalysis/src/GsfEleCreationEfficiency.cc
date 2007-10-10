@@ -147,14 +147,14 @@ void GsfEleCreationEfficiency::Initialise(const edm::ParameterSet &params)
 bool GsfEleCreationEfficiency::MatchObjects(const reco::GsfTrack &trackCand, EgEff::EmObjectRef probeCand)
 {
 
-   double trackPosRho = trackCand.innerPosition().Rho();
-   double trackVz = trackCand.innerPosition().z();
-   double trackEta = trackCand.innerMomentum().eta();
+   double trackPosRho = trackCand.dxy();
+   double trackVz = trackCand.vz();
+   double trackEta = trackCand.eta();
    double trackEcalEta = ecalEta(trackEta, trackVz, trackPosRho);
 
-   double trackMomRho = trackCand.innerMomentum().Rho();
+   double trackMomRho = trackCand.pt();
    int trackCharge = trackCand.charge();
-   double trackPhi = trackCand.innerMomentum().phi();
+   double trackPhi = trackCand.phi();
    double trackEcalPhi = ecalPhi(trackMomRho, trackEta, trackPhi, trackCharge, trackPosRho);
 
    double probeEta = 0;
