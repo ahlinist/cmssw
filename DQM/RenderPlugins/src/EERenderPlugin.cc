@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.20 2007/08/23 11:41:52 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.1 2007/10/10 12:06:50 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.20 $
-  \date $Date: 2007/08/23 11:41:52 $
+  \version $Revision: 1.1 $
+  \date $Date: 2007/10/10 12:06:50 $
 */
 
 #include <TProfile2D.h>
@@ -406,7 +406,9 @@ void EERenderPlugin::postDrawTProfile2D( TCanvas *c, const ObjInfo &o ) {
   if( o.name.find( "EEPDT" ) < o.name.size() || 
       o.name.find( "EELT shape" ) < o.name.size() || 
       o.name.find( "EETPT shape" ) < o.name.size() ) {
-    TH1D* obj1 = obj->ProjectionY( "_py", 1, 1, "e" );
+    TH1D* obj1 = (TH1D*) gROOT->FindObject("_py");
+    if( obj1) obj1->Delete();
+    obj1 = obj->ProjectionY( "_py", 1, 1, "e" );
     gStyle->SetOptStat( "euomr" );
     obj1->SetStats( kTRUE );
     obj1->SetMinimum( 0. );
@@ -417,7 +419,6 @@ void EERenderPlugin::postDrawTProfile2D( TCanvas *c, const ObjInfo &o ) {
     obj1->GetXaxis()->SetNdivisions(510);
     obj1->GetYaxis()->SetNdivisions(510);
     obj1->Draw();
-    delete obj1;
     return;
   }
 
