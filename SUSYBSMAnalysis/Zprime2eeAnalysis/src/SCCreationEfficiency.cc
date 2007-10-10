@@ -148,12 +148,15 @@ void SCCreationEfficiency::Initialise(const edm::ParameterSet &params)
 bool SCCreationEfficiency::MatchObjects(const reco::SuperCluster &scCand, EgEff::EmObjectRef probeCand)
 {
 
-   double trackPosRho = probeCand->track()->innerPosition().Rho();
-   double trackVz = probeCand->track()->innerPosition().z();
+   double trackPosRho = probeCand->track()->dxy();
+   double trackVz = probeCand->track()->vz();
    double trackEta = probeCand->eta();
    double trackEcalEta = ecalEta(trackEta, trackVz, trackPosRho);
 
-   double trackEcalPhi = probeCand->track()->outerMomentum().phi();
+   double trackMomRho = probeCand->track()->pt();
+   int trackCharge = probeCand->track()->charge();
+   double trackPhi = probeCand->track()->phi();
+   double trackEcalPhi = ecalPhi(trackMomRho, trackEta, trackPhi, trackCharge, trackPosRho);
 
    double scEta = scCand.eta();
    double scPhi = scCand.phi();
