@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.20 2007/08/23 11:41:52 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.1 2007/10/10 12:06:50 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.20 $
-  \date $Date: 2007/08/23 11:41:52 $
+  \version $Revision: 1.1 $
+  \date $Date: 2007/10/10 12:06:50 $
 */
 
 #include <TProfile2D.h>
@@ -365,7 +365,9 @@ void EBRenderPlugin::postDrawTProfile2D( TCanvas *c, const ObjInfo &o ) {
   if( o.name.find( "EBPDT" ) < o.name.size() || 
       o.name.find( "EBLT shape" ) < o.name.size() || 
       o.name.find( "EBTPT shape" ) < o.name.size() ) {
-    TH1D* obj1 = obj->ProjectionY( "_py", 1, 1, "e" );
+    TH1D* obj1 = (TH1D*) gROOT->FindObject("_py"); 
+    if( obj1) obj1->Delete(); 
+    obj1 = obj->ProjectionY( "_py", 1, 1, "e" );
     gStyle->SetOptStat( "euomr" );
     obj1->SetStats( kTRUE );
     obj1->SetMinimum( 0. );
@@ -376,7 +378,6 @@ void EBRenderPlugin::postDrawTProfile2D( TCanvas *c, const ObjInfo &o ) {
     obj1->GetXaxis()->SetDrawOption("+");
     obj1->GetYaxis()->SetDrawOption("+");
     obj1->Draw();
-    delete obj1;
     return;
   }
 
