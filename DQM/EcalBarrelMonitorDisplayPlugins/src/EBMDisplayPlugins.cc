@@ -1,11 +1,11 @@
-// $Id: EBMDisplayPlugins.cc,v 1.28 2007/10/10 18:48:11 dellaric Exp $
+// $Id: EBMDisplayPlugins.cc,v 1.29 2007/10/10 19:07:20 dellaric Exp $
 
 /*!
   \file EBMDisplayPlugins
   \brief Display Plugin for Quality Histograms (2D)
   \author B. Gobbo 
-  \version $Revision: 1.28 $
-  \date $Date: 2007/10/10 18:48:11 $
+  \version $Revision: 1.29 $
+  \date $Date: 2007/10/10 19:07:20 $
 */
 
 #include <TProfile2D.h>
@@ -482,9 +482,9 @@ void EBMDisplayPlugins::postDrawTProfile2D( DisplayData *data ) {
     if( name.find( "EBPDT" ) < name.size() || 
 	name.find( "EBLT shape" ) < name.size() || 
 	name.find( "EBTPT shape" ) < name.size() ) {
-      TH1D* obj1 = (TH1D*) gROOT->FindObject((name+"_py").c_str());
+      TH1D* obj1 = (TH1D*) gROOT->FindObject("shape");
       if( obj1) obj1->Delete();
-      obj1 = obj->ProjectionY( (name+"_py").c_str(), 1, 1, "e" );
+      obj1 = obj->ProjectionY( "shape", 1, 1, "e" );
       gStyle->SetOptStat( "euomr" );
       obj1->SetStats( kTRUE );
       obj1->SetMinimum( 0. );

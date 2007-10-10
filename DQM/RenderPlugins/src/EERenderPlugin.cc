@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.2 2007/10/10 18:48:17 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.3 2007/10/10 19:07:35 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.2 $
-  \date $Date: 2007/10/10 18:48:17 $
+  \version $Revision: 1.3 $
+  \date $Date: 2007/10/10 19:07:35 $
 */
 
 #include <TProfile2D.h>
@@ -208,6 +208,7 @@ void EERenderPlugin::preDrawTProfile2D( TCanvas *c, const ObjInfo &o ) {
 
   if( o.name.find( "EEPDT" ) < o.name.size() || 
       o.name.find( "EELT shape" ) < o.name.size() || 
+      o.name.find( "EELDT shape" ) < o.name.size() || 
       o.name.find( "EETPT shape" ) < o.name.size() ) {
     obj->GetXaxis()->SetDrawOption("u");
     obj->GetYaxis()->SetDrawOption("u");
@@ -405,10 +406,11 @@ void EERenderPlugin::postDrawTProfile2D( TCanvas *c, const ObjInfo &o ) {
 
   if( o.name.find( "EEPDT" ) < o.name.size() || 
       o.name.find( "EELT shape" ) < o.name.size() || 
+      o.name.find( "EELDT shape" ) < o.name.size() || 
       o.name.find( "EETPT shape" ) < o.name.size() ) {
-    TH1D* obj1 = (TH1D*) gROOT->FindObject((o.name+"_py").c_str());
+    TH1D* obj1 = (TH1D*) gROOT->FindObject("shape");
     if( obj1) obj1->Delete();
-    obj1 = obj->ProjectionY( (o.name+"_py").c_str(), 1, 1, "e" );
+    obj1 = obj->ProjectionY( "shape", 1, 1, "e" );
     gStyle->SetOptStat( "euomr" );
     obj1->SetStats( kTRUE );
     obj1->SetMinimum( 0. );
