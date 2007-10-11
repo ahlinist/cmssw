@@ -71,24 +71,27 @@ PixelMatchAnalysisEmEm::PixelMatchAnalysisEmEm(const edm::ParameterSet& iConfig)
   sc_ecalisolated = 0;
 
 //  if (debug) {
-    LogDebug("Zprime2eeAnaEmEm")<<"drellyan_ = " << drellyan_ ;
-    LogDebug("Zprime2eeAnaEmEm")<<"rootanalfile_ = " << rootanalfile_ ;
-    LogDebug("Zprime2eeAnaEmEm")<<"ecalconesize_ = " << ecalconesize_ ;
-    LogDebug("Zprime2eeAnaEmEm")<<"hcalconesizemin_ = " << hcalconesizemin_ ;
-    LogDebug("Zprime2eeAnaEmEm")<<"hcalconesizemax_ = " << hcalconesizemax_ ;
-    LogDebug("Zprime2eeAnaEmEm")<<"hcalptMin_ = " << hcalptMin_ ;
-    LogDebug("Zprime2eeAnaEmEm")<<"trackptMin_ = " << trackptMin_ ;
-    LogDebug("Zprime2eeAnaEmEm")<<"trackconesize_ = " <<trackconesize_;;
-    LogDebug("Zprime2eeAnaEmEm")<<"rspan_ = "<<rspan_;;
-    LogDebug("Zprime2eeAnaEmEm")<<"zspan_ = "<<zspan_;;
-    LogDebug("Zprime2eeAnaEmEm")<<"vetoConesize_ = "<<vetoConesize_;;
-    LogDebug("Zprime2eeAnaEmEm")<<"jet_ = "<<jet_;;
-    LogDebug("Zprime2eeAnaEmEm")<<"ptrecmin_ = "<<ptrecmin_;;
-    LogDebug("Zprime2eeAnaEmEm")<<"etarecmin_ = "<<etarecmin_;;
-    LogDebug("Zprime2eeAnaEmEm")<<"ntrackisol_max_ = "<<ntrackisol_max_;;
-    LogDebug("Zprime2eeAnaEmEm")<<"trackisol_max_ = "<<trackisol_max_;;
-    LogDebug("Zprime2eeAnaEmEm")<<"hcalisol_max_ = "<<hcalisol_max_;;
-    LogDebug("Zprime2eeAnaEmEm")<<"ecalisol_max_ = "<<ecalisol_max_;;
+  edm::LogVerbatim("Zprime2eeAnaEmEm")<<"Parameters for EM/EM:";
+  edm::LogVerbatim("Zprime2eeAnaEmEm")<<"===============================================";
+    edm::LogVerbatim("Zprime2eeAnaEmEm")<<"drellyan_ = " << drellyan_ ;
+    edm::LogVerbatim("Zprime2eeAnaEmEm")<<"rootanalfile_ = " << rootanalfile_ ;
+    edm::LogVerbatim("Zprime2eeAnaEmEm")<<"ecalconesize_ = " << ecalconesize_ ;
+    edm::LogVerbatim("Zprime2eeAnaEmEm")<<"hcalconesizemin_ = " << hcalconesizemin_ ;
+    edm::LogVerbatim("Zprime2eeAnaEmEm")<<"hcalconesizemax_ = " << hcalconesizemax_ ;
+    edm::LogVerbatim("Zprime2eeAnaEmEm")<<"hcalptMin_ = " << hcalptMin_ ;
+    edm::LogVerbatim("Zprime2eeAnaEmEm")<<"trackptMin_ = " << trackptMin_ ;
+    edm::LogVerbatim("Zprime2eeAnaEmEm")<<"trackconesize_ = " <<trackconesize_;;
+    edm::LogVerbatim("Zprime2eeAnaEmEm")<<"rspan_ = "<<rspan_;;
+    edm::LogVerbatim("Zprime2eeAnaEmEm")<<"zspan_ = "<<zspan_;;
+    edm::LogVerbatim("Zprime2eeAnaEmEm")<<"vetoConesize_ = "<<vetoConesize_;;
+    edm::LogVerbatim("Zprime2eeAnaEmEm")<<"jet_ = "<<jet_;;
+    edm::LogVerbatim("Zprime2eeAnaEmEm")<<"ptrecmin_ = "<<ptrecmin_;;
+    edm::LogVerbatim("Zprime2eeAnaEmEm")<<"etarecmin_ = "<<etarecmin_;;
+    edm::LogVerbatim("Zprime2eeAnaEmEm")<<"ntrackisol_max_ = "<<ntrackisol_max_;;
+    edm::LogVerbatim("Zprime2eeAnaEmEm")<<"trackisol_max_ = "<<trackisol_max_;;
+    edm::LogVerbatim("Zprime2eeAnaEmEm")<<"hcalisol_max_ = "<<hcalisol_max_;;
+    edm::LogVerbatim("Zprime2eeAnaEmEm")<<"ecalisol_max_ = "<<ecalisol_max_;;
+  edm::LogVerbatim("Zprime2eeAnaEmEm")<<"===============================================";
 //  }
 }
 
@@ -803,7 +806,7 @@ void PixelMatchAnalysisEmEm::endJob() {
   edm::LogVerbatim("Zprime2eeAnaEmEm")<<"";
   edm::LogVerbatim("Zprime2eeAnaEmEm")<<"";
   edm::LogVerbatim("Zprime2eeAnaEmEm")<<"--------------------------------------------------------";
-  edm::LogVerbatim("Zprime2eeAnaEmEm")<<"SUMMARY of number of events";
+  edm::LogVerbatim("Zprime2eeAnaEmEm")<<"SUMMARY of number of events Em/Em";
   edm::LogVerbatim("Zprime2eeAnaEmEm")<<"N tot                        "<<event_tot<<"    eff=1.00";
   edm::LogVerbatim("Zprime2eeAnaEmEm")<<"--------------------------------------------------------";
   edm::LogVerbatim("Zprime2eeAnaEmEm")<<"N >= 2 SC REC:               "<<sc_sizegreater1 <<",    eff="<<eff1;

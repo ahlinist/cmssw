@@ -74,24 +74,27 @@ PixelMatchAnalysis::PixelMatchAnalysis(const edm::ParameterSet& iConfig)
   ecalisol_max_ = iConfig.getParameter<double>("ecalisol_max");
 
   if (debug) {
-    LogDebug("Zprime2eeAna")<<"drellyan_ = " << drellyan_ ;
-    LogDebug("Zprime2eeAna")<<"rootanalfile_ = " << rootanalfile_ ;
-    LogDebug("Zprime2eeAna")<<"ecalconesize_ = " << ecalconesize_ ;
-    LogDebug("Zprime2eeAna")<<"hcalconesizemin_ = " << hcalconesizemin_ ;
-    LogDebug("Zprime2eeAna")<<"hcalconesizemax_ = " << hcalconesizemax_ ;
-    LogDebug("Zprime2eeAna")<<"hcalptMin_ = " << hcalptMin_ ;
-    LogDebug("Zprime2eeAna")<<"trackptMin_ = " << trackptMin_ ;
-    LogDebug("Zprime2eeAna")<<"trackconesize_ = " <<trackconesize_;;
-    LogDebug("Zprime2eeAna")<<"rspan_ = "<<rspan_;;
-    LogDebug("Zprime2eeAna")<<"zspan_ = "<<zspan_;;
-    LogDebug("Zprime2eeAna")<<"vetoConesize_ = "<<vetoConesize_;;
-    LogDebug("Zprime2eeAna")<<"jet_ = "<<jet_;;
-    LogDebug("Zprime2eeAna")<<"ptrecmin_ = "<<ptrecmin_;;
-    LogDebug("Zprime2eeAna")<<"etarecmin_ = "<<etarecmin_;;
-    LogDebug("Zprime2eeAna")<<"trackisol_max_ = "<<trackisol_max_;;
-    LogDebug("Zprime2eeAna")<<"hcalisol_max_ = "<<hcalisol_max_;;
-    LogDebug("Zprime2eeAna")<<"ecalisol_max_ = "<<ecalisol_max_;;
-  }
+  edm::LogVerbatim("Zprime2eeAna")<<"Parameters for Gsf/Gsf:";
+  edm::LogVerbatim("Zprime2eeAna")<<"===============================================";
+    edm::LogVerbatim("Zprime2eeAna")<<"drellyan_ = " << drellyan_ ;
+    edm::LogVerbatim("Zprime2eeAna")<<"rootanalfile_ = " << rootanalfile_ ;
+    edm::LogVerbatim("Zprime2eeAna")<<"ecalconesize_ = " << ecalconesize_ ;
+    edm::LogVerbatim("Zprime2eeAna")<<"hcalconesizemin_ = " << hcalconesizemin_ ;
+    edm::LogVerbatim("Zprime2eeAna")<<"hcalconesizemax_ = " << hcalconesizemax_ ;
+    edm::LogVerbatim("Zprime2eeAna")<<"hcalptMin_ = " << hcalptMin_ ;
+    edm::LogVerbatim("Zprime2eeAna")<<"trackptMin_ = " << trackptMin_ ;
+    edm::LogVerbatim("Zprime2eeAna")<<"trackconesize_ = " <<trackconesize_;;
+    edm::LogVerbatim("Zprime2eeAna")<<"rspan_ = "<<rspan_;;
+    edm::LogVerbatim("Zprime2eeAna")<<"zspan_ = "<<zspan_;;
+    edm::LogVerbatim("Zprime2eeAna")<<"vetoConesize_ = "<<vetoConesize_;;
+    edm::LogVerbatim("Zprime2eeAna")<<"jet_ = "<<jet_;;
+    edm::LogVerbatim("Zprime2eeAna")<<"ptrecmin_ = "<<ptrecmin_;;
+    edm::LogVerbatim("Zprime2eeAna")<<"etarecmin_ = "<<etarecmin_;;
+    edm::LogVerbatim("Zprime2eeAna")<<"trackisol_max_ = "<<trackisol_max_;;
+    edm::LogVerbatim("Zprime2eeAna")<<"hcalisol_max_ = "<<hcalisol_max_;;
+    edm::LogVerbatim("Zprime2eeAna")<<"ecalisol_max_ = "<<ecalisol_max_;;
+ edm::LogVerbatim("Zprime2eeAna")<<"===============================================";
+   }
 }
 
 
@@ -824,7 +827,7 @@ void PixelMatchAnalysis::endJob() {
   edm::LogVerbatim("Zprime2eeAna")<<"";
   edm::LogVerbatim("Zprime2eeAna")<<"";
   edm::LogVerbatim("Zprime2eeAna")<<"--------------------------------------------------------";
-  edm::LogVerbatim("Zprime2eeAna")<<"SUMMARY of number of events";
+  edm::LogVerbatim("Zprime2eeAna")<<"SUMMARY of number of events Gsf/Gsf";
   edm::LogVerbatim("Zprime2eeAna")<<"N tot                       "<< event_tot <<",    eff=1.00";
   edm::LogVerbatim("Zprime2eeAna")<<"--------------------------------------------------------";
   edm::LogVerbatim("Zprime2eeAna")<<"N >= 2e GSF REC:              "<<gsf_sizegreater1<<",    eff="<<eff1 ; 
