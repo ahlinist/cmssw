@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.3 2007/10/10 19:07:35 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.4 2007/10/10 20:36:35 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.3 $
-  \date $Date: 2007/10/10 19:07:35 $
+  \version $Revision: 1.4 $
+  \date $Date: 2007/10/10 20:36:35 $
 */
 
 #include <TProfile2D.h>
@@ -127,10 +127,10 @@ void EBRenderPlugin::preDraw( TCanvas *c, const ObjInfo &o, const ImgInfo &i, Re
 
   c->cd();
 
-//  gPad->SetFrameFillColor( 10 );
-//  if (o.error) gPad->SetFillColor( 2 );
-//  if (o.warning) gPad->SetFillColor( 5 );
-//  if (o.other) gPad->SetFillColor( 16 );
+//  gPad->SetFrameFillColor(10);
+//  if (o.error) gPad->SetFillColor(2);
+//  if (o.warning) gPad->SetFillColor(5);
+//  if (o.other) gPad->SetFillColor(16);
 
   if( dynamic_cast<TProfile2D*>( o.object ) ) {
     preDrawTProfile2D( c, o );
@@ -159,8 +159,8 @@ void EBRenderPlugin::preDrawTProfile2D( TCanvas *c, const ObjInfo &o ) {
 
   gStyle->SetPaintTextFormat();
 
-  gStyle->SetOptStat( 0 );
-  obj->SetStats( kFALSE );
+  gStyle->SetOptStat(0);
+  obj->SetStats(kFALSE);
 
   if( o.name.find( "EBPDT" ) < o.name.size() || 
       o.name.find( "EBLT shape" ) < o.name.size() || 
@@ -169,7 +169,7 @@ void EBRenderPlugin::preDrawTProfile2D( TCanvas *c, const ObjInfo &o ) {
     obj->GetYaxis()->SetDrawOption("u");
     obj->GetXaxis()->SetNdivisions(0);
     obj->GetYaxis()->SetNdivisions(0);
-    obj->SetOption( "axis" );
+    obj->SetOption("axis");
     return;
   }
 
@@ -177,10 +177,10 @@ void EBRenderPlugin::preDrawTProfile2D( TCanvas *c, const ObjInfo &o ) {
   if( o.name.find( "EBCLT" ) < o.name.size() ) {
     gPad->SetGridx();
     gPad->SetGridy();
-    obj->GetXaxis()->SetNdivisions( 40118, kFALSE);
+    obj->GetXaxis()->SetNdivisions(40118, kFALSE);
     obj->GetYaxis()->SetNdivisions(170102, kFALSE);
-    gStyle->SetPalette( 10, pCol4 );
-    obj->SetOption( "colz" );
+    gStyle->SetPalette(10, pCol4);
+    obj->SetOption("colz");
     obj->GetXaxis()->SetLabelColor(0);
     gStyle->SetPaintTextFormat("+g");
     return;
@@ -189,10 +189,10 @@ void EBRenderPlugin::preDrawTProfile2D( TCanvas *c, const ObjInfo &o ) {
   // Occupancy-like (10 x grays) plots
   gPad->SetGridx();
   gPad->SetGridy();
-  obj->GetXaxis()->SetNdivisions( 17 );
-  obj->GetYaxis()->SetNdivisions( 4 );
-  gStyle->SetPalette( 10, pCol4 );
-  obj->SetOption( "colz" );
+  obj->GetXaxis()->SetNdivisions(17);
+  obj->GetYaxis()->SetNdivisions(4);
+  gStyle->SetPalette(10, pCol4);
+  obj->SetOption("colz");
   return;
 
 }
@@ -203,10 +203,10 @@ void EBRenderPlugin::preDrawTProfile( TCanvas *c, const ObjInfo &o ) {
 
   assert( obj );
 
-  gStyle->SetOptStat( 0 );
+  gStyle->SetOptStat(0);
   obj->SetStats( kFALSE );
-  gStyle->SetOptStat( "euomr" );
-  obj->SetStats( kTRUE );
+  gStyle->SetOptStat("euomr");
+  obj->SetStats(kTRUE);
   return;
 
 }
@@ -219,58 +219,60 @@ void EBRenderPlugin::preDrawTH2( TCanvas *c, const ObjInfo &o ) {
 
   gStyle->SetPaintTextFormat();
 
-  gStyle->SetOptStat( 0 );
+  gStyle->SetOptStat(0);
   obj->SetStats( kFALSE );
   int nbx = obj->GetNbinsX();
   int nby = obj->GetNbinsY();
 
-  gPad->SetLogy( 0 );
+  gPad->SetLogy(0);
 
   if( nbx == 85 && nby == 20 ) {
     gPad->SetGridx();
     gPad->SetGridy();
-    obj->GetXaxis()->SetNdivisions( 17 );
-    obj->GetYaxis()->SetNdivisions( 4 );
+    obj->GetXaxis()->SetNdivisions(17);
+    obj->GetYaxis()->SetNdivisions(4);
   }
 
   if( nbx == 17 && nby == 4 ) {
     gPad->SetGridx();
     gPad->SetGridy();
-    obj->GetXaxis()->SetNdivisions( 17 );
-    obj->GetYaxis()->SetNdivisions( 4 );
+    obj->GetXaxis()->SetNdivisions(17);
+    obj->GetYaxis()->SetNdivisions(4);
   }
 
   if( nbx == 10 && nby == 5 ) {
     gPad->SetGridx();
     gPad->SetGridy();
-    obj->GetXaxis()->SetNdivisions( 10 );
-    obj->GetYaxis()->SetNdivisions( 1 );
+    obj->GetXaxis()->SetNdivisions(10);
+    obj->GetYaxis()->SetNdivisions(1);
   }
 
   if( nbx == 2 && nby == 1 ) {
     gPad->SetGridx();
     gPad->SetGridy();
-    obj->GetXaxis()->SetNdivisions( 2 );
-    obj->GetYaxis()->SetNdivisions( 1 );
+    obj->GetXaxis()->SetNdivisions(2);
+    obj->GetYaxis()->SetNdivisions(1);
   }
 
   // Occupancy-like (10 x grays) plots
   if( o.name.find( "EBIT" ) < o.name.size() &&
       o.name.find( "quality" ) >= o.name.size() ) {
-    obj->SetMinimum( 0. );
-    gStyle->SetPalette( 4, pCol4 );
-    obj->SetOption( "colz" );
+    obj->SetMinimum(0.0);
+    gStyle->SetPalette(4, pCol4);
+    obj->SetOption("colz");
     return;
   }
 
   // Occupancy-like (10 x grays) plots
   if( o.name.find( "EBOT" ) < o.name.size() &&
       o.name.find( "quality" ) >= o.name.size() ) {
-    obj->GetXaxis()->SetNdivisions( 40118, kFALSE);
+    gPad->SetGridx();
+    gPad->SetGridy();
+    obj->GetXaxis()->SetNdivisions(40118, kFALSE);
     obj->GetYaxis()->SetNdivisions(170102, kFALSE);
-    gStyle->SetPalette( 10, pCol4 );
+    gStyle->SetPalette(10, pCol4);
     obj->SetMinimum(0.0);
-    obj->SetOption( "colz" );
+    obj->SetOption("colz");
     gStyle->SetPaintTextFormat("+g");
     return;
   }
@@ -278,39 +280,43 @@ void EBRenderPlugin::preDrawTH2( TCanvas *c, const ObjInfo &o ) {
   // Quality-like (green, yellow, red) plots
   if( o.name.find( "summary" ) < o.name.size() ) {
     gStyle->SetOptStat(" ");
+    gPad->SetGridx();
+    gPad->SetGridy();
     obj->GetXaxis()->SetNdivisions(18, kFALSE);
     obj->GetYaxis()->SetNdivisions(2);
     obj->SetMinimum(-0.00000001);
     obj->SetMaximum(6.0);
     gStyle->SetPalette(6, pCol3);
-    obj->SetOption( "col" );
+    obj->SetOption("col");
     gStyle->SetPaintTextFormat("+g");
     return;
   }
 
   // Quality-like (green, yellow, red) plots
   if( o.name.find( "quality" ) < o.name.size() ) {
-    obj->SetMinimum( -0.00000001 );
-    obj->SetMaximum( 5.0 );
-    gStyle->SetPalette( 6, pCol3 );
-    obj->SetOption( "col" );
+    obj->SetMinimum(-0.00000001);
+    obj->SetMaximum(6.0);
+    gStyle->SetPalette(6, pCol3);
+    obj->SetOption("col");
     return;
   }
 
   // Occupancy-like (10 x grays) plots
   if( o.name.find( "EBMM event" ) < o.name.size() ) {
-    gStyle->SetPalette( 10, pCol4 );
-    obj->SetOption( "colz" );
+    gStyle->SetPalette(10, pCol4);
+    obj->SetOption("colz");
     return;
   }
 
   // Occupancy-like (10 x grays) plots
   if( o.name.find( "EBCLT" ) < o.name.size() ) {
-    obj->GetXaxis()->SetNdivisions( 40118, kFALSE);
+    gPad->SetGridx();
+    gPad->SetGridy();
+    obj->GetXaxis()->SetNdivisions(40118, kFALSE);
     obj->GetYaxis()->SetNdivisions(170102, kFALSE);
     obj->GetXaxis()->SetLabelColor(0);
-    gStyle->SetPalette( 10, pCol4 );
-    obj->SetOption( "colz" );
+    gStyle->SetPalette(10, pCol4);
+    obj->SetOption("colz");
     gStyle->SetPaintTextFormat("+g");
     return;
   }
@@ -367,12 +373,12 @@ void EBRenderPlugin::postDrawTProfile2D( TCanvas *c, const ObjInfo &o ) {
       o.name.find( "EBTPT shape" ) < o.name.size() ) {
     TH1D* obj1 = (TH1D*) gROOT->FindObject("shape");
     if( obj1) obj1->Delete();
-    obj1 = obj->ProjectionY( "shape", 1, 1, "e" );
-    gStyle->SetOptStat( "euomr" );
-    obj1->SetStats( kTRUE );
-    obj1->SetMinimum( 0. );
-    gPad->SetGridx( 0 );
-    gPad->SetGridy( 0 );
+    obj1 = obj->ProjectionY("shape", 1, 1, "e");
+    gStyle->SetOptStat("euomr");
+    obj1->SetStats(kTRUE);
+    obj1->SetMinimum(0.0);
+    gPad->SetGridx(0);
+    gPad->SetGridy(0);
     obj1->GetXaxis()->SetNdivisions(510);
     obj1->GetYaxis()->SetNdivisions(510);
     obj1->GetXaxis()->SetDrawOption("+");
@@ -402,32 +408,32 @@ void EBRenderPlugin::postDrawTH2( TCanvas *c, const ObjInfo &o ) {
   int nby = obj->GetNbinsY();
 
   if( nbx == 85 && nby == 20 ) {
-    text1->Draw( "text,same" );
+    text1->Draw("text,same");
     return;
   }
 
   if( nbx == 17 && nby == 4 ) {
-    text2->Draw( "text,same" );
+    text2->Draw("text,same");
     return;
   }
 
   if( nbx == 10 && nby == 5 ) {
-    text3->Draw( "text,same" );
+    text3->Draw("text,same");
     return;
   }
 
   if( nbx == 2 && nby == 1 ) {
-    text4->Draw( "text,same" );
+    text4->Draw("text,same");
     return;
   }
 
   if( o.name.find( "summary" ) < o.name.size() ) {
-    text6->Draw( "text,same" );
+    text6->Draw("text,same");
     return;
   }
 
   if( o.name.find( "EBCLT" ) < o.name.size() ) {
-    text7->Draw( "text,same" );
+    text7->Draw("text,same");
     //ax1->Draw();
     return;
   }
