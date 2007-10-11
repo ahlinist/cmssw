@@ -130,6 +130,8 @@ namespace edm {
     // encode
     std::string  toString() const;
     std::string  toStringOfTracked() const;
+    size_t sizeOfString() const {return rep.size() + 4;}
+    size_t sizeOfStringOfTracked() const;
   
     // access
     bool isTracked() const { return tracked == '+'; }
@@ -140,6 +142,7 @@ namespace edm {
   private:
     std::string name_;
     std::string  rep;
+    mutable std::string  tracked_rep;
     char         type;
     char         tracked;
   
