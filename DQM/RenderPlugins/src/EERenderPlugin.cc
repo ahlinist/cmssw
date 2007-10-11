@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.4 2007/10/10 20:36:35 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.5 2007/10/11 06:19:27 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.4 $
-  \date $Date: 2007/10/10 20:36:35 $
+  \version $Revision: 1.5 $
+  \date $Date: 2007/10/11 06:19:27 $
 */
 
 #include <TProfile2D.h>
@@ -273,16 +273,15 @@ void EERenderPlugin::preDrawTH2( TCanvas *c, const ObjInfo &o ) {
   if( nbx == 50 && nby == 50 ) {
     gPad->SetGridx();
     gPad->SetGridy();
-  }
-
-  if( nbx == 100 && nby == 100 ) {
-    gPad->SetGridx();
-    gPad->SetGridy();
+    obj->GetXaxis()->SetNdivisions(10);
+    obj->GetYaxis()->SetNdivisions(10);
   }
 
   if( nbx == 20 && nby == 20 ) {
     gPad->SetGridx();
     gPad->SetGridy();
+    obj->GetXaxis()->SetNdivisions(20);
+    obj->GetYaxis()->SetNdivisions(20);
   }
 
   if( nbx == 10 && nby == 5 ) {
@@ -299,6 +298,20 @@ void EERenderPlugin::preDrawTH2( TCanvas *c, const ObjInfo &o ) {
     obj->GetYaxis()->SetNdivisions(1);
   }
 
+  if( nbx == 100 && nby == 100 ) {
+    gPad->SetGridx();
+    gPad->SetGridy();
+    obj->GetXaxis()->SetNdivisions(10);
+    obj->GetYaxis()->SetNdivisions(10);
+  }
+
+  if( nbx == 90 && nby == 20 ) {
+    gPad->SetGridx();
+    gPad->SetGridy();
+    obj->GetXaxis()->SetNdivisions(18);
+    obj->GetYaxis()->SetNdivisions(2);
+  }
+
   // Occupancy-like (10 x grays) plots
   if( o.name.find( "EEIT" ) < o.name.size() &&
       o.name.find( "quality" ) >= o.name.size() ) {
@@ -311,6 +324,10 @@ void EERenderPlugin::preDrawTH2( TCanvas *c, const ObjInfo &o ) {
   // Occupancy-like (10 x grays) plots
   if( o.name.find( "EEOT" ) < o.name.size() &&
       o.name.find( "quality" ) >= o.name.size() ) {
+    gPad->SetGridx();
+    gPad->SetGridy();
+    obj->GetXaxis()->SetNdivisions(10, kFALSE);
+    obj->GetYaxis()->SetNdivisions(10, kFALSE);
     gStyle->SetPalette(10, pCol4);
     obj->SetMinimum(0.0);
     obj->SetOption("colz");

@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.4 2007/10/10 20:36:35 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.5 2007/10/11 06:19:27 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.4 $
-  \date $Date: 2007/10/10 20:36:35 $
+  \version $Revision: 1.5 $
+  \date $Date: 2007/10/11 06:19:27 $
 */
 
 #include <TProfile2D.h>
@@ -181,7 +181,6 @@ void EBRenderPlugin::preDrawTProfile2D( TCanvas *c, const ObjInfo &o ) {
     obj->GetYaxis()->SetNdivisions(170102, kFALSE);
     gStyle->SetPalette(10, pCol4);
     obj->SetOption("colz");
-    obj->GetXaxis()->SetLabelColor(0);
     gStyle->SetPaintTextFormat("+g");
     return;
   }
@@ -254,6 +253,20 @@ void EBRenderPlugin::preDrawTH2( TCanvas *c, const ObjInfo &o ) {
     obj->GetYaxis()->SetNdivisions(1);
   }
 
+  if( nbx == 360 && nby == 170 ) { 
+    gPad->SetGridx();
+    gPad->SetGridy();
+    obj->GetXaxis()->SetNdivisions(18, kFALSE);
+    obj->GetYaxis()->SetNdivisions(2);
+  }
+
+  if( nbx == 90 && nby == 20 ) { 
+    gPad->SetGridx();
+    gPad->SetGridy();
+    obj->GetXaxis()->SetNdivisions(18, kFALSE);
+    obj->GetYaxis()->SetNdivisions(2, kFALSE);
+  }
+
   // Occupancy-like (10 x grays) plots
   if( o.name.find( "EBIT" ) < o.name.size() &&
       o.name.find( "quality" ) >= o.name.size() ) {
@@ -280,10 +293,6 @@ void EBRenderPlugin::preDrawTH2( TCanvas *c, const ObjInfo &o ) {
   // Quality-like (green, yellow, red) plots
   if( o.name.find( "summary" ) < o.name.size() ) {
     gStyle->SetOptStat(" ");
-    gPad->SetGridx();
-    gPad->SetGridy();
-    obj->GetXaxis()->SetNdivisions(18, kFALSE);
-    obj->GetYaxis()->SetNdivisions(2);
     obj->SetMinimum(-0.00000001);
     obj->SetMaximum(6.0);
     gStyle->SetPalette(6, pCol3);
@@ -314,7 +323,6 @@ void EBRenderPlugin::preDrawTH2( TCanvas *c, const ObjInfo &o ) {
     gPad->SetGridy();
     obj->GetXaxis()->SetNdivisions(40118, kFALSE);
     obj->GetYaxis()->SetNdivisions(170102, kFALSE);
-    obj->GetXaxis()->SetLabelColor(0);
     gStyle->SetPalette(10, pCol4);
     obj->SetOption("colz");
     gStyle->SetPaintTextFormat("+g");
