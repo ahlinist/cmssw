@@ -19,7 +19,7 @@ public:
 
   virtual void finalize( void ) {}
 
-  virtual void write( void );
+  virtual void write(const bool allHisto);
 
   void psPlot( const TString & name );
   void epsPlot( const TString & name );

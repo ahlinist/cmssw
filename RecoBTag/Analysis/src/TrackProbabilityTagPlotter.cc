@@ -79,8 +79,7 @@ void TrackProbabilityTagPlotter::analyzeTag (const reco::BaseTagInfo * baseTagIn
 
   if (!tagInfo) {
     throw cms::Exception("Configuration")
-      << "BTagPerformanceAnalyzer: Extended TagInfo attached to selected tagInfo not of type TrackProbabilityTagInfo. " << endl
-      << "Select a different tagInfo collection or change the algorithm parameter to TrackProbability in the configuration\n";
+      << "BTagPerformanceAnalyzer: Extended TagInfo not of type TrackProbabilityTagInfo. " << endl;
   }
 
   int jetFlav = jetFlavour.flavour();
@@ -165,18 +164,18 @@ void TrackProbabilityTagPlotter::psPlot(const TString & name)
   canvas.Print(name + cName + ".ps]");
 }
 
-void TrackProbabilityTagPlotter::write()
+void TrackProbabilityTagPlotter::write(const bool allHisto)
 {
   TString dir= "TrackProbability"+theExtensionString;
   gFile->cd();
   gFile->mkdir(dir);
   gFile->cd(dir);
   for(int n=0; n <= 4; n++) {
-    tkcntHistosSig2D[n]->write();
-    tkcntHistosSig3D[n]->write();
+    tkcntHistosSig2D[n]->write(allHisto);
+    tkcntHistosSig3D[n]->write(allHisto);
   }
   if (finalized) {
-    for(int n=0; n < 4; n++) effPurFromHistos[n]->write();
+    for(int n=0; n < 4; n++) effPurFromHistos[n]->write(allHisto);
   }
   gFile->cd();
 }

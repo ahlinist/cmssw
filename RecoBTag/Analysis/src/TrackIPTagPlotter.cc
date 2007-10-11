@@ -157,8 +157,7 @@ void TrackIPTagPlotter::analyzeTag (const reco::BaseTagInfo * baseTagInfo,
 
   if (!tagInfo) {
     throw cms::Exception("Configuration")
-      << "BTagPerformanceAnalyzer: Extended TagInfo attached to selected JetTag not of type TrackIPTagInfo. " << endl
-      << "Select a different JetTag collection or change the algorithm parameter to TrackIPTags in the configuration\n";
+      << "BTagPerformanceAnalyzer: Extended TagInfo not of type TrackIPTagInfo. " << endl;
   }
 
   int jetFlav = jetFlavour.flavour();
@@ -325,28 +324,28 @@ void TrackIPTagPlotter::psPlot(const TString & name)
   canvas.Print(name + cName + ".ps]");
 }
 
-void TrackIPTagPlotter::write()
+void TrackIPTagPlotter::write(const bool allHisto)
 {
   TString dir= "TrackIP"+theExtensionString;
   gFile->cd();
   gFile->mkdir(dir);
   gFile->cd(dir);
-  trkNbr2D->write();
-  trkNbr3D->write();
+  trkNbr2D->write(allHisto);
+  trkNbr3D->write(allHisto);
 #if 0
-  decayLengthValuHisto->write();
-  decayLengthSignHisto->write();
+  decayLengthValuHisto->write(allHisto);
+  decayLengthSignHisto->write(allHisto);
 #endif
-  jetDistanceValuHisto->write();
-  jetDistanceSignHisto->write();
+  jetDistanceValuHisto->write(allHisto);
+  jetDistanceSignHisto->write(allHisto);
   for(int n=0; n <= 4; n++) {
-    tkcntHistosSig2D[n]->write();
-    tkcntHistosSig3D[n]->write();
-    tkcntHistosProb2D[n]->write();
-    tkcntHistosProb3D[n]->write();
+    tkcntHistosSig2D[n]->write(allHisto);
+    tkcntHistosSig3D[n]->write(allHisto);
+    tkcntHistosProb2D[n]->write(allHisto);
+    tkcntHistosProb3D[n]->write(allHisto);
   }
   if (finalized) {
-    for(int n=0; n < 4; n++) effPurFromHistos[n]->write();
+    for(int n=0; n < 4; n++) effPurFromHistos[n]->write(allHisto);
   }
   gFile->cd();
 }

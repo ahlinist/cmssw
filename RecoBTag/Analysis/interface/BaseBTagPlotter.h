@@ -21,7 +21,7 @@ class BaseBTagPlotter {
   // final computation, plotting, printing .......
   virtual void finalize () = 0;
 
-  virtual void write () = 0 ;
+  virtual void write (const bool allHisto) = 0 ;
 
   virtual void epsPlot(const TString & name) = 0;
 

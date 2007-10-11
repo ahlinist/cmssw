@@ -210,7 +210,7 @@ void JetTagPlotter::finalize()
 }
 
 
-void JetTagPlotter::write()
+void JetTagPlotter::write(const bool allHisto)
 {
   TString dir= "JetTag"+theExtensionString;
 
@@ -218,19 +218,19 @@ void JetTagPlotter::write()
   gFile->mkdir(dir);
   gFile->cd(dir);
 
-  dDiscriminatorFC->write();
-  dJetFlav->write();
-  dJetMultiplicity->write();
-  dDiscriminator->write();
-  dJetRecMomentum->write();
-  dJetRecPt->write();
-  dJetRecPseudoRapidity->write();
-  dJetRecPhi->write();
-  dJetPartonMomentum->write();
-  dJetPartonPt->write();
-  dJetPartonPseudoRapidity->write();
+  if (allHisto) dDiscriminatorFC->write(allHisto);
+  dJetFlav->write(allHisto);
+  dJetMultiplicity->write(allHisto);
+  dDiscriminator->write(allHisto);
+  dJetRecMomentum->write(allHisto);
+  dJetRecPt->write(allHisto);
+  dJetRecPseudoRapidity->write(allHisto);
+  dJetRecPhi->write(allHisto);
+  dJetPartonMomentum->write(allHisto);
+  dJetPartonPt->write(allHisto);
+  dJetPartonPseudoRapidity->write(allHisto);
   if (finalized) {
-    effPurFromHistos->write();
+    effPurFromHistos->write(allHisto);
   }
   gFile->cd();
 }

@@ -77,8 +77,7 @@ void SoftLeptonTagPlotter::analyzeTag( const reco::BaseTagInfo * baseTagInfo,
 
   if (!tagInfo) {
     throw cms::Exception("Configuration")
-      << "BTagPerformanceAnalyzer: Extended TagInfo attached to selected JetTag not of type SoftLeptonTagInfo. " << endl
-      << "Select a different JetTag collection or change the algorithm parameter to SoftLepton in the configuration\n";
+      << "BTagPerformanceAnalyzer: Extended TagInfo not of type SoftLeptonTagInfo. " << endl;
   }
 
   int flavour = jetFlavour.flavour();
@@ -136,22 +135,22 @@ void SoftLeptonTagPlotter::psPlot(const TString & name)
   canvas.Print(name + cName + ".ps]");
 }
 
-void SoftLeptonTagPlotter::write()
+void SoftLeptonTagPlotter::write(const bool allHisto)
 {
   TString dir= "SoftLepton" + theExtensionString;
   gFile->cd();
   gFile->mkdir(dir);
   gFile->cd(dir);
   for (int i = 0; i < s_leptons; i++) {
-    m_leptonId[i]->write();
-    m_leptonPt[i]->write();
-    m_sip2d[i]->write();
-    m_sip3d[i]->write();
-    m_ptRel[i]->write();
-    m_etaRel[i]->write();
-    m_deltaR[i]->write();
-    m_ratio[i]->write();
-    m_ratioRel[i]->write();
+    m_leptonId[i]->write(allHisto);
+    m_leptonPt[i]->write(allHisto);
+    m_sip2d[i]->write(allHisto);
+    m_sip3d[i]->write(allHisto);
+    m_ptRel[i]->write(allHisto);
+    m_etaRel[i]->write(allHisto);
+    m_deltaR[i]->write(allHisto);
+    m_ratio[i]->write(allHisto);
+    m_ratioRel[i]->write(allHisto);
   }
   gFile->cd();
 }
