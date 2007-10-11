@@ -1,11 +1,11 @@
-// $Id: EEMDisplayPlugins.cc,v 1.12 2007/10/10 19:07:25 dellaric Exp $
+// $Id: EEMDisplayPlugins.cc,v 1.13 2007/10/10 20:36:34 dellaric Exp $
 
 /*!
   \file EEMDisplayPlugins
   \brief Display Plugin for Quality Histograms (2D)
   \author B. Gobbo 
-  \version $Revision: 1.12 $
-  \date $Date: 2007/10/10 19:07:25 $
+  \version $Revision: 1.13 $
+  \date $Date: 2007/10/10 20:36:34 $
 */
 
 #include <TProfile2D.h>
@@ -368,7 +368,7 @@ std::string EEMDisplayPlugins::preDrawTH2( DisplayData *data ) {
     // Quality-like (green, yellow, red) plots
     if( name.find( "quality" ) < name.size() ) {
       obj->SetMinimum( -0.00000001 );
-      obj->SetMaximum( 5.0 );
+      obj->SetMaximum( 6.0 );
       gStyle->SetPalette( 6, pCol3 );
       obj->SetOption( "col" );
       return "";
