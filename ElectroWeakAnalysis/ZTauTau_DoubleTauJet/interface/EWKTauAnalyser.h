@@ -83,6 +83,12 @@ private:
   std::string statFile_;
   std::string hltJetSrc_;
 
+  double maxTauMass_;
+  double tightTauLeadingTrkPt_;
+  double looseTauLeadingTrkPt_;
+  double minZMass_; 
+  double maxZMass_; 
+
   double jetEtMinMETCorr_;
   double jetEMfracMETCorr_;
 
@@ -130,6 +136,10 @@ private:
 
   TH1D* tauPtH;
   TH1D* tauEtaH;
+  TH1D* tauPtGenH;
+  TH1D* tauEtaGenH;
+  TH1D* tauPtDiscH;
+  TH1D* tauEtaDiscH;
   TH1D* tauPhiH;
   TH1D* tauZVtxH;
   TH1D* tauChargeH;
@@ -139,6 +149,15 @@ private:
   TH1D* tauDiscFirst2JetsH;
   TH1D* sumPtChHadIsoH;
   TH1D* sumPtGammaIsoH;
+
+  TH1D* chHadEnergyJetH;
+  TH1D* neuHadEnergyJetH;
+  TH1D* chEMEnergyJetH;
+  TH1D* chMuEnergyJetH;
+  TH1D* neuEMEnergyJetH;
+  TH1F* chMultJetH;
+  TH1F* neuMultJetH;
+  TH1F* muMultJetH;
 
   TH1D* tauDiscOrigH;
   TH1D* zMassH;
@@ -169,6 +188,8 @@ private:
   TH1I* nTightTauH;
   TH1I* nLooseTauH;
   TH1I* statH;
+
+  TH1D* dRTauAndHLTH;
 
   TProfile* jetPtWithEtaP;
   TProfile* trkPtWithEtaP;
