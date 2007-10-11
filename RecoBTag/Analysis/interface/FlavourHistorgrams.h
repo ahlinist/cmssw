@@ -47,7 +47,7 @@ public:
   // For single variables and arrays
   void fill ( const int & flavour,  const T * variable) const;
 
-  void write () const ;
+  void write(const bool allHisto) const ;
 
   void settitle(const char* title) ;
   
@@ -277,18 +277,18 @@ FlavourHistorgrams<T>::fill ( const int & flavour,  const T * variable) const
 
 
 template <class T>
-void FlavourHistorgrams<T>::write () const {
+void FlavourHistorgrams<T>::write(const bool allHisto) const {
   // here: write histogram to specified output file
-  theHisto_all ->Write() ; 
-  theHisto_d   ->Write() ; 
-  theHisto_u   ->Write() ; 
-  theHisto_s   ->Write() ; 
+  if (allHisto) theHisto_all ->Write() ; 
+  if (allHisto) theHisto_d   ->Write() ; 
+  if (allHisto) theHisto_u   ->Write() ; 
+  if (allHisto) theHisto_s   ->Write() ; 
   theHisto_c   ->Write() ; 
   theHisto_b   ->Write() ; 
   theHisto_g   ->Write() ; 
-  theHisto_ni  ->Write() ; 
+  if (allHisto) theHisto_ni  ->Write() ; 
   theHisto_dus ->Write() ; 
-  theHisto_dusg->Write() ;
+  if (allHisto) theHisto_dusg->Write() ;
 }
 
 template <class T>

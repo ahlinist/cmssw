@@ -63,7 +63,7 @@ class BTagPerformanceAnalyzer : public edm::EDAnalyzer {
   std::vector<double> etaRanges, ptRanges;
   bool produceEps, producePs;
   TString psBaseName, epsBaseName, inputFile;
-  bool update;
+  bool update, allHisto;
   bool fastMC;
   edm::InputTag jetMCSrc;
 

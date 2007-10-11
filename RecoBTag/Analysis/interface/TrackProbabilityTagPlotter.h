@@ -23,7 +23,7 @@ class TrackProbabilityTagPlotter : public BaseTagInfoPlotter {
 
   virtual void finalize ();
 
-  virtual void write ();
+  virtual void write (const bool allHisto);
 
   void epsPlot(const TString & name);
 

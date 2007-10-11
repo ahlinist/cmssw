@@ -30,7 +30,7 @@ class BTagDifferentialPlot {
 
   void process () ;
 
-  void write () ; 
+  void write (const bool allHisto) ; 
 
   void epsPlot(const TString & name);
 

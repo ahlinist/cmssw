@@ -29,7 +29,7 @@ class JetTagPlotter : public BaseBTagPlotter {
   // get "2d" histograms for misid. vs. b-eff
   EffPurFromHistos * getEffPurFromHistos () { return effPurFromHistos ; }
 
-  void write ();
+  void write (const bool allHisto);
 
   void epsPlot(const TString & name);
 

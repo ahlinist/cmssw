@@ -135,19 +135,19 @@ EffPurFromHistos::~EffPurFromHistos () {
 }
 
 
-void EffPurFromHistos::write () {
-  EffFlavVsBEff_d   ->Write();
-  EffFlavVsBEff_u   ->Write();
-  EffFlavVsBEff_s   ->Write();
-  EffFlavVsBEff_c   ->Write();
-  EffFlavVsBEff_b   ->Write();
-  EffFlavVsBEff_g   ->Write();
-  EffFlavVsBEff_ni  ->Write();
-  EffFlavVsBEff_dus ->Write();
-  EffFlavVsBEff_dusg->Write();
+void EffPurFromHistos::write (const bool allHisto) {
+  if (allHisto) EffFlavVsBEff_d->Write();
+  if (allHisto) EffFlavVsBEff_u->Write();
+  if (allHisto) EffFlavVsBEff_s->Write();
+  EffFlavVsBEff_c->Write();
+  if (allHisto) EffFlavVsBEff_b->Write();
+  EffFlavVsBEff_g->Write();
+  if (allHisto) EffFlavVsBEff_ni->Write();
+  EffFlavVsBEff_dus->Write();
+  if (allHisto) EffFlavVsBEff_dusg->Write();
   if ( fromDiscriminatorDistr) {
-    discrNoCutEffic->write();
-    discrCutEfficScan->write();
+    if (allHisto) discrNoCutEffic->write(allHisto);
+    discrCutEfficScan->write(allHisto);
   }
 }
 

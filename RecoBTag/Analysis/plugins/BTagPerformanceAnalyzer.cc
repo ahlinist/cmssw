@@ -198,6 +198,7 @@ void BTagPerformanceAnalyzer::init(const edm::ParameterSet& iConfig)
   psBaseName = TString(iConfig.getParameter<std::string>( "psBaseName" ));
   epsBaseName = TString(iConfig.getParameter<std::string>( "epsBaseName" ));
 
+  allHisto = iConfig.getParameter<bool>( "allHistograms" );
 
   partonKinematics = iConfig.getParameter< bool >("partonKinematics");
 
@@ -346,7 +347,7 @@ void BTagPerformanceAnalyzer::endJob()
     int plotterSize =  binJetTagPlotters[iJetLabel].size();
     for (int iPlotter = 0; iPlotter != plotterSize; ++iPlotter) {
       binJetTagPlotters[iJetLabel][iPlotter]->finalize();
-      binJetTagPlotters[iJetLabel][iPlotter]->write();
+      binJetTagPlotters[iJetLabel][iPlotter]->write(allHisto);
       if (producePs)  (*binJetTagPlotters[iJetLabel][iPlotter]).psPlot(psBaseName);
       if (produceEps) (*binJetTagPlotters[iJetLabel][iPlotter]).epsPlot(epsBaseName);
     }
@@ -356,7 +357,7 @@ void BTagPerformanceAnalyzer::endJob()
       (**iPlotter).process();
       if (producePs)  (**iPlotter).psPlot(psBaseName);
       if (produceEps) (**iPlotter).epsPlot(epsBaseName);
-      (**iPlotter).write();
+      (**iPlotter).write(allHisto);
     }
   }
 
@@ -364,7 +365,7 @@ void BTagPerformanceAnalyzer::endJob()
     int plotterSize =  binTagInfoPlotters[iJetLabel].size();
     for (int iPlotter = 0; iPlotter != plotterSize; ++iPlotter) {
       binTagInfoPlotters[iJetLabel][iPlotter]->finalize();
-      binTagInfoPlotters[iJetLabel][iPlotter]->write();
+      binTagInfoPlotters[iJetLabel][iPlotter]->write(allHisto);
       if (producePs)  (*binTagInfoPlotters[iJetLabel][iPlotter]).psPlot(psBaseName);
       if (produceEps) (*binTagInfoPlotters[iJetLabel][iPlotter]).epsPlot(epsBaseName);
     }

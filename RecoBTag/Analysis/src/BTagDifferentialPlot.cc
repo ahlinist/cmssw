@@ -43,20 +43,20 @@ BTagDifferentialPlot::~BTagDifferentialPlot () {
 
 
 
-void BTagDifferentialPlot::write () {
+void BTagDifferentialPlot::write (const bool allHisto) {
   if (processed) {
   gFile->cd();
   gFile->mkdir(commonName);
   gFile->cd(commonName);
-    theDifferentialHistoB_d   ->Write() ;
-    theDifferentialHistoB_u   ->Write() ;
-    theDifferentialHistoB_s   ->Write() ;
+    if (allHisto) theDifferentialHistoB_d   ->Write() ;
+    if (allHisto) theDifferentialHistoB_u   ->Write() ;
+    if (allHisto) theDifferentialHistoB_s   ->Write() ;
     theDifferentialHistoB_c   ->Write() ;
     theDifferentialHistoB_b   ->Write() ;
     theDifferentialHistoB_g   ->Write() ;
-    theDifferentialHistoB_ni  ->Write() ;
+    if (allHisto) theDifferentialHistoB_ni  ->Write() ;
     theDifferentialHistoB_dus ->Write() ;
-    theDifferentialHistoB_dusg->Write() ;
+    if (allHisto) theDifferentialHistoB_dusg->Write() ;
   }
 }
 

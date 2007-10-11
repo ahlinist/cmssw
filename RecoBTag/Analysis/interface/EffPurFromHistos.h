@@ -38,7 +38,7 @@ class EffPurFromHistos {
   TH1F * getEffFlavVsBEff_dus  () { return EffFlavVsBEff_dus  ; };
   TH1F * getEffFlavVsBEff_dusg () { return EffFlavVsBEff_dusg ; };
 
-  void write () ;
+  void write (const bool allHisto) ;
 
   void epsPlot(const TString & name);
 
