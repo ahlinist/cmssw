@@ -13,7 +13,7 @@
    <HomogeneousContainer name="SiStripLorentzAngleRcd">
       <Class name="SiStripLorentzAngle" mappingVersion="SiStripObjects_2.0"/>
    </HomogeneousContainer >
-   <HomogeneousContainer name="SiStripBadStripRcd">
+   <HomogeneousContainer name="SiStripBadStrip">
       <Class name="SiStripBadStrip" mappingVersion="SiStripObjects_2.0"/>
    </HomogeneousContainer >
    <HomogeneousContainer name="SiStripModuleHVRcd">
