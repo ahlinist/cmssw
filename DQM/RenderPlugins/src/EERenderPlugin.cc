@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.3 2007/10/10 19:07:35 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.4 2007/10/10 20:36:35 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.3 $
-  \date $Date: 2007/10/10 19:07:35 $
+  \version $Revision: 1.4 $
+  \date $Date: 2007/10/10 20:36:35 $
 */
 
 #include <TProfile2D.h>
@@ -171,10 +171,10 @@ void EERenderPlugin::preDraw( TCanvas *c, const ObjInfo &o, const ImgInfo &i, Re
 
   c->cd();
 
-//  gPad->SetFrameFillColor( 10 );
-//  if (o.error) gPad->SetFillColor( 2 );
-//  if (o.warning) gPad->SetFillColor( 5 );
-//  if (o.other) gPad->SetFillColor( 16 );
+//  gPad->SetFrameFillColor(10);
+//  if (o.error) gPad->SetFillColor(2);
+//  if (o.warning) gPad->SetFillColor(5);
+//  if (o.other) gPad->SetFillColor(16);
 
   if( dynamic_cast<TProfile2D*>( o.object ) ) {
     preDrawTProfile2D( c, o );
@@ -203,8 +203,8 @@ void EERenderPlugin::preDrawTProfile2D( TCanvas *c, const ObjInfo &o ) {
 
   gStyle->SetPaintTextFormat();
 
-  gStyle->SetOptStat( 0 );
-  obj->SetStats( kFALSE );
+  gStyle->SetOptStat(0);
+  obj->SetStats(kFALSE);
 
   if( o.name.find( "EEPDT" ) < o.name.size() || 
       o.name.find( "EELT shape" ) < o.name.size() || 
@@ -214,7 +214,7 @@ void EERenderPlugin::preDrawTProfile2D( TCanvas *c, const ObjInfo &o ) {
     obj->GetYaxis()->SetDrawOption("u");
     obj->GetXaxis()->SetNdivisions(0);
     obj->GetYaxis()->SetNdivisions(0);
-    obj->SetOption( "axis" );
+    obj->SetOption("axis");
     return;
   }
 
@@ -224,8 +224,8 @@ void EERenderPlugin::preDrawTProfile2D( TCanvas *c, const ObjInfo &o ) {
     gPad->SetGridy();
     obj->GetXaxis()->SetNdivisions(10, kFALSE);
     obj->GetYaxis()->SetNdivisions(10, kFALSE);
-    gStyle->SetPalette( 10, pCol4 );
-    obj->SetOption( "colz" );
+    gStyle->SetPalette(10, pCol4);
+    obj->SetOption("colz");
     gStyle->SetPaintTextFormat("+g");
     return;
   }
@@ -233,10 +233,10 @@ void EERenderPlugin::preDrawTProfile2D( TCanvas *c, const ObjInfo &o ) {
   // Occupancy-like (10 x grays) plots
   gPad->SetGridx();
   gPad->SetGridy();
-  obj->GetXaxis()->SetNdivisions( 17 );
-  obj->GetYaxis()->SetNdivisions( 4 );
-  gStyle->SetPalette( 10, pCol4 );
-  obj->SetOption( "colz" );
+  obj->GetXaxis()->SetNdivisions(17);
+  obj->GetYaxis()->SetNdivisions(4);
+  gStyle->SetPalette(10, pCol4);
+  obj->SetOption("colz");
   return;
 
 }
@@ -247,10 +247,10 @@ void EERenderPlugin::preDrawTProfile( TCanvas *c, const ObjInfo &o ) {
 
   assert( obj );
 
-  gStyle->SetOptStat( 0 );
+  gStyle->SetOptStat(0);
   obj->SetStats( kFALSE );
-  gStyle->SetOptStat( "euomr" );
-  obj->SetStats( kTRUE );
+  gStyle->SetOptStat("euomr");
+  obj->SetStats(kTRUE);
   return;
 
 }
@@ -263,12 +263,12 @@ void EERenderPlugin::preDrawTH2( TCanvas *c, const ObjInfo &o ) {
 
   gStyle->SetPaintTextFormat();
 
-  gStyle->SetOptStat( 0 );
+  gStyle->SetOptStat(0);
   obj->SetStats( kFALSE );
   int nbx = obj->GetNbinsX();
   int nby = obj->GetNbinsY();
 
-  gPad->SetLogy( 0 );
+  gPad->SetLogy(0);
 
   if( nbx == 50 && nby == 50 ) {
     gPad->SetGridx();
@@ -288,32 +288,32 @@ void EERenderPlugin::preDrawTH2( TCanvas *c, const ObjInfo &o ) {
   if( nbx == 10 && nby == 5 ) {
     gPad->SetGridx();
     gPad->SetGridy();
-    obj->GetXaxis()->SetNdivisions( 10 );
-    obj->GetYaxis()->SetNdivisions( 1 );
+    obj->GetXaxis()->SetNdivisions(10);
+    obj->GetYaxis()->SetNdivisions(1);
   }
 
   if( nbx == 2 && nby == 1 ) {
     gPad->SetGridx();
     gPad->SetGridy();
-    obj->GetXaxis()->SetNdivisions( 2 );
-    obj->GetYaxis()->SetNdivisions( 1 );
+    obj->GetXaxis()->SetNdivisions(2);
+    obj->GetYaxis()->SetNdivisions(1);
   }
 
   // Occupancy-like (10 x grays) plots
   if( o.name.find( "EEIT" ) < o.name.size() &&
       o.name.find( "quality" ) >= o.name.size() ) {
-    obj->SetMinimum( 0. );
-    gStyle->SetPalette( 4, pCol4 );
-    obj->SetOption( "colz" );
+    obj->SetMinimum(0.0);
+    gStyle->SetPalette(4, pCol4);
+    obj->SetOption("colz");
     return;
   }
 
   // Occupancy-like (10 x grays) plots
   if( o.name.find( "EEOT" ) < o.name.size() &&
       o.name.find( "quality" ) >= o.name.size() ) {
-    gStyle->SetPalette( 10, pCol4 );
+    gStyle->SetPalette(10, pCol4);
     obj->SetMinimum(0.0);
-    obj->SetOption( "colz" );
+    obj->SetOption("colz");
     gStyle->SetPaintTextFormat("+g");
     return;
   }
@@ -326,33 +326,35 @@ void EERenderPlugin::preDrawTH2( TCanvas *c, const ObjInfo &o ) {
     obj->GetXaxis()->SetLabelSize(0.03);
     obj->GetYaxis()->SetLabelSize(0.03);
     gStyle->SetPalette(6, pCol3);
-    obj->SetOption( "col" );
+    obj->SetOption("col");
     gStyle->SetPaintTextFormat("+g");
     return;
   }
 
   // Quality-like (green, yellow, red) plots
   if( o.name.find( "quality" ) < o.name.size() ) {
-    obj->SetMinimum( -0.00000001 );
-    obj->SetMaximum( 5.0 );
-    gStyle->SetPalette( 6, pCol3 );
-    obj->SetOption( "col" );
+    obj->SetMinimum(-0.00000001);
+    obj->SetMaximum(6.0);
+    gStyle->SetPalette(6, pCol3);
+    obj->SetOption("col");
     return;
   }
 
   // Occupancy-like (10 x grays) plots
   if( o.name.find( "EEMM event" ) < o.name.size() ) {
-    gStyle->SetPalette( 10, pCol4 );
-    obj->SetOption( "colz" );
+    gStyle->SetPalette(10, pCol4);
+    obj->SetOption("colz");
     return;
   }
 
   // Occupancy-like (10 x grays) plots
   if( o.name.find( "EECLT" ) < o.name.size() ) {
+    gPad->SetGridx();
+    gPad->SetGridy();
     obj->GetXaxis()->SetNdivisions(10, kFALSE);
     obj->GetYaxis()->SetNdivisions(10, kFALSE);
-    gStyle->SetPalette( 10, pCol4 );
-    obj->SetOption( "colz" );
+    gStyle->SetPalette(10, pCol4);
+    obj->SetOption("colz");
     gStyle->SetPaintTextFormat("+g");
     return;
   }
@@ -410,16 +412,16 @@ void EERenderPlugin::postDrawTProfile2D( TCanvas *c, const ObjInfo &o ) {
       o.name.find( "EETPT shape" ) < o.name.size() ) {
     TH1D* obj1 = (TH1D*) gROOT->FindObject("shape");
     if( obj1) obj1->Delete();
-    obj1 = obj->ProjectionY( "shape", 1, 1, "e" );
-    gStyle->SetOptStat( "euomr" );
-    obj1->SetStats( kTRUE );
-    obj1->SetMinimum( 0. );
-    obj1->GetXaxis()->SetDrawOption("+");
-    obj1->GetYaxis()->SetDrawOption("+");
-    gPad->SetGridx( 0 );
-    gPad->SetGridy( 0 );
+    obj1 = obj->ProjectionY("shape", 1, 1, "e");
+    gStyle->SetOptStat("euomr");
+    obj1->SetStats(kTRUE);
+    obj1->SetMinimum(0.0);
+    gPad->SetGridx(0);
+    gPad->SetGridy(0);
     obj1->GetXaxis()->SetNdivisions(510);
     obj1->GetYaxis()->SetNdivisions(510);
+    obj1->GetXaxis()->SetDrawOption("+");
+    obj1->GetYaxis()->SetDrawOption("+");
     obj1->Draw();
     return;
   }
@@ -494,12 +496,12 @@ void EERenderPlugin::postDrawTH2( TCanvas *c, const ObjInfo &o ) {
   }
 
   if( nbx == 10 && nby == 5 ) {
-    text3->Draw( "text,same" );
+    text3->Draw("text,same");
     return;
   }
 
   if( nbx == 2 && nby == 1 ) {
-    text4->Draw( "text,same" );
+    text4->Draw("text,same");
     return;
   }
 
