@@ -166,7 +166,7 @@ BTagMCTools::JetFlavour JetFlavourIdentifier::identifyBasedOnPartons (const Jet 
 
 
 BTagMCTools::JetFlavour JetFlavourIdentifier::basicIdentityBasedOnPartons
-	(const XYZTLorentzVector & jet4Vec, const double coneSize) const
+	(const PtEtaPhiMLorentzVector & jet4Vec, const double coneSize) const
 {
   BTagMCTools::JetFlavour jetFlavour;
   // to count partons from how many sources
@@ -323,7 +323,7 @@ void JetFlavourIdentifier::fillAlgorithmicDefinition(BTagMCTools::JetFlavour & j
 
 void JetFlavourIdentifier::fillPhysicsDefinition(
     BTagMCTools::JetFlavour & jetFlavour,
-    const math::XYZTLorentzVector & jet4Vec) const
+    const math::PtEtaPhiMLorentzVector & jet4Vec) const
 {
   int flavour = jetFlavour.initialFlavour() ;
   // clean: do not accept if final state heavy partons from many sources -> take bigger cone here
