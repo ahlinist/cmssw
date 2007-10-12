@@ -14,12 +14,12 @@
 
 #include <Geometry/Records/interface/MuonGeometryRecord.h>
 
-#include <CondFormats/CSCObjects/interface/CSCDBGains.h>
-#include <CondFormats/DataRecord/interface/CSCDBGainsRcd.h>
-#include <CondFormats/CSCObjects/interface/CSCDBCrosstalk.h>
-#include <CondFormats/DataRecord/interface/CSCDBCrosstalkRcd.h>
-#include <CondFormats/CSCObjects/interface/CSCDBNoiseMatrix.h>
-#include <CondFormats/DataRecord/interface/CSCDBNoiseMatrixRcd.h>
+#include <CondFormats/CSCObjects/interface/CSCGains.h>
+#include <CondFormats/DataRecord/interface/CSCGainsRcd.h>
+#include <CondFormats/CSCObjects/interface/CSCcrosstalk.h>
+#include <CondFormats/DataRecord/interface/CSCcrosstalkRcd.h>
+#include <CondFormats/CSCObjects/interface/CSCNoiseMatrix.h>
+#include <CondFormats/DataRecord/interface/CSCNoiseMatrixRcd.h>
 
 #include <DataFormats/CSCRecHit/interface/CSCRecHit2DCollection.h>
 #include <DataFormats/CSCDigi/interface/CSCStripDigiCollection.h>
@@ -64,17 +64,17 @@ void  CSCRecHitBProducer::produce( edm::Event& ev, const edm::EventSetup& setup 
 
   if ( useCalib ) {  
     // Strip gains
-    edm::ESHandle<CSCDBGains> hGains;
-    setup.get<CSCDBGainsRcd>().get( hGains );
-    const CSCDBGains* pGains = hGains.product(); 
+    edm::ESHandle<CSCGains> hGains;
+    setup.get<CSCGainsRcd>().get( hGains );
+    const CSCGains* pGains = &*hGains.product(); 
     // Strip X-talk
-    edm::ESHandle<CSCDBCrosstalk> hCrosstalk;
-    setup.get<CSCDBCrosstalkRcd>().get( hCrosstalk );
-    const CSCDBCrosstalk* pCrosstalk = hCrosstalk.product();
+    edm::ESHandle<CSCcrosstalk> hCrosstalk;
+    setup.get<CSCcrosstalkRcd>().get( hCrosstalk );
+    const CSCcrosstalk* pCrosstalk = &*hCrosstalk.product();
     // Strip autocorrelation noise matrix
-    edm::ESHandle<CSCDBNoiseMatrix> hNoiseMatrix;
-    setup.get<CSCDBNoiseMatrixRcd>().get(hNoiseMatrix);
-    const CSCDBNoiseMatrix* pNoiseMatrix = hNoiseMatrix.product();
+    edm::ESHandle<CSCNoiseMatrix> hNoiseMatrix;
+    setup.get<CSCNoiseMatrixRcd>().get(hNoiseMatrix);
+    const CSCNoiseMatrix* pNoiseMatrix = &*hNoiseMatrix.product();
 
     // Pass set of calibrations to builder all at once
     stripGainAvg_->setCalibration( pGains );
@@ -98,9 +98,8 @@ void  CSCRecHitBProducer::produce( edm::Event& ev, const edm::EventSetup& setup 
     ev.getByLabel(stripDigiProducer_,"MuonCSCALCTDigi",alcts);
     ev.getByLabel(stripDigiProducer_,"MuonCSCCLCTDigi",clcts);
   }
-  catch (const edm::Exception& e) {
-    //wrong reason for exception
-    if ( e.categoryCode() != edm::errors::ProductNotFound ) throw;    
+  catch ( ... ) {
+//    edm::LogError("CSCRecHitBProducer") << "Warning: L1 trigger info not available " ;
   }
 
   // Create empty collection of rechits
