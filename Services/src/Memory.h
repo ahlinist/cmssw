@@ -64,9 +64,7 @@ namespace edm {
     private:
       procInfo fetch();
       double pageSize() const { return pg_size_; }
-      void printSummary(const double& currentVsize, const double& maxVsize,
-                        const double& currentRSS, const double& maxRSS,
-                        const std::string& type,
+      void updateAndPrint(const std::string& type,
                         const std::string& mdlabel, const std::string& mdname);
 
       procInfo a_;
@@ -80,7 +78,11 @@ namespace edm {
       std::string fname_;
       double pg_size_;
       int num_to_skip_;
+      //options
+      bool showMallocInfo;
+      bool oncePerEventMode;
       int count_;
+
     };
   }
 }
