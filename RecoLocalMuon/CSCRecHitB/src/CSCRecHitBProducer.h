@@ -37,6 +37,9 @@ public:
   bool useCalib;
   bool isData;
   bool debug;
+  bool useCleanWireCollection;
+  bool useCleanStripCollection;
+
   float CSCstripGainAvg;
 
   std::string stripDigiProducer_;

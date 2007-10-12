@@ -35,6 +35,9 @@ CSCRecHitBProducer::CSCRecHitBProducer( const edm::ParameterSet& ps ) : iRun( 0 
   wireDigiProducer_  = ps.getParameter<std::string>("CSCWireDigiProducer");
   useCalib           = ps.getUntrackedParameter<bool>("CSCUseCalibrations");
   debug              = ps.getUntrackedParameter<bool>("CSCDebug");
+  useCleanWireCollection  = ps.getUntrackedParameter<bool>("CSCuseCleanWireCollection"); 
+  useCleanStripCollection = ps.getUntrackedParameter<bool>("CSCuseCleanStripCollection"); 
+
  
   recHitBuilder_     = new CSCRecHitBBuilder( ps ); // pass on the Parameter Settings
   stripGainAvg_      = new CSCStripGainAvg( ps ); // pass on the Parameter Settings
@@ -94,13 +97,9 @@ void  CSCRecHitBProducer::produce( edm::Event& ev, const edm::EventSetup& setup 
   // Get the collections of CLCTs and ALCTs
   edm::Handle<CSCALCTDigiCollection> alcts;
   edm::Handle<CSCCLCTDigiCollection> clcts;
-  try {
-    ev.getByLabel(stripDigiProducer_,"MuonCSCALCTDigi",alcts);
-    ev.getByLabel(stripDigiProducer_,"MuonCSCCLCTDigi",clcts);
-  }
-  catch ( ... ) {
-//    edm::LogError("CSCRecHitBProducer") << "Warning: L1 trigger info not available " ;
-  }
+
+  if ( useCleanWireCollection  ) ev.getByLabel(stripDigiProducer_,"MuonCSCALCTDigi",alcts);
+  if ( useCleanStripCollection ) ev.getByLabel(stripDigiProducer_,"MuonCSCCLCTDigi",clcts);
 
   // Create empty collection of rechits
   std::auto_ptr<CSCRecHit2DCollection> oc( new CSCRecHit2DCollection );
