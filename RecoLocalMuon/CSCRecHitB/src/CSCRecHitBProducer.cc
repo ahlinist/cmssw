@@ -98,8 +98,9 @@ void  CSCRecHitBProducer::produce( edm::Event& ev, const edm::EventSetup& setup 
     ev.getByLabel(stripDigiProducer_,"MuonCSCALCTDigi",alcts);
     ev.getByLabel(stripDigiProducer_,"MuonCSCCLCTDigi",clcts);
   }
-  catch ( ... ) {
-//    edm::LogError("CSCRecHitBProducer") << "Warning: L1 trigger info not available " ;
+  catch (const edm::Exception& e) {
+    //wrong reason for exception
+    if ( e.categoryCode() != edm::errors::ProductNotFound ) throw;    
   }
 
   // Create empty collection of rechits
