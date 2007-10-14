@@ -1,13 +1,13 @@
 #!/bin/bash
 
 #
-#$Id: runall.sh,v 1.7 2007/09/26 23:17:01 gutsche Exp $
+#$Id: runall.sh,v 1.8 2007/10/02 22:36:49 gutsche Exp $
 #
 # Script to run all integration tests
 #
 #
 
-tests=`cat RelVal_runall.txt | grep -v '#'`
+tests=`cat RelVal.txt | grep -v '#'`
 
 report=""
 
@@ -42,7 +42,7 @@ do
     echo Preparing to run $file
     let starttime=`date "+%s"`
     cmsRun $file
-    let exitcode=0
+    let exitcode=$?
 
     let endtime=`date "+%s"`
     let tottime=$endtime-$starttime;   
