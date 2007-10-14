@@ -3,8 +3,13 @@
 
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
-#include "TProfile.h"
-
+//#include "TProfile.h"
+#include <TROOT.h>
+#include <TTree.h>
+#include <TFile.h>
+#include <TH1F.h>
+#include <TProfile.h>
+class TTree;
 // forward declarations
 class TFile;
 class TH1D;
@@ -23,47 +28,61 @@ class MinimumBiasAnalyzer : public edm::EDAnalyzer
       virtual void beginJob( const edm::EventSetup& ) ;
       virtual void endJob() ;
       float_t delR(const float_t&,const float_t&,const float_t&,const float_t&);
-
+      int charge(const int&);
 
    private:
    
      //
-     std::string fOutputFileName ;
+
      std::string objectAnalyzed;
+     std::string fOutputFileName ;
 
-     TFile*      fOutputFile ;
-     TH1D*       fHistPtDist ;
-     TH1D*       fHistEtaDist ;
-     TH1D*       fHistPhiDist ;
-     TH1D*       fHistChgDist ;
-     TH1D*       fHistChgSimm ;
-     TProfile*   pavgPt_vs_Nchg;
-     TProfile*   pdN_vs_dphi;
-     TProfile*   pdPt_vs_dphi;
-     TProfile*   pdN_vs_dphiTrans;
-     TProfile*   pdPt_vs_dphiTrans;
-     TProfile*   pdN_vs_dphiTransDiff;
-     TProfile*   pdPt_vs_dphiTransDiff;
-     TProfile*   pdN_vs_eta;
-     TProfile*   pdN_vs_pt;
+TFile* hFile;
+TTree * nt;
 
-     TProfile*   pdN_vs_ptJTrans;
-     TProfile*   pdN_vs_ptJTransMax;
-     TProfile*   pdN_vs_ptJTransMin;
-     TProfile*   pdN_vs_ptJTransDiff;
-     TProfile*   pdPt_vs_ptJTrans;
-     TProfile*   pdPt_vs_ptJTransMax;
-     TProfile*   pdPt_vs_ptJTransMin;
-     TProfile*   pdPt_vs_ptJTransDiff;
+ int Ev_kind;
 
-     TH1D*       temp1;
-     TH1D*       temp2;
-     TH1D*       temp3;
-     TH1D*       temp4;
 
-     TH1D*       fHistPtDistJetChg;
-     TH1D*       fHistEtaDistJetChg;
-     TH1D*       fHistPhiDistJetChg;
+int Np;
+float p_[1000];
+float pt_[1000];
+float eta_[1000];
+float phi_[1000];
+int charge_[1000];
+int pid_[1000];
+
+int Ntk;
+float p_tk[1000];
+float pt_tk[1000];
+float eta_tk[1000];
+float phi_tk[1000];
+int nhits_tk[1000];
+
+ int lead_tk;
+ int lead_MC;
+ float d_phi;
+
+ TProfile*   dN_vs_eta;
+ TProfile*   dN_vs_pt;
+
+ TProfile*   dN_vs_etaMC;
+ TProfile*   dN_vs_ptMC;
+
+ TProfile* dN_vs_dphiMC;
+ TProfile* dPT_vs_dphiMC;
+
+ TProfile* dN_vs_dphi;
+ TProfile* dPT_vs_dphi;
+
+
+ TH1D*       temp1;
+ TH1D*       temp2; 
+ TH1D*       temp1MC;
+ TH1D*       temp2MC;
+ TH1D*       temp_dnMC;
+ TH1D*       temp_dptMC;
+ TH1D*       temp_dn;
+ TH1D*       temp_dpt;
 
 };
 

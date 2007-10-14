@@ -1,22 +1,24 @@
-// Authors: F. Ambroglini, L. Fano, F. Bechtel
+// Authors: F. Ambroglini, L. Fano'
+
+
 #include <iostream>
 
 #include "AnalysisExamples/MinimumBiasUnderlyingEvent/test/MinimumBiasAnalyzer.h"
- 
+#include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/Common/interface/Ref.h" 
 #include "DataFormats/JetReco/interface/Jet.h"
 #include "DataFormats/JetReco/interface/CaloJetCollection.h"
 #include "DataFormats/JetReco/interface/GenJet.h"
-#include "DataFormats/JetReco/interface/GenJetfwd.h"
+#include "DataFormats/JetReco/interface/GenJetCollection.h"
 #include "DataFormats/JetReco/interface/BasicJet.h"
-#include "DataFormats/JetReco/interface/BasicJetfwd.h"
+#include "DataFormats/JetReco/interface/BasicJetCollection.h"
 #include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
-#include "DataFormats/HepMCCandidate/interface/HepMCCandidate.h"
+#include "DataFormats/HepMCCandidate/interface/GenParticleCandidate.h"
 #include "DataFormats/RecoCandidate/interface/RecoCandidate.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/Event.h"
-#include "FWCore/Framework/interface/Handle.h"
+#include "DataFormats/Common/interface/Handle.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
  
@@ -30,7 +32,7 @@ using namespace reco;
 
 class GreaterPt{
 public:
-  bool operator()( const math::XYZTLorentzVector& a, const math::XYZTLorentzVector& b) {
+  bool operator()( const math::PtEtaPhiMLorentzVector& a, const math::PtEtaPhiMLorentzVector& b) {
     return a.Pt() > b.Pt();
   }
 };
@@ -51,403 +53,245 @@ public:
  
 MinimumBiasAnalyzer::MinimumBiasAnalyzer( const ParameterSet& pset )
    : fOutputFileName( pset.getUntrackedParameter<string>("HistOutFile",std::string("TestHiggsMass.root")) ),
-     objectAnalyzed( pset.getUntrackedParameter<string>("UsedCandidate",std::string("MCCandidate")) ),
-     fOutputFile(0), fHistPtDist(0), fHistEtaDist(0), fHistPhiDist(0), fHistChgDist(0), 
-     fHistChgSimm(0), pavgPt_vs_Nchg(0), pdN_vs_dphi(0),pdPt_vs_dphi(0), pdN_vs_dphiTrans(0),pdPt_vs_dphiTrans(0),
-     pdN_vs_dphiTransDiff(0),pdPt_vs_dphiTransDiff(0), pdN_vs_eta(0),pdN_vs_pt(0), pdN_vs_ptJTrans(0),  pdN_vs_ptJTransMax(0),
-     pdN_vs_ptJTransMin(0),  pdN_vs_ptJTransDiff(0), pdPt_vs_ptJTrans(0), pdPt_vs_ptJTransMax(0), 
-     pdPt_vs_ptJTransMin(0), pdPt_vs_ptJTransDiff(0), temp1(0), temp2(0), temp3(0), temp4(0),
-     fHistPtDistJetChg(0), fHistEtaDistJetChg(0), fHistPhiDistJetChg(0)
+     objectAnalyzed( pset.getUntrackedParameter<string>("UsedCandidate",std::string("MCCandidate")) )
+     /*     fOutputFile(0), fHistPtDist(0), fHistEtaDist(0), fHistPhiDist(0), fHistChgDist(0), 
+     fHistChgSimm(0),pdN_vs_dphi(0),pdPt_vs_dphi(0), temp1(0), temp2(0), fHistPtDistJetChg(0),
+     fHistEtaDistJetChg(0), fHistPhiDistJetChg(0)*/
 {
 }
 
 void MinimumBiasAnalyzer::beginJob( const EventSetup& )
 {
  
-   fOutputFile   = new TFile( fOutputFileName.c_str(), "RECREATE" ) ;
-   fHistPtDist   = new TH1D(  "HistPtDist"  , "Pt Spectra", 100,  0., 4. ) ;
-   fHistEtaDist  = new TH1D(  "HistEtaDist" , "#eta Spectra", 100, -5., 5. ) ;
-   fHistPhiDist  = new TH1D(  "HistPhiDist" , "#phi Spectra", 100, -4., 4. ) ;    
-   fHistChgDist  = new TH1D(  "HistChgDist" , "N chg particles per event",   250, 0., 500. ) ;    
-   fHistChgSimm  = new TH1D(  "HistChgSimm" , "Charge simmetry",   11, -5., 5. ) ;    
+  hFile = new TFile ( "trackcluster.root", "RECREATE" );
+  nt = new TTree("nt","a Tree");
 
-   pavgPt_vs_Nchg          = new TProfile("avgPt_vs_Nchg","<Pt> vs Nchg",250,0.,500.);
-   pdN_vs_dphi             = new TProfile("dN_vs_dphi","dN vs dphi",100,-180.,180.,0,100);
-   pdPt_vs_dphi            = new TProfile("dPt_vs_dphi","dPt vs dphi",100,-180.,180.,0,100);
-   pdN_vs_dphiTrans        = new TProfile("dN_vs_dphiTrans","dN vs dphi Trans",100,-180.,180.,0,100);
-   pdPt_vs_dphiTrans       = new TProfile("dPt_vs_dphiTrans","dPt vs dphi Trans",100,-180.,180.,0,100);
-   pdN_vs_dphiTransDiff    = new TProfile("dN_vs_dphiTransDiff","dN vs dphi TransDiff",50,0.,180.,0,100);
-   pdPt_vs_dphiTransDiff   = new TProfile("dPt_vs_dphiTransDiff","dPt vs dphi TransDiff",50,0.,180.,0,100);
-   pdN_vs_eta              = new TProfile("dN_vs_eta","dN vs eta",100,0.,5.);
-   pdN_vs_pt               = new TProfile("dN_vs_pt","dN vs PT",100,0.,4.);
+  nt->Branch("Ev_kind",&Ev_kind,"Ev_kind/I");
 
-   pdN_vs_ptJTrans         = new TProfile("dN_vs_ptJT","dN vs PT Jet Trans",200,0.,400);
-   pdN_vs_ptJTransMax      = new TProfile("dN_vs_ptJTM","dN vs PT Jet Trans Max",200,0.,400);
-   pdN_vs_ptJTransMin      = new TProfile("dN_vs_ptJTm","dN vs PT Jet Trans Min",200,0.,400);
-   pdN_vs_ptJTransDiff     = new TProfile("dN_vs_ptJTD","dN vs PT Jet Trans Diff",200,0.,400);
+  nt->Branch("Np",&Np,"Np/I");
+  nt->Branch("p_",p_,"p_[Np]/F");
+  nt->Branch("pt_",pt_,"pt_[Np]/F");
+  nt->Branch("eta_",eta_,"eta_[Np]/F");
+  nt->Branch("phi_",phi_,"phi_[Np]/F");
+  nt->Branch("pid_",phi_,"pid_[Np]/I");
+  nt->Branch("charge_",charge_,"charge_[Np]/I");
 
-   pdPt_vs_ptJTrans        = new TProfile("dPt_vs_ptJT","dPt vs PT Jet Trans",200,0.,400);
-   pdPt_vs_ptJTransMax     = new TProfile("dPt_vs_ptJTM","dPt vs PT Jet Trans Max",200,0.,400);
-   pdPt_vs_ptJTransMin     = new TProfile("dPt_vs_ptJTm","dPt vs PT Jet Trans Min",200,0.,400);
-   pdPt_vs_ptJTransDiff    = new TProfile("dPt_vs_ptJTD","dPt vs PT Jet Trans Diff",200,0.,400);
+  nt->Branch("Ntk",&Ntk,"Ntk/I");
+  nt->Branch("p_tk",p_tk,"p_tk[Ntk]/F");
+  nt->Branch("pt_tk",pt_tk,"pt_tk[Ntk]/F");
+  nt->Branch("eta_tk",eta_tk,"eta_tk[Ntk]/F");
+  nt->Branch("phi_tk",phi_tk,"phi_tk[Ntk]/F");
+  nt->Branch("nhits_tk",nhits_tk,"nhits_tk[Ntk]/I");
+  
+
+  // general purpose
+
+  dN_vs_eta = new TProfile("dN_vs_eta","dN vs eta",100,0.,5.);
+  dN_vs_pt = new TProfile("dN_vs_pt","dN vs PT",100,0.,4.5);
+
+  dN_vs_etaMC = new TProfile("dN_vs_etaMC","dN vs eta",100,0.,5.);
+  dN_vs_ptMC = new TProfile("dN_vs_ptMC","dN vs PT",100,0.,4.5);
+
+  dN_vs_dphiMC = new TProfile("dN_vs_dphiMC","#delta N vs #delta #phi",100,-180.,180.,0,100);
+  dPT_vs_dphiMC = new TProfile("dPT_vs_dphiMC","#delta PTsum vs #delta #phi",100,-180.,180.,0,100);
+
+  dN_vs_dphi = new TProfile("dN_vs_dphi","#delta N vs #delta #phi",100,-180.,180.,0,100);
+  dPT_vs_dphi = new TProfile("dPT_vs_dphi","#delta PTsum vs #delta #phi",100,-180.,180.,0,100);
 
 
-   temp1 = new TH1D("temp1","temp",100,-180.,180.);
-   temp2 = new TH1D("temp2","temp",100,-180.,180.);
-   temp3 = new TH1D("temp3","temp",100,0.,5.);
-   temp4 = new TH1D("temp4","temp",100,0.,4.);
 
-   fHistPtDistJetChg   = new TH1D(  "HistPtDistJetChg", "Pt fisrt charged jet Spectra", 100,  0., 100. ) ;
-   fHistEtaDistJetChg  = new TH1D(  "HistEtaDistJetChg", "#eta fisrt charged jet Spectra", 100, -5., 5. ) ;
-   fHistPhiDistJetChg  = new TH1D(  "HistPhiDistJetChg", "#phi fisrt charged jet Spectra", 100, -4., 4. ) ;
+  temp1 = new TH1D("temp1","temp",100,0.,5.);
+  temp2 = new TH1D("temp2","temp",100,0.,4.5);
 
-   return ;
+  temp1MC = new TH1D("temp1MC","temp",100,0.,5.);
+  temp2MC = new TH1D("temp2MC","temp",100,0.,4.5);
+
+  temp_dnMC = new TH1D("temp_dnMC","temp",100,-180.,180.);
+  temp_dptMC = new TH1D("temp_dptMC","temp",100,-180.,180.);
+
+  temp_dn = new TH1D("temp_dn","temp",100,-180.,180.);
+  temp_dpt = new TH1D("temp_dpt","temp",100,-180.,180.);
+
 }
 
 
-void MinimumBiasAnalyzer::analyze( const Event& e, const EventSetup& ){
+void MinimumBiasAnalyzer::analyze( const Event& e, const EventSetup& )
+{
+
+  float piG = acos(-1.);
 
 
-  Handle< CandidateCollection > CandHandle ;
-  objectAnalyzed == "MCCandidate" ? 
-    e.getByLabel( "goodParticles", CandHandle ) :
-    e.getByLabel( "goodTracks", CandHandle );
-  
-  Handle< GenJetCollection > GenJetsHandle ;
-  Handle< BasicJetCollection > BasicJetsHandle ;
+  Handle<HepMCProduct> MCEvt;
+  e.getByType(MCEvt);
+  HepMC::GenEvent * generated_event = new HepMC::GenEvent(*(MCEvt->GetEvent()));
+  HepMC::GenEvent::particle_iterator p;
 
-  if(objectAnalyzed == "MCCandidate" ){ 
-    e.getByLabel( "iterativeCone7GenJets", GenJetsHandle );
-  }else{
-    e.getByLabel( "iterativeCone7BasicJets", BasicJetsHandle );
-  }
+  edm::Handle<reco::TrackCollection> trackHandle;
+  e.getByLabel("selectTracks", trackHandle);
+  reco::TrackCollection theTracks = *(trackHandle.product());
 
-  std::vector<math::XYZTLorentzVector> particles4Jet;
-  particles4Jet.clear();
+  Ev_kind =generated_event->signal_process_id();
 
-  float_t piG=acos(-1.);
+  Np=0;
+  float tmp_=0;
+  int idx_tmp_=-99;
 
+  for (p = generated_event->particles_begin(); p != generated_event->particles_end(); p++)
+    { 
 
-  if(CandHandle->size()){ 
-    
-    int nchg = 0;
-    int all = 0;
-    float_t avgPt = 0.;
-    float_t avgPtChg = 0.;
-      
-    for(CandidateCollection::const_iterator it = CandHandle->begin();it!=CandHandle->end();it++){
-      all++;
-      math::XYZTLorentzVector mom = it->p4();
-      fHistPtDist->Fill(it->pt());
-      fHistEtaDist->Fill(it->eta());
-      fHistPhiDist->Fill(it->phi());
-      avgPt += it->pt();
-      if(it->charge()!=0){
-	avgPtChg += mom.Pt();
-	temp3->Fill(fabs(mom.eta()));
-	temp4->Fill(fabs(mom.Pt()));
-      
-	if(mom.Pt()>=0.5 && fabs(mom.eta())<1) particles4Jet.push_back(mom); // for UE and MB Observables, particles are selected to be central and with PT>500 MeV  
-	
-	fHistChgSimm->Fill(it->charge());
-	nchg++;
-      }
+      if((*p)->status()==1)
+	{
+
+	  charge_[Np]=charge((*p)->pdg_id());
+	  pid_[Np]=(*p)->pdg_id();
+	  p_[Np]=sqrt((*p)->momentum().px()*(*p)->momentum().px()+(*p)->momentum().py()*(*p)->momentum().py()+(*p)->momentum().pz()*(*p)->momentum().pz());
+	  pt_[Np]= (*p)->momentum().perp();
+	  eta_[Np]= (*p)->momentum().eta();
+	  phi_[Np]= (*p)->momentum().phi();
+	  if(abs(eta_[Np])<2. && pt_[Np]>0.9 && charge_[Np]!=0)
+	    {
+	      temp1MC->Fill(abs(eta_[Np]));
+	      temp2MC->Fill(pt_[Np]);
+	      
+	      // find the leading particle
+	      if(pt_[Np]>tmp_)
+		{
+		  tmp_=pt_[Np];
+		  idx_tmp_=Np;
+		}
+	    }
+	  Np++;
+	}  
     }
-    
-    avgPtChg = avgPtChg/float_t(nchg);
 
-    fHistChgDist->Fill(nchg);
-    
-    pavgPt_vs_Nchg->Fill(nchg,avgPtChg);
-
-    for(int i=0;i<100;i++)
-      {
-	pdN_vs_eta->Fill((i*0.05)+0.025,temp3->GetBinContent(i+1)/0.1,1); // 0.5 normalized to 0.25 bin in abs(eta) (2 times) -> 0.5
-	pdN_vs_pt->Fill((i*0.04)+0.02,temp4->GetBinContent(i+1)/0.04,1); // 0.5 normalized to 0.5 bin in pt -> 0.5
-      }
-    
-    temp3->Reset();
-    temp4->Reset();
-  
-  
-    std::stable_sort(particles4Jet.begin(),particles4Jet.end(),GreaterPt());
-  }
+  lead_tk=idx_tmp_;
 
 
-  if(objectAnalyzed=="MCCandidate"){
-   
-    std::vector<GenJet> tmpGenJet;
-    tmpGenJet.clear();
+  Ntk=0;
+  tmp_=0;
+  idx_tmp_=-99;  
 
-    if(GenJetsHandle->size()){ 
-      for(GenJetCollection::const_iterator it=GenJetsHandle->begin();it!=GenJetsHandle->end();it++) 
-	tmpGenJet.push_back(*it);
-      std::stable_sort(tmpGenJet.begin(),tmpGenJet.end(),GenJetSort());
-    }
-    
-    if(tmpGenJet.size()){
-      GenJet pJ = tmpGenJet.front();
-      
-      fHistPtDistJetChg->Fill(pJ.pt());
-      fHistEtaDistJetChg->Fill(pJ.eta());
-      fHistPhiDistJetChg->Fill(pJ.phi());
-      
-      if(fabs(pJ.eta())<1&&pJ.pt()>1){
-	
-	if(particles4Jet.size()){
-	  
-	  float_t conv = 180/piG;
-	  
-	  for (std::vector<math::XYZTLorentzVector>::const_iterator par = particles4Jet.begin();
-	       par != particles4Jet.end(); par++ ){
-	    
-	    // get 3-vector of jet
-	    TVector3 * jetvector = new TVector3;
-	    jetvector->SetPtEtaPhi(pJ.pt(), pJ.eta(), pJ.phi());
+  for (std::vector<reco::Track>::const_iterator itTk = theTracks.begin(); itTk != theTracks.end(); itTk++) 
+    {
+      p_tk[Ntk]=itTk->outerP();
+      pt_tk[Ntk]=itTk->outerPt();
+      eta_tk[Ntk]=itTk->outerEta();
+      phi_tk[Ntk]=itTk->outerPhi();
+      nhits_tk[Ntk]=itTk->found();
 
-	    // get 3-vector of particle
-	    TVector3 * particlevector = new TVector3;
-	    particlevector->SetPtEtaPhi(par->pt(), par->eta(), par->phi());
+      if(nhits_tk[Ntk] < 8)
+	std::cout<<"numero hit = "<<nhits_tk[Ntk]<<std::endl;
 
-	    // use ROOT method to calculate dphi 
-	    // convert dphi from radiants to degrees 
-	    float_t Dphi_mc = conv * jetvector->DeltaPhi(*particlevector);
-
-	    temp1->Fill(Dphi_mc);
-	    temp2->Fill(Dphi_mc,par->Pt());
-
-	  }
- 
-	  // fill profile histograms 
-	  // scale by binwidth ( = 360 degrees / 100 bins ) and by eta-range ( = 2 )
-	  float_t transN1=0;
-	  float_t transN2=0;
-	  float_t transP1=0;
-	  float_t transP2=0;
-	  for(int i=0;i<100;i++){
-	    if(i>14 && i<33 ){
-	      transN1 += temp1->GetBinContent(i+1);
-	      transP1 += temp2->GetBinContent(i+1);
+      if(abs(eta_tk[Ntk])<2. && pt_tk[Ntk]>0.9 && nhits_tk[Ntk]>7)
+	{
+	  temp1->Fill(abs(eta_tk[Ntk]));
+	  temp2->Fill(pt_tk[Ntk]);
+	  if(pt_tk[Ntk]>tmp_)
+	    {
+	      tmp_=pt_tk[Ntk];
+	      idx_tmp_=Ntk;
 	    }
-	    if(i>64 && i<83 ){
-	      transN2 += temp1->GetBinContent(i+1);  
-	      transP2 += temp2->GetBinContent(i+1);  
-	    }  
-	    float_t bincont1_mc=temp1->GetBinContent(i+1);
-	    pdN_vs_dphi->Fill(-180.+i*3.6+1.8,bincont1_mc/(360./50.),1);
-
-	    float_t bincont2_mc=temp2->GetBinContent(i+1);
-	    pdPt_vs_dphi->Fill(-180.+i*3.6+1.8,bincont2_mc/(360./50.),1);
-	  }
-
-	  //fill transMIN transMAX e transDIFF
-	  // scale by binwidth ( = 360 degrees / 100 bins ) and by eta-range ( = 2 )
-	  bool orderedN = false; 
-	  bool orderedP = false; 
-	  
-	  if( transN1>=transN2 ) orderedN = true;
-	  if( transP1>=transP2 ) orderedP = true;
-	  pdN_vs_ptJTrans->Fill(pJ.pt(),(transN1+transN2)/(120./2.),1);
-	  pdPt_vs_ptJTrans->Fill(pJ.pt(),(transP1+transP2)/(120./2.),1);
-	  if(orderedN){
-	    pdN_vs_ptJTransMin->Fill(pJ.pt(),transN2/(60./2.),1);
-	    pdN_vs_ptJTransMax->Fill(pJ.pt(),transN1/(60./2.),1);
-	    pdN_vs_ptJTransDiff->Fill(pJ.pt(),((transN1-transN2)/transN1)/(60./2.),1);
-	    for(int i=0;i<100;i++){
-	      float_t bincont1_mc=temp1->GetBinContent(i+1);
-	      pdN_vs_dphiTrans->Fill(-180.+i*3.6+1.8,bincont1_mc/(360./50.),1);
-	    }
-	    for(int i=0;i<50;i++){
-	      float_t bincont1_mc= (temp1->GetBinContent(49-i) - temp1->GetBinContent(51+i))/temp1->GetBinContent(49-i);
-	      pdN_vs_dphiTransDiff->Fill(0.+i*3.6+1.8,bincont1_mc/(180./50.),1);
-	    }
-	  }else{
-	    pdN_vs_ptJTransMin->Fill(pJ.pt(),transN1/(60./2.),1);
-	    pdN_vs_ptJTransMax->Fill(pJ.pt(),transN2/(60./2.),1);
-	    pdN_vs_ptJTransDiff->Fill(pJ.pt(),((transN2-transN1)/transN2)/(60./2.),1);
-	    for(int i=100;i>0;i--){
-	      float_t bincont1_mc=temp1->GetBinContent(i+1);
-	      pdN_vs_dphiTrans->Fill(-180.+i*3.6+1.8,bincont1_mc/(360./50.),1);
-	    }
-	    for(int i=0;i<50;i++){
-	      float_t bincont1_mc= (temp1->GetBinContent(51+i) - temp1->GetBinContent(49-i))/temp1->GetBinContent(51+i);
-	      pdN_vs_dphiTransDiff->Fill(0.+i*3.6+1.8,bincont1_mc/(180./50.),1);
-	    }
-	  }
-
-	  if(orderedP){
-	    pdPt_vs_ptJTransMin->Fill(pJ.pt(),transP2/(60./2.),1);
-	    pdPt_vs_ptJTransMax->Fill(pJ.pt(),transP1/(60./2.),1);
-	    pdPt_vs_ptJTransDiff->Fill(pJ.pt(),((transP1-transP2)/transP1)/(60./2.),1);
-	    for(int i=0;i<100;i++){
-	      float_t bincont2_mc=temp2->GetBinContent(i+1);
-	      pdPt_vs_dphiTrans->Fill(-180.+i*3.6+1.8,bincont2_mc/(360./50.),1);
-	    }
-	    for(int i=0;i<50;i++){
-	      float_t bincont2_mc= (temp2->GetBinContent(49-i) - temp2->GetBinContent(51+i))/temp1->GetBinContent(49-i);
-	      pdPt_vs_dphiTransDiff->Fill(0.+i*3.6+1.8,bincont2_mc/(180./50.),1);
-	    }
-	  }else{
-	    pdPt_vs_ptJTransMin->Fill(pJ.pt(),transP1/(60./2.),1);
-	    pdPt_vs_ptJTransMax->Fill(pJ.pt(),transP2/(60./2.),1);
-	    pdPt_vs_ptJTransDiff->Fill(pJ.pt(),((transP2-transP1)/transP2)/(60./2.),1);
-	    for(int i=100;i>0;i--){
-	      float_t bincont2_mc=temp2->GetBinContent(i+1);
-	      pdPt_vs_dphiTrans->Fill(-180.+i*3.6+1.8,bincont2_mc/(360./50.),1);
-	    }
-	    for(int i=0;i<50;i++){
-	      float_t bincont2_mc= (temp2->GetBinContent(51+i) - temp2->GetBinContent(49-i))/temp1->GetBinContent(51+i);
-	      pdPt_vs_dphiTransDiff->Fill(0.+i*3.6+1.8,bincont2_mc/(180./50.),1);
-	    }
-	  }
-	  temp1->Reset();
-	  temp2->Reset();
 	}
-      }
+
+      Ntk++;
     }
-    
-  }else{
-    std::vector<BasicJet> tmpBasicJet;
-    tmpBasicJet.clear();
 
-    if(BasicJetsHandle->size()){ 
-      for(BasicJetCollection::const_iterator it=BasicJetsHandle->begin();it!=BasicJetsHandle->end();it++) 
-	tmpBasicJet.push_back(*it);
-      std::stable_sort(tmpBasicJet.begin(),tmpBasicJet.end(),BasicJetSort());
-    }
-    
-    
-    if(tmpBasicJet.size()){
-      BasicJet pJ = tmpBasicJet.front();
-      
-      fHistPtDistJetChg->Fill(pJ.pt());
-      fHistEtaDistJetChg->Fill(pJ.eta());
-      fHistPhiDistJetChg->Fill(pJ.phi());
-      
-      if(fabs(pJ.eta())<1&&pJ.pt()>1){
-	
-	if(particles4Jet.size()){
-	  
-	  float_t conv = 180/piG;
-	  
-	  for (std::vector<math::XYZTLorentzVector>::const_iterator par = particles4Jet.begin();
-	       par != particles4Jet.end(); par++ ){
-	    
-	    // get 3-vector of jet
-            TVector3 * jetvector = new TVector3;
-            jetvector->SetPtEtaPhi(pJ.pt(), pJ.eta(), pJ.phi());
+  lead_MC=idx_tmp_;
 
-            // get 3-vector of particle
-            TVector3 * particlevector = new TVector3;
-            particlevector->SetPtEtaPhi(par->pt(), par->eta(), par->phi());
 
-            // use ROOT method to calculate dphi
-            // convert dphi from radiants to degrees
-            float_t Dphi_mc = conv * jetvector->DeltaPhi(*particlevector);
 
-            temp1->Fill(Dphi_mc);
-            temp2->Fill(Dphi_mc,par->Pt());
+  // attivita' UE usando la leading track come scala di energia dell'evento
+  //  faccio separatamente MC e REC (secondo me piu' giusto che richiedere
+  // i 2 indici, contemporaneamente, diversi da -99
+  if(lead_MC!=-99)
+    {
+      for(int i=0;i<Np;i++)
+	{
+	  if(i!=lead_MC && abs(eta_[i])<2. && pt_[i]>0.9 && charge_[i]!=0)
+	    {
+    // 3-vector  
+	      TVector3 * leadvector = new TVector3;
+	      leadvector->SetPtEtaPhi(pt_[lead_MC], eta_[lead_MC], phi_[lead_MC]);
 
-	  }
-	  
-	  // fill profile histograms 
-	  // scale by binwidth ( = 360 degrees / 100 bins ) and by eta-range ( = 2 )
-	  float_t transN1=0;
-	  float_t transN2=0;
-	  float_t transP1=0;
-	  float_t transP2=0;
-	  for(int i=0;i<100;i++){
-	    if(i>14 && i<33 ){
-	      transN1 += temp1->GetBinContent(i+1);
-	      transP1 += temp2->GetBinContent(i+1);
-	    }
-	    if(i>64 && i<83 ){
-	      transN2 += temp1->GetBinContent(i+1);  
-	      transP2 += temp2->GetBinContent(i+1);  
-	    }  
-	    float_t bincont1_mc=temp1->GetBinContent(i+1);
-	    pdN_vs_dphi->Fill(-180.+i*3.6+1.8,bincont1_mc/(360./50.),1);
+	      TVector3 * particlevector = new TVector3;
+	      particlevector->SetPtEtaPhi(pt_[i], eta_[i], phi_[i]);
 
-	    float_t bincont2_mc=temp2->GetBinContent(i+1);
-	    pdPt_vs_dphi->Fill(-180.+i*3.6+1.8,bincont2_mc/(360./50.),1);
-	  }
+	      float_t d_phi = (180./piG) * leadvector->DeltaPhi(*particlevector);
 
-	  //fill transMIN transMAX e transDIFF
-	  // scale by binwidth ( = 360 degrees / 100 bins ) and by eta-range ( = 2 )
-	  bool orderedN = false; 
-	  bool orderedP = false; 
-	  
-	  if( transN1>=transN2 ) orderedN = true;
-	  if( transP1>=transP2 ) orderedP = true;
-	  pdN_vs_ptJTrans->Fill(pJ.pt(),(transN1+transN2)/(120./2.),1);
-	  pdPt_vs_ptJTrans->Fill(pJ.pt(),(transP1+transP2)/(120./2.),1);
-	  if(orderedN){
-	    pdN_vs_ptJTransMin->Fill(pJ.pt(),transN2/(60./2.),1);
-	    pdN_vs_ptJTransMax->Fill(pJ.pt(),transN1/(60./2.),1);
-	    pdN_vs_ptJTransDiff->Fill(pJ.pt(),((transN1-transN2)/transN1)/(60./2.),1);
-	    for(int i=0;i<100;i++){
-	      float_t bincont1_mc=temp1->GetBinContent(i+1);
-	      pdN_vs_dphiTrans->Fill(-180.+i*3.6+1.8,bincont1_mc/(360./50.),1);
+	      temp_dnMC->Fill(d_phi);
+	      temp_dptMC->Fill(d_phi,pt_[i]);
 	    }
-	    for(int i=0;i<50;i++){
-	      float_t bincont1_mc= (temp1->GetBinContent(49-i) - temp1->GetBinContent(51+i)/temp1->GetBinContent(49-i));
-	      pdN_vs_dphiTransDiff->Fill(0.+i*3.6+1.8,bincont1_mc/(180./50.),1);
-	    }
-	  }else{
-	    pdN_vs_ptJTransMin->Fill(pJ.pt(),transN1/(60./2.),1);
-	    pdN_vs_ptJTransMax->Fill(pJ.pt(),transN2/(60./2.),1);
-	    pdN_vs_ptJTransDiff->Fill(pJ.pt(),((transN2-transN1)/transN2)/(60./2.),1);
-	    for(int i=100;i>0;i--){
-	      float_t bincont1_mc=temp1->GetBinContent(i+1);
-	      pdN_vs_dphiTrans->Fill(-180.+i*3.6+1.8,bincont1_mc/(360./50.),1);
-	    }
-	    for(int i=0;i<50;i++){
-	      float_t bincont1_mc= (temp1->GetBinContent(51+i) - temp1->GetBinContent(49-i))/temp1->GetBinContent(51+i);
-	      pdN_vs_dphiTransDiff->Fill(0.+i*3.6+1.8,bincont1_mc/(180./50.),1);
-	    }
-	  }
-
-	  if(orderedP){
-	    pdPt_vs_ptJTransMin->Fill(pJ.pt(),transP2/(60./2.),1);
-	    pdPt_vs_ptJTransMax->Fill(pJ.pt(),transP1/(60./2.),1);
-	    pdPt_vs_ptJTransDiff->Fill(pJ.pt(),((transP1-transP2)/transP1)/(60./2.),1);
-	    for(int i=0;i<100;i++){
-	      float_t bincont2_mc=temp2->GetBinContent(i+1);
-	      pdPt_vs_dphiTrans->Fill(-180.+i*3.6+1.8,bincont2_mc/(360./50.),1);
-	    }
-	    for(int i=0;i<50;i++){
-	      float_t bincont2_mc= (temp2->GetBinContent(49-i) - temp2->GetBinContent(51+i))/temp1->GetBinContent(49-i);
-	      pdPt_vs_dphiTransDiff->Fill(0.+i*3.6+1.8,bincont2_mc/(180./50.),1);
-	    }
-	  }else{
-	    pdPt_vs_ptJTransMin->Fill(pJ.pt(),transP1/(60./2.),1);
-	    pdPt_vs_ptJTransMax->Fill(pJ.pt(),transP2/(60./2.),1);
-	    pdPt_vs_ptJTransDiff->Fill(pJ.pt(),((transP2-transP1)/transP2)/(60./2.),1);
-	    for(int i=100;i>0;i--){
-	      float_t bincont2_mc=temp2->GetBinContent(i+1);
-	      pdPt_vs_dphiTrans->Fill(-180.+i*3.6+1.8,bincont2_mc/(360./50.),1);
-	    }
-	    for(int i=0;i<50;i++){
-	      float_t bincont2_mc= (temp2->GetBinContent(51+i) - temp2->GetBinContent(49-i))/temp1->GetBinContent(51+i);
-	      pdPt_vs_dphiTransDiff->Fill(0.+i*3.6+1.8,bincont2_mc/(180./50.),1);
-	    }
-	  }
-	  temp1->Reset();
-	  temp2->Reset();
 	}
-      }
     }
-  }
 
-  return ;
+  if(lead_tk!=-99)
+    {
+      for(int i=0;i<Ntk;i++)
+	{
+	  if(i!=lead_tk && abs(eta_tk[i])<2. && pt_tk[i]>0.9  && nhits_tk[i]>7)
+	    {
+	      // 3-vector  
+	      TVector3 * leadtrack = new TVector3;
+	      leadtrack->SetPtEtaPhi(pt_tk[lead_tk], eta_tk[lead_tk], phi_tk[lead_tk]);
+
+	      TVector3 * trackvector = new TVector3;
+	      trackvector->SetPtEtaPhi(pt_tk[i], eta_tk[i], phi_tk[i]);
+
+	      float_t d_phi = (180./(piG*1.)) * leadtrack->DeltaPhi(*trackvector);
+
+
+	      temp_dn->Fill(d_phi);
+	      temp_dpt->Fill(d_phi,pt_tk[i]);
+
+
+
+	    }
+	}
+    }
+  
+
+
+
+
+
+
+
+
+  // grandezze differenziali base
+
+  for(int i=0;i<100;i++)
+    {
+      dN_vs_eta->Fill((i*0.05)+0.025,temp1->GetBinContent(i+1)/0.1,1);
+      dN_vs_pt->Fill((i*0.045)+0.0225,temp2->GetBinContent(i+1)/0.045,1);
+      dN_vs_etaMC->Fill((i*0.05)+0.025,temp1MC->GetBinContent(i+1)/0.1,1);
+      dN_vs_ptMC->Fill((i*0.045)+0.0225,temp2MC->GetBinContent(i+1)/0.045,1);
+
+      dN_vs_dphiMC->Fill((-180+i*3.6+1.8), temp_dnMC->GetBinContent(i+1)/(3.6*2*(piG/180.)));
+      dPT_vs_dphiMC->Fill((-180+i*3.6+1.8), temp_dptMC->GetBinContent(i+1)/(3.6*2*(piG/180.)));
+
+      dN_vs_dphi->Fill((-180+i*3.6+1.8), temp_dn->GetBinContent(i+1)/(3.6*2*(piG/180.)));
+      dPT_vs_dphi->Fill((-180+i*3.6+1.8), temp_dpt->GetBinContent(i+1)/(3.6*2*(piG/180.)));
+    }
+
+  temp1->Reset();
+  temp2->Reset(); 
+  temp1MC->Reset();
+  temp2MC->Reset();
+  temp_dnMC->Reset();
+  temp_dptMC->Reset();
+  temp_dn->Reset();
+  temp_dpt->Reset();
+
+  nt->Fill();
 }
 
 void MinimumBiasAnalyzer::endJob(){
   
-  fOutputFile->Write() ;
-  fOutputFile->Close() ;
-  
-  return ;
+
+    nt->Write();
+    hFile->Write();
+    hFile->Close();
+
   
 }
 
@@ -457,6 +301,80 @@ float_t MinimumBiasAnalyzer::delR(const float_t& eta1,const float_t& eta2,const 
   float cono = sqrt((eta1-eta2)*(eta1-eta2)+(phi1-phi2)*(phi1-phi2));
 
   return cono;
+
+}
+
+int MinimumBiasAnalyzer::charge(const int& Id){
+  
+  //...Purpose: to give three times the charge for a particle/parton.
+
+  //      ID     = particle ID
+  //      hepchg = particle charge times 3
+
+  int kqa,kq1,kq2,kq3,kqj,irt,kqx,kqn;
+  int hepchg;
+
+
+  int ichg[109]={-1,2,-1,2,-1,2,-1,2,0,0,-3,0,-3,0,-3,0,
+		 -3,0,0,0,0,0,0,3,0,0,0,0,0,0,3,0,3,6,0,0,3,6,0,0,-1,2,-1,2,-1,2,0,0,0,0,
+		 -3,0,-3,0,-3,0,0,0,0,0,-1,2,-1,2,-1,2,0,0,0,0,
+		 -3,0,-3,0,-3,0,3,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+
+
+  //...Initial values. Simple case of direct readout.
+  hepchg=0;
+  kqa=abs(Id);
+  kqn=kqa/1000000000%10;
+  kqx=kqa/1000000%10;
+  kq3=kqa/1000%10;
+  kq2=kqa/100%10;
+  kq1=kqa/10%10;
+  kqj=kqa%10;
+  irt=kqa%10000;
+
+  //...illegal or ion
+  //...set ion charge to zero - not enough information
+  if(kqa==0 || kqa >= 10000000) {
+
+    if(kqn==1) {hepchg=0;}
+  }
+  //... direct translation
+  else if(kqa<=100) {hepchg = ichg[kqa-1];}
+  //... KS and KL (and undefined)
+  else if(kqj == 0) {hepchg = 0;}
+  //C... direct translation
+  else if(kqx>0 && irt<100)
+    {
+      hepchg = ichg[irt-1];
+      if(kqa==1000017 || kqa==1000018) {hepchg = 0;}
+      if(kqa==1000034 || kqa==1000052) {hepchg = 0;}
+      if(kqa==1000053 || kqa==1000054) {hepchg = 0;}
+      if(kqa==5100061 || kqa==5100062) {hepchg = 6;}
+    }
+  //...Construction from quark content for heavy meson, diquark, baryon.
+  //...Mesons.
+  else if(kq3==0)
+    {
+      hepchg = ichg[kq2-1]-ichg[kq1-1];
+      //...Strange or beauty mesons.
+      if((kq2==3) || (kq2==5)) {hepchg = ichg[kq1-1]-ichg[kq2-1];}
+    }
+  else if(kq1 == 0) {
+    //...Diquarks.
+    hepchg = ichg[kq3-1] + ichg[kq2-1];
+  }
+
+  else{
+    //...Baryons
+    hepchg = ichg[kq3-1]+ichg[kq2-1]+ichg[kq1-1];
+  }
+
+  //... fix sign of charge
+  if(Id<0 && hepchg!=0) {hepchg = -1*hepchg;}
+
+  // cout << hepchg<< endl;
+  return hepchg;
+
 
 }
 
