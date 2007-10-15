@@ -91,6 +91,8 @@ namespace edm {
     // executing its event loop function ('write').
     CurrentProcessingContext const* currentContext() const;
 
+    ModuleDescription const& description() const;
+
   private:
 
     unsigned int nextID_;

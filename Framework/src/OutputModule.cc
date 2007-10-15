@@ -377,6 +377,12 @@ namespace edm {
     return current_context_;
   }
 
+  ModuleDescription const&
+  OutputModule::description() const
+  {
+    return md_;
+  }
+
   bool OutputModule::selected(BranchDescription const& desc) const
   {
     return groupSelector_.selected(desc);
