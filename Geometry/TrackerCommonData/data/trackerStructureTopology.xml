@@ -76,6 +76,8 @@
       <Parameter name="TkDDDStructure" value="TIBLayer"/>
     </SpecPar>
 
+<!--definire plus e minus-->
+
     <SpecPar name="TIBSubDetStringPar">
       <PartSelector path="//TIBString0LoMin1" />
       <PartSelector path="//TIBString0LoPls1" />
@@ -199,6 +201,7 @@
     <SpecPar name="TECSubDetWheelPar">
       <PartSelector path="//TECWheelA" />
       <PartSelector path="//TECWheelB" />
+      <PartSelector path="//TECWheel6" /> <!-- special disk that contains the beamsplitters (for alignment)-->
       <PartSelector path="//TECWheelC" />
       <PartSelector path="//TECWheelD" />
       <Parameter name="TkDDDStructure" value="TECWheel"/>
