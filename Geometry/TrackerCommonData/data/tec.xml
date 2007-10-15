@@ -231,7 +231,7 @@
  </PosPart>
  <PosPart copyNumber="5">
    <rParent name="tec:TECWheels"/>
-   <rChild name="tecwheelb:TECWheelB"/>
+   <rChild name="tecwheel6:TECWheel6"/>
   <Translation x="[zero]" y="[zero]" z="[Wheel5Z]-[ZPos]"/>
  </PosPart>
  <PosPart copyNumber="6">

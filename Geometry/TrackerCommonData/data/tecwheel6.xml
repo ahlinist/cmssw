@@ -63,7 +63,7 @@
  </LogicalPart>
  <LogicalPart name="TECBeamsplitter" category="unspecified">
   <rSolid name="tecwheel6:TECBeamsplitter"/>
-  <rMaterial name="materials:Air"/>
+  <rMaterial name="tecmaterial:TEC_Beamsplitter"/>
  </LogicalPart>
 </LogicalPartSection>
 
