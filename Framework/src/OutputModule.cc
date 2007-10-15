@@ -380,7 +380,7 @@ namespace edm {
   ModuleDescription const&
   OutputModule::description() const
   {
-    return md_;
+    return moduleDescription_;
   }
 
   bool OutputModule::selected(BranchDescription const& desc) const
