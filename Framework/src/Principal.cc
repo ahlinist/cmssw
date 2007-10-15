@@ -32,7 +32,7 @@ namespace edm {
     store_(rtrv),
     size_(0)
   {
-    if (processHistoryID_ != ProcessHistoryID()) {
+    if (processHistoryID_.isValid()) {
       ProcessHistoryRegistry& history(*ProcessHistoryRegistry::instance());
       assert(history.notEmpty());
       bool found = history.getMapped(processHistoryID_, *processHistoryPtr_);
