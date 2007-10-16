@@ -31,7 +31,7 @@ using namespace reco;
 
 class GreaterPt{
 public:
-  bool operator()( const math::PtEtaPhiMLorentzVector& a, const math::PtEtaPhiMLorentzVector& b) {
+  bool operator()( const math::XYZTLorentzVector& a, const math::XYZTLorentzVector& b) {
     return a.pt() > b.pt();
   }
 };
@@ -213,8 +213,8 @@ void MBUEAnalysisRootpleProducer::analyze( const Event& e, const EventSetup& )
   e.getByLabel(genJetCollName.c_str(), GenJetsHandle );
   e.getByLabel(tracksJetCollName.c_str(), TracksJetsHandle );
   
-  std::vector<math::PtEtaPhiMLorentzVector> GenPart;
-  std::vector<math::PtEtaPhiMLorentzVector> Tracks;
+  std::vector<math::XYZTLorentzVector> GenPart;
+  std::vector<math::XYZTLorentzVector> Tracks;
   std::vector<GenJet> ChgGenJetContainer;
   std::vector<GenJet> GenJetContainer;
   std::vector<BasicJet> TracksJetContainer;
@@ -264,7 +264,7 @@ void MBUEAnalysisRootpleProducer::analyze( const Event& e, const EventSetup& )
       GenPart.push_back(it->p4());
     }
     std::stable_sort(GenPart.begin(),GenPart.end(),GreaterPt());
-    for(std::vector<math::PtEtaPhiMLorentzVector>::const_iterator it = GenPart.begin(); it != GenPart.end(); it++)
+    for(std::vector<math::XYZTLorentzVector>::const_iterator it = GenPart.begin(); it != GenPart.end(); it++)
       fillMCParticles(it->P(),it->Pt(),it->Eta(),it->Phi());
   }
   
@@ -273,7 +273,7 @@ void MBUEAnalysisRootpleProducer::analyze( const Event& e, const EventSetup& )
       Tracks.push_back(it->p4());
     }
     std::stable_sort(Tracks.begin(),Tracks.end(),GreaterPt());
-    for(std::vector<math::PtEtaPhiMLorentzVector>::const_iterator it = Tracks.begin(); it != Tracks.end(); it++)
+    for(std::vector<math::XYZTLorentzVector>::const_iterator it = Tracks.begin(); it != Tracks.end(); it++)
       fillTracks(it->P(),it->Pt(),it->Eta(),it->Phi());
   }
   

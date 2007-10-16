@@ -30,13 +30,6 @@ using namespace edm;
 using namespace std;
 using namespace reco;
 
-class GreaterPt{
-public:
-  bool operator()( const math::PtEtaPhiMLorentzVector& a, const math::PtEtaPhiMLorentzVector& b) {
-    return a.Pt() > b.Pt();
-  }
-};
-
 class GenJetSort{
 public:
   bool operator()(const GenJet& a, const GenJet& b) {

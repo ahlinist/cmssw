@@ -30,7 +30,7 @@ using namespace reco;
 
 class GreaterPt{
 public:
-  bool operator()( const math::PtEtaPhiMLorentzVector& a, const math::PtEtaPhiMLorentzVector& b) {
+  bool operator()( const math::XYZTLorentzVector& a, const math::XYZTLorentzVector& b) {
     return a.pt() > b.pt();
   }
 };
@@ -160,7 +160,7 @@ void MBUEAnalysisRootpleProducerOnlyMC::analyze( const Event& e, const EventSetu
   e.getByLabel(chgJetCollName.c_str(), ChgGenJetsHandle );
   e.getByLabel(genJetCollName.c_str(), GenJetsHandle );
   
-  std::vector<math::PtEtaPhiMLorentzVector> GenPart;
+  std::vector<math::XYZTLorentzVector> GenPart;
   std::vector<GenJet> ChgGenJetContainer;
   std::vector<GenJet> GenJetContainer;
   
@@ -189,7 +189,7 @@ void MBUEAnalysisRootpleProducerOnlyMC::analyze( const Event& e, const EventSetu
       GenPart.push_back(it->p4());
     }
     std::stable_sort(GenPart.begin(),GenPart.end(),GreaterPt());
-    for(std::vector<math::PtEtaPhiMLorentzVector>::const_iterator it = GenPart.begin(); it != GenPart.end(); it++)
+    for(std::vector<math::XYZTLorentzVector>::const_iterator it = GenPart.begin(); it != GenPart.end(); it++)
       fillMCParticles(it->P(),it->Pt(),it->Eta(),it->Phi());
   }
   
