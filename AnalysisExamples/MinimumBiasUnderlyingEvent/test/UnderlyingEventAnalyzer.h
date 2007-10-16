@@ -40,8 +40,8 @@ public:
   virtual void beginJob( const edm::EventSetup& );
   virtual void endJob();
   
-  void mcAnalysis(vector<math::PtEtaPhiMLorentzVector>&,vector<GenJet>&);
-  void tkAnalysis(vector<math::PtEtaPhiMLorentzVector>&,vector<BasicJet>&);
+  void mcAnalysis(vector<math::XYZTLorentzVector>&,vector<GenJet>&);
+  void tkAnalysis(vector<math::XYZTLorentzVector>&,vector<BasicJet>&);
 
   float_t delR(const float_t&,const float_t&,const float_t&,const float_t&);
   

@@ -19,7 +19,7 @@ using namespace reco;
 
 class GreaterPt{
 public:
-  bool operator()( const math::PtEtaPhiMLorentzVector& a, const math::PtEtaPhiMLorentzVector& b) {
+  bool operator()( const math::XYZTLorentzVector& a, const math::XYZTLorentzVector& b) {
     return a.pt() > b.pt();
   }
 };
@@ -290,8 +290,8 @@ void UnderlyingEventAnalyzer::analyze( const Event& e, const EventSetup& ){
     if(mcInfo)e.getByLabel(chgJetCollName.c_str(), ChgGenJetsHandle );
     if(tkInfo)e.getByLabel(tracksJetCollName.c_str(), TracksJetsHandle );
     
-    std::vector<math::PtEtaPhiMLorentzVector> ChgGenPart4Jet;
-    std::vector<math::PtEtaPhiMLorentzVector> Tracks4Jet;
+    std::vector<math::XYZTLorentzVector> ChgGenPart4Jet;
+    std::vector<math::XYZTLorentzVector> Tracks4Jet;
     std::vector<GenJet> ChgGenJetContainer;
     std::vector<BasicJet> TracksJetContainer;
     std::vector<CaloJet> RecoCaloJetContainer;
@@ -367,11 +367,11 @@ void UnderlyingEventAnalyzer::analyze( const Event& e, const EventSetup& ){
   }
 }
 
-void UnderlyingEventAnalyzer::mcAnalysis(std::vector<math::PtEtaPhiMLorentzVector>& Part4Jet, std::vector<GenJet>& JetCollection ){
+void UnderlyingEventAnalyzer::mcAnalysis(std::vector<math::XYZTLorentzVector>& Part4Jet, std::vector<GenJet>& JetCollection ){
 
   float_t avgPtChg = 0.;
   
-  for(std::vector<math::PtEtaPhiMLorentzVector>::const_iterator it = Part4Jet.begin();it!=Part4Jet.end();it++){
+  for(std::vector<math::XYZTLorentzVector>::const_iterator it = Part4Jet.begin();it!=Part4Jet.end();it++){
     fHistPtDistMC->Fill(it->pt());
     fHistEtaDistMC->Fill(it->eta());
     fHistPhiDistMC->Fill(it->phi());
@@ -410,7 +410,7 @@ void UnderlyingEventAnalyzer::mcAnalysis(std::vector<math::PtEtaPhiMLorentzVecto
     
     float_t conv = 180/piG;
     
-    for (std::vector<math::PtEtaPhiMLorentzVector>::const_iterator par = Part4Jet.begin();
+    for (std::vector<math::XYZTLorentzVector>::const_iterator par = Part4Jet.begin();
 	 par != Part4Jet.end(); par++ ){
       
       // get 3-vector of jet
@@ -573,11 +573,11 @@ void UnderlyingEventAnalyzer::mcAnalysis(std::vector<math::PtEtaPhiMLorentzVecto
 }
 
 
-void UnderlyingEventAnalyzer::tkAnalysis(std::vector<math::PtEtaPhiMLorentzVector>& Part4Jet, std::vector<BasicJet>& JetCollection ){
+void UnderlyingEventAnalyzer::tkAnalysis(std::vector<math::XYZTLorentzVector>& Part4Jet, std::vector<BasicJet>& JetCollection ){
 
   float_t avgPtChg = 0.;
   
-  for(std::vector<math::PtEtaPhiMLorentzVector>::const_iterator it = Part4Jet.begin();it!=Part4Jet.end();it++){
+  for(std::vector<math::XYZTLorentzVector>::const_iterator it = Part4Jet.begin();it!=Part4Jet.end();it++){
     fHistPtDistRECO->Fill(it->pt());
     fHistEtaDistRECO->Fill(it->eta());
     fHistPhiDistRECO->Fill(it->phi());
@@ -616,7 +616,7 @@ void UnderlyingEventAnalyzer::tkAnalysis(std::vector<math::PtEtaPhiMLorentzVecto
     
     float_t conv = 180/piG;
     
-    for (std::vector<math::PtEtaPhiMLorentzVector>::const_iterator par = Part4Jet.begin();
+    for (std::vector<math::XYZTLorentzVector>::const_iterator par = Part4Jet.begin();
 	 par != Part4Jet.end(); par++ ){
       
       // get 3-vector of jet
