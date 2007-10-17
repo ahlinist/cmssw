@@ -12,7 +12,7 @@
   <Constant name="waf_intra_col_sep" value="6.34*cm"/>
   <Constant name="waf_inter_col_sep" value="0.05*cm"/>
   <Constant name="dee_sep" value="0.05*cm"/>
-  <Constant name="wedge_width" value="5.8*cm"/>
+  <Constant name="wedge_width" value="6.24*cm"/>
   <Constant name="wedge_length" value="5.2*cm"/>
   <Constant name="wedge_front_thick" value="0.2*cm"/>
   <Constant name="wedge_back_thick" value="0.545*cm"/>
@@ -108,18 +108,18 @@
   <Constant name="CP_diameter" value="2.5*cm"/>
   <Constant name="CW_diameter" value="2.0*cm"/>
   <Constant name="Front_CP_radius" value="130.5*cm"/>
-  <Constant name="Rear_CP_radius" value="131.8*cm"/>
+  <Constant name="Rear_CP_radius" value="132.6*cm"/>
   <Constant name="Front_CP_Z_shift" value="-4.19*cm"/>
   <Constant name="Rear_CP_Z_shift" value="1.65*cm"/>
 
   <!-- Constants for preshower ladders -->
-  <Constant name="ladder_thick" value="[box_thick]/cos([wedge_angle]*2) + [ceramic_length]*sin([wedge_angle]*2) + [wedge_front_thick]" />
+  <Constant name="ladder_thick" value="[box_thick]/cos([wedge_angle]*2) + [ceramic_length]*sin([wedge_angle]*2) + [wedge_front_thick]+0.02*mm" />
   <Constant name="ladder_width" value="2*[waf_intra_col_sep]" />
   <Constant name="micromodule_length" value="[ceramic_length]*cos([wedge_angle]*2) + [box_thick]*sin([wedge_angle]*2)" />
   <Constant name="LdrFrnt_Length" value="[ceramic_length]*cos([wedge_angle]*2)+[box_thick]*sin([wedge_angle]*2)" />
   <Constant name="LdrFrnt_Offset" value="(2*[ladder_thick]-[ceramic_length]*sin([wedge_angle]*2))/4." />
   <Constant name="LdrBck_Length" value="[ceramic_length]*cos([wedge_angle]*2)-[wedge_length]" />
-  <Constant name="LdrBck_Offset" value="([ladder_thick]-[wedge_back_thick]+[box_thick]/cos([wedge_angle]*2))/4.+[wedge_back_thick]+([LdrBck_Length]/2)*sin([wedge_angle]*2)" />
+  <Constant name="LdrBck_Offset" value="([ladder_thick]-[wedge_back_thick]+[box_thick]/cos([wedge_angle]*2)+0.02*mm)/4.+[wedge_back_thick]+([LdrBck_Length]/2)*sin([wedge_angle]*2)+0.02*mm" />
   <Constant name="R_MIN_Abs_Al" value="[R_MIN]+4.9*cm"/>
   <Constant name="R_MIN_Abs_Pb" value="[R_MIN]+14.35*cm"/>
   <Constant name="R_MAX_Abs_Al" value="127.54*cm"/>
@@ -203,10 +203,10 @@
   
   <Tubs name="SFID" rMin="[R_MIN]" rMax="[R_MIN]+[ID_height]" dz="[PRESH_Z_TOTAL]/2.-[P1]-[P2]-[P3]" startPhi="0*deg" deltaPhi="360*deg"/>
 
-  <Tubs name="SFC1" rMin="[Front_CP_radius]-[CP_diameter]/2." rMax="[Front_CP_radius]+[CP_diameter]/2." dz="[CP_diameter]/2." startPhi="0*deg" deltaPhi="360*deg"/>
-  <Tubs name="SFC2" rMin="[Front_CP_radius]-[CW_diameter]/2." rMax="[Front_CP_radius]+[CW_diameter]/2." dz="[CW_diameter]/2." startPhi="0*deg" deltaPhi="360*deg"/>
-  <Tubs name="SFC3" rMin="[Rear_CP_radius]-[CP_diameter]/2." rMax="[Rear_CP_radius]+[CP_diameter]/2." dz="[CP_diameter]/2." startPhi="0*deg" deltaPhi="360*deg"/>
-  <Tubs name="SFC4" rMin="[Rear_CP_radius]-[CP_diameter]/2." rMax="[Rear_CP_radius]+[CP_diameter]/2." dz="[CW_diameter]/2." startPhi="0*deg" deltaPhi="360*deg"/>
+  <Torus name="SFC1" innerRadius="0." outerRadius="[CP_diameter]/2." torusRadius="[Front_CP_radius]" startPhi="0*deg" deltaPhi="360*deg"/>
+  <Torus name="SFC2" innerRadius="0." outerRadius="[CW_diameter]/2." torusRadius="[Front_CP_radius]" startPhi="0*deg" deltaPhi="360*deg"/>
+  <Torus name="SFC3" innerRadius="0." outerRadius="[CP_diameter]/2." torusRadius="[Rear_CP_radius]" startPhi="0*deg" deltaPhi="360*deg"/>
+  <Torus name="SFC4" innerRadius="0." outerRadius="[CP_diameter]/2." torusRadius="[Rear_CP_radius]" startPhi="0*deg" deltaPhi="360*deg"/>
 
   <Trapezoid name="SWED" 
                dz="[wedge_length]/2"
