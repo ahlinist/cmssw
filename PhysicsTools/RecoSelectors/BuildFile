@@ -3,8 +3,8 @@
 <use name=DataFormats/TrackReco>
 <use name=DataFormats/VertexReco>
 <export>
-    <lib name=PhysicsToolsRecoSelectors>
-    <use name=FWCore/ParameterSet>
-    <use name=DataFormats/TrackReco>
-    <use name=DataFormats/VertexReco>
+  <lib name=PhysicsToolsRecoSelectors>
+  <use name=FWCore/ParameterSet>
+  <use name=DataFormats/TrackReco>
+  <use name=DataFormats/VertexReco>
 </export>
