@@ -119,9 +119,8 @@ int main(int argc, char* argv[])
   // 
   // The parameters for these can be overridden from the configuration files.
   std::vector<std::string> defaultServices;
-  defaultServices.reserve(6);
+  defaultServices.reserve(5);
   defaultServices.push_back("MessageLogger");
-  defaultServices.push_back("LoadAllDictionaries");
   defaultServices.push_back("InitRootHandlers");
   defaultServices.push_back("AdaptorConfig");
   defaultServices.push_back("EnableFloatingPointExceptions");
