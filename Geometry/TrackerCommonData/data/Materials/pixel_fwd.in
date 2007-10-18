@@ -1,6 +1,16 @@
 PIXEL forward detector
 ============
 
+ @version October 17, 2007
+ @created Vesna CUPLOV (2006)
+ @modified Vesna CUPLOV (2007)
+  - Forward pixel Disks and Service cylinder mixtures definitions.
+  - All mixtures for FPix disks were updated in october 2007.
+    (added capacitors, resistors, solders  in the HDI and VHDI mixtures..... )
+  - Mixtures for Service cylinder were fully implemented in october 2007.
+.....................................................................................
+.....................................................................................
+
 Input file for mixture.f
 Start new mixtures with a '#' in the first column
 Start the components with a '*' in the first column
@@ -19,82 +29,194 @@ For items in a compound: Item number, Comment, Material (has to be
                                      ELE for electronics
 ..................................................................... 
 
-1) BumpBonds+Air (per ROC area = 0.7962cm2)
-   =======================
+1) BumpBonds+Air layer per ROC area = 0.7962cm2) updated: 10.05.07
+   ============================================
+ROC dimensions: Length=0.994cm, Width=0.801cm and Thickness=0.0190cm
 
-(1)      An average of 4160 Bump Bonds (63% Tin and 37% Lead)
-         Area: 0.003 x 0.003 = 0.000009 cm^2
-         thickness 0.0025cm ->  V = 0.0000000225 cm^3 
-(2)      Air: (Area_ROC * 0.0025) - 4160 * 0.0000000225 
-               V_Air = 0.0019905 - 0.0000936 = 0.00189 cm^3
+(1)      An average of 4160 Bump Bonds (63% Tin and 37% Lead) per ROC
+         Bump Bond size: Length= 0.003cm, Width=0.003cm and Thickness=0.0025cm
+                         Volume will be approximatively: V = 0.0000000225 cm^3 
+(2)      Air: (Area_ROC=0.7962 * 0.0025) - 4160 * 0.0000000225 
+               V_Air = 0.0019905 - 0.0000936 = 0.0018964 cm^3
+The total volume of this layer (solder/air) is 0.0019905 = 0.002
+
+The bump bond is made of a material named Bump_Bond. 
 .....................................................................
-# "Pixel Forward BumpBond layer per ROC" "Pix_Fwd_Bump"  0.002  0.7962
-* 1 "Bump Bonds" "Bump Bonds"  0.0000000225 4160 SUP
-* 2 "Bump Bond Air" "Air"  0.00189  1 SUP
+# "Pixel Forward BumpBond layer per ROC" "Pix_Fwd_Bump"  0.00199  0.7962
+* 1 "Bump Bonds" "FPix_TinLeadSolder" 0.0000936 1 ELE
+* 2 "Bump Bond Air" "Air"  0.0018964  1 SUP
 
 
-2) VHDI (updated on october 4th 2006)
-   ====
+2) VHDI (updated on october 5th 2007)
+   ================================
+The total area of VHDI on a blade is 60.5326 cm2 
+We have one layer of Kapton on 60.5326 cm2 area and thickness of 0.009cm
+We have Copper only 60% of the volume made by 60.5326 cm2 area and thickness of 0.004cm
 
-(1-2)       (a) Kapton V =  0.5448 cm^3
-            (c) Copper V = 0.1453 cm^3
-.....................................................................
-# "Pixel Forward VHDI" "Pix_Fwd_VHDI"  0.6901  60.5326
-* 1 "VHDI: Kapton" "T_Kapton" 0.5448 1 SUP
-* 2 "VHDI: Copper" "Copper" 0.1453 1 SUP
+So the Kapton Volume is 0.5448 cm3 and the Copper Volume is 0.1453 cm3.
 
+The total volume of VHDI on a blade is 60.5326 cm2 * 0.009 + 60% * 60.5326* 0.004 = 0.6901 cm3
 
-
-3) ChoTherm per ROC
-   =================
-
-(1-4)    (a) Acrylic is epoxy
-             V = 0.002 cm^3    
-         (b) BN powder 
-             volume = 0.002 cm^3 
-         (c) Silicone 
-             volume = 0.008 cm^3
-         (d) Polyimide
-             volume = 0.002 cm^3
-.....................................................................
-# "Pixel Forward ChoTherm sensor" "Pix_Fwd_ChoTherm_sensor"  0.014  0.7962
-* 1 "Chotherm: Acrylic is epoxy" "Epoxy" 0.002 1 SUP
-* 2 "Chotherm: BN powder" "BN powder" 0.002 1 SUP
-* 3 "Chotherm: Silicone" "Silicone" 0.008 1 SUP
-* 4 "Chotherm: Polyimide it's kapton" "T_Kapton" 0.002 1 SUP 
-
-
-4) 3M 9882 tape
-   ====================
-
-(1-2)    (a) Acrylic is epoxy
-             Area: 60.53 cm^2
-             V = 0.2421 cm^3
-
-         (b) Ceramic(BN)  V = 0.0605 cm^3
+There are 135 capacitors made of Marium_Titanate. (L=1mm, W=0.5mm and Thickness=0.25mm)
+There are Solders made of Tin/Lead in proportion of 63/37: Total volume of Solder is: 0.0054 cm3
 
 .....................................................................
-# "Pixel Forward AdhFilm" "Pix_Fwd_AdhFilm"  0.3026  60.53
-* 1 "AdhFilm: Acrylic is epoxy" "Epoxy" 0.2421 1 SUP
-* 2 "AdhFilm: Ceramic" "BN powder" 0.0605 1 SUP
+# "Pixel Forward VHDI" "Pix_Fwd_VHDI"  0.7124  60.5326
+* 1 "VHDI: Kapton" "FPix_Kapton" 0.5448 1 ELE
+* 2 "VHDI: Copper" "Copper" 0.1453 1 ELE
+* 3 "Capacitors" "Barium_Titanate" 0.000125 135 ELE
+* 4 "Solders" "FPix_TinLeadSolder" 0.0054 1 ELE
 
 
-5) HDI 
-   ===
 
-(1-3)       (a) Kapton V =  0.4278 cm^3
-            (b) Internal flex adhesive V = 0.2139 cm^3
-            (c) Copper V = 0.0675 cm^3
+3) AgEpoxy (also called ChoTherm1680 by Greg Derylo)
+   ============================================
+
+There are 2 places where we put this material: Between VHDI and ROC and Between Plaquette and HDI prom panel. 
+The last bottom layer of a plaquette is made of AgEpoxy and will then be touching the HDI layer of a panel.
+
+Greg Derylo called this ChoTherm (the XML file call this Pix_Fwd_AgEpoxy. 
+
+Description of the layer between VHDI and ROC : Acrylic (Epoxy assumed) V = 0.0895 cm3
+                                                BN powder V = 0.0895 cm3
+                                                (Boron Nitride powder ~ ceramic)
+                                                Silicone  V = 0.3579 cm3
+                                                Polyimide  V = 0.0895 cm3
 .....................................................................
-# "Pixel Forward HDI" "Pix_Fwd_HDI"  0.7092  42.78
-* 1 "HDI: Kapton" "T_Kapton" 0.4278 1 SUP
-* 2 "HDI: Internal flex adhesive is like epoxy" "Internal flex adhesive" 0.2139 1 SUP
-* 3 "HDI: Copper" "Copper" 0.0675 1 SUP
+# "Pixel Forward AgEpoxy VHDI-ROC" "Pix_Fwd_AgEpoxy"  0.6264  1
+* 1 "Acrylic is epoxy" "FPix_Epoxy" 0.0895 1 SUP
+* 2 "BN powder" "FPix_BNPowder" 0.0895 1 SUP
+* 3 "Silicone" "FPix_Silicone" 0.3579 1 SUP
+* 4 "Polyimide is kapton" "FPix_Kapton" 0.0895 1 ELE
 
+
+Description of the layer between HDI and plaquette : Acrylic (Epoxy assumed) V = 0.1513 cm3
+                                                     BN powder V = 0.1513 cm3
+                                                     Silicone  V = 0.6053 cm3
+                                                     Polyimide  V = 0.1513 cm3
+.....................................................................
+# "Pixel Forward AgEpoxy HDI-plaquette " "Pix_Fwd_AgEpoxy"  1.0592  1
+* 1 "Acrylic is epoxy" "FPix_Epoxy" 0.1513 1 SUP
+* 2 "BN powder" "FPix_BNPowder" 0.1513 1 SUP
+* 3 "Silicone" "FPix_Silicone" 0.6053 1 SUP
+* 4 "Polyimide is kapton" "FPix_Kapton" 0.1513 1 ELE
+
+
+..............\
+............../    OF COURSE WE SHOULD FIND THE SAME MIXTURE. THIS IS JUST A CHECK. 
+
+
+4) Adhesive Film: 3M 9882 tape 
+   ==========================
+This tape is made of Acrylic (Epoxy assumed) V = 0.2421cm3 and Ceramic (BN powder) V = 0.0605 cm3
+.....................................................................
+# "Pixel Forward AdhFilm 3M 9882" "Pix_Fwd_AdhFilm"  0.3026  1
+* 1 "Acrylic is epoxy" "FPix_Epoxy" 0.2421 1 SUP
+* 2 "Ceramic" "FPix_BNPowder" 0.0605 1  SUP
+
+
+CHECK: There is also a layer of Adhesive film on a panel:
+.....................................................................
+# "Pixel Forward AdhFilm 3M 9882 PANEL" "Pix_Fwd_AdhFilm"  0.2139  1
+* 1 "Acrylic is epoxy" "FPix_Epoxy" 0.1711 1 SUP
+* 2 "Ceramic" "FPix_BNPowder" 0.0428 1  SUP
+
+..............\
+............../    OF COURSE WE SHOULD FIND THE SAME MIXTURE. THIS IS JUST A CHECK. 
+
+
+5) HDI + other components per blade
+   ===============================
+HDI on a BLADE (2 panels) is made of: Kapton (0.4278 * 2 cm3), an internal flex adhesive(~epoxy) (0.2139 * 2 cm3), Copper (0.0675 * 2 cm3).
+There are 8 capacitors made of BaTiO3: V = 0.0019 cm3
+There are 9 resistors made of Alumina: V = 0.0022 cm3
+There are Solders made of Tin/Lead in proportion of 63/37: Total volume of Solder is: 0.0085 cm3
+We also have Bias and Ground Wires: Copper V = 0.0362 cm3
+                                    Kapton V = 0.1087 cm3
+                                    Solder Tin/Lead (63/37) V = 0.012 cm3
+                                    Epoxy V = 0.030 cm3
+                                    Indium solders In/Sn (52/48) V = 0.006 cm3 
+
+.....................................................................
+# "Pixel Forward HDI" "Pix_Fwd_HDI" 1.6232   1
+* 1 "Kapton" "FPix_Kapton" 0.8556 1 ELE
+* 2 "Internal flex adhesive is like epoxy" "FPix_Epoxy" 0.4278 1 SUP
+* 3 "Copper" "Copper" 0.1349 1 ELE
+* 4 "Capacitors" "Barium_Titanate" 0.0019 1 ELE
+* 5 "Resistors" "FPix_Alumina" 0.0022 1 ELE
+* 6 "Solders"  "FPix_TinLeadSolder" 0.0085 1 ELE
+* 7 "Copper" "Copper" 0.0362 1 ELE
+* 8 "Kapton" "FPix_Kapton" 0.1087 1 ELE
+* 9 "Solders"  "FPix_TinLeadSolder" 0.012 1 ELE
+* 10 "Epoxy" "FPix_Epoxy" 0.030 1 SUP
+* 11 "Solders Indium" "Indium" 0.006 1 ELE
+
+
+
+SERVICE CYLINDER MATERIAL 10.04.07 (V. Cuplov)
+=============================================
+The following description has been done by B. Gobbi and E. Spencer.
+See FPix DOC DB: 1628-v2
+https://docdb.fnal.gov/CMS-private/DocDB/DocumentDatabase 
+
+# "Volume 1 " "Pix_Fwd_Servi_Cylinder" 1195 1
+* 1 "Carbon Fiber" "FPix_Cylind_CF" 1162 1 SUP
+* 2 "G10" "FPix_Cylind_G10" 26 1 CAB
+* 3 "Aluminium" "Aluminium" 6 1 SUP
+* 4 "Ceramic" "Ceramic" 1 1 SUP
+
+# "Volume 2 " "Pix_Fwd_End_Flange" 253 1
+* 1 "Aluminium for End Flange" "Aluminium" 187 1 SUP
+* 2 "Aluminium for cooling lines" "Aluminium" 4 1 COL
+* 3 "SnCu" "FPix_Cylind_SnCu" 11 1 CAB
+* 4 "Poliax" "FPix_Cylind_POLIAX" 35 1 CAB
+* 5 "C6F14" "FPix_Cylind_C6F14" 16 1 COL
+
+# "Volume 3 " "Pix_Fwd_End_Electro_1" 147 1
+* 1 "SnCu" "FPix_Cylind_SnCu" 13 1 CAB
+* 2 "G10" "FPix_Cylind_G10" 65 1 CAB
+* 3 "Poliax" "FPix_Cylind_POLIAX" 39 1 CAB
+* 4 "Carbon Fiber" "FPix_Cylind_CF" 23 1 SUP
+* 5 "Copper" "Copper" 2 1 ELE
+* 6 "Polyester" "FPix_Cylind_Polyester" 5 1 CAB
+
+# "Volume 4 " "Pix_Fwd_End_Electro_2" 120 1
+* 1 "SnCu" "FPix_Cylind_SnCu" 11 1 CAB
+* 2 "G10" "FPix_Cylind_G10" 54 1 CAB
+* 3 "Poliax" "FPix_Cylind_POLIAX" 31 1 CAB
+* 4 "Carbon Fiber" "FPix_Cylind_CF" 19 1 SUP
+* 5 "Copper" "Copper" 1 1 ELE
+* 6 "Polyester" "FPix_Cylind_Polyester" 4 1 CAB
+
+# "Volume 5 " "Pix_Fwd_End_Coil_Fiber" 416 1
+* 1 "Polyester" "FPix_Cylind_Polyester" 225 1 CAB
+* 2 "Poliax" "FPix_Cylind_POLIAX" 122 1 CAB
+* 3 "G10" "FPix_Cylind_G10" 33 1 SUP
+* 4 "Noryl" "FPix_Cylind_Noryl" 26 1 SUP
+* 5 "PMMA" "FPix_Cylind_PMMA" 10 1 CAB
+
+# "Volume 6 " "Pix_Fwd_Port_Cards" 191 1
+* 1 "G10" "FPix_Cylind_G10" 103 1 ELE
+* 2 "Copper" "Copper" 11 1 ELE
+* 3 "Polyimide (extension cable)" "FPix_Kapton" 33 1 CAB
+* 4 "Port card/ CCU connectors" "FPix_Cylind_Polyester" 12 1 CAB
+* 5 "Solder" "FPix_TinLeadSolder" 1 1 ELE
+* 6 "Resistors" "FPix_Alumina" 2 1 ELE
+* 7 "Capacitors" "Barium_Titanate" 1 1 ELE
+* 8 "Chips" "Silicon" 1 1 ELE
+* 9 "OH parts (mostly G10)" "FPix_Cylind_G10" 27 1 ELE
+
+# "Volume 7: FRONT " "Pix_Fwd_End_Pipe_1"  457 1
+* 1 "SnCu" "FPix_Cylind_SnCu" 74 1 CAB
+* 2 "C6F14" "FPix_Cylind_C6F14" 214 1 COL
+* 3 "Aluminium (cooling tube)" "Aluminium" 81 1 COL
+* 4 "Poliax" "FPix_Cylind_POLIAX" 88 1 CAB 
+
+# "Volume 8: BACK " "Pix_Fwd_End_Pipe_2"  396 1
+* 1 "SnCu" "FPix_Cylind_SnCu" 66 1 CAB
+* 2 "C6F14" "FPix_Cylind_C6F14" 170 1 COL
+* 3 "Aluminium (cooling tube)" "Aluminium" 82 1 COL
+* 4 "Poliax" "FPix_Cylind_POLIAX" 78 1 CAB 
 
 # "END"  "END"  0.  0.   
 this has to be the last line !
-
-
-
-
