@@ -18,12 +18,15 @@ Pi0MaterialConversion::Pi0MaterialConversion() {
   phophi_=0;
   ConversionREst_=0;
   ConversionPhiEst_=0;
+  stubchar1_=0;
+  stubchar2_=0;
   track1ptIS_=0;
   track1phiIS_=0;
   track1etaIS_=0;
   track1ptFS_=0;
   track1phiFS_=0;
   track1etaFS_=0;
+  track1Charge_=0;
   nHits1_=-1;
   track1chi2_=-999;
   track1SmallRhit_=0;
@@ -36,12 +39,42 @@ Pi0MaterialConversion::Pi0MaterialConversion() {
   nHits2_=-1;
   track2chi2_=-999;
   track2SmallRhit_=0;
+  track2Charge_=0;
   VtxXpos_=0;
   VtxYpos_=0;
   VtxZpos_=0;
   VtxRpos_=0;
   VtxPhipos_=0;
   VtxChi2_=-999;
+  stub1Hits.clear();
+  stub2Hits.clear();
+  trk1Hits.clear();
+  trk2Hits.clear();
+
+  e1Emax_=0;
+  e1E2nd_=0;
+  e1E2x2_=0;
+  e1E3x3_=0;
+  e1etaeta_=0;
+  e1phiphi_=0;
+  e1etaphi_=0;
+
+  e2Emax_=0;
+  e2E2nd_=0;
+  e2E2x2_=0;
+  e2E3x3_=0;
+  e2etaeta_=0;
+  e2phiphi_=0;
+  e2etaphi_=0;
+
+
+  phoEmax_=0;
+  phoE2nd_=0;
+  phoE2x2_=0;
+  phoE3x3_=0;
+  phoetaeta_=0;
+  phophiphi_=0;
+  phoetaphi_=0;
 }
  
 Pi0MaterialConversion::~Pi0MaterialConversion() {
@@ -72,7 +105,8 @@ Pi0MaterialConversion::Pi0MaterialConversion(
   phophi_=photonphi;
   ConversionREst_=RConv;
   ConversionPhiEst_=PhiConv;
-
+  stubchar1_=0;
+  stubchar2_=0;
   track1ptIS_=0;
   track1phiIS_=0;
   track1etaIS_=0;
@@ -80,6 +114,7 @@ Pi0MaterialConversion::Pi0MaterialConversion(
   track1phiFS_=0;
   track1etaFS_=0;
   nHits1_=-1;
+  track1Charge_=0;
   track1chi2_=-999;
   track1SmallRhit_=0;
   track2ptIS_=0;
@@ -91,12 +126,38 @@ Pi0MaterialConversion::Pi0MaterialConversion(
   nHits2_=-1;
   track2chi2_=-999;
   track2SmallRhit_=0;
+  track2Charge_=0;
   VtxXpos_=0;
   VtxYpos_=0;
   VtxZpos_=0;
   VtxRpos_=0;
   VtxPhipos_=0;
   VtxChi2_=-999;
+
+  e1Emax_=0;
+  e1E2nd_=0;
+  e1E2x2_=0;
+  e1E3x3_=0;
+  e1etaeta_=0;
+  e1phiphi_=0;
+  e1etaphi_=0;
+
+  e2Emax_=0;
+  e2E2nd_=0;
+  e2E2x2_=0;
+  e2E3x3_=0;
+  e2etaeta_=0;
+  e2phiphi_=0;
+  e2etaphi_=0;
+
+
+  phoEmax_=0;
+  phoE2nd_=0;
+  phoE2x2_=0;
+  phoE3x3_=0;
+  phoetaeta_=0;
+  phophiphi_=0;
+  phoetaphi_=0;
 
 }
 
