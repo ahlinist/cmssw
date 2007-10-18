@@ -23,7 +23,7 @@ echo "rndm_VtxSmeared " : ${rndm_VtxSmeared}
 echo "rndm_g4SimHits "  : ${rndm_g4SimHits}
 
 
-cat > temp_ttbar_$1.cfg <<EOF
+cat > temp_zprime_$1.cfg <<EOF
 
 process Sim = {
 
@@ -71,32 +71,7 @@ process Sim = {
    # 
    module rndmStore = RandomEngineStateProducer { }
 
-   source = PythiaSource {
-     untracked int32 pythiaPylistVerbosity = 0
-     untracked bool pythiaHepMCVerbosity = false
-     untracked int32 maxEventsToPrint = 0
-     untracked bool pythiaVerbosity = false
-
-     PSet PythiaParameters = {
-       # This is a vector of ParameterSet names to be read, in this order
-       vstring parameterSets =  {
-         "pythiaUESettings",
-         "processParameters"
-       }
-
-       # CMS default pythia parameters
-       include "Configuration/Generator/data/PythiaUESettings.cfi"
-   
-       vstring processParameters = {
-         'MSEL=0                  ! User defined processes',
-         'MSUB(81) = 1            ! qqbar to QQbar',
-         'MSUB(82) = 1            ! gg to QQbar',
-         'MSTP(7) = 6             ! flavour = top',
-         'PMAS(6,1) = 175.        ! top quark mass'
-       }
-     }
-   }
-
+   include "Configuration/JetMET/data/calorimetry-gen-Zprime_Dijets_700.cff"
 
    # event vertex smearing - applies only once (internal check)
    # Note : all internal generators will always do (0,0,0) vertex
@@ -125,7 +100,7 @@ process Sim = {
    module GEN-SIM = PoolOutputModule 
    { 
       using FEVTSIMEventContent
-      untracked string fileName = "pyth_ttbar_detsim_${1}.root" 
+      untracked string fileName = "pyth_zprime_detsim_${1}.root" 
 #      untracked PSet dataset =
 #      {
 #         untracked string dataTier = "GEN-SIM"
@@ -141,6 +116,6 @@ process Sim = {
 
 EOF
 
-cmsRun  temp_ttbar_$1.cfg
+cmsRun  temp_zprime_$1.cfg
 
-###dccp pyth_ttbar_detsim_${1}.root /pnfs/cms/WAX/2/yarba_j/pyth_ttbar_detsim_${1}.root
+###dccp pyth_zprime_detsim_${1}.root /pnfs/cms/WAX/2/yarba_j/pyth_zprime_detsim_${1}.root
