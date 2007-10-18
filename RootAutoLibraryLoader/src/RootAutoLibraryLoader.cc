@@ -231,8 +231,12 @@ RootAutoLibraryLoader::GetClass(const char* classname, Bool_t load)
      //std::cout <<" going to call loadLibraryForClass"<<std::endl;
      if (loadLibraryForClass(classname)) {
        //use this to check for infinite recursion attempt
-       classNameAttemptingToLoad_ = classname;       
-       returnValue = gROOT->GetClass(classname,kFALSE);
+       classNameAttemptingToLoad_ = classname;    
+       // This next call will create the TClass object for the class.
+       // It will also attempt to load the dictionary for the class
+       // if the second argument is kTRUE. This is the default, so it
+       // need not be explicitly specified.
+       returnValue = gROOT->GetClass(classname, kTRUE);
        classNameAttemptingToLoad_ = 0;
      }
    }
