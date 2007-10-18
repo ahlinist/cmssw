@@ -116,6 +116,30 @@ class PixelMatchAnalysisGsfEm : public edm::EDAnalyzer {
   int sc_one_two_acc;
 
   TFile *rootfile;
+  TTree* mytree;
+
+  //Define variables for branches
+  float sc_Z_iso_m_var;
+  float sc_Z_vtxcor_iso_m_var;
+  float sc_Z_iso_e_var; 
+  float sc_Z_iso_pt_var; 
+  float sc_Z_iso_eta_var; 
+  float sc_Z_iso_phi_var;
+
+  float sc_one_iso_pt_var;
+  float sc_two_iso_pt_var;
+  float sc_one_iso_eta_var;
+  float sc_two_iso_eta_var;
+
+  float sc_one_vtxcor_iso_pt_var;
+  float sc_two_vtxcor_iso_pt_var; 
+  float sc_one_vtxcor_iso_eta_var;
+  float sc_two_vtxcor_iso_eta_var;
+  float sc_one_vtxcor_iso_e_var;
+  float sc_two_vtxcor_iso_e_var; 
+  float sc_one_vtxcor_iso_phi_var;
+  float sc_two_vtxcor_iso_phi_var;
+
 
   // HISTO initialisation
 

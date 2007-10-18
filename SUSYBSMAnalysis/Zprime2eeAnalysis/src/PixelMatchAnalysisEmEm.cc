@@ -40,6 +40,31 @@ using namespace std;
 PixelMatchAnalysisEmEm::PixelMatchAnalysisEmEm(const edm::ParameterSet& iConfig)
 {
 
+  //mytree = new TTree("tree","tr");
+
+  //Define variables for branches
+  sc_Z_iso_m_var = 0.;
+  sc_Z_vtxcor_iso_m_var = 0.;
+  sc_Z_iso_e_var = 0.; 
+  sc_Z_iso_pt_var = 0.; 
+  sc_Z_iso_eta_var = 0.; 
+  sc_Z_iso_phi_var = 0.;
+
+  sc_one_iso_pt_var = 0.;
+  sc_two_iso_pt_var = 0.;
+  sc_one_iso_eta_var = 0.;
+  sc_two_iso_eta_var = 0.;
+
+  sc_one_vtxcor_iso_pt_var = 0.;
+  sc_two_vtxcor_iso_pt_var = 0.; 
+  sc_one_vtxcor_iso_eta_var = 0.;
+  sc_two_vtxcor_iso_eta_var = 0.;
+  sc_one_vtxcor_iso_e_var = 0.;
+  sc_two_vtxcor_iso_e_var = 0.; 
+  sc_one_vtxcor_iso_phi_var = 0.;
+  sc_two_vtxcor_iso_phi_var = 0.;
+
+
   drellyan_ = iConfig.getParameter<bool>("drellyan");
   ecalconesize_ = iConfig.getParameter<double>("ecalconesize");
   hcalconesizemin_ = iConfig.getParameter<double>("hcalconesizemin");
@@ -161,6 +186,33 @@ void PixelMatchAnalysisEmEm::beginJob(const edm::EventSetup&)
   sc_two_vtxcor_iso_e = fs->make<TH1F>("sc_two_vtxcor_iso_e","sc_two_vtxcor_iso_e",400,0.,4000.);
   sc_one_vtxcor_iso_phi = fs->make<TH1F>("sc_one_vtxcor_iso_phi","sc_one_vtxcor_iso_phi",160,-4.,4.);
   sc_two_vtxcor_iso_phi = fs->make<TH1F>("sc_two_vtxcor_iso_phi","sc_two_vtxcor_iso_phi",160,-4.,4.);
+
+  //Define tree
+  mytree = fs->make<TTree>("tree","tr");
+
+
+  //Define branches
+  mytree->Branch("sc_Z_iso_m_branch",&sc_Z_iso_m_var,"sc_Z_iso_m_branch/F");
+  mytree->Branch("sc_Z_vtxcor_iso_m_branch",&sc_Z_vtxcor_iso_m_var,"sc_Z_vtxcor_iso_m_branch/F");
+  mytree->Branch("sc_Z_iso_e_branch",&sc_Z_iso_e_var ,"sc_Z_iso_e_branch/F");
+  mytree->Branch("sc_Z_iso_pt_branch",&sc_Z_iso_pt_var,"sc_Z_iso_pt_branch/F");
+  mytree->Branch("sc_Z_iso_eta_branch",&sc_Z_iso_eta_var,"sc_Z_iso_eta_branch/F");
+  mytree->Branch("sc_Z_iso_phi_branch",&sc_Z_iso_phi_var,"sc_Z_iso_phi_branch/F");
+  
+  mytree->Branch("sc_one_iso_pt_branch",&sc_one_iso_pt_var,"sc_one_iso_pt_branch/F");
+  mytree->Branch("sc_two_iso_pt_branch",&sc_two_iso_pt_var,"sc_two_iso_pt_branch/F");
+  mytree->Branch("sc_one_iso_eta_branch",&sc_one_iso_eta_var,"sc_one_iso_eta_branch/F");
+  mytree->Branch("sc_two_iso_eta_branch",&sc_two_iso_eta_var,"sc_two_iso_eta_branch/F");
+  
+  mytree->Branch("sc_one_vtxcor_iso_pt_branch",&sc_one_vtxcor_iso_pt_var,"sc_one_vtxcor_iso_pt_branch/F");
+  mytree->Branch("sc_two_vtxcor_iso_pt_branch",&sc_two_vtxcor_iso_pt_var,"sc_two_vtxcor_iso_pt_branch/F");
+  mytree->Branch("sc_one_vtxcor_iso_eta_branch",&sc_one_vtxcor_iso_eta_var,"sc_one_vtxcor_iso_eta_branch/F");
+  mytree->Branch("sc_two_vtxcor_iso_eta_branch",&sc_two_vtxcor_iso_eta_var,"sc_two_vtxcor_iso_eta_branch/F");
+  mytree->Branch("sc_one_vtxcor_iso_e_branch",&sc_one_vtxcor_iso_e_var,"sc_one_vtxcor_iso_e_branch/F");
+  mytree->Branch("sc_two_vtxcor_iso_e_branch",&sc_two_vtxcor_iso_e_var,"sc_two_vtxcor_iso_e_branch/F");
+  mytree->Branch("sc_one_vtxcor_iso_phi_branch",&sc_one_vtxcor_iso_phi_var,"sc_one_vtxcor_iso_phi_branch/F");
+  mytree->Branch("sc_two_vtxcor_iso_phi_branch",&sc_two_vtxcor_iso_phi_var,"sc_two_vtxcor_iso_phi_branch/F");
+
   
 }
 
@@ -775,6 +827,31 @@ void PixelMatchAnalysisEmEm::analyze(const edm::Event& iEvent, const edm::EventS
 
 	      LogDebug("Zprime2eeAnaEmEm")<<"sc vertex corr filled";
 	
+	      //Fill variables for the tree
+	      sc_Z_iso_m_var = sc_mass;
+	      sc_Z_vtxcor_iso_m_var = sc_mass_vtxcor;
+	      sc_Z_iso_e_var = (superclustwo_vtxcor+superclusone_vtxcor).e(); 
+	      sc_Z_iso_pt_var = (superclustwo_vtxcor+superclusone_vtxcor).et(); 
+	      sc_Z_iso_eta_var = (superclustwo_vtxcor+superclusone_vtxcor).eta(); 
+	      sc_Z_iso_phi_var = (superclustwo_vtxcor+superclusone_vtxcor).phi();
+
+	      sc_one_iso_pt_var = superclusone.et();
+	      sc_two_iso_pt_var = superclustwo.et();
+	      sc_one_iso_eta_var = superclusone.eta();
+	      sc_two_iso_eta_var = superclustwo.eta();
+
+	      sc_one_vtxcor_iso_pt_var = superclusone_vtxcor.et();
+	      sc_two_vtxcor_iso_pt_var = superclustwo_vtxcor.et(); 
+	      sc_one_vtxcor_iso_eta_var = superclusone_vtxcor.eta();
+	      sc_two_vtxcor_iso_eta_var = superclustwo_vtxcor.eta();
+	      sc_one_vtxcor_iso_e_var = superclusone_vtxcor.e();
+	      sc_two_vtxcor_iso_e_var = superclustwo_vtxcor.e(); 
+	      sc_one_vtxcor_iso_phi_var = superclusone_vtxcor.phi();
+	      sc_two_vtxcor_iso_phi_var = superclustwo_vtxcor.phi();
+
+	      //Fill the tree
+	      mytree->Fill();
+
 	    }//end of ecal isolation cut
 	  }//end of hcal isolation cut
 	}//end of tracker pt isolation cut 
@@ -790,7 +867,6 @@ void PixelMatchAnalysisEmEm::analyze(const edm::Event& iEvent, const edm::EventS
 
 // ------------ method called once each job just after ending the event loop  ------------
 void PixelMatchAnalysisEmEm::endJob() {
-
 
 
   double eff1=double(sc_sizegreater1)/double(event_tot);
