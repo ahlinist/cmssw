@@ -64,7 +64,7 @@ Make it 100 % Aluminium but scale the actual physical volume
 to a smaller volume (210 mm^3) to get the right mass in the available volume
 .......................................................................
 # "TID module cooling inserts"   "TID_Cool_insert"  0.210     -1
-* 1 "Aluminium insert"            "Aluminium"       0.425      1   COL
+* 1 "Aluminium insert"            "Aluminium"       0.425      1   SUP
 .......................................................................
 =======================================================================
 
