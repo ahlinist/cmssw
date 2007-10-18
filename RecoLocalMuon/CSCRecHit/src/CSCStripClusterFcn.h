@@ -11,7 +11,7 @@
 
 #include "Minuit2/FCNBase.h"
 #include <RecoLocalMuon/CSCRecHit/src/CSCFitData.h>
-#include <RecoLocalMuon/CSCRecHit/src/CSCGattiFunction.h>
+#include <Geometry/CSCGeometry/interface/CSCGattiFunction.h>
 
 #include <vector>
 
