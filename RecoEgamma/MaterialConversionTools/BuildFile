@@ -36,6 +36,7 @@
 <use name=RecoTracker/TransientTrackingRecHit> 
 <use name=RecoTracker/TrackProducer>
 <use name=RecoVertex/KalmanVertexFit>
+<use name=RecoVertex/AdaptiveVertexFit>
 
 <export>
   <use name=FWCore/Framework>
@@ -78,6 +79,7 @@
   <use name=RecoTracker/TransientTrackingRecHit> 
   <use name=RecoTracker/TrackProducer>
   <use name=RecoVertex/KalmanVertexFit>
+  <use name=RecoVertex/AdaptiveVertexFit>
 
 
 </export>

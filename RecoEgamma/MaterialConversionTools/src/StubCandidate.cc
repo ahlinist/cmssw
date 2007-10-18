@@ -1,5 +1,7 @@
 #include "RecoEgamma/MaterialConversionTools/interface/StubCandidate.h"
 #include "Geometry/Vector/interface/GlobalPoint.h"
+#include <TMath.h>
+
 #define StubCandidate_cxx
 
 // bool operator<(const StubCandidate& a, const StubCandidate& b) 
@@ -16,7 +18,8 @@
 
 bool StubCandidate::IsInZRegionOfInterest(double _SeedX, double _SeedY, double _SeedZ,
 					  double _VtxZ,
-					  double _TestX, double _TestY, double _TestZ,			        
+					  double _TestX, double _TestY, double _TestZ,
+					  double _TestXXerr, double _TestYYerr,
 					  bool VERB)
 {
   //Testing the Z coordinate position of hit.
@@ -37,8 +40,8 @@ bool StubCandidate::IsInZRegionOfInterest(double _SeedX, double _SeedY, double _
   
   double TESTR = sqrt(_TestX*_TestX + _TestY*_TestY);
   
-  double REGIONZMax = slopemax * TESTR + interceptmax;
-  double REGIONZMin = slopemin * TESTR + interceptmin;
+  double REGIONZMax = slopemax * TESTR + interceptmax + 2.*_TestYYerr;
+  double REGIONZMin = slopemin * TESTR + interceptmin - 2.*_TestYYerr;
   if (VERB){
     cout << "Region Z Max: " << REGIONZMax << endl;
     cout << "Region Z Min: " << REGIONZMin << endl;
@@ -122,6 +125,8 @@ StubCandidate::StubCandidate(double SeedX,
   _innerRadiuscurve = GetInnerRadiusCurve();
   _outerRadiuscurve = GetOuterRadiusCurve();
   SetFirstPos(RConv, PhiConv);
+  _PhiConv = PhiConv;
+  _RConv = RConv;
 }
 
 // int StubCandidate::GetNhits() 
@@ -394,45 +399,50 @@ double StubCandidate::GetEtErr()
 		    (_ZVtx-_SeedZ)*(_ZVtx-_SeedZ));
   double T = sqrt( _SeedX*_SeedX + _SeedY*_SeedY);
   double EErr = (_SeedE * _ETCONSTERR * T)/R;
-  if (_SeedE < 3.5)
-    EErr = (_SeedE * 3.*_ETCONSTERR * T)/R;
+//   if (_SeedE < 3.5)
+//     EErr = (_SeedE * 3.*_ETCONSTERR * T)/R;
   double ZErr =  (_SeedE * T  * (_ZVtx - _SeedZ) * _ZVTXCONSTERR)/(R*R*R);
   double ETERRCalc = sqrt(EErr*EErr + ZErr*ZErr);
   return ETERRCalc;
 }
 
 //Check if a hit is in the road
-bool StubCandidate::IsInRoad(GlobalPoint hit, bool VERBOSE)
+bool StubCandidate::IsInRoad(GlobalPoint hit, float xx_err, float yy_err, bool VERBOSE)
 {
   double XPos = hit.x();
   double YPos = hit.y();
   double ZPos = hit.z();
-  
-  bool IsInZ = IsInZRegionOfInterest(_SeedX,_SeedY,_SeedZ,
-				     _ZVtx,
-				     XPos, YPos, ZPos, VERBOSE);
+  bool IsInZ = false;
+//   if (yy_err > 10)
+//     IsInZ = true;
+  IsInZ = IsInZRegionOfInterest(_SeedX,_SeedY,_SeedZ,
+				_ZVtx,
+				XPos, YPos, ZPos, 
+				xx_err, yy_err,VERBOSE);
   if (!IsInZ) return false;
   else {
-    //A quick sanity check.  If you are the first hit, then
-    //you must be on the same side of the calorimeter as me.
-    //Otherwise don't waste time.
-//     double R = (XPos - _SeedX)*(XPos - _SeedX) 
-//                +(YPos - _SeedY)*(YPos - _SeedY);
-    
+    //Here's another sanity check.  
+    //I want to eliminate hits that fall into the road in an unphysical region (pi away on the other
+    //side of the detector).  So I'm going to require that a candidate hit can be no more than
+    //pi/2. away from the conversion phi.  That's a big window, should only eliminate
+    //our false hits.
+    float phi_hit = atan2(YPos,XPos);
+    float df = (phi_hit - _PhiConv);
+    if (df > TMath::Pi()) df -=2.*TMath::Pi();
+    if (df < -1.*TMath::Pi()) df +=2*TMath::Pi();
+    if (fabs(df) > TMath::Pi()/2.) return false;
+
     //Another check for something that should never happen.
 
     double coordR = sqrt(XPos*XPos + YPos*YPos);
     double SeedR = sqrt(_SeedX*_SeedX + _SeedY*_SeedY);
     if (coordR > SeedR ) return false;
 
-
-//     //Gotta be on the same side of the detector.
-//     if (R > (_CALHEIGHT*_CALHEIGHT)){ 
-//       if (VERBOSE) cout << "On other side of detector!  WRONGO!" << endl;
-//       return false;
-//     } 
+    //Should also be on the same side of detector:
+    //Calculate R from seed to point in question. 
+    float distR = sqrt((_SeedX-XPos)*(_SeedX-XPos) + (_SeedY-YPos)*(_SeedY-YPos));
+    if (distR > SeedR) return false;
     
-
     //Calculate R from point to center of
     //circle.  If within the errorbands on curve,
     //then its in.  If within some sigma of the
