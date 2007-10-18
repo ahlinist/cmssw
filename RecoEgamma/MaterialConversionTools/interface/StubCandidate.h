@@ -13,9 +13,9 @@ using namespace std;
 //appropriate error is.
 ////////////////////////////////////////////////////
 
-const static double _CALZERR = 5;//cm 
-const static double _ETCONSTERR = 0.15;//%error
-const static double _ZVTXCONSTERR = 15.3;//cm
+const static double _CALZERR = 2;//cm 
+const static double _ETCONSTERR = 0.05;//%error
+const static double _ZVTXCONSTERR = 5.3;//cm
 const static double _CALHEIGHT = 120;//cm
 const static double _TRACKERHEIGHT = 110;//cm
 const static double _RADIUSOFINTEREST = 50;//cm
@@ -139,7 +139,7 @@ class StubCandidate{
 
   //Check if a hit is in the road.  Returns true if the hit
   //is consistent with the road.
-  bool  IsInRoad(GlobalPoint hit, bool VERBOSE=false);
+  bool  IsInRoad(GlobalPoint hit, float xx_err, float yy_err, bool VERBOSE=false);
   
   //Add hit to the stub.  Returns 0
   //if successful, otherwise, Returns 1
@@ -167,6 +167,7 @@ class StubCandidate{
   bool IsInZRegionOfInterest(double _SeedX, double _SeedY, double _SeedZ,
 			     double _VtxZ,
 			     double _TestX, double _TestY, double _TestZ,
+			     double _TestXXerr, double _TestYYerr,
 			     bool VERB=false);
   
 
@@ -195,7 +196,8 @@ class StubCandidate{
   double _innercenterX;
   double _innercenterY;
   
-
+  double _RConv;
+  double _PhiConv;
   
   //Radius of Curvature defined by ET
   double _RadiusofCurve;

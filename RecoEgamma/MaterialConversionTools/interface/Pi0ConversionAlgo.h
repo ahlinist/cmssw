@@ -26,6 +26,9 @@ class MagneticField;
 class GeomDet;
 class CachingVertex;
 class TransientTrack;
+/* class GsfChi2MeasurementEstimator; */
+/* class GsfPropagatorWithMaterial; */
+/* class GsfMaterialEffectsUpdator; */
 
 class Pi0ConversionAlgo
 {
@@ -34,17 +37,19 @@ class Pi0ConversionAlgo
 
   //Control the verbosity.
   int debugLevel_;
-  PropagatorWithMaterial *thePropagator;
-  PropagatorWithMaterial *theRevPropagator;
-  TrajectoryStateUpdator *theUpdator;
-  MeasurementEstimator* theEstimator;
+  float maxHitChi2_;
+   TrajectoryStateUpdator *theUpdator; 
+   MeasurementEstimator* theEstimator; 
+//  GsfMaterialEffectsUpdator *theUpdator;
+//  GsfChi2MeasurementEstimator *theEstimator;
+
  public:
   enum DebugLevel { pDEBUG = 0, pINFO = 1, pERROR = 2 };    
   //The default constructor
   Pi0ConversionAlgo();
   ~Pi0ConversionAlgo();
   //The real constructor
-  Pi0ConversionAlgo(DebugLevel debugLevel = pINFO);
+  Pi0ConversionAlgo(DebugLevel debugLevel = pINFO, float maxchi2=100);
 
   //This object is really just a library of functions for helping to
   //recontruct pi0 conversions.
@@ -57,11 +62,11 @@ class Pi0ConversionAlgo
 
    //Make roads, fill them with tracking hits, and select the best candidate sets.
    void GetStubHits(reco::BasicCluster ele1, reco::BasicCluster ele2,
-	       Float_t RConv, Float_t PhiConv, 
-	       std::vector <TrackingRecHit*> *FullTracker,
-	       const TrackerGeometry *geom,
-	       std::vector <TrackingRecHit*> *Stub1,
-	       std::vector <TrackingRecHit*> *Stub2);
+		    Float_t RConv, Float_t PhiConv, 
+		    std::vector <TrackingRecHit*> *FullTracker,
+		    const TrackerGeometry *geom,
+		    std::vector <TrackingRecHit*> *Stub1,
+		    std::vector <TrackingRecHit*> *Stub2, int&, int&);
    
 
    ////////////////////////
@@ -73,14 +78,25 @@ class Pi0ConversionAlgo
 		  const MagneticField *magField,
 		  const TrackerGeometry *geom, const edm::EventSetup& iSetup, 
 		  reco::TrackCollection &trkCan,
-		  reco::TrackExtraCollection &trkColl);
+		  reco::TrackExtraCollection &trkColl,
+		  edm::OwnVector <TrackingRecHit> &returnhits);
 
    std::vector<TrajectoryMeasurement> FindBestHit(const TrajectoryStateOnSurface& tsosBefore,
 						 const std::set<const GeomDet*>& theDets,
 						  edm::OwnVector<TrackingRecHit>& theHits,
 						  const TrackerGeometry *geom,
 						  const TransientTrackingRecHitBuilder *ttrhBuilder,
-						  const MeasurementTracker *theMeasurementTracker);
+						  const MeasurementTracker *theMeasurementTracker,
+						  const PropagatorWithMaterial *thePropagator);
+
+
+/*    std::vector<TrajectoryMeasurement> FindBestHit(const TrajectoryStateOnSurface& tsosBefore, */
+/* 						 const std::set<const GeomDet*>& theDets, */
+/* 						  edm::OwnVector<TrackingRecHit>& theHits, */
+/* 						  const TrackerGeometry *geom, */
+/* 						  const TransientTrackingRecHitBuilder *ttrhBuilder, */
+/* 						  const MeasurementTracker *theMeasurementTracker, */
+/* 						  const GsfPropagatorWithMaterial *thePropagator); */
    //////////////////////
    CachingVertex FitVertex(std::vector<reco::TransientTrack> tracks);
 

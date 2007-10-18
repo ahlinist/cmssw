@@ -16,6 +16,7 @@
 #include "RecoEgamma/MaterialConversionTools/interface/StubCandidate.h" 
 
 #include "DataFormats/EgammaReco/interface/BasicCluster.h"
+
 #include "DataFormats/TrackCandidate/interface/TrackCandidate.h"
 #include "DataFormats/TrackReco/interface/TrackExtra.h"
 #include "DataFormats/TrackCandidate/interface/TrackCandidateCollection.h"
@@ -40,7 +41,11 @@
 
 #include "TrackingTools/PatternTools/interface/Trajectory.h"
 #include "TrackingTools/MaterialEffects/interface/PropagatorWithMaterial.h"
+//#include "TrackingTools/GsfTracking/interface/GsfPropagatorWithMaterial.h"
+//#include "TrackingTools/GsfTracking/interface/GsfChi2MeasurementEstimator.h"
+
 #include "TrackingTools/KalmanUpdators/interface/KFUpdator.h"
+//#include "TrackingTools/GsfTracking/interface/GsfMaterialEffectsUpdator.h"
 #include "TrackingTools/PatternTools/interface/TrajectoryStateUpdator.h"
 #include "TrackingTools/PatternTools/interface/MeasurementEstimator.h"
 #include "TrackingTools/KalmanUpdators/interface/Chi2MeasurementEstimatorBase.h"
@@ -62,6 +67,7 @@
 #include "TrackPropagation/SteppingHelixPropagator/interface/SteppingHelixPropagator.h"
 #include "TrackingTools/PatternTools/interface/TSCPBuilderNoMaterial.h"
 #include "RecoVertex/KalmanVertexFit/interface/KalmanVertexFitter.h"
+#include "RecoVertex/AdaptiveVertexFit/interface/AdaptiveVertexFitter.h"
 #include "RecoVertex/VertexPrimitives/interface/CachingVertex.h"
 #include "DataFormats/TrackReco/interface/TrackFwd.h"
 #include "DataFormats/TrackReco/interface/Track.h"
@@ -74,18 +80,34 @@ using namespace std;
 using namespace reco;
 
 Pi0ConversionAlgo::Pi0ConversionAlgo(){
+  debug_ = false;
+  maxHitChi2_ = 100;
+  theEstimator = new Chi2MeasurementEstimator(100);
+  theUpdator = new KFUpdator();
+  // need this to sort recHits, sorting done after getting seed because propagationDirection is needed
+  // get tracker geometry
+
 }
 
-Pi0ConversionAlgo::Pi0ConversionAlgo(DebugLevel debugLevel)
+Pi0ConversionAlgo::Pi0ConversionAlgo(DebugLevel debugLevel, float maxHitChi2)
 {
   debugLevel_ = debugLevel;
   if (debugLevel_ == 0)
     debug_ = true;
   else debug_ = false;
+  maxHitChi2_ = maxHitChi2;
+  theEstimator = new Chi2MeasurementEstimator(100);
+  theUpdator = new KFUpdator();
+  // need this to sort recHits, sorting done after getting seed because propagationDirection is needed
+  // get tracker geometry
+
 
 }
 
 Pi0ConversionAlgo::~Pi0ConversionAlgo(){
+
+  delete theUpdator;
+  delete theEstimator;
 }
 
 
@@ -189,26 +211,55 @@ void Pi0ConversionAlgo::GetStubHits(BasicCluster ele1, BasicCluster ele2,
 				    std::vector <TrackingRecHit*> *FullTracker,
 				    const TrackerGeometry *geom,
 				    std::vector <TrackingRecHit*> *Stub1,
-				    std::vector <TrackingRecHit*> *Stub2)
+				    std::vector <TrackingRecHit*> *Stub2,
+				    int &char1,int &char2)
 {
   //Bits of this were originally in RSAdapter, and ConversionCandidate, but StubCandidate is
   //used almost untouched.
   
 
-  vector <TrackingRecHit*> hits_pos_stub1;
-  vector <TrackingRecHit*> hits_neg_stub1;
-
-  vector <TrackingRecHit*> hits_pos_stub2;
-  vector <TrackingRecHit*> hits_neg_stub2;
+//   vector <TrackingRecHit*> hits_stub1;
+//   vector <TrackingRecHit*> hits_stub2;
 
   //Make stubs
-  StubCandidate posstub1(ele1.x(), ele1.y(), ele1.z(), ele1.energy(),0,RConv,PhiConv,1);
-  StubCandidate negstub1(ele1.x(), ele1.y(), ele1.z(), ele1.energy(),0,RConv,PhiConv,-1);
-  StubCandidate posstub2(ele2.x(), ele2.y(), ele2.z(), ele2.energy(),0,RConv,PhiConv,1);
-  StubCandidate negstub2(ele2.x(), ele2.y(), ele2.z(), ele2.energy(),0,RConv,PhiConv,-1);
+  //Unique case: Identify the positive and negative charged stubs (indicates just the sign
+  //of curvature) from the phi positions of the clusters.
+  Float_t Phi1 = ele1.phi();
+  Float_t Phi2 = ele2.phi();
+  Int_t charge1=0;
+  Int_t charge2=0;
+  
+  Float_t PhiDiff = Phi1 - Phi2;
+  if (fabs(PhiDiff) < TMath::Pi()){
+    if (PhiDiff > 0) {
+      charge1 = 1;
+      charge2 = -1;
+    }
+    else{
+      charge1 = -1;
+      charge2 = 1;
+    }
+  }
+  else{
+    if(Phi1 >TMath::Pi() 
+       && Phi2 < (TMath::Pi()/2.)){
+      charge1 = -1;
+      charge2 = 1;
+    }
+    else{
+      charge1 = 1;
+      charge2 = -1;
+    }
+  }
+  char1 = charge1;
+  char2 = charge2;
+  StubCandidate Stub1S(ele1.x(), ele1.y(), ele1.z(), ele1.energy(),0,RConv,PhiConv,charge1);
+  StubCandidate Stub2S(ele2.x(), ele2.y(), ele2.z(), ele2.energy(),0,RConv,PhiConv,charge2);
+ 
   //Using this constructor, the roads should be created.  Remember to check this when debugging.  
   //Select hits that are in road.
-
+  //  std::cout << "----------------------------------" << std::endl;
+  //  std::cout << "Making stub collections: " << std::endl;
   if (debug_) std::cout << "Total tracker hits: " << FullTracker->size() << std::endl;
   //Make one loop through the hits, and then you're done.
   for (int th=0;th < int(FullTracker->size()); ++th){
@@ -225,143 +276,61 @@ void Pi0ConversionAlgo::GetStubHits(BasicCluster ele1, BasicCluster ele2,
       std::cout << "Y: " << position.y() << std::endl;
       std::cout << "Z: " << position.z() << std::endl;
     }
+    float position_err_xx = htr->localPositionError().xx();
+    float position_err_yy = htr->localPositionError().yy();
+//     if (debug_){
+//       std::cout << "----------" << std::endl;
+//       std::cout << "Hit error local yy: " << position_err_yy << std::endl;
+//       std::cout << "Hit error local xx: " << position_err_xx << std::endl;
+//     }
+    //    std::cout << "Hit: "<<th <<"  R position: " << position.perp() << std::endl;
     //Can I auto stiletto-ize?  Get "IsHitInRoad", and Chi2XY for hit.  Whoever has smallest Chi2 gets the hit.
-    bool Pos1 =   posstub1.IsInRoad(position);
-    bool Pos2 =   posstub2.IsInRoad(position);
-    bool Neg1 =   negstub1.IsInRoad(position);
-    bool Neg2 =   negstub2.IsInRoad(position);
+    bool S1 =   Stub1S.IsInRoad(position, position_err_xx, position_err_yy);
+    bool S2 =   Stub2S.IsInRoad(position, position_err_xx, position_err_yy);
     bool HitTaken = false;
 
-    double Pos1Chi2XY = 1e16;
-    double Pos2Chi2XY = 1e16;
-    double Neg1Chi2XY = 1e16;
-    double Neg2Chi2XY = 1e16;
-    if (Pos2) Pos2Chi2XY = posstub2.Chi2Hit(position);
-    if (Neg1) Neg1Chi2XY = negstub1.Chi2Hit(position);
-    if (Neg2) Neg2Chi2XY = negstub2.Chi2Hit(position);
-    if (Pos1) Pos1Chi2XY = posstub1.Chi2Hit(position);
-
+    double S1Chi2XY = 1e16;
+    double S2Chi2XY = 1e16;
+    if (S1) S1Chi2XY = Stub1S.Chi2Hit(position);
+    if (S2) S2Chi2XY = Stub2S.Chi2Hit(position);
+    
     //Check hit against first stub:
     //If it HAS the hit, and the smallest chi2, add it.
-    if (Pos1Chi2XY < Pos2Chi2XY
-	&& Pos1Chi2XY < Neg1Chi2XY
-	&& Pos1Chi2XY < Neg2Chi2XY
-	&& Pos1){
-      //Stub1 gets the hit.
-      HitTaken = true;
-      hits_pos_stub1.push_back((*FullTracker)[th]);
-    }
+    if (S1 && S1Chi2XY < S2Chi2XY && S1Chi2XY < maxHitChi2_)
+      {
+	//Stub1 gets the hit.
+	HitTaken = true;
+	Stub1->push_back((*FullTracker)[th]);
+	if (debug_) std::cout<< "Took hit with chi2xy: " << S1Chi2XY << std::endl;
+      }
     
     if (!HitTaken){
-      if (Pos2Chi2XY < Neg1Chi2XY
-	  && Pos2Chi2XY < Neg2Chi2XY
-	  && Pos2){
+      if (S2 && S2Chi2XY < S1Chi2XY && S2Chi2XY < maxHitChi2_){
 	HitTaken = true;
-	hits_pos_stub2.push_back((*FullTracker)[th]);
-      }
-    }
-    if (!HitTaken){
-      if (Neg1Chi2XY < Neg2Chi2XY
-	  && Neg1){
-	HitTaken = true;
-	hits_neg_stub1.push_back((*FullTracker)[th]);
-      }
-    }
-    if (!HitTaken){
-      if (Neg2){
-	HitTaken = true;
-	hits_pos_stub2.push_back((*FullTracker)[th]);
+	Stub2->push_back((*FullTracker)[th]);
+	if (debug_) std::cout << "Took hit with chi2xy: " << S2Chi2XY << std::endl;
       }
     }
 
+  
   }//Done Looping over all the hits.
   
 
-  //Decide on Stub1
-  //Ok, so who is the best stub?  First select on hits, then select on chi2.
-  if (hits_pos_stub1.size() > hits_neg_stub1.size() && hits_pos_stub1.size()!=hits_neg_stub1.size()){
-    for (int i=0;i< int(hits_pos_stub1.size());++i)
-      Stub1->push_back(hits_pos_stub1[i]);
-  }
-  else if ( hits_pos_stub1.size()!=hits_neg_stub1.size()) {
-    for (int i=0;i< int(hits_neg_stub1.size());++i)
-      Stub1->push_back(hits_neg_stub1[i]);
-  }
-  if (hits_pos_stub1.size() == hits_neg_stub1.size()){
-    //Test total chi2
-    vector <GlobalPoint> stubPos1;
-    vector <GlobalPoint> stubNeg1;
-    for (int i=0;i<int(hits_pos_stub1.size());++i){
-      TrackingRecHit *htr = hits_pos_stub1[i];
-      GlobalPoint position = geom->idToDet(htr->geographicalId())->surface().toGlobal(htr->localPosition());
-      stubPos1.push_back(position);
-    }
-    for (int i=0;i<int(hits_neg_stub1.size());++i){
-      TrackingRecHit *htr = hits_neg_stub1[i];
-      GlobalPoint position = geom->idToDet(htr->geographicalId())->surface().toGlobal(htr->localPosition());
-      stubNeg1.push_back(position);
-    }
-    double TotChi2Pos1 = posstub1.Chi2XY(stubPos1);
-    double TotChi2Neg1 = negstub1.Chi2XY(stubNeg1);
-    if (TotChi2Pos1 < TotChi2Neg1){
-      for (int i=0;i< int(hits_pos_stub1.size());++i)
-	Stub1->push_back(hits_pos_stub1[i]);
-    }
-    else{
-      for (int i=0;i< int(hits_neg_stub1.size());++i)
-      Stub1->push_back(hits_neg_stub1[i]);
-    }
-  }
-
-  //////////////////////////
-  //Decide on Stub2
-  //Ok, so who is the best stub?  First select on hits, then select on chi2.
-  if (hits_pos_stub2.size() > hits_neg_stub2.size() && hits_pos_stub2.size()!=hits_neg_stub2.size()){
-    for (int i=0;i< int(hits_pos_stub2.size());++i)
-      Stub2->push_back(hits_pos_stub2[i]);
-  }
-  else if ( hits_pos_stub2.size()!=hits_neg_stub2.size()) {
-    for (int i=0;i< int(hits_neg_stub2.size());++i)
-      Stub2->push_back(hits_neg_stub2[i]);
-  }
-  if (hits_pos_stub2.size() == hits_neg_stub2.size()){
-    //Test total chi2
-    vector <GlobalPoint> stubPos2;
-    vector <GlobalPoint> stubNeg2;
-    for (int i=0;i<int(hits_pos_stub2.size());++i){
-      TrackingRecHit* htr = hits_pos_stub2[i];
-      GlobalPoint position = geom->idToDet(htr->geographicalId())->surface().toGlobal(htr->localPosition());
-      stubPos2.push_back(position);
-    }
-    for (int i=0;i<int(hits_neg_stub2.size());++i){
-      TrackingRecHit *htr = hits_neg_stub2[i];
-      GlobalPoint position = geom->idToDet(htr->geographicalId())->surface().toGlobal(htr->localPosition());
-      stubNeg2.push_back(position);
-    }
-    double TotChi2Pos2 = posstub2.Chi2XY(stubPos2);
-    double TotChi2Neg2 = negstub2.Chi2XY(stubNeg2);
-    if (TotChi2Pos2 < TotChi2Neg2){
-      for (int i=0;i< int(hits_pos_stub2.size());++i)
-	Stub2->push_back(hits_pos_stub2[i]);
-    }
-    else{
-      for (int i=0;i< int(hits_neg_stub2.size());++i)
-      Stub2->push_back(hits_neg_stub2[i]);
-    }
-  }
 
   //Done making hit collections!
 }
 
 
 void Pi0ConversionAlgo::FitTrack( vector <TrackingRecHit*> Stub, 
-					     const MeasurementTracker *theMeasurementTracker, 
-					     const TransientTrackingRecHitBuilder *ttrhBuilder,
-					     const MagneticField *magField,
-					     const TrackerGeometry *geom,
-					     const edm::EventSetup& es,
-					     reco::TrackCollection &trkCan,
-					     reco::TrackExtraCollection &trkColl)
+				  const MeasurementTracker *theMeasurementTracker, 
+				  const TransientTrackingRecHitBuilder *ttrhBuilder,
+				  const MagneticField *magField,
+				  const TrackerGeometry *geom,
+				  const edm::EventSetup& es,
+				  reco::TrackCollection &trkCan,
+				  reco::TrackExtraCollection &trkColl,
+				  edm::OwnVector<TrackingRecHit> &returnhits
+				  )
 {
   //Around 900 lines of code regarding the fitting of the candidate hits into a track.  That is
   //of course, presuming that we've GOT the right hits.
@@ -371,15 +340,11 @@ void Pi0ConversionAlgo::FitTrack( vector <TrackingRecHit*> Stub,
   // Create the trajectory cleaner 
   TrajectoryCleanerBySharedHits theTrajectoryCleaner;
   vector<Trajectory> FinalTrajectories;
-  theEstimator = new Chi2MeasurementEstimator(100.);
-  theUpdator = new KFUpdator();
-  // need this to sort recHits, sorting done after getting seed because propagationDirection is needed
-  // get tracker geometry
-  if (debug_) std::cout << "creating propagator, with electron mass" << std::endl;
-  //Made this use the electron mass, make sure to check the number of 0s.
-  thePropagator = new PropagatorWithMaterial(alongMomentum,.000511,&(*magField)); 
+   PropagatorWithMaterial *thePropagator = new PropagatorWithMaterial(alongMomentum,.1,&(*magField), .785); 
+  //GsfPropagatorWithMaterial *thePropagator = new PropagatorWithMaterial(alongMomentum,.000511,&(*magField), .785); 
+
   if (debug_) std::cout << "creating propagator with material" << std::endl;
-  theRevPropagator = new PropagatorWithMaterial(oppositeToMomentum,.000511,&(*magField)); 
+  PropagatorWithMaterial *theRevPropagator = new PropagatorWithMaterial(oppositeToMomentum,.1,&(*magField), .785); 
   AnalyticalPropagator prop(magField,anyDirection);
   TrajectoryStateTransform transformer;
   if (debug_) std::cout << "Prior to creating smoother." << std::endl;
@@ -392,6 +357,9 @@ void Pi0ConversionAlgo::FitTrack( vector <TrackingRecHit*> Stub,
   int nchit = 0;
   //This WAS the beginning of a loop.  However, right now we'll try to fit one stub at a time.
   {//This is a placeholder for the loop over the clouds
+
+    //Die screaming if too many hits.  What's too many?  Don't know yet.
+    if (Stub.size()>500) return;
 
 
     // fill rechits from cloud into new OwnVector
@@ -476,7 +444,7 @@ void Pi0ConversionAlgo::FitTrack( vector <TrackingRecHit*> Stub,
     
     //Road search default is 7, I have pushed this back to five (note that 5 was commented out in the
     //original code.
-    const int min_chunk_length = 5;
+    const int min_chunk_length = 6;
     //const int min_chunk_length = 7;
     
     for (int ilayer0 = 0; ilayer0 <= nlayers-min_chunk_length; ++ilayer0) {
@@ -529,8 +497,8 @@ void Pi0ConversionAlgo::FitTrack( vector <TrackingRecHit*> Stub,
       
       // This has implications, based on the way we locate the hits.  
       // For now, use only the low occupancy layers in the first pass
-      //const int nfound_min = min_chunk_length-1;
-      const int nfound_min = 4;
+      const int nfound_min = min_chunk_length-1;
+      //const int nfound_min = 4;
       multimap<int, const DetLayer*>::iterator ilm = layer_map.begin();
       int ngoodlayers = 0;
       while (ilm != layer_map.end()) {
@@ -652,6 +620,12 @@ void Pi0ConversionAlgo::FitTrack( vector <TrackingRecHit*> Stub,
 	  FreeTrajectoryState fts( helix.stateAtVertex().parameters(), initialError);
 	  //                       RoadSearchSeedFinderAlgorithm::initialError( *outerHit, *innerHit,
 	  //                                  vertexPos, vertexErr));
+	  if (debug_){
+	  std::cout << "Free Trajectory State Parameters: " << std::endl;
+	  std::cout << "TransverseMomentum: " << fts.momentum().perp() << std::endl;
+	  std::cout << "R position: " << sqrt(pow(fts.position().x(),2) + pow(fts.position().y(),2)) << std::endl;
+	  std::cout << "This look okay?" << std::endl;
+	  }
 	  vector<Trajectory> rawTrajectories;
 	  
 	  Trajectory seedTraj(*(new TrajectorySeed()), alongMomentum);
@@ -1016,7 +990,7 @@ void Pi0ConversionAlgo::FitTrack( vector <TrackingRecHit*> Stub,
 			   << ")  in layer " << ilr->second <<std::endl;
 	      
 	      const TrajectoryStateOnSurface theTSOS = newTrajectory.lastMeasurement().updatedState();
-	      std::vector<TrajectoryMeasurement> theGoodHits = FindBestHit(theTSOS,dets,skipped_hits, geom, ttrhBuilder,theMeasurementTracker);
+	      std::vector<TrajectoryMeasurement> theGoodHits = FindBestHit(theTSOS,dets,skipped_hits, geom, ttrhBuilder,theMeasurementTracker, thePropagator);
 	      if (!theGoodHits.empty())
 		newTrajectory.push(theGoodHits.front(),theGoodHits.front().estimate());
 	      ++imap;
@@ -1138,7 +1112,7 @@ void Pi0ConversionAlgo::FitTrack( vector <TrackingRecHit*> Stub,
       //variable declarations
       
       std::vector<Trajectory> trajVec;
-      reco::Track * theTrack;
+      //reco::Track * theTrack;
       Trajectory * theTraj; 
       KFTrajectoryFitter *theFitter = new KFTrajectoryFitter(thePropagator, theUpdator, theEstimator);
       //perform the fit: the result's size is 1 if it succeded, 0 if fails
@@ -1180,7 +1154,7 @@ void Pi0ConversionAlgo::FitTrack( vector <TrackingRecHit*> Stub,
 	
 	PerigeeTrajectoryError::CovarianceMatrix covar = tscp.perigeeError();
 	
-	theTrack = new reco::Track(theTraj->chiSquared(),
+	reco::Track theTrack(theTraj->chiSquared(),
 				   int(ndof),//FIXME fix weight() in TrackingRecHit
 				   param,tscp.pt(),
 				   covar);
@@ -1214,16 +1188,29 @@ void Pi0ConversionAlgo::FitTrack( vector <TrackingRecHit*> Stub,
 
 
 	//	theTrack->setExtra( teref );
-	trkCan.push_back(*theTrack);
+	trkCan.push_back(theTrack);
 	trkColl.push_back(extr);
+      //edm::OwnVector<const TransientTrackingRecHit> ttHits = it->recHits(); 
+      //for (edm::OwnVector<const TransientTrackingRecHit>::const_iterator rhit=ttHits.begin(); 
+	TransientTrackingRecHit::ConstRecHitContainer tttHits = it->recHits();           
+	for (TransientTrackingRecHit::ConstRecHitContainer::const_iterator rhit=tttHits.begin(); 
+	     rhit!=tttHits.end(); ++rhit){
+	  returnhits.push_back((*rhit)->hit()->clone());
+	}
+// 	for (int i=0;i<goodHits.size();++i){
+// 	  //	  TrackingRecHit hitter = goodHits[i];
+// 	  returnhits.push_back(goodHits[i]);
+// 	}
       
       }
+      delete theFitter;
     }
   }
   
   if (debug_) std::cout<< "Found " << output.size() << " track candidates."<<std::endl;  
   if (debug_) std::cout<< "Found " << trkCan.size() << " tracks."<<std::endl;  
-  
+  delete thePropagator;
+  delete theRevPropagator;
 
   //  return trackvec;
 }
@@ -1233,7 +1220,8 @@ std::vector<TrajectoryMeasurement> Pi0ConversionAlgo::FindBestHit(const Trajecto
 								  edm::OwnVector<TrackingRecHit>& theHits,
 								  const TrackerGeometry *geom,
 								  const TransientTrackingRecHitBuilder *ttrhBuilder,
-								  const MeasurementTracker *theMeasurementTracker)
+								  const MeasurementTracker *theMeasurementTracker,
+								  const PropagatorWithMaterial *thePropagator)
 {
   
   std::vector<TrajectoryMeasurement> theBestHits;
@@ -1298,6 +1286,7 @@ std::vector<TrajectoryMeasurement> Pi0ConversionAlgo::FindBestHit(const Trajecto
 
 CachingVertex Pi0ConversionAlgo::FitVertex(std::vector<reco::TransientTrack> tracks){
   KalmanVertexFitter fit_vtx(false);
+  //AdaptiveVertexFitter fit_vtx;
   CachingVertex vt = fit_vtx.vertex(tracks);
   return vt;
 
