@@ -11,13 +11,20 @@
 <use name=MagneticField/Engine>
 <use name=TrackingTools/MeasurementDet>
 <use name=RecoTracker/MeasurementDet>
-
+<use name=SimDataFormats/HepMCProduct>
 <use name=RecoTracker/TkDetLayers>
 <use name=RecoTracker/TkSeedGenerator>
 <use name=TrackingTools/TrajectoryState>
 <use name=TrackingTools/GeomPropagators>
 <use name=TrackingTools/TrajectoryCleaning>
 <use name=RecoEgamma/MaterialConversionTools>
+<use name=SimDataFormats/Track>
+<use name=SimDataFormats/Vertex>
+<use name=Geometry/CaloGeometry>
+<use name=Geometry/CaloEventSetup>
+<use name=DataFormats/HcalRecHit>
+<use name=RecoCaloTools/Selectors>
+<use name=RecoCaloTools/MetaCollections>
 <export>
   <lib name=RecoEgammaMaterialConversionModules>
   <use name=FWCore/Framework>
@@ -39,4 +46,12 @@
   <use name=TrackingTools/GeomPropagators>
   <use name=TrackingTools/TrajectoryCleaning>
   <use name=RecoEgamma/ConversionMaterialTools>
+  <use name=SimDataFormats/HepMCProduct>
+  <use name=SimDataFormats/Track>
+  <use name=SimDataFormats/Vertex>
+  <use name=Geometry/CaloGeometry>
+  <use name=Geometry/CaloEventSetup>
+  <use name=DataFormats/HcalRecHit>
+  <use name=RecoCaloTools/Selectors>
+  <use name=RecoCaloTools/MetaCollections>
 </export>

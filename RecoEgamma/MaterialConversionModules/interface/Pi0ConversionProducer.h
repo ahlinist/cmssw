@@ -7,9 +7,9 @@
 #include "FWCore/Framework/interface/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
-
+#include "Geometry/CaloGeometry/interface/CaloGeometry.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-
+#include "RecoCaloTools/MetaCollections/interface/CaloRecHitMetaCollections.h"
 #include "RecoEgamma/MaterialConversionTools/interface/Pi0ConversionAlgo.h"
 
 //
@@ -27,14 +27,16 @@ class Pi0ConversionProducer : public edm::EDProducer
   virtual void produce(edm::Event&, const edm::EventSetup&);
   
  private:
-  
+  edm::ESHandle<CaloGeometry>                 theCaloGeom;
   int nMaxPrintout_; // max # of printouts
   int nEvt_;         // internal counter of events
   Pi0ConversionAlgo* pi0conv_p;
   std::string conversioncollection_;
   std::string basicclusterCollection_;
   std::string basicclusterProducer_;
- 
+   // input configuration
+  std::string hbheLabel_;
+  std::string hbheInstanceName_;
   edm::InputTag matchedStripRecHitsInputTag_;
   edm::InputTag rphiStripRecHitsInputTag_;
   edm::InputTag stereoStripRecHitsInputTag_;
@@ -43,6 +45,7 @@ class Pi0ConversionProducer : public edm::EDProducer
   double clusterdRMax_;
   double clusterMinPT_;
   double cluster_pt_thresh_;
+  double clusterIso_;
   std::string clusterLabel_;
   int stubminimumhits_;
   std::string builderName_;
