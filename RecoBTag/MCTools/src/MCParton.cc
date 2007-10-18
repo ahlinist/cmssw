@@ -124,7 +124,7 @@ void MCParton::setParticleProperties( ) {
       int statusP = (**p).status() ;
       MCParticleInfo lundCodeP((**p).pdg_id()) ;
       int flavourP = abs ( lundCodeP.lundCode() ) ;
-      double deltaRP = ROOT::Math::VectorUtil::DeltaR(lorentzVect((**p).momentum()), lorentzVect(hepParticle->momentum()));
+      double deltaRP = ROOT::Math::VectorUtil::DeltaR(math::XYZTLorentzVector((**p).momentum()), math::XYZTLorentzVector(hepParticle->momentum()));
       if( (*p)->production_vertex() ){
 	if ( statusP==2 &&
 	     *((*p)->production_vertex()->particles_begin(HepMC::parents)) != hepParticle &&

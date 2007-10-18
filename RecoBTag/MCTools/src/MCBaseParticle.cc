@@ -9,8 +9,8 @@ MCBaseParticle::MCBaseParticle( const HepMC::GenParticle* particle, const HepMC:
   particleInfo_( particle->pdg_id() )
  {
   hepParticle = particle;
-  hepEvent  = event;
-  fourVector_ = lorentzVect( particle->momentum() );
+  hepEvent    = event;
+  fourVector_ = math::XYZTLorentzVector( particle->momentum() );
 }
 
 MCBaseParticle::~MCBaseParticle() {
