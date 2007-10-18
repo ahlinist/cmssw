@@ -173,8 +173,8 @@ Values for R1A+R1B (180 deg sector)
 
 ......................................................................
 # "TID MC R1"              "TID_ICB1"         45.250    377.085
-* 1 "Kapton"               "T_Kapton"         17.131     2   CAB
-* 2 "Cu traces"            "Copper"            2.455     2   CAB
+* 1 "Kapton"               "T_Kapton"         17.131     2   ELE
+* 2 "Cu traces"            "Copper"            2.455     2   ELE
 * 3 "IC Chips"             "T_Kapton"          0.030    13   ELE
 * 4 "Connector"            "T_Kapton"          1.240     2   ELE   
 * 5 "Connector pins"       "T_Bronze"          0.149     2   ELE
@@ -221,8 +221,8 @@ Values for R2+R2 (180 deg sector)
 
 ......................................................................
 # "TID MC R2"              "TID_ICB2"          49.073    408.941
-* 1 "Kapton"               "T_Kapton"          18.391    2   CAB
-* 2 "Cu traces"            "Copper"            2.636     2   CAB
+* 1 "Kapton"               "T_Kapton"          18.391    2   ELE
+* 2 "Cu traces"            "Copper"            2.636     2   ELE
 * 3 "IC Chips"             "T_Kapton"          0.030    14   ELE
 * 4 "Connector"            "T_Kapton"          1.240     2   ELE   
 * 5 "Connector pins"       "T_Bronze"          0.149     2   ELE
@@ -269,8 +269,8 @@ Values for R3A+R3B (180 deg sector)
  
 ......................................................................
 # "TID MC R3"              "TID_ICB3"          44.146 367.88 
-* 1 "Kapton"               "T_Kapton"         21.998     2   CAB
-* 2 "Cu traces"            "Copper"            3.152     2   CAB
+* 1 "Kapton"               "T_Kapton"         21.998     2   ELE
+* 2 "Cu traces"            "Copper"            3.152     2   ELE
 * 3 "IC Chips"             "T_Kapton"          0.030    11   ELE
 * 4 "Connector"            "T_Kapton"          1.153     2   ELE   
 * 5 "Connector pins"       "T_Bronze"          0.133     2   ELE
