@@ -50,10 +50,7 @@ protected:
   const HepMC::GenEvent *    hepEvent;
   const HepMC::GenParticle * hepParticle;
   MCParticleInfo particleInfo_;
-  math::XYZTLorentzVector  fourVector_;
-
-  math::XYZTLorentzVector lorentzVect(const HepMC::FourVector & p4) const 
-  	{return  math::XYZTLorentzVector( p4 );}
+  math::XYZTLorentzVector fourVector_;
 
 };
 
