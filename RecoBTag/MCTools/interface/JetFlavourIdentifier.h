@@ -23,10 +23,10 @@ private:
   void fillInfo ( const HepMC::GenEvent * generated_event );
 
   BTagMCTools::JetFlavour  basicIdentityBasedOnPartons
-	(const math::PtEtaPhiMLorentzVector & jet4Vec, const double coneSize) const;
+	(const math::XYZTLorentzVector & jet4Vec, const double coneSize) const;
 
   void fillAlgorithmicDefinition(  BTagMCTools::JetFlavour & jetFlavour) const;
-  void fillPhysicsDefinition(  BTagMCTools::JetFlavour & jetFlavour, const math::PtEtaPhiMLorentzVector & jet4Vec) const;
+  void fillPhysicsDefinition(  BTagMCTools::JetFlavour & jetFlavour, const math::XYZTLorentzVector & jet4Vec) const;
 
   double coneSizeToAssociate;
 

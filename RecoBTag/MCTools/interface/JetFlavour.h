@@ -16,69 +16,69 @@ class JetFlavour {
 
 public:
 
-  JetFlavour();
+  JetFlavour(void);
 
   /**
    * Returns the flavour of the jet. This changes according of the definition, 'algorithmic' or 'physical'
    */
-  int flavour() const {return m_flavour;}
+  int flavour(void) const { return m_flavour; }
 
   /**
    * The momentum of the underlying parton. This parton changes according of the
    * definition, 'algorithmic' or 'physical'
    */
-  math::XYZTLorentzVector underlyingParton4Vec() const {return m_underlyingParton4Vec;}
+  const math::XYZTLorentzVector & underlyingParton4Vec (void) const { return m_underlyingParton4Vec; }
 
-  int  mainFlavour                  ( void ) const { return m_mainFlavour; }
-  int  heaviestFlavour              ( void ) const { return m_heaviestFlavour; }
-  int  minimumDeltaRFlavour         ( void ) const { return m_minimumDeltaRFlavour; }
+  int  mainFlavour                  (void) const { return m_mainFlavour; }
+  int  heaviestFlavour              (void) const { return m_heaviestFlavour; }
+  int  minimumDeltaRFlavour         (void) const { return m_minimumDeltaRFlavour; }
 
-  int  mainOrigFlavour              ( void ) const { return m_mainOrigFlavour; }
-  int  originFlavour                ( void ) const { return m_originFlavour; }
-  int  initialFlavour               ( void ) const { return m_initialFlavour; }
+  int  mainOrigFlavour              (void) const { return m_mainOrigFlavour; }
+  int  originFlavour                (void) const { return m_originFlavour; }
+  int  initialFlavour               (void) const { return m_initialFlavour; }
 
-  bool initialPartonSplitsToC       ( void ) const { return m_initialPartonSplitsToC; }
-  bool initialPartonSplitsToB       ( void ) const { return m_initialPartonSplitsToB; }
+  bool initialPartonSplitsToC       (void) const { return m_initialPartonSplitsToC; }
+  bool initialPartonSplitsToB       (void) const { return m_initialPartonSplitsToB; }
 
-  double pMainParton                ( void ) const { return m_pMainParton; }
-  double pClosestParton             ( void ) const { return m_pClosestParton; }
-  double pHeaviestParton            ( void ) const { return m_pHeaviestParton; }
-  double deltaRMainParton           ( void ) const { return m_deltaRMainParton; }
-  double deltaRClosestParton        ( void ) const { return m_deltaRClosestParton; }
-  math::XYZTLorentzVector vec4MainParton      ( void ) const { return m_Vec4MainParton; }
-  math::XYZTLorentzVector vec4ClosestParton   ( void ) const { return m_Vec4ClosestParton; }
-  math::XYZTLorentzVector vec4HeaviestParton  ( void ) const { return m_Vec4HeaviestParton; }
+  double pMainParton                (void) const { return m_pMainParton; }
+  double pClosestParton             (void) const { return m_pClosestParton; }
+  double pHeaviestParton            (void) const { return m_pHeaviestParton; }
+  double deltaRMainParton           (void) const { return m_deltaRMainParton; }
+  double deltaRClosestParton        (void) const { return m_deltaRClosestParton; }
+  const math::XYZTLorentzVector & vec4MainParton     (void) const { return m_Vec4MainParton; }
+  const math::XYZTLorentzVector & vec4ClosestParton  (void) const { return m_Vec4ClosestParton; }
+  const math::XYZTLorentzVector & vec4HeaviestParton (void) const { return m_Vec4HeaviestParton; }
 
-  math::XYZTLorentzVector vec4SummedPartons   ( void ) const { return m_Vec4SummedPartons; }
-  math::XYZTLorentzVector vec4OriginParton    ( void ) const { return m_Vec4OriginParton; }
+  const math::XYZTLorentzVector & vec4SummedPartons  (void) const { return m_Vec4SummedPartons; }
+  const math::XYZTLorentzVector & vec4OriginParton   (void) const { return m_Vec4OriginParton; }
 
   // if based on heavy hadrons
-  bool hasBottomHadronInCone        ( void ) const { return ( m_mainFlavour == 5 ); }
-  bool hasCharmHadronInCone         ( void ) const { return ( m_mainFlavour == 4 ); }
-  bool hasStrangeHadronInCone       ( void ) const { return ( m_mainFlavour == 3 ); }
-  bool hasHeavyHadronInCone         ( void ) const { return ( m_mainFlavour == 5 || m_mainFlavour == 4 ); }
+  bool hasBottomHadronInCone        (void) const { return ( m_mainFlavour == 5 ); }
+  bool hasCharmHadronInCone         (void) const { return ( m_mainFlavour == 4 ); }
+  bool hasStrangeHadronInCone       (void) const { return ( m_mainFlavour == 3 ); }
+  bool hasHeavyHadronInCone         (void) const { return ( m_mainFlavour == 5 || m_mainFlavour == 4 ); }
 
-  bool hasDown                      ( void ) const { return m_hasDown; }
-  bool hasUp                        ( void ) const { return m_hasUp; }
-  bool hasStrange                   ( void ) const { return m_hasStrange; }
-  bool hasCharm                     ( void ) const { return m_hasCharm; }
-  bool hasBottom                    ( void ) const { return m_hasBottom; }
-  bool hasGluon                     ( void ) const { return m_hasGluon; }
+  bool hasDown                      (void) const { return m_hasDown; }
+  bool hasUp                        (void) const { return m_hasUp; }
+  bool hasStrange                   (void) const { return m_hasStrange; }
+  bool hasCharm                     (void) const { return m_hasCharm; }
+  bool hasBottom                    (void) const { return m_hasBottom; }
+  bool hasGluon                     (void) const { return m_hasGluon; }
 
-  int  nDown                        ( void ) const { return m_nDown; }
-  int  nUp                          ( void ) const { return m_nUp; }
-  int  nStrange                     ( void ) const { return m_nStrange; }
-  int  nCharm                       ( void ) const { return m_nCharm; }
-  int  nBottom                      ( void ) const { return m_nBottom; }
-  int  nGluon                       ( void ) const { return m_nGluon; }
+  int  nDown                        (void) const { return m_nDown; }
+  int  nUp                          (void) const { return m_nUp; }
+  int  nStrange                     (void) const { return m_nStrange; }
+  int  nCharm                       (void) const { return m_nCharm; }
+  int  nBottom                      (void) const { return m_nBottom; }
+  int  nGluon                       (void) const { return m_nGluon; }
 
-  int  numberOfSources              ( void ) const { return m_numberOfSources; }
-  std::vector<int> flavourSources   ( void ) const { return m_flavourSources; }
+  int  numberOfSources              (void) const { return m_numberOfSources; }
+  std::vector<int> flavourSources   (void) const { return m_flavourSources; }
 
 //set methods:
 
   void flavour(const int a) {m_flavour = a;}
-  void underlyingParton4Vec(const math::XYZTLorentzVector a) {m_underlyingParton4Vec = a;}
+  void underlyingParton4Vec(const math::XYZTLorentzVector & a) { m_underlyingParton4Vec = a;}
 
   void mainFlavour              (const int a)    { m_mainFlavour = a; }
   void heaviestFlavour          (const int a)    { m_heaviestFlavour = a; }
@@ -96,12 +96,12 @@ public:
   void pHeaviestParton          (const double a) { m_pHeaviestParton = a; }
   void deltaRMainParton         (const double a) { m_deltaRMainParton = a; }
   void deltaRClosestParton      (const double a) { m_deltaRClosestParton = a; }
-  void vec4MainParton           (const math::XYZTLorentzVector a)  {m_Vec4MainParton = a; }
-  void vec4ClosestParton        (const math::XYZTLorentzVector a)  {m_Vec4ClosestParton = a; }
-  void vec4HeaviestParton       (const math::XYZTLorentzVector a)  {m_Vec4HeaviestParton = a; }
+  void vec4MainParton           (const math::XYZTLorentzVector & a) { m_Vec4MainParton = a; }
+  void vec4ClosestParton        (const math::XYZTLorentzVector & a) { m_Vec4ClosestParton = a; }
+  void vec4HeaviestParton       (const math::XYZTLorentzVector & a) { m_Vec4HeaviestParton = a; }
 
-  void vec4SummedPartons        (const math::XYZTLorentzVector a)  {m_Vec4SummedPartons = a; }
-  void vec4OriginParton         (const math::XYZTLorentzVector a)  {m_Vec4OriginParton = a; }
+  void vec4SummedPartons        (const math::XYZTLorentzVector & a) { m_Vec4SummedPartons = a; }
+  void vec4OriginParton         (const math::XYZTLorentzVector & a) { m_Vec4OriginParton = a; }
 
   // if based on heavy hadrons
 
