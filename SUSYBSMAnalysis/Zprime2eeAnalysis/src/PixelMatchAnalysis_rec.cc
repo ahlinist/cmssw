@@ -55,6 +55,30 @@ using namespace std;
 PixelMatchAnalysis::PixelMatchAnalysis(const edm::ParameterSet& iConfig)
 {
 
+  //Define variables for branches
+  gsf_Z_iso_m_var = 0.;
+  gsf_Z_vtxcor_iso_m_var = 0.;
+  gsf_Z_iso_e_var = 0.; 
+  gsf_Z_iso_pt_var = 0.; 
+  gsf_Z_iso_eta_var = 0.; 
+  gsf_Z_iso_phi_var = 0.;
+
+  gsf_el_iso_pt_var = 0.;
+  gsf_po_iso_pt_var = 0.;
+  gsf_el_iso_eta_var = 0.;
+  gsf_po_iso_eta_var = 0.;
+
+  gsf_el_vtxcor_iso_pt_var = 0.;
+  gsf_po_vtxcor_iso_pt_var = 0.; 
+  gsf_el_vtxcor_iso_eta_var = 0.;
+  gsf_po_vtxcor_iso_eta_var = 0.;
+  gsf_el_vtxcor_iso_e_var = 0.;
+  gsf_po_vtxcor_iso_e_var = 0.; 
+  gsf_el_vtxcor_iso_phi_var = 0.;
+  gsf_po_vtxcor_iso_phi_var = 0.;
+
+
+
   drellyan_ = iConfig.getParameter<bool>("drellyan");
   ecalconesize_ = iConfig.getParameter<double>("ecalconesize");
   hcalconesizemin_ = iConfig.getParameter<double>("hcalconesizemin");
@@ -167,6 +191,31 @@ void PixelMatchAnalysis::beginJob(const edm::EventSetup&)
   gsf_po_vtxcor_iso_e = fs->make<TH1F>("gsf_po_vtxcor_iso_e","gsf_po_vtxcor_iso_e",400,0.,4000.);
   gsf_el_vtxcor_iso_phi = fs->make<TH1F>("gsf_el_vtxcor_iso_phi","gsf_el_vtxcor_iso_phi",160,-4.,4.);
   gsf_po_vtxcor_iso_phi = fs->make<TH1F>("gsf_po_vtxcor_iso_phi","gsf_po_vtxcor_iso_phi",160,-4.,4.);
+
+  //Define tree
+  mytree = fs->make<TTree>("tree","tr");
+
+  //Define branches
+  mytree->Branch("gsf_Z_iso_m_branch",&gsf_Z_iso_m_var,"gsf_Z_iso_m_branch/F");
+  mytree->Branch("gsf_Z_vtxcor_iso_m_branch",&gsf_Z_vtxcor_iso_m_var,"gsf_Z_vtxcor_iso_m_branch/F");
+  mytree->Branch("gsf_Z_iso_e_branch",&gsf_Z_iso_e_var ,"gsf_Z_iso_e_branch/F");
+  mytree->Branch("gsf_Z_iso_pt_branch",&gsf_Z_iso_pt_var,"gsf_Z_iso_pt_branch/F");
+  mytree->Branch("gsf_Z_iso_eta_branch",&gsf_Z_iso_eta_var,"gsf_Z_iso_eta_branch/F");
+  mytree->Branch("gsf_Z_iso_phi_branch",&gsf_Z_iso_phi_var,"gsf_Z_iso_phi_branch/F");
+  
+  mytree->Branch("gsf_el_iso_pt_branch",&gsf_el_iso_pt_var,"gsf_el_iso_pt_branch/F");
+  mytree->Branch("gsf_po_iso_pt_branch",&gsf_po_iso_pt_var,"gsf_po_iso_pt_branch/F");
+  mytree->Branch("gsf_el_iso_eta_branch",&gsf_el_iso_eta_var,"gsf_el_iso_eta_branch/F");
+  mytree->Branch("gsf_po_iso_eta_branch",&gsf_po_iso_eta_var,"gsf_po_iso_eta_branch/F");
+  
+  mytree->Branch("gsf_el_vtxcor_iso_pt_branch",&gsf_el_vtxcor_iso_pt_var,"gsf_el_vtxcor_iso_pt_branch/F");
+  mytree->Branch("gsf_po_vtxcor_iso_pt_branch",&gsf_po_vtxcor_iso_pt_var,"gsf_po_vtxcor_iso_pt_branch/F");
+  mytree->Branch("gsf_el_vtxcor_iso_eta_branch",&gsf_el_vtxcor_iso_eta_var,"gsf_el_vtxcor_iso_eta_branch/F");
+  mytree->Branch("gsf_po_vtxcor_iso_eta_branch",&gsf_po_vtxcor_iso_eta_var,"gsf_po_vtxcor_iso_eta_branch/F");
+  mytree->Branch("gsf_el_vtxcor_iso_e_branch",&gsf_el_vtxcor_iso_e_var,"gsf_el_vtxcor_iso_e_branch/F");
+  mytree->Branch("gsf_po_vtxcor_iso_e_branch",&gsf_po_vtxcor_iso_e_var,"gsf_po_vtxcor_iso_e_branch/F");
+  mytree->Branch("gsf_el_vtxcor_iso_phi_branch",&gsf_el_vtxcor_iso_phi_var,"gsf_el_vtxcor_iso_phi_branch/F");
+  mytree->Branch("gsf_po_vtxcor_iso_phi_branch",&gsf_po_vtxcor_iso_phi_var,"gsf_po_vtxcor_iso_phi_branch/F");
 
 }
 
@@ -532,7 +581,6 @@ void PixelMatchAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup
   valeur=event_tot;
   //mybranch->Fill();
 
-  
   LogDebug("Zprime2eeAna") << "tree";
 
   // HepLorentzVector and SuperClusterRef initialisation:
@@ -802,6 +850,31 @@ void PixelMatchAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup
         gsf_el_vtxcor_iso_phi->Fill(sc_el_vtxcor.phi());
         gsf_po_vtxcor_iso_phi->Fill(sc_po_vtxcor.phi());
 	
+	//Fill variables for the tree
+	gsf_Z_iso_m_var = sc_mass;
+	gsf_Z_vtxcor_iso_m_var = sc_mass_vtxcor;
+	gsf_Z_iso_e_var = (sc_po_vtxcor+sc_el_vtxcor).e(); 
+	gsf_Z_iso_pt_var = (sc_po_vtxcor+sc_el_vtxcor).et(); 
+	gsf_Z_iso_eta_var = (sc_po_vtxcor+sc_el_vtxcor).eta(); 
+	gsf_Z_iso_phi_var = (sc_po_vtxcor+sc_el_vtxcor).phi();
+
+	gsf_el_iso_pt_var = sc_el.et();
+	gsf_po_iso_pt_var = sc_po.et();
+	gsf_el_iso_eta_var = sc_el.eta();
+	gsf_po_iso_eta_var = sc_po.eta();
+
+	gsf_el_vtxcor_iso_pt_var = sc_el_vtxcor.et();
+	gsf_po_vtxcor_iso_pt_var = sc_po_vtxcor.et(); 
+	gsf_el_vtxcor_iso_eta_var = sc_el_vtxcor.eta();
+	gsf_po_vtxcor_iso_eta_var = sc_po_vtxcor.eta();
+	gsf_el_vtxcor_iso_e_var = sc_el_vtxcor.e();
+	gsf_po_vtxcor_iso_e_var = sc_po_vtxcor.e(); 
+	gsf_el_vtxcor_iso_phi_var = sc_el_vtxcor.phi();
+	gsf_po_vtxcor_iso_phi_var = sc_po_vtxcor.phi();
+
+	//Fill the tree
+	mytree->Fill();
+
       }//end of ecal isolation cut
     }//end of hcal isolation cut
   }//end of tracker isolation cut 

@@ -126,7 +126,28 @@ class PixelMatchAnalysis : public edm::EDAnalyzer {
 
   TFile *rootfile;
   TTree* mytree;
-  TBranch* mybranch;
+
+  //Define variables for branches
+  float gsf_Z_iso_m_var;
+  float gsf_Z_vtxcor_iso_m_var;
+  float gsf_Z_iso_e_var; 
+  float gsf_Z_iso_pt_var; 
+  float gsf_Z_iso_eta_var; 
+  float gsf_Z_iso_phi_var;
+
+  float gsf_el_iso_pt_var;
+  float gsf_po_iso_pt_var;
+  float gsf_el_iso_eta_var;
+  float gsf_po_iso_eta_var;
+
+  float gsf_el_vtxcor_iso_pt_var;
+  float gsf_po_vtxcor_iso_pt_var; 
+  float gsf_el_vtxcor_iso_eta_var;
+  float gsf_po_vtxcor_iso_eta_var;
+  float gsf_el_vtxcor_iso_e_var;
+  float gsf_po_vtxcor_iso_e_var; 
+  float gsf_el_vtxcor_iso_phi_var;
+  float gsf_po_vtxcor_iso_phi_var;
 
 
 // HISTO initialisation
