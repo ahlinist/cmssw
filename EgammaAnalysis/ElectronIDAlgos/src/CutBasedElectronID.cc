@@ -66,11 +66,11 @@ bool CutBasedElectronID::result(const reco::PixelMatchGsfElectron* electron,
   int eb;
   if (eta < 1.479) 
     eb = 0;
-  else 
-    eb = 1;
+  else {
+    eb = 1; 
+    sigmaee = sigmaee - 0.02*(fabs(eta) - 2.3);   //correct sigmaetaeta dependence on eta in endcap
+  }
 
-  sigmaee = sigmaee - 0.02*(fabs(eta) - 2.3);   //correct sigmaetaeta dependence on eta in endcap
-    
   std::vector<double> cut;
     
   // ROBUST Selection
