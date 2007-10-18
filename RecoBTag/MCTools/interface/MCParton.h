@@ -43,8 +43,8 @@ public:
   bool splitsToB	  () const { return splitsToB_; }
   //  bool getSplitsToGluon      () const { return splitsToGluon ; }
 
-  std::vector<const HepMC::GenParticle*> daughters () const { return daughterLines_ ; }
-  math::XYZTLorentzVector summedDaughterMomentum () const { return summedDaughters_ ; }
+  const std::vector<const HepMC::GenParticle*> & daughters () const { return daughterLines_ ; }
+  const math::XYZTLorentzVector & summedDaughterMomentum   () const { return summedDaughters_ ; }
 
   bool isInitialParton      () const { return isInitialParton_; }
   bool initialPartonHasCloseHF () const { return initialPartonHasCloseHF_; }
@@ -77,7 +77,6 @@ private:
 
   bool isInitialParton_;
   bool initialPartonHasCloseHF_;
-
 
 };
 #endif
