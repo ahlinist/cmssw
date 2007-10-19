@@ -2,7 +2,7 @@
 
 #include <RecoLocalMuon/CSCRecHitB/src/CSCMake2DRecHit.h>
 #include <RecoLocalMuon/CSCRecHitB/src/CSCFitXonStripWithGatti.h>
-#include <RecoLocalMuon/CSCRecHitB/src/probab.h>
+#include <RecoLocalMuon/CSCRecHitB/src/Chi2Probab.h>
 #include <RecoLocalMuon/CSCRecHitB/interface/CSCStripHit.h>
 #include <RecoLocalMuon/CSCRecHitB/interface/CSCWireHit.h>
 
@@ -168,7 +168,7 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
       sigma = sigma_fit;
       chisq = chisq_fit;
       int ndof = 5;
-      prob  = probab(ndof, chisq_fit);
+      prob  = Chi2Probab(ndof, chisq_fit);
 
     } else {
 
