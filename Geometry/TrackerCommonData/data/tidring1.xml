@@ -70,7 +70,7 @@
 <LogicalPartSection label="tidring1.xml">
  <LogicalPart name="TIDStructure1" category="unspecified">
   <rSolid name="tidringpar:TIDStructure"/>
-  <rMaterial name="tidmaterial:TID_mech"/>
+  <rMaterial name="tidmaterial:TID_Mech"/>
  </LogicalPart>
  <LogicalPart name="TIDICC1" category="unspecified">
   <rSolid name="tidringpar:TIDICCDS"/>
@@ -102,7 +102,7 @@
  </LogicalPart>
  <LogicalPart name="TIDRing1CoolManifold" category="unspecified">
   <rSolid name="tidring1:TIDRing1CoolManifold"/>
-  <rMaterial name="tidmaterial:TID_Cool_Manifold"/>
+  <rMaterial name="tidmaterial:TID_CoolManifold"/>
  </LogicalPart>
  <LogicalPart name="TIDRing1FlatCable" category="unspecified">
   <rSolid name="tidring1:TIDRing1FlatCableCutted"/>

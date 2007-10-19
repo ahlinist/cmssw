@@ -21,13 +21,17 @@ For items in a compound: Item number, Comment, Material (has to be
 o TID support disks
   -----------------
 
+20071019 EM
+
+[WAS: "TID_Nomex" -> "Nomex" ]
+
 These are the disks that hold the sensor rings. They are 8 mm thick,
 Nomex core of 7 mm and 0.5 mm CF skin each side
 
 Numbers per unit area
 .....................................................................
-# "TID support disk"        "TID_mech"            0.8       1.   
-* 1 "Nomex core"            "TID_Nomex"           0.7       1    SUP
+# "TID support disk"        "TID_Mech"            0.8       1.   
+* 1 "Nomex core"            "Nomex"               0.7       1    SUP
 * 2 "CF skins"              "Carbon fibre str."   0.1       1    SUP
 ....................................................................
 =====================================================================
@@ -74,7 +78,7 @@ MC Volume: Value per 1 cm length
                           + 15 x 3 x 0.05    ==> 5.45 cm^3]
 
 ......................................................................
-# "TID cooling manifolds per cm"  "TID_Cool_Manifold" 0.80      -1.
+# "TID cooling manifolds per cm"  "TID_CoolManifold" 0.80      -1.
 * 1 "Aluminium walls"      "Aluminium"         0.32       1   COL
 * 2 "Coolant"              "C6F14_F2_-30C"     0.48       1   COL
 ......................................................................
@@ -101,42 +105,12 @@ Material: "L" shaped CF piece with inserts in Aluminium.
                                      5*4*0.4 + 3.6*4*0.4 (on cyl.) 
                                      ==> 21.76 cm^3]
 .......................................................................
-# "TID wheel fixations"       "TID_Wheel_Fixation"   10.46     -1
+# "TID wheel fixations"       "TID_WheelFixation"    10.46     -1
 * 1 "CF L-shaped piece"       "Carbon fibre str."    13.1     1    SUP
 * 2 "Aluminium inserts"        "Aluminium"           11.0     1    SUP
 .......................................................................
 =======================================================================
 
-o TID_Connector
-  -------------
-These are the optical connector at the end of the TID. Total number: 398
-
-TIB: 306 conn.
-TID: 92 conn
-
-%%NEWS: Mail from Francois: weight of optoconnector (12 channels) is 
-%%      46.8 g Plastic + 8.4 g Cu 
-%%      33.43 cm^3     + 0.9375 cm^3 
-%%
-%%I don't believe this ! Too heavy !
-%%Now take the following: Per MU Connector 0.7 g Cu and 0.7 g Plastic (12)
-%%     Plastic: take Kapton => 12 * 0.5 cm^3 = 6 cm^3
-%%Big connector has about dimensions of 6 x 2 x 1 cm => 12 cm^3
-%%      total 18 cm^3 + 0.937 cm^3 copper
-
-New information from Francois:
-  Connector weighs 25 g total, about 4 g metallic mass  
-     21 g Kapton => 15 cm^3 plastic
-      4 g Copper => 0.446 cm^3
-     
-.....................................................................
-# "TIB/TID optical conn"    "TID_Connector"      43228.   4322.8   
-* 1 "Optoconnector"         "T_Kapton"           15.0     398   CAB
-* 2 "Optoconnector"         "Copper"             0.446    398   CAB
-....................................................................
-=====================================================================
-
-... here em part begins
 
 o TID ICB1
   --------
@@ -466,7 +440,6 @@ MCVolume = 1.0 x 2.5 x 0.05 cm^3 = 0.125 cm^3
 .......................................................................
 =======================================================================
 
-... here em part ends
 
 # "END"  "END"  0.  0.   
 this has to be the last line !

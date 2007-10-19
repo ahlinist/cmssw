@@ -98,7 +98,7 @@
   <Numeric name="PitchStereoTolerance"    value="[tidmodpar:PitchStereoTolerance]"/>
 
   <String name="CoolInsertName"        value="tidmodule0:TIDCoolInsert"/>
-  <String name="CoolInsertMaterial"    value="tidmaterial:TID_Cool_insert"/>
+  <String name="CoolInsertMaterial"    value="tidmaterial:TID_CoolInsert"/>
   <Numeric name="CoolInsertHeight"     value="[tidmodpar:CoolInsertHeightDS]"/>
   <Numeric name="CoolInsertThick"      value="[tidmodpar:CoolInsertThickDS]"/>
   <Numeric name="CoolInsertWidth"      value="[tidmodpar:CoolInsertWidthDS]"/>

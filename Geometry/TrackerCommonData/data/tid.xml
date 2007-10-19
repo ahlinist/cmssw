@@ -93,7 +93,7 @@
   </LogicalPart>
  <LogicalPart name="TIDWheelFixCutted" category="unspecified">
   <rSolid name="TIDWheelFixCutted"/>
-  <rMaterial name="tidmaterial:TID_Wheel_Fixation"/>
+  <rMaterial name="tidmaterial:TID_WheelFixation"/>
  </LogicalPart>
 </LogicalPartSection>
 
