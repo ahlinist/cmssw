@@ -19,7 +19,7 @@
 //
 
 #if !defined(DEFINE_SEAL_MODULE)
-#define DEFINE_SEAL_MODULE() enum {dummy} define_seal_module_ ## __LINE__
+#define DEFINE_SEAL_MODULE() typedef int pluginManagerNeedsSemiColon
 #endif
 
 #endif
