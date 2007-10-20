@@ -7,7 +7,6 @@
 <use name=DataFormats/HepMCCandidate>
 <use name=DataFormats/Common>
 <use name=DataFormats/BTauReco>
-<use name=DataFormats/JetReco>
 <use name=DataFormats/TrackReco>
 <use name=DataFormats/VertexReco>
 <use name=DataFormats/EcalRecHit>
@@ -45,5 +44,6 @@
   <use name=CondFormats/BTauObjects>
   <use name=rootcore> 
   <flags LDFLAGS="-lXMLIO"> 
+  <flags CXXFLAGS="-fpermissive"> 
   <flags EDM_PLUGIN=1>   
 </library>
