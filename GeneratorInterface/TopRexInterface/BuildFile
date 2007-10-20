@@ -4,6 +4,7 @@
 <use name=clhep> 
 <use name=hepmc> 
 <use name=pythia6>
+<use name=f77compiler>
 <use name=toprex>
 
 <flags EDM_PLUGIN=1>
@@ -18,5 +19,3 @@
  <use name=toprex>
 </export>
 
- <lib name=g2c></lib>
- <lib name=m></lib>
