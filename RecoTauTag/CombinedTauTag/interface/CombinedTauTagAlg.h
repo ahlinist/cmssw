@@ -14,11 +14,12 @@
 
 #include "DataFormats/BTauReco/interface/CombinedTauTagInfo.h"
 #include "DataFormats/BTauReco/interface/JetTag.h"
-#include "DataFormats/BTauReco/interface/JetTracksAssociation.h"
 #include "DataFormats/BTauReco/interface/IsolatedTauTagInfo.h"
 #include "DataFormats/BTauReco/interface/TaggingVariable.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/JetReco/interface/CaloJetCollection.h"
 #include "DataFormats/JetReco/interface/Jet.h"
+#include "DataFormats/JetReco/interface/JetTracksAssociation.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/EgammaReco/interface/BasicCluster.h" 
 #include "DataFormats/CaloTowers/interface/CaloTower.h"
@@ -26,9 +27,8 @@
 #include "DataFormats/EcalDetId/interface/EBDetId.h"
 #include "DataFormats/EcalDetId/interface/EEDetId.h"
 #include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
-#include "DataFormats/GeometryVector/interface/GlobalTag.h"
-#include "DataFormats/GeometryVector/interface/Vector3DBase.h"
-#include "DataFormats/GeometryVector/interface/Point3DBase.h"
+#include "DataFormats/GeometryVector/interface/GlobalPoint.h"
+#include "DataFormats/GeometryVector/interface/GlobalVector.h"
 
 #include "MagneticField/Engine/interface/MagneticField.h"
 #include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
@@ -43,9 +43,6 @@
 #include "Geometry/CaloGeometry/interface/CaloGeometry.h"
 #include "Geometry/CaloGeometry/interface/CaloCellGeometry.h"
 #include "Geometry/CaloGeometry/interface/CaloSubdetectorGeometry.h"
-
-#include "RecoBTag/BTagTools/interface/SignedTransverseImpactParameter.h"
-#include "RecoBTag/BTagTools/interface/SignedImpactParameter3D.h"
 
 #include "RecoTauTag/CombinedTauTag/interface/ECALBounds.h"
 #include "RecoTauTag/CombinedTauTag/interface/CombinedTauTagLikelihoodRatio.h"
@@ -64,9 +61,6 @@
 using namespace std; 
 using namespace edm;
 using namespace reco;
-
-typedef Vector3DBase<float,GlobalTag> Global3DVector;
-typedef Point3DBase<float,GlobalTag> Global3DPoint;
 
 const double pi=3.14159265358979323846264;
 const double chargedpi_mass=0.13957018;      //PDG Particle Physics Booklet, 2004
@@ -162,7 +156,7 @@ public:
   ~CombinedTauTagAlg(){
     if (theCombinedTauTagLikelihoodRatio!=0) delete theCombinedTauTagLikelihoodRatio;
   };
-  pair<JetTag,CombinedTauTagInfo> tag(const IsolatedTauTagInfoRef&,const Vertex&,Event&,const EventSetup&);
+  pair<float,CombinedTauTagInfo> tag(const IsolatedTauTagInfoRef&,const Vertex&,Event&,const EventSetup&);
   void setCombinedTauTagLikelihoodRatio(CombinedTauTagLikelihoodRatio* x){theCombinedTauTagLikelihoodRatio=x;}
  private:
   void init(const EventSetup&);
@@ -230,7 +224,7 @@ public:
   bool infact_GoodElectronCand;
   bool passed_cutmuon;  
   bool infact_GoodMuonCand;
-  Global3DVector* the_recjet_G3DV;
+  GlobalVector* the_recjet_GV;
   HepLorentzVector the_recjet_alternatHepLV;
   double TauCandJet_ref_et;
   vector<HepLorentzVector> chargedpicand_fromtk_HepLV;

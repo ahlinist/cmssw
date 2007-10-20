@@ -7,6 +7,5 @@
   <use name=CondFormats/BTauObjects>
   <use name=rootcore>
   <flags LDFLAGS="-lXMLIO">
-  <flags CXXFLAGS="-fpermissive">
   <flags EDM_PLUGIN=1>
 </library>
