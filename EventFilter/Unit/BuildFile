@@ -4,4 +4,3 @@
 </export>
 <use name=boost>
 <use name=EventFilter/Utilities>
-<lib name=i2outils>
