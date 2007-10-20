@@ -46,9 +46,7 @@
 <use name=root>
 <use name=rootcore>
 <flags LDFLAGS="-lXMLIO">
-<flags EDM_PLUGIN=1>
 <export>
-   <lib name=RecoTauTagCombinedTauTag>
    <use name=FWCore/Framework>
    <use name=FWCore/Utilities>
    <use name=FWCore/MessageLogger>
@@ -88,4 +86,5 @@
    <use name=RecoVertex/AdaptiveVertexFit>
    <use name=RecoVertex/KalmanVertexFit>
    <use name=RecoVertex/VertexTools>
+   <lib name=RecoTauTagCombinedTauTag>
 </export>
