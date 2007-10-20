@@ -14,12 +14,11 @@
 
 #include "DataFormats/BTauReco/interface/CombinedTauTagInfo.h"
 #include "DataFormats/BTauReco/interface/JetTag.h"
-#include "DataFormats/JetReco/interface/CaloJetCollection.h"
-#include "DataFormats/JetReco/interface/Jet.h"
-#include "DataFormats/JetReco/interface/JetTracksAssociation.h"
+#include "DataFormats/BTauReco/interface/JetTracksAssociation.h"
 #include "DataFormats/BTauReco/interface/IsolatedTauTagInfo.h"
 #include "DataFormats/BTauReco/interface/TaggingVariable.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/JetReco/interface/Jet.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/EgammaReco/interface/BasicCluster.h" 
 #include "DataFormats/CaloTowers/interface/CaloTower.h"
@@ -27,8 +26,9 @@
 #include "DataFormats/EcalDetId/interface/EBDetId.h"
 #include "DataFormats/EcalDetId/interface/EEDetId.h"
 #include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
-#include "DataFormats/GeometryVector/interface/GlobalPoint.h"
-#include "DataFormats/GeometryVector/interface/GlobalVector.h"
+#include "DataFormats/GeometryVector/interface/GlobalTag.h"
+#include "DataFormats/GeometryVector/interface/Vector3DBase.h"
+#include "DataFormats/GeometryVector/interface/Point3DBase.h"
 
 #include "MagneticField/Engine/interface/MagneticField.h"
 #include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
@@ -44,8 +44,11 @@
 #include "Geometry/CaloGeometry/interface/CaloCellGeometry.h"
 #include "Geometry/CaloGeometry/interface/CaloSubdetectorGeometry.h"
 
+#include "RecoBTag/BTagTools/interface/SignedTransverseImpactParameter.h"
+#include "RecoBTag/BTagTools/interface/SignedImpactParameter3D.h"
+
 #include "RecoTauTag/CombinedTauTag/interface/ECALBounds.h"
-#include "RecoTauTag/CombinedTauTag/interface/LikelihoodRatio.h"
+#include "RecoTauTag/CombinedTauTag/interface/CombinedTauTagLikelihoodRatio.h"
 
 #include "Math/GenVector/VectorUtil.h"
 #include "Math/GenVector/PxPyPzE4D.h"
@@ -62,12 +65,15 @@ using namespace std;
 using namespace edm;
 using namespace reco;
 
+typedef Vector3DBase<float,GlobalTag> Global3DVector;
+typedef Point3DBase<float,GlobalTag> Global3DPoint;
+
 const double pi=3.14159265358979323846264;
 const double chargedpi_mass=0.13957018;      //PDG Particle Physics Booklet, 2004
   
 class CombinedTauTagAlg{
 public: 
-  CombinedTauTagAlg(const ParameterSet& parameters):theTransientTrackBuilder(0),theLikelihoodRatio(0){
+  CombinedTauTagAlg(const ParameterSet& parameters):theTransientTrackBuilder(0),theCombinedTauTagLikelihoodRatio(0){
     // --- parameters filled in RecoTauTag/CombinedTauTag/data/combinedTauTag.cfi
     // ------ tracker selection
     MinimumTransverseMomentum_                                = parameters.getParameter<double>("MinimumTransverseMomentum");
@@ -111,7 +117,7 @@ public:
     muon_selection_max_ECALEt_o_leadtkPt_                     = parameters.getParameter<double>("muon_selection_max_ECALEt_o_leadtkPt");
     muon_selection_max_HCALEt_o_leadtkPt_                     = parameters.getParameter<double>("muon_selection_max_HCALEt_o_leadtkPt");
   }
-  CombinedTauTagAlg():theTransientTrackBuilder(0),theLikelihoodRatio(0){
+  CombinedTauTagAlg():theTransientTrackBuilder(0),theCombinedTauTagLikelihoodRatio(0){
     // ------ tracker selection
     MinimumTransverseMomentum_                                = 1.;
     MatchingCone_                                             = 0.17;
@@ -154,10 +160,10 @@ public:
     muon_selection_max_HCALEt_o_leadtkPt_                     = 0.4;  
   } 
   ~CombinedTauTagAlg(){
-    if (theLikelihoodRatio!=0) delete theLikelihoodRatio;
+    if (theCombinedTauTagLikelihoodRatio!=0) delete theCombinedTauTagLikelihoodRatio;
   };
-  pair<float,CombinedTauTagInfo> tag(const IsolatedTauTagInfoRef&,const Vertex&,Event&,const EventSetup&);
-  void setLikelihoodRatio(LikelihoodRatio* x){theLikelihoodRatio=x;}
+  pair<JetTag,CombinedTauTagInfo> tag(const IsolatedTauTagInfoRef&,const Vertex&,Event&,const EventSetup&);
+  void setCombinedTauTagLikelihoodRatio(CombinedTauTagLikelihoodRatio* x){theCombinedTauTagLikelihoodRatio=x;}
  private:
   void init(const EventSetup&);
   math::XYZPoint recTrackImpactPositiononECAL(Event&,const EventSetup&,TrackRef);
@@ -189,7 +195,7 @@ public:
   double ECALclus_min_e_;
   double matchingECALclustrack_deltaR_;
   // ------ likelihood function selection
-  LikelihoodRatio* theLikelihoodRatio;
+  CombinedTauTagLikelihoodRatio* theCombinedTauTagLikelihoodRatio;
   bool use_neutralECALclus_number_case1signaltk_;	
   bool use_neutralECALclus_radius_case1signaltk_;
   bool use_neutralE_ratio_case1signaltk_;
@@ -224,7 +230,7 @@ public:
   bool infact_GoodElectronCand;
   bool passed_cutmuon;  
   bool infact_GoodMuonCand;
-  GlobalVector* the_recjet_GV;
+  Global3DVector* the_recjet_G3DV;
   HepLorentzVector the_recjet_alternatHepLV;
   double TauCandJet_ref_et;
   vector<HepLorentzVector> chargedpicand_fromtk_HepLV;

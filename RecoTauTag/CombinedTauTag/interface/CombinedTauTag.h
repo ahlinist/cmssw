@@ -22,7 +22,6 @@
 #include "DataFormats/BTauReco/interface/JetTag.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
-#include "DataFormats/VertexReco/interface/VertexFwd.h"
 
 #include "CondFormats/BTauObjects/interface/CalibratedHistogram.h"
 #include "CondFormats/BTauObjects/interface/CombinedTauTagCalibration.h"
@@ -33,7 +32,7 @@
 #include "CLHEP/Random/RandGauss.h"
 
 #include "RecoTauTag/CombinedTauTag/interface/CombinedTauTagAlg.h"
-#include "RecoTauTag/CombinedTauTag/interface/LikelihoodRatio.h"
+#include "RecoTauTag/CombinedTauTag/interface/CombinedTauTagLikelihoodRatio.h"
 #include "RecoTauTag/CombinedTauTag/interface/CategoryDataCondDB.h"
 
 #include "RecoBTag/XMLCalibration/interface/CalibrationInterface.h"
@@ -58,7 +57,7 @@ class CombinedTauTag : public EDProducer {
 	produces<JetTagCollection>().setBranchAlias(modulname);
 	string infoBranchName=modulname+"Info";
 	produces<CombinedTauTagInfoCollection>().setBranchAlias(infoBranchName);
-	theLikelihoodRatio=new LikelihoodRatio(iConfig);  
+	theCombinedTauTagLikelihoodRatio=new CombinedTauTagLikelihoodRatio(iConfig);  
 	m_cacheId=0;
       }
       ~CombinedTauTag(){
@@ -67,7 +66,7 @@ class CombinedTauTag : public EDProducer {
       virtual void produce(Event&, const EventSetup&);
  private:
       CombinedTauTagAlg* theCombinedTauTagAlg;
-      LikelihoodRatio* theLikelihoodRatio;
+      CombinedTauTagLikelihoodRatio* theCombinedTauTagLikelihoodRatio;
       unsigned long long m_cacheId;
       string IsolatedTauTagSrc_;
       string PVSrc_;
