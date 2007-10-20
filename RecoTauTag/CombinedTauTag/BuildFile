@@ -8,7 +8,6 @@
 <use name=DataFormats/VertexReco>
 <use name=DataFormats/EcalRecHit>
 <use name=DataFormats/EgammaReco>
-<use name=DataFormats/JetReco>
 <use name=DataFormats/TrackReco>
 <use name=DataFormats/TrackingRecHit>
 <use name=DataFormats/TrackCandidate>
@@ -28,7 +27,6 @@
 <use name=Geometry/CaloTopology>
 <use name=Geometry/Records>
 <use name=Geometry/CommonDetUnit>
-<use name=TrackingTools/IPTools>
 <use name=TrackingTools/Records>
 <use name=TrackingTools/PatternTools>
 <use name=TrackingTools/TrajectoryState>
@@ -37,6 +35,7 @@
 <use name=TrackingTools/TrajectoryParametrization>
 <use name=TrackingTools/TrajectoryState>
 <use name=RecoTracker/TrackProducer>
+<use name=RecoBTag/BTagTools>
 <use name=RecoVertex/VertexPrimitives>
 <use name=RecoVertex/AdaptiveVertexFit>
 <use name=RecoVertex/KalmanVertexFit>
@@ -46,6 +45,7 @@
 <use name=root>
 <use name=rootcore>
 <flags LDFLAGS="-lXMLIO">
+<flags CXXFLAGS="-fpermissive">
 <flags EDM_PLUGIN=1>
 <export>
    <lib name=RecoTauTagCombinedTauTag>
@@ -76,7 +76,6 @@
    <use name=Geometry/CaloTopology>
    <use name=Geometry/Records>
    <use name=Geometry/CommonDetUnit>
-   <use name=TrackingTools/IPTools>
    <use name=TrackingTools/Records>
    <use name=TrackingTools/PatternTools>
    <use name=TrackingTools/TrajectoryState>
@@ -88,4 +87,5 @@
    <use name=RecoVertex/AdaptiveVertexFit>
    <use name=RecoVertex/KalmanVertexFit>
    <use name=RecoVertex/VertexTools>
+   <use name=RecoBTag/BTagTools>
 </export>
