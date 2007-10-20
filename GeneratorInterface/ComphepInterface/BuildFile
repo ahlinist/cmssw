@@ -4,7 +4,7 @@
 <use name=clhep> 
 <use name=hepmc> 
 <use name=pythia6>
-#<use name=photos215>
+<use name=f77compiler>
 <use name=root>
 <use name=Utilities/StorageFactory>
  
@@ -21,15 +21,7 @@
  <use name=pythia6>
  <use name=root>
  <use name=Utilities/StorageFactory>
-# <use name=tauola27.121_aux1>
-# <use name=tauola27.121>
-# <use name=photos215>
- 
 </export>
 
- <lib name=g2c></lib>
- <lib name=m></lib>
-# <lib name=tauola27.121_aux1>
-# <lib name=tauola27.121>
-#
+
 
