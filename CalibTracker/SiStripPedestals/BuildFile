@@ -21,7 +21,7 @@
 <use name=DQM/SiStripCommon>  
 <use name=oracle>
 <use name=clhep>
-<use name=xdaq>
+#<use name=xdaq>
 <use name=DQMServices/Core>
 <use name=DataFormats/SiStripDigi>
 <use name=CalibFormats/SiStripObjects>
@@ -53,7 +53,7 @@
    <use name=CondFormats/SiStripObjects>
    <use name=oracle>
    <use name=clhep>
-   <use name=xdaq>
+#   <use name=xdaq>
 
 
 </export>
