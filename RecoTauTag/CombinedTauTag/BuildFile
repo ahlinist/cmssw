@@ -44,8 +44,6 @@
 <use name=boost>
 <use name=rootrflx>
 <use name=root>
-<use name=rootcore>
-<flags LDFLAGS="-lXMLIO">
 <export>
    <use name=FWCore/Framework>
    <use name=FWCore/Utilities>
