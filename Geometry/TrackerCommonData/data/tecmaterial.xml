@@ -3,62 +3,27 @@
 
   <MaterialSection label="tecmaterial.xml">
   
-    <CompositeMaterial density="1.69*g/cm3" method="mixture by weight" name="Tk_SO_FC_D" symbol=" ">
-      <MaterialFraction fraction="0.84491305">
-        <rMaterial name="materials:Carbon"/>
+   <CompositeMaterial density="1.69*g/cm3" method="mixture by weight" name="Tk_SO_FC_D" symbol=" ">
+    <MaterialFraction fraction="1.">
+      <rMaterial name="materials:Carbon fibre str."/>
     </MaterialFraction>
-      <MaterialFraction fraction="0.042542086">
-        <rMaterial name="materials:Hydrogen"/>
+   </CompositeMaterial>
+   <CompositeMaterial density="1.69*g/cm3" method="mixture by weight" name="Tk_SO_FC_E" symbol=" ">
+    <MaterialFraction fraction="1.">
+      <rMaterial name="materials:Carbon fibre str."/>
     </MaterialFraction>
-      <MaterialFraction fraction="0.11254487">
-        <rMaterial name="materials:Oxygen"/>
-    </MaterialFraction>
-  </CompositeMaterial>
-    <CompositeMaterial density="1.69*g/cm3" method="mixture by weight" name="Tk_SO_FC_E" symbol=" ">
-      <MaterialFraction fraction="0.84491305">
-        <rMaterial name="materials:Carbon"/>
-    </MaterialFraction>
-      <MaterialFraction fraction="0.042542086">
-        <rMaterial name="materials:Hydrogen"/>
-    </MaterialFraction>
-      <MaterialFraction fraction="0.11254487">
-        <rMaterial name="materials:Oxygen"/>
-    </MaterialFraction>
-  </CompositeMaterial>
-
-
+   </CompositeMaterial>
 
     <!-- *********************************Oo. checked new materials .oO**************************************-->
 
     <!-- materials to build materials -->
     <CompositeMaterial density="29*mg/cm3" method="mixture by weight" name="TEC_Nomex" symbol=" ">
-      <MaterialFraction fraction="0.027815941">
-        <rMaterial name="materials:Nitrogen"/>
-    </MaterialFraction>
-      <MaterialFraction fraction="0.31653768">
-        <rMaterial name="materials:Oxygen"/>
-    </MaterialFraction>
-      <MaterialFraction fraction="0.00047881724">
-        <rMaterial name="materials:Argon"/>
-    </MaterialFraction>
-      <MaterialFraction fraction="0.077581544">
-        <rMaterial name="materials:Hydrogen"/>
-    </MaterialFraction>
-      <MaterialFraction fraction="0.57758601">
-        <rMaterial name="materials:Carbon"/>
+    <MaterialFraction fraction="1.">
+      <rMaterial name="materials:Nomex"/>
     </MaterialFraction>
   </CompositeMaterial>
 
     <!-- Modules -->
-    <CompositeMaterial density="1.42*g/cm3" method="mixture by weight" name="TEC_SideFrameSuppliesBox" symbol=" ">
-      <MaterialFraction fraction="0.4">
-        <rMaterial name="materials:Aluminium"/>
-    </MaterialFraction>
-      <MaterialFraction fraction="0.6">
-        <rMaterial name="materials:Oxygen"/>
-    </MaterialFraction>
-  </CompositeMaterial>
-
     <CompositeMaterial density="4.853000*g/cm3" method="mixture by weight" name="TEC_Hybrid4APV" symbol=" ">
       <MaterialFraction fraction="0.082900">
         <rMaterial name="materials:T_Kapton"/>

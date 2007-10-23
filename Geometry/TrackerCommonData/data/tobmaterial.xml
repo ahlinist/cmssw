@@ -905,84 +905,29 @@
 
 
   <CompositeMaterial name="TIB_rail" density="1.69*g/cm3" symbol=" " method="mixture by weight">
-    <MaterialFraction fraction="0.84491305">
-      <rMaterial name="materials:Carbon"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.042542086">
-      <rMaterial name="materials:Hydrogen"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.11254487">
-      <rMaterial name="materials:Oxygen"/>
-    </MaterialFraction>
-  </CompositeMaterial>
-  <CompositeMaterial name="TOB_CF_Str" density="1.69*g/cm3" symbol=" " method="mixture by weight">
-    <MaterialFraction fraction="0.84491305">
-      <rMaterial name="materials:Carbon"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.042542086">
-      <rMaterial name="materials:Hydrogen"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.11254487">
-      <rMaterial name="materials:Oxygen"/>
-    </MaterialFraction>
-  </CompositeMaterial>
-  <CompositeMaterial name="TOB_Epoxy" density="1.32*g/cm3" symbol=" " method="mixture by weight">
-    <MaterialFraction fraction="0.53539691">
-      <rMaterial name="materials:Carbon"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.13179314">
-      <rMaterial name="materials:Hydrogen"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.33280996">
-      <rMaterial name="materials:Oxygen"/>
-    </MaterialFraction>
-  </CompositeMaterial>
-  <CompositeMaterial name="TOB_Nomex" density="32*mg/cm3" symbol=" " method="mixture by weight">
-    <MaterialFraction fraction="0.027815941">
-      <rMaterial name="materials:Nitrogen"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.31653768">
-      <rMaterial name="materials:Oxygen"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.00047881724">
-      <rMaterial name="materials:Argon"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.077581544">
-      <rMaterial name="materials:Hydrogen"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.57758601">
-      <rMaterial name="materials:Carbon"/>
+    <MaterialFraction fraction="1.">
+      <rMaterial name="materials:Carbon fibre str."/>
     </MaterialFraction>
   </CompositeMaterial>
 
-  <CompositeMaterial name="TOB_cool_DS" density="2.871*g/cm3" symbol=" " method="mixture by weight">
-    <MaterialFraction fraction="0.33735406">
-      <rMaterial name="materials:Copper"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.14458031">
-      <rMaterial name="materials:Nickel"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.11044592">
-      <rMaterial name="materials:Carbon"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.40761971">
-      <rMaterial name="materials:Fluorine"/>
+  <CompositeMaterial name="TOB_CF_Str" density="1.69*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="1.">
+      <rMaterial name="materials:Carbon fibre str."/>
     </MaterialFraction>
   </CompositeMaterial>
-  <CompositeMaterial name="TOB_cool_SS" density="3.083*g/cm3" symbol=" " method="mixture by weight">
-    <MaterialFraction fraction="0.37396217">
-      <rMaterial name="materials:Copper"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.1602695">
-      <rMaterial name="materials:Nickel"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.099296708">
-      <rMaterial name="materials:Carbon"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.36647162">
-      <rMaterial name="materials:Fluorine"/>
+
+  <CompositeMaterial name="TOB_Epoxy" density="1.32*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="1.">
+      <rMaterial name="materials:Epoxy"/>
     </MaterialFraction>
   </CompositeMaterial>
+
+  <CompositeMaterial name="TOB_Nomex" density="32*mg/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="1.">
+      <rMaterial name="materials:Nomex"/>
+    </MaterialFraction>
+  </CompositeMaterial>
+
   <CompositeMaterial name="TOB_cool_solder" density="9*g/cm3" symbol=" " method="mixture by weight">
     <MaterialFraction fraction="0.62">
       <rMaterial name="materials:Tin"/>
@@ -994,173 +939,13 @@
       <rMaterial name="materials:Silver"/>
     </MaterialFraction>
   </CompositeMaterial>
-  <CompositeMaterial name="TOB_coolmanifold1" density="2.379*g/cm3" symbol=" " method="mixture by weight">
-    <MaterialFraction fraction="0.323497">
-      <rMaterial name="materials:Copper"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.11399339">
-      <rMaterial name="materials:Nickel"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.10791085">
-      <rMaterial name="materials:Carbon"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.39826362">
-      <rMaterial name="materials:Fluorine"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.03377713">
-      <rMaterial name="materials:Zinc"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.013985964">
-      <rMaterial name="materials:Tin"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.0081208823">
-      <rMaterial name="materials:Lead"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.00045116013">
-      <rMaterial name="materials:Silver"/>
-    </MaterialFraction>
-  </CompositeMaterial>
-  <CompositeMaterial name="TOB_coolmanifold2" density="2.382*g/cm3" symbol=" " method="mixture by weight">
-    <MaterialFraction fraction="0.32371088">
-      <rMaterial name="materials:Copper"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.11385989">
-      <rMaterial name="materials:Nickel"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.10778555">
-      <rMaterial name="materials:Carbon"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.39780115">
-      <rMaterial name="materials:Fluorine"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.034085695">
-      <rMaterial name="materials:Zinc"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.014109238">
-      <rMaterial name="materials:Tin"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.0081924609">
-      <rMaterial name="materials:Lead"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.00045513671">
-      <rMaterial name="materials:Silver"/>
-    </MaterialFraction>
-  </CompositeMaterial>
-  <CompositeMaterial name="TOB_coolmanifold3" density="2.384*g/cm3" symbol=" " method="mixture by weight">
-    <MaterialFraction fraction="0.32390247">
-      <rMaterial name="materials:Copper"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.11374632">
-      <rMaterial name="materials:Nickel"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.10767555">
-      <rMaterial name="materials:Carbon"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.39739519">
-      <rMaterial name="materials:Fluorine"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.034353842">
-      <rMaterial name="materials:Zinc"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.01421451">
-      <rMaterial name="materials:Tin"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.0082535867">
-      <rMaterial name="materials:Lead"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.00045853259">
-      <rMaterial name="materials:Silver"/>
-    </MaterialFraction>
-  </CompositeMaterial>
-  <CompositeMaterial name="TOB_coolmanifold4" density="2.386*g/cm3" symbol=" " method="mixture by weight">
-    <MaterialFraction fraction="0.32402838">
-      <rMaterial name="materials:Copper"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.11366312">
-      <rMaterial name="materials:Nickel"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.10759589">
-      <rMaterial name="materials:Carbon"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.39710117">
-      <rMaterial name="materials:Fluorine"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.034541812">
-      <rMaterial name="materials:Zinc"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.014303168">
-      <rMaterial name="materials:Tin"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.0083050652">
-      <rMaterial name="materials:Lead"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.00046139251">
-      <rMaterial name="materials:Silver"/>
-    </MaterialFraction>
-  </CompositeMaterial>
-  <CompositeMaterial name="TOB_coolmanifold5" density="2.384*g/cm3" symbol=" " method="mixture by weight">
-    <MaterialFraction fraction="0.3239264">
-      <rMaterial name="materials:Copper"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.11372728">
-      <rMaterial name="materials:Nickel"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.10765979">
-      <rMaterial name="materials:Carbon"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.39733704">
-      <rMaterial name="materials:Fluorine"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.034393994">
-      <rMaterial name="materials:Zinc"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.014232409">
-      <rMaterial name="materials:Tin"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.0082639795">
-      <rMaterial name="materials:Lead"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.00045910997">
-      <rMaterial name="materials:Silver"/>
-    </MaterialFraction>
-  </CompositeMaterial>
-  <CompositeMaterial name="TOB_coolmanifold6" density="2.386*g/cm3" symbol=" " method="mixture by weight">
-    <MaterialFraction fraction="0.32405034">
-      <rMaterial name="materials:Copper"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.11364341">
-      <rMaterial name="materials:Nickel"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.10758078">
-      <rMaterial name="materials:Carbon"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.39704543">
-      <rMaterial name="materials:Fluorine"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.03458172">
-      <rMaterial name="materials:Zinc"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.014320964">
-      <rMaterial name="materials:Tin"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.0083153982">
-      <rMaterial name="materials:Lead"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.00046196657">
-      <rMaterial name="materials:Silver"/>
-    </MaterialFraction>
-  </CompositeMaterial>
+
   <CompositeMaterial name="TOB_middle_ribs" density="1.69*g/cm3" symbol=" " method="mixture by weight">
-    <MaterialFraction fraction="0.84491305">
-      <rMaterial name="materials:Carbon"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.042542086">
-      <rMaterial name="materials:Hydrogen"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.11254487">
-      <rMaterial name="materials:Oxygen"/>
+    <MaterialFraction fraction="1.">
+      <rMaterial name="materials:Carbon fibre str."/>
     </MaterialFraction>
   </CompositeMaterial>
+
   <CompositeMaterial name="TOB_plate_A" density="674*mg/cm3" symbol=" " method="mixture by weight">
     <MaterialFraction fraction="1.00000000">
       <rMaterial name="materials:Aluminium"/>
@@ -2546,17 +2331,9 @@
     </MaterialFraction>
   </CompositeMaterial>
 
-
-
   <CompositeMaterial name="TOB_rod" density="1.796*g/cm3" symbol=" " method="mixture by weight">
-    <MaterialFraction fraction="0.84491305">
-      <rMaterial name="materials:Carbon"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.042542086">
-      <rMaterial name="materials:Hydrogen"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.11254487">
-      <rMaterial name="materials:Oxygen"/>
+    <MaterialFraction fraction="1.">
+      <rMaterial name="materials:Carbon fibre str."/>
     </MaterialFraction>
   </CompositeMaterial>
 
