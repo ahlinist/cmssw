@@ -928,18 +928,6 @@
     </MaterialFraction>
   </CompositeMaterial>
 
-  <CompositeMaterial name="TOB_cool_solder" density="9*g/cm3" symbol=" " method="mixture by weight">
-    <MaterialFraction fraction="0.62">
-      <rMaterial name="materials:Tin"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.36">
-      <rMaterial name="materials:Lead"/>
-    </MaterialFraction>
-    <MaterialFraction fraction="0.02">
-      <rMaterial name="materials:Silver"/>
-    </MaterialFraction>
-  </CompositeMaterial>
-
   <CompositeMaterial name="TOB_middle_ribs" density="1.69*g/cm3" symbol=" " method="mixture by weight">
     <MaterialFraction fraction="1.">
       <rMaterial name="materials:Carbon fibre str."/>
