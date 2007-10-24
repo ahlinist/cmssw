@@ -17,6 +17,7 @@
 #include <map>
 #include <sstream>
 #include <ostream>
+#include <assert.h>
 
 namespace edm {
   namespace pset {

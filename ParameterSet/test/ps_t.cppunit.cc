@@ -6,6 +6,7 @@
 #include <iostream>
 #include <limits>
 #include <string>
+#include <assert.h>
 
 #include <cppunit/extensions/HelperMacros.h>
 
