@@ -19,6 +19,11 @@
  *            Universidad de los Andes, Bogota
  */
 
+namespace CLHEP {
+  class HepRandomEngine;
+  class RandFlat;
+  class RandPoissonQ;
+}
 
 class RPCPolluter : public edm::EDProducer
 {
@@ -41,6 +46,9 @@ class RPCPolluter : public edm::EDProducer
 
   virtual void produce(edm::Event&, const edm::EventSetup&);
 
+  CLHEP::HepRandomEngine* rndEngine;
+  CLHEP::RandFlat* flatDistribution;
+  CLHEP::RandPoissonQ *poissonDistribution_;
 
 };
 

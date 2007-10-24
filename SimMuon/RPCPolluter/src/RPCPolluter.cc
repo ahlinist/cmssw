@@ -23,7 +23,14 @@
 #include <FWCore/Framework/interface/ESHandle.h>
 #include <FWCore/Framework/interface/MakerMacros.h>
 
-
+#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "FWCore/Utilities/interface/RandomNumberGenerator.h"
+#include "FWCore/Utilities/interface/Exception.h"
+#include "CLHEP/Random/RandomEngine.h"
+#include "CLHEP/Random/RandFlat.h"
+#include <cmath>
+#include <utility>
+#include <map>
 
 
 // RPCPolluter
@@ -41,6 +48,15 @@ RPCPolluter::RPCPolluter(const edm::ParameterSet& iConfig)
 
   gate=iConfig.getParameter<double>("Gate");
 
+  edm::Service<edm::RandomNumberGenerator> rng;
+  if ( ! rng.isAvailable()) {
+    throw cms::Exception("Configuration")
+      << "RPCDigitizer requires the RandomNumberGeneratorService\n"
+      "which is not present in the configuration file.  You must add the service\n"
+      "in the configuration file or remove the modules that require it.";
+  }
+
+  rndEngine = &(rng->getEngine());
 }
 
 
@@ -84,13 +100,18 @@ void RPCPolluter::produce(edm::Event& e, const edm::EventSetup& es)
       }
 
     double ave = rate*nbxing*gate*area*1.0e-9;
+    poissonDistribution_ = new CLHEP::RandPoissonQ(rndEngine, ave);
+    N_hits = poissonDistribution_->fire();
 
-    N_hits = RandPoissonQ::shoot(ave);
     std::cout <<" Number of hits "<<N_hits<<std::endl;
     for (int i = 0; i < N_hits; i++ )
-      {
-	int strip = RandFlat::shootInt(nstrips);
-	int time_hit = static_cast<int>(RandFlat::shoot((nbxing*gate))/gate);
+      {    
+	flatDistribution = new CLHEP::RandFlat(rndEngine, 1, nstrips);
+	int strip = static_cast<int>(flatDistribution->fire());
+
+	flatDistribution = new CLHEP::RandFlat(rndEngine, (nbxing*gate)/gate);
+	int time_hit = (static_cast<int>(flatDistribution->fire())) - nbxing/2;
+
 	RPCDigi rpcDigi(strip,time_hit);
 	pDigis->insertDigi(rpcId,rpcDigi);
       }
