@@ -10,4 +10,5 @@ http://cern.ch/cms-sdt/CondCore/SQLiteData/sistripfedcablingCSA07.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/sistripfedcabling.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/electronIdLikelihood.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/btagTrackProbability.db
-http://cern.ch/cms-sdt/CondCore/SQLiteData/RPCEMap_030707.db
+http://cern.ch/cms-sdt/CondCore/SQLiteData/RPCEMap_181007.db
+http://cern.ch/cms-sdt/CondCore/SQLiteData/MVAJetTagsFakeConditions.db
