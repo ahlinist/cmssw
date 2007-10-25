@@ -15,7 +15,7 @@
 
 // user include files
 #include "FWCore/Framework/interface/EventSetupRecordIntervalFinder.h"
-
+#include <cassert>
 
 //
 // constants, enums and typedefs
