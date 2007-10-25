@@ -8,6 +8,7 @@
 #include "EgammaAnalysis/EgammaIsolationProducers/interface/EgammaElectronTkNumIsolationProducer.h"
 #include "EgammaAnalysis/EgammaIsolationProducers/interface/EgammaPhotonTkIsolationProducer.h"
 #include "EgammaAnalysis/EgammaIsolationProducers/interface/EgammaPhotonTkNumIsolationProducer.h"
+#include "EgammaAnalysis/EgammaIsolationProducers/interface/EgammaTowerIsolationProducer.h"
 
 
 DEFINE_SEAL_MODULE();
@@ -17,3 +18,4 @@ DEFINE_ANOTHER_FWK_MODULE(EgammaElectronTkIsolationProducer);
 DEFINE_ANOTHER_FWK_MODULE(EgammaElectronTkNumIsolationProducer);
 DEFINE_ANOTHER_FWK_MODULE(EgammaPhotonTkIsolationProducer);
 DEFINE_ANOTHER_FWK_MODULE(EgammaPhotonTkNumIsolationProducer);
+DEFINE_ANOTHER_FWK_MODULE(EgammaTowerIsolationProducer);
