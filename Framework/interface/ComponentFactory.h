@@ -110,7 +110,13 @@ template<typename T>
 
    }
 }
-#define COMPONENTFACTORY_GET(_type_) EDM_REGISTER_PLUGINFACTORY(edmplugin::PluginFactory<edm::eventsetup::ComponentMakerBase<_type_>* ()>,_type_::name()); \
-static edm::eventsetup::ComponentFactory<_type_> s_dummyfactory; template<> edm::eventsetup::ComponentFactory<_type_>* edm::eventsetup::ComponentFactory<_type_>::get() { return &s_dummyfactory; } enum {dummy_componentfactory_get_}
+#define COMPONENTFACTORY_GET(_type_) \
+EDM_REGISTER_PLUGINFACTORY(edmplugin::PluginFactory<edm::eventsetup::ComponentMakerBase<_type_>* ()>,_type_::name()); \
+static edm::eventsetup::ComponentFactory<_type_> s_dummyfactory; \
+namespace edm { namespace eventsetup { \
+template<> edm::eventsetup::ComponentFactory<_type_>* edm::eventsetup::ComponentFactory<_type_>::get() \
+{ return &s_dummyfactory; } \
+  } } \
+typedef int componentfactory_get_needs_semicolon
 
 #endif
