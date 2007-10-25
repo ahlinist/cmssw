@@ -39,7 +39,7 @@
   </detector>
 
   <detector name='RPC' offline_connect='oracle://orcon/CMS_COND_RPC'>
-     <poolsetup mapping='mapping_RPCObjects_CMSSW160.xml' dbsetup='dbsetup_RPCObjects_CMSSW160.xml' library='CondFormatsRPCObjects' />
+     <poolsetup mapping='mapping_RPCObjects_CMSSW170.xml' dbsetup='dbsetup_RPCObjects_CMSSW170.xml' library='CondFormatsRPCObjects' />
   </detector>  
 
   <detector name='HCAL' offline_connect='oracle://orcon/CMS_COND_HCAL'>
