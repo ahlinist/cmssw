@@ -234,9 +234,9 @@ def main(argv) :
             print 'Preparation of ProdAgent workflow: relval_workflows.xml failed with message:',ex
             sys.exit(1)
         
-            print ''
-            print 'Prepared ProdAgent workflow: relval_workflows.xml to be injected into the RelValInjector by:'
-            print 'python2.4 publish.py RelValInjector:Inject',os.path.join(os.getcwd(), 'relval_workflows.xml')
+        print ''
+        print 'Prepared ProdAgent workflow: relval_workflows.xml to be injected into the RelValInjector by:'
+        print 'python2.4 publish.py RelValInjector:Inject',os.path.join(os.getcwd(), 'relval_workflows.xml')
 
     if single_cfg != '' :
         pickleParameterSet(single_cfg)
