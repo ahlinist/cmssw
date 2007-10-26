@@ -25,6 +25,7 @@
 #include "FWCore/Framework/interface/DataProxy.h"
 #include "FWCore/Framework/interface/MakeDataException.h"
 #include "FWCore/Framework/interface/EventSetupRecord.h"
+#include <cassert>
 
 // forward declarations
 
