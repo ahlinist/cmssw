@@ -115,6 +115,7 @@ def main(argv) :
 
     required parameters
     --samples      <textfile>   : list of RelVal sample parameter-sets in plain text file, one sample per line, # marks comment
+    --cfg          <cfg>        : pickle given parameter-set, options are either --samples or --cfg
     --cms-path     <path>       : path to CMS software area
     
     optional parameters         :
@@ -140,11 +141,12 @@ def main(argv) :
         sys.exit(2)
 
     samples      = ''
+    single_cfg          = ''
     debug        = 0
     cms_path     = ''
 
     try:
-        opts, args = getopt.getopt(argv, "", ["help", "debug", "samples=", "cms-path="])
+        opts, args = getopt.getopt(argv, "", ["help", "debug", "samples=", "cms-path=", "cfg="])
     except getopt.GetoptError:
         print main.__doc__
         sys.exit(2)
@@ -158,72 +160,88 @@ def main(argv) :
             debug = 1
         elif opt == "--samples" :
             samples = arg
+        elif opt == "--cfg" :
+            single_cfg = arg
         elif opt == "--cms-path" :
             cms_path = arg
 
-    if samples == '' or cms_path == '':
+    if samples != '' and single_cfg != '' :
+        print ''
+        print 'Please use either --samples or --cfg !'
+        print ''
         print main.__doc__
         sys.exit(2)
 
-    # read in samples
-    cfgs = []
-    try:
-        file = open(samples)
-    except IOError:
-        print 'file with list of parameter-sets cannot be opened!'
-        sys.exit(1)
-    for line in file.readlines():
-        line = line.strip()
-        if len(line) > 0 and line[0] != '#':
-            if len(line.strip().split()) > 1 :
-                print 'Please specify only one parameter-set per line, following line has more than one:',line
-                sys.exit(1)
-            else :
-                cfgs.append(line.strip())
+    if samples != '' and cms_path == '':
+        print main.__doc__
+        sys.exit(2)
 
-    # pickle parameter-sets
-    for cfg in cfgs:
-        print 'Store python representation of parameter-set:',cfg,'in pickle file',cfg.replace('.cfg','.pkl')
-        pickleParameterSet(cfg)
 
-    # write workflow xml
-    try:
-        topNode = Element("RelValSpec")
+    if samples != '' :
+        # read in samples
+        cfgs = []
+        try:
+            file = open(samples)
+        except IOError:
+            print 'file with list of parameter-sets cannot be opened!'
+            sys.exit(1)
+        for line in file.readlines():
+            line = line.strip()
+            if len(line) > 0 and line[0] != '#':
+                if len(line.strip().split()) > 1 :
+                    print 'Please specify only one parameter-set per line, following line has more than one:',line
+                    sys.exit(1)
+                else :
+                    cfgs.append(line.strip())
 
+        # pickle parameter-sets
         for cfg in cfgs:
-            element = Element("RelValTest")
-            element.setAttribute("Name", cfg.replace('.cfg',''))
+            print 'Store python representation of parameter-set:',cfg,'in pickle file',cfg.replace('.cfg','.pkl')
+            pickleParameterSet(cfg)
+
+        # write workflow xml
+        try:
+            topNode = Element("RelValSpec")
+
+            for cfg in cfgs:
+                element = Element("RelValTest")
+                element.setAttribute("Name", cfg.replace('.cfg',''))
             
-            PickleFileElement = Element("PickleFile")
-            PickleFileElement.setAttribute("Value", os.path.join(os.getcwd(), cfg.replace('.cfg','.pkl')))
-            element.appendChild(PickleFileElement)
+                PickleFileElement = Element("PickleFile")
+                PickleFileElement.setAttribute("Value", os.path.join(os.getcwd(), cfg.replace('.cfg','.pkl')))
+                element.appendChild(PickleFileElement)
             
-            PickleFileElement = Element("CMSPath")
-            PickleFileElement.setAttribute("Value", cms_path)
-            element.appendChild(PickleFileElement)
+                PickleFileElement = Element("CMSPath")
+                PickleFileElement.setAttribute("Value", cms_path)
+                element.appendChild(PickleFileElement)
             
-            PickleFileElement = Element("CMSSWArchitecture")
-            PickleFileElement.setAttribute("Value", architecture)
-            element.appendChild(PickleFileElement)
+                PickleFileElement = Element("CMSSWArchitecture")
+                PickleFileElement.setAttribute("Value", architecture)
+                element.appendChild(PickleFileElement)
             
-            PickleFileElement = Element("CMSSWVersion")
-            PickleFileElement.setAttribute("Value", version)
-            element.appendChild(PickleFileElement)
+                PickleFileElement = Element("CMSSWVersion")
+                PickleFileElement.setAttribute("Value", version)
+                element.appendChild(PickleFileElement)
             
-            topNode.appendChild(element)
+                topNode.appendChild(element)
     
-        doc = Document()
-        doc.appendChild(topNode)
-        handle = open("relval_workflows.xml", "w")
-        handle.write(doc.toprettyxml())
-        handle.close()
-    except Exception,ex:
-        print 'Preparation of ProdAgent workflow: relval_workflows.xml failed with message:',ex
-        sys.exit(1)
+            doc = Document()
+            doc.appendChild(topNode)
+            handle = open("relval_workflows.xml", "w")
+            handle.write(doc.toprettyxml())
+            handle.close()
+        except Exception,ex:
+            print 'Preparation of ProdAgent workflow: relval_workflows.xml failed with message:',ex
+            sys.exit(1)
         
-    print ''
-    print 'Prepared ProdAgent workflow: relval_workflows.xml to be injected into the RelValInjector by:'
-    print 'python2.4 publish.py RelValInjector:Inject',os.path.join(os.getcwd(), 'relval_workflows.xml')
+            print ''
+            print 'Prepared ProdAgent workflow: relval_workflows.xml to be injected into the RelValInjector by:'
+            print 'python2.4 publish.py RelValInjector:Inject',os.path.join(os.getcwd(), 'relval_workflows.xml')
+
+    if single_cfg != '' :
+        pickleParameterSet(single_cfg)
+        print 'Store python representation of parameter-set:',single_cfg,'in pickle file',single_cfg.replace('.cfg','.pkl')
+        
 
 if __name__ == '__main__' :
     main(sys.argv[1:])
