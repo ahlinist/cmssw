@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-#$Id: runall.sh,v 1.9 2007/10/14 15:39:12 dlange Exp $
+#$Id: runall.sh,v 1.10 2007/10/15 20:11:13 gutsche Exp $
 #
 # Script to run all integration tests
 #
@@ -40,8 +40,9 @@ fi
 for file in $tests 
 do
     echo Preparing to run $file
+    logfile=$file".log"
     let starttime=`date "+%s"`
-    cmsRun $file
+    cmsRun $file > $logfile 2>&1
     let exitcode=$?
 
     let endtime=`date "+%s"`
