@@ -8,7 +8,7 @@
  * Author: Dmitry Zaborov
  */
 
-// Version: $Id: ProtonTaggerFilter.cc,v 1.2 2007/09/28 08:50:13 dzaborov Exp $
+// Version: $Id: ProtonTaggerFilter.cc,v 1.3 2007/09/28 12:30:47 dzaborov Exp $
 
 #include "FastSimulation/ProtonTaggers/interface/ProtonTaggerFilter.h"
 
@@ -48,6 +48,7 @@ ProtonTaggerFilter::ProtonTaggerFilter(edm::ParameterSet const & p)
   
   switch (beam1mode)
   {
+    case 0: std::cout << "Option chosen for beam 1: ingnore" << std::endl; break;
     case 1: std::cout << "Option chosen for beam 1: 420" << std::endl; break;
     case 2: std::cout << "Option chosen for beam 1: 220" << std::endl; break;
     case 3: std::cout << "Option chosen for beam 1: 420 and 220" << std::endl; break;
@@ -58,6 +59,7 @@ ProtonTaggerFilter::ProtonTaggerFilter(edm::ParameterSet const & p)
   
   switch (beam2mode)
   {
+    case 0: std::cout << "Option chosen for beam 2: ingnore" << std::endl; break;
     case 1: std::cout << "Option chosen for beam 2: 420" << std::endl; break;
     case 2: std::cout << "Option chosen for beam 2: 220" << std::endl; break;
     case 3: std::cout << "Option chosen for beam 2: 420 and 220" << std::endl; break;
@@ -79,6 +81,14 @@ ProtonTaggerFilter::ProtonTaggerFilter(edm::ParameterSet const & p)
   if (((beam1mode != 4) || (beam2mode != 4)) && (beamCombiningMode > 2)) {
     std::cerr << "Warning: beamCombiningMode = " << beamCombiningMode 
               << " only makes sence with beam1mode = beam2mode = 4" << std::endl;
+  }
+
+  if (((beam1mode == 0) || (beam2mode == 0)) && (beamCombiningMode > 1)) {
+    std::cerr << "Warning: You ask for 2 protons while one of the beams is set to ignore" << std::endl;
+  }
+
+  if ((beam1mode == 0) && (beam2mode == 0)) {
+    std::cerr << "Warning: Both beams are set to ignore." << std::endl;
   }
 
   std::cout << "ProtonTaggerFilter: Initialized" << std::endl;
@@ -164,13 +174,13 @@ bool ProtonTaggerFilter::filter(edm::Event & iEvent, const edm::EventSetup & es)
 
       float pz = p->momentum().pz();
 
-      if (pz>pz1 && pz<Ebeam) {
+      if ((pz > pz1) && (pz < Ebeam) && (beam1mode != 0)) {
           pz1 = pz;
 	  pt1 = p->momentum().perp();
           phi1= p->momentum().phi();
       }
 
-      if (pz<pz2 && pz>-Ebeam) {
+      if ((pz < pz2) && (pz > -Ebeam) && (beam2mode != 0)) {
           pz2 = pz;
 	  pt2 = p->momentum().perp();
           phi2= p->momentum().phi();
