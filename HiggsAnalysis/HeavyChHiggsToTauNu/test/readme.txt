@@ -13,6 +13,8 @@
 		cd HiggsAnalysis/HeavyChHiggsToTauNu/src
 		chmod +x dictionary.csh
 		dictionary.csh
+
+		Rerun dictionary.csh every time after changing anything in MyEvent class
 	-compile
 		cd HiggsAnalysis/HeavyChHiggsToTauNu
 		scramv1 b
