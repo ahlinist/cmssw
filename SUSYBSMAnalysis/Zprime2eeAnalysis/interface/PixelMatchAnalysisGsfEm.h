@@ -140,6 +140,7 @@ class PixelMatchAnalysisGsfEm : public edm::EDAnalyzer {
   float sc_one_vtxcor_iso_phi_var;
   float sc_two_vtxcor_iso_phi_var;
 
+  double sc_weight;
 
   // HISTO initialisation
 

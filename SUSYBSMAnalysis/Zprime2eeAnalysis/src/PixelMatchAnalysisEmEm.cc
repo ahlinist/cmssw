@@ -64,6 +64,7 @@ PixelMatchAnalysisEmEm::PixelMatchAnalysisEmEm(const edm::ParameterSet& iConfig)
   sc_one_vtxcor_iso_phi_var = 0.;
   sc_two_vtxcor_iso_phi_var = 0.;
 
+  sc_weight = 0. ;
 
   drellyan_ = iConfig.getParameter<bool>("drellyan");
   ecalconesize_ = iConfig.getParameter<double>("ecalconesize");
@@ -213,7 +214,7 @@ void PixelMatchAnalysisEmEm::beginJob(const edm::EventSetup&)
   mytree->Branch("sc_one_vtxcor_iso_phi_branch",&sc_one_vtxcor_iso_phi_var,"sc_one_vtxcor_iso_phi_branch/F");
   mytree->Branch("sc_two_vtxcor_iso_phi_branch",&sc_two_vtxcor_iso_phi_var,"sc_two_vtxcor_iso_phi_branch/F");
 
-  
+  mytree->Branch("sc_weight",&sc_weight,"sc_weight/D");
 }
 
 
@@ -228,6 +229,10 @@ double PixelMatchAnalysisEmEm::ecaletisol( const edm::Event& Evt, const reco::Su
   Handle<reco::SuperClusterCollection> pIslandSuperClusters;
   Handle<reco::BasicClusterCollection> pHybridBasicClusters;
   Handle<reco::BasicClusterCollection> pIslandBasicClusters;
+
+  Handle<double> weightHandle;
+  Evt.getByLabel ("weight", weightHandle);
+  sc_weight= * weightHandle;
 
   try {
     Evt.getByLabel("hybridSuperClusters","", pHybridSuperClusters);
@@ -542,8 +547,8 @@ void PixelMatchAnalysisEmEm::analyze(const edm::Event& iEvent, const edm::EventS
       LogDebug("Zprime2eeAnaEmEm") << "=======================================================" ; 
     }
 
-  histo_run->Fill(iEvent.id().run());
-  histo_event->Fill(iEvent.id().event());
+  histo_run->Fill(iEvent.id().run() ,sc_weight);
+  histo_event->Fill(iEvent.id().event() ,sc_weight);
 
   // Get the barrel hcal hits
   //edm::Handle<HBHERecHitCollection> hhitBarrelHandle;
@@ -717,12 +722,12 @@ void PixelMatchAnalysisEmEm::analyze(const edm::Event& iEvent, const edm::EventS
       //Compute the invariant mass and fill histos before isolation cuts
       float  sc_mass=(superclustwo+superclusone).m();
       float  sc_mass_vtxcor=(superclustwo_vtxcor+superclusone_vtxcor).m();
-      sc_Z_m->Fill(sc_mass);
-      sc_Z_vtxcor_m->Fill(sc_mass_vtxcor);
-      sc_one_pt->Fill(superclusone.et());
-      sc_two_pt->Fill(superclustwo.et());
-      sc_one_vtxcor_pt->Fill(superclusone_vtxcor.et());
-      sc_two_vtxcor_pt->Fill(superclustwo_vtxcor.et());
+      sc_Z_m->Fill(sc_mass ,sc_weight);
+      sc_Z_vtxcor_m->Fill(sc_mass_vtxcor ,sc_weight);
+      sc_one_pt->Fill(superclusone.et() ,sc_weight);
+      sc_two_pt->Fill(superclustwo.et() ,sc_weight);
+      sc_one_vtxcor_pt->Fill(superclusone_vtxcor.et() ,sc_weight);
+      sc_two_vtxcor_pt->Fill(superclustwo_vtxcor.et() ,sc_weight);
     
       // Compute the isolation variables and fill histos
 
@@ -731,12 +736,12 @@ void PixelMatchAnalysisEmEm::analyze(const edm::Event& iEvent, const edm::EventS
       std::pair<int,float> sconetrackisol = trackisol(sclusterone, trackcoll, recozvtx, true);
       std::pair<int,float> sctwotrackisol = trackisol(sclustertwo, trackcoll, recozvtx, true);
   
-      sc_one_track_isol_abs->Fill(sconetrackisol.second);
-      sc_one_track_isol->Fill(sconetrackisol.second/superclusone.et());
-      sc_two_track_isol_abs->Fill(sctwotrackisol.second);
-      sc_two_track_isol->Fill(sctwotrackisol.second/superclustwo.et());
-      sc_one_numbertrackisol->Fill(sconetrackisol.first);
-      sc_two_numbertrackisol->Fill(sctwotrackisol.first);
+      sc_one_track_isol_abs->Fill(sconetrackisol.second ,sc_weight);
+      sc_one_track_isol->Fill(sconetrackisol.second/superclusone.et() ,sc_weight);
+      sc_two_track_isol_abs->Fill(sctwotrackisol.second ,sc_weight);
+      sc_two_track_isol->Fill(sctwotrackisol.second/superclustwo.et() ,sc_weight);
+      sc_one_numbertrackisol->Fill(sconetrackisol.first ,sc_weight);
+      sc_two_numbertrackisol->Fill(sctwotrackisol.first ,sc_weight);
 
       if(debug) {
 	LogDebug("Zprime2eeAnaEmEm")<<" sc_one_track_isol_abs = "<<sconetrackisol.second;
@@ -752,10 +757,10 @@ void PixelMatchAnalysisEmEm::analyze(const edm::Event& iEvent, const edm::EventS
       double one_hcalisol = hcaletisol(sclusterone,towerCollection);
       double two_hcalisol = hcaletisol(sclustertwo,towerCollection);
 
-      sc_one_hcal_isol_abs->Fill(one_hcalisol);
-      sc_one_hcal_isol->Fill(one_hcalisol/superclusone.et());
-      sc_two_hcal_isol_abs->Fill(two_hcalisol);
-      sc_two_hcal_isol->Fill(two_hcalisol/superclustwo.et());
+      sc_one_hcal_isol_abs->Fill(one_hcalisol ,sc_weight);
+      sc_one_hcal_isol->Fill(one_hcalisol/superclusone.et() ,sc_weight);
+      sc_two_hcal_isol_abs->Fill(two_hcalisol ,sc_weight);
+      sc_two_hcal_isol->Fill(two_hcalisol/superclustwo.et() ,sc_weight);
 
       if(debug) {
 	LogDebug("Zprime2eeAnaEmEm")<<" sc_one_hcal_isol_abs = "<<one_hcalisol;
@@ -768,10 +773,10 @@ void PixelMatchAnalysisEmEm::analyze(const edm::Event& iEvent, const edm::EventS
       double one_ecalisol = ecaletisol(iEvent,sclusterone);
       double two_ecalisol = ecaletisol(iEvent,sclustertwo);
 
-      sc_one_ecal_isol_abs->Fill(one_ecalisol);
-      sc_one_ecal_isol->Fill(one_ecalisol/superclusone.et());
-      sc_two_ecal_isol_abs->Fill(two_ecalisol);
-      sc_two_ecal_isol->Fill(two_ecalisol/superclustwo.et());
+      sc_one_ecal_isol_abs->Fill(one_ecalisol ,sc_weight);
+      sc_one_ecal_isol->Fill(one_ecalisol/superclusone.et() ,sc_weight);
+      sc_two_ecal_isol_abs->Fill(two_ecalisol ,sc_weight);
+      sc_two_ecal_isol->Fill(two_ecalisol/superclustwo.et() ,sc_weight);
  
       if(debug) {
 	LogDebug("Zprime2eeAnaEmEm")<<" sc_one_ecal_isol_abs = "<< one_ecalisol;
@@ -800,30 +805,30 @@ void PixelMatchAnalysisEmEm::analyze(const edm::Event& iEvent, const edm::EventS
 	      //Compute the invariant mass and fill histos AFTER isolation cuts
 	      float  sc_mass=(superclustwo+superclusone).m();
 	      float  sc_mass_vtxcor=(superclustwo_vtxcor+superclusone_vtxcor).m();
-	      sc_Z_iso_m->Fill(sc_mass);
-	      sc_Z_vtxcor_iso_m->Fill(sc_mass_vtxcor);
-	      sc_Z_iso_e->Fill((superclustwo_vtxcor+superclusone_vtxcor).e());
-	      sc_Z_iso_pt->Fill((superclustwo_vtxcor+superclusone_vtxcor).et());
-	      sc_Z_iso_eta->Fill((superclustwo_vtxcor+superclusone_vtxcor).eta());
-	      sc_Z_iso_phi->Fill((superclustwo_vtxcor+superclusone_vtxcor).phi());
+	      sc_Z_iso_m->Fill(sc_mass ,sc_weight);
+	      sc_Z_vtxcor_iso_m->Fill(sc_mass_vtxcor ,sc_weight);
+	      sc_Z_iso_e->Fill((superclustwo_vtxcor+superclusone_vtxcor).e() ,sc_weight);
+	      sc_Z_iso_pt->Fill((superclustwo_vtxcor+superclusone_vtxcor).et() ,sc_weight);
+	      sc_Z_iso_eta->Fill((superclustwo_vtxcor+superclusone_vtxcor).eta() ,sc_weight);
+	      sc_Z_iso_phi->Fill((superclustwo_vtxcor+superclusone_vtxcor).phi() ,sc_weight);
 
 	      LogDebug("Zprime2eeAnaEmEm")<<"Z quantities filled";
 
-	      sc_one_iso_pt->Fill(superclusone.et());
-	      sc_two_iso_pt->Fill(superclustwo.et());
-	      sc_one_iso_eta->Fill(superclusone.eta());
-	      sc_two_iso_eta->Fill(superclustwo.eta());
+	      sc_one_iso_pt->Fill(superclusone.et() ,sc_weight);
+	      sc_two_iso_pt->Fill(superclustwo.et() ,sc_weight);
+	      sc_one_iso_eta->Fill(superclusone.eta() ,sc_weight);
+	      sc_two_iso_eta->Fill(superclustwo.eta() ,sc_weight);
 
  	      LogDebug("Zprime2eeAnaEmEm")<<"sc quantities filled";
 
-	      sc_one_vtxcor_iso_pt->Fill(superclusone_vtxcor.et());
-	      sc_two_vtxcor_iso_pt->Fill(superclustwo_vtxcor.et());
-	      sc_one_vtxcor_iso_eta->Fill(superclusone_vtxcor.eta());
-	      sc_two_vtxcor_iso_eta->Fill(superclustwo_vtxcor.eta());
-	      sc_one_vtxcor_iso_e->Fill(superclusone_vtxcor.e());
-	      sc_two_vtxcor_iso_e->Fill(superclustwo_vtxcor.e());
-	      sc_one_vtxcor_iso_phi->Fill(superclusone_vtxcor.phi());
-	      sc_two_vtxcor_iso_phi->Fill(superclustwo_vtxcor.phi());
+	      sc_one_vtxcor_iso_pt->Fill(superclusone_vtxcor.et() ,sc_weight);
+	      sc_two_vtxcor_iso_pt->Fill(superclustwo_vtxcor.et() ,sc_weight);
+	      sc_one_vtxcor_iso_eta->Fill(superclusone_vtxcor.eta() ,sc_weight);
+	      sc_two_vtxcor_iso_eta->Fill(superclustwo_vtxcor.eta() ,sc_weight);
+	      sc_one_vtxcor_iso_e->Fill(superclusone_vtxcor.e() ,sc_weight);
+	      sc_two_vtxcor_iso_e->Fill(superclustwo_vtxcor.e() ,sc_weight);
+	      sc_one_vtxcor_iso_phi->Fill(superclusone_vtxcor.phi() ,sc_weight);
+	      sc_two_vtxcor_iso_phi->Fill(superclustwo_vtxcor.phi() ,sc_weight);
 
 	      LogDebug("Zprime2eeAnaEmEm")<<"sc vertex corr filled";
 	
