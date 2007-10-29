@@ -77,6 +77,7 @@ PixelMatchAnalysis::PixelMatchAnalysis(const edm::ParameterSet& iConfig)
   gsf_el_vtxcor_iso_phi_var = 0.;
   gsf_po_vtxcor_iso_phi_var = 0.;
 
+  gsf_weight = 0. ;
 
 
   drellyan_ = iConfig.getParameter<bool>("drellyan");
@@ -217,6 +218,7 @@ void PixelMatchAnalysis::beginJob(const edm::EventSetup&)
   mytree->Branch("gsf_el_vtxcor_iso_phi_branch",&gsf_el_vtxcor_iso_phi_var,"gsf_el_vtxcor_iso_phi_branch/F");
   mytree->Branch("gsf_po_vtxcor_iso_phi_branch",&gsf_po_vtxcor_iso_phi_var,"gsf_po_vtxcor_iso_phi_branch/F");
 
+  mytree->Branch("gsf_weight",&gsf_weight,"gsf_weight/D");
 }
 
 
@@ -231,6 +233,10 @@ double PixelMatchAnalysis::ecaletisol( const edm::Event& Evt, reco::SuperCluster
   Handle<reco::SuperClusterCollection> pIslandSuperClusters;
   Handle<reco::BasicClusterCollection> pHybridBasicClusters;
   Handle<reco::BasicClusterCollection> pIslandBasicClusters;
+
+  Handle<double> weightHandle;
+  Evt.getByLabel ("weight", weightHandle);
+  gsf_weight= * weightHandle;
 
   try {
     Evt.getByLabel("hybridSuperClusters","", pHybridSuperClusters);
@@ -539,8 +545,8 @@ void PixelMatchAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup
     LogDebug("Zprime2eeAna") << "iEvent.id().run() = " << iEvent.id().run() << "  iEvent.id().event() = " << iEvent.id().event()  ; 
     LogDebug("Zprime2eeAna") << "=======================================================" ; 
    }
-  histo_run->Fill(iEvent.id().run());
-  histo_event->Fill(iEvent.id().event());
+  histo_run->Fill(iEvent.id().run() ,gsf_weight);
+  histo_event->Fill(iEvent.id().event() ,gsf_weight);
 
   // Get the barrel hcal hits
   //edm::Handle<HBHERecHitCollection> hhitBarrelHandle;
@@ -646,7 +652,7 @@ void PixelMatchAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup
   const reco::PixelMatchGsfElectronCollection* collpixelmatchelec = pixelmatchelec.product();
 
   LogDebug("Zprime2eeAna") << "collpixelmatchelec->size() = " <<  collpixelmatchelec->size() ;
-  gsfcoll_size->Fill(collpixelmatchelec->size());
+  gsfcoll_size->Fill(collpixelmatchelec->size() ,gsf_weight);
 
   typedef reco::PixelMatchGsfElectron myElectron;
   std::vector<myElectron> gsf_el;
@@ -748,12 +754,12 @@ void PixelMatchAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup
     //Compute the invariant mass and fill histos before isolation cuts
     float  sc_mass=(sc_po+sc_el).m();
     float  sc_mass_vtxcor=(sc_po_vtxcor+sc_el_vtxcor).m();
-    gsf_Z_m->Fill(sc_mass);
-    gsf_Z_vtxcor_m->Fill(sc_mass_vtxcor);
-    gsf_el_pt->Fill(sc_el.et());
-    gsf_po_pt->Fill(sc_po.et());
-    gsf_el_vtxcor_pt->Fill(sc_el_vtxcor.et());
-    gsf_po_vtxcor_pt->Fill(sc_po_vtxcor.et());
+    gsf_Z_m->Fill(sc_mass ,gsf_weight);
+    gsf_Z_vtxcor_m->Fill(sc_mass_vtxcor ,gsf_weight);
+    gsf_el_pt->Fill(sc_el.et() ,gsf_weight);
+    gsf_po_pt->Fill(sc_po.et() ,gsf_weight);
+    gsf_el_vtxcor_pt->Fill(sc_el_vtxcor.et() ,gsf_weight);
+    gsf_po_vtxcor_pt->Fill(sc_po_vtxcor.et() ,gsf_weight);
     
     // Compute the isolation variables and fill histos
 
@@ -763,12 +769,12 @@ void PixelMatchAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup
     std::pair<int,float> testelec = trackisol(trackelec, trackcoll, recozvtx);
     std::pair<int,float> testposi = trackisol(trackposi, trackcoll, recozvtx);
   
-    gsf_el_track_isol_abs->Fill(testelec.second);
-    gsf_el_track_isol->Fill(testelec.second/sc_el.et());
-    gsf_po_track_isol_abs->Fill(testposi.second);
-    gsf_po_track_isol->Fill(testposi.second/sc_po.et());
-    gsf_el_numbertrackisol->Fill(testelec.first);
-    gsf_po_numbertrackisol->Fill(testposi.first);
+    gsf_el_track_isol_abs->Fill(testelec.second ,gsf_weight);
+    gsf_el_track_isol->Fill(testelec.second/sc_el.et() ,gsf_weight);
+    gsf_po_track_isol_abs->Fill(testposi.second ,gsf_weight);
+    gsf_po_track_isol->Fill(testposi.second/sc_po.et() ,gsf_weight);
+    gsf_el_numbertrackisol->Fill(testelec.first ,gsf_weight);
+    gsf_po_numbertrackisol->Fill(testposi.first ,gsf_weight);
 
     if(debug) {
       LogDebug("Zprime2eeAna")<<" gsf_el_track_isol_abs = "<<testelec.second;
@@ -784,10 +790,10 @@ void PixelMatchAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup
     double elec_hcalisol = hcaletisol(scluselec,towerCollection);
     double posi_hcalisol = hcaletisol(sclusposi,towerCollection);
 
-    gsf_el_hcal_isol_abs->Fill(elec_hcalisol);
-    gsf_el_hcal_isol->Fill(elec_hcalisol/sc_el.et());
-    gsf_po_hcal_isol_abs->Fill(posi_hcalisol);
-    gsf_po_hcal_isol->Fill(posi_hcalisol/sc_po.et());
+    gsf_el_hcal_isol_abs->Fill(elec_hcalisol ,gsf_weight);
+    gsf_el_hcal_isol->Fill(elec_hcalisol/sc_el.et() ,gsf_weight);
+    gsf_po_hcal_isol_abs->Fill(posi_hcalisol ,gsf_weight);
+    gsf_po_hcal_isol->Fill(posi_hcalisol/sc_po.et() ,gsf_weight);
 
     if(debug) {
       LogDebug("Zprime2eeAna")<<" gsf_el_hcal_isol_abs = "<<elec_hcalisol;
@@ -800,10 +806,10 @@ void PixelMatchAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup
     double elec_ecalisol = ecaletisol(iEvent,scluselec);
     double posi_ecalisol = ecaletisol(iEvent,sclusposi);
 
-    gsf_el_ecal_isol_abs->Fill(elec_ecalisol);
-    gsf_el_ecal_isol->Fill(elec_ecalisol/sc_el.et());
-    gsf_po_ecal_isol_abs->Fill(posi_ecalisol);
-    gsf_po_ecal_isol->Fill(posi_ecalisol/sc_po.et());
+    gsf_el_ecal_isol_abs->Fill(elec_ecalisol ,gsf_weight);
+    gsf_el_ecal_isol->Fill(elec_ecalisol/sc_el.et() ,gsf_weight);
+    gsf_po_ecal_isol_abs->Fill(posi_ecalisol ,gsf_weight);
+    gsf_po_ecal_isol->Fill(posi_ecalisol/sc_po.et() ,gsf_weight);
  
     if(debug) {
       LogDebug("Zprime2eeAna")<<" gsf_el_ecal_isol_abs = "<< elec_ecalisol;
@@ -829,26 +835,26 @@ void PixelMatchAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup
         //Compute the invariant mass and fill histos AFTER isolation cuts
         float  sc_mass=(sc_po+sc_el).m();
         float  sc_mass_vtxcor=(sc_po_vtxcor+sc_el_vtxcor).m();
-        gsf_Z_iso_m->Fill(sc_mass);
-        gsf_Z_vtxcor_iso_m->Fill(sc_mass_vtxcor);
-        gsf_Z_iso_e->Fill((sc_po_vtxcor+sc_el_vtxcor).e());
-        gsf_Z_iso_pt->Fill((sc_po_vtxcor+sc_el_vtxcor).et());
-        gsf_Z_iso_eta->Fill((sc_po_vtxcor+sc_el_vtxcor).eta());
-        gsf_Z_iso_phi->Fill((sc_po_vtxcor+sc_el_vtxcor).phi());
+        gsf_Z_iso_m->Fill(sc_mass ,gsf_weight);
+        gsf_Z_vtxcor_iso_m->Fill(sc_mass_vtxcor ,gsf_weight);
+        gsf_Z_iso_e->Fill((sc_po_vtxcor+sc_el_vtxcor).e() ,gsf_weight);
+        gsf_Z_iso_pt->Fill((sc_po_vtxcor+sc_el_vtxcor).et() ,gsf_weight);
+        gsf_Z_iso_eta->Fill((sc_po_vtxcor+sc_el_vtxcor).eta() ,gsf_weight);
+        gsf_Z_iso_phi->Fill((sc_po_vtxcor+sc_el_vtxcor).phi() ,gsf_weight);
 
-        gsf_el_iso_pt->Fill(sc_el.et());
-        gsf_po_iso_pt->Fill(sc_po.et());
-        gsf_el_iso_eta->Fill(sc_el.eta());
-        gsf_po_iso_eta->Fill(sc_po.eta());
+        gsf_el_iso_pt->Fill(sc_el.et() ,gsf_weight);
+        gsf_po_iso_pt->Fill(sc_po.et() ,gsf_weight);
+        gsf_el_iso_eta->Fill(sc_el.eta() ,gsf_weight);
+        gsf_po_iso_eta->Fill(sc_po.eta() ,gsf_weight);
 
-        gsf_el_vtxcor_iso_pt->Fill(sc_el_vtxcor.et());
-        gsf_po_vtxcor_iso_pt->Fill(sc_po_vtxcor.et());
-        gsf_el_vtxcor_iso_eta->Fill(sc_el_vtxcor.eta());
-        gsf_po_vtxcor_iso_eta->Fill(sc_po_vtxcor.eta());
-        gsf_el_vtxcor_iso_e->Fill(sc_el_vtxcor.e());
-        gsf_po_vtxcor_iso_e->Fill(sc_po_vtxcor.e());
-        gsf_el_vtxcor_iso_phi->Fill(sc_el_vtxcor.phi());
-        gsf_po_vtxcor_iso_phi->Fill(sc_po_vtxcor.phi());
+        gsf_el_vtxcor_iso_pt->Fill(sc_el_vtxcor.et() ,gsf_weight);
+        gsf_po_vtxcor_iso_pt->Fill(sc_po_vtxcor.et() ,gsf_weight);
+        gsf_el_vtxcor_iso_eta->Fill(sc_el_vtxcor.eta() ,gsf_weight);
+        gsf_po_vtxcor_iso_eta->Fill(sc_po_vtxcor.eta() ,gsf_weight);
+        gsf_el_vtxcor_iso_e->Fill(sc_el_vtxcor.e() ,gsf_weight);
+        gsf_po_vtxcor_iso_e->Fill(sc_po_vtxcor.e() ,gsf_weight);
+        gsf_el_vtxcor_iso_phi->Fill(sc_el_vtxcor.phi() ,gsf_weight);
+        gsf_po_vtxcor_iso_phi->Fill(sc_po_vtxcor.phi() ,gsf_weight);
 	
 	//Fill variables for the tree
 	gsf_Z_iso_m_var = sc_mass;
