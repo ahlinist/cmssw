@@ -97,7 +97,7 @@ bool JPsieeFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  float etapos=0.;
 	  float ptneg=0.;
 	  float ptpos=0.;
-	  for(std::set<GenParticle*>::const_iterator p = outVertex->particles_out_const_begin();
+	  for(std::vector<GenParticle*>::const_iterator p = outVertex->particles_out_const_begin();
 	      p != outVertex->particles_out_const_end(); p++)
 	    {
 	      int event_particle_id =  (*p)->pdg_id() ;
