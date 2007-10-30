@@ -1,41 +1,14 @@
 <?xml version="1.0"?>
 <DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../../DetectorDescription/Schema/DDLSchema.xsd">
 
-<ConstantsSection label="tecbulkhead.xml" eval="true">
+<ConstantsSection label="tecbackplate.xml" eval="true">
   <Constant name="zero"            value="0.0*fm"/>
-  <Constant name="TECtoShort"      value="([Thick]-[tecwheel:DiskT])/(89*mm+54.7*mm)"/>
-  <Constant name="Rin"             value="[tecpetal3:PetalContRmin]"/> <!--  draweings show R in =302*mm-->
+  <Constant name="Rin"             value="[tecpetal3:PetalContRmin]"/> <!--  drawings show Rin =302*mm-->
   <Constant name="Rout"            value="[tec:WheelR]"/>
-  <Constant name="Thick"           value="[tec:ZEnd]-[tec:Wheel8Z]-0.5*[tecwheel:WheelT]"/> <!-- this should be 160*mm but can not because the TEC mothervolume is to short! => TECtoShort - parameter-->
+  <Constant name="Thick"           value="[tecwheel:DiskT] + [ThermalShieldThick]"/>
 
   <Constant name="ThermalShieldRout"   value="1053*mm"/>
-  <Constant name="ThermalShieldThick"   value="54.7*mm*[TECtoShort]"/>
-  
-  <Constant name="BulkheadRout"        value="1053*mm"/>
-  <Constant name="BulkheadThick"       value="89*mm*[TECtoShort]"/>
-
-  <Constant name="PatchpanelRout"     value="[BulkheadRout]"/>
-  <Constant name="PatchpanelRin"      value="645*mm"/>
-  <Constant name="PatchpanelWidth"    value="35*deg"/>
-  <Constant name="PatchpanelThick"    value="[BulkheadThick]"/>
-  <Constant name="PatchpanelPhi"      value="14*deg"/>
-  <Constant name="PpBoxWidth"       value="175*mm"/>
-  <Constant name="PpBoxLengthL"     value="298.19*mm"/>
-  <Constant name="PpBoxLengthS"     value="143.23*mm"/>
-  <Constant name="PpBoxThick"       value="0.5*43.43*mm*[TECtoShort]"/>
-  <Constant name="PpBoxSideX"        value="20.2*mm"/>
-  <Constant name="PpBoxSideY"        value="12.5*mm"/>
-  <Constant name="PpBoxDistX"        value="35*mm"/>
-  <Constant name="PpBoxDistY"        value="14*mm"/>
-  <Constant name="CtrlBoxWidth"     value="75*mm"/>
-  <Constant name="CtrlBoxLength"    value="195*mm"/>
-  <Constant name="CtrlBoxThick"     value="25*mm*[TECtoShort]"/>
-  <Constant name="CtrlBoxDistX"     value="73.35*mm"/>
-  <Constant name="CtrlBoxDistY"     value="12.85*mm"/>
-
-  <Constant name="AlignRingRin"    value="[Rin]"/>
-  <Constant name="AlignRingRout"   value="327*mm"/>
-  <Constant name="AlignRingThick"  value="[BulkheadThick]"/>
+  <Constant name="ThermalShieldThick"  value="49.7*mm"/>
   
   <Constant name="CircPipeRin"    value="[ThermalShieldRout]"/>
   <Constant name="CircPipeRout"   value="[Rout]"/>
@@ -45,42 +18,21 @@
 <SolidSection label="tecbackplate.xml">
   <Tubs name="TECBackPlate"                 rMin="[Rin]" 
          rMax="[Rout]"              dz="0.5*[Thick]" 
-         startPhi="0*deg"           deltaPhi="360*deg"/>
-
- <Tubs name="TECThermalShield"      rMin="[Rin]" 
+         startPhi="0*deg"           deltaPhi="360*deg"/>  
+  <Tubs name="TECThermalShield"      rMin="[Rin]" 
          rMax="[ThermalShieldRout]" dz="0.5*[ThermalShieldThick]" 
          startPhi="0*deg"           deltaPhi="360*deg"/>
- <Tubs name="TECBulkhead"      rMin="[Rin]" 
-         rMax="[BulkheadRout]" dz="0.5*[BulkheadThick]" 
-         startPhi="0*deg"           deltaPhi="360*deg"/>
- 
-  <Tubs name="TECAlignRing"       rMin="[AlignRingRin]" 
-       rMax="[AlignRingRout]"     dz="0.5*[AlignRingThick]" 
-       startPhi="0*deg"        deltaPhi="360*deg"/>
-
- <Tubs name="TECPatchpanel"      rMin="[PatchpanelRin]" 
-         rMax="[PatchpanelRout]" dz="0.5*[PatchpanelThick]" 
-         startPhi="-[PatchpanelWidth]"           deltaPhi="[PatchpanelWidth]"/>
- <Box name="TECPpBoxL" dx="0.5*[PpBoxLengthL]" 
-       dy="0.5*[PpBoxWidth]" dz="0.5*[PpBoxThick]"/>
- <Box name="TECPpBoxS" dx="0.5*[PpBoxLengthS]" 
-       dy="0.5*[PpBoxWidth]" dz="0.5*[PpBoxThick]"/>
- <Box name="TECCtrlBox" dx="0.5*[CtrlBoxLength]" 
-       dy="0.5*[CtrlBoxWidth]" dz="0.5*[CtrlBoxThick]"/>
-
   <Tubs name="TECCircPipe"       rMin="[CircPipeRin]" 
-       rMax="[CircPipeRout]"     dz="0.5*[CircPipeThick]" 
-       startPhi="0*deg"        deltaPhi="360*deg"/>
-
+        rMax="[CircPipeRout]"     dz="0.5*[CircPipeThick]" 
+        startPhi="0*deg"        deltaPhi="360*deg"/>
 </SolidSection>
 
 <LogicalPartSection label="tecbackplate.xml">
-  <LogicalPart name="TECBackPlate" category="unspecified">
+ <LogicalPart name="TECBackPlate" category="unspecified">
      <rSolid name="tecbackplate:TECBackPlate"/>
      <rMaterial name="materials:Air"/>
   </LogicalPart>
-  
- <LogicalPart name="TECBackDisk" category="unspecified">
+<LogicalPart name="TECBackDisk" category="unspecified">
   <rSolid name="tecwheeld:TECWheelDiskD"/>
   <rMaterial name="tecmaterial:TEC_BackDiskCF"/>
  </LogicalPart>
@@ -93,33 +45,6 @@
   <rSolid name="tecbackplate:TECThermalShield"/>
   <rMaterial name="tecmaterial:TEC_ThermalShield"/>
  </LogicalPart>
- <LogicalPart name="TECBulkhead" category="unspecified">
-  <rSolid name="tecbackplate:TECBulkhead"/>
-  <rMaterial name="tecmaterial:TEC_Bulkhead"/>
- </LogicalPart>
-
- <LogicalPart name="TECPatchpanel" category="unspecified">
-  <rSolid name="tecbackplate:TECPatchpanel"/>
-  <rMaterial name="materials:Air"/>
- </LogicalPart>
- <LogicalPart name="TECPpBoxL" category="unspecified">
-  <rSolid name="tecbackplate:TECPpBoxL"/>
-  <rMaterial name="tecmaterial:TEC_PatchpanelBox"/>
- </LogicalPart>
- <LogicalPart name="TECPpBoxS" category="unspecified">
-  <rSolid name="tecbackplate:TECPpBoxS"/>
-  <rMaterial name="tecmaterial:TEC_PatchpanelBox"/>
- </LogicalPart>
- <LogicalPart name="TECCtrlBox" category="unspecified">
-  <rSolid name="tecbackplate:TECCtrlBox"/>
-  <rMaterial name="tecmaterial:TEC_PatchCtrlBox"/>
- </LogicalPart>
-
-  <LogicalPart name="TECAlignRing" category="unspecified">
-    <rSolid name="tecbackplate:TECAlignRing"/>
-    <rMaterial name="tecmaterial:TEC_AlignRing"/>
-  </LogicalPart>  
-
   <LogicalPart name="TECCircPipe" category="unspecified">
     <rSolid name="tecbackplate:TECCircPipe"/>
     <rMaterial name="tecmaterial:TEC_CircPipe"/>
@@ -131,9 +56,8 @@
    <rParent name="tecbackplate:TECBackPlate"/>
    <rChild name="tecbackplate:TECBackDisk"/>
    <Translation x="[zero]" y="[zero]" z="(-0.5*[Thick]+0.5*[tecwheel:DiskT])"/>
- </PosPart>
-  
-<PosPart copyNumber="1">
+ </PosPart> 
+ <PosPart copyNumber="1">
    <rParent name="tecbackplate:TECBackDisk"/>
    <rChild name="tecbackplate:TECBackDiskNomex"/>
  </PosPart>
@@ -145,42 +69,6 @@
    <rParent name="tecbackplate:TECBackPlate"/>
    <rChild name="tecbackplate:TECThermalShield"/>
    <Translation x="[zero]" y="[zero]" z="(-0.5*[Thick]+[tecwheel:DiskT]+0.5*[ThermalShieldThick])"/>
- </PosPart>
- <PosPart copyNumber="1">
-   <rParent name="tecbackplate:TECBackPlate"/>
-   <rChild name="tecbackplate:TECBulkhead"/>
-   <Translation x="[zero]" y="[zero]" z="(0.5*[Thick]-0.5*[BulkheadThick])"/>
- </PosPart>
-
- <PosPart copyNumber="1">
-   <rParent name="tecbackplate:TECBulkhead"/>
-   <rChild name="tecbackplate:TECAlignRing"/>
- </PosPart>
-
- <PosPart copyNumber="1">
-   <rParent name="tecbackplate:TECPatchpanel"/>
-   <rChild name="tecbackplate:TECPpBoxL"/>
-   <Translation x="[PatchpanelRin]+0.5*[PpBoxLengthL]+[PpBoxSideX]" y="-0.5*[PpBoxWidth]-[PpBoxSideY]" z="-0.5*[PatchpanelThick]+0.5*[PpBoxThick]"/>
- </PosPart>
- <PosPart copyNumber="2">
-   <rParent name="tecbackplate:TECPatchpanel"/>
-   <rChild name="tecbackplate:TECPpBoxL"/>
-   <Translation x="[PatchpanelRin]+0.5*[PpBoxLengthL]+[PpBoxSideX]-[PpBoxDistX]" y="-1.5*[PpBoxWidth]-[PpBoxSideY]-[PpBoxDistY]" z="-0.5*[PatchpanelThick]+0.5*[PpBoxThick]"/>
- </PosPart>
- <PosPart copyNumber="1">
-   <rParent name="tecbackplate:TECPatchpanel"/>
-   <rChild name="tecbackplate:TECPpBoxS"/>
-   <Translation x="[PatchpanelRin]+[PpBoxLengthL]-[PpBoxLengthS]+0.5*[PpBoxLengthS]+[PpBoxSideX]" y="-0.5*[PpBoxWidth]-[PpBoxSideY]" z="-0.5*[PatchpanelThick]+1.5*[PpBoxThick]"/>
- </PosPart>
- <PosPart copyNumber="2">
-   <rParent name="tecbackplate:TECPatchpanel"/>
-   <rChild name="tecbackplate:TECPpBoxS"/>
-   <Translation x="[PatchpanelRin]+[PpBoxLengthL]-[PpBoxLengthS]+0.5*[PpBoxLengthS]+[PpBoxSideX]-[PpBoxDistX]" y="-1.5*[PpBoxWidth]-[PpBoxSideY]-[PpBoxDistY]" z="-0.5*[PatchpanelThick]+1.5*[PpBoxThick]"/>
- </PosPart>
- <PosPart copyNumber="1">
-   <rParent name="tecbackplate:TECPatchpanel"/>
-   <rChild name="tecbackplate:TECCtrlBox"/>
-   <Translation x="[PatchpanelRin]+0.5*[CtrlBoxLength]+[PpBoxSideX]+[CtrlBoxDistX]" y="-[PpBoxSideY]-2*[PpBoxWidth]-[PpBoxDistY]-[CtrlBoxDistY]-0.5*[CtrlBoxWidth]" z="-0.5*[PatchpanelThick]+0.5*[CtrlBoxThick]"/>
  </PosPart>
 
  <PosPart copyNumber="1">
@@ -214,32 +102,6 @@
   <Numeric name="Radius"      value="[zero]"/>
   <Vector name="Center" type="numeric" nEntries="3"> 0, 0, 0  </Vector>
 </Algorithm>
-
-<Algorithm name="track:DDTrackerAngular">
-  <rParent name="tecbackplate:TECBulkhead"/>
-  <String  name="ChildName"   value="tecbackplate:TECPatchpanel"/>
-  <Numeric name="N"           value="4" />
-  <Numeric name="StartCopyNo" value="1" />
-  <Numeric name="IncrCopyNo"  value="1" />
-  <Numeric name="RangeAngle"  value="360*deg"/>
-  <Numeric name="StartAngle"  value="-[PatchpanelPhi]"/>
-  <Numeric name="Radius"      value="[zero]"/>
-  <Vector name="Center" type="numeric" nEntries="3">
-    0, 0, 0  </Vector>
-</Algorithm>
-<Algorithm name="track:DDTrackerAngular">
-  <rParent name="tecbackplate:TECBulkhead"/>
-  <String  name="ChildName"   value="tecbackplate:TECPatchpanel"/>
-  <Numeric name="N"           value="4" />
-  <Numeric name="StartCopyNo" value="1" />
-  <Numeric name="IncrCopyNo"  value="1" />
-  <Numeric name="RangeAngle"  value="360*deg"/>
-  <Numeric name="StartAngle"  value="-[PatchpanelPhi]-[PatchpanelWidth]"/>
-  <Numeric name="Radius"      value="[zero]"/>
-  <Vector name="Center" type="numeric" nEntries="3">
-    0, 0, 0  </Vector>
-</Algorithm>
-
 
 </DDDefinition>
 

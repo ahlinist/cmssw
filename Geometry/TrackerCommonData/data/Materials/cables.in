@@ -22,6 +22,11 @@ For items in a compound: Item number, Comment, Material (has to be
 
 =====================================================================
 
+6366,93	9550,39	14,84	126	67,46	7470,03	22,32
+glass fibre	heating foils kapton	heating foils Inconel circuit
+3183,46	238,76	79,59
+
+
 o Optical Fibers
   ---------------
 20070829 rranieri
@@ -360,8 +365,7 @@ Volumes per centimeter.
 
 o Bulkhead cables: Pixel input/output
   ------------------------------------
-MC Volume: tube segments, r = 30-110.5 cm, dz = 7.7 cm, dphi = 2*20 deg
-              ==> 30400 cm^3
+MC Volume: 30308.3 cm^3
 
 (1-2) Cooling pipes: per unit length
         Aluminium x-section (r=0.33-0.3 cm) = 0.0594 cm^2   
@@ -385,7 +389,7 @@ MC Volume: tube segments, r = 30-110.5 cm, dz = 7.7 cm, dphi = 2*20 deg
 
 
 ......................................................................
-# "Bulkhead pixel in/out-put"  "Tk_panels_mid1"   30400.0   3948.
+# "Bulkhead pixel in/out-put"  "Tk_panels_mid1"    30308.3	30308.3
 * 1 "Cooling pipes"           "Steel-008"         14.48   20    COL
 * 2 "Coolant"                 "C6F14"             76.0    20    COL
 * 3 "Copper power cables"       "Copper"          600.0     1   CAB
@@ -397,8 +401,7 @@ MC Volume: tube segments, r = 30-110.5 cm, dz = 7.7 cm, dphi = 2*20 deg
 
 o Bulkhead cables: Pixel cables/connectors
   ----------------------------------------
-MC Volume: tube segments, r = 30-62.5 cm, dz = 7.7 cm, dphi = 2*160 deg
-              ==> 64640 cm^3
+MC Volume: 70285.7 cm3
 
 (1-2) Copper power cables (neglect Al cables to connectors here)
           ==> total x-sect 7.5 cm^2, 
@@ -415,7 +418,7 @@ MC Volume: tube segments, r = 30-62.5 cm, dz = 7.7 cm, dphi = 2*160 deg
         28 stacks of 5 connectors each -> 140
 (7-8) Optoconnectors - as in strip detector
 ......................................................................
-# "Bulkhead pixel connectors"  "Tk_panels_mid2"   64640.0   8395.0
+# "Bulkhead pixel connectors"  "Tk_panels_mid2"  70285.7	70285.7
 * 1 "Copper power cables"       "Copper"         600.0     1   CAB
 * 2 "Power cable insulation"    "Polyethylene"   970.0     1   CAB
 * 3 "Optical Fibers"            "Quartz"        1.27E-4  960   CAB
@@ -460,8 +463,8 @@ needs to be updated!
 
 All cables, fibers and cooling pipes of all subdetectors...
  
-MC Volume: r = 110.5-123.30 cm, dz = 9 cm
-          ==> take cross-section here = 9401 cm^2
+MC Volume: r = 110.5-123.30 cm, thick/2 = 4.755 cm
+          ==> take cross-section here = 933.72 cm^2
 
                  TIB          TID     TOB     TEC  
 MS Cables:  
@@ -477,7 +480,7 @@ Cooling pipes: TIB+TID : 56 + 14 Steel pipes
                TEC :     64 SS pipes
 
 ......................................................................
-# "Bulkhead cables outlet"  "Tk_panels_up"         9401.   -1.
+# "Bulkhead cables outlet"  "Tk_panels_up"        933.72   -1.
 * 1 "MS cable Al 36 APVs"       "CAB_Al36"        0.7854  430   CAB
 * 2 "MS cable Al 48 APVs"       "CAB_Al48"        0.7854   68   CAB
 * 3 "MS cable Al 60 APVs"       "CAB_Al60"        0.7854   90   CAB

@@ -6,7 +6,7 @@
  <Constant name="Rin"             value="22.30*cm"/>
  <Constant name="Rout"            value="113.50*cm"/>
  <Constant name="ZStart"          value="124.00*cm"/>
- <Constant name="ZEnd"            value="281.27*cm"/>
+ <Constant name="ZEnd"            value="281.27*cm+0.34*mm"/>
  <Constant name="WheelR"          value="110.30*cm"/>
  <Constant name="OuterSkinRin"    value="113.46*cm"/>
 
@@ -45,6 +45,7 @@
  <Constant name="Wheel6Z"         value="224.75*cm"/>
  <Constant name="Wheel7Z"         value="245.25*cm"/>
  <Constant name="Wheel8Z"         value="266.75*cm"/>
+ <Constant name="BackplateZ"      value="[Wheel8Z]+87.4*mm-0.5*[tecwheel:DiskT]+0.5*[tecbackplate:Thick]"/>
  <Constant name="AxialCableW"     value="2.0*deg"/>
  <Constant name="AxialCableT"     value="0.21*cm"/>
  <Constant name="CableFi1"        value="-11.25*deg"/>
@@ -181,7 +182,8 @@
  <PosPart copyNumber="1">
    <rParent name="tec:TECWheels"/>
    <rChild name="tecbackplate:TECBackPlate"/>
-  <Translation x="[zero]" y="[zero]" z="[TECDz]-0.5*[tecbackplate:Thick]"/>
+  <Translation x="[zero]" y="[zero]" z="[BackplateZ]-[ZPos]"/>
+  <!--Translation x="[zero]" y="[zero]" z="[TECDz]-0.5*[tecbackplate:Thick]"/-->
  </PosPart>
  <PosPart copyNumber="1">
    <rParent name="tec:TECWheels"/>

@@ -754,26 +754,48 @@ This contains anythings that connects the bulkhead to the TEC
 * 5 "CTRL Cables"	    "MS_cntrl_cable"	  0.283	  4320	CAB
 ....................................................................................
 ====================================================================================
-o TEC_Bulkhead
+o TEC_BHDisk
   -----------------------------
 
-MCVolume: 60635.1 cm3 (for all TEC)
+MCVolume: 15917.3 cm3 (for all TEC)
+CF Skin	Nomex	inserts steel	inserts epoxy	grounding cable 50mm	double T Ribs	TM Blue connection cable
+
 
 ....................................................................................
-#   "TEC Bulkhead"              "TEC_Bulkhead"          60635.1         60635.1
-* 1 "Bulkhead"              "Carbon fibre str."         14166.27  1 SUP
-* 2 "Grounding Cable"	    "Copper"	  		67.46	  1 ELE
-* 3 "TM Blue connection cable" "Copper"	     	    22.32    1 CAB
+#   "TEC Bulkhead Disk"              "TEC_BHDisk"          15917.3	15917.3
+* 1 "CF Skins"              "Carbon fibre str."        6366.93  1 SUP
+* 2 "Nomex Core"	    "Nomex" 	  	       9550.39	1 SUP
+* 3 "Inserts (Steel)"	    "Steel-008"		       14.84	1 SUP
+* 4 "Inserts (Epoxy)"	    "Epoxy"		       126.00	1 SUP
+* 5 "Grounding Cable"	    "Copper"		       67.46	1 CAB
+* 6 "Ribs"     		    "Carbon fibre str."	       7470.03	1 SUP
+* 7 "TM Blue cable"	    "Copper"	    	       22.32	1 CAB
+
+....................................................................................
+====================================================================================
+o TEC_BHCovers
+  -----------------------------
+
+MCVolume: 3501.82 cm3 (for one bulkhead)
+
+(3) using Copper for inconel lacking specifications
+
+....................................................................................
+#   "TEC Bulkhead Covers"              "TEC_BHCovers"          3501.82	3501.82
+* 1 "glass Fibre"              "Carbon fibre str."	      3183.46    1 SUP
+* 2 "heating foil (kapton)"    "T_Kapton"	  	      238.76   	 1 SUP
+* 3 "heating foil (inconel)"    "Nickel"		      79.59	 1 SUP
+
 ....................................................................................
 ====================================================================================
 o TEC_PatchpanelBox
   -----------------------------
 
-MCVolume: 12569.8 cm3 (for all TEC)
+MCVolume: 26839.2 cm3 (for all TEC)
 
   total MC weight: 12.5698 kg
 ....................................................................................
-#   "TEC_PatchpanelBox"         "TEC_PatchpanelBox"             12569.8         12569.8
+#   "TEC_PatchpanelBox"         "TEC_PatchpanelBox"             26839.2	26839.2
 * 1 "bolts+nuts+washers"        "Steel-008"          34.17   1    SUP
 * 2 "spacers"			"Aluminium"	    141.19   1    SUP
 * 3 "cable retainers"		"Carbon fibre str." 275.5    1    SUP
@@ -784,10 +806,10 @@ MCVolume: 12569.8 cm3 (for all TEC)
 o TEC_PatchpanelCtrlBox
   -----------------------------
 
-MCVolume: 1369.88 cm3 (for all TEC)
+MCVolume: 2925.01 cm3 (for all TEC)
 
 ....................................................................................
-# "TEC_PatchCtrlBox"             "TEC_PatchCtrlBox"         1369.88     1369.88
+# "TEC_PatchCtrlBox"             "TEC_PatchCtrlBox"         2925.01	2925.01
 * 1 "fibre couplings"            "Aluminium"           135.97  1  SUP
 * 2 "fibres"			 "Fibre_Ribbon"	       399.87  1  CAB
 * 3 "cables"			 "MS_cntrl_cable"      0.283   39 CAB
@@ -797,12 +819,12 @@ MCVolume: 1369.88 cm3 (for all TEC)
 o TEC_AlignRing
   -----------------------------
 
-MCVolume: 1499.09 cm3 (for all TEC)
+MCVolume: 11884.6 cm3 (for all TEC)
 
    TM = Tiltmeter
 
 ....................................................................................
-#   "TEC_AlignRing"             "TEC_AlignRing"         1499.09         1499.09
+#   "TEC_AlignRing"             "TEC_AlignRing"         11884.6         11884.6
 * 1 "Ring itself"              "Carbon fibre str."  3075.54  1 SUP
 * 2 "pillars"		       "Aluminium"   	    126.66   1 SUP
 * 3 "support Clamp"	       "Aluminium"	    12.37    1 SUP

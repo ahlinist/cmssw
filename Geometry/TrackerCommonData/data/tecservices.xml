@@ -18,7 +18,7 @@
    <Constant name="ChannelEndInsertWidth"    value="[ChannelWidth]"/>
    <Constant name="ChannelEndInsertRin"      value="[ChannelRin]"/>
    <Constant name="ChannelEndInsertRout"     value="[ChannelRout]"/>
-   <Constant name="ChannelEndInsertHeight"   value="30*mm"/>
+   <Constant name="ChannelEndInsertHeight"   value="21*mm"/>
    <Constant name="ChannelEndInsertZ"        value="0.5*[ChannelEndInsertHeight]-0.5*[ChannelHeight]"/><!--[tec:Wheel0Z]-[tec:ZPos]-0.5*[tecwheel:DiskT]+0.5*[ChannelHeight]-77.5*mm"/-->
 
 
