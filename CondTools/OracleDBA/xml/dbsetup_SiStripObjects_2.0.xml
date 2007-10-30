@@ -1,6 +1,9 @@
 <?xml version='1.0' encoding="UTF-8"?>
 <!DOCTYPE Database SYSTEM "InMemory">
 <Database connectionString="notmatter" >
+   <HomogeneousContainer name="SiStripFedCablingRcd">
+      <Class name="SiStripFedCabling" mappingVersion="SiStripObjects_2.0"/>
+   </HomogeneousContainer >
    <HomogeneousContainer name="SiStripPedestalsRcd">
       <Class name="SiStripPedestals" mappingVersion="SiStripObjects_2.0"/>
    </HomogeneousContainer >
