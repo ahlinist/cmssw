@@ -453,7 +453,7 @@
   <rRotation name="rotations:000D"/>
   <Translation x="-1.85*cm" y="0*fm" z="-295*mum"/>
  </PosPart>
--->
+
  <PosPart copyNumber="1">
    <rParent name="esalgo:SFBX"/>
    <rChild name="esalgo:SFEX"/>
