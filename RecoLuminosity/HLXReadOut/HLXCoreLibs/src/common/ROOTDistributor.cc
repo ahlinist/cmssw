@@ -1,5 +1,6 @@
 #include "ROOTDistributor.hh"
 #include "ICUtilityToolbox.hh"
+#include <iomanip>
 
 /*
 
@@ -46,7 +47,7 @@ namespace HCAL_HLX {
     delete [] LHC;
 
     delete Threshold;
-    delete LumiSection;
+    //    delete LumiSection;
     delete LumiSectionHist;
     delete L1HLTrigger;
     delete TriggerDeadtime;
@@ -55,16 +56,16 @@ namespace HCAL_HLX {
   bool ROOTDistributor::ProcessSection(const LUMI_SECTION& localSection){
     //cout << "Begin " << __PRETTY_FUNCTION__ << endl;
 
-    unsigned int i, j;
+    int i;
 
     ET_SUM_SECTION    *EtSumPtr[HCAL_HLX_MAX_HLXS];
     OCCUPANCY_SECTION *OccupancyPtr[HCAL_HLX_MAX_HLXS];
     LHC_SECTION       *LHCPtr[HCAL_HLX_MAX_HLXS];
 
     std::ostringstream outputString;
-    outputString << "data/" << mBaseFileName << "_" 
-		 << dec << localSection.hdr.runNumber 
-		 << "_" << localSection.hdr.sectionNumber << ".root";
+    outputString << "data/" << "LS__"
+		 << setfill('0') << setw(6)  << localSection.hdr.runNumber 
+		 << "_" << setfill('0') << setw(6) << localSection.hdr.sectionNumber << ".root";
 
     string fileName = outputString.str();
     cout << "Output file is " << fileName << endl;    
@@ -83,14 +84,13 @@ namespace HCAL_HLX {
     m_tree->Bronch("Summary.",       "HCAL_HLX::LUMI_SUMMARY",        &Summary, sizeof(Summary)/compress);
     m_tree->Bronch("BunchCrossing.", "HCAL_HLX::LUMI_BUNCH_CROSSING", &BX, sizeof(BX)/compress);
     
-    for(int i = 0; i < HCAL_HLX_MAX_HLXS; i++){
+    for(i = 0; i < HCAL_HLX_MAX_HLXS; i++){
       EtSumPtr[i] = &EtSum[i];
-      MBCD(localSection.etSum[i], &EtSumPtr[i], i);
+      MBCD(localSection.etSum[i], &EtSumPtr[i], i, 100);
       OccupancyPtr[i] = &Occupancy[i];
-      MBCD(localSection.occupancy[i], &OccupancyPtr[i], i);
+      MBCD(localSection.occupancy[i], &OccupancyPtr[i], i, 100);
       LHCPtr[i] = &LHC[i];
-      MBCD(localSection.lhc[i], &LHCPtr[i], i);
-      // Yes, that is supposed to be the address of a pointer.  ROOT is strange.
+      MBCD(localSection.lhc[i], &LHCPtr[i], i, 100);
     }
     
     Threshold->Threshold1Set1 = 51;
