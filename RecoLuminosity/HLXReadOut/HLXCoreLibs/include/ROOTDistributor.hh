@@ -17,7 +17,10 @@ email: ahunt@princeton.edu
 #include "ICTypeDefs.hh"
 #include "LumiStructures.hh"
 #include "AbstractDistributor.hh"
+
+#ifndef ROOTDICTCOMPILE
 #include "ROOTMutex.hh"
+#endif
 
 namespace HCAL_HLX {
 
@@ -31,7 +34,8 @@ namespace HCAL_HLX {
     LUMI_SUMMARY *Summary;
     LUMI_BUNCH_CROSSING *BX;
     LUMI_THRESHOLD *Threshold;
-
+    LUMI_SECTION_HEADER *Header;
+    
     ET_SUM_SECTION    *EtSum;
     OCCUPANCY_SECTION *Occupancy;
     LHC_SECTION       *LHC;
@@ -39,6 +43,8 @@ namespace HCAL_HLX {
     LUMI_SECTION_HST *LumiSectionHist;
     LEVEL1_HLT_TRIGGER *L1HLTrigger;
     TRIGGER_DEADTIME *TriggerDeadtime;
+
+    unsigned int compress;
 
     ROOTDistributor(std::string filename = "LumiSchema",
 		    std::string treename = "LumiTree");
@@ -54,7 +60,9 @@ namespace HCAL_HLX {
     // TO DO: make a template for these three functions
 
   private:
+#ifndef ROOTDICTCOMPILE
     ROOTMutex mROOTMutex;
+#endif
     std::string mBaseFileName;
     std::string mBaseTreeName;
 
