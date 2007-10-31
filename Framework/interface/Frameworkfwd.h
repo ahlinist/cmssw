@@ -25,6 +25,7 @@ namespace edm {
   class Event;
   class EventPrincipal;
   class EventSetup;
+  class FileBlock;
   class GeneratedInputSource;
   class Group;
   class InputSource;

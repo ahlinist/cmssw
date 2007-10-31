@@ -45,6 +45,10 @@ namespace edm {
 
     bool wantAllEvents() const;
 
+    void beginInputFile(FileBlock const& fb);
+
+    void endInputFile(FileBlock const& fb);
+
   private:
     virtual bool implDoWork(EventPrincipal& e, EventSetup const& c,
 			    BranchActionType,

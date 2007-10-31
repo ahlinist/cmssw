@@ -34,6 +34,15 @@ namespace edm {
     mod_->maybeOpenFile();
   }
 
+  void
+  OutputWorker::beginInputFile(FileBlock const& fb) {
+    mod_->doBeginInputFile(fb);
+  }
+
+  void
+  OutputWorker::endInputFile(FileBlock const& fb) {
+    mod_->doEndInputFile(fb);
+  }
 
   bool 
   OutputWorker::implDoWork(EventPrincipal& ep, EventSetup const&,

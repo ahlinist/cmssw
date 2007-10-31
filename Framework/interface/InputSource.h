@@ -86,6 +86,9 @@ namespace edm {
     /// Read next run
     boost::shared_ptr<RunPrincipal> readRun();
 
+    /// Read next file
+    boost::shared_ptr<FileBlock> readFile();
+
     /// Skip the number of events specified.
     /// Offset may be negative.
     void skipEvents(int offset);
@@ -155,12 +158,17 @@ namespace edm {
 
     ProductRegistry & productRegistryUpdate() const {return const_cast<ProductRegistry &>(*productRegistry_);}
 
+    bool const& initialized() const {return initialized_;}
+
+    void setInitialized() {initialized_ = true;}
+
   private:
 
     // Indicate inability to get a new event by returning a null
     // auto_ptr.
     virtual std::auto_ptr<EventPrincipal> readEvent_(boost::shared_ptr<LuminosityBlockPrincipal>) = 0;
     virtual std::auto_ptr<EventPrincipal> readIt(EventID const&);
+    virtual boost::shared_ptr<FileBlock> readFile_();
     virtual boost::shared_ptr<RunPrincipal> readRun_() = 0;
     virtual boost::shared_ptr<LuminosityBlockPrincipal> readLuminosityBlock_(boost::shared_ptr<RunPrincipal>) = 0;
     virtual void skip(int);
@@ -185,6 +193,7 @@ namespace edm {
     boost::shared_ptr<ProductRegistry const> productRegistry_;
     bool const primary_;
     Timestamp time_;
+    bool initialized_;
   };
 }
 

@@ -142,6 +142,12 @@ namespace edm {
     // Call openNewFileIfNeeded() on all OutputModules
     void openNewOutputFilesIfNeeded();
 
+    // Call beginInputFile() on all OutputModules
+    void beginInputFile(FileBlock const& fb);
+
+    // Call endInputFile() on all OutputModules
+    void endInputFile(FileBlock const& fb);
+
     std::pair<double,double> timeCpuReal() const {
       return std::pair<double,double>(stopwatch_->cpuTime(),stopwatch_->realTime());
     }

@@ -343,6 +343,16 @@ namespace edm {
     endLuminosityBlock(lbp);
   }
 
+  void OutputModule::doBeginInputFile(FileBlock const& fb)
+  {
+    beginInputFile(fb);
+  }
+
+  void OutputModule::doEndInputFile(FileBlock const& fb)
+  {
+    endInputFile(fb);
+  }
+
   void OutputModule::maybeEndFile()
   {
     if (isFileOpen() && isFileFull()) reallyEndFile();

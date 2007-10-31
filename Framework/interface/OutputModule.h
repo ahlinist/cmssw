@@ -49,6 +49,8 @@ namespace edm {
 		    CurrentProcessingContext const* c);
     void doEndLuminosityBlock(LuminosityBlockPrincipal const& e, ModuleDescription const& d,
 		    CurrentProcessingContext const* c);
+    void doBeginInputFile(FileBlock const& fb);
+    void doEndInputFile(FileBlock const& fb);
     /// Tell the OutputModule this is a convenient time to end the
     /// current file, in case it wants to do so.
     void maybeEndFile();
@@ -168,6 +170,8 @@ namespace edm {
     virtual void endRun(RunPrincipal const& r) = 0;
     virtual void beginLuminosityBlock(LuminosityBlockPrincipal const& lb){}
     virtual void endLuminosityBlock(LuminosityBlockPrincipal const& lb) = 0;
+    virtual void beginInputFile(FileBlock const& fb) {}
+    virtual void endInputFile(FileBlock const& fb) {}
 
     virtual bool isFileOpen() const { return true; }
     virtual bool isFileFull() const { return false; }
