@@ -4,11 +4,11 @@ setenv SCRAM_ARCH slc4_ia32_gcc345
 source /uscmst1/prod/sw/cms/cshrc cmslpc
 setenv PATH /usr/bin:$PATH
 
-cd /uscms/home/yarba_j/work/SL4/CMSSW_1_7_0_pre6/src
+cd /uscms/home/yarba_j/work/SL4/CMSSW_1_7_0_pre8/src
 eval `scramv1 runtime -csh`
 
-if ( ! -e /uscms_scratch/3DayLifetime/yarba_j/170pre6 ) mkdir /uscms_scratch/3DayLifetime/yarba_j/170pre6
-cd /uscms_scratch/3DayLifetime/yarba_j/170pre6
+if ( ! -e /uscmst1b_scratch/lpc1/3DayLifetime/yarba_j/170pre8 ) mkdir /uscmst1b_scratch/lpc1/3DayLifetime/yarba_j/170pre6
+cd /uscmst1b_scratch/lpc1/3DayLifetime/yarba_j/170pre6
 
 set rndm_source=135799753
 set rndm_VtxSmeared=123456789
@@ -33,13 +33,15 @@ process Sim = {
    {
       untracked vstring destinations = {"cout"}
 
-      untracked vstring categories = { "FwkJob", "SimG4CoreApplication" }
+      untracked vstring categories = { "FwkJob", "SimG4CoreApplication", "G4cout", "G4cerr" }
 
       untracked PSet cout = 
       {
          untracked PSet default = { untracked int32 limit = 0 }  # kill all messages in the log
 	 untracked PSet FwkJob  = { untracked int32 limit = -1 } # but FwkJob category - those unlimitted
-	 untracked PSet SimG4CoreApplication = { untracked int32 limit = -1 } 
+	 untracked PSet SimG4CoreApplication = { untracked int32 limit = -1 }
+	 untracked PSet G4cout = {  untracked int32 limit = -1 }
+	 untracked PSet G4cerr = {  untracked int32 limit = -1 }	 
       }
 
       # uncomment if you want it...
@@ -136,6 +138,7 @@ process Sim = {
    #   
    path p1 = { VtxSmeared, g4SimHits, rndmStore }
    endpath outpath = { GEN-SIM }
+   schedule = { p1, outpath }
 
 }
 
