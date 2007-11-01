@@ -237,7 +237,7 @@
     </MaterialFraction>
   </CompositeMaterial>
 
-    <CompositeMaterial density="0.0371000*g/cm3" method="mixture by weight" name="Tk_panels_mid1" symbol=" ">
+  <CompositeMaterial density="0.370000*g/cm3" method="mixture by weight" name="Tk_panels_mid1" symbol=" ">
       <MaterialFraction fraction="0.085670">
         <rMaterial name="materials:Steel-008"/>
       </MaterialFraction>
@@ -254,7 +254,7 @@
         <rMaterial name="materials:Quartz"/>
       </MaterialFraction>
     </CompositeMaterial>
-    <CompositeMaterial density="0.0179000*g/cm3" method="mixture by weight" name="Tk_panels_mid2" symbol=" ">
+    <CompositeMaterial density="0.178000*g/cm3" method="mixture by weight" name="Tk_panels_mid2" symbol=" ">
       <MaterialFraction fraction="0.197860">
         <rMaterial name="materials:Copper"/>
       </MaterialFraction>
@@ -268,8 +268,7 @@
         <rMaterial name="materials:T_Kapton"/>
       </MaterialFraction>
     </CompositeMaterial>
-
-    <CompositeMaterial density="0.2299*g/cm3" method="mixture by weight" name="Tk_panels_up" symbol=" ">
+    <CompositeMaterial density="0.221000*g/cm3" method="mixture by weight" name="Tk_panels_up" symbol=" ">
       <MaterialFraction fraction="0.281640">
         <rMaterial name="trackermaterial:CAB_Al36"/>
       </MaterialFraction>

@@ -389,7 +389,7 @@ MC Volume: 30308.3 cm^3
 
 
 ......................................................................
-# "Bulkhead pixel in/out-put"  "Tk_panels_mid1"    30308.3	30308.3
+# "Bulkhead pixel in/out-put"  "Tk_panels_mid1"    30380.980   -1
 * 1 "Cooling pipes"           "Steel-008"         14.48   20    COL
 * 2 "Coolant"                 "C6F14"             76.0    20    COL
 * 3 "Copper power cables"       "Copper"          600.0     1   CAB
@@ -418,7 +418,7 @@ MC Volume: 70285.7 cm3
         28 stacks of 5 connectors each -> 140
 (7-8) Optoconnectors - as in strip detector
 ......................................................................
-# "Bulkhead pixel connectors"  "Tk_panels_mid2"  70285.7	70285.7
+# "Bulkhead pixel connectors"  "Tk_panels_mid2"  70513.251 -1
 * 1 "Copper power cables"       "Copper"         600.0     1   CAB
 * 2 "Power cable insulation"    "Polyethylene"   970.0     1   CAB
 * 3 "Optical Fibers"            "Quartz"        1.27E-4  960   CAB
@@ -480,7 +480,7 @@ Cooling pipes: TIB+TID : 56 + 14 Steel pipes
                TEC :     64 SS pipes
 
 ......................................................................
-# "Bulkhead cables outlet"  "Tk_panels_up"        933.72   -1.
+# "Bulkhead cables outlet"  "Tk_panels_up"        10280.226   -1.
 * 1 "MS cable Al 36 APVs"       "CAB_Al36"        0.7854  430   CAB
 * 2 "MS cable Al 48 APVs"       "CAB_Al48"        0.7854   68   CAB
 * 3 "MS cable Al 60 APVs"       "CAB_Al60"        0.7854   90   CAB
