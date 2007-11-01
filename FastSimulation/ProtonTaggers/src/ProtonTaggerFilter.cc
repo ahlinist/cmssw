@@ -1,14 +1,14 @@
 /**
  * file ProtonTaggerFilter.cc
  *
- * Selection of two most forward going protons, 
- * one in clockwise and one in anti-clockwise beam direction.
+ * Selection of very forward protons, generated and from pileup,
+ * in clockwise and anti-clockwise beam directions.
  * Access to near-beam detector acceptances.
  *
  * Author: Dmitry Zaborov
  */
 
-// Version: $Id: ProtonTaggerFilter.cc,v 1.3 2007/09/28 12:30:47 dzaborov Exp $
+// Version: $Id: ProtonTaggerFilter.cc,v 1.4 2007/10/28 16:37:55 dzaborov Exp $
 
 #include "FastSimulation/ProtonTaggers/interface/ProtonTaggerFilter.h"
 
@@ -31,6 +31,7 @@
 #include "TFile.h"
 
 #include <iostream>
+#include <list>
 
 
 /** read (and verify) parameters */
@@ -147,54 +148,84 @@ bool ProtonTaggerFilter::filter(edm::Event & iEvent, const edm::EventSetup & es)
   iEvent.getByLabel("source",evtSource);
   const HepMC::GenEvent* genEvent = evtSource->GetEvent();
 
-  // ... initialize some variables
+  //std::cout << "event contains " << genEvent->particles_size() << " particles " << std::endl;
+  if (genEvent->particles_empty()) {
+    std::cout << "empty source event" << std::endl;
+    return false;
+  }
+
+  // ... get pileup event
+
+  edm::Handle<edm::HepMCProduct> pileUpSource;
+  const HepMC::GenEvent* pileUpEvent = 0;
+  bool isPileUp = true;
+  
+  try { 
+    iEvent.getByLabel("famosPileUp","PileUpEvents", pileUpSource);
+    pileUpEvent = pileUpSource->GetEvent();
+    //std::cout << "got pileup" << std::endl;
+  } catch ( cms::Exception& e ) { 
+    isPileUp = false;
+    //std::cout << "no pileup in the event" << std::endl;
+  }
+
+  //if (isPileUp) std::cout << "event contains " << pileUpEvent->particles_size() << " pileup particles " << std::endl;  
+
+  // ... some constants
 
   const double mp = 0.938272029; // just a proton mass
-  const double Ebeam=7000.0;     // beam energy - would be better to read from parameters
- 
-  double pz1 = 0.0;
-  double pz2 = 0.0;
-  double pt1  = -10.0;
-  double pt2  = -10.0;
-  double phi1 = 0;
-  double phi2 = 0;
+  const double Ebeam = 7000.0;   // beam energy - would be better to read from parameters
+  const float  pzCut = 2500;     // ignore particles with less than |Pz| < pzCut  
+  const float  acceptThreshold = 0.5; // proton will be "accepted" if the value of acceptance is above this threshold
 
   // ... loop over particles, find the most energetic proton in either direction
+
+  std::list<HepMC::GenParticle*> veryForwardParicles;
   
   for ( HepMC::GenEvent::particle_const_iterator piter = genEvent->particles_begin();
-	    piter != genEvent->particles_end();
-	    ++piter )
+          piter != genEvent->particles_end();
+          ++piter )
   {
+    
     HepMC::GenParticle* p = *piter;
 
-    if (p->pdg_id() == 2212) { // proton id
-      
-      //std::cout << " pdg_id: "  << p->pdg_id() << " eta: " << p->momentum().eta() << " e: " 
-      //          <<  p->momentum().e() << " pz: " << p->momentum().pz() << std::endl;
-
-      float pz = p->momentum().pz();
-
-      if ((pz > pz1) && (pz < Ebeam) && (beam1mode != 0)) {
-          pz1 = pz;
-	  pt1 = p->momentum().perp();
-          phi1= p->momentum().phi();
-      }
-
-      if ((pz < pz2) && (pz > -Ebeam) && (beam2mode != 0)) {
-          pz2 = pz;
-	  pt2 = p->momentum().perp();
-          phi2= p->momentum().phi();
-      }
-      
-      //std::cout << "pz1 " << pz1 << " pz2: "  << pz2 << " pz: " << pz << std::endl;
+    float pz = p->momentum().pz();
+    if (((pz > pzCut) || (pz < -pzCut)) && ((p->status() == 0) || (p->status() == 1))) {
+      veryForwardParicles.push_back(p);
+      //std::cout << "pdgid: " << p->pdg_id() << " status: " << p->status() << std::endl;
     }
   }
 
+  //std::cout << "# generated forward particles  : " << veryForwardParicles.size() << std::endl;
+
+  if ( isPileUp ) {
+
+    //std::cout << "Adding pileup " << std::endl;
+
+    for ( HepMC::GenEvent::particle_const_iterator piter = pileUpEvent->particles_begin();
+  	    piter != pileUpEvent->particles_end();
+  	    ++piter )
+    {
+      
+      HepMC::GenParticle* p = *piter;
+
+      float pz = p->momentum().pz();
+      if (((pz > pzCut) || (pz < -pzCut)) && ((p->status() == 0) || (p->status() == 1))) {
+        veryForwardParicles.push_back(p);
+        //std::cout << "pdgid: " << p->pdg_id() << " status: " << p->status() << std::endl;
+      }
+    }
+  }
+
+  //std::cout << "# forward particles to be tried: " << veryForwardParicles.size() << std::endl;
+
+
   // ... return false if no forward protons found
 
-  if ((pt1<0) && (pt2<0)) return false;
-  
-  // ... first set all acceptances to zero
+  if (veryForwardParicles.empty()) return false;
+
+
+  // ... set all acceptances to zero
 
   float acc420b1, acc220b1, acc420and220b1, acc420or220b1; // beam 1 (clockwise)
   float acc420b2, acc220b2, acc420and220b2, acc420or220b2; // beam 2 (anti-clockwise)
@@ -202,82 +233,118 @@ bool ProtonTaggerFilter::filter(edm::Event & iEvent, const edm::EventSetup & es)
   acc420b1 = acc220b1 = acc420and220b1 = acc420or220b1 = 0;
   acc420b2 = acc220b2 = acc420and220b2 = acc420or220b2 = 0;
 
-  // ... then compute acceptance for any sensible proton 1
+  int nP1at220m = 0;
+  int nP1at420m = 0;
 
-  if (pt1>0) {
+  int nP2at220m = 0;
+  int nP2at420m = 0;
 
+  // ... loop over (pre-selected) forward particles
+  
+  for (std::list<HepMC::GenParticle*>::const_iterator part = veryForwardParicles.begin();
+       part != veryForwardParicles.end();
+       part++)
+  {
+
+    HepMC::GenParticle* p = *part;
+
+    float pz  = p->momentum().pz();
+    float pt  = p->momentum().perp();
+    float phi = p->momentum().phi();;
+
+    if ((pz > Ebeam) || (pz < -Ebeam)) continue;
+    
     // ... compute kinimatical variable
 
-    double xi  = 1.0 - pz1/Ebeam;		    // fractional momentum loss
-    double t   = (-pt1*pt1 - mp*mp*xi*xi) / (1-xi); // "t"
-    double phi = phi1;
-    
-    if (xi<0.0) xi=-10.0;
-    if (xi>1.0) xi=10.0;
-    
-    // ... get acceptance from tables
+    float xi  = 1.0;	// fractional momentum loss
+    if (pz>0) xi -= pz/Ebeam;
+    else xi += pz/Ebeam;
 
-    //std::cout << "pz1: " << pz1 << " pt1: " <<  pt1 << " xi: " << xi
+    double t   = (-pt*pt - mp*mp*xi*xi) / (1-xi); // "t"
+
+    //std::cout << " pdg_id: "  << p->pdg_id() << " eta: " << p->momentum().eta() << " e: " 
+    //          <<  p->momentum().e() << std::endl;
+    //std::cout << "pz: " << pz << " pt: " <<  pt << " xi: " << xi
     //          << " t: " << t << " phi: " << phi << std::endl;
 
-    acc420b1       = helper420beam1.GetAcceptance(t, xi, phi);
-    acc220b1       = helper220beam1.GetAcceptance(t, xi, phi);
-    acc420and220b1 = helper420a220beam1.GetAcceptance(t, xi, phi);
-
-    acc420or220b1  = acc420b1 + acc220b1 - acc420and220b1;
-
-    //std::cout << "+acc420b1: " << acc420b1 << " acc220b1: " << acc220b1 << " acc420and220b1: " << acc420and220b1 << " acc420or220b1: " << acc420or220b1  << std::endl;
-  }
-
-  // ... the same for proton 2
-
-  if (pt2>0) {
-  
-    double xi  = 1.0 + pz2/Ebeam;		  // fractional momentum loss
-    double t   = (-pt2*pt2-mp*mp*xi*xi) / (1-xi); // "t"
-    double phi = phi2;
-    
     if (xi<0.0) xi=-10.0;
     if (xi>1.0) xi=10.0;
 
-    //std::cout << "-pz2: " << pz2 << " pt2: " <<  pt2 << " xi: " << xi
-    //          << " t: " << t << " phi: " << phi << std::endl;
+    //float rnd1 = RandGauss::shoot(0.,1.);
+    //float rnd2 = RandGauss::shoot(0.,1.);
 
-    acc420b2       = helper420beam2.GetAcceptance(t, xi, phi);
-    acc220b2       = helper220beam2.GetAcceptance(t, xi, phi);
-    acc420and220b2 = helper420a220beam2.GetAcceptance(t, xi, phi);
+    // ... get acceptance from tables: beam 1 (if it is not ignored)
+
+    if ((pz > 0) && (beam1mode != 0)) {    
+
+      acc420b1       = helper420beam1.GetAcceptance(t, xi, phi);
+      acc220b1       = helper220beam1.GetAcceptance(t, xi, phi);
+      acc420and220b1 = helper420a220beam1.GetAcceptance(t, xi, phi);
+
+      acc420or220b1  = acc420b1 + acc220b1 - acc420and220b1;
+
+      //std::cout << "+acc420b1: " << acc420b1 << " acc220b1: " << acc220b1 << " acc420and220b1: " << acc420and220b1 << " acc420or220b1: " << acc420or220b1  << std::endl;
+
+      bool res420and220 = (acc420and220b1 > acceptThreshold);
+      bool res420       = (acc420b1       > acceptThreshold);
+      bool res220       = (acc220b1       > acceptThreshold);
+
+      if (res420and220) {nP1at220m++; nP1at420m++;}
+      else if (res420) nP1at420m++;
+      else if (res220) nP1at220m++;
+  
+      if ((p->pdg_id() != 2212) && (res220 || res420 || res420and220)) {
+        std::cout << " !!! P got proton 1 at 420 m: pz = " << pz << std::endl;
+        if (res220) std::cout << "got a particle with pid" << p->pdg_id() << " at 220 m along beam 1, pz = " << pz << std::endl;
+        if (res420) std::cout << "got a particle with pid" << p->pdg_id() << " at 420 m along beam 1, pz = " << pz << std::endl;
+        if (res420and220) std::cout << "got a particle with pid" << p->pdg_id() << " at 220 m & 420 m  along beam 1, pz = " << pz << std::endl;
+      }
+    }
     
-    acc420or220b2  = acc420b2 + acc220b2 - acc420and220b2;
+    // ... the same for beam 2
 
-    //std::cout << "+acc420b2: " << acc420b2 << " acc220b2: " << acc220b2 << " acc420and220b2: " << acc420and220b2 << " acc420or220b2: " << acc420or220b2 << std::endl;
+    if ((pz < 0) && (beam2mode != 0)) {
+
+      acc420b2       = helper420beam2.GetAcceptance(t, xi, phi);
+      acc220b2       = helper220beam2.GetAcceptance(t, xi, phi);
+      acc420and220b2 = helper420a220beam2.GetAcceptance(t, xi, phi);
+    
+      acc420or220b2  = acc420b2 + acc220b2 - acc420and220b2;
+
+      //std::cout << "+acc420b2: " << acc420b2 << " acc220b2: " << acc220b2 << " acc420and220b2: " << acc420and220b2 << " acc420or220b2: " << acc420or220b2 << std::endl;
+
+      bool res420and220 = (acc420and220b2 > acceptThreshold);
+      bool res420       = (acc420b2       > acceptThreshold);
+      bool res220       = (acc220b2       > acceptThreshold);
+
+      if (res420and220) {nP2at220m++; nP2at420m++;}
+      else if (res420) nP2at420m++;
+      else if (res220) nP2at220m++;
+  
+      if ((p->pdg_id() != 2212) && (res220 || res420 || res420and220)) {
+        std::cout << " !!! P got proton 1 at 420 m: pz = " << pz << std::endl;
+        if (res220) std::cout << "got a particle with pid" << p->pdg_id() << " at 220 m along beam 2, pz = " << pz << std::endl;
+        if (res420) std::cout << "got a particle with pid" << p->pdg_id() << " at 420 m along beam 2, pz = " << pz << std::endl;
+        if (res420and220) std::cout << "got a particle with pid" << p->pdg_id() << " at 220 m & 420 m along beam 2, pz = " << pz << std::endl;
+      }
+    }
   }
+
+  // ... boolean result for each detector
   
-  // ... make a decision
-  
-  //float rnd1 = RandGauss::shoot(0.,1.);
-  //float rnd2 = RandGauss::shoot(0.,1.);
+  bool p1at220m = (nP1at220m>0) ? true : false;
+  bool p1at420m = (nP1at420m>0) ? true : false;
+  bool p2at220m = (nP2at220m>0) ? true : false;
+  bool p2at420m = (nP2at420m>0) ? true : false;
 
-  const float acceptThreshold = 0.5;
-  
-  bool p1at220m = false;
-  bool p1at420m = false;
+  if ((nP1at220m > 1) && (beam1mode!=1)) std::cout << " !!! " << nP1at220m << " proton(s) from beam 1 at 220 m" << std::endl;
+  if ((nP1at420m > 1) && (beam1mode!=2)) std::cout << " !!! " << nP1at420m << " proton(s) from beam 1 at 420 m" << std::endl;
+  if ((nP2at220m > 1) && (beam2mode!=1)) std::cout << " !!! " << nP2at220m << " proton(s) from beam 2 at 220 m" << std::endl;
+  if ((nP2at420m > 1) && (beam2mode!=2)) std::cout << " !!! " << nP2at420m << " proton(s) from beam 2 at 420 m" << std::endl;
 
-  bool p2at220m = false;
-  bool p2at420m = false;
 
-  if (acc420and220b1 > acceptThreshold) p1at220m = p1at420m = true;
-  if (acc420b1       > acceptThreshold) p1at420m = true;
-  if (acc220b1       > acceptThreshold) p1at220m = true;
-  
-  if (acc420and220b2 > acceptThreshold) p2at220m = p2at420m = true;
-  if (acc420b2       > acceptThreshold) p2at420m = true;
-  if (acc220b2       > acceptThreshold) p2at220m = true;
-
-  //if (p1at220m) std::cout << "got proton 1 at 220 m" << std::endl;
-  //if (p1at420m) std::cout << "got proton 1 at 420 m" << std::endl;
-  //if (p2at220m) std::cout << "got proton 2 at 220 m" << std::endl;
-  //if (p2at420m) std::cout << "got proton 2 at 420 m" << std::endl;
-
+  // ... make a decision based on requested filter configuration
+    
   bool p1accepted = false;
   bool p2accepted = false;
   
