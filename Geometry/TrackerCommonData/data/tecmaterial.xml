@@ -816,18 +816,21 @@
         <rMaterial name="materials:Nickel"/>
       </MaterialFraction>
     </CompositeMaterial>
-    <CompositeMaterial density="0.596000*g/cm3" method="mixture by weight" name="TEC_PatchpanelBox" symbol=" ">
-      <MaterialFraction fraction="0.004730">
+    <CompositeMaterial density="2.619000*g/cm3" method="mixture by weight" name="TEC_PatchpanelBox" symbol=" ">
+      <MaterialFraction fraction="0.001140">
         <rMaterial name="materials:Steel-008"/>
       </MaterialFraction>
-      <MaterialFraction fraction="0.669990">
+      <MaterialFraction fraction="0.161110">
         <rMaterial name="materials:Aluminium"/>
       </MaterialFraction>
-      <MaterialFraction fraction="0.038150">
+      <MaterialFraction fraction="0.009170">
         <rMaterial name="materials:Carbon fibre str."/>
       </MaterialFraction>
-      <MaterialFraction fraction="0.287130">
+      <MaterialFraction fraction="0.069040">
         <rMaterial name="trackermaterial:CAB_Al36"/>
+      </MaterialFraction>
+      <MaterialFraction fraction="0.759540">
+        <rMaterial name="materials:MS_Cu60"/>
       </MaterialFraction>
     </CompositeMaterial>
     <CompositeMaterial density="1.382000*g/cm3" method="mixture by weight" name="TEC_PatchCtrlBox" symbol=" ">

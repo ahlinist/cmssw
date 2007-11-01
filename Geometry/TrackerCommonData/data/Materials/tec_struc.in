@@ -792,8 +792,8 @@ o TEC_PatchpanelBox
   -----------------------------
 
 MCVolume: 26839.2 cm3 (for all TEC)
+(6) is unconfirmed due to lacking information it is taken from old cables.in
 
-  total MC weight: 12.5698 kg
 ....................................................................................
 #   "TEC_PatchpanelBox"         "TEC_PatchpanelBox"             26839.2	26839.2
 * 1 "bolts+nuts+washers"        "Steel-008"          34.17   1    SUP
@@ -801,6 +801,7 @@ MCVolume: 26839.2 cm3 (for all TEC)
 * 3 "cable retainers"		"Carbon fibre str." 275.5    1    SUP
 * 4 "cables"			"CAB_Al36"    	      0.7854 2640 CAB
 * 5 "plugs"			"Aluminium"	    4697.07  1	  CAB
+* 6 "MS cable Cu 60 APVs"       "MS_Cu60"         59.4    384   CAB
 ....................................................................................
 ====================================================================================
 o TEC_PatchpanelCtrlBox
