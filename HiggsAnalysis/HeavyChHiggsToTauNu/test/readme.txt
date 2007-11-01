@@ -1,12 +1,21 @@
-10.10.2007	CMSSW_1_6_5	jet calibration data needed:
+10.10.2007/S.Lehti CMSSW_1_6_5	jet calibration data needed:
 				cvs co -r jet_corrections_16X JetMETCorrections/MCJet/data
 
-29.10.2007      CMSSW_1_6_7	Old SimpleTree version tagged with name "SimpleTree". 
+29.10.2007/S.Lehti CMSSW_1_6_7	Old SimpleTree version tagged with name "SimpleTree". 
 				Contains the analysis, event filter, and storing 
 				data using a simple root tree.
-29.10.2007	CMSSW_1_6_7	Analysis changed to pTDR ORCA style using MyEvent 
+
+29.10.2007/S.Lehti CMSSW_1_6_7	Analysis changed to pTDR ORCA style using MyEvent 
 				class for storing information in the root files. 
 				In cvs head.
+
+1.11.2007/S.Lehti  CMSSW_1_6_7	PFlow tags needed, co version V02-06-00, and compile.
+				List of all cvs tags to be checked out:
+				cvs co -r jet_corrections_16X JetMETCorrections/MCJet/data
+				cvs co -r V02-06-00 DataFormats/ParticleFlowReco
+				cvs co -r V02-06-00 DataFormats/ParticleFlowCandidate
+				cvs co -r V02-06-00 RecoParticleFlow
+
 
 	How to compile:
 	- First make event dictionaries for the MyEvent class
