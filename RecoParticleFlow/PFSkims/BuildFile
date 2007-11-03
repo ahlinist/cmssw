@@ -12,5 +12,5 @@
 <use name=DQMServices/CoreROOT>
 <flags EDM_PLUGIN=1>
 <export>
-lib name=RecoParticleFlowPFSkims>
+<lib name=RecoParticleFlowPFSkims>
 </export>
