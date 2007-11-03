@@ -143,7 +143,7 @@ namespace edm {
     void openNewOutputFilesIfNeeded();
 
     // Call beginInputFile() on all OutputModules
-    void beginInputFile(FileBlock const& fb);
+    void beginInputFile(FileBlock & fb);
 
     // Call endInputFile() on all OutputModules
     void endInputFile(FileBlock const& fb);
