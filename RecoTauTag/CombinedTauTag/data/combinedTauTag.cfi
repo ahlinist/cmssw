@@ -22,6 +22,8 @@ module combinedTauTag=CombinedTauTag {
 	double MinimumTransverseMomentumLeadingTrack_case3signalTracks = 6.	
   	int32 MaximumNumberOfTracksIsolationRing = 0
         #---ECAL clus. selection parameters
+	InputTag BarrelBasicClusterSource = islandBasicClusters:islandBarrelBasicClusters
+	InputTag EndcapBasicClusterSource = islandBasicClusters:islandEndcapBasicClusters
 	double ECALclus_min_e = 1.
 	double ECALclusleadtk_conesize = 0.45
 	double matchingECALclustrack_deltaR = 0.015
@@ -43,7 +45,9 @@ module combinedTauTag=CombinedTauTag {
 	bool use_tksEt_o_jetEt_case3signaltks = false			#Ettks/Etjet
 	bool use_signedflightpath_significance_case3signaltks = true
 	#---1 pi-prong/e/mu/discrimination parameters - method by Mangeol Dominique J., 05 (CMS AN-2006/015), slightly modified
-	double calotk_conesize = 0.3
+	InputTag EBRecHitsSource = ecalRecHit:EcalRecHitsEB
+    	InputTag EERecHitsSource = ecalRecHit:EcalRecHitsEE
+    	double calotk_conesize = 0.3
 	#double electron_selection_1stmin_ECALEt_o_leadtkPt = 0.80
  	#double electron_selection_1stmax_ECALEt_o_leadtkPt = 2.00
  	#double electron_selection_1stmax_HCALEt_o_leadtkPt = 0.05
