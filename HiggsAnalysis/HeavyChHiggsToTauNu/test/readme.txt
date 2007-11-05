@@ -16,6 +16,9 @@
 				cvs co -r V02-06-00 DataFormats/ParticleFlowCandidate
 				cvs co -r V02-06-00 RecoParticleFlow
 
+5.11.2007/S.Lehti  CMSSW_1_6_7	Type1MET added in analysis, MET storing changed
+				to contain rawMET and muon correction separately
+
 
 	How to compile:
 	- First make event dictionaries for the MyEvent class
