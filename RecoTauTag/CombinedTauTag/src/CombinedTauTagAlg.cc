@@ -114,7 +114,7 @@ pair<float,CombinedTauTagInfo> CombinedTauTagAlg::tag(const IsolatedTauTagInfoRe
   // *************basic ECAL clus. info filling ***************
   // ************************begin*****************************
   Handle<BasicClusterCollection> theBarrelBCCollection;
-  theEvent.getByLabel("islandBasicClusters","islandBarrelBasicClusters",theBarrelBCCollection);
+  theEvent.getByLabel(BarrelBasicClusterSource_,theBarrelBCCollection);
   for(BasicClusterCollection::const_iterator i_BC=theBarrelBCCollection->begin();i_BC!=theBarrelBCCollection->end();i_BC++) {
     Hep3Vector theBC_Hep3V(0.,0.,0.);
     theBC_Hep3V.setREtaPhi((*i_BC).energy(),(*i_BC).eta(),(*i_BC).phi());
@@ -125,7 +125,7 @@ pair<float,CombinedTauTagInfo> CombinedTauTagAlg::tag(const IsolatedTauTagInfoRe
     ECALclus_withmass0_HepLV.push_back(theBC_HepLV);
   }
   Handle<BasicClusterCollection> theEndcapBCCollection;
-  theEvent.getByLabel("islandBasicClusters","islandEndcapBasicClusters",theEndcapBCCollection);
+  theEvent.getByLabel(EndcapBasicClusterSource_,theEndcapBCCollection);
   for(BasicClusterCollection::const_iterator i_BC=theEndcapBCCollection->begin();i_BC!=theEndcapBCCollection->end();i_BC++) {
     Hep3Vector theBC_Hep3V(0.,0.,0.);
     theBC_Hep3V.setREtaPhi((*i_BC).energy(),(*i_BC).eta(),(*i_BC).phi());
@@ -571,8 +571,8 @@ double CombinedTauTagAlg::ECALcellsEtSum_around_rectk(const IsolatedTauTagInfoRe
       vector<CaloTowerRef> theCaloTowers=theIsolatedTauTagInfoRef->jtaRef()->first.castTo<CaloJetRef>()->getConstituents();
       Handle<EBRecHitCollection> EBRecHits;
       Handle<EERecHitCollection> EERecHits;     
-      theEvent.getByLabel("ecalRecHit","EcalRecHitsEB",EBRecHits );
-      theEvent.getByLabel("ecalRecHit","EcalRecHitsEE",EERecHits );
+      theEvent.getByLabel(EBRecHitsSource_,EBRecHits );
+      theEvent.getByLabel(EERecHitsSource_,EERecHits );
       for(vector<CaloTowerRef>::const_iterator i_Tower=theCaloTowers.begin();i_Tower!=theCaloTowers.end();i_Tower++){
 	size_t numRecHits = (**i_Tower).constituentsSize();
 	for(size_t j=0;j<numRecHits;j++) {

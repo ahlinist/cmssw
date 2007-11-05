@@ -84,6 +84,8 @@ public:
     MinimumTransverseMomentumLeadingTrack_case3signalTracks_  = parameters.getParameter<double>("MinimumTransverseMomentumLeadingTrack_case3signalTracks"); 
     MaximumNumberOfTracksIsolationRing_                       = parameters.getParameter<int>("MaximumNumberOfTracksIsolationRing");
     // ------ ECAL clus. selection
+    BarrelBasicClusterSource_                                 = parameters.getParameter<InputTag>("BarrelBasicClusterSource");
+    EndcapBasicClusterSource_                                 = parameters.getParameter<InputTag>("EndcapBasicClusterSource");
     ECALclusleadtk_conesize_                                  = parameters.getParameter<double>("ECALclusleadtk_conesize");
     ECALclus_min_e_                                           = parameters.getParameter<double>("ECALclus_min_e");
     matchingECALclustrack_deltaR_                             = parameters.getParameter<double>("matchingECALclustrack_deltaR");
@@ -101,6 +103,8 @@ public:
     use_tksEt_o_jetEt_case3signaltks_                         = parameters.getParameter<bool>("use_tksEt_o_jetEt_case3signaltks");
     use_signedflightpath_significance_case3signaltks_         = parameters.getParameter<bool>("use_signedflightpath_significance_case3signaltks");
     // ------ 1 pi-prong/e/mu/discrimination parameters
+    EBRecHitsSource_                                          = parameters.getParameter<InputTag>("EBRecHitsSource");
+    EERecHitsSource_                                          = parameters.getParameter<InputTag>("EERecHitsSource");
     calotk_conesize_                                          = parameters.getParameter<double>("calotk_conesize");
     electron_selection_1stmin_ECALEt_o_leadtkPt_              = parameters.getParameter<double>("electron_selection_1stmin_ECALEt_o_leadtkPt");
     electron_selection_1stmax_ECALEt_o_leadtkPt_              = parameters.getParameter<double>("electron_selection_1stmax_ECALEt_o_leadtkPt");
@@ -185,6 +189,7 @@ public:
   double MinimumTransverseMomentumLeadingTrack_case3signalTracks_;
   int MaximumNumberOfTracksIsolationRing_;
   // ------ ECAL clus. selection parameters:
+  InputTag BarrelBasicClusterSource_,EndcapBasicClusterSource_;
   double ECALclusleadtk_conesize_;
   double ECALclus_min_e_;
   double matchingECALclustrack_deltaR_;
@@ -203,6 +208,7 @@ public:
   bool use_tksEt_o_jetEt_case3signaltks_;
   bool use_signedflightpath_significance_case3signaltks_;
   // ------ 1 pi-prong/e/mu/discrimination
+  InputTag EBRecHitsSource_,EERecHitsSource_; 
   double calotk_conesize_;
   double electron_selection_1stmin_ECALEt_o_leadtkPt_;
   double electron_selection_1stmax_ECALEt_o_leadtkPt_;
