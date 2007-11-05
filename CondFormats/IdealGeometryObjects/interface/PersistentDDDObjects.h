@@ -5,7 +5,57 @@
 #include <string>
 //#include <map>
 #include <vector>
-//#include <iostream>
+#include <iostream>
+
+/** @class PString
+ *
+ *  @author:  Michael Case               Initial Version
+ *  @version: 0.0
+ *  @date:    31 Oct 2007
+ * 
+ *  Description:
+ *  
+ *  Persistency for DDD objects, minimal information needed to make a
+ *  DDD
+ *
+ */
+
+/// A wrapper for a vector<string> that guarantees no repeats.
+/**
+ *  This class also returns the index in the vector so that the 
+ *  caller gets back the existing string or the newly inserted
+ *  index (for this unique string).
+ *
+ *  FIX: Maybe the overloading of the operator() was a bad way to go...
+ **/
+class PStrings {
+ public:
+
+  // prevents duplicate strings
+  int operator() (const std::string& str) {
+    // insert to vector for now.
+    // VERY SLOW string comparison based inserts... could be a trie someday?
+    //    std::cout << "try to insert " << str << std::endl;
+    size_t i = 0;
+    while (  i < pStrings.size() && pStrings[i] != str ) {
+      //      std::cout << pStrings[i] << std::endl;
+      ++i;
+    }
+    if ( i < pStrings.size() && pStrings[i] == str ) {
+      return i;
+    }
+    pStrings.push_back(str);
+    return pStrings.size() - 1;
+/*     std::vector<std::string>::const_iterator it = std::find(pStrings.begin(), pStrings.end()); */
+/*     if ( it == pStrings.end() ) { */
+/*       pStrings.push_back(str); */
+/*       return pStrings.back(); */
+/*     } */
+/*     return *it; */
+  }
+
+  std::vector<std::string> pStrings;
+};
 
 /** @class PSolid
  *
@@ -26,12 +76,12 @@ class PSolid {
 
   PSolid() {  }
   // Coral insisted that no contents be NULL so I put " "(space) in strings.
-  PSolid ( const std::string& name
+  PSolid ( int name
 	   , const std::vector<double> pars
 	   , const int& shapeType
-	   , const std::string& solid1 = " "
-	   , const std::string& solid2 = " "
-	   , const std::string& rotation = " "
+	   , int solid1
+	   , int solid2
+	   , int rotation
 	   , const bool& reflection = false)
     : pName(name), pPars(pars), pShapeType(shapeType)
     , pSolid1(solid1), pSolid2(solid2), pRotation(rotation)
@@ -42,13 +92,13 @@ class PSolid {
 
   // for now all are public
   // private:
-  std::string pName;
+  int pName;
   std::vector<double> pPars;
   int pShapeType;
-  std::string pSolid1;
-  std::string pSolid2;
+  int pSolid1;
+  int pSolid2;
   //  std::string pBooleanOp;  This can be determined by the shape-type
-  std::string pRotation;
+  int pRotation;
   bool pReflection;
 };
 
@@ -56,11 +106,11 @@ class PMaterial {
 
  public:
 
-  typedef std::vector<std::pair<std::string, double> > ConstituentType ;
+  //  typedef std::vector<std::pair<int, double> > ConstituentType;
 
   PMaterial() { }
 
-  PMaterial ( const std::string& name,
+  PMaterial ( int name,
 	      const double& density,
 	      const double& z,
 	      const double& a )
@@ -71,19 +121,24 @@ class PMaterial {
 
   ~PMaterial () { }
 
-  void addConstituent( const std::string& name, const double& fraction ) {
-    pConstituents.push_back( std::make_pair( name, fraction ) );
+  void addConstituent( int name, const double& fraction ) {
+    //pConstituents.push_back( std::make_pair( name, fraction ) );
+    pCN.push_back(name);
+    pCF.push_back(fraction);
     pNumberOfConstituents++;
   }
 
   // for now all are public
   // private:
-  std::string pName;
+  int pName;
   double pDensity;
   double pZ;
   double pA;
   int pNumberOfConstituents;
-  ConstituentType pConstituents;
+  //  ConstituentType pConstituents;
+  std::vector<int> pCN; // constituent names... keep in synch with:
+  std::vector<double> pCF; // fraction of the constituent 'named' above
+                           // (in pCN) which is used in this material.
 };
 
 class PRotation {
@@ -92,7 +147,7 @@ class PRotation {
 
   PRotation() { }
 
-  PRotation( const std::string& name 
+  PRotation( int name 
 	     , const double& thetaX
 	     , const double& phiX
 	     , const double& thetaY
@@ -111,7 +166,7 @@ class PRotation {
 
   // for now all are public
   // private:
-  std::string pName;
+  int pName;
   // wish we could just save euler angles.
 /*   double pPhi; */
 /*   double pTheta; */
@@ -131,9 +186,9 @@ class PLogicalPart {
 
   PLogicalPart () { }
 
-  PLogicalPart ( const std::string& name
-		 , const std::string& solid
-		 , const std::string& material )
+  PLogicalPart ( int name
+		 , int solid
+		 , int material )
     : pName(name), pSolid(solid), pMaterial(material)
     { }
 
@@ -141,9 +196,9 @@ class PLogicalPart {
 
   // for now all are public
   // private:
-  std::string pName;
-  std::string pSolid;
-  std::string pMaterial;
+  int pName;
+  int pSolid;
+  int pMaterial;
 };
 
 class PPosPart {
@@ -152,9 +207,9 @@ class PPosPart {
 
   PPosPart() { }
 
-  PPosPart ( const std::string& parentLP
-	     , const std::string& childLP
-	     , const std::string& rotation
+  PPosPart ( int parentLP
+	     , int childLP
+	     , int rotation
 	     , const double& x
 	     , const double& y
 	     , const double& z
@@ -169,9 +224,9 @@ class PPosPart {
 
   // for now all are public
   // private:
-  std::string pParentLP;
-  std::string pChildLP;
-  std::string pRotation;
+  int pParentLP;
+  int pChildLP;
+  int pRotation;
   double pX;
   double pY;
   double pZ;
@@ -184,12 +239,12 @@ class PValuePair {
  public:
   PValuePair() { };
   ~PValuePair() { };
-  PValuePair ( const std::string& instr, double indbl ) {
+  PValuePair ( int instr, double indbl ) {
     pStr = instr;
     pDbl = indbl;
   }
   // private:
-  std::string pStr;
+  int pStr;
   double pDbl;
 };
 
@@ -201,7 +256,7 @@ class PValueOffset {
   bool pIsEvaluated;
   int pOneOffset;
   int pSize;
-}; 
+};
 
 class PValueStore {
  public:
@@ -209,7 +264,7 @@ class PValueStore {
   ~PValueStore() { };
   //private:
   std::vector<PValuePair>  pValuePairs; // big vector of value pairs that are refered to in chunks from offset and size.
-  std::vector<std::string> pNames; // this vector and the next must stay in-synch.
+  std::vector<int> pNames; // this vector and the next must stay in-synch.
   std::vector<PValueOffset> pOffset; // tells you where in pValues to start and how many to go through.
 };
 
@@ -223,8 +278,8 @@ class PSpecPar {
 
   ~PSpecPar () { }
 
-  bool newSpecParEntry ( const std::string& name , bool evaluated = false ) {
-    std::vector<std::string>::const_iterator fit = find ( pValues.pNames.begin(), pValues.pNames.end(),  name );
+  bool newSpecParEntry ( int name , bool evaluated = false ) {
+    std::vector<int>::const_iterator fit = find ( pValues.pNames.begin(), pValues.pNames.end(),  name );
     //    std::cout << "adding new SpecParEntry " << name;
     //    if ( evaluated ) std::cout << " evaluated " << std::endl; else std::cout << " not evaluated " << std::endl;
     if ( fit == pValues.pNames.end() ) {
@@ -243,24 +298,20 @@ class PSpecPar {
       pValues.pNames.push_back(name);
       return true;
     } else {
-      //      std::cout << "WHAT TO DO HERE!?  CAN NOT ADD TO ONE ALREADY ADDED TO!" << std::endl;
+      std::cout << "ERROR:  WHAT TO DO HERE!?  CAN NOT ADD TO ONE ALREADY ADDED TO!" << std::endl;
     }
     return false;
   }
 
-  void addToCurrentSpecPar ( const std::string& strVal, const double& dblVal = 0.0 ) {
+  void addToCurrentSpecPar ( int strVal, const double& dblVal = 0.0 ) {
     PValueOffset& pvo = pValues.pOffset.back();
     ++(pvo.pSize);
     //    std::cout << "\tadding " << strVal << " " << dblVal << std::endl;
     pValues.pValuePairs.push_back ( PValuePair (strVal, dblVal) );
   }
 
-  void addToCurrentSelectionStrings ( const std::string& instr ) {
-    pSpecSelections.push_back(instr);
-  }
-
   //private:
-  std::string pName;
+  int pName;
   PValueStore pValues;
   std::vector<std::string> pSpecSelections;
 
@@ -275,6 +326,7 @@ class PIdealGeometry {
   std::vector<PRotation> pRotations;
   std::vector<PSpecPar> pSpecPars;
   std::string pStartNode;
+  std::vector<std::string> pStrings;
 };
 
 

@@ -11,7 +11,8 @@ namespace {
     std::vector<PLogicalPart> dummyl;
     std::vector<PPosPart> dummyp;
     std::vector<PSpecPar> dummypsp2;
-    PMaterial::ConstituentType dummypmct;
+    //    std::vector<std::pair<int, double> > dummypintdbl;
+    //    PMaterial::ConstituentType dummypmct;
     PIdealGeometry dummypig;
 
     PGeometricDet dummypgd;
