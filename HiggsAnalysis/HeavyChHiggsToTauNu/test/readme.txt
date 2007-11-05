@@ -20,7 +20,7 @@
 	How to compile:
 	- First make event dictionaries for the MyEvent class
 		cd HiggsAnalysis/HeavyChHiggsToTauNu/src
-		chmod +x dictionary.csh
+		(chmod +x dictionary.csh if needed)
 		dictionary.csh
 
 		Rerun dictionary.csh every time after changing anything in MyEvent class
