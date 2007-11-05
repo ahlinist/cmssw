@@ -40,41 +40,42 @@ const DDCompactView* DataProxy<IdealGeometryRecord, DDCompactView>::make(const I
   // Make the DDCompactView from PIdealGeometry
 
   //  std::cout<<"ref belongs to container "<< m_data.containerName()<<std::endl;
-
+  //  std::cout << "m_data->pStrings.size() is " << m_data->pStrings.size() << std::endl;
+  DDPersToDDDFactory ddFact(&(m_data->pStrings));
   for(std::vector<PRotation>::const_iterator rit = m_data->pRotations.begin();
       rit != m_data->pRotations.end(); ++rit) {
-    DDPersToDDDFactory::rotation( *rit );
+    ddFact.rotation( *rit );
   }
   //    std::cout << "about to do Materials" << std::endl;
   for(std::vector<PMaterial>::const_iterator mit = m_data->pMaterials.begin();
       mit != m_data->pMaterials.end(); ++mit) {
-    DDPersToDDDFactory::material( *mit );
+    ddFact.material( *mit );
   }
   //    std::cout << "about to do Solids" << std::endl;
   for(std::vector<PSolid>::const_iterator sit = m_data->pSolids.begin();
       sit != m_data->pSolids.end(); ++sit) {
-    DDPersToDDDFactory::solid( *sit );
+    ddFact.solid( *sit );
   }
   //    std::cout << "about to do LogicalParts" << std::endl;
   for(std::vector<PLogicalPart>::const_iterator lit = m_data->pLogicalParts.begin();
       lit != m_data->pLogicalParts.end(); ++lit) {
     //    std::cout << "making part " << lit->pName << std::endl;
-    DDLogicalPart lp = DDPersToDDDFactory::logicalPart ( *lit );
+    DDLogicalPart lp = ddFact.logicalPart ( *lit );
     //    std::cout << lp << std::endl;
   }
 
   //  std::cout << "about to setRoot to " << m_data->pStartNode << std::endl;
-  DDPersToDDDFactory::setRoot( m_data->pStartNode );
+  ddFact.setRoot( m_data->pStartNode );
   //  std::cout << "about to do PosParts" << std::endl;
   for(std::vector<PPosPart>::const_iterator pit = m_data->pPosParts.begin();
       pit != m_data->pPosParts.end(); ++pit) {
-    DDPersToDDDFactory::position( *pit );
+    ddFact.position( *pit );
   }
 
   //    std::cout << "about to do SpecPars" << std::endl;
   for(std::vector<PSpecPar>::const_iterator spit = m_data->pSpecPars.begin();
       spit != m_data->pSpecPars.end(); ++spit) {
-    DDPersToDDDFactory::specPar( *spit );
+    ddFact.specPar( *spit );
   }
 
       
