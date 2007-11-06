@@ -263,7 +263,8 @@ void BTagPerformanceAnalyzer::analyze(const edm::Event& iEvent, const edm::Event
                  jetMC->begin(); iter != jetMC->end(); iter++)
                {
                  unsigned int fl = iter->second.getFlavour();
-                 flavours.insert(FlavourMap::value_type(iter->first,fl));
+                 const CaloJetRef caloRef = iter->first.castTo<CaloJetRef>();
+                 flavours.insert(FlavourMap::value_type(caloRef, fl));
                }
   }
 
