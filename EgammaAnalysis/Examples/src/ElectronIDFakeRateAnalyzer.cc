@@ -13,7 +13,7 @@
 //
 // Original Author:  Pedro Ribeiro
 //         Created:  Thu Jul 26 12:07:34 WEST 2007
-// $Id$
+// $Id: ElectronIDFakeRateAnalyzer.cc,v 1.1 2007/11/06 12:14:12 ppereira Exp $
 //
 //
 
@@ -410,4 +410,4 @@ double ElectronIDFakeRateAnalyzer::getDeltaPhi (const reco::Candidate* candidate
 }
 
 //define this as a plug-in
-DEFINE_FWK_MODULE(ElectronIDFakeRateAnalyzer);
+//DEFINE_FWK_MODULE(ElectronIDFakeRateAnalyzer);
