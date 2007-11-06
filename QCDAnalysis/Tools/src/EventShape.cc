@@ -1,4 +1,4 @@
-#include "EventShape.h"
+#include "QCDAnalysis/Tools/interface/EventShape.h"
 
 using namespace std;
 
