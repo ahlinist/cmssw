@@ -93,7 +93,7 @@ public:
 //=============================================================================
 
  std::vector<double> getThrustAxis(); //returns the global thrust axis Nx, Ny, Nz=0
- std::vector<double> getThrustAxis_C(); //returns the central thrust axis Nx, Ny, Nx=0
+ std::vector<double> getThrustAxis_C(); //returns the central thrust axis Nx, Ny, Nz=0 
 
 
  //eta_c: choice of the central region
