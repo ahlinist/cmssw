@@ -387,7 +387,7 @@ std::pair<int,float> PixelMatchAnalysisGsfEm::findIsoTracks(GlobalVector mom, Gl
 
   eta = mom.eta();
   if(debug) LogDebug("Zprime2eeAnaGsfEm")<<" eta "<< eta ;
-  if(usevertexcorr) eta = asinh(sinh(mom.eta())*(1.-(vtx.z()/(tradius*tanh(mom.eta())))));
+  if(usevertexcorr) eta = asinh(sinh(mom.eta())-vtx.z()/tradius );
   if(debug) LogDebug("Zprime2eeAnaGsfEm")<<" eta (cor) "<< eta ;
 
   for(reco::TrackCollection::const_iterator trItr = isoTracks->begin(); trItr != isoTracks->end(); ++trItr){
@@ -571,7 +571,7 @@ void  PixelMatchAnalysisGsfEm::vertexcorr(HepLorentzVector scvector, HepLorentzV
 {
   scvector_vtxcor=scvector;
   if(recozvtx!=0.) {
-    float etacor_one = asinh(sinh(scvector.eta())*(1.-(recozvtx/(tradius*tanh(scvector.eta())))));
+    float etacor_one = asinh(sinh(scvector.eta())-recozvtx/tradius );
     scvector_vtxcor.setREtaPhi(scvector.e(),etacor_one,scvector.phi());
     scvector_vtxcor.setE(scvector.e());
     }

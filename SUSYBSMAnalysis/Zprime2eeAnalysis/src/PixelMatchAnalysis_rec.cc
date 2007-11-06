@@ -501,29 +501,29 @@ void PixelMatchAnalysis::searchmax(const reco::PixelMatchGsfElectronCollection* 
 //-------------------------------------------------------------------------
 void  PixelMatchAnalysis::vertexcorr(HepLorentzVector elecvector, HepLorentzVector & elecvector_vtxcor, double recozvtx, double radius, double tradius) {
 
-
+ 
   if(recozvtx!=0.) {
-
-      float etacor_el = asinh(sinh(elecvector.eta())*(1.-(recozvtx/(tradius*tanh(elecvector.eta())))));
-//      float ptcor_el=(elecvector.et()*cosh(elecvector.eta())/cosh(etacor_el));
-      elecvector_vtxcor.setREtaPhi(elecvector.e(),etacor_el,elecvector.phi());
-      elecvector_vtxcor.setE(elecvector.e());
-/*
+    
+    float etacor_el = asinh( sinh(elecvector.eta())-recozvtx/tradius );
+    //      float ptcor_el=(elecvector.et()*cosh(elecvector.eta())/cosh(etacor_el));
+    elecvector_vtxcor.setREtaPhi(elecvector.e(),etacor_el,elecvector.phi());
+    elecvector_vtxcor.setE(elecvector.e());
+    /*
       if(debug) {
-        LogDebug("Zprime2eeAna")<<"in PixelMatchAnalysis::vertexcorr method ";
-        LogDebug("Zprime2eeAna")<<" recovertex z  and tradius "<<recozvtx<<" "<<tradius;
-        LogDebug("Zprime2eeAna") << "  elecvector.theta() = " <<  elecvector.theta() <<  endl;
-        LogDebug("Zprime2eeAna") << "  elecvector.e()*sin(elecvector.theta() )  = " <<  elecvector.e()*sin(elecvector.theta() )  <<  endl;
-        LogDebug("Zprime2eeAna") << "  elecvector.et()/elecvector.e()= " << elecvector.et()/elecvector.e() <<  endl;
-        LogDebug("Zprime2eeAna") << "  tradius/radius = " << tradius/radius  <<  endl;
-        LogDebug("Zprime2eeAna") << "  elecvector_vtxcor.et()/elecvector_vtxcor.e()= " << elecvector_vtxcor.et()/elecvector_vtxcor.e() <<  endl;
-        LogDebug("Zprime2eeAna") << "  ptcor_el= " << ptcor_el <<  endl;
-        LogDebug("Zprime2eeAna") << "  radius= " << radius <<  endl;
-        LogDebug("Zprime2eeAna") << "  tradius= " << tradius <<  endl;
+      LogDebug("Zprime2eeAna")<<"in PixelMatchAnalysis::vertexcorr method ";
+      LogDebug("Zprime2eeAna")<<" recovertex z  and tradius "<<recozvtx<<" "<<tradius;
+      LogDebug("Zprime2eeAna") << "  elecvector.theta() = " <<  elecvector.theta() <<  endl;
+      LogDebug("Zprime2eeAna") << "  elecvector.e()*sin(elecvector.theta() )  = " <<  elecvector.e()*sin(elecvector.theta() )  <<  endl;
+      LogDebug("Zprime2eeAna") << "  elecvector.et()/elecvector.e()= " << elecvector.et()/elecvector.e() <<  endl;
+      LogDebug("Zprime2eeAna") << "  tradius/radius = " << tradius/radius  <<  endl;
+      LogDebug("Zprime2eeAna") << "  elecvector_vtxcor.et()/elecvector_vtxcor.e()= " << elecvector_vtxcor.et()/elecvector_vtxcor.e() <<  endl;
+      LogDebug("Zprime2eeAna") << "  ptcor_el= " << ptcor_el <<  endl;
+      LogDebug("Zprime2eeAna") << "  radius= " << radius <<  endl;
+      LogDebug("Zprime2eeAna") << "  tradius= " << tradius <<  endl;
       }
-*/
-
-    }
+    */
+    
+  }
 }
 
 
