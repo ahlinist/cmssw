@@ -86,7 +86,7 @@ void MCMatchingTools::getMatched (const std::vector<const reco::Candidate*>* mcC
       double deltaPbyP = getDPbyP(**iLepton,**iReco);
       //int productCharge = getProductCharge(**iLepton,**iReco);
 
-      if (deltaR <= deltaRMax && deltaPbyP <= deltaPMax /*&& productCharge == 1*/ ) {
+      if (deltaR <= deltaRMax /*&& deltaPbyP <= deltaPMax*/ /*&& productCharge == 1*/ ) {
 	matchCand.push_back(*iReco);
       }
 
