@@ -1,5 +1,19 @@
 block PTDR_ID = {
 
+    #Selection of input variables to be used for each eID quality
+    #"loose", "medium", "tight"
+    vint32 useEoverPIn      	= { 0, 1, 0 }
+    vint32 useDeltaEtaIn    	= { 1, 1, 1 }
+    vint32 useDeltaPhiIn    	= { 1, 1, 1 }
+    vint32 useHoverE        	= { 1, 1, 1 }
+    vint32 useE9overE25     	= { 1, 1, 1 }
+    vint32 useEoverPOut     	= { 1, 1, 1 }
+    vint32 useDeltaPhiOut   	= { 0, 1, 1 }
+    vint32 useInvEMinusInvP 	= { 0, 0, 0 }
+    vint32 useBremFraction  	= { 0, 0, 0 }
+    vint32 useSigmaEtaEta   	= { 0, 1, 1 }
+    vint32 useSigmaPhiPhi   	= { 0, 1, 0 }
+
     # Electron quality for cut based ID. Can be:
     # "loose"  - e.g. suitable for H->ZZ->4l
     # "medium" - intermediate quality

@@ -17,19 +17,6 @@ module electronId = ElectronIDProducer {
     bool doLikelihood = false
     bool doNeuralNet = false
 
-# Selection of input variables:
-    bool useEoverPIn      = 1
-    bool useDeltaEtaIn    = 1
-    bool useDeltaPhiIn    = 1
-    bool useHoverE        = 1
-    bool useE9overE25     = 1
-    bool useEoverPOut     = 1
-    bool useDeltaPhiOut   = 1
-    bool useInvEMinusInvP = 0
-    bool useBremFraction  = 0
-    bool useSigmaEtaEta   = 1
-    bool useSigmaPhiPhi   = 1
-
     InputTag barrelClusterShapeAssociation = hybridSuperClusters:hybridShapeAssoc
     InputTag endcapClusterShapeAssociation = islandBasicClusters:islandEndcapShapeAssoc
     
