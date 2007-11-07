@@ -1,7 +1,6 @@
 block PTDR_ID = {
 
-    #Selection of input variables to be used for each eID quality
-    #"loose", "medium", "tight"
+    #Selection of input variables to be used for each eID quality "loose", "medium", "tight"
     vint32 useEoverPIn      	= { 0, 1, 0 }
     vint32 useDeltaEtaIn    	= { 1, 1, 1 }
     vint32 useDeltaPhiIn    	= { 1, 1, 1 }
