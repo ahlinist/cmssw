@@ -1,7 +1,7 @@
 #ifndef SiStripOfflinePedNoiseToDb_h
 #define SiStripOfflinePedNoiseToDb_h
 
-// $Id: SiStripOfflinePedNoiseToDb.h,v 1.1 2006/11/19 17:06:39 giordano Exp $
+// $Id: SiStripOfflinePedNoiseToDb.h,v 1.2 2006/11/20 19:01:51 giordano Exp $
 
 // system include files
 #include <memory>
@@ -30,6 +30,8 @@
 #include <iomanip>
 #include <string>
 #include <vector>
+
+class DaqMonitorBEInterface;
 
 namespace cms{
   class SiStripOfflinePedNoiseToDb : public edm::EDAnalyzer {
