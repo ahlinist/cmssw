@@ -20,7 +20,6 @@ module electronId = ElectronIDProducer {
     InputTag barrelClusterShapeAssociation = hybridSuperClusters:hybridShapeAssoc
     InputTag endcapClusterShapeAssociation = islandBasicClusters:islandEndcapShapeAssoc
     
-    # std::vector<edm::ParameterSet>
     VPSet algo_psets = {
         {using PTDR_ID}, {using CutBased_ID}
     }
