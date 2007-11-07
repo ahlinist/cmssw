@@ -10,7 +10,6 @@ void PTDRElectronID::setup(const edm::ParameterSet& conf) {
   
   // Select algo dependent set of parameters
   std::vector<edm::ParameterSet> algoPSets = conf.getParameter<std::vector<edm::ParameterSet> >("algo_psets");
-  //edm::ParameterSet idAlgoPSet = algoPSets[1].getParameter<std::vector<edm::ParameterSet> >("algo_psets");
   
   quality_ =  algoPSets[0].getParameter<std::string>("electronQuality");
   useEoverPIn_ = algoPSets[0].getParameter<std::vector<int> >("useEoverPIn");
