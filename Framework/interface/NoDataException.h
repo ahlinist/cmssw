@@ -24,10 +24,10 @@
 
       report(INFO, kFacilityString) << "run # " << eventHeader->runNumber()
                                      << "event # " << eventHeader->number()
-				     << endl;
+				     << std::endl;
 
     } catch(NoDataException<Item<DBEventHeader>::contents> &iException) {
-      report(WARNING, kFacilityString) << iException.what() << endl;
+      report(WARNING, kFacilityString) << iException.what() << std::endl;
     }
       
     \endcode
