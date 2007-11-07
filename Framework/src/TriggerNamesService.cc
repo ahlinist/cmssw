@@ -11,6 +11,7 @@
 #include "FWCore/ParameterSet/interface/Registry.h"
 #include "FWCore/Utilities/interface/ThreadSafeRegistry.h"
 #include "FWCore/Utilities/interface/Exception.h"
+#include "FWCore/Utilities/interface/Algorithms.h"
 
 
 namespace edm {
@@ -59,9 +60,7 @@ namespace edm {
         // for reasons of backward compatibility
         Strings psetNames = pset.getParameterNamesForType<Strings>();
         std::string name("@trigger_paths");
-        Strings::const_iterator iter = std::find(psetNames.begin(), psetNames.end(), name);
-        if (iter != psetNames.end()) {
-
+	if (search_all(psetNames, name)) {
           // It is there, get it
           trigPaths = pset.getParameter<Strings>("@trigger_paths");
 

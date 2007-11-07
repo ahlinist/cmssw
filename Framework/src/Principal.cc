@@ -409,8 +409,6 @@ namespace edm {
   Principal::getAllProvenance(std::vector<Provenance const*> & provenances) const {
     provenances.clear();
     for (Principal::const_iterator i = begin(), iEnd = end(); i != iEnd; ++i) {
-      SharedConstGroupPtr g = *i;
-      this->resolveProvenance(*g);
       if ((*i)->provenanceAvailable()) provenances.push_back(&(*i)->provenance());
     }
   }

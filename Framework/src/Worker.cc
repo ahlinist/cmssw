@@ -127,8 +127,6 @@ private:
   }
   
   void Worker::endJob() {
-    using namespace std;
-    
     try {
         CallPrePostEndJob cpp(sigs_,md_);
 	implEndJob();
