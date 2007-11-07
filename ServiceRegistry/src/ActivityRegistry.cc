@@ -16,6 +16,7 @@
 
 // user include files
 #include "FWCore/ServiceRegistry/interface/ActivityRegistry.h"
+#include "FWCore/Utilities/interface/Algorithms.h"
 
 //
 // constants, enums and typedefs
@@ -98,8 +99,7 @@ copySlotsToFrom(T& iTo, T& iFrom)
 {
   typename T::slot_list_type slots = iFrom.slots();
   
-  std::for_each(slots.begin(),slots.end(),
-                boost::bind( &T::connect, iTo, _1) );
+  edm::for_all(slots, boost::bind( &T::connect, iTo, _1) );
 }
 
 template<class T>
@@ -123,8 +123,7 @@ copySlotsToFromReverse(T& iTo, T& iFrom)
   std::reverse(slotsTo.begin(), slotsTo.end());
   std::reverse(slotsFrom.begin(), slotsFrom.end());
 
-  std::for_each(slotsFrom.begin(),slotsFrom.end(),
-                boost::bind( &T::connect, iTo, _1) );
+  edm::for_all(slotsFrom, boost::bind( &T::connect, iTo, _1) );
 
   std::reverse(slotsTo.begin(), slotsTo.end());
 
