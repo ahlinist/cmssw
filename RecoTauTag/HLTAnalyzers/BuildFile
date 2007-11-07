@@ -5,9 +5,11 @@
 <use name=DataFormats/BTauReco>
 <use name=DataFormats/VertexReco>
 <use name=DataFormats/L1Trigger>
+<use name=DataFormats/TauReco>
 <use name=root>
 <use name=SimDataFormats/HepMCProduct>
 <use name=DataFormats/BTauReco>
+<use name=DataFormats/TauReco>
 <use name=DataFormats/JetReco>
 <use name=DataFormats/METReco>
 <use name=DataFormats/EgammaReco>
