@@ -44,13 +44,13 @@ void testCPUTimer::testTiming()
   timer.start();
   sleep(2);
   timer.stop();
-  cerr <<"real "<<timer.realTime()<<" cpu "<<timer.cpuTime()<<endl;
+  std::cerr <<"real "<<timer.realTime()<<" cpu "<<timer.cpuTime()<< std::endl;
   CPPUNIT_ASSERT(timer.realTime() > 2.0);
   CPPUNIT_ASSERT(timer.cpuTime()+2.0 <= timer.realTime());
 
   timer.start();
   sleep(2);
-  cerr <<"real "<<timer.realTime()<<" cpu "<<timer.cpuTime()<<endl;
+  std::cerr <<"real "<<timer.realTime()<<" cpu "<<timer.cpuTime()<< std::endl;
   CPPUNIT_ASSERT(timer.realTime() > 4.0);
   //this should do nothing
   timer.start();
@@ -59,7 +59,7 @@ void testCPUTimer::testTiming()
   sleep(2);
 
   timer.stop();
-  cerr <<"real "<<timer.realTime()<<" cpu "<<timer.cpuTime()<<endl;
+  std::cerr <<"real "<<timer.realTime()<<" cpu "<<timer.cpuTime()<< std::endl;
   
   double real = timer.realTime();
   double cpu = timer.cpuTime();
@@ -90,7 +90,7 @@ void testCPUTimer::testTiming()
   }while(nowTime.tv_sec -startTime.tv_sec +1E-6*(nowTime.tv_usec-startTime.tv_usec) <1);
   timer.stop();
 
-  cerr <<"real "<<timer.realTime()<<" cpu "<<timer.cpuTime()<<endl;
+  std::cerr <<"real "<<timer.realTime()<<" cpu "<<timer.cpuTime()<< std::endl;
   CPPUNIT_ASSERT(timer.realTime() >= 1.0);
   CPPUNIT_ASSERT(timer.cpuTime()>=1.0);
 
