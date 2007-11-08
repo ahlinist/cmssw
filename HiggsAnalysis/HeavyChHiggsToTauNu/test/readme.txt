@@ -21,7 +21,7 @@
 
 8.11.2007/S.Lehti  CMSSW_1_6_7  Tau changed to use CaloTau and PFTau classes. Old code using
 				IsolatedTauTagInfo tagged with name "IsolatedTauTagInfo". 
-				New code in cvs head.
+				New code in cvs head. 
 				List of all cvs tags to be checked out:
                                 cvs co -r V02-06-00 DataFormats/ParticleFlowReco
                                 cvs co -r V02-06-00 DataFormats/ParticleFlowCandidate
@@ -29,7 +29,7 @@
 				cvs co -r V00-00-17 DataFormats/TauReco
 				cvs co -r V00-00-37 RecoTauTag/RecoTau 
 				cvs co -r V00-00-06 RecoTauTag/TauTagTools
-				cvs co -r jet_corrections_16X JetMETCorrections/MCJet/data
+
 
 
 	How to compile:
