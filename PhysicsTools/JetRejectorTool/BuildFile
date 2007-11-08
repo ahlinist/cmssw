@@ -9,8 +9,8 @@
 <use name=rootrflx>
 <use name=root>
 <use name=rootcore>
-<flags SEAL_PLUGIN_NAME="PhysicsToolsJetRejectorTool">
-
+#<flags SEAL_PLUGIN_NAME="PhysicsToolsJetRejectorTool">
+<flags EDM_PLUGIN=1>
 <export>
    <lib name=PhysicsToolJetRejectorTool>
    <use name=FWCore/Framework>
