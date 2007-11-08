@@ -65,6 +65,8 @@ namespace edm {
       unsigned int bang;         // error count of spoilt events
       unsigned int nops;         // count of empty prescaler vector
       unsigned int bcfg;         // getConfig exception count
+      unsigned int lslast;       // end-of-run LS# cached, 0 if run not ended
+      unsigned int l1ind;        // current L1 index 
 
     public:
 

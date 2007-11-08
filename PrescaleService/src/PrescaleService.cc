@@ -33,6 +33,8 @@ namespace edm {
       lsold = 0;
       nops = 0; 
       bcfg = 0;
+      lslast = 0;
+      l1ind = 0;
 
       //
       const std::vector<std::string> InitialConfig(iPS.getParameter< std::vector<std::string> >("InitialConfig"));
@@ -88,6 +90,7 @@ namespace edm {
 	  std::ostringstream oss;
 	  std::string ARRAY_LEN = "_";
 	  std::string SEPARATOR = " ";
+	  oss << l1ind << SEPARATOR;
 	  oss << lsold << SEPARATOR;
 	  //TriggerReport::eventSummary
 	  oss << trold.eventSummary.totalEvents << SEPARATOR
@@ -102,7 +105,8 @@ namespace edm {
 		<< trold.trigPathSummaries[i].timesFailed << SEPARATOR
 		<< trold.trigPathSummaries[i].timesExcept << SEPARATOR
 		<< trold.trigPathSummaries[i].name << SEPARATOR;
-	  }
+            oss << "dummy" << SEPARATOR;
+          }
           boost::mutex::scoped_lock scoped_lock(mutex);
 	  triggers.push_back(oss.str());
 	}
@@ -322,6 +326,10 @@ namespace edm {
       oss << SEPARATOR << lspmax;
       oss << SEPARATOR << count_;
       oss << SEPARATOR << nops;
+      oss << SEPARATOR << bcfg;
+      oss << SEPARATOR << lslast;
+      oss << SEPARATOR << lsold;
+      oss << SEPARATOR << l1ind;
       stsstr = oss.str();
       return stsstr;
     }
