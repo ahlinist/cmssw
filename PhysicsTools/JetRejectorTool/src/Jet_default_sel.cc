@@ -15,6 +15,7 @@ Jet_default_sel::Jet_default_sel(const edm::ParameterSet& iConfig){
   produces< vector<reco::CaloJet> >();  
   produces< vector<reco::GenJet> >();  
 
+
   // outputRootFile = new TFile("JetRejObsProducer.root","recreate");
 }
 
@@ -51,7 +52,7 @@ void Jet_default_sel::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   vector<reco::JetTag> seljet_trk = seljet.selection(ICjettags, jetEnergycut_, jetNConstMin_);
   vector<reco::CaloJet> seljets = seljet.selection(Cjets, jetEnergycut_, jetNConstMin_);
   vector<reco::GenJet> selgenjets = seljet.selection(Gjets, jetEnergycut_, jetNConstMin_);
-  
+
   unsigned int sizecalojet = seljets.size();
   unsigned int sizegenjet = selgenjets.size();
   unsigned int sizejettag = seljet_trk.size();
@@ -80,3 +81,6 @@ void Jet_default_sel::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.put( pOut3 );
 
 }
+//define this as a plug-in
+#include "FWCore/Framework/interface/MakerMacros.h"
+DEFINE_FWK_MODULE(Jet_default_sel);

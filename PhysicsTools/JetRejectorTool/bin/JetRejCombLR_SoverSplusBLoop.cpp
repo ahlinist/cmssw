@@ -15,7 +15,7 @@
 #include <TStyle.h>
 #include <TKey.h>
 #include <vector>
-#include "FWCore/FWLite/src/AutoLibraryLoader.h"
+#include "FWCore/FWLite/interface/AutoLibraryLoader.h"
 #include "TopQuarkAnalysis/TopTools/interface/LRHelpFunctions.h"
 #include "AnalysisDataFormats/TopObjects/interface/JetRejObs.h"
 #include "DataFormats/JetReco/interface/CaloJet.h"
@@ -30,7 +30,7 @@ using namespace reco;
 
 //input files
 const  int       nrFiles  	  		= 1;
-const  TString   path     	  		= "../test/JetRejObsProducer.root";
+const  TString   path     	  		= "../test/JetRejObsProducerparton_mu.root";
 
 //matching variables
 const  bool  	 useSpaceAngle    		= true;
@@ -39,27 +39,38 @@ const  double 	 SumAlphaCut  	  		= 0.7;
 
 
 //observable histogram variables (include all defined observables!!!)
-const  int      nrJetCombObs  			= 13;
-const  int      JetCombObs[nrJetCombObs] 	= {1,2,3,4,5,6,7,8,9,10,11,12,13};
+const  int      nrJetCombObs  			= 15;
+const  int      JetCombObs[nrJetCombObs] 	= {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
 const  int   	nrJetCombHistBins    		= 50;
-const  double   JetCombObsMin[nrJetCombObs]	= {  0,    0, -0.5,  0, -3, -3,  0,   0,   0, 0,   0, 0,  0};
-const  double   JetCombObsMax[nrJetCombObs]	= {5.2, 1.05,  6.5, 50, 50, 50, 50,   1, 0.4, 4, 1.1, 5, 50};
+//const  double   JetCombObsMin[nrJetCombObs]	= {  0,    0, -0.5,  0, -3, -3,  0,   0,   0,  2, -10,   0,  0};
+//const  double   JetCombObsMax[nrJetCombObs]	= {5.2, 1.05,  6.5, 50, 50, 50, 50,   1, 0.4,  8, 600, 400, 50};
 
+const  double   JetCombObsMin[nrJetCombObs]	= {  0,  -1.01,  0.5,  0, -3, -3,  0, 0,   0, -10,   0, 0,   0, 0,  0};
+const  double   JetCombObsMax[nrJetCombObs]	= {5.2,   1.01,  5.5, 50, 50, 50, 50, 1, 0.4, 600, 400, 4, 1.1, 5, 50};
 
 //observable fit functions
 const char*     JetCombObsFits[nrJetCombObs] 	= {  "[0]/(1 + 1/exp([1]*([2] - x)))",  //obs1	
-						     "[0]/(1 + 1/exp([1]*([2] - x)))",  //obs2	
-						     "[0]/(1 + 1/exp([1]*([2] - x)))",  //obs3
+						     // "[0]/(1 + 1/exp([1]*([2] - x)))",  //obs2
+						     "[0]/(1 + 1/exp([1]*([2] - x)))+[3]",//obs2
+						     // "[0]/(1 + 1/exp([1]*([2] - x)))",  //obs3
+						     //"[0]/(1 + 1/exp([1]*([2] - x)))+[3]",//obs3
+						     "pol4",//obs3
 						     "[0]/(1 + 1/exp([1]*([2] - x)))", //obs4
-						     "[0]/(1 + 1/exp([1]*([2] - x)))", //obs5
-						     "([0]+[3]*abs(x)/x)*(1-exp([1]*(abs(x)-[2])))",  //obs6	
+						     //	     "[0]/(1 + 1/exp([1]*([2] - x)))", //obs5
+						     "[0]/(1 + 1/exp([1]*([2] - x)))+[3]",//obs5
+						     //"landaun",//obs6  "([0]+[3]*abs(x)/x)*(1-exp([1]*(abs(x)-[2])))", //obs6	
+						     "[0]/(1 + 1/exp([1]*([2] - x)))",  //obs6
 						     "[0]/(1 + 1/exp([1]*([2] - x)))",  //obs7
 						     "[0]/(1 + 1/exp([1]*([2] - x)))", //obs8
 						     "landaun", //obs9
 						     "[0]/(1 + 1/exp([1]*([2] - x)))", //obs10
 						     "[0]/(1 + 1/exp([1]*([2] - x)))", //obs11
-						     "landaun", //obs12
-						     "[0]/(1 + 1/exp([1]*([2] - x)))" //obs13
+						     "[0]/(1 + 1/exp([1]*([2] - x)))", //obs12
+						     // "[0]/(1 + 1/exp([1]*([2] - x)))", //obs11
+						     "[0]/(1 + 1/exp([1]*([2] - x)))+[3]",//obs13
+						     //   "landau", //obs12
+						     "[0]/(1 + 1/exp([1]*([2] - x)))+[3]",//obs14
+						     "[0]/(1 + 1/exp([1]*([2] - x)))" //obs15
 						  };
 
 //output files ps/root
@@ -100,13 +111,35 @@ int main() {
   }
   myLRhelper = new LRHelpFunctions(obsNrs, nrJetCombHistBins, obsMin, obsMax, obsFits); 
   
+
+  /*  vector<double> parsFobs2; 
+  parsFobs2.push_back(0.76);
+  parsFobs2.push_back(-12.9);
+  parsFobs2.push_back(0.159);
+  myLRhelper -> setObsFitParameters(2,parsFobs2);
+  */
+
   vector<double> parsFobs6; 
-  parsFobs6.push_back(0.8);
-  parsFobs6.push_back(-0.1);
-  parsFobs6.push_back(-0.8);
-  parsFobs6.push_back(0.2);
+  parsFobs6.push_back(41);
+  parsFobs6.push_back(18);
+  parsFobs6.push_back(8);
+  // parsFobs6.push_back(0.2);
   myLRhelper -> setObsFitParameters(6,parsFobs6);
 
+  /*  vector<double> parsFobs11; 
+  parsFobs11.push_back(0.938);
+  parsFobs11.push_back(-0.002);
+  parsFobs11.push_back(138);
+  // parsFobs6.push_back(0.2);
+  myLRhelper -> setObsFitParameters(11,parsFobs11);
+  */
+  vector<double> parsFobs10; 
+  parsFobs10.push_back(1.18);
+  parsFobs10.push_back(-0.0158);
+  parsFobs10.push_back(105);
+  parsFobs10.push_back(-0.23);
+  myLRhelper -> setObsFitParameters(10,parsFobs10);
+  
 
   // fill signal and background contributions to S and B histograms
   doEventloop(); 
