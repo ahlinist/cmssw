@@ -1,4 +1,3 @@
-
 #ifndef JetRejLRObservables_h
 #define JetRejLRObservables_h
 
