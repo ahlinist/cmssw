@@ -5,7 +5,7 @@
 #include "CLHEP/HepMC/GenEvent.h"
 #include <CLHEP/HepMC/GenParticle.h>
 #include <CLHEP/HepMC/GenVertex.h>
-#include "FWCore/Framework/interface/Handle.h"
+//#include "FWCore/Framework/interface/Handle.h"
 #include "CLHEP/Vector/LorentzVector.h"
 #include "DataFormats/JetReco/interface/Jet.h"
 #include <DataFormats/JetReco/interface/GenJet.h>

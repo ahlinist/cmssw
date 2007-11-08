@@ -13,9 +13,10 @@ JetRejComLR::JetRejComLR(const edm::ParameterSet& iConfig){
  
   //likelihood histogram variables
   nrJetCombLRtotBins   		= 50;
-  JetCombLRtotMin   		= -5;
+  JetCombLRtotMin   		= -7;
   JetCombLRtotMax      		= 11;
-  JetCombLRtotFitFunction      	= "[0]/(1 + 1/exp([1]*([2] - x)))";
+  JetCombLRtotFitFunction      	= "[0]/(1 + 1/exp([1]*([2] - x)))+[3]";
+    //   "[0]/(1 + 1/exp([1]*([2] - x)))";
   
   //output files ps/root
   JetCombOutFileName   		= "../data/JetRejLRJetCombSelObsAndPurity.root";
@@ -100,3 +101,6 @@ void JetRejComLR::produce( edm::Event& iEvent, const edm::EventSetup& iSetup)
   ///-----------------------
   
 }
+ //define this as a plug-in
+#include "FWCore/Framework/interface/MakerMacros.h"
+ DEFINE_FWK_MODULE(JetRejComLR);

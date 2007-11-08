@@ -6,4 +6,5 @@
  <use name=rootcintex>
  <use name=root>
  <bin file="JetRejCombLR_SoverSplusBLoop.cpp"> </bin>
+# <bin file="prova.cpp"> </bin>
 </environment>
