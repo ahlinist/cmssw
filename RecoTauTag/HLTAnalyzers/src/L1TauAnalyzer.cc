@@ -12,7 +12,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Fri Apr  6 15:24:17 CDT 2007
-// $Id: L1TauAnalyzer.cc,v 1.12 2007/09/11 20:22:05 chinhan Exp $
+// $Id: L1TauAnalyzer.cc,v 1.1 2007/09/25 20:21:12 chinhan Exp $
 //
 //
 
@@ -721,6 +721,7 @@ L1TauAnalyzer::fillL1CompHistos() {
   _FastL1TauHistos->fillL1TauComp(_FastL1TauJets,_L1extraTauJets,false);
   _FastL1ElecHistos->fillL1ElecComp(_FastL1isoEgammas,_L1extraisoEgammas);
   _FastL1JetMETHistos->fillL1CompMET(_FastL1MET,_L1extraMET);
+  _FastL1JetMETHistos->fillL1JetComp(_FastL1InclJets,_L1extraInclJets,false);
 }
   
 void 
