@@ -29,7 +29,7 @@
 				cvs co -r V00-00-17 DataFormats/TauReco
 				cvs co -r V00-00-37 RecoTauTag/RecoTau 
 				cvs co -r V00-00-06 RecoTauTag/TauTagTools
-
+				cvs co -r jet_corrections_16X JetMETCorrections/MCJet/data
 
 
 	How to compile:
