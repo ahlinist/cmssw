@@ -21,20 +21,29 @@ void list(TFile & file) {
   cout << endl;
 }
 
-void plot(TFile & file, const string & name) {
-  string folder = "JetTag_" + name + "BJetTags_GLOBAL";
+enum zone_list {
+	GLOBAL  = 0,
+	BARREL  = 1,
+	ENDCAP  = 2,
+	FORWARD = 2
+};
+
+const char* zone_name[] = { "GLOBAL", "ETA_0-1.4", "ETA_1.4-2.4" };
+
+void plot(TFile & file, const string & name, zone_list zone = GLOBAL) {
+  string folder = "JetTag_" + name + "BJetTags_" + zone_name[zone];
   string name_mistag       = name + "_mistag";
   string name_discriminant = name + "_discriminant";
-  string name_c_vs_b  = folder + "/" + "FlavEffVsBEff_C_discrFC_"   + name + "BJetTags_GLOBAL";
-  string name_x_vs_b  = folder + "/" + "FlavEffVsBEff_DUS_discrFC_" + name + "BJetTags_GLOBAL";
-  string name_g_vs_b  = folder + "/" + "FlavEffVsBEff_G_discrFC_"   + name + "BJetTags_GLOBAL";
-  string name_b_discr = folder + "/" + "discr_" + name + "BJetTags_GLOBALB";
-  string name_c_discr = folder + "/" + "discr_" + name + "BJetTags_GLOBALC";
-  string name_x_discr = folder + "/" + "discr_" + name + "BJetTags_GLOBALDUS";
-  string name_g_discr = folder + "/" + "discr_" + name + "BJetTags_GLOBALG";
+  string name_c_vs_b  = folder + "/" + "FlavEffVsBEff_C_discrFC_"   + name + "BJetTags_" + zone_name[zone];
+  string name_x_vs_b  = folder + "/" + "FlavEffVsBEff_DUS_discrFC_" + name + "BJetTags_" + zone_name[zone];
+  string name_g_vs_b  = folder + "/" + "FlavEffVsBEff_G_discrFC_"   + name + "BJetTags_" + zone_name[zone];
+  string name_b_discr = folder + "/" + "discr_" + name + "BJetTags_" + zone_name[zone] + "B";
+  string name_c_discr = folder + "/" + "discr_" + name + "BJetTags_" + zone_name[zone] + "C";
+  string name_x_discr = folder + "/" + "discr_" + name + "BJetTags_" + zone_name[zone] + "DUS";
+  string name_g_discr = folder + "/" + "discr_" + name + "BJetTags_" + zone_name[zone] + "G";
 
   
-  TCanvas* mistag = new TCanvas(name_mistag.c_str(), name.c_str(), 800, 600);
+  TCanvas* mistag = new TCanvas(name_mistag.c_str(), name.c_str(), 1024, 768);
   mistag->SetLogy(true);
   
   TH1F* plot_c_vs_b = (TH1F*) get( file, name_c_vs_b );
@@ -57,9 +66,19 @@ void plot(TFile & file, const string & name) {
   plot_c_vs_b->Draw("");
   plot_x_vs_b->Draw("same");
   plot_g_vs_b->Draw("same");
+  
+  mistag->SetFillColor( kWhite );
+  mistag->SetGridx( true );
+  mistag->SetGridy( true );
+  mistag->SetFrameBorderMode( 0 );
+  mistag->SetFrameLineWidth( 2 );
+  mistag->SetCanvasSize(1280, 960);
+  mistag->SaveAs((name_mistag + ".png").c_str());
+  mistag->SetCanvasSize(480, 320);
+  mistag->SaveAs((name_mistag + "_small.png").c_str());
 
 
-  TCanvas* discriminant = new TCanvas(name_discriminant.c_str(), name.c_str(), 800, 600);
+  TCanvas* discriminant = new TCanvas(name_discriminant.c_str(), name.c_str());
   float max = 0;
 
   TH1F* plot_b_discr = (TH1F*) get( file, name_b_discr );
@@ -88,8 +107,16 @@ void plot(TFile & file, const string & name) {
   plot_c_discr->Draw("same");
   plot_x_discr->Draw("same");
   plot_g_discr->Draw("same");
+  discriminant->SetFillColor( kWhite );
+  discriminant->SetGridx( true );
+  discriminant->SetGridy( true );
+  discriminant->SetFrameBorderMode( 0 );
+  discriminant->SetFrameLineWidth( 2 );
+  discriminant->SetCanvasSize(1280, 960);
+  discriminant->SaveAs((name_discriminant + ".png").c_str());
+  discriminant->SetCanvasSize(480, 320);
+  discriminant->SaveAs((name_discriminant + "_small.png").c_str());
 }
-
 
 // convenience functions with implicit file 
 
@@ -97,7 +124,21 @@ void list(void) {
   list( *_file0 );
 }
 
-void plot(const string & name) {
-  plot( *_file0, name );
+void plot(const string & name, zone_list zone = GLOBAL) {
+  plot( *_file0, name, zone );
 }
 
+// convenience macro for CMSSW 1.7.x
+make_all_plots() {
+  plot( "trackCountingHighEff" );
+  plot( "trackCountingHighPur" );
+  plot( "jetProbability" );
+  plot( "jetBProbability" );
+  plot( "impactParameterMVA" );
+  plot( "softMuon" );
+  plot( "softMuonNoIP" );
+  plot( "softElectron", BARREL );
+  plot( "combinedSecondaryVertex" );
+  plot( "combinedSecondaryVertexMVA" );
+  plot( "simpleSecondaryVertex" );
+}
