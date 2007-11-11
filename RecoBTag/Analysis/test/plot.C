@@ -9,14 +9,25 @@ TObject* get(TFile & file, const string & name) {
   return object;
 }
 
-void list(TFile & file) {
+vector<string> get_list(TFile& file) {
   TPRegexp pcreJetTag("JetTag_(.*)BJetTags_GLOBAL");
 
-  cout << "BJetTags" << endl;
+  vector<string> list;
   for (unsigned int i = 0; i < file.GetListOfKeys()->GetSize(); ++i) {
     TString name( file.GetListOfKeys()->At(i)->GetName() );
     if (pcreJetTag.MatchB( name ))
-      cout << '\t' << ((TObjString *) pcreJetTag.MatchS( name )->At(1))->GetString() << endl;
+      list.push_back( string((TObjString *) pcreJetTag.MatchS( name )->At(1))->GetString() );
+  }
+
+  return list;
+}
+
+void list(TFile & file) {
+  vector<string> list = get_list(file);
+
+  cout << "BJetTags" << endl;
+  for (unsigned int i = 0; i < list.size(); i++)
+      cout << '\t' << list[i] << endl;
   }
   cout << endl;
 }
@@ -46,14 +57,14 @@ void plot(TFile & file, const string & name, zone_list zone = GLOBAL, bool keep 
   string title_discriminant = name + ": discriminant by flavour";
   string title_efficiency   = name + ": efficiency vs. discriminator cut";
   string title_mistag       = name + ": mistag vs. b tag efficiency";
-  string name_b_discr = folder + "/" + "discr_" + name + "BJetTags_" + zone_name[zone] + "B";
-  string name_c_discr = folder + "/" + "discr_" + name + "BJetTags_" + zone_name[zone] + "C";
-  string name_x_discr = folder + "/" + "discr_" + name + "BJetTags_" + zone_name[zone] + "DUS";
-  string name_g_discr = folder + "/" + "discr_" + name + "BJetTags_" + zone_name[zone] + "G";
-  string name_b_eff   = folder + "/" + "effVsDiscrCut_discrFC_" + name + "BJetTags_" + zone_name[zone] + "B";
-  string name_c_eff   = folder + "/" + "effVsDiscrCut_discrFC_" + name + "BJetTags_" + zone_name[zone] + "C";
-  string name_x_eff   = folder + "/" + "effVsDiscrCut_discrFC_" + name + "BJetTags_" + zone_name[zone] + "DUS";
-  string name_g_eff   = folder + "/" + "effVsDiscrCut_discrFC_" + name + "BJetTags_" + zone_name[zone] + "G";
+  string name_b_discr = folder + "/" + "discr_"                     + name + "BJetTags_" + zone_name[zone] + "B";
+  string name_c_discr = folder + "/" + "discr_"                     + name + "BJetTags_" + zone_name[zone] + "C";
+  string name_x_discr = folder + "/" + "discr_"                     + name + "BJetTags_" + zone_name[zone] + "DUS";
+  string name_g_discr = folder + "/" + "discr_"                     + name + "BJetTags_" + zone_name[zone] + "G";
+  string name_b_eff   = folder + "/" + "effVsDiscrCut_discrFC_"     + name + "BJetTags_" + zone_name[zone] + "B";
+  string name_c_eff   = folder + "/" + "effVsDiscrCut_discrFC_"     + name + "BJetTags_" + zone_name[zone] + "C";
+  string name_x_eff   = folder + "/" + "effVsDiscrCut_discrFC_"     + name + "BJetTags_" + zone_name[zone] + "DUS";
+  string name_g_eff   = folder + "/" + "effVsDiscrCut_discrFC_"     + name + "BJetTags_" + zone_name[zone] + "G";
   string name_c_vs_b  = folder + "/" + "FlavEffVsBEff_C_discrFC_"   + name + "BJetTags_" + zone_name[zone];
   string name_x_vs_b  = folder + "/" + "FlavEffVsBEff_DUS_discrFC_" + name + "BJetTags_" + zone_name[zone];
   string name_g_vs_b  = folder + "/" + "FlavEffVsBEff_G_discrFC_"   + name + "BJetTags_" + zone_name[zone];
