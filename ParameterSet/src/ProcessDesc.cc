@@ -18,6 +18,7 @@ static const char CVSId[] = "$Id$";
 #include "FWCore/ParameterSet/interface/OperatorNode.h"
 #include "FWCore/Utilities/interface/EDMException.h"
 #include "FWCore/Utilities/interface/DebugMacros.h"
+#include "FWCore/Utilities/interface/Algorithms.h"
 #include "FWCore/ParameterSet/interface/Registry.h"
 #include <iostream>
 
@@ -112,14 +113,11 @@ namespace edm
     if(1 <= edm::debugit())
       {
         std::cerr << "\nschedule=\n  ";
-        std::copy(schedule.begin(),schedule.end(),
-                  std::ostream_iterator<std::string>(std::cerr,","));
+        copy_all(schedule, std::ostream_iterator<std::string>(std::cerr,","));
         std::cerr << "\ntriggernames=\n  ";
-        std::copy(triggerpaths.begin(),triggerpaths.end(),
-                  std::ostream_iterator<std::string>(std::cerr,","));
+        copy_all(triggerpaths, std::ostream_iterator<std::string>(std::cerr,","));
         std::cerr << "\nendpaths=\n  ";
-        std::copy(endpaths.begin(),endpaths.end(),
-                  std::ostream_iterator<std::string>(std::cerr,","));
+        copy_all(endpaths, std::ostream_iterator<std::string>(std::cerr,","));
         std::cerr << "\n";
       }
 

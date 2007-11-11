@@ -17,6 +17,7 @@
 #include "FWCore/ParameterSet/interface/split.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/Utilities/interface/EDMException.h"
+#include "FWCore/Utilities/interface/Algorithms.h"
 
 #include "boost/bind.hpp"
 
@@ -269,7 +270,7 @@ namespace edm {
     for(std::vector<std::string>::const_iterator b = temp.begin(), e = temp.end(); b != e; ++b) {
       // locate required name/value separator
       std::string::const_iterator  q
-        = std::find(b->begin(), b->end(), '=');
+        = find_in_all(*b, '=');
       if(q == b->end())
         return false;
 
