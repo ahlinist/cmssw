@@ -16,7 +16,7 @@ vector<string> get_list(TFile& file) {
   for (unsigned int i = 0; i < file.GetListOfKeys()->GetSize(); ++i) {
     TString name( file.GetListOfKeys()->At(i)->GetName() );
     if (pcreJetTag.MatchB( name ))
-      list.push_back( string((TObjString *) pcreJetTag.MatchS( name )->At(1))->GetString() );
+      list.push_back( string( ((TObjString *) pcreJetTag.MatchS( name )->At(1))->GetString() ) );
   }
 
   return list;
@@ -28,7 +28,6 @@ void list(TFile & file) {
   cout << "BJetTags" << endl;
   for (unsigned int i = 0; i < list.size(); i++)
       cout << '\t' << list[i] << endl;
-  }
   cout << endl;
 }
 
