@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.6 2007/10/11 07:12:57 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.7 2007/11/12 14:48:21 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.6 $
-  \date $Date: 2007/10/11 07:12:57 $
+  \version $Revision: 1.7 $
+  \date $Date: 2007/11/12 14:48:21 $
 */
 
 #include <TH3.h>
@@ -264,7 +264,9 @@ void EERenderPlugin::preDrawTH3( TCanvas *c, const ObjInfo &o ) {
 
   assert( obj );
 
-  if( o.name.find( "EETTT Et map" ) < o.name.size() ) {
+  if( o.name.find( "EETTT Et map" ) < o.name.size() ||
+      o.name.find( "EETTT EE - Et trigger tower quality summary" ) < o.name.size() ||
+      o.name.find( "EETTT EE + Et trigger tower quality summary" ) < o.name.size() ) {
     obj->GetXaxis()->SetDrawOption("u");
     obj->GetYaxis()->SetDrawOption("u");
     obj->GetXaxis()->SetNdivisions(0);
@@ -511,7 +513,9 @@ void EERenderPlugin::postDrawTH3( TCanvas *c, const ObjInfo &o ) {
 
   assert( obj );
 
-  if( o.name.find( "EETTT Et map" ) < o.name.size() ) {
+  if( o.name.find( "EETTT Et map" ) < o.name.size() ||
+      o.name.find( "EETTT EE - Et trigger tower quality summary" < o.name.size() ||
+      o.name.find( "EETTT EE + Et trigger tower quality summary" < o.name.size() ) {
     int nch = strlen(obj->GetName())+5;
     char *name = new char[nch];
     sprintf(name,"%s_pyx",obj->GetName());
