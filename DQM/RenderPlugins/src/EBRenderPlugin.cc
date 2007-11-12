@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.7 2007/11/12 14:48:21 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.8 2007/11/12 14:57:59 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.7 $
-  \date $Date: 2007/11/12 14:48:21 $
+  \version $Revision: 1.8 $
+  \date $Date: 2007/11/12 14:57:59 $
 */
 
 #include <TH3.h>
@@ -404,12 +404,14 @@ void EBRenderPlugin::postDrawTProfile2D( TCanvas *c, const ObjInfo &o ) {
 
   if( o.name.find( "EBLT shape" ) < o.name.size() || 
       o.name.find( "EBTPT shape" ) < o.name.size() ) {
+    std::string title = obj->GetTitle();
     int nch = strlen(obj->GetName())+4;
     char *name = new char[nch];
     sprintf(name,"%s_py",obj->GetName());
     TH1D* obj1 = (TH1D*) gROOT->FindObject(name);
     if( obj1 ) obj1->Delete();
     obj1 = obj->ProjectionY(name, 1, 1, "e");
+    obj1->SetTitle(title.c_str());
     gStyle->SetOptStat("euomr");
     obj1->SetStats(kTRUE);
     obj1->SetMinimum(0.0);
@@ -441,22 +443,38 @@ void EBRenderPlugin::postDrawTH3( TCanvas *c, const ObjInfo &o ) {
 
   assert( obj );
 
+  int nbx = obj->GetNbinsX();
+  int nby = obj->GetNbinsY();
+
+  if( nbx == 85 && nby == 20 ) {
+    gPad->SetGridx();
+    gPad->SetGridy();
+    obj->GetXaxis()->SetNdivisions(17);
+    obj->GetYaxis()->SetNdivisions(4);
+  }
+
+  if( nbx == 17 && nby == 4 ) {
+    gPad->SetGridx();
+    gPad->SetGridy();
+    obj->GetXaxis()->SetNdivisions(17);
+    obj->GetYaxis()->SetNdivisions(4);
+  }
+
   if( o.name.find( "EBTTT Et map" ) < o.name.size() ||
       o.name.find( "EBTTT Et trigger tower quality summary" ) ) {
+    std::string title = obj->GetTitle();
     int nch = strlen(obj->GetName())+5;
     char *name = new char[nch];
     sprintf(name,"%s_pyx",obj->GetName());
     TProfile2D* obj1 = (TProfile2D*) gROOT->FindObject(name);
     if( obj1 ) obj->Delete();
     obj1 = obj->Project3DProfile("yx");
-    gPad->SetGridx();
-    gPad->SetGridy();
-    obj->GetXaxis()->SetNdivisions(40118, kFALSE);
-    obj->GetYaxis()->SetNdivisions(170102, kFALSE);
+    obj1->SetTitle(title.c_str());
     gStyle->SetPalette(10, pCol4);
     obj->SetOption("colz");
     gStyle->SetPaintTextFormat("+g");
     obj1->Draw();
+    text2->Draw("text,same");
     delete[] name;
     return;
   }

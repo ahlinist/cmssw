@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.8 2007/11/12 14:57:59 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.9 2007/11/12 15:05:01 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.8 $
-  \date $Date: 2007/11/12 14:57:59 $
+  \version $Revision: 1.9 $
+  \date $Date: 2007/11/12 15:05:01 $
 */
 
 #include <TH3.h>
@@ -452,12 +452,14 @@ void EERenderPlugin::postDrawTProfile2D( TCanvas *c, const ObjInfo &o ) {
   if( o.name.find( "EELT shape" ) < o.name.size() || 
       o.name.find( "EELDT shape" ) < o.name.size() || 
       o.name.find( "EETPT shape" ) < o.name.size() ) {
+    std::string title = obj->GetTitle();
     int nch = strlen(obj->GetName())+4;
     char *name = new char[nch];
     sprintf(name,"%s_py",obj->GetName());
     TH1D* obj1 = (TH1D*) gROOT->FindObject(name);
     if( obj1 ) obj1->Delete();
     obj1 = obj->ProjectionY(name, 1, 1, "e");
+    obj1->SetTitle(title.c_str());
     gStyle->SetOptStat("euomr");
     obj1->SetStats(kTRUE);
     obj1->SetMinimum(0.0);
@@ -513,19 +515,34 @@ void EERenderPlugin::postDrawTH3( TCanvas *c, const ObjInfo &o ) {
 
   assert( obj );
 
+  int nbx = obj->GetNbinsX();
+  int nby = obj->GetNbinsY();
+
+  if( nbx == 50 && nby == 50 ) {
+    gPad->SetGridx();
+    gPad->SetGridy();
+    obj->GetXaxis()->SetNdivisions(10);
+    obj->GetYaxis()->SetNdivisions(10);
+  }
+
+  if( nbx == 100 && nby == 100 ) {
+    gPad->SetGridx();
+    gPad->SetGridy();
+    obj->GetXaxis()->SetNdivisions(10);
+    obj->GetYaxis()->SetNdivisions(10);
+  }
+
   if( o.name.find( "EETTT Et map" ) < o.name.size() ||
       o.name.find( "EETTT EE - Et trigger tower quality summary" ) < o.name.size() ||
       o.name.find( "EETTT EE + Et trigger tower quality summary" ) < o.name.size() ) {
+    std::string title = obj->GetTitle();
     int nch = strlen(obj->GetName())+5;
     char *name = new char[nch];
     sprintf(name,"%s_pyx",obj->GetName());
     TProfile2D* obj1 = (TProfile2D*) gROOT->FindObject(name);
     if( obj1 ) obj1->Delete();
     obj1 = obj->Project3DProfile("yx");
-    gPad->SetGridx();
-    gPad->SetGridy();
-    obj->GetXaxis()->SetNdivisions(10, kFALSE);
-    obj->GetYaxis()->SetNdivisions(10, kFALSE);
+    obj1->SetTitle(title.c_str());
     gStyle->SetPalette(10, pCol4);
     obj->SetOption("colz");
     gStyle->SetPaintTextFormat("+g");
