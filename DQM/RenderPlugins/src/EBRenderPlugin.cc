@@ -414,6 +414,12 @@ void EBRenderPlugin::postDrawTProfile2D( TCanvas *c, const ObjInfo &o ) {
     gStyle->SetOptStat("euomr");
     obj1->SetStats(kTRUE);
     obj1->SetMinimum(0.0);
+    gPad->SetGridx(0);
+    gPad->SetGridy(0);
+    obj1->GetXaxis()->SetNdivisions(510);
+    obj1->GetYaxis()->SetNdivisions(510);
+    obj1->GetXaxis()->SetDrawOption("+");
+    obj1->GetYaxis()->SetDrawOption("+");
     obj1->Draw();
     return;
   }
