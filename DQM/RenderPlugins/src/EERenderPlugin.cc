@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.7 2007/11/12 14:48:21 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.8 2007/11/12 14:57:59 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.7 $
-  \date $Date: 2007/11/12 14:48:21 $
+  \version $Revision: 1.8 $
+  \date $Date: 2007/11/12 14:57:59 $
 */
 
 #include <TH3.h>
@@ -514,8 +514,8 @@ void EERenderPlugin::postDrawTH3( TCanvas *c, const ObjInfo &o ) {
   assert( obj );
 
   if( o.name.find( "EETTT Et map" ) < o.name.size() ||
-      o.name.find( "EETTT EE - Et trigger tower quality summary" < o.name.size() ||
-      o.name.find( "EETTT EE + Et trigger tower quality summary" < o.name.size() ) {
+      o.name.find( "EETTT EE - Et trigger tower quality summary" ) < o.name.size() ||
+      o.name.find( "EETTT EE + Et trigger tower quality summary" ) < o.name.size() ) {
     int nch = strlen(obj->GetName())+5;
     char *name = new char[nch];
     sprintf(name,"%s_pyx",obj->GetName());
