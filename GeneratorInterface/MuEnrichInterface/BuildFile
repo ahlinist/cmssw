@@ -3,6 +3,7 @@
 <use name=SimDataFormats/HepMCProduct>
 <use name=hepmc> 
 <use name=pythia6>
+<use name=f77compiler>
 
 <flags EDM_PLUGIN=1>
 <export>
@@ -13,6 +14,3 @@
  <use name=hepmc> 
  <use name=pythia6>
 </export>
-
- <lib name=g2c></lib>
- <lib name=m></lib>
