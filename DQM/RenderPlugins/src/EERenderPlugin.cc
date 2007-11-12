@@ -1,14 +1,15 @@
-// $Id: EERenderPlugin.cc,v 1.5 2007/10/11 06:19:27 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.6 2007/10/11 07:12:57 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.5 $
-  \date $Date: 2007/10/11 06:19:27 $
+  \version $Revision: 1.6 $
+  \date $Date: 2007/10/11 07:12:57 $
 */
 
+#include <TH3.h>
 #include <TProfile2D.h>
 
 #include <TStyle.h>
@@ -182,6 +183,9 @@ void EERenderPlugin::preDraw( TCanvas *c, const ObjInfo &o, const ImgInfo &i, Re
   else if( dynamic_cast<TProfile*>( o.object ) ) {
     preDrawTProfile( c, o );
   }
+  else if( dynamic_cast<TH3F*>( o.object ) ) {
+    preDrawTH3( c, o );
+  }
   else if( dynamic_cast<TH2*>( o.object ) ) {
     preDrawTH2( c, o );
   }
@@ -206,8 +210,7 @@ void EERenderPlugin::preDrawTProfile2D( TCanvas *c, const ObjInfo &o ) {
   gStyle->SetOptStat(0);
   obj->SetStats(kFALSE);
 
-  if( o.name.find( "EEPDT" ) < o.name.size() || 
-      o.name.find( "EELT shape" ) < o.name.size() || 
+  if( o.name.find( "EELT shape" ) < o.name.size() || 
       o.name.find( "EELDT shape" ) < o.name.size() || 
       o.name.find( "EETPT shape" ) < o.name.size() ) {
     obj->GetXaxis()->SetDrawOption("u");
@@ -251,6 +254,25 @@ void EERenderPlugin::preDrawTProfile( TCanvas *c, const ObjInfo &o ) {
   obj->SetStats( kFALSE );
   gStyle->SetOptStat("euomr");
   obj->SetStats(kTRUE);
+  return;
+
+}
+
+void EERenderPlugin::preDrawTH3( TCanvas *c, const ObjInfo &o ) {
+
+  TH3* obj = dynamic_cast<TH3*>( o.object );
+
+  assert( obj );
+
+  if( o.name.find( "EETTT Et map" ) < o.name.size() ) {
+    obj->GetXaxis()->SetDrawOption("u");
+    obj->GetYaxis()->SetDrawOption("u");
+    obj->GetXaxis()->SetNdivisions(0);
+    obj->GetYaxis()->SetNdivisions(0);
+    obj->SetOption("axis");
+    return;
+  }
+
   return;
 
 }
@@ -407,7 +429,9 @@ void EERenderPlugin::postDraw( TCanvas *c, const ObjInfo &o, const ImgInfo &i ) 
   if( dynamic_cast<TProfile2D*>( o.object ) ) {
     postDrawTProfile2D( c, o );
   }
-  else if( dynamic_cast<TH2*>( o.object ) ) {
+  else if( dynamic_cast<TH3F*>( o.object ) ) {
+    postDrawTH3( c, o );
+  }  else if( dynamic_cast<TH2*>( o.object ) ) {
     postDrawTH2( c, o );
   }
 
@@ -423,13 +447,15 @@ void EERenderPlugin::postDrawTProfile2D( TCanvas *c, const ObjInfo &o ) {
 
   assert( obj );
 
-  if( o.name.find( "EEPDT" ) < o.name.size() || 
-      o.name.find( "EELT shape" ) < o.name.size() || 
+  if( o.name.find( "EELT shape" ) < o.name.size() || 
       o.name.find( "EELDT shape" ) < o.name.size() || 
       o.name.find( "EETPT shape" ) < o.name.size() ) {
-    TH1D* obj1 = (TH1D*) gROOT->FindObject("shape");
-    if( obj1) obj1->Delete();
-    obj1 = obj->ProjectionY("shape", 1, 1, "e");
+    int nch = strlen(obj->GetName())+4;
+    char *name = new char[nch];
+    sprintf(name,"%s_py",obj->GetName());
+    TH1D* obj1 = (TH1D*) gROOT->FindObject(name);
+    if( obj1 ) obj1->Delete();
+    obj1 = obj->ProjectionY(name, 1, 1, "e");
     gStyle->SetOptStat("euomr");
     obj1->SetStats(kTRUE);
     obj1->SetMinimum(0.0);
@@ -440,6 +466,7 @@ void EERenderPlugin::postDrawTProfile2D( TCanvas *c, const ObjInfo &o ) {
     obj1->GetXaxis()->SetDrawOption("+");
     obj1->GetYaxis()->SetDrawOption("+");
     obj1->Draw();
+    delete[] name;
     return;
   }
 
@@ -464,6 +491,56 @@ void EERenderPlugin::postDrawTProfile2D( TCanvas *c, const ObjInfo &o ) {
       text9->Draw("text,same");
     }
     return;
+  }
+
+  int x1 = text1->GetXaxis()->FindBin(obj->GetXaxis()->GetXmin());
+  int x2 = text1->GetXaxis()->FindBin(obj->GetXaxis()->GetXmax());
+  int y1 = text1->GetYaxis()->FindBin(obj->GetYaxis()->GetXmin());
+  int y2 = text1->GetYaxis()->FindBin(obj->GetYaxis()->GetXmax());
+  text1->GetXaxis()->SetRange(x1, x2);
+  text1->GetYaxis()->SetRange(y1, y2);
+  text1->Draw("text,same");
+  text1->Draw( "text,same" );
+  return;
+
+}
+
+void EERenderPlugin::postDrawTH3( TCanvas *c, const ObjInfo &o ) {
+
+  TH3* obj = dynamic_cast<TH3*>( o.object );
+
+  assert( obj );
+
+  if( o.name.find( "EETTT Et map" ) < o.name.size() ) {
+    int nch = strlen(obj->GetName())+5;
+    char *name = new char[nch];
+    sprintf(name,"%s_pyx",obj->GetName());
+    TProfile2D* obj1 = (TProfile2D*) gROOT->FindObject(name);
+    if( obj1 ) obj1->Delete();
+    obj1 = obj->Project3DProfile("yx");
+    gPad->SetGridx();
+    gPad->SetGridy();
+    obj->GetXaxis()->SetNdivisions(10, kFALSE);
+    obj->GetYaxis()->SetNdivisions(10, kFALSE);
+    gStyle->SetPalette(10, pCol4);
+    obj->SetOption("colz");
+    gStyle->SetPaintTextFormat("+g");
+    obj1->Draw();
+    delete[] name;
+    return;
+  }
+
+  c->SetBit(TGraph::kClipFrame);
+  TLine l;
+  l.SetLineWidth(1);
+  for ( int i=0; i<201; i=i+1){
+    if ( (Numbers::ixSectorsEE[i]!=0 || Numbers::iySectorsEE[i]!=0) && (Numbers::ixSectorsEE[i+1]!=0 || Numbers::iySectorsEE[i+1]!=0) ) {
+      if( o.name.find( "EECLT" ) < o.name.size() ) {
+        l.DrawLine(3.0*(Numbers::ixSectorsEE[i]-50), 3.0*(Numbers::iySectorsEE[i]-50), 3.0*(Numbers::ixSectorsEE[i+1]-50), 3.0*(Numbers::iySectorsEE[i+1]-50));
+      } else {
+        l.DrawLine(Numbers::ixSectorsEE[i], Numbers::iySectorsEE[i], Numbers::ixSectorsEE[i+1], Numbers::iySectorsEE[i+1]);
+      }
+    }
   }
 
   int x1 = text1->GetXaxis()->FindBin(obj->GetXaxis()->GetXmin());
