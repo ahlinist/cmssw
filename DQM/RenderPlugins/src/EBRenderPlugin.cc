@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.11 2007/11/12 16:29:45 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.12 2007/11/12 16:35:09 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.11 $
-  \date $Date: 2007/11/12 16:29:45 $
+  \version $Revision: 1.12 $
+  \date $Date: 2007/11/12 16:35:09 $
 */
 
 #include <TH3.h>
@@ -414,12 +414,6 @@ void EBRenderPlugin::postDrawTProfile2D( TCanvas *c, const ObjInfo &o ) {
     gStyle->SetOptStat("euomr");
     obj1->SetStats(kTRUE);
     obj1->SetMinimum(0.0);
-    gPad->SetGridx(0);
-    gPad->SetGridy(0);
-    obj1->GetXaxis()->SetNdivisions(510);
-    obj1->GetYaxis()->SetNdivisions(510);
-    obj1->GetXaxis()->SetDrawOption("+");
-    obj1->GetYaxis()->SetDrawOption("+");
     obj1->Draw();
     return;
   }
