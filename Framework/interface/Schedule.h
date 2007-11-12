@@ -201,6 +201,9 @@ namespace edm {
     /// Return whether a module has reached its maximum count.
     bool const terminate() const;
 
+    ///  Clear all the counters in the trigger report.
+    void clearCounters();
+
     class CallPrePost {
     public:
       CallPrePost(ActivityRegistry* a, EventPrincipal* ep, EventSetup const* es);

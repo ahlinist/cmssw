@@ -69,6 +69,10 @@ namespace edm {
       return std::pair<double,double>(stopwatch_->cpuTime(),stopwatch_->realTime());
     }
 
+    void clearCounters() {
+      timesRun_ = timesVisited_ = timesPassed_ = timesFailed_ = timesExcept_ = 0;
+    }
+
     int timesRun() const { return timesRun_; }
     int timesVisited() const { return timesVisited_; }
     int timesPassed() const { return timesPassed_; }

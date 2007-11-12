@@ -62,6 +62,8 @@ namespace edm {
       return workers_.at(i).timeCpuReal();
     }
 
+    void clearCounters();
+
     int timesRun() const { return timesRun_; }
     int timesPassed() const { return timesPassed_; }
     int timesFailed() const { return timesFailed_; }

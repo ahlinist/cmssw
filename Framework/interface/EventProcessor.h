@@ -265,6 +265,9 @@ namespace edm {
     /// modules-in-path, modules-in-endpath, and modules.
     void getTriggerReport(TriggerReport& rep) const;      
 
+    /// Clears counters used by trigger report.
+    void clearCounters();
+
     //------------------------------------------------------------------
     //
     // Data members (and nested classes and structs) below.
