@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.11 2007/11/12 16:12:15 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.12 2007/11/12 16:29:45 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.11 $
-  \date $Date: 2007/11/12 16:12:15 $
+  \version $Revision: 1.12 $
+  \date $Date: 2007/11/12 16:29:45 $
 */
 
 #include <TH3.h>
@@ -264,6 +264,8 @@ void EERenderPlugin::preDrawTH3( TCanvas *c, const ObjInfo &o ) {
 
   assert( obj );
 
+return;
+
   if( o.name.find( "EETTT Et map" ) < o.name.size() ||
       o.name.find( "EETTT EE - Et trigger tower quality summary" ) < o.name.size() ||
       o.name.find( "EETTT EE + Et trigger tower quality summary" ) < o.name.size() ) {
@@ -509,6 +511,8 @@ void EERenderPlugin::postDrawTH3( TCanvas *c, const ObjInfo &o ) {
   TH3* obj = dynamic_cast<TH3*>( o.object );
 
   assert( obj );
+
+return;
 
   gStyle->SetOptStat(0);
   obj->SetStats( kFALSE );

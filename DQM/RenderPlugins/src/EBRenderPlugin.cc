@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.10 2007/11/12 16:12:15 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.11 2007/11/12 16:29:45 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.10 $
-  \date $Date: 2007/11/12 16:12:15 $
+  \version $Revision: 1.11 $
+  \date $Date: 2007/11/12 16:29:45 $
 */
 
 #include <TH3.h>
@@ -218,6 +218,8 @@ void EBRenderPlugin::preDrawTH3( TCanvas *c, const ObjInfo &o ) {
   TH3* obj = dynamic_cast<TH3*>( o.object );
   
   assert( obj );
+
+return;
 
   if( o.name.find( "EBTTT Et map" ) < o.name.size() ||
       o.name.find( "EBTTT Et trigger tower quality summary" ) ) {
@@ -438,6 +440,8 @@ void EBRenderPlugin::postDrawTH3( TCanvas *c, const ObjInfo &o ) {
   TH3* obj = dynamic_cast<TH3*>( o.object );
 
   assert( obj );
+
+return;
 
   gStyle->SetOptStat(0);
   obj->SetStats( kFALSE );
