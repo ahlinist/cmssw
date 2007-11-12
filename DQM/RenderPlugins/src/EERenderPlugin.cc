@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.10 2007/11/12 15:50:39 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.11 2007/11/12 16:12:15 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.10 $
-  \date $Date: 2007/11/12 15:50:39 $
+  \version $Revision: 1.11 $
+  \date $Date: 2007/11/12 16:12:15 $
 */
 
 #include <TH3.h>
@@ -500,7 +500,6 @@ void EERenderPlugin::postDrawTProfile2D( TCanvas *c, const ObjInfo &o ) {
   text1->GetXaxis()->SetRange(x1, x2);
   text1->GetYaxis()->SetRange(y1, y2);
   text1->Draw("text,same");
-  text1->Draw( "text,same" );
   return;
 
 }
@@ -511,6 +510,8 @@ void EERenderPlugin::postDrawTH3( TCanvas *c, const ObjInfo &o ) {
 
   assert( obj );
 
+  gStyle->SetOptStat(0);
+  obj->SetStats( kFALSE );
   int nbx = obj->GetNbinsX();
   int nby = obj->GetNbinsY();
 
@@ -540,7 +541,6 @@ void EERenderPlugin::postDrawTH3( TCanvas *c, const ObjInfo &o ) {
     obj->SetOption("colz");
     gStyle->SetPaintTextFormat("+g");
     obj1->Draw();
-    return;
   }
 
   c->SetBit(TGraph::kClipFrame);
@@ -563,7 +563,6 @@ void EERenderPlugin::postDrawTH3( TCanvas *c, const ObjInfo &o ) {
   text1->GetXaxis()->SetRange(x1, x2);
   text1->GetYaxis()->SetRange(y1, y2);
   text1->Draw("text,same");
-  text1->Draw( "text,same" );
   return;
 
 }
@@ -598,7 +597,6 @@ void EERenderPlugin::postDrawTH2( TCanvas *c, const ObjInfo &o ) {
     text1->GetXaxis()->SetRange(x1, x2);
     text1->GetYaxis()->SetRange(y1, y2);
     text1->Draw("text,same");
-    text1->Draw( "text,same" );
     return;
   }
 

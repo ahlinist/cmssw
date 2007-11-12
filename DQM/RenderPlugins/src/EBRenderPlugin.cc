@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.9 2007/11/12 15:50:39 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.10 2007/11/12 16:12:15 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.9 $
-  \date $Date: 2007/11/12 15:50:39 $
+  \version $Revision: 1.10 $
+  \date $Date: 2007/11/12 16:12:15 $
 */
 
 #include <TH3.h>
@@ -423,12 +423,12 @@ void EBRenderPlugin::postDrawTProfile2D( TCanvas *c, const ObjInfo &o ) {
   }
 
   if( o.name.find( "EBCLT" ) < o.name.size() ) {
-    text7->Draw( "text,same" );
+    text7->Draw("text,same");
     //ax1->Draw();
     return;
   }
 
-  text1->Draw( "text,same" );
+  text1->Draw("text,same");
   return;
 
 }
@@ -439,21 +439,23 @@ void EBRenderPlugin::postDrawTH3( TCanvas *c, const ObjInfo &o ) {
 
   assert( obj );
 
+  gStyle->SetOptStat(0);
+  obj->SetStats( kFALSE );
   int nbx = obj->GetNbinsX();
   int nby = obj->GetNbinsY();
-
-  if( nbx == 85 && nby == 20 ) {
-    gPad->SetGridx();
-    gPad->SetGridy();
-    obj->GetXaxis()->SetNdivisions(17);
-    obj->GetYaxis()->SetNdivisions(4);
-  }
 
   if( nbx == 17 && nby == 4 ) {
     gPad->SetGridx();
     gPad->SetGridy();
     obj->GetXaxis()->SetNdivisions(17);
     obj->GetYaxis()->SetNdivisions(4);
+  }
+
+  if( nbx == 72 && nby == 34 ) {
+    gPad->SetGridx();
+    gPad->SetGridy();
+    obj->GetXaxis()->SetNdivisions(18);
+    obj->GetYaxis()->SetNdivisions(2);
   }
 
   if( o.name.find( "EBTTT Et map" ) < o.name.size() ||
@@ -467,11 +469,18 @@ void EBRenderPlugin::postDrawTH3( TCanvas *c, const ObjInfo &o ) {
     obj->SetOption("colz");
     gStyle->SetPaintTextFormat("+g");
     obj1->Draw();
+  }
+
+  if( nbx == 17 && nby == 4 ) {
     text2->Draw("text,same");
     return;
   }
 
-  text1->Draw( "text,same" );
+  if( o.name.find( "summary" ) < o.name.size() ) {
+    text6->Draw("text,same");
+    return;
+  }
+
   return;
 
 }
