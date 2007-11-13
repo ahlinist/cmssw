@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.16 2007/11/13 11:15:34 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.17 2007/11/13 12:48:20 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.16 $
-  \date $Date: 2007/11/13 11:15:34 $
+  \version $Revision: 1.17 $
+  \date $Date: 2007/11/13 12:48:20 $
 */
 
 #include <TH3.h>
@@ -450,6 +450,79 @@ void EBRenderPlugin::postDrawTH3( TCanvas *c, const ObjInfo &o ) {
       obj1->Draw();
       text8->Draw("text,same");
     }
+
+    return;
+  }
+
+  if( o.name.find( "EBTTT Flags" ) < o.name.size() ) {
+    std::string name = obj->GetName();
+    if( o.name.find( "Bit 000" ) < o.name.size() ) {
+      obj->GetZaxis()->SetRange(1, 1);
+    }
+    if( o.name.find( "Bit 001" ) < o.name.size() ) {
+      obj->GetZaxis()->SetRange(2, 2);
+    }
+    if( o.name.find( "Bit 011" ) < o.name.size() ) {
+      obj->GetZaxis()->SetRange(3, 3);
+    }
+    if( o.name.find( "Bit 100" ) < o.name.size() ) {
+      obj->GetZaxis()->SetRange(4, 4);
+    }
+    if( o.name.find( "Bit 110" ) < o.name.size() ) {
+      obj->GetZaxis()->SetRange(5, 5);
+    }
+    if( o.name.find( "Bit 101" ) < o.name.size() ) {
+      obj->GetZaxis()->SetRange(6, 6);
+    }
+    if( o.name.find( "Bits 110+111" ) < o.name.size() ) {
+      obj->GetZaxis()->SetRange(7, 8);
+    }
+    TH2F* obj1 = (TH2F*) obj->Project3D( "yx" );
+    obj1->SetTitle(name.c_str());
+    gPad->Clear();
+
+    gStyle->SetOptStat(0);
+    obj1->SetStats( kFALSE );
+
+    obj1->SetMinimum(0);
+    gStyle->SetPalette(10, pCol4);
+    obj1->SetOption("colz");
+    gPad->SetGridx();
+    gPad->SetGridy();
+    gStyle->SetPaintTextFormat("+g");
+    obj1->GetXaxis()->SetNdivisions(17);
+    obj1->GetYaxis()->SetNdivisions(4);
+    obj1->Draw();
+    text2->Draw("text,same");
+
+    return;
+  }
+
+  if( o.name.find( "EBTTT FineGrainVeto" ) < o.name.size() ) {
+    std::string name = obj->GetName();
+    if( o.name.find( "Flag 0" ) < o.name.size() ) {
+      obj->GetZaxis()->SetRange(1, 1);
+    }
+    if( o.name.find( "Flag 1" ) < o.name.size() ) {
+      obj->GetZaxis()->SetRange(2, 2);
+    }
+    TH2F* obj1 = (TH2F*) obj->Project3D( "yx" );
+    obj1->SetTitle(name.c_str());
+    gPad->Clear();
+    
+    gStyle->SetOptStat(0);
+    obj1->SetStats( kFALSE );
+
+    obj1->SetMinimum(0);
+    gStyle->SetPalette(10, pCol4);
+    obj1->SetOption("colz");
+    gPad->SetGridx();
+    gPad->SetGridy();
+    gStyle->SetPaintTextFormat("+g");
+    obj1->GetXaxis()->SetNdivisions(17);
+    obj1->GetYaxis()->SetNdivisions(4);
+    obj1->Draw();
+    text2->Draw("text,same");
 
     return;
   }
