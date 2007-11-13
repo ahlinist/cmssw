@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.14 2007/11/12 19:21:04 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.15 2007/11/13 09:01:21 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.14 $
-  \date $Date: 2007/11/12 19:21:04 $
+  \version $Revision: 1.15 $
+  \date $Date: 2007/11/13 09:01:21 $
 */
 
 #include <TH3.h>
@@ -29,6 +29,7 @@ static TH2C* t3 = new TH2C( "eb_text3", "text3", 10, 0,  10,  5,   0,  5 );
 static TH2C* t4 = new TH2C( "eb_text4", "text4",  2, 0,   2,  1,   0,  1 );
 static TH2C* t6 = new TH2C( "eb_text6", "text6", 18, 0, 360,  2, -85, 85 );
 static TH2C* t7 = new TH2C( "eb_text7", "text7", 18, -M_PI*(9+1.5)/9, M_PI*(9-1.5)/9, 2, -1.479, 1.479);
+static TH2C* t8 = new TH2C( "eb_text8", "text8", 18, 0., 72., 2, -17., 17. );
 
 static TGaxis* ax1 = new TGaxis(-M_PI*(9+1.5)/9, -1.479, M_PI*(9-1.5)/9, -1.479, -M_PI*(9+1.5)/9, M_PI*(9-1.5)/9, 40306, "N");
 
@@ -68,6 +69,7 @@ void EBRenderPlugin::initialise( int argc, char **argv, DaqMonitorBEInterface *b
   text4 = t4;
   text6 = t6;
   text7 = t7;
+  text8 = t8;
 
   text1->SetMinimum(   0.1 );
   text2->SetMinimum(   0.1 );
@@ -75,6 +77,7 @@ void EBRenderPlugin::initialise( int argc, char **argv, DaqMonitorBEInterface *b
   text4->SetMinimum(   0.1 );
   text6->SetMinimum( -18.01 );
   text7->SetMinimum( -18.01 );
+  text8->SetMinimum( -18.01 );
 
   for( short i=0; i<68; i++ ) {
     text1->Fill( 2+(i/4)*5, 2+(i%4)*5, i+1 );
@@ -100,6 +103,11 @@ void EBRenderPlugin::initialise( int argc, char **argv, DaqMonitorBEInterface *b
       text7->SetBinContent(x, y, +z);
     }
   }
+  for ( short i=0; i<36; i++ ) {
+    int x = 1 + i%18;
+    int y = 1 + i/18;
+    text8->SetBinContent(x, y, Numbers::iEB(i+1));
+  }
 
   text1->SetMarkerSize( 2 );
   text2->SetMarkerSize( 2 );
@@ -107,6 +115,7 @@ void EBRenderPlugin::initialise( int argc, char **argv, DaqMonitorBEInterface *b
   text4->SetMarkerSize( 2 );
   text6->SetMarkerSize( 2 );
   text7->SetMarkerSize( 2 );
+  text8->SetMarkerSize( 2 );
 
 }
 
@@ -276,6 +285,13 @@ void EBRenderPlugin::preDrawTH2( TCanvas *c, const ObjInfo &o ) {
   }
 
   if( nbx == 90 && nby == 20 ) { 
+    gPad->SetGridx();
+    gPad->SetGridy();
+    obj->GetXaxis()->SetNdivisions(18, kFALSE);
+    obj->GetYaxis()->SetNdivisions(2, kFALSE);
+  }
+
+  if( nbx == 72 && nby == 34 ) {
     gPad->SetGridx();
     gPad->SetGridy();
     obj->GetXaxis()->SetNdivisions(18, kFALSE);
@@ -485,6 +501,11 @@ void EBRenderPlugin::postDrawTH2( TCanvas *c, const ObjInfo &o ) {
 
   if( nbx == 2 && nby == 1 ) {
     text4->Draw("text,same");
+    return;
+  }
+
+  if( nbx == 72 && nby == 34 ) {
+    text8->Draw("text,same");
     return;
   }
 
