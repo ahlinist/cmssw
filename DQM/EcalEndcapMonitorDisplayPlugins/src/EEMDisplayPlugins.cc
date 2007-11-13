@@ -1,11 +1,11 @@
-// $Id: EEMDisplayPlugins.cc,v 1.14 2007/10/11 06:15:49 dellaric Exp $
+// $Id: EEMDisplayPlugins.cc,v 1.15 2007/11/13 09:01:21 dellaric Exp $
 
 /*!
   \file EEMDisplayPlugins
   \brief Display Plugin for Quality Histograms (2D)
   \author B. Gobbo 
-  \version $Revision: 1.14 $
-  \date $Date: 2007/10/11 06:15:49 $
+  \version $Revision: 1.15 $
+  \date $Date: 2007/11/13 09:01:21 $
 */
 
 #include <TProfile2D.h>
@@ -443,10 +443,6 @@ void EEMDisplayPlugins::postDraw( DisplayData *data ) {
 }
 
 void EEMDisplayPlugins::postDrawTProfile2D( DisplayData *data ) {
-
-  TProfile2D* obj = dynamic_cast<TProfile2D*>( data->object );
-
-  name = (data->object)->GetName();
 
   text1->Draw( "text,same" );
 

@@ -1,11 +1,11 @@
-// $Id: EBMDisplayPlugins.cc,v 1.31 2007/10/11 06:15:48 dellaric Exp $
+// $Id: EBMDisplayPlugins.cc,v 1.32 2007/11/13 09:01:18 dellaric Exp $
 
 /*!
   \file EBMDisplayPlugins
   \brief Display Plugin for Quality Histograms (2D)
   \author B. Gobbo 
-  \version $Revision: 1.31 $
-  \date $Date: 2007/10/11 06:15:48 $
+  \version $Revision: 1.32 $
+  \date $Date: 2007/11/13 09:01:18 $
 */
 
 #include <TProfile2D.h>
@@ -460,10 +460,6 @@ void EBMDisplayPlugins::postDraw( DisplayData *data ) {
 }
 
 void EBMDisplayPlugins::postDrawTProfile2D( DisplayData *data ) {
-
-  TProfile2D* obj = dynamic_cast<TProfile2D*>( data->object );
-
-  name = (data->object)->GetName();
 
   text1->Draw( "text,same" );
 
