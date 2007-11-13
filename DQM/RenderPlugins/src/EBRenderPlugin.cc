@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.15 2007/11/13 09:01:21 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.16 2007/11/13 11:15:34 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.15 $
-  \date $Date: 2007/11/13 09:01:21 $
+  \version $Revision: 1.16 $
+  \date $Date: 2007/11/13 11:15:34 $
 */
 
 #include <TH3.h>
@@ -204,8 +204,6 @@ void EBRenderPlugin::preDrawTProfile( TCanvas *c, const ObjInfo &o ) {
 
   assert( obj );
 
-  gStyle->SetOptStat(0);
-  obj->SetStats( kFALSE );
   gStyle->SetOptStat("euomr");
   obj->SetStats(kTRUE);
   return;
@@ -218,17 +216,8 @@ void EBRenderPlugin::preDrawTH3( TCanvas *c, const ObjInfo &o ) {
   
   assert( obj );
 
-return;
-
-  if( o.name.find( "EBTTT Et map" ) < o.name.size() ||
-      o.name.find( "EBTTT Et trigger tower quality summary" ) ) {
-    obj->GetXaxis()->SetDrawOption("u");
-    obj->GetYaxis()->SetDrawOption("u");
-    obj->GetXaxis()->SetNdivisions(0);
-    obj->GetYaxis()->SetNdivisions(0);
-    obj->SetOption("axis");
-    return;
-  }
+  gStyle->SetOptStat(0);
+  obj->SetStats( kFALSE );
 
   return;
   
@@ -244,6 +233,7 @@ void EBRenderPlugin::preDrawTH2( TCanvas *c, const ObjInfo &o ) {
 
   gStyle->SetOptStat(0);
   obj->SetStats( kFALSE );
+
   int nbx = obj->GetNbinsX();
   int nby = obj->GetNbinsY();
 
@@ -281,7 +271,7 @@ void EBRenderPlugin::preDrawTH2( TCanvas *c, const ObjInfo &o ) {
     gPad->SetGridx();
     gPad->SetGridy();
     obj->GetXaxis()->SetNdivisions(18, kFALSE);
-    obj->GetYaxis()->SetNdivisions(2);
+    obj->GetYaxis()->SetNdivisions(2, kFALSE);
   }
 
   if( nbx == 90 && nby == 20 ) { 
@@ -368,14 +358,15 @@ void EBRenderPlugin::preDrawTH1( TCanvas *c, const ObjInfo &o ) {
 
   assert( obj );
 
+  gStyle->SetOptStat("euomr");
   obj->SetStats(kTRUE);
+
   if ( obj->GetMaximum(1.e15) > 0. ) {
     gPad->SetLogy(1);
   } else {
    gPad->SetLogy(0);
   }
 
-  gStyle->SetOptStat("euomr");
   return;
 
 }
@@ -427,47 +418,39 @@ void EBRenderPlugin::postDrawTH3( TCanvas *c, const ObjInfo &o ) {
 
   assert( obj );
 
-return;
-
-  gStyle->SetOptStat(0);
-  obj->SetStats( kFALSE );
-  int nbx = obj->GetNbinsX();
-  int nby = obj->GetNbinsY();
-
-  if( nbx == 17 && nby == 4 ) {
-    gPad->SetGridx();
-    gPad->SetGridy();
-    obj->GetXaxis()->SetNdivisions(17);
-    obj->GetYaxis()->SetNdivisions(4);
-  }
-
-  if( nbx == 72 && nby == 34 ) {
-    gPad->SetGridx();
-    gPad->SetGridy();
-    obj->GetXaxis()->SetNdivisions(18);
-    obj->GetYaxis()->SetNdivisions(2);
-  }
-
   if( o.name.find( "EBTTT Et map" ) < o.name.size() ||
       o.name.find( "EBTTT Et trigger tower quality summary" ) ) {
-    std::string name = o.name + "_pyx";
-    TProfile2D* obj1 = (TProfile2D*) gROOT->FindObject(name.c_str());
-    if( obj1 ) obj->Delete();
-    obj1 = obj->Project3DProfile("yx");
-    obj1->SetTitle(o.name.c_str());
+    std::string name = obj->GetName();
+    TProfile2D* obj1 = obj->Project3DProfile("yx");
+    obj1->SetTitle(name.c_str());
+    gPad->Clear();
+
+    gStyle->SetOptStat(0);
+    obj1->SetStats( kFALSE );
+
+    int nbx = obj1->GetNbinsX();
+    int nby = obj1->GetNbinsY();
+
     gStyle->SetPalette(10, pCol4);
-    obj->SetOption("colz");
+    obj1->SetOption("colz");
     gStyle->SetPaintTextFormat("+g");
-    obj1->Draw();
-  }
+    if( nbx == 17 && nby == 4 ) {
+      gPad->SetGridx();
+      gPad->SetGridy();
+      obj1->GetXaxis()->SetNdivisions(17);
+      obj1->GetYaxis()->SetNdivisions(4);
+      obj1->Draw();
+      text2->Draw("text,same");
+    }
+    if( nbx == 72 && nby == 34 ) {
+      gPad->SetGridx();
+      gPad->SetGridy();
+      obj1->GetXaxis()->SetNdivisions(18, kFALSE);
+      obj1->GetYaxis()->SetNdivisions(2, kFALSE);
+      obj1->Draw();
+      text8->Draw("text,same");
+    }
 
-  if( nbx == 17 && nby == 4 ) {
-    text2->Draw("text,same");
-    return;
-  }
-
-  if( o.name.find( "summary" ) < o.name.size() ) {
-    text6->Draw("text,same");
     return;
   }
 
