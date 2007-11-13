@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.13 2007/11/12 16:35:09 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.15 2007/11/12 19:21:04 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.13 $
-  \date $Date: 2007/11/12 16:35:09 $
+  \version $Revision: 1.15 $
+  \date $Date: 2007/11/12 19:21:04 $
 */
 
 #include <TH3.h>
@@ -209,17 +209,6 @@ void EERenderPlugin::preDrawTProfile2D( TCanvas *c, const ObjInfo &o ) {
 
   gStyle->SetOptStat(0);
   obj->SetStats(kFALSE);
-
-  if( o.name.find( "EELT shape" ) < o.name.size() || 
-      o.name.find( "EELDT shape" ) < o.name.size() || 
-      o.name.find( "EETPT shape" ) < o.name.size() ) {
-    obj->GetXaxis()->SetDrawOption("u");
-    obj->GetYaxis()->SetDrawOption("u");
-    obj->GetXaxis()->SetNdivisions(0);
-    obj->GetYaxis()->SetNdivisions(0);
-    obj->SetOption("axis");
-    return;
-  }
 
   // Occupancy-like (10 x grays) plots
   if( o.name.find( "EECLT" ) < o.name.size() ) {
@@ -450,27 +439,6 @@ void EERenderPlugin::postDrawTProfile2D( TCanvas *c, const ObjInfo &o ) {
   TProfile2D* obj = dynamic_cast<TProfile2D*>( o.object );
 
   assert( obj );
-
-  if( o.name.find( "EELT shape" ) < o.name.size() || 
-      o.name.find( "EELDT shape" ) < o.name.size() || 
-      o.name.find( "EETPT shape" ) < o.name.size() ) {
-    std::string name = o.name + "_py";
-    TH1D* obj1 = (TH1D*) gROOT->FindObject(name.c_str());
-    if( obj1 ) obj1->Delete();
-    obj1 = obj->ProjectionY(name.c_str(), 1, 1, "e");
-    obj1->SetTitle(o.name.c_str());
-    gStyle->SetOptStat("euomr");
-    obj1->SetStats(kTRUE);
-    obj1->SetMinimum(0.0);
-    gPad->SetGridx(0);
-    gPad->SetGridy(0);
-    obj1->GetXaxis()->SetNdivisions(510);
-    obj1->GetYaxis()->SetNdivisions(510);
-    obj1->GetXaxis()->SetDrawOption("+");
-    obj1->GetYaxis()->SetDrawOption("+");
-    obj1->Draw();
-    return;
-  }
 
   c->SetBit(TGraph::kClipFrame);
   TLine l;
