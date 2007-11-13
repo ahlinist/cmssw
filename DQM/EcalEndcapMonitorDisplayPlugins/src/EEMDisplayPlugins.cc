@@ -1,11 +1,11 @@
-// $Id: EEMDisplayPlugins.cc,v 1.13 2007/10/10 20:36:34 dellaric Exp $
+// $Id: EEMDisplayPlugins.cc,v 1.14 2007/10/11 06:15:49 dellaric Exp $
 
 /*!
   \file EEMDisplayPlugins
   \brief Display Plugin for Quality Histograms (2D)
   \author B. Gobbo 
-  \version $Revision: 1.13 $
-  \date $Date: 2007/10/10 20:36:34 $
+  \version $Revision: 1.14 $
+  \date $Date: 2007/10/11 06:15:49 $
 */
 
 #include <TProfile2D.h>
@@ -169,19 +169,6 @@ std::string EEMDisplayPlugins::preDrawTProfile2D( DisplayData *data ) {
   name = (data->object)->GetName();
 
   if( obj ) {
-    if( name.find( "EEPDT" ) < name.size() || 
-	name.find( "EELT shape" ) < name.size() || 
-	name.find( "EETPT shape" ) < name.size() ) {
-      gStyle->SetOptStat( 0 );
-      obj->SetStats( kFALSE );
-      obj->GetXaxis()->SetDrawOption("u");
-      obj->GetYaxis()->SetDrawOption("u");
-      obj->GetXaxis()->SetNdivisions(0);
-      obj->GetYaxis()->SetNdivisions(0);
-      obj->SetOption( "axis" );
-      return "";
-    }
-
     gStyle->SetOptStat( 0 );
     obj->SetStats( kFALSE );
     nbx = obj->GetNbinsX();
@@ -460,27 +447,6 @@ void EEMDisplayPlugins::postDrawTProfile2D( DisplayData *data ) {
   TProfile2D* obj = dynamic_cast<TProfile2D*>( data->object );
 
   name = (data->object)->GetName();
-
-  if( obj ) {
-    if( name.find( "EEPDT" ) < name.size() || 
-	name.find( "EELT shape" ) < name.size() || 
-	name.find( "EETPT shape" ) < name.size() ) {
-      TH1D* obj1 = (TH1D*) gROOT->FindObject("shape");
-      if( obj1) obj1->Delete();
-      obj1 = obj->ProjectionY( "shape", 1, 1, "e" );
-      gStyle->SetOptStat( "euomr" );
-      obj1->SetStats( kTRUE );
-      obj1->SetMinimum( 0. );
-      (data->pad)->SetGridx( 0 );
-      (data->pad)->SetGridy( 0 );
-      obj1->GetXaxis()->SetDrawOption("+");
-      obj1->GetYaxis()->SetDrawOption("+");
-      obj1->GetXaxis()->SetNdivisions(510);
-      obj1->GetYaxis()->SetNdivisions(510);
-      obj1->Draw();
-      return;
-    }
-  }
 
   text1->Draw( "text,same" );
 
