@@ -118,7 +118,7 @@
   </LogicalPart>
   <LogicalPart name="TECAlignRing" category="unspecified">
     <rSolid name="trackerbulkhead:TECAlignRing"/>
-    <rMaterial name="tecmaterial:TEC_AlignRing"/>>
+    <rMaterial name="tecmaterial:TEC_AlignRing"/>
   </LogicalPart>  
 
   <LogicalPart name="TECPpBoxL" category="unspecified">
