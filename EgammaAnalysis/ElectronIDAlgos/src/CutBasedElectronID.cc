@@ -102,38 +102,77 @@ bool CutBasedElectronID::result(const reco::PixelMatchGsfElectron* electron,
   // TIGHT Selection
   if (quality_ == "tight") {
     
+    if ((eOverP < 0.8) && (fBrem < 0.2)) 
+      return false;
+    
     if (eOverP < 0.9*(1-fBrem))
       return false;
+    
+    cut = cuts_.getParameter<std::vector<double> >("hOverE");
+    if (hOverE > cut[cat+4*eb]) 
+      return false;    
+    
+    cut = cuts_.getParameter<std::vector<double> >("sigmaEtaEta");
+    if (sigmaee > cut[cat+4*eb]) 
+      return false;    
+    
+    cut = cuts_.getParameter<std::vector<double> >("deltaPhiIn");
+    if (eOverP < 1.5) {
+      if (fabs(deltaPhiIn) > cut[cat+4*eb]) 
+        return false;    
+    } else {
+      if (fabs(deltaPhiIn) > cut[3+4*eb])
+        return false;
+    }
+    
+    cut = cuts_.getParameter<std::vector<double> >("deltaEtaIn");
+    if (fabs(deltaEtaIn) > cut[cat+4*eb]) 
+      return false;    
+    
+    cut = cuts_.getParameter<std::vector<double> >("eSeedOverPinMin");
+    if (eSeedOverPin < cut[cat+4*eb]) 
+      return false;  
+
+    cut = cuts_.getParameter<std::vector<double> >("eSeedOverPinMax");
+    if (eSeedOverPin > cut[cat+4*eb]) 
+      return false;  
+
+    return true;
   }
   
     // LOOSE Selection
-  if ((eOverP < 0.8) && (fBrem < 0.2)) 
-    return false;
-
-  cut = cuts_.getParameter<std::vector<double> >("hOverE");
-  if (hOverE > cut[cat+4*eb]) 
-    return false;    
-  
-  cut = cuts_.getParameter<std::vector<double> >("sigmaEtaEta");
-  if (sigmaee > cut[cat+4*eb]) 
-    return false;    
-  
-  cut = cuts_.getParameter<std::vector<double> >("deltaPhiIn");
-  if (eOverP < 1.5) {
-    if (deltaPhiIn > cut[cat+4*eb]) 
-      return false;    
-  } else {
-    if (deltaPhiIn > cut[3+4*eb])
+  if (quality_ == "loose") {
+    
+    if ((eOverP < 0.8) && (fBrem < 0.2)) 
       return false;
+    
+    cut = cuts_.getParameter<std::vector<double> >("hOverE");
+    if (hOverE > cut[cat+4*eb]) 
+      return false;    
+    
+    cut = cuts_.getParameter<std::vector<double> >("sigmaEtaEta");
+    if (sigmaee > cut[cat+4*eb]) 
+      return false;    
+    
+    cut = cuts_.getParameter<std::vector<double> >("deltaPhiIn");
+    if (eOverP < 1.5) {
+      if (fabs(deltaPhiIn) > cut[cat+4*eb]) 
+        return false;    
+    } else {
+      if (fabs(deltaPhiIn) > cut[3+4*eb])
+        return false;
+    }
+    
+    cut = cuts_.getParameter<std::vector<double> >("deltaEtaIn");
+    if (fabs(deltaEtaIn) > cut[cat+4*eb]) 
+      return false;    
+    
+    cut = cuts_.getParameter<std::vector<double> >("eSeedOverPin");
+    if (eSeedOverPin < cut[cat+4*eb]) 
+      return false;  
+    
+    return true; 
   }
   
-  cut = cuts_.getParameter<std::vector<double> >("deltaEtaIn");
-  if (deltaEtaIn > cut[cat+4*eb]) 
-    return false;    
-  
-  cut = cuts_.getParameter<std::vector<double> >("eSeedOverPin");
-  if (eSeedOverPin < cut[cat+4*eb]) 
-    return false;  
-    
-  return true; 
+  return false;
 }
