@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.22 2007/11/15 08:46:19 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.23 2007/11/15 11:32:23 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.22 $
-  \date $Date: 2007/11/15 08:46:19 $
+  \version $Revision: 1.23 $
+  \date $Date: 2007/11/15 11:32:23 $
 */
 
 #include <TH3.h>
@@ -330,14 +330,17 @@ void EBRenderPlugin::preDrawTH2( TCanvas *c, const ObjInfo &o ) {
     obj->SetMinimum(0.0);
     gStyle->SetPalette(10, pCol4);
     obj->SetOption("colz");
+    gStyle->SetPaintTextFormat("+g");
     return;
   }
 
   // Occupancy-like (10 x grays) plots
-  if( o.name.find( "EBTTT" ) < o.name.size() ) {
+  if( o.name.find( "EBTTT" ) < o.name.size() &&
+      o.name.find( "quality" ) >= o.name.size() ) {
     obj->SetMinimum(0.0);
     gStyle->SetPalette(10, pCol4);
     obj->SetOption("colz");
+    gStyle->SetPaintTextFormat("+g");
     return;
   }
 
@@ -367,6 +370,7 @@ void EBRenderPlugin::preDrawTH2( TCanvas *c, const ObjInfo &o ) {
     obj->SetMaximum(6.0);
     gStyle->SetPalette(6, pCol3);
     obj->SetOption("col");
+    gStyle->SetPaintTextFormat("+g");
     return;
   }
 
@@ -375,6 +379,7 @@ void EBRenderPlugin::preDrawTH2( TCanvas *c, const ObjInfo &o ) {
     obj->SetMinimum(0.0);
     gStyle->SetPalette(10, pCol4);
     obj->SetOption("colz");
+    gStyle->SetPaintTextFormat("+g");
     return;
   }
 
