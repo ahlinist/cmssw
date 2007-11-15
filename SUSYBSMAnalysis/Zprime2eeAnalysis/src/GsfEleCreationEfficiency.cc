@@ -29,10 +29,10 @@ void GsfEleCreationEfficiency::Add(const edm::Event &event, const edm::EventSetu
 
   try
   {
-     edm::Handle<double> weightHandle;
-     event.getByLabel("weight", weightHandle);
-     const double *weightPtr = weightHandle.product();
-     weight = *weightPtr;
+  // Get this event's weight
+  edm::Handle< double> weightHandle;
+  event.getByLabel ("weight", weightHandle);
+  weight = * weightHandle;
   } catch(cms::Exception &ex) {
     // edm::LogInfo("GsfEleCreationEfficiency") i
     //   << "INFO:  No weight in event - weight is 1.0";

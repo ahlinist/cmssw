@@ -21,15 +21,14 @@
 void SCCreationEfficiency::Add(const edm::Event &event, const edm::EventSetup &eventSetup)
 {
 
-  // Get this event's weight
   double weight = 1.0;
 
   try
   {
-     edm::Handle<double> weightHandle;
-     event.getByLabel("weight", weightHandle);
-     const double *weightPtr = weightHandle.product();
-     weight = *weightPtr;
+  // Get this event's weight
+  edm::Handle< double> weightHandle;
+  event.getByLabel ("weight", weightHandle);
+  weight = * weightHandle;
   } catch(cms::Exception &ex) {
     // edm::LogInfo("SCCreationEfficiency") i
     //   << "INFO:  No weight in event - weight is 1.0";
