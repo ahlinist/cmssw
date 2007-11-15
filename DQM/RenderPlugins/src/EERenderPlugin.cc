@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.22 2007/11/15 08:46:19 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.23 2007/11/15 14:13:59 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.22 $
-  \date $Date: 2007/11/15 08:46:19 $
+  \version $Revision: 1.23 $
+  \date $Date: 2007/11/15 14:13:59 $
 */
 
 #include <TH3.h>
@@ -435,7 +435,8 @@ void EERenderPlugin::postDraw( TCanvas *c, const ObjInfo &o, const ImgInfo &i ) 
   }
   else if( dynamic_cast<TH3F*>( o.object ) ) {
     postDrawTH3( c, o );
-  }  else if( dynamic_cast<TH2*>( o.object ) ) {
+  }
+  else if( dynamic_cast<TH2*>( o.object ) ) {
     postDrawTH2( c, o );
   }
 
