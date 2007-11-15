@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.24 2007/11/15 14:17:34 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.25 2007/11/15 14:18:51 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.24 $
-  \date $Date: 2007/11/15 14:17:34 $
+  \version $Revision: 1.25 $
+  \date $Date: 2007/11/15 14:18:51 $
 */
 
 #include <TH3.h>
@@ -351,14 +351,17 @@ void EERenderPlugin::preDrawTH2( TCanvas *c, const ObjInfo &o ) {
     obj->SetMinimum(0.0);
     gStyle->SetPalette(10, pCol4);
     obj->SetOption("colz");
+    gStyle->SetPaintTextFormat("+g");
     return;
   }
 
   // Occupancy-like (10 x grays) plots
-  if( o.name.find( "EETTT" ) < o.name.size() ) {
+  if( o.name.find( "EETTT" ) < o.name.size() &&
+      o.name.find( "quality" ) >= o.name.size() ) {
     obj->SetMinimum(0.0);
     gStyle->SetPalette(10, pCol4);
     obj->SetOption("colz");
+    gStyle->SetPaintTextFormat("+g");
     return;
   }
 
@@ -388,6 +391,7 @@ void EERenderPlugin::preDrawTH2( TCanvas *c, const ObjInfo &o ) {
     obj->SetMaximum(6.0);
     gStyle->SetPalette(6, pCol3);
     obj->SetOption("col");
+    gStyle->SetPaintTextFormat("+g");
     return;
   }
 
@@ -396,6 +400,7 @@ void EERenderPlugin::preDrawTH2( TCanvas *c, const ObjInfo &o ) {
     obj->SetMinimum(0.0);
     gStyle->SetPalette(10, pCol4);
     obj->SetOption("colz");
+    gStyle->SetPaintTextFormat("+g");
     return;
   }
 
