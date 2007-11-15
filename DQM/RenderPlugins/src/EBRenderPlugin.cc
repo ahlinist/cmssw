@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.18 2007/11/13 15:52:04 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.19 2007/11/15 06:47:36 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.18 $
-  \date $Date: 2007/11/13 15:52:04 $
+  \version $Revision: 1.19 $
+  \date $Date: 2007/11/15 06:47:36 $
 */
 
 #include <TH3.h>
@@ -292,7 +292,15 @@ void EBRenderPlugin::preDrawTH2( TCanvas *c, const ObjInfo &o ) {
   if( o.name.find( "EBIT" ) < o.name.size() &&
       o.name.find( "quality" ) >= o.name.size() ) {
     obj->SetMinimum(0.0);
-    gStyle->SetPalette(4, pCol4);
+    gStyle->SetPalette(10, pCol4);
+    obj->SetOption("colz");
+    return;
+  }
+
+  // Occupancy-like (10 x grays) plots
+  if( o.name.find( "EBTTT" ) < o.name.size() ) {
+    obj->SetMinimum(0.0);
+    gStyle->SetPalette(10, pCol4);
     obj->SetOption("colz");
     return;
   }
