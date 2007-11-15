@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.21 2007/11/15 08:28:02 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.22 2007/11/15 08:46:19 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.21 $
-  \date $Date: 2007/11/15 08:28:02 $
+  \version $Revision: 1.22 $
+  \date $Date: 2007/11/15 08:46:19 $
 */
 
 #include <TH3.h>
@@ -18,6 +18,8 @@
 
 #include <TGraph.h>
 #include <TLine.h>
+
+#include <iostream>
 
 #include "DQMServices/Core/interface/MonitorElement.h"
 
@@ -216,17 +218,32 @@ void EERenderPlugin::preDrawTProfile2D( TCanvas *c, const ObjInfo &o ) {
     gPad->SetGridy();
     obj->GetXaxis()->SetNdivisions(10, kFALSE);
     obj->GetYaxis()->SetNdivisions(10, kFALSE);
+    obj->SetMinimum(0.0);
     gStyle->SetPalette(10, pCol4);
     obj->SetOption("colz");
     gStyle->SetPaintTextFormat("+g");
     return;
   }
 
+  int nbx = obj->GetNbinsX();
+  int nby = obj->GetNbinsY();
+
+  if( nbx == 50 && nby == 50 ) {
+    gPad->SetGridx();
+    gPad->SetGridy();
+    obj->GetXaxis()->SetNdivisions(10);
+    obj->GetYaxis()->SetNdivisions(10);
+  }
+
+  if( nbx == 100 && nby == 100 ) {
+    gPad->SetGridx();
+    gPad->SetGridy();
+    obj->GetXaxis()->SetNdivisions(10);
+    obj->GetYaxis()->SetNdivisions(10);
+  }
+
   // Occupancy-like (10 x grays) plots
-  gPad->SetGridx();
-  gPad->SetGridy();
-  obj->GetXaxis()->SetNdivisions(17);
-  obj->GetYaxis()->SetNdivisions(4);
+  obj->SetMinimum(0.0);
   gStyle->SetPalette(10, pCol4);
   obj->SetOption("colz");
   return;
@@ -268,11 +285,23 @@ void EERenderPlugin::preDrawTH2( TCanvas *c, const ObjInfo &o ) {
 
   gStyle->SetOptStat(0);
   obj->SetStats( kFALSE );
+  gPad->SetLogy(0);
+
+  // Occupancy-like (10 x grays) plots
+  if( o.name.find( "EECLT" ) < o.name.size() ) {
+    gPad->SetGridx();
+    gPad->SetGridy();
+    obj->GetXaxis()->SetNdivisions(10, kFALSE);
+    obj->GetYaxis()->SetNdivisions(10, kFALSE);
+    obj->SetMinimum(0.0);
+    gStyle->SetPalette(10, pCol4);
+    obj->SetOption("colz");
+    gStyle->SetPaintTextFormat("+g");
+    return;
+  }
 
   int nbx = obj->GetNbinsX();
   int nby = obj->GetNbinsY();
-
-  gPad->SetLogy(0);
 
   if( nbx == 50 && nby == 50 ) {
     gPad->SetGridx();
@@ -366,20 +395,9 @@ void EERenderPlugin::preDrawTH2( TCanvas *c, const ObjInfo &o ) {
 
   // Occupancy-like (10 x grays) plots
   if( o.name.find( "EEMM event" ) < o.name.size() ) {
+    obj->SetMinimum(0.0);
     gStyle->SetPalette(10, pCol4);
     obj->SetOption("colz");
-    return;
-  }
-
-  // Occupancy-like (10 x grays) plots
-  if( o.name.find( "EECLT" ) < o.name.size() ) {
-    gPad->SetGridx();
-    gPad->SetGridy();
-    obj->GetXaxis()->SetNdivisions(10, kFALSE);
-    obj->GetYaxis()->SetNdivisions(10, kFALSE);
-    gStyle->SetPalette(10, pCol4);
-    obj->SetOption("colz");
-    gStyle->SetPaintTextFormat("+g");
     return;
   }
 
@@ -496,6 +514,16 @@ void EERenderPlugin::postDrawTH2( TCanvas *c, const ObjInfo &o ) {
     }
   }
 
+  if( o.name.find( "EECLT" ) < o.name.size() ) {
+    if( o.name.find( "EE -" ) < o.name.size() ) {
+      text8->Draw("text,same");
+    }
+    if( o.name.find( "EE +" ) < o.name.size() ) {
+      text9->Draw("text,same");
+    }
+    return;
+  }
+
   int nbx = obj->GetNbinsX();
   int nby = obj->GetNbinsY();
 
@@ -526,16 +554,6 @@ void EERenderPlugin::postDrawTH2( TCanvas *c, const ObjInfo &o ) {
     }
     if( o.name.find( "EE +" ) < o.name.size() ) {
       text7->Draw("text,same");
-    }
-    return;
-  }
-
-  if( o.name.find( "EECLT" ) < o.name.size() ) {
-    if( o.name.find( "EE -" ) < o.name.size() ) {
-      text8->Draw("text,same");
-    }
-    if( o.name.find( "EE +" ) < o.name.size() ) {
-      text9->Draw("text,same");
     }
     return;
   }
