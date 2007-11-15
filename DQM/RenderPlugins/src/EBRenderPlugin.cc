@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.19 2007/11/15 06:47:36 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.20 2007/11/15 08:19:29 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.19 $
-  \date $Date: 2007/11/15 06:47:36 $
+  \version $Revision: 1.20 $
+  \date $Date: 2007/11/15 08:19:29 $
 */
 
 #include <TH3.h>
@@ -425,44 +425,6 @@ void EBRenderPlugin::postDrawTH3( TCanvas *c, const ObjInfo &o ) {
   TH3* obj = dynamic_cast<TH3*>( o.object );
 
   assert( obj );
-
-  // Occupancy-like (10 x grays) plots
-  if( o.name.find( "EBTTT Et map" ) < o.name.size() ||
-      o.name.find( "EBTTT Et trigger tower quality summary" ) ) {
-    std::string name = obj->GetName();
-    TProfile2D* obj1 = obj->Project3DProfile("yx");
-    obj1->SetTitle(name.c_str());
-    gPad->Clear();
-
-    gStyle->SetOptStat(0);
-    obj1->SetStats( kFALSE );
-
-    int nbx = obj1->GetNbinsX();
-    int nby = obj1->GetNbinsY();
-
-    gStyle->SetPalette(10, pCol4);
-    obj1->SetOption("colz");
-    gStyle->SetPaintTextFormat("+g");
-
-    if( nbx == 17 && nby == 4 ) {
-      gPad->SetGridx();
-      gPad->SetGridy();
-      obj1->GetXaxis()->SetNdivisions(17);
-      obj1->GetYaxis()->SetNdivisions(4);
-      obj1->Draw();
-      text2->Draw("text,same");
-    }
-    if( nbx == 72 && nby == 34 ) {
-      gPad->SetGridx();
-      gPad->SetGridy();
-      obj1->GetXaxis()->SetNdivisions(18, kFALSE);
-      obj1->GetYaxis()->SetNdivisions(2, kFALSE);
-      obj1->Draw();
-      text8->Draw("text,same");
-    }
-
-    return;
-  }
 
   return;
 

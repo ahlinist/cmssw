@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.19 2007/11/15 06:47:36 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.20 2007/11/15 08:19:29 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.19 $
-  \date $Date: 2007/11/15 06:47:36 $
+  \version $Revision: 1.20 $
+  \date $Date: 2007/11/15 08:19:29 $
 */
 
 #include <TH3.h>
@@ -477,64 +477,6 @@ void EERenderPlugin::postDrawTH3( TCanvas *c, const ObjInfo &o ) {
   TH3* obj = dynamic_cast<TH3*>( o.object );
 
   assert( obj );
-
-  // Occupancy-like (10 x grays) plots
-  if( o.name.find( "EETTT Et map" ) < o.name.size() ||
-      o.name.find( "EETTT EE - Et trigger tower quality summary" ) < o.name.size() ||
-      o.name.find( "EETTT EE + Et trigger tower quality summary" ) < o.name.size() ) {
-    std::string name = obj->GetName();
-    TProfile2D* obj1 = obj->Project3DProfile("yx");
-    obj1->SetTitle(name.c_str());
-    gPad->Clear();
-
-    gStyle->SetOptStat(0);
-    obj1->SetStats( kFALSE );
-
-    int nbx = obj1->GetNbinsX();
-    int nby = obj1->GetNbinsY();
-
-    gStyle->SetPalette(10, pCol4);
-    obj1->SetOption("colz");
-    gStyle->SetPaintTextFormat("+g");
-
-    if( nbx == 50 && nby == 50 ) {
-      gPad->SetGridx();
-      gPad->SetGridy();
-      obj1->GetXaxis()->SetNdivisions(10);
-      obj1->GetYaxis()->SetNdivisions(10);
-      obj1->Draw();
-    }
-    if( nbx == 100 && nby == 100 ) {
-      gPad->SetGridx();
-      gPad->SetGridy();
-      obj1->GetXaxis()->SetNdivisions(10);
-      obj1->GetYaxis()->SetNdivisions(10);
-      obj1->Draw();
-    }
-
-    c->SetBit(TGraph::kClipFrame);
-    TLine l;
-    l.SetLineWidth(1);
-    for ( int i=0; i<201; i=i+1){
-      if ( (Numbers::ixSectorsEE[i]!=0 || Numbers::iySectorsEE[i]!=0) && (Numbers::ixSectorsEE[i+1]!=0 || Numbers::iySectorsEE[i+1]!=0) ) {
-        if( o.name.find( "EECLT" ) < o.name.size() ) {
-          l.DrawLine(3.0*(Numbers::ixSectorsEE[i]-50), 3.0*(Numbers::iySectorsEE[i]-50), 3.0*(Numbers::ixSectorsEE[i+1]-50), 3.0*(Numbers::iySectorsEE[i+1]-50));
-        } else {
-          l.DrawLine(Numbers::ixSectorsEE[i], Numbers::iySectorsEE[i], Numbers::ixSectorsEE[i+1], Numbers::iySectorsEE[i+1]);
-        }
-      }
-    }
-
-    int x1 = text1->GetXaxis()->FindBin(obj1->GetXaxis()->GetXmin());
-    int x2 = text1->GetXaxis()->FindBin(obj1->GetXaxis()->GetXmax());
-    int y1 = text1->GetYaxis()->FindBin(obj1->GetYaxis()->GetXmin());
-    int y2 = text1->GetYaxis()->FindBin(obj1->GetYaxis()->GetXmax());
-    text1->GetXaxis()->SetRange(x1, x2);
-    text1->GetYaxis()->SetRange(y1, y2);
-    text1->Draw("text,same");
-
-    return;
-  }
 
   return;
 
