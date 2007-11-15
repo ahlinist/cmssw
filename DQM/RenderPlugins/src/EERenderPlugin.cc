@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.23 2007/11/15 14:13:59 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.24 2007/11/15 14:17:34 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.23 $
-  \date $Date: 2007/11/15 14:13:59 $
+  \version $Revision: 1.24 $
+  \date $Date: 2007/11/15 14:17:34 $
 */
 
 #include <TH3.h>
@@ -376,8 +376,6 @@ void EERenderPlugin::preDrawTH2( TCanvas *c, const ObjInfo &o ) {
     gStyle->SetOptStat(" ");
     obj->SetMinimum(-0.00000001);
     obj->SetMaximum(6.0);
-    obj->GetXaxis()->SetLabelSize(0.03);
-    obj->GetYaxis()->SetLabelSize(0.03);
     gStyle->SetPalette(6, pCol3);
     obj->SetOption("col");
     gStyle->SetPaintTextFormat("+g");
