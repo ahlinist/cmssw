@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.17 2007/11/13 12:48:20 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.18 2007/11/13 15:52:04 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.17 $
-  \date $Date: 2007/11/13 12:48:20 $
+  \version $Revision: 1.18 $
+  \date $Date: 2007/11/13 15:52:04 $
 */
 
 #include <TH3.h>
@@ -71,10 +71,10 @@ void EBRenderPlugin::initialise( int argc, char **argv, DaqMonitorBEInterface *b
   text7 = t7;
   text8 = t8;
 
-  text1->SetMinimum(   0.1 );
-  text2->SetMinimum(   0.1 );
-  text3->SetMinimum(   0.1 );
-  text4->SetMinimum(   0.1 );
+  text1->SetMinimum(   0.10 );
+  text2->SetMinimum(   0.10 );
+  text3->SetMinimum(   0.10 );
+  text4->SetMinimum(   0.10 );
   text6->SetMinimum( -18.01 );
   text7->SetMinimum( -18.01 );
   text8->SetMinimum( -18.01 );
@@ -418,6 +418,7 @@ void EBRenderPlugin::postDrawTH3( TCanvas *c, const ObjInfo &o ) {
 
   assert( obj );
 
+  // Occupancy-like (10 x grays) plots
   if( o.name.find( "EBTTT Et map" ) < o.name.size() ||
       o.name.find( "EBTTT Et trigger tower quality summary" ) ) {
     std::string name = obj->GetName();
@@ -434,6 +435,7 @@ void EBRenderPlugin::postDrawTH3( TCanvas *c, const ObjInfo &o ) {
     gStyle->SetPalette(10, pCol4);
     obj1->SetOption("colz");
     gStyle->SetPaintTextFormat("+g");
+
     if( nbx == 17 && nby == 4 ) {
       gPad->SetGridx();
       gPad->SetGridy();
@@ -450,79 +452,6 @@ void EBRenderPlugin::postDrawTH3( TCanvas *c, const ObjInfo &o ) {
       obj1->Draw();
       text8->Draw("text,same");
     }
-
-    return;
-  }
-
-  if( o.name.find( "EBTTT Flags" ) < o.name.size() ) {
-    std::string name = obj->GetName();
-    if( o.name.find( "Bit 000" ) < o.name.size() ) {
-      obj->GetZaxis()->SetRange(1, 1);
-    }
-    if( o.name.find( "Bit 001" ) < o.name.size() ) {
-      obj->GetZaxis()->SetRange(2, 2);
-    }
-    if( o.name.find( "Bit 011" ) < o.name.size() ) {
-      obj->GetZaxis()->SetRange(3, 3);
-    }
-    if( o.name.find( "Bit 100" ) < o.name.size() ) {
-      obj->GetZaxis()->SetRange(4, 4);
-    }
-    if( o.name.find( "Bit 110" ) < o.name.size() ) {
-      obj->GetZaxis()->SetRange(5, 5);
-    }
-    if( o.name.find( "Bit 101" ) < o.name.size() ) {
-      obj->GetZaxis()->SetRange(6, 6);
-    }
-    if( o.name.find( "Bits 110+111" ) < o.name.size() ) {
-      obj->GetZaxis()->SetRange(7, 8);
-    }
-    TH2F* obj1 = (TH2F*) obj->Project3D( "yx" );
-    obj1->SetTitle(name.c_str());
-    gPad->Clear();
-
-    gStyle->SetOptStat(0);
-    obj1->SetStats( kFALSE );
-
-    obj1->SetMinimum(0);
-    gStyle->SetPalette(10, pCol4);
-    obj1->SetOption("colz");
-    gPad->SetGridx();
-    gPad->SetGridy();
-    gStyle->SetPaintTextFormat("+g");
-    obj1->GetXaxis()->SetNdivisions(17);
-    obj1->GetYaxis()->SetNdivisions(4);
-    obj1->Draw();
-    text2->Draw("text,same");
-
-    return;
-  }
-
-  if( o.name.find( "EBTTT FineGrainVeto" ) < o.name.size() ) {
-    std::string name = obj->GetName();
-    if( o.name.find( "Flag 0" ) < o.name.size() ) {
-      obj->GetZaxis()->SetRange(1, 1);
-    }
-    if( o.name.find( "Flag 1" ) < o.name.size() ) {
-      obj->GetZaxis()->SetRange(2, 2);
-    }
-    TH2F* obj1 = (TH2F*) obj->Project3D( "yx" );
-    obj1->SetTitle(name.c_str());
-    gPad->Clear();
-    
-    gStyle->SetOptStat(0);
-    obj1->SetStats( kFALSE );
-
-    obj1->SetMinimum(0);
-    gStyle->SetPalette(10, pCol4);
-    obj1->SetOption("colz");
-    gPad->SetGridx();
-    gPad->SetGridy();
-    gStyle->SetPaintTextFormat("+g");
-    obj1->GetXaxis()->SetNdivisions(17);
-    obj1->GetYaxis()->SetNdivisions(4);
-    obj1->Draw();
-    text2->Draw("text,same");
 
     return;
   }

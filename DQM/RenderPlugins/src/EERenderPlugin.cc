@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.17 2007/11/13 12:48:20 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.18 2007/11/13 15:52:04 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.17 $
-  \date $Date: 2007/11/13 12:48:20 $
+  \version $Revision: 1.18 $
+  \date $Date: 2007/11/13 15:52:04 $
 */
 
 #include <TH3.h>
@@ -72,18 +72,18 @@ void EERenderPlugin::initialise( int argc, char **argv, DaqMonitorBEInterface *b
   text8 = t8;
   text9 = t9;
 
-  text1->SetMinimum(   0.01 );
-  text3->SetMinimum(   0.01 );
-  text4->SetMinimum(   0.01 );
-  text6->SetMinimum(  -9.01 );
-  text7->SetMinimum(  +0.01 );
-  text8->SetMinimum(  -9.01 );
-  text9->SetMinimum(  +0.01 );
+  text1->SetMinimum(  0.01 );
+  text3->SetMinimum(  0.01 );
+  text4->SetMinimum(  0.01 );
+  text6->SetMinimum( -9.01 );
+  text7->SetMinimum( +0.01 );
+  text8->SetMinimum( -9.01 );
+  text9->SetMinimum( +0.01 );
 
-  text6->SetMaximum(  -0.01 );
-  text7->SetMaximum(  +9.01 );
-  text8->SetMaximum(  -0.01 );
-  text9->SetMaximum(  +9.01 );
+  text6->SetMaximum( -0.01 );
+  text7->SetMaximum( +9.01 );
+  text8->SetMaximum( -0.01 );
+  text9->SetMaximum( +9.01 );
 
   for ( short j=0; j<400; j++ ) {
     int x = 5*(1 + j%20);
@@ -470,6 +470,7 @@ void EERenderPlugin::postDrawTH3( TCanvas *c, const ObjInfo &o ) {
 
   assert( obj );
 
+  // Occupancy-like (10 x grays) plots
   if( o.name.find( "EETTT Et map" ) < o.name.size() ||
       o.name.find( "EETTT EE - Et trigger tower quality summary" ) < o.name.size() ||
       o.name.find( "EETTT EE + Et trigger tower quality summary" ) < o.name.size() ) {
@@ -487,6 +488,7 @@ void EERenderPlugin::postDrawTH3( TCanvas *c, const ObjInfo &o ) {
     gStyle->SetPalette(10, pCol4);
     obj1->SetOption("colz");
     gStyle->SetPaintTextFormat("+g");
+
     if( nbx == 50 && nby == 50 ) {
       gPad->SetGridx();
       gPad->SetGridy();
@@ -501,118 +503,6 @@ void EERenderPlugin::postDrawTH3( TCanvas *c, const ObjInfo &o ) {
       obj1->GetYaxis()->SetNdivisions(10);
       obj1->Draw();
     }
-
-    c->SetBit(TGraph::kClipFrame);
-    TLine l;
-    l.SetLineWidth(1);
-    for ( int i=0; i<201; i=i+1){
-      if ( (Numbers::ixSectorsEE[i]!=0 || Numbers::iySectorsEE[i]!=0) && (Numbers::ixSectorsEE[i+1]!=0 || Numbers::iySectorsEE[i+1]!=0) ) {
-        if( o.name.find( "EECLT" ) < o.name.size() ) {
-          l.DrawLine(3.0*(Numbers::ixSectorsEE[i]-50), 3.0*(Numbers::iySectorsEE[i]-50), 3.0*(Numbers::ixSectorsEE[i+1]-50), 3.0*(Numbers::iySectorsEE[i+1]-50));
-        } else {
-          l.DrawLine(Numbers::ixSectorsEE[i], Numbers::iySectorsEE[i], Numbers::ixSectorsEE[i+1], Numbers::iySectorsEE[i+1]);
-        }
-      }
-    }
-
-    int x1 = text1->GetXaxis()->FindBin(obj1->GetXaxis()->GetXmin());
-    int x2 = text1->GetXaxis()->FindBin(obj1->GetXaxis()->GetXmax());
-    int y1 = text1->GetYaxis()->FindBin(obj1->GetYaxis()->GetXmin());
-    int y2 = text1->GetYaxis()->FindBin(obj1->GetYaxis()->GetXmax());
-    text1->GetXaxis()->SetRange(x1, x2);
-    text1->GetYaxis()->SetRange(y1, y2);
-    text1->Draw("text,same");
-
-    return;
-  }
-
-  if( o.name.find( "EETTT Flags" ) < o.name.size() ) {
-    std::string name = obj->GetName();
-    if( o.name.find( "Bit 000" ) < o.name.size() ) {
-      obj->GetZaxis()->SetRange(1, 1);
-    }
-    if( o.name.find( "Bit 001" ) < o.name.size() ) {
-      obj->GetZaxis()->SetRange(2, 2);
-    }
-    if( o.name.find( "Bit 011" ) < o.name.size() ) {
-      obj->GetZaxis()->SetRange(3, 3);
-    }
-    if( o.name.find( "Bit 100" ) < o.name.size() ) {
-      obj->GetZaxis()->SetRange(4, 4);
-    }
-    if( o.name.find( "Bit 110" ) < o.name.size() ) {
-      obj->GetZaxis()->SetRange(5, 5);
-    }
-    if( o.name.find( "Bit 101" ) < o.name.size() ) {
-      obj->GetZaxis()->SetRange(6, 6);
-    }
-    if( o.name.find( "Bits 110+111" ) < o.name.size() ) {
-      obj->GetZaxis()->SetRange(7, 8);
-    }
-    TH2F* obj1 = (TH2F*) obj->Project3D( "yx" );
-    obj1->SetTitle(name.c_str());
-    gPad->Clear();
-
-    gStyle->SetOptStat(0);
-    obj1->SetStats( kFALSE );
-
-    obj1->SetMinimum(0);
-    gStyle->SetPalette(10, pCol4);
-    obj1->SetOption("colz");
-    gPad->SetGridx();
-    gPad->SetGridy();
-    gStyle->SetPaintTextFormat("+g");
-    obj1->GetXaxis()->SetNdivisions(17);
-    obj1->GetYaxis()->SetNdivisions(4);
-    obj1->Draw();
-
-    c->SetBit(TGraph::kClipFrame);
-    TLine l;
-    l.SetLineWidth(1);
-    for ( int i=0; i<201; i=i+1){
-      if ( (Numbers::ixSectorsEE[i]!=0 || Numbers::iySectorsEE[i]!=0) && (Numbers::ixSectorsEE[i+1]!=0 || Numbers::iySectorsEE[i+1]!=0) ) {
-        if( o.name.find( "EECLT" ) < o.name.size() ) {
-          l.DrawLine(3.0*(Numbers::ixSectorsEE[i]-50), 3.0*(Numbers::iySectorsEE[i]-50), 3.0*(Numbers::ixSectorsEE[i+1]-50), 3.0*(Numbers::iySectorsEE[i+1]-50));
-        } else {
-          l.DrawLine(Numbers::ixSectorsEE[i], Numbers::iySectorsEE[i], Numbers::ixSectorsEE[i+1], Numbers::iySectorsEE[i+1]);
-        }
-      }
-    }
-
-    int x1 = text1->GetXaxis()->FindBin(obj1->GetXaxis()->GetXmin());
-    int x2 = text1->GetXaxis()->FindBin(obj1->GetXaxis()->GetXmax());
-    int y1 = text1->GetYaxis()->FindBin(obj1->GetYaxis()->GetXmin());
-    int y2 = text1->GetYaxis()->FindBin(obj1->GetYaxis()->GetXmax());
-    text1->GetXaxis()->SetRange(x1, x2);
-    text1->GetYaxis()->SetRange(y1, y2);
-    text1->Draw("text,same");
-
-  }
-
-  if( o.name.find( "EETTT FineGrainVeto" ) < o.name.size() ) {
-    std::string name = obj->GetName();
-    if( o.name.find( "Flag 0" ) < o.name.size() ) {
-      obj->GetZaxis()->SetRange(1, 1);
-    }
-    if( o.name.find( "Flag 1" ) < o.name.size() ) {
-      obj->GetZaxis()->SetRange(2, 2);
-    }
-    TH2F* obj1 = (TH2F*) obj->Project3D( "yx" );
-    obj1->SetTitle(name.c_str());
-    gPad->Clear();
-
-    gStyle->SetOptStat(0);
-    obj1->SetStats( kFALSE );
-
-    obj1->SetMinimum(0);
-    gStyle->SetPalette(10, pCol4);
-    obj1->SetOption("colz");
-    gPad->SetGridx();
-    gPad->SetGridy();
-    gStyle->SetPaintTextFormat("+g");
-    obj1->GetXaxis()->SetNdivisions(17);
-    obj1->GetYaxis()->SetNdivisions(4);
-    obj1->Draw();
 
     c->SetBit(TGraph::kClipFrame);
     TLine l;
