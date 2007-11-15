@@ -1,11 +1,11 @@
-// $Id: EBMDisplayPlugins.cc,v 1.32 2007/11/13 09:01:18 dellaric Exp $
+// $Id: EBMDisplayPlugins.cc,v 1.33 2007/11/13 14:05:33 dellaric Exp $
 
 /*!
   \file EBMDisplayPlugins
   \brief Display Plugin for Quality Histograms (2D)
   \author B. Gobbo 
-  \version $Revision: 1.32 $
-  \date $Date: 2007/11/13 09:01:18 $
+  \version $Revision: 1.33 $
+  \date $Date: 2007/11/13 14:05:33 $
 */
 
 #include <TProfile2D.h>
@@ -281,11 +281,18 @@ std::string EBMDisplayPlugins::preDrawTH2( DisplayData *data ) {
     (data->pad)->SetGridy();
 
     // Occupancy-like (10 x grays) plots
-    if( ( name.find( "EBIT" ) < name.size() ||
-	  name.find( "EBOT" ) < name.size() ) &&
+    if( name.find( "EBIT" ) < name.size() &&
 	name.find( "quality" ) >= name.size() ) {
       obj->SetMinimum( 0. );
-      gStyle->SetPalette( 4, pCol4 );
+      gStyle->SetPalette(10, pCol4 );
+      obj->SetOption( "colz" );
+      return "";
+    }
+
+    // Occupancy-like (10 x grays) plots
+    if( name.find( "EBIT" ) < name.size() ) {
+      obj->SetMinimum( 0. );
+      gStyle->SetPalette(10, pCol4 );
       obj->SetOption( "colz" );
       return "";
     }

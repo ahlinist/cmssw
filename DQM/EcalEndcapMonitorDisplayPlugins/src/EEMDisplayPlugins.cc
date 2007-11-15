@@ -1,11 +1,11 @@
-// $Id: EEMDisplayPlugins.cc,v 1.15 2007/11/13 09:01:21 dellaric Exp $
+// $Id: EEMDisplayPlugins.cc,v 1.16 2007/11/13 14:06:22 dellaric Exp $
 
 /*!
   \file EEMDisplayPlugins
   \brief Display Plugin for Quality Histograms (2D)
   \author B. Gobbo 
-  \version $Revision: 1.15 $
-  \date $Date: 2007/11/13 09:01:21 $
+  \version $Revision: 1.16 $
+  \date $Date: 2007/11/13 14:06:22 $
 */
 
 #include <TProfile2D.h>
@@ -265,14 +265,21 @@ std::string EEMDisplayPlugins::preDrawTH2( DisplayData *data ) {
     (data->pad)->SetGridy();
 
     // Occupancy-like (10 x grays) plots
-    if( ( name.find( "EEIT" ) < name.size() ||
-	  name.find( "EEOT" ) < name.size() ) &&
+    if( name.find( "EEIT" ) < name.size() &&
 	name.find( "quality" ) >= name.size() ) {
       obj->SetMinimum( 0. );
-      gStyle->SetPalette( 4, pCol4 );
+      gStyle->SetPalette(10, pCol4 );
       obj->SetOption( "colz" );
       return "";
     }    
+
+    // Occupancy-like (10 x grays) plots
+    if( name.find( "EEIT" ) < name.size() ) {
+      obj->SetMinimum( 0. );
+      gStyle->SetPalette(10, pCol4 );
+      obj->SetOption( "colz" );
+      return "";
+    }
 
     if( name.find( "summary" ) < name.size() ) {
       gStyle->SetOptStat(" ");
