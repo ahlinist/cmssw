@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.26 2007/11/15 14:32:19 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.27 2007/11/16 09:19:30 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.26 $
-  \date $Date: 2007/11/15 14:32:19 $
+  \version $Revision: 1.27 $
+  \date $Date: 2007/11/16 09:19:30 $
 */
 
 #include <TH3.h>
@@ -258,6 +258,8 @@ void EERenderPlugin::preDrawTProfile( TCanvas *c, const ObjInfo &o ) {
 
   gStyle->SetOptStat("euomr");
   obj->SetStats(kTRUE);
+  gPad->SetLogy(0);
+
   return;
 
 }
@@ -270,6 +272,7 @@ void EERenderPlugin::preDrawTH3( TCanvas *c, const ObjInfo &o ) {
 
   gStyle->SetOptStat(0);
   obj->SetStats( kFALSE );
+  gPad->SetLogy(0);
 
   return;
 
@@ -423,12 +426,14 @@ void EERenderPlugin::preDrawTH1( TCanvas *c, const ObjInfo &o ) {
 
   gStyle->SetOptStat("euomr");
   obj->SetStats(kTRUE);
+  gPad->SetLogy(0);
 
-  if ( obj->GetMaximum(1.e15) > 0. ) {
-    gPad->SetLogy(1);
-  } else {
-    gPad->SetLogy(0);
-  }
+  int nbx = obj->GetNbinsX();
+
+  if ( obj->GetMaximum() > 0. ) gPad->SetLogy(1);
+
+  if ( nbx == 10 ) gPad->SetLogy(0);
+  if ( nbx == 850 ) gPad->SetLogy(0);
 
   return;
 
