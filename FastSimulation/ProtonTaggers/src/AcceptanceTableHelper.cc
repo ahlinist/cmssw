@@ -5,7 +5,7 @@
  *
  * Author: Dmitry Zaborov
  *
- * Version: $Id:  $
+ * Version: $Id: AcceptanceTableHelper.cc,v 1.1 2007/09/28 08:40:13 dzaborov Exp $
  ***************************************************************************/
 
 #include "FastSimulation/ProtonTaggers/interface/AcceptanceTableHelper.h"
@@ -56,6 +56,10 @@ float AcceptanceTableHelper::GetAcceptance(float t, float xi, float phi) {
   if ((h_log10t_log10Xi_Phi != NULL)				  // if table exists
        && (log10t < h_log10t_log10Xi_Phi->GetXaxis()->GetXmax())) // and t within table range
   {
+  
+    float log10tMin = h_log10t_log10Xi_Phi->GetXaxis()->GetXmin();
+    if (log10t < log10tMin) log10t = log10tMin; // very small t should go to the lowest t bin
+    
     acc = h_log10t_log10Xi_Phi->GetBinContent(h_log10t_log10Xi_Phi->FindBin(log10t, log10Xi, phi));
 
   } else if (h_t_log10Xi_Phi != NULL) { // if table exists for high t
