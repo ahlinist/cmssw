@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.23 2007/11/15 11:32:23 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.24 2007/11/15 14:32:19 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.23 $
-  \date $Date: 2007/11/15 11:32:23 $
+  \version $Revision: 1.24 $
+  \date $Date: 2007/11/15 14:32:19 $
 */
 
 #include <TH3.h>
@@ -346,6 +346,15 @@ void EBRenderPlugin::preDrawTH2( TCanvas *c, const ObjInfo &o ) {
 
   // Occupancy-like (10 x grays) plots
   if( o.name.find( "EBOT" ) < o.name.size() ) {
+    obj->SetMinimum(0.0);
+    gStyle->SetPalette(10, pCol4);
+    obj->SetOption("colz");
+    gStyle->SetPaintTextFormat("+g");
+    return;
+  }
+
+  // Occupancy-like (10 x grays) plots
+  if( o.name.find( "EBCT" ) < o.name.size() ) {
     obj->SetMinimum(0.0);
     gStyle->SetPalette(10, pCol4);
     obj->SetOption("colz");
