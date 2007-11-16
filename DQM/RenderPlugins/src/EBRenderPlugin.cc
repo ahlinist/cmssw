@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.24 2007/11/15 14:32:19 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.25 2007/11/16 09:19:30 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.24 $
-  \date $Date: 2007/11/15 14:32:19 $
+  \version $Revision: 1.25 $
+  \date $Date: 2007/11/16 09:19:30 $
 */
 
 #include <TH3.h>
@@ -176,6 +176,7 @@ void EBRenderPlugin::preDrawTProfile2D( TCanvas *c, const ObjInfo &o ) {
 
   gStyle->SetOptStat(0);
   obj->SetStats(kFALSE);
+  gPad->SetLogy(0);
 
   // Occupancy-like (10 x grays) plots
   if( o.name.find( "EBCLT" ) < o.name.size() ) {
@@ -230,6 +231,8 @@ void EBRenderPlugin::preDrawTProfile( TCanvas *c, const ObjInfo &o ) {
 
   gStyle->SetOptStat("euomr");
   obj->SetStats(kTRUE);
+  gPad->SetLogy(0);
+
   return;
 
 }
@@ -242,6 +245,7 @@ void EBRenderPlugin::preDrawTH3( TCanvas *c, const ObjInfo &o ) {
 
   gStyle->SetOptStat(0);
   obj->SetStats( kFALSE );
+  gPad->SetLogy(0);
 
   return;
   
@@ -402,12 +406,14 @@ void EBRenderPlugin::preDrawTH1( TCanvas *c, const ObjInfo &o ) {
 
   gStyle->SetOptStat("euomr");
   obj->SetStats(kTRUE);
+  gPad->SetLogy(0);
 
-  if ( obj->GetMaximum(1.e15) > 0. ) {
-    gPad->SetLogy(1);
-  } else {
-   gPad->SetLogy(0);
-  }
+  int nbx = obj->GetNbinsX();
+
+  if ( obj->GetMaximum() > 0. ) gPad->SetLogy(1);
+
+  if ( nbx == 10 ) gPad->SetLogy(0);
+  if ( nbx == 1700 ) gPad->SetLogy(0);
 
   return;
 
