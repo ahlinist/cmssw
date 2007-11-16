@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.25 2007/11/15 14:18:51 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.26 2007/11/15 14:32:19 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.25 $
-  \date $Date: 2007/11/15 14:18:51 $
+  \version $Revision: 1.26 $
+  \date $Date: 2007/11/15 14:32:19 $
 */
 
 #include <TH3.h>
@@ -367,6 +367,15 @@ void EERenderPlugin::preDrawTH2( TCanvas *c, const ObjInfo &o ) {
 
   // Occupancy-like (10 x grays) plots
   if( o.name.find( "EEOT" ) < o.name.size() ) {
+    obj->SetMinimum(0.0);
+    gStyle->SetPalette(10, pCol4);
+    obj->SetOption("colz");
+    gStyle->SetPaintTextFormat("+g");
+    return;
+  }
+
+  // Occupancy-like (10 x grays) plots
+  if( o.name.find( "EECT" ) < o.name.size() ) {
     obj->SetMinimum(0.0);
     gStyle->SetPalette(10, pCol4);
     obj->SetOption("colz");
