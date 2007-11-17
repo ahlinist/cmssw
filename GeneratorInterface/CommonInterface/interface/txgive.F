@@ -319,8 +319,8 @@ C..TXRSTR2, 06/09/2006 by Serge Slabospitsky
       integer lens
       parameter (lens=60)
       integer lenk
-      parameter (lenk=132)
-      character *132 strout, aa, vnu 
+      parameter (lenk=512)
+      character *512 strout, aa, vnu 
 *
       character *60 inam, vv, vst, ww 
 *
