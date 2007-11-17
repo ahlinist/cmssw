@@ -7,6 +7,10 @@
 //* 
 //************************************
 #include "GeneratorInterface/MadGraphInterface/interface/MCDBInterface.h"
+#include "FWCore/PluginManager/interface/PluginManager.h"
+#include "FWCore/PluginManager/interface/standard.h"
+#include "Utilities/StorageFactory/interface/IOTypes.h"
+#include "Utilities/StorageFactory/interface/Storage.h"
 
 // Makes a local copy of a CASTOR file.
 // This code is a modified version of 
@@ -26,9 +30,9 @@ void mcdbGetInputFile(std::string  &madGraphInputFile, int &mcdbArticleID) {
   std::cout << "MCDBInterface: MCDB input file..." << std::endl;
   
   // Makes the local copy of the CASTOR file 
-  seal::PluginManager::get()->initialise ();
+  edmplugin::PluginManager::configure(edmplugin::standard::config());
   
-  seal::IOOffset    mcdbFileSize = -1;
+  IOOffset    mcdbFileSize = -1;
   StorageFactory::get()->enableAccounting(true);
   bool mcdbFileExists = StorageFactory::get()->check(madGraphInputFile, &mcdbFileSize);
   
@@ -42,9 +46,9 @@ void mcdbGetInputFile(std::string  &madGraphInputFile, int &mcdbArticleID) {
       <<" Cannot open MCDB input file, check file name and path.";
   }
   
-  seal::Storage  *mcdbFile =  StorageFactory::get()->open(madGraphInputFile);
+  Storage  *mcdbFile =  StorageFactory::get()->open(madGraphInputFile);
   char mcdbBuf [1024];
-  seal::IOSize mcdbNSize;
+  IOSize mcdbNSize;
   
   std::ofstream  mcdbLocalFileCopy;
   mcdbLocalFileCopy.open(mcdbLocalFileName.c_str());
