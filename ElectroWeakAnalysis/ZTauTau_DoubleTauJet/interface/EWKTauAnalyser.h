@@ -56,13 +56,13 @@ protected:
   void findElectrons(const edm::Event& iEvent, const edm::EventSetup& iSetup); 
   void findInvMassFromCalo(const edm::Event& iEvent, const edm::EventSetup& iSetup); 
   void findTauImpactParameter(const edm::Event& iEvent, const edm::EventSetup& iSetup); 
-  int findTauDecayMode(const edm::Event& iEvent, const edm::EventSetup& iSetup, std::vector<int>& tauTypeList);
+  int findTauDecayMode(const edm::Event& iEvent, 
+                       const edm::EventSetup& iSetup, std::vector<int>& tauTypeList, bool fillHist=true);
   int selectTau(const reco::PFTau& jet);
   void findInvariantMass(const reco::PFTau& jet);
   std::pair<unsigned int, unsigned int> getTauIndices(std::map<unsigned int, unsigned int>& smap);
   bool matchWithHLTJet(const reco::PFTau& tau, const reco::CaloJetCollection& caloJets, double& dr);
   //  bool matchWithHLTJet(const PFTau& tau, const Handle<reco::HLTFilterObjectWithRefs>& hltHandle, double& dr);
-
 
 private:
 
@@ -86,6 +86,7 @@ private:
   double maxTauMass_;
   double tightTauLeadingTrkPt_;
   double looseTauLeadingTrkPt_;
+  double leadingTrkPtFrac_;
   double minZMass_; 
   double maxZMass_; 
 
@@ -103,6 +104,7 @@ private:
 
   TFile* theFile;
 
+  TH1I* nJetsH;
   TH1I* nTauCandH;
   TH1D* leadingTrackPtH;  
   TH1D* leadingTrackSiptH;  
@@ -116,8 +118,10 @@ private:
   TH1D* invMassGenH;
   TH1D* invMassMCH;
   TH1D* invMassMC1H;
+  TH1D* invMassMC2H;
   TH1D* invMassMC3H;
   TH1D* maxHcalEnergyH;
+  TH1D* maxHcalEnergy2H;
   TH1D* emEnergyFracH;
   TH1D* emEnergyFrac2H;
   TH1I* nChHadronH;
@@ -171,6 +175,11 @@ private:
   TH2D* ptScatH;
   TH1I* tauDecayModeH; 
   TH1I* tauDecayProdH;
+  TH1I* tauProdGammaOnlyH;
+  TH1I* tauDecayProdNoGamH;
+  TH2I* tauDecayProd2DH;
+  TH1I* tauDecayProdMlt1H;
+  TH1I* tauDecayProdMgt1H;
 
   TH1D* metH;
   TH1D* sumEtH;
@@ -189,14 +198,39 @@ private:
   TH1I* nLooseTauH;
   TH1I* statH;
 
+  TH1I* selIndexTauH;
+
   TH1D* dRTauAndHLTH;
 
   TProfile* jetPtWithEtaP;
   TProfile* trkPtWithEtaP;
 
+  TH1I* fTauDecayModeH; 
+  TH1I* sTauDecayModeH; 
+
+  TH1D* tauDisc2H;
+  TH1D* tauDisc1H;
+
+  TH1D* leadingTrackPt1H;
+  TH1D* leadingTrackPt2H;
+
+  TH1D* ltPtFrac1H;
+  TH1D* ltPtFrac2H;
+
+  TH1D* tauEta1H;
+  TH1D* tauEta2H;
+
+  TH1D* tauMass1H;
+  TH1D* tauMass2H;
+
+  TH1D* ltSipt1H;
+  TH1D* ltSipt2H;
+
   std::string fileName;
   int debugFlg;
   int applyDisc;
+  int applyHLTMatch;
+
   std::string dataType;
 
   int nStat[12];
