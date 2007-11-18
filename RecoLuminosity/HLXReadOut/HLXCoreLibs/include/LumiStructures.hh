@@ -28,37 +28,46 @@ namespace HCAL_HLX
   using namespace ICCoreUtils;
 
   struct LUMI_SUMMARY {
-    double DeadtimeNormalization;
-    double Normalization;
-    double InstantLumi;
-    double InstantLumiErr;
-    double InstantLumiQlty;
-    double InstantETLumi;
-    double InstantETLumiErr;
-    double InstantETLumiQlty;
-    double InstantOccLumi[2];
-    double InstantOccLumiErr[2];
-    double InstantOccLumiQlty[2];
-    double lumiNoise[2];
+    float DeadtimeNormalization; 
+    float LHCNormalization; // recieved from LHC 
+    float ETNormalization;  // Calculated
+    float OccNormalization;
+
+    float InstantLumi;
+    float InstantLumiErr;
+    u8 InstantLumiQlty;
+
+    float InstantETLumi;
+    float InstantETLumiErr;
+    u8 InstantETLumiQlty;
+
+    float InstantOccLumi[2];
+    float InstantOccLumiErr[2];
+    u8 InstantOccLumiQlty[2];
+
+    float lumiNoise[2];
+  };
+
+  struct LUMI_DETAIL {
+    float BXNormalization[HCAL_HLX_MAX_BUNCHES];
+
+    float ETLumi[HCAL_HLX_MAX_BUNCHES];
+    float ETLumiErr[HCAL_HLX_MAX_BUNCHES];
+    u8 ETLumiQlty[HCAL_HLX_MAX_BUNCHES];
+
+    float OccLumi[2][HCAL_HLX_MAX_BUNCHES];
+    float OccLumiErr[2][HCAL_HLX_MAX_BUNCHES];
+    u8 OccLumiQlty[2][HCAL_HLX_MAX_BUNCHES];
   };
 
   struct LUMI_THRESHOLD {
-    double Threshold1Set1;
-    double Threshold2Set1;
-    double Threshold1Set2;
-    double Threshold2Set2;
-    double ET;
+    float OccThreshold1Set1;  // Occupancy Threshold
+    float OccThreshold2Set1;
+    float OccThreshold1Set2;
+    float OccThreshold2Set2;
+    float ETSum;
   };
 
-  struct LUMI_BUNCH_CROSSING {
-    double LHCLumi[HCAL_HLX_MAX_BUNCHES];
-    double ETLumi[HCAL_HLX_MAX_BUNCHES];
-    double ETLumiErr[HCAL_HLX_MAX_BUNCHES];
-    double ETLumiQlty[HCAL_HLX_MAX_BUNCHES];
-    double OccLumi[2][HCAL_HLX_MAX_BUNCHES];
-    double OccLumiErr[2][HCAL_HLX_MAX_BUNCHES];
-    double OccLumiQlty[2][HCAL_HLX_MAX_BUNCHES];
-  };
   
   struct LEVEL1_HLT_TRIGGER {
     int TriggerValue;
@@ -69,6 +78,7 @@ namespace HCAL_HLX
     int TriggerDeadtime;
   };
 
+  /*
   struct LUMI_SECTION_HST {
     bool IsDataTaking;
     int BeginOrbitNumber;
@@ -79,8 +89,9 @@ namespace HCAL_HLX
     int SecStopTime;
     int SecStartTime;
   };
+  */
 
-  struct LUMI_RAW_HEADER {
+  struct LUMI_RAW_HEADER { // Used in NibbleCollector 
     u16 marker;
     u8  hlxID;
     u8  packetID;
@@ -104,19 +115,19 @@ namespace HCAL_HLX
   struct ET_SUM_NIBBLE {
     LUMI_NIBBLE_HEADER hdr;
     bool bIsComplete;
-    unsigned long data[HCAL_HLX_MAX_BUNCHES];
+    u32 data[HCAL_HLX_MAX_BUNCHES];
   };
   
   struct OCCUPANCY_NIBBLE {
     LUMI_NIBBLE_HEADER hdr;
     bool bIsComplete[6];
-    unsigned short data[6][HCAL_HLX_MAX_BUNCHES];
+    u16 data[6][HCAL_HLX_MAX_BUNCHES];
   };
 
   struct LHC_NIBBLE {
     LUMI_NIBBLE_HEADER hdr;
     bool bIsComplete;
-    unsigned short data[HCAL_HLX_MAX_BUNCHES];
+    u8 data[HCAL_HLX_MAX_BUNCHES];
   };
 
   struct LUMI_SECTION_HEADER {
@@ -136,23 +147,23 @@ namespace HCAL_HLX
 
   struct ET_SUM_SECTION {
     LUMI_SECTION_SUB_HEADER hdr;
-    double data[HCAL_HLX_MAX_BUNCHES];
+    float data[HCAL_HLX_MAX_BUNCHES];
   };
 
   struct OCCUPANCY_SECTION {
     LUMI_SECTION_SUB_HEADER hdr;
-    double data[6][HCAL_HLX_MAX_BUNCHES];
+    u32 data[6][HCAL_HLX_MAX_BUNCHES];
   };
 
   struct LHC_SECTION {
     LUMI_SECTION_SUB_HEADER hdr;
-    double data[HCAL_HLX_MAX_BUNCHES];
+    u32 data[HCAL_HLX_MAX_BUNCHES];
   };
 
   struct LUMI_SECTION {
     LUMI_SECTION_HEADER hdr;
     LUMI_SUMMARY lumiSummary;
-    LUMI_BUNCH_CROSSING lumiBunchCrossing;
+    LUMI_DETAIL  lumiDetail;
 
     ET_SUM_SECTION etSum[HCAL_HLX_MAX_HLXS];
     OCCUPANCY_SECTION occupancy[HCAL_HLX_MAX_HLXS];
