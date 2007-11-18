@@ -49,6 +49,8 @@ namespace HCAL_HLX
   };
 
   struct LUMI_DETAIL {
+    float LHCLumi[HCAL_HLX_MAX_BUNCHES]; // Sum of LHC.data over all HLX's
+
     float BXNormalization[HCAL_HLX_MAX_BUNCHES];
 
     float ETLumi[HCAL_HLX_MAX_BUNCHES];
