@@ -75,7 +75,7 @@ namespace edm {
       return aux_;
     }
 
-    RunNumber_t runNumber() const {
+    RunNumber_t run() const {
       return aux().run();
     }
 

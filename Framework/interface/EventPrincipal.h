@@ -90,7 +90,7 @@ namespace edm {
       return aux().luminosityBlock();
     }
 
-    RunNumber_t runNumber() const {
+    RunNumber_t run() const {
       return id().run();
     }
 
@@ -138,7 +138,7 @@ namespace edm {
   inline
   bool
   isSameRun(EventPrincipal const* a, EventPrincipal const* b) {
-    return(a != 0 && b != 0 && a->runNumber() == b->runNumber());
+    return(a != 0 && b != 0 && a->run() == b->run());
   }
 
   inline
