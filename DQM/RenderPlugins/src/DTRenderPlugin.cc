@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.1 2007/10/11 07:12:57 gmasetti Exp $
+// $Id: DTRenderPlugin.cc,v 1.1 2007/11/14 15:12:42 gmasetti Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
   \version $Revision: 1.1 $
-  \date $Date: 2007/10/11 07:12:57 $
+  \date $Date: 2007/11/14 15:12:42 $
 */
 
 #include <TProfile2D.h>
@@ -126,6 +126,25 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const ObjInfo &o ) {
     return;
   }
 
+  if (o.name.find( "TrigEff" ) < o.name.size() ) {
+    obj->SetMinimum(0.);
+    obj->SetMaximum(1.);
+    return;
+  }
+
+  if (o.name.find( "BXvsQual" ) < o.name.size()    ||
+      o.name.find( "Flag1stvsBX" ) < o.name.size() ||
+      o.name.find( "Theta" ) < o.name.size() ) {
+    gPad->SetLogz(1);
+    return;
+  }
+  
+  if (o.name.find( "DCC_" ) <o.name.size() ||
+      o.name.find( "DDU_" ) <o.name.size() ) {
+    obj->SetOption( "box" );
+    return;
+  }
+
   return;
 
 
@@ -161,7 +180,14 @@ void DTRenderPlugin::preDrawTH1( TCanvas *c, const ObjInfo &o ) {
     return;
   }
 
-  if( o.name.find( "hResDist" ) < o.name.size() ) {
+  if( o.name.find( "hResDist" ) < o.name.size() ||
+      o.name.find( "MeanTest" ) < o.name.size() ||
+      o.name.find( "SigmaTest" ) < o.name.size() ||
+      o.name.find( "xEfficiency" ) < o.name.size() ||
+      o.name.find( "yEfficiency" ) < o.name.size() ||
+      o.name.find( "Efficiency_" ) < o.name.size() ||
+      o.name.find( "OccupancyDiff_" ) < o.name.size() ||
+      o.name.find( "tTrigTest" ) < o.name.size() ) {
     
     TAttLine *line = dynamic_cast<TAttLine *> (o.object);
     assert (line);
@@ -186,9 +212,31 @@ void DTRenderPlugin::preDrawTH1( TCanvas *c, const ObjInfo &o ) {
 	//	  std::cout << name << " has nothing" << std::endl; 
       }  
     }   
+
+    if ( o.name.find( "tTrigTest" ) < o.name.size() ) {
+      obj->GetXaxis()->SetBinLabel(1,"SL1");
+      obj->GetXaxis()->SetBinLabel(2,"SL2");
+      obj->GetXaxis()->SetBinLabel(3,"SL3");
+    }
+
     return;
   }
   
+  if( o.name.find( "CorrectBX" ) < o.name.size() ) {
+    obj->GetYaxis()->SetRangeUser(-10.,30.);
+    obj->GetXaxis()->LabelsOption("hd");
+    return;
+  }
+
+  if( o.name.find( "TrigEff" ) < o.name.size()  ||
+      o.name.find( "CorrFrac" ) < o.name.size() ||
+      o.name.find( "2ndFrac" ) < o.name.size()  ||
+      o.name.find( "HFrac" ) < o.name.size() ) {
+    obj->GetYaxis()->SetRangeUser(0.,1.1);
+    obj->GetXaxis()->LabelsOption("hd");
+    return;
+  } 
+
   return;
 
 }
