@@ -157,11 +157,7 @@ void RPCTriggerPatternBuilder::parsePatterns()
   }
 
   for (int tower = 0; tower < RPCConst::m_TOWER_COUNT; ++tower) {
-    pL1RPCConfig->m_pats.push_back(std::vector< std::vector< RPCPattern::RPCPatVec > >());
-    pL1RPCConfig->m_quals.push_back(std::vector< std::vector< RPCPattern::TQualityVec > >());
     for (int logSector = 0; logSector < scCnt; ++logSector) {
-      pL1RPCConfig->m_pats[tower].push_back(std::vector< RPCPattern::RPCPatVec >());
-      pL1RPCConfig->m_quals[tower].push_back(std::vector< RPCPattern::TQualityVec >());
       for (int logSegment = 0; logSegment < sgCnt; ++logSegment) {
 
         std::stringstream fname;
@@ -171,26 +167,26 @@ void RPCTriggerPatternBuilder::parsePatterns()
 	      << "sg" <<logSegment 
               << ".xml";
 
-//        LogDebug("RPCTriggerConfig") << "Parsing: " << fname.str() <<std::endl;
-
         cout<<"Parsing "<<fname.str()<<flush;
         RPCPatternsParser parser;
         parser.parse(fname.str());
         cout<<" - done "<<endl;
 
         RPCPattern::RPCPatVec npats = parser.getPatternsVec(tower, logSector, logSegment);
-	pL1RPCConfig->m_pats[tower][logSector].push_back(npats); 
+           
+        for (int ip=0; ip<npats.size(); ip++) {
+          npats[ip].setCoords(tower,logSector,logSegment);
+          pL1RPCConfig->m_pats.push_back(npats[ip]);
+        }
 
         RPCPattern::TQualityVec nquals = parser.getQualityVec(); 
-	pL1RPCConfig->m_quals[tower][logSector].push_back(nquals); 
+        for (int iq=0; iq<nquals.size(); iq++) {
+          nquals[iq].m_tower=tower;
+          nquals[iq].m_logsector=logSector;
+          nquals[iq].m_logsegment=logSegment;
+          pL1RPCConfig->m_quals.push_back(nquals[iq]);
+        }
 	    
-//	LogDebug("RPCTriggerConfig") 
-//	  << "  RPCPatterns: " << npats.size() 
-//	  << "/" << pL1RPCConfig->m_pats[tower][logSector][logSegment].size()
-//	  << " qualities: "<< nquals.size()
-//	  << "/" << pL1RPCConfig->m_quals[tower][logSector][logSegment].size()
-//	  << std::endl;
-
       } // segments
     } // sectors
   } // towers
