@@ -43,6 +43,11 @@
 		cd HiggsAnalysis/HeavyChHiggsToTauNu
 		scramv1 b
 
+	      * if you have taken any tags, then the compilation should be
+                done in  CMSSW_1_6_X/src directory instead of 
+                HiggsAnalysis/HeavyChHiggsToTauNu, so that everything gets
+                compiled
+
 	-run
 	Take jet calibration data for 1_5_X samples:
 	cvs co -r jet_corrections_16X JetMETCorrections/MCJet/data
