@@ -2,6 +2,7 @@
 namespace   BTagMCTools {
 JetFlavour::JetFlavour()
 {
+  m_flavour		 = 0 ;
   m_mainFlavour          = 0 ;
   m_heaviestFlavour      = 0 ;
   m_minimumDeltaRFlavour = 0 ;
