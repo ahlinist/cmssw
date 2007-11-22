@@ -16,94 +16,94 @@ TrackIPTagPlotter::TrackIPTagPlotter(const TString & tagName,
   }
 
   trkNbr3D = new FlavourHistorgrams<int>
-	("selTrksNbr_3D" + theExtensionString, "Number of selected tracks for 3D IPS" + theExtensionString, 31, -0.5, 30.5,
+	("selTrksNbr_3D" + theExtensionString, "Number of selected tracks for 3D IPS", 31, -0.5, 30.5,
 	false, true, true, "b", update);
 
   trkNbr2D = new FlavourHistorgrams<int>
-	("selTrksNbr_2D" + theExtensionString, "Number of selected tracks for 2D IPS" + theExtensionString, 31, -0.5, 30.5,
+	("selTrksNbr_2D" + theExtensionString, "Number of selected tracks for 2D IPS", 31, -0.5, 30.5,
 	false, true, true, "b", update);
 
   lowerIPSBound = -35.0;
   upperIPSBound = +35.0;
 
   tkcntHistosSig3D[4] = new FlavourHistorgrams<double>
-       ("ips_3D" + theExtensionString, "3D Significance of impact parameter",
+       ("ips_3D" + theExtensionString, "3D IP significance",
 	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
   tkcntHistosSig3D[0] = new FlavourHistorgrams<double>
-       ("ips1_3D" + theExtensionString, "3D Significance of impact parameter 1st trk",
+       ("ips1_3D" + theExtensionString, "3D IP significance 1.trk",
 	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
   tkcntHistosSig3D[1] = new FlavourHistorgrams<double>
-       ("ips2_3D" + theExtensionString, "3D Significance of impact parameter 2nd trk",
+       ("ips2_3D" + theExtensionString, "3D IP significance 2.trk",
 	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
   tkcntHistosSig3D[2] = new FlavourHistorgrams<double>
-       ("ips3_3D" + theExtensionString, "3D Significance of impact parameter 3rd trk",
+       ("ips3_3D" + theExtensionString, "3D IP significance 3.trk",
 	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
   tkcntHistosSig3D[3] = new FlavourHistorgrams<double>
-       ("ips4_3D" + theExtensionString, "3D Significance of impact parameter 4th trk",
+       ("ips4_3D" + theExtensionString, "3D IP significance 4.trk",
 	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
   tkcntHistosSig2D[4] = new FlavourHistorgrams<double>
-       ("ips_2D" + theExtensionString, "2D Significance of impact parameter",
+       ("ips_2D" + theExtensionString, "2D IP significance",
 	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
   tkcntHistosSig2D[0] = new FlavourHistorgrams<double>
-       ("ips1_2D" + theExtensionString, "2D Significance of impact parameter 1st trk",
+       ("ips1_2D" + theExtensionString, "2D IP significance 1.trk",
 	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
   tkcntHistosSig2D[1] = new FlavourHistorgrams<double>
-       ("ips2_2D" + theExtensionString, "2D Significance of impact parameter 2nd trk",
+       ("ips2_2D" + theExtensionString, "2D IP significance 2.trk",
 	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
   tkcntHistosSig2D[2] = new FlavourHistorgrams<double>
-       ("ips3_2D" + theExtensionString, "2D Significance of impact parameter 3rd trk",
+       ("ips3_2D" + theExtensionString, "2D IP significance 3.trk",
 	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
   tkcntHistosSig2D[3] = new FlavourHistorgrams<double>
-       ("ips4" + theExtensionString, "2D Significance of impact parameter 4th trk",
+       ("ips4" + theExtensionString, "2D IP significance 4.trk",
 	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
   tkcntHistosProb3D[4] = new FlavourHistorgrams<float>
-       ("prob_3D" + theExtensionString, "3D Probability of impact parameter",
+       ("prob_3D" + theExtensionString, "3D IP probability",
 	50, -1.1, 1.1, false, true, true, "b", update) ;
 
   tkcntHistosProb3D[0] = new FlavourHistorgrams<float>
-       ("prob1_3D" + theExtensionString, "3D Probability of impact parameter 1st trk",
+       ("prob1_3D" + theExtensionString, "3D IP probability 1.trk",
 	50, -1.1, 1.1, false, true, true, "b", update) ;
 
   tkcntHistosProb3D[1] = new FlavourHistorgrams<float>
-       ("prob2_3D" + theExtensionString, "3D Probability of impact parameter 2nd trk",
+       ("prob2_3D" + theExtensionString, "3D IP probability 2.trk",
 	50, -1.1, 1.1, false, true, true, "b", update) ;
 
   tkcntHistosProb3D[2] = new FlavourHistorgrams<float>
-       ("prob3_3D" + theExtensionString, "3D Probability of impact parameter 3rd trk",
+       ("prob3_3D" + theExtensionString, "3D IP probability 3.trk",
 	50, -1.1, 1.1, false, true, true, "b", update) ;
 
   tkcntHistosProb3D[3] = new FlavourHistorgrams<float>
-       ("prob4_3D" + theExtensionString, "3D Probability of impact parameter 4th trk",
+       ("prob4_3D" + theExtensionString, "3D IP probability 4.trk",
 	50, -1.1, 1.1, false, true, true, "b", update) ;
 
   tkcntHistosProb2D[4] = new FlavourHistorgrams<float>
-       ("prob_2D" + theExtensionString, "2D Probability of impact parameter",
+       ("prob_2D" + theExtensionString, "2D IP probability",
 	50, -1.1, 1.1, false, true, true, "b", update) ;
 
   tkcntHistosProb2D[0] = new FlavourHistorgrams<float>
-       ("prob1_2D" + theExtensionString, "2D Probability of impact parameter 1st trk",
+       ("prob1_2D" + theExtensionString, "2D IP probability 1.trk",
 	50, -1.1, 1.1, false, true, true, "b", update) ;
 
   tkcntHistosProb2D[1] = new FlavourHistorgrams<float>
-       ("prob2_2D" + theExtensionString, "2D Probability of impact parameter 2nd trk",
+       ("prob2_2D" + theExtensionString, "2D IP probability 2.trk",
 	50, -1.1, 1.1, false, true, true, "b", update) ;
 
   tkcntHistosProb2D[2] = new FlavourHistorgrams<float>
-       ("prob3_2D" + theExtensionString, "2D Probability of impact parameter 3rd trk",
+       ("prob3_2D" + theExtensionString, "2D IP probability 3.trk",
 	50, -1.1, 1.1, false, true, true, "b", update) ;
 
   tkcntHistosProb2D[3] = new FlavourHistorgrams<float>
-       ("prob4" + theExtensionString, "2D Probability of impact parameter 4th trk",
+       ("prob4" + theExtensionString, "2D IP probability 4.trk",
 	50, -1.1, 1.1, false, true, true, "b", update) ;
 
 #if 0
@@ -173,16 +173,24 @@ void TrackIPTagPlotter::analyzeTag (const reco::BaseTagInfo * baseTagInfo,
   trkNbr3D->fill(jetFlav, ip.size());
   trkNbr2D->fill(jetFlav, ip.size());
 
+  vector<unsigned int> sortedIndices = tagInfo->sortedIndexes(reco::TrackIPTagInfo::IP2DSig);
   for(unsigned int n=0; n < ip.size() && n < 4; n++) {
-    tkcntHistosSig2D[n]->fill(jetFlav, ip[n].ip2d.significance());
-    tkcntHistosProb2D[n]->fill(jetFlav, prob2d[n]);
+    tkcntHistosSig2D[n]->fill(jetFlav, ip[sortedIndices[n]].ip2d.significance());
+  }
+  sortedIndices = tagInfo->sortedIndexes(reco::TrackIPTagInfo::Prob2D);
+  for(unsigned int n=0; n < ip.size() && n < 4; n++) {
+    tkcntHistosProb2D[n]->fill(jetFlav, prob2d[sortedIndices[n]]);
   }
   for(unsigned int n=ip.size(); n < 4; n++)
     tkcntHistosSig2D[n]->fill(jetFlav, lowerIPSBound-1.0);
 
+  sortedIndices = tagInfo->sortedIndexes(reco::TrackIPTagInfo::IP3DSig);
   for(unsigned int n=0; n < ip.size() && n < 4; n++) {
-    tkcntHistosSig3D[n]->fill(jetFlav, ip[n].ip3d.significance());
-    tkcntHistosProb3D[n]->fill(jetFlav, prob3d[n]);
+    tkcntHistosSig3D[n]->fill(jetFlav, ip[sortedIndices[n]].ip3d.significance());
+  }
+  sortedIndices = tagInfo->sortedIndexes(reco::TrackIPTagInfo::Prob3D);
+  for(unsigned int n=0; n < ip.size() && n < 4; n++) {
+    tkcntHistosProb3D[n]->fill(jetFlav, prob3d[sortedIndices[n]]);
   }
   for(unsigned int n=ip.size(); n < 4; n++)
     tkcntHistosSig3D[n]->fill(jetFlav, lowerIPSBound-1.0);
