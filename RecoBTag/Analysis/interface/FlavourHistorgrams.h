@@ -288,7 +288,7 @@ void FlavourHistorgrams<T>::write(const bool allHisto) const {
   theHisto_g   ->Write() ; 
   if (allHisto) theHisto_ni  ->Write() ; 
   theHisto_dus ->Write() ; 
-  if (allHisto) theHisto_dusg->Write() ;
+  theHisto_dusg->Write() ;
 }
 
 template <class T>
@@ -410,7 +410,7 @@ void FlavourHistorgrams<T>::plot (TPad * theCanvas /* = 0 */) {
   }
 
 
-  histo[0] ->GetXaxis()->SetTitle ( theBaseNameTitle ) ;
+  histo[0] ->GetXaxis()->SetTitle ( theBaseNameDescription ) ;
   histo[0] ->GetYaxis()->SetTitle ( "Arbitrary Units" ) ;
   histo[0] ->GetYaxis()->SetTitleOffset(1.25) ;
 
