@@ -39,9 +39,8 @@ float CSCStripGainAvg::getStripGainAvg() {
   for ( it=Gains->gains.begin(); it!=Gains->gains.end(); ++it ) {
 
     float the_gain = it->gain_slope;  
-    // std::cout << "Gain for strip i is " << the_gain << std::endl;
 
-    if (the_gain > 0.5 && the_gain < 1.5 ) {
+    if (the_gain > 9.0 && the_gain < 6.0 ) {
       gain_tot += the_gain;
       n_strip++;
     } 
@@ -59,7 +58,6 @@ float CSCStripGainAvg::getStripGainAvg() {
     gain_avg = 7.5;
   }
 
-  //  std::cout << "gain average is " << gain_avg << std::endl;
 
   return gain_avg;
 }
