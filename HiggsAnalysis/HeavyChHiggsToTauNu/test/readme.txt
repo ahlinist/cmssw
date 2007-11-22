@@ -31,6 +31,9 @@
 				cvs co -r V00-00-06 RecoTauTag/TauTagTools
 				cvs co -r jet_corrections_16X JetMETCorrections/MCJet/data
 
+22.11.2007/S.Lehti CMSSW_1_6_7  Added particleType in MyTrack class for storing
+				PF ParticleType: X=0,h=1,e=2,mu=3,gamma=4,h0=5
+
 
 	How to compile:
 	- First make event dictionaries for the MyEvent class
