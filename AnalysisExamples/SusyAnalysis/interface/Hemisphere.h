@@ -11,7 +11,7 @@
 *  Authors: Luc Pape & Filip Moortgat      Date: July 2005
 *                                          Updated: July 2006
 *                                          Updated: 15 Sept 2006
-*
+*                                          Updated: 15 November 2006
 */
 
 
@@ -34,6 +34,7 @@ public:
 // Seeding method: choice of 2 inital axes
 //   1: 1st: max P ; 2nd: max P * delta R wrt first one 
 //   2: 2 objects who give maximal invariant mass (recommended)
+//   3: 2 objects who give maximal transverse mass
 //
 // Hemisphere association method:
 //   1: maximum pt longitudinal projected on the axes
