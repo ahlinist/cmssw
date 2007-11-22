@@ -157,7 +157,7 @@ int Hemisphere::reconstruct(){
     }
 
    
-   } else if (seed_meth == 2) {
+   } else if (seed_meth == 2 | seed_meth == 3) {
 
     float Mass_Max = 0.;
     float InvariantMass = 0.;
@@ -168,10 +168,20 @@ int Hemisphere::reconstruct(){
      if (Object_Noseed[i] == 0){ 
       for (int j=i+1;j<vsize;j++){  
        if (Object_Noseed[j] == 0){ 
-         InvariantMass =  (Object_E[i] + Object_E[j])* (Object_E[i] + Object_E[j])
-	 - (Object_Px[i] + Object_Px[j])* (Object_Px[i] + Object_Px[j]) 
-	 - (Object_Py[i] + Object_Py[j])* (Object_Py[i] + Object_Py[j])
-	 - (Object_Pz[i] + Object_Pz[j])* (Object_Pz[i] + Object_Pz[j]) ;        
+         // either the invariant mass
+         if (seed_meth == 2){
+           InvariantMass =  (Object_E[i] + Object_E[j])* (Object_E[i] + Object_E[j])
+	   - (Object_Px[i] + Object_Px[j])* (Object_Px[i] + Object_Px[j]) 
+	   - (Object_Py[i] + Object_Py[j])* (Object_Py[i] + Object_Py[j])
+	   - (Object_Pz[i] + Object_Pz[j])* (Object_Pz[i] + Object_Pz[j]) ;  
+         } 
+         // or the transverse mass
+         else if (seed_meth == 3){
+           float pti = sqrt(Object_Px[i]*Object_Px[i] + Object_Py[i]*Object_Py[i]);
+           float ptj = sqrt(Object_Px[j]*Object_Px[j] + Object_Py[j]*Object_Py[j]);
+           InvariantMass =  2. * (pti*ptj - Object_Px[i]*Object_Px[j]
+                                          - Object_Py[i]*Object_Py[j] );
+         }
          if ( Mass_Max < InvariantMass){
            Mass_Max = InvariantMass;
            I_Max = i;
