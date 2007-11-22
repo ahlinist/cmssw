@@ -373,6 +373,7 @@ namespace edm {
     startEndFile();
     writeFileFormatVersion();
     writeFileIdentifier();
+    writeFileIndex();
     writeProcessConfigurationRegistry();
     writeProcessHistoryRegistry();
     writeModuleDescriptionRegistry();
