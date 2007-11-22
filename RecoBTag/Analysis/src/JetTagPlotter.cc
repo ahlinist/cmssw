@@ -36,66 +36,60 @@ JetTagPlotter::JetTagPlotter (const TString & tagName, const EtaPtBin & etaPtBin
   // to have a shorter name .....
   const TString & es = theExtensionString;
 
-  // Discriminator for computations (fine binning)
-  dDiscriminatorFC = new FlavourHistorgrams<double>
-	("discrFC" + es, "Discriminator for computations" + es,
-	discrBins, discrStart_, discrEnd_, true, true, true, "b", update);
-  dDiscriminatorFC->settitle("Discriminant");
   // jet flavour
   dJetFlav = new FlavourHistorgrams<int>
-	("jetFlavour" + es, "Jet Flavour" + es, 22, -0.5, 21.5,
+	("jetFlavour" + es, "Jet Flavour", 22, -0.5, 21.5,
 	false, false, false, "b", update);
 
   // track multiplicity in jet
   dJetMultiplicity = new FlavourHistorgrams<int>
-	("jetMultiplicity" + es, "Jet Multiplicity" + es, 31, -0.5, 30.5,
+	("jetMultiplicity" + es, "Jet Multiplicity", 31, -0.5, 30.5,
 	false, true, true, "b", update);
 
     // Discriminator: again with reasonable binning
   dDiscriminator = new FlavourHistorgrams<double>
-	("discr" + es, "Discriminator" + es, 50, discrStart_, discrEnd_,
+	("discr" + es, "Discriminator", 50, discrStart_, discrEnd_,
 	false, true, true, "b", update);
   dDiscriminator->settitle("Discriminant");
     // reconstructed jet momentum
   dJetRecMomentum = new FlavourHistorgrams<double>
-	("jetMomentum" + es, "jet momentum" + es, 200, 0.0, 200.0,
+	("jetMomentum" + es, "jet momentum", 200, 0.0, 200.0,
 	false, false, true, "b", update);
 
   // reconstructed jet transverse momentum
   dJetRecPt = new FlavourHistorgrams<double>
-	("jetPt" + es, "jet pt" + es, 200, 0.0, 200.0,
+	("jetPt" + es, "jet pt", 200, 0.0, 200.0,
 	false, false, true, "b", update);
 
   // reconstructed jet eta
   dJetRecPseudoRapidity = new FlavourHistorgrams<double>
-	("jetEta" + es, "jet eta" + es, 100, -3.5, 3.5,
+	("jetEta" + es, "jet eta", 100, -3.5, 3.5,
 	false, false, true, "b", update);
 
   // reconstructed jet phi
   dJetRecPhi = new FlavourHistorgrams<double>
-	("jetPhi" + es, "jet phi" + es, 100, -3.15, 3.15,
+	("jetPhi" + es, "jet phi", 100, -3.15, 3.15,
 	false, false, true, "b", update);
 
   // associated parton momentum
   dJetPartonMomentum = new FlavourHistorgrams<double>
-	("associatedPartonMomentum" + es, "associated parton momentum" + es,
+	("associatedPartonMomentum" + es, "associated parton momentum",
 	200, 0.0, 400.0, false, false, true, "b", update);
 
   // associated parton pt
   dJetPartonPt = new FlavourHistorgrams<double>
-	("associatedPartonPt" + es, "associated parton pt" + es,
+	("associatedPartonPt" + es, "associated parton pt",
 	200, 0.0, 400.0, false, false, true, "b", update);
 
   // associated parton eta
   dJetPartonPseudoRapidity = new FlavourHistorgrams<double>
-	("associatedPartonEta" + es, "associated parton eta" + es,
+	("associatedPartonEta" + es, "associated parton eta",
 	100, -3.5, 3.5, false, false, true, "b", update);
 }
 
 
 
 JetTagPlotter::~JetTagPlotter () {
-  delete dDiscriminatorFC;
   delete dJetFlav;
   delete dJetMultiplicity;
   delete dDiscriminator;
@@ -113,7 +107,6 @@ JetTagPlotter::~JetTagPlotter () {
 
 void JetTagPlotter::epsPlot(const TString & name)
 {
-  dDiscriminatorFC->epsPlot(name);
   dJetFlav->epsPlot(name);
   dJetMultiplicity->epsPlot(name);
   dDiscriminator->epsPlot(name);
@@ -182,7 +175,6 @@ void JetTagPlotter::analyzeTag(const reco::JetTag & jetTag,
 {
   int jetFlav = jetFlavour.flavour();
 
-  dDiscriminatorFC->fill(jetFlav, jetTag.second);
   dJetFlav->fill(jetFlav, jetFlav);
 //  dJetMultiplicity->fill(jetFlav, jetTag.tracks().size()); //fixme
   dDiscriminator->fill(jetFlav, jetTag.second );
@@ -203,7 +195,7 @@ void JetTagPlotter::finalize()
   // final processing:
   // produce the misid. vs. eff histograms
   //
-  effPurFromHistos = new EffPurFromHistos ( dDiscriminatorFC,
+  effPurFromHistos = new EffPurFromHistos ( dDiscriminator,
 				nBinEffPur_, startEffPur_, endEffPur_);
   effPurFromHistos->compute();
   finalized = true;
@@ -218,7 +210,6 @@ void JetTagPlotter::write(const bool allHisto)
   gFile->mkdir(dir);
   gFile->cd(dir);
 
-  if (allHisto) dDiscriminatorFC->write(allHisto);
   dJetFlav->write(allHisto);
   dJetMultiplicity->write(allHisto);
   dDiscriminator->write(allHisto);

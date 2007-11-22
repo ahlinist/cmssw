@@ -34,14 +34,14 @@ EffPurFromHistos::EffPurFromHistos
 
   fromDiscriminatorDistr = true;
   discrNoCutEffic = new FlavourHistorgrams<double> (
-	"totalEntries" + histoExtension, "Total Entries" + histoExtension,
+	"totalEntries" + histoExtension, "Total Entries: " + dDiscriminatorFC->baseNameDescription(),
 	dDiscriminatorFC->nBins(), dDiscriminatorFC->lowerBound(),
 	dDiscriminatorFC->upperBound(), true, true, false, "b" );
 
   // conditional discriminator cut for efficiency histos
 
   discrCutEfficScan = new FlavourHistorgrams<double> (
-	"effVsDiscrCut" + histoExtension, "Efficiency vs Discriminator Cut" + histoExtension,
+	"effVsDiscrCut" + histoExtension, "Eff. vs Disc. Cut: " + dDiscriminatorFC->baseNameDescription(),
 	dDiscriminatorFC->nBins(), dDiscriminatorFC->lowerBound(),
 	dDiscriminatorFC->upperBound(), true, true, false, "b" );
   discrCutEfficScan->SetMinimum(1E-4);
@@ -94,6 +94,7 @@ EffPurFromHistos::EffPurFromHistos
 
   // loop over flavours
   for ( int iFlav = 0; iFlav < dimHistos; iFlav++ ) {
+    if (discrCfHistos[iFlav] == 0) continue;
     discrNoCutHistos[iFlav]->SetXTitle ( "Discriminant" );
     discrNoCutHistos[iFlav]->GetXaxis()->SetTitleOffset ( 0.75 );
 
@@ -448,9 +449,9 @@ void EffPurFromHistos::compute ()
   // use fact that eff decreases monotonously
 
   // any of the histos to be created can be taken here:
-  TH1F * EffFlavVsBEff = EffFlavVsBEff_d;
+  TH1F * EffFlavVsBEff = EffFlavVsBEff_b;
 
-  int nBinB = EffFlavVsBEff->GetNbinsX() - 2; // -2 because we don't include under/overflow in loop
+  int nBinB = EffFlavVsBEff->GetNbinsX();
 
   for ( int iBinB = 1; iBinB <= nBinB; iBinB++ ) {  // loop over the bins on the x-axis of the histograms to be filled
 
