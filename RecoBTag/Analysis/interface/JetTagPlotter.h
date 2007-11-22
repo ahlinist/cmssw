@@ -55,7 +55,6 @@ class JetTagPlotter : public BaseBTagPlotter {
   // for the misid vs. eff plots
   EffPurFromHistos * effPurFromHistos ;
 
-  FlavourHistorgrams<double> * dDiscriminatorFC;
   FlavourHistorgrams<int> * dJetFlav;
 
   // track multiplicity in jet
