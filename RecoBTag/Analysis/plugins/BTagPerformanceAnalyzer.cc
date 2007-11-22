@@ -1,10 +1,11 @@
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
+#include "FWCore/Utilities/interface/Exception.h"
+#include "FWCore/Utilities/interface/CodedException.h"
 #include "RecoBTag/Analysis/interface/BTagPerformanceAnalyzer.h"
 #include "RecoBTag/Analysis/interface/JetTagPlotter.h"
-#include "FWCore/Utilities/interface/CodedException.h"
 #include "RecoBTag/Analysis/interface/TagInfoPlotterFactory.h"
-#include <DataFormats/Common/interface/View.h>
+#include "DataFormats/Common/interface/View.h"
 
 using namespace reco;
 using namespace edm;
@@ -123,7 +124,8 @@ void BTagPerformanceAnalyzer::bookHistos(const edm::ParameterSet& pSet)
       delete differentialPlotsConstantPt  ;
 
     } else {
-      tagInfoInputTags.push_back(moduleLabel);
+      // tag info retrievel is deferred (needs availability of EventSetup)
+      tagInfoInputTags.push_back(vector<edm::InputTag>());
       tiDataFormatType.push_back(dataFormatType);
       binTagInfoPlotters.push_back(vector<BaseTagInfoPlotter*>()) ;
 
@@ -139,8 +141,10 @@ void BTagPerformanceAnalyzer::bookHistos(const edm::ParameterSet& pSet)
 	    dataFormatType, moduleLabel.label(), etaPtBin, 
 	    moduleConfig[iModule].getParameter<edm::ParameterSet>("parameters"), update);
 	  binTagInfoPlotters.back().push_back ( jetTagPlotter ) ;
+          binTagInfoPlottersToModuleConfig[jetTagPlotter] = iModule;
 	}
       }
+
       edm::LogInfo("Info")
 	<< "====>>>> ## sizeof differentialPlots = " << differentialPlots.size();
     }
@@ -251,21 +255,19 @@ BTagPerformanceAnalyzer::~BTagPerformanceAnalyzer()
 
 void BTagPerformanceAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
- if(!fastMC) jfi.readEvent(iEvent);
+  if (!fastMC)
+    jfi.readEvent(iEvent);
 
- edm::Handle<JetFlavourMatchingCollection> jetMC;
- FlavourMap flavours;
+  edm::Handle<JetFlavourMatchingCollection> jetMC;
+  FlavourMap flavours;
 
- if(fastMC)
-  {
-	 iEvent.getByLabel(jetMCSrc, jetMC);
-         for(JetFlavourMatchingCollection::const_iterator iter =
-                 jetMC->begin(); iter != jetMC->end(); iter++)
-               {
-                 unsigned int fl = iter->second.getFlavour();
-                 const CaloJetRef caloRef = iter->first.castTo<CaloJetRef>();
-                 flavours.insert(FlavourMap::value_type(caloRef, fl));
-               }
+  if (fastMC) {
+    iEvent.getByLabel(jetMCSrc, jetMC);
+    for (JetFlavourMatchingCollection::const_iterator iter = jetMC->begin();
+         iter != jetMC->end(); iter++) {
+      unsigned int fl = iter->second.getFlavour();
+      flavours.insert(FlavourMap::value_type(iter->first, fl));
+    }
   }
 
 // Look first at the jetTags
@@ -278,64 +280,110 @@ void BTagPerformanceAnalyzer::analyze(const edm::Event& iEvent, const edm::Event
 
     int plotterSize =  binJetTagPlotters[iJetLabel].size();
     for (JetTagCollection::const_iterator tagI = tagColl.begin();
-	tagI != tagColl.end(); ++tagI) {
+	 tagI != tagColl.end(); ++tagI) {
       // Identify parton associated to jet.
       BTagMCTools::JetFlavour jetFlavour = getJetFlavour(tagI->first, fastMC, flavours);
 
       if (!jetSelector(*(tagI->first), jetFlavour)) continue;
       for (int iPlotter = 0; iPlotter != plotterSize; ++iPlotter) {
 	bool inBin = false;
-	if (partonKinematics) inBin = binJetTagPlotters[iJetLabel][iPlotter]->etaPtBin().inBin(jetFlavour);
-	else inBin = binJetTagPlotters[iJetLabel][iPlotter]->etaPtBin().inBin(*(tagI->first));
+	if (partonKinematics)
+          inBin = binJetTagPlotters[iJetLabel][iPlotter]->etaPtBin().inBin(jetFlavour);
+	else
+          inBin = binJetTagPlotters[iJetLabel][iPlotter]->etaPtBin().inBin(*tagI->first);
 	// Fill histograms if in desired pt/rapidity bin.
-	if ( inBin ) 
+	if (inBin)
 	  binJetTagPlotters[iJetLabel][iPlotter]->analyzeTag(*tagI, jetFlavour);
       }
     }
   }
 
-// Nowlook at the TagInfo
+// Now look at the TagInfos
 
   for (unsigned int iJetLabel = 0; iJetLabel != tiDataFormatType.size(); ++iJetLabel) {
-    edm::Handle< View<BaseTagInfo> > tagInfoHandle;
-    iEvent.getByLabel(tagInfoInputTags[iJetLabel], tagInfoHandle);
-    const View<BaseTagInfo> & tagInfoColl = *(tagInfoHandle.product());
-    LogDebug("Info") << "Found " << tagInfoColl.size() << " B candidates in collection " << tagInfoInputTags[iJetLabel];
+    int plotterSize = binTagInfoPlotters[iJetLabel].size();
+    for (int iPlotter = 0; iPlotter != plotterSize; ++iPlotter)
+      binTagInfoPlotters[iJetLabel][iPlotter]->setEventSetup(iSetup);
 
-    int plotterSize =  binTagInfoPlotters[iJetLabel].size();
-    for (View<BaseTagInfo>::const_iterator tagI = tagInfoColl.begin();
-	tagI != tagInfoColl.end(); ++tagI) {
+    vector<edm::InputTag> & inputTags = tagInfoInputTags[iJetLabel];
+    if (inputTags.empty()) {
+      // deferred retrieval of input tags
+      BaseTagInfoPlotter *firstPlotter = binTagInfoPlotters[iJetLabel][0];
+      int iModule = binTagInfoPlottersToModuleConfig[firstPlotter];
+      vector<string> labels = firstPlotter->tagInfoRequirements();
+      if (labels.empty())
+        labels.push_back("label");
+      for (vector<string>::const_iterator iLabels = labels.begin();
+           iLabels != labels.end(); ++iLabels) {
+        edm::InputTag inputTag =
+        	moduleConfig[iModule].getParameter<InputTag>(*iLabels);
+        inputTags.push_back(inputTag);
+      }
+    }
+
+    unsigned int nInputTags = inputTags.size();
+    vector< edm::Handle< View<BaseTagInfo> > > tagInfoHandles(nInputTags);
+    edm::ProductID jetProductID;
+    unsigned int nTagInfos = 0;
+    for (unsigned int iInputTags = 0; iInputTags < inputTags.size(); ++iInputTags) {
+      edm::Handle< View<BaseTagInfo> > & tagInfoHandle = tagInfoHandles[iInputTags];
+      iEvent.getByLabel(inputTags[iInputTags], tagInfoHandle);
+      unsigned int size = tagInfoHandle->size();
+      LogDebug("Info") << "Found " << size << " B candidates in collection " << inputTags[iInputTags];
+      edm::ProductID thisProductID = (size > 0) ? (*tagInfoHandle)[0].jet().id() : edm::ProductID();
+      if (iInputTags == 0) {
+        jetProductID = thisProductID;
+        nTagInfos = size;
+      } else if (jetProductID != thisProductID)
+        throw cms::Exception("Configuration") << "TagInfos are referencing a different jet collection." << endl;
+      else if (nTagInfos != size)
+        throw cms::Exception("Configuration") << "TagInfo collections are having a different size." << endl;
+    }
+
+    for (unsigned int iTagInfos = 0; iTagInfos < nTagInfos; ++iTagInfos) {
+      vector<const BaseTagInfo*> baseTagInfos(nInputTags);
+      edm::RefToBase<Jet> jetRef;
+      for (unsigned int iTagInfo = 0; iTagInfo < nInputTags; iTagInfo++) {
+        const BaseTagInfo &baseTagInfo = (*tagInfoHandles[iTagInfo])[iTagInfos];
+        if (iTagInfo == 0)
+          jetRef = baseTagInfo.jet();
+        else if (baseTagInfo.jet() != jetRef)
+          throw cms::Exception("Configuration") << "TagInfos pointing to different jets." << endl;
+        baseTagInfos[iTagInfo] = &baseTagInfo;
+      }
+
       // Identify parton associated to jet.
-      BTagMCTools::JetFlavour jetFlavour = getJetFlavour(tagI->jet(), fastMC, flavours);
+      BTagMCTools::JetFlavour jetFlavour = getJetFlavour(jetRef, fastMC, flavours);
+      if (!jetSelector(*jetRef, jetFlavour))
+        continue;
 
-      if (!jetSelector(*(tagI->jet()), jetFlavour)) continue;
       for (int iPlotter = 0; iPlotter != plotterSize; ++iPlotter) {
 	bool inBin = false;
-	if (partonKinematics) inBin = binTagInfoPlotters[iJetLabel][iPlotter]->etaPtBin().inBin(jetFlavour);
-	else inBin = binTagInfoPlotters[iJetLabel][iPlotter]->etaPtBin().inBin(*(tagI->jet()));
+	if (partonKinematics)
+          inBin = binTagInfoPlotters[iJetLabel][iPlotter]->etaPtBin().inBin(jetFlavour);
+	else
+          inBin = binTagInfoPlotters[iJetLabel][iPlotter]->etaPtBin().inBin(*jetRef);
 	// Fill histograms if in desired pt/rapidity bin.
-	if ( inBin ) 
-	  binTagInfoPlotters[iJetLabel][iPlotter]->analyzeTag(&(*tagI), jetFlavour);
+	if (inBin)
+	  binTagInfoPlotters[iJetLabel][iPlotter]->analyzeTag(baseTagInfos, jetFlavour);
       }
     }
   }
-
 }
 
 BTagMCTools::JetFlavour BTagPerformanceAnalyzer::getJetFlavour(
-	edm::RefToBase<Jet> caloRefTB, bool fastMC, FlavourMap flavours)
+	edm::RefToBase<Jet> caloRef, bool fastMC, FlavourMap flavours)
 {
   BTagMCTools::JetFlavour jetFlavour;
   if(! fastMC) {
-    jetFlavour = jfi.identifyBasedOnPartons(*caloRefTB);
+    jetFlavour = jfi.identifyBasedOnPartons(*caloRef);
   } else {
-    jetFlavour.underlyingParton4Vec(caloRefTB->p4());
-    const CaloJetRef & caloRef = caloRefTB.castTo<CaloJetRef>();
+    jetFlavour.underlyingParton4Vec(caloRef->p4());
     jetFlavour.flavour(flavours[caloRef]);
   }
 
   LogTrace("Info") << "Found jet with flavour "<<jetFlavour.flavour()<<endl;
-  LogTrace("Info") << caloRefTB->p()<<" , "<< caloRefTB->pt()<<" - "
+  LogTrace("Info") << caloRef->p()<<" , "<< caloRef->pt()<<" - "
    << jetFlavour.underlyingParton4Vec().P()<<" , "<< jetFlavour.underlyingParton4Vec().Pt()<<endl;
   return jetFlavour;
 }

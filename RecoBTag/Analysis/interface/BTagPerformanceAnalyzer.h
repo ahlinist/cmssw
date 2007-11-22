@@ -24,6 +24,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 
 //class CaloJetRef;
 
@@ -45,13 +46,20 @@ class BTagPerformanceAnalyzer : public edm::EDAnalyzer {
 
    private:
 
+  struct JetRefCompare :
+       public std::binary_function<edm::RefToBase<reco::Jet>, edm::RefToBase<reco::Jet>, bool> {
+    inline bool operator () (const edm::RefToBase<reco::Jet> &j1,
+                             const edm::RefToBase<reco::Jet> &j2) const
+    { return j1.key() < j2.key(); }
+  };
+
   // Get histogram plotting options from configuration.
   void init(const edm::ParameterSet& iConfig);
   void bookHistos(const edm::ParameterSet& pSet);
   EtaPtBin getEtaPtBin(int iEta, int iPt);
-  typedef std::map<reco::CaloJetRef, unsigned int> FlavourMap;
+  typedef std::map<edm::RefToBase<reco::Jet>, unsigned int, JetRefCompare> FlavourMap;
   BTagMCTools::JetFlavour getJetFlavour(
-	edm::RefToBase<reco::Jet> caloRefTB, bool fastMC, FlavourMap flavours);
+	edm::RefToBase<reco::Jet> caloRef, bool fastMC, FlavourMap flavours);
 
   std::string rootFile;
   vector<std::string> tiDataFormatType;
@@ -69,11 +77,13 @@ class BTagPerformanceAnalyzer : public edm::EDAnalyzer {
 
   vector< vector<JetTagPlotter*> > binJetTagPlotters;
   vector< vector<BaseTagInfoPlotter*> > binTagInfoPlotters;
-  vector<edm::InputTag> jetTagInputTags, tagInfoInputTags;
+  vector<edm::InputTag> jetTagInputTags;
+  vector< vector<edm::InputTag> > tagInfoInputTags;
   // Contains plots for each bin of rapidity and pt.
   vector< vector<BTagDifferentialPlot*> > differentialPlots;
   JetFlavourIdentifier jfi;
   vector<edm::ParameterSet> moduleConfig;
+  map<BaseTagInfoPlotter*, size_t> binTagInfoPlottersToModuleConfig;
 
 };
 
