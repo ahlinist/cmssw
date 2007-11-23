@@ -18,7 +18,7 @@ class EffPurFromHistos {
 	int nBin = 100 , double startO = 0.005 , double endO = 1.005 ) ;
 	// defaults reasonable for lifetime based tags
 
-  EffPurFromHistos (const FlavourHistorgrams<double> * dDiscriminatorFC,
+  EffPurFromHistos (const FlavourHistograms<double> * dDiscriminatorFC,
 	int nBin = 100 , double startO = 0.005 , double endO = 1.005 ) ;
 	// defaults reasonable for lifetime based tags
 
@@ -50,8 +50,8 @@ class EffPurFromHistos {
 
 //   void print () const ;
 
-  FlavourHistorgrams<double> * discriminatorNoCutEffic() const {return discrNoCutEffic;}
-  FlavourHistorgrams<double> * discriminatorCutEfficScan() const {return discrCutEfficScan;}
+  FlavourHistograms<double> * discriminatorNoCutEffic() const {return discrNoCutEffic;}
+  FlavourHistograms<double> * discriminatorCutEfficScan() const {return discrCutEfficScan;}
 
  private:
 
@@ -63,7 +63,7 @@ class EffPurFromHistos {
   // the TString for the histo name extension
   TString histoExtension ;
 
-  FlavourHistorgrams<double> * discrNoCutEffic, *discrCutEfficScan;
+  FlavourHistograms<double> * discrNoCutEffic, *discrCutEfficScan;
 
   // the input histograms (efficiency versus discriminator cut)
   // IMPORTANT: IT'S ASSUMED THAT ALL HISTOS HAVE THE SAME BINNING!!

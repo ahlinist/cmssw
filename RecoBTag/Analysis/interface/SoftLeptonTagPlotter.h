@@ -28,16 +28,16 @@ private:
 
   // keep plots for up to 3 leptons per jet
   static const int s_leptons = 2;
-  FlavourHistorgrams<double> * m_leptonId[s_leptons];   // lepton identification discriminant
-  FlavourHistorgrams<double> * m_leptonPt[s_leptons];   // lepton transverse momentum
+  FlavourHistograms<double> * m_leptonId[s_leptons];   // lepton identification discriminant
+  FlavourHistograms<double> * m_leptonPt[s_leptons];   // lepton transverse momentum
   
-  FlavourHistorgrams<double> * m_sip2d[s_leptons];      // 2D signed inpact parameter
-  FlavourHistorgrams<double> * m_sip3d[s_leptons];      // 3D signed inpact parameter
-  FlavourHistorgrams<double> * m_ptRel[s_leptons];      // transverse momentum wrt. jet axis
-  FlavourHistorgrams<double> * m_etaRel[s_leptons];     // (pseudo)rapidity along jet axis
-  FlavourHistorgrams<double> * m_deltaR[s_leptons];     // pseudoangular distance to jet axis
-  FlavourHistorgrams<double> * m_ratio[s_leptons];      // momentum over jet energy
-  FlavourHistorgrams<double> * m_ratioRel[s_leptons];   // momentum parallel to jet axis over jet energy
+  FlavourHistograms<double> * m_sip2d[s_leptons];      // 2D signed inpact parameter
+  FlavourHistograms<double> * m_sip3d[s_leptons];      // 3D signed inpact parameter
+  FlavourHistograms<double> * m_ptRel[s_leptons];      // transverse momentum wrt. jet axis
+  FlavourHistograms<double> * m_etaRel[s_leptons];     // (pseudo)rapidity along jet axis
+  FlavourHistograms<double> * m_deltaR[s_leptons];     // pseudoangular distance to jet axis
+  FlavourHistograms<double> * m_ratio[s_leptons];      // momentum over jet energy
+  FlavourHistograms<double> * m_ratioRel[s_leptons];   // momentum parallel to jet axis over jet energy
   
 };
 

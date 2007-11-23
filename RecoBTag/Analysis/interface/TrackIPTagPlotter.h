@@ -34,17 +34,17 @@ class TrackIPTagPlotter : public BaseTagInfoPlotter {
   double startEffPur_ ; 
   double endEffPur_ ; 
 
-  FlavourHistorgrams<double> * tkcntHistosSig3D[5];
-  FlavourHistorgrams<double> * tkcntHistosSig2D[5];
-  FlavourHistorgrams<int> * trkNbr3D, * trkNbr2D;
+  FlavourHistograms<double> * tkcntHistosSig3D[5];
+  FlavourHistograms<double> * tkcntHistosSig2D[5];
+  FlavourHistograms<int> * trkNbr3D, * trkNbr2D;
   double lowerIPSBound, upperIPSBound;
 
   EffPurFromHistos * effPurFromHistos[4] ;
 
-  FlavourHistorgrams<float> * tkcntHistosProb3D[5];
-  FlavourHistorgrams<float> * tkcntHistosProb2D[5];
-  FlavourHistorgrams<double> *decayLengthValuHisto, *jetDistanceValuHisto;
-  FlavourHistorgrams<double> *decayLengthSignHisto, *jetDistanceSignHisto;
+  FlavourHistograms<float> * tkcntHistosProb3D[5];
+  FlavourHistograms<float> * tkcntHistosProb2D[5];
+  FlavourHistograms<double> *decayLengthValuHisto, *jetDistanceValuHisto;
+  FlavourHistograms<double> *decayLengthSignHisto, *jetDistanceSignHisto;
 
   bool finalized;
 } ;

@@ -31,7 +31,7 @@ TaggingVariablePlotter::VariableConfig::VariableConfig(
 	for(std::vector<unsigned int>::const_iterator iter = indices.begin();
 	    iter != indices.end(); iter++) {
 		Plot plot;
-		plot.histo.reset(new FlavourHistorgrams<double>(
+		plot.histo.reset(new FlavourHistograms<double>(
 			name.c_str() + (*iter ? Form("%d", *iter) : TString())
 			             + (category.empty() ? TString()
 			              		: (TString("_") + category)),

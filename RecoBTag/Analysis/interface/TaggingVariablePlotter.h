@@ -48,7 +48,7 @@ class TaggingVariablePlotter : public BaseTagInfoPlotter {
     bool			logScale;
 
     struct Plot {
-      boost::shared_ptr< FlavourHistorgrams<double> >	histo;
+      boost::shared_ptr< FlavourHistograms<double> >	histo;
       unsigned int					index;
     } ;
 
