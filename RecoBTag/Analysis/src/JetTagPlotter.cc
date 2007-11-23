@@ -37,52 +37,52 @@ JetTagPlotter::JetTagPlotter (const TString & tagName, const EtaPtBin & etaPtBin
   const TString & es = theExtensionString;
 
   // jet flavour
-  dJetFlav = new FlavourHistorgrams<int>
+  dJetFlav = new FlavourHistograms<int>
 	("jetFlavour" + es, "Jet Flavour", 22, -0.5, 21.5,
 	false, false, false, "b", update);
 
   // track multiplicity in jet
-  dJetMultiplicity = new FlavourHistorgrams<int>
+  dJetMultiplicity = new FlavourHistograms<int>
 	("jetMultiplicity" + es, "Jet Multiplicity", 31, -0.5, 30.5,
 	false, true, true, "b", update);
 
     // Discriminator: again with reasonable binning
-  dDiscriminator = new FlavourHistorgrams<double>
+  dDiscriminator = new FlavourHistograms<double>
 	("discr" + es, "Discriminator", 50, discrStart_, discrEnd_,
 	false, true, true, "b", update);
   dDiscriminator->settitle("Discriminant");
     // reconstructed jet momentum
-  dJetRecMomentum = new FlavourHistorgrams<double>
+  dJetRecMomentum = new FlavourHistograms<double>
 	("jetMomentum" + es, "jet momentum", 200, 0.0, 200.0,
 	false, false, true, "b", update);
 
   // reconstructed jet transverse momentum
-  dJetRecPt = new FlavourHistorgrams<double>
+  dJetRecPt = new FlavourHistograms<double>
 	("jetPt" + es, "jet pt", 200, 0.0, 200.0,
 	false, false, true, "b", update);
 
   // reconstructed jet eta
-  dJetRecPseudoRapidity = new FlavourHistorgrams<double>
+  dJetRecPseudoRapidity = new FlavourHistograms<double>
 	("jetEta" + es, "jet eta", 100, -3.5, 3.5,
 	false, false, true, "b", update);
 
   // reconstructed jet phi
-  dJetRecPhi = new FlavourHistorgrams<double>
+  dJetRecPhi = new FlavourHistograms<double>
 	("jetPhi" + es, "jet phi", 100, -3.15, 3.15,
 	false, false, true, "b", update);
 
   // associated parton momentum
-  dJetPartonMomentum = new FlavourHistorgrams<double>
+  dJetPartonMomentum = new FlavourHistograms<double>
 	("associatedPartonMomentum" + es, "associated parton momentum",
 	200, 0.0, 400.0, false, false, true, "b", update);
 
   // associated parton pt
-  dJetPartonPt = new FlavourHistorgrams<double>
+  dJetPartonPt = new FlavourHistograms<double>
 	("associatedPartonPt" + es, "associated parton pt",
 	200, 0.0, 400.0, false, false, true, "b", update);
 
   // associated parton eta
-  dJetPartonPseudoRapidity = new FlavourHistorgrams<double>
+  dJetPartonPseudoRapidity = new FlavourHistograms<double>
 	("associatedPartonEta" + es, "associated parton eta",
 	100, -3.5, 3.5, false, false, true, "b", update);
 }

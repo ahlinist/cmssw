@@ -1,6 +1,6 @@
 
-#ifndef FlavourHistorgrams_H
-#define FlavourHistorgrams_H
+#ifndef FlavourHistograms_H
+#define FlavourHistograms_H
 
 // #include "BTagPlotPrintC.h"
 
@@ -23,18 +23,18 @@ using namespace RecoBTag;
 // class to describe Histo
 //
 template <class T>
-class FlavourHistorgrams {
+class FlavourHistograms {
 
 public:
 
-  FlavourHistorgrams (TString baseNameTitle_ , TString baseNameDescription_ ,
+  FlavourHistograms (TString baseNameTitle_ , TString baseNameDescription_ ,
 		      int nBins_ , double lowerBound_ , double upperBound_ ,
 		      bool statistics_ ,
 		      bool plotLog_ ,
 		      bool plotNormalized_ ,
 		      TString plotFirst_ , bool update = false) ;
 
-  virtual ~FlavourHistorgrams () ;
+  virtual ~FlavourHistograms () ;
 
 
   // define arrays (if needed)
@@ -57,7 +57,7 @@ public:
 
   // needed for efficiency computations -> this / b
   // (void : alternative would be not to overwrite the histos but to return a cloned HistoDescription)
-  void divide ( FlavourHistorgrams<T> & bHD ) const ;
+  void divide ( FlavourHistograms<T> & bHD ) const ;
 
   void SetMaximum(const double max) { theMax = max;}
   void SetMinimum(const double min) { theMin = min;}
@@ -132,20 +132,20 @@ protected:
   // the canvas to plot
   TCanvas* theCanvas ;
   private:
-  FlavourHistorgrams(){}
+  FlavourHistograms(){}
 
 } ;
 
 
 
 template <class T>
-FlavourHistorgrams<T>::FlavourHistorgrams (TString baseNameTitle_ , TString baseNameDescription_ ,
+FlavourHistograms<T>::FlavourHistograms (TString baseNameTitle_ , TString baseNameDescription_ ,
 					  int nBins_ , double lowerBound_ , double upperBound_ ,
 					  bool statistics_ ,
 					  bool plotLog_ ,
 					  bool plotNormalized_ ,
 					  TString plotFirst_, bool update) :
-//   BaseFlavourHistorgrams () ,
+//   BaseFlavourHistograms () ,
   // theVariable ( variable_ ) ,
   theBaseNameTitle ( baseNameTitle_ ) , theBaseNameDescription ( baseNameDescription_ ) ,
   theNBins ( nBins_ ) , theLowerBound ( lowerBound_ ) , theUpperBound ( upperBound_ ) ,
@@ -165,8 +165,8 @@ FlavourHistorgrams<T>::FlavourHistorgrams (TString baseNameTitle_ , TString base
   }
   else {
     // not correct: print warning and set default (l)
-    cout << "FlavourHistorgrams::FlavourHistorgrams : thePlotFirst was not correct : " << thePlotFirst << endl ;
-    cout << "FlavourHistorgrams::FlavourHistorgrams : Set it to default value (l)! " << endl ;
+    cout << "FlavourHistograms::FlavourHistograms : thePlotFirst was not correct : " << thePlotFirst << endl ;
+    cout << "FlavourHistograms::FlavourHistograms : Set it to default value (l)! " << endl ;
     thePlotFirst = "l" ;
   }
 
@@ -214,7 +214,7 @@ FlavourHistorgrams<T>::FlavourHistorgrams (TString baseNameTitle_ , TString base
 
 
 template <class T>
-FlavourHistorgrams<T>::~FlavourHistorgrams () {
+FlavourHistograms<T>::~FlavourHistograms () {
   // delete the histos
   delete theHisto_all   ;
   delete theHisto_d     ;
@@ -233,7 +233,7 @@ FlavourHistorgrams<T>::~FlavourHistorgrams () {
 
 // define arrays (if needed)
 // template <class T>
-// void FlavourHistorgrams<T>::defineArray ( int * dimension , int max , int indexToPlot ) {
+// void FlavourHistograms<T>::defineArray ( int * dimension , int max , int indexToPlot ) {
 //   // indexToPlot < 0 if all to be plotted
 //   theArrayDimension = dimension ;
 //   theMaxDimension   = max ;
@@ -242,14 +242,14 @@ FlavourHistorgrams<T>::~FlavourHistorgrams () {
   
 // fill entry
 template <class T> void
-FlavourHistorgrams<T>::fill ( const int & flavour,  const T & variable) const 
+FlavourHistograms<T>::fill ( const int & flavour,  const T & variable) const 
 {
   // For single variables and arrays (for arrays only a single index can be filled)
   fillVariable ( flavour , variable ) ;
 }
 
 template <class T> void
-FlavourHistorgrams<T>::fill ( const int & flavour,  const T * variable) const
+FlavourHistograms<T>::fill ( const int & flavour,  const T * variable) const
 {
   if ( theArrayDimension == 0 ) {       
     // single variable
@@ -277,7 +277,7 @@ FlavourHistorgrams<T>::fill ( const int & flavour,  const T * variable) const
 
 
 template <class T>
-void FlavourHistorgrams<T>::write(const bool allHisto) const {
+void FlavourHistograms<T>::write(const bool allHisto) const {
   // here: write histogram to specified output file
   if (allHisto) theHisto_all ->Write() ; 
   if (allHisto) theHisto_d   ->Write() ; 
@@ -292,7 +292,7 @@ void FlavourHistorgrams<T>::write(const bool allHisto) const {
 }
 
 template <class T>
-void FlavourHistorgrams<T>::settitle(const char* title) {
+void FlavourHistograms<T>::settitle(const char* title) {
   theHisto_all ->SetXTitle(title) ;
   theHisto_d   ->SetXTitle(title) ;
   theHisto_u   ->SetXTitle(title) ;
@@ -308,7 +308,7 @@ void FlavourHistorgrams<T>::settitle(const char* title) {
 
   
 template <class T>
-void FlavourHistorgrams<T>::plot (TPad * theCanvas /* = 0 */) {
+void FlavourHistograms<T>::plot (TPad * theCanvas /* = 0 */) {
 
 //fixme:
   bool btppNI = false;
@@ -445,7 +445,7 @@ histo[0] ->Draw() ;}
 }
 
 template <class T>
-void FlavourHistorgrams<T>::epsPlot(TString name)
+void FlavourHistograms<T>::epsPlot(TString name)
 {
    TCanvas tc(theBaseNameTitle , theBaseNameDescription);
    
@@ -457,7 +457,7 @@ void FlavourHistorgrams<T>::epsPlot(TString name)
 // needed for efficiency computations -> this / b
 // (void : alternative would be not to overwrite the histos but to return a cloned HistoDescription)
 template <class T>
-void FlavourHistorgrams<T>::divide ( FlavourHistorgrams<T> & bHD ) const {
+void FlavourHistograms<T>::divide ( FlavourHistograms<T> & bHD ) const {
   // divide histos using binomial errors
   //
   // ATTENTION: It's the responsability of the user to make sure that the HistoDescriptions
@@ -477,7 +477,7 @@ void FlavourHistorgrams<T>::divide ( FlavourHistorgrams<T> & bHD ) const {
   
 
 template <class T>
-void FlavourHistorgrams<T>::fillVariable ( const int & flavour , const T & var ) const {
+void FlavourHistograms<T>::fillVariable ( const int & flavour , const T & var ) const {
   // all
   theHisto_all                ->Fill ( var ) ;
   // flavour specific
@@ -493,7 +493,7 @@ void FlavourHistorgrams<T>::fillVariable ( const int & flavour , const T & var )
 }
 
 template <class T>
-vector<TH1F*> FlavourHistorgrams<T>::getHistoVector() const
+vector<TH1F*> FlavourHistograms<T>::getHistoVector() const
 {
   vector<TH1F*> histoVector;
   histoVector.push_back ( theHisto_all );

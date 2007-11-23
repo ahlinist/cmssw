@@ -15,109 +15,109 @@ TrackIPTagPlotter::TrackIPTagPlotter(const TString & tagName,
   gFile->cd(dir);
   }
 
-  trkNbr3D = new FlavourHistorgrams<int>
+  trkNbr3D = new FlavourHistograms<int>
 	("selTrksNbr_3D" + theExtensionString, "Number of selected tracks for 3D IPS", 31, -0.5, 30.5,
 	false, true, true, "b", update);
 
-  trkNbr2D = new FlavourHistorgrams<int>
+  trkNbr2D = new FlavourHistograms<int>
 	("selTrksNbr_2D" + theExtensionString, "Number of selected tracks for 2D IPS", 31, -0.5, 30.5,
 	false, true, true, "b", update);
 
   lowerIPSBound = -35.0;
   upperIPSBound = +35.0;
 
-  tkcntHistosSig3D[4] = new FlavourHistorgrams<double>
+  tkcntHistosSig3D[4] = new FlavourHistograms<double>
        ("ips_3D" + theExtensionString, "3D IP significance",
 	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
-  tkcntHistosSig3D[0] = new FlavourHistorgrams<double>
+  tkcntHistosSig3D[0] = new FlavourHistograms<double>
        ("ips1_3D" + theExtensionString, "3D IP significance 1.trk",
 	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
-  tkcntHistosSig3D[1] = new FlavourHistorgrams<double>
+  tkcntHistosSig3D[1] = new FlavourHistograms<double>
        ("ips2_3D" + theExtensionString, "3D IP significance 2.trk",
 	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
-  tkcntHistosSig3D[2] = new FlavourHistorgrams<double>
+  tkcntHistosSig3D[2] = new FlavourHistograms<double>
        ("ips3_3D" + theExtensionString, "3D IP significance 3.trk",
 	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
-  tkcntHistosSig3D[3] = new FlavourHistorgrams<double>
+  tkcntHistosSig3D[3] = new FlavourHistograms<double>
        ("ips4_3D" + theExtensionString, "3D IP significance 4.trk",
 	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
-  tkcntHistosSig2D[4] = new FlavourHistorgrams<double>
+  tkcntHistosSig2D[4] = new FlavourHistograms<double>
        ("ips_2D" + theExtensionString, "2D IP significance",
 	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
-  tkcntHistosSig2D[0] = new FlavourHistorgrams<double>
+  tkcntHistosSig2D[0] = new FlavourHistograms<double>
        ("ips1_2D" + theExtensionString, "2D IP significance 1.trk",
 	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
-  tkcntHistosSig2D[1] = new FlavourHistorgrams<double>
+  tkcntHistosSig2D[1] = new FlavourHistograms<double>
        ("ips2_2D" + theExtensionString, "2D IP significance 2.trk",
 	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
-  tkcntHistosSig2D[2] = new FlavourHistorgrams<double>
+  tkcntHistosSig2D[2] = new FlavourHistograms<double>
        ("ips3_2D" + theExtensionString, "2D IP significance 3.trk",
 	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
-  tkcntHistosSig2D[3] = new FlavourHistorgrams<double>
+  tkcntHistosSig2D[3] = new FlavourHistograms<double>
        ("ips4" + theExtensionString, "2D IP significance 4.trk",
 	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
-  tkcntHistosProb3D[4] = new FlavourHistorgrams<float>
+  tkcntHistosProb3D[4] = new FlavourHistograms<float>
        ("prob_3D" + theExtensionString, "3D IP probability",
 	50, -1.1, 1.1, false, true, true, "b", update) ;
 
-  tkcntHistosProb3D[0] = new FlavourHistorgrams<float>
+  tkcntHistosProb3D[0] = new FlavourHistograms<float>
        ("prob1_3D" + theExtensionString, "3D IP probability 1.trk",
 	50, -1.1, 1.1, false, true, true, "b", update) ;
 
-  tkcntHistosProb3D[1] = new FlavourHistorgrams<float>
+  tkcntHistosProb3D[1] = new FlavourHistograms<float>
        ("prob2_3D" + theExtensionString, "3D IP probability 2.trk",
 	50, -1.1, 1.1, false, true, true, "b", update) ;
 
-  tkcntHistosProb3D[2] = new FlavourHistorgrams<float>
+  tkcntHistosProb3D[2] = new FlavourHistograms<float>
        ("prob3_3D" + theExtensionString, "3D IP probability 3.trk",
 	50, -1.1, 1.1, false, true, true, "b", update) ;
 
-  tkcntHistosProb3D[3] = new FlavourHistorgrams<float>
+  tkcntHistosProb3D[3] = new FlavourHistograms<float>
        ("prob4_3D" + theExtensionString, "3D IP probability 4.trk",
 	50, -1.1, 1.1, false, true, true, "b", update) ;
 
-  tkcntHistosProb2D[4] = new FlavourHistorgrams<float>
+  tkcntHistosProb2D[4] = new FlavourHistograms<float>
        ("prob_2D" + theExtensionString, "2D IP probability",
 	50, -1.1, 1.1, false, true, true, "b", update) ;
 
-  tkcntHistosProb2D[0] = new FlavourHistorgrams<float>
+  tkcntHistosProb2D[0] = new FlavourHistograms<float>
        ("prob1_2D" + theExtensionString, "2D IP probability 1.trk",
 	50, -1.1, 1.1, false, true, true, "b", update) ;
 
-  tkcntHistosProb2D[1] = new FlavourHistorgrams<float>
+  tkcntHistosProb2D[1] = new FlavourHistograms<float>
        ("prob2_2D" + theExtensionString, "2D IP probability 2.trk",
 	50, -1.1, 1.1, false, true, true, "b", update) ;
 
-  tkcntHistosProb2D[2] = new FlavourHistorgrams<float>
+  tkcntHistosProb2D[2] = new FlavourHistograms<float>
        ("prob3_2D" + theExtensionString, "2D IP probability 3.trk",
 	50, -1.1, 1.1, false, true, true, "b", update) ;
 
-  tkcntHistosProb2D[3] = new FlavourHistorgrams<float>
+  tkcntHistosProb2D[3] = new FlavourHistograms<float>
        ("prob4" + theExtensionString, "2D IP probability 4.trk",
 	50, -1.1, 1.1, false, true, true, "b", update) ;
 
 #if 0
-  decayLengthValuHisto = new FlavourHistorgrams<double>
+  decayLengthValuHisto = new FlavourHistograms<double>
        ("decLen" + theExtensionString, "Decay Length",
 	50, -5.0, 5.0, false, true, true, "b", update);
-  decayLengthSignHisto = new FlavourHistorgrams<double>
+  decayLengthSignHisto = new FlavourHistograms<double>
        ("decLenSign" + theExtensionString, "Decay Length significance",
 	50, -2000.0, 2000.0, false, true, true, "b", update);
 #endif
-  jetDistanceValuHisto = new FlavourHistorgrams<double>
+  jetDistanceValuHisto = new FlavourHistograms<double>
        ("jetDist" + theExtensionString, "JetDistance",
 	50, -0.1, 0.1, false, true, true, "b", update);
-  jetDistanceSignHisto = new FlavourHistorgrams<double>
+  jetDistanceSignHisto = new FlavourHistograms<double>
        ("jetDistSign" + theExtensionString, "JetDistance significance",
 	50, -100.0, 100.0, false, true, true, "b", update);
 

@@ -15,43 +15,43 @@ TrackProbabilityTagPlotter::TrackProbabilityTagPlotter(const TString & tagName,
   gFile->cd();
   gFile->cd(dir);
   }
-  tkcntHistosSig3D[4] = new FlavourHistorgrams<double>
+  tkcntHistosSig3D[4] = new FlavourHistograms<double>
        ("ips_3D" + theExtensionString, "3D Probability of impact parameter",
 	50, -1.0, 1.0, false, true, true, "b", update) ;
 
-  tkcntHistosSig3D[0] = new FlavourHistorgrams<double>
+  tkcntHistosSig3D[0] = new FlavourHistograms<double>
        ("ips1_3D" + theExtensionString, "3D Probability of impact parameter 1st trk",
 	50, -1.0, 1.0, false, true, true, "b", update) ;
 
-  tkcntHistosSig3D[1] = new FlavourHistorgrams<double>
+  tkcntHistosSig3D[1] = new FlavourHistograms<double>
        ("ips2_3D" + theExtensionString, "3D Probability of impact parameter 2nd trk",
 	50, -1.0, 1.0, false, true, true, "b", update) ;
 
-  tkcntHistosSig3D[2] = new FlavourHistorgrams<double>
+  tkcntHistosSig3D[2] = new FlavourHistograms<double>
        ("ips3_3D" + theExtensionString, "3D Probability of impact parameter 3rd trk",
 	50, -1.0, 1.0, false, true, true, "b", update) ;
 
-  tkcntHistosSig3D[3] = new FlavourHistorgrams<double>
+  tkcntHistosSig3D[3] = new FlavourHistograms<double>
        ("ips4_3D" + theExtensionString, "3D Probability of impact parameter 4th trk",
 	50, -1.0, 1.0, false, true, true, "b", update) ;
 
-  tkcntHistosSig2D[4] = new FlavourHistorgrams<double>
+  tkcntHistosSig2D[4] = new FlavourHistograms<double>
        ("ips_2D" + theExtensionString, "2D Probability of impact parameter",
 	50, -1.0, 1.0, false, true, true, "b", update) ;
 
-  tkcntHistosSig2D[0] = new FlavourHistorgrams<double>
+  tkcntHistosSig2D[0] = new FlavourHistograms<double>
        ("ips1_2D" + theExtensionString, "2D Probability of impact parameter 1st trk",
 	50, -1.0, 1.0, false, true, true, "b", update) ;
 
-  tkcntHistosSig2D[1] = new FlavourHistorgrams<double>
+  tkcntHistosSig2D[1] = new FlavourHistograms<double>
        ("ips2_2D" + theExtensionString, "2D Probability of impact parameter 2nd trk",
 	50, -1.0, 1.0, false, true, true, "b", update) ;
 
-  tkcntHistosSig2D[2] = new FlavourHistorgrams<double>
+  tkcntHistosSig2D[2] = new FlavourHistograms<double>
        ("ips3_2D" + theExtensionString, "2D Probability of impact parameter 3rd trk",
 	50, -1.0, 1.0, false, true, true, "b", update) ;
 
-  tkcntHistosSig2D[3] = new FlavourHistorgrams<double>
+  tkcntHistosSig2D[3] = new FlavourHistograms<double>
        ("ips4" + theExtensionString, "2D Probability of impact parameter 4th trk",
 	50, -1.0, 1.0, false, true, true, "b", update) ;
 

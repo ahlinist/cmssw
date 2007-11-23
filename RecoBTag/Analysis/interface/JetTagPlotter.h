@@ -55,34 +55,34 @@ class JetTagPlotter : public BaseBTagPlotter {
   // for the misid vs. eff plots
   EffPurFromHistos * effPurFromHistos ;
 
-  FlavourHistorgrams<int> * dJetFlav;
+  FlavourHistograms<int> * dJetFlav;
 
   // track multiplicity in jet
-  FlavourHistorgrams<int> * dJetMultiplicity;
+  FlavourHistograms<int> * dJetMultiplicity;
   
   // Discriminator: again with reasonable binning
-  FlavourHistorgrams<double> * dDiscriminator;
+  FlavourHistograms<double> * dDiscriminator;
   
   // reconstructed jet momentum
-  FlavourHistorgrams<double> * dJetRecMomentum;
+  FlavourHistograms<double> * dJetRecMomentum;
 
   // reconstructed jet transverse momentum
-  FlavourHistorgrams<double> * dJetRecPt;
+  FlavourHistograms<double> * dJetRecPt;
 
   // reconstructed jet eta
-  FlavourHistorgrams<double> * dJetRecPseudoRapidity;
+  FlavourHistograms<double> * dJetRecPseudoRapidity;
 
   // reconstructed jet phi
-  FlavourHistorgrams<double> * dJetRecPhi;
+  FlavourHistograms<double> * dJetRecPhi;
 
   // associated parton momentum
-  FlavourHistorgrams<double> * dJetPartonMomentum;
+  FlavourHistograms<double> * dJetPartonMomentum;
 
   // associated parton pt
-  FlavourHistorgrams<double> * dJetPartonPt;
+  FlavourHistograms<double> * dJetPartonPt;
 
   // associated parton eta
-  FlavourHistorgrams<double> * dJetPartonPseudoRapidity;
+  FlavourHistograms<double> * dJetPartonPseudoRapidity;
 } ;
 
 #endif

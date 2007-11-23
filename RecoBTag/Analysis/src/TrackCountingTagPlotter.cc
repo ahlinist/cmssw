@@ -16,54 +16,54 @@ TrackCountingTagPlotter::TrackCountingTagPlotter(const TString & tagName,
   gFile->cd(dir);
   }
 
-  trkNbr3D = new FlavourHistorgrams<int>
+  trkNbr3D = new FlavourHistograms<int>
 	("selTrksNbr_3D" + theExtensionString, "Number of selected tracks for 3D IPS" + theExtensionString, 31, -0.5, 30.5,
 	false, true, true, "b", update);
 
-  trkNbr2D = new FlavourHistorgrams<int>
+  trkNbr2D = new FlavourHistograms<int>
 	("selTrksNbr_2D" + theExtensionString, "Number of selected tracks for 2D IPS" + theExtensionString, 31, -0.5, 30.5,
 	false, true, true, "b", update);
 
   lowerIPSBound = -35.0;
   upperIPSBound = +35.0;
 
-  tkcntHistosSig3D[4] = new FlavourHistorgrams<double>
+  tkcntHistosSig3D[4] = new FlavourHistograms<double>
        ("ips_3D" + theExtensionString, "3D Significance of impact parameter",
 	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
-  tkcntHistosSig3D[0] = new FlavourHistorgrams<double>
+  tkcntHistosSig3D[0] = new FlavourHistograms<double>
        ("ips1_3D" + theExtensionString, "3D Significance of impact parameter 1st trk",
 	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
-  tkcntHistosSig3D[1] = new FlavourHistorgrams<double>
+  tkcntHistosSig3D[1] = new FlavourHistograms<double>
        ("ips2_3D" + theExtensionString, "3D Significance of impact parameter 2nd trk",
 	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
-  tkcntHistosSig3D[2] = new FlavourHistorgrams<double>
+  tkcntHistosSig3D[2] = new FlavourHistograms<double>
        ("ips3_3D" + theExtensionString, "3D Significance of impact parameter 3rd trk",
 	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
-  tkcntHistosSig3D[3] = new FlavourHistorgrams<double>
+  tkcntHistosSig3D[3] = new FlavourHistograms<double>
        ("ips4_3D" + theExtensionString, "3D Significance of impact parameter 4th trk",
 	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
-  tkcntHistosSig2D[4] = new FlavourHistorgrams<double>
+  tkcntHistosSig2D[4] = new FlavourHistograms<double>
        ("ips_2D" + theExtensionString, "2D Significance of impact parameter",
 	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
-  tkcntHistosSig2D[0] = new FlavourHistorgrams<double>
+  tkcntHistosSig2D[0] = new FlavourHistograms<double>
        ("ips1_2D" + theExtensionString, "2D Significance of impact parameter 1st trk",
 	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
-  tkcntHistosSig2D[1] = new FlavourHistorgrams<double>
+  tkcntHistosSig2D[1] = new FlavourHistograms<double>
        ("ips2_2D" + theExtensionString, "2D Significance of impact parameter 2nd trk",
 	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
-  tkcntHistosSig2D[2] = new FlavourHistorgrams<double>
+  tkcntHistosSig2D[2] = new FlavourHistograms<double>
        ("ips3_2D" + theExtensionString, "2D Significance of impact parameter 3rd trk",
 	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
-  tkcntHistosSig2D[3] = new FlavourHistorgrams<double>
+  tkcntHistosSig2D[3] = new FlavourHistograms<double>
        ("ips4" + theExtensionString, "2D Significance of impact parameter 4th trk",
 	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 

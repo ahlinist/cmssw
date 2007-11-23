@@ -34,9 +34,9 @@ class TrackCountingTagPlotter : public BaseTagInfoPlotter {
   double startEffPur_ ; 
   double endEffPur_ ; 
 
-  FlavourHistorgrams<double> * tkcntHistosSig3D[5];
-  FlavourHistorgrams<double> * tkcntHistosSig2D[5];
-  FlavourHistorgrams<int> * trkNbr3D, * trkNbr2D;
+  FlavourHistograms<double> * tkcntHistosSig3D[5];
+  FlavourHistograms<double> * tkcntHistosSig2D[5];
+  FlavourHistograms<int> * trkNbr3D, * trkNbr2D;
   double lowerIPSBound, upperIPSBound;
 
   EffPurFromHistos * effPurFromHistos[4] ;

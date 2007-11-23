@@ -26,21 +26,21 @@ EffPurFromHistos::EffPurFromHistos ( const TString & ext, TH1F * h_d, TH1F * h_u
 }
 
 EffPurFromHistos::EffPurFromHistos 
-	(const FlavourHistorgrams<double> * dDiscriminatorFC, int nBin,
+	(const FlavourHistograms<double> * dDiscriminatorFC, int nBin,
 	double startO, double endO) :
 	nBinOutput(nBin), startOutput(startO), endOutput(endO)
 {
   histoExtension = "_"+dDiscriminatorFC->baseNameTitle();
 
   fromDiscriminatorDistr = true;
-  discrNoCutEffic = new FlavourHistorgrams<double> (
+  discrNoCutEffic = new FlavourHistograms<double> (
 	"totalEntries" + histoExtension, "Total Entries: " + dDiscriminatorFC->baseNameDescription(),
 	dDiscriminatorFC->nBins(), dDiscriminatorFC->lowerBound(),
 	dDiscriminatorFC->upperBound(), true, true, false, "b" );
 
   // conditional discriminator cut for efficiency histos
 
-  discrCutEfficScan = new FlavourHistorgrams<double> (
+  discrCutEfficScan = new FlavourHistograms<double> (
 	"effVsDiscrCut" + histoExtension, "Eff. vs Disc. Cut: " + dDiscriminatorFC->baseNameDescription(),
 	dDiscriminatorFC->nBins(), dDiscriminatorFC->lowerBound(),
 	dDiscriminatorFC->upperBound(), true, true, false, "b" );

@@ -34,8 +34,8 @@ class TrackProbabilityTagPlotter : public BaseTagInfoPlotter {
   int	nBinEffPur_ ;
   double startEffPur_ ; 
   double endEffPur_ ; 
-  FlavourHistorgrams<double> * tkcntHistosSig3D[5];
-  FlavourHistorgrams<double> * tkcntHistosSig2D[5];
+  FlavourHistograms<double> * tkcntHistosSig3D[5];
+  FlavourHistograms<double> * tkcntHistosSig2D[5];
   EffPurFromHistos * effPurFromHistos[4] ;
   bool finalized;
 } ;
