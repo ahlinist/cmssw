@@ -372,18 +372,18 @@ void BTagPerformanceAnalyzer::analyze(const edm::Event& iEvent, const edm::Event
 }
 
 BTagMCTools::JetFlavour BTagPerformanceAnalyzer::getJetFlavour(
-	edm::RefToBase<Jet> caloRef, bool fastMC, FlavourMap flavours)
+	edm::RefToBase<Jet> jetRef, bool fastMC, FlavourMap flavours)
 {
   BTagMCTools::JetFlavour jetFlavour;
-  if(! fastMC) {
-    jetFlavour = jfi.identifyBasedOnPartons(*caloRef);
+  if (!fastMC) {
+    jetFlavour = jfi.identifyBasedOnPartons(*jetRef);
   } else {
-    jetFlavour.underlyingParton4Vec(caloRef->p4());
-    jetFlavour.flavour(flavours[caloRef]);
+    jetFlavour.underlyingParton4Vec(jetRef->p4());
+    jetFlavour.flavour(flavours[jetRef]);
   }
 
   LogTrace("Info") << "Found jet with flavour "<<jetFlavour.flavour()<<endl;
-  LogTrace("Info") << caloRef->p()<<" , "<< caloRef->pt()<<" - "
+  LogTrace("Info") << jetRef->p()<<" , "<< jetRef->pt()<<" - "
    << jetFlavour.underlyingParton4Vec().P()<<" , "<< jetFlavour.underlyingParton4Vec().Pt()<<endl;
   return jetFlavour;
 }
