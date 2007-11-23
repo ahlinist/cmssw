@@ -116,7 +116,8 @@ void TaggingVariablePlotter::write(const bool allHisto)
 {
 	TString dir = "TaggingVariable" + theExtensionString;
 	gFile->cd();
-	gFile->mkdir(dir);
+	if (!gFile->Get(dir))
+		gFile->mkdir(dir);
 	gFile->cd(dir);
 
 	for(vector<VariableConfig>::const_iterator iter = variables.begin();
