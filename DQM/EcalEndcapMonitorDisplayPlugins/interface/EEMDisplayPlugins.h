@@ -1,4 +1,4 @@
-// $Id: EEMDisplayPlugins.h,v 1.3 2007/07/24 08:50:38 dellaric Exp $
+// $Id: EEMDisplayPlugins.h,v 1.4 2007/09/24 17:51:24 dellaric Exp $
 
 #ifndef  EEMDisplayPlugins_H
 # define EEMDisplayPlugins_H
@@ -7,8 +7,8 @@
   \file EEMDisplayPlugins
   \brief Display Plugin for Quality Histograms (2D)
   \author B. Gobbo 
-  \version $Revision: 1.3 $
-  \date $Date: 2007/07/24 08:50:38 $
+  \version $Revision: 1.4 $
+  \date $Date: 2007/09/24 17:51:24 $
 */
 
 #include "VisMonitoring/VisDQMBase/interface/VisDQMDisplayPlugin.h"
@@ -59,10 +59,10 @@ class EEMDisplayPlugins : public VisDQMDisplayPlugin {
   // private functions...
   std::string preDrawTProfile2D( DisplayData *data );
   std::string preDrawTProfile( DisplayData *data );
-  std::string preDrawTH2( DisplayData *data );
-  std::string preDrawTH1( DisplayData *data );
+  std::string preDrawTH2F( DisplayData *data );
+  std::string preDrawTH1F( DisplayData *data );
   void postDrawTProfile2D( DisplayData *data );
-  void postDrawTH2( DisplayData *data );
+  void postDrawTH2F( DisplayData *data );
   template<class T> void adjustRange( T obj );
 
 };
