@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.27 2007/11/16 09:19:30 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.28 2007/11/16 10:09:17 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.27 $
-  \date $Date: 2007/11/16 09:19:30 $
+  \version $Revision: 1.28 $
+  \date $Date: 2007/11/16 10:09:17 $
 */
 
 #include <TH3.h>
@@ -173,11 +173,6 @@ void EERenderPlugin::preDraw( TCanvas *c, const ObjInfo &o, const ImgInfo &i, Re
 #endif
 
   c->cd();
-
-//  gPad->SetFrameFillColor(10);
-//  if (o.error) gPad->SetFillColor(2);
-//  if (o.warning) gPad->SetFillColor(5);
-//  if (o.other) gPad->SetFillColor(16);
 
   if( dynamic_cast<TProfile2D*>( o.object ) ) {
     preDrawTProfile2D( c, o );
