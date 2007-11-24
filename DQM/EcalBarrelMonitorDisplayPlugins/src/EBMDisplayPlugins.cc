@@ -1,13 +1,17 @@
-// $Id: EBMDisplayPlugins.cc,v 1.33 2007/11/13 14:05:33 dellaric Exp $
+// $Id: EBMDisplayPlugins.cc,v 1.34 2007/11/15 08:44:40 dellaric Exp $
 
 /*!
   \file EBMDisplayPlugins
   \brief Display Plugin for Quality Histograms (2D)
   \author B. Gobbo 
-  \version $Revision: 1.33 $
-  \date $Date: 2007/11/13 14:05:33 $
+  \version $Revision: 1.34 $
+  \date $Date: 2007/11/15 08:44:40 $
 */
 
+#include <TH1.h>
+#include <TH2.h>
+#include <TH3.h>
+#include <TProfile.h>
 #include <TProfile2D.h>
 
 #include <TStyle.h>
@@ -167,11 +171,11 @@ std::string EBMDisplayPlugins::preDraw( DisplayData *data ) {
   else if( dynamic_cast<TProfile*>( data->object ) ) {
     return preDrawTProfile( data );
   }
-  else if( dynamic_cast<TH2*>( data->object ) ) {
-    return preDrawTH2( data );
+  else if( dynamic_cast<TH2F*>( data->object ) ) {
+    return preDrawTH2F( data );
   }
-  else if( dynamic_cast<TH1*>( data->object ) ) {
-    return preDrawTH1( data );
+  else if( dynamic_cast<TH1F*>( data->object ) ) {
+    return preDrawTH1F( data );
   }
   
   return "";
@@ -239,9 +243,9 @@ std::string EBMDisplayPlugins::preDrawTProfile( DisplayData *data ) {
 
 }
 
-std::string EBMDisplayPlugins::preDrawTH2( DisplayData *data ) {
+std::string EBMDisplayPlugins::preDrawTH2F( DisplayData *data ) {
 
-  TH2* obj = dynamic_cast<TH2*>( data->object );
+  TH2F* obj = dynamic_cast<TH2F*>( data->object );
 
   name = (data->object)->GetName();
 
@@ -391,9 +395,9 @@ std::string EBMDisplayPlugins::preDrawTH2( DisplayData *data ) {
 
 }
 
-std::string EBMDisplayPlugins::preDrawTH1( DisplayData *data ) {
+std::string EBMDisplayPlugins::preDrawTH1F( DisplayData *data ) {
 
-  TH1* obj = dynamic_cast<TH1*>( data->object );
+  TH1F* obj = dynamic_cast<TH1F*>( data->object );
 
   name = (data->object)->GetName();
 
@@ -460,8 +464,8 @@ void EBMDisplayPlugins::postDraw( DisplayData *data ) {
   if( dynamic_cast<TProfile2D*>( data->object ) ) {
     postDrawTProfile2D( data );
   }
-  else if( dynamic_cast<TH2*>( data->object ) ) {
-    postDrawTH2( data );
+  else if( dynamic_cast<TH2F*>( data->object ) ) {
+    postDrawTH2F( data );
   }
 
 }
@@ -473,9 +477,9 @@ void EBMDisplayPlugins::postDrawTProfile2D( DisplayData *data ) {
 }
 
 
-void EBMDisplayPlugins::postDrawTH2( DisplayData *data ) {
+void EBMDisplayPlugins::postDrawTH2F( DisplayData *data ) {
 
-  TH2* obj = dynamic_cast<TH2*>( data->object );
+  TH2F* obj = dynamic_cast<TH2F*>( data->object );
 
   name = (data->object)->GetName();
 
