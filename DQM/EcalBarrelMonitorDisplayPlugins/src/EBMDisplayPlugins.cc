@@ -1,16 +1,16 @@
-// $Id: EBMDisplayPlugins.cc,v 1.34 2007/11/15 08:44:40 dellaric Exp $
+// $Id: EBMDisplayPlugins.cc,v 1.35 2007/11/24 17:45:55 dellaric Exp $
 
 /*!
   \file EBMDisplayPlugins
   \brief Display Plugin for Quality Histograms (2D)
   \author B. Gobbo 
-  \version $Revision: 1.34 $
-  \date $Date: 2007/11/15 08:44:40 $
+  \version $Revision: 1.35 $
+  \date $Date: 2007/11/24 17:45:55 $
 */
 
-#include <TH1.h>
-#include <TH2.h>
-#include <TH3.h>
+#include <TH1F.h>
+#include <TH2F.h>
+#include <TH3F.h>
 #include <TProfile.h>
 #include <TProfile2D.h>
 
