@@ -1,15 +1,18 @@
-// $Id: EBRenderPlugin.cc,v 1.26 2007/11/16 10:09:17 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.27 2007/11/24 11:14:52 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.26 $
-  \date $Date: 2007/11/16 10:09:17 $
+  \version $Revision: 1.27 $
+  \date $Date: 2007/11/24 11:14:52 $
 */
 
-#include <TH3.h>
+#include <TH1F.h>
+#include <TH2F.h>
+#include <TH3F.h>
+#include <TProfile.h>
 #include <TProfile2D.h>
 
 #include <TStyle.h>
@@ -127,6 +130,10 @@ bool EBRenderPlugin::applies( const ObjInfo &o, const ImgInfo &i ) {
     return true;
   } 
 
+  if( o.name.find( "EcalBarrel/EcalInfo" ) == 0 ) {
+    return true;
+  }
+
   return false;
 
 }
@@ -146,13 +153,13 @@ void EBRenderPlugin::preDraw( TCanvas *c, const ObjInfo &o, const ImgInfo &i, Re
     preDrawTProfile( c, o );
   }
   else if( dynamic_cast<TH3F*>( o.object ) ) {
-    preDrawTH3( c, o );
+    preDrawTH3F( c, o );
   }
-  else if( dynamic_cast<TH2*>( o.object ) ) {
-    preDrawTH2( c, o );
+  else if( dynamic_cast<TH2F*>( o.object ) ) {
+    preDrawTH2F( c, o );
   }
-  else if( dynamic_cast<TH1*>( o.object ) ) {
-    preDrawTH1( c, o );
+  else if( dynamic_cast<TH1F*>( o.object ) ) {
+    preDrawTH1F( c, o );
   }
 
 #ifdef DEBUG
@@ -232,9 +239,9 @@ void EBRenderPlugin::preDrawTProfile( TCanvas *c, const ObjInfo &o ) {
 
 }
 
-void EBRenderPlugin::preDrawTH3( TCanvas *c, const ObjInfo &o ) {
+void EBRenderPlugin::preDrawTH3F( TCanvas *c, const ObjInfo &o ) {
   
-  TH3* obj = dynamic_cast<TH3*>( o.object );
+  TH3F* obj = dynamic_cast<TH3F*>( o.object );
   
   assert( obj );
 
@@ -246,9 +253,9 @@ void EBRenderPlugin::preDrawTH3( TCanvas *c, const ObjInfo &o ) {
   
 } 
 
-void EBRenderPlugin::preDrawTH2( TCanvas *c, const ObjInfo &o ) {
+void EBRenderPlugin::preDrawTH2F( TCanvas *c, const ObjInfo &o ) {
 
-  TH2* obj = dynamic_cast<TH2*>( o.object );
+  TH2F* obj = dynamic_cast<TH2F*>( o.object );
 
   assert( obj );
 
@@ -393,9 +400,9 @@ void EBRenderPlugin::preDrawTH2( TCanvas *c, const ObjInfo &o ) {
 
 }
 
-void EBRenderPlugin::preDrawTH1( TCanvas *c, const ObjInfo &o ) {
+void EBRenderPlugin::preDrawTH1F( TCanvas *c, const ObjInfo &o ) {
 
-  TH1* obj = dynamic_cast<TH1*>( o.object );
+  TH1F* obj = dynamic_cast<TH1F*>( o.object );
 
   assert( obj );
 
@@ -409,6 +416,11 @@ void EBRenderPlugin::preDrawTH1( TCanvas *c, const ObjInfo &o ) {
 
   if ( nbx == 10 ) gPad->SetLogy(0);
   if ( nbx == 1700 ) gPad->SetLogy(0);
+
+  if( o.name.find( "EVTTYPE" ) < o.name.size() ) {
+   gPad->SetBottomMargin(0.4);
+   obj->GetXaxis()->LabelsOption("v");
+  }
 
   return;
 
@@ -426,10 +438,10 @@ void EBRenderPlugin::postDraw( TCanvas *c, const ObjInfo &o, const ImgInfo &i ) 
     postDrawTProfile2D( c, o );
   }
   else if( dynamic_cast<TH3F*>( o.object ) ) {
-    postDrawTH3( c, o );
+    postDrawTH3F( c, o );
   }
-  else if( dynamic_cast<TH2*>( o.object ) ) {
-    postDrawTH2( c, o );
+  else if( dynamic_cast<TH2F*>( o.object ) ) {
+    postDrawTH2F( c, o );
   }
 
 #ifdef DEBUG
@@ -468,9 +480,9 @@ void EBRenderPlugin::postDrawTProfile2D( TCanvas *c, const ObjInfo &o ) {
 
 }
 
-void EBRenderPlugin::postDrawTH3( TCanvas *c, const ObjInfo &o ) {
+void EBRenderPlugin::postDrawTH3F( TCanvas *c, const ObjInfo &o ) {
 
-  TH3* obj = dynamic_cast<TH3*>( o.object );
+  TH3F* obj = dynamic_cast<TH3F*>( o.object );
 
   assert( obj );
 
@@ -478,9 +490,9 @@ void EBRenderPlugin::postDrawTH3( TCanvas *c, const ObjInfo &o ) {
 
 }
 
-void EBRenderPlugin::postDrawTH2( TCanvas *c, const ObjInfo &o ) {
+void EBRenderPlugin::postDrawTH2F( TCanvas *c, const ObjInfo &o ) {
 
-  TH2* obj = dynamic_cast<TH2*>( o.object );
+  TH2F* obj = dynamic_cast<TH2F*>( o.object );
 
   assert( obj );
 
