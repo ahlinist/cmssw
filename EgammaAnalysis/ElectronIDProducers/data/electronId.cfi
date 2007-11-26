@@ -2,8 +2,8 @@ include "EgammaAnalysis/ElectronIDProducers/data/cutBasedElectronId.cfi"
 include "EgammaAnalysis/ElectronIDProducers/data/ptdrElectronId.cfi"
 
 # --- ESSource for Electron ID likelihood ---
-include "EgammaAnalysis/ElectronIDESSources/data/likelihoodPdfsDB.cfi"
-include "EgammaAnalysis/ElectronIDESSources/data/likelihoodESetup.cfi"
+#include "EgammaAnalysis/ElectronIDESSources/data/likelihoodPdfsDB.cfi"
+#include "EgammaAnalysis/ElectronIDESSources/data/likelihoodESetup.cfi"
 
 module electronId = ElectronIDProducer {
 
@@ -17,8 +17,8 @@ module electronId = ElectronIDProducer {
     bool doLikelihood = false
     bool doNeuralNet = false
 
-    InputTag barrelClusterShapeAssociation = hybridSuperClusters:hybridShapeAssoc
-    InputTag endcapClusterShapeAssociation = islandBasicClusters:islandEndcapShapeAssoc
+    #InputTag barrelClusterShapeAssociation = hybridSuperClusters:hybridShapeAssoc
+    #InputTag endcapClusterShapeAssociation = islandBasicClusters:islandEndcapShapeAssoc
     
     VPSet algo_psets = {
         {using PTDR_ID}, {using CutBased_ID}
