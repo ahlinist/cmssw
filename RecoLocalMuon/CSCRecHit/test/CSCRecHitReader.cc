@@ -69,6 +69,7 @@ CSCRecHitReader::CSCRecHitReader(const edm::ParameterSet& pset){
   theFile->cd();
   
   // Book the histograms
+  hRHPall = new H2DRecHit("ALL_CSC");  
   hRHPME1a = new H2DRecHit("ME_1_a");  
   hRHPME1b = new H2DRecHit("ME_1_b");
   hRHPME12 = new H2DRecHit("ME_1_2");
@@ -102,6 +103,7 @@ CSCRecHitReader::~CSCRecHitReader(){
   // Write the histos to file
   theFile->cd();
   heff0->Write();
+  hRHPall->Write();
   hRHPME1a->Write();
   hRHPME1b->Write();
   hRHPME12->Write();
@@ -434,6 +436,9 @@ void CSCRecHitReader::analyze(const Event & event, const EventSetup& eventSetup)
       }
 	
       // Fill the histograms according to which segment we are using:
+
+      histo = hRHPall;
+      histo->Fill(xreco, yreco, xsimu, ysimu, grecphi, gsimphi, gsimr, sigma_xreco, sigma_yreco, stripWidth, dstrip, sPhiPitch, chi2);
 	  
       // Look at ME type first then determine inner/outer ring
       if (id.station() == 1) {

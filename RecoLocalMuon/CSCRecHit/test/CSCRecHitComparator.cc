@@ -125,13 +125,6 @@ void CSCRecHitComparator::analyze(const Event & event, const EventSetup& eventSe
   event.getByLabel(simHitLabel, "MuonCSCHits", simHits);
   if (debug) cout << "   #SimHits: " << simHits->size() << endl;
 
-  /*  
-   * // Get the RecHits collection :
-   * Handle<CSCRecHit2DCollection> recHits; 
-   * event.getByLabel(recHitLabel, recHits);  
-   * if (debug) cout << "   #RecHits: " << recHits->size() << endl;
-   */
-
 
   std::vector<edm::Handle<CSCRecHit2DCollection> > VrecHits;
   event.getManyByType(VrecHits);
@@ -153,8 +146,8 @@ void CSCRecHitComparator::analyze(const Event & event, const EventSetup& eventSe
     std::cout << "******* rechit collection using process name testing not found" << std::endl;
   }
 
-  CSCRecHit2DCollection recHits(*(VrecHits.at(theRecProduct)));
 
+  CSCRecHit2DCollection recHits(*(VrecHits.at(theRecProduct)));
 
   theProvenance = 0;
   theRecProduct = 0;
@@ -179,10 +172,38 @@ void CSCRecHitComparator::analyze(const Event & event, const EventSetup& eventSe
 
   // Search for matching hit in layer/chamber/...  in simhits:
   for (simIt = oldHits.begin(); simIt != oldHits.end(); simIt++) {
-    
-    
+        
     // Find chamber where old rechit is located
     CSCDetId id = (CSCDetId)(*simIt).cscDetId();
+
+
+    PSimHitContainer::const_iterator simIt_2;
+
+    int matched_simhit = 0;
+    bool foundmatch2 = false;
+
+    for (simIt_2 = simHits->begin(); simIt_2 != simHits->end(); simIt_2++) {
+
+      // Find chamber where simhit 2 is located
+      CSCDetId id_2 = (CSCDetId)(*simIt_2).detUnitId();
+
+
+      
+      // See if have matching pair of sim hits in same any chamber layer
+      if ((id.endcap()  == id_2.endcap())  &&
+          (id.ring()    == id_2.ring())    &&
+          (id.station() == id_2.station()) &&
+          (id.chamber() == id_2.chamber()) &&
+          (id.layer()   == id_2.layer())) {
+        matched_simhit++;
+        if (abs((*simIt_2).particleType()) == 13 ) foundmatch2 = true;
+      }
+    }
+
+    if ( !foundmatch2 ) continue;
+    if (matched_simhit > maxSimhitLayer ) continue;
+   
+
 
       
     // Store sim hit as a Local Point:
@@ -227,9 +248,6 @@ void CSCRecHitComparator::analyze(const Event & event, const EventSetup& eventSe
     int rwiregrp = 0; 
     int stripnum = 0; 
       
-
-    chaMap1[chamber->specs()->chamberTypeName()]++; 
-
 
     // Loop over rechits 
       
@@ -302,6 +320,9 @@ void CSCRecHitComparator::analyze(const Event & event, const EventSetup& eventSe
       // Other chambers don't have ganged strips:
       if ( rechit_count > maxRechitLayer ) found_match = false;
     }
+
+
+    chaMap1[chamber->specs()->chamberTypeName()]++; 
 
 
     // With best match, compute the various quantities needed:

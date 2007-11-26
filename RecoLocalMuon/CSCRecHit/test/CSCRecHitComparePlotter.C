@@ -1,4 +1,4 @@
-void CSCRecHitPlotter(int segtype){
+void CSCRecHitComparePlotter(int segtype){
 
   /* Macro to plot histograms produced by CSCRecHitReader.cc
    * You may need to update the TFile name, and will need to
@@ -14,9 +14,9 @@ TFile *file = TFile::Open("cscrechitplots.root");
 
 // Files for histogram output --> set suffixps to desired file type:  e.g. .eps, .jpg, ...
 
-TString suffixps = ".gif";
+TString suffixps = ".eps";
 
- TString segment = "ALL_CSC";
+TString segment = "ME_All";
 
  if (segtype == 10) TString segment = "ME_1_a";
  if (segtype == 11) TString segment = "ME_1_b";
@@ -95,36 +95,6 @@ TString suffixps = ".gif";
  hChi2Out          = (TH1F *) file->Get(segment+"_hChi2Out");
  hPullvsChi2       = (TH2F *) file->Get(segment+"_hPullvsChi2");
 
-// ***************************************************************** 
-// Have match
-// *****************************************************************
-
- gStyle->SetOptStat(kTRUE);
- gStyle->SetOptStat(kFALSE);
- TCanvas *c1 = new TCanvas("c1","");
- c1->SetFillColor(10);
- c1->SetFillColor(10);
- hRhiteff->SetTitle(segment);
- hRhiteff->SetFillColor(1);
- hRhiteff->SetFillStyle(3004);
- hRhiteff->Draw();
- hRhiteff->GetXaxis()->SetTitle("Chamber type");
- hRhiteff->GetYaxis()->SetTitle("efficiency");
- c1->Print(plot00);
-
-
- gStyle->SetOptStat(kTRUE);
- gStyle->SetOptStat(kFALSE);
- TCanvas *c1 = new TCanvas("c1","");
- c1->SetFillColor(10);
- c1->SetFillColor(10);
- hHaveMatch->SetTitle(segment);
- hHaveMatch->SetFillColor(1);
- hHaveMatch->SetFillStyle(3004);
- hHaveMatch->Draw();
- hHaveMatch->GetXaxis()->SetTitle("Sim hits without (0) or with (1) matching rechit");
- c1->Print(plot0);
- 
 // *****************************************************************
 // 1) Local X position
 // *****************************************************************
@@ -154,44 +124,6 @@ TString suffixps = ".gif";
  hPullX->GetXaxis()->SetTitle("#Delta x_{local}/#sigma x_{reco}");
  hPullX->GetYaxis()->SetTitle(" ");   
  c1->Print(plot1d);
- 
-// 1e) Yrec vs Xrec
- gStyle->SetOptStat(kFALSE);
- TCanvas *c1 = new TCanvas("c1","");
- c1->SetFillColor(10);
- c1->SetFillColor(10);
- hRecYvsX->SetTitle(segment);
- hRecYvsX->SetFillColor(1);
- hRecYvsX->SetFillStyle(3004);
- hRecYvsX->Draw();
- hRecYvsX->GetXaxis()->SetTitle("x_{reco} (cm) ");
- hRecYvsX->GetYaxis()->SetTitle("y_{reco} (cm) ");
- c1->Print(plot1e);
-
-// 1f) Ysim vs Xsim
- gStyle->SetOptStat(kFALSE);
- TCanvas *c1 = new TCanvas("c1","");
- c1->SetFillColor(10);
- c1->SetFillColor(10);
- hSimYvsX->SetTitle(segment);
- hSimYvsX->SetFillColor(1);
- hSimYvsX->SetFillStyle(3004);
- hSimYvsX->Draw();
- hSimYvsX->GetXaxis()->SetTitle("x_{sim} (cm) ");
- hSimYvsX->GetYaxis()->SetTitle("y_{sim} (cm) ");
- c1->Print(plot1f);
-
-// 1f) Simhits without matching rechits Ysim vs Xsim
- gStyle->SetOptStat(kFALSE);
- TCanvas *c1 = new TCanvas("c1","");
- c1->SetFillColor(10);
- c1->SetFillColor(10);
- hMisYvsX->SetTitle(segment);
- hMisYvsX->Draw("BOX");
- hMisYvsX->GetXaxis()->SetTitle("x_{sim} (cm) ");
- hMisYvsX->GetYaxis()->SetTitle("y_{sim} (cm) ");
- c1->Print(plot1g);
-
 
 // *****************************************************************
 // 2) Local Y position  
@@ -228,7 +160,7 @@ TString suffixps = ".gif";
 // *****************************************************************
 
 // 5a) Res phi
- gStyle->SetOptStat(kTRUE);
+ gStyle->SetOptStat(kTRUE);  
  TCanvas *c1 = new TCanvas("c1","");
  c1->SetFillColor(10);
  c1->SetFillColor(10);
@@ -236,8 +168,6 @@ TString suffixps = ".gif";
  hResphi->SetFillColor(1);
  hResphi->SetFillStyle(3004);
  hResphi->Draw();
- hResphi->GetXaxis()->SetTitle("#Delta #phi  (mrads)");
- hResphi->GetYaxis()->SetTitle(" ");
  c1->Print(plot5a);
 
 
@@ -295,79 +225,6 @@ TString suffixps = ".gif";
  hrDphiSW->GetXaxis()->SetTitle("r #Delta #phi/strip width");
  hrDphiSW->GetYaxis()->SetTitle(" ");
  c1->Print(plot5e);
-
-
-// *****************************************************************
-// 6) chi^2 study
-// *****************************************************************
-
-// 6a) Chi^2 for all rechits
- gStyle->SetOptStat(kTRUE);
- TCanvas *c1 = new TCanvas("c1","");
- c1->SetFillColor(10);
- c1->SetFillColor(10);
- hChi2All->SetTitle(segment);
- hChi2All->SetFillColor(1);
- hChi2All->SetFillStyle(3004);
- hChi2All->Draw();
- hChi2All->GetXaxis()->SetTitle("#chi^{2}");
- hChi2All->GetYaxis()->SetTitle("");
- c1->Print(plot6a);
-
-
-// 6b) Chi^2 for rechits within core of pull distribution
- gStyle->SetOptStat(kTRUE);
- TCanvas *c1 = new TCanvas("c1","");
- c1->SetFillColor(10);
- c1->SetFillColor(10);
- hChi2Core->SetTitle(segment);
- hChi2Core->SetFillColor(1);
- hChi2Core->SetFillStyle(3004);
- hChi2Core->Draw();
- hChi2Core->GetXaxis()->SetTitle("#chi^{2}  (core)");
- hChi2Core->GetYaxis()->SetTitle("");
- c1->Print(plot6b);
-
-// 6c) Chi^2 for rechits outside core of pull distribution
- gStyle->SetOptStat(kTRUE);
- TCanvas *c1 = new TCanvas("c1","");
- c1->SetFillColor(10);
- c1->SetFillColor(10);
- hChi2Out->SetTitle(segment);
- hChi2Out->SetFillColor(1);
- hChi2Out->SetFillStyle(3004);
- hChi2Out->Draw();
- hChi2Out->GetXaxis()->SetTitle("#chi^{2}  (outliers)");
- hChi2Out->GetYaxis()->SetTitle("");
- c1->Print(plot6c);
-
-
-// 6d) pull vs chi^2 (box)
- gStyle->SetOptStat(kFALSE);
- TCanvas *c1 = new TCanvas("c1","");
- c1->SetFillColor(10);
- c1->SetFillColor(10);
- hPullvsChi2->SetTitle(segment);
- hPullvsChi2->Draw("BOX");
- hPullvsChi2->GetXaxis()->SetTitle("#chi^{2}");
- hPullvsChi2->GetYaxis()->SetTitle("R #Delta #phi/#sigma");
- c1->Print(plot6d);
-
-
-// 6e) pull vs chi^2 (profile)
- 
-// Tprofile hprofX = hPullvsChi2->ProfileX("hprofX", 0, 52, "s");
- Tprofile hprofX = hPullvsChi2->ProfileX("hprofX");
-
- gStyle->SetOptStat(kFALSE);
- TCanvas *c1 = new TCanvas("c1","");
- c1->SetFillColor(10);
- c1->SetFillColor(10);
- hprofX->SetTitle(segment);
- hprofX->Draw();
- hprofX->GetXaxis()->SetTitle("#chi^{2}");
- hprofX->GetYaxis()->SetTitle("R #Delta #phi/#sigma");
- c1->Print(plot6e);
 
 
 

@@ -56,6 +56,7 @@ protected:
 private: 
 
   // Histograms
+  H2DRecHit *hRHPall;
   H2DRecHit *hRHPME1a;
   H2DRecHit *hRHPME1b;
   H2DRecHit *hRHPME12;
