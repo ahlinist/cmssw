@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.30 2007/11/24 18:22:15 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.31 2007/11/24 21:13:13 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.30 $
-  \date $Date: 2007/11/24 18:22:15 $
+  \version $Revision: 1.31 $
+  \date $Date: 2007/11/24 21:13:13 $
 */
 
 #include <TH1F.h>
@@ -443,7 +443,7 @@ void EERenderPlugin::preDrawTH1F( TCanvas *c, const ObjInfo &o ) {
   }
 
   if( o.name.find( "EEMM DCC" ) < o.name.size() ) {
-   gPad->SetBottomMargin(0.4);
+   gPad->SetBottomMargin(0.2);
    obj->GetXaxis()->LabelsOption("v");
   }
 
