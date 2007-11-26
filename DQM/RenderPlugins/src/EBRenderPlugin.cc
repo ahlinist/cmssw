@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.28 2007/11/24 18:22:15 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.29 2007/11/24 21:13:13 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.28 $
-  \date $Date: 2007/11/24 18:22:15 $
+  \version $Revision: 1.29 $
+  \date $Date: 2007/11/24 21:13:13 $
 */
 
 #include <TH1F.h>
@@ -423,7 +423,7 @@ void EBRenderPlugin::preDrawTH1F( TCanvas *c, const ObjInfo &o ) {
   }
 
   if( o.name.find( "EBMM DCC" ) < o.name.size() ) {
-   gPad->SetBottomMargin(0.4);
+   gPad->SetBottomMargin(0.2);
    obj->GetXaxis()->LabelsOption("v");
   }
 
