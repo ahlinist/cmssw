@@ -12,7 +12,16 @@ namespace edm {
 
   void
   VectorInputSource::readMany(int number, EventPrincipalVector& result) {
-    // Do we need any error handling (e.g. exception translation) here?
     this->readMany_(number, result);
+  }
+
+  void
+  VectorInputSource::readMany(int number, EventPrincipalVector& result, EventID const& id, unsigned int fileSeqNumber) {
+    this->readMany_(number, result, id, fileSeqNumber);
+  }
+
+  void
+  VectorInputSource::readManyRandom(int number, EventPrincipalVector& result) {
+    this->readManyRandom_(number, result);
   }
 }
