@@ -2,11 +2,11 @@
 #include "DetectorDescription/PersistentDDDObjects/interface/DDPersToDDDFactory.h"
 
 //TEMPORARY!!!
-#include "DetectorDescription/Core/interface/DDExpandedView.h"
+//#include "DetectorDescription/Core/interface/DDExpandedView.h"
 //END TEMPORARY!!!
 
-#include <iostream>
-#include <memory>
+//#include <iostream>
+//#include <memory>
 
 DataProxy<IdealGeometryRecord, DDCompactView>::DataProxy( cond::Connection* pooldb
 							  , std::map<std::string,std::string>::iterator& pProxyToToken )
