@@ -1,13 +1,16 @@
-<use name=FWCore/Framework>
-<use name=FWCore/PluginManager>
+<use name=CondCore/DBCommon>
 <use name=CondCore/PluginSystem>
-<use name=Geometry/Records>
+<use name=CondFormats/IdealGeometryObjects>
+<use name=DetectorDescription/Core>
 <use name=DetectorDescription/PersistentDDDObjects>
+<use name=FWCore/Framework>
+<use name=Geometry/Records>
 <export>
-   <lib name=CondCoreIdealGeometryPlugins>
-   <use name=FWCore/Framework>
-   <use name=FWCore/PluginManager>
-   <use name=CondCore/PluginSystem>
-   <use name=Geometry/Records>
-   <use name=DetectorDescription/PersistentDDDObjects>
+  <use name=CondCore/DBCommon>
+  <use name=CondCore/PluginSystem>
+  <use name=CondFormats/IdealGeometryObjects>
+  <use name=DetectorDescription/Core>
+  <use name=FWCore/Framework>
+  <use name=Geometry/Records>
+  <lib name=CondCoreIdealGeometryPlugins>
 </export>
