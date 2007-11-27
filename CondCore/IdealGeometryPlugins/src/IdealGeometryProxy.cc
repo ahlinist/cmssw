@@ -8,7 +8,7 @@
 #include <iostream>
 #include <memory>
 
-DataProxy<IdealGeometryRecord, DDCompactView>::DataProxy( cond::PoolStorageManager* pooldb
+DataProxy<IdealGeometryRecord, DDCompactView>::DataProxy( cond::Connection* pooldb
 							  , std::map<std::string,std::string>::iterator& pProxyToToken )
   : m_pooldb(pooldb), m_pProxyToToken(pProxyToToken)
 { 
@@ -23,19 +23,19 @@ const DDCompactView* DataProxy<IdealGeometryRecord, DDCompactView>::make(const I
 									 , const edm::eventsetup::DataKey&)
 {
   //  std::cout << " ENTER IdealGeometryProxy make " << std::endl << std::flush;
-  try{
+//   try{
     //    std::cout<<"IdealGeometryProxy make "<<std::endl;
-    m_pooldb->startTransaction(true);
-    m_data=cond::Ref<PIdealGeometry>(*m_pooldb,m_pProxyToToken->second);
+    m_pooldb->poolTransaction().start(true);
+    m_data=cond::TypedRef<PIdealGeometry>(m_pooldb->poolTransaction(),m_pProxyToToken->second);
     *m_data;
-    m_pooldb->commit();
-  }catch( const cond::Exception& er ){
-    throw er;
-  }catch( const std::exception& er ){
-    throw cond::Exception( er.what() );
-  }catch( ... ){
-    throw cond::Exception( "Unknown error" );
-  }
+    m_pooldb->poolTransaction().commit();
+//   }catch( const cond::Exception& er ){
+//     throw er;
+//   }catch( const std::exception& er ){
+//     throw cond::Exception( er.what() );
+//   }catch( ... ){
+//     throw cond::Exception( "Unknown error" );
+//   }
 
   // Make the DDCompactView from PIdealGeometry
 
