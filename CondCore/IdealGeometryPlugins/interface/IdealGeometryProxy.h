@@ -4,15 +4,16 @@
 #include <iostream>
 // user include files
 #include "FWCore/Framework/interface/DataProxyTemplate.h"
-//#include "CondCore/DBCommon/interface/PoolStorageManager.h"
-//#include "CondCore/DBCommon/interface/PoolTransaction.h"
+
 #include "CondCore/DBCommon/interface/Connection.h"
 #include "CondCore/DBCommon/interface/Exception.h"
-//#include "CondCore/DBCommon/interface/Ref.h"
 #include "CondCore/DBCommon/interface/TypedRef.h"
 #include "CondCore/PluginSystem/interface/DataProxy.h"
+
 #include "CondFormats/IdealGeometryObjects/interface/PersistentDDDObjects.h"
+
 #include "DetectorDescription/Core/interface/DDCompactView.h"
+
 #include "Geometry/Records/interface/IdealGeometryRecord.h"
 
 /** This specialization of DataProxy is requred so that we are able to
