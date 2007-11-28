@@ -19,8 +19,6 @@ namespace edm {
     explicit RawInputSource(ParameterSet const& pset, InputSourceDescription const& desc);
     virtual ~RawInputSource();
 
-    int remainingEvents() const {return remainingEvents_;}
-
   protected:
     std::auto_ptr<Event> makeEvent(EventID & eventId, Timestamp const& tstamp);
     virtual std::auto_ptr<Event> readOneEvent() = 0;
@@ -34,7 +32,6 @@ namespace edm {
     virtual void setLumi(LuminosityBlockNumber_t lb);
     virtual void setRun(RunNumber_t r);
     
-    int remainingEvents_;
     RunNumber_t runNumber_;
     LuminosityBlockNumber_t luminosityBlockNumber_;
     bool newRun_;
