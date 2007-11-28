@@ -22,9 +22,10 @@
         }
         string type = "poisson"
         double averageNumber = 2.
-        int32 minBunch = -5
-        int32 maxBunch = +3
         int32 seed = 1234567
       }
       int32 bunchspace = 25
+      string Label = ""
+      int32 minBunch = -5  # in terms of 25 ns
+      int32 maxBunch = +3
   }
