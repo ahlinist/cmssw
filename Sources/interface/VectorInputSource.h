@@ -28,12 +28,12 @@ namespace edm {
 
     void readMany(int number, EventPrincipalVector& result);
     void readMany(int number, EventPrincipalVector& result, EventID const& id, unsigned int fileSeqNumber);
-    void readManyRandom(int number, EventPrincipalVector& result); 
+    void readManyRandom(int number, EventPrincipalVector& result, unsigned int& fileSeqNumber); 
 
   private:
     virtual void readMany_(int number, EventPrincipalVector& result) = 0;
     virtual void readMany_(int number, EventPrincipalVector& result, EventID const& id, unsigned int fileSeqNumber) = 0;
-    virtual void readManyRandom_(int number, EventPrincipalVector& result) = 0;
+    virtual void readManyRandom_(int number, EventPrincipalVector& result, unsigned int& fileSeqNumber) = 0;
   };
 }
 

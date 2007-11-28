@@ -21,7 +21,7 @@ namespace edm {
   }
 
   void
-  VectorInputSource::readManyRandom(int number, EventPrincipalVector& result) {
-    this->readManyRandom_(number, result);
+  VectorInputSource::readManyRandom(int number, EventPrincipalVector& result, unsigned int& fileSeqNumber) {
+    this->readManyRandom_(number, result, fileSeqNumber);
   }
 }
