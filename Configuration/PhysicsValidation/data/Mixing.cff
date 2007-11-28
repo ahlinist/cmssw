@@ -18,10 +18,11 @@
          }
                string type = "poisson"
                double averageNumber = 5
-               int32 minBunch = -5
-               int32 maxBunch = +3
                int32 seed = 1234567
        }
+               string Label = ""
+               int32 minBunch = -5  # in terms of 25 ns
+               int32 maxBunch = +3
                int32 bunchspace = 25
    }
    module mixWithPileUpTest = MixingModule{
@@ -29,12 +30,16 @@
                untracked vstring fileNames = {'file:minbias.root'} 
                string type = "fixed"
                double averageNumber = 2
-               int32 minBunch = 0
-               int32 maxBunch = 0
                int32 seed = 1234567
        }
                int32 bunchspace = 25
+               string Label = ""
+               int32 minBunch = -5  # in terms of 25 ns
+               int32 maxBunch = +3
    }
    module mixNoPileup = MixingModule{
                int32 bunchspace = 25
+               string Label = ""
+               int32 minBunch = -5  # in terms of 25 ns
+               int32 maxBunch = +3
    }
