@@ -1,6 +1,6 @@
 /*
- *  $Date: 2006/11/01 15:50:21 $
- *  $Revision: 1.2 $
+ *  $Date: 2007/03/26 16:10:09 $
+ *  $Revision: 1.3 $
  *  
  *  Filip Moorgat & Hector Naves 
  *  26/10/05
@@ -69,21 +69,16 @@ ComphepSource::ComphepSource( const ParameterSet & pset,
 
 
   
-  cout << "ComphepSource: initializing Pythia. " << endl;
   
   // PYLIST Verbosity Level
   // Valid PYLIST arguments are: 1, 2, 3, 5, 7, 11, 12, 13
   pythiaPylistVerbosity_ = pset.getUntrackedParameter<int>("pythiaPylistVerbosity",0);
-  cout << "Pythia PYLIST verbosity level = " << pythiaPylistVerbosity_ << endl;
   
   // HepMC event verbosity Level
   pythiaHepMCVerbosity_ = pset.getUntrackedParameter<bool>("pythiaHepMCVerbosity",false);
-  cout << "Pythia HepMC verbosity = " << pythiaHepMCVerbosity_ << endl; 
 
   //Max number of events printed on verbosity level 
   maxEventsToPrint_ = pset.getUntrackedParameter<int>("maxEventsToPrint",0);
-  cout << "Number of events to be printed = " << maxEventsToPrint_ << endl;
-
   
   ////////////////////////
   // Set PYTHIA parameters in a single ParameterSet
@@ -106,9 +101,6 @@ ComphepSource::ComphepSource( const ParameterSet & pset,
       pythia_params.getParameter<vector<string> >(mySet);
     
     if (mySet != "CSAParameters"){
-    cout << "----------------------------------------------" << endl;
-    cout << "Read PYTHIA parameter set " << mySet << endl;
-    cout << "----------------------------------------------" << endl;
     
     // Loop over all parameters and stop in case of mistake
     for( vector<string>::const_iterator  
@@ -129,9 +121,6 @@ ComphepSource::ComphepSource( const ParameterSet & pset,
   
    pars = pythia_params.getParameter<vector<string> >("CSAParameters");
 
-   cout << "----------------------------------------------" << endl; 
-   cout << "Reading CSA parameter settings. " << endl;
-   cout << "----------------------------------------------" << endl;                                                                           
 
     call_txgive_init();
   
@@ -156,9 +145,6 @@ ComphepSource::ComphepSource( const ParameterSet & pset,
 
   //In the future, we will get the random number seed on each event and tell 
   // pythia to use that new seed
-    cout << "----------------------------------------------" << endl;
-    cout << "Setting Pythia random number seed " << endl;
-    cout << "----------------------------------------------" << endl;
   edm::Service<RandomNumberGenerator> rng;
   uint32_t seed = rng->mySeed();
   ostringstream sRandomSet;
@@ -173,12 +159,10 @@ ComphepSource::ComphepSource( const ParameterSet & pset,
   //********                                      
   
   produces<HepMCProduct>();
-  cout << "ComphepSource: starting event generation ... " << endl;
 }
 
 
 ComphepSource::~ComphepSource(){
-  cout << "ComphepSource: event generation done. " << endl;
   call_pystat(1);
   //  call_pretauola(1);  // output from TAUOLA 
   clear(); 
@@ -192,7 +176,6 @@ void ComphepSource::clear() {
 bool ComphepSource::produce(Event & e) {
 
     auto_ptr<HepMCProduct> bare_product(new HepMCProduct());  
-    //cout << "ComphepSource: Generating event ...  " << endl;
 
     //********                                         
     //
@@ -260,6 +243,5 @@ bool
 ComphepSource::call_txgive_init() 
 {
    TXGIVE_INIT();
-   cout << "  Setting CSA defaults.   "   << endl;
    return 1;
 }
