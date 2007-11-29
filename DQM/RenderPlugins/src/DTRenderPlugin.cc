@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.2 2007/11/20 10:12:56 gmasetti Exp $
+// $Id: DTRenderPlugin.cc,v 1.3 2007/11/29 15:36:36 ameyer Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.2 $
-  \date $Date: 2007/11/20 10:12:56 $
+  \version $Revision: 1.3 $
+  \date $Date: 2007/11/29 15:36:36 $
 */
 
 #include <TProfile2D.h>
@@ -194,6 +194,7 @@ void DTRenderPlugin::preDrawTH1( TCanvas *c, const ObjInfo &o ) {
     
     if (line) {
       
+/*
       MonitorElement* me = o.me;
       if (me->hasError()) {
 	line->SetLineColor(TColor::GetColor("#CC0000"));
@@ -211,6 +212,7 @@ void DTRenderPlugin::preDrawTH1( TCanvas *c, const ObjInfo &o ) {
 	line->SetLineColor(TColor::GetColor("#000000"));
 	//	  std::cout << name << " has nothing" << std::endl; 
       }  
+*/
     }   
 
     if ( o.name.find( "tTrigTest" ) < o.name.size() ) {

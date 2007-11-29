@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.34 2007/11/29 19:07:50 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.35 2007/11/29 22:29:10 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.34 $
-  \date $Date: 2007/11/29 19:07:50 $
+  \version $Revision: 1.35 $
+  \date $Date: 2007/11/29 22:29:10 $
 */
 
 #include <TH1F.h>
@@ -22,7 +22,8 @@
 #include <iostream>
 
 #include "DQM/EcalCommon/interface/ColorPalette.h"
-#include <DQM/EcalCommon/interface/Numbers.h>
+#include "DQM/EcalCommon/interface/Numbers.h"
+
 #include "EBRenderPlugin.h"
 
 static bool first = true;
