@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.35 2007/11/29 17:25:30 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.36 2007/11/29 19:07:50 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.35 $
-  \date $Date: 2007/11/29 17:25:30 $
+  \version $Revision: 1.36 $
+  \date $Date: 2007/11/29 19:07:50 $
 */
 
 #include <TH1F.h>
@@ -24,6 +24,7 @@
 
 #include <iostream>
 
+#include "DQMServices/Core/interface/DaqMonitorBEInterface.h"
 #include "DQMServices/Core/interface/MonitorElement.h"
 
 #include "DQM/EcalCommon/interface/ColorPalette.h"
@@ -31,15 +32,8 @@
 #include "EERenderPlugin.h"
 
 static bool  first = true;
-static TH2S* t1 = new TH2S( "ee_text1", "text1", 100, -2., 98., 100, -2., 98.);
-static TH2C* t3 = new TH2C( "ee_text3", "text3", 10, 0,  10,  5,   0,  5 );
-static TH2C* t4 = new TH2C( "ee_text4", "text4",  2, 0,   2,  1,   0,  1 );
-static TH2C* t6 = new TH2C( "ee_text6", "text6", 10, 0., 100., 10, 0., 100. );
-static TH2C* t7 = new TH2C( "ee_text7", "text7", 10, 0., 100., 10, 0., 100. );
-static TH2C* t8 = new TH2C( "ee_text8", "text8", 10, -150., 150., 10, -150., 150. );
-static TH2C* t9 = new TH2C( "ee_text9", "text9", 10, -150., 150., 10, -150., 150. );
 
-void EERenderPlugin::initialise( int argc, char **argv, DaqMonitorBEInterface *bei ) {
+void EERenderPlugin::initialise( int argc, char **argv ) {
 
   if( ! first ) return;
 
@@ -69,13 +63,13 @@ void EERenderPlugin::initialise( int argc, char **argv, DaqMonitorBEInterface *b
   }
   for( short i=0; i<10; i++ ) pCol4[i] = i+401;
 
-  text1 = t1;
-  text3 = t3;
-  text4 = t4;
-  text6 = t6;
-  text7 = t7;
-  text8 = t8;
-  text9 = t9;
+  text1 = new TH2C( "ee_text1", "text1", 100, -2., 98., 100, -2., 98.);
+  text3 = new TH2C( "ee_text3", "text3", 10, 0,  10,  5,   0,  5 );
+  text4 = new TH2C( "ee_text4", "text4",  2, 0,   2,  1,   0,  1 );
+  text6 = new TH2C( "ee_text6", "text6", 10, 0., 100., 10, 0., 100. );
+  text7 = new TH2C( "ee_text7", "text7", 10, 0., 100., 10, 0., 100. );
+  text8 = new TH2C( "ee_text8", "text8", 10, -150., 150., 10, -150., 150. );
+  text9 = new TH2C( "ee_text9", "text9", 10, -150., 150., 10, -150., 150. );
 
   text1->SetMinimum(  0.01 );
   text3->SetMinimum(  0.01 );

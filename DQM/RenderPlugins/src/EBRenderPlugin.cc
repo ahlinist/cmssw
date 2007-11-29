@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.33 2007/11/29 17:25:30 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.34 2007/11/29 19:07:50 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.33 $
-  \date $Date: 2007/11/29 17:25:30 $
+  \version $Revision: 1.34 $
+  \date $Date: 2007/11/29 19:07:50 $
 */
 
 #include <TH1F.h>
@@ -21,24 +21,13 @@
 
 #include <iostream>
 
-#include "DQMServices/Core/interface/MonitorElement.h"
-
 #include "DQM/EcalCommon/interface/ColorPalette.h"
 #include <DQM/EcalCommon/interface/Numbers.h>
 #include "EBRenderPlugin.h"
 
-static bool  first = true;
-static TH2C* t1 = new TH2C( "eb_text1", "text1", 85, 0,  85, 20,   0, 20 );
-static TH2C* t2 = new TH2C( "eb_text2", "text2", 17, 0,  17,  4,   0,  4 );
-static TH2C* t3 = new TH2C( "eb_text3", "text3", 10, 0,  10,  5,   0,  5 );
-static TH2C* t4 = new TH2C( "eb_text4", "text4",  2, 0,   2,  1,   0,  1 );
-static TH2C* t6 = new TH2C( "eb_text6", "text6", 18, 0, 360,  2, -85, 85 );
-static TH2C* t7 = new TH2C( "eb_text7", "text7", 18, -M_PI*(9+1.5)/9, M_PI*(9-1.5)/9, 2, -1.479, 1.479);
-static TH2C* t8 = new TH2C( "eb_text8", "text8", 18, 0., 72., 2, -17., 17. );
+static bool first = true;
 
-static TGaxis* ax1 = new TGaxis(-M_PI*(9+1.5)/9, -1.479, M_PI*(9-1.5)/9, -1.479, -M_PI*(9+1.5)/9, M_PI*(9-1.5)/9, 40306, "N");
-
-void EBRenderPlugin::initialise( int argc, char **argv, DaqMonitorBEInterface *bei ) {
+void EBRenderPlugin::initialise( int argc, char **argv ) {
 
   if( ! first ) return;
 
@@ -68,13 +57,13 @@ void EBRenderPlugin::initialise( int argc, char **argv, DaqMonitorBEInterface *b
   }
   for( short i=0; i<10; i++ ) pCol4[i] = i+401;
 
-  text1 = t1;
-  text2 = t2;
-  text3 = t3;
-  text4 = t4;
-  text6 = t6;
-  text7 = t7;
-  text8 = t8;
+  text1 = new TH2C( "eb_text1", "text1", 85, 0,  85, 20,   0, 20 );
+  text2 = new TH2C( "eb_text2", "text2", 17, 0,  17,  4,   0,  4 );
+  text3 = new TH2C( "eb_text3", "text3", 10, 0,  10,  5,   0,  5 );
+  text4 = new TH2C( "eb_text4", "text4",  2, 0,   2,  1,   0,  1 );
+  text6 = new TH2C( "eb_text6", "text6", 18, 0, 360,  2, -85, 85 );
+  text7 = new TH2C( "eb_text7", "text7", 18, -M_PI*(9+1.5)/9, M_PI*(9-1.5)/9, 2, -1.479, 1.479);
+  text8 = new TH2C( "eb_text8", "text8", 18, 0., 72., 2, -17., 17. );
 
   text1->SetMinimum(   0.10 );
   text2->SetMinimum(   0.10 );
@@ -121,6 +110,8 @@ void EBRenderPlugin::initialise( int argc, char **argv, DaqMonitorBEInterface *b
   text6->SetMarkerSize( 2 );
   text7->SetMarkerSize( 2 );
   text8->SetMarkerSize( 2 );
+
+  ax1 = new TGaxis(-M_PI*(9+1.5)/9, -1.479, M_PI*(9-1.5)/9, -1.479, -M_PI*(9+1.5)/9, M_PI*(9-1.5)/9, 40306, "N");
 
 }
 
