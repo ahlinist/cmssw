@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.29 2007/11/24 21:13:13 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.30 2007/11/26 12:52:31 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.29 $
-  \date $Date: 2007/11/24 21:13:13 $
+  \version $Revision: 1.30 $
+  \date $Date: 2007/11/26 12:52:31 $
 */
 
 #include <TH1F.h>
@@ -462,6 +462,12 @@ void EBRenderPlugin::postDrawTProfile2D( TCanvas *c, const ObjInfo &o ) {
   assert( obj );
 
   if( o.name.find( "EBCLT" ) < o.name.size() ) {
+    int x1 = text1->GetXaxis()->FindBin(obj->GetXaxis()->GetXmin());
+    int x2 = text1->GetXaxis()->FindBin(obj->GetXaxis()->GetXmax());
+    int y1 = text1->GetYaxis()->FindBin(obj->GetYaxis()->GetXmin());
+    int y2 = text1->GetYaxis()->FindBin(obj->GetYaxis()->GetXmax());
+    text7->GetXaxis()->SetRange(x1, x2);
+    text7->GetYaxis()->SetRange(y1, y2);
     text7->Draw("text,same");
     //ax1->Draw();
     return;
@@ -471,15 +477,33 @@ void EBRenderPlugin::postDrawTProfile2D( TCanvas *c, const ObjInfo &o ) {
   int nby = obj->GetNbinsY();
 
   if( nbx == 17 && nby == 4 ) {
+    int x1 = text1->GetXaxis()->FindBin(obj->GetXaxis()->GetXmin());
+    int x2 = text1->GetXaxis()->FindBin(obj->GetXaxis()->GetXmax());
+    int y1 = text1->GetYaxis()->FindBin(obj->GetYaxis()->GetXmin());
+    int y2 = text1->GetYaxis()->FindBin(obj->GetYaxis()->GetXmax());
+    text2->GetXaxis()->SetRange(x1, x2);
+    text2->GetYaxis()->SetRange(y1, y2);
     text2->Draw("text,same");
     return;
   }
 
   if( nbx == 72 && nby == 34 ) {
+    int x1 = text1->GetXaxis()->FindBin(obj->GetXaxis()->GetXmin());
+    int x2 = text1->GetXaxis()->FindBin(obj->GetXaxis()->GetXmax());
+    int y1 = text1->GetYaxis()->FindBin(obj->GetYaxis()->GetXmin());
+    int y2 = text1->GetYaxis()->FindBin(obj->GetYaxis()->GetXmax());
+    text8->GetXaxis()->SetRange(x1, x2);
+    text8->GetYaxis()->SetRange(y1, y2);
     text8->Draw("text,same");
     return;
   }
 
+  int x1 = text1->GetXaxis()->FindBin(obj->GetXaxis()->GetXmin());
+  int x2 = text1->GetXaxis()->FindBin(obj->GetXaxis()->GetXmax());
+  int y1 = text1->GetYaxis()->FindBin(obj->GetYaxis()->GetXmin());
+  int y2 = text1->GetYaxis()->FindBin(obj->GetYaxis()->GetXmax());
+  text1->GetXaxis()->SetRange(x1, x2);
+  text1->GetYaxis()->SetRange(y1, y2);
   text1->Draw("text,same");
   return;
 
@@ -502,6 +526,12 @@ void EBRenderPlugin::postDrawTH2F( TCanvas *c, const ObjInfo &o ) {
   assert( obj );
 
   if( o.name.find( "EBCLT" ) < o.name.size() ) {
+    int x1 = text1->GetXaxis()->FindBin(obj->GetXaxis()->GetXmin());
+    int x2 = text1->GetXaxis()->FindBin(obj->GetXaxis()->GetXmax());
+    int y1 = text1->GetYaxis()->FindBin(obj->GetYaxis()->GetXmin());
+    int y2 = text1->GetYaxis()->FindBin(obj->GetYaxis()->GetXmax());
+    text7->GetXaxis()->SetRange(x1, x2);
+    text7->GetYaxis()->SetRange(y1, y2);
     text7->Draw("text,same");
     //ax1->Draw();
     return;
@@ -511,31 +541,67 @@ void EBRenderPlugin::postDrawTH2F( TCanvas *c, const ObjInfo &o ) {
   int nby = obj->GetNbinsY();
 
   if( nbx == 85 && nby == 20 ) {
+    int x1 = text1->GetXaxis()->FindBin(obj->GetXaxis()->GetXmin());
+    int x2 = text1->GetXaxis()->FindBin(obj->GetXaxis()->GetXmax());
+    int y1 = text1->GetYaxis()->FindBin(obj->GetYaxis()->GetXmin());
+    int y2 = text1->GetYaxis()->FindBin(obj->GetYaxis()->GetXmax());
+    text1->GetXaxis()->SetRange(x1, x2);
+    text1->GetYaxis()->SetRange(y1, y2);
     text1->Draw("text,same");
     return;
   }
 
   if( nbx == 17 && nby == 4 ) {
+    int x1 = text1->GetXaxis()->FindBin(obj->GetXaxis()->GetXmin());
+    int x2 = text1->GetXaxis()->FindBin(obj->GetXaxis()->GetXmax());
+    int y1 = text1->GetYaxis()->FindBin(obj->GetYaxis()->GetXmin());
+    int y2 = text1->GetYaxis()->FindBin(obj->GetYaxis()->GetXmax());
+    text2->GetXaxis()->SetRange(x1, x2);
+    text2->GetYaxis()->SetRange(y1, y2);
     text2->Draw("text,same");
     return;
   }
 
   if( nbx == 10 && nby == 5 ) {
+    int x1 = text1->GetXaxis()->FindBin(obj->GetXaxis()->GetXmin());
+    int x2 = text1->GetXaxis()->FindBin(obj->GetXaxis()->GetXmax());
+    int y1 = text1->GetYaxis()->FindBin(obj->GetYaxis()->GetXmin());
+    int y2 = text1->GetYaxis()->FindBin(obj->GetYaxis()->GetXmax());
+    text3->GetXaxis()->SetRange(x1, x2);
+    text3->GetYaxis()->SetRange(y1, y2);
     text3->Draw("text,same");
     return;
   }
 
   if( nbx == 2 && nby == 1 ) {
+    int x1 = text1->GetXaxis()->FindBin(obj->GetXaxis()->GetXmin());
+    int x2 = text1->GetXaxis()->FindBin(obj->GetXaxis()->GetXmax());
+    int y1 = text1->GetYaxis()->FindBin(obj->GetYaxis()->GetXmin());
+    int y2 = text1->GetYaxis()->FindBin(obj->GetYaxis()->GetXmax());
+    text4->GetXaxis()->SetRange(x1, x2);
+    text4->GetYaxis()->SetRange(y1, y2);
     text4->Draw("text,same");
     return;
   }
 
   if( nbx == 72 && nby == 34 ) {
+    int x1 = text1->GetXaxis()->FindBin(obj->GetXaxis()->GetXmin());
+    int x2 = text1->GetXaxis()->FindBin(obj->GetXaxis()->GetXmax());
+    int y1 = text1->GetYaxis()->FindBin(obj->GetYaxis()->GetXmin());
+    int y2 = text1->GetYaxis()->FindBin(obj->GetYaxis()->GetXmax());
+    text8->GetXaxis()->SetRange(x1, x2);
+    text8->GetYaxis()->SetRange(y1, y2);
     text8->Draw("text,same");
     return;
   }
 
   if( o.name.find( "summary" ) < o.name.size() ) {
+    int x1 = text1->GetXaxis()->FindBin(obj->GetXaxis()->GetXmin());
+    int x2 = text1->GetXaxis()->FindBin(obj->GetXaxis()->GetXmax());
+    int y1 = text1->GetYaxis()->FindBin(obj->GetYaxis()->GetXmin());
+    int y2 = text1->GetYaxis()->FindBin(obj->GetYaxis()->GetXmax());
+    text6->GetXaxis()->SetRange(x1, x2);
+    text6->GetYaxis()->SetRange(y1, y2);
     text6->Draw("text,same");
     return;
   }

@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.31 2007/11/24 21:13:13 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.32 2007/11/26 12:52:31 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.31 $
-  \date $Date: 2007/11/24 21:13:13 $
+  \version $Revision: 1.32 $
+  \date $Date: 2007/11/26 12:52:31 $
 */
 
 #include <TH1F.h>
@@ -496,9 +496,21 @@ void EERenderPlugin::postDrawTProfile2D( TCanvas *c, const ObjInfo &o ) {
 
   if( o.name.find( "EECLT" ) < o.name.size() ) {
     if( o.name.find( "EE -" ) < o.name.size() ) {
+      int x1 = text1->GetXaxis()->FindBin(obj->GetXaxis()->GetXmin());
+      int x2 = text1->GetXaxis()->FindBin(obj->GetXaxis()->GetXmax());
+      int y1 = text1->GetYaxis()->FindBin(obj->GetYaxis()->GetXmin());
+      int y2 = text1->GetYaxis()->FindBin(obj->GetYaxis()->GetXmax());
+      text8->GetXaxis()->SetRange(x1, x2);
+      text8->GetYaxis()->SetRange(y1, y2);
       text8->Draw("text,same");
     }
     if( o.name.find( "EE +" ) < o.name.size() ) {
+      int x1 = text1->GetXaxis()->FindBin(obj->GetXaxis()->GetXmin());
+      int x2 = text1->GetXaxis()->FindBin(obj->GetXaxis()->GetXmax());
+      int y1 = text1->GetYaxis()->FindBin(obj->GetYaxis()->GetXmin());
+      int y2 = text1->GetYaxis()->FindBin(obj->GetYaxis()->GetXmax());
+      text9->GetXaxis()->SetRange(x1, x2);
+      text9->GetYaxis()->SetRange(y1, y2);
       text9->Draw("text,same");
     }
     return;
@@ -546,9 +558,21 @@ void EERenderPlugin::postDrawTH2F( TCanvas *c, const ObjInfo &o ) {
 
   if( o.name.find( "EECLT" ) < o.name.size() ) {
     if( o.name.find( "EE -" ) < o.name.size() ) {
+      int x1 = text1->GetXaxis()->FindBin(obj->GetXaxis()->GetXmin());
+      int x2 = text1->GetXaxis()->FindBin(obj->GetXaxis()->GetXmax());
+      int y1 = text1->GetYaxis()->FindBin(obj->GetYaxis()->GetXmin());
+      int y2 = text1->GetYaxis()->FindBin(obj->GetYaxis()->GetXmax());
+      text8->GetXaxis()->SetRange(x1, x2);
+      text8->GetYaxis()->SetRange(y1, y2);    
       text8->Draw("text,same");
     }
     if( o.name.find( "EE +" ) < o.name.size() ) {
+      int x1 = text1->GetXaxis()->FindBin(obj->GetXaxis()->GetXmin());
+      int x2 = text1->GetXaxis()->FindBin(obj->GetXaxis()->GetXmax());
+      int y1 = text1->GetYaxis()->FindBin(obj->GetYaxis()->GetXmin());
+      int y2 = text1->GetYaxis()->FindBin(obj->GetYaxis()->GetXmax());
+      text9->GetXaxis()->SetRange(x1, x2);
+      text9->GetYaxis()->SetRange(y1, y2);    
       text9->Draw("text,same");
     }
     return;
@@ -569,20 +593,44 @@ void EERenderPlugin::postDrawTH2F( TCanvas *c, const ObjInfo &o ) {
   }
 
   if( nbx == 10 && nby == 5 ) {
+    int x1 = text1->GetXaxis()->FindBin(obj->GetXaxis()->GetXmin());
+    int x2 = text1->GetXaxis()->FindBin(obj->GetXaxis()->GetXmax());
+    int y1 = text1->GetYaxis()->FindBin(obj->GetYaxis()->GetXmin());
+    int y2 = text1->GetYaxis()->FindBin(obj->GetYaxis()->GetXmax());
+    text3->GetXaxis()->SetRange(x1, x2);
+    text3->GetYaxis()->SetRange(y1, y2);
     text3->Draw("text,same");
     return;
   }
 
   if( nbx == 2 && nby == 1 ) {
+    int x1 = text1->GetXaxis()->FindBin(obj->GetXaxis()->GetXmin());
+    int x2 = text1->GetXaxis()->FindBin(obj->GetXaxis()->GetXmax());
+    int y1 = text1->GetYaxis()->FindBin(obj->GetYaxis()->GetXmin());
+    int y2 = text1->GetYaxis()->FindBin(obj->GetYaxis()->GetXmax());
+    text4->GetXaxis()->SetRange(x1, x2);
+    text4->GetYaxis()->SetRange(y1, y2);
     text4->Draw("text,same");
     return;
   }
 
   if( o.name.find( "summary" ) < o.name.size() ) {
     if( o.name.find( "EE -" ) < o.name.size() ) {
+      int x1 = text1->GetXaxis()->FindBin(obj->GetXaxis()->GetXmin());
+      int x2 = text1->GetXaxis()->FindBin(obj->GetXaxis()->GetXmax());
+      int y1 = text1->GetYaxis()->FindBin(obj->GetYaxis()->GetXmin());
+      int y2 = text1->GetYaxis()->FindBin(obj->GetYaxis()->GetXmax());
+      text6->GetXaxis()->SetRange(x1, x2);
+      text6->GetYaxis()->SetRange(y1, y2);    
       text6->Draw("text,same");
     }
     if( o.name.find( "EE +" ) < o.name.size() ) {
+      int x1 = text1->GetXaxis()->FindBin(obj->GetXaxis()->GetXmin());
+      int x2 = text1->GetXaxis()->FindBin(obj->GetXaxis()->GetXmax());
+      int y1 = text1->GetYaxis()->FindBin(obj->GetYaxis()->GetXmin());
+      int y2 = text1->GetYaxis()->FindBin(obj->GetYaxis()->GetXmax());
+      text7->GetXaxis()->SetRange(x1, x2);
+      text7->GetYaxis()->SetRange(y1, y2);    
       text7->Draw("text,same");
     }
     return;
