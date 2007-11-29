@@ -184,11 +184,13 @@ namespace edm {
     virtual void endJob();
 
   private:
+    bool done() const {return remainingEvents_ == 0 || remainingLumis_ == 0;}
 
     int maxEvents_;
     int remainingEvents_;
+    int maxLumis_;
+    int remainingLumis_;
     int readCount_;
-    bool unlimited_;
     ModuleDescription const moduleDescription_;
     boost::shared_ptr<ProductRegistry const> productRegistry_;
     bool const primary_;
