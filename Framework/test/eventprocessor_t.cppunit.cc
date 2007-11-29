@@ -267,8 +267,8 @@ void testeventprocessor::prepostTest()
 			    "}\n");
   edm::EventProcessor proc(configuration);
    
-  proc.preProcessEventSignal.connect(&doPre);
-  proc.postProcessEventSignal.connect(&doPost);
+  proc.preProcessEventSignal().connect(&doPre);
+  proc.postProcessEventSignal().connect(&doPost);
   proc.beginJob();
   proc.run();
   proc.endJob();
