@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.1 2007/11/14 15:12:42 gmasetti Exp $
+// $Id: DTRenderPlugin.cc,v 1.2 2007/11/20 10:12:56 gmasetti Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.1 $
-  \date $Date: 2007/11/14 15:12:42 $
+  \version $Revision: 1.2 $
+  \date $Date: 2007/11/20 10:12:56 $
 */
 
 #include <TProfile2D.h>
@@ -28,7 +28,7 @@ void DTRenderPlugin::initialise( int argc, char **argv, DaqMonitorBEInterface *b
 
 bool DTRenderPlugin::applies( const ObjInfo &o, const ImgInfo &i ) {
  
-  if( o.name.find( "DriftTubes/DT" ) == 0 ) {
+  if( o.name.find( "DT/" ) == 0 ) {
     return true;
   } 
 
@@ -223,15 +223,17 @@ void DTRenderPlugin::preDrawTH1( TCanvas *c, const ObjInfo &o ) {
   }
   
   if( o.name.find( "CorrectBX" ) < o.name.size() ) {
-    obj->GetYaxis()->SetRangeUser(-10.,30.);
-    obj->GetXaxis()->LabelsOption("hd");
-    return;
+   gPad->SetLogy(0);
+   obj->GetYaxis()->SetRangeUser(-10.,30.);
+   obj->GetXaxis()->LabelsOption("hd");
+   return;
   }
 
   if( o.name.find( "TrigEff" ) < o.name.size()  ||
       o.name.find( "CorrFrac" ) < o.name.size() ||
       o.name.find( "2ndFrac" ) < o.name.size()  ||
       o.name.find( "HFrac" ) < o.name.size() ) {
+    gPad->SetLogy(0);
     obj->GetYaxis()->SetRangeUser(0.,1.1);
     obj->GetXaxis()->LabelsOption("hd");
     return;
