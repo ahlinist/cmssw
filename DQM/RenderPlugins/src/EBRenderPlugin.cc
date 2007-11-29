@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.31 2007/11/29 14:42:56 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.32 2007/11/29 15:02:26 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.31 $
-  \date $Date: 2007/11/29 14:42:56 $
+  \version $Revision: 1.32 $
+  \date $Date: 2007/11/29 15:02:26 $
 */
 
 #include <TH1F.h>
@@ -161,6 +161,8 @@ void EBRenderPlugin::preDraw( TCanvas *c, const ObjInfo &o, const ImgInfo &i, Re
   else if( dynamic_cast<TH1F*>( o.object ) ) {
     preDrawTH1F( c, o );
   }
+
+  r.drawOptions = "";
 
 #ifdef DEBUG
   std::cout << "done" << std::endl;
