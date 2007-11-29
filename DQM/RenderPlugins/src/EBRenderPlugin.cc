@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.32 2007/11/29 15:02:26 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.33 2007/11/29 17:25:30 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.32 $
-  \date $Date: 2007/11/29 15:02:26 $
+  \version $Revision: 1.33 $
+  \date $Date: 2007/11/29 17:25:30 $
 */
 
 #include <TH1F.h>
@@ -464,10 +464,10 @@ void EBRenderPlugin::postDrawTProfile2D( TCanvas *c, const ObjInfo &o ) {
   assert( obj );
 
   if( o.name.find( "EBCLT" ) < o.name.size() ) {
-    int x1 = text7->GetXaxis()->FindBin(obj->GetXaxis()->GetXmin());
-    int x2 = text7->GetXaxis()->FindBin(obj->GetXaxis()->GetXmax());
-    int y1 = text7->GetYaxis()->FindBin(obj->GetYaxis()->GetXmin());
-    int y2 = text7->GetYaxis()->FindBin(obj->GetYaxis()->GetXmax());
+    int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+    int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+    int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+    int y2 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
     text7->GetXaxis()->SetRange(x1, x2);
     text7->GetYaxis()->SetRange(y1, y2);
     text7->Draw("text,same");
@@ -479,10 +479,10 @@ void EBRenderPlugin::postDrawTProfile2D( TCanvas *c, const ObjInfo &o ) {
   int nby = obj->GetNbinsY();
 
   if( nbx == 17 && nby == 4 ) {
-    int x1 = text2->GetXaxis()->FindBin(obj->GetXaxis()->GetXmin());
-    int x2 = text2->GetXaxis()->FindBin(obj->GetXaxis()->GetXmax());
-    int y1 = text2->GetYaxis()->FindBin(obj->GetYaxis()->GetXmin());
-    int y2 = text2->GetYaxis()->FindBin(obj->GetYaxis()->GetXmax());
+    int x1 = text2->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+    int x2 = text2->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+    int y1 = text2->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+    int y2 = text2->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
     text2->GetXaxis()->SetRange(x1, x2);
     text2->GetYaxis()->SetRange(y1, y2);
     text2->Draw("text,same");
@@ -490,20 +490,20 @@ void EBRenderPlugin::postDrawTProfile2D( TCanvas *c, const ObjInfo &o ) {
   }
 
   if( nbx == 72 && nby == 34 ) {
-    int x1 = text8->GetXaxis()->FindBin(obj->GetXaxis()->GetXmin());
-    int x2 = text8->GetXaxis()->FindBin(obj->GetXaxis()->GetXmax());
-    int y1 = text8->GetYaxis()->FindBin(obj->GetYaxis()->GetXmin());
-    int y2 = text8->GetYaxis()->FindBin(obj->GetYaxis()->GetXmax());
+    int x1 = text8->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+    int x2 = text8->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+    int y1 = text8->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+    int y2 = text8->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
     text8->GetXaxis()->SetRange(x1, x2);
     text8->GetYaxis()->SetRange(y1, y2);
     text8->Draw("text,same");
     return;
   }
 
-  int x1 = text1->GetXaxis()->FindBin(obj->GetXaxis()->GetXmin());
-  int x2 = text1->GetXaxis()->FindBin(obj->GetXaxis()->GetXmax());
-  int y1 = text1->GetYaxis()->FindBin(obj->GetYaxis()->GetXmin());
-  int y2 = text1->GetYaxis()->FindBin(obj->GetYaxis()->GetXmax());
+  int x1 = text1->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+  int x2 = text1->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+  int y1 = text1->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+  int y2 = text1->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
   text1->GetXaxis()->SetRange(x1, x2);
   text1->GetYaxis()->SetRange(y1, y2);
   text1->Draw("text,same");
@@ -528,10 +528,10 @@ void EBRenderPlugin::postDrawTH2F( TCanvas *c, const ObjInfo &o ) {
   assert( obj );
 
   if( o.name.find( "EBCLT" ) < o.name.size() ) {
-    int x1 = text7->GetXaxis()->FindBin(obj->GetXaxis()->GetXmin());
-    int x2 = text7->GetXaxis()->FindBin(obj->GetXaxis()->GetXmax());
-    int y1 = text7->GetYaxis()->FindBin(obj->GetYaxis()->GetXmin());
-    int y2 = text7->GetYaxis()->FindBin(obj->GetYaxis()->GetXmax());
+    int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+    int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+    int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+    int y2 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
     text7->GetXaxis()->SetRange(x1, x2);
     text7->GetYaxis()->SetRange(y1, y2);
     text7->Draw("text,same");
@@ -543,10 +543,10 @@ void EBRenderPlugin::postDrawTH2F( TCanvas *c, const ObjInfo &o ) {
   int nby = obj->GetNbinsY();
 
   if( nbx == 85 && nby == 20 ) {
-    int x1 = text1->GetXaxis()->FindBin(obj->GetXaxis()->GetXmin());
-    int x2 = text1->GetXaxis()->FindBin(obj->GetXaxis()->GetXmax());
-    int y1 = text1->GetYaxis()->FindBin(obj->GetYaxis()->GetXmin());
-    int y2 = text1->GetYaxis()->FindBin(obj->GetYaxis()->GetXmax());
+    int x1 = text1->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+    int x2 = text1->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+    int y1 = text1->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+    int y2 = text1->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
     text1->GetXaxis()->SetRange(x1, x2);
     text1->GetYaxis()->SetRange(y1, y2);
     text1->Draw("text,same");
@@ -554,10 +554,10 @@ void EBRenderPlugin::postDrawTH2F( TCanvas *c, const ObjInfo &o ) {
   }
 
   if( nbx == 17 && nby == 4 ) {
-    int x1 = text2->GetXaxis()->FindBin(obj->GetXaxis()->GetXmin());
-    int x2 = text2->GetXaxis()->FindBin(obj->GetXaxis()->GetXmax());
-    int y1 = text2->GetYaxis()->FindBin(obj->GetYaxis()->GetXmin());
-    int y2 = text2->GetYaxis()->FindBin(obj->GetYaxis()->GetXmax());
+    int x1 = text2->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+    int x2 = text2->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+    int y1 = text2->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+    int y2 = text2->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
     text2->GetXaxis()->SetRange(x1, x2);
     text2->GetYaxis()->SetRange(y1, y2);
     text2->Draw("text,same");
@@ -565,10 +565,10 @@ void EBRenderPlugin::postDrawTH2F( TCanvas *c, const ObjInfo &o ) {
   }
 
   if( nbx == 10 && nby == 5 ) {
-    int x1 = text3->GetXaxis()->FindBin(obj->GetXaxis()->GetXmin());
-    int x2 = text3->GetXaxis()->FindBin(obj->GetXaxis()->GetXmax());
-    int y1 = text3->GetYaxis()->FindBin(obj->GetYaxis()->GetXmin());
-    int y2 = text3->GetYaxis()->FindBin(obj->GetYaxis()->GetXmax());
+    int x1 = text3->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+    int x2 = text3->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+    int y1 = text3->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+    int y2 = text3->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
     text3->GetXaxis()->SetRange(x1, x2);
     text3->GetYaxis()->SetRange(y1, y2);
     text3->Draw("text,same");
@@ -576,10 +576,10 @@ void EBRenderPlugin::postDrawTH2F( TCanvas *c, const ObjInfo &o ) {
   }
 
   if( nbx == 2 && nby == 1 ) {
-    int x1 = text4->GetXaxis()->FindBin(obj->GetXaxis()->GetXmin());
-    int x2 = text4->GetXaxis()->FindBin(obj->GetXaxis()->GetXmax());
-    int y1 = text4->GetYaxis()->FindBin(obj->GetYaxis()->GetXmin());
-    int y2 = text4->GetYaxis()->FindBin(obj->GetYaxis()->GetXmax());
+    int x1 = text4->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+    int x2 = text4->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+    int y1 = text4->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+    int y2 = text4->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
     text4->GetXaxis()->SetRange(x1, x2);
     text4->GetYaxis()->SetRange(y1, y2);
     text4->Draw("text,same");
@@ -587,10 +587,10 @@ void EBRenderPlugin::postDrawTH2F( TCanvas *c, const ObjInfo &o ) {
   }
 
   if( nbx == 72 && nby == 34 ) {
-    int x1 = text8->GetXaxis()->FindBin(obj->GetXaxis()->GetXmin());
-    int x2 = text8->GetXaxis()->FindBin(obj->GetXaxis()->GetXmax());
-    int y1 = text8->GetYaxis()->FindBin(obj->GetYaxis()->GetXmin());
-    int y2 = text8->GetYaxis()->FindBin(obj->GetYaxis()->GetXmax());
+    int x1 = text8->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+    int x2 = text8->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+    int y1 = text8->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+    int y2 = text8->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
     text8->GetXaxis()->SetRange(x1, x2);
     text8->GetYaxis()->SetRange(y1, y2);
     text8->Draw("text,same");
@@ -598,10 +598,10 @@ void EBRenderPlugin::postDrawTH2F( TCanvas *c, const ObjInfo &o ) {
   }
 
   if( o.name.find( "summary" ) < o.name.size() ) {
-    int x1 = text6->GetXaxis()->FindBin(obj->GetXaxis()->GetXmin());
-    int x2 = text6->GetXaxis()->FindBin(obj->GetXaxis()->GetXmax());
-    int y1 = text6->GetYaxis()->FindBin(obj->GetYaxis()->GetXmin());
-    int y2 = text6->GetYaxis()->FindBin(obj->GetYaxis()->GetXmax());
+    int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+    int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+    int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+    int y2 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
     text6->GetXaxis()->SetRange(x1, x2);
     text6->GetYaxis()->SetRange(y1, y2);
     text6->Draw("text,same");
