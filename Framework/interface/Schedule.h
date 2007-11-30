@@ -116,9 +116,6 @@ namespace edm {
     typedef std::set<Worker*> AllWorkers;
     typedef std::vector<OutputWorker*> AllOutputWorkers;
 
-    typedef std::pair<int, OutputWorker const*> OneLimitedOutputWorker;
-
-    typedef std::vector<OneLimitedOutputWorker> AllLimitedOutputWorkers;
     typedef std::vector<Worker*> Workers;
 
     typedef std::vector<WorkerInPath> PathWorkers;
@@ -252,6 +249,8 @@ namespace edm {
     void fillTrigPath(int bitpos, std::string const& name, TrigResPtr);
     void fillEndPath(int bitpos, std::string const& name);
 
+    void limitOutput();
+
     ParameterSet        pset_;
     WorkerRegistry*     worker_reg_;
     ProductRegistry*    prod_reg_;
@@ -269,7 +268,6 @@ namespace edm {
     WorkerPtr                results_inserter_;
     AllWorkers               all_workers_;
     AllOutputWorkers         all_output_workers_;
-    AllLimitedOutputWorkers  limited_output_workers_;
     TrigPaths                trig_paths_;
     TrigPaths                end_paths_;
 

@@ -34,6 +34,7 @@ namespace edm {
   class LuminosityBlockPrincipal;
   class NoDelayedReader;
   class OutputModule;
+  class OutputModuleDescription;
   class ParameterSet;
   class Principal;
   class ProcessNameSelector;

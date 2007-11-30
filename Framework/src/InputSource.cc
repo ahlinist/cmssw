@@ -125,9 +125,6 @@ namespace edm {
     boost::shared_ptr<LuminosityBlockPrincipal> result;
     if (!done()) {
       result = readLuminosityBlock_(rp);
-      if (result.get() != 0) {
-        if (maxLumis_ >= 0) --remainingLumis_;
-      }
     }
     return result;
   }
@@ -143,7 +140,7 @@ namespace edm {
       if (result.get() != 0) {
         Event event(*result, moduleDescription());
         postRead(event);
-        if (maxEvents_ >= 0) --remainingEvents_;
+        if (remainingEvents_ > 0) --remainingEvents_;
 	++readCount_;
         setTimestamp(result->time());
 	issueReports(result->id());
@@ -163,7 +160,7 @@ namespace edm {
       if (result.get() != 0) {
         Event event(*result, moduleDescription());
         postRead(event);
-        if (maxEvents_ >= 0) --remainingEvents_;
+        if (remainingEvents_ > 0) --remainingEvents_;
 	++readCount_;
 	issueReports(result->id());
       }
@@ -260,6 +257,7 @@ namespace edm {
     LuminosityBlock lb(lbp, moduleDescription());
     endLuminosityBlock(lb);
     lb.commit_();
+    if (remainingLumis_ > 0) --remainingLumis_;
   }
 
   void 

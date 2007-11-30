@@ -33,8 +33,6 @@ namespace edm {
     static std::auto_ptr<OutputModule> makeOne(ModuleDescription const& md,
 					WorkerParams const& wp);
 
-    int eventCount() const;
-
     // Call maybeEndFile() on the controlled OutputModule.
     void maybeEndFile();
 
@@ -48,6 +46,10 @@ namespace edm {
     void beginInputFile(FileBlock const& fb);
 
     void endInputFile(FileBlock const& fb);
+
+    bool done() const;
+
+    void configure(OutputModuleDescription const& desc);
 
   private:
     virtual bool implDoWork(EventPrincipal& e, EventSetup const& c,

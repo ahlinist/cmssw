@@ -95,9 +95,9 @@ namespace edm {
     return "OutputModule";
   }
   
-  int OutputWorker::eventCount() const {
-    return mod_->eventCount();
-  }
-
   bool OutputWorker::wantAllEvents() const {return mod_->wantAllEvents();}
+
+  bool OutputWorker::done() const {return mod_->done();}
+
+  void OutputWorker::configure(OutputModuleDescription const& desc) {mod_->configure(desc);}
 }
