@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.37 2007/11/29 22:29:10 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.38 2007/11/29 22:40:02 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.37 $
-  \date $Date: 2007/11/29 22:29:10 $
+  \version $Revision: 1.38 $
+  \date $Date: 2007/11/29 22:40:02 $
 */
 
 #include <TH1F.h>
@@ -64,7 +64,7 @@ void EERenderPlugin::initialise( int argc, char **argv ) {
   }
   for( short i=0; i<10; i++ ) pCol4[i] = i+401;
 
-  text1 = new TH2C( "ee_text1", "text1", 100, -2., 98., 100, -2., 98.);
+  text1 = new TH2S( "ee_text1", "text1", 100, -2., 98., 100, -2., 98.);
   text3 = new TH2C( "ee_text3", "text3", 10, 0,  10,  5,   0,  5 );
   text4 = new TH2C( "ee_text4", "text4",  2, 0,   2,  1,   0,  1 );
   text6 = new TH2C( "ee_text6", "text6", 10, 0., 100., 10, 0., 100. );
