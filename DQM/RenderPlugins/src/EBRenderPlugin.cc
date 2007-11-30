@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.36 2007/11/29 22:40:01 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.37 2007/11/30 07:12:52 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.36 $
-  \date $Date: 2007/11/29 22:40:01 $
+  \version $Revision: 1.37 $
+  \date $Date: 2007/11/30 07:12:52 $
 */
 
 #include <TH1F.h>
@@ -442,6 +442,9 @@ void EBRenderPlugin::postDraw( TCanvas *c, const ObjInfo &o, const ImgInfo &i ) 
   else if( dynamic_cast<TH2F*>( o.object ) ) {
     postDrawTH2F( c, o );
   }
+  else if( dynamic_cast<TH1F*>( o.object ) ) {
+    postDrawTH1F( c, o );
+  }
 
 #ifdef DEBUG
   std::cout << "done" << std::endl;
@@ -599,6 +602,16 @@ void EBRenderPlugin::postDrawTH2F( TCanvas *c, const ObjInfo &o ) {
     text6->Draw("text,same");
     return;
   }
+
+}
+
+void EBRenderPlugin::postDrawTH1F( TCanvas *c, const ObjInfo &o ) {
+
+  TH1F* obj = dynamic_cast<TH1F*>( o.object );
+
+  assert( obj );
+
+  return;
 
 }
 

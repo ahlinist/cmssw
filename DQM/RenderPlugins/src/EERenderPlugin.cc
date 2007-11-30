@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.38 2007/11/29 22:40:02 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.39 2007/11/30 07:15:26 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.38 $
-  \date $Date: 2007/11/29 22:40:02 $
+  \version $Revision: 1.39 $
+  \date $Date: 2007/11/30 07:15:26 $
 */
 
 #include <TH1F.h>
@@ -465,6 +465,9 @@ void EERenderPlugin::postDraw( TCanvas *c, const ObjInfo &o, const ImgInfo &i ) 
   else if( dynamic_cast<TH2F*>( o.object ) ) {
     postDrawTH2F( c, o );
   }
+  else if( dynamic_cast<TH1F*>( o.object ) ) {
+    preDrawTH1F( c, o );
+  }
 
 #ifdef DEBUG
   std::cout << "done" << std::endl;
@@ -632,6 +635,16 @@ void EERenderPlugin::postDrawTH2F( TCanvas *c, const ObjInfo &o ) {
     }
     return;
   }
+
+}
+
+void EERenderPlugin::postDrawTH1F( TCanvas *c, const ObjInfo &o ) {
+
+  TH1F* obj = dynamic_cast<TH1F*>( o.object );
+
+  assert( obj );
+
+  return;
 
 }
 
