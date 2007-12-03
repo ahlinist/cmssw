@@ -31,9 +31,12 @@ namespace edm {
     virtual void skip(int offset);
     virtual void setLumi(LuminosityBlockNumber_t lb);
     virtual void setRun(RunNumber_t r);
+    virtual InputSource::ItemType getNextItemType() const;
+    void readAhead();
     
     RunNumber_t runNumber_;
     LuminosityBlockNumber_t luminosityBlockNumber_;
+    bool noMoreEvents_;
     bool newRun_;
     bool newLumi_;
     std::auto_ptr<EventPrincipal> ep_;

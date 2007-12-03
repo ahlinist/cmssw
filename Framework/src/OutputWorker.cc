@@ -97,7 +97,7 @@ namespace edm {
   
   bool OutputWorker::wantAllEvents() const {return mod_->wantAllEvents();}
 
-  bool OutputWorker::done() const {return mod_->done();}
+  bool OutputWorker::limitReached() const {return mod_->limitReached();}
 
   void OutputWorker::configure(OutputModuleDescription const& desc) {mod_->configure(desc);}
 }

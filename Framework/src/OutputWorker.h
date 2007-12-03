@@ -47,7 +47,7 @@ namespace edm {
 
     void endInputFile(FileBlock const& fb);
 
-    bool done() const;
+    bool limitReached() const;
 
     void configure(OutputModuleDescription const& desc);
 

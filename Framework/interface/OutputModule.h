@@ -201,7 +201,7 @@ namespace edm {
       moduleDescription_ = md;
     }
 
-    bool done() const {return remainingEvents_ == 0 || remainingLumis_ == 0;}
+    bool limitReached() const {return remainingEvents_ == 0 || remainingLumis_ == 0;}
 
     // The following member functions are part of the Template Method
     // pattern, used for implementing doEndFile() and maybeEndFil().
