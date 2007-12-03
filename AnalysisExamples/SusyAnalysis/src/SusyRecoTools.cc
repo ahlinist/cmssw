@@ -413,7 +413,7 @@ void SusyRecoTools::GetJetTrksFromCalo(int iJet, int nJetTkHitsmin,
   
  for (int i=0; i< (int) TrackData->size(); i++){
    const Track* pTrack = &(*TrackData)[i];
-   if ((int)pTrack->recHitsSize() >= nJetTkHitsmin
+   if ((int)pTrack->found() >= nJetTkHitsmin
       && pTrack->pt() >= tkPtmin){
      float tkOuterX = pTrack->outerX();
      float tkOuterY = pTrack->outerY();
@@ -455,7 +455,7 @@ void SusyRecoTools::GetJetTrksInCone(int ichk,  int nJetTkHitsmin,
   
   for (int i=0; i< (int) TrackData->size(); i++){
     const Track* pTrack = &(*TrackData)[i];
-    if ((int)pTrack->recHitsSize() >= nJetTkHitsmin
+    if ((int)pTrack->found() >= nJetTkHitsmin
         && pTrack->pt() >= tkPtmin){
       float eta = pTrack->eta();
       float phi = pTrack->phi();
@@ -487,7 +487,7 @@ void SusyRecoTools::GetJetTrksFromTag(int ichk,  int nJetTkHitsmin,
 //  cout << " jetTag tracks size " << n << endl;
   
   for (int i=0; i< (int) jetTracks.size(); ++i){
-    int nHits = jetTracks[i]->recHitsSize();
+    int nHits = jetTracks[i]->found();
     float pt = jetTracks[i]->pt();
     if ( nHits >= nJetTkHitsmin && pt >= tkPtmin){
       for (int j=0; j< (int) TrackData->size(); ++j){

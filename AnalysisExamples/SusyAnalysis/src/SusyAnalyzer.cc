@@ -21,10 +21,16 @@ SusyAnalyzer::SusyAnalyzer(const edm::ParameterSet& iConfig)
 {
   // get name of output file with histogramms
   fOutputFileName = iConfig.getUntrackedParameter<string>("HistOutFile"); 
+ 
+  // flag for AOD (hopefully to be removed) 
+  useAODOnly = iConfig.getParameter<bool>("useAODOnly") ;
+
+  // flag for FastSim (hopefully to be removed) 
+  useFastSimulation = iConfig.getParameter<bool>("useFastSim") ;
 
   // get names of modules, producing object collections
   m_electronSrc  = iConfig.getParameter<string>("electrons");
-  m_muonSrc    = iConfig.getParameter<string>("muons");
+  m_muonSrc    = iConfig.getParameter<edm::InputTag>("muons");
   m_tracksSrc  = iConfig.getParameter<string>("tracks");
   m_vertexSrc  = iConfig.getParameter<string>("vertices");
   m_jetsSrc    = iConfig.getParameter<string>("jets");
@@ -35,6 +41,8 @@ SusyAnalyzer::SusyAnalyzer(const edm::ParameterSet& iConfig)
   m_bjettag = iConfig.getParameter<string>("bjettag");
   m_tautag = iConfig.getParameter<string>("tautag");
   m_hlTriggerResults = iConfig.getParameter<edm::InputTag>("HLTriggerResults");
+  m_clusterShapeBarrel = iConfig.getParameter<edm::InputTag>("clusterShapeBarrel");
+  m_clusterShapeEndcap = iConfig.getParameter<edm::InputTag>("clusterShapeEndcap");
  
   // get parameters, save them in a structure Config
   
@@ -50,6 +58,7 @@ SusyAnalyzer::SusyAnalyzer(const edm::ParameterSet& iConfig)
     
   // get parameters for ObjectCleaner
   cleaner_params = iConfig.getParameter<ParameterSet>("CleaningParams");
+  cleaner_params.addParameter<bool> ("useFastSim", useFastSimulation); 
   myConfig.cleaner_params = cleaner_params;
   
   // get parameters for Isolator  
@@ -231,9 +240,6 @@ void SusyAnalyzer::beginJob( const edm::EventSetup& )
 
 void SusyAnalyzer::endJob()
 {
-       
-   hOutputFile->Write() ;
-   hOutputFile->Close() ;
 
   // Final output of the run statistics
   
@@ -243,6 +249,10 @@ void SusyAnalyzer::endJob()
    // delete UserAnalysis, which prints its statistics
    myUserAnalysis->setNtotEvtProc(numTotEvt);
    delete myUserAnalysis; 
+   
+   // output the histograms to file
+   hOutputFile->Write() ;
+   hOutputFile->Close() ;
    
    return ;
 }
@@ -359,10 +369,10 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
  
      if (p.numberOfMothers() > 0 ) { 
        const Candidate * mom = p.mother();
-       for( size_t j = 0; j < genParticles->size(); ++ j ) {
+//       for( size_t j = 0; j < genParticles->size(); ++ j ) {
+       for( size_t j = 0; j < i; ++ j ) {
  	const Candidate * ref = &((*genParticles)[j]);
- 	if (mom->px() == ref->px() && mom->py() == ref->py() && mom->pz()==ref->pz() 
- 	    && mom->status() == ref->status() && mom->pdgId()==ref->pdgId())
+ 	if (ref == mom)
  	  {
  	    MCData[i]->setMotherIndex(j);
  	  }
@@ -516,6 +526,18 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   
   }
 
+  //get electron cluster shape Collection -> association map (electron,clustershape)  
+
+  //barrel
+  edm::Handle<reco::BasicClusterShapeAssociationCollection> clusterShapeBarrel;
+  iEvent.getByLabel(m_clusterShapeBarrel,clusterShapeBarrel);
+  clusterShapeBarrelData = clusterShapeBarrel.product();
+  
+  //endcap
+  edm::Handle<reco::BasicClusterShapeAssociationCollection> clusterShapeEndcap;
+  iEvent.getByLabel(m_clusterShapeEndcap,clusterShapeEndcap);
+  clusterShapeEndcapData = clusterShapeEndcap.product();
+
 
   // get muons collection
   Handle<MuonCollection> muons; 
@@ -547,9 +569,16 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
    }
 
    // get Taus collection
-   Handle<IsolatedTauTagInfoCollection> tauTagInfoHandle;
+   
+  // before CMSSW_1_6_0 
+  // Handle<IsolatedTauTagInfoCollection> tauTagInfoHandle;
+  // iEvent.getByLabel(m_tautag, tauTagInfoHandle);
+  // const IsolatedTauTagInfoCollection * tauTagInfo = tauTagInfoHandle.product();
+  
+  // from CMSSW_1_6_0 onwards 
+   Handle<JetTagCollection> tauTagInfoHandle;
    iEvent.getByLabel(m_tautag, tauTagInfoHandle);
-   const IsolatedTauTagInfoCollection * tauTagInfo = tauTagInfoHandle.product();
+   const JetTagCollection * tauTagInfo = tauTagInfoHandle.product();
 
 
 
@@ -570,6 +599,8 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   for (unsigned int j = 0; j < jets->size(); j++)
   {
     for (unsigned int i = 0; i < tauTagInfo->size(); i++) {
+
+ 
      if (
     //  &(*tauTagInfo)[i].jet() == &(*jets)[j] 
           fabs( ((*jets)[j].px() - (*tauTagInfo)[i].jet()->px())/  (*jets)[j].px()) < EPSILON_BT && 
@@ -579,6 +610,7 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
      
      ) {
        tautagdiscriminator = (*tauTagInfo)[i].discriminator();
+ 
        break;
      }
     }
@@ -603,10 +635,7 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   
   
     recopart->setBtagDiscriminator(btagdiscriminator);
-//    if(btagdiscriminator > ana_minBtagDiscriminator) {recopart->setParticleType(6);}
     recopart->setTauTagDiscriminator(tautagdiscriminator);
-  //  if (tautagdiscriminator > -5.0) {cout << "Found tau candidate with discrim = " << tautagdiscriminator 
-  //       << " and pt = " << recopart->pt() << " and eta = " << recopart->eta() << endl; }
    
     RecoData.push_back(recopart);
  
@@ -668,6 +697,8 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
    EventData->setTrackCollection(TrackData); 
    EventData->setVertexCollection(VertexData); 
    EventData->setCaloTowerCollection(CaloTowerData); 
+   EventData->setClusterShapeBarrelCollection(clusterShapeBarrelData);
+   EventData->setClusterShapeEndcapCollection(clusterShapeEndcapData);
 
 
    // make printout of candidates, etc.
@@ -1021,6 +1052,11 @@ void SusyAnalyzer::PrintAccCuts()
   cout << "  Minimum Pt for jets, first      = " << ana_jetPtMin1 << endl;
   cout << "  Minimum b-tag discriminator     = " << ana_minBtagDiscriminator << endl;
   cout << "  Method for UFO selection        = " << ana_ufoSelMethod << endl;
+  if (useAODOnly && ana_ufoSelMethod == 1){
+    cout << " ==> cannot be = 1 if AOD only, please change to 2 or 3 *****" << endl;
+    cout << "  the same applies to clean_methodTksInJetVx and clean_methodTksInJet *****" << endl;
+    exit(1);
+  }  
   cout << "  Minimum hits on a track         = " << ana_ufoTkHitsmin << endl;
   cout << "  Minimum CaloTow E Fraction      = " << ana_ufoCaloTowEFracmin << endl;
   cout << "  DeltaR for Track search of Jet  = " << ana_ufodRTrkFromJet << endl;
@@ -1114,10 +1150,33 @@ void SusyAnalyzer::PrintCleanerCuts()
   float clean_jetVxCaloTowEFracmin = cleaner_params.getParameter<double>("clean_jetVxCaloTowEFracmin") ;
   float clean_dRTrkFromJetVx = cleaner_params.getParameter<double>("clean_dRTrkFromJetVx") ;
   float clean_distVxmax = cleaner_params.getParameter<double>("clean_distVxmax") ;
-  float clean_ElecEoPmin = cleaner_params.getParameter<double>("clean_ElecEoPmin") ;
-  float clean_ElecEoPinvmax = cleaner_params.getParameter<double>("clean_ElecEoPinvmax") ;
-  float clean_dRElecTowermax = cleaner_params.getParameter<double>("clean_dRElecTowermax") ;
-  float clean_ElecHoEmax = cleaner_params.getParameter<double>("clean_ElecHoEmax") ;
+
+  bool clean_UserDefinedElecID = cleaner_params.getParameter<bool> ("clean_UserDefinedElecID"); 
+  float clean_ElecHoverEBarmax = cleaner_params.getParameter<double>("clean_ElecHoverEBarmax") ;
+  float clean_ElecSigmaEtaEtaBarmax = cleaner_params.getParameter<double>("clean_ElecSigmaEtaEtaBarmax") ;
+  float clean_ElecSigmaPhiPhiBarmax = cleaner_params.getParameter<double>("clean_ElecSigmaPhiPhiBarmax") ;
+  float clean_ElecDeltaEtaInBarmax = cleaner_params.getParameter<double>("clean_ElecDeltaEtaInBarmax") ;
+  float clean_ElecDeltaPhiInBarmax = cleaner_params.getParameter<double>("clean_ElecDeltaPhiInBarmax") ;
+  float clean_ElecDeltaPhiOutBarmax = cleaner_params.getParameter<double>("clean_ElecDeltaPhiOutBarmax") ;
+  float clean_ElecEoverPInBarmin = cleaner_params.getParameter<double>("clean_ElecEoverPInBarmin") ;
+  float clean_ElecEoverPOutBarmin = cleaner_params.getParameter<double>("clean_ElecEoverPOutBarmin") ;
+  float clean_ElecInvEMinusInvPBarmax = cleaner_params.getParameter<double>("clean_ElecInvEMinusInvPBarmax") ;
+  float clean_ElecE9overE25Barmin = cleaner_params.getParameter<double>("clean_ElecE9overE25Barmin") ;
+//  float clean_ElecBremFractionBarmax = cleaner_params.getParameter<double>("clean_ElecBremFractionBarmax") ;
+  float clean_ElecHoverEEndmax = cleaner_params.getParameter<double>("clean_ElecHoverEEndmax") ;
+  float clean_ElecSigmaEtaEtaEndmax = cleaner_params.getParameter<double>("clean_ElecSigmaEtaEtaEndmax") ;
+  float clean_ElecSigmaPhiPhiEndmax = cleaner_params.getParameter<double>("clean_ElecSigmaPhiPhiEndmax") ;
+  float clean_ElecDeltaEtaInEndmax = cleaner_params.getParameter<double>("clean_ElecDeltaEtaInEndmax") ;
+  float clean_ElecDeltaPhiInEndmax = cleaner_params.getParameter<double>("clean_ElecDeltaPhiInEndmax") ;
+  float clean_ElecDeltaPhiOutEndmax = cleaner_params.getParameter<double>("clean_ElecDeltaPhiOutEndmax") ;
+  float clean_ElecEoverPInEndmin = cleaner_params.getParameter<double>("clean_ElecEoverPInEndmin") ;
+  float clean_ElecEoverPOutEndmin = cleaner_params.getParameter<double>("clean_ElecEoverPOutEndmin") ;
+  float clean_ElecInvEMinusInvPEndmax = cleaner_params.getParameter<double>("clean_ElecInvEMinusInvPEndmax") ;
+  float clean_ElecE9overE25Endmin = cleaner_params.getParameter<double>("clean_ElecE9overE25Endmin") ;
+//  float clean_ElecBremFractionEndmax = cleaner_params.getParameter<double>("clean_ElecBremFractionEndmax") ;
+  std::string ecutquality = cleaner_params.getParameter<std::string>("electronQuality");
+
+ 
   float clean_dRSSelecmax = cleaner_params.getParameter<double>("clean_dRSSelecmax") ;
   float clean_MuonDPbyPmax = cleaner_params.getParameter<double>("clean_MuonDPbyPmax") ;
   float clean_MuonChi2max = cleaner_params.getParameter<double>("clean_MuonChi2max") ;
@@ -1154,14 +1213,40 @@ void SusyAnalyzer::PrintCleanerCuts()
   cout << "  clean_etaTkfromVxmax            = " << clean_etaTkfromVxmax << endl;
   cout << "  clean_sumPtTkfromVxmin          = " << clean_sumPtTkfromVxmin << endl;
   cout << "  clean_methodTksInJetVx          = " << clean_methodTksInJetVx << endl;
+  if (useAODOnly && clean_methodTksInJetVx == 1){
+    cout << "  ==> cannot be = 1 if AOD only, please change to 2 or 3 *****" << endl;
+    cout << "  the same applies to clean_methodTksInJet  *****" << endl;
+    exit(1);
+  }
   cout << "  clean_nJetVxTkHitsmin           = " << clean_nJetVxTkHitsmin << endl;
   cout << "  clean_jetVxCaloTowEFracmin      = " << clean_jetVxCaloTowEFracmin << endl;
   cout << "  clean_dRTrkFromJetVx            = " << clean_dRTrkFromJetVx << endl;
-  cout << "  clean_distVxmax                 = " << clean_distVxmax << endl;
-  cout << "  clean_ElecEoPmin                = " << clean_ElecEoPmin << endl;
-  cout << "  clean_ElecEoPinvmax             = " << clean_ElecEoPinvmax << endl;
-  cout << "  clean_dRElecTowermax            = " << clean_dRElecTowermax << endl;
-  cout << "  clean_ElecHoEmax                = " << clean_ElecHoEmax << endl;
+  cout << "  clean_distVxmax                 = " << clean_distVxmax << endl; 
+  if(clean_UserDefinedElecID) {
+  cout << "  UserDefinedElecID used with the following parameters: " << endl;   
+  cout << "  clean_ElecHoverEBarmax          = " << clean_ElecHoverEBarmax << endl;
+  cout << "  clean_ElecHoverEEndmax          = " << clean_ElecHoverEEndmax << endl;
+  cout << "  clean_ElecSigmaEtaEtaBarmax     = " << clean_ElecSigmaEtaEtaBarmax << endl;
+  cout << "  clean_ElecSigmaEtaEtaEndmax     = " << clean_ElecSigmaEtaEtaEndmax << endl;
+  cout << "  clean_ElecSigmaPhiPhiBarmax     = " << clean_ElecSigmaPhiPhiBarmax << endl;
+  cout << "  clean_ElecSigmaPhiPhiEndmax     = " << clean_ElecSigmaPhiPhiEndmax << endl;
+  cout << "  clean_ElecDeltaEtaInBarmax      = " << clean_ElecDeltaEtaInBarmax << endl;
+  cout << "  clean_ElecDeltaEtaInEndmax      = " << clean_ElecDeltaEtaInEndmax << endl;
+  cout << "  clean_ElecDeltaPhiInBarmax      = " << clean_ElecDeltaPhiInBarmax << endl;
+  cout << "  clean_ElecDeltaPhiInEndmax      = " <<  clean_ElecDeltaPhiInEndmax<< endl;
+  cout << "  clean_ElecDeltaPhiOutBarmax     = " <<  clean_ElecDeltaPhiOutBarmax<< endl;
+  cout << "  clean_ElecDeltaPhiOutEndmax     = " <<  clean_ElecDeltaPhiOutEndmax<< endl;
+  cout << "  clean_ElecEoverPInBarmin        = " << clean_ElecEoverPInBarmin << endl;
+  cout << "  clean_ElecEoverPInEndmin        = " << clean_ElecEoverPInEndmin << endl;
+  cout << "  clean_ElecEoverPOutBarmin       = " << clean_ElecEoverPOutBarmin << endl;
+  cout << "  clean_ElecEoverPOutEndmin       = " <<  clean_ElecEoverPOutEndmin<< endl;
+  cout << "  clean_ElecInvEMinusInvPBarmax   = " << clean_ElecInvEMinusInvPBarmax << endl;
+  cout << "  clean_ElecInvEMinusInvPEndmax   = " << clean_ElecInvEMinusInvPEndmax << endl;
+  cout << "  clean_ElecE9overE25Barmin       = " <<  clean_ElecE9overE25Barmin<< endl;
+  cout << "  clean_ElecE9overE25Endmin       = " << clean_ElecE9overE25Endmin << endl; 
+  } else {
+  cout << "  Egamma ElectronID tables used. Selection type: " << ecutquality << endl;
+  } 
   cout << "  clean_dRSSelecmax               = " << clean_dRSSelecmax << endl;
   cout << "  clean_MuonDPbyPmax              = " << clean_MuonDPbyPmax << endl;
   cout << "  clean_MuonChi2max               = " << clean_MuonChi2max << endl;
@@ -1175,6 +1260,10 @@ void SusyAnalyzer::PrintCleanerCuts()
   cout << "  clean_deltaRElecJetmax          = " << clean_deltaRElecJetmax << endl;
   cout << "  clean_elecbyJetEratio           = " << clean_elecbyJetEratio << endl;
   cout << "  clean_methodTksInJet            = " << clean_methodTksInJet << endl;
+  if (useAODOnly && clean_methodTksInJet == 1){
+    cout << " ==> cannot be = 1 if AOD only, please change to 2 or 3 *****" << endl;
+    exit(1);
+  }
   cout << "  clean_nJetTkHitsmin             = " << clean_nJetTkHitsmin << endl;
   cout << "  clean_jetCaloTowEFracmin        = " << clean_jetCaloTowEFracmin << endl;
   cout << "  clean_dRTrkFromJet              = " << clean_dRTrkFromJet << endl;

@@ -65,7 +65,7 @@ class SusyAnalyzer : public edm::EDAnalyzer {
   // names of modules, producing object collections
      string m_calotowers;
      string m_electronSrc;
-     string m_muonSrc;
+     edm::InputTag m_muonSrc;
      string m_tracksSrc;
      string m_vertexSrc;
      string m_jetsSrc;
@@ -76,6 +76,8 @@ class SusyAnalyzer : public edm::EDAnalyzer {
      string m_bjettag;  // for b-tagging
      string m_tautag;  // for tau-tagging
      edm::InputTag m_hlTriggerResults;
+     edm::InputTag m_clusterShapeBarrel;
+     edm::InputTag m_clusterShapeEndcap;
 
   // names of histogram output file
      TFile*      hOutputFile ;
@@ -101,12 +103,18 @@ class SusyAnalyzer : public edm::EDAnalyzer {
      edm::ParameterSet useranalysis_params;
 
      Config_t myConfig;
+
+     bool useAODOnly;
+     bool useFastSimulation;
      
   // Define all pointers to objects
 
      const TrackCollection * TrackData;
      const VertexCollection * VertexData;
-     const CaloTowerCollection * CaloTowerData;
+     const CaloTowerCollection * CaloTowerData;     
+     const BasicClusterShapeAssociationCollection * clusterShapeBarrelData; 
+     const BasicClusterShapeAssociationCollection * clusterShapeEndcapData; 
+
      MCProcessor * myMCProcessor;
      RecoProcessor * myRecoProcessor;
      ShapeAnalyzer * myHemiAna;

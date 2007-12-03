@@ -15,9 +15,14 @@ SusyRecoTools(pEvtData),
 //primVx(NULL), 
 clean_chisqVxmax(10.), clean_dRVxmax(0.24), clean_dzVxmax(10.),
 clean_etaTkfromVxmax(2.0), clean_sumPtTkfromVxmin(30.),
-clean_distVxmax(5.),
-clean_ElecEoPmin(0.9), clean_ElecEoPinvmax(0.02), clean_dRElecTowermax(0.4),
-clean_ElecHoEmax(0.05), clean_dRSSelecmax(10.), 
+clean_distVxmax(5.), clean_UserDefinedElecID(true),
+clean_ElecHoverEBarmax (0.115), clean_ElecHoverEEndmax(0.150), clean_ElecSigmaEtaEtaBarmax(0.0140),
+clean_ElecSigmaEtaEtaEndmax(0.0275), clean_ElecSigmaPhiPhiBarmax(999.), clean_ElecSigmaPhiPhiEndmax(999.),
+clean_ElecDeltaEtaInBarmax(0.0090), clean_ElecDeltaEtaInEndmax(0.0105), clean_ElecDeltaPhiInBarmax(0.053),
+clean_ElecDeltaPhiInEndmax(0.092), clean_ElecDeltaPhiOutBarmax(999.), clean_ElecDeltaPhiOutEndmax(999.), 
+clean_ElecEoverPInBarmin(0.8), clean_ElecEoverPInEndmin(0.8), clean_ElecEoverPOutBarmin(0.), 
+clean_ElecEoverPOutEndmin(0.), clean_ElecInvEMinusInvPBarmax(0.05), clean_ElecInvEMinusInvPEndmax(0.05), 
+clean_ElecE9overE25Barmin(0.7), clean_ElecE9overE25Endmin(0.8), clean_dRSSelecmax(10.), 
 clean_MuonDPbyPmax(0.5), clean_MuonChi2max(3.0), clean_MuonNHitsmin(13),
 clean_dRMuonTowermax(0.4), clean_dRSSmuonmax(0.1), 
 clean_dRPhotTowermax(0.4), clean_PhotHoEmax(0.05), 
@@ -28,12 +33,13 @@ clean_jetCaloTowEFracmin(0.005),
 clean_dRTrkFromJet(0.6), clean_FracChminJet(0.1), clean_FracEmmaxJet(0.9),
 clean_dROSelecmax(0.2), clean_MOSelecmax(5.),
 clean_FracChmin(0.1), clean_FracEmmin(0.175),
-clean_METmin(50.), clean_dPhiJetMETmin(0.), clean_dR12min(0.5), clean_dR21min(0.5)
+clean_METmin(50.), clean_dPhiJetMETmin(0.), clean_dR12min(0.5), clean_dR21min(0.5), useFastSim(false)
 {}
 
-ObjectCleaner::ObjectCleaner(MrEvent* pEvtData, edm::ParameterSet param):
+ObjectCleaner::ObjectCleaner(MrEvent* pEvtData, edm::ParameterSet param): SusyRecoTools(pEvtData), 
 //RecoData(*pData), TrackData(Tracks), VertexData(Vertices), CaloTowerData(CaloTowers),
-SusyRecoTools(pEvtData) 
+clusterShapeBarrelData(pEvtData->clusterShapeBarrelCollection()), 
+clusterShapeEndcapData(pEvtData->clusterShapeEndcapCollection())
 //primVx(NULL)
 {
 clean_chisqVxmax = param.getParameter<double>("clean_chisqVxmax") ;
@@ -42,10 +48,101 @@ clean_dzVxmax = param.getParameter<double>("clean_dzVxmax") ;
 clean_etaTkfromVxmax = param.getParameter<double>("clean_etaTkfromVxmax") ;
 clean_sumPtTkfromVxmin = param.getParameter<double>("clean_sumPtTkfromVxmin") ;
 clean_distVxmax = param.getParameter<double>("clean_distVxmax") ;
-clean_ElecEoPmin = param.getParameter<double>("clean_ElecEoPmin") ;
-clean_ElecEoPinvmax = param.getParameter<double>("clean_ElecEoPinvmax") ;
-clean_dRElecTowermax = param.getParameter<double>("clean_dRElecTowermax") ;
-clean_ElecHoEmax = param.getParameter<double>("clean_ElecHoEmax") ;
+clean_UserDefinedElecID = param.getParameter<bool> ("clean_UserDefinedElecID"); 
+if(clean_UserDefinedElecID) {
+useEoverPIn = true;
+useDeltaEtaIn = true;
+useDeltaPhiIn = true;
+useHoverE = true;
+useE9overE25 = true;
+useEoverPOut = true;
+useEseedOverPIn = false;
+useDeltaPhiOut = true;
+useInvEMinusInvP = true;
+useBremFraction = false;
+useSigmaEtaEta = true;
+useSigmaPhiPhi = true;
+clean_ElecHoverEBarmax = param.getParameter<double>("clean_ElecHoverEBarmax") ;
+clean_ElecSigmaEtaEtaBarmax = param.getParameter<double>("clean_ElecSigmaEtaEtaBarmax") ;
+clean_ElecSigmaPhiPhiBarmax = param.getParameter<double>("clean_ElecSigmaPhiPhiBarmax") ;
+clean_ElecDeltaEtaInBarmax = param.getParameter<double>("clean_ElecDeltaEtaInBarmax") ;
+clean_ElecDeltaPhiInBarmax = param.getParameter<double>("clean_ElecDeltaPhiInBarmax") ;
+clean_ElecDeltaPhiOutBarmax = param.getParameter<double>("clean_ElecDeltaPhiOutBarmax") ;
+clean_ElecEoverPInBarmin = param.getParameter<double>("clean_ElecEoverPInBarmin") ;
+clean_ElecEoverPOutBarmin = param.getParameter<double>("clean_ElecEoverPOutBarmin") ;
+clean_ElecInvEMinusInvPBarmax = param.getParameter<double>("clean_ElecInvEMinusInvPBarmax") ;
+clean_ElecE9overE25Barmin = param.getParameter<double>("clean_ElecE9overE25Barmin") ;
+//  clean_ElecBremFractionBarmax = param.getParameter<double>("clean_ElecBremFractionBarmax") ;
+clean_ElecHoverEEndmax = param.getParameter<double>("clean_ElecHoverEEndmax") ;
+clean_ElecSigmaEtaEtaEndmax = param.getParameter<double>("clean_ElecSigmaEtaEtaEndmax") ;
+clean_ElecSigmaPhiPhiEndmax = param.getParameter<double>("clean_ElecSigmaPhiPhiEndmax") ;
+clean_ElecDeltaEtaInEndmax = param.getParameter<double>("clean_ElecDeltaEtaInEndmax") ;
+clean_ElecDeltaPhiInEndmax = param.getParameter<double>("clean_ElecDeltaPhiInEndmax") ;
+clean_ElecDeltaPhiOutEndmax = param.getParameter<double>("clean_ElecDeltaPhiOutEndmax") ;
+clean_ElecEoverPInEndmin = param.getParameter<double>("clean_ElecEoverPInEndmin") ;
+clean_ElecEoverPOutEndmin = param.getParameter<double>("clean_ElecEoverPOutEndmin") ;
+clean_ElecInvEMinusInvPEndmax = param.getParameter<double>("clean_ElecInvEMinusInvPEndmax") ;
+clean_ElecE9overE25Endmin = param.getParameter<double>("clean_ElecE9overE25Endmin") ;
+//  clean_ElecBremFractionEndmax = param.getParameter<double>("clean_ElecBremFractionEndmax") ;
+} else {
+ecutquality = param.getParameter<std::string>("electronQuality");
+  if (ecutquality=="robust") {
+  useEoverPIn = false;
+  useDeltaEtaIn = true;
+  useDeltaPhiIn = true;
+  useHoverE = true;
+  useE9overE25 = false;
+  useEoverPOut = false;
+  useEseedOverPin = false;
+  useDeltaPhiOut = false;
+  useInvEMinusInvP = false;
+  useBremFraction =false;
+  useSigmaEtaEta = true;
+  useSigmaPhiPhi = false;
+  ecuts = param.getParameter<edm::ParameterSet>("robustEleIDCuts");
+  std::vector<double> barrelecut = ecuts.getParameter<std::vector<double> >("barrel");
+  std::vector<double> endcapecut = ecuts.getParameter<std::vector<double> >("endcap");
+  clean_UserDefinedElecID = true;
+  clean_ElecHoverEBarmax = barrelecut[0];
+  clean_ElecHoverEEndmax = endcapecut[0];
+  clean_ElecSigmaEtaEtaBarmax = barrelecut[1];
+  clean_ElecSigmaEtaEtaEndmax = endcapecut[1];
+  clean_ElecDeltaPhiInBarmax = barrelecut[2];  
+  clean_ElecDeltaPhiInEndmax = endcapecut[2]; 
+  clean_ElecDeltaEtaInBarmax = barrelecut[3];
+  clean_ElecDeltaEtaInEndmax = endcapecut[3];
+  } else if (ecutquality=="tight") {
+  useEoverPIn = true;
+  useDeltaEtaIn = true;
+  useDeltaPhiIn = true;
+  useHoverE = true;
+  useE9overE25 = false;
+  useEoverPOut = false;
+  useEseedOverPin = true;
+  useDeltaPhiOut = false;
+  useInvEMinusInvP = false;
+  useBremFraction =false;
+  useSigmaEtaEta = true;
+  useSigmaPhiPhi = false;
+  ecuts = param.getParameter<edm::ParameterSet>("tightEleIDCuts");
+  } else if (ecutquality=="loose") {
+  useEoverPIn = true;
+  useDeltaEtaIn = true;
+  useDeltaPhiIn = true;
+  useHoverE = true;
+  useE9overE25 = false;
+  useEoverPOut = false;  
+  useEseedOverPin = true;
+  useDeltaPhiOut = false;
+  useInvEMinusInvP = false;
+  useBremFraction =false;
+  useSigmaEtaEta = true;
+  useSigmaPhiPhi = false;
+  ecuts = param.getParameter<edm::ParameterSet>("looseEleIDCuts");
+  } else {
+    throw(std::runtime_error("\n\nElectronIDProducer: Invalid electronQuality parameter: must be tight, medium or loose.\n\n"));
+  }
+}
 clean_dRSSelecmax = param.getParameter<double>("clean_dRSSelecmax") ;
 clean_MuonDPbyPmax = param.getParameter<double>("clean_MuonDPbyPmax") ;
 clean_MuonChi2max = param.getParameter<double>("clean_MuonChi2max") ;
@@ -73,6 +170,7 @@ clean_METmin = param.getParameter<double>("clean_METmin") ;
 clean_dPhiJetMETmin = param.getParameter<double>("clean_dPhiJetMETmin") ;
 clean_dR12min = param.getParameter<double>("clean_dR12min") ;
 clean_dR21min = param.getParameter<double>("clean_dR21min") ;
+useFastSim = param.getParameter<bool>("useFastSim") ;
 }
 
 //------------------------------------------------------------------------------
@@ -313,80 +411,362 @@ bool ObjectCleaner::CleanElectron(int ichk)
    float ele_eta = elecand->superCluster()->eta();
 //   float ele_phi = elecand->superCluster()->phi();
    float ele_theta = 2. * atan(exp(-ele_eta));
-   float p_track = elecand->gsfTrack()->p();
+//   float p_track = elecand->gsfTrack()->p();
    float pt_track = elecand->gsfTrack()->pt();
    float et_em = fabs(elenergy*sin(ele_theta));
-   float e_had = 0.;                       
+//   float e_had = 0.;                       
    float et_had = 0.;
-   float ele_HoE = 0.;
   
-/*   // Compute H/E
-   // another try: use seed cluster angles and energy (like H->4e)
-   const BasicCluster* basicCluster = &(*(elecand->superCluster()->seed() ));
-   float elBclenergy = basicCluster->energy();
-   ele_eta = basicCluster->eta();
-   ele_phi = basicCluster->phi();
-   float hcalEnergy = 0.;
-   float hcalEt = 0.;
-   CaloTowerCollection::const_iterator calo;
-   for ( calo = CaloTowerData->begin(); calo != CaloTowerData->end(); ++calo ){
-     float tow_eta = calo->eta();
-     float tow_phi = calo->phi();
-     float deltar0 = GetDeltaR(tow_eta, ele_eta, tow_phi, ele_phi);
-     if (deltar0 < clean_dRElecTowermax){ 
-       hcalEnergy += calo->hadEnergy();
-       hcalEt += calo->hadEt();
-//       cout << "  Electron hcal energy = " << calo->hadEnergy()
-//            << ", ET = " << calo->hadEt() << ", ecal energy = " << calo->emEnergy()
-//            << ", ET = " << calo->emEt() << endl;
-     }
-   }
-   e_had = hcalEnergy;
-   et_had = hcalEt;
-//   ele_HoE = e_had/elBclenergy;
-   ele_HoE = et_had/et_em;
-*/   
-   ele_HoE = elecand->hadronicOverEm();
-   et_had = ele_HoE * et_em;
+   float eta = fabs(elecand->p4().Eta());
+  
+  float eOverPin = elecand->eSuperClusterOverP();
+  float eSeed = elecand->superCluster()->seed()->energy();
+  float pin  = elecand->trackMomentumAtVtx().R();   
+  float eSeedOverPin = eSeed/pin; 
+  float pout = elecand->trackMomentumOut().R(); 
+  float eSeedOverPout = elecand->eSeedClusterOverPout();
+  float fBrem = (pin-pout)/pin;
+  
+  float hOverE = elecand->hadronicOverEm();
+  float deltaPhiIn = elecand->deltaPhiSuperClusterTrackAtVtx();
+  float deltaEtaIn = elecand->deltaEtaSuperClusterTrackAtVtx();
+  float deltaPhiOut = elecand->deltaPhiSeedClusterTrackAtCalo();
+  float invEOverInvP = (1./elecand->caloEnergy())-(1./elecand->trackMomentumAtVtx().R());
+  
+  BasicClusterShapeAssociationCollection::const_iterator seedShpItr;
+      
+    if (elecand->classification()<100) {
+      seedShpItr = clusterShapeBarrelData->find(elecand->superCluster()->seed());
+    }
+    else {
+      seedShpItr = clusterShapeEndcapData->find(elecand->superCluster()->seed());  
+    }
+  
+    //edm::Ref to Cluster shape of electron
+    const ClusterShapeRef& clusterShape = seedShpItr->val;
+
+    if (clusterShape.isNull()) {
+      if (DEBUGLVL >= 2){
+	cout << " No cluster shape information for this electron, index = " << ichk << endl;
+      }
+      return false;
+    }
+
+  float sigmaee = sqrt(clusterShape->covEtaEta());
+  float sigmapp = sqrt(clusterShape->covPhiPhi());
+  float E9overE25 = clusterShape->e3x3()/clusterShape->e5x5();
+
+
+// correct sigmaee for xtal shape in endcap (wait advice from David)
+  
+  if (fabs(eta) >= 1.479) {
+    sigmaee = sigmaee - 0.02*(fabs(eta) - 2.3);   //correct sigmaetaeta dependence on eta in endcap
+  } 
+  
+
+    // Check that not a fake from pi0
    
-   // Check that not a fake from pi0
-   
-/*  not yet available in 1_2_0 and does not work in 1_3_x (association map)
-   float e3x3 = elecand->superCluster()->e3x3();
-   float e5x5 = elecand->superCluster()->e5x5();
-   cout << " e3x3 = " << e3x3 << ", e5x5 = " << e5x5 << endl;
-   float covEtaEta = elecand->superCluster()->covEtaEta();
-   float covPhiPhi = elecand->superCluster()->covPhiPhi();
-   cout << " covEtaEta = " << covEtaEta << " covPhiPhi = " << covPhiPhi << endl;
-*/
- 
+
    // Save the transverse quantities in MrParticle
-  
+
+   et_had = hOverE * et_em;  
    RecoData[ichk]->setPt_tracks(pt_track);
    RecoData[ichk]->setEt_em(et_em);
    RecoData[ichk]->setEt_had(et_had);
-  
-   // --------------------------- H over E -------------------------------------------
-   if (ele_HoE >= clean_ElecHoEmax ) {
-     if (DEBUGLVL >= 2){
-       cout << " Electron rejected due to bad H/E :" << e_had/elenergy << endl;
+   
+   
+   // define category (barrel, endcap, ...)
+   int cat;
+   if(clean_UserDefinedElecID) {
+     if (fabs(eta) < 1.479) {
+       cat = 0;
+     } else {
+       cat = 1;
      }
-     RecoData[ichk]->setParticleType(11);
-     return false;
+   } else {
+     // Egamma category code 
+     if((fabs(eta)<1.479 && fBrem<0.06) || (fabs(eta)>1.479 && fBrem<0.1)) {
+      cat=1;
+     } else if (eOverPin < 1.2 && eOverPin > 0.8) {
+      cat=0;
+     } else { 
+      cat=2;
+     } 
+      
+     if (fabs(eta) >= 1.479) { cat += 4; }
+      
    }
- 
+   // cut on the electronID variables 
+    vector<double> cut;
   
-   // --------------------------- E over p -------------------------------------------
-   if (elenergy/p_track < clean_ElecEoPmin || 
-       fabs(1./elenergy - 1./p_track) > clean_ElecEoPinvmax) {
-     if (DEBUGLVL >= 2){
-       cout << " Electron rejected due to bad E/p :" << elenergy/p_track << endl;
-     }
-     RecoData[ichk]->setParticleType(13);
-     return false;
-   }
+    if (useHoverE) {
+     
+      double value = hOverE;
+      
+      if(clean_UserDefinedElecID) {
+      cut.push_back(clean_ElecHoverEBarmax);
+      cut.push_back(clean_ElecHoverEEndmax);
+      } else {
+      cut = ecuts.getParameter<std::vector<double> >("hOverE");    
+      }
+      
+      if (value > cut[cat]) {
+	if (DEBUGLVL >= 2){
+	   cout << " Electron rejected due to bad H/E :" << value << endl;
 
+	}
+	RecoData[ichk]->setParticleType(11);
+	return false;
+      }
+    } 
+     
+    if (useE9overE25) {
+     
+      double value = E9overE25;
+      
+      if(clean_UserDefinedElecID) {
+      cut.push_back(clean_ElecE9overE25Barmin );
+      cut.push_back(clean_ElecE9overE25Endmin );
+      } else {
+      cut = ecuts.getParameter<std::vector<double> >("E9overE25");    
+      }
+      
+      if (value < cut[cat]) {
+	if (DEBUGLVL >= 2){
+	  cout << " Electron rejected due to bad E9/E25 :" << value << endl;
+
+	}
+	RecoData[ichk]->setParticleType(12);
+	return false;
+      }
+    }  
+
+    if (useSigmaEtaEta) {
+     
+      double value = sigmaee;
+      
+      if(clean_UserDefinedElecID) {
+      cut.push_back(clean_ElecSigmaEtaEtaBarmax );
+      cut.push_back(clean_ElecSigmaEtaEtaEndmax );
+      } else {
+      cut = ecuts.getParameter<std::vector<double> >("sigmaEtaEta");    
+      }
+      
+      if (value > cut[cat]) {
+	if (DEBUGLVL >= 2){
+           cout << " Electron rejected due to bad SigmaEtaEta :" << value << endl;
+	}
+	RecoData[ichk]->setParticleType(12);
+	return false;
+      }
+    }  
+      
+    if (useSigmaPhiPhi) {
+     
+      double value = sigmapp;
+      
+      if(clean_UserDefinedElecID) {
+      cut.push_back(clean_ElecSigmaPhiPhiBarmax );
+      cut.push_back(clean_ElecSigmaPhiPhiEndmax );
+      } else {
+      cut = ecuts.getParameter<std::vector<double> >("sigmaPhiPhi");    
+      }
+      
+      if (value > cut[cat]) {
+	if (DEBUGLVL >= 2){
+           cout << " Electron rejected due to bad SigmaPhiPhi :" << value << endl;
+	}
+	RecoData[ichk]->setParticleType(12);
+	return false;
+      }
+    }       
+            
+    if (useEoverPIn) {
+     
+      double value = eOverPin;
+ 
+     // also make the extra tight/loose requirement here   
+      if(!clean_UserDefinedElecID) {
+       if (((eOverPin < 0.8) && (fBrem < 0.2)) || ((eOverPin < 0.9*(1-fBrem)) && ecutquality=="tight") ) {
+        if (DEBUGLVL >= 2){
+	   cout << " Electron rejected due to bad E_{Supercluster}/p_{track}:" << value << endl;
+	 }
+	 RecoData[ichk]->setParticleType(13);
+         return false;     
+       }
+      }
+          
+      if(clean_UserDefinedElecID) {
+      cut.push_back(clean_ElecEoverPInBarmin);
+      cut.push_back(clean_ElecEoverPInEndmin);
+      } else {
+      cut = ecuts.getParameter<std::vector<double> >("EoverPIn");    
+      }      
+      
+      if (value < cut[cat]) {
+	if (DEBUGLVL >= 2){
+	  cout << " Electron rejected due to bad E_{Supercluster}/p_{track}:" << value << endl;
+	}
+	RecoData[ichk]->setParticleType(13);
+	return false;
+      }
+    }
+    
+    if (useDeltaEtaIn) {
+     
+      double value = fabs(deltaEtaIn);
+      
+      if(clean_UserDefinedElecID) {
+      cut.push_back(clean_ElecDeltaEtaInBarmax);
+      cut.push_back(clean_ElecDeltaEtaInEndmax);
+      } else {
+      cut = ecuts.getParameter<std::vector<double> >("deltaEtaIn");    
+      }
+      
+      if (value > cut[cat]) {
+	if (DEBUGLVL >= 2){
+	  cout << " Electron rejected due to bad DeltaEtaIn between Supercluster and track :" << value << endl;
+
+	}
+	RecoData[ichk]->setParticleType(13);
+	return false;
+      }
+    }
+    
+    if (useDeltaPhiIn) {
+     
+      double value = fabs(deltaPhiIn);
+      
+      if(clean_UserDefinedElecID) {
+      cut.push_back(clean_ElecDeltaPhiInBarmax);
+      cut.push_back(clean_ElecDeltaPhiInEndmax);
+      } else {
+      cut = ecuts.getParameter<std::vector<double> >("deltaPhiIn");    
+      }
+      
+      if (value > cut[cat]) {
+	if (DEBUGLVL >= 2){
+	  cout << " Electron rejected due to bad DeltaPhiIn between Supercluster and track :" << value << endl;
+
+	}
+	RecoData[ichk]->setParticleType(13);
+	return false;
+      }
+    }   
+
+     if (useDeltaPhiOut) {
+     
+      double value = fabs(deltaPhiOut);
+      
+      if(clean_UserDefinedElecID) {
+      cut.push_back(clean_ElecDeltaPhiOutBarmax);
+      cut.push_back(clean_ElecDeltaPhiOutEndmax);
+      } else {
+      cut = ecuts.getParameter<std::vector<double> >("deltaPhiOut");    
+      }
+      
+      if (value > cut[cat]) {
+	if (DEBUGLVL >= 2){
+	  cout << " Electron rejected due to bad DeltaPhiOut between Supercluster and track :" << value << endl;
+
+	}
+	RecoData[ichk]->setParticleType(13);
+	return false;
+      }
+    }      
+    if (useEoverPOut) {
+     
+      double value = eSeedOverPout;
+      
+      if(clean_UserDefinedElecID) {
+      cut.push_back(clean_ElecEoverPOutBarmin);
+      cut.push_back(clean_ElecEoverPOutEndmin);
+      } else {
+      cut = ecuts.getParameter<std::vector<double> >("eSeedOverPout");    
+      }
+      
+      if (value < cut[cat]) {
+	if (DEBUGLVL >= 2){
+          cout << " Electron rejected due to bad  seed cluster energy / P track out :" << value << endl;
+
+	}
+	RecoData[ichk]->setParticleType(13);
+	return false;
+      }
+    }      
+       
+    if (useInvEMinusInvP) {
+     
+      double value = invEOverInvP;
+      
+      if(clean_UserDefinedElecID) {
+      cut.push_back(clean_ElecInvEMinusInvPBarmax);
+      cut.push_back(clean_ElecInvEMinusInvPEndmax);
+      } else {
+      cut = ecuts.getParameter<std::vector<double> >("invEOverInvP");    
+      }
+      
+      if (value > cut[cat]) {
+	if (DEBUGLVL >= 2){
+ 	  cout << " Electron rejected due to bad E_{Supercluster}^{-1} - p_{track}^{-1} :" << value << endl;
+
+	}
+	RecoData[ichk]->setParticleType(13);
+	return false;
+      }
+    }       
+ /*   
+    if (useBremFraction) {
+     
+      double value = fBrem;
+      
+      if(clean_UserDefinedElecID) {
+      cut.push_back(clean_ElecBremFractionBarmin);
+      cut.push_back(clean_ElecBremFractionEndmin);
+      } else {
+      cut = ecuts.getParameter<std::vector<double> >("fBrem");    
+      }
+      
+      if (value > cut[cat]) {
+	if (DEBUGLVL >= 2){
+	  cout << " Electron rejected due to bad brem fraction :" << value << endl;
+
+	}
+	RecoData[ichk]->setParticleType(13);
+	return false;
+      }
+    }      
+*/
+
+    if (useEseedOverPin) {
+     
+      double value = eSeedOverPin;
+      
+      if(clean_UserDefinedElecID) {
+      cut.push_back(0.);
+      cut.push_back(0.);
+      } else if (ecutquality=="tight"){
+      cut = ecuts.getParameter<std::vector<double> >("eSeedOverPinMin");
+      } else {    
+      cut = ecuts.getParameter<std::vector<double> >("eSeedOverPin");
+      }
+      
+      if (value < cut[cat]) {
+	if (DEBUGLVL >= 2){
+	  cout << " Electron rejected due to bad eSeed / P track in :" << value << endl;
+
+	}
+	RecoData[ichk]->setParticleType(13);
+	return false;
+      }
+    }    
+  
+    
+    // at the end, we should remove the vector cut
+    cut.clear();
+   
  return true;
+
 
 }
 
@@ -475,18 +855,25 @@ bool ObjectCleaner::CleanMuon(int ichk)
  const Muon* muoncand = RecoData[ichk]->muonCandidate();
 //cout << " Clean muon cand with pointer " << muoncand << endl;
  
+ TrackRef muontrack;
+ if (useFastSim) {
+    muontrack = muoncand->track();
+ } else {
+    muontrack = muoncand->combinedMuon();
+ }
+ 
  bool goodmuon = false;
  if (muoncand != NULL) {
  
    // Verify the muon quality
 // cout << " Comb muon address " << &(*(muoncand->combinedMuon())) << endl;
-   float pt_track = muoncand->combinedMuon()->pt();
+   float pt_track = muontrack->pt();
 //   following does not work anymore in 130
 //   float dpt_track = muoncand->combinedMuon()->ptError();
-   float dpt_track = muoncand->combinedMuon()->error(0) /
-    (muoncand->combinedMuon()->qoverp())*(muoncand->combinedMuon()->pt());
-   float chisq = muoncand->combinedMuon()->normalizedChi2();
-   int nHitsValid = muoncand->combinedMuon()->numberOfValidHits();
+   float dpt_track = muontrack->error(0) /
+    (muontrack->qoverp())*(muontrack->pt());
+   float chisq = muontrack->normalizedChi2();
+   int nHitsValid = muontrack->numberOfValidHits();
 //   int nHitsLost = muoncand->combinedMuon()->numberOfLostHits();
 
    // the following should be improved ...
@@ -574,11 +961,19 @@ bool ObjectCleaner::DuplicateMuon(int ichk)
  if (recopart->particleType()/10 != 2){return false;}
 
  const Muon* muoncand = RecoData[ichk]->muonCandidate();
- float ptmuon = muoncand->combinedMuon()->pt();
+
+ TrackRef muontrack;
+ if (useFastSim) {
+    muontrack = muoncand->track();
+ } else {
+    muontrack = muoncand->combinedMuon();
+ }
+
+ float ptmuon = muontrack->pt();
 //   following does not work anymore in 130
 // float dptmuon = muoncand->combinedMuon()->ptError();
- float dptmuon = muoncand->combinedMuon()->error(0) /
-   (muoncand->combinedMuon()->qoverp())*(muoncand->combinedMuon()->pt());
+ float dptmuon = muontrack->error(0) /
+   (muontrack->qoverp())*(muontrack->pt());
 
  for (int j = 0; j < (int) RecoData.size(); j++){
    if (j != ichk){
@@ -596,11 +991,17 @@ bool ObjectCleaner::DuplicateMuon(int ichk)
           if ( (pptype1 == 0 && pptype2 == 0) ||
                (pptype1 != 0 && pptype2 != 0) ){
             const Muon* muonnew = RecoData[j]->muonCandidate();
-            float ptnew = muonnew->combinedMuon()->pt();
+            TrackRef muonnewtrack;
+            if (useFastSim) {
+              muonnewtrack = muonnew->track();
+            } else {
+              muonnewtrack = muonnew->combinedMuon();
+            }
+            float ptnew = muonnewtrack->pt();
             //   following does not work anymore in 130
 //            float dptnew = muonnew->combinedMuon()->ptError();
-            float dptnew = muoncand->combinedMuon()->error(0) /
-             (muoncand->combinedMuon()->qoverp())*(muoncand->combinedMuon()->pt());
+            float dptnew = muonnewtrack->error(0) /
+             (muonnewtrack->qoverp())*(muonnewtrack->pt());
             if (dptmuon/ptmuon >= dptnew/ptnew){
               if (DEBUGLVL >= 2){
                 cout << " Muon " << ichk 
