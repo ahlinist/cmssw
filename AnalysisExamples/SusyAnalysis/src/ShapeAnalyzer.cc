@@ -65,7 +65,8 @@ bool ShapeAnalyzer::AnalyzeHemi(void)
       
     }
     
-    myHemi = new Hemisphere(vPx, vPy, vPz, vE, 2, 3);
+//    myHemi = new Hemisphere(vPx, vPy, vPz, vE, 2, 3);
+    myHemi = new Hemisphere(vPx, vPy, vPz, vE, 3, 3);
     
     if (DEBUGLVL < 3){myHemi->SetDebug(0);}
     else {myHemi->SetDebug(1);}

@@ -117,11 +117,12 @@ void MatchObjects::DoMatch(void)
 	  } 
         }   
     
-      // matching jets with MC truth
-        if ((ptype >= 5 && ptype <= 7) 
+      // matching jets/taus with MC truth
+        if ((((ptype >= 5 && ptype <= 7) 
            && (abs(MCData[j]->pid()) == 21 || 
-           (abs(MCData[j]->pid()) > 0 && abs(MCData[j]->pid()) < 6)) 
-           &&  MCData[j]->status() == 2) {
+           (abs(MCData[j]->pid()) > 0 && abs(MCData[j]->pid()) < 6)))
+           || (ptype == 3 && abs(MCData[j]->pid()) == 15))
+           &&  MCData[j]->status() == 2 ) {
           float deltaR = GetDeltaR(RecoData[i]->eta(), MCData[j]->eta(), 
                                    RecoData[i]->phi(), MCData[j]->phi());
           float dPtbyPt = 999.;

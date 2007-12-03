@@ -23,6 +23,8 @@
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "DataFormats/EgammaReco/interface/ClusterShapeFwd.h"
+#include "DataFormats/EgammaReco/interface/BasicClusterShapeAssociation.h"
 
 #include "AnalysisExamples/SusyAnalysis/interface/MrEvent.h" 
 #include "AnalysisExamples/SusyAnalysis/interface/MrParticle.h" 
@@ -65,6 +67,9 @@ void SetDebug(int debug)  { DEBUGLVL  = debug; }
 
 private:
 
+ const BasicClusterShapeAssociationCollection * clusterShapeBarrelData; 
+ const BasicClusterShapeAssociationCollection * clusterShapeEndcapData; 
+
 //std::vector<MrParticle*>& RecoData;
 //const TrackCollection * TrackData;
 //const VertexCollection* VertexData;
@@ -80,10 +85,22 @@ float clean_dzVxmax;
 float clean_etaTkfromVxmax;
 float clean_sumPtTkfromVxmin;
 float clean_distVxmax;
-float clean_ElecEoPmin;
-float clean_ElecEoPinvmax;
-float clean_dRElecTowermax;
-float clean_ElecHoEmax;
+bool clean_UserDefinedElecID;
+float clean_ElecHoverEBarmax; float clean_ElecHoverEEndmax;
+float clean_ElecSigmaEtaEtaBarmax; float clean_ElecSigmaEtaEtaEndmax;
+float clean_ElecSigmaPhiPhiBarmax; float clean_ElecSigmaPhiPhiEndmax;
+float clean_ElecDeltaEtaInBarmax; float clean_ElecDeltaEtaInEndmax;
+float clean_ElecDeltaPhiInBarmax; float clean_ElecDeltaPhiInEndmax;
+float clean_ElecDeltaPhiOutBarmax; float clean_ElecDeltaPhiOutEndmax;
+float clean_ElecEoverPInBarmin; float clean_ElecEoverPInEndmin;
+float clean_ElecEoverPOutBarmin; float clean_ElecEoverPOutEndmin;
+float clean_ElecInvEMinusInvPBarmax; float clean_ElecInvEMinusInvPEndmax;
+float clean_ElecE9overE25Barmin; float clean_ElecE9overE25Endmin;
+//  float clean_ElecBremFractionBarmax; float clean_ElecBremFractionEndmax;
+
+std::string ecutquality;
+edm::ParameterSet ecuts;
+
 float clean_dRSSelecmax;
 float clean_MuonDPbyPmax;
 float clean_MuonChi2max;
@@ -112,7 +129,22 @@ float clean_dPhiJetMETmin;
 float clean_dR12min;
 float clean_dR21min;
 
+  bool useEoverPIn;
+  bool useDeltaEtaIn;
+  bool useDeltaPhiIn;
+  bool useHoverE;
+  bool useE9overE25;
+  bool useEoverPOut;
+  bool useEseedOverPIn;
+  bool useDeltaPhiOut;
+  bool useInvEMinusInvP;
+  bool useBremFraction;
+  bool useSigmaEtaEta;
+  bool useSigmaPhiPhi;
+  bool useEseedOverPin;
 
+ bool useFastSim;
+  
 };
 
 #endif

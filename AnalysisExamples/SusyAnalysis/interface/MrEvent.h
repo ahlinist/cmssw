@@ -26,6 +26,8 @@
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/Common/interface/TriggerResults.h"
 #include "DataFormats/L1Trigger/interface/L1ParticleMap.h"
+#include "DataFormats/EgammaReco/interface/ClusterShapeFwd.h"
+#include "DataFormats/EgammaReco/interface/BasicClusterShapeAssociation.h"
 
 #include "AnalysisExamples/SusyAnalysis/interface/MrParticle.h" 
 
@@ -83,6 +85,9 @@ std::vector<MrParticle*>* recoData(){return pRecoData;}
 const TrackCollection * trackCollection() {return TrackData;}
 const VertexCollection * vertexCollection() {return VertexData;}
 const CaloTowerCollection * caloTowerCollection() {return CaloTowerData;}
+const BasicClusterShapeAssociationCollection * clusterShapeBarrelCollection()  {return ClusterShapeBarrelData;}  
+const BasicClusterShapeAssociationCollection * clusterShapeEndcapCollection()  {return ClusterShapeEndcapData;}  
+
 // event and run number
 int run() {return RunNumber;}
 int event() {return EventNumber;}
@@ -178,6 +183,8 @@ void setRecoData(std::vector<MrParticle*>* recodata){pRecoData = recodata;}
 void setTrackCollection(const TrackCollection * tc)  {TrackData = tc;}
 void setVertexCollection(const VertexCollection * vc) {VertexData = vc;}
 void setCaloTowerCollection(const CaloTowerCollection * cc) {CaloTowerData = cc;}
+void setClusterShapeBarrelCollection(const BasicClusterShapeAssociationCollection * cc) {ClusterShapeBarrelData = cc;}
+void setClusterShapeEndcapCollection(const BasicClusterShapeAssociationCollection * cc) {ClusterShapeEndcapData = cc;}
 void setRun(int run) {RunNumber = run;}
 void setEvent(int ev) {EventNumber = ev;}
 void setTriggeredL1(int trig){TrigL1 = trig;}
@@ -227,6 +234,8 @@ std::vector<MrParticle*>* pRecoData;
 const TrackCollection * TrackData;
 const VertexCollection * VertexData;
 const CaloTowerCollection * CaloTowerData;
+const BasicClusterShapeAssociationCollection * ClusterShapeBarrelData; 
+const BasicClusterShapeAssociationCollection * ClusterShapeEndcapData; 
 
 
 int RunNumber, EventNumber;

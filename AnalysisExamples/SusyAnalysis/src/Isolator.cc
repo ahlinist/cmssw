@@ -326,17 +326,37 @@ bool Isolator::IsoObject(int ichk, int itype)
       calPhi = supercluster->phi();
       // for Tracker isolation
       const Track* eletrack = &(*(elecand->gsfTrack()));
-      if (itra == 1) {
-        ptest = eletrack->pt();
-      } else if (itra == 2) {
-        ptest = eletrack->p();
-      } else if (itra == 3) {
-        ptest = 1.;
-      }
-      pSubtr = ptest;
-      ntkTrkSubtr = 1;
       trkEta = eletrack->eta();
       trkPhi = eletrack->phi();
+      // special loop to find the Kalman track matching the GSF one
+      float drMin = 99999.;
+      int itkmin = -1;
+      for (int i = 0; i < (int) TrackData->size(); i++) {
+        float eta = (*TrackData)[i].eta();
+        float phi = (*TrackData)[i].phi();
+        float DR = GetDeltaR(trkEta, eta, trkPhi, phi);
+        if (DR > iso_ObjTkDRin && DR < iso_ObjTkDRout && DR < drMin) {
+          drMin = DR;
+          itkmin = i;
+        }
+      }
+      if (itkmin >= 0) {
+        if (itra == 1) {
+          ptest = eletrack->pt();
+          pSubtr = (*TrackData)[itkmin].pt();
+        } else if (itra == 2) {
+          ptest = eletrack->p();
+          pSubtr = (*TrackData)[itkmin].p();
+        } else if (itra == 3) {
+          ptest = 1.;
+          pSubtr = 1.;
+        }
+        ntkTrkSubtr = 1;
+      } else {
+        ptest = 0.1;
+        pSubtr = 0.;
+        ntkTrkSubtr = 0;
+      }
     }
     else if (ptype == 2){
       // for Calo isolation
