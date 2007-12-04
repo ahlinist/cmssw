@@ -1,3 +1,5 @@
+#include "DataFormats/VertexReco/interface/Vertex.h"
+
 #include "RecoBTag/Analysis/interface/TrackIPTagPlotter.h"
 
 TrackIPTagPlotter::TrackIPTagPlotter(const TString & tagName,
@@ -106,14 +108,9 @@ TrackIPTagPlotter::TrackIPTagPlotter(const TString & tagName,
        ("prob4" + theExtensionString, "2D IP probability 4.trk",
 	50, -1.1, 1.1, false, true, true, "b", update) ;
 
-#if 0
   decayLengthValuHisto = new FlavourHistograms<double>
        ("decLen" + theExtensionString, "Decay Length",
 	50, -5.0, 5.0, false, true, true, "b", update);
-  decayLengthSignHisto = new FlavourHistograms<double>
-       ("decLenSign" + theExtensionString, "Decay Length significance",
-	50, -2000.0, 2000.0, false, true, true, "b", update);
-#endif
   jetDistanceValuHisto = new FlavourHistograms<double>
        ("jetDist" + theExtensionString, "JetDistance",
 	50, -0.1, 0.1, false, true, true, "b", update);
@@ -129,10 +126,7 @@ TrackIPTagPlotter::~TrackIPTagPlotter ()
 
   delete trkNbr3D;
   delete trkNbr2D;
-#if 0
   delete decayLengthValuHisto;
-  delete decayLengthSignHisto;
-#endif
   delete jetDistanceValuHisto;
   delete jetDistanceSignHisto;
 
@@ -203,15 +197,15 @@ void TrackIPTagPlotter::analyzeTag (const reco::BaseTagInfo * baseTagInfo,
     tkcntHistosSig3D[4]->fill(jetFlav, ip[n].ip3d.significance());
     tkcntHistosProb3D[4]->fill(jetFlav, prob3d[n]);
   }
-#if 0
+  GlobalPoint pv(tagInfo->primaryVertex()->position().x(),
+                 tagInfo->primaryVertex()->position().y(),
+                 tagInfo->primaryVertex()->position().z());
   for(unsigned int n=0; n < ip.size(); n++) {
-    decayLengthValuHisto->fill(jetFlav, ip[n].decayLen.value());
-    decayLengthSignHisto->fill(jetFlav, ip[n].decayLen.significance());
+    double decayLen = (ip[n].closestToJetAxis - pv).mag();
+    decayLengthValuHisto->fill(jetFlav, decayLen);
   }
-#endif
   for(unsigned int n=0; n < ip.size(); n++) {
     jetDistanceValuHisto->fill(jetFlav, ip[n].distanceToJetAxis);
-//    jetDistanceSignHisto->fill(jetFlav, ip[n].distanceToJetAxis.significance());
   }
 
 }
@@ -315,17 +309,13 @@ void TrackIPTagPlotter::psPlot(const TString & name)
 
   canvas.Print(name + cName + ".ps");
   canvas.Clear();
-  canvas.Divide(2,3);
+  canvas.Divide(1,3);
   canvas.cd(1);
   jetDistanceValuHisto->plot();
   canvas.cd(2);
   jetDistanceSignHisto->plot();
-#if 0
   canvas.cd(3);
   decayLengthValuHisto->plot();
-  canvas.cd(4);
-  decayLengthSignHisto->plot();
-#endif
 
 
   canvas.Print(name + cName + ".ps");
@@ -340,10 +330,7 @@ void TrackIPTagPlotter::write(const bool allHisto)
   gFile->cd(dir);
   trkNbr2D->write(allHisto);
   trkNbr3D->write(allHisto);
-#if 0
   decayLengthValuHisto->write(allHisto);
-  decayLengthSignHisto->write(allHisto);
-#endif
   jetDistanceValuHisto->write(allHisto);
   jetDistanceSignHisto->write(allHisto);
   for(int n=0; n <= 4; n++) {
