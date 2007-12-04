@@ -4,7 +4,6 @@
 #include <RecoLocalMuon/CSCRecHitB/src/CSCStripCrosstalk.h>
 #include <RecoLocalMuon/CSCRecHitB/src/CSCStripNoiseMatrix.h>
 #include <RecoLocalMuon/CSCRecHitB/src/CSCFindPeakTime.h>
-#include <RecoLocalMuon/CSCRecHitB/src/probab.h>
 #include <RecoLocalMuon/CSCRecHitB/interface/CSCStripHit.h>
 
 #include <Geometry/CSCGeometry/interface/CSCLayer.h>
