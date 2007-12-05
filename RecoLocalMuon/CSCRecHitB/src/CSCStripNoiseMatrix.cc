@@ -42,20 +42,21 @@ CSCStripNoiseMatrix::~CSCStripNoiseMatrix() {
   nMatrix.clear();
 
   // Initialize values in case can't find chamber with constants
+  // These are ME1/2 constants...
   float elem[15];
-  elem[0] = 1.;
-  elem[1] = 0.;
-  elem[2] = 0.;
-  elem[3] = 1.;
-  elem[4] = 0.;
-  elem[5] = 0.;
-  elem[6] = 1.;
-  elem[7] = 0.;
-  elem[8] = 0.;
-  elem[9] = 1.;
-  elem[10] = 0.;
+  elem[0] = 8.64;
+  elem[1] = 3.47;
+  elem[2] = 2.45;
+  elem[3] = 8.60;
+  elem[4] = 3.28;
+  elem[5] = 1.88;
+  elem[6] = 8.61;
+  elem[7] = 3.18;
+  elem[8] = 1.99;
+  elem[9] = 7.67;
+  elem[10] = 2.64;
   elem[11] = 0.;
-  elem[12] = 1.;
+  elem[12] = 7.71;
   elem[13] = 0.;
   elem[14] = 0.;
 
@@ -104,7 +105,7 @@ CSCStripNoiseMatrix::~CSCStripNoiseMatrix() {
 
   for ( int i = 0; i < 3; ++i) {
   
-    LongIndexType sid = sid2[i];
+    LongIndexType sid = sid2[i] -1;    // DB starts at zero, whereas indexer starts at 1
 
     float w = getStripGain( sid );
     w = w*w;
@@ -135,14 +136,24 @@ CSCStripNoiseMatrix::~CSCStripNoiseMatrix() {
     }
 
     if ( isFlawed ) {
-      for ( int k = 0; k < 15; ++k) { 
-        if ( k%3 == 0) {
-          elem[k] = 1.;  
-        } else {
-          elem[k] = 0.;
-        } 
-      }
+      // These are fake ME1/2:
+      elem[0] = 8.64;
+      elem[1] = 3.47;
+      elem[2] = 2.45;
+      elem[3] = 8.60;
+      elem[4] = 3.28;
+      elem[5] = 1.88;
+      elem[6] = 8.61;
+      elem[7] = 3.18;
+      elem[8] = 1.99;
+      elem[9] = 7.67;
+      elem[10] = 2.64;
+      elem[11] = 0.;
+      elem[12] = 7.71;
+      elem[13] = 0.;
+      elem[14] = 0.;
     }
+
     for (int k = 0; k < 15; ++k) nMatrix.push_back( elem[k] );
   }
 }

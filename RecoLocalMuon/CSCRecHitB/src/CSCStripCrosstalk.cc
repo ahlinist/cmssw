@@ -85,14 +85,13 @@ void CSCStripCrosstalk::getCrossTalk( const CSCDetId& id, int centralStrip, std:
   float b_left = 0.;
   float m_right = 0.;
   float b_right = 0.;
-
   int idx = 0;
 
 
   // Cluster of 3 strips, so get x-talks for these 3 strips
   for ( int i = 0; i < 3; ++i ) {
 
-    LongIndexType sid = sid2[i];
+    LongIndexType sid = sid2[i] -1;   // DB starts at zero, whereas indexer starts at 1
       
     m_left  = xTalk_->crosstalk[sid].xtalk_slope_left;
     b_left  = xTalk_->crosstalk[sid].xtalk_intercept_left;

@@ -56,7 +56,8 @@ void CSCStripGain::getStripGain( const CSCDetId& id, float* weights ) {
     LongIndexType idDB = theIndexer->stripChannelIndex( testId, strip1);
 
     for ( unsigned i = 0; i < 16; ++i) {
-      LongIndexType sid = idDB + i;
+      LongIndexType sid = idDB + i -1;                         // DB start at 0, indexer start at 1
+
       float w = globalGainAvg/Gains_->gains[sid].gain_slope;
 
       if (w > 1.5) w = 1.5;
@@ -73,7 +74,8 @@ void CSCStripGain::getStripGain( const CSCDetId& id, float* weights ) {
     LongIndexType idDB = theIndexer->stripChannelIndex( id, strip1);
 
     for ( unsigned i = 0; i < nStrips; ++i) {
-      LongIndexType sid = idDB + i;
+      LongIndexType sid = idDB + i -1;                       // DB start at 0, indexer start at 1
+
       float w = globalGainAvg/Gains_->gains[sid].gain_slope;
       if (w > 1.5) w = 1.5;
       if (w < 0.5) w = 0.5;
