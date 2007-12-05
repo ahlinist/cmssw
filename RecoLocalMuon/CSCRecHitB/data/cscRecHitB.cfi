@@ -4,7 +4,7 @@ module csc2DRecHits = CSCRecHitBProducer {
      untracked bool CSCIsRunningOnData           = false
      untracked bool CSCDebug                     = false
 ###########################################################
-#    Which digis:
+#    Which digis to use for hit reconstruction:
 ###########################################################
      string CSCStripDigiProducer                 = "muonCSCDigis"
      string CSCWireDigiProducer                  = "muonCSCDigis"
@@ -12,9 +12,6 @@ module csc2DRecHits = CSCRecHitBProducer {
 #    Calibration info:
 ###########################################################
      untracked bool CSCUseCalibrations           = true
-###  New DB chamber index prefix (was 220000000)
-     untracked int32  CSCchamberIdPrefix         = 0
-     FileInPath theMappingFile                   = "CondFormats/CSCObjects/data/csc_slice_test_map.txt"
 ###########################################################
 #    LCT info:
 ###########################################################
@@ -25,32 +22,43 @@ module csc2DRecHits = CSCRecHitBProducer {
 ###########################################################
 #    Parameters for wire hits
 ###########################################################
+# Max separation in time bins between 2 adjacent wire groups 
      untracked int32  CSCWireClusterDeltaT       = 1
+# Max size of a wire cluster
      untracked int32  CSCWireClusterMaxSize      = 999
 ###########################################################
 #    Parameters for strip hits
 ###########################################################
+# Min ADC count  after pedestal subtraction for central strip of cluster
      untracked double CSCStripPeakThreshold      = 10.
+# Min ADC count after pedestal subtraction for strip cluster
      untracked double CSCStripClusterChargeCut   = 30.
+# Size of strip cluster
      untracked int32  CSCStripClusterSize        = 3
+# Use Gatti.  If false, use Centroid
      untracked bool   CSCUseGattiFit             = true
-     # the step size is in units of strip width
+# The minimum step size for binomial search is in units of strip width
      untracked double CSCminGattiStepSize        = 0.0001
+# The minimum error that can be assigned out of the Gatti fit in units of strip width
      untracked double CSCminGattiError           = 0.015
+# The maximum chi^2 for the Gatti fit to be valid, otherwise use centroid
      untracked double CSCMaxGattiChi2            = 200.
+# The following are for CSC experts to be changed:
+# When calibrations are shown to be inadequate and tuning is needed, the following are helpful
      untracked double CSCCalibrationSystematics  = 0.00
      untracked double CSCStripxtalksOffset       = 0.00
      untracked double CSCStripxtalksSystematics  = 0.00
 ###########################################################
 #    Parameters for 2-D hits
 ###########################################################
-###  To be set once wire digis have timing info:
+###  Maximum time difference between strip and wire hit in time bins
      untracked int32  CSCstripWireDeltaTime      = 1
+###  This is to produce pseudo 2-D hits from wire or strip hits only
 ###  This was not fully developed and currently NOT working
 ###  Use false always to avoid crash
      untracked bool CSCproduce1DHits             = false
 ##############################################################
-# Currently unused parameters
+# Currently unused parameters from unused functions
 ##############################################################
      untracked int32  CSCSegmentPerChamberMax    = 3
 # wire segments:
