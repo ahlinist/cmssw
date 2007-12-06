@@ -41,6 +41,7 @@
 #include "DataFormats/BTauReco/interface/JetTracksAssociation.h"
 #include "DataFormats/BTauReco/interface/JetTag.h"
 #include "DataFormats/Common/interface/RefVector.h"
+#include "DataFormats/Candidate/interface/CandMatchMap.h"
 #include "PhysicsTools/JetRejectorTool/interface/JetRejLRObservables.h"
 #include "AnalysisDataFormats/TopObjects/interface/JetRejObs.h"
 //#include "PhysicsTools/JetRejectorTool/interface/JetRejObs.h"
@@ -70,6 +71,8 @@ class JetRejObsProducer : public edm::EDProducer {
       edm::InputTag seljettagsrc_;
       double jetNumNoRad_;
       double leptonIsolation_, DeltaRcut_;
+      edm::InputTag matchedjetsOne1_;   
+      edm::InputTag matchedjetsOne2_;
       JetRejLRObservables     *myJetRejLRObs;
       //TFile *outputRootFile;
       unsigned int switchSignalDefinition;
