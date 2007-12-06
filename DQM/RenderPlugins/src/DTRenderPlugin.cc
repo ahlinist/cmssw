@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.4 2007/11/29 22:39:36 dellaric Exp $
+// $Id: DTRenderPlugin.cc,v 1.5 2007/11/29 22:41:33 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.4 $
-  \date $Date: 2007/11/29 22:39:36 $
+  \version $Revision: 1.5 $
+  \date $Date: 2007/11/29 22:41:33 $
 */
 
 #include <TProfile2D.h>
@@ -21,7 +21,7 @@
 #include "DTRenderPlugin.h"
 
 
-void DTRenderPlugin::initialise( int argc, char **argv, DaqMonitorBEInterface *bei ) {
+void DTRenderPlugin::initialise( int argc, char **argv ) {
 
 
 }
@@ -193,17 +193,15 @@ void DTRenderPlugin::preDrawTH1( TCanvas *c, const ObjInfo &o ) {
     assert (line);
     
     if (line) {
-      
-      MonitorElement* me = o.me;
-      if (me->hasError()) {
+      if (o.flags & FLAG_ERROR) {
 	line->SetLineColor(TColor::GetColor("#CC0000"));
 	//	  std::cout << name << " has error" << std::endl;
       }
-      else if (me->hasWarning()) {
+      else if (o.flags & FLAG_WARNING) {
 	line->SetLineColor(TColor::GetColor("#993300"));
 	//	  std::cout << name << " has worning" << std::endl;
       }
-      else if (me->hasOtherReport()) { 
+      else if (o.flags & FLAG_REPORT) { 
 	line->SetLineColor(TColor::GetColor("#FFCC00"));
 	//	  std::cout << name << " has other report" << std::endl;
       }
