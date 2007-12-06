@@ -13,6 +13,9 @@ JetRejObsProducer::JetRejObsProducer(const edm::ParameterSet& iConfig){
   leptonIsolation_  = iConfig.getParameter< double > ("leptonIsolation");
   DeltaRcut_   = iConfig.getParameter< double > ("DeltaRcut");
   switchSignalDefinition = iConfig.getParameter< unsigned int > ("signalDefinition");
+  // gen-reco match:
+  matchedjetsOne1_    = iConfig.getParameter<edm::InputTag> ("matchMapOne1");
+  matchedjetsOne2_    = iConfig.getParameter<edm::InputTag> ("matchMapOne2");  
 
   //  cout << "switchSignalDefinition = " << switchSignalDefinition << endl;
 
@@ -50,14 +53,29 @@ void JetRejObsProducer::produce( edm::Event& iEvent, const edm::EventSetup& iSet
   
   Handle<vector<reco::JetTag> > jettags;	
   iEvent.getByLabel (seljettagsrc_, jettags);
-   
+
+  // reco-gen matching (see PhysicsTools/JetMCAlgos/test/matchOneToOne.cc, V00-05-00):
+  edm::Handle<CandidateCollection> source;
+  edm::Handle<CandidateCollection> matched;
+  edm::Handle<CandMatchMap>        matchedjetsOne1;
+  edm::Handle<CandMatchMap>        matchedjetsOne2;
+  try {
+    iEvent.getByLabel ("genJetSele",source);
+    iEvent.getByLabel ("topJetSele",matched);
+    iEvent.getByLabel (matchedjetsOne1_, matchedjetsOne1 );
+    iEvent.getByLabel (matchedjetsOne2_, matchedjetsOne2 );
+  } catch(std::exception& ce) {
+    cerr << "[matchOneToOne] caught std::exception " << ce.what() << endl;
+    return;
+  }
+  
   // ---------------Generator Level-----------------
   std::vector<const reco::Candidate*> leptons, quarks;
   leptons.clear();
   quarks.clear();
 
   //semileptonic decays with a muon and etaGen of partons less 2.4
-
+   /*
   for(size_t igp = 0; igp < genEvt->size(); ++igp){
     const reco::Candidate & cand = (*genEvt)[igp];
     int st = cand.status(); 
@@ -74,6 +92,9 @@ void JetRejObsProducer::produce( edm::Event& iEvent, const edm::EventSetup& iSet
       //    if((*genEvt)[igp].pdgId() == -11) cout<<"@@@===>elettroni in file = "<<(*genEvt)[igp].pdgId()<<endl;
     }
   }
+   */ // si puo' togliere tutta questa parte che e' fatta da  GenParticleStatus3Selector
+
+
 
   if (switchSignalDefinition > 1) { // in this case, the "quarks" are GenJets or PartonJets
     vector<reco::GenJet> genjet;
@@ -96,15 +117,46 @@ void JetRejObsProducer::produce( edm::Event& iEvent, const edm::EventSetup& iSet
   auto_ptr< vector< JetRejObs > > Obs( new  vector<JetRejObs > ); 
   vector<  JetRejObs > *myObs = new vector<JetRejObs >;
   //------------------------
-
+  double DeltaRjp;
+  int nogluonradiation=0;
   vector<reco::CaloJet> calojet = (*jets);  
+  vector<unsigned int> vctidxJet;
+
+  for( CandMatchMap::const_iterator f  = matchedjetsOne1->begin();
+       f != matchedjetsOne1->end();
+       f++) {
+    const Candidate * genRef = &*(f->key);
+    const Candidate * recoRef  = &*(f->val);
+  
+    DeltaRjp =  ROOT::Math::VectorUtil::DeltaR( genRef->p4(), recoRef->p4() );
+    if(DeltaRjp < DeltaRcut_) nogluonradiation++;  
+
+  // find matched CaloJet:
+       for (unsigned int inr=0; inr < calojet.size(); inr++ ){
+	   double pt1 = calojet[inr].pt();
+	   double eta1 = calojet[inr].eta();
+	   double phi1 = calojet[inr].phi();
+	   double pt2 = (*recoRef).pt();
+	   double eta2 = (*recoRef).eta();
+	   double phi2 = (*recoRef).phi();
+	   if (pt1==pt2 && eta1==eta2 && phi1==phi2) {
+	     vctidxJet.push_back( inr ) ;
+	     continue;
+	   }
+	 }
+ 
+ } 
+  //-----------------------
+
+  // vecchio matching: da togliere!
+  /* vector<reco::CaloJet> calojet = (*jets);  
 
   JetPartonMatching matching = JetPartonMatching(quarks, calojet,1);
   vector<pair<unsigned int,unsigned int> > bestMatch = matching.getMatching(); 
 
-  double DeltaRjp; 
+  // double DeltaRjp; 
   double DeltaRTot=0;
-  int nogluonradiation=0; 
+
   unsigned int idxPart;
   unsigned int idxJet;
   vector<unsigned int> vctidxJet;
@@ -116,10 +168,11 @@ void JetRejObsProducer::produce( edm::Event& iEvent, const edm::EventSetup& iSet
     DeltaRjp =  ROOT::Math::VectorUtil::DeltaR( calojet[idxJet].p4(), quarks[idxPart]->p4() );
     DeltaRTot += DeltaRjp;
     vctidxJet.push_back( bestMatch[icbm].second );
-    if(DeltaRjp < DeltaRcut_) nogluonradiation++;
-  } 
-  
-  vector<pair<int,double> > vectDeltaR;
+    //    if(DeltaRjp < DeltaRcut_) nogluonradiation++;
+    } */
+  //-------------------------------------------  
+ 
+ vector<pair<int,double> > vectDeltaR;
   double wantedJet; 
 
   if(nogluonradiation >= jetNumNoRad_){  ///only the events with four recojets matching the four primary quarks
