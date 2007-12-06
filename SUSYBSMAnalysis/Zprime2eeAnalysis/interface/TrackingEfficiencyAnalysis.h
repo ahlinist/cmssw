@@ -67,10 +67,11 @@ class  TrackingEfficiencyAnalysis : public edm::EDAnalyzer {
   virtual void endJob() ;
 
   double ecaletisol(const edm::Event& Evt, reco::SuperClusterRef maxsupercluster );
-  double hcaletisol(reco::SuperClusterRef maxsupercluster, const HBHERecHitCollection* hbhe, const CaloGeometry* geometry);
-  double hcaletisol(reco::SuperClusterRef maxsupercluster, const CaloTowerCollection* hbhe);
+
   std::pair<int,float> trackisol(reco::SuperClusterRef acluster, const reco::GsfTrackRef tr, const reco::TrackCollection* isoTracks, double zvtx, bool isgsf, bool usevertexcorr);
+
   std::pair<int,float> findIsoTracks(GlobalVector mom, GlobalPoint vtx,  const reco::TrackCollection* isoTracks, bool isElectron, bool useVertex, bool isgsf, bool usevertexcorr);
+
   void searchmax( const reco::PixelMatchGsfElectronCollection*, std::vector<reco::SuperClusterRef> superclusters, int &prime, int &second);
   void vertexcorr(HepLorentzVector scvector, HepLorentzVector & scvector_vtxcor, double recozvtx, double radius, double tradius);
 
@@ -80,13 +81,26 @@ class  TrackingEfficiencyAnalysis : public edm::EDAnalyzer {
 
   std::pair<int,float> SCtrackIsolation(const reco::SuperCluster* , const reco::TrackCollection*, const reco::PixelMatchGsfElectron* );
 
+  std::pair<int,float> eleTrackIsolation( const reco::TrackCollection* , const reco::PixelMatchGsfElectron* );
+
   std::pair<int,float> scHasMatchedTrack(const reco::SuperCluster* , const reco::TrackCollection*, const reco::PixelMatchGsfElectron* );
 
   Hep3Vector getVertex(const reco::PixelMatchGsfElectron* ele );
 
   double getScCorrectedEta(const reco::SuperCluster* , Hep3Vector );
 
-  double closestTrackToSc(const reco::SuperCluster*, const reco::TrackCollection*, const reco::PixelMatchGsfElectron* );
+  double deltaRofClosestTrackToSc(const reco::SuperCluster*, const reco::TrackCollection*, const reco::PixelMatchGsfElectron* );
+
+  double deltaRofClosestTrackToGsfEle( const reco::TrackCollection*, const reco::PixelMatchGsfElectron* );
+
+  double hcaletisol(const reco::PixelMatchGsfElectron*, const CaloTowerCollection* );
+ 
+  const reco::Track* closestTrackToGsfEle( const reco::TrackCollection*, const reco::PixelMatchGsfElectron* );
+
+  const reco::Track* closestTrackToSC( const reco::TrackCollection*, const reco::SuperCluster* );
+
+  double deltaROfClosestGsfEleToSC( const reco::PixelMatchGsfElectronCollection*, const reco::SuperCluster* );
+
 
   // ----------member data ---------------------------
 
@@ -99,15 +113,25 @@ class  TrackingEfficiencyAnalysis : public edm::EDAnalyzer {
   std::string endcapsuperclusterlabel_ ;
   std::string rootanalfile_ ;
   
+  double eleIsoCut_;
+  double eleIsoTrackMinPt_;
+  double eleIsoTrackConeSize_;
   double trackConeSize_;
-  double vetoConeSize_;
+  double eleIsoVetoConeSize_;
   double minTagProbeInvMass_;
+  double maxTagProbeInvMass_;
   double tagEtMin_;
   double probeEtMin_;
   double scWithMatchedTrack;
+  double EBscWithMatchedTrack;
+  double EEscWithMatchedTrack;
   double tagProbeEvents;
+  double tagProbeEventsWithEBprobe;
+  double tagProbeEventsWithEEprobe;
   double zVertexCut_;
-
+  double hcalconesizemin_;
+  double hcalconesizemax_;
+  double hcalptMin_;
 
   int debug;
   int event_tot;
@@ -146,20 +170,33 @@ class  TrackingEfficiencyAnalysis : public edm::EDAnalyzer {
   float sc_two_vtxcor_iso_phi_var;
 
   double sc_weight;
-
+  
+  double invMass4Tree;
+  double probeIsolationVariable;
+  bool isTPeventSelected;
+  
   // HISTO initialisation
 
   TH1I* gsfcoll_size;
   TH1I* sccoll_size;
 
   TH1F* h_tagCollectionSize;
+  TH1F* h_probeCollectionSize;
+
+  TH1F* h_totTagProbeEvents;
+  TH1F* h_totRecoEvents;
+
   TH1F* h_tagEnergy;
   TH1F* h_trackPtAroundSC;
   TH1F* h_trackPtAroundSCFrac;
   TH1F* h_TagProbeInvMass;
   TH1F* h_matchedTrackPtoverSCEt;
+  TH1F* h_nearestTrackPoverSCE;
   TH1F* h_minDeltaRTrackSC;
-
+  TH1F* h_minDeltaRTrackGsfEle;
+  TH1F* h_tagHcalEt_over_Et;
+  TH1F* h_trackPtInConeMinusNearestTrackPt;
+  TH1F* h_tagIsoVar;
 };
 
 #endif
