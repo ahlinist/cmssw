@@ -36,17 +36,24 @@ using namespace std;
 TrackingEfficiencyAnalysis::TrackingEfficiencyAnalysis(const edm::ParameterSet& iConfig)
 {
 
-  //mytree = new TTree("tree","tr");
+  mytree = new TTree("tree","tr");
 
   sc_weight = 1.;
  
 
   trackConeSize_ = iConfig.getParameter<double>("trackConeSize");
-  vetoConeSize_ = iConfig.getParameter<double>("vetoConeSize");
+  eleIsoVetoConeSize_ = iConfig.getParameter<double>("eleIsoVetoConeSize");
   minTagProbeInvMass_ = iConfig.getParameter<double>("minTagProbeInvMass");
+  maxTagProbeInvMass_ = iConfig.getParameter<double>("maxTagProbeInvMass");
   tagEtMin_ = iConfig.getParameter<double>("tagEtMin");
   probeEtMin_ = iConfig.getParameter<double>("probeEtMin");
   zVertexCut_ = iConfig.getParameter<double>("zVertexCut");
+  hcalconesizemin_ = iConfig.getParameter<double>("hcalconesizemin");
+  hcalconesizemax_ = iConfig.getParameter<double>("hcalconesizemax");
+  hcalptMin_ = iConfig.getParameter<double>("hcalptMin");
+  eleIsoTrackConeSize_ = iConfig.getParameter<double>("eleIsoTrackConeSize");
+  eleIsoTrackMinPt_ = iConfig.getParameter<double>("eleIsoTrackMinPt");
+  eleIsoCut_ = iConfig.getParameter<double>("eleIsoCut");
 
   debug=1;
   event_tot=0;
@@ -69,7 +76,12 @@ void TrackingEfficiencyAnalysis::beginJob(const edm::EventSetup&)
   edm::Service<TFileService> fs;
 
   tagProbeEvents = 0.;
+  tagProbeEventsWithEBprobe = 0.;
+  tagProbeEventsWithEEprobe = 0.;
+  
   scWithMatchedTrack = 0.;
+  EBscWithMatchedTrack = 0.;
+  EEscWithMatchedTrack = 0.;
 
   //  HISTO INITIALISATION :
   
@@ -78,23 +90,35 @@ void TrackingEfficiencyAnalysis::beginJob(const edm::EventSetup&)
   sccoll_size = fs->make<TH1I>("sccoll_size","sccoll_size",20,0.,20.);
   gsfcoll_size = fs->make<TH1I>("gsfcoll_size","gsfcoll_size",20,0.,20.);
   
+
+  h_totRecoEvents = fs->make<TH1F>("h_totRecoEvents", "h_totRecoEvents", 2, 0, 2. );
+  h_totTagProbeEvents = fs->make<TH1F>("h_totTagProbeEvents", "h_totTagProbeEvents", 2, 0, 2. );
+
   //histos: tag properties
   h_tagCollectionSize = fs->make<TH1F>("h_tagCollectionSize", "h_tagCollectionSize",10,0.,10.);
   h_tagEnergy = fs->make<TH1F>("tagEnergy","tagEnergy",400,0.,800.);
- 
+  h_tagHcalEt_over_Et = fs->make<TH1F>("h_tagHcalEt_over_Et", "h_tagHcalEt_over_Et",200,0.,4.);
+  h_minDeltaRTrackGsfEle = fs->make<TH1F>("h_minDeltaRTrackGsfEle", "h_minDeltaRTrackGsfEle",  500, 0., 2. );
+  h_tagIsoVar = fs->make<TH1F>("h_tagIsoVar", "h_tagIsoVar",500,-1.,4.);
+
   //histos:probe properties
+  h_probeCollectionSize = fs->make<TH1F>("h_probeCollectionSize", "h_probeCollectionSize",10,0.,10.);
   h_trackPtAroundSCFrac = fs->make<TH1F>("h_trackPtAroundSCFrac", "h_trackPtAroundSCFrac",200,0.,4.);
   h_trackPtAroundSC = fs->make<TH1F>("h_trackPtAroundSC", "h_trackPtAroundSC",400,0.,400.);
   h_TagProbeInvMass = fs->make<TH1F>("h_TagProbeInvMass", "h_TagProbeInvMass",600,0.,600.);
 
   h_matchedTrackPtoverSCEt = fs->make<TH1F>("h_matchedTrackPtoverSCEt", "h_matchedTrackPtoverSCEt", 200,0.,4.);
+  h_nearestTrackPoverSCE = fs->make<TH1F>("h_nearestTrackPoverSCE", "h_nearestTrackPoverSCE", 200,0.,4.);
+  h_trackPtInConeMinusNearestTrackPt = fs->make<TH1F>("h_trackPtInConeMinusNearestTrackPtOverSCEt", "h_trackPtInConeMinusNearestTrackPtOverSCEt", 500, -1.,4.);
   h_minDeltaRTrackSC = fs->make<TH1F>("h_minDeltaRTrackSC", "h_minDeltaRTrackSC",  200, 0., 4. );
-
+  
   //Define tree
   mytree = fs->make<TTree>("tree","tr");
  
   //Define branches
-  // mytree->Branch("sc_Z_iso_m_branch",&sc_Z_iso_m_var,"sc_Z_iso_m_branch/F");
+  mytree->Branch("TPinvMass",&invMass4Tree,"TPinvMass/F");
+  mytree->Branch("probeIsolationVariable",&probeIsolationVariable,"probeIsolationVariable/F");
+  mytree->Branch("isTPeventSelected",&isTPeventSelected,"isTPeventSelected/O");
   
 }
 
@@ -108,12 +132,12 @@ void TrackingEfficiencyAnalysis::analyze(const edm::Event& iEvent, const edm::Ev
   using namespace std; 
   using namespace reco;
   
-  if (debug)
-      {
-    LogDebug("thisAnalysis") << "=======================================================" ; 
-      LogDebug("thisAnalysis") << "iEvent.id().run() = " << iEvent.id().run() << "  iEvent.id().event() = " << iEvent.id().event()  ; 
-      LogDebug("thisAnalysis") << "=======================================================" ; 
-  }
+//   if (debug)
+//       {
+//     cout << "=======================================================" ; 
+//       cout << "iEvent.id().run() = " << iEvent.id().run() << "  iEvent.id().event() = " << iEvent.id().event()  ; 
+//       cout << "=======================================================" ; 
+//   }
 
   //HepLorentzVector and SuperClusterRef initialisation:
 
@@ -144,19 +168,22 @@ void TrackingEfficiencyAnalysis::analyze(const edm::Event& iEvent, const edm::Ev
   //Reconstructed vertexes
   edm::Handle<reco::VertexCollection> vertices;
   try {iEvent.getByLabel("offlinePrimaryVerticesFromCTFTracks",vertices);} catch (cms::Exception& ex) {
-    LogDebug("thisAnalysis")<<"could not found the product with producer offlinePrimaryVerticesFromCTFTracks" << ex ;
+    cout<<"could not found the product with producer offlinePrimaryVerticesFromCTFTracks" << ex ;
  }
   const VertexCollection* VertexData = vertices.product();
 
   // Get the general tracks
   edm::Handle<reco::TrackCollection> trackHandle;
   try {iEvent.getByLabel("ctfWithMaterialTracks", trackHandle);} catch (cms::Exception& ex) { 
-    LogDebug("thisAnalysis")<<"could not found the product with producer ctfWithMaterialTracks" << ex ;
+    cout<<"could not found the product with producer ctfWithMaterialTracks" << ex ;
 }
   const reco::TrackCollection* trackcoll = trackHandle.product();
 
   //total number of events on which the code is run:
   event_tot++;
+
+  h_totRecoEvents ->Fill(1.);
+
   if( (event_tot%100)  == 0)cout<<"----------------------------------------event # "<<event_tot<<" ------------------------------------------------"<<endl;
   
   // Get PixelMatchGsfElectron Collection -----------------------------------------
@@ -164,20 +191,19 @@ void TrackingEfficiencyAnalysis::analyze(const edm::Event& iEvent, const edm::Ev
 
   Handle<reco::PixelMatchGsfElectronCollection> pixelmatchelec;
   try{ iEvent.getByLabel("pixelMatchGsfElectrons","",pixelmatchelec); } catch(cms::Exception& ex) {
-    LogDebug("thisAnalysis")<<"could not found the product with producer pixelMatchGsfElectrons" << ex ;
+    cout<<"could not found the product with producer pixelMatchGsfElectrons" << ex ;
   }
   const reco::PixelMatchGsfElectronCollection* collpixelmatchelec = pixelmatchelec.product();
-  if(debug) LogDebug("thisAnalysis") << "collpixelmatchelec->size() = " <<  collpixelmatchelec->size() ;
-
+ 
   //Get the hybrid and endcap supercluster collection
   Handle<reco::SuperClusterCollection> pHybridSuperClusters;
   Handle<reco::SuperClusterCollection> pIslandSuperClusters;
 
   try {
-    iEvent.getByLabel("hybridSuperClusters","", pHybridSuperClusters);
-    iEvent.getByLabel("islandSuperClusters","islandEndcapSuperClusters", pIslandSuperClusters);
+    iEvent.getByLabel("correctedHybridSuperClusters","", pHybridSuperClusters);
+    iEvent.getByLabel("correctedEndcapSuperClustersWithPreshower","", pIslandSuperClusters);
   } catch ( cms::Exception& ex ) {
-    LogDebug("thisAnalysis")<<"could not found the product with producer hybridSuperClusters or islandEndcapSuperClusters" << ex ;
+    cout<<"could not found the product with producer hybridSuperClusters or islandEndcapSuperClusters" << ex ;
   }
 
   const reco::SuperClusterCollection* hybridSuperClusters = pHybridSuperClusters.product();
@@ -195,9 +221,9 @@ void TrackingEfficiencyAnalysis::analyze(const edm::Event& iEvent, const edm::Ev
   }
   
   
-    LogDebug("thisAnalysis") << "hybridSuperClusters->size() = " <<  hybridSuperClusters->size() ;
-    LogDebug("thisAnalysis") << "islandSuperClusters->size() = " <<  islandSuperClusters->size() ;
-    LogDebug("thisAnalysis") << "sclusters.size() = " <<  sclusters.size() ;
+  //cout << "hybridSuperClusters->size() = " <<  hybridSuperClusters->size() ;
+  //cout << "islandSuperClusters->size() = " <<  islandSuperClusters->size() ;
+  //cout << "sclusters.size() = " <<  sclusters.size() ;
 
   gsfcoll_size->Fill(collpixelmatchelec->size() ,sc_weight);
   sccoll_size->Fill(sclusters.size() ,sc_weight);
@@ -208,26 +234,33 @@ void TrackingEfficiencyAnalysis::analyze(const edm::Event& iEvent, const edm::Ev
 
   //if gsf collection size is > 0 and if (other) sc collection size is > 0 ...
   if( (collpixelmatchelec->size() > 0) && (sclusters.size() > 1)  ) {
-
+    
     sc_sizegreater1++;
-
+    
     /////////////////////////LOOK FOR TAGS: PIXELMATCHGSFELECTRONS with cuts
-
+    
     //apply selection cuts to PixelMatchGsfElectrons
-    reco::PixelMatchGsfElectronCollection TagCollection;
-
-    for(reco::PixelMatchGsfElectronCollection::const_iterator tagIt = collpixelmatchelec->begin(); tagIt != collpixelmatchelec->end(); ++tagIt) {
+    typedef std::vector<const reco::PixelMatchGsfElectron*> PixelMatchGsfElectronPointerCollection;
+    std::vector<const reco::PixelMatchGsfElectron*> TagCollection;
+    //reco::PixelMatchGsfElectronCollection TagCollection;
+    
+    for(PixelMatchGsfElectronCollection::const_iterator tagIt = collpixelmatchelec->begin(); tagIt != collpixelmatchelec->end(); ++tagIt) {
 
       double tagEt = tagIt->energy() * sin(2*atan( exp( -1. * tagIt->eta()) ) );
       double tagAbsEta = fabs( tagIt->eta() ); 
 
+      double eleIsoVariable = eleTrackIsolation( trackcoll, &(*tagIt) ).second;
+      
+      h_tagIsoVar ->Fill( eleIsoVariable );
+      
       if( tagAbsEta < 1.444 || (tagAbsEta > 1.560 && tagAbsEta < 2.5) ) //tag ele must be in ECAL fiducial region
 	if( tagEt > tagEtMin_ ) //tag ele must have Et above certain threshold
-	  TagCollection.push_back( *tagIt );
+	  if( eleIsoVariable < eleIsoCut_ )
+	  TagCollection.push_back( &(*tagIt) );
       
     }
     
-    LogDebug("thisAnalysis")<<"Found "<<TagCollection.size()<<" Tag electrons, now looking for probes..."<<endl;
+    //    cout<<"Found "<<TagCollection.size()<<" Tag electrons, now looking for probes..."<<endl;
     
     h_tagCollectionSize->Fill( TagCollection.size() );
     
@@ -235,75 +268,155 @@ void TrackingEfficiencyAnalysis::analyze(const edm::Event& iEvent, const edm::Ev
     ////////////////////////////////LOOK FOR PROBES: ECAL SC
     
     //association map: one Tag - many Probes
-
+    
     std::map<const reco::PixelMatchGsfElectron*, std::vector<const reco::SuperCluster*> > TagProbeMap;
-
-    for(reco::PixelMatchGsfElectronCollection::const_iterator selTagIt = TagCollection.begin(); selTagIt != TagCollection.end(); ++selTagIt){
+    
+    for(PixelMatchGsfElectronPointerCollection::const_iterator selTagIt = TagCollection.begin(); selTagIt != TagCollection.end(); ++selTagIt){
       
-      for( std::vector<const reco::SuperCluster*>::const_iterator scIt_eb = sclusters.begin(); scIt_eb != sclusters.end(); ++scIt_eb) { 
+      for( reco::SuperClusterCollection::const_iterator scIt_eb = hybridSuperClusters->begin(); scIt_eb != hybridSuperClusters->end(); ++scIt_eb) { 
 	
-	LogDebug("thisAnalysis")<<"SCGsfInvMass( &(*scIt_eb), &(*selTagIt) "<<SCGsfInvMass( *scIt_eb, &(*selTagIt) ) <<endl;
+	//cout<<" SC  energy "<<scIt_eb->energy()<<" ele energy "<< (*selTagIt)->superCluster()->energy()<<endl;
+	//cout<<" SC  address "<<&(*scIt_eb)<<" ele address "<<&( *( (*selTagIt)->superCluster() )  )<<endl;
 	
-	if( SCbelongsToAGsf( *scIt_eb , &(*selTagIt) ) )
+	if( &(*scIt_eb) == &( *( (*selTagIt)->superCluster() )  )  )
 	  continue;
-
-	double probeEt = (*scIt_eb)->energy() * sin(2*atan( exp( -1. * (*scIt_eb)->eta()) ) );
-	  if( probeEt > probeEtMin_){
 	
-	    TagProbeMap[&(*selTagIt)].push_back( *scIt_eb );
-	    LogDebug("thisAnalysis")<<"Added Probe SC to Tag"<<endl;
-	  
-	  }
+	double probeEt = scIt_eb->energy() * sin(2*atan( exp( -1. * scIt_eb->eta()) ) );
+	double probeAbsEta = fabs( scIt_eb->eta() );
+	
+	if( probeAbsEta < 1.444 || (probeAbsEta > 1.560 && probeAbsEta < 2.5) )//probe must be in ECAL fiducial region
+	  if( probeEt > probeEtMin_)
+	    TagProbeMap[*selTagIt].push_back( &(*scIt_eb) );
 	
       }
+      
+      for( reco::SuperClusterCollection::const_iterator scIt_eb = islandSuperClusters->begin(); scIt_eb != islandSuperClusters->end(); ++scIt_eb) { 
 	
-      }//end of loop over Tags to fill the one-to-many association map    
+	if( &(*scIt_eb) == &( *( (*selTagIt)->superCluster() )  )  )
+          continue;
+	
+	double probeEt = scIt_eb->energy() * sin(2*atan( exp( -1. * scIt_eb->eta()) ) );
+	
+	if( probeEt > probeEtMin_){
+	  TagProbeMap[*selTagIt].push_back( &(*scIt_eb) );
+	  //cout<<"Added Probe SC to Tag"<<endl;
+	}
+      }
+
+      
+    }//end of loop over Tags to fill the one-to-many association map    
     
     
     if( TagCollection.size() >0 ){
-    
-    //////////////////////////////////DUMP TAG&PROBE EVENT ON HISTOS
-    
-      for(reco::PixelMatchGsfElectronCollection::const_iterator selTagIt = TagCollection.begin(); selTagIt != TagCollection.end(); ++selTagIt){
       
-      if( TagProbeMap[&(*selTagIt)].size() == 0 || TagProbeMap[&(*selTagIt)].size() > 1 ) //exclude event if there is more than one probe for the tag 
-	continue;
-
-      h_tagEnergy->Fill(selTagIt->energy());
+      //////////////////////////////////DUMP TAG&PROBE EVENT ON HISTOS
       
-      for(std::vector<const reco::SuperCluster*>::const_iterator It = TagProbeMap[&(*selTagIt)].begin(); It != TagProbeMap[&(*selTagIt)].end(); ++It){
+      for(PixelMatchGsfElectronPointerCollection::const_iterator selTagIt = TagCollection.begin(); selTagIt != TagCollection.end(); ++selTagIt){
 	
-	Hep3Vector tagVertex = getVertex( &(*selTagIt) );
+	h_probeCollectionSize ->Fill( TagProbeMap[*selTagIt].size() );
 
-	if( SCGsfInvMass( *It, &(*selTagIt) ) < minTagProbeInvMass_ )  //Tag-Probe invariant mass cut
-	  continue; 
+	if( TagProbeMap[*selTagIt].size() == 0 || TagProbeMap[*selTagIt].size() > 1  ) //exclude event if there is more than one probe for the tag 
+	  continue;
 	
-	std::pair<int,float> trackisol = SCtrackIsolation( *It,trackcoll, &(*selTagIt) );
+	h_tagEnergy->Fill((*selTagIt)->energy());
 	
-	LogDebug("thisAnalysis")<<"Probe analysis: # of track in cone: "<<trackisol.first<<" with total pT: "<<trackisol.second<<endl;
+	h_minDeltaRTrackGsfEle->Fill( deltaRofClosestTrackToGsfEle( trackcoll, *selTagIt )   );
 	
-	h_trackPtAroundSCFrac->Fill( trackisol.second / ( (*It)->energy() * sin(2*atan( exp( -1. * (*It)->eta()))) )  );
-	h_trackPtAroundSC->Fill( trackisol.second );
-	h_TagProbeInvMass->Fill(SCGsfInvMass( *It, &(*selTagIt) ));
+	//cout<<"hcaletisol "<<hcaletisol( *selTagIt, towerCollection )<<endl;
+	
+	double tagHcalEt = hcaletisol( *selTagIt, towerCollection );
+	double tagEt =  (*selTagIt)->energy() * sin(2*atan( exp( -1. * (*selTagIt)->eta()) ) ); 
+	
+	h_tagHcalEt_over_Et->Fill( tagHcalEt / tagEt );
+	
+	for(std::vector<const reco::SuperCluster*>::const_iterator It = TagProbeMap[*selTagIt].begin(); It != TagProbeMap[*selTagIt].end(); ++It){
+	  
+	  Hep3Vector tagVertex = getVertex( *selTagIt );
+	  
+	  if( SCGsfInvMass( *It, *selTagIt ) < minTagProbeInvMass_ || SCGsfInvMass( *It, *selTagIt ) > maxTagProbeInvMass_ )  //Tag-Probe invariant mass cut
+	    continue; 
+	  
+	  std::pair<int,float> trackisol = SCtrackIsolation( *It,trackcoll, *selTagIt );
+	  
+	  
+	  //cout<<"Probe analysis: # of track in cone: "<<trackisol.first<<" with total pT: "<<trackisol.second<<endl;
+	  
+	  double probeEt = ( (*It)->energy() * sin(2*atan( exp( -1. * (*It)->eta()))) );
+	  
+	  h_trackPtAroundSCFrac->Fill( trackisol.second / probeEt  );
+	  h_trackPtAroundSC->Fill( trackisol.second );
+	  h_TagProbeInvMass->Fill(SCGsfInvMass( *It, *selTagIt ));
+	  
+	  std::pair<int,float> hasTrack = scHasMatchedTrack(*It,trackcoll, *selTagIt );
+	  
+	  h_matchedTrackPtoverSCEt->Fill( hasTrack.second / probeEt  );
+	  
+	  double pOfTrackNearestToProbe = 0.;
+	  double ptOfTrackNearestToProbe = 0.;
+	  
+	  if( deltaRofClosestTrackToSc( *It, trackcoll, *selTagIt ) < trackConeSize_){
 
-	std::pair<int,float> hasTrack = scHasMatchedTrack(*It,trackcoll, &(*selTagIt) );
-	h_matchedTrackPtoverSCEt->Fill( hasTrack.second / ( (*It)->energy() * sin(2*atan( exp( -1. * (*It)->eta()))) )  );
-	
-	tagProbeEvents++;
-	
-	h_minDeltaRTrackSC->Fill( closestTrackToSc( *It, trackcoll, &(*selTagIt) )   );
+	    pOfTrackNearestToProbe = closestTrackToSC( trackcoll, *It )->p();
+	    ptOfTrackNearestToProbe = closestTrackToSC( trackcoll, *It )->pt();
 
-	if(hasTrack.first>=1)
-	  scWithMatchedTrack++;
-      }
+	  }
+
+	  h_trackPtInConeMinusNearestTrackPt -> Fill( (trackisol.second - ptOfTrackNearestToProbe) / probeEt);
+	  
+	  h_nearestTrackPoverSCE -> Fill(  pOfTrackNearestToProbe / ( (*It)->energy() ) );
+
+	  invMass4Tree = SCGsfInvMass( *It, *selTagIt );//write TP inv mass on tree	  
+	  
+	  probeIsolationVariable = (trackisol.second - ptOfTrackNearestToProbe) / probeEt;
+	  if( fabs ( (*It)->eta() ) < 1.444  ){
+	   
+	    h_totTagProbeEvents ->Fill(1.);
+
+	    tagProbeEvents++; 
+	    tagProbeEventsWithEBprobe++;
+	    
+	    if( deltaROfClosestGsfEleToSC( collpixelmatchelec , *It ) < 0.1 ){
+	      //	    if( deltaROfClosestGsfEleToSC( *It, trackcoll, *selTagIt ) < 0.1 ){
+
+	      isTPeventSelected = 1.;
+
+	      scWithMatchedTrack++;
+	      EBscWithMatchedTrack++;
+	    }
+	    else isTPeventSelected = 0.;
+
+	  }
+	  
+	  if( fabs ( (*It)->eta() ) < 2.5  && fabs ( (*It)->eta() ) > 1.560 ){
+	    
+	    tagProbeEvents++; 
+	    h_totTagProbeEvents ->Fill(1.);
+
+	    tagProbeEventsWithEEprobe++;
+	    
+	    if( deltaROfClosestGsfEleToSC( collpixelmatchelec , *It  ) < 0.1 ){
+	      
+	      isTPeventSelected = 1.;
+	      
+              scWithMatchedTrack++;
+              EEscWithMatchedTrack++;
+            }
+	    
+	    else isTPeventSelected = 0.;
+	  }
+	  
+	  h_minDeltaRTrackSC->Fill( deltaRofClosestTrackToSc( *It, trackcoll, *selTagIt )   );
+	  
+	  mytree -> Fill();
+
+	}//end loop on Probes for each Tag
+      }//end loop on Tags
       
     }
-      
-    }//end loop on Tags 
-
     
   }//end of if size of collection is > 1
-
+  
+  
 }//end of analyzer
 
 
@@ -315,38 +428,16 @@ TrackingEfficiencyAnalysis::endJob() {
 
   cout<<"***********Tag-Probe events: "<<tagProbeEvents<<" events with track-matched SC: "<<scWithMatchedTrack<<" Integrated tracking efficiency: "<<scWithMatchedTrack/tagProbeEvents<<endl;
 
+  cout<<"***********Tag-Probe events with probe in ECAL Barrel: "<<tagProbeEventsWithEBprobe<<" events with track-matched SC: "<<EBscWithMatchedTrack<<" Integrated tracking efficiency: "<<EBscWithMatchedTrack/tagProbeEventsWithEBprobe<<endl;
+
+  cout<<"***********Tag-Probe events with probe in ECAL Endcaps: "<<tagProbeEventsWithEEprobe<<" events with track-matched SC: "<<EEscWithMatchedTrack<<" Integrated tracking efficiency: "<<EEscWithMatchedTrack/tagProbeEventsWithEEprobe<<endl;
+
 }
 //define this as a plug-in
 DEFINE_FWK_MODULE(TrackingEfficiencyAnalysis);
 
 
 ////////////////////////////////////////////////////////////MEMBER FUNCTIONS FOR ANALYZER////////////////////////////////////////////////////////////
-
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-
-bool TrackingEfficiencyAnalysis::SCbelongsToAGsf(const reco::SuperCluster* sc , const reco::PixelMatchGsfElectron* gsf) {
-
-  bool alreadyUsed = false;
-
-//be careful not to take the same SC of the gsf
-  
-    HepLorentzVector ele4V, sc4V;
-    
-    Hep3Vector tagVertex(gsf->gsfTrack()->vertex().x(), gsf->gsfTrack()->vertex().y(), gsf->gsfTrack()->vertex().z());
-    double corrScEta = getScCorrectedEta( sc, tagVertex );
-
-    sc4V.setRThetaPhi( sc->energy(), 2*atan( exp( -1. * corrScEta ) ), sc->phi() );
-    LogDebug("thisAnalysis") <<"[SCbelongsToAGsf] sc theta:"<<2*atan( exp( -1. * corrScEta ) )<<endl;
-
-    ele4V.setRThetaPhi( gsf->superCluster()->energy(), gsf->theta(), gsf->phi() );
-    LogDebug("thisAnalysis") <<"[SCbelongsToAGsf] gsf theta:"<<gsf->theta()<<endl;
-
-    if( ele4V.deltaR(sc4V) < vetoConeSize_ )
-      alreadyUsed = true;
-  
-    return alreadyUsed;
-}
-
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -357,11 +448,11 @@ double TrackingEfficiencyAnalysis::SCGsfInvMass(const reco::SuperCluster* sc , c
     Hep3Vector tagVertex(ele->gsfTrack()->vertex().x(), ele->gsfTrack()->vertex().y(), ele->gsfTrack()->vertex().z());
     double corrScEta = getScCorrectedEta( sc, tagVertex );
 
-    LogDebug("thisAnalysis") <<"[SCGsfInvMass]sc "<<sc->energy()<<" "<<2*atan( exp( -1. * corrScEta ) )<<" "<<sc->phi()<<endl;
-    LogDebug("thisAnalysis") <<"[SCGsfInvMass]ele "<<ele->superCluster()->energy()<<" "<<ele->theta()<<" "<<ele->phi()<<endl;
+    //cout <<"[SCGsfInvMass]sc "<<sc->energy()<<" "<<2*atan( exp( -1. * corrScEta ) )<<" "<<sc->phi()<<endl;
+    //cout <<"[SCGsfInvMass]ele "<<ele->superCluster()->energy()<<" "<<ele->theta()<<" "<<ele->gsfTrack()->innerMomentum().phi()<<endl;
     
     sc3V.setRThetaPhi( sc->energy(), 2*atan( exp( -1. * corrScEta ) ), sc->phi() );
-    ele3V.setRThetaPhi( ele->superCluster()->energy(), ele->theta(), ele->phi() );
+    ele3V.setRThetaPhi( ele->superCluster()->energy(), ele->theta(), ele->gsfTrack()->innerMomentum().phi() );
 
     HepLorentzVector ele4V(ele->superCluster()->energy(),ele3V);
     HepLorentzVector sc4V(sc->energy(),sc3V);
@@ -386,7 +477,7 @@ std::pair<int,float> TrackingEfficiencyAnalysis::SCtrackIsolation(const reco::Su
 
   sc3V.setRThetaPhi( sc->energy(), 2*atan( exp( -1. * corrScEta ) ), sc->phi() );
   
-  LogDebug("thisAnalysis") <<"[SCtrackIsolation] sc theta:"<<2*atan( exp( -1. * corrScEta ) )<<endl;
+  //cout <<"[SCtrackIsolation] sc theta:"<<2*atan( exp( -1. * corrScEta ) )<<endl;
 
   float ptTracksInCone = 0.;
   int nTracksInCone = 0;
@@ -395,12 +486,11 @@ std::pair<int,float> TrackingEfficiencyAnalysis::SCtrackIsolation(const reco::Su
     
     trackVertexZ = trackIt->vertex().z();
 
-    track3V.setRThetaPhi( sqrt( trackIt->momentum().mag2() ), trackIt->theta(), trackIt->phi() );
+    track3V.setRThetaPhi( trackIt->p(), trackIt->theta(), trackIt->innerMomentum().phi() );
     
-    if(track3V.deltaR(sc3V) < trackConeSize_ && track3V.deltaR(sc3V) > vetoConeSize_ ){
-     
-      LogDebug("thisAnalysis") << "[SCtrackIsolation] deltaZ between sc and track: "<< (trackVertexZ - tagVertexZ) << endl;
 
+    if(track3V.deltaR(sc3V) < trackConeSize_ ){
+     
       nTracksInCone++;
       ptTracksInCone += track3V.perp();
 
@@ -413,6 +503,43 @@ std::pair<int,float> TrackingEfficiencyAnalysis::SCtrackIsolation(const reco::Su
   pair.first = nTracksInCone;
   pair.second = ptTracksInCone;
   
+  return pair;
+  
+}
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+
+std::pair<int,float> TrackingEfficiencyAnalysis::eleTrackIsolation( const reco::TrackCollection* trackcoll, const reco::PixelMatchGsfElectron* ele)
+{ 
+  
+  Hep3Vector track3V, ele3V;
+
+
+  ele3V.setRThetaPhi( ele->superCluster()->energy(), 2*atan( exp( -1. * ele->eta() ) ), ele->phi() );
+  
+  
+  float ptTracksInCone = 0.;
+  int nTracksInCone = 0;
+
+  for(reco::TrackCollection::const_iterator trackIt = trackcoll->begin(); trackIt != trackcoll->end(); trackIt++){
+    
+    track3V.setRThetaPhi( trackIt->p(), trackIt->theta(), trackIt->innerMomentum().phi() );
+    
+    if(track3V.perp() > eleIsoTrackMinPt_ && track3V.deltaR(ele3V) < eleIsoTrackConeSize_ && track3V.deltaR(ele3V) > eleIsoVetoConeSize_){
+      
+      nTracksInCone++;
+      ptTracksInCone += pow( ( track3V.perp()/ ele->gsfTrack()->pt() ) , 2 ) ;
+
+    }
+    
+
+  }
+  
+  std::pair<int,float> pair;
+  pair.first = nTracksInCone;
+  pair.second = ptTracksInCone;
+
   return pair;
   
 }
@@ -434,8 +561,6 @@ std::pair<int,float> TrackingEfficiencyAnalysis::scHasMatchedTrack(const reco::S
   double corrScEta = getScCorrectedEta( sc, tagVertex );
   sc3V.setRThetaPhi( sc->energy(), 2*atan( exp( -1. * corrScEta ) ), sc->phi() );
   
-  LogDebug("thisAnalysis") <<"[SCtrackIsolation] sc theta:"<<2*atan( exp( -1. * corrScEta ) )<<endl;
-
   float ptTracksInCone = 0.;
   int nTracksInCone = 0;
 
@@ -443,9 +568,9 @@ std::pair<int,float> TrackingEfficiencyAnalysis::scHasMatchedTrack(const reco::S
     
     trackVertexZ = trackIt->vertex().z();
 
-    track3V.setRThetaPhi( sqrt( trackIt->momentum().mag2() ), trackIt->theta(), trackIt->phi() );
+    track3V.setRThetaPhi( trackIt->p() , trackIt->theta(), trackIt->innerMomentum().phi() );
     
-    if( track3V.deltaR(sc3V) < vetoConeSize_ ){
+    if( track3V.deltaR(sc3V) < 0.1 ){
      
       if( fabs(trackVertexZ - tagVertexZ) < zVertexCut_){
 	nTracksInCone++;
@@ -460,7 +585,7 @@ std::pair<int,float> TrackingEfficiencyAnalysis::scHasMatchedTrack(const reco::S
   std::pair<int,float> pair;
   pair.first = nTracksInCone;
   pair.second = ptTracksInCone;
-  
+
   return pair;
   
 }
@@ -494,18 +619,11 @@ double TrackingEfficiencyAnalysis::getScCorrectedEta(const reco::SuperCluster* s
 
   eta = sc->eta();
   
-   LogDebug("thisAnalysis") <<"[getScCorrectedEta] primaryVertex: x "<< primaryVertex.x() << " y "<<primaryVertex.y() << " z" <<primaryVertex.z() <<endl;
-   LogDebug("thisAnalysis") <<"[getScCorrectedEta] scPosition: x "<< sc->position().x() << " y "<< sc->position().y() << " z" << sc->position().z() <<endl;
-    
-   LogDebug("thisAnalysis") <<"[getScCorrectedEta] eta "<< eta << endl;
-
   double corrScPerp = sqrt( corrScX*corrScX + corrScY*corrScY );
 
   Hep3Vector scPos( corrScX, corrScY, corrScZ );
 
   double corrScEta =scPos.eta();
-
-  LogDebug("thisAnalysis") <<"[getScCorrectedEta] eta (cor) "<< corrScEta << endl;;
 
   return eta;
   
@@ -514,8 +632,7 @@ double TrackingEfficiencyAnalysis::getScCorrectedEta(const reco::SuperCluster* s
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 
-
-double TrackingEfficiencyAnalysis::closestTrackToSc(const reco::SuperCluster* sc, const reco::TrackCollection* trackcoll, const reco::PixelMatchGsfElectron* ele )
+double TrackingEfficiencyAnalysis::deltaRofClosestTrackToSc(const reco::SuperCluster* sc, const reco::TrackCollection* trackcoll, const reco::PixelMatchGsfElectron* ele )
 { 
 
   double tagVertexZ = ele->gsfTrack()->vertex().z();
@@ -531,11 +648,10 @@ double TrackingEfficiencyAnalysis::closestTrackToSc(const reco::SuperCluster* sc
 
   for(reco::TrackCollection::const_iterator trackIt = trackcoll->begin(); trackIt != trackcoll->end(); trackIt++){
     
-  track3V.setRThetaPhi( sqrt( trackIt->momentum().mag2() ), trackIt->theta(), trackIt->phi() );
+  track3V.setRThetaPhi( trackIt->p(), trackIt->theta(), trackIt->innerMomentum().phi() );
     
   if( track3V.deltaR(sc3V) < deltaRMin )
     deltaRMin = track3V.deltaR(sc3V);
-  
   
   }
   
@@ -545,4 +661,155 @@ double TrackingEfficiencyAnalysis::closestTrackToSc(const reco::SuperCluster* sc
 }
 
 
+//--------------------------------------------------------------------------------------------------------------------------------------
 
+const reco::Track* TrackingEfficiencyAnalysis::closestTrackToGsfEle( const reco::TrackCollection* trackcoll, const reco::PixelMatchGsfElectron* ele )
+{
+
+  Hep3Vector track3V, ele3V;
+
+  ele3V.setRThetaPhi( ele->superCluster()->energy(), 2*atan( exp( -1. * ele->eta() ) ), ele->phi() );
+
+  double deltaRMin = 9999.;
+
+  const reco::Track* closestTrack;
+
+  for(reco::TrackCollection::const_iterator trackIt = trackcoll->begin(); trackIt != trackcoll->end(); trackIt++){
+
+    track3V.setRThetaPhi( trackIt->p(), trackIt->theta(), trackIt->innerMomentum().phi() );
+
+    if( track3V.deltaR(ele3V) < deltaRMin ){
+     
+      deltaRMin = track3V.deltaR(ele3V);
+      closestTrack = &(*trackIt);
+    
+    }
+    
+  }
+  
+  
+  
+  return closestTrack;
+  
+}
+
+//---------------------------------------------------------------------------------------------------------------------------------------
+
+
+const reco::Track* TrackingEfficiencyAnalysis::closestTrackToSC( const reco::TrackCollection* trackcoll, const reco::SuperCluster* sc )
+{
+
+  Hep3Vector track3V, sc3V;
+
+  sc3V.setRThetaPhi( sc->energy(), 2*atan( exp( -1. * sc->eta() ) ), sc->phi() );
+
+  double deltaRMin = 9999.;
+
+  const reco::Track* closestTrack;
+
+  for(reco::TrackCollection::const_iterator trackIt = trackcoll->begin(); trackIt != trackcoll->end(); trackIt++){
+
+    track3V.setRThetaPhi( trackIt->p(), trackIt->theta(), trackIt->innerMomentum().phi() );
+
+    if( track3V.deltaR(sc3V) < deltaRMin ){
+     
+      deltaRMin = track3V.deltaR(sc3V);
+      closestTrack = &(*trackIt);
+    
+    }
+    
+  }
+  
+  
+  
+  return closestTrack;
+  
+}
+
+//---------------------------------------------------------------------------------------------------------------------------------------
+
+
+double TrackingEfficiencyAnalysis::deltaROfClosestGsfEleToSC( const reco::PixelMatchGsfElectronCollection* elecoll, const reco::SuperCluster* sc )
+{
+
+  Hep3Vector ele3V, sc3V;
+
+  sc3V.setRThetaPhi( sc->energy(), 2*atan( exp( -1. * sc->eta() ) ), sc->phi() );
+
+  double deltaRMin = 9999.;
+
+  for(reco::PixelMatchGsfElectronCollection::const_iterator trackIt = elecoll->begin(); trackIt != elecoll->end(); trackIt++){
+
+    ele3V.setRThetaPhi( trackIt->superCluster()->energy(), trackIt->theta(), trackIt->phi() );
+
+    if( ele3V.deltaR(sc3V) < deltaRMin )
+      deltaRMin = ele3V.deltaR(sc3V);
+        
+  }
+  
+  return deltaRMin;
+  
+}
+
+//---------------------------------------------------------------------------------------------------------------------------------------
+
+
+double TrackingEfficiencyAnalysis::hcaletisol(const reco::PixelMatchGsfElectron* ele, const CaloTowerCollection* hbhe){
+
+  using namespace edm; // needed for all fwk related classes
+  using namespace std;
+  using namespace reco;
+
+  float hcalIsol=0.;
+
+  float candSCphi = ele->gsfTrack()->innerMomentum().phi();
+  float candSCeta = ele->eta();
+
+  for(CaloTowerCollection::const_iterator hbheItr = hbhe->begin(); hbheItr != hbhe->end(); ++hbheItr){
+    double HcalHit_eta=hbheItr->eta();
+    double HcalHit_phi=hbheItr->phi();
+    float HcalHit_pth=hbheItr->hadEt();
+    
+    if(HcalHit_pth>hcalptMin_) {
+      float deltaphi;
+      //      if(HcalHit_phi<0) HcalHit_phi+=TWOPI;
+      HcalHit_phi+=PI;
+      //if(candSCphi<0) candSCphi+=TWOPI;
+      deltaphi=fabs(HcalHit_phi-candSCphi);
+      if(deltaphi>TWOPI) deltaphi-=TWOPI;
+      if(deltaphi>PI) deltaphi=TWOPI-deltaphi;
+      float deltaeta=fabs(HcalHit_eta-candSCeta);
+      float newDelta= sqrt(deltaphi*deltaphi+ deltaeta*deltaeta);
+      if(newDelta < hcalconesizemax_ && newDelta > hcalconesizemin_) hcalIsol+=HcalHit_pth;
+      
+    }      
+  }
+  return hcalIsol;
+}
+
+
+//------------------------------------------------------------------------------------------------------------------------------------
+
+double TrackingEfficiencyAnalysis::deltaRofClosestTrackToGsfEle( const reco::TrackCollection* trackcoll, const reco::PixelMatchGsfElectron* ele )
+{
+
+  Hep3Vector track3V, ele3V;
+
+  ele3V.setRThetaPhi( ele->superCluster()->energy(), 2*atan( exp( -1. * ele->eta() ) ), ele->phi() );
+
+  double deltaRMin = 9999.;
+
+  for(reco::TrackCollection::const_iterator trackIt = trackcoll->begin(); trackIt != trackcoll->end(); trackIt++){
+
+    track3V.setRThetaPhi( trackIt->p(), trackIt->theta(), trackIt->innerMomentum().phi() );
+
+    if( track3V.deltaR(ele3V) < deltaRMin )
+      deltaRMin = track3V.deltaR(ele3V);
+
+
+  }
+
+
+  return deltaRMin;
+
+}
