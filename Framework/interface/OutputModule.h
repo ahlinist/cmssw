@@ -210,6 +210,7 @@ namespace edm {
     virtual void writeFileFormatVersion() {}
     virtual void writeFileIdentifier() {}
     virtual void writeFileIndex() {}
+    virtual void writeEventHistory() {}
     virtual void writeProcessConfigurationRegistry() {}
     virtual void writeProcessHistoryRegistry() {}
     virtual void writeModuleDescriptionRegistry() {}

@@ -385,6 +385,7 @@ namespace edm {
     writeFileFormatVersion();
     writeFileIdentifier();
     writeFileIndex();
+    writeEventHistory();
     writeProcessConfigurationRegistry();
     writeProcessHistoryRegistry();
     writeModuleDescriptionRegistry();
