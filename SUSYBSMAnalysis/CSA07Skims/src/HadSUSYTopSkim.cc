@@ -4,8 +4,8 @@
  * >= 3 jets + 1 lepton (muon, elect), top candle calibration/monitoring
  * (lepton + jets trigger path)
  *
- * $Date: 2007/08/31 14:17:19 $
- * $Revision: 1.4 $
+ * $Date: 2007/09/25 17:54:51 $
+ * $Revision: 1.5 $
  *
  * \author Michael Tytgat, Maria Spiropulu - CERN
  *
@@ -25,8 +25,8 @@
 #include "DataFormats/JetReco/interface/CaloJet.h"
 #include "DataFormats/MuonReco/interface/Muon.h"
 #include "DataFormats/MuonReco/interface/MuonFwd.h"
-#include "DataFormats/EgammaCandidates/interface/PixelMatchGsfElectronFwd.h"
-#include "DataFormats/EgammaCandidates/interface/PixelMatchGsfElectron.h"
+#include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
+#include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 
 #include "SUSYBSMAnalysis/CSA07Skims/interface/HadSUSYTopSkim.h"
 
@@ -106,7 +106,7 @@ bool HadSUSYTopSkim::filter( edm::Event& iEvent,
   if ( nMuon < NminMuon_ ) return false;
 
   // electron cuts
-  Handle<PixelMatchGsfElectronCollection> ElecHandle;
+  Handle<GsfElectronCollection> ElecHandle;
 //  try {
     iEvent.getByLabel( Elecsrc_, ElecHandle );
 //  }
@@ -119,7 +119,7 @@ bool HadSUSYTopSkim::filter( edm::Event& iEvent,
   if ( ElecHandle->empty() ) return false;
 
   int nElec = 0;
-  for ( PixelMatchGsfElectronCollection::const_iterator it = 
+  for ( GsfElectronCollection::const_iterator it = 
 	  ElecHandle->begin();
         it != ElecHandle->end(); it++ ) {
     if ( it->pt() > ElecPtmin_ ) nElec++;

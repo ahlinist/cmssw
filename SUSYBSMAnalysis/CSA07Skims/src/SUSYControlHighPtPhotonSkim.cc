@@ -3,8 +3,8 @@
  * High Energy Photon SUSY Skim (control sample)
  * one photon and one electron > xx GeV in barrel + isolation 
  *
- * $Date: 2007/08/31 14:17:19 $
- * $Revision: 1.4 $
+ * $Date: 2007/09/25 17:54:51 $
+ * $Revision: 1.5 $
  *
  * \author Daniele del Re - Univ. La Sapienza & INFN
  *
@@ -22,8 +22,8 @@
 #include "DataFormats/Common/interface/Handle.h"    
 
 #include "DataFormats/EgammaCandidates/interface/Photon.h"
-#include "DataFormats/EgammaCandidates/interface/PixelMatchGsfElectron.h"
-#include "DataFormats/EgammaCandidates/interface/PixelMatchGsfElectronFwd.h"
+#include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
+#include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
 
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/Common/interface/AssociationVector.h"
@@ -66,7 +66,7 @@ bool SUSYControlHighPtPhotonSkim::filter( edm::Event& iEvent,
 
   if ( PhotonHandle->empty() ) return false;
 
-  Handle<PixelMatchGsfElectronCollection>  ElectronHandle;
+  Handle<GsfElectronCollection>  ElectronHandle;
 
   iEvent.getByLabel( Electronsrc_, ElectronHandle );
 
@@ -84,7 +84,7 @@ bool SUSYControlHighPtPhotonSkim::filter( edm::Event& iEvent,
     if (iso && fabs(it->first->eta()) < 1.479 && it->first->pt() > PhotonPtmin_) { 
 
       int overlap(0);
-      for ( PixelMatchGsfElectronCollection::const_iterator itel = ElectronHandle->begin(); 
+      for ( GsfElectronCollection::const_iterator itel = ElectronHandle->begin(); 
 	    itel != ElectronHandle->end(); itel++ ) {
 	
 	if( itel->pt() > ElectronPtmin_ ){
@@ -99,7 +99,7 @@ bool SUSYControlHighPtPhotonSkim::filter( edm::Event& iEvent,
 
   }
 
-  for ( PixelMatchGsfElectronCollection::const_iterator itel = ElectronHandle->begin(); 
+  for ( GsfElectronCollection::const_iterator itel = ElectronHandle->begin(); 
 	itel != ElectronHandle->end(); itel++ ) {
 
     if (fabs(itel->eta()) < 1.479 && itel->pt() > ElectronPtmin_) 
