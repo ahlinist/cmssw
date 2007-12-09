@@ -4,8 +4,8 @@
  * >= 2 barrel muons 30 GeV, Pt(2muons)>150
  * Z-Candle, dimuon/Z trigger path
  *
- * $Date: 2007/08/31 14:17:19 $
- * $Revision: 1.3 $
+ * $Date: 2007/09/25 17:54:50 $
+ * $Revision: 1.4 $
  *
  * \author Michael Tytgat, Maria Spiropulu - CERN
  *
@@ -23,8 +23,8 @@
 #include "DataFormats/Common/interface/Handle.h"    
 
 #include "SUSYBSMAnalysis/CSA07Skims/interface/HadSUSYdiElecSkim.h"
-#include "DataFormats/EgammaCandidates/interface/PixelMatchGsfElectron.h"
-#include "DataFormats/EgammaCandidates/interface/PixelMatchGsfElectronFwd.h"
+#include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
+#include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
 
 using namespace edm;
 using namespace std;
@@ -58,7 +58,7 @@ bool HadSUSYdiElecSkim::filter( edm::Event& iEvent,
 {
   nEvents_++;
 
-  Handle<PixelMatchGsfElectronCollection> ElecHandle;
+  Handle<GsfElectronCollection> ElecHandle;
 //  try {
     iEvent.getByLabel( Elecsrc_, ElecHandle );
 //  }
@@ -69,12 +69,12 @@ bool HadSUSYdiElecSkim::filter( edm::Event& iEvent,
 //    return false;
 //  }
   if ( ElecHandle->empty() ) return false;
-  PixelMatchGsfElectronCollection TheElecs = *ElecHandle;
+  GsfElectronCollection TheElecs = *ElecHandle;
   std::stable_sort( TheElecs.begin(), TheElecs.end(), PtSorter() );
   
   int nElec = 0;
   double Pxdielec = 0., Pydielec = 0.;
-  for ( PixelMatchGsfElectronCollection::const_iterator it = TheElecs.begin();
+  for ( GsfElectronCollection::const_iterator it = TheElecs.begin();
 	it != TheElecs.end(); it++ ) {
     if ( (it->pt() > ElecPtmin_) 
 	 && (fabs(it->eta()) < 3.0) ) {

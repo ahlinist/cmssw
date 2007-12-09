@@ -8,8 +8,8 @@
  * MET>50 GeV
  * Cuts values in the cfi files in the data directory 
  *
- * $Date: 2007/08/31 14:25:05 $
- * $Revision: 1.4 $
+ * $Date: 2007/09/25 17:54:51 $
+ * $Revision: 1.5 $
  *
  * \author Massimiliano Chioboli, Universita' and INFN, Catania
  *         Maria Spiropulu - CERN
@@ -30,11 +30,11 @@
 
 #include "SUSYBSMAnalysis/CSA07Skims/interface/LepSUSYSkim.h"
 #include "DataFormats/MuonReco/interface/Muon.h"
-#include "DataFormats/EgammaCandidates/interface/PixelMatchGsfElectron.h"
+#include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 #include "DataFormats/JetReco/interface/CaloJet.h"
 #include "DataFormats/METReco/interface/CaloMETCollection.h"
 #include "DataFormats/MuonReco/interface/MuonFwd.h"
-#include "DataFormats/EgammaCandidates/interface/PixelMatchGsfElectronFwd.h"
+#include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
 #include "DataFormats/METReco/interface/CaloMET.h"
 
 using namespace edm;
@@ -94,7 +94,7 @@ bool LepSUSYSkim::filter( edm::Event& iEvent,
   std::stable_sort( TheMuons.begin(), TheMuons.end(), PtSorter() );
 
   // Get the electron collection
-  Handle<PixelMatchGsfElectronCollection> ElecHandle;
+  Handle<GsfElectronCollection> ElecHandle;
 //  try {
     iEvent.getByLabel( Elecsrc_, ElecHandle );
 //  }
@@ -104,7 +104,7 @@ bool LepSUSYSkim::filter( edm::Event& iEvent,
 //      << Elecsrc_.label();
 //    return false;
 //  }
-  PixelMatchGsfElectronCollection TheElecs = *ElecHandle;
+  GsfElectronCollection TheElecs = *ElecHandle;
   std::stable_sort( TheElecs.begin(), TheElecs.end(), PtSorter() );
 
 
@@ -154,7 +154,7 @@ bool LepSUSYSkim::filter( edm::Event& iEvent,
    
   // Apply cuts on electrons
   int nElec = 0;
-  for ( PixelMatchGsfElectronCollection::const_iterator it = TheElecs.begin();
+  for ( GsfElectronCollection::const_iterator it = TheElecs.begin();
 	it != TheElecs.end(); it++ ) {
 //    cout << "elec pt = " << it->pt() << endl;
 //    cout << "elec eta = " << it->eta() << endl;
