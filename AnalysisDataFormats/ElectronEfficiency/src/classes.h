@@ -19,5 +19,10 @@ namespace
       EgEff::TagProbeAssociationRef vr2;
       EgEff::TagProbeAssociationRefProd vrp1;
       EgEff::TagProbeAssociationRefVector vrv1;
+
+      edm::reftobase::Holder<reco::Candidate, EgEff::EmObjectRef> rh1;
+      edm::reftobase::RefHolder<EgEff::EmObjectRef> rh2M;
+      edm::reftobase::VectorHolder<reco::Candidate, EgEff::EmObjectRefVector> rh3;
+      edm::reftobase::RefVectorHolder<EgEff::EmObjectRefVector> rh4;
    }
 }

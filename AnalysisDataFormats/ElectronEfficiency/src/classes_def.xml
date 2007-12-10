@@ -15,4 +15,10 @@
    <class pattern="edm::RefProd<edm::AssociationMap<*>" />
    <class pattern="edm::RefVector<edm::AssociationMap<*>" />
    <class name="edm::helpers::KeyVal<edm::RefProd<std::vector<EgEff::EmObject> >,edm::RefProd<std::vector<EgEff::EmObject> > >" />
+
+   <class name="edm::reftobase::Holder<reco::Candidate, EgEff::EmObjectRef>" />
+   <class name="edm::reftobase::RefHolder<EgEff::EmObjectRef>" />
+   <class name="edm::reftobase::VectorHolder<reco::Candidate, EgEff::EmObjectRefVector>" />
+   <class name="edm::reftobase::RefVectorHolder<EgEff::EmObjectRefVector>" />
+
 </lcgdict>
