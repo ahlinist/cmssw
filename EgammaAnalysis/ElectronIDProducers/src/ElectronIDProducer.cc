@@ -27,8 +27,10 @@ ElectronIDProducer::ElectronIDProducer(const edm::ParameterSet& conf) : conf_(co
 
   ptdrAlgo_ = new PTDRElectronID();
   cutBasedAlgo_ = new CutBasedElectronID();
-  likelihoodAlgo_ = new ElectronLikelihood();
   neuralNetAlgo_ = new ElectronNeuralNet();
+
+  barrelClusterShapeAssociation_ = conf_.getParameter<edm::InputTag>("barrelClusterShapeAssociation");
+  endcapClusterShapeAssociation_ = conf.getParameter<edm::InputTag>("endcapClusterShapeAssociation");
 
   produces<reco::ElectronIDCollection>(electronIDLabel_);
   produces<reco::ElectronIDAssociationCollection>(electronIDAssociation_);
@@ -51,6 +53,20 @@ void ElectronIDProducer::produce(edm::Event& e, const edm::EventSetup& c) {
   reco::ElectronIDCollection electronIDCollection;
   std::auto_ptr<reco::ElectronIDCollection> electronIDCollection_p(new reco::ElectronIDCollection);
 
+  // get the association of the clusters to their shapes for EB
+  edm::Handle<reco::BasicClusterShapeAssociationCollection> barrelClShpHandle ;
+  try { e.getByLabel (barrelClusterShapeAssociation_, barrelClShpHandle) ; }
+  catch ( cms::Exception& ex ) { edm::LogError ("ElectronIDProducer") << "Can't get ECAL barrel Cluster Shape Collection" ; }
+  const reco::BasicClusterShapeAssociationCollection& barrelClShpMap = *barrelClShpHandle ;
+
+  // get the association of the clusters to their shapes for EE
+  edm::Handle<reco::BasicClusterShapeAssociationCollection> endcapClShpHandle ;
+  try { e.getByLabel (endcapClusterShapeAssociation_, endcapClShpHandle) ; }
+  catch ( cms::Exception& ex ) { edm::LogError ("ElectronIDLHProducer") << "Can't get ECAL endcap Cluster Shape Collection" ; }
+  const reco::BasicClusterShapeAssociationCollection& endcapClShpMap = *endcapClShpHandle ;
+
+
+
   // Loop over electrons and calculate electron ID using specified technique(s)
   reco::GsfElectronCollection::const_iterator electron;
   for (electron = (*electrons).begin();
@@ -67,7 +83,27 @@ void ElectronIDProducer::produce(edm::Event& e, const edm::EventSetup& c) {
     if (doCutBased_) 
     	cutBasedDecision = cutBasedAlgo_->result(&(*electron),e);
     if (doLikelihood_) 
-    	likelihood = likelihoodAlgo_->result(&(*electron),e);
+      {
+	bool hasBarrel=true ;
+	bool hasEndcap=true ;
+
+	reco::SuperClusterRef sclusRef = electron->get<reco::SuperClusterRef> () ;
+	reco::BasicClusterShapeAssociationCollection::const_iterator seedShpItr ;
+	seedShpItr = barrelClShpMap.find (sclusRef->seed ()) ;
+	if ( seedShpItr==barrelClShpMap.end ())  {
+	  hasBarrel=false ;
+	  seedShpItr=endcapClShpMap.find (sclusRef->seed ()) ;
+	  if ( seedShpItr==endcapClShpMap.end () ) hasEndcap=false ;
+	}
+	if (hasBarrel || hasEndcap) {
+	  const reco::ClusterShapeRef& sClShape = seedShpItr->val ;
+	  // get electron likelihood
+	  edm::ESHandle<ElectronLikelihood> likelihoodAlgo ;
+	  c.getData ( likelihoodAlgo ) ;
+	  likelihood = likelihoodAlgo->result (*electron,*sClShape) ;
+	}
+      }
+
     if (doNeuralNet_) 
     	neuralNetOutput = neuralNetAlgo_->result(&(*electron),e);
     
