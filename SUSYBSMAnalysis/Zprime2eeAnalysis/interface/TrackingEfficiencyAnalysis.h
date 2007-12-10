@@ -94,6 +94,8 @@ class  TrackingEfficiencyAnalysis : public edm::EDAnalyzer {
   double deltaRofClosestTrackToGsfEle( const reco::TrackCollection*, const reco::PixelMatchGsfElectron* );
 
   double hcaletisol(const reco::PixelMatchGsfElectron*, const CaloTowerCollection* );
+
+  double hcaletisol(const reco::SuperCluster*, const CaloTowerCollection* );
  
   const reco::Track* closestTrackToGsfEle( const reco::TrackCollection*, const reco::PixelMatchGsfElectron* );
 
@@ -132,6 +134,8 @@ class  TrackingEfficiencyAnalysis : public edm::EDAnalyzer {
   double hcalconesizemin_;
   double hcalconesizemax_;
   double hcalptMin_;
+  double tagHcalEt_over_Et_max_;
+  double probeHcalEt_over_Et_max_;
 
   int debug;
   int event_tot;
@@ -173,6 +177,7 @@ class  TrackingEfficiencyAnalysis : public edm::EDAnalyzer {
   
   double invMass4Tree;
   double probeIsolationVariable;
+  double probeHCALIsolationVariable;
   bool isTPeventSelected;
   
   // HISTO initialisation
@@ -182,11 +187,15 @@ class  TrackingEfficiencyAnalysis : public edm::EDAnalyzer {
 
   TH1F* h_tagCollectionSize;
   TH1F* h_probeCollectionSize;
+  TH1F* h_probeHcalEt_over_Et;
 
   TH1F* h_totTagProbeEvents;
   TH1F* h_totRecoEvents;
 
+  
   TH1F* h_tagEnergy;
+  TH1F* h_tagEt;
+  TH1F* h_probeEt;
   TH1F* h_trackPtAroundSC;
   TH1F* h_trackPtAroundSCFrac;
   TH1F* h_TagProbeInvMass;
