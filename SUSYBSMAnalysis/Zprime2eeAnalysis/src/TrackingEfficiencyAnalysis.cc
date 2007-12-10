@@ -54,6 +54,8 @@ TrackingEfficiencyAnalysis::TrackingEfficiencyAnalysis(const edm::ParameterSet& 
   eleIsoTrackConeSize_ = iConfig.getParameter<double>("eleIsoTrackConeSize");
   eleIsoTrackMinPt_ = iConfig.getParameter<double>("eleIsoTrackMinPt");
   eleIsoCut_ = iConfig.getParameter<double>("eleIsoCut");
+  tagHcalEt_over_Et_max_ = iConfig.getParameter<double>("tagHcalEt_over_Et_max");
+  probeHcalEt_over_Et_max_ = iConfig.getParameter<double>("probeHcalEt_over_Et_max");
 
   debug=1;
   event_tot=0;
@@ -97,6 +99,7 @@ void TrackingEfficiencyAnalysis::beginJob(const edm::EventSetup&)
   //histos: tag properties
   h_tagCollectionSize = fs->make<TH1F>("h_tagCollectionSize", "h_tagCollectionSize",10,0.,10.);
   h_tagEnergy = fs->make<TH1F>("tagEnergy","tagEnergy",400,0.,800.);
+  h_tagEt = fs->make<TH1F>("tagEt","tagEt",400,0.,800.);
   h_tagHcalEt_over_Et = fs->make<TH1F>("h_tagHcalEt_over_Et", "h_tagHcalEt_over_Et",200,0.,4.);
   h_minDeltaRTrackGsfEle = fs->make<TH1F>("h_minDeltaRTrackGsfEle", "h_minDeltaRTrackGsfEle",  500, 0., 2. );
   h_tagIsoVar = fs->make<TH1F>("h_tagIsoVar", "h_tagIsoVar",500,-1.,4.);
@@ -106,6 +109,8 @@ void TrackingEfficiencyAnalysis::beginJob(const edm::EventSetup&)
   h_trackPtAroundSCFrac = fs->make<TH1F>("h_trackPtAroundSCFrac", "h_trackPtAroundSCFrac",200,0.,4.);
   h_trackPtAroundSC = fs->make<TH1F>("h_trackPtAroundSC", "h_trackPtAroundSC",400,0.,400.);
   h_TagProbeInvMass = fs->make<TH1F>("h_TagProbeInvMass", "h_TagProbeInvMass",600,0.,600.);
+  h_probeEt = fs->make<TH1F>("probeEt","probeEt",400,0.,800.);
+  h_probeHcalEt_over_Et = fs->make<TH1F>("h_probeHcalEt_over_Et", "h_probeHcalEt_over_Et",200,0.,4.);
 
   h_matchedTrackPtoverSCEt = fs->make<TH1F>("h_matchedTrackPtoverSCEt", "h_matchedTrackPtoverSCEt", 200,0.,4.);
   h_nearestTrackPoverSCE = fs->make<TH1F>("h_nearestTrackPoverSCE", "h_nearestTrackPoverSCE", 200,0.,4.);
@@ -116,8 +121,9 @@ void TrackingEfficiencyAnalysis::beginJob(const edm::EventSetup&)
   mytree = fs->make<TTree>("tree","tr");
  
   //Define branches
-  mytree->Branch("TPinvMass",&invMass4Tree,"TPinvMass/F");
-  mytree->Branch("probeIsolationVariable",&probeIsolationVariable,"probeIsolationVariable/F");
+  mytree->Branch("TPinvMass",&invMass4Tree,"TPinvMass/D");
+  mytree->Branch("probeIsolationVariable",&probeIsolationVariable,"probeIsolationVariable/D");
+  mytree->Branch("probeHCALIsolationVariable",&probeHCALIsolationVariable,"probeHCALIsolationVariable/D");
   mytree->Branch("isTPeventSelected",&isTPeventSelected,"isTPeventSelected/O");
   
 }
@@ -248,15 +254,21 @@ void TrackingEfficiencyAnalysis::analyze(const edm::Event& iEvent, const edm::Ev
 
       double tagEt = tagIt->energy() * sin(2*atan( exp( -1. * tagIt->eta()) ) );
       double tagAbsEta = fabs( tagIt->eta() ); 
-
+      double tagHcalEt = hcaletisol( &*tagIt, towerCollection );
+      
+      h_tagEt->Fill( tagEt );
+      double tagHcalEt_over_Et = tagHcalEt / tagEt;
+      h_tagHcalEt_over_Et->Fill( tagHcalEt_over_Et );
+      
       double eleIsoVariable = eleTrackIsolation( trackcoll, &(*tagIt) ).second;
       
       h_tagIsoVar ->Fill( eleIsoVariable );
       
       if( tagAbsEta < 1.444 || (tagAbsEta > 1.560 && tagAbsEta < 2.5) ) //tag ele must be in ECAL fiducial region
 	if( tagEt > tagEtMin_ ) //tag ele must have Et above certain threshold
-	  if( eleIsoVariable < eleIsoCut_ )
-	  TagCollection.push_back( &(*tagIt) );
+	  if( eleIsoVariable < eleIsoCut_ )//isolation cut for Tags - Tracks
+	    if( tagHcalEt_over_Et < tagHcalEt_over_Et_max_)//isolation cut for Tags - HCAL/ECAL
+	      TagCollection.push_back( &(*tagIt) );
       
     }
     
@@ -296,13 +308,14 @@ void TrackingEfficiencyAnalysis::analyze(const edm::Event& iEvent, const edm::Ev
           continue;
 	
 	double probeEt = scIt_eb->energy() * sin(2*atan( exp( -1. * scIt_eb->eta()) ) );
+	double probeAbsEta = fabs( scIt_eb->eta() );
 	
-	if( probeEt > probeEtMin_){
-	  TagProbeMap[*selTagIt].push_back( &(*scIt_eb) );
-	  //cout<<"Added Probe SC to Tag"<<endl;
-	}
+	if( probeAbsEta < 1.444 || (probeAbsEta > 1.560 && probeAbsEta < 2.5) )//probe must be in ECAL fiducial region
+	  if( probeEt > probeEtMin_ )
+	    TagProbeMap[*selTagIt].push_back( &(*scIt_eb) );
+	
       }
-
+      
       
     }//end of loop over Tags to fill the one-to-many association map    
     
@@ -323,11 +336,6 @@ void TrackingEfficiencyAnalysis::analyze(const edm::Event& iEvent, const edm::Ev
 	h_minDeltaRTrackGsfEle->Fill( deltaRofClosestTrackToGsfEle( trackcoll, *selTagIt )   );
 	
 	//cout<<"hcaletisol "<<hcaletisol( *selTagIt, towerCollection )<<endl;
-	
-	double tagHcalEt = hcaletisol( *selTagIt, towerCollection );
-	double tagEt =  (*selTagIt)->energy() * sin(2*atan( exp( -1. * (*selTagIt)->eta()) ) ); 
-	
-	h_tagHcalEt_over_Et->Fill( tagHcalEt / tagEt );
 	
 	for(std::vector<const reco::SuperCluster*>::const_iterator It = TagProbeMap[*selTagIt].begin(); It != TagProbeMap[*selTagIt].end(); ++It){
 	  
@@ -367,48 +375,58 @@ void TrackingEfficiencyAnalysis::analyze(const edm::Event& iEvent, const edm::Ev
 
 	  invMass4Tree = SCGsfInvMass( *It, *selTagIt );//write TP inv mass on tree	  
 	  
+	  double probeHcalEt = hcaletisol( *It, towerCollection );
+	  h_probeEt->Fill( probeEt );	
+	  h_probeHcalEt_over_Et->Fill( probeHcalEt / probeEt );
+	  probeHCALIsolationVariable = probeHcalEt / probeEt;
 	  probeIsolationVariable = (trackisol.second - ptOfTrackNearestToProbe) / probeEt;
+	  
 	  if( fabs ( (*It)->eta() ) < 1.444  ){
-	   
-	    h_totTagProbeEvents ->Fill(1.);
-
-	    tagProbeEvents++; 
-	    tagProbeEventsWithEBprobe++;
-	    
-	    if( deltaROfClosestGsfEleToSC( collpixelmatchelec , *It ) < 0.1 ){
-	      //	    if( deltaROfClosestGsfEleToSC( *It, trackcoll, *selTagIt ) < 0.1 ){
-
-	      isTPeventSelected = 1.;
-
-	      scWithMatchedTrack++;
-	      EBscWithMatchedTrack++;
+	    if( (probeHcalEt / probeEt) < probeHcalEt_over_Et_max_ ){   
+	  
+	      h_totTagProbeEvents ->Fill(1.);
+	      
+	      tagProbeEvents++; 
+	      tagProbeEventsWithEBprobe++;
+	      
+	      if( deltaROfClosestGsfEleToSC( collpixelmatchelec , *It ) < 0.1 ){
+		//	    if( deltaROfClosestGsfEleToSC( *It, trackcoll, *selTagIt ) < 0.1 ){
+		
+		isTPeventSelected = 1.;
+		
+		scWithMatchedTrack++;
+		EBscWithMatchedTrack++;
+	      }
+	      else isTPeventSelected = 0.;
+	      
 	    }
-	    else isTPeventSelected = 0.;
-
+	    
 	  }
 	  
 	  if( fabs ( (*It)->eta() ) < 2.5  && fabs ( (*It)->eta() ) > 1.560 ){
-	    
-	    tagProbeEvents++; 
-	    h_totTagProbeEvents ->Fill(1.);
-
-	    tagProbeEventsWithEEprobe++;
-	    
-	    if( deltaROfClosestGsfEleToSC( collpixelmatchelec , *It  ) < 0.1 ){
+	    if( (probeHcalEt / probeEt) < probeHcalEt_over_Et_max_ ){
 	      
-	      isTPeventSelected = 1.;
+	      tagProbeEvents++; 
+	      h_totTagProbeEvents ->Fill(1.);
 	      
-              scWithMatchedTrack++;
-              EEscWithMatchedTrack++;
-            }
-	    
+	      tagProbeEventsWithEEprobe++;
+	      
+	      if( deltaROfClosestGsfEleToSC( collpixelmatchelec , *It  ) < 0.1 ){
+		
+		isTPeventSelected = 1.;
+		
+		scWithMatchedTrack++;
+		EEscWithMatchedTrack++;
+	      }
+	      
 	    else isTPeventSelected = 0.;
-	  }
+	    }
+	  }	  
 	  
 	  h_minDeltaRTrackSC->Fill( deltaRofClosestTrackToSc( *It, trackcoll, *selTagIt )   );
 	  
 	  mytree -> Fill();
-
+	  
 	}//end loop on Probes for each Tag
       }//end loop on Tags
       
@@ -763,6 +781,42 @@ double TrackingEfficiencyAnalysis::hcaletisol(const reco::PixelMatchGsfElectron*
   float hcalIsol=0.;
 
   float candSCphi = ele->gsfTrack()->innerMomentum().phi();
+  float candSCeta = ele->eta();
+
+  for(CaloTowerCollection::const_iterator hbheItr = hbhe->begin(); hbheItr != hbhe->end(); ++hbheItr){
+    double HcalHit_eta=hbheItr->eta();
+    double HcalHit_phi=hbheItr->phi();
+    float HcalHit_pth=hbheItr->hadEt();
+    
+    if(HcalHit_pth>hcalptMin_) {
+      float deltaphi;
+      //      if(HcalHit_phi<0) HcalHit_phi+=TWOPI;
+      HcalHit_phi+=PI;
+      //if(candSCphi<0) candSCphi+=TWOPI;
+      deltaphi=fabs(HcalHit_phi-candSCphi);
+      if(deltaphi>TWOPI) deltaphi-=TWOPI;
+      if(deltaphi>PI) deltaphi=TWOPI-deltaphi;
+      float deltaeta=fabs(HcalHit_eta-candSCeta);
+      float newDelta= sqrt(deltaphi*deltaphi+ deltaeta*deltaeta);
+      if(newDelta < hcalconesizemax_ && newDelta > hcalconesizemin_) hcalIsol+=HcalHit_pth;
+      
+    }      
+  }
+  return hcalIsol;
+}
+
+//---------------------------------------------------------------------------------------------------------------------------------------
+
+
+double TrackingEfficiencyAnalysis::hcaletisol(const reco::SuperCluster* ele, const CaloTowerCollection* hbhe){
+
+  using namespace edm; // needed for all fwk related classes
+  using namespace std;
+  using namespace reco;
+
+  float hcalIsol=0.;
+
+  float candSCphi = ele->phi();
   float candSCeta = ele->eta();
 
   for(CaloTowerCollection::const_iterator hbheItr = hbhe->begin(); hbheItr != hbhe->end(); ++hbheItr){
