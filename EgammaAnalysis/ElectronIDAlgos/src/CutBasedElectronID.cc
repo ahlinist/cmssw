@@ -25,7 +25,7 @@ void CutBasedElectronID::setup(const edm::ParameterSet& conf) {
   }
 }
 
-int CutBasedElectronID::classify(const reco::PixelMatchGsfElectron* electron) {
+int CutBasedElectronID::classify(const reco::GsfElectron* electron) {
   
   double eta = electron->p4().Eta();
   double eOverP = electron->eSuperClusterOverP();
@@ -45,7 +45,7 @@ int CutBasedElectronID::classify(const reco::PixelMatchGsfElectron* electron) {
   return cat;
 }
 
-bool CutBasedElectronID::result(const reco::PixelMatchGsfElectron* electron,
+bool CutBasedElectronID::result(const reco::GsfElectron* electron,
                                 const edm::Event& e) { 
   
   double eta = fabs(electron->p4().Eta());

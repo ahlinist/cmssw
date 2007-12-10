@@ -39,7 +39,7 @@ void PTDRElectronID::setup(const edm::ParameterSet& conf) {
   
 }
 
-bool PTDRElectronID::result(const reco::PixelMatchGsfElectron* electron,
+bool PTDRElectronID::result(const reco::GsfElectron* electron,
                             const edm::Event& e) {
 
   if (electron->classification()==40) return true;

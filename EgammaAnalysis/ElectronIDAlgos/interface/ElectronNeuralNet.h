@@ -3,7 +3,7 @@
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "DataFormats/EgammaCandidates/interface/PixelMatchGsfElectron.h"
+#include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 #include "EgammaAnalysis/ElectronIDAlgos/interface/ElectronIDAlgo.h"
 
 class ElectronNeuralNet : ElectronIDAlgo{
@@ -15,7 +15,7 @@ public:
   virtual ~ElectronNeuralNet(){};
 
   void setup(const edm::ParameterSet& conf){};
-  double result(const reco::PixelMatchGsfElectron* electron, const edm::Event&);
+  double result(const reco::GsfElectron* electron, const edm::Event&);
 
  private:
 
