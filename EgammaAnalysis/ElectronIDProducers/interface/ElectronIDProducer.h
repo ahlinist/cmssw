@@ -28,14 +28,17 @@ class ElectronIDProducer : public edm::EDProducer
   PTDRElectronID* ptdrAlgo_;
   CutBasedElectronID* cutBasedAlgo_; 	   
   ElectronNeuralNet* neuralNetAlgo_;
-  ElectronLikelihood* likelihoodAlgo_;
-  
+  // likelihood is already in the eventSetup
+
   edm::ParameterSet conf_;
 
   std::string electronProducer_;
   std::string electronLabel_;
   std::string electronIDLabel_;
   std::string electronIDAssociation_; //association map
+
+  edm::InputTag barrelClusterShapeAssociation_;
+  edm::InputTag endcapClusterShapeAssociation_;
   
   bool doPtdrId_;
   bool doCutBased_;
