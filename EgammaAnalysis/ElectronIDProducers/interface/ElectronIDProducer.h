@@ -7,7 +7,7 @@
 #include "DataFormats/Common/interface/Handle.h"
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "DataFormats/EgammaCandidates/interface/PixelMatchGsfElectron.h"
+#include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 #include "EgammaAnalysis/ElectronIDAlgos/interface/PTDRElectronID.h"
 #include "EgammaAnalysis/ElectronIDAlgos/interface/CutBasedElectronID.h"
 #include "EgammaAnalysis/ElectronIDAlgos/interface/ElectronLikelihood.h"

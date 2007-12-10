@@ -44,7 +44,7 @@ ElectronIDProducer::~ElectronIDProducer() {
 void ElectronIDProducer::produce(edm::Event& e, const edm::EventSetup& c) {
 
   // Read in electrons
-  edm::Handle<reco::PixelMatchGsfElectronCollection> electrons;
+  edm::Handle<reco::GsfElectronCollection> electrons;
   e.getByLabel(electronProducer_,electronLabel_,electrons);
 
   // Initialize output electron ID collection
@@ -52,7 +52,7 @@ void ElectronIDProducer::produce(edm::Event& e, const edm::EventSetup& c) {
   std::auto_ptr<reco::ElectronIDCollection> electronIDCollection_p(new reco::ElectronIDCollection);
 
   // Loop over electrons and calculate electron ID using specified technique(s)
-  reco::PixelMatchGsfElectronCollection::const_iterator electron;
+  reco::GsfElectronCollection::const_iterator electron;
   for (electron = (*electrons).begin();
        electron != (*electrons).end(); ++electron) {
 
@@ -89,7 +89,7 @@ void ElectronIDProducer::produce(edm::Event& e, const edm::EventSetup& c) {
   // Add electron ID AssociationMap to the event
   std::auto_ptr<reco::ElectronIDAssociationCollection> electronIDAssocs_p(new reco::ElectronIDAssociationCollection);
   for (unsigned int i = 0; i < electrons->size(); i++){
-    electronIDAssocs_p->insert(edm::Ref<reco::PixelMatchGsfElectronCollection>(electrons,i),edm::Ref<reco::ElectronIDCollection>(electronIDHandle,i));
+    electronIDAssocs_p->insert(edm::Ref<reco::GsfElectronCollection>(electrons,i),edm::Ref<reco::ElectronIDCollection>(electronIDHandle,i));
   }
   e.put(electronIDAssocs_p,electronIDAssociation_);
 

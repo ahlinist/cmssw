@@ -9,7 +9,7 @@ void ElectronIDAlgo::baseSetup(const edm::ParameterSet& conf) {
   endcapClusterShapeAssocProducer_ = conf.getParameter<edm::InputTag>("endcapClusterShapeAssociation");
 }
 
-const reco::ClusterShapeRef& ElectronIDAlgo::getClusterShape(const reco::PixelMatchGsfElectron* electron, const edm::Event& e) {
+const reco::ClusterShapeRef& ElectronIDAlgo::getClusterShape(const reco::GsfElectron* electron, const edm::Event& e) {
 
   // Get association maps linking BasicClusters to ClusterShape.
   edm::Handle<reco::BasicClusterShapeAssociationCollection> clusterShapeHandleBarrel;

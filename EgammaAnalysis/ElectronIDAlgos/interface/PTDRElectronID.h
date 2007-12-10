@@ -12,7 +12,7 @@ public:
   virtual ~PTDRElectronID(){};
 
   void setup(const edm::ParameterSet& conf);
-  bool result(const reco::PixelMatchGsfElectron*, const edm::Event&);
+  bool result(const reco::GsfElectron*, const edm::Event&);
 
  private:
 

@@ -12,8 +12,8 @@ public:
   virtual ~CutBasedElectronID(){};
 
   void setup(const edm::ParameterSet& conf);
-  bool result(const reco::PixelMatchGsfElectron*, const edm::Event&);
-  int classify(const reco::PixelMatchGsfElectron*);
+  bool result(const reco::GsfElectron*, const edm::Event&);
+  int classify(const reco::GsfElectron*);
   
  private:
   
