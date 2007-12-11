@@ -41,8 +41,8 @@ class RecoAnalyzerExample : public edm::EDAnalyzer {
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/JetReco/interface/CaloJet.h"
 #include "DataFormats/JetReco/interface/GenJet.h"
-#include "DataFormats/EgammaCandidates/interface/PixelMatchGsfElectron.h"
-#include "DataFormats/EgammaCandidates/interface/PixelMatchGsfElectronFwd.h"
+#include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
+#include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
 #include "DataFormats/MuonReco/interface/Muon.h"
 #include "DataFormats/MuonReco/interface/MuonFwd.h"
 #include "DataFormats/BTauReco/interface/IsolatedTauTagInfo.h"
@@ -146,7 +146,7 @@ void RecoAnalyzerExample::analyze(const Event& event, const EventSetup& eventSet
   cout << "====> number of Tau tags   " << tauTags->size() << endl;
   
   // Electrons
-  Handle<PixelMatchGsfElectronCollection> electrons;
+  Handle<GsfElectronCollection> electrons;
   event.getByLabel( electrons_, electrons );
   cout << "====> number of Electrons  " << electrons->size() << endl;
   
