@@ -85,14 +85,14 @@ sequence highlevelreco = {
 		  		photonSequence,
 				btaureco,
 				globalMuons,
-				GsfGlobalElectronSequence
+				GsfGlobalElectronTestSequence
 			 }
 
 ########
 sequence reconstruction = {localreco,globalreco,highlevelreco}
-sequence reconstruction_plusGSF = {localreco,globalreco,GsfGlobalElectronSequence,highlevelreco}
+sequence reconstruction_plusGSF = {localreco,globalreco,GsfGlobalElectronTestSequence,highlevelreco}
 sequence reconstruction_plusRS = {localreco,globalreco,rstracks,highlevelreco}
-sequence reconstruction_plusRS_plusGSF = {localreco,globalreco,rstracks,GsfGlobalElectronSequence,highlevelreco}
+sequence reconstruction_plusRS_plusGSF = {localreco,globalreco,rstracks,GsfGlobalElectronTestSequence,highlevelreco}
 
 #sequence reconstruction = {localreco,globalreco}
 ########
