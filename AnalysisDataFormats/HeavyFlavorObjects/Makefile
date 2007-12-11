@@ -1,5 +1,5 @@
 # ======================================================================
-# NOTE: 
+# NOTE: make all
 # -----
 #
 # ======================================================================
@@ -9,9 +9,10 @@ ROOTCFLAGS    = $(shell $(ROOTSYS)/bin/root-config --cflags)
 ROOTLIBS      = $(shell $(ROOTSYS)/bin/root-config --libs)
 ROOTGLIBS     = $(shell $(ROOTSYS)/bin/root-config --glibs)
 
-CXX           = c++
+CXX           = $(shell scramv1 tool info cxxcompiler | grep CXX= | sed s/CXX=//)
 CXXFLAGS      = -g -Wall -fPIC
 LD            = c++
+LD            = $(CXX)
 LDFLAGS       = -g
 SOFLAGS       = -shared
 
