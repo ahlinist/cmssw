@@ -66,10 +66,10 @@ namespace edm {
 
   private:
 
-    virtual InputSource::ItemType getNextItemType() const;
+    virtual InputSource::ItemType getNextItemType();
     virtual std::auto_ptr<EventPrincipal> readEvent_(boost::shared_ptr<LuminosityBlockPrincipal> lbp);
-    virtual boost::shared_ptr<LuminosityBlockPrincipal> readLuminosityBlock_(boost::shared_ptr<RunPrincipal> rp);
-    virtual boost::shared_ptr<RunPrincipal> readRun_();
+    boost::shared_ptr<LuminosityBlockPrincipal> readLuminosityBlock_();
+    boost::shared_ptr<RunPrincipal> readRun_();
 
     // This vector holds 3 values representing (run, lumi, event)
     // repeated over and over again, in one vector.
