@@ -25,22 +25,19 @@ namespace edm {
 
   private:
     virtual std::auto_ptr<EventPrincipal> readEvent_(boost::shared_ptr<LuminosityBlockPrincipal>);
-    virtual boost::shared_ptr<LuminosityBlockPrincipal> readLuminosityBlock_(boost::shared_ptr<RunPrincipal> rp);
+    virtual boost::shared_ptr<LuminosityBlockPrincipal> readLuminosityBlock_();
     virtual boost::shared_ptr<RunPrincipal> readRun_();
     virtual std::auto_ptr<EventPrincipal> readIt(EventID const& eventID);
     virtual void skip(int offset);
     virtual void setLumi(LuminosityBlockNumber_t lb);
     virtual void setRun(RunNumber_t r);
-    virtual InputSource::ItemType getNextItemType() const;
-    void readAhead();
+    virtual InputSource::ItemType getNextItemType();
     
     RunNumber_t runNumber_;
     LuminosityBlockNumber_t luminosityBlockNumber_;
-    bool noMoreEvents_;
     bool newRun_;
     bool newLumi_;
     std::auto_ptr<EventPrincipal> ep_;
-    boost::shared_ptr<LuminosityBlockPrincipal> lbp_;
   };
 }
 #endif
