@@ -1,6 +1,6 @@
 include "SimGeneral/HepPDTESSource/data/pythiapdt.cfi"
 
-include "PhysicsTools/RecoCandAlgos/data/allTracks.cfi"
+include "PhysicsTools/RecoAlgos/data/allTracks.cfi"
 #module allTracks = ChargedCandidateProducer {
 #  InputTag src = ctfWithMaterialTracks
 #  string particleType = "pi+"
