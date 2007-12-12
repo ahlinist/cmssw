@@ -13,7 +13,7 @@
 //
 // Original Author:  Pedro Ribeiro
 //         Created:  Thu Jul 26 12:07:34 WEST 2007
-// $Id: ElectronIDFakeRateAnalyzer.cc,v 1.1 2007/11/06 12:14:12 ppereira Exp $
+// $Id: ElectronIDFakeRateAnalyzer.cc,v 1.2 2007/11/06 15:10:50 ppereira Exp $
 //
 //
 
@@ -152,16 +152,20 @@ ElectronIDFakeRateAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSe
   const reco::PixelMatchGsfElectronCollection gsfElectrons = *(gsfElectronsHandle.product());
 
   //get Association Map between electrons and electron ID information from event
+
   
   Handle<reco::ElectronIDAssociationCollection> eleIDassociationHandle;
   iEvent.getByLabel(ElectronIDAssocMap_,eleIDassociationHandle);
   const reco::ElectronIDAssociationCollection eleIDassociation = *(eleIDassociationHandle.product());
+
+
 
   // get Gen Jets
   Handle<reco::GenJetCollection> genJetsH;
   iEvent.getByLabel(GenJetCollection_,genJetsH);
   const reco::GenJetCollection genJets = *(genJetsH.product());
 
+ 
   //get Reco Jets
   Handle<reco::CaloJetCollection> jetsH;
   iEvent.getByLabel(RecoJetCollection_,jetsH);
@@ -371,7 +375,41 @@ ElectronIDFakeRateAnalyzer::endJob() {
   hEventsEta->SetEntries(tEvents);
 
   rootFile_->cd();
-  rootFile_->Write();
+  hStatistics->Write();
+  hRecoElecPT->Write();
+  hSelElecPT->Write();
+  hRecoJetsPT->Write();
+  hGenJetsPT->Write();
+  hGenPartons1PT->Write();
+  hGenPartons2PT->Write();
+  hEventsPT->Write();
+  
+  hRecoElecEta->Write();
+  hSelElecEta->Write();
+  hRecoJetsEta->Write();
+  hGenJetsEta->Write();
+  hGenPartons1Eta->Write();
+  hGenPartons2Eta->Write();
+  hEventsEta->Write();
+
+  hRecoElec->Write();
+  hSelElec->Write();
+  hRecoJets->Write();
+  hGenJets->Write();
+  hGenPartons1->Write();
+  hGenPartons2->Write();
+  hEvents->Write();
+  
+  hFakeNumEt->Write();
+  hFakeNumSelEt->Write();
+  hFakeDenEt->Write();
+  hFakeNumEta->Write();
+  hFakeNumSelEta->Write();
+  hFakeDenEta->Write();
+  hdRminElecJet->Write();
+  hEtJetvsEtElectron->Write();
+  
+  //rootFile_->Write();
   rootFile_->Close();
  
 }

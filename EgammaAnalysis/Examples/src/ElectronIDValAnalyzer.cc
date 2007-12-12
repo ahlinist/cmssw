@@ -13,7 +13,7 @@
 //
 // Original Author:  Pedro Ribeiro
 //         Created:  Thu Jul 26 12:07:34 WEST 2007
-// $Id: ElectronIDValAnalyzer.cc,v 1.1 2007/11/06 11:43:16 ppereira Exp $
+// $Id: ElectronIDValAnalyzer.cc,v 1.2 2007/11/06 15:10:55 ppereira Exp $
 //
 //
 
@@ -472,9 +472,68 @@ ElectronIDValAnalyzer::endJob() {
 //   hPurSelEvent->Write();
 //   hRECEffInclusive->Write();
 //   hSelEffInclusive->Write();
-//   efficiencyInf->Write();
-  rootFile_->Write();
-  rootFile_->Close();
+  efficiencyInf->Write();
+
+
+   hMCElecPT->Write();
+   hRECElecPT->Write();
+   hSelElecPT->Write();
+   hRECElecPTEne->Write();
+   hSelElecPTEne->Write();
+   hRECElecPTAllCharge->Write();
+   hSelElecPTAllCharge->Write();
+   hRECElecPTChargeMis->Write();
+   hSelElecPTChargeMis->Write();
+
+   hRECElecPT1->Write();
+   hRECElecPT2->Write();
+   hSelElecPT1->Write();
+   hSelElecPT2->Write();
+ 
+   hMCElecEta->Write();
+   hRECElecEta->Write();
+   hSelElecEta->Write();
+   hRECElecEtaEne->Write();
+   hSelElecEtaEne->Write();
+   hRECElecEtaAllCharge->Write();
+   hSelElecEtaAllCharge->Write();
+   hRECElecEtaChargeMis->Write();
+   hSelElecEtaChargeMis->Write();
+ 
+   hRECElecEta1->Write();
+   hRECElecEta2->Write();
+   hSelElecEta1->Write();
+   hSelElecEta2->Write();
+
+   hMCElecPhi->Write();
+   hRECElecPhi->Write();
+   hSelElecPhi->Write();
+   hRECElecPhiEne->Write();
+   hSelElecPhiEne->Write();
+   hRECElecPhiAllCharge->Write();
+   hSelElecPhiAllCharge->Write();
+   hRECElecPhiChargeMis->Write();
+   hSelElecPhiChargeMis->Write();
+
+   hRECElecPhi1->Write();
+   hRECElecPhi2->Write();
+   hSelElecPhi1->Write();
+   hSelElecPhi2->Write();
+  
+   hDPByPMatch->Write() ;
+
+   hMCNElec->Write();
+   hRECNElec->Write();
+   hSelNElec->Write();
+
+   rootFile_->cd("/Reconstruction");
+   hRECEffInclusive->Write();
+   rootFile_->cd("/Identification");
+   hSelEffInclusive->Write();
+   rootFile_->cd();
+   
+   //rootFile_->Write();
+   rootFile_->Close();
 
   delete gEffPT;
   delete gEffIdPT;
