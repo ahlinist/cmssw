@@ -16,7 +16,6 @@
 
 //#include "DataFormats/HLTReco/interface/HLTFilterObject.h"
 
-
 #include <TH1.h>
 #include <TH2.h>
 #include <TProfile.h>
@@ -63,6 +62,11 @@ protected:
   std::pair<unsigned int, unsigned int> getTauIndices(std::map<unsigned int, unsigned int>& smap);
   bool matchWithHLTJet(const reco::PFTau& tau, const reco::CaloJetCollection& caloJets, double& dr);
   //  bool matchWithHLTJet(const PFTau& tau, const Handle<reco::HLTFilterObjectWithRefs>& hltHandle, double& dr);
+  double sumOfIPSignificance(const PFTau& tau1, const PFTau& tau2); 
+  bool prongsAsExpected(const PFTau& tau1, const PFTau& tau2);
+  void TauObject(Handle<reco::PFTauCollection> tauHandle, int iTau, PFTau& tau); 
+  static bool applySelection(int bitWord, int bitPosition); 
+  static void bit_print(int word, int pos=8);
 
 private:
 
@@ -89,6 +93,9 @@ private:
   double leadingTrkPtFrac_;
   double minZMass_; 
   double maxZMass_; 
+  int maxExtraJets_;
+  double minIPSignificanceSum_;
+  double minJetEt_;
 
   double jetEtMinMETCorr_;
   double jetEMfracMETCorr_;
@@ -100,12 +107,16 @@ private:
   double minimumTrackPt_;
   double clusterTrackMatchingCone_;
 
+  std::string datatype_;
+  std::string selbitStr_;
+  int selectionBits;
+  
   int nEvent;
 
   TFile* theFile;
 
-  TH1I* nJetsH;
-  TH1I* nTauCandH;
+  TH1F* nJetsH;
+  TH1F* nTauCandH;
   TH1D* leadingTrackPtH;  
   TH1D* leadingTrackSiptH;  
   TH1D* ltIPSig1PH;  
@@ -124,19 +135,19 @@ private:
   TH1D* maxHcalEnergy2H;
   TH1D* emEnergyFracH;
   TH1D* emEnergyFrac2H;
-  TH1I* nChHadronH;
-  TH1I* nChHadronSigH;
-  TH1I* nChHadronIsoH;
-  TH1I* nGammaH;
-  TH1I* nGammaSigH;
-  TH1I* nGammaIsoH;
-  TH1I* nNeuHadronH;
-  TH1I* nNeuHadronSigH;
-  TH1I* nNeuHadronIsoH;
+  TH1F* nChHadronH;
+  TH1F* nChHadronSigH;
+  TH1F* nChHadronIsoH;
+  TH1F* nGammaH;
+  TH1F* nGammaSigH;
+  TH1F* nGammaIsoH;
+  TH1F* nNeuHadronH;
+  TH1F* nNeuHadronSigH;
+  TH1F* nNeuHadronIsoH;
 
-  TH1I* nSelectedTracksH;
-  TH1I* nSignalTracksH;
-  TH1I* nIsolationTracksH;
+  TH1F* nSelectedTracksH;
+  TH1F* nSignalTracksH;
+  TH1F* nIsolationTracksH;
 
   TH1D* tauPtH;
   TH1D* tauEtaH;
@@ -173,13 +184,13 @@ private:
 
   TH1D* ptDiffH;
   TH2D* ptScatH;
-  TH1I* tauDecayModeH; 
-  TH1I* tauDecayProdH;
-  TH1I* tauProdGammaOnlyH;
-  TH1I* tauDecayProdNoGamH;
+  TH1F* tauDecayModeH; 
+  TH1F* tauDecayProdH;
+  TH1F* tauProdGammaOnlyH;
+  TH1F* tauDecayProdNoGamH;
   TH2I* tauDecayProd2DH;
-  TH1I* tauDecayProdMlt1H;
-  TH1I* tauDecayProdMgt1H;
+  TH1F* tauDecayProdMlt1H;
+  TH1F* tauDecayProdMgt1H;
 
   TH1D* metH;
   TH1D* sumEtH;
@@ -194,19 +205,19 @@ private:
 
   TH1D* ltPtFracH;
   TH2D* ltvsJetPtH;
-  TH1I* nTightTauH;
-  TH1I* nLooseTauH;
-  TH1I* statH;
+  TH1F* nTightTauH;
+  TH1F* nLooseTauH;
+  TH1F* statH;
 
-  TH1I* selIndexTauH;
+  TH1F* selIndexTauH;
 
   TH1D* dRTauAndHLTH;
 
   TProfile* jetPtWithEtaP;
   TProfile* trkPtWithEtaP;
 
-  TH1I* fTauDecayModeH; 
-  TH1I* sTauDecayModeH; 
+  TH1F* fTauDecayModeH; 
+  TH1F* sTauDecayModeH; 
 
   TH1D* tauDisc2H;
   TH1D* tauDisc1H;
@@ -226,14 +237,16 @@ private:
   TH1D* ltSipt1H;
   TH1D* ltSipt2H;
 
+  TH1D* siptSumH;
+  TH1D* siptSum2H;
+
+  TH1D* maxEtTauH;
+  TH1D* minEtTauH;
+
   std::string fileName;
   int debugFlg;
-  int applyDisc;
-  int applyHLTMatch;
 
-  std::string dataType;
-
-  int nStat[12];
+  int nStat[13];
 
 protected:
   std::ofstream fStatLog_;
