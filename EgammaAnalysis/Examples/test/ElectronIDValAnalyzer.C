@@ -734,6 +734,160 @@ void electronIdPlots (const char* _file1, const char* _file2, const char* _file3
   legA22->Draw();
   gPad->Update();
 
+
+    //Efficiency of Identification  with energy requirement
+  
+  TCanvas *cEfficiencyIdPTEne = new TCanvas("cEfficiencyIdPTEne","Electron identification Efficiency vs PT (energy requirement)");
+  //cEfficiency->Divide(1,4);
+ 
+  file1->cd("Energy");
+
+  TGraphAsymmErrors * gEleEffPTEneId1 = (TGraphAsymmErrors*)gDirectory->Get("EfficiencyIdentificationPTEneGraph");
+  //cEfficiency->cd(1);
+  gEleEffPTEneId1->SetLineStyle(1);
+  gEleEffPTEneId1->SetLineColor(4);
+  gEleEffPTEneId1->SetMarkerSize(0.5);
+  gEleEffPTEneId1->SetMarkerStyle(26);
+  gEleEffPTEneId1->SetMarkerColor(4);
+  gEleEffPTEneId1->Draw("AP");
+  gEleEffPTEneId1->GetXaxis()->SetTitle("GEN electron p_{T}");
+  gEleEffPTEneId1->GetXaxis()->SetRangeUser(min,max);
+  gEleEffPTEneId1->GetYaxis()->SetTitle("Efficiency");
+  gEleEffPTEneId1->GetYaxis()->SetRangeUser(0,1.1);
+
+
+  file2->cd("Energy");
+
+  TGraphAsymmErrors * gEleEffPTEneId2 = (TGraphAsymmErrors*)gDirectory->Get("EfficiencyIdentificationPTEneGraph");
+  //cEfficiency->cd(1);
+  gEleEffPTEneId2->SetLineStyle(1);
+  gEleEffPTEneId2->SetLineColor(8);
+  gEleEffPTEneId2->SetMarkerSize(0.5);
+  gEleEffPTEneId2->SetMarkerStyle(20);
+  gEleEffPTEneId2->SetMarkerColor(8);
+  gEleEffPTEneId2->Draw("P");
+
+  file3->cd("Energy");
+
+  TGraphAsymmErrors * gEleEffPTEneId3 = (TGraphAsymmErrors*)gDirectory->Get("EfficiencyIdentificationPTEneGraph");
+  //cEfficiency->cd(1);
+  gEleEffPTEneId3->SetLineStyle(1);
+  gEleEffPTEneId3->SetLineColor(2);
+  gEleEffPTEneId3->SetMarkerSize(0.5);
+  gEleEffPTEneId3->SetMarkerStyle(21);
+  gEleEffPTEneId3->SetMarkerColor(2);
+  gEleEffPTEneId3->Draw("P");
+
+  
+  TLegend* legAB20 = new TLegend(0.6,0.2,0.85,0.4);
+  legAB20->AddEntry(gEleEffPTEneId1,"Id loose","l"); 
+  legAB20->AddEntry(gEleEffPTEneId2,"Id medium","l"); 
+  legAB20->AddEntry(gEleEffPTEneId3,"Id tight","l"); 
+  legAB20->SetFillColor(0);   
+  legAB20->SetTextSize(0.04);   
+  legAB20->Draw();
+  gPad->Update();
+
+  TCanvas *cEfficiencyIdEtaEne = new TCanvas("cEfficiencyIdEtaEne","Electron identification Efficiency vs Eta (energy requirement)");
+  //cEfficiency->Divide(1,4);
+
+  file1->cd("Energy");
+
+  TGraphAsymmErrors * gEleEffEtaEneId1 = (TGraphAsymmErrors*)gDirectory->Get("EfficiencyIdentificationEtaEneGraph");
+  //cEfficiency->cd(1);
+  gEleEffEtaEneId1->SetLineStyle(1);
+  gEleEffEtaEneId1->SetLineColor(4);
+  gEleEffEtaEneId1->SetMarkerSize(0.5);
+  gEleEffEtaEneId1->SetMarkerStyle(26);
+  gEleEffEtaEneId1->SetMarkerColor(4);
+  gEleEffEtaEneId1->Draw("AP");
+  gEleEffEtaEneId1->GetXaxis()->SetTitle("GEN electron #eta");
+  gEleEffEtaEneId1->GetYaxis()->SetTitle("Efficiency");
+  gEleEffEtaEneId1->GetYaxis()->SetRangeUser(0,1.1);
+
+
+  file2->cd("Energy");
+
+  TGraphAsymmErrors * gEleEffEtaEneId2 = (TGraphAsymmErrors*)gDirectory->Get("EfficiencyIdentificationEtaEneGraph");
+  //cEfficiency->cd(1);
+  gEleEffEtaEneId2->SetLineStyle(1);
+  gEleEffEtaEneId2->SetLineColor(8);
+  gEleEffEtaEneId2->SetMarkerSize(0.5);
+  gEleEffEtaEneId2->SetMarkerStyle(20);
+  gEleEffEtaEneId2->SetMarkerColor(8);
+  gEleEffEtaEneId2->Draw("P");
+
+  file3->cd("Energy");
+
+  TGraphAsymmErrors * gEleEffEtaEneId3 = (TGraphAsymmErrors*)gDirectory->Get("EfficiencyIdentificationEtaEneGraph");
+  //cEfficiency->cd(1);
+  gEleEffEtaEneId3->SetLineStyle(1);
+  gEleEffEtaEneId3->SetLineColor(2);
+  gEleEffEtaEneId3->SetMarkerSize(0.5);
+  gEleEffEtaEneId3->SetMarkerStyle(21);
+  gEleEffEtaEneId3->SetMarkerColor(2);
+  gEleEffEtaEneId3->Draw("P");
+
+  TLegend* legAB21 = new TLegend(0.6,0.2,0.85,0.4);
+  legAB21->AddEntry(gEleEffEtaEneId1,"Id loose","l"); 
+  legAB21->AddEntry(gEleEffEtaEneId2,"Id medium","l"); 
+  legAB21->AddEntry(gEleEffEtaEneId3,"Id tight","l"); 
+  legAB21->SetFillColor(0);   
+  legAB21->SetTextSize(0.04);   
+  legAB21->Draw();
+  gPad->Update();
+
+  TCanvas *cEfficiencyIdPhiEne = new TCanvas("cEfficiencyIdPhiEne","Electron identification Efficiency vs Phi (energy requirement)");
+  //cEfficiency->Divide(1,4);
+
+  file1->cd("Energy");
+
+  TGraphAsymmErrors * gEleEffPhiEneId1 = (TGraphAsymmErrors*)gDirectory->Get("EfficiencyIdentificationPhiEneGraph");
+  //cEfficiency->cd(1);
+  gEleEffPhiEneId1->SetLineStyle(1);
+  gEleEffPhiEneId1->SetLineColor(4);
+  gEleEffPhiEneId1->SetMarkerSize(0.5);
+  gEleEffPhiEneId1->SetMarkerStyle(26);
+  gEleEffPhiEneId1->SetMarkerColor(4);
+  gEleEffPhiEneId1->Draw("AP");
+  gEleEffPhiEneId1->GetXaxis()->SetTitle("GEN electron #phi");
+  gEleEffPhiEneId1->GetYaxis()->SetTitle("Efficiency");
+  gEleEffPhiEneId1->GetYaxis()->SetRangeUser(0,1.1);
+
+
+  file2->cd("Energy");
+
+  TGraphAsymmErrors * gEleEffPhiEneId2 = (TGraphAsymmErrors*)gDirectory->Get("EfficiencyIdentificationPhiEneGraph");
+  //cEfficiency->cd(1);
+  gEleEffPhiEneId2->SetLineStyle(1);
+  gEleEffPhiEneId2->SetLineColor(8);
+  gEleEffPhiEneId2->SetMarkerSize(0.5);
+  gEleEffPhiEneId2->SetMarkerStyle(20);
+  gEleEffPhiEneId2->SetMarkerColor(8);
+  gEleEffPhiEneId2->Draw("P");
+
+  file3->cd("Energy");
+
+  TGraphAsymmErrors * gEleEffPhiEneId3 = (TGraphAsymmErrors*)gDirectory->Get("EfficiencyIdentificationPhiEneGraph");
+  //cEfficiency->cd(1);
+  gEleEffPhiEneId3->SetLineStyle(1);
+  gEleEffPhiEneId3->SetLineColor(2);
+  gEleEffPhiEneId3->SetMarkerSize(0.5);
+  gEleEffPhiEneId3->SetMarkerStyle(21);
+  gEleEffPhiEneId3->SetMarkerColor(2);
+  gEleEffPhiEneId3->Draw("P");
+
+
+  TLegend* legAB22 = new TLegend(0.6,0.2,0.85,0.4);
+  legAB22->AddEntry(gEleEffPhiEneId1,"Id loose","l"); 
+  legAB22->AddEntry(gEleEffPhiEneId2,"Id medium","l"); 
+  legAB22->AddEntry(gEleEffPhiEneId3,"Id tight","l"); 
+  legAB22->SetFillColor(0);   
+  legAB22->SetTextSize(0.04);   
+  legAB22->Draw();
+  gPad->Update();
+
+
   //MisCharge ratio for reconstruction and identification
 
   TCanvas *cMisChargePT = new  TCanvas("cMisChargePT","Electron Mischarge Fraction vs PT");
