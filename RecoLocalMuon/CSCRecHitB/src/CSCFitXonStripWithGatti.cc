@@ -38,6 +38,7 @@ CSCFitXonStripWithGatti::CSCFitXonStripWithGatti(const edm::ParameterSet& ps){
   xtalksSystematics          = ps.getUntrackedParameter<double>("CSCStripxtalksSystematics");
   minGattiStepSize           = ps.getUntrackedParameter<double>("CSCminGattiStepSize");
   minGattiError              = ps.getUntrackedParameter<double>("CSCminGattiError");
+  minGattiErrorME11          = ps.getUntrackedParameter<double>("CSCminGattiErrorME11");
   maxGattiChi2               = ps.getUntrackedParameter<double>("CSCMaxGattiChi2");
   stripCrosstalk_            = new CSCStripCrosstalk( ps );
   stripNoiseMatrix_          = new CSCStripNoiseMatrix( ps );
@@ -65,6 +66,9 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCDetId& id, const CSCLayer* 
   specs_ = layer->chamber()->specs();
   stripWidth = sWidth;
   initChamberSpecs();
+
+  // Set miminum Gatti error according to chamber type (special for ME1/a
+  if ( id.ring() == 4 && id.station() == 1 ) minGattiError = minGattiErrorME11;
 
   // Initialize output parameters just in case the fit fails  
   xGatti = xCenterStrip;  
