@@ -40,7 +40,7 @@ float CSCStripGainAvg::getStripGainAvg() {
 
     float the_gain = it->gain_slope;  
 
-    if (the_gain > 9.0 && the_gain < 6.0 ) {
+    if (the_gain < 10.0 && the_gain > 5.0 ) {
       gain_tot += the_gain;
       n_strip++;
     } 
