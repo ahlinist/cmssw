@@ -39,9 +39,8 @@ module csc2DRecHits = CSCRecHitBProducer {
      untracked bool   CSCUseGattiFit             = true
 # The minimum step size for binomial search is in units of strip width
      untracked double CSCminGattiStepSize        = 0.0001
-# The minimum error that can be assigned out of the Gatti fit in units of strip width
-     untracked double CSCminGattiError           = 0.015
-# The maximum chi^2 for the Gatti fit to be valid, otherwise use centroid
+     untracked double CSCminGattiError           = 0.020
+     untracked double CSCminGattiErrorME11       = 0.030
      untracked double CSCMaxGattiChi2            = 200.
 # The following are for CSC experts to be changed:
 # When calibrations are shown to be inadequate and tuning is needed, the following are helpful
