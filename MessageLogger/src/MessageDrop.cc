@@ -18,16 +18,21 @@
 // user include files
 #include "FWCore/MessageLogger/interface/MessageDrop.h"
 
+// Change Log
+//
+// 1 12/13/07 mf     	the static drops had been file-global level; moved it
+//		     	into the instance() method to cure a 24-byte memory
+//			leak reported by valgrind. Suggested by MP.
 
 using namespace edm;
 
-static boost::thread_specific_ptr<MessageDrop> drops;
 
 edm::Exception * MessageDrop::ex_p = 0;
 
 MessageDrop *
 MessageDrop::instance()
 {
+  static boost::thread_specific_ptr<MessageDrop> drops;
   MessageDrop* drop = drops.get();
   if(drop==0) { 
     drops.reset(new MessageDrop);
