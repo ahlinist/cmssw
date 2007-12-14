@@ -4,7 +4,10 @@
 <use name=FWCore/PluginManager>
 <use name=FWCore/ParameterSet>
 <use name=SimDataFormats/HepMCProduct>
+<use name=SimTracker/TrackAssociation>
 <use name=DataFormats/Candidate>
+<use name=DataFormats/TrackReco>
+<use name=DataFormats/TrackingRecHit>
 <use name=hepmc> 
 <use name=heppdt>
 <use name=root>
@@ -16,8 +19,11 @@
    <use name=FWCore/ParameterSet>
    <use name=SimDataFormats/HepMCProduct>
    <use name=DataFormats/Candidate>
+   <use name=DataFormats/TrackReco>
+   <use name=DataFormats/TrackingRecHit>
+   <use name=SimGeneral/HepPDTRecord>
+   <use name=SimTracker/TrackAssociation>
    <use name=hepmc>
    <use name=heppdt> 
-   <use name=SimGeneral/HepPDTRecord>
    <use name=clhep>
 </export>

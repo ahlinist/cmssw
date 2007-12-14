@@ -25,5 +25,7 @@ class HFDumpSignal : public edm::EDAnalyzer {
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
   virtual void endJob() ;
 
+  std::string fTracksLabel;
+
 };
 

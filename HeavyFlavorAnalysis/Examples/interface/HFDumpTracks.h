@@ -14,6 +14,8 @@ class TFile;
 class TTree;
 class TAna00Event;
 
+class TrackAssociatorBase;
+
 // ----------------------------------------------------------------------
 class HFDumpTracks : public edm::EDAnalyzer {
  public:
@@ -25,5 +27,8 @@ class HFDumpTracks : public edm::EDAnalyzer {
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
   virtual void endJob() ;
 
+  std::string fTracksLabel, fAssociatorLabel, fTrackingParticlesLabel;
+
+  TrackAssociatorBase *fAssociator;
 };
 
