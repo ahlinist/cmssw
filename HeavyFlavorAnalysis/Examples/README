@@ -7,8 +7,8 @@ The following works (for me) on lxplus and elsewhere, both on 64bit and 32bit ar
    cd CMSSW_1_6_8/src
    eval `scramv1 runtime -csh`
    project CMSSW
-   cvs co -r V00-00-00 AnalysisDataFormats/HeavyFlavorObjects
-   cvs co -r V00-00-00 HeavyFlavorAnalysis/Examples
+   cvs co -r V00-00-01 AnalysisDataFormats/HeavyFlavorObjects
+   cvs co -r V00-00-01 HeavyFlavorAnalysis/Examples
    cd AnalysisDataFormats/HeavyFlavorObjects/
    make all
    cd ../../HeavyFlavorAnalysis/Examples
