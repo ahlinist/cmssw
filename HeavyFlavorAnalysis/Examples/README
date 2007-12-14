@@ -2,16 +2,41 @@
 ---------------------------
 
 The following should work on lxplus and elsewhere, both on 64bits and 32bits architecture
-   cd SOMEWHERE
-   scramv1 project CMSSW 1_6_8
-   cd CMSSW_1_6_8/src
-   eval `scramv1 runtime -csh`
-   project CMSSW
-   cvs co AnalysisDataFormats/HeavyFlavorObjects
-   cvs co HeavyFlavorAnalysis/Examples
-   cd AnalysisDataFormats/HeavyFlavorObjects/
-   make all
-   cd ../../HeavyFlavorAnalysis/Examples
-   scramv1 b
-   cd test
+   lxplus> cd SOMEWHERE
+   lxplus> scramv1 project CMSSW CMSSW_1_6_8
+   lxplus> cd CMSSW_1_6_8/src
+   lxplus> eval `scramv1 runtime -csh`
+   lxplus> project CMSSW
+   lxplus> cvs co -r V00-00-00 AnalysisDataFormats/HeavyFlavorObjects
+   lxplus> cvs co -r V00-00-00 HeavyFlavorAnalysis/Examples
+   lxplus> cd AnalysisDataFormats/HeavyFlavorObjects/
+   lxplus> make all
+   lxplus> cd ../../HeavyFlavorAnalysis/Examples
+   lxplus> scramv1 b
+   lxplus> cd test
    
+   lxplus> ln -s . scratch
+   lxplus> cmsRun Bs2MuMu_GEN_SIM_DIGI_RECO.cfg 
+
+   lxplus> cmsRun test.cfg
+
+   root
+   root [0] gSystem->Load("../../../AnalysisDataFormats/HeavyFlavorObjects/lib/libAna00.so");
+   root [1] .x test.C
+
+
+1. Missing features
+-------------------
+
+The following is to be implemented over the next few days
+  - Finish HFDumpSignal with Candidates, based on truth-matching
+  - Add vertexing to HFDumpSignal
+  - HFDumpEventInformation: L1, HLT, pthat, ...
+  - HFDumpTracks: Add L1 and HLT information to tracks
+  - Add new information to tree: neutrals, jets
+  - Candidates generator particles usage instead of HepMC
+  - Candidates truth matching in HFDumpTracks (so that it also runs on AOD)
+  - Provide two example cfg files for simulation: RECO and AOD
+  - Simulation cfg files: reorganization to factorize the process
+  - Reorganization of cfg files: Create separate sequences
+  - Validation
