@@ -8,7 +8,7 @@ The following works (for me) on lxplus and elsewhere, both on 64bit and 32bit ar
    eval `scramv1 runtime -csh`
    project CMSSW
    cvs co -r V00-00-03 AnalysisDataFormats/HeavyFlavorObjects
-   cvs co -r V00-00-04 HeavyFlavorAnalysis/Examples
+   cvs co -r V00-00-05 HeavyFlavorAnalysis/Examples
    cd AnalysisDataFormats/HeavyFlavorObjects/
    make all
    cd ../../HeavyFlavorAnalysis/Examples
@@ -16,7 +16,7 @@ The following works (for me) on lxplus and elsewhere, both on 64bit and 32bit ar
    cd test
    
 Generate an example RECO file (it will contain Bs -> mu+ mu-)
-   ln -s . scratch
+   ln -s . scratch  # or somewhere else!
    cmsRun Bs2MuMu_GEN_SIM_DIGI_RECO.cfg 
 
 Run EDAnalyzers and fill a tree
