@@ -60,16 +60,16 @@ void HFDumpGenerator::analyze(const Event& iEvent, const EventSetup& iSetup) {
     const Candidate *mom = p.mother();
     double pt = p.pt(), eta = p.eta(), phi = p.phi(), mass = p.mass();
     double vx = p.vx(), vy = p.vy(), vz = p.vz();
-    aGen->fP.SetXYZM(p.px(), 
+    aGen->fP.SetXYZT(p.px(), 
  		     p.py(), 
  		     p.pz(), 
  		     p.energy());
     aGen->fV.SetXYZ(vx, vy, vz);
 
-    aGen->dump();
+    //aGen->dump();
  
   }
-  cout << "----------------------------------------------------------------------" << endl;
+  //cout << "----------------------------------------------------------------------" << endl;
   
   // ----------------------------------------------------------------------
   // -- Get generator block directly
@@ -87,7 +87,7 @@ void HFDumpGenerator::analyze(const Event& iEvent, const EventSetup& iSetup) {
     pGen->fNumber = (*p)->barcode() - 1;
     pGen->fID     = (*p)->pdg_id();
     pGen->fStatus = (*p)->status();
-    pGen->fP.SetXYZM((*p)->momentum().x(), 
+    pGen->fP.SetXYZT((*p)->momentum().x(), 
 		     (*p)->momentum().y(), 
 		     (*p)->momentum().z(), 
 		     (*p)->momentum().e());
@@ -143,7 +143,7 @@ void HFDumpGenerator::analyze(const Event& iEvent, const EventSetup& iSetup) {
       pGen->fDau2 = -1;
     }
 
-    pGen->dump();
+    //pGen->dump();
     ++gcnt; 
   }
 

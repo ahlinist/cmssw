@@ -1,0 +1,17 @@
+0. Recipe for the impatient
+---------------------------
+
+The following should work on lxplus and elsewhere, both on 64bits and 32bits architecture
+   cd SOMEWHERE
+   scramv1 project CMSSW 1_6_8
+   cd CMSSW_1_6_8/src
+   eval `scramv1 runtime -csh`
+   project CMSSW
+   cvs co AnalysisDataFormats/HeavyFlavorObjects
+   cvs co HeavyFlavorAnalysis/Examples
+   cd AnalysisDataFormats/HeavyFlavorObjects/
+   make all
+   cd ../../HeavyFlavorAnalysis/Examples
+   scramv1 b
+   cd test
+   

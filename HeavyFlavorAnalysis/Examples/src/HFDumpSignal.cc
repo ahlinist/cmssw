@@ -8,17 +8,25 @@
 #include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TGenCand.hh"
 #include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaVertex.hh"
 
+#include "DataFormats/Common/interface/Handle.h"
+#include "DataFormats/Common/interface/Wrapper.h"
+#include "DataFormats/Candidate/interface/Candidate.h"
+
 // -- Yikes!
 extern TAna00Event *gHFEvent;
 
-using namespace::std;
+using namespace std;
+using namespace reco;
+using namespace edm;
 
 
 // ----------------------------------------------------------------------
-HFDumpSignal::HFDumpSignal(const edm::ParameterSet& iConfig) {
+HFDumpSignal::HFDumpSignal(const edm::ParameterSet& iConfig) :
+  fTracksLabel(iConfig.getUntrackedParameter<string>("tracksLabel", string("goodTracks"))) {
   using namespace std;
   cout << "----------------------------------------------------------------------" << endl;
   cout << "--- HFDumpSignal constructor" << endl;
+  cout << "--- " << fTracksLabel.c_str() << endl;
   cout << "----------------------------------------------------------------------" << endl;
 
 }
@@ -32,19 +40,13 @@ HFDumpSignal::~HFDumpSignal() {
 
 // ----------------------------------------------------------------------
 void HFDumpSignal::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
-  cout << endl 
-       << "HFDumpSignal> run: " << gHFEvent->fRunNumber
-       << " event: " << gHFEvent->fEventNumber 
-       << " trigger: " << gHFEvent->fTriggerWord1
-       << endl;
 
+  Handle<reco::CandidateCollection> trackCands;
+  iEvent.getByLabel(fTracksLabel.c_str(), trackCands);
 
-  cout << "Found " << gHFEvent->nGenCands() << " generator cands in event" << endl;
-  TGenCand  *pGen;
-  for (int ig = 0; ig < gHFEvent->nGenCands(); ++ig) {
-    pGen = gHFEvent->getGenCand(ig);
-    cout << " track " << ig 
-         << " pT = " << pGen->fP.Rho() << endl;
+  for (unsigned int i = 0; i < trackCands->size(); ++i) {
+    const Candidate &cand = (*trackCands)[i];
+    cout << i << "  " << cand.pt() << endl;
   }
 
 }
