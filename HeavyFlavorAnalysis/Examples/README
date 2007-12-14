@@ -1,36 +1,56 @@
 0. Recipe for the impatient
 ---------------------------
 
-The following should work on lxplus and elsewhere, both on 64bits and 32bits architecture
-   lxplus> cd SOMEWHERE
-   lxplus> scramv1 project CMSSW CMSSW_1_6_8
-   lxplus> cd CMSSW_1_6_8/src
-   lxplus> eval `scramv1 runtime -csh`
-   lxplus> project CMSSW
-   lxplus> cvs co -r V00-00-00 AnalysisDataFormats/HeavyFlavorObjects
-   lxplus> cvs co -r V00-00-00 HeavyFlavorAnalysis/Examples
-   lxplus> cd AnalysisDataFormats/HeavyFlavorObjects/
-   lxplus> make all
-   lxplus> cd ../../HeavyFlavorAnalysis/Examples
-   lxplus> scramv1 b
-   lxplus> cd test
+The following works (for me) on lxplus and elsewhere, both on 64bit and 32bit architectures
+   cd SOMEWHERE
+   scramv1 project CMSSW CMSSW_1_6_8
+   cd CMSSW_1_6_8/src
+   eval `scramv1 runtime -csh`
+   project CMSSW
+   cvs co -r V00-00-00 AnalysisDataFormats/HeavyFlavorObjects
+   cvs co -r V00-00-00 HeavyFlavorAnalysis/Examples
+   cd AnalysisDataFormats/HeavyFlavorObjects/
+   make all
+   cd ../../HeavyFlavorAnalysis/Examples
+   scramv1 b
+   cd test
    
-   lxplus> ln -s . scratch
-   lxplus> cmsRun Bs2MuMu_GEN_SIM_DIGI_RECO.cfg 
+Generate an example RECO file (it will contain Bs -> mu+ mu-)
+   ln -s . scratch
+   cmsRun Bs2MuMu_GEN_SIM_DIGI_RECO.cfg 
 
-   lxplus> cmsRun test.cfg
+Run EDAnalyzers and fill a tree
+   cmsRun test.cfg
 
+Look at the tree
    root
-   root [0] gSystem->Load("../../../AnalysisDataFormats/HeavyFlavorObjects/lib/libAna00.so");
-   root [1] .x test.C
+     gSystem->Load("../../../AnalysisDataFormats/HeavyFlavorObjects/lib/libAna00.so");
+     .x test.C
 
 
-1. Missing features
+1. Notes
+--------
+
+o The truth-matching is presently done with TrackingParticle. I think
+  this means it onloy runs on RECO.  (see below)
+
+o The code is a mixture of tracks and candidates. I'd prefer the
+  latter, but sometimes the former compiled sooner or the cfg files
+  were easier to find. (see below)
+
+o (Reco) Muons are still missing. The tracks are currently identified
+  with 'truth'. This is easy to fix. (see below)
+
+
+
+
+2. Missing features
 -------------------
 
 The following is to be implemented over the next few days
   - Finish HFDumpSignal with Candidates, based on truth-matching
   - Add vertexing to HFDumpSignal
+  - Pass the pointer to the 'event' in a better way than with a global variable
   - HFDumpEventInformation: L1, HLT, pthat, ...
   - HFDumpTracks: Add L1 and HLT information to tracks
   - Add new information to tree: neutrals, jets
