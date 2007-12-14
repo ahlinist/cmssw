@@ -4,6 +4,7 @@
 <use name=DQMServices/NodeROOT>
 <use name=DQMServices/Daemon>
 <use name=DQMServices/UI>
+<use name=DQMServices/XdaqCollector>
 <use name=DQMServices/Components>
 <use name=DQMServices/WebComponents>
 <use name=xdaq>
@@ -18,6 +19,7 @@
  <use name=DQMServices/UI>
  <use name=DQMServices/Components>
  <use name=DQMServices/WebComponents>
+ <use name=DQMServices/XdaqCollector>
  <use name=xdaq>
  <use name=xerces-c>
 </export>
