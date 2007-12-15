@@ -246,7 +246,7 @@ TFWLiteSelectorBasic::Process(Long64_t iEntry) {
    if(everythingOK_) {
       edm::EventAuxiliary aux;
       edm::EventAuxiliary* pAux= &aux;
-      TBranch* branch = m_->tree_->GetBranch("EventAuxiliary");
+      TBranch* branch = m_->tree_->GetBranch(edm::BranchTypeToAuxiliaryBranchName(edm::InEvent).c_str());
 
       branch->SetAddress(&pAux);
       //provBranch->SetAddress(&pProv);
