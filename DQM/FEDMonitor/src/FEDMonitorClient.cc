@@ -23,7 +23,6 @@ namespace dqm{
       ModuleWeb("FEDMonitorClient")
      , qtHandle_(0)
      , nUpdates_(0)
-     , collationtodo_(pset.getUntrackedParameter<bool>("doCollation",false)) 
      , qtesttodo_(pset.getUntrackedParameter<bool>("doQTests",false))
      , autorefresh_(false)
     {
@@ -37,7 +36,6 @@ namespace dqm{
       
       dbe->showDirStructure();
 
-      if(collationtodo_) bookCollationMaybe();       
       if(qtesttodo_) bookQTests(pset); 
 
     }
@@ -58,20 +56,6 @@ namespace dqm{
       qtHandle_->configureTests(pset.getUntrackedParameter<std::string>("qtList", "QualityTests.xml"),dbe);
       if(qtHandle_) qtHandle_->attachTests(dbe);      
     }
-    
-    void FEDMonitorClient::bookCollationMaybe()
-    {
-      for(int i=0; i<1024; i++)
-	{
-	  std::ostringstream oss1;
-	  oss1 << "fed" << i; 
-	  CollateMonitorElement *cme = mui->collate1D(oss1.str(),oss1.str(),"FEDs/Collated");
-	  std::ostringstream oss2;
-	  oss2 << "*/FEDs/Details/"<<oss1.str();
-	  mui->add(cme,oss2.str());
-	}
-    }
-    
     
     void FEDMonitorClient::defaultWebPage(xgi::Input *in, xgi::Output *out)
     {

@@ -47,12 +47,10 @@ namespace dqm{
       unsigned int eventId_;
       unsigned int nUpdates_;
 
-      bool collationtodo_;
       bool qtesttodo_;
       bool autorefresh_;
 
       void bookQTests( const edm::ParameterSet& );
-      void bookCollationMaybe();
 
       std::string findSubsystemPath(std::string &);
 
