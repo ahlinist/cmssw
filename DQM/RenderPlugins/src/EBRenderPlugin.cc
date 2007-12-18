@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.37 2007/11/30 07:12:52 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.38 2007/11/30 07:18:39 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.37 $
-  \date $Date: 2007/11/30 07:12:52 $
+  \version $Revision: 1.38 $
+  \date $Date: 2007/11/30 07:18:39 $
 */
 
 #include <TH1F.h>
@@ -417,6 +417,16 @@ void EBRenderPlugin::preDrawTH1F( TCanvas *c, const ObjInfo &o ) {
   }
 
   if( o.name.find( "EBMM DCC" ) < o.name.size() ) {
+   gPad->SetBottomMargin(0.2);
+   obj->GetXaxis()->LabelsOption("v");
+  }
+
+  if( o.name.find( "quality errors summary" ) < o.name.size() ) {
+   gPad->SetBottomMargin(0.2);
+   obj->GetXaxis()->LabelsOption("v");
+  }
+
+  if( o.name.find( "EBOT occupancy summary 1D" ) < o.name.size() ) {
    gPad->SetBottomMargin(0.2);
    obj->GetXaxis()->LabelsOption("v");
   }

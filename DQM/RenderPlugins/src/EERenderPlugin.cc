@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.39 2007/11/30 07:15:26 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.40 2007/11/30 07:18:39 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.39 $
-  \date $Date: 2007/11/30 07:15:26 $
+  \version $Revision: 1.40 $
+  \date $Date: 2007/11/30 07:18:39 $
 */
 
 #include <TH1F.h>
@@ -440,6 +440,16 @@ void EERenderPlugin::preDrawTH1F( TCanvas *c, const ObjInfo &o ) {
   }
 
   if( o.name.find( "EEMM DCC" ) < o.name.size() ) {
+   gPad->SetBottomMargin(0.2);
+   obj->GetXaxis()->LabelsOption("v");
+  }
+
+  if( o.name.find( "quality errors summary" ) < o.name.size() ) {
+   gPad->SetBottomMargin(0.2);
+   obj->GetXaxis()->LabelsOption("v");
+  }
+
+  if( o.name.find( "EEOT occupancy summary 1D" ) < o.name.size() ) {
    gPad->SetBottomMargin(0.2);
    obj->GetXaxis()->LabelsOption("v");
   }
