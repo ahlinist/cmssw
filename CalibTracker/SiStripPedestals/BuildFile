@@ -51,6 +51,7 @@
    <use name=DataFormats/SiStripDigi>
    <use name=CondFormats/DataRecord>
    <use name=CondFormats/SiStripObjects>
+   <use name=CondCore/DBOutputService>
    <use name=oracle>
    <use name=clhep>
 #   <use name=xdaq>
