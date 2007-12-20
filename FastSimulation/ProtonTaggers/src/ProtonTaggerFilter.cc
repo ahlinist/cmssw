@@ -8,7 +8,7 @@
  * Author: Dmitry Zaborov
  */
 
-// Version: $Id: ProtonTaggerFilter.cc,v 1.4 2007/10/28 16:37:55 dzaborov Exp $
+// Version: $Id: ProtonTaggerFilter.cc,v 1.5 2007/11/01 21:16:21 dzaborov Exp $
 
 #include "FastSimulation/ProtonTaggers/interface/ProtonTaggerFilter.h"
 
@@ -160,11 +160,12 @@ bool ProtonTaggerFilter::filter(edm::Event & iEvent, const edm::EventSetup & es)
   const HepMC::GenEvent* pileUpEvent = 0;
   bool isPileUp = true;
   
-  try { 
-    iEvent.getByLabel("famosPileUp","PileUpEvents", pileUpSource);
+  bool isProduct = iEvent.getByLabel("famosPileUp", "PileUpEvents", pileUpSource);
+
+  if (isProduct) {
     pileUpEvent = pileUpSource->GetEvent();
     //std::cout << "got pileup" << std::endl;
-  } catch ( cms::Exception& e ) { 
+  } else {
     isPileUp = false;
     //std::cout << "no pileup in the event" << std::endl;
   }
