@@ -20,7 +20,7 @@
 
 // system include files
 #include <memory>
-
+#include <stdexcept>
 // user include files
 #include "FWCore/Framework/interface/ModuleFactory.h"
 #include "FWCore/Framework/interface/ESProducer.h"
@@ -44,6 +44,7 @@ class DoodadESProducer : public edm::ESProducer {
       ReturnType produce(const GadgetRcd &);
    private:
       // ----------member data ---------------------------
+      bool exceptionInformation_;
 };
 
 //
@@ -52,13 +53,14 @@ class DoodadESProducer : public edm::ESProducer {
 
 //
 // static data member definitions
-//
 
 //
 // constructors and destructor
 //
-DoodadESProducer::DoodadESProducer(const edm::ParameterSet& /*iConfig*/)
-{
+DoodadESProducer::DoodadESProducer(const edm::ParameterSet& iConfig) :
+   exceptionInformation_(iConfig.getUntrackedParameter<bool>("throwException",false))
+{  
+
    //the following line is needed to tell the framework what
    // data is being produced
    setWhatProduced(this);
@@ -83,13 +85,17 @@ DoodadESProducer::~DoodadESProducer()
 // ------------ method called to produce the data  ------------
 DoodadESProducer::ReturnType
 DoodadESProducer::produce(const GadgetRcd& iRecord)
-{
+{ 
+   if( exceptionInformation_ ) {
+      throw std::runtime_error("test exception catching");
+   } 
+    
    using namespace edmtest;
 
    std::auto_ptr<Doodad> pDoodad(new Doodad) ;
 
    pDoodad->a = 1;
-
+   
    return pDoodad ;
 }
 }
