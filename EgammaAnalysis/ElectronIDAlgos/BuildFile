@@ -9,6 +9,7 @@
 <use name=PhysicsTools/StatPatternRecognition>
 <use name=RecoEgamma/EgammaElectronAlgos>
 <use name=CondCore/DBOutputService>
+<flags LDFLAGS="-lTMVA">
 <export>
   <lib name=EgammaAnalysisElectronIDAlgos>
   <use name=FWCore/Framework>
