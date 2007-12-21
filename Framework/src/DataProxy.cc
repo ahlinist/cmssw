@@ -15,6 +15,7 @@
 
 // user include files
 #include "FWCore/Framework/interface/DataProxy.h"
+#include "FWCore/Framework/interface/ComponentDescription.h"
 
 
 //
@@ -25,13 +26,19 @@ namespace edm {
 //
 // static data member definitions
 //
-
+static
+const ComponentDescription*
+dummyDescription()
+{
+   static ComponentDescription s_desc;
+   return &s_desc;
+}     
 //
 // constructors and destructor
 //
 DataProxy::DataProxy() :
    cacheIsValid_(false),
-   description_(0)
+   description_(dummyDescription())
 {
 }
 
