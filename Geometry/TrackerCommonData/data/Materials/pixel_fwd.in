@@ -29,25 +29,22 @@ For items in a compound: Item number, Comment, Material (has to be
                                      ELE for electronics
 ..................................................................... 
 
-1) BumpBonds+Air layer per ROC area = 0.7962cm2) updated: 10.05.07
+
+1) BumpBonds+Air layer per ROC area
    ============================================
 ROC dimensions: Length=0.994cm, Width=0.801cm and Thickness=0.0190cm
 
-(1)      An average of 4160 Bump Bonds (63% Tin and 37% Lead) per ROC
-         Bump Bond size: Length= 0.003cm, Width=0.003cm and Thickness=0.0025cm
-                         Volume will be approximatively: V = 0.0000000225 cm^3 
-(2)      Air: (Area_ROC=0.7962 * 0.0025) - 4160 * 0.0000000225 
-               V_Air = 0.0019905 - 0.0000936 = 0.0018964 cm^3
-The total volume of this layer (solder/air) is 0.0019905 = 0.002
+An average of 4160 Bump Bonds (63% Tin and 37% Lead) per ROC
+Bump Bond size: Length= 0.003cm, Width=0.003cm and Thickness=0.0025cm
+Volume will be approximatively: V = 0.0000000225 cm^3 
 
 The bump bond is made of a material named Bump_Bond. 
 .....................................................................
-# "Pixel Forward BumpBond layer per ROC" "Pix_Fwd_Bump"  0.00199  0.7962
+# "Pixel Forward BumpBond layer per ROC" "Pix_Fwd_Bump" 0.00199  1
 * 1 "Bump Bonds" "FPix_TinLeadSolder" 0.0000936 1 ELE
-* 2 "Bump Bond Air" "Air"  0.0018964  1 SUP
 
 
-2) VHDI (updated on october 5th 2007)
+2) VHDI
    ================================
 The total area of VHDI on a blade is 60.5326 cm2 
 We have one layer of Kapton on 60.5326 cm2 area and thickness of 0.009cm
@@ -69,7 +66,7 @@ There are Solders made of Tin/Lead in proportion of 63/37: Total volume of Solde
 
 
 
-3) AgEpoxy (also called ChoTherm1680 by Greg Derylo)
+3) AgEpoxy (also called ChoTherm1680)
    ============================================
 
 There are 2 places where we put this material: Between VHDI and ROC and Between Plaquette and HDI prom panel. 
@@ -90,22 +87,6 @@ Description of the layer between VHDI and ROC : Acrylic (Epoxy assumed) V = 0.08
 * 4 "Polyimide is kapton" "FPix_Kapton" 0.0895 1 ELE
 
 
-Description of the layer between HDI and plaquette : Acrylic (Epoxy assumed) V = 0.1513 cm3
-                                                     BN powder V = 0.1513 cm3
-                                                     Silicone  V = 0.6053 cm3
-                                                     Polyimide  V = 0.1513 cm3
-.....................................................................
-# "Pixel Forward AgEpoxy HDI-plaquette " "Pix_Fwd_AgEpoxy"  1.0592  1
-* 1 "Acrylic is epoxy" "FPix_Epoxy" 0.1513 1 SUP
-* 2 "BN powder" "FPix_BNPowder" 0.1513 1 SUP
-* 3 "Silicone" "FPix_Silicone" 0.6053 1 SUP
-* 4 "Polyimide is kapton" "FPix_Kapton" 0.1513 1 ELE
-
-
-..............\
-............../    OF COURSE WE SHOULD FIND THE SAME MIXTURE. THIS IS JUST A CHECK. 
-
-
 4) Adhesive Film: 3M 9882 tape 
    ==========================
 This tape is made of Acrylic (Epoxy assumed) V = 0.2421cm3 and Ceramic (BN powder) V = 0.0605 cm3
@@ -113,16 +94,6 @@ This tape is made of Acrylic (Epoxy assumed) V = 0.2421cm3 and Ceramic (BN powde
 # "Pixel Forward AdhFilm 3M 9882" "Pix_Fwd_AdhFilm"  0.3026  1
 * 1 "Acrylic is epoxy" "FPix_Epoxy" 0.2421 1 SUP
 * 2 "Ceramic" "FPix_BNPowder" 0.0605 1  SUP
-
-
-CHECK: There is also a layer of Adhesive film on a panel:
-.....................................................................
-# "Pixel Forward AdhFilm 3M 9882 PANEL" "Pix_Fwd_AdhFilm"  0.2139  1
-* 1 "Acrylic is epoxy" "FPix_Epoxy" 0.1711 1 SUP
-* 2 "Ceramic" "FPix_BNPowder" 0.0428 1  SUP
-
-..............\
-............../    OF COURSE WE SHOULD FIND THE SAME MIXTURE. THIS IS JUST A CHECK. 
 
 
 5) HDI + other components per blade
@@ -153,26 +124,26 @@ We also have Bias and Ground Wires: Copper V = 0.0362 cm3
 
 
 
-SERVICE CYLINDER MATERIAL 10.04.07 (V. Cuplov)
+SERVICE CYLINDER MATERIAL (V. Cuplov)
 =============================================
 The following description has been done by B. Gobbi and E. Spencer.
 See FPix DOC DB: 1628-v2
 https://docdb.fnal.gov/CMS-private/DocDB/DocumentDatabase 
 
-# "Volume 1 " "Pix_Fwd_Servi_Cylinder" 1195 1
+# "Volume 1 " "Pix_Fwd_Servi_Cylind" 8957 1
 * 1 "Carbon Fiber" "FPix_Cylind_CF" 1162 1 SUP
 * 2 "G10" "FPix_Cylind_G10" 26 1 CAB
 * 3 "Aluminium" "Aluminium" 6 1 SUP
 * 4 "Ceramic" "Ceramic" 1 1 SUP
 
-# "Volume 2 " "Pix_Fwd_End_Flange" 253 1
+# "Volume 2 " "Pix_Fwd_End_Flange" 412 1
 * 1 "Aluminium for End Flange" "Aluminium" 187 1 SUP
 * 2 "Aluminium for cooling lines" "Aluminium" 4 1 COL
 * 3 "SnCu" "FPix_Cylind_SnCu" 11 1 CAB
 * 4 "Poliax" "FPix_Cylind_POLIAX" 35 1 CAB
 * 5 "C6F14" "FPix_Cylind_C6F14" 16 1 COL
 
-# "Volume 3 " "Pix_Fwd_End_Electro_1" 147 1
+# "Volume 3 " "Pix_Fwd_End_Electro_1" 1139 1
 * 1 "SnCu" "FPix_Cylind_SnCu" 13 1 CAB
 * 2 "G10" "FPix_Cylind_G10" 65 1 CAB
 * 3 "Poliax" "FPix_Cylind_POLIAX" 39 1 CAB
@@ -180,7 +151,7 @@ https://docdb.fnal.gov/CMS-private/DocDB/DocumentDatabase
 * 5 "Copper" "Copper" 2 1 ELE
 * 6 "Polyester" "FPix_Cylind_Polyester" 5 1 CAB
 
-# "Volume 4 " "Pix_Fwd_End_Electro_2" 120 1
+# "Volume 4 " "Pix_Fwd_End_Electro_2" 980 1
 * 1 "SnCu" "FPix_Cylind_SnCu" 11 1 CAB
 * 2 "G10" "FPix_Cylind_G10" 54 1 CAB
 * 3 "Poliax" "FPix_Cylind_POLIAX" 31 1 CAB
@@ -188,14 +159,14 @@ https://docdb.fnal.gov/CMS-private/DocDB/DocumentDatabase
 * 5 "Copper" "Copper" 1 1 ELE
 * 6 "Polyester" "FPix_Cylind_Polyester" 4 1 CAB
 
-# "Volume 5 " "Pix_Fwd_End_Coil_Fiber" 416 1
+# "Volume 5 " "Pix_Fwd_End_Coil_Fiber" 2833 1
 * 1 "Polyester" "FPix_Cylind_Polyester" 225 1 CAB
 * 2 "Poliax" "FPix_Cylind_POLIAX" 122 1 CAB
 * 3 "G10" "FPix_Cylind_G10" 33 1 SUP
 * 4 "Noryl" "FPix_Cylind_Noryl" 26 1 SUP
 * 5 "PMMA" "FPix_Cylind_PMMA" 10 1 CAB
 
-# "Volume 6 " "Pix_Fwd_Port_Cards" 191 1
+# "Volume 6 " "Pix_Fwd_Port_Cards" 332 1
 * 1 "G10" "FPix_Cylind_G10" 103 1 ELE
 * 2 "Copper" "Copper" 11 1 ELE
 * 3 "Polyimide (extension cable)" "FPix_Kapton" 33 1 CAB
@@ -206,7 +177,7 @@ https://docdb.fnal.gov/CMS-private/DocDB/DocumentDatabase
 * 8 "Chips" "Silicon" 1 1 ELE
 * 9 "OH parts (mostly G10)" "FPix_Cylind_G10" 27 1 ELE
 
-# "Volume 7: FRONT " "Pix_Fwd_End_Pipe_1"  457 1
+# "Volume 7: FRONT " "Pix_Fwd_End_Pipe_1"  477 1
 * 1 "SnCu" "FPix_Cylind_SnCu" 74 1 CAB
 * 2 "C6F14" "FPix_Cylind_C6F14" 214 1 COL
 * 3 "Aluminium (cooling tube)" "Aluminium" 81 1 COL
@@ -220,3 +191,7 @@ https://docdb.fnal.gov/CMS-private/DocDB/DocumentDatabase
 
 # "END"  "END"  0.  0.   
 this has to be the last line !
+
+
+
+
