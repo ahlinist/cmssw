@@ -113,7 +113,7 @@ namespace edm {
     typedef boost::shared_ptr<HLTGlobalStatus> TrigResPtr;
     typedef boost::shared_ptr<Worker> WorkerPtr;
     typedef boost::shared_ptr<ActivityRegistry> ActivityRegistryPtr;
-    typedef std::set<Worker*> AllWorkers;
+    typedef std::vector<Worker*> AllWorkers;
     typedef std::vector<OutputWorker*> AllOutputWorkers;
 
     typedef std::vector<Worker*> Workers;
@@ -250,6 +250,8 @@ namespace edm {
     void fillEndPath(int bitpos, std::string const& name);
 
     void limitOutput();
+
+    void addToAllWorkers(Worker* w);
 
     ParameterSet        pset_;
     WorkerRegistry*     worker_reg_;
