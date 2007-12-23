@@ -96,6 +96,7 @@ private:
   int maxExtraJets_;
   double minIPSignificanceSum_;
   double minJetEt_;
+  double maxHadTowerEnergy_;
 
   double jetEtMinMETCorr_;
   double jetEMfracMETCorr_;
@@ -107,7 +108,8 @@ private:
   double minimumTrackPt_;
   double clusterTrackMatchingCone_;
 
-  std::string datatype_;
+  std::string dataType_;
+  std::string analysisType_;
   std::string selbitStr_;
   int selectionBits;
   
