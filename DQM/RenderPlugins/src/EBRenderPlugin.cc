@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.38 2007/11/30 07:18:39 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.39 2007/12/18 14:03:48 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.38 $
-  \date $Date: 2007/11/30 07:18:39 $
+  \version $Revision: 1.39 $
+  \date $Date: 2007/12/18 14:03:48 $
 */
 
 #include <TH1F.h>
@@ -34,29 +34,27 @@ void EBRenderPlugin::initialise( int argc, char **argv ) {
 
   first = false;
 
-  for( short i=0; i<6; i++ ) {
-    TColor* color;
-    if( ! gROOT->GetColor( 301+i )) {
-      color = new TColor( 301+i, ecdqm::rgb[i][0], ecdqm::rgb[i][1], ecdqm::rgb[i][2], "" );
-    }
-    else {
-      color = gROOT->GetColor( 301+i );
-      color->SetRGB( ecdqm::rgb[i][0], ecdqm::rgb[i][1], ecdqm::rgb[i][2] );
-    }
+  for( int i=0; i<6; i++ ) {
+    TColor* color = gROOT->GetColor( 301+i );
+    if ( ! color ) color = new TColor( 301+i, 0, 0, 0, "");
+    color->SetRGB( ecdqm::rgb[i][0], ecdqm::rgb[i][1], ecdqm::rgb[i][2] );
   }
-  for( short i=0; i<6; i++ ) pCol3[i]  = i+301;
 
-  for( short i=0; i<10; i++ ) {
-    TColor* color;
-    if( ! gROOT->GetColor( 401+i )) {
-      color = new TColor( 401+i, ecdqm::rgb2[i][0], ecdqm::rgb2[i][1], ecdqm::rgb2[i][2], "" );
-    }
-    else {
-      color = gROOT->GetColor( 401+i );
-      color->SetRGB( ecdqm::rgb2[i][0], ecdqm::rgb2[i][1], ecdqm::rgb2[i][2] );
-    }
+  for( int i=0; i<10; i++ ) {
+    TColor* color = gROOT->GetColor( 401+i );
+    if ( ! color ) color = new TColor( 401+i, 0, 0, 0, "");
+    color->SetRGB( ecdqm::rgb2[i][0], ecdqm::rgb2[i][1], ecdqm::rgb2[i][2] );
   }
+  
+  for( int i=0; i<10; i++ ) {
+    TColor* color = gROOT->GetColor( 501+i );
+    if ( ! color ) color = new TColor( 501+i, 0, 0, 0, "");
+    color->SetRGB( ecdqm::rgb2[i][2], 0, 0 );
+  }
+
+  for( short i=0; i<6; i++ ) pCol3[i]  = i+301;
   for( short i=0; i<10; i++ ) pCol4[i] = i+401;
+  for( short i=0; i<10; i++ ) pCol5[i] = i+401;
 
   text1 = new TH2C( "eb_text1", "text1", 85, 0,  85, 20,   0, 20 );
   text2 = new TH2C( "eb_text2", "text2", 17, 0,  17,  4,   0,  4 );
