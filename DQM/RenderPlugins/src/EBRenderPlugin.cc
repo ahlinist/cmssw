@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.40 2007/12/25 17:24:12 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.41 2007/12/25 20:09:09 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.40 $
-  \date $Date: 2007/12/25 17:24:12 $
+  \version $Revision: 1.41 $
+  \date $Date: 2007/12/25 20:09:09 $
 */
 
 #include <TH1F.h>
@@ -326,7 +326,7 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const ObjInfo &o ) {
   if( o.name.find( "EBIT" ) < o.name.size() &&
       o.name.find( "quality" ) >= o.name.size() ) {
     obj->SetMinimum(0.0);
-    gStyle->SetPalette(10, pCol4);
+    gStyle->SetPalette(10, pCol5);
     obj->SetOption("colz");
     gStyle->SetPaintTextFormat("+g");
     return;

@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.42 2007/12/25 17:24:12 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.43 2007/12/25 20:09:10 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.42 $
-  \date $Date: 2007/12/25 17:24:12 $
+  \version $Revision: 1.43 $
+  \date $Date: 2007/12/25 20:09:10 $
 */
 
 #include <TH1F.h>
@@ -349,7 +349,7 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const ObjInfo &o ) {
   if( o.name.find( "EEIT" ) < o.name.size() &&
       o.name.find( "quality" ) >= o.name.size() ) {
     obj->SetMinimum(0.0);
-    gStyle->SetPalette(10, pCol4);
+    gStyle->SetPalette(10, pCol5);
     obj->SetOption("colz");
     gStyle->SetPaintTextFormat("+g");
     return;
