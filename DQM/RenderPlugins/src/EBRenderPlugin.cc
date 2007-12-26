@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.41 2007/12/25 20:09:09 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.42 2007/12/26 18:18:05 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.41 $
-  \date $Date: 2007/12/25 20:09:09 $
+  \version $Revision: 1.42 $
+  \date $Date: 2007/12/26 18:18:05 $
 */
 
 #include <TH1F.h>
@@ -49,7 +49,7 @@ void EBRenderPlugin::initialise( int argc, char **argv ) {
   for( int i=0; i<10; i++ ) {
     TColor* color = gROOT->GetColor( 501+i );
     if ( ! color ) color = new TColor( 501+i, 0, 0, 0, "");
-    color->SetRGB( ecdqm::rgb2[i][2], 0, 0 );
+    color->SetRGB( ecdqm::rgb2[i][1], 0, ecdqm::rgb2[i][1] );
   }
 
   for( short i=0; i<6; i++ ) pCol3[i]  = i+301;
