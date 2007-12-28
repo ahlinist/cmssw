@@ -121,6 +121,7 @@ namespace edm {
     typedef std::vector<WorkerInPath> PathWorkers;
 
     Schedule(ParameterSet const& processDesc,
+	     std::string const& processGUID,
 	     edm::service::TriggerNamesService& tns,
 	     WorkerRegistry& wregistry,
 	     ProductRegistry& pregistry,
@@ -258,6 +259,7 @@ namespace edm {
     ProductRegistry*    prod_reg_;
     ActionTable*        act_table_;
     std::string         processName_;
+    std::string         processGUID_;
     ActivityRegistryPtr act_reg_;
 
     State state_;
