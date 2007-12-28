@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.46 2007/12/26 19:19:13 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.47 2007/12/28 10:59:12 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.46 $
-  \date $Date: 2007/12/26 19:19:13 $
+  \version $Revision: 1.47 $
+  \date $Date: 2007/12/28 10:59:12 $
 */
 
 #include <TH1F.h>
@@ -55,7 +55,7 @@ void EERenderPlugin::initialise( int argc, char **argv ) {
   for( int i=0; i<10; i++ ) {
     TColor* color = gROOT->GetColor( 501+i );
     if ( ! color ) color = new TColor( 501+i, 0, 0, 0, "");
-    color->SetRGB( ecdqm::rgb2[i][1], 0*ecdqm::rgb2[i][1], 0*ecdqm::rgb2[i][1] );
+    color->SetRGB( ecdqm::rgb2[i][1], 0, 0 );
   }
 
   for( short i=0; i<6; i++ ) pCol3[i]  = i+301;
