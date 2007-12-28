@@ -6,9 +6,11 @@
 <use name=DataFormats/SiStripDetId>
 <use name=RecoTracker/TkSeedingLayers>
 <use name=FWCore/PluginManager>
+<use name=RecoLocalTracker/SiPixelRecHits>
 
 <export>
   <lib name=RecoTrackerPixelStubs>	 
   <use name=DataFormats/TrackerRecHit2D>
   <use name=RecoTracker/TkSeedingLayers>
+  <use name=RecoLocaltracker/SiPixelRecHits>
 </export>
