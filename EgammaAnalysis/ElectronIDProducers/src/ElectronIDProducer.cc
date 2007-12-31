@@ -55,14 +55,20 @@ void ElectronIDProducer::produce(edm::Event& e, const edm::EventSetup& c) {
 
   // get the association of the clusters to their shapes for EB
   edm::Handle<reco::BasicClusterShapeAssociationCollection> barrelClShpHandle ;
-  try { e.getByLabel (barrelClusterShapeAssociation_, barrelClShpHandle) ; }
-  catch ( cms::Exception& ex ) { edm::LogError ("ElectronIDProducer") << "Can't get ECAL barrel Cluster Shape Collection" ; }
+  e.getByLabel (barrelClusterShapeAssociation_, barrelClShpHandle) ;
+  if (!barrelClShpHandle.isValid()) {
+    edm::LogError ("ElectronIDProducer") << "Can't get ECAL barrel Cluster Shape Collection" ; 
+  }
+
   const reco::BasicClusterShapeAssociationCollection& barrelClShpMap = *barrelClShpHandle ;
 
   // get the association of the clusters to their shapes for EE
   edm::Handle<reco::BasicClusterShapeAssociationCollection> endcapClShpHandle ;
-  try { e.getByLabel (endcapClusterShapeAssociation_, endcapClShpHandle) ; }
-  catch ( cms::Exception& ex ) { edm::LogError ("ElectronIDLHProducer") << "Can't get ECAL endcap Cluster Shape Collection" ; }
+  e.getByLabel (endcapClusterShapeAssociation_, endcapClShpHandle) ;
+  if (!endcapClShpHandle.isValid()) {
+    edm::LogError ("ElectronIDLHProducer") << "Can't get ECAL endcap Cluster Shape Collection" ;
+  }
+  
   const reco::BasicClusterShapeAssociationCollection& endcapClShpMap = *endcapClShpHandle ;
 
 
