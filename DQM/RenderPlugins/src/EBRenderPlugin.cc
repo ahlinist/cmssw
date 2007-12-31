@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.45 2007/12/28 10:59:12 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.46 2007/12/28 11:01:05 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.45 $
-  \date $Date: 2007/12/28 10:59:12 $
+  \version $Revision: 1.46 $
+  \date $Date: 2007/12/28 11:01:05 $
 */
 
 #include <TH1F.h>
@@ -18,8 +18,10 @@
 #include <TStyle.h>
 #include <TCanvas.h>
 #include <TColor.h>
+#include <TROOT.h>
 
 #include <iostream>
+#include <math.h>
 
 #include "DQM/EcalCommon/interface/ColorPalette.h"
 #include "DQM/EcalCommon/interface/Numbers.h"
