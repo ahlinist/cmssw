@@ -1,26 +1,27 @@
-// $Id: EERenderPlugin.cc,v 1.47 2007/12/28 10:59:12 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.48 2007/12/28 11:01:05 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.47 $
-  \date $Date: 2007/12/28 10:59:12 $
+  \version $Revision: 1.48 $
+  \date $Date: 2007/12/28 11:01:05 $
 */
 
-#include <TH1F.h>
-#include <TH2F.h>
-#include <TH3F.h>
-#include <TProfile.h>
-#include <TProfile2D.h>
+#include "TH1F.h"
+#include "TH2F.h"
+#include "TH3F.h"
+#include "TProfile.h"
+#include "TProfile2D.h"
 
-#include <TStyle.h>
-#include <TCanvas.h>
-#include <TColor.h>
+#include "TStyle.h"
+#include "TCanvas.h"
+#include "TColor.h"
 
-#include <TGraph.h>
-#include <TLine.h>
+#include "TGraph.h"
+#include "TLine.h"
+#include "TROOT.h"
 
 #include <iostream>
 
