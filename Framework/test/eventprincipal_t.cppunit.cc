@@ -33,6 +33,7 @@ $Id$
 #include "FWCore/Utilities/interface/EDMException.h"
 #include "FWCore/Utilities/interface/GetPassID.h"
 #include "FWCore/Utilities/interface/GetReleaseVersion.h"
+#include "FWCore/Utilities/interface/GlobalIdentifier.h"
 
 class test_ep: public CppUnit::TestFixture 
 {
@@ -176,11 +177,12 @@ void test_ep::setUp()
 
     edm::ProcessConfiguration* process = processConfigurations_[tag];
     assert(process);
+    std::string uuid = edm::createGlobalIdentifier();
     edm::Timestamp now(1234567UL);
     boost::shared_ptr<edm::ProductRegistry const> preg = boost::shared_ptr<edm::ProductRegistry const>(pProductRegistry_);
     boost::shared_ptr<edm::RunPrincipal> rp(new edm::RunPrincipal(eventID_.run(), now, now, preg, *process));
     boost::shared_ptr<edm::LuminosityBlockPrincipal>lbp(new edm::LuminosityBlockPrincipal(1, now, now, preg, rp, *process));
-    pEvent_  = new edm::EventPrincipal(eventID_, now, preg, lbp, *process, true);
+    pEvent_  = new edm::EventPrincipal(eventID_, uuid, now, preg, lbp, *process, true);
     pEvent_->put(product, provenance);
   }
   CPPUNIT_ASSERT(pEvent_->size() == 1);

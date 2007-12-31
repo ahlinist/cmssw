@@ -160,6 +160,9 @@ namespace edm {
     /// Accessor for primary input source flag
     bool const primary() const {return primary_;}
 
+    /// Accessor for global process identifier
+    std::string const& processGUID() const {return processGUID_;}
+
     /// Called by framework at beginning of job
     void doBeginJob(EventSetup const&);
 
@@ -225,6 +228,7 @@ namespace edm {
     ModuleDescription const moduleDescription_;
     boost::shared_ptr<ProductRegistry const> productRegistry_;
     bool const primary_;
+    std::string processGUID_;
     Timestamp time_;
     mutable bool doneReadAhead_;
     mutable ItemType state_;

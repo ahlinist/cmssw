@@ -67,7 +67,7 @@ namespace edm {
     EventID id(run, event);
     currentIndex_ += 3;
     std::auto_ptr<EventPrincipal> result(
-	new EventPrincipal(id, ts, productRegistry(), lbp2, processConfiguration(), false));
+	new EventPrincipal(id, processGUID(), ts, productRegistry(), lbp2, processConfiguration(), false));
     return result;
   }
 

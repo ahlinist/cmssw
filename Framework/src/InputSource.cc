@@ -14,6 +14,7 @@ $Id$
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
+#include "FWCore/Utilities/interface/GlobalIdentifier.h"
 #include "FWCore/Utilities/interface/RandomNumberGenerator.h"
 
 namespace edm {
@@ -50,6 +51,7 @@ namespace edm {
       moduleDescription_(desc.moduleDescription_),
       productRegistry_(createSharedPtrToStatic<ProductRegistry const>(desc.productRegistry_)),
       primary_(pset.getParameter<std::string>("@module_label") == std::string("@main_input")),
+      processGUID_(primary_ ? createGlobalIdentifier() : std::string()),
       time_(),
       doneReadAhead_(false),
       state_(IsInvalid),

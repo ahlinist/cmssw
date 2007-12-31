@@ -270,7 +270,7 @@ TFWLiteSelectorBasic::Process(Long64_t iEntry) {
 	 boost::shared_ptr<edm::ProductRegistry const> reg(m_->reg_);
 	 boost::shared_ptr<edm::RunPrincipal> rp(new edm::RunPrincipal(aux.run(), aux.time(), aux.time(), reg, pc));
 	 boost::shared_ptr<edm::LuminosityBlockPrincipal>lbp(new edm::LuminosityBlockPrincipal(1, aux.time(), aux.time(), reg, rp, pc));
-	 edm::EventPrincipal ep(aux.id(), aux.time(), reg, lbp, pc, true,
+	 edm::EventPrincipal ep(aux.id(), aux.processGUID(), aux.time(), reg, lbp, pc, true,
 				edm::EventAuxiliary::Any,
                                 edm::EventPrincipal::invalidBunchXing,
 				edm::EventPrincipal::invalidStoreNumber,

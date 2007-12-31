@@ -39,6 +39,7 @@ $Id$
 #include "FWCore/Utilities/interface/EDMException.h"
 #include "FWCore/Utilities/interface/GetPassID.h"
 #include "FWCore/Utilities/interface/GetReleaseVersion.h"
+#include "FWCore/Utilities/interface/GlobalIdentifier.h"
 #include "DataFormats/Provenance/interface/ProcessHistoryRegistry.h"
 
 using namespace edm;
@@ -336,12 +337,14 @@ void testEvent::setUp()
   // look up the object.
 
   boost::shared_ptr<ProductRegistry const> preg = boost::shared_ptr<ProductRegistry const>(availableProducts_);
+  std::string uuid = createGlobalIdentifier();
   Timestamp time = make_timestamp();
   EventID id = make_id();
   ProcessConfiguration const& pc = currentModuleDescription_->processConfiguration();
   boost::shared_ptr<RunPrincipal> rp(new RunPrincipal(id.run(), time, time, preg, pc));
   boost::shared_ptr<LuminosityBlockPrincipal>lbp(new LuminosityBlockPrincipal(1, time, time, preg, rp, pc));
   principal_  = new EventPrincipal(id,
+				   uuid,
 				   time,
 				   preg,
                                    lbp,
