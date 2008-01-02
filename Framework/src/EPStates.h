@@ -359,7 +359,7 @@ namespace statemachine {
       sc::custom_reaction< File > > reactions;
 
     sc::result react( const File & file);
-    void readAndProcessAndWriteEvent();
+    void readAndProcessEvent();
     void markNonEmpty();
   private:
     edm::IEventProcessor & ep_;

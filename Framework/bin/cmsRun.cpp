@@ -145,10 +145,16 @@ int main(int argc, char* argv[])
 
   boost::program_options::positional_options_description p;
   p.add(kParameterSetOpt, -1);
+
+  boost::program_options::options_description hidden("hidden options");
+  hidden.add_options()("fwk", "For use only by Framework Developers");
   
+  boost::program_options::options_description all_options("All Options");
+  all_options.add(desc).add(hidden);
+
   boost::program_options::variables_map vm;
   try {
-    store(boost::program_options::command_line_parser(argc,argv).options(desc).positional(p).run(),vm);
+    store(boost::program_options::command_line_parser(argc,argv).options(all_options).positional(p).run(),vm);
     notify(vm);
   } catch(boost::program_options::error const& iException) {
     edm::LogError("FwkJob") << "Exception from command line processing: " << iException.what();
@@ -258,7 +264,16 @@ int main(int argc, char* argv[])
     proc = procTmp;
     proc->beginJob();
     proc.on();
-    proc->run();
+    // If the command line option "fwk" is set, then run the event processor
+    // using the new statemachine code.  This is a mode that should only be
+    // used by Framework developers at the moment.
+    if (vm.count("fwk")) {
+      proc->runToCompletion();
+    }
+    // This is the default that has been in use for a long time.
+    else {
+      proc->run();
+    }
     proc.off();
     proc->endJob();
     rc = 0;
