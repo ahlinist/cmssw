@@ -68,6 +68,50 @@
   <Numeric name="DOHMPRIMLength"          value="[tiblayerpar:DOHM_PRIM_L]"/>
   <String name="DOHMAUXMaterial"          value="tibmaterial:TIB_DOHM_AUX"/>
   <Numeric name="DOHMAUXLength"           value="[tiblayerpar:DOHM_AUX_L]"/>
+
+  <!-- Pillar Material -->
+  <String name="PillarMaterial"           value="tibmaterial:TIB_Pillar"/>
+
+  <!-- FW Internal Pillar Parameters -->
+  <Numeric name="FWIntPillarDz"             value="23.5*mm"/>
+  <Numeric name="FWIntPillarDPhi"           value="5.5*deg"/>
+  <Vector  name="FWIntPillarPhi" type="numeric" nEntries="4">
+  52.*deg, 128.*deg, 232.*deg, 308.*deg 
+  </Vector>
+  <Vector  name="FWIntPillarZ" type="numeric" nEntries="4">
+  182.*mm, 182.*mm, 182.*mm, 182.*mm
+  </Vector>
+
+  <!-- BW Internal Pillar Parameters -->
+  <Numeric name="BWIntPillarDz"             value="16.0*mm"/>
+  <Numeric name="BWIntPillarDPhi"           value="5.5*deg"/>
+  <Vector  name="BWIntPillarPhi" type="numeric" nEntries="4">
+  52.*deg, 128.*deg, 232.*deg, 308.*deg 
+  </Vector>
+  <Vector  name="BWIntPillarZ" type="numeric" nEntries="4">
+  -259.*mm, -259.*mm, -259.*mm, -259.*mm
+  </Vector>
+
+  <!-- FW External Pillar Parameters -->
+  <Numeric name="FWExtPillarDz"             value="1.*cm"/>
+  <Numeric name="FWExtPillarDPhi"           value="1.*deg"/>
+  <Vector  name="FWExtPillarPhi" type="numeric" nEntries="1">
+  -1.
+  </Vector>
+  <Vector  name="FWExtPillarZ" type="numeric" nEntries="1">
+  -1.
+  </Vector>
+
+  <!-- BW External Pillar Parameters -->
+  <Numeric name="BWExtPillarDz"             value="1.*cm"/>
+  <Numeric name="BWExtPillarDPhi"           value="1.*deg"/>
+  <Vector  name="BWExtPillarPhi" type="numeric" nEntries="1">
+  -1.
+  </Vector>
+  <Vector  name="BWExtPillarZ" type="numeric" nEntries="1">
+  -1.
+  </Vector>
+
 </Algorithm>
 
 </DDDefinition>
