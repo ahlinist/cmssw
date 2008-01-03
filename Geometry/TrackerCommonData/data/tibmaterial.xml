@@ -444,6 +444,15 @@
     </MaterialFraction>
   </CompositeMaterial>
 
+  <CompositeMaterial name="TIB_Pillar" density="1.33800*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="0.75785">
+      <rMaterial name="materials:Carbon fibre str."/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.24215">
+      <rMaterial name="materials:Aluminium"/>
+    </MaterialFraction>
+  </CompositeMaterial>
+
 </MaterialSection>
 
 </DDDefinition>
