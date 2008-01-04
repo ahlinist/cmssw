@@ -35,7 +35,7 @@ namespace edm {
   }
 
   void
-  OutputWorker::beginInputFile(FileBlock const& fb) {
+  OutputWorker::openFile(FileBlock const& fb) {
     mod_->doBeginInputFile(fb);
   }
 

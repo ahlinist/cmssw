@@ -189,7 +189,7 @@ namespace edm {
     virtual void endRun(RunPrincipal const& r) = 0;
     virtual void beginLuminosityBlock(LuminosityBlockPrincipal const& lb){}
     virtual void endLuminosityBlock(LuminosityBlockPrincipal const& lb) = 0;
-    virtual void beginInputFile(FileBlock const& fb) {}
+    virtual void openFile(FileBlock const& fb) {}
     virtual void endInputFile(FileBlock const& fb) {}
 
     virtual bool isFileOpen() const { return true; }

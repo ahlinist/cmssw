@@ -356,7 +356,7 @@ namespace edm {
 
   void OutputModule::doBeginInputFile(FileBlock const& fb)
   {
-    beginInputFile(fb);
+    openFile(fb);
   }
 
   void OutputModule::doEndInputFile(FileBlock const& fb)

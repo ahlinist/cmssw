@@ -43,7 +43,7 @@ namespace edm {
 
     bool wantAllEvents() const;
 
-    void beginInputFile(FileBlock const& fb);
+    void openFile(FileBlock const& fb);
 
     void endInputFile(FileBlock const& fb);
 
