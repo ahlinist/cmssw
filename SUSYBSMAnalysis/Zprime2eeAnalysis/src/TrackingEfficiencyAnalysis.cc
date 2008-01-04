@@ -45,17 +45,24 @@ TrackingEfficiencyAnalysis::TrackingEfficiencyAnalysis(const edm::ParameterSet& 
   eleIsoVetoConeSize_ = iConfig.getParameter<double>("eleIsoVetoConeSize");
   minTagProbeInvMass_ = iConfig.getParameter<double>("minTagProbeInvMass");
   maxTagProbeInvMass_ = iConfig.getParameter<double>("maxTagProbeInvMass");
+  
   tagEtMin_ = iConfig.getParameter<double>("tagEtMin");
   probeEtMin_ = iConfig.getParameter<double>("probeEtMin");
   zVertexCut_ = iConfig.getParameter<double>("zVertexCut");
   hcalconesizemin_ = iConfig.getParameter<double>("hcalconesizemin");
   hcalconesizemax_ = iConfig.getParameter<double>("hcalconesizemax");
   hcalptMin_ = iConfig.getParameter<double>("hcalptMin");
+  
   eleIsoTrackConeSize_ = iConfig.getParameter<double>("eleIsoTrackConeSize");
   eleIsoTrackMinPt_ = iConfig.getParameter<double>("eleIsoTrackMinPt");
-  eleIsoCut_ = iConfig.getParameter<double>("eleIsoCut");
+  max_tag_tkPt_over_elePt_ = iConfig.getParameter<double>("max_tag_tkPt_over_elePt");
+  max_tag_tkNumInCone_ = iConfig.getParameter<double>("max_tag_tkNumInCone");
+ 
   tagHcalEt_over_Et_max_ = iConfig.getParameter<double>("tagHcalEt_over_Et_max");
   probeHcalEt_over_Et_max_ = iConfig.getParameter<double>("probeHcalEt_over_Et_max");
+ 
+  ecalconesize_ = iConfig.getParameter<double>("ecalconesize");
+  max_ecalEt_over_tagEt_ = iConfig.getParameter<double>("max_ecalEt_over_tagEt");
 
   debug=1;
   event_tot=0;
@@ -101,8 +108,10 @@ void TrackingEfficiencyAnalysis::beginJob(const edm::EventSetup&)
   h_tagEnergy = fs->make<TH1F>("tagEnergy","tagEnergy",400,0.,800.);
   h_tagEt = fs->make<TH1F>("tagEt","tagEt",400,0.,800.);
   h_tagHcalEt_over_Et = fs->make<TH1F>("h_tagHcalEt_over_Et", "h_tagHcalEt_over_Et",200,0.,4.);
+  h_tagEcalEt_over_Et = fs->make<TH1F>("h_tagEcalEt_over_Et", "h_tagEcalEt_over_Et",200,0.,4.);
   h_minDeltaRTrackGsfEle = fs->make<TH1F>("h_minDeltaRTrackGsfEle", "h_minDeltaRTrackGsfEle",  500, 0., 2. );
-  h_tagIsoVar = fs->make<TH1F>("h_tagIsoVar", "h_tagIsoVar",500,-1.,4.);
+  h_tagTKIsoVar = fs->make<TH1F>("h_tagTKIsoVar", "h_tagTKIsoVar",500,-1.,4.);
+  h_tagTKNumInCone = fs->make<TH1F>("h_tagTKNumInCone", "h_tagTKNumInCone",41,-1.,40.);
 
   //histos:probe properties
   h_probeCollectionSize = fs->make<TH1F>("h_probeCollectionSize", "h_probeCollectionSize",10,0.,10.);
@@ -226,6 +235,29 @@ void TrackingEfficiencyAnalysis::analyze(const edm::Event& iEvent, const edm::Ev
     sclusters.push_back( &(*it2) );
   }
   
+
+
+  //get basic clusters (for ECAL isolation) - begin
+  Handle<reco::BasicClusterCollection> pHybridBasicClusters;
+  Handle<reco::BasicClusterCollection> pIslandBasicClusters;
+
+  iEvent.getByLabel("hybridSuperClusters","", pHybridBasicClusters);
+  iEvent.getByLabel("islandBasicClusters","islandEndcapBasicClusters", pIslandBasicClusters);
+  
+  const reco::BasicClusterCollection* hybridBasicClusters = pHybridBasicClusters.product();
+  const reco::BasicClusterCollection* islandBasicClusters = pIslandBasicClusters.product();
+
+  std::vector<const reco::BasicCluster*> bclusters;
+  
+  for (reco::BasicClusterCollection::const_iterator ibc = hybridBasicClusters->begin(); 
+       ibc < hybridBasicClusters->end(); ibc++ )
+    bclusters.push_back(&(*ibc));
+  
+  for (reco::BasicClusterCollection::const_iterator iec = islandBasicClusters->begin(); 
+       iec < islandBasicClusters->end(); iec++ )
+    bclusters.push_back(&(*iec));
+  
+  //get basic clusters (for ECAL isolation) - end
   
   //cout << "hybridSuperClusters->size() = " <<  hybridSuperClusters->size() ;
   //cout << "islandSuperClusters->size() = " <<  islandSuperClusters->size() ;
@@ -257,18 +289,28 @@ void TrackingEfficiencyAnalysis::analyze(const edm::Event& iEvent, const edm::Ev
       double tagHcalEt = hcaletisol( &*tagIt, towerCollection );
       
       h_tagEt->Fill( tagEt );
+      
       double tagHcalEt_over_Et = tagHcalEt / tagEt;
       h_tagHcalEt_over_Et->Fill( tagHcalEt_over_Et );
+
+      double tagEcalEt_over_Et = ecaletisol( tagIt->superCluster(), bclusters ) / tagEt;
+      h_tagEcalEt_over_Et->Fill( tagEcalEt_over_Et );
       
-      double eleIsoVariable = eleTrackIsolation( trackcoll, &(*tagIt) ).second;
       
-      h_tagIsoVar ->Fill( eleIsoVariable );
-      
+      double tag_tkPt_over_elePt = eleTrackIsolation( trackcoll, &(*tagIt) ).second / tagEt;
+      double tag_tkNumInCone = eleTrackIsolation( trackcoll, &(*tagIt) ).first;
+
+
+      h_tagTKIsoVar ->Fill( tag_tkPt_over_elePt );
+      h_tagTKNumInCone -> Fill( tag_tkNumInCone );
+
       if( tagAbsEta < 1.444 || (tagAbsEta > 1.560 && tagAbsEta < 2.5) ) //tag ele must be in ECAL fiducial region
 	if( tagEt > tagEtMin_ ) //tag ele must have Et above certain threshold
-	  if( eleIsoVariable < eleIsoCut_ )//isolation cut for Tags - Tracks
-	    if( tagHcalEt_over_Et < tagHcalEt_over_Et_max_)//isolation cut for Tags - HCAL/ECAL
-	      TagCollection.push_back( &(*tagIt) );
+	  if( tag_tkPt_over_elePt < max_tag_tkPt_over_elePt_ )//isolation cut for Tags - Tracks
+	    if( tagEcalEt_over_Et < max_ecalEt_over_tagEt_ )
+	      if( tag_tkNumInCone > max_tag_tkNumInCone_)
+		if( tagHcalEt_over_Et < tagHcalEt_over_Et_max_)//isolation cut for Tags - HCAL/ECAL
+		  TagCollection.push_back( &(*tagIt) );
       
     }
     
@@ -547,7 +589,8 @@ std::pair<int,float> TrackingEfficiencyAnalysis::eleTrackIsolation( const reco::
     if(track3V.perp() > eleIsoTrackMinPt_ && track3V.deltaR(ele3V) < eleIsoTrackConeSize_ && track3V.deltaR(ele3V) > eleIsoVetoConeSize_){
       
       nTracksInCone++;
-      ptTracksInCone += pow( ( track3V.perp()/ ele->gsfTrack()->pt() ) , 2 ) ;
+      //      ptTracksInCone += pow( ( track3V.perp()/ ele->gsfTrack()->pt() ) , 2 ) ;
+      ptTracksInCone += track3V.perp();
 
     }
     
@@ -839,6 +882,68 @@ double TrackingEfficiencyAnalysis::hcaletisol(const reco::SuperCluster* ele, con
     }      
   }
   return hcalIsol;
+}
+
+//---------------------------------------------------------------------------------------------------------------------------------------
+
+
+double TrackingEfficiencyAnalysis::ecaletisol(reco::SuperClusterRef maxsupercluster, std::vector<const reco::BasicCluster*> bclusters){
+
+float ecalIsol=0.;
+float candSCphi = maxsupercluster->phi();
+float candSCeta = maxsupercluster->eta();
+
+if(debug) {
+LogDebug("Zprime2eeAnaGsfEm")<<"energie(raw and presh) eta and phi of max SC "
+<<maxsupercluster->rawEnergy()<<" "
+<<maxsupercluster->preshowerEnergy()<<" "
+<<maxsupercluster->eta()<<" "
+<<maxsupercluster->phi();
+}
+
+bool MATCHEDSC = true;
+const reco::BasicCluster *cluster= 0;
+
+//loop over basic clusters
+for(std::vector<const reco::BasicCluster*>::const_iterator cItr = bclusters.begin(); cItr != bclusters.end(); ++cItr){
+
+cluster = *cItr;
+float ebc_bce    = cluster->energy();
+float ebc_bceta  = cluster->eta();
+float ebc_bcphi  = cluster->phi();
+float ebc_bcet   = ebc_bce*sin(2*atan(exp(ebc_bceta)));
+float newDelta;
+
+//     if (ebc_bcet > etMin && ebc_bcalgo == 0) {
+//       if (ebc_bcchi2 < 30.) {
+if(MATCHEDSC){
+bool inSuperCluster = false;
+
+      reco::basicCluster_iterator theEclust = maxsupercluster->clustersBegin();
+      // loop over the basic clusters of the matched supercluster
+      for(;theEclust != maxsupercluster->clustersEnd();
+        theEclust++) {
+	if (&(**theEclust) ==  cluster) inSuperCluster = true;
+      }
+      if (!inSuperCluster) {
+      float deltaphi;
+      if(ebc_bcphi<0) ebc_bcphi+=TWOPI;
+      if(candSCphi<0) candSCphi+=TWOPI;
+      deltaphi=fabs(ebc_bcphi-candSCphi);
+      if(deltaphi>TWOPI) deltaphi-=TWOPI;
+      if(deltaphi>PI) deltaphi=TWOPI-deltaphi;
+      float deltaeta=fabs(ebc_bceta-candSCeta);
+      newDelta= sqrt(deltaphi*deltaphi+ deltaeta*deltaeta);
+      if(newDelta < ecalconesize_) {
+        ecalIsol+=ebc_bcet;
+	}
+      }
+    }
+    //   } // matches ebc_bcchi2
+    // } // matches ebc_bcet && ebc_bcalgo
+
+  }
+  return ecalIsol;
 }
 
 

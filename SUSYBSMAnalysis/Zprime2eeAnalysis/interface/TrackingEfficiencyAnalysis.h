@@ -96,7 +96,9 @@ class  TrackingEfficiencyAnalysis : public edm::EDAnalyzer {
   double hcaletisol(const reco::PixelMatchGsfElectron*, const CaloTowerCollection* );
 
   double hcaletisol(const reco::SuperCluster*, const CaloTowerCollection* );
- 
+
+  double ecaletisol(reco::SuperClusterRef , std::vector<const reco::BasicCluster*> );
+
   const reco::Track* closestTrackToGsfEle( const reco::TrackCollection*, const reco::PixelMatchGsfElectron* );
 
   const reco::Track* closestTrackToSC( const reco::TrackCollection*, const reco::SuperCluster* );
@@ -115,7 +117,9 @@ class  TrackingEfficiencyAnalysis : public edm::EDAnalyzer {
   std::string endcapsuperclusterlabel_ ;
   std::string rootanalfile_ ;
   
-  double eleIsoCut_;
+  double max_tag_tkPt_over_elePt_;
+  double max_tag_tkNumInCone_;
+
   double eleIsoTrackMinPt_;
   double eleIsoTrackConeSize_;
   double trackConeSize_;
@@ -136,6 +140,8 @@ class  TrackingEfficiencyAnalysis : public edm::EDAnalyzer {
   double hcalptMin_;
   double tagHcalEt_over_Et_max_;
   double probeHcalEt_over_Et_max_;
+  double ecalconesize_;
+  double max_ecalEt_over_tagEt_;
 
   int debug;
   int event_tot;
@@ -203,9 +209,12 @@ class  TrackingEfficiencyAnalysis : public edm::EDAnalyzer {
   TH1F* h_nearestTrackPoverSCE;
   TH1F* h_minDeltaRTrackSC;
   TH1F* h_minDeltaRTrackGsfEle;
+  TH1F* h_tagEcalEt_over_Et;
   TH1F* h_tagHcalEt_over_Et;
   TH1F* h_trackPtInConeMinusNearestTrackPt;
-  TH1F* h_tagIsoVar;
+  TH1F* h_tagTKIsoVar;
+  TH1F* h_tagTKNumInCone;
+
 };
 
 #endif
