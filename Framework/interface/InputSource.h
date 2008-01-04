@@ -170,8 +170,8 @@ namespace edm {
     void doEndJob();
 
     /// Called by framework when events are exhausted.
-    void doFinishLumi(LuminosityBlockPrincipal& lbp);
-    void doFinishRun(RunPrincipal& rp);
+    void doEndLumi(LuminosityBlockPrincipal& lbp);
+    void doEndRun(RunPrincipal& rp);
 
     /// Accessor for the current time, as seen by the input source
     Timestamp const& timestamp() const {return time_;}

@@ -278,7 +278,7 @@ namespace edm {
   }
 
   void
-  InputSource::doFinishRun(RunPrincipal& rp) {
+  InputSource::doEndRun(RunPrincipal& rp) {
     rp.setEndTime(time_);
     Run run(rp, moduleDescription());
     endRun(run);
@@ -286,7 +286,7 @@ namespace edm {
   }
 
   void
-  InputSource::doFinishLumi(LuminosityBlockPrincipal & lbp) {
+  InputSource::doEndLumi(LuminosityBlockPrincipal & lbp) {
     lbp.setEndTime(time_);
     LuminosityBlock lb(lbp, moduleDescription());
     endLuminosityBlock(lb);

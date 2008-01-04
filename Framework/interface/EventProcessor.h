@@ -413,7 +413,6 @@ namespace edm {
     boost::shared_ptr<LuminosityBlockPrincipal>   lbp_;
     boost::shared_ptr<EDLooper>                   looper_;
 
-    boost::shared_ptr<FileBlock>                  sm_fb_;
     boost::shared_ptr<RunPrincipal>               sm_rp_;
     boost::shared_ptr<LuminosityBlockPrincipal>   sm_lbp_;
     std::auto_ptr<EventPrincipal>               sm_evp_;
