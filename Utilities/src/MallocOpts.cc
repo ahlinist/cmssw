@@ -38,8 +38,10 @@ namespace edm
     {
       int op=0,a;
       int ans[4];
-    
-#if defined(__x86_64__) || defined(__i386__)
+
+// Still some problem on x86_64, so only i386 for now    
+//#if defined(__x86_64__) || defined(__i386__)
+#if defined(__i386__)
 
 
       __asm__ __volatile__ ("pushl %%ebx;\
