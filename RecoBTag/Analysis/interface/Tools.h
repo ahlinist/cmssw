@@ -13,6 +13,7 @@
 #include "TCanvas.h"
 #include "TString.h"
 #include "TFile.h"
+class TStyle;
 
 #include<iostream>
 #include<string>
