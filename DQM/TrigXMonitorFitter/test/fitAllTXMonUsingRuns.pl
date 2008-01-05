@@ -105,22 +105,10 @@ if (@rootfiles)
         $convert = "; ./makeImgs.tcsh";
       }
 
-    my $htmlcommand = "; ./moveHtml.pl ; ./copyRoot.pl -f $filename";
+    my $htmlcommand = "; ./moveHtml.pl ; ./htmlsorter.pl; ./copyRoot.pl -f $filename";
 
-    my $command = "(./AllTXMonFitter.exe @rootfiles $htmlcommand $convert) >& all.out &";
+    my $command = "(./AllTXMonFitter.exe @rootfiles $convert $htmlcommand) >& all.out &";
     print $command,"\n";
     system $command;
 
   }
-
-
-
-
-
-
-
-
-
-
-
-
