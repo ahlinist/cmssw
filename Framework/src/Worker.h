@@ -50,7 +50,7 @@ namespace edm {
     bool doWork(T&, EventSetup const& c,
 		BranchActionType const& bat,
 		CurrentProcessingContext const* cpc);
-    void beginJob(EventSetup const&) ;
+    void beginJob(EventSetup const*) ;
     void endJob();
     void reset() { state_ = Ready; }
     
@@ -214,7 +214,10 @@ namespace edm {
 	// a module will only be printed during the full true processing
 	// pass of this module
 
-	actions::ActionCodes action = actions_->find(e.rootCause());
+	// Get the action corresponding to this exception.  However, if processing
+	// something other than an event (e.g. run, lumi) always rethrow.
+	actions::ActionCodes action = (isEvent ? actions_->find(e.rootCause()) : actions::Rethrow);
+
 	// If we are processing an endpath, treat SkipEvent or FailPath
 	// as FailModule, so any subsequent OutputModules are still run.
 	if (cpc && cpc->isEndPath()) {
@@ -223,7 +226,7 @@ namespace edm {
 	switch(action) {
 	  case actions::IgnoreCompletely: {
 	      rc=true;
-	      if (isEvent) ++timesPassed_;
+	      ++timesPassed_;
 	      state_ = Pass;
 	      LogWarning("IgnoreCompletely")
 		<< "Module ignored an exception\n"
@@ -236,7 +239,7 @@ namespace edm {
 	      LogWarning("FailModule")
                 << "Module failed due to an exception\n"
                 << e.what() << "\n";
-	      if (isEvent) ++timesFailed_;
+	      ++timesFailed_;
 	      state_ = Fail;
 	      break;
 	  }

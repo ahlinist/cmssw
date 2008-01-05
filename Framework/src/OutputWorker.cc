@@ -35,13 +35,23 @@ namespace edm {
   }
 
   void
-  OutputWorker::openFile(FileBlock const& fb) {
-    mod_->doBeginInputFile(fb);
+  OutputWorker::openFile(FileBlock const* fb) {
+    mod_->doOpenFile(*fb);
   }
 
   void
-  OutputWorker::endInputFile(FileBlock const& fb) {
-    mod_->doEndInputFile(fb);
+  OutputWorker::writeRun(RunPrincipal const* rp) {
+    mod_->doWriteRun(*rp);
+  }
+
+  void
+  OutputWorker::writeLumi(LuminosityBlockPrincipal const* lbp) {
+    mod_->doWriteLuminosityBlock(*lbp);
+  }
+
+  void
+  OutputWorker::respondToCloseInputFile(FileBlock const* fb) {
+    mod_->doRespondToCloseInputFile(*fb);
   }
 
   bool 

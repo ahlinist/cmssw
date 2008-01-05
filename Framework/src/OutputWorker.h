@@ -43,9 +43,16 @@ namespace edm {
 
     bool wantAllEvents() const;
 
-    void openFile(FileBlock const& fb);
+    // These next functions take pointers rather than references
+    // as arguments to avoid a copy when used in generic algorithms.
 
-    void endInputFile(FileBlock const& fb);
+    void openFile(FileBlock const* fb);
+
+    void writeRun(RunPrincipal const* rp);
+
+    void writeLumi(LuminosityBlockPrincipal const* lbp);
+
+    void respondToCloseInputFile(FileBlock const* fb);
 
     bool limitReached() const;
 

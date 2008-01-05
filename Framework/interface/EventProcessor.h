@@ -357,7 +357,6 @@ namespace edm {
     void procOneEvent(EventPrincipal *pep);
     void endLuminosityBlock(LuminosityBlockPrincipal *lbp);
     void endRun(RunPrincipal *rp);
-    void endInputFile(FileBlock const& fb);
 
     StatusCode waitForAsyncCompletion(unsigned int timeout_seconds);
 
