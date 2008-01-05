@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.48 2007/12/28 11:01:05 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.40 2007/11/30 07:18:39 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.48 $
-  \date $Date: 2007/12/28 11:01:05 $
+  \version $Revision: 1.40 $
+  \date $Date: 2007/11/30 07:18:39 $
 */
 
 #include "TH1F.h"
@@ -41,27 +41,29 @@ void EERenderPlugin::initialise( int argc, char **argv ) {
 
   first = false;
 
-  for( int i=0; i<6; i++ ) {
-    TColor* color = gROOT->GetColor( 301+i );
-    if ( ! color ) color = new TColor( 301+i, 0, 0, 0, "");
-    color->SetRGB( ecdqm::rgb[i][0], ecdqm::rgb[i][1], ecdqm::rgb[i][2] );
+  for( short i=0; i<6; i++ ) {
+    TColor* color;
+    if( ! gROOT->GetColor( 301+i )) {
+      color = new TColor( 301+i, ecdqm::rgb[i][0], ecdqm::rgb[i][1], ecdqm::rgb[i][2], "" );
+    }
+    else {
+      color = gROOT->GetColor( 301+i );
+      color->SetRGB( ecdqm::rgb[i][0], ecdqm::rgb[i][1], ecdqm::rgb[i][2] );
+    }
   }
-
-  for( int i=0; i<10; i++ ) {
-    TColor* color = gROOT->GetColor( 401+i );
-    if ( ! color ) color = new TColor( 401+i, 0, 0, 0, "");
-    color->SetRGB( ecdqm::rgb2[i][0], ecdqm::rgb2[i][1], ecdqm::rgb2[i][2] );
-  }
-  
-  for( int i=0; i<10; i++ ) {
-    TColor* color = gROOT->GetColor( 501+i );
-    if ( ! color ) color = new TColor( 501+i, 0, 0, 0, "");
-    color->SetRGB( ecdqm::rgb2[i][1], 0, 0 );
-  }
-
   for( short i=0; i<6; i++ ) pCol3[i]  = i+301;
+
+  for( short i=0; i<10; i++ ) {
+    TColor* color;
+    if( ! gROOT->GetColor( 401+i )) {
+      color = new TColor( 401+i, ecdqm::rgb2[i][0], ecdqm::rgb2[i][1], ecdqm::rgb2[i][2], "" );
+    }
+    else {
+      color = gROOT->GetColor( 401+i );
+      color->SetRGB( ecdqm::rgb2[i][0], ecdqm::rgb2[i][1], ecdqm::rgb2[i][2] );
+    }
+  }
   for( short i=0; i<10; i++ ) pCol4[i] = i+401;
-  for( short i=0; i<10; i++ ) pCol5[i] = i+501;
 
   text1 = new TH2S( "ee_text1", "text1", 100, -2., 98., 100, -2., 98.);
   text3 = new TH2C( "ee_text3", "text3", 10, 0,  10,  5,   0,  5 );
@@ -350,7 +352,7 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const ObjInfo &o ) {
   if( o.name.find( "EEIT" ) < o.name.size() &&
       o.name.find( "quality" ) >= o.name.size() ) {
     obj->SetMinimum(0.0);
-    gStyle->SetPalette(10, pCol5);
+    gStyle->SetPalette(10, pCol4);
     obj->SetOption("colz");
     gStyle->SetPaintTextFormat("+g");
     return;
@@ -360,11 +362,7 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const ObjInfo &o ) {
   if( o.name.find( "EETTT" ) < o.name.size() &&
       o.name.find( "quality" ) >= o.name.size() ) {
     obj->SetMinimum(0.0);
-    if( o.name.find( "Error" ) >= o.name.size() ) {
-      gStyle->SetPalette(10, pCol4);
-    } else {
-      gStyle->SetPalette(10, pCol5);
-    }
+    gStyle->SetPalette(10, pCol4);
     obj->SetOption("colz");
     gStyle->SetPaintTextFormat("+g");
     return;
@@ -443,16 +441,6 @@ void EERenderPlugin::preDrawTH1F( TCanvas *c, const ObjInfo &o ) {
   }
 
   if( o.name.find( "EEMM DCC" ) < o.name.size() ) {
-   gPad->SetBottomMargin(0.2);
-   obj->GetXaxis()->LabelsOption("v");
-  }
-
-  if( o.name.find( "quality errors summary" ) < o.name.size() ) {
-   gPad->SetBottomMargin(0.2);
-   obj->GetXaxis()->LabelsOption("v");
-  }
-
-  if( o.name.find( "EEOT occupancy summary 1D" ) < o.name.size() ) {
    gPad->SetBottomMargin(0.2);
    obj->GetXaxis()->LabelsOption("v");
   }
