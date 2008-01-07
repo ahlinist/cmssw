@@ -13,11 +13,13 @@
 
 // HEP library include files
 #include <Math/GenVector/VectorUtil.h>
-#include "CLHEP/HepMC/GenEvent.h"
-#include "CLHEP/HepMC/GenVertex.h"
-#include "CLHEP/HepMC/GenParticle.h"
+//#include "CLHEP/HepMC/GenEvent.h"
+//#include "CLHEP/HepMC/GenVertex.h"
+//#include "CLHEP/HepMC/GenParticle.h"
 #include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
 #include "RecoTauTag/HLTAnalyzers/interface/MCTauCand.h"
+#include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
+#include "HepMC/GenEvent.h"
 
 // L1 Trigger data formats
 #include "DataFormats/L1Trigger/interface/L1EmParticle.h"
