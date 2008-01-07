@@ -57,6 +57,7 @@ $Id$
 #include "FWCore/Framework/interface/EventHelperDescription.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/ParameterSet/interface/ProcessDesc.h"
+#include "FWCore/Framework/src/PrincipalCache.h"
 
 namespace edm {
 
@@ -412,8 +413,7 @@ namespace edm {
     boost::shared_ptr<LuminosityBlockPrincipal>   lbp_;
     boost::shared_ptr<EDLooper>                   looper_;
 
-    boost::shared_ptr<RunPrincipal>               sm_rp_;
-    boost::shared_ptr<LuminosityBlockPrincipal>   sm_lbp_;
+    PrincipalCache                                principalCache_;
     std::auto_ptr<EventPrincipal>               sm_evp_;
 
     friend class EDLooperHelper;
