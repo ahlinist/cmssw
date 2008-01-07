@@ -12,7 +12,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Fri Apr  6 15:24:17 CDT 2007
-// $Id: L1TauAnalyzer.cc,v 1.1 2007/09/25 20:21:12 chinhan Exp $
+// $Id: L1TauAnalyzer.cc,v 1.2 2007/11/09 19:26:54 chinhan Exp $
 //
 //
 
@@ -40,7 +40,7 @@ std::vector<HepMC::GenParticle*> getGenStableDecayProducts(const HepMC::GenVerte
 namespace GenPart {
   bool 
   greaterEt( const HepMC::GenParticle& a, const HepMC::GenParticle& b ) {
-    return (a.momentum().et()>b.momentum().et());
+    return (a.momentum().perp()>b.momentum().perp());
   }
 }
 
@@ -335,9 +335,9 @@ L1TauAnalyzer::getGenObjects(const edm::Event& iEvent, const edm::EventSetup& iS
 		  _GenTaus.at(_GenTaus.size()-1).calcVisibleP4(TauNu->momentum());
 		  /*
 		  if (std::abs(_GenTaus.at(_GenTaus.size()-1).getVisibleP4().et() + TauNu->momentum().et()
-			       - _GenTaus.at(_GenTaus.size()-1).momentum().et()) > 0.5 ) {
+			       - _GenTaus.at(_GenTaus.size()-1).momentum().perp()) > 0.5 ) {
 		    std::cout << "+++++ Gen Tau (et,eta,phi): "
-			      <<_GenTaus.at(_GenTaus.size()-1).momentum().et()<<", "
+			      <<_GenTaus.at(_GenTaus.size()-1).momentum().perp()<<", "
 			      <<_GenTaus.at(_GenTaus.size()-1).momentum().eta() << ", "
 			      <<_GenTaus.at(_GenTaus.size()-1).momentum().phi()<<std::endl;
 		    std::cout << "///// Gen TauNu (et,eta,phi): "<<TauNu->momentum().et()<<", "
@@ -402,7 +402,7 @@ L1TauAnalyzer::printGenInfo(const edm::Event& iEvent) {
   for (int i=0; i<(int)_GenTaus.size(); i++) {
     std::cout << "Gen Tau"<<i<<" Decay / nProng: " << _GenTaus.at(i).getDecayMode() 
 	      << " / " << _GenTaus.at(i).getnProng() << std::endl;
-    std::cout << "     Gen Tau"<<i<<" (et,eta,phi): "<<_GenTaus.at(i).momentum().et()<<", "
+    std::cout << "     Gen Tau"<<i<<" (et,eta,phi): "<<_GenTaus.at(i).momentum().perp()<<", "
 	      <<_GenTaus.at(i).momentum().eta() << ", "<<_GenTaus.at(i).momentum().phi()<<std::endl;
     std::cout << "vis. Gen Tau"<<i<<" (et,eta,phi): "<<_GenTaus.at(i).getVisibleP4().et()<<", "
 	      <<_GenTaus.at(i).getVisibleP4().eta() << ", "<<_GenTaus.at(i).getVisibleP4().phi()<<std::endl;
@@ -410,12 +410,12 @@ L1TauAnalyzer::printGenInfo(const edm::Event& iEvent) {
   }
   std::cout << "-------------------------------------------------------------" << std::endl;
   for (int i=0; i<(int)_GenElecs.size(); i++) {
-    std::cout << "     Gen Elec"<<i<<" (et,eta,phi): "<<_GenElecs.at(i).momentum().et()<<", "
+    std::cout << "     Gen Elec"<<i<<" (et,eta,phi): "<<_GenElecs.at(i).momentum().perp()<<", "
 	      <<_GenElecs.at(i).momentum().eta() << ", "<<_GenElecs.at(i).momentum().phi()<<std::endl;
   }
   std::cout << "-------------------------------------------------------------" << std::endl;
   for (int i=0; i<(int)_GenMuons.size(); i++) {
-    std::cout << "     Gen Elec"<<i<<" (et,eta,phi): "<<_GenMuons.at(i).momentum().et()<<", "
+    std::cout << "     Gen Elec"<<i<<" (et,eta,phi): "<<_GenMuons.at(i).momentum().perp()<<", "
 	      <<_GenMuons.at(i).momentum().eta() << ", "<<_GenMuons.at(i).momentum().phi()<<std::endl;
   }
   //std::cout << "-------------------------------------------------------------" << std::endl;
