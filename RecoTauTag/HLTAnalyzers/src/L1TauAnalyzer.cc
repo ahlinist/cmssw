@@ -12,7 +12,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Fri Apr  6 15:24:17 CDT 2007
-// $Id: L1TauAnalyzer.cc,v 1.2 2007/11/09 19:26:54 chinhan Exp $
+// $Id: L1TauAnalyzer.cc,v 1.3 2008/01/07 17:18:14 chinhan Exp $
 //
 //
 
@@ -438,7 +438,7 @@ L1TauAnalyzer::printGenInfo(const edm::Event& iEvent) {
   for (int i=0; i<(int)_L1extraMuons.size(); i++) {
     std::cout << "L1extra Muon"<<i<< " (et,eta,phi): " << _L1extraMuons.at(i).et() << ", " << _L1extraMuons.at(i).eta() << ", " << _L1extraMuons.at(i).phi() << std::endl;
   }
-  std::cout << "L1extra MET: " << _L1extraMET.et() << std::endl;
+  //std::cout << "L1extra MET: " << _L1extraMET.begin().et() << std::endl;
   std::cout<<"--- FastL1 Info ---------------------------------------------"<<std::endl;
   for (int i=0; i<(int)_FastL1TauJets.size(); i++) {
     std::cout << "FastL1 Tau"<<i<< " (et,eta,phi): " << _FastL1TauJets.at(i).et() << ", " << _FastL1TauJets.at(i).eta() << ", " << _FastL1TauJets.at(i).phi() << std::endl;
@@ -455,7 +455,7 @@ L1TauAnalyzer::printGenInfo(const edm::Event& iEvent) {
   for (int i=0; i<(int)_FastL1ForJets.size(); i++) {
     std::cout << "FastL1 ForJet"<<i<< " (et,eta,phi): " << _FastL1ForJets.at(i).et() << ", " << _FastL1ForJets.at(i).eta() << ", " << _FastL1ForJets.at(i).phi() << std::endl;
   }
-  std::cout << "FastL1 MET: " << _FastL1MET.et() << std::endl;
+  //std::cout << "FastL1 MET: " << _FastL1MET.begin().et() << std::endl;
 
   std::cout<<"--- GenJet (iterCone5) Info ---------------------------------------------"<<std::endl;
   for (int i=0; i<(int)_iCone5GenJets.size(); i++) {
@@ -506,10 +506,15 @@ void
 L1TauAnalyzer::getFastL1Objects(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   // FastL1 info
+  /*
   edm::Handle<l1extra::L1EtMissParticle> hFastL1MET;
   //iEvent.getByLabel(_FastL1Source,_FastL1metSource,hFastL1MET);
   iEvent.getByLabel(_FastL1Source,hFastL1MET);
   _FastL1MET = *hFastL1MET;
+  */
+  edm::Handle<l1extra::L1EtMissParticleCollection> hFastL1METColl;
+  iEvent.getByLabel(_FastL1Source,hFastL1METColl);
+  _FastL1MET = *hFastL1METColl;
 
   //
   _FastL1TauJets.clear();
@@ -578,10 +583,16 @@ void
 L1TauAnalyzer::getL1extraObjects(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   // L1extra info
+  /*
   edm::Handle<l1extra::L1EtMissParticle> hL1extraMET;
   iEvent.getByLabel(_L1extraSource,hL1extraMET);
   _L1extraMET = *hL1extraMET;
+  */
+  edm::Handle<l1extra::L1EtMissParticleCollection> hL1extraMETColl;
+  iEvent.getByLabel(_L1extraSource,hL1extraMETColl);
+  _L1extraMET = *hL1extraMETColl;
 
+  
   //
   _L1extraMuons.clear();
   edm::Handle<l1extra::L1MuonParticleCollection> hL1extraMuons;
@@ -686,7 +697,7 @@ L1TauAnalyzer::fillFastL1Histos() {
   }
   
   // MET
-  _FastL1JetMETHistos->fillL1MET(_FastL1MET);
+  _FastL1JetMETHistos->fillL1MET(_FastL1MET[0]);
 
   // Jets
   //_FastL1JetMETHistos->fillL1Jets(_FastL1JetsNoTau);
@@ -699,7 +710,7 @@ L1TauAnalyzer::fillFastL1Histos() {
   //			   _GenTaus);
 
   l1extra::L1MuonParticleCollection dummyMuons;
-  _FastL1Acceptance->fillTauEff(_FastL1TauJets,_FastL1isoEgammas,dummyMuons,_FastL1MET,
+  _FastL1Acceptance->fillTauEff(_FastL1TauJets,_FastL1isoEgammas,dummyMuons,_FastL1MET[0],
 				_GenElecs,_GenMuons,_GenTauElecs,_GenTauMuons,_GenTaus,
 				_iCone5GenJets);
   _FastL1Acceptance->fillTauAcc(_FastL1TauJets,_GenTaus);
@@ -712,7 +723,7 @@ L1TauAnalyzer::fillFastL1Histos() {
   _FastL1Acceptance->fillJetAndTauAcc(_FastL1JetsNoTau,_FastL1TauJets,
 				      _GenTaus);
   
-  _FastL1Acceptance->fillMETAndTauAcc(_FastL1MET,_FastL1TauJets,_GenTaus);
+  _FastL1Acceptance->fillMETAndTauAcc(_FastL1MET[0],_FastL1TauJets,_GenTaus);
     
 }
 
@@ -720,7 +731,7 @@ void
 L1TauAnalyzer::fillL1CompHistos() {
   _FastL1TauHistos->fillL1TauComp(_FastL1TauJets,_L1extraTauJets,false);
   _FastL1ElecHistos->fillL1ElecComp(_FastL1isoEgammas,_L1extraisoEgammas);
-  _FastL1JetMETHistos->fillL1CompMET(_FastL1MET,_L1extraMET);
+  _FastL1JetMETHistos->fillL1CompMET(_FastL1MET[0],_L1extraMET[0]);
   _FastL1JetMETHistos->fillL1JetComp(_FastL1InclJets,_L1extraInclJets,false);
 }
   
@@ -772,18 +783,18 @@ L1TauAnalyzer::fillL1extraHistos() {
   }
 
   // MET
-  _L1extraJetMETHistos->fillL1MET(_L1extraMET);
+  _L1extraJetMETHistos->fillL1MET(_L1extraMET[0]);
 
   // Jets
   //_L1extraJetMETHistos->fillL1Jets(_L1extraJetsNoTau);
   _L1extraJetMETHistos->fillL1Jets(_L1extraInclJets,false);
 
   // Acceptance
-  _L1extraAcceptance->fillTauEff(_L1extraTauJets,_L1extraisoEgammas,_L1extraMuons,_L1extraMET,
+  _L1extraAcceptance->fillTauEff(_L1extraTauJets,_L1extraisoEgammas,_L1extraMuons,_L1extraMET[0],
 				 _GenElecs,_GenMuons,_GenTauElecs,_GenTauMuons,_GenTaus,
 				 _iCone5GenJets);
 
-  //_doPrintGenInfo = _L1extraAcceptance->fillTauEff(_L1extraTauJets,_L1extraisoEgammas,_L1extraMuons,_L1extraMET,
+  //_doPrintGenInfo = _L1extraAcceptance->fillTauEff(_L1extraTauJets,_L1extraisoEgammas,_L1extraMuons,_L1extraMET[0],
   //   _GenElecs,_GenMuons,_GenTauElecs,_GenTauMuons,_GenTaus,
   //					   _iCone5GenJets);
   //_doPrintGenInfo = false;
@@ -799,7 +810,7 @@ L1TauAnalyzer::fillL1extraHistos() {
 				      _GenMuons,_GenTauMuons,_GenTaus);  
   _L1extraAcceptance->fillJetAndTauAcc(_L1extraJetsNoTau,_L1extraTauJets,
 				       _GenTaus);
-  _L1extraAcceptance->fillMETAndTauAcc(_L1extraMET,_L1extraTauJets,_GenTaus);
+  _L1extraAcceptance->fillMETAndTauAcc(_L1extraMET[0],_L1extraTauJets,_GenTaus);
   
 }
 
