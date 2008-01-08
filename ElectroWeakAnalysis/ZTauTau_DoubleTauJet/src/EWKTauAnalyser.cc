@@ -25,7 +25,6 @@
 
 // electron
 #include "DataFormats/EgammaCandidates/interface/PixelMatchGsfElectronFwd.h"
-
 // Invariant Mass from Caloremeter
 #include "DataFormats/BTauReco/interface/TauMassTagInfo.h"
 #include "DataFormats/BTauReco/interface/TauImpactParameterInfo.h"
@@ -321,15 +320,10 @@ void EWKTauAnalyser::analyze(const Event& iEvent, const EventSetup& iSetup) {
     const PFTau& tau = (*theTau);
     if (tau.et() < minJetEt_) continue;
 
-    // Prints out some quantities
-    if (debugFlg)
-    cout << "================" << endl
-         << "Jet Number: "     << iTau << endl
-         << "================" << endl;
-
     double minDR = 99.9;
     bool matched = matchWithHLTJet(tau, myHLTJetCollection, minDR);
-    if (debugFlg) cout << " dR of PFTauJet wrt nearest HLT Jet " << minDR << endl;
+    if (debugFlg) cout << "EWKTauAnalyser::analyze(): iTau=" << iTau 
+                       << ", dR(PFTauJet, nearest HLT Jet) = " << minDR << endl;
     dRTauAndHLTH->Fill(minDR);
     if (matched) {
       tauCandidateList.push_back(iTau);
@@ -349,7 +343,7 @@ void EWKTauAnalyser::analyze(const Event& iEvent, const EventSetup& iSetup) {
       extraJetList.push_back(tau);
     }
   }
-  // We retain events only with two PFJets ecah matched with HLT 
+  // We retain events only with two PFJets each matched with HLT 
   if (tauCandidateList.size() != 2) return;
   nStat[2]++;
 
@@ -372,7 +366,7 @@ void EWKTauAnalyser::analyze(const Event& iEvent, const EventSetup& iSetup) {
   TauObject(tauHandle, tauCandidateList[0], taua); 
   TauObject(tauHandle, tauCandidateList[1], taub); 
 
-  // Fill Et
+  // fill
   double siptSum = sumOfIPSignificance(taua, taub);
   siptSumH->Fill(siptSum);
 
@@ -472,7 +466,8 @@ void EWKTauAnalyser::analyze(const Event& iEvent, const EventSetup& iSetup) {
 
     double tau_pt = tau.pt();
     if (debugFlg)
-      cout << "                        Pt of the Tau: " << tau_pt << endl
+      cout << "                                 iTau: " << iTau << endl
+           << "                        Pt of the Tau: " << tau_pt << endl
            << "                       Lead PFCand pt: " << tau_leading_trk_pt       << endl
            << "             InvariantMass of the Tau: " << tau_inv_mass             << endl
            << "                    Vertex of the Tau: " << tau_zvertex              << endl
@@ -488,8 +483,7 @@ void EWKTauAnalyser::analyze(const Event& iEvent, const EventSetup& iSetup) {
            << "       # of IsolationPFGammaCandidate: " << tau_iso_photons          << endl
            << "  Sum pT of Isolation Charged Hadrons: " << tau_sumpt_iso_ch_hadrons << endl
            << "Sum E_T of Isolation Gamma Candidates: " << tau_sumpt_iso_photons    << endl
-           << "                     PF Jet EM Energy: " << chEMEnergyJet+neuEMEnergyJet << endl
-           << endl;
+           << "                     PF Jet EM Energy: " << chEMEnergyJet+neuEMEnergyJet << endl;
 
     invMassH->Fill(tau_inv_mass);
     leadingTrackPtH->Fill(tau_leading_trk_pt);
@@ -568,7 +562,11 @@ void EWKTauAnalyser::analyze(const Event& iEvent, const EventSetup& iSetup) {
       if (iSelect == 0) nTightTau++;
     }
     selectMap.insert(pair<unsigned int, unsigned int>(iTau, iSelect));
-    EWKTauAnalyser::bit_print(iSelect);
+    if (debugFlg) {
+      cout << "                       Selection bits: ";
+      EWKTauAnalyser::bit_print(iSelect);
+      cout << endl;
+    }
  
     for (unsigned int k = 0; k < 11; k++) {
       if (iSelect & (1 << k)) {
@@ -617,9 +615,19 @@ void EWKTauAnalyser::analyze(const Event& iEvent, const EventSetup& iSetup) {
   }
   nTightTauH->Fill(nTightTau);
   nLooseTauH->Fill(nLooseTau);
+  // Let's see which bits are quite
+  if (debugFlg) {
+    cout << "Tau Selection bits: " << endl;
+    for (map<unsigned int, unsigned int>::iterator it = selectMap.begin();
+                                                  it != selectMap.end(); it++) 
+    {
+      EWKTauAnalyser::bit_print(it->second); 
+    }
+  }
   if (nTightTau < 1) return;
   nStat[6]++;
 
+  if (debugFlg) printEvent(taua, taub);
   // At this point call all other routines
   //findIsolatedTaus(iEvent, iSetup);
   //findMET(iEvent, iSetup);
@@ -631,15 +639,6 @@ void EWKTauAnalyser::analyze(const Event& iEvent, const EventSetup& iSetup) {
   if (nLooseTau < 2) return;
   nStat[7]++;
   
-  // Let's see which bits are quite
-  if (debugFlg) {
-    for (map<unsigned int, unsigned int>::iterator it = selectMap.begin();
-                                                  it != selectMap.end(); it++) 
-    {
-      EWKTauAnalyser::bit_print(it->first); 
-    }
-  }
-
   // Invariant mass of the tau pair
   pair<unsigned int, unsigned int> tauPairIndex = getTauIndices(selectMap);
   if (debugFlg) cout << " Tau indices = " << tauPairIndex.first << ", " << tauPairIndex.second << endl;
@@ -648,6 +647,8 @@ void EWKTauAnalyser::analyze(const Event& iEvent, const EventSetup& iSetup) {
   PFTauRef theTau2(tauHandle, tauPairIndex.second);
   const PFTau& tau1 = (*theTau1);
   const PFTau& tau2 = (*theTau2);
+
+
   if ( applySelection(selectionBits, 7) ) {
     // temporary cludge to implement background enriched sample
     double value = tau1.charge() * tau2.charge();
@@ -670,7 +671,7 @@ void EWKTauAnalyser::analyze(const Event& iEvent, const EventSetup& iSetup) {
   if ( applySelection(selectionBits, 9) && (siptSum < minIPSignificanceSum_) ) return;
   nStat[10]++;
 
-  if (debugFlg) cout << " Tau Momenta " << tau1.pt() << " , " << tau2.pt() << endl;
+  if (debugFlg) cout << " Tau Momenta: " << tau1.pt() << " , " << tau2.pt() << endl;
   const math::XYZTLorentzVector& P1 = tau1.p4();
   const math::XYZTLorentzVector& P2 = tau2.p4();
   math::XYZTLorentzVector ZP4 = P1 + P2;
@@ -1011,6 +1012,7 @@ void EWKTauAnalyser::endJob() {
 
   // Print out Event Statistics
   if (fStatLog_) {
+    string type = (analysisType_ == "QCD_Estimate") ? "     same charge" : "opposite charges";
     fStatLog_ << "========================================================= " << endl
               << "              Event Statistics                            " << endl
               << "========================================================= " << endl  
@@ -1023,7 +1025,7 @@ void EWKTauAnalyser::endJob() {
               << setw(8) << nStat[5] << endl
               << "             Events with atleast one Tight tau = " << setw(8) << nStat[6] << endl
               << "   Events with two selected taus (Tight+Loose) = " << setw(8) << nStat[7] << endl
-              << "       Events with two oppositely charged taus = " << setw(8) << nStat[8] << endl
+              << "       Events with two taus of " << type << " = " << setw(8) << nStat[8] << endl
               << "         Events with only 1-prong/3-prong taus = " << setw(8) << nStat[9] << endl
               << "        Events with sum(sipt) of taus >= " <<
                      setprecision(1) << setw(5) << minIPSignificanceSum_ << " = " << setw(8) << nStat[10] << endl
@@ -1233,6 +1235,73 @@ bool EWKTauAnalyser::prongsAsExpected(const PFTau& tau1, const PFTau& tau2) {
   if (debugFlg) cout << "nch_1 = " << nch_1 << ", nch_2=" << nch_2 << endl;
   if (nch_1 != 1 && nch_2 != 1) return false;
   return true;
+}
+void  EWKTauAnalyser::printEvent(const PFTau& tau1, const PFTau& tau2) 
+{
+  cout << "First Candidate:" << endl;
+  printCandidate(tau1);  
+
+  cout << "Second Candidate:" << endl;
+  printCandidate(tau2);  
+
+  double value = tau1.charge() * tau2.charge();
+  cout << "ch1*ch2 = " << value << endl;
+
+  string p = prongsAsExpected(tau1, tau2) ? "yes" : "no";
+  cout << "prongsAsExpected = " << p << endl;
+
+  double siptSum = sumOfIPSignificance(tau1, tau2);
+  cout << "Sum(IP Significance)**2 = " << siptSum << endl;
+ 
+  const math::XYZTLorentzVector& P1 = tau1.p4();
+  const math::XYZTLorentzVector& P2 = tau2.p4();
+  math::XYZTLorentzVector ZP4 = P1 + P2;
+  double mass = ZP4.M();
+  cout << "Reconstructed Z Mass = " << mass << endl;
+}
+void  EWKTauAnalyser::printCandidate(const PFTau& tau)
+{
+    double pt = tau.pt();
+    PFCandidateRef theLeadPFCand = tau.leadPFChargedHadrCand();
+    if (!theLeadPFCand) {      
+      cerr << "EWKTauAnalyser::printCandidate(): No Lead PFCand!" << endl;
+      return;
+    }
+    double leading_trk_pt       = (*theLeadPFCand).pt();
+    double charge               = tau.charge();
+    double had_energy           = tau.maximumHCALPFClusterEt();
+    double leading_trk_sipt     = fabs(tau.leadPFChargedHadrCandsignedSipt());
+    double mass                 = tau.alternatLorentzVect().M();
+    int sig_ch_hadrons          = tau.signalPFChargedHadrCands().size();
+    int sig_photons             = tau.signalPFGammaCands().size();
+    int sig_neu_hadrons         = tau.signalPFNeutrHadrCands().size();
+    int iso_ch_hadrons          = tau.isolationPFChargedHadrCands().size();
+    int iso_photons             = tau.isolationPFGammaCands().size();
+    int iso_neu_hadrons         = tau.isolationPFNeutrHadrCands().size();
+    double sumpt_iso_ch_hadrons = tau.isolationPFChargedHadrCandsPtSum();
+    double sumpt_iso_photons    = tau.isolationPFGammaCandsEtSum();
+
+    const PFTauTagInfo& tagInfo = (*(tau.pfTauTagInfoRef()));
+    const PFJet& pfJet          = (*(tagInfo.pfjetRef()));
+    double em_energy_frac       = pfJet.chargedEmEnergyFraction()+pfJet.neutralEmEnergyFraction();
+    double chEMEnergyJet        = pfJet.chargedEmEnergy();
+    double neuEMEnergyJet       = pfJet.neutralEmEnergy();
+
+    cout << "                        Pt of the Tau: " << pt << endl
+         << "                       Lead PFCand pt: " << leading_trk_pt       << endl
+         << "                         ltrkPt/jetPt: " << leading_trk_pt/pt    << endl
+         << "             InvariantMass of the Tau: " << mass                 << endl
+         << "                    Charge of the Tau: " << charge               << endl
+         << "                   Em energy fraction: " << em_energy_frac       << endl
+         << "                    Max Hadron energy: " << had_energy           << endl
+         << "          # of SignalPFChargedHadrons: " << sig_ch_hadrons       << endl
+         << "       # of IsolationPFChargedHadrons: " << iso_ch_hadrons       << endl
+         << "          # of SignalPFGammaCandidate: " << sig_photons          << endl
+         << "       # of IsolationPFGammaCandidate: " << iso_photons          << endl
+         << "  Sum pT of Isolation Charged Hadrons: " << sumpt_iso_ch_hadrons << endl
+         << "Sum E_T of Isolation Gamma Candidates: " << sumpt_iso_photons    << endl
+         << "                     PF Jet EM Energy: " << chEMEnergyJet+neuEMEnergyJet << endl
+         << endl;
 }
 bool EWKTauAnalyser::applySelection(int bitWord, int bitPosition) {
   //  0 - offline discriminator (isolation) on each candidate
