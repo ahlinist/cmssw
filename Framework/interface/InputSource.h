@@ -100,6 +100,9 @@ namespace edm {
     /// Read next file
     boost::shared_ptr<FileBlock> readFile();
 
+    /// close current file
+    void closeFile();
+
     /// Skip the number of events specified.
     /// Offset may be negative.
     void skipEvents(int offset);
@@ -206,6 +209,7 @@ namespace edm {
     virtual std::auto_ptr<EventPrincipal> readEvent_(boost::shared_ptr<LuminosityBlockPrincipal>) = 0;
     virtual std::auto_ptr<EventPrincipal> readIt(EventID const&);
     virtual boost::shared_ptr<FileBlock> readFile_();
+    virtual void closeFile_() {}
     virtual void skip(int);
     virtual void setRun(RunNumber_t r);
     virtual void setLumi(LuminosityBlockNumber_t lb);

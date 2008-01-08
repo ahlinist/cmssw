@@ -122,6 +122,7 @@ namespace edm {
     }
   }
 
+  // Return a dummy file block.
   boost::shared_ptr<FileBlock>
   InputSource::readFile() {
     assert(doneReadAhead_);
@@ -129,6 +130,11 @@ namespace edm {
     assert(!limitReached());
     doneReadAhead_ = false;
     return readFile_();
+  }
+
+  void
+  InputSource::closeFile() {
+    return closeFile_();
   }
 
   // Return a dummy file block.
