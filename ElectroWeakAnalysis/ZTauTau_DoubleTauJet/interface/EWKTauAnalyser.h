@@ -62,9 +62,12 @@ protected:
   std::pair<unsigned int, unsigned int> getTauIndices(std::map<unsigned int, unsigned int>& smap);
   bool matchWithHLTJet(const reco::PFTau& tau, const reco::CaloJetCollection& caloJets, double& dr);
   //  bool matchWithHLTJet(const PFTau& tau, const Handle<reco::HLTFilterObjectWithRefs>& hltHandle, double& dr);
-  double sumOfIPSignificance(const PFTau& tau1, const PFTau& tau2); 
-  bool prongsAsExpected(const PFTau& tau1, const PFTau& tau2);
-  void TauObject(Handle<reco::PFTauCollection> tauHandle, int iTau, PFTau& tau); 
+  double sumOfIPSignificance(const reco::PFTau& tau1, const reco::PFTau& tau2); 
+  bool prongsAsExpected(const reco::PFTau& tau1, const reco::PFTau& tau2);
+  void TauObject(Handle<reco::PFTauCollection> tauHandle, int iTau, reco::PFTau& tau); 
+  void printEvent(const reco::PFTau& tau1, const reco::PFTau& tau2);
+  void printCandidate(const reco::PFTau& tau);
+
   static bool applySelection(int bitWord, int bitPosition); 
   static void bit_print(int word, int pos=8);
 
