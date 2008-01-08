@@ -36,8 +36,8 @@ namespace edm {
     // Call maybeEndFile() on the controlled OutputModule.
     void maybeEndFile();
 
-    // Call doEndFile() on the controlled OutputModule.
-    void doEndFile();
+    // Call closeFile() on the controlled OutputModule.
+    void closeFile();
 
     void openNewFileIfNeeded();
 

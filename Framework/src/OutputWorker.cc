@@ -25,8 +25,8 @@ namespace edm {
   }
 
   void
-  OutputWorker::doEndFile() {
-    mod_->doEndFile();
+  OutputWorker::closeFile() {
+    mod_->doCloseFile();
   }
 
   void

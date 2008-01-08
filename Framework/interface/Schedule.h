@@ -146,13 +146,13 @@ namespace edm {
     // Call maybeEndFile() on all OutputModules.
     void maybeEndFile();
 
-    // Call doEndFile() on all OutputModules.
-    void doEndFile();
+    // Call closeFile() on all OutputModules.
+    void closeOutputFiles();
 
     // Call openNewFileIfNeeded() on all OutputModules
     void openNewOutputFilesIfNeeded();
 
-    // Call openOutputFiles() on all OutputModules
+    // Call openFiles() on all OutputModules
     void openOutputFiles(FileBlock & fb);
 
     // Call respondToCloseInputFile() on all OutputModules
