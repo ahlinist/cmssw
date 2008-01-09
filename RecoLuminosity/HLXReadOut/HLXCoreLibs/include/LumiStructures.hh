@@ -129,7 +129,7 @@ namespace HCAL_HLX
   struct LHC_NIBBLE {
     LUMI_NIBBLE_HEADER hdr;
     bool bIsComplete;
-    u8 data[HCAL_HLX_MAX_BUNCHES];
+    u16 data[HCAL_HLX_MAX_BUNCHES];
   };
 
   struct LUMI_SECTION_HEADER {
