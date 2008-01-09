@@ -5,9 +5,7 @@ Project=RecoLuminosity/HLXReadOut
 
 Packages= \
 	CoreUtils \
-        LumiDBLib \
 	HLXCoreLibs \
-	StandAlone \
-	XDAQ
+	StandAlone
 
 include $(XDAQ_ROOT)/config/Makefile.rules
