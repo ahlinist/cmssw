@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Oracle is part of CMSSW, so we use this copy (might change later...)
+export ORACLE_ROOT=/nfshome0/cmssw/slc4_ia32_gcc345/external/oracle/10.2.0.3
+
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${ORACLE_ROOT}/lib
+export PATH=$PATH:${ORACLE_ROOT}/bin
+export TNS_ADMIN=/nfshome0/lmsts/omds_tns
+export ORACLE_HOME=$ORACLE_ROOT
