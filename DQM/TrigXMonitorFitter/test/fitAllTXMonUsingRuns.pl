@@ -1,4 +1,4 @@
-#!/usr/bin/env perl
+f ./#!/usr/bin/env perl
 
 use strict;
 use warnings;
@@ -15,7 +15,8 @@ my $help = "Usage: $prog [-flags]
 Options:
 -f filename       => use the Run Numbers in 'filename'
 -h                => this Help screen
--nc               => do Not Convert eps to gifs
+-nc               => do Not convert eps to gifs
+-w                => do Not generate html folders
 ";
 
 
@@ -40,6 +41,12 @@ while (@ARGV && $ARGV[0] =~ /^-/)
         $noconvert = "true";
         next;
       }
+    if ($arg =~ /^-nc/i)
+      {
+        $nofoldergenerator = "true";
+        next;
+      }
+
     warn "I don't understand '$arg'.\n";
   }
 
@@ -104,10 +111,14 @@ if (@rootfiles)
       {
         $convert = "; ./makeImgs.tcsh";
       }
+    my $foldergenerator;
+    if (!$nofoldergenerator)
+      {
+        $foldergenerator = "; ./htmlsorter.pl";
+      }
 
-    my $htmlcommand = "; ./moveHtml.pl ; ./htmlsorter.pl; ./copyRoot.pl -f $filename";
 
-    my $command = "(./AllTXMonFitter.exe @rootfiles $convert $htmlcommand) >& all.out &";
+    my $command = "(./AllTXMonFitter.exe @rootfiles $convert ; $foldergenerator; ./copyRoot.pl -f $filename) >& all.out &";
     print $command,"\n";
     system $command;
 
