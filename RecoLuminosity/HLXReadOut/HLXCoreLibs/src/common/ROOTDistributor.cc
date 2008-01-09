@@ -30,7 +30,7 @@ namespace HCAL_HLX {
 
     mROOTMutex.Lock();
 
-    CreateTree(localSetion);
+    CreateTree(localSection);
     FillTree(localSection);
     CloseTree();
 
