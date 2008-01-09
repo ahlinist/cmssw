@@ -34,7 +34,7 @@ namespace HCAL_HLX
       mDIPData = 0;
       mErrorCount = 0;
 
-      //cout << "Initialising DIP" << endl;
+      cout << "Initialising DIP" << endl;
       
       // Open the DIP interface
       mDIP = Dip::create("CMS/HF/Lumi/LumiPublisher");
@@ -47,7 +47,7 @@ namespace HCAL_HLX
       //ErrHandler errorHandler;
       
       // Create the DIP publication interface
-      //cout << "Creating DIP publication " << itemName << endl;
+      cout << "Creating DIP publication " << itemName << endl;
       mDIPPublisher = mDIP->createDipPublication(itemName, this);
       if ( !mDIPPublisher ) {
 	MemoryAllocationException lExc("Unable to allocate DIP publication interface");
@@ -73,8 +73,12 @@ namespace HCAL_HLX
   DIPDistributor::~DIPDistributor() {
     // Destroy all the interfaces
     mDIP->destroyDipPublication(mDIPPublisher);
-    delete mDIPData;
-    delete mDIP;
+
+    // Shut down DIP
+    Dip::shutdown();
+
+    //delete mDIPData;
+    //delete mDIP;
 
     // Set the pointers to NULL
     mDIP = 0;
@@ -127,7 +131,7 @@ namespace HCAL_HLX
     //}
 
     for ( u32 i = 0 ; i != lumiSection.hdr.numBunches ; i++ ) {
-      mHistogramData[i] = lumiSection.lumiBunchCrossing.LHCLumi[i];
+      mHistogramData[i] = lumiSection.lumiDetail.LHCLumi[i];
     }
 
     // Load the DIP header information
