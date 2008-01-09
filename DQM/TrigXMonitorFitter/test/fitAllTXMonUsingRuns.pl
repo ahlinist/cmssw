@@ -1,4 +1,4 @@
-f ./#!/usr/bin/env perl
+#!/usr/bin/env perl
 
 use strict;
 use warnings;
@@ -15,13 +15,14 @@ my $help = "Usage: $prog [-flags]
 Options:
 -f filename       => use the Run Numbers in 'filename'
 -h                => this Help screen
--nc               => do Not convert eps to gifs
+-i                => do Not convert eps to gifs
 -w                => do Not generate html folders
+-r                => do Not copy root files
 ";
 
 
 
-my ($filename, $noconvert);
+my ($filename, $noconvert, $nofoldergenerator, $nocopy);
 while (@ARGV && $ARGV[0] =~ /^-/)
   {
     my $arg = shift @ARGV;
@@ -36,14 +37,19 @@ while (@ARGV && $ARGV[0] =~ /^-/)
         $filename = shift;
         next;
       }
-    if ($arg =~ /^-nc/i)
+    if ($arg =~ /^-i/i)
       {
         $noconvert = "true";
         next;
       }
-    if ($arg =~ /^-nc/i)
+    if ($arg =~ /^-w/i)
       {
         $nofoldergenerator = "true";
+        next;
+      }
+    if ($arg =~ /^-r/i)
+      {
+        $nocopy = "true";
         next;
       }
 
@@ -116,9 +122,15 @@ if (@rootfiles)
       {
         $foldergenerator = "; ./htmlsorter.pl";
       }
+    my $rootcopier;
+    if (!$nocopy)
+      {
+        $rootcopier = "; ./copyRoot.pl -f $filename";
+      }
 
 
-    my $command = "(./AllTXMonFitter.exe @rootfiles $convert ; $foldergenerator; ./copyRoot.pl -f $filename) >& all.out &";
+
+    my $command = "(./AllTXMonFitter.exe @rootfiles $convert $foldergenerator $rootcopier) >& all.out &";
     print $command,"\n";
     system $command;
 
