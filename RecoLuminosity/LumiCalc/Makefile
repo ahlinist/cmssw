@@ -3,9 +3,9 @@ Project=RecoLuminosity
 Package=LumiCalc
 
 IncludeDirs = \
-	$(XDAQ_ROOT)/$(Project)/$(Package)/interface \
-	$(XDAQ_ROOT)/$(Project)/HLXReadOut/CoreUtils/include \
-	$(XDAQ_ROOT)/$(Project)/HLXReadOut/HLXCoreLibs/include
+	$(BUILD_HOME)/$(Project)/$(Package)/interface \
+	$(BUILD_HOME)/$(Project)/HLXReadOut/CoreUtils/include \
+	$(BUILD_HOME)/$(Project)/HLXReadOut/HLXCoreLibs/include
 
 Sources = \
 	LumiCalc.cc
