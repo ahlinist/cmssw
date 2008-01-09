@@ -62,15 +62,13 @@ namespace HCAL_HLX {
     void ETLumiBX();
     void LHCLumi();
 
-    double totalOccupancy[6][HCAL_HLX_MAX_BUNCHES];
-    double totalEtSum[HCAL_HLX_MAX_BUNCHES];
-    double totalLHC[HCAL_HLX_MAX_BUNCHES];
+    float totalOccupancy[6][HCAL_HLX_MAX_BUNCHES];
+    float totalEtSum[HCAL_HLX_MAX_BUNCHES];
+    float totalLHC[HCAL_HLX_MAX_BUNCHES];
     
     u16 startAG, endAG;   // what portion of the Abort Gap will be used for noise  
     i8 bunchStructure;
     u32 mNumBunches;
-    //u32 lastRun;
-    //u32 currentRun;
 
     u8 Block(u32 BX, u8 numBlock);
     u8 isBunch(u32, i8);  
