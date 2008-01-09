@@ -27,8 +27,6 @@ using namespace std;
 using namespace HCAL_HLX;
 using namespace ICCoreUtils;
 
-#define NUM_HLXS 13
-
 int main(int argc, char ** argv) {
   signal(SIGINT,CtrlC);
   SectionCollector *lSectionCollector = 0;
@@ -36,11 +34,11 @@ int main(int argc, char ** argv) {
   OracleDistributor *lOracleDistributor = 0;
   try {
     // send approximately every 10 seconds
-    lSectionCollector = new SectionCollector(3564,    // Num bunches
-					     3,       // Num nibbles per section
-					     4096,    // Num orbits in lumi nibble
-					     NUM_HLXS);  // Num HLXs
-    lNibbleCollector = new NibbleCollector(NUM_HLXS);
+    lSectionCollector = new SectionCollector(300,    // Num bunches
+					     10,       // Num nibbles per section
+					     1,    // Num orbits in lumi nibble
+					     1);  // Num HLXs
+    lNibbleCollector = new NibbleCollector(1,0x533C);
     lNibbleCollector->AttachSectionCollector(lSectionCollector);
     lOracleDistributor = new OracleDistributor;
     lSectionCollector->AttachDistributor(lOracleDistributor);
@@ -49,9 +47,11 @@ int main(int argc, char ** argv) {
     time((time_t*)&startTime);
     tempTime=startTime;
 
+    lNibbleCollector->Start();
+
     while (gContinue) {
-      Sleep(1);
-      lNibbleCollector->RunServiceHandler();
+      Sleep(100);
+      //lNibbleCollector->RunServiceHandler();
       time((time_t*)&tempTime);
       if ( tempTime != interTime ) {
 	cout << endl << tempTime-startTime << endl;
@@ -67,8 +67,9 @@ int main(int argc, char ** argv) {
 	cout << "Average data rate (Mb/s): " << (double)lNibbleCollector->GetTotalDataVolume()*8.0/(1024.0*1024.0*(double)(tempTime-startTime)) << endl;
 	interTime = tempTime;
       }
-      usleep(1000);
     }
+
+    lNibbleCollector->Stop();
         
   }catch(ICException & aExc){
     cerr << aExc.what() << endl;

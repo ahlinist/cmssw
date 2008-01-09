@@ -8,25 +8,21 @@ Sources =
 
 UserSourcePath =
 IncludeDirs = \
-	$(XDAQ_ROOT)/$(ProjectGroup)/LumiDB/include \
-	$(XDAQ_ROOT)/$(ProjectGroup)/LumiCalc/interface \
-	$(XDAQ_ROOT)/$(Project)/CoreUtils/include \
-	$(XDAQ_ROOT)/$(Project)/HLXCoreLibs/include \
-	$(XDAQ_ROOT)/$(Project)/DIP/include \
-	$(ORACLE_HOME)/rdbms/demo \
-	$(ORACLE_HOME)/rdbms/public \
-	$(ORACLE_HOME)/plsql/public \
-	$(ORACLE_HOME)/network/public \
+	$(BUILD_HOME)/$(ProjectGroup)/LumiDB/include \
+	$(BUILD_HOME)/$(ProjectGroup)/LumiCalc/interface \
+	$(BUILD_HOME)/$(Project)/CoreUtils/include \
+	$(BUILD_HOME)/$(Project)/HLXCoreLibs/include \
+	$(DIPBASE)/include \
+	$(ORACLE_HOME)/include \
 	$(ROOTSYS)/include
 
 LibraryDirs = \
-	$(XDAQ_ROOT)/$(ProjectGroup)/LumiDB/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM) \
-	$(XDAQ_ROOT)/$(ProjectGroup)/LumiCalc/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM) \
-	$(XDAQ_ROOT)/$(Project)/CoreUtils/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM) \
-	$(XDAQ_ROOT)/$(Project)/HLXCoreLibs/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM) \
-	$(XDAQ_ROOT)/$(Project)/DIP/lib \
+	$(BUILD_HOME)/$(ProjectGroup)/LumiDB/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM) \
+	$(BUILD_HOME)/$(ProjectGroup)/LumiCalc/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM) \
+	$(BUILD_HOME)/$(Project)/CoreUtils/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM) \
+	$(BUILD_HOME)/$(Project)/HLXCoreLibs/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM) \
+	$(DIPBASE)/lib \
 	$(ORACLE_HOME)/lib \
-	$(ORACLE_HOME)/rdbms/lib \
 	$(ROOTSYS)/lib
 
 UserCFlags =
@@ -34,45 +30,20 @@ UserCCFlags = -D_REENTRANT
 UserDynamicLinkFlags =
 UserStaticLinkFlags =
 UserExecutableLinkFlags =
-Libraries = LumiCalc LumiDB CoreUtils HLXCoreLibs pthread dip dl clntsh occi10 \
-	nnz10 n10 XrdSec Core Cint Hist Matrix Gpad Graf Tree Netx
-	#ASImageGui ASImage ASPluginGS Cintex Cint Core dequeDict EG FitPanel Foam Fumili Ged GeomBuilder \
-	#GeomPainter Geom Gpad Graf3d Graf GuiBld Gui GX11 GX11TTF HistPainter Hist Html listDict map2Dict \
-	#mapDict MathCore Matrix Minuit2 Minuit MLP multimap2Dict multimapDict multisetDict Netx Physics \
-	#Postscript ProofGui Proof Quadp Reflex RGL Rint setDict Smatrix SpectrumPainter \
-	#Spectrum SPlot SQL Table Thread TMVA TreePlayer Tree TreeViewer  \
-	#XrdSec
-
+Libraries = LumiCalc LumiDB CoreUtils HLXCoreLibs pthread dip dl clntsh occi \
+	nnz10 Core Cint Hist Matrix Gpad Graf Tree
 
 #	Hist MathCore Matrix Core Cint Gpad Graf
 DynamicLibrary = 
 StaticLibrary =
 Executables = \
-	global_run.cpp \
 	hlx_fake.cpp \
-	test_distribution.cpp \
-	test_oracle_distributor.cpp \
-	test_oracle_distributor_fake.cpp \
-	test_DIP_distributor.cpp \
-	tcp_server.cpp \
-        tcp_client.cpp \
-	test_tcp_distributor.cpp \
-	test_ROOT_distributor.cpp \
-	global_run.cpp \
 	global_run_fake.cpp \
-        test_distribution_fake.cpp
-#	test_debug_cout.cpp \
-#	test_section.cpp \
-#	tcp_receiver2.cpp \
-#	test_debug_file.cpp \
-#	test_nibble.cpp \
-#	test_tcp_distributor.cpp \
-#	tcp_receiver.cpp \
-#	test_DIP_distributor.cpp \
-#	test_oracle_distributor.cpp \
-#	udp_gen.cpp \
-#	test_all_fake.cpp \
-#	test_DIP_distributor_fake.cpp \
-#	test_oracle_distributor_fake.cpp
+	global_run.cpp \
+	test_distribution.cpp \
+        tcp_client_short.cpp \
+	tcp_client_long.cpp \
+	test_DIP_distributor.cpp \
+	test_oracle_distributor.cpp
 
 include $(XDAQ_ROOT)/config/Makefile.rules

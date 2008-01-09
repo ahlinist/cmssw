@@ -13,6 +13,7 @@
 
 // NibbleCollector class
 #include "TCPDistributor.hh"
+#include "DIPDistributor.hh"
 #include "NibbleCollector.hh"
 #include "SectionCollector.hh"
 
@@ -36,15 +37,17 @@ int main(int argc, char ** argv) {
 							       1);  // Num HLXs
     NibbleCollector *lNibbleCollector = new NibbleCollector(1);
     lNibbleCollector->AttachSectionCollector(lSectionCollector);
-    TCPDistributor *lTCPDistributor = new TCPDistributor("127.0.0.1",50002);
+    TCPDistributor *lTCPDistributor = new TCPDistributor("vmepcs2f17-18",50002);
+    DIPDistributor *lDIPDistributor = new DIPDistributor;
     lSectionCollector->AttachDistributor(lTCPDistributor);
+    lSectionCollector->AttachDistributor(lDIPDistributor);
 
     int startTime, tempTime, interTime = 0;
     time((time_t*)&startTime);
     tempTime=startTime;
 
     while (gContinue) {
-      lNibbleCollector->RunServiceHandler();
+      //lNibbleCollector->RunServiceHandler();
       time((time_t*)&tempTime);
       if ( tempTime != interTime ) {
 	cout << endl << tempTime-startTime << endl;
@@ -60,7 +63,7 @@ int main(int argc, char ** argv) {
 	cout << "Average data rate (Mb/s): " << (double)lNibbleCollector->GetTotalDataVolume()*8.0/(1024.0*1024.0*(double)(tempTime-startTime)) << endl;
 	interTime = tempTime;
       }
-      usleep(1000);
+      Sleep(100);
     }
 
   }catch(ICException & aExc){

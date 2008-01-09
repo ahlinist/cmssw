@@ -31,8 +31,10 @@ using namespace std;
 using namespace ICCoreUtils;
 using namespace HCAL_HLX;
 
-const u32 TIMEOUT_PERIOD = 20;
-const u32 SLEEP_TIME = 1;
+const u32 TIMEOUT_PERIOD = 1; //20;
+const u32 SLEEP_TIME = 320; //1000; //1;
+const unsigned int NumBunches = 300;
+const unsigned int DataSize = NumBunches*4;
 
 // Variables (global)
 u8 **crcTable;
@@ -69,7 +71,7 @@ u8 ComputeChecksum(const u8 *data, u32 numBytes) {
 
 void InitialiseChecksum() {
   // This has to be dynamically allocated or it won't work
-  crcTable = new (u8 *)[256];
+  crcTable = new u8 *[256];
 
   // Initialise the array
   for ( u32 i = 0 ; i != 256 ; i++ ) {
@@ -126,7 +128,7 @@ u8 ChecksumHelper(u8 data, u8 prevCRC) {
 const char sourceAddress[] = "192.168.1.100";
 const char targetAddress[] = "192.168.1.100";
 const unsigned short sourcePort = 0x3B53;
-const unsigned short destPort = 0x3A53;
+const unsigned short destPort = 0x3C53; //3A53
 
 // Data to be transmitted
 LUMI_RAW_HEADER lumiHeader = {
@@ -136,27 +138,27 @@ LUMI_RAW_HEADER lumiHeader = {
   0,      // start orbit
   0,      // num orbits
   0,      // start bunch (always zero for short orbit)
-  299,    // num bunches
+  NumBunches - 1,    // num bunches
   7,      // histogram set
   0,      // histogram sequence
   0xAAAA,
   0xFFFF
 };
-u16 lumiOccData[300];
-u32 lumiEtData[300];
-u8 payloadData[2000];
+u16 lumiOccData[NumBunches];
+u32 lumiEtData[NumBunches];
+u8 payloadData[DataSize];
 u32 payloadVolume = 0;
 
 void GeneratePacket() {
   memcpy(payloadData,&lumiHeader,sizeof(LUMI_RAW_HEADER));
   if ( lumiHeader.histogramSet == 7 ) {
-    memcpy(payloadData+sizeof(LUMI_RAW_HEADER),lumiEtData,sizeof(u32)*300);   
-    payloadData[sizeof(LUMI_RAW_HEADER)+sizeof(u32)*300] = ComputeChecksum(payloadData,sizeof(LUMI_RAW_HEADER)+sizeof(u32)*300);
-    payloadVolume = sizeof(LUMI_RAW_HEADER)+sizeof(u32)*300+1;
+    memcpy(payloadData+sizeof(LUMI_RAW_HEADER),lumiEtData,sizeof(u32)*NumBunches);   
+    payloadData[sizeof(LUMI_RAW_HEADER)+sizeof(u32)*NumBunches] = ComputeChecksum(payloadData,sizeof(LUMI_RAW_HEADER)+sizeof(u32)*NumBunches);
+    payloadVolume = sizeof(LUMI_RAW_HEADER)+sizeof(u32)*NumBunches+1;
   } else {
-    memcpy(payloadData+sizeof(LUMI_RAW_HEADER),lumiOccData,sizeof(u16)*300);   
-    payloadData[sizeof(LUMI_RAW_HEADER)+sizeof(u16)*300] = ComputeChecksum(payloadData,sizeof(LUMI_RAW_HEADER)+sizeof(u16)*300);
-    payloadVolume = sizeof(LUMI_RAW_HEADER)+sizeof(u16)*300+1;
+    memcpy(payloadData+sizeof(LUMI_RAW_HEADER),lumiOccData,sizeof(u16)*NumBunches);   
+    payloadData[sizeof(LUMI_RAW_HEADER)+sizeof(u16)*NumBunches] = ComputeChecksum(payloadData,sizeof(LUMI_RAW_HEADER)+sizeof(u16)*NumBunches);
+    payloadVolume = sizeof(LUMI_RAW_HEADER)+sizeof(u16)*NumBunches+1;
   }
 }
 

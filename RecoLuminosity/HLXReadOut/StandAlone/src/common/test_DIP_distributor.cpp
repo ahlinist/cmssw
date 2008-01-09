@@ -41,7 +41,7 @@ int main(int argc, char ** argv) {
 					     3, // Num nibbles per section
 					     1, // Num orbits in lumi nibble
 					     NUM_HLXS);  // Num HLXs
-    lNibbleCollector = new NibbleCollector(NUM_HLXS);
+    lNibbleCollector = new NibbleCollector(NUM_HLXS,0x533C);
     lNibbleCollector->AttachSectionCollector(lSectionCollector);
     lDIPDistributor = new DIPDistributor;
     lSectionCollector->AttachDistributor(lDIPDistributor);
@@ -50,8 +50,9 @@ int main(int argc, char ** argv) {
     time((time_t*)&startTime);
     tempTime=startTime;
 
+    lNibbleCollector->Start();
     while (gContinue) {
-      lNibbleCollector->RunServiceHandler();
+      //lNibbleCollector->RunServiceHandler();
       time((time_t*)&tempTime);
       if ( tempTime != interTime ) {
 	cout << endl << tempTime-startTime << endl;
@@ -67,7 +68,7 @@ int main(int argc, char ** argv) {
 	cout << "Average data rate (Mb/s): " << (double)lNibbleCollector->GetTotalDataVolume()*8.0/(1024.0*1024.0*(double)(tempTime-startTime)) << endl;
 	interTime = tempTime;
       }
-      Sleep(1);
+      Sleep(100);
     }
 
   }catch(ICException & aExc){

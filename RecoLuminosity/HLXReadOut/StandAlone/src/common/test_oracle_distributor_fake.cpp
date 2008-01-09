@@ -60,8 +60,8 @@ int main(int argc, char ** argv) {
     tempTime=startTime;
 
     while (gContinue) {
-      Sleep(1);
-      lNibbleCollector->RunServiceHandler();
+      Sleep(100);
+      //lNibbleCollector->RunServiceHandler();
       time((time_t*)&tempTime);
       if ( tempTime != interTime ) {
 	cout << endl << tempTime-startTime << endl;
@@ -77,7 +77,6 @@ int main(int argc, char ** argv) {
 	cout << "Average data rate (Mb/s): " << (double)lNibbleCollector->GetTotalDataVolume()*8.0/(1024.0*1024.0*(double)(tempTime-startTime)) << endl;
 	interTime = tempTime;
       }
-      usleep(1000);
     }
         
   }catch(ICException & aExc){
