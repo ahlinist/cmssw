@@ -25,7 +25,7 @@ using namespace std;
 using namespace HCAL_HLX;
 using namespace ICCoreUtils;
 
-#define NUM_HLXS 13
+#define NUM_HLXS 36
 
 int main(int argc, char ** argv) {
   signal(SIGINT,CtrlC);
@@ -34,12 +34,12 @@ int main(int argc, char ** argv) {
   TestDistributor *lTestDistributor = 0;
   try {
 
-cout << "NUM HLXS " << dec << NUM_HLXS << endl;
-    lSectionCollector = new SectionCollector(3564, //3564, // Num bunches
-					     3,    // Num nibbles per section
-					     4096,  //280,  // Num orbits in lumi nibble
-					     NUM_HLXS);   // Num HLXs
-    lNibbleCollector = new NibbleCollector(NUM_HLXS);
+    lSectionCollector = new SectionCollector(300,       // Num bunches
+					     4,         // Num nibbles per section
+					     1,         // Num orbits in lumi nibble
+					     1);//NUM_HLXS);  // Num HLXs
+
+    lNibbleCollector = new NibbleCollector(NUM_HLXS,0x533C);
     lTestDistributor = new TestDistributor;
     lNibbleCollector->AttachSectionCollector(lSectionCollector);
     lSectionCollector->AttachDistributor(lTestDistributor);
@@ -48,8 +48,10 @@ cout << "NUM HLXS " << dec << NUM_HLXS << endl;
     time((time_t*)&startTime);
     tempTime=startTime;
 
+    lNibbleCollector->Start();
+
     while (gContinue) {
-      lNibbleCollector->RunServiceHandler();
+      //lNibbleCollector->RunServiceHandler();
       time((time_t*)&tempTime);
       if ( tempTime != interTime ) {
 	cout << endl << tempTime-startTime << endl;
@@ -72,8 +74,10 @@ cout << "NUM HLXS " << dec << NUM_HLXS << endl;
 	cout << "Average data rate (Mb/s): " << (double)lNibbleCollector->GetTotalDataVolume()*8.0/(1024.0*1024.0*(double)(tempTime-startTime)) << endl;
 	interTime = tempTime;
       }
-      Sleep(1);
+      Sleep(100);
     }
+
+    lNibbleCollector->Stop();
 
   }catch(ICException & aExc){
     cerr<<aExc.what()<<endl;

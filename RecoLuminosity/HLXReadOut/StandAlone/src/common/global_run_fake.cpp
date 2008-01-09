@@ -13,7 +13,7 @@
 
 // HLX interface classes
 #include "OracleDistributor.hh"
-#include "ROOTDistributor.hh"
+//#include "ROOTDistributor.hh"
 #include "DIPDistributor.hh"
 #include "TCPDistributor.hh"
 #include "DebugCoutDistributor.hh"
@@ -35,8 +35,8 @@ using namespace HCAL_HLX;
 using namespace ICCoreUtils;
 
 #define NUM_HLXS 1
-#define SHORT_LENGTH 1000
-#define LONG_LENGTH 15000
+#define SHORT_LENGTH 4
+#define LONG_LENGTH 256
 #define NUM_BUNCHES 300 //3564
 #define NUM_ORBITS 1 //4096
 
@@ -48,7 +48,7 @@ int main(int argc, char ** argv) {
   // The distributors
   OracleDistributor *lOracleDistributor = 0;
   DIPDistributor *lDIPDistributor = 0;
-  ROOTDistributor *lROOTDistributor = 0;
+  //ROOTDistributor *lROOTDistributor = 0;
   TCPDistributor *lTCPDistributor = 0;
   DebugCoutDistributor *lDebugCoutDistributor = 0;
   GIFDistributor *lGIFDistributor = 0;
@@ -76,23 +76,23 @@ int main(int argc, char ** argv) {
     lSectionCollectorShort->SetRunNumber(runNumber);
     lSectionCollectorLong->SetRunNumber(runNumber);
 
-    lOracleDistributor = new OracleDistributor;
-    lSectionCollectorLong->AttachDistributor(lOracleDistributor);
-    lROOTDistributor = new ROOTDistributor;
-    lSectionCollectorLong->AttachDistributor(lROOTDistributor);
-    lDebugCoutDistributor = new DebugCoutDistributor;
-    lSectionCollectorLong->AttachDistributor(lDebugCoutDistributor);
+    //lOracleDistributor = new OracleDistributor;
+    //lSectionCollectorLong->AttachDistributor(lOracleDistributor);
+    //lROOTDistributor = new ROOTDistributor;
+    //lSectionCollectorLong->AttachDistributor(lROOTDistributor);
+    //lDebugCoutDistributor = new DebugCoutDistributor;
+    //lSectionCollectorLong->AttachDistributor(lDebugCoutDistributor);
 
-    lGIFDistributor = new GIFDistributor;
-    lSectionCollectorLong->AttachDistributor(lGIFDistributor);
+    //lGIFDistributor = new GIFDistributor;
+    //lSectionCollectorLong->AttachDistributor(lGIFDistributor);
     lDIPDistributor = new DIPDistributor;
     lSectionCollectorShort->AttachDistributor(lDIPDistributor);
-    lTCPDistributor = new TCPDistributor;
-    lSectionCollectorShort->AttachDistributor(lTCPDistributor);
-    for ( u32 i = 0 ; i != NUM_HLXS ; i++ ) {
-      lWedgeGIFDistributor[i] = new WedgeGIFDistributor(i);
-      lSectionCollectorLong->AttachDistributor(lWedgeGIFDistributor[i]);
-    }
+    //lTCPDistributor = new TCPDistributor;
+    //lSectionCollectorShort->AttachDistributor(lTCPDistributor);
+    //for ( u32 i = 0 ; i != NUM_HLXS ; i++ ) {
+    //lWedgeGIFDistributor[i] = new WedgeGIFDistributor(i);
+      //lSectionCollectorLong->AttachDistributor(lWedgeGIFDistributor[i]);
+    //}
 
     lNibbleCollector = new NibbleCollector(NUM_HLXS);
     lNibbleCollector->AttachSectionCollector(lSectionCollectorShort);
@@ -104,8 +104,8 @@ int main(int argc, char ** argv) {
     interTime=tempTime;
 
     while (gContinue) {
-      Sleep(1);
-      lNibbleCollector->RunServiceHandler();
+      Sleep(100);
+      //lNibbleCollector->RunServiceHandler();
       time((time_t*)&tempTime);
       if ( tempTime-interTime >= 5 ) {
 	cout << endl << endl;
@@ -144,7 +144,7 @@ int main(int argc, char ** argv) {
   delete lDIPDistributor;
   delete lDebugCoutDistributor;
   delete lTCPDistributor;
-  delete lROOTDistributor;
+  //delete lROOTDistributor;
   delete lOracleDistributor;
   delete lGIFDistributor;
   //for ( u32 i = 0 ; i != NUM_HLXS ; i++ ) {
