@@ -43,7 +43,10 @@ namespace HCAL_HLX
   public:
 
     // Constructor
-    OracleDistributor();
+    OracleDistributor(const char *username = 0,
+		      const char *password = 0,
+		      const char *location = 0,
+		      const char *schema = 0);
 
     // Destructor
     ~OracleDistributor();
