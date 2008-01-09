@@ -35,7 +35,8 @@ namespace HCAL_HLX
 				   char sourceAddress[]) {
     try {
       mUdpSocket=-1;
-      mThreadId=0;
+      mWorkerThreadId = 0;
+      mServiceThreadId=0;
       mNumHLXs = aNumHLXs;
 
       // Initialise the data structures
@@ -66,6 +67,10 @@ namespace HCAL_HLX
 		 &tempNum,&txa);
       cout << dec << "SO_RCVBUF set to " << tempNum << endl;
 
+      // Allow socket to be re-bound
+      int val=1;
+      setsockopt(mUdpSocket,SOL_SOCKET,SO_REUSEADDR,&val,sizeof(val));
+
       // Bind to a local port to receive data
       int ret = bind(mUdpSocket,(struct sockaddr *)&sa_local,sizeof(sa_local));
       if ( ret == -1 ) {
@@ -73,11 +78,14 @@ namespace HCAL_HLX
 	RAISE(lExc);
       }
 
+      cout << "Setup complete" << endl;
+
+      /*
       // Initialise the worker thread
       mWorkerThreadContinue=true;
       mWriteBufferPointer = 0;
       mReadBufferPointer = 0;
-      pthread_mutex_init(&mDataMutex,0);
+      //pthread_mutex_init(&mDataMutex,0);
 
       // Thread attribute initialisation
       pthread_attr_t attr;
@@ -99,7 +107,7 @@ namespace HCAL_HLX
       //ret = pthread_attr_setstacksize(&attr,stacksize);
 
       // Create the worker thread
-      ret = pthread_create(&mThreadId,
+      ret = pthread_create(&mWorkerThreadId,
 			   NULL,
 			   (void*(*)(void*))NibbleCollector::WorkerThread,
 			   reinterpret_cast<void *>(this));
@@ -114,35 +122,114 @@ namespace HCAL_HLX
       cout << "Thread policy set to SCHED_FIFO" << endl;
       schedparam.sched_priority = sched_get_priority_max(SCHED_FIFO);
       cout << "Thread priority set to " << schedparam.sched_priority << endl;
-      pthread_setschedparam(mThreadId,
+      pthread_setschedparam(mWorkerThreadId,
 			    policy,
 			    &schedparam);
-      pthread_getschedparam(mThreadId,
+      pthread_getschedparam(mWorkerThreadId,
 			    &policy,
 			    &schedparam);
       cout << "Policy is now: " << policy << endl;
       cout << "Priority is now: " << schedparam.sched_priority << endl;
+
+      cout << "Starting service thread" << endl;
+      mServiceThreadContinue=true;
+      ret = pthread_create(&mServiceThreadId,
+			   NULL,
+			   (void*(*)(void*))NibbleCollector::ServiceThread,
+			   reinterpret_cast<void *>(this));
+      if ( ret != 0 ) {
+	MemoryAllocationException lExc("Cannot create service thread");
+	RAISE(lExc);
+	}*/
 
     } catch (ICException & aExc) {
       RETHROW(aExc);
     }
   }
 
+  void NibbleCollector::Start() {
+
+    // Initialise the worker thread
+    mWorkerThreadContinue=true;
+    mWriteBufferPointer = 0;
+    mReadBufferPointer = 0;
+    
+    // Thread attribute initialisation
+    pthread_attr_t attr;
+    int ret = pthread_attr_init(&attr);
+    if ( ret != 0 ) {
+      MemoryAllocationException lExc("Cannot initialise worker thread attributes");
+      RAISE(lExc);
+    }
+    
+    // Create the worker thread
+    ret = pthread_create(&mWorkerThreadId,
+			 NULL,
+			 (void*(*)(void*))NibbleCollector::WorkerThread,
+			 reinterpret_cast<void *>(this));
+    if ( ret != 0 ) {
+      MemoryAllocationException lExc("Cannot create worker thread");
+      RAISE(lExc);
+    }
+    
+    int policy;
+    sched_param schedparam;
+    policy = SCHED_FIFO;
+    cout << "Thread policy set to SCHED_FIFO" << endl;
+    schedparam.sched_priority = sched_get_priority_max(SCHED_FIFO);
+    cout << "Thread priority set to " << schedparam.sched_priority << endl;
+    pthread_setschedparam(mWorkerThreadId,
+			  policy,
+			  &schedparam);
+    pthread_getschedparam(mWorkerThreadId,
+			  &policy,
+			  &schedparam);
+    cout << "Policy is now: " << policy << endl;
+    cout << "Priority is now: " << schedparam.sched_priority << endl;
+
+    // Service thread
+    cout << "Starting service thread" << endl;
+    mServiceThreadContinue=true;
+    ret = pthread_create(&mServiceThreadId,
+			 NULL,
+			 (void*(*)(void*))NibbleCollector::ServiceThread,
+			 reinterpret_cast<void *>(this));
+    if ( ret != 0 ) {
+      MemoryAllocationException lExc("Cannot create service thread");
+      RAISE(lExc);
+    }
+
+  }
+  
+  void NibbleCollector::Stop() {
+
+    // Worker thread shutdown
+    mWorkerThreadContinue=false;
+    pthread_join(mWorkerThreadId,NULL);
+    mWorkerThreadId = 0;
+    
+    // Service thread shutdown
+    mServiceThreadContinue=false;
+    pthread_join(mServiceThreadId,NULL);
+    mServiceThreadId = 0;
+
+  }
+
   // Destructor deletes the hardware interface
   NibbleCollector::~NibbleCollector() {
     try {
-      mWorkerThreadContinue=false;
+
+      if ( mWorkerThreadContinue ) Stop();
+
       if ( mUdpSocket != -1 ) {
 	// Release the socket
 	shutdown(mUdpSocket,SHUT_RDWR);
 	mUdpSocket=-1;
       }
-      pthread_join(mThreadId,NULL);
-      //cout << "rejoined" << endl;a
-      mThreadId=0;
-      pthread_mutex_destroy(&mDataMutex);
-      this->CleanUp();
-      //cout << "cleanup" << endl;
+
+      // Clean the data structures
+      CleanUp();
+
     } catch (ICException & aExc) {
       RETHROW(aExc);
     }
@@ -179,7 +266,7 @@ namespace HCAL_HLX
 	MemoryAllocationException lExc("LHC data counters");
 	RAISE(lExc);
       }
-      mOccupancyDataCounters = new (u32 *)[mNumHLXs];
+      mOccupancyDataCounters = new u32 *[mNumHLXs];
       if ( mOccupancyDataCounters == 0 ) {
 	MemoryAllocationException lExc("Occupancy data counters");
 	RAISE(lExc);
@@ -298,7 +385,7 @@ namespace HCAL_HLX
       // CRC table
       for ( u32 i = 0 ; i != 256 ; i++ ) {
 	if ( crcTable[i] ) {
-	  delete []crcTable;
+	  delete []crcTable[i];
 	  crcTable[i] = 0;
 	}
       }
@@ -326,7 +413,7 @@ namespace HCAL_HLX
   
       // Sock is an intialized socket handle
       tv.tv_sec = 0;
-      tv.tv_usec = 0;
+      tv.tv_usec = 1000;
       
       // Reset the descriptors
       FD_ZERO(&fds);
@@ -458,36 +545,46 @@ namespace HCAL_HLX
   }
 
   // Service handler
-  // This could be an interlock with a service thread, if needed
-  void NibbleCollector::RunServiceHandler() {
-    try {
+  //  void NibbleCollector::RunServiceHandler() {
+  void NibbleCollector::ServiceThread(void *thisPtr) {
+    // Poll for data here    
+    // No exceptions, just plain-vanilla C++
+    NibbleCollector *theClass = reinterpret_cast<NibbleCollector *>(thisPtr);
+
+  //    try {
       //pthread_mutex_lock(&mDataMutex);
-      while (mWriteBufferPointer!=mReadBufferPointer) {
+    while ( theClass->mServiceThreadContinue ) {
+      while (theClass->mWriteBufferPointer!=theClass->mReadBufferPointer) {
 	// Validate the checksum
-	if ( this->ValidateChecksum(circularBuffer[mReadBufferPointer].data,
-				    circularBuffer[mReadBufferPointer].len-1) ) {
+	if ( theClass->ValidateChecksum(theClass->circularBuffer[theClass->mReadBufferPointer].data,
+					theClass->circularBuffer[theClass->mReadBufferPointer].len-1) ) {
 	  // Increment the good packet counter
-	  mNumGoodPackets++;
+	  theClass->mNumGoodPackets++;
 	  // Map the lumi header
-	  LUMI_RAW_HEADER *lumiHdr = reinterpret_cast<LUMI_RAW_HEADER *>(circularBuffer[mReadBufferPointer].data);
+	  LUMI_RAW_HEADER *lumiHdr = reinterpret_cast<LUMI_RAW_HEADER *>(theClass->circularBuffer[theClass->mReadBufferPointer].data);
 	  
 	  // If the checksum is valid, process the packet
-	  this->ProcessPacket(lumiHdr,
-			      circularBuffer[mReadBufferPointer].data+sizeof(LUMI_RAW_HEADER),
-			      circularBuffer[mReadBufferPointer].len-1-sizeof(LUMI_RAW_HEADER));
-	  } else {
+	  theClass->ProcessPacket(lumiHdr,
+				  theClass->circularBuffer[theClass->mReadBufferPointer].data+sizeof(LUMI_RAW_HEADER),
+				  theClass->circularBuffer[theClass->mReadBufferPointer].len-1-sizeof(LUMI_RAW_HEADER));
+	} else {
 	  // Increment the bad packet counter
 	  //cout << "bad checksum" << endl;
-	    mNumBadPackets++;
+	    theClass->mNumBadPackets++;
 	  }
-      	mReadBufferPointer++;
+      	theClass->mReadBufferPointer++;
       }
-      //pthread_mutex_unlock(&mDataMutex);
-    } catch (ICException & aExc) {
-      //pthread_mutex_unlock(&mDataMutex);
-      RETHROW(aExc);
+      Sleep(1);
     }
+      //pthread_mutex_unlock(&mDataMutex);
+      //    } catch (ICException & aExc) {
+      //pthread_mutex_unlock(&mDataMutex);
+      //      cout << "Exception caught!!!" << endl;
+      //RETHROW(aExc);
+      //    }
   }
+
+    //  }
 
   void NibbleCollector::ProcessPacket(const LUMI_RAW_HEADER *lumiHdr,
 				      const u8 *data,
@@ -665,7 +762,7 @@ namespace HCAL_HLX
 
   void NibbleCollector::InitialiseChecksum() {
     // This has to be dynamically allocated or it won't work
-    crcTable = new (u8 *)[256];
+    crcTable = new u8 *[256];
     if ( crcTable == 0 ) {
       MemoryAllocationException lExc("CRC table");
       RAISE(lExc);

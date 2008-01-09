@@ -34,7 +34,7 @@ namespace HCAL_HLX
   bool TestDistributor::ProcessSection(const LUMI_SECTION & lumiSection) {
     try {
 
-      for ( u8 k = 0 ; k != lumiSection.hdr.numHLXs ; k++ ) {
+      for ( u16 k = 0 ; k != lumiSection.hdr.numHLXs ; k++ ) {
 	u32 i, value;
 	bool bExit = false;
 	for ( i = 0 ; i != lumiSection.hdr.numBunches ; i++ ) {
@@ -47,7 +47,7 @@ namespace HCAL_HLX
 	    if ( value > 0xFFFF ) value = 0xFFFF;
 	    value *= lumiSection.occupancy[k].hdr.numNibbles;
 	    if ( lumiSection.occupancy[k].data[j][i] != value ) {
-	      //cout << static_cast<u16>(k) << "\t" << j << "\t" << i << "\t" << lumiSection.occupancy[k][j].data[i] << "\t" << value << endl;
+	      //cout << static_cast<u16>(k) << "\t" << j << "\t" << i << "\t" << lumiSection.occupancy[k].data[j][i] << "\t" << value << endl;
 	      bExit = true;
 	      break;
 	    }
@@ -68,7 +68,8 @@ namespace HCAL_HLX
 	  if ( value > 0xFFFF ) value = 0xFFFF;
 	  value *= lumiSection.lhc[k].hdr.numNibbles;
 	  if ( lumiSection.lhc[k].data[i] != value ) {
-	    break;
+	    cout << static_cast<u16>(k) << "\t" << i << "\t" << lumiSection.lhc[k].data[i] << "\t" << value << endl;
+	    //break;
 	  }
 	}	
 	if ( i != lumiSection.hdr.numBunches ) {
@@ -83,6 +84,7 @@ namespace HCAL_HLX
 	  }
 	  value = i * lumiSection.hdr.numOrbits;
 	  if ( lumiSection.etSum[k].data[i] != value ) {
+	    //cout << static_cast<u16>(k) << "\t" << i << "\t" << lumiSection.etSum[k].data[i] << "\t" << value << endl;
 	    break;
 	  }
 	}

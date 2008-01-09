@@ -293,8 +293,8 @@ namespace HCAL_HLX
       while (it != clientList.end()) {
 	if ( it->nBytesLeft != 0 ) {
 	  // Flag an error (not done properly yet)
-	  cout << "TCPDistributor: ERROR - server interlock copy failed" << endl;
-	  cout << "                Client socket " << dec << it->socket << endl;
+	  //cout << "TCPDistributor: ERROR - server interlock copy failed" << endl;
+	  //cout << "                Client socket " << dec << it->socket << endl;
 	  pthread_mutex_unlock(&mDataMutex);
           return false;
 	} else {

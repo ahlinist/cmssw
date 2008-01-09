@@ -13,6 +13,8 @@
 #include "HardwareAccessException.hh"
 #include "MemoryAllocationException.hh"
 #include "OracleDBException.hh"
+#include "occi.h"
+
 //#include "ArgumentOutOfRangeException.hh"
 
 // HCAL HLX namespace
@@ -29,7 +31,10 @@ namespace HCAL_HLX
   }
 
   // Default constructor
-  OracleDistributor::OracleDistributor() {
+  OracleDistributor::OracleDistributor(const char *username,
+				       const char *password,
+				       const char *location,
+				       const char *schema) {
     mDBWriter = 0;
     mErrorCount = 0;
     mLumiBXData.aEtLumi = 0;
@@ -42,21 +47,37 @@ namespace HCAL_HLX
       // Database is publicly visible to anyone on CERN network,
       // so information is stored only locally on readout server
       // inside a private network...
-      string mOracleDBUserName(getenv("HLX_ORACLE_DB_USER_NAME"));
-      string mOracleDBPassword(getenv("HLX_ORACLE_DB_PASSWORD"));
-      string mOracleDBLocation(getenv("HLX_ORACLE_DB_LOCATION"));
-      string mOracleDBSchema(getenv("HLX_ORACLE_DB_SCHEMA"));
+      string mOracleDBUserName;
+      string mOracleDBPassword;
+      string mOracleDBLocation;
+      string mOracleDBSchema;
+
+      if ( username ) {
+	mOracleDBUserName = username;
+      } else {
+	mOracleDBUserName = getenv("HLX_ORACLE_DB_USER_NAME");
+      }
+      if ( password ) {
+	mOracleDBPassword = password;
+      } else {
+	mOracleDBPassword = getenv("HLX_ORACLE_DB_PASSWORD");
+      }
+      if ( location ) {
+	mOracleDBLocation = location;
+      } else {
+	mOracleDBLocation = getenv("HLX_ORACLE_DB_LOCATION");
+      }
+      if ( schema ) {
+	mOracleDBSchema = schema;
+      } else {
+	mOracleDBSchema = getenv("HLX_ORACLE_DB_SCHEMA");
+      }
 
       // Initialisation of DB connection
       mDBWriter = new DBWriter(mOracleDBUserName,
 			       mOracleDBPassword,
 			       mOracleDBLocation,
 			       mOracleDBSchema);
-	      
-      //mOracleEnvironment = Environment::createEnvironment(Environment::DEFAULT);
-      //mOracleConnection = mOracleEnvironment->createConnection(*mOracleDBUserName,
-      //						       *mOracleDBPassword,
-      //						       *mOracleDBLocation);
       
       // Create the initial data structures
       mLumiBXData.aBX = new int[4096];
@@ -69,10 +90,11 @@ namespace HCAL_HLX
 
     } catch (OracleDBException & aExc) {
       RETHROW(aExc);
-    } catch (std::exception & aExc) {
-      HardwareAccessException lExc(aExc.what());
-      RAISE(lExc);
     }
+    //catch (SQLException aExc) {
+    //OracleDBException lExc(aExc.getMessage());
+    //RAISE(lExc);
+    //}
 
   }
 
@@ -92,7 +114,6 @@ namespace HCAL_HLX
   }
 
   bool OracleDistributor::ProcessSection(const LUMI_SECTION & lumiSection) {
-    //cout << "Begin " << __PRETTY_FUNCTION__ << endl;
     try {
       // Get the next sequence ID
       long lumiSectionID = mDBWriter->getLumiSectionSeq();
@@ -109,7 +130,6 @@ namespace HCAL_HLX
       mLumiSectionData.lsNum = static_cast<int>(lumiSection.hdr.sectionNumber);
 
       // Write the lumi section data into the DB      
-      //cout << "OracleDistributor: Inserting luminosity section" << endl;
       mDBWriter->insertBind_LumiSec(lumiSectionID,
 				    mLumiSectionData);
 
@@ -126,7 +146,6 @@ namespace HCAL_HLX
       mLumiSummaryData.instOccLumiQ = 0;
 
       // Write the lumi summary data
-      //cout << "OracleDistributor: Inserting luminosity summary data" << endl;
       mDBWriter->insertBind_LumiSummary(lumiSectionID,
 					mLumiSummaryData);
 
@@ -145,12 +164,16 @@ namespace HCAL_HLX
       }
 
       // Write the lumi BX data
-      //cout << "OracleDistributor: Inserting luminosity bx data" << endl;
       mDBWriter->insertArray_LumiBX(lumiSectionID,
 				    mLumiBXData);
       return true;
-    } catch (OracleDBException & aExc) {
-      cout << aExc.what() << endl;
+
+      //    } catch (SQLException aExc) {      //cout << "Oracle error code " << std::dec << aExc.getErrorCode() << endl;
+      //    }
+    } catch (OracleDBException aExc) {
+    //    } catch (ICException aExc) {
+      cout << "Oracle error" << endl;
+      //cout << aExc.what() << endl;
       mErrorCount++;
       // TODO: decide whether to return true or false depending on DB exception!
       return true;

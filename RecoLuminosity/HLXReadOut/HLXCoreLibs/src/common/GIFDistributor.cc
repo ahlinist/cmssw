@@ -134,7 +134,7 @@ namespace HCAL_HLX
     histogramET.GetXaxis()->SetTitle("BX Number");
     histogramET.GetYaxis()->SetTitle("ET Sum");
     histogramET.Draw();
-    canvas.SaveAs("tmp/et.png");
+    canvas.SaveAs("pic/et.png");
   }
 
   void GIFDistributor::DoLHCHistogram(u32 numBunches) {
@@ -153,7 +153,7 @@ namespace HCAL_HLX
     histogramET.GetXaxis()->SetTitle("BX Number");
     histogramET.GetYaxis()->SetTitle("Count");
     histogramET.Draw();
-    canvas.SaveAs("tmp/lhc.png");
+    canvas.SaveAs("pic/lhc.png");
   }
 
   void GIFDistributor::DoBelowOccTopHistogram(u32 numBunches) {
@@ -172,7 +172,7 @@ namespace HCAL_HLX
     histogramET.GetXaxis()->SetTitle("BX Number");
     histogramET.GetYaxis()->SetTitle("Count");
     histogramET.Draw();
-    canvas.SaveAs("tmp/occ_below_threshold_top.png");
+    canvas.SaveAs("pic/occ_below_threshold_top.png");
   }
 
   void GIFDistributor::DoBetweenOccTopHistogram(u32 numBunches) {
@@ -191,7 +191,7 @@ namespace HCAL_HLX
     histogramET.GetXaxis()->SetTitle("BX Number");
     histogramET.GetYaxis()->SetTitle("Count");
     histogramET.Draw();
-    canvas.SaveAs("tmp/occ_between_thresholds_top.png");
+    canvas.SaveAs("pic/occ_between_thresholds_top.png");
 
   }
 
@@ -211,7 +211,7 @@ namespace HCAL_HLX
     histogramET.GetXaxis()->SetTitle("BX Number");
     histogramET.GetYaxis()->SetTitle("Count");
     histogramET.Draw();
-    canvas.SaveAs("tmp/occ_above_threshold_top.png");
+    canvas.SaveAs("pic/occ_above_threshold_top.png");
   }
 
   void GIFDistributor::DoBelowOccBottomHistogram(u32 numBunches) {
@@ -230,7 +230,7 @@ namespace HCAL_HLX
     histogramET.GetXaxis()->SetTitle("BX Number");
     histogramET.GetYaxis()->SetTitle("Count");
     histogramET.Draw();
-    canvas.SaveAs("tmp/occ_below_threshold_bottom.png");
+    canvas.SaveAs("pic/occ_below_threshold_bottom.png");
 
   }
 
@@ -250,7 +250,7 @@ namespace HCAL_HLX
     histogramET.GetXaxis()->SetTitle("BX Number");
     histogramET.GetYaxis()->SetTitle("Count");
     histogramET.Draw();
-    canvas.SaveAs("tmp/occ_between_thresholds_bottom.png");
+    canvas.SaveAs("pic/occ_between_thresholds_bottom.png");
   }
 
   void GIFDistributor::DoAboveOccBottomHistogram(u32 numBunches) {
@@ -270,7 +270,7 @@ namespace HCAL_HLX
     histogram.GetYaxis()->SetTitle("Count");
     histogram.Draw();
     
-    canvas.SaveAs("tmp/occ_above_threshold_bottom.png");
+    canvas.SaveAs("pic/occ_above_threshold_bottom.png");
   }
 
   bool GIFDistributor::ProcessSection(const LUMI_SECTION & lumiSection) { 

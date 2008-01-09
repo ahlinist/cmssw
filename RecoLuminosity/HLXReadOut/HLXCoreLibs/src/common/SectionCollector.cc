@@ -336,6 +336,7 @@ namespace HCAL_HLX
 	    } else {
 	      nextIndex++;
 	    }
+
 #ifdef HCAL_HLX_SECTION_COLLECTOR_DEBUG
 	    cout << "Write index is: " << dec << mDistributors[i]->writeIndex << endl;
 	    cout << "Read index is: " << dec << mDistributors[i]->readIndex << endl;
@@ -381,6 +382,7 @@ namespace HCAL_HLX
 	mLumiSection->lhc[hlxID].hdr.numNibbles = 1;
 	// As this is the first nibble of the set, copy into array
 	for ( u32 i = 0 ; i != mNumBunches ; i++ ) {
+	  //cout << lhcNibble.data[i] << "\t";
 	  mLumiSection->lhc[hlxID].data[i] = lhcNibble.data[i];
 	}
 
@@ -397,6 +399,7 @@ namespace HCAL_HLX
 	mLumiSection->lhc[hlxID].hdr.numNibbles++;
 	
 	for ( u32 i = 0 ; i != mNumBunches ; i++ ) {
+	  //cout << lhcNibble.data[i] << "\t";
 	  // Accumulate the data
 	  mLumiSection->lhc[hlxID].data[i] += lhcNibble.data[i];
 	}
