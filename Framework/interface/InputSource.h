@@ -110,6 +110,7 @@ namespace edm {
     /// Begin again at the first event
     void rewind() {
       doneReadAhead_ = false;
+      state_ = IsInvalid;
       rewind_();
     }
 

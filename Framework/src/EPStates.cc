@@ -32,8 +32,8 @@ namespace statemachine {
   }
 
   void Machine::rewindAndPrepareForNextLoop(const Restart & restart) {
-    ep_->rewindInput();
     ep_->prepareForNextLoop();
+    ep_->rewindInput();
   }
 
   Starting::Starting(my_context ctx) : my_base(ctx) { }
