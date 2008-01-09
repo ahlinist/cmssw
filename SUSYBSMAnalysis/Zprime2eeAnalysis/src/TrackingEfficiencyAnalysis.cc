@@ -308,7 +308,7 @@ void TrackingEfficiencyAnalysis::analyze(const edm::Event& iEvent, const edm::Ev
 	if( tagEt > tagEtMin_ ) //tag ele must have Et above certain threshold
 	  if( tag_tkPt_over_elePt < max_tag_tkPt_over_elePt_ )//isolation cut for Tags - Tracks
 	    if( tagEcalEt_over_Et < max_ecalEt_over_tagEt_ )
-	      if( tag_tkNumInCone > max_tag_tkNumInCone_)
+	      if( tag_tkNumInCone <= max_tag_tkNumInCone_)
 		if( tagHcalEt_over_Et < tagHcalEt_over_Et_max_)//isolation cut for Tags - HCAL/ECAL
 		  TagCollection.push_back( &(*tagIt) );
       
