@@ -51,6 +51,10 @@ namespace HCAL_HLX
     
     // Reset function
     void Reset();
+    // Thread start function
+    void Start();
+    // Thread stop function
+    void Stop();
 
     // Statistics
     u32 GetNumGoodPackets();
@@ -69,7 +73,7 @@ namespace HCAL_HLX
     u16 GetReadBufferPointer();
 
     // Service handler function
-    void RunServiceHandler();
+    //void RunServiceHandler();
 
     // Lumi section collector
     void AttachSectionCollector(AbstractSectionCollector *sectionCollector);
@@ -89,6 +93,9 @@ namespace HCAL_HLX
 
     // Thread worker function
     static void WorkerThread(void *thisPtr);
+
+    // Thread service function
+    static void ServiceThread(void *thisPtr);
 
     // Checksum calculation helper functions
     bool ValidateChecksum(const u8 *data, u32 numBytes);
@@ -126,6 +133,7 @@ namespace HCAL_HLX
 
     // Worker thread continuation flag
     bool mWorkerThreadContinue;
+    bool mServiceThreadContinue;
 
     // Number of HLXs in system
     u32 mNumHLXs;
@@ -146,10 +154,10 @@ namespace HCAL_HLX
     u8 **crcTable;
 
     // Worker thread ID
-    pthread_t mThreadId;
+    pthread_t mWorkerThreadId, mServiceThreadId;
 
     // Mutex 
-    pthread_mutex_t mDataMutex;
+    //pthread_mutex_t mDataMutex;
 
     // Hardware abstraction layer
     //HLX_HAL::HLXVMEILInterface * mHardwareInterface;
