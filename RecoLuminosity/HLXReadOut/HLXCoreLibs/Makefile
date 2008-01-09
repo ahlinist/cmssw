@@ -4,15 +4,12 @@ Project=$(ProjectGroup)/HLXReadOut
 Package=HLXCoreLibs
 
 IncludeDirs = \
-	$(XDAQ_ROOT)/$(ProjectGroup)/LumiDB/include \
-	$(XDAQ_ROOT)/$(ProjectGroup)/LumiCalc/interface \
-	$(XDAQ_ROOT)/$(Project)/$(Package)/include \
-	$(XDAQ_ROOT)/$(Project)/CoreUtils/include \
-	$(XDAQ_ROOT)/$(Project)/DIP/include \
-	$(ORACLE_ROOT)/rdbms/demo \
-	$(ORACLE_ROOT)/plsql/public \
-	$(ORACLE_ROOT)/rdbms/public \
-	$(ORACLE_ROOT)/network/public \
+	$(BUILD_HOME)/$(ProjectGroup)/LumiDB/include \
+	$(BUILD_HOME)/$(ProjectGroup)/LumiCalc/interface \
+	$(BUILD_HOME)/$(Project)/$(Package)/include \
+	$(BUILD_HOME)/$(Project)/CoreUtils/include \
+	$(DIPBASE)/include \
+	$(ORACLE_ROOT)/include \
 	$(ROOTSYS)/include
 
 Sources = \
@@ -27,9 +24,11 @@ Sources = \
         SectionCollector.cc \
 	TestSectionCollector.cc \
         TCPDistributor.cc \
-	ROOTDistributor.cc \
-	ROOTDistributor_Dict.cc \
-        ROOTMutex.cc
+	SectionListDistributor.cc \
+	ROOTMutex.cc
+#	ROOTDistributor.cc \
+#	ROOTDistributor_Dict.cc \
+#       ROOTMutex.cc \
 
 # some XDAQ-required stuff
 include $(XDAQ_ROOT)/config/mfAutoconf.rules
@@ -54,5 +53,5 @@ TestLibraries=
 # targets
 all : _all 
 
-#standard XDAQ C++ compilation
+# standard XDAQ C++ compilation
 include $(XDAQ_ROOT)/config/Makefile.rules
