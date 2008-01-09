@@ -1,15 +1,10 @@
 #!/bin/bash
 
-export DIPBASE=${HOME}/TriDAS/$Project/DIP
-echo DIPBASE set to $DIPBASE
+export DIPBASE=/opt/DIP
 export CLASSPATH=$DIPBASE/lib/dip.jar
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$DIPBASE/lib
-#echo CLASSPATH was extended with $DIPBASE/lib/dip.jar
-#echo LD_LIBRARY_PATH was extended with $DIPBASE/lib
-#export DIPNS=cms-cent-dcs-02  #fwserv01.cern.ch
-#export DIPPORT=2506
-export DIPNS=cms-cent-dcs-02
-#export DIM_DNS_PORT=2505
-#export DIM_DNS_NODE=cms-cent-dcs-02
-#export DIMDNSNODE=$DIM_DNS_NODE
-#export DIMDNSPORT=$DIM_DNS_PORT
+
+# This is the DCS PC that forwards DIP data from the
+# .CMS private network to the CERN network
+export DIPNS=cms-cent-dcs-01
+
