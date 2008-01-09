@@ -2,7 +2,7 @@
 #include "ConfigFileErrorException.hh"
 #include "FileNotOpenedException.hh"
 
-namespace GCT_SC
+namespace HCAL_HLX
 {
   using namespace std;
 
@@ -142,20 +142,21 @@ namespace GCT_SC
 				    const std::string & aKey, 
 				    std::string & aLine)
   {
-//cout<<"ASCIIReaderEngine::Key = "<<aKey<<endl;
+    //cout<<"ASCIIReaderEngine::Key = "<<aKey<<endl;
 
     mInputStream.seekg(0);  
     do {
       std::getline(mInputStream, aLine, '\n');
-//cout<<">>>> ASCIIReaderEngine::Line = "<<aLine<<endl;
+      //cout<<">>>> ASCIIReaderEngine::Line = "<<aLine<<endl;
       if(mInputStream.eof()){
+	mInputStream.clear();
 	break;
       }
       if(aLine.find(aKey)!=aLine.npos){
 	return true;
       }
     }while(true); 
-  
+    
     return false;
   }
 

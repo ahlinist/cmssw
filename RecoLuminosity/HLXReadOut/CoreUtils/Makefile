@@ -2,7 +2,7 @@ Project=RecoLuminosity/HLXReadOut
 Package=CoreUtils
 
 IncludeDirs = \
-	$(XDAQ_ROOT)/$(Project)/$(Package)/include
+	$(BUILD_HOME)/$(Project)/$(Package)/include
 
 Sources = \
 	ASCIIReaderEngine.cc \

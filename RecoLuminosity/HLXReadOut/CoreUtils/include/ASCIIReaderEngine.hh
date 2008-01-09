@@ -10,7 +10,7 @@
 #include <string>
 #include <sstream>
 
-namespace GCT_SC
+namespace HCAL_HLX
 {
 
   using namespace ICCoreUtils;
@@ -18,9 +18,6 @@ namespace GCT_SC
   class ASCIIReaderEngine
   {
   public:
-    
-    
-  protected:
     ASCIIReaderEngine(const std::string & aFileName);
     virtual ~ASCIIReaderEngine();
     
@@ -111,6 +108,8 @@ namespace GCT_SC
     void ExtractValue(const std::string & aLine, 
 		      std::string & aVal)
     {
+      //std::cout << __PRETTY_FUNCTION__ << std::endl;
+      //std::cout << aLine << std::endl;
       size_t lStartPos=aLine.find('\"');
       if(lStartPos==aLine.npos){
 	return;
