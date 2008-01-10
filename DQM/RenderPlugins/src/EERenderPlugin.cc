@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.49 2007/12/31 11:22:30 elmer Exp $
+// $Id: EERenderPlugin.cc,v 1.51 2008/01/05 16:13:24 elmer Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.49 $
-  \date $Date: 2007/12/31 11:22:30 $
+  \version $Revision: 1.51 $
+  \date $Date: 2008/01/05 16:13:24 $
 */
 
 #include "TH1F.h"
@@ -380,6 +380,16 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const ObjInfo &o ) {
   }
 
   // Occupancy-like (10 x grays) plots
+  if( o.name.find( "EESFT" ) < o.name.size() &&
+      o.name.find( "summary" ) >= o.name.size() ) {
+    obj->SetMinimum(0.0);
+    gStyle->SetPalette(10, pCol5);
+    obj->SetOption("colz");
+    gStyle->SetPaintTextFormat("+g");
+    return;
+  }
+
+  // Occupancy-like (10 x grays) plots
   if( o.name.find( "EECT" ) < o.name.size() ) {
     obj->SetMinimum(0.0);
     gStyle->SetPalette(10, pCol4);
@@ -443,6 +453,16 @@ void EERenderPlugin::preDrawTH1F( TCanvas *c, const ObjInfo &o ) {
   }
 
   if( o.name.find( "EEMM DCC" ) < o.name.size() ) {
+   gPad->SetBottomMargin(0.2);
+   obj->GetXaxis()->LabelsOption("v");
+  }
+
+  if( o.name.find( "front-end status bits" ) < o.name.size() ) {
+   gPad->SetBottomMargin(0.25);
+   obj->GetXaxis()->LabelsOption("v");
+  }
+
+  if( o.name.find( "front-end status errors summary" ) < o.name.size() ) {
    gPad->SetBottomMargin(0.2);
    obj->GetXaxis()->LabelsOption("v");
   }
