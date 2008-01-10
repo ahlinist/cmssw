@@ -119,6 +119,7 @@ namespace edm {
     using Base::prodGetter;
     using Base::productRegistry;
     using Base::put;
+    using Base::readImmediate;
     using Base::size;
     using Base::store;
 

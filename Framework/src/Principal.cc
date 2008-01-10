@@ -413,6 +413,18 @@ namespace edm {
     }
   }
 
+  void
+  Principal::readImmediate() const {
+    for (Principal::const_iterator i = begin(), iEnd = end(); i != iEnd; ++i) {
+      if ((*i)->provenanceAvailable()) {
+	resolveProvenance(**i);
+        if (!(*i)->productUnavailable()) {
+	   resolveProduct(**i, false);
+	}
+      }
+    }
+  }
+
   EDProduct const *
   Principal::getIt(ProductID const& oid) const {
     return get(oid).wrapper();
