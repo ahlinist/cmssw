@@ -52,6 +52,8 @@ namespace edm {
 
     void writeLumi(LuminosityBlockPrincipal const* lbp);
 
+    void respondToOpenInputFile(FileBlock const* fb);
+
     void respondToCloseInputFile(FileBlock const* fb);
 
     bool limitReached() const;

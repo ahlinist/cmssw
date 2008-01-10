@@ -371,6 +371,11 @@ namespace edm {
     openFile(fb);
   }
 
+  void OutputModule::doRespondToOpenInputFile(FileBlock const& fb)
+  {
+    respondToOpenInputFile(fb);
+  }
+
   void OutputModule::doRespondToCloseInputFile(FileBlock const& fb)
   {
     respondToCloseInputFile(fb);

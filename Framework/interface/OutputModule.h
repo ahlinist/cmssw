@@ -54,6 +54,7 @@ namespace edm {
     void doWriteRun(RunPrincipal const& rp);
     void doWriteLuminosityBlock(LuminosityBlockPrincipal const& lbp);
     void doOpenFile(FileBlock const& fb);
+    void doRespondToOpenInputFile(FileBlock const& fb);
     void doRespondToCloseInputFile(FileBlock const& fb);
     /// Tell the OutputModule this is a convenient time to end the
     /// current file, in case it wants to do so.
@@ -194,6 +195,7 @@ namespace edm {
     virtual void endLuminosityBlock(LuminosityBlockPrincipal const& lb){}
     virtual void writeLuminosityBlock(LuminosityBlockPrincipal const& lb) = 0;
     virtual void openFile(FileBlock const& fb) {}
+    virtual void respondToOpenInputFile(FileBlock const& fb) {}
     virtual void respondToCloseInputFile(FileBlock const& fb) {}
 
     virtual bool isFileOpen() const { return true; }

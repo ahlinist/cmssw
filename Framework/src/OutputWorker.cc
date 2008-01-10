@@ -50,6 +50,11 @@ namespace edm {
   }
 
   void
+  OutputWorker::respondToOpenInputFile(FileBlock const* fb) {
+    mod_->doRespondToOpenInputFile(*fb);
+  }
+
+  void
   OutputWorker::respondToCloseInputFile(FileBlock const* fb) {
     mod_->doRespondToCloseInputFile(*fb);
   }
