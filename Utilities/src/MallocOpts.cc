@@ -36,8 +36,13 @@ namespace edm
   
     cpu_type get_cpu_type()
     {
-      int op=0,a;
-      int ans[4];
+      // issue: these need to be static.  The asm instruction combined
+      // with optimization on the 64 bit platform moves the stack data
+      // member around in such a way that the =m directive misses the
+      // the location.   Of course this means that this routine is not
+      // multithread safe.
+      static volatile int op=0,a;
+      static volatile int ans[4];
 
 // Still some problem on x86_64, so only i386 for now    
 #if defined(__x86_64__)
