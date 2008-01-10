@@ -40,8 +40,24 @@ namespace edm
       int ans[4];
 
 // Still some problem on x86_64, so only i386 for now    
-//#if defined(__x86_64__) || defined(__i386__)
-#if defined(__i386__)
+#if defined(__x86_64__)
+
+      __asm__ __volatile__ ("pushq %%rbx;\
+ pushq %%rdx;				 \
+ pushq %%rcx;				 \
+ cpuid;					 \
+ movl  %%ecx,%0;			 \
+ movl  %%edx,%1;			 \
+ movl  %%ebx,%2;			 \
+ movl  %%eax,%3;			 \
+ popq  %%rcx;				 \
+ popq  %%rdx;				 \
+ popq  %%rbx;"
+                            : "=m"(ans[2]), "=m"(ans[1]), "=m"(ans[0]), "=m"(a)
+                            : "a"(op)
+			    );
+
+#elif defined(__i386__)
 
 
       __asm__ __volatile__ ("pushl %%ebx;\
