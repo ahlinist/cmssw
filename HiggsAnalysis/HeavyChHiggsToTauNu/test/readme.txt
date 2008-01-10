@@ -34,14 +34,10 @@
 22.11.2007/S.Lehti CMSSW_1_6_7  Added particleType in MyTrack class for storing
 				PF ParticleType: X=0,h=1,e=2,mu=3,gamma=4,h0=5
 
+10.1.2008/S.Lehti CMSSW_1_6_8   Dictionary created automatically by BuildFile
+
 
 	How to compile:
-	- First make event dictionaries for the MyEvent class
-		cd HiggsAnalysis/HeavyChHiggsToTauNu/src
-		(chmod +x dictionary.csh if needed)
-		dictionary.csh
-
-		Rerun dictionary.csh every time after changing anything in MyEvent class
 	-compile
 		cd HiggsAnalysis/HeavyChHiggsToTauNu
 		scramv1 b
