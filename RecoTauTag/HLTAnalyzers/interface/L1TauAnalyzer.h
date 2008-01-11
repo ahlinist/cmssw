@@ -41,6 +41,7 @@
 #include "DataFormats/METReco/interface/CaloMETCollection.h"
 #include "DataFormats/METReco/interface/CaloMET.h"
 #include "DataFormats/METReco/interface/METCollection.h"
+#include "DataFormats/METReco/interface/CaloMET.h"
 #include "DataFormats/JetReco/interface/GenJet.h"
 #include "DataFormats/METReco/interface/GenMET.h"
 #include "DataFormats/JetReco/interface/JetTracksAssociation.h"
