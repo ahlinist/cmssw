@@ -2,7 +2,7 @@
 #define _ContentReader_h_
 
 #include "xdaq/Application.h"
-#include "DQMServices/CoreROOT/interface/DaqMonitorROOTBackEnd.h"
+#include "DQMServices/Core/interface/DaqMonitorROOTBackEnd.h"
 
 
 class ContentReader
