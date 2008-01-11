@@ -99,9 +99,15 @@ void BsAnalyzer::analyze( const Event& e, const EventSetup& )
    if (Evt) nevent++;
 
    const float mmcToPs = 3.3355; 
-   int nB=0;
-   int nBz=0;
-   int nBzb=0;
+   int nB = 0;
+   int nBp = 0;
+   int nBz = 0;
+   int nBzb = 0;
+   int nBzmix = 0;
+   int nBzunmix = 0;
+   int nBzKmumu = 0;
+   int nBJpsiKs = 0;
+   int nBJpsiKstar = 0;
 
    for ( GenEvent::particle_const_iterator p = Evt->particles_begin(); p != Evt->particles_end(); ++p ) {
 
@@ -117,9 +123,6 @@ void BsAnalyzer::analyze( const Event& e, const EventSetup& )
        dectime = (endvert->position().t() - prodvert->position().t())*mmcToPs/gamma;
 
        // Mixed particle ?
-       for ( GenVertex::particles_out_const_iterator ap = endvert->particles_out_const_begin(); ap != endvert->particles_out_const_end(); ++ap ) {
-	 if ( (*p)->pdg_id() + (*ap)->pdg_id() == 0) mixed = 0;
-       }
        for ( GenVertex::particles_in_const_iterator p2 = prodvert->particles_in_const_begin(); p2 != prodvert->particles_in_const_end(); ++p2 ) { 
 	 if ( (*p)->pdg_id() + (*p2)->pdg_id() == 0) {
 	   mixed = 1;
@@ -127,6 +130,9 @@ void BsAnalyzer::analyze( const Event& e, const EventSetup& )
            GenVertex* mixvert = (*p2)->production_vertex();
            dectime = (prodvert->position().t() - mixvert->position().t())*mmcToPs/gamma;
 	 }
+       }
+       for ( GenVertex::particles_out_const_iterator ap = endvert->particles_out_const_begin(); ap != endvert->particles_out_const_end(); ++ap ) {
+	 if ( (*p)->pdg_id() + (*ap)->pdg_id() == 0) mixed = 0;
        }
      }
 
@@ -137,11 +143,15 @@ void BsAnalyzer::analyze( const Event& e, const EventSetup& )
        if (!endvert) {
 	 *undecayed << (*p)->pdg_id() << endl;
        } else {
-	 *decayed << (*p)->pdg_id() << endl;
+	 *decayed << (*p)->pdg_id() << " --> " ;
+         for ( GenVertex::particles_out_const_iterator bp = endvert->particles_out_const_begin(); bp != endvert->particles_out_const_end(); ++bp ) {
+	   *decayed << (*bp)->pdg_id() << " " ;
+         }
+         *decayed << endl;
        }
      }
      // --------------------------------------------------------------
-     if ( (*p)->pdg_id() == 531 ) {  // B_s 
+     if ( (*p)->pdg_id() == 531 /* && endvert */ ) {  // B_s 
        nbs++;
        hPtbs->Fill((*p)->momentum().perp());
        hPbs->Fill( sqrt ( pow((*p)->momentum().px(),2)+pow((*p)->momentum().py(),2)+
@@ -161,16 +171,21 @@ void BsAnalyzer::analyze( const Event& e, const EventSetup& )
        
      }
      // --------------------------------------------------------------
-     if ( abs((*p)->pdg_id()) == 511 ) {  // B0 
+     if ( abs((*p)->pdg_id()) == 511 /* && endvert */ ) {  // B0 
        if (mixed != 0) {
 	 nB++;
-         if ( (*p)->pdg_id() > 0 ) {nBz++;} else {nBzb++;}
+         if ( (*p)->pdg_id() > 0 ) {
+	   nBz++;
+	   if ( mixed == 1 ) {nBzmix++;} else {nBzunmix++;}
+	 } else {nBzb++;}         
        }
        int isJpsiKs = 0;
+       int isKmumu = 0;
        int isSemilept = 0;
        for ( GenVertex::particles_out_const_iterator bp = endvert->particles_out_const_begin(); bp != endvert->particles_out_const_end(); ++bp ) {
 	 if ( (*p)->pdg_id() > 0 ) hIdBDaugs->Fill((*bp)->pdg_id());
          if ( (*bp)->pdg_id() == 443 || (*bp)->pdg_id() == 310 ) isJpsiKs++ ; 
+         if ( (*p)->pdg_id() > 0 && ( abs((*bp)->pdg_id()) == 313 || abs((*bp)->pdg_id()) == 13 )) isKmumu++ ; 
          if ( abs((*bp)->pdg_id()) == 11 || abs((*bp)->pdg_id()) == 13 || abs((*bp)->pdg_id()) == 15 ) isSemilept++ ;
        }
         
@@ -188,6 +203,7 @@ void BsAnalyzer::analyze( const Event& e, const EventSetup& )
        }
 
        if (isJpsiKs == 2) {
+         nBJpsiKs++;
 	 if ( (*p)->pdg_id()*mixed < 0 ) { 
 	   htbbarJpsiKs->Fill( dectime );
 	 } else {
@@ -195,10 +211,17 @@ void BsAnalyzer::analyze( const Event& e, const EventSetup& )
 	 }
        }
       
+       if (isKmumu == 3) nBzKmumu++; 
      }
      // --------------------------------------------------------------
-     if ( abs((*p)->pdg_id()) == 521 ) {  // B+
+     if ( abs((*p)->pdg_id()) == 521 /* && endvert */ ) {  // B+
+       nBp++;
        htbPlus->Fill( dectime );
+       int isJpsiKstar = 0;
+       for ( GenVertex::particles_out_const_iterator bp = endvert->particles_out_const_begin(); bp != endvert->particles_out_const_end(); ++bp ) {
+         if ( (*bp)->pdg_id() == 443 || abs( (*bp)->pdg_id() ) == 323 ) isJpsiKstar++ ;          
+       }
+       if (isJpsiKstar == 2) nBJpsiKstar++;
      }
      // --------------------------------------------------------------
      if ( (*p)->pdg_id() == 333 ) {  // phi 
@@ -269,9 +292,20 @@ void BsAnalyzer::analyze( const Event& e, const EventSetup& )
        }
      }
    }
+   // ---------------------------------------------------------
+
    hnB->Fill(nB);
    hnBz->Fill(nBz);
    hnBzb->Fill(nBzb);
+   *undecayed << "-------------------------------" << endl;
+   *decayed << "-------------------------------" << endl;
+
+   // if (nBz > 0) std::cout << "nBz = " << nBz << " nBz (K*mu+mu-) = " << nBzKmumu << " nMix = " << nBzmix << std::endl;
+   // if (nBz > 0 && nBzKmumu == 0) Evt->print();
+   // if (nB > 0) std::cout << "nB = " << nB << " nBz (JPsi Ks) = " << nBJpsiKs << std::endl;
+   // if (nBp > 0) std::cout << "nB = " << nBp << " nBz (JPsi Kstar) = " << nBJpsiKstar << std::endl;
+   // if (nBp > 0 && nBJpsiKstar == 0) Evt->print();
+
    return ;   
 }
 

@@ -1,4 +1,4 @@
-# $Id: DECAY.DEC,v 1.1 2007/09/05 11:25:21 covarell Exp $ 
+# $Id: DECAY.DEC,v 1.2 2007/12/03 09:03:34 covarell Exp $ 
 #Define the B0B0bar mass difference
 Define dm 0.502e12
 Define dgamma 0
@@ -114,7 +114,7 @@ JetSetPar MSTJ(26)=0
 
 # PR LHCb 10/01/2006
 # Turn on PHOTOS for all decays
-noPhotos
+yesPhotos
 #
 #
 #Decay vpho

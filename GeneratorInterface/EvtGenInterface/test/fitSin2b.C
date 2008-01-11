@@ -20,6 +20,7 @@
   hasymJpsiKs->Divide(hmeno,hpiu);
   TF1 *sin2b = new TF1("sin2b","[0]*sin([1]*x + [2])",0.,12.);
   sin2b->SetParameters(0.699,0.502,0.0);
+// sin2b->FixParameter(1,0.502);
   hasymJpsiKs->Fit("sin2b","","e1",0.,10.5);
 
   TLine *line1 = new TLine(0.,0.6997,12.,0.6997);
