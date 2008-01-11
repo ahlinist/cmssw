@@ -13,7 +13,7 @@
 //
 // Original Author:  Nello Nappi
 //         Created:  Fri May 11 15:33:30 CEST 2007
-// $Id: EvtGenProducer.h,v 1.5 2007/08/27 09:49:46 covarell Exp $
+// $Id: EvtGenProducer.h,v 1.2 2007/09/28 15:13:15 nappic Exp $
 //
 //
 
@@ -46,6 +46,7 @@
 #include "EvtGenBase/EvtHighSpinParticle.hh"
 #include "EvtGenBase/EvtStdHep.hh"
 #include "EvtGenBase/EvtSecondary.hh"
+#include "EvtGenModels/EvtPythia.hh"
 
 namespace CLHEP {
   class HepRandomEngine;
@@ -68,19 +69,24 @@ private:
   virtual void beginJob(const edm::EventSetup & c);                
   virtual void endJob();                                           
   virtual void produce(edm::Event & e, const edm::EventSetup & c); 
-  void decay(HepMC::GenParticle* partHep, EvtId idEvt, HepMC::GenEvent* theEvent);
-  // member data 
+  void decay(HepMC::GenParticle* partHep, EvtId idEvt, HepMC::GenEvent* theEvent, bool del_daug);
+  void go_through_daughters(EvtParticle* part);
+  void update_candlist( int theIndex, HepMC::GenParticle *thePart );
+  
+  // from Pythia
+  void call_pygive(const std::string& iParm );
 
 private:
   CLHEP::RandFlat* m_flat;   
   EvtGen *m_EvtGen;
-  std::vector<EvtId> forced_Evt;     // EvtId's of particles with forced decay
-  std::vector<int> forced_Hep;       // HepId's of particles with forced decay
-  int nforced;                       // number of particles with forced decay
-  int ntotal;
-  int nlist;                         // number of candidates to be forced in an event 
-  HepMC::GenParticle *listp[10];    
-  int index[10];                     // identifed which of the nforced particles
-  void go_through_daughters(EvtParticle* part);
+  std::vector<EvtId> forced_Evt;     // EvtId's of particels with forced decay
+  std::vector<int> forced_Hep;       // HepId's of particels with forced decay
+  int nforced;                       // number of particels with forced decay
+  int ntotal, nevent;
+  std::vector<std::string> pythia_params;
+  int nlist; 
+  HepMC::GenParticle *listp[10]; 
+  int index[10];                     // list of candidates to be forced 
+
 };
 

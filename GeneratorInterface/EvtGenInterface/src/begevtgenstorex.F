@@ -1,5 +1,5 @@
 C--------------------------------------------------------------------------
-C $Id: begevtgenstorex.F,v 1.1 2007/09/05 11:25:22 covarell Exp $
+C $Id: begevtgenstorex.F,v 1.4 2004/05/06 17:49:32 robbep Exp $
 C
 C Environment:
 C      This software is part of the EvtGen package developed jointly
@@ -29,9 +29,9 @@ C------------------------------------------------------------------------
 *
 * Anders Ryd,  Dec 96   Created.
 *
-*  
-#include "EvtGenModels/common_hepevt.inc"
+* 
 
+#include "GeneratorInterface/EvtGenInterface/interface/my_hepevt.inc"
       logical qedrad
       integer ph_nmxhep ! this is parameter nmxhep in photos/photos_make
 *                     ! Renamed here to avoid name conflict in stdhep.inc
@@ -42,17 +42,11 @@ C------------------------------------------------------------------------
 
       integer stdhepnum,i
       
-      double precision px,py,pz,e,m
-      double precision x,y,z,t
+      double precision px,py,pz,e,m,x,y,z,t
       
-      logical yesdebug 
-      yesdebug = .false.
-  
       stdhepnum=partnum
-      if (yesdebug.eqv..true.) print *, 'Screwed up here - 3' 
-      if (yesdebug.eqv..true.) print *,  d_h_phep(5,1)
-      if (yesdebug.eqv..true.) print *,  d_h_vhep(4,1)
-
+      
+      
       d_h_nevhep=eventnum
       d_h_nhep=numparticle
       d_h_isthep(entry)=istat
@@ -61,41 +55,23 @@ C------------------------------------------------------------------------
       d_h_jmohep(2,entry)=0
       d_h_jdahep(1,entry)=daugfirst
       d_h_jdahep(2,entry)=dauglast
-      if (yesdebug.eqv..true.) print *, 'Screwed up here - 4' 
-      if (yesdebug.eqv..true.) print *, entry, ' ', px 
       d_h_phep(1,entry)=px
-      if (yesdebug.eqv..true.) print *, 'Screwed up here - 5' 
-      if (yesdebug.eqv..true.) print *, entry, ' ', py
       d_h_phep(2,entry)=py
-      if (yesdebug.eqv..true.) print *, 'Screwed up here - 6' 
-      if (yesdebug.eqv..true.) print *, entry, ' ', pz
       d_h_phep(3,entry)=pz
-      if (yesdebug.eqv..true.) print *, 'Screwed up here - 7' 
-      if (yesdebug.eqv..true.) print *, entry, ' ', e
       d_h_phep(4,entry)=e
-      if (yesdebug.eqv..true.) print *, 'Screwed up here - 8' 
-      if (yesdebug.eqv..true.) print *, entry, ' ', m 
       d_h_phep(5,entry)=m
-      if (yesdebug.eqv..true.) print *, 'Screwed up here - 9' 
-      if (yesdebug.eqv..true.) print *, entry, ' ', x
       d_h_vhep(1,entry)=x
-      if (yesdebug.eqv..true.) print *, 'Screwed up here - 10' 
-      if (yesdebug.eqv..true.) print *, entry, ' ', y
       d_h_vhep(2,entry)=y
-      if (yesdebug.eqv..true.) print *, 'Screwed up here - 11' 
-      if (yesdebug.eqv..true.) print *, entry, ' ', z
       d_h_vhep(3,entry)=z
-      if (yesdebug.eqv..true.) print *, 'Screwed up here - 12' 
-      if (yesdebug.eqv..true.) print *, entry, ' ', t
       d_h_vhep(4,entry)=t
-
+      
       qedrad(entry)=.true.
       if (daugfirst.gt.0 .and. dauglast.gt.0) THEN
         do i=daugfirst, dauglast
           qedrad(i) = .true.
         end do
       end if
-      if (yesdebug.eqv..true.) print *, 'Screwed up here - 13' 
+      
       return
       
       end
