@@ -255,7 +255,7 @@ public:
 
 private:
   std::auto_ptr<MessageSender> ap; 
-  LogAbsolute( LogProblem const& );				// Change log 9
+  LogAbsolute( LogAbsolute const& );				// Change log 9
 
 };  // LogAbsolute
 
