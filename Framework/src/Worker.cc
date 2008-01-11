@@ -82,11 +82,11 @@ private:
     sigs_.postModuleEndJobSignal = &postEJ;
   }
 
-  void Worker::beginJob(EventSetup const* es) {
+  void Worker::beginJob(EventSetup const& es) {
     
     try {
         CallPrePostBeginJob cpp(sigs_,md_);
-	implBeginJob(*es);
+	implBeginJob(es);
     }
     catch(cms::Exception& e) {
 	// should event id be included?

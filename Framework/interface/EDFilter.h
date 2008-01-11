@@ -38,6 +38,10 @@ namespace edm {
 		   CurrentProcessingContext const* cpc);
     bool doEndLuminosityBlock(LuminosityBlock & lb, EventSetup const& c,
 		   CurrentProcessingContext const* cpc);
+    void doRespondToOpenInputFile(FileBlock const& fb);
+    void doRespondToCloseInputFile(FileBlock const& fb);
+    void doRespondToOpenOutputFiles(FileBlock const& fb);
+    void doRespondToCloseOutputFiles(FileBlock const& fb);
 
     static void fillDescription(edm::ParameterSetDescription&);
 
@@ -54,6 +58,10 @@ namespace edm {
     virtual bool endRun(Run &, EventSetup const&){return true;}
     virtual bool beginLuminosityBlock(LuminosityBlock &, EventSetup const&){return true;}
     virtual bool endLuminosityBlock(LuminosityBlock &, EventSetup const&){return true;}
+    virtual void respondToOpenInputFile(FileBlock const& fb) {}
+    virtual void respondToCloseInputFile(FileBlock const& fb) {}
+    virtual void respondToOpenOutputFiles(FileBlock const& fb) {}
+    virtual void respondToCloseOutputFiles(FileBlock const& fb) {}
 
     void setModuleDescription(ModuleDescription const& md) {
       moduleDescription_ = md;

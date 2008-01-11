@@ -43,18 +43,11 @@ namespace edm {
 
     bool wantAllEvents() const;
 
-    // These next functions take pointers rather than references
-    // as arguments to avoid a copy when used in generic algorithms.
+    void openFile(FileBlock const& fb);
 
-    void openFile(FileBlock const* fb);
+    void writeRun(RunPrincipal const& rp);
 
-    void writeRun(RunPrincipal const* rp);
-
-    void writeLumi(LuminosityBlockPrincipal const* lbp);
-
-    void respondToOpenInputFile(FileBlock const* fb);
-
-    void respondToCloseInputFile(FileBlock const* fb);
+    void writeLumi(LuminosityBlockPrincipal const& lbp);
 
     bool limitReached() const;
 
@@ -73,6 +66,12 @@ namespace edm {
 
     virtual void implBeginJob(EventSetup const&) ;
     virtual void implEndJob() ;
+
+    virtual void implRespondToOpenInputFile(FileBlock const& fb);
+    virtual void implRespondToCloseInputFile(FileBlock const& fb);
+    virtual void implRespondToOpenOutputFiles(FileBlock const& fb);
+    virtual void implRespondToCloseOutputFiles(FileBlock const& fb);
+
     virtual std::string workerType() const;
     
     boost::shared_ptr<OutputModule> mod_;

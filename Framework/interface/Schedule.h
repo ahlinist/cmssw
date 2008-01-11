@@ -161,6 +161,12 @@ namespace edm {
     // Call respondToCloseInputFile() on all Modules
     void respondToCloseInputFile(FileBlock const& fb);
 
+    // Call respondToOpenOutputFiles() on all Modules
+    void respondToOpenOutputFiles(FileBlock const& fb);
+
+    // Call respondToCloseOutputFiles() on all Modules
+    void respondToCloseOutputFiles(FileBlock const& fb);
+
     std::pair<double,double> timeCpuReal() const {
       return std::pair<double,double>(stopwatch_->cpuTime(),stopwatch_->realTime());
     }

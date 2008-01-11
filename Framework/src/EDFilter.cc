@@ -58,9 +58,28 @@ namespace edm
     return this->endLuminosityBlock(lb, c);
   }
 
+  void
+  EDFilter::doRespondToOpenInputFile(FileBlock const& fb) {
+    respondToOpenInputFile(fb);
+  }
+
+  void
+  EDFilter::doRespondToCloseInputFile(FileBlock const& fb) {
+    respondToCloseInputFile(fb);
+  }
+
+  void
+  EDFilter::doRespondToOpenOutputFiles(FileBlock const& fb) {
+    respondToOpenOutputFiles(fb);
+  }
+
+  void
+  EDFilter::doRespondToCloseOutputFiles(FileBlock const& fb) {
+    respondToCloseOutputFiles(fb);
+  }
+
   CurrentProcessingContext const*
-  EDFilter::currentContext() const
-  {
+  EDFilter::currentContext() const {
     return current_context_;
   }
   
