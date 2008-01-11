@@ -1,7 +1,7 @@
 
 //#include "FWCore/Framework/interface/MakerMacros.h"
-//#include "RecoTauTag/HLTAnalyzers/interface/TauJetMCFilter.h"
-//#include "FWCore/PluginManager/interface/ModuleDef.h"
+#include "RecoTauTag/HLTAnalyzers/interface/TauJetMCFilter.h"
+#include "FWCore/PluginManager/interface/ModuleDef.h"
 //#include "RecoTauTag/HLTAnalyzers/interface/SingleDoubleTrkTau.h"
 #include "RecoTauTag/HLTAnalyzers/interface/L1TauAnalyzer.h"
 
