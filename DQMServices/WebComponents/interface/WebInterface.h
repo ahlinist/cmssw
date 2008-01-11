@@ -9,7 +9,7 @@
 #include "xgi/Utils.h"
 #include "xgi/Method.h"
 
-#include "DQMServices/UI/interface/MonitorUIRoot.h"
+#include "DQMServices/Core/interface/MonitorUIRoot.h"
 
 #include "DQMServices/WebComponents/interface/WebPage.h"
 #include "DQMServices/WebComponents/interface/MessageDispatcher.h"
