@@ -33,6 +33,7 @@ namespace edm {
 
   class OutputModule {
   public:
+    template <typename T> friend class WorkerT;
     friend class OutputWorker;
     typedef OutputModule ModuleType;
 

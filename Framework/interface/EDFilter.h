@@ -21,6 +21,7 @@ namespace edm {
 
   class EDFilter : public ProducerBase {
   public:
+    template <typename T> friend class WorkerT;
     friend class FilterWorker;
     typedef EDFilter ModuleType;
     

@@ -18,6 +18,7 @@ $Id$
 namespace edm {
   class EDProducer : public ProducerBase {
   public:
+    template <typename T> friend class WorkerT;
     friend class ProducerWorker;
     typedef EDProducer ModuleType;
 
