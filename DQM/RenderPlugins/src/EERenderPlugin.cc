@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.51 2008/01/05 16:13:24 elmer Exp $
+// $Id: EERenderPlugin.cc,v 1.52 2008/01/10 07:59:42 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.51 $
-  \date $Date: 2008/01/05 16:13:24 $
+  \version $Revision: 1.52 $
+  \date $Date: 2008/01/10 07:59:42 $
 */
 
 #include "TH1F.h"
@@ -24,9 +24,6 @@
 #include "TROOT.h"
 
 #include <iostream>
-
-#include "DQMServices/Core/interface/DaqMonitorBEInterface.h"
-#include "DQMServices/Core/interface/MonitorElement.h"
 
 #include "DQM/EcalCommon/interface/ColorPalette.h"
 #include "DQM/EcalCommon/interface/Numbers.h"
