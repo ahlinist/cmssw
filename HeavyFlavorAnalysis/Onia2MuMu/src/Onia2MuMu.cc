@@ -487,7 +487,9 @@ void Onia2MuMu::fillRecTracks(const edm::Event &iEvent) {
     }
     new((*Reco_track_CovM)[Reco_track_size])TMatrixD(cov); 
     Reco_track_size++;
+    cout << "hello1" << endl;
   }
+  cout << "hello2" << endl;
 }
 
 //////////////////////////////////////////////////////////////
@@ -650,8 +652,7 @@ void Onia2MuMu::fillOniaMuMuTracks(const edm::Event &iEvent, const edm::EventSet
   iEvent.getByLabel(OniaMuonType, muons);
 
   Handle<reco::VertexCollection> privtxs;
-  // FAST SIM CHANGE
-  //  iEvent.getByLabel(thePrimaryVertexLabel, privtxs);
+  iEvent.getByLabel(thePrimaryVertexLabel, privtxs);
 
   TrackCollection::const_iterator muon1;
   TrackCollection::const_iterator muon2;
