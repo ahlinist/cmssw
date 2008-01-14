@@ -24,7 +24,7 @@
 
 // user include files
 #include "FWCore/Modules/src/EventSetupRecordDataGetter.h"
-
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 
 //
@@ -66,7 +66,7 @@ EventSetupRecordDataGetter::~EventSetupRecordDataGetter()
 // ------------ method called to produce the data  ------------
 void
 EventSetupRecordDataGetter::analyze(const edm::Event& /*iEvent*/, const edm::EventSetup& iSetup)
-{
+{  
    if(0 == recordToDataKeys_.size()) {
       typedef std::vector< ParameterSet > Parameters;
       Parameters toGet = pSet_.getParameter<Parameters>("toGet");
@@ -76,8 +76,9 @@ EventSetupRecordDataGetter::analyze(const edm::Event& /*iEvent*/, const edm::Eve
          
          eventsetup::EventSetupRecordKey recordKey(eventsetup::EventSetupRecordKey::TypeTag::findType(recordName));
          if(recordKey.type() == eventsetup::EventSetupRecordKey::TypeTag()) {
-            //record not found
-            std::cout <<"Record \""<< recordName <<"\" does not exist "<<std::endl;
+	   //record not found
+	   edm::LogWarning("DataGetter") <<"Record \""<< recordName <<"\" does not exist "<<std::endl;
+            
             continue;
          }
          typedef std::vector< std::string > Strings;
@@ -92,8 +93,10 @@ EventSetupRecordDataGetter::analyze(const edm::Event& /*iEvent*/, const edm::Eve
             }
             eventsetup::TypeTag datumType = eventsetup::TypeTag::findType(datumName);
             if(datumType == eventsetup::TypeTag()) {
-               //not found
-               std::cout <<"data item of type \""<< datumName <<"\" does not exist"<<std::endl;
+	      //not found
+	      edm::LogWarning("DataGetter") <<"data item of type \""<< datumName <<"\" does not exist"<<std::endl;
+
+	     
                continue;
             }
             eventsetup::DataKey datumKey(datumType, labelName.c_str());
@@ -122,10 +125,10 @@ EventSetupRecordDataGetter::analyze(const edm::Event& /*iEvent*/, const edm::Eve
               itKey != itKeyEnd;
               ++itKey) {
             if(! pRecord->doGet(*itKey)) {
-               std::cout << "No data of type \""<<itKey->type().name() <<"\" with name \""<< itKey->name().value()<<"\" in record "<<itRecord->first.type().name() <<" found "<< std::endl;
+	      edm::LogWarning("DataGetter") << "No data of type \""<<itKey->type().name() <<"\" with name \""<< itKey->name().value()<<"\" in record "<<itRecord->first.type().name() <<" found "<< std::endl;
             } else {
                if(verbose_) {
-                  std::cout << "got data of type \""<<itKey->type().name() <<"\" with name \""<< itKey->name().value()<<"\" in record "<<itRecord->first.type().name() << std::endl;
+		 edm::LogSystem("DataGetter") << "got data of type \""<<itKey->type().name() <<"\" with name \""<< itKey->name().value()<<"\" in record "<<itRecord->first.type().name() << std::endl;
                }
             }
          }
