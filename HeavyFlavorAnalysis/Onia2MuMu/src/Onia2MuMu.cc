@@ -487,9 +487,7 @@ void Onia2MuMu::fillRecTracks(const edm::Event &iEvent) {
     }
     new((*Reco_track_CovM)[Reco_track_size])TMatrixD(cov); 
     Reco_track_size++;
-    cout << "hello1" << endl;
   }
-  cout << "hello2" << endl;
 }
 
 //////////////////////////////////////////////////////////////
