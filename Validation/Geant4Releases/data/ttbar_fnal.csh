@@ -4,11 +4,11 @@ setenv SCRAM_ARCH slc4_ia32_gcc345
 source /uscmst1/prod/sw/cms/cshrc cmslpc
 setenv PATH /usr/bin:$PATH
 
-cd /uscms/home/yarba_j/work/SL4/CMSSW_1_7_0_pre8/src
+cd /uscms/home/yarba_j/work/SL4/CMSSW_1_7_3_g490p1/src
 eval `scramv1 runtime -csh`
 
-if ( ! -e /uscmst1b_scratch/lpc1/3DayLifetime/yarba_j/170pre8 ) mkdir /uscmst1b_scratch/lpc1/3DayLifetime/yarba_j/170pre6
-cd /uscmst1b_scratch/lpc1/3DayLifetime/yarba_j/170pre6
+if ( ! -e /uscmst1b_scratch/lpc1/3DayLifetime/yarba_j/173g490p1 ) mkdir /uscmst1b_scratch/lpc1/3DayLifetime/yarba_j/173g490p1
+cd /uscmst1b_scratch/lpc1/3DayLifetime/yarba_j/173g490p1
 
 set rndm_source=135799753
 set rndm_VtxSmeared=123456789
@@ -37,7 +37,8 @@ process Sim = {
 
       untracked PSet cout = 
       {
-         untracked PSet default = { untracked int32 limit = 0 }  # kill all messages in the log
+         untracked bool noTimeStamps = true
+	 untracked PSet default = { untracked int32 limit = 0 }  # kill all messages in the log
 	 untracked PSet FwkJob  = { untracked int32 limit = -1 } # but FwkJob category - those unlimitted
 	 untracked PSet SimG4CoreApplication = { untracked int32 limit = -1 }
 	 untracked PSet G4cout = {  untracked int32 limit = -1 }
@@ -50,6 +51,12 @@ process Sim = {
    }
 
    service = Timing {}
+
+   service = SimpleMemoryCheck
+   {
+      untracked int32 ignoreTotal = 1 # default is one
+      untracked bool oncePerEventMode = true # default is false, so it only reports increases
+   }   
    
    service = RandomNumberGeneratorService {
            untracked uint32 sourceSeed = ${rndm_source}
