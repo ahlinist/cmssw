@@ -23,7 +23,7 @@ echo "rndm_VtxSmeared " : ${rndm_VtxSmeared}
 echo "rndm_g4SimHits "  : ${rndm_g4SimHits}
 
 
-cat > temp_zprime_$1.cfg <<EOF
+cat > temp_minbias_$1.cfg <<EOF
 
 process Sim = {
 
@@ -90,7 +90,7 @@ process Sim = {
    # 
    module rndmStore = RandomEngineStateProducer { }
 
-   include "Configuration/JetMET/data/calorimetry-gen-Zprime_Dijets_700.cff"
+   include "Configuration/Generator/data/PythiaMinBias.cfi"
 
    # event vertex smearing - applies only once (internal check)
    # Note : all internal generators will always do (0,0,0) vertex
@@ -119,7 +119,7 @@ process Sim = {
    module GEN-SIM = PoolOutputModule 
    { 
       using FEVTSIMEventContent
-      untracked string fileName = "pyth_zprime_detsim_${1}.root" 
+      untracked string fileName = "pyth_minbias_detsim_${1}.root" 
 #      untracked PSet dataset =
 #      {
 #         untracked string dataTier = "GEN-SIM"
@@ -135,6 +135,6 @@ process Sim = {
 
 EOF
 
-cmsRun  temp_zprime_$1.cfg
+cmsRun  temp_minbias_$1.cfg
 
-###dccp pyth_zprime_detsim_${1}.root /pnfs/cms/WAX/2/yarba_j/pyth_zprime_detsim_${1}.root
+###dccp pyth_minbias_detsim_${1}.root /pnfs/cms/WAX/2/yarba_j/pyth_minbias_detsim_${1}.root
