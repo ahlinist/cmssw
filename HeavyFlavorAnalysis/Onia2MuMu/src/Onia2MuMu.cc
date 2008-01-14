@@ -15,7 +15,7 @@
 /////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////
 
-#include "Onia2MuMu/Onia2MuMu/interface/Onia2MuMu.h"
+#include "HeavyFlavorAnalysis/Onia2MuMu/interface/Onia2MuMu.h"
 
 ////////////////////////////////////////////////////////////////////////
 // constructor
@@ -362,16 +362,12 @@ void Onia2MuMu::fillGeneratorBlock(const edm::Event &iEvent) {
   Mc_ProcessId   = myGenEvent->signal_process_id();
   Mc_EventScale  = myGenEvent->event_scale();
   
-  // FASTSIM CHANGE!
-  /*
   Handle< GenInfoProduct > gi;
   iEvent.getRun().getByLabel( "source", gi);
   double auto_cross_section = gi->cross_section(); // calculated at end of each RUN, in mb
   double external_cross_section = gi->external_cross_section(); // is the precalculated one written in the cfg file -- units is pb
   double filter_eff = gi->filter_efficiency();
   Mc_EventWeight = external_cross_section * filter_eff*branch_ratio ;  // in pb; in analyzer weight=this weight/Nr events analyzed
-  */
-  Mc_EventWeight = 1;
 
 
 
@@ -685,7 +681,7 @@ void Onia2MuMu::fillOniaMuMuTracks(const edm::Event &iEvent, const edm::EventSet
         Reco_QQ_glb_cosTheta[Reco_QQ_glb_size]=GetTheta(mu2, mu1);
       }    
       
-      /*
+    
       edm::ESHandle<TransientTrackBuilder> theB;
       iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",theB);
       std::auto_ptr<VertexCollection> vertexCollection(new VertexCollection());
@@ -740,7 +736,6 @@ void Onia2MuMu::fillOniaMuMuTracks(const edm::Event &iEvent, const edm::EventSet
         Reco_QQ_glb_cosAlpha[Reco_QQ_glb_size]= -2;
         Reco_QQ_glb_ctau[Reco_QQ_glb_size]= -100;
       }
-      */
       Reco_QQ_glb_size++; 
     }
     m1++;
