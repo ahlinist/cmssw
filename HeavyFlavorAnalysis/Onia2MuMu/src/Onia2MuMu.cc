@@ -223,8 +223,9 @@ void Onia2MuMu::beginJob(const edm::EventSetup&)
   }
   
   if(theStoreOniaRadiation){
-    fTree->Branch("Mc_chargedtrk_size",    &Mc_chargedtrk_size,    "Mc_chargedtrk_size/I");
+    fTree->Branch("Mc_chargedtrk_size",    &Mc_chargedtrk_size, "Mc_chargedtrk_size/I");
     fTree->Branch("Mc_chargedtrk_4mom",    "TClonesArray",       &Mc_chargedtrk_4mom);
+    fTree->Branch("Mc_chargedtrk_charge",   Mc_chargedtrk_charge,"Mc_chargedtrk_charge[Mc_chargedtrk_size]/I");
   }  
 
   if(theStorePriVtxFlag){
@@ -361,15 +362,14 @@ void Onia2MuMu::fillGeneratorBlock(const edm::Event &iEvent) {
   const HepMC::GenEvent* myGenEvent = HepMCEvt->GetEvent();
   Mc_ProcessId   = myGenEvent->signal_process_id();
   Mc_EventScale  = myGenEvent->event_scale();
-  
+
   Handle< GenInfoProduct > gi;
   iEvent.getRun().getByLabel( "source", gi);
   double auto_cross_section = gi->cross_section(); // calculated at end of each RUN, in mb
   double external_cross_section = gi->external_cross_section(); // is the precalculated one written in the cfg file -- units is pb
   double filter_eff = gi->filter_efficiency();
   Mc_EventWeight = external_cross_section * filter_eff*branch_ratio ;  // in pb; in analyzer weight=this weight/Nr events analyzed
-
-
+ 
 
   Mc_QQ_size=0; 
   Mc_mu_size=0;
@@ -447,6 +447,7 @@ void Onia2MuMu::fillGeneratorBlock(const edm::Event &iEvent) {
 	TLorentzVector a;
 	a.SetPxPyPzE(p.px(),p.py(),p.pz(),p.energy());
 	new((*Mc_chargedtrk_4mom)[Mc_chargedtrk_size])TLorentzVector(a);
+	Mc_chargedtrk_charge[Mc_chargedtrk_size]=p.threeCharge();
 	Mc_chargedtrk_size++;
       }
     }
@@ -474,11 +475,18 @@ void Onia2MuMu::fillRecTracks(const edm::Event &iEvent) {
     new((*Reco_track_4mom)[Reco_track_size])TLorentzVector(a); 
     TVector3 b(itTrack->vx(),itTrack->vy(),itTrack->vz());
     new((*Reco_track_3vec)[Reco_track_size])TVector3(b);
-    Reco_track_d0[Reco_track_size]= itTrack->d0();
-    Reco_track_dz[Reco_track_size]= itTrack->dz();
+    Reco_track_ptErr[Reco_track_size]=itTrack->ptError();
+    Reco_track_phiErr[Reco_track_size]=itTrack->phiError();
+    Reco_track_etaErr[Reco_track_size]=itTrack->etaError();
+    Reco_track_d0[Reco_track_size]=itTrack->d0();
+    Reco_track_d0err[Reco_track_size]=itTrack->d0Error();
+    Reco_track_dz[Reco_track_size]=itTrack->dz();
+    Reco_track_dzerr[Reco_track_size]=itTrack->dzError();
+    Reco_track_charge[Reco_track_size]=itTrack->charge();
     Reco_track_chi2[Reco_track_size]=itTrack->chi2();
     Reco_track_ndof[Reco_track_size]=itTrack->ndof();
     Reco_track_nhits[Reco_track_size]=itTrack->numberOfValidHits();
+    
     TMatrixD cov(5,5); 
     for (int lan=0;lan<5;lan++ ) {
       for ( int len=0;len<5;len++ ) {
@@ -589,15 +597,6 @@ void Onia2MuMu::fillMuons(const edm::Event &iEvent){
     TVector3 b(muoni->vx(),muoni->vy(),muoni->vz());
     // to be calculated
     new((*Reco_mu_trk_3vec)[Reco_mu_trk_size])TVector3(b);
-
-    TMatrixD cov3(5,5);
-    for (int lan=0;lan<5;lan++ ) {
-      for ( int len=0;len<5;len++ ) {
-        cov3(lan,len)=tkTracki->covariance(lan,len);
-      }
-    }
-    new((*Reco_mu_trk_CovM)[Reco_mu_trk_size])TMatrixD(cov3);
-
     Reco_mu_trk_ptErr[Reco_mu_trk_size]=tkTracki->ptError();
     Reco_mu_trk_phiErr[Reco_mu_trk_size]=tkTracki->phiError();
     Reco_mu_trk_etaErr[Reco_mu_trk_size]=tkTracki->etaError();
@@ -610,6 +609,15 @@ void Onia2MuMu::fillMuons(const edm::Event &iEvent){
     Reco_mu_trk_ndof[Reco_mu_trk_size]=tkTracki->ndof();
     Reco_mu_trk_nhits[Reco_mu_trk_size]=tkTracki->numberOfValidHits();
 
+    TMatrixD cov3(5,5);
+    for (int lan=0;lan<5;lan++ ) {
+      for ( int len=0;len<5;len++ ) {
+        cov3(lan,len)=tkTracki->covariance(lan,len);
+      }
+    }
+    new((*Reco_mu_trk_CovM)[Reco_mu_trk_size])TMatrixD(cov3);
+
+   
     Reco_mu_trk_size++;
   }
 }
@@ -649,8 +657,9 @@ void Onia2MuMu::fillOniaMuMuTracks(const edm::Event &iEvent, const edm::EventSet
   Handle<reco::TrackCollection> muons;
   iEvent.getByLabel(OniaMuonType, muons);
 
-  Handle<reco::VertexCollection> privtxs;
-  iEvent.getByLabel(thePrimaryVertexLabel, privtxs);
+  //FAST
+  //  Handle<reco::VertexCollection> privtxs;
+  // iEvent.getByLabel(thePrimaryVertexLabel, privtxs);
 
   TrackCollection::const_iterator muon1;
   TrackCollection::const_iterator muon2;
@@ -680,7 +689,7 @@ void Onia2MuMu::fillOniaMuMuTracks(const edm::Event &iEvent, const edm::EventSet
         Reco_QQ_glb_cosTheta[Reco_QQ_glb_size]=GetTheta(mu2, mu1);
       }    
       
-    
+      /*
       edm::ESHandle<TransientTrackBuilder> theB;
       iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",theB);
       std::auto_ptr<VertexCollection> vertexCollection(new VertexCollection());
@@ -735,6 +744,7 @@ void Onia2MuMu::fillOniaMuMuTracks(const edm::Event &iEvent, const edm::EventSet
         Reco_QQ_glb_cosAlpha[Reco_QQ_glb_size]= -2;
         Reco_QQ_glb_ctau[Reco_QQ_glb_size]= -100;
       }
+      */
       Reco_QQ_glb_size++; 
     }
     m1++;
