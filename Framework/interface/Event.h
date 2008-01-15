@@ -86,8 +86,8 @@ namespace edm {
     friend class DaqSource;
     friend class InputSource;
     friend class RawInputSource;
-    friend class FilterWorker;
-    friend class ProducerWorker;
+    friend class EDFilter;
+    friend class EDProducer;
 
     EventAuxiliary const& aux_;
     boost::shared_ptr<LuminosityBlock const> const luminosityBlock_;

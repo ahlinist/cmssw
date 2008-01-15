@@ -67,8 +67,8 @@ namespace edm {
     friend class DaqSource;
     friend class InputSource;
     friend class RawInputSource;
-    friend class FilterWorker;
-    friend class ProducerWorker;
+    friend class EDFilter;
+    friend class EDProducer;
 
     RunAuxiliary const& aux_;
   };

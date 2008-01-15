@@ -18,11 +18,11 @@
 #include "FWCore/Framework/interface/ConstProductRegistry.h"
 
 #include "FWCore/Framework/interface/EDProducer.h"
-#include "FWCore/Framework/src/ProducerWorker.h"
 #include "FWCore/Framework/interface/Actions.h"
 #include "DataFormats/Provenance/interface/ProductRegistry.h"
 #include "FWCore/Framework/src/WorkerMaker.h"
 #include "FWCore/Framework/src/WorkerParams.h"
+#include "FWCore/Framework/src/WorkerT.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 

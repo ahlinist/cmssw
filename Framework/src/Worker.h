@@ -147,13 +147,6 @@ namespace edm {
     Sigs sigs_;
   };
 
-  template <class WT>
-  struct WorkerType {
-    // typedef int module_type;
-    // typedef int worker_type;
-  };
-
-
   namespace {
     template <typename T>
     cms::Exception& exceptionContext(ModuleDescription const& iMD,

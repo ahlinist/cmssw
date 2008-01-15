@@ -48,27 +48,6 @@ namespace edm {
     bool limitReached() const;
 
     void configure(OutputModuleDescription const& desc);
-
-  private:
-    virtual bool implDoWork(EventPrincipal& e, EventSetup const& c,
-			    BranchActionType,
-			    CurrentProcessingContext const* cpc);
-    virtual bool implDoWork(RunPrincipal& rp, EventSetup const& c,
-			    BranchActionType bat,
-			    CurrentProcessingContext const* cpc);
-    virtual bool implDoWork(LuminosityBlockPrincipal& lbp, EventSetup const& c,
-			    BranchActionType bat,
-			    CurrentProcessingContext const* cpc);
-
-    virtual void implBeginJob(EventSetup const& es);
-
-    virtual std::string workerType() const;
-  };
-
-  template <> 
-  struct WorkerType<OutputModule> {
-    typedef OutputModule ModuleType;
-    typedef OutputWorker worker_type;
   };
 
 }

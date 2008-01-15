@@ -272,7 +272,8 @@ int main(int argc, char* argv[])
     }
     // This is the default that has been in use for a long time.
     else {
-      proc->run();
+      // proc->run();
+      proc->runToCompletion();
     }
     proc.off();
     proc->endJob();
