@@ -11,3 +11,5 @@ http://cern.ch/cms-sdt/CondCore/SQLiteData/RPCEMap_181007.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/MVAJetTagsFakeConditions.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/CSCChamberMapValues.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/CSCCrateMapValues.db
+http://cern.ch/cms-sdt/CondCore/SQLiteData/CSCChamberMapValues_18X.db
+http://cern.ch/cms-sdt/CondCore/SQLiteData/CSCCrateMapValues_18X.db
