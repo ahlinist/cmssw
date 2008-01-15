@@ -137,6 +137,7 @@ class Onia2MuMu : public edm::EDAnalyzer {
       int Mc_mumoth_id[10];           // MotherID of muons (all muons, could also be weak)
       int Mc_chargedtrk_size;           // Amount of charged  particles in MC
       TClonesArray* Mc_chargedtrk_4mom; // Array of 4-vector of charged particles in MC
+      int Mc_chargedtrk_charge[3000];   // Vector of charge of particles in MC
       
       int Reco_track_size;            // Number of reconstructed tracks
       TClonesArray* Reco_track_4mom;  // Array of 4-momentum of Reconstructed trackss
@@ -153,8 +154,9 @@ class Onia2MuMu : public edm::EDAnalyzer {
       double Reco_track_chi2[3000];   // Vector of chi2 of tracks
       double Reco_track_ndof[3000];   // Vector of ndof of tracks
       double Reco_track_nhits[3000];  // Vector of nhits of tracks
-      int Reco_track_muflag[3000];    // Vector denoting of  if this track could have been a muon (0 =no muon, 1 =muon)
 
+
+      int Reco_track_muflag[3000];    // Vector denoting of  if this track couldhave been a muon (0 =no muon, 1 =muon)
       int Reco_mu_glb_size;           // Number of reconstructed global muons
       TClonesArray* Reco_mu_glb_4mom; // Array of 4-momentum of Reconstructed global muons
       TClonesArray* Reco_mu_glb_3vec; // Array of 3-d creation vertex of Reconstructed global muons
