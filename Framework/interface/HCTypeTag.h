@@ -41,7 +41,7 @@ class HCTypeTag : public TypeIDBase
       // ---------- constants, enums and typedefs --------------
 
       // ---------- Constructors and destructor ----------------
-      HCTypeTag() : m_name(0) {}
+      HCTypeTag() : m_name("") {}
       //virtual ~HCTypeTag();  
 
       // ---------- member functions ---------------------------
