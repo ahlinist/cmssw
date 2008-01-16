@@ -160,7 +160,7 @@ void BsAnalyzer::analyze( const Event& e, const EventSetup& )
        hEtabs->Fill((*p)->momentum().pseudoRapidity());
        
        for ( GenVertex::particles_out_const_iterator ap = endvert->particles_out_const_begin(); ap != endvert->particles_out_const_end(); ++ap ) {
-	 if ( (*p)->pdg_id() > 0 ) hIdBsDaugs->Fill((*ap)->pdg_id());
+	 hIdBsDaugs->Fill((*ap)->pdg_id());
        }
        
        if (mixed == 1) {
@@ -183,7 +183,7 @@ void BsAnalyzer::analyze( const Event& e, const EventSetup& )
        int isKmumu = 0;
        int isSemilept = 0;
        for ( GenVertex::particles_out_const_iterator bp = endvert->particles_out_const_begin(); bp != endvert->particles_out_const_end(); ++bp ) {
-	 if ( (*p)->pdg_id() > 0 ) hIdBDaugs->Fill((*bp)->pdg_id());
+	 hIdBDaugs->Fill((*bp)->pdg_id());
          if ( (*bp)->pdg_id() == 443 || (*bp)->pdg_id() == 310 ) isJpsiKs++ ; 
          if ( (*p)->pdg_id() > 0 && ( abs((*bp)->pdg_id()) == 313 || abs((*bp)->pdg_id()) == 13 )) isKmumu++ ; 
          if ( abs((*bp)->pdg_id()) == 11 || abs((*bp)->pdg_id()) == 13 || abs((*bp)->pdg_id()) == 15 ) isSemilept++ ;
@@ -234,7 +234,7 @@ void BsAnalyzer::analyze( const Event& e, const EventSetup& )
      // --------------------------------------------------------------
      if ( (*p)->pdg_id() == 13 ) { // mu+
        for ( GenVertex::particles_in_const_iterator p2 = prodvert->particles_in_const_begin(); p2 != prodvert->particles_in_const_end(); ++p2 ) {
-	 if ( abs((*p2)->pdg_id()) == 511 ) { // B0
+	 if ( (*p2)->pdg_id() == 511 ) { // B0
 	   hPtmu->Fill((*p)->momentum().perp());
 	   hPmu->Fill( sqrt ( pow((*p)->momentum().px(),2)+pow((*p)->momentum().py(),2)+
 			      pow((*p)->momentum().pz(),2) )) ;
