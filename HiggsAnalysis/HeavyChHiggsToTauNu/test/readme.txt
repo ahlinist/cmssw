@@ -36,6 +36,8 @@
 
 10.1.2008/S.Lehti CMSSW_1_6_8   Dictionary created automatically by BuildFile
 
+16.1.2008/S.Lehti CMSSW_1_6_8	Adding barcodes in MyMCParticle class
+
 
 	How to compile:
 	-compile
