@@ -120,7 +120,7 @@ void WebInterface::Open(xgi::Input * in, xgi::Output * out) throw (xgi::exceptio
     {
       if (to_open == "top") 
 	{
-	  myBei->cd();
+	  myBei->setCurrentFolder("/");
 	}
       else if (to_open == "..")
 	{
