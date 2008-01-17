@@ -38,6 +38,14 @@
 
 16.1.2008/S.Lehti CMSSW_1_6_8	Adding barcodes in MyMCParticle class
 
+17.1.2008/S.Lehti CMSSW_1_6_8	New pf tags. List of all cvs tags to be checked out:
+				cvs co -r global_1_6_8_14jan01 RecoParticleFlow
+				cvs co -r global_1_6_8_14jan01 DataFormats/ParticleFlowReco
+				cvs co -r global_1_6_8_14jan01 DataFormats/ParticleFlowCandidate
+                                cvs co -r V00-00-17 DataFormats/TauReco
+                                cvs co -r V00-00-37 RecoTauTag/RecoTau
+                                cvs co -r V00-00-06 RecoTauTag/TauTagTools
+                                cvs co -r jet_corrections_16X JetMETCorrections/MCJet/data
 
 	How to compile:
 	-compile
