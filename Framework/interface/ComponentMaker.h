@@ -27,11 +27,11 @@
 #include "FWCore/Framework/interface/ComponentDescription.h"
 #include "FWCore/Framework/interface/DataProxyProvider.h"
 #include "FWCore/Framework/interface/EventSetupRecordIntervalFinder.h"
+#include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 // forward declarations
 
 namespace edm {
-   class ParameterSet;
    namespace eventsetup {
       class EventSetupProvider;
       class DataProxyProvider;

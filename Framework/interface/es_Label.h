@@ -22,6 +22,7 @@
 // system include files
 #include "boost/shared_ptr.hpp"
 #include <string>
+#include <vector>
 
 // user include files
 #include "FWCore/Utilities/interface/EDMException.h"
