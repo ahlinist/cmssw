@@ -12,5 +12,5 @@
   <lib name=RecoTrackerPixelStubs>	 
   <use name=DataFormats/TrackerRecHit2D>
   <use name=RecoTracker/TkSeedingLayers>
-  <use name=RecoLocaltracker/SiPixelRecHits>
+  <use name=RecoLocalTracker/SiPixelRecHits>
 </export>
