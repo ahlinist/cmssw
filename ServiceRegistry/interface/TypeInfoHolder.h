@@ -1,5 +1,7 @@
 #ifndef ServiceRegistry_TypeInfoHolder_h
 #define ServiceRegistry_TypeInfoHolder_h
+
+#include <typeinfo>
 // -*- C++ -*-
 //
 // Package:     ServiceRegistry

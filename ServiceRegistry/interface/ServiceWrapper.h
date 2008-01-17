@@ -20,6 +20,7 @@
 //
 
 // system include files
+#include <memory>
 
 // user include files
 #include "FWCore/ServiceRegistry/interface/ServiceWrapperBase.h"
