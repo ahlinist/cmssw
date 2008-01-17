@@ -23,7 +23,7 @@ $Id$
 namespace edm {
   class RunPrincipal;
   class UnscheduledHandler;
-  class LuminosityBlockPrincipal : private Principal {
+  class LuminosityBlockPrincipal : public Principal {
   typedef Principal Base;
   public:
     LuminosityBlockPrincipal(LuminosityBlockNumber_t const& id,
@@ -79,6 +79,7 @@ namespace edm {
       return aux().run();
     }
 
+/*
     using Base::addGroup;
     using Base::addToProcessHistory;
     using Base::getAllProvenance;
@@ -102,10 +103,12 @@ namespace edm {
     using Base::readImmediate;
     using Base::size;
     using Base::store;
+*/
 
     void setUnscheduledHandler(boost::shared_ptr<UnscheduledHandler>) {}
 
   private:
+    virtual void addOrReplaceGroup(std::auto_ptr<Group> g);
     virtual bool unscheduledFill(Provenance const&) const {return false;}
 
     boost::shared_ptr<RunPrincipal> runPrincipal_;
