@@ -82,6 +82,7 @@ namespace edm {
     // last lumi, or last run.
     std::vector<int> runLumiEvent_;
     std::vector<int>::size_type currentIndex_;
+    bool firstTime_;
   };
 }
 #endif

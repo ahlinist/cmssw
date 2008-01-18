@@ -16,7 +16,8 @@ namespace edm {
 				       InputSourceDescription const& desc) :
     InputSource(pset, desc),
     runLumiEvent_(pset.getUntrackedParameter<std::vector<int> >("runLumiEvent", std::vector<int>())),
-    currentIndex_(0) { 
+    currentIndex_(0),
+    firstTime_(true) { 
   }
 
   TestRunLumiSource::~TestRunLumiSource() {
@@ -73,14 +74,17 @@ namespace edm {
 
   InputSource::ItemType
   TestRunLumiSource::getNextItemType() {
-    ItemType oldState = state();
-
+    if (firstTime_) {
+      firstTime_ = false;
+      return InputSource::IsFile;
+    }
     if (currentIndex_ + 2 >= runLumiEvent_.size()) {
       return InputSource::IsStop;
     }
     if (runLumiEvent_[currentIndex_] == 0) {
       return InputSource::IsStop;
     }
+    ItemType oldState = state();
     if (oldState == IsInvalid) return InputSource::IsFile;
     if (runLumiEvent_[currentIndex_ + 1] == 0) {
       return InputSource::IsRun;
