@@ -17,15 +17,12 @@
 #include "FWCore/Services/interface/PrintLoadingPlugins.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/PluginManager/interface/PluginManager.h"
-#include "FWCore/PluginManager/interface/SharedLibrary.h"
 #include "FWCore/PluginManager/interface/PluginInfo.h"
 
 #include "boost/bind.hpp"
 #include "boost/mem_fn.hpp"
 #include "sigc++/signal.h"
 
-#include <boost/filesystem/path.hpp>
-#include <boost/shared_ptr.hpp>
 #include <algorithm>
 #include <iostream>
 #include <string>

@@ -5,7 +5,6 @@ $Id$
 #include <algorithm>
 #include <iterator>
 #include <ostream>
-#include <string>
 #include "FWCore/Modules/src/AsciiOutputModule.h"
 #include "FWCore/Framework/interface/EventPrincipal.h"
 #include "DataFormats/Provenance/interface/Provenance.h"

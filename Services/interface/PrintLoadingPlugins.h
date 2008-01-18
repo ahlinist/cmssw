@@ -3,9 +3,6 @@
 
 #include "FWCore/Services/interface/PrintLoadingPlugins.h"
 #include <boost/filesystem/path.hpp>
-#include "sigc++/signal.h"
-#include "FWCore/ServiceRegistry/interface/ServicesManager.h"
-#include "FWCore/PluginManager/interface/PluginManager.h"
 
 // -*- C++ -*-
 //

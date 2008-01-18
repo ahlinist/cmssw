@@ -5,7 +5,6 @@ $Id$
 
 #include "FWCore/Framework/test/MockEventProcessor.h"
 
-#include <iostream>
 #include <sstream>
 
 namespace {

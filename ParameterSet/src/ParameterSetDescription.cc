@@ -15,7 +15,6 @@
 
 // user include files
 #include "FWCore/ParameterSet/interface/ParameterSetDescription.h"
-#include "FWCore/Utilities/interface/Exception.h"
 
 //
 // constants, enums and typedefs
