@@ -44,8 +44,6 @@ written to the output file anyway.
 
 
 #include "FWCore/Framework/interface/InputSource.h"
-#include "DataFormats/Provenance/interface/EventID.h"
-#include "DataFormats/Provenance/interface/LuminosityBlockID.h"
 
 #include "boost/shared_ptr.hpp"
 #include <memory>
