@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.49 2008/01/05 16:13:24 elmer Exp $
+// $Id: EBRenderPlugin.cc,v 1.50 2008/01/10 07:59:42 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.49 $
-  \date $Date: 2008/01/05 16:13:24 $
+  \version $Revision: 1.50 $
+  \date $Date: 2008/01/10 07:59:42 $
 */
 
 #include <TH1F.h>
@@ -450,7 +450,7 @@ void EBRenderPlugin::preDrawTH1F( TCanvas *c, const ObjInfo &o ) {
    obj->GetXaxis()->LabelsOption("v");
   }
 
-  if( o.name.find( "EBOT occupancy summary 1D" ) < o.name.size() ) {
+  if( o.name.find( "EBOT digi occupancy summary 1D" ) < o.name.size() ) {
    gPad->SetBottomMargin(0.2);
    obj->GetXaxis()->LabelsOption("v");
   }
