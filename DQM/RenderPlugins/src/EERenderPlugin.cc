@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.52 2008/01/10 07:59:42 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.53 2008/01/13 18:31:39 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.52 $
-  \date $Date: 2008/01/10 07:59:42 $
+  \version $Revision: 1.53 $
+  \date $Date: 2008/01/13 18:31:39 $
 */
 
 #include "TH1F.h"
@@ -469,7 +469,7 @@ void EERenderPlugin::preDrawTH1F( TCanvas *c, const ObjInfo &o ) {
    obj->GetXaxis()->LabelsOption("v");
   }
 
-  if( o.name.find( "EEOT occupancy summary 1D" ) < o.name.size() ) {
+  if( o.name.find( "EEOT digi occupancy summary 1D" ) < o.name.size() ) {
    gPad->SetBottomMargin(0.2);
    obj->GetXaxis()->LabelsOption("v");
   }
