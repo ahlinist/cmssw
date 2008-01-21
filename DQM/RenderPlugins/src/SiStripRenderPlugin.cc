@@ -3,7 +3,7 @@
   \brief Display Plugin for SiStrip DQM Histograms
   \author S. Dutta 
   \version $Revision: 1.1 $
-  \date $Date: 2007/12/05 16:05 $
+  \date $Date: 2007/12/10 16:20:58 $
 */
 
 #include <TProfile2D.h>
@@ -13,11 +13,10 @@
 #include <TColor.h>
 #include <TText.h>
 
-#include "DQMServices/Core/interface/MonitorElement.h"
 #include "SiStripRenderPlugin.h"
 
 
-void SiStripRenderPlugin::initialise( int argc, char **argv, DaqMonitorBEInterface *bei ) {
+void SiStripRenderPlugin::initialise( int argc, char **argv ) {
 
 
 }
@@ -160,18 +159,17 @@ void SiStripRenderPlugin::postDrawTH2( TCanvas *c, const ObjInfo &o ) {
 
 void SiStripRenderPlugin::postDrawTH1( TCanvas *c, const ObjInfo &o ) {
 
-  MonitorElement* me = o.me;
   TText tt;
   tt.SetTextSize(0.12);
-  if (me->getQReports().size() == 0) return;
+  if (o.flags == 0) return;
   else {
-    if (me->hasError()) {
+    if (FLAG_ERROR) {
       tt.SetTextColor(2);
       tt.DrawTextNDC(0.5, 0.5, "Error");
-    } else if (me->hasWarning()) {
+    } else if (FLAG_WARNING) {
       tt.SetTextColor(5);
       tt.DrawTextNDC(0.5, 0.5, "Warning");
-    } else if (me->hasOtherReport()) { 
+    } else if (FLAG_REPORT) { 
       tt.SetTextColor(1);
       tt.DrawTextNDC(0.5, 0.5, "Other ");      
     } else {
