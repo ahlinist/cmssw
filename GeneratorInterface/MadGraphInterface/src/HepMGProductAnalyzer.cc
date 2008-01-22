@@ -1,5 +1,4 @@
 #include "GeneratorInterface/MadGraphInterface/interface/HepMGProductAnalyzer.h"
-#include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
 #include <iostream>
 
 HepMGProductAnalyzer::HepMGProductAnalyzer(const edm::ParameterSet& iConfig) : label_(iConfig.getUntrackedParameter("moduleLabel",std::string("source"))) {}

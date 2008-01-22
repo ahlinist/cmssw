@@ -1,6 +1,6 @@
 /*
- *  $Date: 2006/09/13 14:44:41 $
- *  $Revision: 1.2 $
+ *  $Date: 2007/03/28 07:30:43 $
+ *  $Revision: 1.3 $
  *  
  *  Filip Moorgat & Hector Naves 
  *  26/10/05
@@ -17,8 +17,6 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "FWCore/Utilities/interface/RandomNumberGenerator.h"
-#include "CLHEP/Random/JamesRandom.h"
-#include "CLHEP/Random/RandFlat.h"
 
 #include <iostream>
 #include "time.h"
@@ -138,7 +136,6 @@ ToprexSource::ToprexSource( const ParameterSet & pset,
 
 
 // Read the TopReX parameters
-#include "GeneratorInterface/CommonInterface/interface/ExternalGenRead.inc"
 
 
   //In the future, we will get the random number seed on each event and tell 

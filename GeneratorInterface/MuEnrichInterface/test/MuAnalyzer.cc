@@ -2,13 +2,11 @@
 
 #include "GeneratorInterface/MuEnrichInterface/test/MuAnalyzer.h"
  
-#include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
 #include "SimDataFormats/TrackingAnalysis/interface/TrackingParticleFwd.h"
 #include "SimDataFormats/TrackingAnalysis/interface/TrackingParticle.h"
 #include "SimDataFormats/TrackingAnalysis/interface/TrackingVertexContainer.h"
 #include "SimDataFormats/TrackingAnalysis/interface/TrackingVertex.h"
 #include "FWCore/Framework/interface/Event.h"
-#include "FWCore/Framework/interface/Run.h"
 #include "DataFormats/Common/interface/Handle.h" 
 #include "DataFormats/Provenance/interface/EventID.h"
 

@@ -1,5 +1,4 @@
 #include "FWCore/Framework/interface/InputSourceMacros.h"
-#include "FWCore/Framework/interface/MakerMacros.h"
 #include "GeneratorInterface/TopRexInterface/interface/ToprexSource.h"
 
   using edm::ToprexSource;
