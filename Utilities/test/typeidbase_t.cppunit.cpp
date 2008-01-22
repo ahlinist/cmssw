@@ -64,4 +64,3 @@ void testTypeIDBase::copyTest()
   std::string n3(id3.name());
   CPPUNIT_ASSERT(n1== n3);
 }
-#include <Utilities/Testing/interface/CppUnit_testdriver.icpp>
