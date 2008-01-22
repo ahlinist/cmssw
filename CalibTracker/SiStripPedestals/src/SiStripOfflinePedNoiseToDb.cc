@@ -23,7 +23,6 @@
 
 #include "CalibTracker/SiStripPedestals/interface/SiStripOfflinePedNoiseToDb.h"
 
-#include <sstream>
 
 namespace cms{
   SiStripOfflinePedNoiseToDb::SiStripOfflinePedNoiseToDb(const edm::ParameterSet& conf):

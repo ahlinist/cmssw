@@ -13,13 +13,12 @@
 //
 // Original Author:  Tommaso Boccali
 //         Created:  Tue Jul 26 08:47:57 CEST 2005
-// $Id: SimHitTrackerAnalyzer.cc,v 1.9 2006/08/02 08:13:37 llista Exp $
+// $Id: SimHitTrackerAnalyzer.cc,v 1.1 2006/11/13 15:58:00 fambrogl Exp $
 //
 //
 
 
 // system include files
-#include <memory>
 
 // user include files
 #include "AnalysisExamples/SimTrackerAnalysis/interface/SimHitTrackerAnalyzer.h"
@@ -27,7 +26,6 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/Framework/interface/ESHandle.h"
-#include "FWCore/Framework/interface/MakerMacros.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "SimDataFormats/TrackingHit/interface/PSimHit.h"
@@ -46,8 +44,6 @@
 #include "Geometry/TrackerGeometryBuilder/interface/TrackerGeometry.h"
 #include "Geometry/Records/interface/TrackerDigiGeometryRecord.h"
 #include "Geometry/CommonDetUnit/interface/GeomDetUnit.h"
-#include "Geometry/TrackerGeometryBuilder/interface/PixelGeomDetUnit.h"
-#include "Geometry/TrackerGeometryBuilder/interface/StripGeomDetUnit.h"
 
 #include "TFile.h"
 #include "TH1.h"

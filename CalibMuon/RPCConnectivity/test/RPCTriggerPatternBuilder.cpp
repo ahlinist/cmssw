@@ -4,15 +4,12 @@
  * Description:
  *      Class to parse xml files and fill Offline DB
  *
- * $Date: 2007/04/11 12:04:25 $
- * $Revision: 1.11 $
+ * $Date: 2007/11/20 17:21:21 $
+ * $Revision: 1.2 $
  * \author Michal Szleper -- INS Warsaw
  *
  */
 #include "FWCore/Framework/interface/EDAnalyzer.h"
-#include "FWCore/Framework/interface/Event.h"
-#include "FWCore/Framework/interface/EventSetup.h"
-#include "FWCore/Framework/interface/ESHandle.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CondCore/DBOutputService/interface/PoolDBOutputService.h"
@@ -25,7 +22,6 @@
 #include "OnlineDB/Oracle/interface/Oracle.h"
 
 #include <FWCore/ParameterSet/interface/FileInPath.h>
-#include "CondFormats/DataRecord/interface/L1RPCConfigRcd.h"
 #include "CondFormats/RPCObjects/interface/L1RPCConfig.h"
 #include "L1Trigger/RPCTrigger/interface/RPCPatternsParser.h"
 

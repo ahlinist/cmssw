@@ -10,7 +10,6 @@
 
 // Next include is essential: this is the right place where all calsses are
 // registered for serialization: include all anchestors of FlagTxt.
-#include "CalibTracker/SiStripRunSummary/interface/RegisterFlagXML.h"
 #include "CalibTracker/SiStripRunSummary/interface/FlagXML.h"
 
 #include "CalibTracker/SiStripRunSummary/interface/SerializeXML.h"

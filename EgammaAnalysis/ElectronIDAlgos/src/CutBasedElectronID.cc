@@ -1,7 +1,6 @@
 #include "EgammaAnalysis/ElectronIDAlgos/interface/CutBasedElectronID.h"
 #include "DataFormats/EgammaReco/interface/ClusterShape.h"
 #include "DataFormats/EgammaReco/interface/ClusterShapeFwd.h"
-#include "DataFormats/EgammaReco/interface/BasicClusterShapeAssociation.h"
 #include "DataFormats/EgammaReco/interface/BasicCluster.h"
 
 void CutBasedElectronID::setup(const edm::ParameterSet& conf) {

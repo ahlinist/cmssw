@@ -4,27 +4,16 @@
 
 #include "CalibTracker/SiStripPedestals/interface/SiStripNoiseDB.h"
 
-#include "DataFormats/SiStripDetId/interface/SiStripSubStructure.h"
-#include "FWCore/ServiceRegistry/interface/Service.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "CondCore/DBOutputService/interface/PoolDBOutputService.h"
-#include "Geometry/TrackerGeometryBuilder/interface/TrackerGeometry.h" 
-#include "Geometry/Records/interface/TrackerDigiGeometryRecord.h"
-#include "Geometry/CommonTopologies/interface/StripTopology.h"
-#include "Geometry/TrackerGeometryBuilder/interface/StripGeomDetType.h"
-#include "Geometry/TrackerGeometryBuilder/interface/StripGeomDetUnit.h"
-#include "DataFormats/FEDRawData/interface/FEDNumbering.h"
 
-#include <FWCore/Framework/interface/Event.h>
 #include <FWCore/Framework/interface/EventSetup.h>
 #include "DataFormats/Common/interface/Handle.h"
-#include <FWCore/ParameterSet/interface/ParameterSet.h>
 
 // data formats
 
 // std
 #include <cstdlib>
-#include <string>
 
 using namespace std;
 

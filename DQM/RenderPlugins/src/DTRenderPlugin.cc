@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.5 2007/11/29 22:41:33 dellaric Exp $
+// $Id: DTRenderPlugin.cc,v 1.6 2007/12/06 16:01:44 lat Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.5 $
-  \date $Date: 2007/11/29 22:41:33 $
+  \version $Revision: 1.6 $
+  \date $Date: 2007/12/06 16:01:44 $
 */
 
 #include <TProfile2D.h>
@@ -14,7 +14,6 @@
 #include <TCanvas.h>
 #include <TColor.h>
 
-#include "DQMServices/Core/interface/MonitorElement.h"
 
 //#include "DQM/EcalCommon/interface/ColorPalette.h"
 //#include <DQM/EcalCommon/interface/Numbers.h>
