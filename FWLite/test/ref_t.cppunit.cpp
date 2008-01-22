@@ -15,7 +15,6 @@ $Id$
 #include "TSystem.h"
 #include "TChain.h"
 #include "DataFormats/TestObjects/interface/OtherThingCollection.h"
-#include "DataFormats/TestObjects/interface/ThingCollection.h"
 #include "DataFormats/Provenance/interface/BranchType.h"
 #include "FWCore/Utilities/interface/TestHelper.h"
 

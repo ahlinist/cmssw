@@ -5,7 +5,6 @@ Test program for edm::Event.
 
 $Id$
 ----------------------------------------------------------------------*/
-#include <Utilities/Testing/interface/CppUnit_testdriver.icpp>
 #include <cppunit/extensions/HelperMacros.h>
 
 #include <algorithm>
