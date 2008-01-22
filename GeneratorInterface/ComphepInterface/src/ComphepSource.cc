@@ -1,6 +1,6 @@
 /*
- *  $Date: 2007/03/26 16:10:09 $
- *  $Revision: 1.3 $
+ *  $Date: 2007/11/28 15:35:29 $
+ *  $Revision: 1.4 $
  *  
  *  Filip Moorgat & Hector Naves 
  *  26/10/05
@@ -18,8 +18,6 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "FWCore/Utilities/interface/RandomNumberGenerator.h"
-#include "CLHEP/Random/JamesRandom.h"
-#include "CLHEP/Random/RandFlat.h"
 
 #include <iostream>
 #include "time.h"
@@ -139,7 +137,6 @@ ComphepSource::ComphepSource( const ParameterSet & pset,
 
 
  // Read the Comphep parameter
-#include "GeneratorInterface/CommonInterface/interface/ExternalGenRead.inc"
 
 
 
