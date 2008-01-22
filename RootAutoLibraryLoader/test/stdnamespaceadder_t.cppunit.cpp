@@ -49,3 +49,4 @@ void testSTDNamespaceAdder::tests()
    CPPUNIT_ASSERT(stdNamespaceAdder(kVectorVectorBlahNS) == kVectorVectorBlahNS);
    
 }
+#include <Utilities/Testing/interface/CppUnit_testdriver.icpp>
