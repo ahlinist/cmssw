@@ -8,27 +8,22 @@
  * Author: Dmitry Zaborov
  */
 
-// Version: $Id: ProtonTaggerFilter.cc,v 1.5 2007/11/01 21:16:21 dzaborov Exp $
+// Version: $Id: ProtonTaggerFilter.cc,v 1.6 2007/12/20 12:48:40 dzaborov Exp $
 
 #include "FastSimulation/ProtonTaggers/interface/ProtonTaggerFilter.h"
 
-#include "FWCore/PluginManager/interface/PluginManager.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ParameterSet/interface/FileInPath.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
-#include "FWCore/Framework/interface/EventSetup.h"
-#include "FWCore/Framework/interface/ESHandle.h"
 #include "FWCore/Utilities/interface/Exception.h"
 
 #include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
 #include "DataFormats/Common/interface/Handle.h"
 
-#include "HepMC/GenEvent.h"
 
 //#include "CLHEP/Random/RandGaussQ.h"
 
-#include "TFile.h"
 
 #include <iostream>
 #include <list>
