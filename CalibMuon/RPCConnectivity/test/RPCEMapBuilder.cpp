@@ -4,8 +4,8 @@
  * Description:
  *      Class to read directly OMDS DB with OCCI and fill Offline DB
  *
- * $Date: 2007/07/30 14:53:46 $
- * $Revision: 1.12 $
+ * $Date: 2007/10/08 12:19:42 $
+ * $Revision: 1.1 $
  *
  */
 
@@ -14,18 +14,8 @@
 #include "CondFormats/RPCObjects/interface/ChamberLocationSpec.h"
 #include "CondFormats/RPCObjects/interface/DBSpecToDetUnit.h"
 
-#include "CondFormats/RPCObjects/interface/RPCReadOutMapping.h"
-#include "CondFormats/RPCObjects/interface/DccSpec.h"
-#include "CondFormats/RPCObjects/interface/TriggerBoardSpec.h"
-#include "CondFormats/RPCObjects/interface/LinkConnSpec.h"
-#include "CondFormats/RPCObjects/interface/LinkBoardSpec.h"
-#include "CondFormats/RPCObjects/interface/FebConnectorSpec.h"
-#include "CondFormats/RPCObjects/interface/ChamberStripSpec.h"
 
 #include "FWCore/Framework/interface/EDAnalyzer.h"
-#include "FWCore/Framework/interface/Event.h"
-#include "FWCore/Framework/interface/EventSetup.h"
-#include "FWCore/Framework/interface/ESHandle.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CondCore/DBOutputService/interface/PoolDBOutputService.h"

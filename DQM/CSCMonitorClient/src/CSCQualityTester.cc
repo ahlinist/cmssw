@@ -2,8 +2,8 @@
  *
  *  Implementation of CSCQualityTester
  *
- *  $Date: 2007/07/04 21:17:46 $
- *  $Revision: 1.5 $
+ *  $Date: 2007/09/13 14:54:37 $
+ *  $Revision: 1.6 $
  *  \author Ilaria Segoni
  */
 #include "DQM/CSCMonitorClient/interface/CSCQualityTester.h"
@@ -11,7 +11,6 @@
 #include "DQMServices/QualityTests/interface/QCriterionRoot.h"
 
 #include<iostream>
-#include <string>
 
 //
 CSCQualityTester::CSCQualityTester()

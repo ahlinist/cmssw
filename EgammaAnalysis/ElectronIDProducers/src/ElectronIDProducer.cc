@@ -2,7 +2,6 @@
 #include "AnalysisDataFormats/Egamma/interface/ElectronID.h"
 #include "AnalysisDataFormats/Egamma/interface/ElectronIDAssociation.h"
 #include "DataFormats/EgammaReco/interface/BasicCluster.h"
-#include "DataFormats/EgammaReco/interface/ClusterShape.h"
 #include "DataFormats/EgammaReco/interface/BasicClusterShapeAssociation.h"
 
 void ElectronIDProducer::beginJob(edm::EventSetup const& iSetup) {

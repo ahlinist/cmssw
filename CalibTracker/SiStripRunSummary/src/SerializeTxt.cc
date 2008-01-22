@@ -11,7 +11,6 @@
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>
 
-#include "CalibTracker/SiStripRunSummary/interface/FlagTxt.h"
 #include "CalibTracker/SiStripRunSummary/interface/RegisterFlagTxt.h"
 
 #include "CalibTracker/SiStripRunSummary/interface/SerializeTxt.h"

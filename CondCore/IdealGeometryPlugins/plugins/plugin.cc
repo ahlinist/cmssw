@@ -1,5 +1,4 @@
 #include "CondCore/PluginSystem/interface/registration_macros.h"
-#include "CondCore/IdealGeometryPlugins/interface/IdealGeometryProxy.h"
 #include "CondFormats/IdealGeometryObjects/interface/PGeometricDet.h"
 #include "Geometry/Records/interface/IdealGeometryRecord.h"
 #include "DetectorDescription/Core/interface/DDCompactView.h"

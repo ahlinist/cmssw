@@ -2,26 +2,15 @@
 #include <iostream>
 
 #include "AnalysisExamples/MinimumBiasUnderlyingEvent/test/MBUEAnalysisRootpleProducerOnlyMC.h"
-#include "DataFormats/Common/interface/Ref.h" 
 #include "DataFormats/JetReco/interface/Jet.h"
-#include "DataFormats/JetReco/interface/CaloJetCollection.h"
 #include "DataFormats/JetReco/interface/GenJet.h"
 #include "DataFormats/JetReco/interface/GenJetCollection.h"
-#include "DataFormats/JetReco/interface/BasicJet.h"
-#include "DataFormats/JetReco/interface/BasicJetCollection.h"
-#include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
-#include "DataFormats/HepMCCandidate/interface/GenParticleCandidate.h"
-#include "DataFormats/RecoCandidate/interface/RecoCandidate.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "DataFormats/Common/interface/Handle.h"
-#include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
  
-#include "TFile.h"
-#include "TH1.h"
-#include "TVector3.h"
  
 using namespace edm;
 using namespace std;

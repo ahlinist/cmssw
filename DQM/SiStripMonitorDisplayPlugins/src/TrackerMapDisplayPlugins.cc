@@ -1,12 +1,8 @@
 //<<<<<< INCLUDES                                                       >>>>>>
 #include "DQM/SiStripMonitorDisplayPlugins/interface/TrackerMapDisplayPlugins.h"
 #include "DQMServices/Core/interface/DaqMonitorBEInterface.h"
-#include "DQMServices/Core/interface/MonitorElement.h"
-#include "VisMonitoring/VisDQMBase/interface/VisDQMOps.h"
-#include "VisMonitoring/VisDQMBase/interface/VisDQMGroupTwig.h"
 #include <iostream>
 #include <TObject.h>
-#include <TH1F.h>
 
 #include <cassert>
 #include <string>

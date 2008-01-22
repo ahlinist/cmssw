@@ -10,12 +10,9 @@
 #include "EgammaAnalysis/EgammaIsolationProducers/interface/EgammaHcalIsolationProducer.h"
 
 // Framework
-#include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "DataFormats/Common/interface/Handle.h"
 #include "FWCore/Framework/interface/ESHandle.h"
-#include "FWCore/MessageLogger/interface/MessageLogger.h"
-#include "FWCore/Utilities/interface/Exception.h"
 
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/Candidate/interface/CandAssociation.h"
@@ -24,8 +21,6 @@
 #include "DataFormats/EgammaReco/interface/SuperClusterFwd.h"
 
 #include "DataFormats/HcalRecHit/interface/HcalRecHitCollections.h"
-#include "DataFormats/HcalDetId/interface/HcalDetId.h"
-#include "Geometry/CaloGeometry/interface/CaloCellGeometry.h"
 #include "Geometry/CaloGeometry/interface/CaloGeometry.h"
 
 #include "Geometry/Records/interface/IdealGeometryRecord.h"
