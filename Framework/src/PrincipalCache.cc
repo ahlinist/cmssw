@@ -151,11 +151,10 @@ namespace edm {
       return true;
     }
 
-    // Need to merge the new run principal into the one already
-    // in the cache, this part not implemented yet.
+    iter->second->mergeRun(rp);
     currentRunPrincipal_ = iter->second;
     
-    return false;
+    return true;
   }
 
   bool PrincipalCache::insert(boost::shared_ptr<LuminosityBlockPrincipal> lbp) {
@@ -169,11 +168,10 @@ namespace edm {
       return true;
     }
 
-    // Need to merge the new luminosity principal into the one already
-    // in the cache, this part not implemented yet.
+    iter->second->mergeLuminosityBlock(lbp);
     currentLumiPrincipal_ = iter->second;
     
-    return false;
+    return true;
   }
 
   bool PrincipalCache::noMoreRuns() {

@@ -87,6 +87,8 @@ namespace edm {
 
     void setUnscheduledHandler(boost::shared_ptr<UnscheduledHandler>) {}
 
+    void mergeRun(boost::shared_ptr<RunPrincipal> rp);
+
   private:
     virtual void addOrReplaceGroup(std::auto_ptr<Group> g);
 

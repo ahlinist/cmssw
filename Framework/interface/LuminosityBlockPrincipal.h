@@ -107,6 +107,8 @@ namespace edm {
 
     void setUnscheduledHandler(boost::shared_ptr<UnscheduledHandler>) {}
 
+    void mergeLuminosityBlock(boost::shared_ptr<LuminosityBlockPrincipal> lbp);
+
   private:
     virtual void addOrReplaceGroup(std::auto_ptr<Group> g);
     virtual bool unscheduledFill(Provenance const&) const {return false;}

@@ -49,8 +49,8 @@ namespace edm {
     return size();
   }
    
-  Group const *
-  Principal::getExistingGroup(Group const& group) const {
+  Group*
+  Principal::getExistingGroup(Group const& group) {
     unsigned int index = group.index();
     return groups_[index].get();
   }
@@ -73,7 +73,6 @@ namespace edm {
 
   void 
   Principal::replaceGroup(std::auto_ptr<Group> group) {
-    BranchDescription const& bd = group->productDescription();
     unsigned int index = group->index();
     SharedGroupPtr g(group);
     if (g->branchEntryDescription() == 0) g->provenance().setStore(store_);
