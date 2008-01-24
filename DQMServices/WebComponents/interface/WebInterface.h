@@ -13,7 +13,7 @@
 
 #include "DQMServices/WebComponents/interface/WebPage.h"
 #include "DQMServices/WebComponents/interface/MessageDispatcher.h"
-#include "DQMServices/WebComponents/interface/ME_map.h"
+#include "DQMServices/WebComponents/interface/ME_MAP.h"
 
 #include <string>
 #include <map>
@@ -71,8 +71,8 @@ class WebInterface
   
   /// Answer navigator requests 
   void Open(xgi::Input * in, xgi::Output * out) throw (xgi::exception::Exception);
-  void Subscribe(xgi::Input * in, xgi::Output * out) throw (xgi::exception::Exception);
-  void Unsubscribe(xgi::Input * in, xgi::Output * out) throw (xgi::exception::Exception);
+//  void Subscribe(xgi::Input * in, xgi::Output * out) throw (xgi::exception::Exception);
+//  void Unsubscribe(xgi::Input * in, xgi::Output * out) throw (xgi::exception::Exception);
 
   /// Outputs the subdirectories and files of "directory". Called by any of the above three.
   void printNavigatorXML(std::string directory, xgi::Output * out);
@@ -86,7 +86,7 @@ class WebInterface
 
   /// Answers viewer requests
   void DrawGif(xgi::Input * in, xgi::Output * out) throw (xgi::exception::Exception);
-  void printMap(ME_map view_map, std::string id);
+  void printMap(ME_MAP view_map, std::string id);
 
   /// Adds widgets to the page
   void add(std::string, WebElement *);
