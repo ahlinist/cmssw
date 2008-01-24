@@ -54,8 +54,8 @@ void WebInterface::handleStandardRequest(xgi::Input * in, xgi::Output * out ) th
 
   if (requestID == "Configure")    Configure(in, out);
   if (requestID == "Open")         Open(in, out);
-  if (requestID == "Subscribe")    Subscribe(in, out);
-  if (requestID == "Unsubscribe")  Unsubscribe(in, out);
+//  if (requestID == "Subscribe")    Subscribe(in, out);
+//  if (requestID == "Unsubscribe")  Unsubscribe(in, out);
   if (requestID == "ContentsOpen") ContentsOpen(in, out);
   if (requestID == "Draw")         DrawGif(in, out);
 }
@@ -137,7 +137,7 @@ void WebInterface::Open(xgi::Input * in, xgi::Output * out) throw (xgi::exceptio
     }
   printNavigatorXML(myBei->pwd(), out); 
 }
-void WebInterface::Subscribe(xgi::Input * in, xgi::Output * out) throw (xgi::exception::Exception)
+/*void WebInterface::Subscribe(xgi::Input * in, xgi::Output * out) throw (xgi::exception::Exception)
 {
   std::multimap<std::string, std::string> nav_map;
 
@@ -191,7 +191,7 @@ void WebInterface::Unsubscribe(xgi::Input * in, xgi::Output * out) throw (xgi::e
       current = "top";
     }
   printNavigatorXML(current, out);
-}
+}*/
 
 void WebInterface::printNavigatorXML(std::string current, xgi::Output * out)
 {
@@ -339,7 +339,7 @@ void WebInterface::printContentViewerXML(std::string current, xgi::Output * out)
 void WebInterface::DrawGif(xgi::Input * in, xgi::Output * out) throw (xgi::exception::Exception)
 {
   std::multimap<std::string, std::string> view_multimap;
-  ME_map view_map;
+  ME_MAP view_map;
 
   CgiReader cgi_reader(in);
   cgi_reader.read_form(view_multimap);
@@ -376,7 +376,7 @@ void WebInterface::DrawGif(xgi::Input * in, xgi::Output * out) throw (xgi::excep
   std::cout << "will try to print " << id << std::endl;
   
   seal::Callback action(seal::CreateCallback(this, &WebInterface::printMap, view_map, id));
-  (*mui_p)->addCallback(action);
+  // (*mui_p)->addCallback(action);
   
   // And return the URL of the file:
   out->getHTTPResponseHeader().addHeader("Content-Type", "text/xml");
@@ -388,7 +388,7 @@ void WebInterface::DrawGif(xgi::Input * in, xgi::Output * out) throw (xgi::excep
   myBei->unlock();
 }
 
-void WebInterface::printMap(ME_map view_map, std::string id)
+void WebInterface::printMap(ME_MAP view_map, std::string id)
 {
   view_map.print(id);
 }
