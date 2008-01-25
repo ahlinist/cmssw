@@ -68,10 +68,14 @@ class HLTMuonDQMClient: public EDAnalyzer{
   DaqMonitorBEInterface* dbe_;
 
   TH1F *hNMu_[2];
+  TH1F *hQ_[2];
   TH1F *hPt_[2];
-  TH1F *hHPt_[2];
+  TH1F *hPtlx_[2];
   TH1F *hEta_[2];
   TH1F *hPhi_[2];
+  TH1F *hPtres_;
+  TH1F *hEtares_;
+  TH1F *hPhires_;
   TH2F *hEtaphi_[2];
   TH1F *hDr_[2];
   TH1F *hDz_[2];

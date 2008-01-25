@@ -13,7 +13,7 @@ Implementation:
 //
 // Original Author:  Muriel VANDER DONCKT *:0
 //         Created:  Wed Dec 12 09:55:42 CET 2007
-// $Id: HLTMuonDQMClient.cc,v 1.1 2008/01/24 14:44:33 muriel Exp $
+// $Id: HLTMuonDQMClient.cc,v 1.1 2008/01/24 15:31:01 muriel Exp $
 //
 //
 
@@ -45,7 +45,7 @@ HLTMuonDQMClient::HLTMuonDQMClient( const edm::ParameterSet& ps )
   dumpRate_   = ps.getUntrackedParameter<int>("dumpRate", 10);
   outputFileName_ = ps.getUntrackedParameter<string>("outputFileName", "HLTMuon");
   rootFolder_ = ps.getUntrackedParameter<string>("rootFolder", "HLTMuon/");
-  htmlDir_    = ps.getUntrackedParameter<string>("htmlDir","/tmp/muon/DQM/HLT");
+  htmlDir_    = ps.getUntrackedParameter<string>("htmlDir","HLT/Objects/Muon/");
   htmlName_   = ps.getUntrackedParameter<string>("htmlName","muonHLT.html");  
   sta_        = ps.getUntrackedParameter<bool>("RunStandalone", false);
   x11_        = ps.getUntrackedParameter<bool>("InitializeX11", false);
@@ -163,10 +163,10 @@ void HLTMuonDQMClient::doQT(){
     meT = dynamic_cast<MonitorElementT<TNamed>*>(mePt);
     hPt_[level-2]= dynamic_cast<TH1F*> (meT->operator->());
 
-    sprintf(tit, "%sLevel%i/Objects/HLTMuonL%i_highpt",rootFolder_.c_str(),level,level);
-    MonitorElement *meHPt= dbe_->get(tit);
-    meT = dynamic_cast<MonitorElementT<TNamed>*>(meHPt);
-    hHPt_[level-2]= dynamic_cast<TH1F*> (meT->operator->());
+    sprintf(tit, "%sLevel%i/Objects/HLTMuonL%i_ptlx",rootFolder_.c_str(),level,level);
+    MonitorElement *mePtlx= dbe_->get(tit);
+    meT = dynamic_cast<MonitorElementT<TNamed>*>(mePtlx);
+    hPtlx_[level-2]= dynamic_cast<TH1F*> (meT->operator->());
 
     sprintf(tit, "%sLevel%i/Objects/HLTMuonL%i_eta",rootFolder_.c_str(),level,level);
     MonitorElement *meEta= dbe_->get(tit);
@@ -177,6 +177,23 @@ void HLTMuonDQMClient::doQT(){
     MonitorElement *mePhi= dbe_->get(tit);
     meT = dynamic_cast<MonitorElementT<TNamed>*>(mePhi);
     hPhi_[level-2]= dynamic_cast<TH1F*> (meT->operator->());
+    
+    if (level == 2){
+      sprintf(tit, "%sLevel%i/Objects/HLTMuonL%i_ptres",rootFolder_.c_str(),level,level);
+      MonitorElement *mePtres= dbe_->get(tit);
+      meT = dynamic_cast<MonitorElementT<TNamed>*>(mePtres);
+      hPtres_= dynamic_cast<TH1F*> (meT->operator->());
+      
+      sprintf(tit, "%sLevel%i/Objects/HLTMuonL%i_etares",rootFolder_.c_str(),level,level);
+      MonitorElement *meEtares= dbe_->get(tit);
+      meT = dynamic_cast<MonitorElementT<TNamed>*>(meEtares);
+      hEtares_= dynamic_cast<TH1F*> (meT->operator->());
+      
+      sprintf(tit, "%sLevel%i/Objects/HLTMuonL%i_phires",rootFolder_.c_str(),level,level);
+      MonitorElement *mePhires= dbe_->get(tit);
+      meT = dynamic_cast<MonitorElementT<TNamed>*>(mePhires);
+      hPhires_= dynamic_cast<TH1F*> (meT->operator->());
+    }
 
     sprintf(tit, "%sLevel%i/Objects/HLTMuonL%i_etaphi",rootFolder_.c_str(),level,level);
     MonitorElement *meEtaphi= dbe_->get(tit);
@@ -212,6 +229,11 @@ void HLTMuonDQMClient::doQT(){
     MonitorElement *meDimumass= dbe_->get(tit);
     meT = dynamic_cast<MonitorElementT<TNamed>*>(meDimumass);
     hDimumass_[level-2]= dynamic_cast<TH1F*> (meT->operator->());
+
+    sprintf(tit, "%sLevel%i/Objects/HLTMuonL%i_charge",rootFolder_.c_str(),level,level);
+    MonitorElement *meQ= dbe_->get(tit);
+    meT = dynamic_cast<MonitorElementT<TNamed>*>(meQ);
+    hQ_[level-2]= dynamic_cast<TH1F*> (meT->operator->());
   } 
 }
 
@@ -247,69 +269,81 @@ void HLTMuonDQMClient::htmlOutput(int run, string htmlDir, string htmlName) {
   string histName;
   gROOT->SetStyle("Plain");
   gStyle->SetStatW(0.3);
-  gStyle->SetStatH(0.2);
+  gStyle->SetStatH(0.15);
   gStyle->SetPalette(1, 0);
   gStyle->SetGridStyle(1);
 
-  TCanvas *cMuL2 = new TCanvas("cMuL2", "cMuL2", 1200, 900);
+  TCanvas *cMuL2 = new TCanvas("cMuL2", "cMuL2", 1200, 1200);
   gStyle->SetOptStat(111110);
-  cMuL2->Divide(4,3);
-  cMuL2->cd(1);
+  cMuL2->Divide(4,4);
+  unsigned pad=0;
+  cMuL2->cd(++pad);
   hNMu_[0]->Draw();
-  cMuL2->cd(2);
+  cMuL2->cd(++pad);
+  hQ_[0]->Draw();
+  cMuL2->cd(++pad);
   hPt_[0]->Draw();
-  cMuL2->cd(3);
-  hHPt_[0]->Draw();
-  cMuL2->cd(4);
+  cMuL2->cd(++pad);
+  hPtlx_[0]->Draw();
+  cMuL2->cd(++pad);
+  hPtres_->Draw();
+  cMuL2->cd(++pad);
   hEta_[0]->Draw();
-  cMuL2->cd(5);
+  cMuL2->cd(++pad);
+  hEtares_->Draw();
+  cMuL2->cd(++pad);
   hPhi_[0]->Draw();
-  cMuL2->cd(6);
+  cMuL2->cd(++pad);
+  hPhires_->Draw();
+  cMuL2->cd(++pad);
   gStyle->SetOptStat(0);
   hEtaphi_[0]->Draw("colz");
   gStyle->SetOptStat(111110);
-  cMuL2->cd(7);
+  cMuL2->cd(++pad);
   hDr_[0]->Draw();
-  cMuL2->cd(8);
+  cMuL2->cd(++pad);
   hDz_[0]->Draw();
-  cMuL2->cd(9);
+  cMuL2->cd(++pad);
   hErr0_[0]->Draw();
-  cMuL2->cd(10);
+  cMuL2->cd(++pad);
   hNhit_[0]->Draw();
-  cMuL2->cd(11);
+  cMuL2->cd(++pad);
   hIso_[0]->Draw();
-  cMuL2->cd(12);
+  cMuL2->cd(++pad);
   hDimumass_[0]->Draw();
   histName = htmlDir+"/Level2.png";
   cMuL2->SaveAs(histName.c_str());  
 
-  TCanvas *cMuL3 = new TCanvas("cMuL3", "cMuL3", 1200, 900);
-  cMuL3->Divide(4,3);
-  cMuL3->cd(1);
+  TCanvas *cMuL3 = new TCanvas("cMuL3", "cMuL3", 1200, 1200);
+  cMuL3->Divide(4,4);
+  pad=0;
+  cMuL3->cd(++pad);
   hNMu_[1]->Draw();
-  cMuL3->cd(2);
+  cMuL3->cd(++pad);
+  hQ_[1]->Draw();
+  cMuL3->cd(++pad);
   hPt_[1]->Draw();
-  cMuL3->cd(3);
-  hHPt_[1]->Draw();
-  cMuL3->cd(4);
+  cMuL3->cd(++pad);
+  hPtlx_[1]->Draw();
+  cMuL3->cd(++pad);
   hEta_[1]->Draw();
-  cMuL3->cd(5);
+  cMuL3->cd(++pad);
   hPhi_[1]->Draw();
-  cMuL3->cd(6);
+  cMuL3->cd(++pad);
   gStyle->SetOptStat(0);
   hEtaphi_[1]->Draw("colz");
   gStyle->SetOptStat(111110);
-  cMuL3->cd(7);
+  cMuL3->cd(++pad);
   hDr_[1]->Draw();
-  cMuL3->cd(8);
+  cMuL3->cd(++pad);
   hDz_[1]->Draw();
-  cMuL3->cd(9);
+  cMuL3->cd(++pad);
   hErr0_[1]->Draw();
-  cMuL3->cd(10);
+  cMuL3->cd(++pad);
   hNhit_[1]->Draw();
-  cMuL3->cd(11);
+  cMuL3->cd(++pad);
   hIso_[1]->Draw();
-  cMuL3->cd(13);
+  cMuL3->cd(++pad);
   hDimumass_[1]->Draw();
   histName = htmlDir+"/Level3.png";
   cMuL3->SaveAs(histName.c_str()); 
