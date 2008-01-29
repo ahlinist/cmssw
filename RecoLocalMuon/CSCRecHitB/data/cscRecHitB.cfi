@@ -6,8 +6,9 @@ module csc2DRecHits = CSCRecHitBProducer {
 ###########################################################
 #    Which digis to use for hit reconstruction:
 ###########################################################
-     string CSCStripDigiProducer                 = "muonCSCDigis"
-     string CSCWireDigiProducer                  = "muonCSCDigis"
+     InputTag CSCDigiTag                         = muonCSCDigis
+     InputTag CSCStripDigiTag                    = MuonCSCStripDigi
+     InputTag CSCWireDigiTag                     = MuonCSCWireDigi
 ###########################################################
 #    Calibration info:
 ###########################################################

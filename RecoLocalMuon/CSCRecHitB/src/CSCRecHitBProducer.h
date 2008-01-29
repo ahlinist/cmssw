@@ -18,6 +18,7 @@
 #include <FWCore/Framework/interface/EDProducer.h>
 #include <FWCore/Framework/interface/Event.h>
 #include <FWCore/ParameterSet/interface/ParameterSet.h>
+#include "FWCore/ParameterSet/interface/InputTag.h"
 
 class CSCRecHitBBuilder; 
 class CSCStripGainAvg;
@@ -42,8 +43,9 @@ public:
 
   float CSCstripGainAvg;
 
-  std::string stripDigiProducer_;
-  std::string wireDigiProducer_;
+  edm::InputTag stripDigiTag;
+  edm::InputTag wireDigiTag;
+  edm::InputTag CSCDigiTag;
 
   CSCRecHitBBuilder* recHitBuilder_;
   CSCStripGainAvg* stripGainAvg_;
