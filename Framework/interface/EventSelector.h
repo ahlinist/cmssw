@@ -12,11 +12,23 @@
 #include "DataFormats/Common/interface/TriggerResults.h"
 #include "DataFormats/Provenance/interface/ParameterSetID.h"
 
+#include "boost/shared_ptr.hpp"
+
 #include <vector>
 #include <string>
 
 namespace edm
 {
+  // possible return codes for the testSelectionOverlap
+  // method defined below.
+  namespace evtSel
+  {
+    enum OverlapResult {InvalidSelection = 0,
+                        NoOverlap = 1,
+                        PartialOverlap = 2,
+                        ExactMatch = 3};
+  }
+
   class EventSelector
   {
   public:
@@ -35,6 +47,21 @@ namespace edm
     bool wantAll() const { return accept_all_; }
     bool acceptEvent(TriggerResults const&);
     bool acceptEvent(unsigned char const*, int) const;
+
+    // 29-Jan-2008, KAB - added methods for testing and using
+    // trigger selections (pathspecs).
+    static bool selectionIsValid(Strings const& pathspec,
+                                 Strings const& fullTriggerList);
+    static evtSel::OverlapResult
+      testSelectionOverlap(Strings const& pathspec1,
+                           Strings const& pathspec2,
+                           Strings const& fullTriggerList);
+    static boost::shared_ptr<TriggerResults>
+      maskTriggerResults(Strings const& pathspecs,
+                         TriggerResults const& inputResults,
+                         Strings const& fullTriggerList);
+    static std::vector<std::string>
+      getEventSelectionVString(edm::ParameterSet const& pset);
 
   private:
 
