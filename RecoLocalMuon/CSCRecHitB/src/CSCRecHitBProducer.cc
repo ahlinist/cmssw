@@ -31,8 +31,9 @@
 
 CSCRecHitBProducer::CSCRecHitBProducer( const edm::ParameterSet& ps ) : iRun( 0 ), CSCstripGainAvg( 1 ) {
 	
-  stripDigiProducer_ = ps.getParameter<std::string>("CSCStripDigiProducer");
-  wireDigiProducer_  = ps.getParameter<std::string>("CSCWireDigiProducer");
+  CSCDigiTag         = ps.getParameter<edm::InputTag>("CSCDigiTag");
+  stripDigiTag       = ps.getParameter<edm::InputTag>("CSCStripDigiTag");
+  wireDigiTag        = ps.getParameter<edm::InputTag>("CSCWireDigiTag");
   useCalib           = ps.getUntrackedParameter<bool>("CSCUseCalibrations");
   debug              = ps.getUntrackedParameter<bool>("CSCDebug");
   useCleanWireCollection  = ps.getUntrackedParameter<bool>("CSCuseCleanWireCollection"); 
@@ -91,14 +92,14 @@ void  CSCRecHitBProducer::produce( edm::Event& ev, const edm::EventSetup& setup 
   // Get the collections of strip & wire digis from event
   edm::Handle<CSCStripDigiCollection> stripDigis;
   edm::Handle<CSCWireDigiCollection> wireDigis;
-  ev.getByLabel(stripDigiProducer_, "MuonCSCStripDigi", stripDigis);
-  ev.getByLabel(wireDigiProducer_,  "MuonCSCWireDigi",  wireDigis);
+  ev.getByLabel(CSCDigiTag.label(),stripDigiTag.label(),stripDigis);
+  ev.getByLabel(CSCDigiTag.label(),wireDigiTag.label(),wireDigis);
 
   // Get the collections of CLCTs and ALCTs
   edm::Handle<CSCALCTDigiCollection> alcts;
   edm::Handle<CSCCLCTDigiCollection> clcts;
-  if ( useCleanWireCollection  ) ev.getByLabel(stripDigiProducer_,"MuonCSCALCTDigi",alcts);
-  if ( useCleanStripCollection ) ev.getByLabel(stripDigiProducer_,"MuonCSCCLCTDigi",clcts);
+  if ( useCleanWireCollection  ) ev.getByLabel(CSCDigiTag.label(),"MuonCSCALCTDigi",alcts);
+  if ( useCleanStripCollection ) ev.getByLabel(CSCDigiTag.label(),"MuonCSCCLCTDigi",clcts);
 
   // Create empty collection of rechits
   std::auto_ptr<CSCRecHit2DCollection> oc( new CSCRecHit2DCollection );
