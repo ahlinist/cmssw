@@ -295,7 +295,7 @@ EventContentAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
    for(Provenances::iterator itProv = provenances.begin(), itProvEnd = provenances.end();
                              itProv != itProvEnd;
                            ++itProv) {
-     if((*itProv)->isPresent()) {
+     if((*itProv)->product().present()) {
        friendlyName = (*itProv)->friendlyClassName();
        //if(friendlyName.empty())  friendlyName = std::string("||");
        
