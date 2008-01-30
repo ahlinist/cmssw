@@ -141,7 +141,7 @@ void testGenericHandle::getbyLabelTest() {
   boost::shared_ptr<edm::LuminosityBlockPrincipal>lbp(new edm::LuminosityBlockPrincipal(1, fakeTime, fakeTime, pregc, rp, pc));
   edm::EventPrincipal ep(col, uuid, fakeTime, pregc, lbp, pc, true);
 
-  std::auto_ptr<edm::Provenance> pprov(new edm::Provenance(product, edm::BranchEntryDescription::Success));
+  std::auto_ptr<edm::Provenance> pprov(new edm::Provenance(product));
   ep.put(pprod, pprov);
   
   edm::GenericHandle h("edmtest::DummyProduct");
