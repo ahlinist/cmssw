@@ -24,6 +24,9 @@ $Id$
 #include "DataFormats/Provenance/interface/ProcessHistory.h"
 #include "DataFormats/Provenance/interface/ProductRegistry.h"
 #include "DataFormats/Provenance/interface/Timestamp.h"
+#include "DataFormats/Provenance/interface/EventAuxiliary.h"
+#include "DataFormats/Provenance/interface/LuminosityBlockAuxiliary.h"
+#include "DataFormats/Provenance/interface/RunAuxiliary.h"
 #include "DataFormats/TestObjects/interface/Thing.h"
 #include "DataFormats/TestObjects/interface/ToyProducts.h"
 #include "FWCore/Framework/interface/Event.h"
@@ -341,18 +344,15 @@ void testEvent::setUp()
   Timestamp time = make_timestamp();
   EventID id = make_id();
   ProcessConfiguration const& pc = currentModuleDescription_->processConfiguration();
-  boost::shared_ptr<RunPrincipal> rp(new RunPrincipal(id.run(), time, time, preg, pc));
-  boost::shared_ptr<LuminosityBlockPrincipal>lbp(new LuminosityBlockPrincipal(1, time, time, preg, rp, pc));
-  principal_  = new EventPrincipal(id,
-				   uuid,
-				   time,
+  RunAuxiliary runAux(id.run(), time, time);
+  boost::shared_ptr<RunPrincipal> rp(new RunPrincipal(runAux, preg, pc));
+  LuminosityBlockAuxiliary lumiAux(rp->run(), 1, time, time);
+  boost::shared_ptr<LuminosityBlockPrincipal>lbp(new LuminosityBlockPrincipal(lumiAux, preg, rp, pc));
+  EventAuxiliary eventAux(id, uuid, time, lbp->luminosityBlock(), true);
+  principal_  = new EventPrincipal(eventAux,
 				   preg,
                                    lbp,
                                    pc,
-                                   true,
-				   EventAuxiliary::Any,
-				   EventPrincipal::invalidBunchXing,
-				   EventPrincipal::invalidStoreNumber,
                                    processHistoryID);
 
   currentEvent_ = new Event(*principal_, *currentModuleDescription_);

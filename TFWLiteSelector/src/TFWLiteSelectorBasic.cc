@@ -26,6 +26,9 @@
 #include "DataFormats/Provenance/interface/BranchType.h"
 #include "DataFormats/Provenance/interface/ProductRegistry.h"
 #include "DataFormats/Provenance/interface/ConstBranchDescription.h"
+#include "DataFormats/Provenance/interface/EventAuxiliary.h"
+#include "DataFormats/Provenance/interface/LuminosityBlockAuxiliary.h"
+#include "DataFormats/Provenance/interface/RunAuxiliary.h"
 #include "DataFormats/Common/interface/EDProduct.h"
 #include "FWCore/Utilities/interface/WrappedClassName.h"
 #include "FWCore/Utilities/interface/EDMException.h"
@@ -269,14 +272,12 @@ TFWLiteSelectorBasic::Process(Long64_t iEntry) {
 	 m_->reader_->setEntry(iEntry);
 	 edm::ProcessConfiguration pc;
 	 boost::shared_ptr<edm::ProductRegistry const> reg(m_->reg_);
-	 boost::shared_ptr<edm::RunPrincipal> rp(new edm::RunPrincipal(aux.run(), aux.time(), aux.time(), reg, pc));
-	 boost::shared_ptr<edm::LuminosityBlockPrincipal>lbp(new edm::LuminosityBlockPrincipal(1, aux.time(), aux.time(), reg, rp, pc));
-	 edm::EventPrincipal ep(aux.id(), aux.processGUID(), aux.time(), reg, lbp, pc, true,
-				edm::EventAuxiliary::Any,
-                                edm::EventPrincipal::invalidBunchXing,
-				edm::EventPrincipal::invalidStoreNumber,
-			        aux.processHistoryID(),
-				m_->reader_);
+	 edm::RunAuxiliary runAux(aux.run(), aux.time(), aux.time());
+	 boost::shared_ptr<edm::RunPrincipal> rp(new edm::RunPrincipal(runAux, reg, pc));
+	 edm::LuminosityBlockAuxiliary lumiAux(rp->run(), 1, aux.time(), aux.time());
+	 boost::shared_ptr<edm::LuminosityBlockPrincipal>lbp(
+	    new edm::LuminosityBlockPrincipal(lumiAux, reg, rp, pc));
+	 edm::EventPrincipal ep(aux, reg, lbp, pc, aux.processHistoryID(), m_->reader_);
          m_->processNames_ = ep.processHistory();
 
 	 using namespace edm;

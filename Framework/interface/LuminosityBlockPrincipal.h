@@ -26,9 +26,7 @@ namespace edm {
   class LuminosityBlockPrincipal : public Principal {
   typedef Principal Base;
   public:
-    LuminosityBlockPrincipal(LuminosityBlockNumber_t const& id,
-        Timestamp const& beginTm,
-        Timestamp const& endTm,
+    LuminosityBlockPrincipal(LuminosityBlockAuxiliary const& aux,
 	boost::shared_ptr<ProductRegistry const> reg,
         boost::shared_ptr<RunPrincipal> rp,
         ProcessConfiguration const& pc,

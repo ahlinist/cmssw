@@ -21,6 +21,9 @@ $Id$
 #include "DataFormats/Provenance/interface/ProductRegistry.h"
 #include "DataFormats/Provenance/interface/Provenance.h"
 #include "DataFormats/Provenance/interface/Timestamp.h"
+#include "DataFormats/Provenance/interface/EventAuxiliary.h"
+#include "DataFormats/Provenance/interface/LuminosityBlockAuxiliary.h"
+#include "DataFormats/Provenance/interface/RunAuxiliary.h"
 #include "DataFormats/Common/interface/Wrapper.h"
 #include "DataFormats/TestObjects/interface/ToyProducts.h"
 #include "DataFormats/Common/interface/BasicHandle.h"
@@ -180,9 +183,12 @@ void test_ep::setUp()
     std::string uuid = edm::createGlobalIdentifier();
     edm::Timestamp now(1234567UL);
     boost::shared_ptr<edm::ProductRegistry const> preg = boost::shared_ptr<edm::ProductRegistry const>(pProductRegistry_);
-    boost::shared_ptr<edm::RunPrincipal> rp(new edm::RunPrincipal(eventID_.run(), now, now, preg, *process));
-    boost::shared_ptr<edm::LuminosityBlockPrincipal>lbp(new edm::LuminosityBlockPrincipal(1, now, now, preg, rp, *process));
-    pEvent_  = new edm::EventPrincipal(eventID_, uuid, now, preg, lbp, *process, true);
+    edm::RunAuxiliary runAux(eventID_.run(), now, now);
+    boost::shared_ptr<edm::RunPrincipal> rp(new edm::RunPrincipal(runAux, preg, *process));
+    edm::LuminosityBlockAuxiliary lumiAux(rp->run(), 1, now, now);
+    boost::shared_ptr<edm::LuminosityBlockPrincipal>lbp(new edm::LuminosityBlockPrincipal(lumiAux, preg, rp, *process));
+    edm::EventAuxiliary eventAux(eventID_, uuid, now, lbp->luminosityBlock(), true);
+    pEvent_ = new edm::EventPrincipal(eventAux, preg, lbp, *process);
     pEvent_->put(product, provenance);
   }
   CPPUNIT_ASSERT(pEvent_->size() == 1);
