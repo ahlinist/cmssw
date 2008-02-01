@@ -3,27 +3,50 @@
 
   <MaterialSection label="tecmaterial.xml">
   
-   <CompositeMaterial density="1.69*g/cm3" method="mixture by weight" name="Tk_SO_FC_D" symbol=" ">
-    <MaterialFraction fraction="1.">
-      <rMaterial name="materials:Carbon fibre str."/>
+    <CompositeMaterial density="1.69*g/cm3" method="mixture by weight" name="Tk_SO_FC_D" symbol=" ">
+      <MaterialFraction fraction="0.84491305">
+        <rMaterial name="materials:Carbon"/>
     </MaterialFraction>
-   </CompositeMaterial>
-   <CompositeMaterial density="1.69*g/cm3" method="mixture by weight" name="Tk_SO_FC_E" symbol=" ">
-    <MaterialFraction fraction="1.">
-      <rMaterial name="materials:Carbon fibre str."/>
+      <MaterialFraction fraction="0.042542086">
+        <rMaterial name="materials:Hydrogen"/>
     </MaterialFraction>
-   </CompositeMaterial>
+      <MaterialFraction fraction="0.11254487">
+        <rMaterial name="materials:Oxygen"/>
+    </MaterialFraction>
+  </CompositeMaterial>
+    <CompositeMaterial density="1.69*g/cm3" method="mixture by weight" name="Tk_SO_FC_E" symbol=" ">
+      <MaterialFraction fraction="0.84491305">
+        <rMaterial name="materials:Carbon"/>
+    </MaterialFraction>
+      <MaterialFraction fraction="0.042542086">
+        <rMaterial name="materials:Hydrogen"/>
+    </MaterialFraction>
+      <MaterialFraction fraction="0.11254487">
+        <rMaterial name="materials:Oxygen"/>
+    </MaterialFraction>
+  </CompositeMaterial>
+
+
 
     <!-- *********************************Oo. checked new materials .oO**************************************-->
 
     <!-- materials to build materials -->
     <CompositeMaterial density="29*mg/cm3" method="mixture by weight" name="TEC_Nomex" symbol=" ">
-    <MaterialFraction fraction="1.">
-      <rMaterial name="materials:Nomex"/>
+      <MaterialFraction fraction="1.">
+        <rMaterial name="materials:Nomex"/>
+      </MaterialFraction>
+    </CompositeMaterial>
+
+    <!-- Modules -->
+    <CompositeMaterial density="1.42*g/cm3" method="mixture by weight" name="TEC_SideFrameSuppliesBox" symbol=" ">
+      <MaterialFraction fraction="0.4">
+        <rMaterial name="materials:Aluminium"/>
+    </MaterialFraction>
+      <MaterialFraction fraction="0.6">
+        <rMaterial name="materials:Oxygen"/>
     </MaterialFraction>
   </CompositeMaterial>
 
-    <!-- Modules -->
     <CompositeMaterial density="4.853000*g/cm3" method="mixture by weight" name="TEC_Hybrid4APV" symbol=" ">
       <MaterialFraction fraction="0.082900">
         <rMaterial name="materials:T_Kapton"/>
@@ -670,9 +693,15 @@
         <rMaterial name="materials:Steel-008"/>
       </MaterialFraction>
     </CompositeMaterial>
-    <CompositeMaterial density="0.872000*g/cm3" method="mixture by weight" name="TEC_AxCable" symbol=" ">
-      <MaterialFraction fraction="0.970850">
+    <CompositeMaterial density="0.957000*g/cm3" method="mixture by weight" name="TEC_AxCable" symbol=" ">
+      <MaterialFraction fraction="0.379320">
         <rMaterial name="trackermaterial:CAB_Al36"/>
+      </MaterialFraction>
+      <MaterialFraction fraction="0.336630">
+        <rMaterial name="trackermaterial:CAB_Al48"/>
+      </MaterialFraction>
+      <MaterialFraction fraction="0.254900">
+        <rMaterial name="trackermaterial:CAB_Al60"/>
       </MaterialFraction>
       <MaterialFraction fraction="0.029150">
         <rMaterial name="materials:MS_cntrl_cable"/>
@@ -686,37 +715,49 @@
         <rMaterial name="materials:Steel-008"/>
       </MaterialFraction>
     </CompositeMaterial>
-    <CompositeMaterial density="0.356000*g/cm3" method="mixture by weight" name="TEC_PhiCableL" symbol=" ">
-      <MaterialFraction fraction="0.692910">
+    <CompositeMaterial density="0.453000*g/cm3" method="mixture by weight" name="TEC_PhiCableL" symbol=" ">
+      <MaterialFraction fraction="0.299040">
         <rMaterial name="trackermaterial:CAB_Al36"/>
       </MaterialFraction>
-      <MaterialFraction fraction="0.077670">
+      <MaterialFraction fraction="0.265370">
+        <rMaterial name="trackermaterial:CAB_Al48"/>
+      </MaterialFraction>
+      <MaterialFraction fraction="0.200790">
+        <rMaterial name="trackermaterial:CAB_Al60"/>
+      </MaterialFraction>
+      <MaterialFraction fraction="0.059390">
         <rMaterial name="materials:MS_cntrl_cable"/>
       </MaterialFraction>
-      <MaterialFraction fraction="0.018620">
+      <MaterialFraction fraction="0.014240">
         <rMaterial name="materials:Tin"/>
       </MaterialFraction>
-      <MaterialFraction fraction="0.043990">
+      <MaterialFraction fraction="0.033630">
         <rMaterial name="materials:Copper"/>
       </MaterialFraction>
-      <MaterialFraction fraction="0.166810">
+      <MaterialFraction fraction="0.127550">
         <rMaterial name="materials:Epoxy"/>
       </MaterialFraction>
     </CompositeMaterial>
-    <CompositeMaterial density="0.611000*g/cm3" method="mixture by weight" name="TEC_PhiCableU" symbol=" ">
-      <MaterialFraction fraction="0.739120">
+    <CompositeMaterial density="0.755000*g/cm3" method="mixture by weight" name="TEC_PhiCableU" symbol=" ">
+      <MaterialFraction fraction="0.280540">
         <rMaterial name="trackermaterial:CAB_Al36"/>
       </MaterialFraction>
-      <MaterialFraction fraction="0.082810">
+      <MaterialFraction fraction="0.267550">
+        <rMaterial name="trackermaterial:CAB_Al48"/>
+      </MaterialFraction>
+      <MaterialFraction fraction="0.242700">
+        <rMaterial name="trackermaterial:CAB_Al60"/>
+      </MaterialFraction>
+      <MaterialFraction fraction="0.066410">
         <rMaterial name="materials:MS_cntrl_cable"/>
       </MaterialFraction>
-      <MaterialFraction fraction="0.019760">
+      <MaterialFraction fraction="0.015850">
         <rMaterial name="materials:Tin"/>
       </MaterialFraction>
-      <MaterialFraction fraction="0.046920">
+      <MaterialFraction fraction="0.037630">
         <rMaterial name="materials:Copper"/>
       </MaterialFraction>
-      <MaterialFraction fraction="0.111380">
+      <MaterialFraction fraction="0.089320">
         <rMaterial name="materials:Epoxy"/>
       </MaterialFraction>
     </CompositeMaterial>
@@ -766,7 +807,7 @@
         <rMaterial name="materials:Carbon fibre str."/>
       </MaterialFraction>
     </CompositeMaterial>
-    <CompositeMaterial density="0.316000*g/cm3" method="mixture by weight" name="TEC_ThermalShield" symbol=" ">
+    <CompositeMaterial density="0.163000*g/cm3" method="mixture by weight" name="TEC_ThermalShield" symbol=" ">
       <MaterialFraction fraction="0.950460">
         <rMaterial name="tecmaterial:TEC_Nomex"/>
       </MaterialFraction>
@@ -774,17 +815,23 @@
         <rMaterial name="materials:Carbon fibre str."/>
       </MaterialFraction>
     </CompositeMaterial>
-    <CompositeMaterial density="2.575000*g/cm3" method="mixture by weight" name="TEC_CircPipe" symbol=" ">
-      <MaterialFraction fraction="0.044060">
+    <CompositeMaterial density="0.763000*g/cm3" method="mixture by weight" name="TEC_CircPipe" symbol=" ">
+      <MaterialFraction fraction="0.110260">
         <rMaterial name="materials:Steel-008"/>
       </MaterialFraction>
-      <MaterialFraction fraction="0.003920">
+      <MaterialFraction fraction="0.009820">
         <rMaterial name="materials:Brass"/>
       </MaterialFraction>
-      <MaterialFraction fraction="0.873350">
+      <MaterialFraction fraction="0.266890">
         <rMaterial name="trackermaterial:CAB_Al36"/>
       </MaterialFraction>
-      <MaterialFraction fraction="0.078670">
+      <MaterialFraction fraction="0.236780">
+        <rMaterial name="trackermaterial:CAB_Al48"/>
+      </MaterialFraction>
+      <MaterialFraction fraction="0.179360">
+        <rMaterial name="trackermaterial:CAB_Al60"/>
+      </MaterialFraction>
+      <MaterialFraction fraction="0.196890">
         <rMaterial name="materials:MS_cntrl_cable"/>
       </MaterialFraction>
     </CompositeMaterial>
@@ -816,20 +863,26 @@
         <rMaterial name="materials:Nickel"/>
       </MaterialFraction>
     </CompositeMaterial>
-    <CompositeMaterial density="2.619000*g/cm3" method="mixture by weight" name="TEC_PatchpanelBox" symbol=" ">
-      <MaterialFraction fraction="0.001140">
+    <CompositeMaterial density="2.669000*g/cm3" method="mixture by weight" name="TEC_PatchpanelBox" symbol=" ">
+      <MaterialFraction fraction="0.001120">
         <rMaterial name="materials:Steel-008"/>
       </MaterialFraction>
-      <MaterialFraction fraction="0.161110">
+      <MaterialFraction fraction="0.172620">
         <rMaterial name="materials:Aluminium"/>
       </MaterialFraction>
-      <MaterialFraction fraction="0.009170">
+      <MaterialFraction fraction="0.009050">
         <rMaterial name="materials:Carbon fibre str."/>
       </MaterialFraction>
-      <MaterialFraction fraction="0.069040">
+      <MaterialFraction fraction="0.026590">
         <rMaterial name="trackermaterial:CAB_Al36"/>
       </MaterialFraction>
-      <MaterialFraction fraction="0.759540">
+      <MaterialFraction fraction="0.023600">
+        <rMaterial name="trackermaterial:CAB_Al48"/>
+      </MaterialFraction>
+      <MaterialFraction fraction="0.017880">
+        <rMaterial name="trackermaterial:CAB_Al60"/>
+      </MaterialFraction>
+      <MaterialFraction fraction="0.749140">
         <rMaterial name="materials:MS_Cu60"/>
       </MaterialFraction>
     </CompositeMaterial>
@@ -845,10 +898,10 @@
       </MaterialFraction>
     </CompositeMaterial>
     <CompositeMaterial density="0.539000*g/cm3" method="mixture by weight" name="TEC_AlignRing" symbol=" ">
-      <MaterialFraction fraction="0.823840">
+      <MaterialFraction fraction="0.823810">
         <rMaterial name="materials:Carbon fibre str."/>
       </MaterialFraction>
-      <MaterialFraction fraction="0.059670">
+      <MaterialFraction fraction="0.059700">
         <rMaterial name="materials:Aluminium"/>
       </MaterialFraction>
       <MaterialFraction fraction="0.116220">
