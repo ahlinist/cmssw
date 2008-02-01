@@ -2,6 +2,10 @@
 
 #include "HeavyFlavorAnalysis/Examples/interface/HFTree.h"
 
+
+#include "DataFormats/Common/interface/Handle.h"
+#include "FWCore/Framework/interface/ESHandle.h"
+
 #include <TROOT.h>
 #include <TFile.h>
 #include <TTree.h>
@@ -49,8 +53,15 @@ HFTree::~HFTree() {
 void HFTree::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
   gHFEvent->fRunNumber   = iEvent.id().run();
   gHFEvent->fEventNumber = iEvent.id().event();
+
+  // -- Get pthat from event
+  edm::Handle<double> genEventScale;
+  iEvent.getByLabel( "genEventScale", genEventScale);
+  gHFEvent->fPtHat = *genEventScale;
+
   cout << "HFTree> filling tree for run: " << gHFEvent->fRunNumber
        << " event: " << gHFEvent->fEventNumber 
+       << " pthat: " << gHFEvent->fPtHat 
        << endl;
   fTree->Fill();
   gHFEvent->Clear();
