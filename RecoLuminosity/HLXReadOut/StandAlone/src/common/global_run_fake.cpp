@@ -76,21 +76,12 @@ int main(int argc, char ** argv) {
     lSectionCollectorShort->SetRunNumber(runNumber);
     lSectionCollectorLong->SetRunNumber(runNumber);
 
-<<<<<<< global_run_fake.cpp
     lOracleDistributor = new OracleDistributor;
     lSectionCollectorLong->AttachDistributor(lOracleDistributor);
     //lROOTDistributor = new ROOTDistributor;
     //lSectionCollectorLong->AttachDistributor(lROOTDistributor);
     //lDebugCoutDistributor = new DebugCoutDistributor;
     //lSectionCollectorLong->AttachDistributor(lDebugCoutDistributor);
-=======
-    //lOracleDistributor = new OracleDistributor;
-    //lSectionCollectorLong->AttachDistributor(lOracleDistributor);
-    //lROOTDistributor = new ROOTDistributor;
-    //lSectionCollectorLong->AttachDistributor(lROOTDistributor);
-    //lDebugCoutDistributor = new DebugCoutDistributor;
-    //lSectionCollectorLong->AttachDistributor(lDebugCoutDistributor);
->>>>>>> 1.3
 
     //lGIFDistributor = new GIFDistributor;
     //lSectionCollectorLong->AttachDistributor(lGIFDistributor);

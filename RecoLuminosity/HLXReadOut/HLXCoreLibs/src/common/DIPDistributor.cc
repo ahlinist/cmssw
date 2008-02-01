@@ -33,8 +33,7 @@ namespace HCAL_HLX
       mDIPPublisher = 0;
       mDIPData = 0;
       mErrorCount = 0;
-<<<<<<< DIPDistributor.cc
-      
+
       // Open the log file
       mLogFile.open("/tmp/LMS-DIPDistributor.log",ios::app);
       if ( !mLogFile.is_open() ) {
@@ -43,10 +42,6 @@ namespace HCAL_HLX
       }
       std::string tString = "Class constructor";
       DoLogEntry(tString);
-=======
-
-      cout << "Initialising DIP" << endl;
->>>>>>> 1.4
       
       // Open the DIP interface
       mDIP = Dip::create("CMS/HF/Lumi/LumiPublisher");

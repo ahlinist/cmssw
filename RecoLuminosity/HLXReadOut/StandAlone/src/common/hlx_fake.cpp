@@ -31,17 +31,10 @@ using namespace std;
 using namespace ICCoreUtils;
 using namespace HCAL_HLX;
 
-<<<<<<< hlx_fake.cpp
 const u32 TIMEOUT_PERIOD = 1;
 const u32 SLEEP_TIME = 320; //320;
 const unsigned int NumBunches = 300;
 const unsigned int DataSize = sizeof(LUMI_RAW_HEADER)+sizeof(u32)*NumBunches+1;
-=======
-const u32 TIMEOUT_PERIOD = 1; //20;
-const u32 SLEEP_TIME = 320; //1000; //1;
-const unsigned int NumBunches = 300;
-const unsigned int DataSize = NumBunches*4;
->>>>>>> 1.5
 
 // Variables (global)
 u8 **crcTable;
@@ -147,27 +140,16 @@ LUMI_RAW_HEADER lumiHeader = {
   0,      // start orbit
   0,      // num orbits
   0,      // start bunch (always zero for short orbit)
-<<<<<<< hlx_fake.cpp
   NumBunches - 1,    // num bunches
   0,      // histogram set
-=======
-  NumBunches - 1,    // num bunches
-  7,      // histogram set
->>>>>>> 1.5
   0,      // histogram sequence
   0xAAAA,
   0xFFFF
 };
-<<<<<<< hlx_fake.cpp
 
 u16 lumiOccData[NumBunches];
 u32 lumiEtData[NumBunches];
 u8 payloadData[DataSize];
-=======
-u16 lumiOccData[NumBunches];
-u32 lumiEtData[NumBunches];
-u8 payloadData[DataSize];
->>>>>>> 1.5
 u32 payloadVolume = 0;
 
 void GeneratePacket() {
