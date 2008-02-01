@@ -13,14 +13,9 @@
 #include "HardwareAccessException.hh"
 #include "MemoryAllocationException.hh"
 #include "OracleDBException.hh"
-<<<<<<< OracleDistributor.cc
 #include "FileNotOpenedException.hh"
 #include "occi.h"
 
-=======
-#include "occi.h"
-
->>>>>>> 1.8
 //#include "ArgumentOutOfRangeException.hh"
 
 // HCAL HLX namespace
@@ -189,18 +184,9 @@ namespace HCAL_HLX
       mDBWriter->insertArray_LumiBX(lumiSectionID,
 				    mLumiBXData);
       return true;
-<<<<<<< OracleDistributor.cc
+
     } catch (OracleDBException aExc) {
       DoLogEntry(aExc.what());
-=======
-
-      //    } catch (SQLException aExc) {      //cout << "Oracle error code " << std::dec << aExc.getErrorCode() << endl;
-      //    }
-    } catch (OracleDBException aExc) {
-    //    } catch (ICException aExc) {
-      cout << "Oracle error" << endl;
-      //cout << aExc.what() << endl;
->>>>>>> 1.8
       mErrorCount++;
       // TODO: decide whether to return true or false depending on DB exception!
       return true;

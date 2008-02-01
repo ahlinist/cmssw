@@ -570,17 +570,10 @@ namespace HCAL_HLX
 				  theClass->circularBuffer[theClass->mReadBufferPointer].len-1-sizeof(LUMI_RAW_HEADER));
 	} else {
 	  // Increment the bad packet counter
-<<<<<<< NibbleCollector.cc
-	  cout << "bad checksum" << endl;
+	  //cout << "bad checksum" << endl;
 	  theClass->mNumBadPackets++;
 	}
       	theClass->mReadBufferPointer++;
-=======
-	  //cout << "bad checksum" << endl;
-	    theClass->mNumBadPackets++;
-	  }
-      	theClass->mReadBufferPointer++;
->>>>>>> 1.7
       }
       Sleep(1);
     }
