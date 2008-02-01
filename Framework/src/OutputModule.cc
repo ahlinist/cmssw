@@ -414,6 +414,7 @@ namespace edm {
     writeModuleDescriptionRegistry();
     writeParameterSetRegistry();
     writeProductDescriptionRegistry();
+    writeEntryDescriptions();
     finishEndFile();
   }
 
