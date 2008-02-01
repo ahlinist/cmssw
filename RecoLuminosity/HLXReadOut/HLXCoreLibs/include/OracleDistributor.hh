@@ -9,7 +9,7 @@
 #define ORACLEDISTRIBUTOR_HH
 
 // The string and stream definitions
-//#include <fstream>
+#include <fstream>
 //#include <string>
 //#include <vector>
 
@@ -72,6 +72,17 @@ namespace HCAL_HLX
     DBWriter::DBLumiBX mLumiBXData;
     DBWriter::DBLumiSummary mLumiSummaryData;
 
+    // Logging file for exceptions from OMDS
+    ofstream mLogFile;
+    // Logging helper function
+    void DoLogEntry(const std::string & entry) {
+      time_t theTime = time(NULL);
+      mLogFile << "------------------------------------------" << endl;
+      mLogFile << "At " << ctime(&theTime) << endl;
+      mLogFile << entry << endl;
+      mLogFile << "------------------------------------------" << endl << endl;
+    }
+    
     // User name and password are hard-coded
     //string *mOracleDBUserName;
     //string *mOracleDBPassword;

@@ -31,10 +31,17 @@ using namespace std;
 using namespace ICCoreUtils;
 using namespace HCAL_HLX;
 
+<<<<<<< hlx_fake.cpp
+const u32 TIMEOUT_PERIOD = 1;
+const u32 SLEEP_TIME = 320; //320;
+const unsigned int NumBunches = 300;
+const unsigned int DataSize = sizeof(LUMI_RAW_HEADER)+sizeof(u32)*NumBunches+1;
+=======
 const u32 TIMEOUT_PERIOD = 1; //20;
 const u32 SLEEP_TIME = 320; //1000; //1;
 const unsigned int NumBunches = 300;
 const unsigned int DataSize = NumBunches*4;
+>>>>>>> 1.5
 
 // Variables (global)
 u8 **crcTable;
@@ -64,8 +71,10 @@ void CleanupChecksum() {
 u8 ComputeChecksum(const u8 *data, u32 numBytes) {
   u8 theCRC = 0xAA;
   for ( u32 i = 0 ; i != numBytes ; i++ ) {
+    //cout << static_cast<u16>(theCRC) << "\t";
     theCRC=SingleChecksum(data[i],theCRC);
   }
+  //cout << static_cast<u16>(theCRC) << endl << endl;
   return theCRC;
 }
 
@@ -138,15 +147,27 @@ LUMI_RAW_HEADER lumiHeader = {
   0,      // start orbit
   0,      // num orbits
   0,      // start bunch (always zero for short orbit)
+<<<<<<< hlx_fake.cpp
+  NumBunches - 1,    // num bunches
+  0,      // histogram set
+=======
   NumBunches - 1,    // num bunches
   7,      // histogram set
+>>>>>>> 1.5
   0,      // histogram sequence
   0xAAAA,
   0xFFFF
 };
+<<<<<<< hlx_fake.cpp
+
 u16 lumiOccData[NumBunches];
 u32 lumiEtData[NumBunches];
 u8 payloadData[DataSize];
+=======
+u16 lumiOccData[NumBunches];
+u32 lumiEtData[NumBunches];
+u8 payloadData[DataSize];
+>>>>>>> 1.5
 u32 payloadVolume = 0;
 
 void GeneratePacket() {
@@ -216,6 +237,17 @@ int main(int argc, char ** argv)
       sa_target.sin_addr.s_addr = inet_addr(targetAddress);
       sa_target.sin_family = AF_INET;
 
+      // Generate the packet
+      GeneratePacket();
+
+      // Send it
+      ret = sendto(udp_socket,payloadData,payloadVolume,0,(struct sockaddr *)&sa_target,sizeof(sa_target)); 
+      if ( ret == -1 ) {
+	cerr << "Unable to send data" << endl;
+	return 1;
+      }
+
+      // Move to the next type
       if ( lumiHeader.histogramSet == 7 ) {
 	lumiHeader.histogramSet = 0;
 	lumiHeader.startOrbit += lumiHeader.numOrbits+1;
@@ -227,16 +259,6 @@ int main(int argc, char ** argv)
       }	else {
 	lumiHeader.histogramSet++;
       }
-      GeneratePacket();
-
-      ret = sendto(udp_socket,payloadData,payloadVolume,0,(struct sockaddr *)&sa_target,sizeof(sa_target)); 
-      if ( ret == -1 ) {
-	cerr << "Unable to send data" << endl;
-	return 1;
-      }
-
-      // Sleep for 1ms between packets
-      //usleep(10);
 
     }
 

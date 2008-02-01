@@ -224,6 +224,7 @@ namespace HCAL_HLX
       if ( mUdpSocket != -1 ) {
 	// Release the socket
 	shutdown(mUdpSocket,SHUT_RDWR);
+	close(mUdpSocket);
 	mUdpSocket=-1;
       }
 
@@ -405,7 +406,7 @@ namespace HCAL_HLX
     NibbleCollector *theClass = reinterpret_cast<NibbleCollector *>(thisPtr);
     fd_set fds;
     struct timeval tv;
-    u8 rData[1500];
+    u8 rData[2000];
     int mUdpSocket=theClass->mUdpSocket;
     int ret;
 
@@ -435,7 +436,7 @@ namespace HCAL_HLX
 #endif
 	  // About to overflow
 	  // Read the packet and dump it and flag the counter
-	  ret = recv(mUdpSocket,rData,1500,0);
+	  ret = recv(mUdpSocket,rData,2000,0);
 	  if ( ret == -1 ) {
 	    //HardwareAccessException lExc("Unable to get data from UDP socket");
 	    //RAISE(lExc);
@@ -569,10 +570,17 @@ namespace HCAL_HLX
 				  theClass->circularBuffer[theClass->mReadBufferPointer].len-1-sizeof(LUMI_RAW_HEADER));
 	} else {
 	  // Increment the bad packet counter
+<<<<<<< NibbleCollector.cc
+	  cout << "bad checksum" << endl;
+	  theClass->mNumBadPackets++;
+	}
+      	theClass->mReadBufferPointer++;
+=======
 	  //cout << "bad checksum" << endl;
 	    theClass->mNumBadPackets++;
 	  }
       	theClass->mReadBufferPointer++;
+>>>>>>> 1.7
       }
       Sleep(1);
     }
@@ -749,6 +757,9 @@ namespace HCAL_HLX
 
   bool NibbleCollector::ValidateChecksum(const u8 *data, u32 numBytes) {
     u8 computedChecksum = ComputeChecksum(data,numBytes);
+    //cout << static_cast<u16>(computedChecksum) << "\t"
+    //<< static_cast<u16>(data[numBytes]) << "\t"
+    //<< numBytes << endl;
     return (computedChecksum == data[numBytes]);
   }
 

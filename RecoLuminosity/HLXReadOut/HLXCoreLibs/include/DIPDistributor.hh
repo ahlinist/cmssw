@@ -9,7 +9,7 @@
 #define DIPDISTRIBUTOR_HH
 
 // The string and stream definitions
-//#include <fstream>
+#include <fstream>
 //#include <string>
 //#include <vector>
 
@@ -85,6 +85,17 @@ namespace HCAL_HLX
 
     // DIP interface
     DipFactory * mDIP;
+
+    // Logging file for exceptions from DIP
+    ofstream mLogFile;
+    // Logging helper function
+    void DoLogEntry(const std::string & entry) {
+      time_t theTime = time(NULL);
+      mLogFile << "------------------------------------------" << endl;
+      mLogFile << "At " << ctime(&theTime) << endl;
+      mLogFile << entry << endl;
+      mLogFile << "------------------------------------------" << endl << endl;
+    }
 
   };
 

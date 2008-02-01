@@ -13,8 +13,14 @@
 #include "HardwareAccessException.hh"
 #include "MemoryAllocationException.hh"
 #include "OracleDBException.hh"
+<<<<<<< OracleDistributor.cc
+#include "FileNotOpenedException.hh"
 #include "occi.h"
 
+=======
+#include "occi.h"
+
+>>>>>>> 1.8
 //#include "ArgumentOutOfRangeException.hh"
 
 // HCAL HLX namespace
@@ -43,7 +49,17 @@ namespace HCAL_HLX
     mLumiBXData.aOccLumi = 0;
     mLumiBXData.aOccErr = 0;
     mLumiBXData.aOccQ = 0;
-    try{
+
+    // Open the log file
+    mLogFile.open("/tmp/LMS-OracleDistributor.log",ios::app);
+    if ( !mLogFile.is_open() ) {
+      FileNotOpenedException lExc("/tmp/LMS-OracleDistributor.log");
+      RAISE(lExc);
+    }
+    std::string tmpString = "Class constructor";
+    DoLogEntry(tmpString);
+
+    try {
       // Database is publicly visible to anyone on CERN network,
       // so information is stored only locally on readout server
       // inside a private network...
@@ -89,6 +105,7 @@ namespace HCAL_HLX
       mLumiBXData.aOccQ = new int[4096];
 
     } catch (OracleDBException & aExc) {
+      DoLogEntry(aExc.what());
       RETHROW(aExc);
     }
     //catch (SQLException aExc) {
@@ -111,6 +128,11 @@ namespace HCAL_HLX
     delete []mLumiBXData.aOccLumi; mLumiBXData.aOccLumi = 0;
     delete []mLumiBXData.aOccErr; mLumiBXData.aOccErr = 0;
     delete []mLumiBXData.aOccQ; mLumiBXData.aOccQ = 0;
+
+    // Close the log file
+    std::string tmpString = "Class destructor";
+    DoLogEntry(tmpString);
+    mLogFile.close();
   }
 
   bool OracleDistributor::ProcessSection(const LUMI_SECTION & lumiSection) {
@@ -167,6 +189,10 @@ namespace HCAL_HLX
       mDBWriter->insertArray_LumiBX(lumiSectionID,
 				    mLumiBXData);
       return true;
+<<<<<<< OracleDistributor.cc
+    } catch (OracleDBException aExc) {
+      DoLogEntry(aExc.what());
+=======
 
       //    } catch (SQLException aExc) {      //cout << "Oracle error code " << std::dec << aExc.getErrorCode() << endl;
       //    }
@@ -174,15 +200,12 @@ namespace HCAL_HLX
     //    } catch (ICException aExc) {
       cout << "Oracle error" << endl;
       //cout << aExc.what() << endl;
+>>>>>>> 1.8
       mErrorCount++;
       // TODO: decide whether to return true or false depending on DB exception!
       return true;
-    } /*catch (...) {
-      cout << "Unknown exception caught" << endl;
-      mErrorCount++;
-      return true;
-    }*/
-    //cout << "End " << __PRETTY_FUNCTION__ << endl;
+    }
+
   }
 
 
