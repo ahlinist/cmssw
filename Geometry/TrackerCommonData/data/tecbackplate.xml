@@ -40,6 +40,11 @@
   <rSolid name="tecwheeld:TECWheelNomexD"/>
   <rMaterial name="tecmaterial:TEC_Nomex"/>
  </LogicalPart>
+ <LogicalPart name="TECBackDiskGroundingRing" category="unspecified">
+  <rSolid name="tecwheel:TECGroundingRing"/>
+  <rMaterial name="materials:Copper"/>
+ </LogicalPart>
+
 
  <LogicalPart name="TECThermalShield" category="unspecified">
   <rSolid name="tecbackplate:TECThermalShield"/>
@@ -63,7 +68,7 @@
  </PosPart>
  <PosPart copyNumber="1">
    <rParent name="tecbackplate:TECBackDisk"/>
-   <rChild name="tecwheel:TECGroundingRing"/>
+   <rChild name="tecbackplate:TECBackDiskGroundingRing"/>
  </PosPart>
  <PosPart copyNumber="1">
    <rParent name="tecbackplate:TECBackPlate"/>

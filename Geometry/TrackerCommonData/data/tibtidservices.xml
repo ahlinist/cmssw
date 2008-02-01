@@ -7,7 +7,7 @@
  <Constant name="Rin1"          value="22.20*cm"/>
  <Constant name="Rin2"          value="[tid:Rout]"/>     <!-- 52.0 cm --> 
  <Constant name="Rin3"          value="24.60*cm"/>       <!-- "dente" PXL flange -->
- <Constant name="Rin4"          value="113.50*cm"/>      <!-- inner R (vs beam) [was 113.5 cm in tid.xml]; min value: 113.05 tec.xml --> 
+ <Constant name="Rin4"          value="113.51*cm"/>      <!-- inner R (vs beam) corrected to 113.51 cm as in reallity--> 
  <Constant name="Rout1"         value="[tib:Rout]"/>     <!-- 54.0 cm -->
  <Constant name="Rout2"         value="58.00*cm"/>       <!-- "dente" Margerita flange -->
  <Constant name="Rout3"         value="116.00*cm"/>      <!-- outer R (vs TST)  [was 115.0 cm in tib.xml]; max value: 116.0 tob.xml --> 
@@ -67,6 +67,16 @@
  <Constant name="TSTCabAxialL"   value="142.0*cm"/>      
  <Constant name="TSTCabAxialZ"   value="[Zv7]+[TSTCabAxialL]/2"/>  
  <Constant name="TSTCabAxialAlT"  value="0.1*cm"/>                   
+<!-- TEC Rails -->
+ <Constant name="TECRailsRin"     value="[Rin4]"/> <!-- directly ontop of the TEC Skin-->
+ <Constant name="TECRailsRout"     value="[TSTCabAxialR]-[TSTCabAxialT]/2"/> <!-- directly under AxialCables-->
+ <Constant name="TECRailsPhi"        value="-0.664*deg"/>
+ <Constant name="TECRailsDeltaPhi"   value="7.409*deg"/>
+
+ <Constant name="TECRailsADz"     value="15.30*cm"/>
+ <Constant name="TECRailsAZ"      value="160.25*cm"/>
+ <Constant name="TECRailsBDz"     value="26.65*cm"/>
+ <Constant name="TECRailsBZ"      value="250.10*cm"/>
 </ConstantsSection>
 
 <SolidSection label="tibtidservices.xml">
@@ -181,6 +191,13 @@
   <ZSection z="[Zv6]+0.8*([Zv7]-[Zv6])"      rMin="[TSTCabContRin]"         rMax="[TSTCabAxialR]-[TSTCabAxialAlT]+[TSTCabAxialT]/2" />
   <ZSection z="[Zv7]"                        rMin="[TSTCabContRin]"         rMax="[TSTCabAxialR]-[TSTCabAxialAlT]+[TSTCabAxialT]/2" />
  </Polycone>
+<!-- TEC Rails -->
+ <Tubs name="TECRailsA"           rMin="[TECRailsRin]"
+       rMax="[TECRailsRout]"       dz="[TECRailsADz]"
+       startPhi="[TECRailsDeltaPhi]/2" deltaPhi="[TECRailsDeltaPhi]"/>
+ <Tubs name="TECRailsB"           rMin="[TECRailsRin]" 
+       rMax="[TECRailsRout]"       dz="[TECRailsBDz]"
+       startPhi="[TECRailsDeltaPhi]/2" deltaPhi="[TECRailsDeltaPhi]"/>
 
 </SolidSection>
 
@@ -253,6 +270,16 @@
   <rSolid name="TSTCabRadial"/>
   <rMaterial name="tibtidcommonmaterial:TIBTID_TSTCabRadial"/>
  </LogicalPart>
+<!-- TEC Rails -->
+ <LogicalPart name="TECRailsA" category="unspecified">
+  <rSolid name="tibtidservices:TECRailsA"/>
+  <rMaterial name="tecmaterial:TEC_Rails"/>
+ </LogicalPart>
+ <LogicalPart name="TECRailsB" category="unspecified">
+  <rSolid name="tibtidservices:TECRailsB"/>
+  <rMaterial name="tecmaterial:TEC_Rails"/>
+ </LogicalPart>
+
 </LogicalPartSection>
 
 
@@ -293,5 +320,32 @@
    <rChild name="tibtidservices:TIBTIDTSTCabRadial"/>
  </PosPart>
 </PosPartSection>
+
+<!-- TEC Rails -->
+<Algorithm name="track:DDTrackerAngular">
+  <rParent name="tibtidservices:TIBTIDTSTCabCont"/>
+  <String  name="ChildName"   value="tibtidservices:TECRailsA"/>
+  <Numeric name="N"           value="2" />
+  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="IncrCopyNo"  value="1" />
+  <Numeric name="RangeAngle"  value="360*deg"/>
+  <Numeric name="StartAngle"  value="[TECRailsPhi]"/>
+  <Numeric name="Radius"      value="[zero]"/>
+  <Vector name="Center" type="numeric" nEntries="3">
+	0, 0, [TECRailsAZ] </Vector>
+</Algorithm>
+<Algorithm name="track:DDTrackerAngular">
+  <rParent name="tibtidservices:TIBTIDTSTCabCont"/>
+  <String  name="ChildName"   value="tibtidservices:TECRailsB"/>
+  <Numeric name="N"           value="2" />
+  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="IncrCopyNo"  value="1" />
+  <Numeric name="RangeAngle"  value="360*deg"/>
+  <Numeric name="StartAngle"  value="[TECRailsPhi]"/>
+  <Numeric name="Radius"      value="[zero]"/>
+  <Vector name="Center" type="numeric" nEntries="3">
+	0, 0, [TECRailsBZ] </Vector>
+</Algorithm>
+
 
 </DDDefinition>

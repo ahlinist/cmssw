@@ -64,7 +64,7 @@ o TEC petal
 * 8 "Protection Caps"           "Carbon fibre str."    12.6049 	1    SUP
 * 9 "Fibre Protector"           "Carbon fibre str."    3.1188 	1    SUP
 * 10 "Fibre Protector Glue"	"Epoxy"	      	       3.0769	1    SUP
-* 11 "optical fibre pigtails"	"Optical_Fiber"	       16.0341	1    ELE
+* 11 "optical fibre pigtails"	"Optical_Fiber"	       16.0341	1    CAB
 * 12 "Cooling bridges"		"Carbon fibre str."    0.00190	1    COL
 * 13 "PEEK inserts"		"Peek"	      	       2.2424	1    SUP
 .......................................................................
@@ -600,12 +600,14 @@ o TEC Axial Cables
   ------------------
 MCVolume: 34933.5 cm3 (for all TEC)
 
-(1) 347.47 m of MSC Cables
+(1-3) MSC Cables
 (2) 28,95 m of CTRL Cables
 ...................................................................
 # "TEC AxialCables"     "TEC_AxCable"     34933.5	234.6
-* 1 "MSC Cables"	"CAB_Al36"		 0.7854	34747	CAB
-* 2 "CTRL Cables"	"MS_cntrl_cable"	 0.283	2895	CAB
+* 1 "MSC Al36 Cables"	"CAB_Al36"		 0.7854	13576	CAB
+* 2 "MSC Al48 Cables"	"CAB_Al48"		 0.7854	12048	CAB
+* 3 "MSC Al60 Cables"	"CAB_Al60"		 0.7854	 9123	CAB
+* 4 "CTRL Cables"	"MS_cntrl_cable"	 0.283	2895	CAB
 
 ....................................................................
 =====================================================================
@@ -626,11 +628,13 @@ MC Volume: 17688.2 cm3 all TEC
 
 ...................................................................
 # "TEC Lower Phi Cables"     "TEC_PhiCableL"	17688.2		73700
-* 1 "MSC Cables"	"CAB_Al36"		 0.7854	3446	CAB
-* 2 "CTRL Cables"	"MS_cntrl_cable"	 0.283	1072	CAB
-* 3 "cable repair"	"Tin"			 72.73	1	CAB
-* 4 "cable repair"	"Copper"		 171.82	1	CAB
-* 5 "cable repair"	"Epoxy"			 651.57	1	CAB
+* 1 "MSC Al36 Cables"	"CAB_Al36"		 0.7854	 1945	CAB
+* 2 "MSC Al48 Cables"	"CAB_Al48"		 0.7854	 1726	CAB
+* 3 "MSC Al60 Cables"	"CAB_Al60"		 0.7854	 1306	CAB
+* 4 "CTRL Cables"	"MS_cntrl_cable"	 0.283 	 1072	CAB
+* 5 "cable repair"	"Tin"			 72.73	1	CAB
+* 6 "cable repair"	"Copper"		 171.82	1	CAB
+* 7 "cable repair"	"Epoxy"			 651.57	1	CAB
 
 ....................................................................
 =====================================================================
@@ -640,11 +644,14 @@ MC Volume: 19578.2  cm3 all TEC
 
 ...................................................................
 # "TEC Upper Phi Cables"     "TEC_PhiCableU"	19578.2		50520
-* 1 "MSC Cables"	"CAB_Al36"		 0.7854	6892	CAB
-* 2 "CTRL Cables"	"MS_cntrl_cable"	 0.283	2143	CAB
-* 3 "cable repair"	"Tin"			 144.73	1	CAB
-* 4 "cable repair"	"Copper"		 343.65	1	CAB
-* 5 "cable repair"	"Epoxy"			 815.67	1	CAB
+
+* 1 "MSC Al36 Cables"	"CAB_Al36"		 0.7854	 3262	CAB
+* 2 "MSC Al48 Cables"	"CAB_Al48"		 0.7854	 3111	CAB
+* 3 "MSC Al60 Cables"	"CAB_Al60"		 0.7854	 2822	CAB
+* 4 "CTRL Cables"	"MS_cntrl_cable"	 0.283	2143	CAB
+* 5 "cable repair"	"Tin"			 144.73	1	CAB
+* 6 "cable repair"	"Copper"		 343.65	1	CAB
+* 7 "cable repair"	"Epoxy"			 815.67	1	CAB
 
 ....................................................................
 =====================================================================
@@ -728,12 +735,12 @@ MCVolume: 2818.74 cm3 (for all TEC)
 o TEC_ThermalShield
   -----------------------------
 
-MCVolume: 81554.1 cm3 (for all TEC)
+MCVolume: 158218 cm3 (for all TEC)
 
 note that the MC volume is maller because there is not enough space in TEC mothervolume.
 
 ....................................................................................
-#   "TEC Thermal Shield"         "TEC_ThermalShield"             81554.1         81554.1
+#   "TEC Thermal Shield"         "TEC_ThermalShield"             158218	158218
 * 1 "Nomex Disk"              "TEC_Nomex"           	    219990.32  1 SUP
 * 2 "CF Skin"          	      "Carbon fibre str."           11466.27   1 SUP
 ....................................................................................
@@ -741,17 +748,19 @@ note that the MC volume is maller because there is not enough space in TEC mothe
 o TEC_CircPipe
   -----------------------------
 
-MCVolume: 8675.89 cm3 (for all TEC)
+MCVolume: 16831.6 cm3 (for all TEC)
 
 This contains anythings that connects the bulkhead to the TEC
 (3) should eventually get its own volume
 ....................................................................................
-#   "TEC_CircPipe"              "TEC_CircPipe"          8675.89         8675.89
+#   "TEC_CircPipe"              "TEC_CircPipe"          16831.6 	16831.6
 * 1 "Gas Pipe"              "Steel-008"           192.31  1	COL
 * 2 "Grounding mechanics"   "Brass"		  60.99	  1	SUP
 * 3 "lancashire Fittings"   "Steel-008"		  492.31  1	SUP
-* 4 "MSC Cables"	    "CAB_Al36"		  0.7854  17280 CAB
-* 5 "CTRL Cables"	    "MS_cntrl_cable"	  0.283	  4320	CAB
+* 4 "MSC Al36 Cables"	    "CAB_Al36"		 0.7854	 2110	CAB
+* 5 "MSC Al48 Cables"	    "CAB_Al48"		 0.7854	 1872	CAB
+* 6 "MSC Al60 Cables"	    "CAB_Al60"		 0.7854	 1418	CAB
+* 7 "CTRL Cables"	    "MS_cntrl_cable"	  0.283	  4320	CAB
 ....................................................................................
 ====================================================================================
 o TEC_BHDisk
@@ -792,16 +801,18 @@ o TEC_PatchpanelBox
   -----------------------------
 
 MCVolume: 26839.2 cm3 (for all TEC)
-(6) is unconfirmed due to lacking information it is taken from old cables.in
+(8) is unconfirmed due to lacking information it is taken from old cables.in
 
 ....................................................................................
 #   "TEC_PatchpanelBox"         "TEC_PatchpanelBox"             26839.2	26839.2
 * 1 "bolts+nuts+washers"        "Steel-008"          34.17   1    SUP
 * 2 "spacers"			"Aluminium"	    141.19   1    SUP
 * 3 "cable retainers"		"Carbon fibre str." 275.5    1    SUP
-* 4 "cables"			"CAB_Al36"    	      0.7854 2640 CAB
-* 5 "plugs"			"Aluminium"	    4697.07  1	  CAB
-* 6 "MS cable Cu 60 APVs"       "MS_Cu60"         59.4    384   CAB
+* 4 "MSC Al36 Cables"		"CAB_Al36"	    0.7854   1031 CAB
+* 5 "MSC Al48 Cables"		"CAB_Al48"	    0.7854   915  CAB
+* 6 "MSC Al60 Cables"		"CAB_Al60"	    0.7854   693  CAB
+* 7 "plugs"			"Aluminium"	    5114.54  1	  CAB
+* 8 "MS cable Cu 60 APVs"       "MS_Cu60"         59.4    384   CAB
 ....................................................................................
 ====================================================================================
 o TEC_PatchpanelCtrlBox
@@ -827,7 +838,7 @@ MCVolume: 11884.6 cm3 (for all TEC)
 ....................................................................................
 #   "TEC_AlignRing"             "TEC_AlignRing"         11884.6         11884.6
 * 1 "Ring itself"              "Carbon fibre str."  3075.54  1 SUP
-* 2 "pillars"		       "Aluminium"   	    126.66   1 SUP
+* 2 "pillars"		       "Aluminium"   	    126.77   1 SUP
 * 3 "support Clamp"	       "Aluminium"	    12.37    1 SUP
 * 4 "inserts"		       "Aluminium"	    0.86     1 SUP
 * 5 "TM Mechanics"	       "Aluminium"	    84.44    1 ELE

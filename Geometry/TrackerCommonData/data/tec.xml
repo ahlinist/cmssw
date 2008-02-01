@@ -4,7 +4,7 @@
 <ConstantsSection label="tec.xml" eval="true">
  <Constant name="zero"            value="0.0*fm"/>
  <Constant name="Rin"             value="22.30*cm"/>
- <Constant name="Rout"            value="113.50*cm"/>
+ <Constant name="Rout"            value="113.51*cm"/>
  <Constant name="ZStart"          value="124.00*cm"/>
  <Constant name="ZEnd"            value="281.27*cm+0.34*mm"/>
  <Constant name="WheelR"          value="110.30*cm"/>
@@ -102,10 +102,10 @@
   <ZSection z="([InTubeZ2]-[ZPos])" rMin="[InTubeRin2]" rMax="[InTubeRout2]" />
   <ZSection z="[TECDz]-2.97"        rMin="[InTubeRin2]" rMax="[InTubeRout2]" />
  </Polycone> 
- <Tubs name="TECRailsA"           rMin="[ServiceRin]"
+ <Tubs name="RailsA"           rMin="[ServiceRin]"
        rMax="[tecservices:GasPipeRpos]+[tecservices:GasPipeRout]"       dz="[TECRailsADz]"
        startPhi="[RailsDeltaPhi]/2" deltaPhi="[RailsDeltaPhi]"/>
- <Tubs name="TECRailsB"           rMin="[ServiceRin]"
+ <Tubs name="RailsB"           rMin="[ServiceRin]"
        rMax="[tecservices:GasPipeRpos]+[tecservices:GasPipeRout]"       dz="[TECRailsBDz]"
        startPhi="[RailsDeltaPhi]/2" deltaPhi="[RailsDeltaPhi]"/>
  <Tubs name="TECRailsInsertA"     rMin="[RailsInsARin]"
@@ -152,12 +152,12 @@
   <rSolid name="tec:TECInnerTube"/>
   <rMaterial name="tecmaterial:Tk_SO_FC_E"/>
  </LogicalPart>
- <LogicalPart name="TECRailsA" category="unspecified">
-  <rSolid name="tec:TECRailsA"/>
+ <LogicalPart name="RailsA" category="unspecified">
+  <rSolid name="tec:RailsA"/>
   <rMaterial name="tecmaterial:TEC_Rails"/>
  </LogicalPart>
- <LogicalPart name="TECRailsB" category="unspecified">
-  <rSolid name="tec:TECRailsB"/>
+ <LogicalPart name="RailsB" category="unspecified">
+  <rSolid name="tec:RailsB"/>
   <rMaterial name="tecmaterial:TEC_Rails"/>
  </LogicalPart>
  <LogicalPart name="TECRailsInsertA" category="unspecified">
@@ -253,127 +253,127 @@
  </PosPart>
 <!-- TECRailsInsert-->
  <!--PosPart copyNumber="1">
-   <rParent name="tec:TECRailsA"/>
+   <rParent name="tec:RailsA"/>
    <rChild name="tec:TECRailsInsertA"/>
    <rRotation name="90Y"/>
    <Translation x="[RailsInsXmid]" y="5.69*cm" z="-14.0*cm"/>	
  </PosPart>
  <PosPart copyNumber="2">
-   <rParent name="tec:TECRailsA"/>
+   <rParent name="tec:RailsA"/>
    <rChild name="tec:TECRailsInsertA"/>
    <rRotation name="90Y"/>
    <Translation x="[RailsInsXmid]" y="5.69*cm" z="0*fm"/>	
  </PosPart>
  <PosPart copyNumber="3">
-   <rParent name="tec:TECRailsA"/>
+   <rParent name="tec:RailsA"/>
    <rChild name="tec:TECRailsInsertA"/>
    <rRotation name="90Y"/>
    <Translation x="[RailsInsXmid]" y="5.69*cm" z="14.0*cm"/>	
  </PosPart>
  <PosPart copyNumber="1">
-   <rParent name="tec:TECRailsA"/>
+   <rParent name="tec:RailsA"/>
    <rChild name="tec:TECRailsInsertB"/>
    <rRotation name="90Y"/>
    <Translation x="[RailsInsXup]" y="1.69*cm" z="-14.0*cm"/>	
  </PosPart>
  <PosPart copyNumber="2">
-   <rParent name="tec:TECRailsA"/>
+   <rParent name="tec:RailsA"/>
    <rChild name="tec:TECRailsInsertB"/>
    <rRotation name="90Y"/>
    <Translation x="[RailsInsXup]" y="1.69*cm" z="0*fm"/>	
  </PosPart>
  <PosPart copyNumber="3">
-   <rParent name="tec:TECRailsA"/>
+   <rParent name="tec:RailsA"/>
    <rChild name="tec:TECRailsInsertB"/>
    <rRotation name="90Y"/>
    <Translation x="[RailsInsXup]" y="1.69*cm" z="14.0*cm"/>	
  </PosPart>
  <PosPart copyNumber="4">
-   <rParent name="tec:TECRailsA"/>
+   <rParent name="tec:RailsA"/>
    <rChild name="tec:TECRailsInsertB"/>
    <rRotation name="90Y"/>
    <Translation x="[RailsInsXdown]" y="9.69*cm" z="-14.0*cm"/>	
  </PosPart>
  <PosPart copyNumber="5">
-   <rParent name="tec:TECRailsA"/>
+   <rParent name="tec:RailsA"/>
    <rChild name="tec:TECRailsInsertB"/>
    <rRotation name="90Y"/>
    <Translation x="[RailsInsXdown]" y="9.69*cm" z="0*fm"/>	
  </PosPart>
  <PosPart copyNumber="6">
-   <rParent name="tec:TECRailsA"/>
+   <rParent name="tec:RailsA"/>
    <rChild name="tec:TECRailsInsertB"/>
    <rRotation name="90Y"/>
    <Translation x="[RailsInsXdown]" y="9.69*cm" z="14.0*cm"/>	
  </PosPart>
  <PosPart copyNumber="1">
-   <rParent name="tec:TECRailsB"/>
+   <rParent name="tec:RailsB"/>
    <rChild name="tec:TECRailsInsertA"/>
    <rRotation name="90Y"/>
    <Translation x="[RailsInsXmid]" y="5.69*cm" z="-25.35*cm"/>	
  </PosPart>
  <PosPart copyNumber="2">
-   <rParent name="tec:TECRailsB"/>
+   <rParent name="tec:RailsB"/>
    <rChild name="tec:TECRailsInsertA"/>
    <rRotation name="90Y"/>
    <Translation x="[RailsInsXmid]" y="5.69*cm" z="-4.85*cm"/>	
  </PosPart>
  <PosPart copyNumber="3">
-   <rParent name="tec:TECRailsB"/>
+   <rParent name="tec:RailsB"/>
    <rChild name="tec:TECRailsInsertA"/>
    <rRotation name="90Y"/>
    <Translation x="[RailsInsXmid]" y="5.69*cm" z="16.65*cm"/>	
  </PosPart>
  <PosPart copyNumber="4">
-   <rParent name="tec:TECRailsB"/>
+   <rParent name="tec:RailsB"/>
    <rChild name="tec:TECRailsInsertA"/>
    <rRotation name="90Y"/>
    <Translation x="[RailsInsXmid]" y="5.69*cm" z="25.39*cm"/>	
  </PosPart>
  <PosPart copyNumber="1">
-   <rParent name="tec:TECRailsB"/>
+   <rParent name="tec:RailsB"/>
    <rChild name="tec:TECRailsInsertB"/>
    <rRotation name="90Y"/>
    <Translation x="[RailsInsXup]" y="1.69*cm" z="-25.35*cm"/>	
  </PosPart>
  <PosPart copyNumber="2">
-   <rParent name="tec:TECRailsB"/>
+   <rParent name="tec:RailsB"/>
    <rChild name="tec:TECRailsInsertB"/>
    <rRotation name="90Y"/>
    <Translation x="[RailsInsXup]" y="1.69*cm" z="-4.85*cm"/>	
  </PosPart>
  <PosPart copyNumber="3">
-   <rParent name="tec:TECRailsB"/>
+   <rParent name="tec:RailsB"/>
    <rChild name="tec:TECRailsInsertB"/>
    <rRotation name="90Y"/>
    <Translation x="[RailsInsXup]" y="1.69*cm" z="16.65*cm"/>	
  </PosPart>
  <PosPart copyNumber="4">
-   <rParent name="tec:TECRailsB"/>
+   <rParent name="tec:RailsB"/>
    <rChild name="tec:TECRailsInsertB"/>
    <rRotation name="90Y"/>
    <Translation x="[RailsInsXup]" y="1.69*cm" z="25.39*cm"/>	
  </PosPart>
  <PosPart copyNumber="5">
-   <rParent name="tec:TECRailsB"/>
+   <rParent name="tec:RailsB"/>
    <rChild name="tec:TECRailsInsertB"/>
    <rRotation name="90Y"/>
    <Translation x="[RailsInsXdown]" y="9.69*cm" z="-25.35*cm"/>	
  </PosPart>
  <PosPart copyNumber="6">
-   <rParent name="tec:TECRailsB"/>
+   <rParent name="tec:RailsB"/>
    <rChild name="tec:TECRailsInsertB"/>
    <rRotation name="90Y"/>
    <Translation x="[RailsInsXdown]" y="9.69*cm" z="-4.85*cm"/>	
  </PosPart>
  <PosPart copyNumber="7">
-   <rParent name="tec:TECRailsB"/>
+   <rParent name="tec:RailsB"/>
    <rChild name="tec:TECRailsInsertB"/>
    <rRotation name="90Y"/>
    <Translation x="[RailsInsXdown]" y="9.69*cm" z="16.65*cm"/>	
  </PosPart>
  <PosPart copyNumber="8">
-   <rParent name="tec:TECRailsB"/>
+   <rParent name="tec:RailsB"/>
    <rChild name="tec:TECRailsInsertB"/>
    <rRotation name="90Y"/>
    <Translation x="[RailsInsXdown]" y="9.69*cm" z="25.35*cm"/>	
@@ -404,9 +404,9 @@
   <Vector name="Center" type="numeric" nEntries="3"> 0, 0, 0 </Vector>
 </Algorithm>
 
-<Algorithm name="track:DDTrackerAngular">
+<!--Algorithm name="track:DDTrackerAngular">
   <rParent name="tecservices:TECServices"/>
-  <String  name="ChildName"   value="tec:TECRailsA"/>
+  <String  name="ChildName"   value="tec:RailsA"/>
   <Numeric name="N"           value="2" />
   <Numeric name="StartCopyNo" value="1" />
   <Numeric name="IncrCopyNo"  value="1" />
@@ -418,7 +418,7 @@
 </Algorithm>
 <Algorithm name="track:DDTrackerAngular">
   <rParent name="tecservices:TECServices"/>
-  <String  name="ChildName"   value="tec:TECRailsB"/>
+  <String  name="ChildName"   value="tec:RailsB"/>
   <Numeric name="N"           value="2" />
   <Numeric name="StartCopyNo" value="1" />
   <Numeric name="IncrCopyNo"  value="1" />
@@ -427,7 +427,7 @@
   <Numeric name="Radius"      value="[zero]"/>
   <Vector name="Center" type="numeric" nEntries="3">
 	0, 0, [TECRailsBZ]-[ZPos] </Vector>
-</Algorithm>
+</Algorithm-->
 
 
 
