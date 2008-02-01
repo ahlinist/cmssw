@@ -50,6 +50,7 @@ public:
   // ----------------------------------------------------------------------
   int               fRunNumber, fEventNumber;
   int               fEventBits;
+  double            fPtHat;
   int               fTriggerDecision, fDiMuonTriggerDecision;
   int               fTriggerWord1, fTriggerWord2, fTriggerWord3, fTriggerWord4 ;
 
