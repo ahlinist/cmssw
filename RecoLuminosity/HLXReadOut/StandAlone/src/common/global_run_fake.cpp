@@ -76,12 +76,21 @@ int main(int argc, char ** argv) {
     lSectionCollectorShort->SetRunNumber(runNumber);
     lSectionCollectorLong->SetRunNumber(runNumber);
 
+<<<<<<< global_run_fake.cpp
+    lOracleDistributor = new OracleDistributor;
+    lSectionCollectorLong->AttachDistributor(lOracleDistributor);
+    //lROOTDistributor = new ROOTDistributor;
+    //lSectionCollectorLong->AttachDistributor(lROOTDistributor);
+    //lDebugCoutDistributor = new DebugCoutDistributor;
+    //lSectionCollectorLong->AttachDistributor(lDebugCoutDistributor);
+=======
     //lOracleDistributor = new OracleDistributor;
     //lSectionCollectorLong->AttachDistributor(lOracleDistributor);
     //lROOTDistributor = new ROOTDistributor;
     //lSectionCollectorLong->AttachDistributor(lROOTDistributor);
     //lDebugCoutDistributor = new DebugCoutDistributor;
     //lSectionCollectorLong->AttachDistributor(lDebugCoutDistributor);
+>>>>>>> 1.3
 
     //lGIFDistributor = new GIFDistributor;
     //lSectionCollectorLong->AttachDistributor(lGIFDistributor);
@@ -94,9 +103,11 @@ int main(int argc, char ** argv) {
       //lSectionCollectorLong->AttachDistributor(lWedgeGIFDistributor[i]);
     //}
 
-    lNibbleCollector = new NibbleCollector(NUM_HLXS);
+    lNibbleCollector = new NibbleCollector(NUM_HLXS,0x533C);
     lNibbleCollector->AttachSectionCollector(lSectionCollectorShort);
     lNibbleCollector->AttachSectionCollector(lSectionCollectorLong);
+
+    lNibbleCollector->Start();
 
     int startTime, tempTime, interTime = 0;
     time((time_t*)&startTime);
@@ -120,9 +131,8 @@ int main(int argc, char ** argv) {
 	cout << "Bad occupancy nibble count: " << lNibbleCollector->GetNumBadOccupancyNibbles() << endl;
 	cout << "Good LHC nibble count: " << lNibbleCollector->GetNumGoodLHCNibbles() << endl;
 	cout << "Bad LHC nibble count: " << lNibbleCollector->GetNumBadLHCNibbles() << endl;
-	cout << "Good section count:" << lSectionCollectorLong->GetNumCompleteLumiSections() << endl;
-	cout << "Bad section count: " << lSectionCollectorLong->GetNumIncompleteLumiSections() << endl;
-	//cout << "Lost section count: " << lSectionCollectorLong->GetNumLostLumiSections() << endl;
+	cout << "Good section count:" << lSectionCollectorShort->GetNumCompleteLumiSections() << endl;
+	cout << "Bad section count: " << lSectionCollectorShort->GetNumIncompleteLumiSections() << endl;
 	cout << "Lost packet count: " << lNibbleCollector->GetNumLostPackets() << endl;
 	cout << "Total data volume: " << lNibbleCollector->GetTotalDataVolume() << endl;
 	cout << "Average data rate (Mb/s): " << (double)lNibbleCollector->GetTotalDataVolume()*8.0/(1024.0*1024.0*(double)(tempTime-startTime)) << endl;

@@ -10,7 +10,7 @@
 #include "ICException.hh"
 #include "HardwareAccessException.hh"
 #include "MemoryAllocationException.hh"
-//#include "ArgumentOutOfRangeException.hh"
+#include "FileNotOpenedException.hh"
 
 // HCAL HLX namespace
 namespace HCAL_HLX
@@ -21,43 +21,60 @@ namespace HCAL_HLX
   using namespace std;
 
   void DIPDistributor::handleException(DipPublication * publication, DipException & ex) {
-    std::cout << "DIP error caused by " << ex.what() << std::endl;
+    //std::cout << "DIP error caused by " << ex.what() << std::endl;
+    DoLogEntry(ex.what());
     mErrorCount++;
   }
   
   // Default constructor
   DIPDistributor::DIPDistributor() {
     try {
-
       mDIP = 0;
       mDIPPublisher = 0;
       mDIPData = 0;
       mErrorCount = 0;
+<<<<<<< DIPDistributor.cc
+      
+      // Open the log file
+      mLogFile.open("/tmp/LMS-DIPDistributor.log",ios::app);
+      if ( !mLogFile.is_open() ) {
+	FileNotOpenedException lExc("/tmp/LMS-DIPDistributor.log");
+	RAISE(lExc);
+      }
+      std::string tString = "Class constructor";
+      DoLogEntry(tString);
+=======
 
       cout << "Initialising DIP" << endl;
+>>>>>>> 1.4
       
       // Open the DIP interface
       mDIP = Dip::create("CMS/HF/Lumi/LumiPublisher");
       if ( !mDIP ) {
-	MemoryAllocationException lExc("Unable to allocate DIP interface");
+	string tempString = "Unable to allocate DIP interface";
+        DoLogEntry(tempString);
+	MemoryAllocationException lExc(tempString);
 	RAISE(lExc);
       }
       
       char itemName[]={"dip/CMS/HF/LumiData"};    
-      //ErrHandler errorHandler;
       
       // Create the DIP publication interface
       cout << "Creating DIP publication " << itemName << endl;
       mDIPPublisher = mDIP->createDipPublication(itemName, this);
       if ( !mDIPPublisher ) {
-	MemoryAllocationException lExc("Unable to allocate DIP publication interface");
+	string tempString = "Unable to create DIP publication";
+        DoLogEntry(tempString);
+	MemoryAllocationException lExc(tempString);
 	RAISE(lExc);
       }
       
       // Create the publication data structure
       mDIPData = mDIP->createDipData();
       if ( !mDIPData ) {
-	MemoryAllocationException lExc("Unable to allocate DIP data space");
+	string tempString = "Unable to create DIP data";
+        DoLogEntry(tempString);
+	MemoryAllocationException lExc(tempString);
 	RAISE(lExc);
       }
       
@@ -65,6 +82,7 @@ namespace HCAL_HLX
       this->Init();
 
     } catch (ICException & aExc) {
+      DoLogEntry(aExc.what());
       RETHROW(aExc);
     }
   }
@@ -87,6 +105,11 @@ namespace HCAL_HLX
 
     // Clean up the data structures
     this->CleanUp();
+
+    // Close the log file
+    std::string tmpString = "Class destructor";
+    DoLogEntry(tmpString);
+    mLogFile.close();
   }
 
   u32 DIPDistributor::GetErrorCount() {
@@ -94,42 +117,24 @@ namespace HCAL_HLX
   }
 
   void DIPDistributor::Init() {
-    //mHistogramData = new (DipInt *)[36];
-    //if ( !mHistogramData ) {
-    //  MemoryAllocationException lExc("Unable to allocate memory");
-    //  RAISE(lExc);
-    // }
-    //memset(mHistogramData,0,sizeof(DipInt *)*36);
-    //for ( u32 i = 0 ; i != 36 ; i++ ) {
+
     mHistogramData = new DipDouble[4096];
     if ( !mHistogramData ) {
       this->CleanUp();
       MemoryAllocationException lExc("Unable to allocate memory");
       RAISE(lExc);
     }
-      //}
+
   }
 
   void DIPDistributor::CleanUp() { 
     if ( mHistogramData ) {
-      //for ( u32 i = 0 ; i != 36 ; i++ ) {
-      //delete [] mHistogramData[i];
-      //}
       delete []mHistogramData;
       mHistogramData = 0;
     }
   }
 
   bool DIPDistributor::ProcessSection(const LUMI_SECTION & lumiSection) { 
-    //cout << "Begin " << __PRETTY_FUNCTION__ << endl;
-
-    //for ( u32 j = 0 ; j != lumiSection.hdr.numBunches ; j++ ) {
-    //  mHistogramData[j] = 0; 
-    //  for ( u32 i = 0 ; i != lumiSection.hdr.numHLXs ; i++ ) {
-    //mHistogramData[j] += lumiSection.lhc[i].data[j];
-    // }
-    //}
-
     for ( u32 i = 0 ; i != lumiSection.hdr.numBunches ; i++ ) {
       mHistogramData[i] = lumiSection.lumiDetail.LHCLumi[i];
     }
@@ -155,10 +160,6 @@ namespace HCAL_HLX
     mDIPPublisher->send(*mDIPData,time);
 
     return true;
-	/*} catch (DipException e){
-	printf("Failed to send dip data\n");
-	}*/
-    //cout << "End " << __PRETTY_FUNCTION__ << endl;
   }
 
 }
