@@ -57,32 +57,6 @@ namespace edm {
       aux_.setEndTime(time);
     }
 
-/*
-    using Base::addGroup;
-    using Base::addToProcessHistory;
-    using Base::getAllProvenance;
-    using Base::getByLabel;
-    using Base::get;
-    using Base::getBySelector;
-    using Base::getByType;
-    using Base::getForOutput;
-    using Base::getIt;
-    using Base::getMany;
-    using Base::getManyByType;
-    using Base::getProvenance;
-    using Base::groupGetter;
-    using Base::numEDProducts;
-    using Base::processConfiguration;
-    using Base::processHistory;
-    using Base::processHistoryID;
-    using Base::prodGetter;
-    using Base::productRegistry;
-    using Base::put;
-    using Base::readImmediate;
-    using Base::size;
-    using Base::store;
-*/
-
     void setUnscheduledHandler(boost::shared_ptr<UnscheduledHandler>) {}
 
     void mergeRun(boost::shared_ptr<RunPrincipal> rp);

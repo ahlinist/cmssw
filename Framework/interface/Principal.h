@@ -59,9 +59,6 @@ namespace edm {
 
     Principal & groupGetter() {return *this;}
 
-    // Return the number of EDProducts contained.
-    size_type numEDProducts() const;
-    
     void put(std::auto_ptr<EDProduct> edp,
 	     std::auto_ptr<Provenance> prov);
 
