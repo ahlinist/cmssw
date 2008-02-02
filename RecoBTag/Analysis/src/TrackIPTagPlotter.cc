@@ -168,25 +168,25 @@ void TrackIPTagPlotter::analyzeTag (const reco::BaseTagInfo * baseTagInfo,
   trkNbr2D->fill(jetFlav, ip.size());
 
   vector<unsigned int> sortedIndices = tagInfo->sortedIndexes(reco::TrackIPTagInfo::IP2DSig);
-  for(unsigned int n=0; n < ip.size() && n < 4; n++) {
+  for(unsigned int n=0; n < sortedIndices.size() && n < 4; n++) {
     tkcntHistosSig2D[n]->fill(jetFlav, ip[sortedIndices[n]].ip2d.significance());
   }
   sortedIndices = tagInfo->sortedIndexes(reco::TrackIPTagInfo::Prob2D);
-  for(unsigned int n=0; n < ip.size() && n < 4; n++) {
+  for(unsigned int n=0; n < sortedIndices.size() && n < 4; n++) {
     tkcntHistosProb2D[n]->fill(jetFlav, prob2d[sortedIndices[n]]);
   }
-  for(unsigned int n=ip.size(); n < 4; n++)
+  for(unsigned int n=sortedIndices.size(); n < 4; n++)
     tkcntHistosSig2D[n]->fill(jetFlav, lowerIPSBound-1.0);
 
   sortedIndices = tagInfo->sortedIndexes(reco::TrackIPTagInfo::IP3DSig);
-  for(unsigned int n=0; n < ip.size() && n < 4; n++) {
+  for(unsigned int n=0; n < sortedIndices.size() && n < 4; n++) {
     tkcntHistosSig3D[n]->fill(jetFlav, ip[sortedIndices[n]].ip3d.significance());
   }
   sortedIndices = tagInfo->sortedIndexes(reco::TrackIPTagInfo::Prob3D);
-  for(unsigned int n=0; n < ip.size() && n < 4; n++) {
+  for(unsigned int n=0; n < sortedIndices.size() && n < 4; n++) {
     tkcntHistosProb3D[n]->fill(jetFlav, prob3d[sortedIndices[n]]);
   }
-  for(unsigned int n=ip.size(); n < 4; n++)
+  for(unsigned int n=sortedIndices.size(); n < 4; n++)
     tkcntHistosSig3D[n]->fill(jetFlav, lowerIPSBound-1.0);
 
   for(unsigned int n=0; n < ip.size(); n++) {
