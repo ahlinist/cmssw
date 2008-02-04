@@ -57,7 +57,7 @@ void CtfWithMaterialTrackEmObjectAlgo::run(edm::Event &event, EgEff::EmObjectCol
       if (goodTrack && requireFiducial_) {
          double candRho = track->innerPosition().Rho();
          double candVz = track->innerPosition().z();
-         double candEta = track->innerMomentum().eta();
+         double candEta = track->momentum().eta();
          double candEcalEta = ecalEta(candEta, candVz, candRho);
          if ( (fabs(candEcalEta) > eeMax) || 
               ((fabs(candEcalEta) < eeMin && (fabs(candEcalEta) > ebMax))) )
@@ -109,10 +109,10 @@ double CtfWithMaterialTrackEmObjectAlgo::computeTrackIsolation(const reco::Track
    {
       if (trackCollection[i].pt() > 1.5)
       {
-         dR = ROOT::Math::VectorUtil::DeltaR(trackCollection[i].innerMomentum(), track.innerMomentum());
+         dR = ROOT::Math::VectorUtil::DeltaR(trackCollection[i].momentum(), track.momentum());
          if ((dR > innerR) && (dR < outerR)) 
             { 
-            ratio = (trackCollection[i].innerMomentum().Rho()/track.innerMomentum().Rho());
+            ratio = (trackCollection[i].momentum().Rho()/track.momentum().Rho());
             iso += pow(ratio, 2);
          }
       }
