@@ -136,8 +136,8 @@ private:
   std::vector<MCTauCand> _GenTaus;
 
   // FastL1 objects
-  //l1extra::L1EtMissParticle _FastL1MET;
-  l1extra::L1EtMissParticleCollection _FastL1MET;
+  l1extra::L1EtMissParticle _FastL1MET;
+  //l1extra::L1EtMissParticleCollection _FastL1MET;
   l1extra::L1JetParticleCollection _FastL1TauJets;
   l1extra::L1JetParticleCollection _FastL1CenJets;
   l1extra::L1JetParticleCollection _FastL1ForJets;
@@ -147,8 +147,8 @@ private:
   l1extra::L1EmParticleCollection _FastL1isoEgammas;
 
   // L1extra objects
-  //l1extra::L1EtMissParticle _L1extraMET;
-  l1extra::L1EtMissParticleCollection _L1extraMET;
+  l1extra::L1EtMissParticle _L1extraMET;
+  //l1extra::L1EtMissParticleCollection _L1extraMET;
   l1extra::L1MuonParticleCollection _L1extraMuons;
   l1extra::L1JetParticleCollection _L1extraTauJets;
   l1extra::L1JetParticleCollection _L1extraCenJets;
