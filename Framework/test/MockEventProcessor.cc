@@ -101,6 +101,7 @@ namespace edm {
 	output_ << "The state machine reports it has been terminated\n";
       }
     }
+    return epSuccess;
   }
 
   void MockEventProcessor::readFile() {
