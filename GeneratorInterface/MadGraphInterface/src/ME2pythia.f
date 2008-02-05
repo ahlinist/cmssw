@@ -88,6 +88,11 @@ C*********************************************************************
       IMPLICIT NONE
       CHARACTER*132 CHAR_READ
 
+C DKC
+C... Parameters from the MadGraphSource
+      logical minimalLH
+      common /SOURCEPRS/minimalLH
+
 C...Pythia parameters.
       INTEGER MSTP,MSTI,MRPY
       DOUBLE PRECISION PARP,PARI,RRPY
@@ -144,7 +149,13 @@ C then read second line into evfile, third line into dummy and fourth into proce
       OPEN(LNHIN,FILE=EVFILE,STATUS='UNKNOWN')
 
 C...Extract the model parameter card and read it.
-      CALL MODELPAR(LNHIN)
+c DKC
+      if(minimalLH) then
+        write(*,*)"ME2pythia.f: Using minimal LH"
+        write(*,*)"ME2pythia.f: Not calling the MODELPAR subroutine"
+      else
+        CALL MODELPAR(LNHIN)
+      endif
 
 c...Read the <init> block information
 
@@ -202,7 +213,12 @@ C...based on first event only!
       REWIND(LNHIN)
 
 C...Extract cuts and matching parameters
-      CALL read_params(LNHIN,npara,param,value)
+      if(minimalLH) then
+        write(*,*)"ME2pythia.f: Using minimal LH"
+        write(*,*)"ME2pythia.f: Not calling the READ_PARAMS subroutine"
+      else
+       CALL read_params(LNHIN,npara,param,value)
+      endif
 
       call get_integer(npara,param,value," ickkw ",ickkw,0)
 

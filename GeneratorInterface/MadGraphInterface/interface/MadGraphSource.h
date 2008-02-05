@@ -54,6 +54,8 @@ namespace edm
     double MEMAIN_qcut;
     unsigned int MEMAIN_iexcfile; // 1 = perform exclusive matching
     bool produceEventTreeFile_;
+    // Flag to allow reading a simple LHE file using the minimal Les Houches functionality (ignoring reading parameters from the header)
+   bool minimalLH_;
   };
 } 
 #endif
