@@ -11,6 +11,8 @@
  * Dorian Kcira : add automatic end of event processing when hitting
  *                the end of the lhe file (29/01/07)
  * Dorian Kcira : added ME-PS matching (22/05/2007)
+ * Dorian Kcira : added reading of <slha> xml tags in the header (05/02/2008)
+ * Dorian Kcira : added flag to allow reading of generic LH files without MadGraph specifics (06/02/2008)
  ***************************************/
 #include "GeneratorInterface/MadGraphInterface/interface/MadGraphSource.h"
 #include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
@@ -92,6 +94,17 @@ extern "C" {
  }memain_;
 }
 
+/*
+      LOGICAL minimalLH
+      common /SOURCEPRS/minimalLH
+*/
+extern "C"{
+  extern struct SOURCEPRS{
+   bool minimalLH;
+  }sourceprs_;
+}
+
+
 //used for defaults - change these to defines? TODO
   static const unsigned long kNanoSecPerSec = 1000000000;
   static const unsigned long kAveEventPerSec = 200;
@@ -99,7 +112,7 @@ extern "C" {
 using namespace edm;
 
 MadGraphSource::MadGraphSource( const ParameterSet & pset, InputSourceDescription const& desc) : GeneratedInputSource(pset, desc), evt(0),
-pythiaPylistVerbosity_ (pset.getUntrackedParameter<int>("pythiaPylistVerbosity",0)),pythiaHepMCVerbosity_ (pset.getUntrackedParameter<bool>("pythiaHepMCVerbosity",false)),maxEventsToPrint_ (pset.getUntrackedParameter<int>("maxEventsToPrint",0)),MGfile_ (pset.getParameter<std::string>("MadGraphInputFile")),getInputFromMCDB_ (pset.getUntrackedParameter<bool>("getInputFromMCDB",false)),MCDBArticleID_ (pset.getParameter<int>("MCDBArticleID")),firstEvent_(pset.getUntrackedParameter<unsigned int>("firstEvent", 0)),lhe_event_counter_(0),MEMAIN_etaclmax(pset.getUntrackedParameter<double>("MEMAIN_etaclmax",0.)),MEMAIN_qcut(pset.getUntrackedParameter<double>("MEMAIN_qcut",0.)),MEMAIN_iexcfile(pset.getUntrackedParameter<unsigned int>("MEMAIN_iexcfile",0)), produceEventTreeFile_ (pset.getUntrackedParameter<bool>("produceEventTreeFile",false)) {
+pythiaPylistVerbosity_ (pset.getUntrackedParameter<int>("pythiaPylistVerbosity",0)),pythiaHepMCVerbosity_ (pset.getUntrackedParameter<bool>("pythiaHepMCVerbosity",false)),maxEventsToPrint_ (pset.getUntrackedParameter<int>("maxEventsToPrint",0)),MGfile_ (pset.getParameter<std::string>("MadGraphInputFile")),getInputFromMCDB_ (pset.getUntrackedParameter<bool>("getInputFromMCDB",false)),MCDBArticleID_ (pset.getParameter<int>("MCDBArticleID")),firstEvent_(pset.getUntrackedParameter<unsigned int>("firstEvent", 0)),lhe_event_counter_(0),MEMAIN_etaclmax(pset.getUntrackedParameter<double>("MEMAIN_etaclmax",0.)),MEMAIN_qcut(pset.getUntrackedParameter<double>("MEMAIN_qcut",0.)),MEMAIN_iexcfile(pset.getUntrackedParameter<unsigned int>("MEMAIN_iexcfile",0)), produceEventTreeFile_ (pset.getUntrackedParameter<bool>("produceEventTreeFile",false)), minimalLH_(pset.getUntrackedParameter<bool>("minimalLH",false)) {
 
   std::ifstream file;
   std::ofstream ofile;
@@ -124,6 +137,10 @@ pythiaPylistVerbosity_ (pset.getUntrackedParameter<int>("pythiaPylistVerbosity",
   ofile<<MGfile_;
   ofile<<"\n";
   ofile.close();
+
+  // check whether using minimal LH
+  sourceprs_.minimalLH = minimalLH_; // pass to ME2pythia through common block
+  if(minimalLH_) edm::LogInfo("Generator|MadGraph")<<" ----- Using minimal Les Houches Accord functionality - ignoring MadGraph specifics.";
   
   // first set to default values, mostly zeros
   memain_.etcjet=0.;
