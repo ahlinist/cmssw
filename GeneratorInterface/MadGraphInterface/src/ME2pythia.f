@@ -1,18 +1,8 @@
 C******************************************************
 C*          MadEvent - Pythia interface.              *
-C*           Version 4.2-CMSSW 08 May 2007            *
-C* dkcira                                             *
-C*                                                    *
-C*  - add changes proposed by S. Bolognesi to allow   *
-C*    reading of Phantom files. Two flags are added   *
-C*    that disallow setting the model and reading the *
-C*    input cards file SLHA.dat                       *
-C*  - Hack for reading input file in present setup    *
-C*    of CMSSW                                        *
-C*  - add -w flag to buildfile so that no warnings    *
-C*    about unused variables are displayed            *
-C*                                                    *
 C*           Version 4.2, 4 March 2007                *
+C*
+C* dkcira 2008.02.05
 C*                                                    *
 C*  - Improvement of matching routines                *
 C*                                                    *
@@ -121,9 +111,9 @@ C...Extra commonblock to transfer run info.
 
 C...Inputs for the matching algorithm
       double precision etcjet,rclmax,etaclmax,qcut,clfact
-      integer maxjets,minjets,iexcfile,ktsche
+      integer maxjets,minjets,iexcfile,ktsche,nexcres,excres(30)
       common/MEMAIN/etcjet,rclmax,etaclmax,qcut,clfact,
-     $   maxjets,minjets,iexcfile,ktsche
+     $   maxjets,minjets,iexcfile,ktsche,nexcres,excres
 
 C...Parameter arrays (local)
       integer maxpara
@@ -189,12 +179,16 @@ C...Read NPRUP subsequent lines with information on each process.
 c DKC
 c C...Set PDFLIB or LHAPDF pdf number for Pythia
 c 
-c       IF(PDFSUP(1).NE.19070)THEN
+c       IF(PDFSUP(1).NE.19070.AND.(PDFSUP(1).NE.0.OR.PDFSUP(2).NE.0))THEN
 c c     Not CTEQ5L, which is standard in Pythia
-c         MSTP(52)=2
+c          CALL PYGIVE('MSTP(52)=2')
 c c     The following works for both PDFLIB and LHAPDF (where PDFGUP(1)=0)
 c c     But note that the MadEvent output uses the LHAPDF numbering scheme
-c         MSTP(51)=1000*PDFGUP(1)+PDFSUP(1)
+c         IF(PDFSUP(1).NE.0)THEN
+c            MSTP(51)=1000*PDFGUP(1)+PDFSUP(1)
+c         ELSE
+c            MSTP(51)=1000*PDFGUP(2)+PDFSUP(2)
+c         ENDIF
 c       ENDIF
 
 C...Initialize widths and partial widths for resonances.
@@ -227,6 +221,9 @@ c      CALL PYGIVE('PARP(91)=2.5')
 c      CALL PYGIVE('PARP(93)=15')
 
       IF(ickkw.gt.0) CALL set_matching(LNHIN,npara,param,value)
+
+C...For photon initial states from protons: Set proton not to break up
+      CALL PYGIVE('MSTP(98)=1')
 
 C...Reset event numbering
       IEVNT=0
@@ -283,9 +280,9 @@ C...Extra commonblock to transfer run info.
 
 C...Inputs for the matching algorithm
       double precision etcjet,rclmax,etaclmax,qcut,clfact
-      integer maxjets,minjets,iexcfile,ktsche
+      integer maxjets,minjets,iexcfile,ktsche,nexcres,excres(30)
       common/MEMAIN/etcjet,rclmax,etaclmax,qcut,clfact,
-     $   maxjets,minjets,iexcfile,ktsche
+     $   maxjets,minjets,iexcfile,ktsche,nexcres,excres
 
 C...Commonblock to transfer event-by-event matching info
       INTEGER NLJETS,IEXC,Ifile
@@ -293,7 +290,7 @@ C...Commonblock to transfer event-by-event matching info
       COMMON/MEMAEV/PTCLUS(20),NLJETS,IEXC,Ifile
 
 C...Local variables
-      INTEGER I,J,IBEG,NEX,KP(MAXNUP),MOTH
+      INTEGER I,J,IBEG,NEX,KP(MAXNUP),MOTH,NUPREAD,IREM
       DOUBLE PRECISION PSUM,ESUM,PM1,PM2,A1,A2,A3,A4,A5
       DOUBLE PRECISION SCALLOW(MAXNUP),PNONJ(4),PMNONJ!,PT2JETS
 C...Lines to read in assumed never longer than 200 characters. 
@@ -318,37 +315,57 @@ C...Allow indentation.
      &STRING(IBEG:IBEG+6).NE.'<event ') GOTO 100
 
 C...Read first line of event info.
-      READ(LNHIN,*,END=130,ERR=130) NUP,IDPRUP,XWGTUP,SCALUP,
+      READ(LNHIN,*,END=130,ERR=130) NUPREAD,IDPRUP,XWGTUP,SCALUP,
      &AQEDUP,AQCDUP
 
 C...Read NUP subsequent lines with information on each particle.
       ESUM=0d0
       PSUM=0d0
       NEX=2
-      DO 120 I=1,NUP
-        READ(LNHIN,*,END=130,ERR=130) IDUP(I),ISTUP(I),
-     &  MOTHUP(1,I),MOTHUP(2,I),ICOLUP(1,I),ICOLUP(2,I),
-     &  (PUP(J,I),J=1,5),VTIMUP(I),SPINUP(I)
+      NUP=1
+      IREM=NUPREAD+1
+
+      DO 120 I=1,NUPREAD
+        READ(LNHIN,*,END=130,ERR=130) IDUP(NUP),ISTUP(NUP),
+     &  MOTHUP(1,NUP),MOTHUP(2,NUP),ICOLUP(1,NUP),ICOLUP(2,NUP),
+     &  (PUP(J,NUP),J=1,5),VTIMUP(NUP),SPINUP(NUP)
+C...Remove Z/gamma resonance in e+e-
+        IF(IABS(IDBMUP(1)).EQ.11.AND.IABS(IDBMUP(2)).EQ.11.AND.
+     $       IDBMUP(1).EQ.-IDBMUP(2).AND.ISTUP(NUP).EQ.2.AND.
+     $       MOTHUP(1,NUP).EQ.1) THEN
+           IREM=I
+           cycle
+        ENDIF
 C...Reset resonance momentum to prepare for mass shifts
-        IF(ISTUP(I).EQ.2) PUP(3,I)=0
-        IF(ISTUP(I).EQ.1)THEN
+        IF(ISTUP(NUP).EQ.2) PUP(3,NUP)=0
+        IF(ISTUP(NUP).EQ.1)THEN
           NEX=NEX+1
-           IF(PUP(5,I).EQ.0D0.AND.IABS(IDUP(I)).GT.3.AND.IDUP(I).NE.21)
-     $       THEN
+           IF(PUP(5,NUP).EQ.0D0.AND.IABS(IDUP(NUP)).GT.3
+     $         .AND.IDUP(NUP).NE.21) THEN
 C...Set massless particle masses to Pythia default. Adjust z-momentum. 
-              PUP(5,I)=PMAS(IABS(PYCOMP(IDUP(I))),1)
-              PUP(3,I)=SIGN(SQRT(MAX(0d0,PUP(4,I)**2-PUP(5,I)**2-
-     $           PUP(1,I)**2-PUP(2,I)**2)),PUP(3,I))
+              PUP(5,NUP)=PMAS(IABS(PYCOMP(IDUP(NUP))),1)
+              PUP(3,NUP)=SIGN(SQRT(MAX(0d0,PUP(4,NUP)**2-PUP(5,NUP)**2-
+     $           PUP(1,NUP)**2-PUP(2,NUP)**2)),PUP(3,NUP))
            ENDIF
-           PSUM=PSUM+PUP(3,I)
+           PSUM=PSUM+PUP(3,NUP)
+C...Adjust mother information due to removed mother
+           IF(MOTHUP(1,NUP).EQ.IREM)THEN
+              MOTHUP(1,NUP)=1
+              MOTHUP(2,NUP)=2
+           ELSE IF(MOTHUP(1,NUP).GT.IREM)THEN
+              MOTHUP(1,NUP)=MOTHUP(1,NUP)-1
+              MOTHUP(2,NUP)=MOTHUP(2,NUP)-1
+           ENDIF
 C...Set mother resonance momenta
-           MOTH=MOTHUP(1,I)
+           MOTH=MOTHUP(1,NUP)
            DO WHILE (MOTH.GT.2)
-             PUP(3,MOTH)=PUP(3,MOTH)+PUP(3,I)
+             PUP(3,MOTH)=PUP(3,MOTH)+PUP(3,NUP)
              MOTH=MOTHUP(1,MOTH)
            ENDDO
         ENDIF
+        NUP=NUP+1
   120 CONTINUE
+      NUP=NUP-1
 
 C...Increment event number
       IEVNT=IEVNT+1
@@ -394,10 +411,11 @@ C...factorisation scale given by MadEvent, please implement the function PYMASC
 C...(example function included below) 
 
       IF(ickkw.eq.0.AND.MSCAL.GT.0) CALL PYMASC(SCALUP)
-
+      IF(MINT(35).eq.3.AND.ickkw.EQ.1) SCALUP=SQRT(PARP(67))*SCALUP
+      
 C...Read FSR scale for all FS particles (as comment in event file)
       IF(ickkw.eq.1)THEN
-        READ(LNHIN,*,END=130,ERR=101) CDUM,(PTCLUS(I),I=1,NEX)
+        READ(LNHIN,*,END=130,ERR=101) CDUM,(PTPART(I),I=1,NEX)
  101    CONTINUE
       ENDIF
 
@@ -406,16 +424,19 @@ c
 c   Set up number of jets
 c
          NLJETS=0
-
+         NPART=0
          do i=3,NUP
             if(ISTUP(i).ne.1) cycle
+            NPART=NPART+1
+            IPART(NPART)=i
             if(iabs(IDUP(i)).ge.6.and.IDUP(i).ne.21) cycle
             if(MOTHUP(1,i).gt.2) cycle
             NLJETS=NLJETS+1
+            PTCLUS(NLJETS)=PTPART(NPART)
          enddo
+         CALL ALPSOR(PTCLUS,nljets,KP,1)
       
          IDPRUP=LPRUP(NLJETS-MINJETS+1)
-
 
          IF(ickkw.eq.1) THEN
 c   ... and decide whether exclusive or inclusive
@@ -430,9 +451,10 @@ c   ... and decide whether exclusive or inclusive
       RETURN
 
 C...Error exit, typically when no more events.
-  130 WRITE(*,*) ' Failed to read LHEF event information.'
-      WRITE(*,*) ' Will assume end of file has been reached.'
+  130 WRITE(*,*) ' Failed to read LHEF event information,'
+      WRITE(*,*) ' assume end of file has been reached.'
       NUP=0
+      MINT(51)=2
       RETURN
       END
 
@@ -443,6 +465,11 @@ C*********************************************************************
       SUBROUTINE UPVETO(IPVETO)
 
       IMPLICIT NONE
+
+C...Pythia common blocks
+      INTEGER MINT
+      DOUBLE PRECISION VINT
+      COMMON/PYINT1/MINT(400),VINT(400)
 
 C...GUP Event common block
       INTEGER MAXNUP
@@ -505,12 +532,6 @@ C...kt clustering common block
       COMMON /KTCOMM/ETOT,RSQ,PPP(9,NMAXKT),KTP(NMAXKT,NMAXKT),
      $   KTS(NMAXKT),KT(NMAXKT),KTLAST(NMAXKT),HIST(NMAXKT),NUM
 
-C...Inputs for jet clustering and Pythia run
-      INTEGER NITER,NFILES
-      DOUBLE PRECISION ETCLUS,ETMIN,RMAX,ETAMAX,ETAJETMAX,ASFACT
-      COMMON/JETPAR/ETCLUS,ETMIN,RMAX,ETAMAX,ETAJETMAX,ASFACT,
-     $     NITER,NFILES
-
 C...Extra commonblock to transfer run info.
       INTEGER LNHIN,LNHOUT,MSCAL,IEVNT,ICKKW,ISCALE
       COMMON/UPPRIV/LNHIN,LNHOUT,MSCAL,IEVNT,ICKKW,ISCALE
@@ -524,9 +545,9 @@ C   cone-jets: default=1.5
 C    Matching if within clfact*RCLMAX 
 
       double precision etcjet,rclmax,etaclmax,qcut,clfact
-      integer maxjets,minjets,iexcfile,ktsche
+      integer maxjets,minjets,iexcfile,ktsche,nexcres,excres(30)
       common/MEMAIN/etcjet,rclmax,etaclmax,qcut,clfact,
-     $   maxjets,minjets,iexcfile,ktsche
+     $   maxjets,minjets,iexcfile,ktsche,nexcres,excres
 
 C...Commonblock to transfer event-by-event matching info
       INTEGER NLJETS,IEXC,Ifile
@@ -541,7 +562,7 @@ C...Commonblock to transfer event-by-event matching info
 
 
 C   local variables
-      integer i,j,ihep,nmatch,jrmin,KPT(MAXNUP)
+      integer i,j,ihep,nmatch,jrmin,KPT(MAXNUP),nres
       double precision etajet,phijet,delr,dphi,delrmin,ptjet
       double precision p(4,10),pt(10),eta(10),phi(10)
       integer idbg
@@ -552,7 +573,7 @@ c
       parameter (tiny=1d-3)
       integer icount
       data icount/0/
-      INTEGER ISTOLD(NMXHEP),IST,IMO
+      INTEGER ISTOLD(NMXHEP),IST,IDA
 c      LOGICAL FOUND
 
 c      if(NLJETS.GT.0)then
@@ -563,6 +584,32 @@ c      endif
 
       IPVETO=0
       IF(ICKKW.NE.1) RETURN
+
+      IF(NLJETS.LT.MINJETS.OR.NLJETS.GT.MAXJETS)THEN
+        if(idbg.eq.1)
+     $     WRITE(LNHOUT,*) 'Failed due to NLJETS ',NLJETS,' < ',MINJETS,
+     $        ' or > ',MAXJETS
+         GOTO 999
+      ENDIF
+
+C   Throw event if it contains an excluded resonance
+      NRES=0
+      DO I=1,NUP
+        IF(ISTUP(I).EQ.2)THEN
+           DO J=1,nexcres
+              IF(IDUP(I).EQ.EXCRES(J)) NRES=NRES+1
+           ENDDO
+        ENDIF
+      ENDDO
+      IF(NRES.GT.0)THEN
+         if(idbg.eq.1)
+     $        PRINT *,'Event',IEVNT,' thrown because of ',NRES,
+     $        ' excluded resonance(s)'
+c     CALL PYLIST(7)
+         GOTO 999
+      ENDIF
+
+
 
 C   Set up vetoed mothers
 c      DO I=1,MAXNUP
@@ -582,10 +629,14 @@ c         ISTORG(ihep)=ISTHEP(ihep)
      $        IDHEP(ihep).NE.21) ISTHEP(ihep)=2
          IF(ISTHEP(ihep).EQ.1.AND.(iabs(IDHEP(ihep)).lt.6.or.
      $        IDHEP(ihep).eq.21).AND.JMOHEP(1,ihep).GT.0) then
-            IMO=JMOHEP(1,ihep)
-            DO WHILE(IMO.GT.0)
-               IF(iabs(IDHEP(IMO)).GE.6.AND.IDHEP(IMO).NE.21) GOTO 5
-               IMO=JMOHEP(1,IMO)
+            IDA=ihep
+            DO WHILE(JMOHEP(1,IDA).GT.0)
+c           Trace mothers, if daughter particle in hard event,
+c           must be decay - remove
+              IF(iabs(IDHEP(JMOHEP(1,IDA))).GE.6.AND.
+     $           IDHEP(JMOHEP(1,IDA)).NE.21.AND.
+     $           IDA.LE.NUP+4) GOTO 5
+              IDA=JMOHEP(1,IDA)
             ENDDO
             cycle
  5          ISTHEP(ihep)=2
@@ -734,6 +785,49 @@ C     VETO EVENTS WHERE MATCHED JETS ARE SOFTER THAN NON-MATCHED ONES
       ENDIF
 
       else                      ! qcut.gt.0
+
+      if(MINT(35).eq.3) then
+C     The pt-ordered showers have been used - use "shower emission pt method"
+C     Veto events where first shower emission has kt > YCUT
+
+        IF(NLJETS.EQ.0)THEN
+           VINT(358)=0
+        ENDIF
+
+        IF(idbg.eq.1) THEN
+           PRINT *,'Using shower emission pt method'
+           PRINT *,'qcut, ptclus(1), vint(357),vint(358): ',
+     $          qcut,ptclus(1),vint(357),vint(358)
+        ENDIF
+        YCUT=qcut**2
+
+        IF(NLJETS.GT.0.AND.PTCLUS(1)**2.LT.YCUT) THEN
+          if(idbg.eq.1)
+     $       WRITE(LNHOUT,*) 'Failed due to KT ',
+     $       PTCLUS(1),' < ',SQRT(YCUT)
+          GOTO 999
+        ENDIF
+
+c        PRINT *,'Y,VINT:',SQRT(Y(NLJETS+1)),SQRT(VINT(390))
+
+        IF(IEXC.EQ.1.AND.MAX(VINT(357),VINT(358)).GT.SQRT(YCUT))THEN
+          if(idbg.eq.1)
+     $       WRITE(LNHOUT,*),
+     $       'Failed due to ',max(VINT(357),VINT(358)),' > ',SQRT(YCUT)
+          GOTO 999
+        ENDIF
+c        PRINT *,NLJETS,IEXC,SQRT(VINT(390)),PTCLUS(1),SQRT(YCUT)
+c     Highest multiplicity case
+        IF(IEXC.EQ.0.AND.NLJETS.GT.0.AND.
+     $       MAX(VINT(357),VINT(358)).GT.PTCLUS(1))THEN
+c     $     VINT(390).GT.PTCLUS(1)**2)THEN
+          if(idbg.eq.1)
+     $       WRITE(LNHOUT,*),
+     $       'Failed due to ',max(VINT(357),VINT(358)),' > ',PTCLUS(1)
+          GOTO 999
+        ENDIF
+c     
+      else                      ! not false ! not pt-ordered showers
 
         IF(clfact.EQ.0d0) clfact=1d0
 
@@ -924,9 +1018,10 @@ C     Remove jet clustered with parton
           NJETM=NJETM-1
  120    CONTINUE
 
-      endif
+      endif                     ! pt-ordered showers
+      endif                     ! qcut.gt.0
 
-C...Cluster particles with |eta| < etamax for histograms
+C...Cluster particles with |eta| < etaclmax for histograms
       NN=0
       DO IHEP=1,NHEP
          IF (ISTHEP(IHEP).EQ.1
@@ -934,8 +1029,6 @@ C...Cluster particles with |eta| < etamax for histograms
             PTJET=sqrt(PHEP(1,IHEP)**2+PHEP(2,IHEP)**2)
             ETAJET=ABS(LOG(MIN((SQRT(PTJET**2+PHEP(3,IHEP)**2)+
      $           ABS(PHEP(3,IHEP)))/PTJET,1d5)))
-c            IF(ETAJET.GT.ETAMAX) cycle
-cDKC - recommended from Johan for doing check plots for the matching
             IF(ETAJET.GT.etaclmax) cycle
             NN=NN+1
             IF (NN.GT.NMAX) then
@@ -1119,23 +1212,27 @@ C...Local variables
       INTEGER iunit,ivalue
       DOUBLE PRECISION value
       LOGICAL block_found
-
+      INTEGER i,ifail
+      
 C...add flags for the case when no model is defined in the head of LH and no cards should be read. DKC
       INTEGER model_def,cards_def
       model_def = 0
       cards_def = 0
 
       buff=' '
-      do 100 while(buff(1:21).ne.'# End param_card.dat')
+      do 100 while(buff.ne.'</slha>' .and.
+     $     buff(1:21).ne.'# End param_card.dat')
         read(iunit,'(a132)',end=105,err=98) buff
         
-        if(buff(1:23).eq.'# Begin param_card.dat')then
+        if(buff.eq.'<slha>' .or.
+     $       buff(1:23).eq.'# Begin param_card.dat')then
 c       Write out the SLHA file to unit 24
           open(24,status='scratch')
           do while(.true.)
             read(iunit,'(a132)',end=99,err=98) buff
             cards_def=1 ! DKC
-            if(buff(1:21).eq.'# End param_card.dat') goto 105
+            if(buff.eq.'</slha>' .or.
+     $           buff(1:21).eq.'# End param_card.dat') goto 105
             write(24,'(a80)') buff
           end do
         endif
@@ -1157,22 +1254,19 @@ C...Read the SLHA file
       block_found=.false.
       do 200 while(.true.)
         read(24,'(a132)',end=205,err=98) buff
+        call case_trap2(buff,len_trim(buff))
 c      Look for "block" to find SM and mass parameters
          if(buff(1:1).eq.'b')then
             block_name=buff(7:)
             block_found=.true.
-c         elseif(buff(1:1).eq.'d') then
-c            read(buff(6:),*) ivalue,value
-c            print *,'Reading decay ',ivalue,value
-c            PMAS(PYCOMP(ivalue),2)=value            
          endif
          if (block_found) then
             do 10 while(.true.)
-               read(iunit,'(a132)',end=205,err=98) buff
+               read(24,'(a132)',end=205,err=98) buff
                if(buff(1:1).eq.'#') goto 10
                if(buff(1:1).ne.' ') then
                   block_found=.false.
-                  backspace(iunit)
+                  backspace(24)
                   goto 200
                endif
                if(block_name(1:8).eq.'sminputs')then
@@ -1184,22 +1278,13 @@ c            PMAS(PYCOMP(ivalue),2)=value
                   if(ivalue.eq.4) PMAS(23,1)=value
                   if(ivalue.eq.6) PMAS(6,1)=value
                   if(ivalue.eq.7) PMAS(15,1)=value
-               else if(block_name(1:9).eq.'mgsmparam')then
-                  read(buff,*) ivalue,value
-                  print *,'Reading parameter ',block_name(1:9),
-     $                 ivalue,value
-                  if(ivalue.eq.1) PARU(102)=value
-                  if(ivalue.eq.2) PMAS(24,1)=value
-               else if(block_name(1:4).eq.'mass')then
-                  read(buff,*) ivalue,value
-                  print *,'Reading parameter ',block_name(1:4),
-     $                 ivalue,value
-                  PMAS(PYCOMP(ivalue),1)=value                  
                endif
  10         continue
          endif
  200  continue
  205  continue
+      PARU(102)  = 0.5d0-sqrt(0.25d0-
+     $     PARU(1)/sqrt(2d0)*PARU(103)/PARU(105)/PMAS(23,1)**2)
       REWIND(24)
       
       if(model_def.EQ.1) then ! DKC
@@ -1210,12 +1295,19 @@ c      open(24,FILE='SLHA.dat',ERR=91)
 c     Pick out SM parameters
 c      CALL READSMLHA(iunit)
 
-      if(model.ne.'sm')then
-         IMSS(1) = 11
-         IMSS(21)= 24 ! Logical unit number of SLHA spectrum file
-c         IMSS(22)= 24 ! Logical unit number of SLHA decay file
+      if(index(model,'mssm').ne.0) then
+         call PYGIVE('IMSS(1) = 11')
+         CALL PYSLHA(1,0,IFAIL)
       endif
-
+      call PYGIVE('IMSS(21)= 24') ! Logical unit number of SLHA spectrum file
+      if(model(1:2).ne.'sm'.and.model(1:4).ne.'mssm') then
+         call PYGIVE('IMSS(22)= 24') ! Logical unit number of SLHA decay file
+c     Let Pythia read all new particles ("qnumbers")
+         CALL PYSLHA(0,0,IFAIL)
+      endif
+c     Let Pythia read all masses and, if possible, decays 
+      CALL PYSLHA(5,0,IFAIL)
+      CALL PYSLHA(2,0,IFAIL)
       RETURN
 
  90   WRITE(*,*)'Could not open file SLHA.dat for writing'
@@ -1229,87 +1321,6 @@ c         IMSS(22)= 24 ! Logical unit number of SLHA decay file
       STOP
 
       END
-
-cC*********************************************************************
-c      
-cC...READSMLHA
-cC...Reads the SMLHA file to extract SM parameters
-cC...as well as all particle masses.
-c
-c      SUBROUTINE READSMLHA(iunit)
-c
-c      IMPLICIT NONE
-c
-cC...Pythia common blocks
-c      INTEGER PYCOMP,MSTU,MSTJ,KCHG
-c      DOUBLE PRECISION PARU,PARJ,PMAS,PARF,VCKM
-cC...Parameters.
-c      COMMON/PYDAT1/MSTU(200),PARU(200),MSTJ(200),PARJ(200)
-cC...Particle properties + some flavour parameters.
-c      COMMON/PYDAT2/KCHG(500,4),PMAS(500,4),PARF(2000),VCKM(4,4)
-c
-cC...Local variables      
-c      CHARACTER*132 buff,block_name
-c      CHARACTER*8 model
-c      INTEGER iunit,ivalue
-c      DOUBLE PRECISION value
-c      LOGICAL block_found
-c      
-c      block_found=.false.
-c
-c      do 100 while(.true.)
-c         read(iunit,'(a132)',end=105,err=98) buff
-c         call case_trap2(buff,132)
-c         if(buff(1:1).eq.'b')then
-c            block_name=buff(7:)
-c            block_found=.true.
-cc         elseif(buff(1:1).eq.'d') then
-cc            read(buff(6:),*) ivalue,value
-cc            print *,'Reading decay ',ivalue,value
-cc            PMAS(PYCOMP(ivalue),2)=value            
-c         endif
-c         if (block_found) then
-c            do 10 while(.true.)
-c               read(iunit,'(a132)',end=105,err=98) buff
-c               if(buff(1:1).eq.'#') goto 10
-c               if(buff(1:1).ne.' ') then
-c                  block_found=.false.
-c                  backspace(iunit)
-c                  goto 100
-c               endif
-c               if(block_name(1:8).eq.'sminputs')then
-c                  read(buff,*) ivalue,value
-c                  print *,'Reading parameter ',block_name(1:8),
-c     $                 ivalue,value
-c                  if(ivalue.eq.1) PARU(103)=1d0/value
-c                  if(ivalue.eq.2) PARU(105)=value
-c                  if(ivalue.eq.4) PMAS(23,1)=value
-c                  if(ivalue.eq.6) PMAS(6,1)=value
-c                  if(ivalue.eq.7) PMAS(15,1)=value
-c               else if(block_name(1:9).eq.'mgsmparam')then
-c                  read(buff,*) ivalue,value
-c                  print *,'Reading parameter ',block_name(1:9),
-c     $                 ivalue,value
-c                  if(ivalue.eq.1) PARU(102)=value
-c                  if(ivalue.eq.2) PMAS(24,1)=value
-c               else if(block_name(1:4).eq.'mass')then
-c                  read(buff,*) ivalue,value
-c                  print *,'Reading parameter ',block_name(1:4),
-c     $                 ivalue,value
-c                  PMAS(PYCOMP(ivalue),1)=value                  
-c               endif
-c 10         continue
-c         endif
-c 100  continue
-c 105  continue
-c
-c      REWIND(iunit)
-c
-c      RETURN
-c 98   WRITE(*,*)'Unexpected error reading file'
-c      WRITE(*,*)'Quitting...'
-c      STOP
-c      END
 
 C*********************************************************************
 
@@ -1381,7 +1392,7 @@ C...Read NUP subsequent lines with information on each particle.
 
       SUPPCS=1.
       do I=3,NUP
-        if (ISTUP(I).EQ.1.AND.(IABS(IDUP(I)).GT.23.OR.
+        if (ISTUP(I).EQ.1.AND.(IABS(IDUP(I)).GE.23.OR.
      $     (IABS(IDUP(I)).GE.6.AND.IABS(IDUP(I)).LE.8)))
      $     THEN
           WRITE(LNHOUT,*) 'Resonance ',IDUP(I), ' has BRTOT ',
@@ -1444,7 +1455,7 @@ c
 c   parameters
 c   
       integer maxpara
-      parameter (maxpara=100)
+      parameter (maxpara=200)
 c   
 c   arguments
 c   
@@ -1497,10 +1508,12 @@ c
 c   read in values
 c   
       buff=' '
-      do while(index(buff,'Begin run_card.dat').ne.0)
+      do while(index(buff,'<MGRunCard>').ne.0 .and.
+     $     index(buff,'Begin run_card.dat').ne.0)
         read(iunit,'(a132)',end=99,err=99) buff
       enddo
-      do 10 while(index(buff,'End run_card.dat').eq.0)
+      do 10 while(index(buff,'</MGRunCard>').eq.0 .and.
+     $     index(buff,'End run_card.dat').eq.0)
         read(iunit,'(a132)',end=99,err=99) buff
         if(buff.eq.' ') then
           goto 10
@@ -1570,10 +1583,10 @@ C...Extra commonblock to transfer run info.
 
 C...Inputs for the matching algorithm
       double precision etcjet,rclmax,etaclmax,qcut,clfact
-      integer maxjets,minjets,iexcfile,ktsche
+      integer maxjets,minjets,iexcfile,ktsche,nexcres,excres(30)
       common/MEMAIN/etcjet,rclmax,etaclmax,qcut,clfact,
-     $   maxjets,minjets,iexcfile,ktsche
-      DATA ktsche/0/
+     $   maxjets,minjets,iexcfile,ktsche,nexcres,excres
+      DATA ktsche,maxjets,minjets,nexcres/0,-1,-1,0/
       DATA qcut,clfact/0d0,0d0/
 
 C...Commonblock to transfer event-by-event matching info
@@ -1601,12 +1614,13 @@ C...Need lower scale for final state radiation in e+e-
       IF(IABS(IDBMUP(1)).EQ.11.AND.IABS(IDBMUP(2)).EQ.11) then
         CALL PYGIVE('PARP(71)=1')
       ENDIF
+
+C...CRUCIAL FOR JET-PARTON MATCHING: CALL UPVETO, ALLOW JET-PARTON MATCHING
+      call pygive('MSTP(143)=1')
+
 C     
 C...Check jet multiplicities and set processes
 C
-      MINJETS=0
-      MAXJETS=0
-
       DO I=1,MAXNJ
         XSTOT(I)=0D0
       ENDDO
@@ -1628,18 +1642,19 @@ c        XSTOT(NLJETS+1)=XSTOT(NLJETS+1)+XWGTUP
 
       REWIND(iunit)
 
-      MINJETS=MINJ
-      MAXJETS=MAXJ
-      write(LNHOUT,*) 'Minimum number of jets: ',MINJETS
-      write(LNHOUT,*) 'Maximum number of jets: ',MAXJETS
-      NPRUP=1+MAXJETS-MINJETS
-c      XSECTOT=0d0
-      XSECTOT=XSECUP(1)
-      DO I=MINJETS,MAXJETS
-c        XSECUP(1+I-MINJETS) = XSTOT(I+1)
-        XSECUP(1+I-MINJETS) = XSECTOT*XSTOT(I+1)/NREAD
-        XMAXUP(1+I-MINJETS) = XMAXUP(1)
-        LPRUP(1+I-MINJETS)  = 661+I-MINJETS
+      write(LNHOUT,*) 'Minimum number of jets in file: ',MINJ
+      write(LNHOUT,*) 'Maximum number of jets in file: ',MAXJ
+
+      XSECTOT=0d0
+      DO I=1,NPRUP
+         XSECTOT=XSECTOT+XSECUP(I)
+      ENDDO
+
+      NPRUP=1+MAXJ-MINJ
+      DO I=MINJ,MAXJ
+        XSECUP(1+I-MINJ) = XSECTOT*XSTOT(I+1)/NREAD
+        XMAXUP(1+I-MINJ) = XMAXUP(1)
+        LPRUP(1+I-MINJ)  = 661+I-MINJ
 c        XSECTOT=XSECTOT+XSTOT(I+1)
       ENDDO
 
@@ -1649,6 +1664,12 @@ c        XSECTOT=XSECTOT+XSTOT(I+1)
       DO I=1,NPRUP
         WRITE(LNHOUT,'(I5,E23.5)') I,XSECUP(I)
       ENDDO
+
+      IF(MINJETS.EQ.-1) MINJETS=MINJ
+      IF(MAXJETS.EQ.-1) MAXJETS=MAXJ
+      write(LNHOUT,*) 'Minimum number of jets allowed: ',MINJETS
+      write(LNHOUT,*) 'Maximum number of jets allowed: ',MAXJETS
+
       CALL FLUSH()
 
       if(ickkw.eq.1) then
@@ -1667,7 +1688,7 @@ c***********************************************************************
         call get_real   (npara,param,value," drjj " ,drjmin,7d3)
         call get_real   (npara,param,value," xqcut " ,xqcut,0d0)
 
-        if(qcut.lt.xqcut) qcut=xqcut*1.2
+        if(qcut.lt.xqcut) qcut=max(xqcut*1.2,xqcut+5)
         if(xqcut.le.0)then
            write(*,*) 'Warning! ME generation QCUT = 0. QCUT set to 0!'
            qcut=0
@@ -1697,7 +1718,6 @@ C     INPUT PARAMETERS FOR CONE ALGORITHM
         ELSE
           WRITE(*,*) 'KT JET PARAMETERS FOR MATCHING:'
           WRITE(*,*) 'QCUT=',qcut
-          WRITE(*,*) 'PT(JET)>',PTJMIN
           WRITE(*,*) 'ETA(JET)<',ETACLMAX
           WRITE(*,*) 'Note that in ME generation, qcut = ',xqcut
         ENDIF
@@ -1712,15 +1732,10 @@ c-------------------------------------------------------------------------------
       implicit none
 
 c   
-c   parameters
-c   
-      integer maxpara
-      parameter (maxpara=100)
-c   
 c   arguments
 c   
       integer npara
-      character*20 param(maxpara),value(maxpara)
+      character*20 param(*),value(*)
       character*(*)  name
       real*8 var,def_value
 c   
@@ -1757,15 +1772,10 @@ c   finds the parameter named "name" in param and associate to "value" in value
 c----------------------------------------------------------------------------------
       implicit none
 c   
-c   parameters
-c   
-      integer maxpara
-      parameter (maxpara=100)
-c   
 c   arguments
 c   
       integer npara
-      character*20 param(maxpara),value(maxpara)
+      character*20 param(*),value(*)
       character*(*)  name
       integer var,def_value
 c   
