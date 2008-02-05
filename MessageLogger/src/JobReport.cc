@@ -596,6 +596,30 @@ namespace edm
   }
    
 
+  void 
+  JobReport::reportAnalysisFile(std::string const& fileName, std::map<std::string, std::string> const& fileData) {
+
+    if(impl_->ost_) {
+      std::ostream& msg = *(impl_->ost_);
+      //std::ostringstream msg;
+      msg << "<AnalysisFile>\n"
+	  << "  <FileName>" << fileName <<"</FileName>\n";
+      
+      std::map<std::string, std::string>::const_iterator pos;
+      for (pos = fileData.begin(); pos != fileData.end(); ++pos){
+        msg <<  "  <" << pos->first 
+	    <<  "  Value=\"" << pos->second  << "\" />"
+	    <<  "\n";
+      }
+      
+      msg << "</AnalysisFile>\n";
+      //LogError("FwkJob") << msg.str();
+      msg <<std::flush;
+    }
+
+
+  }
+
 
   void 
   JobReport::reportError(std::string const& shortDesc,

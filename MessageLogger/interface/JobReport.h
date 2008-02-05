@@ -341,7 +341,8 @@ namespace edm {
       /// found.
       void reportSkippedFile(std::string const& pfn, std::string const& lfn);
 	
-
+      void reportAnalysisFile(std::string const& fileName, 
+			      std::map<std::string, std::string> const& fileData) ;
       ///
       /// Report Timing statistics
       /// Invoked by the Timing service to send an end of job 
