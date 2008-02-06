@@ -13,6 +13,7 @@
  * Dorian Kcira : add automatic end of event processing when hitting
  *                the end of the lhe file (29/01/07)
  * Dorian Kcira : added ME-PS matching (22/05/2007)
+ * Carsten Hof  : add saving of flavours and fractional momenta of ingoing partons in pdfinfo (06/02/2008)
  ***************************************/
 #define PYCOMP pycomp_
 #include "FWCore/Framework/interface/GeneratedInputSource.h"
@@ -20,6 +21,8 @@
 #include <map>
 #include <string>
 #include "HepMC/GenEvent.h"
+#include "HepMC/PdfInfo.h"
+
 namespace edm
 {
   class MadGraphSource : public GeneratedInputSource {
@@ -35,6 +38,7 @@ namespace edm
     void clear();
   private:
     HepMC::GenEvent  *evt;
+    HepMC::PdfInfo* pdf_info;
     /// Pythia PYLIST Verbosity flag
     unsigned int pythiaPylistVerbosity_;
     /// HepMC verbosity flag
