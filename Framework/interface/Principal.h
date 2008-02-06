@@ -119,8 +119,6 @@ namespace edm {
 
     void addGroup(ConstBranchDescription const& bd, ProductStatus status);
 
-    // void addGroup(std::auto_ptr<Provenance>, bool onDemand = false);
-
     void addGroup(std::auto_ptr<EDProduct> prod, std::auto_ptr<Provenance> prov);
 
     ProcessConfiguration const& processConfiguration() const {return processConfiguration_;}
@@ -134,6 +132,9 @@ namespace edm {
     // ----- Mark this Principal as having been updated in the
     // current Process.
     void addToProcessHistory() const;
+
+    // merge Principals possibly containing different groups.
+    void combine(Principal & other);
 
   protected:
     // ----- Add a new Group
