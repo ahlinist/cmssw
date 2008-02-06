@@ -10,6 +10,7 @@
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "Geometry/TrackerGeometryBuilder/interface/TrackerGeometry.h"
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 SeedComparitorWithPixelStubs::SeedComparitorWithPixelStubs(const edm::ParameterSet &cfg)
   : betaCutFactor_(cfg.getParameter<double>("betaCutFactor")),
@@ -59,29 +60,40 @@ bool SeedComparitorWithPixelStubs::compatible(const SeedingHitSet &seed, const e
 	//std::cout << "\nCPE Created" << std::endl;
 	//std::cout << "Beginning compatible run\n\n";
   for (unsigned int i=0; i<seed.hits().size()-1; ++i) {
-    //std::cout << "Beginning loop 1: i = " << i << std::endl;
-    const SiPixelRecHit &pix1 = dynamic_cast<const SiPixelRecHit&>(*(seed.hits()[i]));
-    PixelStub stub1(pix1, betaCutFactor_, tempCutFactor_, method_flag, theCfg, es, *theCPE);
-    
-    for (unsigned int j=i+1; j<seed.hits().size(); ++j) {
-      //std::cout << "Beginning loop 2: j = " << j << std::endl;
-      const SiPixelRecHit &pix2 = dynamic_cast<const SiPixelRecHit&>(*(seed.hits()[j]));
-			//	std::cout << "\n\n\nIDs: " << pix1.geographicalId().subdetId() << " " << pix2.geographicalId().subdetId() << std::endl;
+		//const TrackingRecHit &hit1 = dynamic_cast<const TrackingRecHit&>(*(seed.hits()[i]));
+		LogDebug ("PixStub") << "First Sub Det ID : " << (*seed.hits()[i]).geographicalId().subdetId();
+		if ((*seed.hits()[i]).geographicalId().subdetId() != 1
+			&& (*seed.hits()[i]).geographicalId().subdetId() !=  2) {
+			LogDebug ("PixStub") << "Not in pixels";
+			continue;
+		}
+		const SiPixelRecHit &pix1 = dynamic_cast<const SiPixelRecHit&>(*(seed.hits()[i]));
+		PixelStub stub1(pix1, betaCutFactor_, tempCutFactor_, method_flag, theCfg, es, *theCPE);
+		
+		for (unsigned int j=i+1; j<seed.hits().size(); ++j) {
+			LogDebug ("PixStub") << "Second Sub ID : " << (*seed.hits()[j]).geographicalId().subdetId();
+			if ((*seed.hits()[j]).geographicalId().subdetId() != 1
+				&& (*seed.hits()[j]).geographicalId().subdetId() !=  2) {
+				LogDebug ("PixStub") << "Not in pixels";
+				continue;
+			}
+			const SiPixelRecHit &pix2 = dynamic_cast<const SiPixelRecHit&>(*(seed.hits()[j]));
+			
 			if (method_flag < 3) {
 				if (pix1.geographicalId().subdetId() != pix2.geographicalId().subdetId()){
 					//	std::cout << "Mixed Seeds" << std::endl;
 					continue;
 				}
 			}
-      PixelStub stub2(pix2, betaCutFactor_, tempCutFactor_, method_flag, theCfg, es, *theCPE);
-
+			PixelStub stub2(pix2, betaCutFactor_, tempCutFactor_, method_flag, theCfg, es, *theCPE);
+			
 			// Now make the comparison
-      if (! stub1.compatible(stub2)) {
+			if (! stub1.compatible(stub2)) {
 				good=false;
 				//			std::cout << "Bad Seed Excluded!!!!!" << std::endl;
 			}
-    }
-  }
+		}
+	}
 	//std::cout << "Run Complete\n\n\n\n\n";
 	return good;
 }
