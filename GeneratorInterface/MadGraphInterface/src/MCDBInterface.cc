@@ -7,9 +7,8 @@
 //* 
 //************************************
 #include "GeneratorInterface/MadGraphInterface/interface/MCDBInterface.h"
+#include "FWCore/PluginManager/interface/PluginManager.h"
 #include "FWCore/PluginManager/interface/standard.h"
-#include "Utilities/StorageFactory/interface/IOTypes.h"
-#include "Utilities/StorageFactory/interface/Storage.h"
 
 // Makes a local copy of a CASTOR file.
 // This code is a modified version of 
@@ -31,7 +30,7 @@ void mcdbGetInputFile(std::string  &madGraphInputFile, int &mcdbArticleID) {
   // Makes the local copy of the CASTOR file 
   edmplugin::PluginManager::configure(edmplugin::standard::config());
   
-  IOOffset    mcdbFileSize = -1;
+  seal::IOOffset    mcdbFileSize = -1;
   StorageFactory::get()->enableAccounting(true);
   bool mcdbFileExists = StorageFactory::get()->check(madGraphInputFile, &mcdbFileSize);
   
@@ -45,9 +44,9 @@ void mcdbGetInputFile(std::string  &madGraphInputFile, int &mcdbArticleID) {
       <<" Cannot open MCDB input file, check file name and path.";
   }
   
-  Storage  *mcdbFile =  StorageFactory::get()->open(madGraphInputFile);
+  seal::Storage  *mcdbFile =  StorageFactory::get()->open(madGraphInputFile);
   char mcdbBuf [1024];
-  IOSize mcdbNSize;
+  seal::IOSize mcdbNSize;
   
   std::ofstream  mcdbLocalFileCopy;
   mcdbLocalFileCopy.open(mcdbLocalFileName.c_str());
