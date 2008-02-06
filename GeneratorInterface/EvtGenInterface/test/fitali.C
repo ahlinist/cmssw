@@ -16,4 +16,5 @@
 // hasymMix->Fit("pol0");
   hasymMix->Draw("e1");
 //  cosDm->Draw("same");
+  c1->SaveAs("fitali.eps");
 }
