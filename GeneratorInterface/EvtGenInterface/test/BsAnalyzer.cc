@@ -234,7 +234,7 @@ void BsAnalyzer::analyze( const Event& e, const EventSetup& )
      // --------------------------------------------------------------
      if ( (*p)->pdg_id() == 13 ) { // mu+
        for ( GenVertex::particles_in_const_iterator p2 = prodvert->particles_in_const_begin(); p2 != prodvert->particles_in_const_end(); ++p2 ) {
-	 if ( (*p2)->pdg_id() == 511 ) { // B0
+	 if ( abs((*p2)->pdg_id()) == 511 ) { // B0
 	   hPtmu->Fill((*p)->momentum().perp());
 	   hPmu->Fill( sqrt ( pow((*p)->momentum().px(),2)+pow((*p)->momentum().py(),2)+
 			      pow((*p)->momentum().pz(),2) )) ;
@@ -250,10 +250,12 @@ void BsAnalyzer::analyze( const Event& e, const EventSetup& )
 				  (*p2)->momentum().pz(), (*p2)->momentum().e());
 	       TLorentzVector ptot = pmu1 + pmu2;
                TVector3 booster = ptot.BoostVector();
-	       pmu1.Boost( -booster );
+	       TLorentzVector leptdir = ( ((*p2)->pdg_id() > 0) ? pmu1 : pmu2 );
+
+	       leptdir.Boost( -booster );
 	       pb0.Boost( -booster );
 	       hmumuMassSqr->Fill(ptot.M2());
-               if ( cos( pmu1.Vect().Angle(pb0.Vect())) > 0) {
+               if ( cos( leptdir.Vect().Angle(pb0.Vect()) ) > 0) {
 		 hmumuMassSqrPlus->Fill(ptot.M2());
 	       } else {
 		 hmumuMassSqrMinus->Fill(ptot.M2());
