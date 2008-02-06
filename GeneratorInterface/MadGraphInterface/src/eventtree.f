@@ -48,9 +48,9 @@ C...Commonblock to transfer event-by-event matching info
       DATA Ifile/0/
 C...Inputs for the matching algorithm
       double precision etcjet,rclmax,etaclmax,qcut,clfact
-      integer maxjets,minjets,iexcfile,ktsche
+      integer maxjets,minjets,iexcfile,ktsche,nexcres,excres(30)
       common/MEMAIN/etcjet,rclmax,etaclmax,qcut,clfact,
-     $   maxjets,minjets,iexcfile,ktsche
+     $   maxjets,minjets,iexcfile,ktsche,nexcres,excres
 
 C...Inputs for jet clustering and Pythia run
 C...IJET=1(getjet)/2(ktclus)
