@@ -114,6 +114,9 @@ using namespace edm;
 MadGraphSource::MadGraphSource( const ParameterSet & pset, InputSourceDescription const& desc) : GeneratedInputSource(pset, desc), evt(0),
 pythiaPylistVerbosity_ (pset.getUntrackedParameter<int>("pythiaPylistVerbosity",0)),pythiaHepMCVerbosity_ (pset.getUntrackedParameter<bool>("pythiaHepMCVerbosity",false)),maxEventsToPrint_ (pset.getUntrackedParameter<int>("maxEventsToPrint",0)),MGfile_ (pset.getParameter<std::string>("MadGraphInputFile")),getInputFromMCDB_ (pset.getUntrackedParameter<bool>("getInputFromMCDB",false)),MCDBArticleID_ (pset.getParameter<int>("MCDBArticleID")),firstEvent_(pset.getUntrackedParameter<unsigned int>("firstEvent", 0)),lhe_event_counter_(0),MEMAIN_etaclmax(pset.getUntrackedParameter<double>("MEMAIN_etaclmax",0.)),MEMAIN_qcut(pset.getUntrackedParameter<double>("MEMAIN_qcut",0.)),MEMAIN_iexcfile(pset.getUntrackedParameter<unsigned int>("MEMAIN_iexcfile",0)), produceEventTreeFile_ (pset.getUntrackedParameter<bool>("produceEventTreeFile",false)), minimalLH_(pset.getUntrackedParameter<bool>("minimalLH",false)) {
 
+  edm::LogInfo("Generator|MadGraph")<<" initializing MadGraphSource";
+  pdf_info = new HepMC::PdfInfo();
+
   std::ifstream file;
   std::ofstream ofile;
 
@@ -224,6 +227,7 @@ pythiaPylistVerbosity_ (pset.getUntrackedParameter<int>("pythiaPylistVerbosity",
 
 MadGraphSource::~MadGraphSource(){
   edm::LogInfo("Generator|MadGraph")<<"event generation done.";
+  delete pdf_info;
   clear();
   //  rm -f MGinput.dat;
 }
@@ -251,6 +255,21 @@ bool MadGraphSource::produce(Event & e) {
   HepMC::GenEvent* evt = conv.read_next_event();
   evt->set_signal_process_id(pypars.msti[0]);
   evt->set_event_number(numberEventsInRun() - remainingEvents() - 1);
+
+  // store PDF information
+  int id_1 = pypars.msti[14];
+  int id_2 = pypars.msti[15];
+  if (id_1 == 21) id_1 = 0;
+  if (id_2 == 21) id_2 = 0;
+  pdf_info->set_id1(id_1);
+  pdf_info->set_id2(id_2);
+  pdf_info->set_x1(pypars.pari[32]);
+  pdf_info->set_x2(pypars.pari[33]);
+  pdf_info->set_scalePDF(pypars.pari[20]);
+  pdf_info->set_pdf1(pypars.pari[28]);
+  pdf_info->set_pdf2(pypars.pari[29]);
+  evt->set_pdf_info( *pdf_info);
+
 
   if(event() <= maxEventsToPrint_ && (pythiaPylistVerbosity_ || pythiaHepMCVerbosity_)) {
     // Prints PYLIST info
