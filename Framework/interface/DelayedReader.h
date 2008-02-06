@@ -11,7 +11,9 @@ $Id$
 ----------------------------------------------------------------------*/
 
 #include <memory>
+#include "boost/shared_ptr.hpp"
 #include "DataFormats/Provenance/interface/ProvenanceDelayedReader.h"
+#include "DataFormats/Common/interface/EDProduct.h"
 
 namespace edm {
   class BranchKey;
@@ -20,7 +22,13 @@ namespace edm {
   class DelayedReader : public ProvenanceDelayedReader {
   public:
     virtual ~DelayedReader();
-    virtual std::auto_ptr<EDProduct> getProduct(BranchKey const& k, EDProductGetter const* ep) const = 0;
+    std::auto_ptr<EDProduct> getProduct(BranchKey const& k, EDProductGetter const* ep) {
+      return getProduct_(k, ep);
+    }
+    void mergeReaders(boost::shared_ptr<DelayedReader> other) {mergeReaders_(other);}
+  private:
+    virtual std::auto_ptr<EDProduct> getProduct_(BranchKey const& k, EDProductGetter const* ep) const = 0;
+    virtual void mergeReaders_(boost::shared_ptr<DelayedReader>) {}
   };
 }
 
