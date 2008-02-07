@@ -47,6 +47,7 @@ module csc2DRecHits = CSCRecHitBProducer {
 # When calibrations are shown to be inadequate and tuning is needed, the following are helpful
      untracked double CSCCalibrationSystematics  = 0.00
      untracked double CSCStripxtalksOffset       = 0.00
+     untracked double CSCStripxtalksNoCalib      = 0.035
      untracked double CSCStripxtalksSystematics  = 0.00
 ###########################################################
 #    Parameters for 2-D hits
