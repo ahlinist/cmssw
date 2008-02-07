@@ -1,10 +1,7 @@
 // -*- C++ -*-
-//
 // Package:    STFilter
 // Class:      STFilter
-// 
 /**\class STFilter STFilter.cc MyEDFilter/STFilter/src/STFilter.cc
-
  Description: 
 
  ** used for single top t-channel events generated with MadEvent 
@@ -18,24 +15,14 @@
  Implementation:
      <Notes on implementation>
 */
-//
 // Original Author:  Julia Weinelt
 //         Created:  Wed Jan 23 15:12:46 CET 2008
-// $Id$
-//
-//
-
-
-// system include files
+// $Id: STFilter.cc,v 1.1 2008/01/28 12:58:32 dkcira Exp $
 #include <memory>
-
-// user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDFilter.h"
-
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
-
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
 #include "HepMC/GenEvent.h"
@@ -49,23 +36,27 @@ class STFilter : public edm::EDFilter {
       virtual void beginJob(const edm::EventSetup&) ;
       virtual bool filter(edm::Event&, const edm::EventSetup&);
       virtual void endJob() ;
-      
-  double pTMax_;
-  
+   private:
+      double pTMax_;
+      // debug level
+      int DEBUGLVL;    
+      // counters
+      unsigned int input_events;
+      unsigned int accepted_events;
 };
 
 STFilter::STFilter(const edm::ParameterSet& iConfig)
 {
   pTMax_ = iConfig.getParameter<double>("pTMax");
+  std::cout<<"SingleTopMatchingFilter +++ maximum pt of associated-b  pTMax = "<<pTMax_<<std::endl;
+  DEBUGLVL = iConfig.getUntrackedParameter<int>("debuglvl", 0); // get debug level
+  input_events=0; accepted_events=0; // counters
 }
 
 
-STFilter::~STFilter()
-{
-}
+STFilter::~STFilter() {}
 
-bool STFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
-{
+bool STFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   using namespace edm;
   
   bool accEvt = false;
@@ -73,6 +64,8 @@ bool STFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   int secBcount = 0;
   double pTSecB = 100;
+
+  ++input_events;
   
   Handle<HepMCProduct> evt;
   iEvent.getByType(evt);
@@ -113,6 +106,7 @@ bool STFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
     if(pTSecB < pTMax_) accEvt = true;
   }
   
+  if(accEvt) ++accepted_events;
   return accEvt;
 }
 
@@ -123,6 +117,11 @@ void STFilter::beginJob(const edm::EventSetup&)
 
 void STFilter::endJob() 
 {
+ double fraction = (double) accepted_events / (double) input_events;
+ double percent =  100. * fraction;
+ double error =  100. * sqrt( fraction*(1-fraction) / (double) input_events );
+ std::cout<<"STFilter ++ accepted_events/input_events = "<<accepted_events<<"/"<<input_events<<" = "<<fraction<<std::endl;
+ std::cout<<"STFilter ++ efficiency  = "<<percent<<" % +/- "<<error<<" %"<<std::endl;
 }
 
 DEFINE_FWK_MODULE(STFilter);
