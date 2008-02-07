@@ -47,6 +47,10 @@
                                 cvs co -r V00-00-06 RecoTauTag/TauTagTools
                                 cvs co -r jet_corrections_16X JetMETCorrections/MCJet/data
 
+7.2.2008/S.Lehti CMSSW_1_6_9	Analysis program renamed and moved to a git 
+                                repository, instructions: 
+				http://cmsdoc.cern.ch/~slehti/HipProofAnalysis.html
+
 	How to compile:
 	-compile
 		cd HiggsAnalysis/HeavyChHiggsToTauNu
@@ -61,6 +65,6 @@
 	Take jet calibration data for 1_5_X samples:
 	cvs co -r jet_corrections_16X JetMETCorrections/MCJet/data
 
-	Example for reading and analyzing the produced root files can be found in:
-	/afs/cern.ch/user/s/slehti/public/CMSSW/analysis_src
+	Example program for reading and analyzing the produced root files:
+	http://cmsdoc.cern.ch/~slehti/HipProofAnalysis.html
 
