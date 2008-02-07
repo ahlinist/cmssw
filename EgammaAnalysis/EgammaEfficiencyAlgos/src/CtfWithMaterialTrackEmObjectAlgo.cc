@@ -55,8 +55,8 @@ void CtfWithMaterialTrackEmObjectAlgo::run(edm::Event &event, EgEff::EmObjectCol
 
       // check fiducial
       if (goodTrack && requireFiducial_) {
-         double candRho = track->innerPosition().Rho();
-         double candVz = track->innerPosition().z();
+         double candRho = track->referencePoint().Rho();
+         double candVz = track->referencePoint().z();
          double candEta = track->momentum().eta();
          double candEcalEta = ecalEta(candEta, candVz, candRho);
          if ( (fabs(candEcalEta) > eeMax) || 
