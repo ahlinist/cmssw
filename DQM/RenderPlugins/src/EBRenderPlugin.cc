@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.50 2008/01/10 07:59:42 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.51 2008/01/20 17:11:56 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.50 $
-  \date $Date: 2008/01/10 07:59:42 $
+  \version $Revision: 1.51 $
+  \date $Date: 2008/01/20 17:11:56 $
 */
 
 #include <TH1F.h>
@@ -565,6 +565,17 @@ void EBRenderPlugin::postDrawTH2F( TCanvas *c, const ObjInfo &o ) {
     text7->GetYaxis()->SetRange(y1, y2);
     text7->Draw("text,same");
     //axis1->Draw();
+    return;
+  }
+
+  if( o.name.find( "EBOT" ) < o.name.size() ) {
+    int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+    int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+    int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+    int y2 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+    text6->GetXaxis()->SetRange(x1, x2);
+    text6->GetYaxis()->SetRange(y1, y2);
+    text6->Draw("text,same");
     return;
   }
 
