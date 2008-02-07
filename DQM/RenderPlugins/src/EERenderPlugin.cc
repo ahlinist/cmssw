@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.53 2008/01/13 18:31:39 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.54 2008/01/20 17:11:56 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.53 $
-  \date $Date: 2008/01/13 18:31:39 $
+  \version $Revision: 1.54 $
+  \date $Date: 2008/01/20 17:11:56 $
 */
 
 #include "TH1F.h"
@@ -604,6 +604,28 @@ void EERenderPlugin::postDrawTH2F( TCanvas *c, const ObjInfo &o ) {
       text9->GetXaxis()->SetRange(x1, x2);
       text9->GetYaxis()->SetRange(y1, y2);    
       text9->Draw("text,same");
+    }
+    return;
+  }
+
+  if( o.name.find( "EECLT" ) < o.name.size() ) {
+    if( o.name.find( "EE -" ) < o.name.size() ) {
+      int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+      int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+      int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+      int y2 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+      text6->GetXaxis()->SetRange(x1, x2);
+      text6->GetYaxis()->SetRange(y1, y2);
+      text6->Draw("text,same");
+    }
+    if( o.name.find( "EE +" ) < o.name.size() ) {
+      int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+      int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+      int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+      int y2 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+      text7->GetXaxis()->SetRange(x1, x2);
+      text7->GetYaxis()->SetRange(y1, y2);
+      text7->Draw("text,same");
     }
     return;
   }
