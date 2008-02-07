@@ -35,6 +35,7 @@ CSCFitXonStripWithGatti::CSCFitXonStripWithGatti(const edm::ParameterSet& ps){
   useCalib                   = ps.getUntrackedParameter<bool>("CSCUseCalibrations");
   adcSystematics             = ps.getUntrackedParameter<double>("CSCCalibrationSystematics");        
   xtalksOffset               = ps.getUntrackedParameter<double>("CSCStripxtalksOffset");
+  xtalksNoCalib              = ps.getUntrackedParameter<double>("CSCStripxtalksNoCalib");
   xtalksSystematics          = ps.getUntrackedParameter<double>("CSCStripxtalksSystematics");
   minGattiStepSize           = ps.getUntrackedParameter<double>("CSCminGattiStepSize");
   minGattiError              = ps.getUntrackedParameter<double>("CSCminGattiError");
@@ -42,6 +43,7 @@ CSCFitXonStripWithGatti::CSCFitXonStripWithGatti(const edm::ParameterSet& ps){
   maxGattiChi2               = ps.getUntrackedParameter<double>("CSCMaxGattiChi2");
   stripCrosstalk_            = new CSCStripCrosstalk( ps );
   stripNoiseMatrix_          = new CSCStripNoiseMatrix( ps );
+
 
   peakTimeFinder_            = new CSCFindPeakTime();
 }
@@ -132,12 +134,12 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCDetId& id, const CSCLayer* 
     }
   } else { 
     for ( int t = 0; t < 3; ++t ) {
-      xt_l[0][t] = xtalksOffset;
-      xt_r[0][t] = xtalksOffset;
-      xt_l[1][t] = xtalksOffset; 
-      xt_r[1][t] = xtalksOffset; 
-      xt_l[2][t] = xtalksOffset; 
-      xt_r[2][t] = xtalksOffset; 
+      xt_l[0][t] = xtalksNoCalib;
+      xt_r[0][t] = xtalksNoCalib;
+      xt_l[1][t] = xtalksNoCalib; 
+      xt_r[1][t] = xtalksNoCalib; 
+      xt_l[2][t] = xtalksNoCalib; 
+      xt_r[2][t] = xtalksNoCalib; 
 
       xt_lr0[t] = (1. - xt_l[0][t] - xt_r[0][t]);
       xt_lr1[t] = (1. - xt_l[1][t] - xt_r[1][t]);
@@ -173,12 +175,13 @@ void CSCFitXonStripWithGatti::findXOnStrip( const CSCDetId& id, const CSCLayer* 
   } else {
     // FIXME:  NO HARD WIRED VALUES !!!
     for ( int istrip =0; istrip < 3; ++istrip ) {
-      a11[istrip] = 10.0;
-      a12[istrip] = 0.0;
-      a13[istrip] = 0.0;
-      a22[istrip] = 10.0;
-      a23[istrip] = 0.0;
-      a33[istrip] = 10.0;
+      // Values from ME1/2 from MTCC:
+      a11[istrip] = 8.64;
+      a12[istrip] = 3.47;
+      a13[istrip] = 2.45;
+      a22[istrip] = 8.60;
+      a23[istrip] = 3.28;
+      a33[istrip] = 8.61;
     }
   }
   

@@ -143,6 +143,7 @@ class CSCFitXonStripWithGatti
   double adcSystematics;
   float xtalksOffset;
   float xtalksSystematics;
+  float xtalksNoCalib;
   float minGattiStepSize;
   float minGattiError;
   float minGattiErrorME11;
