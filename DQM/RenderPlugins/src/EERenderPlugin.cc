@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.54 2008/01/20 17:11:56 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.55 2008/02/07 13:17:56 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.54 $
-  \date $Date: 2008/01/20 17:11:56 $
+  \version $Revision: 1.55 $
+  \date $Date: 2008/02/07 13:17:56 $
 */
 
 #include "TH1F.h"
@@ -608,7 +608,7 @@ void EERenderPlugin::postDrawTH2F( TCanvas *c, const ObjInfo &o ) {
     return;
   }
 
-  if( o.name.find( "EECLT" ) < o.name.size() ) {
+  if( o.name.find( "EEOT" ) < o.name.size() ) {
     if( o.name.find( "EE -" ) < o.name.size() ) {
       int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
       int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
