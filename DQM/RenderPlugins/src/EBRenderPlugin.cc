@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.52 2008/02/07 11:38:34 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.53 2008/02/07 13:34:35 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.52 $
-  \date $Date: 2008/02/07 11:38:34 $
+  \version $Revision: 1.53 $
+  \date $Date: 2008/02/07 13:34:35 $
 */
 
 #include <TH1F.h>
@@ -149,22 +149,10 @@ void EBRenderPlugin::preDraw( TCanvas *c, const ObjInfo &o, const ImgInfo &i, Re
   TGaxis::SetMaxDigits(4);
   
   gStyle->SetOptTitle(kTRUE);
-  gStyle->SetTitleX(0.01);
-  gStyle->SetTitleY(1.00);
-  gStyle->SetTitleW(0.00);
-  gStyle->SetTitleH(0.05);
   gStyle->SetTitleBorderSize(0);
-  gStyle->SetTitleFont(43, "c");
-  gStyle->SetTitleFontSize(11);
 
   gStyle->SetOptStat(kFALSE);
-  gStyle->SetStatX(0.99);
-  gStyle->SetStatY(0.99);
-  gStyle->SetStatW(0.25);
-  gStyle->SetStatH(0.20);
   gStyle->SetStatBorderSize(1);
-  gStyle->SetStatFont(43);
-  gStyle->SetStatFontSize(10);
 
   gStyle->SetOptFit(kFALSE);
 
