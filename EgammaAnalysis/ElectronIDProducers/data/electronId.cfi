@@ -2,8 +2,8 @@ include "EgammaAnalysis/ElectronIDProducers/data/cutBasedElectronId.cfi"
 include "EgammaAnalysis/ElectronIDProducers/data/ptdrElectronId.cfi"
 
 # --- ESSource for Electron ID likelihood ---
-#include "EgammaAnalysis/ElectronIDESSources/data/likelihoodPdfsDB.cfi"
-#include "EgammaAnalysis/ElectronIDESSources/data/likelihoodESetup.cfi"
+include "EgammaAnalysis/ElectronIDESSources/data/likelihoodPdfsDB.cfi"
+include "EgammaAnalysis/ElectronIDESSources/data/likelihoodESetup.cfi"
 
 module electronId = ElectronIDProducer {
 
