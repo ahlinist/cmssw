@@ -36,7 +36,7 @@ void ElectronNeuralNet::setup(const edm::ParameterSet& conf)
 }
 
 
-double ElectronNeuralNet::result(const reco::PixelMatchGsfElectron* electron,
+double ElectronNeuralNet::result(const reco::GsfElectron* electron,
 				 const edm::Event& e) {
   E = electron->energy();
   p_in = sqrt(electron->trackMomentumAtVtx().Mag2());

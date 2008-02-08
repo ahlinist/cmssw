@@ -1,3 +1,8 @@
+#ifndef ElectronNeuralNet_H
+#define ElectronNeuralNet_H
+
+#include "EgammaAnalysis/ElectronIDAlgos/interface/ElectronIDAlgo.h"
+
 #include "TMVA/Reader.h"
 #include "TMVA/Factory.h"
 #include "TMVA/MethodMLP.h"
@@ -12,7 +17,7 @@ class ElectronNeuralNet : ElectronIDAlgo{
   virtual ~ElectronNeuralNet(){};
 
   void setup(const edm::ParameterSet& conf);
-  double result(const reco::PixelMatchGsfElectron* electron, const edm::Event&);
+  double result(const reco::GsfElectron* electron, const edm::Event&);
 
  private:
   edm::ParameterSet conf_;
