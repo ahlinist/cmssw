@@ -64,7 +64,7 @@ namespace edm {
 
     BasicHandle  get(ProductID const& oid) const;
 
-    BasicHandle  getForOutput(ProductID const& oid, bool selected) const;
+    BasicHandle  getForOutput(ProductID const& oid, bool getProd, bool getProv) const;
 
     BasicHandle  getBySelector(TypeID const& tid,
                                SelectorBase const& s) const;
