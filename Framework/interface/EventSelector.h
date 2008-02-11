@@ -7,6 +7,14 @@
 
  */
 
+// Change Log
+//
+// 1 - Mark Fischler Feb 6, 2008
+//	Internals for implementation of glob-style wildcard selection 
+//	In particular, !xyz* requires the vector nonveto_bits_
+//	nonveto_bits_ is designed to also accomodate an AND of triggers
+//      selection criterion, if that is wanted at some future date.
+
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/Common/interface/HLTPathStatus.h"
 #include "DataFormats/Common/interface/TriggerResults.h"
@@ -81,6 +89,7 @@ namespace edm
 
     bool accept_all_;
     Bits decision_bits_;
+    std::vector<Bits> nonveto_bits_;				// change 1
     bool results_from_current_process_;
 
     bool psetID_initialized_;
@@ -92,6 +101,9 @@ namespace edm
     bool notStarPresent_;
 
     bool acceptTriggerPath(HLTPathStatus const&, BitInfo const&) const;
+    static std::string glob2reg(std::string const& s);
+    static std::vector< Strings::const_iterator > 
+      matching_triggers(Strings const& trigs, std::string const& s);
   };
 }
 

@@ -1,3 +1,11 @@
+// Change Log
+//
+// 1 - M Fischler 2/8/08 Enable partial wildcards, as in HLT* or !CAL*
+//			 A version of this code with cerr debugging traces has
+//			 been placed in the doc area.  
+// 			 See ../doc/EventSelector-behavior.doc for details of
+//			 reactions to Ready or Exception states.
+
 
 #include "FWCore/Framework/interface/EventSelector.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
@@ -5,6 +13,7 @@
 #include "FWCore/Utilities/interface/Algorithms.h"
 
 #include "boost/algorithm/string.hpp"
+#include "boost/regex.hpp"
 
 #include <algorithm>
 
@@ -14,6 +23,7 @@ namespace edm
 			       Strings const& names):
     accept_all_(false),
     decision_bits_(),
+    nonveto_bits_(),
     results_from_current_process_(true),
     psetID_initialized_(false),
     psetID_(),
@@ -27,6 +37,7 @@ namespace edm
   EventSelector::EventSelector(Strings const& pathspecs):
     accept_all_(false),
     decision_bits_(),
+    nonveto_bits_(),
     results_from_current_process_(false),
     psetID_initialized_(false),
     psetID_(),
@@ -40,6 +51,7 @@ namespace edm
   EventSelector::init(Strings const& paths,
 		      Strings const& triggernames)
   {
+    // std::cerr << "### init entered\n";
     accept_all_ = false;
     decision_bits_.clear();
 
@@ -59,48 +71,80 @@ namespace edm
 
 	std::string current_path(*i);
 	boost::erase_all(current_path, " \t");
-	if(current_path == "*" && !star_done)
-	  {
-	    star_done = true;
-	    for(unsigned int k=0;k<triggernames.size();++k) 
-	      decision_bits_.push_back(BitInfo(k,true));
-	  }
-	else if (current_path == "!*")
+	if (current_path == "!*")
 	  {
             notStarPresent_ = true;
 	  }
-	else
+	if (current_path == "*")
 	  {
-	    // brute force algorithm here, assumes arrays are small
-	    // and only passed through during initialization...
-
-	    bool accept_level = (current_path[0]!='!');
-	    // make the name without the bang if need be
-	    std::string const& realname = 
-	      accept_level 
-	      ? current_path 
-	      : std::string((current_path.begin()+1), current_path.end());
-	    
-	    // see if the name can be found in the full list of paths
-	    Strings::const_iterator pos = 
-	      find_in_all(triggernames,realname);
-	    if(pos!=triggernames.end())
-	      {
-		BitInfo bi(distance(triggernames.begin(),pos),accept_level);
-		decision_bits_.push_back(bi);
-	      }
-	    else
-	      {
-                throw edm::Exception(edm::errors::Configuration)
-                  << "EventSelector::init, An OutputModule is using SelectEvents\n"
-                     "to request a trigger name that does not exist\n"
-                  << "The unknown trigger name is: " << realname << "\n";  
-	      }
+            star_done = true;
 	  }
-      }
-    
+	bool negative_criterion = false;
+	if (current_path[0] == '!') {
+	  negative_criterion = true;
+	}
+	std::string const& realname =
+	      negative_criterion 
+	      ? std::string((current_path.begin()+1), current_path.end())
+	      : current_path;
+
+	// instead of "see if the name can be found in the full list of paths"
+	// we want to find all paths that match this name.	
+	std::vector< Strings::const_iterator> matches =
+		matching_triggers(triggernames, realname);
+	
+	if (matches.empty() && (glob2reg(realname) == realname)) 
+	{
+            throw edm::Exception(edm::errors::Configuration)
+              << "EventSelector::init, An OutputModule is using SelectEvents\n"
+                 "to request a trigger name that does not exist\n"
+              << "The unknown trigger name is: " << realname << "\n";  
+	}
+		 	 
+#ifdef REALNAME_MUST_MATCH_FEATURE_MIGHT_BE_WANTED
+	if (matches.empty() && (glob2reg(realname) != realname)) 
+	{
+            throw edm::Exception(edm::errors::Configuration)
+              << "EventSelector::init, An OutputModule is using SelectEvents\n"
+                 "to request a wildcarded trigger name that does not match any trigger \n"
+              << "The wildcarded trigger name is: " << realname << "\n";  
+	}
+#endif
+
+	if ( !negative_criterion ) {
+	  for (unsigned int t = 0; t != matches.size(); ++t) {
+	    BitInfo bi(distance(triggernames.begin(),matches[t]), true);
+	    decision_bits_.push_back(bi);
+	  }
+	} else if (negative_criterion) {
+	  if (matches.empty()) {
+              throw edm::Exception(edm::errors::Configuration)
+              << "EventSelector::init, An OutputModule is using SelectEvents\n"
+                 "to request a veto a set trigger names that do not exist\n"
+              << "The problematic name is: " << current_path << "\n";  
+	  
+	  } else if (matches.size() == 1) {
+	    BitInfo bi(distance(triggernames.begin(),matches[0]), false);
+	    decision_bits_.push_back(bi);
+	  } else {
+	    Bits nonveto;
+	    for (unsigned int t = 0; t != matches.size(); ++t) {
+	      BitInfo bi(distance(triggernames.begin(),matches[t]), true);
+	      // We set this to true because if the trigger bit is set,
+	      // we want acceptTriggerBits to return true so that we will
+	      // **reject** the criterion.
+	      nonveto.push_back(bi);
+	    }
+	    nonveto_bits_.push_back(nonveto);
+	  } 	
+	}
+    } // end of the for loop on i(paths.begin()), end(paths.end())
+
     if (notStarPresent_ && star_done) accept_all_ = true;
-  }
+
+    // std::cerr << "### init exited\n";
+
+  } // EventSelector::init
   
   EventSelector::EventSelector(edm::ParameterSet const& config,
 			       Strings const& triggernames):
@@ -174,21 +218,34 @@ namespace edm
           }
       }
     
-    // handle the special "!*" case, this selects events that fail all trigger paths
-    if (notStarPresent_) {
-
+    // handle each entry in nonveto_bits_:
+    // the previously special "!*" case is now handled routinely by this code.
+    
+    for (std::vector<Bits>::const_iterator nv =  nonveto_bits_.begin();
+    					   nv != nonveto_bits_.end(); ++nv)
+    {
       bool allFail = true;
-      for (int j = 0; j < nTriggerNames_; ++j) {
-        if (this->acceptTriggerPath(tr[j], BitInfo(j, true))) allFail = false;
+      Bits::const_iterator i(nv->begin());
+      Bits::const_iterator e(nv->end());
+      for(;i!=e;++i) 
+      {
+        if (this->acceptTriggerPath(tr[i->pos_], *i)) 
+	{ allFail = false; break; }
       }
       if (allFail) return true;
     }
 
+    // If we have not accepted based on decision_bits_, nor on any one of
+    // the nonveto_bits_ collections, then we reject this event.
+    
     return false;
   }
 
-  bool EventSelector::acceptEvent(unsigned char const* array_of_trigger_results, int number_of_trigger_paths) const
+  bool 
+  EventSelector::acceptEvent(unsigned char const* array_of_trigger_results, 
+  			     int number_of_trigger_paths) const
   {
+
     // This should never occur unless someone uses this function in
     // an incorrect way ...
     if (!results_from_current_process_) {
@@ -217,28 +274,37 @@ namespace edm
           }
       }
 
-    // handle the special "!*" case, this selects events that fail all trigger paths
-    if (notStarPresent_) {
-
+    // handle each entry in nonveto_bits_:
+    // the previously special "!*" case is now handled routinely by this code.
+    
+    for (std::vector<Bits>::const_iterator nv =  nonveto_bits_.begin();
+    					   nv != nonveto_bits_.end(); ++nv)
+    {
       bool allFail = true;
-      for (int j = 0; j < nTriggerNames_; ++j) {
-
-        int pathIndex = j;
+      Bits::const_iterator i(nv->begin());
+      Bits::const_iterator e(nv->end());
+      for(;i!=e;++i) 
+      {
+        int pathIndex = i->pos_;
         if (pathIndex < number_of_trigger_paths)
         {
-          int byteIndex = ((int) pathIndex / 4);
-          int subIndex = pathIndex % 4;
-          int state = array_of_trigger_results[byteIndex] >> (subIndex * 2);
-          state &= 0x3;
-          HLTPathStatus pathStatus(static_cast<hlt::HLTState>(state));
-
-          if (this->acceptTriggerPath(pathStatus, BitInfo(j, true))) allFail = false;
+            int byteIndex = ((int) pathIndex / 4);
+            int subIndex = pathIndex % 4;
+            int state = array_of_trigger_results[byteIndex] >> (subIndex * 2);
+            state &= 0x3;
+            HLTPathStatus pathStatus(static_cast<hlt::HLTState>(state));
+ 	    if ( this->acceptTriggerPath(pathStatus, *i) )
+	    { allFail = false; break; }
         }
       }
       if (allFail) return true;
     }
-
+    
+    // If we have not accepted based on decision_bits_, nor on any one of
+    // the nonveto_bits_ collections, then we reject this event.
+    
     return false;
+
   }
 
   /**
@@ -500,4 +566,28 @@ namespace edm
              ((pathStatus.state()==hlt::Fail) && !(pathInfo.accept_state_)) ||
              ((pathStatus.state()==hlt::Exception)) );
   }
+
+  std::string  EventSelector::glob2reg(std::string const& s) 
+  {
+    std::string r = s;
+    boost::replace_all(r, "*", ".*");
+    boost::replace_all(r, "?", ".");
+    return r;
+  }
+
+  std::vector< EventSelector::Strings::const_iterator > 
+  EventSelector::matching_triggers(Strings const& trigs, std::string const& s) 
+  {
+    std::vector< Strings::const_iterator > m;
+    boost::regex r ( glob2reg(s) );
+    for (Strings::const_iterator i = trigs.begin(); i != trigs.end(); ++i)
+    {
+      if  (boost::regex_match((*i),r)) 
+      {
+        m.push_back(i);
+      }
+    }
+    return m;
+  }
+
 }
