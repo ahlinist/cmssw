@@ -11,13 +11,12 @@
  ** filter criterion: transverse momentum of 2nd b quark "pT < pTMax" -> event accepted!
  ** How-To: include STFilter.cfg in your .cfg, replace pTMax by the desired value, 
     include module "STFilter" in outpath
- 
  Implementation:
      <Notes on implementation>
 */
 // Original Author:  Julia Weinelt
 //         Created:  Wed Jan 23 15:12:46 CET 2008
-// $Id: STFilter.cc,v 1.2 2008/02/07 15:46:42 dkcira Exp $
+// $Id: STFilter.cc,v 1.3 2008/02/11 09:56:43 dkcira Exp $
 #include <memory>
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDFilter.h"
@@ -27,7 +26,8 @@
 #include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
 #include "HepMC/GenEvent.h"
 #include "TFile.h"
-#include "TH1.h"
+#include "TH1D.h"
+#include "TString.h"
 
 class STFilter : public edm::EDFilter {
    public:
@@ -55,8 +55,7 @@ class STFilter : public edm::EDFilter {
       edm::ParameterSet conf_;
 };
 
-STFilter::STFilter(const edm::ParameterSet& iConfig)
-{
+STFilter::STFilter(const edm::ParameterSet& iConfig) {
   pTMax_ = iConfig.getParameter<double>("pTMax");
   edm::LogInfo("SingleTopMatchingFilter")<<"+++ maximum pt of associated-b  pTMax = "<<pTMax_;
   DEBUGLVL = iConfig.getUntrackedParameter<int>("debuglvl", 0); // get debug level
@@ -77,6 +76,7 @@ bool STFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
   int secBcount = 0;
   double pTSecB = 100;
+  double etaSecB = 100;
 
   ++input_events;
   
@@ -89,47 +89,51 @@ bool STFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   while( (*i)->status() == 3 )
     i++;
   
-  
+  std::cout<<"DDDDDDDDDDDDDDDD "<<(*i)->barcode()<<std::endl;
   // ---- 22 or 23? ----
   if((*i)->barcode() <= 13) 
     lo = true;
   else 
     accEvt = true;
-  
   // ---- filter only 22 events ----
   if (lo){
     for (HepMC::GenEvent::particle_const_iterator p = myEvt->particles_begin(); p!=myEvt->particles_end(); ++p){
-      
       // ---- look in shower for 2nd b quark ----
       if ((*p)->status() == 2 && abs((*p)->pdg_id()) == 5){  
-	
 	// ---- if b quark is found, loop over its parents ----
 	for (HepMC::GenVertex::particle_iterator m = (*p)->production_vertex()->particles_begin(HepMC::parents); m != (*p)->production_vertex()->particles_end(HepMC::parents); ++m){
-	  // ---- found 2ndb-candidate in shower ---- 
-	  // ---- check mother of this candidate ----
+	  // ---- found 2ndb-candidate in shower ---- // ---- check mother of this candidate ----
 	  if(abs((*m)->barcode()) < 5){        
 	    if(secBcount == 1) break;
 	    secBcount ++;
 	    pTSecB = (*p)->operator HepMC::FourVector().perp();
+	    etaSecB = (*p)->operator HepMC::FourVector().eta();
 	  }
 	}
       }
     }
-    
     if(pTSecB < pTMax_) accEvt = true;
+    // fill histos if requested
+    if(m_produceHistos){
+      std::cout<<"DDDDDDDDDDDDDDDD "<<pTSecB<<" "<<etaSecB<<std::endl;
+         hbPt->Fill(pTSecB);
+         hbEta->Fill(etaSecB);
+         if(accEvt){
+           hbPtFiltered->Fill(pTSecB);
+           hbEtaFiltered->Fill(etaSecB);
+         }
+    }
   }
-  
   if(accEvt) ++accepted_events;
   return accEvt;
 }
 
 
-void STFilter::beginJob(const edm::EventSetup&)
-{
+void STFilter::beginJob(const edm::EventSetup&) {
   if(m_produceHistos){ // initialize histogram output file
     edm::ParameterSet Parameters;
-    hOutputFile   = new TFile( fOutputFileName.c_str(), "RECREATE" ) ;
     edm::LogInfo("SingleTopMatchingFilter)")<<"beginJob : creating histogram file: "<<fOutputFileName.c_str()<<std::endl;
+    hOutputFile   = new TFile( fOutputFileName.c_str(), "RECREATE" ) ; hOutputFile->cd();
     // book histograms
     Parameters =  conf_.getParameter<edm::ParameterSet>("TH1bPt");
     hbPt = new TH1D( "bPt", "Pt of 2nd b quark", Parameters.getParameter<int32_t>("Nbinx"), Parameters.getParameter<double>("xmin"), Parameters.getParameter<double>("xmax"));
@@ -142,17 +146,15 @@ void STFilter::beginJob(const edm::EventSetup&)
   }
 }
 
-void STFilter::endJob() 
-{
+void STFilter::endJob() {
  if(m_produceHistos){
-std::cout<<"DDDDDDDDDDDDDDd write out to histo"<<std::endl;
-hbPt->Print();
- hOutputFile->Write() ; hOutputFile->Close() ;} // Write out histograms to file, then close it
- double fraction = (double) accepted_events / (double) input_events;
- double percent =  100. * fraction;
- double error =  100. * sqrt( fraction*(1-fraction) / (double) input_events );
- std::cout<<"STFilter ++ accepted_events/input_events = "<<accepted_events<<"/"<<input_events<<" = "<<fraction<<std::endl;
- std::cout<<"STFilter ++ efficiency  = "<<percent<<" % +/- "<<error<<" %"<<std::endl;
+   hOutputFile->cd();
+   hbPt->Write(); hbEta->Write(); hbPtFiltered->Write(); hbEtaFiltered->Write();
+   hOutputFile->Write() ; hOutputFile->Close() ;} // Write out histograms to file, then close it
+   double fraction = (double) accepted_events / (double) input_events;
+   double percent =  100. * fraction; double error =  100. * sqrt( fraction*(1-fraction) / (double) input_events );
+   std::cout<<"STFilter ++ accepted_events/input_events = "<<accepted_events<<"/"<<input_events<<" = "<<fraction<<std::endl;
+   std::cout<<"STFilter ++ efficiency  = "<<percent<<" % +/- "<<error<<" %"<<std::endl;
 }
 
 DEFINE_FWK_MODULE(STFilter);
