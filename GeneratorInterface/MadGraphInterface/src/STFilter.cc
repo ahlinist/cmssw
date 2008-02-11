@@ -16,7 +16,7 @@
 */
 // Original Author:  Julia Weinelt
 //         Created:  Wed Jan 23 15:12:46 CET 2008
-// $Id: STFilter.cc,v 1.3 2008/02/11 09:56:43 dkcira Exp $
+// $Id: STFilter.cc,v 1.4 2008/02/11 11:29:31 dkcira Exp $
 #include <memory>
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDFilter.h"
@@ -89,7 +89,6 @@ bool STFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   while( (*i)->status() == 3 )
     i++;
   
-  std::cout<<"DDDDDDDDDDDDDDDD "<<(*i)->barcode()<<std::endl;
   // ---- 22 or 23? ----
   if((*i)->barcode() <= 13) 
     lo = true;
@@ -115,7 +114,6 @@ bool STFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup) {
     if(pTSecB < pTMax_) accEvt = true;
     // fill histos if requested
     if(m_produceHistos){
-      std::cout<<"DDDDDDDDDDDDDDDD "<<pTSecB<<" "<<etaSecB<<std::endl;
          hbPt->Fill(pTSecB);
          hbEta->Fill(etaSecB);
          if(accEvt){
