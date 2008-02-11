@@ -17,7 +17,7 @@
 */
 // Original Author:  Julia Weinelt
 //         Created:  Wed Jan 23 15:12:46 CET 2008
-// $Id: STFilter.cc,v 1.1 2008/01/28 12:58:32 dkcira Exp $
+// $Id: STFilter.cc,v 1.2 2008/02/07 15:46:42 dkcira Exp $
 #include <memory>
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDFilter.h"
@@ -26,12 +26,13 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
 #include "HepMC/GenEvent.h"
+#include "TFile.h"
+#include "TH1.h"
 
 class STFilter : public edm::EDFilter {
    public:
       explicit STFilter(const edm::ParameterSet&);
       ~STFilter();
-
    private:
       virtual void beginJob(const edm::EventSetup&) ;
       virtual bool filter(edm::Event&, const edm::EventSetup&);
@@ -43,14 +44,26 @@ class STFilter : public edm::EDFilter {
       // counters
       unsigned int input_events;
       unsigned int accepted_events;
+      // histograms
+      bool m_produceHistos;
+      TH1D* hbPt; TH1D* hbPtFiltered;
+      TH1D* hbEta; TH1D* hbEtaFiltered;
+      // histogram output file
+      std::string fOutputFileName ;
+      TFile*  hOutputFile ;
+      //
+      edm::ParameterSet conf_;
 };
 
 STFilter::STFilter(const edm::ParameterSet& iConfig)
 {
   pTMax_ = iConfig.getParameter<double>("pTMax");
-  std::cout<<"SingleTopMatchingFilter +++ maximum pt of associated-b  pTMax = "<<pTMax_<<std::endl;
+  edm::LogInfo("SingleTopMatchingFilter")<<"+++ maximum pt of associated-b  pTMax = "<<pTMax_;
   DEBUGLVL = iConfig.getUntrackedParameter<int>("debuglvl", 0); // get debug level
   input_events=0; accepted_events=0; // counters
+  m_produceHistos = iConfig.getParameter<bool>("produceHistos"); // produce histograms?
+  fOutputFileName = iConfig.getUntrackedParameter<std::string>("histOutFile"); // get name of output file with histograms
+  conf_ = iConfig;
 }
 
 
@@ -113,10 +126,28 @@ bool STFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
 void STFilter::beginJob(const edm::EventSetup&)
 {
+  if(m_produceHistos){ // initialize histogram output file
+    edm::ParameterSet Parameters;
+    hOutputFile   = new TFile( fOutputFileName.c_str(), "RECREATE" ) ;
+    edm::LogInfo("SingleTopMatchingFilter)")<<"beginJob : creating histogram file: "<<fOutputFileName.c_str()<<std::endl;
+    // book histograms
+    Parameters =  conf_.getParameter<edm::ParameterSet>("TH1bPt");
+    hbPt = new TH1D( "bPt", "Pt of 2nd b quark", Parameters.getParameter<int32_t>("Nbinx"), Parameters.getParameter<double>("xmin"), Parameters.getParameter<double>("xmax"));
+    Parameters =  conf_.getParameter<edm::ParameterSet>("TH1bEta");
+    hbEta = new TH1D( "bEta", "Eta of 2nd b quark", Parameters.getParameter<int32_t>("Nbinx"), Parameters.getParameter<double>("xmin"), Parameters.getParameter<double>("xmax"));
+    Parameters =  conf_.getParameter<edm::ParameterSet>("TH1bPtFiltered");
+    hbPtFiltered = new TH1D( "bPtFiltered", "Pt of 2nd b quark filtered",  Parameters.getParameter<int32_t>("Nbinx"), Parameters.getParameter<double>("xmin"), Parameters.getParameter<double>("xmax"));
+    Parameters =  conf_.getParameter<edm::ParameterSet>("TH1bEtaFiltered");
+    hbEtaFiltered = new TH1D( "bEtaFiltered", "Eta of 2nd b quark filtered",  Parameters.getParameter<int32_t>("Nbinx"), Parameters.getParameter<double>("xmin"), Parameters.getParameter<double>("xmax"));
+  }
 }
 
 void STFilter::endJob() 
 {
+ if(m_produceHistos){
+std::cout<<"DDDDDDDDDDDDDDd write out to histo"<<std::endl;
+hbPt->Print();
+ hOutputFile->Write() ; hOutputFile->Close() ;} // Write out histograms to file, then close it
  double fraction = (double) accepted_events / (double) input_events;
  double percent =  100. * fraction;
  double error =  100. * sqrt( fraction*(1-fraction) / (double) input_events );
