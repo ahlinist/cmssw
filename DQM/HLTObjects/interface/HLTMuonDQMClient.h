@@ -23,6 +23,7 @@
 
 #include "TH1F.h"
 #include "TH2F.h"
+#include "TProfile.h"
 
 using namespace edm;
 using namespace std;
@@ -43,7 +44,6 @@ class HLTMuonDQMClient: public EDAnalyzer{
   void cleanup();
   void doQT();
 
-  string getMEName(const int & zside, const int & plane, const int & type);
 
   void htmlOutput(int run, string htmlDir, string htmlName);
 
@@ -76,7 +76,10 @@ class HLTMuonDQMClient: public EDAnalyzer{
   TH1F *hPtres_;
   TH1F *hEtares_;
   TH1F *hPhires_;
+  TProfile *hEtareseta_, *hPhiresphi_,*hDrphi_[2],*hDzeta_[2] ;
   TH2F *hEtaphi_[2];
+  TH2F *hPtphi_[2];
+  TH2F *hPteta_[2];
   TH1F *hDr_[2];
   TH1F *hDz_[2];
   TH1F *hErr0_[2];
