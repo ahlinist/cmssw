@@ -16,7 +16,7 @@
  * Carsten Hof  : add saving of flavours and fractional momenta of ingoing partons in pdfinfo (06/02/2008)
  ***************************************/
 #define PYCOMP pycomp_
-#include "FWCore/Framework/interface/GeneratedInputSource.h"
+#include "FWCore/Sources/interface/ExternalInputSource.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include <map>
 #include <string>
@@ -25,7 +25,7 @@
 
 namespace edm
 {
-  class MadGraphSource : public GeneratedInputSource {
+  class MadGraphSource : public ExternalInputSource {
   public:
     /// Constructor
     MadGraphSource(const ParameterSet &, const InputSourceDescription &);

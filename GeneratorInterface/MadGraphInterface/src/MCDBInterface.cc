@@ -1,10 +1,7 @@
 //************************************
 //* Generators interface with the LCG MCDB
-//*
 //* Hector Naves Sordo 
-//* 
 //* First version: 25/10/06 
-//* 
 //************************************
 #include "GeneratorInterface/MadGraphInterface/interface/MCDBInterface.h"
 #include "FWCore/PluginManager/interface/standard.h"
@@ -26,7 +23,7 @@ void mcdbGetInputFile(std::string  &madGraphInputFile, int &mcdbArticleID) {
   int mcdbStartArticleIDFromHere =  madGraphInputFile.rfind("/", mcdbStartFromHere - 1);
   std::string mcdbArticleIDFromPath = madGraphInputFile.substr(mcdbStartArticleIDFromHere + 1, (mcdbStartFromHere - mcdbStartArticleIDFromHere) - 1);
   
-  std::cout << "MCDBInterface: MCDB input file..." << std::endl;
+  std::cout << "MCDBInterface: MCDB input file... "<< madGraphInputFile<< std::endl;
   
   // Makes the local copy of the CASTOR file 
   edmplugin::PluginManager::configure(edmplugin::standard::config());
