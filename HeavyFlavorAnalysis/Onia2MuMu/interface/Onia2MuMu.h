@@ -9,6 +9,7 @@
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
+#include "FWCore/ParameterSet/interface/InputTag.h"
 #include "DataFormats/Common/interface/Handle.h"
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "FWCore/Utilities/interface/EDMException.h"
@@ -42,6 +43,9 @@
 #include "DataFormats/L1Trigger/interface/L1ParticleMap.h"
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutRecord.h"
 #include "DataFormats/Common/interface/TriggerResults.h"
+#include "DataFormats/HLTReco/interface/HLTFilterObject.h"
+#include "DataFormats/RecoCandidate/interface/RecoChargedCandidate.h"
+#include "DataFormats/RecoCandidate/interface/RecoChargedCandidateFwd.h"
 
 
 #include <memory>
@@ -80,7 +84,7 @@ class Onia2MuMu : public edm::EDAnalyzer {
       virtual void fillRecTracks(const edm::Event &iEvent);
       virtual void fillMuons(const edm::Event &iEvent);
       virtual void fillPrimaryVertex(const edm::Event &iEvent);
-      virtual void fillOniaMuMuTracks(const edm::Event &iEvent, const edm::EventSetup&,string OniaMuonType);
+      virtual void fillOniaMuMuTracks(const edm::Event &iEvent, const edm::EventSetup&,edm::InputTag OniaMuonType);
 
       double PhiInRange(const double& phi) const;
       template <class T, class U> double deltaR(const T & t, const U & u) const;
@@ -93,16 +97,20 @@ class Onia2MuMu : public edm::EDAnalyzer {
       string theOutFileName;               // Filename
       int theOniaType;                     // 443 for Jpsi, 553 for Upsilon, etc
       int theDebugLevel;                   // 0 no prints, 1 some, 2 lots
-      string theStandAloneMuonsLabel;      // Muon information from standalone muons
-      string theTrackerMuonsLabel;         // Muon information from tracker muons // does not work
-      string theGlobalMuonsLabel;          // Muon information from global muons
-      string theMuonsLabel;                // From this one can get both global and track info
-      string theTrackLabel;                // Track information
-      string theOniaMuonsLabel;            // From this one we reconstruct dimuons
-      string thePrimaryVertexLabel;        // Primary Vertex
-      string theL1ParticleMap;             // L1 trigger bits
-      string theL1GTReadoutRec;            // L1 trigger results
-      string theHLTriggerResults;          // HLT trigger results
+      edm::InputTag theStandAloneMuonsLabel;      // Muon information from standalone muons
+      edm::InputTag theTrackerMuonsLabel;         // Muon information from tracker muons // does not work
+      edm::InputTag theGlobalMuonsLabel;          // Muon information from global muons
+      edm::InputTag theMuonsLabel;                // From this one can get both global and track info
+      edm::InputTag theTrackLabel;                // Track information
+      edm::InputTag theOniaMuonsLabel;            // From this one we reconstruct dimuons
+      edm::InputTag thePrimaryVertexLabel;        // Primary Vertex
+      edm::InputTag theL1ParticleMap;             // L1 trigger bits
+      edm::InputTag theL1GTReadoutRec;            // L1 trigger results
+      edm::InputTag theHLTriggerResults;          // HLT trigger results
+      edm::InputTag theL1MuonLabel;
+      edm::InputTag theL2MuonLabel;
+      edm::InputTag theL3MuonLabel;
+
       bool theStoreGenFlag;                // Yes or No to store generator information
       bool theStoreHLTFlag;                // Yes or No to store HLT information
       bool theStoreL1Flag;                 // Yes or No to store L1 information
@@ -121,7 +129,7 @@ class Onia2MuMu : public edm::EDAnalyzer {
       int Max_QQ_size;
       int Max_mu_size;
       int Max_PriVtx_size;
-      int Max_trig_size;
+      unsigned int Max_trig_size;
 
       int Mc_QQ_size;                     // Number of Onia in event (usually 1)
       TClonesArray* Mc_QQ_4mom;       // Array of 4-momentum of Onium
@@ -150,10 +158,10 @@ class Onia2MuMu : public edm::EDAnalyzer {
       double Reco_track_d0err[3000];  // Vector of d0 of tracks
       double Reco_track_dz[3000];     // Vector of dz of tracks
       double Reco_track_dzerr[3000];  // Vector of dz of tracks
-      double Reco_track_charge[3000]; // Vector of charge of tracks
+      int Reco_track_charge[3000]; // Vector of charge of tracks
       double Reco_track_chi2[3000];   // Vector of chi2 of tracks
       double Reco_track_ndof[3000];   // Vector of ndof of tracks
-      double Reco_track_nhits[3000];  // Vector of nhits of tracks
+      int Reco_track_nhits[3000];  // Vector of nhits of tracks
 
 
       int Reco_track_muflag[3000];    // Vector denoting of  if this track couldhave been a muon (0 =no muon, 1 =muon)
@@ -168,10 +176,10 @@ class Onia2MuMu : public edm::EDAnalyzer {
       double Reco_mu_glb_d0err[10];   // Vector of d0err of global muons
       double Reco_mu_glb_dz[10];      // Vector of dz of global muons
       double Reco_mu_glb_dzerr[10];   // Vector of dzerr of global muons
-      double Reco_mu_glb_charge[10];  // Vector of charge of global muons
+      int Reco_mu_glb_charge[10];  // Vector of charge of global muons
       double Reco_mu_glb_chi2[10];   // Vector of chi2 of global muons
       double Reco_mu_glb_ndof[10];   // Vector of ndof of global muons
-      double Reco_mu_glb_nhits[10];  // Vector of number of valid hits of global muons
+      int Reco_mu_glb_nhits[10];  // Vector of number of valid hits of global muons
       
       int Reco_mu_sta_size;           // Number of reconstructed standalone muons
       TClonesArray* Reco_mu_sta_4mom; // Array of 4-momentum of Reconstructed standalone muons
@@ -184,10 +192,10 @@ class Onia2MuMu : public edm::EDAnalyzer {
       double Reco_mu_sta_d0err[10];   // Vector of d0err of standalone muons
       double Reco_mu_sta_dz[10];      // Vector of dz of standalone muons
       double Reco_mu_sta_dzerr[10];   // Vector of dzerr of standalone muons
-      double Reco_mu_sta_charge[10];   // Vector of charge of standalone muons
+      int Reco_mu_sta_charge[10];   // Vector of charge of standalone muons
       double Reco_mu_sta_chi2[10];   // Vector of chi2 of standalone muons
       double Reco_mu_sta_ndof[10];   // Vector of ndof of standalone muons
-      double Reco_mu_sta_nhits[10];  // Vector of number of valid hits of standalone muons
+      int Reco_mu_sta_nhits[10];  // Vector of number of valid hits of standalone muons
       
 
       int Reco_mu_trk_size;           // Number of reconstructed tracker muons
@@ -201,10 +209,10 @@ class Onia2MuMu : public edm::EDAnalyzer {
       double Reco_mu_trk_d0err[10];   // Vector of d0err of tracker muons
       double Reco_mu_trk_dz[10];      // Vector of dz of tracker muons
       double Reco_mu_trk_dzerr[10];   // Vector of dzerr of tracker muons
-      double Reco_mu_trk_charge[10];   // Vector of charge of tracker muons
+      int Reco_mu_trk_charge[10];   // Vector of charge of tracker muons
       double Reco_mu_trk_chi2[10];   // Vector of chi2 of tracker muons
       double Reco_mu_trk_ndof[10];   // Vector of ndof of tracker muons
-      double Reco_mu_trk_nhits[10];  // Vector of number of valid hits of tracker muons
+      int Reco_mu_trk_nhits[10];  // Vector of number of valid hits of tracker muons
       
 
 
@@ -236,7 +244,11 @@ class Onia2MuMu : public edm::EDAnalyzer {
       int L1TBits_size;               // Number of L1 trigger bits
       bool L1TBits_accept[200];       // L1 trigger bits
       bool L1TGlobal_Decision;        // L1 trigger global decision
- 
+    
+      int L1_mu_L1_size;
+      TClonesArray* L1_mu_L1_4mom;
+      int L1_mu_L1_charge[10];
+
       int HLTBits_size;               // Number of HLT trigger bits 
       bool HLTBits_wasrun[200];       // Each HLT bits was run or not
       bool HLTBits_accept[200];       // Each HLT bits fired or not
@@ -244,7 +256,18 @@ class Onia2MuMu : public edm::EDAnalyzer {
       bool HLTGlobal_wasrun;          // The HLT was run or not
       bool HLTGlobal_Decision;        // Global HLT decision
       bool HLTGlobal_error;           // HLT path error or not
- 
+
+      int HLT_mu_L2_size;
+      TClonesArray* HLT_mu_L2_4mom;
+      int HLT_mu_L2_charge[10];
+      int HLT_mu_L3_size;
+      TClonesArray* HLT_mu_L3_4mom;
+      int HLT_mu_L3_charge[10];
+
+      TClonesArray* HLTSingle_mu_L2_4mom;
+      int HLTSingle_mu_L2_charge[5];
+      TClonesArray* HLTSingle_mu_L3_4mom;
+      int HLTSingle_mu_L3_charge[5];
 
       unsigned int  fNevt;            // event number
       
@@ -252,8 +275,9 @@ class Onia2MuMu : public edm::EDAnalyzer {
       double Mc_EventScale;           // Pthat of process
       double Mc_EventWeight;          // Weight of event generated
 
-      
-     
+      std::vector<std::string> hltModules[2]; // in order: L2, L3
+      std::vector<std::string> hltPaths;
+    
       
 };
 
