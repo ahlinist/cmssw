@@ -51,6 +51,17 @@
                                 repository, instructions: 
 				http://cmsdoc.cern.ch/~slehti/HipProofAnalysis.html
 
+12.2.2008/S.Lehti CMSSW_1_6_9	New pf tags.
+				cvs co -r global_1_6_9_11feb08 RecoParticleFlow
+				cvs co -r global_1_6_9_11feb08 DataFormats/ParticleFlowReco
+				cvs co -r global_1_6_9_11feb08 DataFormats/ParticleFlowCandidate
+                                cvs co -r V00-00-17 DataFormats/TauReco
+                                cvs co -r V00-00-37 RecoTauTag/RecoTau
+                                cvs co -r V00-00-06 RecoTauTag/TauTagTools
+                                cvs co -r jet_corrections_16X JetMETCorrections/MCJet/data
+
+
+
 	How to compile:
 	-compile
 		cd HiggsAnalysis/HeavyChHiggsToTauNu
