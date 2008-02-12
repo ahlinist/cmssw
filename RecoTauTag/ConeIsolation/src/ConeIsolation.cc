@@ -13,7 +13,7 @@
 //
 // Original Author:  Simone Gennai
 //      Created:  Thu Apr  6 09:56:23 CEST 2006
-// $Id: ConeIsolation.cc,v 1.25 2007/06/03 18:21:47 gennai Exp $
+// $Id: ConeIsolation.cc,v 1.26 2007/09/11 22:06:35 ratnik Exp $
 //
 //
 
@@ -38,13 +38,9 @@
 #include <DataFormats/VertexReco/interface/VertexFwd.h>
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
-//#include "MagneticField/Engine/interface/MagneticField.h"
-//#include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/Framework/interface/ESHandle.h"
-//#include "RecoBTag/BTagTools/interface/SignedImpactParameter3D.h"
-//#include "RecoBTag/BTagTools/interface/SignedTransverseImpactParameter.h"
-
+#include "DataFormats/BeamSpot/interface/BeamSpot.h"
 
 using namespace reco;
 using namespace edm;
@@ -58,10 +54,13 @@ ConeIsolation::ConeIsolation(const edm::ParameterSet& iConfig)
   jetTrackSrc = iConfig.getParameter<string>("JetTrackSrc");
   vertexSrc = iConfig.getParameter<string>("vertexSrc");
   usingVertex = iConfig.getParameter<bool>("useVertex");
+  usingBeamSpot = iConfig.getParameter<bool>("useBeamSpot"); //If false the OfflinePrimaryVertex will be used.
   m_algo = new ConeIsolationAlgorithm(iConfig);
   
-   produces<reco::JetTagCollection>(); 
+  produces<reco::JetTagCollection>(); 
    produces<reco::IsolatedTauTagInfoCollection>();       
+
+
 
 }
 
@@ -84,53 +83,62 @@ ConeIsolation::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    //Get jets with tracks
    Handle<reco::JetTracksAssociationCollection> jetTracksAssociation;
    iEvent.getByLabel(jetTrackSrc,jetTracksAssociation);
-   reco::JetTagCollection * baseCollection = new reco::JetTagCollection();
 
-   reco::IsolatedTauTagInfoCollection * extCollection = new reco::IsolatedTauTagInfoCollection();
+   std::auto_ptr<reco::JetTagCollection>             tagCollection;
+   std::auto_ptr<reco::IsolatedTauTagInfoCollection> extCollection( new reco::IsolatedTauTagInfoCollection() );
+if (not jetTracksAssociation->empty()) {
+     RefToBaseProd<reco::Jet> prod( jetTracksAssociation->begin()->first );
+     tagCollection.reset( new reco::JetTagCollection(prod) );
+   } else {
+     tagCollection.reset( new reco::JetTagCollection() );
+   }
 
    Vertex::Error e;
    e(0,0)=1;
    e(1,1)=1;
    e(2,2)=1;
    Vertex::Point p(0,0,-1000);
-   Vertex myPV(p,e,1,1,1);
+   Vertex myPVtmp(p,e);//Fake vertex to be used in case no vertex is found
+   Vertex myPV;
+
    //Get pixel vertices
    Handle<reco::VertexCollection> vertices;
    iEvent.getByLabel(vertexSrc,vertices);
-   if(usingVertex)
+   const reco::VertexCollection vertCollection = *(vertices.product());
+   //Check if there is the PV!!!!
+   if(vertCollection.begin() != vertCollection.end())
+     myPVtmp = *(vertCollection.begin());
+
+   //In case the beam spot is used, the Z of the vertex still comes from the PV, while the (x,y) is taken from the beamspot
+   reco::BeamSpot vertexBeamSpot;
+   edm::Handle<reco::BeamSpot> recoBeamSpotHandle;
+   
+   if(usingBeamSpot)
      {
-       const reco::VertexCollection vertCollection = *(vertices.product());
-       reco::VertexCollection::const_iterator ci = vertCollection.begin();
-       if(vertCollection.size() > 0) {
-	 myPV = *ci;
-       }
-     }
+       //Create a new vertex with the information on x0 and Y0 from the beamspot, to be used in HLT.
+       iEvent.getByType(recoBeamSpotHandle);
+       vertexBeamSpot = *recoBeamSpotHandle;
+       Vertex::Point bspoint(vertexBeamSpot.x0(),vertexBeamSpot.y0(),myPVtmp.z());
+       Vertex combinedVertex = Vertex(bspoint,myPVtmp.error(),myPVtmp.chi2(),myPVtmp.ndof(),myPVtmp.tracksSize());
+       myPV = combinedVertex;
+	 }else{
+	   myPV = myPVtmp;
+	 }
+
+
+   
    JetTracksAssociationCollection::const_iterator it = jetTracksAssociation->begin();
-   int i = 0; 
-   for(; it != jetTracksAssociation->end(); it++)
+   for (unsigned int i = 0; i < jetTracksAssociation->size(); ++i)
      {
-       pair<JetTag,IsolatedTauTagInfo> myPair =m_algo->tag(edm::Ref<JetTracksAssociationCollection>(jetTracksAssociation,i),myPV); 
-       baseCollection->push_back(myPair.first);    
-       //still need to set the JetTag
+       pair<float,IsolatedTauTagInfo> myPair =m_algo->tag(edm::Ref<JetTracksAssociationCollection>(jetTracksAssociation,i),myPV); 
+       tagCollection->setValue(i, myPair.first);
        extCollection->push_back(myPair.second);
-       i++;
      }
 
+   iEvent.put(extCollection);
+   iEvent.put(tagCollection);
 
 
-  std::auto_ptr<reco::IsolatedTauTagInfoCollection> resultExt(extCollection);  
-   edm::OrphanHandle <reco::IsolatedTauTagInfoCollection >  myTagInfo =  iEvent.put(resultExt);
-   int cc=0;
-   reco::JetTagCollection::iterator myInfo = baseCollection->begin();   
-   for(;myInfo!=baseCollection->end();myInfo++)
-     {
-       myInfo->setTagInfo(RefToBase<BaseTagInfo>(IsolatedTauTagInfoRef(myTagInfo,cc))); 
-       cc++;
-     }
-
-
-   std::auto_ptr<reco::JetTagCollection> resultBase(baseCollection);
-   iEvent.put(resultBase);
 
 }
 
