@@ -28,6 +28,7 @@ using namespace HepMC;
 
 // ----------------------------------------------------------------------
 HFDumpGenerator::HFDumpGenerator(const ParameterSet& iConfig):
+  fVerbose(iConfig.getUntrackedParameter<int>("verbose", 0)),
   fGenCandidatesLabel(iConfig.getUntrackedParameter<string>("generatorCandidates", string("MCCandidate"))), 
   fGenEventLabel(iConfig.getUntrackedParameter<string>("generatorEvent", string("Source")))  {
   using namespace std;

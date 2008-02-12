@@ -25,6 +25,7 @@ class HFDumpGenerator : public edm::EDAnalyzer {
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
   virtual void endJob() ;
 
+  int         fVerbose;
   std::string fGenCandidatesLabel, fGenEventLabel;
 
 };

@@ -17,22 +17,17 @@ class TAna00Event;
 class TrackAssociatorBase;
 
 // ----------------------------------------------------------------------
-class HFDumpTracks : public edm::EDAnalyzer {
+class HFDumpStuff : public edm::EDAnalyzer {
  public:
-  explicit HFDumpTracks(const edm::ParameterSet&);
-  ~HFDumpTracks();
+  explicit HFDumpStuff(const edm::ParameterSet&);
+  ~HFDumpStuff();
   
  private:
   virtual void beginJob(const edm::EventSetup&) ;
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
   virtual void endJob() ;
 
-  std::string          fTracksLabel, 
-                       fGenEventLabel, fSimTracksLabel,
-                       fAssociatorLabel, fTrackingParticlesLabel;
+  std::string          fGenEventScaleLabel, fMETLabel;
 
-  int                  fVerbose, fDoTruthMatching; 
-
-  TrackAssociatorBase *fAssociator;
 };
 
