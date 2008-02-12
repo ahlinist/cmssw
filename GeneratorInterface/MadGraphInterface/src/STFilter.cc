@@ -16,7 +16,7 @@
 */
 // Original Author:  Julia Weinelt
 //         Created:  Wed Jan 23 15:12:46 CET 2008
-// $Id: STFilter.cc,v 1.4 2008/02/11 11:29:31 dkcira Exp $
+// $Id: STFilter.cc,v 1.5 2008/02/11 13:40:21 dkcira Exp $
 #include <memory>
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDFilter.h"
@@ -82,18 +82,17 @@ bool STFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   
   Handle<HepMCProduct> evt;
   iEvent.getByType(evt);
-  
   const HepMC::GenEvent * myEvt = evt->GetEvent();   // GET EVENT FROM HANDLE 
   
   HepMC::GenEvent::particle_const_iterator i = myEvt->particles_begin();
-  while( (*i)->status() == 3 )
-    i++;
+  while( (*i)->status() == 3 ) i++; // skip status 3 particles
   
   // ---- 22 or 23? ----
   if((*i)->barcode() <= 13) 
     lo = true;
   else 
     accEvt = true;
+
   // ---- filter only 22 events ----
   if (lo){
     for (HepMC::GenEvent::particle_const_iterator p = myEvt->particles_begin(); p!=myEvt->particles_end(); ++p){
@@ -114,12 +113,12 @@ bool STFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup) {
     if(pTSecB < pTMax_) accEvt = true;
     // fill histos if requested
     if(m_produceHistos){
-         hbPt->Fill(pTSecB);
-         hbEta->Fill(etaSecB);
-         if(accEvt){
-           hbPtFiltered->Fill(pTSecB);
-           hbEtaFiltered->Fill(etaSecB);
-         }
+      hbPt->Fill(pTSecB);
+      hbEta->Fill(etaSecB);
+      if(accEvt){
+        hbPtFiltered->Fill(pTSecB);
+        hbEtaFiltered->Fill(etaSecB);
+      }
     }
   }
   if(accEvt) ++accepted_events;
