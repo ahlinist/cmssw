@@ -201,8 +201,6 @@ namespace edm {
     status = g->status();
     if (productstatus::onDemand(status)) {
       status = productstatus::neverCreated();
-    }
-    if (!productstatus::present(status)) {
       return BasicHandle();
     }
     return BasicHandle(g->product(), &g->provenance());
