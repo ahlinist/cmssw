@@ -31,21 +31,20 @@ using namespace std;
 class treeReader {
 public:
   treeReader(TChain *tree, TString evtClassName);
-  ~treeReader();
-  void        init(TString evtClassName);
+  virtual      ~treeReader();
+  virtual void init(TString evtClassName);
 
-  void        openHistFile(TString filename);
-  void        closeHistFile();
-  void        bookHist();
+  virtual void openHistFile(TString filename);
+  virtual void closeHistFile();
+  virtual void bookHist();
 
-  void        startAnalysis();
-  int         loop(int nevents = 1, int start = -1);
-  void        eventProcessing();
+  virtual void startAnalysis();
+  virtual int  loop(int nevents = 1, int start = -1);
+  virtual void eventProcessing();
 
-  void        dumpEvent();
-  void        fillHist();
+  virtual void fillHist();
 
-private:
+protected:
 
   TChain     *fpChain;        // pointer to the analyzed TTree or TChain
   TFile      *fpHistFile;     // for output histograms and reduced trees
