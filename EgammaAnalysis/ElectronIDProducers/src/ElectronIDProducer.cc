@@ -58,25 +58,20 @@ void ElectronIDProducer::produce(edm::Event& e, const edm::EventSetup& c) {
   if (!barrelClShpHandle.isValid()) {
     edm::LogError ("ElectronIDProducer") << "Can't get ECAL barrel Cluster Shape Collection" ; 
   }
-
   const reco::BasicClusterShapeAssociationCollection& barrelClShpMap = *barrelClShpHandle ;
 
   // get the association of the clusters to their shapes for EE
   edm::Handle<reco::BasicClusterShapeAssociationCollection> endcapClShpHandle ;
   e.getByLabel (endcapClusterShapeAssociation_, endcapClShpHandle) ;
   if (!endcapClShpHandle.isValid()) {
-    edm::LogError ("ElectronIDLHProducer") << "Can't get ECAL endcap Cluster Shape Collection" ;
+    edm::LogError ("ElectronIDProducer") << "Can't get ECAL endcap Cluster Shape Collection" ;
   }
-  
   const reco::BasicClusterShapeAssociationCollection& endcapClShpMap = *endcapClShpHandle ;
-
-
 
   // Loop over electrons and calculate electron ID using specified technique(s)
   reco::GsfElectronCollection::const_iterator electron;
   for (electron = (*electrons).begin();
        electron != (*electrons).end(); ++electron) {
-
     
     bool boolDecision = -1; 
     bool ptdrDecision = -1;
