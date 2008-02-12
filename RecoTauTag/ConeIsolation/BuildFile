@@ -5,6 +5,7 @@
 <use name=DataFormats/BTauReco>
 <use name=DataFormats/VertexReco>
 <use name=DataFormats/Math>
+<use name=DataFormats/BeamSpot>
 <use name=PhysicsTools/IsolationUtils>
 #<use name=boost>
 <use name=root>
