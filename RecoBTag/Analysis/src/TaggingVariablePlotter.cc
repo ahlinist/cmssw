@@ -46,6 +46,12 @@ TaggingVariablePlotter::TaggingVariablePlotter(const TString &tagName,
 	const EtaPtBin &etaPtBin, const ParameterSet &pSet, bool update,
 	const string &category) : BaseTagInfoPlotter(tagName, etaPtBin)
 {
+	if (update) {
+		TString dir = "TaggingVariable" + theExtensionString;
+		gFile->cd();
+		gFile->cd(dir);
+	}
+
 	vector<string> pSets = pSet.getParameterNames();
 	for(vector<string>::const_iterator iter = pSets.begin();
 	    iter != pSets.end(); iter++) {
@@ -53,12 +59,6 @@ TaggingVariablePlotter::TaggingVariablePlotter(const TString &tagName,
 		                   pSet.getParameter<ParameterSet>(*iter),
 		                   update, category);
 		variables.push_back(var);
-	}
-
-	if (update) {
-		TString dir = "TaggingVariable" + theExtensionString;
-		gFile->cd();
-		gFile->cd(dir);
 	}
 }
 
