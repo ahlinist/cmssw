@@ -5,6 +5,9 @@ include "EgammaAnalysis/ElectronIDProducers/data/ptdrElectronId.cfi"
 include "EgammaAnalysis/ElectronIDESSources/data/likelihoodPdfsDB.cfi"
 include "EgammaAnalysis/ElectronIDESSources/data/likelihoodESetup.cfi"
 
+# --- Neural Net Electron ID block---
+include "EgammaAnalysis/ElectronIDProducers/data/neuralNetElectronId.cfi" 
+
 module electronId = ElectronIDProducer {
 
     string electronProducer = "pixelMatchGsfElectrons"
@@ -16,11 +19,14 @@ module electronId = ElectronIDProducer {
     bool doCutBased = false
     bool doLikelihood = false
     bool doNeuralNet = false
-
+    
     InputTag barrelClusterShapeAssociation = hybridSuperClusters:hybridShapeAssoc
     InputTag endcapClusterShapeAssociation = islandBasicClusters:islandEndcapShapeAssoc
     
     VPSet algo_psets = {
         {using PTDR_ID}, {using CutBased_ID}
     }
+
+    using NeuralNet
+
 }
