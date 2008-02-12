@@ -1,34 +1,42 @@
-#include "treeReader.hh"
+#include "myReader.hh"
 
 #include "TRandom.h"
 
-#include "treeReader.icc"
-
-
 // ----------------------------------------------------------------------
-// Run with: ./runTreeReader -c chains/bg-test -D root 
-//           ./runTreeReader -f test.root 
+// Run with: ./runMyReader -c chains/bg-test -D root 
+//           ./runMyReader -f test.root 
 // ----------------------------------------------------------------------
 
 
 // ----------------------------------------------------------------------
-void treeReader::startAnalysis() {
-  cout << "startAnalysis: ..." << endl;
+myReader::myReader(TChain *tree, TString evtClassName): treeReader(tree, evtClassName) {
+  cout << "--> myReader> This is the start ..." << endl;
+}
+// ----------------------------------------------------------------------
+myReader::~myReader() {
+  cout << "--> myReader> This is the end ..." << endl;
+}
+
+// ----------------------------------------------------------------------
+void myReader::startAnalysis() {
+  cout << "--> myReader> startAnalysis: ..." << endl;
 }
 
 
 
 // ----------------------------------------------------------------------
-void treeReader::eventProcessing() {
+void myReader::eventProcessing() {
   TAnaTrack *pTrack;
-  TAnaCand *pCand;
+  TAnaCand  *pCand;
+  TAnaJet   *pJet;
 
   fRun = fpEvt->fRunNumber;
 
   cout << "----------------------------------------------------------------------" << endl;
-  cout << "Found " << fpEvt->nGenCands() << " gen cands in event" << endl;
-  cout << "Found " << fpEvt->nSigTracks() << " sig tracks in event" << endl;
-  cout << "Found " << fpEvt->nRecTracks() << " rec tracks in event" << endl;
+  cout << "myReader> Found " << fpEvt->nGenCands() << " gen cands in event" << endl;
+  cout << "myReader> Found " << fpEvt->nSigTracks() << " sig tracks in event" << endl;
+  cout << "myReader> Found " << fpEvt->nRecTracks() << " rec tracks in event" << endl;
+  cout << "myReader> Found " << fpEvt->nCaloJets() << " jets in event" << endl;
   ((TH1D*)fpHistFile->Get("h1"))->Fill(fpEvt->nRecTracks()); 
   
   cout << "------------------------------" << endl;
@@ -47,8 +55,11 @@ void treeReader::eventProcessing() {
     ((TH1D*)fpHistFile->Get("h100"))->Fill(pCand->fMass); 
   }
 
-
-  
+  cout << "------------------------------" << endl;
+  for (int it = 0; it < fpEvt->nCaloJets(); ++it) {
+    pJet = fpEvt->getCaloJet(it);
+    cout << "J: " << " "; pJet->dump(); 
+  }
 
   fpHistFile->cd();
   fillHist(); 
@@ -58,15 +69,15 @@ void treeReader::eventProcessing() {
 
 
 // ----------------------------------------------------------------------
-void treeReader::fillHist() {
+void myReader::fillHist() {
 
 
 }
 
 // ----------------------------------------------------------------------
-void treeReader::bookHist() {
+void myReader::bookHist() {
   TH1 *h;
-  cout << "-->bookHist> " << endl;
+  cout << "--> myReader> bookHist> " << endl;
 
   h = new TH1D("h1", "nTrk", 40, 0., 40.);
   h = new TH1D("h10", "pT", 40, 0., 20.);

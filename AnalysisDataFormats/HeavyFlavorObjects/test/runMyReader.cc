@@ -13,17 +13,13 @@
 #include "TRandom.h"
 #include "TUnixSystem.h"
 
-#include "treeReader.hh"
+#include "myReader.hh"
 
 
 using namespace std;
 
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// %% Usage: ./runTreeReader -f test.root
-// %%        ./runTreeReader -c chains/bg-test -D root
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 int main(int argc, char *argv[]) {
 
   int processID = gSystem->GetPid();
@@ -130,7 +126,7 @@ int main(int argc, char *argv[]) {
   }
 
   // -- Now instantiate the tree-analysis class object, initialize, and run it ...
-  treeReader a(chain, evtClassName);
+  myReader a(chain, evtClassName);
   a.openHistFile(histfile); 
   a.bookHist(); 
 

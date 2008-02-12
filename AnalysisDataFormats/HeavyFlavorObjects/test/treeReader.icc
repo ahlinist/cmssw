@@ -39,12 +39,7 @@ void treeReader::closeHistFile() {
   fpHistFile->Close();
   delete fpHistFile;
 
-//  fFSarah->cd();
-//  fFSarah->Write();
-//  fFSarah->Close();
-
 }
-
 
 // ----------------------------------------------------------------------
 int treeReader::loop(int nevents, int start) {
