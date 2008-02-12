@@ -13,7 +13,7 @@ Implementation:
 //
 // Original Author:  Muriel VANDER DONCKT *:0
 //         Created:  Wed Dec 12 09:55:42 CET 2007
-// $Id: HLTMuonDQMClient.cc,v 1.2 2008/01/25 15:46:21 muriel Exp $
+// $Id: HLTMuonDQMClient.cc,v 1.3 2008/02/11 17:55:33 muriel Exp $
 //
 //
 
@@ -223,18 +223,15 @@ void HLTMuonDQMClient::doQT(){
 
     if (level == 2){
       sprintf(tit, "%sLevel%i/HLTMuonL%i_ptres",rootFolder_.c_str(),level,level);
-      MonitorElement *mePtres= dbe_->get(tit);
-      meT = dynamic_cast<MonitorElementT<TNamed>*>(mePtres);
+      meT = dynamic_cast<MonitorElementT<TNamed>*>(dbe_->get(tit));
       hPtres_= dynamic_cast<TH1F*> (meT->operator->());
       
       sprintf(tit, "%sLevel%i/HLTMuonL%i_etares",rootFolder_.c_str(),level,level);
-      MonitorElement *meEtares= dbe_->get(tit);
-      meT = dynamic_cast<MonitorElementT<TNamed>*>(meEtares);
+      meT = dynamic_cast<MonitorElementT<TNamed>*>(dbe_->get(tit));
       hEtares_= dynamic_cast<TH1F*> (meT->operator->());
       
       sprintf(tit, "%sLevel%i/HLTMuonL%i_phires",rootFolder_.c_str(),level,level);
-      MonitorElement *mePhires= dbe_->get(tit);
-      meT = dynamic_cast<MonitorElementT<TNamed>*>(mePhires);
+      meT = dynamic_cast<MonitorElementT<TNamed>*>(dbe_->get(tit));
       hPhires_= dynamic_cast<TH1F*> (meT->operator->());
 
       sprintf(tit, "%sLevel%i/HLTMuonL%i_etareseta",rootFolder_.c_str(),level,level);
@@ -290,20 +287,24 @@ void HLTMuonDQMClient::htmlOutput(int run, string htmlDir, string htmlName) {
   unsigned pad=0;
   if (hNMu_[0] == 0)return;
   cMuL2->cd(++pad); 
+  gPad->SetLogy();
   hNMu_[0]->Draw();
   cMuL2->cd(++pad);
+  gPad->SetLogy();
   hQ_[0]->Draw();
+  gPad->Update();  
   cMuL2->cd(++pad);
+  gPad->SetLogy(0);
   hPt_[0]->Draw();
   cMuL2->cd(++pad);
   hPtlx_[0]->Draw();
   cMuL2->cd(++pad);
   hPtres_->Draw();
-  cMuL2->cd(++pad); 
+  cMuL2->cd(++pad);
   hPtphi_[0]->Draw("colz");
   cMuL2->cd(++pad);
   hPteta_[0]->Draw("colz");
-  cMuL2->cd(++pad);
+   cMuL2->cd(++pad);
   hEta_[0]->Draw();
   cMuL2->cd(++pad);
   hEtares_->Draw();
@@ -329,12 +330,15 @@ void HLTMuonDQMClient::htmlOutput(int run, string htmlDir, string htmlName) {
   hDzeta_[0]->Draw();
   cMuL2->cd(++pad);
   hErr0_[0]->Draw();
-  cMuL2->cd(++pad); 
+  cMuL2->cd(++pad);
   hNhit_[0]->Draw();
   cMuL2->cd(++pad);
+  gPad->SetLogy();
   hIso_[0]->Draw();
   cMuL2->cd(++pad);
+  gPad->SetLogy();
   hDimumass_[0]->Draw();
+  gPad->Update();
   histName = htmlDir+"/Level2.png";
   cMuL2->SaveAs(histName.c_str()); 
   cout << "saved file "<<endl;
@@ -342,10 +346,14 @@ void HLTMuonDQMClient::htmlOutput(int run, string htmlDir, string htmlName) {
   cMuL3->Divide(4,5);
   pad=0;
   cMuL3->cd(++pad);
+  gPad->SetLogy();
   hNMu_[1]->Draw();
   cMuL3->cd(++pad);
+  gPad->SetLogy();
   hQ_[1]->Draw();
+  gPad->Update();
   cMuL3->cd(++pad);
+  gPad->SetLogy(0);
   hPt_[1]->Draw();
   cMuL3->cd(++pad);
   hPtlx_[1]->Draw();
@@ -362,27 +370,50 @@ void HLTMuonDQMClient::htmlOutput(int run, string htmlDir, string htmlName) {
   hEtaphi_[1]->Draw("colz");
   gStyle->SetOptStat(111110);
   cMuL3->cd(++pad);
+  gPad->SetLogy();
   hDr_[1]->Draw();
   cMuL3->cd(++pad);
   hDrphi_[1]->Draw();
+  /*
+  double dphiMax=hDrphi_[1]->GetMaximumStored();
+  int nbins=hDrphi_[1]->GetNbinsX();
+  double phiMax=-3.15+(hDrphi_[1]->GetMaximumBin())*(6.283/nbins);
+  double beamSpotX=dphiMax*cos(phiMax);
+  double beamSpotY=dphiMax*sin(phiMax);
+  TPaveText *pav=new TPaveText(0.11,0.8,0.41,0.89,"tl");
+  char text[512];
+  sprintf(text,"BeamSpot x=%f  y=%f",beamSpotX, beamSpotY);
+  pav->SetFillColor(0);
+  pav->AddText(0,0,text);
+  pav->AppendPad();
+  pav->Draw(); */
+  gPad->Update();
   cMuL3->cd(++pad);
+  gPad->SetLogy();
   hDz_[1]->Draw();
   cMuL3->cd(++pad);
   hDzeta_[1]->Draw();
   cMuL3->cd(++pad);
+  gPad->SetLogy();
   hErr0_[1]->Draw();
   cMuL3->cd(++pad);
   hNhit_[1]->Draw();
   cMuL3->cd(++pad);
+  gPad->SetLogy();
   hIso_[1]->Draw();
   cMuL3->cd(++pad);
+  gPad->SetLogy();
   hDimumass_[1]->Draw();
   histName = htmlDir+"/Level3.png";
+  gPad->Update();
   cMuL3->SaveAs(histName.c_str()); 
   delete cMuL2;
   delete cMuL3; 
-
+  delete pav;
+  htmlFile << "<h2>Level 2</h2>" << endl;
   htmlFile << "<img src=\"Level2.png\"></img>" << endl;
+  htmlFile << "<hr>" << endl;
+  htmlFile << "<h2>Level 3</h2>" << endl;
   htmlFile << "<img src=\"Level3.png\"></img>" << endl;
  // html page footer
   htmlFile << "</body> " << endl;
