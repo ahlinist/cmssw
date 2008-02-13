@@ -116,7 +116,7 @@ EffPurFromHistos::EffPurFromHistos
 
 
   // divide to get efficiency vs. discriminator cut from absolute numbers
-  discrCutEfficScan->divide ( *discrNoCutEffic );  // does: histos including discriminator cut / flat histo
+  discrCutEfficScan->divide ( this, *discrNoCutEffic, 1.0, 1.0, "B" );  // does: histos including discriminator cut / flat histo
 }
 
 
