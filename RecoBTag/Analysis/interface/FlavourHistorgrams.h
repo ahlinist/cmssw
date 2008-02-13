@@ -293,17 +293,16 @@ void FlavourHistograms<T>::write(const bool allHisto) const {
 
 template <class T>
 void FlavourHistograms<T>::settitle(const char* title) {
-  theHisto_all ->SetXTitle(title) ;
-  theHisto_d   ->SetXTitle(title) ;
-  theHisto_u   ->SetXTitle(title) ;
-  theHisto_s   ->SetXTitle(title) ;
-  theHisto_c   ->SetXTitle(title) ;
-  theHisto_b   ->SetXTitle(title) ;
-  theHisto_g   ->SetXTitle(title) ;
-  theHisto_ni  ->SetXTitle(title) ;
-  theHisto_dus ->SetXTitle(title) ;
-  theHisto_dusg->SetXTitle(title) ;
-
+ if(theHisto_all) theHisto_all ->SetXTitle(title) ;
+ if(theHisto_d)  theHisto_d   ->SetXTitle(title) ;
+ if(theHisto_u)  theHisto_u   ->SetXTitle(title) ;
+ if(theHisto_s)  theHisto_s   ->SetXTitle(title) ;
+ if(theHisto_c)  theHisto_c   ->SetXTitle(title) ;
+ if(theHisto_b)  theHisto_b   ->SetXTitle(title) ;
+ if(theHisto_g)  theHisto_g   ->SetXTitle(title) ;
+ if(theHisto_ni) theHisto_ni  ->SetXTitle(title) ;
+ if(theHisto_dus) theHisto_dus ->SetXTitle(title) ;
+ if(theHisto_dusg)theHisto_dusg->SetXTitle(title) ;
 }
 
   
