@@ -36,8 +36,12 @@ class TrackIPTagPlotter : public BaseTagInfoPlotter {
 
   FlavourHistograms<double> * tkcntHistosSig3D[5];
   FlavourHistograms<double> * tkcntHistosSig2D[5];
+  FlavourHistograms<double> * tkcntHistosErr3D[5];
+  FlavourHistograms<double> * tkcntHistosErr2D[5];
+  FlavourHistograms<double> * tkcntHistosVal3D[5];
+  FlavourHistograms<double> * tkcntHistosVal2D[5];
   FlavourHistograms<int> * trkNbr3D, * trkNbr2D;
-  double lowerIPSBound, upperIPSBound;
+  double lowerIPSBound, upperIPSBound,lowerIPBound, upperIPBound,lowerIPEBound, upperIPEBound ;
 
   EffPurFromHistos * effPurFromHistos[4] ;
 
