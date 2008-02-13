@@ -28,46 +28,145 @@ TrackIPTagPlotter::TrackIPTagPlotter(const TString & tagName,
   lowerIPSBound = -35.0;
   upperIPSBound = +35.0;
 
+  lowerIPBound = -0.1;
+  upperIPBound = 0.1;
+
+  lowerIPEBound = 0;
+  upperIPEBound = 0.04;
+
+  // IP significance
+  // 3D
   tkcntHistosSig3D[4] = new FlavourHistograms<double>
        ("ips_3D" + theExtensionString, "3D IP significance",
-	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
+	100, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
   tkcntHistosSig3D[0] = new FlavourHistograms<double>
        ("ips1_3D" + theExtensionString, "3D IP significance 1.trk",
-	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
+	100, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
   tkcntHistosSig3D[1] = new FlavourHistograms<double>
        ("ips2_3D" + theExtensionString, "3D IP significance 2.trk",
-	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
+	100, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
   tkcntHistosSig3D[2] = new FlavourHistograms<double>
        ("ips3_3D" + theExtensionString, "3D IP significance 3.trk",
-	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
+	100, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
   tkcntHistosSig3D[3] = new FlavourHistograms<double>
        ("ips4_3D" + theExtensionString, "3D IP significance 4.trk",
-	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
+	100, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
+  //2D
   tkcntHistosSig2D[4] = new FlavourHistograms<double>
        ("ips_2D" + theExtensionString, "2D IP significance",
-	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
+	100, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
   tkcntHistosSig2D[0] = new FlavourHistograms<double>
        ("ips1_2D" + theExtensionString, "2D IP significance 1.trk",
-	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
+	100, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
   tkcntHistosSig2D[1] = new FlavourHistograms<double>
        ("ips2_2D" + theExtensionString, "2D IP significance 2.trk",
-	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
+	100, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
   tkcntHistosSig2D[2] = new FlavourHistograms<double>
        ("ips3_2D" + theExtensionString, "2D IP significance 3.trk",
-	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
+	100, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
   tkcntHistosSig2D[3] = new FlavourHistograms<double>
        ("ips4" + theExtensionString, "2D IP significance 4.trk",
-	50, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
+	100, lowerIPSBound, upperIPSBound, false, true, true, "b", update) ;
 
+  // IP value
+  //3D
+  tkcntHistosVal3D[4] = new FlavourHistograms<double>
+       ("ip_3D" + theExtensionString, "3D IP value",
+	100, lowerIPBound, upperIPBound, false, true, true, "b", update) ;
+
+  tkcntHistosVal3D[0] = new FlavourHistograms<double>
+       ("ip1_3D" + theExtensionString, "3D IP value 1.trk",
+	100, lowerIPBound, upperIPBound, false, true, true, "b", update) ;
+
+  tkcntHistosVal3D[1] = new FlavourHistograms<double>
+       ("ip2_3D" + theExtensionString, "3D IP value 2.trk",
+	100, lowerIPBound, upperIPBound, false, true, true, "b", update) ;
+
+  tkcntHistosVal3D[2] = new FlavourHistograms<double>
+       ("ip3_3D" + theExtensionString, "3D IP value 3.trk",
+	100, lowerIPBound, upperIPBound, false, true, true, "b", update) ;
+
+  tkcntHistosVal3D[3] = new FlavourHistograms<double>
+       ("ip4_3D" + theExtensionString, "3D IP value 4.trk",
+	100, lowerIPBound, upperIPBound, false, true, true, "b", update) ;
+
+  //2D
+  tkcntHistosVal2D[4] = new FlavourHistograms<double>
+       ("ip_2D" + theExtensionString, "2D IP value",
+	100, lowerIPBound, upperIPBound, false, true, true, "b", update) ;
+
+  tkcntHistosVal2D[0] = new FlavourHistograms<double>
+       ("ip1_2D" + theExtensionString, "2D IP value 1.trk",
+	100, lowerIPBound, upperIPBound, false, true, true, "b", update) ;
+
+  tkcntHistosVal2D[1] = new FlavourHistograms<double>
+       ("ip2_2D" + theExtensionString, "2D IP value 2.trk",
+	100, lowerIPBound, upperIPBound, false, true, true, "b", update) ;
+
+  tkcntHistosVal2D[2] = new FlavourHistograms<double>
+       ("ip3_2D" + theExtensionString, "2D IP value 3.trk",
+	100, lowerIPBound, upperIPBound, false, true, true, "b", update) ;
+
+  tkcntHistosVal2D[3] = new FlavourHistograms<double>
+       ("ip4" + theExtensionString, "2D IP value 4.trk",
+	100, lowerIPBound, upperIPBound, false, true, true, "b", update) ;
+
+
+  // IP error
+  // 3D
+  tkcntHistosErr3D[4] = new FlavourHistograms<double>
+       ("ipe_3D" + theExtensionString, "3D IP error",
+	100, lowerIPEBound, upperIPEBound, false, true, true, "b", update) ;
+
+  tkcntHistosErr3D[0] = new FlavourHistograms<double>
+       ("ipe1_3D" + theExtensionString, "3D IP error 1.trk",
+	100, lowerIPEBound, upperIPEBound, false, true, true, "b", update) ;
+
+  tkcntHistosErr3D[1] = new FlavourHistograms<double>
+       ("ipe2_3D" + theExtensionString, "3D IP error 2.trk",
+	100, lowerIPEBound, upperIPEBound, false, true, true, "b", update) ;
+
+  tkcntHistosErr3D[2] = new FlavourHistograms<double>
+       ("ipe3_3D" + theExtensionString, "3D IP error 3.trk",
+	100, lowerIPEBound, upperIPEBound, false, true, true, "b", update) ;
+
+  tkcntHistosErr3D[3] = new FlavourHistograms<double>
+       ("ipe4_3D" + theExtensionString, "3D IP error 4.trk",
+	100, lowerIPEBound, upperIPEBound, false, true, true, "b", update) ;
+
+  //2D
+  tkcntHistosErr2D[4] = new FlavourHistograms<double>
+       ("ipe_2D" + theExtensionString, "2D IP error",
+	100, lowerIPEBound, upperIPEBound, false, true, true, "b", update) ;
+
+  tkcntHistosErr2D[0] = new FlavourHistograms<double>
+       ("ipe1_2D" + theExtensionString, "2D IP error 1.trk",
+	100, lowerIPEBound, upperIPEBound, false, true, true, "b", update) ;
+
+  tkcntHistosErr2D[1] = new FlavourHistograms<double>
+       ("ipe2_2D" + theExtensionString, "2D IP error 2.trk",
+	100, lowerIPEBound, upperIPEBound, false, true, true, "b", update) ;
+
+  tkcntHistosErr2D[2] = new FlavourHistograms<double>
+       ("ipe3_2D" + theExtensionString, "2D IP error 3.trk",
+	100, lowerIPEBound, upperIPEBound, false, true, true, "b", update) ;
+
+  tkcntHistosErr2D[3] = new FlavourHistograms<double>
+       ("ipe4" + theExtensionString, "2D IP error 4.trk",
+	100, lowerIPEBound, upperIPEBound, false, true, true, "b", update) ;
+
+
+
+  // probability
   tkcntHistosProb3D[4] = new FlavourHistograms<float>
        ("prob_3D" + theExtensionString, "3D IP probability",
 	50, -1.1, 1.1, false, true, true, "b", update) ;
@@ -133,6 +232,10 @@ TrackIPTagPlotter::~TrackIPTagPlotter ()
   for(int n=0; n <= 4; n++) {
     delete tkcntHistosSig2D[n];
     delete tkcntHistosSig3D[n];
+    delete tkcntHistosVal2D[n];
+    delete tkcntHistosVal3D[n];
+    delete tkcntHistosErr2D[n];
+    delete tkcntHistosErr3D[n];
     delete tkcntHistosProb2D[n];
     delete tkcntHistosProb3D[n];
   }
@@ -170,31 +273,43 @@ void TrackIPTagPlotter::analyzeTag (const reco::BaseTagInfo * baseTagInfo,
   vector<unsigned int> sortedIndices = tagInfo->sortedIndexes(reco::TrackIPTagInfo::IP2DSig);
   for(unsigned int n=0; n < sortedIndices.size() && n < 4; n++) {
     tkcntHistosSig2D[n]->fill(jetFlav, ip[sortedIndices[n]].ip2d.significance());
+    tkcntHistosVal2D[n]->fill(jetFlav, ip[sortedIndices[n]].ip2d.value());
+    tkcntHistosErr2D[n]->fill(jetFlav, ip[sortedIndices[n]].ip2d.error());
   }
   sortedIndices = tagInfo->sortedIndexes(reco::TrackIPTagInfo::Prob2D);
   for(unsigned int n=0; n < sortedIndices.size() && n < 4; n++) {
     tkcntHistosProb2D[n]->fill(jetFlav, prob2d[sortedIndices[n]]);
   }
-  for(unsigned int n=sortedIndices.size(); n < 4; n++)
+  for(unsigned int n=sortedIndices.size(); n < 4; n++){
     tkcntHistosSig2D[n]->fill(jetFlav, lowerIPSBound-1.0);
-
+    tkcntHistosVal2D[n]->fill(jetFlav, lowerIPBound-1.0);
+    tkcntHistosErr2D[n]->fill(jetFlav, lowerIPEBound-1.0);
+  }
   sortedIndices = tagInfo->sortedIndexes(reco::TrackIPTagInfo::IP3DSig);
   for(unsigned int n=0; n < sortedIndices.size() && n < 4; n++) {
     tkcntHistosSig3D[n]->fill(jetFlav, ip[sortedIndices[n]].ip3d.significance());
+    tkcntHistosVal3D[n]->fill(jetFlav, ip[sortedIndices[n]].ip3d.value());
+    tkcntHistosErr3D[n]->fill(jetFlav, ip[sortedIndices[n]].ip3d.error());
   }
   sortedIndices = tagInfo->sortedIndexes(reco::TrackIPTagInfo::Prob3D);
   for(unsigned int n=0; n < sortedIndices.size() && n < 4; n++) {
     tkcntHistosProb3D[n]->fill(jetFlav, prob3d[sortedIndices[n]]);
   }
-  for(unsigned int n=sortedIndices.size(); n < 4; n++)
+  for(unsigned int n=sortedIndices.size(); n < 4; n++){
     tkcntHistosSig3D[n]->fill(jetFlav, lowerIPSBound-1.0);
-
+    tkcntHistosVal3D[n]->fill(jetFlav, lowerIPBound-1.0);
+    tkcntHistosErr3D[n]->fill(jetFlav, lowerIPEBound-1.0);
+  }
   for(unsigned int n=0; n < ip.size(); n++) {
     tkcntHistosSig2D[4]->fill(jetFlav, ip[n].ip2d.significance());
+    tkcntHistosVal2D[4]->fill(jetFlav, ip[n].ip2d.value());
+    tkcntHistosErr2D[4]->fill(jetFlav, ip[n].ip2d.error());
     tkcntHistosProb2D[4]->fill(jetFlav, prob2d[n]);
   }
   for(unsigned int n=0; n < ip.size(); n++) {
     tkcntHistosSig3D[4]->fill(jetFlav, ip[n].ip3d.significance());
+    tkcntHistosVal3D[4]->fill(jetFlav, ip[n].ip3d.value());
+    tkcntHistosErr3D[4]->fill(jetFlav, ip[n].ip3d.error());
     tkcntHistosProb3D[4]->fill(jetFlav, prob3d[n]);
   }
   GlobalPoint pv(tagInfo->primaryVertex()->position().x(),
@@ -336,6 +451,10 @@ void TrackIPTagPlotter::write(const bool allHisto)
   for(int n=0; n <= 4; n++) {
     tkcntHistosSig2D[n]->write(allHisto);
     tkcntHistosSig3D[n]->write(allHisto);
+    tkcntHistosVal2D[n]->write(allHisto);
+    tkcntHistosVal3D[n]->write(allHisto);
+    tkcntHistosErr2D[n]->write(allHisto);
+    tkcntHistosErr3D[n]->write(allHisto);
     tkcntHistosProb2D[n]->write(allHisto);
     tkcntHistosProb3D[n]->write(allHisto);
   }
@@ -356,6 +475,10 @@ void TrackIPTagPlotter::epsPlot(const TString & name)
   for(int n=0; n <= 4; n++) {
     tkcntHistosSig2D[n]->epsPlot(name);
     tkcntHistosSig3D[n]->epsPlot(name);
+    tkcntHistosVal2D[n]->epsPlot(name);
+    tkcntHistosVal3D[n]->epsPlot(name);
+    tkcntHistosErr2D[n]->epsPlot(name);
+    tkcntHistosErr3D[n]->epsPlot(name);
     tkcntHistosProb2D[n]->epsPlot(name);
     tkcntHistosProb3D[n]->epsPlot(name);
   }
