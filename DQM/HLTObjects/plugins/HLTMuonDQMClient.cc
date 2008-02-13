@@ -13,7 +13,7 @@ Implementation:
 //
 // Original Author:  Muriel VANDER DONCKT *:0
 //         Created:  Wed Dec 12 09:55:42 CET 2007
-// $Id: HLTMuonDQMClient.cc,v 1.3 2008/02/11 17:55:33 muriel Exp $
+// $Id: HLTMuonDQMClient.cc,v 1.4 2008/02/12 17:36:47 muriel Exp $
 //
 //
 
@@ -409,7 +409,7 @@ void HLTMuonDQMClient::htmlOutput(int run, string htmlDir, string htmlName) {
   cMuL3->SaveAs(histName.c_str()); 
   delete cMuL2;
   delete cMuL3; 
-  delete pav;
+//  delete pav;
   htmlFile << "<h2>Level 2</h2>" << endl;
   htmlFile << "<img src=\"Level2.png\"></img>" << endl;
   htmlFile << "<hr>" << endl;
