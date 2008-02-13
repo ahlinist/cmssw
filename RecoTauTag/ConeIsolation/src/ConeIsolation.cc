@@ -13,7 +13,7 @@
 //
 // Original Author:  Simone Gennai
 //      Created:  Thu Apr  6 09:56:23 CEST 2006
-// $Id: ConeIsolation.cc,v 1.26 2007/09/11 22:06:35 ratnik Exp $
+// $Id: ConeIsolation.cc,v 1.27 2008/02/12 11:11:32 gennai Exp $
 //
 //
 
@@ -55,6 +55,7 @@ ConeIsolation::ConeIsolation(const edm::ParameterSet& iConfig)
   vertexSrc = iConfig.getParameter<string>("vertexSrc");
   usingVertex = iConfig.getParameter<bool>("useVertex");
   usingBeamSpot = iConfig.getParameter<bool>("useBeamSpot"); //If false the OfflinePrimaryVertex will be used.
+  beamSpotProducer = iConfig.getParameter<edm::InputTag>("BeamSpotProducer");
   m_algo = new ConeIsolationAlgorithm(iConfig);
   
   produces<reco::JetTagCollection>(); 
@@ -116,7 +117,7 @@ if (not jetTracksAssociation->empty()) {
    if(usingBeamSpot)
      {
        //Create a new vertex with the information on x0 and Y0 from the beamspot, to be used in HLT.
-       iEvent.getByType(recoBeamSpotHandle);
+       iEvent.getByLabel(beamSpotProducer,recoBeamSpotHandle);
        vertexBeamSpot = *recoBeamSpotHandle;
        Vertex::Point bspoint(vertexBeamSpot.x0(),vertexBeamSpot.y0(),myPVtmp.z());
        Vertex combinedVertex = Vertex(bspoint,myPVtmp.error(),myPVtmp.chi2(),myPVtmp.ndof(),myPVtmp.tracksSize());
