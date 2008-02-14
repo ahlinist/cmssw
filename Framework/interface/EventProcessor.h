@@ -416,6 +416,7 @@ namespace edm {
     PrincipalCache                                principalCache_;
     std::auto_ptr<EventPrincipal>               sm_evp_;
     bool                                          shouldWeStop_;
+    bool                                          stateMachineWasInErrorState_;
 
     friend class EDLooperHelper;
     friend class event_processor::StateSentry;
