@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.6 2007/12/06 16:01:44 lat Exp $
+// $Id: DTRenderPlugin.cc,v 1.7 2008/01/22 19:15:25 muzaffar Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.6 $
-  \date $Date: 2007/12/06 16:01:44 $
+  \version $Revision: 1.7 $
+  \date $Date: 2008/01/22 19:15:25 $
 */
 
 #include <TProfile2D.h>
@@ -20,12 +20,7 @@
 #include "DTRenderPlugin.h"
 
 
-void DTRenderPlugin::initialise( int argc, char **argv ) {
-
-
-}
-
-bool DTRenderPlugin::applies( const ObjInfo &o, const ImgInfo &i ) {
+bool DTRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &i ) {
  
   if( o.name.find( "DT/" ) == 0 ) {
     return true;
@@ -35,7 +30,7 @@ bool DTRenderPlugin::applies( const ObjInfo &o, const ImgInfo &i ) {
 
 }
 
-void DTRenderPlugin::preDraw( TCanvas *c, const ObjInfo &o, const ImgInfo &i, RenderInfo &r ) {
+void DTRenderPlugin::preDraw( TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo &i, VisDQMRenderInfo &r ) {
 
 #ifdef DEBUG
   std::cout << "DTRenderPlugin:preDraw " << o.name << std::endl;
@@ -67,19 +62,19 @@ void DTRenderPlugin::preDraw( TCanvas *c, const ObjInfo &o, const ImgInfo &i, Re
 
 }
 
-void DTRenderPlugin::preDrawTProfile2D( TCanvas *c, const ObjInfo &o ) {
+void DTRenderPlugin::preDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   return;
 
 }
 
-void DTRenderPlugin::preDrawTProfile( TCanvas *c, const ObjInfo &o ) {
+void DTRenderPlugin::preDrawTProfile( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   return;
 
 }
 
-void DTRenderPlugin::preDrawTH2( TCanvas *c, const ObjInfo &o ) {
+void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   TH2* obj = dynamic_cast<TH2*>( o.object );
 
@@ -149,7 +144,7 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const ObjInfo &o ) {
 
 }
 
-void DTRenderPlugin::preDrawTH1( TCanvas *c, const ObjInfo &o ) {
+void DTRenderPlugin::preDrawTH1( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   TH1* obj = dynamic_cast<TH1*>( o.object );
 
@@ -192,15 +187,15 @@ void DTRenderPlugin::preDrawTH1( TCanvas *c, const ObjInfo &o ) {
     assert (line);
     
     if (line) {
-      if (o.flags & FLAG_ERROR) {
+      if (o.flags & DQMNet::DQM_FLAG_REPORT_ERROR) {
 	line->SetLineColor(TColor::GetColor("#CC0000"));
 	//	  std::cout << name << " has error" << std::endl;
       }
-      else if (o.flags & FLAG_WARNING) {
+      else if (o.flags & DQMNet::DQM_FLAG_REPORT_WARNING) {
 	line->SetLineColor(TColor::GetColor("#993300"));
 	//	  std::cout << name << " has worning" << std::endl;
       }
-      else if (o.flags & FLAG_REPORT) { 
+      else if (o.flags & DQMNet::DQM_FLAG_REPORT_OTHER) { 
 	line->SetLineColor(TColor::GetColor("#FFCC00"));
 	//	  std::cout << name << " has other report" << std::endl;
       }
@@ -240,7 +235,7 @@ void DTRenderPlugin::preDrawTH1( TCanvas *c, const ObjInfo &o ) {
 
 }
 
-void DTRenderPlugin::postDraw( TCanvas *c, const ObjInfo &o, const ImgInfo &i ) {
+void DTRenderPlugin::postDraw( TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo &i ) {
 
 #ifdef DEBUG
   std::cout << "DTRenderPlugin:postDraw " << o.name << std::endl;
@@ -268,25 +263,25 @@ void DTRenderPlugin::postDraw( TCanvas *c, const ObjInfo &o, const ImgInfo &i ) 
 
 }
 
-void DTRenderPlugin::postDrawTProfile2D( TCanvas *c, const ObjInfo &o ) {
+void DTRenderPlugin::postDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   return;
 
 }
 
-void DTRenderPlugin::postDrawTProfile( TCanvas *c, const ObjInfo &o ) {
+void DTRenderPlugin::postDrawTProfile( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   return;
 
 }
 
-void DTRenderPlugin::postDrawTH2( TCanvas *c, const ObjInfo &o ) {
+void DTRenderPlugin::postDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   return;
 
 }
 
-void DTRenderPlugin::postDrawTH1( TCanvas *c, const ObjInfo &o ) {
+void DTRenderPlugin::postDrawTH1( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   return;
 

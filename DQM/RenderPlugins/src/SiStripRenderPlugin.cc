@@ -2,8 +2,8 @@
   \file SiStripRenderPlugin
   \brief Display Plugin for SiStrip DQM Histograms
   \author S. Dutta 
-  \version $Revision: 1.1 $
-  \date $Date: 2007/12/10 16:20:58 $
+  \version $Revision: 1.2 $
+  \date $Date: 2008/01/21 22:14:47 $
 */
 
 #include <TProfile2D.h>
@@ -16,12 +16,7 @@
 #include "SiStripRenderPlugin.h"
 
 
-void SiStripRenderPlugin::initialise( int argc, char **argv ) {
-
-
-}
-
-bool SiStripRenderPlugin::applies( const ObjInfo &o, const ImgInfo &i ) {
+bool SiStripRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &i ) {
  
   if( o.name.find( "SiStrip/" ) == 0 ) {
     return true;
@@ -31,14 +26,11 @@ bool SiStripRenderPlugin::applies( const ObjInfo &o, const ImgInfo &i ) {
 
 }
 
-void SiStripRenderPlugin::preDraw( TCanvas *c, const ObjInfo &o, const ImgInfo &i, RenderInfo &r ) {
+void SiStripRenderPlugin::preDraw( TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo &i, VisDQMRenderInfo &r ) {
 
   c->cd();
 
-  if( dynamic_cast<TProfile*>( o.object ) ) {
-    preDrawTProfile( c, o );
-  }
-  else if( dynamic_cast<TH2*>( o.object ) ) {
+  if( dynamic_cast<TH2*>( o.object ) ) {
     preDrawTH2( c, o );
   }
   else if( dynamic_cast<TH1*>( o.object ) ) {
@@ -48,13 +40,7 @@ void SiStripRenderPlugin::preDraw( TCanvas *c, const ObjInfo &o, const ImgInfo &
 }
 
 
-void SiStripRenderPlugin::preDrawTProfile( TCanvas *c, const ObjInfo &o ) {
-
-  return;
-
-}
-
-void SiStripRenderPlugin::preDrawTH2( TCanvas *c, const ObjInfo &o ) {
+void SiStripRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   TH2* obj = dynamic_cast<TH2*>( o.object );
 
@@ -106,7 +92,7 @@ void SiStripRenderPlugin::preDrawTH2( TCanvas *c, const ObjInfo &o ) {
   return;
 }
 
-void SiStripRenderPlugin::preDrawTH1( TCanvas *c, const ObjInfo &o ) {
+void SiStripRenderPlugin::preDrawTH1( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   TH1* obj = dynamic_cast<TH1*>( o.object );
 
@@ -122,7 +108,7 @@ void SiStripRenderPlugin::preDrawTH1( TCanvas *c, const ObjInfo &o ) {
 
 }
 
-void SiStripRenderPlugin::postDraw( TCanvas *c, const ObjInfo &o, const ImgInfo &i ) {
+void SiStripRenderPlugin::postDraw( TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo &i ) {
 
 #ifdef DEBUG
   std::cout << "SiStripRenderPlugin:postDraw " << o.name << std::endl;
@@ -130,12 +116,8 @@ void SiStripRenderPlugin::postDraw( TCanvas *c, const ObjInfo &o, const ImgInfo 
 
   c->cd();
 
-  if( dynamic_cast<TProfile*>( o.object ) ) {
-    postDrawTProfile( c, o );
-  } else if( dynamic_cast<TH2*>( o.object ) ) {
-    postDrawTH2( c, o );
-  } else if( dynamic_cast<TH1*>( o.object ) ) {
-    postDrawTH2( c, o );
+  if( dynamic_cast<TH1*>( o.object ) ) {
+    postDrawTH1( c, o );
   }
 
 
@@ -145,31 +127,19 @@ void SiStripRenderPlugin::postDraw( TCanvas *c, const ObjInfo &o, const ImgInfo 
 
 }
 
-void SiStripRenderPlugin::postDrawTProfile( TCanvas *c, const ObjInfo &o ) {
-
-  return;
-
-}
-
-void SiStripRenderPlugin::postDrawTH2( TCanvas *c, const ObjInfo &o ) {
-
-  return;
-
-}
-
-void SiStripRenderPlugin::postDrawTH1( TCanvas *c, const ObjInfo &o ) {
+void SiStripRenderPlugin::postDrawTH1( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   TText tt;
   tt.SetTextSize(0.12);
   if (o.flags == 0) return;
   else {
-    if (FLAG_ERROR) {
+    if (o.flags & DQMNet::DQM_FLAG_REPORT_ERROR) {
       tt.SetTextColor(2);
       tt.DrawTextNDC(0.5, 0.5, "Error");
-    } else if (FLAG_WARNING) {
+    } else if (o.flags & DQMNet::DQM_FLAG_REPORT_WARNING) {
       tt.SetTextColor(5);
       tt.DrawTextNDC(0.5, 0.5, "Warning");
-    } else if (FLAG_REPORT) { 
+    } else if (o.flags & DQMNet::DQM_FLAG_REPORT_OTHER) { 
       tt.SetTextColor(1);
       tt.DrawTextNDC(0.5, 0.5, "Other ");      
     } else {
@@ -181,4 +151,3 @@ void SiStripRenderPlugin::postDrawTH1( TCanvas *c, const ObjInfo &o ) {
   return;
 
 }
-

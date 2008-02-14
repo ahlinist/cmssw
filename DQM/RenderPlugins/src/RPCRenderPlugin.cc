@@ -12,13 +12,7 @@
 
 
 
-void RPCRenderPlugin::initialise( int argc, char **argv, DaqMonitorBEInterface *mui ) {
-
- 
-}
-
-
-bool RPCRenderPlugin::applies( const ObjInfo &o, const ImgInfo &i ) {
+bool RPCRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &i ) {
 
    if( o.name.find( "RPC/RecHits/GlobalHistograms" ) == 0 ) {
     
@@ -29,7 +23,7 @@ bool RPCRenderPlugin::applies( const ObjInfo &o, const ImgInfo &i ) {
   
 }
 
-void RPCRenderPlugin::preDraw( TCanvas *c, const ObjInfo &o, const ImgInfo &i, RenderInfo &r ) {
+void RPCRenderPlugin::preDraw( TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo &i, VisDQMRenderInfo &r ) {
 
 #ifdef DEBUG
   std::cout << "RPCRenderPlugin:preDraw " << o.name << std::endl;
@@ -50,7 +44,7 @@ void RPCRenderPlugin::preDraw( TCanvas *c, const ObjInfo &o, const ImgInfo &i, R
 }
 
 
-void RPCRenderPlugin::preDrawTH2( TCanvas *c, const ObjInfo &o ) {
+void RPCRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   TH2* obj = dynamic_cast<TH2*>( o.object );
 
@@ -79,31 +73,5 @@ void RPCRenderPlugin::preDrawTH2( TCanvas *c, const ObjInfo &o ) {
 
   return;
 
-
-}
-
-
-void RPCRenderPlugin::postDraw( TCanvas *c, const ObjInfo &o, const ImgInfo &i ) {
-
-#ifdef DEBUG
-  std::cout << "RPCRenderPlugin:postDraw " << o.name << std::endl;
-#endif
-
-  c->cd();
-
-  if( dynamic_cast<TH2*>( o.object ) ) {
-    postDrawTH2( c, o );
-  }
-
-#ifdef DEBUG
-  std::cout << "done" << std::endl;
-#endif
-
-}
-
-
-void RPCRenderPlugin::postDrawTH2( TCanvas *c, const ObjInfo &o ) {
-
-  return;
 
 }
