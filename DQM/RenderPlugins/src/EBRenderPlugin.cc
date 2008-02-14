@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.53 2008/02/07 13:34:35 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.54 2008/02/07 13:52:56 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.53 $
-  \date $Date: 2008/02/07 13:34:35 $
+  \version $Revision: 1.54 $
+  \date $Date: 2008/02/07 13:52:56 $
 */
 
 #include <TH1F.h>
@@ -116,7 +116,7 @@ void EBRenderPlugin::initialise( int argc, char **argv ) {
 
 }
 
-bool EBRenderPlugin::applies( const ObjInfo &o, const ImgInfo &i ) {
+bool EBRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &i ) {
  
   if( o.name.find( "EcalBarrel/EB" ) == 0 ) {
     return true;
@@ -130,7 +130,7 @@ bool EBRenderPlugin::applies( const ObjInfo &o, const ImgInfo &i ) {
 
 }
 
-void EBRenderPlugin::preDraw( TCanvas *c, const ObjInfo &o, const ImgInfo &i, RenderInfo &r ) {
+void EBRenderPlugin::preDraw( TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo &i, VisDQMRenderInfo &r ) {
 
 #ifdef DEBUG
   std::cout << "EBRenderPlugin:preDraw " << o.name << std::endl;
@@ -182,7 +182,7 @@ void EBRenderPlugin::preDraw( TCanvas *c, const ObjInfo &o, const ImgInfo &i, Re
 
 }
 
-void EBRenderPlugin::preDrawTProfile2D( TCanvas *c, const ObjInfo &o ) {
+void EBRenderPlugin::preDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   TProfile2D* obj = dynamic_cast<TProfile2D*>( o.object );
 
@@ -239,7 +239,7 @@ void EBRenderPlugin::preDrawTProfile2D( TCanvas *c, const ObjInfo &o ) {
 
 }
 
-void EBRenderPlugin::preDrawTProfile( TCanvas *c, const ObjInfo &o ) {
+void EBRenderPlugin::preDrawTProfile( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   TProfile* obj = dynamic_cast<TProfile*>( o.object );
 
@@ -253,7 +253,7 @@ void EBRenderPlugin::preDrawTProfile( TCanvas *c, const ObjInfo &o ) {
 
 }
 
-void EBRenderPlugin::preDrawTH3F( TCanvas *c, const ObjInfo &o ) {
+void EBRenderPlugin::preDrawTH3F( TCanvas *c, const DQMNet::CoreObject &o ) {
   
   TH3F* obj = dynamic_cast<TH3F*>( o.object );
   
@@ -267,7 +267,7 @@ void EBRenderPlugin::preDrawTH3F( TCanvas *c, const ObjInfo &o ) {
   
 } 
 
-void EBRenderPlugin::preDrawTH2F( TCanvas *c, const ObjInfo &o ) {
+void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   TH2F* obj = dynamic_cast<TH2F*>( o.object );
 
@@ -428,7 +428,7 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const ObjInfo &o ) {
 
 }
 
-void EBRenderPlugin::preDrawTH1F( TCanvas *c, const ObjInfo &o ) {
+void EBRenderPlugin::preDrawTH1F( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   TH1F* obj = dynamic_cast<TH1F*>( o.object );
 
@@ -479,7 +479,7 @@ void EBRenderPlugin::preDrawTH1F( TCanvas *c, const ObjInfo &o ) {
 
 }
 
-void EBRenderPlugin::postDraw( TCanvas *c, const ObjInfo &o, const ImgInfo &i ) {
+void EBRenderPlugin::postDraw( TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo &i ) {
 
 #ifdef DEBUG
   std::cout << "EBRenderPlugin:postDraw " << o.name << std::endl;
@@ -506,7 +506,7 @@ void EBRenderPlugin::postDraw( TCanvas *c, const ObjInfo &o, const ImgInfo &i ) 
 
 }
 
-void EBRenderPlugin::postDrawTProfile2D( TCanvas *c, const ObjInfo &o ) {
+void EBRenderPlugin::postDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   TProfile2D* obj = dynamic_cast<TProfile2D*>( o.object );
 
@@ -560,7 +560,7 @@ void EBRenderPlugin::postDrawTProfile2D( TCanvas *c, const ObjInfo &o ) {
 
 }
 
-void EBRenderPlugin::postDrawTH3F( TCanvas *c, const ObjInfo &o ) {
+void EBRenderPlugin::postDrawTH3F( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   TH3F* obj = dynamic_cast<TH3F*>( o.object );
 
@@ -570,7 +570,7 @@ void EBRenderPlugin::postDrawTH3F( TCanvas *c, const ObjInfo &o ) {
 
 }
 
-void EBRenderPlugin::postDrawTH2F( TCanvas *c, const ObjInfo &o ) {
+void EBRenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   TH2F* obj = dynamic_cast<TH2F*>( o.object );
 
@@ -670,7 +670,7 @@ void EBRenderPlugin::postDrawTH2F( TCanvas *c, const ObjInfo &o ) {
 
 }
 
-void EBRenderPlugin::postDrawTH1F( TCanvas *c, const ObjInfo &o ) {
+void EBRenderPlugin::postDrawTH1F( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   TH1F* obj = dynamic_cast<TH1F*>( o.object );
 
