@@ -9,6 +9,7 @@
 #include <TROOT.h>
 #include <TFile.h>
 #include <TTree.h>
+#include <TH1.h>
 
 #include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAna00Event.hh"
 #include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaTrack.hh"
@@ -18,6 +19,7 @@
 
 // -- Yikes!
 TAna00Event  *gHFEvent;
+TFile        *gHFFile;
 
 using namespace::std;
 
@@ -32,7 +34,10 @@ HFTree::HFTree(const edm::ParameterSet& iConfig) {
   fEvent = new TAna00Event(0);
   fTree->Branch("TAna00Event", "TAna00Event", &fEvent, 256000/8, 1);
 
+  TH1D *h1 = new TH1D("h1", "h1", 20, 0., 20.);
+
   gHFEvent = fEvent;
+  gHFFile  = fFile;
 
 }
 

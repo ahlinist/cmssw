@@ -25,8 +25,12 @@
 #include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TGenCand.hh"
 #include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaVertex.hh"
 
+#include <TFile.h>
+#include <TH1.h>
+
 // -- Yikes!
 extern TAna00Event *gHFEvent;
+extern TFile       *gHFFile;
 
 using namespace std;
 using namespace edm;
@@ -63,7 +67,7 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   // -- get the collection of RecoTracks 
   edm::Handle<reco::TrackCollection> tracks;
   iEvent.getByLabel(fTracksLabel.c_str(), tracks);  
-  
+
   // -- get the tracking particle collection needed for truth matching. Only on RECO data tier!
   reco::RecoToSimCollection recSimColl;
   if (1 == fDoTruthMatching) {
@@ -89,6 +93,8 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
   if (fVerbose > 0) cout << "===> Tracks " << endl;
   TAnaTrack *pTrack; 
+  TH1D *h1 = (TH1D*)gHFFile->Get("h1");
+  h1->Fill(tracks->size());
   for (unsigned int i = 0; i < tracks->size(); ++i){    
     reco::TrackRef rTrack(tracks, i);
     reco::Track track(*rTrack);
