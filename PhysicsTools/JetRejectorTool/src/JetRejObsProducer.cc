@@ -46,7 +46,8 @@ void JetRejObsProducer::produce( edm::Event& iEvent, const edm::EventSetup& iSet
   iEvent.getByLabel("offlinePrimaryVerticesFromCTFTracks", primvertex); 
 
   Handle<vector<reco::GenJet> > genjets;
-  if (switchSignalDefinition == 2) iEvent.getByLabel( selgenjetsrc_, genjets); 
+  //  if (switchSignalDefinition == 2) iEvent.getByLabel( selgenjetsrc_, genjets); 
+  if (switchSignalDefinition > 1) iEvent.getByLabel( selgenjetsrc_, genjets); 
   
   Handle<vector<reco::CaloJet> > jets;
   iEvent.getByLabel( selcalojetsrc_, jets); 
@@ -55,13 +56,13 @@ void JetRejObsProducer::produce( edm::Event& iEvent, const edm::EventSetup& iSet
   iEvent.getByLabel (seljettagsrc_, jettags);
 
   // reco-gen matching (see PhysicsTools/JetMCAlgos/test/matchOneToOne.cc, V00-05-00):
-  edm::Handle<CandidateCollection> source;
-  edm::Handle<CandidateCollection> matched;
+  // edm::Handle<CandidateCollection> source;
+  // edm::Handle<CandidateCollection> matched;
   edm::Handle<CandMatchMap>        matchedjetsOne1;
   edm::Handle<CandMatchMap>        matchedjetsOne2;
   try {
-    iEvent.getByLabel ("genJetSele",source);
-    iEvent.getByLabel ("topJetSele",matched);
+    // iEvent.getByLabel ("genJetSele",source);
+    // iEvent.getByLabel ("topJetSele",matched);
     iEvent.getByLabel (matchedjetsOne1_, matchedjetsOne1 );
     iEvent.getByLabel (matchedjetsOne2_, matchedjetsOne2 );
   } catch(std::exception& ce) {
@@ -74,29 +75,7 @@ void JetRejObsProducer::produce( edm::Event& iEvent, const edm::EventSetup& iSet
   leptons.clear();
   quarks.clear();
 
-  //semileptonic decays with a muon and etaGen of partons less 2.4
-   /*
-  for(size_t igp = 0; igp < genEvt->size(); ++igp){
-    const reco::Candidate & cand = (*genEvt)[igp];
-    int st = cand.status(); 
-    if(st==3){
-      if (switchSignalDefinition == 1) {
-	//	cout<< "@@@@ ===> switch =1!!!"<< endl;
-	if(abs((*genEvt)[igp].pdgId())<6 && (*genEvt)[igp].mother()->pdgId() != 2212 &&(*genEvt)[igp].pdgId()!=(*genEvt)[igp].mother()->pdgId()){// without isr
- // if(abs((*genEvt)[igp].pdgId())<6 &&(*genEvt)[igp].pdgId()!=(*genEvt)[igp].mother()->pdgId()){ //with isr
-	  quarks.push_back(& cand);
-	}
-      }
-      //      if(abs((*genEvt)[igp].pdgId()==11) || abs((*genEvt)[igp].pdgId()==13)) leptons.push_back(&(*genEvt)[igp]);
-   if( (*genEvt)[igp].pdgId()== -11 || (*genEvt)[igp].pdgId()== 11 || abs((*genEvt)[igp].pdgId()==13)) leptons.push_back(&(*genEvt)[igp]);
-      //    if((*genEvt)[igp].pdgId() == -11) cout<<"@@@===>elettroni in file = "<<(*genEvt)[igp].pdgId()<<endl;
-    }
-  }
-   */ // si puo' togliere tutta questa parte che e' fatta da  GenParticleStatus3Selector
-
-
-
-  if (switchSignalDefinition > 1) { // in this case, the "quarks" are GenJets or PartonJets
+  /* if (switchSignalDefinition > 1) { // in this case, the "quarks" are GenJets or PartonJets
     vector<reco::GenJet> genjet;
     if (switchSignalDefinition == 2) {
       //    cout<< "@@@@ ===> switch =2!!!"<< endl;
@@ -111,7 +90,7 @@ void JetRejObsProducer::produce( edm::Event& iEvent, const edm::EventSetup& iSet
       const reco::Candidate & cand = genjet[i];
       quarks.push_back(& cand);
     }
-  }
+    }*/
 
   // create the vectors
   auto_ptr< vector< JetRejObs > > Obs( new  vector<JetRejObs > ); 
@@ -140,7 +119,7 @@ void JetRejObsProducer::produce( edm::Event& iEvent, const edm::EventSetup& iSet
 	   double eta2 = (*recoRef).eta();
 	   double phi2 = (*recoRef).phi();
 	   if (pt1==pt2 && eta1==eta2 && phi1==phi2) {
-	     vctidxJet.push_back( inr ) ;
+	     if(DeltaRjp < DeltaRcut_) vctidxJet.push_back( inr ) ;
 	     continue;
 	   }
 	 }
@@ -181,14 +160,30 @@ void JetRejObsProducer::produce( edm::Event& iEvent, const edm::EventSetup& iSet
     for(unsigned int inr=0; inr < calojet.size(); inr++ ){
       wantedJet = 0.;
       for(unsigned int ij =0; ij < vctidxJet.size(); ij++){
-	if (inr == vctidxJet[ij]) wantedJet = 1.; 
+	if (inr == vctidxJet[ij]) wantedJet = 1.;
       }
-      
+      double JetEta = calojet[inr].eta(); 
+      double JetPhi = calojet[inr].phi(); 
+      bool trk_Jet_Ass = false;
+      for(unsigned int sjt=0; sjt< jettags->size(); sjt++){
+	edm::RefVector< reco::TrackCollection > tracks;
+	tracks = (*jettags)[sjt].tracks();
+	
+	//  reco::Jet JetTrAss;
+	edm::RefToBase<Jet> JetTrAss;
+	JetTrAss = (*jettags)[sjt].jet();
+
+	if((*JetTrAss).eta() != JetEta && (*JetTrAss).phi() != JetPhi) continue;    
+	//	for(unsigned int sti=0; sti<tracks.size(); sti++){
+	if(tracks.size() > 0)  trk_Jet_Ass = true;
+	  //	}
+      }   
       //observable class: JetRejLRObservables
-      JetRejObs obs = (*myJetRejLRObs) (calojet[inr], primvertex, jettags, wantedJet);
+      if(trk_Jet_Ass){
+	JetRejObs obs = (*myJetRejLRObs) (calojet[inr], primvertex, jettags, wantedJet);
       
       myObs->push_back( obs );
-      
+      }
     }//close the loop on jets!!!!
   }//close nogluonradiation
   
