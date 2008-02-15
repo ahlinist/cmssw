@@ -5,6 +5,7 @@
  <use name=FWCore/Framework>
  <use name=rootcintex>
  <use name=root>
- <bin file="JetRejCombLR_SoverSplusBLoop.cpp"> </bin>
-# <bin file="prova.cpp"> </bin>
+ <bin file="JetRejCombLR_SoverSplusBLoop_parton.cpp"> </bin>
+ <bin file="JetRejCombLR_SoverSplusBLoop_genjet.cpp"> </bin>
+ <bin file="JetRejCombLR_SoverSplusBLoop_partonjet.cpp"> </bin>
 </environment>
