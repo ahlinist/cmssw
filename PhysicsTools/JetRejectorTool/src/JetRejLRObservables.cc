@@ -135,7 +135,8 @@ JetRejObs  JetRejLRObservables::operator()(reco::CaloJet& calojet, edm::Handle<v
   jetCombVarVal.push_back(pair<int,double>(2,obs2));
 
   //obs3: Pt Jet
-  double obs3 = TMath::Log(calojet.pt());
+   double obs3 = TMath::Log(calojet.pt());
+  //  double obs3 = calojet.pt();
   jetCombVarVal.push_back(pair<int,double>(3,obs3));
  
   //obs4: n90
