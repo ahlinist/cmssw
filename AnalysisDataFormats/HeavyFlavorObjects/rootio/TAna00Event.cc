@@ -13,12 +13,17 @@ TAna00Event::TAna00Event(Int_t Option) {
   fSigTracks       = new TClonesArray("TAnaTrack", 1000);
   fnSigTracks      = 0;
 
+  fCaloJets        = new TClonesArray("TAnaJet", 1000);
+  fnCaloJets       = 0;
+
+  fGenJets         = new TClonesArray("TAnaJet", 1000);
+  fnGenJets        = 0;
+
   fCandidates      = new TClonesArray("TAnaCand", 1000);
   fnCandidates     = 0;
 
   fGenCands        = new TClonesArray("TGenCand", 1000);
   fnGenCands       = 0;
-
 }
 
 // ----------------------------------------------------------------------
@@ -38,7 +43,6 @@ void TAna00Event::Clear(Option_t *option) {
   fnRecTracks = 0;
   //  cout << " ... done " << endl;
 
-
   TAnaTrack *pSigTrack;
   //  cout << "Starting to clear signal tracks ";
   for (i = 0; i < fnSigTracks; i++) {
@@ -49,6 +53,25 @@ void TAna00Event::Clear(Option_t *option) {
   fnSigTracks = 0;
   //  cout << " ... done " << endl;
 
+  TAnaJet *pCaloJet;
+  //  cout << "Starting to clear jets ";
+  for (i = 0; i < fnCaloJets; i++) {
+    pCaloJet = getCaloJet(i);
+    pCaloJet->clear();
+  }
+  fCaloJets->Clear(option);
+  fnCaloJets = 0;
+  //  cout << " ... done " << endl;
+
+  TAnaJet *pGenJet;
+  //  cout << "Starting to clear jets ";
+  for (i = 0; i < fnGenJets; i++) {
+    pGenJet = getGenJet(i);
+    pGenJet->clear();
+  }
+  fGenJets->Clear(option);
+  fnGenJets = 0;
+  //  cout << " ... done " << endl;
 
   TAnaCand *pCand;
   //  cout << "Starting to clear candidates ";
@@ -60,7 +83,6 @@ void TAna00Event::Clear(Option_t *option) {
   fnCandidates = 0;
   //  cout << " ... done " << endl;
 
-
   TGenCand *pGenCand;
   //  cout << "Starting to clear gencands ";
   for (i = 0; i < fnGenCands; i++) {
@@ -70,7 +92,6 @@ void TAna00Event::Clear(Option_t *option) {
   fGenCands->Clear(option);
   fnGenCands = 0;
   //  cout << " ... done " << endl;
-
 
 }
 
@@ -98,20 +119,21 @@ void TAna00Event::dumpGenBlock() {
 }
 
 // ----------------------------------------------------------------------
-int TAna00Event::getGenIndex(double px, double py, double pz, int id) {
+int TAna00Event::getGenIndex(double px, double py, double pz, int id, double precision) {
   TGenCand *pGenCand;
   int index(-1);
 
   //   cout << "Searching among " << fnGenCands << " cands for match to p = (" 
   //        << px << ", " << py << ", " << pz << ") with ID = " << id << endl;
 
-  double matchPrecision(0.005);
   for (int i = 0; i < fnGenCands; i++) {
     pGenCand = getGenCand(i);
-    if (pGenCand->fID != id) continue;
-    if ((TMath::Abs((pGenCand->fP.X() - px))/px) > matchPrecision) continue;
-    if ((TMath::Abs((pGenCand->fP.Y() - py))/py) > matchPrecision) continue;
-    if ((TMath::Abs((pGenCand->fP.Z() - pz))/pz) > matchPrecision) continue;
+    if (id != -1) {
+      if (pGenCand->fID != id) continue;
+    }
+    if ((TMath::Abs((pGenCand->fP.X() - px))/px) > precision) continue;
+    if ((TMath::Abs((pGenCand->fP.Y() - py))/py) > precision) continue;
+    if ((TMath::Abs((pGenCand->fP.Z() - pz))/pz) > precision) continue;
     index = i; 
     //     cout << "I think this is a match at index= " << index 
     // 	 << "  " << px << " " << py << " " << pz << " " << endl;
@@ -149,6 +171,31 @@ TAnaTrack* TAna00Event::addSigTrack() {
   return (TAnaTrack*)d[d.GetLast()];
 }
 
+// ----------------------------------------------------------------------
+TAnaJet* TAna00Event::getCaloJet(Int_t n) { 
+  return (TAnaJet*)fCaloJets->UncheckedAt(n); 
+}
+
+// ----------------------------------------------------------------------
+TAnaJet* TAna00Event::addCaloJet() {
+  TClonesArray& d = *fCaloJets; 
+  new(d[d.GetLast()+1]) TAnaJet(fnCaloJets);
+  ++fnCaloJets;
+  return (TAnaJet*)d[d.GetLast()];
+}
+
+// ----------------------------------------------------------------------
+TAnaJet* TAna00Event::getGenJet(Int_t n) { 
+  return (TAnaJet*)fGenJets->UncheckedAt(n); 
+}
+
+// ----------------------------------------------------------------------
+TAnaJet* TAna00Event::addGenJet() {
+  TClonesArray& d = *fGenJets; 
+  new(d[d.GetLast()+1]) TAnaJet(fnGenJets);
+  ++fnGenJets;
+  return (TAnaJet*)d[d.GetLast()];
+}
 
 // ----------------------------------------------------------------------
 TAnaCand* TAna00Event::getCand(Int_t n) { 
