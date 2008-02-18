@@ -21,14 +21,19 @@ For items in a compound: Item number, Comment, Material (has to be
 o TIB Layer CF support cylinder
   -----------------------------
 
-GSguazzoni 20070922
+GSguazzoni 20080218
 
-This is a meta material introduced in case of fine tuning; now good
-agreement with 100% CF.
-
+(1) CF of cylinder skins
+(2)(3) Kapton strips (320g) to hold optical
+       fibers and fixing glue (170g) evenly distributed over
+       ~13627cm3 of "TIB_CFCylinder" volume.
+(4) Silicone spirals (300g) to group fibers, distributed as above
 ......................................................................
-# "TIB layer support"      "TIB_CFCylinder"         1.   22.73
-* 1 "CF cylinder"          "Carbon fibre str."    1.     1   SUP
+# "TIB layer support"      "TIB_CFCylinder"       1.      -1.
+* 1 "CF cylinder"          "Carbon fibre str."    1.       1   SUP
+* 2 "Kapton strips"        "T_Kapton"             0.01677  1   SUP
+* 3 "Glue"                 "Epoxy"                0.00960  1   SUP
+* 4 "Silicone spirals"     "Silicone_Gel"         0.02281  1   SUP 
 ......................................................................
 ======================================================================
 

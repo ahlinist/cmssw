@@ -40,6 +40,9 @@
   12.461*mm, 4.*mm, [MFRingOutR]-[tiblayerpar:MFRingT], [MFRingOutR]
   </Vector>
 
+  <String  name="FillerMaterial"    value="materials:T_G10"/>
+  <Numeric name="FillerDeltaz"      value="11*mm"/>
+
   <String name="RibMaterial"        value="materials:Carbon fibre str."/>
   <Vector name="RibWidth" type="numeric" nEntries="6">
    [tiblayerpar:RibWidth1], [tiblayerpar:RibWidth2], [tiblayerpar:RibWidth2], 
