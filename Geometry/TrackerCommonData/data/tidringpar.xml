@@ -42,6 +42,17 @@
 <!-- Modules -->
  <Constant name="ModuleZDS"         value="1.305*cm"/>
  <Constant name="ModuleZSS"         value="1.226*cm"/>
+<!--  Disk inserts for the fixation of the modules -->
+ <Constant name="ModuleFixRin"       value="0.160*cm"/>
+ <Constant name="ModuleFixRout"      value="0.515*cm"/>
+ <Constant name="ModuleFixRinSmall"  value="0.140*cm"/>
+ <Constant name="ModuleFixRoutSmall" value="0.410*cm"/>
+ <Constant name="ModuleFixExtraT"    value="[tid:zero]"/> 
+<!-- CCUM boxes -->
+ <Constant name="CCUMH"              value="3.30*cm"/>
+ <Constant name="CCUMW"              value="2.40*cm"/>
+ <Constant name="CCUMT"              value="0.76*cm"/>
+ <Constant name="CCUMZ"              value="[ICBT]+[FiberLayerT]+([StructureT]+[CCUMT])/2"/>
 </ConstantsSection>
 
 <SolidSection label="tidringpar.xml">
@@ -55,14 +66,34 @@
        dy="[ICCT]/2"                  dz="[ICCH]/2"/>
  <Box name="TIDICCDS"                 dx="[ICCW]"
        dy="[ICCT]/2"                  dz="[ICCH]/2"/>
+ <Box name="TIDCCUM"                  dx="[CCUMW]/2"
+       dy="[CCUMH]/2"                  dz="[CCUMT]/2"/>
  <Box name="TIDManifoldFix"           dx="[ManifoldFixW]/2"
        dy="[ManifoldFixH]/2"          dz="[ManifoldFixT]/2"/>
+ <Tubs name="TIDModuleFix"            rMin="[ModuleFixRin]" 
+       rMax="[ModuleFixRout]"         dz="[ModuleFixExtraT]+[StructureT]/2" 
+       startPhi="0*deg"               deltaPhi="360.*deg"/>
+ <Tubs name="TIDModuleFixSmall"       rMin="[ModuleFixRinSmall]"
+       rMax="[ModuleFixRoutSmall]"    dz="[ModuleFixExtraT]+[StructureT]/2" 
+       startPhi="0*deg"               deltaPhi="360.*deg"/>
 </SolidSection>
 
 <LogicalPartSection label="tidringpar.xml">
  <LogicalPart name="TIDManifoldFix" category="unspecified">
    <rSolid name="TIDManifoldFix"/>
    <rMaterial name="materials:Aluminium"/>
+ </LogicalPart>
+ <LogicalPart name="TIDModuleFix" category="unspecified">
+  <rSolid name="TIDModuleFix"/>
+  <rMaterial name="tidmaterial:TID_ModuleFix"/>
+ </LogicalPart>
+ <LogicalPart name="TIDModuleFixSmall" category="unspecified">
+  <rSolid name="TIDModuleFixSmall"/>
+  <rMaterial name="tidmaterial:TID_ModuleFix"/>
+ </LogicalPart>
+ <LogicalPart name="TIDCCUMBox" category="unspecified">
+  <rSolid name="TIDCCUM"/>
+  <rMaterial name="tibtidcommonmaterial:TIBTID_CCUM"/>
  </LogicalPart>
 </LogicalPartSection>
 
