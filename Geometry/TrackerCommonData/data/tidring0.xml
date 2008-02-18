@@ -14,6 +14,7 @@
            [tidringpar:ICBTailTol])"/>
  <Constant name="ICBTailRPos"    value="([tidringpar:Rout]+[ICBTailR]-
            [tidringpar:ICBTailTol])/2"/>
+ <Constant name="CCUMrPos"         value="[ICBTailR]+2*[tidringpar:ICBTailTol]+[tidringpar:CCUMW]/2"/> 
  <Constant name="CoolR1"           value="[Rmin]+[tidmodule0:ModuleHeight]-[tidmodule0:CoolInsertShift]"/>
  <Constant name="CoolR2"           value="[Rmin]+[tidmodule0:ModuleHeight]-[tidmodpar:CoolInsertHeightDS]+[tidringpar:CoolD]/2"/>
  <Constant name="DOHMrIn"          value="44.5*cm"/>
@@ -28,6 +29,8 @@
  <Constant name="FlatCablephiPosOff"   value="3*deg" /> 
  <Constant name="FlatCablephiPosL"     value="[FlatCablephiPos]-[FlatCablephiPosOff]-[FlatCabledPhi]/2" /> 
  <Constant name="FlatCablephiPosR"     value="[FlatCablephiPos]+[FlatCablephiPosOff]+[FlatCabledPhi]/2" />
+ <Constant name="ModuleFixationInsertsInR"          value="28.8*cm"/>
+ <Constant name="ModuleFixationInsertsOutR"         value="37.7*cm"/> 
 </ConstantsSection>
 
 <SolidSection label="tidring0.xml">
@@ -110,6 +113,60 @@
   <Numeric name="StartAngle"  value="113*deg"/>
   <Numeric name="Radius"      value="[tidringpar:CoolManifoldR]"/>
   <Vector name="Center" type="numeric" nEntries="3"> 0, 0, 0 </Vector>
+</Algorithm>
+
+<!-- Inserts for module fixation  -->
+<Algorithm name="track:DDTrackerAngular">
+  <rParent name="tidring0:TIDStructure0"/>
+  <String  name="ChildName"   value="tidringpar:TIDModuleFix"/>
+  <Numeric name="N"           value="24" />
+  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="IncrCopyNo"  value="1" />
+  <Numeric name="RangeAngle"  value="360*deg"/>
+  <Numeric name="StartAngle"  value="-9.90 *deg"/>
+  <Numeric name="Radius"      value="[ModuleFixationInsertsInR]"/>
+  <Vector name="Center" type="numeric" nEntries="3">
+   [zero], [zero], [zero]
+  </Vector>
+</Algorithm>
+<Algorithm name="track:DDTrackerAngular">
+  <rParent name="tidring0:TIDStructure0"/>
+  <String  name="ChildName"   value="tidringpar:TIDModuleFix"/>
+  <Numeric name="N"           value="24" />
+  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="IncrCopyNo"  value="1" />
+  <Numeric name="RangeAngle"  value="360*deg"/>
+  <Numeric name="StartAngle"  value="+9.90*deg"/>
+  <Numeric name="Radius"      value="[ModuleFixationInsertsInR]"/>
+  <Vector name="Center" type="numeric" nEntries="3">
+   [zero], [zero], [zero]
+  </Vector>
+</Algorithm>
+<Algorithm name="track:DDTrackerAngular">
+  <rParent name="tidring0:TIDStructure0"/>
+  <String  name="ChildName"   value="tidringpar:TIDModuleFix"/>
+  <Numeric name="N"           value="24" />
+  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="IncrCopyNo"  value="1" />
+  <Numeric name="RangeAngle"  value="360*deg"/>
+  <Numeric name="StartAngle"  value="-5.04*deg"/>
+  <Numeric name="Radius"      value="[ModuleFixationInsertsOutR]"/>
+  <Vector name="Center" type="numeric" nEntries="3">
+   [zero], [zero], [zero]
+  </Vector>
+</Algorithm>
+<Algorithm name="track:DDTrackerAngular">
+  <rParent name="tidring0:TIDStructure0"/>
+  <String  name="ChildName"   value="tidringpar:TIDModuleFix"/>
+  <Numeric name="N"           value="24" />
+  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="IncrCopyNo"  value="1" />
+  <Numeric name="RangeAngle"  value="360*deg"/>
+  <Numeric name="StartAngle"  value="+5.04*deg"/>
+  <Numeric name="Radius"      value="[ModuleFixationInsertsOutR]"/>
+  <Vector name="Center" type="numeric" nEntries="3">
+   [zero], [zero], [zero]
+  </Vector>
 </Algorithm>
 
 

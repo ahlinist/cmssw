@@ -76,6 +76,21 @@
 
 <Algorithm name="track:DDTrackerPhiAlgo">
   <rParent name="tidring0b:TIDRing0B"/>
+  <String name="ChildName"    value="tidringpar:TIDCCUMBox"/>
+  <Numeric name="Radius"      value="[tidring0:CCUMrPos]"/>
+  <Numeric name="Tilt"        value="0*deg"/>
+  <Vector name="Phi" type="numeric" nEntries="8">
+   165.0*deg,          60.0*deg,           24.0*deg,          21.0*deg,
+   345.0*deg,         240.0*deg,          204.0*deg,         201.0*deg
+  </Vector>
+  <Vector name="ZPos" type="numeric" nEntries="8">
+  -[tidringpar:CCUMZ],  [tidringpar:CCUMZ], [tidringpar:CCUMZ], -[tidringpar:CCUMZ],
+  -[tidringpar:CCUMZ],  [tidringpar:CCUMZ],-[tidringpar:CCUMZ],  [tidringpar:CCUMZ]
+  </Vector>
+</Algorithm>
+
+<Algorithm name="track:DDTrackerPhiAlgo">
+  <rParent name="tidring0b:TIDRing0B"/>
   <String name="ChildName"    value="tidring0:TIDRing0DOHM"/>
   <Numeric name="Radius"      value="[tidring0:DOHMrOff]"/>
   <Numeric name="Tilt"        value="0*deg"/>
