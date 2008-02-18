@@ -23,30 +23,6 @@ For items in a compound: Item number, Comment, Material (has to be
                                      ELE for electronics
 ..................................................................... 
 
-o Frame side (legs and bottom)
-  ----------------------------
-MC Volumes are about original size, so scale thicknesses
-(1) Carbon fiber frame piece 0.05 cm thickness
-(2) Kapton 0.01 cm thickness
-(3) Copper traces, make them about 7% of the Kapton thickness, 
-    i.e. 0.0007
-....................................................................
-# "TID frame legs"       "TID_frame_side"       0.06   1.
-* 1 "CF frame piece"     "Carbon fibre str."    0.05   1    SUP
-* 2 "LV Kapton"          "T_Kapton"             0.01   1    ELE
-* 3 "Copper traces"      "Copper"               0.0007 1    ELE
-.....................................................................
-=================================================================== 
-
-o TID Frame top
-  -------------
-This is the Carbon fibre support under the hybrid and the pitch adapter.
-Simply 100 % Carbon fibre, thickness 0.05 cm
-....................................................................
-# "TID frame top"       "TID_frame_top"         0.05   1.
-* 1 "CF frame piece"     "Carbon fibre str."    0.05   1    SUP
-.....................................................................
-=================================================================== 
 
 o Cooling insert 
   --------------
