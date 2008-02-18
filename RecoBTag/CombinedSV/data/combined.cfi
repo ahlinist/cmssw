@@ -1,9 +1,9 @@
 module combinedSVBJetTags = CombinedSV
 {
   string jetTracks = "ic5JetTracksAssociatorAtVertex"
-  string vertexcoll = "offlinePrimaryVerticesFromCTFTracks"
+  string vertexcoll = "offlinePrimaryVertices"
   # string vertexcoll = "none"
-  string trackcoll = "ctfWithMaterialTracks"
+  string trackcoll = "generalTracks"
   double charmPriorInBG = 0.25
 
   include "RecoBTag/CombinedSV/data/vertexreco.cfi"
