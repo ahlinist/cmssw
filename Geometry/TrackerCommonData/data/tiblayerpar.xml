@@ -4,7 +4,6 @@
 <ConstantsSection label="tiblayerpar.xml" eval="true">
  <Constant name="DetTilt"        value="-9.00*deg"/>
  <Constant name="Tolerance"      value="0.25*cm"/>
- <Constant name="SupportW"       value="1.00*cm"/>
  <Constant name="SupportT"       value="0.5*mm"/>
  <Constant name="RibWidth1"      value="3.50*cm"/>
  <Constant name="RibWidth2"      value="0.13*cm"/>

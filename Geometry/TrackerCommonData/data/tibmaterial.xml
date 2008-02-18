@@ -189,9 +189,18 @@
     </MaterialFraction>
   </CompositeMaterial>
 
-  <CompositeMaterial name="TIB_CFCylinder" density="1.69000*g/cm3" symbol=" " method="mixture by weight">
-    <MaterialFraction fraction="1">
+  <CompositeMaterial name="TIB_CFCylinder" density="1.74797*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="0.96684">
       <rMaterial name="materials:Carbon fibre str."/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.01343">
+      <rMaterial name="materials:T_Kapton"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.00714">
+      <rMaterial name="materials:Epoxy"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.01259">
+      <rMaterial name="materials:Silicone_Gel"/>
     </MaterialFraction>
   </CompositeMaterial>
 

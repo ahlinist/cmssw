@@ -28,8 +28,8 @@
   <Numeric name="MFRingOuterRadius" value="[MFRingOutR]"/>
   <Numeric name="MFRingThickness"   value="[tiblayerpar:MFRingT]"/>
   <Numeric name="MFRingDeltaz"      value="[tiblayerpar:MFRingDz]"/>
-  <String name="MFIntRingMaterial"   value="tibmaterial:TIB_MFIntRing"/>
-  <String name="MFExtRingMaterial"   value="tibmaterial:TIB_MFExtRing"/>
+  <String name="MFIntRingMaterial"  value="tibmaterial:TIB_MFIntRing"/>
+  <String name="MFExtRingMaterial"  value="tibmaterial:TIB_MFExtRing"/>
   <Numeric name="SupportThickness"  value="[tiblayerpar:SupportT]"/>
 
   <String name="CentRingMaterial"   value="tibmaterial:TIB_CentRing"/>
@@ -39,6 +39,9 @@
   <Vector name="CentRing2" type="numeric" nEntries="4">
   36.88*mm, 4.*mm, [MFRingInR], [MFRingInR]+[tiblayerpar:MFRingT]
   </Vector>
+
+  <String  name="FillerMaterial"    value="materials:T_G10"/>
+  <Numeric name="FillerDeltaz"      value="10*mm"/>
 
   <String name="RibMaterial"        value="materials:Carbon fibre str."/>
   <Vector name="RibWidth" type="numeric" nEntries="6">

@@ -298,7 +298,7 @@ MCVolume:  15225.2 cm^3
 o TIBTID Service Cylinder mixture
   -------------------------------
 
-20070712 GSguazzoni
+20080218 GSguazzoni
 
 MCVolume:  28372.3 cm^3
 Outer radius:  540 mm
@@ -312,15 +312,23 @@ DeltaZ: 42.6 mm
 (5) Shield (kapton) 322.9g/1.4g/cm^3 = 230.684 cm^3
 (6) Kapton tape 750g/1.4g/cm^3 = 535.7 cm^3
 (7) Carbon Fiber Fixing 92cm^3
+(8) Medusa LV distribution card (G10) 64*0.7 cm^3
+(9) Medusa LV distribution card (Copper) 64*0.05 cm^3           
+(10) Medusa LV distibution card (shrinkable sheath) 64*3.0 cm^3
+(11) Medusa LV distibution card (Glue) 64*0.8 cm^3
 ......................................................................
 # "TIBTID Service cylinder mixture" "TIBTID_ServiceCylinder" 28372.3 -1.
-* 1 "TIBTID Medusa wire"      "T_MedusaWire"   1.1310E-2  217300   CAB
-* 2 "TIBTID Al 6mm pipe"      "T_Al6mmPipe"    0.2827       4346   COL
-* 3 "AOH-DOH Fiber Pigtail"   "T_FiberPigtail" 0.7854E-2  236250   CAB
-* 4 "Shield Cu"               "Copper"         29.486          1   SUP
-* 5 "Shield Kapton"	      "T_Kapton"       230.684	       1   SUP	
-* 6 "Kapton tape"	      "T_Kapton"       535.7	       1   SUP	
-* 7 "CF Fixings"              "Carbon fibre str." 98.          1   SUP	
+*  1 "TIBTID Medusa wire"      "T_MedusaWire"   1.1310E-2  217300   CAB
+*  2 "TIBTID Al 6mm pipe"      "T_Al6mmPipe"    0.2827       4346   COL
+*  3 "AOH-DOH Fiber Pigtail"   "T_FiberPigtail" 0.7854E-2  236250   CAB
+*  4 "Shield Cu"               "Copper"         29.486          1   SUP
+*  5 "Shield Kapton"	       "T_Kapton"       230.684	        1   SUP	
+*  6 "Kapton tape"	       "T_Kapton"       535.7	        1   SUP	
+*  7 "CF Fixings"              "Carbon fibre str." 98.          1   SUP	
+*  8 "Medusa LV card"          "T_G10"          0.70           64   CAB
+*  9 "Medusa LV card"          "Copper"         0.05           64   CAB
+* 10 "Medusa LV card"          "Polyethylene"   3.00           64   CAB
+* 11 "Medusa LV card"          "Epoxy"          0.80           64   CAB
 ......................................................................
 ======================================================================
 
@@ -395,18 +403,20 @@ MCVolume:  31671.7 cm^3
 o TIBTID Back Optical Panel Inner mixture
   ---------------------------------------
 
-20070713 GSguazzoni
+20080218 GSguazzoni
 
 MCVolume:  19636.4 cm^3
 
 (1) FR4 screens, 340.7 cm^3
 (2) AOH-DOH Fiber Pigtail, 1777m
 (3) Al supports, 115g/2.7g/cm^3 = 42.7 cm^3
+(4) Silicone spirals, 458, ~1.6g each ==> ~1.7cm^3 each
 ......................................................................
 # "TIBTID OptoPanelBackInner" "TIBTID_OptoPanelBackInner"  19636.4 -1.
 * 1 "FR4 panels"              "T_FR4"                340.7       1 SUP
 * 2 "AOH-DOH Fiber Pigtail"   "T_FiberPigtail"   0.7854E-2  177700 CAB
 * 3 "Al supports"             "Aluminium"             42.7       1 SUP
+* 4 "Silicone spirals"        "Silicone_Gel"          1.70     458 SUP
 ......................................................................
 ======================================================================
 
