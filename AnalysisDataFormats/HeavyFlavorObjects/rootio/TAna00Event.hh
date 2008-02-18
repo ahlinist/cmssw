@@ -4,11 +4,13 @@
 
 #include "TObject.h"
 #include "TClonesArray.h"
+#include "TVector3.h"
 
 #include "TGenCand.hh"
 #include "TAnaTrack.hh"
 #include "TAnaCand.hh"
 #include "TAnaVertex.hh"
+#include "TAnaJet.hh"
 
 class TAna00Event : public TObject {
 
@@ -26,8 +28,8 @@ public:
   TGenCand*           getGenCand(int n);
   virtual TGenCand*   addGenCand();
   void                dumpGenBlock();
-  // For a given SimTrack, find the index in the generator block by doing a (p,id) matching
-  int                 getGenIndex(double px, double py, double pz, int id);
+  // For a given 'SimTrack', find the index in the generator block by doing a (p,id) matching
+  int                 getGenIndex(double px, double py, double pz, int id, double precision = 0.005);
   // Check whether a RecTrack/TAnaTrack has mother with ID in the generator block
   //  int                 isDescendant(TAnaTrack *pTrk, int ID, int matchCharge = 0);
 
@@ -47,16 +49,29 @@ public:
   TAnaCand*           getCand(int n);
   virtual TAnaCand*   addCand();
 
+  // -- CaloJets
+  int                 nCaloJets() {return fnCaloJets;}
+  TAnaJet*            getCaloJet(int n);
+  virtual TAnaJet*    addCaloJet();
+
+  // -- GenJets
+  int                 nGenJets() {return fnGenJets;}
+  TAnaJet*            getGenJet(int n);
+  virtual TAnaJet*    addGenJet();
+
+
   // ----------------------------------------------------------------------
   int               fRunNumber, fEventNumber;
   int               fEventBits;
   double            fPtHat;
+  
   int               fTriggerDecision, fDiMuonTriggerDecision;
   int               fTriggerWord1, fTriggerWord2, fTriggerWord3, fTriggerWord4 ;
 
   TAnaVertex        fPrimaryVertex;
   TAnaVertex        fPrimaryVertex2;
 
+  TVector3          fGenMET, fMET0, fMET1;  // only x and y component are relevant. z could contain type information. 
 
 private:
 
@@ -68,6 +83,12 @@ private:
 
   int               fnSigTracks;
   TClonesArray      *fSigTracks;
+
+  int               fnCaloJets;
+  TClonesArray      *fCaloJets;
+
+  int               fnGenJets;
+  TClonesArray      *fGenJets;
 
   int               fnCandidates;
   TClonesArray      *fCandidates;

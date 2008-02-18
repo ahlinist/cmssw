@@ -34,7 +34,10 @@ ANA00   = TAna00Event.o TAna00EventDict.o \
           TGenCand.o TGenCandDict.o \
           TAnaTrack.o TAnaTrackDict.o \
           TAnaCand.o TAnaCandDict.o \
-          TAnaVertex.o TAnaVertexDict.o
+          TAnaVertex.o TAnaVertexDict.o \
+          TAnaJet.o TAnaJetDict.o \
+          TAnaMuon.o TAnaMuonDict.o \
+          TGenMuon.o TGenMuonDict.o 
 
 
 # ================================================================================
@@ -44,7 +47,6 @@ all:
 	@$(MAKE) writeA00Event
 	@$(MAKE) readA00Event
 	@$(MAKE) runTreeReader
-	@$(MAKE) runTrigReader
 	@$(MAKE) links
 
 # ================================================================================
@@ -67,6 +69,14 @@ rootio/TAnaVertexDict.cc: rootio/TAnaVertex.hh
 rootio/TAnaCandDict.cc: rootio/TAnaCand.hh 
 	cd rootio && $(ROOTSYS)/bin/rootcint -f TAnaCandDict.cc -c TAnaCand.hh  && cd - 
 
+rootio/TAnaJetDict.cc: rootio/TAnaJet.hh 
+	cd rootio && $(ROOTSYS)/bin/rootcint -f TAnaJetDict.cc -c TAnaJet.hh && cd - 
+
+rootio/TAnaMuonDict.cc: rootio/TAnaMuon.hh 
+	cd rootio && $(ROOTSYS)/bin/rootcint -f TAnaMuonDict.cc -c TAnaMuon.hh && cd -
+
+rootio/TGenMuonDict.cc: rootio/TGenMuon.hh 
+	cd rootio && $(ROOTSYS)/bin/rootcint -f TGenMuonDict.cc -c TGenMuon.hh && cd - 
 
 # ======================================================================
 writeA00Event: test/writeA00Event.cc
@@ -91,12 +101,20 @@ runTreeReader: test/treeReader.cc test/treeReader.cc
 
 
 # ================================================================================
-runTrigReader: test/trigReader.cc test/trigReader.cc
+runMyReader: test/myReader.hh test/myReader.cc
 # --------------------------------------------------
-	cd test && $(CXX) $(CXXFLAGS) -c trigReader.cc -o ../obj/trigReader.o &&cd - 
-	cd test && $(ROOTSYS)/bin/rootcint -f trigReaderDict.cc -c trigReader.hh && cd - 
-	cd test && $(CXX) $(CXXFLAGS) -o ../obj/runTrigReader.o -c runTrigReader.cc && cd - 
-	cd test && $(LD) $(LDFLAGS)  -o ../bin/runTrigReader $(GLIBS) ../lib/libAna00.so ../obj/runTrigReader.o ../obj/trigReader.o
+	cd test && $(CXX) $(CXXFLAGS) -c myReader.cc -o ../obj/myReader.o  && cd ..
+	cd test && $(ROOTSYS)/bin/rootcint -f myReaderDict.cc -c myReader.hh && cd ..
+	cd test && $(CXX) $(CXXFLAGS) -o ../obj/runMyReader.o -c runMyReader.cc && cd ..
+	cd test && $(LD) $(LDFLAGS)  -o ../bin/runMyReader $(GLIBS) ../lib/libAna00.so ../obj/runMyReader.o ../obj/myReader.o ../obj/treeReader.o && cd ..
+
+# ================================================================================
+runHttReader: test/httReader.hh test/httReader.cc
+# --------------------------------------------------
+	cd test && $(CXX) $(CXXFLAGS) -c httReader.cc -o ../obj/httReader.o  && cd ..
+	cd test && $(ROOTSYS)/bin/rootcint -f httReaderDict.cc -c httReader.hh && cd ..
+	cd test && $(CXX) $(CXXFLAGS) -o ../obj/runHttReader.o -c runHttReader.cc && cd ..
+	cd test && $(LD) $(LDFLAGS)  -o ../bin/runHttReader $(GLIBS) ../lib/libAna00.so ../obj/runHttReader.o ../obj/httReader.o ../obj/treeReader.o && cd ..
 
 
 # ================================================================================
