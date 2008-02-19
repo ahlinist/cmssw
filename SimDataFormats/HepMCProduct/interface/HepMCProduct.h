@@ -19,7 +19,9 @@ namespace edm {
 
   class HepMCProduct {
   public:
-    HepMCProduct() : evt_( 0 ), isVtxGenApplied_ ( false ) { };
+    HepMCProduct() : evt_( 0 ), isVtxGenApplied_ ( false ),
+                                isVtxBoostApplied_ ( false ),
+				isPBoostApplied_ ( false ) { };
     explicit HepMCProduct( HepMC::GenEvent * evt );
     virtual ~HepMCProduct();
     
