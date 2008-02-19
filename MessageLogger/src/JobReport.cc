@@ -396,6 +396,13 @@ namespace edm
       f.runsSeen.insert(run);
     }
 
+    void 
+    JobReport::reportDataType(Token fileToken, std::string const& dataType)
+    {
+      JobReport::OutputFile& f = impl_->getOutputFileForToken(fileToken);
+      f.dataType = dataType;
+    }
+
     void
     JobReport::inputFileClosed(JobReport::Token fileToken)
     {
@@ -691,6 +698,19 @@ namespace edm
     impl_->addGeneratorInfo(name, value);
   }
 
+
+  void JobReport::reportRandomStateFile(std::string const& name)
+  {
+    if(impl_->ost_) {
+      std::ostream& msg = *(impl_->ost_);
+      msg << "<RandomServiceStateFile>\n"
+        << name << "\n"
+	<<  "</RandomServiceStateFile>\n";
+      //LogInfo("FwkJob") << msg.str();    
+      msg << std::flush;
+    }
+  }
+  
   void
   JobReport::reportPSetHash(std::string const& hashValue)
   {

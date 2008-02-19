@@ -235,6 +235,13 @@ namespace edm {
       /// the file identified by the given Token.
       void eventReadFromFile(Token fileToken, unsigned int run, unsigned int event);
 
+      ///
+      /// Report the data type of a file after it has been opened
+      /// Needed since the data type isnt known until an event has been
+      /// read
+      void reportDataType(Token fileToken, std::string const& dataType);
+
+
       /// Report that the input file identified by the given Token has
       /// been closed. An exception will be thrown if the given Token
       /// was not obtained from inputFileOpened.
@@ -362,7 +369,10 @@ namespace edm {
       /// No special chars in the value string. 
       void reportGeneratorInfo(std::string const&  name, std::string const&  value);
       
-
+      ///
+      /// Report the name of the random engine persistency file
+      ///
+      void reportRandomStateFile(std::string const& name);
 
       ///
       /// Report PSetHash
