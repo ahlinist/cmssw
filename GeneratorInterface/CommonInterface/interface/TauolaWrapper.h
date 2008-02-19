@@ -38,6 +38,18 @@ extern "C" {
 }
 #define ki_taumod ki_taumod_
 
+extern "C" {
+   extern struct {
+     int jak1;
+     int jak2;
+     int itdkrc; 
+     int ifphot; 
+     int ifhadm; 
+     int ifhadp; 
+   } libra_ ;
+} 
+#define libra libra_
+
 //
 //-------------------------------------------------------------------------------
 //
