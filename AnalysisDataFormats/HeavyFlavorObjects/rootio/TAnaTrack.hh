@@ -28,8 +28,9 @@ public:
   double         fChi2;
   double         fLip, fLipE, fTip, fTipE;      // longitudinal and transverse impact parameters
 
-  // -- Particle ID
+  // -- Particle ID / Muon type
   double         fMuID, fElID, fKaID;
+  int            fMuType;
 
   // -- Momentum
   TVector3       fPlab;
