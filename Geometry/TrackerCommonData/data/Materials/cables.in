@@ -492,12 +492,206 @@ Cooling pipes: TIB+TID : 56 + 14 Steel pipes
 * 9 "Cooling pipes TOB"       "Steel-008"          0.16   46    COL
 * 10 "Coolant TOB"             "C6F14"            0.785   46    COL
 * 11 "Cooling pipes TEC"       "Steel-008"       0.1806   64    COL
-* 12"Coolant TEC"             "C6F14"            0.95     64    COL
+* 12 "Coolant TEC"             "C6F14"            0.95     64    COL
 ......................................................................
 ======================================================================
 
 
+o Thermal Screen Power Cables
+  -----------------------------
 
+20080219 rranieri
+
+MCVolume: 1.000 cm^3
+
+Weight/cm inferred from direct measurement --> 402 g/m = 4.02 g/cm.
+
+(1) 10% Cu x-sect
+	density = 8.96 g/cm^3
+	--> volume = 0.10 x (4.02 / 8.96) cm^2 x 1 cm = 0.045 cm^3
+(2) 90% Insulation (PE)
+	density = 0.95 g/cm^3
+	--> volume = 0.90 x (4.02 / 0.95) cm^2 x 1 cm = 3.808 cm^3
+
+......................................................
+# "TS Power Cable" "TS_PowerCable"     1.000  -1
+* 1 "Copper"       "Copper"            0.045   1  CAB
+* 2 "Insulation"   "Polyethylene"      3.808   1  CAB
+......................................................
+======================================================
+
+
+o Thermal Screen Signal Cables
+  -----------------------------
+
+20080219 rranieri
+
+MCVolume: 1.000 cm^3
+
+Weight/cm inferred from direct measurement --> 313 g/m = 3.13 g/cm.
+
+(1) 10% Cu x-sect
+	density = 8.96 g/cm^3
+	--> volume = 0.10 x (3.13 / 8.96) cm^2 x 1 cm = 0.035 cm^3
+(2) 90% Insulation (PE)
+	density = 0.95 g/cm^3
+	--> volume = 0.90 x (3.13 / 0.95) cm^2 x 1 cm = 2.965 cm^3
+
+......................................................
+# "TS Power Cable" "TS_SignalCable"    1.000  -1
+* 1 "Copper"       "Copper"            0.035   1  CAB
+* 2 "Insulation"   "Polyethylene"      2.965   1  CAB
+......................................................
+======================================================
+
+
+o PP1 cables: PXB,PXF,TIB,TID,TOB,TEC,TS
+  ---------------------------------------
+
+20080219 rranieri 
+Services of the whole Tracker into PP1 (4 ECAL volumes called "Tracker_PP1_Cables")
+ 
+MC Volume [Tracker_PP1_Cables]: 116407.5 cm^3
+
+The length of the cables is ~3000 mm = 300 cm
+
+(1-3) MS Cables
+            TIBTID  TOB  TEC
+CAB_Al36        0   508    ?
+CAB_Al48        0   180    ?
+CAB_Al60      488     0    ?
+
+Total cm of cables per each of the 4 sectors (number of cables x 300 cm / 4)
+            TIBTID   TOB    TEC   TOTAL
+CAB_Al36        0   38100    ?    38100
+CAB_Al48        0   13500    ?    13500
+CAB_Al60    36600       0    ?    36600
+
+(4) Ruggedized Ribbon
+The toal number of fiber ribbons is TIB+TID+TOB+TEC = 3620
+Total cm per sector: 3620 x 300 cm / 4 = 271500
+
+(5) DOHM ribbons
+            TIBTID  TOB  TEC
+DOHM cables   120    92    ?
+
+Total cm of cables per each of the 4 sectors (number of cables x 300 cm / 4)
+            TIBTID   TOB    TEC   TOTAL
+DOHM cables  9000    6900    ?    15900
+
+(6-7) TIB/TID/TOB/TEC Cooling Pipes (unit length = 1 cm)
+ Inner diameter = 10.0 mm
+ Outer diameter =  9.0 mm
+ Volume per unit length: pi x (0.50 - 0.45)^2 cm^2 x 1 cm = 7.854 x 10^-3 cm^3 
+ Material: pure copper
+ 
+ Cooling Fluid
+ Inner diameter =  0.0 mm
+ Outer diameter =  9.0 mm
+ Volume per unit length: pi x 0.45^2 cm^2 x 1 cm = 0.6362 cm^3 
+ Material: C6F14_F2_-30C
+
+              TIBTID  TOB  TEC
+Cooling Pipes   144    88   ??
+
+Total cm of cables per each of the 4 sectors (number of cables x 300 cm / 4)
+              TIBTID   TOB    TEC   TOTAL
+Cooling Pipes 10800    6600    ?    17400
+
+(8) Thermal Screen Power Cables
+Number of TS Power Cables = 8
+
+Total cm of cables per each of the 4 sectors (number of cables x 300 cm / 4)
+             
+Power Cables TS --> 600 cm
+
+(9) Thermal Screen Signal Cables
+
+Number of TS Signal Cables = 10
+
+Total cm of cables per each of the 4 sectors (number of cables x 300 cm / 4)
+             
+Signal Cables TS --> 750 cm
+
+(10-11) Thermal Screen Cooling Pipes (unit length = 1 cm)
+ Inner diameter = 10.0 mm
+ Outer diameter =  9.0 mm
+ Volume per unit length: pi x (0.50 - 0.45)^2 cm^2 x 1 cm = 7.854 x 10^-3 cm^3 
+ Material: pure copper
+ 
+ Cooling Fluid
+ Inner diameter =  0.0 mm
+ Outer diameter =  9.0 mm
+ Volume per unit length: pi x 0.45^2 cm^2 x 1 cm = 0.6362 cm^3 
+ Material: C6F14_3M_-15C
+
+Number of Cooling Pipes TS = ??
+
+Total cm of cables per each of the 4 sectors (number of cables x 300 cm / 4)
+             
+Cooling Pipes TS --> ?? cm
+
+(12) 16 Inox rails in the 18 phi sectors per each side
+	 => 8 rails per each MC Volume "Tracker_PP1_Cables"
+1.5 mm thickness over the whole surface
+
+1 Rail Total length (from "Tracker_PP1_Cables" properties):
+	- diagonal of Dz=(3106.6-2708.88) mm = 397.72 mm , Dr=(1424.45-1238) mm = 186.45 mm (triangle)
+	- axial Dz=(3288.5-3057.56) mm = 230.94 mm , Dr=(1775-1721.5) mm = 53.5 mm
+	- thichness: t=1.5 mm
+  Diagonal Volume: 2 x [ (t x Dr) x Dz] --> 222464.682 mm^3 = 222.5 cm^3
+  Axial Volume: 2 x [ (t x Dz) x Dr] --> 37065.87 mm^3 = 37.1 cm^3
+
+1 Rail Volume = 259.6 cm^3
+8 copies
+
+--------> Still Missing: TS Cooling Pipes, TEC, PXB, PXF cables
+
+.................................................................................
+# "Tracker Cables to PP1"           "Tk_Cables_PP1"   116407.5          -1
+* 1 "Multi Service Cable CAB36"     "CAB_Al36"             0.7854    38100  CAB
+* 2 "Multi Service Cable CAB48"     "CAB_Al48"             0.7854    13500  CAB
+* 3 "Multi Service Cable CAB60"     "CAB_Al60"             0.7854    36600  CAB
+* 4 "Ruggedized ribbons"            "T_RuggRibbon"         0.086    271500  CAB
+* 5 "DOHM ribbons"                  "T_RuggRibbon"         0.086     15900  CAB
+* 6 "TIB/TID/TOB/TEC Cooling Pipes" "Copper"               7.854E-3  17400  COL
+* 7 "TIB/TID/TOB/TEC Cooling Fluid" "C6F14_F2_-30C"        0.6362    17400  COL
+* 8 "TS Power Cables"               "TS_PowerCable"        1.000       600  CAB
+* 9 "TS Signal Cables"              "TS_SignalCable"       1.000       750  CAB
+* 10 "TS Cooling Pipes"             "Copper"               7.854E-3      0  COL
+* 11 "TS Cooling Fluid"             "C6F14_3M_-15C"        0.6362        0  COL
+* 12 "Inox Rail"                    "Steel-008"          259.6           8  SUP
+.................................................................................
+=================================================================================
+
+
+o PP1 connectors: PXB,PXF,TIB,TID,TOB,TEC,TS
+  ---------------------------------------
+
+20080219 rranieri 
+Connectors for the services of the whole Tracker into PP1 (4 ECAL volumes called "Tracker_PP1_Connectors")
+
+MC Volume [Tracker_PP1_Cables]: 47602.8 cm^3
+
+The length of the cables is ~30 cm (1/10 on average wrt the previous volume)
+
+--------> Still Missing: TS Cooling Pipes, TEC, PXB, PXF cables [see above]
+
+...................................................................................
+# "Tracker Connectors in PP1"       "Tk_Connectors_PP1"  47602.8          -1
+* 1 "Multi Service Cable CAB36"     "CAB_Al36"               0.7854     3810  CAB
+* 2 "Multi Service Cable CAB48"     "CAB_Al48"               0.7854     1350  CAB
+* 3 "Multi Service Cable CAB60"     "CAB_Al60"               0.7854     3660  CAB
+* 4 "Ruggedized ribbons"            "T_RuggRibbon"           0.086     27150  CAB
+* 5 "DOHM ribbons"                  "T_RuggRibbon"           0.086      1590  CAB
+* 6 "TIB/TID/TOB/TEC Cooling Pipes" "Copper"                 7.854E-3   1740  COL
+* 7 "TIB/TID/TOB/TEC Cooling Fluid" "C6F14_F2_-30C"          0.6362     1740  COL
+* 8 "TS Power Cables"               "TS_PowerCable"          1.000        60  CAB
+* 9 "TS Signal Cables"              "TS_SignalCable"         1.000        75  CAB
+* 10 "TS Cooling Pipes"             "Copper"                 7.854E-3      0  COL
+* 11 "TS Cooling Fluid"             "C6F14_3M_-15C"          0.6362        0  COL
+...................................................................................
+===================================================================================
 
 
 # "END"  "END"  0.  0.   
