@@ -35,9 +35,7 @@ ANA00   = TAna00Event.o TAna00EventDict.o \
           TAnaTrack.o TAnaTrackDict.o \
           TAnaCand.o TAnaCandDict.o \
           TAnaVertex.o TAnaVertexDict.o \
-          TAnaJet.o TAnaJetDict.o \
-          TAnaMuon.o TAnaMuonDict.o \
-          TGenMuon.o TGenMuonDict.o 
+          TAnaJet.o TAnaJetDict.o 
 
 
 # ================================================================================
