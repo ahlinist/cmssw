@@ -60,9 +60,10 @@ void HFTree::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
   gHFEvent->fEventNumber = iEvent.id().event();
     
   cout << "HFTree> filling tree for run: " << gHFEvent->fRunNumber
-       << " event: " << gHFEvent->fEventNumber 
-       << " pthat: " << gHFEvent->fPtHat 
-       << " MET0: " << gHFEvent->fMET0.Mag()
+       << " event: "  << gHFEvent->fEventNumber 
+       << " pthat: "  << gHFEvent->fPtHat 
+       << " MET0: "   << gHFEvent->fMET0.Mag()
+       << " genMET: " << gHFEvent->fGenMET.Mag()
        << endl;
   fTree->Fill();
   gHFEvent->Clear();

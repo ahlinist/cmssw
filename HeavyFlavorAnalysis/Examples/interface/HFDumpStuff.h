@@ -27,7 +27,7 @@ class HFDumpStuff : public edm::EDAnalyzer {
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
   virtual void endJob() ;
 
-  std::string          fGenEventScaleLabel, fMETLabel;
+  std::string          fGenEventScaleLabel, fMETLabel, fGenMETLabel;
 
 };
 

@@ -94,7 +94,9 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   if (fVerbose > 0) cout << "===> Tracks " << endl;
   TAnaTrack *pTrack; 
   TH1D *h1 = (TH1D*)gHFFile->Get("h1");
+  TH1D *h2 = (TH1D*)gHFFile->Get("h2");
   h1->Fill(tracks->size());
+  h2->Fill(tracks->size());
   for (unsigned int i = 0; i < tracks->size(); ++i){    
     reco::TrackRef rTrack(tracks, i);
     reco::Track track(*rTrack);
@@ -182,6 +184,10 @@ void  HFDumpTracks::beginJob(const edm::EventSetup& setup) {
   edm::ESHandle<TrackAssociatorBase> theAssociator;
   setup.get<TrackAssociatorRecord>().get(fAssociatorLabel.c_str(), theAssociator);
   fAssociator = (TrackAssociatorBase*)theAssociator.product();
+
+  gHFFile->cd();
+  TH1D *h1 = new TH1D("h2", "h2", 20, 0., 20.);
+
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
