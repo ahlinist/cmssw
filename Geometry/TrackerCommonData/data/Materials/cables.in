@@ -573,11 +573,11 @@ Total cm per sector: 3620 x 300 cm / 4 = 271500
 
 (5) DOHM ribbons
             TIBTID  TOB  TEC
-DOHM cables   120    92    ?
+DOHM cables   120    92  144
 
 Total cm of cables per each of the 4 sectors (number of cables x 300 cm / 4)
             TIBTID   TOB    TEC   TOTAL
-DOHM cables  9000    6900    ?    15900
+DOHM cables  9000    6900  10800  26700
 
 (6-7) TIB/TID/TOB/TEC Cooling Pipes (unit length = 1 cm)
  Inner diameter = 10.0 mm
@@ -592,11 +592,11 @@ DOHM cables  9000    6900    ?    15900
  Material: C6F14_F2_-30C
 
               TIBTID  TOB  TEC
-Cooling Pipes   144    88   ??
+Cooling Pipes   144    88  128
 
 Total cm of cables per each of the 4 sectors (number of cables x 300 cm / 4)
               TIBTID   TOB    TEC   TOTAL
-Cooling Pipes 10800    6600    ?    17400
+Cooling Pipes  10800  6600   9600   27000
 
 (8) Thermal Screen Power Cables
 Number of TS Power Cables = 8
@@ -653,9 +653,9 @@ Cooling Pipes TS --> ?? cm
 * 2 "Multi Service Cable CAB48"     "CAB_Al48"             0.7854    13500  CAB
 * 3 "Multi Service Cable CAB60"     "CAB_Al60"             0.7854    36600  CAB
 * 4 "Ruggedized ribbons"            "T_RuggRibbon"         0.086    271500  CAB
-* 5 "DOHM ribbons"                  "T_RuggRibbon"         0.086     15900  CAB
-* 6 "TIB/TID/TOB/TEC Cooling Pipes" "Copper"               7.854E-3  17400  COL
-* 7 "TIB/TID/TOB/TEC Cooling Fluid" "C6F14_F2_-30C"        0.6362    17400  COL
+* 5 "DOHM ribbons"                  "T_RuggRibbon"         0.086     26700  CAB
+* 6 "TIB/TID/TOB/TEC Cooling Pipes" "Copper"               7.854E-3  27000  COL
+* 7 "TIB/TID/TOB/TEC Cooling Fluid" "C6F14_F2_-30C"        0.6362    27000  COL
 * 8 "TS Power Cables"               "TS_PowerCable"        1.000       600  CAB
 * 9 "TS Signal Cables"              "TS_SignalCable"       1.000       750  CAB
 * 10 "TS Cooling Pipes"             "Copper"               7.854E-3      0  COL
@@ -683,9 +683,9 @@ The length of the cables is ~30 cm (1/10 on average wrt the previous volume)
 * 2 "Multi Service Cable CAB48"     "CAB_Al48"               0.7854     1350  CAB
 * 3 "Multi Service Cable CAB60"     "CAB_Al60"               0.7854     3660  CAB
 * 4 "Ruggedized ribbons"            "T_RuggRibbon"           0.086     27150  CAB
-* 5 "DOHM ribbons"                  "T_RuggRibbon"           0.086      1590  CAB
-* 6 "TIB/TID/TOB/TEC Cooling Pipes" "Copper"                 7.854E-3   1740  COL
-* 7 "TIB/TID/TOB/TEC Cooling Fluid" "C6F14_F2_-30C"          0.6362     1740  COL
+* 5 "DOHM ribbons"                  "T_RuggRibbon"           0.086      2670  CAB
+* 6 "TIB/TID/TOB/TEC Cooling Pipes" "Copper"                 7.854E-3   2700  COL
+* 7 "TIB/TID/TOB/TEC Cooling Fluid" "C6F14_F2_-30C"          0.6362     2700  COL
 * 8 "TS Power Cables"               "TS_PowerCable"          1.000        60  CAB
 * 9 "TS Signal Cables"              "TS_SignalCable"         1.000        75  CAB
 * 10 "TS Cooling Pipes"             "Copper"                 7.854E-3      0  COL
