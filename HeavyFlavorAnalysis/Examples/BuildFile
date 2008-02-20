@@ -17,6 +17,7 @@
 <use name=DataFormats/HLTReco>
 <use name=DataFormats/L1Trigger>
 <use name=DataFormats/L1GlobalTrigger>
+<use name=DataFormats/METReco>
 <use name=hepmc> 
 <use name=heppdt>
 <use name=root>
@@ -41,6 +42,7 @@
    <use name=DataFormats/HLTReco>
    <use name=DataFormats/L1Trigger>
    <use name=DataFormats/L1GlobalTrigger>
+   <use name=DataFormats/METReco>
    <use name=hepmc>
    <use name=heppdt> 
    <use name=clhep>
