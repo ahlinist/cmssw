@@ -557,15 +557,15 @@ The length of the cables is ~3000 mm = 300 cm
 
 (1-3) MS Cables
             TIBTID  TOB  TEC
-CAB_Al36        0   508    ?
-CAB_Al48        0   180    ?
-CAB_Al60      488     0    ?
+CAB_Al36        0   508  304
+CAB_Al48        0   180  272
+CAB_Al60      488     0  192
 
 Total cm of cables per each of the 4 sectors (number of cables x 300 cm / 4)
             TIBTID   TOB    TEC   TOTAL
-CAB_Al36        0   38100    ?    38100
-CAB_Al48        0   13500    ?    13500
-CAB_Al60    36600       0    ?    36600
+CAB_Al36        0   38100  22800  60900
+CAB_Al48        0   13500  20400  33900
+CAB_Al60    36600       0  14400  51000
 
 (4) Ruggedized Ribbon
 The toal number of fiber ribbons is TIB+TID+TOB+TEC = 3620
@@ -649,9 +649,9 @@ Cooling Pipes TS --> ?? cm
 
 .................................................................................
 # "Tracker Cables to PP1"           "Tk_Cables_PP1"   116407.5          -1
-* 1 "Multi Service Cable CAB36"     "CAB_Al36"             0.7854    38100  CAB
-* 2 "Multi Service Cable CAB48"     "CAB_Al48"             0.7854    13500  CAB
-* 3 "Multi Service Cable CAB60"     "CAB_Al60"             0.7854    36600  CAB
+* 1 "Multi Service Cable CAB36"     "CAB_Al36"             0.7854    60900  CAB
+* 2 "Multi Service Cable CAB48"     "CAB_Al48"             0.7854    33900  CAB
+* 3 "Multi Service Cable CAB60"     "CAB_Al60"             0.7854    51000  CAB
 * 4 "Ruggedized ribbons"            "T_RuggRibbon"         0.086    271500  CAB
 * 5 "DOHM ribbons"                  "T_RuggRibbon"         0.086     26700  CAB
 * 6 "TIB/TID/TOB/TEC Cooling Pipes" "Copper"               7.854E-3  27000  COL
@@ -679,9 +679,9 @@ The length of the cables is ~30 cm (1/10 on average wrt the previous volume)
 
 ...................................................................................
 # "Tracker Connectors in PP1"       "Tk_Connectors_PP1"  47602.8          -1
-* 1 "Multi Service Cable CAB36"     "CAB_Al36"               0.7854     3810  CAB
-* 2 "Multi Service Cable CAB48"     "CAB_Al48"               0.7854     1350  CAB
-* 3 "Multi Service Cable CAB60"     "CAB_Al60"               0.7854     3660  CAB
+* 1 "Multi Service Cable CAB36"     "CAB_Al36"               0.7854     6090  CAB
+* 2 "Multi Service Cable CAB48"     "CAB_Al48"               0.7854     3390  CAB
+* 3 "Multi Service Cable CAB60"     "CAB_Al60"               0.7854     5100  CAB
 * 4 "Ruggedized ribbons"            "T_RuggRibbon"           0.086     27150  CAB
 * 5 "DOHM ribbons"                  "T_RuggRibbon"           0.086      2670  CAB
 * 6 "TIB/TID/TOB/TEC Cooling Pipes" "Copper"                 7.854E-3   2700  COL
