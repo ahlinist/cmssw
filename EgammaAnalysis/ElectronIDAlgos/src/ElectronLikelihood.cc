@@ -3,13 +3,14 @@
 #include "DataFormats/EgammaReco/interface/BasicClusterShapeAssociation.h"
 #include "DataFormats/EcalDetId/interface/EcalSubdetector.h"
 #include "EgammaAnalysis/ElectronIDAlgos/interface/ElectronLikelihood.h"
-#include "PhysicsTools/StatPatternRecognition/interface/SprClassifierReader.hh"
-#include "PhysicsTools/StatPatternRecognition/interface/SprTrainedFisher.hh"
 #include <iostream>
 
 
 ElectronLikelihood::ElectronLikelihood (const ElectronLikelihoodCalibration *calibration,
-					edm::FileInPath fisherEBFileName, edm::FileInPath fisherEEFileName,
+					const std::vector<double> & fisherEBLt15,
+					const std::vector<double> & fisherEBGt15,
+					const std::vector<double> & fisherEELt15,
+					const std::vector<double> & fisherEEGt15,
 					const std::vector<double> & eleFracsEBlt15,
 					const std::vector<double> & piFracsEBlt15,
 					const std::vector<double> & eleFracsEElt15,
@@ -36,7 +37,8 @@ ElectronLikelihood::ElectronLikelihood (const ElectronLikelihoodCalibration *cal
   m_splitBackgroundPdfs (splitBackgroundPdfs)  
 {
   Setup (calibration,
-	 fisherEBFileName, fisherEEFileName,
+	 fisherEBLt15, fisherEBGt15,
+	 fisherEELt15, fisherEEGt15,
 	 eleFracsEBlt15, piFracsEBlt15,
 	 eleFracsEElt15, piFracsEElt15,
 	 eleFracsEBgt15, piFracsEBgt15,
@@ -66,7 +68,10 @@ ElectronLikelihood::~ElectronLikelihood () {
 
 void 
 ElectronLikelihood::Setup (const ElectronLikelihoodCalibration *calibration,
-			   edm::FileInPath fisherEBFileName, edm::FileInPath fisherEEFileName,
+			   const std::vector<double> & fisherEBLt15,
+			   const std::vector<double> & fisherEBGt15,
+			   const std::vector<double> & fisherEELt15,
+			   const std::vector<double> & fisherEEGt15,
 			   const std::vector<double> & eleFracsEBlt15,
 			   const std::vector<double> & piFracsEBlt15,
 			   const std::vector<double> & eleFracsEElt15,
@@ -83,15 +88,11 @@ ElectronLikelihood::Setup (const ElectronLikelihoodCalibration *calibration,
 			   bool splitBackgroundPdfs) 
 {
 
-  // Set up the Fisher coefficients
-  m_fisherEBFileName = fisherEBFileName;
-  m_fisherEEFileName = fisherEEFileName;
-
   // ECAL BARREL LIKELIHOOD - Pt < 15 GeV region
   _EBlt15lh->initFromDB (calibration) ;
 
   _EBlt15lh->addSpecies ("electrons",eleWeight) ;
-  _EBlt15lh->addSpecies ("hadrons",piWeight) ;
+  _EBlt15lh->addSpecies ("hadrons",  piWeight) ;
 
   if(signalWeightSplitting.compare("fullclass")==0) {
     _EBlt15lh->setSplitFrac ("electrons", "fullclass0", eleFracsEBlt15[0]) ;
@@ -114,6 +115,8 @@ ElectronLikelihood::Setup (const ElectronLikelihoodCalibration *calibration,
   if (m_eleIDSwitches.m_useEoverPOut)    _EBlt15lh->addPdf ("electrons", "EoPout",      splitSignalPdfs) ;
   if (m_eleIDSwitches.m_useHoverE)       _EBlt15lh->addPdf ("electrons", "HoE",         splitSignalPdfs) ;
   if (m_eleIDSwitches.m_useShapeFisher)  _EBlt15lh->addPdf ("electrons", "shapeFisher", splitSignalPdfs) ;
+  if (m_eleIDSwitches.m_useSigmaEtaEta)  _EBlt15lh->addPdf ("electrons", "sigmaEtaEta", splitSignalPdfs) ;
+  if (m_eleIDSwitches.m_useE9overE25)    _EBlt15lh->addPdf ("electrons", "s9s25",       splitSignalPdfs) ;
 
   if(backgroundWeightSplitting.compare("fullclass")==0) {
     _EBlt15lh->setSplitFrac ("hadrons", "fullclass0", piFracsEBlt15[0]) ;
@@ -136,6 +139,8 @@ ElectronLikelihood::Setup (const ElectronLikelihoodCalibration *calibration,
   if (m_eleIDSwitches.m_useEoverPOut)    _EBlt15lh->addPdf ("hadrons", "EoPout",        splitBackgroundPdfs) ;
   if (m_eleIDSwitches.m_useHoverE)       _EBlt15lh->addPdf ("hadrons", "HoE",           splitBackgroundPdfs) ;
   if (m_eleIDSwitches.m_useShapeFisher)  _EBlt15lh->addPdf ("hadrons", "shapeFisher",   splitBackgroundPdfs) ;
+  if (m_eleIDSwitches.m_useSigmaEtaEta)  _EBlt15lh->addPdf ("hadrons", "sigmaEtaEta",   splitBackgroundPdfs) ;
+  if (m_eleIDSwitches.m_useE9overE25)    _EBlt15lh->addPdf ("hadrons", "s9s25",         splitBackgroundPdfs) ;
 
 
   // ECAL BARREL LIKELIHOOD - Pt >= 15 GeV region
@@ -165,6 +170,9 @@ ElectronLikelihood::Setup (const ElectronLikelihoodCalibration *calibration,
   if (m_eleIDSwitches.m_useEoverPOut)    _EBgt15lh->addPdf ("electrons", "EoPout",      splitSignalPdfs) ;
   if (m_eleIDSwitches.m_useHoverE)       _EBgt15lh->addPdf ("electrons", "HoE",         splitSignalPdfs) ;
   if (m_eleIDSwitches.m_useShapeFisher)  _EBgt15lh->addPdf ("electrons", "shapeFisher", splitSignalPdfs) ;
+  if (m_eleIDSwitches.m_useSigmaEtaEta)  _EBgt15lh->addPdf ("electrons", "sigmaEtaEta", splitSignalPdfs) ;
+  if (m_eleIDSwitches.m_useE9overE25)    _EBgt15lh->addPdf ("electrons", "s9s25",       splitSignalPdfs) ;
+
 
   if(backgroundWeightSplitting.compare("fullclass")==0) {
     _EBgt15lh->setSplitFrac ("hadrons", "fullclass0", piFracsEBgt15[0]) ;
@@ -187,7 +195,8 @@ ElectronLikelihood::Setup (const ElectronLikelihoodCalibration *calibration,
   if (m_eleIDSwitches.m_useEoverPOut)    _EBgt15lh->addPdf ("hadrons", "EoPout",        splitBackgroundPdfs) ;
   if (m_eleIDSwitches.m_useHoverE)       _EBgt15lh->addPdf ("hadrons", "HoE",           splitBackgroundPdfs) ;
   if (m_eleIDSwitches.m_useShapeFisher)  _EBgt15lh->addPdf ("hadrons", "shapeFisher",   splitBackgroundPdfs) ;
-
+  if (m_eleIDSwitches.m_useSigmaEtaEta)  _EBgt15lh->addPdf ("hadrons", "sigmaEtaEta",   splitBackgroundPdfs) ;
+  if (m_eleIDSwitches.m_useE9overE25)    _EBgt15lh->addPdf ("hadrons", "s9s25",         splitBackgroundPdfs) ;
 
   // ECAL ENDCAP LIKELIHOOD - Pt < 15 GeV
   _EElt15lh->initFromDB (calibration) ;
@@ -216,6 +225,8 @@ ElectronLikelihood::Setup (const ElectronLikelihoodCalibration *calibration,
   if (m_eleIDSwitches.m_useEoverPOut)    _EElt15lh->addPdf ("electrons", "EoPout",      splitSignalPdfs) ;
   if (m_eleIDSwitches.m_useHoverE)       _EElt15lh->addPdf ("electrons", "HoE",         splitSignalPdfs) ;
   if (m_eleIDSwitches.m_useShapeFisher)  _EElt15lh->addPdf ("electrons", "shapeFisher", splitSignalPdfs) ;
+  if (m_eleIDSwitches.m_useSigmaEtaEta)  _EElt15lh->addPdf ("electrons", "sigmaEtaEta", splitSignalPdfs) ;
+  if (m_eleIDSwitches.m_useE9overE25)    _EElt15lh->addPdf ("electrons", "s9s25",       splitSignalPdfs) ;
 
   if(backgroundWeightSplitting.compare("fullclass")==0) {
     _EElt15lh->setSplitFrac ("hadrons", "fullclass0", piFracsEElt15[0]) ;
@@ -239,6 +250,8 @@ ElectronLikelihood::Setup (const ElectronLikelihoodCalibration *calibration,
   if (m_eleIDSwitches.m_useEoverPOut)    _EElt15lh->addPdf ("hadrons", "EoPout",      splitBackgroundPdfs) ;
   if (m_eleIDSwitches.m_useHoverE)       _EElt15lh->addPdf ("hadrons", "HoE",         splitBackgroundPdfs) ;
   if (m_eleIDSwitches.m_useShapeFisher)  _EElt15lh->addPdf ("hadrons", "shapeFisher", splitBackgroundPdfs) ;
+  if (m_eleIDSwitches.m_useSigmaEtaEta)  _EElt15lh->addPdf ("hadrons", "sigmaEtaEta", splitBackgroundPdfs) ;
+  if (m_eleIDSwitches.m_useE9overE25)    _EElt15lh->addPdf ("hadrons", "s9s25",       splitBackgroundPdfs) ;
 
 
   // ECAL ENDCAP LIKELIHOOD - Pt >= 15 GeV
@@ -268,6 +281,8 @@ ElectronLikelihood::Setup (const ElectronLikelihoodCalibration *calibration,
   if (m_eleIDSwitches.m_useEoverPOut)    _EEgt15lh->addPdf ("electrons", "EoPout",      splitSignalPdfs) ;
   if (m_eleIDSwitches.m_useHoverE)       _EEgt15lh->addPdf ("electrons", "HoE",         splitSignalPdfs) ;
   if (m_eleIDSwitches.m_useShapeFisher)  _EEgt15lh->addPdf ("electrons", "shapeFisher", splitSignalPdfs) ;
+  if (m_eleIDSwitches.m_useSigmaEtaEta)  _EEgt15lh->addPdf ("electrons", "sigmaEtaEta", splitSignalPdfs) ;
+  if (m_eleIDSwitches.m_useE9overE25)    _EEgt15lh->addPdf ("electrons", "s9s25",       splitSignalPdfs) ;
 
   if(backgroundWeightSplitting.compare("fullclass")==0) {
     _EEgt15lh->setSplitFrac ("hadrons", "fullclass0", piFracsEEgt15[0]) ;
@@ -285,11 +300,19 @@ ElectronLikelihood::Setup (const ElectronLikelihoodCalibration *calibration,
 				      << " splitting is implemented right now";
   }
 
+  // initialise the fisher coefficients from cfi
+  m_fisherEBLt15 = fisherEBLt15;
+  m_fisherEBGt15 = fisherEBGt15;
+  m_fisherEELt15 = fisherEELt15;
+  m_fisherEEGt15 = fisherEEGt15;
+
   if (m_eleIDSwitches.m_useDeltaPhiIn)   _EEgt15lh->addPdf ("hadrons", "dPhiVtx",     splitBackgroundPdfs) ; 
   if (m_eleIDSwitches.m_useDeltaEtaCalo) _EEgt15lh->addPdf ("hadrons", "dEtaCalo",    splitBackgroundPdfs) ;
   if (m_eleIDSwitches.m_useEoverPOut)    _EEgt15lh->addPdf ("hadrons", "EoPout",      splitBackgroundPdfs) ;
   if (m_eleIDSwitches.m_useHoverE)       _EEgt15lh->addPdf ("hadrons", "HoE",         splitBackgroundPdfs) ;
   if (m_eleIDSwitches.m_useShapeFisher)  _EEgt15lh->addPdf ("hadrons", "shapeFisher", splitBackgroundPdfs) ;
+  if (m_eleIDSwitches.m_useSigmaEtaEta)  _EEgt15lh->addPdf ("hadrons", "sigmaEtaEta", splitBackgroundPdfs) ;
+  if (m_eleIDSwitches.m_useE9overE25)    _EEgt15lh->addPdf ("hadrons", "s9s25",       splitBackgroundPdfs) ;
 }
 
 
@@ -305,12 +328,13 @@ ElectronLikelihood::getInputVar (const reco::GsfElectron &electron,
 {
 
   // the variables entering the likelihood
-  measurements.push_back ( electron.deltaPhiSuperClusterTrackAtVtx () ) ;
-  measurements.push_back ( electron.deltaEtaSeedClusterTrackAtCalo () ) ;
-  measurements.push_back ( electron.eSeedClusterOverPout () ) ;
-  measurements.push_back ( electron.hadronicOverEm () ) ;
-  measurements.push_back ( CalculateFisher(electron, sClShape) ) ;
-
+  if (m_eleIDSwitches.m_useDeltaPhiIn) measurements.push_back ( electron.deltaPhiSuperClusterTrackAtVtx () ) ;
+  if (m_eleIDSwitches.m_useDeltaEtaCalo) measurements.push_back ( electron.deltaEtaSeedClusterTrackAtCalo () ) ;
+  if (m_eleIDSwitches.m_useEoverPOut) measurements.push_back ( electron.eSeedClusterOverPout () ) ;
+  if (m_eleIDSwitches.m_useHoverE) measurements.push_back ( electron.hadronicOverEm () ) ;
+  if (m_eleIDSwitches.m_useShapeFisher) measurements.push_back ( CalculateFisher(electron, sClShape) ) ;
+  if (m_eleIDSwitches.m_useSigmaEtaEta) measurements.push_back ( sqrt (sClShape.covEtaEta ()) );
+  if (m_eleIDSwitches.m_useE9overE25)   measurements.push_back ( sClShape.e3x3 ()/sClShape.e5x5 ()) ;
 }
 
 
@@ -325,19 +349,12 @@ ElectronLikelihood::CalculateFisher(const reco::GsfElectron &electron,
 {
 
   // the variables entering the shape fisher
-  double s9s25, sigmaEtaEta, lat, a20;
+  double s9s25, sigmaEtaEta, etaLat, a20;
 
   s9s25=sClShape.e3x3 ()/sClShape.e5x5 () ;
   sigmaEtaEta=sqrt (sClShape.covEtaEta ()) ;
-  lat=sClShape.lat () ;
+  etaLat=sClShape.etaLat() ;
   a20=sClShape.zernike20 () ;
-
-
-  std::vector<double> inputs;
-  inputs.push_back(s9s25);
-  inputs.push_back(sigmaEtaEta);
-  inputs.push_back(lat);
-  inputs.push_back(a20);
 
   // evaluate the Fisher discriminant
   double clusterShapeFisher;
@@ -345,18 +362,36 @@ ElectronLikelihood::CalculateFisher(const reco::GsfElectron &electron,
   EcalSubdetector subdet = EcalSubdetector (vecId[0].subdetId ()) ;
   
   if (subdet==EcalBarrel) {
-    SprAbsTrainedClassifier *ClassifierEB = 
-      SprClassifierReader::readTrained(m_fisherEBFileName.fullPath().c_str());
-    SprTrainedFisher *FisherEB = dynamic_cast<SprTrainedFisher*>(ClassifierEB);
-    FisherEB->useStandard();
-    clusterShapeFisher = FisherEB->response(inputs);
+    if (electron.pt()<15.) {
+      clusterShapeFisher = m_fisherEBLt15[0] + 
+	m_fisherEBLt15[1] * sigmaEtaEta +
+	m_fisherEBLt15[2] * s9s25 +
+	m_fisherEBLt15[3] * etaLat +
+	m_fisherEBLt15[4] * a20;
+    }
+    else {
+      clusterShapeFisher = m_fisherEBGt15[0] + 
+	m_fisherEBGt15[1] * sigmaEtaEta +
+	m_fisherEBGt15[2] * s9s25 +
+	m_fisherEBGt15[3] * etaLat +
+	m_fisherEBGt15[4] * a20;
+    }
   }
   else if (subdet==EcalEndcap) {
-    SprAbsTrainedClassifier *ClassifierEE = 
-      SprClassifierReader::readTrained(m_fisherEEFileName.fullPath().c_str());
-    SprTrainedFisher *FisherEE = dynamic_cast<SprTrainedFisher*>(ClassifierEE);
-    FisherEE->useStandard();
-    clusterShapeFisher = FisherEE->response(inputs);
+    if (electron.pt()<15.) {
+      clusterShapeFisher = m_fisherEELt15[0] + 
+	m_fisherEELt15[1] * sigmaEtaEta +
+	m_fisherEELt15[2] * s9s25 +
+	m_fisherEELt15[3] * etaLat +
+	m_fisherEELt15[4] * a20;
+    }
+    else {
+      clusterShapeFisher = m_fisherEEGt15[0] + 
+	m_fisherEEGt15[1] * sigmaEtaEta +
+	m_fisherEEGt15[2] * s9s25 +
+	m_fisherEEGt15[3] * etaLat +
+	m_fisherEEGt15[4] * a20;
+    }
   }
   else {
     clusterShapeFisher = -999 ;
