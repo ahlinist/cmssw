@@ -6,7 +6,6 @@
 <use name=CondFormats/DataRecord>
 <use name=Geometry/CaloGeometry>
 <use name=RecoCaloTools/MetaCollections>
-<use name=PhysicsTools/StatPatternRecognition>
 <use name=RecoEgamma/EgammaElectronAlgos>
 <use name=CondCore/DBOutputService>
 <flags LDFLAGS="-lTMVA">
@@ -20,7 +19,6 @@
   <use name=CondFormats/DataRecord>
   <use name=Geometry/CaloGeometry>
   <use name=RecoCaloTools/MetaCollections>
-  <use name=PhysicsTools/StatPatternRecognition>
   <use name=RecoEgamma/EgammaElectronAlgos>
   <use name=CondCore/DBOutputService>
 </export>
