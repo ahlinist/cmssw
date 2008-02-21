@@ -11,13 +11,11 @@ $Id$
 namespace edm {
 
   struct OutputModuleDescription {
-    OutputModuleDescription() : maxEvents_(-1), maxLumis_(-1) {}
-    OutputModuleDescription(int maxEvents, int maxLumis) :
-      maxEvents_(maxEvents),
-      maxLumis_(maxLumis)
+    OutputModuleDescription() : maxEvents_(-1) {}
+    OutputModuleDescription(int maxEvents) :
+      maxEvents_(maxEvents)
     {}
     int maxEvents_;
-    int maxLumis_;
   };
 }
 

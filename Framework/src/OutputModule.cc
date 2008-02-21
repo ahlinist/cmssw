@@ -116,8 +116,6 @@ namespace edm {
   OutputModule::OutputModule(ParameterSet const& pset) : 
     maxEvents_(-1),
     remainingEvents_(maxEvents_),
-    maxLumis_(-1),
-    remainingLumis_(maxLumis_),
     nextID_(),
     keptProducts_(),
     droppedProducts_(),
@@ -171,7 +169,6 @@ namespace edm {
 
   void OutputModule::configure(OutputModuleDescription const& desc) {
     remainingEvents_ = maxEvents_ = desc.maxEvents_;
-    remainingLumis_ = maxLumis_ = desc.maxLumis_;
   }
 
   void OutputModule::selectProducts() {
@@ -366,9 +363,6 @@ namespace edm {
   void OutputModule::doWriteLuminosityBlock(LuminosityBlockPrincipal const& lbp) {
     FDEBUG(2) << "writeLuminosityBlock called\n";
     writeLuminosityBlock(lbp);
-    if (remainingLumis_ > 0) {
-      --remainingLumis_;
-    }
   }
 
   void OutputModule::doOpenFile(FileBlock const& fb) {
