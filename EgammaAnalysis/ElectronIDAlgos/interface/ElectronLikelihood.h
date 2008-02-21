@@ -45,7 +45,10 @@ class ElectronLikelihood : ElectronIDAlgo {
 
   //! ctor
   ElectronLikelihood (const ElectronLikelihoodCalibration *calibration,
-		      edm::FileInPath fisherEBFileName, edm::FileInPath fisherEEFileName,
+		      const std::vector<double> & fisherEBLt15,
+		      const std::vector<double> & fisherEBGt15,
+		      const std::vector<double> & fisherEELt15,
+		      const std::vector<double> & fisherEEGt15,
 		      const std::vector<double> & eleFracsEBlt15,
 		      const std::vector<double> & piFracsEBlt15,
 		      const std::vector<double> & eleFracsEElt15,
@@ -77,7 +80,10 @@ class ElectronLikelihood : ElectronIDAlgo {
   //! build the likelihood model from histograms 
   //! in Barrel file and Endcap file
   void Setup (const ElectronLikelihoodCalibration *calibration,
-	      edm::FileInPath fisherEBFileName, edm::FileInPath fisherEEFileName,
+	      const std::vector<double> & fisherEBLt15,
+	      const std::vector<double> & fisherEBGt15,
+	      const std::vector<double> & fisherEELt15,
+	      const std::vector<double> & fisherEEGt15,
 	      const std::vector<double> & eleFracsEBlt15,
 	      const std::vector<double> & piFracsEBlt15,
 	      const std::vector<double> & eleFracsEElt15,
@@ -108,9 +114,8 @@ class ElectronLikelihood : ElectronIDAlgo {
   //! likelihood above 15GeV/c
   LikelihoodPdfProduct *_EBgt15lh, *_EEgt15lh;
 
-  //! fisher configuration files
-  edm::FileInPath m_fisherEBFileName;
-  edm::FileInPath m_fisherEEFileName;
+  //! fisher coefficients
+  std::vector<double> m_fisherEBLt15, m_fisherEBGt15, m_fisherEELt15, m_fisherEEGt15;
 
   //! general parameters of all the ele id algorithms
   LikelihoodSwitches m_eleIDSwitches ;
