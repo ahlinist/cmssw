@@ -3,6 +3,7 @@
 #include <TColor.h>
 #include <TVirtualPad.h>
 #include <math.h>
+#include <iostream>
 
 void ME_MAP::add(std::string name, MonitorElement *me_p)
 {
@@ -83,18 +84,11 @@ void ME_MAP::create_gif(std::string name)
 	  if (it->second->hasWarning()) color = TColor::GetColor ("#FF8000");
 	  if (it->second->hasError()) color = TColor::GetColor ("#CC0000");
 	  current_pad->HighLight(color, kTRUE);
-
-	  MonitorElementT<TNamed> * ob = dynamic_cast<MonitorElementT<TNamed>*>(it->second);
-	  if(ob)
-	    {
-	      ob->operator->()->Draw();
-	    }
-
+	  it->second->getRootObject()->Draw();
 	  i++;
 	}
       	  
       canvas.SaveAs(name.c_str());
-      
     }
 }
   
