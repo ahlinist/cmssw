@@ -2,6 +2,7 @@
 #include "DQMServices/WebComponents/interface/CgiReader.h"
 #include "DQMServices/WebComponents/interface/CgiWriter.h"
 #include "DQMServices/WebComponents/interface/ContentReader.h"
+#include "DQMServices/Core/interface/DQMOldReceiver.h"
 
 
 
@@ -113,7 +114,7 @@ void WebInterface::Open(xgi::Input * in, xgi::Output * out) throw (xgi::exceptio
 	}
     }
 
-  DaqMonitorBEInterface * myBei = (*mui_p)->getBEInterface();
+  DQMStore * myBei = (*mui_p)->getBEInterface();
   
   std::cout << "will try to open " << to_open << std::endl;
   if (*mui_p)
@@ -209,7 +210,7 @@ void WebInterface::printNavigatorXML(std::string current, xgi::Output * out)
   
   *out << "<current>" << current << "</current>" << endl;
   
-  DaqMonitorBEInterface * myBei = (*mui_p)->getBEInterface();
+  DQMStore * myBei = (*mui_p)->getBEInterface();
   ContentReader reader(myBei);
   
   std::list<std::string>::iterator it;
@@ -276,7 +277,7 @@ void WebInterface::ContentsOpen(xgi::Input * in, xgi::Output * out) throw (xgi::
 	}
     }
 
-  DaqMonitorBEInterface * myBei = (*mui_p)->getBEInterface();
+  DQMStore * myBei = (*mui_p)->getBEInterface();
   
   std::cout << "will try to open " << to_open << std::endl;
   if (*mui_p)
@@ -317,7 +318,7 @@ void WebInterface::printContentViewerXML(std::string current, xgi::Output * out)
   
   *out << "<current>" << current << "</current>" << endl;
   
-  DaqMonitorBEInterface * myBei = (*mui_p)->getBEInterface();
+  DQMStore * myBei = (*mui_p)->getBEInterface();
   ContentReader reader(myBei);
   
   std::list<std::string>::iterator it;
@@ -353,8 +354,7 @@ void WebInterface::DrawGif(xgi::Input * in, xgi::Output * out) throw (xgi::excep
       return;
     }
 
-  DaqMonitorBEInterface * myBei = (*mui_p)->getBEInterface();
-  myBei->lock();
+  DQMStore * myBei = (*mui_p)->getBEInterface();
 
   ContentReader con_reader(myBei);  
   multimap<string,string>::iterator lower = view_multimap.lower_bound("View");
@@ -385,7 +385,6 @@ void WebInterface::DrawGif(xgi::Input * in, xgi::Output * out) throw (xgi::excep
   *out << getContextURL() + "/temporary/" + id + ".gif" << std::endl;
   *out << "</fileURL>" << std::endl;
 
-  myBei->unlock();
 }
 
 void WebInterface::printMap(ME_MAP view_map, std::string id)

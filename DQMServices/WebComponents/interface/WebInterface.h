@@ -9,8 +9,6 @@
 #include "xgi/Utils.h"
 #include "xgi/Method.h"
 
-#include "DQMServices/Core/interface/MonitorUIRoot.h"
-
 #include "DQMServices/WebComponents/interface/WebPage.h"
 #include "DQMServices/WebComponents/interface/MessageDispatcher.h"
 #include "DQMServices/WebComponents/interface/ME_MAP.h"
@@ -18,6 +16,7 @@
 #include <string>
 #include <map>
 
+class DQMOldReceiver;
 class WebInterface
 {
 
@@ -31,14 +30,14 @@ class WebInterface
 
  protected:
 
-  MonitorUserInterface ** mui_p;
+  DQMOldReceiver ** mui_p;
   WebPage * page_p;
 
  public:
 
   WebInterface(std::string _exeURL, 
 	       std::string _appURL, 
-	       MonitorUserInterface ** _mui_p)
+	       DQMOldReceiver ** _mui_p)
     {
       exeURL = _exeURL;
       appURL = _appURL;

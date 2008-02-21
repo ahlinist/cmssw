@@ -2,7 +2,6 @@
 #define _ME_MAP_h
 
 #include "DQMServices/Core/interface/MonitorElement.h"
-#include "DQMServices/Core/interface/MonitorUIRoot.h"
 #include <TCanvas.h>
 
 
