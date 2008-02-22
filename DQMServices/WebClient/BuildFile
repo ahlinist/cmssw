@@ -1,13 +1,11 @@
+<use name=DQMServices/Components>
 <use name=boost>
 <use name=root> 
-<use name=DQMServices/Components>
-<use name=DQMServices/Daemon>
-<use name=DQMServices/UI>
 <use name=xdaq>
 <export>
  <lib name=MonitorWebClient>
  <use name=DQMServices/Components>
- <use name=DQMServices/Daemon>
- <use name=DQMServices/UI>
+ <use name=boost>
+ <use name=root> 
  <use name=xdaq>
 </export>
