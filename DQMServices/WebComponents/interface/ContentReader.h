@@ -2,18 +2,18 @@
 #define _ContentReader_h_
 
 #include "xdaq/Application.h"
-#include "DQMServices/Core/interface/DaqMonitorBEInterface.h"
+#include "DQMServices/Core/interface/DQMStore.h"
 
 
 class ContentReader
 {
 private:
 
-  DaqMonitorBEInterface *bei;
+  DQMStore *bei;
 
 public:	
 
-  ContentReader(DaqMonitorBEInterface *the_bei)
+  ContentReader(DQMStore *the_bei)
     {
       bei = the_bei;
     }
