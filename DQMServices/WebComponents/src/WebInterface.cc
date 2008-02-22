@@ -76,7 +76,7 @@ void WebInterface::Configure(xgi::Input * in, xgi::Output * out) throw (xgi::exc
   /*
     if (*mui_p == 0)
     {
-    *mui_p = new MonitorUIRoot(host, atoi(port.c_str()), clientname);
+    *mui_p = new DQMOldReceiver(host, atoi(port.c_str()), clientname);
     }
     else
     {
