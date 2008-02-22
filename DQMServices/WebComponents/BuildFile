@@ -1,10 +1,11 @@
 <use name=DQMServices/Core>
-<use name=DQMServices/UI>
+<use name=Foundation/SealBase>
 <use name=root>
 <use name=xdaq>
 <export>
   <use name=DQMServices/Core>
-  <use name=DQMServices/UI>
+  <use name=Foundation/SealBase>
+  <use name=root>
   <use name=xdaq>
   <lib name=DQMServicesWebComponents>
 </export>
