@@ -12,8 +12,8 @@
    * Some information, see below, depends on the chosen definition, 'algorithmic' or 'physical'
    */
 namespace BTagMCTools {
-class JetFlavour {
 
+class JetFlavour {
 public:
 
   JetFlavour(void);
