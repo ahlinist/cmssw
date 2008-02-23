@@ -11,7 +11,6 @@
 
 class JetFlavourIdentifier {
 public:
-
   JetFlavourIdentifier() {}
   JetFlavourIdentifier(const edm::ParameterSet& iConfig);
   void readEvent(const edm::Event& iEvent);
@@ -22,7 +21,7 @@ public:
 private:
   void fillInfo( const HepMC::GenEvent * generated_event );
 
-  BTagMCTools::JetFlavour  basicIdentityBasedOnPartons(const math::XYZTLorentzVector & jet4Vec, const double coneSize) const;
+  BTagMCTools::JetFlavour basicIdentityBasedOnPartons(const math::XYZTLorentzVector & jet4Vec, const double coneSize) const;
 
   void fillAlgorithmicDefinition(BTagMCTools::JetFlavour & jetFlavour) const;
   void fillPhysicsDefinition(BTagMCTools::JetFlavour & jetFlavour, const math::XYZTLorentzVector & jet4Vec) const;
