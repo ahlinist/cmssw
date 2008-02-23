@@ -17,16 +17,15 @@ public:
   void readEvent(const edm::Event& iEvent);
 
   BTagMCTools::JetFlavour identifyBasedOnPartons( const reco::Jet & jet ) const;
-  const std::vector<MCParton> & getListOfPartons() const  {return m_partons;}
+  const std::vector<MCParton> & getListOfPartons() const { return m_partons; }
 
 private:
-  void fillInfo ( const HepMC::GenEvent * generated_event );
+  void fillInfo( const HepMC::GenEvent * generated_event );
 
-  BTagMCTools::JetFlavour  basicIdentityBasedOnPartons
-	(const math::XYZTLorentzVector & jet4Vec, const double coneSize) const;
+  BTagMCTools::JetFlavour  basicIdentityBasedOnPartons(const math::XYZTLorentzVector & jet4Vec, const double coneSize) const;
 
-  void fillAlgorithmicDefinition(  BTagMCTools::JetFlavour & jetFlavour) const;
-  void fillPhysicsDefinition(  BTagMCTools::JetFlavour & jetFlavour, const math::XYZTLorentzVector & jet4Vec) const;
+  void fillAlgorithmicDefinition(BTagMCTools::JetFlavour & jetFlavour) const;
+  void fillPhysicsDefinition(BTagMCTools::JetFlavour & jetFlavour, const math::XYZTLorentzVector & jet4Vec) const;
 
   double coneSizeToAssociate;
 
@@ -39,7 +38,6 @@ private:
   bool vetoB, vetoC, vetoL, vetoG;
   std::string moduleLabel;
   HepMC::GenEvent * generated_event;
-
 };
 
 #endif
