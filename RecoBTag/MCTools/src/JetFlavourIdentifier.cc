@@ -50,7 +50,7 @@ void JetFlavourIdentifier::readEvent(const edm::Event& iEvent)
 }
 
 
-void JetFlavourIdentifier::fillInfo ( const HepMC::GenEvent * event ) {
+void JetFlavourIdentifier::fillInfo( const HepMC::GenEvent * event ) {
 
 //   HeavyHadrons.erase( HeavyHadrons.begin() , HeavyHadrons.end() ) ;
 //   Leptons.erase( Leptons.begin() , Leptons.end() ) ;
