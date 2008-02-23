@@ -120,7 +120,7 @@ public:
   void nGluon           (const int a)   { m_nGluon = a; }
 
   void numberOfSources  (const int a)   { m_numberOfSources = a; }
-  void flavourSources   (const const std::vector<int> & a) { m_flavourSources = a; }
+  void flavourSources   (const std::vector<int> & a) { m_flavourSources = a; }
 
 private:
 
