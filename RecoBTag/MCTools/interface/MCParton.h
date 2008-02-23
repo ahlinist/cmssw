@@ -79,5 +79,5 @@ private:
   bool initialPartonHasCloseHF_;
 
 };
-#endif
 
+#endif

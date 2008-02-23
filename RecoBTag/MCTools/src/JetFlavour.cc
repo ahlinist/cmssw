@@ -6,12 +6,9 @@ JetFlavour::JetFlavour()
   m_mainFlavour          = 0 ;
   m_heaviestFlavour      = 0 ;
   m_minimumDeltaRFlavour = 0 ;
-
   m_mainOrigFlavour      = 0 ;
-  
   m_originFlavour        = 0 ;
-
-  m_initialFlavour        = 0 ;
+  m_initialFlavour       = 0 ;
 
   m_initialPartonSplitsToC = false ;
   m_initialPartonSplitsToB = false ;
