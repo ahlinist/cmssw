@@ -73,7 +73,7 @@ public:
   int  nGluon                       (void) const { return m_nGluon; }
 
   int  numberOfSources              (void) const { return m_numberOfSources; }
-  std::vector<int> flavourSources   (void) const { return m_flavourSources; }
+  const std::vector<int> & flavourSources (void) const { return m_flavourSources; }
 
 //set methods:
 
@@ -120,7 +120,7 @@ public:
   void nGluon           (const int a)   { m_nGluon = a; }
 
   void numberOfSources  (const int a)   { m_numberOfSources = a; }
-  void flavourSources   (const std::vector<int> a) { m_flavourSources = a; }
+  void flavourSources   (const const std::vector<int> & a) { m_flavourSources = a; }
 
 private:
 
