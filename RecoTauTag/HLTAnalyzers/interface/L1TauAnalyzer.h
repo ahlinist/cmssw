@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Fri Feb 22 09:20:55 CST 2008
-// $Id$
+// $Id: L1TauAnalyzer.h,v 1.8 2008/02/25 01:22:39 chinhan Exp $
 //
 //
 
@@ -115,6 +115,32 @@ class L1TauAnalyzer : public edm::EDAnalyzer {
   bool _DoMCMatching;
   bool _DoPFTauMatching;
 
+  // PDG id for 
+  int _BosonPID;
+
+  // Cuts
+  double _L1MCTauMinDeltaR;
+  double _MCTauHadMinEt;
+  double _MCTauHadMaxAbsEta;
+
+  double _PFMCTauMinDeltaR;
+  double _PFTauMinEt;
+  double _PFTauMaxAbsEta;
+
+  // Thresholds of L1 menu
+  double _SingleTauThreshold;
+  double _DoubleTauThreshold;
+  std::vector<double> _SingleTauMETThresholds;
+  std::vector<double> _MuTauThresholds;
+  std::vector<double> _IsoEgTauThresholds;
+
+  // L1 menu names
+  std::string _L1SingleTauName;
+  std::string _L1DoubleTauName;
+  std::string _L1TauMETName;
+  std::string _L1MuonTauName;
+  std::string _L1IsoEgTauName;
+
   // Gen Objects
   std::vector<TLorentzVector> _GenTauMuons;
   std::vector<TLorentzVector> _GenTauElecs;
@@ -191,15 +217,6 @@ class L1TauAnalyzer : public edm::EDAnalyzer {
   TH1* h_PFMCTauDeltaR;
 
   
-  // Cuts
-  double _L1MCTauMinDeltaR;
-  double _MCTauHadMinEt;
-  double _MCTauHadMaxAbsEta;
-
-  double _PFMCTauMinDeltaR;
-  double _PFTauMinEt;
-  double _PFTauMaxAbsEta;
-
   // Event based efficiencies as a function of thresholds
   TH1* h_L1SingleTauEffEt;
   TH1* h_L1DoubleTauEffEt;
@@ -207,20 +224,6 @@ class L1TauAnalyzer : public edm::EDAnalyzer {
   TH1* h_L1DoubleTauEffMCMatchEt;
   TH1* h_L1SingleTauEffPFMCMatchEt;
   TH1* h_L1DoubleTauEffPFMCMatchEt;
-
-  // Thresholds of L1 menu
-  double _SingleTauThreshold;
-  double _DoubleTauThreshold;
-  std::vector<double> _SingleTauMETThresholds;
-  std::vector<double> _MuTauThresholds;
-  std::vector<double> _IsoEgTauThresholds;
-
-  // L1 menu names
-  std::string _L1SingleTauName;
-  std::string _L1DoubleTauName;
-  std::string _L1TauMETName;
-  std::string _L1MuonTauName;
-  std::string _L1IsoEgTauName;
 
 // Counters for event based efficiencies
   int _nEvents; // all events processed
