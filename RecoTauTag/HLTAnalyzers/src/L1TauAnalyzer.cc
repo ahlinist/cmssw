@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Fri Feb 22 09:20:55 CST 2008
-// $Id$
+// $Id: L1TauAnalyzer.cc,v 1.6 2008/02/25 01:22:39 chinhan Exp $
 //
 //
 
@@ -64,6 +64,7 @@ L1TauAnalyzer::L1TauAnalyzer(const edm::ParameterSet& iConfig)
   _L1MuonTauName = iConfig.getParameter<std::string>("L1MuonTauName");
   _L1IsoEgTauName = iConfig.getParameter<std::string>("L1IsoEGTauName");
 
+  _BosonPID = iConfig.getParameter<int>("BosonPID");
 }
 
 
@@ -418,41 +419,45 @@ L1TauAnalyzer::getGenObjects(const edm::Event& iEvent, const edm::EventSetup& iS
   int nfidTauHads = 0; int nfidTauMuons = 0;int nfidTauElecs = 0; // count in fiducial region
   TLorentzVector taunu,tauelec,taumuon;
   GenEvent::particle_iterator p;
-  for (p = generated_event->particles_begin(); p != generated_event->particles_end(); p++) {
-    if(abs((*p)->pdg_id()) == 15&&(*p)->status()==2) { 
-      bool lept_decay = false;
-      
-      TLorentzVector tau((*p)->momentum().px(),(*p)->momentum().py(),(*p)->momentum().pz(),(*p)->momentum().e());
+
+  for (p = generated_event->particles_begin(); p != generated_event->particles_end(); ++p) {
+    if(abs((*p)->pdg_id()) == _BosonPID && (*p)->end_vertex()) {
       HepMC::GenVertex::particle_iterator z = (*p)->end_vertex()->particles_begin(HepMC::descendants);
       for(; z != (*p)->end_vertex()->particles_end(HepMC::descendants); z++) {
-	if(abs((*z)->pdg_id()) == 11 || abs((*z)->pdg_id()) == 13) lept_decay=true;
-	if(abs((*z)->pdg_id()) == 11) {
-	  tauelec.SetPxPyPzE((*z)->momentum().px(),(*z)->momentum().py(),(*z)->momentum().pz(),(*z)->momentum().e());
-	  _GenTauElecs.push_back(tauelec);
-	  nTauElecs++;
-	  if (tauelec.Et()>=_MCTauHadMinEt && tauelec.Eta()<=_MCTauHadMaxAbsEta )
-	    nfidTauElecs++;
-	}
-	if(abs((*z)->pdg_id()) == 13) {
-	  taumuon.SetPxPyPzE((*z)->momentum().px(),(*z)->momentum().py(),(*z)->momentum().pz(),(*z)->momentum().e());
-	  _GenTauMuons.push_back(taumuon);
-	  nTauMuons++;
-	  if (taumuon.Et()>=_MCTauHadMinEt && taumuon.Eta()<=_MCTauHadMaxAbsEta )
-	    nfidTauMuons++;
-	}
-	if(abs((*z)->pdg_id()) == 16)
-	  taunu.SetPxPyPzE((*z)->momentum().px(),(*z)->momentum().py(),(*z)->momentum().pz(),(*z)->momentum().e());	
+	if(abs((*z)->pdg_id()) == 15 && (*z)->status()==2) { 
+	  bool lept_decay = false;
+	  TLorentzVector tau((*z)->momentum().px(),(*z)->momentum().py(),(*z)->momentum().pz(),(*z)->momentum().e());
+	  HepMC::GenVertex::particle_iterator t = (*z)->end_vertex()->particles_begin(HepMC::descendants);
+	  for(; t != (*z)->end_vertex()->particles_end(HepMC::descendants); t++) {
+	    if(abs((*t)->pdg_id()) == 11 || abs((*t)->pdg_id()) == 13) lept_decay=true;
+	    if(abs((*t)->pdg_id()) == 11) {
+	      tauelec.SetPxPyPzE((*t)->momentum().px(),(*t)->momentum().py(),(*t)->momentum().pz(),(*t)->momentum().e());
+	      _GenTauElecs.push_back(tauelec);
+	      nTauElecs++;
+	      if (tauelec.Et()>=_MCTauHadMinEt && tauelec.Eta()<=_MCTauHadMaxAbsEta )
+		nfidTauElecs++;
+	    }
+	    if(abs((*t)->pdg_id()) == 13) {
+	      taumuon.SetPxPyPzE((*t)->momentum().px(),(*t)->momentum().py(),(*t)->momentum().pz(),(*t)->momentum().e());
+	      _GenTauMuons.push_back(taumuon);
+	      nTauMuons++;
+	      if (taumuon.Et()>=_MCTauHadMinEt && taumuon.Eta()<=_MCTauHadMaxAbsEta )
+		nfidTauMuons++;
+	    }
+	    if(abs((*t)->pdg_id()) == 16)
+	      taunu.SetPxPyPzE((*t)->momentum().px(),(*t)->momentum().py(),(*t)->momentum().pz(),(*t)->momentum().e());	
+	  }
+	  if(lept_decay==false) {
+	    TLorentzVector jetMom=tau-taunu;
+	    _GenTauHads.push_back(jetMom);
+	    nTauHads++;
+	    if (jetMom.Et()>=_MCTauHadMinEt && jetMom.Eta()<=_MCTauHadMaxAbsEta )
+	      nfidTauHads++;
+	  }
+	}    
       }
-      if(lept_decay==false) {
-	TLorentzVector jetMom=tau-taunu;
-	_GenTauHads.push_back(jetMom);
-	nTauHads++;
-	if (jetMom.Et()>=_MCTauHadMinEt && jetMom.Eta()<=_MCTauHadMaxAbsEta )
-	  nfidTauHads++;
-      }
-    }    
+    }
   }
-  
   delete generated_event;
 
   // Counters

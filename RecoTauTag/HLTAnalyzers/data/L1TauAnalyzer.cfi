@@ -3,6 +3,11 @@ module l1tau = L1TauAnalyzer {
     InputTag PFTauDiscriminatorSource = pfRecoTauDiscriminationByIsolation
     InputTag GenParticleSource = source
 
+    int32    BosonPID     = 23 //(Z)
+    // int32    BosonPID     = 37 //(H+)
+    // int32    BosonPID     = 35 //(H0)
+    // int32    BosonPID     = 36 //(A0)
+
     // L1extra reading
     InputTag L1extraTauJetSource       = l1extraParticles:Tau
     InputTag L1extraCenJetSource       = l1extraParticles:Central
