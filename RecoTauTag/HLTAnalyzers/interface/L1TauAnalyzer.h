@@ -1,7 +1,29 @@
+// -*- C++ -*-
+//
+// Package:    L1TauAnalyzer
+// Class:      L1TauAnalyzer
+// 
+/**\class L1TauAnalyzer L1TauAnalyzer.cc UserCode/L1TauAnalyzer/src/L1TauAnalyzer.cc
+
+ Description: <one line class summary>
+
+ Implementation:
+     <Notes on implementation>
+*/
+//
+// Original Author:  Chi Nhan Nguyen
+//         Created:  Fri Feb 22 09:20:55 CST 2008
+// $Id$
+//
+//
+
+
 // system include files
 #include <memory>
-#include <string>
 #include <vector>
+#include <string>
+#include <iostream>
+#include <iomanip>
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -9,174 +31,249 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/MessageLogger/interface/MessageLogger.h"
 
-// HEP library include files
+#include "DataFormats/TauReco/interface/PFTau.h"
+#include "DataFormats/TauReco/interface/PFTauDiscriminatorByIsolation.h"
+
+#include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
 #include <Math/GenVector/VectorUtil.h>
-//#include "CLHEP/HepMC/GenEvent.h"
-//#include "CLHEP/HepMC/GenVertex.h"
-//#include "CLHEP/HepMC/GenParticle.h"
-#include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
-#include "RecoTauTag/HLTAnalyzers/interface/MCTauCand.h"
-#include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
-#include "HepMC/GenEvent.h"
+#include "TLorentzVector.h"
+
+#include "FWCore/ServiceRegistry/interface/Service.h" // Framework services
+#include "PhysicsTools/UtilAlgos/interface/TFileService.h" // Framework service for histograms
+
+#include "TH1.h"
 
 // L1 Trigger data formats
 #include "DataFormats/L1Trigger/interface/L1EmParticle.h"
+#include "DataFormats/L1Trigger/interface/L1EmParticleFwd.h"
 #include "DataFormats/L1Trigger/interface/L1JetParticle.h"
+#include "DataFormats/L1Trigger/interface/L1JetParticleFwd.h"
 #include "DataFormats/L1Trigger/interface/L1MuonParticle.h"
+#include "DataFormats/L1Trigger/interface/L1MuonParticleFwd.h"
 #include "DataFormats/L1Trigger/interface/L1EtMissParticle.h"
 #include "DataFormats/L1Trigger/interface/L1EtMissParticleFwd.h"
 #include "DataFormats/L1Trigger/interface/L1ParticleMap.h"
-
-// Histogram containers
-#include "RecoTauTag/HLTAnalyzers/interface/L1TauHistograms.h"
-#include "RecoTauTag/HLTAnalyzers/interface/L1ElecHistograms.h"
-#include "RecoTauTag/HLTAnalyzers/interface/L1JetMETHistograms.h"
-#include "RecoTauTag/HLTAnalyzers/interface/L1Acceptance.h"
-
-// reco
-#include "DataFormats/JetReco/interface/BasicJetCollection.h"
-#include "DataFormats/JetReco/interface/CaloJetCollection.h"
-#include "DataFormats/METReco/interface/CaloMETCollection.h"
-#include "DataFormats/METReco/interface/CaloMET.h"
-#include "DataFormats/METReco/interface/METCollection.h"
-#include "DataFormats/METReco/interface/CaloMET.h"
-#include "DataFormats/JetReco/interface/GenJet.h"
-#include "DataFormats/METReco/interface/GenMET.h"
-//#include "DataFormats/JetReco/interface/JetTracksAssociation.h"
-#include "DataFormats/BTauReco/interface/IsolatedTauTagInfo.h"
-#include "DataFormats/MuonReco/interface/Muon.h"
-#include "DataFormats/MuonReco/interface/MuonFwd.h"
-#include "DataFormats/EgammaReco/interface/SuperCluster.h"
-#include "DataFormats/EgammaReco/interface/SuperClusterFwd.h"
-#include "DataFormats/EgammaCandidates/interface/PixelMatchGsfElectron.h"
-#include "DataFormats/EgammaCandidates/interface/PixelMatchGsfElectronFwd.h"
+#include "DataFormats/L1Trigger/interface/L1ParticleMapFwd.h"
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutRecord.h"
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutSetupFwd.h"
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMapRecord.h"
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMapFwd.h"
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMap.h"
+#include "DataFormats/L1GlobalMuonTrigger/interface/L1MuGMTExtendedCand.h"
 
 //
 // class decleration
 //
 
 class L1TauAnalyzer : public edm::EDAnalyzer {
-public:
-  explicit L1TauAnalyzer(const edm::ParameterSet&);
-  ~L1TauAnalyzer();
-  
-  
-private:
-  virtual void beginJob(const edm::EventSetup&) ;
-  virtual void analyze(const edm::Event&, const edm::EventSetup&);
-  virtual void endJob() ;
-  
+   public:
+      explicit L1TauAnalyzer(const edm::ParameterSet&);
+      ~L1TauAnalyzer();
+
+
+   private:
+      virtual void beginJob(const edm::EventSetup&) ;
+      virtual void analyze(const edm::Event&, const edm::EventSetup&);
+      virtual void endJob() ;
+
+
   void getGenObjects(const edm::Event&, const edm::EventSetup&);
-  void getRecoObjects(const edm::Event&, const edm::EventSetup&);
-  void getFastL1Objects(const edm::Event&, const edm::EventSetup&);
+  void getPFTauObjects(const edm::Event&, const edm::EventSetup&);
   void getL1extraObjects(const edm::Event&, const edm::EventSetup&);
-  void getTauJets(const edm::Event& iEvent);
-  void getMuons(const edm::Event& iEvent);
-  void getElecs(const edm::Event& iEvent);
 
-  bool passTauCuts(const reco::Jet&);
-  bool passElecCuts(const reco::PixelMatchGsfElectron&);
-  bool passMuCuts(const reco::Muon&);
-  bool passMETCuts(const reco::CaloMET&);
+  void fillL1Histograms();
+  void fillGenHistograms();
+  void fillPFTauHistograms();
 
-  void fillFastL1Histos();
-  void makeFastL1Histos();
-  void fillL1extraHistos();
-  void makeL1extraHistos();
-  void fillL1CompHistos();
-  void fillL1GenCompHistos();
+  void evalL1Decisions(const edm::Event& iEvent);
+  void evalL1extraDecisions();
 
-  void printGenInfo(const edm::Event&);
+  void calcL1MCTauMatching();
+  void calcL1MCPFTauMatching();
+
+  void convertToIntegratedEff(TH1*,double);
+  void printTrigReport();
   
   // ----------member data ---------------------------
 
-  // Config parameters
-  bool _doGenObjects;
-  bool _doFastL1Objects;
-  bool _doL1extraObjects;
-  bool _doRecoObjects;
-  bool _doPrintGenInfo;
-  bool _doRecoCuts;
+  edm::InputTag _PFTauSource;
+  edm::InputTag _PFTauDiscriminatorSource;
+  edm::InputTag _GenParticleSource;
 
-  std::string _GeneratorSource;
+  edm::InputTag _L1extraTauJetSource;
+  edm::InputTag _L1extraCenJetSource;
+  edm::InputTag _L1extraForJetSource;
+  edm::InputTag _L1extraNonIsoEgammaSource;
+  edm::InputTag _L1extraIsoEgammaSource;
+  edm::InputTag _L1extraMETSource;
+  edm::InputTag _L1extraMuonSource;
 
-  std::string _FastL1Source;
-  std::string _FastL1metSource;
-  std::string _FastL1taujetSource;
-  std::string _FastL1cenjetSource;
-  std::string _FastL1forjetSource;
-  std::string _FastL1egammaSource;
-  std::string _FastL1isoegammaSource;
+  edm::InputTag _L1GtReadoutRecord;
+  edm::InputTag _L1GtObjectMap;
 
-  std::string _L1extraSource;
-  std::string _L1extramuonSource;
-  std::string _L1extrametSource;
-  std::string _L1extrataujetSource;
-  std::string _L1extracenjetSource;
-  std::string _L1extraforjetSource;
-  std::string _L1extraegammaSource;
-  std::string _L1extraisoegammaSource;
+  bool _DoMCMatching;
+  bool _DoPFTauMatching;
 
-  std::string _iCone5CaloJetSource;
-  std::string _iCone5GenJetSource;
-  std::string _CaloMETSource;
-  std::string _GenMETSource;
-  std::string _ConeIsoTauJetTagSource;
-  std::string _GlobalMuonSource;
-  std::string _PixelElecSource;
+  // Gen Objects
+  std::vector<TLorentzVector> _GenTauMuons;
+  std::vector<TLorentzVector> _GenTauElecs;
+  std::vector<TLorentzVector> _GenTauHads;
 
-  // List of generated leptons from Z, W or H
-  std::vector<HepMC::GenParticle> _GenBosons;
-  std::vector<HepMC::GenParticle> _GenElecs;
-  std::vector<HepMC::GenParticle> _GenMuons;
-  std::vector<HepMC::GenParticle> _GenTauElecs;
-  std::vector<HepMC::GenParticle> _GenTauMuons;
-  std::vector<MCTauCand> _GenTaus;
+  // Tagged PFTau Objects
+  std::vector<TLorentzVector> _PFTaus;
 
-  // FastL1 objects
-  l1extra::L1EtMissParticle _FastL1MET;
-  //l1extra::L1EtMissParticleCollection _FastL1MET;
-  l1extra::L1JetParticleCollection _FastL1TauJets;
-  l1extra::L1JetParticleCollection _FastL1CenJets;
-  l1extra::L1JetParticleCollection _FastL1ForJets;
-  l1extra::L1JetParticleCollection _FastL1JetsNoTau;
-  l1extra::L1JetParticleCollection _FastL1InclJets;
-  l1extra::L1EmParticleCollection _FastL1Egammas;
-  l1extra::L1EmParticleCollection _FastL1isoEgammas;
+  // L1extra Objects
+  std::vector<TLorentzVector> _L1Taus;
+  std::vector<TLorentzVector> _L1CenJets;
+  std::vector<TLorentzVector> _L1ForJets;
+  std::vector<TLorentzVector> _L1NonIsoEgammas;
+  std::vector<TLorentzVector> _L1IsoEgammas;
+  std::vector<TLorentzVector> _L1METs;
+  std::vector<TLorentzVector> _L1Muons;
+  std::vector<int> _L1MuQuals;
 
-  // L1extra objects
-  l1extra::L1EtMissParticle _L1extraMET;
-  //l1extra::L1EtMissParticleCollection _L1extraMET;
-  l1extra::L1MuonParticleCollection _L1extraMuons;
-  l1extra::L1JetParticleCollection _L1extraTauJets;
-  l1extra::L1JetParticleCollection _L1extraCenJets;
-  l1extra::L1JetParticleCollection _L1extraForJets;
-  l1extra::L1JetParticleCollection _L1extraJetsNoTau;
-  l1extra::L1JetParticleCollection _L1extraInclJets;
-  l1extra::L1EmParticleCollection _L1extraEgammas;
-  l1extra::L1EmParticleCollection _L1extraisoEgammas;
 
-  // reco objects
-  reco::CaloJetCollection _iCone5CaloJets;
-  std::vector<reco::Jet> _iCone5TauJets;
-  reco::GenJetCollection _iCone5GenJets;
-  reco::METCollection _GenMET;
-  reco::CaloMETCollection _CaloMET;
+  // histograms
+  TH1* h_L1TauEt;
+  TH1* h_L1TauEta;
+  TH1* h_L1TauPhi;
+
+  TH1* h_L1Tau1Et;
+  TH1* h_L1Tau1Eta;
+  TH1* h_L1Tau1Phi;
+
+  TH1* h_L1Tau2Et;
+  TH1* h_L1Tau2Eta;
+  TH1* h_L1Tau2Phi;
+
+  //
+  TH1* h_GenTauHadEt;
+  TH1* h_GenTauHadEta;
+  TH1* h_GenTauHadPhi;
+
+  //
+  TH1* h_PFTauEt;
+  TH1* h_PFTauEta;
+  TH1* h_PFTauPhi;
+
+  // L1 response
+  TH1* h_L1MCTauDeltaR;
+  TH1* h_L1minusMCTauEt;
+  TH1* h_L1minusMCoverMCTauEt;
+
+  // MC matching efficiencies
+  TH1* h_EffMCTauEt;
+  TH1* h_EffMCTauEta;
+  TH1* h_EffMCTauPhi;
+  // Numerators
+  TH1* h_L1MCMatchedTauEt;
+  TH1* h_L1MCMatchedTauEta;
+  TH1* h_L1MCMatchedTauPhi;
+  // Denominators
+  TH1* h_MCTauHadEt;
+  TH1* h_MCTauHadEta;
+  TH1* h_MCTauHadPhi;
+
+  // MCPF matching efficiencies
+  TH1* h_EffMCPFTauEt;
+  TH1* h_EffMCPFTauEta;
+  TH1* h_EffMCPFTauPhi;
+  // Numerators
+  TH1* h_L1MCPFMatchedTauEt;
+  TH1* h_L1MCPFMatchedTauEta;
+  TH1* h_L1MCPFMatchedTauPhi;
+  // Denominators
+  TH1* h_MCPFTauHadEt;
+  TH1* h_MCPFTauHadEta;
+  TH1* h_MCPFTauHadPhi;
+
+  TH1* h_PFMCTauDeltaR;
+
   
-  reco::MuonCollection _Muons;
-  reco::PixelMatchGsfElectronCollection _PixelElectrons;
+  // Cuts
+  double _L1MCTauMinDeltaR;
+  double _MCTauHadMinEt;
+  double _MCTauHadMaxAbsEta;
 
-  // Histogram containers
-  L1TauHistograms* _FastL1TauHistos;
-  L1TauHistograms* _L1extraTauHistos;
-  L1ElecHistograms* _FastL1ElecHistos;
-  L1ElecHistograms* _L1extraElecHistos;
-  L1JetMETHistograms* _FastL1JetMETHistos;
-  L1JetMETHistograms* _L1extraJetMETHistos;
+  double _PFMCTauMinDeltaR;
+  double _PFTauMinEt;
+  double _PFTauMaxAbsEta;
 
-  L1Acceptance* _FastL1Acceptance;
-  L1Acceptance* _L1extraAcceptance;
+  // Event based efficiencies as a function of thresholds
+  TH1* h_L1SingleTauEffEt;
+  TH1* h_L1DoubleTauEffEt;
+  TH1* h_L1SingleTauEffMCMatchEt;
+  TH1* h_L1DoubleTauEffMCMatchEt;
+  TH1* h_L1SingleTauEffPFMCMatchEt;
+  TH1* h_L1DoubleTauEffPFMCMatchEt;
+
+  // Thresholds of L1 menu
+  double _SingleTauThreshold;
+  double _DoubleTauThreshold;
+  std::vector<double> _SingleTauMETThresholds;
+  std::vector<double> _MuTauThresholds;
+  std::vector<double> _IsoEgTauThresholds;
+
+  // L1 menu names
+  std::string _L1SingleTauName;
+  std::string _L1DoubleTauName;
+  std::string _L1TauMETName;
+  std::string _L1MuonTauName;
+  std::string _L1IsoEgTauName;
+
+// Counters for event based efficiencies
+  int _nEvents; // all events processed
+
+  int _nEventsGenTauHad; 
+  int _nEventsDoubleGenTauHads; 
+  int _nEventsGenTauMuonTauHad; 
+  int _nEventsGenTauElecTauHad;   
+
+  int _nfidEventsGenTauHad; 
+  int _nfidEventsDoubleGenTauHads; 
+  int _nfidEventsGenTauMuonTauHad; 
+  int _nfidEventsGenTauElecTauHad;   
+
+  int _nEventsPFMatchGenTauHad; 
+  int _nEventsPFMatchDoubleGenTauHads; 
+  int _nEventsPFMatchGenTauMuonTauHad; 
+  int _nEventsPFMatchGenTauElecTauHad;   
+
+  int _nEventsL1SingleTauPassed;
+  int _nEventsL1SingleTauPassedMCMatched;
+  int _nEventsL1SingleTauPassedPFMCMatched;
+
+  int _nEventsL1DoubleTauPassed;
+  int _nEventsL1DoubleTauPassedMCMatched;
+  int _nEventsL1DoubleTauPassedPFMCMatched;
+
+  int _nEventsL1SingleTauMETPassed;
+  int _nEventsL1SingleTauMETPassedMCMatched;
+  int _nEventsL1SingleTauMETPassedPFMCMatched;
+
+  int _nEventsL1MuonTauPassed;
+  int _nEventsL1MuonTauPassedMCMatched;
+  int _nEventsL1MuonTauPassedPFMCMatched;
+
+  int _nEventsL1IsoEgTauPassed;
+  int _nEventsL1IsoEgTauPassedMCMatched;
+  int _nEventsL1IsoEgTauPassedPFMCMatched;
+
+  // from GT bit info
+  int _nEventsL1GTSingleTauPassed;
+  int _nEventsL1GTDoubleTauPassed;
+  int _nEventsL1GTSingleTauMETPassed;
+  int _nEventsL1GTMuonTauPassed;
+  int _nEventsL1GTIsoEgTauPassed;
 
 };
+
+//
+// constants, enums and typedefs
+//
+
+//
+// static data member definitions
+//
+
