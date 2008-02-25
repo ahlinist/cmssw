@@ -1,4 +1,6 @@
-// system include files
+#ifndef _HFTREE_h_
+#define _HFTREE_h_
+
 #include <memory>
 
 // user include files
@@ -30,4 +32,4 @@ class HFTree : public edm::EDAnalyzer {
   TAna00Event  *fEvent;
 };
 
-
+#endif

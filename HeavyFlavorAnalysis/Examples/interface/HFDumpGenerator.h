@@ -1,4 +1,6 @@
-// system include files
+#ifndef _HFDUMPGENERATOR_h_
+#define _HFDUMPGENERATOR_h_
+
 #include <memory>
 
 // user include files
@@ -30,3 +32,4 @@ class HFDumpGenerator : public edm::EDAnalyzer {
 
 };
 
+#endif
