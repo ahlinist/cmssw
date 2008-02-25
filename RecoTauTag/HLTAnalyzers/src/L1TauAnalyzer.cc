@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Fri Feb 22 09:20:55 CST 2008
-// $Id: L1TauAnalyzer.cc,v 1.6 2008/02/25 01:22:39 chinhan Exp $
+// $Id: L1TauAnalyzer.cc,v 1.7 2008/02/25 19:57:06 chinhan Exp $
 //
 //
 
@@ -235,17 +235,17 @@ L1TauAnalyzer::beginJob(const edm::EventSetup&)
   h_L1DoubleTauEffPFMCMatchEt->Sumw2();
 
   // Init counters for event based efficiencies
-  _nEvents = 0;
+  _nEvents = 0; // all events processed
 
   _nEventsGenTauHad = 0; 
   _nEventsDoubleGenTauHads = 0; 
   _nEventsGenTauMuonTauHad = 0; 
-  _nEventsGenTauElecTauHad = 0;
+  _nEventsGenTauElecTauHad = 0;   
 
   _nfidEventsGenTauHad = 0; 
   _nfidEventsDoubleGenTauHads = 0; 
   _nfidEventsGenTauMuonTauHad = 0; 
-  _nfidEventsGenTauElecTauHad = 0;
+  _nfidEventsGenTauElecTauHad = 0;   
 
   _nEventsPFMatchGenTauHad = 0; 
   _nEventsPFMatchDoubleGenTauHads = 0; 
@@ -272,6 +272,12 @@ L1TauAnalyzer::beginJob(const edm::EventSetup&)
   _nEventsL1IsoEgTauPassedMCMatched = 0;
   _nEventsL1IsoEgTauPassedPFMCMatched = 0;
 
+  // from GT bit info
+  _nEventsL1GTSingleTauPassed = 0;
+  _nEventsL1GTDoubleTauPassed = 0;
+  _nEventsL1GTSingleTauMETPassed = 0;
+  _nEventsL1GTMuonTauPassed = 0;
+  _nEventsL1GTIsoEgTauPassed = 0;
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
