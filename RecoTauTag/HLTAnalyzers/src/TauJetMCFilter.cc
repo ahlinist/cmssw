@@ -56,7 +56,8 @@ bool TauJetMCFilter::filter(edm::Event& iEvent, const edm::EventSetup& iES)
   
   HepMC::GenEvent * generated_event = new HepMC::GenEvent(*(evt->GetEvent()));
   
-  int nTauMatched =0, ntaujet=0,nelec=0,nmuon=0;
+  //int nTauMatched =0;
+  int ntaujet=0,nelec=0,nmuon=0;
   bool event_passed = true;
   
   TLorentzVector taunet,tauelec,taumuon;
