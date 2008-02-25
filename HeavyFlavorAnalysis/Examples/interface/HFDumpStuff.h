@@ -1,4 +1,6 @@
-// system include files
+#ifndef _HFDUMPSTUFF_h_
+#define _HFDUMPSTUFF_h_
+
 #include <memory>
 
 // user include files
@@ -31,3 +33,4 @@ class HFDumpStuff : public edm::EDAnalyzer {
 
 };
 
+#endif

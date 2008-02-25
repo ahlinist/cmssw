@@ -1,4 +1,6 @@
-// system include files
+#ifndef _HFDUMPTRACKS_h_
+#define _HFDUMPTRACKS_h_
+
 #include <memory>
 
 // user include files
@@ -36,3 +38,4 @@ class HFDumpTracks : public edm::EDAnalyzer {
   TrackAssociatorBase *fAssociator;
 };
 
+#endif

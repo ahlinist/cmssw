@@ -1,4 +1,6 @@
-// system include files
+#ifndef _HFDUMPJETS_h_
+#define _HFDUMPJETS_h_
+
 #include <memory>
 
 // user include files
@@ -47,4 +49,6 @@ class HFDumpJets : public edm::EDAnalyzer {
   
 
 };
+
+#endif
 
