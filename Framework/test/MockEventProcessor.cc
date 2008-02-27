@@ -25,12 +25,12 @@ namespace edm {
 
   MockEventProcessor::MockEventProcessor(const std::string& mockData,
                                          std::ostream& output,
-                                         const statemachine::Filemode& filemode,
+                                         const statemachine::FileMode& fileMode,
                                          bool handleEmptyRuns,
                                          bool handleEmptyLumis) :
     mockData_(mockData),
     output_(output),
-    filemode_(filemode),
+    fileMode_(fileMode),
     handleEmptyRuns_(handleEmptyRuns),
     handleEmptyLumis_(handleEmptyLumis),
     shouldWeCloseOutput_(true),
@@ -41,7 +41,7 @@ namespace edm {
   edm::MockEventProcessor::StatusCode
   MockEventProcessor::runToCompletion() {
     statemachine::Machine myMachine(this,
-                                    filemode_,
+                                    fileMode_,
                                     handleEmptyRuns_,
                                     handleEmptyLumis_);
 

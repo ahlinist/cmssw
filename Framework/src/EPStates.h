@@ -29,7 +29,7 @@ namespace edm {
 
 namespace statemachine {
 
-  enum Filemode { SPARSE, DENSE };
+  enum FileMode { SPARSE, DENSE };
   const int INVALID_RUN = 0;
   const int INVALID_LUMI = 0;
 
@@ -74,12 +74,12 @@ namespace statemachine {
   {
   public:
     Machine(edm::IEventProcessor* ep,
-            Filemode filemode,
+            FileMode fileMode,
             bool handleEmptyRuns,
             bool handleEmptyLumis);
 
     edm::IEventProcessor& ep() const;
-    Filemode filemode() const;
+    FileMode fileMode() const;
     bool handleEmptyRuns() const;
     bool handleEmptyLumis() const;
 
@@ -89,7 +89,7 @@ namespace statemachine {
   private:
 
     edm::IEventProcessor* ep_;
-    Filemode filemode_;
+    FileMode fileMode_;
     bool handleEmptyRuns_;
     bool handleEmptyLumis_;
   };

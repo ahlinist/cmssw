@@ -417,7 +417,7 @@ namespace edm {
     std::auto_ptr<EventPrincipal>               sm_evp_;
     bool                                          shouldWeStop_;
     bool                                          stateMachineWasInErrorState_;
-    std::string                                   filemode_;
+    std::string                                   fileMode_;
     bool                                          handleEmptyRuns_;
     bool                                          handleEmptyLumis_;
 

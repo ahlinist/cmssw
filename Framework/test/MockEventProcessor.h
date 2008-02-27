@@ -22,7 +22,7 @@ namespace edm
 
     MockEventProcessor(const std::string& mockData,
                        std::ostream& output,
-                       const statemachine::Filemode& filemode,
+                       const statemachine::FileMode& fileMode,
                        bool handleEmptyRuns,
                        bool handleEmptyLumis);
 
@@ -67,7 +67,7 @@ namespace edm
   private:
     std::string mockData_;
     std::ostream & output_;
-    statemachine::Filemode filemode_;
+    statemachine::FileMode fileMode_;
     bool handleEmptyRuns_;
     bool handleEmptyLumis_;
 
