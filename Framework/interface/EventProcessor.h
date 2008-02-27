@@ -417,6 +417,9 @@ namespace edm {
     std::auto_ptr<EventPrincipal>               sm_evp_;
     bool                                          shouldWeStop_;
     bool                                          stateMachineWasInErrorState_;
+    std::string                                   filemode_;
+    bool                                          handleEmptyRuns_;
+    bool                                          handleEmptyLumis_;
 
     friend class EDLooperHelper;
     friend class event_processor::StateSentry;
