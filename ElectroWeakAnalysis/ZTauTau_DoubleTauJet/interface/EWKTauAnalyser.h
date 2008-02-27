@@ -60,16 +60,20 @@ protected:
   int selectTau(const reco::PFTau& jet);
   void findInvariantMass(const reco::PFTau& jet);
   std::pair<unsigned int, unsigned int> getTauIndices(std::map<unsigned int, unsigned int>& smap);
-  bool matchWithHLTJet(const reco::PFTau& tau, const reco::CaloJetCollection& caloJets, double& dr);
   //  bool matchWithHLTJet(const PFTau& tau, const Handle<reco::HLTFilterObjectWithRefs>& hltHandle, double& dr);
-  double sumOfIPSignificance(const reco::PFTau& tau1, const reco::PFTau& tau2); 
-  bool prongsAsExpected(const reco::PFTau& tau1, const reco::PFTau& tau2);
-  void TauObject(Handle<reco::PFTauCollection> tauHandle, int iTau, reco::PFTau& tau); 
-  void printEvent(const reco::PFTau& tau1, const reco::PFTau& tau2);
-  void printCandidate(const reco::PFTau& tau);
 
   static bool applySelection(int bitWord, int bitPosition); 
+
+public:
+
+  static void TauObject(Handle<reco::PFTauCollection> tauHandle, int iTau, reco::PFTau& tau); 
+  static bool matchWithHLTJet(const reco::PFTau& tau, const reco::CaloJetCollection& caloJets, double& dr);
   static void bit_print(int word, int pos=8);
+  static double getTauCharge(const reco::PFTau& tau, int dflag=0);
+  static void printCandidate(const reco::PFTau& tau);
+  static void printEvent(const reco::PFTau& tau1, const reco::PFTau& tau2);
+  static double sumOfIPSignificance(const reco::PFTau& tau1, const reco::PFTau& tau2, int dflag=0); 
+  static bool prongsAsExpected(const reco::PFTau& tau1, const reco::PFTau& tau2, int dflag=0);
 
 private:
 
@@ -115,6 +119,7 @@ private:
   std::string analysisType_;
   std::string selbitStr_;
   int selectionBits;
+  double eventCharge_;
   
   int nEvent;
 
@@ -140,6 +145,11 @@ private:
   TH1D* maxHcalEnergy2H;
   TH1D* emEnergyFracH;
   TH1D* emEnergyFrac2H;
+  TH1D* eOverPH;
+  TH1D* etOverPtH;
+  TH1D* hmaxOverPH;
+  TH1D* htotOverPH;
+
   TH1F* nChHadronH;
   TH1F* nChHadronSigH;
   TH1F* nChHadronIsoH;
@@ -252,6 +262,7 @@ private:
   int debugFlg;
 
   int nStat[13];
+  int nEvtCharge[3];
 
 protected:
   std::ofstream fStatLog_;
