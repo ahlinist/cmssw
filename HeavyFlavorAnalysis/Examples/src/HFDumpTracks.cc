@@ -125,7 +125,6 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	for (TrackingParticle::genp_iterator pit = tpr->genParticle_begin(); 
 	     pit != tpr->genParticle_end(); 
 	     ++pit){
-	  cout << ". ";
 	  genPar     = pit->get();
 	  gen_pdg_id = (*genPar).pdg_id();
 	  gen_id     = (*genPar).barcode()-1;
@@ -134,11 +133,10 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	  //gen_eta    = (*genPar).momentum().pseudoRapidity();
 	  gen_cnt++;
 	}
-	cout << endl;
       } catch (Exception event) {
-	cout << "%%>   Rec. Track #" << setw(2) << rTrack.index() << " pT: " 
-	     << setprecision(2) << setw(6) << track.pt() 
-	     <<  " matched to 0 MC Tracks" << endl;
+	// 	cout << "%%>   Rec. Track #" << setw(2) << rTrack.index() << " pT: " 
+	// 	     << setprecision(2) << setw(6) << track.pt() 
+	// 	     <<  " matched to 0 MC Tracks" << endl;
       }
     }
 
