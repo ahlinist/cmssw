@@ -27,6 +27,9 @@ using namespace edm;
 // ----------------------------------------------------------------------
 HFDumpStuff::HFDumpStuff(const edm::ParameterSet& iConfig):
   fGenEventScaleLabel(iConfig.getUntrackedParameter<string>("GenEventScaleLabel", string("genEventScale"))),
+  fCandidates1Label(iConfig.getUntrackedParameter<string>("Candidates1Label", string("JPsiToMuMu"))),
+  fCandidates2Label(iConfig.getUntrackedParameter<string>("Candidates2Label", string("JPsiToMuMu"))),
+  fCandidates3Label(iConfig.getUntrackedParameter<string>("Candidates3Label", string("JPsiToMuMu"))),
   fMETLabel(iConfig.getUntrackedParameter<string>("METLabel", string("corMetType1Icone5"))),
   fGenMETLabel(iConfig.getUntrackedParameter<string>("GenMETLabel", string("genMet")))
 {
@@ -58,6 +61,60 @@ void HFDumpStuff::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     //    cout << ex.explainSelf() << endl;
     cout << "genEventScale " << fGenEventScaleLabel.c_str() << " not found " << endl;
   }
+
+
+  // -- Candidates list
+  try {
+    Handle<CandidateCollection> candidates1Handle;
+    iEvent.getByLabel(fCandidates1Label.c_str(), candidates1Handle);
+    for (int i = 0; i < candidates1Handle->size(); ++ i ) {
+      const Candidate &p = (*candidates1Handle)[i];
+      cout << "==> candidates1 " << i << " id = " << p.pdgId() 
+	   << " mass = " << p.mass()
+	   << " pt = " << p.pt() 
+	   << " phi = " << p.phi() 
+	   << " eta = " << p.eta() 
+	   << endl;
+    }
+  } catch (cms::Exception &ex) {
+    //    cout << ex.explainSelf() << endl;
+    cout << "Candidate list " << fCandidates1Label.c_str() << " not found " << endl;
+  }
+
+  try {
+    Handle<CandidateCollection> candidates2Handle;
+    iEvent.getByLabel(fCandidates2Label.c_str(), candidates2Handle);
+    for (int i = 0; i < candidates2Handle->size(); ++ i ) {
+      const Candidate &p = (*candidates2Handle)[i];
+      cout << "==> candidates2 " << i << " id = " << p.pdgId() 
+	   << " mass = " << p.mass()
+	   << " pt = " << p.pt() 
+	   << " phi = " << p.phi() 
+	   << " eta = " << p.eta() 
+	   << endl;
+    }
+  } catch (cms::Exception &ex) {
+    //    cout << ex.explainSelf() << endl;
+    cout << "Candidate list " << fCandidates2Label.c_str() << " not found " << endl;
+  }
+
+  try {
+    Handle<CandidateCollection> candidates3Handle;
+    iEvent.getByLabel(fCandidates3Label.c_str(), candidates3Handle);
+    for (int i = 0; i < candidates3Handle->size(); ++ i ) {
+      const Candidate &p = (*candidates3Handle)[i];
+      cout << "==> candidates3 " << i << " id = " << p.pdgId() 
+	   << " mass = " << p.mass()
+	   << " pt = " << p.pt() 
+	   << " phi = " << p.phi() 
+	   << " eta = " << p.eta() 
+	   << endl;
+    }
+  } catch (cms::Exception &ex) {
+    //    cout << ex.explainSelf() << endl;
+    cout << "Candidate list " << fCandidates3Label.c_str() << " not found " << endl;
+  }
+
 
 
   // -- MET

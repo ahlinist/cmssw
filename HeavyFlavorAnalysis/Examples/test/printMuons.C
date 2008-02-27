@@ -1,7 +1,8 @@
 {
 
 TChain chain("T1");
-chain.Add("scratch/ana/bs2mumu_famos.root");
+//chain.Add("scratch/ana/bs2mumu_famos.root");
+chain.Add("scratch/ana/bp2jpsikp_famos.root");
 
 // -- Set up for reading
 Int_t nentries(0), nb(0);
@@ -27,7 +28,7 @@ for (iEvent = 0; iEvent < nentries; iEvent++) {
   cout << "Found " << pEvent->nGenCands() << " generator cands in event " << iEvent << endl;
   for (int ig = 0; ig < pEvent->nGenCands(); ++ig) {
     pGen = pEvent->getGenCand(ig);
-    if (531 == TMath::Abs(pGen->fID) || 13 == TMath::Abs(pGen->fID)) {
+    if (521 == TMath::Abs(pGen->fID) || 13 == TMath::Abs(pGen->fID) || 443 == TMath::Abs(pGen->fID)) {
       pGen->dump();
       if ((13 == TMath::Abs(pGen->fID)) && (pGen->fP.Perp() < 2.5)) {
 	cout << "++++++++++++" << endl;
