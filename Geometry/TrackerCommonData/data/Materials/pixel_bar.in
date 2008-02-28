@@ -170,27 +170,196 @@ MC Volume: xsection 0.670 x 0.030 cm   (0.03 = 0.0165 + some volume for 6 wires 
 * 7 "Power cable ext coating"   "T_Kapton"         8.17E-5  6    CAB
 =====================================================================
 
-o Pixel azimuthal cooling distribution rings
+
+
+o Layer 1 Al manifold + cooling + flange
   ------------------------------------------
+Absolute values (not per phi len!)
 
-Everything is per unit length (in phi) !
+MC Volume: cool1   4 x 4.88  x 0.5 = 12.2748 cm3
 
-MC Volume: area 0.5 x 0.88 cm
+(1) 5.3g x 2 aluminium,  i.e. 1.96 cm3 x 2  = 3.92 cm3
+(2) Coolant   (2.96+1.77) *2 = 9.46 cm3  //not updated
 
-(1) Aluminium square tube: 0.5*0.88 - 0.4*0.78 cm = 0.128 cm^2
-(2) Coolant   0.4*0.78 = 0.312 cm^2
- 
-  The next two items have to be divided by 2*pi*r = 28.27 for layer 1
-(3) Put in roughly 0.07 cm^3 x 4 additional Al for tube connectors
-(4) Stainless steel for hose clamps 1.16 g (0.15 cm^3) 4 x
+(3) Stainless steel "L"  2.5 g x 4 = 10g / 7.8 = 0.32 cm3 
+(4) Stainless steel for hose clamps 1.16 g (0.15 cm^3)   =  0.15 cm3
+(5) Carbon fiber 3.97g x 2  / 1.69 = 4.69 cm3
+(6) Fiberglass 5.61g x 2   /  1.9 = 5.905 cm3
+(7) Airex 0.4g x 2 / 0.08 = 10 cm3  //FIXME
+(8) Support clamps + screws (x 4) 0.39 g = 0.14 cm3
+
 .....................................................................
-# "Pixel barrel cooling rings"     "Pix_Bar_Water"     0.44   -1.
-* 1 "square tubes"            "Aluminium"        0.128   1    COL
-* 2 "Coolant"                 "C6F14"            0.312   1    COL
-* 3 "Al tube connectors"      "Aluminium"        2.5E-3  4    COL
-* 4 "SS hose clamps"          "Steel-008"        5.3E-3  4    COL
+# "Pixel barrel cooling rings"     "Flange_with_Manifold_Layer1"     12.27   -1.
+* 1 "Al Manifold"             "Aluminium"         3.92    1    COL
+* 2 "Coolant"                 "C6F14"             8.7     1    COL
+* 3 "Al tube connectors"      "Aluminium"         0.32    4    COL
+* 4 "SS hose clamps"          "Steel-008"         0.15    4    COL
+* 5 "Carbon fiber"            "Carbon fibre str." 4.69    1    SUP
+* 6 "Fiber glass reinforce"   "T_FR4"             5.905   1    SUP
+* 7 "Foam"                    "Air"               10      1    SUP
+* 8 "Support clamps"          "Aluminium"         0.14    4    SUP   
 .....................................................................
-=====================================================================   
+
+
+
+o Layer 2 Al manifold + cooling + flange
+  ------------------------------------------
+Absolute values (not per phi len!)
+
+MC Volume: cool2	6.9x7.78x0.5 =	20.2922 cm3
+
+(1) 8.4g x 2 aluminium,  i.e. 3.11 cm3 x 2  = 6.22 cm3
+(2) Coolant   2.848 * 6 = 17.09 cm3  
+
+(3) Stainless steel "L"  2.5 g x 4 = 10g / 7.8 = 0.32 cm3
+(4) Stainless steel for hose clamps 1.16 g (0.15 cm^3)   =  0.15 cm3
+(5) Carbon fiber 8.49g x 2  / 1.69 = 10.05 cm3
+(6) Fiberglass 8.96g x 2   /  1.9 = 9.43 cm3
+(7) Airex 1.27g x 2 / 0.08 = 31.75 cm3  //FIXME 
+(8) Support clamps + screws (x 8) 0.39 g = 0.14 cm3
+.....................................................................
+# "Pixel barrel cooling rings"     "Flange_with_Manifold_Layer2"     20.29   -1.
+* 1 "Al Manifold"             "Aluminium"        6.22   1    COL
+* 2 "Coolant"                 "C6F14"            17.09   1    COL
+* 3 "Al tube connectors"      "Aluminium"        0.32    6    COL
+* 4 "SS hose clamps"          "Steel-008"        0.15    6    COL
+* 5 "Carbon fiber"            "Carbon fibre str." 10.05  1    SUP
+* 6 "Fiber glass reinforce"   "T_FR4"             9.43   1    SUP
+* 7 "Foam"                    "Air"                  31.75   1    SUP
+* 8 "Support clamps"          "Aluminium"         0.14    8   SUP
+.....................................................................
+
+
+
+
+
+o Layer 3 Al manifold + cooling + flange
+  ------------------------------------------
+Absolute values (not per phi len!)
+
+MC Volume: cool3	9.7	10.58	0.5	28.0331
+
+(1) 12g x 2 aluminium   = 8.88 cm3
+(2) Coolant   8*1.72 + 2.81*2 = 19.37  
+(3) Stainless steel "L"  2.5 g x 4 = 10g / 7.8 = 0.32 cm3
+(4) Stainless steel for hose clamps 1.16 g (0.15 cm^3)   =  0.15 cm3
+(5) Fiberglass 17.3g x 2   /  1.9 (35% only) = 6.37 cm3 
+.....................................................................
+# "Pixel barrel cooling rings"     "FlangeInner_with_Manifold_Layer3"     20.29   -1.
+* 1 "Al Manifold"             "Aluminium"        6.22   1     COL
+* 2 "Coolant"                 "C6F14"            19.37  1     COL
+* 3 "Al tube connectors"      "Aluminium"        0.32   10    COL
+* 4 "SS hose clamps"          "Steel-008"        0.15   10    COL
+* 6 "Fiber glass reinforce"   "T_FR4"                 6.37   1     SUP
+.....................................................................
+
+o Layer 3 flange (outer)
+
+MC Volume Flange	10.6x18x0.6=398.932cm3
+
+(1) Carbon fiber 74.92g x 2  / 1.69 = 88.66 cm3
+(2) Fiberglass 17.3g x 2  (65%) /  1.9 = 18.2 cm3 = 11.8cm3
+(3) Airex 21.27g x 2 / 0.04 = 1063 cm3 //FIXME
+(4) 2.7e-3 cm3  (x80) Al fixation points
+.....................................................................
+# "Pixel barrel cooling rings"     "Flange_with_Manifold_Layer1"     398.9   -1.
+* 1 "Carbon fiber"            "Carbon fibre str." 88.66    1    SUP
+* 2 "Fiber glass reinforce"   "T_FR4"             11.8     1    SUP
+* 3 "Foam"                    "Air"                  531      1    SUP
+* 4 "Fixation points"         "Aluminium"         2.7e-3  80    SUP
+.....................................................................
+
+
+o Cables from Endring Prints to supply tube
+
+MC Volume: cable_endring_to_tube    A x B x C = D cm3   //FIXME
+
+(1) power cable copper  (32 x)     1.788g / 8.96 =0.2cm3
+(2) power cable aluminum (32 x)  1g / 2.7 = 0.37cm3
+(3) power cable insulation(silicone rubber Si(CH3)2O) (32 x) 2.68g/ 1.3 = 2.06cm3
+(4) power cable plastic connector (Polyphenylene Oxid) (32 x) 0.733g / 1.06=  0.69 cm3
+(5) Kapton cable: Kapton layers:    0.0125cm x  2.5cm x 33cm
+                                   0.0125cm x 1.5cm x 33cm
+                                   0.0125cm x 1.5cm x 23.5cm
+                                   0.0125cm x 1.5cm x 20.5cm
+     in total: 3.465g / 1.4 = 2.475cm3
+(6) Kapton cable: copper layers:    0.0022cm x  2.5cm x 33cm
+    (only 75% of the area)         0.0022cm x 1.5cm x 33cm
+                                   0.0022cm x 1.5cm x 23.5cm
+                                   0.0022cm x 1.5cm x 20.5cm
+     in total: 2.93g / 8.96 = 0.327cm3
+(7) Kapton cable: Adhesive:            0.005cm x  2.5cm x 33cm
+    using epoxy                       0.005cm x 1.5cm x 33cm
+                                      0.005cm x 1.5cm x 23.5cm
+                                      0.005cm x 1.5cm x 20.5cm
+    in total 1g / 1 = 1cm3
+(8) "L" cooling bends suppl. tube steel           2.5g / 7.8 = 0.32cm3
+(9) endprint clips connecting L12 and L3 boards Aluminum    0.6g / 2.7 = 0.22cm3
+.....................................................................
+# "cable endring to tube"     "cable_endring_to_tube"   100     -1.
+* 1 "pow. cable copper"             "Copper"            0.2    32    CAB
+* 2 "pow. cable aluminium"       "Aluminium"            0.37   32    CAB
+* 3 "pow. cable insulation"         "FPix_Silicone"     2.06   32    CAB
+* 4 "pow. cable connector"         "FPix_Cylind_Noryl"  0.69   32    CAB
+* 5 "sign. cable Kapton"           "T_Kapton"           2.475   1     CAB
+* 6 "sign. cable copper"           "Copper"             0.327   1    CAB
+* 7 "sign. cable adhesive"         "FPix_Epoxy"          1      1    CAB
+* 8 "supply tube cooling bends"    "Steel-008"           0.32   20   COL
+* 9 "clips to connect endprints"   "Aluminium"            0.22  16   SUP
+.....................................................................
+
+
+
+
+
+o Layer1/2 Endring Prints
+-------------------------
+
+MC Volume: endringprints12      A x B x C = D cm3 //FIXME
+
+(1) Copper in boards + connectors:  64g / 8.96 = 7.143cm3
+(2) FR4 (epoxy + glass fiber) in boards: 52.8g / 1.9 = 27.79cm3
+(3) plastic in connectors (LCP+glass):      36.8g /2    = 18.4cm3  //FIXME: using FR4 is wrong
+(4) Sn in solder:   2.56g / 7.31 = 0.35cm3
+(5) Pb in solder:   2.72g / 11.34 = 0.24cm3
+(6) Screws (steel)    1g/ 7.8  = 0.13cm3
+.....................................................................
+# "Layer1 2 EndringPrints"     "Layer1_2_EndringPrints"     100   -1.
+* 1 "Copper"                   "Copper"     7.143   1    ELE
+* 2 "Epoxy"                    "T_FR4"      27.79   1    ELE
+* 3 "connector polymer"        "T_FR4"        18.4    1    ELE
+* 4 "Tin in solder"            "Tin"        0.35    1    ELE
+* 5 "Lead in solder"           "Lead"       0.24    1    ELE
+* 6 "Steel Screws"             "Steel-008"  0.13    1    SUP
+.....................................................................
+
+
+o Layer3 Endring Prints
+-------------------------
+
+MC Volume: endringprints3      A x B x C = D cm3 //FIXME
+
+(1) Copper in boards + connectors:  53.2g / 8.96 = 5.94cm3
+(2) FR4 (epoxy + glass fiber) in boards: 43.9g / 1.9 = 23.1cm3
+(3) plastic in connectors (LCP+glass):      30.6g /2    = 15.3cm3 //FIXME
+(4) Sn in solder:   2.2g / 7.31 = 0.3cm3
+(5) Pb in solder:   2.3g / 11.34 = 0.2cm3
+(6) Screws (steel)    1g/ 7.8  = 0.13cm3
+.....................................................................
+# "Layer3 EndringPrints"     "Layer3_EndringPrints"     100   -1.
+* 1 "Copper"             "Copper"      5.94   1    ELE
+* 2 "Epoxy"              "T_FR4"       23.1   1    ELE
+* 3 "connector polymer"  "T_FR4"         15.3   1   ELE
+* 4 "Tin in solder"      "Tin"          0.3   1  ELE
+* 5 "Lead in solder"     "Lead"        0.2    1  ELE
+* 6 "Steel Screws"       "Steel-008"  0.13    1   SUP
+.....................................................................
+
+
+
+=============  OLD   STUFF ==============================
+
+
 
 o Pixel barrel radial cables layer 1
   ----------------------------------
