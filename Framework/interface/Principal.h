@@ -133,8 +133,8 @@ namespace edm {
     // current Process.
     void addToProcessHistory() const;
 
-    // merge Principals possibly containing different groups.
-    void combine(Principal & other);
+    // merge Principals containing different groups.
+    void recombine(Principal & other, std::vector<ProductID> const& pids);
 
   protected:
     // ----- Add a new Group
