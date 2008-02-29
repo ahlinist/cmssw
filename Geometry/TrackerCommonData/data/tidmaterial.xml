@@ -303,12 +303,11 @@
     </MaterialFraction>
   </CompositeMaterial>
 
-<!-- DS Alumina -->
-  <CompositeMaterial name="TID_Spacer" density="2.96120*g/cm3" symbol=" " method="mixture by weight">
-    <MaterialFraction fraction="0.90342">
+  <CompositeMaterial name="TID_Spacer" density="2.98720*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="0.89555">
       <rMaterial name="materials:Alumina"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.09658">
+    <MaterialFraction fraction="0.10445">
       <rMaterial name="materials:Epoxy"/>
     </MaterialFraction>
   </CompositeMaterial>
