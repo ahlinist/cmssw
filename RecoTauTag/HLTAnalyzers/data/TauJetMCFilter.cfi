@@ -10,5 +10,8 @@ module tauJetMCFilter = TauJetMCFilter {
  double EtaMuonMax = 2.5
 #  "etau" "mutau" "tautau" "emu" "ee" "mumu". "tau" corresponds to hadronic decays
  vstring includeList = { "tautau" }
+
+ bool fillHistos = false
+ bool doPrintOut = true
 }
    
