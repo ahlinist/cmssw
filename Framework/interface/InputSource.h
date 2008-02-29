@@ -201,6 +201,11 @@ namespace edm {
     void setLuminosityBlockPrincipal(boost::shared_ptr<LuminosityBlockPrincipal> lbp) {lumiPrincipal_ = lbp;}
     void resetRunPrincipal() {runPrincipal_.reset();}
     void resetLuminosityBlockPrincipal() {lumiPrincipal_.reset();}
+    void reset() const {
+      doneReadAhead_ = false;
+      state_ = IsInvalid;
+    }
+
 
   private:
     bool limitReached() const {return remainingEvents_ == 0 || remainingLumis_ == 0;}
