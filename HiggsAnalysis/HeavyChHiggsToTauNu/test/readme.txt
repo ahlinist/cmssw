@@ -62,7 +62,8 @@
 
 18.2.2008/S.Lehti CMSSW_1_6_9	Lauri's changes to MyEvent class, adding 
 				MySimTrack and MyHit classes 
-
+29.2.2008/S.Lehti CMSSW_1_6_10	GenJets added in vector<MyMCParticles>,
+                                pid=0,status=4
 
 	How to compile:
 	-compile
