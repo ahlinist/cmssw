@@ -122,7 +122,7 @@ C...Inputs for the matching algorithm
 
 C...Parameter arrays (local)
       integer maxpara
-      parameter (maxpara=100)
+      parameter (maxpara=200)
       integer npara,iseed
       character*20 param(maxpara),value(maxpara)      
 
