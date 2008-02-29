@@ -353,12 +353,9 @@ ElectronLikelihood::CalculateFisher(const reco::PixelMatchGsfElectron &electron,
 
   s9s25=sClShape.e3x3 ()/sClShape.e5x5 () ;
   sigmaEtaEta=sqrt (sClShape.covEtaEta ()) ;
-  // Fix for 169. Likelihood use no more extra cluster shape variables (and Fisher), 
-  // no need to access them
-  //   etaLat=sClShape.etaLat() ;
-  //   a20=sClShape.zernike20 () ;
-  etaLat=0;
-  a20=0;
+  etaLat=sClShape.etaLat() ;
+  a20=sClShape.zernike20 () ;
+
 
   // evaluate the Fisher discriminant
   double clusterShapeFisher;
