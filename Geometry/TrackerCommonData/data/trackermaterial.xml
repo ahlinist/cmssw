@@ -271,7 +271,7 @@
     <MaterialFraction fraction="0.01196">
       <rMaterial name="trackermaterial:T_RuggRibbon"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.00186">
+    <MaterialFraction fraction="0.01186">
       <rMaterial name="materials:Copper"/>
     </MaterialFraction>
     <MaterialFraction fraction="0.20153">
