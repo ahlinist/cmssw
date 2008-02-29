@@ -29,7 +29,37 @@ TauJetMCFilter::TauJetMCFilter(const edm::ParameterSet& iConfig)
   mPtMuon = iConfig.getParameter<double>("PtMuon");
   mincludeList= iConfig.getParameter<vstring>( "includeList" );
   //tauParticles = iConfig.getParameter<InputTag>("TauParticles");
+
+  _fillHistos = iConfig.getParameter<bool>("fillHistos");
+  _doPrintOut = iConfig.getParameter<bool>("doPrintOut");
+
+  ////////////////////////////////////////////////////////  
+  // Book histograms
+  if (_fillHistos) {
+    edm::Service<TFileService> fs;
+    TFileDirectory dir = fs->mkdir("histos");
   
+    h_TauEt  = dir.make<TH1F>("TauEt", "E_{T}",60,0.,60.); 
+    h_TauEt->Sumw2();
+    h_TauEta  = dir.make<TH1F>("TauEta", "#eta",40,-5.,5.); 
+    h_TauEta->Sumw2();
+    h_TauPhi  = dir.make<TH1F>("TauPhi", "#phi",40,-3.2,3.2); 
+    h_TauPhi->Sumw2();
+    
+    h_MuonPt  = dir.make<TH1F>("MuonPt", "P_{T}",60,0.,60.); 
+    h_MuonPt->Sumw2();
+    h_MuonEta  = dir.make<TH1F>("MuonEta", "#eta",40,-5.,5.); 
+    h_MuonEta->Sumw2();
+    h_MuonPhi  = dir.make<TH1F>("MuonPhi", "#phi",40,-3.2,3.2); 
+    h_MuonPhi->Sumw2();
+    
+    h_ElecEt  = dir.make<TH1F>("ElecEt", "E_{T}",60,0.,60.); 
+    h_ElecEt->Sumw2();
+    h_ElecEta  = dir.make<TH1F>("ElecEta", "#eta",40,-5.,5.); 
+    h_ElecEta->Sumw2();
+    h_ElecPhi  = dir.make<TH1F>("ElecPhi", "#phi",40,-3.2,3.2); 
+    h_ElecPhi->Sumw2();
+  }
 }
 
 TauJetMCFilter::~TauJetMCFilter(){ }
@@ -51,6 +81,8 @@ bool TauJetMCFilter::filter(edm::Event& iEvent, const edm::EventSetup& iES)
   //  const L1JetParticleCollection & myL1Tau  = *(tauColl.product());
   //
   
+  _nEvents++;
+
   edm::Handle<HepMCProduct> evt;
   iEvent.getByLabel(genParticles, evt);
   
@@ -59,6 +91,13 @@ bool TauJetMCFilter::filter(edm::Event& iEvent, const edm::EventSetup& iES)
   //int nTauMatched =0;
   int ntaujet=0,nelec=0,nmuon=0;
   bool event_passed = true;
+
+  bool passedElecEtaCut = true;
+  bool passedElecEtCut = true;
+  bool passedMuonEtaCut = true;
+  bool passedMuonPtCut = true;
+  bool passedTauEtaCut = true;
+  bool passedTauEtCut = true;
   
   TLorentzVector taunet,tauelec,taumuon;
   HepMC::GenEvent::particle_iterator p;
@@ -82,16 +121,40 @@ bool TauJetMCFilter::filter(edm::Event& iEvent, const edm::EventSetup& iES)
 	    {
 	      nelec++;
 	      tauelec.SetPxPyPzE((*z)->momentum().px(),(*z)->momentum().py(),(*z)->momentum().pz(),(*z)->momentum().e());
-	      if((*z)->momentum().perp()<mPtElec)event_passed = false;
-	      if(fabs((*z)->momentum().eta())>mEtaElecMax)event_passed = false;
+	      if (_fillHistos) {
+		h_ElecEt->Fill((*z)->momentum().perp()); 
+		h_ElecEta->Fill((*z)->momentum().eta()); 
+		h_ElecPhi->Fill((*z)->momentum().phi()); 
+	      }
+	      
+	      if(fabs((*z)->momentum().eta())>mEtaElecMax) {
+		event_passed = false;
+		passedElecEtaCut = false;
+	      }	
+	      if((*z)->momentum().perp()<mPtElec) {
+		event_passed = false;
+		passedElecEtCut = false;
+	      }
 	    }
 	  if(abs((*z)->pdg_id()) == 13)
 	    {
 	      nmuon++;
 	      taumuon.SetPxPyPzE((*z)->momentum().px(),(*z)->momentum().py(),(*z)->momentum().pz(),(*z)->momentum().e());
-	      if((*z)->momentum().perp()<mPtMuon)event_passed = false;
-	      if(fabs((*z)->momentum().eta())>mEtaMuonMax)event_passed = false;
 
+	      if (_fillHistos) {
+		h_MuonPt->Fill((*z)->momentum().perp()); 
+		h_MuonEta->Fill((*z)->momentum().eta()); 
+		h_MuonPhi->Fill((*z)->momentum().phi()); 
+	      }
+	      
+	      if(fabs((*z)->momentum().eta())>mEtaMuonMax) {
+		event_passed = false;
+		passedMuonEtaCut = false;
+	      }
+	      if((*z)->momentum().perp()<mPtMuon) {
+		event_passed = false;
+		passedMuonPtCut = false;
+	      }
 	    }
 	  if(abs((*z)->pdg_id()) == 16)taunet.SetPxPyPzE((*z)->momentum().px(),(*z)->momentum().py(),(*z)->momentum().pz(),(*z)->momentum().e());
 	  
@@ -100,9 +163,21 @@ bool TauJetMCFilter::filter(edm::Event& iEvent, const edm::EventSetup& iES)
 	{
 	  ntaujet++;
 	  TLorentzVector jetMom=tau-taunet;
-	  if(jetMom.Et() < mEtTau) event_passed = false;
-	  if(fabs(jetMom.Eta()) > mEtaMax) event_passed = false;
+
+	  if (_fillHistos) {
+	    h_TauEt->Fill(jetMom.Et()); 
+	    h_TauEta->Fill(jetMom.Eta()); 
+	    h_TauPhi->Fill(jetMom.Phi()); 
+	  }
 	  
+	  if(fabs(jetMom.Eta()) > mEtaMax) {
+	    event_passed = false;
+	    passedTauEtaCut = false;
+	  }
+	  if(jetMom.Et() < mEtTau) {
+	    event_passed = false;
+	    passedTauEtCut = false;
+	  }
 	}
       
       /*
@@ -120,6 +195,7 @@ bool TauJetMCFilter::filter(edm::Event& iEvent, const edm::EventSetup& iES)
 	
 	}
       */
+
     }
     
   }
@@ -138,6 +214,40 @@ bool TauJetMCFilter::filter(edm::Event& iEvent, const edm::EventSetup& iES)
     {     
       if((*e)==decay_type)decay=true;
     }
+
+  /*  
+  if (passedMuonPtCut && passedMuonEtaCut && passedElecEtaCut) {
+    _nPassedElecEtaCut++;
+  }
+  if (passedMuonPtCut && passedMuonEtaCut && passedElecEtaCut && passedElecEtCut) {
+    _nPassedElecEtCut++;
+  }
+  */
+
+  if (ntaujet>=1) {
+    _nPassednTauCut++;
+  }
+  if (ntaujet>=1 && passedTauEtaCut) {
+    _nPassedTauEtaCut++;
+  }
+  if (ntaujet>=1 && passedTauEtaCut && passedTauEtCut) {
+    _nPassedTauEtCut++;
+  }
+  if (ntaujet>=1 && passedTauEtaCut && passedTauEtCut 
+      && nmuon>=1) {
+    _nPassednMuonCut++;
+  }
+  if (ntaujet>=1 && passedTauEtaCut && passedTauEtCut
+      && nmuon>=1 && passedMuonEtaCut) {
+    _nPassedMuonEtaCut++;
+  }
+  if (ntaujet>=1 && passedTauEtaCut && passedTauEtCut
+      && nmuon>=1 && passedMuonPtCut && passedMuonEtaCut) {
+    _nPassedMuonPtCut++;
+  }
+
+  if(event_passed&&decay)
+    _nPassedAllCuts++;
   
   //if(mn_taujet!=ntaujet||mn_elec!=nelec||mn_muon!=nmuon)event_passed=false;
   
@@ -147,3 +257,46 @@ bool TauJetMCFilter::filter(edm::Event& iEvent, const edm::EventSetup& iES)
   
 
 }
+
+
+
+// ------------ method called once each job just before starting event loop  ------------
+void 
+TauJetMCFilter::beginJob(const edm::EventSetup&)
+{
+  _nEvents = 0;
+  _nPassedElecEtaCut = 0;
+  _nPassedElecEtCut = 0;
+  _nPassedMuonEtaCut = 0;
+  _nPassedMuonPtCut = 0;
+  _nPassedTauEtaCut = 0;
+  _nPassedTauEtCut = 0;
+  _nPassedAllCuts = 0;
+
+  _nPassednMuonCut = 0;
+  _nPassednTauCut = 0;
+}
+
+// ------------ method called once each job just after ending the event loop  ------------
+void 
+TauJetMCFilter::endJob() {
+  using namespace std;
+
+  if (_doPrintOut) {
+    string MarkerString = "###MuTauMCFilter### ";
+    cout<<MarkerString<<"*** Start: MuTauMCFilter Efficiency Report ***"<<endl;
+    cout<<MarkerString<<"nEvents processed             : "<<_nEvents<<endl;
+    cout<<MarkerString<<"------------------------------------------------------------"<<endl;
+    cout<<MarkerString<<"nEvents passing ntaujet cut   : "<<_nPassednTauCut<<endl;
+    cout<<MarkerString<<"nEvents passing tau eta cut   : "<<_nPassedTauEtaCut<<endl;
+    cout<<MarkerString<<"nEvents passing tau et cut    : "<<_nPassedTauEtCut<<endl;
+    cout<<MarkerString<<"nEvents passing nmuon cut     : "<<_nPassednMuonCut<<endl;
+    cout<<MarkerString<<"nEvents passing muon eta cut  : "<<_nPassedMuonEtaCut<<endl;
+    cout<<MarkerString<<"nEvents passing muon pt cut   : "<<_nPassedMuonPtCut<<endl;
+    cout<<MarkerString<<"------------------------------------------------------------"<<endl;
+    cout<<MarkerString<<"nEvents passing all cuts      : "<<_nPassedAllCuts<<endl;
+    cout<<MarkerString<<"*** End: MuTauMCFilter Efficiency Report ***"<<endl;
+    cout<<endl;
+  }
+}
+ 
