@@ -6,8 +6,8 @@
 
 #include "EventFilter/Utilities/interface/ModuleWeb.h"
 
-#include "DQMServices/UI/interface/MonitorUIRoot.h"
-//#include "DQMServices/Core/interface/DaqMonitorBEInterface.h"
+#include "DQMServices/Core/interface/DQMOldReceiver.h"
+#include "DQMServices/Core/interface/MonitorElement.h"
 #include "DQMServices/ClientConfig/interface/QTestHandle.h"
 
 namespace xgi{
@@ -40,8 +40,8 @@ namespace dqm{
       MonitorElement ** hindfed;
       QTestHandle * qtHandle_;
 
-      DaqMonitorBEInterface * dbe;
-      MonitorUserInterface * mui;
+      DQMStore * dbe;
+      DQMOldReceiver * mui;
 
       unsigned int runId_;
       unsigned int eventId_;

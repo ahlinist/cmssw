@@ -1,6 +1,8 @@
 #include "FEDMonitorClient.h"
 
 #include "DataFormats/FEDRawData/interface/FEDNumbering.h"
+#include "DQMServices/Core/interface/DQMStore.h"
+#include "DQMServices/Core/interface/MonitorElement.h"
 
 #include <iostream>
 #include <typeinfo>
@@ -28,11 +30,11 @@ namespace dqm{
     {
       
       // get hold of back-end interface
-      dbe = edm::Service<DaqMonitorBEInterface>().operator->();
+      dbe = edm::Service<DQMStore>().operator->();
       
       // instantiate Monitor UI without connecting to any monitoring server
       // (i.e. "standalone mode")
-      mui = new MonitorUIRoot();
+      mui = new DQMOldReceiver();
       
       dbe->showDirStructure();
 

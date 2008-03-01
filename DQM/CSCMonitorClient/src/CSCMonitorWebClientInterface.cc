@@ -2,8 +2,8 @@
  *
  *  Implementation of CSCMonitorWebClientInterface
  *
- *  $Date: 2007/06/14 23:04:16 $
- *  $Revision: 1.1.2.2 $
+ *  $Date: 2007/07/04 21:17:44 $
+ *  $Revision: 1.2 $
  *  \author Ilaria Segoni
  */
 #include "DQM/CSCMonitorClient/interface/CSCMonitorWebClientInterface.h"
@@ -16,7 +16,7 @@
 #include "DQMServices/WebComponents/interface/GifDisplay.h"
 #include "DQM/CSCMonitorClient/interface/WebMessage.h"
 
-CSCMonitorWebClientInterface::CSCMonitorWebClientInterface(std::string theContextURL, std::string theApplicationURL, MonitorUserInterface ** _mui_p)
+CSCMonitorWebClientInterface::CSCMonitorWebClientInterface(std::string theContextURL, std::string theApplicationURL, DQMOldReceiver ** _mui_p)
   : WebInterface(theContextURL, theApplicationURL, _mui_p)
 {
 
