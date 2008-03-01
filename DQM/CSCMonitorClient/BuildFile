@@ -1,9 +1,6 @@
 <use name=boost>
 <use name=root>
 <use name=DQMServices/Core>
-<use name=DQMServices/NodeROOT>
-<use name=DQMServices/Daemon>
-<use name=DQMServices/UI>
 <use name=DQMServices/XdaqCollector>
 <use name=DQMServices/Components>
 <use name=DQMServices/WebComponents>
@@ -14,9 +11,6 @@
  <use name=root>
  <use name=boost>
  <use name=DQMServices/Core>
- <use name=DQMServices/NodeROOT>
- <use name=DQMServices/Daemon>
- <use name=DQMServices/UI>
  <use name=DQMServices/Components>
  <use name=DQMServices/WebComponents>
  <use name=DQMServices/XdaqCollector>
