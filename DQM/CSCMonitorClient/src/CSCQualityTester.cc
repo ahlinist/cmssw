@@ -2,13 +2,15 @@
  *
  *  Implementation of CSCQualityTester
  *
- *  $Date: 2007/09/13 14:54:37 $
- *  $Revision: 1.6 $
+ *  $Date: 2008/01/22 18:54:03 $
+ *  $Revision: 1.7 $
  *  \author Ilaria Segoni
  */
 #include "DQM/CSCMonitorClient/interface/CSCQualityTester.h"
 #include "DQM/CSCMonitorClient/interface/CSCQualityTestTypes.h"
-#include "DQMServices/QualityTests/interface/QCriterionRoot.h"
+#include "DQMServices/Core/interface/QTest.h"
+#include "DQMServices/Core/interface/DQMStore.h"
+#include "DQMServices/Core/interface/MonitorElement.h"
 
 #include<iostream>
 
@@ -31,20 +33,20 @@ CSCQualityTester::~CSCQualityTester(){
 
 
 //
-void CSCQualityTester::SetupTests(MonitorUserInterface * mui){
+void CSCQualityTester::SetupTests(DQMOldReceiver * mui){
   if(printout) logFile<<"In CSCQualityTester::SetupTests(...)"<<std::endl;  
   this->SetupTestsFromTextFile(mui);
 }
 
 
-void CSCQualityTester::RunTests(MonitorUserInterface * mui){
+void CSCQualityTester::RunTests(DQMOldReceiver * mui){
   this->LinkTeststoME(mui);
   //this->AttachRunTests(mui);
 
 }
 
 //
-void CSCQualityTester::SetupTestsFromTextFile(MonitorUserInterface * mui ){ 
+void CSCQualityTester::SetupTestsFromTextFile(DQMOldReceiver * mui ){ 
 
 
   if(printout) logFile<<"In CSCQualityTester::SetupTestsFromTextFiles\n...\n"<<std::endl;
@@ -86,7 +88,7 @@ void CSCQualityTester::SetupTestsFromTextFile(MonitorUserInterface * mui ){
 }
 
 
-void CSCQualityTester::LinkTeststoME(MonitorUserInterface * mui){ 
+void CSCQualityTester::LinkTeststoME(DQMOldReceiver * mui){ 
 
 
   if(printout) logFile<<"\nIn CSCQualityTester::LinkTeststoME"<<std::endl;
@@ -101,7 +103,7 @@ void CSCQualityTester::LinkTeststoME(MonitorUserInterface * mui){
   
   int file_status=1;
  
-  DaqMonitorBEInterface* bei = (mui)->getBEInterface(); 
+  DQMStore* bei = (mui)->getBEInterface(); 
   do{    
       file_status=fscanf(TestsMEsFile,"%s%s\n",&TestName,&MEName);
 			 
@@ -129,34 +131,34 @@ void CSCQualityTester::LinkTeststoME(MonitorUserInterface * mui){
 
 }
 
-void CSCQualityTester::SetContentsXRangeROOTTest(MonitorUserInterface * mui, char  TestName[20], float  WarningLevel, float  params[5]){
+void CSCQualityTester::SetContentsXRangeROOTTest(DQMOldReceiver * mui, char  TestName[20], float  WarningLevel, float  params[5]){
 
   if(printout) logFile<<"In CSCQualityTester::SetContentsXRangeROOTTest, configuring "<<TestName<<" test."<<std::endl;
 
-  DaqMonitorBEInterface* bei = (mui)->getBEInterface();	
-  QCriterion * qc1 = bei->createQTest(ContentsXRangeROOT::getAlgoName(),TestName);
-  MEContentsXRangeROOT * me_qc1 = (MEContentsXRangeROOT *) qc1;
+  DQMStore* bei = (mui)->getBEInterface();	
+  QCriterion * qc1 = bei->createQTest(ContentsXRange::getAlgoName(),TestName);
+  ContentsXRange * me_qc1 = (ContentsXRange *) qc1;
   me_qc1->setAllowedXRange(params[0],params[1]);
   me_qc1->setWarningProb(WarningLevel);
  
 }
 
 
-void CSCQualityTester::SetContentsYRangeROOTTest(MonitorUserInterface * mui, char  TestName[20], float  WarningLevel, float  params[5]){
+void CSCQualityTester::SetContentsYRangeROOTTest(DQMOldReceiver * mui, char  TestName[20], float  WarningLevel, float  params[5]){
 
   if(printout) logFile<<"In CSCQualityTester::SetContentsYRangeROOTTest, configuring "<<TestName<<" test"<<std::endl;
 	
   qTests.push_back(TestName);
-  DaqMonitorBEInterface* bei = (mui)->getBEInterface();
-  QCriterion * qc1 = bei->createQTest(ContentsYRangeROOT::getAlgoName(),TestName);
-  MEContentsYRangeROOT * me_qc1 = (MEContentsYRangeROOT *) qc1;
+  DQMStore* bei = (mui)->getBEInterface();
+  QCriterion * qc1 = bei->createQTest(ContentsYRange::getAlgoName(),TestName);
+  ContentsYRange * me_qc1 = (ContentsYRange *) qc1;
   me_qc1->setAllowedYRange(params[0],params[1]);
   me_qc1->setWarningProb(WarningLevel);
 
 }
 
 
-void CSCQualityTester::AttachRunTests(MonitorUserInterface * mui){
+void CSCQualityTester::AttachRunTests(DQMOldReceiver * mui){
 
 if(printout) logFile<<"\nIn CSCQualityTester::AttachRunTests(...)"<<std::endl;
 
@@ -166,7 +168,7 @@ for (std::map<std::string, std::vector<std::string> >::iterator testsMap=qTestTo
      
        std::string testName=testsMap->first;
        std::vector<std::string> MElist=testsMap->second;
-    	DaqMonitorBEInterface* bei = (mui)->getBEInterface();
+    	DQMStore* bei = (mui)->getBEInterface();
        if(printout) logFile<<"Number of ME's for Test "<< testName <<": "<<MElist.size()<<std::endl;
 
       	     for(std::vector<std::string>::iterator list = MElist.begin(); list != MElist.end(); ++list){
@@ -179,13 +181,13 @@ for (std::map<std::string, std::vector<std::string> >::iterator testsMap=qTestTo
 
 
 
-std::pair<std::string,std::string> CSCQualityTester::CheckTestsGlobal(MonitorUserInterface * mui) 
+std::pair<std::string,std::string> CSCQualityTester::CheckTestsGlobal(DQMOldReceiver * mui) 
 {
   if(printout) logFile << "\nChecking Global Status of Quiality Tests" << std::endl;
   std::pair<std::string,std::string> statement;
   
 	int status = 0;
-	DaqMonitorBEInterface* bei = (mui)->getBEInterface();	
+	DQMStore* bei = (mui)->getBEInterface();	
 	status= bei->getStatus();
         if(printout) logFile << "Possible states: successful "<< dqm::qstatus::STATUS_OK<<", error:  " 
 	<< dqm::qstatus::ERROR<<
@@ -221,7 +223,7 @@ std::pair<std::string,std::string> CSCQualityTester::CheckTestsGlobal(MonitorUse
 }
 
  
-void CSCQualityTester::ConfigureTest(char TestType[20], MonitorUserInterface * mui, char  TestName[20], float  WarningLevel, float  params[5]){
+void CSCQualityTester::ConfigureTest(char TestType[20], DQMOldReceiver * mui, char  TestName[20], float  WarningLevel, float  params[5]){
   
  qTests.push_back(TestName);
  
@@ -234,7 +236,7 @@ void CSCQualityTester::ConfigureTest(char TestType[20], MonitorUserInterface * m
 
 }
 
-std::map< std::string, std::vector<std::string> > CSCQualityTester::CheckTestsSingle(MonitorUserInterface * mui){
+std::map< std::string, std::vector<std::string> > CSCQualityTester::CheckTestsSingle(DQMOldReceiver * mui){
  
  detailedWarnings.clear();
  this->SearchDirectories(mui);
@@ -242,10 +244,10 @@ std::map< std::string, std::vector<std::string> > CSCQualityTester::CheckTestsSi
 
 } 
 
-void CSCQualityTester::SearchDirectories(MonitorUserInterface * mui) 
+void CSCQualityTester::SearchDirectories(DQMOldReceiver * mui) 
 {
   
- DaqMonitorBEInterface* bei = (mui)->getBEInterface();
+ DQMStore* bei = (mui)->getBEInterface();
  std::vector<std::string> meNames=bei->getMEs();   
  std::vector<std::string> dirNames=bei->getSubdirs();
  int pippo=meNames.size();
@@ -277,7 +279,7 @@ void CSCQualityTester::SearchDirectories(MonitorUserInterface * mui)
 }
 
 
-void CSCQualityTester::ProcessAlarms(std::vector<std::string> meNames, std::string currentDir, MonitorUserInterface * mui){
+void CSCQualityTester::ProcessAlarms(std::vector<std::string> meNames, std::string currentDir, DQMOldReceiver * mui){
     logFile<<"sonoqui0, number of me's: "<<meNames.size()<<std::endl;
 
  for(std::vector<std::string>::iterator nameItr= meNames.begin(); nameItr!= meNames.end(); ++nameItr){
@@ -290,7 +292,7 @@ void CSCQualityTester::ProcessAlarms(std::vector<std::string> meNames, std::stri
 	char fullPath[128];
 	sprintf(fullPath,"%s/%s",currentDir.c_str(),(*nameItr).c_str());
 	logFile<<"fullpath "<<fullPath<<std::endl;
-	DaqMonitorBEInterface* bei = (mui)->getBEInterface();
+	DQMStore* bei = (mui)->getBEInterface();
 	me= bei->get(fullPath);
         logFile<<"sonoqui1 "<<me<<std::endl;
 	std::vector<QReport *> report;

@@ -13,7 +13,7 @@
 #include "DQMServices/XdaqCollector/interface/Updater.h"
 #include "DQMServices/XdaqCollector/interface/UpdateObserver.h"
 
-#include "DQMServices/Core/interface/MonitorUserInterface.h"
+#include "DQMServices/Core/interface/DQMOldReceiver.h"
 
 #include "DQM/CSCMonitorClient/interface/CSCMonitorWebClientInterface.h"
 

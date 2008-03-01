@@ -3,7 +3,7 @@
  * DQM for generic FED data: loops over feds and fills datasize histograms
  *   
  * 
- * $Date: 2007/05/23 09:21:10 $
+ * $Date: 2007/10/09 08:08:04 $
  * $Revision: 1.1 $
  * \author E. Meschi PH/CMD
  *
@@ -18,7 +18,8 @@
 #include <DataFormats/FEDRawData/interface/FEDNumbering.h>
 
 #include "FWCore/ServiceRegistry/interface/Service.h"
-#include "DQMServices/Core/interface/DaqMonitorBEInterface.h"
+#include "DQMServices/Core/interface/DQMStore.h"
+#include "DQMServices/Core/interface/MonitorElement.h"
 
 #include <iostream>
 
@@ -38,9 +39,9 @@ namespace dqm{
 
       FEDMonitor(const edm::ParameterSet& pset):count_(0), dqm(true), cleanup(false)
       {
-	DaqMonitorBEInterface *dbe = 0;
+	DQMStore *dbe = 0;
 	try{
-	  dbe = edm::Service<DaqMonitorBEInterface>().operator->();
+	  dbe = edm::Service<DQMStore>().operator->();
 	  dbe->setCurrentFolder("FEDs/Summary");
 	  hfedsize = dbe->book1D("fedsize","FED Size Distribution",100,0.,10000.);
 	  hfedprof = dbe->bookProfile("fedprof","FED Size by ID", 2048,0.,2048.,
@@ -72,10 +73,10 @@ namespace dqm{
       void endRun()
       {
 	cleanup = true;
-	DaqMonitorBEInterface *dbe = 0;
+	DQMStore *dbe = 0;
       
 	try{
-	  dbe = edm::Service<DaqMonitorBEInterface>().operator->();
+	  dbe = edm::Service<DQMStore>().operator->();
 	  dbe->setCurrentFolder("FEDs/Summary");
 	  dbe->removeContents();
 	  dbe->setCurrentFolder("FEDs/Details");
@@ -104,8 +105,8 @@ namespace dqm{
 		  {
 		    if(hindfed[i]==0)
 		      {
-			DaqMonitorBEInterface *dbe = 
-			  edm::Service<DaqMonitorBEInterface>().operator->();
+			DQMStore *dbe = 
+			  edm::Service<DQMStore>().operator->();
 			dbe->setCurrentFolder("FEDs/Details");
 			std::ostringstream os1;
 			std::ostringstream os2;

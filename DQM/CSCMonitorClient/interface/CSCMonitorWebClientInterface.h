@@ -7,8 +7,8 @@
  *  the CSC Data Quality Monitor (mainly prints the control web page and runs quality tests
  *  on real-time demand).
  * 
- *  $Date: 2007/06/13 14:33:07 $
- *  $Revision: 1.1.2.1 $
+ *  $Date: 2007/07/04 21:17:42 $
+ *  $Revision: 1.2 $
  *  \author Ilaria Segoni
   */
 
@@ -27,7 +27,7 @@ class CSCMonitorWebClientInterface : public WebInterface
  public:
   
   
-  CSCMonitorWebClientInterface(std::string theContextURL, std::string theApplicationURL, MonitorUserInterface ** _mui_p);
+  CSCMonitorWebClientInterface(std::string theContextURL, std::string theApplicationURL, DQMOldReceiver ** _mui_p);
 
   /// The method that prints out the webpage
   void Default(xgi::Input * in, xgi::Output * out) throw (xgi::exception::Exception);
