@@ -8,7 +8,7 @@
  <Constant name="PetalContRmax"  value="110.17*cm"/>
  <Constant name="HybridWidth"    value="29.97*mm"/>
  <Constant name="HybridHeight"   value="22.99*mm"/>
- <Constant name="HybridThick"    value="2.55*mm"/>
+ <Constant name="HybridThick"    value="1.0*mm"/> <!--(real 1.5mm) in reality this sticks out into the ring volume and is compressed to keep hirachy intact-->
  <Constant name="CoolR1"         value="4.1791*mm"/>
  <Constant name="CoolR2"         value="4.8276*mm"/>
  <Constant name="CoolR3"         value="4.6029*mm"/>
@@ -18,7 +18,7 @@
  <Constant name="PetalThick"     value="10.0*mm"/>
  <Constant name="PetalWidth"     value="37.4*deg"/>
  <Constant name="PetalRmax"      value="109.9*cm"/>
- <Constant name="ICBThick"       value="3.75*mm"/>
+ <Constant name="ICBThick"       value="2.222*mm"/><!-- see other comments-->
  <Constant name="ICBWidth"       value="37.4*deg"/>
  <Constant name="ICBRmax"        value="110.17*cm"/>
  <Constant name="ICBZ"           value="([PetalThick]+[ICBThick])/2"/>
@@ -30,7 +30,7 @@
  <Constant name="DOHMZ"          value="[zero]"/>
  <Constant name="CCUMHeight" value="31*mm"/>
  <Constant name="CCUMWidth" value="31*mm"/>
- <Constant name="CCUMThick" value="2*mm"/>
+ <Constant name="CCUMThick" value="1.0*mm"/><!-- (real: 2mm)in reality this sticks out into the ring volume and is compressed to keep hirachy intact-->
  <Constant name="CCUMZ"        value="([ICBThick]-[CCUMThick])/2"/>
 </ConstantsSection>
 

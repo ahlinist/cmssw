@@ -28,7 +28,7 @@
   <Numeric name="StartAngle"  value="[Phi0]"/>
   <Numeric name="IncrAngle"   value="[DPhi]"/>
   <Numeric name="Radius"      value="[tecring6:RPos]"/>
-  <Numeric name="ZIn"         value="-[tecring6:ModuleZ]"/>
+  <Numeric name="ZIn"         value="-[tecring6:ModuleZ]-[tecmodpar:SideFrameThick]"/>
   <Numeric name="ZOut"        value="[tecring6:ModuleZ]"/>
   <Numeric name="Number"      value="[Modules]"/>
   <Numeric name="StartCopyNo" value="1"/>

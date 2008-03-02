@@ -7,7 +7,7 @@
  <Constant name="Phi"       value="([Modules]-1)*[DPhi]"/>
  <Constant name="Phi0"      value="-[Phi]/2"/>
  <Constant name="Bridges"   value="1"/>
- <Constant name="PhiBridge" value="[Phi0]"/>
+ <Constant name="PhiBridge" value="[Phi0]+[DPhi]"/>
  <Constant name="CoolIns0"  value="3333"/>
  <Constant name="CoolIns1"  value="4440"/>
 </ConstantsSection>

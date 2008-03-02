@@ -12,10 +12,10 @@
  <Constant name="InactiveStart"        value="109.712*mm"/>
  <Constant name="SideWidthTop"       value="0.1376009*cm"/>
  <Constant name="SideWidthBottom"    value="0.1262048*cm"/>
- <Constant name="HybridZ"            value="[ActiveZ]+ 0.5*(-[tecmodpar:WaferThick2] + [tecmodpar:HybridThick])"/>
- <Constant name="TopFrameZ"          value="[HybridZ]+ 0.5*([tecmodpar:HybridThick]+[tecmodpar:TopFrameThick])"/>
- <Constant name="SideFrameZ"         value="[TopFrameZ]+0.5*(-[tecmodpar:TopFrameThick]+[tecmodpar:SideFrameThick])"/>
- <Constant name="PitchZ"             value="[TopFrameZ] - 0.5*([tecmodpar:TopFrameThick] + [tecmodpar:PitchThick])"/>
+ <Constant name="HybridZ"           value="[TopFrameZ]+ 0.5*([tecmodpar:TopFrameThick] + [tecmodpar:HybridThick])"/>
+ <Constant name="TopFrameZ"         value="[SideFrameZ]+ 0.5*(-[tecmodpar:SideFrameThick]+[tecmodpar:TopFrameThick])"/>
+ <Constant name="SideFrameZ"        value="[ActiveZ]+0.5*(-[tecmodpar:WaferThick2] - [tecmodpar:SideFrameThick])"/>
+ <Constant name="PitchZ"            value="[TopFrameZ] + 0.5*([tecmodpar:TopFrameThick] + [tecmodpar:PitchThick])"/>
  <Constant name="DlHybrid"           value="7.120*cm"/>
  <Constant name="BridgeWidth"        value="2.474*cm"/>
  <Constant name="BridgeThick"        value="0.224*cm"/>
@@ -25,7 +25,7 @@
  <Constant name="TopFrameTopWidth"   value="77.1*mm"/>
  <Constant name="TopFrameBotWidth"   value="94.2*mm"/>
  <Constant name="TopFrameHeight"     value="37.2*mm"/>
- <Constant name="ShiftZ"             value="0*fm"/>
+ <Constant name="ShiftZ"             value="0.5*[tecmodpar:SideFrameThick]"/>
  <Constant name="SideFrameRtheta"    value="-0.040*rad"/>
  <Constant name="SideFrameRHeight"   value="210.8*mm"/>
  <Constant name="SideFrameRWidth"    value="13.9*mm"/>

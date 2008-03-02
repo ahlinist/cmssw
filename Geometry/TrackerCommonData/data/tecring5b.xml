@@ -39,7 +39,7 @@
   <Numeric name="IncrAngle"   value="[DPhi]"/>
   <Numeric name="Radius"      value="[tecring5:RPos]"/>
   <Numeric name="ZIn"         value="[tecring5:ModuleZ]"/>
-  <Numeric name="ZOut"        value="-[tecring5:ModuleZ]"/>
+  <Numeric name="ZOut"        value="-[tecring5:ModuleZ]-[tecmodpar:SideFrameThick]"/>
   <Numeric name="Number"      value="[Modules]"/>
   <Numeric name="StartCopyNo" value="5"/>
   <Numeric name="IncrCopyNo"  value="1"/>

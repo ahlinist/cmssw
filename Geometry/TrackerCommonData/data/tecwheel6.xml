@@ -47,11 +47,11 @@
  </LogicalPart>
  <LogicalPart name="TECWheelDisk6" category="unspecified">
   <rSolid name="tecwheel6:TECWheelDisk6"/>
-  <rMaterial name="tecmaterial:TEC_wheel_CF"/>
+  <rMaterial name="tecmaterial:TEC_wheel6_CF"/>
  </LogicalPart>
  <LogicalPart name="TECWheelNomex6" category="unspecified">
   <rSolid name="tecwheel6:TECWheelNomex6"/>
-  <rMaterial name="tecmaterial:TEC_wheel_Nomex"/>
+  <rMaterial name="tecmaterial:TEC_wheel6_Nomex"/>
  </LogicalPart>
  <LogicalPart name="TECFixSupport6" category="unspecified">
   <rSolid name="tecwheel6:TECFixSupport6"/>
