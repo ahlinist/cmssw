@@ -32,10 +32,10 @@
 
     <!-- materials to build materials -->
     <CompositeMaterial density="29*mg/cm3" method="mixture by weight" name="TEC_Nomex" symbol=" ">
-      <MaterialFraction fraction="1.">
+     <MaterialFraction fraction="1.">
         <rMaterial name="materials:Nomex"/>
       </MaterialFraction>
-    </CompositeMaterial>
+  </CompositeMaterial>
 
     <!-- Modules -->
     <CompositeMaterial density="1.42*g/cm3" method="mixture by weight" name="TEC_SideFrameSuppliesBox" symbol=" ">
@@ -233,7 +233,7 @@
         <rMaterial name="materials:Peek"/>
       </MaterialFraction>
     </CompositeMaterial>
-    <CompositeMaterial density="1.647000*g/cm3" method="mixture by weight" name="TEC_OptoH" symbol=" ">
+    <CompositeMaterial density="4.200000*g/cm3" method="mixture by weight" name="TEC_OptoH" symbol=" ">
       <MaterialFraction fraction="0.116960">
         <rMaterial name="materials:T_G10"/>
       </MaterialFraction>
@@ -650,7 +650,7 @@
         <rMaterial name="materials:C6F14_F2_-30C"/>
       </MaterialFraction>
     </CompositeMaterial>
-    <CompositeMaterial density="2.381000*g/cm3" method="mixture by weight" name="TEC_CCUM" symbol=" ">
+    <CompositeMaterial density="4.762000*g/cm3" method="mixture by weight" name="TEC_CCUM" symbol=" ">
       <MaterialFraction fraction="0.015190">
         <rMaterial name="materials:BGA"/>
       </MaterialFraction>
@@ -919,17 +919,27 @@
         <rMaterial name="tecmaterial:TEC_Nomex"/>
       </MaterialFraction>
     </CompositeMaterial>
-    <CompositeMaterial density="0.019000*g/cm3" method="mixture by weight" name="TEC_wheel_Nomex" symbol=" ">
+    <CompositeMaterial density="0.038000*g/cm3" method="mixture by weight" name="TEC_wheel_Nomex" symbol=" ">
       <MaterialFraction fraction="1.000000">
-        <rMaterial name="tecmaterial:TEC_Nomex"/>
+        <rMaterial name="materials:Nomex"/>
       </MaterialFraction>
     </CompositeMaterial>
-    <CompositeMaterial density="1.124000*g/cm3" method="mixture by weight" name="TEC_wheel_CF" symbol=" ">
+    <CompositeMaterial density="1.269000*g/cm3" method="mixture by weight" name="TEC_wheel_CF" symbol=" ">
       <MaterialFraction fraction="1.000000">
         <rMaterial name="materials:Carbon fibre str."/>
       </MaterialFraction>
     </CompositeMaterial>
-    <CompositeMaterial density="0.428000*g/cm3" method="mixture by weight" name="TEC_wheelinsert" symbol=" ">
+    <CompositeMaterial density="0.024000*g/cm3" method="mixture by weight" name="TEC_wheel6_Nomex" symbol=" ">
+      <MaterialFraction fraction="1.000000">
+        <rMaterial name="materials:Nomex"/>
+      </MaterialFraction>
+    </CompositeMaterial>
+    <CompositeMaterial density="1.627000*g/cm3" method="mixture by weight" name="TEC_wheel6_CF" symbol=" ">
+      <MaterialFraction fraction="1.000000">
+        <rMaterial name="materials:Carbon fibre str."/>
+      </MaterialFraction>
+    </CompositeMaterial>
+    <CompositeMaterial density="1.353000*g/cm3" method="mixture by weight" name="TEC_wheelinsert" symbol=" ">
       <MaterialFraction fraction="1.000000">
         <rMaterial name="materials:Aluminium"/>
       </MaterialFraction>

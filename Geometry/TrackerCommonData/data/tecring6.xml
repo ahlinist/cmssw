@@ -12,11 +12,10 @@
  <Constant name="RingThick"      value="(2*[tecmodpar:ModuleThickSS]+
                                            [ModuleGap])"/>
  <Constant name="ModuleZ"        value="([tecmodpar:ModuleThickSS]+
-                                         [ModuleGap])/2"/>
+                                         [ModuleGap])/2-[tecmodpar:SideFrameThick]"/>
  <Constant name="RingZ"          value="-12.421*mm"/>
  <Constant name="BridgeR"        value="997.4*mm"/>
- <Constant name="BridgeZ"        value="([tecpetpar:BridgeThick]-
-           [tecmodule6:BridgeThick])/2"/>
+ <Constant name="BridgeZ"        value="-0.5*[tecmodpar:SideFrameThick]"/>
  <Constant name="BridgeFrameZ"   value="[RingZ]-([tecpetpar:BridgeThick]+
            [RingThick])/2"/>
 </ConstantsSection>

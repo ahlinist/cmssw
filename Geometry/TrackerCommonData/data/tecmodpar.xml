@@ -27,7 +27,7 @@ compatibility-->
  <Constant name="PitchThick"     value="0.6650*mm"/>
  <Constant name="PitchZ"         value="-1.1075*mm"/>
  <Constant name="GapModule"      value="0.500*mm"/>
- <Constant name="ModuleThickSS"  value="[ModuleThick]"/>
+ <Constant name="ModuleThickSS"  value="[ModuleThick]+[SideFrameThick]"/>
  <Constant name="ModuleThickDS"  value="(2*[ModuleThick]+[GapModule])"/>
  <Constant name="SiFrSuppBoxThick"   value="0.258*mm"/>
  <Constant name="SiReenforcementThick"   value="0.387*mm"/>

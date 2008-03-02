@@ -74,7 +74,7 @@ o AOH
   ---
 Taking data from TOB AOHs:
 
-MCVolume: 1.757 cm^3
+MCVolume: 0.689 cm^3 (compressed so that there is no overlap with the rings)
 
 (1-2) PCBs
         FR4:    m = 0.65 g
@@ -130,7 +130,7 @@ c), the total mass is computed
 (12) different from TOB: Screws M1.6x5	Brass 0.0192x2.49cm3 (because either 2 or 3 scres are used)
 
 .......................................................................
-# "TEC AOH"                     "TEC_OptoH"          1.757    2.75
+# "TEC AOH"                     "TEC_OptoH"          0.689    2.75
 * 1 "PCB board"                 "T_G10"            0.342   1     ELE
 * 2 "PCB copper traces"         "Copper"           0.055   1     ELE     
 * 3 "NAiS connectors"           "Copper"           0.020   1     ELE
@@ -520,7 +520,7 @@ MCVolume: 1354.73 cm3 (for all TEC)
 =======================================================================
 o TEC CCUM
   -----------------------------
-MC Volume: 184.512
+MC Volume: 92.256 cm3 (volume has been reduced so that thy do not stick into the ring volumes)
    for 288 CCUM in TEC
 
 (1-3) From TOB ( the Chips are the same)
@@ -538,7 +538,7 @@ MC Volume: 184.512
 
 (4) lacking any information on CCUM information its weight is modeled by FR4.
 ............................................................................
-# "TEC CCUM board"            "TEC_CCUM"                 184.512   9
+# "TEC CCUM board"            "TEC_CCUM"                 92.256   9
 * 1 "CCUM ASICs BGA"          "BGA"                       0.013    288   ELE
 * 2 "CCUM ASICs EMC"          "Epoxy"                     0.328    288   ELE
 * 3 "CCUM ASICs copper"       "Copper"                    0.015    288   ELE
@@ -873,29 +873,46 @@ o TEC wheels
   ----------
 
   The wheels consist of a 1.6 cm NOMEX core and 2*0.04 cm CF skins.
-  11800 cm^2 of the area are cut out due to holes in the structure.
-  (I assume the same holes are cut for all 9 disks, irrespective of their
-   inner radius). Hence, for the 3 innermost disk, the material is reduced by 
-  32.3%, and by 33.5% for the 6 outer disks. => Take 33 % for all.
-  Thus for calculation take 100 cm^3 volume !
+  There are 4 380.13cm2 and 14 490.87cm2 holes in addition to the 
+  2999.62 cm2 hole in the middle.
+
+MCVolume: 451761 cm3 (for all TEC)
 ......................................................................
-# "TEC Wheel NOMEX"       "TEC_wheel_Nomex"      160        100
-* 1 "Nomex, reduced by 33%"     "TEC_Nomex"      106.4     1    SUP
+# "TEC Wheel NOMEX"       "TEC_wheel_Nomex"     451761         -1
+* 1 "Nomex"     "Nomex"      542183.87     1    SUP
+
+MCVolume: 22874.5 cm3 (for all TEC)
 ......................................................................
-# "TEC Wheel CF skins"          "TEC_wheel_CF"       8       100
-* 1 "Carbon fibre, reduced 33%"  "Carbon fibre str." 5.32   1   SUP  
+# "TEC Wheel CF skins"          "TEC_wheel_CF"       22874.5       -1
+* 1 "CF Skins"  "Carbon fibre str." 17170.28   1   SUP  
+
+......................................................................
+======================================================================
+
+  TEC Wheel 6 has differnt holes in the CF and NOMEX body because it carries 
+  Laser alignment  Parts (Beamsplitter etc.):
+    8x97.5 cm2
+    8x65.0 cm2
+
+MCVolume: 54793.7 cm3 (for all TEC)
+# "TEC Wheel6 NOMEX"       "TEC_wheel6_Nomex"    54793.7         -1
+* 1 "Nomex"     "Nomex"        41370.13   1    SUP
+MCVolume: 2818.75 cm3 (for all TEC)
+......................................................................
+# "TEC Wheel6 CF skins"          "TEC_wheel6_CF"       2818.75       -1
+* 1 "CF Skins"  "Carbon fibre str." 2713.7   1   SUP  
 ......................................................................
 ======================================================================
 
 o Inserts for petal fixation inserts
   ----------------------------------
- MC Volume:  12984 cm3 all TEC
-
+MCVolume: 4106.27 cm3 (for all TEC)
 This contains the petal Pot in the disk _and_ the connection to the petal.
 
 .......................................................................
-# "Petal fixations"             "TEC_wheelinsert"   12984     0.95
-* 1 "Insert"                 "Aluminium"         2057.62    1   SUP
+# "Petal fixations"             "TEC_wheelinsert"   4106.27     -1
+* 1 "PetalBushes"                 "Aluminium"         650.42    1   SUP
+* 2 "PetalPots"			  "Aluminium"	      1407.2	1   SUP
 ......................................................................
 ======================================================================
 
@@ -905,7 +922,7 @@ o Fixations to inner support tube
   MC Volume: 625.829 cm3 all TEC
 
 .......................................................................
-# "Fixations to inner support"  "TEC_Fixframe"        625.829	625.829
+# "Fixations to inner support"  "TEC_Fixframe"        625.829	-1
 * 1 "Aluminium fixations"        "Aluminium"          317.94   1   SUP
  2 "Stainless Steel screw"      "Steel-008"          1.28     1   SUP
 .......................................................................
