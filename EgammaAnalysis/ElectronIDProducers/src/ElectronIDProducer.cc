@@ -29,7 +29,7 @@ ElectronIDProducer::ElectronIDProducer(const edm::ParameterSet& conf) : conf_(co
   neuralNetAlgo_ = new ElectronNeuralNet();
 
   barrelClusterShapeAssociation_ = conf_.getParameter<edm::InputTag>("barrelClusterShapeAssociation");
-  endcapClusterShapeAssociation_ = conf.getParameter<edm::InputTag>("endcapClusterShapeAssociation");
+  endcapClusterShapeAssociation_ = conf_.getParameter<edm::InputTag>("endcapClusterShapeAssociation");
 
   produces<reco::ElectronIDCollection>(electronIDLabel_);
   produces<reco::ElectronIDAssociationCollection>(electronIDAssociation_);
