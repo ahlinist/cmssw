@@ -366,7 +366,7 @@ MC Volume: silicone_pipes_plus_coolant   967cm3 * 280/360 =  752cm3
 
 .....................................................................
 # "radial cooling"     "silicone_pipes_plus_coolant"   752     -1.
-* 1 "silicone pipe"      "FPix_Silicone"            56.23    1    COL
+* 1 "silicone pipe"      "BPix_Silicone"            56.23    1    COL
 * 2 "coolant"            "C6F14_F2_-10C"            38       1    COL
 .....................................................................
 
