@@ -292,7 +292,7 @@ MC Volume: cable_endring_to_tube    A x B x C = D cm3 old volume 313.18  //FIXME
     using epoxy                       0.005cm x 1.5cm x 33cm
                                       0.005cm x 1.5cm x 23.5cm
                                       0.005cm x 1.5cm x 20.5cm
-    in total 1g / 1 = 1cm3
+    in total 1g / 1.3 = 0.769cm3
 (8) "L" cooling bends suppl. tube steel           2.5g / 7.8 = 0.32cm3
 (9) endprint clips connecting L12 and L3 boards Aluminum    0.6g / 2.7 = 0.22cm3
 .....................................................................
@@ -301,9 +301,9 @@ MC Volume: cable_endring_to_tube    A x B x C = D cm3 old volume 313.18  //FIXME
 * 2 "pow. cable aluminium"       "Aluminium"            0.37   32    CAB
 * 3 "pow. cable insulation"         "FPix_Silicone"     2.06   32    CAB
 * 4 "pow. cable connector"         "FPix_Cylind_Noryl"  0.69   32    CAB
-* 5 "sign. cable Kapton"           "T_Kapton"           2.475   1     CAB
-* 6 "sign. cable copper"           "Copper"             0.327   1    CAB
-* 7 "sign. cable adhesive"         "FPix_Epoxy"          1      1    CAB
+* 5 "sign. cable Kapton"           "T_Kapton"           2.475   16     CAB
+* 6 "sign. cable copper"           "Copper"             0.327   16    CAB
+* 7 "sign. cable adhesive"         "Epoxy"              0.769   16    CAB
 * 8 "supply tube cooling bends"    "Steel-008"           0.32   20   COL
 * 9 "clips to connect endprints"   "Aluminium"            0.22  16   SUP
 .....................................................................
@@ -369,6 +369,49 @@ MC Volume: silicone_pipes_plus_coolant   967cm3 * 280/360 =  752cm3
 * 1 "silicone pipe"      "BPix_Silicone"            56.23    1    COL
 * 2 "coolant"            "C6F14_F2_-10C"            38       1    COL
 .....................................................................
+
+
+
+======= OLD REVIEWED TO REMOVE WHAT ALREADY INCLUDED ====
+o Pixel barrel connectors 2 (on service tube)
+  -------------------------------------------
+MC Volume, cylinder r=18-18.25  cm, z = 8 cm
+
+(1-4) Cables from endring boards (see above) to service tube
+    * 64 Kapton cables, 2 cm wide, 100 mu thick,
+      Cu 10.5 mu average length 12 cm
+    * 32 Al cables, Al 0.404, Ag 0.103 (from Kurt's table)
+(5-8) Connector board 4 cm wide, 16 boards in phi
+    340 mu G10, 19 mu Cu, 50 mu Epoxy, 4 mu Tin
+(9-10) Kapton cable connectors
+       0.11 cm^3 Kapton, 0.015 cm^3 Bronze, 64 pieces
+(11-12) Power connectors,
+       0.91 cm^3 Kapton, 0.094 cm^3 Bronze, 32 pieces
+(13-14) Cooling pipes, length 10cm
+        Aluminium x-section (r=0.33-0.3 cm) = 0.0594 cm^2
+                             20+2 pipes (2 for flushing)
+        Coolant r=0.3 cm  => 0.2827 cm^2      20 volumes
+(15) Cooling connectors, as above (very rough estimate !)
+     Put in roughly 0.07 cm^3 x 20 additional Al for tube connectors
+(16) Stainless steel for hose clamps 1.16 g (0.15 cm^3) 20 x
+(17) Carbon fibre cylinder, length = 11cm, r=18.5 cm, thickness 0.1 cm
+......................................................................
+# "Pixel barrel connectors 2"  "Pix_Bar_Conn2"    227    -1.
+* 1 "Connector board"          "G10"              1.496   16   CAB
+* 2 "Connector board"          "Copper"           0.0836  16   CAB
+* 3 "Connector board"          "Epoxy"            0.22    16   CAB
+* 4 "Connector board"          "Tin"              0.0176  16   CAB
+* 5 "Kapton cable connectors"  "T_Kapton"         0.11    64   CAB
+* 6  "Kapton cable connectors" "T_Bronze"         0.015   64   CAB
+* 7  "Power connectors"        "T_Kapton"         0.91    32   CAB
+* 8  "Power connectors"        "T_Bronze"         0.094   32   CAB
+* 9  "Cooling pipes"           "Aluminium"        0.594   22   COL
+* 10 "Coolant"                 "C6F14_F2_-10C"    2.827   20   COL
+* 11 "Cooling connectors"      "Aluminium"        0.07    20   COL
+* 12 "Hose clamps"             "Steel-008"        0.15    20   COL
+* 13 "Carbon fibre cylinder"  "Carbon fibre str." 127.86   1   SUP
+......................................................................
+======================================================================
 
 
 =============  OLD   STUFF ==============================
@@ -478,49 +521,6 @@ MC Volume (per board) r = 12-18.5 cm, thickness 0.19 cm
 .....................................................................
 ===================================================================== 
 
-o Pixel barrel connectors 2 (on service tube)
-  -------------------------------------------
-MC Volume, cylinder r=18-18.25  cm, z = 29-40 cm (l=11 cm)
-
-(1-4) Cables from endring boards (see above) to service tube
-    * 64 Kapton cables, 2 cm wide, 100 mu thick, 
-      Cu 10.5 mu average length 12 cm
-    * 32 Al cables, Al 0.404, Ag 0.103 (from Kurt's table) 
-(5-8) Connector board 4 cm wide, 16 boards in phi
-    340 mu G10, 19 mu Cu, 50 mu Epoxy, 4 mu Tin
-(9-10) Kapton cable connectors 
-       0.11 cm^3 Kapton, 0.015 cm^3 Bronze, 64 pieces
-(11-12) Power connectors,
-       0.91 cm^3 Kapton, 0.094 cm^3 Bronze, 32 pieces
-(13-14) Cooling pipes, length 10cm
-        Aluminium x-section (r=0.33-0.3 cm) = 0.0594 cm^2   
-                             20+2 pipes (2 for flushing)
-        Coolant r=0.3 cm  => 0.2827 cm^2      20 volumes
-(15) Cooling connectors, as above (very rough estimate !)
-     Put in roughly 0.07 cm^3 x 20 additional Al for tube connectors
-(16) Stainless steel for hose clamps 1.16 g (0.15 cm^3) 20 x
-(17) Carbon fibre cylinder, length = 11cm, r=18.5 cm, thickness 0.1 cm
-......................................................................
-# "Pixel barrel connectors 2"  "Pix_Bar_Conn2"    313.18    -1.
-* 1 "Kapton cables"            "T_Kapton"         0.24    64   CAB 
-* 2 "Kapton cables"            "Copper"           0.0252  64   CAB
-* 3 "Alu cables"               "Aluminium"        0.404   32   CAB
-* 4 "Alu cables"               "Silver"           0.103   32   CAB
-* 5 "Connector board"          "G10"              1.496   16   CAB
-* 6 "Connector board"          "Copper"           0.0836  16   CAB
-* 7 "Connector board"          "Epoxy"            0.22    16   CAB
-* 8 "Connector board"          "Tin"              0.0176  16   CAB
-* 9 "Kapton cable connectors"  "T_Kapton"         0.11    64   CAB
-* 10 "Kapton cable connectors" "T_Bronze"         0.015   64   CAB
-* 11 "Power connectors"        "T_Kapton"         0.91    32   CAB
-* 12 "Power connectors"        "T_Bronze"         0.094   32   CAB
-* 13 "Cooling pipes"           "Aluminium"        0.594   22   COL
-* 14 "Coolant"                 "C6F14_F2_-10C"            2.827   20   COL
-* 15 "Cooling connectors"      "Aluminium"        0.07    20   COL
-* 16 "Hose clamps"             "Steel-008"        0.15    20   COL
-* 17 "Carbon fibre cylinder"  "Carbon fibre str." 127.86   1   SUP
-......................................................................
-======================================================================  
 
 o Pixel barrel connectors 3 (on service tube)
   -------------------------------------------
