@@ -142,7 +142,7 @@ MC Volume: 0.35 x 0.35 cm
 .....................................................................
 # "Pixel Barrel cooling pipes"   "T_Pix_Bar_Cool"    0.1225   -1.
 * 1 "Cooling pipes"              "Aluminium"         0.0342    1  COL
-* 2 "Coolant"                    "C6F14"             0.0808    1  COL
+* 2 "Coolant"                    "C6F14_F2_-10C"             0.0808    1  COL
 .....................................................................
 =====================================================================
 
@@ -191,7 +191,7 @@ MC Volume: cool1   4 x 4.88  x 0.5 = 12.2748 cm3
 .....................................................................
 # "Pixel barrel cooling rings"     "Flange_with_Manifold_Layer1"     12.27   -1.
 * 1 "Al Manifold"             "Aluminium"         3.92    1    COL
-* 2 "Coolant"                 "C6F14"             8.7     1    COL
+* 2 "Coolant"                 "C6F14_F2_-10C"             8.7     1    COL
 * 3 "Al tube connectors"      "Aluminium"         0.32    4    COL
 * 4 "SS hose clamps"          "Steel-008"         0.15    4    COL
 * 5 "Carbon fiber"            "Carbon fibre str." 4.69    1    SUP
@@ -220,7 +220,7 @@ MC Volume: cool2	6.9x7.78x0.5 =	20.2922 cm3
 .....................................................................
 # "Pixel barrel cooling rings"     "Flange_with_Manifold_Layer2"     20.29   -1.
 * 1 "Al Manifold"             "Aluminium"        6.22   1    COL
-* 2 "Coolant"                 "C6F14"            17.09   1    COL
+* 2 "Coolant"                 "C6F14_F2_-10C"            17.09   1    COL
 * 3 "Al tube connectors"      "Aluminium"        0.32    6    COL
 * 4 "SS hose clamps"          "Steel-008"        0.15    6    COL
 * 5 "Carbon fiber"            "Carbon fibre str." 10.05  1    SUP
@@ -247,7 +247,7 @@ MC Volume: cool3	9.7	10.58	0.5	28.0331
 .....................................................................
 # "Pixel barrel cooling rings"     "FlangeInner_with_Manifold_Layer3"     20.29   -1.
 * 1 "Al Manifold"             "Aluminium"        6.22   1     COL
-* 2 "Coolant"                 "C6F14"            19.37  1     COL
+* 2 "Coolant"                 "C6F14_F2_-10C"            19.37  1     COL
 * 3 "Al tube connectors"      "Aluminium"        0.32   10    COL
 * 4 "SS hose clamps"          "Steel-008"        0.15   10    COL
 * 6 "Fiber glass reinforce"   "T_FR4"                 6.37   1     SUP
@@ -262,7 +262,7 @@ MC Volume Flange	10.6x18x0.6=398.932cm3
 (3) Airex 21.27g x 2 / ?? = ?? cm3, using Nomex 1329 cm3 //FIXME
 (4) 2.7e-3 cm3  (x80) Al fixation points
 .....................................................................
-# "Pixel barrel cooling rings"     "Flange_with_Manifold_Layer1"     398.9   -1.
+# "Pixel barrel cooling rings"     "FlangeOuter_Layer3"     398.9   -1.
 * 1 "Carbon fiber"            "Carbon fibre str." 88.66    1    SUP
 * 2 "Fiber glass reinforce"   "T_FR4"             11.8     1    SUP
 * 3 "Foam"                    "Air"               1329     1    SUP
@@ -380,7 +380,7 @@ All volumes per unit length
 * 3 "Power module cables"       "Aluminium"        8.E-4    576  CAB
 * 4 "Power module cables"       "Silver"           2.E-5    576  CAB
 * 5 "Cooling tubes"             "Peek"             0.589     4   COL
-* 6 "Coolant"                   "C6F14"            0.196     4   COL
+* 6 "Coolant"                   "C6F14_F2_-10C"            0.196     4   COL
 .....................................................................
 =====================================================================
 
@@ -403,7 +403,7 @@ All volumes per unit length
 * 3 "Power module cables"       "Aluminium"        8.E-4    960  CAB
 * 4 "Power module cables"       "Silver"           2.E-5    960  CAB
 * 5 "Cooling tubes"             "Peek"             0.589     6   COL
-* 6 "Coolant"                   "C6F14"            0.196     6   COL
+* 6 "Coolant"                   "C6F14_F2_-10C"            0.196     6   COL
 .....................................................................
 =====================================================================
 
@@ -426,7 +426,7 @@ All volumes per unit length
 * 3 "Power module cables"       "Aluminium"        8.E-4   1344  CAB
 * 4 "Power module cables"       "Silver"           2.E-5   1344  CAB
 * 5 "Cooling tubes"             "Peek"             0.589    10   COL
-* 6 "Coolant"                   "C6F14"            0.196    10   COL
+* 6 "Coolant"                   "C6F14_F2_-10C"            0.196    10   COL
 .....................................................................
 =====================================================================
 
@@ -501,7 +501,7 @@ MC Volume, cylinder r=18-18.25  cm, z = 29-40 cm (l=11 cm)
 * 11 "Power connectors"        "T_Kapton"         0.91    32   CAB
 * 12 "Power connectors"        "T_Bronze"         0.094   32   CAB
 * 13 "Cooling pipes"           "Aluminium"        0.594   22   COL
-* 14 "Coolant"                 "C6F14"            2.827   20   COL
+* 14 "Coolant"                 "C6F14_F2_-10C"            2.827   20   COL
 * 15 "Cooling connectors"      "Aluminium"        0.07    20   COL
 * 16 "Hose clamps"             "Steel-008"        0.15    20   COL
 * 17 "Carbon fibre cylinder"  "Carbon fibre str." 127.86   1   SUP
@@ -532,7 +532,7 @@ MC Volume, cylinder r=18-18.25  cm, z = 40-56 cm (l=16 cm)
 * 3 "Connector board"          "Epoxy"            0.32    16   CAB
 * 4 "Connector board"          "Tin"              0.0256  16   CAB
 * 5 "Cooling pipes"            "Aluminium"        0.95    22   COL
-* 6 "Coolant"                  "C6F14"            4.523   20   COL
+* 6 "Coolant"                  "C6F14_F2_-10C"            4.523   20   COL
 * 7 "Power in/out"             "Aluminium"        48.      1   CAB
 * 8 "Bias and control"         "Copper"           5.E-3  384   CAB
 * 9 "Optical hybrids"          "G10"              0.22   192   ELE
@@ -560,7 +560,7 @@ MC Volume, cylinder r=18.5-18.7  cm
 ......................................................................
 # "Pixel barrel services "  "Pix_Bar_Services"    23.37    -1.
 * 1 "Cooling pipes"            "Aluminium"        0.0594  22   COL
-* 2 "Coolant"                  "C6F14"            0.2827  20   COL
+* 2 "Coolant"                  "C6F14_F2_-10C"            0.2827  20   COL
 * 3 "Power in/out"             "Aluminium"        3.       1   CAB
 * 4 "Bias and control"         "Copper"           3.1E-4 384   CAB
 * 5 "Optical fibers"           "Quartz"          1.27E-4 576   CAB
