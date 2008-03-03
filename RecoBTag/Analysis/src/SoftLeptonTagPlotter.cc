@@ -34,6 +34,10 @@ SoftLeptonTagPlotter::SoftLeptonTagPlotter(const TString & tagName,
         Form( "%s lepton %s", ordinal[i], "pT rel" ),
         "Lepton transverse moementum relative to jet axis",
         100, 0.0, 10.0, false, false, true, "b", update);
+    m_p0Par[i] = new FlavourHistograms<double> (
+        Form( "%s lepton %s", ordinal[i], "p0 par" ),
+        "Lepton moementum along jet axis in the B rest frame",
+        100, 0.0, 10.0, false, false, true, "b", update);
     m_etaRel[i] = new FlavourHistograms<double> (
         Form( "%s lepton %s", ordinal[i], "eta rel" ),
         "Lepton pseudorapidity relative to jet axis",
@@ -61,6 +65,7 @@ SoftLeptonTagPlotter::~SoftLeptonTagPlotter ()
     delete m_sip2d[i];
     delete m_sip3d[i];
     delete m_ptRel[i];
+    delete m_p0Par[i];
     delete m_etaRel[i];
     delete m_deltaR[i];
     delete m_ratio[i];
@@ -91,6 +96,7 @@ void SoftLeptonTagPlotter::analyzeTag( const reco::BaseTagInfo * baseTagInfo,
     m_sip2d[i]->fill(    flavour, tagInfo->properties(i).sip2d );
     m_sip3d[i]->fill(    flavour, tagInfo->properties(i).sip3d );
     m_ptRel[i]->fill(    flavour, tagInfo->properties(i).ptRel );
+    m_p0Par[i]->fill(    flavour, tagInfo->properties(i).p0Par );
     m_etaRel[i]->fill(   flavour, tagInfo->properties(i).etaRel );
     m_deltaR[i]->fill(   flavour, tagInfo->properties(i).deltaR );
     m_ratio[i]->fill(    flavour, tagInfo->properties(i).ratio );
@@ -118,6 +124,7 @@ void SoftLeptonTagPlotter::psPlot(const TString & name)
     canvas.cd(5)->Clear();
     m_ptRel[i]->plot();
     canvas.cd(6)->Clear();
+    m_p0Par[i]->plot();
     canvas.Print(name + cName + ".ps");
 
     canvas.cd(1)->Clear();
@@ -147,6 +154,7 @@ void SoftLeptonTagPlotter::write(const bool allHisto)
     m_sip2d[i]->write(allHisto);
     m_sip3d[i]->write(allHisto);
     m_ptRel[i]->write(allHisto);
+    m_p0Par[i]->write(allHisto);
     m_etaRel[i]->write(allHisto);
     m_deltaR[i]->write(allHisto);
     m_ratio[i]->write(allHisto);
@@ -163,6 +171,7 @@ void SoftLeptonTagPlotter::epsPlot(const TString & name)
     m_sip2d[i]->epsPlot( name );
     m_sip3d[i]->epsPlot( name );
     m_ptRel[i]->epsPlot( name );
+    m_p0Par[i]->epsPlot( name );
     m_etaRel[i]->epsPlot( name );
     m_deltaR[i]->epsPlot( name );
     m_ratio[i]->epsPlot( name );
