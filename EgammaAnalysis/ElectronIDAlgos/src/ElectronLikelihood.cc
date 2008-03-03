@@ -322,7 +322,7 @@ ElectronLikelihood::Setup (const ElectronLikelihoodCalibration *calibration,
 
 
 void 
-ElectronLikelihood::getInputVar (const reco::PixelMatchGsfElectron &electron, 
+ElectronLikelihood::getInputVar (const reco::GsfElectron &electron, 
                                  std::vector<float> &measurements, 
                                  const reco::ClusterShape &sClShape) const 
 {
@@ -344,7 +344,7 @@ ElectronLikelihood::getInputVar (const reco::PixelMatchGsfElectron &electron,
 
 
 double 
-ElectronLikelihood::CalculateFisher(const reco::PixelMatchGsfElectron &electron,
+ElectronLikelihood::CalculateFisher(const reco::GsfElectron &electron,
 				    const reco::ClusterShape& sClShape) const
 {
 
@@ -408,7 +408,7 @@ ElectronLikelihood::CalculateFisher(const reco::PixelMatchGsfElectron &electron,
 
 
 float 
-ElectronLikelihood::result (const reco::PixelMatchGsfElectron &electron, 
+ElectronLikelihood::result (const reco::GsfElectron &electron, 
                             const reco::ClusterShape &sClShape) const 
 {
 
