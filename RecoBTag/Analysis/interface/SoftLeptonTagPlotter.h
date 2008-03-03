@@ -34,8 +34,9 @@ private:
   FlavourHistograms<double> * m_sip2d[s_leptons];      // 2D signed inpact parameter
   FlavourHistograms<double> * m_sip3d[s_leptons];      // 3D signed inpact parameter
   FlavourHistograms<double> * m_ptRel[s_leptons];      // transverse momentum wrt. jet axis
+  FlavourHistograms<double> * m_p0Par[s_leptons];      // parallel momentum wrt. jet axis in the B rest frame
   FlavourHistograms<double> * m_etaRel[s_leptons];     // (pseudo)rapidity along jet axis
-  FlavourHistograms<double> * m_deltaR[s_leptons];     // pseudoangular distance to jet axis
+  FlavourHistograms<double> * m_deltaR[s_leptons];     // (pseudo)angular distance to jet axis
   FlavourHistograms<double> * m_ratio[s_leptons];      // momentum over jet energy
   FlavourHistograms<double> * m_ratioRel[s_leptons];   // momentum parallel to jet axis over jet energy
   
