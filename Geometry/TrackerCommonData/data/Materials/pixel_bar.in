@@ -356,6 +356,20 @@ MC Volume: endringprints3 1 = 12, R2=18.5, Dz/2 = 0.95    118.336cm3
 .....................................................................
 
 
+o Silicone Pipes plus coolant
+
+MC Volume: silicone_pipes_plus_coolant   967cm3 * 280/360 =  752cm3
+
+(1) silicone pipes  20 pipes per flange, total amount of silicone =131g     1.788g / 8.96 =0.2cm3
+    131g / 2.33g = 56.23cm3
+(2) inner volume of silicone pipes = 38cm3
+
+.....................................................................
+# "radial cooling"     "silicone_pipes_plus_coolant"   752     -1.
+* 1 "silicone pipe"      "FPix_Silicone"            56.23    1    COL
+* 2 "coolant"            "C6F14_F2_-10C"            38       1    COL
+.....................................................................
+
 
 =============  OLD   STUFF ==============================
 
