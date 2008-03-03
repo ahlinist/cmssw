@@ -21,7 +21,7 @@ while (<>)
      $i++;
    }  
     print "  </CompositeMaterial>\n";
-    print STDERR "Total fraction is: ".$tot."\n"; 
+#    print STDERR "Total fraction is: ".$tot."\n"; 
     if(abs($tot-1) > 0.001 ) 
     {
      die "ERROR: total fraction is ".$tot; 
