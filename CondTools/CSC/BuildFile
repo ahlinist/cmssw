@@ -1,0 +1,23 @@
+<use name=CondFormats/Calibration>
+<use name=CondFormats/DataRecord>
+<use name=CondCore/PopCon>
+<use name=CondFormats/CSCObjects>
+<use name=CondCore/DBCommon>
+
+<library name=plugins/CSCCrosstalkPopConAnalyzer file=src/CSCCrosstalkHandler.cc,src/CSCCrosstalkPopConAnalyzer.cc>
+  <flags EDM_PLUGIN=1>
+</library>
+
+<library name=plugins/CSCGainsPopConAnalyzer file=src/CSCGainsHandler.cc,src/CSCGainsPopConAnalyzer.cc>
+  <flags EDM_PLUGIN=1>
+</library>
+
+<library name=plugins/CSCNoiseMatrixPopConAnalyzer file=src/CSCNoiseMatrixHandler.cc,src/CSCNoiseMatrixPopConAnalyzer.cc>
+  <flags EDM_PLUGIN=1>
+</library>
+
+<library name=plugins/CSCPedestalsPopConAnalyzer file=src/CSCPedestalsHandler.cc,src/CSCPedestalsPopConAnalyzer.cc>
+  <flags EDM_PLUGIN=1>
+</library>
+
+
