@@ -6,7 +6,7 @@ include "EgammaAnalysis/ElectronIDESSources/data/likelihoodPdfsDB.cfi"
 include "EgammaAnalysis/ElectronIDESSources/data/likelihoodESetup.cfi"
 
 # --- Neural Net Electron ID block---
-include "EgammaAnalysis/ElectronIDProducers/data/neuralNetElectronId.cfi" 
+#include "EgammaAnalysis/ElectronIDProducers/data/neuralNetElectronId.cfi" 
 
 module electronId = ElectronIDProducer {
 
@@ -27,6 +27,6 @@ module electronId = ElectronIDProducer {
         {using PTDR_ID}, {using CutBased_ID}
     }
 
-    using NeuralNet
+    #using NeuralNet
 
 }
