@@ -3,12 +3,13 @@
 setenv SCRAM_ARCH slc4_ia32_gcc345
 source /uscmst1/prod/sw/cms/cshrc cmslpc
 setenv PATH /usr/bin:$PATH
+setenv PATH /usr/java/jdk1.5.0_10/bin:$PATH
+unsetenv PYTHONPATH
 
-cd /uscms/home/yarba_j/work/SL4/CMSSW_1_7_3_g490p1/src
+cd /uscmst1b_scratch/lpc1/3DayLifetime/yarba_j
+scramv1 p CMSSW CMSSW_1_8_0_pre9
+cd CMSSW_1_8_0_pre9/src
 eval `scramv1 runtime -csh`
-
-if ( ! -e /uscms_scratch/3DayLifetime/yarba_j/173g490p1 ) mkdir /uscms_scratch/3DayLifetime/yarba_j/173g490p1
-cd /uscms_scratch/3DayLifetime/yarba_j/173g490p1
 
 set rndm_source=135799753
 set rndm_VtxSmeared=123456789
@@ -27,7 +28,7 @@ cat > temp_minbias_$1.cfg <<EOF
 
 process Sim = {
 
-   untracked PSet maxEvents = { untracked int32 input = 100 }
+   untracked PSet maxEvents = { untracked int32 input = 50 }
    
    service = MessageLogger
    {
@@ -137,4 +138,7 @@ EOF
 
 cmsRun  temp_minbias_$1.cfg
 
-###dccp pyth_minbias_detsim_${1}.root /pnfs/cms/WAX/2/yarba_j/pyth_minbias_detsim_${1}.root
+if ( ! -e /pnfs/cms/WAX/resilient/yarba_j/GEN-SIM/180pre9 ) mkdir /pnfs/cms/WAX/resilient/yarba_j/GEN-SIM/180pre9
+chmod 777 /pnfs/cms/WAX/resilient/yarba_j/GEN-SIM/180pre9
+
+/opt/d-cache/srm/bin/srmcp "file:///$PWD/pyth_minbias_detsim_${1}.root" "srm://cmssrm.fnal.gov:8443/resilient/yarba_j/GEN-SIM/180pre9/pyth_minbias_detsim_${1}.root"
