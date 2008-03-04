@@ -67,26 +67,27 @@ class HLTMuonDQMClient: public EDAnalyzer{
 
   DaqMonitorBEInterface* dbe_;
 
-  TH1F *hNMu_[2];
-  TH1F *hQ_[2];
-  TH1F *hPt_[2];
+  TH1F *hNMu_[4];
+  TH1F *hQ_[4];
+  TH1F *hPt_[4];
   TH1F *hPtlx_[2];
-  TH1F *hEta_[2];
-  TH1F *hPhi_[2];
-  TH1F *hPtres_;
-  TH1F *hEtares_;
-  TH1F *hPhires_;
-  TProfile *hEtareseta_, *hPhiresphi_,*hDrphi_[2],*hDzeta_[2] ;
-  TH2F *hEtaphi_[2];
-  TH2F *hPtphi_[2];
-  TH2F *hPteta_[2];
+  TH1F *hEta_[4];
+  TH1F *hPhi_[4];
+  TH1F *hPtres_[3];
+  TH1F *hEtares_[3];
+  TH1F *hPhires_[3];
+  TProfile *hEtareseta_[3], *hPhiresphi_[3],*hDrphi_[3],*hD0phi_[3],*hDzeta_[3] ;
+  TH2F *hEtaphi_[4];
+  TH2F *hPtphi_[4];
+  TH2F *hPteta_[4];
+  TH1F *hD0_[2];
   TH1F *hDr_[2];
   TH1F *hDz_[2];
   TH1F *hErr0_[2];
   TH1F *hNhit_[2];
   TH1F *hIso_[2];
   TH1F *hDimumass_[2];
-
+  TH1F *hL1Qual_;
   bool x11_;                 // enable the ROOT application's x11 interface?
   TApplication *theApp_;     // the ROOT application
   TPad *CRtd_pad_[3];        // Cosmic Run track display pads
