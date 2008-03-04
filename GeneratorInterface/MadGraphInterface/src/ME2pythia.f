@@ -1602,7 +1602,9 @@ C...Inputs for the matching algorithm
       integer maxjets,minjets,iexcfile,ktsche,nexcres,excres(30)
       common/MEMAIN/etcjet,rclmax,etaclmax,qcut,clfact,
      $   maxjets,minjets,iexcfile,ktsche,nexcres,excres
+CDKC      DATA ktsche,maxjets,minjets,nexcres/0,-1,-1,0/
       DATA ktsche,maxjets,minjets,nexcres/0,-1,-1,0/
+      DATA ktsche,nexcres/0,0/
       DATA qcut,clfact/0d0,0d0/
 
 C...Commonblock to transfer event-by-event matching info
@@ -1625,6 +1627,10 @@ C...Local variables
       parameter(MAXNJ=6)
       DOUBLE PRECISION XSTOT(MAXNJ),XSECTOT
       DOUBLE PRECISION ptjmin,etajmax,drjmin,ptbmin,etabmax,xqcut
+
+CDKC -- initalize by assignment instead of data statement, whose behaviour is compiler dependent
+       minjets=-1
+       maxjets=-1
 
 C...Need lower scale for final state radiation in e+e-
       IF(IABS(IDBMUP(1)).EQ.11.AND.IABS(IDBMUP(2)).EQ.11) then
