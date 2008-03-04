@@ -119,7 +119,7 @@ void SiStripNoiseDB::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	      bool disable = true;
 	      if(temp[ibin] == 0) disable = false;
 
-	      SiStripNoises_->setData(noise,disable,theSiStripVector);
+	      SiStripNoises_->setData(noise,theSiStripVector);
 	      ibin++;
 	    } 
 	    mSiStripNoises.push_back(make_pair(detid,theSiStripVector));
@@ -133,8 +133,7 @@ void SiStripNoiseDB::endJob(void){
 
   for (std::vector< std::pair<uint32_t, std::vector<short> > >::const_iterator iter=mSiStripNoises.begin(); iter!=mSiStripNoises.end();iter++)
     {
-      SiStripNoises::Range range(iter->second.begin(),iter->second.end());
-      if ( ! SiStripNoises_->put(iter->first,range) )
+      if ( ! SiStripNoises_->put(iter->first,iter->second) )
 	edm::LogError("SiStripNoiseDB") <<"[SiStripNoiseDB::analyze] detid " << iter->first << "already exists"<<endl;
     }    
 	
