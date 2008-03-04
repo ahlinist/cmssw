@@ -16,7 +16,7 @@
 //
 // Original Author:  dkcira
 //         Created:  Sat Feb  4 20:49:51 CET 2006
-// $Id: SiStripNoiseDB.h,v 1.5 2007/03/21 16:26:20 bainbrid Exp $
+// $Id: SiStripNoiseDB.h,v 1.6 2007/11/07 19:40:29 elmer Exp $
 //
 
 // system include files
@@ -49,6 +49,7 @@
 #include "CalibTracker/SiStripAPVAnalysis/interface/ApvAnalysisFactory.h"
 
 #include "CondFormats/SiStripObjects/interface/SiStripNoises.h"
+#include "CalibFormats/SiStripObjects/interface/SiStripQuality.h"
 
 #include "boost/cstdint.hpp"
 #include <iostream>
@@ -82,6 +83,8 @@ class SiStripNoiseDB : public edm::EDAnalyzer {
 
        SiStripNoises* SiStripNoises_;
        std::vector< std::pair<uint32_t,std::vector<short> > > mSiStripNoises;
+
+       SiStripQuality* SiStripQuality_;
 	 
        std::vector<uint32_t> SelectedDetIds;
 	 

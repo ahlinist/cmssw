@@ -148,7 +148,7 @@ namespace cms{
 		
 	LogDebug("SiStripOfflinePedNoiseToDb")  <<"DetId " << detid << " Ped Noise lth hth disable " << ped << " " << noise << " " << lTh << " " << hTh << " " << disable << std::endl;
 	SiStripPedestals_->setData(ped,lTh,hTh,theSiStripPedVector);
-	SiStripNoises_->setData(noise,disable,theSiStripNoiseVector);
+	SiStripNoises_->setData(noise,theSiStripNoiseVector);
       }
 
       {
@@ -159,8 +159,7 @@ namespace cms{
       }
       {
 	edm::LogInfo("SiStripOfflinePedNoiseToDb") <<"uploading Noise for detid "<< detid << " vector size " << theSiStripNoiseVector.size() <<std::endl;
-	SiStripNoises::Range range(theSiStripNoiseVector.begin(),theSiStripNoiseVector.end());
-	if ( ! SiStripNoises_->put(detid,range) )
+	if ( ! SiStripNoises_->put(detid,theSiStripNoiseVector) )
 	  edm::LogError("SiStripNoiseDB") << "[SiStripNoiseDB::analyze] detid " << detid << "already exists"<<std::endl;	
       }       
     }
