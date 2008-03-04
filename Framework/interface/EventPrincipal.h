@@ -17,7 +17,9 @@ $Id$
 #include "boost/shared_ptr.hpp"
 
 #include "DataFormats/Provenance/interface/EventAuxiliary.h"
+#include "DataFormats/Provenance/interface/History.h"
 #include "FWCore/Framework/interface/Principal.h"
+
 
 namespace edm {
   class EventID;
@@ -99,6 +101,9 @@ namespace edm {
 
     void setUnscheduledHandler(boost::shared_ptr<UnscheduledHandler> iHandler);
 
+    EventSelectionIDVector const& eventSelectionIDs() const;
+    History const& history() const;
+    void setHistory(History const& h);
   private:
     virtual void addOrReplaceGroup(std::auto_ptr<Group> g);
 
@@ -110,6 +115,7 @@ namespace edm {
     boost::shared_ptr<UnscheduledHandler> unscheduledHandler_;
 
     mutable std::vector<std::string> moduleLabelsRunning_;
+    History   eventHistory_;
   };
 
   inline
