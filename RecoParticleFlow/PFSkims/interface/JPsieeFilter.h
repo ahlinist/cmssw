@@ -24,8 +24,9 @@
 #include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
 
 #include "HepMC/GenVertex.h"
-#include "DQMServices/Core/interface/DaqMonitorBEInterface.h"
 
+#include "DQMServices/Core/interface/DQMStore.h"
+#include "DQMServices/Core/interface/MonitorElement.h"
 // 
 
 
@@ -63,7 +64,8 @@ private:
   std::vector<int> motherId;
   bool doHistos_;
 
-  DaqMonitorBEInterface * dbe;
+ 
+  DQMStore * dbe;
   MonitorElement * h0;
   MonitorElement * h2;
   MonitorElement * h4;

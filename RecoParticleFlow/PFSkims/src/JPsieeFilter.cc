@@ -24,7 +24,7 @@ JPsieeFilter::JPsieeFilter(const edm::ParameterSet& iConfig)
 void  JPsieeFilter::beginJob(const edm::EventSetup & c){
   if(doHistos_)
     {
-      dbe = edm::Service<DaqMonitorBEInterface>().operator->();
+      dbe = edm::Service<DQMStore>().operator->();
       h0 =  dbe->book2D("h0","Pt vs eta",120,-6,6.,120,0,30.);
       h2 =  dbe->book1D("h2","electron eta ",120,-6,6.);
       h4 =  dbe->book1D("h4","electron pt ",120,0,30.);
