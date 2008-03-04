@@ -9,7 +9,7 @@
 <use name=SimGeneral/HepPDTRecord>
 <use name=PhysicsTools/UtilAlgos>
 <use name=FWCore/ServiceRegistry>
-<use name=DQMServices/CoreROOT>
+<use name=DQMServices/Core>
 <flags EDM_PLUGIN=1>
 <export>
 <lib name=RecoParticleFlowPFSkims>
