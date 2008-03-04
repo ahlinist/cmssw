@@ -8,6 +8,7 @@
 <use name=clhep> 
 <use name=hepmc>
 <use name=pythia6>
+<use name=lhapdf>
 <use name=root>
 <use name=Utilities/StorageFactory>
 <use name=f77compiler>
@@ -26,6 +27,7 @@
  <use name=clhep> 
  <use name=hepmc>
  <use name=pythia6>
+ <use name=lhapdf>
  <use name=root>
  <use name=Utilities/StorageFactory>
 </export>
