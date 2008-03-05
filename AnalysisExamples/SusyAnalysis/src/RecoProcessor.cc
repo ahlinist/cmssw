@@ -790,7 +790,7 @@ bool RecoProcessor::RecoDriver()
      
             if (fabs(recopart->eta()) < ana_photonEtaMax 
                 && recopart->pt() > ana_photonPtMin1){   
-              recopart->setParticleType(4); 
+              recopart->setParticleType(40); 
       
               RecoData.push_back(recopart);
               numPhotons++;
@@ -959,7 +959,7 @@ bool RecoProcessor::RecoDriver()
      bool acceptObject = true;
      int ptype = RecoData[i]->particleType()/10;
      int pptype = RecoData[i]->particleType()%10;
-     if (ptype >= 5 && ptype <= 7){
+     if (ptype == 3 || (ptype >= 5 && ptype <= 7)){
    
        acceptObject = !myCleaner->ElectronJet(i);
      
@@ -1083,10 +1083,11 @@ bool RecoProcessor::RecoDriver()
         else{
           if (DEBUGLVL >= 2 && RecoData[i]->particleType() < 50){
             cout << " part " << i << ", type = " << RecoData[i]->particleType()
-            << " outside acceptance, is added to nearest jet and removed" << endl;
+//            << " outside acceptance, is added to nearest jet and removed" << endl;
+            << " outside acceptance, is removed" << endl;
           }  
-          int iJet = FindNearestJet(i);
-          AddToJet(i, iJet);
+//          int iJet = FindNearestJet(i);
+//          AddToJet(i, iJet);
           delete RecoData[i];
           RecoData.erase(RecoData.begin() + i);
         }

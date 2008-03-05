@@ -29,7 +29,8 @@ iso_PhCalWeight(0.75), iso_PhIsoValue(0.5),
 iso_MethodUfo(1100), iso_jetbyUfoEmin(1.), iso_ptUfowrtJetmin(7.),
 iso_UfoCalDRin(0.), iso_UfoCalDRout(0.1), iso_UfoCalSeed(0.1), 
 iso_UfoTkDRin(0.), iso_UfoTkDRout(0.1), iso_UfoTkSeed(0.1), 
-iso_UfoCalWeight(0.75), iso_UfoIsoValue(0.5)
+iso_UfoCalWeight(0.75), iso_UfoIsoValue(0.5),
+iso_DRJetMergemax(0.6)
 {}
 
 Isolator::Isolator(MrEvent* pEvtData, edm::ParameterSet param):
@@ -92,6 +93,7 @@ iso_UfoTkDRout = param.getParameter<double>("iso_UfoTkDRout") ;
 iso_UfoTkSeed = param.getParameter<double>("iso_UfoTkSeed") ;
 iso_UfoCalWeight = param.getParameter<double>("iso_UfoCalWeight") ;
 iso_UfoIsoValue = param.getParameter<double>("iso_UfoIsoValue") ;
+iso_DRJetMergemax = param.getParameter<double>("iso_DRJetMergemax") ;
 }
 
 // Methods:
@@ -504,7 +506,11 @@ bool Isolator::IsoObject(int ichk, int itype)
 
     // using tracker information
     if (idet == 2 || idet == 3){
-      pSum = IsoTrkSum (itra, trkEta, trkPhi, 
+//      pSum = IsoTrkSum (itra, trkEta, trkPhi, 
+//                              iso_ObjTkDRin, iso_ObjTkDRout, iso_ObjTkSeed);
+//      pSum = IsoJetTrkSum (itra, trkEta, trkPhi, 
+//                              iso_ObjTkDRin, iso_ObjTkDRout, iso_ObjTkSeed);
+      pSum = IsoPvxTrkSum (itra, trkEta, trkPhi, 
                               iso_ObjTkDRin, iso_ObjTkDRout, iso_ObjTkSeed);
 //    cout << " Iso ptest " << ptest << " psum " << pSum << " pSubtr " << pSubtr << endl;
       if (itra < 3 && ival == 1) {
@@ -584,7 +590,7 @@ bool Isolator::IsoObject(int ichk, int itype)
 
 bool Isolator::IsObjectMerged(int ichk, bool isIsolated)
 {
-// Checks whether an object is included in the nearest jet
+// Checks whether an object is included in the nearest jet, provided the jet is within a max DR
 // if yes and object is isolated, removes it from the jet 4-vector
 // if no and object is not isolated, adds it to the jet 4-vector
 // returns whether or not it merged the object with the jet
@@ -600,6 +606,13 @@ bool Isolator::IsObjectMerged(int ichk, bool isIsolated)
 
   int iJet = FindNearestJet(ichk);
   if (iJet < 0) {return isMerged;}
+  
+  float trketa = RecoData[ichk]->eta();
+  float trkphi = RecoData[ichk]->phi();
+  float jeteta = RecoData[iJet]->eta();
+  float jetphi = RecoData[iJet]->phi();
+  float DR = GetDeltaR(trketa, jeteta, trkphi, jetphi);
+  if (DR > iso_DRJetMergemax){return isMerged;}
   
   bool isInJet = false;
 //  cout << " nearest jet index = " << iJet 

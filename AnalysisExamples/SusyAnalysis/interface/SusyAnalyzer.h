@@ -45,6 +45,7 @@
 #include "AnalysisExamples/SusyAnalysis/interface/RecoProcessor.h"
 #include "AnalysisExamples/SusyAnalysis/interface/ShapeAnalyzer.h"
 #include "AnalysisExamples/SusyAnalysis/interface/UserAnalysis.h"
+#include "AnalysisExamples/SusyAnalysis/interface/EffProcessor.h"
 
 #include "TFile.h"
 #include "TH1.h"
@@ -117,6 +118,7 @@ class SusyAnalyzer : public edm::EDAnalyzer {
 
      MCProcessor * myMCProcessor;
      RecoProcessor * myRecoProcessor;
+     EffProcessor * myEffProcessor;
      ShapeAnalyzer * myHemiAna;
      UserAnalysis * myUserAnalysis;
   

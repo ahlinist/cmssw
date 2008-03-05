@@ -113,12 +113,12 @@ void SusyAnalyzer::beginJob( const edm::EventSetup& )
 
    // initialize global counters 
    numTotL1BitsBeforeCuts.clear();
-   for(int i=0; i<113; i++) {
+   for(int i=0; i<120; i++) {
      numTotL1BitsBeforeCuts.push_back(0);
    }
 
    numTotHltBitsBeforeCuts.clear();
-   for(int i=0; i<47; i++) {
+   for(int i=0; i<90; i++) {
      numTotHltBitsBeforeCuts.push_back(0);
    }
    numTotEventsAfterCuts = 0;
@@ -770,6 +770,15 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
    
 
   // ******************************************************** 
+  // Compute efficiencies and fake rates 
+   
+   myEffProcessor = new EffProcessor(&myConfig);
+   myEffProcessor->SetDebug(DEBUGLVL);
+   
+   myEffProcessor->EffDriver(EventData);
+   
+
+  // ******************************************************** 
   // Recontruct and match the hemispheres 
     
    myHemiAna = new ShapeAnalyzer(EventData);
@@ -1346,6 +1355,7 @@ void SusyAnalyzer::PrintIsolatorCuts()
   float iso_UfoTkSeed = isolator_params.getParameter<double>("iso_UfoTkSeed") ;
   float iso_UfoCalWeight = isolator_params.getParameter<double>("iso_UfoCalWeight") ;
   float iso_UfoIsoValue = isolator_params.getParameter<double>("iso_UfoIsoValue") ;
+  float iso_DRJetMergemax = isolator_params.getParameter<double>("iso_DRJetMergemax") ;
 
   cout << endl;
   cout << "Parameters for Isolator: " << endl;
@@ -1404,6 +1414,7 @@ void SusyAnalyzer::PrintIsolatorCuts()
   cout << "  iso_UfoTkSeed                    = " << iso_UfoTkSeed << endl;
   cout << "  iso_UfoCalWeight                 = " << iso_UfoCalWeight << endl;
   cout << "  iso_UfoIsoValue                  = " << iso_UfoIsoValue << endl;
+  cout << "  iso_DRJetMergemax                = " << iso_DRJetMergemax << endl;
 
 
     return;    

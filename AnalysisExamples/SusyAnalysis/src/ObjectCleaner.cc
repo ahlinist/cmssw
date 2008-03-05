@@ -434,13 +434,28 @@ bool ObjectCleaner::CleanElectron(int ichk)
   float invEOverInvP = (1./elecand->caloEnergy())-(1./elecand->trackMomentumAtVtx().R());
   
   BasicClusterShapeAssociationCollection::const_iterator seedShpItr;
-      
+  bool findFail = true;
+
     if (elecand->classification()<100) {
       seedShpItr = clusterShapeBarrelData->find(elecand->superCluster()->seed());
+      findFail = (seedShpItr == clusterShapeBarrelData->end());
     }
-    else {
+    if (findFail || elecand->classification()>=100 ) {
       seedShpItr = clusterShapeEndcapData->find(elecand->superCluster()->seed());  
+      findFail = (seedShpItr == clusterShapeEndcapData->end());
     }
+    if (findFail ) {
+      seedShpItr = clusterShapeBarrelData->find(elecand->superCluster()->seed());
+      findFail = (seedShpItr == clusterShapeBarrelData->end());
+    }
+    
+      if (findFail) {      
+        cout << " Can't find cluster shape information for this electron, index = " << ichk << 
+        " with eta = " << eta << endl;      
+      return false;
+    }
+
+  
   
     //edm::Ref to Cluster shape of electron
     const ClusterShapeRef& clusterShape = seedShpItr->val;
@@ -519,7 +534,8 @@ bool ObjectCleaner::CleanElectron(int ichk)
 	return false;
       }
     } 
-     
+
+    cut.clear();
     if (useE9overE25) {
      
       double value = E9overE25;
@@ -541,6 +557,7 @@ bool ObjectCleaner::CleanElectron(int ichk)
       }
     }  
 
+    cut.clear();
     if (useSigmaEtaEta) {
      
       double value = sigmaee;
@@ -561,6 +578,7 @@ bool ObjectCleaner::CleanElectron(int ichk)
       }
     }  
       
+    cut.clear();  
     if (useSigmaPhiPhi) {
      
       double value = sigmapp;
@@ -580,7 +598,8 @@ bool ObjectCleaner::CleanElectron(int ichk)
 	return false;
       }
     }       
-            
+                    
+    cut.clear();
     if (useEoverPIn) {
      
       double value = eOverPin;
@@ -595,7 +614,8 @@ bool ObjectCleaner::CleanElectron(int ichk)
          return false;     
        }
       }
-          
+
+      cut.clear();          
       if(clean_UserDefinedElecID) {
       cut.push_back(clean_ElecEoverPInBarmin);
       cut.push_back(clean_ElecEoverPInEndmin);
@@ -612,6 +632,7 @@ bool ObjectCleaner::CleanElectron(int ichk)
       }
     }
     
+    cut.clear();    
     if (useDeltaEtaIn) {
      
       double value = fabs(deltaEtaIn);
@@ -633,6 +654,7 @@ bool ObjectCleaner::CleanElectron(int ichk)
       }
     }
     
+    cut.clear();
     if (useDeltaPhiIn) {
      
       double value = fabs(deltaPhiIn);
@@ -654,6 +676,7 @@ bool ObjectCleaner::CleanElectron(int ichk)
       }
     }   
 
+     cut.clear();
      if (useDeltaPhiOut) {
      
       double value = fabs(deltaPhiOut);
@@ -674,6 +697,8 @@ bool ObjectCleaner::CleanElectron(int ichk)
 	return false;
       }
     }      
+    
+    cut.clear();
     if (useEoverPOut) {
      
       double value = eSeedOverPout;
@@ -695,6 +720,7 @@ bool ObjectCleaner::CleanElectron(int ichk)
       }
     }      
        
+    cut.clear();
     if (useInvEMinusInvP) {
      
       double value = invEOverInvP;
@@ -716,6 +742,7 @@ bool ObjectCleaner::CleanElectron(int ichk)
       }
     }       
  /*   
+    cut.clear();
     if (useBremFraction) {
      
       double value = fBrem;
@@ -738,6 +765,7 @@ bool ObjectCleaner::CleanElectron(int ichk)
     }      
 */
 
+    cut.clear();
     if (useEseedOverPin) {
      
       double value = eSeedOverPin;
