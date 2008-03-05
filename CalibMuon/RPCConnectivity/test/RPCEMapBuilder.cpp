@@ -4,8 +4,8 @@
  * Description:
  *      Class to read directly OMDS DB with OCCI and fill Offline DB
  *
- * $Date: 2007/10/08 12:19:42 $
- * $Revision: 1.1 $
+ * $Date: 2008/01/22 19:06:34 $
+ * $Revision: 1.2 $
  *
  */
 
@@ -52,7 +52,6 @@ private:
   string record_;
   string tag_;
   string version_;
-  int runno_;
 
   // utilities
   string IntToString(int num)
@@ -70,8 +69,7 @@ private:
 RPCEMapBuilder::RPCEMapBuilder(const edm::ParameterSet& iConfig) 
   : record_(iConfig.getParameter<std::string>("record")),
     tag_(iConfig.getUntrackedParameter<std::string>("tag",(string)"RPCEMap_v1")),
-    version_(iConfig.getUntrackedParameter<std::string>("version",(string)"CreationTime")),
-    runno_(iConfig.getUntrackedParameter<int>("runnumber",0))
+    version_(iConfig.getUntrackedParameter<std::string>("version",(string)"CreationTime"))
 {
   cout<<"CTor called"<<endl;
 
@@ -159,19 +157,9 @@ void RPCEMapBuilder::WritePoolDB()
     cout<<"DB service OK"<<endl; 
   }
   
-  try {
-    if( mydbservice->isNewTagRequest(record_) ) {
-      std::cout<<"Creating new tag for "<<record_<<std::endl;
-      mydbservice->createNewIOV<RPCEMap>(eMap, mydbservice->endOfTime(), record_);
-    } else {
-      int iov=mydbservice->currentTime();
-      if (runno_ > 0) iov=runno_;
-      std::cout<<"Current IOV is "<<iov<<std::endl;
-      mydbservice->appendSinceTime<RPCEMap>(eMap, iov, record_);
-    }
-  }
-  catch (std::exception &e) { cout <<"std::exception:  "<< e.what(); }
-  catch (...) { cout << "Unknown error caught "<<endl; }
+  int iov=mydbservice->currentTime();
+  std::cout<<"Current IOV is "<<iov<<std::endl;
+  mydbservice->writeOne<RPCEMap>(eMap, iov, record_);
   cout<<"... all done, end"<<endl;
 }
   

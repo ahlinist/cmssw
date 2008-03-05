@@ -4,8 +4,8 @@
  * Description:
  *      Class to read directly OMDS DB with OCCI and fill Offline DB
  *
- * $Date: 2007/04/11 12:04:25 $
- * $Revision: 1.11 $
+ * $Date: 2007/07/30 14:53:46 $
+ * $Revision: 1.12 $
  * \author Michal Bluj -- INS Warsaw
  *
  */
@@ -61,7 +61,6 @@ private:
   string record_;
   string tag_;
   string version_;
-  int runno_;
                                                                                 
   // utilities
   string IntToString(int num)
@@ -79,8 +78,7 @@ private:
 RPCReadOutMappingBuilder::RPCReadOutMappingBuilder(const edm::ParameterSet& iConfig) 
   : record_(iConfig.getParameter<std::string>("record")),
     tag_(iConfig.getUntrackedParameter<std::string>("tag",(string)"RPCReadOutMapping_v1")),
-    version_(iConfig.getUntrackedParameter<std::string>("version",(string)"CreationTime")),
-    runno_(iConfig.getUntrackedParameter<int>("runnumber",0))
+    version_(iConfig.getUntrackedParameter<std::string>("version",(string)"CreationTime"))
 {
   cout<<"CTor called"<<endl;
 
@@ -171,21 +169,10 @@ void RPCReadOutMappingBuilder::WritePoolDB()
     cout<<"DB service OK"<<endl; 
   }
   
-  try {
-    if( mydbservice->isNewTagRequest(record_) ) {
-      std::cout<<"Creating new tag for "<<record_<<std::endl;
-      mydbservice->createNewIOV<RPCReadOutMapping>(cabling, mydbservice->endOfTime(), record_);
-    } else {
-      int iov=mydbservice->currentTime();
-      if (runno_ > 0) iov=runno_;
-      std::cout<<"Current IOV is "<<iov<<std::endl;
-      mydbservice->appendSinceTime<RPCReadOutMapping>(cabling, iov, record_);
-    }
-  }
-  catch (std::exception &e) { cout <<"std::exception:  "<< e.what(); }
-  catch (...) { cout << "Unknown error caught "<<endl; }
+  int iov=mydbservice->currentTime();
+  std::cout<<"Current IOV is "<<iov<<std::endl;
+  mydbservice->writeOne<RPCReadOutMapping>(cabling, iov, record_);
   cout<<"... all done, end"<<endl;
-
 }
   
 
