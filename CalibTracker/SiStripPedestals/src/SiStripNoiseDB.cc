@@ -142,7 +142,7 @@ void SiStripNoiseDB::endJob(void){
   if( mydbservice.isAvailable() ){
     try{
       edm::LogInfo("SiStripNoiseDB")<<"current time "<<mydbservice->currentTime()<<std::endl;
-      mydbservice->createNewIOV<SiStripNoises>(SiStripNoises_,mydbservice->endOfTime(), "SiStripNoisesRcd");      
+      mydbservice->createNewIOV<SiStripNoises>(SiStripNoises_,mydbservice->beginOfTime(),mydbservice->endOfTime(), "SiStripNoisesRcd");      
     }catch(const cond::Exception& er){
       edm::LogError("SiStripNoiseDB")<<er.what()<<std::endl;
     }catch(const std::exception& er){

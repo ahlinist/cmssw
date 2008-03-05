@@ -144,7 +144,7 @@ void SiStripPedDB::endJob(void){
   
   if( mydbservice.isAvailable() ){
     try{
-      mydbservice->createNewIOV<SiStripPedestals>(SiStripPedestals_,mydbservice->endOfTime(), "SiStripPedestalsRcd");      
+      mydbservice->createNewIOV<SiStripPedestals>(SiStripPedestals_,mydbservice->beginOfTime(),mydbservice->endOfTime(), "SiStripPedestalsRcd");      
     }catch(const cond::Exception& er){
       edm::LogError("SiStripPedDB")<<er.what()<<std::endl;
     }catch(const std::exception& er){
