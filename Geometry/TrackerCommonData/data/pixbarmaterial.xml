@@ -308,7 +308,7 @@
     <MaterialFraction fraction="0.08">
           <rMaterial name="materials:Silicon"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.53">
+    <MaterialFraction fraction="0.52">
           <rMaterial name="materials:Carbon"/>
     </MaterialFraction>
     <MaterialFraction fraction="0.39">
