@@ -128,6 +128,7 @@ float iso_UfoTkDRout;
 float iso_UfoTkSeed;
 float iso_UfoCalWeight;
 float iso_UfoIsoValue;
+float iso_DRJetMergemax;
 
 };
 

@@ -61,6 +61,9 @@ MrEvent() : pMcData(0), pRecoData(0), TrackData(0), VertexData(0), CaloTowerData
   MetMC.SetXYZ(0.,0.,0.);
   MetCalo.SetXYZ(0.,0.,0.);
   MetRecoil.SetXYZ(0.,0.,0.);
+  EffTrig = 0.;
+  FakeElProb = 0.;
+  FakeMuProb = 0.;
   for (int i=0; i<6; i++){
     HemiAxis1.push_back(0.);
     HemiAxis2.push_back(0.);
@@ -140,6 +143,10 @@ math::XYZVector metRecoilvect(){return MetRecoil;}
 float metMCMod(){return sqrt(MetMC.perp2());}
 float metCaloMod(){return sqrt(MetCalo.perp2());}
 float metRecoilMod(){return sqrt(MetRecoil.perp2());}
+// Trigger efficiency
+float effTrig(){return EffTrig;}
+float fakeElProb(){return FakeElProb;}
+float fakeMuProb(){return FakeMuProb;}
 // Hemisphere axes as Nx, Ny, Nz, P, E (with Ni = Pi/P), same as Hemisphere class
 std::vector<float> hemiAxis1(){return HemiAxis1;}
 std::vector<float> hemiAxis2(){return HemiAxis2;}
@@ -221,6 +228,9 @@ void setPvPtsum(float pt){PvPtsum = pt;}
 void setMetMC(math::XYZVector metMC) {MetMC = metMC;}
 void setMetCalo(math::XYZVector metCalo) {MetCalo = metCalo; }
 void setMetRecoil(math::XYZVector metRecoil) {MetRecoil = metRecoil;}
+void setEffTrig(float eff){EffTrig = eff;}
+void setFakeElProb(float eff){FakeElProb = eff;}
+void setFakeMuProb(float eff){FakeMuProb = eff;}
 void setHemiAxis1(std::vector<float> axis){HemiAxis1 = axis;}
 void setHemiAxis2(std::vector<float> axis){HemiAxis2 = axis;}
 void setIndexMatchedSusyMother1(int index){IndexMatchedSusyMother1 = index;}
@@ -246,6 +256,7 @@ int EventQuality;
 float Chi2, Ndof, NormalizedChi2, PVx, PVy, PVz, PVdx, PVdy, PVdz, PvPtsum;
 long IndexPVx, PvnTracks;
 math::XYZVector MetMC, MetCalo, MetRecoil;
+float EffTrig, FakeElProb, FakeMuProb;
 std::vector<float> HemiAxis1, HemiAxis2;
 int IndexMatchedSusyMother1, IndexMatchedSusyMother2;
 static const int Njetsmax = 15;

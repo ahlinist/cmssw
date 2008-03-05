@@ -415,7 +415,9 @@ void SusyRecoTools::GetJetTrksFromCalo(int iJet, int nJetTkHitsmin,
    const Track* pTrack = &(*TrackData)[i];
    if ((int)pTrack->found() >= nJetTkHitsmin
       && pTrack->pt() >= tkPtmin){
-     float tkOuterX = pTrack->outerX();
+     float eta = pTrack->eta();
+     float phi = pTrack->phi();
+/*     float tkOuterX = pTrack->outerX();
      float tkOuterY = pTrack->outerY();
      float tkOuterZ = pTrack->outerZ();
      float eta = 0.;
@@ -425,6 +427,7 @@ void SusyRecoTools::GetJetTrksFromCalo(int iJet, int nJetTkHitsmin,
        eta = -log(tan(0.5*theta));
      }
      float phi = atan2(tkOuterY,tkOuterX);
+*/     
      if (IsInPhiWindow (phi, phimin, phimax) 
           && (eta-etamin)*(eta-etamax) <= 0.){
        (*tracksFromJet).push_back(i);
@@ -766,6 +769,100 @@ float SusyRecoTools::IsoTrkSum (int itra, float TrkEta, float TrkPhi,
 
 //------------------------------------------------------------------------------
 
+float SusyRecoTools::IsoPvxTrkSum (int itra, float TrkEta, float TrkPhi, 
+                 float iso_DRin, float iso_DRout, float iso_Seed){
+// Computes the sum inside a cone from R=iso_DRin to R=iso_DRout
+// using 4-vectors stored in Track objects
+// if itra = 1 : sum of Pt or Et
+//         = 2 : sum of P or E
+//         = 3 : number of objects accepted
+
+  float sum = 0.;
+ 
+  int indPrim = EventData->indexPrimaryVx();
+  if (indPrim < 0) {return true;}
+  primVx = &(*VertexData)[indPrim];
+
+  track_iterator itk = primVx->tracks_begin();
+  for (; itk != primVx->tracks_end(); ++itk) {
+    if ((*itk)->p() > iso_Seed){
+      float eta = (*itk)->eta();
+      float phi = (*itk)->phi();
+      float DR = GetDeltaR(TrkEta, eta, TrkPhi, phi);
+      if (DR <= 0.) {DR = 0.001;}
+      if (DR > iso_DRin && DR < iso_DRout){
+        if (itra == 1){
+          sum += (*itk)->pt();
+        } else if (itra == 2){
+          sum += (*itk)->p();
+        } else if (itra == 3){
+          sum = (int) sum + 1;
+        } else{
+         cout << " *** method " << itra
+          << " for IsoPvxTrkSum not implemented ***" << endl;
+        }
+      }
+    }
+  }
+  
+  return sum;
+
+}
+
+//------------------------------------------------------------------------------
+
+float SusyRecoTools::IsoJetTrkSum (int itra, float TrkEta, float TrkPhi, 
+                 float iso_DRin, float iso_DRout, float iso_Seed){
+// Computes the sum inside a cone from R=iso_DRin to R=iso_DRout
+// using 4-vectors stored in Track objects belonging to jets
+// if itra = 1 : sum of Pt or Et
+//         = 2 : sum of P or E
+//         = 3 : number of objects accepted
+  
+  vector<int> tracksFromJet;
+  float sum = 0.;
+  
+  for (int iJet = 0; iJet < (int) RecoData.size(); iJet++) {
+    int ptype = RecoData[iJet]->particleType()/10;
+    if (ptype >= 5 && ptype <= 7){
+  
+    // Get the list of track indices inside a cone around the jet
+      GetJetTrksFromCalo(iJet, 0, 0., 0.005, 
+                       & tracksFromJet);
+
+      sum = 0.;
+      for (int i = 0; i < (int) tracksFromJet.size(); i++) {
+        int itk = tracksFromJet[i];
+        if ((*TrackData)[itk].p() > iso_Seed){
+          float eta = (*TrackData)[itk].eta();
+          float phi = (*TrackData)[itk].phi();
+          float DR = GetDeltaR(TrkEta, eta, TrkPhi, phi);
+          if (DR <= 0.) {DR = 0.001;}
+          if (DR > iso_DRin && DR < iso_DRout){
+            if (itra == 1){
+              sum += (*TrackData)[itk].pt();
+            } else if (itra == 2){
+              sum += (*TrackData)[itk].p();
+            } else if (itra == 3){
+              sum = (int) sum + 1;
+            } else{
+             cout << " *** method " << itra
+              << " for IsoJetTrkSum not implemented ***" << endl;
+            }
+          }
+        }
+      }
+      if (sum > 0.) {break;}
+  
+    }
+  }
+  
+  return sum;
+
+}
+
+//------------------------------------------------------------------------------
+
 float SusyRecoTools::IsoCandSum (int itra, float TrkEta, float TrkPhi, 
                  float iso_DRin, float iso_DRout, float iso_Seed){
 // Computes the sum inside a cone from R=iso_DRin to R=iso_DRout
@@ -875,8 +972,8 @@ bool SusyRecoTools::EMCaloTowerWindow(int ichk,
  float etamean = fabs(0.5*(etamin+etamax) );
  phimin -= CaloTowerSizePhi(etamean);
  phimax += CaloTowerSizePhi(etamean);
- etamin -= CaloTowerSizePhi(etamin);
- etamax += CaloTowerSizePhi(etamax);
+ etamin -= CaloTowerSizeEta(etamin);
+ etamax += CaloTowerSizeEta(etamax);
  // Check that they are still correctly normalized (-pi < phi < pi)
  if (phimin < -pi) {phimin += twopi;}
  if (phimax >  pi) {phimax -= twopi;}

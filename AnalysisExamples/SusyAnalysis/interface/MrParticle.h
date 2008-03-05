@@ -29,13 +29,13 @@ public:
 MrParticle() : Px(0.), Py(0.), Pz(0.), E(0.), Charge(0.),  
 Vx(0.), Vy(0.), Vz(0.), D0Error(0.), DzError(0.),
 ParticleType(0), ParticleIso(true), ParticleIsoValue(-1.), Hemi(0),
-Pt_tracks(0.), Et_em(0.), Et_had(0.),
+Pt_tracks(0.), Et_em(0.), Et_had(0.), EffID(0.), EffToBeFake(1.),
 MCParton(0), PID(0), Status(0), Mother1(0), BtagDiscriminator(-10) {};
 
 MrParticle(float px, float py, float pz, float e) : Px(px), Py(py), Pz(pz), E(e), Charge(0.),  
 Vx(0.), Vy(0.), Vz(0.), D0Error(0.), DzError(0.),
 ParticleType(0), ParticleIso(true), ParticleIsoValue(-1.), Hemi(0),
-Pt_tracks(0.), Et_em(0.), Et_had(0.),
+Pt_tracks(0.), Et_em(0.), Et_had(0.), EffID(0.), EffToBeFake(1.),
 MCParton(0), PID(0), Status(0), Mother1(0), BtagDiscriminator(-10) {};
 
 
@@ -104,6 +104,8 @@ float pt_tracks() {return Pt_tracks;}
 // electromagnetic and hadronic energy fractions
 float et_em() {return Et_em;}
 float et_had() {return Et_had;}
+float effID() {return EffID;}
+float effToBeFake() {return EffToBeFake;}
 // get b-tagging discriminator
 double getBtagDiscriminator(){return BtagDiscriminator;}
 // get tau-tagging discriminator
@@ -155,6 +157,8 @@ void setNumTracks(int ntk) {NumTracks = ntk;}
 void setPt_tracks(float apt_tracks) {Pt_tracks = apt_tracks;}
 void setEt_em(float aet_em){Et_em = aet_em;} 
 void setEt_had(float aet_had){Et_had = aet_had;}
+void setEffID(float effID) {EffID = effID;}
+void setEffToBeFake(float effFake) {EffToBeFake = effFake;}
 void setPartonIndex(int mcpart) {MCParton = mcpart;}
 void setPID(int pid) {PID = pid; 
                       if (abs(PID) == 11) {ParticleType = 10;} 
@@ -179,7 +183,8 @@ float Vx, Vy, Vz, D0Error, DzError;
 int ParticleType, ParticleIso;
 float ParticleIsoValue;
 int Hemi, NumTracks;
-float Pt_tracks, Et_em, Et_had;
+float Pt_tracks, Et_em, Et_had; 
+float EffID, EffToBeFake;
 int MCParton, PID, Status, Mother1;
 double BtagDiscriminator, TauTagDiscriminator;
 

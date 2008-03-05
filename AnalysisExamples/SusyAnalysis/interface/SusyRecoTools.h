@@ -62,6 +62,8 @@ virtual float GetPtwrtJet(int, int);
 virtual float GetJetTrkPtsum(int, int, int, float, float);
 virtual float IsoCalSum (int, float, float, float, float, float);
 virtual float IsoTrkSum (int, float, float, float, float, float);
+virtual float IsoPvxTrkSum (int, float, float, float, float, float);
+virtual float IsoJetTrkSum (int, float, float, float, float, float);
 virtual float IsoCandSum (int, float, float, float, float, float);
 virtual bool EMCaloTowerWindow(int,  float&, float&, float&, float&);
 virtual bool GetEMCaloTowers(int, vector<CaloTowerDetId>*);
