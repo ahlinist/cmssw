@@ -4,8 +4,8 @@
  * Description:
  *      Class to parse xml files and fill Offline DB
  *
- * $Date: 2007/11/20 17:21:21 $
- * $Revision: 1.2 $
+ * $Date: 2008/01/22 19:06:34 $
+ * $Revision: 1.3 $
  * \author Michal Szleper -- INS Warsaw
  *
  */
@@ -46,7 +46,6 @@ private:
   L1RPCConfig *pL1RPCConfig;
     
   string tag_;
-  int runno_;
   int m_ppt;
   string m_dataDir;
   string m_patternsDir;
@@ -55,7 +54,6 @@ private:
                                                                                 
 RPCTriggerPatternBuilder::RPCTriggerPatternBuilder(const edm::ParameterSet& iConfig) 
   : tag_(iConfig.getUntrackedParameter<std::string>("tag",(string)"RPCTriggerPatterns_v1")),
-    runno_(iConfig.getUntrackedParameter<int>("runnumber",0)),
     m_ppt(iConfig.getUntrackedParameter<int>("PACsPerTower")),
     m_dataDir(iConfig.getUntrackedParameter<std::string>("filedir"))
 {
@@ -111,21 +109,10 @@ void RPCTriggerPatternBuilder::WritePoolDB()
     cout<<"DB service OK"<<endl; 
   }
   
-  try {
-    if( mydbservice->isNewTagRequest("L1RPCConfigRcd") ) {
-      std::cout<<"Creating new tag for L1RPCConfigRcd"<<std::endl;
-      mydbservice->createNewIOV<L1RPCConfig>(pL1RPCConfig, mydbservice->endOfTime(), "L1RPCConfigRcd");
-    } else {
-      int iov=mydbservice->currentTime();
-      if (runno_ > 0) iov=runno_;
-      std::cout<<"Current IOV is "<<iov<<std::endl;
-      mydbservice->appendSinceTime<L1RPCConfig>(pL1RPCConfig, iov, "L1RPCConfigRcd");
-    }
-  }
-  catch (std::exception &e) { cout <<"std::exception:  "<< e.what(); }
-  catch (...) { cout << "Unknown error caught "<<endl; }
+  int iov=mydbservice->currentTime();
+  std::cout<<"Current IOV is "<<iov<<std::endl;
+  mydbservice->writeOne<RPCEMap>(eMap, iov, record_);
   cout<<"... all done, end"<<endl;
-
 }
 
 // Method called to parse xml files and fill L1RPCConfig
