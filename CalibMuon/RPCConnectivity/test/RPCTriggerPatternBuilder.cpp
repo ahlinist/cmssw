@@ -4,8 +4,8 @@
  * Description:
  *      Class to parse xml files and fill Offline DB
  *
- * $Date: 2008/01/22 19:06:34 $
- * $Revision: 1.3 $
+ * $Date: 2008/03/05 12:25:52 $
+ * $Revision: 1.4 $
  * \author Michal Szleper -- INS Warsaw
  *
  */
@@ -111,7 +111,7 @@ void RPCTriggerPatternBuilder::WritePoolDB()
   
   int iov=mydbservice->currentTime();
   std::cout<<"Current IOV is "<<iov<<std::endl;
-  mydbservice->writeOne<RPCEMap>(eMap, iov, record_);
+  mydbservice->writeOne<L1RPCConfig>(pL1RPCConfig, iov, "L1RPCConfigRcd");
   cout<<"... all done, end"<<endl;
 }
 
