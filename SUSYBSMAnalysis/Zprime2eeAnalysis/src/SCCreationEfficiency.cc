@@ -27,7 +27,7 @@ void SCCreationEfficiency::Add(const edm::Event &event, const edm::EventSetup &e
   {
   // Get this event's weight
   edm::Handle< double> weightHandle;
-  event.getByLabel ("weight", weightHandle);
+  event.getByLabel ("weight","weight", weightHandle);
   weight = * weightHandle;
   } catch(cms::Exception &ex) {
     // edm::LogInfo("SCCreationEfficiency") i

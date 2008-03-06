@@ -235,7 +235,7 @@ double PixelMatchAnalysis::ecaletisol( const edm::Event& Evt, reco::SuperCluster
   Handle<reco::BasicClusterCollection> pIslandBasicClusters;
 
   Handle<double> weightHandle;
-  Evt.getByLabel ("weight", weightHandle);
+  Evt.getByLabel ("weight","weight", weightHandle);
   gsf_weight= * weightHandle;
 
   try {
@@ -831,6 +831,9 @@ void PixelMatchAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup
 
       if(elec_ecalisol/sc_el.et() < ecalisol_max_ && posi_ecalisol/sc_po.et() < ecalisol_max_) {
 	gsf_ecalisolated++;
+
+
+
 
         //Compute the invariant mass and fill histos AFTER isolation cuts
         float  sc_mass=(sc_po+sc_el).m();

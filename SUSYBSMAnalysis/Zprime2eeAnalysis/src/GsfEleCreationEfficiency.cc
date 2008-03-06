@@ -31,7 +31,7 @@ void GsfEleCreationEfficiency::Add(const edm::Event &event, const edm::EventSetu
   {
   // Get this event's weight
   edm::Handle< double> weightHandle;
-  event.getByLabel ("weight", weightHandle);
+  event.getByLabel ("weight","weight", weightHandle);
   weight = * weightHandle;
   } catch(cms::Exception &ex) {
     // edm::LogInfo("GsfEleCreationEfficiency") i
