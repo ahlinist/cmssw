@@ -2,7 +2,6 @@ http://cern.ch/cms-sdt/CondCore/SQLiteData/data200/cmscond_build_localcatalog
 http://cern.ch/cms-sdt/CondCore/SQLiteData/data200/mydata.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/data200/MVAJetTags_CMSSW160validation.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/data200/DTFullMap.db
-http://cern.ch/cms-sdt/CondCore/SQLiteData/data200/sistripfedcablingCSA07.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/data200/electronIdLikelihood.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/data200/RPCEMap_181007.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/data200/MVAJetTagsFakeConditions.db
@@ -10,8 +9,7 @@ http://cern.ch/cms-sdt/CondCore/SQLiteData/data200/CSCChamberMapValues.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/data200/CSCCrateMapValues.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/data200/CSCChamberMapValues_18X.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/data200/CSCCrateMapValues_18X.db
-http://cern.ch/cms-sdt/CondCore/SQLiteData/data200/sistripfedcabling_18X.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/data200/siPixelCabling200.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/data200/DTFullMap_fix17X.db
-http://cern.ch/cms-sdt/CondCore/SQLiteData/data200/SiStripCabling_TIF_18X.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/data200/btagTrackProbability200.db
+http://cern.ch/cms-sdt/CondCore/SQLiteData/data200/SiStripFedCabling_20X.db
