@@ -4,8 +4,8 @@
  * Description:
  *      Class to parse xml files and fill Offline DB
  *
- * $Date: 2008/03/05 12:25:52 $
- * $Revision: 1.4 $
+ * $Date: 2008/03/06 09:32:15 $
+ * $Revision: 1.5 $
  * \author Michal Szleper -- INS Warsaw
  *
  */
@@ -157,13 +157,13 @@ void RPCTriggerPatternBuilder::parsePatterns()
 
         RPCPattern::RPCPatVec npats = parser.getPatternsVec(tower, logSector, logSegment);
            
-        for (int ip=0; ip<npats.size(); ip++) {
+        for (unsigned int ip=0; ip<npats.size(); ip++) {
           npats[ip].setCoords(tower,logSector,logSegment);
           pL1RPCConfig->m_pats.push_back(npats[ip]);
         }
 
         RPCPattern::TQualityVec nquals = parser.getQualityVec(); 
-        for (int iq=0; iq<nquals.size(); iq++) {
+        for (unsigned int iq=0; iq<nquals.size(); iq++) {
           nquals[iq].m_tower=tower;
           nquals[iq].m_logsector=logSector;
           nquals[iq].m_logsegment=logSegment;
