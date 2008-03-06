@@ -513,9 +513,9 @@ float SusyRecoTools::CaloTowerSizePhi(float eta)
 
  float sizePhi = 0.;
  if (fabs(eta) <= 1.74){
-   sizePhi = 0.0435;
+   sizePhi = 0.0435+0.0174;
  } else {
-   sizePhi = 0.087;
+   sizePhi = 0.087+0.0174;
  }
 
  return sizePhi;
@@ -530,11 +530,11 @@ float SusyRecoTools::CaloTowerSizeEta(float eta)
  float abseta = fabs(eta);
  float sizeEta = 0.;
  if (abseta <= 1.74){
-   sizeEta = 0.0435;
+   sizeEta = 0.0435+0.0174;
  } else if (abseta <= 2.5){
-   sizeEta = 0.0435 + 0.0678*(abseta-1.74);
+   sizeEta = 0.0435 + 0.0678*(abseta-1.74)+0.0174;
  } else {
-   sizeEta = 0.0875;
+   sizeEta = 0.0875+0.0174;
  }
 
  return sizeEta;
