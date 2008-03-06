@@ -229,7 +229,7 @@ double PixelMatchAnalysisGsfEm::ecaletisol( const edm::Event& Evt, reco::SuperCl
 
  
   Handle<double> weightHandle;
-  Evt.getByLabel ("weight", weightHandle);
+  Evt.getByLabel ("weight","weight", weightHandle);
   sc_weight= * weightHandle;
 
   try {

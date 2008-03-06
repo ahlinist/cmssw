@@ -231,7 +231,7 @@ double PixelMatchAnalysisEmEm::ecaletisol( const edm::Event& Evt, const reco::Su
   Handle<reco::BasicClusterCollection> pIslandBasicClusters;
 
   Handle<double> weightHandle;
-  Evt.getByLabel ("weight", weightHandle);
+  Evt.getByLabel ("weight","weight", weightHandle);
   sc_weight= * weightHandle;
 
   try {
@@ -799,6 +799,20 @@ void PixelMatchAnalysisEmEm::analyze(const edm::Event& iEvent, const edm::EventS
 
 	    if(one_ecalisol/superclusone.et() < ecalisol_max_ && two_ecalisol/superclustwo.et() < ecalisol_max_) {
 	      sc_ecalisolated++;
+
+
+
+	      if(sc_weight<0.01){
+		Handle< int > genProcessID;
+		iEvent.getByLabel( "genEventProcID", genProcessID );
+		int processID = *genProcessID;
+		Handle< double > genEventScale;
+		iEvent.getByLabel( "genEventScale", genEventScale );
+		double pthat = *genEventScale;
+		
+		LogInfo("Zprime2eeAnaEmEm")<< "Id: " << processID << " Scale: "<< pthat << " Weight: " << sc_weight;
+	      }
+
 
 	      LogDebug("Zprime2eeAnaEmEm")<<"startdebug";
 
