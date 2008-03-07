@@ -28,7 +28,7 @@ class ElectronIDProducer : public edm::EDProducer
   PTDRElectronID* ptdrAlgo_;
   CutBasedElectronID* cutBasedAlgo_; 	   
   ElectronNeuralNet* neuralNetAlgo_;
-  // likelihood is already in the eventSetup
+  //likelihood is already in the eventSetup
 
   edm::ParameterSet conf_;
 
