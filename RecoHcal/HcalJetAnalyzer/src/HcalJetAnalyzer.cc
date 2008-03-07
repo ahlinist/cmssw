@@ -13,7 +13,6 @@
 #include "RecoHcal/HcalJetAnalyzer/interface/HcalJetAnalyzer.h"
 
 #include "DataFormats/JetReco/interface/CaloJet.h"
-//#include "DataFormats/JetReco/interface/GenJetCollection.h" 
 #include "DataFormats/L1GlobalMuonTrigger/interface/L1MuRegionalCand.h"
 #include "DataFormats/L1GlobalMuonTrigger/interface/L1MuGMTReadoutCollection.h"
 
@@ -452,17 +451,9 @@ try{
             float tms =0; float bms=0;
             int maxi=0; float maxa=0; float mEnergy=0;
            
-	    //if(eta<-12 || eta>12) continue;
-	    // if(radius>50 ) continue;
 
-	    //cout <<"HO staTrack-------------->  "<< staTrack << endl;
-	    //cout <<"HO j-------------->  "<< j << endl;
-           
-	    //cout <<"HO eta  "<< eta << endl;
-	    //cout <<"HO phi  "<< phi << endl;
-	    
 	    COND->makeHcalCalibration(digi.id(),&calibs);
-	   // cout <<"aaaaaaaaaaaaaaaaaaaaaaaaaaaaa"<<endl;
+
 	      for(int i=0; i<=nTS; i++){
 	           if(digi.sample(i).adc()>maxa){maxa=digi.sample(i).adc(); maxi=i;}
                  }
@@ -470,8 +461,6 @@ try{
 	    for(int i=0;i<nTS;i++){
                Energy+=adc2fC[digi.sample(i).adc()]-calibs.pedestal(digi.sample(i).capid());
 	       raw+=digi.sample(i).adc();           
-               //ts += i*fabs(adc2fC[digi.sample(i).adc()]-calibs.pedestal(digi.sample(i).capid()));
-	       //bs += fabs(adc2fC[digi.sample(i).adc()]-calibs.pedestal(digi.sample(i).capid()));
                ts += i*(adc2fC[digi.sample(i).adc()]-calibs.pedestal(digi.sample(i).capid()));
 	       bs += adc2fC[digi.sample(i).adc()]-calibs.pedestal(digi.sample(i).capid());
 	      if(i>=(maxi-1) && i<=maxi+2){
@@ -482,11 +471,6 @@ try{
 	    }
 
            
-	    //cout <<"aaaaaaaaaaaa11aaaaaaaaaaaaaaaaa"<<endl;
-	    //cout <<"HO Energy  "<< Energy << endl;
-	    //cout <<"HO meta  "<< eta << endl;
-	    //cout <<"HO mphi  "<< phi << endl;
- 
            if(bs!=0) {
      
             dthoTime->Fill(ts/bs);
@@ -516,8 +500,7 @@ try{
                 hoz0 = z0;
                 hoz1 = z1;
 
-		// hophi0 = Phi0;
-                //hophi1 = Phi1;
+	
             	hophi0=(int)GetAngle(x0,y0)/5.0;
 	        hophi1=(int)GetAngle(x1,y1)/5.0;    
 	    HOcnt++;
@@ -543,9 +526,7 @@ try{
 	dthb_[0]= x0;
 	dthb_[1] = y0;
 	dthb_[2] = z0;
-        //float dx=x0-x1; 
-        //float dy=y0-y1; 
-        //float dz=z0-z1; if(dz<0.001 && dz>-0.001) continue;
+
 	int   Eta0=0;
 	int   Eta1=0;
 	float Phi0=(int)GetAngle(x0,y0)/5.0;
@@ -561,16 +542,11 @@ try{
         edm::Handle<HBHEDigiCollection> hbhe; 
 	iEvent.getByType(hbhe);
 
-	
-       // icb_ = hbhe->size();
-//	  edm::Handle<HBHEDigiCollection> hbhe; 
-//	 iEvent.getByType(hbhe);
-	 
 	for(HBHEDigiCollection::const_iterator j=hbhe->begin();j!=hbhe->end();j++){
 	 const HBHEDataFrame digi = (const HBHEDataFrame)(*j);
 	  if(digi.id().subdet()==HcalBarrel){bb++;}
 	}
-	//int HBHEch= hbhe->size();
+
 	icb_= bb; 
  
        
@@ -585,16 +561,10 @@ try{
         for(HBHEDigiCollection::const_iterator j=hbhe->begin();j!=hbhe->end();j++){
             const HBHEDataFrame digi = (const HBHEDataFrame)(*j);
            if(digi.id().subdet()==HcalBarrel){
-            //jb++;
-            //cout <<"jb ---> "<< jb /*<<"digi size-->"<<digi.size)*/<<endl;
-	   // cout<<"eta"<<digi.id().ieta()<<endl;
-	   // cout<<"phi"<<digi.id().iphi()<<endl;
+  
 	     eta=digi.id().ieta(); 
 	     phi=digi.id().iphi();
-	     // int ieta=eta+20;
-             //int iphi=phi;
-
-	     //int depth=digi.id().depth();
+	
 	    int nTS=digi.size();
 	    float Energy=0;
 	    float raw=0;
@@ -602,11 +572,7 @@ try{
              float tms =0; float bms=0;                
             int maxi=0; float maxa=0; float mEnergy=0;
 	    
-	    
-	   // if(eta<-16 || eta>16) continue;
-	    //if(phi<1 || phi>72)   continue;
-	    //if(depth<1 || depth>4)continue;
-	    
+
 	    COND->makeHcalCalibration(digi.id(),&calibs);
 	       for(int i=0; i<=nTS; i++){
 	           if(digi.sample(i).adc()>maxa){maxa=digi.sample(i).adc(); maxi=i;}
@@ -615,8 +581,6 @@ try{
              for(int i=0;i<nTS;i++){
                   Energy+=adc2fC[digi.sample(i).adc()]-calibs.pedestal(digi.sample(i).capid());
 	              raw+=digi.sample(i).adc();
-		      // ts += i*fabs(adc2fC[digi.sample(i).adc()]-calibs.pedestal(digi.sample(i).capid()));
-		      //bs += fabs(adc2fC[digi.sample(i).adc()]-calibs.pedestal(digi.sample(i).capid()));
                      ts += i*(adc2fC[digi.sample(i).adc()]-calibs.pedestal(digi.sample(i).capid()));
 	             bs += adc2fC[digi.sample(i).adc()]-calibs.pedestal(digi.sample(i).capid());
            
@@ -626,9 +590,6 @@ try{
 	            bms += adc2fC[digi.sample(i).adc()]-calibs.pedestal(digi.sample(i).capid());
 	        }
 	    }
-
-             // if(digi.id().subdet()==HcalBarrel){
-	     
 	   	if(bs!=0) {
             
                  dthbTimeth->Fill(ts/bs);
@@ -679,11 +640,10 @@ try{
 		 
 		 }
 	         printf("Eta=%i Phi=%i Max=%f Sum=%f Time=%f\n",maxE,maxP,max,sum,GetTime(DATA[maxP][maxE],10));
-		 // int jd = digi.id();
-                 gtimehb = GetTime(DATA[maxP][maxE],10);
+               gtimehb = GetTime(DATA[maxP][maxE],10);
                  enhbmuon=sum;
 	         HBmuons->Fill(sum);
-	     //}
+
 	}
    
 
@@ -713,20 +673,7 @@ catch(...){};
      for (unsigned int j = 0; j < muons->size(); j++)
     {
    
-   
-   /*
-   
-   for( unsigned int counter  = 0; counter != muons->recHitsSize()-1; ++counter) {
-   
-       TrackingRecHitRef myRef = muons->recHit(counter);
-       const TrackingRecHit *rechit = myRef.get();
-       const GeomDet* geomDet = theTrackingGeometry->idToDet(rechit->geographicalId());
-       
-	 //It's a DT Hit
-       if(geomDet->subDetector() == GeomDetEnumerators::HCAL) {
-   */
-   
-   
+  
     cout<<"nbr of recomuon\t"<<"p\t"<<"\t"<<"charge"<<endl;
     cout<<muons->size()<<"\t\t"<<(*muons)[j].p()<<"\t"<</*(*muons)[j].energy()
          <<*/"\t"<<(*muons)[j].charge()<<endl;
@@ -734,17 +681,7 @@ catch(...){};
   
    }
 
-   
- /*  if(numMuons==2){
-       invmass=sqrt(pow((*muons)[0].energy()+(*muons)[1].energy(),2)-
-               (pow((*muons)[0].px()+(*muons)[1].px(),2)+
-                pow((*muons)[0].py()+(*muons)[1].py(),2) +
-                pow((*muons)[0].pz()+(*muons)[1].pz(),2) ) ) ;
-			
-			cout<<"Z' mass->"<<invmass<<endl;
-		_dimuon->Fill(invmass);	
-			}*/
-   
+
    cout<<"nbr of muon"<<numMuons<<endl;
    
    
@@ -752,7 +689,7 @@ catch(...){};
 
 	 int TriggerType=0;
  edm::Handle<L1MuGMTReadoutCollection> gmtrc_handle; 
- //   iEvent.getByLabel("l1GtUnpack",gmtrc_handle);
+ 
      iEvent.getByLabel("gtDigis",gmtrc_handle);
    L1MuGMTReadoutCollection const* gmtrc = gmtrc_handle.product();
    
@@ -789,10 +726,7 @@ catch(...){};
   if(nrpcb[0]>0 && ndt[0]==0  ){   TriggerType=TRIG_RPC;  }
   if(ndt[0]==0  && nrpcb[0]==0){  TriggerType=TRIG_HB;   }
   if(ndt[0]>0   && nrpcb[0]>0 ){  TriggerType=TRIG_RPCDT;}
-  /////////////////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////////////////
-  
-
+ 
 	 ///////////////// trigger-end
      
    //Jet Partccc
@@ -802,15 +736,13 @@ catch(...){};
     edm::Handle<CaloTowerCollection> caloTowers;
     iEvent.getByLabel(m_calotowers,caloTowers);
 	
-	// cout<<"calotower size"<<caloTowers->size()<<endl;
+
 	calohit=(int)caloTowers->size();
-	//cout<<"calotower size"<<calohit <<endl;
+
      hcalosize->Fill((int)caloTowers->size());
      int cl=0;
   for( CaloTowerCollection::const_iterator cal = caloTowers->begin(); cal != caloTowers->end(); ++ cal ) {
-    // cout<<"calotower et"<<cal->et()<<endl;  
-    // cout<<"calotower et"<<cal->energy()<<endl; 
-    ///xxxxxxxxxxx
+
     CaloTowerDetId  detIDs=cal->id();
     
     caloET[cl]=cal->et() ;
@@ -819,8 +751,7 @@ catch(...){};
     caloEta[cl]=cal->eta();
     caloieta[cl]= detIDs.ieta();
     caloiphi[cl]= detIDs.iphi();
-   // cout <<"ieta cal:"<<detIDs.ieta()<<endl;
-    
+   
     
  if(TriggerType==TRIG_DT){
      
@@ -833,7 +764,6 @@ catch(...){};
 
      hcaloenergy->Fill(cal->energy()); 
      hcaloent->Fill(cal->et());
-     //hcalopt->Fill(cal->pt());
      hcaloeta->Fill(cal->eta());
      hcalophi->Fill(cal->phi());
      
@@ -856,18 +786,14 @@ catch(...){};
   iEvent.getByLabel( "hbhereco", HBHERecHits );
   iEvent.getByLabel( "horeco", HORecHits );
  
-      // const HBHERecHitCollection Hithbhe = *(HBHERecHits.product());
- 	 
-	ihbhehit=(int) HBHERecHits->size(); 
+ 	ihbhehit=(int) HBHERecHits->size(); 
 	int ttb=0;
 	int tte=0;
 	for(HBHERecHitCollection::const_iterator RecHit= (*HBHERecHits).begin();RecHit!=(*HBHERecHits).end();RecHit++)
 	{
-	// const HBHEDataFrame digi = (const HBHEDataFrame)(*RecHit);
-	 //cout<<RecHit->detid()<<endl; 
+
 	  DetId Rec_Hit_DetID=(RecHit)->id();
-          //DetId::Detector DetName=Rec_Hit_DetID.det();
-	 // if( DetName == DetId::Hcal ){ 
+    
 	    HcalDetId Hcal_ID = Rec_Hit_DetID;
 	    HcalSubdetector HcalName = Hcal_ID.subdet();
 	    if( HcalName == HcalBarrel ){
@@ -877,7 +803,7 @@ catch(...){};
             RecHBEta[ttb]=Hcal_ID.ieta();
 	    RecHBdep[ttb]=Hcal_ID.depth();
 	    RecHBen[ttb]=(*RecHit).energy();
-	    // cout<<"rechit-->"<<(float)RecHit->energy()<<endl;
+
 	      HBRecietaphi_->Fill(Hcal_ID.ieta(),Hcal_ID.iphi(),RecHit->energy()); 
 	      if(Hcal_ID.ieta()<0) {
                   HcalRecminuHBphi_->Fill(Hcal_ID.iphi(), RecHit->energy());
@@ -901,11 +827,7 @@ catch(...){};
 	      RecHEen[tte]=(*RecHit).energy();
 	      tte++;
 	      } 
-	       
-	  /*if(digi.id().subdet()==HcalBarrel){
-	  if(digi.id().ieta()>0){} 
-	  */
-	  //} 
+
 	}
    
    ihohit=(int) HORecHits->size();
@@ -913,8 +835,7 @@ catch(...){};
  for(HORecHitCollection::const_iterator RecHit= (*HORecHits).begin();RecHit!=(*HORecHits).end();RecHit++)
 	{
 	  DetId Rec_Hit_DetID=(RecHit)->id();
-          //DetId::Detector DetName=Rec_Hit_DetID.det();
-	    HcalDetId Hcal_ID = Rec_Hit_DetID;
+  	    HcalDetId Hcal_ID = Rec_Hit_DetID;
 	      RecHOPhi[tto]=Hcal_ID.iphi();
               RecHOEta[tto] =Hcal_ID.ieta();
 	      RecHOdep[tto]= Hcal_ID.depth();
@@ -928,7 +849,6 @@ catch(...){};
  for(HFRecHitCollection::const_iterator RecHit= (*HFRecHits).begin();RecHit!=(*HFRecHits).end();RecHit++)
 	{
 	  DetId Rec_Hit_DetID=(RecHit)->id();
-          //DetId::Detector DetName=Rec_Hit_DetID.det();
 	    HcalDetId Hcal_ID = Rec_Hit_DetID;
 	      RecHFPhi[ttf]=Hcal_ID.iphi();
               RecHFEta[ttf]=Hcal_ID.ieta();
@@ -939,63 +859,39 @@ catch(...){};
 	    HFREChithis_->Fill(RecHit->energy());
 	  }
 	
-	
-	
- //tree_->Fill();
- 
-   
- 
-  
+ //tree_->Fill(); 
   	  njt_ = (int)jets->size();
 	  nJt=njt_;
 	  hjetmult->Fill(njt_);
-          //if (energy>1.5)  hjetmultE->Fill(njt_);
+
 	  cout<<"n jet"<<njt_<<endl;
   for (int ijt=0;ijt<njt_;++ijt) {
-		//  const reco::CaloJet&   caloJet =
-          //  dynamic_cast<const reco::CaloJet&>(*jets )[ijt];
-                 
-    const std::vector<CaloTowerRef>&  theCaloTowers=(*jets )[ijt].getConstituents();
-    //int nConstituents=(int)theCaloTowers.size();
+  const std::vector<CaloTowerRef>&  theCaloTowers=(*jets )[ijt].getConstituents();
     
     
 RecoJetET[ijt]=(*jets )[ijt].et() ;
 RecoJetE[ijt]=(*jets )[ijt].energy() ;
 RecoJetPhi[ijt]=(*jets )[ijt].phi(); 
 RecoJetEta[ijt]=(*jets )[ijt].eta();
-//RecoJetiphi[ijt]=;
-//RecoJetieta[ijt]=;
-//RecoJetdep[ijt]= ;
-    
-    
-   // histograms
-    //opt<<"jet energy:"<<(*jets )[ijt].energy()<<endl;
-    
+
     hjetenergy->Fill((*jets )[ijt].energy());
    
     hjetent->Fill((*jets )[ijt].et());
-    //opt<<"jet et:"<<(*jets )[ijt].et()<<endl;
+ 
     hjetpt ->Fill((*jets )[ijt].pt());
-    //opt<<"jet pt:"<<(*jets )[ijt].pt()<<endl;
-    
+ 
     hjeteta->Fill((*jets )[ijt].eta());
     hjetphi->Fill((*jets )[ijt].phi());
     
     if(TriggerType==TRIG_DT){
-      //cout<< " DT trigger-->"<<TriggerType <<endl;
+  
       hjetentD->Fill((*jets )[ijt].et());
   }
     if(TriggerType==TRIG_HB) {
         hjetentH->Fill((*jets )[ijt].et());
-	//cout<< " HB trigger--->"<<TriggerType <<endl;
+
   }
 
-   // std::vector <CaloTowerRef> constituents = calojet->getConstituents ();
-   // int nConstituents= constituents.size();
-    
-    //opt<<"n of calotower"<<nConstituents <<endl;  
-    
-    // nrh=100*abs(nConstituents); //F.O. simdilik.....
        int schb=0;
        int sche=0;
        int scho=0;
@@ -1003,11 +899,9 @@ RecoJetEta[ijt]=(*jets )[ijt].eta();
     
      for(vector<CaloTowerRef>::const_iterator i_Tower=theCaloTowers.begin();i_Tower!=theCaloTowers.end();i_Tower++){
      size_t numRecHits = (**i_Tower).constituentsSize();
-     //opt<<"n of Rechits"<<numRecHits <<endl;
+  
      nrh=numRecHits;
-      //nrth[ijt]=numRecHits;//deneme
-     //nrh=nrth[ijt]; 
-     // cout<<"----->"<<nrh<<endl;   	       
+  	       
      for(size_t j=0;j<numRecHits;j++) {
 
       DetId RecHitDetID=(**i_Tower).constituent(j);
@@ -1050,7 +944,7 @@ RecoJetEta[ijt]=(*jets )[ijt].eta();
              
 	     
 	      ++schb;
-	    //ferferfer
+	  
 	    
 	    }
             else if(  HcalNum == HcalEndcap  ){
@@ -1060,13 +954,13 @@ RecoJetEta[ijt]=(*jets )[ijt].eta();
 		
 	   
 	       HcalDigiHEetaphi_->Fill(HcalID.ieta(),HcalID.iphi(),theRecHit->energy()/2);
-	      //HcalDigiHEetaphi_->Fill(RecHEieta[j], RecHEiphi[j], RecHEenergy[j],1);
+
               }
 	      else{
  	       sumRecHitE += theRecHit->energy();
 	    
 	       HcalDigiHEetaphi_->Fill(HcalID.ieta(),HcalID.iphi(),theRecHit->energy());
-	     // HcalDigiHEetaphi_->Fill(RecHEieta[j], RecHEiphi[j], RecHEenergy[j],1);
+	  
               }
               HBHEDigiCollection::const_iterator theDigis=hbhe->find(HcalID);
 	      opt << "         RecHit: " << j << ": HE, ieta=" << HcalID.ieta() << ", iphi=" << HcalID.iphi()<<      
@@ -1092,7 +986,7 @@ RecoJetEta[ijt]=(*jets )[ijt].eta();
 	       	  
 	    
 	       HcalDigiHOetaphi_->Fill(HcalID.ieta(),HcalID.iphi(),theRecHit->energy());
-	     // HcalDigiHOetaphi_->Fill(RecHOieta[j],RecHOiphi[j], RecHOenergy[j],1);
+	
 	      
               HODigiCollection::const_iterator theDigis=ho->find(HcalID);
 	      opt << "         RecHit: " << j << ": HO, ieta=" << HcalID.ieta() << ", iphi=" << HcalID.iphi()<<      
@@ -1119,7 +1013,7 @@ RecoJetEta[ijt]=(*jets )[ijt].eta();
 	      
 	      HcalDigiHFetaphi_->Fill(HcalID.ieta(),HcalID.iphi(),theRecHit->energy());
 	     
-	     // HcalDigiHFetaphi_->Fill(RecHFieta[schf], RecHFiphi[schf],RecHFenergy[schf],1);
+
 	      
               HFDigiCollection::const_iterator theDigis=HFDigis->find(HcalID);
 	      opt << "         RecHit: " << j << ": HF, ieta=" << HcalID.ieta() << ", iphi=" << HcalID.iphi()<<      
@@ -1140,7 +1034,7 @@ RecoJetEta[ijt]=(*jets )[ijt].eta();
 	   ++schf;
 	   }	
     
-             // opt << "sumRecHitE ="<<sumRecHitE<<endl;                  	      
+     	      
           }
        
       }  
@@ -1149,10 +1043,7 @@ RecoJetEta[ijt]=(*jets )[ijt].eta();
  
      //tree_->Fill();    
   }
-       //end of jet part...
-  
-  //electron part
-
+ 
  
 
 }
