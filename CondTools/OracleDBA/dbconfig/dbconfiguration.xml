@@ -2,48 +2,40 @@
 
 <dbconfiguration>
 
-  <general general_connect='oracle://orcon/CMS_COND_GENERAL' />
-
-  <iov>
-    <poolsetup mapping='mapping_CondIOV_2.0.xml' dbsetup='dbsetup_CondIOV_2.0.xml' library='CondCoreIOVService' />
-  </iov>
-
-  <metadata sql='createMetadata.sql' />
-
   <detector name='ECAL' offline_connect='oracle://orcon/CMS_COND_ECAL'>
-     <poolsetup mapping='mapping_EcalObjects_1.0.xml' dbsetup='dbsetup_EcalObjects_1.0.xml' library='CondFormatsEcalObjects' />
+     <poolsetup mappingdir='CondFormats/EcalObjects/xml' mappingfile='*' library='CondFormatsEcalObjects' />
   </detector>
 
   <detector name='CSC' offline_connect='oracle://orcon/CMS_COND_CSC'>
-     <poolsetup mapping='mapping_CSCObjects_1.0.xml' dbsetup='dbsetup_CSCObjects_1.0.xml' library='CondFormatsCSCObjects' />
+     <poolsetup mappingdir='CondFormats/EcalObjects/xml' mappingfile='*' library='CondFormatsCSCObjects' />
   </detector>
 
   <detector name='DT' offline_connect='oracle://orcon/CMS_COND_DT'>
-     <poolsetup mapping='mapping_DTObjects_CMSSW150.xml' dbsetup='dbsetup_DTObjects_CMSSW150.xml' library='CondFormatsDTObjects' />
+     <poolsetup mappingdir='CondFormats/DTObjects/xml' mappingfile='*' library='CondFormatsDTObjects' />
   </detector>
 
   <detector name='STRIP' offline_connect='oracle://orcon/CMS_COND_STRIP'>
-     <poolsetup mapping='mapping_SiStripObjects_3.0.xml' dbsetup='dbsetup_SiStripObjects_3.0.xml' library='CondFormatsSiStripObjects' />
+     <poolsetup mapping='CondFormats/SiStripObjects/xml' mappingfile='*' library='CondFormatsSiStripObjects' />
   </detector>
 
   <detector name='ALIGNMENT' offline_connect='oracle://orcon/CMS_COND_ALIGNMENT'>
-     <poolsetup mapping='mapping_AlignmentObjects_1.0.xml' dbsetup='dbsetup_AlignmentObjects_1.0.xml' library='CondFormatsAlignment' />
+     <poolsetup mappingdir='CondFormats/Alignment/xml' mappingfile='*' library='CondFormatsAlignment' />
   </detector>
 
   <detector name='BEAMSPOT' offline_connect='oracle://orcon/CMS_COND_BEAMSPOT'>
-     <poolsetup mapping='mapping_BeamSpotObjects_CMSSW150.xml' dbsetup='dbsetup_BeamSpotObjects_CMSSW150.xml' library='CondFormatsBeamSpotObjects' />
+     <poolsetup mappingdir='CondFormats/BeamSpotObjects/xml' mappingfile='*' library='CondFormatsBeamSpotObjects' />
   </detector>
 
   <detector name='PIXEL' offline_connect='oracle://orcon/CMS_COND_PIXEL'>
-     <poolsetup mapping='mapping_SiPixelObjects_CMSSW160.xml' dbsetup='dbsetup_SiPixelObjects_CMSSW160.xml' library='CondFormatsSiPixelObjects' />
+     <poolsetup mappingdir='CondFormats/SiPixelObjects/xml' mappingfile='*' library='CondFormatsSiPixelObjects' />
   </detector>
 
   <detector name='RPC' offline_connect='oracle://orcon/CMS_COND_RPC'>
-     <poolsetup mapping='mapping_RPCObjects_CMSSW170.xml' dbsetup='dbsetup_RPCObjects_CMSSW170.xml' library='CondFormatsRPCObjects' />
+     <poolsetup mappingdir='CondFormats/RPCObjects/xml' mappingfile='*' library='CondFormatsRPCObjects' />
   </detector>  
 
   <detector name='HCAL' offline_connect='oracle://orcon/CMS_COND_HCAL'>
-     <poolsetup mapping='mapping_HcalObjects_CMSSW160.xml' dbsetup='dbsetup_HcalObjects_CMSSW160.xml' library='CondFormatsHcalObjects' />
+     <poolsetup mappingdir='CondFormats/HcalObjects/xml' mappingfile='*' library='CondFormatsHcalObjects' />
   </detector>  
 
 </dbconfiguration>
