@@ -2,16 +2,15 @@
 #include <string>
 using namespace std;
 
-int colorList[] = {1,2,3,4};  
-int markerStyleList[] = {21,22,23,21,22,23};  
+int colorList[] = {1,2,3,4,5,6,7,8,9,10}; 
+int markerStyleList[] = {21,21,23,23,22,22,23,23,21,21};  
 
-TObject * getHistogram(TFile * f, string algo,string histoName, string range = "GLOBAL",string suffix ="")
+TObject * getHistogram(TFile * f, string algo,string histoName, string range = "GLOBAL")
 {
 string prefix = "JetTag";
 string d = prefix+"_"+algo+"_"+range;
 TDirectory * dir  =(TDirectory *) f->Get(d.c_str());
-cout << histoName+"_"+algo+"_"+range << endl;
-return dir->Get((histoName+"_"+algo+"_"+range+suffix).c_str());
+return dir->Get((histoName+"_"+algo+"_"+range).c_str());
 }
 
 
@@ -23,42 +22,36 @@ obj->SetMarkerStyle(markerStyleList[i]);
 
 
 
-void drawAll(string suf = "")
+void drawAll()
 {
- // TFile *_file0 = TFile::Open("jetTagAnalysisA-test-4-menomeno.root"); //jetTagAnalysisA-test-4-menomeno-abs.root");
-  TFile *_file0 = TFile::Open("jetTagAnalysisB-test-2.0.root");
-  TFile *_file1 = TFile::Open("jetTagAnalysisB-test.root");
+  //  TFile *_file0 = TFile::Open("jetTagAnalysisBoris_standard.root");
+  TFile *_file1 = TFile::Open("jetTagAnalysis.root");
   
   vector<TFile *> files;
   vector<string> algos;
-/*  algos.push_back("jetProbabilityBJetTags");
-  files.push_back(_file0);
-
-*/
-  algos.push_back("jetProbabilityBJetTagsTestMass");
-  files.push_back(_file0);
-  algos.push_back("jetProbabilityBJetTags");
-  files.push_back(_file1);
-  algos.push_back("jetProbabilityBJetTagsTest");
-  files.push_back(_file1);
-  algos.push_back("jetProbabilityBJetTagsTestMass");
-  files.push_back(_file1);
-  
-/*algos.push_back("trackCountingHighEffBJetTags");
-  files.push_back(_file0);
-  
   algos.push_back("trackCountingHighPurBJetTags");
-  files.push_back(_file0);
-  
-  algos.push_back("jetProbabilityBJetTags");
-  files.push_back(_file1);
-
   algos.push_back("trackCountingHighEffBJetTags");
+  algos.push_back("jetProbabilityBJetTags");
+  algos.push_back("jetBProbabilityBJetTags");
+  algos.push_back("simpleSecondaryVertexBJetTags");
+  algos.push_back("combinedSecondaryVertexBJetTags");
+  algos.push_back("combinedSecondaryVertexMVABJetTags");
+  algos.push_back("softMuonBJetTags");
+  algos.push_back("softMuonNoIPBJetTags");
+  algos.push_back("softElectronBJetTags");
+
   files.push_back(_file1);
-  
-  algos.push_back("trackCountingHighPurBJetTags");
   files.push_back(_file1);
-*/
+ files.push_back(_file1);
+ files.push_back(_file1);
+ files.push_back(_file1);
+ files.push_back(_file1);
+ files.push_back(_file1);
+ files.push_back(_file1);
+ files.push_back(_file1);
+ files.push_back(_file1);
+ files.push_back(_file1);
+ files.push_back(_file1);
 
 
   TLegend * leg = new TLegend(0.4,0.4,0.6,0.6);
@@ -69,10 +62,9 @@ void drawAll(string suf = "")
   for(int i = 0 ; i < algos.size() ; i++)
    {
       cout << algos[i] << endl;
-//     TH1F * h = (TH1F *) getHistogram(files[i],algos[i],"FlavEffVsBEff_DUS_discrFC","ETA_0-1.4_PT_50-80");
-     TH1F * h = (TH1F *) getHistogram(files[i],algos[i],"FlavEffVsBEff_C_discrFC","GLOBAL");
-//     TH1F * h = (TH1F *) getHistogram(files[i],algos[i],"FlavEffVsBEff_G_discrFC","GLOBAL"); //ETA_0-1.4_PT_50-80");
-//     TH1F * h = (TH1F *) getHistogram(files[i],algos[i],"discrCutCond_discrFC","ETA_0-1.4_PT_50-80",suf);
+      //TH1F * h = (TH1F *) getHistogram(files[i],algos[i],"FlavEffVsBEff_DUS_discr","ETA_0-1.4");
+     TH1F * h = (TH1F *) getHistogram(files[i],algos[i],"FlavEffVsBEff_DUS_discr","GLOBAL");
+     //TH1F * h = (TH1F *) getHistogram(files[i],algos[i],"FlavEffVsBEff_DUS_discr","ETA_1.4-2.4");
      cout << h << endl;
      if(i==0) h->Draw(); else h->Draw("same"); 
      setStyle(i,h);
