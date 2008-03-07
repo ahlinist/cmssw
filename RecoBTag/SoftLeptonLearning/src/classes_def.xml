@@ -1,0 +1,7 @@
+<lcgdict>
+  <class name="SoftLeptonCalibrationData"/>
+  <class name="std::vector<SoftLeptonCalibrationData>"/>
+  <class name="edm::Wrapper<std::vector<SoftLeptonCalibrationData> >"/>
+
+  <class name="std::vector<reco::TrackBase>"/>
+</lcgdict>
