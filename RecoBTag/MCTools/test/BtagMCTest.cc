@@ -33,7 +33,7 @@ class BtagMCTest : public edm::EDAnalyzer {
       virtual void analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup);
 
    private:
-  JetFlavourIdentifier jfi;
+      BTagMCTools::JetFlavourIdentifier jfi;
   std::string moduleLabel;
 };
 
@@ -42,7 +42,7 @@ BtagMCTest::BtagMCTest(const edm::ParameterSet& iConfig)
 {
   moduleLabel = iConfig.getParameter<std::string>( "moduleLabel" );
 
-  jfi = JetFlavourIdentifier(iConfig.getParameter<edm::ParameterSet>("jetIdParameters"));
+  jfi = BTagMCTools::JetFlavourIdentifier(iConfig.getParameter<edm::ParameterSet>("jetIdParameters"));
 }
 
 
@@ -72,10 +72,10 @@ void BtagMCTest::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
   int size = tagColl.size();
   cout << "Found " << size << " B candidates" << endl;
   for (int i = 0; i < size; ++i) {
-    BTagMCTools::JetFlavour jetFlavour = jfi.identifyBasedOnPartons(* tagColl[i].first);
-    cout << "Tag with discriminator " << tagColl[i].second 
+    BTagMCTools::JetFlavour jetFlavour = jfi.identifyBasedOnPartons(* tagColl[i].jet());
+    cout << "Tag with discriminator " << tagColl[i].discriminator() 
          << " - Associated Parton flavour: "<< jetFlavour.flavour() << endl;
-    cout << "  Eta/phi of reconstructed jet: " << tagColl[i].first->eta()<<" , "<< tagColl[i].first->phi() <<endl;
+    cout << "  Eta/phi of reconstructed jet: " << tagColl[i].jet()->eta()<<" , "<< tagColl[i].jet()->phi() <<endl;
     cout << "  Eta/phi of parton:            " << jetFlavour.underlyingParton4Vec().eta()
 	 <<" , "<< jetFlavour.underlyingParton4Vec().phi()<<endl;
   }

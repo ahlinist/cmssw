@@ -38,7 +38,7 @@ class JetPartonAssocTest : public edm::EDAnalyzer {
       virtual void analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup);
 
    private:
-  JetFlavourIdentifier jfi;
+    BTagMCTools::JetFlavourIdentifier jfi;
   std::string moduleLabel;
 
   vector<unsigned int> nFlav;
@@ -52,7 +52,7 @@ JetPartonAssocTest::JetPartonAssocTest(const edm::ParameterSet& iConfig) :
 {
   moduleLabel = iConfig.getParameter<std::string>( "moduleLabel" );
 
-  jfi = JetFlavourIdentifier(iConfig.getParameter<edm::ParameterSet>("jetIdParameters"));
+  jfi = BTagMCTools::JetFlavourIdentifier(iConfig.getParameter<edm::ParameterSet>("jetIdParameters"));
 }
 
 
@@ -117,5 +117,4 @@ JetPartonAssocTest::~JetPartonAssocTest()
 }
 
 //define this as a plug-in
-//DEFINE_SEAL_MODULE();
-DEFINE_ANOTHER_FWK_MODULE(JetPartonAssocTest);
+DEFINE_FWK_MODULE(JetPartonAssocTest);
