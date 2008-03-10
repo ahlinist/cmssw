@@ -1,15 +1,14 @@
-#include <TProfile2D.h>
-
-#include <TStyle.h>
-#include <TCanvas.h>
-#include <TColor.h>
+#include "TProfile2D.h"
+#include "TStyle.h"
+#include "TCanvas.h"
+#include "TColor.h"
 #include <iostream>
+#include <cassert>
 //#include "DQMServices/Core/interface/MonitorElement.h"
 
 //#include "DQM/EcalCommon/interface/ColorPalette.h"
 //#include <DQM/EcalCommon/interface/Numbers.h>
-#include "RPCRenderPlugin.h"
-
+#include "DQM/RenderPlugins/src/RPCRenderPlugin.h"
 
 
 bool RPCRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &i ) {

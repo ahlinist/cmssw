@@ -2,18 +2,18 @@
   \file SiStripRenderPlugin
   \brief Display Plugin for SiStrip DQM Histograms
   \author S. Dutta 
-  \version $Revision: 1.2 $
-  \date $Date: 2008/01/21 22:14:47 $
+  \version $Revision: 1.3 $
+  \date $Date: 2008/02/14 20:24:54 $
 */
 
-#include <TProfile2D.h>
+#include "TProfile2D.h"
+#include "TStyle.h"
+#include "TCanvas.h"
+#include "TColor.h"
+#include "TText.h"
+#include <cassert>
 
-#include <TStyle.h>
-#include <TCanvas.h>
-#include <TColor.h>
-#include <TText.h>
-
-#include "SiStripRenderPlugin.h"
+#include "DQM/RenderPlugins/src/SiStripRenderPlugin.h"
 
 
 bool SiStripRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &i ) {
