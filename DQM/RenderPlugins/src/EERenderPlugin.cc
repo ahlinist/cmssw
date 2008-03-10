@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.58 2008/02/07 13:52:56 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.59 2008/02/14 20:24:53 lat Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.58 $
-  \date $Date: 2008/02/07 13:52:56 $
+  \version $Revision: 1.59 $
+  \date $Date: 2008/02/14 20:24:53 $
 */
 
 #include "TH1F.h"
@@ -28,7 +28,7 @@
 #include "DQM/EcalCommon/interface/ColorPalette.h"
 #include "DQM/EcalCommon/interface/Numbers.h"
 
-#include "EERenderPlugin.h"
+#include "DQM/RenderPlugins/src/EERenderPlugin.h"
 
 static bool  first = true;
 
