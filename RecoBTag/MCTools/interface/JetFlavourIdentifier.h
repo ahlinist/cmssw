@@ -9,6 +9,8 @@
 #include "RecoBTag/MCTools/interface/JetFlavour.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
 
+namespace BTagMCTools {
+
 class JetFlavourIdentifier {
 public:
   JetFlavourIdentifier() {}
@@ -38,5 +40,7 @@ private:
   std::string moduleLabel;
   HepMC::GenEvent * generated_event;
 };
+
+}
 
 #endif

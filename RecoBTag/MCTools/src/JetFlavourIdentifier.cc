@@ -13,6 +13,8 @@ using namespace HepMC;
 using namespace reco;
 using namespace math;
 
+namespace BTagMCTools {
+
 JetFlavourIdentifier::JetFlavourIdentifier(const edm::ParameterSet& iConfig)
 {
   moduleLabel           = iConfig.getParameter<std::string>( "mcSource" );
@@ -359,4 +361,6 @@ void JetFlavourIdentifier::fillPhysicsDefinition(
 
   jetFlavour.flavour(flavour);
   jetFlavour.underlyingParton4Vec(jetFlavour.vec4OriginParton() );
+}
+
 }
