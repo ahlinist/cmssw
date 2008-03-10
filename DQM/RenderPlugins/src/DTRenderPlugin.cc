@@ -1,23 +1,22 @@
-// $Id: DTRenderPlugin.cc,v 1.7 2008/01/22 19:15:25 muzaffar Exp $
+// $Id: DTRenderPlugin.cc,v 1.8 2008/02/14 20:24:53 lat Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.7 $
-  \date $Date: 2008/01/22 19:15:25 $
+  \version $Revision: 1.8 $
+  \date $Date: 2008/02/14 20:24:53 $
 */
 
-#include <TProfile2D.h>
-
-#include <TStyle.h>
-#include <TCanvas.h>
-#include <TColor.h>
-
+#include "TProfile2D.h"
+#include "TStyle.h"
+#include "TCanvas.h"
+#include "TColor.h"
+#include <cassert>
 
 //#include "DQM/EcalCommon/interface/ColorPalette.h"
 //#include <DQM/EcalCommon/interface/Numbers.h>
-#include "DTRenderPlugin.h"
+#include "DQM/RenderPlugins/src/DTRenderPlugin.h"
 
 
 bool DTRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &i ) {
