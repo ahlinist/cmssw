@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.8 2008/02/14 20:24:53 lat Exp $
+// $Id: DTRenderPlugin.cc,v 1.9 2008/03/10 15:21:45 elmer Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.8 $
-  \date $Date: 2008/02/14 20:24:53 $
+  \version $Revision: 1.9 $
+  \date $Date: 2008/03/10 15:21:45 $
 */
 
 #include "TProfile2D.h"
@@ -91,6 +91,7 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
   //obj->SetOption( "box" );
   gStyle->SetPalette(1);
   obj->SetOption( "colz" );
+  gPad->SetLogz(0);
 
   if( o.name.find( "FED770_EventLenght" ) < o.name.size() ) {
     gStyle->SetOptStat( 1111111 );
@@ -109,6 +110,7 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
   if( o.name.find( "SCTriggerBX" ) < o.name.size() ) {
     obj->GetYaxis()->SetLabelSize(0.1);
     obj->GetXaxis()->SetTitle("Trigger BX");
+    obj->GetYaxis()->SetRangeUser(0.,40.);
     return;
   }
   
@@ -125,15 +127,23 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if (o.name.find( "BXvsQual" ) < o.name.size()    ||
-      o.name.find( "Flag1stvsBX" ) < o.name.size() ||
-      o.name.find( "Theta" ) < o.name.size() ) {
-    gPad->SetLogz(1);
+  if (o.name.find( "BestQual" ) < o.name.size() ) {
     return;
   }
-  
-  if (o.name.find( "DCC_" ) <o.name.size() ||
-      o.name.find( "DDU_" ) <o.name.size() ) {
+
+  if (o.name.find( "QualvsPhi" ) <o.name.size() ) {
+    obj->GetYaxis()->SetRangeUser(-10.,30.);
+    return;
+  }   
+
+  if (o.name.find( "QualvsPhi" ) <o.name.size() ||
+      o.name.find( "QualDDUvsQualDCC" ) <o.name.size() ||
+      o.name.find( "PositionvsQual" ) <o.name.size() ||
+      o.name.find( "PosvsAngle" ) <o.name.size() ||
+      o.name.find( "PhitkvsPhitrig" ) <o.name.size() ||
+      o.name.find( "PhibtkvsPhibtrig" ) <o.name.size() ||
+      o.name.find( "HitstkvsQualtrig" ) <o.name.size() ||
+      o.name.find( "Flag1stvsQual" ) <o.name.size() ) {
     obj->SetOption( "box" );
     return;
   }
@@ -157,11 +167,11 @@ void DTRenderPlugin::preDrawTH1( TCanvas *c, const DQMNet::CoreObject &o ) {
   gStyle->SetOptStat( 1111111 );
   obj->SetStats( kFALSE );
 
-  if ( obj->GetMaximum(1.e15) > 0. ) {
-    gPad->SetLogy(1);
-  } else {
-   gPad->SetLogy(0);
-  }
+//   if ( obj->GetMaximum(1.e15) > 0. ) {
+//     gPad->SetLogy(1);
+//   } else {
+//    gPad->SetLogy(0);
+//   }
 
   if( o.name.find( "FED770TTSValues_Percent" ) < o.name.size() ) {
     gPad->SetLogy( 1 );
