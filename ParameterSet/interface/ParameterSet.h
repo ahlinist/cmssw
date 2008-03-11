@@ -83,6 +83,14 @@ namespace edm {
 
     /// checks if a parameter exists
     bool exists(const std::string & parameterName) const;
+    /// checks if a parameter exists as a given type
+    template <class T>
+    bool existsAs(const std::string & parameterName, bool trackiness=true) const
+    {
+       std::vector<std::string> names = getParameterNamesForType<T>(trackiness);
+       return std::find(names.begin(), names.end(), parameterName) != names.end();
+    }
+
     void depricatedInputTagWarning(std::string const& name, std::string const& label) const;
 
     template <class T>
