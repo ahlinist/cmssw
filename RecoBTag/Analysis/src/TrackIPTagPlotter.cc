@@ -1,3 +1,5 @@
+#include <cstddef>
+
 #include "DataFormats/VertexReco/interface/Vertex.h"
 
 #include "RecoBTag/Analysis/interface/TrackIPTagPlotter.h"
@@ -270,7 +272,7 @@ void TrackIPTagPlotter::analyzeTag (const reco::BaseTagInfo * baseTagInfo,
   trkNbr3D->fill(jetFlav, ip.size());
   trkNbr2D->fill(jetFlav, ip.size());
 
-  vector<unsigned int> sortedIndices = tagInfo->sortedIndexes(reco::TrackIPTagInfo::IP2DSig);
+  vector<std::size_t> sortedIndices = tagInfo->sortedIndexes(reco::TrackIPTagInfo::IP2DSig);
   for(unsigned int n=0; n < sortedIndices.size() && n < 4; n++) {
     tkcntHistosSig2D[n]->fill(jetFlav, ip[sortedIndices[n]].ip2d.significance());
     tkcntHistosVal2D[n]->fill(jetFlav, ip[sortedIndices[n]].ip2d.value());
