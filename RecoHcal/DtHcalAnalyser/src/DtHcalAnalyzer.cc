@@ -13,7 +13,7 @@
 //
 // Original Author:  Dmitry Vishnevskiy
 //         Created:  Sun Nov 11 11:14:44 CET 2007
-// $Id: DtHcalAnalyzer.cc,v 1.1 2008/03/09 14:42:46 dma Exp $
+// $Id: DtHcalAnalyzer.cc,v 1.1 2008/03/10 09:00:47 dma Exp $
 //
 //
 
@@ -284,7 +284,11 @@ public:
           }
    float  GetEnergyGev(int eta0,int phi0,int depth0,int eta1,int phi1,int depth1){
 		  float en=0;
-		  for(int i=eta0-2;i<=eta1+2;i++) 
+		  int ef=eta0-2;
+		  int et=eta1+2;
+		  if(eta0>0 && ef<0) ef=1;
+		  if(eta1<0 && et>0) et=-1;
+		  for(int i=ef;i<=et;i++) 
 		  for(int j=phi0;j<=phi1;j++)
 		  for(int k=depth0;k<=depth1;k++){
 		     if(j>0 && j<73 && i>-16 && i<16 && i!=0 && k>0 && k<5){ 
@@ -950,7 +954,7 @@ int   eta,phi,depth,nTS,HOcnt=0,HBcnt=0,DTcnt=0;
 	// due to most of the events have only 1 track segment we want to analyse only this kind of events
 	// (to avoid situation than we analyse one track two times (top & bottom segment) 
 	// to increase statistics, we will propogate track segment on top & bottom parts of HCAL
-	if(staTracks->size()!=1) continue;
+	if(staTracks->size()>1 && tsosAtHO_outer.globalPosition().y()>0) continue;
 	
         //process HO event... (Track cross HO)
         if (tsosAtHO_inner.isValid() && tsosAtHO_outer.isValid()){
