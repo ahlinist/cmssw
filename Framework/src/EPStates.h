@@ -224,6 +224,7 @@ namespace statemachine {
 
     bool beginRunCalled() const;
     int currentRun() const;
+    bool runException() const;
     void setupCurrentRun();
     void beginRun(int run);
     void endRun(int run);
@@ -234,6 +235,7 @@ namespace statemachine {
     edm::IEventProcessor & ep_;
     bool beginRunCalled_;
     int currentRun_;
+    bool runException_;
   };
 
   class HandleLumis;
@@ -311,6 +313,7 @@ namespace statemachine {
     bool currentLumiEmpty_;
     int currentLumi_;
     std::vector<int> unhandledLumis_;
+    bool lumiException_;
   };
 
   class HandleEvent;
