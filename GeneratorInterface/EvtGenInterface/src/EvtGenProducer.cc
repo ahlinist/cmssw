@@ -14,7 +14,7 @@
 //
 // Original Author:  Nello Nappi
 //         Created:  Fri May 11 15:19:32 CEST 2007
-// $Id: EvtGenProducer.cc,v 1.3 2007/09/28 15:13:44 nappic Exp $
+// $Id: EvtGenProducer.cc,v 1.4 2008/01/11 17:09:31 covarell Exp $
 //
 //
 #include "FWCore/PluginManager/interface/PluginManager.h"
@@ -124,6 +124,7 @@ void EvtGenProducer::endJob()
 void EvtGenProducer::produce(edm::Event & e, const edm::EventSetup & es)
 {
   nevent++;
+  npartial = 0;
   // std::cout << "nevent = " << nevent << std::endl ;
   
   int idHep,ipart,status;
@@ -132,7 +133,9 @@ void EvtGenProducer::produce(edm::Event & e, const edm::EventSetup & es)
 
   edm::Handle< edm::HepMCProduct > EvtHandle ;
   e.getByLabel( "source", EvtHandle ) ;
+
   const HepMC::GenEvent* Evt = EvtHandle->GetEvent() ;
+  nPythia = Evt->particles_size();
   HepMC::GenEvent* newEvt = new HepMC::GenEvent( *Evt );
 
   // Do here initialization of EvtPythia then restore original settings
@@ -299,6 +302,8 @@ void EvtGenProducer::decay(HepMC::GenParticle* partHep, EvtId idEvt, HepMC::GenE
 						  evtstdhep.getP4(ipart2).get(0)),
 				idHep,
 				evtstdhep.getIStat(ipart2));
+      npartial++;
+      thePart->suggest_barcode(npartial + nPythia);
       int theMum2 = evtstdhep.getFirstMother(ipart2);
       if (theMum2 != -1 && theVerts[theMum2]) theVerts[theMum2]->add_particle_out( thePart );
       if (theVerts[ipart2]) theVerts[ipart2]->add_particle_in( thePart );
