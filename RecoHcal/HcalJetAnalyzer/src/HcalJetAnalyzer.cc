@@ -15,7 +15,9 @@
 #include "DataFormats/JetReco/interface/CaloJet.h"
 #include "DataFormats/L1GlobalMuonTrigger/interface/L1MuRegionalCand.h"
 #include "DataFormats/L1GlobalMuonTrigger/interface/L1MuGMTReadoutCollection.h"
-
+#include "CondFormats/HcalObjects/interface/HcalQIECoder.h"
+#include "CalibFormats/HcalObjects/interface/HcalDbService.h"
+#include "CalibFormats/HcalObjects/interface/HcalDbRecord.h"
 #include <TFile.h>
 //#include <TTree.h> 
 
@@ -169,98 +171,13 @@ HcalJetAnalyzer::HcalJetAnalyzer(const edm::ParameterSet& iConfig)
  nsay=0;
 
  
-       opt.open("jetoutput.txt",ios::out);
+ // opt.open("jetoutput.txt",ios::out);
   
-   file_ = new TFile(outputFileName_.c_str(),"RECREATE"); //file_->cd();
-  
+       /*  file_ = new TFile(outputFileName_.c_str(),"RECREATE"); //file_->cd();
  
-  _dimuon = new TH1F("dimuonmass","",1000,100, 1100);
-
-   
-  dtAnglePhi =new TH1F("Dt phi angle distribution","Dt phi angle distribution",150,-100,100);
-  dtAngleEta =new TH1F("Dt eta angle distribution","Dt eta angle distribution",150,-100,100);
-  dthoEta    =new TH2F("Dt<->HO eta correlation","Dt<->HO eta correlation",500,-300,300,65,-16,16);
-  dthoPhi    =new TH2F("Dt<->HO phi correlation","Dt<->HO phi correlation",350,0,73,145,0,73); 
-  dthoDEta   =new TH1F("HO Eta towers per track","HO Eta towers per track",10,0,10);
-  dthoDPhi   =new TH1F("HO Phi towers per track","HO Phi towers per track",10,0,10);
-  dthbEta    =new TH2F("Dt<->HB eta correlation","Dt<->HB eta correlation",500,-300,300,65,-16,16);
-  dthbPhi    =new TH2F("Dt<->HB phi correlation","Dt<->HB phi correlation",350,0,73,145,0,73);
-  dthbDEta   =new TH1F("HB Eta towers per track","HB Eta towers per track",10,0,10);
-  dthbDPhi   =new TH1F("HB Phi towers per track","HB Phi towers per track",10,0,10);
-  dthoEn     =new TH1F("HO energy distribution","HO energy distribution",250,-30,50);
-  dthbEn     =new TH1F("HB energy distribution","HB energy distribution",250,-30,50);
-  dthoRaw    =new TH1F("HO ADC distribution","HO ADC distribution",250,-2,70);
-  dthbRaw    =new TH1F("HB ADC distribution","HB ADC distribution",250,-2,70);
-  HBmuons    =new TH1F("HB Muons energy distribution","HB Muons energy distribution",250,-30,50);
-
-    
-  dthbTime   =new TH1F("HB  time distribution","HB time distribution",500,0.5,9.5);
-  dthoTime   =new TH1F("HO  time distribution","HO  time distribution",500,0.5,9.5);
-  dthbTimeth   =new TH1F("HB  time distribution 4TS","HB time distribution 4TS ",500,0.5,9.5);
-  dthoTimeth   =new TH1F("HO  time distribution 4TS ","HO  time distribution 4TS",500,0.5,9.5);
-    
- 
-  dtimpr     = new TH1F("dtimpr"," r at IP",100,0.,500.);
-  dtimpx     =new TH1F("dtimpx"," x at IP",100,-750.,750.);
-  dtimpy     =new TH1F("dtimpy"," y at IP",100,-750.,750.);
-  dtimpz     =new TH1F("dtimpz"," z at IP",100,-750.,750.);
+       _dimuon = new TH1F("dimuonmass","",1000,100, 1100); */
 
 
-  hNSA        =new TH1F("hNSA","Num SA tracks in events", 6, -0.5, 5.5);
-  hNhitsSA    = new TH1F("hNhitsSA","Num hits in SA tracks", 50, .5, 50.5);
-  hChi2SA     =new TH1F("hChi2SA","#chi^{2}/NDoF for SA tracks", 100, 0, 100.);
-  hPIPSA      = new TH1F("hPIPSA","p for SA tracks @ IP", 100, 0., 100);
-  hPtIPSA    = new TH1F("hPtIPSA","pt for SA tracks @ IP", 100, 0., 100);
-  hPhiIPSA   = new TH1F("hPhiInnerTSOSSA","#phi for SA tracks @ innermost TSOS", 100, -3.14, 3.14);
-  hEtaIPSA   = new TH1F("hEtaInnerTSOSSA","#eta for SA tracks @ innermost TSOS", 100, -2.5, 2.5);
-hjetenergy = new TH1F( "RecoEnergyJet", "Jet Energy ", 1000, -10.0, 200.0);
-hjetent  = new TH1F( "RecoETJet", "Transverse Jet Energy ", 1000, -10.0, 200.0);
-hjetentD  = new TH1F( "RecoETJet_DT", "Transverse Jet Energy DT trigger", 1000, -10.0, 200.0);
-hjetentH  = new TH1F( "RecoETJet_HB", "Transverse Jet Energy HCAL trigger", 1000, -10.0, 200.0);
-hjetpt   = new TH1F( "RecoPtJet", " Pt Distribution of Reconstructed Jets ", 1000,-10,200 );
-hjeteta  = new TH1F( "RecoEtaJet", "Eta Distribution of Reconstructed  Jets ",500,-3.0,3.0 );
-hjetphi  = new TH1F("RecoJetPhi","phi Distribution of Reconstructed Jets",500,-3.2,  3.2);
-
-hjetmult = new TH1F( "JetMult", "Jet Multiplicity ", 100,0,100);
-hjetmultE = new TH1F( "JetMultE", "Jet Multiplicity E>1.5 GeV", 100,0,100); 
-
-HBREChithis_ = new TH1F( "HBREChit ","HBrecohit energy",100,-10,50);
-HEREChithis_ = new TH1F( " HEREChit "," HErecohit energy",100,-10,50);
-HOREChithis_ = new TH1F( "HOREChit ","HOrecohit energy",100,-10,50);
-HFREChithis_ = new TH1F( "HFREChit ","HFrecohit energy",100,-10,50);
-	 
-hcalosize   = new TH1F( "Calotower size", "Nbr of calotower ", 500,-10,200);//calo
-hcaloenergy = new TH1F( "RecoEnergycalo", "Calotower energy ", 500, -10.0, 200.0);
-hcaloenergyH = new TH1F( "RecoEnergycaloH", "Calotower energy HCAL trigger ", 500, -10.0, 200.0);
-hcaloenergyD = new TH1F( "RecoEnergycaloD", "Calotower energy DT trigger", 500, -10.0, 200.0);
-hcaloent    = new TH1F( "RecoETcalo", "Transverse energy ", 100, 0.0, 200.0); 
-hcaloeta    = new TH1F( "RecoEtacalo", "Eta Distribution of Calotower ", 1000,-3.0,3.0 );
-hcalophi    = new TH1F("RecocalotPhi","phi Distribution of Calotower",1000,-3.2,  3.2);
- 
-  HBclust=new TH2F("HB energy","HB energy",7,-3,3,33,-16,16);
-  
-HcalDigiminuHBphi_ = new TProfile("Jets_Rec_Hit_energy_in_HB-_iphi","HB- iphi vs Jet Energy (Rec Hit)",100,0,72,-30,50);
-HcalDigiminuHBeta_ = new TProfile("Jets_Rec_Hit_energy_in_HB-_ieta","HB- ieta vs Jet Energy (Rec Hit)",100,-17,0,-30,50);
-
-HcalDigiplusHBphi_ = new TProfile("Jets_Rec_Hit_energy_in_HB+_iphi","HB+ iphi vs Jet Energy (Rec Hit)",100,0,72,-30,50);  
-HcalDigiplusHBeta_ = new TProfile("Jets_Rec_Hit_energy_in_HB+_ieta","HB+ ieta vs Jet Energy (Rec Hit)",100,0,17,-30,50);  
-HcalRecminuHBphi_ =  new TProfile("RecHit_energy_in_HB-_iphi","HB- iphi-energy  Rec Hit",100,0,72,0,10);
-HcalRecminuHBeta_ =  new TProfile("RecHit_energy_in_HB-_ieta","HB- ieta-energy  Rec Hit",100,-17,0,0,10);
-HcalRecplusHBphi_ =  new TProfile("RecHit_energy_in_HB+_iphi","HB+ iphi-energy  Rec Hit",100,0,72,0,10);
-HcalRecplusHBeta_ =  new TProfile("RecHit_energy_in_HB+_ieta","HB+ iphi-energy  Rec Hit",100,0,16,0,10);
-
-
-HcalDigietaphi_   =  new TProfile2D("Jets_Rec_Hit_HB_Energy_ietaiphi","HB ieta-iphi  Jet Energy (Rec Hit)",100,-42,42,100,0,72,0,200);
-HcalDigiHEetaphi_ =  new TProfile2D("Jets_Rec_Hit_HE_Energy_ietaiphi","HE ieta-iphi  Jet Energy (Rec Hit)",100,-42,42,100,0,72,0,200);
-HcalDigiHFetaphi_ =  new TProfile2D("Jets_Rec_Hit_HF_Energy_ietaiphi","HF ieta-iphi  Jet Energy (Rec Hit)",100,-42,42,100,0,72,0,200);
-HcalDigiHOetaphi_ =  new TProfile2D("Jets_Rec_Hit_HO_Energy_ietaiphi","HO ieta-iphi  Jet Energy (Rec Hit)",100,-42,42,100,0,72,0,200);
-HBRecietaphi_     =  new TProfile2D("HB_Rec_Hit_Energy_ietaiphi"," HB ieta-iphi   Rec Hit (GeV)",100,-42,42,100,0,72,0,200);
-
-
-//HcalRecminuHBphi_ =  new TH2F("RecHit_energy_in_HB-_iphi","iphi vs energy",100,0,72,100,-30,50);
-//HcalRecplusHBphi_ =  new TH2F("RecHit_energy_in_HB+_iphi","iphi vs energy",100,0,72,100,-30,50);	  
-  
-  //theFile ->cd();
  
 
 }
@@ -269,9 +186,9 @@ HBRecietaphi_     =  new TProfile2D("HB_Rec_Hit_Energy_ietaiphi"," HB ieta-iphi 
 //______________________________________________________________________________
 HcalJetAnalyzer::~HcalJetAnalyzer()
 {
-   file_->Write();
+ /*  file_->Write();
   file_->Close();
-  delete file_;
+  delete file_;*/
   
 }
 
@@ -450,7 +367,10 @@ try{
 	    float ts =0; float bs=0;          
             float tms =0; float bms=0;
             int maxi=0; float maxa=0; float mEnergy=0;
-           
+            
+	         
+	        const HcalQIEShape* shape = COND->getHcalShape();
+                const HcalQIECoder* coder = COND->getHcalCoder(digi.id());           
 
 	    COND->makeHcalCalibration(digi.id(),&calibs);
 
@@ -459,14 +379,31 @@ try{
                  }
 
 	    for(int i=0;i<nTS;i++){
-               Energy+=adc2fC[digi.sample(i).adc()]-calibs.pedestal(digi.sample(i).capid());
-	       raw+=digi.sample(i).adc();           
-               ts += i*(adc2fC[digi.sample(i).adc()]-calibs.pedestal(digi.sample(i).capid()));
-	       bs += adc2fC[digi.sample(i).adc()]-calibs.pedestal(digi.sample(i).capid());
+	    
+               //Energy+=adc2fC[digi.sample(i).adc()]-calibs.pedestal(digi.sample(i).capid());
+
+	      float fC = coder->charge(*shape,digi.sample(i).adc(),digi.sample(i).capid());
+	      Energy+=fC-calibs.pedestal(digi.sample(i).capid());//F.O  pedestal substructed digi (FC)   
+	       raw+=digi.sample(i).adc();      
+	        
+		 ts += i*(fC-calibs.pedestal(digi.sample(i).capid()));
+		 bs += fC-calibs.pedestal(digi.sample(i).capid());     
+		 
+            /*   ts += i*(adc2fC[digi.sample(i).adc()]-calibs.pedestal(digi.sample(i).capid()));
+	       bs += adc2fC[digi.sample(i).adc()]-calibs.pedestal(digi.sample(i).capid());*/
+	      
 	      if(i>=(maxi-1) && i<=maxi+2){
-	        mEnergy+=adc2fC[digi.sample(i).adc()]-calibs.pedestal(digi.sample(i).capid());           
-                 tms += i*(adc2fC[digi.sample(i).adc()]-calibs.pedestal(digi.sample(i).capid()));
-	         bms += adc2fC[digi.sample(i).adc()]-calibs.pedestal(digi.sample(i).capid());
+	      
+	       // mEnergy+=adc2fC[digi.sample(i).adc()]-calibs.pedestal(digi.sample(i).capid());
+	      
+	         mEnergy+=fC-calibs.pedestal(digi.sample(i).capid());//F.O  pedestal substructed digi (FC)
+		           
+		 tms += i*(fC-calibs.pedestal(digi.sample(i).capid()));
+		 bms += fC-calibs.pedestal(digi.sample(i).capid());         
+              
+	         /*tms += i*(adc2fC[digi.sample(i).adc()]-calibs.pedestal(digi.sample(i).capid()));
+	         bms += adc2fC[digi.sample(i).adc()]-calibs.pedestal(digi.sample(i).capid());*/
+	      
 	        }
 	    }
 
@@ -572,6 +509,9 @@ try{
              float tms =0; float bms=0;                
             int maxi=0; float maxa=0; float mEnergy=0;
 	    
+	         
+	        const HcalQIEShape* shape = COND->getHcalShape();
+                const HcalQIECoder* coder = COND->getHcalCoder(digi.id());           
 
 	    COND->makeHcalCalibration(digi.id(),&calibs);
 	       for(int i=0; i<=nTS; i++){
@@ -579,15 +519,24 @@ try{
                  }
 
              for(int i=0;i<nTS;i++){
-                  Energy+=adc2fC[digi.sample(i).adc()]-calibs.pedestal(digi.sample(i).capid());
-	              raw+=digi.sample(i).adc();
-                     ts += i*(adc2fC[digi.sample(i).adc()]-calibs.pedestal(digi.sample(i).capid()));
-	             bs += adc2fC[digi.sample(i).adc()]-calibs.pedestal(digi.sample(i).capid());
+
+                   float fC = coder->charge(*shape,digi.sample(i).adc(),digi.sample(i).capid());
+	          Energy+=fC-calibs.pedestal(digi.sample(i).capid());//F.O  pedestal substructed digi (FC)   
+	         raw+=digi.sample(i).adc();  
+
+		//   Energy+=adc2fC[digi.sample(i).adc()]-calibs.pedestal(digi.sample(i).capid());
+		 // ts += i*(adc2fC[digi.sample(i).adc()]-calibs.pedestal(digi.sample(i).capid()));
+		 //  bs += adc2fC[digi.sample(i).adc()]-calibs.pedestal(digi.sample(i).capid());
+                 ts += i*(fC-calibs.pedestal(digi.sample(i).capid()));
+		 bs += fC-calibs.pedestal(digi.sample(i).capid());   
            
 		if(i>=(maxi-1) && i<=maxi+2){
-        	       mEnergy+=adc2fC[digi.sample(i).adc()]-calibs.pedestal(digi.sample(i).capid());
-                     tms += i*(adc2fC[digi.sample(i).adc()]-calibs.pedestal(digi.sample(i).capid()));
-	            bms += adc2fC[digi.sample(i).adc()]-calibs.pedestal(digi.sample(i).capid());
+        	   
+                  mEnergy+=fC-calibs.pedestal(digi.sample(i).capid());//F.O  pedestal substructed digi (FC)
+		           
+		 tms += i*(fC-calibs.pedestal(digi.sample(i).capid()));
+		 bms += fC-calibs.pedestal(digi.sample(i).capid());  
+
 	        }
 	    }
 	   	if(bs!=0) {
@@ -687,8 +636,11 @@ catch(...){};
    
      /////// trigger
 
-	 int TriggerType=0;
- edm::Handle<L1MuGMTReadoutCollection> gmtrc_handle; 
+
+    int TriggerType=0;
+    
+ 
+  edm::Handle<L1MuGMTReadoutCollection> gmtrc_handle; 
  
      iEvent.getByLabel("gtDigis",gmtrc_handle);
    L1MuGMTReadoutCollection const* gmtrc = gmtrc_handle.product();
@@ -729,6 +681,9 @@ catch(...){};
  
 	 ///////////////// trigger-end
      
+  
+
+
    //Jet Partccc
     
     edm::Handle<CaloJetCollection> jets;
@@ -963,8 +918,8 @@ RecoJetEta[ijt]=(*jets )[ijt].eta();
 	  
               }
               HBHEDigiCollection::const_iterator theDigis=hbhe->find(HcalID);
-	      opt << "         RecHit: " << j << ": HE, ieta=" << HcalID.ieta() << ", iphi=" << HcalID.iphi()<<      
-	      ", depth=" << HcalID.depth() << ", energy=" << theRecHit->energy() << ", time=" <<\
+	      //opt << "         RecHit: " << j << ": HE, ieta=" << HcalID.ieta() << ", iphi=" << HcalID.iphi()<<      
+	      //", depth=" << HcalID.depth() << ", energy=" << theRecHit->energy() << ", time=" <<\
 	      theRecHit->time() <<", All Digis=" << theDigis->size() << ", presamples =" <<\
 	      theDigis->presamples() <<endl;              
               float SumDigiCharge = 0.0;
@@ -974,7 +929,7 @@ RecoJetEta[ijt]=(*jets )[ijt].eta();
                 const HcalQIESample QIE = theDigis->sample(k);
                 if(k>=theDigis->presamples()&&k<theDigis->presamples()+SamplesToAdd)SumDigiCharge+=QIE.nominal_fC();
                 if(k<theDigis->presamples()-1)EstimatedPedestal+=QIE.nominal_fC()*SamplesToAdd/(theDigis->presamples()-1);
-		opt << "            Digi: " << k <<  ", cap ID = " << QIE.capid() << ": ADC Counts = " << QIE.adc() <<  ", nominal fC = " << QIE.nominal_fC() <<endl;
+		//opt << "            Digi: " << k <<  ", cap ID = " << QIE.capid() << ": ADC Counts = " << QIE.adc() <<  ", nominal fC = " << QIE.nominal_fC() <<endl;
               }
 	      
              	   ++sche;
@@ -989,8 +944,8 @@ RecoJetEta[ijt]=(*jets )[ijt].eta();
 	
 	      
               HODigiCollection::const_iterator theDigis=ho->find(HcalID);
-	      opt << "         RecHit: " << j << ": HO, ieta=" << HcalID.ieta() << ", iphi=" << HcalID.iphi()<<      
-	      ", depth=" << HcalID.depth() << ", energy=" << theRecHit->energy() << ", time=" <<\
+	      //opt << "         RecHit: " << j << ": HO, ieta=" << HcalID.ieta() << ", iphi=" << HcalID.iphi()<<      
+	      //", depth=" << HcalID.depth() << ", energy=" << theRecHit->energy() << ", time=" <<\
 	      theRecHit->time() <<", All Digis=" << theDigis->size() << ", presamples =" <<\
 	      theDigis->presamples() <<endl;              
               float SumDigiCharge = 0.0;
@@ -1000,7 +955,7 @@ RecoJetEta[ijt]=(*jets )[ijt].eta();
                 const HcalQIESample QIE = theDigis->sample(k);
                 if(k>=theDigis->presamples()&&k<theDigis->presamples()+SamplesToAdd)SumDigiCharge+=QIE.nominal_fC();
                 if(k<theDigis->presamples()-1)EstimatedPedestal+=QIE.nominal_fC()*SamplesToAdd/(theDigis->presamples()-1);
-		opt << "            Digi: " << k <<  ", cap ID = " << QIE.capid() << ": ADC Counts = " << QIE.adc() <<  ", nominal fC = " << QIE.nominal_fC() <<endl;
+		//opt << "            Digi: " << k <<  ", cap ID = " << QIE.capid() << ": ADC Counts = " << QIE.adc() <<  ", nominal fC = " << QIE.nominal_fC() <<endl;
               }
              	   ++scho; 
   
@@ -1015,9 +970,9 @@ RecoJetEta[ijt]=(*jets )[ijt].eta();
 	     
 
 	      
-              HFDigiCollection::const_iterator theDigis=HFDigis->find(HcalID);
-	      opt << "         RecHit: " << j << ": HF, ieta=" << HcalID.ieta() << ", iphi=" << HcalID.iphi()<<      
-	      ", depth=" << HcalID.depth() << ", energy=" << theRecHit->energy() << ", time=" <<\
+           /*   HFDigiCollection::const_iterator theDigis=HFDigis->find(HcalID);
+	      //opt << "         RecHit: " << j << ": HF, ieta=" << HcalID.ieta() << ", iphi=" << HcalID.iphi()<<      
+	      //", depth=" << HcalID.depth() << ", energy=" << theRecHit->energy() << ", time=" <<\
 	      theRecHit->time() <<", All Digis=" << theDigis->size() << ", presamples =" <<\
 	      theDigis->presamples() <<endl;              
               float SumDigiCharge = 0.0;
@@ -1027,8 +982,8 @@ RecoJetEta[ijt]=(*jets )[ijt].eta();
                 const HcalQIESample QIE = theDigis->sample(k);
                 if(k>=theDigis->presamples()&&k<theDigis->presamples()+SamplesToAdd)SumDigiCharge+=QIE.nominal_fC();
                 if(k<theDigis->presamples()-1)EstimatedPedestal+=QIE.nominal_fC()*SamplesToAdd/(theDigis->presamples()-1);
-		opt << "            Digi: " << k <<  ", cap ID = " << QIE.capid() << ": ADC Counts = " << QIE.adc() <<  ", nominal fC = " << QIE.nominal_fC() <<endl;
-              }
+		//opt << "            Digi: " << k <<  ", cap ID = " << QIE.capid() << ": ADC Counts = " << QIE.adc() <<  ", nominal fC = " << QIE.nominal_fC() <<endl;
+              }*/
                 
         
 	   ++schf;
@@ -1055,11 +1010,101 @@ void HcalJetAnalyzer::beginJob(const edm::EventSetup& es)
 
   
  
+ edm::Service<TFileService> fs;
+ 
+  _dimuon = fs->make<TH1F>("dimuonmass","",1000,100, 1100);
+
+  
+  
+  dtAnglePhi =fs->make<TH1F>("Dt phi angle distribution","Dt phi angle distribution",150,-100,100);
+  dtAngleEta =fs->make<TH1F>("Dt eta angle distribution","Dt eta angle distribution",150,-100,100);
+  dthoEta    =fs->make<TH2F>("Dt<->HO eta correlation","Dt<->HO eta correlation",500,-300,300,65,-16,16);
+  dthoPhi    =fs->make<TH2F>("Dt<->HO phi correlation","Dt<->HO phi correlation",350,0,73,145,0,73); 
+  dthoDEta   =fs->make<TH1F>("HO Eta towers per track","HO Eta towers per track",10,0,10);
+  dthoDPhi   =fs->make<TH1F>("HO Phi towers per track","HO Phi towers per track",10,0,10);
+  dthbEta    =fs->make<TH2F>("Dt<->HB eta correlation","Dt<->HB eta correlation",500,-300,300,65,-16,16);
+  dthbPhi    =fs->make<TH2F>("Dt<->HB phi correlation","Dt<->HB phi correlation",350,0,73,145,0,73);
+  dthbDEta   =fs->make<TH1F>("HB Eta towers per track","HB Eta towers per track",10,0,10);
+  dthbDPhi   =fs->make<TH1F>("HB Phi towers per track","HB Phi towers per track",10,0,10);
+  dthoEn     =fs->make<TH1F>("HO energy distribution","HO energy distribution",250,-30,50);
+  dthbEn     =fs->make<TH1F>("HB energy distribution","HB energy distribution",250,-30,50);
+  dthoRaw    =fs->make<TH1F>("HO ADC distribution","HO ADC distribution",250,-2,70);
+  dthbRaw    =fs->make<TH1F>("HB ADC distribution","HB ADC distribution",250,-2,70);
+  HBmuons    =fs->make<TH1F>("HB Muons energy distribution","HB Muons energy distribution",250,-30,50);
+
+    
+  dthbTime   =fs->make<TH1F>("HB  time distribution","HB time distribution",500,0.5,9.5);
+  dthoTime   =fs->make<TH1F>("HO  time distribution","HO  time distribution",500,0.5,9.5);
+  dthbTimeth   =fs->make<TH1F>("HB  time distribution 4TS","HB time distribution 4TS ",500,0.5,9.5);
+  dthoTimeth   =fs->make<TH1F>("HO  time distribution 4TS ","HO  time distribution 4TS",500,0.5,9.5);
+    
+ 
+  dtimpr     = fs->make<TH1F>("dtimpr"," r at IP",100,0.,500.);
+  dtimpx     =fs->make<TH1F>("dtimpx"," x at IP",100,-750.,750.);
+  dtimpy     =fs->make<TH1F>("dtimpy"," y at IP",100,-750.,750.);
+  dtimpz     =fs->make<TH1F>("dtimpz"," z at IP",100,-750.,750.);
+
+
+  hNSA        =fs->make<TH1F>("hNSA","Num SA tracks in events", 6, -0.5, 5.5);
+  hNhitsSA    = fs->make<TH1F>("hNhitsSA","Num hits in SA tracks", 50, .5, 50.5);
+  hChi2SA     =fs->make<TH1F>("hChi2SA","#chi^{2}/NDoF for SA tracks", 100, 0, 100.);
+  hPIPSA      = fs->make<TH1F>("hPIPSA","p for SA tracks @ IP", 100, 0., 100);
+  hPtIPSA    = fs->make<TH1F>("hPtIPSA","pt for SA tracks @ IP", 100, 0., 100);
+  hPhiIPSA   = fs->make<TH1F>("hPhiInnerTSOSSA","#phi for SA tracks @ innermost TSOS", 100, -3.14, 3.14);
+  hEtaIPSA   = fs->make<TH1F>("hEtaInnerTSOSSA","#eta for SA tracks @ innermost TSOS", 100, -2.5, 2.5);
+hjetenergy = fs->make<TH1F>( "RecoEnergyJet", "Jet Energy ", 1000, -10.0, 200.0);
+hjetent  = fs->make<TH1F>( "RecoETJet", "Transverse Jet Energy ", 1000, -10.0, 200.0);
+hjetentD  = fs->make<TH1F>( "RecoETJet_DT", "Transverse Jet Energy DT trigger", 1000, -10.0, 200.0);
+hjetentH  = fs->make<TH1F>( "RecoETJet_HB", "Transverse Jet Energy HCAL trigger", 1000, -10.0, 200.0);
+hjetpt   = fs->make<TH1F>( "RecoPtJet", " Pt Distribution of Reconstructed Jets ", 1000,-10,200 );
+hjeteta  = fs->make<TH1F>( "RecoEtaJet", "Eta Distribution of Reconstructed  Jets ",500,-3.0,3.0 );
+hjetphi  = fs->make<TH1F>("RecoJetPhi","phi Distribution of Reconstructed Jets",500,-3.2,  3.2);
+
+hjetmult = fs->make<TH1F>( "JetMult", "Jet Multiplicity ", 100,0,100);
+hjetmultE = fs->make<TH1F>( "JetMultE", "Jet Multiplicity E>1.5 GeV", 100,0,100); 
+
+HBREChithis_ = fs->make<TH1F>( "HBREChit ","HBrecohit energy",100,-10,50);
+HEREChithis_ = fs->make<TH1F>( " HEREChit "," HErecohit energy",100,-10,50);
+HOREChithis_ = fs->make<TH1F>( "HOREChit ","HOrecohit energy",100,-10,50);
+HFREChithis_ = fs->make<TH1F>( "HFREChit ","HFrecohit energy",100,-10,50);
+	 
+hcalosize   = fs->make<TH1F>( "Calotower size", "Nbr of calotower ", 500,-10,200);//calo
+hcaloenergy = fs->make<TH1F>( "RecoEnergycalo", "Calotower energy ", 500, -10.0, 200.0);
+hcaloenergyH = fs->make<TH1F>( "RecoEnergycaloH", "Calotower energy HCAL trigger ", 500, -10.0, 200.0);
+hcaloenergyD = fs->make<TH1F>( "RecoEnergycaloD", "Calotower energy DT trigger", 500, -10.0, 200.0);
+hcaloent    = fs->make<TH1F>( "RecoETcalo", "Transverse energy ", 100, 0.0, 200.0); 
+hcaloeta    = fs->make<TH1F>( "RecoEtacalo", "Eta Distribution of Calotower ", 1000,-3.0,3.0 );
+hcalophi    = fs->make<TH1F>("RecocalotPhi","phi Distribution of Calotower",1000,-3.2,  3.2);
+ 
+  HBclust=fs->make<TH2F>("HB energy","HB energy",7,-3,3,33,-16,16);
+  
+HcalDigiminuHBphi_ = fs->make<TProfile>("Jets_Rec_Hit_energy_in_HB-_iphi","HB- iphi vs Jet Energy (Rec Hit)",100,0,72,-30,50);
+HcalDigiminuHBeta_ = fs->make<TProfile>("Jets_Rec_Hit_energy_in_HB-_ieta","HB- ieta vs Jet Energy (Rec Hit)",100,-17,0,-30,50);
+
+HcalDigiplusHBphi_ = fs->make<TProfile>("Jets_Rec_Hit_energy_in_HB+_iphi","HB+ iphi vs Jet Energy (Rec Hit)",100,0,72,-30,50);  
+HcalDigiplusHBeta_ = fs->make<TProfile>("Jets_Rec_Hit_energy_in_HB+_ieta","HB+ ieta vs Jet Energy (Rec Hit)",100,0,17,-30,50);  
+HcalRecminuHBphi_ =  fs->make<TProfile>("RecHit_energy_in_HB-_iphi","HB- iphi-energy  Rec Hit",100,0,72,0,10);
+HcalRecminuHBeta_ =  fs->make<TProfile>("RecHit_energy_in_HB-_ieta","HB- ieta-energy  Rec Hit",100,-17,0,0,10);
+HcalRecplusHBphi_ =  fs->make<TProfile>("RecHit_energy_in_HB+_iphi","HB+ iphi-energy  Rec Hit",100,0,72,0,10);
+HcalRecplusHBeta_ =  fs->make<TProfile>("RecHit_energy_in_HB+_ieta","HB+ iphi-energy  Rec Hit",100,0,16,0,10);
+
+
+HcalDigietaphi_   =  fs->make<TProfile2D>("Jets_Rec_Hit_HB_Energy_ietaiphi","HB ieta-iphi  Jet Energy (Rec Hit)",100,-42,42,100,0,72,0,200);
+HcalDigiHEetaphi_ =  fs->make<TProfile2D>("Jets_Rec_Hit_HE_Energy_ietaiphi","HE ieta-iphi  Jet Energy (Rec Hit)",100,-42,42,100,0,72,0,200);
+HcalDigiHFetaphi_ =  fs->make<TProfile2D>("Jets_Rec_Hit_HF_Energy_ietaiphi","HF ieta-iphi  Jet Energy (Rec Hit)",100,-42,42,100,0,72,0,200);
+HcalDigiHOetaphi_ =  fs->make<TProfile2D>("Jets_Rec_Hit_HO_Energy_ietaiphi","HO ieta-iphi  Jet Energy (Rec Hit)",100,-42,42,100,0,72,0,200);
+HBRecietaphi_     =  fs->make<TProfile2D>("HB_Rec_Hit_Energy_ietaiphi"," HB ieta-iphi   Rec Hit (GeV)",100,-42,42,100,0,72,0,200);
+ 
+//HcalRecminuHBphi_ =  new TH2F("RecHit_energy_in_HB-_iphi","iphi vs energy",100,0,72,100,-30,50);
+//HcalRecplusHBphi_ =  new TH2F("RecHit_energy_in_HB+_iphi","iphi vs energy",100,0,72,100,-30,50);	  
+  
+  //theFile ->cd();
   
     es.get<HcalDbRecord>().get(COND); 
 
  
-  
+    return;
+
 }
 
 
