@@ -13,7 +13,7 @@
 //
 // Original Author:  Nello Nappi
 //         Created:  Fri May 11 15:33:30 CEST 2007
-// $Id: EvtGenProducer.h,v 1.2 2007/09/28 15:13:15 nappic Exp $
+// $Id: EvtGenProducer.h,v 1.3 2008/01/11 17:09:29 covarell Exp $
 //
 //
 
@@ -82,8 +82,11 @@ private:
   std::vector<EvtId> forced_Evt;     // EvtId's of particels with forced decay
   std::vector<int> forced_Hep;       // HepId's of particels with forced decay
   int nforced;                       // number of particels with forced decay
-  int ntotal, nevent;
-  std::vector<std::string> pythia_params;
+  int ntotal, npartial, nevent;      // generic counters
+
+  int nPythia;
+  std::vector<std::string> pythia_params;  // Pythia stuff
+
   int nlist; 
   HepMC::GenParticle *listp[10]; 
   int index[10];                     // list of candidates to be forced 
