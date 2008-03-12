@@ -63,6 +63,8 @@ namespace edm {
         TYPE_TO_NAME(VInputTag);
         TYPE_TO_NAME(EventID);
         TYPE_TO_NAME(VEventID);
+        TYPE_TO_NAME(LuminosityBlockID);
+        TYPE_TO_NAME(VLuminosityBlockID);
       default:
         assert(false);
     }

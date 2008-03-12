@@ -40,6 +40,7 @@ namespace edm {
     k_FileInPath,
     k_InputTag,  k_VInputTag,
     k_EventID,   k_VEventID,
+    k_LuminosityBlockID,   k_VLuminosityBlockID,
     k_numParameterTypes
   };
   std::string parameterTypeEnumToString(ParameterTypes);

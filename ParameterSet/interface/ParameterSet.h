@@ -373,6 +373,29 @@ private:
 
 
   // ----------------------------------------------------------------------
+  // LuminosityBlockID
+
+  template <>
+  inline
+  edm::LuminosityBlockID
+  ParameterSet::getParameter<edm::LuminosityBlockID>(std::string const& name) const {
+    return retrieve(name).getLuminosityBlockID();
+  }
+
+
+  // ----------------------------------------------------------------------
+  // VLuminosityBlockID
+
+  template <>
+  inline
+  std::vector<edm::LuminosityBlockID>
+  ParameterSet::getParameter<std::vector<edm::LuminosityBlockID> >(std::string const& name) const {
+    return retrieve(name).getVLuminosityBlockID();
+  }
+
+
+
+  // ----------------------------------------------------------------------
   // PSet, vPSet
   
   template<>
@@ -668,6 +691,45 @@ private:
   std::vector<edm::EventID>
   ParameterSet::getUntrackedParameter<std::vector<edm::EventID> >(std::string const& name) const {
     return getEntryPointerOrThrow_(name)->getVEventID();
+  }
+
+
+
+  
+  // ----------------------------------------------------------------------
+  // LuminosityBlockID, VLuminosityBlockID
+
+  template<>
+  inline
+  edm::LuminosityBlockID
+  ParameterSet::getUntrackedParameter<edm::LuminosityBlockID>(std::string const& name, edm::LuminosityBlockID const& defaultValue) const {
+    Entry const* entryPtr = retrieveUntracked(name);
+    return entryPtr == 0 ? defaultValue : entryPtr->getLuminosityBlockID();
+  }
+
+  template<>
+  inline
+  edm::LuminosityBlockID
+  ParameterSet::getUntrackedParameter<edm::LuminosityBlockID>(std::string const& name) const {
+    return getEntryPointerOrThrow_(name)->getLuminosityBlockID();
+  }
+
+  template<>
+  inline
+  std::vector<edm::LuminosityBlockID>
+  ParameterSet::getUntrackedParameter<std::vector<edm::LuminosityBlockID> >(std::string const& name,
+                                      std::vector<edm::LuminosityBlockID> const& defaultValue) const
+  {
+    Entry const* entryPtr = retrieveUntracked(name);
+    return entryPtr == 0 ? defaultValue : entryPtr->getVLuminosityBlockID();
+  }
+
+
+  template<>
+  inline
+  std::vector<edm::LuminosityBlockID>
+  ParameterSet::getUntrackedParameter<std::vector<edm::LuminosityBlockID> >(std::string const& name) const {
+    return getEntryPointerOrThrow_(name)->getVLuminosityBlockID();
   }
 
 
