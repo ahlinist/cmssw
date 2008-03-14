@@ -10,11 +10,9 @@ namespace edm {
   EDInputSource::EDInputSource(ParameterSet const& pset,
 				       InputSourceDescription const& desc) :
       InputSource(pset, desc),
-      catalogs_() {
-    catalogs_.reserve(2);
-    catalogs_.push_back(InputFileCatalog(pset));
-    catalogs_.push_back(InputFileCatalog(pset, std::string("secondaryFileNames"), true));
-  }
+      poolCatalog_(),
+      catalog_(pset, poolCatalog_),
+      secondaryCatalog_(pset, poolCatalog_, std::string("secondaryFileNames"), true) {}
 
   EDInputSource::~EDInputSource() {
   }

@@ -19,8 +19,11 @@
 #include <boost/algorithm/string.hpp>
 
 namespace edm {
-  InputFileCatalog::InputFileCatalog(ParameterSet const& pset, std::string const& namesParameter, bool canBeEmpty, bool noThrow) :
-    FileCatalog(),
+  InputFileCatalog::InputFileCatalog(ParameterSet const& pset,
+				     PoolCatalog & poolcat,
+				     std::string const& namesParameter,
+				     bool canBeEmpty, bool noThrow) :
+    FileCatalog(poolcat),
     logicalFileNames_(canBeEmpty ?
 	pset.getUntrackedParameter<std::vector<std::string> >(namesParameter, std::vector<std::string>()) :
 	pset.getUntrackedParameter<std::vector<std::string> >(namesParameter)),
