@@ -24,6 +24,10 @@ class MCMatchingTools {
   double getDPtbyPt (const reco::Particle& mc,const reco::Particle& reco) ;
   double getDEoverE (const reco::Particle& mc,const reco::Particle& reco) ;
   int getProductCharge (const reco::Candidate& mc,const reco::Candidate& reco); 
+  
+  double getDeltaR (const reco::Particle& candidate1, const reco::Particle& candidate2) ;
+  double getDeltaPhi (const reco::Particle& candidate1,const reco::Particle& candidate2) ;
+
 
 
  private: 
@@ -38,8 +42,6 @@ class MCMatchingTools {
   double MaxElectronEta_;
 
   std::vector<const reco::Candidate*>* getMCLeptons();
-  double getDeltaR (const reco::Particle& candidate1, const reco::Particle& candidate2) ;
-  double getDeltaPhi (const reco::Particle& candidate1,const reco::Particle& candidate2) ;
   void ResolveMatch (MatchMap& matchMap);
   int LowerDPbyP (std::vector<const reco::Candidate*>& cands, const reco::Candidate* imc); 
   
