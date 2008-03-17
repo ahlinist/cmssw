@@ -13,7 +13,7 @@
 //
 // Original Author:  Simone Gennai
 //      Created:  Thu Apr  6 09:56:23 CEST 2006
-// $Id: ConeIsolation.cc,v 1.27 2008/02/12 11:11:32 gennai Exp $
+// $Id: ConeIsolation.cc,v 1.28 2008/02/13 13:10:43 gennai Exp $
 //
 //
 
@@ -51,8 +51,8 @@ using namespace std;
 //
 ConeIsolation::ConeIsolation(const edm::ParameterSet& iConfig)
 {
-  jetTrackSrc = iConfig.getParameter<string>("JetTrackSrc");
-  vertexSrc = iConfig.getParameter<string>("vertexSrc");
+  jetTrackSrc = iConfig.getParameter<InputTag>("JetTrackSrc");
+  vertexSrc = iConfig.getParameter<InputTag>("vertexSrc");
   usingVertex = iConfig.getParameter<bool>("useVertex");
   usingBeamSpot = iConfig.getParameter<bool>("useBeamSpot"); //If false the OfflinePrimaryVertex will be used.
   beamSpotProducer = iConfig.getParameter<edm::InputTag>("BeamSpotProducer");

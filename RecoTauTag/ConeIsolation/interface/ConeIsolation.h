@@ -6,7 +6,7 @@
  * It returns two collections: base collection is the JetTag, and extended Collection which is the IsolatedTauTagInfo.
  * The method implemented in the IsolatedTauTagInfo class are used to compute the discriminator variable.
  * A trick is used to link the IsolatedTauTagInfo to a smart reference to the JetTag.   
- *  $Revision: 1.9 $
+ *  $Revision: 1.10 $
  *  \author Simone Gennai
  */
 
@@ -30,8 +30,8 @@ class ConeIsolation : public edm::EDProducer {
       virtual void produce(edm::Event&, const edm::EventSetup&);
  private:
       ConeIsolationAlgorithm* m_algo;
-      std::string jetTrackSrc;
-      std::string vertexSrc;
+      edm::InputTag jetTrackSrc;
+      edm::InputTag vertexSrc;
       bool usingVertex;
       edm::InputTag beamSpotProducer;
       bool usingBeamSpot;
