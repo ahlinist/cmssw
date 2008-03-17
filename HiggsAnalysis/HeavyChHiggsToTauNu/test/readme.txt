@@ -64,6 +64,7 @@
 				MySimTrack and MyHit classes 
 29.2.2008/S.Lehti CMSSW_1_6_10	GenJets added in vector<MyMCParticles>,
                                 pid=0,status=4
+17.3.2008/S.Lehti CMSSW_1_6_10	Bugfix: PFTau::isolationPFCands() missing from PT tracks
 
 	How to compile:
 	-compile
