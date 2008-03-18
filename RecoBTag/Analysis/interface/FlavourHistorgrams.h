@@ -206,6 +206,7 @@ FlavourHistograms<T>::FlavourHistograms (TString baseNameTitle_ , TString baseNa
     theHisto_ni    = (TH1F*) gDirectory->Get(theBaseNameTitle + "NI"  ) ; 
     theHisto_dus   = (TH1F*) gDirectory->Get(theBaseNameTitle + "DUS" ) ; 
     theHisto_dusg  = (TH1F*) gDirectory->Get(theBaseNameTitle + "DUSG") ;
+
   }
 
   // defaults for other data members
@@ -279,16 +280,16 @@ FlavourHistograms<T>::fill ( const int & flavour,  const T * variable) const
 template <class T>
 void FlavourHistograms<T>::write(const bool allHisto) const {
   // here: write histogram to specified output file
-  if (allHisto) theHisto_all ->Write() ; 
-  if (allHisto) theHisto_d   ->Write() ; 
-  if (allHisto) theHisto_u   ->Write() ; 
-  if (allHisto) theHisto_s   ->Write() ; 
-  theHisto_c   ->Write() ; 
-  theHisto_b   ->Write() ; 
-  theHisto_g   ->Write() ; 
-  if (allHisto) theHisto_ni  ->Write() ; 
-  theHisto_dus ->Write() ; 
-  theHisto_dusg->Write() ;
+  if (allHisto && theHisto_all) theHisto_all ->Write() ; 
+  if (allHisto && theHisto_d) theHisto_d   ->Write() ; 
+  if (allHisto && theHisto_u) theHisto_u   ->Write() ; 
+  if (allHisto && theHisto_s) theHisto_s   ->Write() ; 
+  if (theHisto_c)theHisto_c   ->Write() ; 
+  if (theHisto_b)theHisto_b   ->Write() ; 
+  if (theHisto_g)theHisto_g   ->Write() ; 
+  if (allHisto && theHisto_ni) theHisto_ni  ->Write() ; 
+  if (theHisto_dus)theHisto_dus ->Write() ; 
+  if (theHisto_dusg)theHisto_dusg->Write() ;
 }
 
 template <class T>
