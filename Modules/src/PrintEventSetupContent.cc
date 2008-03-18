@@ -1,3 +1,4 @@
+
 // -*- C++ -*-
 //
 // Package:    PrintEventSetupContent
@@ -21,6 +22,7 @@
 // system include files
 #include <memory>
 #include <map>
+#include <iostream>
 // user include files
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 
@@ -28,9 +30,12 @@
 
 #include "FWCore/Modules/src/EventSetupRecordDataGetter.h"
 
-#include "FWCore/Framework/interface/EventSetup.h"//add by Yao
+#include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
- 
+
+#include "FWCore/Framework/interface/ValidityInterval.h"
+#include "FWCore/Framework/interface/IOVSyncValue.h"
+#include "DataFormats/Provenance/interface/EventID.h" 
 //
 // class decleration
 //
@@ -110,7 +115,9 @@ PrintEventSetupContent::analyze(const edm::Event& iEvent, const edm::EventSetup&
 	  edm::LogSystem("ESContent")<<"\n"<<"Changed Record"<<"\n  "<<"<datatype>"<<" "<<"'label'"; 
       cacheIdentifiers_[*itrecords] = rec->cacheIdentifier();
       edm::LogAbsolute("ESContent")<<itrecords->name()<<std::endl;
-     
+
+      edm::LogAbsolute("ESContent")<<" start: "<<rec->validityInterval().first().eventID()<<" time: "<<rec->validityInterval().first().time().value()<<std::endl;
+      edm::LogAbsolute("ESContent")<<" end:   "<<rec->validityInterval().last().eventID()<<" time: "<<rec->validityInterval().last().time().value()<<std::endl;
       rec->fillRegisteredDataKeys(data);
       for(Data::iterator itdata = data.begin(), itdataend = data.end(); itdata != itdataend; ++itdata){
 	edm::LogAbsolute("ESContent")<<"  "<<itdata->type().name()<<" '"<<itdata->name().value()<<"'"<<std::endl;
