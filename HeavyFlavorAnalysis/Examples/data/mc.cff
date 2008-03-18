@@ -1,7 +1,9 @@
 source = PythiaSource { 
   untracked int32 pythiaPylistVerbosity = 0
+  # -- To get full decay branching fraction list enable the following two lines
+  # untracked int32 pythiaPylistVerbosity = 12
+  # untracked int32 maxEventsToPrint      = 1
   untracked bool pythiaHepMCVerbosity   = false
-  untracked int32 maxEventsToPrint      = 0  
   untracked double filterEfficiency     = 1.
 
   PSet PythiaParameters = {
@@ -14,7 +16,7 @@ source = PythiaSource {
     include "Configuration/Generator/data/PythiaUESettings.cfi"
 
     vstring processParameters = {
-      'MSEL=1         ! Min Bias'
+      'MSEL=5         ! Min Bias'
       # to add specific decays, see Bp2JpsiKp.cff or Bs2MuMu.cff
     }
   }
@@ -31,3 +33,22 @@ module bFilter = PythiaFilter {
 }
 
 
+# -- Require single muon 
+module MuFilter = PythiaFilter {
+  untracked int32 ParticleID = 13
+  untracked double MinEta = -2.5
+  untracked double MaxEta = 2.5
+  untracked double MinPt = 2.5
+  untracked int32 Status = 1
+}
+
+# -- Filter on dimuon kinematical acceptance
+module MuMuFilter = MCParticlePairFilter {
+  untracked vint32 ParticleID1 = {13}
+  untracked vint32 ParticleID2 = {13}
+  untracked int32 ParticleCharge = -1
+  untracked vint32 Status = {1,1}
+  untracked vdouble MinPt = {2.5,2.5}
+  untracked vdouble MinEta = {-2.5,-2.5}
+  untracked vdouble MaxEta = {2.5,2.5}
+}

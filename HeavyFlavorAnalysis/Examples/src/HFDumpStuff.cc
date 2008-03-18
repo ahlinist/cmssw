@@ -65,7 +65,8 @@ void HFDumpStuff::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
   // -- Candidates list
   try {
-    Handle<CandidateCollection> candidates1Handle;
+    //    Handle<CandidateCollection> candidates1Handle;
+    Handle<reco::CandidateView> candidates1Handle;
     iEvent.getByLabel(fCandidates1Label.c_str(), candidates1Handle);
     for (int i = 0; i < candidates1Handle->size(); ++ i ) {
       const Candidate &p = (*candidates1Handle)[i];
@@ -82,7 +83,8 @@ void HFDumpStuff::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   }
 
   try {
-    Handle<CandidateCollection> candidates2Handle;
+    //    Handle<CandidateCollection> candidates2Handle;
+    Handle<reco::CandidateView> candidates2Handle;
     iEvent.getByLabel(fCandidates2Label.c_str(), candidates2Handle);
     for (int i = 0; i < candidates2Handle->size(); ++ i ) {
       const Candidate &p = (*candidates2Handle)[i];
@@ -99,7 +101,8 @@ void HFDumpStuff::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   }
 
   try {
-    Handle<CandidateCollection> candidates3Handle;
+    //    Handle<CandidateCollection> candidates3Handle;
+    Handle<reco::CandidateView> candidates3Handle;
     iEvent.getByLabel(fCandidates3Label.c_str(), candidates3Handle);
     for (int i = 0; i < candidates3Handle->size(); ++ i ) {
       const Candidate &p = (*candidates3Handle)[i];

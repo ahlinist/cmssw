@@ -3,7 +3,7 @@
 TChain chain("T1");
 //chain.Add("scratch/ana/bs2mumu_famos.root");
 //chain.Add("scratch/ana/bp2jpsikp_famos.root");
-chain.Add("scratch/ana/mc_famos.root");
+chain.Add("scratch/ana/test.root");
 
 // -- Set up for reading
 Int_t nentries(0), nb(0);
