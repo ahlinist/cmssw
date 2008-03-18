@@ -16,6 +16,7 @@
 #include "DataFormats/TrackReco/interface/TrackExtraFwd.h"
 #include "DataFormats/TrackReco/interface/TrackFwd.h"
 #include "DataFormats/TrackReco/interface/Track.h"
+#include "DataFormats/MuonReco/interface/Muon.h"
 
 #include "FWCore/Framework/interface/ESHandle.h"
 
@@ -34,11 +35,13 @@ extern TFile       *gHFFile;
 
 using namespace std;
 using namespace edm;
+using namespace reco;
 
 
 // ----------------------------------------------------------------------
 HFDumpTracks::HFDumpTracks(const edm::ParameterSet& iConfig):
   fTracksLabel(iConfig.getUntrackedParameter<string>("tracksLabel", string("ctfWithMaterialTracks"))),
+  fMuonsLabel(iConfig.getUntrackedParameter<InputTag>("muonsLabel")),
   fGenEventLabel(iConfig.getUntrackedParameter<string>("generatorEventLabel", string("source"))),
   fSimTracksLabel(iConfig.getUntrackedParameter<string>("simTracksLabel", string("famosSimHits"))),
   fAssociatorLabel(iConfig.getUntrackedParameter<string>("associatorLabel", string("TrackAssociatorByChi2"))), 
@@ -65,11 +68,26 @@ HFDumpTracks::~HFDumpTracks() {
 void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
   // -- get the collection of RecoTracks 
-  edm::Handle<reco::TrackCollection> tracks;
+  edm::Handle<TrackCollection> tracks;
   iEvent.getByLabel(fTracksLabel.c_str(), tracks);  
 
+  // -- get the collection of muons and store their corresponding track indices
+  vector<int> muonIndices;
+  Handle<MuonCollection> hMuons;
+  iEvent.getByLabel(fMuonsLabel, hMuons);
+  const Track* tt = 0;
+  for (MuonCollection::const_iterator muon = hMuons->begin(); muon != hMuons->end(); ++muon) {
+    TrackRef track = muon->track();
+    muonIndices.push_back((muon->track()).index());
+  }
+  if (fVerbose > 0) cout << "==>HFDumpSignal> nMuons = " << hMuons->size() << endl;
+  for (int i = 0; i < muonIndices.size(); ++i) {
+    cout << i << " " << muonIndices[i] << endl;
+  }
+  
+
   // -- get the tracking particle collection needed for truth matching. Only on RECO data tier!
-  reco::RecoToSimCollection recSimColl;
+  RecoToSimCollection recSimColl;
   if (1 == fDoTruthMatching) {
     try {
       edm::Handle<TrackingParticleCollection> trackingParticles;
@@ -98,8 +116,8 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   h1->Fill(tracks->size());
   h2->Fill(tracks->size());
   for (unsigned int i = 0; i < tracks->size(); ++i){    
-    reco::TrackRef rTrack(tracks, i);
-    reco::Track track(*rTrack);
+    TrackRef rTrack(tracks, i);
+    Track track(*rTrack);
 
     pTrack = gHFEvent->addRecTrack();
     pTrack->fIndex = rTrack.index();
@@ -113,6 +131,12 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     pTrack->fChi2 = track.chi2();
     pTrack->fDof = int(track.ndof());
     pTrack->fHits = track.numberOfValidHits();  
+    pTrack->fMuID = 0.; 
+    for (int im = 0; im < muonIndices.size(); ++im) {
+      if (i == muonIndices[im]) {
+	pTrack->fMuID = 1.; 
+      }
+    }
 
     int gen_pdg_id(-99999), gen_id(-99999), gen_cnt(0);
 

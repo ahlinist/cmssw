@@ -39,7 +39,7 @@ HFDumpSignal::HFDumpSignal(const edm::ParameterSet& iConfig) :
   fTracksLabel(iConfig.getUntrackedParameter<string>("tracksLabel", string("goodTracks"))), 
   fPrimaryVertexLabel(iConfig.getUntrackedParameter<string>("PrimaryVertexLabel", string("offlinePrimaryVerticesFromCTFTracks"))),
   // fMuonsLabel(iConfig.getUntrackedParameter<string>("muonsLabel", string("goodTracks"))) {
-  fMuonsLabel(iConfig.getUntrackedParameter<edm::InputTag>("muonsLabel")) {
+  fMuonsLabel(iConfig.getUntrackedParameter<InputTag>("muonsLabel")) {
   using namespace std;
   cout << "----------------------------------------------------------------------" << endl;
   cout << "--- HFDumpSignal constructor" << endl;

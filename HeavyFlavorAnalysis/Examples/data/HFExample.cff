@@ -127,6 +127,7 @@ module genDump = HFDumpGenerator {
 module trkDump = HFDumpTracks {
   untracked int32  verbose                = 0
   # for Famos:
+  untracked InputTag muonsLabel           = paramMuons:ParamGlobalMuons
   untracked string tracksLabel            = "gsWithMaterialTracks"
   untracked string associatorLabel        = "TrackAssociatorByChi2"
   untracked string trackingParticlesLabel = "trackingParticles"
