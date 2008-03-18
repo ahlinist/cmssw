@@ -7,7 +7,13 @@
 #include "DataFormats/METReco/interface/CaloMETCollection.h"
 #include "DataFormats/METReco/interface/GenMETCollection.h"
 
+#include "SimDataFormats/TrackingAnalysis/interface/TrackingVertexContainer.h"
+#include "SimDataFormats/TrackingAnalysis/interface/TrackingVertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
+
 #include "FWCore/Framework/interface/ESHandle.h"
+#include "CommonTools/Statistics/interface/ChiSquared.h"
 
 #include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAna00Event.hh"
 #include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaTrack.hh"
@@ -27,6 +33,7 @@ using namespace edm;
 // ----------------------------------------------------------------------
 HFDumpStuff::HFDumpStuff(const edm::ParameterSet& iConfig):
   fGenEventScaleLabel(iConfig.getUntrackedParameter<string>("GenEventScaleLabel", string("genEventScale"))),
+  fPrimaryVertexLabel(iConfig.getUntrackedParameter<string>("PrimaryVertexLabel", string("offlinePrimaryVerticesFromCTFTracks"))),
   fCandidates1Label(iConfig.getUntrackedParameter<string>("Candidates1Label", string("JPsiToMuMu"))),
   fCandidates2Label(iConfig.getUntrackedParameter<string>("Candidates2Label", string("JPsiToMuMu"))),
   fCandidates3Label(iConfig.getUntrackedParameter<string>("Candidates3Label", string("JPsiToMuMu"))),
@@ -63,6 +70,27 @@ void HFDumpStuff::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   }
 
 
+  // -- Primary vertex
+  try {
+    edm::Handle<reco::VertexCollection> recoPrimaryVertexCollection;
+    iEvent.getByLabel(fPrimaryVertexLabel.c_str(), recoPrimaryVertexCollection);
+    const reco::VertexCollection vertices = *(recoPrimaryVertexCollection.product());
+    const reco::Vertex pV = vertices[0]; // ???? 
+    ChiSquared chi2(pV.chi2(), pV.ndof());
+    
+    TAnaVertex *pVtx = new TAnaVertex();
+    pVtx->setInfo(chi2.value(), int(chi2.degreesOfFreedom()), chi2.probability(), 0, 0);
+    pVtx->fPoint.SetXYZ(pV.position().x(),
+                        pV.position().y(),
+                        pV.position().z());
+    gHFEvent->fPrimaryVertex = *pVtx;
+
+  } catch (cms::Exception &ex) {
+    //    cout << ex.explainSelf() << endl;
+    cout << "==>HFDumpStuff> primaryVertex " << fPrimaryVertexLabel.c_str() << " not found " << endl;
+  } 
+
+
   // -- Candidates list
   try {
     //    Handle<CandidateCollection> candidates1Handle;
@@ -70,7 +98,7 @@ void HFDumpStuff::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     iEvent.getByLabel(fCandidates1Label.c_str(), candidates1Handle);
     for (int i = 0; i < candidates1Handle->size(); ++ i ) {
       const Candidate &p = (*candidates1Handle)[i];
-      cout << "==> candidates1 " << i << " id = " << p.pdgId() 
+      cout << "==>HFDumpStuff>  candidates1 " << i << " id = " << p.pdgId() 
 	   << " mass = " << p.mass()
 	   << " pt = " << p.pt() 
 	   << " phi = " << p.phi() 
@@ -79,7 +107,7 @@ void HFDumpStuff::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     }
   } catch (cms::Exception &ex) {
     //    cout << ex.explainSelf() << endl;
-    cout << "Candidate list " << fCandidates1Label.c_str() << " not found " << endl;
+    cout << "==>HFDumpStuff> Candidate list " << fCandidates1Label.c_str() << " not found " << endl;
   }
 
   try {
@@ -97,7 +125,7 @@ void HFDumpStuff::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     }
   } catch (cms::Exception &ex) {
     //    cout << ex.explainSelf() << endl;
-    cout << "Candidate list " << fCandidates2Label.c_str() << " not found " << endl;
+    cout << "==>HFDumpStuff> Candidate list " << fCandidates2Label.c_str() << " not found " << endl;
   }
 
   try {
@@ -115,7 +143,7 @@ void HFDumpStuff::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     }
   } catch (cms::Exception &ex) {
     //    cout << ex.explainSelf() << endl;
-    cout << "Candidate list " << fCandidates3Label.c_str() << " not found " << endl;
+    cout << "==>HFDumpStuff> Candidate list " << fCandidates3Label.c_str() << " not found " << endl;
   }
 
 
@@ -128,7 +156,7 @@ void HFDumpStuff::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     gHFEvent->fMET0 = TVector3(met->p4().x(), met->p4().y(), 0.);  
   } catch (cms::Exception &ex) {
     //    cout << ex.explainSelf() << endl;
-    cout << "MET " << fMETLabel.c_str() << " not found " << endl;
+    cout << "==>HFDumpStuff> MET " << fMETLabel.c_str() << " not found " << endl;
   }
 
 
@@ -141,7 +169,7 @@ void HFDumpStuff::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     gHFEvent->fGenMET = TVector3(genmet.px(), genmet.py(), 0.);  
   } catch (cms::Exception &ex) {
     //    cout << ex.explainSelf() << endl;
-    cout << "GenMET " << fGenMETLabel.c_str() << " not found " << endl;
+    cout << "==>HFDumpStuff> GenMET " << fGenMETLabel.c_str() << " not found " << endl;
   }
 
   cout << "==HFDumpStuff> GenMET =  (" 
