@@ -82,7 +82,8 @@ int main(int argc, char* argv[]) {
                                                    handleEmptyRuns,
                                                    handleEmptyLumis);
 
-        mockEventProcessor.runToCompletion();
+        bool onlineStateTransitions = false;
+        mockEventProcessor.runToCompletion(onlineStateTransitions);
       }
     }
   }

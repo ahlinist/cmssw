@@ -268,7 +268,8 @@ int main(int argc, char* argv[])
     proc = procTmp;
     proc->beginJob();
     proc.on();
-    proc->runToCompletion();
+    bool onlineStateTransitions = false;
+    proc->runToCompletion(onlineStateTransitions);
     proc.off();
     proc->endJob();
     rc = 0;

@@ -39,7 +39,7 @@ namespace edm {
   }
 
   edm::MockEventProcessor::StatusCode
-  MockEventProcessor::runToCompletion(bool runWasSet) {
+  MockEventProcessor::runToCompletion(bool onlineStateTransitions) {
     statemachine::Machine myMachine(this,
                                     fileMode_,
                                     handleEmptyRuns_,

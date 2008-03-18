@@ -26,7 +26,7 @@ namespace edm
                        bool handleEmptyRuns,
                        bool handleEmptyLumis);
 
-    virtual StatusCode runToCompletion(bool runWasSet = false);
+    virtual StatusCode runToCompletion(bool onlineStateTransitions);
 
     virtual void readFile();
     virtual void closeInputFile();

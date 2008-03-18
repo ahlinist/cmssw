@@ -295,7 +295,7 @@ namespace edm {
 
     // These classes work with the boost statemachine
 
-    virtual StatusCode runToCompletion(bool runWasSet = false);
+    virtual StatusCode runToCompletion(bool onlineStateTransitions);
 
     virtual void readFile();
     virtual void closeInputFile();
