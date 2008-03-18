@@ -39,6 +39,7 @@ public:
   void        startAnalysis();
   void        eventProcessing();
   void        fillHist();
+  void        readCuts(TString filename, int dump = 1);
 
 };
 
