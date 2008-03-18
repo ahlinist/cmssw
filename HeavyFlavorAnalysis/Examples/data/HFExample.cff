@@ -140,6 +140,9 @@ module signalDump = HFDumpSignal {
   untracked int32  verbose                = 0
   untracked string tracksLabel            = "gsWithMaterialTracks"
   untracked InputTag muonsLabel           = paramMuons:ParamGlobalMuons
+  untracked double muonPt                 = 3.0
+  untracked double kaonPt                 = 1.0
+  untracked double deltaR                 = 1.5
 }
 
 module jetDump = HFDumpJets {
