@@ -39,8 +39,7 @@ int main(int argc, char *argv[]) {
   // -- Some defaults
   TString dirBase("./");               // this could point to "/home/ursl/data/root/."
   TString dirName("."); dirspec = 0;   // and this to, e.g. "bmm", "bee", "bem", ...
-  TString cutFile("bmm.default.cuts");
-  TString decaySign("2mu");
+  TString cutFile("tree.defaults.cuts");
 
   TString treeName("T1");
   TString evtClassName("TAna00Event");
@@ -56,6 +55,12 @@ int main(int argc, char *argv[]) {
   }
 
 
+  // -- Prepare histfilename variation with (part of) cut file name
+  TString fn(cutFile);
+  fn.ReplaceAll("cuts/", "");
+  fn.ReplaceAll("cuts", "");
+  fn.ReplaceAll("tree", "");
+  fn.ReplaceAll(".", "");
   
   // -- Determine filename for output histograms and 'final' small/reduced tree
   TString  barefile(fileName), chainFile, meta, histfile;
@@ -64,13 +69,13 @@ int main(int argc, char *argv[]) {
     if (barefile.Contains("chains/")) {
       meta = barefile;
       barefile.ReplaceAll("chains/", "");
-      histfile = barefile + "." + ".root";
+      histfile = barefile + "." + fn + ".root";
       if (dirspec) {
         histfile = dirBase + "/" + dirName + "/" + histfile;
       }
     } else {
       meta = barefile;
-      histfile =  barefile + "." + ".root";
+      histfile =  barefile + "." + fn + ".root";
       if (dirspec) {
         histfile = dirBase + "/" + dirName + "/" + histfile;
       }
@@ -79,7 +84,7 @@ int main(int argc, char *argv[]) {
     int fl = barefile.Last('/');
     TString bla(barefile);
     bla.Replace(0, fl+1, ' '); bla.Strip(TString::kLeading, ' ');  bla.Remove(0,1);
-    histfile =  bla + "." + ".root";
+    histfile =  bla + "." + fn + ".root";
     if (dirspec) {
       histfile = dirBase + "/" + dirName + "/" + histfile;
     }
@@ -91,7 +96,7 @@ int main(int argc, char *argv[]) {
     bla.Replace(0, fl+1, ' '); bla.Strip(TString::kLeading, ' ');  bla.Remove(0,1);
     histfile =  bla;
     histfile.ReplaceAll(".root", "");
-    histfile +=  ".root";
+    histfile +=  "." + fn + ".root";
     if (dirspec) {
       histfile = dirBase + "/" + dirName + "/" + histfile;
     }
@@ -133,6 +138,7 @@ int main(int argc, char *argv[]) {
   treeReader a(chain, evtClassName);
   a.openHistFile(histfile); 
   a.bookHist(); 
+  a.readCuts(cutFile, 1);
 
   a.startAnalysis(); 
   a.loop(nevents, start);

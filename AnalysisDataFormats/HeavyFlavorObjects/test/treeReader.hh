@@ -37,6 +37,7 @@ public:
   virtual void openHistFile(TString filename);
   virtual void closeHistFile();
   virtual void bookHist();
+  virtual void readCuts(TString filename, int dump = 1);
 
   virtual void startAnalysis();
   virtual int  loop(int nevents = 1, int start = -1);
@@ -49,6 +50,7 @@ protected:
   TChain     *fpChain;        // pointer to the analyzed TTree or TChain
   TFile      *fpHistFile;     // for output histograms and reduced trees
   TString     fChainFileName; // the name of the chain file
+  TString     fCutFile;       // contains file with the cut definitions
   int         fNentries;      // number of events in chain
   int         fEvent;         // current event number
 
@@ -60,6 +62,17 @@ protected:
 
   // -- Histogram pointers 
   TTree *fTree;
+
+
+  // -- Cut values
+  double 
+      PTLO
+    , PTHI
+    , ETALO
+    , ETAHI   
+    ;
+  int TYPE;
+  
 
 };
 

@@ -41,6 +41,71 @@ void treeReader::closeHistFile() {
 
 }
 
+// --------------------------------------------------------------------------------------------------
+void treeReader::readCuts(TString filename, int dump) {
+  char  buffer[200];
+  fCutFile = filename;
+  if (dump) cout << "Reading " << fCutFile.Data() << " for cut settings" << endl;
+  sprintf(buffer, "%s", fCutFile.Data());
+  ifstream is(buffer);
+  char CutName[100];
+  float CutValue;
+  int ok(0);
+
+  TString fn(fCutFile.Data());
+
+  if (dump) {
+    cout << "====================================" << endl;
+    cout << "Cut file  " << fCutFile.Data() << endl;
+    cout << "------------------------------------" << endl;
+  }
+
+  TH1D *hcuts = new TH1D("hcuts", "", 1000, 0., 1000.);
+  hcuts->GetXaxis()->SetBinLabel(1, fn.Data());
+  int ibin; 
+
+  while (is.getline(buffer, 200, '\n')) {
+    ok = 0;
+    if (buffer[0] == '#') {continue;}
+    if (buffer[0] == '/') {continue;}
+    sscanf(buffer, "%s %f", CutName, &CutValue);
+
+    if (!strcmp(CutName, "TYPE")) {
+      TYPE = int(CutValue); ok = 1;
+      if (dump) cout << "TYPE:           " << TYPE << endl;
+    }
+
+    if (!strcmp(CutName, "PTLO")) {
+      PTLO = CutValue; ok = 1;
+      if (dump) cout << "PTLO:           " << PTLO << " GeV" << endl;
+      ibin = 11;
+      hcuts->SetBinContent(ibin, PTLO);
+      hcuts->GetXaxis()->SetBinLabel(ibin, "p_{T}^{min}(l) [GeV]");
+    }
+
+    if (!strcmp(CutName, "ETALO")) {
+      ETALO = CutValue; ok = 1;
+      if (dump) cout << "ETALO:           " << ETALO << endl;
+      ibin = 13;
+      hcuts->SetBinContent(ibin, ETALO);
+      hcuts->GetXaxis()->SetBinLabel(ibin, "#eta_{T}^{min}(l)");
+    }
+
+    if (!strcmp(CutName, "ETAHI")) {
+      ETAHI = CutValue; ok = 1;
+      if (dump) cout << "ETAHI:           " << ETAHI << endl;
+      ibin = 14;
+      hcuts->SetBinContent(ibin, ETAHI);
+      hcuts->GetXaxis()->SetBinLabel(ibin, "#eta_{T}^{max}(l)");
+    }
+
+    if (!ok) cout << "==> ERROR: Don't know about variable " << CutName << endl;
+  }
+
+  if (dump)  cout << "------------------------------------" << endl;
+}
+
+
 // ----------------------------------------------------------------------
 int treeReader::loop(int nevents, int start) {
   int nb = 0, maxEvents(0);
