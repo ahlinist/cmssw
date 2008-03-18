@@ -39,12 +39,17 @@ HFDumpSignal::HFDumpSignal(const edm::ParameterSet& iConfig) :
   fTracksLabel(iConfig.getUntrackedParameter<string>("tracksLabel", string("goodTracks"))), 
   fPrimaryVertexLabel(iConfig.getUntrackedParameter<string>("PrimaryVertexLabel", string("offlinePrimaryVerticesFromCTFTracks"))),
   // fMuonsLabel(iConfig.getUntrackedParameter<string>("muonsLabel", string("goodTracks"))) {
-  fMuonsLabel(iConfig.getUntrackedParameter<InputTag>("muonsLabel")) {
+  fMuonsLabel(iConfig.getUntrackedParameter<InputTag>("muonsLabel")),
+  fMuonPt(iConfig.getUntrackedParameter<double>("muonPt", 1.0)), 
+  fKaonPt(iConfig.getUntrackedParameter<double>("kaonPt", 1.0)), 
+  fDeltaR(iConfig.getUntrackedParameter<double>("deltaR", 1.5)) {
   using namespace std;
   cout << "----------------------------------------------------------------------" << endl;
   cout << "--- HFDumpSignal constructor" << endl;
   cout << "--- tracksLabel:            " << fTracksLabel.c_str() << endl;
   cout << "--- muonsLabel:             " << fMuonsLabel << endl;
+  cout << "--- kaonPt:                 " << fKaonPt << endl;
+  cout << "--- deltaR:                 " << fDeltaR << endl;
   cout << "----------------------------------------------------------------------" << endl;
 
 }
@@ -82,10 +87,12 @@ void HFDumpSignal::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
   // -- Look at muons
   if (fVerbose > 0) cout << "==>HFDumpSignal> nMuons = " << hMuons->size() << endl;
+  vector<int> muonIndices;
   const reco::Track* tt = 0;
   for (reco::MuonCollection::const_iterator muon = hMuons->begin(); muon != hMuons->end(); ++muon) {
     TrackRef track = muon->track();
     tt = &(*track);
+    if (tt->pt() <  fMuonPt) continue;
     recTracks.push_back(tt);
     
     pTrack   = gHFEvent->addSigTrack();  
@@ -97,7 +104,7 @@ void HFDumpSignal::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 			      tt->phi()
 			      ); 
     pTrack->fIndex  = (muon->track()).index();
-
+    muonIndices.push_back((muon->track()).index());
     if (fVerbose > 0) {
       pTrack->dump();
     }
@@ -105,7 +112,7 @@ void HFDumpSignal::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
   // -- Choose another (random) track close to muons
   if (recTracks.size() == 2) {
-    TLorentzVector m1, m2, psi, k; 
+    TLorentzVector m1, m2, k, psi, b; 
     m1.SetPtEtaPhiM(recTracks.at(0)->pt(),
 		    recTracks.at(0)->eta(),
 		    recTracks.at(0)->phi(),
@@ -116,9 +123,11 @@ void HFDumpSignal::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 		    MMUON); 
 
     psi = m1 + m2; 
+    cout << "J/psi mass = " << psi.M() << endl;
 
-    int foundTrack(0); 
+    int foundTrack(-1); 
     for (unsigned int i = 0; i < hTracks->size(); ++i){    
+      if (i == muonIndices[0] || i == muonIndices[1]) continue; // skip muons!
       reco::TrackRef rTrack(hTracks, i);
       reco::Track track(*rTrack);
 
@@ -127,28 +136,31 @@ void HFDumpSignal::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 		     track.phi(),
 		     MKAON); 
 
-      if (k.Perp() > 1.0 && psi.DeltaR(k) < 1.5) {
-	++foundTrack;
-	recTracks.push_back(&track); 
-
-	pTrack   = gHFEvent->addSigTrack();  
-	pTrack->fMCID     = track.charge()*-13; 
-	pTrack->fGenIndex = -1; 
-	pTrack->fQ        = track.charge();
-	pTrack->fPlab.SetPtEtaPhi(track.pt(),
-				  track.eta(),
-				  track.phi()
-				  ); 
-	pTrack->fIndex  = rTrack.index();
-
-	break;
-      }
+      b = psi + k; 
+      
+      if (k.Perp() < fKaonPt) continue;
+      if (psi.DeltaR(k) > fDeltaR) continue;
+      if (b.M() < 4.0) continue;
+      if (b.M() > 6.0) continue;
+      foundTrack = i;
     }
-
-    if (0 == foundTrack) {
+    if (-1 == foundTrack) {
       cout << "==>HFDumpSignal> No additional track found close to dimuons" << endl;
       return;
     }
+    reco::TrackRef rTrack(hTracks, foundTrack);
+    reco::Track track(*rTrack);
+    recTracks.push_back(&track); 
+    pTrack   = gHFEvent->addSigTrack();  
+    pTrack->fMCID     = track.charge()*-13; 
+    pTrack->fGenIndex = -1; 
+    pTrack->fQ        = track.charge();
+    pTrack->fPlab.SetPtEtaPhi(track.pt(),
+			      track.eta(),
+			      track.phi()
+			      ); 
+    pTrack->fIndex  = rTrack.index();
+    
     
     // -- Make transient tracks needed for vertexing
     edm::ESHandle<TransientTrackBuilder> theB;
@@ -243,7 +255,7 @@ void HFDumpSignal::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     pVtx->fC3d  = comp3d; 
 
     
-    // -- Build candidate
+    // -- Build candidate: B+
     TAnaCand  *pCand = gHFEvent->addCand();
     
     pCand->fPlab = comp.Vect();

@@ -29,6 +29,7 @@ class HFDumpSignal : public edm::EDAnalyzer {
   int           fVerbose; 
   std::string   fTracksLabel, fPrimaryVertexLabel;
   edm::InputTag fMuonsLabel;
+  double        fMuonPt, fKaonPt, fDeltaR;
 
 };
 

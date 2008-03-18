@@ -80,12 +80,8 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     TrackRef track = muon->track();
     muonIndices.push_back((muon->track()).index());
   }
-  if (fVerbose > 0) cout << "==>HFDumpSignal> nMuons = " << hMuons->size() << endl;
-  for (int i = 0; i < muonIndices.size(); ++i) {
-    cout << i << " " << muonIndices[i] << endl;
-  }
-  
-
+  if (fVerbose > 0) cout << "==>HFDumpTracks> nMuons = " << hMuons->size() << endl;
+ 
   // -- get the tracking particle collection needed for truth matching. Only on RECO data tier!
   RecoToSimCollection recSimColl;
   if (1 == fDoTruthMatching) {
