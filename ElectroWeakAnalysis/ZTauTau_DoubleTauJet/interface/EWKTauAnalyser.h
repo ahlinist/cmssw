@@ -14,15 +14,9 @@
 #include "DataFormats/TauReco/interface/PFTau.h"
 #include "DataFormats/JetReco/interface/GenJet.h"
 
-//#include "DataFormats/HLTReco/interface/HLTFilterObject.h"
-
 #include <TH1.h>
 #include <TH2.h>
 #include <TProfile.h>
-
-//class PFTau;
-class TFile;
-//class GenJet;
 
 class EWKTauAnalyser: public edm::EDAnalyzer {
 
@@ -61,7 +55,7 @@ protected:
   void findInvariantMass(const reco::PFTau& jet);
   std::pair<unsigned int, unsigned int> getTauIndices(std::map<unsigned int, unsigned int>& smap);
   //  bool matchWithHLTJet(const PFTau& tau, const Handle<reco::HLTFilterObjectWithRefs>& hltHandle, double& dr);
-
+  void printStatistics(std::ostream& out);
   static bool applySelection(int bitWord, int bitPosition); 
 
 public:
@@ -77,53 +71,53 @@ public:
 
 private:
 
-  std::string PFTaus_;
-  std::string TauDiscriminatorByIsolationProducer_;
-  std::string metSrc_;
-  std::string jetTagSrc_;
-  std::string genJetSrc_;
-  std::string caloJetSrc_;
-  std::string jetCorrector_;
-  std::string muonSrc_;
-  std::string trackSrc_;
-  std::string vertexSrc_;
-  std::string electronSrc_;
-  std::string caloInvMassSrc_;
-  std::string genParticles_;
-  std::string ipSrc_;
-  std::string statFile_;
-  std::string hltJetSrc_;
+  int _debugFlg;
 
-  double maxTauMass_;
-  double tightTauLeadingTrkPt_;
-  double looseTauLeadingTrkPt_;
-  double leadingTrkPtFrac_;
-  double minZMass_; 
-  double maxZMass_; 
-  int maxExtraJets_;
-  double minIPSignificanceSum_;
-  double minJetEt_;
-  double maxHadTowerEnergy_;
+  std::string _PFTaus;
+  std::string _TauDiscriminatorByIsolationProducer;
+  std::string _jetTagSrc;
+  std::string _metSrc;
+  std::string _genJetSrc;
+  std::string _caloJetSrc;
+  std::string _electronSrc;
+  std::string _muonSrc;
+  std::string _trackSrc;
+  std::string _vertexSrc;
+  std::string _hltJetSrc;
+  std::string _genParticles;
+  std::string _caloInvMassSrc;
+  std::string _ipSrc;
 
-  double jetEtMinMETCorr_;
-  double jetEMfracMETCorr_;
+  double _maxTauMass;
+  double _tightTauLeadingTrkPt;
+  double _looseTauLeadingTrkPt;
+  double _leadingTrkPtFrac;
+  double _minZMass; 
+  double _maxZMass; 
+     int _maxExtraJets;
+  double _minIPSignificanceSum;
+  double _minJetEt;
+  double _maxHadTowerEnergy;
 
-  double matchingCone_;
-  double isolationCone_;
-  double signalCone_;
-  double leadingTrackPt_;
-  double minimumTrackPt_;
-  double clusterTrackMatchingCone_;
+  std::string _jetCorrector;
+  double _jetEtMinMETCorr;
+  double _jetEMfracMETCorr;
 
-  std::string dataType_;
-  std::string analysisType_;
-  std::string selbitStr_;
-  int selectionBits;
-  double eventCharge_;
+  double _matchingCone;
+  double _signalCone;
+  double _isolationCone;
+  double _leadingTrackPt;
+  double _minimumTrackPt;
+  double _clusterTrackMatchingCone;
+
+  std::string _statFile;
+  std::string _dataType;
+  std::string _analysisType;
+  std::string _selbitStr;
+     int selectionBits;
+  double _eventCharge;
   
   int nEvent;
-
-  TFile* theFile;
 
   TH1F* nJetsH;
   TH1F* nTauCandH;
@@ -258,13 +252,7 @@ private:
   TH1D* maxEtTauH;
   TH1D* minEtTauH;
 
-  std::string fileName;
-  int debugFlg;
-
-  int nStat[13];
-  int nEvtCharge[3];
-
-protected:
-  std::ofstream fStatLog_;
+  int _nStat[13];
+  int _nEvtCharge[3];
 };
 #endif
