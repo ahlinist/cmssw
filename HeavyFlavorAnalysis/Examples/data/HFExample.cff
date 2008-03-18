@@ -25,7 +25,7 @@ include "SimTracker/TrackAssociation/data/TrackAssociatorByChi2.cfi"
 
 
 # ----------------------------------------------------------------------
-# -- Candidates
+# -- Luca's Candidates
 # ----------------------------------------------------------------------
 include "PhysicsTools/RecoCandAlgos/data/allTracks.cfi"
   replace allTracks.src = gsWithMaterialTracks
@@ -45,11 +45,14 @@ module goodTracks = CandSelector {
 #}
 
 
+# ----------------------------------------------------------------------
+# -- Vertexing
+# ----------------------------------------------------------------------
+include "TrackingTools/TransientTrack/data/TransientTrackBuilder.cfi"
 
 # ----------------------------------------------------------------------
 # -- Jets
 # ----------------------------------------------------------------------
-
 module caloJetCollectionClone = CaloJetShallowCloneProducer{
   InputTag src = iterativeCone5CaloJets
 }
@@ -122,7 +125,7 @@ module genDump = HFDumpGenerator {
 } 
 
 module trkDump = HFDumpTracks {
-  untracked int32  verbose = 1
+  untracked int32  verbose                = 0
   # for Famos:
   untracked string tracksLabel            = "gsWithMaterialTracks"
   untracked string associatorLabel        = "TrackAssociatorByChi2"
@@ -133,8 +136,8 @@ module trkDump = HFDumpTracks {
 } 
 
 module signalDump = HFDumpSignal {
-  untracked int32  verbose = 1
-  untracked string tracksLabel            = "goodTracks"
+  untracked int32  verbose                = 0
+  untracked string tracksLabel            = "gsWithMaterialTracks"
   untracked InputTag muonsLabel           = paramMuons:ParamGlobalMuons
 }
 
