@@ -7,14 +7,13 @@
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 
+#include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
+#include "TrackingTools/Records/interface/TransientTrackRecord.h"
+
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-
-class TFile;
-class TTree;
-class TAna00Event;
 
 // ----------------------------------------------------------------------
 class HFDumpSignal : public edm::EDAnalyzer {
@@ -27,7 +26,9 @@ class HFDumpSignal : public edm::EDAnalyzer {
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
   virtual void endJob() ;
 
-  std::string fTracksLabel;
+  int           fVerbose; 
+  std::string   fTracksLabel;
+  edm::InputTag fMuonsLabel;
 
 };
 

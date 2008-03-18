@@ -1,0 +1,25 @@
+
+// If you want to use the (CMS default) CLHEP random, 
+// set these ones to false
+replace famosPileUp.UseTRandomEngine = true
+replace famosSimHits.UseTRandomEngine = true
+replace siTrackerGaussianSmearingRecHits.UseTRandomEngine = true
+replace caloRecHits.UseTRandomEngine = true
+replace paramMuons.UseTRandomEngine = true
+
+# Famos sequences
+include "FastSimulation/Configuration/data/FamosSequences.cff"
+// If you want to turn on/off pile-up
+# replace famosPileUp.PileUpSimulator.averageNumber = 5.0    
+// Parametrized magnetic field
+replace VolumeBasedMagneticFieldESProducer.useParametrizedTrackerField = true
+// You may not want to simulate everything for your study
+replace famosSimHits.SimulateCalorimetry = true
+replace famosSimHits.SimulateTracking = true
+# replace famosSimHits.SimulateMuons = false
+
+# Tracker MisAlignement 
+# include "FastSimulation/Configuration/data/MisAlignment.cff" 
+
+# ECAL miscalibration. 
+# include "FastSimulation/Configuration/data/MisCalibration.cff"
