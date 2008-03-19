@@ -20,7 +20,6 @@ namespace edm {
   class EDAnalyzer;
   class EDFilter;
   class EDLooper;
-  class EDLooperHelper;
   class EDProducer;
   class Event;
   class EventPrincipal;

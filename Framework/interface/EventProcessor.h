@@ -54,7 +54,6 @@ $Id$
 #include "DataFormats/Provenance/interface/ReleaseVersion.h"
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EventHelperDescription.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/ParameterSet/interface/ProcessDesc.h"
 #include "FWCore/Framework/src/PrincipalCache.h"
@@ -348,8 +347,6 @@ namespace edm {
     StatusCode processInputFiles(int numberEventsToProcess, bool repeatable,
 		     event_processor::Msg m);
     StatusCode doneAsync(event_processor::Msg m);
-    EventHelperDescription runOnce(boost::shared_ptr<RunPrincipal>& rp,
-                                   boost::shared_ptr<LuminosityBlockPrincipal>& lbp);
     
     boost::shared_ptr<FileBlock> beginInputFile();
     boost::shared_ptr<RunPrincipal> beginRun();
@@ -426,7 +423,6 @@ namespace edm {
     bool                                          handleEmptyLumis_;
     bool                                          sourceActive_;
 
-    friend class EDLooperHelper;
     friend class event_processor::StateSentry;
     friend class event_processor::LuminosityBlockSentry;
     friend class event_processor::RunSentry;
