@@ -21,6 +21,7 @@
 //#define HCAL_HLX_NUM_BUNCHES 3564
 //#define HCAL_HLX_NUM_HLXS 36
 
+// Changes
 // Namespace for the HCAL HLX
 namespace HCAL_HLX
 {
@@ -30,8 +31,6 @@ namespace HCAL_HLX
   struct LUMI_SUMMARY {
     float DeadtimeNormalization; 
     float LHCNormalization; // recieved from LHC 
-    float ETNormalization;  // Calculated
-    float OccNormalization;
 
     float InstantLumi;
     float InstantLumiErr;
@@ -40,10 +39,12 @@ namespace HCAL_HLX
     float InstantETLumi;
     float InstantETLumiErr;
     u8 InstantETLumiQlty;
+    float ETNormalization;  // Calculated
 
     float InstantOccLumi[2];
     float InstantOccLumiErr[2];
     u8 InstantOccLumiQlty[2];
+    float OccNormalization[2];
 
     float lumiNoise[2];
   };
@@ -70,10 +71,23 @@ namespace HCAL_HLX
     float ETSum;
   };
 
-  
-  struct LEVEL1_HLT_TRIGGER {
-    int TriggerValue;
-    int TriggerBitNumber;    
+  struct LUMI_HF_RING_SET{
+    int Set1Rings;
+    int Set2Rings;
+    int EtSumRings;
+  };
+
+  struct LEVEL1_TRIGGER {
+    int L1lineNumber;
+    int L1Scaler;
+    int L1RateCounter;
+  };
+
+  struct HLT{
+    int TriggerPath;
+    int InputCount;
+    int AcceptCount;
+    int PrescaleFactor;
   };
 
   struct TRIGGER_DEADTIME {
