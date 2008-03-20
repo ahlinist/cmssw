@@ -16,7 +16,8 @@
           "pythiaHgg"
         }
 
-        include "Configuration/Generator/data/PythiaUESettings.cfi"
+        include 
+"Configuration/Spring08Production/data/PythiaUESettings.cfi"
 
         vstring pythiaHgg = {
           "MSEL=0                  ! User defined processes",
@@ -25,8 +26,6 @@
           "MSUB(115) = 1           ! g g    -> g gam",
           "CKIN(3)=25              ! pthat min for 2->2 interaction",
           "CKIN(4)=-1              ! pthat max for 2->2 interaction",
-      'MSTP(51)=10042     ! choice of proton parton-distribution set (D=7 and means CTEQ 5L)',
-      'MSTP(52)=2     ! choice of proton pdf library (D=1 and means internal pythia one, according to MSTP(51) above'	  
 
         }
       }
