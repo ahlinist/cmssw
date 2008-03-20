@@ -62,18 +62,6 @@
    <rChild name="eregalgo:ECAL"/>
   <rRotation name="rotations:000D"/>
  </PosPart>
- <PosPart copyNumber="1">
-   <rParent name="eregalgo:ECAL"/>
-   <rChild name="eregalgo:EREG"/>
-   <Translation x="0*mm" y="0*mm" z="[eecon:EEzMagF]"/>
-  <rRotation name="rotations:000D"/>
- </PosPart>
- <PosPart copyNumber="2">
-   <rParent name="eregalgo:ECAL"/>
-   <rChild name="eregalgo:EREG"/>
-   <Translation x="0*mm" y="0*mm" z="-[eecon:EEzMagF]"/>
-  <rRotation name="rotations:180D"/>
- </PosPart>
 </PosPartSection>
 
 </DDDefinition>
