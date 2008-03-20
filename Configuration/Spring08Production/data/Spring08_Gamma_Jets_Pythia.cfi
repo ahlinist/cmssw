@@ -25,7 +25,7 @@
           "MSUB(29) = 1            ! q g    -> q gam",
           "MSUB(115) = 1           ! g g    -> g gam",
           "CKIN(3)=25              ! pthat min for 2->2 interaction",
-          "CKIN(4)=-1              ! pthat max for 2->2 interaction",
+          "CKIN(4)=-1              ! pthat max for 2->2 interaction"
 
         }
       }

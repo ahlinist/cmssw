@@ -14,8 +14,6 @@ source = PythiaSource
       "pythiaMinBias" 
     }
 
-    # Default (mostly empty - to keep PYTHIA default) card file
-    # Name of the set is "pythiaDefault"
         include 
 "Configuration/Spring08Production/data/PythiaUESettings.cfi"
 
@@ -31,7 +29,7 @@ source = PythiaSource
       'MSUB(92)=1     ! Min bias process, single diffractive',
       'MSUB(93)=1     ! Min bias process, single diffractive',
       'MSUB(94)=1     ! Min bias process, double diffractive',
-      'MSUB(95)=1     ! Min bias process',
+      'MSUB(95)=1     ! Min bias process'
     }
 
   }
