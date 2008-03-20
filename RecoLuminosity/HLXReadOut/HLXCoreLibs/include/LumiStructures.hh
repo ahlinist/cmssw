@@ -52,15 +52,15 @@ namespace HCAL_HLX
   struct LUMI_DETAIL {
     float LHCLumi[HCAL_HLX_MAX_BUNCHES]; // Sum of LHC.data over all HLX's
 
-    float BXNormalization[HCAL_HLX_MAX_BUNCHES];
-
     float ETLumi[HCAL_HLX_MAX_BUNCHES];
     float ETLumiErr[HCAL_HLX_MAX_BUNCHES];
     u8 ETLumiQlty[HCAL_HLX_MAX_BUNCHES];
+    float ETBXNormalization[HCAL_HLX_MAX_BUNCHES];
 
     float OccLumi[2][HCAL_HLX_MAX_BUNCHES];
     float OccLumiErr[2][HCAL_HLX_MAX_BUNCHES];
     u8 OccLumiQlty[2][HCAL_HLX_MAX_BUNCHES];
+    float OccBXNormalization[2][HCAL_HLX_MAX_BUNCHES];
   };
 
   struct LUMI_THRESHOLD {
