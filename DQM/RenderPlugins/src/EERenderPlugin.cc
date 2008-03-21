@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.59 2008/02/14 20:24:53 lat Exp $
+// $Id: EERenderPlugin.cc,v 1.60 2008/03/10 21:24:38 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.59 $
-  \date $Date: 2008/02/14 20:24:53 $
+  \version $Revision: 1.60 $
+  \date $Date: 2008/03/10 21:24:38 $
 */
 
 #include "TH1F.h"
@@ -625,6 +625,17 @@ void EERenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
       text9->GetYaxis()->SetRange(y1, y2);    
       text9->Draw("text,same");
     }
+    return;
+  }
+
+  if( o.name.find( "EEOT MEM" ) < o.name.size() ) {
+    int x1 = text3->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+    int x2 = text3->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+    int y1 = text3->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+    int y2 = text3->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+    text3->GetXaxis()->SetRange(x1, x2);
+    text3->GetYaxis()->SetRange(y1, y2);
+    text3->Draw("text,same");
     return;
   }
 
