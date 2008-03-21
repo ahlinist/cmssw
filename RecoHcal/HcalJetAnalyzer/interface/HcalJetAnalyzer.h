@@ -5,8 +5,6 @@
 #define TRIG_RPCDT  4
 #define TRIG_HB     5
 
-
-
 // system include files
 #include <memory>
 #include <string>
@@ -28,8 +26,10 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 
+#include "PhysicsTools/UtilAlgos/interface/TFileService.h"
+
 #include "DataFormats/Candidate/interface/Candidate.h"
-#include "DataFormats/HLTReco/interface/HLTFilterObject.h"
+//#include "DataFormats/HLTReco/interface/HLTFilterObject.h"
 #include "DataFormats/Common/interface/TriggerResults.h"
 #include "DataFormats/L1Trigger/interface/L1ParticleMap.h"
 
@@ -97,6 +97,9 @@
 #include "DataFormats/HcalRecHit/interface/HcalRecHitCollections.h"
 #include "DataFormats/HcalDetId/interface/HcalDetId.h"
 #include "DataFormats/HcalRecHit/interface/HBHERecHit.h" 
+#include "DataFormats/EcalDetId/interface/EBDetId.h" 
+#include "DataFormats/EcalDetId/interface/EEDetId.h"
+#include "DataFormats/EcalRecHit/interface/EcalUncalibratedRecHit.h"
 #include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
 #include "DataFormats/HcalDigi/interface/HcalDigiCollections.h"
 #include "DataFormats/EcalDigi/interface/EBDataFrame.h"
@@ -111,6 +114,8 @@
 #include <iostream>
 #include <cmath>
 #include <fstream>
+
+
 const int MAXGEN =  10;
 const int MAXRPC =  20;
 const int MAXDTBX = 20;
