@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.57 2008/03/21 19:56:53 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.58 2008/03/21 20:05:30 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.57 $
-  \date $Date: 2008/03/21 19:56:53 $
+  \version $Revision: 1.58 $
+  \date $Date: 2008/03/21 20:05:30 $
 */
 
 #include <TH1F.h>
@@ -451,6 +451,21 @@ void EBRenderPlugin::preDrawTH1F( TCanvas *c, const DQMNet::CoreObject &o ) {
   }
 
   if( o.name.find( "EBMM DCC" ) < o.name.size() ) {
+   gPad->SetBottomMargin(0.2);
+   obj->GetXaxis()->LabelsOption("v");
+  }
+
+  if( o.name.find( "EBMM digi number profile" ) < o.name.size() ) {
+   gPad->SetBottomMargin(0.2);
+   obj->GetXaxis()->LabelsOption("v");
+  }
+
+  if( o.name.find( "EBMM hit number profile" ) < o.name.size() ) {
+   gPad->SetBottomMargin(0.2);
+   obj->GetXaxis()->LabelsOption("v");
+  }
+
+  if( o.name.find( "EBMM TP digi number profile" ) < o.name.size() ) {
    gPad->SetBottomMargin(0.2);
    obj->GetXaxis()->LabelsOption("v");
   }
