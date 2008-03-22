@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.64 2008/03/22 08:30:27 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.65 2008/03/22 08:46:09 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.64 $
-  \date $Date: 2008/03/22 08:30:27 $
+  \version $Revision: 1.65 $
+  \date $Date: 2008/03/22 08:46:09 $
 */
 
 #include "TH1F.h"
@@ -275,17 +275,17 @@ void EERenderPlugin::preDrawTProfile( TCanvas *c, const DQMNet::CoreObject &o ) 
   obj->SetStats(kTRUE);
   gPad->SetLogy(0);
 
-  if( o.name.find( "EEMM digis number profile" ) < o.name.size() ) {
+  if( o.name.find( "EEMM digi number profile" ) < o.name.size() ) {
    gPad->SetBottomMargin(0.2);
    obj->GetXaxis()->LabelsOption("v");
   }
 
-  if( o.name.find( "EEMM hits number profile" ) < o.name.size() ) {
+  if( o.name.find( "EEMM hit number profile" ) < o.name.size() ) {
    gPad->SetBottomMargin(0.2);
    obj->GetXaxis()->LabelsOption("v");
   }
 
-  if( o.name.find( "EEMM TP digis number profile" ) < o.name.size() ) {
+  if( o.name.find( "EEMM TP digi number profile" ) < o.name.size() ) {
    gPad->SetBottomMargin(0.2);
    obj->GetXaxis()->LabelsOption("v");
   }
