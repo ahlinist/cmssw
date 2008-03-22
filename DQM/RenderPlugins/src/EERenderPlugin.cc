@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.63 2008/03/22 08:23:46 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.64 2008/03/22 08:30:27 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.63 $
-  \date $Date: 2008/03/22 08:23:46 $
+  \version $Revision: 1.64 $
+  \date $Date: 2008/03/22 08:30:27 $
 */
 
 #include "TH1F.h"
@@ -275,6 +275,21 @@ void EERenderPlugin::preDrawTProfile( TCanvas *c, const DQMNet::CoreObject &o ) 
   obj->SetStats(kTRUE);
   gPad->SetLogy(0);
 
+  if( o.name.find( "EEMM digis number profile" ) < o.name.size() ) {
+   gPad->SetBottomMargin(0.2);
+   obj->GetXaxis()->LabelsOption("v");
+  }
+
+  if( o.name.find( "EEMM hits number profile" ) < o.name.size() ) {
+   gPad->SetBottomMargin(0.2);
+   obj->GetXaxis()->LabelsOption("v");
+  }
+
+  if( o.name.find( "EEMM TP digis number profile" ) < o.name.size() ) {
+   gPad->SetBottomMargin(0.2);
+   obj->GetXaxis()->LabelsOption("v");
+  }
+
   return;
 
 }
@@ -470,21 +485,6 @@ void EERenderPlugin::preDrawTH1F( TCanvas *c, const DQMNet::CoreObject &o ) {
   }
 
   if( o.name.find( "EEMM DCC" ) < o.name.size() ) {
-   gPad->SetBottomMargin(0.2);
-   obj->GetXaxis()->LabelsOption("v");
-  }
-
-  if( o.name.find( "EEMM digis number profile" ) < o.name.size() ) {
-   gPad->SetBottomMargin(0.2);
-   obj->GetXaxis()->LabelsOption("v");
-  }
-
-  if( o.name.find( "EEMM hits number profile" ) < o.name.size() ) {
-   gPad->SetBottomMargin(0.2);
-   obj->GetXaxis()->LabelsOption("v");
-  }
-
-  if( o.name.find( "EEMM TP digis number profile" ) < o.name.size() ) {
    gPad->SetBottomMargin(0.2);
    obj->GetXaxis()->LabelsOption("v");
   }

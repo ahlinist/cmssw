@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.59 2008/03/22 08:23:46 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.60 2008/03/22 08:30:27 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.59 $
-  \date $Date: 2008/03/22 08:23:46 $
+  \version $Revision: 1.60 $
+  \date $Date: 2008/03/22 08:30:27 $
 */
 
 #include <TH1F.h>
@@ -249,6 +249,21 @@ void EBRenderPlugin::preDrawTProfile( TCanvas *c, const DQMNet::CoreObject &o ) 
   obj->SetStats(kTRUE);
   gPad->SetLogy(0);
 
+  if( o.name.find( "EBMM digis number profile" ) < o.name.size() ) {
+   gPad->SetBottomMargin(0.2);
+   obj->GetXaxis()->LabelsOption("v");
+  }
+
+  if( o.name.find( "EBMM hits number profile" ) < o.name.size() ) {
+   gPad->SetBottomMargin(0.2);
+   obj->GetXaxis()->LabelsOption("v");
+  }
+
+  if( o.name.find( "EBMM TP digis number profile" ) < o.name.size() ) {
+   gPad->SetBottomMargin(0.2);
+   obj->GetXaxis()->LabelsOption("v");
+  }
+
   return;
 
 }
@@ -451,21 +466,6 @@ void EBRenderPlugin::preDrawTH1F( TCanvas *c, const DQMNet::CoreObject &o ) {
   }
 
   if( o.name.find( "EBMM DCC" ) < o.name.size() ) {
-   gPad->SetBottomMargin(0.2);
-   obj->GetXaxis()->LabelsOption("v");
-  }
-
-  if( o.name.find( "EBMM digis number profile" ) < o.name.size() ) {
-   gPad->SetBottomMargin(0.2);
-   obj->GetXaxis()->LabelsOption("v");
-  }
-
-  if( o.name.find( "EBMM hits number profile" ) < o.name.size() ) {
-   gPad->SetBottomMargin(0.2);
-   obj->GetXaxis()->LabelsOption("v");
-  }
-
-  if( o.name.find( "EBMM TP digis number profile" ) < o.name.size() ) {
    gPad->SetBottomMargin(0.2);
    obj->GetXaxis()->LabelsOption("v");
   }
