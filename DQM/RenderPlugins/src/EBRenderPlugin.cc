@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.60 2008/03/22 08:30:27 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.61 2008/03/22 08:46:09 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.60 $
-  \date $Date: 2008/03/22 08:30:27 $
+  \version $Revision: 1.61 $
+  \date $Date: 2008/03/22 08:46:09 $
 */
 
 #include <TH1F.h>
@@ -249,17 +249,17 @@ void EBRenderPlugin::preDrawTProfile( TCanvas *c, const DQMNet::CoreObject &o ) 
   obj->SetStats(kTRUE);
   gPad->SetLogy(0);
 
-  if( o.name.find( "EBMM digis number profile" ) < o.name.size() ) {
+  if( o.name.find( "EBMM digi number profile" ) < o.name.size() ) {
    gPad->SetBottomMargin(0.2);
    obj->GetXaxis()->LabelsOption("v");
   }
 
-  if( o.name.find( "EBMM hits number profile" ) < o.name.size() ) {
+  if( o.name.find( "EBMM hit number profile" ) < o.name.size() ) {
    gPad->SetBottomMargin(0.2);
    obj->GetXaxis()->LabelsOption("v");
   }
 
-  if( o.name.find( "EBMM TP digis number profile" ) < o.name.size() ) {
+  if( o.name.find( "EBMM TP digi number profile" ) < o.name.size() ) {
    gPad->SetBottomMargin(0.2);
    obj->GetXaxis()->LabelsOption("v");
   }
