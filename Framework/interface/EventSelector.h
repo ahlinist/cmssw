@@ -64,10 +64,8 @@ namespace edm
       testSelectionOverlap(Strings const& pathspec1,
                            Strings const& pathspec2,
                            Strings const& fullTriggerList);
-    static boost::shared_ptr<TriggerResults>
-      maskTriggerResults(Strings const& pathspecs,
-                         TriggerResults const& inputResults,
-                         Strings const& fullTriggerList);
+    boost::shared_ptr<TriggerResults>
+      maskTriggerResults(TriggerResults const& inputResults);
     static std::vector<std::string>
       getEventSelectionVString(edm::ParameterSet const& pset);
 
