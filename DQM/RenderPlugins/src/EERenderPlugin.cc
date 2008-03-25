@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.67 2008/03/25 07:10:00 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.68 2008/03/25 07:22:08 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.67 $
-  \date $Date: 2008/03/25 07:10:00 $
+  \version $Revision: 1.68 $
+  \date $Date: 2008/03/25 07:22:08 $
 */
 
 #include "TH1F.h"
@@ -228,16 +228,31 @@ void EERenderPlugin::preDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o 
   obj->SetStats(kFALSE);
 
   if( o.name.find( "EELT shape" ) < o.name.size() ) {
+    c->SetTheta(+30.);
+    c->SetPhi(-60.);
+    obj->GetXaxis()->SetTitleOffset(2.5);
+    obj->GetYaxis()->SetTitleOffset(3.0);
+    obj->GetZaxis()->SetTitleOffset(1.3);
     obj->SetOption("lego");
     return;
   }
 
   if( o.name.find( "EELDT shape" ) < o.name.size() ) {
+    c->SetTheta(+30.);
+    c->SetPhi(-60.);
+    obj->GetXaxis()->SetTitleOffset(2.5);
+    obj->GetYaxis()->SetTitleOffset(3.0);
+    obj->GetZaxis()->SetTitleOffset(1.3);
     obj->SetOption("lego");
     return;
   }
 
   if( o.name.find( "EETPT shape" ) < o.name.size() ) {
+    c->SetTheta(+30.);
+    c->SetPhi(-60.);
+    obj->GetXaxis()->SetTitleOffset(2.5);
+    obj->GetYaxis()->SetTitleOffset(3.0);
+    obj->GetZaxis()->SetTitleOffset(1.3);
     obj->SetOption("lego");
     return;
   }
