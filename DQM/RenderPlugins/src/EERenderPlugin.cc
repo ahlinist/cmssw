@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.66 2008/03/22 09:04:24 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.67 2008/03/25 07:10:00 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.66 $
-  \date $Date: 2008/03/22 09:04:24 $
+  \version $Revision: 1.67 $
+  \date $Date: 2008/03/25 07:10:00 $
 */
 
 #include "TH1F.h"
@@ -226,6 +226,21 @@ void EERenderPlugin::preDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o 
 
   gStyle->SetOptStat(0);
   obj->SetStats(kFALSE);
+
+  if( o.name.find( "EELT shape" ) < o.name.size() ) {
+    obj->SetOption("lego");
+    return;
+  }
+
+  if( o.name.find( "EELDT shape" ) < o.name.size() ) {
+    obj->SetOption("lego");
+    return;
+  }
+
+  if( o.name.find( "EETPT shape" ) < o.name.size() ) {
+    obj->SetOption("lego");
+    return;
+  }
 
   // Occupancy-like (10 x grays) plots
   if( o.name.find( "EECLT" ) < o.name.size() ) {

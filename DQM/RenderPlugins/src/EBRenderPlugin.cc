@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.62 2008/03/22 09:04:24 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.63 2008/03/25 07:10:00 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.62 $
-  \date $Date: 2008/03/22 09:04:24 $
+  \version $Revision: 1.63 $
+  \date $Date: 2008/03/25 07:10:00 $
 */
 
 #include <TH1F.h>
@@ -193,6 +193,16 @@ void EBRenderPlugin::preDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o 
   gStyle->SetOptStat(0);
   obj->SetStats(kFALSE);
   gPad->SetLogy(0);
+
+  if( o.name.find( "EBLT shape" ) < o.name.size() ) {
+    obj->SetOption("lego");
+    return;
+  }
+
+  if( o.name.find( "EBTPT shape" ) < o.name.size() ) {
+    obj->SetOption("lego");
+    return;
+  }
 
   // Occupancy-like (10 x grays) plots
   if( o.name.find( "EBCLT" ) < o.name.size() ) {
