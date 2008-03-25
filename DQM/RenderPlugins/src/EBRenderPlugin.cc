@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.63 2008/03/25 07:10:00 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.64 2008/03/25 07:22:08 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.63 $
-  \date $Date: 2008/03/25 07:10:00 $
+  \version $Revision: 1.64 $
+  \date $Date: 2008/03/25 07:22:08 $
 */
 
 #include <TH1F.h>
@@ -195,11 +195,21 @@ void EBRenderPlugin::preDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o 
   gPad->SetLogy(0);
 
   if( o.name.find( "EBLT shape" ) < o.name.size() ) {
+    c->SetTheta(+30.);
+    c->SetPhi(-60.);
+    obj->GetXaxis()->SetTitleOffset(2.5);
+    obj->GetYaxis()->SetTitleOffset(3.0);
+    obj->GetZaxis()->SetTitleOffset(1.3);
     obj->SetOption("lego");
     return;
   }
 
   if( o.name.find( "EBTPT shape" ) < o.name.size() ) {
+    c->SetTheta(+30.);
+    c->SetPhi(-60.);
+    obj->GetXaxis()->SetTitleOffset(2.5);
+    obj->GetYaxis()->SetTitleOffset(3.0);
+    obj->GetZaxis()->SetTitleOffset(1.3);
     obj->SetOption("lego");
     return;
   }
