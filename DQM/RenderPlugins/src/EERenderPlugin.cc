@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.65 2008/03/22 08:46:09 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.66 2008/03/22 09:04:24 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.65 $
-  \date $Date: 2008/03/22 08:46:09 $
+  \version $Revision: 1.66 $
+  \date $Date: 2008/03/22 09:04:24 $
 */
 
 #include "TH1F.h"
@@ -550,6 +550,18 @@ void EERenderPlugin::postDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o
   TProfile2D* obj = dynamic_cast<TProfile2D*>( o.object );
 
   assert( obj );
+
+  if( o.name.find( "EELT shape" ) < o.name.size() ) {
+    return;
+  }
+
+  if( o.name.find( "EELDT shape" ) < o.name.size() ) {
+    return;
+  }
+
+  if( o.name.find( "EETPT shape" ) < o.name.size() ) {
+    return;
+  }
 
   c->SetBit(TGraph::kClipFrame);
   TLine l;
