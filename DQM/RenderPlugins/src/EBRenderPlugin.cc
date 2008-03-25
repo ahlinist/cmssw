@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.61 2008/03/22 08:46:09 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.62 2008/03/22 09:04:24 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.61 $
-  \date $Date: 2008/03/22 08:46:09 $
+  \version $Revision: 1.62 $
+  \date $Date: 2008/03/22 09:04:24 $
 */
 
 #include <TH1F.h>
@@ -531,6 +531,14 @@ void EBRenderPlugin::postDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o
   TProfile2D* obj = dynamic_cast<TProfile2D*>( o.object );
 
   assert( obj );
+
+  if( o.name.find( "EBLT shape" ) < o.name.size() ) {
+    return;
+  }
+
+  if( o.name.find( "EBTPT shape" ) < o.name.size() ) {
+    return;
+  }
 
   if( o.name.find( "EBCLT" ) < o.name.size() ) {
     int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
