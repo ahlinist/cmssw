@@ -70,6 +70,10 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
   CSCRecHit2D::ADCContainer adcMap;
   CSCRecHit2D::ChannelContainer wgroups;
 
+  // @@ FIXME:  These are dummy values for now ...
+  float PositionWithinTheStrip= 0.;
+  float SigmaWithinTheStrip = 0.;
+  int quality = 0;
 
   // Find wire hit position and wire properties
   wgroups = wHit.wgroups();
@@ -129,7 +133,7 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
     // Now compute the errors properly on local x and y
     LocalError localerr = layergeom_->localError( centerStrip, sigma, sigmaWire );
 
-    CSCRecHit2D rechit( id, lp0, localerr, strips, adcMap, wgroups, tpeak, chisq, prob );
+    CSCRecHit2D rechit( id, lp0, localerr, strips, adcMap, wgroups, tpeak, PositionWithinTheStrip, SigmaWithinTheStrip, quality);
 
     return rechit;  
   } 
@@ -215,7 +219,7 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripAndWire(const CSCDetId& id, const CSCLa
   LocalError localerr = layergeom_->localError( centerStrip, sigma, sigmaWire );
 
   // store rechit    
-  CSCRecHit2D rechit( id, lp0, localerr, strips, adcMap, wgroups, tpeak, chisq, prob );
+  CSCRecHit2D rechit( id, lp0, localerr, strips, adcMap, wgroups, tpeak, PositionWithinTheStrip, SigmaWithinTheStrip, quality);
 
   return rechit;
 }
@@ -244,6 +248,11 @@ CSCRecHit2D CSCMake2DRecHit::hitFromWireOnly(const CSCDetId& id, const CSCLayer*
   CSCRecHit2D::ChannelContainer strips;
   CSCRecHit2D::ChannelContainer wiregroups;
   CSCRecHit2D::ADCContainer adcMap;
+
+  // @@ FIXME:  These are dummy values for now ...
+  float PositionWithinTheStrip= 0.;
+  float SigmaWithinTheStrip = 0.;
+  int quality = 0;
 
   // Find wire hit position and wire properties
   float tpeak = wHit.tmax() * 50.;
@@ -280,7 +289,7 @@ CSCRecHit2D CSCMake2DRecHit::hitFromWireOnly(const CSCDetId& id, const CSCLayer*
 
   LocalError localerr(dx2, dxy, dy2);
 
-  CSCRecHit2D rechit( id, lp0, localerr, strips, adcMap, wgroups, tpeak, chisq, prob );
+  CSCRecHit2D rechit( id, lp0, localerr, strips, adcMap, wgroups, tpeak, PositionWithinTheStrip, SigmaWithinTheStrip, quality);
 
   if (debug) std::cout << "Found wire hit in layer " << this_layer << " with local position:  x = " << x << "  y = " << y << std::endl; 
 
@@ -310,6 +319,11 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripOnly(const CSCDetId& id, const CSCLayer
 
   CSCRecHit2D::ChannelContainer wgroups;
   CSCRecHit2D::ADCContainer adcMap;
+
+  // @@ FIXME:  These are dummy values for now ...
+  float PositionWithinTheStrip= 0.;
+  float SigmaWithinTheStrip = 0.;
+  int quality = 0;
 
   // Strip position and properties
   CSCRecHit2D::ChannelContainer strips = sHit.strips();
@@ -350,7 +364,7 @@ CSCRecHit2D CSCMake2DRecHit::hitFromStripOnly(const CSCDetId& id, const CSCLayer
 
   LocalError localerr(dx2, dxy, dy2);
 
-  CSCRecHit2D rechit( id, lp0, localerr, strips, adcMap, wgroups, tpeak, chisq, prob );
+  CSCRecHit2D rechit( id, lp0, localerr, strips, adcMap, wgroups, tpeak, PositionWithinTheStrip, SigmaWithinTheStrip, quality);
 
   if (debug) std::cout << "Found strip hit in layer " << this_layer << " with local position:  x = " << x << "  y = " << y << std::endl; 
 
