@@ -30,6 +30,7 @@ public:
 
   // -- Particle ID
   double         fMuID, fElID, fKaID;
+  int            fMuType;
 
   // -- Momentum
   TVector3       fPlab;
