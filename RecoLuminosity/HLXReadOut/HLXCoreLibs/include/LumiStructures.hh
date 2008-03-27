@@ -72,9 +72,9 @@ namespace HCAL_HLX
   };
 
   struct LUMI_HF_RING_SET{
-    int Set1Rings;
-    int Set2Rings;
-    int EtSumRings;
+    std::string Set1Rings;
+    std::string Set2Rings;
+    std::string EtSumRings;
   };
 
   struct LEVEL1_TRIGGER {
