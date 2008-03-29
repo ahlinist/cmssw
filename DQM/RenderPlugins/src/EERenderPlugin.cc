@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.68 2008/03/25 07:22:08 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.69 2008/03/25 08:34:19 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.68 $
-  \date $Date: 2008/03/25 07:22:08 $
+  \version $Revision: 1.69 $
+  \date $Date: 2008/03/25 08:34:19 $
 */
 
 #include "TH1F.h"
@@ -152,13 +152,13 @@ void EERenderPlugin::initialise( int argc, char **argv ) {
 
 bool EERenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &i ) {
  
-  if( o.name.find( "EcalEndcap/EE" ) == 0 ) {
+#ifdef DEBUG
+  std::cout << "EERenderPlugin:applies " << o.name << std::endl;
+#endif
+
+  if( o.name.find( "EcalEndcap" ) < o.name.size() ) {
     return true;
   } 
-
-  if( o.name.find( "EcalEndcap/EcalInfo" ) == 0 ) {
-    return true;
-  }
 
   return false;
 

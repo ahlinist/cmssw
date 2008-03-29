@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.64 2008/03/25 07:22:08 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.65 2008/03/25 08:34:19 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.64 $
-  \date $Date: 2008/03/25 07:22:08 $
+  \version $Revision: 1.65 $
+  \date $Date: 2008/03/25 08:34:19 $
 */
 
 #include <TH1F.h>
@@ -117,14 +117,14 @@ void EBRenderPlugin::initialise( int argc, char **argv ) {
 }
 
 bool EBRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &i ) {
- 
-  if( o.name.find( "EcalBarrel/EB" ) == 0 ) {
+
+#ifdef DEBUG
+  std::cout << "EBRenderPlugin:applies " << o.name << std::endl;
+#endif
+
+  if( o.name.find( "EcalBarrel" ) < o.name.size() ) {
     return true;
   } 
-
-  if( o.name.find( "EcalBarrel/EcalInfo" ) == 0 ) {
-    return true;
-  }
 
   return false;
 
