@@ -74,11 +74,10 @@ extern "C" {
 /*
 ME2Pythia.f
       double precision etcjet,rclmax,etaclmax,qcut,clfact
-      integer maxjets,minjets,iexcfile,ktsche
+      integer maxjets,minjets,iexcfile,ktsche,nexcres,excres(30)
       common/MEMAIN/etcjet,rclmax,etaclmax,qcut,clfact,
-     $   maxjets,minjets,iexcfile,ktsche
-      DATA ktsche/0/
-      DATA qcut,clfact/0d0,0d0/
+     $   maxjets,minjets,iexcfile,ktsche,nexcres,excres
+
 */
 extern "C" {
  extern struct MEMAIN{
@@ -91,6 +90,8 @@ extern "C" {
  int minjets;
  int iexcfile;
  int ktsche;
+ int nexcres;
+ int excres[30];
  }memain_;
 }
 
