@@ -29,16 +29,9 @@ $Id$
 #include "FWCore/Framework/interface/DataViewImpl.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 
-#include "FWCore/Utilities/interface/GCCPrerequisite.h"
-
 namespace edm {
 
-#if GCC_PREREQUISITE(3,4,4)
   class LuminosityBlock : private DataViewImpl
-#else
-  // Bug in gcc3.2.3 compiler forces public inheritance
-  class LuminosityBlock : public DataViewImpl
-#endif
   {
   public:
     LuminosityBlock(LuminosityBlockPrincipal& dbk, const ModuleDescription& md);

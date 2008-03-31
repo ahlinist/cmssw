@@ -11,7 +11,6 @@ $Id$
 
 ----------------------------------------------------------------------*/
 
-#include "FWCore/Utilities/interface/GCCPrerequisite.h"
 #include "FWCore/Framework/interface/ProductRegistryHelper.h"
 #include "boost/bind.hpp"
 #include "boost/function.hpp"
@@ -21,12 +20,7 @@ namespace edm {
   class BranchDescription;
   class ModuleDescription;
   class ProductRegistry;
-#if GCC_PREREQUISITE(3,4,4)
   class ProducerBase : private ProductRegistryHelper {
-#else
-  // Bug in gcc3.2.3 compiler forces public inheritance
-  class ProducerBase : public ProductRegistryHelper {
-#endif
   public:
     typedef ProductRegistryHelper::TypeLabelList TypeLabelList;
     ProducerBase ();

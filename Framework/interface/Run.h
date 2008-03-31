@@ -25,16 +25,9 @@ $Id$
 #include "FWCore/Framework/interface/DataViewImpl.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 
-#include "FWCore/Utilities/interface/GCCPrerequisite.h"
-
 namespace edm {
 
-#if GCC_PREREQUISITE(3,4,4)
   class Run : private DataViewImpl
-#else
-  // Bug in gcc3.2.3 compiler forces public inheritance
-  class Run : public DataViewImpl
-#endif
   {
   public:
     Run(RunPrincipal& dbk, const ModuleDescription& md);
