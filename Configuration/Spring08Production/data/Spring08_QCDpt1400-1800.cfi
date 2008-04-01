@@ -14,7 +14,7 @@ source = PythiaSource
             "processParameters"
         }
 
-        include "Configuration/Generator/data/PythiaUESettings.cfi"
+        include "Configuration/Spring08Production/data/PythiaUESettings.cfi"
 
         vstring processParameters = {
             'MSEL=1               ! QCD hight pT processes',
