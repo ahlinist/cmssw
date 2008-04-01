@@ -37,7 +37,6 @@ class JetRejLRObservables {
     JetRejLRObservables();
     ~JetRejLRObservables();	
 
-    //    vector<pair<int, double> >  operator()(JetPartonMatch&, edm::Handle<vector<reco::Vertex> >, edm::Handle<vector<reco::JetTag> >);
     JetRejObs  operator()(reco::CaloJet&, edm::Handle<vector<reco::Vertex> >, edm::Handle<vector<reco::JetTag> >, double);
     double DeltaRJP(double, double, double, double );
   private:

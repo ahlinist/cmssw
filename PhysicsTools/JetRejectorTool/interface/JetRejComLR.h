@@ -1,5 +1,4 @@
 // Original Author:  Ilaria Villella
-//         Created:  Thu 12 Apr 2007
 
 // system include files
 #include <memory>
@@ -43,6 +42,8 @@
 //#include "PhysicsTools/JetRejectorTool/interface/JetRejObs.h"
 #include "TopQuarkAnalysis/TopTools/interface/LRHelpFunctions.h"
 
+#include "DataFormats/Common/interface/ValueMap.h"
+
 using namespace edm;
 using namespace std;
 using namespace reco;
@@ -57,21 +58,17 @@ class JetRejComLR : public edm::EDProducer {
       ~JetRejComLR();
       void produce(edm::Event&, const edm::EventSetup&);
       
-   
+      typedef edm::ValueMap<double> JetLRRejectorMap;
+
     
    private:
-      // std::vector<reco::CaloJet>  CaloJetSelected;
-      // std::vector<reco::JetTag>  JetTagSelected;
       edm::InputTag obssrc_;
+      edm::InputTag selcalojetsrc_;
 
       double  DeltaRcut_;
       vector< int > JetSelObs_;
       string lrJetCombFile_;
-      /*     int   nrJetCombLRtotBins_;
-      double JetCombLRtotMin_;
-      double JetCombLRtotMax_ ;
-      string JetCombLRtotFitFunction_;
-      */
+
       int     nrJetCombLRtotBins;
       double JetCombLRtotMin;
       double JetCombLRtotMax;
