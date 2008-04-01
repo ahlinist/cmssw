@@ -1,4 +1,9 @@
 #include "PhysicsTools/JetRejectorTool/interface/JetRejComLR.h"
+#include "PhysicsTools/JetRejectorTool/interface/JetRejObsProducer.h"
+//#include "PhysicsTools/PatUtils/interface/RefHelper.h"
+#include "DataFormats/Common/interface/Association.h"
+#include "DataFormats/Common/interface/RefToBase.h"
+#include "DataFormats/Common/interface/ValueMap.h"
 
 
 //
@@ -7,6 +12,7 @@
 
 JetRejComLR::JetRejComLR(const edm::ParameterSet& iConfig){
   obssrc_ = iConfig.getParameter<edm::InputTag>( "obssrc" );  
+  selcalojetsrc_ = iConfig.getParameter<edm::InputTag>( "selcalojetsrc" );  
   DeltaRcut_   = iConfig.getParameter< double > ("DeltaRcut");
   JetSelObs_ = iConfig.getUntrackedParameter< vector<int> > ( "JetSelObs"); 
   lrJetCombFile_ = iConfig.getParameter< std::string > ("lrJetCombFile");
@@ -59,48 +65,68 @@ JetRejComLR::~JetRejComLR()
 
 void JetRejComLR::produce( edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-  std::vector <double >  *myObs = new std::vector <double> ;
+   using namespace edm;
+   using namespace std;
+   using namespace reco;
+ 
+   JetRejObs obsValue;
+   double myJet= -1;
+   double logLR;
+   vector<double> obsVals;
+   
+   //read in jets, use jets to access JetRejObsMap:
+   Handle<View<Jet> > jets; 
+   iEvent.getByLabel( selcalojetsrc_, jets); 
 
-  Handle<vector<JetRejObs> > observables;
-  iEvent.getByLabel(obssrc_, observables); 
+   Handle<JetRejObsProducer::JetRejObsMap> observables;
+   iEvent.getByLabel(obssrc_, observables); 
 
-  JetRejObs obsValue;
-  double myJet= -1;
-  double logLR;
-  // get observable values
-  vector<double> obsVals;
-  for(unsigned int ll =0; ll<observables->size(); ll++){ // loop on the jets in the event!
-    obsValue = (*observables)[ll]; // vector of observables for each jet!
-    obsVals.clear();
-    for(unsigned int j=0; j<obsValue.getSize(); j++){//loop on all the observables
-      if(obsValue.getPair(j).first == 0 ) myJet = obsValue.getPair(j).second;
-      
-      for(unsigned int os = 0; os < JetSelObs_.size(); os++){ // loop on the selected observables
-	if(obsValue.getPair(j).first == JetSelObs_[os]){
-	  obsVals.push_back(obsValue.getPair(j).second);
-	}
-      }
-    }
-    
-    logLR =  myLRhelper -> calcLRval(obsVals);
-    
-    if(myJet == 1) {
-      myLRhelper -> fillLRSignalHist(logLR);
-    }
-    else
-      {
-	myLRhelper -> fillLRBackgroundHist(logLR);
-      }
-    myObs->push_back( logLR );//store the logLR in the AOD 
-  }//close loop on the jets in the events!
-  
-  //---------------------------------
-  
-  std::auto_ptr<std::vector< double > > pOut(myObs);
-  iEvent.put( pOut );
-  ///-----------------------
-  
+   
+   // create map passing the handle to the matched collection
+   std::auto_ptr<JetLRRejectorMap> jetlrs(new JetLRRejectorMap);
+   JetLRRejectorMap::Filler filler(*jetlrs);
+   {
+     size_t n = jets->size();
+     std::vector<double> lrs(n);
+     //vector<reco::CaloJet>::const_iterator thisjet = calojet.begin();
+     View<Jet>::const_iterator thisjet = jets->begin();
+     for(size_t ll = 0; ll != n; ++ll, ++thisjet) {
+       // compute the match for i-th jet, store the index in genParticles collection
+       RefToBase<Jet> thisjetref = jets->refAt(ll);
+       obsValue = (*observables)[thisjetref]; // vector of observables for each jet!
+       obsVals.clear();
+       for(unsigned int j=0; j<obsValue.getSize(); j++){//loop on all the observables
+	 if(obsValue.getPair(j).first == 0 ) myJet = obsValue.getPair(j).second;
+
+	 for(unsigned int os = 0; os < JetSelObs_.size(); os++){ // loop on the selected observables
+	   if(obsValue.getPair(j).first == JetSelObs_[os]){
+	     obsVals.push_back(obsValue.getPair(j).second);
+	   }
+	 }
+       }
+
+       logLR =  myLRhelper -> calcLRval(obsVals);
+
+       if(myJet == 1) {
+	 myLRhelper -> fillLRSignalHist(logLR);
+       }
+       else
+	 {
+	   myLRhelper -> fillLRBackgroundHist(logLR);
+	 }
+       // ---------------------------------------------------------------------
+       lrs[ll] = logLR;
+     }
+     filler.insert(jets, lrs.begin(), lrs.end());
+   }
+   
+   
+   // really fill the association map
+   filler.fill();
+   // put into the event 
+   iEvent.put(jetlrs);
 }
+
  //define this as a plug-in
 #include "FWCore/Framework/interface/MakerMacros.h"
  DEFINE_FWK_MODULE(JetRejComLR);

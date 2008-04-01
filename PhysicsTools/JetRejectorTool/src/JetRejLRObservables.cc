@@ -10,7 +10,6 @@ JetRejLRObservables::~JetRejLRObservables() {}
 
 // member function to add observables to the event
 
-//@@//JetRejObs  JetRejLRObservables::operator()(JetPartonMatch& bestMatch, edm::Handle<vector<reco::Vertex> > primvertex, edm::Handle<vector<reco::JetTag> > jettags, double DeltaR){
 JetRejObs  JetRejLRObservables::operator()(reco::CaloJet& calojet, edm::Handle<vector<reco::Vertex> > primvertex, edm::Handle<vector<reco::JetTag> > jettags, double wantedJet){
   jetCombVarVal.clear();
 
@@ -103,7 +102,7 @@ JetRejObs  JetRejLRObservables::operator()(reco::CaloJet& calojet, edm::Handle<v
   double DRJetTwr;
   double caloenedrtot=0;
   double caloenetot=0; 
-  double caloene03=0.; // Andrea: serve per e03e05
+  double caloene03=0.; 
 
   jettowers = calojet.getConstituents();
   EtMaxTower =0;
@@ -174,23 +173,22 @@ JetRejObs  JetRejLRObservables::operator()(reco::CaloJet& calojet, edm::Handle<v
   jetCombVarVal.push_back(pair<int,double>(11,obs11));
   
   //Track Variables
-  // if(trk_Jet_Ass){ // only if there are tracks associated with the Jet 
-    //obs12: Highest TrackPV Pt / Pt Jet
-    double obs12 = TrkPt_Max_Vtx / calojet.pt();
-    jetCombVarVal.push_back(pair<int,double>(12,obs12));
-    
-    //obs13: Beta = Sum(Pt TrackPV) / Sum(Pt Track)
-    double obs13 = Beta_vtx * Beta_vtx;
-    jetCombVarVal.push_back(pair<int,double>(13,obs13));
-    
-    //obs14: Alpha = Sum(Pt TrackPV) / Pt Jet
-    double obs14 = TrkPt_Tot_Vtx / calojet.pt(); 
-    jetCombVarVal.push_back(pair<int,double>(14,obs14));
-    
-    //obs15: N Track PV (/ N track?)
-    double obs15 = ntrk_vtx;
-    jetCombVarVal.push_back(pair<int,double>(15,obs15));
-    
+  //obs12: Highest TrackPV Pt / Pt Jet
+  double obs12 = TrkPt_Max_Vtx / calojet.pt();
+  jetCombVarVal.push_back(pair<int,double>(12,obs12));
+  
+  //obs13: Beta = Sum(Pt TrackPV) / Sum(Pt Track)
+  double obs13 = Beta_vtx * Beta_vtx;
+  jetCombVarVal.push_back(pair<int,double>(13,obs13));
+  
+  //obs14: Alpha = Sum(Pt TrackPV) / Pt Jet
+  double obs14 = TrkPt_Tot_Vtx / calojet.pt(); 
+  jetCombVarVal.push_back(pair<int,double>(14,obs14));
+  
+  //obs15: N Track PV (/ N track?)
+  double obs15 = ntrk_vtx;
+  jetCombVarVal.push_back(pair<int,double>(15,obs15));
+  
   }else{
     //obs12: Highest TrackPV Pt / Pt Jet
     double obs1 = -10;

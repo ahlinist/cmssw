@@ -1,9 +1,9 @@
 #include "PhysicsTools/JetRejectorTool/interface/JetRejObsProducer.h"
 
-
 //
 // constructor
 //
+
 
 JetRejObsProducer::JetRejObsProducer(const edm::ParameterSet& iConfig){
   selgenjetsrc_ = iConfig.getParameter<edm::InputTag>( "selgenjetsrc" );  
@@ -22,7 +22,8 @@ JetRejObsProducer::JetRejObsProducer(const edm::ParameterSet& iConfig){
  // define Observables
    myJetRejLRObs   = new JetRejLRObservables();
 
-  produces<  vector< JetRejObs > >();  
+  //produces<  vector< JetRejObs > >(); 
+  produces<JetRejObsMap>();  
 }
 
 // destructor
@@ -39,9 +40,6 @@ void JetRejObsProducer::produce( edm::Event& iEvent, const edm::EventSetup& iSet
   Handle<CandidateCollection > genEvt; //class containing a vector of generated Monte-Carlo particles
   iEvent.getByLabel ("genParticleCandidates", genEvt);
 
-  // Handle<vector<reco::Vertex> > primvertex;
-  //iEvent.getByLabel("pixelVertices", primvertex); 
-
   Handle<vector<reco::Vertex> > primvertex;
   iEvent.getByLabel("offlinePrimaryVerticesFromCTFTracks", primvertex); 
 
@@ -56,13 +54,9 @@ void JetRejObsProducer::produce( edm::Event& iEvent, const edm::EventSetup& iSet
   iEvent.getByLabel (seljettagsrc_, jettags);
 
   // reco-gen matching (see PhysicsTools/JetMCAlgos/test/matchOneToOne.cc, V00-05-00):
-  // edm::Handle<CandidateCollection> source;
-  // edm::Handle<CandidateCollection> matched;
   edm::Handle<CandMatchMap>        matchedjetsOne1;
   edm::Handle<CandMatchMap>        matchedjetsOne2;
   try {
-    // iEvent.getByLabel ("genJetSele",source);
-    // iEvent.getByLabel ("topJetSele",matched);
     iEvent.getByLabel (matchedjetsOne1_, matchedjetsOne1 );
     iEvent.getByLabel (matchedjetsOne2_, matchedjetsOne2 );
   } catch(std::exception& ce) {
@@ -75,26 +69,9 @@ void JetRejObsProducer::produce( edm::Event& iEvent, const edm::EventSetup& iSet
   leptons.clear();
   quarks.clear();
 
-  /* if (switchSignalDefinition > 1) { // in this case, the "quarks" are GenJets or PartonJets
-    vector<reco::GenJet> genjet;
-    if (switchSignalDefinition == 2) {
-      //    cout<< "@@@@ ===> switch =2!!!"<< endl;
-      genjet= (*genjets);  
-      //    } else if (switchSignalDefinition == 3) {  // to be uncommented when available (CMSSW > 1_5_0)
-      //      genjet= (*partonjets);  
-    } else {
-      cout << " !!ERROR!! no such option!" << endl;
-      return;
-    }
-    for(size_t i=0; i<genjet.size(); i++) {
-      const reco::Candidate & cand = genjet[i];
-      quarks.push_back(& cand);
-    }
-    }*/
-
   // create the vectors
-  auto_ptr< vector< JetRejObs > > Obs( new  vector<JetRejObs > ); 
-  vector<  JetRejObs > *myObs = new vector<JetRejObs >;
+  //auto_ptr< vector< JetRejObs > > Obs( new  vector<JetRejObs > ); 
+  //vector<  JetRejObs > *myObs = new vector<JetRejObs >;
   //------------------------
   double DeltaRjp;
   int nogluonradiation=0;
@@ -127,72 +104,51 @@ void JetRejObsProducer::produce( edm::Event& iEvent, const edm::EventSetup& iSet
  } 
   //-----------------------
 
-  // vecchio matching: da togliere!
-  /* vector<reco::CaloJet> calojet = (*jets);  
-
-  JetPartonMatching matching = JetPartonMatching(quarks, calojet,1);
-  vector<pair<unsigned int,unsigned int> > bestMatch = matching.getMatching(); 
-
-  // double DeltaRjp; 
-  double DeltaRTot=0;
-
-  unsigned int idxPart;
-  unsigned int idxJet;
-  vector<unsigned int> vctidxJet;
-
-  for(unsigned int icbm=0; icbm < bestMatch.size(); icbm++ ){
-  
-    idxPart = bestMatch[icbm].first;
-    idxJet  = bestMatch[icbm].second;
-    DeltaRjp =  ROOT::Math::VectorUtil::DeltaR( calojet[idxJet].p4(), quarks[idxPart]->p4() );
-    DeltaRTot += DeltaRjp;
-    vctidxJet.push_back( bestMatch[icbm].second );
-    //    if(DeltaRjp < DeltaRcut_) nogluonradiation++;
-    } */
-  //-------------------------------------------  
  
  vector<pair<int,double> > vectDeltaR;
   double wantedJet; 
 
-  if(nogluonradiation >= jetNumNoRad_){  ///only the events with four recojets matching the four primary quarks
-    
-    //// Beginning Loop on jets!!!!
-    for(unsigned int inr=0; inr < calojet.size(); inr++ ){
-      wantedJet = 0.;
-      for(unsigned int ij =0; ij < vctidxJet.size(); ij++){
-	if (inr == vctidxJet[ij]) wantedJet = 1.;
-      }
-      double JetEta = calojet[inr].eta(); 
-      double JetPhi = calojet[inr].phi(); 
-      bool trk_Jet_Ass = false;
-      for(unsigned int sjt=0; sjt< jettags->size(); sjt++){
-	edm::RefVector< reco::TrackCollection > tracks;
-	tracks = (*jettags)[sjt].tracks();
-	
-	//  reco::Jet JetTrAss;
-	edm::RefToBase<Jet> JetTrAss;
-	JetTrAss = (*jettags)[sjt].jet();
+  // create map passing the handle to the matched collection
+   std::auto_ptr<JetRejObsMap> PJetRejObs(new JetRejObsMap);
+   JetRejObsMap::Filler filler(*PJetRejObs);
+   {
+     std::vector<JetRejObs> obs(calojet.size());
+     for(size_t inr = 0; inr != calojet.size(); ++inr) {
+       //-----------------------------------------
+       wantedJet = 0.;
+       for(unsigned int ij =0; ij < vctidxJet.size(); ij++){
+	 if (inr == vctidxJet[ij]) wantedJet = 1.;
+       }
+       double JetEta = calojet[inr].eta(); 
+       double JetPhi = calojet[inr].phi(); 
+       bool trk_Jet_Ass = false;
+       for(unsigned int sjt=0; sjt< jettags->size(); sjt++){
+	 edm::RefVector< reco::TrackCollection > tracks;
+	 tracks = (*jettags)[sjt].tracks();
 
-	if((*JetTrAss).eta() != JetEta && (*JetTrAss).phi() != JetPhi) continue;    
-	//	for(unsigned int sti=0; sti<tracks.size(); sti++){
-	if(tracks.size() > 0)  trk_Jet_Ass = true;
-	  //	}
-      }   
-      //observable class: JetRejLRObservables
-      if(trk_Jet_Ass){
-	JetRejObs obs = (*myJetRejLRObs) (calojet[inr], primvertex, jettags, wantedJet);
-      
-      myObs->push_back( obs );
-      }
-    }//close the loop on jets!!!!
-  }//close nogluonradiation
-  
+	 //  reco::Jet JetTrAss;
+	 edm::RefToBase<Jet> JetTrAss;
+	 JetTrAss = (*jettags)[sjt].jet();
 
-  
-  ////-----------------------
-  std::auto_ptr<std::vector< JetRejObs > > pOut(myObs);
-  iEvent.put( pOut );
-  ///-----------------------
+	 if((*JetTrAss).eta() != JetEta && (*JetTrAss).phi() != JetPhi) continue;    
+	 //	for(unsigned int sti=0; sti<tracks.size(); sti++){
+	 if(tracks.size() > 0)  trk_Jet_Ass = true;
+	   //	}
+       }   
+       //observable class: JetRejLRObservables
+       //if(trk_Jet_Ass){
+       JetRejObs jetobs = (*myJetRejLRObs) (calojet[inr], primvertex, jettags, wantedJet);
+       //}
+       //-----------------------------------------
+       obs[inr] = jetobs ;
+     }
+     filler.insert(jets, obs.begin(), obs.end());
+   }
+   
+   // really fill the association map
+   filler.fill();
+   // put into the event 
+   iEvent.put(PJetRejObs);   
   
 }
  //define this as a plug-in
