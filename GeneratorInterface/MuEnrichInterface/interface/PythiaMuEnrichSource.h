@@ -50,7 +50,6 @@
   struct t_decay *decay;
   struct t_decayed_hadron *next;
 };
-typedef struct t_decayed_hadron t_decayed_hadron;
 
 struct t_decay
 {
@@ -59,7 +58,6 @@ struct t_decay
   t_decayed_hadron *daughter;
   struct t_decay *next;
 };
-typedef struct t_decay t_decay;
 
 
 //
