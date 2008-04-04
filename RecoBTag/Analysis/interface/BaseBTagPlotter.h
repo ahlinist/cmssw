@@ -2,7 +2,6 @@
 #define BaseBTagPlotter_H
 
 #include "RecoBTag/Analysis/interface/EtaPtBin.h"
-#include "RecoBTag/MCTools/interface/JetFlavour.h"
 #include "RecoBTag/Analysis/interface/EffPurFromHistos.h"
 #include "TString.h"
 

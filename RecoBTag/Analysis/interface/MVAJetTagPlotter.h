@@ -9,7 +9,7 @@
 #include "DataFormats/BTauReco/interface/BaseTagInfo.h"
 #include "RecoBTau/JetTagComputer/interface/GenericMVAJetTagComputer.h"
 #include "RecoBTag/Analysis/interface/FlavourHistorgrams.h"
-#include "RecoBTag/MCTools/interface/JetFlavour.h"
+// #include "RecoBTag/MCTools/interface/JetFlavour.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 
@@ -22,7 +22,7 @@ class MVAJetTagPlotter : public BaseTagInfoPlotter {
 
   ~MVAJetTagPlotter ();
 
-  virtual void analyzeTag (const std::vector<const reco::BaseTagInfo *> & baseTagInfos, const BTagMCTools::JetFlavour & jetFlavour);
+  virtual void analyzeTag (const std::vector<const reco::BaseTagInfo *> & baseTagInfos, const int & jetFlavour);
 
   virtual void finalize ();
 

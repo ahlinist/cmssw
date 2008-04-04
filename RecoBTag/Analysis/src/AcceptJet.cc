@@ -11,11 +11,11 @@ AcceptJet::AcceptJet()
   etaMin     = 0.0;
   etaMax     = 2.4;
 
-  pPartonMin = 9999.9;
-  pPartonMax = 0.0;
-
-  ptPartonMin = 9999.9;
-  ptPartonMax = 0.0;
+//   pPartonMin = 9999.9;
+//   pPartonMax = 0.0;
+// 
+//   ptPartonMin = 9999.9;
+//   ptPartonMax = 0.0;
 
   ptRecJetMin = 9999.9;
   ptRecJetMax = 0.0;
@@ -26,7 +26,7 @@ AcceptJet::AcceptJet()
 // 'global' event selection based on basic variables
 
 
-bool AcceptJet::operator() (const reco::Jet & jet, const BTagMCTools::JetFlavour & jetFlavour) const
+bool AcceptJet::operator() (const reco::Jet & jet, const int & jetFlavour) const
 {
 
   bool accept = true;
@@ -37,11 +37,11 @@ bool AcceptJet::operator() (const reco::Jet & jet, const BTagMCTools::JetFlavour
   if ( fabs(jet.eta()) < etaMin  ||
        fabs(jet.eta()) > etaMax  ) accept = false;
 
-  if ( jetFlavour.underlyingParton4Vec().P() < pPartonMin  ||
-       jetFlavour.underlyingParton4Vec().P() > pPartonMax  ) accept = false;
-
-  if ( jetFlavour.underlyingParton4Vec().Pt() < ptPartonMin  ||
-       jetFlavour.underlyingParton4Vec().Pt() > ptPartonMax  ) accept = false;
+//   if ( jetFlavour.underlyingParton4Vec().P() < pPartonMin  ||
+//        jetFlavour.underlyingParton4Vec().P() > pPartonMax  ) accept = false;
+// 
+//   if ( jetFlavour.underlyingParton4Vec().Pt() < ptPartonMin  ||
+//        jetFlavour.underlyingParton4Vec().Pt() > ptPartonMax  ) accept = false;
 
   if ( jet.pt() < ptRecJetMin ||
        jet.pt() > ptRecJetMax ) accept = false;

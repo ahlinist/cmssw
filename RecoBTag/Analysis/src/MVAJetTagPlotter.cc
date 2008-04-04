@@ -59,7 +59,7 @@ void MVAJetTagPlotter::setEventSetup(const edm::EventSetup &setup)
 }
 
 void MVAJetTagPlotter::analyzeTag (const vector<const BaseTagInfo*> &baseTagInfos,
-                                   const BTagMCTools::JetFlavour &jetFlavour)
+                                   const int &jetFlavour)
 {
 	// taggingVariables() should not need EventSetup
 	// computer->setEventSetup(es);

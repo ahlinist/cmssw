@@ -69,16 +69,14 @@ TaggingVariablePlotter::~TaggingVariablePlotter ()
 
 
 void TaggingVariablePlotter::analyzeTag (const BaseTagInfo *baseTagInfo,
-	const BTagMCTools::JetFlavour &jetFlavour)
+	const int &jetFlavour)
 {
 	analyzeTag(baseTagInfo->taggingVariables(), jetFlavour);
 }
 
 void TaggingVariablePlotter::analyzeTag (const TaggingVariableList &vars,
-	const BTagMCTools::JetFlavour &jetFlavour)
+	const int &jetFlavour)
 {
-	int jetFlav = jetFlavour.flavour();
-
 	for(vector<VariableConfig>::const_iterator iter = variables.begin();
 	    iter != variables.end(); iter++) {
 		std::vector<TaggingValue> values;
@@ -96,9 +94,9 @@ void TaggingVariablePlotter::analyzeTag (const TaggingVariableList &vars,
 		    plot != iter->plots.end(); plot++) {
 			if (plot->index == 0) {
 				for(unsigned int i = 0; i < size; i++)
-					plot->histo->fill(jetFlav, values[i]);
+					plot->histo->fill(jetFlavour, values[i]);
 			} else if (plot->index - 1 < size)
-				plot->histo->fill(jetFlav,
+				plot->histo->fill(jetFlavour,
 				                  values[plot->index - 1]);
 		}
 	}

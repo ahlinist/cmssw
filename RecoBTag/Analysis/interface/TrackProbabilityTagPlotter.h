@@ -5,7 +5,7 @@
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/BTauReco/interface/TrackProbabilityTagInfo.h"
 #include "RecoBTag/Analysis/interface/FlavourHistorgrams.h"
-#include "RecoBTag/MCTools/interface/JetFlavour.h"
+// #include "RecoBTag/MCTools/interface/JetFlavour.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 
@@ -19,7 +19,7 @@ class TrackProbabilityTagPlotter : public BaseTagInfoPlotter {
 
   ~TrackProbabilityTagPlotter () ;
 
-  void analyzeTag (const reco::BaseTagInfo * tagInfo, const BTagMCTools::JetFlavour & jetFlavour);
+  void analyzeTag (const reco::BaseTagInfo * tagInfo, const int & jetFlavour);
 
   virtual void finalize ();
 

@@ -46,11 +46,11 @@ bool EtaPtBin::inBin(const reco::Jet & jet) const
   return inBin(jet.eta(), jet.pt());
 }
 
-bool EtaPtBin::inBin(const BTagMCTools::JetFlavour & jetFlavour) const
-{
-  return inBin(jetFlavour.underlyingParton4Vec().Eta(),
-	       jetFlavour.underlyingParton4Vec().Pt());
-}
+// bool EtaPtBin::inBin(const BTagMCTools::JetFlavour & jetFlavour) const
+// {
+//   return inBin(jetFlavour.underlyingParton4Vec().Eta(),
+// 	       jetFlavour.underlyingParton4Vec().Pt());
+// }
 
 
 bool EtaPtBin::inBin (const double & eta , const double & pt ) const {

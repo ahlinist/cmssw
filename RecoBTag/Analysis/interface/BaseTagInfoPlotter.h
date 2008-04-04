@@ -7,7 +7,7 @@
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "DataFormats/BTauReco/interface/BaseTagInfo.h"
 #include "RecoBTag/Analysis/interface/BaseBTagPlotter.h"
-#include "RecoBTag/MCTools/interface/JetFlavour.h"
+// #include "RecoBTag/MCTools/interface/JetFlavour.h"
 
 class BaseTagInfoPlotter : public BaseBTagPlotter {
 
@@ -17,8 +17,8 @@ class BaseTagInfoPlotter : public BaseBTagPlotter {
 	    BaseBTagPlotter(tagName, etaPtBin) {};
 
   virtual ~BaseTagInfoPlotter () {};
-  virtual void analyzeTag(const reco::BaseTagInfo * tagInfo, const BTagMCTools::JetFlavour & jetFlavour);
-  virtual void analyzeTag(const std::vector<const reco::BaseTagInfo *> &tagInfos, const BTagMCTools::JetFlavour & jetFlavour);
+  virtual void analyzeTag(const reco::BaseTagInfo * tagInfo, const int & jetFlavour);
+  virtual void analyzeTag(const std::vector<const reco::BaseTagInfo *> &tagInfos, const int & jetFlavour);
 
   virtual void setEventSetup(const edm::EventSetup & setup);
   virtual vector<string> tagInfoRequirements() const;
