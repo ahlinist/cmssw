@@ -1,3 +1,4 @@
+<flags EDM_PLUGIN=1>
 <use name=root>
 <use name=Geometry/CaloGeometry>
 <use name=Geometry/CaloEventSetup>
@@ -8,7 +9,7 @@
 <use name=DataFormats/HepMCCandidate>
 <use name=DataFormats/CaloTowers>
 <use name=SimDataFormats/HepMCProduct>
-<flags SEAL_PLUGIN_NAME="JetMETCorrectionsDijetBalance">
+
 <export>
   <lib name=JetMETCorrections/DijetBalance>
   <use name=root>
