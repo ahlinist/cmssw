@@ -176,7 +176,7 @@ void test_ep::setUp()
     edm::ProductRegistry::ProductList::const_iterator it = pl.find(bk);
     branch.productID_ = it->second.productID_;
 
-    std::auto_ptr<edm::Provenance> provenance(new edm::Provenance(branch));
+    std::auto_ptr<edm::Provenance> provenance(new edm::Provenance(branch, true));
 
     edm::ProcessConfiguration* process = processConfigurations_[tag];
     assert(process);

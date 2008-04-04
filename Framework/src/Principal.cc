@@ -411,7 +411,8 @@ namespace edm {
   Principal::getAllProvenance(std::vector<Provenance const*> & provenances) const {
     provenances.clear();
     for (Principal::const_iterator i = begin(), iEnd = end(); i != iEnd; ++i) {
-      if ((*i)->provenanceAvailable()) provenances.push_back(&(*i)->provenance());
+      if ((*i)->provenanceAvailable() && (*i)->provenance().isPresent() && (*i)->provenance().product().present())
+	 provenances.push_back(&(*i)->provenance());
     }
   }
 

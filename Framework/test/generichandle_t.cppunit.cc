@@ -164,7 +164,7 @@ void testGenericHandle::getbyLabelTest() {
   edm::EventAuxiliary eventAux(col, uuid, fakeTime, lbp->luminosityBlock(), true);
   edm::EventPrincipal ep(eventAux, pregc, lbp, pc);
 
-  std::auto_ptr<edm::Provenance> pprov(new edm::Provenance(product));
+  std::auto_ptr<edm::Provenance> pprov(new edm::Provenance(product, true));
   ep.put(pprod, pprov);
   
   edm::GenericHandle h("edmtest::DummyProduct");
