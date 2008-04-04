@@ -1,4 +1,4 @@
-ource = PythiaSource
+source = PythiaSource
 {
     untracked int32 pythiaPylistVerbosity = 0
     untracked bool pythiaHepMCVerbosity = false
