@@ -6,6 +6,8 @@ source = PythiaSource
     #?
     untracked double crossSection = 0.
     untracked double filterEfficiency = 0.0053
+        # breaking news 10 TeV center of mass energy...
+        untracked double comEnergy = 10000.
    
     PSet PythiaParameters = {
 
@@ -16,8 +18,6 @@ source = PythiaSource
         }
 
         include "Configuration/Spring08Production/data/PythiaUESettings.cfi"
-        # breaking news 10 TeV center of mass energy...
-        untracked double comEnergy = 10000.
 
 	
         vstring processParameters = { 
