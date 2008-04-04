@@ -7,8 +7,6 @@ source = PythiaSource
   untracked double crossSection = 55000000000.
   # put here the efficiency of your filter (1. if no filter) dummy
   untracked double filterEfficiency = 1.
-  # breaking news 10 TeV center of mass energy...
-  untracked double comEnergy = 10000.
 
   PSet PythiaParameters = {
 
