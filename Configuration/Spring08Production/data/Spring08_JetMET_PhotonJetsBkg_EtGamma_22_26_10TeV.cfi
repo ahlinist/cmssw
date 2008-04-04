@@ -6,6 +6,8 @@ source = PythiaSource
     untracked int32 maxEventsToPrint = 0
     untracked double filterEfficiency     = 0.0
     untracked double crossSection = 6781000000.
+	# breaking news 10 TeV center of mass energy... 
+	untracked double comEnergy = 10000.
     
     PSet PythiaParameters = {
 	
@@ -14,8 +16,6 @@ source = PythiaSource
 	    "pythiaUESettings", 
 	    "processParameters"
 	}
-	# breaking news 10 TeV center of mass energy... 
-	untracked double comEnergy = 10000.
 
 	include "GeneratorInterface/GenFilters/data/PythiaUESettingsForGammaJetWithBg.cfi"
 
