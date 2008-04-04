@@ -5,6 +5,8 @@ ource = PythiaSource
     untracked int32 maxEventsToPrint = 0
     untracked double crossSection = 119800000.00000
     untracked double filterEfficiency = 
+	# breaking news 10 TeV center of mass energy...
+        untracked double comEnergy = 10000.
 
     PSet PythiaParameters = {
 
@@ -15,8 +17,6 @@ ource = PythiaSource
         }
 
         include "Configuration/Spring08Production/data/PythiaUESettings.cfi"
-	# breaking news 10 TeV center of mass energy...
-        untracked double comEnergy = 10000.
 
 
         vstring processParameters = {

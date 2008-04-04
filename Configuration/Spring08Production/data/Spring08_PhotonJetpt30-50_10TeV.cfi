@@ -6,6 +6,8 @@ source = PythiaSource
     untracked double crossSection = 40620.
     untracked double filterEfficiency = 1.0000
     PSet PythiaParameters = {
+        # breaking news 10 TeV center of mass energy...
+        untracked double comEnergy = 10000.
 
         # This is a vector of ParameterSet names to be read, in this order
         vstring parameterSets = {
@@ -14,8 +16,6 @@ source = PythiaSource
         }
 
         include "Configuration/Spring08Production/data/PythiaUESettings.cfi"
-        # breaking news 10 TeV center of mass energy...
-        untracked double comEnergy = 10000.
 
 
         vstring processParameters = {
