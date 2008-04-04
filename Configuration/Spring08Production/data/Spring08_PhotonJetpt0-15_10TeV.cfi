@@ -4,7 +4,7 @@ source = PythiaSource
     untracked bool pythiaHepMCVerbosity = false
     untracked int32 maxEventsToPrint = 0
     untracked double crossSection = 119800000.00000
-    untracked double filterEfficiency = 
+    untracked double filterEfficiency = 1.0
 	# breaking news 10 TeV center of mass energy...
         untracked double comEnergy = 10000.
 
