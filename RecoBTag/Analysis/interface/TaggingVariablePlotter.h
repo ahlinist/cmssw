@@ -10,7 +10,7 @@
 #include "DataFormats/BTauReco/interface/TaggingVariable.h"
 #include "DataFormats/BTauReco/interface/BaseTagInfo.h"
 #include "RecoBTag/Analysis/interface/FlavourHistorgrams.h"
-#include "RecoBTag/MCTools/interface/JetFlavour.h"
+// #include "RecoBTag/MCTools/interface/JetFlavour.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 
@@ -24,9 +24,9 @@ class TaggingVariablePlotter : public BaseTagInfoPlotter {
 
   ~TaggingVariablePlotter () ;
 
-  void analyzeTag (const reco::BaseTagInfo * baseTagInfo, const BTagMCTools::JetFlavour & jetFlavour);
+  void analyzeTag (const reco::BaseTagInfo * baseTagInfo, const int & jetFlavour);
 
-  void analyzeTag (const reco::TaggingVariableList & variables, const BTagMCTools::JetFlavour & jetFlavour);
+  void analyzeTag (const reco::TaggingVariableList & variables, const int & jetFlavour);
 
   virtual void finalize ();
 

@@ -74,7 +74,7 @@ SoftLeptonTagPlotter::~SoftLeptonTagPlotter ()
 }
 
 void SoftLeptonTagPlotter::analyzeTag( const reco::BaseTagInfo * baseTagInfo,
-    const BTagMCTools::JetFlavour & jetFlavour )
+    const int & jetFlavour )
 {
 
   const reco::SoftLeptonTagInfo * tagInfo = 
@@ -85,22 +85,19 @@ void SoftLeptonTagPlotter::analyzeTag( const reco::BaseTagInfo * baseTagInfo,
       << "BTagPerformanceAnalyzer: Extended TagInfo not of type SoftLeptonTagInfo. " << endl;
   }
 
-  int flavour = jetFlavour.flavour();
-  // check if properly initialized
-
   int n_leptons = tagInfo->leptons();
 
   for (int i = 0; i < n_leptons && i < s_leptons; i++) {
-    m_leptonPt[i]->fill( flavour, tagInfo->lepton(i)->pt() );
-    m_leptonId[i]->fill( flavour, tagInfo->properties(i).quality );
-    m_sip2d[i]->fill(    flavour, tagInfo->properties(i).sip2d );
-    m_sip3d[i]->fill(    flavour, tagInfo->properties(i).sip3d );
-    m_ptRel[i]->fill(    flavour, tagInfo->properties(i).ptRel );
-    m_p0Par[i]->fill(    flavour, tagInfo->properties(i).p0Par );
-    m_etaRel[i]->fill(   flavour, tagInfo->properties(i).etaRel );
-    m_deltaR[i]->fill(   flavour, tagInfo->properties(i).deltaR );
-    m_ratio[i]->fill(    flavour, tagInfo->properties(i).ratio );
-    m_ratioRel[i]->fill( flavour, tagInfo->properties(i).ratioRel );
+    m_leptonPt[i]->fill( jetFlavour, tagInfo->lepton(i)->pt() );
+    m_leptonId[i]->fill( jetFlavour, tagInfo->properties(i).quality );
+    m_sip2d[i]->fill(    jetFlavour, tagInfo->properties(i).sip2d );
+    m_sip3d[i]->fill(    jetFlavour, tagInfo->properties(i).sip3d );
+    m_ptRel[i]->fill(    jetFlavour, tagInfo->properties(i).ptRel );
+    m_p0Par[i]->fill(    jetFlavour, tagInfo->properties(i).p0Par );
+    m_etaRel[i]->fill(   jetFlavour, tagInfo->properties(i).etaRel );
+    m_deltaR[i]->fill(   jetFlavour, tagInfo->properties(i).deltaR );
+    m_ratio[i]->fill(    jetFlavour, tagInfo->properties(i).ratio );
+    m_ratioRel[i]->fill( jetFlavour, tagInfo->properties(i).ratioRel );
   }
 }
 

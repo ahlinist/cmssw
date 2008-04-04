@@ -248,7 +248,7 @@ TrackIPTagPlotter::~TrackIPTagPlotter ()
 
 
 void TrackIPTagPlotter::analyzeTag (const reco::BaseTagInfo * baseTagInfo,
-	const BTagMCTools::JetFlavour & jetFlavour)
+	const int & jetFlavour)
 {
 
   const reco::TrackIPTagInfo * tagInfo = 
@@ -259,8 +259,6 @@ void TrackIPTagPlotter::analyzeTag (const reco::BaseTagInfo * baseTagInfo,
       << "BTagPerformanceAnalyzer: Extended TagInfo not of type TrackIPTagInfo. " << endl;
   }
 
-  int jetFlav = jetFlavour.flavour();
-
   vector<reco::TrackIPTagInfo::TrackIPData> ip = tagInfo->impactParameterData();
 
   vector<float> prob2d, prob3d;
@@ -269,60 +267,60 @@ void TrackIPTagPlotter::analyzeTag (const reco::BaseTagInfo * baseTagInfo,
     prob3d = tagInfo->probabilities(1);	
   }
 
-  trkNbr3D->fill(jetFlav, ip.size());
-  trkNbr2D->fill(jetFlav, ip.size());
+  trkNbr3D->fill(jetFlavour, ip.size());
+  trkNbr2D->fill(jetFlavour, ip.size());
 
   vector<std::size_t> sortedIndices = tagInfo->sortedIndexes(reco::TrackIPTagInfo::IP2DSig);
   for(unsigned int n=0; n < sortedIndices.size() && n < 4; n++) {
-    tkcntHistosSig2D[n]->fill(jetFlav, ip[sortedIndices[n]].ip2d.significance());
-    tkcntHistosVal2D[n]->fill(jetFlav, ip[sortedIndices[n]].ip2d.value());
-    tkcntHistosErr2D[n]->fill(jetFlav, ip[sortedIndices[n]].ip2d.error());
+    tkcntHistosSig2D[n]->fill(jetFlavour, ip[sortedIndices[n]].ip2d.significance());
+    tkcntHistosVal2D[n]->fill(jetFlavour, ip[sortedIndices[n]].ip2d.value());
+    tkcntHistosErr2D[n]->fill(jetFlavour, ip[sortedIndices[n]].ip2d.error());
   }
   sortedIndices = tagInfo->sortedIndexes(reco::TrackIPTagInfo::Prob2D);
   for(unsigned int n=0; n < sortedIndices.size() && n < 4; n++) {
-    tkcntHistosProb2D[n]->fill(jetFlav, prob2d[sortedIndices[n]]);
+    tkcntHistosProb2D[n]->fill(jetFlavour, prob2d[sortedIndices[n]]);
   }
   for(unsigned int n=sortedIndices.size(); n < 4; n++){
-    tkcntHistosSig2D[n]->fill(jetFlav, lowerIPSBound-1.0);
-    tkcntHistosVal2D[n]->fill(jetFlav, lowerIPBound-1.0);
-    tkcntHistosErr2D[n]->fill(jetFlav, lowerIPEBound-1.0);
+    tkcntHistosSig2D[n]->fill(jetFlavour, lowerIPSBound-1.0);
+    tkcntHistosVal2D[n]->fill(jetFlavour, lowerIPBound-1.0);
+    tkcntHistosErr2D[n]->fill(jetFlavour, lowerIPEBound-1.0);
   }
   sortedIndices = tagInfo->sortedIndexes(reco::TrackIPTagInfo::IP3DSig);
   for(unsigned int n=0; n < sortedIndices.size() && n < 4; n++) {
-    tkcntHistosSig3D[n]->fill(jetFlav, ip[sortedIndices[n]].ip3d.significance());
-    tkcntHistosVal3D[n]->fill(jetFlav, ip[sortedIndices[n]].ip3d.value());
-    tkcntHistosErr3D[n]->fill(jetFlav, ip[sortedIndices[n]].ip3d.error());
+    tkcntHistosSig3D[n]->fill(jetFlavour, ip[sortedIndices[n]].ip3d.significance());
+    tkcntHistosVal3D[n]->fill(jetFlavour, ip[sortedIndices[n]].ip3d.value());
+    tkcntHistosErr3D[n]->fill(jetFlavour, ip[sortedIndices[n]].ip3d.error());
   }
   sortedIndices = tagInfo->sortedIndexes(reco::TrackIPTagInfo::Prob3D);
   for(unsigned int n=0; n < sortedIndices.size() && n < 4; n++) {
-    tkcntHistosProb3D[n]->fill(jetFlav, prob3d[sortedIndices[n]]);
+    tkcntHistosProb3D[n]->fill(jetFlavour, prob3d[sortedIndices[n]]);
   }
   for(unsigned int n=sortedIndices.size(); n < 4; n++){
-    tkcntHistosSig3D[n]->fill(jetFlav, lowerIPSBound-1.0);
-    tkcntHistosVal3D[n]->fill(jetFlav, lowerIPBound-1.0);
-    tkcntHistosErr3D[n]->fill(jetFlav, lowerIPEBound-1.0);
+    tkcntHistosSig3D[n]->fill(jetFlavour, lowerIPSBound-1.0);
+    tkcntHistosVal3D[n]->fill(jetFlavour, lowerIPBound-1.0);
+    tkcntHistosErr3D[n]->fill(jetFlavour, lowerIPEBound-1.0);
   }
   for(unsigned int n=0; n < ip.size(); n++) {
-    tkcntHistosSig2D[4]->fill(jetFlav, ip[n].ip2d.significance());
-    tkcntHistosVal2D[4]->fill(jetFlav, ip[n].ip2d.value());
-    tkcntHistosErr2D[4]->fill(jetFlav, ip[n].ip2d.error());
-    tkcntHistosProb2D[4]->fill(jetFlav, prob2d[n]);
+    tkcntHistosSig2D[4]->fill(jetFlavour, ip[n].ip2d.significance());
+    tkcntHistosVal2D[4]->fill(jetFlavour, ip[n].ip2d.value());
+    tkcntHistosErr2D[4]->fill(jetFlavour, ip[n].ip2d.error());
+    tkcntHistosProb2D[4]->fill(jetFlavour, prob2d[n]);
   }
   for(unsigned int n=0; n < ip.size(); n++) {
-    tkcntHistosSig3D[4]->fill(jetFlav, ip[n].ip3d.significance());
-    tkcntHistosVal3D[4]->fill(jetFlav, ip[n].ip3d.value());
-    tkcntHistosErr3D[4]->fill(jetFlav, ip[n].ip3d.error());
-    tkcntHistosProb3D[4]->fill(jetFlav, prob3d[n]);
+    tkcntHistosSig3D[4]->fill(jetFlavour, ip[n].ip3d.significance());
+    tkcntHistosVal3D[4]->fill(jetFlavour, ip[n].ip3d.value());
+    tkcntHistosErr3D[4]->fill(jetFlavour, ip[n].ip3d.error());
+    tkcntHistosProb3D[4]->fill(jetFlavour, prob3d[n]);
   }
   GlobalPoint pv(tagInfo->primaryVertex()->position().x(),
                  tagInfo->primaryVertex()->position().y(),
                  tagInfo->primaryVertex()->position().z());
   for(unsigned int n=0; n < ip.size(); n++) {
     double decayLen = (ip[n].closestToJetAxis - pv).mag();
-    decayLengthValuHisto->fill(jetFlav, decayLen);
+    decayLengthValuHisto->fill(jetFlavour, decayLen);
   }
   for(unsigned int n=0; n < ip.size(); n++) {
-    jetDistanceValuHisto->fill(jetFlav, ip[n].distanceToJetAxis);
+    jetDistanceValuHisto->fill(jetFlavour, ip[n].distanceToJetAxis);
   }
 
 }

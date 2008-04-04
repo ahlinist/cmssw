@@ -18,6 +18,7 @@
 #include "RecoBTag/Analysis/interface/BaseTagInfoPlotter.h"
 #include "RecoBTag/Analysis/interface/Tools.h"
 #include "RecoBTag/MCTools/interface/JetFlavourIdentifier.h"
+#include "RecoBTag/MCTools/interface/JetFlavour.h"
 #include "DataFormats/JetReco/interface/Jet.h"
 #include "FWCore/ParameterSet/interface/InputTag.h"
 #include "SimDataFormats/JetMatching/interface/JetFlavourMatching.h"

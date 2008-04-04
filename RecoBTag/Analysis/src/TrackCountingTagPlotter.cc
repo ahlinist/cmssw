@@ -87,7 +87,7 @@ TrackCountingTagPlotter::~TrackCountingTagPlotter ()
 
 
 void TrackCountingTagPlotter::analyzeTag (const reco::BaseTagInfo * baseTagInfo,
-	const BTagMCTools::JetFlavour & jetFlavour)
+	const int & jetFlavour)
 {
 
   const reco::TrackCountingTagInfo * tagInfo = 
@@ -98,25 +98,23 @@ void TrackCountingTagPlotter::analyzeTag (const reco::BaseTagInfo * baseTagInfo,
       << "BTagPerformanceAnalyzer: Extended TagInfo not of type TrackCountingTagInfo. " << endl;
   }
 
-  int jetFlav = jetFlavour.flavour();
-
-  trkNbr3D->fill(jetFlav, tagInfo->selectedTracks(0));
-  trkNbr2D->fill(jetFlav, tagInfo->selectedTracks(1));
+  trkNbr3D->fill(jetFlavour, tagInfo->selectedTracks(0));
+  trkNbr2D->fill(jetFlavour, tagInfo->selectedTracks(1));
 
   for(int n=0; n < tagInfo->selectedTracks(1) && n < 4; n++)
-    tkcntHistosSig2D[n]->fill(jetFlav, tagInfo->significance(n,1));
+    tkcntHistosSig2D[n]->fill(jetFlavour, tagInfo->significance(n,1));
   for(int n=tagInfo->selectedTracks(1); n < 4; n++)
-    tkcntHistosSig2D[n]->fill(jetFlav, lowerIPSBound-1.0);
+    tkcntHistosSig2D[n]->fill(jetFlavour, lowerIPSBound-1.0);
 
   for(int n=0; n < tagInfo->selectedTracks(0) && n < 4; n++)
-    tkcntHistosSig3D[n]->fill(jetFlav, tagInfo->significance(n,0));
+    tkcntHistosSig3D[n]->fill(jetFlavour, tagInfo->significance(n,0));
   for(int n=tagInfo->selectedTracks(0); n < 4; n++)
-    tkcntHistosSig3D[n]->fill(jetFlav, lowerIPSBound-1.0);
+    tkcntHistosSig3D[n]->fill(jetFlavour, lowerIPSBound-1.0);
 
   for(int n=0; n < tagInfo->selectedTracks(1); n++)
-    tkcntHistosSig2D[4]->fill(jetFlav, tagInfo->significance(n,1));
+    tkcntHistosSig2D[4]->fill(jetFlavour, tagInfo->significance(n,1));
   for(int n=0; n < tagInfo->selectedTracks(0); n++)
-    tkcntHistosSig3D[4]->fill(jetFlav, tagInfo->significance(n,0));
+    tkcntHistosSig3D[4]->fill(jetFlavour, tagInfo->significance(n,0));
 }
 
 void TrackCountingTagPlotter::finalize ()

@@ -171,21 +171,19 @@ void JetTagPlotter::psPlot(const TString & name)
 }
 
 void JetTagPlotter::analyzeTag(const reco::JetTag & jetTag,
-	const BTagMCTools::JetFlavour & jetFlavour)
+	const int & jetFlavour)
 {
-  int jetFlav = jetFlavour.flavour();
+  dJetFlav->fill(jetFlavour, jetFlavour);
+//  dJetMultiplicity->fill(jetFlavourour, jetTag.tracks().size()); //fixme
+  dDiscriminator->fill(jetFlavour, jetTag.second );
+  dJetRecMomentum->fill(jetFlavour, jetTag.first->p() );
+  dJetRecPt->fill(jetFlavour, jetTag.first->pt() );
+  dJetRecPseudoRapidity->fill(jetFlavour, jetTag.first->eta() );
+  dJetRecPhi->fill(jetFlavour, jetTag.first->phi());
 
-  dJetFlav->fill(jetFlav, jetFlav);
-//  dJetMultiplicity->fill(jetFlav, jetTag.tracks().size()); //fixme
-  dDiscriminator->fill(jetFlav, jetTag.second );
-  dJetRecMomentum->fill(jetFlav, jetTag.first->p() );
-  dJetRecPt->fill(jetFlav, jetTag.first->pt() );
-  dJetRecPseudoRapidity->fill(jetFlav, jetTag.first->eta() );
-  dJetRecPhi->fill(jetFlav, jetTag.first->phi());
-
-  dJetPartonMomentum->fill(jetFlav, jetFlavour.underlyingParton4Vec().P() );
-  dJetPartonPt->fill(jetFlav, jetFlavour.underlyingParton4Vec().Pt() );
-  dJetPartonPseudoRapidity->fill(jetFlav, jetFlavour.underlyingParton4Vec().Eta() );
+//   dJetPartonMomentum->fill(jetFlav, jetFlavour.underlyingParton4Vec().P() );
+//   dJetPartonPt->fill(jetFlav, jetFlavour.underlyingParton4Vec().Pt() );
+//   dJetPartonPseudoRapidity->fill(jetFlav, jetFlavour.underlyingParton4Vec().Eta() );
 }
 
 

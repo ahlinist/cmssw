@@ -4,7 +4,7 @@
 #include "DataFormats/BTauReco/interface/SoftLeptonTagInfo.h"
 #include "RecoBTag/Analysis/interface/BaseTagInfoPlotter.h"
 #include "RecoBTag/Analysis/interface/FlavourHistorgrams.h"
-#include "RecoBTag/MCTools/interface/JetFlavour.h"
+// #include "RecoBTag/MCTools/interface/JetFlavour.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 class SoftLeptonTagPlotter : public BaseTagInfoPlotter {
@@ -15,7 +15,7 @@ public:
   
   ~SoftLeptonTagPlotter( void ) ;
 
-  void analyzeTag (const reco::BaseTagInfo * baseTagInfo, const BTagMCTools::JetFlavour & jetFlavour);
+  void analyzeTag (const reco::BaseTagInfo * baseTagInfo, const int & jetFlavour);
 
   virtual void finalize( void ) {}
 

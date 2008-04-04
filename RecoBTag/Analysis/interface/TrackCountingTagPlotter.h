@@ -4,7 +4,7 @@
 #include "RecoBTag/Analysis/interface/BaseTagInfoPlotter.h"
 #include "DataFormats/BTauReco/interface/TrackCountingTagInfo.h"
 #include "RecoBTag/Analysis/interface/FlavourHistorgrams.h"
-#include "RecoBTag/MCTools/interface/JetFlavour.h"
+// #include "RecoBTag/MCTools/interface/JetFlavour.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 
@@ -18,7 +18,7 @@ class TrackCountingTagPlotter : public BaseTagInfoPlotter {
 
   ~TrackCountingTagPlotter () ;
 
-  void analyzeTag (const reco::BaseTagInfo * baseTagInfo, const BTagMCTools::JetFlavour & jetFlavour);
+  void analyzeTag (const reco::BaseTagInfo * baseTagInfo, const int & jetFlavour);
 
   virtual void finalize ();
 
