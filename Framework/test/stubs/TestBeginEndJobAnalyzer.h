@@ -32,11 +32,19 @@ public:
    
    virtual void analyze(const edm::Event&, const edm::EventSetup&);
    
-   virtual void beginJob(const edm::EventSetup&);
+   virtual void beginJob(edm::EventSetup const&);
    virtual void endJob();
-   
+   virtual void beginRun(edm::Run const&, edm::EventSetup const&);
+   virtual void endRun(edm::Run const&, edm::EventSetup const&);
+   virtual void beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
+   virtual void endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
+  
    static bool beginJobCalled;
    static bool endJobCalled;
+   static bool beginRunCalled;
+   static bool endRunCalled;
+   static bool beginLumiCalled;
+   static bool endLumiCalled;
    static bool destructorCalled;
 private:
       // ----------member data ---------------------------

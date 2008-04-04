@@ -36,6 +36,7 @@ namespace edm
     virtual ~IEventProcessor();
 
     virtual StatusCode runToCompletion(bool onlineStateTransitions) = 0;
+    virtual StatusCode runEventCount(int numberOfEventsToProcess) = 0;
 
     virtual void readFile() = 0;
     virtual void closeInputFile() = 0;
