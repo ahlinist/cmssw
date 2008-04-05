@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.71 2008/03/29 13:21:23 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.72 2008/03/29 13:26:44 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.71 $
-  \date $Date: 2008/03/29 13:21:23 $
+  \version $Revision: 1.72 $
+  \date $Date: 2008/03/29 13:26:44 $
 */
 
 #include "TH1F.h"
@@ -236,8 +236,9 @@ void EERenderPlugin::preDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o 
 
   gStyle->SetPaintTextFormat();
 
-  gStyle->SetOptStat(0);
+  gStyle->SetOptStat(kFALSE);
   obj->SetStats(kFALSE);
+  gPad->SetLogy(kFALSE);
 
   if( o.name.find( "EELT shape" ) < o.name.size() ) {
     c->SetTheta(+30.);
@@ -315,7 +316,7 @@ void EERenderPlugin::preDrawTProfile( TCanvas *c, const DQMNet::CoreObject &o ) 
 
   gStyle->SetOptStat("euomr");
   obj->SetStats(kTRUE);
-  gPad->SetLogy(0);
+  gPad->SetLogy(kFALSE);
 
   if( o.name.find( "EEMM digi number profile" ) < o.name.size() ) {
    gPad->SetBottomMargin(0.2);
@@ -342,9 +343,9 @@ void EERenderPlugin::preDrawTH3F( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   assert( obj );
 
-  gStyle->SetOptStat(0);
-  obj->SetStats( kFALSE );
-  gPad->SetLogy(0);
+  gStyle->SetOptStat(kFALSE);
+  obj->SetStats(kFALSE);
+  gPad->SetLogy(kFALSE);
 
   return;
 
@@ -358,9 +359,9 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   gStyle->SetPaintTextFormat();
 
-  gStyle->SetOptStat(0);
-  obj->SetStats( kFALSE );
-  gPad->SetLogy(0);
+  gStyle->SetOptStat(kFALSE);
+  obj->SetStats(kFALSE);
+  gPad->SetLogy(kFALSE);
 
   // Occupancy-like (10 x grays) plots
   if( o.name.find( "EECLT" ) < o.name.size() ) {
@@ -512,14 +513,14 @@ void EERenderPlugin::preDrawTH1F( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   gStyle->SetOptStat("euomr");
   obj->SetStats(kTRUE);
-  gPad->SetLogy(0);
+  gPad->SetLogy(kFALSE);
 
   int nbx = obj->GetNbinsX();
 
-  if ( obj->GetMaximum() > 0. ) gPad->SetLogy(1);
+  if ( obj->GetMaximum() > 0. ) gPad->SetLogy(kTRUE);
 
-  if ( nbx == 10 ) gPad->SetLogy(0);
-  if ( nbx == 850 ) gPad->SetLogy(0);
+  if ( nbx == 10 ) gPad->SetLogy(kFALSE);
+  if ( nbx == 850 ) gPad->SetLogy(kFALSE);
 
   if( o.name.find( "EVTTYPE" ) < o.name.size() ) {
    gPad->SetBottomMargin(0.4);
