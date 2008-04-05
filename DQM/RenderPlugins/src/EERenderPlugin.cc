@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.72 2008/03/29 13:26:44 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.73 2008/04/05 18:44:44 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.72 $
-  \date $Date: 2008/03/29 13:26:44 $
+  \version $Revision: 1.73 $
+  \date $Date: 2008/04/05 18:44:44 $
 */
 
 #include "TH1F.h"
@@ -17,13 +17,15 @@
 
 #include "TStyle.h"
 #include "TCanvas.h"
+#include "TGaxis.h"
 #include "TColor.h"
+#include "TROOT.h"
 
 #include "TGraph.h"
 #include "TLine.h"
-#include "TROOT.h"
 
 #include <iostream>
+#include <math.h>
 
 #include "DQM/EcalCommon/interface/ColorPalette.h"
 #include "DQM/EcalCommon/interface/Numbers.h"
