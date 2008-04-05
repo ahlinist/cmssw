@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.69 2008/04/05 18:44:44 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.70 2008/04/05 19:03:20 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.69 $
-  \date $Date: 2008/04/05 18:44:44 $
+  \version $Revision: 1.70 $
+  \date $Date: 2008/04/05 19:03:20 $
 */
 
 #include "TH1F.h"
@@ -112,8 +112,6 @@ void EBRenderPlugin::initialise( int argc, char **argv ) {
   text6->SetMarkerSize( 2 );
   text7->SetMarkerSize( 2 );
   text8->SetMarkerSize( 2 );
-
-  axis1 = new TGaxis(-M_PI*(9+1.5)/9, -1.479, M_PI*(9-1.5)/9, -1.479, -M_PI*(9+1.5)/9, M_PI*(9-1.5)/9, 40306, "N");
 
 }
 
@@ -581,7 +579,6 @@ void EBRenderPlugin::postDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o
     text7->GetXaxis()->SetRange(x1, x2);
     text7->GetYaxis()->SetRange(y1, y2);
     text7->Draw("text,same");
-    //axis1->Draw();
     return;
   }
 
@@ -645,7 +642,6 @@ void EBRenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     text7->GetXaxis()->SetRange(x1, x2);
     text7->GetYaxis()->SetRange(y1, y2);
     text7->Draw("text,same");
-    //axis1->Draw();
     return;
   }
 
