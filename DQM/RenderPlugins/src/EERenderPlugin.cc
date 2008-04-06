@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.73 2008/04/05 18:44:44 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.74 2008/04/05 19:03:20 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.73 $
-  \date $Date: 2008/04/05 18:44:44 $
+  \version $Revision: 1.74 $
+  \date $Date: 2008/04/05 19:03:20 $
 */
 
 #include "TH1F.h"
@@ -375,6 +375,14 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     gStyle->SetPalette(10, pCol4);
     obj->SetOption("colz");
     gStyle->SetPaintTextFormat("+g");
+    return;
+  }
+
+  if( o.name.find( "EETMT timing vs amplitude" ) < o.name.size() ) {
+    if ( obj->GetMaximum() > 0. ) gPad->SetLogz(kTRUE);
+    obj->SetMinimum(0.0);
+    gStyle->SetPalette(10, pCol4);
+    obj->SetOption("colz");
     return;
   }
 
