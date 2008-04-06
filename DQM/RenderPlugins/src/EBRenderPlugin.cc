@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.70 2008/04/05 19:03:20 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.71 2008/04/05 19:03:57 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.70 $
-  \date $Date: 2008/04/05 19:03:20 $
+  \version $Revision: 1.71 $
+  \date $Date: 2008/04/05 19:03:57 $
 */
 
 #include "TH1F.h"
@@ -335,6 +335,14 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     gStyle->SetPalette(10, pCol4);
     obj->SetOption("colz");
     gStyle->SetPaintTextFormat("+g");
+    return;
+  }
+
+  if( o.name.find( "EBTMT timing vs amplitude" ) < o.name.size() ) {
+    if ( obj->GetMaximum() > 0. ) gPad->SetLogz(kTRUE);
+    obj->SetMinimum(0.0);
+    gStyle->SetPalette(10, pCol4);
+    obj->SetOption("colz");
     return;
   }
 
