@@ -9,6 +9,9 @@
 //		generic os<< lines in JobReport::JobReportImpl::writeOutputFile
 //		to direct use of LogInfo.
 //
+// 4/8/08   mf	Encase the logdesc for in <CDATA> ... </CDATA>
+
+//
 // Original Author:  Marc Paterno
 // $Id$
 //
