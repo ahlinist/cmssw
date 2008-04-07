@@ -595,7 +595,7 @@ namespace edm
     if(impl_->ost_) {
       std::ostream& msg =*(impl_->ost_);
       msg << "<FrameworkError ExitStatus=\"1\" Type=\"" << shortDesc <<"\" >\n";
-      msg << "  " << longDesc << "\n";
+      msg << "<CDATA>\n" << longDesc << "\n</CDATA>\n";
       msg << "</FrameworkError>\n";
    //LogError("FwkJob") << msg.str();
       msg << std::flush;
