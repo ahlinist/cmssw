@@ -108,7 +108,7 @@ module gentagJetPhys = CandJetFlavourIdentifier{
 # ----------------------------------------------------------------------
 include "RecoMET/Configuration/data/GenMETParticles.cff"
 include "RecoMET/METProducers/data/genMet.cfi"
-include "JetMETCorrections/Modules/data/JetMETCorrections.cff"
+#include "JetMETCorrections/Modules/data/JetMETCorrections.cff"
 
 
 
@@ -127,8 +127,8 @@ module genDump = HFDumpGenerator {
 module trkDump = HFDumpTracks {
   untracked int32  verbose                = 0
   # for Famos:
-  untracked InputTag muonsLabel           = paramMuons:ParamGlobalMuons
-  untracked string tracksLabel            = "gsWithMaterialTracks"
+  untracked InputTag muonsLabel           = muons
+  untracked string tracksLabel            = "ctfWithMaterialTracks"
   untracked string associatorLabel        = "TrackAssociatorByChi2"
   untracked string trackingParticlesLabel = "trackingParticles"
   untracked int32  doTruthMatching        = 2
@@ -138,8 +138,8 @@ module trkDump = HFDumpTracks {
 
 module signalDump = HFDumpSignal {
   untracked int32  verbose                = 0
-  untracked string tracksLabel            = "gsWithMaterialTracks"
-  untracked InputTag muonsLabel           = paramMuons:ParamGlobalMuons
+  untracked string tracksLabel            = "ctfWithMaterialTracks"
+  untracked InputTag muonsLabel           = muons
   untracked double muonPt                 = 3.0
   untracked double kaonPt                 = 1.0
   untracked double deltaR                 = 1.5

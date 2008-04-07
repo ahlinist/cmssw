@@ -6,6 +6,8 @@
 #include "HeavyFlavorAnalysis/Examples/interface/HFDumpJets.h"
 #include "HeavyFlavorAnalysis/Examples/interface/HFDumpStuff.h"
 #include "HeavyFlavorAnalysis/Examples/interface/HFDumpSignal.h"
+#include "HeavyFlavorAnalysis/Examples/interface/HFDumpSignal.h"
+#include "HeavyFlavorAnalysis/Examples/interface/HFGenFilter.h"
 
 DEFINE_SEAL_MODULE();
 DEFINE_ANOTHER_FWK_MODULE(HFTree);
@@ -14,4 +16,5 @@ DEFINE_ANOTHER_FWK_MODULE(HFDumpTracks);
 DEFINE_ANOTHER_FWK_MODULE(HFDumpJets);
 DEFINE_ANOTHER_FWK_MODULE(HFDumpStuff);
 DEFINE_ANOTHER_FWK_MODULE(HFDumpSignal);
+DEFINE_ANOTHER_FWK_MODULE(HFGenFilter);
 

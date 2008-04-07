@@ -84,3 +84,8 @@ module MuMuFilter = MCParticlePairFilter {
   untracked double MinInvMass = 2.9
   untracked double MaxInvMass = 3.3
 }
+
+# -- Filter on dimuon kinematical acceptance
+module genFilter = HFGenFilter {
+
+}
