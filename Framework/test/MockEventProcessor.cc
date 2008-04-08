@@ -226,4 +226,8 @@ namespace edm {
     output_ << "\tshouldWeStop\n";
     return shouldWeStop_;
   }
+
+  void MockEventProcessor::setExceptionMessageFiles(std::string& message) { }
+  void MockEventProcessor::setExceptionMessageRuns(std::string& message) { }
+  void MockEventProcessor::setExceptionMessageLumis(std::string& message) { }
 }

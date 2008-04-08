@@ -9,6 +9,8 @@ Abstract base class for Event Processors
 Original Authors: W. David Dagenhart, Marc Paterno
 */
 
+#include <string>
+
 namespace statemachine {
   class Restart;
 }
@@ -73,6 +75,10 @@ namespace edm
     virtual void readEvent() = 0;
     virtual void processEvent() = 0;
     virtual bool shouldWeStop() = 0;
+
+    virtual void setExceptionMessageFiles(std::string& message) = 0;
+    virtual void setExceptionMessageRuns(std::string& message) = 0;
+    virtual void setExceptionMessageLumis(std::string& message) = 0;
   };
 }
 

@@ -372,6 +372,10 @@ namespace edm {
     virtual void processEvent();
     virtual bool shouldWeStop();
 
+    virtual void setExceptionMessageFiles(std::string& message);
+    virtual void setExceptionMessageRuns(std::string& message);
+    virtual void setExceptionMessageLumis(std::string& message);
+
   private:
     //------------------------------------------------------------------
     //
@@ -384,6 +388,7 @@ namespace edm {
 
                        
     StatusCode runCommon(bool onlineStateTransitions, int numberOfEventsToProcess);
+    void terminateMachine(bool afterException);
 
     StatusCode processEvents(int & numberEventsToProcess);
     StatusCode processLumis(int & numberEventsToProcess, bool repeatable);
@@ -467,6 +472,9 @@ namespace edm {
     bool                                          handleEmptyRuns_;
     bool                                          handleEmptyLumis_;
     bool                                          sourceActive_;
+    std::string                                   exceptionMessageFiles_;
+    std::string                                   exceptionMessageRuns_;
+    std::string                                   exceptionMessageLumis_;
 
     friend class event_processor::StateSentry;
     friend class event_processor::MachineSentry;

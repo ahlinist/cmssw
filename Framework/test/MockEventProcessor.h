@@ -65,6 +65,10 @@ namespace edm
     virtual void processEvent();
     virtual bool shouldWeStop();
 
+    virtual void setExceptionMessageFiles(std::string& message);
+    virtual void setExceptionMessageRuns(std::string& message);
+    virtual void setExceptionMessageLumis(std::string& message);
+
   private:
     std::string mockData_;
     std::ostream & output_;
