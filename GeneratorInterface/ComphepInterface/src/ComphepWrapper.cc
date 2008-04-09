@@ -1,5 +1,4 @@
-#ifndef COMPHEP_WRAPPER_H
-#define COMPHEP_WRAPPER_H
+#include "GeneratorInterface/ComphepInterface/interface/ComphepWrapper.h"
 //////////////////////////////////////////////////////////////////////////
 // Sergey.Slabospitsky@cern.ch, July 2006
 // Wrapper for FORTRAN version of PEVMAIN
@@ -8,9 +7,7 @@
                                                                                
 //--------------------------------------------------------------------------
 // 
-#define pevmain pevmain_
     extern "C" {
         void pevmain();
-        void call_pevmain();
+        void call_pevmain(){ pevmain_(); }
       }
-#endif

@@ -1,6 +1,6 @@
 /*
- *  $Date: 2008/01/22 20:57:31 $
- *  $Revision: 1.5 $
+ *  $Date: 2007/11/28 15:35:29 $
+ *  $Revision: 1.4 $
  *  
  *  Filip Moorgat & Hector Naves 
  *  26/10/05
@@ -13,12 +13,14 @@
  */
 
 
-#include "GeneratorInterface/ComphepInterface/interface/ComphepSource.h"
+#include "GeneratorInterface/ComphepInterface/interface/ComphepProducer.h"
 #include "GeneratorInterface/ComphepInterface/interface/ComphepWrapper.h"
 #include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "FWCore/Utilities/interface/RandomNumberGenerator.h"
+#include "CLHEP/Random/JamesRandom.h"
+#include "CLHEP/Random/RandFlat.h"
 
 #include <iostream>
 #include "time.h"
@@ -36,24 +38,40 @@ using namespace std;
 #include "GeneratorInterface/CommonInterface/interface/PythiaCMS.h"
 #include "GeneratorInterface/CommonInterface/interface/Txgive.h"
 
-HepMC::IO_HEPEVT conv;
+HepMC::IO_HEPEVT conv2;
 // ***********************
 
 // MCDB Interface
 #include "GeneratorInterface/ComphepInterface/interface/MCDBInterface.h"
 
-
 //used for defaults
   static const unsigned long kNanoSecPerSec = 1000000000;
   static const unsigned long kAveEventPerSec = 200;
 
-ComphepSource::ComphepSource( const ParameterSet & pset, 
-			    InputSourceDescription const& desc ) :
-  GeneratedInputSource(pset, desc), evt(0), 
+// Added 12 March '08 by JMM as part of forcing Pythia to use
+// the random number engines from the random service.  The
+// remaining question is how to make sure this version of PYR
+// is used instead of the one embedded in Pythia.
+
+#define PYR pyr_
+extern "C" {
+  static HepRandomEngine* RandomEnginePointer;
+
+  double PYR(int idummy)
+  {
+    return RandomEnginePointer->flat();
+  }
+}
+
+ComphepProducer::ComphepProducer( const ParameterSet & pset) :
+  EDProducer(), evt(0), 
   pythiaPylistVerbosity_ (pset.getUntrackedParameter<int>("pythiaPylistVerbosity",0)),
   pythiaHepMCVerbosity_ (pset.getUntrackedParameter<bool>("pythiaHepMCVerbosity",false)),
   maxEventsToPrint_ (pset.getUntrackedParameter<int>("maxEventsToPrint",1)),
-  getInputFromMCDB_ (pset.getUntrackedParameter<bool>("getInputFromMCDB",false)), MCDBArticleID_ (pset.getParameter<int>("MCDBArticleID")) {
+  getInputFromMCDB_ (pset.getUntrackedParameter<bool>("getInputFromMCDB",false)),
+  MCDBArticleID_ (pset.getParameter<int>("MCDBArticleID")),
+  eventNumber_(0)
+  {
 
 
   //******
@@ -138,12 +156,15 @@ ComphepSource::ComphepSource( const ParameterSet & pset,
 
 
  // Read the Comphep parameter
+#include "GeneratorInterface/CommonInterface/interface/ExternalGenRead.inc"
 
 
 
   //In the future, we will get the random number seed on each event and tell 
   // pythia to use that new seed
   edm::Service<RandomNumberGenerator> rng;
+  RandomEnginePointer = &(rng->getEngine());
+
   uint32_t seed = rng->mySeed();
   ostringstream sRandomSet;
   sRandomSet <<"MRPY(1)="<<seed;
@@ -153,25 +174,25 @@ ComphepSource::ComphepSource( const ParameterSet & pset,
 
   //  call_pretauola(-1);     // TAUOLA initialization
 
-  cout << endl; // Stetically add for the output
+  cout << endl; // Statically add for the output
   //********                                      
   
   produces<HepMCProduct>();
 }
 
 
-ComphepSource::~ComphepSource(){
+ComphepProducer::~ComphepProducer(){
   call_pystat(1);
   //  call_pretauola(1);  // output from TAUOLA 
   clear(); 
 }
 
-void ComphepSource::clear() {
+void ComphepProducer::clear() {
  
 }
 
 
-bool ComphepSource::produce(Event & e) {
+void ComphepProducer::produce(Event & e, const EventSetup& es ) {
 
     auto_ptr<HepMCProduct> bare_product(new HepMCProduct());  
 
@@ -183,15 +204,16 @@ bool ComphepSource::produce(Event & e) {
 
     call_pyhepc( 1 );
     
-    //    HepMC::GenEvent* evt = conv.getGenEventfromHEPEVT();
-    HepMC::GenEvent* evt = conv.read_next_event();
+    //    HepMC::GenEvent* evt = conv2.getGenEventfromHEPEVT();
+    HepMC::GenEvent* evt = conv2.read_next_event();
     evt->set_signal_process_id(pypars.msti[0]);
-    evt->set_event_number(numberEventsInRun() - remainingEvents() - 1);
+    ++eventNumber_;
+    evt->set_event_number(eventNumber_);
     
 
     //******** Verbosity ********
     
-    if(event() <= maxEventsToPrint_ &&
+    if(e.id().event() <= maxEventsToPrint_ &&
        (pythiaPylistVerbosity_ || pythiaHepMCVerbosity_)) {
 
       // Prints PYLIST info
@@ -214,12 +236,10 @@ bool ComphepSource::produce(Event & e) {
     if(evt)  bare_product->addHepMCData(evt );
 
     e.put(bare_product);
-
-    return true;
 }
 
 bool 
-ComphepSource::call_pygive(const std::string& iParm ) 
+ComphepProducer::call_pygive(const std::string& iParm ) 
  {
   int numWarn = pydat1.mstu[26]; //# warnings
   int numErr = pydat1.mstu[22];// # errors
@@ -230,7 +250,7 @@ ComphepSource::call_pygive(const std::string& iParm )
 }
 //------------
 bool 
-ComphepSource::call_txgive(const std::string& iParm ) 
+ComphepProducer::call_txgive(const std::string& iParm ) 
    {
     //call the fortran routine txgive with a fortran string
      TXGIVE( iParm.c_str(), iParm.length() );  
@@ -238,7 +258,7 @@ ComphepSource::call_txgive(const std::string& iParm )
    }
 
 bool
-ComphepSource::call_txgive_init() 
+ComphepProducer::call_txgive_init() 
 {
    TXGIVE_INIT();
    return 1;
