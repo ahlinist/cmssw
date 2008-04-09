@@ -7,7 +7,8 @@ HepMGProductAnalyzer::~HepMGProductAnalyzer() {}
 
 void HepMGProductAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
    edm::Handle<edm::HepMCProduct> evt;
-   iEvent.getByType(evt);
+// iEvent.getByType(evt);
+   iEvent.getByLabel(label_,evt);
 
    //Print out the HepMCProduct
    evt->GetEvent()->print();

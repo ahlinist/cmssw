@@ -1,6 +1,6 @@
-/** MadGraphSource
+/** MadGraphProducer
  *
- * A modified version of the PythiaSource by 
+ * A modified version of the PythiaProducer by 
  * Filip Moorgat & Hector Naves, that generates 
  * events by reading in a file produced with MadGraph/MadEvent
  * and shower them with Pythia.
@@ -14,11 +14,11 @@
  * Dorian Kcira : added reading of <slha> xml tags in the header (05/02/2008)
  * Dorian Kcira : added flag to allow reading of generic LH files without MadGraph specifics (06/02/2008)
  ***************************************/
-#include "GeneratorInterface/MadGraphInterface/interface/MadGraphSource.h"
+#include "GeneratorInterface/MadGraphInterface/interface/MadGraphProducer.h"
+#include "GeneratorInterface/MadGraphInterface/interface/PYR.h"
 #include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
-#include "GeneratorInterface/MadGraphInterface/interface/PYR.h"
 #include "FWCore/Utilities/interface/RandomNumberGenerator.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
@@ -75,10 +75,11 @@ extern "C" {
 /*
 ME2Pythia.f
       double precision etcjet,rclmax,etaclmax,qcut,clfact
-      integer maxjets,minjets,iexcfile,ktsche,nexcres,excres(30)
+      integer maxjets,minjets,iexcfile,ktsche
       common/MEMAIN/etcjet,rclmax,etaclmax,qcut,clfact,
-     $   maxjets,minjets,iexcfile,ktsche,nexcres,excres
-
+     $   maxjets,minjets,iexcfile,ktsche
+      DATA ktsche/0/
+      DATA qcut,clfact/0d0,0d0/
 */
 extern "C" {
  extern struct MEMAIN{
@@ -91,8 +92,6 @@ extern "C" {
  int minjets;
  int iexcfile;
  int ktsche;
- int nexcres;
- int excres[30];
  }memain_;
 }
 
@@ -113,10 +112,24 @@ extern "C"{
 
 using namespace edm;
 
-MadGraphSource::MadGraphSource( const ParameterSet & pset, InputSourceDescription const& desc) : ExternalInputSource (pset, desc), evt(0),
-pythiaPylistVerbosity_ (pset.getUntrackedParameter<int>("pythiaPylistVerbosity",0)),pythiaHepMCVerbosity_ (pset.getUntrackedParameter<bool>("pythiaHepMCVerbosity",false)),maxEventsToPrint_ (pset.getUntrackedParameter<int>("maxEventsToPrint",0)),MGfile_ (fileNames()[0]),getInputFromMCDB_ (pset.getUntrackedParameter<bool>("getInputFromMCDB",false)),MCDBArticleID_ (pset.getParameter<int>("MCDBArticleID")),firstEvent_(pset.getUntrackedParameter<unsigned int>("firstEvent", 0)),lhe_event_counter_(0),MEMAIN_etaclmax(pset.getUntrackedParameter<double>("MEMAIN_etaclmax",0.)),MEMAIN_qcut(pset.getUntrackedParameter<double>("MEMAIN_qcut",0.)),MEMAIN_iexcfile(pset.getUntrackedParameter<unsigned int>("MEMAIN_iexcfile",0)), produceEventTreeFile_ (pset.getUntrackedParameter<bool>("produceEventTreeFile",false)), minimalLH_(pset.getUntrackedParameter<bool>("minimalLH",false)) {
+MadGraphProducer::MadGraphProducer( const ParameterSet & pset) :
+ EDProducer(), evt(0),
+ pythiaPylistVerbosity_ (pset.getUntrackedParameter<int>("pythiaPylistVerbosity",0)),
+ pythiaHepMCVerbosity_ (pset.getUntrackedParameter<bool>("pythiaHepMCVerbosity",false)),
+ maxEventsToPrint_ (pset.getUntrackedParameter<int>("maxEventsToPrint",0)),
+ MGfile_ (pset.getParameter<std::string>("MadGraphInputFile")),
+ getInputFromMCDB_ (pset.getUntrackedParameter<bool>("getInputFromMCDB",false)),
+ MCDBArticleID_ (pset.getParameter<int>("MCDBArticleID")),
+ firstEvent_(pset.getUntrackedParameter<unsigned int>("firstEvent", 0)),
+ lhe_event_counter_(0),MEMAIN_etaclmax(pset.getUntrackedParameter<double>("MEMAIN_etaclmax",0.)),
+ MEMAIN_qcut(pset.getUntrackedParameter<double>("MEMAIN_qcut",0.)),
+ MEMAIN_iexcfile(pset.getUntrackedParameter<unsigned int>("MEMAIN_iexcfile",0)),
+ produceEventTreeFile_ (pset.getUntrackedParameter<bool>("produceEventTreeFile",false)),
+ minimalLH_(pset.getUntrackedParameter<bool>("minimalLH",false)),
+ eventNumber_(firstEvent_)
+{
 
-  edm::LogInfo("Generator|MadGraph")<<" initializing MadGraphSource";
+  edm::LogInfo("Generator|MadGraph")<<" initializing MadGraphProducer";
   pdf_info = new HepMC::PdfInfo();
 
   std::ifstream file;
@@ -128,8 +141,8 @@ pythiaPylistVerbosity_ (pset.getUntrackedParameter<int>("pythiaPylistVerbosity",
   // strip the input file name
   if ( MGfile_.find("file:") || MGfile_.find("rfio:")){
     MGfile_.erase(0,5);
-  }   
- //
+  }
+
   file.open(MGfile_.c_str(),std::ios::in);  
   if(!file){
     edm::LogError("GeneratorError|OpenMadGraphFileError")<< "Error: Cannot open MadGraph input file";
@@ -169,7 +182,7 @@ pythiaPylistVerbosity_ (pset.getUntrackedParameter<int>("pythiaPylistVerbosity",
   // print out
   edm::LogInfo("Generator|MadGraph")<<"MEMAIN before ME2pythia initialization - etcjet ="<<memain_.etcjet<<" rclmax ="<<memain_.rclmax<<" etaclmax ="<<memain_.etaclmax<<" qcut ="<<memain_.qcut<<" clfact ="<<memain_.clfact<<" maxjets ="<<memain_.maxjets<<" minjets ="<<memain_.minjets<<" iexcfile ="<<memain_.iexcfile<<" ktsche ="<<memain_.ktsche;
 
-  edm::LogInfo("Generator|MadGraph")<<"MadGraphSource: initializing Pythia.";
+  edm::LogInfo("Generator|MadGraph")<<"MadGraphProducer: initializing Pythia.";
   // PYLIST Verbosity Level
   // Valid PYLIST arguments are: 1, 2, 3, 5, 7, 11, 12, 13
   edm::LogInfo("Generator|MadGraph")<<"Pythia PYLIST verbosity level = " << pythiaPylistVerbosity_;
@@ -178,7 +191,8 @@ pythiaPylistVerbosity_ (pset.getUntrackedParameter<int>("pythiaPylistVerbosity",
   //Max number of events printed on verbosity level 
   edm::LogInfo("Generator|MadGraph")<<"Number of events to be printed = " << maxEventsToPrint_;
   // max nr of events and first event
-  edm::LogInfo("Generator|MadGraph")<<"firstEvent / maxEvents = "<<firstEvent_<<" / "<< maxEvents();
+//edm::LogInfo("Generator|MadGraph")<<"firstEvent / maxEvents = "<<firstEvent_<<" / "<< maxEvents();
+  edm::LogInfo("Generator|MadGraph")<<"firstEvent / maxEvents = "<<firstEvent_<<" / 999999999";
 
   // Set PYTHIA parameters in a single ParameterSet
   ParameterSet pythia_params = pset.getParameter<ParameterSet>("PythiaParameters") ;
@@ -218,7 +232,7 @@ pythiaPylistVerbosity_ (pset.getUntrackedParameter<int>("pythiaPylistVerbosity",
   edm::LogInfo("Generator|MadGraph")<<"Setting Pythia random number seed";
   edm::LogInfo("Generator|MadGraph")<<"----------------------------------------------";
   edm::Service<RandomNumberGenerator> rng;
-  randomEngine = &(rng->getEngine());
+  randomEngine = fRandomEngine = &(rng->getEngine());
   uint32_t seed = rng->mySeed();
   std::ostringstream sRandomSet;
   sRandomSet <<"MRPY(1)="<<seed;
@@ -233,22 +247,22 @@ pythiaPylistVerbosity_ (pset.getUntrackedParameter<int>("pythiaPylistVerbosity",
 }
 
 
-MadGraphSource::~MadGraphSource(){
+MadGraphProducer::~MadGraphProducer(){
   edm::LogInfo("Generator|MadGraph")<<"event generation done.";
   delete pdf_info;
   clear();
   //  rm -f MGinput.dat;
 }
 
-void MadGraphSource::clear() {
+void MadGraphProducer::clear() {
 }
 
-
-bool MadGraphSource::produce(Event & e) {
+void MadGraphProducer::produce(Event & e, const EventSetup& es) 
+{
   std::auto_ptr<HepMCProduct> bare_product(new HepMCProduct());  
 
   // skip LHE events - read firstEvent_ times <event>...</event> from the LHE file without returning from produce()
-  for(;lhe_event_counter_<firstEvent_; ++lhe_event_counter_){
+  for(;lhe_event_counter_<firstEvent_; ++lhe_event_counter_) {
     call_pyevnt();      // generate one event with Pythia
     call_pyhepc( 1 );
     edm::LogWarning("Generator|MadGraph")<<"skipping LHE event "<<lhe_event_counter_;
@@ -262,7 +276,8 @@ bool MadGraphSource::produce(Event & e) {
   HepMC::IO_HEPEVT conv;
   HepMC::GenEvent* evt = conv.read_next_event();
   evt->set_signal_process_id(pypars.msti[0]);
-  evt->set_event_number(numberEventsInRun() - remainingEvents() - 1);
+  evt->set_event_number(eventNumber_);
+  ++eventNumber_;
 
   // store PDF information
   int id_1 = pypars.msti[14];
@@ -279,7 +294,7 @@ bool MadGraphSource::produce(Event & e) {
   evt->set_pdf_info( *pdf_info);
 
 
-  if(event() <= maxEventsToPrint_ && (pythiaPylistVerbosity_ || pythiaHepMCVerbosity_)) {
+  if(e.id().event() <= maxEventsToPrint_ && (pythiaPylistVerbosity_ || pythiaHepMCVerbosity_)) {
     // Prints PYLIST info
     if(pythiaPylistVerbosity_) {
       call_pylist(pythiaPylistVerbosity_);
@@ -293,15 +308,14 @@ bool MadGraphSource::produce(Event & e) {
 
   if(hepeup_.nup==0){
     edm::LogInfo("Generator|MadGraph")<<"The interface signalled end of Les Houches file. Finishing event processing here.";
-    return false; // finish event processing if variable nup from common block HEPEUP set to 0 in ME2Pythia.f
+    return; // finish event processing if variable nup from common block HEPEUP set to 0 in ME2Pythia.f
   }
 
   if(evt)  bare_product->addHepMCData(evt );
   e.put(bare_product);
-  return true;
 }
 
-bool MadGraphSource::call_pygive(const std::string& iParm ) {
+bool MadGraphProducer::call_pygive(const std::string& iParm ) {
   int numWarn = pydat1.mstu[26]; //# warnings
   int numErr = pydat1.mstu[22];// # errors
   //call the fortran routine pygive with a fortran string
