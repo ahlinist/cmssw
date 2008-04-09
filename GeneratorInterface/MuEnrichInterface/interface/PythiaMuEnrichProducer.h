@@ -1,5 +1,5 @@
-#ifndef PYTHIAMUENRICHSOURCE_h
-#define PYTHIAMUENRICHSOURCE_h
+#ifndef PYTHIAMUENRICHPRODUCER_h
+#define PYTHIAMUENRICHPRODUCER_h
 
 /** \class 
  *
@@ -12,16 +12,12 @@
  *   ( port from FAMOS )
  ***************************************/
 
-#include "FWCore/Framework/interface/GeneratedInputSource.h"
+#include "FWCore/Framework/interface/EDProducer.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include <map>
 #include <string>
 #include "HepMC/GenEvent.h"
 
-
-
-/* maximum number of muons to generate: */
-#define MAXMUON 10
 
 /* flavour code for muon: */
 #define IDMU 13
@@ -44,6 +40,9 @@
 #define V(a,b) pyjets.v[b-1][a-1]
 
 #ifdef NEVER
+/* maximum number of muons to generate: */
+#define MAXMUON 10
+
  struct t_decayed_hadron
 {
   int index;
@@ -71,10 +70,10 @@ class HepRandomEngine;
 
 namespace edm
 {
-  class PythiaMuEnrichSource : public GeneratedInputSource {
+  class PythiaMuEnrichProducer : public EDProducer {
   public:
-    PythiaMuEnrichSource(const ParameterSet &, const InputSourceDescription &);
-    virtual ~PythiaMuEnrichSource();
+    PythiaMuEnrichProducer(const ParameterSet &);
+    virtual ~PythiaMuEnrichProducer();
 
   private:
     // ----------member data ---------------------------
@@ -83,7 +82,8 @@ namespace edm
     bool call_txgive(const std::string& iParm );
     bool call_txgive_init();
   private:
-    virtual bool produce(Event & e);
+    virtual void produce(Event & e, const EventSetup & es);
+    virtual void endJob();
     void clear();
 	  
     HepMC::GenEvent  *evt;
@@ -156,6 +156,11 @@ namespace edm
     t_decay* loop_hadrons(int first, int last);
     t_decayed_hadron* decay(int);
     bool isbc();
+    int runNum_;
+    int eventNum_;
+    int numEvents_;
+
+    CLHEP::HepRandomEngine* fRandomEngine;
   };
 }
 #endif
