@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.74 2008/04/05 19:03:20 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.75 2008/04/06 14:44:11 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.74 $
-  \date $Date: 2008/04/05 19:03:20 $
+  \version $Revision: 1.75 $
+  \date $Date: 2008/04/06 14:44:11 $
 */
 
 #include "TH1F.h"
@@ -316,6 +316,8 @@ void EERenderPlugin::preDrawTProfile( TCanvas *c, const DQMNet::CoreObject &o ) 
 
   assert( obj );
 
+  gStyle->SetPaintTextFormat();
+
   gStyle->SetOptStat("euomr");
   obj->SetStats(kTRUE);
   gPad->SetLogy(kFALSE);
@@ -344,6 +346,8 @@ void EERenderPlugin::preDrawTH3F( TCanvas *c, const DQMNet::CoreObject &o ) {
   TH3F* obj = dynamic_cast<TH3F*>( o.object );
 
   assert( obj );
+
+  gStyle->SetPaintTextFormat();
 
   gStyle->SetOptStat(kFALSE);
   obj->SetStats(kFALSE);
@@ -520,6 +524,8 @@ void EERenderPlugin::preDrawTH1F( TCanvas *c, const DQMNet::CoreObject &o ) {
   TH1F* obj = dynamic_cast<TH1F*>( o.object );
 
   assert( obj );
+
+  gStyle->SetPaintTextFormat();
 
   gStyle->SetOptStat("euomr");
   obj->SetStats(kTRUE);
