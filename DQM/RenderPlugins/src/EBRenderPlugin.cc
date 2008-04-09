@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.71 2008/04/05 19:03:57 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.72 2008/04/06 14:44:11 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.71 $
-  \date $Date: 2008/04/05 19:03:57 $
+  \version $Revision: 1.72 $
+  \date $Date: 2008/04/06 14:44:11 $
 */
 
 #include "TH1F.h"
@@ -276,6 +276,8 @@ void EBRenderPlugin::preDrawTProfile( TCanvas *c, const DQMNet::CoreObject &o ) 
 
   assert( obj );
 
+  gStyle->SetPaintTextFormat();
+
   gStyle->SetOptStat("euomr");
   obj->SetStats(kTRUE);
   gPad->SetLogy(kFALSE);
@@ -304,6 +306,8 @@ void EBRenderPlugin::preDrawTH3F( TCanvas *c, const DQMNet::CoreObject &o ) {
   TH3F* obj = dynamic_cast<TH3F*>( o.object );
   
   assert( obj );
+
+  gStyle->SetPaintTextFormat();
 
   gStyle->SetOptStat(kFALSE);
   obj->SetStats(kFALSE);
@@ -487,6 +491,8 @@ void EBRenderPlugin::preDrawTH1F( TCanvas *c, const DQMNet::CoreObject &o ) {
   TH1F* obj = dynamic_cast<TH1F*>( o.object );
 
   assert( obj );
+
+  gStyle->SetPaintTextFormat();
 
   gStyle->SetOptStat("euomr");
   obj->SetStats(kTRUE);
