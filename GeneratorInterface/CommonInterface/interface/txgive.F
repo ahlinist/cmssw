@@ -9,6 +9,14 @@ C...Sets values of commonblock variables.
       double precision  Rpar     ! global TopRex real    parameters
       common /TXPAR/Ipar(512), Rpar(512)
       save   /TXPAR/
+***
+      integer CSAMODE
+      double precision  MUONRW, GAMMAJRW, ZJRW, ZPRW, HLTRW, 
+     &  SUSYRW, WWRW
+      common /EXPAR/CSAMODE, MUONRW, GAMMAJRW, ZJRW, ZPRW, 
+     &  HLTRW, SUSYRW, WWRW
+
+      save   /EXPAR/
 **********
       integer ndch   ! maximum number of decay channels
       parameter (ndch=50)
@@ -71,6 +79,95 @@ C...Sets values of commonblock variables.
 ***
       Iread = 1
       ier = 1
+***
+
+      Inam = 'CSAMODE ='
+        call TXRSTR2(inam, chin, strin, ier) 
+C	print*,'IER', ier
+         if(ier.ne.1) then
+           iread = 0
+           read(strin(1:512),*) CSAMODE 
+         endif
+*
+      
+      rnam = 'MUONRW ='
+        call TXRSTR2(rnam, chin, strin, ier) 
+C	print*,'IER', ier
+         if(ier.ne.1) then
+           iread = 0
+           read(strin(1:512),*) MUONRW 
+         endif
+*
+    
+      rnam = 'GAMMAJRW ='
+        call TXRSTR2(rnam, chin, strin, ier) 
+C	print*,'IER', ier
+         if(ier.ne.1) then
+           iread = 0
+           read(strin(1:512),*) GAMMAJRW 
+         endif
+*
+      
+      rnam = 'ZJRW ='
+        call TXRSTR2(rnam, chin, strin, ier) 
+C	print*,'IER', ier
+         if(ier.ne.1) then
+           iread = 0
+           read(strin(1:512),*) ZJRW 
+         endif
+*	 
+      rnam = 'ZPRW ='
+        call TXRSTR2(rnam, chin, strin, ier) 
+C	print*,'IER', ier
+         if(ier.ne.1) then
+           iread = 0
+           read(strin(1:512),*) ZPRW 
+         endif
+* 
+      rnam = 'HLTRW ='
+        call TXRSTR2(rnam, chin, strin, ier) 
+C	print*,'IER', ier
+         if(ier.ne.1) then
+           iread = 0
+           read(strin(1:512),*) HLTRW 
+         endif
+*	 
+      rnam = 'SUSYRW ='
+        call TXRSTR2(rnam, chin, strin, ier) 
+C	print*,'IER', ier
+         if(ier.ne.1) then
+           iread = 0
+           read(strin(1:512),*) SUSYRW 
+         endif
+*
+      rnam = 'WWRW ='
+        call TXRSTR2(rnam, chin, strin, ier) 
+C	print*,'IER', ier
+         if(ier.ne.1) then
+           iread = 0
+           read(strin(1:512),*) WWRW 
+         endif
+	 
+***
+
+      do I = 1,512
+        call intochar(I, il, cvi)
+         Inam = 'ipar('//cvi(1:il)//')'//' = '
+         Rnam = 'rpar('//cvi(1:il)//')'//' = '
+        call TXRSTR2(rnam, chin, strin, ier) 
+         if(ier.ne.1) then
+           iread = 0
+           read(strin(1:512),*) Rpar(i) 
+         endif
+        call TXRSTR2(inam, chin, strin, ier) 
+         if(ier.ne.1) then
+           iread = 0
+           read(strin(1:512),*) Ipar(i) 
+         endif
+      enddo
+*
+***
+*
       Inam = 'unwfile = ' ! for alpgen
         call TXRSTR2(inam, chin, strin, ier) 
          if(ier.eq.0) then
