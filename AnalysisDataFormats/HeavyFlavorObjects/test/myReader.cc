@@ -89,8 +89,8 @@ void myReader::bookHist() {
   h = new TH1D("h20", "ntrk", 20, 0, 20.);
 
   h = new TH1D("h100", "l/s", 80, 0., 20.);
-  h = new TH1D("m100", "m", 80, 2.0, 6.0);
-  h = new TH1D("m101", "m", 80, 2.0, 6.0);
+  h = new TH1D("m100", "m", 80, 0.0, 8.0);
+  h = new TH1D("m101", "m", 80, 0.0, 8.0);
 
   // -- Reduced Tree
   fTree = new TTree("events", "events");
