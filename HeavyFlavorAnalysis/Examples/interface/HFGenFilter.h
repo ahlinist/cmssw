@@ -25,7 +25,7 @@ public:
 
 private:
   
-  int            fNtot;
+  int            fNgood, fNtot, fEvt;
 
 };
 

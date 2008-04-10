@@ -16,7 +16,7 @@ source = PythiaSource {
     include "Configuration/Generator/data/PythiaUESettings.cfi"
 
     vstring processParameters = {
-      'MSEL=5         ! Min Bias'
+      'MSEL=1         ! Min Bias'
       # to add specific decays, see Bp2JpsiKp.cff or Bs2MuMu.cff
     }
   }

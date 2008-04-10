@@ -36,19 +36,12 @@ module goodTracks = CandSelector {
   bool filter = false
 }     
 
-#include "PhysicsTools/RecoCandAlgos/data/allMuons.cfi"
-#  replace allMuons.src = ParamGlobalMuons
-
-#module JPsiToMuMu =  CandViewShallowCloneCombiner {
-#string decay = "allMuons@+ allMuons@-"
-#  string cut = "2.8 < mass < 3.4"
-#}
-
 
 # ----------------------------------------------------------------------
 # -- Vertexing
 # ----------------------------------------------------------------------
 include "TrackingTools/TransientTrack/data/TransientTrackBuilder.cfi"
+
 
 # ----------------------------------------------------------------------
 # -- Jets
@@ -126,12 +119,11 @@ module genDump = HFDumpGenerator {
 
 module trkDump = HFDumpTracks {
   untracked int32  verbose                = 0
-  # for Famos:
   untracked InputTag muonsLabel           = muons
   untracked string tracksLabel            = "ctfWithMaterialTracks"
   untracked string associatorLabel        = "TrackAssociatorByChi2"
   untracked string trackingParticlesLabel = "trackingParticles"
-  untracked int32  doTruthMatching        = 2
+  untracked int32  doTruthMatching        = 1
   untracked string generatorEventLabel    = "source"
   untracked string simTracksLabel         = "famosSimHits"
 } 

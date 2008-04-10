@@ -3,12 +3,12 @@
 
 The following works (for me) on lxplus and elsewhere, both on 64bit and 32bit architectures
    cd SOMEWHERE
-   scramv1 project CMSSW CMSSW_1_6_8
-   cd CMSSW_1_6_8/src
+   scramv1 project CMSSW CMSSW_1_6_10
+   cd CMSSW_1_6_10/src
    eval `scramv1 runtime -csh`
    project CMSSW
-   cvs co -r V00-00-03 AnalysisDataFormats/HeavyFlavorObjects
-   cvs co -r V00-00-05 HeavyFlavorAnalysis/Examples
+   cvs co AnalysisDataFormats/HeavyFlavorObjects
+   cvs co HeavyFlavorAnalysis/Examples
    cd AnalysisDataFormats/HeavyFlavorObjects/
    make all
    cd ../../HeavyFlavorAnalysis/Examples
@@ -17,6 +17,7 @@ The following works (for me) on lxplus and elsewhere, both on 64bit and 32bit ar
    
 Generate an example RECO file (it will contain Bs -> mu+ mu-)
    ln -s . scratch  # or somewhere else!
+   mkdir scratch/ana
    cmsRun Bs2MuMu_GEN_SIM_DIGI_RECO.cfg 
 
 Run EDAnalyzers and fill a tree
@@ -28,35 +29,50 @@ Look at the tree
      .x test.C
 
 
+Alternatively, run FAMOS in one go: 
+   cmsRun HFExample.cfg
+   root
+     gSystem->Load("../../../AnalysisDataFormats/HeavyFlavorObjects/lib/libAna00.so");
+     .x HFExample.C
+
+A better way for analysis is with the compiled root class: 
+   cd ../../../AnalysisDataFormats/HeavyFlavorObjects/test
+   ../bin/runMyReader -f ../../../HeavyFlavorAnalysis/Examples/test/scratch/ana/hfexample.root
+   root 
+      TFile f("hfexample.defaults.root")
+      m100->Draw()
+
+
 1. Notes
 --------
 
-o The truth-matching is presently done with TrackingParticle. I think
-  this means it onloy runs on RECO.  (see below)
+o Both FAMOS and FULLSIM examples are provided. FAMOS requires some
+  change of name (e.g. muons -> paramMuons:ParamGlobalMuons). These
+  are collected in data/HFFamosReplacements.cff. 
 
-o The code is a mixture of tracks and candidates. I'd prefer the
-  latter, but sometimes the former compiled sooner or the cfg files
-  were easier to find. (see below)
+o A few cfg files in test provide the following options: 
 
-o (Reco) Muons are still missing. The tracks are currently identified
-  with 'truth'. This is easy to fix. (see below)
+  HFExample.cfg runs PYTHIA+GenFilters+FAMOS+NTP-dumping in one go. No
+  CMSSW file is produced, only the ntuple. By default it contains B+
+  -> J/psi K+. 
 
+  test.cfg runs PYTHIA+FULLSIM. The output is a CMSSW file. 
+
+o Be careful about MSEL=5 and MSEL=1: MSEL=1 is the only fully correct
+  way to generate  events. However, it generates minimum  bias, so 99%
+  of  all events  do not  contain a  b quark.  You can  filter  on the
+  generator level with the bFilter (see data/mc.cff). 
+
+  As  a fast  way  to  generate bbbar-events,  MSEL=5  is useful.   It
+  generates only gluon-fusion events with bbbar in the final state. It
+  runs  about 100  times  faster than  MSEL=1,  but the  b quarks  are
+  produced  back-to-back;  in gluon  splitting  they  are  not at  all
+  back-to-back.
 
 
 
 2. Missing features
 -------------------
 
-The following is to be implemented over the next few days
-  - Finish HFDumpSignal with Candidates, based on truth-matching
-  - Add vertexing to HFDumpSignal
-  - Pass the pointer to the 'event' in a better way than with a global variable
-  - HFDumpEventInformation: L1, HLT, pthat, ...
-  - HFDumpTracks: Add L1 and HLT information to tracks
-  - Add new information to tree: neutrals, jets
-  - Candidates generator particles usage instead of HepMC
-  - Candidates truth matching in HFDumpTracks (so that it also runs on AOD)
-  - Provide two example cfg files for simulation: RECO and AOD
-  - Simulation cfg files: reorganization to factorize the process
-  - Reorganization of cfg files: Create separate sequences
-  - Validation
+Please  send an  email  to Urs  Langenegger  if you  would like  other
+features.
