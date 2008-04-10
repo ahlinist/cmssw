@@ -45,6 +45,7 @@ all:
 	@$(MAKE) writeA00Event
 	@$(MAKE) readA00Event
 	@$(MAKE) runTreeReader
+	@$(MAKE) runMyReader
 	@$(MAKE) links
 
 # ================================================================================
