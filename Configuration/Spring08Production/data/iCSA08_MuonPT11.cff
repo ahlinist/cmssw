@@ -1,0 +1,41 @@
+source = PythiaSource 
+{ 
+   untracked int32 pythiaPylistVerbosity = 0 
+   untracked bool pythiaHepMCVerbosity = false 
+   untracked int32 maxEventsToPrint = 0 
+ 
+   untracked double crossSection = 498000000.
+   untracked double filterEfficiency = 0.0007
+
+   # sqrt(s) = 10 TeV
+   untracked double comEnergy = 10000.
+
+
+   PSet PythiaParameters = {
+
+         # This is a vector of ParameterSet names to be read, in this order
+         vstring parameterSets = {
+               "pythiaUESettings", 
+               "processParameters"
+         }
+
+         include "Configuration/Generator/data/PythiaUESettings.cfi"
+ 
+         vstring processParameters = {
+               'MSEL=1                 ! QCD high pT processes',
+               'CKIN(3)=20.          ! minimum pt hat for hard interactions'
+         }
+
+   }
+}
+
+module generatorFilter = PythiaFilter
+   {
+            untracked int32 ParticleID = 13
+            untracked double MinPt = 11. 
+            untracked double MinEta = -2.5
+            untracked double MaxEta = 2.5
+   }
+
+# canonical name needed for further steps
+sequence ProductionFilterSequence = { generatorFilter}
