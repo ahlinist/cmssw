@@ -1,6 +1,6 @@
 /*
- *  $Date: 2008/01/22 21:10:04 $
- *  $Revision: 1.4 $
+ *  $Date: 2007/03/28 07:30:43 $
+ *  $Revision: 1.3 $
  *  
  *  Filip Moorgat & Hector Naves 
  *  26/10/05
@@ -11,13 +11,15 @@
  */
 
 
-#include "GeneratorInterface/TopRexInterface/interface/ToprexSource.h"
+#include "GeneratorInterface/TopRexInterface/interface/ToprexProducer.h"
 #include "GeneratorInterface/TopRexInterface/interface/PYR.h"
-#include "GeneratorInterface/CommonInterface/interface/FindJets.h"
+#include "GeneratorInterface/TopRexInterface/interface/FindJets.h"
 #include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "FWCore/Utilities/interface/RandomNumberGenerator.h"
+#include "CLHEP/Random/JamesRandom.h"
+#include "CLHEP/Random/RandFlat.h"
 
 #include <iostream>
 #include "time.h"
@@ -38,7 +40,7 @@ using namespace std;
 #include "GeneratorInterface/CommonInterface/interface/Txgive.h"
 
 
-HepMC::IO_HEPEVT conv;
+HepMC::IO_HEPEVT conv2;
 // ***********************
 
 
@@ -46,18 +48,15 @@ HepMC::IO_HEPEVT conv;
   static const unsigned long kNanoSecPerSec = 1000000000;
   static const unsigned long kAveEventPerSec = 200;
 
-ToprexSource::ToprexSource( const ParameterSet & pset, 
-			    InputSourceDescription const& desc ) :
-  GeneratedInputSource(pset, desc), evt(0), 
+ToprexProducer::ToprexProducer( const ParameterSet & pset) :
+  EDProducer(), evt(0), 
   pythiaPylistVerbosity_ (pset.getUntrackedParameter<int>("pythiaPylistVerbosity",0)),
   pythiaHepMCVerbosity_ (pset.getUntrackedParameter<bool>("pythiaHepMCVerbosity",false)),
-  maxEventsToPrint_ (pset.getUntrackedParameter<int>("maxEventsToPrint",1))
-  
+  maxEventsToPrint_ (pset.getUntrackedParameter<int>("maxEventsToPrint",1)),
+  eventNumber_(0)
 {
   
-  cout << "ToprexSource: initializing TopReX " << endl;
-  
- 
+  cout << "ToprexProducer: initializing TopReX " << endl;
   
   // PYLIST Verbosity Level
   // Valid PYLIST arguments are: 1, 2, 3, 5, 7, 11, 12, 13
@@ -137,6 +136,7 @@ ToprexSource::ToprexSource( const ParameterSet & pset,
 
 
 // Read the TopReX parameters
+#include "GeneratorInterface/CommonInterface/interface/ExternalGenRead.inc"
 
 
   //In the future, we will get the random number seed on each event and tell 
@@ -161,21 +161,21 @@ ToprexSource::ToprexSource( const ParameterSet & pset,
   cout << endl; // Stetically add for the output
 
   produces<HepMCProduct>();
-  cout << "ToprexSource: starting event generation ... " << endl;
+  cout << "ToprexProducer: starting event generation ... " << endl;
 }
 
 
-ToprexSource::~ToprexSource(){
-  cout << "ToprexSource: event generation done. " << endl;
+ToprexProducer::~ToprexProducer(){
+  cout << "ToprexProducer: event generation done. " << endl;
   call_pystat(1);
   //    call_pretauola(1);  // output from TAUOLA 
   clear(); 
 }
 
-void ToprexSource::clear() { }
+void ToprexProducer::clear() { }
 
 
-bool ToprexSource::produce(Event & e) {
+void ToprexProducer::produce(Event & e, const EventSetup& es) {
 
     auto_ptr<HepMCProduct> bare_product(new HepMCProduct());  
      //
@@ -187,10 +187,11 @@ bool ToprexSource::produce(Event & e) {
     call_findjets();      // find jets 
     call_pyhepc( 1 );
     
-    HepMC::GenEvent* evt = conv.read_next_event();
+    HepMC::GenEvent* evt = conv2.read_next_event();
     evt->set_signal_process_id(pypars.msti[0]);
     evt->set_event_scale(pypars.pari[16]);
-    evt->set_event_number(numberEventsInRun() - remainingEvents() - 1);
+    ++eventNumber_;
+    evt->set_event_number(eventNumber_);
 
     //    Nest (*evt);
 
@@ -199,7 +200,7 @@ bool ToprexSource::produce(Event & e) {
 
     //******** Verbosity ********
     
-    if(event() <= maxEventsToPrint_ &&
+    if(e.id().event() <= maxEventsToPrint_ &&
        (pythiaPylistVerbosity_ || pythiaHepMCVerbosity_)) {
 
       // Prints PYLIST info
@@ -223,11 +224,11 @@ bool ToprexSource::produce(Event & e) {
 
     e.put(bare_product);
 
-    return true;
+    return;
 }
 
 bool 
-ToprexSource::call_pygive(const std::string& iParm ) 
+ToprexProducer::call_pygive(const std::string& iParm ) 
 {
    int numWarn = pydat1.mstu[26]; //# warnings
    int numErr = pydat1.mstu[22];// # errors
@@ -239,14 +240,14 @@ ToprexSource::call_pygive(const std::string& iParm )
 
 //------------
 bool 
-ToprexSource::call_txgive(const std::string& iParm ) 
+ToprexProducer::call_txgive(const std::string& iParm ) 
    {
    TXGIVE( iParm.c_str(), iParm.length() );  
 	return 1;  
    }
 
 bool
-ToprexSource::call_txgive_init() 
+ToprexProducer::call_txgive_init() 
 {
    TXGIVE_INIT();
    cout << "  Setting CSA defaults.   "   << endl;
