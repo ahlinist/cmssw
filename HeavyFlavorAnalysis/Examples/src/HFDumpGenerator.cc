@@ -48,29 +48,40 @@ HFDumpGenerator::~HFDumpGenerator() {
 // ----------------------------------------------------------------------
 void HFDumpGenerator::analyze(const Event& iEvent, const EventSetup& iSetup) {
 
+  // -- CAREFUL!
+  gHFEvent->Clear();
+
+  static int nevt(0); 
+  ++nevt;
+  //  cout << "==> HFDumpGenerator> new  event  " << nevt << endl;
+
   // -- Get candidates from generator block
   //    https://twiki.cern.ch/twiki/bin/view/CMS/WorkBookGenParticleCandidate
   Handle<CandidateCollection> hMCCandidates;
-  iEvent.getByLabel(fGenCandidatesLabel.c_str(), hMCCandidates);
-  TGenCand  *aGen = new TGenCand;
-  for (int i = 0; i < hMCCandidates->size(); ++ i ) {
-    const Candidate &p = (*hMCCandidates)[i];
-    aGen->fID    = p.pdgId();
-    aGen->fStatus = p.status();  
-    aGen->fNumber = i;  
-    const Candidate *mom = p.mother();
-    double pt = p.pt(), eta = p.eta(), phi = p.phi(), mass = p.mass();
-    double vx = p.vx(), vy = p.vy(), vz = p.vz();
-    aGen->fP.SetXYZT(p.px(), 
- 		     p.py(), 
- 		     p.pz(), 
- 		     p.energy());
-    aGen->fV.SetXYZ(vx, vy, vz);
-
-    //aGen->dump();
- 
+  try {
+    iEvent.getByLabel(fGenCandidatesLabel.c_str(), hMCCandidates);
+    TGenCand  *aGen = new TGenCand;
+    for (int i = 0; i < hMCCandidates->size(); ++ i ) {
+      const Candidate &p = (*hMCCandidates)[i];
+      aGen->fID    = p.pdgId();
+      aGen->fStatus = p.status();  
+      aGen->fNumber = i;  
+      const Candidate *mom = p.mother();
+      double pt = p.pt(), eta = p.eta(), phi = p.phi(), mass = p.mass();
+      double vx = p.vx(), vy = p.vy(), vz = p.vz();
+      aGen->fP.SetXYZT(p.px(), 
+		       p.py(), 
+		       p.pz(), 
+		       p.energy());
+      aGen->fV.SetXYZ(vx, vy, vz);
+      
+      //aGen->dump();
+      
+    }
+  } catch (Exception event) {
+    //    cout << "==> HFDumpGenerator> CandidateCollection with label " << fGenCandidatesLabel.c_str() 
+    //	 << " not found " << endl;
   }
-  //cout << "----------------------------------------------------------------------" << endl;
   
   // ----------------------------------------------------------------------
   // -- Get generator block directly

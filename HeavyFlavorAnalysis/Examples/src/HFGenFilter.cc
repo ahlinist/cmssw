@@ -24,52 +24,40 @@ HFGenFilter::HFGenFilter(const edm::ParameterSet& iConfig) {
   cout << "--- HFGenFilter constructor" << endl;
   cout << "----------------------------------------------------------------------" << endl;
   
+  fNgood= 0;
   fNtot = 0; 
 }
 
 
 // ----------------------------------------------------------------------
 HFGenFilter::~HFGenFilter() {  
-  cout << "==> HFGenFilter> Total number of accepted events = " << fNtot << endl;
+  cout << "==> HFGenFilter> Total number of accepted/total events = " << fNgood << "/" << fNtot << endl;
 }
 
 
 // ----------------------------------------------------------------------
 bool HFGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup) {
-
   bool goodEvent(false);
 
   TGenCand *pGen, *pDau;
-  int muDau(0);
+
+  ++fNtot;
+  cout << "==> HFGenFilter> new  event  " << fNtot;
 
   // -- filter events with at least one muon and pT>2.5GeV
   for (int ig = 0; ig < gHFEvent->nGenCands(); ++ig) {
     pGen = gHFEvent->getGenCand(ig);
-    muDau = 0; 
-    if (pGen->fDau1 > 0 && pGen->fDau2 > 0) {
-      for (int id = pGen->fDau1;  id <= pGen->fDau2; ++id) {
-        if ((id > -1) && (id < gHFEvent->nGenCands())) {
-          pDau = gHFEvent->getGenCand(id); 
-          if (13 == TMath::Abs(pDau->fID)) {
-            ++muDau;
-          }
-        }
-      }
+    if ((13 == TMath::Abs(pGen->fID)) && (pGen->fP.Perp() > 5.)) {
+      goodEvent = true;
     }
-
-    if ((13 == TMath::Abs(pGen->fID)) || (muDau > 0)) {
-      pGen->dump();
-      if ((13 == TMath::Abs(pGen->fID)) && (pGen->fP.Perp() < 2.5)) {
-        cout << "++++++++++++" << endl;
-      }
-      if ((13 == TMath::Abs(pGen->fID)) && (pGen->fP.Perp() > 2.5)) {
-	goodEvent = true;
-      }
-    }
-
   }
 
-  if (goodEvent) ++fNtot;
+  if (goodEvent) {
+    ++fNgood;
+    cout << " accepted" << endl;
+  } else {
+    cout << " not accepted" << endl;
+  }
   return goodEvent;
 }
 
