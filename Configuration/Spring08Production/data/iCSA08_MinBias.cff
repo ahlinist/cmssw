@@ -1,0 +1,40 @@
+  source = PythiaSource 
+  { 
+    untracked int32 pythiaPylistVerbosity = 0
+    untracked bool pythiaHepMCVerbosity   = false
+    untracked int32 maxEventsToPrint      = 0  
+    untracked double filterEfficiency     = 1.
+
+    #SA CSA08	 10 TeV center of mass
+    untracked double comEnergy = 10000.
+
+    PSet PythiaParameters = 
+    {
+      # This is a vector of ParameterSet names to be read, in this order
+      vstring parameterSets = 
+      {
+        "pythiaUESettings", 
+        "processParameters"
+      }
+
+      include "Configuration/Generator/data/PythiaUESettings.cfi"
+ 
+      vstring processParameters = 
+      {
+        'MSEL=0         ! User defined processes',
+        'MSUB(11)=1     ! Min bias process',
+        'MSUB(12)=1     ! Min bias process',
+        'MSUB(13)=1     ! Min bias process',
+        'MSUB(28)=1     ! Min bias process',
+        'MSUB(53)=1     ! Min bias process',
+        'MSUB(68)=1     ! Min bias process',
+        'MSUB(92)=1     ! Min bias process, single diffractive',
+        'MSUB(93)=1     ! Min bias process, single diffractive',
+        'MSUB(94)=1     ! Min bias process, double diffractive',
+        'MSUB(95)=1     ! Min bias process'
+      }
+    }
+  }
+   
+  include "Configuration/StandardSequences/data/Generator.cff"
+  include "Configuration/StandardSequences/data/VtxSmearedGauss.cff" 
