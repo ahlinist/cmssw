@@ -11,7 +11,7 @@ process.include("Configuration/Spring08Production/data/iCSA08_MuonPT11.cff")
 # process metadata
 process.configurationMetadata = cms.untracked.PSet( 
                                 version =    cms.untracked.string( "$Revision: 1.1 $" ),
-                                name    =    cms.untracked.string( "$Source: $" ),
+                                name    =    cms.untracked.string( "$Source: /cvs_server/repositories/CMSSW/CMSSW/Configuration/Spring08Production/python/iCSA08_MuonPT11_cfg.py,v $" ),
                                 annotation = cms.untracked.string( "b/c -> mu pT > 11 GEN evts for CSA08" ) )
 
 
@@ -34,9 +34,5 @@ for pathName in process.endpaths:
 # selection criteria
 #process.output_module.SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring( "production") )
 
-
-# increasing verbosity
-process.MessageLogger.cerr.threshold = "INFO"
-process.add_(cms.Service("Tracer"))
 
 process.maxEvents.input = 1

@@ -6,5 +6,5 @@ process = cms.Process("HLT")
 # load defaults in old cfg syntax
 process.include("Configuration/Spring08Production/data/iCSA08_GenToHLT.cff")
 
-process.output_module.dataset.dataTier = "TOBEDEFINED"
+process.output_module.dataset.dataTier = "GEN-SIM-RAW"
 
