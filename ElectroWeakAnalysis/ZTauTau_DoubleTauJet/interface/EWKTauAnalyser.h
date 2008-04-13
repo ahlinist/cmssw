@@ -114,7 +114,7 @@ private:
   std::string _dataType;
   std::string _analysisType;
   std::string _selbitStr;
-     int selectionBits;
+     int _selectionBits;
   double _eventCharge;
   
   int nEvent;
