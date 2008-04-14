@@ -105,7 +105,7 @@ void ElectronIDProducer::produce(edm::Event& e, const edm::EventSetup& c) {
       }
 
     if (doNeuralNet_) 
-    	neuralNetOutput = neuralNetAlgo_->result(&(*electron),e);
+    	neuralNetOutput = neuralNetAlgo_->result (&(*electron),e) ;
     
     if (doPtdrId_)
     	boolDecision = ptdrDecision ; 	 
