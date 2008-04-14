@@ -1,4 +1,3 @@
-<use name=clhep>
 <use name=boost>
 
 <use name=FWCore/Framework>
@@ -20,17 +19,12 @@
 <use name=oracle>
 <use name=clhep>
 #<use name=xdaq>
-<use name=DQMServices/Core>
-<use name=DataFormats/SiStripDigi>
 <use name=CalibFormats/SiStripObjects>
 <use name=CalibTracker/Records>
 <use name=CalibTracker/SiStripCommon>
 
-<use name=DataFormats/SiStripDetId>
 <use name=DataFormats/FEDRawData> 
 
-<use name=CondFormats/SiStripObjects>
-<use name=CondFormats/DataRecord>
 <use name=CondCore/DBOutputService>
 
 <use name=CalibTracker/SiStripAPVAnalysis>
