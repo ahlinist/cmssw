@@ -36,5 +36,3 @@
     }
   }
    
-  include "Configuration/StandardSequences/data/Generator.cff"
-  include "Configuration/StandardSequences/data/VtxSmearedGauss.cff" 
