@@ -66,6 +66,7 @@
                                 pid=0,status=4
 17.3.2008/S.Lehti CMSSW_1_6_10	Bugfix: PFTau::isolationPFCands() missing from PT tracks
 27.3.2008/S.Lehti CMSSW_1_6_11  HCAL recHits depth() == 1 requirement removed, added HO and HF
+15.4.2008/S.Lehti CMSSW_1_6_11  Added option for selecting iterativeTrack collection
 
 	How to compile:
 	-compile
