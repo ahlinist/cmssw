@@ -32,7 +32,7 @@ source = PythiaSource
 module generatorFilter = PythiaFilter
    {
             untracked int32 ParticleID = 13
-            untracked double MinPt = 11. 
+            untracked double MinPt = 5. 
             untracked double MinEta = -2.5
             untracked double MaxEta = 2.5
    }
@@ -43,6 +43,6 @@ sequence ProductionFilterSequence = { generatorFilter}
 untracked PSet configurationMetadata = {
     untracked string version = "$Revision$"
     untracked string name = "$Source$"
-    untracked string annotation = "b/c -> mu pT > 11 GEN evts for CSA08"
+    untracked string annotation = "b/c -> mu pT > 5 GEN evts for CSA08"
 }
   
