@@ -4,6 +4,8 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
+#include "DataFormats/EgammaReco/interface/ClusterShapeFwd.h"
+#include "DataFormats/EgammaReco/interface/ClusterShape.h"
 
 class ElectronIDAlgo {
 
@@ -17,7 +19,7 @@ public:
 
  protected:
 
-  const reco::ClusterShapeRef& getClusterShape(const reco::GsfElectron*, const edm::Event&);
+  const reco::ClusterShape& getClusterShape(const reco::GsfElectron*, const edm::Event&);
 
   bool useEoverPIn_;
   bool useDeltaEtaIn_;
