@@ -323,7 +323,7 @@ namespace statemachine {
     beginRunCalled_ = true;
 
     runException_ = true;
-    ep_.smBeginRun(run);
+    ep_.beginRun(run);
     runException_ = false;
   }
 
@@ -331,7 +331,7 @@ namespace statemachine {
     beginRunCalled_ = false;
 
     runException_ = true;
-    ep_.smEndRun(run);
+    ep_.endRun(run);
     runException_ = false;
   }
 

@@ -172,11 +172,11 @@ namespace edm {
     output_ << "\tdoErrorStuff\n";
   }
 
-  void MockEventProcessor::smBeginRun(int run) {
+  void MockEventProcessor::beginRun(int run) {
     output_ << "\tbeginRun " << run << "\n";
   }
 
-  void MockEventProcessor::smEndRun(int run) {
+  void MockEventProcessor::endRun(int run) {
     output_ << "\tendRun " << run << "\n";
   }
 

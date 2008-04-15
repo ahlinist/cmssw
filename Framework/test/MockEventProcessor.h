@@ -48,8 +48,8 @@ namespace edm
 
     virtual void doErrorStuff();
 
-    virtual void smBeginRun(int run);
-    virtual void smEndRun(int run);
+    virtual void beginRun(int run);
+    virtual void endRun(int run);
 
     virtual void beginLumi(int run, int lumi);
     virtual void endLumi(int run, int lumi);
