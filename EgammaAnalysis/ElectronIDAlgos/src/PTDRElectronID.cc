@@ -118,23 +118,23 @@ bool PTDRElectronID::result(const reco::GsfElectron* electron,
     if (value<mincut[icut]) return false;
   }
 
-  const reco::ClusterShapeRef& shapeRef = getClusterShape(electron,e);
+  const reco::ClusterShape& shapeRef = getClusterShape(electron,e);
 
   if (useE9overE25_[variables_]) {
-    double value = shapeRef->e3x3()/shapeRef->e5x5();
+    double value = (shapeRef).e3x3()/(shapeRef).e5x5();
     std::vector<double> mincut = cuts_.getParameter<std::vector<double> >("E9overE25");
     if (fabs(value)<mincut[icut]) return false;
   }
 
   if (useSigmaEtaEta_[variables_]) {
-    double value = shapeRef->covEtaEta();
+    double value = (shapeRef).covEtaEta();
     std::vector<double> maxcut = cuts_.getParameter<std::vector<double> >("sigmaEtaEtaMax");
     std::vector<double> mincut = cuts_.getParameter<std::vector<double> >("sigmaEtaEtaMin");
     if (sqrt(value)<mincut[icut] || sqrt(value)>maxcut[icut]) return false;
   }
 
   if (useSigmaPhiPhi_[variables_]) {
-    double value = shapeRef->covPhiPhi();
+    double value = (shapeRef).covPhiPhi();
     std::vector<double> mincut = cuts_.getParameter<std::vector<double> >("sigmaPhiPhiMin");
     std::vector<double> maxcut = cuts_.getParameter<std::vector<double> >("sigmaPhiPhiMax");
     if (sqrt(value)<mincut[icut] || sqrt(value)>maxcut[icut]) return false;

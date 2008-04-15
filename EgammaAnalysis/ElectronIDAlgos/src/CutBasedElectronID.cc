@@ -48,7 +48,7 @@ bool CutBasedElectronID::result(const reco::GsfElectron* electron,
                                 const edm::Event& e) { 
   
   double eta = fabs(electron->p4().Eta());
-  const reco::ClusterShapeRef& shapeRef = getClusterShape(electron, e);
+  const reco::ClusterShape& shapeRef = getClusterShape(electron, e);
   
   double eOverP = electron->eSuperClusterOverP();
   double eSeed = electron->superCluster()->seed()->energy();
@@ -58,7 +58,7 @@ bool CutBasedElectronID::result(const reco::GsfElectron* electron,
   double fBrem = (pin-pout)/pin;
   
   double hOverE = electron->hadronicOverEm();
-  double sigmaee = sqrt(shapeRef->covEtaEta());
+  double sigmaee = sqrt((shapeRef).covEtaEta());
   double deltaPhiIn = electron->deltaPhiSuperClusterTrackAtVtx();
   double deltaEtaIn = electron->deltaEtaSuperClusterTrackAtVtx();
   
