@@ -5,8 +5,8 @@ source = PythiaSource
     untracked bool pythiaHepMCVerbosity = false
     untracked int32 maxEventsToPrint = 0
     untracked double crossSection = 102700000.
-    # Not correct at the moment 
-    untracked double filterEfficiency =1.0
+    # First estimate 
+    untracked double filterEfficiency =0.000275
     
     #SA CSA08 10 TeV center of mass
     untracked double comEnergy = 10000.
@@ -42,7 +42,7 @@ module photonptfilter = MCSingleParticleFilter{
 sequence ProductionFilterSequence = { photonptfilter}
 
 untracked PSet configurationMetadata = {
-    untracked string version = "$Revision$"
-    untracked string name = "$Source$"
+    untracked string version = "$Revision: 1.2 $"
+    untracked string name = "$Source: /cvs_server/repositories/CMSSW/CMSSW/Configuration/Spring08Production/data/iCSA08_GammaJets.cff,v $"
     untracked string annotation = "gamma-jet for iCSA08"
   } 
