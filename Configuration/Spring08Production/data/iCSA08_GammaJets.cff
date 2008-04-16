@@ -1,0 +1,45 @@
+source = PythiaSource  
+{
+    
+    untracked int32 pythiaPylistVerbosity = 0
+    untracked bool pythiaHepMCVerbosity = false
+    untracked int32 maxEventsToPrint = 0
+    untracked double crossSection = 102700000.
+    # Not correct at the moment 
+    untracked double filterEfficiency =1.0
+    
+    #SA CSA08 10 TeV center of mass
+    untracked double comEnergy = 10000.
+    PSet PythiaParameters = 
+    { 
+	
+        vstring parameterSets = {
+	    "pythiaUESettings",
+	    "processParameters"	  
+        }
+	include "Configuration/Spring08Production/data/PythiaUESettings.cfi"
+	vstring processParameters = 
+	{
+	    'MSEL=10               ! QCD hight pT processes'
+        }      
+    }
+}
+
+# Filter out events with Photon Pt > 30.GeV
+module photonptfilter = MCSingleParticleFilter{
+    untracked vint32 ParticleID = {22}
+    untracked vint32 Status = {0}
+    untracked vdouble MinPt = {30.0}
+}
+# Alternative Filter (doing the same)
+ module photonfilter2 = PythiaFilter{
+    untracked int32 ParticleID = 22
+    untracked int32 Status = 0
+    untracked double MinPt = 30.0         
+}
+
+# canonical name needed for further steps
+sequence ProductionFilterSequence = { photonptfilter}
+
+include "Configuration/StandardSequences/data/Generator.cff"
+include "Configuration/StandardSequences/data/VtxSmearedGauss.cff" 
