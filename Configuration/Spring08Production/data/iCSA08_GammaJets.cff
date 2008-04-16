@@ -41,5 +41,8 @@ module photonptfilter = MCSingleParticleFilter{
 # canonical name needed for further steps
 sequence ProductionFilterSequence = { photonptfilter}
 
-include "Configuration/StandardSequences/data/Generator.cff"
-include "Configuration/StandardSequences/data/VtxSmearedGauss.cff" 
+untracked PSet configurationMetadata = {
+    untracked string version = "$Revision$"
+    untracked string name = "$Source$"
+    untracked string annotation = "gamma-jet for iCSA08"
+  } 
