@@ -1,12 +1,12 @@
 #ifndef ConverterTester_h
 #define ConverterTester_h
 
-/** \class GlobalHitsAnalyzer
+/** \class ConverterTester
  *  
  *  Class to fill dqm monitor elements from existing EDM file
  *
- *  $Date: 2008/03/13 21:17:07 $
- *  $Revision: 1.5 $
+ *  $Date: 2008/03/26 22:16:30 $
+ *  $Revision: 1.1 $
  *  \author M. Strang SUNY-Buffalo
  */
 
@@ -53,16 +53,14 @@ private:
   std::string fName;
   int verbosity;
   int frequency;
-  int vtxunit;
   std::string label;
   DQMStore *dbe;
-  std::string outputfile;
-  bool doOutput;
 
   MonitorElement *meTestString;
   MonitorElement *meTestInt;
   MonitorElement *meTestFloat;
-  MonitorElement *meTestTH1F;
+  MonitorElement *meTestTH1FD;
+  MonitorElement *meTestTH1FN;
   MonitorElement *meTestTH2F;
   MonitorElement *meTestTH3F;
   MonitorElement *meTestProfile1;
