@@ -27,32 +27,5 @@
 <use name=FWCore/ServiceRegistry>
 <flags EDM_PLUGIN=1>
 <export>
-   <lib name=RecoHcalHcalPromptAnalysis>
-   <use name=FWCore/Framework>
-   <use name=FWCore/PluginManager>
-   <use name=FWCore/ParameterSet>
-   <use name=DataFormats/JetReco>			
-   <use name=DataFormats/Candidate>
-   <use name=DataFormats/HcalDetId>
-   <use name=DataFormats/DetId>
-   <use name=DataFormats/HcalDigi>
-   <use name=DataFormats/HcalRecHit>
-   <use name=CondFormats/HcalObjects>
-   <use name=Geometry/CaloTopology>
-   <use name=Geometry/CaloGeometry>
-   <use name=Geometry/CaloEventSetup>
-   <use name=DataFormats/DTRecHit>
-   <use name=Geometry/DTGeometry>
-   <use name=DataFormats/LTCDigi>
-   <use name=RecoMuon/TrackingTools>
-   <use name=TrackingTools/TransientTrack>
-   <use name=DataFormats/TrackingRecHit>
-   <use name=DataFormats/TrackReco>
-   <use name=CalibMuon/DTDigiSync>
-   <use name=RecoMuon/TrackingTools>
-   <use name=TrackingTools/TransientTrack>
-   <use name=DataFormats/L1GlobalTrigger>
-   <use name=DataFormats/L1GlobalMuonTrigger>	
-   <use name=PhysicsTools/UtilAlgos>
-   <use name=FWCore/ServiceRegistry>
+   <lib name=RecoHcalHcalProm>
 </export>
