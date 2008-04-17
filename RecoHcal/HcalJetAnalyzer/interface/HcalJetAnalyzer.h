@@ -5,6 +5,8 @@
 #define TRIG_RPCDT  4
 #define TRIG_HB     5
 
+
+
 // system include files
 #include <memory>
 #include <string>
@@ -43,9 +45,10 @@
 #include "DataFormats/JetReco/interface/JetTracksAssociation.h"
 #include "DataFormats/JetReco/interface/CaloJetCollection.h"
 #include "DataFormats/JetReco/interface/CaloJet.h"
-//#include "DataFormats/JetReco/interface/GenJet.h"
+#include "DataFormats/JetReco/interface/GenJet.h"
 //#include "DataFormats/JetReco/interface/GenJetfwd.h"
 //#include "DataFormats/JetReco/interface/GenJetCollection.h "
+#include "DataFormats/JetReco/interface/GenJetCollection.h"
 #include "DataFormats/CaloTowers/interface/CaloTowerCollection.h"
 #include "DataFormats/METReco/interface/CaloMETCollection.h"
 //#include "DataFormats/BTauReco/interface/JetTracksAssociation.h"
@@ -114,8 +117,6 @@
 #include <iostream>
 #include <cmath>
 #include <fstream>
-
-
 const int MAXGEN =  10;
 const int MAXRPC =  20;
 const int MAXDTBX = 20;
@@ -142,10 +143,11 @@ private:
   //
   // member functions
   //
+//void  addBranches(TTree* tree_);
   virtual void beginJob(const edm::EventSetup&) ;
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
   virtual void endJob() ;
-
+ 
   
   // member data
   
@@ -161,6 +163,18 @@ private:
      string m_calometSrc;
      string m_bjettag;  // for b-tagging
      string m_tautag;  // for tau-tagging
+    /* string m_HBHEdigi; 
+     string m_HFdigi ;  
+     string m_HOdigi ;  
+         
+     */ 
+     string m_HBHEreco;
+     string m_HFreco ; 
+     string m_HOreco ;  
+     string m_GTdigi ;  
+     string m_EcalRecHits;
+    // string m_EcalRecHitsEE;
+     
      
       DTTTrigBaseSync *theSync;
       int _local_event;
@@ -174,36 +188,93 @@ private:
  
   std::string outputFileName_;
   TFile*      file_;
+  TTree*      treedt_;
   TTree*      tree_;
+  TTree*      treejcon_;
   
    int nmu;
    int nmu_;
    int dimuon;
    int numMuons;
    int nsay;
-   short  nrh;
-   //short  nrth[100];//deneme
+   int  nrh;
+   float nCalotower; 
+   float DRJetTwr ; 
    
-  
    bool useRealOnly;
    bool Hcodedqie;
+  
+   float ana_muonEtaMax;
+   float ana_muonPtMin1;
+   float ana_muonPtMin2; 
+   float invmass;
+  
+
+   float JetRecHFenergy[100];
+    float JetRecHFieta[100];
+    float JetRecHFiphi[100]; 
+
+  float JetRecHBenergy[100]; 
+  float JetRecHBieta[100];
+  float JetRecHBiphi[100];
+  float JetRecHEenergy[100];
+  float JetRecHEieta[100];
+  float JetRecHEiphi[100];
+  
+  float JetRecHOenergy[100];
+  float JetRecHOieta[100];
+  float JetRecHOiphi[100];
+  
+  float JetRecHBdep[100];
+  float JetRecHEdep[100];
+  float JetRecHOdep[100];
+  float JetRecHFdep[100];
+  
+
+float RecoJetArea[100];  
+float RecoJetmaxEemT[100];
+float RecoJetmaxEHadT[100];
+float RecoJetEnhadfrac[100];
+float RecoJetEnemfrac[100]; 
+float RecoJetEnHB[100];
+float RecoJetEnHO[100];
+float RecoJetEnHE[100]; 
+float RecoJetEnEB[100];
+float RecoJetEnEE[100];
+float RecoJetEnHF[100];
+float RecoJetTowerA[100];
+float RecoJetn90[100];
+ 
+  
+float JetRecEBenergy[100];
+float JetRecEBieta[100]; 
+float JetRecEBiphi[100]; 
+float JetRecEEenergy[100];
+float JetRecEEieta[100];
+float JetRecEEiphi[100];
   
   
   TProfile*   HcalDigiminuHBphi_;
   TProfile*   HcalDigiplusHBphi_;
   TProfile*   HcalDigiminuHBeta_;
   TProfile*   HcalDigiplusHBeta_;
-   
+  TProfile*   HcalRecminuHBphi_;
+  TProfile*   HcalRecminuHBeta_;
+  TProfile*   HcalRecplusHBphi_;
+  TProfile*   HcalRecplusHBeta_ ;
   TProfile2D* HcalDigietaphi_;  
   TProfile2D* HcalDigiHEetaphi_;
   TProfile2D* HcalDigiHFetaphi_;
   TProfile2D* HcalDigiHOetaphi_;
   //TH2F* HcalDigisignal[50];
-  TProfile2D* HBRecietaphi_;
-  TProfile*   HcalRecminuHBphi_;
-  TProfile*   HcalRecplusHBphi_;
-  TProfile*   HcalRecminuHBeta_;
-  TProfile*   HcalRecplusHBeta_;
+  TProfile2D* HBRecietaphi_; 
+  TProfile*   ECALDigiminuEBphi_;
+  TProfile*   ECALDigiminuEBeta_;
+  TProfile*   ECALDigiplusEBphi_;
+  TProfile*   ECALDigiplusEBeta_;
+  TProfile2D* ECALEBDigietaphi_ ;
+  TProfile2D* ECALEEDigietaphi_ ;
+  
 //TH2F* HcalRecminuHBphi_;
 //TH2F* HcalRecplusHBphi_;
   TH1F* HBREChithis_; 
@@ -211,7 +282,7 @@ private:
   TH1F* HOREChithis_ ;
   TH1F* HFREChithis_ ;
    TH1F *_dimuon;
-   
+   TH1F* hjetcalotower;
    //cosmicmuon stuff
     
       //////////////////////////////////////////////////////////////////////////////////////
@@ -232,7 +303,9 @@ private:
       TH1F  *dthbRaw;
       TH1F  *HBmuons; 
 
-       TH1F  *dthbTime;
+      //TProfile*   HcalDigiminuHBphi_;
+      //TProfile*  dthbTime_;
+      TH1F  *dthbTime;
       TH1F  *dthoTime;
       TH1F  *dthbTimeth;
       TH1F  *dthoTimeth;
@@ -250,19 +323,42 @@ private:
       TH1F  *hPtIPSA;
       TH1F  *hPhiIPSA;
       TH1F  *hEtaIPSA;
-
+      TH1F  *EBREChithis_;
+      TH1F  *EEREChithis_;
       TH2F  *HBclust;
+      TH1F *obs1; 
+      TH1F *obs2;
+      TH1F *obs3; 
+      TH1F *obs4;
+      TH1F *obs5;
+      TH1F *obs6;
+      TH1F *obs7;
+      TH1F *obs8;
+      TH1F *obs9;
+      TH1F *obs10; 
+      TH1F *obs11;
+      TH1F *obs12;
+      TH1F *obs13;
+      TH1F *obs14;
+      TH1F *HFP_Rechits_long_fiber; 
+      TH1F *HFM_Rechits_long_fiber; 
+      TH1F *HFP_Rechits_short_fiber;
+      TH1F *HFM_Rechits_short_fiber;
         int ico_;
         int icb_;
         int nevt_;
 	int hcqie;
    int nJt;
-   int ihbhehit;
+   int nGJt;
+   int ihbhit;
+   int ihehit;
    int ihohit;
    int ihfhit;
+   int iebhit;
+   int ieehit;
    int calohit;
    short njt_;
-    
+   float  Track_Size;
       /* short ico_;
        short icb_;
        short nevt_;*/
@@ -281,6 +377,7 @@ private:
       float mtimeho_[4000];
       
 float  caloET[1000] ;
+float  caloPT[1000] ;
 float  caloE[1000] ;
 float  caloPhi[1000]; 
 float  caloEta[1000];
@@ -293,6 +390,13 @@ float  RecoJetPhi[100];
 float  RecoJetEta[100];
 float  RecoJetiphi[100];
 float  RecoJetieta[100]; 
+float  RecoJetPT[100];
+float  recoJetCaltower[100];
+float  GENJetET[100];
+float  GENJetPT[100];
+float  GENJetE[100];
+float  GENJetPhi[100];
+float  GENJetEta[100];
 
 float  RecHBPhi[4000];
 float  RecHBEta[4000];
@@ -310,16 +414,25 @@ float  RecHBdep[4000];
 float  RecHEdep[4000];
 float  RecHOdep[4000];
 float  RecHFdep[4000];
+float  RecEEenergy[20000];
+float  RecEEieta[20000];
+float  RecEEiphi[20000]; 
+float  RecEBenergy[20000];
+float  RecEBieta[20000];
+float  RecEBiphi[20000];      
+//float gtimehb;
+float dt0_[4];
+float dtho_[4];
+float dthoO_[4];
+float dthb_[4];
+float dthbO_[4];
+float gtimehb;
+ofstream opt;
       
-      //float gtimehb;
-      float dt0_[4];
-       float dtho_[4];
-      float dthb_[4];
-      float gtimehb;
-     ofstream opt;
-      
-
-      float imp,hoz0,hoz1,hbz0,hbz1,hophi0,hophi1,hbphi0,hbphi1,enhbmuon; 
+float EtMaxTower[100];
+float sumEXdr[100]; 
+float sumEtower[100];
+float imp,hoz0,hoz1,hbz0,hbz1,hophi0,hophi1,hbphi0,hbphi1,enhbmuon; 
    
    
    
@@ -333,6 +446,10 @@ float  RecHFdep[4000];
   TH1F* hjetmult;
   TH1F* hjetmultE;
   TH1F* hjetenergy;//
+  TH1F* hGenJetEt; 
+  TH1F* hGenJetPt; 
+  TH1F* hGenJetEta;
+  TH1F* hGenJetPhi;
   TH1F* hcalosize; // calotower
   TH1F* hcaloenergy;
   TH1F* hcaloenergyH;
@@ -341,6 +458,12 @@ float  RecHFdep[4000];
   TH1F* hcalopt;	
   TH1F* hcaloeta;	
   TH1F* hcalophi;
+  TH1F* EBRECtime_;
+  TH1F* EERECtime_;
+  TH1F* HBRECtime_;
+  TH1F* HERECtime_;
+  TH1F* HFRECtime_;
+  TH1F* HORECtime_;
   /////////
 
 
