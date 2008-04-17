@@ -13,7 +13,7 @@
 //
 // Original Author:  Efe Yazgan
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id$
+// $Id: HcalProm.cc,v 1.1 2008/04/17 09:36:53 efe Exp $
 //
 //
 
@@ -62,6 +62,10 @@
 //trigger
 #include "DataFormats/L1GlobalMuonTrigger/interface/L1MuRegionalCand.h"
 #include "DataFormats/L1GlobalMuonTrigger/interface/L1MuGMTReadoutCollection.h"
+
+//tracks
+#include "DataFormats/TrackReco/interface/Track.h"
+#include "DataFormats/TrackReco/interface/TrackFwd.h"
 
 //TFile Service
 #include "FWCore/ServiceRegistry/interface/Service.h"
@@ -117,6 +121,9 @@ class HcalProm : public edm::EDAnalyzer {
   TH1F* h_jet_eta;
   TH1F* h_jet_phi;
 
+  TH1F* h_muon_vertex_x;
+  TH1F* h_muon_px;
+  TH1F* h_muon_p;
 };
 
 //
@@ -189,6 +196,10 @@ HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    iEvent.getByLabel("iterativeCone5CaloJets",caloJet);
    const CaloJetCollection cjet = *(caloJet.product());
 
+   //Cosmic Muons
+   Handle<TrackCollection> cosmicmuon;
+   iEvent.getByLabel("cosmicMuons",cosmicmuon);
+
 
    int adcs[10] = {};
 
@@ -226,6 +237,11 @@ HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   }
 
 
+  for(TrackCollection::const_iterator ncm = cosmicmuon->begin(); ncm != cosmicmuon->end();  ++ncm) {
+    h_muon_vertex_x->Fill(ncm->vx());
+    h_muon_px->Fill(ncm->px());
+    h_muon_p->Fill(ncm->p());
+  }
 
   for (CaloJetCollection::const_iterator jetiter=cjet.begin(); jetiter!=cjet.end(); jetiter++){
     h_jet_energy->Fill(jetiter->energy());
@@ -246,7 +262,7 @@ void HcalProm::beginJob(const edm::EventSetup&)
 {
   TFileDirectory EcalDir = fs->mkdir( "Ecal" );
   TFileDirectory HcalDir = fs->mkdir( "Hcal" );
-  TFileDirectory MounDir = fs->mkdir( "Muon" );
+  TFileDirectory MuonDir = fs->mkdir( "Muon" );
   TFileDirectory CorrDir = fs->mkdir( "Correlations" );
   TFileDirectory NoiseDir = fs->mkdir( "Noise" );
   TFileDirectory JetMetDir = fs->mkdir( "JetMet" );
@@ -271,6 +287,10 @@ void HcalProm::beginJob(const edm::EventSetup&)
   h_jet_energy = JetMetDir.make<TH1F>("h_jet_energy","Jet Energy",130,-10,120);
   h_jet_eta = JetMetDir.make<TH1F>("h_jet_eta","#eta(j)",100,-7,7);
   h_jet_phi = JetMetDir.make<TH1F>("h_jet_phi","#phi(j)",100,-7,7);
+
+  h_muon_vertex_x = MuonDir.make<TH1F>("h_muon_vertex_x","Muon Vertex X",10000,-1000,1000);
+  h_muon_px = MuonDir.make<TH1F>("h_muon_px","P_{X}(#mu)",1000,-10,100);
+  h_muon_p = MuonDir.make<TH1F>("h_muon_p","P(#mu)",1000,-10,100);
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
