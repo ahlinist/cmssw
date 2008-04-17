@@ -36,3 +36,10 @@
     }
   }
    
+untracked PSet configurationMetadata =
+{
+    untracked string version = "$Revision$"
+    untracked string name = "$Source$"
+    untracked string annotation = "MinBias for iCSA08"
+}
+
