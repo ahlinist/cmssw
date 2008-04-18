@@ -11,6 +11,7 @@ class PGeometricDet{
   ~PGeometricDet() { };
 
   struct Item {  
+    int _level; // goes like 1, 2, 3, 4, 4, 4, 3, 4, 4, 3, 4, 4, 4, 1, 2, 3, etc.
     double _x;
     double _y;
     double _z;
