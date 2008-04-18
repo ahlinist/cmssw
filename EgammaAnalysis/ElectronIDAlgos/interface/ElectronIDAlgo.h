@@ -15,23 +15,13 @@ public:
 
   virtual ~ElectronIDAlgo(){};
 
-  void baseSetup(const edm::ParameterSet& conf);
+  void baseSetup(const edm::ParameterSet& conf) ;
+  virtual void setup(const edm::ParameterSet& conf)  {};
+  virtual double result(const reco::GsfElectron*, const edm::Event&) {return 0.;};
 
  protected:
 
   const reco::ClusterShape& getClusterShape(const reco::GsfElectron*, const edm::Event&);
-
-  bool useEoverPIn_;
-  bool useDeltaEtaIn_;
-  bool useDeltaPhiIn_;
-  bool useHoverE_;
-  bool useE9overE25_;
-  bool useEoverPOut_;
-  bool useDeltaPhiOut_;
-  bool useInvEMinusInvP_;
-  bool useBremFraction_;
-  bool useSigmaEtaEta_;
-  bool useSigmaPhiPhi_;
 
   edm::InputTag barrelClusterShapeAssocProducer_;
   edm::InputTag endcapClusterShapeAssocProducer_;

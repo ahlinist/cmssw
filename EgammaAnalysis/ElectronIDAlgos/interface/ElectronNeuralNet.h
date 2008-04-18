@@ -6,7 +6,7 @@
 #include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 #include "EgammaAnalysis/ElectronIDAlgos/interface/ElectronIDAlgo.h"
 
-class ElectronNeuralNet : ElectronIDAlgo{
+class ElectronNeuralNet : public ElectronIDAlgo{
 
 public:
 

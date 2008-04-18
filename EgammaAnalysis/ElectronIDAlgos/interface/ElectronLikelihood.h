@@ -24,7 +24,6 @@
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-//#include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 #include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 #include "DataFormats/EgammaReco/interface/ClusterShape.h"
 #include "EgammaAnalysis/ElectronIDAlgos/interface/ElectronIDAlgo.h"
@@ -37,7 +36,7 @@
 #include <vector>
 
 
-class ElectronLikelihood : ElectronIDAlgo {
+class ElectronLikelihood {
 
  public:
   
