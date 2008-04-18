@@ -1,5 +1,6 @@
 module eidCutBasedClasses = EleIdCutBasedRef
 {
+  
   InputTag src = pixelMatchGsfElectrons
   bool filter = false 
   double threshold = 0.5

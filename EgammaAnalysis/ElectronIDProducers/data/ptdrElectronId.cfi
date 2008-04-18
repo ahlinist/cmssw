@@ -3,7 +3,6 @@
     # "medium" - intermediate quality  
     # "tight"  - e.g. suitable for H->WW->2l2nu
     string electronQuality = "loose"
-
     string algorithm = "eIDCBClasses" 
 
     #Selection of input variables to be used for each eID quality "loose", "medium", "tight"
