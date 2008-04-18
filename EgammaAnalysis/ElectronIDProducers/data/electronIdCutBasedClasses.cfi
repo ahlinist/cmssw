@@ -1,4 +1,4 @@
-module eidCutBased = EleIdCutBasedRef
+module eidCutBasedClasses = EleIdCutBasedRef
 {
   InputTag src = pixelMatchGsfElectrons
   bool filter = false 
@@ -7,6 +7,6 @@ module eidCutBased = EleIdCutBasedRef
   InputTag barrelClusterShapeAssociation = hybridSuperClusters:hybridShapeAssoc
   InputTag endcapClusterShapeAssociation = islandBasicClusters:islandEndcapShapeAssoc
 
-  include "EgammaAnalysis/ElectronIDProducers/data/cutBasedElectronId.cfi"
+  include "EgammaAnalysis/ElectronIDProducers/data/ptdrElectronId.cfi"
 
 }

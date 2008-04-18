@@ -1,11 +1,11 @@
-block CutBased_ID = {
-
     # Electron quality for cut based ID. Can be:
     # "robust" 
     # "loose" 
     # "tight" 
     string electronQuality = "robust"
 
+    string algorithm = "eIDCB" 
+    
     # cut value arrays of form {hoe, sigmaEtaEta, dPhiIn, dEtaIn}
     PSet robustEleIDCuts =
     {
@@ -46,4 +46,4 @@ block CutBased_ID = {
         vdouble eSeedOverPinMax = {99999.,  99999., 99999., 99999.,   
                                    99999.,  99999., 99999., 99999.}    
     }
-}
+

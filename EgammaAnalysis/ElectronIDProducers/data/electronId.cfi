@@ -10,7 +10,7 @@ include "EgammaAnalysis/ElectronIDESSources/data/likelihoodESetup.cfi"
 
 module electronId = ElectronIDProducer {
 
-    string electronProducer = "pixelMatchGsfElectrons"
+    string electronProducer = "GsfElectrons"
     string electronLabel = ""
     string electronIDLabel = ""
     string electronIDAssociationLabel = ""

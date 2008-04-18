@@ -7,8 +7,6 @@ module eidLikelihood = EleIdLikelihoodRef
   bool filter = false 
   double threshold = 0.5
   
-  bool doLikelihood = true
-  
   InputTag barrelClusterShapeAssociation = hybridSuperClusters:hybridShapeAssoc
   InputTag endcapClusterShapeAssociation = islandBasicClusters:islandEndcapShapeAssoc
 

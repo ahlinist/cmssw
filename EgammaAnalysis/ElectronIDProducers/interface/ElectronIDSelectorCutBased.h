@@ -7,6 +7,7 @@
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
+#include "EgammaAnalysis/ElectronIDAlgos/interface/ElectronIDAlgo.h"
 #include "EgammaAnalysis/ElectronIDAlgos/interface/PTDRElectronID.h"
 #include "EgammaAnalysis/ElectronIDAlgos/interface/CutBasedElectronID.h"
 
@@ -22,13 +23,11 @@ class ElectronIDSelectorCutBased
    
  private:
 
-  PTDRElectronID* ptdrAlgo_;
-  CutBasedElectronID* cutBasedAlgo_; 	   
+  ElectronIDAlgo* electronIDAlgo_;
 
   edm::ParameterSet conf_;
   
-  bool doPtdrId_;
-  bool doCutBased_;
+  std::string algorithm_ ;
 
 };
 
