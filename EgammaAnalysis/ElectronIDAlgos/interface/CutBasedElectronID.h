@@ -3,7 +3,7 @@
 
 #include "EgammaAnalysis/ElectronIDAlgos/interface/ElectronIDAlgo.h"
 
-class CutBasedElectronID : ElectronIDAlgo {
+class CutBasedElectronID : public ElectronIDAlgo {
 
 public:
 
@@ -12,7 +12,7 @@ public:
   virtual ~CutBasedElectronID(){};
 
   void setup(const edm::ParameterSet& conf);
-  bool result(const reco::GsfElectron*, const edm::Event&);
+  double result(const reco::GsfElectron*, const edm::Event&);
   int classify(const reco::GsfElectron*);
   
  private:
@@ -22,4 +22,4 @@ public:
   
 };
 
-#endif // PTDRElectronID_H
+#endif // CutBasedElectronID_H

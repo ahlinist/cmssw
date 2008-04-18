@@ -8,19 +8,17 @@ void CutBasedElectronID::setup(const edm::ParameterSet& conf) {
   // Get all the parameters
   baseSetup(conf);
   
-  // Select algo dependent set of parameters
-  std::vector<edm::ParameterSet> algoPSets = conf.getParameter<std::vector<edm::ParameterSet> >("algo_psets");
-  
-  quality_ = algoPSets[1].getParameter<std::string>("electronQuality");
+  quality_ = conf.getParameter<std::string>("electronQuality");
   
   if (quality_ == "tight") {
-    cuts_ = algoPSets[1].getParameter<edm::ParameterSet>("tightEleIDCuts");
+    cuts_ = conf.getParameter<edm::ParameterSet>("tightEleIDCuts");
   } else if (quality_=="robust") {
-    cuts_ = algoPSets[1].getParameter<edm::ParameterSet>("robustEleIDCuts");
+    cuts_ = conf.getParameter<edm::ParameterSet>("robustEleIDCuts");
   } else if (quality_=="loose") {
-    cuts_ = algoPSets[1].getParameter<edm::ParameterSet>("looseEleIDCuts");
+    cuts_ = conf.getParameter<edm::ParameterSet>("looseEleIDCuts");
   } else {
-    throw(std::runtime_error("\n\nElectronIDProducer: Invalid electronQuality parameter: must be tight, loose or robust.\n\n"));
+    edm::LogError("CutBasedElectronID") << "Invalid electronQuality parameter: must be tight, loose or robust." ;
+    exit (1);
   }
 }
 
@@ -44,7 +42,7 @@ int CutBasedElectronID::classify(const reco::GsfElectron* electron) {
   return cat;
 }
 
-bool CutBasedElectronID::result(const reco::GsfElectron* electron,
+double CutBasedElectronID::result(const reco::GsfElectron* electron,
                                 const edm::Event& e) { 
   
   double eta = fabs(electron->p4().Eta());
@@ -82,18 +80,18 @@ bool CutBasedElectronID::result(const reco::GsfElectron* electron,
       cut = cuts_.getParameter<std::vector<double> >("endcap");
 
     if (hOverE > cut[0]) 
-      return false;    
+      return 0.;    
 
     if (sigmaee > cut[1]) 
-      return false;    
+      return 0.;    
 
     if (fabs(deltaPhiIn) > cut[2]) 
-      return false;    
+      return 0.;    
 
     if (fabs(deltaEtaIn) > cut[3]) 
-      return false;    
+      return 0.;    
     
-    return true;
+    return 1.;
   }
   
   int cat = classify(electron);
@@ -102,76 +100,76 @@ bool CutBasedElectronID::result(const reco::GsfElectron* electron,
   if (quality_ == "tight") {
     
     if ((eOverP < 0.8) && (fBrem < 0.2)) 
-      return false;
+      return 0.;
     
     if (eOverP < 0.9*(1-fBrem))
-      return false;
+      return 0.;
     
     cut = cuts_.getParameter<std::vector<double> >("hOverE");
     if (hOverE > cut[cat+4*eb]) 
-      return false;    
+      return 0.;    
     
     cut = cuts_.getParameter<std::vector<double> >("sigmaEtaEta");
     if (sigmaee > cut[cat+4*eb]) 
-      return false;    
+      return 0.;    
     
     cut = cuts_.getParameter<std::vector<double> >("deltaPhiIn");
     if (eOverP < 1.5) {
       if (fabs(deltaPhiIn) > cut[cat+4*eb]) 
-        return false;    
+        return 0.;    
     } else {
       if (fabs(deltaPhiIn) > cut[3+4*eb])
-        return false;
+        return 0.;
     }
     
     cut = cuts_.getParameter<std::vector<double> >("deltaEtaIn");
     if (fabs(deltaEtaIn) > cut[cat+4*eb]) 
-      return false;    
+      return 0.;    
     
     cut = cuts_.getParameter<std::vector<double> >("eSeedOverPinMin");
     if (eSeedOverPin < cut[cat+4*eb]) 
-      return false;  
+      return 0.;  
 
     cut = cuts_.getParameter<std::vector<double> >("eSeedOverPinMax");
     if (eSeedOverPin > cut[cat+4*eb]) 
-      return false;  
+      return 0.;  
 
-    return true;
+    return 1.;
   }
   
     // LOOSE Selection
   if (quality_ == "loose") {
     
     if ((eOverP < 0.8) && (fBrem < 0.2)) 
-      return false;
+      return 0.;
     
     cut = cuts_.getParameter<std::vector<double> >("hOverE");
     if (hOverE > cut[cat+4*eb]) 
-      return false;    
+      return 0.;    
     
     cut = cuts_.getParameter<std::vector<double> >("sigmaEtaEta");
     if (sigmaee > cut[cat+4*eb]) 
-      return false;    
+      return 0.;    
     
     cut = cuts_.getParameter<std::vector<double> >("deltaPhiIn");
     if (eOverP < 1.5) {
       if (fabs(deltaPhiIn) > cut[cat+4*eb]) 
-        return false;    
+        return 0.;    
     } else {
       if (fabs(deltaPhiIn) > cut[3+4*eb])
-        return false;
+        return 0.;
     }
     
     cut = cuts_.getParameter<std::vector<double> >("deltaEtaIn");
     if (fabs(deltaEtaIn) > cut[cat+4*eb]) 
-      return false;    
+      return 0.;    
     
     cut = cuts_.getParameter<std::vector<double> >("eSeedOverPin");
     if (eSeedOverPin < cut[cat+4*eb]) 
-      return false;  
+      return 0.;  
     
-    return true; 
+    return 1.; 
   }
   
-  return false;
+  return 0.;
 }

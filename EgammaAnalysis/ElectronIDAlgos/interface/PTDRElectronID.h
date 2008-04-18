@@ -3,7 +3,7 @@
 
 #include "EgammaAnalysis/ElectronIDAlgos/interface/ElectronIDAlgo.h"
 
-class PTDRElectronID : ElectronIDAlgo {
+class PTDRElectronID : public ElectronIDAlgo {
 
 public:
 
@@ -12,7 +12,7 @@ public:
   virtual ~PTDRElectronID(){};
 
   void setup(const edm::ParameterSet& conf);
-  bool result(const reco::GsfElectron*, const edm::Event&);
+  double result(const reco::GsfElectron*, const edm::Event&);
 
  private:
 
@@ -29,7 +29,8 @@ public:
   std::vector<int> useBremFraction_;
   std::vector<int> useSigmaEtaEta_;
   std::vector<int> useSigmaPhiPhi_;
- 
+  std::vector<int> acceptCracks_;
+  
   edm::ParameterSet cuts_;
 
   int variables_;
