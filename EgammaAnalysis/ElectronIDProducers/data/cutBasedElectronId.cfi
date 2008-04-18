@@ -3,7 +3,6 @@
     # "loose" 
     # "tight" 
     string electronQuality = "robust"
-
     string algorithm = "eIDCB" 
     
     # cut value arrays of form {hoe, sigmaEtaEta, dPhiIn, dEtaIn}
