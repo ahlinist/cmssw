@@ -2,7 +2,6 @@
 
 ElectronIDSelectorCutBased::ElectronIDSelectorCutBased (const edm::ParameterSet& conf) : conf_ (conf) 
 {
-  
   std::string algorithm_ = conf.getParameter<std::string> ("algorithm") ;
   
   if ( algorithm_ == "eIDCBClasses" )
@@ -14,7 +13,6 @@ ElectronIDSelectorCutBased::ElectronIDSelectorCutBased (const edm::ParameterSet&
     edm::LogError("ElectronIDSelectorCutBased") << "Invalid algorithm parameter: must be eIDCBClasses or eIDCB." ;
     exit (1); 
   }
-
 }
 
 ElectronIDSelectorCutBased::~ElectronIDSelectorCutBased () 

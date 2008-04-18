@@ -24,9 +24,7 @@ class ElectronIDSelectorCutBased
  private:
 
   ElectronIDAlgo* electronIDAlgo_;
-
   edm::ParameterSet conf_;
-  
   std::string algorithm_ ;
 
 };
