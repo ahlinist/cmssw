@@ -26,7 +26,5 @@ module electronId = ElectronIDProducer {
     VPSet algo_psets = {
         {using PTDR_ID}, {using CutBased_ID}
     }
-
     #using NeuralNet
-
 }
