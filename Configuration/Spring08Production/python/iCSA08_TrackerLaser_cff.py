@@ -6,6 +6,8 @@ def customise(process):
   # add the description of the Alignment Tubes
   process.XMLIdealGeometryESSource.geomXMLFiles.append("Alignment/LaserAlignmentSimulation/data/AlignmentTubes.xml")
 
+  process.siStripDigis.ZeroSuppression = False # produce "VirginRaw" SiStripRawDigis
+
   process.g4SimHits.Physics.type = "SimG4Core/Physics/LaserOpticalPhysics"
 
   process.g4SimHits.Watchers = cms.VPSet( 
