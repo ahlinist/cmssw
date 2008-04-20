@@ -60,7 +60,7 @@ module  mumugenfilter  = MCParticlePairFilter {
     untracked vdouble MaxEta = {2.7, 2.7}
 }
 
-seqeunce tmpSequence = {!eegenfilter & !mumugenfilter}
+sequence tmpSequence = {!eegenfilter & !mumugenfilter}
 sequence ProductionFilterSequence= {!tmpSequence}
 
 
