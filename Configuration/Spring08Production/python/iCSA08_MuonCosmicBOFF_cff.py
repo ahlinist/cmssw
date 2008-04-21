@@ -1,17 +1,13 @@
 import FWCore.ParameterSet.Config as cms
 
-def customise(process):
-    # Pixel digitization: set the TOF window for digitizer to accept hits, 
-    # window should stay fixed to 25 ns, shift of TOF for the strip tracker 
+#---------- CMSCGEN, cosmics MC, set parameters
+#           Used defaults are: 1BX, underground
+from GeneratorInterface.CosmicMuonGenerator.CMSCGENsource_cfi import *
+configurationMetadata = cms.untracked.PSet(
+    version = cms.untracked.string('$Revision: 1.1 $'),
+    name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/CMSSW/Configuration/Spring08Production/data/iCSA08_MuonCosmicBOFF.cff,v $'),
+    annotation = cms.untracked.string('Cosmic muons underground B-field OFF and 1 BX ')
+)
+CosMuoGenSource.MinP = 10.
+CosMuoGenSource.MaxTheta = 80.
 
-    process.siPixelDigis.TofLowerCut = 18.5  
-    process.siPixelDigis.TofUpperCut = 43.5
-    process.siStripDigis.CosmicDelayShift = 31.
-    process.siStripDigis.CouplingCostantPeak = (0.94, 0.03) #FROM TIF DATA
-
-    # switch off magnetic field
-    process.UniformMagneticFieldESProducer = cms.ESProducer("UniformMagneticFieldESProducer", ZFieldInTesla = cms.double(0.0) )
-    process.es_prefer_UniformMagneticFieldESProducer = cms.ESPrefer("UniformMagneticFieldESProducer")
-    process.g4SimHits.UseMagneticField = False
-
-    return process

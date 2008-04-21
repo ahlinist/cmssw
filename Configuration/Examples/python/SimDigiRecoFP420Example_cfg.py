@@ -58,7 +58,13 @@ process.source = cms.Source("PoolSource",
 )
 
 process.o1 = cms.OutputModule("PoolOutputModule",
-    outputCommands = cms.untracked.vstring('drop *', 'keep *_VtxSmeared_*_*', 'keep *_source_*_*', 'keep edmHepMCProduct_*_*_*', 'keep SimTracks_*_*_*', 'keep SimVertexs_*_*_*', 'keep RecoCollectionFP420_*_*_*'),
+    outputCommands = cms.untracked.vstring('drop *', 
+        'keep *_VtxSmeared_*_*', 
+        'keep *_source_*_*', 
+        'keep edmHepMCProduct_*_*_*', 
+        'keep SimTracks_*_*_*', 
+        'keep SimVertexs_*_*_*', 
+        'keep RecoCollectionFP420_*_*_*'),
     fileName = cms.untracked.string('Hec_Exhume_Hbb.root')
 )
 
