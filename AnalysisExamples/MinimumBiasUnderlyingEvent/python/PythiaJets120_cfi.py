@@ -20,7 +20,8 @@ source = cms.Source("PythiaSource",
     maxEventsToPrint = cms.untracked.int32(0),
     PythiaParameters = cms.PSet(
         parameterSets = cms.vstring('pythiaJets120'),
-        pythiaJets120 = cms.vstring('MSEL=1', 'CKIN(3)=120')
+        pythiaJets120 = cms.vstring('MSEL=1', 
+            'CKIN(3)=120')
     )
 )
 
