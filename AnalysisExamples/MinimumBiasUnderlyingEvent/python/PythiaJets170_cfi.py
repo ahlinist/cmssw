@@ -19,7 +19,8 @@ source = cms.Source("PythiaSource",
     pythiaHepMCVerbosity = cms.untracked.bool(False),
     maxEventsToPrint = cms.untracked.int32(0),
     PythiaParameters = cms.PSet(
-        pythiaJets170 = cms.vstring('MSEL=1', 'CKIN(3)=170'),
+        pythiaJets170 = cms.vstring('MSEL=1', 
+            'CKIN(3)=170'),
         parameterSets = cms.vstring('pythiaJets170')
     )
 )
