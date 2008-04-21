@@ -1,3 +1,7 @@
+# The following comments couldn't be translated into the new config version:
+
+# no proper samples available at the moment
+# no proper samples available at the moment
 import FWCore.ParameterSet.Config as cms
 
 #

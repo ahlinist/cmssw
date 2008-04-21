@@ -13,7 +13,18 @@ analElId = cms.EDFilter("AnalElId",
     TrTruth = cms.InputTag("trackingParticles"),
     PtCut = cms.double(1.0),
     PFRecTrackLabel = cms.InputTag("repreid"),
-    ROUList = cms.vstring('TrackerHitsTIBLowTof', 'TrackerHitsTIBHighTof', 'TrackerHitsTIDLowTof', 'TrackerHitsTIDHighTof', 'TrackerHitsTOBLowTof', 'TrackerHitsTOBHighTof', 'TrackerHitsTECLowTof', 'TrackerHitsTECHighTof', 'TrackerHitsPixelBarrelLowTof', 'TrackerHitsPixelBarrelHighTof', 'TrackerHitsPixelEndcapLowTof', 'TrackerHitsPixelEndcapHighTof')
+    ROUList = cms.vstring('TrackerHitsTIBLowTof', 
+        'TrackerHitsTIBHighTof', 
+        'TrackerHitsTIDLowTof', 
+        'TrackerHitsTIDHighTof', 
+        'TrackerHitsTOBLowTof', 
+        'TrackerHitsTOBHighTof', 
+        'TrackerHitsTECLowTof', 
+        'TrackerHitsTECHighTof', 
+        'TrackerHitsPixelBarrelLowTof', 
+        'TrackerHitsPixelBarrelHighTof', 
+        'TrackerHitsPixelEndcapLowTof', 
+        'TrackerHitsPixelEndcapHighTof')
 )
 
 
