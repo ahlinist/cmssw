@@ -20,9 +20,10 @@ electronId = cms.EDProducer("ElectronIDProducer",
     barrelClusterShapeAssociation = cms.InputTag("hybridSuperClusters","hybridShapeAssoc"),
     algo_psets = cms.VPSet(cms.PSet(
         PTDR_ID
-    ), cms.PSet(
-        CutBased_ID
-    ))
+    ), 
+        cms.PSet(
+            CutBased_ID
+        ))
 )
 
 

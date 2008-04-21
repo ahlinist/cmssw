@@ -12,9 +12,10 @@ eidCutBased = cms.EDFilter("EleIdCutBasedRef",
     threshold = cms.double(0.5),
     algo_psets = cms.VPSet(cms.PSet(
         PTDR_ID
-    ), cms.PSet(
-        CutBased_ID
-    ))
+    ), 
+        cms.PSet(
+            CutBased_ID
+        ))
 )
 
 
