@@ -1,5 +1,5 @@
-#ifndef Geometry_ForwardGeometry_ZdcHardcodeGeometryEP_H
-#define Geometry_ForwardGeometry_ZdcHardcodeGeometryEP_H 1
+#ifndef GEOMETRY_HCALEVENTSETUP_HCALHARDCODEGEOMETRYEP_H
+#define GEOMETRY_HCALEVENTSETUP_HCALHARDCODEGEOMETRYEP_H 1
 
 
 // system include files
@@ -9,36 +9,34 @@
 // user include files
 #include "FWCore/Framework/interface/ModuleFactory.h"
 #include "FWCore/Framework/interface/ESProducer.h"
+
 #include "FWCore/Framework/interface/ESHandle.h"
-#include "Geometry/Records/interface/ZDCGeometryRecord.h"
 #include "Geometry/Records/interface/IdealGeometryRecord.h"
+#include "Geometry/Records/interface/HcalGeometryRecord.h"
 #include "Geometry/CaloGeometry/interface/CaloSubdetectorGeometry.h"
-#include "Geometry/ForwardGeometry/interface/ZdcHardcodeGeometryLoader.h"
+#include "Geometry/HcalTowerAlgo/interface/HcalHardcodeGeometryLoader.h"
 
 //
 // class decleration
 //
 
-class ZdcHardcodeGeometryEP : public edm::ESProducer 
+class HcalHardcodeGeometryEP : public edm::ESProducer 
 {
    public:
-      ZdcHardcodeGeometryEP(const edm::ParameterSet&);
-      ~ZdcHardcodeGeometryEP();
+      HcalHardcodeGeometryEP(const edm::ParameterSet&);
+      virtual ~HcalHardcodeGeometryEP();
 
       typedef boost::shared_ptr<CaloSubdetectorGeometry> ReturnType;
 
-      ReturnType produceAligned( const ZDCGeometryRecord&   ) ;
-      ReturnType produceIdeal(   const IdealGeometryRecord& ) ;
+      ReturnType produceIdeal(   const IdealGeometryRecord&);
+      ReturnType produceAligned( const HcalGeometryRecord& );
 
       void       idealRecordCallBack( const IdealGeometryRecord& );
 
    private:
-
       // ----------member data ---------------------------
 
-      ZdcHardcodeGeometryLoader* m_loader ;
-
-      ZdcTopology m_topology ;
+      HcalHardcodeGeometryLoader* m_loader ;
 
       bool m_applyAlignment ;
 };
