@@ -19,7 +19,9 @@ hEEPSignalHighEtEventSelection = cms.PSet(
 #
 hEEPSignalMedEtEventSelection = cms.PSet(
     SelectEvents = cms.untracked.PSet(
-        SelectEvents = cms.vstring('hEEPSignalMedEtHigh', 'hEEPSignalMedEtMedBarrel', 'hEEPSignalMedEtMedEndcap')
+        SelectEvents = cms.vstring('hEEPSignalMedEtHigh', 
+            'hEEPSignalMedEtMedBarrel', 
+            'hEEPSignalMedEtMedEndcap')
     )
 )
 
