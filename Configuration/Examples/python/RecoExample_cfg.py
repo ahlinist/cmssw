@@ -1,8 +1,3 @@
-# The following comments couldn't be translated into the new config version:
-
-#	using FEVTSIMEventContent
-#	using RECOSIMEventContent
-
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("RP")
