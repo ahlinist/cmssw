@@ -35,6 +35,11 @@ namespace statemachine {
     ep_->startingNewLoop();
   }
 
+  void Machine::startingNewLoop(const Stop& stop) {
+    if (ep_->alreadyHandlingException()) return;
+    ep_->startingNewLoop();
+  }
+
   void Machine::rewindAndPrepareForNextLoop(const Restart & restart) {
     ep_->prepareForNextLoop();
     ep_->rewindInput();
@@ -44,17 +49,13 @@ namespace statemachine {
 
   Starting::~Starting() { }
 
-  sc::result Starting::react( const Stop& stop)
-  {
-    return terminate();
-  }
-
   HandleFiles::HandleFiles(my_context ctx) :
     my_base(ctx),
     ep_(context< Machine >().ep()),
     exitCalled_(false) { }
 
   void HandleFiles::exit() {
+    if (ep_.alreadyHandlingException()) return;
     exitCalled_ = true;
     closeFiles();
   }
@@ -136,7 +137,7 @@ namespace statemachine {
     my_base(ctx),
     ep_(context< Machine >().ep())
   { 
-    if (ep_.endOfLoop()) post_event(Stop());
+    if (ep_.alreadyHandlingException() || ep_.endOfLoop()) post_event(Stop());
     else post_event(Restart());
   }
 
@@ -248,6 +249,7 @@ namespace statemachine {
     runException_(false) { }
 
   void HandleRuns::exit() {
+    if (ep_.alreadyHandlingException()) return;
     exitCalled_ = true;
     finalizeRun();
   }
@@ -454,6 +456,7 @@ namespace statemachine {
   }
 
   void HandleLumis::exit() {
+    if (ep_.alreadyHandlingException()) return;
     exitCalled_ = true;
     checkInvariant();
     finalizeAllLumis();

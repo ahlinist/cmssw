@@ -69,6 +69,8 @@ namespace edm
     virtual void setExceptionMessageRuns(std::string& message);
     virtual void setExceptionMessageLumis(std::string& message);
 
+    virtual bool alreadyHandlingException() const;
+
   private:
     std::string mockData_;
     std::ostream & output_;

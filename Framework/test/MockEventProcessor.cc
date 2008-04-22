@@ -230,4 +230,6 @@ namespace edm {
   void MockEventProcessor::setExceptionMessageFiles(std::string& message) { }
   void MockEventProcessor::setExceptionMessageRuns(std::string& message) { }
   void MockEventProcessor::setExceptionMessageLumis(std::string& message) { }
+
+  bool MockEventProcessor::alreadyHandlingException() const { return false; }
 }

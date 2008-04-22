@@ -79,6 +79,8 @@ namespace edm
     virtual void setExceptionMessageFiles(std::string& message) = 0;
     virtual void setExceptionMessageRuns(std::string& message) = 0;
     virtual void setExceptionMessageLumis(std::string& message) = 0;
+
+    virtual bool alreadyHandlingException() const = 0;
   };
 }
 
