@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.72 2008/04/06 14:44:11 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.73 2008/04/09 07:59:01 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.72 $
-  \date $Date: 2008/04/06 14:44:11 $
+  \version $Revision: 1.73 $
+  \date $Date: 2008/04/09 07:59:01 $
 */
 
 #include "TH1F.h"
@@ -670,7 +670,7 @@ void EBRenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( o.name.find( "EBOT" ) < o.name.size() ) {
+  if( o.name.find( "EBOT digi" ) < o.name.size() ) {
     int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
     int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
     int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
@@ -678,6 +678,28 @@ void EBRenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     text6->GetXaxis()->SetRange(x1, x2);
     text6->GetYaxis()->SetRange(y1, y2);
     text6->Draw("text,same");
+    return;
+  }
+
+  if( o.name.find( "EBOT rec hit" ) < o.name.size() ) {
+    int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+    int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+    int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+    int y2 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+    text6->GetXaxis()->SetRange(x1, x2);
+    text6->GetYaxis()->SetRange(y1, y2);
+    text6->Draw("text,same");
+    return;
+  }
+
+  if( o.name.find( "EBOT TP digi" ) < o.name.size() ) {
+    int x1 = text8->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+    int x2 = text8->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+    int y1 = text8->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+    int y2 = text8->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+    text8->GetXaxis()->SetRange(x1, x2);
+    text8->GetYaxis()->SetRange(y1, y2);
+    text8->Draw("text,same");
     return;
   }
 
