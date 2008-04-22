@@ -13,3 +13,5 @@ http://cern.ch/cms-sdt/CondCore/SQLiteData/data200/siPixelCabling200.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/data200/DTFullMap_fix17X.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/data200/btagTrackProbability200.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/data200/SiStripFedCabling_20X.db
+http://cern.ch/cms-sdt/CondCore/SQLiteData/data200/electronIdLikelihoodNonIsolated.db
+http://cern.ch/cms-sdt/CondCore/SQLiteData/data200/electronIdLikelihoodTkIsolated.db
