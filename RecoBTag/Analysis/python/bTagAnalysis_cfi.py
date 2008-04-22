@@ -23,9 +23,8 @@ bTagAnalysis = cms.EDAnalyzer("BTagPerformanceAnalyzer",
     ), 
         cms.PSet(
             bTagCombinedSVAnalysisBlock,
-            ipTagInfos = cms.InputTag("impactParameterTagInfos"),
+            tagInfos = cms.VInputTag(cms.InputTag("impactParameterTagInfos"), cms.InputTag("secondaryVertexTagInfos")),
             type = cms.string('GenericMVA'),
-            svTagInfos = cms.InputTag("secondaryVertexTagInfos"),
             label = cms.InputTag("combinedSecondaryVertex")
         ), 
         cms.PSet(
