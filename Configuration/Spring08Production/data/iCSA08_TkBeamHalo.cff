@@ -23,5 +23,4 @@ replace plusSideFilter.scintillators_type = 0
 
 sequence tmpSequence = {!plusSideFilter & !minusSideFilter}
 sequence ProductionFilterSequence = {!tmpSequence}
-}
 
