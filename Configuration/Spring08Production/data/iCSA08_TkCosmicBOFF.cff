@@ -17,7 +17,7 @@ replace cosmicInTracker.doMonitor = false
 sequence ProductionFilterSequence = {cosmicInTracker}
 
 untracked PSet configurationMetadata = {
-    untracked string version = "$Revision$"
-    untracked string name = "$Source$"
-    untracked string annotation = "CSA08 tracker cosmic BON sample"
+    untracked string version = "$Revision: 1.1 $"
+    untracked string name = "$Source: /cvs_server/repositories/CMSSW/CMSSW/Configuration/Spring08Production/data/iCSA08_TkCosmicBOFF.cff,v $"
+    untracked string annotation = "CSA08 tracker cosmic BOFF sample"
 }
