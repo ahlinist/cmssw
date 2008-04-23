@@ -12,8 +12,6 @@
 #include "FWCore/Sources/interface/VectorInputSource.h"
 #include "IORawData/DaqSource/interface/DaqBaseReader.h"
 
-using namespace edm;
-
 namespace evf {
 
   class SecondaryProducer: public DaqBaseReader
@@ -40,7 +38,7 @@ namespace evf {
     //
     // private member functions
     //
-    boost::shared_ptr<VectorInputSource> makeSecInput(ParameterSet const& ps);
+    boost::shared_ptr<edm::VectorInputSource> makeSecInput(edm::ParameterSet const& ps);
 
 
   private:
@@ -50,7 +48,7 @@ namespace evf {
     edm::RunNumber_t   runNum;
     edm::EventNumber_t eventNum;
 
-    boost::shared_ptr<VectorInputSource> secInput_;
+    boost::shared_ptr<edm::VectorInputSource> secInput_;
 
   };
 
