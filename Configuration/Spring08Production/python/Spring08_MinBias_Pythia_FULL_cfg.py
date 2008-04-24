@@ -37,7 +37,7 @@ process.load("FWCore.MessageService.MessageLogger_cfi")
 
 process.configurationMetadata = cms.untracked.PSet(
     version = cms.untracked.string('$Revision: 1.1 $'),
-    name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/CMSSW/Configuration/Spring08Production/data/Spring08_MinBias_Pythia_FULL.cfg,v $'),
+    name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/CMSSW/Configuration/Spring08Production/python/Spring08_MinBias_Pythia_FULL_cfg.py,v $'),
     annotation = cms.untracked.string('generation of minbias with pythia6, CTEQ 6L1 used')
 )
 process.maxEvents = cms.untracked.PSet(
@@ -49,13 +49,13 @@ process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService
         l1ParamMuons = cms.untracked.uint32(54525),
         caloRecHits = cms.untracked.uint32(654321),
         MuonSimHits = cms.untracked.uint32(97531),
-        muonCSCDigis = cms.untracked.uint32(525432),
-        muonDTDigis = cms.untracked.uint32(67673876),
+        simMuonCSCDigis = cms.untracked.uint32(525432),
+        simMuonDTDigis = cms.untracked.uint32(67673876),
         famosSimHits = cms.untracked.uint32(13579),
         paramMuons = cms.untracked.uint32(54525),
         famosPileUp = cms.untracked.uint32(918273),
         VtxSmeared = cms.untracked.uint32(123456789),
-        muonRPCDigis = cms.untracked.uint32(524964),
+        simMuonRPCDigis = cms.untracked.uint32(524964),
         siTrackerGaussianSmearingRecHits = cms.untracked.uint32(24680)
     ),
     # This is to initialize the random engine of the source
