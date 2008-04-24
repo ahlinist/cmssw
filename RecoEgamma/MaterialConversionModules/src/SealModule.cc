@@ -1,9 +1,9 @@
-#include "PluginManager/ModuleDef.h"
+#include "FWCore/PluginManager/interface/ModuleDef.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
-#include "RecoEgamma/MaterialConversionModules/interface/Pi0ConversionProducer.h"
-#include "RecoEgamma/MaterialConversionModules/interface/Pi0ConversionAnalyzer.h"
+#include "RecoEgamma/MaterialConversionModules/interface/ClusterAndHitsProducer.h"
+#include "RecoEgamma/MaterialConversionModules/interface/ClusterAndHitsAnalyzer.h"
 
 
 DEFINE_SEAL_MODULE();
-DEFINE_ANOTHER_FWK_MODULE(Pi0ConversionProducer);
-DEFINE_ANOTHER_FWK_MODULE(Pi0ConversionAnalyzer);
+DEFINE_ANOTHER_FWK_MODULE(ClusterAndHitsProducer);
+DEFINE_ANOTHER_FWK_MODULE(ClusterAndHitsAnalyzer);
