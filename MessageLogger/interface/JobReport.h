@@ -357,6 +357,21 @@ namespace edm {
       ///
       void reportTimingInfo(std::map<std::string, double> const & timingData);
 
+      ///
+      /// Report Memory statistics
+      /// Invoked by the Memory service to send an end of job 
+      /// summary about memory usage for inclusion in the job report
+      ///
+      void reportMemoryInfo(std::map<std::string, double> const& memoryData);
+
+      ///
+      /// Report Memory statistics
+      /// ALTERNATE FORM - USING THIS MAY NECESSITATE CHANGES IN PARSING XML!
+      /// Invoked by the Memory service to send an end of job 
+      /// summary about memory usage for inclusion in the job report
+      ///
+      void reportMemoryInfo(std::vector<std::string> const& memoryData);
+
       /// Report Storage Statistics
       void reportStorageStats(std::string const & data); 
 
