@@ -68,6 +68,18 @@
 27.3.2008/S.Lehti CMSSW_1_6_11  HCAL recHits depth() == 1 requirement removed, added HO and HF
 15.4.2008/S.Lehti CMSSW_1_6_11  Added option for selecting iterativeTrack collection
 15.4.2008/S.Lehti CMSSW_1_6_11  Added TauJet jet energy corrections
+24.4.2008/S.Lehti CMSSW_1_6_11  Added metNoHF and a number of type1 corrections. New tags:
+                                cvs co -r global_1_6_9_11feb08 RecoParticleFlow
+                                cvs co -r global_1_6_9_11feb08 DataFormats/ParticleFlowReco
+                                cvs co -r global_1_6_9_11feb08 DataFormats/ParticleFlowCandidate
+                                cvs co -r V00-00-17 DataFormats/TauReco
+                                cvs co -r V00-00-37 RecoTauTag/RecoTau
+                                cvs co -r V00-00-06 RecoTauTag/TauTagTools
+                                cvs co -r jet_corrections_16X JetMETCorrections/MCJet/data
+				cvs co -r CMSSW_2_0_0 RecoMET
+				cvs co -r CMSSW_2_0_0 DataFormats/METReco
+				cvs co -r CMSSW_2_0_0 RecoJets/Configuration/data
+				cvs co -r CMSSW_2_0_0 RecoJets/JetProducers/data
 
 
 
