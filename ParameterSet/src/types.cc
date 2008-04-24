@@ -731,7 +731,7 @@ bool
 bool
   edm::decode(edm::EventID& to, std::string const& from)
 {
-  std::vector<std::string> tokens = edm::pset::tokenize(from, ":");
+  std::vector<std::string> tokens = edm::tokenize(from, ":");
   assert(tokens.size() == 2);
   unsigned int run = strtoul(tokens[0].c_str(), 0, 0);
   unsigned int event = strtoul(tokens[1].c_str(), 0, 0);
@@ -798,7 +798,7 @@ bool
 bool
   edm::decode(edm::LuminosityBlockID& to, std::string const& from)
 {
-  std::vector<std::string> tokens = edm::pset::tokenize(from, ":");
+  std::vector<std::string> tokens = edm::tokenize(from, ":");
   assert(tokens.size() == 2);
   unsigned int run = strtoul(tokens[0].c_str(), 0, 0);
   unsigned int lumi = strtoul(tokens[1].c_str(), 0, 0);

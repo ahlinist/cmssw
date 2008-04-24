@@ -352,7 +352,7 @@ namespace edm
 
     // Find the file, based on the value of path variable.
     typedef std::vector<std::string> stringvec_t;
-    stringvec_t  pathElements = edm::pset::tokenize(searchPath_, ":");
+    stringvec_t  pathElements = tokenize(searchPath_, ":");
     stringvec_t::const_iterator it =  pathElements.begin();
     stringvec_t::const_iterator end = pathElements.end();
     while (it != end) {
