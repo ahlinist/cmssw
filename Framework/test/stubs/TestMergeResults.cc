@@ -18,7 +18,7 @@
 #include "DataFormats/TestObjects/interface/Thing.h"
 #include "DataFormats/TestObjects/interface/ThingWithIsEqual.h"
 #include "DataFormats/TestObjects/interface/ThingWithMerge.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 

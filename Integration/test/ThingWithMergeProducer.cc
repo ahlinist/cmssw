@@ -17,7 +17,7 @@
 #include "DataFormats/TestObjects/interface/ThingWithMerge.h"
 #include "DataFormats/TestObjects/interface/ThingWithIsEqual.h"
 #include "DataFormats/Common/interface/Handle.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 namespace edmtest {
