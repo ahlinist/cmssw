@@ -113,8 +113,21 @@ extern "C"{
 
 using namespace edm;
 
-MadGraphSource::MadGraphSource( const ParameterSet & pset, InputSourceDescription const& desc) : ExternalInputSource (pset, desc), evt(0),
-pythiaPylistVerbosity_ (pset.getUntrackedParameter<int>("pythiaPylistVerbosity",0)),pythiaHepMCVerbosity_ (pset.getUntrackedParameter<bool>("pythiaHepMCVerbosity",false)),maxEventsToPrint_ (pset.getUntrackedParameter<int>("maxEventsToPrint",0)),MGfile_ (fileNames()[0]),getInputFromMCDB_ (pset.getUntrackedParameter<bool>("getInputFromMCDB",false)),MCDBArticleID_ (pset.getParameter<int>("MCDBArticleID")),firstEvent_(pset.getUntrackedParameter<unsigned int>("firstEvent", 0)),lhe_event_counter_(0),MEMAIN_etaclmax(pset.getUntrackedParameter<double>("MEMAIN_etaclmax",0.)),MEMAIN_qcut(pset.getUntrackedParameter<double>("MEMAIN_qcut",0.)),MEMAIN_iexcfile(pset.getUntrackedParameter<unsigned int>("MEMAIN_iexcfile",0)), produceEventTreeFile_ (pset.getUntrackedParameter<bool>("produceEventTreeFile",false)), minimalLH_(pset.getUntrackedParameter<bool>("minimalLH",false)) {
+MadGraphSource::MadGraphSource( const ParameterSet & pset, InputSourceDescription const& desc) 
+   : ExternalInputSource (pset, desc), evt(0),
+     pythiaPylistVerbosity_ (pset.getUntrackedParameter<int>("pythiaPylistVerbosity",0)),
+     pythiaHepMCVerbosity_ (pset.getUntrackedParameter<bool>("pythiaHepMCVerbosity",false)),
+     maxEventsToPrint_ (pset.getUntrackedParameter<int>("maxEventsToPrint",0)),
+     MGfile_ (fileNames()[0]),
+     getInputFromMCDB_ (pset.getUntrackedParameter<bool>("getInputFromMCDB",false)),
+     MCDBArticleID_ (pset.getParameter<int>("MCDBArticleID")),
+     firstEvent_(pset.getUntrackedParameter<unsigned int>("firstEvent", 0)),
+     lhe_event_counter_(0),MEMAIN_etaclmax(pset.getUntrackedParameter<double>("MEMAIN_etaclmax",0.)),
+     MEMAIN_qcut(pset.getUntrackedParameter<double>("MEMAIN_qcut",0.)),
+     MEMAIN_iexcfile(pset.getUntrackedParameter<unsigned int>("MEMAIN_iexcfile",0)), 
+     produceEventTreeFile_ (pset.getUntrackedParameter<bool>("produceEventTreeFile",false)), 
+     minimalLH_(pset.getUntrackedParameter<bool>("minimalLH",false)) 
+{
 
   edm::LogInfo("Generator|MadGraph")<<" initializing MadGraphSource";
   pdf_info = new HepMC::PdfInfo();
