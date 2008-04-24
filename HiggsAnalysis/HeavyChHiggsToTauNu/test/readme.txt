@@ -80,7 +80,8 @@
 				cvs co -r CMSSW_2_0_0 DataFormats/METReco
 				cvs co -r CMSSW_2_0_0 RecoJets/Configuration/data
 				cvs co -r CMSSW_2_0_0 RecoJets/JetProducers/data
-
+				Edit RecoJets/Configuration/data/GenJetParticles.cff and
+				remove double quotes from line 'InputTag src = "genParticles"'
 
 
 	How to compile:
