@@ -4,9 +4,9 @@ source = PythiaSource
     untracked int32 pythiaPylistVerbosity = 0
     untracked bool pythiaHepMCVerbosity = false
     untracked int32 maxEventsToPrint = 0
-    untracked double crossSection = 102700000.
-    # First estimate 
-    untracked double filterEfficiency =0.000275
+    untracked double crossSection = 939600
+   # First estimate 
+    untracked double filterEfficiency =0.0467
     
     #SA CSA08 10 TeV center of mass
     untracked double comEnergy = 10000.
@@ -20,7 +20,10 @@ source = PythiaSource
 	include "Configuration/Spring08Production/data/PythiaUESettings.cfi"
 	vstring processParameters = 
 	{
-	    'MSEL=10               ! QCD hight pT processes'
+	    'MSEL=10               ! QCD hight pT processes',
+	    'CKIN(3)=10.           ! minimum pt hat for hard interactions'
+
+	    
         }      
     }
 }
@@ -42,7 +45,7 @@ module photonptfilter = MCSingleParticleFilter{
 sequence ProductionFilterSequence = { photonptfilter}
 
 untracked PSet configurationMetadata = {
-    untracked string version = "$Revision: 1.2 $"
+    untracked string version = "$Revision: 1.3 $"
     untracked string name = "$Source: /cvs_server/repositories/CMSSW/CMSSW/Configuration/Spring08Production/data/iCSA08_GammaJets.cff,v $"
     untracked string annotation = "gamma-jet for iCSA08"
   } 
