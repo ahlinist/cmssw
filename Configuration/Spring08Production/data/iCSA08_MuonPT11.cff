@@ -5,7 +5,7 @@ source = PythiaSource
    untracked int32 maxEventsToPrint = 0 
  
    untracked double crossSection = 498000000.
-   untracked double filterEfficiency = 0.0054.
+   untracked double filterEfficiency = 0.0054
 
    # sqrt(s) = 10 TeV
    untracked double comEnergy = 10000.
@@ -41,7 +41,7 @@ module generatorFilter = PythiaFilter
 sequence ProductionFilterSequence = { generatorFilter}
 
 untracked PSet configurationMetadata = {
-    untracked string version = "$Revision: 1.2 $"
+    untracked string version = "$Revision: 1.3 $"
     untracked string name = "$Source: /cvs_server/repositories/CMSSW/CMSSW/Configuration/Spring08Production/data/iCSA08_MuonPT11.cff,v $"
     untracked string annotation = "b/c -> mu pT > 11 GEN evts for CSA08"
 }
