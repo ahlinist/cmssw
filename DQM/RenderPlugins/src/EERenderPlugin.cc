@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.75 2008/04/06 14:44:11 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.76 2008/04/09 07:59:01 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.75 $
-  \date $Date: 2008/04/06 14:44:11 $
+  \version $Revision: 1.76 $
+  \date $Date: 2008/04/09 07:59:01 $
 */
 
 #include "TH1F.h"
@@ -174,6 +174,10 @@ bool EERenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &
     return true;
   }
 
+  if( o.name.find( "EcalEndcap/Run summary/EventInfo" ) < o.name.size() ) {
+    return true;
+  }
+
   return false;
 
 }
@@ -272,7 +276,6 @@ void EERenderPlugin::preDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o 
     return;
   }
 
-  // Occupancy-like (10 x grays) plots
   if( o.name.find( "EECLT" ) < o.name.size() ) {
     gPad->SetGridx();
     gPad->SetGridy();
@@ -302,7 +305,6 @@ void EERenderPlugin::preDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o 
     obj->GetYaxis()->SetNdivisions(10);
   }
 
-  // Occupancy-like (10 x grays) plots
   obj->SetMinimum(0.0);
   gStyle->SetPalette(10, pCol4);
   obj->SetOption("colz");
@@ -369,7 +371,6 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
   obj->SetStats(kFALSE);
   gPad->SetLogy(kFALSE);
 
-  // Occupancy-like (10 x grays) plots
   if( o.name.find( "EECLT" ) < o.name.size() ) {
     gPad->SetGridx();
     gPad->SetGridy();
@@ -435,7 +436,22 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->GetYaxis()->SetNdivisions(2);
   }
 
-  // Occupancy-like (10 x grays) plots
+  if( o.name.find( "errorSummaryXYM_EcalEndcap" ) < o.name.size() ) {
+    obj->SetMinimum(-1.0);
+    gStyle->SetPalette(5);
+    obj->SetOption("colz");
+    gStyle->SetPaintTextFormat("+g");
+    return;
+  }
+
+  if( o.name.find( "errorSummaryXYP_EcalEndcap" ) < o.name.size() ) {
+    obj->SetMinimum(-1.0);
+    gStyle->SetPalette(5);
+    obj->SetOption("colz");
+    gStyle->SetPaintTextFormat("+g");
+    return;
+  }
+
   if( o.name.find( "EEIT" ) < o.name.size() &&
       o.name.find( "quality" ) >= o.name.size() ) {
     obj->SetMinimum(0.0);
@@ -445,7 +461,6 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  // Occupancy-like (10 x grays) plots
   if( o.name.find( "EETTT" ) < o.name.size() &&
       o.name.find( "quality" ) >= o.name.size() ) {
     obj->SetMinimum(0.0);
@@ -459,7 +474,6 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  // Occupancy-like (10 x grays) plots
   if( o.name.find( "EEOT" ) < o.name.size() ) {
     obj->SetMinimum(0.0);
     gStyle->SetPalette(10, pCol4);
@@ -468,7 +482,6 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  // Occupancy-like (10 x grays) plots
   if( o.name.find( "EESFT" ) < o.name.size() &&
       o.name.find( "summary" ) >= o.name.size() ) {
     obj->SetMinimum(0.0);
@@ -478,7 +491,6 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  // Occupancy-like (10 x grays) plots
   if( o.name.find( "EECT" ) < o.name.size() ) {
     obj->SetMinimum(0.0);
     gStyle->SetPalette(10, pCol4);
@@ -487,7 +499,6 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  // Quality-like (green, yellow, red) plots
   if( o.name.find( "summary" ) < o.name.size() ) {
     gStyle->SetOptStat(" ");
     obj->SetMinimum(-0.00000001);
@@ -498,7 +509,6 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  // Quality-like (green, yellow, red) plots
   if( o.name.find( "quality" ) < o.name.size() ) {
     obj->SetMinimum(-0.00000001);
     obj->SetMaximum(6.0);
@@ -508,7 +518,6 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  // Occupancy-like (10 x grays) plots
   if( o.name.find( "EEMM event" ) < o.name.size() ) {
     obj->SetMinimum(0.0);
     gStyle->SetPalette(10, pCol4);

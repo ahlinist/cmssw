@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.74 2008/04/22 08:12:36 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.75 2008/04/25 12:53:41 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.74 $
-  \date $Date: 2008/04/22 08:12:36 $
+  \version $Revision: 1.75 $
+  \date $Date: 2008/04/25 12:53:41 $
 */
 
 #include "TH1F.h"
@@ -66,6 +66,7 @@ void EBRenderPlugin::initialise( int argc, char **argv ) {
   text6 = new TH2C( "eb_text6", "text6", 18, 0, 360,  2, -85, 85 );
   text7 = new TH2C( "eb_text7", "text7", 18, -M_PI*(9+1.5)/9, M_PI*(9-1.5)/9, 2, -1.479, 1.479);
   text8 = new TH2C( "eb_text8", "text8", 18, 0., 72., 2, -17., 17. );
+  text9 = new TH2C( "eb_text9", "text9", 18, 0., 72., 2, 0., 34. );
 
   text1->SetMinimum(   0.10 );
   text2->SetMinimum(   0.10 );
@@ -74,6 +75,7 @@ void EBRenderPlugin::initialise( int argc, char **argv ) {
   text6->SetMinimum( -18.01 );
   text7->SetMinimum( -18.01 );
   text8->SetMinimum( -18.01 );
+  text9->SetMinimum( -18.01 );
 
   for( short i=0; i<68; i++ ) {
     text1->Fill( 2+(i/4)*5, 2+(i%4)*5, i+1 );
@@ -103,6 +105,7 @@ void EBRenderPlugin::initialise( int argc, char **argv ) {
     int x = 1 + i%18;
     int y = 1 + i/18;
     text8->SetBinContent(x, y, Numbers::iEB(i+1));
+    text9->SetBinContent(x, y, Numbers::iEB(i+1));
   }
 
   text1->SetMarkerSize( 2 );
@@ -112,6 +115,7 @@ void EBRenderPlugin::initialise( int argc, char **argv ) {
   text6->SetMarkerSize( 2 );
   text7->SetMarkerSize( 2 );
   text8->SetMarkerSize( 2 );
+  text9->SetMarkerSize( 2 );
 
 }
 
@@ -134,6 +138,10 @@ bool EBRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &
   }
 
   if( o.name.find( "EcalBarrel/Run summary/EcalInfo" ) < o.name.size() ) {
+    return true;
+  }
+
+  if( o.name.find( "EcalBarrel/Run summary/EventInfo" ) < o.name.size() ) {
     return true;
   }
 
@@ -225,7 +233,6 @@ void EBRenderPlugin::preDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o 
     return;
   }
 
-  // Occupancy-like (10 x grays) plots
   if( o.name.find( "EBCLT" ) < o.name.size() ) {
     gPad->SetGridx();
     gPad->SetGridy();
@@ -262,7 +269,6 @@ void EBRenderPlugin::preDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o 
     obj->GetYaxis()->SetNdivisions(4);
   }
 
-  // Occupancy-like (10 x grays) plots
   obj->SetMinimum(0.0);
   gStyle->SetPalette(10, pCol4);
   obj->SetOption("colz");
@@ -329,7 +335,6 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
   obj->SetStats(kFALSE);
   gPad->SetLogy(kFALSE);
 
-  // Occupancy-like (10 x grays) plots
   if( o.name.find( "EBCLT" ) < o.name.size() ) {
     gPad->SetGridx();
     gPad->SetGridy();
@@ -402,7 +407,14 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->GetYaxis()->SetNdivisions(2, kFALSE);
   }
 
-  // Occupancy-like (10 x grays) plots
+  if( o.name.find( "errorSummaryPhiEta_EcalBarrel" ) < o.name.size() ) {
+    obj->SetMinimum(0.0);
+    gStyle->SetPalette(5);
+    obj->SetOption("colz");
+    gStyle->SetPaintTextFormat("+g");
+    return;
+  }
+
   if( o.name.find( "EBIT" ) < o.name.size() &&
       o.name.find( "quality" ) >= o.name.size() ) {
     obj->SetMinimum(0.0);
@@ -412,7 +424,6 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  // Occupancy-like (10 x grays) plots
   if( o.name.find( "EBTTT" ) < o.name.size() &&
       o.name.find( "quality" ) >= o.name.size() ) {
     obj->SetMinimum(0.0);
@@ -426,7 +437,6 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  // Occupancy-like (10 x grays) plots
   if( o.name.find( "EBSFT" ) < o.name.size() &&
       o.name.find( "summary" ) >= o.name.size() ) {
     obj->SetMinimum(0.0); 
@@ -436,7 +446,6 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  // Occupancy-like (10 x grays) plots
   if( o.name.find( "EBOT" ) < o.name.size() ) {
     obj->SetMinimum(0.0);
     gStyle->SetPalette(10, pCol4);
@@ -445,7 +454,6 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  // Occupancy-like (10 x grays) plots
   if( o.name.find( "EBCT" ) < o.name.size() ) {
     obj->SetMinimum(0.0);
     gStyle->SetPalette(10, pCol4);
@@ -454,7 +462,6 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  // Quality-like (green, yellow, red) plots
   if( o.name.find( "summary" ) < o.name.size() ) {
     gStyle->SetOptStat(" ");
     obj->SetMinimum(-0.00000001);
@@ -465,7 +472,6 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  // Quality-like (green, yellow, red) plots
   if( o.name.find( "quality" ) < o.name.size() ) {
     obj->SetMinimum(-0.00000001);
     obj->SetMaximum(6.0);
@@ -475,7 +481,6 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  // Occupancy-like (10 x grays) plots
   if( o.name.find( "EBMM event" ) < o.name.size() ) {
     obj->SetMinimum(0.0);
     gStyle->SetPalette(10, pCol4);
@@ -733,6 +738,17 @@ void EBRenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     text6->GetXaxis()->SetRange(x1, x2);
     text6->GetYaxis()->SetRange(y1, y2);
     text6->Draw("text,same");
+    return;
+  }
+
+  if( o.name.find( "errorSummaryPhiEta_EcalBarrel" ) < o.name.size() ) {
+    int x1 = text9->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+    int x2 = text9->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+    int y1 = text9->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+    int y2 = text9->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+    text9->GetXaxis()->SetRange(x1, x2);
+    text9->GetYaxis()->SetRange(y1, y2);
+    text9->Draw("text,same");
     return;
   }
 
