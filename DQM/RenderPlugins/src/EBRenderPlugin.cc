@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.75 2008/04/25 12:53:41 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.76 2008/04/26 08:42:12 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.75 $
-  \date $Date: 2008/04/25 12:53:41 $
+  \version $Revision: 1.76 $
+  \date $Date: 2008/04/26 08:42:12 $
 */
 
 #include "TH1F.h"
@@ -407,7 +407,7 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->GetYaxis()->SetNdivisions(2, kFALSE);
   }
 
-  if( o.name.find( "errorSummaryPhiEta_EcalBarrel" ) < o.name.size() ) {
+  if( o.name.find( "errorSummaryPhiEta" ) < o.name.size() ) {
     obj->SetMinimum(0.0);
     gStyle->SetPalette(5);
     obj->SetOption("colz");
@@ -741,7 +741,7 @@ void EBRenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( o.name.find( "errorSummaryPhiEta_EcalBarrel" ) < o.name.size() ) {
+  if( o.name.find( "errorSummaryPhiEta" ) < o.name.size() ) {
     int x1 = text9->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
     int x2 = text9->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
     int y1 = text9->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());

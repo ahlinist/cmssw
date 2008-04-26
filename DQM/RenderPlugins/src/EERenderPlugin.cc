@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.77 2008/04/26 08:42:12 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.78 2008/04/26 09:03:52 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.77 $
-  \date $Date: 2008/04/26 08:42:12 $
+  \version $Revision: 1.78 $
+  \date $Date: 2008/04/26 09:03:52 $
 */
 
 #include "TH1F.h"
@@ -466,7 +466,7 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->GetYaxis()->SetNdivisions(2);
   }
 
-  if( o.name.find( "errorSummaryXYM_EcalEndcap" ) < o.name.size() ) {
+  if( o.name.find( "errorSummaryXYM" ) < o.name.size() ) {
     obj->SetMinimum(0.0);
     gStyle->SetPalette(5);
     obj->SetOption("colz");
@@ -474,7 +474,7 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( o.name.find( "errorSummaryXYP_EcalEndcap" ) < o.name.size() ) {
+  if( o.name.find( "errorSummaryXYP" ) < o.name.size() ) {
     obj->SetMinimum(0.0);
     gStyle->SetPalette(5);
     obj->SetOption("colz");
@@ -728,9 +728,9 @@ void EERenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
   l.SetLineWidth(1);
   for ( int i=0; i<201; i=i+1){
     if ( (Numbers::ixSectorsEE[i]!=0 || Numbers::iySectorsEE[i]!=0) && (Numbers::ixSectorsEE[i+1]!=0 || Numbers::iySectorsEE[i+1]!=0) ) {
-      if ( o.name.find( "errorSummaryXYM_EcalEndcap") < o.name.size() ) {
+      if ( o.name.find( "errorSummaryXYM") < o.name.size() ) {
         l.DrawLine(0.2*Numbers::ixSectorsEE[i], 0.2*Numbers::iySectorsEE[i], 0.2*Numbers::ixSectorsEE[i+1], 0.2*Numbers::iySectorsEE[i+1]);
-      } else if ( o.name.find( "errorSummaryXYP_EcalEndcap") < o.name.size() ) {
+      } else if ( o.name.find( "errorSummaryXYP") < o.name.size() ) {
         l.DrawLine(0.2*Numbers::ixSectorsEE[i], 0.2*Numbers::iySectorsEE[i], 0.2*Numbers::ixSectorsEE[i+1], 0.2*Numbers::iySectorsEE[i+1]);
       } else if( o.name.find( "EECLT" ) < o.name.size() ) {
         l.DrawLine(3.0*(Numbers::ixSectorsEE[i]-50), 3.0*(Numbers::iySectorsEE[i]-50), 3.0*(Numbers::ixSectorsEE[i+1]-50), 3.0*(Numbers::iySectorsEE[i+1]-50));
@@ -795,7 +795,7 @@ void EERenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( o.name.find( "errorSummaryXYM_EcalEndcap" ) < o.name.size() ) {
+  if( o.name.find( "errorSummaryXYM" ) < o.name.size() ) {
     int x1 = text10->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
     int x2 = text10->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
     int y1 = text10->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
@@ -806,7 +806,7 @@ void EERenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( o.name.find( "errorSummaryXYP_EcalEndcap" ) < o.name.size() ) {
+  if( o.name.find( "errorSummaryXYP" ) < o.name.size() ) {
     int x1 = text11->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
     int x2 = text11->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
     int y1 = text11->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
