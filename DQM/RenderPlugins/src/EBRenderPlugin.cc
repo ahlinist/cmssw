@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.76 2008/04/26 08:42:12 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.77 2008/04/26 09:16:58 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.76 $
-  \date $Date: 2008/04/26 08:42:12 $
+  \version $Revision: 1.77 $
+  \date $Date: 2008/04/26 09:16:58 $
 */
 
 #include "TH1F.h"
@@ -408,7 +408,8 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
   }
 
   if( o.name.find( "errorSummaryPhiEta" ) < o.name.size() ) {
-    obj->SetMinimum(0.0);
+    obj->SetMinimum(-0.01);
+    obj->SetMaximum(+1.00);
     gStyle->SetPalette(5);
     obj->SetOption("colz");
     gStyle->SetPaintTextFormat("+g");
