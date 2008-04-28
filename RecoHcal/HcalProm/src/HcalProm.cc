@@ -13,7 +13,7 @@
 //
 // Original Author:  Efe Yazgan
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.1 2008/04/17 09:36:53 efe Exp $
+// $Id: HcalProm.cc,v 1.2 2008/04/17 15:21:26 efe Exp $
 //
 //
 
@@ -124,6 +124,10 @@ class HcalProm : public edm::EDAnalyzer {
   TH1F* h_muon_vertex_x;
   TH1F* h_muon_px;
   TH1F* h_muon_p;
+
+  TH2F* h_ecalx_vs_muonx;
+  TH1F* h_impact_diff;
+  int TrigDT;
 };
 
 //
@@ -200,7 +204,47 @@ HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    Handle<TrackCollection> cosmicmuon;
    iEvent.getByLabel("cosmicMuons",cosmicmuon);
 
+   //trigger
+   Handle<L1MuGMTReadoutCollection> gmtrc_handle; 
+   iEvent.getByLabel("l1GmtEmulDigis",gmtrc_handle);
+   L1MuGMTReadoutCollection const* gmtrc = gmtrc_handle.product();
+   
+   int idt   = 0;
+   int ndt[3] = {0,0,0};
+   int irpcb = 0;
+   int nrpcb[3] = {0,0,0};
+   int N;
+   vector<L1MuGMTReadoutRecord> gmt_records = gmtrc->getRecords();
+   vector<L1MuGMTReadoutRecord>::const_iterator igmtrr;
+ 
+   int MAXDTBX = 20;
+   int MAXRPCBX = 20;
 
+   for(igmtrr=gmt_records.begin(); igmtrr!=gmt_records.end(); igmtrr++) {
+     vector<L1MuRegionalCand>::const_iterator iter1;
+     vector<L1MuRegionalCand> rmc;;
+     // DTBX Trigger
+     rmc = igmtrr->getDTBXCands(); N=0;
+     for(iter1=rmc.begin(); iter1!=rmc.end(); iter1++) {
+       if ( idt < MAXDTBX && !(*iter1).empty() ) {
+         idt++; 
+         if(N<4) ndt[N]++; 
+       } 
+       N++;
+     }
+     // RPCb Trigger
+     rmc = igmtrr->getBrlRPCCands(); N=0;
+     for(iter1=rmc.begin(); iter1!=rmc.end(); iter1++) {
+       if ( irpcb < MAXRPCBX && !(*iter1).empty() ) {
+         irpcb++;
+	 if(N<4) nrpcb[N]++;
+       }  
+       N++;
+     }
+   }
+
+   if(ndt[0]>0 && nrpcb[0] == 0) TrigDT++;
+   
    int adcs[10] = {};
 
    //CORRECT:  Timing plot should be done using linearized ADC's!
@@ -253,6 +297,15 @@ HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     h_calo_tower_energy->Fill(kal->energy());
   }
 
+  //correlations
+  for(TrackCollection::const_iterator ncm = cosmicmuon->begin(); ncm != cosmicmuon->end();  ++ncm) {
+    if (fabs(ncm->eta())>1.3) continue;
+    for(reco::BasicClusterCollection::const_iterator aClus = islandBarrelBasicClusters.begin(); aClus != islandBarrelBasicClusters.end(); aClus++) {
+      h_ecalx_vs_muonx->Fill(aClus->x(),ncm->vx());
+      h_impact_diff->Fill(aClus->z()-ncm->vx());
+    }
+  } 
+
 
 }
 
@@ -291,6 +344,10 @@ void HcalProm::beginJob(const edm::EventSetup&)
   h_muon_vertex_x = MuonDir.make<TH1F>("h_muon_vertex_x","Muon Vertex X",10000,-1000,1000);
   h_muon_px = MuonDir.make<TH1F>("h_muon_px","P_{X}(#mu)",1000,-10,100);
   h_muon_p = MuonDir.make<TH1F>("h_muon_p","P(#mu)",1000,-10,100);
+
+  h_ecalx_vs_muonx = CorrDir.make<TH2F>("h_ecalx_vs_muonx","h_ecalx_vs_muonx",10000,-1000,1000,10000,-1000,1000);
+  h_impact_diff = CorrDir.make<TH1F>("h_impact_diff","h_impact_diff",1000,-200,200);
+  TrigDT = 0;
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
