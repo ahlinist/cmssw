@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.77 2008/04/26 09:16:58 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.78 2008/04/27 18:42:05 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.77 $
-  \date $Date: 2008/04/26 09:16:58 $
+  \version $Revision: 1.78 $
+  \date $Date: 2008/04/27 18:42:05 $
 */
 
 #include "TH1F.h"
@@ -57,7 +57,7 @@ void EBRenderPlugin::initialise( int argc, char **argv ) {
 
   for( short i=0; i<6; i++ ) pCol3[i]  = i+301;
   for( short i=0; i<10; i++ ) pCol4[i] = i+401;
-  for( short i=0; i<10; i++ ) pCol5[i] = i+401;
+  for( short i=0; i<10; i++ ) pCol5[i] = i+501;
 
   text1 = new TH2C( "eb_text1", "text1", 85, 0,  85, 20,   0, 20 );
   text2 = new TH2C( "eb_text2", "text2", 17, 0,  17,  4,   0,  4 );
@@ -407,7 +407,7 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->GetYaxis()->SetNdivisions(2, kFALSE);
   }
 
-  if( o.name.find( "errorSummaryPhiEta" ) < o.name.size() ) {
+  if( o.name.find( "errorSummaryMap" ) < o.name.size() ) {
     obj->SetMinimum(-0.01);
     obj->SetMaximum(+1.00);
     gStyle->SetPalette(5);
@@ -742,7 +742,7 @@ void EBRenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( o.name.find( "errorSummaryPhiEta" ) < o.name.size() ) {
+  if( o.name.find( "errorSummaryMap" ) < o.name.size() ) {
     int x1 = text9->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
     int x2 = text9->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
     int y1 = text9->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
