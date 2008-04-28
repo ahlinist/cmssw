@@ -4,7 +4,7 @@ if [ $numArgs -lt 2 ]; then
     echo "Usage: patch-cmssw-build.sh CMSSW_X_Y_Z patchdir";
     exit -1;
 fi
-export PATH=${PATH}:EventFilter/Deployment/scripts
+export PATH=${PATH}:$PWD/EventFilter/Deployment/scripts
 export SCRAM_ARCH=slc4onl_ia32_gcc346
 cat > EventFilter/Deployment/scripts/scramv1 <<EOF
 /opt/cmssw/slc4onl_ia32_gcc346/lcg/SCRAMV1/V1_2_1/bin/scram \$@
