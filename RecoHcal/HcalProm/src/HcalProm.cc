@@ -5,7 +5,10 @@
 // 
 /**\class HcalProm HcalProm.cc RecoHcal/HcalProm/src/HcalProm.cc
 
- Description: <one line class summary>
+ SIMPLE EXAMPLE CODE demonstrating the access to officially reconstructed global run data.
+ The config file is under the test directory.
+ The config file should read the officially reconstructed root file in castor or 
+ The output from Configuration/GlobalRuns/data/recoT0.cfg (official reco cfg). 
 
  Implementation:
      <Notes on implementation>
@@ -13,7 +16,7 @@
 //
 // Original Author:  Efe Yazgan
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.2 2008/04/17 15:21:26 efe Exp $
+// $Id: HcalProm.cc,v 1.3 2008/04/28 12:58:46 efe Exp $
 //
 //
 
@@ -112,8 +115,8 @@ class HcalProm : public edm::EDAnalyzer {
   TH1F* h_ecal_cluster_energy;
   TH1F* h_ecal_cluster_eta;
   TH1F* h_ecal_cluster_phi;
-  TH2F* h_ecal_vs_hcal_eta;
-  TH2F* h_ecal_vs_hcal_phi; 
+  TH2F* h_ecal_vs_hcal_X;
+  TH2F* h_ecal_vs_hcal_Y; 
 
   TH1F* h_calo_tower_energy;
 
@@ -332,8 +335,8 @@ void HcalProm::beginJob(const edm::EventSetup&)
   h_ecal_cluster_eta = EcalDir.make<TH1F>("h_ecal_cluster_eta","#eta(EB Cluster)",100,-7,7);
   h_ecal_cluster_phi = EcalDir.make<TH1F>("h_ecal_cluster_phi","#phi(EB Cluster)",100,-7,7);
   
-  h_ecal_vs_hcal_eta = CorrDir.make<TH2F>("h_ecal_vs_hcal_eta","#eta(EB) vs #eta(HB)",100,-7,7,100,-7,7);
-  h_ecal_vs_hcal_phi = CorrDir.make<TH2F>("h_ecal_vs_hcal_phi","#phi(EB) vs #phi(HB)",100,-7,7,100,-7,7);
+  h_ecal_vs_hcal_X = CorrDir.make<TH2F>("h_ecal_vs_hcal_X","X(EB) vs X(HB)",100,-7,7,100,-7,7);
+  h_ecal_vs_hcal_Y = CorrDir.make<TH2F>("h_ecal_vs_hcal_Y","Y(EB) vs Y(HB)",100,-7,7,100,-7,7);
 
   h_calo_tower_energy = JetMetDir.make<TH1F>("h_calo_tower_energy","Calo Tower Energy",130,-10,120);
 
