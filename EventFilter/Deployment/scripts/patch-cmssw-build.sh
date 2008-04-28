@@ -1,7 +1,7 @@
 #!/bin/bash
 export PATH=${PATH}:EventFilter/Deployment/scripts
 export SCRAM_ARCH=slc4onl_ia32_gcc346
-cat > EventFilter/Deployments/scripts/scramv1 <<EOF
+cat > EventFilter/Deployment/scripts/scramv1 <<EOF
 /opt/cmssw/slc4onl_ia32_gcc346/lcg/SCRAMV1/V1_2_1/bin/scram \$@
 EOF
 chmod +x EventFilter/Deployment/scripts/scramv1
