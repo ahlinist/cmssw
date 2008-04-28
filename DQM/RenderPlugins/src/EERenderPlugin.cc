@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.79 2008/04/26 09:16:58 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.80 2008/04/27 18:42:05 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.79 $
-  \date $Date: 2008/04/26 09:16:58 $
+  \version $Revision: 1.80 $
+  \date $Date: 2008/04/27 18:42:05 $
 */
 
 #include "TH1F.h"
@@ -513,8 +513,7 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( o.name.find( "EESFT" ) < o.name.size() &&
-      o.name.find( "summary" ) >= o.name.size() ) {
+  if( o.name.find( "EESFT front-end status summary" ) < o.name.size() ) {
     obj->SetMinimum(0.0);
     gStyle->SetPalette(10, pCol5);
     obj->SetOption("colz");
@@ -530,12 +529,10 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( o.name.find( "summary" ) < o.name.size() ) {
-    gStyle->SetOptStat(" ");
-    obj->SetMinimum(-0.00000001);
-    obj->SetMaximum(6.0);
-    gStyle->SetPalette(6, pCol3);
-    obj->SetOption("col");
+  if( o.name.find( "EEMM event" ) < o.name.size() ) {
+    obj->SetMinimum(0.0);
+    gStyle->SetPalette(10, pCol4);
+    obj->SetOption("colz");
     gStyle->SetPaintTextFormat("+g");
     return;
   }
@@ -549,10 +546,12 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( o.name.find( "EEMM event" ) < o.name.size() ) {
-    obj->SetMinimum(0.0);
-    gStyle->SetPalette(10, pCol4);
-    obj->SetOption("colz");
+  if( o.name.find( "summary" ) < o.name.size() ) {
+    gStyle->SetOptStat(" ");
+    obj->SetMinimum(-0.00000001);
+    obj->SetMaximum(6.0);
+    gStyle->SetPalette(6, pCol3);
+    obj->SetOption("col");
     gStyle->SetPaintTextFormat("+g");
     return;
   }

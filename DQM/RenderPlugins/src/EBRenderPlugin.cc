@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.78 2008/04/27 18:42:05 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.80 2008/04/28 19:14:46 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.78 $
-  \date $Date: 2008/04/27 18:42:05 $
+  \version $Revision: 1.80 $
+  \date $Date: 2008/04/28 19:14:46 $
 */
 
 #include "TH1F.h"
@@ -438,8 +438,7 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( o.name.find( "EBSFT" ) < o.name.size() &&
-      o.name.find( "summary" ) >= o.name.size() ) {
+  if( o.name.find( "EBSFT front-end status summary" ) < o.name.size() ) { 
     obj->SetMinimum(0.0); 
     gStyle->SetPalette(10, pCol5);
     obj->SetOption("colz");
@@ -463,12 +462,10 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( o.name.find( "summary" ) < o.name.size() ) {
-    gStyle->SetOptStat(" ");
-    obj->SetMinimum(-0.00000001);
-    obj->SetMaximum(6.0);
-    gStyle->SetPalette(6, pCol3);
-    obj->SetOption("col");
+  if( o.name.find( "EBMM event" ) < o.name.size() ) {
+    obj->SetMinimum(0.0);
+    gStyle->SetPalette(10, pCol4);
+    obj->SetOption("colz");
     gStyle->SetPaintTextFormat("+g");
     return;
   }
@@ -482,10 +479,12 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( o.name.find( "EBMM event" ) < o.name.size() ) {
-    obj->SetMinimum(0.0);
-    gStyle->SetPalette(10, pCol4);
-    obj->SetOption("colz");
+  if( o.name.find( "summary" ) < o.name.size() ) {
+    gStyle->SetOptStat(" ");
+    obj->SetMinimum(-0.00000001);
+    obj->SetMaximum(6.0);
+    gStyle->SetPalette(6, pCol3);
+    obj->SetOption("col");
     gStyle->SetPaintTextFormat("+g");
     return;
   }
