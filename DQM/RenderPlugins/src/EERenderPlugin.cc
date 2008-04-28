@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.80 2008/04/27 18:42:05 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.81 2008/04/28 20:15:59 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.80 $
-  \date $Date: 2008/04/27 18:42:05 $
+  \version $Revision: 1.81 $
+  \date $Date: 2008/04/28 20:15:59 $
 */
 
 #include "TH1F.h"
@@ -513,7 +513,7 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( o.name.find( "EESFT front-end status summary" ) < o.name.size() ) {
+  if( o.name.find( "EESFT" ) < o.name.size() && o.name.find( "EESFT front-end status summary" ) >= o.name.size() ) {
     obj->SetMinimum(0.0);
     gStyle->SetPalette(10, pCol5);
     obj->SetOption("colz");
