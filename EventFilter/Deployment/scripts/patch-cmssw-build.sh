@@ -1,4 +1,5 @@
 #!/bin/bash
+numArgs=$#;
 if [ $numArgs -lt 2 ]; then
     echo "Usage: patch-cmssw-build.sh CMSSW_X_Y_Z patchdir";
     exit -1;
@@ -9,7 +10,6 @@ cat > EventFilter/Deployment/scripts/scramv1 <<EOF
 /opt/cmssw/slc4onl_ia32_gcc346/lcg/SCRAMV1/V1_2_1/bin/scram \$@
 EOF
 chmod +x EventFilter/Deployment/scripts/scramv1
-numArgs=$#;
 CMS_SW_VERSION=$1;
 LOCAL_CODE_PATCHES_TOP=$2;
 #source /opt/cmssw/cmsset_default.sh; no longer needed 
