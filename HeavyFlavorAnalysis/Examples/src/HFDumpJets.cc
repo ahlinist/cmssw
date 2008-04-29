@@ -179,50 +179,51 @@ void HFDumpJets::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 	break;
       }
     }
-    //BTagging: discriminator 1
-    for (unsigned int i = 0; i != bTags1.size(); ++i) { 
-      if (cal->et() == bTags1[i].jet()->et()) {
 
-	pCaloJet->fD1 = bTags1[i].discriminator();
-      }
-    }
-    //BTagging: discriminator 2
-    for (unsigned int i = 0; i != bTags2.size(); ++i) { 
-      if (cal->et() == bTags2[i].jet()->et())
-	pCaloJet->fD2 = bTags2[i].discriminator(); 
-    }
-    //BTagging: discriminator 3
-    for (unsigned int i = 0; i != bTags3.size(); ++i) { 
-      if (cal->et() == bTags3[i].jet()->et())
-	pCaloJet->fD3 = bTags3[i].discriminator(); 
-    }
-    //BTagging: discriminator 4 
-    for (unsigned int i = 0; i != bTags4.size(); ++i) { 
-      if (cal->et() == bTags4[i].jet()->et()) {
-	pCaloJet->fD4 = bTags4[i].discriminator();
+//     //BTagging: discriminator 1
+//     for (unsigned int i = 0; i != bTags1.size(); ++i) { 
+//       if (cal->et() == bTags1[i].jet()->et()) {
+
+// 	pCaloJet->fD1 = bTags1[i].discriminator();
+//       }
+//     }
+//     //BTagging: discriminator 2
+//     for (unsigned int i = 0; i != bTags2.size(); ++i) { 
+//       if (cal->et() == bTags2[i].jet()->et())
+// 	pCaloJet->fD2 = bTags2[i].discriminator(); 
+//     }
+//     //BTagging: discriminator 3
+//     for (unsigned int i = 0; i != bTags3.size(); ++i) { 
+//       if (cal->et() == bTags3[i].jet()->et())
+// 	pCaloJet->fD3 = bTags3[i].discriminator(); 
+//     }
+//     //BTagging: discriminator 4 
+//     for (unsigned int i = 0; i != bTags4.size(); ++i) { 
+//       if (cal->et() == bTags4[i].jet()->et()) {
+// 	pCaloJet->fD4 = bTags4[i].discriminator();
 	
-	//fill tracks belonging to jet
-	const edm::RefVector<reco::TrackCollection> tc = bTags4[i].tracks();
-	for (unsigned int j=0; j<tc.size(); j++) {
-	  pCaloJet->addTrack(tc[j].index());
-	}
-      }
-    }
-    //BTagging: discriminator 5 
-    for (unsigned int i = 0; i != bTags5.size(); ++i) { 
-      if (cal->et() == bTags5[i].jet()->et()) 
-	pCaloJet->fD5 = bTags5[i].discriminator();
-    }
-    //BTagging: discriminator 6
-    for (unsigned int i = 0; i != bTags6.size(); ++i) { 
-      if (cal->et() == bTags6[i].jet()->et())
-	pCaloJet->fD6 = bTags6[i].discriminator();
-    }
-    //BTagging: discriminator 7
-    for (unsigned int i = 0; i != bTags7.size(); ++i) { 
-      if (cal->et() == bTags7[i].jet()->et())
-	pCaloJet->fD7 = bTags7[i].discriminator(); 
-    }
+// 	//fill tracks belonging to jet
+// 	const edm::RefVector<reco::TrackCollection> tc = bTags4[i].tracks();
+// 	for (unsigned int j=0; j<tc.size(); j++) {
+// 	  pCaloJet->addTrack(tc[j].index());
+// 	}
+//       }
+//     }
+//     //BTagging: discriminator 5 
+//     for (unsigned int i = 0; i != bTags5.size(); ++i) { 
+//       if (cal->et() == bTags5[i].jet()->et()) 
+// 	pCaloJet->fD5 = bTags5[i].discriminator();
+//     }
+//     //BTagging: discriminator 6
+//     for (unsigned int i = 0; i != bTags6.size(); ++i) { 
+//       if (cal->et() == bTags6[i].jet()->et())
+// 	pCaloJet->fD6 = bTags6[i].discriminator();
+//     }
+//     //BTagging: discriminator 7
+//     for (unsigned int i = 0; i != bTags7.size(); ++i) { 
+//       if (cal->et() == bTags7[i].jet()->et())
+// 	pCaloJet->fD7 = bTags7[i].discriminator(); 
+//     }
      
     if (jetIndex==0) cout << "===> Calo Jets " << endl;
     pCaloJet->dump();

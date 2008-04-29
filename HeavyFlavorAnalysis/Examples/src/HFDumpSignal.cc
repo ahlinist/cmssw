@@ -8,6 +8,8 @@
 #include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TGenCand.hh"
 #include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaVertex.hh"
 
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
 #include "RecoVertex/VertexTools/interface/VertexDistance3D.h"
 #include "RecoVertex/VertexTools/interface/VertexDistanceXY.h"
 #include "RecoVertex/KalmanVertexFit/interface/KalmanVertexFitter.h"
@@ -17,6 +19,7 @@
 #include "DataFormats/Common/interface/Handle.h"
 #include "DataFormats/Common/interface/Wrapper.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
+#include "DataFormats/MuonReco/interface/MuonFwd.h"
 #include "DataFormats/MuonReco/interface/Muon.h"
 #include "DataFormats/TrackReco/interface/TrackExtraFwd.h"
 #include "DataFormats/TrackReco/interface/TrackFwd.h"
@@ -65,21 +68,21 @@ HFDumpSignal::~HFDumpSignal() {
 void HFDumpSignal::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
   // -- get the primary vertex
-  edm::Handle<reco::VertexCollection> recoPrimaryVertexCollection;
+  edm::Handle<VertexCollection> recoPrimaryVertexCollection;
   iEvent.getByLabel(fPrimaryVertexLabel.c_str(), recoPrimaryVertexCollection);
   const reco::VertexCollection vertices = *(recoPrimaryVertexCollection.product());
   if (vertices.size() == 0) {
     cout << "==>HFDumpSignal> No primary vertex found, skipping" << endl;
     return;
   }
-  const reco::Vertex pV = vertices[0]; // ???? 
+  const Vertex pV = vertices[0]; // ???? 
 
   // -- get the collection of muons
-  Handle<reco::MuonCollection> hMuons;
+  Handle<MuonCollection> hMuons;
   iEvent.getByLabel(fMuonsLabel, hMuons);
 
   // -- get the collection of tracks
-  Handle<reco::TrackCollection> hTracks;
+  Handle<TrackCollection> hTracks;
   iEvent.getByLabel(fTracksLabel.c_str(), hTracks);  
 
   std::vector<const reco::Track*> recTracks; 
@@ -239,20 +242,20 @@ void HFDumpSignal::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     VertexDistanceXY axy;
     double dXY      = axy.distance(pV, TransSecVtx).value();
     double dXYE     = axy.distance(pV, TransSecVtx).error();
-    double compXY   = axy.compatibility(pV, TransSecVtx);
+    //    double compXY   = axy.compatibility(pV, TransSecVtx);
     
     VertexDistance3D a3d;
     double d3d      = a3d.distance(pV, TransSecVtx).value();
     double d3dE     = a3d.distance(pV, TransSecVtx).error();
-    double comp3d   = a3d.compatibility(pV, TransSecVtx);
+    //    double comp3d   = a3d.compatibility(pV, TransSecVtx);
     
     pVtx->fDxy  = dXY; 
     pVtx->fDxyE = dXYE; 
-    pVtx->fCxy  = compXY; 
+    //     pVtx->fCxy  = compXY; 
  
     pVtx->fD3d  = d3d; 
     pVtx->fD3dE = d3dE; 
-    pVtx->fC3d  = comp3d; 
+    //     pVtx->fC3d  = comp3d; 
 
     
     // -- Build candidate: B+

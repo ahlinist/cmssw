@@ -6,6 +6,3 @@ replace trkDump.doTruthMatching = 2
 
 replace signalDump.muonsLabel  = paramMuons:ParamGlobalMuons
 replace signalDump.tracksLabel = "gsWithMaterialTracks"
-
-
-
