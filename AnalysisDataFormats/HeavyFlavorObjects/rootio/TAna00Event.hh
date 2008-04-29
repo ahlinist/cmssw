@@ -65,8 +65,10 @@ public:
   int               fEventBits;
   double            fPtHat;
   
-  int               fTriggerDecision, fDiMuonTriggerDecision;
-  int               fTriggerWord1, fTriggerWord2, fTriggerWord3, fTriggerWord4 ;
+  int               fL1Decision, fHLTDecision;
+
+  int               fL1w1, fL1w2, fL1w3, fL1w4;
+  int               fHLTw1, fHLTw2, fHLTw3, fHLTw4;
 
   TAnaVertex        fPrimaryVertex;
   TAnaVertex        fPrimaryVertex2;
