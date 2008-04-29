@@ -1,3 +1,5 @@
+include "Configuration/Generator/data/PythiaUESettings.cfi"
+
   source = PythiaSource 
   { 
     untracked int32 pythiaPylistVerbosity = 0
@@ -17,7 +19,7 @@
         "processParameters"
       }
 
-      include "Configuration/Generator/data/PythiaUESettings.cfi"
+      using pythiaUESettingsBlock 
  
       vstring processParameters = 
       {
@@ -38,8 +40,8 @@
    
 untracked PSet configurationMetadata =
 {
-    untracked string version = "$Revision$"
-    untracked string name = "$Source$"
+    untracked string version = "$Revision: 1.3 $"
+    untracked string name = "$Source: /cvs_server/repositories/CMSSW/CMSSW/Configuration/Spring08Production/data/iCSA08_MinBias.cff,v $"
     untracked string annotation = "MinBias for iCSA08"
 }
 
