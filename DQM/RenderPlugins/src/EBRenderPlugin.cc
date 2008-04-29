@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.82 2008/04/28 20:21:29 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.83 2008/04/28 21:01:50 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.82 $
-  \date $Date: 2008/04/28 20:21:29 $
+  \version $Revision: 1.83 $
+  \date $Date: 2008/04/28 21:01:50 $
 */
 
 #include "TH1F.h"
@@ -125,11 +125,15 @@ bool EBRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &
   std::cout << "EBRenderPlugin:applies " << o.name << std::endl;
 #endif
 
-  if( o.name.find( "EcalBarrel/EB" ) == 0 ) {
+  if( o.name.find( "EcalBarrel/EB" ) < o.name.size() ) {
     return true;
   }
 
-  if( o.name.find( "EcalBarrel/EcalInfo" ) == 0 ) {
+  if( o.name.find( "EcalBarrel/EcalInfo" ) < o.name.size() ) {
+    return true;
+  }
+
+  if( o.name.find( "EcalBarrel/EventInfo" ) < o.name.size() ) {
     return true;
   }
 
@@ -207,13 +211,15 @@ void EBRenderPlugin::preDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o 
 
   assert( obj );
 
+  std::string name = o.name.substr(o.name.rfind("/")+1);
+
   gStyle->SetPaintTextFormat();
 
   gStyle->SetOptStat(kFALSE);
   obj->SetStats(kFALSE);
   gPad->SetLogy(kFALSE);
 
-  if( o.name.find( "EBLT shape" ) < o.name.size() ) {
+  if( name.find( "EBLT shape" ) < name.size() ) {
     c->SetTheta(+30.);
     c->SetPhi(-60.);
     obj->GetXaxis()->SetTitleOffset(2.5);
@@ -223,7 +229,7 @@ void EBRenderPlugin::preDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o 
     return;
   }
 
-  if( o.name.find( "EBTPT shape" ) < o.name.size() ) {
+  if( name.find( "EBTPT shape" ) < name.size() ) {
     c->SetTheta(+30.);
     c->SetPhi(-60.);
     obj->GetXaxis()->SetTitleOffset(2.5);
@@ -233,7 +239,7 @@ void EBRenderPlugin::preDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o 
     return;
   }
 
-  if( o.name.find( "EBCLT" ) < o.name.size() ) {
+  if( name.find( "EBCLT" ) < name.size() ) {
     gPad->SetGridx();
     gPad->SetGridy();
     obj->GetXaxis()->SetNdivisions(40118, kFALSE);
@@ -282,23 +288,25 @@ void EBRenderPlugin::preDrawTProfile( TCanvas *c, const DQMNet::CoreObject &o ) 
 
   assert( obj );
 
+  std::string name = o.name.substr(o.name.rfind("/")+1);
+
   gStyle->SetPaintTextFormat();
 
   gStyle->SetOptStat("euomr");
   obj->SetStats(kTRUE);
   gPad->SetLogy(kFALSE);
 
-  if( o.name.find( "EBMM digi number profile" ) < o.name.size() ) {
+  if( name.find( "EBMM digi number profile" ) < name.size() ) {
    gPad->SetBottomMargin(0.2);
    obj->GetXaxis()->LabelsOption("v");
   }
 
-  if( o.name.find( "EBMM hit number profile" ) < o.name.size() ) {
+  if( name.find( "EBMM hit number profile" ) < name.size() ) {
    gPad->SetBottomMargin(0.2);
    obj->GetXaxis()->LabelsOption("v");
   }
 
-  if( o.name.find( "EBMM TP digi number profile" ) < o.name.size() ) {
+  if( name.find( "EBMM TP digi number profile" ) < name.size() ) {
    gPad->SetBottomMargin(0.2);
    obj->GetXaxis()->LabelsOption("v");
   }
@@ -312,6 +320,8 @@ void EBRenderPlugin::preDrawTH3F( TCanvas *c, const DQMNet::CoreObject &o ) {
   TH3F* obj = dynamic_cast<TH3F*>( o.object );
   
   assert( obj );
+
+  std::string name = o.name.substr(o.name.rfind("/")+1);
 
   gStyle->SetPaintTextFormat();
 
@@ -329,13 +339,15 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   assert( obj );
 
+  std::string name = o.name.substr(o.name.rfind("/")+1);
+
   gStyle->SetPaintTextFormat();
 
   gStyle->SetOptStat(kFALSE);
   obj->SetStats(kFALSE);
   gPad->SetLogy(kFALSE);
 
-  if( o.name.find( "EBCLT" ) < o.name.size() ) {
+  if( name.find( "EBCLT" ) < name.size() ) {
     gPad->SetGridx();
     gPad->SetGridy();
     obj->GetXaxis()->SetNdivisions(40118, kFALSE);
@@ -347,7 +359,7 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( o.name.find( "EBTMT timing vs amplitude" ) < o.name.size() ) {
+  if( name.find( "EBTMT timing vs amplitude" ) < name.size() ) {
     if ( obj->GetMaximum() > 0. ) gPad->SetLogz(kTRUE);
     obj->SetMinimum(0.0);
     gStyle->SetPalette(10, pCol4);
@@ -407,7 +419,7 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->GetYaxis()->SetNdivisions(2, kFALSE);
   }
 
-  if( o.name.find( "errorSummaryPhiEta" ) < o.name.size() ) {
+  if( name.find( "errorSummaryPhiEta" ) < name.size() ) {
     obj->SetMinimum(-0.01);
     obj->SetMaximum(+1.00);
     gStyle->SetPalette(5);
@@ -416,8 +428,8 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( o.name.find( "EBIT" ) < o.name.size() &&
-      o.name.find( "quality" ) >= o.name.size() ) {
+  if( name.find( "EBIT" ) < name.size() &&
+      name.find( "quality" ) >= name.size() ) {
     obj->SetMinimum(0.0);
     gStyle->SetPalette(10, pCol5);
     obj->SetOption("colz");
@@ -425,10 +437,10 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( o.name.find( "EBTTT" ) < o.name.size() &&
-      o.name.find( "quality" ) >= o.name.size() ) {
+  if( name.find( "EBTTT" ) < name.size() &&
+      name.find( "quality" ) >= name.size() ) {
     obj->SetMinimum(0.0);
-    if( o.name.find( "Error" ) >= o.name.size() ) {
+    if( name.find( "Error" ) >= name.size() ) {
       gStyle->SetPalette(10, pCol4);
     } else {
       gStyle->SetPalette(10, pCol5);
@@ -438,8 +450,8 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( o.name.find( "EBSFT" ) < o.name.size() &&
-      o.name.find( "EBSFT front-end status summary" ) >= o.name.size() ) { 
+  if( name.find( "EBSFT" ) < name.size() &&
+      name.find( "summary" ) >= name.size() ) { 
     obj->SetMinimum(0.0); 
     gStyle->SetPalette(10, pCol5);
     obj->SetOption("colz");
@@ -447,7 +459,7 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( o.name.find( "EBOT" ) < o.name.size() ) {
+  if( name.find( "EBOT" ) < name.size() ) {
     obj->SetMinimum(0.0);
     gStyle->SetPalette(10, pCol4);
     obj->SetOption("colz");
@@ -455,7 +467,7 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( o.name.find( "EBCT" ) < o.name.size() ) {
+  if( name.find( "EBCT" ) < name.size() ) {
     obj->SetMinimum(0.0);
     gStyle->SetPalette(10, pCol4);
     obj->SetOption("colz");
@@ -463,29 +475,29 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( o.name.find( "EBMM event" ) < o.name.size() ) {
-    obj->SetMinimum(0.0);
-    gStyle->SetPalette(10, pCol4);
-    obj->SetOption("colz");
-    gStyle->SetPaintTextFormat("+g");
-    return;
-  }
-
-  if( o.name.find( "quality" ) < o.name.size() ) {
-    obj->SetMinimum(-0.00000001);
-    obj->SetMaximum(6.0);
-    gStyle->SetPalette(6, pCol3);
-    obj->SetOption("col");
-    gStyle->SetPaintTextFormat("+g");
-    return;
-  }
-
-  if( o.name.find( "summary" ) < o.name.size() ) {
+  if( name.find( "summary" ) < name.size() ) {
     gStyle->SetOptStat(" ");
     obj->SetMinimum(-0.00000001);
     obj->SetMaximum(6.0);
     gStyle->SetPalette(6, pCol3);
     obj->SetOption("col");
+    gStyle->SetPaintTextFormat("+g");
+    return;
+  }
+
+  if( name.find( "quality" ) < name.size() ) {
+    obj->SetMinimum(-0.00000001);
+    obj->SetMaximum(6.0);
+    gStyle->SetPalette(6, pCol3);
+    obj->SetOption("col");
+    gStyle->SetPaintTextFormat("+g");
+    return;
+  }
+
+  if( name.find( "EBMM event" ) < name.size() ) {
+    obj->SetMinimum(0.0);
+    gStyle->SetPalette(10, pCol4);
+    obj->SetOption("colz");
     gStyle->SetPaintTextFormat("+g");
     return;
   }
@@ -497,6 +509,8 @@ void EBRenderPlugin::preDrawTH1F( TCanvas *c, const DQMNet::CoreObject &o ) {
   TH1F* obj = dynamic_cast<TH1F*>( o.object );
 
   assert( obj );
+
+  std::string name = o.name.substr(o.name.rfind("/")+1);
 
   gStyle->SetPaintTextFormat();
 
@@ -511,37 +525,37 @@ void EBRenderPlugin::preDrawTH1F( TCanvas *c, const DQMNet::CoreObject &o ) {
   if ( nbx == 10 ) gPad->SetLogy(kFALSE);
   if ( nbx == 1700 ) gPad->SetLogy(kFALSE);
 
-  if( o.name.find( "EVTTYPE" ) < o.name.size() ) {
+  if( name.find( "EVTTYPE" ) < name.size() ) {
    gPad->SetBottomMargin(0.4);
    obj->GetXaxis()->LabelsOption("v");
   }
 
-  if( o.name.find( "EBMM DCC" ) < o.name.size() ) {
+  if( name.find( "EBMM DCC" ) < name.size() ) {
    gPad->SetBottomMargin(0.2);
    obj->GetXaxis()->LabelsOption("v");
   }
 
-  if( o.name.find( "EBIT DCC" ) < o.name.size() ) {
+  if( name.find( "EBIT DCC" ) < name.size() ) {
    gPad->SetBottomMargin(0.2);
    obj->GetXaxis()->LabelsOption("v");
   }
 
-  if( o.name.find( "front-end status bits" ) < o.name.size() ) {
+  if( name.find( "front-end status bits" ) < name.size() ) {
    gPad->SetBottomMargin(0.05);
    obj->GetXaxis()->LabelsOption("v");
   }
 
-  if( o.name.find( "front-end status errors summary" ) < o.name.size() ) {
+  if( name.find( "front-end status errors summary" ) < name.size() ) {
    gPad->SetBottomMargin(0.2);
    obj->GetXaxis()->LabelsOption("v");
   }
 
-  if( o.name.find( "quality errors summary" ) < o.name.size() ) {
+  if( name.find( "quality errors summary" ) < name.size() ) {
    gPad->SetBottomMargin(0.2);
    obj->GetXaxis()->LabelsOption("v");
   }
 
-  if( o.name.find( "EBOT digi occupancy summary 1D" ) < o.name.size() ) {
+  if( name.find( "EBOT digi occupancy summary 1D" ) < name.size() ) {
    gPad->SetBottomMargin(0.2);
    obj->GetXaxis()->LabelsOption("v");
   }
@@ -583,15 +597,17 @@ void EBRenderPlugin::postDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o
 
   assert( obj );
 
-  if( o.name.find( "EBLT shape" ) < o.name.size() ) {
+  std::string name = o.name.substr(o.name.rfind("/")+1);
+
+  if( name.find( "EBLT shape" ) < name.size() ) {
     return;
   }
 
-  if( o.name.find( "EBTPT shape" ) < o.name.size() ) {
+  if( name.find( "EBTPT shape" ) < name.size() ) {
     return;
   }
 
-  if( o.name.find( "EBCLT" ) < o.name.size() ) {
+  if( name.find( "EBCLT" ) < name.size() ) {
     int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
     int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
     int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
@@ -644,6 +660,8 @@ void EBRenderPlugin::postDrawTH3F( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   assert( obj );
 
+  std::string name = o.name.substr(o.name.rfind("/")+1);
+
   return;
 
 }
@@ -654,7 +672,9 @@ void EBRenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   assert( obj );
 
-  if( o.name.find( "EBCLT" ) < o.name.size() ) {
+  std::string name = o.name.substr(o.name.rfind("/")+1);
+
+  if( name.find( "EBCLT" ) < name.size() ) {
     int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
     int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
     int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
@@ -665,7 +685,7 @@ void EBRenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( o.name.find( "EBOT MEM" ) < o.name.size() ) {
+  if( name.find( "EBOT MEM" ) < name.size() ) {
     int x1 = text3->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
     int x2 = text3->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
     int y1 = text3->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
@@ -676,7 +696,7 @@ void EBRenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( o.name.find( "EBOT digi" ) < o.name.size() ) {
+  if( name.find( "EBOT digi" ) < name.size() ) {
     int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
     int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
     int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
@@ -687,7 +707,7 @@ void EBRenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( o.name.find( "EBOT rec hit" ) < o.name.size() ) {
+  if( name.find( "EBOT rec hit" ) < name.size() ) {
     int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
     int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
     int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
@@ -698,7 +718,7 @@ void EBRenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( o.name.find( "EBOT TP digi" ) < o.name.size() ) {
+  if( name.find( "EBOT TP digi" ) < name.size() ) {
     int x1 = text8->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
     int x2 = text8->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
     int y1 = text8->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
@@ -709,7 +729,7 @@ void EBRenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( o.name.find( "EBOT test pulse digi" ) < o.name.size() ) {
+  if( name.find( "EBOT test pulse digi" ) < name.size() ) {
     int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
     int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
     int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
@@ -720,7 +740,7 @@ void EBRenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( o.name.find( "EBOT laser digi" ) < o.name.size() ) {
+  if( name.find( "EBOT laser digi" ) < name.size() ) {
     int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
     int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
     int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
@@ -731,7 +751,7 @@ void EBRenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( o.name.find( "EBOT pedestal digi" ) < o.name.size() ) {
+  if( name.find( "EBOT pedestal digi" ) < name.size() ) {
     int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
     int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
     int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
@@ -742,7 +762,7 @@ void EBRenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( o.name.find( "errorSummaryPhiEta" ) < o.name.size() ) {
+  if( name.find( "errorSummaryPhiEta" ) < name.size() ) {
     int x1 = text9->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
     int x2 = text9->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
     int y1 = text9->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
@@ -811,7 +831,7 @@ void EBRenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( o.name.find( "summary" ) < o.name.size() ) {
+  if( name.find( "summary" ) < name.size() ) {
     int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
     int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
     int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
@@ -829,6 +849,8 @@ void EBRenderPlugin::postDrawTH1F( TCanvas *c, const DQMNet::CoreObject &o ) {
   TH1F* obj = dynamic_cast<TH1F*>( o.object );
 
   assert( obj );
+
+  std::string name = o.name.substr(o.name.rfind("/")+1);
 
   return;
 

@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.82 2008/04/28 20:21:29 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.83 2008/04/28 21:01:50 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.82 $
-  \date $Date: 2008/04/28 20:21:29 $
+  \version $Revision: 1.83 $
+  \date $Date: 2008/04/28 21:01:50 $
 */
 
 #include "TH1F.h"
@@ -188,11 +188,15 @@ bool EERenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &
   std::cout << "EERenderPlugin:applies " << o.name << std::endl;
 #endif
 
-  if( o.name.find( "EcalEndcap/EB" ) == 0 ) {
+  if( o.name.find( "EcalEndcap/EB" ) < o.name.size() ) {
     return true;
   }
 
-  if( o.name.find( "EcalEndcap/EcalInfo" ) == 0 ) {
+  if( o.name.find( "EcalEndcap/EcalInfo" ) < o.name.size() ) {
+    return true;
+  }
+
+  if( o.name.find( "EcalEndcap/EventInfo" ) < o.name.size() ) {
     return true;
   }
 
@@ -270,13 +274,15 @@ void EERenderPlugin::preDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o 
 
   assert( obj );
 
+  std::string name = o.name.substr(o.name.rfind("/")+1);
+
   gStyle->SetPaintTextFormat();
 
   gStyle->SetOptStat(kFALSE);
   obj->SetStats(kFALSE);
   gPad->SetLogy(kFALSE);
 
-  if( o.name.find( "EELT shape" ) < o.name.size() ) {
+  if( name.find( "EELT shape" ) < name.size() ) {
     c->SetTheta(+30.);
     c->SetPhi(-60.);
     obj->GetXaxis()->SetTitleOffset(2.5);
@@ -286,7 +292,7 @@ void EERenderPlugin::preDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o 
     return;
   }
 
-  if( o.name.find( "EELDT shape" ) < o.name.size() ) {
+  if( name.find( "EELDT shape" ) < name.size() ) {
     c->SetTheta(+30.);
     c->SetPhi(-60.);
     obj->GetXaxis()->SetTitleOffset(2.5);
@@ -296,7 +302,7 @@ void EERenderPlugin::preDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o 
     return;
   }
 
-  if( o.name.find( "EETPT shape" ) < o.name.size() ) {
+  if( name.find( "EETPT shape" ) < name.size() ) {
     c->SetTheta(+30.);
     c->SetPhi(-60.);
     obj->GetXaxis()->SetTitleOffset(2.5);
@@ -306,7 +312,7 @@ void EERenderPlugin::preDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o 
     return;
   }
 
-  if( o.name.find( "EECLT" ) < o.name.size() ) {
+  if( name.find( "EECLT" ) < name.size() ) {
     gPad->SetGridx();
     gPad->SetGridy();
     obj->GetXaxis()->SetNdivisions(10, kFALSE);
@@ -348,23 +354,25 @@ void EERenderPlugin::preDrawTProfile( TCanvas *c, const DQMNet::CoreObject &o ) 
 
   assert( obj );
 
+  std::string name = o.name.substr(o.name.rfind("/")+1);
+
   gStyle->SetPaintTextFormat();
 
   gStyle->SetOptStat("euomr");
   obj->SetStats(kTRUE);
   gPad->SetLogy(kFALSE);
 
-  if( o.name.find( "EEMM digi number profile" ) < o.name.size() ) {
+  if( name.find( "EEMM digi number profile" ) < name.size() ) {
    gPad->SetBottomMargin(0.2);
    obj->GetXaxis()->LabelsOption("v");
   }
 
-  if( o.name.find( "EEMM hit number profile" ) < o.name.size() ) {
+  if( name.find( "EEMM hit number profile" ) < name.size() ) {
    gPad->SetBottomMargin(0.2);
    obj->GetXaxis()->LabelsOption("v");
   }
 
-  if( o.name.find( "EEMM TP digi number profile" ) < o.name.size() ) {
+  if( name.find( "EEMM TP digi number profile" ) < name.size() ) {
    gPad->SetBottomMargin(0.2);
    obj->GetXaxis()->LabelsOption("v");
   }
@@ -378,6 +386,8 @@ void EERenderPlugin::preDrawTH3F( TCanvas *c, const DQMNet::CoreObject &o ) {
   TH3F* obj = dynamic_cast<TH3F*>( o.object );
 
   assert( obj );
+
+  std::string name = o.name.substr(o.name.rfind("/")+1);
 
   gStyle->SetPaintTextFormat();
 
@@ -395,13 +405,15 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   assert( obj );
 
+  std::string name = o.name.substr(o.name.rfind("/")+1);
+
   gStyle->SetPaintTextFormat();
 
   gStyle->SetOptStat(kFALSE);
   obj->SetStats(kFALSE);
   gPad->SetLogy(kFALSE);
 
-  if( o.name.find( "EECLT" ) < o.name.size() ) {
+  if( name.find( "EECLT" ) < name.size() ) {
     gPad->SetGridx();
     gPad->SetGridy();
     obj->GetXaxis()->SetNdivisions(10, kFALSE);
@@ -413,7 +425,7 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( o.name.find( "EETMT timing vs amplitude" ) < o.name.size() ) {
+  if( name.find( "EETMT timing vs amplitude" ) < name.size() ) {
     if ( obj->GetMaximum() > 0. ) gPad->SetLogz(kTRUE);
     obj->SetMinimum(0.0);
     gStyle->SetPalette(10, pCol4);
@@ -466,7 +478,7 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->GetYaxis()->SetNdivisions(2);
   }
 
-  if( o.name.find( "errorSummaryXYM" ) < o.name.size() ) {
+  if( name.find( "errorSummaryXYM" ) < name.size() ) {
     obj->SetMinimum(-0.01);
     obj->SetMaximum(+1.00);
     gStyle->SetPalette(5);
@@ -475,7 +487,7 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( o.name.find( "errorSummaryXYP" ) < o.name.size() ) {
+  if( name.find( "errorSummaryXYP" ) < name.size() ) {
     obj->SetMinimum(0.0);
     gStyle->SetPalette(5);
     obj->SetOption("colz");
@@ -483,8 +495,8 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( o.name.find( "EEIT" ) < o.name.size() &&
-      o.name.find( "quality" ) >= o.name.size() ) {
+  if( name.find( "EEIT" ) < name.size() &&
+      name.find( "quality" ) >= name.size() ) {
     obj->SetMinimum(0.0);
     gStyle->SetPalette(10, pCol5);
     obj->SetOption("colz");
@@ -492,10 +504,10 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( o.name.find( "EETTT" ) < o.name.size() &&
-      o.name.find( "quality" ) >= o.name.size() ) {
+  if( name.find( "EETTT" ) < name.size() &&
+      name.find( "quality" ) >= name.size() ) {
     obj->SetMinimum(0.0);
-    if( o.name.find( "Error" ) >= o.name.size() ) {
+    if( name.find( "Error" ) >= name.size() ) {
       gStyle->SetPalette(10, pCol4);
     } else {
       gStyle->SetPalette(10, pCol5);
@@ -505,7 +517,7 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( o.name.find( "EEOT" ) < o.name.size() ) {
+  if( name.find( "EEOT" ) < name.size() ) {
     obj->SetMinimum(0.0);
     gStyle->SetPalette(10, pCol4);
     obj->SetOption("colz");
@@ -513,8 +525,8 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( o.name.find( "EESFT" ) < o.name.size() &&
-      o.name.find( "EESFT front-end status summary" ) >= o.name.size() ) {
+  if( name.find( "EESFT" ) < name.size() &&
+      name.find( "summary" ) >= name.size() ) {
     obj->SetMinimum(0.0);
     gStyle->SetPalette(10, pCol5);
     obj->SetOption("colz");
@@ -522,7 +534,7 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( o.name.find( "EECT" ) < o.name.size() ) {
+  if( name.find( "EECT" ) < name.size() ) {
     obj->SetMinimum(0.0);
     gStyle->SetPalette(10, pCol4);
     obj->SetOption("colz");
@@ -530,29 +542,29 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( o.name.find( "EEMM event" ) < o.name.size() ) {
-    obj->SetMinimum(0.0);
-    gStyle->SetPalette(10, pCol4);
-    obj->SetOption("colz");
-    gStyle->SetPaintTextFormat("+g");
-    return;
-  }
-
-  if( o.name.find( "quality" ) < o.name.size() ) {
-    obj->SetMinimum(-0.00000001);
-    obj->SetMaximum(6.0);
-    gStyle->SetPalette(6, pCol3);
-    obj->SetOption("col");
-    gStyle->SetPaintTextFormat("+g");
-    return;
-  }
-
-  if( o.name.find( "summary" ) < o.name.size() ) {
+  if( name.find( "summary" ) < name.size() ) {
     gStyle->SetOptStat(" ");
     obj->SetMinimum(-0.00000001);
     obj->SetMaximum(6.0);
     gStyle->SetPalette(6, pCol3);
     obj->SetOption("col");
+    gStyle->SetPaintTextFormat("+g");
+    return;
+  }
+
+  if( name.find( "quality" ) < name.size() ) {
+    obj->SetMinimum(-0.00000001);
+    obj->SetMaximum(6.0);
+    gStyle->SetPalette(6, pCol3);
+    obj->SetOption("col");
+    gStyle->SetPaintTextFormat("+g");
+    return;
+  }
+
+  if( name.find( "EEMM event" ) < name.size() ) {
+    obj->SetMinimum(0.0);
+    gStyle->SetPalette(10, pCol4);
+    obj->SetOption("colz");
     gStyle->SetPaintTextFormat("+g");
     return;
   }
@@ -564,6 +576,8 @@ void EERenderPlugin::preDrawTH1F( TCanvas *c, const DQMNet::CoreObject &o ) {
   TH1F* obj = dynamic_cast<TH1F*>( o.object );
 
   assert( obj );
+
+  std::string name = o.name.substr(o.name.rfind("/")+1);
 
   gStyle->SetPaintTextFormat();
 
@@ -578,37 +592,37 @@ void EERenderPlugin::preDrawTH1F( TCanvas *c, const DQMNet::CoreObject &o ) {
   if ( nbx == 10 ) gPad->SetLogy(kFALSE);
   if ( nbx == 850 ) gPad->SetLogy(kFALSE);
 
-  if( o.name.find( "EVTTYPE" ) < o.name.size() ) {
+  if( name.find( "EVTTYPE" ) < name.size() ) {
    gPad->SetBottomMargin(0.4);
    obj->GetXaxis()->LabelsOption("v");
   }
 
-  if( o.name.find( "EEMM DCC" ) < o.name.size() ) {
+  if( name.find( "EEMM DCC" ) < name.size() ) {
    gPad->SetBottomMargin(0.2);
    obj->GetXaxis()->LabelsOption("v");
   }
 
-  if( o.name.find( "EEIT DCC" ) < o.name.size() ) {
+  if( name.find( "EEIT DCC" ) < name.size() ) {
    gPad->SetBottomMargin(0.2);
    obj->GetXaxis()->LabelsOption("v");
   }
 
-  if( o.name.find( "front-end status bits" ) < o.name.size() ) {
+  if( name.find( "front-end status bits" ) < name.size() ) {
    gPad->SetBottomMargin(0.25);
    obj->GetXaxis()->LabelsOption("v");
   }
 
-  if( o.name.find( "front-end status errors summary" ) < o.name.size() ) {
+  if( name.find( "front-end status errors summary" ) < name.size() ) {
    gPad->SetBottomMargin(0.2);
    obj->GetXaxis()->LabelsOption("v");
   }
 
-  if( o.name.find( "quality errors summary" ) < o.name.size() ) {
+  if( name.find( "quality errors summary" ) < name.size() ) {
    gPad->SetBottomMargin(0.2);
    obj->GetXaxis()->LabelsOption("v");
   }
 
-  if( o.name.find( "EEOT digi occupancy summary 1D" ) < o.name.size() ) {
+  if( name.find( "EEOT digi occupancy summary 1D" ) < name.size() ) {
    gPad->SetBottomMargin(0.2);
    obj->GetXaxis()->LabelsOption("v");
   }
@@ -650,15 +664,17 @@ void EERenderPlugin::postDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o
 
   assert( obj );
 
-  if( o.name.find( "EELT shape" ) < o.name.size() ) {
+  std::string name = o.name.substr(o.name.rfind("/")+1);
+
+  if( name.find( "EELT shape" ) < name.size() ) {
     return;
   }
 
-  if( o.name.find( "EELDT shape" ) < o.name.size() ) {
+  if( name.find( "EELDT shape" ) < name.size() ) {
     return;
   }
 
-  if( o.name.find( "EETPT shape" ) < o.name.size() ) {
+  if( name.find( "EETPT shape" ) < name.size() ) {
     return;
   }
 
@@ -667,7 +683,7 @@ void EERenderPlugin::postDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o
   l.SetLineWidth(1);
   for ( int i=0; i<201; i=i+1){
     if ( (Numbers::ixSectorsEE[i]!=0 || Numbers::iySectorsEE[i]!=0) && (Numbers::ixSectorsEE[i+1]!=0 || Numbers::iySectorsEE[i+1]!=0) ) {
-      if( o.name.find( "EECLT" ) < o.name.size() ) {
+      if( name.find( "EECLT" ) < name.size() ) {
         l.DrawLine(3.0*(Numbers::ixSectorsEE[i]-50), 3.0*(Numbers::iySectorsEE[i]-50), 3.0*(Numbers::ixSectorsEE[i+1]-50), 3.0*(Numbers::iySectorsEE[i+1]-50));
       } else {
         l.DrawLine(Numbers::ixSectorsEE[i], Numbers::iySectorsEE[i], Numbers::ixSectorsEE[i+1], Numbers::iySectorsEE[i+1]);
@@ -675,8 +691,8 @@ void EERenderPlugin::postDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o
     }
   }
 
-  if( o.name.find( "EECLT" ) < o.name.size() ) {
-    if( o.name.find( "EE -" ) < o.name.size() ) {
+  if( name.find( "EECLT" ) < name.size() ) {
+    if( name.find( "EE -" ) < name.size() ) {
       int x1 = text8->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
       int x2 = text8->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
       int y1 = text8->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
@@ -685,7 +701,7 @@ void EERenderPlugin::postDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o
       text8->GetYaxis()->SetRange(y1, y2);
       text8->Draw("text,same");
     }
-    if( o.name.find( "EE +" ) < o.name.size() ) {
+    if( name.find( "EE +" ) < name.size() ) {
       int x1 = text9->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
       int x2 = text9->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
       int y1 = text9->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
@@ -714,6 +730,8 @@ void EERenderPlugin::postDrawTH3F( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   assert( obj );
 
+  std::string name = o.name.substr(o.name.rfind("/")+1);
+
   return;
 
 }
@@ -724,16 +742,18 @@ void EERenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   assert( obj );
 
+  std::string name = o.name.substr(o.name.rfind("/")+1);
+
   c->SetBit(TGraph::kClipFrame);
   TLine l;
   l.SetLineWidth(1);
   for ( int i=0; i<201; i=i+1){
     if ( (Numbers::ixSectorsEE[i]!=0 || Numbers::iySectorsEE[i]!=0) && (Numbers::ixSectorsEE[i+1]!=0 || Numbers::iySectorsEE[i+1]!=0) ) {
-      if ( o.name.find( "errorSummaryXYM") < o.name.size() ) {
+      if ( name.find( "errorSummaryXYM") < name.size() ) {
         l.DrawLine(0.2*Numbers::ixSectorsEE[i], 0.2*Numbers::iySectorsEE[i], 0.2*Numbers::ixSectorsEE[i+1], 0.2*Numbers::iySectorsEE[i+1]);
-      } else if ( o.name.find( "errorSummaryXYP") < o.name.size() ) {
+      } else if ( name.find( "errorSummaryXYP") < name.size() ) {
         l.DrawLine(0.2*Numbers::ixSectorsEE[i], 0.2*Numbers::iySectorsEE[i], 0.2*Numbers::ixSectorsEE[i+1], 0.2*Numbers::iySectorsEE[i+1]);
-      } else if( o.name.find( "EECLT" ) < o.name.size() ) {
+      } else if( name.find( "EECLT" ) < name.size() ) {
         l.DrawLine(3.0*(Numbers::ixSectorsEE[i]-50), 3.0*(Numbers::iySectorsEE[i]-50), 3.0*(Numbers::ixSectorsEE[i+1]-50), 3.0*(Numbers::iySectorsEE[i+1]-50));
       } else {
         l.DrawLine(Numbers::ixSectorsEE[i], Numbers::iySectorsEE[i], Numbers::ixSectorsEE[i+1], Numbers::iySectorsEE[i+1]);
@@ -741,8 +761,8 @@ void EERenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     }
   }
 
-  if( o.name.find( "EECLT" ) < o.name.size() ) {
-    if( o.name.find( "EE -" ) < o.name.size() ) {
+  if( name.find( "EECLT" ) < name.size() ) {
+    if( name.find( "EE -" ) < name.size() ) {
       int x1 = text8->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
       int x2 = text8->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
       int y1 = text8->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
@@ -751,7 +771,7 @@ void EERenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
       text8->GetYaxis()->SetRange(y1, y2);    
       text8->Draw("text,same");
     }
-    if( o.name.find( "EE +" ) < o.name.size() ) {
+    if( name.find( "EE +" ) < name.size() ) {
       int x1 = text9->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
       int x2 = text9->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
       int y1 = text9->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
@@ -763,7 +783,7 @@ void EERenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( o.name.find( "EEOT MEM" ) < o.name.size() ) {
+  if( name.find( "EEOT MEM" ) < name.size() ) {
     int x1 = text3->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
     int x2 = text3->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
     int y1 = text3->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
@@ -774,8 +794,8 @@ void EERenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( o.name.find( "EEOT" ) < o.name.size() ) {
-    if( o.name.find( "EE -" ) < o.name.size() ) {
+  if( name.find( "EEOT" ) < name.size() ) {
+    if( name.find( "EE -" ) < name.size() ) {
       int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
       int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
       int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
@@ -784,7 +804,7 @@ void EERenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
       text6->GetYaxis()->SetRange(y1, y2);
       text6->Draw("text,same");
     }
-    if( o.name.find( "EE +" ) < o.name.size() ) {
+    if( name.find( "EE +" ) < name.size() ) {
       int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
       int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
       int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
@@ -796,7 +816,7 @@ void EERenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( o.name.find( "errorSummaryXYM" ) < o.name.size() ) {
+  if( name.find( "errorSummaryXYM" ) < name.size() ) {
     int x1 = text10->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
     int x2 = text10->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
     int y1 = text10->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
@@ -807,7 +827,7 @@ void EERenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( o.name.find( "errorSummaryXYP" ) < o.name.size() ) {
+  if( name.find( "errorSummaryXYP" ) < name.size() ) {
     int x1 = text11->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
     int x2 = text11->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
     int y1 = text11->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
@@ -854,8 +874,8 @@ void EERenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( o.name.find( "summary" ) < o.name.size() ) {
-    if( o.name.find( "EE -" ) < o.name.size() ) {
+  if( name.find( "summary" ) < name.size() ) {
+    if( name.find( "EE -" ) < name.size() ) {
       int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
       int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
       int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
@@ -864,7 +884,7 @@ void EERenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
       text6->GetYaxis()->SetRange(y1, y2);    
       text6->Draw("text,same");
     }
-    if( o.name.find( "EE +" ) < o.name.size() ) {
+    if( name.find( "EE +" ) < name.size() ) {
       int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
       int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
       int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
@@ -883,6 +903,8 @@ void EERenderPlugin::postDrawTH1F( TCanvas *c, const DQMNet::CoreObject &o ) {
   TH1F* obj = dynamic_cast<TH1F*>( o.object );
 
   assert( obj );
+
+  std::string name = o.name.substr(o.name.rfind("/")+1);
 
   return;
 
