@@ -5,6 +5,7 @@
 #include "DataFormats/Common/interface/Handle.h"
 #include "DataFormats/METReco/interface/CaloMET.h"
 #include "DataFormats/METReco/interface/CaloMETCollection.h"
+#include "DataFormats/METReco/interface/GenMET.h"
 #include "DataFormats/METReco/interface/GenMETCollection.h"
 
 #include "SimDataFormats/TrackingAnalysis/interface/TrackingVertexContainer.h"
