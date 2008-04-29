@@ -70,6 +70,8 @@ namespace edm
 
   }  // namespace pset
 
+  ParameterSet getProcessParameterSet();
+
 }  // namespace edm
 
 
