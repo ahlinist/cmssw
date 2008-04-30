@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// Package:    HcalProm
-// Class:      HcalProm
+// Package:    HcalTemplate
+// Class:      HcalTemplate
 // 
-/**\class HcalProm HcalProm.cc RecoHcal/HcalProm/src/HcalProm.cc
+/**\class HcalTemplate HcalTemplate.cc RecoHcal/HcalTemplate/src/HcalTemplate.cc
 
  SIMPLE EXAMPLE CODE demonstrating the access to officially reconstructed global run data.
  The config file is under the test directory.
@@ -16,7 +16,7 @@
 //
 // Original Author:  Efe Yazgan
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.4 2008/04/28 13:15:26 efe Exp $
+// $Id: HcalTemplate.cc,v 1.4 2008/04/28 13:15:26 efe Exp $
 //
 //
 
@@ -86,7 +86,7 @@
 #include <TCanvas.h>
 #include <cmath>
 
-#include "HcalProm.h"
+#include "HcalTemplate.h"
 
 //
 // constants, enums and typedefs
@@ -99,7 +99,7 @@
 //
 // constructors and destructor
 //
-HcalProm::HcalProm(const edm::ParameterSet& iConfig)
+HcalTemplate::HcalTemplate(const edm::ParameterSet& iConfig)
 
 {
    //now do what ever initialization is needed
@@ -107,7 +107,7 @@ HcalProm::HcalProm(const edm::ParameterSet& iConfig)
 }
 
 
-HcalProm::~HcalProm()
+HcalTemplate::~HcalTemplate()
 {
  
    // do anything here that needs to be done at desctruction time
@@ -122,7 +122,7 @@ HcalProm::~HcalProm()
 
 // ------------ method called to for each event  ------------
 void
-HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
+HcalTemplate::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
    using namespace edm;
    using namespace std;
@@ -269,7 +269,7 @@ HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 
 // ------------ method called once each job just before starting event loop  ------------
-void HcalProm::beginJob(const edm::EventSetup&)
+void HcalTemplate::beginJob(const edm::EventSetup&)
 {
   TFileDirectory EcalDir = fs->mkdir( "Ecal" );
   TFileDirectory HcalDir = fs->mkdir( "Hcal" );
@@ -309,6 +309,6 @@ void HcalProm::beginJob(const edm::EventSetup&)
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
-void HcalProm::endJob() {
+void HcalTemplate::endJob() {
 }
 
