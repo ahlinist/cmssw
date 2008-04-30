@@ -1,3 +1,5 @@
+include "Configuration/Generator/data/PythiaUESettings.cfi"
+
 source = PythiaSource 
 { 
    untracked int32 pythiaPylistVerbosity = 0 
@@ -19,8 +21,7 @@ source = PythiaSource
                "processParameters"
          }
 
-         include "Configuration/Generator/data/PythiaUESettings.cfi"
- 
+         using pythiaUESettingsBlock  
          vstring processParameters = {
                'MSEL=1                 ! QCD high pT processes',
                'CKIN(3)=30.          ! minimum pt hat for hard interactions'
@@ -41,7 +42,7 @@ module generatorFilter = PythiaFilter
 sequence ProductionFilterSequence = { generatorFilter}
 
 untracked PSet configurationMetadata = {
-    untracked string version = "$Revision: 1.1 $"
+    untracked string version = "$Revision: 1.2 $"
     untracked string name = "$Source: /cvs_server/repositories/CMSSW/CMSSW/Configuration/Spring08Production/data/iCSA08_MuonPT5.cff,v $"
     untracked string annotation = "b/c -> mu pT > 5 GEN evts for CSA08"
 }
