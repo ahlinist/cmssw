@@ -14,8 +14,6 @@
 <use name=DataFormats/DTRecHit>
 <use name=Geometry/DTGeometry>
 <use name=DataFormats/LTCDigi>
-<use name=RecoMuon/TrackingTools>
-<use name=TrackingTools/TransientTrack>
 <use name=DataFormats/TrackingRecHit>
 <use name=DataFormats/TrackReco>
 <use name=CalibMuon/DTDigiSync>
