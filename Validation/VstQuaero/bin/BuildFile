@@ -1,0 +1,8 @@
+<bin name="normalizeProperly_cdf" file="normalizeProperly_cdf.cpp">
+ <use name=Validation/VstQuaeroUtils>
+</bin>
+<bin name="main_quaero" file="main.cpp">
+ <use name=clhep>
+ <use name=Validation/VstQuaero>
+</bin>
+

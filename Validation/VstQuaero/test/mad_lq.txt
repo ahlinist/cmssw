@@ -1,0 +1,20 @@
+########################################################################################
+# particles     Name anti_Name  Spin    Linetype Mass   Width   Color Label   Model
+#               xxx    xxxx     SFV      WSDC     str    str     STO   str   PDG code
+
+PARTICLE         lq      lq~   lq_spin     d     npm(1)  npm(2)   t    lq     80
+########################################################################################
+# interactions  particles 1   2   3    coupling_name     QNP
+
+INTERACTION     lq_q       lq_l       lq     np_coupl_cLR(1)   QNP
+INTERACTION     lq_l       lq_q       lq~    np_coupl_cLR(2)   QNP
+INTERACTION     g      lq~      lq     np_coupl_c(3)     QNP
+########################################################################################
+# parameters
+
+PARAMETER      npm(1) = lq_mass
+PARAMETER      npm(2) = lq_width
+PARAMETER      np_coupl_cLR(L,1) = (0,lambda)
+PARAMETER      np_coupl_cLR(R,2) = (0,lambda)
+PARAMETER      np_coupl_c(3) = (-1.218,0)
+

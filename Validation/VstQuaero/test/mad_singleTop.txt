@@ -1,0 +1,41 @@
+########################################################################################
+# particles.dat
+                #This is a special data file which contains particles of the
+                #Standard Model. The format for entering new particles is.
+                #Particle codes taken from  http://pdg.lbl.gov /2000/ montecarlorpp.pdf
+                #Name anti_Name  Spin    Linetype Mass   Width   Color Label   Model
+                #xxx    xxxx     SFV      WSDC     str    str     STO   str   PDG code
+
+########################################################################################
+# interactions.dat
+                #       3-particle vertices are entered as follows:
+                #       particle1 particle2  particle3 coupling_name model (QNP)
+                #       Note: The ordering of particles is very important.
+                #       For FFV interactions, must use particles, not anti_particles.
+
+INTERACTION     t      u       a     np_coupl_cLREM(1)   QNP  dmx
+INTERACTION     u      t       a     np_coupl_cLREM(2)   QNP  dmx
+INTERACTION     t      u       z     np_coupl_cLREM(3)   QNP  dmx
+INTERACTION     u      t       z     np_coupl_cLREM(4)   QNP  dmx
+
+INTERACTION     t      c       a     np_coupl_cLREM(1)   QNP  dmx
+INTERACTION     c      t       a     np_coupl_cLREM(2)   QNP  dmx
+INTERACTION     t      c       z     np_coupl_cLREM(3)   QNP  dmx
+INTERACTION     c      t       z     np_coupl_cLREM(4)   QNP  dmx
+
+########################################################################################
+# parameters.dat
+
+# Couplings
+# kappa coupling is replaced by a sed -e 's/' command
+
+PARAMETER      np_coupl_cLREM(L,MDM,1)  = (0,kappa_gamma_coupling)
+PARAMETER      np_coupl_cLREM(R,MDM,1)  = (0,kappa_gamma_coupling)
+PARAMETER      np_coupl_cLREM(L,MDM,2)  = (0,kappa_gamma_coupling)
+PARAMETER      np_coupl_cLREM(R,MDM,2)  = (0,kappa_gamma_coupling)
+PARAMETER      np_coupl_cLREM(L,MDM,3)  = (0,kappa_z_coupling)
+PARAMETER      np_coupl_cLREM(R,MDM,3)  = (0,kappa_z_coupling)
+PARAMETER      np_coupl_cLREM(L,MDM,4)  = (0,kappa_z_coupling)
+PARAMETER      np_coupl_cLREM(R,MDM,4)  = (0,kappa_z_coupling)
+
+MAXFSLEGS       2

@@ -1,0 +1,34 @@
+########################################################################################
+# particles.dat
+                #This is a special data file which contains particles of the
+                #Standard Model. The format for entering new particles is.
+                #Particle codes taken from  http://pdg.lbl.gov /2000/ montecarlorpp.pdf
+                #Name anti_Name  Spin    Linetype Mass   Width   Color Label   Model
+                #xxx    xxxx     SFV      WSDC     str    str     STO   str   PDG code
+
+PARTICLE        tR       tR~      F        S      TMASS TWIDTH     T     t      80
+
+########################################################################################
+# interactions.dat
+                #       3-particle vertices are entered as follows:
+                #       particle1 particle2  particle3 coupling_name model (QNP)
+                #       Note: The ordering of particles is very important.
+                #       For FFV interactions, must use particles, not anti_particles.
+
+INTERACTION     tR     tR      g     GG                QNP
+                tR     tR      a     GAU               QNP
+                tR     tR      z     GZU               QNP
+                tR     tR      h     GHTOP             QNP
+INTERACTION     tR     b       w+    np_coupl_cLR(1)   QNP
+INTERACTION     b      tR      w-    np_coupl_cLR(2)   QNP
+
+########################################################################################
+# parameters.dat
+
+# Couplings
+# Right_handed_coupling is replaced by a sed -e 's/' command
+
+PARAMETER      np_coupl_cLR(R,1)  = (right_handed_coupling,0)
+PARAMETER      np_coupl_cLR(L,2)  = (right_handed_coupling,0)
+
+MAXFSLEGS       4

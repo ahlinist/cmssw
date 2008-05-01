@@ -1,0 +1,45 @@
+########################################################################################
+# particles.dat
+                #This is a special data file which contains particles of the
+                #Standard Model. The format for entering new particles is.
+                #Particle codes taken from  http://pdg.lbl.gov /2000/ montecarlorpp.pdf
+                #Name anti_Name  Spin    Linetype Mass   Width   Color Label   Model
+                #xxx    xxxx     SFV      WSDC     str    str     STO   str   PDG code
+
+PARTICLE         usq     usq~     s         d     npm(1)   npW      t    u~       80
+PARTICLE         chi-    chi+     f         s     npm(2)   npW      s    chi      81
+
+########################################################################################
+# interactions.dat
+                #       3-particle vertices are entered as follows:
+                #       particle1 particle2  particle3 coupling_name model (QNP)
+                #       Note: The ordering of particles is very important.
+                #       For FFV interactions, must use particles, not anti_particles.
+
+INTERACTION     d       e-      usq    np_coupl_cLR(1)   QNP
+INTERACTION     chi-    d       usq~   np_coupl_cLR(2)   QNP
+INTERACTION     mu-     chi-    lls    np_coupl_cLR(3)   QNP
+
+INTERACTION     e-      d       usq~   np_coupl_cLR(4)   QNP
+INTERACTION     d       chi-    usq    np_coupl_cLR(5)   QNP
+INTERACTION     chi-    mu-     lls    np_coupl_cLR(6)   QNP
+
+########################################################################################
+# parameters.dat
+
+PARAMETER       npm(1)=200
+PARAMETER       npm(2)=CHIMASS
+PARAMETER       npm(9)=50
+PARAMETER       np_coupl_cLR(L,1)=(0.1,0)
+PARAMETER       np_coupl_cLR(L,2)=(1.0,0)
+PARAMETER       np_coupl_cLR(L,3)=(1.0,0)
+PARAMETER       np_coupl_cLR(R,4)=(0.1,0)
+PARAMETER       np_coupl_cLR(R,5)=(1.0,0)
+PARAMETER       np_coupl_cLR(R,6)=(1.0,0)
+
+XSEC  21        0.1
+XSEC  22        0.1
+XSEC  23        0.01
+
+MAXFSLEGS       3
+

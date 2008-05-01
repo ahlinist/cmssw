@@ -1,0 +1,69 @@
+########################################################################################
+# particles.dat
+                #This is a special data file which contains particles of the
+                #Standard Model. The format for entering new particles is.
+                #Particle codes taken from  http://pdg.lbl.gov /2000/ montecarlorpp.pdf
+                #Name anti_Name  Spin    Linetype Mass   Width   Color Label   Model
+                #xxx    xxxx     SFV      WSDC     str    str     STO   str   PDG code
+
+PARTICLE         ex-     ex+      f        s     npm(1)   npm(2)      s     e*     80
+
+########################################################################################
+# interactions.dat
+                #       3-particle vertices are entered as follows:
+                #       particle1 particle2  particle3 coupling_name model (QNP)
+                #       Note: The ordering of particles is very important.
+                #       For FFV interactions, must use particles, not anti_particles.
+
+INTERACTION     e-       ex-      a     np_coupl_cLREM(1)   QNP  dmx
+INTERACTION     ex-      e-       a     np_coupl_cLREM(1)   QNP  dmx
+
+INTERACTION     ve       ex-      w+    np_coupl_cLREM(2)   QNP  dmx
+INTERACTION     ex-      ve       w-    np_coupl_cLREM(2)   QNP  dmx
+
+INTERACTION     e-       ex-      z     np_coupl_cLREM(3)   QNP  dmx
+INTERACTION     ex-      e-       z     np_coupl_cLREM(3)   QNP  dmx
+
+INTERACTION     ex-      ex-      a     np_coupl_cLR(1)     QNP
+INTERACTION     ex-      ex-      z     np_coupl_cLR(2)     QNP
+
+########################################################################################
+# parameters.dat
+
+# excited electron mass
+
+PARAMETER      npm(1) = mass_excited_electron
+PARAMETER      npm(2) = width_excited_electron
+
+# Couplings
+# f_e_v/lambda is replaced by a sed -e 's/' command
+# Note David Rainwater's email: the coupling should be -igf/Lambda
+
+PARAMETER      np_coupl_cLREM(L,MDM,1) = (0,f_e_gamma/lambda)
+PARAMETER      np_coupl_cLREM(R,MDM,1) = (0,f_e_gamma/lambda)
+PARAMETER      np_coupl_cLREM(L,MDM,2) = (0,f_e_w/lambda)
+PARAMETER      np_coupl_cLREM(R,MDM,2) = (0,f_e_w/lambda)
+PARAMETER      np_coupl_cLREM(L,MDM,3) = (0,f_e_z/lambda)
+PARAMETER      np_coupl_cLREM(R,MDM,3) = (0,f_e_z/lambda)
+
+PARAMETER      np_coupl_cLR(L,1) = (0.3,0)
+PARAMETER      np_coupl_cLR(R,1) = (0.3,0)
+PARAMETER      np_coupl_cLR(L,2) = (0.3,0)
+PARAMETER      np_coupl_cLR(R,2) = (0.3,0)
+
+MAXFSLEGS       3
+
+# 
+
+XSEC          11    0
+
+XSEC          13    0
+XSEC          14    0
+XSEC          15    0
+XSEC          16    0
+XSEC          17    0
+XSEC          18    0
+
+XSEC          21    0
+XSEC          22    0
+XSEC          23    0

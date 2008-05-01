@@ -1,0 +1,11 @@
+#############################################################
+# Makefile for Quaero package
+# Quaero/tests/GNUmakefile
+##############################################################
+
+all:	bin
+
+bin:	testPairwiseVarChoice
+
+testPairwiseVarChoice:
+	$(CC) $(FLAGS) -o ../../bin/testPairwiseVarChoice testPairwiseVarChoice.cc $(LIBS)
