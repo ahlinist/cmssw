@@ -1,0 +1,7 @@
+TurboSimRule lookupRule( const RuleIdentifier & ruleID ) {
+   
+   if ( ruleID == "Disregard_Unclustered_Energy" );
+   
+   
+   return TurboSimRule();
+}
