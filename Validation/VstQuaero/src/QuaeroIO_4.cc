@@ -37,7 +37,7 @@ void QuaeroIO::makeTmpDirectory(int iSystematicShift)
 	  string colliderRun = iColliderRun->first;
 	  system(("mkdir "+tmpDir+"/relevantBkg/"+colliderRun+"/").c_str());     
 	  system(("mkdir "+tmpDir+"/discriminator/"+colliderRun+"/").c_str());     
-	  for(int i=0; i<iColliderRun->second.size(); i++)
+	  for(size_t i=0; i<iColliderRun->second.size(); i++)
 	    {
 	      string experiment = iColliderRun->second[i];
 	      system(("mkdir "+tmpDir+"/relevantBkg/"+colliderRun+"/"+experiment+"/").c_str());
@@ -55,7 +55,7 @@ void QuaeroIO::makeTmpDirectory(int iSystematicShift)
 	  string colliderRun = iColliderRun->first;
 	  string tmpSysColliderDir = tmpSysDir+colliderRun+"/";
 	  system(("mkdir "+tmpSysColliderDir).c_str());
-	  for(int i=0; i<iColliderRun->second.size(); i++)
+	  for(size_t i=0; i<iColliderRun->second.size(); i++)
 	    {
 	      string experiment = iColliderRun->second[i];
 	      string tmpSysColliderExperimentDir = tmpSysColliderDir+experiment+"/";

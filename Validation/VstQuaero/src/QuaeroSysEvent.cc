@@ -13,7 +13,7 @@ using namespace std;
 QuaeroRecoEvent<QuaeroRecoObject> QuaeroSysEvent::returnQuaeroEventWithoutSystematics() const
 {
   vector<QuaeroRecoObject> o1;
-  for(int i=0; i<components.size(); i++)
+  for(size_t i=0; i<components.size(); i++)
     o1.push_back(components[i]);
   QuaeroRecoEvent<QuaeroRecoObject> e(getEventType(), getRunNumber(), getWeight(), o1, 
 				      getCollisionType(), getRootS(), getZVtx());
@@ -27,7 +27,7 @@ double QuaeroSysEvent::parseSystematicallyAffectedNumber(std::string blah)
   vector<int> errorNumber;
   vector<double> errorMagnitude;
   string readType = "nominal";
-  for(int i=0; i<blah.length(); i++)
+  for(size_t i=0; i<blah.length(); i++)
     {
       if(blah.substr(i,1)=="{")
         {

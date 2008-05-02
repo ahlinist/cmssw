@@ -590,7 +590,7 @@ double Math::totalWeightUncertainty(const vector<double>& w) {
   //   So, the standard deviation of W, which is what we want, is 
   //    sqrt(Neff)*<w> = sqrt(W * <w>) = sqrt(sum{w_i^2}).
   double deltaW = 0;
-  for(int i=0; i<w.size(); i++)
+  for(size_t i=0; i<w.size(); i++)
     deltaW += w[i]*w[i];
   deltaW = sqrt(deltaW);
   return (deltaW);
@@ -1107,7 +1107,8 @@ double Math::amotry(matrix & p, vector<double> & y, vector<double> & psum, int n
 void Math::amoeba(matrix & p, vector<double> & y, int ndim, 
 	Math::FunctionObject* funk, double ftol, int NMAX, bool stoppable)
 {
-	int i,ihi,ilo,inhi,j,mpts=ndim+1;
+  int ihi,ilo,inhi,j;
+  size_t i, mpts=ndim+1;
 	double rtol,sum,swap,ysave,ytry;
 	vector<double> psum(ndim);
 
@@ -1307,7 +1308,7 @@ void Math::makeNiceHistogramRange(
       double wts=0., wtb=0., wtd=0.;
       double fractionOfMCEventsThatSpillOffPlot = 0.01; // 0.05
       double fractionOfDataEventsThatSpillOffPlot = 0.01; // 0.01
-      for(int i=0; i<sigDist.size(); i++)
+      for(size_t i=0; i<sigDist.size(); i++)
 	{
 	  if((wts<fractionOfMCEventsThatSpillOffPlot)&&(wts+sigDist[i].second>=fractionOfMCEventsThatSpillOffPlot))
 	    if(xrange[0]>sigDist[i].first)

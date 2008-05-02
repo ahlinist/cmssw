@@ -68,12 +68,12 @@ C
 	parameter (writeOutHepEvt = .true.)
 	real kfactor, xsecGen, lumiGen   ! units are pb, pb^-1
 	integer numGen
-	logical runII, passes, unlimitedEvents
+	logical passes, unlimitedEvents
 	Integer NEvents, I, J, M, L, PID
-	Integer IEv, NE, NM, NG, NP, NJet
-	Real PTMin, ETMin, Tht, Eta, Phi, ThtJ, EtaJ, PhiJ, r
+	Integer IEv, NP, NJet
+	Real PTMin
 	Real PEl(3,100), PMu(3,100), PPh(3,100), Jet(4,100), PMet(2)
-	real e, costh, px, py, pz, sumpt
+cc	real e, costh, px, py, pz, sumpt
 	Integer typeEl(100), typeMu(100)
 	logical killThisElectron
 	real uncl_x, uncl_y, DeltaR, costhmax
@@ -128,8 +128,8 @@ c	Parameter (NMax = 10000) ! Maximum number of tried events
 	integer nevifile,ifile,nfile,nEventsPerFile
 	integer totalEventsPassed, totalEventsTried
 	parameter (maxNumberOfEventsPerFile=20000)
-	character*5 cgive
-	character*30 cgive0
+cc	character*5 cgive
+cc	character*30 cgive0
 
 	character*999 fPythiaFName
 	character*999 command

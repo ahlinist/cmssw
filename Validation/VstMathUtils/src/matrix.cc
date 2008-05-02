@@ -221,7 +221,8 @@ std::vector< std::vector<double> > matrix::toSTLVector()
 void jacobi(matrix & a, matrix::size_type n, vector<double> & d, matrix & v)
 {
   matrix aa = a;
-  int j,iq,i;
+  int i;
+  size_t j,iq;
   double tresh,theta,tau,t,sm,s,h,g,c;
 
   vector<double> b(n);

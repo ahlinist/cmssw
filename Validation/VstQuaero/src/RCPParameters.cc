@@ -14,7 +14,7 @@ namespace RCPParameters
   void EpsilonWt::store(string colliderRun, string experiment, double epsilonWt)
   {
     string colliderRunExperiment = colliderRun+"-"+experiment;
-    int k = find(colliderRunExperiments.begin(), colliderRunExperiments.end(), colliderRunExperiment) - colliderRunExperiments.begin();
+    size_t k = find(colliderRunExperiments.begin(), colliderRunExperiments.end(), colliderRunExperiment) - colliderRunExperiments.begin();
     if(k==colliderRunExperiments.size())
       {
 	colliderRunExperiments.push_back(colliderRunExperiment);
@@ -28,7 +28,7 @@ namespace RCPParameters
   double EpsilonWt::get(string colliderRun, string experiment)
   {
     string colliderRunExperiment = colliderRun+"-"+experiment;
-    int k = find(colliderRunExperiments.begin(), colliderRunExperiments.end(), colliderRunExperiment) - colliderRunExperiments.begin();
+    size_t k = find(colliderRunExperiments.begin(), colliderRunExperiments.end(), colliderRunExperiment) - colliderRunExperiments.begin();
     if(k<colliderRunExperiments.size())
       return(epsilonWeights[k]);
     else

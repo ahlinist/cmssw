@@ -48,7 +48,7 @@ vector<double> Kolmogorov::producePseudoData(const vector<double>& _bkgpts, cons
   bool debug=false;
   double biggestBkgPosition = -1000000;
   double smallestBkgPosition = 1000000;
-  for ( int i=0 ; i < _bkgpts.size() ; ++i ){
+  for ( size_t i=0 ; i < _bkgpts.size() ; ++i ){
     if ( _bkgpts[i] < smallestBkgPosition )
       smallestBkgPosition=_bkgpts[i];
     if ( _bkgpts[i] > biggestBkgPosition )
@@ -64,7 +64,7 @@ vector<double> Kolmogorov::producePseudoData(const vector<double>& _bkgpts, cons
   vector<double> bkgBins = vector<double>(nBkgBins,0);
   double biggestBkgBinContent = 0; 
   if(debug) cout << " _bkgpts.size()= " << _bkgpts.size() << endl;
-  for (int i=0; i< _bkgpts.size(); ++i){
+  for (size_t i=0; i< _bkgpts.size(); ++i){
     //    if(debug) cout << "i= " << i ;
     sum_bkg += _bkgwt[i];
     //    if(debug) cout << " sum_bkg= " << sum_bkg ;
@@ -129,9 +129,9 @@ vector<double> Kolmogorov::producePseudoData(const vector<double>& _bkgpts, cons
 void Kolmogorov::printBkgAndData() {
 
   cout << "bkg is:" << endl;
-  for ( int i=0; i < bkgpts.size(); ++i ) cout << bkgpts[i] << " " << bkgwt[i] << endl;
+  for ( size_t i=0; i < bkgpts.size(); ++i ) cout << bkgpts[i] << " " << bkgwt[i] << endl;
   cout << "pseudodata are:" << endl;
-  for ( int i=0; i < datapts.size(); ++i ) cout << datapts[i] << endl;
+  for ( size_t i=0; i < datapts.size(); ++i ) cout << datapts[i] << endl;
   
   return;
 }

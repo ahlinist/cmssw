@@ -19,7 +19,7 @@ Bruce Knuteson 2003
 #include <cmath>
 #include <algorithm>
 #include <numeric>
-#include <stdlib.h>
+//#include <stdlib>
 #include "gsl/gsl_math.h"
 #include "gsl/gsl_monte.h"
 #include "gsl/gsl_monte_miser.h"

@@ -361,15 +361,15 @@ vector<double> RelevantVariables::getAllVariableValuesForThisEvent(string finals
       double NuPt2 = pow(NEUPX,2)+pow(NEUPY,2);
       double NEUE  =   (empzbal/2.) + (NuPt2/(2.*empzbal));
       double NEUPZ =  -(empzbal/2.) + (NuPt2/(2.*empzbal));
-      double NEUPT = sqrt(pow(NEUPX,2)+pow(NEUPY,2));
+      //      double NEUPT = sqrt(pow(NEUPX,2)+pow(NEUPY,2));
       // cout << NuPt2 << ", " << NEUE << ", " << NEUPZ << ", " << NEUPT << endl;
       // derive invariant mass and sum pt
       double ALL_PX=NEUPX;
       double ALL_PY=NEUPY;
       double ALL_PZ=NEUPZ;
       double ALL_E=NEUE;
-      double fNEUPTSUM= NEUPT;
-      for(int i=0; i<o.size(); i++)
+      //   double fNEUPTSUM= NEUPT;
+      for(size_t i=0; i<o.size(); i++)
 	if(i!=pmissObject)
 	  {
 	    ALL_PX   +=o[i].px();
@@ -539,7 +539,7 @@ vector<double> RelevantVariables::getAllVariableValuesForThisEvent(string finals
       QuaeroRecoObject::ChiSqdConstrainNeutrino(l,v);
       HepLorentzVector w = l+v;
       HepLorentzVector totalSystem=w;
-      for(int i=0; i<o.size(); i++)
+      for(size_t i=0; i<o.size(); i++)
 	if((oType[i]!="pmiss")&&
 	   (oType[i]!="e+")&&
 	   (oType[i]!="e-")&&
@@ -572,7 +572,7 @@ vector<double> RelevantVariables::getAllVariableValuesForThisEvent(string finals
 	swap(jets[i],jets[j]);     // put jets into pT order
   vector<HepLorentzVector> leptons;
   vector<HepLorentzVector> leptons_positivelyCharged;
-  for(int i=0; i<o.size(); i++)
+  for(size_t i=0; i<o.size(); i++)
     {
       if((oType[i]=="e+")||
 	 (oType[i]=="e-")||

@@ -73,8 +73,8 @@ C
 	Integer IEv, NE, NM, NG, NP, NJet
 	Real PTMin, ETMin, Tht, Eta, Phi, ThtJ, EtaJ, PhiJ, r
 	Real PEl(3,100), PMu(3,100), PPh(3,100), Jet(4,100), PMet(2)
-	real e, costh, px, py, pz, sumpt
-	Integer typeEl(100), typeMu(100)
+c	real e, costh, px, py, pz, sumpt
+c	Integer typeEl(100), typeMu(100)
 	logical killThisElectron
 	real uncl_x, uncl_y, DeltaR, costhmax
 c	Parameter (NMax = 10000) ! Maximum number of tried events
@@ -95,28 +95,24 @@ c	Parameter (NMax = 10000) ! Maximum number of tried events
 	data ecmLEP2 /183, 189, 192, 196, 200, 202, 205, 207/
 
 	real*8 nominalecmHERA
-	integer iecmHERA
 	data nominalecmHERA /320/
 	parameter (NecmHERA = 2)
 	real*8 ecmHERA(NecmHERA)
 	data ecmHERA /301,319/
 
 	double precision nominalecmTEV1
-	integer iecmTEV1
 	data nominalecmTEV1 /1800/
 	parameter (NecmTEV1 = 1)
 	double precision ecmTEV1(NecmTEV1)
 	data ecmTEV1 /1800/
 
 	real*8 nominalecmTEV2
-	integer iecmTEV2
 	data nominalecmTEV2 /1960/
 	parameter (NecmTEV2 = 1)
 	real*8 ecmTEV2(NecmTEV2)
 	data ecmTEV2 /1960/
 
 	real*8 nominalecmLHC
-	integer iecmLHC
 	data nominalecmLHC /14000/
 	parameter (NecmLHC = 1)
 	real*8 ecmLHC(NecmLHC)
@@ -124,12 +120,12 @@ c	Parameter (NMax = 10000) ! Maximum number of tried events
 
 	character*999 FNAMEifile
 	character*5 cifile
-	integer nevt,nprnt,lok
-	integer nevifile,ifile,nfile,nEventsPerFile
+	integer lok
+	integer nevifile,ifile,nfile
 	integer totalEventsPassed, totalEventsTried
 	parameter (maxNumberOfEventsPerFile=20000)
-	character*5 cgive
-	character*30 cgive0
+c	character*5 cgive
+c	character*30 cgive0
 
 	character*999 fPythiaFName
 	character*999 command

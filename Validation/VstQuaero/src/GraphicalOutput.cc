@@ -116,14 +116,14 @@ void GraphicalOutput::addDiscriminatorPlots(vector<string> distributionNames,
 
   // The discriminant
   vector<double> dataD = vector<double>(dataEvents.size());
-  for(int i=0; i<dataEvents.size(); i++)
+  for(size_t i=0; i<dataEvents.size(); i++)
     dataD[i] = discriminator.discriminants[tag].compute(dataEvents[i]);
   //vector<double> hD = discriminator.hD;
   //vector<double> smD = discriminator.bD;
   vector<double> hD, smD;
-  for(int i=0; i<hVariableValues.size(); i++)
+  for(size_t i=0; i<hVariableValues.size(); i++)
     hD.push_back(discriminator.discriminants[tag].compute(hVariableValues[i]));
-  for(int i=0; i<smVariableValues.size(); i++)
+  for(size_t i=0; i<smVariableValues.size(); i++)
     smD.push_back(discriminator.discriminants[tag].compute(smVariableValues[i]));
   
     vector<double> binEdges = discriminator.binPoints;
@@ -154,7 +154,7 @@ void GraphicalOutput::addDiscriminatorPlots(vector<string> distributionNames,
     pawCommand += Math::ftoa(21+i)+" ";
   pawCommand += "\n";
   pawCommand += "set lwid 20. \n";
-  for(int i=0; i<binEdges.size()-1; i++)
+  for(size_t i=0; i<binEdges.size()-1; i++)
     {
       double x1 = binEdges[i]*100;
       double x2 = binEdges[i+1]*100;      
@@ -163,7 +163,7 @@ void GraphicalOutput::addDiscriminatorPlots(vector<string> distributionNames,
     }
   pawCommand += "set lwid 2. \n";
 
-  for(int i=0; i<distributionNames.size(); i++)
+  for(size_t i=0; i<distributionNames.size(); i++)
     reformatDistributionName(distributionNames[i]);
 
   // Bins in the original variable space
@@ -268,7 +268,7 @@ void GraphicalOutput::addDiscriminatorPlots(Discriminator& discriminator,
     pawCommand += Math::ftoa(21+i)+" ";
   pawCommand += "\n";
   pawCommand += "set lwid 40. \n";
-  for(int i=0; i<binEdges.size()-1; i++)
+  for(size_t i=0; i<binEdges.size()-1; i++)
     {      
       double x1 = binEdges[i]*100;
       double x2 = binEdges[i+1]*100;   
@@ -352,7 +352,7 @@ void GraphicalOutput::addDiscriminatorPlots( map<vector<string>,vector<vector<do
 	{
       range[0] = 0.35;
       range[1] = 0.90;
-     int nFinalStates = 0;
+     size_t nFinalStates = 0;
       while( (nFinalStates<finalStates[i].size())&&
 	     ( fabs(contributionFromThisFinalStateToThisBin[i][0][finalStates[i].size()-1-nFinalStates] - contributionFromThisFinalStateToThisBin[i][1][finalStates[i].size()-1-nFinalStates])/2 > 0.1 * sqrt(totalHeightPerBin[i]) ) &&
 	     (nFinalStates<40) )
@@ -373,7 +373,7 @@ void GraphicalOutput::addDiscriminatorPlots( map<vector<string>,vector<vector<do
 	    rgb = vector<double>(3,0.5); // grey
 	  pawCommand += setShadedLevels(nFinalStates, rgb, range);
 	  double totalSoFar = 0;
-	  for(int j=0; j<finalStates[i].size()-nFinalStates; j++)
+	  for(size_t j=0; j<finalStates[i].size()-nFinalStates; j++)
 	    totalSoFar += contributionFromThisFinalStateToThisBin[i][k][j]/totalHeightPerBin[i];
 	  pawCommand += "set bord 1 \n";
 	  int color = 1;
@@ -389,7 +389,7 @@ void GraphicalOutput::addDiscriminatorPlots( map<vector<string>,vector<vector<do
 	  y2 = totalSoFar*top;
 	  pawCommand += "box "+Math::ftoa(x1)+" "+Math::ftoa(x2)+" "+Math::ftoa(y1)+" "+Math::ftoa(y2)+" \n";
 	  pawCommand += "set bord 0 \n";	  
-	  for(int jj=finalStates[i].size()-nFinalStates; jj<finalStates[i].size(); jj++)
+	  for(size_t jj=finalStates[i].size()-nFinalStates; jj<finalStates[i].size(); jj++)
 	      {
 		int j = jj-(finalStates[i].size()-nFinalStates);
 		pawCommand += "set faci "+Math::ftoa(20+nFinalStates-j)+" \n";
@@ -426,11 +426,11 @@ void GraphicalOutput::addDiscriminatorPlots( map<vector<string>,vector<vector<do
       rgb[2] = 1; // blue
       pawCommand += setShadedLevels(nFinalStates, rgb, range);
       double totalSoFar = 0;
-      for(int j=0; j<finalStates[i].size()-nFinalStates; j++)
+      for(size_t j=0; j<finalStates[i].size()-nFinalStates; j++)
 	totalSoFar += 
 	  (contributionFromThisFinalStateToThisBin[i][0][j] + contributionFromThisFinalStateToThisBin[i][1][j]) / 
 	  (2. * totalHeightPerBin[i]);
-    for(int jj=finalStates[i].size()-nFinalStates; jj<finalStates[i].size(); jj++)
+    for(size_t jj=finalStates[i].size()-nFinalStates; jj<finalStates[i].size(); jj++)
 	{
 	  int j = jj-(finalStates[i].size()-nFinalStates);
 	  double y = totalSoFar*top+.02;
@@ -636,15 +636,15 @@ void GraphicalOutput::showModelParameterMeasurement(vector<double> xValue, vecto
   command = command + "jtext 50 -8 'x' 0.5 0 c \n";
   command = command + "jtext -11 50 'log?10! L' 0.5 90 c \n";
   double maxx = -1.e8;
-  for(int i=0; i<xValue.size(); i++)
+  for(size_t i=0; i<xValue.size(); i++)
     if(xlogLikelihood[i]==sortedyValue[sortedyValue.size()-1])
       maxx = xValue[i];
   vector<double> standardDeviation(4);
-  for(int i=0; i<standardDeviation.size(); i++)
+  for(size_t i=0; i<standardDeviation.size(); i++)
     standardDeviation[i] = abs(log10(exp(-pow((float)i,(float)2)/2.)));
   command = command + "line "+Math::ftoa(Math::max(x0edge,maxx-.15*xrange))+" "+Math::ftoa(y1)+" "+Math::ftoa(Math::min(x1edge,maxx+.15*xrange))+" "+Math::ftoa(y1)+" \n";
   command = command + "set dmod 2 \n";
-  for(int i=1; i<standardDeviation.size(); i++)
+  for(size_t i=1; i<standardDeviation.size(); i++)
     if(y1-standardDeviation[i]>y0edge)
       {
 	command = command + "line "+Math::ftoa(x0edge)+" "+Math::ftoa(y1-standardDeviation[i])+" "+Math::ftoa(x1edge)+" "+Math::ftoa(y1-standardDeviation[i])+" \n";

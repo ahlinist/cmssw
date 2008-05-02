@@ -128,12 +128,12 @@ ExpectedEvidence OptimalBinning::binningFigureOfMerit(const vector<double>& h, c
 						      double wtMC, double nMC, 
 						      bool binsHaveBeenOptimizedQ, bool includePenaltyFactorQ)
 {
-  int nBins = h.size();
+  size_t nBins = h.size();
   assert( (nBins==h.size()) &&
 	  (nBins==b.size()) );
   
   ExpectedEvidence expectedEvidence;
-  for(int k=0; k<nBins; k++)
+  for(size_t k=0; k<nBins; k++)
     {
       expectedEvidence += binningFigureOfMerit(h[k],b[k],dh[k],db[k]);
       if(includePenaltyFactorQ)
@@ -222,9 +222,9 @@ void OptimalBinning::chooseSingleBinPoint(const vector<double>& h, const vector<
 
   vector<double> hwtCumulative(1,0), bwtCumulative(1,0);
   vector<double> hwtSqd(1,0), bwtSqd(1,0);
-  for(int i=0; i<h.size(); i++)
+  for(size_t i=0; i<h.size(); i++)
       hwtCumulative.push_back(hwtCumulative[i] + hwt[i]);
-  for(int i=0; i<b.size(); i++)
+  for(size_t i=0; i<b.size(); i++)
     bwtCumulative.push_back(bwtCumulative[i] + bwt[i]);
   double hwtTotal = hwtCumulative[hwtCumulative.size()-1];  
   double bwtTotal = bwtCumulative[bwtCumulative.size()-1];  
@@ -232,9 +232,9 @@ void OptimalBinning::chooseSingleBinPoint(const vector<double>& h, const vector<
      ((hwtTotal>10*bwtTotal)&&(bwtTotal>100))||
      ((bwtTotal>10*hwtTotal)&&(hwtTotal>100)))
     return; // the problem is too easy, no need for further binning
-  for(int i=0; i<h.size(); i++)
+  for(size_t i=0; i<h.size(); i++)
     hwtSqd.push_back(hwtSqd.back()+pow(hwt[i],2.));
-  for(int i=0; i<b.size(); i++)
+  for(size_t i=0; i<b.size(); i++)
     bwtSqd.push_back(bwtSqd.back()+pow(bwt[i],2.));
 
   double m0 = binningFigureOfMerit(hwtTotal, bwtTotal, 
@@ -262,7 +262,7 @@ void OptimalBinning::chooseSingleBinPoint(const vector<double>& h, const vector<
   double minWt = minWeight(epsilonWt);
   // cout << "minWt = " << minWt << endl;
 
-  for(int i=1; i<cutpoints.size()-1; i++)
+  for(size_t i=1; i<cutpoints.size()-1; i++)
     {
       int ih = upper_bound(h.begin(),h.end(),cutpoints[i])-h.begin();
       int ib = upper_bound(b.begin(),b.end(),cutpoints[i])-b.begin();
@@ -313,13 +313,13 @@ void OptimalBinning::chooseBinPoints_alreadySorted(const vector<double>& h, cons
   vector<double> _binPoints = binPoints;
   sort(_binPoints.begin(),_binPoints.end());
 
-  double _wtMC = wtMC(hwt,bwt);
+  //  double _wtMC = wtMC(hwt,bwt);
   double _nMC = nMC(hwt,bwt);
   //cout << "hwt = "; print(hwt);
   //cout << "bwt = "; print(bwt);
   //cout << "wtMC = " << wtMC(hwt,bwt) << " ; nMC = " << nMC(hwt,bwt) << " ; P = " << penaltyTermPerBin(_wtMC, _nMC, 1) << endl;
 
-  for(int i=0; i<_binPoints.size()+1; i++)
+  for(size_t i=0; i<_binPoints.size()+1; i++)
     {      
 
       double _binPoint, _improvement;
@@ -371,9 +371,9 @@ void OptimalBinning::chooseBinPoints(const vector<double>& h, const vector<doubl
 				     vector<double>& binPoints, vector<double>& improvement)
 {
   vector<double> hwt, bwt;
-  for(int i=0; i<h.size(); i++)
+  for(size_t i=0; i<h.size(); i++)
     hwt.push_back(wtMC);
-  for(int i=0; i<b.size(); i++)
+  for(size_t i=0; i<b.size(); i++)
     bwt.push_back(wtMC);
   chooseBinPoints(h, hwt, b, bwt, binPoints, improvement, wtMC);
   return;
