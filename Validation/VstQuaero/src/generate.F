@@ -182,7 +182,8 @@ C
 		 elseif (command(1:9).eq."unlimited") then
 		    unlimitedEvents = .true.
 		 elseif (command(1:8).eq."suspect=") then
-		    call suspectwrapper(command(9:len(command)))
+		    write(*,*) 'implement suspect wrapper  in Pythia'
+CC		    call suspectwrapper(command(9:len(command)))
 		 else		 
 		    call pygive(command(1:len_trim(command)))
 		 endif
