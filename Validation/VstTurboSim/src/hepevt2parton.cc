@@ -6,10 +6,8 @@
 #include "Validation/VstMathUtils/interface/Math.hh"
 #include "Validation/VstQuaeroUtils/interface/HepevtBlock.hh"
 #include "Validation/VstTurboSim/interface/QuaeroPartonObject.hh"
-//#include "KtJet/KtEvent.h"
-//#include "KtJet/KtUtil.h"
-#include "Validation/VstKtJet/interface/KtEvent.h"
-#include "Validation/VstKtJet/interface/KtUtil.h"
+#include "KtJet/KtEvent.h"
+#include "KtJet/KtUtil.h"
 #include "Validation/VstTurboSim/interface/hepevt2parton.hh"
 using namespace std;
 
