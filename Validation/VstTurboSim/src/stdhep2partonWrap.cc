@@ -1,8 +1,8 @@
 #include <iostream>
 #include <string>
 #include <cstdlib>
-#include "Validation/VstStdhep/interface/stdhep_mcfio.h"
-#include "Validation/VstStdhep/interface/stdhep_declarations.h"
+//#include "Validation/VstStdhep/interface/stdhep_mcfio.h"
+//#include "Validation/VstStdhep/interface/stdhep_declarations.h"
 #include "Validation/VstQuaeroUtils/interface/HepevtBlock.hh"
 
 #include "HepMC/HEPEVT_Wrapper.h"
@@ -20,7 +20,8 @@ void stdhep2partonWrap(std::string inputStdhepFilename,std::string outputTextFil
   int nevt = 0;
   int istr = 0;
 
-  int ierr = StdHepXdrReadInit(infile, nevt, istr);
+  //int ierr = StdHepXdrReadInit(infile, nevt, istr);
+  int ierr = 1;
   if (ierr != 0) {
     std::cout << "convertStdHep ERROR: problem opening input file: "
 	      << infile << std::endl; 
@@ -29,8 +30,8 @@ void stdhep2partonWrap(std::string inputStdhepFilename,std::string outputTextFil
   // start reading
   int i = 0;
   int lbl = 0;
-  while (ierr == 0) {
-    ierr = StdHepXdrRead(&lbl,istr);
+  /*  while (ierr == 0) {
+    //    ierr = StdHepXdrRead(&lbl,istr);
     if (ierr == 0) {
       ++i;
       if( lbl==1 || lbl==2 ) {
@@ -50,11 +51,11 @@ void stdhep2partonWrap(std::string inputStdhepFilename,std::string outputTextFil
 	}
 	stdhep2parton_(txtfile,outputTextFilename.length());
       } else if (lbl==200) {
-	StdHepXdrEnd(istr);
+	//	StdHepXdrEnd(istr);
 	ierr=1;
       }
     }
-  }
+    } */
   return;
 }
 
@@ -65,8 +66,8 @@ void stdhep2partonWrapSimple(std::string outputTextFilename, const HepevtEvent &
 
   HepMC::HEPEVT_Wrapper::set_event_number( e.nevhep );
   HepMC::HEPEVT_Wrapper::set_number_entries( e.particles.size() );
-  for ( int i1 = 1; i1 <= e.particles.size(); ++i1 ) {
-    int j1=i1-1;
+  for ( size_t i1 = 1; i1 <= e.particles.size(); ++i1 ) {
+    size_t j1=i1-1;
     HepevtParticle p = e.particles[j1];
     HepMC::HEPEVT_Wrapper::set_status( i1, p.isthep);
     HepMC::HEPEVT_Wrapper::set_id( i1, p.idhep);
@@ -76,6 +77,6 @@ void stdhep2partonWrapSimple(std::string outputTextFilename, const HepevtEvent &
     HepMC::HEPEVT_Wrapper::set_mass( i1, p.phep[4]);
     HepMC::HEPEVT_Wrapper::set_position( i1, p.vhep[0], p.vhep[1], p.vhep[2], p.vhep[3]);
   }
-  stdhep2parton_(txtfile,outputTextFilename.length());
+  //  stdhep2parton_(txtfile,outputTextFilename.length());
   return;
 }

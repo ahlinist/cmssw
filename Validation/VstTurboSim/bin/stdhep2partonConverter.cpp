@@ -7,7 +7,7 @@ Comments: This file is simply a wrapper for the fortran code
 ***************************************************************/
 
 #include <string>
-#include "VistaTools/TurboSim/interface/stdhep2partonWrap.hh"
+#include "Validation/VstTurboSim/interface/stdhep2partonWrap.hh"
 #include <unistd.h>
 #include <iostream>
 using namespace std;

@@ -21,14 +21,14 @@ First implementation: Summer 2003, at Fermilab and the University of Chicago
 #include <vector>
 #include <iostream>
 #include <fstream>
-#include "VistaTools/Quaero_utils/interface/QuaeroItemFile.hh"
-#include "VistaTools/Quaero_utils/interface/QuaeroEvent.hh"
-#include "VistaTools/Math_utils/interface/Math.hh"
-#include "VistaTools/TurboSim/interface/QuaeroPartonEvent.hh"
-#include "VistaTools/TurboSim/interface/TurboSimMorphisms1.hh"
-#include "VistaTools/TurboSim/interface/TurboSimMorphisms2.hh"
-#include "VistaTools/TurboSim/interface/stdhep2partonWrap.hh"
-#include "VistaTools/TurboSim/interface/hepevt2parton.hh"
+#include "Validation/VstQuaeroUtils/interface/QuaeroItemFile.hh"
+#include "Validation/VstQuaeroUtils/interface/QuaeroEvent.hh"
+#include "Validation/VstMathUtils/interface/Math.hh"
+#include "Validation/VstTurboSim/interface/QuaeroPartonEvent.hh"
+#include "Validation/VstTurboSim/interface/TurboSimMorphisms1.hh"
+#include "Validation/VstTurboSim/interface/TurboSimMorphisms2.hh"
+#include "Validation/VstTurboSim/interface/stdhep2partonWrap.hh"
+#include "Validation/VstTurboSim/interface/hepevt2parton.hh"
 #include <unistd.h>
 using namespace std;
 
@@ -103,7 +103,7 @@ int main(int argc, char* argv[]) {
     assert(argc == 4);
     string hepevtFileName = argv[2];
     string partonFileName = argv[3];
-    hepevt2parton(hepevtFileName, partonFileName);
+    //    hepevt2parton(hepevtFileName, partonFileName);
   }      
   
   else if(((string)argv[1])=="-prepareconvertHepevt") {
@@ -112,7 +112,7 @@ int main(int argc, char* argv[]) {
     string partonFileName = argv[3];
     //    hepevt_prepare(hepevtFileName, hepevtFileName+"_temp");
     //    hepevt2parton(hepevtFileName+"_temp", partonFileName);
-    hepevt2parton(hepevtFileName, partonFileName);
+    //    hepevt2parton(hepevtFileName, partonFileName);
 
     //    system(("rm " + hepevtFileName+"_temp").c_str());
   }  
