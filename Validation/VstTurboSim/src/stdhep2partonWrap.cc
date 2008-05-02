@@ -17,8 +17,6 @@ void stdhep2partonWrap(std::string inputStdhepFilename,std::string outputTextFil
   char  txtfile[230] = " ";
   strncpy(infile,inputStdhepFilename.c_str(),inputStdhepFilename.length());
   strncpy(txtfile,outputTextFilename.c_str(),outputTextFilename.length());
-  int nevt = 0;
-  int istr = 0;
 
   //int ierr = StdHepXdrReadInit(infile, nevt, istr);
   int ierr = 1;
@@ -28,8 +26,8 @@ void stdhep2partonWrap(std::string inputStdhepFilename,std::string outputTextFil
     return;
   }
   // start reading
-  int i = 0;
-  int lbl = 0;
+  /*  int i = 0;
+      int lbl = 0; */
   /*  while (ierr == 0) {
     //    ierr = StdHepXdrRead(&lbl,istr);
     if (ierr == 0) {

@@ -18,16 +18,16 @@ AdaptiveKDE::AdaptiveKDE() { }
 AdaptiveKDE::AdaptiveKDE(const std::vector<double>& _weights, 
 			 const std::vector<Kernel>& _kernels)
 {
-  int n = _weights.size();
+  size_t n = _weights.size();
   assert(n==_kernels.size());
   weights = _weights;
   double totalWeight = 0.;
-  for(int i=0; i<n; i++)
+  for(size_t i=0; i<n; i++)
     {
       assert(weights[i]>=0);
       totalWeight += weights[i];
     }
-  for(int i=0; i<n; i++) // normalize the sum of the weights to one
+  for(size_t i=0; i<n; i++) // normalize the sum of the weights to one
     weights[i] /= totalWeight;
   kernels = _kernels;
 }

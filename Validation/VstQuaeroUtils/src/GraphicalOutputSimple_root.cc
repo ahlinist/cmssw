@@ -832,23 +832,23 @@ void GraphicalOutputSimple_root::add1dPlots(
 		vector<vector<double> > fs(sigEvents.size(),vector<double>((int)nx));
 		vector<vector<double> > fb(bkgEvents.size(),vector<double>((int)nx));
 		vector<int> fd((int)nx);
-		for(int i=0; i<sigEvents.size(); i++)  {
-		  for(int j=0; j<sigEvents[i].size(); j++)  {
+		for(size_t i=0; i<sigEvents.size(); i++)  {
+		  for(size_t j=0; j<sigEvents[i].size(); j++)  {
 		    if(sigEvents[i][j][k]<xrange[0]) continue;
 		    int bin = (int)((sigEvents[i][j][k]-xrange[0])/dx);
 		    if((bin>=0)&&(bin<nx))
 		      fs[i][bin] += sigMultiplicativeFactor*sigWeights[i][j];
 		  }
 		}
-		for(int i=0; i<bkgEvents.size(); i++)  {
-		  for(int j=0; j<bkgEvents[i].size(); j++)  {
+		for(size_t i=0; i<bkgEvents.size(); i++)  {
+		  for(size_t j=0; j<bkgEvents[i].size(); j++)  {
 		    if(bkgEvents[i][j][k]<xrange[0]) continue;
 		    int bin = (int)((bkgEvents[i][j][k]-xrange[0])/dx);
 		    if((bin>=0)&&(bin<nx))
 		      fb[i][bin] += bkgWeights[i][j];
 		  }
 		}
-		for(int i=0; i<dataEvents.size(); i++)   {
+		for(size_t i=0; i<dataEvents.size(); i++)   {
 		  if(dataEvents[i][k]<xrange[0]) continue;
 		  int bin = (int)((dataEvents[i][k]-xrange[0])/dx);
 		  if((bin>=0)&&(bin<nx))

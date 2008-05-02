@@ -107,7 +107,7 @@ BumpStatistic::BumpStatistic(const string& _finalState, const string& _massVaria
     vector<double> tmp_datapts = producePseudoData(bkgpts, bkgwt, pseudoDataToProduce);
     pseudoDataProductionHasScannedBkgAlready = false;
     //do the adding now:
-    for (int i=0; i<tmp_datapts.size(); ++i)
+    for (size_t i=0; i<tmp_datapts.size(); ++i)
       datapts.push_back(tmp_datapts[i]);
   }
 
@@ -347,7 +347,7 @@ pair<double,double> BumpStatistic::countBkgAndDeltaBkg(const vector<double>& poi
   }
   double total=0;
   double total2=0;
-  for (int i=initialIndex; i<points.size(); ++i) {
+  for (size_t i=initialIndex; i<points.size(); ++i) {
     if(i>0) assert(points[i] >= points[i-1]);
     //next 2 lines: exploit vector being ordered to save time
     if ( points[i] < windowStart ) continue; 
@@ -383,7 +383,7 @@ void BumpStatistic::readWindowAndSidebands(const vector<double>& points, const d
     }
   }
   totalLeft=totalRight=total=0;
-  for (int i=initialIndex; i<points.size(); ++i) {
+  for (size_t i=initialIndex; i<points.size(); ++i) {
     if(i>0) assert(points[i] >= points[i-1]);
     //next 2 lines: exploit vector being ordered to save time
     if ( points[i] < leftBandStart ) continue; 
@@ -427,7 +427,7 @@ void BumpStatistic::readWindowAndSidebands(const std::vector<double>& points, co
     }
   }
   totalLeft=deltaLeft=totalRight=deltaRight=totalInWindow=deltaInWindow=0;
-  for (int i=initialIndex; i<points.size(); ++i) {
+  for (size_t i=initialIndex; i<points.size(); ++i) {
     if(i>0) assert(points[i] >= points[i-1]);
     //next 2 lines: exploit ordered to save time
     if ( points[i] < leftBandStart ) continue; 
@@ -482,7 +482,7 @@ void BumpStatistic::readWindowCentral(const std::vector<double>& points, const s
     }
   }
   totalInWindow=deltaInWindow=0;
-  for (int i=initialIndex; i<points.size(); ++i) {
+  for (size_t i=initialIndex; i<points.size(); ++i) {
     if(i>0) assert(points[i] >= points[i-1]);
     //next 2 lines: exploit ordered to save time
     if ( points[i] < windowStart ) continue; 
@@ -524,7 +524,7 @@ void BumpStatistic::readWindowJustData(const vector<double>& points, BumpCandida
   }
   bc.data = bc.dataLeftLeftHalf = bc.dataLeftRightHalf = bc.dataRightLeftHalf = bc.dataRightRightHalf = 0;
   bc.averagePositionLeftLeft = bc.averagePositionLeftRight = bc.averagePositionRightLeft = bc.averagePositionRightRight = 0;
-  for (int i=initialIndex; i<points.size(); ++i) {
+  for (size_t i=initialIndex; i<points.size(); ++i) {
     if(i>0) assert(points[i] >= points[i-1]);
     //next 2 lines: exploit vector being ordered to save time
     if ( points[i] < bc.leftBandStart ) continue; 
@@ -813,7 +813,7 @@ double BumpStatistic::spikeWeightInRegion(const vector<double>& points, const ve
     else
       break;
   }
-  for (int i=initialIndex; i<points.size(); ++i) {
+  for (size_t i=initialIndex; i<points.size(); ++i) {
     if(i>0) assert(points[i] >= points[i-1]);
     //next 2 lines: exploit vector being ordered to save time
     if ( points[i] < windowStart ) continue;
@@ -848,7 +848,7 @@ double BumpStatistic::spikeWeightInRegion(const vector<double>& points, const ve
     //keep reducing the largest weight(s) until there is no intolerable deviation any more
     if(debug) {
       finalTotalWeight=0;
-      for ( int i=0; i < weightsInRegion.size(); ++i )
+      for ( size_t i=0; i < weightsInRegion.size(); ++i )
 	finalTotalWeight += weightsInRegion[i];
       cout << "totalWeight= "<< finalTotalWeight<< " maxDeviation= "<< maxDeviation << " biggestWeight= " << weightsInRegion[weightsInRegion.size()-1] << endl << flush;
     }
@@ -866,7 +866,7 @@ double BumpStatistic::spikeWeightInRegion(const vector<double>& points, const ve
   }
   //Now, the goal of tolerance is met. Check how much weight we had to take out in total; that will be attributed to spike-weight.
   finalTotalWeight=0;
-  for ( int i=0; i < weightsInRegion.size(); ++i )
+  for ( size_t i=0; i < weightsInRegion.size(); ++i )
     finalTotalWeight += weightsInRegion[i];
   totalSpikeWeight = initialTotalWeight - finalTotalWeight;
   if(debug) cout << " Reduction over. finalTotalWeight= " << finalTotalWeight << " totalSpikeWeight= " << totalSpikeWeight << endl << flush;
@@ -1155,7 +1155,7 @@ vector<double> BumpStatistic::trimBumpsFromData(const std::vector<double>& _data
 
   vector<islandToTrim> islands;
   islands.clear();
-  for(int i=0; i<allBumpsJustData.size(); ++i) {
+  for(size_t i=0; i<allBumpsJustData.size(); ++i) {
     //assume that the bumpsJustData are sorted by increasing window center position.
     if (allBumpsJustData[i].pval <= pvalue) {
       //start the island in which we will substitute the data
@@ -1176,7 +1176,7 @@ vector<double> BumpStatistic::trimBumpsFromData(const std::vector<double>& _data
     }//go find next island if any
   }
   if(debug) cout << "Found in total " << islands.size() << " islands." << endl;
-  for(int i=0; i<_datapts.size(); ++i){
+  for(size_t i=0; i<_datapts.size(); ++i){
     bool shouldBeKept=true;
     for(int j=0; j<islands.size(); ++j) {
       if(islands[j].start<=_datapts[i] && _datapts[i]<=islands[j].end) {
@@ -1188,7 +1188,7 @@ vector<double> BumpStatistic::trimBumpsFromData(const std::vector<double>& _data
   }
   if(debug) cout << "Kept insignificant part: " << answer.size() << " of " << _datapts.size() << endl;
   //So far we have kept the non-bumpy regions.  We must fill the bumpy regions with smooth inclined p.d.f.
-  for(int i=0; i<islands.size(); ++i) {
+  for(size_t i=0; i<islands.size(); ++i) {
     if(debug) cout << "Filling island " << i << endl;
     double dL=islands[i].leftHeight;
     double A=islands[i].leftAveragePosition;
@@ -1229,7 +1229,7 @@ BumpStatistic::BumpCandidate BumpStatistic::findMostInterestingBump(const vector
   vector<BumpCandidate> allQualifyingCandidates;
   allQualifyingCandidates.clear();
 
-  for (int i=0; i < allCandidates.size(); ++i) 
+  for (size_t i=0; i < allCandidates.size(); ++i) 
     if (allCandidates[i].qualifies)
       allQualifyingCandidates.push_back(allCandidates[i]);
 
@@ -1262,7 +1262,7 @@ BumpStatistic::BumpCandidateJustData BumpStatistic::findMostInterestingBump(cons
   vector<BumpCandidateJustData> allQualifyingCandidates;
   allQualifyingCandidates.clear();
 
-  for (int i=0; i < allCandidates.size(); ++i) 
+  for (size_t i=0; i < allCandidates.size(); ++i) 
     if (allCandidates[i].qualifies)
       allQualifyingCandidates.push_back(allCandidates[i]);
   
@@ -1275,7 +1275,7 @@ BumpStatistic::BumpCandidateJustData BumpStatistic::findMostInterestingBump(cons
     mostInterestingBumpFound.windowEnd=0;
   }
   else {
-    for ( int i = 0; i < allQualifyingCandidates.size(); ++i) {
+    for ( size_t i = 0; i < allQualifyingCandidates.size(); ++i) {
       assert(allQualifyingCandidates[i].qualifies);
       if ( allQualifyingCandidates[i].pval <= smallestProb ) {
 	mostInterestingBumpFound = allQualifyingCandidates[i];
@@ -1378,7 +1378,7 @@ double BumpStatistic::probabilityDirectEstimation(const double& pvalmin) {
 
   double probAllBinsDontFluctuate = 1;
   if(debug) cout << "Estimating directly Probability(allBinsDontFluctuate) = Prod(1-thisGuyFluctuates) : " << flush;
-  for ( int i = 0 ; i < allBumps.size() ; ++i ) {
+  for ( size_t i = 0 ; i < allBumps.size() ; ++i ) {
     double probToPassQuality = probQualityIsMet(allBumps[i],20*(int)allBumps.size()); //had it 2*allBumps.size.  More would offer us some stability I hope.
     double probToPassPoisson = 0;
     //    probToPassPoisson = pvalmin; //ignoring the effect of integer data. Makes bumps look a little less significant than they are, by slightly overestimating P_a (=P=what we try to find here).
@@ -1675,7 +1675,7 @@ int BumpStatistic::signalNeededForDiscovery(const double& targetSigma, const dou
       // the most interesting bump isn't where we added the pseudo-signal.
       if(debug) {
 	cout << "Signal passed unnoticed. Let's see what happened in the populated window." << endl;
-	for ( int bcIndex = 0; bcIndex < allPseudoBumps.size(); ++bcIndex ) {
+	for ( size_t bcIndex = 0; bcIndex < allPseudoBumps.size(); ++bcIndex ) {
 	  BumpCandidate thisBC = allPseudoBumps[bcIndex];
 	  if(thisBC.windowStart<=signalMass && thisBC.windowEnd>signalMass) {
 	    checkQualityCriteria(thisBC);
@@ -1707,7 +1707,7 @@ int BumpStatistic::signalNeededForDiscovery(const double& targetSigma, const dou
   //Create pseudo-data and then find how much signal is needed at signalMass.
   if(debug) cout << "Probe sensitivity, using pseudo-data as a basis, at signalMass= " << signalMass << endl;
   vector<double> dataBasis;
-  double targetProbability = Math::sigma2prob(targetSigma);
+  //  double targetProbability = Math::sigma2prob(targetSigma);
   pseudoDataProductionHasScannedBkgAlready = false;
   dataBasis = producePseudoData(bkgpts, bkgwt); //it's sorted.
   pseudoDataProductionHasScannedBkgAlready = false;
@@ -1725,7 +1725,7 @@ string BumpStatistic::probeSensitivityAlongBackground(const double& targetSigma)
   string ans;
   if(debug) cout << "Probe sensitivity, using pseudo-data as a basis." << endl;
   vector<double> dataBasis;
-  double targetProbability = Math::sigma2prob(targetSigma);
+  //double targetProbability = Math::sigma2prob(targetSigma);
   pseudoDataProductionHasScannedBkgAlready = false;
   dataBasis = producePseudoData(bkgpts, bkgwt); //it's sorted.
   pseudoDataProductionHasScannedBkgAlready = false;
@@ -1933,7 +1933,7 @@ string BumpStatistic::reportPvalOfAllBumps() {
   }
   else {
     answer = finalState+"\n"+massVariable+"\n";
-    for ( int i = 0; i < allBumps.size(); ++i) {
+    for ( size_t i = 0; i < allBumps.size(); ++i) {
       answer += Math::ftoa(allBumps[i].windowCenter);
       answer += " ";
       if (isnan(allBumps[i].pval))
@@ -1955,7 +1955,7 @@ string BumpStatistic::reportContentsOfAllBumps() {
   }
   else {
     answer = finalState+"\n"+massVariable+"\n";
-    for ( int i = 0; i < allBumps.size(); ++i) {
+    for ( size_t i = 0; i < allBumps.size(); ++i) {
       answer += Math::ftoa((allBumps[i].windowStart + allBumps[i].windowEnd)/2);
       answer += " ";
       answer += Math::ftoa(allBumps[i].data) ;
@@ -1978,7 +1978,7 @@ string BumpStatistic::reportPvalOfAllBumpsJustData() {
   }
   else {
     answer = finalState+"\n"+massVariable+"\n";
-    for ( int i = 0; i < allBumpsJustData.size(); ++i) {
+    for ( size_t i = 0; i < allBumpsJustData.size(); ++i) {
       answer += Math::ftoa((allBumpsJustData[i].windowStart + allBumpsJustData[i].windowEnd)/2);
       answer += " ";
       answer += Math::ftoa(allBumpsJustData[i].pval) ;
@@ -2052,7 +2052,7 @@ double BumpStatistic::massResolution(double mass) {
   //separations are parentheses and intermediate commas
   vector<int> separations;
   separations.push_back(openPar);
-  for (int i=0; i < commaLocations.size(); ++i) {
+  for (size_t i=0; i < commaLocations.size(); ++i) {
     separations.push_back(commaLocations[i]);
     if(internalFunctionDebug) cout << "Comma at " << commaLocations[i] << endl;
   }
@@ -2060,7 +2060,7 @@ double BumpStatistic::massResolution(double mass) {
     
   //isolate objects between separations
   vector<string> objects;
-  for ( int i=0; i<=separations.size()-2; ++i) {
+  for ( size_t i=0; i<=separations.size()-2; ++i) {
     string thisObject=massVariableEffective.substr(separations[i]+1,separations[i+1]-separations[i]-1);
     if(internalFunctionDebug) cout << "thisObject= " << thisObject << endl;
     objects.push_back(thisObject);
@@ -2078,7 +2078,7 @@ double BumpStatistic::massResolution(double mass) {
 
   int category[4] = {0,0,0,0};
 
-  for ( int i=0; i < objects.size(); ++i ) {
+  for ( size_t i=0; i < objects.size(); ++i ) {
     if (objects[i].find("j",0) != string::npos)
       category[0]++;
     if (objects[i].find("b",0) != string::npos)

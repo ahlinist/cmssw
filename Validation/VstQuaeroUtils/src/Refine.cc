@@ -805,10 +805,10 @@ bool Refine::satisfiesCriteriaQ(QuaeroEvent& e)
 
       bool passesSingleCentralElectronTrigger = (e.numberOfObjects("e",ptThreshold1,1.0)>=1);
       bool passesSinglePlugElectronTrigger = (e.numberOfObjects("e",25,2.5)>=1);
-      bool passesPrescaledSinglePlugElectronTrigger = ((e.numberOfObjects("e",ptThreshold12,2.5)-
+      /*      bool passesPrescaledSinglePlugElectronTrigger = ((e.numberOfObjects("e",ptThreshold12,2.5)-
 							e.numberOfObjects("e",ptThreshold12,1.0)>=1)&&
 						       ((eventType!="data")||
-							((rn.length()>1)&&(rn.substr(rn.length()-1)=="0"))) );
+						       ((rn.length()>1)&&(rn.substr(rn.length()-1)=="0"))) ); */
 
       bool passesDiEmObjectTrigger = 
 	( ( (e.numberOfObjects("e",ptThreshold1,2.5)+
@@ -816,18 +816,18 @@ bool Refine::satisfiesCriteriaQ(QuaeroEvent& e)
 	  ( (e.numberOfObjects("e",ptThreshold1+5,2.5)+
 	     e.numberOfObjects("ph",ptThreshold1+5,2.5)) >=1 ) );
 
-      bool passesPrescaledSingleCentralElectronTrigger = 
+      /* bool passesPrescaledSingleCentralElectronTrigger = 
 	( (e.numberOfObjects("e",ptThreshold01,1.0)>=1) &&
 	  ((eventType!="data")||
 	   ((rn.length()>1)&&(rn.substr(rn.length()-1)=="0"))) );
-      bool passesPrescaledSingleCentralMuonTrigger = 
+	 bool passesPrescaledSingleCentralMuonTrigger = 
 	( (e.numberOfObjects("mu",ptThreshold01,1.0)>=1) &&
 	  ((eventType!="data")||
-	   ((rn.length()>1)&&(rn.substr(rn.length()-1)=="0"))) );
-      bool passesPrescaledSingleCentralPhotonTrigger = 
+	   ((rn.length()>1)&&(rn.substr(rn.length()-1)=="0"))) ); 
+        bool passesPrescaledSingleCentralPhotonTrigger = 
 	( (e.numberOfObjects("ph",ptThreshold2,1.0)>=1) &&
 	  ((eventType!="data")||
-	   ((rn.length()>1)&&(rn.substr(rn.length()-2)=="00"))) );
+	  ((rn.length()>1)&&(rn.substr(rn.length()-2)=="00"))) ); */
 
       int cem8 = e.numberOfObjects("e",ptThreshold0,1.0);
       int cem20 = e.numberOfObjects("e",ptThreshold01,1.0);
@@ -848,8 +848,8 @@ bool Refine::satisfiesCriteriaQ(QuaeroEvent& e)
 	   (Math::deltaphi(o[i].getFourVector().phi(),-M_PI/2)>0.5))
 	  passesSingleMuonTrigger = true;
 
-      bool passesDiTauTrigger = 
-	( (e.numberOfObjects("tau",ptThreshold0,1.0)>=2) );
+//    bool passesDiTauTrigger = 
+//	( (e.numberOfObjects("tau",ptThreshold0,1.0)>=2) );
       bool passesSinglePhotonTrigger = (e.numberOfObjects("ph",
 							  (level<=5 ? 55 : 60),
 							  1.0)>=1);
@@ -859,13 +859,13 @@ bool Refine::satisfiesCriteriaQ(QuaeroEvent& e)
 					    e.numberOfObjects("mu",ptThreshold0,1.0)
 					    // +e.numberOfObjects("tau",ptThreshold1,1.0)
 					    )>=1) );
-      bool passesPhotonBTrigger   = ( (e.numberOfObjects("ph", ptThreshold2, 1.0)>=1) &&
-				      (e.numberOfObjects("b",  ptThreshold0, 1.0)>=1) );
+//    bool passesPhotonBTrigger   = ( (e.numberOfObjects("ph", ptThreshold2, 1.0)>=1) &&
+//				      (e.numberOfObjects("b",  ptThreshold0, 1.0)>=1) );
       bool passesCentralLeptonBTrigger   = ( ( (e.numberOfObjects("e", ptThreshold1, 1.0)+
 						e.numberOfObjects("mu", ptThreshold1, 1.0)) >= 1 ) &&
 					     (e.numberOfObjects("b", ptThreshold0, 1.0)>=1) );
-      bool passesPlugElectronBTrigger  = ( (e.numberOfObjects("e", ptThreshold1, 2.5)>=1) &&
-					   (e.numberOfObjects("b", ptThreshold1, 1.0)>=1) );
+//    bool passesPlugElectronBTrigger  = ( (e.numberOfObjects("e", ptThreshold1, 2.5)>=1) &&
+//					   (e.numberOfObjects("b", ptThreshold1, 1.0)>=1) );
       bool passesPlugElectronCentralTauTrigger  = ( (e.numberOfObjects("e", ptThreshold2, 2.5)>=1) &&
 						    (e.numberOfObjects("tau", ptThreshold0, 1.0)>=1) );
       bool passesSingleJetTrigger = ((e.numberOfObjects("j", (level<=5 ? 150 : 200),1.0)+
@@ -873,8 +873,8 @@ bool Refine::satisfiesCriteriaQ(QuaeroEvent& e)
 				     >=1);
       bool passesSinglePlugPhotonTrigger = (e.numberOfObjects("ph", (level<=5 ? 250 : 300),2.5) >= 1 );
 
-      bool passesPlugPhotonBTrigger = ( (e.numberOfObjects("ph", ptThreshold2, 2.5) >= 1) &&
-					( (e.numberOfObjects("b",ptThreshold0,1.0)>=1) ) );
+//    bool passesPlugPhotonBTrigger = ( (e.numberOfObjects("ph", ptThreshold2, 2.5) >= 1) &&
+//					( (e.numberOfObjects("b",ptThreshold0,1.0)>=1) ) );
 
       bool passesCentralPhotonTauTrigger = ( (e.numberOfObjects("ph", ptThreshold2, 1.0)>=1) &&
 					     (e.numberOfObjects("tau",ptThreshold2, 1.0)>=1) );
@@ -1110,8 +1110,8 @@ bool Refine::satisfiesCriteriaQ(QuaeroEvent& e)
 		o[i].chargeConjugate();
 	  // Two plug electrons with the same sign should have opposite sign
 	  string plugElectronIfPresent = "";
-	  double pTofHighestPtPlugElectron = 0;
-	  for(int i=0; i<o.size(); i++)
+	  //	  double pTofHighestPtPlugElectron = 0;
+	  for(size_t i=0; i<o.size(); i++)
 	    if((o[i].getObjectTypeSansSign()=="e")&&
 	       (fabs(Math::theta2eta(o[i].getFourVector().theta()))>0.9))
 	      for(size_t j=i+1; j<o.size(); j++)
@@ -1187,12 +1187,12 @@ bool Refine::satisfiesCriteriaQ(QuaeroEvent& e)
       if(!((hintSpec.collider=="tev2")&&
 	   (hintSpec.experiment=="cdf")&&
 	   (hintSpec.finalState=="lowPtDileptons")))
-	for(int i=0; i<o.size(); i++)
+	for(size_t i=0; i<o.size(); i++)
 	  if( (fabs(Math::theta2eta(o[i].getFourVector().theta()))>2.5) ||
 	      (o[i].getFourVector().perp()<15) ) 
 	    o[i] = QuaeroRecoObject("uncl",o[i].getFourVector());
       HepLorentzVector uncl = HepLorentzVector(0,0,0,0);
-      for(int i=o.size()-1; i>=0; i--)
+      for(size_t i=o.size()-1; i>=0; i--)
 	if(o[i].getObjectType()=="uncl")
 	  {
 	    uncl = uncl + o[i].getFourVector();
@@ -1353,7 +1353,7 @@ bool Refine::satisfiesCriteriaQ(QuaeroEvent& e)
       string rn = e.getRunNumber();
       string::size_type pos = rn.find (".",0);   // find the dot
       string runNumberString = rn.substr(0,pos); // keep only the run number string.
-      int runNumber = atoi(runNumberString.c_str());
+      //      int runNumber = atoi(runNumberString.c_str());
    
       if(level>=5)
 	{
