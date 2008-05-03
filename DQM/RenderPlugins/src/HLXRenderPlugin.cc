@@ -8,7 +8,7 @@
 //
 // Original Author:  
 //         Created:  Sat Apr 19 20:02:57 CEST 2008
-// $Id$
+// $Id: HLXRenderPlugin.cc,v 1.1 2008/05/03 19:03:28 neadam Exp $
 //
 
 // system include files
@@ -43,7 +43,6 @@
 void HLXRenderPlugin::initialise( int argc, char **argv ) 
 {
 
-  std::cerr << "HLX Render plugin initialize." << std::endl;
 }
 
 bool HLXRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &i ) 
@@ -51,22 +50,17 @@ bool HLXRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo 
   std::cerr << "HLX Render plugin in applies!!!!" << std::endl;
  
   if( o.name.find( "/HLX/HFPlus/Wedge" )  == 0 ){
-    std::cerr << "1. Find == 0" << std::endl;
     return true;
   }
   if( o.name.find( "/HLX/HFMinus/Wedge" ) == 0 ){
-    std::cerr << "2. Find == 0" << std::endl;
     return true;
   }
   if( o.name.find( "/HLX/HFCompare" )     == 0 ){
-    std::cerr << "3. Find == 0" << std::endl;
     return true;
   }
   if( o.name.find( "/HLX/Average" )       == 0 ){ 
-    std::cerr << "3. Find == 0" << std::endl;
     return true;
   }
-  std::cerr << "4. Nothing found." << std::endl;
   return false;
 }
 
@@ -74,9 +68,6 @@ void HLXRenderPlugin::preDraw( TCanvas *c, const DQMNet::CoreObject &o,
 			       const VisDQMImgInfo &i, VisDQMRenderInfo &r ) 
 {
 
-#ifdef DEBUG
-   std::cerr << "HLXRenderPlugin:preDraw " << o.name << std::endl;
-#endif
 
    c->cd();
 
@@ -106,9 +97,6 @@ void HLXRenderPlugin::preDraw( TCanvas *c, const DQMNet::CoreObject &o,
 
    r.drawOptions = "";
 
-#ifdef DEBUG
-   std::cerr << "done" << std::endl;
-#endif
 
 }
 
@@ -149,9 +137,6 @@ void HLXRenderPlugin::postDraw( TCanvas *c, const DQMNet::CoreObject &o,
 			       const VisDQMImgInfo &i ) 
 {
 
-#ifdef DEBUG
-   std::cerr << "HLXRenderPlugin:postDraw " << o.name << std::endl;
-#endif
 
    // Do nothing here for now ...
 
