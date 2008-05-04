@@ -16,7 +16,7 @@
 //
 // Original Author:  Efe Yazgan
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.4 2008/04/28 13:15:26 efe Exp $
+// $Id: HcalProm.h,v 1.1 2008/04/30 20:57:31 fedor Exp $
 //
 //
 
@@ -38,10 +38,22 @@ class TH2F;
 //
 // class decleration
 //
-
 class HcalProm : public edm::EDAnalyzer {
    public:
       explicit HcalProm(const edm::ParameterSet&);
+      void Extrapolate(
+              double ox,
+              double oy,
+              double oz,
+              double px,
+              double py,
+              double pz,
+              double radius,
+              double *thetap_out,
+              double *phip_out,
+              double *thetam_out,
+              double *phim_out
+              );
       ~HcalProm();
 
 
@@ -53,7 +65,12 @@ class HcalProm : public edm::EDAnalyzer {
   edm::Service<TFileService> fs;
 
   TH1F* h_hcal_rechit_energy;
+  TH1F* h_caloMet_energy;
   TH2F* h_eta_phi_HBHE;	
+  TH1F* h_hf_rechit_energy;
+  TH2F* h_eta_phi_HF;
+  TH1F* h_ho_rechit_energy;
+  TH2F* h_eta_phi_HO;
 
   TH1F* h_ecal_rechit_energy;
 
@@ -71,6 +88,7 @@ class HcalProm : public edm::EDAnalyzer {
   TH1F* h_jet_energy;
   TH1F* h_jet_eta;
   TH1F* h_jet_phi;
+  TH1F* h_jet_highestPt;
 
   TH1F* h_muon_vertex_x;
   TH1F* h_muon_px;
@@ -78,5 +96,16 @@ class HcalProm : public edm::EDAnalyzer {
 
   TH2F* h_ecalx_vs_muonx;
   TH1F* h_impact_diff;
+
+  TH2F*  DT_HCAL_eta_correlation;
+  TH2F*  DT_HCAL_eta_correlation_all;
+  TH2F*  DT_HCAL_phi_correlation;
+  TH2F*  DT_HCAL_phi_correlation_all;
+
+  TH1F*  HCAL_energy_correlation;
+  TH1F*  HCAL_energy_correlation_all;
+
+
+
   int TrigDT;
 };
