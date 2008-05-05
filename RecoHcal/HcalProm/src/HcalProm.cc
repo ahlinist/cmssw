@@ -16,7 +16,7 @@
 //
 // Original Author:  Efe Yazgan
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.3 2008/04/28 12:58:46 efe Exp $
+// $Id: HcalProm.cc,v 1.6 2008/05/04 23:11:28 fedor Exp $
 //
 //
 
@@ -52,6 +52,8 @@
 #include "DataFormats/JetReco/interface/Jet.h"
 
 #include "DataFormats/Candidate/interface/Candidate.h"
+//Missing Et
+#include "DataFormats/METReco/interface/CaloMETCollection.h"
 
 //ecal
 #include "DataFormats/EcalRecHit/interface/EcalRecHit.h"
@@ -88,52 +90,13 @@
 #include <TCanvas.h>
 #include <cmath>
 
+#include "HcalProm.h"
 
-//
-// class decleration
-//
-
-class HcalProm : public edm::EDAnalyzer {
-   public:
-      explicit HcalProm(const edm::ParameterSet&);
-      ~HcalProm();
+#include <iostream>
+#include <algorithm>
+#include <vector>
 
 
-   private:
-      virtual void beginJob(const edm::EventSetup&) ;
-      virtual void analyze(const edm::Event&, const edm::EventSetup&);
-      virtual void endJob() ;
-      // ----------member data ---------------------------
-  edm::Service<TFileService> fs;
-
-  TH1F* h_hcal_rechit_energy;
-  TH2F* h_eta_phi_HBHE;	
-
-  TH1F* h_ecal_rechit_energy;
-
-
-  TH1F* h_hbtiming;
-
-  TH1F* h_ecal_cluster_energy;
-  TH1F* h_ecal_cluster_eta;
-  TH1F* h_ecal_cluster_phi;
-  TH2F* h_ecal_vs_hcal_X;
-  TH2F* h_ecal_vs_hcal_Y; 
-
-  TH1F* h_calo_tower_energy;
-
-  TH1F* h_jet_energy;
-  TH1F* h_jet_eta;
-  TH1F* h_jet_phi;
-
-  TH1F* h_muon_vertex_x;
-  TH1F* h_muon_px;
-  TH1F* h_muon_p;
-
-  TH2F* h_ecalx_vs_muonx;
-  TH1F* h_impact_diff;
-  int TrigDT;
-};
 
 //
 // constants, enums and typedefs
@@ -146,6 +109,8 @@ class HcalProm : public edm::EDAnalyzer {
 //
 // constructors and destructor
 //
+
+
 HcalProm::HcalProm(const edm::ParameterSet& iConfig)
 
 {
@@ -177,8 +142,20 @@ HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
    //hcal rechits
    Handle<HBHERecHitCollection> hbhe;
-   iEvent.getByLabel("hbhereco", hbhe);
+   iEvent.getByLabel("hbhereco_", hbhe);
    const HBHERecHitCollection Hithbhe = *(hbhe.product());
+
+   Handle<HFRecHitCollection> hfrh;
+   iEvent.getByLabel("hfreco",hfrh);
+   const HFRecHitCollection Hithf = *(hfrh.product());
+ 
+   Handle<HORecHitCollection> horh; 
+   iEvent.getByLabel( "horeco", horh );
+   const HORecHitCollection Hitho = *(horh.product());
+
+   // Missing Et
+//   Handle<CaloMETCollection> recmet;  
+//   iEvent.getByLabel( "met", recmet ); 
 
    //hcal digis
    Handle<HBHEDigiCollection> hbhe_digi; 
@@ -221,7 +198,19 @@ HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    Handle<L1GlobalTriggerReadoutRecord> gtrr_handle; 
    iEvent.getByLabel("l1GtUnpack",gtrr_handle);
    L1GlobalTriggerReadoutRecord const* gtrr = gtrr_handle.product();
-   
+
+   string errMsg("");
+   try {
+    iEvent.getByLabel ("hbhereco", hbhe);
+   } catch (const cms::Exception& e){
+    errMsg=errMsg + "  -- No  hbhereco\n"+e.what();
+   }
+
+   if (errMsg != ""){
+    errMsg=errMsg + ".";
+    std::cout << "% Warning" << errMsg << std::endl;
+   }
+
    bool dt_l1a = false;
    bool rpc_l1a = false;
    bool hcal_l1a = false;
@@ -277,9 +266,9 @@ HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    if(rpc_l1a) std::cout << "RPC" << std::endl;
    if(hcal_l1a) std::cout << "HCAL" << std::endl;
    std::cout << "************************" << std::endl;
+   
 
-
-
+   
    int adcs[10] = {};
 
    //CORRECT:  Timing plot should be done using linearized ADC's!
@@ -298,10 +287,25 @@ HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    }
 
 
+
   for (HBHERecHitCollection::const_iterator hhit=Hithbhe.begin(); hhit!=Hithbhe.end(); hhit++) {
     if (hhit->energy() > 0.6){
       h_hcal_rechit_energy->Fill(hhit->energy());
       h_eta_phi_HBHE->Fill((hhit->id()).ieta(),(hhit->id()).iphi());
+    }
+  }
+
+  for (HFRecHitCollection::const_iterator hhit=Hithf.begin(); hhit!=Hithf.end(); hhit++) {
+    if (hhit->energy() > 0.6){
+      h_hf_rechit_energy->Fill(hhit->energy());
+      h_eta_phi_HF->Fill((hhit->id()).ieta(),(hhit->id()).iphi());
+    }
+  }
+
+  for (HORecHitCollection::const_iterator hhit=Hitho.begin(); hhit!=Hitho.end(); hhit++) {
+    if (hhit->energy() > 0.6){
+      h_ho_rechit_energy->Fill(hhit->energy());
+      h_eta_phi_HO->Fill((hhit->id()).ieta(),(hhit->id()).iphi());
     }
   }
 
@@ -316,12 +320,11 @@ HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   }
 
   for (reco::BasicClusterCollection::const_iterator clus = clusterCollection_p->begin(); clus != clusterCollection_p->end(); ++clus)
-   {
+    {
      double energy_eb_basic_cluster = clus->energy();
      double phi_eb_basic_cluster    = clus->phi();
      double eta_eb_basic_cluster    = clus->eta();
    }
-
 
   for(TrackCollection::const_iterator ncm = cosmicmuon->begin(); ncm != cosmicmuon->end();  ++ncm) {
     h_muon_vertex_x->Fill(ncm->vx());
@@ -329,10 +332,18 @@ HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     h_muon_p->Fill(ncm->p());
   }
 
+
+  std::vector<double> value;
   for (CaloJetCollection::const_iterator jetiter=cjet.begin(); jetiter!=cjet.end(); jetiter++){
     h_jet_energy->Fill(jetiter->energy());
     h_jet_eta->Fill(jetiter->eta());
     h_jet_phi->Fill(jetiter->phi());
+    value.push_back(jetiter->pt());
+  }
+
+  std::sort(value.begin(), value.end());
+  if(value.size()>0){
+  h_jet_highestPt->Fill(value[value.size()-1]);
   }
 
   for (CaloTowerCollection::const_iterator kal=calohbhe.begin(); kal!=calohbhe.end(); kal++){	
@@ -365,7 +376,12 @@ void HcalProm::beginJob(const edm::EventSetup&)
   //Add runnumbers to histograms!
 
   h_hcal_rechit_energy = HcalDir.make<TH1F>(" h_hcal_rechit_energy","RecHit Energy HBHE",130,-10,120);
+  h_caloMet_energy = HcalDir.make<TH1F>(" h_caloMet_energy","CaloMET0 Energy",130,-10,120);
   h_eta_phi_HBHE = HcalDir.make<TH2F>("h_eta_phi_HBHE","#eta(HBHE)",100,-7,7,100,-7,7);
+  h_hf_rechit_energy = HcalDir.make<TH1F>(" h_hf_rechit_energy","RecHit Energy HF",130,-10,120);
+  h_eta_phi_HF = HcalDir.make<TH2F>("h_eta_phi_HF","#eta(HF)",100,-7,7,100,-7,7);
+  h_ho_rechit_energy = HcalDir.make<TH1F>(" h_ho_rechit_energy","RecHit Energy HO",130,-10,120);
+  h_eta_phi_HO = HcalDir.make<TH2F>("h_eta_phi_HO","#eta(HO)",100,-7,7,100,-7,7);
   h_hbtiming = HcalDir.make<TH1F>("h_hbtiming","HBHE Timing",10,-0.5,9.5);
 
   h_ecal_rechit_energy = EcalDir.make<TH1F>(" h_ecal_rechit_energy","RecHit Energy EB",130,-10,120);
@@ -382,6 +398,7 @@ void HcalProm::beginJob(const edm::EventSetup&)
   h_jet_energy = JetMetDir.make<TH1F>("h_jet_energy","Jet Energy",130,-10,120);
   h_jet_eta = JetMetDir.make<TH1F>("h_jet_eta","#eta(j)",100,-7,7);
   h_jet_phi = JetMetDir.make<TH1F>("h_jet_phi","#phi(j)",100,-7,7);
+  h_jet_highestPt = JetMetDir.make<TH1F>("h_jet_highestPt","Highest Jet pT",7000,0,7000);
 
   h_muon_vertex_x = MuonDir.make<TH1F>("h_muon_vertex_x","Muon Vertex X",10000,-1000,1000);
   h_muon_px = MuonDir.make<TH1F>("h_muon_px","P_{X}(#mu)",1000,-10,100);
@@ -396,5 +413,3 @@ void HcalProm::beginJob(const edm::EventSetup&)
 void HcalProm::endJob() {
 }
 
-//define this as a plug-in
-DEFINE_FWK_MODULE(HcalProm);
