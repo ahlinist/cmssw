@@ -40,6 +40,8 @@ bumpSource=${sourceDir}/bump.txt
 workingDir=${sourceDir}/
 PLOTSPOLICY="LOCALLY"
 
+echo "aha"
+
 while getopts o:e:p: OPT; do
  case $OPT in
  o) # Define workingDir, where to put the results
@@ -67,6 +69,8 @@ while getopts o:e:p: OPT; do
       ;;
  esac
 done
+
+echo ${workingDir}
 
 if [ ! -d ${workingDir} ]; then
     mkdir -p ${workingDir}
