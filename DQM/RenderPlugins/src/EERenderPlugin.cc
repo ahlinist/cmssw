@@ -69,8 +69,7 @@ void EERenderPlugin::initialise( int argc, char **argv ) {
   text7 = new TH2C( "ee_text7", "text7", 10, 0., 100., 10, 0., 100. );
   text8 = new TH2C( "ee_text8", "text8", 10, -150., 150., 10, -150., 150. );
   text9 = new TH2C( "ee_text9", "text9", 10, -150., 150., 10, -150., 150. );
-  text10 = new TH2C( "ee_text10", "text10", 10, 0., 20., 10, 0., 20. );
-  text11 = new TH2C( "ee_text11", "text11", 10, 0., 20., 10, 0., 20. );
+  text10 = new TH2C( "ee_text10", "text10", 20, 0., 40., 10, 0., 20. );
 
   text1->SetMinimum(  0.01 );
   text3->SetMinimum(  0.01 );
@@ -80,14 +79,12 @@ void EERenderPlugin::initialise( int argc, char **argv ) {
   text8->SetMinimum( -9.01 );
   text9->SetMinimum( +0.01 );
   text10->SetMinimum( -9.01 );
-  text11->SetMinimum( +0.01 );
 
   text6->SetMaximum( -0.01 );
   text7->SetMaximum( +9.01 );
   text8->SetMaximum( -0.01 );
   text9->SetMaximum( +9.01 );
   text10->SetMaximum( -0.01 );
-  text11->SetMaximum( +9.01 );
 
   for ( short j=0; j<400; j++ ) {
     int x = 5*(1 + j%20);
@@ -102,7 +99,7 @@ void EERenderPlugin::initialise( int argc, char **argv ) {
       text8->SetBinContent(i, j, -10);
       text9->SetBinContent(i, j, -10);
       text10->SetBinContent(i, j, -10);
-      text11->SetBinContent(i, j, -10);
+      text10->SetBinContent(20+i, j, -10);
     }
   }
   for( short i=0; i<2; i++ ) {
@@ -160,15 +157,15 @@ void EERenderPlugin::initialise( int argc, char **argv ) {
   text10->SetBinContent(6, 2, -5);
   text10->SetBinContent(3, 3, -6);
 
-  text11->SetBinContent(2, 5, +3);
-  text11->SetBinContent(2, 7, +2);
-  text11->SetBinContent(4, 9, +1);
-  text11->SetBinContent(7, 9, +9);
-  text11->SetBinContent(9, 7, +8);
-  text11->SetBinContent(9, 5, +7);
-  text11->SetBinContent(8, 3, +6);
-  text11->SetBinContent(5, 2, +5);
-  text11->SetBinContent(3, 3, +4);
+  text10->SetBinContent(10+2, 5, +3);
+  text10->SetBinContent(10+2, 7, +2);
+  text10->SetBinContent(10+4, 9, +1);
+  text10->SetBinContent(10+7, 9, +9);
+  text10->SetBinContent(10+9, 7, +8);
+  text10->SetBinContent(10+9, 5, +7);
+  text10->SetBinContent(10+8, 3, +6);
+  text10->SetBinContent(10+5, 2, +5);
+  text10->SetBinContent(10+3, 3, +4);
 
   text1->SetMarkerSize( 2 );
   text3->SetMarkerSize( 2 );
@@ -178,7 +175,6 @@ void EERenderPlugin::initialise( int argc, char **argv ) {
   text8->SetMarkerSize( 2 );
   text9->SetMarkerSize( 2 );
   text10->SetMarkerSize( 2 );
-  text11->SetMarkerSize( 2 );
 
 }
 
@@ -478,17 +474,16 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->GetYaxis()->SetNdivisions(2);
   }
 
-  if( name.find( "errorSummaryXYM" ) < name.size() ) {
-    obj->SetMinimum(-0.01);
-    obj->SetMaximum(+1.00);
-    gStyle->SetPalette(5);
-    obj->SetOption("colz");
-    gStyle->SetPaintTextFormat("+g");
-    return;
+  if( nbx == 40 && nby == 20 ) {
+    gPad->SetGridx();
+    gPad->SetGridy();
+    obj->GetXaxis()->SetNdivisions(20);
+    obj->GetYaxis()->SetNdivisions(10);
   }
 
-  if( name.find( "errorSummaryXYP" ) < name.size() ) {
-    obj->SetMinimum(0.0);
+  if( name.find( "reportSummaryMap" ) < name.size() ) {
+    obj->SetMinimum(-0.01);
+    obj->SetMaximum(+1.00);
     gStyle->SetPalette(5);
     obj->SetOption("colz");
     gStyle->SetPaintTextFormat("+g");
@@ -749,10 +744,9 @@ void EERenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
   l.SetLineWidth(1);
   for ( int i=0; i<201; i=i+1){
     if ( (Numbers::ixSectorsEE[i]!=0 || Numbers::iySectorsEE[i]!=0) && (Numbers::ixSectorsEE[i+1]!=0 || Numbers::iySectorsEE[i+1]!=0) ) {
-      if ( name.find( "errorSummaryXYM") < name.size() ) {
+      if ( name.find( "reportSummaryMap") < name.size() ) {
         l.DrawLine(0.2*Numbers::ixSectorsEE[i], 0.2*Numbers::iySectorsEE[i], 0.2*Numbers::ixSectorsEE[i+1], 0.2*Numbers::iySectorsEE[i+1]);
-      } else if ( name.find( "errorSummaryXYP") < name.size() ) {
-        l.DrawLine(0.2*Numbers::ixSectorsEE[i], 0.2*Numbers::iySectorsEE[i], 0.2*Numbers::ixSectorsEE[i+1], 0.2*Numbers::iySectorsEE[i+1]);
+        l.DrawLine(20+0.2*Numbers::ixSectorsEE[i], 0.2*Numbers::iySectorsEE[i], 20+0.2*Numbers::ixSectorsEE[i+1], 0.2*Numbers::iySectorsEE[i+1]);
       } else if( name.find( "EECLT" ) < name.size() ) {
         l.DrawLine(3.0*(Numbers::ixSectorsEE[i]-50), 3.0*(Numbers::iySectorsEE[i]-50), 3.0*(Numbers::ixSectorsEE[i+1]-50), 3.0*(Numbers::iySectorsEE[i+1]-50));
       } else {
@@ -816,7 +810,7 @@ void EERenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( name.find( "errorSummaryXYM" ) < name.size() ) {
+  if( name.find( "reportSummaryMap" ) < name.size() ) {
     int x1 = text10->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
     int x2 = text10->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
     int y1 = text10->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
@@ -824,17 +818,6 @@ void EERenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     text10->GetXaxis()->SetRange(x1, x2);
     text10->GetYaxis()->SetRange(y1, y2);
     text10->Draw("text,same");
-    return;
-  }
-
-  if( name.find( "errorSummaryXYP" ) < name.size() ) {
-    int x1 = text11->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-    int x2 = text11->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-    int y1 = text11->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-    int y2 = text11->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-    text11->GetXaxis()->SetRange(x1, x2);
-    text11->GetYaxis()->SetRange(y1, y2);
-    text11->Draw("text,same");
     return;
   }
 

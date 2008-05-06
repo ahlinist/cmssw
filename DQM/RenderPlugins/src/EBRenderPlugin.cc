@@ -419,7 +419,7 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->GetYaxis()->SetNdivisions(2, kFALSE);
   }
 
-  if( name.find( "errorSummaryPhiEta" ) < name.size() ) {
+  if( name.find( "reportSummaryMap" ) < name.size() ) {
     obj->SetMinimum(-0.01);
     obj->SetMaximum(+1.00);
     gStyle->SetPalette(5);
@@ -762,7 +762,7 @@ void EBRenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( name.find( "errorSummaryPhiEta" ) < name.size() ) {
+  if( name.find( "reportSummaryMap" ) < name.size() ) {
     int x1 = text9->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
     int x2 = text9->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
     int y1 = text9->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
