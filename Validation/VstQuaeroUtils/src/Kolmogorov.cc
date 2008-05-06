@@ -270,25 +270,25 @@ void Kolmogorov::identifyRelevantVariables(vector<size_t>& whichVariables, vecto
 	h2v[j] = h2[j][i];
       for(int j=0; j<h1.size(); j++)
 	h1v[j] = h1[j][i]; */
-      std::cout << " i = " << i << endl;
+      //      std::cout << " i = " << i << endl;
       for(size_t j=0; j<h2.size(); j++) {
 	h2v[j] = h2[j][i];
-	std::cout << h2v[j] << " ";
+	//std::cout << h2v[j] << " ";
       }
-      std::cout << endl;
+      //std::cout << endl;
       for(size_t j=0; j<h1.size(); j++) {
 	h1v[j] = h1[j][i];
-	std::cout << h1v[j] << " ";
+	//std::cout << h1v[j] << " ";
       }
-      std::cout << endl;
-      for(size_t j=0; j<h2wt.size(); j++) {
+      //std::cout << endl;
+      /*for(size_t j=0; j<h2wt.size(); j++) {
 	std::cout << h2wt[j] << " ";
       }
       std::cout << endl;
       for(size_t j=0; j<h1wt.size(); j++) {
 	std::cout << h1wt[j] << " ";
       }
-      std::cout << endl;
+      std::cout << endl;*/
       similarities[i] = vector<double>(2);
       similarities[i][0] = 1. - Kolmogorov(h2v, h2wt, h1v, h1wt).deviation();
       similarities[i][1] = i;
