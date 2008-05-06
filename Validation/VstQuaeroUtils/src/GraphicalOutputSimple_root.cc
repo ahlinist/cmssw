@@ -919,7 +919,8 @@ void GraphicalOutputSimple_root::draw(string plotFileName, string mainCommandFil
   fRootFile << rootMacroFooter <<endl;
   fRootFile.close();
 
-  string executionCommand = "source ~cdfsoft/cdf2.shrc; setup cdfsoft2 6.1.2; root -q -b "+mainCommandFileName;
+  string executionCommand = "root -q -b "+mainCommandFileName;
+  //  string executionCommand = "source ~cdfsoft/cdf2.shrc; setup cdfsoft2 6.1.2; root -q -b "+mainCommandFileName;
 #ifdef QUAERO_CC_PLATFORM_clued0
   executionCommand = "source ~/.login; setup D0RunII p18.08.00; root -q -b "+mainCommandFileName;
 #endif
