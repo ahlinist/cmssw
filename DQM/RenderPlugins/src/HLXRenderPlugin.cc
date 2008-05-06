@@ -8,7 +8,7 @@
 //
 // Original Author:  
 //         Created:  Sat Apr 19 20:02:57 CEST 2008
-// $Id: HLXRenderPlugin.cc,v 1.1 2008/05/03 19:03:28 neadam Exp $
+// $Id: HLXRenderPlugin.cc,v 1.2 2008/05/03 19:05:27 neadam Exp $
 //
 
 // system include files
@@ -47,7 +47,6 @@ void HLXRenderPlugin::initialise( int argc, char **argv )
 
 bool HLXRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &i ) 
 {
-  std::cerr << "HLX Render plugin in applies!!!!" << std::endl;
  
   if( o.name.find( "/HLX/HFPlus/Wedge" )  == 0 ){
     return true;
@@ -148,9 +147,6 @@ void HLXRenderPlugin::postDraw( TCanvas *c, const DQMNet::CoreObject &o,
 //       postDrawTH1F( c, o );
 //    }
 
-#ifdef DEBUG
-   std::cerr << "done" << std::endl;
-#endif
 
 }
 
