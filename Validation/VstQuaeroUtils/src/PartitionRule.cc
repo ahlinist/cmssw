@@ -35,6 +35,8 @@ PartitionRule::PartitionRule(std::string _ruleType)
   distinguishCharge = true;
   maximumNumberOfJetsToIdentify = 99;
   pmin = 0;
+  pmin_leptons = 0;
+  pmin_pmiss = 0;
 
   possibleObjects = vector<string>(0);
   possibleObjects.push_back("e+");
@@ -73,6 +75,15 @@ PartitionRule::PartitionRule(std::string _ruleType)
       usePmiss = false;
       distinguishCharge = false;
     }
+
+  pmin_leptons = (ruleType=="tev2-Vista-lowPtDileptons" ? 4 : pmin);
+  pmin_pmiss = pmin;
+  if(ruleType.find("jetIgnore")!=string::npos) {
+    pmin=100000;
+    pmin_leptons = 0;
+    pmin_pmiss = 0;
+  }
+
   if((ruleType.find("tev2-Vista")!=string::npos)||
      (ruleType.find("tev2-Quaero")!=string::npos))
     {
@@ -149,6 +160,7 @@ PartitionRule::PartitionRule(std::string _ruleType)
   if(ruleType.find("jetInclusive")!=string::npos)
     maximumNumberOfJetsToIdentify = 2;
 
+
   if((ruleType=="lep2-Vista") ||
      (ruleType=="lep2-TurboSim") ||
      (ruleType=="lep2-Quaero") ||
@@ -160,8 +172,8 @@ PartitionRule::PartitionRule(std::string _ruleType)
      (ruleType=="tev2-Vista-") ||
      (ruleType=="tev2-Vista-lowPtDileptons") ||
      (ruleType=="tev2-TurboSim") ||
-     (ruleType=="tev2-Vista-jetInclusive") ||
      (ruleType=="tev2-TurboSim-jetInclusive") ||
+     (ruleType=="tev2-Vista-jetInclusive") ||
      (ruleType=="tev2-Quaero") ||
      (ruleType=="tev2-Sleuth") ||
 
@@ -170,6 +182,8 @@ PartitionRule::PartitionRule(std::string _ruleType)
      (ruleType=="hera-Quaero") ||
 
      (ruleType=="lhc-Vista") ||
+     (ruleType=="lhc-Vista-jetInclusive") ||
+     (ruleType=="lhc-Vista-jetIgnore") ||
      (ruleType=="lhc-TurboSim") ||
      (ruleType=="lhc-Sleuth") ||
 
@@ -203,7 +217,7 @@ FinalState PartitionRule::getFinalState(QuaeroEvent & event)
   bool dropTheEvent = false;
 
   // At CDF, events with one central electron and one plug photon should have two electrons
-  if(ruleType.find("tev2")!=string::npos)
+/*  if(ruleType.find("tev2")!=string::npos)
     {
       if((event.numberOfObjects("e",15,2.5)==1)&&
 	 (event.numberOfObjects("ph",15,2.5)==1))
@@ -217,10 +231,9 @@ FinalState PartitionRule::getFinalState(QuaeroEvent & event)
 		    objects[i] = QuaeroRecoObject((objects[j].getObjectType()=="e+" ? "e-" : "e+" ),objects[i].getFourVector());
 	  event.setObjects(objects);
 	}
-    }
+    } */
 
 
-  double pmin_leptons = (ruleType=="tev2-Vista-lowPtDileptons" ? 4 : pmin);
   int e_plus = event.numberOfObjects("e+",pmin_leptons);
   int e_minus = event.numberOfObjects("e-",pmin_leptons);
   int mu_plus = event.numberOfObjects("mu+",pmin_leptons);
@@ -265,11 +278,14 @@ FinalState PartitionRule::getFinalState(QuaeroEvent & event)
       if(jj<0)
 	jj=0;
     }
+  /*
   if(((j+b)>maximumNumberOfJetsToIdentify)&&
      (!((event.collider()=="tev2")&&
 	(e_plus+e_minus+mu_plus+mu_minus+tau_plus+tau_minus+ph==0)&&
 	(event.numberOfObjects("j",200,1)+event.numberOfObjects("b",200,1)==0))))	
     j = maximumNumberOfJetsToIdentify-b;
+  */
+  if( j+b > maximumNumberOfJetsToIdentify ) j= maximumNumberOfJetsToIdentify;
   if(j<0) 
     j=0;
 
@@ -294,8 +310,8 @@ FinalState PartitionRule::getFinalState(QuaeroEvent & event)
       
   HepLorentzVector pmiss = event.getPmiss();
 
-  int met = ((pmiss.perp() > pmin) &&
-	     (pmiss.e() > pmin)); // 3*sqrt(sumpt));
+  int met = ((pmiss.perp() > pmin_pmiss) &&
+	     (pmiss.e() > pmin_pmiss)); // 3*sqrt(sumpt));
   if(event.collider()=="tev2")
     {
       if((event.numberOfObjects("e")==0) &&

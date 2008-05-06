@@ -29,7 +29,7 @@ FinalState::FinalState(std::vector<std::string> _objects, std::vector<double> _s
 	     (_sumPtRange[0]<_sumPtRange[1]));
       sumPtRange = _sumPtRange;
     }
-  
+
   if(_objects.empty())
     return;
   sort(_objects.begin(), _objects.end());  // put objects in standard order

@@ -55,6 +55,8 @@ private:
   bool usePmiss; ///< use missing energy to categorize events?
   bool distinguishCharge;
   double pmin; ///< minimum momentum for an object to be considered
+  double pmin_leptons; ///< minimum momentum for a lepton to be considered
+  double pmin_pmiss; ///< minimum momentum for pmiss to be considered
   int maximumNumberOfJetsToIdentify; ///< lump events with this many jets or more into the same box
   std::vector<std::string> possibleObjects; ///< list of possible final state objects
   std::map<FinalState,vector<double> > sumPtFinalStateBinEdges;
