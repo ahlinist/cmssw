@@ -81,6 +81,8 @@ namespace edm {
 
     // For debugging purposes only
     virtual void print() = 0;
+    virtual void saveEngineState(const std::string& fileName) = 0;
+    virtual void restoreEngineState(const std::string& fileName) = 0;
 
   private:
 
