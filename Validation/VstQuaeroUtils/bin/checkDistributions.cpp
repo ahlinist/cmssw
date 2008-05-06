@@ -198,10 +198,10 @@ void checkDistributions(string baseDirectory, string type1, string type2,
 	  //HACK: JUST FOR 1e+1j AND 1e+2j, hide the 3j-effect that reflects there, by
 	  //artificially increasing the statistical uncertainty, by reducing
 	  //the statistics.
-	  if(fs=="1e+1j"||fs=="1e+2j" || fs=="1mu+1pmiss")
+	  /*	  if(fs=="1e+1j"||fs=="1e+2j" || fs=="1mu+1pmiss")
 	    //reduce normally just for these guys.  1mu+1pmiss is reduced simply because it takes too long.
 	    incrementPoint1=incrementPoint;
-	  else 
+	    else */ 
 	    incrementPoint1 = 0; //don't reduce statistics
 
 	  if(event.getWeight()<incrementPoint1)
