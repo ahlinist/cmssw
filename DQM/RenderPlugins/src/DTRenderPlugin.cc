@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.9 2008/03/10 15:21:45 elmer Exp $
+// $Id: DTRenderPlugin.cc,v 1.10 2008/03/11 11:43:37 battilan Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.9 $
-  \date $Date: 2008/03/10 15:21:45 $
+  \version $Revision: 1.10 $
+  \date $Date: 2008/03/11 11:43:37 $
 */
 
 #include "TProfile2D.h"
@@ -21,7 +21,7 @@
 
 bool DTRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &i ) {
  
-  if( o.name.find( "DT/" ) == 0 ) {
+  if( o.name.find( "/DT/" ) < o.name.size() ) {
     return true;
   } 
 
