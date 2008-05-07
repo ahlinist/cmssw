@@ -1,13 +1,34 @@
-Instructions v1.1 Beta
+Instructions v1.2 Beta
 by Jeff Temple
 4 May 2008
 Send comments & complaints to jtemple@fnal.gov
 
 
 This GUI is designed to let shifters look for runs recently stored 
-in DBS, and to run the HCAL DQM on those runs.  Below is a simple
-guide for running the beta version of this GUI.
+in DBS, and to run the prompt DQM analysis on those runs.  (It's been
+adapted from a GUI used for HCAL DQM.)
+Below is a simple guide for running the beta version of this GUI.
 
+Quick start:
+    1)  Click on the "DQM options" menu
+    2)  Choose "Change DQM settings".  A new window will appear.
+    3)  In the third row of the new window, enter the directory
+        where you wish your output to appear.  (Be sure to press "Enter"
+        after typing in the new name!)
+    4)  Close the new window.  If you wish, you may save your new value as
+        a default.  (This will save you the trouble of re-entering the 
+        directory name the next time you open the GUI.)
+    5)  Press the "Auto-Update Disabled!!" button on the right side of the
+        GUI.  This will enable auto-checking of DBS, and auto-running of 
+        DQM.
+    6)  Sit back and wait for new files to appear in your specified save 
+        directory!
+    
+
+
+
+
+More detailed instructions:
 
 To find runs in DBS:
    1)  Set the range of runs you want in the white windows in the GUI.
