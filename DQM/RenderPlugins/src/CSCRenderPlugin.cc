@@ -22,7 +22,7 @@
 
 bool CSCRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &i ) {
 
-  if( o.name.find( "CSC/" ) == 0 ) {
+  if( o.name.find( "CSC/" ) < o.name.size() ) {
     return true;
   } 
 
@@ -31,6 +31,8 @@ bool CSCRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo 
 }
 
 void CSCRenderPlugin::preDraw( TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo &i, VisDQMRenderInfo &r ) {
+
+  std::cout << "CSCRenderPlugin:preDraw " << o.name << std::endl;
 
   TH1* obj = dynamic_cast<TH1*>( o.object );
 
