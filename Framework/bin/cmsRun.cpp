@@ -23,14 +23,18 @@ $Id$
 #include "FWCore/PluginManager/interface/standard.h"
 #include "FWCore/Utilities/interface/Exception.h"
 #include "FWCore/Utilities/interface/Presence.h"
+#include "FWCore/Utilities/interface/RootHandlers.h"
 #include "FWCore/MessageLogger/interface/ExceptionMessages.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/MessageLogger/interface/MessageDrop.h"
 #include "FWCore/PluginManager/interface/PresenceFactory.h"
 #include "FWCore/MessageLogger/interface/JobReport.h"
+#include "FWCore/ServiceRegistry/interface/Service.h"
 #include "FWCore/ServiceRegistry/interface/ServiceRegistry.h"
+#include "FWCore/ServiceRegistry/interface/ServiceToken.h"
 #include "FWCore/ServiceRegistry/interface/ServiceWrapper.h"
 
+#include "TError.h"
 
 static char const* const kParameterSetOpt = "parameter-set";
 static char const* const kParameterSetCommandOpt = "parameter-set,p";
@@ -273,6 +277,11 @@ int main(int argc, char* argv[])
     proc.off();
     proc->endJob();
     rc = 0;
+    // Disable Root Error Handler so we do not throw because of ROOT errors.
+    edm::ServiceToken token = proc->getToken();
+    edm::ServiceRegistry::Operate operate(token);
+    edm::Service<edm::RootHandlers> rootHandler;
+    rootHandler->disableErrorHandler();
   }
   catch (cms::Exception& e) {
     rc = 8001;
@@ -290,6 +299,8 @@ int main(int argc, char* argv[])
     rc = 8003;
     edm::printUnknownException(kProgramName, &(jobRep->get()), rc);
   }
-  
+  // Disable Root Error Handler again, just in case an exception
+  // caused the above disabling of the handler to be bypassed.
+  SetErrorHandler(DefaultErrorHandler);
   return rc;
 }
