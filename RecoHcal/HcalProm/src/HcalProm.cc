@@ -16,7 +16,7 @@
 //
 // Original Author:  Efe Yazgan
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.6 2008/05/04 23:11:28 fedor Exp $
+// $Id: HcalProm.cc,v 1.8 2008/05/05 14:10:44 efe Exp $
 //
 //
 
@@ -142,7 +142,7 @@ HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
    //hcal rechits
    Handle<HBHERecHitCollection> hbhe;
-   iEvent.getByLabel("hbhereco_", hbhe);
+   iEvent.getByLabel("hbhereco", hbhe);
    const HBHERecHitCollection Hithbhe = *(hbhe.product());
 
    Handle<HFRecHitCollection> hfrh;
@@ -158,9 +158,9 @@ HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 //   iEvent.getByLabel( "met", recmet ); 
 
    //hcal digis
-   Handle<HBHEDigiCollection> hbhe_digi; 
+   //   Handle<HBHEDigiCollection> hbhe_digi; 
    //   iEvent.getByLabel("hcalZeroSuppressedDigis",hbhe_digi);
-   iEvent.getByLabel("hcalDigis",hbhe_digi);
+   //iEvent.getByLabel("hcalDigis",hbhe_digi);
    
    //calo towers
    Handle<CaloTowerCollection> calo;
@@ -173,17 +173,20 @@ HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    const EcalRecHitCollection Hiteb = *(ebrechit.product());
 
    //ecal clusters
-   Handle<reco::BasicClusterCollection> pIslandBarrelBasicClusters;
+   /*   Handle<reco::BasicClusterCollection> pIslandBarrelBasicClusters;
    iEvent.getByLabel("islandBasicClusters","islandBarrelBasicClusters",pIslandBarrelBasicClusters);
    const BasicClusterCollection islandBarrelBasicClusters = *(pIslandBarrelBasicClusters.product());
-
+   */
    Handle<reco::BasicClusterCollection> bccHandle;
-   iEvent.getByLabel("barrelClusterProducer", "barrelClusterCollection", bccHandle);
+   iEvent.getByLabel("cosmicBasicClusters","CosmicBarrelBasicClusters", bccHandle);
    const reco::BasicClusterCollection *clusterCollection_p = bccHandle.product();
+   
+
+   
 
    // reco jets
    Handle<CaloJetCollection> caloJet;
-   iEvent.getByLabel("iterativeCone5CaloJets",caloJet);
+   iEvent.getByLabel("iterativeCone15CaloJets",caloJet);
    const CaloJetCollection cjet = *(caloJet.product());
 
    //Cosmic Muons
@@ -192,11 +195,11 @@ HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
    //trigger
    Handle<L1MuGMTReadoutCollection> gmtrc_handle; 
-   iEvent.getByLabel("l1GmtEmulDigis",gmtrc_handle);
+   iEvent.getByLabel("gtDigis",gmtrc_handle);
    L1MuGMTReadoutCollection const* gmtrc = gmtrc_handle.product();
 
    Handle<L1GlobalTriggerReadoutRecord> gtrr_handle; 
-   iEvent.getByLabel("l1GtUnpack",gtrr_handle);
+   iEvent.getByLabel("gtDigis",gtrr_handle);
    L1GlobalTriggerReadoutRecord const* gtrr = gtrr_handle.product();
 
    string errMsg("");
@@ -268,7 +271,7 @@ HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    std::cout << "************************" << std::endl;
    
 
-   
+   /* DIGIS ARE TAKEN OUT FROM T0 RECONSTRUCTION
    int adcs[10] = {};
 
    //CORRECT:  Timing plot should be done using linearized ADC's!
@@ -285,7 +288,7 @@ HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
        if (maxadc > 10)	 h_hbtiming->Fill(TS,adcs[TS]);
      }
    }
-
+   */
 
 
   for (HBHERecHitCollection::const_iterator hhit=Hithbhe.begin(); hhit!=Hithbhe.end(); hhit++) {
@@ -313,11 +316,13 @@ HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       h_ecal_rechit_energy->Fill(ehit->energy());
   }
 
+  /*
   for(reco::BasicClusterCollection::const_iterator aClus = islandBarrelBasicClusters.begin(); aClus != islandBarrelBasicClusters.end(); aClus++) {
     h_ecal_cluster_energy->Fill(aClus->energy());
     h_ecal_cluster_eta->Fill(aClus->eta());
     h_ecal_cluster_phi->Fill(aClus->phi());
   }
+  */
 
   for (reco::BasicClusterCollection::const_iterator clus = clusterCollection_p->begin(); clus != clusterCollection_p->end(); ++clus)
     {
@@ -325,7 +330,7 @@ HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      double phi_eb_basic_cluster    = clus->phi();
      double eta_eb_basic_cluster    = clus->eta();
    }
-
+  
   for(TrackCollection::const_iterator ncm = cosmicmuon->begin(); ncm != cosmicmuon->end();  ++ncm) {
     h_muon_vertex_x->Fill(ncm->vx());
     h_muon_px->Fill(ncm->px());
@@ -353,9 +358,9 @@ HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   //correlations
   for(TrackCollection::const_iterator ncm = cosmicmuon->begin(); ncm != cosmicmuon->end();  ++ncm) {
     if (fabs(ncm->eta())>1.3) continue;
-    for(reco::BasicClusterCollection::const_iterator aClus = islandBarrelBasicClusters.begin(); aClus != islandBarrelBasicClusters.end(); aClus++) {
-      h_ecalx_vs_muonx->Fill(aClus->x(),ncm->vx());
-      h_impact_diff->Fill(aClus->z()-ncm->vx());
+    for (reco::BasicClusterCollection::const_iterator clus = clusterCollection_p->begin(); clus != clusterCollection_p->end(); ++clus){
+      h_ecalx_vs_muonx->Fill(clus->x(),ncm->vx());
+      h_impact_diff->Fill(clus->z()-ncm->vx());
     }
   } 
 
