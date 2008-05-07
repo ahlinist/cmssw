@@ -32,6 +32,8 @@ bool CSCRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo 
 
 void CSCRenderPlugin::preDraw( TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo &i, VisDQMRenderInfo &r ) {
 
+  std::cout << "CSCRenderPlugin:preDraw " << o.name << std::endl;
+
   TH1* obj = dynamic_cast<TH1*>( o.object );
 
   gStyle->SetPalette(1,0);
