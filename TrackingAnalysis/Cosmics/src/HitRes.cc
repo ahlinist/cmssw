@@ -14,7 +14,7 @@ See sample cfg files in TrackingAnalysis/Cosmics/test/hitRes*cfg
 //
 // Original Authors:  Wolfgang Adam, Keith Ulmer
 //         Created:  Thu Oct 11 14:53:32 CEST 2007
-// $Id$
+// $Id: HitRes.cc,v 1.1 2008/04/28 04:00:09 kaulmer Exp $
 //
 //
 
@@ -87,6 +87,7 @@ private:
       // ----------member data ---------------------------
   edm::ParameterSet config_;
   edm::InputTag trajectoryTag_;
+  bool doSimHit_;
   const TrackerGeometry* trackerGeometry_;
   const MagneticField* magField_;
 
@@ -128,7 +129,8 @@ HitRes::HitRes(const edm::ParameterSet& iConfig) :
   config_(iConfig), rootFile_(0), rootTree_(0) {
     //now do what ever initialization is needed
     trajectoryTag_ = iConfig.getParameter<edm::InputTag>("trajectories");
-    
+    doSimHit_ = iConfig.getParameter<bool>("associateStrip");
+
     overlapCounts_[0] = 0;  // #trajectories
     overlapCounts_[1] = 0;  // #hits
     overlapCounts_[2] = 0;  // #overlap hits
@@ -176,7 +178,9 @@ HitRes::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   //
   // make associator for SimHits
   //
-  TrackerHitAssociator associator(iEvent, config_);
+  //TrackerHitAssociator
+  TrackerHitAssociator* associator;
+  if(doSimHit_) associator = new TrackerHitAssociator(iEvent, config_); else associator = 0; 
 
   //
   // trajectories (from refit)
@@ -193,7 +197,7 @@ HitRes::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   //
   if ( trajectoryCollection->size()!=1 )  return;
   for ( TrajectoryCollection::const_iterator it=trajectoryCollection->begin();
-	it!=trajectoryCollection->end(); ++it )  analyze(*it,propagator,associator);
+	it!=trajectoryCollection->end(); ++it )  analyze(*it,propagator,*associator);
 
 }
 
@@ -402,63 +406,64 @@ HitRes::analyze (const Trajectory& trajectory,
     
 
     //try writing out the SimHit info (for MC only)
-    std::vector<PSimHit> psimHits1;
-    std::vector<PSimHit> psimHits2;
-    const TransientTrackingRecHit::ConstRecHitPointer firstRecHit = &(*(*iol).first->recHit());
-    const SiStripMatchedRecHit2D* firstMatchedhit=dynamic_cast<const SiStripMatchedRecHit2D*>((*firstRecHit).hit());
-    const TransientTrackingRecHit::ConstRecHitPointer secondRecHit = &(*(*iol).second->recHit());
-    const SiStripMatchedRecHit2D* secondMatchedhit=dynamic_cast<const SiStripMatchedRecHit2D*>((*secondRecHit).hit());
-
-    if ( firstMatchedhit ) {
-      //cout << "rechit2D" << endl;//if matchedHit take the rphi hit only
-      psimHits1 = associator.associateHit( *firstMatchedhit->monoHit() );
-    } else {
-      psimHits1 = associator.associateHit( *(*iol).first->recHit()->hit() );
-      //cout << "single hit " << endl;
-    }
-    //cout << "length of psimHits1: " << psimHits1.size() << endl;
-    if ( !psimHits1.empty() ) {
-      float closest_dist = 99999.9;
-      std::vector<PSimHit>::const_iterator closest_simhit = psimHits1.begin();
-      for (std::vector<PSimHit>::const_iterator m = psimHits1.begin(); m < psimHits1.end(); m++) {
-	//find closest simHit to the recHit
-	float simX = (*m).localPosition().x();
-	float dist = fabs( simX - ((*iol).first->recHit()->localPosition().x()) );
-	//cout << "simHit1 simX = " << simX << "   hitX = " << (*iol).first->recHit()->localPosition().x() << "   distX = " << dist << endl;
-	if (dist<closest_dist) {
-	  //cout << "found newest closest dist for simhit1" << endl;
-	  closest_dist = dist;
-	  closest_simhit = m;
-	}
+    if(doSimHit_){
+      std::vector<PSimHit> psimHits1;
+      std::vector<PSimHit> psimHits2;
+      const TransientTrackingRecHit::ConstRecHitPointer firstRecHit = &(*(*iol).first->recHit());
+      const SiStripMatchedRecHit2D* firstMatchedhit=dynamic_cast<const SiStripMatchedRecHit2D*>((*firstRecHit).hit());
+      const TransientTrackingRecHit::ConstRecHitPointer secondRecHit = &(*(*iol).second->recHit());
+      const SiStripMatchedRecHit2D* secondMatchedhit=dynamic_cast<const SiStripMatchedRecHit2D*>((*secondRecHit).hit());
+      
+      if ( firstMatchedhit ) {
+	//cout << "rechit2D" << endl;//if matchedHit take the rphi hit only
+	psimHits1 = associator.associateHit( *firstMatchedhit->monoHit() );
+      } else {
+	psimHits1 = associator.associateHit( *(*iol).first->recHit()->hit() );
+	//cout << "single hit " << endl;
       }
-      simHitPositions_[0] = (*closest_simhit).localPosition().x();
-      //cout << " filling simHitX: " << (*closest_simhit).localPosition().x() << endl;
-    } else {
-      simHitPositions_[0] = -99.;
-      //cout << " filling simHitX: " << -99 << endl;
-    }
-
-    if (secondMatchedhit) {
-      psimHits2 = associator.associateHit( *secondMatchedhit->monoHit() );
-    } else {
-      psimHits2 = associator.associateHit( *(*iol).second->recHit()->hit() );
-    }
-    if ( !psimHits2.empty() ) {
-      float closest_dist = 99999.9;
-      std::vector<PSimHit>::const_iterator closest_simhit = psimHits2.begin();
-      for (std::vector<PSimHit>::const_iterator m = psimHits2.begin(); m < psimHits2.end(); m++) {
-	float simX = (*m).localPosition().x();
-	float dist = fabs( simX - ((*iol).second->recHit()->localPosition().x()) );
-	if (dist<closest_dist) {
-	  closest_dist = dist;
-	  closest_simhit = m;
+      //cout << "length of psimHits1: " << psimHits1.size() << endl;
+      if ( !psimHits1.empty() ) {
+	float closest_dist = 99999.9;
+	std::vector<PSimHit>::const_iterator closest_simhit = psimHits1.begin();
+	for (std::vector<PSimHit>::const_iterator m = psimHits1.begin(); m < psimHits1.end(); m++) {
+	  //find closest simHit to the recHit
+	  float simX = (*m).localPosition().x();
+	  float dist = fabs( simX - ((*iol).first->recHit()->localPosition().x()) );
+	  //cout << "simHit1 simX = " << simX << "   hitX = " << (*iol).first->recHit()->localPosition().x() << "   distX = " << dist << endl;
+	  if (dist<closest_dist) {
+	    //cout << "found newest closest dist for simhit1" << endl;
+	    closest_dist = dist;
+	    closest_simhit = m;
+	  }
 	}
+	simHitPositions_[0] = (*closest_simhit).localPosition().x();
+	//cout << " filling simHitX: " << (*closest_simhit).localPosition().x() << endl;
+      } else {
+	simHitPositions_[0] = -99.;
+	//cout << " filling simHitX: " << -99 << endl;
       }
-      simHitPositions_[1] = (*closest_simhit).localPosition().x();
-    } else {
-      simHitPositions_[1] = -99.;
+      
+      if (secondMatchedhit) {
+	psimHits2 = associator.associateHit( *secondMatchedhit->monoHit() );
+      } else {
+	psimHits2 = associator.associateHit( *(*iol).second->recHit()->hit() );
+      }
+      if ( !psimHits2.empty() ) {
+	float closest_dist = 99999.9;
+	std::vector<PSimHit>::const_iterator closest_simhit = psimHits2.begin();
+	for (std::vector<PSimHit>::const_iterator m = psimHits2.begin(); m < psimHits2.end(); m++) {
+	  float simX = (*m).localPosition().x();
+	  float dist = fabs( simX - ((*iol).second->recHit()->localPosition().x()) );
+	  if (dist<closest_dist) {
+	    closest_dist = dist;
+	    closest_simhit = m;
+	  }
+	}
+	simHitPositions_[1] = (*closest_simhit).localPosition().x();
+      } else {
+	simHitPositions_[1] = -99.;
+      }
     }
-
 
     rootTree_->Fill();
 //     cout << "DiffErr " 
