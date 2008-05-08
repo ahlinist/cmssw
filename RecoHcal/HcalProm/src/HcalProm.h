@@ -16,7 +16,7 @@
 //
 // Original Author:  Efe Yazgan
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.h,v 1.1 2008/04/30 20:57:31 fedor Exp $
+// $Id: HcalProm.h,v 1.2 2008/05/04 23:11:28 fedor Exp $
 //
 //
 
@@ -65,6 +65,7 @@ class HcalProm : public edm::EDAnalyzer {
   edm::Service<TFileService> fs;
 
   TH1F* h_hcal_rechit_energy;
+  TH1F* h_maxhbherec;
   TH1F* h_caloMet_energy;
   TH2F* h_eta_phi_HBHE;	
   TH1F* h_hf_rechit_energy;
@@ -95,6 +96,8 @@ class HcalProm : public edm::EDAnalyzer {
   TH1F* h_muon_p;
 
   TH2F* h_ecalx_vs_muonx;
+  TH2F* h_ecaly_vs_muony;
+  TH2F* h_jetphi_vs_muonphi;
   TH1F* h_impact_diff;
 
   TH2F*  DT_HCAL_eta_correlation;
