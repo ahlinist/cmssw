@@ -16,7 +16,7 @@
 //
 // Original Author:  Efe Yazgan
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.10 2008/05/08 10:14:39 efe Exp $
+// $Id: HcalProm.cc,v 1.11 2008/05/08 15:16:59 efe Exp $
 //
 //
 
@@ -89,6 +89,7 @@
 #include "TFile.h"
 #include <TCanvas.h>
 #include <cmath>
+#include <TStyle.h>
 
 #include "HcalProm.h"
 
@@ -321,11 +322,27 @@ HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
        h_eta_phi_HF->Fill((hhit->id()).ieta(),(hhit->id()).iphi());
      }
    }
-   
+
+   float maxhorec = 0;
+   float next_to_maxhorec = 0;
+   float maxhorec_ETA;
+   float maxhorec_PHI;
+   float next_to_maxhorec_ETA;
+   float next_to_maxhorec_PHI;     
    for (HORecHitCollection::const_iterator hhit=Hitho.begin(); hhit!=Hitho.end(); hhit++) {
      if (hhit->energy() > 0.6){
        h_ho_rechit_energy->Fill(hhit->energy());
        h_eta_phi_HO->Fill((hhit->id()).ieta(),(hhit->id()).iphi());
+       if (hhit->energy() > maxhorec){ 
+	 maxhorec = hhit->energy();
+	 maxhorec_ETA = hhit->id().ieta();
+         maxhorec_PHI = hhit->id().iphi();
+       }
+       if (hhit->energy() > next_to_maxhorec && hhit->energy()< maxhorec){ 
+	 next_to_maxhorec = hhit->energy();
+	 next_to_maxhorec_ETA = hhit->id().ieta();
+         next_to_maxhorec_PHI = hhit->id().iphi();
+       }
      }
    }
    
@@ -343,6 +360,10 @@ HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   float maxebeerec = 0;
   float next_to_maxebeerec = 0;
+  float maxebeerec_ETA;
+  float maxebeerec_PHI;
+  float next_to_maxebeerec_ETA;
+  float next_to_maxebeerec_PHI; 
   for (reco::BasicClusterCollection::const_iterator clus = clusterCollection_p->begin(); clus != clusterCollection_p->end(); ++clus)
     {
       if (clus->eta()>2.9) continue;
@@ -350,17 +371,29 @@ HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       double energy_eb_basic_cluster = clus->energy();
       double phi_eb_basic_cluster    = clus->phi();
       double eta_eb_basic_cluster    = clus->eta();
-      if (clus->energy() > maxebeerec) maxebeerec = clus->energy();
-      if (clus->energy() > next_to_maxebeerec && clus->energy()< maxebeerec) next_to_maxebeerec = clus->energy();
+      if (clus->energy() > maxebeerec){ 
+	maxebeerec = clus->energy();
+	maxebeerec_ETA = clus->eta();
+	maxebeerec_PHI = clus->phi();
+      }
+      if (clus->energy() > next_to_maxebeerec && clus->energy()< maxebeerec){
+	next_to_maxebeerec = clus->energy();
+	next_to_maxebeerec_ETA = clus->eta();
+	next_to_maxebeerec_PHI = clus->eta();
+      }
    }
 
-  if (fabs(maxhbherec_ETA-next_to_maxhbherec_ETA)<3 && fabs(maxhbherec_PHI-next_to_maxhbherec_PHI)<3 && (maxhbherec+next_to_maxhbherec) > 0. ){ 
-    h_maxhbherec->Fill(maxhbherec+next_to_maxhbherec);
-  }
-    if ((maxebeerec+next_to_maxebeerec)>0.){ 
-      h_maxebeerec->Fill(maxebeerec+next_to_maxebeerec);
-      h_maxebee_plus_maxhbhe->Fill(maxebeerec+next_to_maxebeerec+maxhbherec+next_to_maxhbherec);
-    }
+  float total_hbhe = maxhbherec+next_to_maxhbherec;
+  float total_ebee = maxebeerec+next_to_maxebeerec;
+  float total_ho = maxhorec+next_to_maxhorec;
+  float hbhe_DR = sqrt(pow((maxhbherec_ETA-next_to_maxhbherec_ETA),2)+pow((maxhbherec_ETA-next_to_maxhbherec_ETA),2));
+  float ebee_DR = sqrt(pow((maxebeerec_ETA-next_to_maxebeerec_ETA),2)+pow((maxebeerec_ETA-next_to_maxebeerec_ETA),2));
+  float ho_DR = sqrt(pow((maxhorec_ETA-next_to_maxhorec_ETA),2)+pow((maxhorec_ETA-next_to_maxhorec_ETA),2));
+  if (hbhe_DR < 2.5 && total_hbhe > 0. ) h_maxhbherec->Fill(total_hbhe);
+  if (ebee_DR < 0.4 && total_ebee > 0. ) h_maxebeerec->Fill(total_ebee);
+  if (ho_DR < 2.5 && total_ho > 0.) h_maxhorec->Fill(total_ho);
+  if ((hbhe_DR < 2.5 && total_hbhe > 0.) && (ebee_DR < 0.4 && total_ebee > 0.) ) h_maxebee_plus_maxhbhe->Fill(total_ebee+total_hbhe);
+    
   
 
 
@@ -416,7 +449,8 @@ void HcalProm::beginJob(const edm::EventSetup&)
   //Add runnumbers to histograms!
 
   h_hcal_rechit_energy = HcalDir.make<TH1F>(" h_hcal_rechit_energy","RecHit Energy HBHE",130,-10,120);
-  h_maxhbherec = HcalDir.make<TH1F>("h_maxhbherec","h_maxhbherec",200,-5,20);
+  h_maxhbherec = HcalDir.make<TH1F>("h_maxhbherec","HBHE Muon (GeV)",200,0,15);
+  h_maxhorec = HcalDir.make<TH1F>("h_maxhorec","HO Muon (GeV)",200,0,15);
   h_caloMet_energy = HcalDir.make<TH1F>(" h_caloMet_energy","CaloMET0 Energy",130,-10,120);
   h_eta_phi_HBHE = HcalDir.make<TH2F>("h_eta_phi_HBHE","#eta(HBHE)",100,-7,7,100,-7,7);
   h_hf_rechit_energy = HcalDir.make<TH1F>(" h_hf_rechit_energy","RecHit Energy HF",130,-10,120);
@@ -426,12 +460,12 @@ void HcalProm::beginJob(const edm::EventSetup&)
   h_hbtiming = HcalDir.make<TH1F>("h_hbtiming","HBHE Timing",10,-0.5,9.5);
 
   h_ecal_rechit_energy = EcalDir.make<TH1F>(" h_ecal_rechit_energy","RecHit Energy EB",130,-10,120);
-  h_maxebeerec = EcalDir.make<TH1F>("h_maxebeerec","h_maxebeerec",200,-5,20);
+  h_maxebeerec = EcalDir.make<TH1F>("h_maxebeerec","EBEE Muon (GeV)",200,0,15);
   h_ecal_cluster_energy = EcalDir.make<TH1F>("h_ecal_cluster_energy","EB Cluster Energy",130,-10,120);
   h_ecal_cluster_eta = EcalDir.make<TH1F>("h_ecal_cluster_eta","#eta(EB Cluster)",100,-7,7);
   h_ecal_cluster_phi = EcalDir.make<TH1F>("h_ecal_cluster_phi","#phi(EB Cluster)",100,-7,7);
   
-  h_maxebee_plus_maxhbhe = CorrDir.make<TH1F>("h_maxebee_plus_maxhbhe","h_maxebee_plus_maxhbhe",200,-5,20);
+  h_maxebee_plus_maxhbhe = CorrDir.make<TH1F>("h_maxebee_plus_maxhbhe","EBEE+HBHE Muon (GeV)",200,0,15);
 
   h_ecal_vs_hcal_X = CorrDir.make<TH2F>("h_ecal_vs_hcal_X","X(EB) vs X(HB)",100,-7,7,100,-7,7);
   h_ecal_vs_hcal_Y = CorrDir.make<TH2F>("h_ecal_vs_hcal_Y","Y(EB) vs Y(HB)",100,-7,7,100,-7,7);
@@ -457,11 +491,18 @@ void HcalProm::beginJob(const edm::EventSetup&)
 // ------------ method called once each job just after ending the event loop  ------------
 void HcalProm::endJob() {
   gROOT->SetStyle("Plain");
+  gStyle->SetOptFit(1);
   TCanvas* c1 = new TCanvas("c1","",20,20,400,400);
   c1->cd();
   h_maxhbherec->Draw();
   h_maxhbherec->Fit("landau");
-  c1->Print("hbhe_muon.png");
+  c1->Print("hbhe_muon.png");   
+
+  TCanvas* c1_1 = new TCanvas("c1_1","",20,20,400,400);
+  c1_1->cd();
+  h_maxhorec->Draw();
+  h_maxhorec->Fit("landau");
+  c1_1->Print("ho_muon.png");   
 
   TCanvas* c2 = new TCanvas("c2","",20,20,400,400);
   c2->cd();
