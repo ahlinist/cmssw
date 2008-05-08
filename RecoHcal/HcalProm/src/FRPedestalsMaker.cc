@@ -27,18 +27,21 @@
 #include <iostream>
 #include <fstream>
 
+namespace {
   template <class T> 
-  void fillHists (const edm::SortedCollection<T>& fCollection, std::map < unsigned, TH1F* > * fHists,
+  void fillHists (const edm::SortedCollection<T>& fCollection, 
+		  std::map < unsigned, TH1F* > * fHists, TH1F* fTimeSlicesHist,
 		  int fPreFirst, int fPreLast, int fPostFirst, int fPostLast)
 {
     for (unsigned iHit = 0; iHit < fCollection.size(); ++iHit) {
       const T& frame = fCollection[iHit];
       HcalDetId hid = frame.id();
       unsigned id = hid.rawId();
+      bool notEmpty = false;
       for (int slice = 0; slice < frame.size(); ++slice) {
+	int adc = frame[slice].adc();
 	if ((slice >= fPreFirst && slice <= fPreLast) || (slice >= fPostFirst && slice <= fPostLast)) { // consider slices out of signal area
 	  int capId = frame[slice].capid();
-	  int adc = frame[slice].adc();
 	  // search where to store this information
 	  if (fHists[capId].find (id) == fHists[capId].end()) {
 	    // book new histogram
@@ -50,6 +53,10 @@
 	  }
 	  fHists[capId][id]->Fill (adc);
 	}
+	if (adc > 10) notEmpty = true;
+      }
+      if (notEmpty) {
+	for (int slice = 0; slice < frame.size(); ++slice) fTimeSlicesHist->Fill (slice, frame[slice].adc());
       }
     }
   }
@@ -68,7 +75,7 @@
     double widthError = gauss.GetParError(2);
     return mean;
   }  
-
+}
   
 
 FRPedestalsMaker::FRPedestalsMaker(const edm::ParameterSet& ps)
@@ -84,6 +91,7 @@ FRPedestalsMaker::FRPedestalsMaker(const edm::ParameterSet& ps)
   if (!histFile.empty()) mRootFile = new TFile (histFile.c_str(), "RECREATE"); 
   // booking summary histograms
   mTimeSlicesHist = new TH1F ("TimeSlicesHist", "Average signal in all time slices", 10, 0, 10);
+  mTimeSlicesHist->Sumw2();
 }
 
 FRPedestalsMaker::~FRPedestalsMaker(){
@@ -95,17 +103,16 @@ void FRPedestalsMaker::beginJob(const edm::EventSetup& c){
 
 
 void FRPedestalsMaker::analyze(const edm::Event& e, const edm::EventSetup& eventSetup){
-
   ///get digis
   edm::Handle<HBHEDigiCollection> hbhe; 
   e.getByType(hbhe);
-  fillHists<HBHEDataFrame> (*hbhe, mHists, mPreSliceFirst, mPreSliceLast, mPostSliceFirst, mPostSliceLast);
+  fillHists<HBHEDataFrame> (*hbhe, mHists, mTimeSlicesHist, mPreSliceFirst, mPreSliceLast, mPostSliceFirst, mPostSliceLast);
   edm::Handle<HODigiCollection> ho;     
   e.getByType(ho);
-  fillHists<HODataFrame> (*ho, mHists, mPreSliceFirst, mPreSliceLast, mPostSliceFirst, mPostSliceLast);
+  fillHists<HODataFrame> (*ho, mHists, mTimeSlicesHist, mPreSliceFirst, mPreSliceLast, mPostSliceFirst, mPostSliceLast);
   edm::Handle<HFDigiCollection> hf;     
   e.getByType(hf);
-  fillHists<HFDataFrame> (*hf, mHists, mPreSliceFirst, mPreSliceLast, mPostSliceFirst, mPostSliceLast);
+  fillHists<HFDataFrame> (*hf, mHists, mTimeSlicesHist, mPreSliceFirst, mPreSliceLast, mPostSliceFirst, mPostSliceLast);
   
   // get conditions
   if (!mConditions) {
@@ -150,6 +157,8 @@ void FRPedestalsMaker::endJob(void) {
     pedestals.addValues (HcalPedestal (DetId(id), value[0], value[1], value[2], value[3])); 
     pedestalsADC.addValues (HcalPedestal (DetId(id), valueADC[0], valueADC[1], valueADC[2], valueADC[3])); 
   }
+
+  mTimeSlicesHist->Write();
 
   std::ofstream stream ((mPedestalsFile+"_fC.txt").c_str());
   HcalDbASCIIIO::dumpObject (stream, pedestals);

@@ -5,6 +5,7 @@
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 
 class TH1F;
+class TH2F;
 class HcalDbService;
 class TFile;
 
@@ -34,6 +35,7 @@ void endJob(void);
 private:
  std::map <unsigned, TH1F*> mHists [4];
  TH1F* mTimeSlicesHist;
+ TH2F* mPedDifs [4];
  std::string mPedestalsFile;
  int mPreSliceFirst;
  int mPreSliceLast;
