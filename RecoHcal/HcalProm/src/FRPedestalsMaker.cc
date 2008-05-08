@@ -19,6 +19,7 @@
 
 #include "TFile.h"
 #include "TH1F.h"
+#include "TH2F.h"
 #include "TF1.h"
 
 
@@ -46,9 +47,16 @@ namespace {
 	  if (fHists[capId].find (id) == fHists[capId].end()) {
 	    // book new histogram
 	    char label [1024];
-	    sprintf (label, "adc_%d_%d_%d_%d_%d", hid.subdetId(), hid.ieta(), hid.iphi(), hid.depth(), capId);
+	    sprintf (label, "adc_%c%d_%d_%d_%s_%d", 
+		     hid.ieta()>0?'p':'m', hid.ietaAbs(), hid.iphi(), hid.depth(), 
+		     hid.subdetId() == 1 ? "HB" : hid.subdetId() == 2 ? "HE" : 
+		     hid.subdetId() == 3 ? "HO" : hid.subdetId() == 4 ? "HF" : "NA", 
+		     capId);
 	    char title [1024];
-	    sprintf (title, "ADC subdet=%d eta=%d phi=%d depth=%d, capId=%d", hid.subdetId(), hid.ieta(), hid.iphi(), hid.depth(), capId);
+	    sprintf (title, "ADC subdet=%s eta=%d phi=%d depth=%d, capId=%d", 
+		     hid.subdetId() == 1 ? "HB" : hid.subdetId() == 2 ? "HE" : 
+		     hid.subdetId() == 3 ? "HO" : hid.subdetId() == 4 ? "HF" : "NA", 
+		     hid.ieta(), hid.iphi(), hid.depth(), capId);
 	    fHists[capId][id] = new TH1F (label, title, 25, -0.5, 24.5);
 	  }
 	  fHists[capId][id]->Fill (adc);
@@ -74,7 +82,41 @@ namespace {
     double meanError = gauss.GetParError(1);
     double widthError = gauss.GetParError(2);
     return mean;
-  }  
+  }
+
+  void setHcal2DHist (TH2F* fHist[4], const char* fLabel, const char* fTitle) {
+    for (unsigned i = 0; i < 4; ++i) {
+      char label [1024];
+      sprintf (label, "%s_%d", fLabel, i+1);
+      char title [1024];
+      sprintf (title, "%s, depth=%d", fTitle, i+1);
+      if (fHist[i]) {
+	std::cerr << "setHcal2DHist-> Histogram " << i << " is booked already. Reset" << std::endl;
+	delete fHist[i];
+      }
+      fHist[i] = new TH2F (label, title, 85, -42.5, 42.5, 72, 0.5, 72.5);
+    }
+  }
+
+  void setHcal2DValue (TH2F* fHist[4], HcalDetId fId, float fValue) {
+    int depth = fId.depth();
+    int eta = fId.ieta();
+    int phi = fId.iphi();
+    if (eta == 29 && fId.subdet() == HcalEndcap) {
+      depth = depth + 2;
+    }
+    int index = depth - 1;
+    fHist[index]->Fill (eta, phi, fValue);
+    // std::cout << "setHcal2DValue-> " << depth << '/' << index << '/' << eta << '/' << phi << '/' << fValue << std::endl;
+    if (fabs(eta) > 20) { // fill also adjacent phi
+     fHist[index]->Fill (eta, phi+1, fValue);
+    }
+    if (fabs(eta) > 39) { // fill also adjacent phi in VF
+     fHist[index]->Fill (eta, phi+2, fValue);
+     fHist[index]->Fill (eta, phi+3, fValue);
+    }
+  }
+  
 }
   
 
@@ -90,8 +132,10 @@ FRPedestalsMaker::FRPedestalsMaker(const edm::ParameterSet& ps)
   std::string histFile = ps.getParameter<std::string>("HistogramsFile");
   if (!histFile.empty()) mRootFile = new TFile (histFile.c_str(), "RECREATE"); 
   // booking summary histograms
-  mTimeSlicesHist = new TH1F ("TimeSlicesHist", "Average signal in all time slices", 10, 0, 10);
+  mTimeSlicesHist = new TH1F ("AA_TimeSlicesHist", "Average signal in all time slices", 10, 0, 10);
   mTimeSlicesHist->Sumw2();
+  mPedDifs[0] = mPedDifs[1] = mPedDifs[2] = mPedDifs[3] = 0; 
+  setHcal2DHist (mPedDifs, "AA_pedDifs", "Difference between calculated and set pedestals");
 }
 
 FRPedestalsMaker::~FRPedestalsMaker(){
@@ -154,11 +198,20 @@ void FRPedestalsMaker::endJob(void) {
 	mHists[capId][id]->Write();
       }
     }
-    pedestals.addValues (HcalPedestal (DetId(id), value[0], value[1], value[2], value[3])); 
-    pedestalsADC.addValues (HcalPedestal (DetId(id), valueADC[0], valueADC[1], valueADC[2], valueADC[3])); 
+    DetId detId (id);
+    pedestals.addValues (HcalPedestal (detId, value[0], value[1], value[2], value[3])); 
+    pedestalsADC.addValues (HcalPedestal (detId, valueADC[0], valueADC[1], valueADC[2], valueADC[3])); 
+    // fill average difference
+    const HcalPedestal* p1 = pedestals.getValues (detId);
+    const HcalPedestal* p2 = mConditions->getPedestal (detId);
+    double diff = 
+      0.25 * (p1->getValue(0) + p1->getValue(1) + p1->getValue(2) + p1->getValue(3)) -
+      0.25 * (p2->getValue(0) + p2->getValue(1) + p2->getValue(2) + p2->getValue(3));
+    setHcal2DValue (mPedDifs, HcalDetId (id), diff);
   }
 
   mTimeSlicesHist->Write();
+  for (unsigned i = 0; i < 4; ++i) mPedDifs[i]->Write();
 
   std::ofstream stream ((mPedestalsFile+"_fC.txt").c_str());
   HcalDbASCIIIO::dumpObject (stream, pedestals);
