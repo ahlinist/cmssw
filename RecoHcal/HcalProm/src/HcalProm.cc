@@ -16,7 +16,7 @@
 //
 // Original Author:  Efe Yazgan
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.8 2008/05/05 14:10:44 efe Exp $
+// $Id: HcalProm.cc,v 1.9 2008/05/07 09:12:45 efe Exp $
 //
 //
 
@@ -290,28 +290,33 @@ HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    }
    */
 
+   float maxhbherec = 0;
+   float next_to_maxhbherec = 0;
+   for (HBHERecHitCollection::const_iterator hhit=Hithbhe.begin(); hhit!=Hithbhe.end(); hhit++) {
+     if (hhit->energy() > 0.6){
+       h_hcal_rechit_energy->Fill(hhit->energy());
+       h_eta_phi_HBHE->Fill((hhit->id()).ieta(),(hhit->id()).iphi());
+       if (hhit->energy() > maxhbherec) maxhbherec = hhit->energy();
+       if (hhit->energy() > next_to_maxhbherec && hhit->energy()< maxhbherec) next_to_maxhbherec = hhit->energy();
+     }
+   }
 
-  for (HBHERecHitCollection::const_iterator hhit=Hithbhe.begin(); hhit!=Hithbhe.end(); hhit++) {
-    if (hhit->energy() > 0.6){
-      h_hcal_rechit_energy->Fill(hhit->energy());
-      h_eta_phi_HBHE->Fill((hhit->id()).ieta(),(hhit->id()).iphi());
-    }
-  }
+   h_maxhbherec->Fill(maxhbherec+next_to_maxhbherec);
 
-  for (HFRecHitCollection::const_iterator hhit=Hithf.begin(); hhit!=Hithf.end(); hhit++) {
-    if (hhit->energy() > 0.6){
-      h_hf_rechit_energy->Fill(hhit->energy());
-      h_eta_phi_HF->Fill((hhit->id()).ieta(),(hhit->id()).iphi());
-    }
-  }
-
-  for (HORecHitCollection::const_iterator hhit=Hitho.begin(); hhit!=Hitho.end(); hhit++) {
-    if (hhit->energy() > 0.6){
-      h_ho_rechit_energy->Fill(hhit->energy());
-      h_eta_phi_HO->Fill((hhit->id()).ieta(),(hhit->id()).iphi());
-    }
-  }
-
+   for (HFRecHitCollection::const_iterator hhit=Hithf.begin(); hhit!=Hithf.end(); hhit++) {
+     if (hhit->energy() > 0.6){
+       h_hf_rechit_energy->Fill(hhit->energy());
+       h_eta_phi_HF->Fill((hhit->id()).ieta(),(hhit->id()).iphi());
+     }
+   }
+   
+   for (HORecHitCollection::const_iterator hhit=Hitho.begin(); hhit!=Hitho.end(); hhit++) {
+     if (hhit->energy() > 0.6){
+       h_ho_rechit_energy->Fill(hhit->energy());
+       h_eta_phi_HO->Fill((hhit->id()).ieta(),(hhit->id()).iphi());
+     }
+   }
+   
   for (EcalRecHitCollection::const_iterator ehit=Hiteb.begin(); ehit!=Hiteb.end(); ehit++) {
       h_ecal_rechit_energy->Fill(ehit->energy());
   }
@@ -357,13 +362,15 @@ HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   //correlations
   for(TrackCollection::const_iterator ncm = cosmicmuon->begin(); ncm != cosmicmuon->end();  ++ncm) {
-    if (fabs(ncm->eta())>1.3) continue;
     for (reco::BasicClusterCollection::const_iterator clus = clusterCollection_p->begin(); clus != clusterCollection_p->end(); ++clus){
       h_ecalx_vs_muonx->Fill(clus->x(),ncm->vx());
+      h_ecaly_vs_muony->Fill(clus->y(),ncm->vy());
       h_impact_diff->Fill(clus->z()-ncm->vx());
     }
-  } 
-
+    for (CaloJetCollection::const_iterator jetiter=cjet.begin(); jetiter!=cjet.end(); jetiter++){
+      h_jetphi_vs_muonphi->Fill(jetiter->phi(),ncm->phi());
+    } 
+  }
 
 }
 
@@ -381,6 +388,7 @@ void HcalProm::beginJob(const edm::EventSetup&)
   //Add runnumbers to histograms!
 
   h_hcal_rechit_energy = HcalDir.make<TH1F>(" h_hcal_rechit_energy","RecHit Energy HBHE",130,-10,120);
+  h_maxhbherec = HcalDir.make<TH1F>("h_maxhbherec","h_maxhbherec",200,-5,20);
   h_caloMet_energy = HcalDir.make<TH1F>(" h_caloMet_energy","CaloMET0 Energy",130,-10,120);
   h_eta_phi_HBHE = HcalDir.make<TH2F>("h_eta_phi_HBHE","#eta(HBHE)",100,-7,7,100,-7,7);
   h_hf_rechit_energy = HcalDir.make<TH1F>(" h_hf_rechit_energy","RecHit Energy HF",130,-10,120);
@@ -409,8 +417,10 @@ void HcalProm::beginJob(const edm::EventSetup&)
   h_muon_px = MuonDir.make<TH1F>("h_muon_px","P_{X}(#mu)",1000,-10,100);
   h_muon_p = MuonDir.make<TH1F>("h_muon_p","P(#mu)",1000,-10,100);
 
-  h_ecalx_vs_muonx = CorrDir.make<TH2F>("h_ecalx_vs_muonx","h_ecalx_vs_muonx",10000,-1000,1000,10000,-1000,1000);
+  h_ecalx_vs_muonx = CorrDir.make<TH2F>("h_ecalx_vs_muonx","h_ecalx_vs_muonx",1000,-400,400,1000,-400,400);
+  h_ecaly_vs_muony = CorrDir.make<TH2F>("h_ecaly_vs_muony","h_ecaly_vs_muony",1000,-1000,1000,1000,-1000,1000);
   h_impact_diff = CorrDir.make<TH1F>("h_impact_diff","h_impact_diff",1000,-200,200);
+  h_jetphi_vs_muonphi = CorrDir.make<TH2F>("h_jetphi_vs_muonphi","h_jetphi_vs_muonphi",100,-6,6,100,-6,6);
   TrigDT = 0;
 }
 
