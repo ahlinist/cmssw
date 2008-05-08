@@ -16,7 +16,7 @@
 //
 // Original Author:  Efe Yazgan
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.9 2008/05/07 09:12:45 efe Exp $
+// $Id: HcalProm.cc,v 1.10 2008/05/08 10:14:39 efe Exp $
 //
 //
 
@@ -292,17 +292,29 @@ HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
    float maxhbherec = 0;
    float next_to_maxhbherec = 0;
+   float maxhbherec_ETA;
+   float maxhbherec_PHI;
+   float next_to_maxhbherec_ETA;
+   float next_to_maxhbherec_PHI;   
    for (HBHERecHitCollection::const_iterator hhit=Hithbhe.begin(); hhit!=Hithbhe.end(); hhit++) {
      if (hhit->energy() > 0.6){
        h_hcal_rechit_energy->Fill(hhit->energy());
        h_eta_phi_HBHE->Fill((hhit->id()).ieta(),(hhit->id()).iphi());
-       if (hhit->energy() > maxhbherec) maxhbherec = hhit->energy();
-       if (hhit->energy() > next_to_maxhbherec && hhit->energy()< maxhbherec) next_to_maxhbherec = hhit->energy();
+       if (hhit->energy() > maxhbherec){ 
+	 maxhbherec = hhit->energy();
+	 maxhbherec_ETA = hhit->id().ieta();
+         maxhbherec_PHI = hhit->id().iphi();
+       }
+       if (hhit->energy() > next_to_maxhbherec && hhit->energy()< maxhbherec){ 
+	 next_to_maxhbherec = hhit->energy();
+	 next_to_maxhbherec_ETA = hhit->id().ieta();
+         next_to_maxhbherec_PHI = hhit->id().iphi();
+       }
      }
    }
 
-   h_maxhbherec->Fill(maxhbherec+next_to_maxhbherec);
 
+ 
    for (HFRecHitCollection::const_iterator hhit=Hithf.begin(); hhit!=Hithf.end(); hhit++) {
      if (hhit->energy() > 0.6){
        h_hf_rechit_energy->Fill(hhit->energy());
@@ -329,13 +341,29 @@ HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   }
   */
 
+  float maxebeerec = 0;
+  float next_to_maxebeerec = 0;
   for (reco::BasicClusterCollection::const_iterator clus = clusterCollection_p->begin(); clus != clusterCollection_p->end(); ++clus)
     {
-     double energy_eb_basic_cluster = clus->energy();
-     double phi_eb_basic_cluster    = clus->phi();
-     double eta_eb_basic_cluster    = clus->eta();
+      if (clus->eta()>2.9) continue;
+      if (clus->energy()<0.2) continue;
+      double energy_eb_basic_cluster = clus->energy();
+      double phi_eb_basic_cluster    = clus->phi();
+      double eta_eb_basic_cluster    = clus->eta();
+      if (clus->energy() > maxebeerec) maxebeerec = clus->energy();
+      if (clus->energy() > next_to_maxebeerec && clus->energy()< maxebeerec) next_to_maxebeerec = clus->energy();
    }
+
+  if (fabs(maxhbherec_ETA-next_to_maxhbherec_ETA)<3 && fabs(maxhbherec_PHI-next_to_maxhbherec_PHI)<3 && (maxhbherec+next_to_maxhbherec) > 0. ){ 
+    h_maxhbherec->Fill(maxhbherec+next_to_maxhbherec);
+  }
+    if ((maxebeerec+next_to_maxebeerec)>0.){ 
+      h_maxebeerec->Fill(maxebeerec+next_to_maxebeerec);
+      h_maxebee_plus_maxhbhe->Fill(maxebeerec+next_to_maxebeerec+maxhbherec+next_to_maxhbherec);
+    }
   
+
+
   for(TrackCollection::const_iterator ncm = cosmicmuon->begin(); ncm != cosmicmuon->end();  ++ncm) {
     h_muon_vertex_x->Fill(ncm->vx());
     h_muon_px->Fill(ncm->px());
@@ -398,11 +426,13 @@ void HcalProm::beginJob(const edm::EventSetup&)
   h_hbtiming = HcalDir.make<TH1F>("h_hbtiming","HBHE Timing",10,-0.5,9.5);
 
   h_ecal_rechit_energy = EcalDir.make<TH1F>(" h_ecal_rechit_energy","RecHit Energy EB",130,-10,120);
- 
+  h_maxebeerec = EcalDir.make<TH1F>("h_maxebeerec","h_maxebeerec",200,-5,20);
   h_ecal_cluster_energy = EcalDir.make<TH1F>("h_ecal_cluster_energy","EB Cluster Energy",130,-10,120);
   h_ecal_cluster_eta = EcalDir.make<TH1F>("h_ecal_cluster_eta","#eta(EB Cluster)",100,-7,7);
   h_ecal_cluster_phi = EcalDir.make<TH1F>("h_ecal_cluster_phi","#phi(EB Cluster)",100,-7,7);
   
+  h_maxebee_plus_maxhbhe = CorrDir.make<TH1F>("h_maxebee_plus_maxhbhe","h_maxebee_plus_maxhbhe",200,-5,20);
+
   h_ecal_vs_hcal_X = CorrDir.make<TH2F>("h_ecal_vs_hcal_X","X(EB) vs X(HB)",100,-7,7,100,-7,7);
   h_ecal_vs_hcal_Y = CorrDir.make<TH2F>("h_ecal_vs_hcal_Y","Y(EB) vs Y(HB)",100,-7,7,100,-7,7);
 
@@ -426,5 +456,23 @@ void HcalProm::beginJob(const edm::EventSetup&)
 
 // ------------ method called once each job just after ending the event loop  ------------
 void HcalProm::endJob() {
+  gROOT->SetStyle("Plain");
+  TCanvas* c1 = new TCanvas("c1","",20,20,400,400);
+  c1->cd();
+  h_maxhbherec->Draw();
+  h_maxhbherec->Fit("landau");
+  c1->Print("hbhe_muon.png");
+
+  TCanvas* c2 = new TCanvas("c2","",20,20,400,400);
+  c2->cd();
+  h_maxebeerec->Draw();
+  h_maxebeerec->Fit("landau");
+  c2->Print("ebee_muon.png");
+
+  TCanvas* c3 = new TCanvas("c3","",20,20,400,400);
+  c3->cd();
+  h_maxebee_plus_maxhbhe->Draw();
+  h_maxebee_plus_maxhbhe->Fit("landau");
+  c3->Print("hbhe_plus_ebee_muon.png");
 }
 
