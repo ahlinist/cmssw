@@ -16,7 +16,7 @@
 //
 // Original Author:  Efe Yazgan
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.h,v 1.2 2008/05/04 23:11:28 fedor Exp $
+// $Id: HcalProm.h,v 1.3 2008/05/08 10:15:43 efe Exp $
 //
 //
 
@@ -74,7 +74,9 @@ class HcalProm : public edm::EDAnalyzer {
   TH2F* h_eta_phi_HO;
 
   TH1F* h_ecal_rechit_energy;
+  TH1F* h_maxebeerec;
 
+  TH1F* h_maxebee_plus_maxhbhe;
 
   TH1F* h_hbtiming;
 
