@@ -25,8 +25,6 @@
 <use name=DataFormats/L1GlobalMuonTrigger>
 <use name=PhysicsTools/UtilAlgos>
 <use name=FWCore/ServiceRegistry>
-<use name=CondFormats/HcalObjects>
-<use name=DataFormats/HcalDigi>
 <use name=CalibFormats/HcalObjects>
 <use name=CalibCalorimetry/HcalAlgos>
 <use name=CondTools/Hcal>
