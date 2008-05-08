@@ -1,0 +1,11 @@
+Date: Thu May  8 22:47:35 CEST 2008
+
+-BuildFile
+
+Multiple occurences of HcalDigi and HcalObjects are deleted.
+
+- HcalProm.cc
+- HcalProm.h
+- hcalprom.cfg
+
+
