@@ -37,6 +37,7 @@ ANA00   = TAna00Event.o TAna00EventDict.o \
           TAnaVertex.o TAnaVertexDict.o \
           TAnaJet.o TAnaJetDict.o 
 
+ANACLASSES = ana.o anaDict.o 
 
 # ================================================================================
 all: 
@@ -106,6 +107,16 @@ runMyReader: test/myReader.hh test/myReader.cc
 	cd test && $(ROOTSYS)/bin/rootcint -f myReaderDict.cc -c myReader.hh && cd ..
 	cd test && $(CXX) $(CXXFLAGS) -o ../obj/runMyReader.o -c runMyReader.cc && cd ..
 	cd test && $(LD) $(LDFLAGS)  -o ../bin/runMyReader $(GLIBS) ../lib/libAna00.so ../obj/runMyReader.o ../obj/myReader.o ../obj/treeReader.o && cd ..
+
+
+# ======================================================================
+ana: test/ana.cc
+	cd test && $(CXX) $(CXXFLAGS) -c ana.cc -o ../obj/ana.o  && cd ..
+	cd test && $(ROOTSYS)/bin/rootcint  -f anaDict.cc -c ana.hh && cd ..
+	cd test && $(CXX) $(CXXFLAGS) -c anaDict.cc -o ../obj/anaDict.o  && cd ..
+	$(CXX) $(SOFLAGS) $(addprefix obj/,$(ANACLASSES)) -o lib/libAnaClasses.so
+
+
 
 # ================================================================================
 runHttReader: test/httReader.hh test/httReader.cc
