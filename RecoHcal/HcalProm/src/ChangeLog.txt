@@ -1,11 +1,19 @@
 Date: Thu May  8 22:47:35 CEST 2008
 
+Major changes:
+
 -BuildFile
 
 Multiple occurences of HcalDigi and HcalObjects are deleted.
 
 - HcalProm.cc
+  Methods for HTML writing were included.
+  Fix for CaloMET.
 - HcalProm.h
+  Methods for HTML writing were included.
 - hcalprom.cfg
+  User parameters for HTML printout included.
+
+
 
 
