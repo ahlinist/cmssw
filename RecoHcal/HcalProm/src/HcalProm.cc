@@ -15,8 +15,9 @@
 */
 //
 // Original Author:  Efe Yazgan
+// Updated        :  Taylan Yetkin (2008/05/08)
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.11 2008/05/08 15:16:59 efe Exp $
+// $Id: HcalProm.cc,v 1.12 2008/05/08 20:28:41 efe Exp $
 //
 //
 
@@ -53,6 +54,7 @@
 
 #include "DataFormats/Candidate/interface/Candidate.h"
 //Missing Et
+#include "DataFormats/METReco/interface/CaloMET.h"
 #include "DataFormats/METReco/interface/CaloMETCollection.h"
 
 //ecal
@@ -90,61 +92,81 @@
 #include <TCanvas.h>
 #include <cmath>
 #include <TStyle.h>
+#include "TMath.h"
 
 #include "HcalProm.h"
 
 #include <iostream>
 #include <algorithm>
 #include <vector>
+#include <string>
+#include <sys/time.h>
 
 
 
-//
-// constants, enums and typedefs
-//
+class CaloJetSort {
+  public:
+    bool operator() (const CaloJet & a, const CaloJet & b) {
+          return a.pt() > b.pt();
+    }
+};
 
-//
-// static data member definitions
-//
-
-//
-// constructors and destructor
-//
-
+using namespace edm;
+using namespace std;
+using namespace reco;
 
 HcalProm::HcalProm(const edm::ParameterSet& iConfig)
 
 {
-   //now do what ever initialization is needed
-
+    prompt_htmlPrint = iConfig.getUntrackedParameter < bool > ("printPromptHTML", false);
+    doDigiHTML = iConfig.getUntrackedParameter < bool > ("printDigiHTML", false);
+    doCaloTowerHTML = iConfig.getUntrackedParameter < bool > ("printCaloTowerHTML", false);
+    doRecHitHTML = iConfig.getUntrackedParameter < bool > ("printRecHitHTML", false);
+    doJetMetHTML = iConfig.getUntrackedParameter < bool > ("printJetMetHTML", false);
+    doMuonHTML = iConfig.getUntrackedParameter < bool > ("printMuonHTML", false);
+    doHPDNoiseHTML = iConfig.getUntrackedParameter < bool > ("printHPDNoiseHTML", false);
+    // base Html output directory
+    baseHtmlDir_ = iConfig.getUntrackedParameter < string > ("baseHtmlDir", "");
+    if (baseHtmlDir_.size() != 0)
+        cout << "-->HTML output will go to baseHtmlDir = '" << baseHtmlDir_ << "'" << endl;
+    else
+        cout << "-->HTML output is disabled" << endl;
+    runNo = 0;
+    evtNo = 0;
+    startTime = "Not Avaliable";
+    // global ROOT style
+    gStyle->Reset("Default");
+    gStyle->SetOptFit(1);
+    gStyle->SetCanvasColor(0);
+    gStyle->SetPadColor(0);
+    gStyle->SetFillColor(0);
+    gStyle->SetTitleFillColor(10);
+    // gStyle->SetOptStat(0);
+    gStyle->SetOptStat("ouemr");
+    gStyle->SetPalette(1);
 }
 
 
 HcalProm::~HcalProm()
-{
- 
-   // do anything here that needs to be done at desctruction time
-   // (e.g. close files, deallocate resources etc.)
-
-}
+{}
 
 
-//
-// member functions
-//
 
 // ------------ method called to for each event  ------------
-void
-HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
+void HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-   using namespace edm;
-   using namespace std;
-   using namespace reco;
+    runNo = iEvent.id().run();
+    // old versions time_t a = (iEvent.time().value()) & 0xffffffff;
+    time_t a = (iEvent.time().value()) >> 32;
 
-   //hcal rechits
-   Handle<HBHERecHitCollection> hbhe;
-   iEvent.getByLabel("hbhereco", hbhe);
-   const HBHERecHitCollection Hithbhe = *(hbhe.product());
+    if (evtNo < 1) {
+        startTime = ctime(&a);
+    }
+
+    //hcal rechits
+    Handle<HBHERecHitCollection> hbhe;
+    iEvent.getByLabel("hbhereco", hbhe);
+    const HBHERecHitCollection Hithbhe = *(hbhe.product());
 
    Handle<HFRecHitCollection> hfrh;
    iEvent.getByLabel("hfreco",hfrh);
@@ -154,9 +176,12 @@ HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    iEvent.getByLabel( "horeco", horh );
    const HORecHitCollection Hitho = *(horh.product());
 
-   // Missing Et
-//   Handle<CaloMETCollection> recmet;  
-//   iEvent.getByLabel( "met", recmet ); 
+    // Missing Et
+    const CaloMET *calomet;
+    Handle < CaloMETCollection > recmet;
+    iEvent.getByLabel("met", recmet);
+    const CaloMETCollection *metCol = recmet.product();
+    calomet = &(metCol->front());
 
    //hcal digis
    //   Handle<HBHEDigiCollection> hbhe_digi; 
@@ -293,14 +318,14 @@ HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
    float maxhbherec = 0;
    float next_to_maxhbherec = 0;
-   float maxhbherec_ETA;
-   float maxhbherec_PHI;
-   float next_to_maxhbherec_ETA;
-   float next_to_maxhbherec_PHI;   
+   float maxhbherec_ETA = 0;
+   float maxhbherec_PHI = 0;
+   float next_to_maxhbherec_ETA = 0;
+   float next_to_maxhbherec_PHI = 0;   
    for (HBHERecHitCollection::const_iterator hhit=Hithbhe.begin(); hhit!=Hithbhe.end(); hhit++) {
      if (hhit->energy() > 0.6){
-       h_hcal_rechit_energy->Fill(hhit->energy());
-       h_eta_phi_HBHE->Fill((hhit->id()).ieta(),(hhit->id()).iphi());
+       h_hbhe_rechit_energy->Fill(hhit->energy());
+       h_hbhe_eta_phi->Fill((hhit->id()).ieta(),(hhit->id()).iphi());
        if (hhit->energy() > maxhbherec){ 
 	 maxhbherec = hhit->energy();
 	 maxhbherec_ETA = hhit->id().ieta();
@@ -319,20 +344,20 @@ HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    for (HFRecHitCollection::const_iterator hhit=Hithf.begin(); hhit!=Hithf.end(); hhit++) {
      if (hhit->energy() > 0.6){
        h_hf_rechit_energy->Fill(hhit->energy());
-       h_eta_phi_HF->Fill((hhit->id()).ieta(),(hhit->id()).iphi());
+       h_hf_eta_phi->Fill((hhit->id()).ieta(),(hhit->id()).iphi());
      }
    }
 
    float maxhorec = 0;
    float next_to_maxhorec = 0;
-   float maxhorec_ETA;
-   float maxhorec_PHI;
-   float next_to_maxhorec_ETA;
-   float next_to_maxhorec_PHI;     
+   float maxhorec_ETA = 0;
+   float maxhorec_PHI = 0;
+   float next_to_maxhorec_ETA = 0;
+   float next_to_maxhorec_PHI = 0;     
    for (HORecHitCollection::const_iterator hhit=Hitho.begin(); hhit!=Hitho.end(); hhit++) {
      if (hhit->energy() > 0.6){
        h_ho_rechit_energy->Fill(hhit->energy());
-       h_eta_phi_HO->Fill((hhit->id()).ieta(),(hhit->id()).iphi());
+       h_ho_eta_phi->Fill((hhit->id()).ieta(),(hhit->id()).iphi());
        if (hhit->energy() > maxhorec){ 
 	 maxhorec = hhit->energy();
 	 maxhorec_ETA = hhit->id().ieta();
@@ -347,7 +372,7 @@ HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    }
    
   for (EcalRecHitCollection::const_iterator ehit=Hiteb.begin(); ehit!=Hiteb.end(); ehit++) {
-      h_ecal_rechit_energy->Fill(ehit->energy());
+      h_eb_rechit_energy->Fill(ehit->energy());
   }
 
   /*
@@ -360,10 +385,10 @@ HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   float maxebeerec = 0;
   float next_to_maxebeerec = 0;
-  float maxebeerec_ETA;
-  float maxebeerec_PHI;
-  float next_to_maxebeerec_ETA;
-  float next_to_maxebeerec_PHI; 
+  float maxebeerec_ETA = 0;
+  float maxebeerec_PHI = 0;
+  float next_to_maxebeerec_ETA = 0;
+  float next_to_maxebeerec_PHI = 0; 
   for (reco::BasicClusterCollection::const_iterator clus = clusterCollection_p->begin(); clus != clusterCollection_p->end(); ++clus)
     {
       if (clus->eta()>2.9) continue;
@@ -403,19 +428,29 @@ HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     h_muon_p->Fill(ncm->p());
   }
 
+  std::vector < CaloJet > myjet;
+    for (CaloJetCollection::const_iterator jetiter = cjet.begin(); jetiter != cjet.end(); jetiter++) {
+        h_jet_Pt->Fill(jetiter->pt());
+        h_jet_Eta->Fill(jetiter->eta());
+        h_jet_Phi->Fill(jetiter->phi());
+        myjet.push_back(*jetiter);
+    }
+    if (myjet.size() > 0) {
+        std::stable_sort(myjet.begin(), myjet.end(), CaloJetSort());
+        // now go to deeper levels:
+        // 1-from jet to calo-tower
+        CaloJet jet;
 
-  std::vector<double> value;
-  for (CaloJetCollection::const_iterator jetiter=cjet.begin(); jetiter!=cjet.end(); jetiter++){
-    h_jet_energy->Fill(jetiter->energy());
-    h_jet_eta->Fill(jetiter->eta());
-    h_jet_phi->Fill(jetiter->phi());
-    value.push_back(jetiter->pt());
-  }
+        jet = myjet[0];
+        h_leadJet_Pt->Fill(jet.pt());
+        h_leadJet_Eta->Fill(jet.eta());
+        h_leadJet_Phi->Fill(jet.phi());
+    }
+    // MET
+    h_caloMet_Met->Fill(calomet->pt());
+    h_caloMet_Phi->Fill(calomet->phi());
+    h_caloMet_SumEt->Fill(calomet->sumEt());
 
-  std::sort(value.begin(), value.end());
-  if(value.size()>0){
-  h_jet_highestPt->Fill(value[value.size()-1]);
-  }
 
   for (CaloTowerCollection::const_iterator kal=calohbhe.begin(); kal!=calohbhe.end(); kal++){	
     h_calo_tower_energy->Fill(kal->energy());
@@ -432,6 +467,94 @@ HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       h_jetphi_vs_muonphi->Fill(jetiter->phi(),ncm->phi());
     } 
   }
+    // Check Muon and HCal match
+    double radius_hcal = 286.4;
+    double conesize = -999999.;
+    bool abort_cone_increase = false;
+
+    for (reco::TrackCollection::const_iterator cmTrack = cosmicmuon->begin(); cmTrack != cosmicmuon->end(); ++cmTrack) {
+        double dRtracktowerp = 999999.;
+        double dRtracktowerm = 999999.;
+
+        double thetap = -999.;
+        double etap = -999.;
+        double phip = -999.;
+        double thetam = -999.;
+        double etam = -999.;
+        double phim = -999.;
+
+        Extrapolate(cmTrack->innerPosition().x(), cmTrack->innerPosition().y(), cmTrack->innerPosition().z(),
+          cmTrack->innerMomentum().x(), cmTrack->innerMomentum().y(), cmTrack->innerMomentum().z(),
+          radius_hcal, &thetap, &phip, &thetam, &phim);
+
+        if (thetam != -999.) {
+            etam = -1 * TMath::Log(TMath::Tan(thetam / 2.));
+            etap = -1 * TMath::Log(TMath::Tan(thetap / 2.));
+            if (TMath::IsNaN(etam))
+                etam = -999;
+            if (TMath::IsNaN(etap))
+                etap = -999;
+        }
+        // loop different matching cones, 0.1, 0.2 - 1.0
+        abort_cone_increase = false;
+        for (int conei = 1; conei <= 10; ++conei) {
+            if (abort_cone_increase)
+                break;
+
+            conesize = conei * 0.01;    // max cone of dR<0.1
+            for (CaloTowerCollection::const_iterator cnd = calo->begin(); cnd != calo->end(); cnd++) {
+
+                float ieta = cnd->eta();
+                float iphi = cnd->phi();
+                double ene = cnd->hadEnergy();
+
+                DT_HCAL_eta_correlation_all->Fill(etam, ieta);
+                DT_HCAL_eta_correlation_all->Fill(etap, ieta);
+                DT_HCAL_phi_correlation_all->Fill(phim, iphi);
+                DT_HCAL_phi_correlation_all->Fill(phip, iphi);
+
+                HCAL_energy_correlation_all->Fill(ene);
+
+                if (TMath::Abs(etap) < 4.)
+                    dRtracktowerp = TMath::Sqrt(TMath::Power((ieta - etap), 2.) + TMath::Power((iphi - phip), 2.));
+                if (TMath::Abs(etam) < 4.)
+                    dRtracktowerm = TMath::Sqrt(TMath::Power((ieta - etam), 2.) + TMath::Power((iphi - phim), 2.));
+
+                if (TMath::IsNaN(dRtracktowerm))
+                    dRtracktowerm = 999.;
+                if (TMath::IsNaN(dRtracktowerp))
+                    dRtracktowerp = 999.;
+
+                if (ene > 1. && (dRtracktowerp < conesize)) {
+                    std::cout << "In Run/Event   : " << runNo << "/" << evtNo << std::endl;
+                    std::cout << "Match within   : " << dRtracktowerp << std::endl;
+                    std::cout << "cal eta()      : " << ieta << std::endl;
+                    std::cout << "cal phi()      : " << iphi << std::endl;
+                    std::cout << "cal energy()   : " << ene << std::endl;
+                    std::cout << "Cosmic muon extrapolated to be at eta   p: " << etap << std::endl;
+                    std::cout << "Cosmic muon extrapolated to be at phi   p: " << phip << std::endl;
+                    abort_cone_increase = true;
+                    DT_HCAL_eta_correlation->Fill(etap, ieta);
+                    DT_HCAL_phi_correlation->Fill(phip, iphi);
+                    HCAL_energy_correlation->Fill(ene);
+                }
+                if (ene > 1. && (dRtracktowerm < conesize)) {
+                    std::cout << "In Run/Event   : " << runNo << "/" << evtNo << std::endl;
+                    std::cout << "Match within   : " << dRtracktowerp << std::endl;
+                    std::cout << "cal eta()      : " << ieta << std::endl;
+                    std::cout << "cal phi()      : " << iphi << std::endl;
+                    std::cout << "cal energy()   : " << ene << std::endl;
+                    std::cout << "Cosmic muon extrapolated to be at eta   p: " << etap << std::endl;
+                    std::cout << "Cosmic muon extrapolated to be at phi   p: " << phip << std::endl;
+                    abort_cone_increase = true;
+                    DT_HCAL_eta_correlation->Fill(etap, ieta);
+                    DT_HCAL_phi_correlation->Fill(phip, iphi);
+                    HCAL_energy_correlation->Fill(ene);
+                }
+            }
+        }
+    }
+    ++evtNo;
 
 }
 
@@ -439,81 +562,893 @@ HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 // ------------ method called once each job just before starting event loop  ------------
 void HcalProm::beginJob(const edm::EventSetup&)
 {
-  TFileDirectory EcalDir = fs->mkdir( "Ecal" );
-  TFileDirectory HcalDir = fs->mkdir( "Hcal" );
-  TFileDirectory MuonDir = fs->mkdir( "Muon" );
-  TFileDirectory CorrDir = fs->mkdir( "Correlations" );
-  TFileDirectory NoiseDir = fs->mkdir( "Noise" );
-  TFileDirectory JetMetDir = fs->mkdir( "JetMet" );
+    runNo = 0;
+    evtNo = 0;
+    TrigDT = 0;
+    startTime = "Not Avaliable";
 
-  //Add runnumbers to histograms!
+    TFileDirectory EcalDir = fs->mkdir( "Ecal" );
+    TFileDirectory HcalDir = fs->mkdir( "Hcal" );
+    TFileDirectory MuonDir = fs->mkdir( "Muon" );
+    TFileDirectory CorrDir = fs->mkdir( "Correlations" );
+    TFileDirectory NoiseDir = fs->mkdir( "Noise" );
+    TFileDirectory JetMetDir = fs->mkdir( "JetMet" );
 
-  h_hcal_rechit_energy = HcalDir.make<TH1F>(" h_hcal_rechit_energy","RecHit Energy HBHE",130,-10,120);
-  h_maxhbherec = HcalDir.make<TH1F>("h_maxhbherec","HBHE Muon (GeV)",200,0,15);
-  h_maxhorec = HcalDir.make<TH1F>("h_maxhorec","HO Muon (GeV)",200,0,15);
-  h_caloMet_energy = HcalDir.make<TH1F>(" h_caloMet_energy","CaloMET0 Energy",130,-10,120);
-  h_eta_phi_HBHE = HcalDir.make<TH2F>("h_eta_phi_HBHE","#eta(HBHE)",100,-7,7,100,-7,7);
-  h_hf_rechit_energy = HcalDir.make<TH1F>(" h_hf_rechit_energy","RecHit Energy HF",130,-10,120);
-  h_eta_phi_HF = HcalDir.make<TH2F>("h_eta_phi_HF","#eta(HF)",100,-7,7,100,-7,7);
-  h_ho_rechit_energy = HcalDir.make<TH1F>(" h_ho_rechit_energy","RecHit Energy HO",130,-10,120);
-  h_eta_phi_HO = HcalDir.make<TH2F>("h_eta_phi_HO","#eta(HO)",100,-7,7,100,-7,7);
-  h_hbtiming = HcalDir.make<TH1F>("h_hbtiming","HBHE Timing",10,-0.5,9.5);
+    //Add runnumbers to histograms!
+    
+    h_hbhe_rechit_energy = HcalDir.make<TH1F>("h_hbhe_rechit_energy","RecHit Energy HBHE",130,-10,120);
+    h_hf_rechit_energy = HcalDir.make<TH1F>("h_hf_rechit_energy","RecHit Energy HF",130,-10,120);
+    
+    h_maxhbherec = HcalDir.make<TH1F>("h_maxhbherec","HBHE Muon (GeV)",200,0,15);
+    h_maxhorec = HcalDir.make<TH1F>("h_maxhorec","HO Muon (GeV)",200,0,15);
+    h_hbhe_eta_phi = HcalDir.make<TH2F>("h_hbhe_eta_phi","#eta(HBHE)",100,-7,7,100,-7,7);
+    h_hf_eta_phi = HcalDir.make<TH2F>("h_hf_eta_phi","#eta(HF)",100,-7,7,100,-7,7);
+    h_ho_rechit_energy = HcalDir.make<TH1F>(" h_ho_rechit_energy","RecHit Energy HO",130,-10,120);
+    h_ho_eta_phi = HcalDir.make<TH2F>("h_ho_eta_phi","#eta(HO)",100,-7,7,100,-7,7);
+    
+    h_hbtiming = HcalDir.make<TH1F>("h_hbtiming","HBHE Timing",10,-0.5,9.5);
+    
+    h_jet_Pt = JetMetDir.make < TH1F > ("h_jet_Pt", "Jet PT", 130, -10, 120);
+    h_jet_Eta = JetMetDir.make < TH1F > ("h_jet_Eta", "Jet Eta", 100, -7, 7);
+    h_jet_Phi = JetMetDir.make < TH1F > ("h_jet_Phi", "Jet Phi", 100, -7, 7);
+    h_leadJet_Pt = JetMetDir.make < TH1F > ("h_leadJet_Pt", "Leading Jet PT", 120, 0, 120);
+    h_leadJet_Eta = JetMetDir.make < TH1F > ("h_leadJet_Eta", "Leading Jet Eta", 100, -7, 7);
+    h_leadJet_Phi = JetMetDir.make < TH1F > ("h_leadJet_Phi", "Leading Jet Phi", 100, -7, 7);
+    h_caloMet_Met = JetMetDir.make < TH1F > ("h_caloMet", "MET from CaloTowers", 100, 0, 50);
+    h_caloMet_Phi = JetMetDir.make < TH1F > ("h_caloMet", "MET #phi from CaloTowers", 100, -7, 7);
+    h_caloMet_SumEt = JetMetDir.make < TH1F > ("h_caloMet", "SumET from CaloTowers", 100, 0, 50);
 
-  h_ecal_rechit_energy = EcalDir.make<TH1F>(" h_ecal_rechit_energy","RecHit Energy EB",130,-10,120);
-  h_maxebeerec = EcalDir.make<TH1F>("h_maxebeerec","EBEE Muon (GeV)",200,0,15);
-  h_ecal_cluster_energy = EcalDir.make<TH1F>("h_ecal_cluster_energy","EB Cluster Energy",130,-10,120);
-  h_ecal_cluster_eta = EcalDir.make<TH1F>("h_ecal_cluster_eta","#eta(EB Cluster)",100,-7,7);
-  h_ecal_cluster_phi = EcalDir.make<TH1F>("h_ecal_cluster_phi","#phi(EB Cluster)",100,-7,7);
+    h_eb_rechit_energy = EcalDir.make<TH1F>(" h_eb_rechit_energy","RecHit Energy EB",130,-10,120);
+    h_maxebeerec = EcalDir.make<TH1F>("h_maxebeerec","EBEE Muon (GeV)",200,0,15);
+    h_ecal_cluster_energy = EcalDir.make<TH1F>("h_ecal_cluster_energy","EB Cluster Energy",130,-10,120);
+    h_ecal_cluster_eta = EcalDir.make<TH1F>("h_ecal_cluster_eta","#eta(EB Cluster)",100,-7,7);
+    h_ecal_cluster_phi = EcalDir.make<TH1F>("h_ecal_cluster_phi","#phi(EB Cluster)",100,-7,7);
   
-  h_maxebee_plus_maxhbhe = CorrDir.make<TH1F>("h_maxebee_plus_maxhbhe","EBEE+HBHE Muon (GeV)",200,0,15);
+    h_maxebee_plus_maxhbhe = CorrDir.make<TH1F>("h_maxebee_plus_maxhbhe","EBEE+HBHE Muon (GeV)",200,0,15);
 
-  h_ecal_vs_hcal_X = CorrDir.make<TH2F>("h_ecal_vs_hcal_X","X(EB) vs X(HB)",100,-7,7,100,-7,7);
-  h_ecal_vs_hcal_Y = CorrDir.make<TH2F>("h_ecal_vs_hcal_Y","Y(EB) vs Y(HB)",100,-7,7,100,-7,7);
+    h_ecal_vs_hcal_X = CorrDir.make<TH2F>("h_ecal_vs_hcal_X","X(EB) vs X(HB)",100,-7,7,100,-7,7);
+    h_ecal_vs_hcal_Y = CorrDir.make<TH2F>("h_ecal_vs_hcal_Y","Y(EB) vs Y(HB)",100,-7,7,100,-7,7);
 
-  h_calo_tower_energy = JetMetDir.make<TH1F>("h_calo_tower_energy","Calo Tower Energy",130,-10,120);
+    h_calo_tower_energy = JetMetDir.make<TH1F>("h_calo_tower_energy","Calo Tower Energy",130,-10,120);
 
-  h_jet_energy = JetMetDir.make<TH1F>("h_jet_energy","Jet Energy",130,-10,120);
-  h_jet_eta = JetMetDir.make<TH1F>("h_jet_eta","#eta(j)",100,-7,7);
-  h_jet_phi = JetMetDir.make<TH1F>("h_jet_phi","#phi(j)",100,-7,7);
-  h_jet_highestPt = JetMetDir.make<TH1F>("h_jet_highestPt","Highest Jet pT",7000,0,7000);
+    h_muon_vertex_x = MuonDir.make < TH1F > ("h_muon_vertex_x", "Muon Vertex X", 10000, -1000, 1000);
+    h_muon_px = MuonDir.make < TH1F > ("h_muon_px", "Px(#mu)", 1000, -10, 100);
+    h_muon_p = MuonDir.make < TH1F > ("h_muon_p", "P(#mu)", 1000, -10, 100);
 
-  h_muon_vertex_x = MuonDir.make<TH1F>("h_muon_vertex_x","Muon Vertex X",10000,-1000,1000);
-  h_muon_px = MuonDir.make<TH1F>("h_muon_px","P_{X}(#mu)",1000,-10,100);
-  h_muon_p = MuonDir.make<TH1F>("h_muon_p","P(#mu)",1000,-10,100);
+    h_ecalx_vs_muonx = CorrDir.make<TH2F>("h_ecalx_vs_muonx","h_ecalx_vs_muonx",1000,-400,400,1000,-400,400);
+    h_ecaly_vs_muony = CorrDir.make<TH2F>("h_ecaly_vs_muony","h_ecaly_vs_muony",1000,-1000,1000,1000,-1000,1000);
+    h_impact_diff = CorrDir.make<TH1F>("h_impact_diff","h_impact_diff",1000,-200,200);
+    h_jetphi_vs_muonphi = CorrDir.make<TH2F>("h_jetphi_vs_muonphi","h_jetphi_vs_muonphi",100,-6,6,100,-6,6);
+    
+    DT_HCAL_eta_correlation =
+      MuonDir.make < TH2F > ("DT_CalTower_eta_correlation", "DT eta vs Calo eta at r= 286.4cm", 800, -4., 4., 800, -4.,
+      4.);
+    DT_HCAL_eta_correlation_all =
+      MuonDir.make < TH2F > ("DT_CalTower_eta_correlation_all", "DT eta vs Calo eta at r= 286.4cm", 800, -4., 4., 800,
+      -4., 4.);
+    DT_HCAL_phi_correlation =
+      MuonDir.make < TH2F > ("DT_CalTower_phi_correlation", "DT phi vs Calo phi at r= 286.4cm", 800, -4., 4., 800, -4.,
+      4.);
+    DT_HCAL_phi_correlation_all =
+      MuonDir.make < TH2F > ("DT_CalTower_phi_correlation_all", "DT phi vs Calo phi at r= 286.4cm", 800, -4., 4., 800,
+      -4., 4.);
+    HCAL_energy_correlation =
+      MuonDir.make < TH1F > ("CalTower_energy_correlation", "Calo had energy at r= 286.4cm", 800, -4., 4.);
+    HCAL_energy_correlation_all =
+      MuonDir.make < TH1F > ("CalTower_energy_correlation_all", "Calo had energy at r= 286.4cm", 800, -4., 4.);
+    
+    /*
+    h_Qiesum = NoiseDir.make < TH1F > ("h_Qiesum", "Qiesum All Channels", 30000, -100., 29900.);
+    string Noise[9] = { "1", "5", "20", "80", "150", "300", "600", "1000", "1500" };
+    for (int hi = 0; hi != 9; ++hi) {
+        if (hi != 8) {
+            h_NoiseChan[hi] =
+              NoiseDir.make < TH2F > (string("h_Noise_phi_vs_eta_" + Noise[hi] + "-" + Noise[hi + 1]).c_str(),
+              string("Noise i#phi vs i#eta between " + Noise[hi] + " and " + Noise[hi + 1] + "GeV").c_str(), 40, -19.5,
+              20.5, 73, -.5, 72.5);
+            string title;
 
-  h_ecalx_vs_muonx = CorrDir.make<TH2F>("h_ecalx_vs_muonx","h_ecalx_vs_muonx",1000,-400,400,1000,-400,400);
-  h_ecaly_vs_muony = CorrDir.make<TH2F>("h_ecaly_vs_muony","h_ecaly_vs_muony",1000,-1000,1000,1000,-1000,1000);
-  h_impact_diff = CorrDir.make<TH1F>("h_impact_diff","h_impact_diff",1000,-200,200);
-  h_jetphi_vs_muonphi = CorrDir.make<TH2F>("h_jetphi_vs_muonphi","h_jetphi_vs_muonphi",100,-6,6,100,-6,6);
-  TrigDT = 0;
+            title = "Events between " + Noise[hi] + " and " + Noise[hi + 1] + "GeV";
+            h_NoisePhi[hi] =
+              NoiseDir.make < TH1F > (string("h_Noise_Phi_" + Noise[hi] + "-" + Noise[hi + 1]).c_str(), title.c_str(),
+              73, -.5, 72.5);
+        } else {
+            h_NoiseChan[hi] = NoiseDir.make < TH2F > (string("h_Noise_phi_vs_eta_" + Noise[hi]).c_str(),
+              string("Noise i#phi vs i#eta above " + Noise[hi] + "GeV").c_str(), 40, -19.5, 20.5, 73, -.5, 72.5);
+            string title;
+
+            title = "Events above " + Noise[hi];
+            title = title + "GeV vs i#phi";
+            h_NoisePhi[hi] =
+              NoiseDir.make < TH1F > (string("h_Noise_Phi_" + Noise[hi]).c_str(), title.c_str(), 73, -.5, 72.5);
+        }
+    }
+    */
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
 void HcalProm::endJob() {
-  gROOT->SetStyle("Plain");
-  gStyle->SetOptFit(1);
-  TCanvas* c1 = new TCanvas("c1","",20,20,400,400);
-  c1->cd();
-  h_maxhbherec->Draw();
-  h_maxhbherec->Fit("landau");
-  c1->Print("hbhe_muon.png");   
-
-  TCanvas* c1_1 = new TCanvas("c1_1","",20,20,400,400);
-  c1_1->cd();
-  h_maxhorec->Draw();
-  h_maxhorec->Fit("landau");
-  c1_1->Print("ho_muon.png");   
-
-  TCanvas* c2 = new TCanvas("c2","",20,20,400,400);
-  c2->cd();
-  h_maxebeerec->Draw();
-  h_maxebeerec->Fit("landau");
-  c2->Print("ebee_muon.png");
-
-  TCanvas* c3 = new TCanvas("c3","",20,20,400,400);
-  c3->cd();
-  h_maxebee_plus_maxhbhe->Draw();
-  h_maxebee_plus_maxhbhe->Fit("landau");
-  c3->Print("hbhe_plus_ebee_muon.png");
+  
+  if (prompt_htmlPrint) htmlOutput();
 }
 
+//      HTML OUTPUT
+
+
+void HcalProm::htmlOutput(void) 
+{
+
+
+    cout << "Preparing HcalPrompt html output ..." << endl;
+
+    char tmp[10];
+
+    if (runNo != -1)
+        sprintf(tmp, "HcalPrompt_R%09d", runNo);
+    else
+        sprintf(tmp, "HcalPrompt_R%09d", 0);
+    string htmlDir = baseHtmlDir_ + "/" + tmp + "/";
+
+    system(("/bin/mkdir -p " + htmlDir).c_str());
+
+    std::ofstream htmlFile;
+
+    htmlFile.open((htmlDir + "index.html").c_str());
+
+    // html page header
+    htmlFile << "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">  " << endl;
+    htmlFile << "<html>  " << endl;
+    htmlFile << "<head>  " << endl;
+    htmlFile << "  <meta content=\"text/html; charset=ISO-8859-1\"  " << endl;
+    htmlFile << " http-equiv=\"content-type\">  " << endl;
+    htmlFile << "  <title>Hcal Prompt Analysis Output</title> " << endl;
+    htmlFile << "</head>  " << endl;
+    htmlFile << "<body>  " << endl;
+    htmlFile << "<br>  " << endl;
+    htmlFile << "<center><h1>Hcal Prompt Analysis Outputs</h1></center>" << endl;
+    htmlFile << "<h2>Run Number:&nbsp;&nbsp;&nbsp;" << endl;
+    htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << runNo << "</span>" << endl;
+    htmlFile << "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Start&nbsp;Time:&nbsp;<span style=\"color: rgb(0, 0, 153);\">" <<
+      startTime << "</span></h2> " << endl;
+    htmlFile << "<h2>Events processed:&nbsp;&nbsp;&nbsp;" << endl;
+    htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << evtNo << "</span></h2> " << endl;
+    htmlFile << "<hr>" << endl;
+    htmlFile << "<ul>" << endl;
+
+    string htmlName;
+
+    if (doRecHitHTML) {
+        htmlName = "HcalPromptRecHit.html";
+        RecHitHTMLOutput(runNo, startTime, htmlDir, htmlName);
+        htmlFile << "<table border=0 WIDTH=\"50%\"><tr>" << endl;
+        htmlFile << "<td WIDTH=\"35%\"><a href=\"" << htmlName << "\">RecHit Prompt</a></td>" << endl;
+
+    }
+    if (doDigiHTML) {
+        htmlName = "HcalPromptDigi.html";
+        DigiHTMLOutput(runNo, startTime, htmlDir, htmlName);
+        htmlFile << "<table border=0 WIDTH=\"50%\"><tr>" << endl;
+        htmlFile << "<td WIDTH=\"35%\"><a href=\"" << htmlName << "\">Digi Prompt</a></td>" << endl;
+    }
+    if (doJetMetHTML) {
+        htmlName = "HcalPromptJetMet.html";
+        // htmlOutput(runNo, startTime,htmlDir, htmlName,htmlTitle);
+        JetMetHTMLOutput(runNo, startTime, htmlDir, htmlName);
+        htmlFile << "<table border=0 WIDTH=\"50%\"><tr>" << endl;
+        htmlFile << "<td WIDTH=\"35%\"><a href=\"" << htmlName << "\">JetMet Prompt</a></td>" << endl;
+    }
+    if (doMuonHTML) {
+        htmlName = "HcalPromptMuon.html";
+        MuonHTMLOutput(runNo, startTime, htmlDir, htmlName);
+        htmlFile << "<table border=0 WIDTH=\"50%\"><tr>" << endl;
+        htmlFile << "<td WIDTH=\"35%\"><a href=\"" << htmlName << "\">Muon Prompt</a></td>" << endl;
+    }
+    if (doHPDNoiseHTML) {
+        htmlName = "HcalPromptHPDNoise.html";
+        HPDNoiseHTMLOutput(runNo, startTime, htmlDir, htmlName);
+        htmlFile << "<table border=0 WIDTH=\"50%\"><tr>" << endl;
+        htmlFile << "<td WIDTH=\"35%\"><a href=\"" << htmlName << "\">HPD Noise Prompt</a></td>" << endl;
+    }
+    if (doCaloTowerHTML) {
+        htmlName = "HcalPromptCaloTower.html";
+        CaloTowerHTMLOutput(runNo, startTime, htmlDir, htmlName);
+        htmlFile << "<table border=0 WIDTH=\"50%\"><tr>" << endl;
+        htmlFile << "<td WIDTH=\"35%\"><a href=\"" << htmlName << "\">CaloTower Prompt</a></td>" << endl;
+    }
+    htmlFile << "</tr></table>" << endl;
+    htmlFile << "</ul>" << endl;
+
+    // html page footer
+    htmlFile << "</body> " << endl;
+    htmlFile << "</html> " << endl;
+
+    htmlFile.close();
+    cout << "HcalProm html output done..." << endl;
+    return;
+}
+
+
+void HcalProm::JetMetHTMLOutput(int runNo, string startTime, string htmlDir, string htmlName) {
+
+    cout << "Preparing html output for JetMet" << endl;
+
+    ofstream htmlFile;
+
+    htmlFile.open((htmlDir + htmlName).c_str());
+
+    // html page header
+    htmlFile << "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">  " << endl;
+    htmlFile << "<html>  " << endl;
+    htmlFile << "<head>  " << endl;
+    htmlFile << "  <meta content=\"text/html; charset=ISO-8859-1\"  " << endl;
+    htmlFile << " http-equiv=\"content-type\">  " << endl;
+    htmlFile << "  <title>JetMet Plots</title> " << endl;
+    htmlFile << "</head>  " << endl;
+    htmlFile << "<style type=\"text/css\"> td { font-weight: bold } </style>" << endl;
+    htmlFile << "<body>  " << endl;
+    htmlFile << "<br>  " << endl;
+    htmlFile << "<h2>Run Number:&nbsp;&nbsp;&nbsp;" << endl;
+    htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << runNo << "</span>" << endl;
+    htmlFile << "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Start&nbsp;Time:&nbsp;<span style=\"color: rgb(0, 0, 153);\">" <<
+      startTime << "</span></h2> " << endl;
+    htmlFile << "<h2>Plots from :&nbsp;&nbsp;&nbsp;&nbsp; <span " << endl;
+    htmlFile << " style=\"color: rgb(0, 0, 153);\">JetMet</span></h2> " << endl;
+    htmlFile << "<h2>Events processed:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" << endl;
+    htmlFile << "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span " << endl;
+    htmlFile << " style=\"color: rgb(0, 0, 153);\">" << evtNo << "</span></h2>" << endl;
+    // begin table for histograms
+    htmlFile << "<table width=100%  border=1><tr>" << endl;
+    htmlFile << "</tr></table>" << endl;
+    htmlFile << "<hr>" << endl;
+
+    htmlFile << "<h2><strong>(HcalPrompt)&nbsp;JetMet&nbsp;Histograms</strong></h2>" << endl;
+
+    htmlFile << "<h3>" << endl;
+    htmlFile << "<a href=\"#AllJet_Plots\">AllJet Plots </a></br>" << endl;
+    htmlFile << "<a href=\"#LeadingJet_Plots\">LeadingJet Plots </a></br>" << endl;
+    htmlFile << "<a href=\"#Met_Plots\">Met Plots </a></br>" << endl;
+    htmlFile << "</h3>" << endl;
+    htmlFile << "<hr>" << endl;
+
+    for (int i = 0; i < 3; i++) {
+        string type = "AllJets";
+
+        if (i == 1)
+            type = "LeadingJet";
+        if (i == 2)
+            type = "Met";
+
+        htmlFile << "<tr align=\"left\">" << endl;
+        htmlFile << "<td>&nbsp;&nbsp;&nbsp;<a name=\"" << type << "_Plots\"><h3>" << type <<
+          " Histograms</h3></td></tr>" << endl;
+        if (i == 0) {
+            htmlFile << "<tr align=\"left\">" << endl;
+            histoHTML(runNo, h_jet_Pt, "All Jets Pt", "Events", 92, htmlFile, htmlDir);
+            histoHTML(runNo, h_jet_Eta, "All Jets Eta", "Events", 92, htmlFile, htmlDir);
+            histoHTML(runNo, h_jet_Phi, "all Jets Phi", "Events", 92, htmlFile, htmlDir);
+            htmlFile << "</tr>" << endl;
+        }
+        if (i == 1) {
+            htmlFile << "<tr align=\"left\">" << endl;
+            histoHTML(runNo, h_leadJet_Pt, "Leading Jet Pt", "Events", 92, htmlFile, htmlDir);
+            histoHTML(runNo, h_leadJet_Eta, "Leading Jet Eta", "Events", 92, htmlFile, htmlDir);
+            histoHTML(runNo, h_leadJet_Phi, "Leading Jet Phi", "Events", 92, htmlFile, htmlDir);
+            htmlFile << "</tr>" << endl;
+        }
+        if (i == 2) {
+            htmlFile << "<tr align=\"left\">" << endl;
+            histoHTML(runNo, h_caloMet_Met, "CaloMET", "Events", 92, htmlFile, htmlDir);
+            histoHTML(runNo, h_caloMet_Phi, "CaloMet Phi", "Events", 92, htmlFile, htmlDir);
+            histoHTML(runNo, h_caloMet_SumEt, "Scalar Sum ET", "Events", 92, htmlFile, htmlDir);
+            htmlFile << "</tr>" << endl;
+        }
+
+    }
+    htmlFile << "</table>" << endl;
+    // end table
+    htmlFile << "<br>" << endl;
+
+    // html page footer
+    htmlFile << "</body> " << endl;
+    htmlFile << "</html> " << endl;
+    htmlFile.close();
+
+}
+
+
+void HcalProm::RecHitHTMLOutput(int runNo, string startTime, string htmlDir, string htmlName) {
+
+    cout << "Preparing html output for " << htmlName << endl;
+
+    ofstream htmlFile;
+
+    htmlFile.open((htmlDir + htmlName).c_str());
+
+    // html page header
+    htmlFile << "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">  " << endl;
+    htmlFile << "<html>  " << endl;
+    htmlFile << "<head>  " << endl;
+    htmlFile << "  <meta content=\"text/html; charset=ISO-8859-1\"  " << endl;
+    htmlFile << " http-equiv=\"content-type\">  " << endl;
+    htmlFile << "  <title>RecHit Plots</title> " << endl;
+    htmlFile << "</head>  " << endl;
+    htmlFile << "<style type=\"text/css\"> td { font-weight: bold } </style>" << endl;
+    htmlFile << "<body>  " << endl;
+    htmlFile << "<br>  " << endl;
+    htmlFile << "<h2>Run Number:&nbsp;&nbsp;&nbsp;" << endl;
+    htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << runNo << "</span>" << endl;
+    htmlFile << "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Start&nbsp;Time:&nbsp;<span style=\"color: rgb(0, 0, 153);\">" <<
+      startTime << "</span></h2> " << endl;
+    htmlFile << "<h2>Plots from :&nbsp;&nbsp;&nbsp;&nbsp; <span " << endl;
+    htmlFile << " style=\"color: rgb(0, 0, 153);\">RecHits</span></h2> " << endl;
+    htmlFile << "<h2>Events processed:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" << endl;
+    htmlFile << "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span " << endl;
+    htmlFile << " style=\"color: rgb(0, 0, 153);\">" << evtNo << "</span></h2>" << endl;
+    // begin table for histograms
+    htmlFile << "<table width=100%  border=1><tr>" << endl;
+    htmlFile << "</tr></table>" << endl;
+    htmlFile << "<hr>" << endl;
+
+    htmlFile << "<h2><strong>(HcalPrompt)&nbsp;RecHit&nbsp;Histograms</strong></h2>" << endl;
+
+    htmlFile << "<h3>" << endl;
+    htmlFile << "<a href=\"#HBHE_Plots\">HBHE Plots </a></br>" << endl;
+    htmlFile << "<a href=\"#HF_Plots\">HF Plots </a></br>" << endl;
+    htmlFile << "<a href=\"#HO_Plots\">HO Plots </a></br>" << endl;
+    htmlFile << "<a href=\"#EB_Plots\">EB Plots </a></br>" << endl;
+    htmlFile << "</h3>" << endl;
+    htmlFile << "<hr>" << endl;
+
+    for (int i = 0; i < 4; i++) {
+        string type = "HBHE";
+        if (i == 0){
+	}
+        if (i == 1){
+            type = "HF";
+        }
+        if (i == 2){
+            type = "HO";
+        }
+        if (i == 3){
+            type = "EB";
+        }
+        htmlFile << "<tr align=\"left\">" << endl;
+        htmlFile << "<td>&nbsp;&nbsp;&nbsp;<a name=\"" << type << "_Plots\"><h3>" << type <<
+          " Histograms</h3></td></tr>" << endl;
+        if (i == 0){
+	    htmlFile << "<tr align=\"left\">" << endl;
+	    histoHTML(runNo, h_hbhe_rechit_energy, "HBHE RecHit Energy", "Events", 92, htmlFile, htmlDir);
+	    histoHTML2(runNo, h_hbhe_eta_phi, "iEta", "iPhi", 100, htmlFile, htmlDir);
+	    htmlFile << "</tr>" << endl;
+	}
+        if (i == 1){
+	    htmlFile << "<tr align=\"left\">" << endl;
+	    histoHTML(runNo, h_hf_rechit_energy, "HF RecHit Energy", "Events", 92, htmlFile, htmlDir);
+	    histoHTML2(runNo, h_hf_eta_phi, "iEta", "iPhi", 100, htmlFile, htmlDir);
+	    htmlFile << "</tr>" << endl;
+	}
+        if (i == 2){
+	    htmlFile << "<tr align=\"left\">" << endl;
+	    histoHTML(runNo, h_ho_rechit_energy, "HO RecHit Energy", "Events", 92, htmlFile, htmlDir);
+	    histoHTML2(runNo, h_hf_eta_phi, "iEta", "iPhi", 100, htmlFile, htmlDir);
+	    htmlFile << "</tr>" << endl;
+	}
+        if (i == 3){
+	    htmlFile << "<tr align=\"left\">" << endl;
+	    histoHTML(runNo, h_eb_rechit_energy, "EB RecHit Energy", "Events", 92, htmlFile, htmlDir);
+	    htmlFile << "</tr>" << endl;
+	}
+
+
+    }
+    htmlFile << "</table>" << endl;
+    // end table
+    htmlFile << "<br>" << endl;
+
+    // html page footer
+    htmlFile << "</body> " << endl;
+    htmlFile << "</html> " << endl;
+    htmlFile.close();
+
+}
+
+void HcalProm::DigiHTMLOutput(int runNo, string startTime, string htmlDir, string htmlName) {
+
+    cout << "Preparing html output for " << htmlName << endl;
+
+    ofstream htmlFile;
+
+    htmlFile.open((htmlDir + htmlName).c_str());
+
+    // html page header
+    htmlFile << "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">  " << endl;
+    htmlFile << "<html>  " << endl;
+    htmlFile << "<head>  " << endl;
+    htmlFile << "  <meta content=\"text/html; charset=ISO-8859-1\"  " << endl;
+    htmlFile << " http-equiv=\"content-type\">  " << endl;
+    htmlFile << "  <title>Digi Plots</title> " << endl;
+    htmlFile << "</head>  " << endl;
+    htmlFile << "<style type=\"text/css\"> td { font-weight: bold } </style>" << endl;
+    htmlFile << "<body>  " << endl;
+    htmlFile << "<br>  " << endl;
+    htmlFile << "<h2>Run Number:&nbsp;&nbsp;&nbsp;" << endl;
+    htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << runNo << "</span>" << endl;
+    htmlFile << "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Start&nbsp;Time:&nbsp;<span style=\"color: rgb(0, 0, 153);\">" <<
+      startTime << "</span></h2> " << endl;
+    htmlFile << "<h2>Plots from :&nbsp;&nbsp;&nbsp;&nbsp; <span " << endl;
+    htmlFile << " style=\"color: rgb(0, 0, 153);\">Digis</span></h2> " << endl;
+    htmlFile << "<h2>Events processed:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" << endl;
+    htmlFile << "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span " << endl;
+    htmlFile << " style=\"color: rgb(0, 0, 153);\">" << evtNo << "</span></h2>" << endl;
+    // begin table for histograms
+    htmlFile << "<table width=100%  border=1><tr>" << endl;
+    htmlFile << "</tr></table>" << endl;
+    htmlFile << "<hr>" << endl;
+
+    htmlFile << "<h2><strong>(HcalPrompt)&nbsp;Digi&nbsp;Histograms</strong></h2>" << endl;
+
+    htmlFile << "<h3>" << endl;
+    htmlFile << "<a href=\"#HB_Plots\">HB Plots </a></br>" << endl;
+    htmlFile << "<a href=\"#HE_Plots\">HE Plots </a></br>" << endl;
+    htmlFile << "<a href=\"#HF_Plots\">HF Plots </a></br>" << endl;
+    htmlFile << "<a href=\"#HO_Plots\">HO Plots </a></br>" << endl;
+    htmlFile << "</h3>" << endl;
+    htmlFile << "<hr>" << endl;
+    htmlFile << "</table>" << endl;
+    // end table
+    htmlFile << "<br>" << endl;
+
+    // html page footer
+    htmlFile << "</body> " << endl;
+    htmlFile << "</html> " << endl;
+    htmlFile.close();
+
+}
+
+void HcalProm::HPDNoiseHTMLOutput(int runNo, string startTime, string htmlDir, string htmlName) {
+
+    cout << "Preparing html output for HPDNoise" << endl;
+
+    ofstream htmlFile;
+
+    htmlFile.open((htmlDir + htmlName).c_str());
+
+    // html page header
+    htmlFile << "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">  " << endl;
+    htmlFile << "<html>  " << endl;
+    htmlFile << "<head>  " << endl;
+    htmlFile << "  <meta content=\"text/html; charset=ISO-8859-1\"  " << endl;
+    htmlFile << " http-equiv=\"content-type\">  " << endl;
+    htmlFile << "  <title>HPDNoise Plots</title> " << endl;
+    htmlFile << "</head>  " << endl;
+    htmlFile << "<style type=\"text/css\"> td { font-weight: bold } </style>" << endl;
+    htmlFile << "<body>  " << endl;
+    htmlFile << "<br>  " << endl;
+    htmlFile << "<h2>Run Number:&nbsp;&nbsp;&nbsp;" << endl;
+    htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << runNo << "</span>" << endl;
+    htmlFile <<
+      "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Start&nbsp;Time:&nbsp;<span style=\"color: rgb(0, 0, 153);\">" <<
+      startTime << "</span></h2> " << endl;
+    htmlFile << "<h2>Plots from :&nbsp;&nbsp;&nbsp;&nbsp; <span " << endl;
+    htmlFile << " style=\"color: rgb(0, 0, 153);\">HPD Noise</span></h2> " << endl;
+    htmlFile << "<h2>Events processed:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" << endl;
+    htmlFile << "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span " << endl;
+    htmlFile << " style=\"color: rgb(0, 0, 153);\">" << evtNo << "</span></h2>" << endl;
+    // begin table for histograms
+    htmlFile << "<table width=100%  border=1><tr>" << endl;
+    htmlFile << "</tr></table>" << endl;
+    htmlFile << "<hr>" << endl;
+
+    htmlFile << "<h2><strong>(HcalPrompt)&nbsp;HPDNoise&nbsp;Histograms</strong></h2>" << endl;
+
+    htmlFile << "<h3>" << endl;
+    htmlFile << "<a href=\"#Qiesum_Plots\">Qiesum Plot </a></br>" << endl;
+    htmlFile << "<a href=\"#NoiseChan_Plots\">NoiseChan Plots </a></br>" << endl;
+    htmlFile << "<a href=\"#NoisePhi_Plots\">NoisePhi Plots </a></br>" << endl;
+    htmlFile << "</h3>" << endl;
+    htmlFile << "<hr>" << endl;
+    for (int i = 0; i < 3; i++) {
+        string type = "Qiesum";
+
+        if (i == 1)
+            type = "NoiseChan";
+        if (i == 2)
+            type = "NoisePhi";
+
+        htmlFile << "<tr align=\"left\">" << endl;
+        htmlFile << "<td>&nbsp;&nbsp;&nbsp;<a name=\"" << type << "_Plots\"><h3>" << type <<
+          " Histograms</h3></td></tr>" << endl;
+        if (i == 0) {
+            htmlFile << "<tr align=\"left\">" << endl;
+            histoHTML(runNo, h_Qiesum, "Qiesum (fC)", "Channels", 92, htmlFile, htmlDir);
+            htmlFile << "</tr>" << endl;
+        }
+        if (i == 1) {
+            // string Noise[9] = {"1", "5", "20", "80", "150", "300", "600", "1000", "1500"};
+            htmlFile << "<tr align=\"left\">" << endl;
+            for (int ni = 0; ni != 9; ++ni) {
+                histoHTML2(runNo, h_NoiseChan[ni], "i#eta", "i#phi", 92, htmlFile, htmlDir);
+            }
+            htmlFile << "</tr>" << endl;
+        }
+        if (i == 2) {
+            htmlFile << "<tr align=\"left\">" << endl;
+            for (int ni = 0; ni != 9; ++ni) {
+                histoHTML(runNo, h_NoisePhi[ni], "i#phi", "# Noisy Pixels in Range", 92, htmlFile, htmlDir);
+            }
+            htmlFile << "</tr>" << endl;
+        }
+
+    }
+    htmlFile << "</table>" << endl;
+    // end table
+    htmlFile << "<br>" << endl;
+
+    // html page footer
+    htmlFile << "</body> " << endl;
+    htmlFile << "</html> " << endl;
+    htmlFile.close();
+
+}
+
+void HcalProm::MuonHTMLOutput(int runNo, string startTime, string htmlDir, string htmlName) {
+
+    cout << "Preparing html output for Muon" << endl;
+
+    ofstream htmlFile;
+
+    htmlFile.open((htmlDir + htmlName).c_str());
+
+    // html page header
+    htmlFile << "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">  " << endl;
+    htmlFile << "<html>  " << endl;
+    htmlFile << "<head>  " << endl;
+    htmlFile << "  <meta content=\"text/html; charset=ISO-8859-1\"  " << endl;
+    htmlFile << " http-equiv=\"content-type\">  " << endl;
+    htmlFile << "  <title>Muon Plots</title> " << endl;
+    htmlFile << "</head>  " << endl;
+    htmlFile << "<style type=\"text/css\"> td { font-weight: bold } </style>" << endl;
+    htmlFile << "<body>  " << endl;
+    htmlFile << "<br>  " << endl;
+    htmlFile << "<h2>Run Number:&nbsp;&nbsp;&nbsp;" << endl;
+    htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << runNo << "</span>" << endl;
+    htmlFile <<
+      "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Start&nbsp;Time:&nbsp;<span style=\"color: rgb(0, 0, 153);\">" <<
+      startTime << "</span></h2> " << endl;
+    htmlFile << "<h2>Plots from :&nbsp;&nbsp;&nbsp;&nbsp; <span " << endl;
+    htmlFile << " style=\"color: rgb(0, 0, 153);\">Muons</span></h2> " << endl;
+    htmlFile << "<h2>Events processed:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" << endl;
+    htmlFile << "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span " << endl;
+    htmlFile << " style=\"color: rgb(0, 0, 153);\">" << evtNo << "</span></h2>" << endl;
+    // begin table for histograms
+    htmlFile << "<table width=100%  border=1><tr>" << endl;
+    htmlFile << "</tr></table>" << endl;
+    htmlFile << "<hr>" << endl;
+
+    htmlFile << "<h2><strong>(HcalPrompt)&nbsp;Muon&nbsp;Histograms</strong></h2>" << endl;
+
+    htmlFile << "<h3>" << endl;
+    htmlFile << "<a href=\"#Muon_Plots\">Muon Plots </a></br>" << endl;
+    htmlFile << "</h3>" << endl;
+    htmlFile << "<hr>" << endl;
+
+    string type = "Muon";
+
+    htmlFile << "<tr align=\"left\">" << endl;
+    htmlFile << "<td>&nbsp;&nbsp;&nbsp;<a name=\"" << type << "_Plots\"><h3>" << type << " Histograms</h3></td></tr>" << endl;
+    htmlFile << "<tr align=\"left\">" << endl;
+    histoHTML(runNo, h_maxhbherec, "HBHE Muon (GeV)", "Events", 92, htmlFile, htmlDir);
+    histoHTML(runNo, h_maxhorec, "HO Muon (GeV)", "Events", 92, htmlFile, htmlDir);
+    histoHTML(runNo, h_maxebeerec, "EBEE Muon (GeV)", "Events", 92, htmlFile, htmlDir);
+    histoHTML(runNo, h_maxebee_plus_maxhbhe, "EBEE+HBHE Muon (GeV)", "Events", 92, htmlFile, htmlDir);
+    histoHTML(runNo, h_muon_vertex_x, "Muon Vertex X", "Events", 92, htmlFile, htmlDir);
+    histoHTML(runNo, h_muon_px, "Muon Px", "Events", 92, htmlFile, htmlDir);
+    histoHTML(runNo, h_muon_p, "Muon P", "Events", 92, htmlFile, htmlDir);
+    histoHTML2(runNo, h_ecalx_vs_muonx, "ECAL BasicClu x", "Muon x", 100, htmlFile, htmlDir);
+    histoHTML2(runNo, h_ecaly_vs_muony, "ECAL BasicClu y", "Muon y", 100, htmlFile, htmlDir);
+    histoHTML2(runNo, h_jetphi_vs_muonphi, "Jet Phi", "Muon Phi", 100, htmlFile, htmlDir);
+    histoHTML(runNo, h_impact_diff, "ECAL BasicClu X - Muon X", "Events", 92, htmlFile, htmlDir);
+    histoHTML2(runNo, DT_HCAL_eta_correlation, "DT eta", "Calo eta", 100, htmlFile, htmlDir);
+    histoHTML2(runNo, DT_HCAL_eta_correlation_all, "DT eta all", "Calo eta all", 100, htmlFile, htmlDir);
+    histoHTML2(runNo, DT_HCAL_phi_correlation, "DT phi", "Calo phi", 100, htmlFile, htmlDir);
+    histoHTML2(runNo, DT_HCAL_phi_correlation_all, "DT phi all", "Calo phi all", 100, htmlFile, htmlDir);
+    histoHTML(runNo, HCAL_energy_correlation, "Calo had energy", "Events", 92, htmlFile, htmlDir);
+    histoHTML(runNo, HCAL_energy_correlation_all, "Calo had energy all", "Events", 92, htmlFile, htmlDir);
+    htmlFile << "</tr>" << endl;
+    htmlFile << "</table>" << endl;
+    // end table
+    htmlFile << "<br>" << endl;
+
+    // html page footer
+    htmlFile << "</body> " << endl;
+    htmlFile << "</html> " << endl;
+    htmlFile.close();
+
+}
+
+void HcalProm::CaloTowerHTMLOutput(int runNo, string startTime, string htmlDir, string htmlName) {
+
+    cout << "Preparing html output for CaloTower" << endl;
+
+    ofstream htmlFile;
+
+    htmlFile.open((htmlDir + htmlName).c_str());
+
+    // html page header
+    htmlFile << "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">  " << endl;
+    htmlFile << "<html>  " << endl;
+    htmlFile << "<head>  " << endl;
+    htmlFile << "  <meta content=\"text/html; charset=ISO-8859-1\"  " << endl;
+    htmlFile << " http-equiv=\"content-type\">  " << endl;
+    htmlFile << "  <title>Calo Tower Plots</title> " << endl;
+    htmlFile << "</head>  " << endl;
+    htmlFile << "<style type=\"text/css\"> td { font-weight: bold } </style>" << endl;
+    htmlFile << "<body>  " << endl;
+    htmlFile << "<br>  " << endl;
+    htmlFile << "<h2>Run Number:&nbsp;&nbsp;&nbsp;" << endl;
+    htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << runNo << "</span>" << endl;
+    htmlFile <<
+      "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Start&nbsp;Time:&nbsp;<span style=\"color: rgb(0, 0, 153);\">" <<
+      startTime << "</span></h2> " << endl;
+    htmlFile << "<h2>Plots from :&nbsp;&nbsp;&nbsp;&nbsp; <span " << endl;
+    htmlFile << " style=\"color: rgb(0, 0, 153);\">CaloTowers</span></h2> " << endl;
+    htmlFile << "<h2>Events processed:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" << endl;
+    htmlFile << "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span " << endl;
+    htmlFile << " style=\"color: rgb(0, 0, 153);\">" << evtNo << "</span></h2>" << endl;
+    // begin table for histograms
+    htmlFile << "<table width=100%  border=1><tr>" << endl;
+    htmlFile << "</tr></table>" << endl;
+    htmlFile << "<hr>" << endl;
+
+    htmlFile << "<h2><strong>(HcalPrompt)&nbsp;CaloTower&nbsp;Histograms</strong></h2>" << endl;
+
+    htmlFile << "<h3>" << endl;
+    htmlFile << "<a href=\"#CaloTower_Plots\">CaloTower Plots </a></br>" << endl;
+    htmlFile << "</h3>" << endl;
+    htmlFile << "<hr>" << endl;
+
+    string type = "CaloTower";
+
+    htmlFile << "<tr align=\"left\">" << endl;
+    htmlFile << "<td>&nbsp;&nbsp;&nbsp;<a name=\"" << type << "_Plots\"><h3>" << type << " Histograms</h3></td></tr>" << endl;
+    htmlFile << "<tr align=\"left\">" << endl;
+    histoHTML(runNo, h_calo_tower_energy, "CaloTower energy", "Events", 92, htmlFile, htmlDir);
+    htmlFile << "</tr>" << endl;
+    htmlFile << "</table>" << endl;
+    // end table
+    htmlFile << "<br>" << endl;
+
+    // html page footer
+    htmlFile << "</body> " << endl;
+    htmlFile << "</html> " << endl;
+    htmlFile.close();
+
+}
+
+void HcalProm::histoHTML(int runNo, TH1F * hist, const char *xlab, const char *ylab, int width, ofstream & htmlFile,
+  string htmlDir) {
+
+    if (hist != NULL) {
+        string imgNameTMB = "";
+
+        imgNameTMB = getIMG(runNo, hist, 1, htmlDir, xlab, ylab);
+        string imgName = "";
+
+        imgName = getIMG(runNo, hist, 2, htmlDir, xlab, ylab);
+
+        if (imgName.size() != 0)
+            htmlFile << "<td><a href=\"" << imgName << "\"><img src=\"" << imgNameTMB << "\"></a></td>" << endl;
+        else
+            htmlFile << "<td><img src=\"" << " " << "\"></td>" << endl;
+    } else
+        htmlFile << "<td><img src=\"" << " " << "\"></td>" << endl;
+    return;
+}
+
+void HcalProm::histoHTML2(int runNo, TH2F * hist, const char *xlab, const char *ylab, int width,
+  ofstream & htmlFile, string htmlDir, bool color) {
+    if (hist != NULL) {
+        string imgNameTMB = "";
+
+        imgNameTMB = getIMG2(runNo, hist, 1, htmlDir, xlab, ylab, color);
+        string imgName = "";
+
+        imgName = getIMG2(runNo, hist, 2, htmlDir, xlab, ylab, color);
+        if (imgName.size() != 0)
+            htmlFile << "<td><a href=\"" << imgName << "\"><img src=\"" << imgNameTMB << "\"></a></td>" << endl;
+        else
+            htmlFile << "<td><img src=\"" << " " << "\"></td>" << endl;
+    } else
+        htmlFile << "<td><img src=\"" << " " << "\"></td>" << endl;
+    return;
+}
+
+string HcalProm::getIMG(int runNo, TH1F * hist, int size, string htmlDir, const char *xlab, const char *ylab) {
+
+    if (hist == NULL) {
+        printf("getIMG:  This histo is NULL, %s, %s\n", xlab, ylab);
+        return "";
+    }
+
+    string name = hist->GetTitle();
+
+    cleanString(name);
+    char dest[512];
+
+    if (runNo > -1)
+        sprintf(dest, "%s - Run %d", name.c_str(), runNo);
+    else
+        sprintf(dest, "%s", name.c_str());
+    hist->SetTitle(dest);
+    string title = dest;
+
+    int xwid = 900;
+    int ywid = 540;
+
+    if (size == 1) {
+        title = title + "_tmb";
+        xwid = 600;
+        ywid = 360;
+    }
+    TCanvas *can = new TCanvas(dest, dest, xwid, ywid);
+    if(name.find("Qiesum", 0)!= string::npos){
+        can->SetLogy();  
+    }
+
+    parseString(title);
+    string outName = title + ".gif";
+    string saveName = htmlDir + outName;
+
+    hist->SetXTitle(xlab);
+    hist->SetYTitle(ylab);
+    if(name.find("h_max",0)!=string::npos){
+        hist->Fit("landau");
+    }
+    hist->Draw();
+
+    can->SaveAs(saveName.c_str());
+    delete can;
+
+    return outName;
+}
+
+string HcalProm::getIMG2(int runNo, TH2F * hist, int size, string htmlDir, const char *xlab, const char *ylab,
+  bool color) {
+
+    if (hist == NULL) {
+        printf("getIMG2:  This histo is NULL, %s, %s\n", xlab, ylab);
+        return "";
+    }
+
+    string name = hist->GetTitle();
+
+    cleanString(name);
+    char dest[512];
+
+    if (runNo > -1)
+        sprintf(dest, "%s - Run %d", name.c_str(), runNo);
+    else
+        sprintf(dest, "%s", name.c_str());
+    hist->SetTitle(dest);
+    string title = dest;
+
+    int xwid = 900;
+    int ywid = 540;
+
+    if (size == 1) {
+        title = title + "_tmb";
+        xwid = 600;
+        ywid = 360;
+    }
+    TCanvas *can = new TCanvas(dest, dest, xwid, ywid);
+
+    parseString(title);
+    string outName = title + ".gif";
+    string saveName = htmlDir + outName;
+
+    hist->SetXTitle(xlab);
+    hist->SetYTitle(ylab);
+    if (color)
+        hist->Draw();
+    else {
+        hist->SetStats(false);
+        hist->Draw("COLZ");
+    }
+    can->SaveAs(saveName.c_str());
+    delete can;
+
+    return outName;
+}
+void HcalProm::cleanString(string & title) {
+
+    for (unsigned int i = 0; i < title.size(); i++) {
+        if (title.substr(i, 6) == " - Run") {
+            title.replace(i, title.size() - i, "");
+        }
+        if (title.substr(i, 4) == "_Run") {
+            title.replace(i, title.size() - i, "");
+        }
+        if (title.substr(i, 5) == "__Run") {
+            title.replace(i, title.size() - i, "");
+        }
+    }
+}
+
+void HcalProm::parseString(string & title) {
+
+    for (unsigned int i = 0; i < title.size(); i++) {
+        if (title.substr(i, 1) == " ") {
+            title.replace(i, 1, "_");
+        }
+        if (title.substr(i, 1) == "#") {
+            title.replace(i, 1, "N");
+        }
+        if (title.substr(i, 1) == "-") {
+            title.replace(i, 1, "_");
+        }
+        if (title.substr(i, 1) == "&") {
+            title.replace(i, 1, "_and_");
+        }
+        if (title.substr(i, 1) == "(" || title.substr(i, 1) == ")") {
+            title.replace(i, 1, "_");
+        }
+    }
+
+    return;
+}
+
+// END OF HTML OUTPUT 
+
+
+void HcalProm::Extrapolate(
+  // inputs
+  double ox, double oy, double oz, double px, double py, double pz, double ra,
+  // outputs
+  double *thetap_out, double *phip_out, double *thetam_out, double *phim_out) {
+
+    if (px == 0.) {
+        std::
+          cout <<
+          "px is exactly 0 - the extrapolation can not handle this case currently, sorry. Not extrapolating." <<
+          std::endl;
+        return;
+    }
+
+    double xp = -99999.;
+    double yp = -99999.;
+    double zp = -99999.;
+
+    double xm = -99999.;
+    double ym = -99999.;
+    double zm = -99999.;
+
+    double a = py / px;
+    double b = oy - a * ox;
+
+    double notnegative = (ra * ra - b * b) / (1 + a * a) + TMath::Power(a * b / (1 + a * a), 2.);
+
+    if (notnegative > 0.) {
+        xp = TMath::Sqrt(notnegative) - a * b / (1 + a * a);
+        yp = (py / px) * (xp - ox) + oy;
+        zp = (pz * (xp - ox) / px) + oz;
+        double phip = TMath::ATan2(yp, xp);
+        double thetap = TMath::Pi() / 2. - TMath::ASin(zp / TMath::Sqrt(xp * xp + yp * yp));
+
+        xm = -TMath::Sqrt(notnegative) - a * b / (1 + a * a);
+        ym = py / px * (xm - ox) + oy;
+        zm = pz * (xm - ox) / px + oz;
+
+        double phim = TMath::ATan2(ym, xm);
+        double thetam = TMath::ACos(zp / TMath::Sqrt(xm * xm + ym * ym));
+
+        // set the output values if we are in a reasonable z range
+        if (TMath::Abs(zp) < 433. && TMath::Abs(zm) < 433.) {
+            *thetap_out = thetap;
+            *phip_out = phip;
+            *thetam_out = thetam;
+            *phim_out = phim;
+        }
+    } else {
+        std::cout << "No intersection of Cosmic Muon with Calotower." << std::endl;
+    }
+}
