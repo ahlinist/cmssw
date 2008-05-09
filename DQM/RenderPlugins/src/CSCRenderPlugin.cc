@@ -21,6 +21,7 @@
 
 
 bool CSCRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &i ) {
+  return false;
 
   if( o.name.find( "CSC/" ) < o.name.size() ) {
     return true;
