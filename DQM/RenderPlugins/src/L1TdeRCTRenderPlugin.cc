@@ -1,11 +1,11 @@
-// $Id: L1TdeRCTRenderPlugin.cc,v 0.0 2008/04/29 06:07:07 dellaric Exp $
+// $Id: L1TdeRCTRenderPlugin.cc,v 1.3 2008/05/08 12:14:24 lorenzo Exp $
 
 /*!
   \file L1TdeRCTRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author A.Savin 
-  \version $Revision: 0.0 $
-  \date $Date: 2008/04/29 06:07:07 $
+  \version $Revision: 1.3 $
+  \date $Date: 2008/05/08 12:14:24 $
 */
 
 #include "TH1F.h"
@@ -94,19 +94,19 @@ bool L1TdeRCTRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImg
   std::cout << "L1TdeRCTRenderPlugin:applies " << o.name << std::endl;
 #endif
 
-  if( o.name.find( "L1TMonitor/L1TdeRCT/IsoEm" ) < o.name.size() ) {
+  if( o.name.find( "L1TEMU/L1TdeRCT/IsoEm" ) < o.name.size() ) {
     return true;
   }
 
-  if( o.name.find( "L1TMonitor/L1TdeRCT/IsoEm/ServiceData" ) < o.name.size() ) {
+  if( o.name.find( "L1TEMU/L1TdeRCT/IsoEm/ServiceData" ) < o.name.size() ) {
     return true;
   }
 
-  if( o.name.find( "L1TMonitor/L1TdeRCT/NisoeEm" ) < o.name.size() ) {
+  if( o.name.find( "L1TEMU/L1TdeRCT/NisoeEm" ) < o.name.size() ) {
     return true;
   }
 
-  if( o.name.find( "L1TMonitor/L1TdeRCT/NisoeEm/ServiceData" ) < o.name.size() ) {
+  if( o.name.find( "L1TEMU/L1TdeRCT/NisoeEm/ServiceData" ) < o.name.size() ) {
     return true;
   }
 
