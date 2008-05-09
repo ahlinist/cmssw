@@ -17,7 +17,7 @@
 // Original Author:  Efe Yazgan
 // Updated        :  Taylan Yetkin (2008/05/08)
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.h,v 1.4 2008/05/08 15:17:04 efe Exp $
+// $Id: HcalProm.h,v 1.5 2008/05/09 00:33:01 tyetkin Exp $
 //
 //
 
@@ -85,6 +85,8 @@ class HcalProm : public edm::EDAnalyzer {
 
       TH1F* h_hbhe_rechit_energy;
       TH1F* h_maxhbherec;
+      TH1F* h_maxhbMinusrec;
+      TH1F* h_maxhbPlusrec;
       TH2F* h_hbhe_eta_phi;	
       TH1F* h_hf_rechit_energy;
       TH2F* h_hf_eta_phi;
