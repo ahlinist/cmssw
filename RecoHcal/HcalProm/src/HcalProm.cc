@@ -17,7 +17,7 @@
 // Original Author:  Efe Yazgan
 // Updated        :  Taylan Yetkin (2008/05/08)
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.13 2008/05/09 00:33:01 tyetkin Exp $
+// $Id: HcalProm.cc,v 1.14 2008/05/09 08:23:43 efe Exp $
 //
 //
 
@@ -322,6 +322,20 @@ void HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    float maxhbherec_PHI = 0;
    float next_to_maxhbherec_ETA = 0;
    float next_to_maxhbherec_PHI = 0;   
+
+   float maxhbMinusrec = 0;
+   float next_to_maxhbMinusrec = 0;
+   float maxhbMinusrec_ETA = 0;
+   float maxhbMinusrec_PHI = 0;
+   float next_to_maxhbMinusrec_ETA = 0;
+   float next_to_maxhbMinusrec_PHI = 0;
+
+   float maxhbPlusrec = 0;
+   float next_to_maxhbPlusrec = 0;
+   float maxhbPlusrec_ETA = 0;
+   float maxhbPlusrec_PHI = 0;
+   float next_to_maxhbPlusrec_ETA = 0;
+   float next_to_maxhbPlusrec_PHI = 0;
    for (HBHERecHitCollection::const_iterator hhit=Hithbhe.begin(); hhit!=Hithbhe.end(); hhit++) {
      if (hhit->energy() > 0.6){
        h_hbhe_rechit_energy->Fill(hhit->energy());
@@ -336,6 +350,30 @@ void HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 next_to_maxhbherec_ETA = hhit->id().ieta();
          next_to_maxhbherec_PHI = hhit->id().iphi();
        }
+       //HB ONLY
+       if (hhit->id() > 16) continue;
+       //HB-
+       if (hhit->energy() > maxhbMinusrec){ 
+	 maxhbMinusrec = hhit->energy();
+	 maxhbMinusrec_ETA = hhit->id().ieta();
+         maxhbMinusrec_PHI = hhit->id().iphi();
+       }
+       if (hhit->energy() > next_to_maxhbMinusrec && hhit->energy()< maxhbMinusrec){ 
+	 next_to_maxhbMinusrec = hhit->energy();
+	 next_to_maxhbMinusrec_ETA = hhit->id().ieta();
+         next_to_maxhbMinusrec_PHI = hhit->id().iphi();
+       }       
+       //HB+
+       if (hhit->energy() > maxhbPlusrec){ 
+	 maxhbPlusrec = hhit->energy();
+	 maxhbPlusrec_ETA = hhit->id().ieta();
+         maxhbPlusrec_PHI = hhit->id().iphi();
+       }
+       if (hhit->energy() > next_to_maxhbPlusrec && hhit->energy()< maxhbPlusrec){ 
+	 next_to_maxhbPlusrec = hhit->energy();
+	 next_to_maxhbPlusrec_ETA = hhit->id().ieta();
+         next_to_maxhbPlusrec_PHI = hhit->id().iphi();
+       }       
      }
    }
 
@@ -375,14 +413,6 @@ void HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       h_eb_rechit_energy->Fill(ehit->energy());
   }
 
-  /*
-  for(reco::BasicClusterCollection::const_iterator aClus = islandBarrelBasicClusters.begin(); aClus != islandBarrelBasicClusters.end(); aClus++) {
-    h_ecal_cluster_energy->Fill(aClus->energy());
-    h_ecal_cluster_eta->Fill(aClus->eta());
-    h_ecal_cluster_phi->Fill(aClus->phi());
-  }
-  */
-
   float maxebeerec = 0;
   float next_to_maxebeerec = 0;
   float maxebeerec_ETA = 0;
@@ -393,9 +423,6 @@ void HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     {
       if (clus->eta()>2.9) continue;
       if (clus->energy()<0.2) continue;
-      double energy_eb_basic_cluster = clus->energy();
-      double phi_eb_basic_cluster    = clus->phi();
-      double eta_eb_basic_cluster    = clus->eta();
       if (clus->energy() > maxebeerec){ 
 	maxebeerec = clus->energy();
 	maxebeerec_ETA = clus->eta();
@@ -411,15 +438,19 @@ void HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   float total_hbhe = maxhbherec+next_to_maxhbherec;
   float total_ebee = maxebeerec+next_to_maxebeerec;
   float total_ho = maxhorec+next_to_maxhorec;
+  float total_hbMinus = maxhbMinusrec+next_to_maxhbMinusrec;
+  float total_hbPlus = maxhbPlusrec+next_to_maxhbPlusrec;
   float hbhe_DR = sqrt(pow((maxhbherec_ETA-next_to_maxhbherec_ETA),2)+pow((maxhbherec_ETA-next_to_maxhbherec_ETA),2));
   float ebee_DR = sqrt(pow((maxebeerec_ETA-next_to_maxebeerec_ETA),2)+pow((maxebeerec_ETA-next_to_maxebeerec_ETA),2));
   float ho_DR = sqrt(pow((maxhorec_ETA-next_to_maxhorec_ETA),2)+pow((maxhorec_ETA-next_to_maxhorec_ETA),2));
+  float hbMinus_DR = sqrt(pow((maxhbMinusrec_ETA-next_to_maxhbMinusrec_ETA),2)+pow((maxhbMinusrec_ETA-next_to_maxhbMinusrec_ETA),2));
+  float hbPlus_DR = sqrt(pow((maxhbPlusrec_ETA-next_to_maxhbPlusrec_ETA),2)+pow((maxhbPlusrec_ETA-next_to_maxhbPlusrec_ETA),2));
   if (hbhe_DR < 2.5 && total_hbhe > 0. ) h_maxhbherec->Fill(total_hbhe);
   if (ebee_DR < 0.4 && total_ebee > 0. ) h_maxebeerec->Fill(total_ebee);
   if (ho_DR < 2.5 && total_ho > 0.) h_maxhorec->Fill(total_ho);
   if ((hbhe_DR < 2.5 && total_hbhe > 0.) && (ebee_DR < 0.4 && total_ebee > 0.) ) h_maxebee_plus_maxhbhe->Fill(total_ebee+total_hbhe);
-    
-  
+  if (hbMinus_DR < 2.5 && total_hbMinus > 0.) h_maxhbMinusrec->Fill(total_hbMinus);  
+  if (hbPlus_DR < 2.5 && total_hbPlus > 0.) h_maxhbPlusrec->Fill(total_hbPlus);
 
 
   for(TrackCollection::const_iterator ncm = cosmicmuon->begin(); ncm != cosmicmuon->end();  ++ncm) {
@@ -581,10 +612,12 @@ void HcalProm::beginJob(const edm::EventSetup&)
     
     h_maxhbherec = HcalDir.make<TH1F>("h_maxhbherec","HBHE Muon (GeV)",200,0,15);
     h_maxhorec = HcalDir.make<TH1F>("h_maxhorec","HO Muon (GeV)",200,0,15);
-    h_hbhe_eta_phi = HcalDir.make<TH2F>("h_hbhe_eta_phi","#eta(HBHE)",100,-7,7,100,-7,7);
-    h_hf_eta_phi = HcalDir.make<TH2F>("h_hf_eta_phi","#eta(HF)",100,-7,7,100,-7,7);
+    h_maxhbMinusrec = HcalDir.make<TH1F>("h_maxhbMinusrec","HB- Muon (GeV)",200,0,15);
+    h_maxhbPlusrec = HcalDir.make<TH1F>("h_maxhbPlusrec","HB+ Muon (GeV)",200,0,15);
+    h_hbhe_eta_phi = HcalDir.make<TH2F>("h_hbhe_eta_phi","#eta(HBHE)",60,-30,30,72,0,72);
+    h_hf_eta_phi = HcalDir.make<TH2F>("h_hf_eta_phi","#eta(HF)",96,-48,48,72,0,72);
     h_ho_rechit_energy = HcalDir.make<TH1F>(" h_ho_rechit_energy","RecHit Energy HO",130,-10,120);
-    h_ho_eta_phi = HcalDir.make<TH2F>("h_ho_eta_phi","#eta(HO)",100,-7,7,100,-7,7);
+    h_ho_eta_phi = HcalDir.make<TH2F>("h_ho_eta_phi","#eta(HO)",60,-30,30,72,0,72);
     
     h_hbtiming = HcalDir.make<TH1F>("h_hbtiming","HBHE Timing",10,-0.5,9.5);
     
@@ -601,13 +634,13 @@ void HcalProm::beginJob(const edm::EventSetup&)
     h_eb_rechit_energy = EcalDir.make<TH1F>(" h_eb_rechit_energy","RecHit Energy EB",130,-10,120);
     h_maxebeerec = EcalDir.make<TH1F>("h_maxebeerec","EBEE Muon (GeV)",200,0,15);
     h_ecal_cluster_energy = EcalDir.make<TH1F>("h_ecal_cluster_energy","EB Cluster Energy",130,-10,120);
-    h_ecal_cluster_eta = EcalDir.make<TH1F>("h_ecal_cluster_eta","#eta(EB Cluster)",100,-7,7);
-    h_ecal_cluster_phi = EcalDir.make<TH1F>("h_ecal_cluster_phi","#phi(EB Cluster)",100,-7,7);
+    h_ecal_cluster_eta = EcalDir.make<TH1F>("h_ecal_cluster_eta","#eta(EB Cluster)",100,-6,6);
+    h_ecal_cluster_phi = EcalDir.make<TH1F>("h_ecal_cluster_phi","#phi(EB Cluster)",100,-6,6);
   
     h_maxebee_plus_maxhbhe = CorrDir.make<TH1F>("h_maxebee_plus_maxhbhe","EBEE+HBHE Muon (GeV)",200,0,15);
 
-    h_ecal_vs_hcal_X = CorrDir.make<TH2F>("h_ecal_vs_hcal_X","X(EB) vs X(HB)",100,-7,7,100,-7,7);
-    h_ecal_vs_hcal_Y = CorrDir.make<TH2F>("h_ecal_vs_hcal_Y","Y(EB) vs Y(HB)",100,-7,7,100,-7,7);
+    h_ecal_vs_hcal_X = CorrDir.make<TH2F>("h_ecal_vs_hcal_X","X(EB) vs X(HB)",1000,-100,100,100,-100,100);
+    h_ecal_vs_hcal_Y = CorrDir.make<TH2F>("h_ecal_vs_hcal_Y","Y(EB) vs Y(HB)",1000,-100,100,100,-100,100);
 
     h_calo_tower_energy = JetMetDir.make<TH1F>("h_calo_tower_energy","Calo Tower Energy",130,-10,120);
 
@@ -1139,6 +1172,8 @@ void HcalProm::MuonHTMLOutput(int runNo, string startTime, string htmlDir, strin
     htmlFile << "<tr align=\"left\">" << endl;
     histoHTML(runNo, h_maxhbherec, "HBHE Muon (GeV)", "Events", 92, htmlFile, htmlDir);
     histoHTML(runNo, h_maxhorec, "HO Muon (GeV)", "Events", 92, htmlFile, htmlDir);
+    histoHTML(runNo, h_maxhbMinusrec, "HB- Muon (GeV)", "Events", 92, htmlFile, htmlDir);
+    histoHTML(runNo, h_maxhbPlusrec, "HB+ Muon (GeV)", "Events", 92, htmlFile, htmlDir);
     histoHTML(runNo, h_maxebeerec, "EBEE Muon (GeV)", "Events", 92, htmlFile, htmlDir);
     histoHTML(runNo, h_maxebee_plus_maxhbhe, "EBEE+HBHE Muon (GeV)", "Events", 92, htmlFile, htmlDir);
     histoHTML(runNo, h_muon_vertex_x, "Muon Vertex X", "Events", 92, htmlFile, htmlDir);
