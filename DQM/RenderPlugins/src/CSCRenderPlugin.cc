@@ -35,6 +35,10 @@ void CSCRenderPlugin::preDraw( TCanvas *c, const DQMNet::CoreObject &o, const Vi
 
   std::cout << "CSCRenderPlugin:preDraw " << o.name << std::endl;
 
+  if(o.object == NULL) {
+    return;
+  }
+
   TH1* obj = dynamic_cast<TH1*>( o.object );
 
   if(obj->GetMinimum() == obj->GetMaximum()) {
