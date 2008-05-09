@@ -17,7 +17,7 @@
 // Original Author:  Efe Yazgan
 // Updated        :  Taylan Yetkin (2008/05/08)
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.15 2008/05/09 10:30:13 efe Exp $
+// $Id: HcalProm.cc,v 1.16 2008/05/09 15:11:48 efe Exp $
 //
 //
 
@@ -184,9 +184,9 @@ void HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     calomet = &(metCol->front());
 
    //hcal digis
-   //   Handle<HBHEDigiCollection> hbhe_digi; 
-   //   iEvent.getByLabel("hcalZeroSuppressedDigis",hbhe_digi);
-   //iEvent.getByLabel("hcalDigis",hbhe_digi);
+    Handle<HBHEDigiCollection> hbhe_digi; 
+    //   iEvent.getByLabel("hcalZeroSuppressedDigis",hbhe_digi);
+   iEvent.getByLabel("hcalDigis",hbhe_digi);
    
    //calo towers
    Handle<CaloTowerCollection> calo;
@@ -203,11 +203,11 @@ void HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    iEvent.getByLabel("islandBasicClusters","islandBarrelBasicClusters",pIslandBarrelBasicClusters);
    const BasicClusterCollection islandBarrelBasicClusters = *(pIslandBarrelBasicClusters.product());
    */
+
    Handle<reco::BasicClusterCollection> bccHandle;
    iEvent.getByLabel("cosmicBasicClusters","CosmicBarrelBasicClusters", bccHandle);
-   const reco::BasicClusterCollection *clusterCollection_p = bccHandle.product();
-   
-
+   const reco::BasicClusterCollection *clusterCollection_p = 0;
+   if (!bccHandle.failedToGet()) clusterCollection_p = bccHandle.product();
    
 
    // reco jets
@@ -297,24 +297,26 @@ void HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    std::cout << "************************" << std::endl;
    
 
-   /* DIGIS ARE TAKEN OUT FROM T0 RECONSTRUCTION
-   int adcs[10] = {};
-
-   //CORRECT:  Timing plot should be done using linearized ADC's!
-   for (HBHEDigiCollection::const_iterator j=hbhe_digi->begin(); j!=hbhe_digi->end(); j++){
-     const HBHEDataFrame digi = (const HBHEDataFrame)(*j);
-     HcalDetId id = digi.id();
-     if (id.subdet() != 1) continue;
-     int maxadc = 0;
-     for (int TS = 0; TS < 10 && TS < digi.size(); ++TS){     
-       adcs[TS] = digi[TS].adc();
-       if (digi[TS].adc() > maxadc) maxadc = digi[TS].adc();
-     }
-     for (int TS = 0; TS < 10 && TS < digi.size(); ++TS){     
-       if (maxadc > 10)	 h_hbtiming->Fill(TS,adcs[TS]);
+   // DIGIS ARE TAKEN OUT FROM T0 RECONSTRUCTION, but not at FNAL
+   if (!hbhe_digi.failedToGet ()) {
+     int adcs[10] = {};
+     
+     //CORRECT:  Timing plot should be done using linearized ADC's!
+     for (HBHEDigiCollection::const_iterator j=hbhe_digi->begin(); j!=hbhe_digi->end(); j++){
+       const HBHEDataFrame digi = (const HBHEDataFrame)(*j);
+       HcalDetId id = digi.id();
+       if (id.subdet() != 1) continue; 
+       int maxadc = 0;
+       for (int TS = 0; TS < 10 && TS < digi.size(); ++TS){     
+	 adcs[TS] = digi[TS].adc();
+	 if (digi[TS].adc() > maxadc) maxadc = digi[TS].adc();
+       }
+       for (int TS = 0; TS < 10 && TS < digi.size(); ++TS){     
+	 if (maxadc > 10)	 h_hbtiming->Fill(TS,adcs[TS]);
+       }
      }
    }
-   */
+  
 
    float maxhbherec = 0;
    float next_to_maxhbherec = 0;
@@ -423,22 +425,25 @@ void HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   float maxebeerec_PHI = 0;
   float next_to_maxebeerec_ETA = 0;
   float next_to_maxebeerec_PHI = 0; 
-  for (reco::BasicClusterCollection::const_iterator clus = clusterCollection_p->begin(); clus != clusterCollection_p->end(); ++clus)
-    {
-      if (clus->eta()>2.9) continue;
-      if (clus->energy()<0.2) continue;
-      if (clus->energy() > maxebeerec){ 
-	maxebeerec = clus->energy();
-	maxebeerec_ETA = clus->eta();
-	maxebeerec_PHI = clus->phi();
+  if (clusterCollection_p) { // do ECAL clusters business
+    for (reco::BasicClusterCollection::const_iterator clus = clusterCollection_p->begin(); 
+	 clus != clusterCollection_p->end(); ++clus)
+      {
+	if (clus->eta()>2.9) continue;
+	if (clus->energy()<0.2) continue;
+	if (clus->energy() > maxebeerec){ 
+	  maxebeerec = clus->energy();
+	  maxebeerec_ETA = clus->eta();
+	  maxebeerec_PHI = clus->phi();
+	}
+	if (clus->energy() > next_to_maxebeerec && clus->energy()< maxebeerec){
+	  next_to_maxebeerec = clus->energy();
+	  next_to_maxebeerec_ETA = clus->eta();
+	  next_to_maxebeerec_PHI = clus->eta();
+	}
       }
-      if (clus->energy() > next_to_maxebeerec && clus->energy()< maxebeerec){
-	next_to_maxebeerec = clus->energy();
-	next_to_maxebeerec_ETA = clus->eta();
-	next_to_maxebeerec_PHI = clus->eta();
-      }
-   }
-
+  }
+  
   float total_hbhe = maxhbherec+next_to_maxhbherec;
   float total_ebee = maxebeerec+next_to_maxebeerec;
   float total_ho = maxhorec+next_to_maxhorec;
@@ -493,20 +498,22 @@ void HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   //correlations
   for(TrackCollection::const_iterator ncm = cosmicmuon->begin(); ncm != cosmicmuon->end();  ++ncm) {
-    for (reco::BasicClusterCollection::const_iterator clus = clusterCollection_p->begin(); clus != clusterCollection_p->end(); ++clus){
-      h_ecalx_vs_muonx->Fill(clus->x(),ncm->vx());
-      h_ecaly_vs_muony->Fill(clus->y(),ncm->vy());
-      h_impact_diff->Fill(clus->z()-ncm->vx());
+    if (clusterCollection_p) {
+      for (reco::BasicClusterCollection::const_iterator clus = clusterCollection_p->begin(); clus != clusterCollection_p->end(); ++clus){
+	h_ecalx_vs_muonx->Fill(clus->x(),ncm->vx());
+	h_ecaly_vs_muony->Fill(clus->y(),ncm->vy());
+	h_impact_diff->Fill(clus->z()-ncm->vx());
+      }
+      for (CaloJetCollection::const_iterator jetiter=cjet.begin(); jetiter!=cjet.end(); jetiter++){
+	h_jetphi_vs_muonphi->Fill(jetiter->phi(),ncm->phi());
+      } 
     }
-    for (CaloJetCollection::const_iterator jetiter=cjet.begin(); jetiter!=cjet.end(); jetiter++){
-      h_jetphi_vs_muonphi->Fill(jetiter->phi(),ncm->phi());
-    } 
   }
     // Check Muon and HCal match
     double radius_hcal = 286.4;
     double conesize = -999999.;
     bool abort_cone_increase = false;
-
+  
     for (reco::TrackCollection::const_iterator cmTrack = cosmicmuon->begin(); cmTrack != cosmicmuon->end(); ++cmTrack) {
         double dRtracktowerp = 999999.;
         double dRtracktowerm = 999999.;
