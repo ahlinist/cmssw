@@ -17,7 +17,7 @@
 // Original Author:  Efe Yazgan
 // Updated        :  Taylan Yetkin (2008/05/08)
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.14 2008/05/09 08:23:43 efe Exp $
+// $Id: HcalProm.cc,v 1.15 2008/05/09 10:30:13 efe Exp $
 //
 //
 
@@ -351,29 +351,33 @@ void HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
          next_to_maxhbherec_PHI = hhit->id().iphi();
        }
        //HB ONLY
-       if (hhit->id() > 16) continue;
+       if (abs(hhit->id().ieta()) > 16) continue;
        //HB-
-       if (hhit->energy() > maxhbMinusrec){ 
-	 maxhbMinusrec = hhit->energy();
-	 maxhbMinusrec_ETA = hhit->id().ieta();
-         maxhbMinusrec_PHI = hhit->id().iphi();
+       if (hhit->id().ieta()<0){
+	 if (hhit->energy() > maxhbMinusrec){ 
+	   maxhbMinusrec = hhit->energy();
+	   maxhbMinusrec_ETA = hhit->id().ieta();
+	   maxhbMinusrec_PHI = hhit->id().iphi();
+	 }
+	 if (hhit->energy() > next_to_maxhbMinusrec && hhit->energy()< maxhbMinusrec){ 
+	   next_to_maxhbMinusrec = hhit->energy();
+	   next_to_maxhbMinusrec_ETA = hhit->id().ieta();
+	   next_to_maxhbMinusrec_PHI = hhit->id().iphi();
+	 }       
        }
-       if (hhit->energy() > next_to_maxhbMinusrec && hhit->energy()< maxhbMinusrec){ 
-	 next_to_maxhbMinusrec = hhit->energy();
-	 next_to_maxhbMinusrec_ETA = hhit->id().ieta();
-         next_to_maxhbMinusrec_PHI = hhit->id().iphi();
-       }       
        //HB+
-       if (hhit->energy() > maxhbPlusrec){ 
-	 maxhbPlusrec = hhit->energy();
-	 maxhbPlusrec_ETA = hhit->id().ieta();
-         maxhbPlusrec_PHI = hhit->id().iphi();
+       if (hhit->id().ieta()>0){
+	 if (hhit->energy() > maxhbPlusrec){ 
+	   maxhbPlusrec = hhit->energy();
+	   maxhbPlusrec_ETA = hhit->id().ieta();
+	   maxhbPlusrec_PHI = hhit->id().iphi();
+	 }
+	 if (hhit->energy() > next_to_maxhbPlusrec && hhit->energy()< maxhbPlusrec){ 
+	   next_to_maxhbPlusrec = hhit->energy();
+	   next_to_maxhbPlusrec_ETA = hhit->id().ieta();
+	   next_to_maxhbPlusrec_PHI = hhit->id().iphi();
+	 }       
        }
-       if (hhit->energy() > next_to_maxhbPlusrec && hhit->energy()< maxhbPlusrec){ 
-	 next_to_maxhbPlusrec = hhit->energy();
-	 next_to_maxhbPlusrec_ETA = hhit->id().ieta();
-         next_to_maxhbPlusrec_PHI = hhit->id().iphi();
-       }       
      }
    }
 
