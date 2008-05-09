@@ -17,7 +17,7 @@
 // Original Author:  Efe Yazgan
 // Updated        :  Taylan Yetkin (2008/05/08)
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.12 2008/05/08 20:28:41 efe Exp $
+// $Id: HcalProm.cc,v 1.13 2008/05/09 00:33:01 tyetkin Exp $
 //
 //
 
@@ -594,9 +594,9 @@ void HcalProm::beginJob(const edm::EventSetup&)
     h_leadJet_Pt = JetMetDir.make < TH1F > ("h_leadJet_Pt", "Leading Jet PT", 120, 0, 120);
     h_leadJet_Eta = JetMetDir.make < TH1F > ("h_leadJet_Eta", "Leading Jet Eta", 100, -7, 7);
     h_leadJet_Phi = JetMetDir.make < TH1F > ("h_leadJet_Phi", "Leading Jet Phi", 100, -7, 7);
-    h_caloMet_Met = JetMetDir.make < TH1F > ("h_caloMet", "MET from CaloTowers", 100, 0, 50);
-    h_caloMet_Phi = JetMetDir.make < TH1F > ("h_caloMet", "MET #phi from CaloTowers", 100, -7, 7);
-    h_caloMet_SumEt = JetMetDir.make < TH1F > ("h_caloMet", "SumET from CaloTowers", 100, 0, 50);
+    h_caloMet_Met = JetMetDir.make < TH1F > ("h_caloMet_Met", "MET from CaloTowers", 100, 0, 50);
+    h_caloMet_Phi = JetMetDir.make < TH1F > ("h_caloMet_Phi", "MET #phi from CaloTowers", 100, -7, 7);
+    h_caloMet_SumEt = JetMetDir.make < TH1F > ("h_caloMet_SumEt", "SumET from CaloTowers", 100, 0, 50);
 
     h_eb_rechit_energy = EcalDir.make<TH1F>(" h_eb_rechit_energy","RecHit Energy EB",130,-10,120);
     h_maxebeerec = EcalDir.make<TH1F>("h_maxebeerec","EBEE Muon (GeV)",200,0,15);
