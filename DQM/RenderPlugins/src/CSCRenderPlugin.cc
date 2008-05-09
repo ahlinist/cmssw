@@ -36,6 +36,10 @@ void CSCRenderPlugin::preDraw( TCanvas *c, const DQMNet::CoreObject &o, const Vi
 
   TH1* obj = dynamic_cast<TH1*>( o.object );
 
+  if(obj->GetMinimum() == obj->GetMaximum()) {
+    obj->SetMaximum(obj->GetMinimum() + 0.01);
+  }
+
   gStyle->SetPalette(1,0);
   
   // ============== Start generated from emuDQMBooking.xml by emuBooking2RenderPlugin.xsl ==================
