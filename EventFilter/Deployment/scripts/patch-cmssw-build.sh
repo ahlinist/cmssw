@@ -1,7 +1,7 @@
 #!/bin/bash
 numArgs=$#;
 if [ $numArgs -lt 2 ]; then
-    echo "Usage: patch-cmssw-build.sh CMSSW_X_Y_Z patchdir";
+    echo "Usage: patch-cmssw-build.sh CMSSW_X_Y_Z patchId patchdir";
     exit -1;
 fi
 export PATH=${PATH}:$PWD/EventFilter/Deployment/scripts
@@ -11,7 +11,8 @@ cat > EventFilter/Deployment/scripts/scramv1 <<EOF
 EOF
 chmod +x EventFilter/Deployment/scripts/scramv1
 CMS_SW_VERSION=$1;
-LOCAL_CODE_PATCHES_TOP=$2;
+LOCAL_CODE_PATCHES_TOP=$3;
+PATCH_ID=$2;
 #source /opt/cmssw/cmsset_default.sh; no longer needed 
 mkdir patch-cmssw-tmp;
 cd patch-cmssw-tmp;
@@ -81,11 +82,12 @@ echo "now in $PWD";
 # remove temporary directory holding the local patches
 #rm -rf $TOPD/$CMS_SW_VERSION;
 ln -s /opt/cmssw/slc4onl_ia32_gcc346/cms/online/$CMS_SW_VERSION opt/cmssw/base
+ln -s /opt/cmssw/patches/slc4onl_ia32_gcc346/cms/online/$CMS_SW_VERSION opt/cmssw/patch
 ln -s $RT opt/cmssw/root
 ln -s $SL opt/cmssw/seal
 cat > patch-cmssw.spec <<EOF
 Name: patch-cmssw
-Version: $CMS_SW_VERSION
+Version: $CMS_SW_VERSION$PATCH_ID
 Release: 6
 Summary: CMSSW Patches
 License: Unknown
@@ -121,6 +123,7 @@ tar -C $TOPD -c opt/cmssw |tar -xC \$RPM_BUILD_ROOT
 /opt/cmssw/lib/.edmplugincache
 /opt/cmssw/module/.cache
 /opt/cmssw/base
+/opt/cmssw/patch
 /opt/cmssw/root
 /opt/cmssw/seal
 /opt/cmssw/patches
