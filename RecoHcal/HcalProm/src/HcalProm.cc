@@ -17,7 +17,7 @@
 // Original Author:  Efe Yazgan
 // Updated        :  Taylan Yetkin (2008/05/08)
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.16 2008/05/09 15:11:48 efe Exp $
+// $Id: HcalProm.cc,v 1.17 2008/05/09 20:47:13 fedor Exp $
 //
 //
 
@@ -133,6 +133,8 @@ HcalProm::HcalProm(const edm::ParameterSet& iConfig)
         cout << "-->HTML output is disabled" << endl;
     runNo = 0;
     evtNo = 0;
+    lumibegin=0;
+    lumiend=0;
     startTime = "Not Avaliable";
     // global ROOT style
     gStyle->Reset("Default");
@@ -159,9 +161,18 @@ void HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     // old versions time_t a = (iEvent.time().value()) & 0xffffffff;
     time_t a = (iEvent.time().value()) >> 32;
 
+    int lumi = iEvent.luminosityBlock();
+
     if (evtNo < 1) {
         startTime = ctime(&a);
+        lumibegin=lumi;
     }
+
+    if(lumiend < lumi ) {
+      lumiend = lumi ;
+	 }
+
+    cout<<" Luminosity Block: " << lumibegin <<" Time : "<<startTime<<endl;
 
     //hcal rechits
     Handle<HBHERecHitCollection> hbhe;
@@ -204,10 +215,12 @@ void HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    const BasicClusterCollection islandBarrelBasicClusters = *(pIslandBarrelBasicClusters.product());
    */
 
+
    Handle<reco::BasicClusterCollection> bccHandle;
    iEvent.getByLabel("cosmicBasicClusters","CosmicBarrelBasicClusters", bccHandle);
    const reco::BasicClusterCollection *clusterCollection_p = 0;
    if (!bccHandle.failedToGet()) clusterCollection_p = bccHandle.product();
+
    
 
    // reco jets
@@ -282,7 +295,7 @@ void HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      if((psb.aData(5)&0x3f) > 1) {valid_phi.push_back( (psb.aData(5)>>10)&0x1f ); }
      if((psb.bData(5)&0x3f) > 1) {valid_phi.push_back( (psb.bData(5)>>10)&0x1f ); }
      std::vector<int>::const_iterator iphi;
-     for(iphi=valid_phi.begin(); iphi!=valid_phi.end(); iphi++) {
+    for(iphi=valid_phi.begin(); iphi!=valid_phi.end(); iphi++) {
        std::cout << "Found HCAL mip with phi=" << *iphi << " in bx wrt. L1A = " << ibx << std::endl;
        if(*iphi<9) hcal_top=true;
        if(*iphi>8) hcal_bot=true;
@@ -419,6 +432,7 @@ void HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       h_eb_rechit_energy->Fill(ehit->energy());
   }
 
+
   float maxebeerec = 0;
   float next_to_maxebeerec = 0;
   float maxebeerec_ETA = 0;
@@ -444,6 +458,7 @@ void HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       }
   }
   
+
   float total_hbhe = maxhbherec+next_to_maxhbherec;
   float total_ebee = maxebeerec+next_to_maxebeerec;
   float total_ho = maxhorec+next_to_maxhorec;
@@ -496,6 +511,8 @@ void HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     h_calo_tower_energy->Fill(kal->energy());
   }
 
+
+
   //correlations
   for(TrackCollection::const_iterator ncm = cosmicmuon->begin(); ncm != cosmicmuon->end();  ++ncm) {
     if (clusterCollection_p) {
@@ -509,6 +526,8 @@ void HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       } 
     }
   }
+  
+
     // Check Muon and HCal match
     double radius_hcal = 286.4;
     double conesize = -999999.;
@@ -608,6 +627,8 @@ void HcalProm::beginJob(const edm::EventSetup&)
     evtNo = 0;
     TrigDT = 0;
     startTime = "Not Avaliable";
+    lumibegin=0;
+    lumiend=0;
 
     TFileDirectory EcalDir = fs->mkdir( "Ecal" );
     TFileDirectory HcalDir = fs->mkdir( "Hcal" );
@@ -728,7 +749,7 @@ void HcalProm::htmlOutput(void)
     char tmp[10];
 
     if (runNo != -1)
-        sprintf(tmp, "HcalPrompt_R%09d", runNo);
+      sprintf(tmp, "HcalPrompt_R%09d_L%d_%d", runNo,lumibegin,lumiend);
     else
         sprintf(tmp, "HcalPrompt_R%09d", 0);
     string htmlDir = baseHtmlDir_ + "/" + tmp + "/";
@@ -750,8 +771,15 @@ void HcalProm::htmlOutput(void)
     htmlFile << "<body>  " << endl;
     htmlFile << "<br>  " << endl;
     htmlFile << "<center><h1>Hcal Prompt Analysis Outputs</h1></center>" << endl;
-    htmlFile << "<h2>Run Number:&nbsp;&nbsp;&nbsp;" << endl;
+    htmlFile << "<h2>Run Number:&nbsp;&nbsp;" << endl;
     htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << runNo << "</span>" << endl;
+
+    htmlFile << "&nbsp;&nbsp;LS:&nbsp;" << endl; 
+    htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << lumibegin << "</span>" << endl;
+
+    htmlFile << "-" << endl; 
+    htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << lumiend << "</span>" << endl;
+
     htmlFile << "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Start&nbsp;Time:&nbsp;<span style=\"color: rgb(0, 0, 153);\">" <<
       startTime << "</span></h2> " << endl;
     htmlFile << "<h2>Events processed:&nbsp;&nbsp;&nbsp;" << endl;
@@ -776,7 +804,7 @@ void HcalProm::htmlOutput(void)
     }
     if (doJetMetHTML) {
         htmlName = "HcalPromptJetMet.html";
-        // htmlOutput(runNo, startTime,htmlDir, htmlName,htmlTitle);
+        // htmlOutput(runNo,lumi, startTime,htmlDir, htmlName,htmlTitle);
         JetMetHTMLOutput(runNo, startTime, htmlDir, htmlName);
         htmlFile << "<table border=0 WIDTH=\"50%\"><tr>" << endl;
         htmlFile << "<td WIDTH=\"35%\"><a href=\"" << htmlName << "\">JetMet Prompt</a></td>" << endl;
@@ -833,6 +861,13 @@ void HcalProm::JetMetHTMLOutput(int runNo, string startTime, string htmlDir, str
     htmlFile << "<br>  " << endl;
     htmlFile << "<h2>Run Number:&nbsp;&nbsp;&nbsp;" << endl;
     htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << runNo << "</span>" << endl;
+
+    htmlFile << "&nbsp;&nbsp;LS:&nbsp;" << endl; 
+    htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << lumibegin << "</span>" << endl;
+
+    htmlFile << "-" << endl; 
+    htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << lumiend << "</span>" << endl;
+
     htmlFile << "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Start&nbsp;Time:&nbsp;<span style=\"color: rgb(0, 0, 153);\">" <<
       startTime << "</span></h2> " << endl;
     htmlFile << "<h2>Plots from :&nbsp;&nbsp;&nbsp;&nbsp; <span " << endl;
@@ -900,7 +935,7 @@ void HcalProm::JetMetHTMLOutput(int runNo, string startTime, string htmlDir, str
 }
 
 
-void HcalProm::RecHitHTMLOutput(int runNo, string startTime, string htmlDir, string htmlName) {
+void HcalProm::RecHitHTMLOutput(int runNo ,string startTime, string htmlDir, string htmlName) {
 
     cout << "Preparing html output for " << htmlName << endl;
 
@@ -921,6 +956,13 @@ void HcalProm::RecHitHTMLOutput(int runNo, string startTime, string htmlDir, str
     htmlFile << "<br>  " << endl;
     htmlFile << "<h2>Run Number:&nbsp;&nbsp;&nbsp;" << endl;
     htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << runNo << "</span>" << endl;
+
+    htmlFile << "&nbsp;&nbsp;LS:&nbsp;" << endl; 
+    htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << lumibegin << "</span>" << endl;
+
+    htmlFile << "-" << endl; 
+    htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << lumiend << "</span>" << endl;
+
     htmlFile << "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Start&nbsp;Time:&nbsp;<span style=\"color: rgb(0, 0, 153);\">" <<
       startTime << "</span></h2> " << endl;
     htmlFile << "<h2>Plots from :&nbsp;&nbsp;&nbsp;&nbsp; <span " << endl;
@@ -1017,6 +1059,13 @@ void HcalProm::DigiHTMLOutput(int runNo, string startTime, string htmlDir, strin
     htmlFile << "<br>  " << endl;
     htmlFile << "<h2>Run Number:&nbsp;&nbsp;&nbsp;" << endl;
     htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << runNo << "</span>" << endl;
+
+    htmlFile << "&nbsp;&nbsp;LS:&nbsp;" << endl; 
+    htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << lumibegin << "</span>" << endl;
+
+    htmlFile << "-" << endl; 
+    htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << lumiend << "</span>" << endl;
+
     htmlFile << "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Start&nbsp;Time:&nbsp;<span style=\"color: rgb(0, 0, 153);\">" <<
       startTime << "</span></h2> " << endl;
     htmlFile << "<h2>Plots from :&nbsp;&nbsp;&nbsp;&nbsp; <span " << endl;
@@ -1070,6 +1119,13 @@ void HcalProm::HPDNoiseHTMLOutput(int runNo, string startTime, string htmlDir, s
     htmlFile << "<br>  " << endl;
     htmlFile << "<h2>Run Number:&nbsp;&nbsp;&nbsp;" << endl;
     htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << runNo << "</span>" << endl;
+
+    htmlFile << "&nbsp;&nbsp;LS:&nbsp;" << endl; 
+    htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << lumibegin << "</span>" << endl;
+
+    htmlFile << "-" << endl; 
+    htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << lumiend << "</span>" << endl;
+
     htmlFile <<
       "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Start&nbsp;Time:&nbsp;<span style=\"color: rgb(0, 0, 153);\">" <<
       startTime << "</span></h2> " << endl;
@@ -1156,6 +1212,13 @@ void HcalProm::MuonHTMLOutput(int runNo, string startTime, string htmlDir, strin
     htmlFile << "<br>  " << endl;
     htmlFile << "<h2>Run Number:&nbsp;&nbsp;&nbsp;" << endl;
     htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << runNo << "</span>" << endl;
+
+    htmlFile << "&nbsp;&nbsp;LS:&nbsp;" << endl; 
+    htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << lumibegin << "</span>" << endl;
+
+    htmlFile << "-" << endl; 
+    htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << lumiend << "</span>" << endl;
+
     htmlFile <<
       "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Start&nbsp;Time:&nbsp;<span style=\"color: rgb(0, 0, 153);\">" <<
       startTime << "</span></h2> " << endl;
@@ -1233,6 +1296,13 @@ void HcalProm::CaloTowerHTMLOutput(int runNo, string startTime, string htmlDir, 
     htmlFile << "<br>  " << endl;
     htmlFile << "<h2>Run Number:&nbsp;&nbsp;&nbsp;" << endl;
     htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << runNo << "</span>" << endl;
+
+    htmlFile << "&nbsp;&nbsp;LS:&nbsp;" << endl; 
+    htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << lumibegin << "</span>" << endl;
+
+    htmlFile << "-" << endl; 
+    htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << lumiend << "</span>" << endl;
+
     htmlFile <<
       "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Start&nbsp;Time:&nbsp;<span style=\"color: rgb(0, 0, 153);\">" <<
       startTime << "</span></h2> " << endl;
@@ -1322,7 +1392,7 @@ string HcalProm::getIMG(int runNo, TH1F * hist, int size, string htmlDir, const 
     char dest[512];
 
     if (runNo > -1)
-        sprintf(dest, "%s - Run %d", name.c_str(), runNo);
+      sprintf(dest, "%s - Run %d LS %d-%d", name.c_str(), runNo, lumibegin, lumiend);
     else
         sprintf(dest, "%s", name.c_str());
     hist->SetTitle(dest);
@@ -1372,7 +1442,7 @@ string HcalProm::getIMG2(int runNo, TH2F * hist, int size, string htmlDir, const
     char dest[512];
 
     if (runNo > -1)
-        sprintf(dest, "%s - Run %d", name.c_str(), runNo);
+      sprintf(dest, "%s - Run %d LS %d-%d", name.c_str(), runNo, lumibegin, lumiend);
     else
         sprintf(dest, "%s", name.c_str());
     hist->SetTitle(dest);

@@ -17,7 +17,7 @@
 // Original Author:  Efe Yazgan
 // Updated        :  Taylan Yetkin (2008/05/08)
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.h,v 1.5 2008/05/09 00:33:01 tyetkin Exp $
+// $Id: HcalProm.h,v 1.6 2008/05/09 10:32:12 efe Exp $
 //
 //
 
@@ -68,7 +68,7 @@ class HcalProm : public edm::EDAnalyzer {
       //adding HTML output functions (very similar to DQM) 
       void htmlOutput(void);
       void CaloTowerHTMLOutput(int run, std::string startTime, std::string htmlDir, std::string htmlName);
-      void DigiHTMLOutput(int run, std::string startTime, std::string htmlDir, std::string htmlName);
+      void DigiHTMLOutput(int run , std::string startTime, std::string htmlDir, std::string htmlName);
       void RecHitHTMLOutput(int run, std::string startTime, std::string htmlDir, std::string htmlName);
       void JetMetHTMLOutput(int run, std::string startTime, std::string htmlDir, std::string htmlName);
       void MuonHTMLOutput(int run, std::string startTime, std::string htmlDir, std::string htmlName);
@@ -145,7 +145,7 @@ class HcalProm : public edm::EDAnalyzer {
       TH1F*  HCAL_energy_correlation_all;
       int TrigDT;
       std::string baseHtmlDir_;
-      int runNo,evtNo;
+  int runNo,lumibegin,lumiend,evtNo;
       std::string startTime;
       bool prompt_htmlPrint;
       bool doDigiHTML;
