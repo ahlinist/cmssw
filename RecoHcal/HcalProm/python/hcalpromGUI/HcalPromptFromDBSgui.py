@@ -104,7 +104,7 @@ class HcalPromGUI(DQMDBSgui):
         self.root.title("HcalPrompt DQM from DBS GUI")
 
         # Set new color scheme
-        self.bg="lightblue"
+        #self.bg="lightblue"
 
         return
 
