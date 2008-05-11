@@ -7,4 +7,8 @@ def customise(process):
     process.es_prefer_UniformMagneticFieldESProducer = cms.ESPrefer("UniformMagneticFieldESProducer")
     process.g4SimHits.UseMagneticField = False
 
+    process.hcalDigis.hbhe.level = -10000
+    process.hcalDigis.ho.level   = -10000
+    process.hcalDigis.hf.level   = -10000
+
     return process
