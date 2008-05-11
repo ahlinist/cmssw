@@ -154,26 +154,27 @@ class HcalPromGUI(dbsBaseGui):
         success=True
         
         self.cmsRunOutput=[]
+
+        # Directory name now seems to take the form HcalPrompt_R000XXXX_LY_Z
+        # Y=lumibegin value
+        # Z=lumiend value
+
         if (runnum<100000):
-            outname="HcalPrompt_R0000%i"%runnum
+            outname="HcalPrompt_R0000%i_L"%runnum
         else:
-            outname="HcalPrompt_R000%i"%runnum
+            outname="HcalPrompt_R000%i_L"%runnum
 
-        # make fancier success requirement later -- for now, just check that directory exists
-        if (self.debug):
-            print "%s exists? %i"%(os.path.join(self.basedir,outname),os.path.isdir(os.path.join(self.basedir,outname)))
+        # make fancier success requirement later -- for now, just check that a directory starting with "HcalPrompt_R000.._L exists
 
-        outputdir=os.path.join(self.basedir,outname)
-
-        success=success and (os.path.isdir(outputdir))
-        # if directory exists, add it to cmsRunOutput
-        if (success):
-            if (self.debug):
-                print "<getcmsRunOutput> success=True (directory %s found)!"%outputdir
-            self.cmsRunOutput.append(outputdir)
+        for i in os.listdir(self.basedir):
+            if i.startswith(outname):
+                success=success and True
+                if (self.debug):
+                    print "<getcmsRunOutput> success=True (directory %s found)!"%i
+                outputdir=os.path.join(self.basedir,i)
+                self.cmsRunOutput.append(outputdir)
 
 
-        success=True # as of 11 May 2008, directory doesn't seem to be produced.  For now, set the boolean True regardless of whether or not the directory was found.
 
         # now check that prompt_out.root file exists
         success=success and (os.path.exists("%s"%os.path.join(self.basedir,
