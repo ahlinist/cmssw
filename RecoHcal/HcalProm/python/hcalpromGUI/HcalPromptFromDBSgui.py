@@ -52,7 +52,8 @@ except:
 
 try:
     os.chdir(os.path.join(base,"src/DQM/HcalMonitorModule/python/dqmdbsGUI"))
-    from DQMfromDBSgui import DQMDBSgui  # Get parent GUI info
+    from pyDBSguiBaseClass import dbsBaseGui # get main gui package
+
     from pyDBSRunClass import DBSRun  # Gets class that holds information as to whether a given run has been processed through DQM
     from pydbsAccessor import dbsAccessor  # sends queries to DBS
     os.chdir(base)
@@ -64,7 +65,7 @@ except:
 
 
 
-class HcalPromGUI(DQMDBSgui):
+class HcalPromGUI(dbsBaseGui):
     '''
     *** HcalPromGUI(inherits from DQMDBSgui) ***
     '''
@@ -76,7 +77,7 @@ class HcalPromGUI(DQMDBSgui):
         '''
 
         
-        DQMDBSgui.__init__(self,parent,debug)
+        dbsBaseGui.__init__(self,parent,debug)
 
         if (self.debug):
             print self.__doc__
@@ -102,7 +103,6 @@ class HcalPromGUI(DQMDBSgui):
 
         # Set new root title
         self.root.title("HcalPrompt DQM from DBS GUI")
-
         # Set new color scheme
         #self.bg="lightblue"
 
@@ -122,6 +122,9 @@ class HcalPromGUI(DQMDBSgui):
         self.myDBS.searchStringDataset.set("*/GlobalCruzet1-A/*-T0PromptReco-*/RECO*")
         self.dqmButton.configure(text="Run the Hcal\nPrompt DQM")
 
+        # Set the name of the .cfg file to be run
+        self.cfgFileName.set(os.path.join(self.basedir,"hcalprom_gui.cfg"))
+
         compname=os.uname()[1]
         if compname.startswith("lxplus") and compname.endswith(".cern.ch"):
             if (self.debug):
@@ -131,13 +134,98 @@ class HcalPromGUI(DQMDBSgui):
                 print "Working on %s (CAF)"%compname
             # We can replace the self.myDBS.dbsInst variable with something more CAF-
             #appropriate here, if we see a significant change in performance.
+
+        self.stripe.configure(bg=self.bg_alt)
+
         return
 
 
+    def getcmsRunOutput(self,runnum):
+        '''
+        ** self.getcmsRunOutput(runnum) **
+        This overwrites base class function to look for root files named
+        prompt_out.root and move them to prompt_out_<runnum>.root.
+        It also looks for a directory with the name HcalPrompt_R0000<runnum>.
+        '''
+
+        if (self.debug):
+            print self.getcmsRunOutput.__doc__
+
+        success=True
+        
+        self.cmsRunOutput=[]
+        if (runnum<100000):
+            outname="HcalPrompt_R0000%i"%runnum
+        else:
+            outname="HcalPrompt_R000%i"%runnum
+
+        # make fancier success requirement later -- for now, just check that directory exists
+        if (self.debug):
+            print "%s exists? %i"%(os.path.join(self.basedir,outname),os.path.isdir(os.path.join(self.basedir,outname)))
+
+        outputdir=os.path.join(self.basedir,outname)
+
+        success=success and (os.path.isdir(outputdir))
+        # if directory exists, add it to cmsRunOutput
+        if (success):
+            if (self.debug):
+                print "<getcmsRunOutput> success=True (directory %s found)!"%outputdir
+            self.cmsRunOutput.append(outputdir)
+
+
+        success=True # as of 11 May 2008, directory doesn't seem to be produced.  For now, set the boolean True regardless of whether or not the directory was found.
+
+        # now check that prompt_out.root file exists
+        success=success and (os.path.exists("%s"%os.path.join(self.basedir,
+                                                             "prompt_out.root")))
+
+        # If file exists, we move it to prompt_out_<runnum>.root, and
+        #add it to the self.cmsRunOutput list
+        if (os.path.exists("%s"%os.path.join(self.basedir,"prompt_out.root"))):
+            
+            outputroot="prompt_out_%i.root"%runnum
+            outputroot=os.path.join(self.basedir,outputroot)
+            os.system("mv %s %s"%(os.path.join(self.basedir,
+                                               "prompt_out.root"),
+                                  outputroot))
+            self.cmsRunOutput.append(outputroot)
+
+        if (self.debug):
+            print "<getcmsRunOutput>  The following cmsRun outputs were found:"
+            for i in self.cmsRunOutput:
+                print "\t%s"%i
+            print "\nAll files found? %s"%success
+            
+        return success
+
+    
+
 #####################################
+
+# Run as main GUI:
+
 if __name__=="__main__":
 
-    mygui=HcalPromGUI(debug=1)  # set up gui
+    debug=False
+
+    # Use option parsing to enable/disable debugging from the command line
+    try:
+        from optparse import OptionParser
+        parser=OptionParser()
+        # If "-d" option used, set debug variable true
+        parser.add_option("-d","--debug",
+                          dest="debug",
+                          action="store_true",
+                          help = "Enable debugging when GUI runs",
+                          default=False)
+
+        (options,args)=parser.parse_args(sys.argv)
+        debug=options.debug
+    except:
+        print "Dang, optionParsing didn't work"
+        print "Starting GUI anyway"
+
+    mygui=HcalPromGUI(debug=debug)  # set up gui
     mygui.DrawGUI()
     mygui.specificSetup()
     mygui.root.mainloop() # run main loop
