@@ -160,11 +160,11 @@ class HcalPromGUI(dbsBaseGui):
         # Z=lumiend value
 
         if (runnum<100000):
-            outname="HcalPrompt_R0000%i_L"%runnum
+            outname="HcalPrompt_R0000%i"%runnum
         else:
-            outname="HcalPrompt_R000%i_L"%runnum
+            outname="HcalPrompt_R000%i"%runnum
 
-        # make fancier success requirement later -- for now, just check that a directory starting with "HcalPrompt_R000.._L exists
+        # make fancier success requirement later -- for now, just check that a directory starting with "HcalPrompt_R000.. exists
 
         for i in os.listdir(self.basedir):
             if i.startswith(outname):
