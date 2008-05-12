@@ -326,11 +326,11 @@ namespace edm {
       labelToWorkers_[aWorker->description().moduleLabel_]=aWorker;
     }
   private:
-    virtual bool tryToFillImpl(Provenance const& prov,
+    virtual bool tryToFillImpl(std::string const& moduleLabel,
 			       EventPrincipal& event,
 			       const EventSetup& eventSetup) {
       std::map<std::string, Worker*>::const_iterator itFound =
-        labelToWorkers_.find(prov.moduleLabel());
+        labelToWorkers_.find(moduleLabel);
       if(itFound != labelToWorkers_.end()) {
 	  // Unscheduled reconstruction has no accepted definition
 	  // (yet) of the "current path". We indicate this by passing

@@ -6,8 +6,6 @@
 OutputModule: The base class of all "modules" that write Events to an
 output stream.
 
-$Id$
-
 ----------------------------------------------------------------------*/
 
 #include <vector>
@@ -231,6 +229,7 @@ namespace edm {
     virtual void writeParameterSetRegistry() {}
     virtual void writeProductDescriptionRegistry() {}
     virtual void writeEntryDescriptions() {}
+    virtual void writeBranchMapper() {}
     virtual void finishEndFile() {}
   };
 }
