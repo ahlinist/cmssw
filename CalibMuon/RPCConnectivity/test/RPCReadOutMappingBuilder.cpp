@@ -4,8 +4,8 @@
  * Description:
  *      Class to read directly OMDS DB with OCCI and fill Offline DB
  *
- * $Date: 2007/07/30 14:53:46 $
- * $Revision: 1.12 $
+ * $Date: 2008/03/05 12:25:51 $
+ * $Revision: 1.13 $
  * \author Michal Bluj -- INS Warsaw
  *
  */
@@ -305,7 +305,8 @@ void RPCReadOutMappingBuilder::readCablingMap()
 	for(unsigned int iLB=0; iLB<theLB.size(); iLB++) {
 	  linkChannel=atoi(((theLB[iLB].second).substr((theLB[iLB].second).length()-1,1)).c_str());
 	  bool master = (theLB[iLB].first==theLink[iLink].first);
-	  LinkBoardSpec lb(master,linkChannel);
+          std::string name=theLB[iLB].second;
+	  LinkBoardSpec lb(master,linkChannel,name);
 	  cout << " |    |    |    |-> Getting the FEBs for LB no. "<< linkChannel << " ... " << flush;
 	  FEBStruct tmpFEB;
 	  std::vector<FEBStruct> theFEB;
