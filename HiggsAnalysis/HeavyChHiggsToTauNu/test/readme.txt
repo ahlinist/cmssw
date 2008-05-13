@@ -82,7 +82,8 @@
 				cvs co -r CMSSW_2_0_0 RecoJets/JetProducers/data
 				Edit RecoJets/Configuration/data/GenJetParticles.cff and
 				remove double quotes from line 'InputTag src = "genParticles"'
-
+13.5.2008/S.Lehti CMSSW_1_6_11	Bugfix: myTrackConverter, loop over hits
+ 
 
 	How to compile:
 	-compile
