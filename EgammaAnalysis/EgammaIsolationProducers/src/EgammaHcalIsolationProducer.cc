@@ -23,7 +23,7 @@
 #include "DataFormats/HcalRecHit/interface/HcalRecHitCollections.h"
 #include "Geometry/CaloGeometry/interface/CaloGeometry.h"
 
-#include "Geometry/Records/interface/IdealGeometryRecord.h"
+#include "Geometry/Records/interface/CaloGeometryRecord.h"
 
 EgammaHcalIsolationProducer::EgammaHcalIsolationProducer(const edm::ParameterSet& config) : conf_(config)
 {
@@ -67,7 +67,7 @@ EgammaHcalIsolationProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
 
   //Get Calo Geometry
   edm::ESHandle<CaloGeometry> pG;
-  iSetup.get<IdealGeometryRecord>().get(pG);
+  iSetup.get<CaloGeometryRecord>().get(pG);
   const CaloGeometry* caloGeom = pG.product();
 
 
