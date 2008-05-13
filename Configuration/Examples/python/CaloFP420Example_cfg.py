@@ -75,15 +75,11 @@ process.load("RecoJets.Configuration.GenJetParticles_cff")
 process.load("RecoJets.Configuration.RecoGenJets_cff")
 
 #sequence reconstruction = {localreco, globalreco, MCJetCorrections}
-#digi-rec for FP420
-#include "SimGeneral/MixingModule/data/mixNoPU.cfi"
-process.load("SimRomanPot.SimFP420.FP420Digi_cfi")
+# digi for FP420
+process.load("SimRomanPot.Configuration.SimChargeDigiFP420_cff")
 
-process.load("RecoRomanPot.RecoFP420.FP420Cluster_cfi")
-
-process.load("RecoRomanPot.RecoFP420.FP420Track_cfi")
-
-process.load("RecoRomanPot.RecoFP420.FP420Reco_cfi")
+# rec for FP420
+process.load("RecoRomanPot.Configuration.RecClusterTrackMomentumFP420_cff")
 
 #
 process.load("Configuration.EventContent.EventContent_cff")
@@ -94,8 +90,6 @@ process.maxEvents = cms.untracked.PSet(
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring('file:Exhume_Hbb.root')
 )
-
-process.HcalTopologyIdealEP = cms.ESProducer("HcalTopologyIdealEP")
 
 process.CaloTowerConstituentsMapBuilder = cms.ESProducer("CaloTowerConstituentsMapBuilder",
     MapFile = cms.untracked.string('Geometry/CaloTopology/data/CaloTowerEEGeometric.map.gz')
