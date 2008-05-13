@@ -99,5 +99,5 @@
 	cvs co -r jet_corrections_16X JetMETCorrections/MCJet/data
 
 	Example program for reading and analyzing the produced root files:
-	http://cmsdoc.cern.ch/~slehti/HipProofAnalysis.html
+	http://cmsdoc.cern.ch/~slehti/HipProofAnalysis/HipProofAnalysis.html
 
