@@ -17,7 +17,7 @@
 // Original Author:  Efe Yazgan
 // Updated        :  Taylan Yetkin (2008/05/08)
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.17 2008/05/09 20:47:13 fedor Exp $
+// $Id: HcalProm.cc,v 1.18 2008/05/10 05:03:43 fedor Exp $
 //
 //
 
@@ -72,6 +72,7 @@
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutRecord.h"
 #include "DataFormats/L1GlobalTrigger/interface/L1GtPsbWord.h"
 
+
 //tracks
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/TrackReco/interface/TrackFwd.h"
@@ -103,13 +104,21 @@
 #include <sys/time.h>
 
 
-
-class CaloJetSort {
+namespace {
+  class CaloJetSort {
   public:
     bool operator() (const CaloJet & a, const CaloJet & b) {
-          return a.pt() > b.pt();
+      return a.pt() > b.pt();
     }
-};
+  };
+
+  const unsigned l1TableSize = 10;
+  // grab names from https://twiki.cern.ch/twiki/bin/view/CMS/GlobalTriggerMenu_L1Menu_CRUZET200805
+  const std::string l1TriggerNames[l1TableSize] = {
+    "L1_SingleMu3", "L1_SingleMu5", "L1_SingleMu7", "L1_SingleMu10", "L1_SingleMu14",
+    "L1_SingleMu20", "L1_SingleMu25", "L1_SingleIsoEG5", "L1_SingleIsoEG8", "L1_SingleIsoEG10"
+  }; 
+}
 
 using namespace edm;
 using namespace std;
@@ -285,6 +294,15 @@ void HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      if(igmtrr->getBxInEvent()==0 && irpcb>0) rpc_l1a = true;
    }
    
+   // trigger summary
+   DecisionWord gtDecisionWord = gtrr->decisionWord();
+   for (size_t iBit = 0; iBit < gtDecisionWord.size(); ++iBit) {
+     if (gtDecisionWord [iBit]) {
+       std::string triggerName = iBit < l1TableSize ? l1TriggerNames [iBit] : "Undefined";
+       std::cout << "L1 Accepted: L1 bit " << iBit <<", trigger " << triggerName << std::endl;
+     }
+   }
+
    for(int ibx=-1; ibx<=1; ibx++) {
      bool hcal_top = false;
      bool hcal_bot = false;
