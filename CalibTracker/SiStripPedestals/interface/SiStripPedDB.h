@@ -16,7 +16,7 @@
 //
 // Original Author:  dkcira
 //         Created:  Sat Feb  4 20:49:51 CET 2006
-// $Id: SiStripPedDB.h,v 1.6 2007/03/21 16:26:20 bainbrid Exp $
+// $Id: SiStripPedDB.h,v 1.7 2007/11/07 19:40:29 elmer Exp $
 //
 
 // system include files
@@ -82,7 +82,7 @@ class SiStripPedDB : public edm::EDAnalyzer {
        SiStripFedCabling* fedCabling_;
 
        SiStripPedestals* SiStripPedestals_;
-       std::vector< std::pair<uint32_t,std::vector<char> > > mSiStripPedestals;
+       std::vector< std::pair<uint32_t,SiStripPedestals::InputVector > > mSiStripPedestals;
 
        std::vector<uint32_t> SelectedDetIds;
 	 

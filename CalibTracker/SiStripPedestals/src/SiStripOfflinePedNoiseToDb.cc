@@ -119,8 +119,8 @@ namespace cms{
 	continue;
 	      
       //Get Pedestal and Noise for detid
-      std::vector<char>  theSiStripPedVector;
-      std::vector<short> theSiStripNoiseVector;
+      SiStripPedestals::InputVector theSiStripPedVector;
+      SiStripNoises::InputVector theSiStripNoiseVector;
 	      
       std::vector<float> tmp_ped;
       std::vector<float> tmp_noi;
@@ -147,14 +147,13 @@ namespace cms{
 	bool disable = (tmp_bad[ibin] == 0) ? false : true;
 		
 	LogDebug("SiStripOfflinePedNoiseToDb")  <<"DetId " << detid << " Ped Noise lth hth disable " << ped << " " << noise << " " << lTh << " " << hTh << " " << disable << std::endl;
-	SiStripPedestals_->setData(ped,lTh,hTh,theSiStripPedVector);
+	SiStripPedestals_->setData(ped,theSiStripPedVector);
 	SiStripNoises_->setData(noise,theSiStripNoiseVector);
       }
 
       {
 	edm::LogInfo("SiStripOfflinePedNoiseToDb") <<"uploading Ped for detid "<< detid << " vector size " << theSiStripPedVector.size() <<std::endl;
-	SiStripPedestals::Range range(theSiStripPedVector.begin(),theSiStripPedVector.end());
-	if ( ! SiStripPedestals_->put(detid,range) )
+	if ( ! SiStripPedestals_->put(detid,theSiStripPedVector) )
 	  edm::LogError("SiStripOfflinePedNoiseToDb") <<"[SiStripOfflinePedNoiseToDb::analyze] detid " << detid << "already exists"<<std::endl;
       }
       {

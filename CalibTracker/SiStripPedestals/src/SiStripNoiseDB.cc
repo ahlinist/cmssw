@@ -107,7 +107,7 @@ void SiStripNoiseDB::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	  {
 	    mSiStripNoises.clear();
 	    //Generate Pedestal for det detid
-	    std::vector<short> theSiStripVector;  
+	    SiStripNoises::InputVector theSiStripVector;  
 	    vector<float> tmp_noise;
 	    tmp_noise.clear();
 	    apvFactory_->getNoise(detid, tmp_noise);
@@ -131,7 +131,7 @@ void SiStripNoiseDB::endJob(void){
 
   edm::LogInfo("SiStripNoiseDB") << "... now write sistripnoise data in DB" << std::endl;
 
-  for (std::vector< std::pair<uint32_t, std::vector<short> > >::const_iterator iter=mSiStripNoises.begin(); iter!=mSiStripNoises.end();iter++)
+  for (std::vector< std::pair<uint32_t, SiStripNoises::InputVector > >::const_iterator iter=mSiStripNoises.begin(); iter!=mSiStripNoises.end();iter++)
     {
       if ( ! SiStripNoises_->put(iter->first,iter->second) )
 	edm::LogError("SiStripNoiseDB") <<"[SiStripNoiseDB::analyze] detid " << iter->first << "already exists"<<endl;

@@ -107,7 +107,7 @@ void SiStripPedDB::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	  {
 	    mSiStripPedestals.clear();
 	    //Generate Pedestal for det detid
-	    std::vector<char> theSiStripVector;  
+	    SiStripPedestals::InputVector theSiStripVector;  
 	    vector<float> tmp_ped;
 	    tmp_ped.clear();
 	    apvFactory_->getPedestal(detid, tmp_ped);
@@ -121,7 +121,7 @@ void SiStripPedDB::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 		hTh = lTh;
 		lTh = tmp;
 	      }
-	      SiStripPedestals_->setData(ped,lTh,hTh,theSiStripVector);
+	      SiStripPedestals_->setData(ped,theSiStripVector);
 	      ibin++;
 	    }
 	    mSiStripPedestals.push_back(make_pair(detid,theSiStripVector));
@@ -132,11 +132,10 @@ void SiStripPedDB::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 void SiStripPedDB::endJob(void){
   edm::LogInfo("SiStripPedDB") << "... now write sistrippedestals data in DB" << std::endl;
 	
-  for (std::vector< std::pair<uint32_t, std::vector<char> > >::const_iterator iter=mSiStripPedestals.begin(); iter!=mSiStripPedestals.end();iter++)
+  for (std::vector< std::pair<uint32_t, SiStripPedestals::InputVector > >::iterator iter=mSiStripPedestals.begin(); iter!=mSiStripPedestals.end();iter++)
     {
       edm::LogInfo("SiStripPedDB")<<"uploading detid "<< iter->first << " vector size " << iter->second.size() <<std::endl;
-      SiStripPedestals::Range range(iter->second.begin(),iter->second.end());
-      if ( ! SiStripPedestals_->put(iter->first,range) )
+      if ( ! SiStripPedestals_->put(iter->first,iter->second) )
 	edm::LogError("SiStripPedDB") <<"[SiStripPedDB::analyze] detid " << iter->first << "already exists"<<endl;
     }       
 

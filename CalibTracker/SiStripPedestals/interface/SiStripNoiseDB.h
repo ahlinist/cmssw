@@ -16,7 +16,7 @@
 //
 // Original Author:  dkcira
 //         Created:  Sat Feb  4 20:49:51 CET 2006
-// $Id: SiStripNoiseDB.h,v 1.6 2007/11/07 19:40:29 elmer Exp $
+// $Id: SiStripNoiseDB.h,v 1.7 2008/03/04 15:59:22 giordano Exp $
 //
 
 // system include files
@@ -82,7 +82,7 @@ class SiStripNoiseDB : public edm::EDAnalyzer {
        SiStripFedCabling* fedCabling_;
 
        SiStripNoises* SiStripNoises_;
-       std::vector< std::pair<uint32_t,std::vector<short> > > mSiStripNoises;
+       std::vector< std::pair<uint32_t,SiStripNoises::InputVector > > mSiStripNoises;
 
        SiStripQuality* SiStripQuality_;
 	 
