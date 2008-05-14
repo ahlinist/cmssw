@@ -10,14 +10,12 @@
 <use name=DataFormats/Common>
 <use name=DQMServices/Core>
 
-<use name=DataFormats/SiStripCommon>
 <use name=DataFormats/SiStripDetId>
 <use name=DataFormats/SiStripDigi>
 <use name=CondFormats/DataRecord>
 <use name=CondFormats/SiStripObjects>
 <use name=DQM/SiStripCommon>  
 <use name=oracle>
-<use name=clhep>
 #<use name=xdaq>
 <use name=CalibFormats/SiStripObjects>
 <use name=CalibTracker/Records>
@@ -38,6 +36,7 @@
    <use name=FWCore/MessageLogger>
    <use name=Utilities/Timing>
    <use name=DataFormats/Common>
+   <use name=CalibFormats/SiStripObjects>
    <use name=DataFormats/FEDRawData>
    <use name=DataFormats/SiStripDetId>
    <use name=DataFormats/SiStripDigi>
