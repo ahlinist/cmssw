@@ -163,6 +163,9 @@ namespace edm {
     Provenance
     getProvenance(BranchID const& theID) const;
 
+    Provenance
+    getProvenance(ProductID const& theID) const;
+
     void
     getAllProvenance(std::vector<Provenance const*> &provenances) const;
 
