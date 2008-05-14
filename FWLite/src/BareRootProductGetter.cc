@@ -196,7 +196,9 @@ BareRootProductGetter::setupNewFile(TFile* iFile) const
         //this has to be called since 'branchName' is not stored and the 'init' method is supposed to
         // regenerate it
         itProd->second.init();
-        idToBranchDesc_.insert(IdToBranchDesc::value_type(itProd->second.productID(), itProd->second) );
+	//WMTAN: Kludge for building
+        //idToBranchDesc_.insert(IdToBranchDesc::value_type(itProd->second.productID(), itProd->second) );
+        idToBranchDesc_.insert(IdToBranchDesc::value_type(itProd->second.oldProductID(), itProd->second) );
       }
     }
   }
