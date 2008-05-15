@@ -19,7 +19,6 @@
 
 #include "DQM/RenderPlugins/src/CSCRenderPlugin.h"
 
-
 bool CSCRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &i ) {
 
   if( o.name.find( "CSC/" ) < o.name.size() ) {
@@ -42,8 +41,10 @@ void CSCRenderPlugin::preDraw( TCanvas *c, const DQMNet::CoreObject &o, const Vi
     return;
   }
 
+  c->cd();
+
   gStyle->SetPalette(1,0);
-  
+
   // ============== Start generated from emuDQMBooking.xml by emuBooking2RenderPlugin.xsl ==================
   
   if(REMATCH(".*/DMB_Unpacked$", o.name)) {
@@ -246,9 +247,6 @@ void CSCRenderPlugin::preDraw( TCanvas *c, const DQMNet::CoreObject &o, const Vi
   if(REMATCH(".*/CSC_Reporting$", o.name)) {
     obj->SetStats(false);
     gStyle->SetOptStat("e");
-    gPad->SetGridx();
-    gPad->SetGridy();
-  
     return;
   }
 
@@ -2208,6 +2206,24 @@ void CSCRenderPlugin::preDraw( TCanvas *c, const DQMNet::CoreObject &o, const Vi
 }
 
 void CSCRenderPlugin::postDraw( TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo &i ) {
+
+  if(o.object == NULL) {
+    return;
+  }
+
+  TH1* obj = dynamic_cast<TH1*>( o.object );
+
+  if(obj == NULL) {
+    return;
+  }
+
+  c->cd();
+
+  if(REMATCH(".*Summary/CSC_[a-zA-Z0-9_-]+$", o.name)) {
+    TH2* obj2 = dynamic_cast<TH2*>(obj->Clone());
+    ChamberMap(obj2); 
+    return;
+  }
 
   return;
 
