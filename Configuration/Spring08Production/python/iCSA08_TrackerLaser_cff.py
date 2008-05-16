@@ -23,5 +23,6 @@ def customise(process):
     )
   )
   
+  process.out_step.outputCommands.append("keep *_siStripDigis_*_*") 
 
   return process
