@@ -17,7 +17,7 @@
 // Original Author:  Efe Yazgan
 // Updated        :  Taylan Yetkin (2008/05/08)
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.h,v 1.6 2008/05/09 10:32:12 efe Exp $
+// $Id: HcalProm.h,v 1.7 2008/05/10 05:03:43 fedor Exp $
 //
 //
 
@@ -125,7 +125,8 @@ class HcalProm : public edm::EDAnalyzer {
       TH1F *h_caloMet_Met;
       TH1F *h_caloMet_Phi;
       TH1F *h_caloMet_SumEt;
-
+      TH1F *h_HT;
+      TH1F *h_MHT;
 
       TH1F* h_muon_vertex_x;
       TH1F* h_muon_px;
