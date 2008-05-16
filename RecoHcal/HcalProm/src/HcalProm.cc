@@ -17,7 +17,7 @@
 // Original Author:  Efe Yazgan
 // Updated        :  Taylan Yetkin (2008/05/08)
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.18 2008/05/10 05:03:43 fedor Exp $
+// $Id: HcalProm.cc,v 1.19 2008/05/14 22:18:01 fedor Exp $
 //
 //
 
@@ -501,12 +501,21 @@ void HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     h_muon_p->Fill(ncm->p());
   }
 
+  float HT = 0;
+  float MHTx = 0;
+  float MHTy = 0;
+  float MHT = 0;
   std::vector < CaloJet > myjet;
     for (CaloJetCollection::const_iterator jetiter = cjet.begin(); jetiter != cjet.end(); jetiter++) {
         h_jet_Pt->Fill(jetiter->pt());
         h_jet_Eta->Fill(jetiter->eta());
         h_jet_Phi->Fill(jetiter->phi());
         myjet.push_back(*jetiter);
+	if (jetiter->pt() > 5.){
+	  HT += jetiter->pt();
+	  MHTx += jetiter->px();
+	  MHTy += jetiter->py();	 
+	} 
     }
     if (myjet.size() > 0) {
         std::stable_sort(myjet.begin(), myjet.end(), CaloJetSort());
@@ -523,6 +532,10 @@ void HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     h_caloMet_Met->Fill(calomet->pt());
     h_caloMet_Phi->Fill(calomet->phi());
     h_caloMet_SumEt->Fill(calomet->sumEt());
+
+    h_HT->Fill(HT);
+    MHT = sqrt(MHTx*MHTx+MHTy*MHTy);
+    h_MHT->Fill(MHT);
 
 
   for (CaloTowerCollection::const_iterator kal=calohbhe.begin(); kal!=calohbhe.end(); kal++){	
@@ -680,6 +693,8 @@ void HcalProm::beginJob(const edm::EventSetup&)
     h_caloMet_Met = JetMetDir.make < TH1F > ("h_caloMet_Met", "MET from CaloTowers", 100, 0, 50);
     h_caloMet_Phi = JetMetDir.make < TH1F > ("h_caloMet_Phi", "MET #phi from CaloTowers", 100, -7, 7);
     h_caloMet_SumEt = JetMetDir.make < TH1F > ("h_caloMet_SumEt", "SumET from CaloTowers", 100, 0, 50);
+    h_MHT = JetMetDir.make < TH1F > ("h_MHT","MHT", 600,-10,200);
+    h_HT = JetMetDir.make < TH1F > ("h_HT","HT", 600,-10,200);
 
     h_eb_rechit_energy = EcalDir.make<TH1F>(" h_eb_rechit_energy","RecHit Energy EB",130,-10,120);
     h_maxebeerec = EcalDir.make<TH1F>("h_maxebeerec","EBEE Muon (GeV)",200,0,15);
@@ -937,6 +952,8 @@ void HcalProm::JetMetHTMLOutput(int runNo, string startTime, string htmlDir, str
             histoHTML(runNo, h_caloMet_Met, "CaloMET", "Events", 92, htmlFile, htmlDir);
             histoHTML(runNo, h_caloMet_Phi, "CaloMet Phi", "Events", 92, htmlFile, htmlDir);
             histoHTML(runNo, h_caloMet_SumEt, "Scalar Sum ET", "Events", 92, htmlFile, htmlDir);
+	    histoHTML(runNo, h_MHT, "MHT", "Events", 92, htmlFile, htmlDir);
+	    histoHTML(runNo, h_HT, "HT", "Events", 92, htmlFile, htmlDir);
             htmlFile << "</tr>" << endl;
         }
 
