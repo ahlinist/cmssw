@@ -1,5 +1,6 @@
 #include <iostream>
 #include <stdlib.h>
+#include "TROOT.h"
 #include "TriggerLineInfo.h"
 
 using namespace std;

@@ -1,6 +1,6 @@
 #include <math.h>
 #include "ResidualStat.h"
-
+#include "TROOT.h"
 
 
 //
