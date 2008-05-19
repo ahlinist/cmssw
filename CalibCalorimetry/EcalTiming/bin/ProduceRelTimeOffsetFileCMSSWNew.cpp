@@ -90,7 +90,7 @@ int main(int argc,  char * argv[]){
 	int temp = int(move);
 	if( fabs(rel_shift*25.+temp) < fabs(rel_shift*25.+temp+1) ){Shift[TTnum]=temp;}
 	else{Shift[TTnum]=temp+1;}
-	if( fabs(move)> 10.){cout<<"!! Large shift ( "<<move<<" samples) required for TT: "<<TTnum<<endl; }
+	if( fabs(move)> 10.){cout<<"!! Large shift ( "<<move<<" ns) required for TT: "<<TTnum<<endl; }
       }
   }//end of file
   TxtFile.close();
@@ -102,8 +102,8 @@ int main(int argc,  char * argv[]){
     FinalOffsets[i]=-100;
     if(Shift[i]>-1000){FinalOffsets[i]=TimeOffset[i]-Shift[i];}
     if(FinalOffsets[i] < 1 ){
-      cout<<"Offsets in TT: "<<i<<" is <1. It will be set to 0"<<endl;
-      FinalOffsets[i]=0;
+      cout<<"Offsets in TT: "<<i<<" is <1. It will be reset to the initial one"<<endl;
+      FinalOffsets[i]=TimeOffset[i];
     }
   }
   
@@ -132,12 +132,12 @@ int main(int argc,  char * argv[]){
   xml_outfile<<"   <DELAY_OFFSET>\n";
   xml_outfile<<"             <SUPERMODULE>"<<SMn <<"</SUPERMODULE>\n";
   xml_outfile<<"             <TRIGGERTOWER>69</TRIGGERTOWER>\n";
-  xml_outfile<<"             <TIME_OFFSET>48</TIME_OFFSET>\n";
+  xml_outfile<<"             <TIME_OFFSET>"<< TimeOffset[69]<<"</TIME_OFFSET>\n";
   xml_outfile<<"    </DELAY_OFFSET>"<<endl;
   xml_outfile<<"   <DELAY_OFFSET>\n";
   xml_outfile<<"             <SUPERMODULE>"<<SMn <<"</SUPERMODULE>\n";
   xml_outfile<<"             <TRIGGERTOWER>70</TRIGGERTOWER>\n";
-  xml_outfile<<"             <TIME_OFFSET>48</TIME_OFFSET>\n";
+  xml_outfile<<"             <TIME_OFFSET>"<< TimeOffset[70]<<"</TIME_OFFSET>\n";
   xml_outfile<<"    </DELAY_OFFSET>"<<endl;
 
   for(int i=1;i<69;i++){
