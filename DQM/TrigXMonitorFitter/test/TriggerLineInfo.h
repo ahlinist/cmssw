@@ -10,6 +10,7 @@
  #include <map>
  #include <iomanip>
  #include <cstdlib>
+ #include "TROOT.h"
  #include "TGraphErrors.h"
  #include "TF1.h" 
  #include "TSystem.h"

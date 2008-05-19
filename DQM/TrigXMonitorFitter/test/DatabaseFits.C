@@ -1,5 +1,5 @@
 #include <iostream>
-
+#include "TROOT.h"
 
 void DatabaseFits(int allTriggers = 1, int defaultRunNumbers = 1)
 {
