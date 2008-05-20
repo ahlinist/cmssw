@@ -142,7 +142,9 @@ namespace edm
 
   void ProcessDesc::writeBookkeeping(const std::string & name)
   {
-    pset_->addParameter(name, bookkeeping_[name]);
+    std::vector<std::string> sortedString = bookkeeping_[name];
+    std::sort(sortedString.begin(), sortedString.end());
+    pset_->addParameter(name, sortedString);
   }
  
 
