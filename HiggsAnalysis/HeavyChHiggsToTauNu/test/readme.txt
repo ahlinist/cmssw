@@ -83,7 +83,10 @@
 				Edit RecoJets/Configuration/data/GenJetParticles.cff and
 				remove double quotes from line 'InputTag src = "genParticles"'
 13.5.2008/S.Lehti CMSSW_1_6_11	Bugfix: myTrackConverter, loop over hits
- 
+20.5.2008/S.Lehti CMSSW_1_6_11  Dataformat changed, since root doesnt support 2 level of loops
+                                in addition to event loop. Therefore the hits associated to tracks
+                                are moved from MyTrack to MyJet, and a label associating a hit to
+                                a given track is added in the MyHit data members. 
 
 	How to compile:
 	-compile
