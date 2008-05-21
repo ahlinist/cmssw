@@ -41,9 +41,10 @@ bTagCommonBlock = cms.PSet(
     ptRanges = cms.vdouble(50.0, 80.0, 120.0),
     # eta and pt ranges
     etaRanges = cms.vdouble(0.0, 1.4, 2.4),
-    ptRecJetMax = cms.double(400.0),
+    ptRecJetMax = cms.double(99999.0),
     ptPartonMax = cms.double(99999.0),
     producePs = cms.bool(False),
     inputfile = cms.string('')
 )
+
 

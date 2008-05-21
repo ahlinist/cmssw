@@ -7,6 +7,7 @@ from RecoBTag.Analysis.bTagTrackIPAnalysis_cff import *
 from RecoBTag.Analysis.bTagCombinedSVAnalysis_cff import *
 from RecoBTag.Analysis.bTagTrackCountingAnalysis_cff import *
 from RecoBTag.Analysis.bTagTrackProbabilityAnalysis_cff import *
+from RecoBTag.Analysis.bTagTrackBProbabilityAnalysis_cff import *
 from RecoBTag.Analysis.bTagGenericAnalysis_cff import *
 from RecoBTag.Analysis.bTagSimpleSVAnalysis_cff import *
 from RecoBTag.Analysis.bTagSoftLeptonAnalysis_cff import *
@@ -23,8 +24,9 @@ bTagAnalysis = cms.EDAnalyzer("BTagPerformanceAnalyzer",
     ), 
         cms.PSet(
             bTagCombinedSVAnalysisBlock,
-            tagInfos = cms.VInputTag(cms.InputTag("impactParameterTagInfos"), cms.InputTag("secondaryVertexTagInfos")),
+            ipTagInfos = cms.InputTag("impactParameterTagInfos"),
             type = cms.string('GenericMVA'),
+            svTagInfos = cms.InputTag("secondaryVertexTagInfos"),
             label = cms.InputTag("combinedSecondaryVertex")
         ), 
         cms.PSet(
@@ -40,7 +42,7 @@ bTagAnalysis = cms.EDAnalyzer("BTagPerformanceAnalyzer",
             label = cms.InputTag("jetProbabilityBJetTags")
         ), 
         cms.PSet(
-            bTagProbabilityAnalysisBlock,
+            bTagBProbabilityAnalysisBlock,
             label = cms.InputTag("jetBProbabilityBJetTags")
         ), 
         cms.PSet(
@@ -72,5 +74,6 @@ bTagAnalysis = cms.EDAnalyzer("BTagPerformanceAnalyzer",
             label = cms.InputTag("softElectronBJetTags")
         ))
 )
+
 
 
