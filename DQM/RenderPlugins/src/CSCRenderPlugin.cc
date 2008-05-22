@@ -2219,9 +2219,21 @@ void CSCRenderPlugin::postDraw( TCanvas *c, const DQMNet::CoreObject &o, const V
 
   c->cd();
 
+  if(REMATCH(".*Summary/Summary_EMU$", o.name)) {
+    summaryMap.drawDetector(obj); 
+    return;
+  }
+
+  if(REMATCH(".*Summary/Summary_ME[1234]$", o.name)) {
+    std::string station_str = o.name;
+    REREPLACE(".*Summary/Summary_ME([1234])$", station_str, "$1");
+    summaryMap.drawStation(atoi(station_str.c_str()), obj); 
+    return;
+  }
+
   if(REMATCH(".*Summary/CSC_[a-zA-Z0-9_-]+$", o.name)) {
     TH2* obj2 = dynamic_cast<TH2*>(obj->Clone());
-    ChamberMap(obj2); 
+    chamberMap.draw(obj2); 
     return;
   }
 
