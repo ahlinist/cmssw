@@ -4,30 +4,36 @@
 
 #include <iostream>
 
+//________________________________________________________________________________________
 EventSelectorAND::EventSelectorAND (const edm::ParameterSet& pset) :
-  SusyEventSelector(pset), 
-  sequence_(pset.getParameter< std::vector<std::string> >("components"),
-            pset.getParameter<edm::ParameterSet>("_AllFilters"))
+  CombinedEventSelector(pset)
 {
-
-  // Add all variables from 
-  edm::LogInfo("EventSelectorAND") << "constructed with " 
-                                   << sequence_.size() << " components";
+  edm::LogInfo("EventSelectorAND") << "constructed with " << sequence_.size() << " components";
 }
 
+//________________________________________________________________________________________
 bool
 EventSelectorAND::select (const edm::Event& event) const
 {
-  //
   // logical AND of all results
-  //
+
+  bool result(true);  // Default: all passed
   const std::vector<const SusyEventSelector*>& selectors = sequence_.selectors();
   for ( unsigned int i=0; i<selectors.size(); ++i ) 
     if ( !selectors[i]->select(event) ) {
       LogDebug("EventSelectorAND") << "Event rejected by " << selectors[i]->name();
-      return false;
+      result = false; // not passed!
     }
-  //
-  LogDebug("EventSelectorAND") << "Event accepted";
-  return true;
+
+  if ( result ) LogDebug("EventSelectorAND") << "Event accepted";
+
+  return result;
+
 }
+
+//________________________________________________________________________________________
+#include "FWCore/PluginManager/interface/ModuleDef.h"
+#include "FWCore/Framework/interface/MakerMacros.h"
+#include "FWCore/Framework/interface/ModuleFactory.h"
+#include "SusyAnalysis/EventSelector/interface/EventSelectorFactory.h"
+DEFINE_EDM_PLUGIN(EventSelectorFactory, EventSelectorAND, "EventSelectorAND");

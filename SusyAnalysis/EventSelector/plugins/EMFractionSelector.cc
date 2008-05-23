@@ -5,11 +5,13 @@
 
 #include <vector>
 
-//__________________________________________________________________________________________________
+//________________________________________________________________________________________
 EMFractionSelector::EMFractionSelector (const edm::ParameterSet& pset) :
   SusyEventSelector(pset),
-  jetTag_( pset.getParameter<edm::InputTag>("src") ),
-  minFraction_( pset.getParameter<double>("minFraction") )
+  jetTag_( pset.getParameter<edm::InputTag>("jetTag") ),
+  minFraction_( pset.getParameter<double>("minFraction") ),
+  maxEta_     ( pset.getParameter<double>("maxEta")      ),
+  minPt_      ( pset.getParameter<double>("minPt")       )
 {
 
   // Store computed fraction
@@ -17,7 +19,7 @@ EMFractionSelector::EMFractionSelector (const edm::ParameterSet& pset) :
 
 }
 
-//__________________________________________________________________________________________________
+//________________________________________________________________________________________
 bool
 EMFractionSelector::select (const edm::Event& event) const
 {
@@ -39,8 +41,10 @@ EMFractionSelector::select (const edm::Event& event) const
   for ( std::vector< pat::Jet >::const_iterator iJet = jetHandle->begin();
         iJet != jetHandle->end(); ++iJet )
     {
-      etFrac += iJet->et()*(iJet->emEnergyFraction());
-      etSum  += iJet->et();
+      if ( iJet->pt() > minPt_ && fabs(iJet->eta()) < maxEta_ ) {
+        etFrac += iJet->et()*(iJet->emEnergyFraction());
+        etSum  += iJet->et();
+      }
     }
   
   float emFraction = etFrac/etSum;

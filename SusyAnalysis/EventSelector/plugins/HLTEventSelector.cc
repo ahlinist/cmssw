@@ -12,58 +12,65 @@ HLTEventSelector::HLTEventSelector (const edm::ParameterSet& pset) :
   // trigger path names
   pathNames_ = pset.getParameter< std::vector<std::string> >("pathNames");
 
+  // Add all path names as variables
+  for ( std::vector<std::string>::const_iterator i=pathNames_.begin();
+	i!=pathNames_.end(); ++i )
+    {
+      defineVariable( *i );
+    }
+
   edm::LogInfo("HLTEventSelector") << "constructed with \n"
-				   << "  src = " << triggerResults_ << "\n"
+				   << "  source     = " << triggerResults_ << "\n"
 				   << "  #pathnames = " << pathNames_.size();
 }
 
 bool
 HLTEventSelector::select (const edm::Event& event) const
 {
-  // reset cached variables
+  // Reset cached variables
   resetVariables();
-  //
-  // get the trigger results and check validity
-  //
+
+  // Get the trigger results and check validity
   edm::Handle<edm::TriggerResults> hltHandle;
   event.getByLabel(triggerResults_, hltHandle);
   if ( !hltHandle.isValid() ) {
     edm::LogWarning("HLTEventSelector") << "No trigger results for InputTag " << triggerResults_;
     return false;
   }
-  //
-  // get results
-  //
+
+  // Get results
   edm::TriggerNames trgNames;
   trgNames.init(*hltHandle);
   unsigned int trgSize = trgNames.size();
-//   static int first(true);
-//   if ( first ) {
-//     first = false;
-//     std::cout << "Trigger menu" << std::endl;
-//     for ( unsigned int i=0; i<trgSize; ++i ) {
-//       std::cout << trgNames.triggerName(i) << std::endl;
-//     }
-//   }
-//
-// example for OR of all specified triggers
-//
+  bool result(false);
+
+  // Example for OR of all specified triggers
   for ( std::vector<std::string>::const_iterator i=pathNames_.begin();
 	i!=pathNames_.end(); ++i ) {
-    // get index
+    // Get index
     unsigned int index = trgNames.triggerIndex(*i);
     if ( index==trgSize ) {
       edm::LogWarning("HLTEventSelector") << "Unknown trigger name " << *i;
-//       return false;
       continue;
     }
-//     if ( !hltHandle->accept(index) )  return false;
     if ( hltHandle->accept(index) ) {
       LogDebug("HLTEventSelector") << "Event selected by " << *i;
-      return true;
+      result = true;
+      setVariable( *i, true );
+    } else {
+      setVariable( *i, false );
     }
   }
-//   return true;
-  LogDebug("HLTEventSelector") << "Event rejected";
-  return false;
+
+  if (!result) LogDebug("HLTEventSelector") << "Event rejected";
+
+  return result;
 }
+
+
+//________________________________________________________________________________________
+#include "FWCore/PluginManager/interface/ModuleDef.h"
+#include "FWCore/Framework/interface/MakerMacros.h"
+#include "FWCore/Framework/interface/ModuleFactory.h"
+#include "SusyAnalysis/EventSelector/interface/EventSelectorFactory.h"
+DEFINE_EDM_PLUGIN(EventSelectorFactory, HLTEventSelector, "HLTEventSelector");
