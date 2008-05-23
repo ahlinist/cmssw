@@ -1,9 +1,11 @@
 #ifndef SusyAnalysis_BJetEventSelector_h_
 #define SusyAnalysis_BJetEventSelector_h_
-/** Trivial example for a b-jet selector.
- *  To be modified for analysis!
- */
-// Original author: W. Adam, 10/4/08
+/// Trivial example for a b-jet selector.
+/// To be modified for analysis!
+///
+/// Original author: W. Adam, 10/4/08
+///
+/// $Id: BJetEventSelector.h,v 1.3 2008/05/22 08:32:26 fronga Exp $
 
 // system include files
 #include <memory>

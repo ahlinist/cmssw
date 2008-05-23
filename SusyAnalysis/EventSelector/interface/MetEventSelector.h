@@ -1,13 +1,11 @@
-#ifndef SusyAnalysis_HLTEventSelector_h_
-#define SusyAnalysis_HLTEventSelector_h_
-
-/// Trivial example for a HLT selector.
-///
+#ifndef SusyAnalysis_MetEventSelector_h_
+#define SusyAnalysis_MetEventSelector_h_
+/// Trivial example for a MET selector.
 /// To be modified for analysis!
 ///
 /// Original author: W. Adam, 10/4/08
 ///
-/// $Id: HLTEventSelector.h,v 1.3 2008/05/22 08:32:26 fronga Exp $
+/// $Id: METEventSelector.h,v 1.3 2008/05/22 08:32:26 fronga Exp $
 
 // system include files
 #include <memory>
@@ -22,13 +20,13 @@
 #include <vector>
 #include <string>
 
-class HLTEventSelector : public SusyEventSelector {
+class MetEventSelector : public SusyEventSelector {
 public:
-  HLTEventSelector (const edm::ParameterSet&);
+  MetEventSelector (const edm::ParameterSet&);
   virtual bool select (const edm::Event&) const;
-  virtual ~HLTEventSelector () {}
+  virtual ~MetEventSelector () {}
 private:
-  edm::InputTag triggerResults_;        ///< tag for input collection
-  std::vector<std::string> pathNames_;  ///< trigger path names (ORed)
+  edm::InputTag metTag_;      ///< tag for input collection
+  float minMet_;              ///< lower cut on MET
 };
 #endif
