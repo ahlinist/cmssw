@@ -1,10 +1,12 @@
 #ifndef EventSelector_SelectorSequence_h_
 #define EventSelector_SelectorSequence_h_
 
-/** Class regrouping a series of selector modules. The modules are instantiated 
- *  according to specifications in the configuration files.
- */
-// Original author: W. Adam, 10/4/08
+/// Class regrouping a series of selector modules. The modules are instantiated 
+/// according to specifications in the configuration files.
+///
+/// Original author: W. Adam, 10/4/08
+///
+/// $Id: SelectorSequence.h,v 1.9 2008/05/22 08:32:26 fronga Exp $ 
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
@@ -18,7 +20,7 @@ class SelectorSequence {
 public:
   explicit SelectorSequence (const edm::ParameterSet&);
   explicit SelectorSequence (const std::vector<std::string>& sequence,
-			     const edm::ParameterSet& filters);
+			     const edm::ParameterSet& selectors);
   ~SelectorSequence();
   
   /// number of selectors
@@ -75,7 +77,7 @@ public:
 
 private:
   void createSelectors (const std::vector<std::string>& sequence,
-			const edm::ParameterSet& filters);
+			const edm::ParameterSet& selectors);
   inline bool newEvent (const edm::Event& event) const {return event.id()!=currentEventId_;}
   
 private:

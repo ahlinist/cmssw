@@ -5,9 +5,7 @@
 ///
 /// Calculates the total EM fraction of all jets
 ///
-
-// system include files
-#include <memory>
+/// $Id: EMFractionSelector.h,v 1.3 2008/05/22 08:32:26 fronga Exp $
 
 // user include files
 #include "SusyAnalysis/EventSelector/interface/SusyEventSelector.h"
@@ -24,7 +22,9 @@ public:
 
 private:
   edm::InputTag jetTag_; ///< tag for input collection
-  float minFraction_;    ///< lower Et cuts (defines also min. #jets)
+  float minFraction_;    ///< lower EM fraction cut
+  float maxEta_;         ///< upper |eta| cut on all jets
+  float minPt_;          ///< lower pt cut on all jets
 
 };
 #endif

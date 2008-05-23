@@ -4,7 +4,8 @@
 /// Selector for presence of a primary vertex.
 ///
 /// Just checks that there is (at least) one primary vertex.
-/// $Id $
+///
+/// $Id: PrimaryVertexEventSelector.h,v 1.2 2008/05/22 08:32:26 fronga Exp $
 
 // system include files
 #include <memory>

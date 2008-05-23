@@ -4,6 +4,7 @@
 ///
 /// Computes HT from all jets and cuts on it
 ///
+/// $Id: HTEventSelector.h,v 1.2 2008/05/22 08:32:26 fronga Exp $
 
 // system include files
 #include <memory>
