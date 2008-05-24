@@ -6,8 +6,6 @@
 #include <cassert>
 //#include "DQMServices/Core/interface/MonitorElement.h"
 
-//#include "DQM/EcalCommon/interface/ColorPalette.h"
-//#include <DQM/EcalCommon/interface/Numbers.h>
 #include "DQM/RenderPlugins/src/RPCRenderPlugin.h"
 
 
