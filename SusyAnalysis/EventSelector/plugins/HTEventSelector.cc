@@ -7,7 +7,7 @@
 //__________________________________________________________________________________________________
 HTEventSelector::HTEventSelector (const edm::ParameterSet& pset) :
   SusyEventSelector(pset),
-  jetTag_( pset.getParameter<edm::InputTag>("jet") ),
+  jetTag_( pset.getParameter<edm::InputTag>("jetTag") ),
   minHT_ ( pset.getParameter<double>("minHT") )
 { 
 
