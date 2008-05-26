@@ -9,7 +9,7 @@ class Constituent:
             raise StandardError , "not a well formed Constituent: "+constString
         self.theDescription = line.split('"')[1]
         self.theName = line.split('"')[3]
-        self.theCount = int(line.split('"')[4].split()[1])
+        self.theCount = float(line.split('"')[4].split()[1])
         self.theVolume = float(line.split('"')[4].split()[0]) * self.theCount
         self.theType = line.split('"')[4].split()[2]
         self.theDensity = float(predefinedMaterials[self.theName][2])
@@ -142,7 +142,7 @@ def getTwiki(materials,config):
         result += "  | *Description* | *Material Name* | *Volume* | *Mass* | *Count* | *Type* | *X<sub>0</sub>* | *&lambda;<sub>0</sub>* |\n"
         result += '  | ** | ** | *cm<sup>3</sup>* | *g* | ** | ** | *g cm<sup>-2</sup>* | *g cm<sup>-2</sup>* |\n'
         for const in mat.theConstituents:
-            result += "  | =%s= | =%s= | %.2e | %.2e | %i | %s | %.2f | %.2f |\n" % ( const.theDescription , const.theName , const.theVolume , const.theMass , const.theCount , const.theType , const.theX0 , const.theL0 )
+            result += "  | =%s= | =%s= | %.2e | %.2e | %.2f | %s | %.2f | %.2f |\n" % ( const.theDescription , const.theName , const.theVolume , const.theMass , const.theCount , const.theType , const.theX0 , const.theL0 )
 #            result += "  | ="+const.theDescription+"= | ="+const.theName+"= | "+str(const.theVolume)+" | "+str(const.theMass)+" | "+str(const.theCount)+" | "+const.theType+" | "+str(const.theX0)+" | "+str(const.theL0)+" |\n"
         result += "\n"
 
