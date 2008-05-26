@@ -11,8 +11,8 @@
 //________________________________________________________________________________________
 MetJetEventSelector::MetJetEventSelector (const edm::ParameterSet& pset) :
   SusyEventSelector(pset),
-  metTag_( pset.getParameter<edm::InputTag>("met") ),
-  jetTag_( pset.getParameter<edm::InputTag>("jet") ),
+  metTag_( pset.getParameter<edm::InputTag>("metTag") ),
+  jetTag_( pset.getParameter<edm::InputTag>("jetTag") ),
   metDphiMin_    ( pset.getParameter<double>("metDPhiMin")     ),
   dPhiJet2MetMin_( pset.getParameter<double>("dPhiJet2MetMin") ),
   rDistJetsMin_  ( pset.getParameter<double>("rDistJetsMin")   )
@@ -21,6 +21,7 @@ MetJetEventSelector::MetJetEventSelector (const edm::ParameterSet& pset) :
   // Define all variables we want to cache (and eventually plot...)
   defineVariable("metDphi");
   defineVariable("numberOfJets");
+  defineVariable("dPhiJet1Met");
   defineVariable("dPhiJet2Met");
   defineVariable("R1");
   defineVariable("R2");
@@ -71,22 +72,20 @@ MetJetEventSelector::select (const edm::Event& event) const
   // MET "isolation"
   float metIso = 100.;
   for ( int iJet=0; iJet<4; ++iJet) {
-    // FIXME: new deltaPhi function now (>2.1) accepts collection
     double deltaPhiAbs = fabs( reco::deltaPhi(jets[iJet].phi(),mets[0].phi()) );
     if ( metIso > deltaPhiAbs ) metIso = deltaPhiAbs;
   }
   setVariable("metDphi",metIso);
 
-  // MET and leading jet deltaPhi (in degrees!)
-  // FIXME: new deltaPhi function now (>2.1) accepts collection
-  double dPhiJet2Met = TMath::RadToDeg()*fabs( reco::deltaPhi(jets[1].phi(),mets[0].phi()) ); 
-  setVariable("dPhiJet2Met",dPhiJet2Met);
+  // MET and leading jets deltaPhi
+  double dPhiJet1Met = fabs( reco::deltaPhi(jets[0].phi(),mets[0].phi()) ); 
+  setVariable("dPhiJet1Met",dPhiJet1Met); 
+  double dPhiJet2Met = fabs( reco::deltaPhi(jets[1].phi(),mets[0].phi()) ); 
+  setVariable("dPhiJet2Met",dPhiJet2Met); 
 
   // R1 & R2
-  double dphi1 = reco::deltaPhi(jets[0].phi(),mets[0].phi());
-  double dphi2 = reco::deltaPhi(jets[1].phi(),mets[0].phi());
-  float R1 = sqrt( TMath::Power(dphi2,2) + TMath::Power(dphi1-TMath::Pi(),2) );
-  float R2 = sqrt( TMath::Power(dphi1,2) + TMath::Power(dphi2-TMath::Pi(),2) );
+  float R1 = sqrt( TMath::Power(dPhiJet2Met,2) + TMath::Power(dPhiJet1Met-TMath::Pi(),2) );
+  float R2 = sqrt( TMath::Power(dPhiJet1Met,2) + TMath::Power(dPhiJet2Met-TMath::Pi(),2) );
   setVariable("R1",R1);
   setVariable("R2",R2);
   
