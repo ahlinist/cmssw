@@ -21,7 +21,7 @@
 
 bool CSCRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &i ) {
 
-  if( o.name.find( "CSC/" ) < o.name.size() ) {
+  if ( o.name.find( "CSC/" ) < o.name.size() ) {
     return true;
   } 
 
@@ -2219,20 +2219,21 @@ void CSCRenderPlugin::postDraw( TCanvas *c, const DQMNet::CoreObject &o, const V
 
   c->cd();
 
-  if(REMATCH(".*Summary/Summary_EMU$", o.name)) {
-    summaryMap.drawDetector(obj); 
+  if(REMATCH(".*EventInfo/reportSummaryMap$", o.name)) {
+    TH2* tmp = dynamic_cast<TH2*>(obj);
+    summaryMap.drawDetector(tmp); 
     return;
   }
 
   if(REMATCH(".*Summary/Summary_ME[1234]$", o.name)) {
     std::string station_str = o.name;
     REREPLACE(".*Summary/Summary_ME([1234])$", station_str, "$1");
-    summaryMap.drawStation(atoi(station_str.c_str()), obj); 
+    summaryMap.drawStation(obj, atoi(station_str.c_str())); 
     return;
   }
 
   if(REMATCH(".*Summary/CSC_[a-zA-Z0-9_-]+$", o.name)) {
-    TH2* obj2 = dynamic_cast<TH2*>(obj->Clone());
+    TH2* obj2 = dynamic_cast<TH2*>(obj);
     chamberMap.draw(obj2); 
     return;
   }
