@@ -7,7 +7,7 @@ use warnings;
 
 my @dirs = qw (./txmon_new ./txmon_old);
 my $prefix = "TXMon_txsec";
-# set prefix2 to prefix1 and delete the original prefix 1 when ready
+my $suffix = "root";
 
 
 (my $prog = $0) =~ s|.+/||g;
@@ -98,7 +98,7 @@ foreach my $run (@runs)
   {
     foreach my $dir (@dirs)
       {
-        my @files = glob ("$dir/$prefix$run*root");
+        my @files = glob ("$dir/$prefix$run*$suffix");
         if (@files)
 	  {
             push @rootfiles, @files;

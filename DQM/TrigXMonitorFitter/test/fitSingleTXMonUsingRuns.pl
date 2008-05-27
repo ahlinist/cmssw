@@ -7,6 +7,7 @@ use warnings;
 my $directory = "./";
 my @dirs = qw (./txmon_new ./txmon_old);
 my $prefix = "TXMon_txsec";
+my $suffix = "root";
 my $depositdir = "./singles";
 
 
@@ -117,7 +118,7 @@ foreach my $run (@runs)
 {
     foreach my $dir (@dirs)
     {
-        my @files = glob ("$dir/$prefix$run*root");
+        my @files = glob ("$dir/$prefix$run*$suffix");
         if (@files)
         {
             push @rootfiles, @files;
