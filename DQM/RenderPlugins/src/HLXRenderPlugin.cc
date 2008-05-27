@@ -8,11 +8,12 @@
 //
 // Original Author:  
 //         Created:  Sat Apr 19 20:02:57 CEST 2008
-// $Id$
+// $Id: HLXRenderPlugin.cc,v 1.4 2008/05/13 07:13:53 neadam Exp $
 //
 
 // system include files
 #include <iostream>
+#include <cassert>
 
 // user include files
 #include "DQM/RenderPlugins/src/HLXRenderPlugin.h"
