@@ -1,12 +1,14 @@
-// $Id: L1TdeRCTRenderPlugin.cc,v 1.3 2008/05/08 12:14:24 lorenzo Exp $
+// $Id: L1TdeRCTRenderPlugin.cc,v 1.4 2008/05/09 16:52:17 ameyer Exp $
 
 /*!
   \file L1TdeRCTRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author A.Savin 
-  \version $Revision: 1.3 $
-  \date $Date: 2008/05/08 12:14:24 $
+  \version $Revision: 1.4 $
+  \date $Date: 2008/05/09 16:52:17 $
 */
+
+#include <cassert>
 
 #include "TH1F.h"
 #include "TH2F.h"
