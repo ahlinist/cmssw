@@ -534,6 +534,39 @@ private:
   }
 
 
+  // ----------------------------------------------------------------------
+  // Int64, Vint64
+
+  template<>
+  inline
+  boost::int64_t
+  ParameterSet::getUntrackedParameter<boost::int64_t>(std::string const& name, boost::int64_t const& defaultValue) const {
+    Entry const* entryPtr = retrieveUntracked(name);
+    return entryPtr == 0 ? defaultValue : entryPtr->getInt64();
+  }
+
+  template<>
+  inline
+  boost::int64_t
+  ParameterSet::getUntrackedParameter<boost::int64_t>(std::string const& name) const {
+    return getEntryPointerOrThrow_(name)->getInt64();
+  }
+
+  template<>
+  inline
+  std::vector<boost::int64_t>
+  ParameterSet::getUntrackedParameter<std::vector<boost::int64_t> >(std::string const& name, std::vector<boost::int64_t> const& defaultValue) const {
+    Entry const* entryPtr = retrieveUntracked(name);
+    return entryPtr == 0 ? defaultValue : entryPtr->getVInt64();
+  }
+
+  template<>
+  inline
+  std::vector<boost::int64_t>
+  ParameterSet::getUntrackedParameter<std::vector<boost::int64_t> >(std::string const& name) const {
+    return getEntryPointerOrThrow_(name)->getVInt64();
+  }
+
   
   // ----------------------------------------------------------------------
   // Double, vDouble
