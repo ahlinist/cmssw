@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.12 2008/05/07 15:49:35 battilan Exp $
+// $Id: DTRenderPlugin.cc,v 1.13 2008/05/24 08:53:00 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.12 $
-  \date $Date: 2008/05/07 15:49:35 $
+  \version $Revision: 1.13 $
+  \date $Date: 2008/05/24 08:53:00 $
 */
 
 #include "TProfile2D.h"
@@ -15,6 +15,7 @@
 #include <cassert>
 
 #include "DQM/RenderPlugins/src/DTRenderPlugin.h"
+
 
 bool DTRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &i ) {
  
@@ -73,22 +74,72 @@ void DTRenderPlugin::preDrawTProfile( TCanvas *c, const DQMNet::CoreObject &o ) 
 void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   TH2* obj = dynamic_cast<TH2*>( o.object );
-
   assert( obj );
 
   // This applies to all
-  gStyle->SetCanvasBorderMode( 0 );
-  gStyle->SetPadBorderMode( 0 );
-  gStyle->SetPadBorderSize( 0 );
+  gStyle->SetCanvasBorderMode(0);
+  gStyle->SetPadBorderMode(0);
+  gStyle->SetPadBorderSize(0);
   //    (data->pad)->SetLogy( 0 );
-  gStyle->SetOptStat( 0 );
-  gStyle->SetPalette( 1 );
-  obj->SetStats( kFALSE );
-  
-  //obj->SetOption( "box" );
+  gStyle->SetOptStat(0);
   gStyle->SetPalette(1);
-  obj->SetOption( "colz" );
+  obj->SetStats(kFALSE);
+  obj->SetOption("colz");
   gPad->SetLogz(0);
+
+  if( o.name.find("ROSSummary") < o.name.size() ) {
+    gPad->SetGrid(1,1);
+    obj->GetXaxis()->SetLabelSize(0.07);
+    obj->GetYaxis()->SetLabelSize(0.07);
+    obj->GetXaxis()->LabelsOption("v");
+    gPad->SetBottomMargin(0.25);
+    gPad->SetLeftMargin(0.15);
+  }
+  
+  if( o.name.find("OccupancyAllHits_W") < o.name.size() ) {
+    obj->GetXaxis()->SetNdivisions(13,true);
+    obj->GetYaxis()->SetNdivisions(5,true);
+    obj->GetXaxis()->CenterLabels();
+    obj->GetYaxis()->CenterLabels();
+    gPad->SetGrid(1,1);
+    obj->GetXaxis()->SetLabelSize(0.07);
+    obj->GetYaxis()->SetLabelSize(0.07);
+
+//     obj->GetXaxis()->LabelsOption("v");
+    gPad->SetBottomMargin(0.1);
+    gPad->SetLeftMargin(0.12);
+    gPad->SetRightMargin(0.12);
+
+  } else if(o.name.find("OccupancySummary") < o.name.size()) {
+    obj->GetXaxis()->SetNdivisions(13,true);
+    obj->GetYaxis()->SetNdivisions(5,true);
+    obj->GetXaxis()->CenterLabels();
+    obj->GetYaxis()->CenterLabels();
+    gPad->SetGrid(1,1);
+    obj->GetXaxis()->SetLabelSize(0.07);
+    obj->GetYaxis()->SetLabelSize(0.07);
+    obj->GetXaxis()->LabelsOption("v");
+    gPad->SetBottomMargin(0.1);
+    gPad->SetLeftMargin(0.12);
+    gPad->SetRightMargin(0.12);
+    obj->SetMinimum(-0.00000001);
+    obj->SetMaximum(5.0);
+
+    int colorError1[3];
+    colorError1[0] = 416;// kGreen
+    colorError1[1] = 400;// kYellow
+    colorError1[2] = 800;// kOrange
+    colorError1[3] = 625;
+    colorError1[4] = 632;// kRed
+    gStyle->SetPalette(5, colorError1);
+
+  } else if( o.name.find("Occupancy" ) < o.name.size() ) {
+    gPad->SetGrid(0,4);
+    obj->GetXaxis()->SetLabelSize(0.07);
+    obj->GetYaxis()->SetLabelSize(0.07);
+    gPad->SetLeftMargin(0.15);
+  }
+
 
   if( o.name.find( "FED770_EventLenght" ) < o.name.size() ) {
     gStyle->SetOptStat( 1111111 );
@@ -97,12 +148,7 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( o.name.find( "FED770_ROS" ) < o.name.size() ) {
-    obj->GetXaxis()->LabelsOption("d");
-    obj->GetXaxis()->SetLabelSize(0.05);
-    obj->GetYaxis()->SetLabelSize(0.05);
-    return;
-  }
+
 
   if( o.name.find( "SCTriggerBX" ) < o.name.size() ) {
     obj->GetYaxis()->SetLabelSize(0.1);
@@ -195,19 +241,15 @@ void DTRenderPlugin::preDrawTH1( TCanvas *c, const DQMNet::CoreObject &o ) {
     if (line) {
       if (o.flags & DQMNet::DQM_FLAG_REPORT_ERROR) {
 	line->SetLineColor(TColor::GetColor("#CC0000"));
-	//	  std::cout << name << " has error" << std::endl;
       }
       else if (o.flags & DQMNet::DQM_FLAG_REPORT_WARNING) {
 	line->SetLineColor(TColor::GetColor("#993300"));
-	//	  std::cout << name << " has worning" << std::endl;
       }
       else if (o.flags & DQMNet::DQM_FLAG_REPORT_OTHER) { 
 	line->SetLineColor(TColor::GetColor("#FFCC00"));
-	//	  std::cout << name << " has other report" << std::endl;
       }
       else {
 	line->SetLineColor(TColor::GetColor("#000000"));
-	//	  std::cout << name << " has nothing" << std::endl; 
       }  
     }   
 
