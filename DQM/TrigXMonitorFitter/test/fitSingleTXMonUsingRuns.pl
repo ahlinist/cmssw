@@ -77,8 +77,16 @@ if (! $base)
 {
     ($base = $triggername) =~ s/\&/_and_/g;
     $base .= ".$$";
-    $base = "$depositdir/$base";
+    $base = "$depositdir/$triggername/$base";
 }
+
+
+my $depositfolder = "$depositdir/$triggername";
+my $dircommand = "mkdir $depositfolder";
+print $dircommand, "\n";
+system $dircommand;
+
+
 
 
 my @runs;
@@ -146,14 +154,14 @@ if (@rootfiles)
 
   if (!$noconvert)
     {
-      my $convertcommand = "./convertAllEps.pl -m $base -r --dpi=50";
+      my $convertcommand = "./convertAllEps.pl -m $depositfolder/ -r --dpi=50";
       print $convertcommand, "\n";
       system $convertcommand;
       print "Done converting images\n";
     }
   if (!$noinput)
     {
-      my $inputcommand = "cp @rootfiles $depositdir/";
+      my $inputcommand = "cp @rootfiles $depositfolder/";
       print $inputcommand, "\n";
       system $inputcommand;
       print "Done copying input root files\n";
