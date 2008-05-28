@@ -4,7 +4,7 @@
 ///
 /// Computes HT from all jets and cuts on it
 ///
-/// $Id: HTEventSelector.h,v 1.2 2008/05/22 08:32:26 fronga Exp $
+/// $Id: HTEventSelector.h,v 1.2 2008/05/23 15:48:21 fronga Exp $
 
 // system include files
 #include <memory>
@@ -24,6 +24,7 @@ public:
 
 private:
   edm::InputTag jetTag_; ///< tag for input collection
-  float minHT_;          ///< lower Et cuts (defines also min. #jets)
+  float minHT_;          ///< lower HT cut 
+  float minPt_;          ///< minimum Pt of jets taken into account
 };
 #endif

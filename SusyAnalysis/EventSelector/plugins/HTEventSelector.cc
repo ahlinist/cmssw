@@ -8,7 +8,8 @@
 HTEventSelector::HTEventSelector (const edm::ParameterSet& pset) :
   SusyEventSelector(pset),
   jetTag_( pset.getParameter<edm::InputTag>("jetTag") ),
-  minHT_ ( pset.getParameter<double>("minHT") )
+  minHT_ ( pset.getParameter<double>("minHT") ),
+  minPt_ ( pset.getParameter<double>("minPt") )
 { 
 
   // Store computed HT
@@ -30,11 +31,11 @@ HTEventSelector::select (const edm::Event& event) const
     return false;
   }
 
-  // Sum over jet Ets
+  // Sum over jet Ets (with cut on min. pt)
   float myHT = 0.0;
   std::vector<pat::Jet>::const_iterator iJet = jetHandle->begin();
   while ( iJet != jetHandle->end() ) {
-    myHT += iJet->et();
+    if ( iJet->pt() > minPt_ ) myHT += iJet->et();
     ++iJet;
   }
 
