@@ -15,6 +15,7 @@
  * Dorian Kcira : added flag to allow reading of generic LH files without MadGraph specifics (06/02/2008)
  ***************************************/
 #include "GeneratorInterface/MadGraphInterface/interface/MadGraphSource.h"
+#include "SimDataFormats/GeneratorProducts/interface/LHECommonBlocks.h"
 #include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
@@ -24,6 +25,8 @@
 
 #include <iostream>
 #include <fstream> 
+#include <cstring>
+#include <cstdio>
 #include "time.h"
 
 // Generator modifications
@@ -42,34 +45,6 @@ extern "C" {
 
 extern "C"{
  void eventtree_();
-}
-
-/*
-      INTEGER MAXNUP
-      PARAMETER (MAXNUP=500)
-      INTEGER NUP,IDPRUP,IDUP,ISTUP,MOTHUP,ICOLUP
-      DOUBLE PRECISION XWGTUP,SCALUP,AQEDUP,AQCDUP,PUP,VTIMUP,SPINUP
-
-      COMMON/HEPEUP/NUP,IDPRUP,XWGTUP,SCALUP,AQEDUP,AQCDUP,IDUP(MAXNUP),
-     &   ISTUP(MAXNUP),MOTHUP(2,MAXNUP),ICOLUP(2,MAXNUP),PUP(5,MAXNUP),
-     &   VTIMUP(MAXNUP),SPINUP(MAXNUP)
-*/
-extern "C" {
- extern struct HEPEUP{
- int nup;
- int idprup;
- double xwgtup;
- double scalup;
- double aqedup;
- double aqcdup;
- int idup[500];
- int istup[500];
- int mothup[500][2];
- int icolup[500][2];
- double pup[500][5];
- double vtimup[500];
- double spinup[500];
- }hepeup_;
 }
 
 /*
@@ -100,12 +75,19 @@ extern "C" {
       LOGICAL minimalLH
       common /SOURCEPRS/minimalLH
 */
-extern "C"{
-  extern struct SOURCEPRS{
-   bool minimalLH;
-  }sourceprs_;
+extern "C" {
+  extern struct SOURCEPRS {
+    int minimalLH;
+    int externalLH;
+    int validLH;
+  } sourceprs_;
 }
 
+// init LHNIN Fortran unit with file "fileName" to read.
+extern "C" {
+  void mgopen_(const char *fname, int len);
+  void mgclos_();
+}
 
 //used for defaults - change these to defines? TODO
   static const unsigned long kNanoSecPerSec = 1000000000;
@@ -155,11 +137,13 @@ MadGraphSource::MadGraphSource( const ParameterSet & pset, InputSourceDescriptio
   
   edm::LogInfo("Generator|MadGraph")<< "MadGraph input file is " << MGfile_;
   
-  //Write to file name and first event to be read in to a file which the MadGraph subroutine will read in
-  ofile.open("MGinput.dat",std::ios::out);
-  ofile<<MGfile_;
-  ofile<<"\n";
-  ofile.close();
+  mgopen_(MGfile_.c_str(), MGfile_.size());
+
+//  //Write to file name and first event to be read in to a file which the MadGraph subroutine will read in
+//  ofile.open("MGinput.dat",std::ios::out);
+//  ofile<<MGfile_;
+//  ofile<<"\n";
+//  ofile.close();
 
   // check whether using minimal LH
   sourceprs_.minimalLH = minimalLH_; // pass to ME2pythia through common block
@@ -250,6 +234,7 @@ MadGraphSource::~MadGraphSource(){
   edm::LogInfo("Generator|MadGraph")<<"event generation done.";
   delete pdf_info;
   clear();
+  mgclos_();
   //  rm -f MGinput.dat;
 }
 

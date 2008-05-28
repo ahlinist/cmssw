@@ -1,8 +1,15 @@
 C******************************************************
 C*          MadEvent - Pythia interface.              *
 C*           Version 4.2, 4 March 2007                *
-C*
-C* dkcira 2008.02.05
+C*                                                    *
+C* csaout 2008.05.28                                  *
+C*                                                    *
+C*  - add "external" LHE mode (wherer HEPRUP/HEPEUP   *
+C*    common blocks are from C++ and hence not read)  *
+C*    also use PYSTOP instead of STOP to avoid        *
+C*    segfaults with plain Fortran STOP vs. C++       *
+C*                                                    *
+C* dkcira 2008.02.05                                  *
 C*                                                    *
 C*  - Improvement of matching routines                *
 C*                                                    *
@@ -89,9 +96,12 @@ C*********************************************************************
       CHARACTER*132 CHAR_READ
 
 C DKC
-C... Parameters from the MadGraphSource
-      logical minimalLH
-      common /SOURCEPRS/minimalLH
+C... Parameters from the MadGraphSource / MadGraphProducer
+C C.Saout: Add possibility to fill HEPRUP/HEPEUP common blocks from C++
+      logical minimalLH,externalLH,validLH
+      common /SOURCEPRS/minimalLH,externalLH,validLH
+      data minimalLH,externalLH,validLH/.false.,.false.,.false./
+      save /SOURCEPRS/
 
 C...Pythia parameters.
       INTEGER MSTP,MSTI,MRPY
@@ -143,10 +153,11 @@ c DKC
 C connects unit 22 w file inparm.dat and reads from unit 22, fmt=format, A=
 C caracter, 500=500 characters.first read reads one line of max 500 characters
 C then read second line into evfile, third line into dummy and fourth into process
-      OPEN(22,FILE='MGinput.dat',STATUS='UNKNOWN')
-      READ(22,FMT='(A500)') EVFILE
-      WRITE(*,*)' ',EVFILE
-      OPEN(LNHIN,FILE=EVFILE,STATUS='UNKNOWN')
+c C.Saout: Unit "LNHIN" is now opened from glue code in FortranTools.F
+c      OPEN(22,FILE='MGinput.dat',STATUS='UNKNOWN')
+c      READ(22,FMT='(A500)') EVFILE
+c      WRITE(*,*)' ',EVFILE
+c      OPEN(LNHIN,FILE=EVFILE,STATUS='UNKNOWN')
 
 C...Extract the model parameter card and read it.
 c DKC
@@ -158,9 +169,14 @@ c DKC
       endif
 
 c...Read the <init> block information
+      if(externalLH) then
+c...skip if minimal Les Houches and <init> provided from C++
+        if(.not.validLH) goto 150
+        if(minimalLH) goto 140
+      endif
 
 C...Loop until finds line beginning with "<init>" or "<init ". 
-  100 READ(LNHIN,STRFMT,END=130,ERR=130) STRING
+  100 READ(LNHIN,STRFMT,END=130,ERR=150) STRING
 C...Pick out random number seed and use for PYR initialization
       IF(INDEX(STRING,'iseed').NE.0)THEN
          READ(STRING,*) iseed
@@ -177,15 +193,22 @@ C...Allow indentation.
       IF(STRING(IBEG:IBEG+5).NE.'<init>'.AND.
      &STRING(IBEG:IBEG+5).NE.'<init ') GOTO 100
 
+C...if we get here, take the rest from the common blocks
+      if(externalLH) goto 140
+
 C...Read first line of initialization info.
-      READ(LNHIN,*,END=130,ERR=130) IDBMUP(1),IDBMUP(2),EBMUP(1),
+      READ(LNHIN,*,END=150,ERR=150) IDBMUP(1),IDBMUP(2),EBMUP(1),
      &EBMUP(2),PDFGUP(1),PDFGUP(2),PDFSUP(1),PDFSUP(2),IDWTUP,NPRUP
 
 C...Read NPRUP subsequent lines with information on each process.
       DO 120 IPR=1,NPRUP
-        READ(LNHIN,*,END=130,ERR=130) XSECUP(IPR),XERRUP(IPR),
+        READ(LNHIN,*,END=150,ERR=150) XSECUP(IPR),XERRUP(IPR),
      &  XMAXUP(IPR),LPRUP(IPR)
   120 CONTINUE
+      goto 140
+
+c We get here if end of file was reached, ok for external LHE mode
+  130 if(.not.externalLH) goto 140
 
 c DKC
 c C...Set PDFLIB or LHAPDF pdf number for Pythia
@@ -203,14 +226,18 @@ c         ENDIF
 c       ENDIF
 
 C...Initialize widths and partial widths for resonances.
-      CALL PYINRE
+
+  140 CALL PYINRE
         
 C...Calculate xsec reduction due to non-decayed resonances
 C...based on first event only!
 
       CALL BRSUPP
 
-      REWIND(LNHIN)
+      if(.not.minimalLH.or..not.externalLH) then
+C...file not open if LHE data is from C++ and no MadGraph headers read
+        REWIND(LNHIN)
+      endif
 
 C...Extract cuts and matching parameters
       if(minimalLH) then
@@ -247,9 +274,9 @@ C...Reset event numbering
       RETURN
 
 C...Error exit: give up if initalization does not work.
-  130 WRITE(*,*) ' Failed to read LHEF initialization information.'
+  150 WRITE(*,*) ' Failed to read LHEF initialization information.'
       WRITE(*,*) ' Event generation will be stopped.'
-      STOP  
+      CALL PYSTOP(42)  
       END
 
 C*********************************************************************      
@@ -305,6 +332,10 @@ C...Commonblock to transfer event-by-event matching info
       DOUBLE PRECISION PTCLUS
       COMMON/MEMAEV/PTCLUS(20),NLJETS,IEXC,Ifile
 
+C... Parameters from the MadGraphSource
+      logical minimalLH,externalLH,validLH
+      common /SOURCEPRS/minimalLH,externalLH,validLH
+
 C...Local variables
       INTEGER I,J,IBEG,NEX,KP(MAXNUP),MOTH,NUPREAD,IREM
       DOUBLE PRECISION PSUM,ESUM,PM1,PM2,A1,A2,A3,A4,A5
@@ -321,6 +352,18 @@ C...Format for reading lines.
       STRFMT='(A000)'
       WRITE(STRFMT(3:5),'(I3)') MAXLEN
 
+C...HEPUP common block is filled from C++. If not, make PYEVNT return.
+      if(externalLH) then
+        if(.not.validLH) then
+          NUP=0
+          return
+        else
+          validLH=.false.
+          NUPREAD=NUP
+          goto 115
+        endif
+      endif
+
 C...Loop until finds line beginning with "<event>" or "<event ". 
   100 READ(LNHIN,STRFMT,END=130,ERR=130) STRING
       IBEG=0
@@ -335,16 +378,18 @@ C...Read first line of event info.
      &AQEDUP,AQCDUP
 
 C...Read NUP subsequent lines with information on each particle.
-      ESUM=0d0
+  115 ESUM=0d0
       PSUM=0d0
       NEX=2
       NUP=1
       IREM=NUPREAD+1
 
       DO 120 I=1,NUPREAD
-        READ(LNHIN,*,END=130,ERR=130) IDUP(NUP),ISTUP(NUP),
-     &  MOTHUP(1,NUP),MOTHUP(2,NUP),ICOLUP(1,NUP),ICOLUP(2,NUP),
-     &  (PUP(J,NUP),J=1,5),VTIMUP(NUP),SPINUP(NUP)
+        if(.not.externalLH) then
+          READ(LNHIN,*,END=130,ERR=130) IDUP(NUP),ISTUP(NUP),
+     &    MOTHUP(1,NUP),MOTHUP(2,NUP),ICOLUP(1,NUP),ICOLUP(2,NUP),
+     &    (PUP(J,NUP),J=1,5),VTIMUP(NUP),SPINUP(NUP)
+        endif
 C...Remove Z/gamma resonance in e+e-
         IF(IABS(IDBMUP(1)).EQ.11.AND.IABS(IDBMUP(2)).EQ.11.AND.
      $       IDBMUP(1).EQ.-IDBMUP(2).AND.ISTUP(NUP).EQ.2.AND.
@@ -1328,13 +1373,13 @@ c     Let Pythia read all masses and, if possible, decays
 
  90   WRITE(*,*)'Could not open file SLHA.dat for writing'
       WRITE(*,*)'Quitting...'
-      STOP
+      CALL PYSTOP(42)
  98   WRITE(*,*)'Unexpected error reading file'
       WRITE(*,*)'Quitting...'
-      STOP
+      CALL PYSTOP(42)
  99   WRITE(*,*)'Unexpected end of file'
       WRITE(*,*)'Quitting...'
-      STOP
+      CALL PYSTOP(42)
 
       END
 
@@ -1375,6 +1420,10 @@ C...Extra commonblock to transfer run info.
       INTEGER I,J,IBEG
       REAL SUPPCS
 
+C... Parameters from the MadGraphSource
+      logical minimalLH,externalLH,validLH
+      common /SOURCEPRS/minimalLH,externalLH,validLH
+
 C...Lines to read in assumed never longer than 200 characters. 
       INTEGER MAXLEN
       PARAMETER (MAXLEN=200)
@@ -1385,8 +1434,11 @@ C...Format for reading lines.
       STRFMT='(A000)'
       WRITE(STRFMT(3:5),'(I3)') MAXLEN
 
+C...Common block is filled from C++, skip over file reading
+      if(externalLH) goto 130
+
 C...Loop until finds line beginning with "<event>" or "<event ". 
-  100 READ(LNHIN,STRFMT,END=130,ERR=130) STRING
+  100 READ(LNHIN,STRFMT,END=140,ERR=140) STRING
       IBEG=0
   110 IBEG=IBEG+1
 C...Allow indentation.
@@ -1395,18 +1447,18 @@ C...Allow indentation.
      &STRING(IBEG:IBEG+6).NE.'<event ') GOTO 100
 
 C...Read first line of event info.
-      READ(LNHIN,*,END=130,ERR=130) NUP,IDPRUP,XWGTUP,SCALUP,
+      READ(LNHIN,*,END=140,ERR=140) NUP,IDPRUP,XWGTUP,SCALUP,
      &AQEDUP,AQCDUP
 
 C...Read NUP subsequent lines with information on each particle.
       DO 120 I=1,NUP
-        READ(LNHIN,*,END=130,ERR=130) IDUP(I),ISTUP(I),
+        READ(LNHIN,*,END=140,ERR=140) IDUP(I),ISTUP(I),
      &  MOTHUP(1,I),MOTHUP(2,I),ICOLUP(1,I),ICOLUP(2,I),
      &  (PUP(J,I),J=1,5),VTIMUP(I),SPINUP(I)
   120 CONTINUE
 
 
-      SUPPCS=1.
+  130 SUPPCS=1.
       do I=3,NUP
         if (ISTUP(I).EQ.1.AND.(IABS(IDUP(I)).GE.23.OR.
      $     (IABS(IDUP(I)).GE.6.AND.IABS(IDUP(I)).LE.8)))
@@ -1429,8 +1481,8 @@ C...Read NUP subsequent lines with information on each particle.
       RETURN
 
 C...Error exit, typically when no more events.
-  130 WRITE(*,*) ' Failed to read LHEF event information.'
-      STOP
+  140 WRITE(*,*) ' Failed to read LHEF event information.'
+      CALL PYSTOP(42)
       END
       
       subroutine case_trap2(name,n)
@@ -1559,7 +1611,7 @@ c
 
  99   WRITE(*,*)'Unexpected error reading file'
       WRITE(*,*)'Quitting...'
-      STOP
+      CALL PYSTOP(42)
       end
 
 C*********************************************************************      

@@ -15,8 +15,7 @@
  * Dorian Kcira : added ME-PS matching (22/05/2007)
  * Carsten Hof  : add saving of flavours and fractional momenta of ingoing partons in pdfinfo (06/02/2008)
  ***************************************/
-#define PYCOMP pycomp_
-#include "FWCore/Framework/interface/EDProducer.h"
+#include "FWCore/Framework/interface/EDFilter.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include <map>
 #include <string>
@@ -29,7 +28,7 @@ class HepRandomEngine;
 
 namespace edm
 {
-  class MadGraphProducer : public EDProducer {
+  class MadGraphProducer : public EDFilter {
   public:
     /// Constructor
     MadGraphProducer(const ParameterSet & );
@@ -38,7 +37,10 @@ namespace edm
   private:
     /// Interface to the PYGIVE pythia routine, with add'l protections
     bool call_pygive(const std::string& iParm );
-    virtual void produce(Event & e, const EventSetup& es);
+    virtual bool beginRun(Run& run, const EventSetup& es);
+    virtual bool endRun(Run& run, const EventSetup& es);
+    virtual bool filter(Event & e, const EventSetup& es);
+    void init();
     void clear();
   private:
     HepMC::GenEvent  *evt;
@@ -49,23 +51,17 @@ namespace edm
     bool pythiaHepMCVerbosity_;
     /// Events to print if verbosity
     unsigned int maxEventsToPrint_;    
-    /// Name of file which contains the unweighted MadGraph events
-    std::string MGfile_;
-    /// Get input file from LCG MCDB 
-    bool getInputFromMCDB_;
-    /// Sets the MCDB Article ID (0 if none)
-    int MCDBArticleID_;
     unsigned int firstEvent_;
-    unsigned int lhe_event_counter_;
     // Matching & MEMAIN
     double MEMAIN_etaclmax;
     double MEMAIN_qcut;
     unsigned int MEMAIN_iexcfile; // 1 = perform exclusive matching
     bool produceEventTreeFile_;
     // Flag to allow reading a simple LHE file using the minimal Les Houches functionality (ignoring reading parameters from the header)
-   bool minimalLH_;
-   unsigned int eventNumber_;
-   CLHEP::HepRandomEngine* fRandomEngine;
+    bool minimalLH_;
+    bool initialized_;
+    unsigned int eventNumber_;
+    CLHEP::HepRandomEngine* fRandomEngine;
   };
 } 
 #endif
