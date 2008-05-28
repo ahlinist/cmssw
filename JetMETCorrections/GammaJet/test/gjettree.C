@@ -7,11 +7,11 @@
 #include <fstream>
 #include <stdlib.h>
 #include <stdio.h>
-#include <MyAnalysis/GammaJetAnalysis/test/TMVAPhotons_MLP.class.C>
-#include <MyAnalysis/GammaJetAnalysis/test/TMVAPhotons_1_MLP.class.C>
-#include <MyAnalysis/GammaJetAnalysis/test/TMVAPhotons_2_MLP.class.C>
-#include <MyAnalysis/GammaJetAnalysis/test/TMVAPhotons_3_MLP.class.C>
-#include <MyAnalysis/GammaJetAnalysis/test/TMVAPhotons_4_MLP.class.C>
+#include <etMETCorrections/GammaJet/test/TMVAPhotons_MLP.class.C>
+#include <etMETCorrections/GammaJet/test/TMVAPhotons_1_MLP.class.C>
+#include <etMETCorrections/GammaJet/test/TMVAPhotons_2_MLP.class.C>
+#include <etMETCorrections/GammaJet/test/TMVAPhotons_3_MLP.class.C>
+#include <etMETCorrections/GammaJet/test/TMVAPhotons_4_MLP.class.C>
 void gjettree::Loop(double cross, int NEVT)
 {
 //   In a ROOT session, you can do:
