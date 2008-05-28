@@ -97,8 +97,9 @@ void SummaryMap::drawDetector(TH2* me){
     l[x - 1][1]->Draw();
   }
 
-  TString canvasID = Form("EMU Status: Physics Efficiency %.2f (HW Efficiency %.2f)", (1.0 * rep_el) / csc_el, summary.GetEfficiencyHW());
-  TText *tCanvas_label = new TText(0.0, 2.0 * 3.14159 + 0.5, canvasID);
+  //TString canvasID = Form("EMU Status: Physics Efficiency %.2f (HW Efficiency %.2f)", (1.0 * rep_el) / csc_el, summary.GetEfficiencyHW());
+  //TText *tCanvas_label = new TText(0.0, 2.0 * 3.14159 + 0.5, canvasID);
+  TText *tCanvas_label = new TText(0.0, 2.0 * 3.14159 + 0.5, me->GetTitle());
   tCanvas_label->SetTextAlign(22);
   tCanvas_label->SetTextFont(62);
   tCanvas_label->SetTextSize(0.04);
