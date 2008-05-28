@@ -39,7 +39,7 @@ TO CREATE REDUCED TREE TO FINALIZE THE ANALYSIS
 
 root -b
 root [0] .L JetMETCorrections/GammaJet/test/gjettree.C++
-root [1] gjettree csa08(getchain("inputfiles_csa08.txt"),   "csa08_tree.root")
+root [1] gjettree csa08(getchain("JetMETCorrections/GammaJet/test/inputfiles_csa08.txt"),   "csa08_tree.root")
 root [2] csa08.Loop(1)
 
 
@@ -48,13 +48,17 @@ ANALYSIS FINALIZATION
 
 root -b
 root [0] .L JetMETCorrections/GammaJet/test/gjet_response_fit_csa08.C++
-root [1]  gjet_response_fit_csa08 all(getchain("one_file.txt"), "csa08_finalplots.root",50,35)
+root [1]  gjet_response_fit_csa08 all(getchain("JetMETCorrections/GammaJet/test/one_file.txt"), "csa08_finalplots.root",50,35)
 root [2] all.BookHistos()
 root [3] all.Loop(0)
 root [4] all.Fit()
 
 
+EXTRACT L3 CORRECTIONS
+----------------------
 
+root -b
+root [0] 
 
 SUBMIT JOBS WITH CRAB
 ---------------------
