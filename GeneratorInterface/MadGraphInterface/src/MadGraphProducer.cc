@@ -13,17 +13,29 @@
  * Dorian Kcira : added ME-PS matching (22/05/2007)
  * Dorian Kcira : added reading of <slha> xml tags in the header (05/02/2008)
  * Dorian Kcira : added flag to allow reading of generic LH files without MadGraph specifics (06/02/2008)
+ * Christophe Saout : read LHE data from EDM products and make MadGraphProducer an EDFilter
+ *                    the EDM products can be filled from a LHE file via a dedicated LHESource
  ***************************************/
 #include "GeneratorInterface/MadGraphInterface/interface/MadGraphProducer.h"
 #include "GeneratorInterface/MadGraphInterface/interface/PYR.h"
+#include "SimDataFormats/GeneratorProducts/interface/LHERunInfoProduct.h"
+#include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
+#include "SimDataFormats/GeneratorProducts/interface/LHECommonBlocks.h"
 #include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
 #include "FWCore/Framework/interface/Event.h"
+#include "FWCore/Framework/interface/Run.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "FWCore/Utilities/interface/RandomNumberGenerator.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
+#include <algorithm>
+#include <iterator>
 #include <iostream>
 #include <fstream> 
+#include <cstring>
+#include <cstdio>
+#include <string>
+
 #include "time.h"
 
 // Generator modifications
@@ -42,34 +54,6 @@ extern "C" {
 
 extern "C"{
  void eventtree_();
-}
-
-/*
-      INTEGER MAXNUP
-      PARAMETER (MAXNUP=500)
-      INTEGER NUP,IDPRUP,IDUP,ISTUP,MOTHUP,ICOLUP
-      DOUBLE PRECISION XWGTUP,SCALUP,AQEDUP,AQCDUP,PUP,VTIMUP,SPINUP
-
-      COMMON/HEPEUP/NUP,IDPRUP,XWGTUP,SCALUP,AQEDUP,AQCDUP,IDUP(MAXNUP),
-     &   ISTUP(MAXNUP),MOTHUP(2,MAXNUP),ICOLUP(2,MAXNUP),PUP(5,MAXNUP),
-     &   VTIMUP(MAXNUP),SPINUP(MAXNUP)
-*/
-extern "C" {
- extern struct HEPEUP{
- int nup;
- int idprup;
- double xwgtup;
- double scalup;
- double aqedup;
- double aqcdup;
- int idup[500];
- int istup[500];
- int mothup[500][2];
- int icolup[500][2];
- double pup[500][5];
- double vtimup[500];
- double spinup[500];
- }hepeup_;
 }
 
 /*
@@ -96,15 +80,31 @@ extern "C" {
 }
 
 /*
-      LOGICAL minimalLH
-      common /SOURCEPRS/minimalLH
+      LOGICAL minimalLH,externalLH,validLH
+      common /SOURCEPRS/minimalLH,externalLH,validLH
 */
 extern "C"{
-  extern struct SOURCEPRS{
-   bool minimalLH;
-  }sourceprs_;
+  extern struct SOURCEPRS {
+    int minimalLH;
+    int externalLH;
+    int validLH;
+  } sourceprs_;
 }
 
+// init LHNIN Fortran unit with file "fileName" to read.
+extern "C" {
+  void mgopen_(const char *fname, int len);
+  void mgclos_();
+}
+
+// turn ME2pythia.f aborts into an exception, shutting down EDM cleanly
+extern "C"{
+  void pystop_(int *mcod)
+  {
+    throw cms::Exception("Generator|MadGraphProducer")
+          << "PYSTOP called with code: " << *mcod << std::endl;
+  }
+}
 
 //used for defaults - change these to defines? TODO
   static const unsigned long kNanoSecPerSec = 1000000000;
@@ -113,56 +113,26 @@ extern "C"{
 using namespace edm;
 
 MadGraphProducer::MadGraphProducer( const ParameterSet & pset) :
- EDProducer(), evt(0),
+ EDFilter(), evt(0),
  pythiaPylistVerbosity_ (pset.getUntrackedParameter<int>("pythiaPylistVerbosity",0)),
  pythiaHepMCVerbosity_ (pset.getUntrackedParameter<bool>("pythiaHepMCVerbosity",false)),
  maxEventsToPrint_ (pset.getUntrackedParameter<int>("maxEventsToPrint",0)),
- MGfile_ (pset.getParameter<std::string>("MadGraphInputFile")),
- getInputFromMCDB_ (pset.getUntrackedParameter<bool>("getInputFromMCDB",false)),
- MCDBArticleID_ (pset.getParameter<int>("MCDBArticleID")),
  firstEvent_(pset.getUntrackedParameter<unsigned int>("firstEvent", 0)),
- lhe_event_counter_(0),MEMAIN_etaclmax(pset.getUntrackedParameter<double>("MEMAIN_etaclmax",0.)),
+ MEMAIN_etaclmax(pset.getUntrackedParameter<double>("MEMAIN_etaclmax",0.)),
  MEMAIN_qcut(pset.getUntrackedParameter<double>("MEMAIN_qcut",0.)),
  MEMAIN_iexcfile(pset.getUntrackedParameter<unsigned int>("MEMAIN_iexcfile",0)),
  produceEventTreeFile_ (pset.getUntrackedParameter<bool>("produceEventTreeFile",false)),
  minimalLH_(pset.getUntrackedParameter<bool>("minimalLH",false)),
+ initialized_(false),
  eventNumber_(firstEvent_)
 {
 
   edm::LogInfo("Generator|MadGraph")<<" initializing MadGraphProducer";
   pdf_info = new HepMC::PdfInfo();
 
-  std::ifstream file;
-  std::ofstream ofile;
-
-  // Interface with the LCG MCDB
-  if (getInputFromMCDB_)  mcdbGetInputFile(MGfile_, MCDBArticleID_);
-
-  // strip the input file name
-  if ( MGfile_.find("file:") || MGfile_.find("rfio:")){
-    MGfile_.erase(0,5);
-  }
-
-  file.open(MGfile_.c_str(),std::ios::in);  
-  if(!file){
-    edm::LogError("GeneratorError|OpenMadGraphFileError")<< "Error: Cannot open MadGraph input file";
-    throw edm::Exception(edm::errors::Configuration,"OpenMadGraphFileError")
-      <<" Cannot open MadGraph input file, check file name and path.";
-  }else{
-    edm::LogInfo("Generator|MadGraph")<<"Opened MadGraph file successfully!";
-    file.close();
-  }
-  
-  edm::LogInfo("Generator|MadGraph")<< "MadGraph input file is " << MGfile_;
-  
-  //Write to file name and first event to be read in to a file which the MadGraph subroutine will read in
-  ofile.open("MGinput.dat",std::ios::out);
-  ofile<<MGfile_;
-  ofile<<"\n";
-  ofile.close();
-
   // check whether using minimal LH
   sourceprs_.minimalLH = minimalLH_; // pass to ME2pythia through common block
+  sourceprs_.externalLH = true;
   if(minimalLH_) edm::LogInfo("Generator|MadGraph")<<" ----- Using minimal Les Houches Accord functionality - ignoring MadGraph specifics.";
   
   // first set to default values, mostly zeros
@@ -237,11 +207,6 @@ MadGraphProducer::MadGraphProducer( const ParameterSet & pset) :
   std::ostringstream sRandomSet;
   sRandomSet <<"MRPY(1)="<<seed;
   call_pygive(sRandomSet.str());
-  // Call pythia initialisation with user defined upinit subroutine
-  call_pyinit( "USER", "", "", 0.);
-
-  edm::LogInfo("Generator|MadGraph")<<"MEMAIN after ME2pythia initialization - etcjet ="<<memain_.etcjet<<" rclmax ="<<memain_.rclmax<<" etaclmax ="<<memain_.etaclmax<<" qcut ="<<memain_.qcut<<" clfact ="<<memain_.clfact<<" maxjets ="<<memain_.maxjets<<" minjets ="<<memain_.minjets<<" iexcfile ="<<memain_.iexcfile<<" ktsche ="<<memain_.ktsche;
-
   produces<HepMCProduct>();
   edm::LogInfo("Generator|MadGraph")<<"starting event generation ...";
 }
@@ -257,18 +222,61 @@ MadGraphProducer::~MadGraphProducer(){
 void MadGraphProducer::clear() {
 }
 
-void MadGraphProducer::produce(Event & e, const EventSetup& es) 
+void MadGraphProducer::init() {
+  initialized_ = true;
+
+  // Call pythia initialisation with user defined upinit subroutine
+  call_pyinit( "USER", "", "", 0.);
+
+  edm::LogInfo("Generator|MadGraph")<<"MEMAIN after ME2pythia initialization - etcjet ="<<memain_.etcjet<<" rclmax ="<<memain_.rclmax<<" etaclmax ="<<memain_.etaclmax<<" qcut ="<<memain_.qcut<<" clfact ="<<memain_.clfact<<" maxjets ="<<memain_.maxjets<<" minjets ="<<memain_.minjets<<" iexcfile ="<<memain_.iexcfile<<" ktsche ="<<memain_.ktsche;
+}
+
+bool MadGraphProducer::beginRun(Run& run, const EventSetup& es)
 {
+  edm::Handle<LHERunInfoProduct> product;
+  run.getByLabel("source", product);
+  lhef::CommonBlocks::fillHEPRUP(&product->heprup());
+
+  if (!minimalLH_) {
+    const char *fname = std::tmpnam(NULL);
+    std::ofstream file(fname, std::fstream::out | std::fstream::trunc);
+    std::copy(product->begin(), product->init(),
+              std::ostream_iterator<std::string>(file));
+    file.close();
+    mgopen_(fname, std::strlen(fname));
+    std::remove(fname);
+  }
+
+  return true;
+}
+
+bool MadGraphProducer::endRun(Run& run, const EventSetup& es)
+{
+  mgclos_();
+  initialized_ = false;
+  return true;
+}
+
+bool MadGraphProducer::filter(Event & e, const EventSetup& es) 
+{
+  edm::Handle<LHEEventProduct> product;
+  e.getByLabel("source", product);
+  lhef::CommonBlocks::fillHEPEUP(&product->hepeup());
+  sourceprs_.validLH = true;
+  if (!initialized_)
+    init();
+
   std::auto_ptr<HepMCProduct> bare_product(new HepMCProduct());  
 
-  // skip LHE events - read firstEvent_ times <event>...</event> from the LHE file without returning from produce()
-  for(;lhe_event_counter_<firstEvent_; ++lhe_event_counter_) {
-    call_pyevnt();      // generate one event with Pythia
-    call_pyhepc( 1 );
-    edm::LogWarning("Generator|MadGraph")<<"skipping LHE event "<<lhe_event_counter_;
-  }
-    
   call_pyevnt();      // generate one event with Pythia
+
+  if (hepeup_.nup == 0 || pypars.msti[0] == 1) {
+    // the event got rejected by the matching and we have to filter
+    edm::LogInfo("Generator|MadGraph") << "Event was skipped.";
+    e.put(bare_product); // put an empty product, CMSSW filter will take care
+    return false;
+  }
+
   call_pyhepc( 1 );
 
   if(produceEventTreeFile_) eventtree_(); // write out an event tree file
@@ -306,13 +314,10 @@ void MadGraphProducer::produce(Event & e, const EventSetup& es)
     }
   }
 
-  if(hepeup_.nup==0){
-    edm::LogInfo("Generator|MadGraph")<<"The interface signalled end of Les Houches file. Finishing event processing here.";
-    return; // finish event processing if variable nup from common block HEPEUP set to 0 in ME2Pythia.f
-  }
-
-  if(evt)  bare_product->addHepMCData(evt );
+  bare_product->addHepMCData(evt );
   e.put(bare_product);
+
+  return true;
 }
 
 bool MadGraphProducer::call_pygive(const std::string& iParm ) {
