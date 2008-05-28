@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.83 2008/04/28 21:01:50 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.85 2008/05/06 06:17:48 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.83 $
-  \date $Date: 2008/04/28 21:01:50 $
+  \version $Revision: 1.85 $
+  \date $Date: 2008/05/06 06:17:48 $
 */
 
 #include "TH1F.h"
@@ -29,6 +29,8 @@
 
 #include "DQM/EcalCommon/interface/ColorPalette.h"
 #include "DQM/EcalCommon/interface/Numbers.h"
+
+#include "DQM/RenderPlugins/src/utils.h"
 
 #include "DQM/RenderPlugins/src/EERenderPlugin.h"
 
@@ -482,10 +484,17 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
   }
 
   if( name.find( "reportSummaryMap" ) < name.size() ) {
+/*
     obj->SetMinimum(-0.01);
     obj->SetMaximum(+1.00);
     gStyle->SetPalette(5);
     obj->SetOption("colz");
+     obj->SetMinimum(-0.01);
+     obj->SetMaximum(+1.00);
+     gStyle->SetPalette(5);
+     obj->SetOption("colz");
+*/
+    dqm::utils::reportSummaryMapPalette(obj);
     gStyle->SetPaintTextFormat("+g");
     return;
   }
