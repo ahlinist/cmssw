@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.6 2008/03/27 15:54:38 delre Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.1 2008/05/28 09:18:46 delre Exp $
 //
 //
 
@@ -21,7 +21,7 @@
 // constructors and destructor
 //
 
-#include "MyAnalysis/GammaJetAnalysis/interface/GammaJetAnalyzer.h"
+#include "JetMETCorrections/GammaJet/interface/GammaJetAnalyzer.h"
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
