@@ -28,6 +28,8 @@
 <use name=CalibFormats/HcalObjects>
 <use name=CalibCalorimetry/HcalAlgos>
 <use name=CondTools/Hcal>
+<use name=CondFormats/L1TObjects>
+<use name=CondFormats/DataRecord>
 <flags EDM_PLUGIN=1>
 <export>
    <lib name=RecoHcalHcalProm>
