@@ -26,7 +26,7 @@ process.source = cms.Source("PoolSource",
 )
 
 process.RECO = cms.OutputModule("PoolOutputModule",
-    process.AODSIMEventContent,
+    process.RECOSIMEventContent,
     fileName = cms.untracked.string('reco.root')
 )
 
