@@ -10,6 +10,7 @@ $Id$
 ----------------------------------------------------------------------*/
 
 #include <memory>
+#include <string>
 #include <vector>
 #include "boost/shared_ptr.hpp"
 
@@ -29,11 +30,13 @@ namespace edm {
     void readMany(int number, EventPrincipalVector& result);
     void readMany(int number, EventPrincipalVector& result, EventID const& id, unsigned int fileSeqNumber);
     void readManyRandom(int number, EventPrincipalVector& result, unsigned int& fileSeqNumber); 
+    void dropUnwantedBranches(std::vector<std::string> const& wantedBranches);
 
   private:
     virtual void readMany_(int number, EventPrincipalVector& result) = 0;
     virtual void readMany_(int number, EventPrincipalVector& result, EventID const& id, unsigned int fileSeqNumber) = 0;
     virtual void readManyRandom_(int number, EventPrincipalVector& result, unsigned int& fileSeqNumber) = 0;
+    virtual void dropUnwantedBranches_(std::vector<std::string> const& wantedBranches) = 0;
   };
 }
 
