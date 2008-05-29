@@ -11,7 +11,7 @@
 
 bool RPCRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &i ) {
 
-   if( o.name.find( "RPC/RecHits/SummaryHissstograms" ) == 0 ) {
+   if( o.name.find( "RPC/RecHits/SummaryHistograms" ) == 0 ) {
     
      return true;
   } 
@@ -61,7 +61,7 @@ void RPCRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
   gStyle->SetPalette(1);
   obj->SetOption( "colz" );
 
-  if( o.name.find( "avoe" ) < o.name.size() ) {
+  if( o.name.find("Occupancy") < o.name.size() ) {
     gStyle->SetOptStat( 1111111 );
     gStyle->SetPalette( 1 );
     obj->SetStats( kTRUE );
