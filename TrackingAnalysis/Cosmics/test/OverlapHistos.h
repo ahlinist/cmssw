@@ -98,6 +98,7 @@ private:
   std::vector<TH2*> localYVsDxdzHistos_[2];
   std::vector<TH2*> localXVsDydzHistos_[2];
   std::vector<TH2*> localYVsDydzHistos_[2];
+  std::vector<TH2*> dPreddSimVsdHitdSimHistos_[2];
 
 public:
    OverlapHistos(TTree *tree=0);
@@ -141,8 +142,8 @@ OverlapHistos::OverlapHistos(TTree *tree)
    if (tree == 0) {
       TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("MyAnalyzer.root");
       if (!f) {
-	//f = new TFile("/uscmst1b_scratch/lpc1/lpctrk/kaulmer/CMSSW_1_7_5/src/CTF_skim_pass4.root");
-	f = new TFile("/uscmst1b_scratch/lpc1/lpctrk/kaulmer/CMSSW_1_7_5/src/MCposA_pass4_withSimHit.root");
+	f = new TFile("/uscmst1b_scratch/lpc1/lpctrk/kaulmer/CMSSW_1_7_7/src/crab_CTF_MCposC_newMC_TIF_Pass4_fix.root");
+	//f = new TFile("/uscmst1b_scratch/lpc1/lpctrk/kaulmer/CMSSW_1_7_5/src/MCposA_pass4_withSimHit.root");
       }
       tree = (TTree*)gDirectory->Get("Overlaps");
 

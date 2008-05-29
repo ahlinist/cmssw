@@ -52,6 +52,7 @@ void OverlapHistos::Loop(){
   std::vector<TH2*> allLocalYVsDxdzHistos[2]; //local Y vs dx/dz
   std::vector<TH2*> allLocalXVsDydzHistos[2]; //local X vs dy/dz
   std::vector<TH2*> allLocalYVsDydzHistos[2]; //local Y vs dy/dz
+  std::vector<TH2*> alldPreddSimVsdHitdSimHistos[2]; //dPred-dSim vs dHit-dSim  
   TH2F* widthVsAngle = new TH2F("widthVsAngle", "width vs angle", 75, -0.75, 0.75, 400, -0.2, 0.2);
   widthVsAngle->GetXaxis()->SetTitle("dx/dz");
   widthVsAngle->GetYaxis()->SetTitle("#Deltax_{hit}-#Deltax_{pred}");
@@ -154,6 +155,7 @@ void OverlapHistos::Loop(){
     TH2* localYVsDxdz(0);
     TH2* localXVsDydz(0);
     TH2* localYVsDydz(0);
+    TH2* dPreddSimVsdHitdSim(0);
     unsigned int ind(0);
     std::map<DetIdPair,unsigned int>::iterator it = allIndices.find(idPair);
     if ( it==allIndices.end() ) {
@@ -257,6 +259,9 @@ void OverlapHistos::Loop(){
 	sprintf(hn,"localYVsDydz%c%d",charAB[j],ind);
 	localYVsDydz = new TH2F(hn,hn, 100, -1, 1, 1000, -10, 10);
 	allLocalYVsDydzHistos[j].push_back(localYVsDydz);
+	sprintf(hn,"dPreddSimVsdHitdSim%c%d",charAB[j],ind);
+	dPreddSimVsdHitdSim = new TH2F(hn,hn, 40, -0.02, 0.02, 40, -0.02, 0.02);
+	alldPreddSimVsdHitdSimHistos[j].push_back(dPreddSimVsdHitdSim);
       }
       curDir->cd();
     }
@@ -304,6 +309,7 @@ void OverlapHistos::Loop(){
     localYVsDxdz = allLocalYVsDxdzHistos[j][ind];
     localXVsDydz = allLocalXVsDydzHistos[j][ind];
     localYVsDydz = allLocalYVsDydzHistos[j][ind];
+    dPreddSimVsdHitdSim = alldPreddSimVsdHitdSimHistos[j][ind];
     // fill histograms
     resHisto->Fill(deltaHit-deltaPred);
     if (predX[0]>0) resHistoPlusX->Fill(deltaHit-deltaPred);
@@ -320,11 +326,13 @@ void OverlapHistos::Loop(){
     hitErrHistoFirst->Fill(hitEX[0]);
     hitErrHistoSecond->Fill(hitEX[1]);
     if(simX[0]>-90 && simX[1]>-90){
+      //      if( fabs(deltaSim-deltaHit) < 0.04 ) {
       simRecHisto->Fill(deltaSim-deltaHit);
       simRecHistoAll->Fill(deltaSim-deltaHit);
       //simRecMomentum->Fill((deltaSim-deltaHit)/(0.0136*0.16*3));
       simRecMomentum->Fill((0.0136*0.16*3)/(deltaSim-deltaHit));
       simTrkHisto->Fill(deltaSim-deltaPred);
+      //}
     }
     dxdzHisto->Fill(predDX[0]);
     posHistos[0]->Fill(sqrt(gX[0]*gX[0]+gY[0]*gY[0]));
@@ -344,6 +352,7 @@ void OverlapHistos::Loop(){
     localYVsDxdz->Fill(predDX[0],predY[0]);
     localXVsDydz->Fill(predDY[0],predX[0]);
     localYVsDydz->Fill(predDY[0],predY[0]);
+    dPreddSimVsdHitdSim->Fill(deltaSim-deltaPred,deltaSim-deltaHit);
   }
 
   //
@@ -379,6 +388,7 @@ void OverlapHistos::Loop(){
     localYVsDxdzHistos_[j].reserve(allIndices.size());    
     localXVsDydzHistos_[j].reserve(allIndices.size());    
     localYVsDydzHistos_[j].reserve(allIndices.size());    
+    dPreddSimVsdHitdSimHistos_[j].reserve(allIndices.size());
   }
   //
   // loop over all pairs, check entries and create new index
@@ -416,6 +426,7 @@ void OverlapHistos::Loop(){
     TH2* localYVsDxdzHistos[2];
     TH2* localXVsDydzHistos[2];
     TH2* localYVsDydzHistos[2];
+    TH2* dPreddSimVsdHitdSimHistos[2];
 
     for ( int j=0; j<2; ++j ) {
       resHistos[j] = allResHistos[j][(*ih).second];
@@ -448,6 +459,7 @@ void OverlapHistos::Loop(){
       localYVsDxdzHistos[j] = allLocalYVsDxdzHistos[j][(*ih).second];
       localXVsDydzHistos[j] = allLocalXVsDydzHistos[j][(*ih).second];
       localYVsDydzHistos[j] = allLocalYVsDydzHistos[j][(*ih).second];
+      dPreddSimVsdHitdSimHistos[j] = alldPreddSimVsdHitdSimHistos[j][(*ih).second];
     }
     
     //
@@ -552,6 +564,9 @@ void OverlapHistos::Loop(){
 	sprintf(hn,"localYVsDydz%c%3.3d",charAB[j],n);
 	localYVsDydzHistos[j]->SetNameTitle(hn,hn);
 	localYVsDydzHistos_[j].push_back(localYVsDydzHistos[j]);
+	sprintf(hn,"dPreddSimVsdHitdSim%c%3.3d",charAB[j],n);
+	dPreddSimVsdHitdSimHistos[j]->SetNameTitle(hn,hn);
+	dPreddSimVsdHitdSimHistos_[j].push_back(dPreddSimVsdHitdSimHistos[j]);
       }
       ++n;
     }
@@ -590,6 +605,7 @@ void OverlapHistos::Loop(){
 	delete localYVsDxdzHistos[j];
 	delete localXVsDydzHistos[j];
 	delete localYVsDydzHistos[j];
+	delete dPreddSimVsdHitdSimHistos[j];
       }
     }
   }
@@ -777,7 +793,7 @@ void OverlapHistos::Loop(){
       fillMean(i+1,dxdzMeans,dxdzHisto);
 
       //print out to check the ordering of the index within each layer
-      //      std::cout << "Index: " << i << "   Layer: " << k << "   Phi: " << posHistos[1]->GetMean() << "   r: " << posHistos[0]->GetMean() << "   z: " << posHistos[2]->GetMean() << "  dx/dz: " << dxdzHisto->GetMean() << "   detID = " << detIdPairs_[i].first << " and " << detIdPairs_[i].second << std::endl;
+            std::cout << "Index: " << i << "   Layer: " << k << "   Phi: " << posHistos[1]->GetMean() << "   r: " << posHistos[0]->GetMean() << "   z: " << posHistos[2]->GetMean() << "  dx/dz: " << dxdzHisto->GetMean() << "   detID = " << detIdPairs_[i].first << " and " << detIdPairs_[i].second << std::endl;
       //    std::cout << " geographical ID: " << id << std::endl;
 
 //       predErrMeans->SetBinContent(i+1,predErrHisto->GetMean());
@@ -914,22 +930,9 @@ OverlapHistos::fillWidth (int ibin, TH1* resultHisto, TH1* inputHisto,
 {
   double sum = inputHisto->Integral();
   if ( sum>0.00001 ) {
-    gStyle->SetOptFit(1011);
-    //inputHisto->Fit("gaus","LQ0R");
-    //inputHisto->Fit("gaus","Q0R","",inputHisto->GetMean()-3*inputHisto->GetRMS(),inputHisto->GetMean()+3*inputHisto->GetRMS());
-    //restricting the fit range is just a kludge to get around SimHit associate
-    //problem for matched hits
-    inputHisto->Fit("gaus","Q0R","",-0.05,0.05);
+    inputHisto->Fit("gaus","Q0R");
     double sigma = inputHisto->GetFunction("gaus")->GetParameter(2);
     double error_sigma = inputHisto->GetFunction("gaus")->GetParError(2);
-    // sometimes the fit blows up and the likelihood fit is more reasonable
-    // this could be improved.
-    if ( (scale*error_sigma) > 50) {
-      inputHisto->Fit("gaus","LQ0R","",-0.01,0.01);
-          //inputHisto->Fit("gaus","Q0R","",inputHisto->GetMean()-3*inputHisto->GetRMS(),inputHisto->GetMean()+3*inputHisto->GetRMS());
-	  sigma = inputHisto->GetFunction("gaus")->GetParameter(2);
-          error_sigma = inputHisto->GetFunction("gaus")->GetParError(2);
-     }
     resultHisto->SetBinContent(ibin,scale*sigma);
     resultHisto->SetBinError(ibin,scale*error_sigma);
   }
