@@ -14,7 +14,7 @@ See sample cfg files in TrackingAnalysis/Cosmics/test/hitRes*cfg
 //
 // Original Authors:  Wolfgang Adam, Keith Ulmer
 //         Created:  Thu Oct 11 14:53:32 CEST 2007
-// $Id: HitRes.cc,v 1.1 2008/04/28 04:00:09 kaulmer Exp $
+// $Id: HitRes.cc,v 1.2 2008/05/07 15:26:19 kaulmer Exp $
 //
 //
 
@@ -44,9 +44,11 @@ See sample cfg files in TrackingAnalysis/Cosmics/test/hitRes*cfg
 #include  "DataFormats/TrackReco/interface/TrackExtraFwd.h"
 #include "DataFormats/TrackingRecHit/interface/TrackingRecHit.h"
 #include "DataFormats/SiStripDetId/interface/StripSubdetector.h"
+#include "DataFormats/DetId/interface/DetId.h" 
 #include "DataFormats/SiStripDetId/interface/TIBDetId.h"
 #include "DataFormats/SiStripDetId/interface/TOBDetId.h"
 #include "Geometry/CommonDetUnit/interface/GeomDet.h"
+#include "Geometry/TrackerGeometryBuilder/interface/GluedGeomDet.h"
 #include "TrackingTools/PatternTools/interface/Trajectory.h"
 #include "TrackingTools/TransientTrackingRecHit/interface/TransientTrackingRecHit.h"
 #include "RecoTracker/TransientTrackingRecHit/interface/TSiStripMatchedRecHit.h"
@@ -59,6 +61,8 @@ See sample cfg files in TrackingAnalysis/Cosmics/test/hitRes*cfg
 #include "TrackingTools/AnalyticalJacobians/interface/JacobianCurvilinearToLocal.h"
 #include "TrackingTools/AnalyticalJacobians/interface/AnalyticalCurvilinearJacobian.h"
 #include "TrackingTools/TrackFitters/interface/TrajectoryStateCombiner.h"
+#include "DataFormats/GeometryVector/interface/LocalPoint.h"
+#include "DataFormats/GeometryVector/interface/GlobalPoint.h"
 
 #include "TFile.h"
 #include "TTree.h"
@@ -260,6 +264,7 @@ HitRes::analyze (const Trajectory& trajectory,
 	layer = layerFromId(id);
 	if ( layer!=-1 && layer==previousLayer ) {
 	  overlapHits.push_back(std::make_pair(previousTM,&(*itm)));
+	  cout << "adding overlap pair from layer = " << layer << endl;
 	}
       }
     }
@@ -389,39 +394,35 @@ HitRes::analyze (const Trajectory& trajectory,
     // information on modules and hits
     overlapIds_[0] = (*iol).first->recHit()->geographicalId().rawId();
     overlapIds_[1] = (*iol).second->recHit()->geographicalId().rawId();
+    //if its a matched hit fill hitPosition with the rphi x position, otherwise the
+    //recHit position is fine (glued layer, stereo only hits are already gone)
+    const TransientTrackingRecHit::ConstRecHitPointer firstRecHit = &(*(*iol).first->recHit());
+    const SiStripMatchedRecHit2D* firstMatchedhit=dynamic_cast<const SiStripMatchedRecHit2D*>((*firstRecHit).hit());
+    const TransientTrackingRecHit::ConstRecHitPointer secondRecHit = &(*(*iol).second->recHit());
+    const SiStripMatchedRecHit2D* secondMatchedhit=dynamic_cast<const SiStripMatchedRecHit2D*>((*secondRecHit).hit());
     hitPositions_[0] = (*iol).first->recHit()->localPosition().x();
-    hitPositions_[1] = (*iol).second->recHit()->localPosition().x();
     hitErrors_[0] = sqrt((*iol).first->recHit()->localPositionError().xx());
+    hitPositions_[1] = (*iol).second->recHit()->localPosition().x();
     hitErrors_[1] = sqrt((*iol).second->recHit()->localPositionError().xx());
-
-    //if ( dynamic_cast<const ProjectedRecHit2D*>(&(*(*iol).first->recHit())) ){
-    //  const ProjectedRecHit2D* proj = dynamic_cast<const ProjectedRecHit2D*>(&(*(*iol).first->recHit()));
-    //  proj->monoHit();
-    //  const GeomDet* det1 = proj1->originalDet();
-    //  const DetId id1 = det1->geographicalId();
-    //  //if((id1.rawId() & 0x3)==0) cout << "hit is matched" << endl;
-    //  if((id1.rawId() & 0x3)==1) continue; //hit is stereo
-    //  //if((id1.rawId() & 0x3)==2) cout << "hit is rphi" << endl;
-    // }
     
-
     //try writing out the SimHit info (for MC only)
     if(doSimHit_){
       std::vector<PSimHit> psimHits1;
       std::vector<PSimHit> psimHits2;
-      const TransientTrackingRecHit::ConstRecHitPointer firstRecHit = &(*(*iol).first->recHit());
-      const SiStripMatchedRecHit2D* firstMatchedhit=dynamic_cast<const SiStripMatchedRecHit2D*>((*firstRecHit).hit());
-      const TransientTrackingRecHit::ConstRecHitPointer secondRecHit = &(*(*iol).second->recHit());
-      const SiStripMatchedRecHit2D* secondMatchedhit=dynamic_cast<const SiStripMatchedRecHit2D*>((*secondRecHit).hit());
+      //calculate layer
+      DetId id = (*iol).first->recHit()->geographicalId();
+      int layer(-1);
+      layer = layerFromId(id);
+      cout << "layer = " << layer << endl;
       
       if ( firstMatchedhit ) {
-	//cout << "rechit2D" << endl;//if matchedHit take the rphi hit only
+	cout << "rechit2D" << endl;//if matchedHit take the rphi hit only
 	psimHits1 = associator.associateHit( *firstMatchedhit->monoHit() );
       } else {
 	psimHits1 = associator.associateHit( *(*iol).first->recHit()->hit() );
-	//cout << "single hit " << endl;
+	cout << "single hit " << endl;
       }
-      //cout << "length of psimHits1: " << psimHits1.size() << endl;
+      cout << "length of psimHits1: " << psimHits1.size() << endl;
       if ( !psimHits1.empty() ) {
 	float closest_dist = 99999.9;
 	std::vector<PSimHit>::const_iterator closest_simhit = psimHits1.begin();
@@ -429,15 +430,33 @@ HitRes::analyze (const Trajectory& trajectory,
 	  //find closest simHit to the recHit
 	  float simX = (*m).localPosition().x();
 	  float dist = fabs( simX - ((*iol).first->recHit()->localPosition().x()) );
-	  //cout << "simHit1 simX = " << simX << "   hitX = " << (*iol).first->recHit()->localPosition().x() << "   distX = " << dist << endl;
+	  if (firstMatchedhit) dist = fabs( simX - firstMatchedhit->monoHit()->localPosition().x());
+	  cout << "simHit1 simX = " << simX << "   hitX = " << (*iol).first->recHit()->localPosition().x() << "   distX = " << dist << "   layer = " << layer << endl;
 	  if (dist<closest_dist) {
 	    //cout << "found newest closest dist for simhit1" << endl;
 	    closest_dist = dist;
 	    closest_simhit = m;
 	  }
 	}
-	simHitPositions_[0] = (*closest_simhit).localPosition().x();
-	//cout << " filling simHitX: " << (*closest_simhit).localPosition().x() << endl;
+	//if glued layer, convert sim hit position to matchedhit surface
+	//layer index from 1-4 for TIB, 1-6 for TOB
+	if ( layer==1||layer==2 ) {
+	  const GluedGeomDet* gluedDet = (const GluedGeomDet*)(*trackerGeometry_).idToDet((*firstRecHit).hit()->geographicalId());
+	  const StripGeomDetUnit* stripDet =(StripGeomDetUnit*) gluedDet->monoDet();
+	  GlobalPoint gp = stripDet->surface().toGlobal( (*closest_simhit).localPosition() );
+	  LocalPoint lp = gluedDet->surface().toLocal( gp );
+	  LocalVector localdirection = (*closest_simhit).localDirection();
+	  GlobalVector globaldirection = stripDet->surface().toGlobal(localdirection);
+	  LocalVector direction = gluedDet->surface().toLocal(globaldirection);
+	  float scale = -lp.z() / direction.z();
+	  LocalPoint projectedPos = lp + scale*direction;
+          simHitPositions_[0] =	projectedPos.x();
+	  cout << "simhit position from matched layer = " << simHitPositions_[0] << endl;
+	} else {
+	  simHitPositions_[0] = (*closest_simhit).localPosition().x();
+	  cout << "simhit position from non-matched layer = " << simHitPositions_[0] << endl;
+	}
+	cout << "hit position = " << hitPositions_[0] << endl;
       } else {
 	simHitPositions_[0] = -99.;
 	//cout << " filling simHitX: " << -99 << endl;
@@ -454,17 +473,32 @@ HitRes::analyze (const Trajectory& trajectory,
 	for (std::vector<PSimHit>::const_iterator m = psimHits2.begin(); m < psimHits2.end(); m++) {
 	  float simX = (*m).localPosition().x();
 	  float dist = fabs( simX - ((*iol).second->recHit()->localPosition().x()) );
+	  if (secondMatchedhit) dist = fabs( simX - secondMatchedhit->monoHit()->localPosition().x());
 	  if (dist<closest_dist) {
 	    closest_dist = dist;
 	    closest_simhit = m;
 	  }
 	}
-	simHitPositions_[1] = (*closest_simhit).localPosition().x();
+	//if glued layer, convert sim hit position to matchedhit surface
+	if ( layer==1||layer==2 ) {
+	  const GluedGeomDet* gluedDet = (const GluedGeomDet*)(*trackerGeometry_).idToDet((*secondRecHit).hit()->geographicalId());
+	  const StripGeomDetUnit* stripDet =(StripGeomDetUnit*) gluedDet->monoDet();
+	  GlobalPoint gp = stripDet->surface().toGlobal( (*closest_simhit).localPosition() );
+	  LocalPoint lp = gluedDet->surface().toLocal( gp );
+	  LocalVector localdirection = (*closest_simhit).localDirection();
+	  GlobalVector globaldirection = stripDet->surface().toGlobal(localdirection);
+	  LocalVector direction = gluedDet->surface().toLocal(globaldirection);
+	  float scale = -lp.z() / direction.z();
+	  LocalPoint projectedPos = lp + scale*direction;
+          simHitPositions_[1] =	projectedPos.x();
+	} else {
+	  simHitPositions_[1] = (*closest_simhit).localPosition().x();
+	}
       } else {
 	simHitPositions_[1] = -99.;
       }
     }
-
+    
     rootTree_->Fill();
 //     cout << "DiffErr " 
 // 	 << c00 << " " << c10 << " " << c11 << " " << diff << std::endl;
