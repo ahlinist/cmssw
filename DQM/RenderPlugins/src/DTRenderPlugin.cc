@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.13 2008/05/24 08:53:00 dellaric Exp $
+// $Id: DTRenderPlugin.cc,v 1.14 2008/05/27 16:29:57 cerminar Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.13 $
-  \date $Date: 2008/05/24 08:53:00 $
+  \version $Revision: 1.14 $
+  \date $Date: 2008/05/27 16:29:57 $
 */
 
 #include "TProfile2D.h"
@@ -87,6 +87,9 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
   obj->SetOption("colz");
   gPad->SetLogz(0);
 
+  // --------------------------------------------------------------
+  // Data integrity plots
+
   if( o.name.find("ROSSummary") < o.name.size() ) {
     gPad->SetGrid(1,1);
     obj->GetXaxis()->SetLabelSize(0.07);
@@ -94,7 +97,35 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->GetXaxis()->LabelsOption("v");
     gPad->SetBottomMargin(0.25);
     gPad->SetLeftMargin(0.15);
+    return;
   }
+
+  if(o.name.find("DataIntegritySummary") < o.name.size()) {
+    obj->GetXaxis()->SetNdivisions(13,true);
+    obj->GetYaxis()->SetNdivisions(6,true);
+    obj->GetXaxis()->CenterLabels();
+    obj->GetYaxis()->CenterLabels();
+    gPad->SetGrid(1,1);
+    obj->GetXaxis()->SetLabelSize(0.07);
+    obj->GetYaxis()->SetLabelSize(0.07);
+    obj->GetXaxis()->SetTitleOffset(1.15);
+//     obj->GetXaxis()->LabelsOption("v");
+    gPad->SetBottomMargin(0.1);
+    gPad->SetLeftMargin(0.15);
+    gPad->SetRightMargin(0.12);
+    obj->SetMinimum(-0.00000001);
+    obj->SetMaximum(3.0);
+    
+    int colorErrorDI[3];
+    colorErrorDI[0] = 416;// kGreen
+    colorErrorDI[1] = 594;// kind of blue
+    colorErrorDI[2] = 632;// kRed
+    gStyle->SetPalette(3, colorErrorDI);
+    return;
+  }
+
+
+
   
   if( o.name.find("OccupancyAllHits_W") < o.name.size() ) {
     obj->GetXaxis()->SetNdivisions(13,true);
@@ -109,8 +140,8 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     gPad->SetBottomMargin(0.1);
     gPad->SetLeftMargin(0.12);
     gPad->SetRightMargin(0.12);
-
-  } else if(o.name.find("OccupancySummary") < o.name.size()) {
+    return;
+  } else if(o.name.find("OccupancySummary_W") < o.name.size()) {
     obj->GetXaxis()->SetNdivisions(13,true);
     obj->GetYaxis()->SetNdivisions(5,true);
     obj->GetXaxis()->CenterLabels();
@@ -125,19 +156,43 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->SetMinimum(-0.00000001);
     obj->SetMaximum(5.0);
 
-    int colorError1[3];
+    int colorError1[5];
     colorError1[0] = 416;// kGreen
     colorError1[1] = 400;// kYellow
     colorError1[2] = 800;// kOrange
     colorError1[3] = 625;
     colorError1[4] = 632;// kRed
     gStyle->SetPalette(5, colorError1);
+    return;
+  }  else if(o.name.find("OccupancySummary") < o.name.size()) {
+    obj->GetXaxis()->SetNdivisions(13,true);
+    obj->GetYaxis()->SetNdivisions(5,true);
+    obj->GetXaxis()->CenterLabels();
+    obj->GetYaxis()->CenterLabels();
+    gPad->SetGrid(1,1);
+    obj->GetXaxis()->SetLabelSize(0.07);
+    obj->GetYaxis()->SetLabelSize(0.07);
+    obj->GetXaxis()->LabelsOption("v");
+    gPad->SetBottomMargin(0.1);
+    gPad->SetLeftMargin(0.12);
+    gPad->SetRightMargin(0.12);
+    obj->SetMinimum(-0.00000001);
+    obj->SetMaximum(5.0);
 
+    int colorError1[5];
+    colorError1[0] = 416;// kGreen
+    colorError1[1] = 400;// kYellow
+    colorError1[2] = 800;// kOrange
+    colorError1[3] = 625;
+    colorError1[4] = 632;// kRed
+    gStyle->SetPalette(5, colorError1);
+    return;
   } else if( o.name.find("Occupancy" ) < o.name.size() ) {
     gPad->SetGrid(0,4);
     obj->GetXaxis()->SetLabelSize(0.07);
     obj->GetYaxis()->SetLabelSize(0.07);
     gPad->SetLeftMargin(0.15);
+    return;
   }
 
 
