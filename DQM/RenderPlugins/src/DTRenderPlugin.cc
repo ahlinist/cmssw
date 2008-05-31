@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.14 2008/05/27 16:29:57 cerminar Exp $
+// $Id: DTRenderPlugin.cc,v 1.15 2008/05/30 09:13:25 cerminar Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.14 $
-  \date $Date: 2008/05/27 16:29:57 $
+  \version $Revision: 1.15 $
+  \date $Date: 2008/05/30 09:13:25 $
 */
 
 #include "TProfile2D.h"
@@ -246,9 +246,61 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  return;
 
+  // --------------------------------------------------------------
+  // Segments plots
+  if(o.name.find("segmentSummary_W") < o.name.size()) {
+    obj->GetXaxis()->SetNdivisions(13,true);
+    obj->GetYaxis()->SetNdivisions(5,true);
+    obj->GetXaxis()->CenterLabels();
+    obj->GetYaxis()->CenterLabels();
+    gPad->SetGrid(1,1);
+    obj->GetXaxis()->SetLabelSize(0.07);
+    obj->GetYaxis()->SetLabelSize(0.07);
+    //    obj->GetXaxis()->LabelsOption("v");
+    gPad->SetBottomMargin(0.1);
+    gPad->SetLeftMargin(0.12);
+    gPad->SetRightMargin(0.12);
+    obj->SetMinimum(-0.00000001);
+    obj->SetMaximum(3.0);
 
+    int colorError1[3];
+    colorError1[0] = 416;// kGreen
+    colorError1[1] = 400;// kYellow
+    colorError1[2] = 632;// kRed
+    gStyle->SetPalette(3, colorError1);
+    return;
+  }  else if(o.name.find("segmentSummary") < o.name.size()) {
+    obj->GetXaxis()->SetNdivisions(13,true);
+    obj->GetYaxis()->SetNdivisions(6,true);
+    obj->GetXaxis()->CenterLabels();
+    obj->GetYaxis()->CenterLabels();
+    gPad->SetGrid(1,1);
+    obj->GetXaxis()->SetLabelSize(0.07);
+    obj->GetYaxis()->SetLabelSize(0.07);
+    //    obj->GetXaxis()->LabelsOption("v");
+    gPad->SetBottomMargin(0.1);
+    gPad->SetLeftMargin(0.12);
+    gPad->SetRightMargin(0.12);
+    obj->SetMinimum(-0.00000001);
+    obj->SetMaximum(3.0);
+
+    int colorError1[3];
+    colorError1[0] = 416;// kGreen
+    colorError1[1] = 400;// kYellow
+    colorError1[2] = 632;// kRed
+    gStyle->SetPalette(3, colorError1);
+    return;
+  } else if(o.name.find("numberOfSegments_W") < o.name.size()) {
+    obj->GetXaxis()->SetNdivisions(13,true);
+    obj->GetYaxis()->SetNdivisions(5,true);
+    obj->GetXaxis()->CenterLabels();
+    obj->GetYaxis()->CenterLabels();
+    obj->GetXaxis()->SetLabelSize(0.07);
+    obj->GetYaxis()->SetLabelSize(0.07);
+//     obj->GetXaxis()->LabelsOption("v");
+  }
+  
 }
 
 void DTRenderPlugin::preDrawTH1( TCanvas *c, const DQMNet::CoreObject &o ) {
