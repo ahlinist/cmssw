@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.1 2008/05/28 09:18:46 delre Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.2 2008/05/28 18:22:13 delre Exp $
 //
 //
 
@@ -85,8 +85,12 @@ GammaJetAnalyzer::GammaJetAnalyzer(const edm::ParameterSet& iConfig)
   MCTruthCollection_ = iConfig.getUntrackedParameter<edm::InputTag>("MCTruthCollection");
   trackTags_ = iConfig.getUntrackedParameter<edm::InputTag>("tracks");
   Photonsrc_ = iConfig.getUntrackedParameter<edm::InputTag>( "Photonsrc" );
-  Jetsrc_ = iConfig.getUntrackedParameter<edm::InputTag>( "jets" );
-  JetGensrc_ = iConfig.getUntrackedParameter<edm::InputTag>( "jetsgen" );
+  Jetsrcite_ = iConfig.getUntrackedParameter<edm::InputTag>( "jetsite" );
+  Jetsrckt_ = iConfig.getUntrackedParameter<edm::InputTag>( "jetskt" );
+  Jetsrcsis_ = iConfig.getUntrackedParameter<edm::InputTag>( "jetssis" );
+  JetGensrcite_ = iConfig.getUntrackedParameter<edm::InputTag>( "jetsgenite" );
+  JetGensrckt_ = iConfig.getUntrackedParameter<edm::InputTag>( "jetsgenkt" );
+  JetGensrcsis_ = iConfig.getUntrackedParameter<edm::InputTag>( "jetsgensis" );
   METsrc_ = iConfig.getUntrackedParameter<edm::InputTag>( "met" );
   METGensrc_ = iConfig.getUntrackedParameter<edm::InputTag>( "genMet" );
   HBhitsrc_ = iConfig.getUntrackedParameter<edm::InputTag>( "hbhits" );
@@ -121,7 +125,7 @@ GammaJetAnalyzer::~GammaJetAnalyzer()
 void
 GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-   nMC = nPhot = nJet = nJetGen = 0;
+   nMC = nPhot = nJet_ite = nJet_kt = nJet_sis = nJetGen_ite = nJetGen_kt = nJetGen_sis = 0;
 
    using reco::TrackCollection;
   
@@ -140,12 +144,20 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    iEvent.getByLabel( Photonsrc_, PhotonHandle );
 
    // get calo jet collection
-   Handle<CaloJetCollection> jets;
-   iEvent.getByLabel(Jetsrc_, jets);
+   Handle<CaloJetCollection> jetsite;
+   iEvent.getByLabel(Jetsrcite_, jetsite);
+   Handle<CaloJetCollection> jetskt;
+   iEvent.getByLabel(Jetsrckt_, jetskt);
+   Handle<CaloJetCollection> jetssis;
+   iEvent.getByLabel(Jetsrcsis_, jetssis);
 
    // get gen jet collection
-   Handle<GenJetCollection> jetsgen;
-   iEvent.getByLabel(JetGensrc_, jetsgen);
+   Handle<GenJetCollection> jetsgenite;
+   iEvent.getByLabel(JetGensrcite_, jetsgenite);
+   Handle<GenJetCollection> jetsgenkt;
+   iEvent.getByLabel(JetGensrckt_, jetsgenkt);
+   Handle<GenJetCollection> jetsgensis;
+   iEvent.getByLabel(JetGensrcsis_, jetsgensis);
 
    // get MET
    Handle<CaloMETCollection> calomethandle;
@@ -423,34 +435,90 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
    // Loop over reco Jets
 
-   for ( CaloJetCollection::const_iterator it = jets->begin(); 
-	it != jets->end(); it++ ) {
+   for ( CaloJetCollection::const_iterator it = jetsite->begin(); 
+	it != jetsite->end(); it++ ) {
 
-     if(nJet>=100) {cout << "number of reco jets is larger than 100. Skipping" << endl; continue;}
-     pxJet[nJet] = it->px();	 
-     pyJet[nJet] = it->py();	 
-     pzJet[nJet] = it->pz();	 
-     eJet[nJet] = it->energy();	 
-     etaJet[nJet] = it->eta();	 
-     phiJet[nJet] = it->phi();	      
+     if(nJet_ite>=100) {cout << "number of reco jets ite is larger than 100. Skipping" << endl; continue;}
+     pxJet_ite[nJet_ite] = it->px();	 
+     pyJet_ite[nJet_ite] = it->py();	 
+     pzJet_ite[nJet_ite] = it->pz();	 
+     eJet_ite[nJet_ite] = it->energy();	 
+     etaJet_ite[nJet_ite] = it->eta();	 
+     phiJet_ite[nJet_ite] = it->phi();	      
      
-     nJet++;
+     nJet_ite++;
+   }
+   
+    for ( CaloJetCollection::const_iterator it = jetskt->begin(); 
+	it != jetskt->end(); it++ ) {
+
+     if(nJet_kt>=100) {cout << "number of reco jets kt is larger than 100. Skipping" << endl; continue;}
+     pxJet_kt[nJet_kt] = it->px();	 
+     pyJet_kt[nJet_kt] = it->py();	 
+     pzJet_kt[nJet_kt] = it->pz();	 
+     eJet_kt[nJet_kt] = it->energy();	 
+     etaJet_kt[nJet_kt] = it->eta();	 
+     phiJet_kt[nJet_kt] = it->phi();	      
+     
+     nJet_kt++;
+   }
+   
+    for ( CaloJetCollection::const_iterator it = jetssis->begin(); 
+	it != jetssis->end(); it++ ) {
+
+     if(nJet_sis>=100) {cout << "number of reco jets sis is larger than 100. Skipping" << endl; continue;}
+     pxJet_sis[nJet_sis] = it->px();	 
+     pyJet_sis[nJet_sis] = it->py();	 
+     pzJet_sis[nJet_sis] = it->pz();	 
+     eJet_sis[nJet_sis] = it->energy();	 
+     etaJet_sis[nJet_sis] = it->eta();	 
+     phiJet_sis[nJet_sis] = it->phi();	      
+     
+     nJet_sis++;
    }
    
    // Loop over gen Jets
 
-   for ( GenJetCollection::const_iterator it = jetsgen->begin(); 
-	it != jetsgen->end(); it++ ) {
+   for ( GenJetCollection::const_iterator it = jetsgenite->begin(); 
+	it != jetsgenite->end(); it++ ) {
 
-     if(nJetGen>=100) {cout << "number of gen jets is larger than 100. Skipping" << endl; continue;}
-     pxJetGen[nJetGen] = it->px();	 
-     pyJetGen[nJetGen] = it->py();	 
-     pzJetGen[nJetGen] = it->pz();	 
-     eJetGen[nJetGen] = it->energy();	 
-     etaJetGen[nJetGen] = it->eta();	 
-     phiJetGen[nJetGen] = it->phi();	      
+     if(nJetGen_ite>=100) {cout << "number of gen jets ite is larger than 100. Skipping" << endl; continue;}
+     pxJetGen_ite[nJetGen_ite] = it->px();	 
+     pyJetGen_ite[nJetGen_ite] = it->py();	 
+     pzJetGen_ite[nJetGen_ite] = it->pz();	 
+     eJetGen_ite[nJetGen_ite] = it->energy();	 
+     etaJetGen_ite[nJetGen_ite] = it->eta();	 
+     phiJetGen_ite[nJetGen_ite] = it->phi();	      
      
-     nJetGen++;
+     nJetGen_ite++;
+   }
+
+   for ( GenJetCollection::const_iterator it = jetsgenkt->begin(); 
+	it != jetsgenkt->end(); it++ ) {
+
+     if(nJetGen_kt>=100) {cout << "number of gen jets kt is larger than 100. Skipping" << endl; continue;}
+     pxJetGen_kt[nJetGen_kt] = it->px();	 
+     pyJetGen_kt[nJetGen_kt] = it->py();	 
+     pzJetGen_kt[nJetGen_kt] = it->pz();	 
+     eJetGen_kt[nJetGen_kt] = it->energy();	 
+     etaJetGen_kt[nJetGen_kt] = it->eta();	 
+     phiJetGen_kt[nJetGen_kt] = it->phi();	      
+     
+     nJetGen_kt++;
+   }
+
+   for ( GenJetCollection::const_iterator it = jetsgensis->begin(); 
+	it != jetsgensis->end(); it++ ) {
+
+     if(nJetGen_sis>=100) {cout << "number of gen jets sis is larger than 100. Skipping" << endl; continue;}
+     pxJetGen_sis[nJetGen_sis] = it->px();	 
+     pyJetGen_sis[nJetGen_sis] = it->py();	 
+     pzJetGen_sis[nJetGen_sis] = it->pz();	 
+     eJetGen_sis[nJetGen_sis] = it->energy();	 
+     etaJetGen_sis[nJetGen_sis] = it->eta();	 
+     phiJetGen_sis[nJetGen_sis] = it->phi();	      
+     
+     nJetGen_sis++;
    }
 
    // Fill reco MET
@@ -540,21 +608,53 @@ GammaJetAnalyzer::beginJob(const edm::EventSetup&)
   m_tree->Branch("sMinMinPhot",&sMinMinPhot,"sMinMin2Phot[nPhot]/F");
   m_tree->Branch("FisherPhot",&FisherPhot,"FisherPhot[nPhot]/F");
 
-  m_tree->Branch("nJet",&nJet,"nJet/I");
-  m_tree->Branch("pxJet ",&pxJet ,"pxJet[nJet]/F");
-  m_tree->Branch("pyJet ",&pyJet ,"pyJet[nJet]/F");
-  m_tree->Branch("pzJet ",&pzJet ,"pzJet[nJet]/F");
-  m_tree->Branch("eJet  ",&eJet  ,"eJet[nJet]/F");
-  m_tree->Branch("etaJet",&etaJet,"etaJet[nJet]/F");
-  m_tree->Branch("phiJet",&phiJet,"phiJet[nJet]/F");
+  m_tree->Branch("nJet_ite",&nJet_ite,"nJet_ite/I");
+  m_tree->Branch("pxJet_ite ",&pxJet_ite ,"pxJet_ite[nJet_ite]/F");
+  m_tree->Branch("pyJet_ite ",&pyJet_ite ,"pyJet_ite[nJet_ite]/F");
+  m_tree->Branch("pzJet_ite ",&pzJet_ite ,"pzJet_ite[nJet_ite]/F");
+  m_tree->Branch("eJet_ite  ",&eJet_ite  ,"eJet_ite[nJet_ite]/F");
+  m_tree->Branch("etaJet_ite",&etaJet_ite,"etaJet_ite[nJet_ite]/F");
+  m_tree->Branch("phiJet_ite",&phiJet_ite,"phiJet_ite[nJet_ite]/F");
 
-  m_tree->Branch("nJetGen",&nJetGen,"nJetGen/I");
-  m_tree->Branch("pxJetGen ",&pxJetGen ,"pxJetGen[nJetGen]/F");
-  m_tree->Branch("pyJetGen ",&pyJetGen ,"pyJetGen[nJetGen]/F");
-  m_tree->Branch("pzJetGen ",&pzJetGen ,"pzJetGen[nJetGen]/F");
-  m_tree->Branch("eJetGen  ",&eJetGen  ,"eJetGen[nJetGen]/F");
-  m_tree->Branch("etaJetGen",&etaJetGen,"etaJetGen[nJetGen]/F");
-  m_tree->Branch("phiJetGen",&phiJetGen,"phiJetGen[nJetGen]/F");
+  m_tree->Branch("nJet_kt",&nJet_kt,"nJet_kt/I");
+  m_tree->Branch("pxJet_kt ",&pxJet_kt ,"pxJet_kt[nJet_kt]/F");
+  m_tree->Branch("pyJet_kt ",&pyJet_kt ,"pyJet_kt[nJet_kt]/F");
+  m_tree->Branch("pzJet_kt ",&pzJet_kt ,"pzJet_kt[nJet_kt]/F");
+  m_tree->Branch("eJet_kt  ",&eJet_kt  ,"eJet_kt[nJet_kt]/F");
+  m_tree->Branch("etaJet_kt",&etaJet_kt,"etaJet_kt[nJet_kt]/F");
+  m_tree->Branch("phiJet_kt",&phiJet_kt,"phiJet_kt[nJet_kt]/F");
+
+  m_tree->Branch("nJet_sis",&nJet_sis,"nJet_sis/I");
+  m_tree->Branch("pxJet_sis ",&pxJet_sis ,"pxJet_sis[nJet_sis]/F");
+  m_tree->Branch("pyJet_sis ",&pyJet_sis ,"pyJet_sis[nJet_sis]/F");
+  m_tree->Branch("pzJet_sis ",&pzJet_sis ,"pzJet_sis[nJet_sis]/F");
+  m_tree->Branch("eJet_sis  ",&eJet_sis  ,"eJet_sis[nJet_sis]/F");
+  m_tree->Branch("etaJet_sis",&etaJet_sis,"etaJet_sis[nJet_sis]/F");
+  m_tree->Branch("phiJet_sis",&phiJet_sis,"phiJet_sis[nJet_sis]/F");
+
+  m_tree->Branch("nJetGen_ite",&nJetGen_ite,"nJetGen_ite/I");
+  m_tree->Branch("pxJetGen_ite ",&pxJetGen_ite ,"pxJetGen_ite[nJetGen_ite]/F");
+  m_tree->Branch("pyJetGen_ite ",&pyJetGen_ite ,"pyJetGen_ite[nJetGen_ite]/F");
+  m_tree->Branch("pzJetGen_ite ",&pzJetGen_ite ,"pzJetGen_ite[nJetGen_ite]/F");
+  m_tree->Branch("eJetGen_ite  ",&eJetGen_ite  ,"eJetGen_ite[nJetGen_ite]/F");
+  m_tree->Branch("etaJetGen_ite",&etaJetGen_ite,"etaJetGen_ite[nJetGen_ite]/F");
+  m_tree->Branch("phiJetGen_ite",&phiJetGen_ite,"phiJetGen_ite[nJetGen_ite]/F");
+
+  m_tree->Branch("nJetGen_kt",&nJetGen_kt,"nJetGen_kt/I");
+  m_tree->Branch("pxJetGen_kt ",&pxJetGen_kt ,"pxJetGen_kt[nJetGen_kt]/F");
+  m_tree->Branch("pyJetGen_kt ",&pyJetGen_kt ,"pyJetGen_kt[nJetGen_kt]/F");
+  m_tree->Branch("pzJetGen_kt ",&pzJetGen_kt ,"pzJetGen_kt[nJetGen_kt]/F");
+  m_tree->Branch("eJetGen_kt  ",&eJetGen_kt  ,"eJetGen_kt[nJetGen_kt]/F");
+  m_tree->Branch("etaJetGen_kt",&etaJetGen_kt,"etaJetGen_kt[nJetGen_kt]/F");
+  m_tree->Branch("phiJetGen_kt",&phiJetGen_kt,"phiJetGen_kt[nJetGen_kt]/F");
+
+  m_tree->Branch("nJetGen_sis",&nJetGen_sis,"nJetGen_sis/I");
+  m_tree->Branch("pxJetGen_sis ",&pxJetGen_sis ,"pxJetGen_sis[nJetGen_sis]/F");
+  m_tree->Branch("pyJetGen_sis ",&pyJetGen_sis ,"pyJetGen_sis[nJetGen_sis]/F");
+  m_tree->Branch("pzJetGen_sis ",&pzJetGen_sis ,"pzJetGen_sis[nJetGen_sis]/F");
+  m_tree->Branch("eJetGen_sis  ",&eJetGen_sis  ,"eJetGen_sis[nJetGen_sis]/F");
+  m_tree->Branch("etaJetGen_sis",&etaJetGen_sis,"etaJetGen_sis[nJetGen_sis]/F");
+  m_tree->Branch("phiJetGen_sis",&phiJetGen_sis,"phiJetGen_sis[nJetGen_sis]/F");
 
   m_tree->Branch("pxMet ",&pxMet ,"pxMet/F");
   m_tree->Branch("pyMet ",&pyMet ,"pyMet/F");
