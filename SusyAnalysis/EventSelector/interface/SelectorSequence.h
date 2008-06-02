@@ -6,10 +6,12 @@
 ///
 /// Original author: W. Adam, 10/4/08
 ///
-/// $Id: SelectorSequence.h,v 1.9 2008/05/22 08:32:26 fronga Exp $ 
+/// $Id: SelectorSequence.h,v 1.2 2008/05/23 15:48:22 fronga Exp $ 
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+
+#include "SusyAnalysis/EventSelector/interface/SelectorDecisions.h"
 
 #include <vector>
 #include <string>
@@ -64,6 +66,11 @@ public:
    *  up to and including the one identified by "name") */
   bool cumulativeDecision (const edm::Event& event, 
 			   const std::string& selectorName) const;
+
+  /// return decisions as object (with access functions)
+  SelectorDecisions decisionObject (const edm::Event& event) const {
+    return SelectorDecisions(decisions(event));
+  }
 
   /// number of variables
   size_t numberOfVariables () const;
