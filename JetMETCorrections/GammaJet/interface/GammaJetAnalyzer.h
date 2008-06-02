@@ -35,8 +35,12 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
       // ----------member data ---------------------------
       edm::InputTag MCTruthCollection_; 
       edm::InputTag Photonsrc_; 
-      edm::InputTag Jetsrc_; 
-      edm::InputTag JetGensrc_; 
+      edm::InputTag Jetsrcite_; 
+      edm::InputTag Jetsrckt_; 
+      edm::InputTag Jetsrcsis_; 
+      edm::InputTag JetGensrcite_; 
+      edm::InputTag JetGensrckt_; 
+      edm::InputTag JetGensrcsis_; 
       edm::InputTag METsrc_; 
       edm::InputTag METGensrc_; 
       edm::InputTag trackTags_; 
@@ -112,21 +116,53 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
       Float_t sMajMajPhot[40];
       Float_t FisherPhot[40];
 
-      Int_t nJet;
-      Float_t pxJet[100];
-      Float_t pyJet[100];
-      Float_t pzJet[100];
-      Float_t eJet[100];
-      Float_t etaJet[100];
-      Float_t phiJet[100];
+      Int_t nJet_ite;
+      Float_t pxJet_ite[100];
+      Float_t pyJet_ite[100];
+      Float_t pzJet_ite[100];
+      Float_t eJet_ite[100];
+      Float_t etaJet_ite[100];
+      Float_t phiJet_ite[100];
 
-      Int_t nJetGen;
-      Float_t pxJetGen[100];
-      Float_t pyJetGen[100];
-      Float_t pzJetGen[100];
-      Float_t eJetGen[100];
-      Float_t etaJetGen[100];
-      Float_t phiJetGen[100];
+      Int_t nJet_kt;
+      Float_t pxJet_kt[100];
+      Float_t pyJet_kt[100];
+      Float_t pzJet_kt[100];
+      Float_t eJet_kt[100];
+      Float_t etaJet_kt[100];
+      Float_t phiJet_kt[100];
+
+      Int_t nJet_sis;
+      Float_t pxJet_sis[100];
+      Float_t pyJet_sis[100];
+      Float_t pzJet_sis[100];
+      Float_t eJet_sis[100];
+      Float_t etaJet_sis[100];
+      Float_t phiJet_sis[100];
+
+      Int_t nJetGen_ite;
+      Float_t pxJetGen_ite[100];
+      Float_t pyJetGen_ite[100];
+      Float_t pzJetGen_ite[100];
+      Float_t eJetGen_ite[100];
+      Float_t etaJetGen_ite[100];
+      Float_t phiJetGen_ite[100];
+
+      Int_t nJetGen_kt;
+      Float_t pxJetGen_kt[100];
+      Float_t pyJetGen_kt[100];
+      Float_t pzJetGen_kt[100];
+      Float_t eJetGen_kt[100];
+      Float_t etaJetGen_kt[100];
+      Float_t phiJetGen_kt[100];
+
+      Int_t nJetGen_sis;
+      Float_t pxJetGen_sis[100];
+      Float_t pyJetGen_sis[100];
+      Float_t pzJetGen_sis[100];
+      Float_t eJetGen_sis[100];
+      Float_t etaJetGen_sis[100];
+      Float_t phiJetGen_sis[100];
 
       Float_t pxMet;
       Float_t pyMet;
