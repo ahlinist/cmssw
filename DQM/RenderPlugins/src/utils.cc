@@ -1,9 +1,9 @@
-// $Id: utils.cc,v 1.57 2008/05/20 15:28:16 dellaric Exp $
+// $Id: utils.cc,v 1.1 2008/05/28 12:41:29 dellaric Exp $
 
 /*!
   \file utils.cc
-  \version $Revision: 1.57 $
-  \date $Date: 2008/05/20 15:28:16 $
+  \version $Revision: 1.1 $
+  \date $Date: 2008/05/28 12:41:29 $
 */
 
 #include "TH2F.h"
@@ -31,13 +31,13 @@ void utils::reportSummaryMapPalette(TH2F* obj) {
     float rgb[20][3];
 
     for( int i=0; i<20; i++ ) {
-      if ( i < 18 ) {
+      if ( i < 17 ) {
         rgb[i][0] = 0.80+0.01*i;
         rgb[i][1] = 0.00+0.03*i;
         rgb[i][2] = 0.00;
-      } else if ( i == 18 ) {
-        rgb[i][0] = 0.98;
-        rgb[i][1] = 0.60;
+      } else if ( i < 19 ) {
+        rgb[i][0] = 0.80+0.01*i;
+        rgb[i][1] = 0.00+0.03*i+0.15+0.10*(i-17);
         rgb[i][2] = 0.00;
       } else if ( i == 19 ) {
         rgb[i][0] = 0.00;
