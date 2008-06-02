@@ -17,7 +17,7 @@
 // Original Author:  Efe Yazgan
 // Updated        :  Taylan Yetkin (2008/05/08)
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.h,v 1.7 2008/05/10 05:03:43 fedor Exp $
+// $Id: HcalProm.h,v 1.8 2008/05/16 17:09:23 efe Exp $
 //
 //
 
@@ -82,6 +82,8 @@ class HcalProm : public edm::EDAnalyzer {
 
       // ----------member data ---------------------------
       edm::Service<TFileService> fs;
+
+      TH1F* h_global_trigger_bit;
 
       TH1F* h_hbhe_rechit_energy;
       TH1F* h_maxhbherec;
