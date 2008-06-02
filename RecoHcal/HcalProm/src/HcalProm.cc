@@ -17,7 +17,7 @@
 // Original Author:  Efe Yazgan
 // Updated        :  Taylan Yetkin (2008/05/08)
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.19 2008/05/14 22:18:01 fedor Exp $
+// $Id: HcalProm.cc,v 1.20 2008/05/16 17:09:16 efe Exp $
 //
 //
 
@@ -298,8 +298,9 @@ void HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    DecisionWord gtDecisionWord = gtrr->decisionWord();
    for (size_t iBit = 0; iBit < gtDecisionWord.size(); ++iBit) {
      if (gtDecisionWord [iBit]) {
-       std::string triggerName = iBit < l1TableSize ? l1TriggerNames [iBit] : "Undefined";
-       std::cout << "L1 Accepted: L1 bit " << iBit <<", trigger " << triggerName << std::endl;
+       h_global_trigger_bit->Fill (iBit);
+       //   std::string triggerName = iBit < l1TableSize ? l1TriggerNames [iBit] : "Undefined";
+       //   std::cout << "L1 Accepted: L1 bit " << iBit <<", trigger " << triggerName << std::endl;
      }
    }
 
@@ -670,6 +671,7 @@ void HcalProm::beginJob(const edm::EventSetup&)
 
     //Add runnumbers to histograms!
     
+    h_global_trigger_bit = fs->make<TH1F>("h_global_trigger_bit","Global Trigger Bit Fired",128,-0.5,127.5);
     h_hbhe_rechit_energy = HcalDir.make<TH1F>("h_hbhe_rechit_energy","RecHit Energy HBHE",130,-10,120);
     h_hf_rechit_energy = HcalDir.make<TH1F>("h_hf_rechit_energy","RecHit Energy HF",130,-10,120);
     
