@@ -66,14 +66,14 @@ pair<float,IsolatedTauTagInfo> ConeIsolationAlgorithm::tag(const JetTracksAssoci
   float discriminator = 0.;
   if (useVertexConstrain_) {
     // In this case all the selected tracks comes from the same vertex, so no need to pass the dZ_vertex requirement to the discriminator 
-    TrackRef myLeadTk = resultExtended.leadingSignalTrack( matching_cone, pt_min_leadTrack);
-    resultExtended.setLeadingTrack(myLeadTk);
+   const TrackRef myLeadTk = resultExtended.leadingSignalTrack( matching_cone, pt_min_leadTrack);
+      resultExtended.setLeadingTrack(myLeadTk);
     discriminator = resultExtended.discriminator(jetDir, matching_cone, r_sigCone, isolation_cone, pt_min_leadTrack, pt_min_isolation,  n_tracks_isolation_ring); 
     resultExtended.setDiscriminator(discriminator);
   } else {
     // In this case the dZ_vertex is used to associate the tracks to the Z_imp parameter of the Leading Track
-  TrackRef myLeadTk = resultExtended.leadingSignalTrack( matching_cone, pt_min_leadTrack);
-    resultExtended.setLeadingTrack(myLeadTk);    
+ const TrackRef myLeadTk = resultExtended.leadingSignalTrack( matching_cone, pt_min_leadTrack);
+   resultExtended.setLeadingTrack(myLeadTk);    
     discriminator = resultExtended.discriminator(jetDir, matching_cone, r_sigCone, isolation_cone, pt_min_leadTrack, pt_min_isolation,  n_tracks_isolation_ring, dZ_vertex); 
     resultExtended.setDiscriminator(discriminator);
   }
