@@ -17,7 +17,7 @@
 // Original Author:  Efe Yazgan
 // Updated        :  Taylan Yetkin (2008/05/08)
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.20 2008/05/16 17:09:16 efe Exp $
+// $Id: HcalProm.cc,v 1.21 2008/06/02 20:13:42 fedor Exp $
 //
 //
 
@@ -418,10 +418,8 @@ void HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
  
    for (HFRecHitCollection::const_iterator hhit=Hithf.begin(); hhit!=Hithf.end(); hhit++) {
-     if (hhit->energy() > 0.6){
-       h_hf_rechit_energy->Fill(hhit->energy());
-       h_hf_eta_phi->Fill((hhit->id()).ieta(),(hhit->id()).iphi());
-     }
+     h_hf_rechit_energy->Fill(hhit->energy());
+     h_hf_eta_phi->Fill((hhit->id()).ieta(),(hhit->id()).iphi());
    }
 
    float maxhorec = 0;
@@ -672,8 +670,8 @@ void HcalProm::beginJob(const edm::EventSetup&)
     //Add runnumbers to histograms!
     
     h_global_trigger_bit = fs->make<TH1F>("h_global_trigger_bit","Global Trigger Bit Fired",128,-0.5,127.5);
-    h_hbhe_rechit_energy = HcalDir.make<TH1F>("h_hbhe_rechit_energy","RecHit Energy HBHE",130,-10,120);
-    h_hf_rechit_energy = HcalDir.make<TH1F>("h_hf_rechit_energy","RecHit Energy HF",130,-10,120);
+    h_hbhe_rechit_energy = HcalDir.make<TH1F>("h_hbhe_rechit_energy","RecHit Energy HBHE",130,-10,30);
+    h_hf_rechit_energy = HcalDir.make<TH1F>("h_hf_rechit_energy","RecHit Energy HF",130,-10,30);
     
     h_maxhbherec = HcalDir.make<TH1F>("h_maxhbherec","HBHE Muon (GeV)",200,0,15);
     h_maxhorec = HcalDir.make<TH1F>("h_maxhorec","HO Muon (GeV)",200,0,15);
@@ -681,7 +679,7 @@ void HcalProm::beginJob(const edm::EventSetup&)
     h_maxhbPlusrec = HcalDir.make<TH1F>("h_maxhbPlusrec","HB+ Muon (GeV)",200,0,15);
     h_hbhe_eta_phi = HcalDir.make<TH2F>("h_hbhe_eta_phi","#eta(HBHE)",60,-30,30,72,0,72);
     h_hf_eta_phi = HcalDir.make<TH2F>("h_hf_eta_phi","#eta(HF)",96,-48,48,72,0,72);
-    h_ho_rechit_energy = HcalDir.make<TH1F>(" h_ho_rechit_energy","RecHit Energy HO",130,-10,120);
+    h_ho_rechit_energy = HcalDir.make<TH1F>(" h_ho_rechit_energy","RecHit Energy HO",130,-10,30);
     h_ho_eta_phi = HcalDir.make<TH2F>("h_ho_eta_phi","#eta(HO)",60,-30,30,72,0,72);
     
     h_hbtiming = HcalDir.make<TH1F>("h_hbtiming","HBHE Timing",10,-0.5,9.5);
@@ -698,7 +696,7 @@ void HcalProm::beginJob(const edm::EventSetup&)
     h_MHT = JetMetDir.make < TH1F > ("h_MHT","MHT", 600,-10,200);
     h_HT = JetMetDir.make < TH1F > ("h_HT","HT", 600,-10,200);
 
-    h_eb_rechit_energy = EcalDir.make<TH1F>(" h_eb_rechit_energy","RecHit Energy EB",130,-10,120);
+    h_eb_rechit_energy = EcalDir.make<TH1F>(" h_eb_rechit_energy","RecHit Energy EB",130,-10,30);
     h_maxebeerec = EcalDir.make<TH1F>("h_maxebeerec","EBEE Muon (GeV)",200,0,15);
     h_ecal_cluster_energy = EcalDir.make<TH1F>("h_ecal_cluster_energy","EB Cluster Energy",130,-10,120);
     h_ecal_cluster_eta = EcalDir.make<TH1F>("h_ecal_cluster_eta","#eta(EB Cluster)",100,-6,6);
