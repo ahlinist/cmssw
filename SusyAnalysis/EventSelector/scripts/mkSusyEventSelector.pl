@@ -4,7 +4,7 @@
 #
 # Original author: F. Ronga (ETH) - May 23, 2008
 #
-# $Id: mkSusyEventSelector.pl,v 1.1 2008/05/23 15:36:24 fronga Exp $
+# $Id: mkSusyEventSelector.pl,v 1.1 2008/05/23 15:45:30 fronga Exp $
 #
 
 use strict;
@@ -113,7 +113,7 @@ print HEADER <<EOF
 ///
 /// \\author $userName - $date
 ///
-/// \$Id: mkSusyEventSelector.pl,v 1.1 2008/05/23 15:36:24 fronga Exp $
+/// \$Id: mkSusyEventSelector.pl,v 1.1 2008/05/23 15:45:30 fronga Exp $
 #include "SusyAnalysis/EventSelector/interface/SusyEventSelector.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/Event.h"
@@ -137,9 +137,10 @@ close(HEADER);
 $file = "plugins/$selectorName.cc";
 open(SRC,">$file") or die "Couldn't create $file: $!";
 print SRC <<EOF
-#include "$root/interface/$selectorName.h"
-
+#include "SusyAnalysis/EventSelector/interface/SusyEventSelector.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
+
+#include "$root/interface/$selectorName.h"
 
 //________________________________________________________________________________________
 $selectorName\::$selectorName (const edm::ParameterSet& pset ) :
