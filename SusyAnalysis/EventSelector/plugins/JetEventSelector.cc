@@ -75,20 +75,23 @@ JetEventSelector::select (const edm::Event& event) const
     }
     correctedEts.push_back(et);
   }
+  std::vector<size_t> etSorted = 
+    IndexSorter< std::vector<float> >(correctedEts,true)();
   //
   // check cuts (assume that jets are sorted by Et)
   //
   bool result(true);
   for ( unsigned int i=0; i<minEt_.size(); ++i ) {
-    if ( (*jetHandle)[i].et()<minEt_[i] ||
-	 fabs((*jetHandle)[i].eta())>maxEta_[i] ||
-	 (*jetHandle)[i].emEnergyFraction()>maxFem_[i] ) {
+    unsigned int j = etSorted[i];
+    if ( (*jetHandle)[j].et()<minEt_[j] ||
+	 fabs((*jetHandle)[j].eta())>maxEta_[j] ||
+	 (*jetHandle)[j].emEnergyFraction()>maxFem_[j] ) {
       LogTrace("JetEventSelector") << "JetEventSelector: failed at jet " << (i+1);
       result = false;
     }
-    setVariable(3*i+1,(*jetHandle)[i].et());
-    setVariable(3*i+2,(*jetHandle)[i].eta());
-    setVariable(3*i+3,(*jetHandle)[i].emEnergyFraction());
+    setVariable(3*i+1,(*jetHandle)[j].et());
+    setVariable(3*i+2,(*jetHandle)[j].eta());
+    setVariable(3*i+3,(*jetHandle)[j].emEnergyFraction());
   }
   LogTrace("JetEventSelector") << "JetEventSelector: all jets passed";
   return result;
