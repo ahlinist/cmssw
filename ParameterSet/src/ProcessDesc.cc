@@ -142,7 +142,12 @@ namespace edm
 
   void ProcessDesc::writeBookkeeping(const std::string & name)
   {
-    pset_->addParameter(name, bookkeeping_[name]);
+    std::vector<std::string> moduleList = bookkeeping_[name];
+    // event setup objects have their order preserved in both C++ and python
+    if(name.substr(0,1) != "es") {
+      std::sort(moduleList.begin(), moduleList.end());
+    }
+    pset_->addParameter(name, moduleList);
   }
  
 
