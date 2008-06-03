@@ -4,7 +4,7 @@
 #
 # Original author: F. Ronga (ETH) - May 23, 2008
 #
-# $Id: mkSusyEventSelector.pl,v 1.2 2008/06/03 15:35:56 fronga Exp $
+# $Id: mkSusyEventSelector.pl,v 1.3 2008/06/03 16:44:46 fronga Exp $
 #
 
 use strict;
@@ -104,7 +104,7 @@ chomp(my $date = `date`);
 
 # Header
 my $file = "interface/$selectorName.h";
-my $cvsID = '$Id: $'
+my $cvsID = '$'.'Id: '.'$'; # Make sure CVS does not replace that!
 open(HEADER,">$file") or die "Couldn't create $file: $!";
 print HEADER <<EOF
 #ifndef $defineRoot\_$selectorName\_h_
