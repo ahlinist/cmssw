@@ -1,0 +1,6 @@
+<use name="lhapdf"/>
+<use name="f77compiler"/>
+<export>
+	<use name="lhapdf"/>
+	<lib name="GeneratorInterfaceCommonInterface"/>
+</export>
