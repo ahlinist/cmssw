@@ -140,11 +140,12 @@ HcalProm::HcalProm(const edm::ParameterSet& iConfig)
         cout << "-->HTML output will go to baseHtmlDir = '" << baseHtmlDir_ << "'" << endl;
     else
         cout << "-->HTML output is disabled" << endl;
-    runNo = 0;
+    runBegin = -1;
     evtNo = 0;
     lumibegin=0;
     lumiend=0;
     startTime = "Not Avaliable";
+    trigDT = 0;
     // global ROOT style
     gStyle->Reset("Default");
     gStyle->SetOptFit(1);
@@ -166,20 +167,20 @@ HcalProm::~HcalProm()
 // ------------ method called to for each event  ------------
 void HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-    runNo = iEvent.id().run();
     // old versions time_t a = (iEvent.time().value()) & 0xffffffff;
     time_t a = (iEvent.time().value()) >> 32;
 
     int lumi = iEvent.luminosityBlock();
 
-    if (evtNo < 1) {
+    if (runBegin < 0) { // parameters for the first event
         startTime = ctime(&a);
-        lumibegin=lumi;
+        lumibegin=lumiend=lumi;
+        runBegin = iEvent.id().run();
+	bookHistograms (); // book all histograms
     }
 
-    if(lumiend < lumi ) {
-      lumiend = lumi ;
-	 }
+    if(lumi < lumibegin) lumibegin = lumi;
+    if(lumi > lumiend) lumiend = lumi;
 
     cout<<" Luminosity Block: " << lumibegin <<" Time : "<<startTime<<endl;
 
@@ -617,7 +618,7 @@ void HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                     dRtracktowerp = 999.;
 
                 if (ene > 1. && (dRtracktowerp < conesize)) {
-                    std::cout << "In Run/Event   : " << runNo << "/" << evtNo << std::endl;
+                    std::cout << "In Run/Event   : " << runBegin << "/" << evtNo << std::endl;
                     std::cout << "Match within   : " << dRtracktowerp << std::endl;
                     std::cout << "cal eta()      : " << ieta << std::endl;
                     std::cout << "cal phi()      : " << iphi << std::endl;
@@ -630,7 +631,7 @@ void HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                     HCAL_energy_correlation->Fill(ene);
                 }
                 if (ene > 1. && (dRtracktowerm < conesize)) {
-                    std::cout << "In Run/Event   : " << runNo << "/" << evtNo << std::endl;
+                    std::cout << "In Run/Event   : " << runBegin << "/" << evtNo << std::endl;
                     std::cout << "Match within   : " << dRtracktowerp << std::endl;
                     std::cout << "cal eta()      : " << ieta << std::endl;
                     std::cout << "cal phi()      : " << iphi << std::endl;
@@ -653,12 +654,27 @@ void HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 // ------------ method called once each job just before starting event loop  ------------
 void HcalProm::beginJob(const edm::EventSetup&)
 {
-    runNo = 0;
-    evtNo = 0;
-    TrigDT = 0;
-    startTime = "Not Avaliable";
-    lumibegin=0;
-    lumiend=0;
+}
+
+TH1F* HcalProm::book1DHistogram (TFileDirectory& fDir, const std::string& fName, const std::string& fTitle, 
+				 int fNbins, double fXmin, double fXmax) const {
+  char title [1024];
+  sprintf (title, "%s [RUN:%ld/%ld]", fTitle.c_str(), runBegin, lumibegin);
+  std::cout << "booking 1d histogram " << title << std::endl;
+  return fDir.make<TH1F>(fName.c_str(), title, fNbins, fXmin, fXmax);
+}
+
+TH2F* HcalProm::book2DHistogram (TFileDirectory& fDir, const std::string& fName, const std::string& fTitle, 
+				 int fNbinsX, double fXmin, double fXmax,
+				 int fNbinsY, double fYmin, double fYmax
+				 ) const {
+  char title [1024];
+  sprintf (title, "%s [RUN:%ld/%ld]", fTitle.c_str(), runBegin, lumibegin);
+  std::cout << "booking 2d histogram " << title << std::endl;
+  return fDir.make<TH2F>(fName.c_str(), title, fNbinsX, fXmin, fXmax, fNbinsY, fYmin, fYmax);
+}
+
+void HcalProm::bookHistograms () {
 
     TFileDirectory EcalDir = fs->mkdir( "Ecal" );
     TFileDirectory HcalDir = fs->mkdir( "Hcal" );
@@ -666,82 +682,83 @@ void HcalProm::beginJob(const edm::EventSetup&)
     TFileDirectory CorrDir = fs->mkdir( "Correlations" );
     TFileDirectory NoiseDir = fs->mkdir( "Noise" );
     TFileDirectory JetMetDir = fs->mkdir( "JetMet" );
+    TFileDirectory TriggerDir = fs->mkdir( "Trigger" );
 
     //Add runnumbers to histograms!
     
-    h_global_trigger_bit = fs->make<TH1F>("h_global_trigger_bit","Global Trigger Bit Fired",128,-0.5,127.5);
-    h_hbhe_rechit_energy = HcalDir.make<TH1F>("h_hbhe_rechit_energy","RecHit Energy HBHE",130,-10,30);
-    h_hf_rechit_energy = HcalDir.make<TH1F>("h_hf_rechit_energy","RecHit Energy HF",130,-10,30);
+    h_global_trigger_bit =  book1DHistogram (TriggerDir, "h_global_trigger_bit","Global Trigger Bit Fired",128,-0.5,127.5);
+    h_hbhe_rechit_energy =  book1DHistogram (HcalDir, "h_hbhe_rechit_energy","RecHit Energy HBHE",160,-10,30);
+    h_hf_rechit_energy =  book1DHistogram (HcalDir, "h_hf_rechit_energy","RecHit Energy HF",160,-10,30);
     
-    h_maxhbherec = HcalDir.make<TH1F>("h_maxhbherec","HBHE Muon (GeV)",200,0,15);
-    h_maxhorec = HcalDir.make<TH1F>("h_maxhorec","HO Muon (GeV)",200,0,15);
-    h_maxhbMinusrec = HcalDir.make<TH1F>("h_maxhbMinusrec","HB- Muon (GeV)",200,0,15);
-    h_maxhbPlusrec = HcalDir.make<TH1F>("h_maxhbPlusrec","HB+ Muon (GeV)",200,0,15);
-    h_hbhe_eta_phi = HcalDir.make<TH2F>("h_hbhe_eta_phi","#eta(HBHE)",60,-30,30,72,0,72);
-    h_hf_eta_phi = HcalDir.make<TH2F>("h_hf_eta_phi","#eta(HF)",96,-48,48,72,0,72);
-    h_ho_rechit_energy = HcalDir.make<TH1F>(" h_ho_rechit_energy","RecHit Energy HO",130,-10,30);
-    h_ho_eta_phi = HcalDir.make<TH2F>("h_ho_eta_phi","#eta(HO)",60,-30,30,72,0,72);
+    h_maxhbherec =  book1DHistogram (HcalDir, "h_maxhbherec","HBHE Muon (GeV)",200,0,15);
+    h_maxhorec =  book1DHistogram (HcalDir, "h_maxhorec","HO Muon (GeV)",200,0,15);
+    h_maxhbMinusrec =  book1DHistogram (HcalDir, "h_maxhbMinusrec","HB- Muon (GeV)",200,0,15);
+    h_maxhbPlusrec =  book1DHistogram (HcalDir, "h_maxhbPlusrec","HB+ Muon (GeV)",200,0,15);
+    h_hbhe_eta_phi =  book2DHistogram (HcalDir, "h_hbhe_eta_phi","#eta(HBHE)",60,-30,30,72,0,72);
+    h_hf_eta_phi =  book2DHistogram (HcalDir, "h_hf_eta_phi","#eta(HF)",96,-48,48,72,0,72);
+    h_ho_rechit_energy =  book1DHistogram (HcalDir, " h_ho_rechit_energy","RecHit Energy HO",160,-10,30);
+    h_ho_eta_phi =  book2DHistogram (HcalDir, "h_ho_eta_phi","#eta(HO)",60,-30,30,72,0,72);
     
-    h_hbtiming = HcalDir.make<TH1F>("h_hbtiming","HBHE Timing",10,-0.5,9.5);
+    h_hbtiming =  book1DHistogram (HcalDir, "h_hbtiming","HBHE Timing",10,-0.5,9.5);
     
-    h_jet_Pt = JetMetDir.make < TH1F > ("h_jet_Pt", "Jet PT", 130, -10, 120);
-    h_jet_Eta = JetMetDir.make < TH1F > ("h_jet_Eta", "Jet Eta", 100, -7, 7);
-    h_jet_Phi = JetMetDir.make < TH1F > ("h_jet_Phi", "Jet Phi", 100, -7, 7);
-    h_leadJet_Pt = JetMetDir.make < TH1F > ("h_leadJet_Pt", "Leading Jet PT", 120, 0, 120);
-    h_leadJet_Eta = JetMetDir.make < TH1F > ("h_leadJet_Eta", "Leading Jet Eta", 100, -7, 7);
-    h_leadJet_Phi = JetMetDir.make < TH1F > ("h_leadJet_Phi", "Leading Jet Phi", 100, -7, 7);
-    h_caloMet_Met = JetMetDir.make < TH1F > ("h_caloMet_Met", "MET from CaloTowers", 100, 0, 50);
-    h_caloMet_Phi = JetMetDir.make < TH1F > ("h_caloMet_Phi", "MET #phi from CaloTowers", 100, -7, 7);
-    h_caloMet_SumEt = JetMetDir.make < TH1F > ("h_caloMet_SumEt", "SumET from CaloTowers", 100, 0, 50);
-    h_MHT = JetMetDir.make < TH1F > ("h_MHT","MHT", 600,-10,200);
-    h_HT = JetMetDir.make < TH1F > ("h_HT","HT", 600,-10,200);
+    h_jet_Pt =  book1DHistogram (JetMetDir, "h_jet_Pt", "Jet PT", 130, -10, 120);
+    h_jet_Eta =  book1DHistogram (JetMetDir, "h_jet_Eta", "Jet Eta", 100, -7, 7);
+    h_jet_Phi =  book1DHistogram (JetMetDir, "h_jet_Phi", "Jet Phi", 100, -7, 7);
+    h_leadJet_Pt =  book1DHistogram (JetMetDir, "h_leadJet_Pt", "Leading Jet PT", 120, 0, 120);
+    h_leadJet_Eta =  book1DHistogram (JetMetDir, "h_leadJet_Eta", "Leading Jet Eta", 100, -7, 7);
+    h_leadJet_Phi =  book1DHistogram (JetMetDir, "h_leadJet_Phi", "Leading Jet Phi", 100, -7, 7);
+    h_caloMet_Met =  book1DHistogram (JetMetDir, "h_caloMet_Met", "MET from CaloTowers", 100, 0, 50);
+    h_caloMet_Phi =  book1DHistogram (JetMetDir, "h_caloMet_Phi", "MET #phi from CaloTowers", 100, -7, 7);
+    h_caloMet_SumEt =  book1DHistogram (JetMetDir, "h_caloMet_SumEt", "SumET from CaloTowers", 100, 0, 50);
+    h_MHT =  book1DHistogram (JetMetDir, "h_MHT","MHT", 600,-10,200);
+    h_HT =  book1DHistogram (JetMetDir, "h_HT","HT", 600,-10,200);
 
-    h_eb_rechit_energy = EcalDir.make<TH1F>(" h_eb_rechit_energy","RecHit Energy EB",130,-10,30);
-    h_maxebeerec = EcalDir.make<TH1F>("h_maxebeerec","EBEE Muon (GeV)",200,0,15);
-    h_ecal_cluster_energy = EcalDir.make<TH1F>("h_ecal_cluster_energy","EB Cluster Energy",130,-10,120);
-    h_ecal_cluster_eta = EcalDir.make<TH1F>("h_ecal_cluster_eta","#eta(EB Cluster)",100,-6,6);
-    h_ecal_cluster_phi = EcalDir.make<TH1F>("h_ecal_cluster_phi","#phi(EB Cluster)",100,-6,6);
+    h_eb_rechit_energy =  book1DHistogram (EcalDir, " h_eb_rechit_energy","RecHit Energy EB",160,-10,30);
+    h_maxebeerec =  book1DHistogram (EcalDir, "h_maxebeerec","EBEE Muon (GeV)",200,0,15);
+    h_ecal_cluster_energy =  book1DHistogram (EcalDir, "h_ecal_cluster_energy","EB Cluster Energy",130,-10,120);
+    h_ecal_cluster_eta =  book1DHistogram (EcalDir, "h_ecal_cluster_eta","#eta(EB Cluster)",100,-6,6);
+    h_ecal_cluster_phi =  book1DHistogram (EcalDir, "h_ecal_cluster_phi","#phi(EB Cluster)",100,-6,6);
   
-    h_maxebee_plus_maxhbhe = CorrDir.make<TH1F>("h_maxebee_plus_maxhbhe","EBEE+HBHE Muon (GeV)",200,0,15);
+    h_maxebee_plus_maxhbhe =  book1DHistogram (CorrDir, "h_maxebee_plus_maxhbhe","EBEE+HBHE Muon (GeV)",200,0,15);
 
-    h_ecal_vs_hcal_X = CorrDir.make<TH2F>("h_ecal_vs_hcal_X","X(EB) vs X(HB)",1000,-100,100,100,-100,100);
-    h_ecal_vs_hcal_Y = CorrDir.make<TH2F>("h_ecal_vs_hcal_Y","Y(EB) vs Y(HB)",1000,-100,100,100,-100,100);
+    h_ecal_vs_hcal_X = book2DHistogram (CorrDir, "h_ecal_vs_hcal_X","X(EB) vs X(HB)",1000,-100,100,100,-100,100);
+    h_ecal_vs_hcal_Y = book2DHistogram (CorrDir, "h_ecal_vs_hcal_Y","Y(EB) vs Y(HB)",1000,-100,100,100,-100,100);
 
-    h_calo_tower_energy = JetMetDir.make<TH1F>("h_calo_tower_energy","Calo Tower Energy",130,-10,120);
+    h_calo_tower_energy =  book1DHistogram (JetMetDir, "h_calo_tower_energy","Calo Tower Energy",130,-10,120);
 
-    h_muon_vertex_x = MuonDir.make < TH1F > ("h_muon_vertex_x", "Muon Vertex X", 10000, -1000, 1000);
-    h_muon_px = MuonDir.make < TH1F > ("h_muon_px", "Px(#mu)", 1000, -10, 100);
-    h_muon_p = MuonDir.make < TH1F > ("h_muon_p", "P(#mu)", 1000, -10, 100);
+    h_muon_vertex_x =  book1DHistogram (MuonDir, "h_muon_vertex_x", "Muon Vertex X", 10000, -1000, 1000);
+    h_muon_px = book1DHistogram (MuonDir, "h_muon_px", "Px(#mu)", 1000, -10, 100);
+    h_muon_p = book1DHistogram (MuonDir, "h_muon_p", "P(#mu)", 1000, -10, 100);
 
-    h_ecalx_vs_muonx = CorrDir.make<TH2F>("h_ecalx_vs_muonx","h_ecalx_vs_muonx",1000,-400,400,1000,-400,400);
-    h_ecaly_vs_muony = CorrDir.make<TH2F>("h_ecaly_vs_muony","h_ecaly_vs_muony",1000,-1000,1000,1000,-1000,1000);
-    h_impact_diff = CorrDir.make<TH1F>("h_impact_diff","h_impact_diff",1000,-200,200);
-    h_jetphi_vs_muonphi = CorrDir.make<TH2F>("h_jetphi_vs_muonphi","h_jetphi_vs_muonphi",100,-6,6,100,-6,6);
+    h_ecalx_vs_muonx = book2DHistogram (CorrDir, "h_ecalx_vs_muonx","h_ecalx_vs_muonx",1000,-400,400,1000,-400,400);
+    h_ecaly_vs_muony = book2DHistogram (CorrDir, "h_ecaly_vs_muony","h_ecaly_vs_muony",1000,-1000,1000,1000,-1000,1000);
+    h_impact_diff = book1DHistogram (CorrDir, "h_impact_diff","h_impact_diff",1000,-200,200);
+    h_jetphi_vs_muonphi = book2DHistogram (CorrDir, "h_jetphi_vs_muonphi","h_jetphi_vs_muonphi",100,-6,6,100,-6,6);
     
     DT_HCAL_eta_correlation =
-      MuonDir.make < TH2F > ("DT_CalTower_eta_correlation", "DT eta vs Calo eta at r= 286.4cm", 800, -4., 4., 800, -4.,
+      book2DHistogram (MuonDir, "DT_CalTower_eta_correlation", "DT eta vs Calo eta at r= 286.4cm", 800, -4., 4., 800, -4.,
       4.);
     DT_HCAL_eta_correlation_all =
-      MuonDir.make < TH2F > ("DT_CalTower_eta_correlation_all", "DT eta vs Calo eta at r= 286.4cm", 800, -4., 4., 800,
+      book2DHistogram (MuonDir, "DT_CalTower_eta_correlation_all", "DT eta vs Calo eta at r= 286.4cm", 800, -4., 4., 800,
       -4., 4.);
     DT_HCAL_phi_correlation =
-      MuonDir.make < TH2F > ("DT_CalTower_phi_correlation", "DT phi vs Calo phi at r= 286.4cm", 800, -4., 4., 800, -4.,
+      book2DHistogram (MuonDir, "DT_CalTower_phi_correlation", "DT phi vs Calo phi at r= 286.4cm", 800, -4., 4., 800, -4.,
       4.);
     DT_HCAL_phi_correlation_all =
-      MuonDir.make < TH2F > ("DT_CalTower_phi_correlation_all", "DT phi vs Calo phi at r= 286.4cm", 800, -4., 4., 800,
+      book2DHistogram (MuonDir, "DT_CalTower_phi_correlation_all", "DT phi vs Calo phi at r= 286.4cm", 800, -4., 4., 800,
       -4., 4.);
     HCAL_energy_correlation =
-      MuonDir.make < TH1F > ("CalTower_energy_correlation", "Calo had energy at r= 286.4cm", 800, -4., 4.);
+      book1DHistogram (MuonDir, "CalTower_energy_correlation", "Calo had energy at r= 286.4cm", 800, -4., 4.);
     HCAL_energy_correlation_all =
-      MuonDir.make < TH1F > ("CalTower_energy_correlation_all", "Calo had energy at r= 286.4cm", 800, -4., 4.);
+      book1DHistogram (MuonDir, "CalTower_energy_correlation_all", "Calo had energy at r= 286.4cm", 800, -4., 4.);
     
     /*
-    h_Qiesum = NoiseDir.make < TH1F > ("h_Qiesum", "Qiesum All Channels", 30000, -100., 29900.);
+    h_Qiesum = book1DHistogram (NoiseDir, "h_Qiesum", "Qiesum All Channels", 30000, -100., 29900.);
     string Noise[9] = { "1", "5", "20", "80", "150", "300", "600", "1000", "1500" };
     for (int hi = 0; hi != 9; ++hi) {
         if (hi != 8) {
             h_NoiseChan[hi] =
-              NoiseDir.make < TH2F > (string("h_Noise_phi_vs_eta_" + Noise[hi] + "-" + Noise[hi + 1]).c_str(),
+              book2DHistogram (NoiseDir, string("h_Noise_phi_vs_eta_" + Noise[hi] + "-" + Noise[hi + 1]).c_str(),
               string("Noise i#phi vs i#eta between " + Noise[hi] + " and " + Noise[hi + 1] + "GeV").c_str(), 40, -19.5,
               20.5, 73, -.5, 72.5);
             string title;
@@ -751,14 +768,14 @@ void HcalProm::beginJob(const edm::EventSetup&)
               NoiseDir.make < TH1F > (string("h_Noise_Phi_" + Noise[hi] + "-" + Noise[hi + 1]).c_str(), title.c_str(),
               73, -.5, 72.5);
         } else {
-            h_NoiseChan[hi] = NoiseDir.make < TH2F > (string("h_Noise_phi_vs_eta_" + Noise[hi]).c_str(),
+            h_NoiseChan[hi] = book2DHistogram (NoiseDir, string("h_Noise_phi_vs_eta_" + Noise[hi]).c_str(),
               string("Noise i#phi vs i#eta above " + Noise[hi] + "GeV").c_str(), 40, -19.5, 20.5, 73, -.5, 72.5);
             string title;
 
             title = "Events above " + Noise[hi];
             title = title + "GeV vs i#phi";
             h_NoisePhi[hi] =
-              NoiseDir.make < TH1F > (string("h_Noise_Phi_" + Noise[hi]).c_str(), title.c_str(), 73, -.5, 72.5);
+              book1DHistogram (NoiseDir, string("h_Noise_Phi_" + Noise[hi]).c_str(), title.c_str(), 73, -.5, 72.5);
         }
     }
     */
@@ -781,8 +798,8 @@ void HcalProm::htmlOutput(void)
 
     char tmp[10];
 
-    if (runNo != -1)
-      sprintf(tmp, "HcalPrompt_R%09d_L%d_%d", runNo,lumibegin,lumiend);
+    if (runBegin != -1)
+      sprintf(tmp, "HcalPrompt_R%09ld_L%ld_%ld", runBegin,lumibegin,lumiend);
     else
         sprintf(tmp, "HcalPrompt_R%09d", 0);
     string htmlDir = baseHtmlDir_ + "/" + tmp + "/";
@@ -805,7 +822,7 @@ void HcalProm::htmlOutput(void)
     htmlFile << "<br>  " << endl;
     htmlFile << "<center><h1>Hcal Prompt Analysis Outputs</h1></center>" << endl;
     htmlFile << "<h2>Run Number:&nbsp;&nbsp;" << endl;
-    htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << runNo << "</span>" << endl;
+    htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << runBegin << "</span>" << endl;
 
     htmlFile << "&nbsp;&nbsp;LS:&nbsp;" << endl; 
     htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << lumibegin << "</span>" << endl;
@@ -824,39 +841,39 @@ void HcalProm::htmlOutput(void)
 
     if (doRecHitHTML) {
         htmlName = "HcalPromptRecHit.html";
-        RecHitHTMLOutput(runNo, startTime, htmlDir, htmlName);
+        RecHitHTMLOutput(startTime, htmlDir, htmlName);
         htmlFile << "<table border=0 WIDTH=\"50%\"><tr>" << endl;
         htmlFile << "<td WIDTH=\"35%\"><a href=\"" << htmlName << "\">RecHit Prompt</a></td>" << endl;
 
     }
     if (doDigiHTML) {
         htmlName = "HcalPromptDigi.html";
-        DigiHTMLOutput(runNo, startTime, htmlDir, htmlName);
+        DigiHTMLOutput(startTime, htmlDir, htmlName);
         htmlFile << "<table border=0 WIDTH=\"50%\"><tr>" << endl;
         htmlFile << "<td WIDTH=\"35%\"><a href=\"" << htmlName << "\">Digi Prompt</a></td>" << endl;
     }
     if (doJetMetHTML) {
         htmlName = "HcalPromptJetMet.html";
-        // htmlOutput(runNo,lumi, startTime,htmlDir, htmlName,htmlTitle);
-        JetMetHTMLOutput(runNo, startTime, htmlDir, htmlName);
+        // htmlOutput(runBegin,lumi, startTime,htmlDir, htmlName,htmlTitle);
+        JetMetHTMLOutput(startTime, htmlDir, htmlName);
         htmlFile << "<table border=0 WIDTH=\"50%\"><tr>" << endl;
         htmlFile << "<td WIDTH=\"35%\"><a href=\"" << htmlName << "\">JetMet Prompt</a></td>" << endl;
     }
     if (doMuonHTML) {
         htmlName = "HcalPromptMuon.html";
-        MuonHTMLOutput(runNo, startTime, htmlDir, htmlName);
+        MuonHTMLOutput(startTime, htmlDir, htmlName);
         htmlFile << "<table border=0 WIDTH=\"50%\"><tr>" << endl;
         htmlFile << "<td WIDTH=\"35%\"><a href=\"" << htmlName << "\">Muon Prompt</a></td>" << endl;
     }
     if (doHPDNoiseHTML) {
         htmlName = "HcalPromptHPDNoise.html";
-        HPDNoiseHTMLOutput(runNo, startTime, htmlDir, htmlName);
+        HPDNoiseHTMLOutput(startTime, htmlDir, htmlName);
         htmlFile << "<table border=0 WIDTH=\"50%\"><tr>" << endl;
         htmlFile << "<td WIDTH=\"35%\"><a href=\"" << htmlName << "\">HPD Noise Prompt</a></td>" << endl;
     }
     if (doCaloTowerHTML) {
         htmlName = "HcalPromptCaloTower.html";
-        CaloTowerHTMLOutput(runNo, startTime, htmlDir, htmlName);
+        CaloTowerHTMLOutput(startTime, htmlDir, htmlName);
         htmlFile << "<table border=0 WIDTH=\"50%\"><tr>" << endl;
         htmlFile << "<td WIDTH=\"35%\"><a href=\"" << htmlName << "\">CaloTower Prompt</a></td>" << endl;
     }
@@ -873,7 +890,7 @@ void HcalProm::htmlOutput(void)
 }
 
 
-void HcalProm::JetMetHTMLOutput(int runNo, string startTime, string htmlDir, string htmlName) {
+void HcalProm::JetMetHTMLOutput(string startTime, string htmlDir, string htmlName) {
 
     cout << "Preparing html output for JetMet" << endl;
 
@@ -893,7 +910,7 @@ void HcalProm::JetMetHTMLOutput(int runNo, string startTime, string htmlDir, str
     htmlFile << "<body>  " << endl;
     htmlFile << "<br>  " << endl;
     htmlFile << "<h2>Run Number:&nbsp;&nbsp;&nbsp;" << endl;
-    htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << runNo << "</span>" << endl;
+    htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << runBegin << "</span>" << endl;
 
     htmlFile << "&nbsp;&nbsp;LS:&nbsp;" << endl; 
     htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << lumibegin << "</span>" << endl;
@@ -935,25 +952,25 @@ void HcalProm::JetMetHTMLOutput(int runNo, string startTime, string htmlDir, str
           " Histograms</h3></td></tr>" << endl;
         if (i == 0) {
             htmlFile << "<tr align=\"left\">" << endl;
-            histoHTML(runNo, h_jet_Pt, "All Jets Pt", "Events", 92, htmlFile, htmlDir);
-            histoHTML(runNo, h_jet_Eta, "All Jets Eta", "Events", 92, htmlFile, htmlDir);
-            histoHTML(runNo, h_jet_Phi, "all Jets Phi", "Events", 92, htmlFile, htmlDir);
+            histoHTML(h_jet_Pt, "All Jets Pt", "Events", 92, htmlFile, htmlDir);
+            histoHTML(h_jet_Eta, "All Jets Eta", "Events", 92, htmlFile, htmlDir);
+            histoHTML(h_jet_Phi, "all Jets Phi", "Events", 92, htmlFile, htmlDir);
             htmlFile << "</tr>" << endl;
         }
         if (i == 1) {
             htmlFile << "<tr align=\"left\">" << endl;
-            histoHTML(runNo, h_leadJet_Pt, "Leading Jet Pt", "Events", 92, htmlFile, htmlDir);
-            histoHTML(runNo, h_leadJet_Eta, "Leading Jet Eta", "Events", 92, htmlFile, htmlDir);
-            histoHTML(runNo, h_leadJet_Phi, "Leading Jet Phi", "Events", 92, htmlFile, htmlDir);
+            histoHTML(h_leadJet_Pt, "Leading Jet Pt", "Events", 92, htmlFile, htmlDir);
+            histoHTML(h_leadJet_Eta, "Leading Jet Eta", "Events", 92, htmlFile, htmlDir);
+            histoHTML(h_leadJet_Phi, "Leading Jet Phi", "Events", 92, htmlFile, htmlDir);
             htmlFile << "</tr>" << endl;
         }
         if (i == 2) {
             htmlFile << "<tr align=\"left\">" << endl;
-            histoHTML(runNo, h_caloMet_Met, "CaloMET", "Events", 92, htmlFile, htmlDir);
-            histoHTML(runNo, h_caloMet_Phi, "CaloMet Phi", "Events", 92, htmlFile, htmlDir);
-            histoHTML(runNo, h_caloMet_SumEt, "Scalar Sum ET", "Events", 92, htmlFile, htmlDir);
-	    histoHTML(runNo, h_MHT, "MHT", "Events", 92, htmlFile, htmlDir);
-	    histoHTML(runNo, h_HT, "HT", "Events", 92, htmlFile, htmlDir);
+            histoHTML(h_caloMet_Met, "CaloMET", "Events", 92, htmlFile, htmlDir);
+            histoHTML(h_caloMet_Phi, "CaloMet Phi", "Events", 92, htmlFile, htmlDir);
+            histoHTML(h_caloMet_SumEt, "Scalar Sum ET", "Events", 92, htmlFile, htmlDir);
+	    histoHTML(h_MHT, "MHT", "Events", 92, htmlFile, htmlDir);
+	    histoHTML(h_HT, "HT", "Events", 92, htmlFile, htmlDir);
             htmlFile << "</tr>" << endl;
         }
 
@@ -970,7 +987,7 @@ void HcalProm::JetMetHTMLOutput(int runNo, string startTime, string htmlDir, str
 }
 
 
-void HcalProm::RecHitHTMLOutput(int runNo ,string startTime, string htmlDir, string htmlName) {
+void HcalProm::RecHitHTMLOutput(string startTime, string htmlDir, string htmlName) {
 
     cout << "Preparing html output for " << htmlName << endl;
 
@@ -990,7 +1007,7 @@ void HcalProm::RecHitHTMLOutput(int runNo ,string startTime, string htmlDir, str
     htmlFile << "<body>  " << endl;
     htmlFile << "<br>  " << endl;
     htmlFile << "<h2>Run Number:&nbsp;&nbsp;&nbsp;" << endl;
-    htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << runNo << "</span>" << endl;
+    htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << runBegin << "</span>" << endl;
 
     htmlFile << "&nbsp;&nbsp;LS:&nbsp;" << endl; 
     htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << lumibegin << "</span>" << endl;
@@ -1038,25 +1055,25 @@ void HcalProm::RecHitHTMLOutput(int runNo ,string startTime, string htmlDir, str
           " Histograms</h3></td></tr>" << endl;
         if (i == 0){
 	    htmlFile << "<tr align=\"left\">" << endl;
-	    histoHTML(runNo, h_hbhe_rechit_energy, "HBHE RecHit Energy", "Events", 92, htmlFile, htmlDir);
-	    histoHTML2(runNo, h_hbhe_eta_phi, "iEta", "iPhi", 100, htmlFile, htmlDir);
+	    histoHTML(h_hbhe_rechit_energy, "HBHE RecHit Energy", "Events", 92, htmlFile, htmlDir);
+	    histoHTML2(h_hbhe_eta_phi, "iEta", "iPhi", 100, htmlFile, htmlDir);
 	    htmlFile << "</tr>" << endl;
 	}
         if (i == 1){
 	    htmlFile << "<tr align=\"left\">" << endl;
-	    histoHTML(runNo, h_hf_rechit_energy, "HF RecHit Energy", "Events", 92, htmlFile, htmlDir);
-	    histoHTML2(runNo, h_hf_eta_phi, "iEta", "iPhi", 100, htmlFile, htmlDir);
+	    histoHTML(h_hf_rechit_energy, "HF RecHit Energy", "Events", 92, htmlFile, htmlDir);
+	    histoHTML2(h_hf_eta_phi, "iEta", "iPhi", 100, htmlFile, htmlDir);
 	    htmlFile << "</tr>" << endl;
 	}
         if (i == 2){
 	    htmlFile << "<tr align=\"left\">" << endl;
-	    histoHTML(runNo, h_ho_rechit_energy, "HO RecHit Energy", "Events", 92, htmlFile, htmlDir);
-	    histoHTML2(runNo, h_hf_eta_phi, "iEta", "iPhi", 100, htmlFile, htmlDir);
+	    histoHTML(h_ho_rechit_energy, "HO RecHit Energy", "Events", 92, htmlFile, htmlDir);
+	    histoHTML2(h_hf_eta_phi, "iEta", "iPhi", 100, htmlFile, htmlDir);
 	    htmlFile << "</tr>" << endl;
 	}
         if (i == 3){
 	    htmlFile << "<tr align=\"left\">" << endl;
-	    histoHTML(runNo, h_eb_rechit_energy, "EB RecHit Energy", "Events", 92, htmlFile, htmlDir);
+	    histoHTML(h_eb_rechit_energy, "EB RecHit Energy", "Events", 92, htmlFile, htmlDir);
 	    htmlFile << "</tr>" << endl;
 	}
 
@@ -1073,7 +1090,7 @@ void HcalProm::RecHitHTMLOutput(int runNo ,string startTime, string htmlDir, str
 
 }
 
-void HcalProm::DigiHTMLOutput(int runNo, string startTime, string htmlDir, string htmlName) {
+void HcalProm::DigiHTMLOutput(string startTime, string htmlDir, string htmlName) {
 
     cout << "Preparing html output for " << htmlName << endl;
 
@@ -1093,7 +1110,7 @@ void HcalProm::DigiHTMLOutput(int runNo, string startTime, string htmlDir, strin
     htmlFile << "<body>  " << endl;
     htmlFile << "<br>  " << endl;
     htmlFile << "<h2>Run Number:&nbsp;&nbsp;&nbsp;" << endl;
-    htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << runNo << "</span>" << endl;
+    htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << runBegin << "</span>" << endl;
 
     htmlFile << "&nbsp;&nbsp;LS:&nbsp;" << endl; 
     htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << lumibegin << "</span>" << endl;
@@ -1133,7 +1150,7 @@ void HcalProm::DigiHTMLOutput(int runNo, string startTime, string htmlDir, strin
 
 }
 
-void HcalProm::HPDNoiseHTMLOutput(int runNo, string startTime, string htmlDir, string htmlName) {
+void HcalProm::HPDNoiseHTMLOutput(string startTime, string htmlDir, string htmlName) {
 
     cout << "Preparing html output for HPDNoise" << endl;
 
@@ -1153,7 +1170,7 @@ void HcalProm::HPDNoiseHTMLOutput(int runNo, string startTime, string htmlDir, s
     htmlFile << "<body>  " << endl;
     htmlFile << "<br>  " << endl;
     htmlFile << "<h2>Run Number:&nbsp;&nbsp;&nbsp;" << endl;
-    htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << runNo << "</span>" << endl;
+    htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << runBegin << "</span>" << endl;
 
     htmlFile << "&nbsp;&nbsp;LS:&nbsp;" << endl; 
     htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << lumibegin << "</span>" << endl;
@@ -1195,21 +1212,21 @@ void HcalProm::HPDNoiseHTMLOutput(int runNo, string startTime, string htmlDir, s
           " Histograms</h3></td></tr>" << endl;
         if (i == 0) {
             htmlFile << "<tr align=\"left\">" << endl;
-            histoHTML(runNo, h_Qiesum, "Qiesum (fC)", "Channels", 92, htmlFile, htmlDir);
+            histoHTML(h_Qiesum, "Qiesum (fC)", "Channels", 92, htmlFile, htmlDir);
             htmlFile << "</tr>" << endl;
         }
         if (i == 1) {
             // string Noise[9] = {"1", "5", "20", "80", "150", "300", "600", "1000", "1500"};
             htmlFile << "<tr align=\"left\">" << endl;
             for (int ni = 0; ni != 9; ++ni) {
-                histoHTML2(runNo, h_NoiseChan[ni], "i#eta", "i#phi", 92, htmlFile, htmlDir);
+                histoHTML2(h_NoiseChan[ni], "i#eta", "i#phi", 92, htmlFile, htmlDir);
             }
             htmlFile << "</tr>" << endl;
         }
         if (i == 2) {
             htmlFile << "<tr align=\"left\">" << endl;
             for (int ni = 0; ni != 9; ++ni) {
-                histoHTML(runNo, h_NoisePhi[ni], "i#phi", "# Noisy Pixels in Range", 92, htmlFile, htmlDir);
+                histoHTML(h_NoisePhi[ni], "i#phi", "# Noisy Pixels in Range", 92, htmlFile, htmlDir);
             }
             htmlFile << "</tr>" << endl;
         }
@@ -1226,7 +1243,7 @@ void HcalProm::HPDNoiseHTMLOutput(int runNo, string startTime, string htmlDir, s
 
 }
 
-void HcalProm::MuonHTMLOutput(int runNo, string startTime, string htmlDir, string htmlName) {
+void HcalProm::MuonHTMLOutput(string startTime, string htmlDir, string htmlName) {
 
     cout << "Preparing html output for Muon" << endl;
 
@@ -1246,7 +1263,7 @@ void HcalProm::MuonHTMLOutput(int runNo, string startTime, string htmlDir, strin
     htmlFile << "<body>  " << endl;
     htmlFile << "<br>  " << endl;
     htmlFile << "<h2>Run Number:&nbsp;&nbsp;&nbsp;" << endl;
-    htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << runNo << "</span>" << endl;
+    htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << runBegin << "</span>" << endl;
 
     htmlFile << "&nbsp;&nbsp;LS:&nbsp;" << endl; 
     htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << lumibegin << "</span>" << endl;
@@ -1279,25 +1296,25 @@ void HcalProm::MuonHTMLOutput(int runNo, string startTime, string htmlDir, strin
     htmlFile << "<tr align=\"left\">" << endl;
     htmlFile << "<td>&nbsp;&nbsp;&nbsp;<a name=\"" << type << "_Plots\"><h3>" << type << " Histograms</h3></td></tr>" << endl;
     htmlFile << "<tr align=\"left\">" << endl;
-    histoHTML(runNo, h_maxhbherec, "HBHE Muon (GeV)", "Events", 92, htmlFile, htmlDir);
-    histoHTML(runNo, h_maxhorec, "HO Muon (GeV)", "Events", 92, htmlFile, htmlDir);
-    histoHTML(runNo, h_maxhbMinusrec, "HB- Muon (GeV)", "Events", 92, htmlFile, htmlDir);
-    histoHTML(runNo, h_maxhbPlusrec, "HB+ Muon (GeV)", "Events", 92, htmlFile, htmlDir);
-    histoHTML(runNo, h_maxebeerec, "EBEE Muon (GeV)", "Events", 92, htmlFile, htmlDir);
-    histoHTML(runNo, h_maxebee_plus_maxhbhe, "EBEE+HBHE Muon (GeV)", "Events", 92, htmlFile, htmlDir);
-    histoHTML(runNo, h_muon_vertex_x, "Muon Vertex X", "Events", 92, htmlFile, htmlDir);
-    histoHTML(runNo, h_muon_px, "Muon Px", "Events", 92, htmlFile, htmlDir);
-    histoHTML(runNo, h_muon_p, "Muon P", "Events", 92, htmlFile, htmlDir);
-    histoHTML2(runNo, h_ecalx_vs_muonx, "ECAL BasicClu x", "Muon x", 100, htmlFile, htmlDir);
-    histoHTML2(runNo, h_ecaly_vs_muony, "ECAL BasicClu y", "Muon y", 100, htmlFile, htmlDir);
-    histoHTML2(runNo, h_jetphi_vs_muonphi, "Jet Phi", "Muon Phi", 100, htmlFile, htmlDir);
-    histoHTML(runNo, h_impact_diff, "ECAL BasicClu X - Muon X", "Events", 92, htmlFile, htmlDir);
-    histoHTML2(runNo, DT_HCAL_eta_correlation, "DT eta", "Calo eta", 100, htmlFile, htmlDir);
-    histoHTML2(runNo, DT_HCAL_eta_correlation_all, "DT eta all", "Calo eta all", 100, htmlFile, htmlDir);
-    histoHTML2(runNo, DT_HCAL_phi_correlation, "DT phi", "Calo phi", 100, htmlFile, htmlDir);
-    histoHTML2(runNo, DT_HCAL_phi_correlation_all, "DT phi all", "Calo phi all", 100, htmlFile, htmlDir);
-    histoHTML(runNo, HCAL_energy_correlation, "Calo had energy", "Events", 92, htmlFile, htmlDir);
-    histoHTML(runNo, HCAL_energy_correlation_all, "Calo had energy all", "Events", 92, htmlFile, htmlDir);
+    histoHTML(h_maxhbherec, "HBHE Muon (GeV)", "Events", 92, htmlFile, htmlDir);
+    histoHTML(h_maxhorec, "HO Muon (GeV)", "Events", 92, htmlFile, htmlDir);
+    histoHTML(h_maxhbMinusrec, "HB- Muon (GeV)", "Events", 92, htmlFile, htmlDir);
+    histoHTML(h_maxhbPlusrec, "HB+ Muon (GeV)", "Events", 92, htmlFile, htmlDir);
+    histoHTML(h_maxebeerec, "EBEE Muon (GeV)", "Events", 92, htmlFile, htmlDir);
+    histoHTML(h_maxebee_plus_maxhbhe, "EBEE+HBHE Muon (GeV)", "Events", 92, htmlFile, htmlDir);
+    histoHTML(h_muon_vertex_x, "Muon Vertex X", "Events", 92, htmlFile, htmlDir);
+    histoHTML(h_muon_px, "Muon Px", "Events", 92, htmlFile, htmlDir);
+    histoHTML(h_muon_p, "Muon P", "Events", 92, htmlFile, htmlDir);
+    histoHTML2(h_ecalx_vs_muonx, "ECAL BasicClu x", "Muon x", 100, htmlFile, htmlDir);
+    histoHTML2(h_ecaly_vs_muony, "ECAL BasicClu y", "Muon y", 100, htmlFile, htmlDir);
+    histoHTML2(h_jetphi_vs_muonphi, "Jet Phi", "Muon Phi", 100, htmlFile, htmlDir);
+    histoHTML(h_impact_diff, "ECAL BasicClu X - Muon X", "Events", 92, htmlFile, htmlDir);
+    histoHTML2(DT_HCAL_eta_correlation, "DT eta", "Calo eta", 100, htmlFile, htmlDir);
+    histoHTML2(DT_HCAL_eta_correlation_all, "DT eta all", "Calo eta all", 100, htmlFile, htmlDir);
+    histoHTML2(DT_HCAL_phi_correlation, "DT phi", "Calo phi", 100, htmlFile, htmlDir);
+    histoHTML2(DT_HCAL_phi_correlation_all, "DT phi all", "Calo phi all", 100, htmlFile, htmlDir);
+    histoHTML(HCAL_energy_correlation, "Calo had energy", "Events", 92, htmlFile, htmlDir);
+    histoHTML(HCAL_energy_correlation_all, "Calo had energy all", "Events", 92, htmlFile, htmlDir);
     htmlFile << "</tr>" << endl;
     htmlFile << "</table>" << endl;
     // end table
@@ -1310,7 +1327,7 @@ void HcalProm::MuonHTMLOutput(int runNo, string startTime, string htmlDir, strin
 
 }
 
-void HcalProm::CaloTowerHTMLOutput(int runNo, string startTime, string htmlDir, string htmlName) {
+void HcalProm::CaloTowerHTMLOutput(string startTime, string htmlDir, string htmlName) {
 
     cout << "Preparing html output for CaloTower" << endl;
 
@@ -1330,7 +1347,7 @@ void HcalProm::CaloTowerHTMLOutput(int runNo, string startTime, string htmlDir, 
     htmlFile << "<body>  " << endl;
     htmlFile << "<br>  " << endl;
     htmlFile << "<h2>Run Number:&nbsp;&nbsp;&nbsp;" << endl;
-    htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << runNo << "</span>" << endl;
+    htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << runBegin << "</span>" << endl;
 
     htmlFile << "&nbsp;&nbsp;LS:&nbsp;" << endl; 
     htmlFile << "<span style=\"color: rgb(0, 0, 153);\">" << lumibegin << "</span>" << endl;
@@ -1363,7 +1380,7 @@ void HcalProm::CaloTowerHTMLOutput(int runNo, string startTime, string htmlDir, 
     htmlFile << "<tr align=\"left\">" << endl;
     htmlFile << "<td>&nbsp;&nbsp;&nbsp;<a name=\"" << type << "_Plots\"><h3>" << type << " Histograms</h3></td></tr>" << endl;
     htmlFile << "<tr align=\"left\">" << endl;
-    histoHTML(runNo, h_calo_tower_energy, "CaloTower energy", "Events", 92, htmlFile, htmlDir);
+    histoHTML(h_calo_tower_energy, "CaloTower energy", "Events", 92, htmlFile, htmlDir);
     htmlFile << "</tr>" << endl;
     htmlFile << "</table>" << endl;
     // end table
@@ -1376,16 +1393,16 @@ void HcalProm::CaloTowerHTMLOutput(int runNo, string startTime, string htmlDir, 
 
 }
 
-void HcalProm::histoHTML(int runNo, TH1F * hist, const char *xlab, const char *ylab, int width, ofstream & htmlFile,
+void HcalProm::histoHTML(TH1F * hist, const char *xlab, const char *ylab, int width, ofstream & htmlFile,
   string htmlDir) {
 
     if (hist != NULL) {
         string imgNameTMB = "";
 
-        imgNameTMB = getIMG(runNo, hist, 1, htmlDir, xlab, ylab);
+        imgNameTMB = getIMG(hist, 1, htmlDir, xlab, ylab);
         string imgName = "";
 
-        imgName = getIMG(runNo, hist, 2, htmlDir, xlab, ylab);
+        imgName = getIMG(hist, 2, htmlDir, xlab, ylab);
 
         if (imgName.size() != 0)
             htmlFile << "<td><a href=\"" << imgName << "\"><img src=\"" << imgNameTMB << "\"></a></td>" << endl;
@@ -1396,15 +1413,15 @@ void HcalProm::histoHTML(int runNo, TH1F * hist, const char *xlab, const char *y
     return;
 }
 
-void HcalProm::histoHTML2(int runNo, TH2F * hist, const char *xlab, const char *ylab, int width,
+void HcalProm::histoHTML2(TH2F * hist, const char *xlab, const char *ylab, int width,
   ofstream & htmlFile, string htmlDir, bool color) {
     if (hist != NULL) {
         string imgNameTMB = "";
 
-        imgNameTMB = getIMG2(runNo, hist, 1, htmlDir, xlab, ylab, color);
+        imgNameTMB = getIMG2(hist, 1, htmlDir, xlab, ylab, color);
         string imgName = "";
 
-        imgName = getIMG2(runNo, hist, 2, htmlDir, xlab, ylab, color);
+        imgName = getIMG2(hist, 2, htmlDir, xlab, ylab, color);
         if (imgName.size() != 0)
             htmlFile << "<td><a href=\"" << imgName << "\"><img src=\"" << imgNameTMB << "\"></a></td>" << endl;
         else
@@ -1414,7 +1431,7 @@ void HcalProm::histoHTML2(int runNo, TH2F * hist, const char *xlab, const char *
     return;
 }
 
-string HcalProm::getIMG(int runNo, TH1F * hist, int size, string htmlDir, const char *xlab, const char *ylab) {
+string HcalProm::getIMG(TH1F * hist, int size, string htmlDir, const char *xlab, const char *ylab) {
 
     if (hist == NULL) {
         printf("getIMG:  This histo is NULL, %s, %s\n", xlab, ylab);
@@ -1426,11 +1443,11 @@ string HcalProm::getIMG(int runNo, TH1F * hist, int size, string htmlDir, const 
     cleanString(name);
     char dest[512];
 
-    if (runNo > -1)
-      sprintf(dest, "%s - Run %d LS %d-%d", name.c_str(), runNo, lumibegin, lumiend);
+    if (runBegin > -1)
+      sprintf(dest, "%s - Run %ld LS %ld-%ld", name.c_str(), runBegin, lumibegin, lumiend);
     else
         sprintf(dest, "%s", name.c_str());
-    hist->SetTitle(dest);
+    // set run generically hist->SetTitle(dest); 
     string title = dest;
 
     int xwid = 900;
@@ -1463,7 +1480,7 @@ string HcalProm::getIMG(int runNo, TH1F * hist, int size, string htmlDir, const 
     return outName;
 }
 
-string HcalProm::getIMG2(int runNo, TH2F * hist, int size, string htmlDir, const char *xlab, const char *ylab,
+string HcalProm::getIMG2(TH2F * hist, int size, string htmlDir, const char *xlab, const char *ylab,
   bool color) {
 
     if (hist == NULL) {
@@ -1476,11 +1493,11 @@ string HcalProm::getIMG2(int runNo, TH2F * hist, int size, string htmlDir, const
     cleanString(name);
     char dest[512];
 
-    if (runNo > -1)
-      sprintf(dest, "%s - Run %d LS %d-%d", name.c_str(), runNo, lumibegin, lumiend);
+    if (runBegin > -1)
+      sprintf(dest, "%s - Run %ld LS %ld-%ld", name.c_str(), runBegin, lumibegin, lumiend);
     else
         sprintf(dest, "%s", name.c_str());
-    hist->SetTitle(dest);
+    // set run generically    hist->SetTitle(dest);
     string title = dest;
 
     int xwid = 900;

@@ -17,7 +17,7 @@
 // Original Author:  Efe Yazgan
 // Updated        :  Taylan Yetkin (2008/05/08)
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.h,v 1.8 2008/05/16 17:09:23 efe Exp $
+// $Id: HcalProm.h,v 1.9 2008/06/02 20:13:42 fedor Exp $
 //
 //
 
@@ -67,18 +67,26 @@ class HcalProm : public edm::EDAnalyzer {
       
       //adding HTML output functions (very similar to DQM) 
       void htmlOutput(void);
-      void CaloTowerHTMLOutput(int run, std::string startTime, std::string htmlDir, std::string htmlName);
-      void DigiHTMLOutput(int run , std::string startTime, std::string htmlDir, std::string htmlName);
-      void RecHitHTMLOutput(int run, std::string startTime, std::string htmlDir, std::string htmlName);
-      void JetMetHTMLOutput(int run, std::string startTime, std::string htmlDir, std::string htmlName);
-      void MuonHTMLOutput(int run, std::string startTime, std::string htmlDir, std::string htmlName);
-      void HPDNoiseHTMLOutput(int run, std::string startTime, std::string htmlDir, std::string htmlName);
-      void histoHTML(int runNo, TH1F * hist, const char *xlab, const char *ylab, int width, std::ofstream & htmlFile, std::string htmlDir);
-      void histoHTML2(int runNo, TH2F * hist, const char *xlab, const char *ylab, int width, std::ofstream & htmlFile, std::string htmlDir, bool color = false);
-      std::string getIMG(int runNo,TH1F* hist, int size, std::string htmlDir, const char* xlab, const char* ylab);
-      std::string getIMG2(int runNo,TH2F* hist, int size, std::string htmlDir, const char* xlab, const char* ylab,bool color);
+      void CaloTowerHTMLOutput(std::string startTime, std::string htmlDir, std::string htmlName);
+      void DigiHTMLOutput(std::string startTime, std::string htmlDir, std::string htmlName);
+      void RecHitHTMLOutput(std::string startTime, std::string htmlDir, std::string htmlName);
+      void JetMetHTMLOutput(std::string startTime, std::string htmlDir, std::string htmlName);
+      void MuonHTMLOutput(std::string startTime, std::string htmlDir, std::string htmlName);
+      void HPDNoiseHTMLOutput(std::string startTime, std::string htmlDir, std::string htmlName);
+      void histoHTML(TH1F * hist, const char *xlab, const char *ylab, int width, std::ofstream & htmlFile, std::string htmlDir);
+      void histoHTML2(TH2F * hist, const char *xlab, const char *ylab, int width, std::ofstream & htmlFile, std::string htmlDir, bool color = false);
+      std::string getIMG(TH1F* hist, int size, std::string htmlDir, const char* xlab, const char* ylab);
+      std::string getIMG2(TH2F* hist, int size, std::string htmlDir, const char* xlab, const char* ylab,bool color);
       void parseString(std::string& title);
       void cleanString(std::string& title);
+
+  //------- histogram bookers ----------
+  void bookHistograms ();
+  TH1F* book1DHistogram (TFileDirectory& fDir, const std::string& fName, const std::string& fTitle, 
+			 int fNbins, double fXmin, double fXmax) const;
+  TH2F* book2DHistogram (TFileDirectory& fDir, const std::string& fName, const std::string& fTitle, 
+			 int fNbinsX, double fXmin, double fXmax,
+			 int fNbinsY, double fYmin, double fYmax) const;
 
       // ----------member data ---------------------------
       edm::Service<TFileService> fs;
@@ -146,9 +154,9 @@ class HcalProm : public edm::EDAnalyzer {
       
       TH1F*  HCAL_energy_correlation;
       TH1F*  HCAL_energy_correlation_all;
-      int TrigDT;
+      int trigDT;
       std::string baseHtmlDir_;
-  int runNo,lumibegin,lumiend,evtNo;
+      long runBegin,lumibegin,lumiend,evtNo;
       std::string startTime;
       bool prompt_htmlPrint;
       bool doDigiHTML;
