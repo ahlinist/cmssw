@@ -4,7 +4,7 @@
 #
 # Original author: F. Ronga (ETH) - May 23, 2008
 #
-# $Id: mkSusyEventSelector.pl,v 1.1 2008/05/23 15:45:30 fronga Exp $
+# $Id: mkSusyEventSelector.pl,v 1.2 2008/06/03 15:35:56 fronga Exp $
 #
 
 use strict;
@@ -104,6 +104,7 @@ chomp(my $date = `date`);
 
 # Header
 my $file = "interface/$selectorName.h";
+my $cvsID = '$Id: $'
 open(HEADER,">$file") or die "Couldn't create $file: $!";
 print HEADER <<EOF
 #ifndef $defineRoot\_$selectorName\_h_
@@ -113,7 +114,7 @@ print HEADER <<EOF
 ///
 /// \\author $userName - $date
 ///
-/// \$Id: mkSusyEventSelector.pl,v 1.1 2008/05/23 15:45:30 fronga Exp $
+/// $cvsID
 #include "SusyAnalysis/EventSelector/interface/SusyEventSelector.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/Event.h"
