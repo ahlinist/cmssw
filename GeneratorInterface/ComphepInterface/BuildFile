@@ -7,6 +7,7 @@
 <use name=f77compiler>
 <use name=root>
 <use name=Utilities/StorageFactory>
+<use name=GeneratorInterface/CommonInterface>
  
 <flags EDM_PLUGIN=1>
 <flags FFLAGS="-w">
@@ -21,6 +22,7 @@
  <use name=pythia6>
  <use name=root>
  <use name=Utilities/StorageFactory>
+ <use name=GeneratorInterface/CommonInterface>
 </export>
 
 
