@@ -71,6 +71,8 @@ private:
 
       const EventSetupRecordIntervalFinder& operator=(const EventSetupRecordIntervalFinder&); // stop default
 
+      /** override this method if you need to delay setting what records you will be using until after all modules are loaded*/
+      virtual void delaySettingRecords();
       // ---------- member data --------------------------------
       typedef  std::map<eventsetup::EventSetupRecordKey,ValidityInterval> Intervals;
       Intervals intervals_;

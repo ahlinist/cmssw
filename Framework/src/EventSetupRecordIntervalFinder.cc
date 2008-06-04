@@ -74,12 +74,22 @@ EventSetupRecordIntervalFinder::findingRecordWithKey(const EventSetupRecordKey& 
    intervals_.insert(Intervals::value_type(iKey, ValidityInterval()));
 }
 
+void 
+EventSetupRecordIntervalFinder::delaySettingRecords()
+{
+}
+
 //
 // const member functions
 //
 std::set<EventSetupRecordKey> 
 EventSetupRecordIntervalFinder::findingForRecords() const
 {
+   if(intervals_.empty()) {
+      //we are delaying our reading
+      const_cast<EventSetupRecordIntervalFinder*>(this)->delaySettingRecords();
+   }
+   
    std::set<EventSetupRecordKey> returnValue;
    
    for(Intervals::const_iterator itEntry = intervals_.begin(), itEntryEnd = intervals_.end();
