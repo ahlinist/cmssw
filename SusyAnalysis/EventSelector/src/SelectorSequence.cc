@@ -53,8 +53,8 @@ SelectorSequence::createSelectors (const std::vector<std::string>& sequence,
     const SusyEventSelector* selector = EventSelectorFactory::get()->create(selectorType,selectorPSet);
     selectors_.push_back(selector);
   }
-  // prepare cached decision vector
-  currentDecisions_.resize(selectors_.size(),false);
+//   // prepare cached decision vector
+//   currentDecisions_.resize(selectors_.size(),false);
 }
 
 //________________________________________________________________________________________
@@ -81,17 +81,16 @@ SelectorSequence::selectorNames () const
 }
 
 //________________________________________________________________________________________
-std::vector<bool>
+SelectorDecisions
 SelectorSequence::decisions (const edm::Event& iEvent) const
 {
-  if ( newEvent(iEvent) ) {
-    // calculate results for all selectors and update cache
-    for ( size_t i=0; i<selectors_.size(); ++i )
-      currentDecisions_[i] = selectors_[i]->select(iEvent);
-    currentEventId_ = iEvent.id();
-  }
+//   if ( newEvent(iEvent) ) {
+  // calculate results for all selectors and update cache
+  std::vector<bool> results(selectors_.size());
+  for ( size_t i=0; i<selectors_.size(); ++i )
+    results[i] = selectors_[i]->select(iEvent);
 
-  return currentDecisions_;
+  return SelectorDecisions(results);
 }
 
 //________________________________________________________________________________________
@@ -120,87 +119,87 @@ SelectorSequence::selectorName (size_t index) const
   }
 }
 
-//________________________________________________________________________________________
-bool 
-SelectorSequence::globalDecision (const edm::Event& event) const
-{
-  // make sure that cache is updated
-  decisions(event);
-  //
-  for ( size_t i=0; i<size(); ++i ) {
-    if ( !currentDecisions_[i] )  return false;
-  }
-  return true;
-}
+// //________________________________________________________________________________________
+// bool 
+// SelectorSequence::globalDecision (const edm::Event& event) const
+// {
+//   // make sure that cache is updated
+//   decisions(event);
+//   //
+//   for ( size_t i=0; i<size(); ++i ) {
+//     if ( !currentDecisions_[i] )  return false;
+//   }
+//   return true;
+// }
 
-//________________________________________________________________________________________
-bool 
-SelectorSequence::decision (const edm::Event& event, size_t index) const
-{
-  if ( index>=size() ) {
-    edm::LogError("SelectorSequence") << "selector index outside range: " << index;
-    return false;
-  }
-  return decisions(event)[index];
-}
+// //________________________________________________________________________________________
+// bool 
+// SelectorSequence::decision (const edm::Event& event, size_t index) const
+// {
+//   if ( index>=size() ) {
+//     edm::LogError("SelectorSequence") << "selector index outside range: " << index;
+//     return false;
+//   }
+//   return decisions(event)[index];
+// }
 
-//________________________________________________________________________________________
-bool 
-SelectorSequence::decision (const edm::Event& event, 
-			    const std::string& selectorName) const
-{
-  return decisions(event)[selectorIndex(selectorName)];
-}
+// //________________________________________________________________________________________
+// bool 
+// SelectorSequence::decision (const edm::Event& event, 
+// 			    const std::string& selectorName) const
+// {
+//   return decisions(event)[selectorIndex(selectorName)];
+// }
 
-//________________________________________________________________________________________
-bool 
-SelectorSequence::complementaryDecision (const edm::Event& event, size_t index) const
-{
-  // make sure that cache is updated
-  decisions(event);
-  //
-  for ( size_t i=0; i<size(); ++i ) {
-    // ignore decision of selector "index"
-    if ( i==index ) continue;
-    // implement AND of other selectors
-    if ( !currentDecisions_[i] )  return false;
-  }
-  return true;
-}
+// //________________________________________________________________________________________
+// bool 
+// SelectorSequence::complementaryDecision (const edm::Event& event, size_t index) const
+// {
+//   // make sure that cache is updated
+//   decisions(event);
+//   //
+//   for ( size_t i=0; i<size(); ++i ) {
+//     // ignore decision of selector "index"
+//     if ( i==index ) continue;
+//     // implement AND of other selectors
+//     if ( !currentDecisions_[i] )  return false;
+//   }
+//   return true;
+// }
 
-//________________________________________________________________________________________
-bool 
-SelectorSequence::complementaryDecision (const edm::Event& event, 
-					 const std::string& selectorName) const
-{
-  return complementaryDecision(event,selectorIndex(selectorName));
-}
+// //________________________________________________________________________________________
+// bool 
+// SelectorSequence::complementaryDecision (const edm::Event& event, 
+// 					 const std::string& selectorName) const
+// {
+//   return complementaryDecision(event,selectorIndex(selectorName));
+// }
 
-//________________________________________________________________________________________
-bool 
-SelectorSequence::cumulativeDecision (const edm::Event& event, size_t index) const
-{
-  // check index
-  if ( index >= size() ) {
-    edm::LogError("SelectorSequence") << "selector index outside range: " << index;
-    return false;
-  }
-  // make sure that cache is updated
-  decisions(event);
-  //
-  for ( size_t i=0; i<=index; ++i ) {
-    if ( !currentDecisions_[i] )  return false;
-  }
-  return true;
-}
+// //________________________________________________________________________________________
+// bool 
+// SelectorSequence::cumulativeDecision (const edm::Event& event, size_t index) const
+// {
+//   // check index
+//   if ( index >= size() ) {
+//     edm::LogError("SelectorSequence") << "selector index outside range: " << index;
+//     return false;
+//   }
+//   // make sure that cache is updated
+//   decisions(event);
+//   //
+//   for ( size_t i=0; i<=index; ++i ) {
+//     if ( !currentDecisions_[i] )  return false;
+//   }
+//   return true;
+// }
 
-//________________________________________________________________________________________
-bool 
-SelectorSequence::cumulativeDecision (const edm::Event& event, 
-				      const std::string& selectorName) const
-{
-  return cumulativeDecision(event,selectorIndex(selectorName));
-}
+// //________________________________________________________________________________________
+// bool 
+// SelectorSequence::cumulativeDecision (const edm::Event& event, 
+// 				      const std::string& selectorName) const
+// {
+//   return cumulativeDecision(event,selectorIndex(selectorName));
+// }
 
 //________________________________________________________________________________________
 size_t

@@ -16,6 +16,9 @@ public:
   /// number of decisions (selectors)
   inline size_t size () const {return decisions_.size();}
 
+  /// selector results
+  const std::vector<bool>& decisions () const {return decisions_;}
+
   /// global decision (AND of all selectors)
   bool globalDecision () const {
     for ( std::vector<bool>::const_iterator i=decisions_.begin();
@@ -24,9 +27,6 @@ public:
     }
     return true;
   }
-
-  /// selector results
-  const std::vector<bool>& decisions () const {return decisions_;}
 
   /// selector result by index
   bool decision (size_t index) const {

@@ -32,7 +32,7 @@ SusySelectorExample::analyze (const edm::Event& iEvent, const edm::EventSetup& i
   //
   // retrieve the decision of each selector module
   //
-  std::vector<bool> decisions = selectors_.decisions(iEvent);
+  SelectorDecisions decisions = selectors_.decisions(iEvent);
   //
   // count all events / events passing all selections
   //
@@ -43,19 +43,20 @@ SusySelectorExample::analyze (const edm::Event& iEvent, const edm::EventSetup& i
   bool dec(true);
   for ( size_t i=0; i<nrOfSelectors(); ++i ) {
     std::string name = selectors_.selectorName(i);
-    dec = dec && decisions[i];
+    size_t idxFromName = selectors_.selectorIndex(name);
+    dec = dec && decisions.decision(i);
     dbg << " " << name
-	<< " " << selectors_.decision(iEvent,i)
-	<< " " << selectors_.decision(iEvent,name)
-	<< " " << selectors_.complementaryDecision(iEvent,i)
-	<< " " << selectors_.complementaryDecision(iEvent,name)
-	<< " " << selectors_.cumulativeDecision(iEvent,i)
-	<< " " << selectors_.cumulativeDecision(iEvent,name)
+	<< " " << decisions.decision(i)
+	<< " " << decisions.decision(idxFromName)
+	<< " " << decisions.complementaryDecision(i)
+	<< " " << decisions.complementaryDecision(idxFromName)
+	<< " " << decisions.cumulativeDecision(i)
+	<< " " << decisions.cumulativeDecision(idxFromName)
 	<< " " << dec << std::endl;
   }
-  dbg << " global decision = " << selectors_.globalDecision(iEvent);
+  dbg << " global decision = " << decisions.globalDecision();
   edm::LogVerbatim("SusySelectorExample") << "SusySelectorExample: " << dbg.str();
-  if ( !selectors_.globalDecision(iEvent) )  return;
+  if ( !decisions.globalDecision() )  return;
   ++nrEventSelected_;
   //
   // Access to cached variables (all and a specific one)
