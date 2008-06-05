@@ -222,7 +222,7 @@ SelectorSequence::variableNames () const
   std::string sName;
   std::vector<std::string> vNames;
   for ( size_t i=0; i<size(); ++i ) {
-    sName = selectorNames()[i] + ":";
+    sName = selectorNames()[i] + ".";
     vNames = selectors_[i]->variableNames();
     for ( std::vector<std::string>::const_iterator j=vNames.begin();
 	  j!=vNames.end(); ++j ) 
