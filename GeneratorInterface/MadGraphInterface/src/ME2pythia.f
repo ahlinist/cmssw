@@ -2194,3 +2194,27 @@ C...HEPEVT commonblock.
 
       CALL CALSIMM
       END
+
+C...C++ helper to open MadGraph event file passed as argument
+      subroutine MGopen(evfile)
+      character*(*) evfile
+
+C...Extra commonblock to transfer run info.
+      INTEGER LNHIN,LNHOUT,MSCAL,IEVNT,ICKKW,ISCALE
+      COMMON/UPPRIV/LNHIN,LNHOUT,MSCAL,IEVNT,ICKKW,ISCALE
+
+      open(LNHIN,FILE=evfile,STATUS='UNKNOWN')
+
+      end
+
+
+C...C++ helper to close MadGraph event file
+      subroutine MGclos
+
+C...Extra commonblock to transfer run info.
+      INTEGER LNHIN,LNHOUT,MSCAL,IEVNT,ICKKW,ISCALE
+      COMMON/UPPRIV/LNHIN,LNHOUT,MSCAL,IEVNT,ICKKW,ISCALE
+
+      close(LNHIN)
+
+      end
