@@ -20,7 +20,7 @@ PrimaryVertexEventSelector::select (const edm::Event& event) const
   // reset cached variables
   resetVariables();
   // Get the vertices
-  edm::Handle< std::vector<reco::Vertex> > vertexHandle;
+  edm::Handle< edm::View<reco::Vertex> > vertexHandle;
   event.getByLabel(vertexTag_, vertexHandle);
   if ( !vertexHandle.isValid() ) {
     edm::LogWarning("PrimaryVertexEventSelector") 

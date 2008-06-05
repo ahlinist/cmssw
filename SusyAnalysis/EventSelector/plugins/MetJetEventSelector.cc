@@ -37,7 +37,7 @@ MetJetEventSelector::select (const edm::Event& event) const
   resetVariables();
 
   // Get the MET result
-  edm::Handle< std::vector<pat::MET> > metHandle;
+  edm::Handle< edm::View<pat::MET> > metHandle;
   event.getByLabel(metTag_, metHandle);
   if ( !metHandle.isValid() ) {
     edm::LogWarning("MetJetEventSelector") << "No Met results for InputTag " << metTag_;
@@ -48,16 +48,16 @@ MetJetEventSelector::select (const edm::Event& event) const
                                            << metHandle->size() << " instead of 1";    
     return false;
   }
-  const std::vector<pat::MET>& mets = (*metHandle); // For simplicity...
+  const edm::View<pat::MET>& mets = (*metHandle); // For simplicity...
 
   // Get the jets
-  edm::Handle< std::vector<pat::Jet> > jetHandle;
+  edm::Handle< edm::View<pat::Jet> > jetHandle;
   event.getByLabel(jetTag_, jetHandle);
   if ( !jetHandle.isValid() ) {
     edm::LogWarning("MetJetEventSelector") << "No Jet results for InputTag " << jetTag_;
     return false;
   }
-  const std::vector<pat::Jet>& jets = (*jetHandle); // For simplicity...
+  const edm::View<pat::Jet>& jets = (*jetHandle); // For simplicity...
 
   //
   // Preselection: number of jets (need at least 3(?) to make sense out of these variables)
@@ -69,9 +69,9 @@ MetJetEventSelector::select (const edm::Event& event) const
   // Compute variables
   //
 
-  // MET "isolation"
+  // MET "isolation" (calculated on at most 4 jets)
   float metIso = 100.;
-  for ( int iJet=0; iJet<4; ++iJet) {
+  for ( unsigned int iJet=0; iJet<4 && iJet<jets.size(); ++iJet) {
     double deltaPhiAbs = fabs( reco::deltaPhi(jets[iJet].phi(),mets[0].phi()) );
     if ( metIso > deltaPhiAbs ) metIso = deltaPhiAbs;
   }

@@ -38,7 +38,7 @@ BJetEventSelector::select (const edm::Event& event) const
   resetVariables();
 
   // Get the jets
-  edm::Handle< std::vector<pat::Jet> > jetHandle;
+  edm::Handle< edm::View<pat::Jet> > jetHandle;
   event.getByLabel(jetTag_, jetHandle);
   if ( !jetHandle.isValid() ) {
     edm::LogWarning("BJetEventSelector") << "No Jet results for InputTag " << jetTag_;

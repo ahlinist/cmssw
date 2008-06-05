@@ -28,7 +28,7 @@ MetEventSelector::select (const edm::Event& event) const
   //
   // get the MET result
   //
-  edm::Handle< std::vector<pat::MET> > metHandle;
+  edm::Handle< edm::View<pat::MET> > metHandle;
   event.getByLabel(metTag_, metHandle);
   if ( !metHandle.isValid() ) {
     edm::LogWarning("MetEventSelector") << "No Met results for InputTag " << metTag_;

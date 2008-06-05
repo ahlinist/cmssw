@@ -17,9 +17,9 @@ CombinedEventSelector::CombinedEventSelector (const edm::ParameterSet& pset) :
 double 
 CombinedEventSelector::value (const std::string& name) const {
 
-  // Decode variable name (of the form "selector:name") and get it from the sequence
+  // Decode variable name (of the form "selector.name") and get it from the sequence
   
-  size_t index = name.find(":");
+  size_t index = name.find(".");
   if ( index == std::string::npos ) {
     edm::LogError("CombinedEventSelector") << "unable to get selector name from \"" << name << "\""
                                       << "\n(looking for \"selector:variable\")";
