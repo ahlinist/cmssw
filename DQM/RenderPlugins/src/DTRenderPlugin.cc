@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.15 2008/05/30 09:13:25 cerminar Exp $
+// $Id: DTRenderPlugin.cc,v 1.16 2008/05/31 15:26:52 cerminar Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.15 $
-  \date $Date: 2008/05/30 09:13:25 $
+  \version $Revision: 1.16 $
+  \date $Date: 2008/05/31 15:26:52 $
 */
 
 #include "TProfile2D.h"
@@ -219,29 +219,99 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if (o.name.find( "TrigEff" ) < o.name.size() ) {
-    obj->SetMinimum(0.);
-    obj->SetMaximum(1.);
-    return;
-  }
 
-  if (o.name.find( "BestQual" ) < o.name.size() ) {
-    return;
-  }
+  // --------------------------------------------------------------
+  // Trigger plots
+  if( o.name.find("CorrFractionSummary_W") < o.name.size() ) {
+    obj->GetXaxis()->SetNdivisions(13,true);
+    obj->GetYaxis()->SetNdivisions(5,true);
+    obj->GetXaxis()->CenterLabels();
+    obj->GetYaxis()->CenterLabels();
+    gPad->SetGrid(1,1);
+    obj->GetXaxis()->SetLabelSize(0.07);
+    obj->GetYaxis()->SetLabelSize(0.07);
 
-  if (o.name.find( "QualvsPhi" ) <o.name.size() ) {
-    obj->GetYaxis()->SetRangeUser(-10.,30.);
-    return;
-  }   
+//     obj->GetXaxis()->LabelsOption("v");
+    gPad->SetBottomMargin(0.1);
+    gPad->SetLeftMargin(0.12);
+    gPad->SetRightMargin(0.12);
+    obj->GetXaxis()->LabelsOption("v");
+    obj->SetMinimum(-0.00000001);
+    obj->SetMaximum(2.0);
 
-  if (o.name.find( "QualvsPhi" ) <o.name.size() ||
+    int colorError1[3];
+    colorError1[0] = 416;// kGreen
+    colorError1[1] = 594;// kind of blue
+    colorError1[2] = 632;// kRed
+    gStyle->SetPalette(3, colorError1);
+    return;
+  } else if(o.name.find("CorrFractionSummary") < o.name.size()) {
+    obj->GetXaxis()->SetNdivisions(13,true);
+    obj->GetYaxis()->SetNdivisions(6,true);
+    obj->GetXaxis()->CenterLabels();
+    obj->GetYaxis()->CenterLabels();
+    gPad->SetGrid(1,1);
+    obj->GetXaxis()->SetLabelSize(0.07);
+    obj->GetYaxis()->SetLabelSize(0.07);
+    obj->GetXaxis()->LabelsOption("v");
+    gPad->SetBottomMargin(0.1);
+    gPad->SetLeftMargin(0.12);
+    gPad->SetRightMargin(0.12);
+    obj->SetMinimum(-0.00000001);
+    obj->SetMaximum(5.0);
+
+    int colorError1[5];
+    colorError1[0] = 416;// kGreen
+    colorError1[1] = 400;// kYellow
+    colorError1[2] = 800;// kOrange
+    colorError1[3] = 625;
+    colorError1[4] = 632;// kRed
+    gStyle->SetPalette(5, colorError1);
+    return;
+  }  else if(o.name.find("2ndFraction") <  o.name.size() ||
+	     o.name.find("CorrFraction") < o.name.size() ||
+	     o.name.find("HFraction") <    o.name.size() ) {
+    obj->GetXaxis()->SetNdivisions(13,true);
+    if(o.name.find("Phi") < o.name.size())
+      obj->GetYaxis()->SetNdivisions(5,true); //Phi Summary
+    else
+      obj->GetYaxis()->SetNdivisions(4,true); //Theta Summary     
+    obj->GetXaxis()->CenterLabels();
+    obj->GetYaxis()->CenterLabels();
+    gPad->SetGrid(1,1);
+    obj->GetXaxis()->SetLabelSize(0.07);
+    obj->GetYaxis()->SetLabelSize(0.07);
+    //obj->GetXaxis()->LabelsOption("v");
+    gPad->SetBottomMargin(0.1);
+    gPad->SetLeftMargin(0.12);
+    gPad->SetRightMargin(0.12);
+    obj->SetMinimum(-0.00000001);
+    obj->SetMaximum(1.0);
+    return;
+  }  else if(o.name.find("CorrectBX")        < o.name.size() ||
+	     o.name.find("TriggerInclusive") < o.name.size() ||
+	     o.name.find("HFraction")        < o.name.size() ) {
+    obj->GetXaxis()->SetNdivisions(13,true);
+    if(o.name.find("Phi") < o.name.size())
+      obj->GetYaxis()->SetNdivisions(5,true); //Phi Summary
+    else
+      obj->GetYaxis()->SetNdivisions(4,true); //Theta Summary     
+    obj->GetXaxis()->CenterLabels();
+    obj->GetYaxis()->CenterLabels();
+    gPad->SetGrid(1,1);
+    obj->GetXaxis()->SetLabelSize(0.07);
+    obj->GetYaxis()->SetLabelSize(0.07);
+    obj->GetXaxis()->LabelsOption("v");
+    gPad->SetBottomMargin(0.1);
+    gPad->SetLeftMargin(0.12);
+    gPad->SetRightMargin(0.12);
+    if(o.name.find("CorrectBX") < o.name.size())
+      obj->SetOption("text");
+    return;
+  } else if (o.name.find( "QualvsPhi" ) <o.name.size() ||
       o.name.find( "QualDDUvsQualDCC" ) <o.name.size() ||
-      o.name.find( "PositionvsQual" ) <o.name.size() ||
-      o.name.find( "PosvsAngle" ) <o.name.size() ||
-      o.name.find( "PhitkvsPhitrig" ) <o.name.size() ||
-      o.name.find( "PhibtkvsPhibtrig" ) <o.name.size() ||
-      o.name.find( "HitstkvsQualtrig" ) <o.name.size() ||
-      o.name.find( "Flag1stvsQual" ) <o.name.size() ) {
+      o.name.find( "PositionvsQual" )   <o.name.size() ||
+      o.name.find( "Flag1stvsQual" )    <o.name.size() ) {
     obj->SetOption( "box" );
     return;
   }
@@ -333,14 +403,16 @@ void DTRenderPlugin::preDrawTH1( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( o.name.find( "hResDist" ) < o.name.size() ||
-      o.name.find( "MeanTest" ) < o.name.size() ||
-      o.name.find( "SigmaTest" ) < o.name.size() ||
-      o.name.find( "xEfficiency" ) < o.name.size() ||
-      o.name.find( "yEfficiency" ) < o.name.size() ||
-      o.name.find( "Efficiency_" ) < o.name.size() ||
-      o.name.find( "OccupancyDiff_" ) < o.name.size() ||
-      o.name.find( "tTrigTest" ) < o.name.size() ) {
+  if( o.name.find( "hResDist" )        < o.name.size() ||
+      o.name.find( "MeanTest" )        < o.name.size() ||
+      o.name.find( "SigmaTest" )       < o.name.size() ||
+      o.name.find( "xEfficiency" )     < o.name.size() ||
+      o.name.find( "yEfficiency" )     < o.name.size() ||
+      o.name.find( "Efficiency_" )     < o.name.size() ||
+      o.name.find( "OccupancyDiff_" )  < o.name.size() ||
+      o.name.find( "tTrigTest" )       < o.name.size() || 
+      o.name.find( "2ndFraction" )     < o.name.size() ||
+      o.name.find( "CorrFraction" )    < o.name.size() ) {
     
     TAttLine *line = dynamic_cast<TAttLine *> (o.object);
     assert (line);
@@ -360,31 +432,30 @@ void DTRenderPlugin::preDrawTH1( TCanvas *c, const DQMNet::CoreObject &o ) {
       }  
     }   
 
+  }
+  
     if ( o.name.find( "tTrigTest" ) < o.name.size() ) {
       obj->GetXaxis()->SetBinLabel(1,"SL1");
       obj->GetXaxis()->SetBinLabel(2,"SL2");
       obj->GetXaxis()->SetBinLabel(3,"SL3");
+      return;
     }
 
-    return;
-  }
-  
-  if( o.name.find( "CorrectBX" ) < o.name.size() ) {
-   gPad->SetLogy(0);
-   obj->GetYaxis()->SetRangeUser(-10.,30.);
-   obj->GetXaxis()->LabelsOption("hd");
-   return;
-  }
-
-  if( o.name.find( "TrigEff" ) < o.name.size()  ||
-      o.name.find( "CorrFrac" ) < o.name.size() ||
-      o.name.find( "2ndFrac" ) < o.name.size()  ||
-      o.name.find( "HFrac" ) < o.name.size() ) {
-    gPad->SetLogy(0);
+    
+  // --------------------------------------------------------------
+  // Trigger plots
+  if ( o.name.find( "2ndFraction" )  < o.name.size() ||
+       o.name.find( "CorrFraction" ) < o.name.size() || 
+       o.name.find( "HFraction" )    < o.name.size()) {
     obj->GetYaxis()->SetRangeUser(0.,1.1);
-    obj->GetXaxis()->LabelsOption("hd");
     return;
-  } 
+  } else if ( o.name.find( "CorrectBX" ) < o.name.size() ) {
+    if (o.name.find( "DCC" ) < o.name.size())
+      obj->GetYaxis()->SetRangeUser(-5.,5.);
+    else
+      obj->GetYaxis()->SetRangeUser(0.,20.);
+    return;
+  }
 
   return;
 
