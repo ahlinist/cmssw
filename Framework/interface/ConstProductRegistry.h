@@ -45,13 +45,13 @@ namespace edm {
     // Return all the branch names currently known to *this.  This
     // does a return-by-value of the vector so that it may be used in
     // a colon-initialization list.
-    std::vector<std::string> allBranchNames() const;
+    std::vector<std::string> allBranchNames() const {return reg_->allBranchNames();}
 
     // Return pointers to (const) BranchDescriptions for all the
     // BranchDescriptions known to *this.  This does a
     // return-by-value of the vector so that it may be used in a
     // colon-initialization list.
-    std::vector<BranchDescription const*> allBranchDescriptions() const;
+    std::vector<BranchDescription const*> allBranchDescriptions() const {return reg_->allBranchDescriptions();}
      
     unsigned int nextID() const {return reg_->nextID();}
      
