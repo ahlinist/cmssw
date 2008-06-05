@@ -31,7 +31,7 @@ MeffSelector::select (const edm::Event& event) const
   resetVariables();
 
   // Get the MET result
-  edm::Handle< std::vector<pat::MET> > metHandle;
+  edm::Handle< edm::View<pat::MET> > metHandle;
   event.getByLabel(metTag_, metHandle);
   if ( !metHandle.isValid() ) {
     edm::LogWarning("MeffEventSelector") << "No Met results for InputTag " << metTag_;
@@ -44,7 +44,7 @@ MeffSelector::select (const edm::Event& event) const
   }
 
   // Get the jets
-  edm::Handle< std::vector<pat::Jet> > jetHandle;
+  edm::Handle< edm::View<pat::Jet> > jetHandle;
   event.getByLabel(jetTag_, jetHandle);
   if ( !jetHandle.isValid() ) {
     edm::LogWarning("MetJetEventSelector") << "No Jet results for InputTag " << jetTag_;
@@ -53,7 +53,7 @@ MeffSelector::select (const edm::Event& event) const
 
   // Compute Meff
   float meff = (*metHandle)[0].et();
-  for( std::vector< pat::Jet >::const_iterator iJet = jetHandle->begin();
+  for( edm::View< pat::Jet >::const_iterator iJet = jetHandle->begin();
        iJet != jetHandle->end(); ++iJet )
     {
       meff += meff + iJet->et();

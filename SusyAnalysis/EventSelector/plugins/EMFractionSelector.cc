@@ -27,7 +27,7 @@ EMFractionSelector::select (const edm::Event& event) const
   // reset cached variables
   resetVariables();
   // Get the jets
-  edm::Handle< std::vector<pat::Jet> > jetHandle;
+  edm::Handle< edm::View<pat::Jet> > jetHandle;
   event.getByLabel(jetTag_, jetHandle);
   if ( !jetHandle.isValid() ) {
     edm::LogWarning("EMFractionSelector") << "No Jet results for InputTag " << jetTag_;
@@ -38,7 +38,7 @@ EMFractionSelector::select (const edm::Event& event) const
   float etSum  = 0.;
   float etFrac = 0.;
 
-  for ( std::vector< pat::Jet >::const_iterator iJet = jetHandle->begin();
+  for ( edm::View< pat::Jet >::const_iterator iJet = jetHandle->begin();
         iJet != jetHandle->end(); ++iJet )
     {
       if ( iJet->pt() > minPt_ && fabs(iJet->eta()) < maxEta_ ) {

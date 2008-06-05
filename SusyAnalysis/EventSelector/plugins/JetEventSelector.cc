@@ -5,18 +5,15 @@
 #include <vector>
 #include <sstream>
 
+//________________________________________________________________________________________
 JetEventSelector::JetEventSelector (const edm::ParameterSet& pset) :
-  SusyEventSelector(pset) {
-  // input collection
-  jetTag_ = pset.getParameter<edm::InputTag>("jetTag");
-  // jet correction
-  correction_ = pat::Jet::correctionType(pset.getParameter<std::string>("correction"));
-  // lower cuts on jet Et (defines also min. nr. of jets)
-  minEt_ = pset.getParameter< std::vector<double> >("minEt");
-  // upper cuts on jet |eta| (defines also min. nr. of jets)
-  maxEta_ = pset.getParameter< std::vector<double> >("maxEta");
-  // upper cuts on jet EM fraction (defines also min. nr. of jets)
-  maxFem_ = pset.getParameter< std::vector<double> >("maxEMFraction");
+  SusyEventSelector(pset),
+  jetTag_( pset.getParameter<edm::InputTag>("jetTag") ),
+  correction_( pat::Jet::correctionType(pset.getParameter<std::string>("correction")) ),
+  minEt_(  pset.getParameter< std::vector<double> >("minEt"        ) ),
+  maxEta_( pset.getParameter< std::vector<double> >("maxEta"       ) ),
+  maxFem_( pset.getParameter< std::vector<double> >("maxEMFraction") )
+{
 
   /// definition of variables to be cached
   defineVariable("NumberOfJets");
@@ -37,18 +34,23 @@ JetEventSelector::JetEventSelector (const edm::ParameterSet& pset) :
 				   << "  min #jets = " << minEt_.size();
 }
 
+
+//________________________________________________________________________________________
 bool
 JetEventSelector::select (const edm::Event& event) const
 {
   // reset cached variables
   resetVariables();
-  //
+
+  //FIXME: what about checking at construction time?
   if ( minEt_.size()!=maxEta_.size() ||
        maxFem_.size()!=maxEta_.size() ) {
     edm::LogError("JetEventSelector") << "Inconsistent length of vector of cut values";
     return false;
   }
+
   // get the jets
+//   edm::Handle< edm::View<pat::Jet> > jetHandle;
   edm::Handle< std::vector<pat::Jet> > jetHandle;
   event.getByLabel(jetTag_, jetHandle);
   if ( !jetHandle.isValid() ) {

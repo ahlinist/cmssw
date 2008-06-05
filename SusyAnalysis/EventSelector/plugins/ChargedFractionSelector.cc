@@ -31,7 +31,7 @@ ChargedFractionSelector::select (const edm::Event& event) const
   resetVariables();
 
   // Get the jets
-  edm::Handle< std::vector<pat::Jet> > jets;
+  edm::Handle< edm::View<pat::Jet> > jets;
   event.getByLabel(jetTag_, jets );
   if ( !jets.isValid() ) {
     edm::LogWarning("ChargedFractionSelector") << "No Jet results for InputTag " << jetTag_;
@@ -41,7 +41,7 @@ ChargedFractionSelector::select (const edm::Event& event) const
   // Calculate sum of fractions
   float etFrac = 0.;
   // Loop on jets
-  for ( std::vector< pat::Jet >::const_iterator iJet = jets->begin();
+  for ( edm::View< pat::Jet >::const_iterator iJet = jets->begin();
         iJet != jets->end(); ++iJet )
     {
       const reco::TrackRefVector& jetTracks = iJet->associatedTracks();

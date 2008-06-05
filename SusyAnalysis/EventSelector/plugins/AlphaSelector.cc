@@ -24,7 +24,7 @@ AlphaSelector::select (const edm::Event& event) const
   resetVariables();
 
   // Check input collections
-  edm::Handle< std::vector<pat::Jet> > jetHandle;
+  edm::Handle< edm::View<pat::Jet> > jetHandle;
   event.getByLabel(jetTag_, jetHandle);
   if ( !jetHandle.isValid() ) {
     edm::LogWarning("JetEventSelector") << "No Jet results for InputTag " << jetTag_;

@@ -24,7 +24,7 @@ HTEventSelector::select (const edm::Event& event) const
   // reset cached variables
   resetVariables();
   // Get the jets
-  edm::Handle< std::vector<pat::Jet> > jetHandle;
+  edm::Handle< edm::View<pat::Jet> > jetHandle;
   event.getByLabel(jetTag_, jetHandle);
   if ( !jetHandle.isValid() ) {
     edm::LogWarning("HTEventSelector") << "No Jet results for InputTag " << jetTag_;
@@ -33,7 +33,7 @@ HTEventSelector::select (const edm::Event& event) const
 
   // Sum over jet Ets (with cut on min. pt)
   float myHT = 0.0;
-  std::vector<pat::Jet>::const_iterator iJet = jetHandle->begin();
+  edm::View<pat::Jet>::const_iterator iJet = jetHandle->begin();
   while ( iJet != jetHandle->end() ) {
     if ( iJet->pt() > minPt_ ) myHT += iJet->et();
     ++iJet;
