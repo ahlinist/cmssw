@@ -17,7 +17,7 @@
 // Original Author:  Efe Yazgan
 // Updated        :  Taylan Yetkin (2008/05/08)
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.21 2008/06/02 20:13:42 fedor Exp $
+// $Id: HcalProm.cc,v 1.23 2008/06/03 21:12:15 fedor Exp $
 //
 //
 
@@ -471,7 +471,7 @@ void HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	if (clus->energy() > next_to_maxebeerec && clus->energy()< maxebeerec){
 	  next_to_maxebeerec = clus->energy();
 	  next_to_maxebeerec_ETA = clus->eta();
-	  next_to_maxebeerec_PHI = clus->eta();
+	  next_to_maxebeerec_PHI = clus->phi();
 	}
       }
   }
@@ -482,11 +482,11 @@ void HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   float total_ho = maxhorec+next_to_maxhorec;
   float total_hbMinus = maxhbMinusrec+next_to_maxhbMinusrec;
   float total_hbPlus = maxhbPlusrec+next_to_maxhbPlusrec;
-  float hbhe_DR = sqrt(pow((maxhbherec_ETA-next_to_maxhbherec_ETA),2)+pow((maxhbherec_ETA-next_to_maxhbherec_ETA),2));
-  float ebee_DR = sqrt(pow((maxebeerec_ETA-next_to_maxebeerec_ETA),2)+pow((maxebeerec_ETA-next_to_maxebeerec_ETA),2));
-  float ho_DR = sqrt(pow((maxhorec_ETA-next_to_maxhorec_ETA),2)+pow((maxhorec_ETA-next_to_maxhorec_ETA),2));
-  float hbMinus_DR = sqrt(pow((maxhbMinusrec_ETA-next_to_maxhbMinusrec_ETA),2)+pow((maxhbMinusrec_ETA-next_to_maxhbMinusrec_ETA),2));
-  float hbPlus_DR = sqrt(pow((maxhbPlusrec_ETA-next_to_maxhbPlusrec_ETA),2)+pow((maxhbPlusrec_ETA-next_to_maxhbPlusrec_ETA),2));
+  float hbhe_DR = sqrt(pow((maxhbherec_ETA-next_to_maxhbherec_ETA),2)+pow((maxhbherec_PHI-next_to_maxhbherec_PHI),2));
+  float ebee_DR = sqrt(pow((maxebeerec_ETA-next_to_maxebeerec_ETA),2)+pow((maxebeerec_PHI-next_to_maxebeerec_PHI),2));
+  float ho_DR = sqrt(pow((maxhorec_ETA-next_to_maxhorec_ETA),2)+pow((maxhorec_PHI-next_to_maxhorec_PHI),2));
+  float hbMinus_DR = sqrt(pow((maxhbMinusrec_ETA-next_to_maxhbMinusrec_ETA),2)+pow((maxhbMinusrec_PHI-next_to_maxhbMinusrec_PHI),2));
+  float hbPlus_DR = sqrt(pow((maxhbPlusrec_ETA-next_to_maxhbPlusrec_ETA),2)+pow((maxhbPlusrec_PHI-next_to_maxhbPlusrec_PHI),2));
   if (hbhe_DR < 2.5 && total_hbhe > 0. ) h_maxhbherec->Fill(total_hbhe);
   if (ebee_DR < 0.4 && total_ebee > 0. ) h_maxebeerec->Fill(total_ebee);
   if (ho_DR < 2.5 && total_ho > 0.) h_maxhorec->Fill(total_ho);
