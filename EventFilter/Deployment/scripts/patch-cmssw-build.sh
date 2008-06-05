@@ -6,8 +6,9 @@ if [ $numArgs -lt 2 ]; then
 fi
 export PATH=${PATH}:$PWD/EventFilter/Deployment/scripts
 export SCRAM_ARCH=slc4onl_ia32_gcc346
+sver=`cat  /opt/cmssw/$SCRAM_ARCH/etc/default-scramv1-version`
 cat > EventFilter/Deployment/scripts/scramv1 <<EOF
-/opt/cmssw/slc4onl_ia32_gcc346/lcg/SCRAMV1/V1_2_1/bin/scram \$@
+/opt/cmssw/slc4onl_ia32_gcc346/lcg/SCRAMV1/$sver/bin/scram \$@
 EOF
 chmod +x EventFilter/Deployment/scripts/scramv1
 CMS_SW_VERSION=$1;
@@ -85,9 +86,11 @@ ln -s /opt/cmssw/slc4onl_ia32_gcc346/cms/online/$CMS_SW_VERSION opt/cmssw/base
 ln -s /opt/cmssw/patches/slc4onl_ia32_gcc346/cms/online/$CMS_SW_VERSION opt/cmssw/patch
 ln -s $RT opt/cmssw/root
 ln -s $SL opt/cmssw/seal
+CMS_SW_VERSION_CLEAN=`echo $CMS_SW_VERSION | tr -d "-"`; 
+echo "CMS_SW_VERSION now $CMS_SW_VERSION";
 cat > patch-cmssw.spec <<EOF
 Name: patch-cmssw
-Version: $CMS_SW_VERSION$PATCH_ID
+Version: $CMS_SW_VERSION_CLEAN$PATCH_ID
 Release: 6
 Summary: CMSSW Patches
 License: Unknown
@@ -120,8 +123,6 @@ tar -C $TOPD -c opt/cmssw |tar -xC \$RPM_BUILD_ROOT
 /opt/cmssw/lib
 /opt/cmssw/module
 /opt/cmssw/env.txt
-/opt/cmssw/lib/.edmplugincache
-/opt/cmssw/module/.cache
 /opt/cmssw/base
 /opt/cmssw/patch
 /opt/cmssw/root
