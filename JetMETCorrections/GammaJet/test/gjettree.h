@@ -75,19 +75,61 @@ public :
    Float_t         sMinMinPhot[15];   //[nPhot]
    Float_t         FisherPhot[15];   //[nPhot]
    Int_t           nJet;
-   Float_t         pxJet [44];   //[nJet]
-   Float_t         pyJet [44];   //[nJet]
-   Float_t         pzJet [44];   //[nJet]
-   Float_t         eJet  [44];   //[nJet]
-   Float_t         etaJet[44];   //[nJet]
-   Float_t         phiJet[44];   //[nJet]
+   Float_t         pxJet [100];   //[nJet]
+   Float_t         pyJet [100];   //[nJet]
+   Float_t         pzJet [100];   //[nJet]
+   Float_t         eJet  [100];   //[nJet]
+   Float_t         etaJet[100];   //[nJet]
+   Float_t         phiJet[100];   //[nJet]
+   Int_t           nJet_ite;
+   Float_t         pxJet_ite [100];   //[nJet]
+   Float_t         pyJet_ite [100];   //[nJet]
+   Float_t         pzJet_ite [100];   //[nJet]
+   Float_t         eJet_ite  [100];   //[nJet]
+   Float_t         etaJet_ite[100];   //[nJet]
+   Float_t         phiJet_ite[100];   //[nJet]
+   Int_t           nJet_kt;
+   Float_t         pxJet_kt [100];   //[nJet]
+   Float_t         pyJet_kt [100];   //[nJet]
+   Float_t         pzJet_kt [100];   //[nJet]
+   Float_t         eJet_kt  [100];   //[nJet]
+   Float_t         etaJet_kt[100];   //[nJet]
+   Float_t         phiJet_kt[100];   //[nJet]
+   Int_t           nJet_sis;
+   Float_t         pxJet_sis [100];   //[nJet]
+   Float_t         pyJet_sis [100];   //[nJet]
+   Float_t         pzJet_sis [100];   //[nJet]
+   Float_t         eJet_sis  [100];   //[nJet]
+   Float_t         etaJet_sis[100];   //[nJet]
+   Float_t         phiJet_sis[100];   //[nJet]
    Int_t           nJetGen;
-   Float_t         pxJetGen [69];   //[nJetGen]
-   Float_t         pyJetGen [69];   //[nJetGen]
-   Float_t         pzJetGen [69];   //[nJetGen]
-   Float_t         eJetGen  [69];   //[nJetGen]
-   Float_t         etaJetGen[69];   //[nJetGen]
-   Float_t         phiJetGen[69];   //[nJetGen]
+   Float_t         pxJetGen [100];   //[nJetGen]
+   Float_t         pyJetGen [100];   //[nJetGen]
+   Float_t         pzJetGen [100];   //[nJetGen]
+   Float_t         eJetGen  [100];   //[nJetGen]
+   Float_t         etaJetGen[100];   //[nJetGen]
+   Float_t         phiJetGen[100];   //[nJetGen]
+   Int_t           nJetGen_ite;
+   Float_t         pxJetGen_ite [100];   //[nJetGen]
+   Float_t         pyJetGen_ite [100];   //[nJetGen]
+   Float_t         pzJetGen_ite [100];   //[nJetGen]
+   Float_t         eJetGen_ite  [100];   //[nJetGen]
+   Float_t         etaJetGen_ite[100];   //[nJetGen]
+   Float_t         phiJetGen_ite[100];   //[nJetGen]
+   Int_t           nJetGen_kt;
+   Float_t         pxJetGen_kt [100];   //[nJetGen]
+   Float_t         pyJetGen_kt [100];   //[nJetGen]
+   Float_t         pzJetGen_kt [100];   //[nJetGen]
+   Float_t         eJetGen_kt  [100];   //[nJetGen]
+   Float_t         etaJetGen_kt[100];   //[nJetGen]
+   Float_t         phiJetGen_kt[100];   //[nJetGen]
+   Int_t           nJetGen_sis;
+   Float_t         pxJetGen_sis [100];   //[nJetGen]
+   Float_t         pyJetGen_sis [100];   //[nJetGen]
+   Float_t         pzJetGen_sis [100];   //[nJetGen]
+   Float_t         eJetGen_sis  [100];   //[nJetGen]
+   Float_t         etaJetGen_sis[100];   //[nJetGen]
+   Float_t         phiJetGen_sis[100];   //[nJetGen]
    Float_t         pxMet ;
    Float_t         pyMet ;
    Float_t         pzMet ;
@@ -154,20 +196,48 @@ public :
    TBranch        *b_sMajMajPhot;   //!
    TBranch        *b_sMinMinPhot;   //!
    TBranch        *b_FisherPhot;   //!
-   TBranch        *b_nJet;   //!
-   TBranch        *b_pxJet ;   //!
-   TBranch        *b_pyJet ;   //!
-   TBranch        *b_pzJet ;   //!
-   TBranch        *b_eJet  ;   //!
-   TBranch        *b_etaJet;   //!
-   TBranch        *b_phiJet;   //!
-   TBranch        *b_nJetGen;   //!
-   TBranch        *b_pxJetGen ;   //!
-   TBranch        *b_pyJetGen ;   //!
-   TBranch        *b_pzJetGen ;   //!
-   TBranch        *b_eJetGen  ;   //!
-   TBranch        *b_etaJetGen;   //!
-   TBranch        *b_phiJetGen;   //!
+   TBranch        *b_nJet_ite;   //!
+   TBranch        *b_pxJet_ite ;   //!
+   TBranch        *b_pyJet_ite ;   //!
+   TBranch        *b_pzJet_ite ;   //!
+   TBranch        *b_eJet_ite  ;   //!
+   TBranch        *b_etaJet_ite;   //!
+   TBranch        *b_phiJet_ite;   //!
+   TBranch        *b_nJetGen_ite;   //!
+   TBranch        *b_pxJetGen_ite ;   //!
+   TBranch        *b_pyJetGen_ite ;   //!
+   TBranch        *b_pzJetGen_ite ;   //!
+   TBranch        *b_eJetGen_ite  ;   //!
+   TBranch        *b_etaJetGen_ite;   //!
+   TBranch        *b_phiJetGen_ite;   //!
+   TBranch        *b_nJet_kt;   //!
+   TBranch        *b_pxJet_kt ;   //!
+   TBranch        *b_pyJet_kt ;   //!
+   TBranch        *b_pzJet_kt ;   //!
+   TBranch        *b_eJet_kt  ;   //!
+   TBranch        *b_etaJet_kt;   //!
+   TBranch        *b_phiJet_kt;   //!
+   TBranch        *b_nJetGen_kt;   //!
+   TBranch        *b_pxJetGen_kt ;   //!
+   TBranch        *b_pyJetGen_kt ;   //!
+   TBranch        *b_pzJetGen_kt ;   //!
+   TBranch        *b_eJetGen_kt  ;   //!
+   TBranch        *b_etaJetGen_kt;   //!
+   TBranch        *b_phiJetGen_kt;   //!
+   TBranch        *b_nJet_sis;   //!
+   TBranch        *b_pxJet_sis ;   //!
+   TBranch        *b_pyJet_sis ;   //!
+   TBranch        *b_pzJet_sis ;   //!
+   TBranch        *b_eJet_sis  ;   //!
+   TBranch        *b_etaJet_sis;   //!
+   TBranch        *b_phiJet_sis;   //!
+   TBranch        *b_nJetGen_sis;   //!
+   TBranch        *b_pxJetGen_sis ;   //!
+   TBranch        *b_pyJetGen_sis ;   //!
+   TBranch        *b_pzJetGen_sis ;   //!
+   TBranch        *b_eJetGen_sis  ;   //!
+   TBranch        *b_etaJetGen_sis;   //!
+   TBranch        *b_phiJetGen_sis;   //!
    TBranch        *b_pxMet;   //!
    TBranch        *b_pyMet;   //!
    TBranch        *b_pzMet;   //!
@@ -237,7 +307,7 @@ public :
    virtual Int_t    GetEntry(Long64_t entry);
    virtual Long64_t LoadTree(Long64_t entry);
    virtual void     Init(TTree *tree);
-   virtual void     Loop(double cross = 1., int NEVT = 10000000);
+   virtual void     Loop(double cross = 1., int algo = 1, int NEVT = 10000000);
    virtual void     BookHistos();
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
@@ -364,20 +434,48 @@ void gjettree::Init(TTree *tree)
    fChain->SetBranchAddress("sMajMajPhot", sMajMajPhot, &b_sMajMajPhot);
    fChain->SetBranchAddress("sMinMinPhot", sMinMinPhot, &b_sMinMinPhot);
    fChain->SetBranchAddress("FisherPhot", FisherPhot, &b_FisherPhot);
-   fChain->SetBranchAddress("nJet", &nJet, &b_nJet);
-   fChain->SetBranchAddress("pxJet ", pxJet , &b_pxJet );
-   fChain->SetBranchAddress("pyJet ", pyJet , &b_pyJet );
-   fChain->SetBranchAddress("pzJet ", pzJet , &b_pzJet );
-   fChain->SetBranchAddress("eJet  ", eJet  , &b_eJet  );
-   fChain->SetBranchAddress("etaJet", etaJet, &b_etaJet);
-   fChain->SetBranchAddress("phiJet", phiJet, &b_phiJet);
-   fChain->SetBranchAddress("nJetGen", &nJetGen, &b_nJetGen);
-   fChain->SetBranchAddress("pxJetGen ", pxJetGen , &b_pxJetGen );
-   fChain->SetBranchAddress("pyJetGen ", pyJetGen , &b_pyJetGen );
-   fChain->SetBranchAddress("pzJetGen ", pzJetGen , &b_pzJetGen );
-   fChain->SetBranchAddress("eJetGen  ", eJetGen  , &b_eJetGen  );
-   fChain->SetBranchAddress("etaJetGen", etaJetGen, &b_etaJetGen);
-   fChain->SetBranchAddress("phiJetGen", phiJetGen, &b_phiJetGen);
+   fChain->SetBranchAddress("nJet_ite", &nJet_ite, &b_nJet_ite);
+   fChain->SetBranchAddress("pxJet_ite ", pxJet_ite , &b_pxJet_ite );
+   fChain->SetBranchAddress("pyJet_ite ", pyJet_ite , &b_pyJet_ite );
+   fChain->SetBranchAddress("pzJet_ite ", pzJet_ite , &b_pzJet_ite );
+   fChain->SetBranchAddress("eJet_ite  ", eJet_ite  , &b_eJet_ite  );
+   fChain->SetBranchAddress("etaJet_ite", etaJet_ite, &b_etaJet_ite);
+   fChain->SetBranchAddress("phiJet_ite", phiJet_ite, &b_phiJet_ite);
+   fChain->SetBranchAddress("nJetGen_ite", &nJetGen_ite, &b_nJetGen_ite);
+   fChain->SetBranchAddress("pxJetGen_ite ", pxJetGen_ite , &b_pxJetGen_ite );
+   fChain->SetBranchAddress("pyJetGen_ite ", pyJetGen_ite , &b_pyJetGen_ite );
+   fChain->SetBranchAddress("pzJetGen_ite ", pzJetGen_ite , &b_pzJetGen_ite );
+   fChain->SetBranchAddress("eJetGen_ite  ", eJetGen_ite  , &b_eJetGen_ite  );
+   fChain->SetBranchAddress("etaJetGen_ite", etaJetGen_ite, &b_etaJetGen_ite);
+   fChain->SetBranchAddress("phiJetGen_ite", phiJetGen_ite, &b_phiJetGen_ite);
+   fChain->SetBranchAddress("nJet_kt", &nJet_kt, &b_nJet_kt);
+   fChain->SetBranchAddress("pxJet_kt ", pxJet_kt , &b_pxJet_kt );
+   fChain->SetBranchAddress("pyJet_kt ", pyJet_kt , &b_pyJet_kt );
+   fChain->SetBranchAddress("pzJet_kt ", pzJet_kt , &b_pzJet_kt );
+   fChain->SetBranchAddress("eJet_kt  ", eJet_kt  , &b_eJet_kt  );
+   fChain->SetBranchAddress("etaJet_kt", etaJet_kt, &b_etaJet_kt);
+   fChain->SetBranchAddress("phiJet_kt", phiJet_kt, &b_phiJet_kt);
+   fChain->SetBranchAddress("nJetGen_kt", &nJetGen_kt, &b_nJetGen_kt);
+   fChain->SetBranchAddress("pxJetGen_kt ", pxJetGen_kt , &b_pxJetGen_kt );
+   fChain->SetBranchAddress("pyJetGen_kt ", pyJetGen_kt , &b_pyJetGen_kt );
+   fChain->SetBranchAddress("pzJetGen_kt ", pzJetGen_kt , &b_pzJetGen_kt );
+   fChain->SetBranchAddress("eJetGen_kt  ", eJetGen_kt  , &b_eJetGen_kt  );
+   fChain->SetBranchAddress("etaJetGen_kt", etaJetGen_kt, &b_etaJetGen_kt);
+   fChain->SetBranchAddress("phiJetGen_kt", phiJetGen_kt, &b_phiJetGen_kt);
+   fChain->SetBranchAddress("nJet_sis", &nJet_sis, &b_nJet_sis);
+   fChain->SetBranchAddress("pxJet_sis ", pxJet_sis , &b_pxJet_sis );
+   fChain->SetBranchAddress("pyJet_sis ", pyJet_sis , &b_pyJet_sis );
+   fChain->SetBranchAddress("pzJet_sis ", pzJet_sis , &b_pzJet_sis );
+   fChain->SetBranchAddress("eJet_sis  ", eJet_sis  , &b_eJet_sis  );
+   fChain->SetBranchAddress("etaJet_sis", etaJet_sis, &b_etaJet_sis);
+   fChain->SetBranchAddress("phiJet_sis", phiJet_sis, &b_phiJet_sis);
+   fChain->SetBranchAddress("nJetGen_sis", &nJetGen_sis, &b_nJetGen_sis);
+   fChain->SetBranchAddress("pxJetGen_sis ", pxJetGen_sis , &b_pxJetGen_sis );
+   fChain->SetBranchAddress("pyJetGen_sis ", pyJetGen_sis , &b_pyJetGen_sis );
+   fChain->SetBranchAddress("pzJetGen_sis ", pzJetGen_sis , &b_pzJetGen_sis );
+   fChain->SetBranchAddress("eJetGen_sis  ", eJetGen_sis  , &b_eJetGen_sis  );
+   fChain->SetBranchAddress("etaJetGen_sis", etaJetGen_sis, &b_etaJetGen_sis);
+   fChain->SetBranchAddress("phiJetGen_sis", phiJetGen_sis, &b_phiJetGen_sis);
    fChain->SetBranchAddress("pxMet ", &pxMet , &b_pxMet);
    fChain->SetBranchAddress("pyMet ", &pyMet , &b_pyMet);
    fChain->SetBranchAddress("pzMet ", &pzMet , &b_pzMet);

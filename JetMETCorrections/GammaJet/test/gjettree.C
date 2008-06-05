@@ -12,7 +12,7 @@
 #include <JetMETCorrections/GammaJet/test/TMVAPhotons_2_MLP.class.C>
 #include <JetMETCorrections/GammaJet/test/TMVAPhotons_3_MLP.class.C>
 #include <JetMETCorrections/GammaJet/test/TMVAPhotons_4_MLP.class.C>
-void gjettree::Loop(double cross, int NEVT)
+void gjettree::Loop(double cross, int algo, int NEVT)
 {
 //   In a ROOT session, you can do:
 //      Root > .L gjettree.C
@@ -102,7 +102,7 @@ void gjettree::Loop(double cross, int NEVT)
     
     for(int i=0; i<nPhot; i++){
             
-      if(TMath::Abs(etaPhot[i])<1.2) {
+      if(TMath::Abs(etaPhot[i])<1.3) {
 		
 	if(ePhot[i]/cosh(etaPhot[i])>maxptphot) {
 	  maxptphot = ePhot[i]/cosh(etaPhot[i]);
@@ -115,7 +115,40 @@ void gjettree::Loop(double cross, int NEVT)
     }
 
     // LOOP OVER JETS - FINDING THE RECOILING RECO JET
-    
+
+    // picking the selected jet algo
+    if(algo == 1) {
+      nJet = nJet_ite;
+      for(int j=0; j<nJet_ite; j++){
+	pxJet [j]=pxJet_ite [j];
+	pyJet [j]=pyJet_ite [j];
+	pzJet [j]=pzJet_ite [j];
+	eJet  [j]=eJet_ite  [j];
+	etaJet[j]=etaJet_ite[j];
+      	phiJet[j]=phiJet_ite[j];
+      }
+    }else if(algo == 2) {
+      nJet = nJet_kt;
+      for(int j=0; j<nJet_kt; j++){
+	pxJet [j]=pxJet_kt [j];
+	pyJet [j]=pyJet_kt [j];
+	pzJet [j]=pzJet_kt [j];
+	eJet  [j]=eJet_kt  [j];
+	etaJet[j]=etaJet_kt[j];
+      	phiJet[j]=phiJet_kt[j];
+      }
+    }else if(algo == 3) {
+      nJet = nJet_sis;
+      for(int j=0; j<nJet_sis; j++){
+	pxJet [j]=pxJet_sis [j];
+	pyJet [j]=pyJet_sis [j];
+	pzJet [j]=pzJet_sis [j];
+	eJet  [j]=eJet_sis  [j];
+	etaJet[j]=etaJet_sis[j];
+      	phiJet[j]=phiJet_sis[j];
+      }
+    }else cout << "NO SUCH JET ALGO!!!!" << endl;
+           
     double mindeltaphi = 2*pi;
     int imindeltaphi = -1;
     int njetsoverthreshold = 0;
@@ -223,7 +256,7 @@ void gjettree::Loop(double cross, int NEVT)
     if(ePhot[imaxptphot]/cosh(etaPhot[imaxptphot])<200 && ePhot[imaxptphot]/cosh(etaPhot[imaxptphot])>100) nnval = classReader3->GetMvaValue( *inputVec );
     if(ePhot[imaxptphot]/cosh(etaPhot[imaxptphot])>200)                                                    nnval = classReader4->GetMvaValue( *inputVec );
     
-    if(ePhot[imaxptphot]/cosh(etaPhot[imaxptphot])>25 && TMath::Abs(etaPhot[imaxptphot])<1.2) {
+    if(ePhot[imaxptphot]/cosh(etaPhot[imaxptphot])>25 && TMath::Abs(etaPhot[imaxptphot])<1.3) {
       if(matched){
 	pts = ePhot[imaxptphot]/cosh(etaPhot[imaxptphot]);
 	ntrkisos = ntrkiso035Phot[imaxptphot];
@@ -259,7 +292,7 @@ void gjettree::Loop(double cross, int NEVT)
 
     // cuts
 
-    bool etacut =  TMath::Abs(etaPhot[imaxptphot]) < 1.2; 
+    bool etacut =  TMath::Abs(etaPhot[imaxptphot]) < 1.3; 
     bool ptcut = ePhot[imaxptphot]/cosh(etaPhot[imaxptphot])>25;
     
     if(!etacut) continue;
