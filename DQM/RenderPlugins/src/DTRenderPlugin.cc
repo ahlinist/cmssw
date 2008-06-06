@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.16 2008/05/31 15:26:52 cerminar Exp $
+// $Id: DTRenderPlugin.cc,v 1.17 2008/06/05 08:03:21 battilan Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.16 $
-  \date $Date: 2008/05/31 15:26:52 $
+  \version $Revision: 1.17 $
+  \date $Date: 2008/06/05 08:03:21 $
 */
 
 #include "TProfile2D.h"
@@ -289,8 +289,7 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->SetMaximum(1.0);
     return;
   }  else if(o.name.find("CorrectBX")        < o.name.size() ||
-	     o.name.find("TriggerInclusive") < o.name.size() ||
-	     o.name.find("HFraction")        < o.name.size() ) {
+	     o.name.find("TriggerInclusive") < o.name.size() ) {
     obj->GetXaxis()->SetNdivisions(13,true);
     if(o.name.find("Phi") < o.name.size())
       obj->GetYaxis()->SetNdivisions(5,true); //Phi Summary
@@ -305,6 +304,8 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     gPad->SetBottomMargin(0.1);
     gPad->SetLeftMargin(0.12);
     gPad->SetRightMargin(0.12);
+    if(o.name.find("TriggerInclusive") < o.name.size())
+      obj->SetMinimum(-0.00000001);
     if(o.name.find("CorrectBX") < o.name.size())
       obj->SetOption("text");
     return;
