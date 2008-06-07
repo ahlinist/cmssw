@@ -2,8 +2,8 @@
   \file SiStripRenderPlugin
   \brief Display Plugin for SiStrip DQM Histograms
   \author S. Dutta 
-  \version $Revision: 1.4 $
-  \date $Date: 2008/03/10 15:22:18 $
+  \version $Revision: 1.5 $
+  \date $Date: 2008/06/02 10:54:10 $
 */
 
 #include "TProfile2D.h"
@@ -119,12 +119,12 @@ void SiStripRenderPlugin::preDrawTH1F( TCanvas *c, const DQMNet::CoreObject &o )
   assert( obj );
 
   // This applies to all
-  gStyle->SetOptStat(0111);
-  if ( obj->GetMaximum(1.e5) > 0. ) {
-    gPad->SetLogy(1);
-  } else {
-   gPad->SetLogy(0);
-  }
+  gStyle->SetOptStat(1110);
+//  if ( obj->GetMaximum(1.e5) > 0. ) {
+//    gPad->SetLogy(1);
+//  } else {
+//   gPad->SetLogy(0);
+//  }
 
 }
 
