@@ -85,7 +85,7 @@ JetEventSelector::select (const edm::Event& event) const
   bool result(true);
   for ( unsigned int i=0; i<minEt_.size(); ++i ) {
     unsigned int j = etSorted[i];
-    if ( (*jetHandle)[j].et()<minEt_[i] ||
+    if ( correctedEts[j]<minEt_[i] ||
 	 fabs((*jetHandle)[j].eta())>maxEta_[i] ||
 	 (*jetHandle)[j].emEnergyFraction()>maxFem_[i] ) {
       LogTrace("JetEventSelector") << "JetEventSelector: failed at jet " << (i+1);
