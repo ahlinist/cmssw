@@ -202,7 +202,9 @@ namespace edm {
 
 
   private:
-    bool limitReached() const {return remainingEvents_ == 0 || remainingLumis_ == 0;}
+    bool eventLimitReached() const {return remainingEvents_ == 0;}
+    bool lumiLimitReached() const {return remainingLumis_ == 0;}
+    bool limitReached() const {return eventLimitReached() || lumiLimitReached();}
     virtual ItemType getNextItemType() = 0;
     virtual boost::shared_ptr<RunPrincipal> readRun_() = 0;
     virtual boost::shared_ptr<LuminosityBlockPrincipal> readLuminosityBlock_() = 0;
