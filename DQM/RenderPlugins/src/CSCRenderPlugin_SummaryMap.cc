@@ -97,8 +97,6 @@ void SummaryMap::drawDetector(TH2* me){
     l[x - 1][1]->Draw();
   }
 
-  //TString canvasID = Form("EMU Status: Physics Efficiency %.2f (HW Efficiency %.2f)", (1.0 * rep_el) / csc_el, summary.GetEfficiencyHW());
-  //TText *tCanvas_label = new TText(0.0, 2.0 * 3.14159 + 0.5, canvasID);
   TText *tCanvas_label = new TText(0.0, 2.0 * 3.14159 + 0.5, me->GetTitle());
   tCanvas_label->SetTextAlign(22);
   tCanvas_label->SetTextFont(62);
@@ -107,10 +105,9 @@ void SummaryMap::drawDetector(TH2* me){
 
 }
 
-void SummaryMap::drawStation(TH1* me, const int station){ 
-  CSCAddress adr;
+void SummaryMap::drawStation(TH2* me, const int station){ 
 
-  summary.Read(me);
+  CSCAddress adr;
 
   gStyle->SetPalette(1,0);
 
@@ -145,26 +142,31 @@ void SummaryMap::drawStation(TH1* me, const int station){
   float y_min_chamber = FLT_MAX, y_max_chamber = FLT_MIN;
 
   const CSCAddressBox *box;
-  adr.mask.side = adr.mask.ring = adr.mask.chamber = adr.mask.cfeb = adr.mask.hv = false;
+  adr.mask.side = adr.mask.ring = adr.mask.chamber  = adr.mask.layer = adr.mask.cfeb = adr.mask.hv = false;
   adr.mask.station = true;
   adr.station = station;
 
   unsigned int i = 0, p_hw = 0, p_l = 0, p_csc = 0, p_ring = 0;
-  while(summary.Detector().NextAddressBox(i, box, adr)) {
+  while(detector.NextAddressBox(i, box, adr)) {
 
     b[p_hw] = new TBox(box->xmin, box->ymin, box->xmax, box->ymax);
-    if(summary.GetValue(box->adr) > 0)
+
+    unsigned int x = 1 + (box->adr.side - 1) * 9 + (box->adr.ring - 1) * 3 + (box->adr.hv - 1);
+    unsigned int y = 1 + (box->adr.chamber - 1) * 5 + (box->adr.cfeb - 1);
+ 
+    if(me->GetBinContent(x, y) > 0)
       b[p_hw]->SetFillColor(8);
     else
       b[p_hw]->SetFillColor(18);
+
     b[p_hw]->SetLineColor(9);
     b[p_hw]->SetLineStyle(1);
     b[p_hw]->Draw("l");
     p_hw++;
 
     // If this is the last hw element in the chamber - proceed drawing chamber
-    if(box->adr.cfeb == summary.Detector().NumberOfChamberCFEBs(box->adr.station, box->adr.ring) && 
-       box->adr.hv == summary.Detector().NumberOfChamberHVs(box->adr.station, box->adr.ring)) {
+    if(box->adr.cfeb == detector.NumberOfChamberCFEBs(box->adr.station, box->adr.ring) && 
+       box->adr.hv == detector.NumberOfChamberHVs(box->adr.station, box->adr.ring)) {
 
       x_max_chamber = box->xmax;
       y_max_chamber = box->ymax;
@@ -190,7 +192,7 @@ void SummaryMap::drawStation(TH1* me, const int station){
       p_csc++;
 
       // Last HW element in Ring? display ring label 
-      if(box->adr.chamber == summary.Detector().NumberOfChambers(box->adr.station, box->adr.ring)) {
+      if(box->adr.chamber == detector.NumberOfChambers(box->adr.station, box->adr.ring)) {
         TString ringID = Form("%d", box->adr.ring);
         tRing_label[p_ring] = new TText((x_min_chamber + x_max_chamber) / 2.0, 2.0 * 3.14159 + 0.1, ringID);
         tRing_label[p_ring]->SetTextAlign(22);
@@ -219,8 +221,7 @@ void SummaryMap::drawStation(TH1* me, const int station){
   tStation_plus_label->SetTextFont(62);
   tStation_plus_label->SetTextSize(0.02);
   
-  TString canvasID = Form("ME%d Status: Physics Efficiency %.2f (HW Efficiency %.2f)", station, summary.GetEfficiencyArea(adr), summary.GetEfficiencyHW(adr));
-  TText *tCanvas_label = new TText(0.0, 2.0 * 3.14159 + 0.5, canvasID);
+  TText *tCanvas_label = new TText(0.0, 2.0 * 3.14159 + 0.5, me->GetTitle());
   tCanvas_label->SetTextAlign(22);
   tCanvas_label->SetTextFont(62);
   tCanvas_label->SetTextSize(0.04);

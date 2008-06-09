@@ -2228,7 +2228,8 @@ void CSCRenderPlugin::postDraw( TCanvas *c, const DQMNet::CoreObject &o, const V
   if(REMATCH(".*Summary/Summary_ME[1234]$", o.name)) {
     std::string station_str = o.name;
     REREPLACE(".*Summary/Summary_ME([1234])$", station_str, "$1");
-    summaryMap.drawStation(obj, atoi(station_str.c_str())); 
+    TH2* obj2 = dynamic_cast<TH2*>(obj);
+    summaryMap.drawStation(obj2, atoi(station_str.c_str())); 
     return;
   }
 
