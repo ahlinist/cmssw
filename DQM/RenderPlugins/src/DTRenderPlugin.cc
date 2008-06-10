@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.17 2008/06/05 08:03:21 battilan Exp $
+// $Id: DTRenderPlugin.cc,v 1.18 2008/06/06 16:00:03 battilan Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.17 $
-  \date $Date: 2008/06/05 08:03:21 $
+  \version $Revision: 1.18 $
+  \date $Date: 2008/06/06 16:00:03 $
 */
 
 #include "TProfile2D.h"
@@ -80,20 +80,26 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
   gStyle->SetCanvasBorderMode(0);
   gStyle->SetPadBorderMode(0);
   gStyle->SetPadBorderSize(0);
-  //    (data->pad)->SetLogy( 0 );
+
   gStyle->SetOptStat(0);
   gStyle->SetPalette(1);
+
   obj->SetStats(kFALSE);
   obj->SetOption("colz");
+
   gPad->SetLogz(0);
+
+  gStyle->SetLabelSize(0.7);
+  obj->GetXaxis()->SetLabelSize(0.07);
+  obj->GetYaxis()->SetLabelSize(0.07);
 
   // --------------------------------------------------------------
   // Data integrity plots
 
   if( o.name.find("ROSSummary") < o.name.size() ) {
     gPad->SetGrid(1,1);
-    obj->GetXaxis()->SetLabelSize(0.07);
-    obj->GetYaxis()->SetLabelSize(0.07);
+//     obj->GetXaxis()->SetLabelSize(0.07);
+//     obj->GetYaxis()->SetLabelSize(0.07);
     obj->GetXaxis()->LabelsOption("v");
     gPad->SetBottomMargin(0.25);
     gPad->SetLeftMargin(0.15);
@@ -106,8 +112,8 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->GetXaxis()->CenterLabels();
     obj->GetYaxis()->CenterLabels();
     gPad->SetGrid(1,1);
-    obj->GetXaxis()->SetLabelSize(0.07);
-    obj->GetYaxis()->SetLabelSize(0.07);
+//     obj->GetXaxis()->SetLabelSize(0.07);
+//     obj->GetYaxis()->SetLabelSize(0.07);
     obj->GetXaxis()->SetTitleOffset(1.15);
 //     obj->GetXaxis()->LabelsOption("v");
     gPad->SetBottomMargin(0.1);
@@ -133,8 +139,8 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->GetXaxis()->CenterLabels();
     obj->GetYaxis()->CenterLabels();
     gPad->SetGrid(1,1);
-    obj->GetXaxis()->SetLabelSize(0.07);
-    obj->GetYaxis()->SetLabelSize(0.07);
+//     obj->GetXaxis()->SetLabelSize(0.07);
+//     obj->GetYaxis()->SetLabelSize(0.07);
 
 //     obj->GetXaxis()->LabelsOption("v");
     gPad->SetBottomMargin(0.1);
@@ -147,8 +153,8 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->GetXaxis()->CenterLabels();
     obj->GetYaxis()->CenterLabels();
     gPad->SetGrid(1,1);
-    obj->GetXaxis()->SetLabelSize(0.07);
-    obj->GetYaxis()->SetLabelSize(0.07);
+//     obj->GetXaxis()->SetLabelSize(0.07);
+//     obj->GetYaxis()->SetLabelSize(0.07);
     obj->GetXaxis()->LabelsOption("v");
     gPad->SetBottomMargin(0.1);
     gPad->SetLeftMargin(0.12);
@@ -170,8 +176,8 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->GetXaxis()->CenterLabels();
     obj->GetYaxis()->CenterLabels();
     gPad->SetGrid(1,1);
-    obj->GetXaxis()->SetLabelSize(0.07);
-    obj->GetYaxis()->SetLabelSize(0.07);
+//     obj->GetXaxis()->SetLabelSize(0.07);
+//     obj->GetYaxis()->SetLabelSize(0.07);
     obj->GetXaxis()->LabelsOption("v");
     gPad->SetBottomMargin(0.1);
     gPad->SetLeftMargin(0.12);
@@ -189,8 +195,8 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   } else if( o.name.find("Occupancy" ) < o.name.size() ) {
     gPad->SetGrid(0,4);
-    obj->GetXaxis()->SetLabelSize(0.07);
-    obj->GetYaxis()->SetLabelSize(0.07);
+//     obj->GetXaxis()->SetLabelSize(0.07);
+//     obj->GetYaxis()->SetLabelSize(0.07);
     gPad->SetLeftMargin(0.15);
     return;
   }
@@ -228,8 +234,8 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->GetXaxis()->CenterLabels();
     obj->GetYaxis()->CenterLabels();
     gPad->SetGrid(1,1);
-    obj->GetXaxis()->SetLabelSize(0.07);
-    obj->GetYaxis()->SetLabelSize(0.07);
+//     obj->GetXaxis()->SetLabelSize(0.07);
+//     obj->GetYaxis()->SetLabelSize(0.07);
 
 //     obj->GetXaxis()->LabelsOption("v");
     gPad->SetBottomMargin(0.1);
@@ -251,8 +257,8 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->GetXaxis()->CenterLabels();
     obj->GetYaxis()->CenterLabels();
     gPad->SetGrid(1,1);
-    obj->GetXaxis()->SetLabelSize(0.07);
-    obj->GetYaxis()->SetLabelSize(0.07);
+//     obj->GetXaxis()->SetLabelSize(0.07);
+//     obj->GetYaxis()->SetLabelSize(0.07);
     obj->GetXaxis()->LabelsOption("v");
     gPad->SetBottomMargin(0.1);
     gPad->SetLeftMargin(0.12);
@@ -279,8 +285,8 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->GetXaxis()->CenterLabels();
     obj->GetYaxis()->CenterLabels();
     gPad->SetGrid(1,1);
-    obj->GetXaxis()->SetLabelSize(0.07);
-    obj->GetYaxis()->SetLabelSize(0.07);
+//     obj->GetXaxis()->SetLabelSize(0.07);
+//     obj->GetYaxis()->SetLabelSize(0.07);
     //obj->GetXaxis()->LabelsOption("v");
     gPad->SetBottomMargin(0.1);
     gPad->SetLeftMargin(0.12);
@@ -298,8 +304,8 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->GetXaxis()->CenterLabels();
     obj->GetYaxis()->CenterLabels();
     gPad->SetGrid(1,1);
-    obj->GetXaxis()->SetLabelSize(0.07);
-    obj->GetYaxis()->SetLabelSize(0.07);
+//     obj->GetXaxis()->SetLabelSize(0.07);
+//     obj->GetYaxis()->SetLabelSize(0.07);
     obj->GetXaxis()->LabelsOption("v");
     gPad->SetBottomMargin(0.1);
     gPad->SetLeftMargin(0.12);
@@ -326,8 +332,8 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->GetXaxis()->CenterLabels();
     obj->GetYaxis()->CenterLabels();
     gPad->SetGrid(1,1);
-    obj->GetXaxis()->SetLabelSize(0.07);
-    obj->GetYaxis()->SetLabelSize(0.07);
+//     obj->GetXaxis()->SetLabelSize(0.07);
+//     obj->GetYaxis()->SetLabelSize(0.07);
     //    obj->GetXaxis()->LabelsOption("v");
     gPad->SetBottomMargin(0.1);
     gPad->SetLeftMargin(0.12);
@@ -347,8 +353,8 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->GetXaxis()->CenterLabels();
     obj->GetYaxis()->CenterLabels();
     gPad->SetGrid(1,1);
-    obj->GetXaxis()->SetLabelSize(0.07);
-    obj->GetYaxis()->SetLabelSize(0.07);
+//     obj->GetXaxis()->SetLabelSize(0.07);
+//     obj->GetYaxis()->SetLabelSize(0.07);
     //    obj->GetXaxis()->LabelsOption("v");
     gPad->SetBottomMargin(0.1);
     gPad->SetLeftMargin(0.12);
@@ -367,8 +373,8 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->GetYaxis()->SetNdivisions(5,true);
     obj->GetXaxis()->CenterLabels();
     obj->GetYaxis()->CenterLabels();
-    obj->GetXaxis()->SetLabelSize(0.07);
-    obj->GetYaxis()->SetLabelSize(0.07);
+//     obj->GetXaxis()->SetLabelSize(0.07);
+//     obj->GetYaxis()->SetLabelSize(0.07);
 //     obj->GetXaxis()->LabelsOption("v");
   }
   
@@ -384,25 +390,17 @@ void DTRenderPlugin::preDrawTH1( TCanvas *c, const DQMNet::CoreObject &o ) {
   gStyle->SetCanvasBorderMode( 0 );
   gStyle->SetPadBorderMode( 0 );
   gStyle->SetPadBorderSize( 0 );
-  //      (data->pad)->SetLogy( 1 );
-  gStyle->SetOptStat( 1111111 );
   obj->SetStats( kFALSE );
+  gStyle->SetLabelSize(0.7);
+  obj->GetXaxis()->SetLabelSize(0.07);
+  obj->GetYaxis()->SetLabelSize(0.07);
 
-//   if ( obj->GetMaximum(1.e15) > 0. ) {
-//     gPad->SetLogy(1);
-//   } else {
-//    gPad->SetLogy(0);
-//   }
 
   if( o.name.find( "FED770TTSValues_Percent" ) < o.name.size() ) {
     gPad->SetLogy( 1 );
     return;
   }
 
-  if( o.name.find( "FED770_ROSList" ) < o.name.size() ) {
-    obj->GetXaxis()->SetTitle("# of ROS");
-    return;
-  }
 
   if( o.name.find( "hResDist" )        < o.name.size() ||
       o.name.find( "MeanTest" )        < o.name.size() ||
@@ -457,6 +455,17 @@ void DTRenderPlugin::preDrawTH1( TCanvas *c, const DQMNet::CoreObject &o ) {
       obj->GetYaxis()->SetRangeUser(0.,20.);
     return;
   }
+
+  if( o.name.find("DCC_ErrorsChamberID") < o.name.size() ) {
+    gPad->SetGrid(1,0);
+//     obj->GetXaxis()->SetLabelSize(0.07);
+//     obj->GetYaxis()->SetLabelSize(0.07);
+    obj->GetXaxis()->SetNdivisions(6,true);
+    obj->GetXaxis()->CenterLabels();
+    return;
+  }
+
+
 
   return;
 
