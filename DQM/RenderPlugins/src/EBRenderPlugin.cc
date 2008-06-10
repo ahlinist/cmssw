@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.86 2008/05/28 12:41:29 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.87 2008/06/03 21:27:34 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.86 $
-  \date $Date: 2008/05/28 12:41:29 $
+  \version $Revision: 1.87 $
+  \date $Date: 2008/06/03 21:27:34 $
 */
 
 #include "TH1F.h"
@@ -423,6 +423,7 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   if( name.find( "reportSummaryMap" ) < name.size() ) {
     dqm::utils::reportSummaryMapPalette(obj);
+    obj->SetTitle("EcalBarrel Report Summary Map");
     gStyle->SetPaintTextFormat("+g");
     return;
   }
