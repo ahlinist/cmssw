@@ -17,7 +17,7 @@
 // Original Author:  Efe Yazgan
 // Updated        :  Taylan Yetkin (2008/05/08)
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.23 2008/06/03 21:12:15 fedor Exp $
+// $Id: HcalProm.cc,v 1.24 2008/06/05 15:12:10 efe Exp $
 //
 //
 
@@ -1438,7 +1438,7 @@ string HcalProm::getIMG(TH1F * hist, int size, string htmlDir, const char *xlab,
         return "";
     }
 
-    string name = hist->GetTitle();
+    string name = hist->GetName();
 
     cleanString(name);
     char dest[512];
@@ -1488,7 +1488,7 @@ string HcalProm::getIMG2(TH2F * hist, int size, string htmlDir, const char *xlab
         return "";
     }
 
-    string name = hist->GetTitle();
+    string name = hist->GetName();
 
     cleanString(name);
     char dest[512];
