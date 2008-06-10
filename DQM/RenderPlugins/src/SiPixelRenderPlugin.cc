@@ -2,8 +2,8 @@
   \file SiPixelRenderPlugin
   \brief Display Plugin for Pixel DQM Histograms
   \author P.Merkel
-  \version $Revision: 1.1 $
-  \date $Date: 2008/06/03 10:25:13 $
+  \version $Revision: 1.2 $
+  \date $Date: 2008/06/04 07:41:44 $
 */
 
 #include "TProfile2D.h"
@@ -65,6 +65,12 @@ void SiPixelRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) 
   ya->SetTitleSize(0.05);
   ya->SetLabelSize(0.04);
 
+  if( o.name.find( "hitmap" ) < o.name.size() ) {
+    gStyle->SetPalette(1);
+    obj->SetOption("colz");
+    return;
+  }
+    
   TH2F* obj2 = dynamic_cast<TH2F*>( o.object );
 
    if( o.name.find( "reportSummaryMap" ) < o.name.size() ) {
@@ -102,7 +108,6 @@ void SiPixelRenderPlugin::postDraw( TCanvas *c, const DQMNet::CoreObject &o, con
   if( dynamic_cast<TH1*>( o.object ) ) {
     postDrawTH1( c, o );
   }
-
 
 #ifdef DEBUG
   std::cout << "done" << std::endl;
