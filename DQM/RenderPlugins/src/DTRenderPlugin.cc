@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.18 2008/06/06 16:00:03 battilan Exp $
+// $Id: DTRenderPlugin.cc,v 1.19 2008/06/10 15:48:31 cerminar Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.18 $
-  \date $Date: 2008/06/06 16:00:03 $
+  \version $Revision: 1.19 $
+  \date $Date: 2008/06/10 15:48:31 $
 */
 
 #include "TProfile2D.h"
@@ -95,6 +95,37 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   // --------------------------------------------------------------
   // Data integrity plots
+  if( o.name.find("ROSStatus") < o.name.size() ) {
+    gPad->SetGrid(1,1);
+    gPad->SetBottomMargin(0.15);
+    gPad->SetLeftMargin(0.15);
+    return;
+  }
+
+  // --------------------------------------------------------------
+  // Data integrity plots
+  if( o.name.find("FIFOStatus") < o.name.size() ) {
+    gPad->SetGrid(1,1);
+    gPad->SetBottomMargin(0.15);
+    gPad->SetLeftMargin(0.2);
+    return;
+  }
+
+  if( o.name.find("ROSError") < o.name.size() ) {
+    gPad->SetGrid(1,1);
+    gPad->SetBottomMargin(0.15);
+    gPad->SetLeftMargin(0.2);
+    obj->GetXaxis()->SetLabelSize(0.05);
+    obj->GetYaxis()->SetLabelSize(0.05);
+    return;
+  }
+
+  if( o.name.find("TDCError") < o.name.size() ) {
+    gPad->SetGrid(1,1);
+    gPad->SetBottomMargin(0.15);
+    gPad->SetLeftMargin(0.2);
+    return;
+  }
 
   if( o.name.find("ROSSummary") < o.name.size() ) {
     gPad->SetGrid(1,1);
@@ -312,8 +343,10 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     gPad->SetRightMargin(0.12);
     if(o.name.find("TriggerInclusive") < o.name.size())
       obj->SetMinimum(-0.00000001);
-    if(o.name.find("CorrectBX") < o.name.size())
+    if(o.name.find("CorrectBX") < o.name.size()) {
       obj->SetOption("text");
+      obj->SetMarkerSize( 2 );
+    }
     return;
   } else if (o.name.find( "QualvsPhi" ) <o.name.size() ||
       o.name.find( "QualDDUvsQualDCC" ) <o.name.size() ||
