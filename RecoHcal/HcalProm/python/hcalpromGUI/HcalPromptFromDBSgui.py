@@ -119,7 +119,7 @@ class HcalPromGUI(dbsBaseGui):
             print self.specificSetup.__doc__
             
         self.myDBS.searchStringFile.set("")
-        self.myDBS.searchStringDataset.set("*/GlobalCruzet1-A/*-T0PromptReco-*/RECO*")
+        self.myDBS.searchStringDataset.set("*/GlobalCruzet1-A/*-T0ReReco-*/RECO*")
         self.dqmButton.configure(text="Run the Hcal\nPrompt DQM")
 
         # Set the name of the .cfg file to be run
