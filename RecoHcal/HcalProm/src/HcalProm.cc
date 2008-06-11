@@ -18,7 +18,7 @@
 //                   Fedor Ratnikov
 //                   Jordan Damgov
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.25 2008/06/10 19:23:23 fedor Exp $
+// $Id: HcalProm.cc,v 1.26 2008/06/11 10:52:46 efe Exp $
 //
 //
 
@@ -265,7 +265,7 @@ void HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     geo = pG.product();
     geometry_hb = geo->getSubdetectorGeometry(DetId::Hcal,HcalBarrel);
     
-    std::cout << "\nEvent ID = "<< iEvent.id() << std::endl ;
+    cout << "\nEvent ID = "<< iEvent.id() << std::endl;
     ++NTotal;
 
    //Cosmic Muons
@@ -273,7 +273,7 @@ void HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    iEvent.getByLabel("cosmicMuons",muons);
 
    const TrackCollection tC = *(muons.product());
-   std::cout << "Number of cosmic muon tracks in this event: " << tC.size() << endl;
+   //   cout << "Number of cosmic muon tracks in this event: " << tC.size() << endl;
 
    //trigger
    Handle<L1MuGMTReadoutCollection> gmtrc_handle; 
@@ -482,8 +482,7 @@ void HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 		     &outer_thetap, &outer_phip,
 		     &outer_thetam, &outer_phim
 		     );
-	 std::cout<<"PMy : "<<outer_yp<<"\t"<<track->innerPosition().y()<<endl;
-	 std::cout<<"PMx : "<<outer_xp<<"\t"<<track->innerPosition().x()<<endl;
+
 	 if (inner_thetam != -999.) {
 	     inner_etam = -1*TMath::Log(TMath::Tan(inner_thetam/2.));
 	     inner_etap = -1*TMath::Log(TMath::Tan(inner_thetap/2.));
@@ -510,17 +509,10 @@ void HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	     GlobalVector v1(track->outerMomentum().x(), track->outerMomentum().y(),track->outerMomentum().z());
 	     GlobalVector vc1((inner_xp+outer_xp)/2,(inner_yp+outer_yp)/2.,0.);
              f_corr = TMath::Abs((v1.dot(vc1))/(v1.mag()*vc1.mag()));
-	     if(f_corr<0.3)
-		{
-		   cout<<"f_corr : "<<f_corr<<endl;
-		   cout<<"v1 : "<<v1<<endl;
-		   cout<<"vc1 : "<<vc1<<endl;
-		}
+
              h_corr->Fill(f_corr);
 //       Look for hcalDetId
-	     cout<<"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"<<endl;
 	     fhcalDetId = getClosestCell(0.125, (inner_etap+outer_etap)/2, (inner_phip+outer_phip)/2, HBHERecHits, geo,found1);
-             cout<<"#############################"<<endl;
 //	 hcal id is good or ...?
 	     if(!found1)continue;
          h_ct3->Fill(1);
@@ -885,8 +877,8 @@ void HcalProm::bookHistograms () {
     h_caloMet_Met =  book1DHistogram (JetMetDir, "h_caloMet_Met", "MET from CaloTowers", 100, 0, 50);
     h_caloMet_Phi =  book1DHistogram (JetMetDir, "h_caloMet_Phi", "MET #phi from CaloTowers", 100, -7, 7);
     h_caloMet_SumEt =  book1DHistogram (JetMetDir, "h_caloMet_SumEt", "SumET from CaloTowers", 100, 0, 50);
-    h_MHT =  book1DHistogram (JetMetDir, "h_MHT","MHT", 600,-10,200);
-    h_HT =  book1DHistogram (JetMetDir, "h_HT","HT", 600,-10,200);
+    h_MHT =  book1DHistogram (JetMetDir, "h_MHT","MHT", 600,-10,20);
+    h_HT =  book1DHistogram (JetMetDir, "h_HT","HT", 600,-10,20);
 
     h_eb_rechit_energy =  book1DHistogram (EcalDir, " h_eb_rechit_energy","RecHit Energy EB",160,-10,30);
     h_maxebeerec =  book1DHistogram (EcalDir, "h_maxebeerec","EBEE Muon (GeV)",200,0,15);
@@ -1014,8 +1006,8 @@ void HcalProm::bookHistograms () {
 
 	}
     
-    h_HB_maxE = book1DHistogram(MuonDir,"h_HB_maxE", "Maximum HB Energy (>0.6GeV)", 440, -10., 100.);
-    h_HB_maxE2 = book1DHistogram(MuonDir,"h_HB_maxE2", "Maximum HB + next neighbor Energy", 440, -10., 100.);
+    h_HB_maxE = book1DHistogram(MuonDir,"h_HB_maxE", "Maximum HB Energy (>0.6GeV)", 100, -5., 20.);
+    h_HB_maxE2 = book1DHistogram(MuonDir,"h_HB_maxE2", "Maximum HB + next neighbor Energy", 100, -5., 20.);
     h_HB_maxEta = book1DHistogram(MuonDir,"h_HB_maxEta", "Maximum HB Eta", 1000, -5., 5.);
     h_HB_maxPhi = book1DHistogram(MuonDir,"h_HB_maxPhi", "Maximum HB Phi", 1000, -5., 5.);
     h_HB_maxIPhi = book1DHistogram(MuonDir,"h_HB_maxIPhi", "Maximum HB iphi", 73, 0, 73);
@@ -1066,23 +1058,23 @@ void HcalProm::bookHistograms () {
     h_HBTopMin_e1x1 = book1DHistogram(MuonDir,"h_HBTopMin_e1x1", "HB- Top Sector 1x1 cluster energy", 120, -10., 50.);
     h_HBTopMin_e3x3 = book1DHistogram(MuonDir,"h_HBTopMin_e3x3", "HB- Top Sector 3x3 cluster energy", 120, -10., 50.);
     h_HBTopMin_e1x3 = book1DHistogram(MuonDir,"h_HBTopMin_e1x3", "HB- Top Sector 1x3 cluster energy", 600, -10., 50.);
-    h_HBTopMin_e1x3cr = book1DHistogram(MuonDir,"h_HBTopMin_e1x3cr", "HB- Top Sector 1x3 cluster energy corr", 600, -10., 50.);
+    h_HBTopMin_e1x3cr = book1DHistogram(MuonDir,"h_HBTopMin_e1x3cr", "HB- Top Sector 1x3 cluster energy corr", 100, -5., 20.);
     h_HBTopMin_e5x5 = book1DHistogram(MuonDir,"h_HBTopMin_e5x5", "HB- Top Sector 5x5 cluster energy", 120, -10., 50.);
     h_HBTopPlu_e1x1 = book1DHistogram(MuonDir,"h_HBTopPlu_e1x1", "HB+ Top Sector 1x1 cluster energy", 120, -10., 50.);
     h_HBTopPlu_e3x3 = book1DHistogram(MuonDir,"h_HBTopPlu_e3x3", "HB+ Top Sector 3x3 cluster energy", 120, -10., 50.);
     h_HBTopPlu_e1x3 = book1DHistogram(MuonDir,"h_HBTopPlu_e1x3", "HB+ Top Sector 1x3 cluster energy", 600, -10., 50.);
-    h_HBTopPlu_e1x3cr = book1DHistogram(MuonDir,"h_HBTopPlu_e1x3cr", "HB+ Top Sector 1x3 cluster energy corr", 600, -10., 50.);
+    h_HBTopPlu_e1x3cr = book1DHistogram(MuonDir,"h_HBTopPlu_e1x3cr", "HB+ Top Sector 1x3 cluster energy corr", 100, -5., 20.);
     h_HBTopPlu_e5x5 = book1DHistogram(MuonDir,"h_HBTopPlu_e5x5", "HB+ Top Sector 5x5 cluster energy", 120, -10., 50.);
     
     h_HBBottomMin_e1x1 = book1DHistogram(MuonDir,"h_HBBottomMin_e1x1", "HB- Bottom Sector 1x1 cluster energy", 120, -10., 50.);
     h_HBBottomMin_e3x3 = book1DHistogram(MuonDir,"h_HBBottomMin_e3x3", "HB- Bottom Sector 3x3 cluster energy", 120, -10., 50.);
     h_HBBottomMin_e1x3 = book1DHistogram(MuonDir,"h_HBBottomMin_e1x3", "HB- Bottom Sector 1x3 cluster energy", 600, -10., 50.);
-    h_HBBottomMin_e1x3cr = book1DHistogram(MuonDir,"h_HBBottomMin_e1x3cr", "HB- Bottom Sector 1x3 cluster energy corr", 600, -10., 50.);
+    h_HBBottomMin_e1x3cr = book1DHistogram(MuonDir,"h_HBBottomMin_e1x3cr", "HB- Bottom Sector 1x3 cluster energy corr", 100, -5., 20.);
     h_HBBottomMin_e5x5 = book1DHistogram(MuonDir,"h_HBBottomMin_e5x5", "HB- Bottom Sector 5x5 cluster energy", 120, -10., 50.);
     h_HBBottomPlu_e1x1 = book1DHistogram(MuonDir,"h_HBBottomPlu_e1x1", "HB+ Bottom Sector 1x1 cluster energy", 120, -10., 50.);
     h_HBBottomPlu_e3x3 = book1DHistogram(MuonDir,"h_HBBottomPlu_e3x3", "HB+ Bottom Sector 3x3 cluster energy", 120, -10., 50.);
     h_HBBottomPlu_e1x3 = book1DHistogram(MuonDir,"h_HBBottomPlu_e1x3", "HB+ Bottom Sector 1x3 cluster energy", 600, -10., 50.);
-    h_HBBottomPlu_e1x3cr = book1DHistogram(MuonDir,"h_HBBottomPlu_e1x3cr", "HB+ Bottom Sector 1x3 cluster energy corr", 600, -10., 50.);
+    h_HBBottomPlu_e1x3cr = book1DHistogram(MuonDir,"h_HBBottomPlu_e1x3cr", "HB+ Bottom Sector 1x3 cluster energy corr", 100, -5., 20.);
     h_HBBottomPlu_e5x5 = book1DHistogram(MuonDir,"h_HBBottomPlu_e5x5", "HB+ Bottom Sector 5x5 cluster energy", 120, -10., 50.);
     h_corr = book1DHistogram(MuonDir,"h_corr", "90deg correction it self", 210, -1., 2.);
     //@@
@@ -1644,12 +1636,13 @@ void HcalProm::MuonHTMLOutput(string startTime, string htmlDir, string htmlName)
     //    histoHTML2(h_ecaly_vs_muony, "ECAL BasicClu y", "Muon y", 100, htmlFile, htmlDir);
     //    histoHTML2(h_jetphi_vs_muonphi, "Jet Phi", "Muon Phi", 100, htmlFile, htmlDir);
     histoHTML(h_impact_diff, "ECAL BasicClu X - Muon X", "Events", 92, htmlFile, htmlDir);
-    histoHTML2(DT_HCAL_eta_correlation, "DT eta", "Calo eta", 100, htmlFile, htmlDir);
+    /*histoHTML2(DT_HCAL_eta_correlation, "DT eta", "Calo eta", 100, htmlFile, htmlDir);
     histoHTML2(DT_HCAL_eta_correlation_all, "DT eta all", "Calo eta all", 100, htmlFile, htmlDir);
     histoHTML2(DT_HCAL_phi_correlation, "DT phi", "Calo phi", 100, htmlFile, htmlDir);
     histoHTML2(DT_HCAL_phi_correlation_all, "DT phi all", "Calo phi all", 100, htmlFile, htmlDir);
     histoHTML(HCAL_energy_correlation, "Calo had energy", "Events", 92, htmlFile, htmlDir);
     histoHTML(HCAL_energy_correlation_all, "Calo had energy all", "Events", 92, htmlFile, htmlDir);
+    */
 
     histoHTML(h_AllTracks, "Nb. of Reconstructed Cosmic Muon Tracks", "Events", 92, htmlFile, htmlDir);
     histoHTML(h_d0, "Transverse Impact Parameter", "Events", 92, htmlFile, htmlDir);
@@ -1827,9 +1820,9 @@ string HcalProm::getIMG(TH1F * hist, int size, string htmlDir, const char *xlab,
 
     hist->SetXTitle(xlab);
     hist->SetYTitle(ylab);
-    if(name.find("h_max",0)!=string::npos){
-        hist->Fit("landau");
-    }
+    //    if(name.find("h_max",0)!=string::npos){
+    //    hist->Fit("landau");
+    // }
     hist->Draw();
 
     can->SaveAs(saveName.c_str());
@@ -2212,7 +2205,7 @@ bool HcalProm::Extrapolate(
     if(TMath::Sqrt(intX*intX+intY*intY)<ImpPar) isCloseToIP = true;
     }
 
-    std::cout<<"We have a cosmic muon close to the IP "<< zp << " , " << zm << std::endl;
+    // std::cout<<"We have a cosmic muon close to the IP "<< zp << " , " << zm << std::endl;
     
   }
   else {
