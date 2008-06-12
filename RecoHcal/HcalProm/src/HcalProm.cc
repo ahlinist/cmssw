@@ -18,7 +18,7 @@
 //                   Fedor Ratnikov
 //                   Jordan Damgov
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.28 2008/06/11 15:40:54 tyetkin Exp $
+// $Id: HcalProm.cc,v 1.29 2008/06/12 05:37:45 efe Exp $
 //
 //
 
@@ -555,7 +555,7 @@ void HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 		 }
 //		 h_HBM_e5[iphi-1]->Fill(get1xNClusterEnergy(2,ieta,iphi,HBHERecHits));
 		 h_HBTopMin_e1x1->Fill(getNxNClusterEnergy(0,ieta,iphi,HBHERecHits));
-		 h_HBTopMin_e3x3->Fill(getNxNClusterEnergy(1,ieta,iphi,HBHERecHits));
+		 h_HBTopMin_e3x3cr->Fill(f_corr*getNxNClusterEnergy(1,ieta,iphi,HBHERecHits));
 		 h_HBTopMin_e5x5->Fill(getNxNClusterEnergy(2,ieta,iphi,HBHERecHits));
 
                 }else{ // top plus
@@ -568,7 +568,7 @@ void HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 		 }
 //		 h_HBP_e5[iphi-1]->Fill(get1xNClusterEnergy(2,ieta,iphi,HBHERecHits));
 		 h_HBTopPlu_e1x1->Fill(getNxNClusterEnergy(0,ieta,iphi,HBHERecHits));
-		 h_HBTopPlu_e3x3->Fill(getNxNClusterEnergy(1,ieta,iphi,HBHERecHits));
+		 h_HBTopPlu_e3x3cr->Fill(f_corr*getNxNClusterEnergy(1,ieta,iphi,HBHERecHits));
 		 h_HBTopPlu_e5x5->Fill(getNxNClusterEnergy(2,ieta,iphi,HBHERecHits));
                 }
 //      Bottom 
@@ -583,7 +583,7 @@ void HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 		 }
 //		 h_HBM_e5[iphi-1]->Fill(get1xNClusterEnergy(2,ieta,iphi,HBHERecHits));
 		 h_HBBottomMin_e1x1->Fill(getNxNClusterEnergy(0,ieta,iphi,HBHERecHits));
-		 h_HBBottomMin_e3x3->Fill(getNxNClusterEnergy(1,ieta,iphi,HBHERecHits));
+		 h_HBBottomMin_e3x3cr->Fill(f_corr*getNxNClusterEnergy(1,ieta,iphi,HBHERecHits));
 		 h_HBBottomMin_e5x5->Fill(getNxNClusterEnergy(2,ieta,iphi,HBHERecHits));
                 }else{ // bottom plus
 		 h_HBM_e1[iphi-1]->Fill(f_corr*getNxNClusterEnergy(0,ieta,iphi,HBHERecHits));
@@ -595,7 +595,7 @@ void HcalProm::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 		 }
 //		 h_HBM_e5[iphi-1]->Fill(get1xNClusterEnergy(2,ieta,iphi,HBHERecHits));
 		 h_HBBottomPlu_e1x1->Fill(getNxNClusterEnergy(0,ieta,iphi,HBHERecHits));
-		 h_HBBottomPlu_e3x3->Fill(getNxNClusterEnergy(1,ieta,iphi,HBHERecHits));
+		 h_HBBottomPlu_e3x3cr->Fill(f_corr*getNxNClusterEnergy(1,ieta,iphi,HBHERecHits));
 		 h_HBBottomPlu_e5x5->Fill(getNxNClusterEnergy(2,ieta,iphi,HBHERecHits));
                 }
 	     }
@@ -1057,23 +1057,23 @@ void HcalProm::bookHistograms () {
     h_distance2D_vs_chi2 = book2DHistogram(MuonDir,"h_distance2D_vs_chi2", "distance 2D vs chi2", 1000, 0., 1000., 100,0.,1000.);
       
     h_HBTopMin_e1x1 = book1DHistogram(MuonDir,"h_HBTopMin_e1x1", "HB- Top Sector 1x1 cluster energy", 120, -10., 50.);
-    h_HBTopMin_e3x3 = book1DHistogram(MuonDir,"h_HBTopMin_e3x3", "HB- Top Sector 3x3 cluster energy", 120, -10., 50.);
+    h_HBTopMin_e3x3cr = book1DHistogram(MuonDir,"h_HBTopMin_e3x3cr", "HB- Top Sector 3x3 cluster energy", 120, -10., 50.);
     h_HBTopMin_e1x3 = book1DHistogram(MuonDir,"h_HBTopMin_e1x3", "HB- Top Sector 1x3 cluster energy", 600, -10., 50.);
     h_HBTopMin_e1x3cr = book1DHistogram(MuonDir,"h_HBTopMin_e1x3cr", "HB- Top Sector 1x3 cluster energy corr", 100, -5., 20.);
     h_HBTopMin_e5x5 = book1DHistogram(MuonDir,"h_HBTopMin_e5x5", "HB- Top Sector 5x5 cluster energy", 120, -10., 50.);
     h_HBTopPlu_e1x1 = book1DHistogram(MuonDir,"h_HBTopPlu_e1x1", "HB+ Top Sector 1x1 cluster energy", 120, -10., 50.);
-    h_HBTopPlu_e3x3 = book1DHistogram(MuonDir,"h_HBTopPlu_e3x3", "HB+ Top Sector 3x3 cluster energy", 120, -10., 50.);
+    h_HBTopPlu_e3x3cr = book1DHistogram(MuonDir,"h_HBTopPlu_e3x3cr", "HB+ Top Sector 3x3 cluster energy", 120, -10., 50.);
     h_HBTopPlu_e1x3 = book1DHistogram(MuonDir,"h_HBTopPlu_e1x3", "HB+ Top Sector 1x3 cluster energy", 600, -10., 50.);
     h_HBTopPlu_e1x3cr = book1DHistogram(MuonDir,"h_HBTopPlu_e1x3cr", "HB+ Top Sector 1x3 cluster energy corr", 100, -5., 20.);
     h_HBTopPlu_e5x5 = book1DHistogram(MuonDir,"h_HBTopPlu_e5x5", "HB+ Top Sector 5x5 cluster energy", 120, -10., 50.);
     
     h_HBBottomMin_e1x1 = book1DHistogram(MuonDir,"h_HBBottomMin_e1x1", "HB- Bottom Sector 1x1 cluster energy", 120, -10., 50.);
-    h_HBBottomMin_e3x3 = book1DHistogram(MuonDir,"h_HBBottomMin_e3x3", "HB- Bottom Sector 3x3 cluster energy", 120, -10., 50.);
+    h_HBBottomMin_e3x3cr = book1DHistogram(MuonDir,"h_HBBottomMin_e3x3cr", "HB- Bottom Sector 3x3 cluster energy", 120, -10., 50.);
     h_HBBottomMin_e1x3 = book1DHistogram(MuonDir,"h_HBBottomMin_e1x3", "HB- Bottom Sector 1x3 cluster energy", 600, -10., 50.);
     h_HBBottomMin_e1x3cr = book1DHistogram(MuonDir,"h_HBBottomMin_e1x3cr", "HB- Bottom Sector 1x3 cluster energy corr", 100, -5., 20.);
     h_HBBottomMin_e5x5 = book1DHistogram(MuonDir,"h_HBBottomMin_e5x5", "HB- Bottom Sector 5x5 cluster energy", 120, -10., 50.);
     h_HBBottomPlu_e1x1 = book1DHistogram(MuonDir,"h_HBBottomPlu_e1x1", "HB+ Bottom Sector 1x1 cluster energy", 120, -10., 50.);
-    h_HBBottomPlu_e3x3 = book1DHistogram(MuonDir,"h_HBBottomPlu_e3x3", "HB+ Bottom Sector 3x3 cluster energy", 120, -10., 50.);
+    h_HBBottomPlu_e3x3cr = book1DHistogram(MuonDir,"h_HBBottomPlu_e3x3cr", "HB+ Bottom Sector 3x3 cluster energy", 120, -10., 50.);
     h_HBBottomPlu_e1x3 = book1DHistogram(MuonDir,"h_HBBottomPlu_e1x3", "HB+ Bottom Sector 1x3 cluster energy", 600, -10., 50.);
     h_HBBottomPlu_e1x3cr = book1DHistogram(MuonDir,"h_HBBottomPlu_e1x3cr", "HB+ Bottom Sector 1x3 cluster energy corr", 100, -5., 20.);
     h_HBBottomPlu_e5x5 = book1DHistogram(MuonDir,"h_HBBottomPlu_e5x5", "HB+ Bottom Sector 5x5 cluster energy", 120, -10., 50.);
@@ -1651,10 +1651,10 @@ void HcalProm::MuonHTMLOutput(string startTime, string htmlDir, string htmlName)
     histoHTML(h_HB_maxE, "Maximum HB Energy (>0.6GeV)", "Events", 92, htmlFile, htmlDir);
     histoHTML(h_HB_maxE2, "Maximum HB + next neighbor Energy", "Events", 92, htmlFile, htmlDir);
     histoHTML2(h_HB_maxIEtaIPhi, "Maximum HB ieta", "Maximum HB iphi", 100, htmlFile, htmlDir);
-    histoHTML(h_HBTopMin_e1x3cr, "HB- Top Sector 1x3 cluster energy corr", "Events", 92, htmlFile, htmlDir);
-    histoHTML(h_HBTopPlu_e1x3cr, "HB+ Top Sector 1x3 cluster energy corr", "Events", 92, htmlFile, htmlDir);
-    histoHTML(h_HBBottomMin_e1x3cr, "HB- Bottom Sector 1x3 cluster energy corr", "Events", 92, htmlFile, htmlDir);
-    histoHTML(h_HBBottomPlu_e1x3cr, "HB+ Bottom Sector 1x3 cluster energy corr", "Events", 92, htmlFile, htmlDir);
+    histoHTML(h_HBTopMin_e3x3cr, "HB- Top Sector 3x3 cluster energy corr", "Events", 92, htmlFile, htmlDir);
+    histoHTML(h_HBTopPlu_e3x3cr, "HB+ Top Sector 3x3 cluster energy corr", "Events", 92, htmlFile, htmlDir);
+    histoHTML(h_HBBottomMin_e3x3cr, "HB- Bottom Sector 3x3 cluster energy corr", "Events", 92, htmlFile, htmlDir);
+    histoHTML(h_HBBottomPlu_e3x3cr, "HB+ Bottom Sector 3x3 cluster energy corr", "Events", 92, htmlFile, htmlDir);
     histoHTML2(h_HBCorrEta, "Track Eta, X:max, Y:propagated", "HB Eta, X:max, Y:propagated", 100, htmlFile, htmlDir);
     histoHTML2(h_HBCorrPhi, "Track Phi, X:max, Y:propagated", "HB Phi, X:max, Y:propagated",100, htmlFile, htmlDir);
 

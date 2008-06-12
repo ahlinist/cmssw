@@ -17,7 +17,7 @@
 // Original Author:  Efe Yazgan
 // Updated        :  Taylan Yetkin (2008/05/08)
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.h,v 1.10 2008/06/03 21:12:15 fedor Exp $
+// $Id: HcalProm.h,v 1.11 2008/06/11 10:52:50 efe Exp $
 //
 //
 
@@ -269,25 +269,25 @@ class HcalProm : public edm::EDAnalyzer {
       TH1F* h_HBM_e5[72];
       
       TH1F* h_HBTopMin_e1x1;
-      TH1F* h_HBTopMin_e3x3;
+      TH1F* h_HBTopMin_e3x3cr;
       TH1F* h_HBTopMin_e1x3;
       TH1F* h_HBTopMin_e1x3cr;
       TH1F* h_HBTopMin_e5x5;
 
       TH1F* h_HBTopPlu_e1x1;
-      TH1F* h_HBTopPlu_e3x3;
+      TH1F* h_HBTopPlu_e3x3cr;
       TH1F* h_HBTopPlu_e1x3;
       TH1F* h_HBTopPlu_e1x3cr;
       TH1F* h_HBTopPlu_e5x5;
       
       TH1F* h_HBBottomMin_e1x1;
-      TH1F* h_HBBottomMin_e3x3;
+      TH1F* h_HBBottomMin_e3x3cr;
       TH1F* h_HBBottomMin_e1x3;
       TH1F* h_HBBottomMin_e1x3cr;
       TH1F* h_HBBottomMin_e5x5;
       
       TH1F* h_HBBottomPlu_e1x1;
-      TH1F* h_HBBottomPlu_e3x3;
+      TH1F* h_HBBottomPlu_e3x3cr;
       TH1F* h_HBBottomPlu_e1x3;
       TH1F* h_HBBottomPlu_e1x3cr;
       TH1F* h_HBBottomPlu_e5x5;
