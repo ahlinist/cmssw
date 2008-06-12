@@ -18,7 +18,7 @@
 //                   Fedor Ratnikov
 //                   Jordan Damgov
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.27 2008/06/11 11:11:53 efe Exp $
+// $Id: HcalProm.cc,v 1.28 2008/06/11 15:40:54 tyetkin Exp $
 //
 //
 
@@ -2142,7 +2142,7 @@ bool HcalProm::Extrapolate(
 
   double intX= - a*b/(a*a+1);
   double intY=a*intX+b;
-
+  h_d0->Fill(TMath::Sqrt(intX*intX+intY*intY));
   double notnegative = (ra*ra-b*b)/(1+a*a) + TMath::Power(a*b/(1+a*a),2.);
 
   if( notnegative > 0.) {
@@ -2201,7 +2201,7 @@ bool HcalProm::Extrapolate(
      *yp_out=*ym_out;
      *zp_out=*zm_out;
     }
-    h_d0->Fill(TMath::Sqrt(intX*intX+intY*intY));
+    
     if(TMath::Abs(*zp_out) < zwidth ) {
     if(TMath::Sqrt(intX*intX+intY*intY)<ImpPar) isCloseToIP = true;
     }
