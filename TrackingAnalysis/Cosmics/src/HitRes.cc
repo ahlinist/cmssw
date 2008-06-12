@@ -14,7 +14,7 @@ See sample cfg files in TrackingAnalysis/Cosmics/test/hitRes*cfg
 //
 // Original Authors:  Wolfgang Adam, Keith Ulmer
 //         Created:  Thu Oct 11 14:53:32 CEST 2007
-// $Id: HitRes.cc,v 1.2 2008/05/07 15:26:19 kaulmer Exp $
+// $Id: HitRes.cc,v 1.3 2008/05/29 15:12:10 kaulmer Exp $
 //
 //
 
@@ -69,6 +69,7 @@ See sample cfg files in TrackingAnalysis/Cosmics/test/hitRes*cfg
 
 #include <vector>
 #include <utility>
+
 //
 // class decleration
 //
@@ -264,7 +265,7 @@ HitRes::analyze (const Trajectory& trajectory,
 	layer = layerFromId(id);
 	if ( layer!=-1 && layer==previousLayer ) {
 	  overlapHits.push_back(std::make_pair(previousTM,&(*itm)));
-	  cout << "adding overlap pair from layer = " << layer << endl;
+	  edm::LogVerbatim("HitRes") << "adding overlap pair from layer = " << layer;
 	}
       }
     }
@@ -413,16 +414,16 @@ HitRes::analyze (const Trajectory& trajectory,
       DetId id = (*iol).first->recHit()->geographicalId();
       int layer(-1);
       layer = layerFromId(id);
-      cout << "layer = " << layer << endl;
+      edm::LogVerbatim("HitRes") << "layer = " << layer;
       
       if ( firstMatchedhit ) {
-	cout << "rechit2D" << endl;//if matchedHit take the rphi hit only
+	edm::LogVerbatim("HitRes") << "rechit2D";//if matchedHit take the rphi hit only
 	psimHits1 = associator.associateHit( *firstMatchedhit->monoHit() );
       } else {
 	psimHits1 = associator.associateHit( *(*iol).first->recHit()->hit() );
-	cout << "single hit " << endl;
+	edm::LogVerbatim("HitRes") << "single hit ";
       }
-      cout << "length of psimHits1: " << psimHits1.size() << endl;
+      edm::LogVerbatim("HitRes") << "length of psimHits1: " << psimHits1.size();
       if ( !psimHits1.empty() ) {
 	float closest_dist = 99999.9;
 	std::vector<PSimHit>::const_iterator closest_simhit = psimHits1.begin();
@@ -431,7 +432,7 @@ HitRes::analyze (const Trajectory& trajectory,
 	  float simX = (*m).localPosition().x();
 	  float dist = fabs( simX - ((*iol).first->recHit()->localPosition().x()) );
 	  if (firstMatchedhit) dist = fabs( simX - firstMatchedhit->monoHit()->localPosition().x());
-	  cout << "simHit1 simX = " << simX << "   hitX = " << (*iol).first->recHit()->localPosition().x() << "   distX = " << dist << "   layer = " << layer << endl;
+	  edm::LogVerbatim("HitRes") << "simHit1 simX = " << simX << "   hitX = " << (*iol).first->recHit()->localPosition().x() << "   distX = " << dist << "   layer = " << layer;
 	  if (dist<closest_dist) {
 	    //cout << "found newest closest dist for simhit1" << endl;
 	    closest_dist = dist;
@@ -451,12 +452,12 @@ HitRes::analyze (const Trajectory& trajectory,
 	  float scale = -lp.z() / direction.z();
 	  LocalPoint projectedPos = lp + scale*direction;
           simHitPositions_[0] =	projectedPos.x();
-	  cout << "simhit position from matched layer = " << simHitPositions_[0] << endl;
+	  edm::LogVerbatim("HitRes") << "simhit position from matched layer = " << simHitPositions_[0];
 	} else {
 	  simHitPositions_[0] = (*closest_simhit).localPosition().x();
-	  cout << "simhit position from non-matched layer = " << simHitPositions_[0] << endl;
+	  edm::LogVerbatim("HitRes") << "simhit position from non-matched layer = " << simHitPositions_[0];
 	}
-	cout << "hit position = " << hitPositions_[0] << endl;
+	edm::LogVerbatim("HitRes") << "hit position = " << hitPositions_[0];
       } else {
 	simHitPositions_[0] = -99.;
 	//cout << " filling simHitX: " << -99 << endl;
