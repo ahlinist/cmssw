@@ -212,7 +212,7 @@
   <rParent name="trackerbulkhead:TrackerBulkhead"/>
   <String  name="ChildName"   value="trackerbulkhead:TECPatchpanel"/>
   <Numeric name="N"           value="4" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="5" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="-[TECPatchpanelPhi]-[TECPatchpanelWidth]"/>

@@ -251,7 +251,7 @@
   <rParent name="tecwheel6:TECWheelNomex6"/>
   <String  name="ChildName"   value="tecwheel6:TECBeamsplitter"/>
   <Numeric name="N"           value="8" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="9" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="[tecwheel6:BeamsplitterStartPhi]"/>
