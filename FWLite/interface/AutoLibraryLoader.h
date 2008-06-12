@@ -25,6 +25,7 @@ public:
   static void loadAll();
 
 private:
+  static bool enabled_;
   AutoLibraryLoader();
   AutoLibraryLoader(const AutoLibraryLoader&); // stop default
   const AutoLibraryLoader& operator=(const AutoLibraryLoader&); // stop default

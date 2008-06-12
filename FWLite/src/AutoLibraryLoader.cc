@@ -32,7 +32,7 @@
 // static data member definitions
 //
 
-
+bool AutoLibraryLoader::enabled_(false);
 
 //
 // constructors and destructor
@@ -49,6 +49,9 @@ AutoLibraryLoader::AutoLibraryLoader()
 void
 AutoLibraryLoader::enable()
 {
+   if (enabled_) { return; }
+   enabled_ = true;
+
    edmplugin::PluginManager::configure(edmplugin::standard::config());
    static BareRootProductGetter s_getter;
    static edm::EDProductGetter::Operate s_op(&s_getter);
