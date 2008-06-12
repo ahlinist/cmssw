@@ -17,7 +17,7 @@
 // Original Author:  Efe Yazgan
 // Updated        :  Taylan Yetkin (2008/05/08)
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.h,v 1.11 2008/06/11 10:52:50 efe Exp $
+// $Id: HcalProm.h,v 1.12 2008/06/12 08:41:35 efe Exp $
 //
 //
 
@@ -132,7 +132,7 @@ class HcalProm : public edm::EDAnalyzer {
 	  double *thetam_out, double *phim_out
 	  );
       reco::Track bestTrack(const reco::TrackCollection&) const;
-      HcalDetId getClosestCell(float dR,float eta, float phi, const HBHERecHitCollection*  HBHERecHits, const CaloGeometry* geo, bool &found);
+      HcalDetId getClosestCell(float dR,float eta, float phi, const HBHERecHitCollection*  HBHERecHits, const CaloGeometry* geo, float &time, bool &found);
   //------- histogram bookers ----------
   void bookHistograms ();
   TH1F* book1DHistogram (TFileDirectory& fDir, const std::string& fName, const std::string& fTitle, 
@@ -292,6 +292,16 @@ class HcalProm : public edm::EDAnalyzer {
       TH1F* h_HBBottomPlu_e1x3cr;
       TH1F* h_HBBottomPlu_e5x5;
       TH1F* h_corr;
+      //timing for HB rechits
+      TH1F *h_HBBottomPlu_timing[4];
+      TH1F *h_HBBottomMin_timing[4];
+      TH1F *h_HBTopPlu_timing[4];
+      TH1F *h_HBTopMin_timing[4];
+      //timing for muon signal
+      TH1F *h_HBBottomPlu_Muontiming[4];
+      TH1F *h_HBBottomMin_Muontiming[4];
+      TH1F *h_HBTopPlu_Muontiming[4];
+      TH1F *h_HBTopMin_Muontiming[4];
 
 
       TH1F* PROJ_eta;
@@ -369,6 +379,7 @@ class HcalProm : public edm::EDAnalyzer {
       int fAlgoType; 
       double fIP_z;
       double fIP_r;
+      double fHBThreshold;
       int NTotal;
       int NAccepted;
       int NAccepted2;
