@@ -331,6 +331,8 @@
   <Numeric name="Phi"         value="0*deg"/>
   <Numeric name="Offset"      value="[SupportTubeInsertZoff]" />
   <Numeric name="Delta"       value="[SupportTubeInsertZpitch]"/>
+  <Numeric name="StartCopyNo" value="1"/>
+  <Numeric name="IncrCopyNo"  value="1"/>
   <String name="Rotation"     value="tracker:PAA" />
   <Vector name="Center" type="numeric" nEntries="3"> 
     [SupportTubeRin]+[SupportTubeInsert1Dz], [zero], [zero]
@@ -344,6 +346,8 @@
   <Numeric name="Phi"         value="0*deg"/>
   <Numeric name="Offset"      value="[SupportTubeInsertZoff]" />
   <Numeric name="Delta"       value="[SupportTubeInsertZpitch]"/>
+  <Numeric name="StartCopyNo" value="37"/>
+  <Numeric name="IncrCopyNo"  value="1"/>
   <String name="Rotation"     value="tracker:PAA" />
   <Vector name="Center" type="numeric" nEntries="3"> 
     -([SupportTubeRin]+[SupportTubeInsert1Dz]), [zero], [zero]
@@ -358,6 +362,8 @@
   <Numeric name="Phi"         value="0*deg"/>
   <Numeric name="Offset"      value="[SupportTubeInsertZoff]" />
   <Numeric name="Delta"       value="[SupportTubeInsertZpitch]"/>
+  <Numeric name="StartCopyNo" value="1"/>
+  <Numeric name="IncrCopyNo"  value="1"/>
   <String name="Rotation"     value="tracker:PAA" />
   <Vector name="Center" type="numeric" nEntries="3"> 
     [SupportTubeR1]+[SupportTubeInsert2Dz], [zero], [zero]
@@ -371,6 +377,8 @@
   <Numeric name="Phi"         value="0*deg"/>
   <Numeric name="Offset"      value="[SupportTubeInsertZoff]" />
   <Numeric name="Delta"       value="[SupportTubeInsertZpitch]"/>
+  <Numeric name="StartCopyNo" value="37"/>
+  <Numeric name="IncrCopyNo"  value="1"/>
   <String name="Rotation"     value="tracker:PAA" />
   <Vector name="Center" type="numeric" nEntries="3"> 
     -([SupportTubeR1]+[SupportTubeInsert2Dz]), [zero], [zero]
@@ -385,6 +393,8 @@
   <Numeric name="Phi"         value="0*deg"/>
   <Numeric name="Offset"      value="[SupportTubeInsertZoff]" />
   <Numeric name="Delta"       value="[SupportTubeInsertZpitch]"/>
+  <Numeric name="StartCopyNo" value="1"/>
+  <Numeric name="IncrCopyNo"  value="1"/>
   <String name="Rotation"     value="tracker:PAA" />
   <Vector name="Center" type="numeric" nEntries="3"> 
     [SupportTubeR2]+[SupportTubeInsert3Dz], [zero], [zero]
@@ -398,6 +408,8 @@
   <Numeric name="Phi"         value="0*deg"/>
   <Numeric name="Offset"      value="[SupportTubeInsertZoff]" />
   <Numeric name="Delta"       value="[SupportTubeInsertZpitch]"/>
+  <Numeric name="StartCopyNo" value="37"/>
+  <Numeric name="IncrCopyNo"  value="1"/>
   <String name="Rotation"     value="tracker:PAA" />
   <Vector name="Center" type="numeric" nEntries="3"> 
     -([SupportTubeR2]+[SupportTubeInsert3Dz]), [zero], [zero]
@@ -412,6 +424,8 @@
   <Numeric name="Phi"         value="0*deg"/>
   <Numeric name="Offset"      value="[SupportTubeInsertZoff]" />
   <Numeric name="Delta"       value="[SupportTubeInsertZpitch]"/>
+  <Numeric name="StartCopyNo" value="1"/>
+  <Numeric name="IncrCopyNo"  value="1"/>
   <String name="Rotation"     value="tracker:PAA" />
   <Vector name="Center" type="numeric" nEntries="3"> 
     [SupportTubeR3]+[SupportTubeInsert4Dz], [zero], [zero]
@@ -425,6 +439,8 @@
   <Numeric name="Phi"         value="0*deg"/>
   <Numeric name="Offset"      value="[SupportTubeInsertZoff]" />
   <Numeric name="Delta"       value="[SupportTubeInsertZpitch]"/>
+  <Numeric name="StartCopyNo" value="37"/>
+  <Numeric name="IncrCopyNo"  value="1"/>
   <String name="Rotation"     value="tracker:PAA" />
   <Vector name="Center" type="numeric" nEntries="3"> 
     -([SupportTubeR3]+[SupportTubeInsert4Dz]), [zero], [zero]

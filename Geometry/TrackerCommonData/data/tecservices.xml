@@ -303,7 +303,7 @@
   <rParent name="tecservices:TECServices"/>
   <String  name="ChildName"   value="tecservices:TECAxGrounding"/>
   <Numeric name="N"           value="[ChannelN]" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="1*[ChannelN]+1" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="[ChannelFi]-[AxialGroundingFi]"/>
@@ -327,7 +327,7 @@
   <rParent name="tecservices:TECServices"/>
   <String  name="ChildName"   value="tecservices:TECGasPipe"/>
   <Numeric name="N"           value="2" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="3" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="[GasPipePhi2]"/>
@@ -338,7 +338,7 @@
   <rParent name="tecservices:TECServices"/>
   <String  name="ChildName"   value="tecservices:TECGasPipe"/>
   <Numeric name="N"           value="2" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="5" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="[GasPipePhi3]"/>
@@ -385,7 +385,7 @@
   <rParent name="tecservices:TECServices"/>
   <String  name="ChildName"   value="tecservices:TECCoolPipeS"/>
   <Numeric name="N"           value="[ChannelN]" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="1*[ChannelN]+1" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="[ChannelFi]+[CoolPipePhi2]"/>
@@ -396,7 +396,7 @@
   <rParent name="tecservices:TECServices"/>
   <String  name="ChildName"   value="tecservices:TECCoolantS"/>
   <Numeric name="N"           value="[ChannelN]" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="1*[ChannelN]+1" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="[ChannelFi]+[CoolPipePhi2]"/>
@@ -453,7 +453,7 @@
   <rParent name="tecservices:TECServices"/>
   <String  name="ChildName"   value="tecservices:TECCoolPipeL"/>
   <Numeric name="N"           value="[ChannelN]" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="1*[ChannelN]+1" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="[ChannelFi]+[CoolPipePhi4]"/>
@@ -464,7 +464,7 @@
   <rParent name="tecservices:TECServices"/>
   <String  name="ChildName"   value="tecservices:TECCoolantL"/>
   <Numeric name="N"           value="[ChannelN]" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="1*[ChannelN]+1" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="[ChannelFi]+[CoolPipePhi4]"/>
@@ -488,7 +488,7 @@
   <rParent name="tecservices:TECServices"/>
   <String  name="ChildName"   value="tecservices:TECCoolPipeL"/>
   <Numeric name="N"           value="[ChannelN]" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="2*[ChannelN]+1" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="[ChannelFi]+[CoolPipePhi5]"/>
@@ -499,7 +499,7 @@
   <rParent name="tecservices:TECServices"/>
   <String  name="ChildName"   value="tecservices:TECCoolantL"/>
   <Numeric name="N"           value="[ChannelN]" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="2*[ChannelN]+1" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="[ChannelFi]+[CoolPipePhi5]"/>
@@ -522,7 +522,7 @@
   <rParent name="tecservices:TECServices"/>
   <String  name="ChildName"   value="tecservices:TECCoolPipeL"/>
   <Numeric name="N"           value="[ChannelN]" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="3*[ChannelN]+1" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="[ChannelFi]+[CoolPipePhi6]"/>
@@ -533,7 +533,7 @@
   <rParent name="tecservices:TECServices"/>
   <String  name="ChildName"   value="tecservices:TECCoolantL"/>
   <Numeric name="N"           value="[ChannelN]" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="3*[ChannelN]+1" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="[ChannelFi]+[CoolPipePhi6]"/>
@@ -556,7 +556,7 @@
   <rParent name="tecservices:TECServices"/>
   <String  name="ChildName"   value="tecservices:TECCoolPipeS"/>
   <Numeric name="N"           value="[ChannelN]" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="3*[ChannelN]+1" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="[ChannelFi]+[CoolPipePhi7]"/>
@@ -567,7 +567,7 @@
   <rParent name="tecservices:TECServices"/>
   <String  name="ChildName"   value="tecservices:TECCoolantS"/>
   <Numeric name="N"           value="[ChannelN]" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="3*[ChannelN]+1" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="[ChannelFi]+[CoolPipePhi7]"/>
@@ -590,7 +590,7 @@
   <rParent name="tecservices:TECServices"/>
   <String  name="ChildName"   value="tecservices:TECCoolPipeS"/>
   <Numeric name="N"           value="[ChannelN]" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="4*[ChannelN]+1" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="[ChannelFi]+[CoolPipePhi8]"/>
@@ -601,7 +601,7 @@
   <rParent name="tecservices:TECServices"/>
   <String  name="ChildName"   value="tecservices:TECCoolantS"/>
   <Numeric name="N"           value="[ChannelN]" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="4*[ChannelN]+1" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="[ChannelFi]+[CoolPipePhi8]"/>
@@ -682,7 +682,7 @@
   <rParent name="tecservices:TECServices"/>
   <String  name="ChildName"   value="tecservices:TECCCraneBracket"/>
   <Numeric name="N"           value="1" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="2" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="[CraneBracketPhi2]"/>
@@ -694,7 +694,7 @@
   <rParent name="tecservices:TECServices"/>
   <String  name="ChildName"   value="tecservices:TECCCraneBracket"/>
   <Numeric name="N"           value="1" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="3" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="[CraneBracketPhi3]"/>
@@ -706,7 +706,7 @@
   <rParent name="tecservices:TECServices"/>
   <String  name="ChildName"   value="tecservices:TECCCraneBracket"/>
   <Numeric name="N"           value="1" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="4" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="[CraneBracketPhi1]"/>
@@ -718,7 +718,7 @@
   <rParent name="tecservices:TECServices"/>
   <String  name="ChildName"   value="tecservices:TECCCraneBracket"/>
   <Numeric name="N"           value="1" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="5" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="[CraneBracketPhi2]"/>
@@ -730,7 +730,7 @@
   <rParent name="tecservices:TECServices"/>
   <String  name="ChildName"   value="tecservices:TECCCraneBracket"/>
   <Numeric name="N"           value="1" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="6" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="[CraneBracketPhi3]"/>
@@ -742,7 +742,7 @@
   <rParent name="tecservices:TECServices"/>
   <String  name="ChildName"   value="tecservices:TECCCraneBracket"/>
   <Numeric name="N"           value="1" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="7" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="[CraneBracketPhi1]"/>
@@ -754,7 +754,7 @@
   <rParent name="tecservices:TECServices"/>
   <String  name="ChildName"   value="tecservices:TECCCraneBracket"/>
   <Numeric name="N"           value="1" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="8" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="[CraneBracketPhi2]"/>
@@ -766,7 +766,7 @@
   <rParent name="tecservices:TECServices"/>
   <String  name="ChildName"   value="tecservices:TECCCraneBracket"/>
   <Numeric name="N"           value="1" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="9" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="[CraneBracketPhi3]"/>
@@ -778,7 +778,7 @@
   <rParent name="tecservices:TECServices"/>
   <String  name="ChildName"   value="tecservices:TECCCraneBracket"/>
   <Numeric name="N"           value="1" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="10" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="[CraneBracketPhi1]"/>
@@ -790,7 +790,7 @@
   <rParent name="tecservices:TECServices"/>
   <String  name="ChildName"   value="tecservices:TECCCraneBracket"/>
   <Numeric name="N"           value="1" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="11" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="[CraneBracketPhi2]"/>
@@ -802,7 +802,7 @@
   <rParent name="tecservices:TECServices"/>
   <String  name="ChildName"   value="tecservices:TECCCraneBracket"/>
   <Numeric name="N"           value="1" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="12" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="[CraneBracketPhi3]"/>
@@ -814,7 +814,7 @@
   <rParent name="tecservices:TECServices"/>
   <String  name="ChildName"   value="tecservices:TECCCraneBracket"/>
   <Numeric name="N"           value="1" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="13" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="[CraneBracketPhi1]"/>
@@ -826,7 +826,7 @@
   <rParent name="tecservices:TECServices"/>
   <String  name="ChildName"   value="tecservices:TECCCraneBracket"/>
   <Numeric name="N"           value="1" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="14" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="[CraneBracketPhi2]"/>
@@ -838,7 +838,7 @@
   <rParent name="tecservices:TECServices"/>
   <String  name="ChildName"   value="tecservices:TECCCraneBracket"/>
   <Numeric name="N"           value="1" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="15" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="[CraneBracketPhi3]"/>
@@ -850,7 +850,7 @@
   <rParent name="tecservices:TECServices"/>
   <String  name="ChildName"   value="tecservices:TECCCraneBracket"/>
   <Numeric name="N"           value="1" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="16" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="[CraneBracketPhi1]"/>
@@ -862,7 +862,7 @@
   <rParent name="tecservices:TECServices"/>
   <String  name="ChildName"   value="tecservices:TECCCraneBracket"/>
   <Numeric name="N"           value="1" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="17" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="[CraneBracketPhi2]"/>
@@ -874,7 +874,7 @@
   <rParent name="tecservices:TECServices"/>
   <String  name="ChildName"   value="tecservices:TECCCraneBracket"/>
   <Numeric name="N"           value="1" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="18" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="[CraneBracketPhi3]"/>
@@ -885,7 +885,7 @@
   <rParent name="tecservices:TECServices"/>
   <String  name="ChildName"   value="tecservices:TECCCraneBracket"/>
   <Numeric name="N"           value="1" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="19" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="[CraneBracketPhi1]"/>
@@ -897,7 +897,7 @@
   <rParent name="tecservices:TECServices"/>
   <String  name="ChildName"   value="tecservices:TECCCraneBracket"/>
   <Numeric name="N"           value="1" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="20" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="[CraneBracketPhi2]"/>
@@ -909,7 +909,7 @@
   <rParent name="tecservices:TECServices"/>
   <String  name="ChildName"   value="tecservices:TECCCraneBracket"/>
   <Numeric name="N"           value="1" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="21" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="[CraneBracketPhi3]"/>
@@ -920,7 +920,7 @@
   <rParent name="tecservices:TECServices"/>
   <String  name="ChildName"   value="tecservices:TECCCraneBracket"/>
   <Numeric name="N"           value="1" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="22" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="[CraneBracketPhi1]"/>
@@ -932,7 +932,7 @@
   <rParent name="tecservices:TECServices"/>
   <String  name="ChildName"   value="tecservices:TECCCraneBracket"/>
   <Numeric name="N"           value="1" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="23" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="[CraneBracketPhi2]"/>
@@ -944,7 +944,7 @@
   <rParent name="tecservices:TECServices"/>
   <String  name="ChildName"   value="tecservices:TECCCraneBracket"/>
   <Numeric name="N"           value="1" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="24" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="[CraneBracketPhi3]"/>
@@ -955,7 +955,7 @@
   <rParent name="tecservices:TECServices"/>
   <String  name="ChildName"   value="tecservices:TECCCraneBracket"/>
   <Numeric name="N"           value="1" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="25" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="[CraneBracketPhi1]"/>
@@ -967,7 +967,7 @@
   <rParent name="tecservices:TECServices"/>
   <String  name="ChildName"   value="tecservices:TECCCraneBracket"/>
   <Numeric name="N"           value="1" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="26" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="[CraneBracketPhi2]"/>
@@ -979,7 +979,7 @@
   <rParent name="tecservices:TECServices"/>
   <String  name="ChildName"   value="tecservices:TECCCraneBracket"/>
   <Numeric name="N"           value="1" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="27" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="[CraneBracketPhi3]"/>
@@ -991,7 +991,7 @@
   <rParent name="tecservices:TECServices"/>
   <String  name="ChildName"   value="tecservices:TECCCraneBracket"/>
   <Numeric name="N"           value="1" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="28" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="[CraneBracketPhi1]"/>
@@ -1003,7 +1003,7 @@
   <rParent name="tecservices:TECServices"/>
   <String  name="ChildName"   value="tecservices:TECCCraneBracket"/>
   <Numeric name="N"           value="1" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="29" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="[CraneBracketPhi2]"/>
@@ -1015,7 +1015,7 @@
   <rParent name="tecservices:TECServices"/>
   <String  name="ChildName"   value="tecservices:TECCCraneBracket"/>
   <Numeric name="N"           value="1" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="30" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="[CraneBracketPhi3]"/>

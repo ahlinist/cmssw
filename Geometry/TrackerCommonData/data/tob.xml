@@ -1347,6 +1347,8 @@
   <String name="ChildName"    value="tob:TOBDOHM"/>
   <Numeric name="Radius"      value="[DOHMRadius1]"/>
   <Numeric name="Tilt"        value="0*deg"/>
+  <Numeric name="StartCopyNo" value="1"/>
+  <Numeric name="IncrCopyNo"  value="1"/>
   <Vector name="Phi" type="numeric" nEntries="15">
    [DOHM_R1_phi1]  , [DOHM_R1_phi2]  , [DOHM_R1_phi3]  , [DOHM_R1_phi4]  , [DOHM_R1_phi5]  ,
    [DOHM_R1_phi6]  , [DOHM_R1_phi7]  , [DOHM_R1_phi8]  , [DOHM_R1_phi9]  , [DOHM_R1_phi10] ,
@@ -1364,6 +1366,8 @@
   <String name="ChildName"    value="tob:TOBDOHM"/>
   <Numeric name="Radius"      value="[DOHMRadius2]"/>
   <Numeric name="Tilt"        value="0*deg"/>
+  <Numeric name="StartCopyNo" value="16"/>
+  <Numeric name="IncrCopyNo"  value="1"/>
   <Vector name="Phi" type="numeric" nEntries="15">
    [DOHM_R2_phi1]  , [DOHM_R2_phi2]  , [DOHM_R2_phi3]  , [DOHM_R2_phi4]  , [DOHM_R2_phi5]  ,
    [DOHM_R2_phi6]  , [DOHM_R2_phi7]  , [DOHM_R2_phi8]  , [DOHM_R2_phi9]  , [DOHM_R2_phi10] ,
@@ -1381,6 +1385,8 @@
   <String name="ChildName"    value="tob:TOBDOHM"/>
   <Numeric name="Radius"      value="[DOHMRadius3]"/>
   <Numeric name="Tilt"        value="0*deg"/>
+  <Numeric name="StartCopyNo" value="31"/>
+  <Numeric name="IncrCopyNo"  value="1"/>
   <Vector name="Phi" type="numeric" nEntries="16">
    [DOHM_R3_phi1]  , [DOHM_R3_phi2]  , [DOHM_R3_phi3]  , [DOHM_R3_phi4]  , [DOHM_R3_phi5]  ,
    [DOHM_R3_phi6]  , [DOHM_R3_phi7]  , [DOHM_R3_phi8]  , [DOHM_R3_phi9]  , [DOHM_R3_phi10] ,

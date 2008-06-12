@@ -129,7 +129,7 @@
   <rParent name="tidring1:TIDStructure1"/>
   <String  name="ChildName"   value="tidringpar:TIDModuleFix"/>
   <Numeric name="N"           value="24" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="3" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="-9.42*deg"/>
@@ -142,7 +142,7 @@
   <rParent name="tidring1:TIDStructure1"/>
   <String  name="ChildName"   value="tidringpar:TIDModuleFix"/>
   <Numeric name="N"           value="24" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="27" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="+9.42*deg"/>
@@ -155,7 +155,7 @@
   <rParent name="tidring1:TIDStructure1"/>
   <String  name="ChildName"   value="tidringpar:TIDModuleFix"/>
   <Numeric name="N"           value="24" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="51" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="-4.21*deg"/>
@@ -168,7 +168,7 @@
   <rParent name="tidring1:TIDStructure1"/>
   <String  name="ChildName"   value="tidringpar:TIDModuleFix"/>
   <Numeric name="N"           value="24" />
-  <Numeric name="StartCopyNo" value="1" />
+  <Numeric name="StartCopyNo" value="75" />
   <Numeric name="IncrCopyNo"  value="1" />
   <Numeric name="RangeAngle"  value="360*deg"/>
   <Numeric name="StartAngle"  value="+4.21*deg"/>
