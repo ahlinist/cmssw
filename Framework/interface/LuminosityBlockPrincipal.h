@@ -56,6 +56,10 @@ namespace edm {
       return runPrincipal_;
     }
 
+    void setRunPrincipal(boost::shared_ptr<RunPrincipal> rp) {
+      runPrincipal_ = rp;
+    }
+
     LuminosityBlockID id() const {
       return aux().id();
     }
