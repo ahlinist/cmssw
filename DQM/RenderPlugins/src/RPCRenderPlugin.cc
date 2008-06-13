@@ -62,7 +62,7 @@ void RPCRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
   obj->SetOption( "colz" );
 
   if( o.name.find("Occupancy") < o.name.size() ) {
-    gStyle->SetOptStat( 1111111 );
+    gStyle->SetOptStat( 10 );
     gStyle->SetPalette( 1 );
     obj->SetStats( kTRUE );
     return;
