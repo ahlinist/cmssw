@@ -20,6 +20,17 @@
 
 #include "CSCRenderPlugin.h"
 
+ChamberMap::ChamberMap() {
+  bBlank = new TBox(1.0, 0.0, 37, 18);
+  bBlank->SetFillColor(0);
+  bBlank->SetLineColor(1);
+  bBlank->SetLineStyle(1);
+}
+
+ChamberMap::~ChamberMap() {
+  delete bBlank;
+}
+
 // Transform chamber ID to local canvas coordinates
 float ChamberMap::Xmin_local_derived_from_ChamberID(const int side, const int station, const int ring, const int chamber) {
   float x;
@@ -152,14 +163,10 @@ void ChamberMap::draw(TH2*& me){
 
     me->Draw("colz");
 
-	TBox *bBlank = new TBox(1.0, 0.0, 37, 18);
-	bBlank->SetFillColor(0);
-	bBlank->SetLineColor(1);
-	bBlank->SetLineStyle(1);
     bBlank->Draw("l");
 	
-	TBox *b[3][5][4][37];
-	TText *tCSC_label[3][5][4][37];
+    TBox *b[3][5][4][37];
+    TText *tCSC_label[3][5][4][37];
 
     /** VR: Making it floats and moving up */
     float x_min_chamber, x_max_chamber;
@@ -167,7 +174,7 @@ void ChamberMap::draw(TH2*& me){
     float BinContent = 0;
     int fillColor = 0; 
 
-	for(int n_side = 1; n_side <= 2; n_side++) {
+    for(int n_side = 1; n_side <= 2; n_side++) {
       for(int station = 1; station <= 4; station++) {
         for(int n_ring = 1; n_ring <= N_ring(station); n_ring++) {
           for(int n_chamber = 1; n_chamber <= N_chamber(station, n_ring); n_chamber++) {
@@ -217,7 +224,7 @@ void ChamberMap::draw(TH2*& me){
           }
         }
       }
-	}
+    }
     
   }
 
