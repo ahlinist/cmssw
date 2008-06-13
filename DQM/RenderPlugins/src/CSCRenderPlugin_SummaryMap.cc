@@ -23,11 +23,9 @@
 
 #define N_TICS    100
 
-void SummaryMap::drawDetector(TH2* me){ 
+SummaryMap::SummaryMap() {
 
-  gStyle->SetPalette(1,0);
-
-  TH2F *h1 = new TH2F("h1", "", 10, -2.5, 2.5, 10, 0.0, 2.0*3.14159);
+  h1 = new TH2F("h1", "", 10, -2.5, 2.5, 10, 0.0, 2.0*3.14159);
   h1->GetXaxis()->SetTitle("#eta");
   h1->GetXaxis()->SetTitleOffset(1.2);
   h1->GetXaxis()->CenterTitle(true);
@@ -41,12 +39,24 @@ void SummaryMap::drawDetector(TH2* me){
   h1->GetYaxis()->CenterTitle(true);
   h1->GetYaxis()->SetLabelSize(0.03);
   h1->SetStats(kFALSE);
-  h1->Draw();
 
-  TBox *bBlank = new TBox(-2.5, 0.0, 2.5, 2.0*3.14159);
+  bBlank = new TBox(-2.5, 0.0, 2.5, 2.0*3.14159);
   bBlank->SetFillColor(18);
   bBlank->SetLineColor(1);
   bBlank->SetLineStyle(1);
+
+}
+
+SummaryMap::~SummaryMap() {
+  delete h1;
+  delete bBlank;
+}
+
+void SummaryMap::drawDetector(TH2* me){ 
+
+  gStyle->SetPalette(1,0);
+
+  h1->Draw();
   bBlank->Draw("l");
 
   TBox *b[N_TICS][N_TICS];
@@ -111,26 +121,7 @@ void SummaryMap::drawStation(TH2* me, const int station){
 
   gStyle->SetPalette(1,0);
 
-  TH2F *h1 = new TH2F("h1", "", 10, -2.5, 2.5, 10, 0.0, 2.0*3.14159);
-  h1->GetXaxis()->SetTitle("#eta");
-  h1->GetXaxis()->SetTitleOffset(1.2);
-  h1->GetXaxis()->CenterTitle(true);
-  h1->GetXaxis()->SetLabelSize(0.03);
-  h1->GetXaxis()->SetTicks("+-");
-  h1->GetXaxis()->SetNdivisions(20510, kTRUE);
-  h1->GetYaxis()->SetTitle("#phi");
-  h1->GetYaxis()->SetTitleOffset(-1.2);
-  h1->GetYaxis()->SetTicks("+-");
-  h1->GetYaxis()->SetNdivisions(21010, kTRUE);
-  h1->GetYaxis()->CenterTitle(true);
-  h1->GetYaxis()->SetLabelSize(0.03);
-  h1->SetStats(kFALSE);
   h1->Draw();
-
-  TBox *bBlank = new TBox(-2.5, 0.0, 2.5, 2.0*3.14159);
-  bBlank->SetFillColor(0);
-  bBlank->SetLineColor(1);
-  bBlank->SetLineStyle(1);
   bBlank->Draw("l");
   
   TBox *b[N_ELEMENTS];
