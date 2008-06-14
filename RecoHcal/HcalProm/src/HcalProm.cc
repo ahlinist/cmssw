@@ -19,7 +19,7 @@
 //                   Fedor Ratnikov
 //                   Jordan Damgov
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.30 2008/06/12 08:41:31 efe Exp $
+// $Id: HcalProm.cc,v 1.31 2008/06/12 21:24:59 tyetkin Exp $
 //
 //
 
@@ -930,9 +930,9 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
                 }
             }
         }
-        ++evtNo;
 
     }
+    ++evtNo;
 }
 
 
