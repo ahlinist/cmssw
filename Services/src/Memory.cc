@@ -484,8 +484,8 @@ namespace edm {
                     const std::string& mdlabel, const std::string& mdname) 
     {
       update();
-      updateMax();
       andPrint(type, mdlabel, mdname);
+      updateMax();
     }
 
 #ifdef SIMPLE_MEMORY_CHECK_ORIGINAL_XML_OUTPUT
