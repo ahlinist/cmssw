@@ -2663,6 +2663,8 @@ void TriggerLineInfo::getFourListsFromFile (IVector  &timeList,
 // write fit info
 void TriggerLineInfo::writeFitInfo()
 {
+
+
   string filename = baseFilename() + ".html";
   ofstream target (filename.c_str(), ios::out);
 
@@ -2693,14 +2695,23 @@ void TriggerLineInfo::writeFitInfo()
 		 << "<tr><td><b>p0</b></td><td>" << sTLI_orig_p0 << "</td></tr>" << endl
 		 << "<tr><td><b>p1</b></td><td>" << sTLI_orig_p1 << "</td></tr>" << endl
 		 << "<tr><td><b>p2</b></td><td>" << sTLI_orig_p2 << "</td></tr>" << endl
-		 << "<tr><td><b>p3</b></td><td>" << sTLI_orig_p3 << "</td></tr>" << endl;
-	  //     << "<tr><td><b>pn</b></td><td>" << sTLI_orig_pn << "</td></tr>" << endl;
-
+		 << "<tr><td><b>p3</b></td><td>" << sTLI_orig_p3 << "</td></tr>" 
+	    //     << endl << "<tr><td><b>pn</b></td><td>" << sTLI_orig_pn << "</td></tr>";
+		 << endl;
+	  
 	  target << "<tr><td><b>Fit Error</b></td>" 
 		 << "<td>" << sTLI_orig_fitError << "</td></tr>"<< endl
 		 << "<tr><td><a href=\"" << basename() 
-		 << ".html\">html</a></td></tr>" << endl
-		 << "</table>" << endl;
+		 << ".html\">html</a></td></tr>" << endl;
+	  
+	  for (unsigned int RunNumber = 0; RunNumber < sTLI_Vector.size(); ++RunNumber)
+	    {
+	      target << "<tr><td><a href=\"./../../root/TXMon_txsec" << sTLI_RunNumbers[RunNumber]
+		     << ".root\">TXMon_txsec" << sTLI_RunNumbers[RunNumber]
+		     << ".root</a></td></tr>" << endl;
+	    }
+	  
+	  target << "</table>" << endl;
 	}
       else
 	{
@@ -2713,21 +2724,34 @@ void TriggerLineInfo::writeFitInfo()
 		 <<"<tr><td><b>p2</b></td><td>"   <<sTLI_orig_p2 
 		 <<"</td><td> &plusmn;</td><td> " <<sTLI_orig_e2 << "</td></tr>" << endl
 		 <<"<tr><td><b>p3</b></td><td>"   <<sTLI_orig_p3 
-		 <<"</td><td> &plusmn;</td><td> " <<sTLI_orig_e3 << "</td></tr>" << endl;
-	  //     <<"<tr><td><b>pn</b></td><td>"   <<sTLI_orig_pn 
-	  //     <<"</td><td> &plusmn;</td><td> " <<sTLI_orig_en << "</td></tr>" << endl
+		 <<"</td><td> &plusmn;</td><td> " <<sTLI_orig_e3 << "</td></tr>"
+	  //     << endl <<"<tr><td><b>pn</b></td><td>"   <<sTLI_orig_pn 
+	  //     <<"</td><td> &plusmn;</td><td> " <<sTLI_orig_en << "</td></tr>"
+		 << endl;
 
-         target << "<tr><td><b>Fit Error</b></td>" << "<td colspan=3 align=center>"
-		<< sTLI_orig_fitError << "</td></tr>"<< endl
-                << "<tr><td><a href=\"" << basename() << ".html\">html</a></td></tr>" << endl
-                << "</table>" << endl;
+	  target << "<tr><td><b>Fit Error</b></td>" << "<td colspan=3 align=center>"
+		 << sTLI_orig_fitError << "</td></tr>"<< endl
+		 << "<tr><td><a href=\"" << basename()
+		 << ".html\">html</a></td></tr>" << endl;
+	    
+	  for (unsigned int RunNumber = 0; RunNumber < sTLI_Vector.size(); ++RunNumber) 
+	      { 
+		target << "<tr><td><a href=\"./../../root/TXMon_txsec" << sTLI_RunNumbers[RunNumber] 
+		       << ".root\">TXMon_txsec" << sTLI_RunNumbers[RunNumber] 
+		       << ".root</a></td></tr>" << endl; 
+	      } 
+	  
+	  
+	 target << "</table>" << endl;
 	}
 
+
+
       target << "</td>" << endl;
-      target << "<td><a href=\"" << basename() << "_WeightedAvg2.eps\">" << "<img src=\""
-	     << basename() << "_WeightedAvg2.gif\"></a></td>";      
-      target << "<td><a href=\"" << basename() << "_WeightedAvg1.eps\">" << "<img src=\""
-	     << basename() << "_WeightedAvg1.gif\"></a></td>" << endl;
+      target << "<td><a href=\"" << basename() << "_WeightedAvgReplot.eps\">" << "<img src=\""
+	     << basename() << "_WeightedAvgReplot.gif\"></a></td>";      
+      target << "<td><a href=\"" << basename() << "_WeightedAvg.eps\">" << "<img src=\""
+	     << basename() << "_WeightedAvg.gif\"></a></td>" << endl;
 
       if (sTLI_useOfficialFit)
 	{
@@ -2737,13 +2761,23 @@ void TriggerLineInfo::writeFitInfo()
 		 << "<tr><td><b>p0</b></td><td>" << sTLI_p0 << "</td></tr>" << endl
 		 << "<tr><td><b>p1</b></td><td>" << sTLI_p1 << "</td></tr>" << endl
 		 << "<tr><td><b>p2</b></td><td>" << sTLI_p2 << "</td></tr>" << endl
-		 << "<tr><td><b>p3</b></td><td>" << sTLI_p3 << "</td></tr>" << endl;
-	  //     << "<tr><td><b>pn</b></td><td>" << sTLI_pn << "</td></tr>" << endl
-
+		 << "<tr><td><b>p3</b></td><td>" << sTLI_p3 << "</td></tr>" 
+	  //     << endl << "<tr><td><b>pn</b></td><td>" << sTLI_pn << "</td></tr>"
+		 << endl;
+	  
 	  target << "<tr><td><b>Fit Error</b></td>"
 		 << "<td>" << sTLI_fitError << "</td></tr>"<< endl
-		 << "<tr><td><a href=\"" << basename() << ".html\">html</a></td></tr>" << endl
-		 << "</table>" << endl;
+		 << "<tr><td><a href=\"" << basename() 
+		 << ".html\">html</a></td></tr>" << endl;
+	  
+	  for (unsigned int RunNumber = 0; RunNumber < sTLI_Vector.size(); ++RunNumber)  
+	    {  
+	      target << "<tr><td><a href=\"./../../root/TXMon_txsec" << sTLI_RunNumbers[RunNumber]  
+		     << ".root\">TXMon_txsec" << sTLI_RunNumbers[RunNumber]  
+		     << ".root</a></td></tr>" << endl;  
+	    }
+	  
+	  target  << "</table>" << endl;
 	}
       else
 	{
@@ -2756,14 +2790,27 @@ void TriggerLineInfo::writeFitInfo()
 		 <<"<tr><td><b>p2</b></td><td>"   <<sTLI_p2
 		 <<"</td><td> &plusmn;</td><td> " <<sTLI_e2 << "</td></tr>" << endl
 		 <<"<tr><td><b>p3</b></td><td>"   <<sTLI_p3
-		 <<"</td><td> &plusmn;</td><td> " <<sTLI_e3 << "</td></tr>" << endl;
-	  //     <<"<tr><td><b>pn</b></td><td>"   <<sTLI_pn
-	  //     <<"</td><td> &plusmn;</td><td> " <<sTLI_en << "</td></tr>" << endl
+		 <<"</td><td> &plusmn;</td><td> " <<sTLI_e3 << "</td></tr>"
+	  //     << endl <<"<tr><td><b>pn</b></td><td>"   <<sTLI_pn
+	  //     <<"</td><td> &plusmn;</td><td> " <<sTLI_en << "</td></tr>"
+		 << endl;
 
 	  target << "<tr><td><b>Fit Error</b></td>"
-		 << "<td colspan=3 align=center>" << sTLI_fitError << "</td></tr>"<< endl
-		 << "<tr><td><a href=\"" << basename() << ".html\">html</a></td></tr>" << endl
-		 << "</table>" << endl;
+		 << "<td colspan=3 align=center>"
+		 << sTLI_fitError << "</td></tr>"<< endl
+		 << "<tr><td><a href=\"" << basename() 
+		 << ".html\">html</a></td></tr>" << endl;
+
+	  
+	  for (unsigned int RunNumber = 0; RunNumber < sTLI_Vector.size(); ++RunNumber)  
+	    {  
+	      target << "<tr><td><a href=\"./../../root/TXMon_txsec" << sTLI_RunNumbers[RunNumber]  
+		     << ".root\">TXMon_txsec" << sTLI_RunNumbers[RunNumber]  
+		     << ".root</a></td></tr>" << endl;  
+	    }
+	  
+	  
+	  target << "</table>" << endl;
 	}
       
       
@@ -2793,14 +2840,25 @@ void TriggerLineInfo::writeFitInfo()
 	    }
 	  else
 	    if (sTLI_dontFit & (1 << TLI_kHiLo))
+
 	      {
 		target << "  <tr><td>Not Enough High/Low points</td></tr>" << endl;
 	      }
 	  
-	  target  << "<tr><td><a href=\"" << basename() << ".html\">html</a></td></tr>" <<endl 
-		  << "  </table>" << endl << "</tr></table>" << endl;
-	}
+	  target  << "<tr><td><a href=\"" << basename()
+		  << ".html\">html</a></td></tr>" <<endl; 
 
+	  for (unsigned int RunNumber = 0; RunNumber < sTLI_Vector.size(); ++RunNumber)  
+	    {  
+	      target << "<tr><td><a href=\"./../../root/TXMon_txsec" << sTLI_RunNumbers[RunNumber]  
+		     << ".root\">TXMon_txsec" << sTLI_RunNumbers[RunNumber]  
+		     << ".root</a></td></tr>" << endl;  
+	    }
+	  
+	  target  << "  </table>" << endl 
+		  << "</tr></table>" << endl;
+	}
+      
       else
 	{
 	  target << "No points at all" << endl;
