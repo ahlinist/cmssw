@@ -161,7 +161,7 @@ if (@rootfiles)
     }
   if (!$noinput)
     {
-      my $inputcommand = "cp @rootfiles $depositfolder/";
+      my $inputcommand = "cp @rootfiles $depositdir/root/";
       print $inputcommand, "\n";
       system $inputcommand;
       print "Done copying input root files\n";
