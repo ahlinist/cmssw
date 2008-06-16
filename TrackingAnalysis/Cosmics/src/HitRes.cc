@@ -14,7 +14,7 @@ See sample cfg files in TrackingAnalysis/Cosmics/test/hitRes*cfg
 //
 // Original Authors:  Wolfgang Adam, Keith Ulmer
 //         Created:  Thu Oct 11 14:53:32 CEST 2007
-// $Id: HitRes.cc,v 1.3 2008/05/29 15:12:10 kaulmer Exp $
+// $Id: HitRes.cc,v 1.4 2008/06/12 09:11:47 adamwo Exp $
 //
 //
 
@@ -194,8 +194,8 @@ HitRes::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   edm::Handle<TrajectoryCollection> trajectoryCollectionHandle;
   iEvent.getByLabel(trajectoryTag_,trajectoryCollectionHandle);
   const TrajectoryCollection* trajectoryCollection = trajectoryCollectionHandle.product();
-  edm::LogInfo("HitRes") 
-    << " Found " << trajectoryCollection->size() << " trajectories";
+//   edm::LogInfo("HitRes") 
+//     << " Found " << trajectoryCollection->size() << " trajectories";
 
   //
   // loop over trajectories from refit
@@ -315,11 +315,14 @@ HitRes::analyze (const Trajectory& trajectory,
     //
     ++overlapCounts_[2];
     // forward and backward predicted states at module 1
-    TrajectoryStateOnSurface fwdPred1 = (*iol).first->forwardPredictedState();
-    TrajectoryStateOnSurface bwdPred1 = (*iol).first->backwardPredictedState();
+//     TrajectoryStateOnSurface fwdPred1 = (*iol).first->forwardPredictedState();
+//     TrajectoryStateOnSurface bwdPred1 = (*iol).first->backwardPredictedState();
+    TrajectoryStateOnSurface fwdPred1 = (*iol).first->backwardPredictedState();
+    TrajectoryStateOnSurface bwdPred1 = (*iol).first->forwardPredictedState();
     if ( !fwdPred1.isValid() || !bwdPred1.isValid() )  continue;
     // backward predicted state at module 2
-    TrajectoryStateOnSurface bwdPred2 = (*iol).second->backwardPredictedState();
+//     TrajectoryStateOnSurface bwdPred2 = (*iol).second->backwardPredictedState();
+    TrajectoryStateOnSurface bwdPred2 = (*iol).second->forwardPredictedState();
     if ( !bwdPred2.isValid() )  continue;
     // extrapolation bwdPred2 to module 1
     TrajectoryStateOnSurface bwdPred2At1 = propagator.propagate(bwdPred2,fwdPred1.surface());
