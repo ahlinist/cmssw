@@ -2704,10 +2704,10 @@ void TriggerLineInfo::writeFitInfo()
 		 << "<tr><td><a href=\"" << basename() 
 		 << ".html\">html</a></td></tr>" << endl;
 	  
-	  for (unsigned int RunNumber = 0; RunNumber < sTLI_Vector.size(); ++RunNumber)
+	  for (Int_t RunIndex = 0; RunIndex < NumberRunNumbers(); ++RunIndex)
 	    {
-	      target << "<tr><td><a href=\"./../../root/TXMon_txsec" << sTLI_RunNumbers[RunNumber]
-		     << ".root\">TXMon_txsec" << sTLI_RunNumbers[RunNumber]
+	      target << "<tr><td><a href=\"./../../root/TXMon_txsec" << RunNumber(RunIndex)
+		     << ".root\">TXMon_txsec" << RunNumber(RunIndex)
 		     << ".root</a></td></tr>" << endl;
 	    }
 	  
@@ -2734,10 +2734,10 @@ void TriggerLineInfo::writeFitInfo()
 		 << "<tr><td><a href=\"" << basename()
 		 << ".html\">html</a></td></tr>" << endl;
 	    
-	  for (unsigned int RunNumber = 0; RunNumber < sTLI_Vector.size(); ++RunNumber) 
+	  for (Int_t RunIndex = 0; RunIndex < NumberRunNumbers(); ++RunIndex) 
 	      { 
-		target << "<tr><td><a href=\"./../../root/TXMon_txsec" << sTLI_RunNumbers[RunNumber] 
-		       << ".root\">TXMon_txsec" << sTLI_RunNumbers[RunNumber] 
+		target << "<tr><td><a href=\"./../../root/TXMon_txsec" << RunNumber(RunIndex) 
+		       << ".root\">TXMon_txsec" << RunNumber(RunIndex)
 		       << ".root</a></td></tr>" << endl; 
 	      } 
 	  
@@ -2770,10 +2770,10 @@ void TriggerLineInfo::writeFitInfo()
 		 << "<tr><td><a href=\"" << basename() 
 		 << ".html\">html</a></td></tr>" << endl;
 	  
-	  for (unsigned int RunNumber = 0; RunNumber < sTLI_Vector.size(); ++RunNumber)  
+	  for (Int_t RunIndex = 0; RunIndex < NumberRunNumbers(); ++RunIndex)  
 	    {  
-	      target << "<tr><td><a href=\"./../../root/TXMon_txsec" << sTLI_RunNumbers[RunNumber]  
-		     << ".root\">TXMon_txsec" << sTLI_RunNumbers[RunNumber]  
+	      target << "<tr><td><a href=\"./../../root/TXMon_txsec" << RunNumber(RunIndex)
+		     << ".root\">TXMon_txsec" << RunNumber(RunIndex)  
 		     << ".root</a></td></tr>" << endl;  
 	    }
 	  
@@ -2802,10 +2802,10 @@ void TriggerLineInfo::writeFitInfo()
 		 << ".html\">html</a></td></tr>" << endl;
 
 	  
-	  for (unsigned int RunNumber = 0; RunNumber < sTLI_Vector.size(); ++RunNumber)  
+	  for (Int_t RunIndex = 0; RunIndex < NumberRunNumbers(); ++RunIndex)  
 	    {  
-	      target << "<tr><td><a href=\"./../../root/TXMon_txsec" << sTLI_RunNumbers[RunNumber]  
-		     << ".root\">TXMon_txsec" << sTLI_RunNumbers[RunNumber]  
+	      target << "<tr><td><a href=\"./../../root/TXMon_txsec" << RunNumber(RunIndex)  
+		     << ".root\">TXMon_txsec" << RunNumber(RunIndex)  
 		     << ".root</a></td></tr>" << endl;  
 	    }
 	  
@@ -2848,10 +2848,10 @@ void TriggerLineInfo::writeFitInfo()
 	  target  << "<tr><td><a href=\"" << basename()
 		  << ".html\">html</a></td></tr>" <<endl; 
 
-	  for (unsigned int RunNumber = 0; RunNumber < sTLI_Vector.size(); ++RunNumber)  
+	  for (Int_t RunIndex = 0; RunIndex < NumberRunNumbers();  ++RunIndex)  
 	    {  
-	      target << "<tr><td><a href=\"./../../root/TXMon_txsec" << sTLI_RunNumbers[RunNumber]  
-		     << ".root\">TXMon_txsec" << sTLI_RunNumbers[RunNumber]  
+	      target << "<tr><td><a href=\"./../../root/TXMon_txsec" << RunNumber(RunIndex)  
+		     << ".root\">TXMon_txsec" << RunNumber(RunIndex)  
 		     << ".root</a></td></tr>" << endl;  
 	    }
 	  
