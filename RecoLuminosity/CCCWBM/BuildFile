@@ -1,0 +1,16 @@
+<use name=DQMServices/CoreROOT>
+<use name=DQMServices/Daemon>
+<use name=FWCore/Framework>
+<use name=FWCore/PluginManager>
+<use name=FWCore/ParameterSet>
+<use name=RecoLuminosity/TCPReceiver>
+<flags EDM_PLUGIN=1>
+<export>
+   <lib name=RecoLuminosityCCCWBM>
+   <use name=DQMServices/CoreROOT>
+   <use name=DQMServices/Daemon>
+   <use name=FWCore/Framework>
+   <use name=FWCore/PluginManager>
+   <use name=FWCore/ParameterSet>
+   <use name=RecoLuminosity/TCPReceiver>
+</export>
