@@ -62,13 +62,14 @@ namespace HCAL_HLX
   private:
 
     u32 mErrorCount;
+    u32 mProcessCounter;
 
     // Init and cleanup
     void Init();
     void CleanUp();
 
     // Buffers for insertion into DIP data structure
-    DipDouble *mHistogramData;
+    DipFloat *mHistogramData;
     DipInt mNumHLXs;
     DipInt mRunNumber;
     DipInt mSectionNumber;
@@ -76,12 +77,17 @@ namespace HCAL_HLX
     DipInt mNumOrbits;
     DipInt mNumBunches;
     DipInt bCMSLive;
+    DipFloat mInstantLumi;
+    DipFloat mInstantLumiError;
 
-    // DIP data structure for lumi sections
+
+    // DIP data structures for lumi sections
     DipData * mDIPData;
+    DipData * mDIPDataLH;
 
     // Publisher interface
     DipPublication * mDIPPublisher;
+    DipPublication * mDIPPublisherLH;
 
     // DIP interface
     DipFactory * mDIP;
