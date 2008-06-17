@@ -7,5 +7,5 @@ from HLTrigger.HLTfilters.hltHighLevel_cfi import *
 #trigger selection
 #
 hEEPSignalMedEtTrigger = copy.deepcopy(hltHighLevel)
-hEEPSignalMedEtTrigger.HLTPaths = ['HLT1ElectronRelaxed']
+hEEPSignalMedEtTrigger.HLTPaths = ['HLT_IsoEle18_L1R']
 
