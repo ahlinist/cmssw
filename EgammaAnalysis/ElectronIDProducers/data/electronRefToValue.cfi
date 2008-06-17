@@ -1,0 +1,4 @@
+module eidRefToValue = ElectronRefToValueProducer {
+    InputTag electronProducer =  eidCutBased
+}
+
