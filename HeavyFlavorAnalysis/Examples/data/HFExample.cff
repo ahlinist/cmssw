@@ -2,13 +2,15 @@
 # -- MC Generator candidates
 # ----------------------------------------------------------------------
 include "SimGeneral/HepPDTESSource/data/pythiapdt.cfi"
-include "PhysicsTools/HepMCCandAlgos/data/genParticleCandidates.cfi"
 
 module mcCandidates = CandSelector {
- InputTag src = genParticleCandidates
+ InputTag src = genParticles
  string cut = "pt > -1."
  bool filter = false
 }     
+
+include "SimGeneral/HepPDTESSource/data/pythiapdt.cfi"
+include "PhysicsTools/HepMCCandAlgos/data/genParticles.cfi"
 
 
 # ----------------------------------------------------------------------
@@ -101,12 +103,12 @@ module gentagJetPhys = CandJetFlavourIdentifier{
 # ----------------------------------------------------------------------
 include "RecoMET/Configuration/data/GenMETParticles.cff"
 include "RecoMET/METProducers/data/genMet.cfi"
-#include "JetMETCorrections/Modules/data/JetMETCorrections.cff"
+# include "JetMETCorrections/Modules/data/JetMETCorrections.cff"
 
-# ----------------------------------------------------------------------
-# -- L1 Emulator and HLT Setup
-# ----------------------------------------------------------------------
-include "FastSimulation/HighLevelTrigger/data/common/HLTSetup.cff"
+# # ----------------------------------------------------------------------
+# # -- L1 Emulator and HLT Setup
+# # ----------------------------------------------------------------------
+# include "FastSimulation/HighLevelTrigger/data/common/HLTSetup.cff"
 
 
 # ----------------------------------------------------------------------
@@ -165,18 +167,18 @@ module stuffDump = HFDumpStuff {
   untracked string GenMETLabel            = "genMet"
 }
 
-module triggerDump = HFDumpTrigger {
-    untracked int32  verbose                = 1
-    untracked string particleMap            = "l1extraParticleMap"
-    untracked string L1MuLabel              = "l1extraParticles"
-    untracked string L1TriggerName          = "L1_DoubleMu3"
-    InputTag hltLabel                       = TriggerResults::HLT
-    untracked string HLTriggerName          = "HLTBJPsiMuMu"
-
-    untracked string HLTfiltObj0            = "muTracks"
-    untracked string HLTfiltObj1            = "CandFromMumu"
-    untracked string HLTfiltObj2            = "JpsitoMumuL1Seed"
-    untracked string HLTfiltObj3            = "JpsitoMumuL2Filtered"
-    untracked string HLTfiltObj4            = "displacedJpsitoMumuFilter"
-
-  }
+#module triggerDump = HFDumpTrigger {
+#    untracked int32  verbose                = 1
+#    untracked string particleMap            = "l1extraParticleMap"
+#    untracked string L1MuLabel              = "l1extraParticles"
+#    untracked string L1TriggerName          = "L1_DoubleMu3"
+#    InputTag hltLabel                       = TriggerResults::HLT
+#    untracked string HLTriggerName          = "HLTBJPsiMuMu"
+#
+#    untracked string HLTfiltObj0            = "muTracks"
+#    untracked string HLTfiltObj1            = "CandFromMumu"
+#    untracked string HLTfiltObj2            = "JpsitoMumuL1Seed"
+#    untracked string HLTfiltObj3            = "JpsitoMumuL2Filtered"
+#    untracked string HLTfiltObj4            = "displacedJpsitoMumuFilter"
+#
+#}

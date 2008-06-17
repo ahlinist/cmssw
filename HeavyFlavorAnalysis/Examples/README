@@ -1,12 +1,27 @@
 0. Recipe for the impatient
 ---------------------------
 
-The following works (for me) on lxplus and elsewhere, both on 64bit and 32bit architectures
+The following has worked for me (not tested with copy-paste yet!)
    cd SOMEWHERE
-   scramv1 project CMSSW CMSSW_1_6_10
-   cd CMSSW_1_6_10/src
+   scramv1 project CMSSW CMSSW_1_8_4
+   cd CMSSW_1_8_4/src
    eval `scramv1 runtime -csh`
    project CMSSW
+   
+   cvs co -r V01-06-05 TrackPropagation/SteppingHelixPropagator
+   cvs co -r V01-06-05 TrackPropagation/SteppingHelixPropagator
+   cvs co -r V02-05-01-07 FastSimulation/Event
+   cvs co -r V01-04-09-05 FastSimulation/Configuration
+   cvs co -r V00-00-04-01 FastSimulation/MuonSimHitProducer
+   cvs co -r V00-00-08-03 FastSimulation/Muons
+   cvs co -r V00-00-13-01 FastSimulation/ParamL3MuonProducer
+   cvs co -r V04-02-02-01 FastSimulation/MaterialEffects
+   cvs co -r V05-00-11-01 FastSimulation/CaloRecHitsProducer
+   cvs co -r V02-00-00-01 FastSimulation/Calorimetry
+   cvs co -r V01-04-00-03 FastSimulation/TrajectoryManager
+   addpkg FastSimulation/EventProducer
+   cp /afs/cern.ch/cms/data/CMSSW/FastSimulation/MaterialEffects/data/*Val* FastSimulation/MaterialEffects/data/.
+
    cvs co AnalysisDataFormats/HeavyFlavorObjects
    cvs co HeavyFlavorAnalysis/Examples
    cd AnalysisDataFormats/HeavyFlavorObjects/
@@ -15,25 +30,28 @@ The following works (for me) on lxplus and elsewhere, both on 64bit and 32bit ar
    scramv1 b
    cd test
    
-Generate an example RECO file (it will contain Bs -> mu+ mu-)
-   ln -s . scratch  # or somewhere else!
-   mkdir scratch/ana
-   cmsRun Bs2MuMu_GEN_SIM_DIGI_RECO.cfg 
+Now you have two options: 
 
-Run EDAnalyzers and fill a tree
-   cmsRun test.cfg
+1) Run FAMOS and the analysis code (ntuple dumper) in one go: 
+     cmsRun HFExample.cfg
+     root
+       gSystem->Load("../../../AnalysisDataFormats/HeavyFlavorObjects/lib/libAna00.so");
+       .x HFExample.C
 
-Look at the tree
-   root
-     gSystem->Load("../../../AnalysisDataFormats/HeavyFlavorObjects/lib/libAna00.so");
-     .x test.C
+2) Alternatively, generate an example RECO file (it will contain Bs -> mu+ mu-)
+     ln -s . scratch  # or somewhere else!
+     mkdir scratch/ana
+     cmsRun Bs2MuMu_GEN_SIM_DIGI_RECO.cfg 
+
+   Run EDAnalyzers and fill a tree
+     cmsRun test.cfg
+
+   Look at the tree
+     root
+       gSystem->Load("../../../AnalysisDataFormats/HeavyFlavorObjects/lib/libAna00.so");
+       .x test.C
 
 
-Alternatively, run FAMOS in one go: 
-   cmsRun HFExample.cfg
-   root
-     gSystem->Load("../../../AnalysisDataFormats/HeavyFlavorObjects/lib/libAna00.so");
-     .x HFExample.C
 
 A better way for analysis is with the compiled root class: 
    cd ../../../AnalysisDataFormats/HeavyFlavorObjects/test
