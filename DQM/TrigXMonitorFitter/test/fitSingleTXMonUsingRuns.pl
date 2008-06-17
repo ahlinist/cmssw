@@ -8,7 +8,8 @@ my $directory = "./";
 my @dirs = qw (./txmon_new ./txmon_old);
 my $prefix = "TXMon_txsec";
 my $suffix = "root";
-my $depositdir = "./singles";
+my $depositdir = "./Singles";
+my $triggerlevel = "n";
 
 
 (my $prog = $0) =~ s|.+/||g;
@@ -68,6 +69,29 @@ while (@ARGV && $ARGV[0] =~ /^-/)
 my $triggername = shift @ARGV || "empty";
 $triggername =~ s/_and_/\&/g;
 
+
+(my @splitarray) = split / */, $triggername, 5;
+my $truetriggerlevel = $splitarray[1];
+if ($truetriggerlevel == 1)
+  {
+    $triggerlevel = $truetriggerlevel;
+  }
+else
+  {
+    if ($truetriggerlevel == 2)
+      {
+	$triggerlevel = $truetriggerlevel;
+      }
+    else
+      {
+	$triggerlevel = 3;
+      }
+  }
+
+$triggerlevel = join "", "L", $triggerlevel;
+print "Trigger Level: ", $triggerlevel, "\n";
+
+
 if ($base && $base !~ m|^/|)
 {
     $base = $ENV{PWD}."/$base";
@@ -77,11 +101,12 @@ if (! $base)
 {
     ($base = $triggername) =~ s/\&/_and_/g;
     $base .= ".$$";
-    $base = "$depositdir/$triggername/$base";
+    $base = "$depositdir/$triggerlevel/$triggername/$base";
+#    print $base, "\n";
 }
 
 
-my $depositfolder = "$depositdir/$triggername";
+my $depositfolder = "$depositdir/$triggerlevel/$triggername";
 my $dircommand = "mkdir $depositfolder";
 print $dircommand, "\n";
 system $dircommand;
