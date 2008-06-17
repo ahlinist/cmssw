@@ -3,10 +3,9 @@
 #include <TRandom.h>
 
 #include "HeavyFlavorAnalysis/Examples/interface/HFDumpGenerator.h"
-#include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
 
 #include "HepMC/GenVertex.h"
-#include "DataFormats/HepMCCandidate/interface/GenParticleCandidate.h"
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 
 #include "DataFormats/Common/interface/Handle.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
@@ -24,7 +23,7 @@ extern TAna00Event *gHFEvent;
 using namespace std;
 using namespace edm;
 using namespace reco;
-using namespace HepMC;
+//using namespace HepMC;
 
 // ----------------------------------------------------------------------
 HFDumpGenerator::HFDumpGenerator(const ParameterSet& iConfig):
@@ -59,27 +58,31 @@ void HFDumpGenerator::analyze(const Event& iEvent, const EventSetup& iSetup) {
   // -- From PhysicsTools/HepMCCandAlgos/plugins/ParticleListDrawer.cc
   int idx(-1), iMo1(-1), iMo2(-1), iDa1(-1), iDa2(-1); 
 
-  std::vector<const reco::Candidate *> cands;
+  std::vector<const GenParticle *> cands;
   cands.clear();
-  vector<const Candidate *>::const_iterator found = cands.begin();
+  vector<const GenParticle *>::const_iterator found = cands.begin();
 
-  edm::Handle<reco::CandidateCollection> particles;
+  //  edm::Handle<reco::CandidateCollection> genParticlesH;
+  edm::Handle<GenParticleCollection> genParticlesH;
   try {
-    iEvent.getByLabel ("genParticleCandidates", particles);
-  } catch(std::exception& ce) {
-    cerr << "==> HFDumpGenerator caught std::exception " << ce.what() << endl;
-    return;
+    iEvent.getByLabel ("genParticles", genParticlesH);
+  } catch(cms::Exception ce) {
+    cout << "==> HFDumpGenerator caught std::exception " << ce.what() << endl;
   }
 
-  for (CandidateCollection::const_iterator p = particles->begin(); p != particles->end(); ++p) {
+
+  for (GenParticleCollection::const_iterator p = genParticlesH->begin(); p != genParticlesH->end(); ++p) {
     cands.push_back( & * p );
   }
-  
-  for (CandidateCollection::const_iterator p = particles->begin(); p != particles->end();  ++p) {
+
+
+  int i(-1); 
+  for(GenParticleCollection::const_iterator p  = genParticlesH->begin(); p != genParticlesH->end();  p++) {
+    ++i; 
     pGen = gHFEvent->addGenCand();
     pGen->fID    = p->pdgId();
     pGen->fStatus = p->status();  
-    pGen->fNumber = p - particles->begin();
+    pGen->fNumber = i; //p - particles->begin();
 
     //    double pt = p->pt(), eta = p->eta(), phi = p->phi(), mass = p->mass();
     double vx = p->vx(), vy = p->vy(), vz = p->vz();
@@ -128,6 +131,8 @@ void HFDumpGenerator::analyze(const Event& iEvent, const EventSetup& iSetup) {
       iDa2 = found - cands.begin();
       pGen->fDau2 = iDa2;
     }
+
+    //    pGen->dump();
   }
 
     

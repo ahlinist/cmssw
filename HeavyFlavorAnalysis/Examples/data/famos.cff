@@ -4,11 +4,10 @@ replace siTrackerGaussianSmearingRecHits.UseTRandomEngine = true
 replace caloRecHits.UseTRandomEngine = true
 replace paramMuons.UseTRandomEngine = true
 
-# Famos sequences (With HLT)
+# Famos sequences (no HLT here)
 include "FastSimulation/Configuration/data/CommonInputsFake.cff"
 include "FastSimulation/Configuration/data/FamosSequences.cff"
-# L1 Emulator and HLT Setup
-include "FastSimulation/HighLevelTrigger/data/common/HLTSetup.cff"
+include "FastSimulation/HighLevelTrigger/data/common/NoHLTSetup.cff"
 
 // If you want to turn on/off pile-up
 replace famosPileUp.PileUpSimulator.averageNumber = 0.0
@@ -18,28 +17,3 @@ replace VolumeBasedMagneticFieldESProducer.useParametrizedTrackerField = true
 replace famosSimHits.SimulateCalorimetry = true
 replace famosSimHits.SimulateTracking = true
 
-# Simulation
-sequence simulation = { simulationWithFamos }
-
-// prescale factors at L1 : useful for testing all L1 paths, but commented by default
-replace l1GtFactors.PrescaleFactors = {
-    1,       1,       1,       1,       1,       1,       1,       1,       1,       1,
-    1,       1,       1,       1,       1,       1,       1,       1,       1,       1,
-    1,       1,       1,       1,       1,       1,       1,       1,       1,       1,
-    1,       1,       1,       1,       1,       1,       1,       1,       1,       1,
-    1,       1,       1,       1,       1,       1,       1,       1,       1,       1,
-    1,       1,       1,       1,       1,       1,       1,       1,       1,       1,
-    1,       1,       1,       1,       1,       1,       1,       1,       1,       1,
-    1,       1,       1,       1,       1,       1,       1,       1,       1,       1,
-    1,       1,       1,       1,       1,       1,       1,       1,       1,       1,
-    1,       1,       1,       1,       1,       1,       1,       1,       1,       1,
-    1,       1,       1,       1,       1,       1,       1,       1,       1,       1,
-    1,       1,       1,       1,       1,       1,       1,       1,       1,       1,
-    1,       1,       1,       1,       1,       1,       1,       1
-}
-
-
-# HLT paths
-include "HLTrigger/Configuration/data/main/HLTpaths.cff"
-# Note : if your process is not called HLT, you have to change that! 
-# replace hltTrigReport.HLTriggerResults = TriggerResults::HLT
