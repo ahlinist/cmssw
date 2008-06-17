@@ -14,6 +14,9 @@ void plotHitResAlpha(){
   TGraphErrors* alpha2VsAngle_TOB4 = new TGraphErrors();
   TGraphErrors* alpha2VsAngle_allTOB = new TGraphErrors();
   
+  const int predScaleFactor(1.);  // scaling of predicted errors for
+                                  // evaluation of systematics
+
   int n_tot = layer->GetEntries();
   int n_layer2 = 0;
   int n_layer3 = 0;
@@ -25,7 +28,7 @@ void plotHitResAlpha(){
   float hitm, hite;
   float alpha, alphae;
   
-  for (int i = 0; i<n_tot; i++){
+  for (int i = 1; i<=n_tot; i++){
     if ( dxdz->GetBinContent(i) > 0 ) { 
       dxdzm = dxdz->GetBinContent(i); 
     } else {
@@ -39,9 +42,15 @@ void plotHitResAlpha(){
     prede = sigMean->GetBinError(i);
     hitm = hitSigX->GetBinContent(i);
     hite = hitSigX->GetBinError(i);
-    if(hitm!=0) {alpha = (widthm*widthm-predm*predm)/(hitm*hitm);
-      alphae = (2/(hitm*hitm))*(widthm*widthe+predm*prede+(widthm*widthm-predm*predm)*(hite/hitm));
-    } else {alpha=100; alphae=100;}
+
+    predm *= predScaleFactor;   // systematics
+    prede *= predScaleFactor;
+    alpha = (widthm*widthm-predm*predm)/(hitm*hitm);
+//    alphae = (2/(hitm*hitm))*(widthm*widthe+predm*prede+(widthm*widthm-predm*predm)*(hite/hitm));
+    alphae = widthm*widthm*widthe*widthe;
+    alphae += predm*predm*prede*prede;
+    alphae += alpha*alpha*hitm*hitm*hite*hite;
+    alphae = 2/(hitm*hitm)*sqrt(alphae);
 
     if (layer->GetBinContent(i)==6){
       alpha2VsAngle_TOB2->SetPoint(n_layer2,dxdzm, alpha);
