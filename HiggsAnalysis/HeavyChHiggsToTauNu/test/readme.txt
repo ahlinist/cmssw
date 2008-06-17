@@ -86,7 +86,9 @@
 20.5.2008/S.Lehti CMSSW_1_6_11  Dataformat changed, since root doesnt support 2 level of loops
                                 in addition to event loop. Therefore the hits associated to tracks
                                 are moved from MyTrack to MyJet, and a label associating a hit to
-                                a given track is added in the MyHit data members. 
+                                a given track is added in the MyHit data members.
+17.6.2008/S.Lehti CMSSW_1_6_12	Removed jet raw Et cut 10 GeV. Added more btagging discriminators
+
 
 	How to compile:
 	-compile
