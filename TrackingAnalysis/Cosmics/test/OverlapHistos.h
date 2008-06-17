@@ -17,6 +17,8 @@
 #include <map>
 #include <vector>
 
+// #define HISTOS2D
+
 class OverlapHistos {
 private:
    TTree          *fChain;   //!pointer to the analyzed TTree or TChain
@@ -87,6 +89,10 @@ private:
   std::vector<TH1*> xHistos_[2];
   std::vector<TH1*> yHistos_[2];
   std::vector<TH1*> statHistos_[2];
+  std::vector<TH1*> doublePullHistos_[2];
+  std::vector<TH1*> hitPullHistos_[2];
+  std::vector<TH1*> predPullHistos_[2];
+#ifdef HISTOS2D
   std::vector<TH2*> resVsAngleHistos_[2];
   std::vector<TH2*> ddVsLocalXHistos_[2];
   std::vector<TH2*> ddVsLocalYHistos_[2];
@@ -99,6 +105,7 @@ private:
   std::vector<TH2*> localXVsDydzHistos_[2];
   std::vector<TH2*> localYVsDydzHistos_[2];
   std::vector<TH2*> dPreddSimVsdHitdSimHistos_[2];
+#endif
 
 public:
    OverlapHistos(TTree *tree=0);
