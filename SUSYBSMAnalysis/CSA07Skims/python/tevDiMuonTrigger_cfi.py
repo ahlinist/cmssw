@@ -7,5 +7,5 @@ from HLTrigger.HLTfilters.hltHighLevel_cfi import *
 #no isolation
 #
 tevDiMuonTrigger = copy.deepcopy(hltHighLevel)
-tevDiMuonTrigger.HLTPaths = ['HLT1MuonNonIso', 'HLT2MuonNonIso']
+tevDiMuonTrigger.HLTPaths = ['HLT_Mu15_L1Mu7', 'HLT_DoubleMu3']
 

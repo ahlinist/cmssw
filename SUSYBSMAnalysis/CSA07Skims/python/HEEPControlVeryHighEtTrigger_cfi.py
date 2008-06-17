@@ -7,5 +7,5 @@ from HLTrigger.HLTfilters.hltHighLevel_cfi import *
 #trigger selection
 #
 HEEPSignalHighEtTrigger = copy.deepcopy(hltHighLevel)
-HEEPSignalHighEtTrigger.HLTPaths = ['HLT1EMVeryHighEt']
+HEEPSignalHighEtTrigger.HLTPaths = ['HLT_EM200']
 

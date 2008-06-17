@@ -4,4 +4,4 @@
 #
   module HEEPSignalHighEtTrigger =   hltHighLevel from "HLTrigger/HLTfilters/data/hltHighLevel.cfi"
   replace HEEPSignalHighEtTrigger.HLTPaths =
-               {"HLT1EMVeryHighEt"}
+               {"HLT_EM200"}
