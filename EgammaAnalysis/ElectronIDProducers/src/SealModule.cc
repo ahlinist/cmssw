@@ -12,6 +12,7 @@
 #include "EgammaAnalysis/ElectronIDProducers/interface/ElectronIDSelectorCutBased.h"
 #include "EgammaAnalysis/ElectronIDProducers/interface/ElectronIDSelectorNeuralNet.h"
 #include "EgammaAnalysis/ElectronIDProducers/interface/ElectronIDSelectorLikelihood.h"
+#include "EgammaAnalysis/ElectronIDProducers/interface/ElectronRefToValueProducer.h"
 
 typedef ElectronIDSelector<ElectronIDSelectorCutBased>   EleIdCutBasedSel;
 typedef ElectronIDSelector<ElectronIDSelectorNeuralNet>  EleIdNeuralNetSel;
@@ -39,3 +40,4 @@ DEFINE_ANOTHER_FWK_MODULE(ElectronIDProducer);
 DEFINE_ANOTHER_FWK_MODULE(EleIdCutBasedRef);
 DEFINE_ANOTHER_FWK_MODULE(EleIdNeuralNetRef);
 DEFINE_ANOTHER_FWK_MODULE(EleIdLikelihoodRef);
+DEFINE_ANOTHER_FWK_MODULE(ElectronRefToValueProducer);
