@@ -385,7 +385,10 @@ TChain * getchain(char *thechain) {
   ifstream is(buffer);
   cout << "files " << buffer <<  endl;
   while(is.getline(buffer, 200, '\n')){
-    //    if (buffer[0] == '#') continue;
+    if (buffer[0] == '#') {
+      std::cout << "   Skip: " << buffer << std::endl;
+      continue;
+    }
     sscanf(buffer, "%s", pName);
     std::cout << "   Add: " << buffer << std::endl;
     chain->Add(pName);
