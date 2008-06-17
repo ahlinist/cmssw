@@ -384,7 +384,8 @@ void gjet_response_fit_csa08::Fit()
     temphist_sig.Fit(gaussian,"mllq","pe",gaussian->GetParameter(1)-gaussian->GetParameter(2),gaussian->GetParameter(1)+gaussian->GetParameter(2));        
     temphist_sig.Fit(gaussian,"mllq","pe",gaussian->GetParameter(1)-gaussian->GetParameter(2),gaussian->GetParameter(1)+2*gaussian->GetParameter(2));        
     temphist_sig.Fit(gaussian,"mllq","pe",gaussian->GetParameter(1)-minsigma*gaussian->GetParameter(2),gaussian->GetParameter(1)+3.*gaussian->GetParameter(2));        
-    temphist_sig.Fit(gaussian,"mllq","pe",gaussian->GetParameter(1)-minsigma*gaussian->GetParameter(2),gaussian->GetParameter(1)+3.*gaussian->GetParameter(2));        
+    temphist_sig.Fit(gaussian,"mll","pe",gaussian->GetParameter(1)-minsigma*gaussian->GetParameter(2),gaussian->GetParameter(1)+3.*gaussian->GetParameter(2));        
+    if(temphist_sig.Integral()<6) temphist_sig.Fit(gaussian,"mll","pe",gaussian->GetParameter(1)-0.2,gaussian->GetParameter(1)+0.2);  
     biassum_sig->SetBinContent(j,gaussian->GetParameter(1));
     resosum_sig->SetBinContent(j,gaussian->GetParameter(2));
     biassum_sig->SetBinError(j,gaussian->GetParError(1));
@@ -393,7 +394,7 @@ void gjet_response_fit_csa08::Fit()
     distrsum_sig->SetBinContent(j,numevents);
     sprintf(nameout,"%s%d%s","tempfits/tempfit_",j,".eps");
     c0->SaveAs(nameout); 
-    if(temphist_sig.Integral()>0)      cout << temphist_sig.Integral()<< "   " << gaussian->GetParameter(2)/sqrt(temphist_sig.Integral()) << "   " << gaussian->GetParError(1) << endl;;
+    cout << temphist_sig.Integral()<< "   " << gaussian->GetParameter(2)/sqrt(temphist_sig.Integral()) << "   " << gaussian->GetParError(1) << endl;;
     gaussian->Delete();
     
     TF1 *gaussian_all = new TF1("gaussian_all","gaus",-1.,1.);
