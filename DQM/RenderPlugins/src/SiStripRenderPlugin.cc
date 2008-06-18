@@ -2,8 +2,8 @@
   \file SiStripRenderPlugin
   \brief Display Plugin for SiStrip DQM Histograms
   \author S. Dutta 
-  \version $Revision: 1.5 $
-  \date $Date: 2008/06/02 10:54:10 $
+  \version $Revision: 1.6 $
+  \date $Date: 2008/06/07 10:29:37 $
 */
 
 #include "TProfile2D.h"
@@ -20,19 +20,21 @@
 
 bool SiStripRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &i ) {
  
-  if( o.name.find( "SiStrip/EventInfo" ) != std::string::npos ) {
+  if (o.name.find( "SiStrip/" )   == std::string::npos) return false;
+
+  if( o.name.find( "/EventInfo/" ) != std::string::npos ) {
     return true;
   } 
 
-  if( o.name.find( "SiStrip/MechanicalView" ) != std::string::npos ) {
+  if( o.name.find( "/MechanicalView/" ) != std::string::npos ) {
     return true;
   } 
 
-  if( o.name.find( "SiStrip/ReadoutView" ) != std::string::npos ) {
+  if( o.name.find( "/ReadoutView/" ) != std::string::npos ) {
     return true;
   } 
 
-  if( o.name.find( "SiStrip/ReadoutView" ) != std::string::npos ) {
+  if( o.name.find( "/Tracks/" ) != std::string::npos ) {
     return true;
   } 
 
