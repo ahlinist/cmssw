@@ -58,7 +58,7 @@ Worker* WorkerRegistry::getWorker(const WorkerParams& p) {
                        act_reg_->preModuleEndJobSignal_,act_reg_->postModuleEndJobSignal_);
 
     // Transfer ownership of worker to the registry 
-    m_workerMap[workerid] = boost::shared_ptr<Worker>(workerPtr.release());
+    m_workerMap[workerid].reset(workerPtr.release());
     return m_workerMap[workerid].get();
     
   } 

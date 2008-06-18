@@ -46,6 +46,7 @@ $Id$
 #include <string>
 
 #include "boost/shared_ptr.hpp"
+#include "boost/utility.hpp"
 
 #include "DataFormats/Provenance/interface/RunID.h"
 #include "DataFormats/Provenance/interface/LuminosityBlockID.h"
@@ -57,7 +58,7 @@ $Id$
 namespace edm {
   class ParameterSet;
 
-  class InputSource : private ProductRegistryHelper {
+  class InputSource : private ProductRegistryHelper, private boost::noncopyable {
   public:
     enum ItemType {
 	IsInvalid,
