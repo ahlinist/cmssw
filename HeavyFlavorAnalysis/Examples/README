@@ -2,13 +2,13 @@
 ---------------------------
 
 The following has worked for me (not tested with copy-paste yet!)
-   cd SOMEWHERE
+
+   cd ~/testreleases/cmssw
    scramv1 project CMSSW CMSSW_1_8_4
    cd CMSSW_1_8_4/src
    eval `scramv1 runtime -csh`
    project CMSSW
-   
-   cvs co -r V01-06-05 TrackPropagation/SteppingHelixPropagator
+
    cvs co -r V01-06-05 TrackPropagation/SteppingHelixPropagator
    cvs co -r V02-05-01-07 FastSimulation/Event
    cvs co -r V01-04-09-05 FastSimulation/Configuration
@@ -20,15 +20,22 @@ The following has worked for me (not tested with copy-paste yet!)
    cvs co -r V02-00-00-01 FastSimulation/Calorimetry
    cvs co -r V01-04-00-03 FastSimulation/TrajectoryManager
    addpkg FastSimulation/EventProducer
-   cp /afs/cern.ch/cms/data/CMSSW/FastSimulation/MaterialEffects/data/*Val* FastSimulation/MaterialEffects/data/.
 
-   cvs co AnalysisDataFormats/HeavyFlavorObjects
-   cvs co HeavyFlavorAnalysis/Examples
+   cvs co -r V00-00-10 HeavyFlavorAnalysis/Examples
+   cvs co -r V00-00-10 AnalysisDataFormats/HeavyFlavorObjects
    cd AnalysisDataFormats/HeavyFlavorObjects/
    make all
-   cd ../../HeavyFlavorAnalysis/Examples
+   cd -
    scramv1 b
-   cd test
+
+   mv FastSimulation/MaterialEffects/data/ ~/scratch0/
+   cd FastSimulation/MaterialEffects
+   ln -s ~/scratch0/data
+   cd -
+   cp /afs/cern.ch/cms/data/CMSSW/FastSimulation/MaterialEffects/data/*Val* FastSimulation/MaterialEffects/data/.
+   cd HeavyFlavorAnalysis/Examples/test/
+   ln -s . scratch
+   mkdir scratch/ana
    
 Now you have two options: 
 
