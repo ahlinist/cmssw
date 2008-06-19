@@ -119,7 +119,7 @@ namespace edm {
     void setLuminosityBlockNumber_t(LuminosityBlockNumber_t lb) {setLumi(lb);}
 
     /// issue an event report
-    void issueReports(EventID const&);
+    void issueReports(EventID const& eventID, LuminosityBlockNumber_t const& lumi);
 
     /// Register any produced products
     void registerProducts();
