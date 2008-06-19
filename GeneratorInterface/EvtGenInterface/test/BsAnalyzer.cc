@@ -51,6 +51,7 @@ void BsAnalyzer::beginJob( const EventSetup& )
    // fHist2muMass  = new TH1D(  "Hist2muMass", "2-mu inv. mass", 100,  60., 120. ) ;  
    hGeneralId = new TH1D( "hGeneralId","LundIDs of all particles",  100, -1000., 1000.) ;
    hnB = new TH1D( "hnB", "N(B)", 10,  0., 10. ) ;
+   hnJpsi = new TH1D( "hnJpsi", "N(Jpsi)", 10,  0., 10. ) ;
    hnBz = new TH1D( "hnBz", "N(B0)", 10,  0., 10. ) ;
    hnBzb = new TH1D( "hnBzb", "N(B0bar)", 10,  0., 10. ) ;
    hPtbs = new TH1D( "hPtbs", "Pt Bs", 100,  0., 50. ) ;
@@ -75,6 +76,7 @@ void BsAnalyzer::beginJob( const EventSetup& )
    hmumuMassSqrMinus = new TH1D( "hmumuMassSqrMinus","#mu^{+}#mu^{-} invariant mass squared (cos#theta < 0)",  100, -1.0, 25.0) ;
    hIdBsDaugs = new TH1D( "hIdBsDaugs","LundIDs of the Bs's daughters",  100, -1000., 1000.) ;
    hIdPhiDaugs = new TH1D( "hIdPhiDaugs","LundIDs of the phi's daughters",  100, -500., 500.) ;
+   hIdJpsiMot = new TH1D( "hIdJpsiMot","LundIDs of the J/psi's mother",  100, -500., 500.) ;
    hIdBDaugs = new TH1D( "hIdBDaugs","LundIDs of the B's daughters",  100, -1000., 1000.) ;
    hCosHelAngleK = new TH1D( "hCosHelAngleK","cos#theta_{K}",  100, 0., 1.) ;
    hCosHelAngleKbkg = new TH1D( "hCosHelAngleKbkg","cos#theta_{K} background",  100, 0., 1.) ;
@@ -100,6 +102,7 @@ void BsAnalyzer::analyze( const Event& e, const EventSetup& )
 
    const float mmcToPs = 3.3355; 
    int nB = 0;
+   int nJpsi = 0;
    int nBp = 0;
    int nBz = 0;
    int nBzb = 0;
@@ -150,7 +153,7 @@ void BsAnalyzer::analyze( const Event& e, const EventSetup& )
          *decayed << endl;
        }
        }*/
-     *undecayed << (*p)->barcode() << endl;
+     if ((*p)->pdg_id() == 443) *undecayed << (*p)->pdg_id() << endl;
      // --------------------------------------------------------------
      if ( (*p)->pdg_id() == 531 /* && endvert */ ) {  // B_s 
        nbs++;
@@ -213,6 +216,13 @@ void BsAnalyzer::analyze( const Event& e, const EventSetup& )
        }
       
        if (isKmumu == 3) nBzKmumu++; 
+     }
+     // --------------------------------------------------------------
+     if ( (*p)->pdg_id() == 443 ) {
+       nJpsi++;
+       for ( GenVertex::particles_in_const_iterator ap = prodvert->particles_in_const_begin(); ap != prodvert->particles_in_const_end(); ++ap ) {
+	 hIdJpsiMot->Fill((*ap)->pdg_id());
+       }
      }
      // --------------------------------------------------------------
      if ( abs((*p)->pdg_id()) == 521 /* && endvert */ ) {  // B+
@@ -298,10 +308,11 @@ void BsAnalyzer::analyze( const Event& e, const EventSetup& )
    // ---------------------------------------------------------
 
    hnB->Fill(nB);
+   hnJpsi->Fill(nJpsi);
    hnBz->Fill(nBz);
    hnBzb->Fill(nBzb);
    *undecayed << "-------------------------------" << endl;
-   *decayed << "-------------------------------" << endl;
+   // *decayed << "-------------------------------" << endl;
 
    // if (nBz > 0) std::cout << "nBz = " << nBz << " nBz (K*mu+mu-) = " << nBzKmumu << " nMix = " << nBzmix << std::endl;
    // if (nBz > 0 && nBzKmumu == 0) Evt->print();
