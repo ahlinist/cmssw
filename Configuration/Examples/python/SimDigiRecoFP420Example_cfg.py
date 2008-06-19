@@ -23,7 +23,6 @@ process.load("Geometry.TrackerNumberingBuilder.trackerNumberingGeometry_cfi")
 
 process.load("Geometry.MuonNumbering.muonNumberingInitialization_cfi")
 
-process.load("MagneticField.Engine.volumeBasedMagneticField_cfi")
 
 #
 #VX smearing

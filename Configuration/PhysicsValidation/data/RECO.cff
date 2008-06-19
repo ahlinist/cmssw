@@ -1,6 +1,5 @@
 
 # Initialize magnetic field and XML
-include "MagneticField/Engine/data/volumeBasedMagneticField.cfi"
 include "Geometry/CMSCommonData/data/cmsIdealGeometryXML.cfi"  
 
 #
