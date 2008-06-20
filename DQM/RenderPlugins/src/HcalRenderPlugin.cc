@@ -3,7 +3,7 @@
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
   \version $Revision: 1.1 $
-  \date $Date: 2008/04/22 08:12:26 $
+  \date $Date: 2008/04/26 07:43:42 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -20,7 +20,7 @@
 #include "TText.h"
 
 #include <cassert>
-
+#include <fstream>
 
 void
 HcalRenderPlugin::initialise (int argc, char ** argv)
@@ -38,7 +38,8 @@ bool HcalRenderPlugin::applies(const DQMNet::CoreObject &o,
 #ifdef DEBUG 
   std::cout << "HcalRenderPlugin:applies " << o.name << std::endl; 
 #endif 
-  if (o.name.find( "Hcal/" ) ==0 )
+
+  if (o.name.find( "Hcal/" ) != std::string::npos)
     {
       return true;
     }
@@ -154,10 +155,11 @@ void HcalRenderPlugin::preDrawTH2 ( TCanvas *c, const DQMNet::CoreObject &o )
   gStyle->SetPadBorderSize( 0 ); 
   
   // I don't think we want to set stats to 0 for Hcal
-  //gStyle->SetOptStat( 0 ); 
-  //obj->SetStats( kFALSE ); 
+  gStyle->SetOptStat( 0 ); 
+  obj->SetStats( kFALSE ); 
 
   // Use same labeling format as SiStripRenderPlugin.cc
+  /* Axes formatting skipped at DQM request
   TAxis* xa = obj->GetXaxis(); 
   TAxis* ya = obj->GetYaxis(); 
   
@@ -168,7 +170,7 @@ void HcalRenderPlugin::preDrawTH2 ( TCanvas *c, const DQMNet::CoreObject &o )
   ya->SetTitleOffset(0.7); 
   ya->SetTitleSize(0.05); 
   ya->SetLabelSize(0.04); 
-
+  */
   // Now the important stuff -- set 2D hist drawing option to "colz"
   gStyle->SetPalette(1);
   obj->SetOption("colz");
