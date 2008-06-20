@@ -372,6 +372,14 @@ namespace edm {
       ///
       void reportMemoryInfo(std::vector<std::string> const& memoryData);
 
+      ///
+      /// Report Message statistics
+      /// Invoked by the MessageLogger service to send an end of job 
+      /// summary about numbers of various categories messages issued 
+      /// for inclusion in the job report
+      ///
+      void reportMessageInfo(std::map<std::string, double> const & messageData);
+
       /// Report Storage Statistics
       void reportStorageStats(std::string const & data); 
 

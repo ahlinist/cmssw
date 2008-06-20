@@ -10,6 +10,8 @@
 //		to direct use of LogInfo.
 //
 // 4/8/08   mf	Encase the logdesc for in <CDATA> ... </CDATA>
+//
+// 6/19/08  mf	reportMessageInfo()
 
 //
 // Original Author:  Marc Paterno
@@ -709,6 +711,23 @@ namespace edm
         msg << *pos << "\n";
       }
       msg << "</MemoryService>\n";
+      msg << std::flush;
+    }
+  }
+  
+  void 
+  JobReport::reportMessageInfo(std::map<std::string, double> const& messageData){
+
+    if(impl_->ost_) {
+      std::ostream& msg=*(impl_->ost_);
+      msg << "<MessageSummary>\n";
+      std::map<std::string, double>::const_iterator pos;
+      for (pos = messageData.begin(); pos != messageData.end(); ++pos){
+        msg <<  "  <" << pos->first 
+        <<  "  Value=\"" << pos->second  << "\" />"
+        <<  "\n";
+      }
+      msg << "</MessageSummary>\n";
       msg << std::flush;
     }
   }

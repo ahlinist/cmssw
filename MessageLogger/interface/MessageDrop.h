@@ -45,6 +45,9 @@
 //
 //  6  mf 6/18/07	jobMode to have a way to convey choice of hardwired
 //			MessageLogger defaults
+//
+//  7  mf 6/20/08	MessageLoggerScribeIsRunning to let the scribe convey
+//			that it is active.
 
 // user include files
 
@@ -70,8 +73,11 @@ public:
   bool debugEnabled;
   bool infoEnabled;
   bool warningEnabled;
+  static unsigned char messageLoggerScribeIsRunning;	// change log 7
   static edm::Exception * ex_p;				// change log 4
 };
+
+static const unsigned char  MLSCRIBE_RUNNING_INDICATOR = 29; // change log 7
 
 } // end of namespace edm
 

@@ -73,6 +73,9 @@ public:
   static 
   bool  anyDebugEnabled() { return anyDebugEnabled_; }
 
+  static
+  void  SummarizeInJobReport();
+  
 private:
   // put an ErrorLog object here, and maybe more
 
@@ -87,6 +90,8 @@ private:
   static bool   anyDebugEnabled_;
   static bool everyDebugEnabled_;
 
+  static bool fjrSummaryRequested_;
+  
 };  // MessageLogger
 
 

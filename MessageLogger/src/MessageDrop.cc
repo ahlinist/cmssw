@@ -41,3 +41,4 @@ MessageDrop::instance()
   return drop;
 }
 
+unsigned char MessageDrop::messageLoggerScribeIsRunning = 0;

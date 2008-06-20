@@ -365,6 +365,7 @@ public:
   void HaltMessageLogging();
   void FlushMessageLog();
   void GroupLogStatistics(std::string const & category);
+  bool isMessageProcessingSetUp();
 
 }  // namespace edm
 
