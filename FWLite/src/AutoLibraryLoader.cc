@@ -15,6 +15,7 @@
 #include <iostream>
 #include "TROOT.h"
 #include "TInterpreter.h"
+#include "TApplication.h"
 
 // user include files
 #include "FWCore/FWLite/interface/AutoLibraryLoader.h"
@@ -99,11 +100,10 @@ AutoLibraryLoader::enable()
      <<"  CMSSW_RELEASE_BASE\n"
      <<" therefore attempting to '#include' any CMS headers will not work"<<std::endl;
    }
-   
+   if (0 != gApplication) {
+     gApplication->InitializeGraphics();
+   }
 }
-
-
-
 
 void
 AutoLibraryLoader::loadAll()
