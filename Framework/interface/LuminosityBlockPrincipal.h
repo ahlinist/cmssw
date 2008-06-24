@@ -117,9 +117,6 @@ namespace edm {
 
     boost::shared_ptr<RunPrincipal> runPrincipal_;
     LuminosityBlockAuxiliary aux_;
-
-    boost::shared_ptr<Mapper> branchMapperPtr_;
-
   };
 }
 #endif
