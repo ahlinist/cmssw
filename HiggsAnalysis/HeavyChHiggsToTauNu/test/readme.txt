@@ -88,6 +88,7 @@
                                 are moved from MyTrack to MyJet, and a label associating a hit to
                                 a given track is added in the MyHit data members.
 17.6.2008/S.Lehti CMSSW_1_6_12	Removed jet raw Et cut 10 GeV. Added more btagging discriminators
+24.6.2008/S.Lehti CMSSW_1_6_12  Added trigger bit information in MyEvent
 
 
 	How to compile:
