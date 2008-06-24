@@ -31,8 +31,7 @@ namespace edm {
 
     void registerProducts(boost::shared_ptr<ProducerBase>,
 			ProductRegistry *,
-			ModuleDescription const&,
-			bool throwIfNoProducts);
+			ModuleDescription const&);
 
     using ProductRegistryHelper::produces;
     using ProductRegistryHelper::typeLabelList;

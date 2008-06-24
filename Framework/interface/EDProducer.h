@@ -51,7 +51,7 @@ namespace edm {
     void doRespondToOpenOutputFiles(FileBlock const& fb);
     void doRespondToCloseOutputFiles(FileBlock const& fb);
     void registerAnyProducts(boost::shared_ptr<EDProducer>& module, ProductRegistry *reg) {
-      registerProducts(module, reg, moduleDescription_, true);
+      registerProducts(module, reg, moduleDescription_);
     }
 
     std::string workerType() const {return "WorkerT<EDProducer>";}
