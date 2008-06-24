@@ -12,11 +12,9 @@ Implementation:
 //
 // Original Author:  Vineet
 //         Created:  Mon Jun 23 09:42:50 IST 2008
-// $Id$
+// $Id: DiMuonAnalyzer.cc,v 1.1 2008/06/23 22:32:56 kumarv Exp $
 //
 //
-
-
 
 //Include Files
 
@@ -60,34 +58,7 @@ Implementation:
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/MuonReco/interface/Muon.h"
 #include "DataFormats/MuonReco/interface/MuonFwd.h"
-#include "DataFormats/METReco/interface/CaloMETCollection.h"
-#include "DataFormats/METReco/interface/GenMETCollection.h"
-#include "DataFormats/JetReco/interface/CaloJetCollection.h"
 #include "DataFormats/DetId/interface/DetId.h"
-#include "DataFormats/HcalDetId/interface/HcalDetId.h"
-#include "DataFormats/HcalRecHit/interface/HcalRecHitCollections.h"
-#include "DataFormats/HcalRecHit/interface/HBHERecHit.h"
-#include "DataFormats/EcalDetId/interface/EBDetId.h"
-#include "DataFormats/EcalDetId/interface/EEDetId.h"
-#include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
-#include "DataFormats/HcalDigi/interface/HcalDigiCollections.h"
-#include "DataFormats/EgammaReco/interface/BasicCluster.h"
-#include "DataFormats/EgammaReco/interface/SuperCluster.h"
-#include "DataFormats/HcalRecHit/interface/HcalRecHitCollections.h"
-#include "DataFormats/HcalDigi/interface/HcalDigiCollections.h"
-#include "DataFormats/HcalDigi/interface/HcalQIESample.h"
-#include "DataFormats/BTauReco/interface/JetTag.h"
-#include "DataFormats/JetReco/interface/JetTracksAssociation.h"
-#include "DataFormats/BTauReco/interface/IsolatedTauTagInfo.h"
-#include "DataFormats/GsfTrackReco/interface/GsfTrack.h"
-#include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
-#include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
-#include "DataFormats/EgammaReco/interface/BasicClusterFwd.h"
-#include "DataFormats/EgammaReco/interface/SuperClusterFwd.h"
-#include "DataFormats/EgammaReco/interface/ClusterShapeFwd.h"
-#include "DataFormats/EgammaReco/interface/BasicClusterShapeAssociation.h"
-#include "DataFormats/EcalDetId/interface/EcalSubdetector.h"
-#include "DataFormats/EgammaReco/interface/BasicCluster.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 
@@ -96,6 +67,7 @@ Implementation:
 #include "SimDataFormats/TrackingAnalysis/interface/TrackingVertexContainer.h"
 #include "SimDataFormats/TrackingAnalysis/interface/TrackingVertex.h"
 #include "SimDataFormats/TrackingAnalysis/interface/TrackingParticle.h"
+
 #include "SimTracker/TrackAssociation/test/testTrackAssociator.h"
 #include "SimTracker/Records/interface/TrackAssociatorRecord.h"
 #include "SimTracker/TrackAssociation/interface/TrackAssociatorBase.h" 
@@ -116,16 +88,18 @@ Implementation:
 #include "RecoVertex/VertexTools/interface/VertexDistance3D.h"
 #include "RecoVertex/VertexTools/interface/VertexDistanceXY.h"
 #include "RecoVertex/VertexTools/interface/VertexCompatibleWithBeam.h"
+
 #include "Geometry/CaloGeometry/interface/CaloGeometry.h"
 #include "TBDataFormats/HcalTBObjects/interface/HcalTBTriggerData.h"
 #include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
 #include "MagneticField/Engine/interface/MagneticField.h"
+
 using namespace std;
 using namespace edm;
 using namespace HepMC;
 
 //********************************************************************************************************************
-// class decleration
+// class declaration
 //
 class TFile;
 class TH1D;
@@ -145,8 +119,8 @@ private:
   virtual void SimAnalyze(const edm::Event &iEvent, const edm::EventSetup &iSetup); 
   virtual void RecAnalyze(const edm::Event &iEvent, const edm::EventSetup &iSetup); 
   
- 
-  // ----------member data ---------------------------
+//*******************************************************************************************
+// ----------member data ---------------------------
   
   TFile*      fOutputFile ;
   TH1D*       fHistGenmuPt ;
@@ -181,20 +155,21 @@ private:
 // static data member definitions
 //
 
+//*******************************************************************************************
 //
 // constructors and destructor
 //
 DiMuonAnalyzer::DiMuonAnalyzer(const edm::ParameterSet& iConfig):
   fOutputFileName(iConfig.getUntrackedParameter<string>("HistOutFile",std::string("DiMuonAnalysis.root")) ),
   fOutputFile(0),  fHistGenmuPt(0), fHistGenmuEta(0), fHistGenmuPhi(0),fHistSimmuPt(0),fHistSimmuEta(0),fHistrecmuPt(0),fHistrecmuPhi(0),fHistDiMuonGen_Y(0),fHistDiMuonGen_Pt(0),fHistDiMuonGen_P(0),fHistDiMuonGen_Pz(0),fHistDiMuonGen_InvM(0),fHistDiMuonRec_Y(0),fHistDiMuonRec_Pt(0),fHistDiMuonRec_P(0),fHistDiMuonRec_Pz(0),fHistDiMuonRec_InvM(0),fPartID(0),Nevt(0)
-
-
 { 
  // fTracksLabel = iConfig.getUntrackedParameter<string>("inputTracklabel", "ctfWithMaterialTracks");  
   //fTracksLabel1 = iConfig.getUntrackedParameter<string>("inputTracklabel", "globalMuons"); 
   
 }
 
+//*******************************************************************************************
+//
 DiMuonAnalyzer::~DiMuonAnalyzer()
 {
   
@@ -203,20 +178,23 @@ DiMuonAnalyzer::~DiMuonAnalyzer()
   
 }
 
-
 //
 // member functions
 //
 
+//*******************************************************************************************
 // ------------ method called to for each event  ------------
 void 
 DiMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
+
   using namespace HepMC;
   using namespace edm;
+
   using reco::VertexCollection;
   using reco::TrackCollection;
   using reco::MuonCollection;
+
   int eventnumber = iEvent.id().event();
   int runnumber   = iEvent.id().run(); 
   cout << "--------------------------------------------------------------------------------"<<endl;
@@ -230,12 +208,16 @@ DiMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   const HepMC::GenEvent *genEvent = evt->GetEvent();
   int gcnt = genEvent->particles_size();
   cout << "Total no of Particles in the event = " <<gcnt << endl;
+
   gcnt = 0;
   float pt1[100], eta1[100], phi1[100], ppx1[100], ppy1[100], ppz1[100],ener1[100];
   float pt2[100], eta2[100], phi2[100],ppx2[100], ppy2[100], ppz2[100],ener2[100];
   int imuplus=0, imuminus=0;
   int nmp=0;
   int nmn=0;
+
+  const float muonmass = 0.105658369; //  GeV
+
   for (HepMC::GenEvent::particle_const_iterator p = genEvent->particles_begin();
        p != genEvent->particles_end(); ++p) {
     
@@ -246,7 +228,7 @@ DiMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     float px = (*p)->momentum().px();
     float py = (*p)->momentum().py();
     float pz = (*p)->momentum().pz(); 
-    float ener=sqrt((px*px+py*py+pz*pz+0.011163691));
+    float ener=sqrt((px*px+py*py+pz*pz+muonmass*muonmass));
     fPartID->Fill(ID);
     cout <<"genrated muon Pt "<< pt<< " px " << px << "py "<< py << " " <<(px*px + py*py)<<endl; 
     
@@ -320,8 +302,11 @@ DiMuonAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   RecAnalyze(iEvent, iSetup);   
 
   Nevt++;
+
 }//analyze
 
+//*******************************************************************************************
+//
 void DiMuonAnalyzer::SimAnalyze(const edm::Event &iEvent, const edm::EventSetup &iSetup) 
 {
   
@@ -330,7 +315,10 @@ void DiMuonAnalyzer::SimAnalyze(const edm::Event &iEvent, const edm::EventSetup 
   edm::Handle<SimTrackContainer> simTracks;
   iEvent.getByLabel("g4SimHits",simTracks);
   SimTrackContainer::const_iterator simTrack;
-  cout<<"====================================Simulated tracks: ========================================"<<endl;
+
+  cout<<"====================================Simulated tracks: "
+    << "========================================"<<endl;
+
   for (simTrack = simTracks->begin(); simTrack != simTracks->end(); ++simTrack){
     if (abs((*simTrack).type()) == 13) {
       
@@ -350,14 +338,14 @@ void DiMuonAnalyzer::SimAnalyze(const edm::Event &iEvent, const edm::EventSetup 
   
 }//SimAna
 
+//*******************************************************************************************
+//
 void DiMuonAnalyzer::RecAnalyze(const edm::Event &iEvent, const edm::EventSetup &iSetup) 
 {
   using reco::TrackCollection;
   using reco::MuonCollection;
+
   cout <<"--------------Reco-Ana------------------------------------" << endl;
-  
-  
-  
   
   //rcnt = 0;
   float pt1[100], eta1[100], phi1[100],ppx1[100], ppy1[100], ppz1[100],ener1[100];
@@ -366,18 +354,16 @@ void DiMuonAnalyzer::RecAnalyze(const edm::Event &iEvent, const edm::EventSetup 
   int nmp=0;
   int nmn=0;
   
-  
- 
-  
   // muon collection
   edm::Handle<MuonCollection> tmuons;
   iEvent.getByLabel( "muons", tmuons );      
   for (reco::MuonCollection::const_iterator muon = tmuons->begin(); muon != tmuons->end(); ++muon) {
+
     //if( muon->(!isStandAloneMuon()) && muon->isGlobalMuon()){
     // if(muon->isTrackerMuon()){  
     //TrackRef tt = muon->combinedMuon(); //global muon refrence	
 
-if(muon->isGlobalMuon()){
+    if(muon->isGlobalMuon()){
       
       TrackRef tt = muon->track();
       float pt = tt->pt();
@@ -392,9 +378,6 @@ if(muon->isGlobalMuon()){
       
       cout<<"global muon  taking tracker  pt "<<pt<< " eta " <<eta <<endl;
       
-      
-     
-
       //if((eta >-2.0 && eta <2.0)){
       fHistrecmuPt->Fill(pt);
       fHistrecmuEta->Fill(eta);
@@ -426,8 +409,8 @@ if(muon->isGlobalMuon()){
     }//is global muon
     
   }//reconstructed track loop    
-  
-  
+
+  // Dimuon Invariant mass analysis
   
   if(nmp>0 && nmn>0)
     {
@@ -465,6 +448,7 @@ if(muon->isGlobalMuon()){
   cout <<"-------------END-Reco-------------------------------------" << endl <<endl;
 }
 
+//*******************************************************************************************
 // ------------ method called once each job just before starting event loop  ------------
 void 
 DiMuonAnalyzer::beginJob(const edm::EventSetup&)
@@ -479,6 +463,7 @@ DiMuonAnalyzer::beginJob(const edm::EventSetup&)
   fHistrecmuPt  = new TH1D( "fHistrecmuPt", "recMuon Pt spectrum", 100,  0., 10.)  ;
   fHistrecmuEta = new TH1D( "fHistrecmuEta", "recMuon eta spectrum", 100,  -5., 5.)  ; 
   fHistrecmuPhi = new TH1D( "fHistrecmuPhi", "recMuon phi spectrum", 20,  -3.2, 3.2)  ;
+
   fHistDiMuonGen_Y   = new TH1D(  "fHistDiMuonGen_Y", "rapadity_Up", 100,  -5., 5. ) ;
   fHistDiMuonGen_Pt  = new TH1D(  "fHistDiMuonGen_Pt", "Pt_Up", 50,  0.,0.2) ;
   fHistDiMuonGen_P   = new TH1D(  "fHistDiMuonGen_P", "P_Up", 100,  0., 50) ;
@@ -494,17 +479,15 @@ DiMuonAnalyzer::beginJob(const edm::EventSetup&)
   fPartID       = new TH1D( "HistPartID", "Particle ID", 800,  -400, 400.)  ;
   Nevt=0;
 
-
-
-
-  // TH2(const char *name,const char *title,Int_t nbinsx,Double_t xlow,Double_t xup ,Int_t nbinsy,Double_t ylow,Double_t yup)
+ // TH2(const char *name,const char *title,Int_t nbinsx,Double_t xlow,Double_t xup ,Int_t nbinsy,Double_t ylow,Double_t yup)
   
- 
-}
+ }
 
+//*******************************************************************************************
 // ------------ method called once each job just after ending the event loop  ------------
 void 
-DiMuonAnalyzer::endJob() {
+DiMuonAnalyzer::endJob() 
+{
   fOutputFile->cd();  
   fHistGenmuPt->Write();
   fHistGenmuEta->Write();
@@ -519,8 +502,8 @@ DiMuonAnalyzer::endJob() {
   fHistDiMuonGen_P->Write();
   fHistDiMuonGen_Pz->Write();
   fHistDiMuonGen_InvM->Write();
- // fHistDiMuonGen_Pt1->Write();
- // fHistDiMuonGen_Y1->Write(); 
+  // fHistDiMuonGen_Pt1->Write();
+  // fHistDiMuonGen_Y1->Write(); 
   fHistDiMuonRec_Y->Write();
   fHistDiMuonRec_Pt->Write();
   fHistDiMuonRec_P->Write();
@@ -529,7 +512,7 @@ DiMuonAnalyzer::endJob() {
   fOutputFile->Write();
   fOutputFile->Close();
   cout << " Total number of events analysed: " << Nevt << endl;
- }
+}
 
 //define this as a plug-in
 DEFINE_FWK_MODULE(DiMuonAnalyzer);
