@@ -388,11 +388,7 @@ MessageLogger::SummarizeInJobReport() {
     std::map<std::string, double> * smp = new std::map<std::string, double> ();
     MessageLoggerQ::MLqJRS ( smp );
     Service<JobReport> reportSvc;
-    reportSvc->reportTimingInfo(*smp);
-//    std::map<std::string, double>::iterator i;
-//    std::map<std::string, double>::iterator e = sm->end();
-//    for (i = sm->begin(); i != e; ++i) {
-//   }
+    reportSvc->reportMessageInfo(*smp);
     delete smp;
   } 
 }
