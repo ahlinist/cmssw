@@ -2,7 +2,7 @@
 //
 // Package:    TestFailuresAnalyzer
 // Class:      TestFailuresAnalyzer
-// 
+//
 /**\class TestFailuresAnalyzer TestFailuresAnalyzer.cc stubs/TestFailuresAnalyzer/src/TestFailuresAnalyzer.cc
 
  Description: <one line class summary>
@@ -47,7 +47,8 @@ enum {
    kConstructor,
    kBeginOfJob,
    kEvent,
-   kEndOfJob
+   kEndOfJob,
+   kBeginOfJobBadXML
 };
 //
 // constructors and destructor
@@ -64,7 +65,7 @@ TestFailuresAnalyzer::TestFailuresAnalyzer(const edm::ParameterSet& iConfig)
 
 TestFailuresAnalyzer::~TestFailuresAnalyzer()
 {
- 
+
    // do anything here that needs to be done at desctruction time
    // (e.g. close files, deallocate resources etc.)
 
@@ -76,15 +77,18 @@ TestFailuresAnalyzer::~TestFailuresAnalyzer()
 //
 
 // ------------ method called to produce the data  ------------
-void 
+void
 TestFailuresAnalyzer::beginJob(const edm::EventSetup&)
 {
    if(whichFailure_ == kBeginOfJob){
       throw cms::Exception("Test") <<" beginJob";
    }
+   if(whichFailure_ == kBeginOfJobBadXML){
+      throw cms::Exception("Test") <<" beginJob with <BAD> >XML<";
+   }
 }
 
-void 
+void
 TestFailuresAnalyzer::endJob()
 {
    if(whichFailure_ == kEndOfJob){
@@ -99,7 +103,7 @@ TestFailuresAnalyzer::analyze(const edm::Event& /* iEvent */, const edm::EventSe
    if(whichFailure_ == kEvent){
       throw cms::Exception("Test") <<" event";
    }
-   
+
 }
 
 //define this as a plug-in
