@@ -265,7 +265,7 @@ void BTagPerformanceAnalyzer::analyze(const edm::Event& iEvent, const edm::Event
     iEvent.getByLabel(jetMCSrc, jetMC);
     for (JetFlavourMatchingCollection::const_iterator iter = jetMC->begin();
          iter != jetMC->end(); iter++) {
-      unsigned int fl = iter->second.getFlavour();
+      unsigned int fl = abs(iter->second.getFlavour());
       flavours.insert(FlavourMap::value_type(iter->first, fl));
     }
   }
@@ -369,7 +369,7 @@ void BTagPerformanceAnalyzer::analyze(const edm::Event& iEvent, const edm::Event
           inBin = binTagInfoPlotters[iJetLabel][iPlotter]->etaPtBin().inBin(*jetRef);
 	// Fill histograms if in desired pt/rapidity bin.
 	if (inBin)
-	  binTagInfoPlotters[iJetLabel][iPlotter]->analyzeTag(baseTagInfos, abs(jetFlavour.flavour());
+	  binTagInfoPlotters[iJetLabel][iPlotter]->analyzeTag(baseTagInfos, abs(jetFlavour.flavour()));
       }
     }
   }
