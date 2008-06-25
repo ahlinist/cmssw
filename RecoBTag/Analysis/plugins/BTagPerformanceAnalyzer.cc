@@ -284,7 +284,7 @@ void BTagPerformanceAnalyzer::analyze(const edm::Event& iEvent, const edm::Event
       // Identify parton associated to jet.
       BTagMCTools::JetFlavour jetFlavour = getJetFlavour(tagI->first, fastMC, flavours);
 
-      if (!jetSelector(*(tagI->first), jetFlavour.flavour())) continue;
+      if (!jetSelector(*(tagI->first), abs(jetFlavour.flavour()))) continue;
       for (int iPlotter = 0; iPlotter != plotterSize; ++iPlotter) {
 	bool inBin = false;
 	if (partonKinematics)
@@ -295,7 +295,7 @@ void BTagPerformanceAnalyzer::analyze(const edm::Event& iEvent, const edm::Event
           inBin = binJetTagPlotters[iJetLabel][iPlotter]->etaPtBin().inBin(*tagI->first);
 	// Fill histograms if in desired pt/rapidity bin.
 	if (inBin)
-	  binJetTagPlotters[iJetLabel][iPlotter]->analyzeTag(*tagI, jetFlavour.flavour());
+	  binJetTagPlotters[iJetLabel][iPlotter]->analyzeTag(*tagI, abs(jetFlavour.flavour()));
       }
     }
   }
@@ -356,7 +356,7 @@ void BTagPerformanceAnalyzer::analyze(const edm::Event& iEvent, const edm::Event
 
       // Identify parton associated to jet.
       BTagMCTools::JetFlavour jetFlavour = getJetFlavour(jetRef, fastMC, flavours);
-      if (!jetSelector(*jetRef, jetFlavour.flavour()))
+      if (!jetSelector(*jetRef, abs(jetFlavour.flavour())))
         continue;
 
       for (int iPlotter = 0; iPlotter != plotterSize; ++iPlotter) {
@@ -369,7 +369,7 @@ void BTagPerformanceAnalyzer::analyze(const edm::Event& iEvent, const edm::Event
           inBin = binTagInfoPlotters[iJetLabel][iPlotter]->etaPtBin().inBin(*jetRef);
 	// Fill histograms if in desired pt/rapidity bin.
 	if (inBin)
-	  binTagInfoPlotters[iJetLabel][iPlotter]->analyzeTag(baseTagInfos, jetFlavour.flavour());
+	  binTagInfoPlotters[iJetLabel][iPlotter]->analyzeTag(baseTagInfos, abs(jetFlavour.flavour());
       }
     }
   }
