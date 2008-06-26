@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 bTagCommonBlock = cms.PSet(
     # rec. jet
-    ptRecJetMin = cms.double(30.0),
+    ptRecJetMin = cms.double(0.0),
     # This option enables/disables the output of the full list of histograms
     # With false, only a subset of the histograms (the most useful) will
     # be written to file.
@@ -41,7 +41,7 @@ bTagCommonBlock = cms.PSet(
     ptRanges = cms.vdouble(50.0, 80.0, 120.0),
     # eta and pt ranges
     etaRanges = cms.vdouble(0.0, 1.4, 2.4),
-    ptRecJetMax = cms.double(99999.0),
+    ptRecJetMax = cms.double(40000.0),
     ptPartonMax = cms.double(99999.0),
     producePs = cms.bool(False),
     inputfile = cms.string('')
