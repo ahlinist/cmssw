@@ -120,7 +120,7 @@ if (@rootfiles)
     my $foldergenerator;
     if (!$nofoldergenerator)
       {
-        $foldergenerator = "; ./htmlsorter.pl";
+        $foldergenerator = "; ./htmldirectorygen.py ./L*/*.html";
       }
     my $rootcopier;
     if (!$nocopy)
