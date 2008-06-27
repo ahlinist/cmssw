@@ -1,9 +1,3 @@
-# The following comments couldn't be translated into the new config version:
-
-# ... this is needed for the PtGun
-
-# ... just run the filter
-
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("TEST")
@@ -23,7 +17,6 @@ process.RandomNumberGeneratorService = cms.Service(
 
 # ... just a gun to feed something to the ProtonTaggerFilter
 process.source = cms.Source("FlatRandomPtGunSource",
-    firstRun = cms.untracked.uint32(1)
     PGunParameters = cms.untracked.PSet(
         # you can request more than 1 particle
         PartID = cms.untracked.vint32(2212),
@@ -34,7 +27,8 @@ process.source = cms.Source("FlatRandomPtGunSource",
         MinPt = cms.untracked.double(0.4),
         MaxPt = cms.untracked.double(0.6)
     ),
-    Verbosity = cms.untracked.int32(0), ## for printouts, set it to 1 (or greater)
+    firstRun = cms.untracked.uint32(1),
+    Verbosity = cms.untracked.int32(0) ## for printouts, set it to 1 (or greater)
 )
 
 # ... this is our forward proton filter
