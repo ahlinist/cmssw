@@ -20,6 +20,9 @@
 #include "DataFormats/TestObjects/interface/ThingWithIsEqual.h"
 #include "DataFormats/TestObjects/interface/ThingWithMerge.h"
 #include "FWCore/Utilities/interface/InputTag.h"
+#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "FWCore/Framework/interface/ConstProductRegistry.h"
+#include "DataFormats/Provenance/interface/BranchKey.h"
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
@@ -173,6 +176,15 @@ namespace edmtest
 
   void TestMergeResults::analyze(edm::Event const& e,edm::EventSetup const&)
   {
+    static bool iFirst = true;
+    if (iFirst) {
+      iFirst = false;
+      edm::Service<edm::ConstProductRegistry> reg;
+      for (edm::ProductRegistry::ProductList::const_iterator it = reg->productList().begin(); it != reg->productList().end(); ++it) {
+        std::cout << "WDD PRODUCT: " << it->first << "\n";
+      }
+    }
+
     if (verbose_) edm::LogInfo("TestMergeResults") << "analyze";
 
     Run const& run = e.getRun();
