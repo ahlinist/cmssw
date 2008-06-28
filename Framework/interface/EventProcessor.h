@@ -82,15 +82,18 @@ namespace edm {
 
     // Same as previous constructor, but without a 'token'.  Token will be defaulted.
 
-    explicit EventProcessor(std::string const& config,
-			    std::vector<std::string> const& defaultServices,
-			    std::vector<std::string> const& forcedServices =
-			    std::vector<std::string>());
+   EventProcessor(std::string const& config,
+                  std::vector<std::string> const& defaultServices,
+                  std::vector<std::string> const& forcedServices =
+                  std::vector<std::string>());
     
 
     EventProcessor(boost::shared_ptr<edm::ProcessDesc> & processDesc,
                    ServiceToken const& token,
                    serviceregistry::ServiceLegacy legacy);
+
+    /// meant for unit tests
+    EventProcessor(std::string const& config, bool isPython);
 
     ~EventProcessor();
 
