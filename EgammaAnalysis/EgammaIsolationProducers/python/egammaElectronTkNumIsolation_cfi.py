@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 egammaElectronTkNumIsolation = cms.EDProducer("EgammaElectronTkNumIsolationProducer",
-    trackProducer = cms.InputTag("ctfWithMaterialTracks"),
+    trackProducer = cms.InputTag("generalTracks"),
     intRadius = cms.double(0.02),
     electronProducer = cms.InputTag("pixelMatchGsfElectrons"),
     extRadius = cms.double(0.2),
