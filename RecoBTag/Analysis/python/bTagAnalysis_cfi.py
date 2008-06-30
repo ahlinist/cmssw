@@ -1,7 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
 # BTagPerformanceAnalyzer configuration
-from RecoBTag.Analysis.bTagCombinedSVVariables_cff import *
 #includes added because of block refactoring replacing simple includes by using statements
 from RecoBTag.Analysis.bTagTrackIPAnalysis_cff import *
 from RecoBTag.Analysis.bTagCombinedSVAnalysis_cff import *

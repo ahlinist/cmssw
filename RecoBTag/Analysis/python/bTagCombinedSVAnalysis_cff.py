@@ -1,5 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
+from RecoBTag.Analysis.bTagCombinedSVVariables_cff import *
+
 # combinedSecondaryVertex jet tag computer configuration
 bTagCombinedSVAnalysisBlock = cms.PSet(
     parameters = cms.PSet(
