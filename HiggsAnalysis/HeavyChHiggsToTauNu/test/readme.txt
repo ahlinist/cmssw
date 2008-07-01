@@ -105,6 +105,8 @@
 	Take jet calibration data for 1_5_X samples:
 	cvs co -r jet_corrections_16X JetMETCorrections/MCJet/data
 
-	Example program for reading and analyzing the produced root files:
+	Program for reading and analyzing the produced root files:
+	in a git repository:
 	http://cmsdoc.cern.ch/~slehti/HipProofAnalysis/HipProofAnalysis.html
-
+	in CVS:
+	HiggsAnalysis/HeavyChHiggsToTauNu/data/HipProofAnalysis.tar.gz
