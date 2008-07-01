@@ -17,33 +17,17 @@
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
-#include "DQMServices/Core/interface/DaqMonitorBEInterface.h"
-#include "DQMServices/Daemon/interface/MonitorDaemon.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 
 #include "RecoLuminosity/HLXReadOut/CoreUtils/include/ICTypeDefs.hh"
 #include "RecoLuminosity/HLXReadOut/HLXCoreLibs/include/LumiStructures.hh"
 #include "RecoLuminosity/TCPReceiver/interface/TCPReceiver.h"
 
-//#include <TROOT.h>
-//#include <TFile.h>
-//#include <TH1F.h>
-//#include <time.h>
-//#include <TStyle.h>
-//#include <TROOT.h>
-//#include <TSystem.h>
-//#include <TImage.h>
-//#include <TCanvas.h>
-
-// Main DIP include file                                                                                       
 #include "RecoLuminosity/HLXReadOut/DIP/include/Dip.h"
 #include "RecoLuminosity/HLXReadOut/DIP/include/DipPublicationErrorHandler.h"
 
 using namespace HCAL_HLX;
 
-//
-// class decleration
-//
 
 class ErrHandler:public DipPublicationErrorHandler{
   void handleException(DipPublication* publication, DipException& ex){
