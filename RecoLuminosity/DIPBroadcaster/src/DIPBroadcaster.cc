@@ -1,7 +1,7 @@
 /*
     Author:  Jeremy Werner (jwerner@princeton.edu)
     Institution: Princeton University, USA
-    Date: May, 2008
+    Date: June, 2008
 */
 #include "RecoLuminosity/DIPBroadcaster/interface/DIPBroadcaster.h"
 
