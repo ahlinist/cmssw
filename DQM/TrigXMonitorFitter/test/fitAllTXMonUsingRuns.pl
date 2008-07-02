@@ -125,7 +125,7 @@ if (@rootfiles)
     my $rootcopier;
     if (!$nocopy)
       {
-        $rootcopier = "; ./copyRoot.pl -f $filename";
+        $rootcopier = "; ./copyRoot.py $filename";
       }
 
 
