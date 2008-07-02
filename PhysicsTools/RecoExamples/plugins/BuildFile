@@ -15,7 +15,7 @@
 
 <library file=TrackPlotsExample.cc>
   <use name=DataFormats/TrackReco>
-  <use name=root>
+  <use name=rootgraphics>
 </library>
 
 <library file=TrackPointsProducer.cc>
