@@ -29,6 +29,7 @@ private:
   edm::InputTag metTag_; ///< tag for input collection
   float minHT_;          ///< lower HT cut 
   float minPt_;          ///< minimum Pt of jets taken into account
+  float maxEta_;          ///< maximum Eta of jets taken into account
   pat::MET::UncorectionType uncorrType_;  ///< uncorrection type for MET
 };
 #endif
