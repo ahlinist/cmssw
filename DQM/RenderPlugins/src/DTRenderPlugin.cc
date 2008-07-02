@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.19 2008/06/10 15:48:31 cerminar Exp $
+// $Id: DTRenderPlugin.cc,v 1.20 2008/06/11 21:11:00 cerminar Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.19 $
-  \date $Date: 2008/06/10 15:48:31 $
+  \version $Revision: 1.20 $
+  \date $Date: 2008/06/11 21:11:00 $
 */
 
 #include "TProfile2D.h"
@@ -259,16 +259,15 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   // --------------------------------------------------------------
   // Trigger plots
-  if( o.name.find("CorrFractionSummary_W") < o.name.size() ) {
+  if( o.name.find("CorrFractionSummary_W") < o.name.size() ||
+      o.name.find("PhiSlopeSummary_W")     < o.name.size() ||
+      o.name.find("PhibSlopeSummary_W")    < o.name.size() ||
+      o.name.find("2ndFractionSummary_W")  < o.name.size() ) {
     obj->GetXaxis()->SetNdivisions(13,true);
     obj->GetYaxis()->SetNdivisions(5,true);
     obj->GetXaxis()->CenterLabels();
     obj->GetYaxis()->CenterLabels();
     gPad->SetGrid(1,1);
-//     obj->GetXaxis()->SetLabelSize(0.07);
-//     obj->GetYaxis()->SetLabelSize(0.07);
-
-//     obj->GetXaxis()->LabelsOption("v");
     gPad->SetBottomMargin(0.1);
     gPad->SetLeftMargin(0.12);
     gPad->SetRightMargin(0.12);
@@ -282,14 +281,15 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     colorError1[2] = 632;// kRed
     gStyle->SetPalette(3, colorError1);
     return;
-  } else if(o.name.find("CorrFractionSummary") < o.name.size()) {
+  } else if( o.name.find("CorrFractionSummary") < o.name.size() ||
+	     o.name.find("PhiSlopeSummary")     < o.name.size() ||
+	     o.name.find("PhibSlopeSummary")    < o.name.size() ||
+	     o.name.find("2ndFractionSummary")  < o.name.size() ) {
     obj->GetXaxis()->SetNdivisions(13,true);
     obj->GetYaxis()->SetNdivisions(6,true);
     obj->GetXaxis()->CenterLabels();
     obj->GetYaxis()->CenterLabels();
     gPad->SetGrid(1,1);
-//     obj->GetXaxis()->SetLabelSize(0.07);
-//     obj->GetYaxis()->SetLabelSize(0.07);
     obj->GetXaxis()->LabelsOption("v");
     gPad->SetBottomMargin(0.1);
     gPad->SetLeftMargin(0.12);
@@ -305,9 +305,9 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     colorError1[4] = 632;// kRed
     gStyle->SetPalette(5, colorError1);
     return;
-  }  else if(o.name.find("2ndFraction") <  o.name.size() ||
+  }  else if(o.name.find("2ndFraction")  < o.name.size() ||
 	     o.name.find("CorrFraction") < o.name.size() ||
-	     o.name.find("HFraction") <    o.name.size() ) {
+	     o.name.find("HFraction")    < o.name.size() ) {
     obj->GetXaxis()->SetNdivisions(13,true);
     if(o.name.find("Phi") < o.name.size())
       obj->GetYaxis()->SetNdivisions(5,true); //Phi Summary
@@ -316,9 +316,6 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->GetXaxis()->CenterLabels();
     obj->GetYaxis()->CenterLabels();
     gPad->SetGrid(1,1);
-//     obj->GetXaxis()->SetLabelSize(0.07);
-//     obj->GetYaxis()->SetLabelSize(0.07);
-    //obj->GetXaxis()->LabelsOption("v");
     gPad->SetBottomMargin(0.1);
     gPad->SetLeftMargin(0.12);
     gPad->SetRightMargin(0.12);
@@ -326,6 +323,9 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->SetMaximum(1.0);
     return;
   }  else if(o.name.find("CorrectBX")        < o.name.size() ||
+	     o.name.find("ResidualBX")       < o.name.size() ||
+	     o.name.find("PhiTkvsTrig")      < o.name.size() ||
+	     o.name.find("PhibTkvsTrig")     < o.name.size() ||
 	     o.name.find("TriggerInclusive") < o.name.size() ) {
     obj->GetXaxis()->SetNdivisions(13,true);
     if(o.name.find("Phi") < o.name.size())
@@ -335,23 +335,35 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->GetXaxis()->CenterLabels();
     obj->GetYaxis()->CenterLabels();
     gPad->SetGrid(1,1);
-//     obj->GetXaxis()->SetLabelSize(0.07);
-//     obj->GetYaxis()->SetLabelSize(0.07);
     obj->GetXaxis()->LabelsOption("v");
     gPad->SetBottomMargin(0.1);
     gPad->SetLeftMargin(0.12);
     gPad->SetRightMargin(0.12);
-    if(o.name.find("TriggerInclusive") < o.name.size())
+    if(o.name.find("TkvsTrigSlope") < o.name.size()) {
+      obj->SetMaximum(1.15);
+      obj->SetMinimum(0.85);
+    }
+    else if(o.name.find("TkvsTrigCorr") < o.name.size()) {
+      obj->SetMaximum(1.00);
+      obj->SetMinimum(0.90);
+    }
+    else if(o.name.find("TkvsTrigIntercept") < o.name.size()) {
+      obj->SetMaximum(10.);
+      obj->SetMinimum(-10.);
+    }
+    else if(o.name.find("TriggerInclusive") < o.name.size()) {
       obj->SetMinimum(-0.00000001);
-    if(o.name.find("CorrectBX") < o.name.size()) {
+    }
+    else if(o.name.find("BX") < o.name.size()) {
       obj->SetOption("text");
       obj->SetMarkerSize( 2 );
+      gStyle->SetPaintTextFormat("2.0f");
     }
     return;
-  } else if (o.name.find( "QualvsPhi" ) <o.name.size() ||
-      o.name.find( "QualDDUvsQualDCC" ) <o.name.size() ||
-      o.name.find( "PositionvsQual" )   <o.name.size() ||
-      o.name.find( "Flag1stvsQual" )    <o.name.size() ) {
+  } else if (o.name.find("QualvsPhi")        < o.name.size() ||
+             o.name.find("QualDDUvsQualDCC") < o.name.size() ||
+             o.name.find("PositionvsQual")   < o.name.size() ||
+             o.name.find("Flag1stvsQual")    < o.name.size() ) {
     obj->SetOption( "box" );
     return;
   }
