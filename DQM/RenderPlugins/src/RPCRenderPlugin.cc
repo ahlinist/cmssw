@@ -4,20 +4,17 @@
 #include "TColor.h"
 #include <iostream>
 #include <cassert>
-//#include "DQMServices/Core/interface/MonitorElement.h"
+#include "TLine.h"
 
 #include "DQM/RenderPlugins/src/RPCRenderPlugin.h"
-
+#include "DQM/RenderPlugins/src/utils.h"
 
 bool RPCRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &i ) {
 
-   if( o.name.find( "RPC/RecHits/SummaryHistograms" ) == 0 ) {
-    
-     return true;
-  } 
+   if( (o.name.find( "RPC/RecHits/SummaryHistograms" ) == 0 )||
+       (o.name.find("RPC/EventInfo")!= std::string::npos)) return true;
 
-   return false;
-  
+   return false;  
 }
 
 void RPCRenderPlugin::preDraw( TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo &i, VisDQMRenderInfo &r ) {
@@ -40,35 +37,68 @@ void RPCRenderPlugin::preDraw( TCanvas *c, const DQMNet::CoreObject &o, const Vi
 
 }
 
+void RPCRenderPlugin::postDraw(TCanvas *c,const DQMNet::CoreObject &o,const VisDQMImgInfo &i){
+  c->cd();
+
+  if(dynamic_cast<TH2*>( o.object ) ) postDrawTH2(c,o); 
+
+}
 
 void RPCRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
 
-  TH2* obj = dynamic_cast<TH2*>( o.object );
+  TH2F* obj = dynamic_cast<TH2F*>( o.object );
 
   assert( obj );
 
   // This applies to all
   gStyle->SetCanvasBorderMode( 0 );
+  gStyle->SetCanvasColor(kWhite);
   gStyle->SetPadBorderMode( 0 );
   gStyle->SetPadBorderSize( 0 );
-  //    (data->pad)->SetLogy( 0 );
   gStyle->SetOptStat( 0 );
   gStyle->SetPalette( 1 );
   obj->SetStats( kFALSE );
-  
-  
+
+  if(o.name.find("reportSummaryMap") != std::string::npos){
+    dqm::utils::reportSummaryMapPalette(obj);
+    gStyle->SetOptStat( 10 );
+    gStyle->SetPaintTextFormat("%.2f");
+    obj->SetOption("colztext");
+    obj->SetStats( kTRUE );
+    return;
+  }
+
   //obj->SetOption( "box" );
   gStyle->SetPalette(1);
   obj->SetOption( "colz" );
 
-  if( o.name.find("Occupancy") < o.name.size() ) {
+  if( o.name.find("Occupancy") < o.name.size() && o.name.find("_Sector")!= std::string::npos) {
     gStyle->SetOptStat( 10 );
     gStyle->SetPalette( 1 );
     obj->SetStats( kTRUE );
     return;
   }
-
   return;
+}
 
+void  RPCRenderPlugin::postDrawTH2(TCanvas *c, const DQMNet::CoreObject &o){
+ TH2* obj = dynamic_cast<TH2*>( o.object );
+ assert( obj );
 
+ if(o.name.find("reportSummaryMap") != std::string::npos){
+   TLine line;
+   line.SetLineWidth(1);
+
+   line.DrawLine(0.5, 0.5, 0.5, 6.5);
+   line.DrawLine(4.5, 0.5, 4.5, 6.5);
+   line.DrawLine(5.5, 0.5, 5.5, 12.5);
+   line.DrawLine(10.5, 0.5, 10.5, 12.5);
+   line.DrawLine(11.5, 0.5, 11.5, 6.5);
+   line.DrawLine(15.5, 0.5, 15.5, 6.5);
+
+   line.DrawLine(0.5, 6.5, 4.5, 6.5);
+   line.DrawLine(5.5, 12.5, 10.5, 12.5);
+   line.DrawLine(11.5, 6.5, 15.5, 6.5);
+ }
+ return;
 }
