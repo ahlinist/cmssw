@@ -5,7 +5,14 @@
 ///
 /// Original author: W. Adam, 10/4/08
 ///
-/// $Id: METEventSelector.h,v 1.3 2008/05/22 08:32:26 fronga Exp $
+/// $Id: MetEventSelector.h,v 1.1 2008/05/23 15:48:22 fronga Exp $
+
+//if uncorrNumber = 
+  //0: bare uncorrected MET
+  //1: MET uncorrected for JES
+  //2: MET uncorrected for Muons
+ //>2: totally corrected MET
+//T. Rommerskirchen /27/06/08
 
 // system include files
 #include <memory>
@@ -16,6 +23,7 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ParameterSet/interface/InputTag.h"
+#include "DataFormats/PatCandidates/interface/MET.h"
 
 #include <vector>
 #include <string>
@@ -25,8 +33,14 @@ public:
   MetEventSelector (const edm::ParameterSet&);
   virtual bool select (const edm::Event&) const;
   virtual ~MetEventSelector () {}
+  bool uncorrectionType (const std::string& correctionName);
 private:
   edm::InputTag metTag_;      ///< tag for input collection
   float minMet_;              ///< lower cut on MET
+ 
+  std::string uncorrString_;
+  bool uncorrect_;
+
+  pat::MET::UncorectionType uncorrType;
 };
 #endif
