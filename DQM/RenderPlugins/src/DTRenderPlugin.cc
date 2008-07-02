@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.20 2008/06/11 21:11:00 cerminar Exp $
+// $Id: DTRenderPlugin.cc,v 1.21 2008/07/02 15:26:00 battilan Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.20 $
-  \date $Date: 2008/06/11 21:11:00 $
+  \version $Revision: 1.21 $
+  \date $Date: 2008/07/02 15:26:00 $
 */
 
 #include "TProfile2D.h"
@@ -13,9 +13,21 @@
 #include "TCanvas.h"
 #include "TColor.h"
 #include <cassert>
+#include "TLatex.h"
+#include "TLine.h"
 
 #include "DQM/RenderPlugins/src/DTRenderPlugin.h"
+#include "DQM/RenderPlugins/src/utils.h"
 
+
+
+DTRenderPlugin::DTRenderPlugin() {
+
+  labelMB4Sect_global = 0;
+  labelMB4Sect4and13_wheel = new TLatex(4,4.5,"4/13");
+  labelMB4Sect10and14_wheel = new TLatex(9.85,4.5,"10/14");
+
+}
 
 bool DTRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &i ) {
  
@@ -73,7 +85,7 @@ void DTRenderPlugin::preDrawTProfile( TCanvas *c, const DQMNet::CoreObject &o ) 
 
 void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
 
-  TH2* obj = dynamic_cast<TH2*>( o.object );
+  TH2F* obj = dynamic_cast<TH2F*>( o.object );
   assert( obj );
 
   // This applies to all
@@ -92,6 +104,19 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
   gStyle->SetLabelSize(0.7);
   obj->GetXaxis()->SetLabelSize(0.07);
   obj->GetYaxis()->SetLabelSize(0.07);
+
+  
+  // Summary map
+  if( o.name.find( "reportSummaryMap" ) < o.name.size() ) {
+    dqm::utils::reportSummaryMapPalette(obj);
+    obj->GetXaxis()->SetNdivisions(13,true);
+    obj->GetYaxis()->SetNdivisions(6,true);
+    obj->GetXaxis()->CenterLabels();
+    obj->GetYaxis()->CenterLabels();
+    gPad->SetGrid(1,1);
+    return;
+  }
+
 
   // --------------------------------------------------------------
   // Data integrity plots
@@ -233,12 +258,6 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
   }
 
 
-  if( o.name.find( "FED770_EventLenght" ) < o.name.size() ) {
-    gStyle->SetOptStat( 1111111 );
-    gStyle->SetPalette( 1 );
-    obj->SetStats( kTRUE );
-    return;
-  }
 
 
 
@@ -440,6 +459,28 @@ void DTRenderPlugin::preDrawTH1( TCanvas *c, const DQMNet::CoreObject &o ) {
   obj->GetXaxis()->SetLabelSize(0.07);
   obj->GetYaxis()->SetLabelSize(0.07);
 
+  
+
+  if( o.name.find("ROSEventLenght") < o.name.size() ) {
+    c->SetLogy(1);
+    gStyle->SetOptStat( 1111111 );
+    obj->SetStats( kTRUE );
+//     gPad->SetGrid(1,1);
+//     gPad->SetBottomMargin(0.15);
+//     gPad->SetLeftMargin(0.2);
+//     obj->GetXaxis()->SetLabelSize(0.05);
+//     obj->GetYaxis()->SetLabelSize(0.05);
+
+    return;
+  }
+
+  if( o.name.find( "EventLenght" ) < o.name.size() ) {
+    gStyle->SetOptStat( 1111111 );
+    obj->SetStats( kTRUE );
+    c->SetLogy(1);
+    return;
+  }
+
 
   if( o.name.find( "FED770TTSValues_Percent" ) < o.name.size() ) {
     gPad->SetLogy( 1 );
@@ -557,13 +598,43 @@ void DTRenderPlugin::postDrawTProfile( TCanvas *c, const DQMNet::CoreObject &o )
 }
 
 void DTRenderPlugin::postDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
-
+  if(o.name.find("Summary_W") < o.name.size()) {
+    labelMB4Sect4and13_wheel->Draw("same");
+    labelMB4Sect10and14_wheel->Draw("same");
+    return;
+  }
+  if(o.name.find("OccupancyAllHits_perCh") < o.name.size()) {
+    TH2F * histo =  dynamic_cast<TH2F*>( o.object );
+    int nBinsX = histo->GetNbinsX();
+    for(int i = 0; i !=12; ++i) {
+      if(histo->GetBinContent(nBinsX+1,i+1) == -1) {
+	TLine *lineLow = new TLine(1,i,nBinsX,i); 
+	lineLow->SetLineColor(kRed);
+	TLine *lineHigh = new TLine(1,i+1,nBinsX,i+1); 
+	lineHigh->SetLineColor(kRed);
+	lineLow->Draw("same");
+	lineHigh->Draw("same");
+      }
+    }
+    return;
+  }
+  
   return;
 
 }
 
 void DTRenderPlugin::postDrawTH1( TCanvas *c, const DQMNet::CoreObject &o ) {
-
+  if( o.name.find("ROSEventLenght") < o.name.size() ) {
+    TH1F * histo =  dynamic_cast<TH1F*>( o.object );
+    int nBins = histo->GetNbinsX();
+    if(histo->GetBinContent(nBins+1) != 0) {
+      TLatex *labelOverflow = new TLatex(0.5,0.5,"Overflow");
+      labelOverflow->SetTextColor(kRed);
+      labelOverflow->SetNDC();
+      labelOverflow->Draw("same");
+    }
+    return;
+  }
   return;
 
 }
