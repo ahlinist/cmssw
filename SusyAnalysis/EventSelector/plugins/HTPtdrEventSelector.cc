@@ -2,7 +2,6 @@
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
-#include "DataFormats/PatCandidates/interface/MET.h"
 
 //__________________________________________________________________________________________________
 HTPtdrEventSelector::HTPtdrEventSelector (const edm::ParameterSet& pset) :
@@ -12,6 +11,8 @@ HTPtdrEventSelector::HTPtdrEventSelector (const edm::ParameterSet& pset) :
   minHT_ ( pset.getParameter<double>("minHT") ),
   minPt_ ( pset.getParameter<double>("minPt") )
 { 
+  // uncorrection type
+  uncorrType_ = uncorrectionType(pset.getParameter<std::string>("uncorrType"));
 
   // Store computed HT
   defineVariable("HT");
@@ -45,7 +46,8 @@ HTPtdrEventSelector::select (const edm::Event& event) const
   }
 
   // Sum over jet Ets (with cut on min. pt)
-  float myHT = metHandle->front().et();
+  float myHT = uncorrType_==pat::MET::uncorrMAXN ?
+    metHandle->front().et() : metHandle->front().uncorrectedPt(uncorrType_);
   for ( size_t i=1; i<std::min(static_cast<size_t>(4),jetHandle->size()); ++i ) {
     if ( (*jetHandle)[i].pt()>minPt_ ) myHT += (*jetHandle)[i].et();
   }
@@ -55,6 +57,21 @@ HTPtdrEventSelector::select (const edm::Event& event) const
   return myHT>minHT_;
 
 }
+
+pat::MET::UncorectionType
+HTPtdrEventSelector::uncorrectionType (const std::string& correctionName) const
+{
+  if (correctionName == "uncorrALL")
+    return pat::MET::UncorectionType(pat::MET::uncorrALL);
+  if (correctionName == "uncorrJES")
+    return pat::MET::UncorectionType(pat::MET::uncorrJES);
+  if (correctionName == "uncorrMUON")
+    return pat::MET::UncorectionType(pat::MET::uncorrMUON);
+
+  edm::LogInfo("HTPtdrEventSelector")<< "given uncorrection not valid return corrected MET";
+  return pat::MET::uncorrMAXN;
+}
+
 
 //__________________________________________________________________________________________________
 #include "FWCore/PluginManager/interface/ModuleDef.h"
