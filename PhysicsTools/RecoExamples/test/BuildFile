@@ -7,6 +7,6 @@
  <use name=FWCore/FWLite>
  <use name=FWCore/Framework>
  <use name=rootcintex>
- <use name=root>
+ <use name=rootgraphics>
 </bin>
 
