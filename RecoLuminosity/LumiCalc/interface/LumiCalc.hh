@@ -19,9 +19,10 @@ Summary:  Library to calculate relative luminosity from HLX data
 
 ******************************************************************************/
 
-#include "ICTypeDefs.hh"
-#include "LumiStructures.hh"
+#include "RecoLuminosity/HLXReadOut/CoreUtils/include/ICTypeDefs.hh"
+#include "RecoLuminosity/HLXReadOut/HLXCoreLibs/include/LumiStructures.hh"
 #include <cmath>
+#include <vector>
 
 using namespace ICCoreUtils;
 
@@ -39,7 +40,32 @@ namespace HCAL_HLX {
     // Do the calculations
     void DoCalc(HCAL_HLX::LUMI_SECTION & localSection);
 
+    // configuration
+    unsigned int SetBXMask( const std::vector< unsigned int > &BXMask );
+    unsigned int SetHLXMask( const std::vector< unsigned int > &HLXMask );
+    void SetNoiseInterval(unsigned int start,
+			  unsigned int end);
+    
   private:
+
+    void CountActiveTowers(HCAL_HLX::LUMI_SECTION& localSection);
+    void CalcETSumLumi(HCAL_HLX::LUMI_SECTION& localSection);
+    float CalcETSumError( unsigned int numNibbles, 
+			  unsigned int numTowers, 
+			  unsigned int numBunches = 1, 
+			  float intPerBX = 0.01 );
+    void CalcLHCLumi(HCAL_HLX::LUMI_SECTION& localSection);
+    void CalcOccLumi(HCAL_HLX::LUMI_SECTION& localSection);
+    float CalcOccError( unsigned int numNibbles, 
+			unsigned int numTowers, 
+			unsigned int numBunches = 1, 
+			float intPerBX = 0.01 );
+
+    void CalcLumi( HCAL_HLX::LUMI_SECTION& localSection );
+    float CalcLumiError( unsigned int numNibbles, 
+			unsigned int numTowers, 
+			unsigned int numBunches = 1, 
+			float intPerBX = 0.01 );
 
     unsigned int set1BelowIndex;
     unsigned int set1BetweenIndex;
@@ -48,16 +74,18 @@ namespace HCAL_HLX {
     unsigned int set2BetweenIndex;
     unsigned int set2AboveIndex;
     
-    // configuration
-    void SetNoiseInterval(unsigned short int start,
-			  unsigned short int end);
-
-    unsigned short int startAG, endAG; // AG = Abort Gap.
+    // Configuration
+    unsigned int startAG_, endAG_, sizeAG_; // AG = Abort Gap.
+    unsigned int numBX_, numHLX_; 
+    // Should only be called once per run
+    unsigned int numActiveTowers_[36][2];
+    unsigned int TotalActiveTowers_;
 
     bool Block( unsigned short int iBX, unsigned short int numBlock);
-    bool isBunch( unsigned short int iBX,  unsigned short int scheme = 1 );  
+    bool isBunch( unsigned short int iBX, unsigned short int scheme = 1 );  
 
-    float BXMask[HCAL_HLX_MAX_BUNCHES];
+    std::vector< unsigned int > BXMask_;
+    std::vector< unsigned int > HLXMask_;
   };
 }
   
