@@ -199,8 +199,9 @@ string GraphicalOutputSimple_root::createLegend(string legendName, int n)
   legendCommand += legendName+"->SetBorderSize(1);\n";
   legendCommand += legendName+"->GetEntrySeparation();\n";
   legendCommand += legendName+"->SetEntrySeparation(0.01);\n";
-  legendCommand += legendName+"->SetFillStyle(1001);\n";
-  legendCommand += legendName+"->SetFillColor(10);\n";
+  //mrenna to remove histo blotting out data pts
+  //  legendCommand += legendName+"->SetFillStyle(1001);\n";
+  //  legendCommand += legendName+"->SetFillColor(10);\n";
   return legendCommand;
 }
 
@@ -262,6 +263,7 @@ string GraphicalOutputSimple_root::defineBkgColors()
     //  colorCommand += "TColor pink4(504,1.0,0.10,0.10,\"pink4\");\n";
     // make the last one completely red
     colorCommand += "TColor pink4(504,1.0,0.00,0.00,\"pink4\");\n";
+    colorCommand += "TColor blue1(509,0.85,0.85,1.00,\"blue1\");\n";
   }
   else {
     // now we add more colors
@@ -428,6 +430,7 @@ void GraphicalOutputSimple_root::add1dPlot(
   size_t nbins = binEdges.size()-1;
   assert(fb.size()<=13); // less than 13 bkg components
   assert(fs.size()<=13);
+
   for(size_t i=0; i<fb.size(); i++) {
     if(fb[i].empty()) {
       fb[i] = vector<double>(nbins,0);
@@ -503,19 +506,25 @@ void GraphicalOutputSimple_root::add1dPlot(
   string dataArrayName = "dataArray_"+distributionCode;
   string dataHistName = "dataHist_"+distributionCode;
   string bkgHistNameBase = "bkgHist_"+distributionCode;
+  string sigHistNameBase = "sigHist_"+distributionCode;
 
-  plotCommand += fillRootArray(dataArrayName, fd);
+  if( showBkgSigData[2]) plotCommand += fillRootArray(dataArrayName, fd);
 
   // create histogram with from bin edges and fill contents from data
   plotCommand += createRootHistogram(dataHistName,binEdgesArrayName);
-  plotCommand += fillRootHistogram(dataHistName,dataArrayName);
+  if( showBkgSigData[2]) plotCommand += fillRootHistogram(dataHistName,dataArrayName);
   plotCommand += dataHistName+"->Draw(\"e1p\");\n";
   plotCommand += dataHistName+"->SetMaximum("+Math::ftoa(histoYMAX)+");\n";
   plotCommand += dataHistName+"->SetMinimum(0);\n";
+
+
+
   // at this point, if histogram has large number of entries
   // then have to move the Y title offset a little more
   plotCommand += "if("+dataHistName+"->GetMaximum()>9999)\n";
   plotCommand += dataHistName+"->SetTitleOffset(1.5,\"Y\");\n";
+  plotCommand += dataHistName+"->SetMarkerStyle(20);\n";
+  plotCommand += dataHistName+"->SetMarkerSize(1.0);\n";
 
   plotCommand += labelHistogramAxis(dataHistName,distributionName,"X");
   plotCommand += labelHistogramAxis(dataHistName,"Number of Events","Y");
@@ -526,6 +535,7 @@ void GraphicalOutputSimple_root::add1dPlot(
   string legendName = "legend"+Math::ftoa(distributionNumber);
   plotCommand += createLegend(legendName);
   int nLegendEntry = 0;
+
   if(getenv("vistaLegendDataEntry")!=NULL)
     plotCommand += addLegendEntry(legendName,dataHistName,getenv("vistaLegendDataEntry"),"P", nLegendEntry++);
   else if((colliderRun == "tev2" )&&(experiment == "cdf"))
@@ -559,6 +569,8 @@ void GraphicalOutputSimple_root::add1dPlot(
 	  int bkgColor=500;
 	  if(j>=fNBkgContributions) bkgColor = 500+fNBkgContributions-1;
 	  else bkgColor = 500+j;
+	  //mrenna  to prevent histo from blotting out pts
+	  //	  plotCommand += bkgHistName+"->SetFillStyle(0);\n";
 	  plotCommand += bkgHistName+"->SetFillColor("+Math::ftoa(bkgColor)+");\n";
 
 	  //set line color - red or else same as the fill
@@ -572,10 +584,11 @@ void GraphicalOutputSimple_root::add1dPlot(
 
 	  // add appropriate legend entry
 
-	    //Georgios: If the source type is "mock" it should not be included in the legend.
-	    // That could happen if we have for example bkg=0 and data>0, in which case we create 
-	    // "mock" bkg mimicking the data, just for the purpose of being able to plot the data.
-            if ( sources[j] == "mock" ) continue;
+	  //Georgios: If the source type is "mock" it should not be included in the legend.
+	  // That could happen if we have for example bkg=0 and data>0, in which case we create 
+	  // "mock" bkg mimicking the data, just for the purpose of being able to plot the data.
+
+	  if ( sources[j] == "mock" ) continue;
 
 	  if(bkgColor<500+fNBkgContributions-1) {
 	    string legendEntry = sources[j]+" : "+Math::ftoa(Math::toleranceRound(100.0*sourceWeights[j]/totalSourceWeight,0.1))+"%";
@@ -590,8 +603,51 @@ void GraphicalOutputSimple_root::add1dPlot(
   if(showBkgSigData[1]) // if showSig (used in Quaero, not Vista)
     // ignore this section for now
     {
-      cout << "ShowSignal not yet implemented in ROOT..." <<endl;
-      plotCommand += "// ShowSignal not yet implemented in ROOT... \n";
+      // fb.size() is the number of bkg components - make a histo for each
+      for(int j=fs.size()-1; j>=0; j--)
+	{
+	  string sigHistName = sigHistNameBase+"_"+Math::ftoa(j);
+	  string sigArrayName = "sigArray_"+distributionCode+"_"+Math::ftoa(j);
+	  plotCommand += fillRootArray(sigArrayName,fs[j]);
+	  plotCommand += createRootHistogram(sigHistName,binEdgesArrayName);
+	  plotCommand += fillRootHistogram(sigHistName,sigArrayName);
+
+	  int bkgColor=500;
+	  if(j>=fNBkgContributions) bkgColor = 500+fNBkgContributions-1;
+	  else bkgColor = 500+j;
+	  //mrenna  to prevent histo from blotting out pts
+	  //plotCommand += sigHistName+"->SetFillStyle(0);\n";
+          //mrenna no fill
+	  //plotCommand += sigHistName+"->SetFillColor("+Math::ftoa(bkgColor)+");\n";
+
+	  //set line color - red or else same as the fill
+	  int lineColor=500;
+	  lineColor = bkgColor;
+	  if(lineColor>=500 && lineColor<=504) lineColor = 504;
+	  else if(lineColor>=505 && lineColor<=508) lineColor = 508;
+	  else if(lineColor>=509 && lineColor<=512) lineColor = 512;
+          //mrenna
+          lineColor = 1;
+	  plotCommand += sigHistName+"->SetLineColor("+Math::ftoa(lineColor)+");\n";
+	  
+
+	  // add appropriate legend entry
+
+	  //Georgios: If the source type is "mock" it should not be included in the legend.
+	  // That could happen if we have for example bkg=0 and data>0, in which case we create 
+	  // "mock" bkg mimicking the data, just for the purpose of being able to plot the data.
+	  if ( sources[j] == "mock" ) continue;
+
+	  /*	  if(bkgColor<500+fNBkgContributions-1) {
+	    string legendEntry = sources[j]+" : "+Math::ftoa(Math::toleranceRound(100.0*sourceWeights[j]/totalSourceWeight,0.1))+"%";
+	    plotCommand += addLegendEntry(legendName,sigHistName,legendEntry,"F",nLegendEntry++);
+	  }
+	  else { // then add the 'Others' entry for the red (in case of 5 colors) histogram
+	    plotCommand += addLegendEntry(legendName,sigHistName,"Other","F",nLegendEntry++);
+	    }*/
+	}
+      //      cout << "ShowSignal not yet implemented in ROOT..." <<endl;
+      // plotCommand += "// ShowSignal not yet implemented in ROOT... \n";
     }
   if(showBkgSigData[0]) // if showBkg
     {
@@ -602,10 +658,22 @@ void GraphicalOutputSimple_root::add1dPlot(
       }
     }
 
+  if(showBkgSigData[1]) // if showSig
+    {
+      // plot the bkg hists
+      for(int j=fs.size()-1; j>=0; j--)	{
+	string sigHistName = sigHistNameBase+"_"+Math::ftoa(j);
+        // mrenna line and points
+	plotCommand += sigHistName+"->Draw(\"same\");\n";
+	plotCommand += sigHistName+"->SetMarkerStyle(20);\n";
+	plotCommand += sigHistName+"->SetMarkerSize(1.0);\n";
+	plotCommand += sigHistName+"->Draw(\"e1psame\");\n";
+      }
+    }
+
+
   if(showBkgSigData[2]) // if showData
     {
-      plotCommand += dataHistName+"->SetMarkerStyle(20);\n";
-      plotCommand += dataHistName+"->SetMarkerSize(1.0);\n";
       //      plotCommand += dataHistName+"->SetMarkerSize(0.1);\n";//Georgios temporary for finer binning
       plotCommand += dataHistName+"->Draw(\"e1psame\");\n";
     }

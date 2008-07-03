@@ -321,6 +321,8 @@ void GraphicalOutputSimple_paw::add1dPlot(
   size_t nbins = binEdges.size()-1;
   assert(fb.size()<10);
   assert(fs.size()<10);
+
+
   for(size_t i=0; i<fb.size(); i++)
     if(fb[i].empty())
       fb[i] = vector<double>(nbins,0);
@@ -357,8 +359,8 @@ void GraphicalOutputSimple_paw::add1dPlot(
       (histoYMAX < *max_element(fs.back().begin(), fs.back().end())))
     histoYMAX = *max_element(fs.back().begin(), fs.back().end());
   if( showBkgSigData[2] &&
-      (histoYMAX < *max_element(fd.begin(), fd.end())))
-    histoYMAX = *max_element(fd.begin(), fd.end());
+   (histoYMAX < *max_element(fd.begin(), fd.end())))
+
   
   histoYMAX *= 1.05;
 
@@ -419,11 +421,11 @@ void GraphicalOutputSimple_paw::add1dPlot(
 	  plotCommand += "h/cre/bins "+Math::ftoa(hsNumber)+" '' "+Math::ftoa(nx)+" vx\n";
 	  plotCommand += "h/put/cont "+Math::ftoa(hsNumber)+" vfs\n";
 	  plotCommand += "max "+Math::ftoa(hsNumber)+" "+Math::ftoa(histoYMAX)+"\n";
-	  plotCommand += "h/pl "+Math::ftoa(hsNumber)+" "+opt+"\n";
+	  //mrenna	  plotCommand += "h/pl "+Math::ftoa(hsNumber)+" "+opt+"\n";
 	  opt = "S";
 	}
       plotCommand += "set hcol 3\n";
-      plotCommand += "h/pl "+Math::ftoa(131+fs.size()-1)+" S\n";
+      plotCommand += "h/pl "+Math::ftoa(131+fs.size()-1)+" eS\n";
     }
   if(showBkgSigData[0]) // if showBkg
     {
@@ -521,6 +523,8 @@ void GraphicalOutputSimple_paw::add1dPlots(
 {
   // sources are currently ignored in paw implementation...
 
+
+
   logLikelihood = max(-100.,logLikelihood);
   double s=0, b=0;
   for(size_t i=0; i<sigWeights.size(); i++)
@@ -528,6 +532,7 @@ void GraphicalOutputSimple_paw::add1dPlots(
   for(size_t i=0; i<bkgWeights.size(); i++)    
     b += accumulate(bkgWeights[i].begin(),bkgWeights[i].end(),0.);
   int N = dataEvents.size();
+
 
   vector<double> combinedBkgWeights, combinedSigWeights;
   vector<vector<double> > combinedBkgEvents, combinedSigEvents;
@@ -606,7 +611,7 @@ void GraphicalOutputSimple_paw::add1dPlots(
 		  for(size_t j=0; j<sigEvents[i].size(); j++)
 		    {
 		      int bin = (int)((sigEvents[i][j][k]-xrange[0])/dx);
-		      if((bin>=0)&&(bin<nx))
+		      if((bin>=0)&&(bin<nx)) 
 			fs[i][bin] += sigMultiplicativeFactor*sigWeights[i][j];
 		    }
 		}
@@ -624,11 +629,11 @@ void GraphicalOutputSimple_paw::add1dPlots(
 		  int bin = (int)((dataEvents[i][k]-xrange[0])/dx);
 		  if((bin>=0)&&(bin<nx))
 		    fd[bin]++;
-		}
+		} 
 	      add1dPlot(distributionNames[k], 
 			deriveEvenlySpacedBinEdges(xrange[0], xrange[1], nx), 
 			fs, fb, fd, 
-			showBkgSigData);
+			showBkgSigData); 
 	      //if(k % 4==0) // if starting paw page
 	      int pageNumber = 0;
 	      if(d>4)
