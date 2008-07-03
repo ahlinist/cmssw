@@ -8,6 +8,7 @@ $Id$
 #include <memory>
 #include "boost/shared_ptr.hpp"
 
+#include "DataFormats/Provenance/interface/EventID.h"
 #include "FWCore/Framework/interface/InputSource.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 
@@ -20,7 +21,7 @@ namespace edm {
     virtual ~RawInputSource();
 
   protected:
-    std::auto_ptr<Event> makeEvent(EventID & eventId, Timestamp const& tstamp);
+    std::auto_ptr<Event> makeEvent(RunNumber_t run, LuminosityBlockNumber_t lumi, EventNumber_t event, Timestamp const& tstamp);
     virtual std::auto_ptr<Event> readOneEvent() = 0;
 
   private:
@@ -29,8 +30,6 @@ namespace edm {
     virtual boost::shared_ptr<RunPrincipal> readRun_();
     virtual std::auto_ptr<EventPrincipal> readIt(EventID const& eventID);
     virtual void skip(int offset);
-    virtual void setLumi(LuminosityBlockNumber_t lb);
-    virtual void setRun(RunNumber_t r);
     virtual InputSource::ItemType getNextItemType();
     
     RunNumber_t runNumber_;
