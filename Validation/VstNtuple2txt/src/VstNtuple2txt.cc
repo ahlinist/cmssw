@@ -14,7 +14,7 @@
 //
 // Original Author:  Stephen Mrenna
 //         Created:  Wed Oct 10 12:52:50 CDT 2007
-// $Id$
+// $Id: VstNtuple2txt.cc,v 1.1 2008/05/01 21:31:30 mrenna Exp $
 //
 //
 
@@ -40,6 +40,7 @@
 #include "DataFormats/Candidate/interface/CandMatchMap.h"
 #include "DataFormats/Common/interface/Handle.h"
 #include "DataFormats/Common/interface/RefProd.h"
+#include "DataFormats/Common/interface/Ref.h"
 #include "DataFormats/JetReco/interface/Jet.h"
 #include "DataFormats/JetReco/interface/GenJet.h"
 #include "DataFormats/JetReco/interface/GenJetCollection.h"
@@ -56,6 +57,7 @@
 
 #include "Validation/VstTurboSim/interface/QuaeroPartonObject.hh"
 #include "SimGeneral/HepPDTRecord/interface/ParticleDataTable.h"
+#include "SimGeneral/HepPDTRecord/interface/PdtEntry.h"
 //#include "CLHEP/Vector/ThreeVector.h"
 #include <iostream>
 #include <fstream>
@@ -104,6 +106,7 @@ private:
   std::ofstream outputFile_;
   int numberOfEvents_;
   edm::RunNumber_t thisRun_;
+  edm::ESHandle<ParticleDataTable> pdt_;
       // ----------member data ---------------------------
 };
 
@@ -158,21 +161,28 @@ Ntuple2txt::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   Handle<reco::GenJetCollection> generatorJet;
   Handle<reco::GenJetCollection> tauJet;
   iEvent.getByLabel ("VistaJet",generatorJet);
-  iEvent.getByLabel ("VistaTauJet",tauJet);
+  //  iEvent.getByLabel ("VistaTauJet",tauJet);
   iEvent.getByLabel ("VistaJetClone",jetParticles);
-  iEvent.getByLabel ("genVista","otherStableVst",cands);
+//  iEvent.getByLabel ("genVista","otherStableVst",cands);
+  iEvent.getByLabel ("genVista","partonShowerVst",cands);
   Handle<reco::CandMatchMap> particleJetMap;
   iEvent.getByLabel("particleJetMatch", particleJetMap);
 
   // "fix up" the jets
   // used matched particles to get jet mass
   // used parton ids in jets to get jet type
-  size_t psize = jetParticles->size();
+//  size_t psize = jetParticles->size();
+  size_t psize = generatorJet->size();
   std::vector<HepLorentzVector> newJets;
   std::vector<int> jetId;
+  std::vector<double> partonPt;
   for( reco::GenJetCollection::const_iterator it = generatorJet->begin(); it!= generatorJet->end(); ++it) {
     //create a 0 vector for all jets
-    newJets.push_back(HepLorentzVector(0,0,0,0));
+    newJets.push_back(HepLorentzVector(it->px(),it->py(),it->pz(),it->energy()));
+    jetId.push_back(0);
+    partonPt.push_back(0.0);
+/*
+//    newJets.push_back(HepLorentzVector(0,0,0,0));
     //get mc particles in jet
     std::vector<const reco::GenParticleCandidate*> mcparts = it->getConstituents();
     std::vector<const reco::GenParticleCandidate*>::const_iterator mcbegin = mcparts.begin(); 
@@ -188,24 +198,31 @@ Ntuple2txt::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	}
       }
     }
-    jetId.push_back(tempId);
+    jetId.push_back(tempId); */
   }
-
-  //accumulate the particle level 4 vectors in the jets
+   
+  //connect the shower partons to the jets
   for( size_t c = 0; c != cands->size(); ++ c ) {
     reco::CandidateRef cref( cands, c );
     reco::CandMatchMap::const_iterator f = particleJetMap->find( cref );
     if( f != particleJetMap->end() ) {
-      /*      int id = ( f->val->pdgId() );
-      std::cout << c << ") found match with id: " << id << " " << f->val.key() << " " 
+      int id = cref->pdgId();
+      if( abs(id) > 21 ) id=21;
+      if( cref->pt() > partonPt[ f->val.key() ] ) {
+         jetId[ f->val.key() ] = id;
+         partonPt[ f->val.key() ] = cref->pt();
+      }
+      if( numberOfEvents_ < 5 ) {
+         std::cout << c << ") found match with id: " << id << " " << f->val.key() << " " 
 		<< "; pt, eta, phi = " << cref->pt() << ", " << cref->eta() << ", " << cref->phi()
-		<< " mass = " << cref->mass();
-		std::cout << " [*]"; */
-      newJets[f->val.key()] += HepLorentzVector(cref->px(),cref->py(),cref->pz(),cref->energy());
+		<< " mass = " << cref->mass() << " " << newJets[f->val.key()].perp();
+		std::cout << " [*]" << std::endl; 
+      }
+//      newJets[f->val.key()] += HepLorentzVector(cref->px(),cref->py(),cref->pz(),cref->energy());
     }
     //    std::cout << std::endl;
   }
-
+  // 
   //string to accumulate Vista information
   std::stringstream hepEvtStream;
 
@@ -213,26 +230,76 @@ Ntuple2txt::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   HepLorentzVector rootS = HepLorentzVector(0,0,0,0);
   double genSumPt = 0.0;
+  std::string process_id="";
+
+  std::vector<const reco::Candidate *> mcands;
+  std::vector<const reco::Candidate *>::const_iterator found = mcands.begin();
+
+  for( reco::CandidateCollection::const_iterator imc = genParticles->begin(); imc != genParticles->end(); ++imc) {
+    mcands.push_back(&*imc);
+  }
+
   for( reco::CandidateCollection::const_iterator imc = genParticles->begin(); imc != genParticles->end(); ++imc) {
     if(imc->status()==1) {
       rootS += HepLorentzVector(imc->px(),imc->py(),imc->pz(),imc->energy());
       genSumPt += imc->pt();
-    }
+    } else if (imc->status()==3) {
+      int nMo = imc->numberOfMothers();
+      // check if mothers are 4 and 5?
+      if(nMo != 0) {
+	int iMo1=-1;
+        int iMo2=-1;
+	found = find(mcands.begin(), mcands.end(), imc->mother(0));
+	if(found != mcands.end()) iMo1 = found - mcands.begin() ;
+	found = find(mcands.begin(), mcands.end(), imc->mother(nMo-1));
+	if(found != mcands.end()) iMo2 = found - mcands.begin() ;
+
+	if( iMo1==4 || iMo2==5 ) {
+
+// Particle Name
+	  int id = imc->pdgId();
+	  // is this causing some trouble?
+	  const ParticleData * pd = pdt_ ->particle(id);
+	  //std::string particleName = "";
+	  std::string particleName = pd == 0 ? "???" : pd->name();
+	  if( abs(id)<6 || abs(id)==21 ) particleName = "j";
+	  if( id==6 ) particleName = "t";
+	  if( id==-6 ) particleName = "tb";
+	  if( abs(id)==23 ) particleName = "Z0";
+	  if( id==24 ) particleName = "Wp";
+	  if( id==-24 ) particleName = "Wm";
+	  if( id==22 ) particleName = "A";
+	  process_id += particleName;
+	  /*	if( process_id == "" ) {
+	    process_id += particleName;
+	    } else {
+	    process_id += '_'+particleName;
+	    } */
+	}
+      } 
+    } 
+  }
+  if( process_id == "") process_id += "sig";
+  if( process_id == "sig" ) {
+    std::cout << "diagnostic " << std::endl;
+    int idx=0;
+    for( reco::CandidateCollection::const_iterator imc = genParticles->begin(); imc != genParticles->end(); ++imc, ++idx) {
+      int nMo = imc->numberOfMothers();
+      if(idx< 10 && nMo>0) {
+	std::cout << " * " << idx << " " << imc->pdgId() << " " << imc->status() << " " << imc->mother(0)->status() << " " << imc->mother(0)->pdgId() << std::endl;
+      }
+    } 
   }
   double energyCMS = rootS.e();
   if( fabs(energyCMS-14000) < .01 ) energyCMS = 14000;
 
-  std::stringstream ss;
-  std::string collisionType = "pp", generatedSumPt = "";
-  ss << genSumPt;
-  ss >> generatedSumPt;
-
   double wt = 1, zvtx = 0;
 
-  hepEvtStream << "sig " << iEvent.id().event() << " " << wt << " " 
-	    << collisionType << " " << energyCMS << " " << generatedSumPt << " ";
+  hepEvtStream << process_id << " " << thisRun_ << "." << iEvent.id().event() << " " << wt << " " 
+	    << "pp" << " " << energyCMS << " " << genSumPt << " ";
 
   hepEvtStream << zvtx << " ";
+
 
   for( reco::CandidateCollection::const_iterator p  = particles->begin();
        p != particles->end(); ++p) {
@@ -263,7 +330,6 @@ Ntuple2txt::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     hepEvtStream << QuaeroPartonObject(objectType,HepLorentzVector(p->px(),p->py(),p->pz(),p->energy())).print(printFormat) << " ";
     }*/
 
-
   for( size_t c = 0; c != psize; ++ c ) {
     std::string objectType="j";
     if( abs(jetId[c])== 5 ) objectType="b";
@@ -277,9 +343,11 @@ Ntuple2txt::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 // ------------ method called once each job just before starting event loop  ------------
 void 
-Ntuple2txt::beginJob(const edm::EventSetup& )
+Ntuple2txt::beginJob(const edm::EventSetup& e)
 {
+  using namespace edm;
 
+  e.getData( pdt_ );
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
