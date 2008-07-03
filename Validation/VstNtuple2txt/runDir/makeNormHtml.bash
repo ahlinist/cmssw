@@ -40,8 +40,6 @@ bumpSource=${sourceDir}/bump.txt
 workingDir=${sourceDir}/
 PLOTSPOLICY="LOCALLY"
 
-echo "aha"
-
 while getopts o:e:p: OPT; do
  case $OPT in
  o) # Define workingDir, where to put the results
@@ -147,7 +145,7 @@ write ' Number of kinematic distributions with serious shape discrepancy: '${num
 write ' Number of mass distributions with serious bumps: '${numberOfBumpStars}'.</p>'
 write '<h3> Description </h3>'
 write '<p>The final states are sorted in order of decreasing discrepancy between the observed population and the expected one. Population discrepancies take into account the statistical uncertainties and the trials factor due to examining many final states. The final states that are seriously discrepant are preceded by an asterisk (*). </p>'
-write '<p>Plots of relevant kinematic distributions are available.  The uncertainty in the SM expectation of each final state is statistical. All Monte Carlo events have been run through the full '$Experiment' detector simulation. </p>'
+write '<p>Plots of relevant kinematic distributions are available.  The uncertainty in the SM expectation of each final state is statistical. All Monte Carlo events are at the generator level, i.e. they have NOT been run through the full '$Experiment' detector simulation. </p>'
 write '<p>The last column lists the most discrepant kinematic distributions in each final state, with their discrepancy given in units of standard deviations accounting for the trials factor.</p>'
 
 write '<h3> Table of final states </h3>'
@@ -228,13 +226,15 @@ if [ "$PLOTSPOLICY" = "LOCALLY" ]; then
 
   echo $scriptDir
 
-  ${scriptDir}/checkDistributionsWithCuts -paw . bkg data ${collider} ${experiment} $fs > ${plotsDir}/checkDistributionsWithCuts_${fs}.output 
+  ${scriptDir}/checkDistributionsWithCuts -root $PWD bkg sig ${collider} ${experiment} $fs > ${plotsDir}/checkDistributionsWithCuts_${fs}.output 
 
 #  checkDistributionsWithCuts -root $RELEASE_DIR/Vista/results/baseDirectory bkg data ${collider} ${experiment} $fs -jargonReductionFile=$RELEASE_DIR/Vista_$experiment/files/mc/nicerTitlesMergedLegend.txt  > ${plotsDir}/checkDistributionsWithCuts_${fs}.output 
 
- mv plots_withCuts_${fs}.ps $plotsDir/ 
- gzip $plotsDir/plots_withCuts_${fs}.ps 
+ ps2pdf -dPDFSETTINGS=/screen plots_withCuts_${fs}.ps
+ mv plots_withCuts_${fs}.pdf $plotsDir/ 
+# gzip $plotsDir/plots_withCuts_${fs}.ps 
  rm plots_withCuts_${fs}.C  
+ rm plots_withCuts_${fs}.ps
  done
  #OK, plots generated now.
  chmod a+rwx ${plotsDir}
@@ -280,9 +280,15 @@ do
  fi
    
  pageLink=""
- if [ -e ${plotsDir}/plots_withCuts_$fs.ps.gz ]; then
-  pageLink=${pageLink}'<a href="plotsDir/'plots_withCuts_${fs}.ps.gz'">plots</a>'
+#modify to be pdf
+# if [ -e ${plotsDir}/plots_withCuts_$fs.ps.gz ]; then
+#  pageLink=${pageLink}'<a href="plotsDir/'plots_withCuts_${fs}.ps.gz'">plots</a>'
+# fi
+
+ if [ -e ${plotsDir}/plots_withCuts_$fs.pdf ]; then
+  pageLink=${pageLink}'<a href="plotsDir/'plots_withCuts_${fs}.pdf'">plots</a>'
  fi
+
 
 #  composition="`echo $composition | sed -e 's/</ < /g'`"
 #  compositionA="`echo $composition | sed -e 's/\([^,]*,[^,]*,[^,]*,[^,]*,[^,]*\).*/\1/'`"
