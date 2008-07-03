@@ -55,6 +55,8 @@ PartitionRule::PartitionRule(std::string _ruleType)
   possibleObjects.push_back("w-");
   possibleObjects.push_back("z");
 
+
+
   bool ruleTypeUnderstood = false;
 
   if(ruleType.find("lep2")!=string::npos)
@@ -159,6 +161,8 @@ PartitionRule::PartitionRule(std::string _ruleType)
 
   if(ruleType.find("jetInclusive")!=string::npos)
     maximumNumberOfJetsToIdentify = 2;
+  if(ruleType.find("oneJetInclusive")!=string::npos)
+    maximumNumberOfJetsToIdentify = 1;
 
 
   if((ruleType=="lep2-Vista") ||
@@ -183,6 +187,7 @@ PartitionRule::PartitionRule(std::string _ruleType)
 
      (ruleType=="lhc-Vista") ||
      (ruleType=="lhc-Vista-jetInclusive") ||
+     (ruleType=="lhc-Vista-oneJetInclusive") ||
      (ruleType=="lhc-Vista-jetIgnore") ||
      (ruleType=="lhc-TurboSim") ||
      (ruleType=="lhc-Sleuth") ||
@@ -193,6 +198,12 @@ PartitionRule::PartitionRule(std::string _ruleType)
   if(!ruleTypeUnderstood)
     cout << "PartitionRule rule type " << ruleType << " not understood.  Aborting." << endl;
   assert(ruleTypeUnderstood);
+  std::cout << "Partition rule is " << ruleType << std::endl;
+  std::cout << "Partition cuts are " << std::endl;
+  std::cout << "pmin = " << pmin << std::endl;
+  std::cout << "pmin leptons = " << pmin_leptons << std::endl;
+  std::cout << "pmin pmiss = " << pmin_pmiss << std::endl;
+  std::cout << "max no. of jets = " << maximumNumberOfJetsToIdentify << std::endl;
   return;
 }
 
