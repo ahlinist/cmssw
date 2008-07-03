@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.21 2008/07/02 15:26:00 battilan Exp $
+// $Id: DTRenderPlugin.cc,v 1.22 2008/07/02 15:31:33 cerminar Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.21 $
-  \date $Date: 2008/07/02 15:26:00 $
+  \version $Revision: 1.22 $
+  \date $Date: 2008/07/02 15:31:33 $
 */
 
 #include "TProfile2D.h"
@@ -101,7 +101,7 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   gPad->SetLogz(0);
 
-  gStyle->SetLabelSize(0.7);
+  //gStyle->SetLabelSize(0.7);
   obj->GetXaxis()->SetLabelSize(0.07);
   obj->GetYaxis()->SetLabelSize(0.07);
 
@@ -455,7 +455,7 @@ void DTRenderPlugin::preDrawTH1( TCanvas *c, const DQMNet::CoreObject &o ) {
   gStyle->SetPadBorderMode( 0 );
   gStyle->SetPadBorderSize( 0 );
   obj->SetStats( kFALSE );
-  gStyle->SetLabelSize(0.7);
+  //gStyle->SetLabelSize(0.7);
   obj->GetXaxis()->SetLabelSize(0.07);
   obj->GetYaxis()->SetLabelSize(0.07);
 
