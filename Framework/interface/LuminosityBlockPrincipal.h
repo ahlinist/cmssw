@@ -35,7 +35,6 @@ namespace edm {
     typedef Principal<EntryInfo> Base;
     LuminosityBlockPrincipal(LuminosityBlockAuxiliary const& aux,
 	boost::shared_ptr<ProductRegistry const> reg,
-	boost::shared_ptr<RunPrincipal> rp,
 	ProcessConfiguration const& pc,
 	ProcessHistoryID const& hist = ProcessHistoryID(),
 	boost::shared_ptr<Mapper> mapper = boost::shared_ptr<Mapper>(new Mapper),
