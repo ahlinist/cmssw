@@ -7,9 +7,9 @@ Purpose:  This file properly normalizes an input file produced with
 *****************************************/
 
 #include <iostream>
-#include "QuaeroUtils/Luminosity.hh"
-#include "QuaeroUtils/QuaeroItemFile.hh"
-#include "QuaeroUtils/QuaeroEvent.hh"
+#include "Validation/VstQuaeroUtils/interface/Luminosity.hh"
+#include "Validation/VstQuaeroUtils/interface/QuaeroItemFile.hh"
+#include "Validation/VstQuaeroUtils/interface/QuaeroEvent.hh"
 using namespace std;
 
 
