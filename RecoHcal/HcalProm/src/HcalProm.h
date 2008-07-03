@@ -17,7 +17,7 @@
 // Original Author:  Efe Yazgan
 // Updated        :  Taylan Yetkin (2008/05/08)
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.h,v 1.13 2008/06/12 21:24:59 tyetkin Exp $
+// $Id: HcalProm.h,v 1.14 2008/07/03 09:07:26 efe Exp $
 //
 //
 
@@ -85,6 +85,7 @@ class TTree;
 #include "TString.h"
 #include "TStyle.h"
 #include "TCanvas.h"
+#include "TProfile.h"
 //
 // class decleration
 //
@@ -209,6 +210,83 @@ class HcalProm : public edm::EDAnalyzer {
      int NumHitsMuonNoPlaneDTall[50];
 // end ntuple creation
 //<-kropiv
+
+//----
+
+//->kropiv-efe
+// 2nd (Partner) Muon is good: in one Phi Plane in HB
+   //matching between 2 muons
+  TH1F *hAngleMuonHB2DT;
+  TH1F *hDeltaImpXYHB2DT;
+  TH1F *hDeltaZImpXYHB2DT;
+  TH1F *hPhiDeltaTowerHB2DT;
+//Energy
+  TH1F *hEmuonHB2DTTopPlus;
+  TH1F *hEmuonHB2DTTopMinus;
+  TH1F *hEmuonHB2DTBotPlus;
+  TH1F *hEmuonHB2DTBotMinus;
+   //Time
+  TH1F *hTimeMuonHB2DTTopPlus;
+  TH1F *hTimeMuonHB2DTTopMinus;
+  TH1F *hTimeMuonHB2DTBotPlus;
+  TH1F *hTimeMuonHB2DTBotMinus;
+   //Number Towers in Eta Plane passing by good muon
+  TH1F *hNumTowerMuonHB2DTTopPlus;
+  TH1F *hNumTowerMuonHB2DTTopMinus;
+  TH1F *hNumTowerMuonHB2DTBotPlus;
+  TH1F *hNumTowerMuonHB2DTBotMinus;
+  //idPhiTower for eta+ and eta-
+  TH1F *hIdPhiTowerHB2DTMinus;
+  TH1F *hIdPhiTowerHB2DTPlus;
+   // Muon Track quality in DT
+  TH1F *hNumHitsHB2DT;
+  TH1F *hNumHitsHB2DT2;
+  TH1F *hLengthMuonDTHB2DT;
+  TH1F *hLengthMuonDTHB2DT2;
+   // energy for time- and time+
+  TH1F *hEmuonHB2DTTopPlusTimePlus;
+  TH1F *hEmuonHB2DTTopMinusTimePlus;
+  TH1F *hEmuonHB2DTBotPlusTimePlus;
+  TH1F *hEmuonHB2DTBotMinusTimePlus;
+  TH1F *hEmuonHB2DTTopPlusTimeMinus;
+  TH1F *hEmuonHB2DTTopMinusTimeMinus;
+  TH1F *hEmuonHB2DTBotPlusTimeMinus;
+  TH1F *hEmuonHB2DTBotMinusTimeMinus;
+  // in different time:
+  TH1F *hEmuonHB2DTBotPlusTimePlus1;
+  TH1F *hEmuonHB2DTBotPlusTimePlus2;
+  TH1F *hEmuonHB2DTBotPlusTimePlus3;
+  TH1F *hEmuonHB2DTBotPlusTimePlus4;
+  TH1F *hEmuonHB2DTBotPlusTimeMinus1;
+  TH1F *hEmuonHB2DTBotPlusTimeMinus2;
+  TH1F *hEmuonHB2DTBotPlusTimeMinus3;
+  TH1F *hEmuonHB2DTBotPlusTimeMinus4;
+   // IdPhi vs Emuon
+  TH2F *hIdPhiPlusVsE;
+  TH2F *hIdPhiMinusVsE;
+   // IdEta vs Emuon
+  TH2F *hIdEtaTopVsE;
+  TH2F *hIdEtaBotVsE;
+ 
+   // control plots
+  TH1F *hImpXYHB2DT;
+  TH1F *hZImpXYHB2DT;
+  TH2F *hLmuonDTImpXY;
+  TH2F *hImpXYvsZ;
+
+   //energy of selected muon in different part of phi Towers
+  TH1F *hEmuonPhiDetaTower1;
+  TH1F *hEmuonPhiDetaTower2;
+  TH1F *hEmuonPhiDetaTower3;
+  TH1F *hEmuonPhiDetaTower4;
+  TH1F *hEmuonPhiDetaTower5;
+  TH1F *hEmuonPhiDetaTower6;
+
+   // fill TProfile for Time as iphi
+  TProfile *hProfTimeAsIdPhiMinus;
+  TProfile *hProfTimeAsIdPhiPlus;
+
+//->kropiv-efe
       TH1F* h_maxebee_plus_maxhbhe;
 
       TH1F* h_hbtiming;
