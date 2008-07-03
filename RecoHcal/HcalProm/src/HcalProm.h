@@ -17,7 +17,7 @@
 // Original Author:  Efe Yazgan
 // Updated        :  Taylan Yetkin (2008/05/08)
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.h,v 1.12 2008/06/12 08:41:35 efe Exp $
+// $Id: HcalProm.h,v 1.13 2008/06/12 21:24:59 tyetkin Exp $
 //
 //
 
@@ -72,9 +72,14 @@
 #include "FastSimulation/CalorimeterProperties/interface/Calorimeter.h"
 #include "FastSimulation/CaloGeometryTools/interface/CaloGeometryHelper.h"
 
+//Ntuple creation
+#include "TTree.h"
+
 class TH1F;
 class TH2F;
 class TStyle;
+class TTree;
+
 #include "TH1I.h"
 #include "TMath.h"
 #include "TString.h"
@@ -160,7 +165,50 @@ class HcalProm : public edm::EDAnalyzer {
       TH1F* h_eb_rechit_energy;
       TH1F* h_maxebeerec;
       TH1F* h_maxhorec;
-
+//->kropiv
+      TH1F* h_Emuon1hbMinus;
+      TH1F* h_Emuon1hbPlus;
+      TH1F* h_ETAmuon1hbMinus;
+      TH1F* h_ETAmuon1hbPlus;
+      TH1F* h_PHImuon1hbMinus;
+      TH1F* h_PHImuon1hbPlus;
+      TH1F* h_NumbermuonDT;
+      TH1F* h_NumberHBTowersmuon; 
+      TH1F* h_RphiinPosMuon;
+      TH1F* h_RphioutPosMuon;
+      TH1F* h_DeltaRphiPosMuon;
+      TH2F* h_EtaPhiCorrelMuonPhiPlane;
+// ntuple creation:
+//     TFile*      hOutputFile ;
+     TTree * myTree;
+     int run, event, TriggerBit[4], NumMuonHBphiPlane, NumHBTowersMuon[50];
+     int IdTowerPhiMuonIn[50], IdTowerPhiMuonOut[50], IdTowerEtaMuonIn[50], IdTowerEtaMuonOut[50];
+     float TimeAvMuonHB[50];
+     float PHIoutMuonHB[50], PHIinMuonHB[50],  ETAoutMuonHB[50], ETAinMuonHB[50];
+     float ImpXYmuonHB[50], ZImpXYmuonHB[50];
+//     float ImpXYmuon[50], ZImpXYmuon[50],
+     float PHIinTowerHB[50];
+     float EmuonHB[50];
+//
+     float XinPosMuonDT[50], YinPosMuonDT[50], ZinPosMuonDT[50];
+     float XoutPosMuonDT[50], YoutPosMuonDT[50], ZoutPosMuonDT[50];
+     float LengthMuonHB[50], LengthMuonDT[50]; 
+     int NumHitsMuonDT[50], NumHitsMuonDTall[50];
+//
+     //int  NumHBTowersMuon2[50];
+     int IdTowerPhiMuonIn2[50], IdTowerPhiMuonOut2[50], IdTowerEtaMuonIn2[50], IdTowerEtaMuonOut2[50];
+     float TimeAvMuonHB2[50],  TimeAvMuonHBcut2[50], TimeAvMuonHBcutwide2[50], LengthMuonHB2[50];
+     float EmuonHB2[50], EmuonHBcut2[50], EmuonHBcutwide2[50];
+// make initialisation of Muons that not belong to the same Phi Plane in HB
+     int NumMuonHBnoPhiPlane; 
+     int IdTowerMuonNoPlanePhiIn[50], IdTowerMuonNoPlanePhiOut[50];
+     int IdTowerMuonNoPlaneEtaIn[50], IdTowerMuonNoPlaneEtaOut[50];
+     float XinPosMuonNoPlaneDT[50], YinPosMuonNoPlaneDT[50], ZinPosMuonNoPlaneDT[50];
+     float XoutPosMuonNoPlaneDT[50], YoutPosMuonNoPlaneDT[50], ZoutPosMuonNoPlaneDT[50];
+     float ImpXYmuonNoPlaneDT[50], ZImpXYmuonNoPlaneDT[50], LengthMuonNoPlaneDT[50];
+     int NumHitsMuonNoPlaneDTall[50];
+// end ntuple creation
+//<-kropiv
       TH1F* h_maxebee_plus_maxhbhe;
 
       TH1F* h_hbtiming;

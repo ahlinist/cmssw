@@ -19,7 +19,7 @@
 //                   Fedor Ratnikov
 //                   Jordan Damgov
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.31 2008/06/12 21:24:59 tyetkin Exp $
+// $Id: HcalProm.cc,v 1.32 2008/06/14 02:33:37 tyetkin Exp $
 //
 //
 
@@ -262,6 +262,10 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
     Handle < CaloJetCollection > caloJet;
     iEvent.getByLabel("iterativeCone15CaloJets", caloJet);
     const CaloJetCollection cjet = *(caloJet.product());
+
+    //Cosmic Muons
+    Handle<TrackCollection> cosmicmuon;
+    iEvent.getByLabel("cosmicMuons",cosmicmuon);
 
     // geometry
     const CaloGeometry *geo;
@@ -697,6 +701,12 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
         float maxhbMinusrec_PHI = 0;
         float next_to_maxhbMinusrec_ETA = 0;
         float next_to_maxhbMinusrec_PHI = 0;
+//-> kropiv
+   double ETAmuon1hbPlus = 0;
+   double ETAmuon1hbMinus = 0;
+   double PHImuon1hbPlus = 0;
+   double PHImuon1hbMinus = 0;
+//<- kropiv
 
         float maxhbPlusrec = 0;
         float next_to_maxhbPlusrec = 0;
@@ -728,6 +738,9 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
         }
 	for (HBHERecHitCollection::const_iterator hhit = Hithbhe.begin(); hhit != Hithbhe.end(); hhit++) {
             if (hhit->energy() > 0.6) {
+	      //-> kropiv
+	      GlobalPoint pos = geo->getPosition((*hhit).detid());
+	      //<- kropiv
                 h_hbhe_rechit_energy->Fill(hhit->energy());
                 h_hbhe_eta_phi->Fill((hhit->id()).ieta(), (hhit->id()).iphi());
                 if (hhit->energy() > maxhbherec) {
@@ -749,6 +762,10 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
                         maxhbMinusrec = hhit->energy();
                         maxhbMinusrec_ETA = hhit->id().ieta();
                         maxhbMinusrec_PHI = hhit->id().iphi();
+			//-> kropiv
+			ETAmuon1hbMinus = pos.eta();
+			PHImuon1hbMinus = pos.phi();
+			// <- kropiv
                     }
                     if (hhit->energy() > next_to_maxhbMinusrec && hhit->energy() < maxhbMinusrec) {
                         next_to_maxhbMinusrec = hhit->energy();
@@ -762,6 +779,10 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
                         maxhbPlusrec = hhit->energy();
                         maxhbPlusrec_ETA = hhit->id().ieta();
                         maxhbPlusrec_PHI = hhit->id().iphi();
+			//-> kropiv
+			ETAmuon1hbPlus = pos.eta();
+			PHImuon1hbPlus = pos.phi();
+			// <- kropiv			
                     }
                     if (hhit->energy() > next_to_maxhbPlusrec && hhit->energy() < maxhbPlusrec) {
                         next_to_maxhbPlusrec = hhit->energy();
@@ -772,7 +793,349 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
             }
         }
 
+	
+    // Make matching between Muon Track and HBCal 
+    //-> kropiv
+    int NumbermuonDT = 0;
+    NumMuonHBphiPlane = 0;
+    NumMuonHBnoPhiPlane = 0;//more than 1 phi plane
+    for (reco::TrackCollection::const_iterator cmTrack = cosmicmuon->begin(); cmTrack != cosmicmuon->end(); ++cmTrack) {
+          double XinPosMuon;
+          double YinPosMuon;
+          double ZinPosMuon;
+          double XoutPosMuon;
+          double YoutPosMuon;
+          double ZoutPosMuon;
+          double RphiinPosMuon;
+          double RphioutPosMuon;
+          double DeltaRphiPosMuon;
+          double PHIinPosMuon = -99;
+          double ETAinPosMuon = -99;
+          double PHIoutPosMuon = -99;
+          double ETAoutPosMuon = -99;
+          double DeltaEtaTower = 0.087;
+          double DeltaPhiTower = 0.08726646259941666667;
+          int idTowerPhiMuonIn = 999;
+          int idTowerEtaMuonIn = 999;
+          int idTowerPhiMuonOut = 999;
+          int idTowerEtaMuonOut = 999;
+          int NumberHBTowersmuon;
+//
+          double PHIinPosMuon_2 = -99;
+          double ETAinPosMuon_2 = -99;
+          double PHIoutPosMuon_2 = -99;
+          double ETAoutPosMuon_2 = -99;
+// this is inner and outer position of muon in Muon Detector in cm
+          XinPosMuon = cmTrack->innerPosition().x();
+          YinPosMuon = cmTrack->innerPosition().y();
+          ZinPosMuon = cmTrack->innerPosition().z();
+          XoutPosMuon = cmTrack->outerPosition().x();
+          YoutPosMuon = cmTrack->outerPosition().y();
+          ZoutPosMuon = cmTrack->outerPosition().z();
+          XinPosMuonDT[NumMuonHBphiPlane] = XinPosMuon;
+          YinPosMuonDT[NumMuonHBphiPlane] = YinPosMuon;
+          ZinPosMuonDT[NumMuonHBphiPlane] = ZinPosMuon;
+          XoutPosMuonDT[NumMuonHBphiPlane] = XoutPosMuon;
+          YoutPosMuonDT[NumMuonHBphiPlane] = YoutPosMuon;
+          ZoutPosMuonDT[NumMuonHBphiPlane] = ZoutPosMuon;
+          XinPosMuonNoPlaneDT[NumMuonHBnoPhiPlane] = XinPosMuon; 
+          YinPosMuonNoPlaneDT[NumMuonHBnoPhiPlane] = YinPosMuon; 
+          ZinPosMuonNoPlaneDT[NumMuonHBnoPhiPlane] = ZinPosMuon; 
+          XoutPosMuonNoPlaneDT[NumMuonHBnoPhiPlane] = XoutPosMuon; 
+          YoutPosMuonNoPlaneDT[NumMuonHBnoPhiPlane] = YoutPosMuon; 
+          ZoutPosMuonNoPlaneDT[NumMuonHBnoPhiPlane] = ZoutPosMuon; 
+          // calculate number of moun signals in detector
+          NumbermuonDT = NumbermuonDT + 1;   
+// make reculculation of this value to find muon crossing with HB if it is exist
+// we are interested in crossing in InRadiusHB = 177.7 cm  and OutRadiusHB = 287.65 cm in phi plane
+          double InRadiusHB = 177.7;
+          double OutRadiusHB = 287.65;
+          double D1; //discreminator for equation
+// muon fly alone streight line because of ebsents of Magnatic Field
+// could by parametrised by a line: muon = Vin + (Vout-Vin)*apar
+// Vin = (XinPosMuon,YinPosMuon,ZinPosMuon); Vout = (XoutPosMuon,YoutPosMuon,ZoutPosMuon); apar -parameter  
 
+// calculate crossing with InRadiusHB:
+          D1 = pow(InRadiusHB,2)*(pow((XoutPosMuon-XinPosMuon),2)+pow((YoutPosMuon-YinPosMuon),2));
+          D1 = D1 - pow((YinPosMuon*XoutPosMuon-XinPosMuon*YoutPosMuon),2);
+// check that muon crosses InHB in 2 different points
+          if(D1<=0) continue; 
+          D1 = sqrt(D1);
+// calculate two crossing points at InRadiusHB
+          double AMuonHB1;
+          double AMuonHB2;
+          double AMuonHB = 0;
+          double AMuonHB_2 = 0;
+          double XInMuonHB;
+          double YInMuonHB;
+          double ZInMuonHB;
+          double XInMuonHB_2;
+          double YInMuonHB_2;
+          double ZInMuonHB_2;
+          AMuonHB1 = -(XinPosMuon*(XoutPosMuon-XinPosMuon)+YinPosMuon*(YoutPosMuon-YinPosMuon)+D1);
+          AMuonHB1 = AMuonHB1/(pow((XoutPosMuon-XinPosMuon),2)+pow((YoutPosMuon-YinPosMuon),2));
+          AMuonHB2 = -(XinPosMuon*(XoutPosMuon-XinPosMuon)+YinPosMuon*(YoutPosMuon-YinPosMuon)-D1);
+          AMuonHB2 = AMuonHB2/(pow((XoutPosMuon-XinPosMuon),2)+pow((YoutPosMuon-YinPosMuon),2));
+// select the most closest point to X,Y,ZinRHBmuon
+          if(abs(AMuonHB1)<abs(AMuonHB2)){
+              AMuonHB = AMuonHB1;
+              AMuonHB_2 = AMuonHB2;
+          }  
+          if(abs(AMuonHB1)>=abs(AMuonHB2)){
+              AMuonHB = AMuonHB2;
+              AMuonHB_2 = AMuonHB1;
+          }
+          XInMuonHB = XinPosMuon + (XoutPosMuon-XinPosMuon)*AMuonHB;
+          YInMuonHB = YinPosMuon + (YoutPosMuon-YinPosMuon)*AMuonHB;
+          ZInMuonHB = ZinPosMuon + (ZoutPosMuon-ZinPosMuon)*AMuonHB;
+          XInMuonHB_2 = XinPosMuon + (XoutPosMuon-XinPosMuon)*AMuonHB_2;//2=second crossing
+          YInMuonHB_2 = YinPosMuon + (YoutPosMuon-YinPosMuon)*AMuonHB_2;
+          ZInMuonHB_2 = ZinPosMuon + (ZoutPosMuon-ZinPosMuon)*AMuonHB_2;
+// calculate crossing with OutRadiusHB:
+          D1 = pow(OutRadiusHB,2)*(pow((XoutPosMuon-XinPosMuon),2)+pow((YoutPosMuon-YinPosMuon),2));
+          D1 = D1 - pow((YinPosMuon*XoutPosMuon-XinPosMuon*YoutPosMuon),2);
+// check that muon crosses InHB in 2 different points
+          if(D1<=0) continue;
+          D1 = sqrt(D1);
+// calculate two crossing points at InRadiusHB
+          double XOutMuonHB;
+          double YOutMuonHB;
+          double ZOutMuonHB;
+          double XOutMuonHB_2;
+          double YOutMuonHB_2;
+          double ZOutMuonHB_2;
+          AMuonHB1 = -(XinPosMuon*(XoutPosMuon-XinPosMuon)+YinPosMuon*(YoutPosMuon-YinPosMuon)+D1);
+          AMuonHB1 = AMuonHB1/(pow((XoutPosMuon-XinPosMuon),2)+pow((YoutPosMuon-YinPosMuon),2));
+          AMuonHB2 = -(XinPosMuon*(XoutPosMuon-XinPosMuon)+YinPosMuon*(YoutPosMuon-YinPosMuon)-D1);
+          AMuonHB2 = AMuonHB2/(pow((XoutPosMuon-XinPosMuon),2)+pow((YoutPosMuon-YinPosMuon),2));
+// select the most closest point to X,Y,ZinRHBmuon
+          if(abs(AMuonHB1)<abs(AMuonHB2)){
+              AMuonHB = AMuonHB1;
+              AMuonHB_2 = AMuonHB2;
+          }
+          if(abs(AMuonHB1)>=abs(AMuonHB2)){
+              AMuonHB = AMuonHB2;
+              AMuonHB_2 = AMuonHB1;
+          }
+          XOutMuonHB = XinPosMuon + (XoutPosMuon-XinPosMuon)*AMuonHB;
+          YOutMuonHB = YinPosMuon + (YoutPosMuon-YinPosMuon)*AMuonHB;
+          ZOutMuonHB = ZinPosMuon + (ZoutPosMuon-ZinPosMuon)*AMuonHB;
+          XOutMuonHB_2 = XinPosMuon + (XoutPosMuon-XinPosMuon)*AMuonHB_2;
+          YOutMuonHB_2 = YinPosMuon + (YoutPosMuon-YinPosMuon)*AMuonHB_2;
+          ZOutMuonHB_2 = ZinPosMuon + (ZoutPosMuon-ZinPosMuon)*AMuonHB_2;
+// calculate ImpXY - impact parameter in phi-plane and ZImpXY - Z coordinate of ImpXY
+          double AMuonHBmin;
+          double ImpXY;    
+          double ZImpXY;
+          AMuonHBmin = -(XinPosMuon*(XoutPosMuon-XinPosMuon)+YinPosMuon*(YoutPosMuon-YinPosMuon));
+          AMuonHBmin = AMuonHBmin/(pow((XoutPosMuon-XinPosMuon),2)+pow((YoutPosMuon-YinPosMuon),2));
+          ImpXY = pow((XinPosMuon+(XoutPosMuon-XinPosMuon)*AMuonHBmin),2)+pow((YinPosMuon+(YoutPosMuon-YinPosMuon)*AMuonHBmin),2);
+          ImpXY = sqrt(ImpXY);
+          ZImpXY = ZinPosMuon+(ZoutPosMuon-ZinPosMuon)*AMuonHBmin; 
+/////////////
+         // calculating Length of muon in DT (muon chamber) 
+          LengthMuonDT[NumMuonHBphiPlane] = sqrt(pow((XoutPosMuon-XinPosMuon),2)+pow((YoutPosMuon-YinPosMuon),2)+pow((ZoutPosMuon-ZinPosMuon),2));  
+          LengthMuonNoPlaneDT[NumMuonHBnoPhiPlane] = sqrt(pow((XoutPosMuon-XinPosMuon),2)+pow((YoutPosMuon-YinPosMuon),2)+pow((ZoutPosMuon-ZinPosMuon),2));  
+          // bad hits that not use at fit are also included!
+          NumHitsMuonDTall[NumMuonHBphiPlane] =  cmTrack->recHitsSize(); 
+          NumHitsMuonNoPlaneDTall[NumMuonHBnoPhiPlane] = cmTrack->recHitsSize();////
+          // only good hits are included but I don't know how to work with it
+          NumHitsMuonDT[NumMuonHBphiPlane] =  cmTrack->numberOfValidHits(); 
+          XinPosMuon = XInMuonHB;//just DT position of muon = HB poistion of MUon //    dont change.
+          YinPosMuon = YInMuonHB;
+          ZinPosMuon = ZInMuonHB;
+          XoutPosMuon = XOutMuonHB;
+          YoutPosMuon = YOutMuonHB;
+          ZoutPosMuon = ZOutMuonHB;
+         // calculating Length of muon in HB
+         LengthMuonHB[NumMuonHBphiPlane] = sqrt(pow((XInMuonHB-XOutMuonHB),2)+pow((YInMuonHB-YOutMuonHB),2)+pow((ZInMuonHB-ZOutMuonHB),2));  
+         LengthMuonHB2[NumMuonHBphiPlane] = sqrt(pow((XInMuonHB_2-XOutMuonHB_2),2)+pow((YInMuonHB_2-YOutMuonHB_2),2)+pow((ZInMuonHB_2-ZOutMuonHB_2),2));  
+         // AMuonHBmin = -(XinPosMuon*(XoutPosMuon-XinPosMuon)+YinPosMuon*(YoutPosMuon-YinPosMuon));
+         // AMuonHBmin = AMuonHBmin/(pow((XoutPosMuon-XinPosMuon),2)+pow((YoutPosMuon-YinPosMuon),2));
+         // ImpXYmuon[NumMuonHBphiPlane] = pow((XinPosMuon+(XoutPosMuon-XinPosMuon)*AMuonHBmin),2)+pow((YinPosMuon+(YoutPosMuon-YinPosMuon)*AMuonHBmin),2);
+         // ImpXYmuon[NumMuonHBphiPlane] = sqrt(ImpXYmuon[NumMuonHBphiPlane]);
+         // ZImpXYmuon[NumMuonHBphiPlane] = ZinPosMuon+(ZoutPosMuon-ZinPosMuon)*AMuonHBmin; 
+/////////////
+          RphiinPosMuon = sqrt(XinPosMuon*XinPosMuon+YinPosMuon*YinPosMuon);
+          RphioutPosMuon = sqrt(XoutPosMuon*XoutPosMuon+YoutPosMuon*YoutPosMuon);
+          DeltaRphiPosMuon = RphioutPosMuon - RphiinPosMuon;
+          h_RphiinPosMuon ->Fill(RphiinPosMuon);
+          h_RphioutPosMuon ->Fill(RphioutPosMuon);
+          h_DeltaRphiPosMuon->Fill(DeltaRphiPosMuon);
+
+
+          // calculate PHI and ETA
+          if(RphiinPosMuon>0){
+               PHIinPosMuon = acos(XinPosMuon/RphiinPosMuon);
+               if(YinPosMuon<0) PHIinPosMuon = -PHIinPosMuon;
+               PHIinPosMuon_2 = acos(XInMuonHB_2/sqrt(XInMuonHB_2*XInMuonHB_2+YInMuonHB_2*YInMuonHB_2));
+               if(YInMuonHB_2<0) PHIinPosMuon_2 = -PHIinPosMuon_2; 
+          }
+          if(RphioutPosMuon>0){
+               PHIoutPosMuon = acos(XoutPosMuon/RphioutPosMuon);
+               if(YinPosMuon<0) PHIoutPosMuon = -PHIoutPosMuon;
+               PHIoutPosMuon_2 = acos(XOutMuonHB_2/sqrt(XOutMuonHB_2*XOutMuonHB_2+YOutMuonHB_2*YOutMuonHB_2));
+               if(YOutMuonHB_2<0) PHIoutPosMuon_2 = -PHIoutPosMuon_2; 
+          }
+          if(sqrt(RphiinPosMuon*RphiinPosMuon+ZinPosMuon*ZinPosMuon)>0){
+             double thetahelp;
+             thetahelp = acos(ZinPosMuon/sqrt(RphiinPosMuon*RphiinPosMuon+ZinPosMuon*ZinPosMuon));
+             ETAinPosMuon = -log(tan(thetahelp/2)); 
+             thetahelp = acos(ZInMuonHB_2/sqrt(XInMuonHB_2*XInMuonHB_2+YInMuonHB_2*YInMuonHB_2+ZInMuonHB_2*ZInMuonHB_2));
+             ETAinPosMuon_2 = -log(tan(thetahelp/2)); 
+          }
+          if(sqrt(RphioutPosMuon*RphioutPosMuon+ZoutPosMuon*ZoutPosMuon)>0){
+             double thetahelp;
+             thetahelp = acos(ZoutPosMuon/sqrt(RphioutPosMuon*RphioutPosMuon+ZoutPosMuon*ZoutPosMuon));
+             ETAoutPosMuon = -log(tan(thetahelp/2));
+             thetahelp = acos(ZOutMuonHB_2/sqrt(XOutMuonHB_2*XOutMuonHB_2+YOutMuonHB_2*YOutMuonHB_2+ZOutMuonHB_2*ZOutMuonHB_2));
+             ETAoutPosMuon_2 = -log(tan(thetahelp/2));
+
+          }
+          for (HBHERecHitCollection::const_iterator hhit=Hithbhe.begin(); hhit!=Hithbhe.end(); hhit++) {
+              // make cut on nose in HB
+              //if (hhit->energy() > 0.230){}
+              GlobalPoint pos = geo->getPosition((*hhit).detid());
+              double phipos;
+              double etapos;
+              double ehb;
+              etapos = pos.eta();
+              phipos = pos.phi();
+              ehb = hhit->energy();
+              // check that the muon come in this tower
+              if(abs(PHIinPosMuon-phipos)<(DeltaPhiTower/2)&&abs(ETAinPosMuon-etapos)<(DeltaEtaTower/2)){
+                 idTowerPhiMuonIn = hhit->id().iphi();
+                 idTowerEtaMuonIn = hhit->id().ieta();
+                 PHIinTowerHB[NumMuonHBphiPlane] = phipos;
+                 IdTowerMuonNoPlanePhiIn[NumMuonHBnoPhiPlane] = hhit->id().iphi();
+                 IdTowerMuonNoPlaneEtaIn[NumMuonHBnoPhiPlane] = hhit->id().ieta();
+              } 
+              //check that the muon come out this tower
+              if(abs(PHIoutPosMuon-phipos)<(DeltaPhiTower/2)&&abs(ETAoutPosMuon-etapos)<(DeltaEtaTower/2)){
+                 idTowerPhiMuonOut = hhit->id().iphi();
+                 idTowerEtaMuonOut = hhit->id().ieta();
+                 IdTowerMuonNoPlanePhiOut[NumMuonHBnoPhiPlane] = hhit->id().iphi();
+                 IdTowerMuonNoPlaneEtaOut[NumMuonHBnoPhiPlane] = hhit->id().ieta();
+              }
+              // check that the muon come in this tower after first crossing
+              if(abs(PHIinPosMuon_2-phipos)<(DeltaPhiTower/2)&&abs(ETAinPosMuon_2-etapos)<(DeltaEtaTower/2)){
+                 IdTowerPhiMuonIn2[NumMuonHBphiPlane] = hhit->id().iphi();
+                 IdTowerEtaMuonIn2[NumMuonHBphiPlane] = hhit->id().ieta();
+              }
+              // check that the muon come out this tower after first crossing
+              if(abs(PHIoutPosMuon_2-phipos)<(DeltaPhiTower/2)&&abs(ETAoutPosMuon_2-etapos)<(DeltaEtaTower/2)){
+                 IdTowerPhiMuonOut2[NumMuonHBphiPlane] = hhit->id().iphi();
+                 IdTowerEtaMuonOut2[NumMuonHBphiPlane] = hhit->id().ieta();
+              }
+
+          }  //end cicle for HB Towers hhit
+          // calculate number of towers cossing by Muon in the same phi plane (in the phi plane the same callibration for eta-towers
+          if(idTowerPhiMuonIn==idTowerPhiMuonOut){  
+               NumberHBTowersmuon = 0;
+               if(idTowerPhiMuonIn!=999 && idTowerPhiMuonOut!=999){  //check that Tower for Muon is defined in HB 
+                  NumberHBTowersmuon = abs(idTowerEtaMuonIn-idTowerEtaMuonOut)+1; 
+                  // make correction that idEta: ... -2 -1 1 2 ... there is no "0"
+                  if(idTowerEtaMuonIn*idTowerEtaMuonOut<0)NumberHBTowersmuon = NumberHBTowersmuon - 1; 
+                  h_NumberHBTowersmuon->Fill(float(NumberHBTowersmuon));
+                  // fill value for ntuple:
+                  NumHBTowersMuon[NumMuonHBphiPlane] = NumberHBTowersmuon;
+                  PHIoutMuonHB[NumMuonHBphiPlane] = PHIoutPosMuon;
+                  ETAoutMuonHB[NumMuonHBphiPlane] = ETAoutPosMuon;
+                  PHIinMuonHB[NumMuonHBphiPlane] = PHIinPosMuon;
+                  ETAinMuonHB[NumMuonHBphiPlane] = ETAinPosMuon;
+                  ImpXYmuonHB[NumMuonHBphiPlane] = ImpXY; 
+                  ZImpXYmuonHB[NumMuonHBphiPlane] = ZImpXY; 
+                  IdTowerPhiMuonIn[NumMuonHBphiPlane] = idTowerPhiMuonIn;
+                  IdTowerPhiMuonOut[NumMuonHBphiPlane] = idTowerPhiMuonOut;  
+                  IdTowerEtaMuonIn[NumMuonHBphiPlane] = idTowerEtaMuonIn;
+                  IdTowerEtaMuonOut[NumMuonHBphiPlane] = idTowerEtaMuonOut;  
+                  // calculate energy deposited of muon passing though HB and time average by energy 
+                  EmuonHB[NumMuonHBphiPlane] = 0;
+                  TimeAvMuonHB[NumMuonHBphiPlane] = 0;
+                  EmuonHB2[NumMuonHBphiPlane] = 0;
+                  TimeAvMuonHB2[NumMuonHBphiPlane] = 0;
+                  EmuonHBcut2[NumMuonHBphiPlane] = 0;
+                  TimeAvMuonHBcut2[NumMuonHBphiPlane] = 0;
+                  EmuonHBcutwide2[NumMuonHBphiPlane] = 0;
+                  TimeAvMuonHBcutwide2[NumMuonHBphiPlane] = 0;
+                  for (HBHERecHitCollection::const_iterator hhit=Hithbhe.begin(); hhit!=Hithbhe.end(); hhit++) {
+                      //select max i min idTower
+                      int idEtaMax;
+                      int idEtaMin;
+                      idEtaMin = min(idTowerEtaMuonOut,idTowerEtaMuonIn);
+                      idEtaMax = max(idTowerEtaMuonOut,idTowerEtaMuonIn);
+                      int idPhiMax2;
+                      int idPhiMin2;
+                      int idEtaMax2;
+                      int idEtaMin2;
+                      idPhiMin2 = min(IdTowerPhiMuonOut2[NumMuonHBphiPlane],IdTowerPhiMuonIn2[NumMuonHBphiPlane]);
+                      idPhiMax2 = max(IdTowerPhiMuonOut2[NumMuonHBphiPlane],IdTowerPhiMuonIn2[NumMuonHBphiPlane]);
+                      idEtaMin2 = min(IdTowerEtaMuonOut2[NumMuonHBphiPlane],IdTowerEtaMuonIn2[NumMuonHBphiPlane]);
+                      idEtaMax2 = max(IdTowerEtaMuonOut2[NumMuonHBphiPlane],IdTowerEtaMuonIn2[NumMuonHBphiPlane]);
+                      //  
+                      //select towers wich muon passes in phi idTowerPhiMuonIn=idTowerPhiMuonOut - it is selected upper
+                      if(idTowerPhiMuonIn==(hhit->id().iphi())){
+                        // select towers wich muon passes in eta and calculate depsited energy of muon
+                        if((hhit->id().ieta())>=idEtaMin&&(hhit->id().ieta())<=idEtaMax){
+                            EmuonHB[NumMuonHBphiPlane] = EmuonHB[NumMuonHBphiPlane] + hhit->energy(); 
+                            TimeAvMuonHB[NumMuonHBphiPlane] = TimeAvMuonHB[NumMuonHBphiPlane] + (hhit->energy())*(hhit->time());
+                        }
+                      }
+                      //
+                      // select towers wich muon passes in phi and eta planes 2nd time in qub phiXeta
+                      // this is towers wich is passes and wich in the qub with sides phiXeta => more towers wich it passes
+                      if((hhit->id().iphi())>=idPhiMin2 && (hhit->id().iphi())<=idPhiMax2){
+                        if((hhit->id().ieta())>=idEtaMin2 && (hhit->id().ieta())<=idEtaMax2){
+                            EmuonHB2[NumMuonHBphiPlane] = EmuonHB2[NumMuonHBphiPlane] + hhit->energy();
+                            TimeAvMuonHB2[NumMuonHBphiPlane] = TimeAvMuonHB2[NumMuonHBphiPlane] + (hhit->energy())*(hhit->time());
+                            // calculate energe with ~2 sigma cut on nose
+                            if((hhit->energy())>0.5){
+                                EmuonHBcut2[NumMuonHBphiPlane] = EmuonHBcut2[NumMuonHBphiPlane] + hhit->energy();
+                                TimeAvMuonHBcut2[NumMuonHBphiPlane] = TimeAvMuonHBcut2[NumMuonHBphiPlane] + (hhit->energy())*(hhit->time()); 
+                            }
+                        } 
+                      }
+                      // select towers wich muon passes in phi and eta planes 2nd time in wider range \pm 1 tower
+                     if((hhit->id().iphi())>=(idPhiMin2-1) && (hhit->id().iphi())<=(idPhiMax2+1)){
+                        if((hhit->id().ieta())>=(idEtaMin2-1) && (hhit->id().ieta())<=(idEtaMax2+1)){
+                            // calculate energe with ~2 sigma cut on nose
+                            if((hhit->energy())>0.5){
+                                EmuonHBcutwide2[NumMuonHBphiPlane] = EmuonHBcutwide2[NumMuonHBphiPlane] + hhit->energy();
+                                TimeAvMuonHBcutwide2[NumMuonHBphiPlane] = TimeAvMuonHBcutwide2[NumMuonHBphiPlane] + (hhit->energy())*(hhit->time());
+                            }
+                        }
+                      }
+                  }
+                  if(EmuonHB[NumMuonHBphiPlane]!=0)
+                        TimeAvMuonHB[NumMuonHBphiPlane] = TimeAvMuonHB[NumMuonHBphiPlane]/EmuonHB[NumMuonHBphiPlane]; 
+                  if(EmuonHB[NumMuonHBphiPlane]==0) TimeAvMuonHB[NumMuonHBphiPlane] =1000.;
+                  if(EmuonHB2[NumMuonHBphiPlane]!=0)
+                        TimeAvMuonHB2[NumMuonHBphiPlane] = TimeAvMuonHB2[NumMuonHBphiPlane]/EmuonHB2[NumMuonHBphiPlane];
+                  if(EmuonHB2[NumMuonHBphiPlane]==0) TimeAvMuonHB2[NumMuonHBphiPlane] =1000.; 
+                  if(EmuonHBcut2[NumMuonHBphiPlane]!=0)
+                        TimeAvMuonHBcut2[NumMuonHBphiPlane] = TimeAvMuonHBcut2[NumMuonHBphiPlane]/EmuonHBcut2[NumMuonHBphiPlane];
+                  if(EmuonHBcut2[NumMuonHBphiPlane]==0) TimeAvMuonHBcut2[NumMuonHBphiPlane] =1000.; 
+                  if(EmuonHBcutwide2[NumMuonHBphiPlane]!=0)
+                        TimeAvMuonHBcutwide2[NumMuonHBphiPlane] = TimeAvMuonHBcutwide2[NumMuonHBphiPlane]/EmuonHBcutwide2[NumMuonHBphiPlane];
+                  if(EmuonHBcutwide2[NumMuonHBphiPlane]==0) TimeAvMuonHBcutwide2[NumMuonHBphiPlane] =1000.;
+
+                  //
+                  NumMuonHBphiPlane++; 
+               }
+          }
+          //fill Muons that not belong the same Phi Plane in HB 
+          if(idTowerPhiMuonIn!=idTowerPhiMuonOut){
+               ImpXYmuonNoPlaneDT[NumMuonHBnoPhiPlane] = ImpXY;
+               ZImpXYmuonNoPlaneDT[NumMuonHBnoPhiPlane] = ZImpXY;
+               NumMuonHBnoPhiPlane++;  
+          }
+    }
+    h_NumbermuonDT->Fill(float(NumbermuonDT));
+    // fill ntuple only for muons in one phi-plane 
+    if(NumMuonHBphiPlane>0)myTree->Fill();
+    //<- kropiv
+    // End matching between Muon Track and HBCal
+    
 
         for (HFRecHitCollection::const_iterator hhit = Hithf.begin(); hhit != Hithf.end(); hhit++) {
             h_hf_rechit_energy->Fill(hhit->energy());
@@ -864,7 +1227,14 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
             h_maxhbMinusrec->Fill(total_hbMinus);
         if (hbPlus_DR < 2.5 && total_hbPlus > 0.)
             h_maxhbPlusrec->Fill(total_hbPlus);
-
+	//-> kropiv
+	h_Emuon1hbMinus->Fill(total_hbMinus); 
+	h_Emuon1hbPlus->Fill(total_hbPlus); 
+	h_ETAmuon1hbMinus->Fill(ETAmuon1hbMinus); 
+	h_ETAmuon1hbPlus->Fill(ETAmuon1hbPlus); 
+	h_PHImuon1hbMinus->Fill(PHImuon1hbMinus); 
+	h_PHImuon1hbPlus->Fill(PHImuon1hbPlus); 
+	//<- kropiv
 
         for (TrackCollection::const_iterator ncm = muons->begin(); ncm != muons->end(); ++ncm) {
             h_muon_vertex_x->Fill(ncm->vx());
@@ -1010,6 +1380,85 @@ TH1F *HcalProm::book1DHistogram(TFileDirectory & fDir, const std::string & fName
     h_muon_vertex_x = book1DHistogram(MuonDir, "h_muon_vertex_x", "Muon Vertex X", 10000, -1000, 1000);
     h_muon_px = book1DHistogram(MuonDir, "h_muon_px", "Px(#mu)", 1000, -10, 100);
     h_muon_p = book1DHistogram(MuonDir, "h_muon_p", "P(#mu)", 1000, -10, 100);
+//-> kropiv
+    h_Emuon1hbMinus =  book1DHistogram (MuonDir, "h_Emuon1hbMinus","E HBMinus Muon without cut (GeV)",200,0,15);
+    h_Emuon1hbPlus =  book1DHistogram (MuonDir, "h_Emuon1hbPlus","E HBPlus Muon without cut (GeV)",200,0,15);
+    h_ETAmuon1hbMinus =  book1DHistogram (MuonDir, "h_ETAmuon1hbMinus","ETA HBMinus Muon without cut ",200,-1.5,1.5);
+    h_ETAmuon1hbPlus =  book1DHistogram (MuonDir, "h_ETAmuon1hbPlus","ETA HBPlus Muon without cut ",200,-1.5,1.5);
+    h_PHImuon1hbMinus =  book1DHistogram (MuonDir, "h_PHImuon1hbMinus","PHI HBMinus Muon without cut ",200,-3.2,3.2);
+    h_PHImuon1hbPlus =  book1DHistogram (MuonDir, "h_PHImuon1hbPlus","PHI HBPlus Muon without cut ",200,-3.2,3.2);
+    h_NumbermuonDT = book1DHistogram (MuonDir, "h_NumbermuonDT","Number of muons for Muon Detector",40,0,20);
+    h_NumberHBTowersmuon = book1DHistogram (MuonDir, "h_NumberHBTowersmuon","Number towers of muon in HB if moun not cross towers in phi plane",70,0,35);
+    h_RphiinPosMuon =  book1DHistogram (MuonDir, "h_RphiinPosMuon","R inner for Muon in HCAL",200,0,1000);
+    h_RphioutPosMuon =  book1DHistogram (MuonDir, "h_RphioutPosMuon","R outer for Muon in HCAL",200,0,1000);
+    h_DeltaRphiPosMuon = book1DHistogram (MuonDir, "h_DeltaRphiPosMuon","R outer for Muon in HCAL",200,-500,500);
+    h_EtaPhiCorrelMuonPhiPlane = 
+      book2DHistogram (MuonDir, "h_EtaPhiCorrelMuonPhiPlane", "phi vs eta for  mouns not cross towers in phi plane", 75, 0, 75, 32,
+      -20., 20.);
+// ntuple inicialization
+   myTree = new TTree("muonHB","muonHB Tree");
+   myTree->Branch("run",  &run, "run/I");
+   myTree->Branch("event",  &event, "event/I");
+   myTree->Branch("TriggerBit",  TriggerBit, "TriggerBit[4]/I");
+// muonHB block
+   myTree->Branch("NumMuonHBphiPlane", &NumMuonHBphiPlane, "NumMuonHBphiPlane/I");
+   myTree->Branch("NumHBTowersMuon",  NumHBTowersMuon, "NumHBTowersMuon[NumMuonHBphiPlane]/I"); 
+   myTree->Branch("TimeAvMuonHB",  TimeAvMuonHB, "TimeAvMuonHB[NumMuonHBphiPlane]/F"); 
+   myTree->Branch("PHIoutMuonHB",  PHIoutMuonHB, "PHIoutMuonHB[NumMuonHBphiPlane]/F"); 
+   myTree->Branch("ETAoutMuonHB",  ETAoutMuonHB, "ETAoutMuonHB[NumMuonHBphiPlane]/F"); 
+   myTree->Branch("PHIinMuonHB",  PHIinMuonHB, "PHIinMuonHB[NumMuonHBphiPlane]/F"); 
+   myTree->Branch("ETAinMuonHB",  ETAinMuonHB, "ETAinMuonHB[NumMuonHBphiPlane]/F"); 
+   myTree->Branch("IdTowerPhiMuonIn",  IdTowerPhiMuonIn, "IdTowerPhiMuonIn[NumMuonHBphiPlane]/I"); 
+   myTree->Branch("IdTowerPhiMuonOut",  IdTowerPhiMuonOut, "IdTowerPhiMuonOut[NumMuonHBphiPlane]/I"); 
+   myTree->Branch("IdTowerEtaMuonIn",  IdTowerEtaMuonIn, "IdTowerEtaMuonIn[NumMuonHBphiPlane]/I"); 
+   myTree->Branch("IdTowerEtaMuonOut",  IdTowerEtaMuonOut, "IdTowerEtaMuonOut[NumMuonHBphiPlane]/I"); 
+   myTree->Branch("LengthMuonHB",  LengthMuonHB, "LengthMuonHB[NumMuonHBphiPlane]/F"); 
+   myTree->Branch("ImpXYmuonHB",  ImpXYmuonHB, "ImpXYmuonHB[NumMuonHBphiPlane]/F"); 
+   myTree->Branch("ZImpXYmuonHB",  ZImpXYmuonHB, "ZImpXYmuonHB[NumMuonHBphiPlane]/F"); 
+   //myTree->Branch("ImpXYmuon",  ImpXYmuon, "ImpXYmuon[NumMuonHBphiPlane]/F"); 
+   //myTree->Branch("ZImpXYmuon",  ZImpXYmuon, "ZImpXYmuon[NumMuonHBphiPlane]/F"); 
+   myTree->Branch("EmuonHB", EmuonHB, "EmuonHB[NumMuonHBphiPlane]/F"); 
+   myTree->Branch("PHIinTowerHB", PHIinTowerHB, "PHIinTowerHB[NumMuonHBphiPlane]/F"); 
+   // information of Muon in second part of HB
+   //myTree->Branch("NumHBTowersMuon2",  NumHBTowersMuon2, "NumHBTowersMuon2[NumMuonHBphiPlane]/I"); 
+   myTree->Branch("IdTowerPhiMuonIn2",  IdTowerPhiMuonIn2, "IdTowerPhiMuonIn2[NumMuonHBphiPlane]/I"); 
+   myTree->Branch("IdTowerPhiMuonOut2",  IdTowerPhiMuonOut2, "IdTowerPhiMuonOut2[NumMuonHBphiPlane]/I"); 
+   myTree->Branch("IdTowerEtaMuonIn2",  IdTowerEtaMuonIn2, "IdTowerEtaMuonIn2[NumMuonHBphiPlane]/I"); 
+   myTree->Branch("IdTowerEtaMuonOut2",  IdTowerEtaMuonOut2, "IdTowerEtaMuonOut2[NumMuonHBphiPlane]/I"); 
+   myTree->Branch("LengthMuonHB2",  LengthMuonHB2, "LengthMuonHB2[NumMuonHBphiPlane]/F"); 
+   myTree->Branch("TimeAvMuonHB2",  TimeAvMuonHB2, "TimeAvMuonHB2[NumMuonHBphiPlane]/F"); 
+   myTree->Branch("TimeAvMuonHBcut2",  TimeAvMuonHBcut2, "TimeAvMuonHBcut2[NumMuonHBphiPlane]/F"); 
+   myTree->Branch("TimeAvMuonHBcutwide2",  TimeAvMuonHBcutwide2, "TimeAvMuonHBcutwide2[NumMuonHBphiPlane]/F"); 
+   myTree->Branch("EmuonHB2", EmuonHB2, "EmuonHB2[NumMuonHBphiPlane]/F"); 
+   myTree->Branch("EmuonHBcut2", EmuonHBcut2, "EmuonHBcut2[NumMuonHBphiPlane]/F"); 
+   myTree->Branch("EmuonHBcutwide2", EmuonHBcutwide2, "EmuonHBcutwide2[NumMuonHBphiPlane]/F"); 
+   // information of Muon from DT
+   myTree->Branch("LengthMuonDT",  LengthMuonDT, "LengthMuonDT[NumMuonHBphiPlane]/F"); 
+   myTree->Branch("NumHitsMuonDTall",  NumHitsMuonDTall, "NumHitsMuonDTall[NumMuonHBphiPlane]/I"); 
+   myTree->Branch("NumHitsMuonDT",  NumHitsMuonDT, "NumHitsMuonDT[NumMuonHBphiPlane]/I"); 
+   myTree->Branch("XinPosMuonDT", XinPosMuonDT, "XinPosMuonDT[NumMuonHBphiPlane]/F"); 
+   myTree->Branch("YinPosMuonDT", YinPosMuonDT, "YinPosMuonDT[NumMuonHBphiPlane]/F"); 
+   myTree->Branch("ZinPosMuonDT", ZinPosMuonDT, "ZinPosMuonDT[NumMuonHBphiPlane]/F"); 
+   myTree->Branch("XoutPosMuonDT", XoutPosMuonDT, "XoutPosMuonDT[NumMuonHBphiPlane]/F"); 
+   myTree->Branch("YoutPosMuonDT", YoutPosMuonDT, "YoutPosMuonDT[NumMuonHBphiPlane]/F"); 
+   myTree->Branch("ZoutPosMuonDT", ZoutPosMuonDT, "ZoutPosMuonDT[NumMuonHBphiPlane]/F"); 
+   // information of Muon from DT wich are not belong the same phi Plane
+   myTree->Branch("NumMuonHBnoPhiPlane", &NumMuonHBnoPhiPlane, "NumMuonHBnoPhiPlane/I");
+   myTree->Branch("IdTowerMuonNoPlanePhiIn",  IdTowerMuonNoPlanePhiIn, "IdTowerMuonNoPlanePhiIn[NumMuonHBnoPhiPlane]/I");
+   myTree->Branch("IdTowerMuonNoPlanePhiOut",  IdTowerMuonNoPlanePhiOut, "IdTowerMuonNoPlanePhiOut[NumMuonHBnoPhiPlane]/I");
+   myTree->Branch("IdTowerMuonNoPlaneEtaIn",  IdTowerMuonNoPlaneEtaIn, "IdTowerMuonNoPlaneEtaIn[NumMuonHBnoPhiPlane]/I");
+   myTree->Branch("IdTowerMuonNoPlaneEtaOut",  IdTowerMuonNoPlaneEtaOut, "IdTowerMuonNoPlaneEtaOut[NumMuonHBnoPhiPlane]/I");
+   myTree->Branch("XinPosMuonNoPlaneDT", XinPosMuonNoPlaneDT, "XinPosMuonNoPlaneDT[NumMuonHBnoPhiPlane]/F");
+   myTree->Branch("YinPosMuonNoPlaneDT", YinPosMuonNoPlaneDT, "YinPosMuonNoPlaneDT[NumMuonHBnoPhiPlane]/F");
+   myTree->Branch("ZinPosMuonNoPlaneDT", ZinPosMuonNoPlaneDT, "ZinPosMuonNoPlaneDT[NumMuonHBnoPhiPlane]/F");
+   myTree->Branch("XoutPosMuonNoPlaneDT", XoutPosMuonNoPlaneDT, "XoutPosMuonNoPlaneDT[NumMuonHBnoPhiPlane]/F");
+   myTree->Branch("YoutPosMuonNoPlaneDT", YoutPosMuonNoPlaneDT, "YoutPosMuonNoPlaneDT[NumMuonHBnoPhiPlane]/F");
+   myTree->Branch("ZoutPosMuonNoPlaneDT", ZoutPosMuonNoPlaneDT, "ZoutPosMuonNoPlaneDT[NumMuonHBnoPhiPlane]/F");
+   myTree->Branch("ImpXYmuonNoPlaneDT",  ImpXYmuonNoPlaneDT, "ImpXYmuonNoPlaneDT[NumMuonHBnoPhiPlane]/F");
+   myTree->Branch("ZImpXYmuonNoPlaneDT",  ZImpXYmuonNoPlaneDT, "ZImpXYmuonNoPlaneDT[NumMuonHBnoPhiPlane]/F");
+   myTree->Branch("LengthMuonNoPlaneDT",  LengthMuonNoPlaneDT, "LengthMuonNoPlaneDT[NumMuonHBnoPhiPlane]/F");
+   myTree->Branch("NumHitsMuonNoPlaneDTall",  NumHitsMuonNoPlaneDTall, "NumHitsMuonNoPlaneDTall[NumMuonHBnoPhiPlane]/I");
+//<- kropiv
 
     h_ecalx_vs_muonx =
       book2DHistogram(CorrDir, "h_ecalx_vs_muonx", "h_ecalx_vs_muonx", 1000, -400, 400, 1000, -400, 400);
