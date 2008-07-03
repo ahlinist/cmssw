@@ -58,6 +58,7 @@ class VstParticleCandidateSelector : public edm::EDProducer {
 
 #include "SimGeneral/HepPDTRecord/interface/ParticleDataTable.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticleCandidate.h"
+#include "DataFormats/JetReco/interface/GenJet.h"
 #include "DataFormats/Candidate/interface/ShallowCloneCandidate.h"
 #include "DataFormats/Common/interface/Handle.h"
 #include "FWCore/Framework/interface/ESHandle.h"
@@ -182,7 +183,7 @@ void VstParticleCandidateSelector::produce( Event& evt, const EventSetup& ) {
 	//	tauVst->push_back( new ShallowCloneCandidate( ref ) );
       } else if ( idabs==22 ) {
 	if( p->mother(0)->status()==3 || abs(p->mother(0)->pdgId())==11  || abs(p->mother(0)->pdgId())==13 || 
-	    abs(p->mother(0)->pdgId())==15 ) {
+	    abs(p->mother(0)->pdgId())==15 || abs(p->mother(0)->pdgId())<7) {
 	  photonVst->push_back( new ShallowCloneCandidate( ref ) );
 	} else {
 	  otherStableVst->push_back( new ShallowCloneCandidate( ref ) );
