@@ -23,6 +23,10 @@ CheckDistributions with cuts
 #include "Validation/VstQuaeroUtils/interface/RelevantVariables.hh"
 using namespace std;
 
+//This should be a runtime parameter?
+namespace {
+  const char graphicsOutputFormat[]=".ps";
+}
 
 
 /*******************************************************
@@ -185,7 +189,7 @@ void checkDistributionsWithCuts(string baseDirectory,
   while(fdata.nextEvent(event))
     {
       event.reWeight(event.getWeight()*multiplicativeFactor);
-      if(event.getWeight()<prescale)
+      if(event.getWeight()<prescale && experiment!="mc")
 	{
 	  runningWeight += event.getWeight();
 	  if(runningWeight>=prescale)
@@ -230,7 +234,11 @@ void checkDistributionsWithCuts(string baseDirectory,
   //  int nSubComponents = ( (type2=="data") ? 5 : 1 );
 
   double backgroundUncertainty = Math::totalWeightUncertainty(bkgWeights) + 1; //this +1 is like a minimum systematic.
-  int nSubComponents = ( (type2=="data") ? NBkgContributionsforRoot : 1 );
+  //  int nSubComponents = ( (type2=="data") ? NBkgContributionsforRoot : 1 );
+  // mrenna .. see components
+  int nSubComponents = NBkgContributionsforRoot;
+
+
   cout << finalState << "     " << accumulate(dataWeights.begin(), dataWeights.end(), 0.) << "     " << Math::nice(accumulate(sourcesWeight.begin(),sourcesWeight.end(),0.)) << " +- " << backgroundUncertainty << "  ( ";
   // first find the maximum weight in the vector and determine the smallestPrintableValue
   double maxWeight = 0;
@@ -250,6 +258,7 @@ void checkDistributionsWithCuts(string baseDirectory,
       size_t q = min(nSubComponents-1,(int)(find(sources.begin(), sources.end(), jargonReduction.interpret(bkgEvents[l].getEventType()))-sources.begin()));
       bkgWeightsSubComponents[q].push_back(bkgWeights[l]/prescale);
       bkgVariableValuesSubComponents[q].push_back(bkgVariableValues[l]);
+
     }
   vector<bool> showBkgSigData = vector<bool>(3,true); // { show bkg, show sig, show data }
   if(type2=="data")
@@ -423,7 +432,8 @@ void checkDistributionsWithCuts(string baseDirectory,
 			     vector<vector<vector<double> > >(1,dataVariableValues), 
 			     dataVariableValues, sources, sourcesWeight,
 			     showBkgSigData, colliderRun, experiment, finalState_nojargon, 0, false, specificDistribution, bumpLimitsLeft, bumpLimitsRight);
-  string plotsFileName = "plots_withCuts_"+finalState+".ps"; 
+  //  string plotsFileName = "plots_withCuts_"+finalState+".ps"; 
+  string plotsFileName = "plots_withCuts_"+finalState+graphicsOutputFormat; 
   string macroFileName = "plots_withCuts_"+finalState+".C"; 
   graphicalOutput->draw(plotsFileName.data(),macroFileName.data());
 
