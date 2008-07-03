@@ -17,7 +17,7 @@
 // Original Author:  Efe Yazgan
 // Updated        :  Taylan Yetkin (2008/05/08)
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.h,v 1.14 2008/07/03 09:07:26 efe Exp $
+// $Id: HcalProm.h,v 1.15 2008/07/03 09:58:45 efe Exp $
 //
 //
 
@@ -146,7 +146,7 @@ class HcalProm : public edm::EDAnalyzer {
   TH2F* book2DHistogram (TFileDirectory& fDir, const std::string& fName, const std::string& fTitle, 
 			 int fNbinsX, double fXmin, double fXmax,
 			 int fNbinsY, double fYmin, double fYmax) const;
-
+  TProfile* bookProfileHistogram (TFileDirectory & fDir, const std::string & fName, const std::string & fTitle, int fNbins, double fXmin, double fXmax, double fYmin, double fYmax) const;
 
       // ----------member data ---------------------------
       edm::Service<TFileService> fs;
