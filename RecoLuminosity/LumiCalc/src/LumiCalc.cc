@@ -33,6 +33,8 @@ namespace HCAL_HLX {
     for( unsigned int iHLX = 0; iHLX < HCAL_HLX_NUM_HLXS;  ++iHLX ) HLXMask.push_back(1);
     
     SetBXMask( BXMask );
+    SetHLXMask( HLXMask );
+
   }
   
   //****************** Initialization and Configuration Functions ***************
@@ -73,9 +75,8 @@ namespace HCAL_HLX {
 
   }
   
-  unsigned int LumiCalc::SetBXMask( const std::vector<unsigned int> &BXMask ){
+  unsigned int LumiCalc::SetBXMask( const std::vector< unsigned int > &BXMask ){
     // Copy given mask into member variable and count number of active bunches
-    // Should only be called once per run.
 
     const unsigned int maskSize = BXMask.size();
     BXMask_.resize(3564);
@@ -95,7 +96,6 @@ namespace HCAL_HLX {
 
   unsigned int LumiCalc::SetHLXMask( const std::vector<unsigned int> &HLXMask ){
     // Copy given mask into member variable and count number of active HLXs
-    // Should only be called once per run
 
     const unsigned int maskSize = HLXMask.size();
     HLXMask_.resize(3564);
@@ -121,7 +121,10 @@ namespace HCAL_HLX {
 
     //find first unmasked BX
     unsigned int iBX;
-    for( iBX = 0; iBX < HCAL_HLX_NUM_BUNCHES && BXMask_[iBX] != 0; ++iBX );
+    for( iBX = 0; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ){
+      if( BXMask_[iBX] != 0 )
+	break;
+    }
  
     for( unsigned int iHLX = 0; iHLX < HCAL_HLX_NUM_HLXS; ++iHLX ){
       if( HLXMask_[iHLX] ){
@@ -149,18 +152,23 @@ namespace HCAL_HLX {
 	localSection.lumiDetail.LHCLumi[iBX] += localSection.lhc[iHLX].data[iBX];
       }
     }
-
-    localSection.lumiSummary.DeadtimeNormalization = 1.0;
-    localSection.lumiSummary.LHCNormalization = 1.0;
-
   }
 
   void LumiCalc::CalcETSumLumi(HCAL_HLX::LUMI_SECTION &localSection){
 
     float TotalEtSumNoise[NUM_CAP_BANKS];
     float TotalEtSum[HCAL_HLX_NUM_BUNCHES];
+
+    // Fill Normalization and quality
+    for( unsigned int iBX = 0; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ){
+      localSection.lumiDetail.ETLumiQlty[iBX]            = 1;
+      localSection.lumiDetail.ETBXNormalization[iBX]     = 1.0;      
+    }
+
+    localSection.lumiSummary.InstantETLumiQlty = 1;
+    localSection.lumiSummary.ETNormalization = 1.0;
    
-    // count nibbles
+    // count nibbles.
     unsigned int TotalNibbles = 0;
     for( unsigned int iHLX = 0; iHLX < HCAL_HLX_NUM_HLXS; ++iHLX ){
       TotalNibbles += localSection.etSum[iHLX].hdr.numNibbles;
@@ -193,7 +201,7 @@ namespace HCAL_HLX {
       localSection.lumiDetail.ETLumiErr[iBX] = ETSumError;
     }
 
-    if( numBX_ ){ // TODO: check for TotalNibbles = 0;
+    if( numBX_ ){ // TODO: check for TotalNibbles = 0. This will be a big problem.
       localSection.lumiSummary.InstantETLumi = 0.0;
       for( unsigned int iBX = 0; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ){
 	localSection.lumiSummary.InstantETLumi += localSection.lumiDetail.ETLumiErr[iBX]*BXMask_[iBX];
@@ -204,15 +212,6 @@ namespace HCAL_HLX {
       localSection.lumiSummary.InstantETLumi = 0.0;  // error
       localSection.lumiSummary.InstantETLumiErr = 0.0; // error
     }
-
-    for( unsigned int iBX = 0; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ){
-      // Set all qualities and normalizations to 1.
-      localSection.lumiDetail.ETLumiQlty[iBX]            = 1;
-      localSection.lumiDetail.ETBXNormalization[iBX]     = 1;      
-    }
-
-    localSection.lumiSummary.InstantETLumiQlty = 1;
-    localSection.lumiSummary.ETNormalization = 1.0;
   }
 
   float LumiCalc::CalcETSumError( unsigned int numNibbles, unsigned int numTowers, unsigned int numBunches, float intPerBX ){
@@ -345,6 +344,9 @@ namespace HCAL_HLX {
 
     // Should be called once per run
     CountActiveTowers( localSection );
+
+    localSection.lumiSummary.DeadtimeNormalization = 1.0;
+    localSection.lumiSummary.LHCNormalization = 1.0;
 
     // once per lumi section
     CalcLHCLumi( localSection );
