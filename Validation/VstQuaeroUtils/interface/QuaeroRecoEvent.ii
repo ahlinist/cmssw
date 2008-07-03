@@ -256,6 +256,8 @@ std::string QuaeroRecoEvent<T>::collider() const
     ans = "tev2";
   else if((collisionType=="pp")&&(Math::MPEquality(rootS,14000,0.1)))
     ans = "lhc";
+  else if((collisionType=="pp")&&(Math::MPEquality(rootS,10000,0.1)))
+    ans = "lhc";
   else
     cout << "rootS = " << rootS << endl;
   assert(ans!="");
