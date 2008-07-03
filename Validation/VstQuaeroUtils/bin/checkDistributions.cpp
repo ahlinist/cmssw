@@ -223,6 +223,7 @@ void checkDistributions(string baseDirectory, string type1, string type2,
 	}
 
       double deltaBkgWeight = 0.;
+      //mrenna:  don't mess around with mc weights
       if(bkgWeight>0)
 	{
 	  deltaBkgWeight = bkgWeight/sqrt(Math::effectiveNumberOfEvents(bkgwt)) + 1;
@@ -249,7 +250,8 @@ void checkDistributions(string baseDirectory, string type1, string type2,
       while(fdata.nextEvent(event))
 	{
 	  event.reWeight(event.getWeight()*multiplicativeFactor);
-	  if(event.getWeight()<prescale)
+	  //mrenna:  for mc comparisons, don't want to muck with "data"
+	  if(event.getWeight()<prescale && experiment!="mc")
 	    {
 	      runningWeight += event.getWeight();
 	      if(runningWeight>=prescale)
