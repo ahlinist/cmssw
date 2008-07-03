@@ -19,7 +19,7 @@
 //                   Fedor Ratnikov
 //                   Jordan Damgov
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.33 2008/07/03 09:07:18 efe Exp $
+// $Id: HcalProm.cc,v 1.34 2008/07/03 09:58:42 efe Exp $
 //
 //
 
@@ -1501,14 +1501,24 @@ TH1F *HcalProm::book1DHistogram(TFileDirectory & fDir, const std::string & fName
     sprintf(title, "%s [RUN:%ld/%ld]", fTitle.c_str(), runBegin, lumibegin);
     std::cout << "booking 1d histogram " << title << std::endl;
     return fDir.make < TH1F > (fName.c_str(), title, fNbins, fXmin, fXmax);
-} TH2F *HcalProm::book2DHistogram(TFileDirectory & fDir, const std::string & fName, const std::string & fTitle,
+} 
+TH2F *HcalProm::book2DHistogram(TFileDirectory & fDir, const std::string & fName, const std::string & fTitle,
   int fNbinsX, double fXmin, double fXmax, int fNbinsY, double fYmin, double fYmax) const {
     char title[1024];
 
     sprintf(title, "%s [RUN:%ld/%ld]", fTitle.c_str(), runBegin, lumibegin);
     std::cout << "booking 2d histogram " << title << std::endl;
     return fDir.make < TH2F > (fName.c_str(), title, fNbinsX, fXmin, fXmax, fNbinsY, fYmin, fYmax);
-} void HcalProm::bookHistograms() {
+} 
+TProfile *HcalProm::bookProfileHistogram(TFileDirectory & fDir, const std::string & fName, const std::string & fTitle,
+					 int fNbins, double fXmin, double fXmax, double fYmin, double fYmax) const {
+    char title[1024];
+    sprintf(title, "%s [RUN:%ld/%ld]", fTitle.c_str(), runBegin, lumibegin);
+    std::cout << "booking profile histogram " << title << std::endl;
+    return fDir.make < TProfile > (fName.c_str(), title, fNbins, fXmin, fXmax, fYmin, fYmax); 
+}
+
+void HcalProm::bookHistograms() {
 
     TFileDirectory EcalDir = fs->mkdir("Ecal");
     TFileDirectory HcalDir = fs->mkdir("Hcal");
@@ -1799,8 +1809,8 @@ TH1F *HcalProm::book1DHistogram(TFileDirectory & fDir, const std::string & fName
    hEmuonPhiDetaTower6 = book1DHistogram(MuonDir, "hEmuonPhiDetaTower6","Emoun in 6th:0.9-1. part of phi Towers ", 60, -2., 10.);
 
    // fill TProfile for Time as iphi
-   hProfTimeAsIdPhiMinus = new TProfile("hProfTimeAsIdPhiMinus","mean Time as IdPhi for ETA-",73,-0.5,72.5,-150,150);
-   hProfTimeAsIdPhiPlus = new TProfile("hProfTimeAsIdPhiPlus","mean Time as IdPhi for ETA+",73,-0.5,72.5,-150,150);
+   hProfTimeAsIdPhiMinus = bookProfileHistogram(MuonDir, "hProfTimeAsIdPhiMinus","mean Time as IdPhi for ETA-",73,-0.5,72.5,-150,150);
+   hProfTimeAsIdPhiPlus = bookProfileHistogram(MuonDir, "hProfTimeAsIdPhiPlus","mean Time as IdPhi for ETA+",73,-0.5,72.5,-150,150);
   
     //<- kropiv-efe
     char name[1024];
