@@ -142,7 +142,9 @@ void BsAnalyzer::analyze( const Event& e, const EventSetup& )
      hGeneralId->Fill((*p)->pdg_id()); 
 
      // --------------------------------------------------------------
-     /* if ( abs((*p)->pdg_id()/100) == 5 || abs((*p)->pdg_id()/100) == 4 || abs((*p)->pdg_id()/100) == 3) {
+     if ( abs((*p)->pdg_id()) == 511 ) 
+       // || abs((*p)->pdg_id()/100) == 4 || abs((*p)->pdg_id()/100) == 3) 
+     {
        if (!endvert) {
 	 *undecayed << (*p)->pdg_id() << endl;
        } else {
@@ -151,9 +153,9 @@ void BsAnalyzer::analyze( const Event& e, const EventSetup& )
 	   *decayed << (*bp)->pdg_id() << " " ;
          }
          *decayed << endl;
-       }
-       }*/
-     if ((*p)->pdg_id() == 443) *undecayed << (*p)->pdg_id() << endl;
+       }       
+     }
+     // if ((*p)->pdg_id() == 443) *undecayed << (*p)->pdg_id() << endl;
      // --------------------------------------------------------------
      if ( (*p)->pdg_id() == 531 /* && endvert */ ) {  // B_s 
        nbs++;
