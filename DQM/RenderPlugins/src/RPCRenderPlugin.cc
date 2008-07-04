@@ -24,7 +24,6 @@ void RPCRenderPlugin::preDraw( TCanvas *c, const DQMNet::CoreObject &o, const Vi
 #endif
 
   c->cd();
-
  
   if( dynamic_cast<TH2*>( o.object ) ) {
     preDrawTH2( c, o );
@@ -39,6 +38,16 @@ void RPCRenderPlugin::preDraw( TCanvas *c, const DQMNet::CoreObject &o, const Vi
 
 void RPCRenderPlugin::postDraw(TCanvas *c,const DQMNet::CoreObject &o,const VisDQMImgInfo &i){
   c->cd();
+
+  TText tt;
+  tt.SetTextSize(0.12);
+
+  if(o.name.find("Endcap") != std::string::npos && o.name.find("Barrel") == std::string::npos  ){
+    tt.setTextColor(3);
+    tt.DrawTextNDC(0.5, 0.5, "OK-Not in Run");
+    return;
+  }
+
 
   if(dynamic_cast<TH2*>( o.object ) ) postDrawTH2(c,o); 
 
