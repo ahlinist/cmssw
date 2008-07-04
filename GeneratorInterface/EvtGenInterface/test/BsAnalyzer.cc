@@ -24,7 +24,8 @@
 #include "TH1.h"
 #include "TF1.h"
 #include "TLorentzVector.h"
-#include "TVector3.h" 
+#include "TVector3.h"
+#include "TObjArray.h"
  
 #include "FWCore/Framework/interface/MakerMacros.h"
 
@@ -327,12 +328,41 @@ void BsAnalyzer::analyze( const Event& e, const EventSetup& )
 
 void BsAnalyzer::endJob()
 {
-   
-   fOutputFile->Write() ;
-   fOutputFile->Close() ;
-   cout << "N_events = " << nevent << "\n";
-   cout << "N_Bs = " << nbs << "\n"; 
-   return ;
+  TObjArray Hlist(0);
+  Hlist.Add(hGeneralId);	   
+  Hlist.Add(hIdPhiDaugs) ;	   
+  Hlist.Add(hnB);		   
+  Hlist.Add(hnBz) ;		   
+  Hlist.Add(hnBzb) ;	   
+  Hlist.Add(hPtbs) ;	   
+  Hlist.Add(hPbs) ;		   
+  Hlist.Add(hPhibs) ;	   
+  Hlist.Add(hEtabs) ;	   
+  Hlist.Add(hPtmu) ;	   
+  Hlist.Add(hPmu) ;		   
+  Hlist.Add(hPhimu) ;	   
+  Hlist.Add(hEtamu) ;	   
+  Hlist.Add(htbJpsiKs) ;	   
+  Hlist.Add(htbbarJpsiKs) ;	   
+  Hlist.Add(htbPlus) ;	   
+  Hlist.Add(htbsUnmix) ;	   
+  Hlist.Add(htbsMix) ;	   
+  Hlist.Add(htbUnmix) ;	   
+  Hlist.Add(htbMix) ; 	   
+  Hlist.Add(htbMixPlus) ;	   
+  Hlist.Add(htbMixMinus) ;     
+  Hlist.Add(hmumuMassSqr) ;	   
+  Hlist.Add(hmumuMassSqrPlus) ;
+  Hlist.Add(hmumuMassSqrMinus); 
+  Hlist.Add(hIdBsDaugs) ;	   
+  Hlist.Add(hIdBDaugs) ;	   
+  Hlist.Add(hCosHelAngleK) ;   
+  Hlist.Add(hCosHelAngleKbkg) ;
+  Hlist.Write() ;
+  fOutputFile->Close() ;
+  cout << "N_events = " << nevent << "\n";
+  cout << "N_Bs = " << nbs << "\n"; 
+  return ;
 }
  
 DEFINE_FWK_MODULE(BsAnalyzer);

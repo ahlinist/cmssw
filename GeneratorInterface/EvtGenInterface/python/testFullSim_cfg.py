@@ -51,7 +51,7 @@ process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService
 
 process.randomEngineStateProducer = cms.EDProducer("RandomEngineStateProducer")
 
-process.EXAMPLE-RUN-ALL = cms.OutputModule("PoolOutputModule",
+process.myout = cms.OutputModule("PoolOutputModule",
     outputCommands = cms.untracked.vstring('keep *', 
         'drop *_g4SimHits_*_*'),
     fileName = cms.untracked.string('/tmp/covarell/exampleRunAllOutput.root')
@@ -359,7 +359,7 @@ process.evtgenproducer = cms.EDProducer("EvtGenProducer",
         'MDCY(293,1) = 0', 
         'MDCY(105,1) = 0', 
         'MSEL=5         ! b-bbar'),
-    decay_table = cms.string('../data/DECAY_NOPHOTOS.DEC'),
+    decay_table = cms.string('../data/DECAY.DEC'),
     user_decay_file = cms.untracked.string('../data/Bd_JpsiKs_mumupipi.dec'),
     list_forced_decays = cms.vstring('MyB0', 
         'Myanti-B0')
@@ -372,7 +372,7 @@ process.p3 = cms.Path(process.L1Emulator)
 process.p4 = cms.Path(process.DigiToRaw)
 process.p5 = cms.Path(process.RawToDigi)
 process.p6 = cms.Path(process.reconstruction)
-process.outpath = cms.EndPath(process.EXAMPLE-RUN-ALL)
+process.outpath = cms.EndPath(process.myout)
 process.schedule = cms.Schedule(process.p0,process.p1,process.p2,process.p3,process.p4,process.p5,process.p6,process.outpath)
 
 process.g4SimHits.Generator.HepMCProductLabel = 'evtgenproducer'
