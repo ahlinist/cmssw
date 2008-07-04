@@ -17,7 +17,7 @@
 // Original Author:  Efe Yazgan
 // Updated        :  Taylan Yetkin (2008/05/08)
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.h,v 1.15 2008/07/03 09:58:45 efe Exp $
+// $Id: HcalProm.h,v 1.16 2008/07/03 12:18:59 efe Exp $
 //
 //
 
@@ -303,7 +303,7 @@ class HcalProm : public edm::EDAnalyzer {
       TH1F* h_NoisePhi[9];
 	      
 
-  
+      TH1F *h_jet_multiplicity;
       TH1F *h_jet_Pt;
       TH1F *h_jet_Eta;
       TH1F *h_jet_Phi;

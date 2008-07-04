@@ -19,7 +19,7 @@
 //                   Fedor Ratnikov
 //                   Jordan Damgov
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.34 2008/07/03 09:58:42 efe Exp $
+// $Id: HcalProm.cc,v 1.35 2008/07/03 12:18:56 efe Exp $
 //
 //
 
@@ -1432,6 +1432,7 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
         float MHT = 0;
 
         std::vector < CaloJet > myjet;
+	
         for (CaloJetCollection::const_iterator jetiter = cjet.begin(); jetiter != cjet.end(); jetiter++) {
             h_jet_Pt->Fill(jetiter->pt());
             h_jet_Eta->Fill(jetiter->eta());
@@ -1444,15 +1445,16 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
             }
         }
         if (myjet.size() > 0) {
-            std::stable_sort(myjet.begin(), myjet.end(), CaloJetSort());
-            // now go to deeper levels:
-            // 1-from jet to calo-tower
-            CaloJet jet;
+	  std::stable_sort(myjet.begin(), myjet.end(), CaloJetSort());
+	  h_jet_multiplicity->Fill(myjet.size());//
+	  // now go to deeper levels:
+	  // 1-from jet to calo-tower
+	  CaloJet jet;
 
-            jet = myjet[0];
-            h_leadJet_Pt->Fill(jet.pt());
-            h_leadJet_Eta->Fill(jet.eta());
-            h_leadJet_Phi->Fill(jet.phi());
+	  jet = myjet[0];
+	  h_leadJet_Pt->Fill(jet.pt());
+	  h_leadJet_Eta->Fill(jet.eta());
+	  h_leadJet_Phi->Fill(jet.phi());
         }
         // MET
         h_caloMet_Met->Fill(calomet->pt());
@@ -1546,6 +1548,7 @@ void HcalProm::bookHistograms() {
 
     h_hbtiming = book1DHistogram(HcalDir, "h_hbtiming", "HBHE Timing", 10, -0.5, 9.5);
 
+    h_jet_multiplicity = book1DHistogram(JetMetDir, "h_jet_multiplicity", "Jet Multiplicity", 12, 0, 12);
     h_jet_Pt = book1DHistogram(JetMetDir, "h_jet_Pt", "Jet PT", 130, -10, 120);
     h_jet_Eta = book1DHistogram(JetMetDir, "h_jet_Eta", "Jet Eta", 100, -7, 7);
     h_jet_Phi = book1DHistogram(JetMetDir, "h_jet_Phi", "Jet Phi", 100, -7, 7);
@@ -1983,8 +1986,9 @@ void HcalProm::bookHistograms() {
 // ------------ method called once each job just after ending the event loop  ------------
 void HcalProm::endJob() {
 
-    if (prompt_htmlPrint)
-        htmlOutput();
+  h_jet_multiplicity->SetFillColor(4);
+  if (prompt_htmlPrint)
+    htmlOutput();
 }
 
 //      HTML OUTPUT
@@ -2151,6 +2155,7 @@ void HcalProm::JetMetHTMLOutput(string startTime, string htmlDir, string htmlNam
           " Histograms</h3></td></tr>" << endl;
         if (i == 0) {
             htmlFile << "<tr align=\"left\">" << endl;
+	    histoHTML(h_jet_multiplicity, "Jet Multiplicity", "Events", 92, htmlFile, htmlDir);
             histoHTML(h_jet_Pt, "All Jets Pt", "Events", 92, htmlFile, htmlDir);
             histoHTML(h_jet_Eta, "All Jets Eta", "Events", 92, htmlFile, htmlDir);
             histoHTML(h_jet_Phi, "all Jets Phi", "Events", 92, htmlFile, htmlDir);
