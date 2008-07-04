@@ -5,6 +5,7 @@
 #include <iostream>
 #include <cassert>
 #include "TLine.h"
+#include "TText.h"
 
 #include "DQM/RenderPlugins/src/RPCRenderPlugin.h"
 #include "DQM/RenderPlugins/src/utils.h"
@@ -43,7 +44,7 @@ void RPCRenderPlugin::postDraw(TCanvas *c,const DQMNet::CoreObject &o,const VisD
   tt.SetTextSize(0.12);
 
   if(o.name.find("Endcap") != std::string::npos && o.name.find("Barrel") == std::string::npos  ){
-    tt.setTextColor(3);
+    tt.SetTextColor(3);
     tt.DrawTextNDC(0.5, 0.5, "OK-Not in Run");
     return;
   }
