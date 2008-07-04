@@ -45,6 +45,16 @@ SummaryMap::SummaryMap() {
   bBlank->SetLineColor(1);
   bBlank->SetLineStyle(1);
 
+  bEmptyMinus = new TBox(-2.45, 0.0, -1.0, 2.0*3.14159);
+  bEmptyMinus->SetFillColor(10);
+  bEmptyMinus->SetLineColor(1);
+  bEmptyMinus->SetLineStyle(1);
+
+  bEmptyPlus = new TBox(2.45, 0.0, 1.0, 2.0*3.14159);
+  bEmptyPlus->SetFillColor(10);
+  bEmptyPlus->SetLineColor(1);
+  bEmptyPlus->SetLineStyle(1);
+
 }
 
 SummaryMap::~SummaryMap() {
@@ -58,6 +68,8 @@ void SummaryMap::drawDetector(TH2* me){
 
   h1->Draw();
   bBlank->Draw("l");
+  bEmptyMinus->Draw("l");
+  bEmptyPlus->Draw("l");
 
   TBox *b[N_TICS][N_TICS];
   TLine *l[N_TICS - 1][2];
@@ -145,10 +157,27 @@ void SummaryMap::drawStation(TH2* me, const int station){
     unsigned int x = 1 + (box->adr.side - 1) * 9 + (box->adr.ring - 1) * 3 + (box->adr.hv - 1);
     unsigned int y = 1 + (box->adr.chamber - 1) * 5 + (box->adr.cfeb - 1);
  
-    if(me->GetBinContent(x, y) > 0)
-      b[p_hw]->SetFillColor(8);
-    else
-      b[p_hw]->SetFillColor(18);
+    switch ((int) me->GetBinContent(x, y)) {
+      case -1:
+        // Error (RED)
+        b[p_hw]->SetFillColor(2);
+        break;
+      case 1:
+        // OK (GREEN)
+        b[p_hw]->SetFillColor(8);
+        break;
+      case 2:
+        // Swithed off (DARK GREY)
+        b[p_hw]->SetFillColor(15);
+        break;
+      case 0:
+        // No data (WHITE)
+        b[p_hw]->SetFillColor(10);
+        break;
+      default:
+        // Application error!? Can not be this... (MAGENTA)
+        b[p_hw]->SetFillColor(6);
+    }
 
     b[p_hw]->SetLineColor(9);
     b[p_hw]->SetLineStyle(1);
