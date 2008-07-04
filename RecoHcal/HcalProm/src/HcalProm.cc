@@ -18,8 +18,9 @@
 // Updated        :  Taylan Yetkin (2008/05/08)
 //                   Fedor Ratnikov
 //                   Jordan Damgov
+//                   Anna Kropivnitskaya
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.35 2008/07/03 12:18:56 efe Exp $
+// $Id: HcalProm.cc,v 1.36 2008/07/04 11:45:09 efe Exp $
 //
 //
 
@@ -1138,6 +1139,7 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
     
 
     //-> kropiv-efe
+    //Golden Muons
     float DeltaPhiTower = 0.08726646;
        if(NumMuonHBphiPlane>0){ 
             for(Int_t ik = 0; ik<NumMuonHBphiPlane;ik++){
@@ -1319,6 +1321,7 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
             } //end for for interested muon 
         } // end check if good moun exists
     //<- kropiv-efe
+
 
 
         for (HFRecHitCollection::const_iterator hhit = Hithf.begin(); hhit != Hithf.end(); hhit++) {
@@ -1548,18 +1551,18 @@ void HcalProm::bookHistograms() {
 
     h_hbtiming = book1DHistogram(HcalDir, "h_hbtiming", "HBHE Timing", 10, -0.5, 9.5);
 
-    h_jet_multiplicity = book1DHistogram(JetMetDir, "h_jet_multiplicity", "Jet Multiplicity", 12, 0, 12);
-    h_jet_Pt = book1DHistogram(JetMetDir, "h_jet_Pt", "Jet PT", 130, -10, 120);
-    h_jet_Eta = book1DHistogram(JetMetDir, "h_jet_Eta", "Jet Eta", 100, -7, 7);
-    h_jet_Phi = book1DHistogram(JetMetDir, "h_jet_Phi", "Jet Phi", 100, -7, 7);
-    h_leadJet_Pt = book1DHistogram(JetMetDir, "h_leadJet_Pt", "Leading Jet PT", 120, 0, 120);
-    h_leadJet_Eta = book1DHistogram(JetMetDir, "h_leadJet_Eta", "Leading Jet Eta", 100, -7, 7);
-    h_leadJet_Phi = book1DHistogram(JetMetDir, "h_leadJet_Phi", "Leading Jet Phi", 100, -7, 7);
-    h_caloMet_Met = book1DHistogram(JetMetDir, "h_caloMet_Met", "MET from CaloTowers", 100, 0, 50);
-    h_caloMet_Phi = book1DHistogram(JetMetDir, "h_caloMet_Phi", "MET #phi from CaloTowers", 100, -7, 7);
-    h_caloMet_SumEt = book1DHistogram(JetMetDir, "h_caloMet_SumEt", "SumET from CaloTowers", 100, 0, 50);
-    h_MHT = book1DHistogram(JetMetDir, "h_MHT", "MHT", 600, -10, 20);
-    h_HT = book1DHistogram(JetMetDir, "h_HT", "HT", 600, -10, 20);
+    h_jet_multiplicity = book1DHistogram(JetMetDir, "h_jet_multiplicity", "Jet Multiplicity", 40, 0, 40);
+    h_jet_Pt = book1DHistogram(JetMetDir, "h_jet_Pt", "Jet PT", 100, -6, 20);
+    h_jet_Eta = book1DHistogram(JetMetDir, "h_jet_Eta", "Jet Eta", 100, -5.5, 5.5);
+    h_jet_Phi = book1DHistogram(JetMetDir, "h_jet_Phi", "Jet Phi", 100, -4, 4);
+    h_leadJet_Pt = book1DHistogram(JetMetDir, "h_leadJet_Pt", "Leading Jet PT", 100, -6, 20);
+    h_leadJet_Eta = book1DHistogram(JetMetDir, "h_leadJet_Eta", "Leading Jet Eta", 100, -5.5, 5.5);
+    h_leadJet_Phi = book1DHistogram(JetMetDir, "h_leadJet_Phi", "Leading Jet Phi", 100, -4, 4);
+    h_caloMet_Met = book1DHistogram(JetMetDir, "h_caloMet_Met", "MET from CaloTowers", 100, 0, 25);
+    h_caloMet_Phi = book1DHistogram(JetMetDir, "h_caloMet_Phi", "MET #phi from CaloTowers", 100, -4, 4);
+    h_caloMet_SumEt = book1DHistogram(JetMetDir, "h_caloMet_SumEt", "SumET from CaloTowers", 100, 0, 40);
+    h_MHT = book1DHistogram(JetMetDir, "h_MHT", "MHT", 100, -5, 10);
+    h_HT = book1DHistogram(JetMetDir, "h_HT", "HT", 100, -5, 10);
 
     h_eb_rechit_energy = book1DHistogram(EcalDir, " h_eb_rechit_energy", "RecHit Energy EB", 160, -10, 30);
     h_maxebeerec = book1DHistogram(EcalDir, "h_maxebeerec", "EBEE Muon (GeV)", 200, 0, 15);
@@ -1987,6 +1990,17 @@ void HcalProm::bookHistograms() {
 void HcalProm::endJob() {
 
   h_jet_multiplicity->SetFillColor(4);
+  h_jet_Pt->SetFillColor(4);
+  h_jet_Eta->SetFillColor(4);
+  h_jet_Phi->SetFillColor(4);
+  h_leadJet_Pt->SetFillColor(2);
+  h_leadJet_Eta->SetFillColor(2);
+  h_leadJet_Phi->SetFillColor(2);
+  h_caloMet_Met->SetFillColor(3);
+  h_caloMet_Phi->SetFillColor(3);
+  h_caloMet_SumEt->SetFillColor(3);
+  h_MHT->SetFillColor(3);
+  h_HT->SetFillColor(3);
   if (prompt_htmlPrint)
     htmlOutput();
 }
@@ -2847,60 +2861,6 @@ void HcalProm::parseString(string & title) {
 
 // END OF HTML OUTPUT 
 
-/*
-void HcalProm::Extrapolate(
-  // inputs
-  double ox, double oy, double oz, double px, double py, double pz, double ra,
-  // outputs
-  double *thetap_out, double *phip_out, double *thetam_out, double *phim_out) {
-
-    if (px == 0.) {
-        std::
-          cout <<
-          "px is exactly 0 - the extrapolation can not handle this case currently, sorry. Not extrapolating." <<
-          std::endl;
-        return;
-    }
-
-    double xp = -99999.;
-    double yp = -99999.;
-    double zp = -99999.;
-
-    double xm = -99999.;
-    double ym = -99999.;
-    double zm = -99999.;
-
-    double a = py / px;
-    double b = oy - a * ox;
-
-    double notnegative = (ra * ra - b * b) / (1 + a * a) + TMath::Power(a * b / (1 + a * a), 2.);
-
-    if (notnegative > 0.) {
-        xp = TMath::Sqrt(notnegative) - a * b / (1 + a * a);
-        yp = (py / px) * (xp - ox) + oy;
-        zp = (pz * (xp - ox) / px) + oz;
-        double phip = TMath::ATan2(yp, xp);
-        double thetap = TMath::Pi() / 2. - TMath::ASin(zp / TMath::Sqrt(xp * xp + yp * yp));
-
-        xm = -TMath::Sqrt(notnegative) - a * b / (1 + a * a);
-        ym = py / px * (xm - ox) + oy;
-        zm = pz * (xm - ox) / px + oz;
-
-        double phim = TMath::ATan2(ym, xm);
-        double thetam = TMath::ACos(zp / TMath::Sqrt(xm * xm + ym * ym));
-
-        // set the output values if we are in a reasonable z range
-        if (TMath::Abs(zp) < 433. && TMath::Abs(zm) < 433.) {
-            *thetap_out = thetap;
-            *phip_out = phip;
-            *thetam_out = thetam;
-            *phim_out = phim;
-        }
-    } else {
-        std::cout << "No intersection of Cosmic Muon with Calotower." << std::endl;
-    }
-}
-*/
 
 float HcalProm::deltaR(float eta0, float phi0, float eta, float phi) {
     float dphi = phi - phi0;
