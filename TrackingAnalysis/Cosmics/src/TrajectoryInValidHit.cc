@@ -23,8 +23,8 @@ TrajectoryInValidHit::TrajectoryInValidHit( const TrajectoryMeasurement& tm, con
   theHit = tm.recHit();  
   
   uint iidd = theHit->geographicalId().rawId();
-  TrajectoryStateTransform tsostransform;
-  PTrajectoryStateOnDet* combinedptsod=tsostransform.persistentState( theCombinedPredictedState,iidd);
+  //  TrajectoryStateTransform tsostransform;
+  //  PTrajectoryStateOnDet* combinedptsod=tsostransform.persistentState( theCombinedPredictedState,iidd);
   
   
   StripSubdetector strip=StripSubdetector(iidd);
@@ -33,6 +33,7 @@ TrajectoryInValidHit::TrajectoryInValidHit( const TrajectoryMeasurement& tm, con
   uint laytob = 1000;
   float xB = 0.; 
   float yB = 0.;
+  //set bounds for point to be within to be counted in the study
   if (subid ==  StripSubdetector::TIB) { 
     TIBDetId tibid(iidd);
     laytib =tibid.layer();
@@ -54,7 +55,7 @@ TrajectoryInValidHit::TrajectoryInValidHit( const TrajectoryMeasurement& tm, con
   const GeomDetUnit * monodet;
   const GeomDetUnit * stereodet;
  
-  if (laytib == 1 || laytib == 2 || laytob == 1 || laytob == 2){
+  /*  if (laytib == 1 || laytib == 2 || laytob == 1 || laytob == 2){
     
     GluedGeomDet * gdet=(GluedGeomDet *)tracker->idToDet(theHit->geographicalId());    
     GlobalVector gtrkdirco=gdet->toGlobal(combinedptsod->parameters().momentum());
@@ -74,15 +75,17 @@ TrajectoryInValidHit::TrajectoryInValidHit( const TrajectoryMeasurement& tm, con
     StereolocX_temp = pstereoco.x(); 
     StereolocY_temp = pstereoco.y(); 
   }
-  else {
+  else { */
     RPhilocX_temp = theCombinedPredictedState.localPosition().x();
     RPhilocY_temp = theCombinedPredictedState.localPosition().y();
-    StereolocX_temp = 1000.;
-    StereolocY_temp = 1000.;
+    //StereolocX_temp = 1000.; //treat mono and stereo the same now.
+    StereolocX_temp = theCombinedPredictedState.localPosition().x();
+    //StereolocY_temp = 1000.;
+    StereolocY_temp = theCombinedPredictedState.localPosition().y();
     monodet = (GeomDetUnit*)theHit->det();
     stereodet = (GeomDetUnit*)theHit->det();
 
-  }
+    //  }
 
 
   // Restrict the bound regions for better understanding of the modul assignment. 
@@ -111,6 +114,9 @@ TrajectoryInValidHit::TrajectoryInValidHit( const TrajectoryMeasurement& tm, con
   BoundedPointRphi = LocalPoint(xRphi,yRphi,zz);
   BoundedPointSte = LocalPoint(xSte,ySte,zz);
   
+  cout << "Bouding point rphi = " << LocalPoint(xRphi,yRphi,zz) << endl;
+  cout << "Bouding point stereo = " << LocalPoint(xSte,ySte,zz) << endl;
+  if (monodet!=stereodet){cout << "monodet!=stereodet" << endl;} else {cout << "monodet==stereodet" << endl;}
   
   // ---> RPhi Stereo modules 
   if ( monodet->surface().bounds().inside(BoundedPointRphi)) {
@@ -183,7 +189,7 @@ bool TrajectoryInValidHit::InValid() const
 
 LocalPoint TrajectoryInValidHit::project(const GeomDet *det,const GeomDet* projdet,LocalPoint position,LocalVector trackdirection)const
 {
-  
+  cout << "getting projection" << endl;  
   GlobalPoint globalpoint=(det->surface()).toGlobal(position);
   
   // position of the initial and final point of the strip in glued local coordinates

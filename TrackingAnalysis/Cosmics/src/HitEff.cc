@@ -152,11 +152,11 @@ void HitEff::beginJob(const edm::EventSetup& c){
    }
    if (TkLayers  == layers ) {
      if ( modulo != 0){
-       cout << " modulo stereo " << (*DetItr) << " TkLayers " << TkLayers << endl;
+       //cout << " modulo stereo " << (*DetItr) << " TkLayers " << TkLayers << endl;
       ActiveLayStereo.push_back(*DetItr);
      }
      else{
-       cout << " modulo mono " << (*DetItr) << " TkLayers " << TkLayers << endl;
+       //cout << " modulo mono " << (*DetItr) << " TkLayers " << TkLayers << endl;
        ActiveLayMono.push_back(*DetItr);
      }
    }
@@ -283,15 +283,20 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
   edm::Handle<SiStripRecHit2DCollection> rphirecHits;
   edm::InputTag rphirecHitsTag = conf_.getParameter<edm::InputTag>("rphirecHits");
   e.getByLabel( rphirecHitsTag ,rphirecHits);
-  
+
+  //cout << "Number of rphi rechits = " << rphirecHits.product()->size() << endl;
+
   //stereo
   edm::Handle<SiStripRecHit2DCollection> stereorecHits;
   edm::InputTag stereorecHitsTag = conf_.getParameter<edm::InputTag>("stereorecHits");
   e.getByLabel( stereorecHitsTag ,stereorecHits);
+
+  //cout << "Number of stereo rechits = " << stereorecHits.product()->size() << endl;
   
   edm::ESHandle<TrackerGeometry> tracker;
   es.get<TrackerDigiGeometryRecord>().get(tracker);
   const TrackerGeometry * tkgeom=&(* tracker);
+
   
   theAngleFinder = new TrackLocalAngle( tracker.product() );
   
@@ -346,6 +351,7 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
   } 
   // ************ END Stereo RecHit Collection
   
+  //cout << "Number of hits in stereo vector = " << vSte_SiStripRecHit2D.size() << endl;
   
   // ************ RPhi RecHit Collection
   SiStripRecHit2DCollection::const_iterator istrip;
@@ -391,7 +397,7 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
 	if(Totlayer  == layers ) {
 	  double prob;
 	  prob = RanGen2.Rndm();
-	  if (prob > 0.5) {
+	  if (prob > 0.05) {
 	    vRPhi_SiStripRecHit2D.push_back(hit);
 	  }
 	}
@@ -400,7 +406,9 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
 	}
       }
     }
-  }
+  } //end fill rphi vector
+
+  //cout << "Number of hits in rphi vector = " << vRPhi_SiStripRecHit2D.size() << endl;
 
   RHNum = ContRH;
   if (RHNum > 200 ) RHNum = 199;
@@ -477,8 +485,9 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
     }  //   ************ End Track Trigger
 
     int ContTRH = 0;      
-    if (TIBTrigg && TOBTrigg && MatchedHit > 2) {
-      
+    //    if (TIBTrigg && TOBTrigg && MatchedHit > 2) {   //matchedHits are not counted as such anymore
+    if (TIBTrigg && TOBTrigg) {
+      //cout << "Passed HitRes trigger" << endl;      
       EventTriggCKF++; 
       
       const Trajectory traj2 = *(TrajectoryCollectionCKF.product()->begin());
@@ -512,8 +521,10 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
 	}
 	bool IsStereo = false;
 	if (TKlayers == 1 || TKlayers == 2 || TKlayers == 5 || TKlayers == 6){    // Stereo layers
-	  iiddStereo = iidd+1;
-	  iiddMono = iidd+2;
+	  //iiddStereo = iidd+1;
+	  iiddStereo = iidd;
+	  //iiddMono = iidd+2;
+	  iiddMono = iidd;
 	  IsStereo = true;
 	}
 	else {     // Mono layers
@@ -523,11 +534,10 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
 
 	// Modules Constraints
 
-
 	TrajectoryInValidHit*  TM = new TrajectoryInValidHit(*itm2,tkgeom);
-	
+
 	// --> Get trajectory from combinatedState 
-	
+
 	xloc = TM->localRPhiX();
 	yloc = TM->localRPhiY();
 	
@@ -564,20 +574,27 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
 	  }
 	  ContTRH++;
 	}
-	
+
+
  	if (layers == TKlayers) {   // Look at the layer not used to reconstruct the track
 	  // *************************************  Stereo RecHit Efficiency  *****************************************************
+
+	  //cout << "Looking at layer under study" << endl;
 	
- 	  if (IsStereo) {
+	  if (IsStereo) {
 	    if (vSte_SiStripRecHit2D.size() > 0) {
+	      //cout << "checking stereo hit" << endl;
 	      std::vector<const SiStripRecHit2D*>::const_iterator HitIterAll = vSte_SiStripRecHit2D.begin();
 	      int ContSte = 0;
 	      int IndexSte[10];
 	      float ResRotateX[10];
 	      float ModResRotateX[10];
 	      for(; HitIterAll != vSte_SiStripRecHit2D.end(); HitIterAll++) {
+		//cout << "looping through stereo hits" << endl;
 		uint SteRecHitID = ((*HitIterAll)->geographicalId()).rawId();
+		//cout << "got stereo rechit id = " <<  SteRecHitID << endl;
 		if (SteRecHitID == iiddStereo){
+		  //cout << "found match for stereo rechit id" << endl;
 		  ResRotateX[ContSte] = ((((*HitIterAll)->localPosition().x())) - xlocSte)*(-1.);
 		  ModResRotateX[ContSte] = abs(ResRotateX[ContSte]);
 		  ContSte++;
@@ -597,6 +614,8 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
 	      else {
 		FinalResSte = 1000;
 	      }
+	      
+	      //cout << "Final resolution for stereo hit = " << FinalResSte << endl;
 
 	      float discr1 = 0.;
 	      float discr2 = 0.;
@@ -610,6 +629,8 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
 		discr2 = fabs(9.4 - fabs(ylocSte))/yErr;
 	      }  
 	      
+	      //cout << "Checking location of stereo hit: abs(ylocSte) = " << abs(ylocSte) << "  abs(xlocSte) = " << abs(xlocSte) << "  discr1 = " << discr1 << "  discr2 = " << discr2 << endl;
+
 	      //if ( abs(ylocSte) > YINTCons  && abs(xlocSte) < 1500 ) {  
 	      if ( abs(ylocSte) > YINTCons  && abs(xlocSte) < 1500  && discr1 > 5 && discr2 > 5 ) {  
 		
@@ -662,20 +683,25 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
 		}
 	      }
 	    }
-	  }
+	  } // end isStereo
+
 	  // RPhi RecHit Efficiency 
 	  if (vRPhi_SiStripRecHit2D.size() > 0) {
+	    //cout << "Checking rphi hits with size = " << vRPhi_SiStripRecHit2D.size() << endl;
 	    std::vector<const SiStripRecHit2D*>::const_iterator HitIterAll = vRPhi_SiStripRecHit2D.begin();
 	    int ContRPhi = 0;
 	    int IndexRPhi[10];
 	    float ResX[10];
 	    float ModResX[10];
 	    for(; HitIterAll != vRPhi_SiStripRecHit2D.end(); HitIterAll++) {
+	      //cout << "In hit iterator for rphi" << endl;
 	      uint RPhiRecHitID = ((*HitIterAll)->geographicalId()).rawId();
+	      //cout << "RecHit ID = " << RPhiRecHitID << "   iiddMono ID = " << iiddMono << endl;
 	      if (RPhiRecHitID == iiddMono) {
 		ResX[ContRPhi] = ( (*HitIterAll)->localPosition().x()) - xloc; //xloc is the x position from the tracking
 		ModResX[ContRPhi] = abs(ResX[ContRPhi]);
 		ContRPhi++;
+		//cout << "Have ID match. ResX = " << ResX[ContRPhi] << endl;
 	      }
 	    }
 	    float FinalResRPhi;
@@ -691,6 +717,9 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
 	    else {
 	      FinalResRPhi = 1000;
 	    }
+
+	    //cout << "Final rphi resolution = " << FinalResRPhi << endl;
+
 	    float discr1 = 0.;
 	    float discr2 = 0.;
 	    if (layers < 5) {
@@ -702,6 +731,7 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
 	      discr2 = fabs(9.4 - fabs(yloc))/yErr;
 	    }  
 
+	    //cout << "Checking location of rphi hit: abs(yloc) = " << abs(yloc) << "  abs(xloc) = " << abs(xloc) << "  discr1 = " << discr1 << "  discr2 = " << discr2 << endl;
 	    
 	    if ( abs(yloc) > YINTCons && abs(xloc) < 1500 && discr1 > 5 && discr2 > 5 ) { 
 	    //if ( abs(yloc) > YINTCons && abs(xloc) < 1500 ) { 
