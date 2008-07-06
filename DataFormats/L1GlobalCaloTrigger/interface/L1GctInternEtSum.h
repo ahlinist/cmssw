@@ -29,6 +29,12 @@ class L1GctInternEtSum {
 		   uint32_t et,
 		   uint8_t oflow);
 
+  /// construct from individual quantities
+  L1GctInternEtSum(uint16_t capBlock,
+		   uint16_t capIndex,
+		   int16_t bx,
+		   uint32_t data);
+
   /// destructor
   ~L1GctInternEtSum();
 
