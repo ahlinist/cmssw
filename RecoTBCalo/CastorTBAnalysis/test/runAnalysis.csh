@@ -30,8 +30,11 @@ else
    EVENTLIMIT=$ELIMDEF
 fi
 
+CURRENT=`pwd`
+
 FILE=/castor/cern.ch/cms/testbeam/tbh2acdr/TB2008_CASTOR/HTB_0${RUNNUMBER}.root
-QADCCONFIG=/afs/cern.ch/user/k/katsas/scratch0/CMSSW_1_7_5/src/RecoTBCalo/CastorTBAnalysis/test/configQADCTDC.txt
+#QADCCONFIG=/afs/cern.ch/user/k/katsas/scratch0/CMSSW_1_7_5/src/RecoTBCalo/CastorTBAnalysis/test/configQADCTDC.txt
+QADCCONFIG=${CURRENT}/configQADCTDC.txt
 OUTDIR=`pwd`
 
 FILEPRE=${FILE%.root}
