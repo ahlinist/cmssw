@@ -529,11 +529,6 @@ gPad->SetGridy();
    c12->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/final.gif");
 
 
-  TCanvas *c13 = new TCanvas("c13","Time vs Ideta");
-//   c8->Divide();
-   c13->cd();
-   hProfTimeAsIdEtaMinus->Draw();
-   
 
 //      c12.WaitPrimitive();
 /////////////////////////////////////
