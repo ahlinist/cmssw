@@ -20,7 +20,7 @@
 //                   Jordan Damgov
 //                   Anna Kropivnitskaya
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.36 2008/07/04 11:45:09 efe Exp $
+// $Id: HcalProm.cc,v 1.37 2008/07/04 15:13:46 efe Exp $
 //
 //
 
@@ -1250,8 +1250,10 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
                                  if((tmuon-meanB)<(-rmsB*1.5))hEmuonHB2DTBotPlusTimeMinus4->Fill(eHB);
                               }
                               if(IdTowerEtaMuonIn[ik]<0&&IdTowerEtaMuonOut[ik]<0){
-                                 meanB=33.51;
-                                 rmsB=27.35;
+				//meanB=33.51;
+				//rmsB=27.35;
+				meanB=34.84;
+				rmsB=27.31;
                                  if(fabs(tmuon-meanB)<=rmsB){
                                     hEmuonHB2DTBotMinus ->Fill(eHB);
                                     hNumTowerMuonHB2DTBotMinus->Fill(NumHBTowersMuon[ik]); 
@@ -1262,13 +1264,40 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
                               }
                            }
 	       
-			   if(IdTowerEtaMuonIn[ik]<0&&IdTowerEtaMuonOut[ik]<0){
-                                 hProfTimeAsIdPhiMinus->Fill(IdTowerPhiMuonIn[ik],tmuon);
-                           }  
-                           if(IdTowerEtaMuonIn[ik]>0&&IdTowerEtaMuonOut[ik]>0){
-                                 hProfTimeAsIdPhiPlus->Fill(IdTowerPhiMuonIn[ik],tmuon);
-                           } 
-		    
+			   //if(IdTowerEtaMuonIn[ik]<0&&IdTowerEtaMuonOut[ik]<0){
+                           //      hProfTimeAsIdPhiMinus->Fill(IdTowerPhiMuonIn[ik],tmuon);
+                           //}  
+                           //if(IdTowerEtaMuonIn[ik]>0&&IdTowerEtaMuonOut[ik]>0){
+                           //      hProfTimeAsIdPhiPlus->Fill(IdTowerPhiMuonIn[ik],tmuon);
+                           //} 
+			   if(IdTowerPhiMuonIn[ik]>=8&&IdTowerPhiMuonIn[ik]<=28&&IdTowerEtaMuonIn[ik]>0&&IdTowerEtaMuonOut[ik]>0){
+			     hProfTimeAsIdPhiPlus->Fill(IdTowerPhiMuonIn[ik],tmuon);
+                           }
+                           if(IdTowerPhiMuonIn[ik]>=8&&IdTowerPhiMuonIn[ik]<=27&&IdTowerEtaMuonIn[ik]<0&&IdTowerEtaMuonOut[ik]<0){
+			     hProfTimeAsIdPhiMinus->Fill(IdTowerPhiMuonIn[ik],tmuon);
+                           }
+                           if(IdTowerPhiMuonIn[ik]>=43&&IdTowerPhiMuonIn[ik]<=65&&IdTowerEtaMuonIn[ik]>0&&IdTowerEtaMuonOut[ik]>0){
+			     hProfTimeAsIdPhiPlus->Fill(IdTowerPhiMuonIn[ik],tmuon);
+                           }
+                           if(IdTowerPhiMuonIn[ik]>=47&&IdTowerPhiMuonIn[ik]<=64&&IdTowerEtaMuonIn[ik]<0&&IdTowerEtaMuonOut[ik]<0){
+			     hProfTimeAsIdPhiMinus->Fill(IdTowerPhiMuonIn[ik],tmuon);
+                           }
+                           if(abs(IdTowerEtaMuonIn[ik]-IdTowerEtaMuonOut[ik])<=3){
+			     float ideta = float(IdTowerEtaMuonIn[ik]+IdTowerEtaMuonOut[ik])/2;
+			     if(IdTowerPhiMuonIn[ik]>=8&&IdTowerPhiMuonIn[ik]<=28&&IdTowerEtaMuonIn[ik]>0){
+			       hProfTimeAsIdEtaTop->Fill(ideta,tmuon);
+			     }
+			     if(IdTowerPhiMuonIn[ik]>=8&&IdTowerPhiMuonIn[ik]<=27&&IdTowerEtaMuonIn[ik]<0&&IdTowerPhiMuonIn[ik]!=24){
+			       hProfTimeAsIdEtaTop->Fill(ideta,tmuon);
+			     }
+			     if(IdTowerPhiMuonIn[ik]>=43&&IdTowerPhiMuonIn[ik]<=65&&IdTowerEtaMuonIn[ik]>0){
+			       hProfTimeAsIdEtaBot->Fill(ideta,tmuon);
+			     }
+			     if(IdTowerPhiMuonIn[ik]>=47&&IdTowerPhiMuonIn[ik]<=64&&IdTowerEtaMuonIn[ik]<0){
+			       hProfTimeAsIdEtaBot->Fill(ideta,tmuon);
+			     }
+                           }
+
                            if(fabs(tmuon-meanB)<=rmsB&&meanB!=0){
                               // fill energy in different id Phi
                               if(IdTowerEtaMuonIn[ik]<0&&IdTowerEtaMuonOut[ik]<0){
@@ -1817,6 +1846,8 @@ void HcalProm::bookHistograms() {
    // fill TProfile for Time as iphi
    hProfTimeAsIdPhiMinus = bookProfileHistogram(MuonDir, "hProfTimeAsIdPhiMinus","mean Time as IdPhi for ETA-",73,-0.5,72.5,-150,150);
    hProfTimeAsIdPhiPlus = bookProfileHistogram(MuonDir, "hProfTimeAsIdPhiPlus","mean Time as IdPhi for ETA+",73,-0.5,72.5,-150,150);
+   hProfTimeAsIdEtaTop = bookProfileHistogram(MuonDir, "hProfTimeAsIdEtaTop","mean Time as IdEta for Top",57,-14.25,14.25,-150,150);
+   hProfTimeAsIdEtaBot = bookProfileHistogram(MuonDir, "hProfTimeAsIdEtaBot","mean Time as IdEta for Bot",57,-14.25,14.25,-150,150);
   
     //<- kropiv-efe
     char name[1024];

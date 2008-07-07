@@ -28,12 +28,21 @@
    //     TAxis *axis = histo->GetXaxis();
    //     axis->SetLabelSize(0.06);
    hAngleMuonHB2DT ->Draw();
+
+gPad->SetGridx();
+gPad->SetGridy();
    c1->cd(2);
    hDeltaImpXYHB2DT->Draw();
+gPad->SetGridx();
+gPad->SetGridy();
    c1->cd(3);
    hDeltaZImpXYHB2DT->Draw();
+gPad->SetGridx();
+gPad->SetGridy();
    c1->cd(4);
    hPhiDeltaTowerHB2DT->Draw();
+gPad->SetGridx();
+gPad->SetGridy();
    c1->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/pic1.gif");
 // wait
 //   c1->WaitPrimitive();
@@ -41,12 +50,20 @@
    TCanvas *c2 = new TCanvas("c2","E of Muon passes though DT in 2 places, NTowerEta<5");
    c2->Divide(2,2);
    c2->cd(1);
+gPad->SetGridx();
+gPad->SetGridy();
    hEmuonHB2DTTopMinus.Fit("gaus","E","",0.8.,2.4);
    c2->cd(2);
+gPad->SetGridx();
+gPad->SetGridy();
    hEmuonHB2DTTopPlus.Fit("gaus","E","",0.8.,2.4);
    c2->cd(3);
+gPad->SetGridx();
+gPad->SetGridy();
    hEmuonHB2DTBotMinus.Fit("gaus","E","",0.8.,2.4);
    c2->cd(4);
+gPad->SetGridx();
+gPad->SetGridy();
    hEmuonHB2DTBotPlus.Fit("gaus","E","",0.8.,2.4);
    c2->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/pic2.gif");
 // wait
@@ -57,12 +74,20 @@
    c21->Divide(2,2);
    c21->cd(1);
    hTimeMuonHB2DTTopMinus->Draw();
+gPad->SetGridx();
+gPad->SetGridy();
    c21->cd(2);
    hTimeMuonHB2DTTopPlus->Draw();
+gPad->SetGridx();
+gPad->SetGridy();
    c21->cd(3);
    hTimeMuonHB2DTBotMinus->Draw();
+gPad->SetGridx();
+gPad->SetGridy();
    c21->cd(4);
    hTimeMuonHB2DTBotPlus->Draw();
+gPad->SetGridx();
+gPad->SetGridy();
    c21->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/pic21.gif");
 //  c21.WaitPrimitive();
 /////////////////////////////////////////////////
@@ -70,26 +95,37 @@
    c22->Divide(2,2);
    c22->cd(1);
    hNumTowerMuonHB2DTTopMinus ->Draw();
+gPad->SetGridx();
+gPad->SetGridy();
    c22->cd(2);
    hNumTowerMuonHB2DTTopPlus->Draw();
+gPad->SetGridx();
+gPad->SetGridy();
    c22->cd(3);
    hNumTowerMuonHB2DTBotMinus->Draw();
+gPad->SetGridx();
+gPad->SetGridy();
    c22->cd(4);
    hNumTowerMuonHB2DTBotPlus->Draw();
+gPad->SetGridx();
+gPad->SetGridy();
    c22->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/pic22.gif");
 // wait
 //  c22.WaitPrimitive();
 /////////////////////////////////////////////////
    TCanvas *c4 = new TCanvas("c4","Number Eta Towers of Muon passes though DT in 2 places, NTowerEta<5");
-   c4->Divide(2,2);
+   c4->Divide(2,1);
    c4->cd(1);
    hIdPhiTowerHB2DTMinus->Draw();
+gPad->SetGridx();
+gPad->SetGridy();
    c4->cd(2);
    hIdPhiTowerHB2DTPlus->Draw();
-                                                                                                                                      
-   c4->cd(3);
+gPad->SetGridx();
+gPad->SetGridy();                                                                                                                      
+//   c4->cd(3);
 //   hIdPhiTowerHB2DTsevMinus->Draw();
-   c4->cd(4);
+//   c4->cd(4);
 //   hIdPhiTowerHB2DTsevPlus->Draw();
    c4->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/pic4.gif");
 // wait
@@ -100,12 +136,20 @@
    c51->Divide(2,2);
    c51->cd(1);
    hNumHitsHB2DT->Draw();
+gPad->SetGridx();
+gPad->SetGridy();
    c51->cd(2);
    hLengthMuonDTHB2DT->Draw();
+gPad->SetGridx();
+gPad->SetGridy();
    c51->cd(3);
    hNumHitsHB2DT2->Draw();
+gPad->SetGridx();
+gPad->SetGridy();
    c51->cd(4);
    hLengthMuonDTHB2DT2->Draw();
+gPad->SetGridx();
+gPad->SetGridy();
    c51->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/pic51.gif");
 // wait
 //  c51.WaitPrimitive();
@@ -114,12 +158,20 @@
    c61->Divide(2,2);
    c61->cd(1);
    //hEmuonHB2DTTopMinusTimeMinus->Draw();
+gPad->SetGridx();
+gPad->SetGridy();
    hEmuonHB2DTTopMinusTimeMinus.Fit("gaus","E","",0.8.,2.4);
    c61->cd(2);
+gPad->SetGridx();
+gPad->SetGridy();
    hEmuonHB2DTTopPlusTimeMinus.Fit("gaus","E","",0.8.,2.4);
    c61->cd(3);
+gPad->SetGridx();
+gPad->SetGridy();
    hEmuonHB2DTBotMinusTimeMinus.Fit("gaus","E","",0.8.,2.4);
    c61->cd(4);
+gPad->SetGridx();
+gPad->SetGridy();
    hEmuonHB2DTBotPlusTimeMinus.Fit("gaus","E","",0.8.,2.4);
    c61->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/pic61.gif");
 // wait
@@ -128,12 +180,20 @@
    TCanvas *c62 = new TCanvas("c62","Number Eta Towers of Muon passes though DT in 2 places, NTowerEta<5");
    c62->Divide(2,2);
    c62->cd(1);
+gPad->SetGridx();
+gPad->SetGridy();
    hEmuonHB2DTTopMinusTimePlus->Fit("gaus","E","",0.8.,2.4);
    c62->cd(2);
+gPad->SetGridx();
+gPad->SetGridy();
    hEmuonHB2DTTopPlusTimePlus->Fit("gaus","E","",0.8.,2.4);
    c62->cd(3);
+gPad->SetGridx();
+gPad->SetGridy();
    hEmuonHB2DTBotMinusTimePlus->Fit("gaus","E","",0.8.,2.4);
    c62->cd(4);
+gPad->SetGridx();
+gPad->SetGridy();
    hEmuonHB2DTBotPlusTimePlus->Fit("gaus","E","",0.8.,2.4);
    c62->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/pic62.gif");
 // wait
@@ -142,12 +202,20 @@
    TCanvas *c63 = new TCanvas("c63","Number Eta Towers of Muon passes though DT in 2 places, NTowerEta<5");
    c63->Divide(2,2);
    c63->cd(1);
+gPad->SetGridx();
+gPad->SetGridy();
    hEmuonHB2DTBotPlusTimeMinus1->Fit("gaus","E","",0.8.,2.4);
    c63->cd(2);
+gPad->SetGridx();
+gPad->SetGridy();
    hEmuonHB2DTBotPlusTimeMinus2->Fit("gaus","E","",0.8.,2.4);
    c63->cd(3);
+gPad->SetGridx();
+gPad->SetGridy();
    hEmuonHB2DTBotPlusTimeMinus3->Fit("gaus","E","",0.8.,2.4);
    c63->cd(4);
+gPad->SetGridx();
+gPad->SetGridy();
    hEmuonHB2DTBotPlusTimeMinus4->Fit("gaus","E","",0.8.,2.4);
    c63->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/pic63.gif");
 // wait
@@ -156,12 +224,20 @@
    TCanvas *c64 = new TCanvas("c64","Number Eta Towers of Muon passes though DT in 2 places, NTowerEta<5");
    c64->Divide(2,2);
    c64->cd(1);
+gPad->SetGridx();
+gPad->SetGridy();
    hEmuonHB2DTBotPlusTimePlus1->Fit("gaus","E","",0.8.,2.4);
    c64->cd(2);
+gPad->SetGridx();
+gPad->SetGridy();
    hEmuonHB2DTBotPlusTimePlus2->Fit("gaus","E","",0.8.,2.4);
    c64->cd(3);
+gPad->SetGridx();
+gPad->SetGridy();
    hEmuonHB2DTBotPlusTimePlus3->Fit("gaus","E","",0.8.,2.4);
    c64->cd(4);
+gPad->SetGridx();
+gPad->SetGridy();
    hEmuonHB2DTBotPlusTimePlus4->Fit("gaus","E","",0.8.,2.4);
    c64->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/pic64.gif");
 // wait
@@ -170,16 +246,28 @@
    TCanvas *c65 = new TCanvas("c65","Number Eta Towers of Muon passes though DT in 2 places, NTowerEta<5");
    c65->Divide(3,2);
    c65->cd(1);
+gPad->SetGridx();
+gPad->SetGridy();
    hEmuonPhiDetaTower1->Fit("gaus","E","",0.8.,2.4);
    c65->cd(2);
+gPad->SetGridx();
+gPad->SetGridy();
    hEmuonPhiDetaTower2->Fit("gaus","E","",0.8.,2.4);
    c65->cd(3);
+gPad->SetGridx();
+gPad->SetGridy();
    hEmuonPhiDetaTower3->Fit("gaus","E","",0.8.,2.4);
    c65->cd(4);
+gPad->SetGridx();
+gPad->SetGridy();
    hEmuonPhiDetaTower4->Fit("gaus","E","",0.8.,2.4);
    c65->cd(5);
+gPad->SetGridx();
+gPad->SetGridy();
    hEmuonPhiDetaTower5->Fit("gaus","E","",0.8.,2.4);
    c65->cd(6);
+gPad->SetGridx();
+gPad->SetGridy();
    hEmuonPhiDetaTower6->Fit("gaus","E","",0.8.,2.4);
    c65->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/pic65.gif");
 // wait
@@ -190,12 +278,20 @@
    c7->Divide(2,2);
    c7->cd(1);
    hImpXYHB2DT->Draw();
+gPad->SetGridx();
+gPad->SetGridy();
    c7->cd(2);
    hZImpXYHB2DT->Draw();
+gPad->SetGridx();
+gPad->SetGridy();
    c7->cd(3);
    hLmuonDTImpXY->Draw();
+gPad->SetGridx();
+gPad->SetGridy();
    c7->cd(4);
    hImpXYvsZ->Draw();
+gPad->SetGridx();
+gPad->SetGridy();
    c7->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/pic7.gif");
 // wait
 //  c7.WaitPrimitive();
@@ -207,12 +303,22 @@
    c8->Divide(2,2);
    c8->cd(1);
    hProfTimeAsIdPhiMinus->Draw();
+gPad->SetGridx();
+gPad->SetGridy();
    c8->cd(2);
    hProfTimeAsIdPhiPlus->Draw();
+gPad->SetGridx();
+gPad->SetGridy();
    c8->cd(3);
-   hIdPhiPlusVsE->Draw();
+//   hIdPhiPlusVsE->Draw();
+   hProfTimeAsIdEtaTop->Draw();
+gPad->SetGridx();
+gPad->SetGridy();
    c8->cd(4);
-   hIdPhiMinusVsE->Draw();
+//   hIdPhiMinusVsE->Draw();
+   hProfTimeAsIdEtaBot->Draw();
+gPad->SetGridx();
+gPad->SetGridy();
    c8->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/pic8.gif");
 // wait
 //  c8.WaitPrimitive();
@@ -220,9 +326,13 @@
    TCanvas *c81 = new TCanvas("c81","IdEtaTower vs E");
    c81->Divide(1,2);
    c81->cd(1);
+gPad->SetGridx();
+gPad->SetGridy();
    hIdEtaTopVsE -> Draw();
    c81->cd(2);
    hIdEtaBotVsE -> Draw();
+gPad->SetGridx();
+gPad->SetGridy();
    c81->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/pic81.gif");
 // wait
   //c81.WaitPrimitive();
@@ -360,9 +470,12 @@ cout<<"next histos"<<endl;
    c9->Divide(1,2);
    c9->cd(1); 
    hEmuonGaussVsIdPhiTowersPlus->Draw();
+gPad->SetGridx();
+gPad->SetGridy();
    c9->cd(2); 
    hEmuonGaussVsIdPhiTowersMinus->Draw();
-
+gPad->SetGridx();
+gPad->SetGridy();
    c9->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/EmuonGaussMeanForHB.gif");
 //      c9.WaitPrimitive();
 /////////////////////////////////////
@@ -370,21 +483,32 @@ cout<<"next histos"<<endl;
    c10->Divide(1,2);
    c10->cd(1); 
    hEmuonGaussSigmaVsIdPhiTowersPlus->Draw();
+gPad->SetGridx();
+gPad->SetGridy();
    c10->cd(2); 
    hEmuonGaussSigmaVsIdPhiTowersMinus->Draw();
-
+gPad->SetGridx();
+gPad->SetGridy();
    c10->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/EmuonGaussSigmaForDiffPhiTower.gif");
 //      c10.WaitPrimitive();
 /////////////////////////////////////
    TCanvas *c11 = new TCanvas("c11","Emuon Gauss sigma for HB");
    c11->Divide(2,2);
    c11->cd(1); 
+gPad->SetGridx();
+gPad->SetGridy();
    hEmeanGaussTopMinus->Draw();
-   c11->cd(2); 
+   c11->cd(2);
+ gPad->SetGridx();
+gPad->SetGridy();
    hEmeanGaussTopPlus->Draw();
-   c11->cd(3); 
+   c11->cd(3);
+ gPad->SetGridx();
+gPad->SetGridy();
    hEmeanGaussBotMinus->Draw();
    c11->cd(4); 
+gPad->SetGridx();
+gPad->SetGridy();
    hEmeanGaussBotPlus->Draw();
 
    c11->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/EmuonGaussSigmaForHB.gif");
@@ -396,11 +520,20 @@ cout<<"next histos"<<endl;
    c12->cd(1);
 
    hEmuonGaussVsIdEtaTowersTop->Draw();
+gPad->SetGridx();
+gPad->SetGridy();
    c12->cd(2);
    hEmuonGaussVsIdEtaTowersBot->Draw();
-
+gPad->SetGridx();
+gPad->SetGridy();
    c12->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/final.gif");
 
+
+  TCanvas *c13 = new TCanvas("c13","Time vs Ideta");
+//   c8->Divide();
+   c13->cd();
+   hProfTimeAsIdEtaMinus->Draw();
+   
 
 //      c12.WaitPrimitive();
 /////////////////////////////////////
