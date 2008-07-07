@@ -13,7 +13,7 @@
         gStyle->SetStatW(0.25);     // for box width
         gStyle->SetOptFit(1111); // pcev
 
-   TFile *hfile = new TFile("/tmp/efe/cruzet1.root", "READ");     //open file 
+   TFile *hfile = new TFile("/tmp/efe/cruzet3.root", "READ");     //open file 
 
    prom->cd();
    Muon->cd();
@@ -43,7 +43,7 @@ gPad->SetGridy();
    hPhiDeltaTowerHB2DT->Draw();
 gPad->SetGridx();
 gPad->SetGridy();
-   c1->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/pic1.gif");
+   c1->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/Cruzet3/pic1.gif");
 // wait
 //   c1->WaitPrimitive();
 /////////////////////////////////////////////////
@@ -65,7 +65,7 @@ gPad->SetGridy();
 gPad->SetGridx();
 gPad->SetGridy();
    hEmuonHB2DTBotPlus.Fit("gaus","E","",0.8.,2.4);
-   c2->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/pic2.gif");
+   c2->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/Cruzet3/pic2.gif");
 // wait
 //   c2.WaitPrimitive();
                                                                                                                                       
@@ -88,7 +88,7 @@ gPad->SetGridy();
    hTimeMuonHB2DTBotPlus->Draw();
 gPad->SetGridx();
 gPad->SetGridy();
-   c21->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/pic21.gif");
+   c21->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/Cruzet3/pic21.gif");
 //  c21.WaitPrimitive();
 /////////////////////////////////////////////////
    TCanvas *c22 = new TCanvas("c22","Number Eta Towers of Muon passes though DT in 2 places, NTowerEta<5");
@@ -109,7 +109,7 @@ gPad->SetGridy();
    hNumTowerMuonHB2DTBotPlus->Draw();
 gPad->SetGridx();
 gPad->SetGridy();
-   c22->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/pic22.gif");
+   c22->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/Cruzet3/pic22.gif");
 // wait
 //  c22.WaitPrimitive();
 /////////////////////////////////////////////////
@@ -127,7 +127,7 @@ gPad->SetGridy();
 //   hIdPhiTowerHB2DTsevMinus->Draw();
 //   c4->cd(4);
 //   hIdPhiTowerHB2DTsevPlus->Draw();
-   c4->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/pic4.gif");
+   c4->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/Cruzet3/pic4.gif");
 // wait
 //  c4.WaitPrimitive();
                                                                                                                                       
@@ -150,7 +150,7 @@ gPad->SetGridy();
    hLengthMuonDTHB2DT2->Draw();
 gPad->SetGridx();
 gPad->SetGridy();
-   c51->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/pic51.gif");
+   c51->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/Cruzet3/pic51.gif");
 // wait
 //  c51.WaitPrimitive();
 /////////////////////////////////////////////////
@@ -173,7 +173,7 @@ gPad->SetGridy();
 gPad->SetGridx();
 gPad->SetGridy();
    hEmuonHB2DTBotPlusTimeMinus.Fit("gaus","E","",0.8.,2.4);
-   c61->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/pic61.gif");
+   c61->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/Cruzet3/pic61.gif");
 // wait
 //  c61.WaitPrimitive();
 /////////////////////////////////////////////////
@@ -195,7 +195,7 @@ gPad->SetGridy();
 gPad->SetGridx();
 gPad->SetGridy();
    hEmuonHB2DTBotPlusTimePlus->Fit("gaus","E","",0.8.,2.4);
-   c62->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/pic62.gif");
+   c62->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/Cruzet3/pic62.gif");
 // wait
 //  c62.WaitPrimitive();
 /////////////////////////////////////////////////
@@ -217,7 +217,7 @@ gPad->SetGridy();
 gPad->SetGridx();
 gPad->SetGridy();
    hEmuonHB2DTBotPlusTimeMinus4->Fit("gaus","E","",0.8.,2.4);
-   c63->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/pic63.gif");
+   c63->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/Cruzet3/pic63.gif");
 // wait
 //  c63.WaitPrimitive();
 /////////////////////////////////////////////////
@@ -239,7 +239,7 @@ gPad->SetGridy();
 gPad->SetGridx();
 gPad->SetGridy();
    hEmuonHB2DTBotPlusTimePlus4->Fit("gaus","E","",0.8.,2.4);
-   c64->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/pic64.gif");
+   c64->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/Cruzet3/pic64.gif");
 // wait
 //  c64.WaitPrimitive();
 /////////////////////////////////////////////////
@@ -269,7 +269,7 @@ gPad->SetGridy();
 gPad->SetGridx();
 gPad->SetGridy();
    hEmuonPhiDetaTower6->Fit("gaus","E","",0.8.,2.4);
-   c65->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/pic65.gif");
+   c65->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/Cruzet3/pic65.gif");
 // wait
 //  c65.WaitPrimitive();
                                                                                                                                       
@@ -292,7 +292,7 @@ gPad->SetGridy();
    hImpXYvsZ->Draw();
 gPad->SetGridx();
 gPad->SetGridy();
-   c7->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/pic7.gif");
+   c7->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/Cruzet3/pic7.gif");
 // wait
 //  c7.WaitPrimitive();
 ////////////////////////////////////////////////
@@ -319,7 +319,7 @@ gPad->SetGridy();
    hProfTimeAsIdEtaBot->Draw();
 gPad->SetGridx();
 gPad->SetGridy();
-   c8->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/pic8.gif");
+   c8->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/Cruzet3/pic8.gif");
 // wait
 //  c8.WaitPrimitive();
 ////////////////////////////////////////////////
@@ -333,7 +333,7 @@ gPad->SetGridy();
    hIdEtaBotVsE -> Draw();
 gPad->SetGridx();
 gPad->SetGridy();
-   c81->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/pic81.gif");
+   c81->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/Cruzet3/pic81.gif");
 // wait
   //c81.WaitPrimitive();
 
@@ -476,7 +476,7 @@ gPad->SetGridy();
    hEmuonGaussVsIdPhiTowersMinus->Draw();
 gPad->SetGridx();
 gPad->SetGridy();
-   c9->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/EmuonGaussMeanForHB.gif");
+   c9->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/Cruzet3/EmuonGaussMeanForHB.gif");
 //      c9.WaitPrimitive();
 /////////////////////////////////////
    TCanvas *c10 = new TCanvas("c10","Emuon Gauss sigma for different IdPhiTower, HB+");
@@ -489,7 +489,7 @@ gPad->SetGridy();
    hEmuonGaussSigmaVsIdPhiTowersMinus->Draw();
 gPad->SetGridx();
 gPad->SetGridy();
-   c10->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/EmuonGaussSigmaForDiffPhiTower.gif");
+   c10->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/Cruzet3/EmuonGaussSigmaForDiffPhiTower.gif");
 //      c10.WaitPrimitive();
 /////////////////////////////////////
    TCanvas *c11 = new TCanvas("c11","Emuon Gauss sigma for HB");
@@ -511,7 +511,7 @@ gPad->SetGridx();
 gPad->SetGridy();
    hEmeanGaussBotPlus->Draw();
 
-   c11->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/EmuonGaussSigmaForHB.gif");
+   c11->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/Cruzet3/EmuonGaussSigmaForHB.gif");
 //      c11.WaitPrimitive();
 /////////////////////////////////////
    TCanvas *c12 = new TCanvas("c12","Emuon Gauss mean for different IdEtaTower,HB");
@@ -526,7 +526,7 @@ gPad->SetGridy();
    hEmuonGaussVsIdEtaTowersBot->Draw();
 gPad->SetGridx();
 gPad->SetGridy();
-   c12->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/final.gif");
+   c12->Print("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/prompt_detailed_summary/Cruzet3/final.gif");
 
 
 
