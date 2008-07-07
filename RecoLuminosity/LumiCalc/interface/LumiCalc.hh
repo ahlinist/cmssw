@@ -24,18 +24,20 @@ Summary:  Library to calculate relative luminosity from HLX data
 #include <cmath>
 #include <vector>
 
-using namespace ICCoreUtils;
+#define set1BelowIndex   0
+#define set1BetweenIndex 1
+#define set1AboveIndex   2
+#define set2BelowIndex   3
+#define set2BetweenIndex 4
+#define set2AboveIndex   5
 
 namespace HCAL_HLX {
 
   class LumiCalc {
   public:
     //LumiCalc();
-    LumiCalc(unsigned int  start = 3564 - 119,
-	     unsigned int  end = 3564,
-	     char scheme = 1 );
+    LumiCalc();
     ~LumiCalc() {}
-
 
     // Do the calculations
     void DoCalc(HCAL_HLX::LUMI_SECTION & localSection);
@@ -43,8 +45,6 @@ namespace HCAL_HLX {
     // configuration
     unsigned int SetBXMask( const std::vector< unsigned int > &BXMask );
     unsigned int SetHLXMask( const std::vector< unsigned int > &HLXMask );
-    void SetNoiseInterval(unsigned int start,
-			  unsigned int end);
     
   private:
 
@@ -67,18 +67,11 @@ namespace HCAL_HLX {
 			unsigned int numBunches = 1, 
 			float intPerBX = 0.01 );
 
-    unsigned int set1BelowIndex;
-    unsigned int set1BetweenIndex;
-    unsigned int set1AboveIndex;
-    unsigned int set2BelowIndex;
-    unsigned int set2BetweenIndex;
-    unsigned int set2AboveIndex;
-    
     // Configuration
-    unsigned int startAG_, endAG_, sizeAG_; // AG = Abort Gap.
+    unsigned int sizeNoise_[4];
     unsigned int numBX_, numHLX_; 
-    // Should only be called once per run
-    unsigned int numActiveTowers_[36][2];
+
+    unsigned int numActiveTowers_[HCAL_HLX_NUM_HLXS][2];
     unsigned int TotalActiveTowers_;
 
     bool Block( unsigned short int iBX, unsigned short int numBlock);
