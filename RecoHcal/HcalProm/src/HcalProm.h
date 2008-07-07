@@ -17,7 +17,7 @@
 // Original Author:  Efe Yazgan
 // Updated        :  Taylan Yetkin (2008/05/08)
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.h,v 1.16 2008/07/03 12:18:59 efe Exp $
+// $Id: HcalProm.h,v 1.17 2008/07/04 11:45:12 efe Exp $
 //
 //
 
@@ -285,6 +285,8 @@ class HcalProm : public edm::EDAnalyzer {
    // fill TProfile for Time as iphi
   TProfile *hProfTimeAsIdPhiMinus;
   TProfile *hProfTimeAsIdPhiPlus;
+  TProfile *hProfTimeAsIdEtaTop;
+  TProfile *hProfTimeAsIdEtaBot;
 
 //->kropiv-efe
       TH1F* h_maxebee_plus_maxhbhe;
