@@ -17,7 +17,7 @@
 // Original Author:  Efe Yazgan
 // Updated        :  Taylan Yetkin (2008/05/08)
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.h,v 1.18 2008/07/07 08:53:39 efe Exp $
+// $Id: HcalProm.h,v 1.19 2008/07/08 13:03:04 efe Exp $
 //
 //
 
@@ -291,14 +291,21 @@ class HcalProm : public edm::EDAnalyzer {
 //->kropiv-efe
       TH1F* h_maxebee_plus_maxhbhe;
 
-      TH1F* h_hbtiming;
-      TH1F* h_hetiming;
+      TH1F* h_hbplustiming;
+      TH1F* h_hbminustiming;
+      TH1F* h_heplustiming;
+      TH1F* h_heminustiming;
+      TH1F* h_hfplustiming;
+      TH1F* h_hfminustiming;
       TH1F* h_ecal_cluster_energy;
       TH1F* h_ecal_cluster_eta;
       TH1F* h_ecal_cluster_phi;
       TH2F* h_ecal_vs_hcal_X;
       TH2F* h_ecal_vs_hcal_Y; 
       
+      TH1F* h_HFplus_energy_CSC_trig;
+      TH1F* h_HFminus_energy_CSC_trig;
+
       TH1F* h_calo_tower_energy;
 
       TH1F* h_Qiesum;
