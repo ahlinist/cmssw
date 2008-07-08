@@ -20,7 +20,7 @@
 //                   Jordan Damgov
 //                   Anna Kropivnitskaya
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.39 2008/07/08 12:46:42 efe Exp $
+// $Id: HcalProm.cc,v 1.40 2008/07/08 13:03:01 efe Exp $
 //
 //
 
@@ -234,6 +234,9 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
     // iEvent.getByLabel("hcalZeroSuppressedDigis",hbhe_digi);
     iEvent.getByLabel("hcalDigis", hbhe_digi);
 
+    Handle < HFDigiCollection > hf_digi;
+    iEvent.getByLabel("hcalDigis", hf_digi);
+
     // calo towers
     Handle < CaloTowerCollection > calo;
     iEvent.getByLabel("towerMaker", calo);
@@ -431,7 +434,14 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
     std::cout << "************************" << std::endl;
 
 
-
+    //HF abnormal signals
+    if (triggerBit[2] == 1){
+      for (HFRecHitCollection::const_iterator hfhit = Hithf.begin(); hfhit != Hithf.end(); hfhit++) {
+        GlobalPoint hfposition = geo->getPosition(hfhit->detid());
+	if (hfposition.eta() > 0) h_HFplus_energy_CSC_trig->Fill(hfhit->energy());
+        if (hfposition.eta() < 0) h_HFminus_energy_CSC_trig->Fill(hfhit->energy());	
+      }
+    }
 
     // DIGIS ARE TAKEN OUT FROM T0 RECONSTRUCTION, but not at FNAL
     if (triggerBit[0] == 1){
@@ -453,37 +463,65 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
                     maxadc = digi[TS].adc();
             }
             for (int TS = 0; TS < 10 && TS < digi.size(); ++TS) {
-                if (maxadc > 10)
-                    h_hbtiming->Fill(TS, adcs[TS]);
+	      if (maxadc > 10){
+		if (digi.id().ieta() > 0) h_hbplustiming->Fill(TS, adcs[TS]);
+		if (digi.id().ieta() < 0) h_hbminustiming->Fill(TS, adcs[TS]);
+	      }
             }
         }
     }
     }
     
     if (triggerBit[2] == 1){
-    if (!hbhe_digi.failedToGet()) {
+      if (!hbhe_digi.failedToGet()) {
         int adcs[10] = { };
-
+	
         // CORRECT: Timing plot should be done using linearized ADC's!
         for (HBHEDigiCollection::const_iterator j = hbhe_digi->begin(); j != hbhe_digi->end(); j++) {
-            const HBHEDataFrame digi = (const HBHEDataFrame) (*j);
-            HcalDetId id = digi.id();
-
-            if (id.subdet() != 2)
-                continue;
-            int maxadc = 0;
-
-            for (int TS = 0; TS < 10 && TS < digi.size(); ++TS) {
-                adcs[TS] = digi[TS].adc();
-                if (digi[TS].adc() > maxadc)
-                    maxadc = digi[TS].adc();
-            }
-            for (int TS = 0; TS < 10 && TS < digi.size(); ++TS) {
-                if (maxadc > 10)
-                    h_hetiming->Fill(TS, adcs[TS]);
-            }
+	  const HBHEDataFrame digi = (const HBHEDataFrame) (*j);
+	  HcalDetId id = digi.id();
+	  
+	  if (id.subdet() != 2) continue;
+	  int maxadc = 0;
+	  
+	  for (int TS = 0; TS < 10 && TS < digi.size(); ++TS) {
+	    adcs[TS] = digi[TS].adc();
+	    if (digi[TS].adc() > maxadc)
+	      maxadc = digi[TS].adc();
+	  }
+	  for (int TS = 0; TS < 10 && TS < digi.size(); ++TS) {
+	    if (maxadc > 10){
+	      if (digi.id().ieta() > 0) h_heplustiming->Fill(TS, adcs[TS]);
+	      if (digi.id().ieta() < 0) h_heminustiming->Fill(TS, adcs[TS]);
+	    }
+	  }
         }
-    }
+      }
+      ///<---HF
+      if (!hf_digi.failedToGet()) {
+        int adcs[10] = { };
+
+        for (HFDigiCollection::const_iterator j = hf_digi->begin(); j != hf_digi->end(); j++) {
+	  const HFDataFrame digi = (const HFDataFrame) (*j);
+	  HcalDetId id = digi.id();
+	  
+	  if (id.subdet() != 4) continue;
+	  int maxadc = 0;
+	  
+	  for (int TS = 0; TS < 10 && TS < digi.size(); ++TS) {
+	    adcs[TS] = digi[TS].adc();
+	    if (digi[TS].adc() > maxadc)
+	      maxadc = digi[TS].adc();
+	  }
+	  for (int TS = 0; TS < 10 && TS < digi.size(); ++TS) {
+	    if (maxadc > 10){
+	      if (digi.id().ieta() > 0) h_hfplustiming->Fill(TS, adcs[TS]);
+	      if (digi.id().ieta() < 0) h_hfminustiming->Fill(TS, adcs[TS]);
+	    }
+	  }
+        }
+      }
+      ///--->HF
     }
     // @@
     double inner_radius_hcal = 188.15;
@@ -1606,8 +1644,15 @@ void HcalProm::bookHistograms() {
     h_ho_rechit_energy = book1DHistogram(HcalDir, " h_ho_rechit_energy", "RecHit Energy HO", 160, -10, 30);
     h_ho_eta_phi = book2DHistogram(HcalDir, "h_ho_eta_phi", "#eta(HO)", 60, -30, 30, 72, 0, 72);
 
-    h_hbtiming = book1DHistogram(HcalDir, "h_hbtiming", "HB Timing", 10, -0.5, 9.5);
-    h_hetiming = book1DHistogram(HcalDir, "h_hetiming", "HE Timing", 10, -0.5, 9.5);
+    h_hbplustiming = book1DHistogram(HcalDir, "h_hbplustiming", "HB+ Timing", 10, -0.5, 9.5);
+    h_hbminustiming = book1DHistogram(HcalDir, "h_hbminustiming", "HB- Timing", 10, -0.5, 9.5);
+    h_heplustiming = book1DHistogram(HcalDir, "h_heplustiming", "HE+ Timing", 10, -0.5, 9.5);
+    h_heminustiming = book1DHistogram(HcalDir, "h_heminustiming", "HE- Timing", 10, -0.5, 9.5);
+    h_hfplustiming = book1DHistogram(HcalDir, "h_hfplustiming", "HF+ Timing", 10, -0.5, 9.5);
+    h_hfminustiming = book1DHistogram(HcalDir, "h_hfminustiming", "HF- Timing", 10, -0.5, 9.5);
+
+    h_HFplus_energy_CSC_trig = book1DHistogram(HcalDir, "h_HFplus_energy_CSC_trig", "HF+ Energy for CSC Triggered Events", 1000, -2, 1200);
+    h_HFminus_energy_CSC_trig = book1DHistogram(HcalDir, "h_HFminus_energy_CSC_trig", "HF- Energy for CSC Triggered Events", 1000, -2, 1200);
 
     h_jet_multiplicity = book1DHistogram(JetMetDir, "h_jet_multiplicity", "Jet Multiplicity", 40, 0, 40);
     h_jet_Pt = book1DHistogram(JetMetDir, "h_jet_Pt", "Jet PT", 100, -6, 20);
