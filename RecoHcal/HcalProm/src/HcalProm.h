@@ -17,7 +17,7 @@
 // Original Author:  Efe Yazgan
 // Updated        :  Taylan Yetkin (2008/05/08)
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.h,v 1.17 2008/07/04 11:45:12 efe Exp $
+// $Id: HcalProm.h,v 1.18 2008/07/07 08:53:39 efe Exp $
 //
 //
 
@@ -292,6 +292,7 @@ class HcalProm : public edm::EDAnalyzer {
       TH1F* h_maxebee_plus_maxhbhe;
 
       TH1F* h_hbtiming;
+      TH1F* h_hetiming;
       TH1F* h_ecal_cluster_energy;
       TH1F* h_ecal_cluster_eta;
       TH1F* h_ecal_cluster_phi;
