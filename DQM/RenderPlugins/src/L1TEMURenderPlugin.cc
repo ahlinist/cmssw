@@ -151,7 +151,17 @@ void L1TEMURenderPlugin::preDrawTH2F ( TCanvas *c, const DQMNet::CoreObject &o )
     if( o.name.find( "reportSummaryMap" )  != std::string::npos) {
    obj->SetStats( kFALSE );
     dqm::utils::reportSummaryMapPalette(obj);
-    obj->SetOption("colztext");
+    obj->SetOption("colz");
+
+
+    obj->SetTitle("L1TEMU Report Summary Map");
+    
+    obj->GetXaxis()->SetNdivisions(1,true);
+    obj->GetYaxis()->SetNdivisions(12,true);
+    obj->GetXaxis()->CenterLabels();
+    obj->GetYaxis()->CenterLabels();
+    
+    gPad->SetGrid(1,1);
     return;
   }
 
