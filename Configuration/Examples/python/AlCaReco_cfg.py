@@ -1,6 +1,6 @@
 # The following comments couldn't be translated into the new config version:
 
-# last update: $Date: 2008/06/23 12:07:06 $ by $Author: futyand $
+# last update: $Date: 2008/07/01 17:23:45 $ by $Author: futyand $
 
 import FWCore.ParameterSet.Config as cms
 
@@ -17,7 +17,7 @@ process.load("Configuration.StandardSequences.AlCaReco_cff")
 process.load("Configuration.EventContent.AlCaRecoOutput_cff")
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.2 $'),
+    version = cms.untracked.string('$Revision: 1.3 $'),
     name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/CMSSW/Configuration/Examples/python/AlCaReco_cfg.py,v $'),
     annotation = cms.untracked.string('CFG for AlcaReco')
 )
@@ -264,6 +264,6 @@ process.poolALCARECORpcCalHLT = cms.OutputModule("PoolOutputModule",
 )
 
 process.e = cms.EndPath(process.poolALCARECOTkAlZMuMu*process.poolALCARECOTkAlMuonIsolated*process.poolALCARECOTkAlJpsiMuMu*process.poolALCARECOTkAlUpsilonMuMu*process.poolALCARECOTkAlMinBias*process.poolALCARECOSiPixelLorentzAngle*process.poolALCARECOSiStripCalMinBias*process.poolALCARECOEcalCalElectron*process.poolALCARECOEcalCalPhiSym*process.poolALCARECOEcalCalPi0Calib*process.poolALCARECOHcalCalDijets*process.poolALCARECOHcalCalGammaJet*process.poolALCARECOHcalCalIsoTrkNoHLT*process.poolALCARECOHcalCalHO*process.poolALCARECOMuCaliMinBias*process.poolALCARECOMuAlCalIsolatedMu*process.poolALCARECOMuAlOverlaps*process.poolALCARECORpcCalHLT)
-process.schedule = cms.Schedule(process.pathALCARECOTkAlZMuMu,process.pathALCARECOTkAlMuonIsolated,process.pathALCARECOTkAlJpsiMuMu,process.pathALCARECOTkAlUpsilonMuMu,process.pathALCARECOTkAlMinBias,process.pathALCARECOSiPixelLorentzAngle,process.pathALCARECOSiStripCalMinBias,process.pathALCARECOEcalCalElectron,process.pathALCARECOEcalCalPhiSym,process.pathALCARECOEcalCalPi0Calib,process.pathALCARECOHcalCalDijets,process.pathALCARECOHcalCalGammaJet,process.pathALCARECOHcalCalIsoTrkNoHLT,process.pathALCARECOHcalCalHO,process.poolALCARECOMuCaliMinBias,process.pathALCARECOMuAlCalIsolatedMu,process.pathALCARECOMuAlOverlaps,process.pathALCARECORpcCalHLT,process.e)
+process.schedule = cms.Schedule(process.pathALCARECOTkAlZMuMu,process.pathALCARECOTkAlMuonIsolated,process.pathALCARECOTkAlJpsiMuMu,process.pathALCARECOTkAlUpsilonMuMu,process.pathALCARECOTkAlMinBias,process.pathALCARECOSiPixelLorentzAngle,process.pathALCARECOSiStripCalMinBias,process.pathALCARECOEcalCalElectron,process.pathALCARECOEcalCalPhiSym,process.pathALCARECOEcalCalPi0Calib,process.pathALCARECOHcalCalDijets,process.pathALCARECOHcalCalGammaJet,process.pathALCARECOHcalCalIsoTrkNoHLT,process.pathALCARECOHcalCalHO,process.pathALCARECOMuCaliMinBias,process.pathALCARECOMuAlCalIsolatedMu,process.pathALCARECOMuAlOverlaps,process.pathALCARECORpcCalHLT,process.e)
 
 
