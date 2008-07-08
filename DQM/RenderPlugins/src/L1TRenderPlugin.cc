@@ -338,3 +338,5 @@ void L1TRenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o )
 //       sprintf(histo,"L1T_RPC");     break;
 //     case 9 :
 //       pt[i]= new TPaveText(0.
+
+}
