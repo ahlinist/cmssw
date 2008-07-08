@@ -20,7 +20,7 @@
 //                   Jordan Damgov
 //                   Anna Kropivnitskaya
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.37 2008/07/04 15:13:46 efe Exp $
+// $Id: HcalProm.cc,v 1.38 2008/07/07 08:53:36 efe Exp $
 //
 //
 
@@ -1846,8 +1846,8 @@ void HcalProm::bookHistograms() {
    // fill TProfile for Time as iphi
    hProfTimeAsIdPhiMinus = bookProfileHistogram(MuonDir, "hProfTimeAsIdPhiMinus","mean Time as IdPhi for ETA-",73,-0.5,72.5,-150,150);
    hProfTimeAsIdPhiPlus = bookProfileHistogram(MuonDir, "hProfTimeAsIdPhiPlus","mean Time as IdPhi for ETA+",73,-0.5,72.5,-150,150);
-   hProfTimeAsIdEtaTop = bookProfileHistogram(MuonDir, "hProfTimeAsIdEtaTop","mean Time as IdEta for Top",57,-14.25,14.25,-150,150);
-   hProfTimeAsIdEtaBot = bookProfileHistogram(MuonDir, "hProfTimeAsIdEtaBot","mean Time as IdEta for Bot",57,-14.25,14.25,-150,150);
+   hProfTimeAsIdEtaTop = bookProfileHistogram(MuonDir, "hProfTimeAsIdEtaTop","mean Time as IdEta for Top",31,-15.5,15.5,-150,150);
+   hProfTimeAsIdEtaBot = bookProfileHistogram(MuonDir, "hProfTimeAsIdEtaBot","mean Time as IdEta for Bot",31,-15.5,15.5,-150,150);
   
     //<- kropiv-efe
     char name[1024];
