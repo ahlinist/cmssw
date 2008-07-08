@@ -20,7 +20,7 @@
 //                   Jordan Damgov
 //                   Anna Kropivnitskaya
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.38 2008/07/07 08:53:36 efe Exp $
+// $Id: HcalProm.cc,v 1.39 2008/07/08 12:46:42 efe Exp $
 //
 //
 
@@ -434,6 +434,7 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
 
 
     // DIGIS ARE TAKEN OUT FROM T0 RECONSTRUCTION, but not at FNAL
+    if (triggerBit[0] == 1){
     if (!hbhe_digi.failedToGet()) {
         int adcs[10] = { };
 
@@ -456,6 +457,33 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
                     h_hbtiming->Fill(TS, adcs[TS]);
             }
         }
+    }
+    }
+    
+    if (triggerBit[2] == 1){
+    if (!hbhe_digi.failedToGet()) {
+        int adcs[10] = { };
+
+        // CORRECT: Timing plot should be done using linearized ADC's!
+        for (HBHEDigiCollection::const_iterator j = hbhe_digi->begin(); j != hbhe_digi->end(); j++) {
+            const HBHEDataFrame digi = (const HBHEDataFrame) (*j);
+            HcalDetId id = digi.id();
+
+            if (id.subdet() != 2)
+                continue;
+            int maxadc = 0;
+
+            for (int TS = 0; TS < 10 && TS < digi.size(); ++TS) {
+                adcs[TS] = digi[TS].adc();
+                if (digi[TS].adc() > maxadc)
+                    maxadc = digi[TS].adc();
+            }
+            for (int TS = 0; TS < 10 && TS < digi.size(); ++TS) {
+                if (maxadc > 10)
+                    h_hetiming->Fill(TS, adcs[TS]);
+            }
+        }
+    }
     }
     // @@
     double inner_radius_hcal = 188.15;
@@ -1578,7 +1606,8 @@ void HcalProm::bookHistograms() {
     h_ho_rechit_energy = book1DHistogram(HcalDir, " h_ho_rechit_energy", "RecHit Energy HO", 160, -10, 30);
     h_ho_eta_phi = book2DHistogram(HcalDir, "h_ho_eta_phi", "#eta(HO)", 60, -30, 30, 72, 0, 72);
 
-    h_hbtiming = book1DHistogram(HcalDir, "h_hbtiming", "HBHE Timing", 10, -0.5, 9.5);
+    h_hbtiming = book1DHistogram(HcalDir, "h_hbtiming", "HB Timing", 10, -0.5, 9.5);
+    h_hetiming = book1DHistogram(HcalDir, "h_hetiming", "HE Timing", 10, -0.5, 9.5);
 
     h_jet_multiplicity = book1DHistogram(JetMetDir, "h_jet_multiplicity", "Jet Multiplicity", 40, 0, 40);
     h_jet_Pt = book1DHistogram(JetMetDir, "h_jet_Pt", "Jet PT", 100, -6, 20);
