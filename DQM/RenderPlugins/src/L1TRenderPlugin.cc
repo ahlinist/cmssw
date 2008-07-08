@@ -18,6 +18,7 @@
 #include "TCanvas.h"
 #include "TColor.h"
 #include "TText.h"
+#include "TPaveText.h"
 
 #include <cassert>
 #include "DQM/RenderPlugins/src/utils.h"
@@ -26,6 +27,10 @@ void
 L1TRenderPlugin::initialise (int argc, char ** argv)
 {
   // same as RenderPlugin default for now (no special action taken)
+
+
+  //summaryText = new TH2C( "summaryText", "summaryText", 5, 1, 6, 4, 1, 5);
+
   return;
 }
 
@@ -149,10 +154,31 @@ void L1TRenderPlugin::preDrawTH2F ( TCanvas *c, const DQMNet::CoreObject &o )
   assert( obj ); 
   
   //put in preDrawTH2F  
-    if( o.name.find( "reportSummaryMap" )  != std::string::npos) {
-   obj->SetStats( kFALSE );
+  if( o.name.find( "reportSummaryMap" )  != std::string::npos) {
+    obj->SetStats( kFALSE );
     dqm::utils::reportSummaryMapPalette(obj);
-    obj->SetOption("colztext");
+    obj->SetOption("colz");
+    obj->SetTitle("L1T Report Summary Map");
+
+    obj->GetXaxis()->SetNdivisions(1,true);
+    obj->GetYaxis()->SetNdivisions(8,true);
+    obj->GetXaxis()->CenterLabels();
+    obj->GetYaxis()->CenterLabels();
+    
+    gPad->SetGrid(1,1);
+
+
+
+
+    //gStyle->SetPaintTextFormat("+g");
+    
+    //TPaveText tree(.01,.75,.15,1.00);
+    //tree.SetFillColor(18);
+    //tree.SetTextAlign(12);
+    //TText *tnt = tree.AddText("Tree");
+    //tnt.SetTextAlign(22);
+
+
     return;
   }
 
@@ -179,6 +205,32 @@ void L1TRenderPlugin::preDrawTH2F ( TCanvas *c, const DQMNet::CoreObject &o )
   // Now the important stuff -- set 2D hist drawing option to "colz"
   gStyle->SetPalette(1);
   obj->SetOption("colz");
+
+  if(o.name.find("Occupancy_Summary") < o.name.size()) {
+    obj->GetXaxis()->SetNdivisions(13,true);
+    obj->GetYaxis()->SetNdivisions(6,true);
+    obj->GetXaxis()->CenterLabels();
+    obj->GetYaxis()->CenterLabels();
+    gPad->SetGrid(1,1);
+//     obj->GetXaxis()->SetLabelSize(0.07);
+//     obj->GetYaxis()->SetLabelSize(0.07);
+    obj->GetXaxis()->LabelsOption("v");
+    gPad->SetBottomMargin(0.1);
+    gPad->SetLeftMargin(0.12);
+    gPad->SetRightMargin(0.12);
+    obj->SetMinimum(-0.00000001);
+    //obj->SetMaximum(5.0);
+
+    //int colorError1[5];
+    //colorError1[0] = 416;// kGreen
+    //colorError1[1] = 400;// kYellow
+    //colorError1[2] = 800;// kOrange
+    //colorError1[3] = 625;
+    //colorError1[4] = 632;// kRed
+    //gStyle->SetPalette(5, colorError1);
+    gStyle->SetOptStat(0);
+    return;
+  }
 
   return;
 } // preDrawTH2F(...)
@@ -237,6 +289,52 @@ void L1TRenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o )
   // or set bin range based on filled histograms, etc.  
   // Maybe add a big "OK" sign to histograms with no entries (i.e., no errors)?
 
-  return;
 
-} // postDrawTH2F(...)
+  //int nSubsystems = 20;
+  
+  //TPaveText *pt[nSubsystems]; 
+
+  //for(int i =0; i<nSubsystems; i++){
+   
+    // relative to pad dimensions
+    //TText *text = pt->AddText("ECAL");
+    
+//     switch(i){
+//     case 0 :   
+//       pt[i]= new TPaveText(0.14, 0.20, 0.14, 0.20, "NDC"); 
+//       pt[i]->AddText("ECAL");   
+//       break;
+//     case 1 :   
+//       pt[i]= new TPaveText(0.30, 0.20, 0.30,0.20, "NDC");
+//       pt[i]->AddText("HCAL");    
+//       break;
+//     case 2 :   
+//       pt[i]= new TPaveText(0.47, 0.20, 0.47,0.20, "NDC");
+//       pt[i]->AddText("RCT");    
+//       break;
+//     case 3 :   
+//       pt[i]= new TPaveText(0.63, 0.20, 0.63,0.20, "NDC");
+//       pt[i]->AddText("GCT");    
+//       break;
+//     case 4 :   
+//       pt[i]= new TPaveText(0.77, 0.20, 0.77,0.20, "NDC");
+//       pt[i]->AddText("DTTPG");    
+//       break;
+//     case 5 :   
+//       pt[i]= new TPaveText(0.77, 0.20, 0.77,0.20, "NDC");
+//       pt[i]->AddText("DTTF");      
+//       break;
+//     case 6 :   
+//       pt[i]= new TPaveText(0.77, 0.20, 0.77,0.20, "NDC");
+//       pt[i]->AddText("CSCTPG"); 
+//       break;
+//     case 7 :   
+//       pt[i]= new TPaveText(0.77, 0.20, 0.77,0.20, "NDC");
+//       pt[i]->AddText("CSCTF"); 
+//       break;
+//     case 8 :   
+//       pt[i]= new TPaveText(0.77, 0.20, 0.77,0.20, "NDC");
+//       pt[i]->AddText("DTTPG"); 
+//       sprintf(histo,"L1T_RPC");     break;
+//     case 9 :
+//       pt[i]= new TPaveText(0.
