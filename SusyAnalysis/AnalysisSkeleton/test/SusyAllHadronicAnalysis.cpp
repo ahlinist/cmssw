@@ -14,7 +14,7 @@ Uses the EventSelector interface for event selection and TFileService for plotti
 //
 // Original Author:  Markus Stoye
 //         Created:  Mon Feb 18 15:40:44 CET 2008
-// $Id: SusyAllHadronicAnalysis.cpp,v 1.9 2008/06/20 12:35:36 fronga Exp $
+// $Id: SusyAllHadronicAnalysis.cpp,v 1.1 2008/07/07 09:37:38 fronga Exp $
 //
 //
 
@@ -223,8 +223,8 @@ SusyAllHadronicAnalysis::printSummary( void ) {
     << "Total number of events = " << nrEventTotalWeighted_ 
     << " (" << nrEventTotalRaw_ << " unweighted)"
     << " ; selected = " << nrEventCumulative_.back()
-    << " [" << std::setprecision(2)  << std::fixed 
-    << nrEventCumulative_.back()/nrEventTotalWeighted_ >> "%]" << std::endl;
+    << " [" << std::setw(6) << std::setprecision(2)  << std::fixed 
+    << (nrEventCumulative_.back()/nrEventTotalWeighted_)*100. << "%]" << std::endl;
 
   std::ostringstream summary;
   summary << std::setw(21) << std::left << "Name"
