@@ -337,6 +337,61 @@ void L1TRenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o )
 //       pt[i]->AddText("DTTPG"); 
 //       sprintf(histo,"L1T_RPC");     break;
 //     case 9 :
-//       pt[i]= new TPaveText(0.
+//       pt[i]= new TPaveText(0.77, 0.20, 0.77,0.20, "NDC");
+//       pt[i]->AddText("DTTPG"); 
+//       sprintf(histo,"L1T_GMT");     break;
+//     case 10 :  
+//       pt[i]= new TPaveText(0.77, 0.20, 0.77,0.20, "NDC");
+//       pt[i]->AddText("DTTPG"); 
+//       sprintf(histo,"L1T_GT");      break;
+//     case 11 :  
+//       pt[i]= new TPaveText(0.77, 0.20, 0.77,0.20, "NDC");
+//       pt[i]->AddText("DTTPG"); 
+//       sprintf(histo,"L1T_RPCTG");   break;
+//     case 12 :  
+//       pt[i]= new TPaveText(0.77, 0.20, 0.77,0.20, "NDC");
+//       pt[i]->AddText("DTTPG"); 
+//       sprintf(histo,"L1T_EMUL");    break;
+//     case 13 : 
+//       pt[i]= new TPaveText(0.77, 0.20, 0.77,0.20, "NDC");
+//       pt[i]->AddText("DTTPG"); 
+//       sprintf(histo,"L1T_Timing");  break;
+//     case 14 :  
+//       pt[i]= new TPaveText(0.77, 0.20, 0.77,0.20, "NDC");
+//       pt[i]->AddText("DTTPG"); 
+//       sprintf(histo,"L1T_Test1");   break;
+//     case 15 :  
+//       pt[i]= new TPaveText(0.77, 0.20, 0.77,0.20, "NDC");
+//       pt[i]->AddText("DTTPG"); 
+//       sprintf(histo,"L1T_Test2");   break;
+//     case 16 :  
+//       pt[i]= new TPaveText(0.77, 0.20, 0.77,0.20, "NDC");
+//       pt[i]->AddText("DTTPG"); 
+//       sprintf(histo,"L1T_Test3");   break;
+//     case 17 :  
+//       pt[i]= new TPaveText(0.77, 0.20, 0.77,0.20, "NDC");
+//       pt[i]->AddText("DTTPG"); 
+//       sprintf(histo,"L1T_Test4");break;
+//     case 18 :  
+//       pt[i]= new TPaveText(0.77, 0.20, 0.77,0.20, "NDC");
+//       pt[i]->AddText("DTTPG"); 
+//       sprintf(histo,"L1T_Test5");   break;
+//     case 19 :  
+//       pt[i]= new TPaveText(0.77, 0.20, 0.77,0.20, "NDC");
+//       pt[i]->AddText("DTTPG"); 
+//       sprintf(histo,"L1T_Test6");   break;
+//     }  
+    
+//   TPaveText *pt[8];
 
-}
+//   pt[i]->SetFillColor(0); // text is black on white
+//   pt[i]->SetTextSize(0.04); 
+//   pt[i]->SetTextAlign(12);
+//   pt[i]->SetFillStyle(4000);
+  
+//   pt[i]->Draw("same");
+  //to draw your text object
+  //  }
+  return;
+
+} // postDrawTH2F(...)
