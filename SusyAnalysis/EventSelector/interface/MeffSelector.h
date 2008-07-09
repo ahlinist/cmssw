@@ -7,12 +7,14 @@
 ///
 /// \author Frederic Ronga - Fri May 23 14:21:31 CEST 2008
 ///
-/// $Id: $
+/// $Id: MeffSelector.h,v 1.1 2008/05/23 15:48:22 fronga Exp $
 #include "SusyAnalysis/EventSelector/interface/SusyEventSelector.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ParameterSet/interface/InputTag.h"
+#include "DataFormats/PatCandidates/interface/MET.h"
+
 class MeffSelector : public SusyEventSelector {
 public:
   MeffSelector (const edm::ParameterSet&);
@@ -25,5 +27,6 @@ public:
 
   double minMeff_;   ///< Cut on minimum M_eff
 
+  pat::MET::UncorectionType uncorrType_;  ///< uncorrection type for MET
 };
 #endif
