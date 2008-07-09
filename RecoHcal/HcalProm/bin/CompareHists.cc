@@ -148,8 +148,10 @@ void RootFileDigger::addDirs (FullHistNames* fDirs, const FullHistName& fDir) {
  TObject* RootFileDigger::getObject (const FullHistName& fName) {
    for (size_t i = 0; i < mDirs.size(); ++i) {
      if (fName.match (mDirs[i])) {
+       std::string localName = mDirs[i].str() + '/';
+       localName += fName.name();
        TObject* obj = 0;
-       mFile->GetObject (fName.c_str(), obj);
+       mFile->GetObject (localName.c_str(), obj);
        return obj;
      }
    }
