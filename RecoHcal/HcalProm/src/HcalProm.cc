@@ -20,7 +20,7 @@
 //                   Jordan Damgov
 //                   Anna Kropivnitskaya
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.40 2008/07/08 13:03:01 efe Exp $
+// $Id: HcalProm.cc,v 1.41 2008/07/08 16:28:25 efe Exp $
 //
 //
 
@@ -438,8 +438,8 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
     if (triggerBit[2] == 1){
       for (HFRecHitCollection::const_iterator hfhit = Hithf.begin(); hfhit != Hithf.end(); hfhit++) {
         GlobalPoint hfposition = geo->getPosition(hfhit->detid());
-	if (hfposition.eta() > 0) h_HFplus_energy_CSC_trig->Fill(hfhit->energy());
-        if (hfposition.eta() < 0) h_HFminus_energy_CSC_trig->Fill(hfhit->energy());	
+	if (hfposition.eta() > 0 && hfhit->energy()>20.) h_HFplus_energy_CSC_trig->Fill(hfhit->energy());
+        if (hfposition.eta() < 0 && hfhit->energy()>20.) h_HFminus_energy_CSC_trig->Fill(hfhit->energy());	
       }
     }
 
@@ -501,11 +501,12 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
       if (!hf_digi.failedToGet()) {
         int adcs[10] = { };
 
+
         for (HFDigiCollection::const_iterator j = hf_digi->begin(); j != hf_digi->end(); j++) {
 	  const HFDataFrame digi = (const HFDataFrame) (*j);
 	  HcalDetId id = digi.id();
 	  
-	  if (id.subdet() != 4) continue;
+	  //	  if (id.subdet() != 4) continue;
 	  int maxadc = 0;
 	  
 	  for (int TS = 0; TS < 10 && TS < digi.size(); ++TS) {
@@ -1651,8 +1652,8 @@ void HcalProm::bookHistograms() {
     h_hfplustiming = book1DHistogram(HcalDir, "h_hfplustiming", "HF+ Timing", 10, -0.5, 9.5);
     h_hfminustiming = book1DHistogram(HcalDir, "h_hfminustiming", "HF- Timing", 10, -0.5, 9.5);
 
-    h_HFplus_energy_CSC_trig = book1DHistogram(HcalDir, "h_HFplus_energy_CSC_trig", "HF+ Energy for CSC Triggered Events", 1000, -2, 1200);
-    h_HFminus_energy_CSC_trig = book1DHistogram(HcalDir, "h_HFminus_energy_CSC_trig", "HF- Energy for CSC Triggered Events", 1000, -2, 1200);
+    h_HFplus_energy_CSC_trig = book1DHistogram(HcalDir, "h_HFplus_energy_CSC_trig", "HF+ Energy for CSC Triggered Events", 1500, -20, 1000);
+    h_HFminus_energy_CSC_trig = book1DHistogram(HcalDir, "h_HFminus_energy_CSC_trig", "HF- Energy for CSC Triggered Events", 1500, -10, 1000);
 
     h_jet_multiplicity = book1DHistogram(JetMetDir, "h_jet_multiplicity", "Jet Multiplicity", 40, 0, 40);
     h_jet_Pt = book1DHistogram(JetMetDir, "h_jet_Pt", "Jet PT", 100, -6, 20);
