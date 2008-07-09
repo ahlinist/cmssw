@@ -85,10 +85,22 @@ std::string FullHistName::str () const {return mName;}
 const char* FullHistName::c_str () const {return mName.c_str();}
 
 bool FullHistName::match (const FullHistName& fPattern) const {
-  if (mName.find (fPattern.str()) != 0) return false; 
-  if (mName == fPattern.str()) return true;
-  if (path () == fPattern.str()) return true;
-  if (path () == fPattern.path ()) return true;
+  // drop first two levels
+  size_t found = mName.find ('/', 9); // bypass /DQMData/
+  if (found == std::string::npos) return false;
+  std::string compare_name (mName, found);
+
+  std::string pattern = fPattern.str();
+  found = pattern.find ('/', 9);
+  if (found == std::string::npos) return false;
+  pattern.erase (0, found);
+
+  if (compare_name.find (pattern) != 0) return false; 
+  if (compare_name == pattern) return true;
+  FullHistName myname (compare_name);
+  if (myname.path () == pattern) return true;
+  FullHistName mypattern (pattern);
+  if (myname.path () == mypattern.path ()) return true;
   return false;
 }
 
@@ -134,9 +146,14 @@ void RootFileDigger::addDirs (FullHistNames* fDirs, const FullHistName& fDir) {
  }
 
  TObject* RootFileDigger::getObject (const FullHistName& fName) {
-   TObject* obj = 0;
-   mFile->GetObject (fName.c_str(), obj);
-   return obj;
+   for (size_t i = 0; i < mDirs.size(); ++i) {
+     if (fName.match (mDirs[i])) {
+       TObject* obj = 0;
+       mFile->GetObject (fName.c_str(), obj);
+       return obj;
+     }
+   }
+   return 0;
  }
 
  TH1* RootFileDigger::getTH1 (const FullHistName& fName) {
@@ -155,12 +172,12 @@ double HistComparator::dumpComparison (TH1* fHist,
 				       TH1* fRefHist, 
 				       const std::string& fPictureFile)
 {
-  std::cout << "HistComparator::dumpComparison-> " << fHist->GetName() << '/' << fRefHist->GetName() << '/' << fPictureFile << std::endl;
   gStyle->SetOptStat (kFALSE);
   TCanvas canvas ("HistComparator","HistComparator",800,600);
   double pv = 0;
   if (fHist->GetSumOfWeights () > 0) {
-    pv = fHist->KolmogorovTest (fRefHist, "OU");
+    //pv = fHist->KolmogorovTest (fRefHist, "OU");
+    pv = fHist->KolmogorovTest (fRefHist);
     // set style
     TPad pad ("pad", "pad", 0, 0, 1, 0.97, 0);
     pad.Draw();
@@ -199,7 +216,7 @@ double HistComparator::dumpComparison (TH1* fHist,
 //================= main =====================
 int main (int argn, char* argv []) {
   if (argn < 5) {
-    std::cout << "Usage: " << argv[0] << " <file_name> <reference file_name> <pattern> <description" << std::endl;
+    std::cout << "Usage: " << argv[0] << " <file_name> <reference file_name> <pattern> <description>" << std::endl;
     return 1;
   }
   
