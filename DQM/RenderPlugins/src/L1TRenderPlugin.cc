@@ -207,14 +207,14 @@ void L1TRenderPlugin::preDrawTH2F ( TCanvas *c, const DQMNet::CoreObject &o )
   obj->SetOption("colz");
 
   if(o.name.find("Occupancy_Summary") < o.name.size()) {
-    obj->GetXaxis()->SetNdivisions(13,true);
-    obj->GetYaxis()->SetNdivisions(6,true);
+    obj->GetXaxis()->SetNdivisions(6,true);
+    obj->GetYaxis()->SetNdivisions(13,true);
     obj->GetXaxis()->CenterLabels();
     obj->GetYaxis()->CenterLabels();
     gPad->SetGrid(1,1);
 //     obj->GetXaxis()->SetLabelSize(0.07);
 //     obj->GetYaxis()->SetLabelSize(0.07);
-    obj->GetXaxis()->LabelsOption("v");
+    //obj->GetXaxis()->LabelsOption("h");
     gPad->SetBottomMargin(0.1);
     gPad->SetLeftMargin(0.12);
     gPad->SetRightMargin(0.12);
