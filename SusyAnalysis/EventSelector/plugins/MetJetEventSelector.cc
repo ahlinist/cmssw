@@ -1,8 +1,8 @@
 #include "SusyAnalysis/EventSelector/interface/MetJetEventSelector.h"
+#include "SusyAnalysis/EventSelector/interface/uncorrectionTypeMET.h"
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
-#include "DataFormats/PatCandidates/interface/MET.h"
 #include "PhysicsTools/Utilities/interface/deltaPhi.h"
 #include "PhysicsTools/Utilities/interface/deltaR.h"
 #include "TMath.h"
@@ -17,6 +17,8 @@ MetJetEventSelector::MetJetEventSelector (const edm::ParameterSet& pset) :
   dPhiJet2MetMin_( pset.getParameter<double>("dPhiJet2MetMin") ),
   rDistJetsMin_  ( pset.getParameter<double>("rDistJetsMin")   )
 {
+  // uncorrection type
+  uncorrType_ = pat::uncorrectionTypeMET(pset.getParameter<std::string>("uncorrTypeMet"));
 
   // Define all variables we want to cache (and eventually plot...)
   defineVariable("metDphi");
@@ -48,7 +50,7 @@ MetJetEventSelector::select (const edm::Event& event) const
                                            << metHandle->size() << " instead of 1";    
     return false;
   }
-  const edm::View<pat::MET>& mets = (*metHandle); // For simplicity...
+  const pat::MET& met = metHandle->front(); // For simplicity...
 
   // Get the jets
   edm::Handle< edm::View<pat::Jet> > jetHandle;
@@ -71,16 +73,18 @@ MetJetEventSelector::select (const edm::Event& event) const
 
   // MET "isolation" (calculated on at most 4 jets)
   float metIso = 100.;
+  double metPhi =  uncorrType_==pat::MET::uncorrMAXN ?
+    met.phi() : met.uncorrectedPhi(uncorrType_);
   for ( unsigned int iJet=0; iJet<4 && iJet<jets.size(); ++iJet) {
-    double deltaPhiAbs = fabs( reco::deltaPhi(jets[iJet].phi(),mets[0].phi()) );
+    double deltaPhiAbs = fabs( reco::deltaPhi(jets[iJet].phi(),metPhi) );
     if ( metIso > deltaPhiAbs ) metIso = deltaPhiAbs;
   }
   setVariable("metDphi",metIso);
 
   // MET and leading jets deltaPhi
-  double dPhiJet1Met = fabs( reco::deltaPhi(jets[0].phi(),mets[0].phi()) ); 
+  double dPhiJet1Met = fabs( reco::deltaPhi(jets[0].phi(),metPhi) ); 
   setVariable("dPhiJet1Met",dPhiJet1Met); 
-  double dPhiJet2Met = fabs( reco::deltaPhi(jets[1].phi(),mets[0].phi()) ); 
+  double dPhiJet2Met = fabs( reco::deltaPhi(jets[1].phi(),metPhi) ); 
   setVariable("dPhiJet2Met",dPhiJet2Met); 
 
   // R1 & R2
