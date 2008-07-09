@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.22 2008/07/02 15:31:33 cerminar Exp $
+// $Id: DTRenderPlugin.cc,v 1.23 2008/07/03 17:36:38 ameyer Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.22 $
-  \date $Date: 2008/07/02 15:31:33 $
+  \version $Revision: 1.23 $
+  \date $Date: 2008/07/03 17:36:38 $
 */
 
 #include "TProfile2D.h"
@@ -47,10 +47,10 @@ void DTRenderPlugin::preDraw( TCanvas *c, const DQMNet::CoreObject &o, const Vis
 
   c->cd();
 
-//  gPad->SetFrameFillColor(10);
-//  if (o.error) gPad->SetFillColor(2);
-//  if (o.warning) gPad->SetFillColor(5);
-//  if (o.other) gPad->SetFillColor(16);
+//  c->SetFrameFillColor(10);
+//  if (o.error) c->SetFillColor(2);
+//  if (o.warning) c->SetFillColor(5);
+//  if (o.other) c->SetFillColor(16);
 
   if( dynamic_cast<TProfile2D*>( o.object ) ) {
     preDrawTProfile2D( c, o );
@@ -99,11 +99,27 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
   obj->SetStats(kFALSE);
   obj->SetOption("colz");
 
-  gPad->SetLogz(0);
+  c->SetLogz(0);
 
   //gStyle->SetLabelSize(0.7);
   obj->GetXaxis()->SetLabelSize(0.07);
   obj->GetYaxis()->SetLabelSize(0.07);
+
+
+
+  if(o.name.find("NoiseSummary") < o.name.size()) {
+    obj->GetXaxis()->SetNdivisions(13,true);
+    obj->GetYaxis()->SetNdivisions(6,true);
+    obj->GetXaxis()->CenterLabels();
+    obj->GetYaxis()->CenterLabels();
+    c->SetGrid(1,1);
+    obj->GetXaxis()->SetTitleOffset(1.15);
+    c->SetBottomMargin(0.1);
+    c->SetLeftMargin(0.15);
+    c->SetRightMargin(0.12);
+    return;
+  }
+
 
   
   // Summary map
@@ -113,7 +129,7 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->GetYaxis()->SetNdivisions(6,true);
     obj->GetXaxis()->CenterLabels();
     obj->GetYaxis()->CenterLabels();
-    gPad->SetGrid(1,1);
+    c->SetGrid(1,1);
     return;
   }
 
@@ -121,44 +137,44 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
   // --------------------------------------------------------------
   // Data integrity plots
   if( o.name.find("ROSStatus") < o.name.size() ) {
-    gPad->SetGrid(1,1);
-    gPad->SetBottomMargin(0.15);
-    gPad->SetLeftMargin(0.15);
+    c->SetGrid(1,1);
+    c->SetBottomMargin(0.15);
+    c->SetLeftMargin(0.15);
     return;
   }
 
   // --------------------------------------------------------------
   // Data integrity plots
   if( o.name.find("FIFOStatus") < o.name.size() ) {
-    gPad->SetGrid(1,1);
-    gPad->SetBottomMargin(0.15);
-    gPad->SetLeftMargin(0.2);
+    c->SetGrid(1,1);
+    c->SetBottomMargin(0.15);
+    c->SetLeftMargin(0.2);
     return;
   }
 
   if( o.name.find("ROSError") < o.name.size() ) {
-    gPad->SetGrid(1,1);
-    gPad->SetBottomMargin(0.15);
-    gPad->SetLeftMargin(0.2);
+    c->SetGrid(1,1);
+    c->SetBottomMargin(0.15);
+    c->SetLeftMargin(0.2);
     obj->GetXaxis()->SetLabelSize(0.05);
     obj->GetYaxis()->SetLabelSize(0.05);
     return;
   }
 
   if( o.name.find("TDCError") < o.name.size() ) {
-    gPad->SetGrid(1,1);
-    gPad->SetBottomMargin(0.15);
-    gPad->SetLeftMargin(0.2);
+    c->SetGrid(1,1);
+    c->SetBottomMargin(0.15);
+    c->SetLeftMargin(0.2);
     return;
   }
 
   if( o.name.find("ROSSummary") < o.name.size() ) {
-    gPad->SetGrid(1,1);
+    c->SetGrid(1,1);
 //     obj->GetXaxis()->SetLabelSize(0.07);
 //     obj->GetYaxis()->SetLabelSize(0.07);
     obj->GetXaxis()->LabelsOption("v");
-    gPad->SetBottomMargin(0.25);
-    gPad->SetLeftMargin(0.15);
+    c->SetBottomMargin(0.25);
+    c->SetLeftMargin(0.15);
     return;
   }
 
@@ -167,14 +183,14 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->GetYaxis()->SetNdivisions(6,true);
     obj->GetXaxis()->CenterLabels();
     obj->GetYaxis()->CenterLabels();
-    gPad->SetGrid(1,1);
+    c->SetGrid(1,1);
 //     obj->GetXaxis()->SetLabelSize(0.07);
 //     obj->GetYaxis()->SetLabelSize(0.07);
     obj->GetXaxis()->SetTitleOffset(1.15);
 //     obj->GetXaxis()->LabelsOption("v");
-    gPad->SetBottomMargin(0.1);
-    gPad->SetLeftMargin(0.15);
-    gPad->SetRightMargin(0.12);
+    c->SetBottomMargin(0.1);
+    c->SetLeftMargin(0.15);
+    c->SetRightMargin(0.12);
     obj->SetMinimum(-0.00000001);
     obj->SetMaximum(3.0);
     
@@ -194,27 +210,27 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->GetYaxis()->SetNdivisions(5,true);
     obj->GetXaxis()->CenterLabels();
     obj->GetYaxis()->CenterLabels();
-    gPad->SetGrid(1,1);
+    c->SetGrid(1,1);
 //     obj->GetXaxis()->SetLabelSize(0.07);
 //     obj->GetYaxis()->SetLabelSize(0.07);
 
 //     obj->GetXaxis()->LabelsOption("v");
-    gPad->SetBottomMargin(0.1);
-    gPad->SetLeftMargin(0.12);
-    gPad->SetRightMargin(0.12);
+    c->SetBottomMargin(0.1);
+    c->SetLeftMargin(0.12);
+    c->SetRightMargin(0.12);
     return;
   } else if(o.name.find("OccupancySummary_W") < o.name.size()) {
     obj->GetXaxis()->SetNdivisions(13,true);
     obj->GetYaxis()->SetNdivisions(5,true);
     obj->GetXaxis()->CenterLabels();
     obj->GetYaxis()->CenterLabels();
-    gPad->SetGrid(1,1);
+    c->SetGrid(1,1);
 //     obj->GetXaxis()->SetLabelSize(0.07);
 //     obj->GetYaxis()->SetLabelSize(0.07);
     obj->GetXaxis()->LabelsOption("v");
-    gPad->SetBottomMargin(0.1);
-    gPad->SetLeftMargin(0.12);
-    gPad->SetRightMargin(0.12);
+    c->SetBottomMargin(0.1);
+    c->SetLeftMargin(0.12);
+    c->SetRightMargin(0.12);
     obj->SetMinimum(-0.00000001);
     obj->SetMaximum(5.0);
 
@@ -231,13 +247,13 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->GetYaxis()->SetNdivisions(5,true);
     obj->GetXaxis()->CenterLabels();
     obj->GetYaxis()->CenterLabels();
-    gPad->SetGrid(1,1);
+    c->SetGrid(1,1);
 //     obj->GetXaxis()->SetLabelSize(0.07);
 //     obj->GetYaxis()->SetLabelSize(0.07);
     obj->GetXaxis()->LabelsOption("v");
-    gPad->SetBottomMargin(0.1);
-    gPad->SetLeftMargin(0.12);
-    gPad->SetRightMargin(0.12);
+    c->SetBottomMargin(0.1);
+    c->SetLeftMargin(0.12);
+    c->SetRightMargin(0.12);
     obj->SetMinimum(-0.00000001);
     obj->SetMaximum(5.0);
 
@@ -250,15 +266,22 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     gStyle->SetPalette(5, colorError1);
     return;
   } else if( o.name.find("Occupancy" ) < o.name.size() ) {
-    gPad->SetGrid(0,4);
+    c->SetGrid(0,4);
 //     obj->GetXaxis()->SetLabelSize(0.07);
 //     obj->GetYaxis()->SetLabelSize(0.07);
-    gPad->SetLeftMargin(0.15);
+    c->SetLeftMargin(0.15);
     return;
   }
 
-
-
+  
+  if( o.name.find("NoiseRate_W" ) < o.name.size() ) {
+    c->SetGrid(0,4);
+    //     obj->GetXaxis()->SetLabelSize(0.07);
+    //     obj->GetYaxis()->SetLabelSize(0.07);
+    c->SetLeftMargin(0.15);
+    c->SetRightMargin(0.15);
+    return;
+  }
 
 
   if( o.name.find( "SCTriggerBX" ) < o.name.size() ) {
@@ -286,10 +309,10 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->GetYaxis()->SetNdivisions(5,true);
     obj->GetXaxis()->CenterLabels();
     obj->GetYaxis()->CenterLabels();
-    gPad->SetGrid(1,1);
-    gPad->SetBottomMargin(0.1);
-    gPad->SetLeftMargin(0.12);
-    gPad->SetRightMargin(0.12);
+    c->SetGrid(1,1);
+    c->SetBottomMargin(0.1);
+    c->SetLeftMargin(0.12);
+    c->SetRightMargin(0.12);
     obj->GetXaxis()->LabelsOption("v");
     obj->SetMinimum(-0.00000001);
     obj->SetMaximum(2.0);
@@ -308,11 +331,11 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->GetYaxis()->SetNdivisions(6,true);
     obj->GetXaxis()->CenterLabels();
     obj->GetYaxis()->CenterLabels();
-    gPad->SetGrid(1,1);
+    c->SetGrid(1,1);
     obj->GetXaxis()->LabelsOption("v");
-    gPad->SetBottomMargin(0.1);
-    gPad->SetLeftMargin(0.12);
-    gPad->SetRightMargin(0.12);
+    c->SetBottomMargin(0.1);
+    c->SetLeftMargin(0.12);
+    c->SetRightMargin(0.12);
     obj->SetMinimum(-0.00000001);
     obj->SetMaximum(5.0);
 
@@ -334,10 +357,10 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
       obj->GetYaxis()->SetNdivisions(4,true); //Theta Summary     
     obj->GetXaxis()->CenterLabels();
     obj->GetYaxis()->CenterLabels();
-    gPad->SetGrid(1,1);
-    gPad->SetBottomMargin(0.1);
-    gPad->SetLeftMargin(0.12);
-    gPad->SetRightMargin(0.12);
+    c->SetGrid(1,1);
+    c->SetBottomMargin(0.1);
+    c->SetLeftMargin(0.12);
+    c->SetRightMargin(0.12);
     obj->SetMinimum(-0.00000001);
     obj->SetMaximum(1.0);
     return;
@@ -353,11 +376,11 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
       obj->GetYaxis()->SetNdivisions(4,true); //Theta Summary     
     obj->GetXaxis()->CenterLabels();
     obj->GetYaxis()->CenterLabels();
-    gPad->SetGrid(1,1);
+    c->SetGrid(1,1);
     obj->GetXaxis()->LabelsOption("v");
-    gPad->SetBottomMargin(0.1);
-    gPad->SetLeftMargin(0.12);
-    gPad->SetRightMargin(0.12);
+    c->SetBottomMargin(0.1);
+    c->SetLeftMargin(0.12);
+    c->SetRightMargin(0.12);
     if(o.name.find("TkvsTrigSlope") < o.name.size()) {
       obj->SetMaximum(1.15);
       obj->SetMinimum(0.85);
@@ -395,13 +418,13 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->GetYaxis()->SetNdivisions(5,true);
     obj->GetXaxis()->CenterLabels();
     obj->GetYaxis()->CenterLabels();
-    gPad->SetGrid(1,1);
+    c->SetGrid(1,1);
 //     obj->GetXaxis()->SetLabelSize(0.07);
 //     obj->GetYaxis()->SetLabelSize(0.07);
     //    obj->GetXaxis()->LabelsOption("v");
-    gPad->SetBottomMargin(0.1);
-    gPad->SetLeftMargin(0.12);
-    gPad->SetRightMargin(0.12);
+    c->SetBottomMargin(0.1);
+    c->SetLeftMargin(0.12);
+    c->SetRightMargin(0.12);
     obj->SetMinimum(-0.00000001);
     obj->SetMaximum(3.0);
 
@@ -416,13 +439,13 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->GetYaxis()->SetNdivisions(6,true);
     obj->GetXaxis()->CenterLabels();
     obj->GetYaxis()->CenterLabels();
-    gPad->SetGrid(1,1);
+    c->SetGrid(1,1);
 //     obj->GetXaxis()->SetLabelSize(0.07);
 //     obj->GetYaxis()->SetLabelSize(0.07);
     //    obj->GetXaxis()->LabelsOption("v");
-    gPad->SetBottomMargin(0.1);
-    gPad->SetLeftMargin(0.12);
-    gPad->SetRightMargin(0.12);
+    c->SetBottomMargin(0.1);
+    c->SetLeftMargin(0.12);
+    c->SetRightMargin(0.12);
     obj->SetMinimum(-0.00000001);
     obj->SetMaximum(3.0);
 
@@ -465,9 +488,9 @@ void DTRenderPlugin::preDrawTH1( TCanvas *c, const DQMNet::CoreObject &o ) {
     c->SetLogy(1);
     gStyle->SetOptStat( 1111111 );
     obj->SetStats( kTRUE );
-//     gPad->SetGrid(1,1);
-//     gPad->SetBottomMargin(0.15);
-//     gPad->SetLeftMargin(0.2);
+//     c->SetGrid(1,1);
+//     c->SetBottomMargin(0.15);
+//     c->SetLeftMargin(0.2);
 //     obj->GetXaxis()->SetLabelSize(0.05);
 //     obj->GetYaxis()->SetLabelSize(0.05);
 
@@ -483,7 +506,7 @@ void DTRenderPlugin::preDrawTH1( TCanvas *c, const DQMNet::CoreObject &o ) {
 
 
   if( o.name.find( "FED770TTSValues_Percent" ) < o.name.size() ) {
-    gPad->SetLogy( 1 );
+    c->SetLogy( 1 );
     return;
   }
 
@@ -543,7 +566,7 @@ void DTRenderPlugin::preDrawTH1( TCanvas *c, const DQMNet::CoreObject &o ) {
   }
 
   if( o.name.find("DCC_ErrorsChamberID") < o.name.size() ) {
-    gPad->SetGrid(1,0);
+    c->SetGrid(1,0);
 //     obj->GetXaxis()->SetLabelSize(0.07);
 //     obj->GetYaxis()->SetLabelSize(0.07);
     obj->GetXaxis()->SetNdivisions(6,true);
@@ -551,6 +574,12 @@ void DTRenderPlugin::preDrawTH1( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
+
+  if( o.name.find( "NoiseRateSummary" ) < o.name.size() ) {
+    c->SetLogy(1);
+    c->SetLogx(1);
+    return;
+  }
 
 
   return;
@@ -575,7 +604,7 @@ void DTRenderPlugin::postDraw( TCanvas *c, const DQMNet::CoreObject &o, const Vi
     postDrawTH2( c, o );
   }
   else if( dynamic_cast<TH1*>( o.object ) ) {
-    postDrawTH2( c, o );
+    postDrawTH1( c, o );
   }
 
 
