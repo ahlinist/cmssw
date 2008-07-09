@@ -2,6 +2,7 @@
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
+#include "SusyAnalysis/EventSelector/interface/uncorrectionTypeMET.h"
 
 //__________________________________________________________________________________________________
 HTPtdrEventSelector::HTPtdrEventSelector (const edm::ParameterSet& pset) :
@@ -13,7 +14,7 @@ HTPtdrEventSelector::HTPtdrEventSelector (const edm::ParameterSet& pset) :
   maxEta_ ( pset.getParameter<double>("maxEta") )
 { 
   // uncorrection type
-  uncorrType_ = uncorrectionType(pset.getParameter<std::string>("uncorrType"));
+  uncorrType_ = pat::uncorrectionTypeMET(pset.getParameter<std::string>("uncorrType"));
 
   // Store computed HT
   defineVariable("HT");
@@ -59,19 +60,19 @@ HTPtdrEventSelector::select (const edm::Event& event) const
 
 }
 
-pat::MET::UncorectionType
-HTPtdrEventSelector::uncorrectionType (const std::string& correctionName) const
-{
-  if (correctionName == "uncorrALL")
-    return pat::MET::UncorectionType(pat::MET::uncorrALL);
-  if (correctionName == "uncorrJES")
-    return pat::MET::UncorectionType(pat::MET::uncorrJES);
-  if (correctionName == "uncorrMUON")
-    return pat::MET::UncorectionType(pat::MET::uncorrMUON);
+// pat::MET::UncorectionType
+// HTPtdrEventSelector::uncorrectionType (const std::string& correctionName) const
+// {
+//   if (correctionName == "uncorrALL")
+//     return pat::MET::UncorectionType(pat::MET::uncorrALL);
+//   if (correctionName == "uncorrJES")
+//     return pat::MET::UncorectionType(pat::MET::uncorrJES);
+//   if (correctionName == "uncorrMUON")
+//     return pat::MET::UncorectionType(pat::MET::uncorrMUON);
 
-  edm::LogInfo("HTPtdrEventSelector")<< "given uncorrection not valid return corrected MET";
-  return pat::MET::uncorrMAXN;
-}
+//   edm::LogInfo("HTPtdrEventSelector")<< "given uncorrection not valid return corrected MET";
+//   return pat::MET::uncorrMAXN;
+// }
 
 
 //__________________________________________________________________________________________________

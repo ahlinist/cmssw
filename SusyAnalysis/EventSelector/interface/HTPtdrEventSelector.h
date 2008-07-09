@@ -21,8 +21,8 @@ public:
   virtual bool select (const edm::Event&) const;
   virtual ~HTPtdrEventSelector () {}
 
-private:
-  pat::MET::UncorectionType uncorrectionType (const std::string&) const;
+// private:
+//   pat::MET::UncorectionType uncorrectionType (const std::string&) const;
 
 private:
   edm::InputTag jetTag_; ///< tag for input collection
