@@ -47,6 +47,16 @@ extern "C"{
  void eventtree_();
 }
 
+#define TXGIVE txgive_
+extern "C" {
+  void TXGIVE(const char*,int length);
+}
+
+#define TXGIVE_INIT txgive_init_
+extern "C" {
+  void TXGIVE_INIT();
+}
+
 /*
 ME2Pythia.f
       double precision etcjet,rclmax,etaclmax,qcut,clfact
@@ -94,6 +104,7 @@ extern "C" {
   static const unsigned long kAveEventPerSec = 200;
 
 using namespace edm;
+using namespace std;
 
 MadGraphSource::MadGraphSource( const ParameterSet & pset, InputSourceDescription const& desc) 
    : ExternalInputSource (pset, desc), evt(0),
@@ -108,7 +119,10 @@ MadGraphSource::MadGraphSource( const ParameterSet & pset, InputSourceDescriptio
      MEMAIN_qcut(pset.getUntrackedParameter<double>("MEMAIN_qcut",0.)),
      MEMAIN_iexcfile(pset.getUntrackedParameter<unsigned int>("MEMAIN_iexcfile",0)), 
      produceEventTreeFile_ (pset.getUntrackedParameter<bool>("produceEventTreeFile",false)), 
-     minimalLH_(pset.getUntrackedParameter<bool>("minimalLH",false)) 
+     minimalLH_(pset.getUntrackedParameter<bool>("minimalLH",false)),
+  useExternalGenerators_(false),
+  useTauola_(false),
+  useTauolaPolarization_(false)
 {
 
   edm::LogInfo("Generator|MadGraph")<<" initializing MadGraphSource";
@@ -223,6 +237,63 @@ MadGraphSource::MadGraphSource( const ParameterSet & pset, InputSourceDescriptio
   // Call pythia initialisation with user defined upinit subroutine
   call_pyinit( "USER", "", "", 0.);
 
+  // TAUOLA, etc.
+  //
+  useExternalGenerators_ = pset.getUntrackedParameter<bool>("UseExternalGenerators",false);
+//  useTauola_ = pset.getUntrackedParameter<bool>("UseTauola", false);
+//  useTauolaPolarization_ = pset.getUntrackedParameter<bool>("UseTauolaPolarization", false);
+
+  if ( useExternalGenerators_ ) {
+ // read External Generator parameters
+    ParameterSet ext_gen_params =
+       pset.getParameter<ParameterSet>("ExternalGenerators") ;
+    vector<string> extGenNames =
+       ext_gen_params.getParameter< vector<string> >("parameterSets");
+    for (unsigned int ip=0; ip<extGenNames.size(); ++ip )
+    {
+      string curSet = extGenNames[ip];
+      ParameterSet gen_par_set =
+         ext_gen_params.getUntrackedParameter< ParameterSet >(curSet);
+/*
+     cout << "----------------------------------------------" << endl;
+     cout << "Read External Generator parameter set "  << endl;
+     cout << "----------------------------------------------" << endl;
+*/
+     if ( curSet == "Tauola" )
+     {
+        useTauola_ = true;
+        if ( useTauola_ ) {
+           cout << "--> use TAUOLA" << endl;
+        } 
+	useTauolaPolarization_ = gen_par_set.getParameter<bool>("UseTauolaPolarization");
+        if ( useTauolaPolarization_ ) 
+	{
+           cout << "(Polarization effects enabled)" << endl;
+           tauola_.enablePolarizationEffects();
+        } 
+	else 
+	{
+           cout << "(Polarization effects disabled)" << endl;
+           tauola_.disablePolarizationEffects();
+        }
+	vector<string> cards = gen_par_set.getParameter< vector<string> >("InputCards");
+	cout << "----------------------------------------------" << endl;
+        cout << "Initializing Tauola" << endl;
+        for( vector<string>::const_iterator
+                itPar = cards.begin(); itPar != cards.end(); ++itPar )
+        {
+           // call_txgive(*itPar);
+	   TXGIVE( (*itPar).c_str(), (*itPar).length() );
+	   cout << "     " <<  (*itPar).c_str() << endl;
+        }
+        tauola_.initialize();
+        //call_pretauola(-1); // initialize TAUOLA package for tau decays
+     }
+    }
+    // cout << "----------------------------------------------" << endl;
+  }
+
+
   edm::LogInfo("Generator|MadGraph")<<"MEMAIN after ME2pythia initialization - etcjet ="<<memain_.etcjet<<" rclmax ="<<memain_.rclmax<<" etaclmax ="<<memain_.etaclmax<<" qcut ="<<memain_.qcut<<" clfact ="<<memain_.clfact<<" maxjets ="<<memain_.maxjets<<" minjets ="<<memain_.minjets<<" iexcfile ="<<memain_.iexcfile<<" ktsche ="<<memain_.ktsche;
 
   produces<HepMCProduct>();
@@ -241,6 +312,16 @@ MadGraphSource::~MadGraphSource(){
 void MadGraphSource::clear() {
 }
 
+void MadGraphSource::endRun(Run & r) {
+ 
+  call_pystat(1);
+  if ( useTauola_ ) {
+    tauola_.print();
+    //call_pretauola(1); // print TAUOLA decay statistics output
+  }
+
+}
+
 
 bool MadGraphSource::produce(Event & e) {
   std::auto_ptr<HepMCProduct> bare_product(new HepMCProduct());  
@@ -253,6 +334,12 @@ bool MadGraphSource::produce(Event & e) {
   }
     
   call_pyevnt();      // generate one event with Pythia
+
+    if ( useTauola_ ) {
+      tauola_.processEvent();
+      //call_pretauola(0); // generate tau decays with TAUOLA
+    }
+
   call_pyhepc( 1 );
 
   if(produceEventTreeFile_) eventtree_(); // write out an event tree file

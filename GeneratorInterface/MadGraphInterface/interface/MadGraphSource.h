@@ -23,6 +23,8 @@
 #include "HepMC/GenEvent.h"
 #include "HepMC/PdfInfo.h"
 
+#include "GeneratorInterface/CommonInterface/interface/TauolaInterface.h"
+
 namespace edm
 {
   class MadGraphSource : public ExternalInputSource {
@@ -31,6 +33,9 @@ namespace edm
     MadGraphSource(const ParameterSet &, const InputSourceDescription &);
     /// Destructor
     virtual ~MadGraphSource();
+    
+     void endRun( Run& r);
+    
   private:
     /// Interface to the PYGIVE pythia routine, with add'l protections
     bool call_pygive(const std::string& iParm );
@@ -60,6 +65,13 @@ namespace edm
     bool produceEventTreeFile_;
     // Flag to allow reading a simple LHE file using the minimal Les Houches functionality (ignoring reading parameters from the header)
    bool minimalLH_;
+
+    // external generators (tauola,...)
+    bool useExternalGenerators_ ;
+    bool useTauola_ ;
+    bool useTauolaPolarization_ ;
+    TauolaInterface tauola_ ;
+
   };
 } 
 #endif
