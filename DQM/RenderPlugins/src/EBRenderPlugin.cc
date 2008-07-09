@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.87 2008/06/03 21:27:34 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.88 2008/06/10 09:44:16 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.87 $
-  \date $Date: 2008/06/03 21:27:34 $
+  \version $Revision: 1.88 $
+  \date $Date: 2008/06/10 09:44:16 $
 */
 
 #include "TH1F.h"
@@ -541,7 +541,7 @@ void EBRenderPlugin::preDrawTH1F( TCanvas *c, const DQMNet::CoreObject &o ) {
   }
 
   if( name.find( "front-end status bits" ) < name.size() ) {
-   gPad->SetBottomMargin(0.05);
+   gPad->SetBottomMargin(0.25);
    obj->GetXaxis()->LabelsOption("v");
   }
 
