@@ -3,6 +3,8 @@ import FWCore.ParameterSet.Config as cms
 process = cms.Process("SIMU")
 process.load("Configuration.Generator.PythiaUESettings_cfi")
 
+process.load("IOMC.RandomEngine.IOMC_cff")
+
 process.load("Configuration.StandardSequences.VtxSmearedGauss_cff")
 
 process.load("SimG4Core.Application.g4SimHits_cfi")
@@ -31,30 +33,30 @@ process.MessageLogger = cms.Service("MessageLogger",
     )
 )
 
-process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService",
-    moduleSeeds = cms.PSet(
-        simEcalUnsuppressedDigis = cms.untracked.uint32(234567),
-        simMuonRPCDigis = cms.untracked.uint32(123890),
-        evtgenproducer = cms.untracked.uint32(123456),
-        simSiStripDigis = cms.untracked.uint32(987654),
-        mix = cms.untracked.uint32(12345),
-        simHcalUnsuppressedDigis = cms.untracked.uint32(345678),
-        simMuonCSCDigis = cms.untracked.uint32(456789),
-        VtxSmeared = cms.untracked.uint32(98765432),
-        g4SimHits = cms.untracked.uint32(11),
-        simSiPixelDigis = cms.untracked.uint32(654321),
-        simHcalDigis = cms.untracked.uint32(345678),
-        simMuonDTDigis = cms.untracked.uint32(567890)
-    ),
-    sourceSeed = cms.untracked.uint32(100000)
-)
+# process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService",
+#    moduleSeeds = cms.PSet(
+#        simEcalUnsuppressedDigis = cms.untracked.uint32(234567),
+#        simMuonRPCDigis = cms.untracked.uint32(123890),
+#        evtgenproducer = cms.untracked.uint32(123456),
+#        simSiStripDigis = cms.untracked.uint32(987654),
+#        mix = cms.untracked.uint32(12345),
+#        simHcalUnsuppressedDigis = cms.untracked.uint32(345678),
+#        simMuonCSCDigis = cms.untracked.uint32(456789),
+#        VtxSmeared = cms.untracked.uint32(98765432),
+#        g4SimHits = cms.untracked.uint32(11),
+#        simSiPixelDigis = cms.untracked.uint32(654321),
+#        simHcalDigis = cms.untracked.uint32(345678),
+#        simMuonDTDigis = cms.untracked.uint32(567890)
+#    ),
+#    sourceSeed = cms.untracked.uint32(100000)
+#)
 
-process.randomEngineStateProducer = cms.EDProducer("RandomEngineStateProducer")
+# process.randomEngineStateProducer = cms.EDProducer("RandomEngineStateProducer")
 
 process.myout = cms.OutputModule("PoolOutputModule",
     outputCommands = cms.untracked.vstring('keep *', 
         'drop *_g4SimHits_*_*'),
-    fileName = cms.untracked.string('/tmp/covarell/exampleRunAllOutput.root')
+    fileName = cms.untracked.string('/tmp/exampleRunAllOutput.root')
 )
 
 process.maxEvents = cms.untracked.PSet(
@@ -215,7 +217,12 @@ process.source = cms.Source("PythiaSource",
 )
 
 process.evtgenproducer = cms.EDProducer("EvtGenProducer",
-    particle_property_file = cms.string('../data/evt.pdl'),
+    use_default_decay = cms.untracked.bool(False),
+    decay_table = cms.FileInPath('GeneratorInterface/EvtGenInterface//data/DECAY.DEC'),
+    particle_property_file = cms.FileInPath('GeneratorInterface/EvtGenInterface/data/evt.pdl'),
+    user_decay_file = cms.FileInPath('GeneratorInterface/EvtGenInterface/data/Bd_Kstarmumu_Kpi.dec'),
+    list_forced_decays = cms.vstring('MyB0', 
+        'Myanti-B0'),
     processParameters = cms.vstring('MDCY(134,1) = 0', 
         'MDCY(137,1) = 0', 
         'MDCY(138,1) = 0', 

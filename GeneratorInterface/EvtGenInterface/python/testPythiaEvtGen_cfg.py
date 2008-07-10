@@ -1,7 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("GEN")
-# ----------------------------------------------------------------------
 process.load("Configuration.Generator.PythiaUESettings_cfi")
 
 process.MessageLogger = cms.Service("MessageLogger",
@@ -15,7 +14,6 @@ process.MessageLogger = cms.Service("MessageLogger",
 process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService",
     moduleSeeds = cms.PSet(
         g4SimHits = cms.untracked.uint32(11),
-        # ----------------------------------------------------------------------
         evtgenproducer = cms.untracked.uint32(1234566),
         mix = cms.untracked.uint32(12345),
         VtxSmeared = cms.untracked.uint32(98765432)
@@ -24,7 +22,7 @@ process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService
 )
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(50)
+    input = cms.untracked.int32(5000)
 )
 process.source = cms.Source("PythiaSource",
     pythiaHepMCVerbosity = cms.untracked.bool(True),
@@ -181,7 +179,11 @@ process.source = cms.Source("PythiaSource",
 )
 
 process.evtgenproducer = cms.EDProducer("EvtGenProducer",
-    particle_property_file = cms.string('../data/evt.pdl'),
+    use_default_decay = cms.untracked.bool(True),
+    decay_table = cms.FileInPath('GeneratorInterface/EvtGenInterface//data/DECAY.DEC'),
+    particle_property_file = cms.FileInPath('GeneratorInterface/EvtGenInterface/data/evt.pdl'),
+    user_decay_file = cms.FileInPath('GeneratorInterface/EvtGenInterface/data/incl_BtoJpsi_mumu.dec'),
+    list_forced_decays = cms.vstring(),
     processParameters = cms.vstring('MDCY(134,1) = 0', 
         'MDCY(137,1) = 0', 
         'MDCY(138,1) = 0', 
