@@ -114,6 +114,7 @@ public:
   // Modes with hardwired defaults
   
   void hardwireGridJobMode();
+  void hardwireReleaseValidationJobMode();
   void hardwireAnalysisJobMode();
   void hardwireNilJobMode();
 
@@ -134,6 +135,9 @@ public:
       //		event processing. 
       case GridJobMode: 
         hardwireGridJobMode();
+	break;       
+      case ReleaseValidationJobMode:
+        hardwireReleaseValidationJobMode();
 	break;       
       case AnalysisJobMode:
         hardwireAnalysisJobMode();
