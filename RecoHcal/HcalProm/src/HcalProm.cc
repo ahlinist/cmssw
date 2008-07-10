@@ -14,13 +14,14 @@
      <Notes on implementation>
 */
 //
-// Original Author:  Efe Yazgan
-// Updated        :  Taylan Yetkin (2008/05/08)
+// Author:           Efe Yazgan
+//                   Taylan Yetkin 
 //                   Fedor Ratnikov
 //                   Jordan Damgov
 //                   Anna Kropivnitskaya
+// Contacts: Efe Yazgan, Taylan Yetkin
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.41 2008/07/08 16:28:25 efe Exp $
+// $Id: HcalProm.cc,v 1.42 2008/07/09 08:29:51 efe Exp $
 //
 //
 
@@ -215,6 +216,8 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
     Handle < HFRecHitCollection > hfrh;
     iEvent.getByLabel("hfreco", hfrh);
     const HFRecHitCollection Hithf = *(hfrh.product());
+    const HFRecHitCollection *HFHFhits = 0;
+    HFHFhits = hfrh.product();
 
     Handle < HORecHitCollection > horh;
     iEvent.getByLabel("horeco", horh);
@@ -435,14 +438,37 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
 
 
     //HF abnormal signals
-    if (triggerBit[2] == 1){
+    if (triggerBit[2] == 1){//CSC trigger bit
       for (HFRecHitCollection::const_iterator hfhit = Hithf.begin(); hfhit != Hithf.end(); hfhit++) {
         GlobalPoint hfposition = geo->getPosition(hfhit->detid());
-	if (hfposition.eta() > 0 && hfhit->energy()>20.) h_HFplus_energy_CSC_trig->Fill(hfhit->energy());
-        if (hfposition.eta() < 0 && hfhit->energy()>20.) h_HFminus_energy_CSC_trig->Fill(hfhit->energy());	
+
+	float E_Long = -99999;
+	float E_Short = -99999;
+	if (hfhit->id().depth() == 1){ 
+	  E_Long = hfhit->energy();
+	  E_Short = getEnergyEtaPhiDepth(hfhit->id().ieta(),hfhit->id().iphi(),2,HFHFhits);
+	}
+	if (hfhit->id().depth() == 2){ 
+	  E_Short = hfhit->energy();
+	  E_Long = getEnergyEtaPhiDepth(hfhit->id().ieta(),hfhit->id().iphi(),1,HFHFhits);
+	}
+	if (hfhit->energy()>1.2 && hfhit->energy()<20. && (E_Short != -9999. && E_Long != -9999.)) h_S_over_L_plus_S_normal->Fill(E_Short/(E_Long+E_Short));
+        if (hfhit->energy()>20. && (E_Short != -9999. && E_Long != -9999.)) h_S_over_L_plus_S_abnormal->Fill(E_Short/(E_Long+E_Short));
+	h_Long_vs_Short->Fill(E_Long,E_Short);
+
+	if (hfhit->energy()>20.){
+	  h_HF_CSC_Trig_Eta_Phi->Fill(hfhit->id().ieta(),hfhit->id().iphi(),hfhit->energy());
+	  if (hfposition.eta() > 0 ){ 
+	    h_HFplus_energy_CSC_trig->Fill(hfhit->energy());
+	    h_HFplus_energy_vs_RecHitTime_CSC_trig->Fill(hfhit->energy(),hfhit->time());
+	  }
+	  if (hfposition.eta() < 0 ){
+	    h_HFminus_energy_CSC_trig->Fill(hfhit->energy());
+	    h_HFminus_energy_vs_RecHitTime_CSC_trig->Fill(hfhit->energy(),hfhit->time());
+	  }
+	}
       }
     }
-
     // DIGIS ARE TAKEN OUT FROM T0 RECONSTRUCTION, but not at FNAL
     if (triggerBit[0] == 1){
     if (!hbhe_digi.failedToGet()) {
@@ -555,6 +581,21 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
     HcalDetId fhcalDetId;
 
     for (reco::TrackCollection::const_iterator track = tC.begin(); track != tC.end(); track++) {
+
+      //@@@@@@@@------>track test
+    Chi2->Fill(track->chi2());
+    Chi2overDoF->Fill(track->normalizedChi2());
+
+    DistanceOfClosestApproach->Fill(track->d0());
+    DistanceOfClosestApproachVsTheta->Fill(track->theta(), track->d0());
+    DistanceOfClosestApproachVsPhi->Fill(track->phi(), track->d0());
+    DistanceOfClosestApproachVsEta->Fill(track->eta(), track->d0());
+    
+    xPointOfClosestApproach->Fill(track->vertex().x());
+    yPointOfClosestApproach->Fill(track->vertex().y());
+    zPointOfClosestApproach->Fill(track->vertex().z());
+      //@@@@@@@@<-----track test
+
         if (track->recHitsSize() < 25)
             continue;
         f_corr = 1.;
@@ -1629,7 +1670,15 @@ void HcalProm::bookHistograms() {
     TFileDirectory JetMetDir = fs->mkdir("JetMet");
     TFileDirectory TriggerDir = fs->mkdir("Trigger");
 
-    // Add runnumbers to histograms!
+    Chi2 = book1DHistogram(MuonDir, "Chi2", "Track Chi2", 100, -0.5, 0.5);
+    Chi2overDoF = book1DHistogram(MuonDir,"Chi2overDoF", "Track Chi2/d.o.f.", 100, -0.5, 0.05);
+    DistanceOfClosestApproach = book1DHistogram(MuonDir, "DistanceOfClosestApproach", "Track Distance of Closest Approach",100, -0.5, 0.5); 
+    DistanceOfClosestApproachVsTheta = book2DHistogram(MuonDir, "DistanceOfClosestApproachVsTheta", "Distance Of Closest Approach Vs Theta", 100, 0.0, 3.2, 100, -0.4, 0.4);
+    DistanceOfClosestApproachVsPhi = book2DHistogram(MuonDir, "DistanceOfClosestApproachVsPhi", "Distance Of Closest Approach Vs Phi", 100, -3.2, 3.2, 100, -0.5, 0.5);
+    DistanceOfClosestApproachVsEta = book2DHistogram(MuonDir, "DistanceOfClosestApproachVsEta","Distance Of Closest Approach Vs Eta", 100, -3.0, 3.0, 100, -0.5, 0.5);
+    xPointOfClosestApproach = book1DHistogram(MuonDir, "xPointOfClosestApproach","x Point Of Closest Approach", 20, -20, 20);
+    yPointOfClosestApproach = book1DHistogram(MuonDir, "yPointOfClosestApproach","y Point Of Closest Approach", 20, -20, 20);
+    zPointOfClosestApproach = book1DHistogram(MuonDir, "zPointOfClosestApproach","z Point Of Closest Approach", 50, -100, 100);
 
     h_global_trigger_bit =
       book1DHistogram(TriggerDir, "h_global_trigger_bit", "Global Trigger Bit Fired", 128, -0.5, 127.5);
@@ -1652,8 +1701,15 @@ void HcalProm::bookHistograms() {
     h_hfplustiming = book1DHistogram(HcalDir, "h_hfplustiming", "HF+ Timing", 10, -0.5, 9.5);
     h_hfminustiming = book1DHistogram(HcalDir, "h_hfminustiming", "HF- Timing", 10, -0.5, 9.5);
 
-    h_HFplus_energy_CSC_trig = book1DHistogram(HcalDir, "h_HFplus_energy_CSC_trig", "HF+ Energy for CSC Triggered Events", 1500, -20, 1000);
-    h_HFminus_energy_CSC_trig = book1DHistogram(HcalDir, "h_HFminus_energy_CSC_trig", "HF- Energy for CSC Triggered Events", 1500, -10, 1000);
+    h_HFplus_energy_CSC_trig = book1DHistogram(HcalDir, "h_HFplus_energy_CSC_trig", "HF+ Energy for CSC Triggered Events, E(HF)>20 GeV", 1500, -20, 1000);
+    h_HFminus_energy_CSC_trig = book1DHistogram(HcalDir, "h_HFminus_energy_CSC_trig", "HF- Energy for CSC Triggered Events E(HF)>20 GeV", 1500, -10, 1000);
+    h_HFplus_energy_vs_RecHitTime_CSC_trig = book2DHistogram(HcalDir, "h_HFplus_energy_vs_RecHitTime_CSC_trig", "HF+ timing vs Energy for CSC Triggered Events, E(HF)>20 GeV", 1000,0,100, 1500, -20, 1000);
+    h_HFminus_energy_vs_RecHitTime_CSC_trig = book2DHistogram(HcalDir, "h_HFminus_energy_vs_RecHitTime_CSC_trig", "HF- timing vs Energy for CSC Triggered Events, E(HF)>20 GeV", 1000,0,100, 1500, -20, 1000);
+    h_HF_CSC_Trig_Eta_Phi = book2DHistogram(HcalDir, "h_HF_CSC_Trig_Eta_Phi", "HF i#eta vs i#phi for CSC Triggered events E(HF)>20 GeV", 84,-42,42,72,0,72);
+    h_S_over_L_plus_S_normal = book1DHistogram(HcalDir, "h_S_over_L_plus_S_normal","S/(S+L) for E(HF)<20 GeV", 100,-1.2,1.2);
+    h_S_over_L_plus_S_abnormal = book1DHistogram(HcalDir, "h_S_over_L_plus_S_abnormal","S/(S+L) for E(HF)>20 GeV", 100,-1.2,1.2);
+
+    h_Long_vs_Short = book2DHistogram(HcalDir, "h_Long_vs_Short","Long vs Short for CSC Triggered EVents", 1200,-20,1200,1200,-20,1200);
 
     h_jet_multiplicity = book1DHistogram(JetMetDir, "h_jet_multiplicity", "Jet Multiplicity", 40, 0, 40);
     h_jet_Pt = book1DHistogram(JetMetDir, "h_jet_Pt", "Jet PT", 100, -6, 20);
@@ -1858,10 +1914,10 @@ void HcalProm::bookHistograms() {
    hEmuonHB2DTBotPlus = book1DHistogram(MuonDir, "hEmuonHB2DTBotPlus","Emoun, Bottom+, 2nd muon in one phi plane", 60, -2., 10.);
    hEmuonHB2DTBotMinus = book1DHistogram(MuonDir, "hEmuonHB2DTBotMinus","Emoun, Bottom-, 2nd muon in one phi plane", 60, -2., 10.);
    //Time
-   hTimeMuonHB2DTTopPlus = book1DHistogram(MuonDir, "hTimeMuonHB2DTTopPlus","TimeMoun, Top+, 2nd muon in one phi plane ", 60, -150., 150.);
-   hTimeMuonHB2DTTopMinus = book1DHistogram(MuonDir, "hTimeMuonHB2DTTopMinus","TimeMoun, Top-, 2nd muon in one phi plane ", 60, -150., 150.);
-   hTimeMuonHB2DTBotPlus = book1DHistogram(MuonDir, "hTimeMuonHB2DTBotPlus","TimeMoun, Bottom+, 2nd muon in one phi plane ", 60, -150., 150.);
-   hTimeMuonHB2DTBotMinus = book1DHistogram(MuonDir, "hTimeMuonHB2DTBotMinus","TimeMoun, Bottom-, 2nd muon in one phi plane ", 60, -150., 150.);
+   hTimeMuonHB2DTTopPlus = book1DHistogram(MuonDir, "hTimeMuonHB2DTTopPlus","TimeMuon, Top+, 2nd muon in one phi plane ", 500, -50., 50.);
+   hTimeMuonHB2DTTopMinus = book1DHistogram(MuonDir, "hTimeMuonHB2DTTopMinus","TimeMuon, Top-, 2nd muon in one phi plane ", 500, -50., 50.);
+   hTimeMuonHB2DTBotPlus = book1DHistogram(MuonDir, "hTimeMuonHB2DTBotPlus","TimeMuon, Bottom+, 2nd muon in one phi plane ", 500, -30., 70.);
+   hTimeMuonHB2DTBotMinus = book1DHistogram(MuonDir, "hTimeMuonHB2DTBotMinus","TimeMuon, Bottom-, 2nd muon in one phi plane ", 500, -30., 70.);
    //Number Towers in Eta Plane passing by good muon
    hNumTowerMuonHB2DTTopPlus = 
         book1DHistogram(MuonDir, "hNumTowerMuonHB2DTTopPlus","Number Towers of Moun, Top+, 2nd muon in one phi plane ", 11, -0.5, 10.5);
@@ -3280,4 +3336,12 @@ float HcalProm::getPhiCluster(int gridSize, int ieta, int iphi, const HBHERecHit
     }
     Phi /= energy;
     return Phi;
+}
+float HcalProm::getEnergyEtaPhiDepth(int ieta, int iphi, int depth, const HFRecHitCollection * HFRecHits) {
+  float hfenergy = -9999.;
+  HFRecHitCollection::const_iterator it_hf;
+    for (it_hf = HFRecHits->begin(); it_hf != HFRecHits->end(); it_hf++) {
+      if (it_hf->id().ieta() == ieta && it_hf->id().iphi() == iphi && it_hf->id().depth() == depth) hfenergy = it_hf->energy();
+    }
+    return hfenergy;
 }

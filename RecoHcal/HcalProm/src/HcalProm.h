@@ -17,7 +17,7 @@
 // Original Author:  Efe Yazgan
 // Updated        :  Taylan Yetkin (2008/05/08)
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.h,v 1.19 2008/07/08 13:03:04 efe Exp $
+// $Id: HcalProm.h,v 1.20 2008/07/08 16:28:29 efe Exp $
 //
 //
 
@@ -119,6 +119,7 @@ class HcalProm : public edm::EDAnalyzer {
       float get1xNClusterEnergy(int gridSize,int ieta, int iphi, const HBHERecHitCollection*  HBHERecHits);
       float getEtaCluster(int gridSize,int ieta, int iphi, const HBHERecHitCollection*  HBHERecHits);
       float getPhiCluster(int gridSize,int ieta, int iphi, const HBHERecHitCollection*  HBHERecHits);
+      float getEnergyEtaPhiDepth(int ieta, int iphi, int depth, const HFRecHitCollection * HFRecHits);
       //muon extrapolation
       void getHBmax(
           // inputs
@@ -305,6 +306,12 @@ class HcalProm : public edm::EDAnalyzer {
       
       TH1F* h_HFplus_energy_CSC_trig;
       TH1F* h_HFminus_energy_CSC_trig;
+      TH2F* h_HFplus_energy_vs_RecHitTime_CSC_trig;
+      TH2F* h_HFminus_energy_vs_RecHitTime_CSC_trig;
+      TH2F* h_HF_CSC_Trig_Eta_Phi;	
+      TH1F* h_S_over_L_plus_S_normal;
+      TH1F* h_S_over_L_plus_S_abnormal;
+      TH2F* h_Long_vs_Short;
 
       TH1F* h_calo_tower_energy;
 
@@ -493,6 +500,17 @@ class HcalProm : public edm::EDAnalyzer {
       TH2F* h_distance2D_vs_chi2;
       
       TH1F* h_muonNHits;
+
+
+  TH1F* Chi2;
+  TH1F* Chi2overDoF;
+  TH1F* DistanceOfClosestApproach;
+  TH2F* DistanceOfClosestApproachVsTheta;
+  TH2F* DistanceOfClosestApproachVsPhi;
+  TH2F* DistanceOfClosestApproachVsEta;
+  TH1F* xPointOfClosestApproach;
+  TH1F* yPointOfClosestApproach;
+  TH1F* zPointOfClosestApproach;
 
       int trigDT;
       std::string baseHtmlDir_;
