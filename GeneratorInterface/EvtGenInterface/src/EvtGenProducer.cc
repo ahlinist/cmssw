@@ -14,7 +14,7 @@
 //
 // Original Author:  Nello Nappi
 //         Created:  Fri May 11 15:19:32 CEST 2007
-// $Id: EvtGenProducer.cc,v 1.4 2008/01/11 17:09:31 covarell Exp $
+// $Id: EvtGenProducer.cc,v 1.5 2008/03/12 16:28:36 covarell Exp $
 //
 //
 #include "FWCore/PluginManager/interface/PluginManager.h"
@@ -66,19 +66,24 @@ EvtGenProducer::EvtGenProducer(edm::ParameterSet const & p)
   myEvtRandomEngine* the_engine = new myEvtRandomEngine(&m_engine); 
 
   // Get data from parameter set
-  std::string decay_table = p.getParameter<std::string>("decay_table");
-  std::string pdt = p.getParameter<std::string>("particle_property_file");
-  std::string user_decay = p.getUntrackedParameter<std::string>("user_decay_file","none");
+  edm::FileInPath decay_table = p.getParameter<edm::FileInPath>("decay_table");
+  edm::FileInPath pdt = p.getParameter<edm::FileInPath>("particle_property_file");
+  bool useDefault = p.getUntrackedParameter<bool>("use_default_decay",true);
+  edm::FileInPath user_decay = p.getParameter<edm::FileInPath>("user_decay_file");
+  std::string decay_table_s = decay_table.fullPath();
+  std::string pdt_s = pdt.fullPath();
+  std::string user_decay_s = user_decay.fullPath();
+
   pythia_params = p.getParameter< std::vector<std::string> >("processParameters");
   // any number of alias names for forced decays can be specified using dynamic std vector of strings 
   std::vector<std::string> forced_names = p.getParameter< std::vector<std::string> >("list_forced_decays");
     
   produces<edm::HepMCProduct>();   // declare 
     
-  m_EvtGen = new EvtGen (decay_table.c_str(),pdt.c_str(),the_engine);  
+  m_EvtGen = new EvtGen (decay_table_s.c_str(),pdt_s.c_str(),the_engine);  
   // 4th parameter should be rad cor - set to PHOTOS (default)
  
-  if (user_decay != "none") m_EvtGen->readUDecay( user_decay.c_str() );
+  if (!useDefault) m_EvtGen->readUDecay( user_decay_s.c_str() );
 
   std::vector<std::string>::const_iterator i;
   nforced=0;
@@ -259,6 +264,7 @@ void EvtGenProducer::decay(HepMC::GenParticle* partHep, EvtId idEvt, HepMC::GenE
     partEvt->makeStdHep(evtstdhep);
 
     if (ntotal < 1000 && ntotal%10 == 0) {     // DEBUG
+    // if (evtstdhep.getStdHepID(0) == 521 || evtstdhep.getStdHepID(0) == 523) {     // DEBUG
    
       partEvt->printParticle();                
       partEvt->printTree();

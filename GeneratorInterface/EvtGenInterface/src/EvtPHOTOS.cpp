@@ -138,7 +138,7 @@ void EvtPHOTOS::doRadCorr( EvtParticle *p){
     thevhep[numparticle][0]=0.0;
     thevhep[numparticle][1]=0.0;
     thevhep[numparticle][2]=0.0;
-    thevhep[numparticle][3] =0.0;
+    thevhep[numparticle][3]=0.0;
     
     entry+=1;
     thenevhep=1;
@@ -177,7 +177,7 @@ void EvtPHOTOS::doRadCorr( EvtParticle *p){
 	   thejmohep, thejdahep, thephep, thevhep, &thenhepout, thephepout );
 #else
   myphotos_(&entry, &thenevhep, &thenhep, theisthep, theidhep,
-	   thejmohep, thejdahep, thephep, thevhep, &thenhepout, thephepout);
+	    thejmohep, thejdahep, thephep, thevhep, &thenhepout, thephepout);
 #endif
   //  report(INFO,"EvtGen") << "done\n";
   /*
@@ -199,14 +199,20 @@ void EvtPHOTOS::doRadCorr( EvtParticle *p){
 
   if (numparticle==numparticlephotos) return;
 
+  // std::cout << "**********" << std::endl;
+  // std::cout << "Particles after: " << numparticlephotos << std::endl;
+  // std::cout << "Particles before: " << numparticle << std::endl;
+  // std::cout << "N. Generated photons: " << numparticlephotos-numparticle << std::endl;
   EvtVector4R new4mom;
 
   // int np;
-
+  // std::cout << "Other particles: " << std::endl;
   for(i=0;i<p->getNDaug();i++){
 
     entry=i+1;
-
+    /* if (abs(theidhep[0]) == 511 && numparticlephotos-numparticle == 2) {
+      std::cout << "Particle " << entry << ": " << theidhep[entry] << " " << thephepout[entry][0] << " " << thephepout[entry][1]  << " " << thephepout[entry][2] << std::endl;
+      } */
     /* #ifdef WIN32
     BEGEVTGENGETX(&entry,&eventnum,&np,&istat,&partnum,
 		    &mother,&daugfirst,&dauglast,
@@ -251,6 +257,9 @@ void EvtPHOTOS::doRadCorr( EvtParticle *p){
     e  = thephepout[entry][3];
     new4mom.set(e,px,py,pz);
 
+    /* if (abs(theidhep[0]) == 511 && numparticlephotos-numparticle==2) {
+      std::cout << "Particle " << entry << ": " << theidhep[entry] << " " << thephepout[entry][0] << " " << thephepout[entry][1]  << " " << thephepout[entry][2] << std::endl;
+      } */
     //new4mom.dump();
 
     EvtPhotonParticle* gamma;

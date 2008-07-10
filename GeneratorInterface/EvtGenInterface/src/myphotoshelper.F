@@ -189,6 +189,7 @@ C--   Get photon production vertex position
       DO I=1,NHEPOUT    
         DO K = 1,5
           PHEPOUT(K,I) = PHEP(K,I)
+c         print *, PHEPOUT(K,I)
         ENDDO
       ENDDO
 

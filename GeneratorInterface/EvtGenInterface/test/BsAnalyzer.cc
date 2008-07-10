@@ -55,6 +55,7 @@ void BsAnalyzer::beginJob( const EventSetup& )
    hnJpsi = new TH1D( "hnJpsi", "N(Jpsi)", 10,  0., 10. ) ;
    hnBz = new TH1D( "hnBz", "N(B0)", 10,  0., 10. ) ;
    hnBzb = new TH1D( "hnBzb", "N(B0bar)", 10,  0., 10. ) ;
+   hMinvb  = new TH1D( "hMinvb",  "B invariant mass",  100,  5.0, 6.0 ) ;
    hPtbs = new TH1D( "hPtbs", "Pt Bs", 100,  0., 50. ) ;
    hPbs  = new TH1D( "hPbs",  "P Bs",  100,  0., 200. ) ;
    hPhibs = new TH1D( "hPhibs","Phi Bs",  100,  -3.14, 3.14) ;
@@ -63,6 +64,9 @@ void BsAnalyzer::beginJob( const EventSetup& )
    hPmu  = new TH1D( "hPmu",  "P Mu",  100,  0., 200. ) ;
    hPhimu = new TH1D( "hPhimu","Phi Mu",  100,  -3.14, 3.14) ;
    hEtamu = new TH1D( "hEtamu","Eta Mu",  100,  -7.0, 7.0) ;
+   hPtRadPho  = new TH1D( "hPtRadPho",  "Pt radiated photon",  100,  0., 200. ) ;
+   hPhiRadPho = new TH1D( "hPhiRadPho","Phi radiated photon",  100,  -3.14, 3.14) ;
+   hEtaRadPho = new TH1D( "hEtaRadPho","Eta radiated photon",  100,  -7.0, 7.0) ;
    htbPlus = new TH1D( "htbPlus", "B+ proper decay time", 50, 0., 12. ) ;
    htbUnmix = new TH1D( "htbUnmix", "B0 proper decay time (unmixed)", 50, 0., 12. ) ;
    htbMix = new TH1D( "htbMix", "B0 proper decay time (mixed)", 50, 0., 12. ) ;
@@ -116,6 +120,7 @@ void BsAnalyzer::analyze( const Event& e, const EventSetup& )
    for ( GenEvent::particle_const_iterator p = Evt->particles_begin(); p != Evt->particles_end(); ++p ) {
 
      // General
+     TLorentzVector thePart4m(0.,0.,0.,0.);
      GenVertex* endvert = (*p)->end_vertex(); 
      GenVertex* prodvert = (*p)->production_vertex();
      float gamma = (*p)->momentum().e()/(*p)->generated_mass();
@@ -143,7 +148,7 @@ void BsAnalyzer::analyze( const Event& e, const EventSetup& )
      hGeneralId->Fill((*p)->pdg_id()); 
 
      // --------------------------------------------------------------
-     if ( abs((*p)->pdg_id()) == 511 ) 
+     if ( abs((*p)->pdg_id()) == 521 ) 
        // || abs((*p)->pdg_id()/100) == 4 || abs((*p)->pdg_id()/100) == 3) 
      {
        if (!endvert) {
@@ -190,12 +195,30 @@ void BsAnalyzer::analyze( const Event& e, const EventSetup& )
        int isKmumu = 0;
        int isSemilept = 0;
        for ( GenVertex::particles_out_const_iterator bp = endvert->particles_out_const_begin(); bp != endvert->particles_out_const_end(); ++bp ) {
+         // Check invariant mass consistency ...   
+         TLorentzVector theDaug4m((*bp)->momentum().px(), (*bp)->momentum().py(),
+				  (*bp)->momentum().pz(), (*bp)->momentum().e());
+         thePart4m += theDaug4m;
 	 hIdBDaugs->Fill((*bp)->pdg_id());
          if ( (*bp)->pdg_id() == 443 || (*bp)->pdg_id() == 310 ) isJpsiKs++ ; 
+         if ( (*bp)->pdg_id() == 22 ) {
+	   hPtRadPho->Fill((*bp)->momentum().perp());
+	   hPhiRadPho->Fill((*bp)->momentum().phi());
+	   hEtaRadPho->Fill((*bp)->momentum().pseudoRapidity());
+	 }
          if ( (*p)->pdg_id() > 0 && ( abs((*bp)->pdg_id()) == 313 || abs((*bp)->pdg_id()) == 13 )) isKmumu++ ; 
          if ( abs((*bp)->pdg_id()) == 11 || abs((*bp)->pdg_id()) == 13 || abs((*bp)->pdg_id()) == 15 ) isSemilept++ ;
        }
-        
+
+       hMinvb->Fill(sqrt(thePart4m.M2()));
+       /* if (fabs(sqrt(thePart4m.M2())-5.28) > 0.05) {
+	 *undecayed << sqrt(thePart4m.M2()) << "  " << (*p)->pdg_id() << " --> " ;
+         for ( GenVertex::particles_out_const_iterator bp = endvert->particles_out_const_begin(); bp != endvert->particles_out_const_end(); ++bp ) {
+	   *undecayed << (*bp)->pdg_id() << " " ;
+         }
+         *undecayed << endl;
+       } */
+
        if (isSemilept) {
 	 if (mixed == 1) {
 	   htbMix->Fill( dectime );
@@ -314,7 +337,7 @@ void BsAnalyzer::analyze( const Event& e, const EventSetup& )
    hnJpsi->Fill(nJpsi);
    hnBz->Fill(nBz);
    hnBzb->Fill(nBzb);
-   *undecayed << "-------------------------------" << endl;
+   // *undecayed << "-------------------------------" << endl;
    // *decayed << "-------------------------------" << endl;
 
    // if (nBz > 0) std::cout << "nBz = " << nBz << " nBz (K*mu+mu-) = " << nBzKmumu << " nMix = " << nBzmix << std::endl;
@@ -330,10 +353,13 @@ void BsAnalyzer::endJob()
 {
   TObjArray Hlist(0);
   Hlist.Add(hGeneralId);	   
-  Hlist.Add(hIdPhiDaugs) ;	   
+  Hlist.Add(hIdPhiDaugs) ;
+  Hlist.Add(hIdJpsiMot) ;
   Hlist.Add(hnB);		   
   Hlist.Add(hnBz) ;		   
-  Hlist.Add(hnBzb) ;	   
+  Hlist.Add(hnBzb) ;
+  Hlist.Add(hnJpsi) ;
+  Hlist.Add(hMinvb) ;
   Hlist.Add(hPtbs) ;	   
   Hlist.Add(hPbs) ;		   
   Hlist.Add(hPhibs) ;	   
@@ -341,7 +367,10 @@ void BsAnalyzer::endJob()
   Hlist.Add(hPtmu) ;	   
   Hlist.Add(hPmu) ;		   
   Hlist.Add(hPhimu) ;	   
-  Hlist.Add(hEtamu) ;	   
+  Hlist.Add(hEtamu) ;
+  Hlist.Add(hPtRadPho) ;	   		   
+  Hlist.Add(hPhiRadPho) ;	   
+  Hlist.Add(hEtaRadPho) ;
   Hlist.Add(htbJpsiKs) ;	   
   Hlist.Add(htbbarJpsiKs) ;	   
   Hlist.Add(htbPlus) ;	   
