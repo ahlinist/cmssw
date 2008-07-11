@@ -365,11 +365,7 @@ process.evtgenproducer = cms.EDProducer("EvtGenProducer",
         'MDCY(277,1) = 0', 
         'MDCY(293,1) = 0', 
         'MDCY(105,1) = 0', 
-        'MSEL=5         ! b-bbar'),
-    decay_table = cms.string('../data/DECAY.DEC'),
-    user_decay_file = cms.untracked.string('../data/Bd_JpsiKs_mumupipi.dec'),
-    list_forced_decays = cms.vstring('MyB0', 
-        'Myanti-B0')
+        'MSEL=5         ! b-bbar')
 )
 
 process.p0 = cms.Path(process.evtgenproducer)
