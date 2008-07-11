@@ -124,9 +124,24 @@ void L1TRenderPlugin::postDraw (TCanvas * c,
 void L1TRenderPlugin::preDrawTH1F ( TCanvas *c, const DQMNet::CoreObject &o )
 {
   // Do we want to do anything special yet with TH1F histograms?
+  
 
   TH1F* obj = dynamic_cast<TH1F*>( o.object ); 
   assert (obj); // checks that object indeed exists
+
+  if(REMATCH("dttf_p_q_bx*", o.name)) {
+    obj->GetXaxis()->SetNdivisions(3);
+    return;
+  }
+ //  if( o.name.find( "dttf_p_q_" )  != std::string::npos) {
+    
+//     //dqm::utils::reportSummaryMapPalette(obj);
+//     //obj->SetOption("colz");
+//     //obj->SetTitle("L1T Report Summary Map");
+    
+//     obj->GetXaxis()->SetNdivisions(1);
+//     return;
+//   }
 
   // Code used in SiStripRenderPlugin -- do we want similar defaults?
 
