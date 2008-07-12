@@ -21,7 +21,7 @@
 //                   Anna Kropivnitskaya
 // Contacts: Efe Yazgan, Taylan Yetkin
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.42 2008/07/09 08:29:51 efe Exp $
+// $Id: HcalProm.cc,v 1.43 2008/07/10 15:56:37 efe Exp $
 //
 //
 
@@ -347,7 +347,7 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
 
         rmc = igmtrr->getBrlRPCCands();
         for (iter1 = rmc.begin(); iter1 != rmc.end(); iter1++) {
-            if (!(*iter1).empty())
+	  if (!(*iter1).empty())
                 ++irpcb;
         }
 
@@ -361,11 +361,13 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
 
         rmc = igmtrr->getCSCCands();
         for (iter1 = rmc.begin(); iter1 != rmc.end(); iter1++) {
-            if (!(*iter1).empty())
+	  if (!(*iter1).empty())
                 ++icsc;
         }
-        if (icsc > 0)
+        if (icsc > 0){
             cout << "Found " << icsc << " valid CSC candidates in bx wrt. L1A = " << igmtrr->getBxInEvent() << endl;
+	    cout << "BX Number   " << igmtrr->getBxNr() << endl;
+	}
         if (igmtrr->getBxInEvent() == 0 && icsc > 0)
             csc_l1a = true;
 
@@ -444,6 +446,7 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
 
 	float E_Long = -99999;
 	float E_Short = -99999;
+	if (hfhit->energy()<1.2) continue;
 	if (hfhit->id().depth() == 1){ 
 	  E_Long = hfhit->energy();
 	  E_Short = getEnergyEtaPhiDepth(hfhit->id().ieta(),hfhit->id().iphi(),2,HFHFhits);
@@ -452,7 +455,7 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
 	  E_Short = hfhit->energy();
 	  E_Long = getEnergyEtaPhiDepth(hfhit->id().ieta(),hfhit->id().iphi(),1,HFHFhits);
 	}
-	if (hfhit->energy()>1.2 && hfhit->energy()<20. && (E_Short != -9999. && E_Long != -9999.)) h_S_over_L_plus_S_normal->Fill(E_Short/(E_Long+E_Short));
+	if (hfhit->energy()<20. && (E_Short != -9999. && E_Long != -9999.)) h_S_over_L_plus_S_normal->Fill(E_Short/(E_Long+E_Short));
         if (hfhit->energy()>20. && (E_Short != -9999. && E_Long != -9999.)) h_S_over_L_plus_S_abnormal->Fill(E_Short/(E_Long+E_Short));
 	h_Long_vs_Short->Fill(E_Long,E_Short);
 
