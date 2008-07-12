@@ -21,7 +21,7 @@
 //                   Anna Kropivnitskaya
 // Contacts: Efe Yazgan, Taylan Yetkin
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.44 2008/07/12 08:32:48 efe Exp $
+// $Id: HcalProm.cc,v 1.45 2008/07/12 08:35:59 tyetkin Exp $
 //
 //
 
@@ -163,6 +163,9 @@ HcalProm::HcalProm(const edm::ParameterSet & iConfig) {
     t2 = 0; 
     t3 = 0; 
     t4 = 0; 
+    t5 = 0; 
+    t6 = 0; 
+    t7 = 0; 
     // @@
     runBegin = -1;
     evtNo = 0;
@@ -423,9 +426,9 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
     // 2 : CSC
     // 3 : HCAL
     std::cout << "**** Trigger Source ****" << std::endl;
-    const Int_t nt = 4;
-    char *nameTrig[nt] = {"DT","RPC","CSC","HCAL"};
-    for(int b=0;b<4;++b)h_Trigger->GetXaxis()->SetBinLabel(b+1,nameTrig[b]);	
+    const Int_t nt = 7;
+    char *nameTrig[nt] = {"DT","RPC","CSC","HCAL", "DT_AND_HCAL", "RPC_AND_HCAL", "CSC_AND_HCAL" };
+    for(int b=0;b<nt;++b)h_Trigger->GetXaxis()->SetBinLabel(b+1,nameTrig[b]);	
     if (dt_l1a) {
         triggerBit[0] = 1;
 	++t1;
@@ -448,6 +451,18 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
 	++t4;
         std::cout << "HCAL" << std::endl;
         h_Trigger->SetBinContent(4,t4);
+    }
+    if (dt_l1a && hcal_l1a) {
+	++t5;
+        h_Trigger->SetBinContent(5,t5);
+    }
+    if (rpc_l1a && hcal_l1a) {
+	++t6;
+        h_Trigger->SetBinContent(6,t6);
+    }
+    if (csc_l1a && hcal_l1a) {
+	++t7;
+        h_Trigger->SetBinContent(7,t7);
     }
     std::cout << "************************" << std::endl;
 
@@ -1698,7 +1713,7 @@ void HcalProm::bookHistograms() {
 
     h_global_trigger_bit =
       book1DHistogram(TriggerDir, "h_global_trigger_bit", "Global Trigger Bit Fired", 128, -0.5, 127.5);
-    h_Trigger = TriggerDir.make<TH1F>("Trigger", "Trigger Types", 4, 0, 4);
+    h_Trigger = book1DHistogram(TriggerDir, "Trigger", "Trigger Types", 7, 0, 7);
     h_hbhe_rechit_energy = book1DHistogram(HcalDir, "h_hbhe_rechit_energy", "RecHit Energy HBHE", 160, -10, 30);
     h_hf_rechit_energy = book1DHistogram(HcalDir, "h_hf_rechit_energy", "RecHit Energy HF", 160, -10, 30);
 

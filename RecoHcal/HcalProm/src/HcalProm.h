@@ -17,7 +17,7 @@
 // Original Author:  Efe Yazgan
 // Updated        :  Taylan Yetkin (2008/05/08)
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.h,v 1.21 2008/07/10 15:56:40 efe Exp $
+// $Id: HcalProm.h,v 1.22 2008/07/12 08:35:59 tyetkin Exp $
 //
 //
 
@@ -544,5 +544,8 @@ class HcalProm : public edm::EDAnalyzer {
       int t2;
       int t3;
       int t4;
+      int t5;
+      int t6;
+      int t7;
 
 };
