@@ -17,7 +17,7 @@
 // Original Author:  Efe Yazgan
 // Updated        :  Taylan Yetkin (2008/05/08)
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.h,v 1.20 2008/07/08 16:28:29 efe Exp $
+// $Id: HcalProm.h,v 1.21 2008/07/10 15:56:40 efe Exp $
 //
 //
 
@@ -180,6 +180,7 @@ class HcalProm : public edm::EDAnalyzer {
       TH1F* h_RphioutPosMuon;
       TH1F* h_DeltaRphiPosMuon;
       TH2F* h_EtaPhiCorrelMuonPhiPlane;
+      TH1F* h_Trigger;
 // ntuple creation:
 //     TFile*      hOutputFile ;
      TTree * myTree;
@@ -367,8 +368,6 @@ class HcalProm : public edm::EDAnalyzer {
       TH1F* h_NPTracks;
       TH1F* h_NMTracks;
       TH1F* h_NMuons;
-      TH1F* h_Trigger;
-      TH1F* h_Trigger2;
       TH1F* h_Pt;
       TH1F* h_Px;
       TH1F* h_Py;
@@ -541,4 +540,9 @@ class HcalProm : public edm::EDAnalyzer {
       int top_ihpi_high;
       int bottom_ihpi_low;
       int bottom_ihpi_high;
+      int t1;
+      int t2;
+      int t3;
+      int t4;
+
 };

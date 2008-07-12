@@ -21,7 +21,7 @@
 //                   Anna Kropivnitskaya
 // Contacts: Efe Yazgan, Taylan Yetkin
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.43 2008/07/10 15:56:37 efe Exp $
+// $Id: HcalProm.cc,v 1.44 2008/07/12 08:32:48 efe Exp $
 //
 //
 
@@ -158,6 +158,11 @@ HcalProm::HcalProm(const edm::ParameterSet & iConfig) {
     myCalorimeter_ = new CaloGeometryHelper(iConfig.getParameter < edm::ParameterSet > ("Calorimetry"));
     NTotal = 0;
     NAccepted = 0;
+    //trigger bit counters
+    t1 = 0; 
+    t2 = 0; 
+    t3 = 0; 
+    t4 = 0; 
     // @@
     runBegin = -1;
     evtNo = 0;
@@ -262,8 +267,6 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
 
     if (!bccHandle.failedToGet())
         clusterCollection_p = bccHandle.product();
-
-
 
     // reco jets
     Handle < CaloJetCollection > caloJet;
@@ -420,21 +423,31 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
     // 2 : CSC
     // 3 : HCAL
     std::cout << "**** Trigger Source ****" << std::endl;
+    const Int_t nt = 4;
+    char *nameTrig[nt] = {"DT","RPC","CSC","HCAL"};
+    for(int b=0;b<4;++b)h_Trigger->GetXaxis()->SetBinLabel(b+1,nameTrig[b]);	
     if (dt_l1a) {
         triggerBit[0] = 1;
-        std::cout << "DT" << std::endl;
+	++t1;
+        h_Trigger->SetBinContent(1,t1);
     }
     if (rpc_l1a) {
         triggerBit[1] = 1;
+	++t2;
         std::cout << "RPC" << std::endl;
+        h_Trigger->SetBinContent(2,t2);
     }
     if (csc_l1a) {
         triggerBit[2] = 1;
+	++t3;
         std::cout << "CSC" << std::endl;
+        h_Trigger->SetBinContent(3,t3);
     }
     if (hcal_l1a) {
         triggerBit[3] = 1;
+	++t4;
         std::cout << "HCAL" << std::endl;
+        h_Trigger->SetBinContent(4,t4);
     }
     std::cout << "************************" << std::endl;
 
@@ -1685,6 +1698,7 @@ void HcalProm::bookHistograms() {
 
     h_global_trigger_bit =
       book1DHistogram(TriggerDir, "h_global_trigger_bit", "Global Trigger Bit Fired", 128, -0.5, 127.5);
+    h_Trigger = TriggerDir.make<TH1F>("Trigger", "Trigger Types", 4, 0, 4);
     h_hbhe_rechit_energy = book1DHistogram(HcalDir, "h_hbhe_rechit_energy", "RecHit Energy HBHE", 160, -10, 30);
     h_hf_rechit_energy = book1DHistogram(HcalDir, "h_hf_rechit_energy", "RecHit Energy HF", 160, -10, 30);
 
@@ -1859,8 +1873,6 @@ void HcalProm::bookHistograms() {
     h_ct7 = book1DHistogram(MuonDir, "ct7", " ", 2, -0.5, 1.5);
     h_ct8 = book1DHistogram(MuonDir, "ct8", " ", 2, -0.5, 1.5);
     h_ct9 = book1DHistogram(MuonDir, "ct9", " ", 2, -0.5, 1.5);
-    h_Trigger = book1DHistogram(MuonDir, "Trigger", "Trigger Types", 4, 0, 4);
-    h_Trigger2 = book1DHistogram(MuonDir, "Trigger2", "Trigger Types", 4, 0, 4);
     h_NTracks1 = book1DHistogram(MuonDir, "NTracks1", "Nb. of Cosmic Muon Tracks", 10, -0.5, 9.5);
     h_NTracks2 = book1DHistogram(MuonDir, "NTracks2", "Nb. of Cosmic Muon Tracks", 10, -0.5, 9.5);
     h_NPTracks = book1DHistogram(MuonDir, "NPTracks", "Nb. of Cosmic Muon Tracks in +", 10, -0.5, 9.5);
