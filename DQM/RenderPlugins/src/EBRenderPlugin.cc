@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.88 2008/06/10 09:44:16 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.89 2008/07/09 07:10:58 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.88 $
-  \date $Date: 2008/06/10 09:44:16 $
+  \version $Revision: 1.89 $
+  \date $Date: 2008/07/09 07:10:58 $
 */
 
 #include "TH1F.h"
@@ -459,6 +459,14 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
+  if( name.find( "EBSRT" ) < name.size() ) {
+    obj->SetMinimum(0.0);
+    gStyle->SetPalette(10, pCol4);
+    obj->SetOption("colz");
+    gStyle->SetPaintTextFormat("+g");
+    return;
+  }
+
   if( name.find( "EBOT" ) < name.size() ) {
     obj->SetMinimum(0.0);
     gStyle->SetPalette(10, pCol4);
@@ -536,6 +544,11 @@ void EBRenderPlugin::preDrawTH1F( TCanvas *c, const DQMNet::CoreObject &o ) {
   }
 
   if( name.find( "EBIT DCC" ) < name.size() ) {
+   gPad->SetBottomMargin(0.2);
+   obj->GetXaxis()->LabelsOption("v");
+  }
+
+  if( name.find( "EBRDT" ) < name.size() ) {
    gPad->SetBottomMargin(0.2);
    obj->GetXaxis()->LabelsOption("v");
   }

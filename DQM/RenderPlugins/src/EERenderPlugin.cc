@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.87 2008/06/03 21:27:34 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.88 2008/06/10 09:44:16 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.87 $
-  \date $Date: 2008/06/03 21:27:34 $
+  \version $Revision: 1.88 $
+  \date $Date: 2008/06/10 09:44:16 $
 */
 
 #include "TH1F.h"
@@ -529,6 +529,14 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
+  if( name.find( "EESRT" ) < name.size() ) {
+    obj->SetMinimum(0.0);
+    gStyle->SetPalette(10, pCol4);
+    obj->SetOption("colz");
+    gStyle->SetPaintTextFormat("+g");
+    return;
+  }
+
   if( name.find( "EECT" ) < name.size() ) {
     obj->SetMinimum(0.0);
     gStyle->SetPalette(10, pCol4);
@@ -604,6 +612,11 @@ void EERenderPlugin::preDrawTH1F( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   if( name.find( "front-end status bits" ) < name.size() ) {
    gPad->SetBottomMargin(0.25);
+   obj->GetXaxis()->LabelsOption("v");
+  }
+
+  if( name.find( "EERDT" ) < name.size() ) {
+   gPad->SetBottomMargin(0.2);
    obj->GetXaxis()->LabelsOption("v");
   }
 
