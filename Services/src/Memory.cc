@@ -145,8 +145,8 @@ namespace edm {
 	  pr_size = (double)pinfo.vsize;
 	  pr_rssize = (double)pinfo.rss;
 	  
-	  ret.vsize = pr_size   / 1000000.0;
-	  ret.rss   = pr_rssize * pg_size_ / 1000000.0;
+	  ret.vsize = pr_size / (1024.0*1024.0);
+	  ret.rss   = (pr_rssize * pg_size_) / (1024.0*1024.0);
 	}
 #else
       ret.vsize=0;
