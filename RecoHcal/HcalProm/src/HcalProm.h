@@ -17,7 +17,7 @@
 // Original Author:  Efe Yazgan
 // Updated        :  Taylan Yetkin (2008/05/08)
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.h,v 1.22 2008/07/12 08:35:59 tyetkin Exp $
+// $Id: HcalProm.h,v 1.23 2008/07/12 09:06:37 tyetkin Exp $
 //
 //
 
@@ -299,6 +299,16 @@ class HcalProm : public edm::EDAnalyzer {
       TH1F* h_heminustiming;
       TH1F* h_hfplustiming;
       TH1F* h_hfminustiming;
+      TH1F* h_HFPlusTiming; // CSC triggered events
+      TH1F* h_HFMinusTiming;//CSC triggered events
+      TH1F* h_HFMinusShortTimingNor;
+      TH1F* h_HFPlusShortTimingNor;
+      TH1F* h_HFMinusLongTimingNor;
+      TH1F* h_HFPlusLongTimingNor;
+      TH1F* h_HFMinusShortTimingAbn;
+      TH1F* h_HFPlusShortTimingAbn;
+      TH1F* h_HFMinusLongTimingAbn;
+      TH1F* h_HFPlusLongTimingAbn;
       TH1F* h_ecal_cluster_energy;
       TH1F* h_ecal_cluster_eta;
       TH1F* h_ecal_cluster_phi;
