@@ -21,7 +21,7 @@
 //                   Anna Kropivnitskaya
 // Contacts: Efe Yazgan, Taylan Yetkin
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.45 2008/07/12 08:35:59 tyetkin Exp $
+// $Id: HcalProm.cc,v 1.46 2008/07/12 09:06:37 tyetkin Exp $
 //
 //
 
@@ -469,6 +469,7 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
 
     //HF abnormal signals
     if (triggerBit[2] == 1){//CSC trigger bit
+      //HFRecHits 
       for (HFRecHitCollection::const_iterator hfhit = Hithf.begin(); hfhit != Hithf.end(); hfhit++) {
         GlobalPoint hfposition = geo->getPosition(hfhit->detid());
 
@@ -499,6 +500,7 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
 	  }
 	}
       }
+      ///<---HF
     }
     // DIGIS ARE TAKEN OUT FROM T0 RECONSTRUCTION, but not at FNAL
     if (triggerBit[0] == 1){
@@ -563,7 +565,7 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
 	  const HFDataFrame digi = (const HFDataFrame) (*j);
 	  HcalDetId id = digi.id();
 	  
-	  //	  if (id.subdet() != 4) continue;
+	  //if (id.subdet() != 4) continue;
 	  int maxadc = 0;
 	  
 	  for (int TS = 0; TS < 10 && TS < digi.size(); ++TS) {
@@ -576,6 +578,60 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
 	      if (digi.id().ieta() > 0) h_hfplustiming->Fill(TS, adcs[TS]);
 	      if (digi.id().ieta() < 0) h_hfminustiming->Fill(TS, adcs[TS]);
 	    }
+	  }
+	  //calculate adc weighted timing
+	  float weighted_ts = 0;
+	  float sum = 0;
+	  float max_adc = -999;
+	  int ts_max = -999;
+	  float fCSum = 0.;
+	  /*
+	  for(int TS=0;TS<10;++TS){
+	     //fCSum += digi[TS].nominal_fC();
+	     if(max_adc < digi[TS].adc()){ 
+		 max_adc = digi[TS].adc();
+		 ts_max = TS; 
+	     }
+	  }
+	  weighted_ts = ts_max*digi[ts_max].adc();
+	  sum = digi[ts_max].adc();
+	  if(ts_max > 0){ 
+	      weighted_ts += (ts_max-1)*digi[ts_max-1].adc(); 
+	      sum += digi[ts_max-1].adc(); 
+	  }
+	  if(ts_max<(digi.size()-1)){ 
+	      weighted_ts += (ts_max+1)*digi[ts_max+1].adc(); 
+	      sum += digi[ts_max+1].adc(); 
+	  }
+	  weighted_ts = weighted_ts/sum;
+	  */
+	  float weight = 0;
+	  for(int TS=0;TS<10;++TS){
+	      weight += TS*digi[TS].adc();
+	      sum += digi[TS].adc();
+	  }
+	  weighted_ts = weight/sum;
+	  
+
+	  
+	  float E_Long = -99999;
+	  float E_Short = -99999;
+	  
+	  E_Long = getEnergyEtaPhiDepth(id.ieta(),id.iphi(),1,HFHFhits);
+	  E_Short = getEnergyEtaPhiDepth(id.ieta(),id.iphi(),2,HFHFhits);
+	  if( id.ieta()>0 ){
+	      h_HFPlusTiming->Fill(weighted_ts*25.);
+	      if (E_Long > 20) h_HFPlusLongTimingAbn->Fill(weighted_ts*25.);
+	      if (E_Long < 20) h_HFPlusLongTimingNor->Fill(weighted_ts*25.);
+	      if (E_Short > 20) h_HFPlusShortTimingAbn->Fill(weighted_ts*25.);
+	      if (E_Short < 20) h_HFPlusShortTimingNor->Fill(weighted_ts*25.);
+	  }
+	  if( id.ieta()<0 ){
+	      h_HFMinusTiming->Fill(weighted_ts*25);
+	      if (E_Long > 20) h_HFMinusLongTimingAbn->Fill(weighted_ts*25.);
+	      if (E_Long < 20) h_HFMinusLongTimingNor->Fill(weighted_ts*25.);
+	      if (E_Short > 20) h_HFMinusShortTimingAbn->Fill(weighted_ts*25.);
+	      if (E_Short < 20) h_HFMinusShortTimingNor->Fill(weighted_ts*25.);
 	  }
         }
       }
@@ -1732,7 +1788,19 @@ void HcalProm::bookHistograms() {
     h_heminustiming = book1DHistogram(HcalDir, "h_heminustiming", "HE- Timing", 10, -0.5, 9.5);
     h_hfplustiming = book1DHistogram(HcalDir, "h_hfplustiming", "HF+ Timing", 10, -0.5, 9.5);
     h_hfminustiming = book1DHistogram(HcalDir, "h_hfminustiming", "HF- Timing", 10, -0.5, 9.5);
-
+    h_HFPlusTiming = book1DHistogram(HcalDir, "h_HFPlusTiming", "HF+ Timing with CSC Triggered Events", 400, -100., 300.);
+    h_HFMinusTiming = book1DHistogram(HcalDir, "h_HFMinusTiming", "HF- Timing with CSC Triggered Events", 400, -100., 300.);
+    
+    h_HFMinusShortTimingNor = book1DHistogram(HcalDir, "h_HFMinusShortTimingNor", "HF- Short Fibers Timing with CSC Triggered Events E(HF) < 20 GeV", 400, -100., 300.);
+    h_HFPlusShortTimingNor = book1DHistogram(HcalDir, "h_HFPlusShortTimingNor", "HF+ Short Fibers Timing with CSC Triggered Events E(HF) < 20 GeV", 400, -100., 300.);
+    h_HFMinusLongTimingNor = book1DHistogram(HcalDir, "h_HFMinusLongTimingNor", "HF- Long Fibers Timing with CSC Triggered Events E(HF) < 20 GeV", 400, -100., 300.);
+    h_HFPlusLongTimingNor = book1DHistogram(HcalDir, "h_HFPlusLongTimingNor", "HF+ Long Fibers Timing with CSC Triggered Events E(HF) < 20 GeV", 400, -100., 300.);
+    
+    h_HFMinusShortTimingAbn = book1DHistogram(HcalDir, "h_HFMinusShortTimingAbn", "HF- Short Fibers Timing with CSC Triggered Events E(HF) > 20 GeV", 400, -100., 300.);
+    h_HFPlusShortTimingAbn = book1DHistogram(HcalDir, "h_HFPlusShortTimingAbn", "HF+ Short Fibers Timing with CSC Triggered Events E(HF) > 20 GeV", 400, -100., 300.);
+    h_HFMinusLongTimingAbn = book1DHistogram(HcalDir, "h_HFMinusLongTimingAbn", "HF- Long Fibers Timing with CSC Triggered Events E(HF) > 20 GeV", 400, -100., 300.);
+    h_HFPlusLongTimingAbn = book1DHistogram(HcalDir, "h_HFPlusLongTimingAbn", "HF+ Long Fibers Timing with CSC Triggered Events E(HF) > 20 GeV", 400, -100., 300.);
+    
     h_HFplus_energy_CSC_trig = book1DHistogram(HcalDir, "h_HFplus_energy_CSC_trig", "HF+ Energy for CSC Triggered Events, E(HF)>20 GeV", 1500, -20, 1000);
     h_HFminus_energy_CSC_trig = book1DHistogram(HcalDir, "h_HFminus_energy_CSC_trig", "HF- Energy for CSC Triggered Events E(HF)>20 GeV", 1500, -10, 1000);
     h_HFplus_energy_vs_RecHitTime_CSC_trig = book2DHistogram(HcalDir, "h_HFplus_energy_vs_RecHitTime_CSC_trig", "HF+ timing vs Energy for CSC Triggered Events, E(HF)>20 GeV", 1000,0,100, 1500, -20, 1000);
@@ -2181,6 +2249,7 @@ void HcalProm::bookHistograms() {
 // ------------ method called once each job just after ending the event loop  ------------
 void HcalProm::endJob() {
 
+  cout << "End of job!" << endl;
   h_jet_multiplicity->SetFillColor(4);
   h_jet_Pt->SetFillColor(4);
   h_jet_Eta->SetFillColor(4);
@@ -2194,6 +2263,7 @@ void HcalProm::endJob() {
   h_MHT->SetFillColor(3);
   h_HT->SetFillColor(3);
   if (prompt_htmlPrint)
+    cout << "Printing HTML outputs" << endl;
     htmlOutput();
 }
 
