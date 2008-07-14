@@ -8,7 +8,7 @@
 //
 // Original Author:  
 //         Created:  Sat Apr 19 20:02:57 CEST 2008
-// $Id: HLXRenderPlugin.cc,v 1.4 2008/05/13 07:13:53 neadam Exp $
+// $Id: HLXRenderPlugin.cc,v 1.5 2008/05/27 19:53:06 elmer Exp $
 //
 
 // system include files
@@ -66,6 +66,9 @@ bool HLXRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo 
   if( o.name.find( "HLX/CheckSums" ) == 0 ){ 
     return true;
   }
+  if( o.name.find( "HLX/EventInfo" ) == 0 ){ 
+    return true;
+  }
 
   return false;
 }
@@ -94,14 +97,18 @@ void HLXRenderPlugin::preDraw( TCanvas *c, const DQMNet::CoreObject &o,
 
    gROOT->ForceStyle();
 
+   r.drawOptions = "";
    if( dynamic_cast<TProfile*>( o.object ) ) {
       preDrawTProfile( c, o );
    }
    else if( dynamic_cast<TH1F*>( o.object ) ) {
       preDrawTH1F( c, o );
    }
+   else if( dynamic_cast<TH2F*>( o.object ) ) {
+      preDrawTH2F( c, o );
+      r.drawOptions = "colz";
+   }
 
-   r.drawOptions = "";
 
 }
 
@@ -117,7 +124,24 @@ void HLXRenderPlugin::preDrawTProfile( TCanvas *c, const DQMNet::CoreObject &o )
 
    if( o.name.find("EtSum") != std::string::npos && o.name.find("Lumi") == std::string::npos )
    {
-      if( obj->GetMaximum() > 0 ) gPad->SetLogy();
+      int maxBin = obj->GetMaximumBin();
+      int minBin = obj->GetMinimumBin();
+
+      double objMax = obj->GetBinContent(maxBin);
+      double objMin = obj->GetBinContent(minBin);
+      if( objMax > 0 && objMin > 0 ) 
+      {
+	 if( (objMax/objMin) > 1e4 ) gPad->SetLogy();
+      }
+
+      obj->SetMaximum(objMax*1.02);
+      obj->SetMinimum(objMin*0.98);
+   }
+
+   if( o.name.find("SumAllOcc") != std::string::npos )
+   {
+      obj->SetMaximum( 1.25*obj->GetMaximum() );
+      obj->SetMinimum( 0.75*obj->GetMinimum() );
    }
 
    return;
@@ -140,11 +164,38 @@ void HLXRenderPlugin::preDrawTH1F( TCanvas *c, const DQMNet::CoreObject &o )
 
    if( o.name.find("EtSum") != std::string::npos || o.name.find("ETSum") != std::string::npos )
    {
-      if( obj->GetMaximum() > 0 ) gPad->SetLogy();
+      int maxBin = obj->GetMaximumBin();
+      int minBin = obj->GetMinimumBin();
+
+      double objMax = obj->GetBinContent(maxBin);
+      double objMin = obj->GetBinContent(minBin);
+      if( objMax > 0 && objMin > 0 ) 
+      {
+	 if( (objMax/objMin) > 1e4 ) gPad->SetLogy();
+      }
+
+      obj->SetMaximum(objMax*1.02);
+      obj->SetMinimum(objMin*0.98);
    }
    
    return;
 }
+
+void HLXRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o )
+{
+
+   TH2F* obj = dynamic_cast<TH2F*>( o.object );
+
+   assert( obj );
+   obj->SetStats(kFALSE);
+   obj->SetMinimum(0);
+   obj->SetMaximum(1.02);
+
+   gStyle->SetPalette(1);
+
+   return;
+}
+
 
 // Anything that needs to be done after the histogram is drawn
 void HLXRenderPlugin::postDraw( TCanvas *c, const DQMNet::CoreObject &o, 
