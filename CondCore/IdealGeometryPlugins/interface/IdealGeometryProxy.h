@@ -4,10 +4,10 @@
 #include <iostream>
 // user include files
 #include "FWCore/Framework/interface/DataProxyTemplate.h"
-
+#include "CondCore/DBCommon/interface/PoolTransaction.h"
 #include "CondCore/DBCommon/interface/Connection.h"
 #include "CondCore/DBCommon/interface/Exception.h"
-#include "CondCore/DBCommon/interface/TypedRef.h"
+#include "DataSvc/Ref.h"
 #include "CondCore/PluginSystem/interface/DataProxy.h"
 
 #include "CondFormats/IdealGeometryObjects/interface/PersistentDDDObjects.h"
@@ -46,9 +46,9 @@ class DataProxy<IdealGeometryRecord, DDCompactView> : public edm::eventsetup::Da
 
   const DataProxy& operator=( const DataProxy& ); // stop default
   // ---------- member data --------------------------------
-  cond::Connection* m_pooldb;
-  std::map<std::string,std::string>::iterator m_pProxyToToken;
-  cond::TypedRef<PIdealGeometry> m_data;
+  cond::Connection* m_connection;
+  std::map<std::string,std::string>::iterator m_pDatumToToken;
+  pool::Ref<PIdealGeometry> m_data;
 
 };
 #endif // CondCore_IdealGeometryPlugins_IdealGeometryProxy_H
