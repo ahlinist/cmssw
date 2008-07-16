@@ -4,3 +4,6 @@
 <library name=SusyAnalysisAllHadronic file=SusyAllHadronicAnalysis.cpp>
   <flags EDM_PLUGIN=1>
 </library>
+<library name=SusyAnalysisDiJet file=SusyDiJetAnalysis.cpp>
+  <flags EDM_PLUGIN=1>
+</library>
