@@ -5,7 +5,7 @@
 ///
 /// Original author: W. Adam, 10/4/08
 ///
-/// $Id: MetEventSelector.h,v 1.2 2008/07/02 14:55:16 trommers Exp $
+/// $Id: MetEventSelector.h,v 1.3 2008/07/09 08:23:09 adamwo Exp $
 
 //if uncorrNumber = 
   //0: bare uncorrected MET
@@ -38,9 +38,6 @@ private:
   edm::InputTag metTag_;      ///< tag for input collection
   float minMet_;              ///< lower cut on MET
  
-//   std::string uncorrString_;
-//   bool uncorrect_;
-
   pat::MET::UncorectionType uncorrType_;
 };
 #endif
