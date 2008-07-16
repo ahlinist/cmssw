@@ -3,9 +3,11 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 #include "DataFormats/PatCandidates/interface/Jet.h"
-#include "SusyAnalysis/EventSelector/interface/uncorrectionTypeMET.h" 
+#include "DataFormats/PatCandidates/interface/MET.h"
+ 
 
 #include "SusyAnalysis/EventSelector/interface/MeffSelector.h"
+
 
 //________________________________________________________________________________________
 MeffSelector::MeffSelector (const edm::ParameterSet& pset ) :
@@ -14,8 +16,6 @@ MeffSelector::MeffSelector (const edm::ParameterSet& pset ) :
   metTag_(  pset.getParameter<edm::InputTag>("metTag") ),
   minMeff_( pset.getParameter<double>("minMeff")       )
 {
-  // uncorrection type
-  uncorrType_ = pat::uncorrectionTypeMET(pset.getParameter<std::string>("uncorrType"));
 
   // Define variables to store
   defineVariable("Meff");
@@ -52,13 +52,11 @@ MeffSelector::select (const edm::Event& event) const
   }  
 
   // Compute Meff
-//   float meff = (*metHandle)[0].et();
-  float meff = uncorrType_==pat::MET::uncorrMAXN ?
-    metHandle->front().et() : metHandle->front().uncorrectedPt(uncorrType_);
+  float meff = (*metHandle)[0].et();
   for( edm::View< pat::Jet >::const_iterator iJet = jetHandle->begin();
        iJet != jetHandle->end(); ++iJet )
     {
-      meff += iJet->et();
+      meff += meff + iJet->et();
     }
 
   setVariable("Meff",meff);

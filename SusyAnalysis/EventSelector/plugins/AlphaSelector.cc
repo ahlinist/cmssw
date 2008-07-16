@@ -31,7 +31,7 @@ AlphaSelector::select (const edm::Event& event) const
     return false;
   }
   if(jetHandle->size()<2)  {
-    edm::LogWarning("JetEventSelector") << "To few jets to calculate Alpha_Lisa";
+    edm::LogWarning("JetEventSelector") << "Too few jets to calculate dijet alpha";
     return false;
   }
 
