@@ -13,8 +13,6 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ParameterSet/interface/InputTag.h"
-#include "DataFormats/PatCandidates/interface/MET.h"
-
 class MeffSelector : public SusyEventSelector {
 public:
   MeffSelector (const edm::ParameterSet&);
@@ -27,6 +25,5 @@ public:
 
   double minMeff_;   ///< Cut on minimum M_eff
 
-  pat::MET::UncorectionType uncorrType_;  ///< uncorrection type for MET
 };
 #endif
