@@ -60,21 +60,6 @@ HTPtdrEventSelector::select (const edm::Event& event) const
 
 }
 
-// pat::MET::UncorectionType
-// HTPtdrEventSelector::uncorrectionType (const std::string& correctionName) const
-// {
-//   if (correctionName == "uncorrALL")
-//     return pat::MET::UncorectionType(pat::MET::uncorrALL);
-//   if (correctionName == "uncorrJES")
-//     return pat::MET::UncorectionType(pat::MET::uncorrJES);
-//   if (correctionName == "uncorrMUON")
-//     return pat::MET::UncorectionType(pat::MET::uncorrMUON);
-
-//   edm::LogInfo("HTPtdrEventSelector")<< "given uncorrection not valid return corrected MET";
-//   return pat::MET::uncorrMAXN;
-// }
-
-
 //__________________________________________________________________________________________________
 #include "FWCore/PluginManager/interface/ModuleDef.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
