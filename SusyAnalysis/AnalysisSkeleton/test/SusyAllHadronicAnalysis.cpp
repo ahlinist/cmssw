@@ -14,7 +14,7 @@ Uses the EventSelector interface for event selection and TFileService for plotti
 //
 // Original Author:  Markus Stoye
 //         Created:  Mon Feb 18 15:40:44 CET 2008
-// $Id: SusyAllHadronicAnalysis.cpp,v 1.1 2008/07/07 09:37:38 fronga Exp $
+// $Id: SusyAllHadronicAnalysis.cpp,v 1.2 2008/07/08 15:07:37 fronga Exp $
 //
 //
 
@@ -258,7 +258,7 @@ SusyAllHadronicAnalysis::initPlots() {
   std::ostringstream variables; // Container for all variables
 
   // 1. Event variables
-  variables << "weight:process";
+  variables << "run:event:weight:process";
 
   // 2. Decision from all selectors
   for ( std::vector<const SusyEventSelector*>::const_iterator it = sequence_.selectors().begin();
@@ -301,6 +301,8 @@ SusyAllHadronicAnalysis::fillPlots( const edm::Event& iEvent,
   int ivar = 0; 
 
   // 1. Event variables
+  x[ivar++] = iEvent.id().run();
+  x[ivar++] = iEvent.id().event();
   x[ivar++] = weight_;
   x[ivar++] = processId_;
 
