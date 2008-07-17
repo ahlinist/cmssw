@@ -8,7 +8,7 @@
 //
 // Original Author:  
 //         Created:  Sat Apr 19 20:02:57 CEST 2008
-// $Id: HLXRenderPlugin.cc,v 1.5 2008/05/27 19:53:06 elmer Exp $
+// $Id: HLXRenderPlugin.cc,v 1.6 2008/07/14 16:11:23 neadam Exp $
 //
 
 // system include files
@@ -188,10 +188,17 @@ void HLXRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o )
 
    assert( obj );
    obj->SetStats(kFALSE);
-   obj->SetMinimum(0);
+   obj->SetMinimum(-.001);
    obj->SetMaximum(1.02);
 
-   gStyle->SetPalette(1);
+   unsigned int Number = 3;
+   double       Red[]   = { 0.00, 0.00, 1.00};
+   double       Green[] = { 0.00, 1.00, 0.00};
+   double       Blue[]  = { 1.00, 0.00, 0.00};
+   double       Stops[] = { 0.00, 0.50, 1.00 };
+   int          nb = 100;
+   int          i = TColor::CreateGradientColorTable(Number,Stops,Blue,Green,Red,nb);
+   //gStyle->SetPalette(1);
 
    return;
 }
