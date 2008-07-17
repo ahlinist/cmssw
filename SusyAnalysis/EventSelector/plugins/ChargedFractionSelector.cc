@@ -19,6 +19,7 @@ ChargedFractionSelector::ChargedFractionSelector (const edm::ParameterSet& pset)
 
   // Store computed fraction
   defineVariable("chFraction");
+  defineVariable("numberOfJets");
 
 }
 
@@ -40,6 +41,7 @@ ChargedFractionSelector::select (const edm::Event& event) const
 
   // Calculate sum of fractions
   float etFrac = 0.;
+  int   nJets  = 0;
   // Loop on jets
   for ( edm::View< pat::Jet >::const_iterator iJet = jets->begin();
         iJet != jets->end(); ++iJet )
@@ -53,6 +55,7 @@ ChargedFractionSelector::select (const edm::Event& event) const
         for ( reco::TrackRefVector::const_iterator iTrack = jetTracks.begin();
               iTrack!= jetTracks.end(); ++iTrack ) {
           etFrac += (*iTrack)->pt()/iJet->et();
+          nJets++;
         }
       }
     }
@@ -60,8 +63,9 @@ ChargedFractionSelector::select (const edm::Event& event) const
   // Average charge fraction: if no jets, keep default (extreme) value
   double chFraction = 0.;
   if ( jets->size()>0 ) {
-    chFraction = etFrac/static_cast<float>(jets->size()); // Make sure we convert size to float
+    chFraction = etFrac/static_cast<float>(nJets);
     setVariable("chFraction",chFraction); // Cache variable
+    setVariable("numberOfJets",static_cast<float>(nJets)); // Cache variable
   }
 
   // Return selection
