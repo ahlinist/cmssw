@@ -2,6 +2,7 @@
   <use name=FWCore/Framework>
   <use name=CondFormats/DataRecord>
   <use name=CondFormats/RPCObjects>
+  <use name=CondFormats/L1TObjects>
   <use name=CondCore/DBOutputService>
   <use name=OnlineDB/Oracle>
   <use name=L1Trigger/RPCTrigger>

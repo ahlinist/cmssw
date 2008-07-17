@@ -4,8 +4,8 @@
  * Description:
  *      Class to parse xml files and fill Offline DB
  *
- * $Date: 2008/03/06 09:32:15 $
- * $Revision: 1.5 $
+ * $Date: 2008/03/06 09:43:17 $
+ * $Revision: 1.6 $
  * \author Michal Szleper -- INS Warsaw
  *
  */
@@ -22,7 +22,7 @@
 #include "OnlineDB/Oracle/interface/Oracle.h"
 
 #include <FWCore/ParameterSet/interface/FileInPath.h>
-#include "CondFormats/RPCObjects/interface/L1RPCConfig.h"
+#include "CondFormats/L1TObjects/interface/L1RPCConfig.h"
 #include "L1Trigger/RPCTrigger/interface/RPCPatternsParser.h"
 
 
