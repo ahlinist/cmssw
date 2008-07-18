@@ -15,7 +15,4 @@
   <library file=RPCTriggerPatternBuilder.cpp name=RPCTriggerPatternBuilder>
     <flags EDM_PLUGIN=1>
   </library>
-  <library file=L1RPCHwConfigBuilder.cpp name=L1RPCHwConfigBuilder>
-    <flags EDM_PLUGIN=1>
-  </library>
 </environment>
