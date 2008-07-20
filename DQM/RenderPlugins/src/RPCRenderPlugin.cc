@@ -12,9 +12,8 @@
 
 bool RPCRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &i ) {
 
-   if( (o.name.find( "RPC/RecHits/SummaryHistograms" ) == 0 )||
+   if( (o.name.find( "RPC/RecHits/" ) == 0 )||
        (o.name.find("RPC/EventInfo")!= std::string::npos)) return true;
-
    return false;  
 }
 
@@ -30,7 +29,6 @@ void RPCRenderPlugin::preDraw( TCanvas *c, const DQMNet::CoreObject &o, const Vi
     preDrawTH2( c, o );
   }
   
-
 #ifdef DEBUG
   std::cout << "done" << std::endl;
 #endif
@@ -65,26 +63,20 @@ void RPCRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
   gStyle->SetCanvasColor(kWhite);
   gStyle->SetPadBorderMode( 0 );
   gStyle->SetPadBorderSize( 0 );
-  gStyle->SetOptStat( 0 );
+  gStyle->SetOptStat( 10 );
   gStyle->SetPalette( 1 );
+  obj->SetOption( "colz" );  
   obj->SetStats( kFALSE );
 
   if(o.name.find("reportSummaryMap") != std::string::npos){
     dqm::utils::reportSummaryMapPalette(obj);
-    gStyle->SetOptStat( 10 );
     gStyle->SetPaintTextFormat("%.2f");
     obj->SetOption("colztext");
     obj->SetStats( kTRUE );
     return;
   }
 
-  //obj->SetOption( "box" );
-  gStyle->SetPalette(1);
-  obj->SetOption( "colz" );
-
-  if( o.name.find("Occupancy") < o.name.size() && o.name.find("_Sector")!= std::string::npos) {
-    gStyle->SetOptStat( 10 );
-    gStyle->SetPalette( 1 );
+  if( o.name.find("Occupancy") < o.name.size() ) {
     obj->SetStats( kTRUE );
     return;
   }
@@ -98,17 +90,33 @@ void  RPCRenderPlugin::postDrawTH2(TCanvas *c, const DQMNet::CoreObject &o){
  if(o.name.find("reportSummaryMap") != std::string::npos){
    TLine line;
    line.SetLineWidth(1);
+   line.DrawLine(-2.5, 0.5, -2.5, 12.5);
+   line.DrawLine(2.5, 0.5, 2.5, 12.5);
 
-   line.DrawLine(0.5, 0.5, 0.5, 6.5);
-   line.DrawLine(4.5, 0.5, 4.5, 6.5);
-   line.DrawLine(5.5, 0.5, 5.5, 12.5);
-   line.DrawLine(10.5, 0.5, 10.5, 12.5);
-   line.DrawLine(11.5, 0.5, 11.5, 6.5);
-   line.DrawLine(15.5, 0.5, 15.5, 6.5);
-
-   line.DrawLine(0.5, 6.5, 4.5, 6.5);
-   line.DrawLine(5.5, 12.5, 10.5, 12.5);
-   line.DrawLine(11.5, 6.5, 15.5, 6.5);
  }
+
+if(o.name.find("Occupancy") != std::string::npos){
+   TLine line;
+   line.SetLineWidth(2);
+   //rb1in
+   line.DrawLine(91, 0.5, 91, 2.5);
+   line.DrawLine(91, 2.5, 85, 2.5);
+   //rb1out
+   line.DrawLine(85, 2.5, 85, 4.5);
+   line.DrawLine(85, 4.5, 91, 4.5);
+   //rb2in X 3
+   line.DrawLine(91, 4.5, 91, 7.5);
+   line.DrawLine(91, 7.5, 85, 7.5);
+
+   //rb2out
+   line.DrawLine(85, 7.5, 85, 9.5);
+   line.DrawLine(85, 9.5, 43, 9.5);
+
+   //rb3
+   line.DrawLine(43, 9.5, 43, 13.5);
+
+
+ }
+
  return;
 }
