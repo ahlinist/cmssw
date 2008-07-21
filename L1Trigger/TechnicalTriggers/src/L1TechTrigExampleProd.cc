@@ -5,15 +5,16 @@
 // 
 /**\class L1TechTrigExampleProd L1TechTrigExampleProd.cc L1Trigger/L1TechTrigExampleProd/src/L1TechTrigExampleProd.cc
 
- Description: <one line class summary>
+ Description: Tester for L1 technical triggers
 
  Implementation:
-     <Notes on implementation>
+     Creates technical trigger records for a programmable set of bits
+     Bits will fire periodically with programmable frequency
 */
 //
 // Original Author:  Jim Brooke
 //         Created:  Fri Jul 18 14:58:27 CEST 2008
-// $Id$
+// $Id: L1TechTrigExampleProd.cc,v 1.1 2008/07/18 14:02:04 jbrooke Exp $
 //
 //
 
@@ -48,11 +49,12 @@ private:
   virtual void endJob() ;
   
   // ----------member data ---------------------------
-  unsigned ttBit_;
-  unsigned freq_;
-
-  unsigned nEvt_;
+  std::vector<unsigned> ttBits_;
+  std::vector<unsigned> freqs_;
+  std::vector<std::string> names_;
   
+  unsigned nEvt_;
+
 };
 
 //
@@ -69,7 +71,8 @@ private:
 //
 L1TechTrigExampleProd::L1TechTrigExampleProd(const edm::ParameterSet& ps) :
   ttBits_(ps.getParameter< std::vector<unsigned> >("bitNumbers")),
-  freqs_(ps.getParameter< std::vector<double> >("frequencies")),
+  freqs_(ps.getParameter< std::vector<unsigned> >("bitFrequencies")),
+  names_(ps.getParameter< std::vector<std::string> >("bitNames"))
 {
   produces<L1GtTechnicalTriggerRecord>();
   
@@ -99,15 +102,15 @@ L1TechTrigExampleProd::produce(edm::Event& e, const edm::EventSetup& es)
    std::vector<L1GtTechnicalTrigger> ttVec;
 
    // set the trigger bits
-   for (unsigned i=0; i!=ttBits.size(); ++i) {
+   for (unsigned i=0; i!=ttBits_.size(); ++i) {
      
      // decide whether this bit fired
      bool fire = false;
-     if ((nEvt_ % freq_.at(i)) == 0) fire = true;
+     if ((nEvt_ % freqs_.at(i)) == 0) fire = true;
 
      // create trigger bit and store in vector
      // this example only creates triggers for BxInEvent=0
-     ttVec.push_back(L1GtTechnicalTrigger(name, ttBits_.at(i), 0, fire);
+     ttVec.push_back(L1GtTechnicalTrigger(names_.at(i), ttBits_.at(i), 0, fire));
 
    }
 
@@ -115,7 +118,7 @@ L1TechTrigExampleProd::produce(edm::Event& e, const edm::EventSetup& es)
    std::auto_ptr<L1GtTechnicalTriggerRecord> output(new L1GtTechnicalTriggerRecord());
    output->setGtTechnicalTrigger(ttVec);
 
-   iEvent.put(output);
+   e.put(output);
 }
 
 // ------------ method called once each job just before starting event loop  ------------
