@@ -21,7 +21,7 @@
 //                   Anna Kropivnitskaya
 // Contacts: Efe Yazgan, Taylan Yetkin
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.46 2008/07/12 09:06:37 tyetkin Exp $
+// $Id: HcalProm.cc,v 1.47 2008/07/13 12:24:16 tyetkin Exp $
 //
 //
 
@@ -1477,7 +1477,8 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
                            if(IdTowerPhiMuonIn[ik]>=47&&IdTowerPhiMuonIn[ik]<=64&&IdTowerEtaMuonIn[ik]<0&&IdTowerEtaMuonOut[ik]<0){
 			     hProfTimeAsIdPhiMinus->Fill(IdTowerPhiMuonIn[ik],tmuon);
                            }
-                           if(abs(IdTowerEtaMuonIn[ik]-IdTowerEtaMuonOut[ik])<=3){
+			   //                           if(abs(IdTowerEtaMuonIn[ik]-IdTowerEtaMuonOut[ik])<=3){
+			   if(abs(IdTowerEtaMuonIn[ik]-IdTowerEtaMuonOut[ik])<=0){//use only one tower
 			     float ideta = float(IdTowerEtaMuonIn[ik]+IdTowerEtaMuonOut[ik])/2;
 			     if(IdTowerPhiMuonIn[ik]>=8&&IdTowerPhiMuonIn[ik]<=28&&IdTowerEtaMuonIn[ik]>0){
 			       hProfTimeAsIdEtaTop->Fill(ideta,tmuon);
@@ -1504,7 +1505,8 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
                                     hIdPhiPlusVsE->Fill(eHB,float(IdTowerPhiMuonIn[ik]));
                               }  
                               // fill energy in different id Eta Tower, max Eta Tower crossing by muon <= 4 
-                              if(abs(IdTowerEtaMuonIn[ik]-IdTowerEtaMuonOut[ik])<=3){
+			      //                              if(abs(IdTowerEtaMuonIn[ik]-IdTowerEtaMuonOut[ik])<=3){
+			      if(abs(IdTowerEtaMuonIn[ik]-IdTowerEtaMuonOut[ik])<=0){//only 1-eta tower for muon vs eta plot
                                  float ideta = float(IdTowerEtaMuonIn[ik]+IdTowerEtaMuonOut[ik])/2;
                                  if(IdTowerPhiMuonIn[ik]>=8&&IdTowerPhiMuonIn[ik]<=28&&IdTowerEtaMuonIn[ik]>0){
                                        hIdEtaTopVsE->Fill(eHB,ideta);
@@ -2055,8 +2057,8 @@ void HcalProm::bookHistograms() {
    hIdPhiPlusVsE = book2DHistogram(MuonDir, "hIdPhiPlusVsE","IdPhiTower vs Emuon, HB+",  60, -2, 10, 74, -0.5, 73.5); // x, y coordiants
    hIdPhiMinusVsE = book2DHistogram(MuonDir, "hIdPhiMinusVsE","IdPhiTower vs Emuon, HB-",  60, -2, 10, 74, -0.5, 73.5); // x, y coordiants
    // IdEta vs Emuon
-   hIdEtaTopVsE = book2DHistogram(MuonDir, "hIdEtaTopVsE","IdEtaTower vs Emuon, Top HB",  60, -2, 10, 57, -14.25, 14.25); // x, y coordiants
-   hIdEtaBotVsE = book2DHistogram(MuonDir, "hIdEtaBotVsE","IdEtaTower vs Emuon, Bottom HB",  60, -2, 10, 57, -14.25, 14.25); // x, y coordiants
+   hIdEtaTopVsE = book2DHistogram(MuonDir, "hIdEtaTopVsE","IdEtaTower vs Emuon, Top HB",  60, -2, 10, 29, -14.5, 14.5); // x, y coordiants
+   hIdEtaBotVsE = book2DHistogram(MuonDir, "hIdEtaBotVsE","IdEtaTower vs Emuon, Bottom HB",  60, -2, 10, 29, -14.5, 14.5); // x, y coordiants
   
    // contral plots
    hImpXYHB2DT = book1DHistogram(MuonDir, "hImpXYHB2DT","ImpXY of analyzing muon, 2nd muon in one phi plane ", 50, 0., 50.);
