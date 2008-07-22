@@ -14,7 +14,7 @@
 //
 // Original Author:  Jim Brooke
 //         Created:  Fri Jul 18 14:58:27 CEST 2008
-// $Id: L1TechTrigExampleProd.cc,v 1.1 2008/07/18 14:02:04 jbrooke Exp $
+// $Id: L1TechTrigExampleProd.cc,v 1.2 2008/07/21 20:21:39 jbrooke Exp $
 //
 //
 
@@ -119,6 +119,9 @@ L1TechTrigExampleProd::produce(edm::Event& e, const edm::EventSetup& es)
    output->setGtTechnicalTrigger(ttVec);
 
    e.put(output);
+
+   // increment event counter
+   nEvt_++;
 }
 
 // ------------ method called once each job just before starting event loop  ------------
