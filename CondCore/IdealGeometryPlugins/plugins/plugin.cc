@@ -5,5 +5,6 @@
 #include "Geometry/Records/interface/PGeometricDetRcd.h"
 
 DEFINE_SEAL_MODULE();
-REGISTER_PLUGIN(IdealGeometryRecord,DDCompactView);
+//REGISTER_PLUGIN(IdealGeometryRecord,DDCompactView);
+//ONLY_REGISTER_PLUGIN(IdealGeometryRecord,DDCompactView);
 REGISTER_PLUGIN(PGeometricDetRcd,PGeometricDet);
