@@ -462,11 +462,13 @@ strcpy(ctitle81,title81.c_str());
      // c8.WaitPrimitive();
    } // end  cicle by IdPhiTowers
    TH1F *hEmuonGaussVsIdEtaTowersTop = 
-       new TH1F("hEmuonGaussVsIdEtaTowersTop","Emuom mean Gauss as IdEtaTowers, Top HB", 57, -14.25, 14.25);
+       new TH1F("hEmuonGaussVsIdEtaTowersTop","Emuom mean Gauss as IdEtaTowers, Top HB", 29, -14.5, 14.5);
    TH1F *hEmuonGaussVsIdEtaTowersBot = 
-       new TH1F("hEmuonGaussVsIdEtaTowersBot","Emuom mean Gauss as IdEtaTowers, Bottom HB", 57, -14.25, 14.25);
+       new TH1F("hEmuonGaussVsIdEtaTowersBot","Emuom mean Gauss as IdEtaTowers, Bottom HB", 29, -14.5, 14.5);
+//   Int_t nbinyEta = 59;
+//   Int_t nbinxEta = 60;
    Int_t nbinyEta = 59;
-   Int_t nbinxEta = 60;
+   Int_t nbinxEta = 30;
    for(Int_t ik=1; ik<=nbinyEta; ik++){ // make cicle by IdEtaTowers
       // creat histo
       hEmuon->Clear(); //Clean historgram contents = 0;
