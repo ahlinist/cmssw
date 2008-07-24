@@ -43,7 +43,7 @@ void RPCRenderPlugin::postDraw(TCanvas *c,const DQMNet::CoreObject &o,const VisD
 
   if(o.name.find("Endcap") != std::string::npos && o.name.find("Barrel") == std::string::npos  ){
     tt.SetTextColor(3);
-    tt.DrawTextNDC(0.5, 0.5, "OK-Not in Run");
+    tt.DrawTextNDC(0.5, 0.5, "OK");
     return;
   }
 
@@ -88,11 +88,24 @@ void  RPCRenderPlugin::postDrawTH2(TCanvas *c, const DQMNet::CoreObject &o){
  assert( obj );
 
  if(o.name.find("reportSummaryMap") != std::string::npos){
+
+   obj->GetXaxis()->SetNdivisions(16,true);
+   obj->GetYaxis()->SetNdivisions(13,true);
+   obj->GetXaxis()->CenterLabels();
+   obj->GetYaxis()->CenterLabels();
+   c->SetGrid(1,1);
+   
    TLine line;
    line.SetLineWidth(1);
+   line.DrawLine(-3.5, 0.5, -3.5, 6.5);
+   line.DrawLine(-7.5, 6.5,-3.5, 6.5 );
    line.DrawLine(-2.5, 0.5, -2.5, 12.5);
    line.DrawLine(2.5, 0.5, 2.5, 12.5);
+   line.DrawLine(-2.5, 12.5, 2.5, 12.5);
 
+   line.DrawLine(3.5, 0.5, 3.5, 6.5);
+   line.DrawLine(3.5, 6.5,7.5, 6.5 );
+   line.DrawLine(7.5, 0.5,7.5, 6.5 );
  }
 
 if(o.name.find("Occupancy") != std::string::npos){
