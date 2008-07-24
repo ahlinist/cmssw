@@ -14,7 +14,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Mon Feb 19 13:25:24 CST 2007
-// $Id: L1CaloSim.cc,v 1.1.2.1 2008/07/08 18:05:53 chinhan Exp $
+// $Id: L1CaloSim.cc,v 1.2 2008/07/24 10:20:31 chinhan Exp $
 //
 //
 
@@ -36,7 +36,7 @@ L1CaloSim::L1CaloSim(const edm::ParameterSet& iConfig)
   produces<l1extra::L1EmParticleCollection>("isoEgammas");
   */
 
-  produces<l1extra::L1EtMissParticle>();
+  //produces<l1extra::L1EtMissParticle>();
   produces<l1extra::L1EtMissParticleCollection>();
   produces<l1extra::L1JetParticleCollection>("Tau");
   produces<l1extra::L1JetParticleCollection>("Central");
@@ -88,8 +88,8 @@ L1CaloSim::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   if (m_DoBitInfo)
     m_L1GlobalAlgo->FillBitInfos();
 
-  std::auto_ptr<l1extra::L1EtMissParticle> METResult(new l1extra::L1EtMissParticle);
-  //std::auto_ptr<l1extra::L1EtMissParticleCollection> METResult(new l1extra::L1EtMissParticleCollection);
+  //std::auto_ptr<l1extra::L1EtMissParticle> METResult(new l1extra::L1EtMissParticle);
+  std::auto_ptr<l1extra::L1EtMissParticleCollection> METResult(new l1extra::L1EtMissParticleCollection);
   std::auto_ptr<l1extra::L1JetParticleCollection> TauJetResult(new l1extra::L1JetParticleCollection);
   std::auto_ptr<l1extra::L1JetParticleCollection> CenJetResult(new l1extra::L1JetParticleCollection);
   std::auto_ptr<l1extra::L1JetParticleCollection> ForJetResult(new l1extra::L1JetParticleCollection);
@@ -99,6 +99,9 @@ L1CaloSim::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   std::auto_ptr<l1extra::L1MuonParticleCollection> muonDummy(new l1extra::L1MuonParticleCollection);
   //
   //*METResult = m_L1GlobalAlgo->getMET();
+  for (int i=0; i<(int)m_L1GlobalAlgo->getMET().size(); i++) {
+    METResult->push_back(m_L1GlobalAlgo->getMET().at(i));
+  }
   for (int i=0; i<std::min(4,(int)m_L1GlobalAlgo->getTauJets().size()); i++) {
     TauJetResult->push_back(m_L1GlobalAlgo->getTauJets().at(i));
   }

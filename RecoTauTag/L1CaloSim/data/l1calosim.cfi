@@ -1,4 +1,4 @@
-module fastL1CaloSim = FastL1CaloSim
+module l1CaloSim = L1CaloSim
 {
   # Defaults
   # "RecHits" or "TrigPrims" 
