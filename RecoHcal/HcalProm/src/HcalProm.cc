@@ -21,7 +21,7 @@
 //                   Anna Kropivnitskaya
 // Contacts: Efe Yazgan, Taylan Yetkin
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.47 2008/07/13 12:24:16 tyetkin Exp $
+// $Id: HcalProm.cc,v 1.48 2008/07/22 13:04:22 efe Exp $
 //
 //
 
@@ -204,6 +204,8 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
         runBegin = iEvent.id().run();
         bookHistograms();       // book all histograms
     }
+
+    run = iEvent.id().run();//needed in the tree
 
     if (lumi < lumibegin)
         lumibegin = lumi;
