@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.23 2008/07/03 17:36:38 ameyer Exp $
+// $Id: DTRenderPlugin.cc,v 1.24 2008/07/09 18:57:03 cerminar Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.23 $
-  \date $Date: 2008/07/03 17:36:38 $
+  \version $Revision: 1.24 $
+  \date $Date: 2008/07/09 18:57:03 $
 */
 
 #include "TProfile2D.h"
@@ -497,6 +497,14 @@ void DTRenderPlugin::preDrawTH1( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
+
+  if( o.name.find("hResDist") < o.name.size() ) {
+    gStyle->SetOptStat("rme" );
+    obj->SetStats( kTRUE );
+  }
+
+
+
   if( o.name.find( "EventLenght" ) < o.name.size() ) {
     gStyle->SetOptStat( 1111111 );
     obj->SetStats( kTRUE );
@@ -576,8 +584,9 @@ void DTRenderPlugin::preDrawTH1( TCanvas *c, const DQMNet::CoreObject &o ) {
 
 
   if( o.name.find( "NoiseRateSummary" ) < o.name.size() ) {
+
     c->SetLogy(1);
-    c->SetLogx(1);
+    if(obj->GetEntries() != 0) c->SetLogx(1);
     return;
   }
 
