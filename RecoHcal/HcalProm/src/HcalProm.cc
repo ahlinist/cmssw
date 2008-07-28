@@ -21,7 +21,7 @@
 //                   Anna Kropivnitskaya
 // Contacts: Efe Yazgan, Taylan Yetkin
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.49 2008/07/24 16:26:18 efe Exp $
+// $Id: HcalProm.cc,v 1.50 2008/07/28 12:38:06 efe Exp $
 //
 //
 
@@ -1407,14 +1407,21 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
                            eHB = EmuonHB[ik]/LengthMuonHB[ik]*dLHB;
                            float tmuon;
                            tmuon = TimeAvMuonHB[ik]; 
-                           float meanB=0; // difined mean time for top and bot
-                           float rmsB=0; // difined mean time for top and but
+                           float meanB=0; // defined mean time for top and bot
+                           float rmsB=0; // defined mean time for top and but
                            // select that analized muon has good Time (+-1RMS) and belong to one part: Top+,Top-,Bot+ or Bot-  
                            if(IdTowerPhiMuonIn[ik]>0&&IdTowerPhiMuonIn[ik]<37&&NumHBTowersMuon[ik]<=maxTowerEta&&NumHBTowersMuon[ik]>=minTowerEta){ 
                              // cout << " *** check *** " << std::endl;
                               if(IdTowerEtaMuonIn[ik]>0&&IdTowerEtaMuonOut[ik]>0){
+				//CRUZET 1-2
+				if (runBegin < 50000){
                                  meanB=24.04;
                                  rmsB=23.02;
+				}else{//CRUZET 3
+				  meanB=5.057;
+				  rmsB=17.69;
+				}
+				  
                                  if(fabs(tmuon-meanB)<=rmsB){
                                     hEmuonHB2DTTopPlus ->Fill(eHB);
                                     hNumTowerMuonHB2DTTopPlus->Fill(NumHBTowersMuon[ik]);
@@ -1424,8 +1431,14 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
                                  if((tmuon-meanB)>=0&&(tmuon-meanB)<rmsB)hEmuonHB2DTTopPlusTimePlus->Fill(eHB);
                               } 
                               if(IdTowerEtaMuonIn[ik]<0&&IdTowerEtaMuonOut[ik]<0){
-                                 meanB=22.01;
-                                 rmsB=22.99;
+				//CRUZET 1-2
+				if (runBegin < 50000){
+				  meanB=22.01;
+				  rmsB=22.99;
+				}else{//CRUZET 3
+				  meanB=4.571;
+				  rmsB=18.54;
+				}
                                  if(fabs(tmuon-meanB)<=rmsB){
                                     hEmuonHB2DTTopMinus ->Fill(eHB);
                                     hNumTowerMuonHB2DTTopMinus->Fill(NumHBTowersMuon[ik]); 
@@ -1437,8 +1450,14 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
                            }
                            if(IdTowerPhiMuonIn[ik]>36&&IdTowerPhiMuonIn[ik]<73&&NumHBTowersMuon[ik]<=maxTowerEta&&NumHBTowersMuon[ik]>=minTowerEta){
                               if(IdTowerEtaMuonIn[ik]>0&&IdTowerEtaMuonOut[ik]>0){
-                                 meanB=37.99;
-                                 rmsB=23.7;
+				//CRUZET 1-2
+				if (runBegin < 50000){
+				  meanB=37.99;
+				  rmsB=23.7;
+				}else{//CRUZET 3
+				  meanB=18.22;
+				  rmsB=16.96;
+				}
                                  if(fabs(tmuon-meanB)<=rmsB){
                                     hEmuonHB2DTBotPlus ->Fill(eHB);
                                     hNumTowerMuonHB2DTBotPlus->Fill(NumHBTowersMuon[ik]); 
@@ -1457,10 +1476,14 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
                                  if((tmuon-meanB)<(-rmsB*1.5))hEmuonHB2DTBotPlusTimeMinus4->Fill(eHB);
                               }
                               if(IdTowerEtaMuonIn[ik]<0&&IdTowerEtaMuonOut[ik]<0){
-				//meanB=33.51;
-				//rmsB=27.35;
-				meanB=34.84;
-				rmsB=27.31;
+				//CRUZET 1-2
+				if (runBegin < 50000){
+				  meanB=34.84;
+				  rmsB=27.31;
+				}else{//CRUZET 3
+				  meanB=19.22;
+				  rmsB=21.56;
+				}
                                  if(fabs(tmuon-meanB)<=rmsB){
                                     hEmuonHB2DTBotMinus ->Fill(eHB);
                                     hNumTowerMuonHB2DTBotMinus->Fill(NumHBTowersMuon[ik]); 
