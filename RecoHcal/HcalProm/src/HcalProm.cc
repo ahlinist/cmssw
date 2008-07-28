@@ -21,7 +21,7 @@
 //                   Anna Kropivnitskaya
 // Contacts: Efe Yazgan, Taylan Yetkin
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.48 2008/07/22 13:04:22 efe Exp $
+// $Id: HcalProm.cc,v 1.49 2008/07/24 16:26:18 efe Exp $
 //
 //
 
@@ -423,6 +423,12 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
             hcal_l1a = true;
     }
     int triggerBit[4] = { 0, 0, 0, 0 };
+
+    TriggerBit[0] = 0;
+    TriggerBit[1] = 0;
+    TriggerBit[2] = 0;
+    TriggerBit[3] = 0;
+
     // 0 : DT
     // 1 : RPC
     // 2 : CSC
@@ -433,23 +439,27 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
     for(int b=0;b<nt;++b)h_Trigger->GetXaxis()->SetBinLabel(b+1,nameTrig[b]);	
     if (dt_l1a) {
         triggerBit[0] = 1;
+	TriggerBit[0] = 1;
 	++t1;
         h_Trigger->SetBinContent(1,t1);
     }
     if (rpc_l1a) {
         triggerBit[1] = 1;
+        TriggerBit[1] = 1;
 	++t2;
         std::cout << "RPC" << std::endl;
         h_Trigger->SetBinContent(2,t2);
     }
     if (csc_l1a) {
         triggerBit[2] = 1;
+	TriggerBit[2] = 1;
 	++t3;
         std::cout << "CSC" << std::endl;
         h_Trigger->SetBinContent(3,t3);
     }
     if (hcal_l1a) {
         triggerBit[3] = 1;
+	TriggerBit[3] = 1;
 	++t4;
         std::cout << "HCAL" << std::endl;
         h_Trigger->SetBinContent(4,t4);
