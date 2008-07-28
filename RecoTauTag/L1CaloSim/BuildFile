@@ -17,4 +17,4 @@
    <use name=FastSimDataFormats/External>
    <use name=DataFormats/L1Trigger>
 </export>
-<flags EDM_PLUGIN=1>
+#<flags EDM_PLUGIN=1>

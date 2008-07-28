@@ -18,9 +18,9 @@ void plotL1Val(bool printCanvas = false, bool printIndividual = false, bool norm
   TString ver1 = "L1 Emu 2_0_9";
   TString ver2 = "L1 Sim 2_0_9";
 
-  //TFile *f1 = new TFile("ztt.root"); 
+  TFile *f1 = new TFile("ztt.root"); 
   //TFile *f1 = new TFile("qcd_80_120.root"); 
-  TFile *f1 = new TFile("test.root"); 
+  //TFile *f1 = new TFile("test.root"); 
   
   TCanvas* ca1 = new TCanvas();
   ca1->Divide(3,3); 
