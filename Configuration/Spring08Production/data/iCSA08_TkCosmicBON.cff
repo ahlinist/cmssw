@@ -1,6 +1,6 @@
 
 include "GeneratorInterface/CosmicMuonGenerator/data/CMSCGENsource.cfi"
-  replace CosMuoGenSource.MinP = 5.
+  replace CosMuoGenSource.MinP = 4.
   #  ElossScaleFactor=1 -> underground
   #                  =0 -> surface
   #replace CosMuoGenSource.ElossScaleFactor = 1.0
@@ -11,13 +11,12 @@ include "GeneratorInterface/CosmicMuonGenerator/data/CMSCGENsource.cfi"
 
 #----------- Filtering before GEANT4
 include "GeneratorInterface/GenFilters/data/CosmicGenFilterHelix.cfi" # defines cosmicInTracker
-replace cosmicInTracker.minP = 5.
 replace cosmicInTracker.doMonitor = false
 
 sequence ProductionFilterSequence = {cosmicInTracker}
 
 untracked PSet configurationMetadata = {
-    untracked string version = "$Revision$"
-    untracked string name = "$Source$"
+    untracked string version = "$Revision: 1.1 $"
+    untracked string name = "$Source: /cvs_server/repositories/CMSSW/CMSSW/Configuration/Spring08Production/data/iCSA08_TkCosmicBON.cff,v $"
     untracked string annotation = "CSA08 tracker cosmic BON sample"
 }
