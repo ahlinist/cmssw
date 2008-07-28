@@ -21,7 +21,7 @@
 //                   Anna Kropivnitskaya
 // Contacts: Efe Yazgan, Taylan Yetkin
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.50 2008/07/28 12:38:06 efe Exp $
+// $Id: HcalProm.cc,v 1.51 2008/07/28 12:50:30 efe Exp $
 //
 //
 
@@ -1512,8 +1512,8 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
                            if(IdTowerPhiMuonIn[ik]>=47&&IdTowerPhiMuonIn[ik]<=64&&IdTowerEtaMuonIn[ik]<0&&IdTowerEtaMuonOut[ik]<0){
 			     hProfTimeAsIdPhiMinus->Fill(IdTowerPhiMuonIn[ik],tmuon);
                            }
-			   //                           if(abs(IdTowerEtaMuonIn[ik]-IdTowerEtaMuonOut[ik])<=3){
-			   if(abs(IdTowerEtaMuonIn[ik]-IdTowerEtaMuonOut[ik])<=0){//use only one tower
+			   if(abs(IdTowerEtaMuonIn[ik]-IdTowerEtaMuonOut[ik])<=3){
+			   //if(abs(IdTowerEtaMuonIn[ik]-IdTowerEtaMuonOut[ik])<=0){//use only one tower
 			     float ideta = float(IdTowerEtaMuonIn[ik]+IdTowerEtaMuonOut[ik])/2;
 			     if(IdTowerPhiMuonIn[ik]>=8&&IdTowerPhiMuonIn[ik]<=28&&IdTowerEtaMuonIn[ik]>0){
 			       hProfTimeAsIdEtaTop->Fill(ideta,tmuon);
@@ -1540,8 +1540,8 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
                                     hIdPhiPlusVsE->Fill(eHB,float(IdTowerPhiMuonIn[ik]));
                               }  
                               // fill energy in different id Eta Tower, max Eta Tower crossing by muon <= 4 
-			      //                              if(abs(IdTowerEtaMuonIn[ik]-IdTowerEtaMuonOut[ik])<=3){
-			      if(abs(IdTowerEtaMuonIn[ik]-IdTowerEtaMuonOut[ik])<=0){//only 1-eta tower for muon vs eta plot
+			      if(abs(IdTowerEtaMuonIn[ik]-IdTowerEtaMuonOut[ik])<=3){
+			      // if(abs(IdTowerEtaMuonIn[ik]-IdTowerEtaMuonOut[ik])<=0){//only 1-eta tower for muon vs eta plot
                                  float ideta = float(IdTowerEtaMuonIn[ik]+IdTowerEtaMuonOut[ik])/2;
                                  if(IdTowerPhiMuonIn[ik]>=8&&IdTowerPhiMuonIn[ik]<=28&&IdTowerEtaMuonIn[ik]>0){
                                        hIdEtaTopVsE->Fill(eHB,ideta);
