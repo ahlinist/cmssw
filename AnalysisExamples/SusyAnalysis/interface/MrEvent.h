@@ -28,6 +28,7 @@
 #include "DataFormats/L1Trigger/interface/L1ParticleMap.h"
 #include "DataFormats/EgammaReco/interface/ClusterShapeFwd.h"
 #include "DataFormats/EgammaReco/interface/BasicClusterShapeAssociation.h"
+#include "JetMETCorrections/Objects/interface/JetCorrector.h"
 
 #include "AnalysisExamples/SusyAnalysis/interface/MrParticle.h" 
 
@@ -39,7 +40,7 @@ class MrEvent {
 public:
 
 // constructor
-MrEvent() : pMcData(0), pRecoData(0), TrackData(0), VertexData(0), CaloTowerData(0), jetsprocessed(false)
+MrEvent() : pMcData(0), pRecoData(0), pGenData(0), TrackData(0), VertexData(0), CaloTowerData(0), jetsprocessed(false)
 {
   RunNumber = 0;
   EventNumber = 0;
@@ -81,15 +82,17 @@ MrEvent() : pMcData(0), pRecoData(0), TrackData(0), VertexData(0), CaloTowerData
 virtual ~MrEvent(){};
 
 // access methods
-// the pointers to MCData and RecoData
+// the pointers to MCData, GenData and RecoData
 std::vector<MrParticle*>* mcData(){return pMcData;}
 std::vector<MrParticle*>* recoData(){return pRecoData;}
+std::vector<MrParticle*>* genData(){return pGenData;}
 // the pointers to the vertex collection, track collection and calotower collection
 const TrackCollection * trackCollection() {return TrackData;}
 const VertexCollection * vertexCollection() {return VertexData;}
 const CaloTowerCollection * caloTowerCollection() {return CaloTowerData;}
 const BasicClusterShapeAssociationCollection * clusterShapeBarrelCollection()  {return ClusterShapeBarrelData;}  
 const BasicClusterShapeAssociationCollection * clusterShapeEndcapCollection()  {return ClusterShapeEndcapData;}  
+std::vector<const JetCorrector*>* jetCorrectors(){return m_jetCorrectors;}
 
 // event and run number
 int run() {return RunNumber;}
@@ -156,6 +159,9 @@ float hemiMass2(){return sqrt(HemiAxis2[4]*HemiAxis2[4]-HemiAxis2[3]*HemiAxis2[3
 // Index in MCData of the partons matching the hemispheres
 int indexMatchedSusyMother1(){return IndexMatchedSusyMother1;}
 int indexMatchedSusyMother2(){return IndexMatchedSusyMother2;}
+// Event weight and cross section
+float eventWeight(){return EventWeight;}
+float crossSection(){return CrossSection;}
 
 // Quantities derived from the RecoData
 // Number of jets (up to 15 max) stored in decreasing p_T
@@ -187,6 +193,7 @@ float htRecoil(){if(!jetsprocessed) {GetLeadingJets();} ;
 // set methods
 void setMCData(std::vector<MrParticle*>* mcdata){pMcData = mcdata;}
 void setRecoData(std::vector<MrParticle*>* recodata){pRecoData = recodata;}
+void setGenData(std::vector<MrParticle*>* gendata){pGenData = gendata;}
 void setTrackCollection(const TrackCollection * tc)  {TrackData = tc;}
 void setVertexCollection(const VertexCollection * vc) {VertexData = vc;}
 void setCaloTowerCollection(const CaloTowerCollection * cc) {CaloTowerData = cc;}
@@ -235,17 +242,22 @@ void setHemiAxis1(std::vector<float> axis){HemiAxis1 = axis;}
 void setHemiAxis2(std::vector<float> axis){HemiAxis2 = axis;}
 void setIndexMatchedSusyMother1(int index){IndexMatchedSusyMother1 = index;}
 void setIndexMatchedSusyMother2(int index){IndexMatchedSusyMother2 = index;}
+void setJetCorrectors(std::vector<const JetCorrector*>* jc){m_jetCorrectors=jc;}
+void setEventWeight(float ew) {EventWeight = ew;}
+void setCrossSection(float cs) {CrossSection = cs;}
 
 private:
 
 // data members
 std::vector<MrParticle*>* pMcData; 
 std::vector<MrParticle*>* pRecoData;
+std::vector<MrParticle*>* pGenData;
 const TrackCollection * TrackData;
 const VertexCollection * VertexData;
 const CaloTowerCollection * CaloTowerData;
 const BasicClusterShapeAssociationCollection * ClusterShapeBarrelData; 
 const BasicClusterShapeAssociationCollection * ClusterShapeEndcapData; 
+std::vector<const JetCorrector*>* m_jetCorrectors;
 
 
 int RunNumber, EventNumber;
@@ -263,7 +275,7 @@ static const int Njetsmax = 15;
 int LeadJets[Njetsmax], NumJets;
 float PtSumLeadJets;
 bool jetsprocessed;
-
+float EventWeight, CrossSection;
 
 
 // methods

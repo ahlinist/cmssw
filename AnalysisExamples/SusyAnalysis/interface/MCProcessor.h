@@ -30,6 +30,8 @@
 #include "DataFormats/JetReco/interface/Jet.h"
 #include "DataFormats/JetReco/interface/CaloJetCollection.h"
 #include "DataFormats/JetReco/interface/CaloJet.h"
+#include "DataFormats/JetReco/interface/GenJet.h"
+#include "DataFormats/HepMCCandidate/interface/GenParticleCandidate.h"
 #include "DataFormats/EgammaReco/interface/SuperCluster.h"
 #include "DataFormats/CaloTowers/interface/CaloTowerCollection.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
@@ -60,6 +62,12 @@ virtual int NumMCMuonTrue(void){return nMCMuonTrue;}
 virtual int NumMCTauTrue(void){return nMCTauTrue;}
 virtual int NumMCPhotTrue(void){return nMCPhotTrue;}
 virtual int NumMCJetTrue(void){return nMCJetTrue;}
+                                                                                                                                        
+virtual int NumMCElecBigEta(void){return nMCElecBigEtaTrue;}
+virtual int NumMCMuonBigEta(void){return nMCMuonBigEtaTrue;}
+virtual int NumMCTauBigEta(void){return nMCTauBigEtaTrue;}
+virtual int NumMCPhotBigEta(void){return nMCPhotBigEtaTrue;}
+virtual int NumMCJetBigEta(void){return nMCJetBigEtaTrue;}
 
 private:
      
@@ -68,9 +76,11 @@ private:
   Config_t * myConfig;
   edm::ParameterSet acceptance_cuts;
   edm::ParameterSet mcproc_params;
+  edm::ParameterSet isolator_params;
 
   MrEvent * myEventData;
   std::vector<MrParticle*> & MCData;
+  std::vector<MrParticle*> & GenData;
   
   
   // Define all pointers to objects
@@ -96,6 +106,40 @@ private:
   float mc_JetCalFac;
   float mc_JetDeltaRIC;
   
+  // Define the isolation parameters
+  int   iso_MethodElec;
+  float iso_ElCalDRin;
+  float iso_ElCalDRout;
+  float iso_ElCalSeed;
+  float iso_ElTkDRin;
+  float iso_ElTkDRout;
+  float iso_ElTkSeed;
+  float iso_ElIsoValue;
+  int   iso_MethodMuon;
+  float iso_MuCalDRin;
+  float iso_MuCalDRout;
+  float iso_MuCalSeed;
+  float iso_MuTkDRin;
+  float iso_MuTkDRout;
+  float iso_MuTkSeed;
+  float iso_MuIsoValue;
+  int   iso_MethodTau;
+  float iso_TauCalDRin;
+  float iso_TauCalDRout;
+  float iso_TauCalSeed;
+  float iso_TauTkDRin;
+  float iso_TauTkDRout;
+  float iso_TauTkSeed;
+  float iso_TauIsoValue;
+  int   iso_MethodPhot;
+  float iso_PhCalDRin;
+  float iso_PhCalDRout;
+  float iso_PhCalSeed;
+  float iso_PhTkDRin;
+  float iso_PhTkDRout;
+  float iso_PhTkSeed;
+  float iso_PhIsoValue;
+  
   // Define the counters per event
   
   int nMCElecTrue;
@@ -103,13 +147,25 @@ private:
   int nMCTauTrue;
   int nMCPhotTrue;
   int nMCJetTrue;
-  
+                                                                                                                                        
+  int nMCElecBigEtaTrue;
+  int nMCMuonBigEtaTrue;
+  int nMCTauBigEtaTrue;
+  int nMCPhotBigEtaTrue;
+  int nMCJetBigEtaTrue;
+
   // Define MET vectors 
   math::XYZVector metMCvector;
 
   // Define the private methods included
   virtual void PrintMCInfo(int);
   virtual void MakeMCStatusInfo(void);
+  virtual void MakeGenJetInfo(void);
+  virtual bool IsTauJet(int);
+  virtual void MakeMCIsoInfo(void);
+  virtual bool IsMCIso(int);
+  virtual bool IsMCTauIso(int);
+  virtual void MakeMCSusyMothIso();
   virtual math::XYZVector MetFromMC(void);
   virtual float DeltaPhi(float, float);
   virtual float GetDeltaR(float, float, float, float);
