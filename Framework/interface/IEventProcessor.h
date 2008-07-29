@@ -54,8 +54,10 @@ namespace edm
     virtual bool endOfLoop() = 0;
     virtual void rewindInput() = 0;
     virtual void prepareForNextLoop() = 0;
-    virtual void writeCache() = 0;
-    virtual bool shouldWeCloseOutput() = 0;
+    virtual void writeLumiCache() = 0;
+    virtual void writeRunCache() = 0;
+    virtual bool shouldWeCloseOutput() const = 0;
+    virtual bool anyOutputModules() const = 0;
 
     virtual void doErrorStuff() = 0;
 
@@ -74,7 +76,7 @@ namespace edm
 
     virtual void readEvent() = 0;
     virtual void processEvent() = 0;
-    virtual bool shouldWeStop() = 0;
+    virtual bool shouldWeStop() const = 0;
 
     virtual void setExceptionMessageFiles(std::string& message) = 0;
     virtual void setExceptionMessageRuns(std::string& message) = 0;

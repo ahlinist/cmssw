@@ -19,13 +19,13 @@ namespace edm {
   }
 
   void
-  OutputWorker::maybeEndFile() {
-    module().maybeEndFile();
-  }
-
-  void
   OutputWorker::closeFile() {
     module().doCloseFile();
+  }
+
+  bool
+  OutputWorker::shouldWeCloseFile() const {
+    return module().shouldWeCloseFile();
   }
 
   void

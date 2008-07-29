@@ -43,8 +43,10 @@ namespace edm
     virtual bool endOfLoop();
     virtual void rewindInput();
     virtual void prepareForNextLoop();
-    virtual void writeCache();
-    virtual bool shouldWeCloseOutput();
+    virtual void writeLumiCache();
+    virtual void writeRunCache();
+    virtual bool shouldWeCloseOutput() const;
+    virtual bool anyOutputModules() const;
 
     virtual void doErrorStuff();
 
@@ -63,7 +65,7 @@ namespace edm
 
     virtual void readEvent();
     virtual void processEvent();
-    virtual bool shouldWeStop();
+    virtual bool shouldWeStop() const;
 
     virtual void setExceptionMessageFiles(std::string& message);
     virtual void setExceptionMessageRuns(std::string& message);
@@ -73,7 +75,7 @@ namespace edm
 
   private:
     std::string mockData_;
-    std::ostream & output_;
+    mutable std::ostream & output_;
     statemachine::FileMode fileMode_;
     bool handleEmptyRuns_;
     bool handleEmptyLumis_;

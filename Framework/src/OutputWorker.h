@@ -29,11 +29,11 @@ namespace edm {
 
     virtual ~OutputWorker();
 
-    // Call maybeEndFile() on the controlled OutputModule.
-    void maybeEndFile();
-
     // Call closeFile() on the controlled OutputModule.
     void closeFile();
+
+    // Call shouldWeCloseFile() on the controlled OutputModule.
+    bool shouldWeCloseFile() const;
 
     void openNewFileIfNeeded();
 
