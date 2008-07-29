@@ -18,7 +18,8 @@
 #include "TCanvas.h"
 #include "TColor.h"
 #include "TText.h"
-#include "TPaveText.h"
+//#include "TPaveText.h"
+//#include "TROOT.h"
 
 #include <cassert>
 #include "DQM/RenderPlugins/src/utils.h"
@@ -30,6 +31,17 @@ L1TRenderPlugin::initialise (int argc, char ** argv)
 
 
   //summaryText = new TH2C( "summaryText", "summaryText", 5, 1, 6, 4, 1, 5);
+ //  float rgb[6][3] = {{1.00, 0.00, 0.00}, {0.00, 1.00, 0.00},
+// 		     {1.00, 0.96, 0.00}, {0.50, 0.00, 0.00},
+// 		     {0.00, 0.40, 0.00}, {0.94, 0.78, 0.00}};
+
+//   for( int i=0; i<6; i++ ) {
+//     TColor* color = gROOT->GetColor( 301+i );
+//     if ( ! color ) color = new TColor( 301+i, 0, 0, 0, "");
+//     color->SetRGB( rgb[i][0], rgb[i][1], rgb[i][2] );
+//   }
+//   for(int i=0; i<6; i++) cpal[i] = i + 301;
+    
 
   return;
 }
@@ -129,10 +141,92 @@ void L1TRenderPlugin::preDrawTH1F ( TCanvas *c, const DQMNet::CoreObject &o )
   TH1F* obj = dynamic_cast<TH1F*>( o.object ); 
   assert (obj); // checks that object indeed exists
 
-  if(REMATCH("dttf_p_q_bx*", o.name)) {
+  gStyle->SetOptStat(111111);
+
+  if(REMATCH("Packed Charge *", o.name)) {
+    obj->GetXaxis()->SetTitle("charge");
+    obj->GetXaxis()->SetNdivisions(2);
+    return;
+  }
+
+  if(REMATCH("Packed Phi *", o.name)) {
+    obj->GetXaxis()->SetTitle("phi");
+    return;
+  }
+
+  else if(REMATCH("Packed Eta *", o.name)) {
+    obj->GetXaxis()->SetTitle("eta");
+    return;
+  }
+
+  else if(REMATCH("Packed Quality *", o.name)) {
+    obj->GetXaxis()->SetTitle("quality");
+    obj->GetXaxis()->SetNdivisions(8);
+    return;
+  }
+
+  else if(REMATCH("Packed PT *", o.name)) {
+    obj->GetXaxis()->SetTitle("pt");
+    return;
+  }
+
+  else if(REMATCH("Integrated Packed Pt *", o.name)) {
+    obj->GetXaxis()->SetTitle("pt");
+    return;
+  }
+ 
+  else if(REMATCH("Integrated Packed Charge", o.name)) {
+    obj->GetXaxis()->SetTitle("charge");
+    obj->GetXaxis()->SetNdivisions(2);
+    return;
+ }
+
+  else if(REMATCH("Number of Tracks", o.name)) {
+    obj->GetXaxis()->SetNdivisions(12);
+    return;
+  }  
+
+  else if(REMATCH("2nd Tracks", o.name)) {
+    obj->GetXaxis()->SetTitle("sector");
+    obj->GetXaxis()->SetNdivisions(12);
+    return;
+  }
+ 
+  else if(REMATCH("Num Tracks Per Event bx*", o.name)) {
+    obj->GetXaxis()->SetNdivisions(2);
+    return;
+  }
+ 
+  else if(REMATCH("Num Tracks Per Event", o.name)) {
+    obj->GetXaxis()->SetNdivisions(11);
+    return;
+  }
+
+  else if(REMATCH("BX *", o.name)) {
+    obj->GetXaxis()->SetTitle("bx");
     obj->GetXaxis()->SetNdivisions(3);
     return;
   }
+
+//   else if(REMATCH("Wheel * - BX*", o.name)) {
+//     obj->GetXaxis()->SetTitle("bx");
+//     obj->GetXaxis()->SetNdivisions(3);
+//     return;
+//   }
+
+  else if(REMATCH("Integrated Num Tracks", o.name)) {
+    obj->GetXaxis()->CenterLabels();
+    obj->GetYaxis()->CenterLabels();
+    obj->GetXaxis()->SetTitle("wheel");
+    obj->GetXaxis()->SetBinLabel(1,"N2");
+    obj->GetXaxis()->SetBinLabel(2,"N1");
+    obj->GetXaxis()->SetBinLabel(3,"N0");
+    obj->GetXaxis()->SetBinLabel(4,"P0");
+    obj->GetXaxis()->SetBinLabel(5,"P1");
+    obj->GetXaxis()->SetBinLabel(6,"P2");
+    return;
+  }
+
  //  if( o.name.find( "dttf_p_q_" )  != std::string::npos) {
     
 //     //dqm::utils::reportSummaryMapPalette(obj);
@@ -153,6 +247,7 @@ void L1TRenderPlugin::preDrawTH1F ( TCanvas *c, const DQMNet::CoreObject &o )
     gPad->SetLogy(0); 
     } 
   */
+
 
   return;
 
@@ -181,9 +276,6 @@ void L1TRenderPlugin::preDrawTH2F ( TCanvas *c, const DQMNet::CoreObject &o )
     obj->GetYaxis()->CenterLabels();
     
     gPad->SetGrid(1,1);
-
-
-
 
     //gStyle->SetPaintTextFormat("+g");
     
@@ -220,20 +312,47 @@ void L1TRenderPlugin::preDrawTH2F ( TCanvas *c, const DQMNet::CoreObject &o )
   // Now the important stuff -- set 2D hist drawing option to "colz"
   gStyle->SetPalette(1);
   obj->SetOption("colz");
+  
+  //gStyle->SetOptStat(0);
 
-  if(o.name.find("Occupancy_Summary") < o.name.size()) {
-    obj->GetXaxis()->SetNdivisions(6,true);
-    obj->GetYaxis()->SetNdivisions(13,true);
+  if(o.name.find("Summary") < o.name.size()) {
     obj->GetXaxis()->CenterLabels();
     obj->GetYaxis()->CenterLabels();
+
+    obj->GetXaxis()->SetTitle("wheel");
+    obj->GetXaxis()->SetBinLabel(1,"N2");
+    obj->GetXaxis()->SetBinLabel(2,"N1");
+    obj->GetXaxis()->SetBinLabel(3,"N0");
+    obj->GetXaxis()->SetBinLabel(4,"P0");
+    obj->GetXaxis()->SetBinLabel(5,"P1");
+    obj->GetXaxis()->SetBinLabel(6,"P2");
+
+
     gPad->SetGrid(1,1);
-//     obj->GetXaxis()->SetLabelSize(0.07);
-//     obj->GetYaxis()->SetLabelSize(0.07);
-    //obj->GetXaxis()->LabelsOption("h");
     gPad->SetBottomMargin(0.1);
     gPad->SetLeftMargin(0.12);
     gPad->SetRightMargin(0.12);
-    obj->SetMinimum(-0.00000001);
+    //obj->SetMinimum(-0.00000001);
+    gStyle->SetOptStat(0);
+    }
+
+  if(o.name.find("BX Summary") < o.name.size()) {
+    obj->GetYaxis()->SetTitle("bx");
+    obj->GetXaxis()->SetNdivisions(6,true);
+    obj->GetYaxis()->SetNdivisions(4,true);
+    //gPad->SetGrid(1,1);
+    return;
+  }
+
+  if(o.name.find("Occupancy Summary") < o.name.size()) {
+    obj->GetYaxis()->SetTitle("sector");
+    obj->GetXaxis()->SetNdivisions(6,true);
+    obj->GetYaxis()->SetNdivisions(13,true);
+    //gPad->SetGrid(1,1);
+//     obj->GetXaxis()->SetLabelSize(0.07);
+//     obj->GetYaxis()->SetLabelSize(0.07);
+    //obj->GetXaxis()->LabelsOption("h");
+ 
     //obj->SetMaximum(5.0);
 
     //int colorError1[5];
@@ -243,7 +362,29 @@ void L1TRenderPlugin::preDrawTH2F ( TCanvas *c, const DQMNet::CoreObject &o )
     //colorError1[3] = 625;
     //colorError1[4] = 632;// kRed
     //gStyle->SetPalette(5, colorError1);
-    gStyle->SetOptStat(0);
+    
+    //gStyle->SetPalette(6, cpal);
+    ;
+    return;
+  }
+
+  else if(o.name.find("Fractional High Quality Summary") < o.name.size()) {
+    obj->GetYaxis()->SetTitle("sector");
+    obj->GetXaxis()->SetNdivisions(6,true);
+    obj->GetYaxis()->SetNdivisions(13,true);
+    return;
+  }
+
+  else if(o.name.find("2nd Track Summary") < o.name.size()) {
+    obj->GetYaxis()->SetTitle("sector");
+    obj->GetXaxis()->SetNdivisions(6,true);
+    obj->GetYaxis()->SetNdivisions(13,true);
+    return;
+  }
+
+  else if(o.name.find("Phi vs Eta") < o.name.size()) {
+    obj->GetXaxis()->SetTitle("eta");
+    obj->GetYaxis()->SetTitle("phi");
     return;
   }
 
