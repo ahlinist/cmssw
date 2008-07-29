@@ -13,7 +13,7 @@
 //
 // Original Author:  Efe Yazgan
 //         Created:  Thu Jul 24 10:31:07 CEST 2008
-// $Id$
+// $Id: HcalHPDFilter.cc,v 1.1 2008/07/24 15:32:06 efe Exp $
 //
 //
 
@@ -88,7 +88,7 @@ HcalHPDFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
    const HBHERecHitCollection Hithbhe = *(hbhe.product());
 
    for (HBHERecHitCollection::const_iterator hhit=Hithbhe.begin(); hhit!=Hithbhe.end(); hhit++) {
-     if (hhit->energy() > 10.) return true;
+     if (hhit->energy() > 5.) return true;
    }
    return false;
 }
