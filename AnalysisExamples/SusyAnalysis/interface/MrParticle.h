@@ -26,18 +26,25 @@ class MrParticle {
 public:
 
 // constructors
-MrParticle() : Px(0.), Py(0.), Pz(0.), E(0.), Charge(0.),  
+MrParticle() : Px(0.), Py(0.), Pz(0.), E(0.), Ecorfact(1.), Corrected(false), Charge(0.),  
 Vx(0.), Vy(0.), Vz(0.), D0Error(0.), DzError(0.),
 ParticleType(0), ParticleIso(true), ParticleIsoValue(-1.), Hemi(0),
-Pt_tracks(0.), Et_em(0.), Et_had(0.), EffID(0.), EffToBeFake(1.),
-MCParton(0), PID(0), Status(0), Mother1(0), BtagDiscriminator(-10) {};
+NumTracks(0), Pt_tracks(0.), Et_em(0.), Et_had(0.), EffID(0.), EffToBeFake(1.),
+MCParton(0), PID(0), Status(0), Mother1(0), BtagDiscriminator(-100), TauTagDiscriminator(-100) {};
 
-MrParticle(float px, float py, float pz, float e) : Px(px), Py(py), Pz(pz), E(e), Charge(0.),  
+MrParticle(float px, float py, float pz, float e) : Px(px), Py(py), Pz(pz), E(e), 
+Ecorfact(1.), Corrected(false), Charge(0.),  
 Vx(0.), Vy(0.), Vz(0.), D0Error(0.), DzError(0.),
 ParticleType(0), ParticleIso(true), ParticleIsoValue(-1.), Hemi(0),
-Pt_tracks(0.), Et_em(0.), Et_had(0.), EffID(0.), EffToBeFake(1.),
-MCParton(0), PID(0), Status(0), Mother1(0), BtagDiscriminator(-10) {};
+NumTracks(0), Pt_tracks(0.), Et_em(0.), Et_had(0.), EffID(0.), EffToBeFake(1.),
+MCParton(0), PID(0), Status(0), Mother1(0), BtagDiscriminator(-100), TauTagDiscriminator(-100) {};
 
+MrParticle(MrParticle & p) : Px(p.px()), Py(p.py()), Pz(p.pz()), E(p.energy()), 
+Ecorfact(p.ecorfactor()), Corrected(p.isECorrected()), Charge(p.charge()),  
+Vx(p.vx()), Vy(p.vy()), Vz(p.vz()), D0Error(p.d0Error()), DzError(p.dzError()),
+ParticleType(p.particleType()), ParticleIso(p.particleIso()), ParticleIsoValue(p.particleIsoValue()), Hemi(p.hemisphere()),
+NumTracks(p.numTracks()), Pt_tracks(p.pt_tracks()), Et_em(p.et_em()), Et_had(p.et_had()), EffID(p.effID()), EffToBeFake(p.effToBeFake()),
+MCParton(p.partonIndex()), PID(p.pid()), Status(p.status()), Mother1(p.motherIndex()), BtagDiscriminator(p.getBtagDiscriminator()), TauTagDiscriminator(p.getTauTagDiscriminator()) {};
 
 // destructor
 virtual ~MrParticle(){};
@@ -55,6 +62,7 @@ float px() {return Px;}
 float py() {return Py;}
 float pz() {return Pz;}
 float energy() {return E;}
+float ecorfactor() {return Ecorfact;}
 float mass() {return sqrt(E*E-Px*Px-Py*Py-Pz*Pz);}
 float charge() {return Charge;}
 // two-particle invariant mass
@@ -118,6 +126,8 @@ int pid() {return PID;}
 int status() {return Status;}
 // for MC: index in MCData of the mother
 int motherIndex() {return Mother1;}
+// are jet energy corrections applied or not
+bool isECorrected() {return Corrected;}
 
 virtual const PixelMatchGsfElectron* electronCandidate() {
 //                   cout << "Pointer to electron candidate not defined." << endl;
@@ -143,6 +153,7 @@ void setPx(float px) {Px = px;}
 void setPy(float py) {Py = py;}
 void setPz(float pz) {Pz = pz;}
 void setEnergy(float e) {E = e;}
+void setEcorfactor(float ecor) {Ecorfact = ecor;}
 void setCharge(float charge) {Charge = charge;}
 void setVx(float vx) {Vx = vx;}
 void setVy(float vy) {Vy = vy;}
@@ -173,11 +184,28 @@ void setStatus(int stat) {Status = stat;}
 void setMotherIndex(int m1) {Mother1 = m1;} 
 void setBtagDiscriminator(double discri) {BtagDiscriminator = discri;}
 void setTauTagDiscriminator(double discrim) {TauTagDiscriminator = discrim;}
+void setFourVectorToCorrected (bool flag) {
+   if (Corrected == false && flag == true) {
+     E *= Ecorfact; 
+     Px *= Ecorfact; 
+     Py *= Ecorfact; 
+     Pz *= Ecorfact;
+     Corrected = true;
+   } else if (Corrected == true && flag == false) {
+     E = E / Ecorfact; 
+     Px = Px / Ecorfact; 
+     Py = Py / Ecorfact; 
+     Pz = Pz / Ecorfact;
+     Corrected = false;
+  }
+}
 
 private:
 
 // data members
 float Px, Py, Pz, E;
+float Ecorfact;
+bool Corrected;
 float Charge; 
 float Vx, Vy, Vz, D0Error, DzError;
 int ParticleType, ParticleIso;

@@ -22,7 +22,7 @@ ana_photonEtaMax(2.4), ana_photonPtMin1(0.),
 ana_jetEtaMax(5.0), ana_jetPtMin1(20.), ana_minBtagDiscriminator(3.),
 ana_ufoSelMethod(0), 
 ana_ufoTkHitsmin(7), ana_ufoCaloTowEFracmin(0.005), ana_ufodRTrkFromJet(0.6),
-ana_ufoEtaMax(2.4), ana_ufoPtMin1(3.), ana_ufoDRmin(0.3),
+ana_ufoEtaMax(2.4), ana_ufoPtMin1(3.), ana_ufoDRmin(0.3), ana_useCorrectedEnergy(true),
 ana_elecPtMin2(10.), ana_muonPtMin2(10.),ana_tauPtMin2(5.), 
 ana_photonPtMin2(20.), ana_jetPtMin2(30.), ana_ufoPtMin2(10.),
 reco_elecD0ErrorThresh(0.), reco_elecDzErrorThresh(0.),
@@ -97,6 +97,7 @@ myConfig(aConfig), MCData(*(pEvtData->mcData()))
   ana_ufoEtaMax = acceptance_cuts.getParameter<double>("ana_ufoEtaMax") ;
   ana_ufoPtMin1 = acceptance_cuts.getParameter<double>("ana_ufoPtMin1") ;
   ana_ufoDRmin = acceptance_cuts.getParameter<double>("ana_ufoDRmin") ;
+  ana_useCorrectedEnergy = acceptance_cuts.getParameter<bool>("ana_useCorrectedEnergy") ;
   ana_elecPtMin2 = acceptance_cuts.getParameter<double>("ana_elecPtMin2") ;
   ana_muonPtMin2 = acceptance_cuts.getParameter<double>("ana_muonPtMin2") ;
   ana_tauPtMin2 = acceptance_cuts.getParameter<double>("ana_tauPtMin2") ;
@@ -171,6 +172,7 @@ bool RecoProcessor::RecoDriver()
   numElectronsfinalBadShsh = 0;
   numElectronsfinalBadTmat = 0;
   numElectronsMatched = 0;
+  numElectronsIsoMatched = 0;
   numElectronsMatchedBadHOE = 0;
   numElectronsMatchedBadShsh = 0;
   numElectronsMatchedBadTmat = 0;
@@ -184,6 +186,7 @@ bool RecoProcessor::RecoDriver()
   numMuonsfinal = 0;
   numMuonsfinalBad = 0;
   numMuonsMatched = 0;
+  numMuonsIsoMatched = 0;
   numMuonsMatchedBad = 0;
   numTaus = 0;
   numTauNotPrimaryTrk = 0;
@@ -195,6 +198,7 @@ bool RecoProcessor::RecoDriver()
   numTausfinal = 0;
   numTausfinalBad = 0;
   numTausMatched = 0;
+  numTausIsoMatched = 0;
   numTausMatchedBad = 0;
   numPhotons = 0;
   numPhotNotPrimaryTrk = 0;
@@ -1030,6 +1034,55 @@ bool RecoProcessor::RecoDriver()
    
    
   // ******************************************************** 
+  // Apply the Energy corrections
+
+      
+    vector<const JetCorrector*>* pjetCorrectors = EventData->jetCorrectors();
+    
+    for (int i = 0; i < (int) RecoData.size(); i++){
+    
+    // Jet energy corrections
+      int ptype = RecoData[i]->particleType()/10;
+      if (ptype == 5 || ptype == 6){
+      reco::Particle::LorentzVector lv = reco::Particle::LorentzVector(RecoData[i]->px(), RecoData[i]->py(), 
+                           RecoData[i]->pz(), RecoData[i]->energy());
+      float scale = 1.;
+      
+      int pjetCorrectorsSize=pjetCorrectors->size(); // equals to the number of factorial  L2 and L3... LN applied
+      if(pjetCorrectorsSize==2)   // For the moment only L2 and L3 are treated
+      {
+          vector<const JetCorrector *>::const_iterator jcit=pjetCorrectors->begin();
+          float L2scale = (*pjetCorrectors)[0]->correction(lv);
+                                                                                
+          reco::Particle::LorentzVector lvdot = L2scale*lv;
+	  float L3scale = (*pjetCorrectors)[1]->correction(lvdot);
+          scale = L2scale*L3scale;
+      }
+                                                                                
+     // correct for a modified mrjet (where the added piece does not need to be corrected)
+      if (RecoData[i]->pt() - RecoData[i]->jetCandidate()->pt() > 1.0 ) {
+       float newscale = ( RecoData[i]->pt() + RecoData[i]->jetCandidate()->pt()*(scale-1)) / RecoData[i]->pt();
+       scale = newscale;
+      }
+
+      
+      RecoData[i]->setEcorfactor(scale);
+      if (ana_useCorrectedEnergy == true) {
+        RecoData[i]->setFourVectorToCorrected(true);
+      }                            
+ //     }jcit = jetCorrectors.begin()
+ //     else if (ptype == 6){
+ 
+       // special corrections for b-jets           
+      
+      } else if (ptype == 3){
+      // no corrections for taus at the moment (using PF taus in the future)
+      
+      }
+    
+    }
+   
+  // ******************************************************** 
   // Apply the final acceptance cuts
    
     if (DEBUGLVL >= 2){
@@ -1245,7 +1298,13 @@ bool RecoProcessor::RecoDriver()
     
     for (int i = 0; i < (int) RecoData.size(); i++){
       if (RecoData[i]->particleType() == 10){numElectronsfinal++;
-        if (RecoData[i]->partonIndex() >= 0){numElectronsMatched++;}
+        if (RecoData[i]->partonIndex() >= 0){
+          numElectronsMatched++;
+          int indexInMCData = RecoData[i]->partonIndex();
+          if (MCData[indexInMCData]->particleIso() ){
+            numElectronsIsoMatched++;
+          }
+       }
       }
       else if (RecoData[i]->particleType() == 11){numElectronsfinalBadHOE++;
         if (RecoData[i]->partonIndex() >= 0){numElectronsMatchedBadHOE++;}
@@ -1257,13 +1316,25 @@ bool RecoProcessor::RecoDriver()
         if (RecoData[i]->partonIndex() >= 0){numElectronsMatchedBadTmat++;}
       }
       else if (RecoData[i]->particleType() == 20){numMuonsfinal++;
-        if (RecoData[i]->partonIndex() >= 0){numMuonsMatched++;}
+        if (RecoData[i]->partonIndex() >= 0){
+          numMuonsMatched++;
+          int indexInMCData = RecoData[i]->partonIndex();
+          if (MCData[indexInMCData]->particleIso() ){
+            numMuonsIsoMatched++;
+          }
+        }
       }
       else if (RecoData[i]->particleType() == 21){numMuonsfinalBad++;
         if (RecoData[i]->partonIndex() >= 0){numMuonsMatchedBad++;}
       }
       else if (RecoData[i]->particleType() == 30){numTausfinal++;
-        if (RecoData[i]->partonIndex() >= 0){numTausMatched++;}
+        if (RecoData[i]->partonIndex() >= 0){
+          numTausMatched++;
+          int indexInMCData = RecoData[i]->partonIndex();
+          if (MCData[indexInMCData]->particleIso() ){
+            numTausIsoMatched++;
+          }
+        }
       }
       else if (RecoData[i]->particleType() == 31){numTausfinalBad++;
         if (RecoData[i]->partonIndex() >= 0){numTausMatchedBad++;}

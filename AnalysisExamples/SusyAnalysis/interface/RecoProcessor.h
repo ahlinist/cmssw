@@ -95,6 +95,7 @@ virtual int NumElectronsfinalBadHOE(void) {return numElectronsfinalBadHOE; }
 virtual int NumElectronsfinalBadShsh(void) {return numElectronsfinalBadShsh; }
 virtual int NumElectronsfinalBadTmat(void) {return numElectronsfinalBadTmat; }
 virtual int NumElectronsMatched(void) {return numElectronsMatched; }
+virtual int NumElectronsIsoMatched(void) {return numElectronsIsoMatched; }
 virtual int NumElectronsMatchedBadHOE(void) {return numElectronsMatchedBadHOE; }
 virtual int NumElectronsMatchedBadShsh(void) {return numElectronsMatchedBadShsh; }
 virtual int NumElectronsMatchedBadTmat(void) {return numElectronsMatchedBadTmat; }
@@ -108,6 +109,7 @@ virtual int NumMuonsNonIsoBad(void) {return numMuonsNonIsoBad; }
 virtual int NumMuonsfinal(void) {return numMuonsfinal; }
 virtual int NumMuonsfinalBad(void) {return numMuonsfinalBad; }
 virtual int NumMuonsMatched(void) {return numMuonsMatched; }
+virtual int NumMuonsIsoMatched(void) {return numMuonsIsoMatched; }
 virtual int NumMuonsMatchedBad(void) {return numMuonsMatchedBad; }
 virtual int NumTaus(void) {return numTaus; }
 virtual int NumTauNotPrimaryTrk(void) {return numTauNotPrimaryTrk; }
@@ -119,6 +121,7 @@ virtual int NumTausNonIsoBad(void) {return numTausNonIsoBad; }
 virtual int NumTausfinal(void) {return numTausfinal; }
 virtual int NumTausfinalBad(void) {return numTausfinalBad; }
 virtual int NumTausMatched(void) {return numTausMatched; }
+virtual int NumTausIsoMatched(void) {return numTausIsoMatched; }
 virtual int NumTausMatchedBad(void) {return numTausMatchedBad; }
 virtual int NumPhotons(void) {return numPhotons; }
 virtual int NumPhotNotPrimaryTrk(void) {return numPhotNotPrimaryTrk; }
@@ -227,6 +230,7 @@ private:
   float ana_ufoEtaMax;
   float ana_ufoPtMin1;
   float ana_ufoDRmin;
+  bool ana_useCorrectedEnergy;
   float ana_elecPtMin2;
   float ana_muonPtMin2;
   float ana_tauPtMin2;
@@ -290,6 +294,7 @@ private:
   int numElectronsfinalBadShsh;
   int numElectronsfinalBadTmat;
   int numElectronsMatched;
+  int numElectronsIsoMatched;
   int numElectronsMatchedBadHOE;
   int numElectronsMatchedBadShsh;
   int numElectronsMatchedBadTmat;
@@ -303,6 +308,7 @@ private:
   int numMuonsfinal;
   int numMuonsfinalBad;
   int numMuonsMatched;
+  int numMuonsIsoMatched;
   int numMuonsMatchedBad;
   int numTaus;
   int numTauNotPrimaryTrk;
@@ -314,6 +320,7 @@ private:
   int numTausfinal;
   int numTausfinalBad;
   int numTausMatched;
+  int numTausIsoMatched;
   int numTausMatchedBad;
   int numPhotons;
   int numPhotNotPrimaryTrk;

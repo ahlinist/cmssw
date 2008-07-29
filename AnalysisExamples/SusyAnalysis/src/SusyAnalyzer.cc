@@ -34,6 +34,9 @@ SusyAnalyzer::SusyAnalyzer(const edm::ParameterSet& iConfig)
   m_tracksSrc  = iConfig.getParameter<string>("tracks");
   m_vertexSrc  = iConfig.getParameter<string>("vertices");
   m_jetsSrc    = iConfig.getParameter<string>("jets");
+  //m_jetsCorrectionService    = iConfig.getParameter<string>("JetCorrectionService");
+  m_jetsCorrectionL2RelativeService    = iConfig.getParameter<string>("JetCorrectionL2RelativeService");
+  m_jetsCorrectionL3AbsoluteService    = iConfig.getParameter<string>("JetCorrectionL3AbsoluteService");
   m_jetsgenSrc = iConfig.getParameter<string>("jetsgen");
   m_calotowers = iConfig.getParameter<string>("calotowers");
   m_photonSrc  = iConfig.getParameter<string>("photons");
@@ -106,6 +109,12 @@ void SusyAnalyzer::beginJob( const edm::EventSetup& )
 
    // initialize histogram output file
    hOutputFile   = new TFile( fOutputFileName.c_str(), "RECREATE" ) ;
+                                                                                                                                   
+   // create histograms with stats
+   hEventStats= new TH1I("hEventStats","hEventStats",17,0,17); //17 bins
+   hElecMuonStats= new TH1I("hElecMuonStats","hElecMuonStats",10,0,10);//10 bins
+   hPhotonJetStats= new TH1I("hPhotonJetStats","hPhotonJetStats",10,0,10);//10 bins
+   hMiscObjStats= new TH1I("hMiscObjStats","hMiscObjStats",78,0,78); // 78 bins
 
    // instantiate user analysis class (incl. histogram booking)
    myUserAnalysis = new UserAnalysis(&myConfig);
@@ -113,17 +122,18 @@ void SusyAnalyzer::beginJob( const edm::EventSetup& )
 
    // initialize global counters 
    numTotL1BitsBeforeCuts.clear();
-   for(int i=0; i<120; i++) {
+   for(int i=0; i<130; i++) {
      numTotL1BitsBeforeCuts.push_back(0);
    }
 
    numTotHltBitsBeforeCuts.clear();
-   for(int i=0; i<90; i++) {
+   for(int i=0; i<130; i++) {
      numTotHltBitsBeforeCuts.push_back(0);
    }
    numTotEventsAfterCuts = 0;
    
    numTotEvt = 0;
+   numTotMCReject = 0;
    numTotEvtExceptCaught = 0;
    numTotEvtNoTrigger = 0;
    numTotEvtNoReco = 0;
@@ -143,7 +153,13 @@ void SusyAnalyzer::beginJob( const edm::EventSetup& )
    numTotMCTau = 0;
    numTotMCPhot = 0;
    numTotMCJet = 0;
-   
+                                                                                                                                   
+   numTotMCElecBigEta = 0;
+   numTotMCMuonBigEta = 0;
+   numTotMCTauBigEta = 0;
+   numTotMCPhotBigEta = 0;
+   numTotMCJetBigEta = 0;
+
    numTotNotPrimaryTrk = 0;
    numTotNotClean = 0;
    numTotDuplicate = 0;
@@ -165,6 +181,7 @@ void SusyAnalyzer::beginJob( const edm::EventSetup& )
    numTotElectronsfinalBadShsh = 0;  
    numTotElectronsfinalBadTmat = 0;  
    numTotElectronsMatched = 0;
+   numTotElectronsIsoMatched = 0;
    numTotElectronsMatchedBadHOE = 0;
    numTotElectronsMatchedBadShsh = 0;
    numTotElectronsMatchedBadTmat = 0;
@@ -178,6 +195,7 @@ void SusyAnalyzer::beginJob( const edm::EventSetup& )
    numTotMuonsfinal = 0;  
    numTotMuonsfinalBad = 0;  
    numTotMuonsMatched = 0;
+   numTotMuonsIsoMatched = 0;
    numTotMuonsMatchedBad = 0;
    numTotTaus = 0;
    numTotTauNotPrimaryTrk = 0;
@@ -189,6 +207,7 @@ void SusyAnalyzer::beginJob( const edm::EventSetup& )
    numTotTausfinal = 0;
    numTotTausfinalBad = 0;
    numTotTausMatched = 0;
+   numTotTausIsoMatched = 0;
    numTotTausMatchedBad = 0;
    numTotPhotons = 0;  
    numTotPhotNotPrimaryTrk = 0;
@@ -245,11 +264,15 @@ void SusyAnalyzer::endJob()
   
    PrintStatistics();
    cout << " in SusyAnalyzer::endJob" << endl;
+
+   SetHistoWithStats(); // set event statistics histos (will be saved inside  the output root file)	
    
    // delete UserAnalysis, which prints its statistics
    myUserAnalysis->setNtotEvtProc(numTotEvt);
    delete myUserAnalysis; 
    
+
+
    // output the histograms to file
    hOutputFile->Write() ;
    hOutputFile->Close() ;
@@ -389,10 +412,49 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   // Save the MCData in the Event data
   EventData->setMCData(&MCData);
 
-   // get gen jet collection
-   // Handle<GenJetCollection> jetsgen;
-   // iEvent.getByLabel(m_jetsgenSrc, jetsgen);
-  
+/*
+  //Save the cross section and the event weight (CSA07 only!)
+  Handle<int> genProcessID;
+  iEvent.getByLabel( "genEventProcID", genProcessID );
+  double processID = *genProcessID;
+  double cs = -1;
+  if (processID != 4) { 
+    Handle<double> genCrossSect;
+    iEvent.getByLabel( "genEventRunInfo", "PreCalculatedCrossSection", genCrossSect); 
+    cs = *genCrossSect;
+  }
+  Handle< double> weightHandle;
+  iEvent.getByLabel ("csaweightproducer","weight", weightHandle);
+  double weight = * weightHandle;
+  EventData->setCrossSection(cs);
+  EventData->setEventWeight(weight);
+*/
+
+  // make the GenData
+  // first loop over the electrons and muons from the MCData 
+  for (int i = 0; i < (int) MCData.size(); i++) { 
+    if((abs(MCData[i]->pid()) == 11 || abs(MCData[i]->pid()) == 13) && MCData[i]->status() == 1) { 
+      MrParticle* part = new MrParticle(*MCData[i]);
+      part->setPartonIndex(i);
+      GenData.push_back(part);
+    }
+  }   
+  // then add the gen jet collection
+  Handle<GenJetCollection> jetsgen;
+  iEvent.getByLabel(m_jetsgenSrc, jetsgen);
+  for (unsigned int j = 0; j < jetsgen->size(); j++) {
+
+      MrJet* part = new MrJet((*jetsgen)[j].px(),
+           (*jetsgen)[j].py(),(*jetsgen)[j].pz(),(*jetsgen)[j].energy(), &(*jetsgen)[j],0);
+
+      part->setPartonIndex(-1);
+      GenData.push_back(part);
+   
+  }
+
+  // Save the GenData in the Event data
+  EventData->setGenData(&GenData);
+
 
    // handle MC and make MC printout
   
@@ -408,6 +470,7 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     if (DEBUGLVL >= 1){
       cout << " MC Event rejected *** " << endl;
     }
+    numTotMCReject++;
     return;
   }
   
@@ -416,8 +479,16 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   int NumMCTauTrue = myMCProcessor->NumMCTauTrue();
   int NumMCPhotTrue = myMCProcessor->NumMCPhotTrue();
   int NumMCJetTrue = myMCProcessor->NumMCJetTrue();
-  
+                                                                                                                                        
+  int NumMCElecBigEta = myMCProcessor->NumMCElecBigEta();
+  int NumMCMuonBigEta = myMCProcessor->NumMCMuonBigEta();
+  int NumMCTauBigEta = myMCProcessor->NumMCTauBigEta();
+  int NumMCPhotBigEta = myMCProcessor->NumMCPhotBigEta();
+  int NumMCJetBigEta = myMCProcessor->NumMCJetBigEta();
+
   delete myMCProcessor;
+
+
      
   // ******************************************************** 
   // Input the Trigger data and check whether the event is accepted
@@ -461,8 +532,8 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   }
   else {  
    for(unsigned int i=0; i< trh->size(); i++) {
-     hltbits.push_back((*trh)[i].accept());
-     if((*trh)[i].accept()) numTotHltBitsBeforeCuts[i]++;
+     hltbits.push_back(trh->accept(i));
+     if(trh->accept(i)) numTotHltBitsBeforeCuts[i]++;
    }
   }
   EventData->setHltBits(hltbits);
@@ -510,17 +581,24 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
   for (unsigned int j = 0; j < electrons->size(); j++)
   {
+
+
+ 
+
    // set as energy the energy of the supercluster; and as momentum
    // the momentum of the track at closest approach to vertex, renormalized 
    // to the energy of the supercluster
-   float elenergy =((*electrons)[j].superCluster())->energy();
-   float elpx = (*electrons)[j].px() * elenergy / (*electrons)[j].p();
-   float elpy = (*electrons)[j].py() * elenergy / (*electrons)[j].p();
-   float elpz = (*electrons)[j].pz() * elenergy / (*electrons)[j].p();
-   //  mySuperClusterXposition = ((*electrons)[j].superCluster())->x();
-   
-   MrElectron* recopart = new MrElectron(elpx, elpy, elpz, elenergy, &(*electrons)[j]);
+//   float elenergy =((*electrons)[j].superCluster())->energy();
+//   float elpx = (*electrons)[j].px() * elenergy / (*electrons)[j].p();
+//   float elpy = (*electrons)[j].py() * elenergy / (*electrons)[j].p();
+//   float elpz = (*electrons)[j].pz() * elenergy / (*electrons)[j].p();
+//   MrElectron* recopart = new MrElectron(elpx, elpy, elpz, elenergy, &(*electrons)[j]);
+
   
+// better : use weighted supercluster/gsftrack energy + egamma energy scale correction 
+  
+   MrElectron* recopart = new MrElectron((*electrons)[j].px(),(*electrons)[j].py(), (*electrons)[j].pz(), (*electrons)[j].energy(), &(*electrons)[j]);
+ 
    RecoData.push_back(recopart);
 
   
@@ -586,6 +664,7 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
    Handle<CaloJetCollection> jets;
    iEvent.getByLabel(m_jetsSrc, jets);
 
+
    // collect information for b-tagging
    Handle<JetTagCollection> jetsAndTracks;
    iEvent.getByLabel(m_bjettag,jetsAndTracks);
@@ -593,8 +672,8 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
    const JetTag* jetTag = NULL;
     
    double EPSILON_BT = 0.00001;
-   double btagdiscriminator = -10;
-   double tautagdiscriminator = -10;
+   double btagdiscriminator = -100;
+   double tautagdiscriminator = -100;
 
   for (unsigned int j = 0; j < jets->size(); j++)
   {
@@ -690,6 +769,13 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
      }
    }
    
+  // get jet corrections
+   const JetCorrector* jetCorrectorL2 = JetCorrector::getJetCorrector (m_jetsCorrectionL2RelativeService, iSetup);
+   const JetCorrector* jetCorrectorL3 = JetCorrector::getJetCorrector (m_jetsCorrectionL3AbsoluteService, iSetup);
+   vector<const JetCorrector*> jetCorrectors;
+   jetCorrectors.push_back(jetCorrectorL2);
+   jetCorrectors.push_back(jetCorrectorL3);
+
    // Save the pointers to vertex, track and calotower collections in MrEvent
    
 //   const TrackCollection * tc;
@@ -699,6 +785,7 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
    EventData->setCaloTowerCollection(CaloTowerData); 
    EventData->setClusterShapeBarrelCollection(clusterShapeBarrelData);
    EventData->setClusterShapeEndcapCollection(clusterShapeEndcapData);
+   EventData->setJetCorrectors(&jetCorrectors);
 
 
    // make printout of candidates, etc.
@@ -771,12 +858,7 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
   // ******************************************************** 
   // Compute efficiencies and fake rates 
-   
-   myEffProcessor = new EffProcessor(&myConfig);
-   myEffProcessor->SetDebug(DEBUGLVL);
-   
-   myEffProcessor->EffDriver(EventData);
-   
+  
 
   // ******************************************************** 
   // Recontruct and match the hemispheres 
@@ -813,6 +895,12 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   numTotMCTau += NumMCTauTrue;
   numTotMCPhot += NumMCPhotTrue;
   numTotMCJet += NumMCJetTrue;
+                                                                                                                                        
+  numTotMCElecBigEta += NumMCElecBigEta;
+  numTotMCMuonBigEta += NumMCMuonBigEta;
+  numTotMCTauBigEta += NumMCTauBigEta;
+  numTotMCPhotBigEta += NumMCPhotBigEta;
+  numTotMCJetBigEta += NumMCJetBigEta;
 
   numTotNotPrimaryTrk += myRecoProcessor->NumNotPrimaryTrk();
   numTotNotClean += myRecoProcessor->NumNotClean();
@@ -835,6 +923,7 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   numTotElectronsfinalBadShsh += myRecoProcessor->NumElectronsfinalBadShsh();  
   numTotElectronsfinalBadTmat += myRecoProcessor->NumElectronsfinalBadTmat();  
   numTotElectronsMatched += myRecoProcessor->NumElectronsMatched();
+  numTotElectronsIsoMatched += myRecoProcessor->NumElectronsIsoMatched();
   numTotElectronsMatchedBadHOE += myRecoProcessor->NumElectronsMatchedBadHOE();
   numTotElectronsMatchedBadShsh += myRecoProcessor->NumElectronsMatchedBadShsh();
   numTotElectronsMatchedBadTmat += myRecoProcessor->NumElectronsMatchedBadTmat();
@@ -848,6 +937,7 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   numTotMuonsfinal += myRecoProcessor->NumMuonsfinal();  
   numTotMuonsfinalBad += myRecoProcessor->NumMuonsfinalBad();  
   numTotMuonsMatched += myRecoProcessor->NumMuonsMatched();
+  numTotMuonsIsoMatched += myRecoProcessor->NumMuonsIsoMatched();
   numTotMuonsMatchedBad += myRecoProcessor->NumMuonsMatchedBad();
   numTotTaus += myRecoProcessor->NumTaus();  
   numTotTauNotPrimaryTrk += myRecoProcessor->NumTauNotPrimaryTrk();
@@ -859,6 +949,7 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   numTotTausfinal += myRecoProcessor->NumTausfinal();  
   numTotTausfinalBad += myRecoProcessor->NumTausfinalBad();  
   numTotTausMatched += myRecoProcessor->NumTausMatched();
+  numTotTausIsoMatched += myRecoProcessor->NumTausIsoMatched();
   numTotTausMatchedBad += myRecoProcessor->NumTausMatchedBad();
   numTotPhotons += myRecoProcessor->NumPhotons();  
   numTotPhotNotPrimaryTrk += myRecoProcessor->NumPhotNotPrimaryTrk();
@@ -1039,6 +1130,7 @@ void SusyAnalyzer::PrintAccCuts()
   float ana_ufoEtaMax = acceptance_cuts.getParameter<double>("ana_ufoEtaMax") ;
   float ana_ufoPtMin1 = acceptance_cuts.getParameter<double>("ana_ufoPtMin1") ;
   float ana_ufoDRmin = acceptance_cuts.getParameter<double>("ana_ufoDRmin") ;
+  bool ana_useCorrectedEnergy = acceptance_cuts.getParameter<bool>("ana_useCorrectedEnergy") ;
   float ana_elecPtMin2 = acceptance_cuts.getParameter<double>("ana_elecPtMin2") ;
   float ana_muonPtMin2 = acceptance_cuts.getParameter<double>("ana_muonPtMin2") ;
   float ana_tauPtMin2 = acceptance_cuts.getParameter<double>("ana_tauPtMin2") ;
@@ -1074,6 +1166,10 @@ void SusyAnalyzer::PrintAccCuts()
   cout << "  Minimum DeltaR for UFOs in jets = " << ana_ufoDRmin << endl;
   cout << endl;
   cout << "Final acceptance cuts for objects: " << endl;
+  cout << "  Using corrected energy          = ";
+  if (ana_useCorrectedEnergy){cout << "true";}
+  else {cout << "false";}
+  cout << endl;
   cout << "  Minimum Pt for electrons, final = " << ana_elecPtMin2 << endl;
   cout << "  Minimum Pt for muons, final     = " << ana_muonPtMin2 << endl;
   cout << "  Minimum Pt for taus, final      = " << ana_tauPtMin2 << endl;
@@ -1504,7 +1600,8 @@ void SusyAnalyzer::PrintStatistics(void)
  
  cout << endl;
  cout << "Total number of events processed = " << numTotEvt << endl;
- int numTotEvtReject = numTotEvtExceptCaught;
+ numTotEvtReject = numTotEvtExceptCaught;
+ numTotEvtReject += numTotMCReject;
  if (rej_NoTriggerData){numTotEvtReject += numTotEvtNoTrigger;}
  if (rej_MissingRecoData){numTotEvtReject += numTotEvtNoReco;}
  if (rej_MissingTrackData){numTotEvtReject += numTotEvtNoTracks;}
@@ -1521,6 +1618,8 @@ void SusyAnalyzer::PrintStatistics(void)
       << numTotEvt-numTotEvtReject << endl;
  cout << "   events rejected (total)          = " << numTotEvtReject
       << "  = " << 100.*(float)numTotEvtReject / (float)numTotEvt << " %" << endl;
+ cout << "    rejected as no MC data          = " << numTotMCReject 
+      << "  = " << 100.*(float)numTotMCReject / (float)numTotEvt  << "  % *****" << endl;
  cout << "    rejected as exception           = " << numTotEvtExceptCaught 
       << "  = " << 100.*(float)numTotEvtExceptCaught / (float)numTotEvt  << "  % *****" << endl;
  cout << "    without trigger                 = " << numTotEvtNoTrigger
@@ -1697,22 +1796,22 @@ void SusyAnalyzer::PrintStatistics(void)
  
  cout << endl;
  cout << "Efficiency for MC truth Objects within final acceptance"
-      << " (=matched/MC):" << endl;
+      << " (=Iso matched/Iso MC):" << endl;
  cout << "Total number MC electrons = " << numTotMCElec; 
  if (numTotMCElec > 0){
-  cout << "  = " << 100.*(float)numTotElectronsMatched / (float)numTotMCElec; 
+  cout << "  = " << 100.*(float)numTotElectronsIsoMatched / (float)numTotMCElec; 
   cout << " % efficiency";
  }
  cout << endl;
  cout << "Total number MC muons     = " << numTotMCMuon; 
  if (numTotMCMuon > 0){
-  cout << "  = " << 100.*(float)numTotMuonsMatched / (float)numTotMCMuon; 
+  cout << "  = " << 100.*(float)numTotMuonsIsoMatched / (float)numTotMCMuon; 
   cout << " % efficiency";
  }
  cout << endl;
  cout << "Total number MC taus      = " << numTotMCTau; 
  if (numTotMCTau > 0){
-  cout << "  = " << 100.*(float)numTotTausMatched / (float)numTotMCTau; 
+  cout << "  = " << 100.*(float)numTotTausIsoMatched / (float)numTotMCTau; 
   cout << " % efficiency";
  }
  cout << endl;
@@ -1840,6 +1939,140 @@ void SusyAnalyzer::PrintStatistics(void)
 
 //------------------------------------------------------------------------------
 
+void SusyAnalyzer::SetHistoWithStats()
+{
+   hEventStats->SetFillColor(kRed);hEventStats->SetDrawOption("hbar");
+   hEventStats->GetXaxis()->SetBinLabel(1,"TotEvts");hEventStats->SetBinContent(1,numTotEvt);
+   hEventStats->GetXaxis()->SetBinLabel(2,"EventsAfterCuts");hEventStats->SetBinContent(2,numTotEventsAfterCuts);
+   hEventStats->GetXaxis()->SetBinLabel(3,"EvtReject");hEventStats->SetBinContent(3,numTotEvtReject);
+   hEventStats->GetXaxis()->SetBinLabel(4,"MCReject");hEventStats->SetBinContent(4,numTotMCReject);
+   hEventStats->GetXaxis()->SetBinLabel(5,"EvtExceptCaught");hEventStats->SetBinContent(5,numTotEvtExceptCaught);
+   hEventStats->GetXaxis()->SetBinLabel(6,"EvtNoTrigger");hEventStats->SetBinContent(6,numTotEvtNoTrigger);
+   hEventStats->GetXaxis()->SetBinLabel(7,"EvtNoReco");hEventStats->SetBinContent(7,numTotEvtNoReco);
+   hEventStats->GetXaxis()->SetBinLabel(8,"EvtNoTracks");hEventStats->SetBinContent(8,numTotEvtNoTracks);
+   hEventStats->GetXaxis()->SetBinLabel(9,"EvtNoCalo");hEventStats->SetBinContent(9,numTotEvtNoCalo);
+   hEventStats->GetXaxis()->SetBinLabel(10,"EvtEmpty");hEventStats->SetBinContent(10,numTotEvtEmpty);
+   hEventStats->GetXaxis()->SetBinLabel(11,"EvtNoPrimary");hEventStats->SetBinContent(11,numTotEvtNoPrimary);
+   hEventStats->GetXaxis()->SetBinLabel(12,"EvtBadHardJet");hEventStats->SetBinContent(12,numTotEvtBadHardJet);
+   hEventStats->GetXaxis()->SetBinLabel(13,"EvtCleanEmpty");hEventStats->SetBinContent(13,numTotEvtCleanEmpty);
+   hEventStats->GetXaxis()->SetBinLabel(14,"EvtFinalEmpty");hEventStats->SetBinContent(14,numTotEvtFinalEmpty);
+   hEventStats->GetXaxis()->SetBinLabel(15,"EvtBadNoisy");hEventStats->SetBinContent(15,numTotEvtBadNoisy);
+   hEventStats->GetXaxis()->SetBinLabel(16,"EvtBadMET");hEventStats->SetBinContent(16,numTotEvtBadMET);
+   hEventStats->GetXaxis()->SetBinLabel(17,"EvtBadHemi");hEventStats->SetBinContent(17,numTotEvtBadHemi);
+                                                                                                                                        
+   hElecMuonStats->SetFillColor(kBlue);hElecMuonStats->SetDrawOption("hbar");
+   hElecMuonStats->GetXaxis()->SetBinLabel(1,"Electrons");hElecMuonStats->SetBinContent(1,numTotElectrons);
+   hElecMuonStats->GetXaxis()->SetBinLabel(2,"Electronsfinal");hElecMuonStats->SetBinContent(2,numTotElectronsfinal);
+   hElecMuonStats->GetXaxis()->SetBinLabel(3,"ElectronsMatched");hElecMuonStats->SetBinContent(3,numTotElectronsMatched);
+   hElecMuonStats->GetXaxis()->SetBinLabel(4,"MCElec");hElecMuonStats->SetBinContent(4,numTotMCElec);
+   hElecMuonStats->GetXaxis()->SetBinLabel(5,"MCElecBigEta");hElecMuonStats->SetBinContent(5,numTotMCElecBigEta);
+   hElecMuonStats->GetXaxis()->SetBinLabel(6,"Muons");hElecMuonStats->SetBinContent(6,numTotMuons);
+   hElecMuonStats->GetXaxis()->SetBinLabel(7,"Muonsfinal");hElecMuonStats->SetBinContent(7,numTotMuonsfinal);
+   hElecMuonStats->GetXaxis()->SetBinLabel(8,"MuonsMatched");hElecMuonStats->SetBinContent(8,numTotMuonsMatched);
+   hElecMuonStats->GetXaxis()->SetBinLabel(9,"MCMuon");hElecMuonStats->SetBinContent(9,numTotMCMuon);
+   hElecMuonStats->GetXaxis()->SetBinLabel(10,"MCMuonBigEta");hElecMuonStats->SetBinContent(10,numTotMCMuonBigEta);
+                                                                                                                                        
+                                                                                                                                        
+   hPhotonJetStats->SetFillColor(kBlack);hPhotonJetStats->SetDrawOption("hbar");
+   hPhotonJetStats->GetXaxis()->SetBinLabel(1,"Photons");hPhotonJetStats->SetBinContent(1,numTotPhotons);
+   hPhotonJetStats->GetXaxis()->SetBinLabel(2,"Photonsfinal");hPhotonJetStats->SetBinContent(2,numTotPhotonsfinal);
+   hPhotonJetStats->GetXaxis()->SetBinLabel(3,"PhotonsMatched");hPhotonJetStats->SetBinContent(3,numTotPhotonsMatched);
+   hPhotonJetStats->GetXaxis()->SetBinLabel(4,"MCPhot");hPhotonJetStats->SetBinContent(4,numTotMCPhot);
+   hPhotonJetStats->GetXaxis()->SetBinLabel(5,"MCPhotBigEta");hPhotonJetStats->SetBinContent(5,numTotMCPhotBigEta);
+   hPhotonJetStats->GetXaxis()->SetBinLabel(6,"Jets");hPhotonJetStats->SetBinContent(6,numTotJets);
+   hPhotonJetStats->GetXaxis()->SetBinLabel(7,"Jetsfinal");hPhotonJetStats->SetBinContent(7,numTotJetsfinal);
+   hPhotonJetStats->GetXaxis()->SetBinLabel(8,"JetsMatched");hPhotonJetStats->SetBinContent(8,numTotJetsMatched);
+   hPhotonJetStats->GetXaxis()->SetBinLabel(9,"MCJet");hPhotonJetStats->SetBinContent(9,numTotMCJet);
+   hPhotonJetStats->GetXaxis()->SetBinLabel(10,"MCJetBigEta");hPhotonJetStats->SetBinContent(10,numTotMCJetBigEta);
+                                                                                                                                        
+                                                                                                                                        
+                                                                                                                                        
+   hMiscObjStats->SetFillColor(kGreen);hMiscObjStats->SetDrawOption("hbar");
+   hMiscObjStats->GetXaxis()->SetBinLabel(1,"NotPrimaryTrk");hMiscObjStats->SetBinContent(1,numTotNotPrimaryTrk);
+   hMiscObjStats->GetXaxis()->SetBinLabel(2,"NotClean");hMiscObjStats->SetBinContent(2,numTotNotClean);
+   hMiscObjStats->GetXaxis()->SetBinLabel(3,"Duplicate");hMiscObjStats->SetBinContent(3,numTotDuplicate);
+   hMiscObjStats->GetXaxis()->SetBinLabel(4,"ElecNotPrimaryTrk");hMiscObjStats->SetBinContent(4,numTotElecNotPrimaryTrk);
+   hMiscObjStats->GetXaxis()->SetBinLabel(5,"ElecNotCleanHOE");hMiscObjStats->SetBinContent(5,numTotElecNotCleanHOE);
+   hMiscObjStats->GetXaxis()->SetBinLabel(6,"ElecNotCleanShsh");hMiscObjStats->SetBinContent(6,numTotElecNotCleanShsh);
+   hMiscObjStats->GetXaxis()->SetBinLabel(7,"ElecNotCleanTmat");hMiscObjStats->SetBinContent(7,numTotElecNotCleanTmat);
+   hMiscObjStats->GetXaxis()->SetBinLabel(8,"ElecDupl");hMiscObjStats->SetBinContent(8,numTotElecDupl);
+   hMiscObjStats->GetXaxis()->SetBinLabel(9,"ElecDuplBadHOE");hMiscObjStats->SetBinContent(9,numTotElecDuplBadHOE);
+   hMiscObjStats->GetXaxis()->SetBinLabel(10,"ElecDuplBadShsh");hMiscObjStats->SetBinContent(10,numTotElecDuplBadShsh);
+   hMiscObjStats->GetXaxis()->SetBinLabel(11,"ElecDuplBadTmat");hMiscObjStats->SetBinContent(11,numTotElecDuplBadTmat);
+   hMiscObjStats->GetXaxis()->SetBinLabel(12,"ElectronsNonIso");hMiscObjStats->SetBinContent(12,numTotElectronsNonIso);
+   hMiscObjStats->GetXaxis()->SetBinLabel(13,"ElectronsNonIsoBadHOE");hMiscObjStats->SetBinContent(13,numTotElectronsNonIsoBadHOE);
+   hMiscObjStats->GetXaxis()->SetBinLabel(14,"ElectronsNonIsoBadShsh");hMiscObjStats->SetBinContent(14,numTotElectronsNonIsoBadShsh);
+   hMiscObjStats->GetXaxis()->SetBinLabel(15,"ElectronsNonIsoBadTmat");hMiscObjStats->SetBinContent(15,numTotElectronsNonIsoBadTmat);
+   hMiscObjStats->GetXaxis()->SetBinLabel(16,"ElectronsfinalBadHOE");hMiscObjStats->SetBinContent(16,numTotElectronsfinalBadHOE);
+   hMiscObjStats->GetXaxis()->SetBinLabel(17,"ElectronsfinalBadShsh");hMiscObjStats->SetBinContent(17,numTotElectronsfinalBadShsh);
+   hMiscObjStats->GetXaxis()->SetBinLabel(18,"ElectronsfinalBadTmat");hMiscObjStats->SetBinContent(18,numTotElectronsfinalBadTmat);
+   hMiscObjStats->GetXaxis()->SetBinLabel(19,"ElectronsMatchedBadHOE");hMiscObjStats->SetBinContent(19,numTotElectronsMatchedBadHOE);
+   hMiscObjStats->GetXaxis()->SetBinLabel(20,"ElectronsMatchedBadShsh");hMiscObjStats->SetBinContent(20,numTotElectronsMatchedBadShsh);
+   hMiscObjStats->GetXaxis()->SetBinLabel(21,"ElectronsMatchedBadTmat");hMiscObjStats->SetBinContent(21,numTotElectronsMatchedBadTmat);
+   hMiscObjStats->GetXaxis()->SetBinLabel(22,"MuonNotPrimaryTrk");hMiscObjStats->SetBinContent(22,numTotMuonNotPrimaryTrk);
+   hMiscObjStats->GetXaxis()->SetBinLabel(23,"MuonNotClean");hMiscObjStats->SetBinContent(23,numTotMuonNotClean);
+   hMiscObjStats->GetXaxis()->SetBinLabel(24,"MuonDupl");hMiscObjStats->SetBinContent(24,numTotMuonDupl);
+   hMiscObjStats->GetXaxis()->SetBinLabel(25,"MuonDuplBad");hMiscObjStats->SetBinContent(25,numTotMuonDuplBad);
+   hMiscObjStats->GetXaxis()->SetBinLabel(26,"MuonsNonIso");hMiscObjStats->SetBinContent(26,numTotMuonsNonIso);
+   hMiscObjStats->GetXaxis()->SetBinLabel(27,"MuonsNonIsoBad");hMiscObjStats->SetBinContent(27,numTotMuonsNonIsoBad);
+   hMiscObjStats->GetXaxis()->SetBinLabel(28,"MuonsfinalBad");hMiscObjStats->SetBinContent(28,numTotMuonsfinalBad);
+   hMiscObjStats->GetXaxis()->SetBinLabel(29,"MuonsMatchedBad");hMiscObjStats->SetBinContent(29,numTotMuonsMatchedBad);
+   hMiscObjStats->GetXaxis()->SetBinLabel(30,"Taus");hMiscObjStats->SetBinContent(30,numTotTaus);
+   hMiscObjStats->GetXaxis()->SetBinLabel(31,"Tausfinal");hMiscObjStats->SetBinContent(31,numTotTausfinal);
+   hMiscObjStats->GetXaxis()->SetBinLabel(32,"TausMatched");hMiscObjStats->SetBinContent(32,numTotTausMatched);
+   hMiscObjStats->GetXaxis()->SetBinLabel(33,"MCTau");hMiscObjStats->SetBinContent(33,numTotMCTau);
+   hMiscObjStats->GetXaxis()->SetBinLabel(34,"MCTauBigEta");hMiscObjStats->SetBinContent(34,numTotMCTauBigEta);
+   hMiscObjStats->GetXaxis()->SetBinLabel(35,"TauNotPrimaryTrk");hMiscObjStats->SetBinContent(35,numTotTauNotPrimaryTrk);
+   hMiscObjStats->GetXaxis()->SetBinLabel(36,"TauNotClean");hMiscObjStats->SetBinContent(36,numTotTauNotClean);
+   hMiscObjStats->GetXaxis()->SetBinLabel(37,"TauDupl");hMiscObjStats->SetBinContent(37,numTotTauDupl);
+   hMiscObjStats->GetXaxis()->SetBinLabel(38,"TauDuplBad");hMiscObjStats->SetBinContent(38,numTotTauDuplBad);
+   hMiscObjStats->GetXaxis()->SetBinLabel(39,"TausNonIso");hMiscObjStats->SetBinContent(39,numTotTausNonIso);
+   hMiscObjStats->GetXaxis()->SetBinLabel(40,"TausNonIsoBad");hMiscObjStats->SetBinContent(40,numTotTausNonIsoBad);
+   hMiscObjStats->GetXaxis()->SetBinLabel(41,"TausfinalBad");hMiscObjStats->SetBinContent(41,numTotTausfinalBad);
+   hMiscObjStats->GetXaxis()->SetBinLabel(42,"TausMatchedBad");hMiscObjStats->SetBinContent(42,numTotTausMatchedBad);
+   hMiscObjStats->GetXaxis()->SetBinLabel(43,"PhotNotPrimaryTrk");hMiscObjStats->SetBinContent(43,numTotPhotNotPrimaryTrk);
+   hMiscObjStats->GetXaxis()->SetBinLabel(44,"PhotNotCleanHOE");hMiscObjStats->SetBinContent(44,numTotPhotNotCleanHOE);
+   hMiscObjStats->GetXaxis()->SetBinLabel(45,"PhotNotCleanShsh");hMiscObjStats->SetBinContent(45,numTotPhotNotCleanShsh);
+   hMiscObjStats->GetXaxis()->SetBinLabel(46,"PhotDupl");hMiscObjStats->SetBinContent(46,numTotPhotDupl);
+   hMiscObjStats->GetXaxis()->SetBinLabel(47,"PhotDuplBadHOE");hMiscObjStats->SetBinContent(47,numTotPhotDuplBadHOE);
+   hMiscObjStats->GetXaxis()->SetBinLabel(48,"PhotDuplBadShsh");hMiscObjStats->SetBinContent(48,numTotPhotDuplBadShsh);
+   hMiscObjStats->GetXaxis()->SetBinLabel(49,"PhotonsNonIso");hMiscObjStats->SetBinContent(49,numTotPhotonsNonIso);
+   hMiscObjStats->GetXaxis()->SetBinLabel(50,"PhotonsNonIsoBadHOE");hMiscObjStats->SetBinContent(50,numTotPhotonsNonIsoBadHOE);
+   hMiscObjStats->GetXaxis()->SetBinLabel(51,"PhotonsNonIsoBadShsh");hMiscObjStats->SetBinContent(51,numTotPhotonsNonIsoBadShsh);
+   hMiscObjStats->GetXaxis()->SetBinLabel(52,"PhotonsfinalBadHOE");hMiscObjStats->SetBinContent(52,numTotPhotonsfinalBadHOE);
+   hMiscObjStats->GetXaxis()->SetBinLabel(53,"PhotonsfinalBadShsh");hMiscObjStats->SetBinContent(53,numTotPhotonsfinalBadShsh);
+   hMiscObjStats->GetXaxis()->SetBinLabel(54,"PhotonsMatchedBadHOE");hMiscObjStats->SetBinContent(54,numTotPhotonsMatchedBadHOE);
+   hMiscObjStats->GetXaxis()->SetBinLabel(55,"PhotonsMatchedBadShsh");hMiscObjStats->SetBinContent(55,numTotPhotonsMatchedBadShsh);
+   hMiscObjStats->GetXaxis()->SetBinLabel(56,"JetNotPrimaryTrk");hMiscObjStats->SetBinContent(56,numTotJetNotPrimaryTrk);
+   hMiscObjStats->GetXaxis()->SetBinLabel(57,"JetNotCleanFem");hMiscObjStats->SetBinContent(57,numTotJetNotCleanFem);
+   hMiscObjStats->GetXaxis()->SetBinLabel(58,"JetNotCleanFtk");hMiscObjStats->SetBinContent(58,numTotJetNotCleanFtk);
+   hMiscObjStats->GetXaxis()->SetBinLabel(59,"JetDupl");hMiscObjStats->SetBinContent(59,numTotJetDupl);
+   hMiscObjStats->GetXaxis()->SetBinLabel(60,"JetDuplBadFem");hMiscObjStats->SetBinContent(60,numTotJetDuplBadFem);
+   hMiscObjStats->GetXaxis()->SetBinLabel(61,"JetDuplBadFtk");hMiscObjStats->SetBinContent(61,numTotJetDuplBadFtk);
+   hMiscObjStats->GetXaxis()->SetBinLabel(62,"BJets");hMiscObjStats->SetBinContent(62,numTotBJets);
+   hMiscObjStats->GetXaxis()->SetBinLabel(63,"JetsfinalBadFem");hMiscObjStats->SetBinContent(63,numTotJetsfinalBadFem);
+   hMiscObjStats->GetXaxis()->SetBinLabel(64,"JetsfinalBadFtk");hMiscObjStats->SetBinContent(64,numTotJetsfinalBadFtk);
+   hMiscObjStats->GetXaxis()->SetBinLabel(65,"BJetsfinal");hMiscObjStats->SetBinContent(65,numTotBJetsfinal);
+   hMiscObjStats->GetXaxis()->SetBinLabel(66,"JetsMatchedBadFem");hMiscObjStats->SetBinContent(66,numTotJetsMatchedBadFem);
+   hMiscObjStats->GetXaxis()->SetBinLabel(67,"JetsMatchedBadFtk");hMiscObjStats->SetBinContent(67,numTotJetsMatchedBadFtk);
+   hMiscObjStats->GetXaxis()->SetBinLabel(68,"Ufos");hMiscObjStats->SetBinContent(68,numTotUfos);
+   hMiscObjStats->GetXaxis()->SetBinLabel(69,"Ufosfinal");hMiscObjStats->SetBinContent(69,numTotUfosfinal);
+   hMiscObjStats->GetXaxis()->SetBinLabel(70,"UfosMatched");hMiscObjStats->SetBinContent(70,numTotUfosMatched);
+   hMiscObjStats->GetXaxis()->SetBinLabel(71,"UfosNotPrimaryTrk");hMiscObjStats->SetBinContent(71,numTotUfosNotPrimaryTrk);
+   hMiscObjStats->GetXaxis()->SetBinLabel(72,"UfosNotClean");hMiscObjStats->SetBinContent(72,numTotUfosNotClean);
+   hMiscObjStats->GetXaxis()->SetBinLabel(73,"UfosDupl");hMiscObjStats->SetBinContent(73,numTotUfosDupl);
+   hMiscObjStats->GetXaxis()->SetBinLabel(74,"UfosDuplBad");hMiscObjStats->SetBinContent(74,numTotUfosDuplBad);
+   hMiscObjStats->GetXaxis()->SetBinLabel(75,"UfosNonIso");hMiscObjStats->SetBinContent(75,numTotUfosNonIso);
+   hMiscObjStats->GetXaxis()->SetBinLabel(76,"UfosNonIsoBad");hMiscObjStats->SetBinContent(76,numTotUfosNonIsoBad);
+   hMiscObjStats->GetXaxis()->SetBinLabel(77,"UfosfinalBad");hMiscObjStats->SetBinContent(77,numTotUfosfinalBad);
+   hMiscObjStats->GetXaxis()->SetBinLabel(78,"UfosMatchedBad");hMiscObjStats->SetBinContent(78,numTotUfosMatchedBad);
+                                                                                                                                        
+                                                                                                                                        
+}
+
+
+//------------------------------------------------------------------------------
+
 bool SusyAnalyzer::AcceptTrigger()
 {
   // Verifies that the event triggered
@@ -1864,6 +2097,12 @@ void SusyAnalyzer::CleanMemory()
     delete MCData[i];
   }
   MCData.clear();
+ } 
+ if (!GenData.empty() ){
+  for (unsigned int i = 0; i < GenData.size(); i++){  
+    delete GenData[i];
+  }
+  GenData.clear();
  }
  if (!RecoData.empty() ){
   for (unsigned int i = 0; i < RecoData.size(); i++){

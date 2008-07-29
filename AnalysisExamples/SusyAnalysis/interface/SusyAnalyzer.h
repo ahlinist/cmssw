@@ -70,6 +70,9 @@ class SusyAnalyzer : public edm::EDAnalyzer {
      string m_tracksSrc;
      string m_vertexSrc;
      string m_jetsSrc;
+     //string m_jetsCorrectionService;
+     string m_jetsCorrectionL2RelativeService;
+     string m_jetsCorrectionL3AbsoluteService;
      string m_jetsgenSrc;
      string m_tautaginfo;
      string m_photonSrc;
@@ -88,6 +91,7 @@ class SusyAnalyzer : public edm::EDAnalyzer {
 
      vector<MrParticle*> MCData; 
      vector<MrParticle*> RecoData;
+     vector<MrParticle*> GenData; 
   
   // The pointer to the MrEvent data
      
@@ -138,6 +142,8 @@ class SusyAnalyzer : public edm::EDAnalyzer {
   std::vector<int> numTotHltBitsBeforeCuts;
     
   int numTotEvt;
+  int numTotMCReject;
+  int numTotEvtReject;
   int numTotEvtExceptCaught;
   int numTotEvtNoTrigger;
   int numTotEvtNoReco;
@@ -157,7 +163,13 @@ class SusyAnalyzer : public edm::EDAnalyzer {
   int numTotMCTau;
   int numTotMCPhot;
   int numTotMCJet;
-  
+                                                                                                                                   
+  int numTotMCElecBigEta;
+  int numTotMCMuonBigEta;
+  int numTotMCTauBigEta;
+  int numTotMCPhotBigEta;
+  int numTotMCJetBigEta;
+
   int numTotNotPrimaryTrk;
   int numTotNotClean;
   int numTotDuplicate;
@@ -179,6 +191,7 @@ class SusyAnalyzer : public edm::EDAnalyzer {
   int numTotElectronsfinalBadShsh;  
   int numTotElectronsfinalBadTmat;  
   int numTotElectronsMatched;
+  int numTotElectronsIsoMatched;
   int numTotElectronsMatchedBadHOE;
   int numTotElectronsMatchedBadShsh;
   int numTotElectronsMatchedBadTmat;
@@ -192,6 +205,7 @@ class SusyAnalyzer : public edm::EDAnalyzer {
   int numTotMuonsfinal;  
   int numTotMuonsfinalBad;  
   int numTotMuonsMatched;
+  int numTotMuonsIsoMatched;
   int numTotMuonsMatchedBad;
   int numTotTaus;
   int numTotTauNotPrimaryTrk;
@@ -203,6 +217,7 @@ class SusyAnalyzer : public edm::EDAnalyzer {
   int numTotTausfinal;
   int numTotTausfinalBad;
   int numTotTausMatched;
+  int numTotTausIsoMatched;
   int numTotTausMatchedBad;
   int numTotPhotons;  
   int numTotPhotNotPrimaryTrk;
@@ -248,6 +263,12 @@ class SusyAnalyzer : public edm::EDAnalyzer {
   int numTotUfosMatchedBad;
   
   int numTotEventsAfterCuts;
+                                                                                                                                   
+  TH1I *hEventStats; //17 bins
+  TH1I *hElecMuonStats;//10 bins
+  TH1I *hPhotonJetStats;//10 bins
+  TH1I *hMiscObjStats; // 78 bins
+                                                                                                                                   
 
   int firstsusymother[2];
     
@@ -263,6 +284,7 @@ class SusyAnalyzer : public edm::EDAnalyzer {
   virtual void PrintObjectMatchingCuts(void);
   virtual bool AcceptTrigger();  // could become a class once implemented
   virtual void PrintStatistics(void);
+  virtual void SetHistoWithStats(void);
   virtual void CleanMemory();
 
 };
