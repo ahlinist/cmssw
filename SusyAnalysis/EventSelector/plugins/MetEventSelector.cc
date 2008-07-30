@@ -2,6 +2,7 @@
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
+#include "SusyAnalysis/EventSelector/interface/uncorrectionTypeMET.h"
 
 #include <vector>
 
@@ -12,10 +13,9 @@ MetEventSelector::MetEventSelector (const edm::ParameterSet& pset) :
   // lower cut on MET
   minMet_ = pset.getParameter<double>("minMET");
 
-  uncorrString_ = pset.getParameter<std::string>("uncorrType");
+  // uncorrection type
+  uncorrType_ = pat::uncorrectionTypeMET(pset.getParameter<std::string>("uncorrType"));
 
-  uncorrect_  = uncorrectionType(uncorrString_);
- 
 
  // definition of the variable to be cached
   defineVariable("MET");
@@ -24,28 +24,6 @@ MetEventSelector::MetEventSelector (const edm::ParameterSet& pset) :
 				   << "  metTag = " << metTag_ << "\n"
 				   << "  minMET = " << minMet_;
 }
-
-/// sorry ugly hack needs to be changed once pat::MET changes but still safer then to use indices
-bool MetEventSelector::uncorrectionType (const std::string& correctionName)
-{
-  if(correctionName == "uncorrALL"){
-    uncorrType =  pat::MET::UncorectionType(pat::MET::uncorrALL);
-    return true;
-  }
-  if(correctionName == "uncorrJES"){
-    uncorrType = pat::MET::UncorectionType(pat::MET::uncorrJES);
-    return true;
-  }
-  if(correctionName == "uncorrMUON"){
-    uncorrType = pat::MET::UncorectionType(pat::MET::uncorrMUON);
-    return true;
-  }
-  else { 
-    edm::LogInfo("MetEventSelector")<< "given uncorrection not valid return corrected MET";
-    return false; 
-  }
-}
-
 
 bool
 MetEventSelector::select (const edm::Event& event) const
@@ -75,9 +53,8 @@ MetEventSelector::select (const edm::Event& event) const
   //get the uncorrected/corrected MET
   float myMET = -10;
   
-  if(uncorrect_ == true) myMET = metHandle->front().uncorrectedPt(uncorrType);
-  else myMET = metHandle->front().et(); //if given string not known correct everything
-  
+  myMET = uncorrType_==pat::MET::uncorrMAXN ?
+    metHandle->front().et() : metHandle->front().uncorrectedPt(uncorrType_);
 
   //
   // apply cut
