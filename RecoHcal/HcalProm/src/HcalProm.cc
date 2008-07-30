@@ -21,7 +21,7 @@
 //                   Anna Kropivnitskaya
 // Contacts: Efe Yazgan, Taylan Yetkin
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.51 2008/07/28 12:50:30 efe Exp $
+// $Id: HcalProm.cc,v 1.52 2008/07/28 12:55:05 efe Exp $
 //
 //
 
@@ -1422,13 +1422,13 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
 				  rmsB=17.69;
 				}
 				  
-                                 if(fabs(tmuon-meanB)<=rmsB){
+				//if(fabs(tmuon-meanB)<=rmsB){
                                     hEmuonHB2DTTopPlus ->Fill(eHB);
                                     hNumTowerMuonHB2DTTopPlus->Fill(NumHBTowersMuon[ik]);
-                                 }
+				    //}
                                  hTimeMuonHB2DTTopPlus ->Fill(tmuon); 
-                                 if((tmuon-meanB)<0&&(tmuon-meanB)>(-rmsB))hEmuonHB2DTTopPlusTimeMinus->Fill(eHB); //cut on the tail one RMS
-                                 if((tmuon-meanB)>=0&&(tmuon-meanB)<rmsB)hEmuonHB2DTTopPlusTimePlus->Fill(eHB);
+                                 if((tmuon-meanB)<0)hEmuonHB2DTTopPlusTimeMinus->Fill(eHB); //cut on the tail one RMS
+                                 if((tmuon-meanB)>=0)hEmuonHB2DTTopPlusTimePlus->Fill(eHB);
                               } 
                               if(IdTowerEtaMuonIn[ik]<0&&IdTowerEtaMuonOut[ik]<0){
 				//CRUZET 1-2
@@ -1439,13 +1439,13 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
 				  meanB=4.571;
 				  rmsB=18.54;
 				}
-                                 if(fabs(tmuon-meanB)<=rmsB){
+				//if(fabs(tmuon-meanB)<=rmsB){
                                     hEmuonHB2DTTopMinus ->Fill(eHB);
                                     hNumTowerMuonHB2DTTopMinus->Fill(NumHBTowersMuon[ik]); 
-                                 } 
+				    //} 
                                  hTimeMuonHB2DTTopMinus ->Fill(tmuon);
-                                 if((tmuon-meanB)<0&&(tmuon-meanB)>(-rmsB))hEmuonHB2DTTopMinusTimeMinus->Fill(eHB);
-                                 if((tmuon-meanB)>=0&&(tmuon-meanB)<rmsB)hEmuonHB2DTTopMinusTimePlus->Fill(eHB);
+                                 if((tmuon-meanB)<0)hEmuonHB2DTTopMinusTimeMinus->Fill(eHB);
+                                 if((tmuon-meanB)>=0)hEmuonHB2DTTopMinusTimePlus->Fill(eHB);
                               } 
                            }
                            if(IdTowerPhiMuonIn[ik]>36&&IdTowerPhiMuonIn[ik]<73&&NumHBTowersMuon[ik]<=maxTowerEta&&NumHBTowersMuon[ik]>=minTowerEta){
@@ -1458,13 +1458,13 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
 				  meanB=18.22;
 				  rmsB=16.96;
 				}
-                                 if(fabs(tmuon-meanB)<=rmsB){
+				//if(fabs(tmuon-meanB)<=rmsB){
                                     hEmuonHB2DTBotPlus ->Fill(eHB);
                                     hNumTowerMuonHB2DTBotPlus->Fill(NumHBTowersMuon[ik]); 
-                                 } 
+				    //} 
                                  hTimeMuonHB2DTBotPlus ->Fill(tmuon);
-                                 if((tmuon-meanB)<0&&(tmuon-meanB)>(-rmsB))hEmuonHB2DTBotPlusTimeMinus->Fill(eHB);
-                                 if((tmuon-meanB)>=0&&(tmuon-meanB)<rmsB)hEmuonHB2DTBotPlusTimePlus->Fill(eHB);
+                                 if((tmuon-meanB)<0)hEmuonHB2DTBotPlusTimeMinus->Fill(eHB);
+                                 if((tmuon-meanB)>=0)hEmuonHB2DTBotPlusTimePlus->Fill(eHB);
                                  // fill Emuon in different time:
                                  if((tmuon-meanB)>=0&&(tmuon-meanB)<rmsB/2)hEmuonHB2DTBotPlusTimePlus1->Fill(eHB);
                                  if((tmuon-meanB)>=rmsB/2&&(tmuon-meanB)<rmsB)hEmuonHB2DTBotPlusTimePlus2->Fill(eHB);
@@ -1484,13 +1484,13 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
 				  meanB=19.22;
 				  rmsB=21.56;
 				}
-                                 if(fabs(tmuon-meanB)<=rmsB){
+				//if(fabs(tmuon-meanB)<=rmsB){
                                     hEmuonHB2DTBotMinus ->Fill(eHB);
                                     hNumTowerMuonHB2DTBotMinus->Fill(NumHBTowersMuon[ik]); 
-                                 } 
+				    //} 
                                  hTimeMuonHB2DTBotMinus ->Fill(tmuon);
-                                 if((tmuon-meanB)<0&&(tmuon-meanB)>(-rmsB))hEmuonHB2DTBotMinusTimeMinus->Fill(eHB);
-                                 if((tmuon-meanB)>=0&&(tmuon-meanB)<rmsB)hEmuonHB2DTBotMinusTimePlus->Fill(eHB);
+                                 if((tmuon-meanB)<0)hEmuonHB2DTBotMinusTimeMinus->Fill(eHB);
+                                 if((tmuon-meanB)>=0)hEmuonHB2DTBotMinusTimePlus->Fill(eHB);
                               }
                            }
 	       
@@ -1529,7 +1529,7 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
 			     }
                            }
 
-                           if(fabs(tmuon-meanB)<=rmsB&&meanB!=0){
+                           //if(fabs(tmuon-meanB)<=rmsB&&meanB!=0){
                               // fill energy in different id Phi
                               if(IdTowerEtaMuonIn[ik]<0&&IdTowerEtaMuonOut[ik]<0){
                                     hIdPhiTowerHB2DTMinus->Fill(float(IdTowerPhiMuonIn[ik]));
@@ -1577,7 +1577,7 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
                               hImpXYvsZ->Fill(ImpXYmuonHB[ik],ZImpXYmuonHB[ik]);
                            }
                       } // end check for muon in 2 DT exists
-                  }
+		      //}
                } //end for for 2nd good muon
             } //end for for interested muon 
         } // end check if good moun exists
