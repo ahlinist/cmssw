@@ -14,7 +14,7 @@ Uses the EventSelector interface for event selection and TFileService for plotti
 //
 // Original Author:  Markus Stoye
 //         Created:  Mon Feb 18 15:40:44 CET 2008
-// $Id: SusyAllHadronicAnalysis.cpp,v 1.2 2008/07/08 15:07:37 fronga Exp $
+// $Id: SusyAllHadronicAnalysis.cpp,v 1.9 2008/06/20 12:35:36 fronga Exp $
 //
 //
 
@@ -27,7 +27,7 @@ Uses the EventSelector interface for event selection and TFileService for plotti
 #include <iomanip>
 
 // ROOT includes
-#include <TNtuple.h>
+#include <TTree.h>
 
 // Framework include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -75,14 +75,15 @@ private:
 
   // Selection
   SelectorSequence sequence_;              ///< Interface to selectors
-  std::vector<std::string> plotSelection_; ///< Container for plotting selection
-  std::vector<size_t> plotSelectionIndices_; ///< Selector indices for plotting selection
+  std::vector<std::string> filterSelection_; ///< Container for filter selection (i.e., hard cuts)
+  std::vector<size_t> filterSelectionIndices_; ///< Selector indices for filter selection
 
   // Event information
   double eventWeight_;  ///< Event weight from config. file (if <0, get it from event)
   edm::InputTag weightSource_; ///< Source for CSA07 event weight producer
   double weight_;       ///< Actual event weight (either config. or event)
   int    processId_;    ///< CSA07 generator process ID
+  int    run_, event_;  ///< Store run and event number
 
   // Counters
   unsigned int nrEventTotalRaw_;          ///< Raw number of events (+1 at each event)
@@ -91,23 +92,27 @@ private:
   std::vector<float> nrEventAllButOne_;   ///< All-but-one selected #(events) for each module
   std::vector<float> nrEventCumulative_;  ///< Cumulative selected #(events) for each module
 
-  // Plots
-  TNtuple* ntuple_; ///< Will contain all the information we want to keep
+  // Ntuple
+  TTree* decisionTree_;  ///< Will contain all the decisions for ALL processed events
+  TTree* selectionTree_; ///< Will contain all the information we want to keep
+  float* variables_;     ///< Container for the tree variables (from selectors)
+  bool*  decisions_;     ///< Container for all selector decisions
+  bool   globalDec_;     ///< Global decision for event
 
 };
 
 //________________________________________________________________________________________
 SusyAllHadronicAnalysis::SusyAllHadronicAnalysis(const edm::ParameterSet& iConfig):
   sequence_( iConfig.getParameter<edm::ParameterSet>("selections") ),
-  plotSelection_( iConfig.getParameter<std::vector<std::string> >("plotSelection") ),
+  filterSelection_( iConfig.getParameter<std::vector<std::string> >("filterSelection") ),
   eventWeight_( iConfig.getParameter<double>("eventWeight") ),
   weightSource_(iConfig.getParameter<edm::InputTag>("weightSource") ),
   weight_(0.0), nrEventTotalRaw_(0), nrEventTotalWeighted_(0.0)
 {
-  // Translate plotSelection strings to indices
-  plotSelectionIndices_.reserve(plotSelection_.size());
-  for ( size_t i=0; i<plotSelection_.size(); ++i )
-    plotSelectionIndices_.push_back(sequence_.selectorIndex(plotSelection_[i]));
+  // Translate filterSelection strings to indices
+  filterSelectionIndices_.reserve(filterSelection_.size());
+  for ( size_t i=0; i<filterSelection_.size(); ++i )
+    filterSelectionIndices_.push_back(sequence_.selectorIndex(filterSelection_[i]));
     
   // List all selectors and selection variables
   edm::LogVerbatim("SusyAllHadronic") << "Selectors are:" << std::endl;
@@ -133,14 +138,18 @@ SusyAllHadronicAnalysis::SusyAllHadronicAnalysis(const edm::ParameterSet& iConfi
   nrEventAllButOne_.resize( sequence_.size(), 0.0 );
   nrEventCumulative_.resize( sequence_.size(), 0.0 );
 
-  // Initialise plots [should improve in the future]
+  // Initialise plots
   initPlots();
 
 }
 
 
 //________________________________________________________________________________________
-SusyAllHadronicAnalysis::~SusyAllHadronicAnalysis() {}
+SusyAllHadronicAnalysis::~SusyAllHadronicAnalysis() {
+  // Delete arrays we created
+  delete [] decisions_;
+  delete [] variables_;
+}
 
 
 //________________________________________________________________________________________
@@ -170,28 +179,29 @@ SusyAllHadronicAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup
   nrEventTotalWeighted_ += weight_;
   
   // Fill plots with all variables
-  bool dec(true);
+  globalDec_ = true;
   for ( size_t i=0; i<sequence_.size(); ++i ) {
-    dec = dec && decisions.decision(i);
-    edm::LogVerbatim("SusyAllHadronicEvent")
-      << " " << sequence_.selectorName(i)
-      << " " << decisions.decision(i)
-      << " " << decisions.complementaryDecision(i)
-      << " " << decisions.cumulativeDecision(i)
-      << " " << dec << std::endl;
+    globalDec_ = (globalDec_ && decisions.decision(i));
 
-    // Update counters
-    if ( decisions.decision(i) ) nrEventSelected_[i] += weight_;
-    if ( decisions.complementaryDecision(i) ) nrEventAllButOne_[i] += weight_;
-    if ( decisions.cumulativeDecision(i) ) nrEventCumulative_[i] += weight_;
+    // Update counters 
+    if ( decisions.decision(i) )              nrEventSelected_[i]   += weight_;
+    if ( decisions.complementaryDecision(i) ) nrEventAllButOne_[i]  += weight_;
+    if ( decisions.cumulativeDecision(i) )    nrEventCumulative_[i] += weight_;
+
+    // Store decision
+    decisions_[i] = decisions.decision(i);
      
   }
+  
 
   // Fill some plots (only if some selections passed, as configured)
-  dec = true;
-  for ( size_t i=0; i<plotSelectionIndices_.size(); ++i )
-    dec = dec&&decisions.decision(plotSelectionIndices_[i]);
+  bool dec(true);
+  for ( size_t i=0; i<filterSelectionIndices_.size(); ++i ) // only "filter selection"
+    dec = dec && decisions.decision(filterSelectionIndices_[i]);
   if ( dec ) fillPlots( iEvent, decisions );
+
+  // But also keep ALL decisions in a separate tree
+  decisionTree_->Fill();
 
   // Print summary so far (every 10 till 100, every 100 till 1000, etc.)
   for ( unsigned int i=10; i<nrEventTotalRaw_; i*=10 )
@@ -202,10 +212,13 @@ SusyAllHadronicAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup
 
 
 //________________________________________________________________________________________
+// Called once per job, at start
 void 
 SusyAllHadronicAnalysis::beginJob(const edm::EventSetup&) {}
 
 //________________________________________________________________________________________
+// Called once per job, at end
+// Prints summary of counters
 void 
 SusyAllHadronicAnalysis::endJob() {
 
@@ -215,6 +228,7 @@ SusyAllHadronicAnalysis::endJob() {
 
 
 //________________________________________________________________________________________
+// Print out summary of counters
 void
 SusyAllHadronicAnalysis::printSummary( void ) {
 
@@ -252,41 +266,63 @@ SusyAllHadronicAnalysis::printSummary( void ) {
 
 
 //________________________________________________________________________________________
+// Defines all tree branches
 void
 SusyAllHadronicAnalysis::initPlots() {
 
-  std::ostringstream variables; // Container for all variables
+  // Register the tree
+  edm::Service<TFileService> fs;
+  selectionTree_ = fs->make<TTree>( "ntuple",       "Variables for pre-selected events" );
+  decisionTree_  = fs->make<TTree>( "allDecisions", "ALL selector decisions" );
 
   // 1. Event variables
-  variables << "run:event:weight:process";
+  // 1.a. for the tree with all variables
+  selectionTree_->Branch("run",       &run_,       "run/I");
+  selectionTree_->Branch("event",     &event_,     "event/I");
+  selectionTree_->Branch("weight",    &weight_,    "weight/I");
+  selectionTree_->Branch("processId", &processId_, "processId/I");
 
+  // 1.b. for the tree with all decisions (of ALL events)
+  decisionTree_->Branch("run",       &run_,       "run/I");
+  decisionTree_->Branch("event",     &event_,     "event/I");
+  decisionTree_->Branch("weight",    &weight_,    "weight/I");
+  decisionTree_->Branch("processId", &processId_, "processId/I");
+ 
   // 2. Decision from all selectors
+  // Also store global decision
+  selectionTree_->Branch("all_result", &globalDec_, "all_result/O");
+  decisionTree_->Branch("all_result", &globalDec_, "all_result/O");
+  std::ostringstream variableNames; // Container for definition
   for ( std::vector<const SusyEventSelector*>::const_iterator it = sequence_.selectors().begin();
         it != sequence_.selectors().end(); ++it ) {
     std::string var( (*it)->name() );
     var += "_result";
-    // Push to list of variables
-    variables << ":" << var;
+    // Push to list of variables (add  type identifier or list separator)
+    if ( it == sequence_.selectors().begin() ) variableNames << var << "/O";
+    else variableNames << ":" << var;
   }
-  variables << ":all_result"; // Also store global decision
-    
+  decisions_ = new bool[sequence_.size()];  // Also store global decision
+  selectionTree_->Branch("decisions", &decisions_[0], variableNames.str().c_str() );
+  decisionTree_->Branch("decisions", &decisions_[0], variableNames.str().c_str() );
+
   // 3. All variables from sequence
+  variableNames.str("");
   for ( std::vector<const SusyEventSelector*>::const_iterator it = sequence_.selectors().begin();
         it != sequence_.selectors().end(); ++it ) {
     for ( unsigned int i=0; i<(*it)->numberOfVariables(); ++i ) {
-      std::string var( (*it)->name() ); // prefix variable with selector name
-      var += "." + (*it)->variableNames()[i];
-      // Push to list of variables
-      variables << ":" << var;
+      std::string var( (*it)->name() );       // prefix variable with selector name: 
+      var += "." + (*it)->variableNames()[i]; // format is "selectorName.varName"
+      // Push to list of variables (add  type identifier or list separator)
+      if ( it == sequence_.selectors().begin() && i==0 ) variableNames << var << "/F";
+      else variableNames << ":" << var;
     }
   }
+  variables_ = new float[sequence_.numberOfVariables()];
+  selectionTree_->Branch("variables", &variables_[0], variableNames.str().c_str());
 
-  // Register this ntuple
-  edm::Service<TFileService> fs;
-  ntuple_ = fs->make<TNtuple>( "ntuple","SusyAllHadronicAnalysis variables",
-                               variables.str().c_str() );
+  // 4. Now we could add other user variables here...
 
-  edm::LogInfo("SusyAllHadronic") << "Ntuple variables " << variables.str();
+  edm::LogInfo("SusyAllHadronic") << "Ntuple variables " << variableNames.str();
 
 }
 
@@ -296,29 +332,13 @@ void
 SusyAllHadronicAnalysis::fillPlots( const edm::Event& iEvent, 
 				    const SelectorDecisions& decisions ) {
   
-  // Container array
-  float* x = new float[ntuple_->GetNbranches()];
-  int ivar = 0; 
-
-  // 1. Event variables
-  x[ivar++] = iEvent.id().run();
-  x[ivar++] = iEvent.id().event();
-  x[ivar++] = weight_;
-  x[ivar++] = processId_;
-
-  // 2. Decision from all selectors
-  for ( size_t i=0; i<sequence_.size(); ++i ) x[ivar++] = decisions.decision(i);
-  x[ivar++] = decisions.globalDecision();
-
-  // 3. All variables from sequence
+  // Get all variables from sequence
   std::vector<double> values = sequence_.values();
-  for ( size_t i=0; i<values.size(); ++i ) x[ivar++] = values[i];
+  for ( size_t i=0; i<values.size(); ++i ) variables_[i] = values[i];
 
-  if ( ntuple_->Fill( x ) < 0 ) { // Fill returns number of bytes committed, -1 on error
+  if ( selectionTree_->Fill() < 0 ) { // Fill returns number of bytes committed, -1 on error
     edm::LogWarning("SusyAllHadronic") << "@SUB=fillPlots()" << "Problem filling ntuple";
   }
-
-  delete [] x; // Important! otherwise we'll leak...
 
 }
 
