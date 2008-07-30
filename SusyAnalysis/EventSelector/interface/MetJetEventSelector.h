@@ -20,6 +20,7 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ParameterSet/interface/InputTag.h"
+#include "DataFormats/PatCandidates/interface/MET.h"
 
 class MetJetEventSelector : public SusyEventSelector {
 public:
@@ -34,5 +35,6 @@ private:
   float dPhiJet2MetMin_; ///< Minimum angle between MET and 2nd leading jet
   float rDistJetsMin_;   ///< Minimum R1 and R2
 
+  pat::MET::UncorectionType uncorrType_;  ///< uncorrection type for MET
 };
 #endif
