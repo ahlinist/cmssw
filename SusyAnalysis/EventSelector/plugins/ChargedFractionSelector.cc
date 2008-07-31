@@ -14,7 +14,7 @@ ChargedFractionSelector::ChargedFractionSelector (const edm::ParameterSet& pset)
   minFraction_( pset.getParameter<double>("minFraction") ),
   maxEta_     ( pset.getParameter<double>("maxEta")      ),
   minPt_      ( pset.getParameter<double>("minPt")       ),
-  minTracks_  ( pset.getParameter<int>("minTracks")      )
+  minTracks_  ( pset.getParameter<unsigned int>("minTracks")      )
 {
 
   // Store computed fraction
