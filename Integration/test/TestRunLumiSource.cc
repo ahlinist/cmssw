@@ -60,7 +60,7 @@ namespace edm {
   }
 
   std::auto_ptr<EventPrincipal>
-  TestRunLumiSource::readEvent_(boost::shared_ptr<LuminosityBlockPrincipal> lbp) {
+  TestRunLumiSource::readEvent_() {
     unsigned int run = runLumiEvent_[currentIndex_];
     unsigned int lumi = runLumiEvent_[currentIndex_ + 1];
     unsigned int event = runLumiEvent_[currentIndex_ + 2];

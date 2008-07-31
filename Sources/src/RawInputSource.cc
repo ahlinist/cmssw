@@ -48,7 +48,7 @@ namespace edm {
   }
 
   std::auto_ptr<EventPrincipal>
-  RawInputSource::readEvent_(boost::shared_ptr<LuminosityBlockPrincipal>) {
+  RawInputSource::readEvent_() {
     assert(ep_.get() != 0);
     return ep_;
   }
