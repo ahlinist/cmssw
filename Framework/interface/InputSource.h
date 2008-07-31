@@ -70,6 +70,12 @@ namespace edm {
 	IsRepeat
     };
 
+    enum ProcessingMode {
+	Runs,
+	RunsAndLumis,
+	RunsLumisAndEvents
+    };
+
     typedef ProductRegistryHelper::TypeLabelList TypeLabelList;
     /// Constructor
     explicit InputSource(ParameterSet const&, InputSourceDescription const&);
@@ -181,6 +187,9 @@ namespace edm {
     /// Accessor for current luminosity block number
     LuminosityBlockNumber_t luminosityBlock() const;
 
+    /// RunsLumisAndEvents (default), RunsAndLumis, or Runs.
+    ProcessingMode processingMode() const {return processingMode_;}
+
     using ProductRegistryHelper::produces;
     using ProductRegistryHelper::typeLabelList;
 
@@ -201,15 +210,15 @@ namespace edm {
       state_ = IsInvalid;
     }
 
-
   private:
     bool eventLimitReached() const {return remainingEvents_ == 0;}
     bool lumiLimitReached() const {return remainingLumis_ == 0;}
     bool limitReached() const {return eventLimitReached() || lumiLimitReached();}
     virtual ItemType getNextItemType() = 0;
+    ItemType nextItemType_();
     virtual boost::shared_ptr<RunPrincipal> readRun_() = 0;
     virtual boost::shared_ptr<LuminosityBlockPrincipal> readLuminosityBlock_() = 0;
-    virtual std::auto_ptr<EventPrincipal> readEvent_(boost::shared_ptr<LuminosityBlockPrincipal>) = 0;
+    virtual std::auto_ptr<EventPrincipal> readEvent_() = 0;
     virtual std::auto_ptr<EventPrincipal> readIt(EventID const&);
     virtual boost::shared_ptr<FileBlock> readFile_();
     virtual void closeFile_() {}
@@ -232,6 +241,7 @@ namespace edm {
     int maxLumis_;
     int remainingLumis_;
     int readCount_;
+    ProcessingMode processingMode_;
     ModuleDescription const moduleDescription_;
     boost::shared_ptr<ProductRegistry const> productRegistry_;
     bool const primary_;
