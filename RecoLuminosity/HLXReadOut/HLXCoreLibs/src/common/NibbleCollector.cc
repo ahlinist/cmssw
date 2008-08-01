@@ -202,16 +202,20 @@ namespace HCAL_HLX
   }
   
   void NibbleCollector::Stop() {
-
-    // Worker thread shutdown
-    mWorkerThreadContinue=false;
-    pthread_join(mWorkerThreadId,NULL);
-    mWorkerThreadId = 0;
     
-    // Service thread shutdown
-    mServiceThreadContinue=false;
-    pthread_join(mServiceThreadId,NULL);
-    mServiceThreadId = 0;
+    if ( mWorkerThreadId != 0 ) {
+      // Worker thread shutdown
+      mWorkerThreadContinue=false;
+      pthread_join(mWorkerThreadId,NULL);
+      mWorkerThreadId = 0;
+    }
+
+    if ( mServiceThreadId != 0 ) {
+      // Service thread shutdown
+      mServiceThreadContinue=false;
+      pthread_join(mServiceThreadId,NULL);
+      mServiceThreadId = 0;
+    }
 
   }
 
@@ -224,7 +228,7 @@ namespace HCAL_HLX
       if ( mUdpSocket != -1 ) {
 	// Release the socket
 	shutdown(mUdpSocket,SHUT_RDWR);
-	close(mUdpSocket);
+	//close(mUdpSocket);
 	mUdpSocket=-1;
       }
 
@@ -577,12 +581,6 @@ namespace HCAL_HLX
       }
       Sleep(1);
     }
-      //pthread_mutex_unlock(&mDataMutex);
-      //    } catch (ICException & aExc) {
-      //pthread_mutex_unlock(&mDataMutex);
-      //      cout << "Exception caught!!!" << endl;
-      //RETHROW(aExc);
-      //    }
   }
 
     //  }
@@ -590,7 +588,6 @@ namespace HCAL_HLX
   void NibbleCollector::ProcessPacket(const LUMI_RAW_HEADER *lumiHdr,
 				      const u8 *data,
 				      u32 nBytes) {
-    //	return;
     try {
       u8 hlxID = lumiHdr->hlxID;
 
@@ -616,7 +613,6 @@ namespace HCAL_HLX
 		  mSectionCollectors[i]->ProcessETSumNibble(mETSumNibbles[hlxID],
 							    hlxID);
 		}
-		//cout << "After process et nibble" << endl;
 	      }
 	    }
 	    

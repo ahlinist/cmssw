@@ -40,9 +40,9 @@ namespace HCAL_HLX
 
   private:
     // The one-and-only mutex object
-    static pthread_mutex_t *mMutex;
-    // Lock count
-    static u32 mLockCount;
+    static pthread_mutex_t mMutex;
+    // User count
+    static u32 mUserCount;
 
   }; //~class ROOTMutex
 

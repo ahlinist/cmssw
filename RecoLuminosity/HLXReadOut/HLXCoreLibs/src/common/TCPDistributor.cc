@@ -308,9 +308,6 @@ namespace HCAL_HLX
       // DON'T REMOVE THIS
       //cout << "Before mutex unlock" << endl;
       pthread_mutex_unlock(&mDataMutex);
-    //} catch (ICException & aExc) {
-    //  RETHROW(aExc);
-   // }
 
    return true;
 #ifdef HCAL_HLX_TCP_DISTRIBUTOR_DEBUG

@@ -6,7 +6,7 @@ export XDAQ_PLATFORM=x86_slc3
 
 # Must be set to a local or networked root path
 # This one is the copy on the .CMS private network
-export ROOTSYS=/nfshome0/cmssw/slc3_ia32_gcc323/lcg/root/5.14.00e/root
+export ROOTSYS=/opt/root/current
 
 export LD_LIBRARY_PATH=/usr/local/lib:/usr/lib:/lib
 export PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/local/sbin

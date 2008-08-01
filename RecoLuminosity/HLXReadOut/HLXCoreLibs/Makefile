@@ -9,8 +9,8 @@ IncludeDirs = \
 	$(BUILD_HOME)/$(Project)/$(Package)/include \
 	$(BUILD_HOME)/$(Project)/CoreUtils/include \
 	$(DIPBASE)/include \
-	$(ORACLE_ROOT)/include \
-	$(ROOTSYS)/include
+	/opt/oracle/current/sdk/include \
+	$(ROOTSYS)/include \
 
 Sources = \
 	DebugCoutDistributor.cc \
@@ -25,10 +25,10 @@ Sources = \
 	TestSectionCollector.cc \
         TCPDistributor.cc \
 	SectionListDistributor.cc \
-	ROOTMutex.cc
-#	ROOTDistributor.cc \
-#	ROOTDistributor_Dict.cc \
-#       ROOTMutex.cc \
+	ROOTMutex.cc \
+	#ROOTDistributor.cc \
+	#ROOTDistributor_Dict.cc \
+        #ROOTMutex.cc \
 
 # some XDAQ-required stuff
 include $(XDAQ_ROOT)/config/mfAutoconf.rules
@@ -46,7 +46,7 @@ ExternalObjects =
 DynamicLibrary= HLXCoreLibs
 StaticLibrary=
 Executables= 
-Libraries= CoreUtils dip dl LumiDB LumiCalc
+Libraries= # CoreUtils dip dl LumiDB LumiCalc
 TestExecutables= 
 TestLibraries= 
 

@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Oracle is part of CMSSW, so we use this copy (might change later...)
-export ORACLE_ROOT=/nfshome0/cmssw/slc4_ia32_gcc345/external/oracle/10.2.0.3
+# CMSSW copy of client is old, and designed for gcc323 libs
+# Use locally installed copy instead (11g+)
+export ORACLE_ROOT=/opt/oracle/current
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${ORACLE_ROOT}/lib
-export PATH=$PATH:${ORACLE_ROOT}/bin
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${ORACLE_ROOT}
 export TNS_ADMIN=/nfshome0/lmsts/omds_tns
 export ORACLE_HOME=$ORACLE_ROOT

@@ -13,7 +13,7 @@ IncludeDirs = \
 	$(BUILD_HOME)/$(Project)/CoreUtils/include \
 	$(BUILD_HOME)/$(Project)/HLXCoreLibs/include \
 	$(DIPBASE)/include \
-	$(ORACLE_HOME)/include \
+	/opt/oracle/current/sdk/include \
 	$(ROOTSYS)/include
 
 LibraryDirs = \
@@ -22,7 +22,7 @@ LibraryDirs = \
 	$(BUILD_HOME)/$(Project)/CoreUtils/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM) \
 	$(BUILD_HOME)/$(Project)/HLXCoreLibs/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM) \
 	$(DIPBASE)/lib \
-	$(ORACLE_HOME)/lib \
+	/opt/oracle/current \
 	$(ROOTSYS)/lib
 
 UserCFlags =
@@ -30,8 +30,8 @@ UserCCFlags = -D_REENTRANT
 UserDynamicLinkFlags =
 UserStaticLinkFlags =
 UserExecutableLinkFlags =
-Libraries = LumiCalc LumiDB CoreUtils HLXCoreLibs pthread dip dl clntsh occi \
-	nnz10 Core Cint Hist Matrix Gpad Graf Tree
+Libraries = LumiCalc LumiDB CoreUtils HLXCoreLibs pthread dip dl occi clntsh \
+	nnz10 Core Cint Hist Matrix Gpad Graf Tree 
 
 #	Hist MathCore Matrix Core Cint Gpad Graf
 DynamicLibrary = 

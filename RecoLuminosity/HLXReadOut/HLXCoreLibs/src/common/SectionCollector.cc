@@ -12,6 +12,9 @@
 // For usleep function
 #include <unistd.h>
 
+//For time stamp
+#include <time.h>
+#include <sys/time.h>
 // Various generic and type-specific exception implementations
 #include "ICException.hh"
 #include "HardwareAccessException.hh"
@@ -40,6 +43,9 @@ namespace HCAL_HLX
       mNumOrbitsPerNibble = aNumOrbitsPerNibble;
       mNumOrbits = aNumOrbitsPerNibble * aNumNibblesPerSection;
       mNumBunches = aNumBunches;
+      std::cout<<"init: mNumBunches= "<<mNumBunches<<std::endl;
+      std::cout<<"init: mNumOrbits= "<<mNumOrbits<<std::endl;
+      std::cout<<"init: mNumHLXs= "<<mNumHLXs<<std::endl;
       mRunNumber = 0;
 
       mLumiCalculator = new LumiCalc;
@@ -85,7 +91,10 @@ namespace HCAL_HLX
       CleanUp();
 
       // Delete the lumi calculator
-      delete mLumiCalculator;
+      if ( mLumiCalculator != 0 ) {
+	delete mLumiCalculator;
+	mLumiCalculator = 0;
+      }
 
     } catch (ICException & aExc) {
       RETHROW(aExc);
@@ -96,12 +105,23 @@ namespace HCAL_HLX
   void SectionCollector::Init() {
     try {
       mLumiSection = new LUMI_SECTION;
-      if ( !mLumiSection ) {
+      mLumiSection->hdr.timestamp = 0;
+      mLumiSection->hdr.timestamp_micros = 0;
+      mLumiSection->hdr.runNumber = 0;
+      mLumiSection->hdr.sectionNumber = 0;
+      mLumiSection->hdr.startOrbit = 0;
+      mLumiSection->hdr.numOrbits = 0;
+      mLumiSection->hdr.numBunches = 0;
+      mLumiSection->hdr.numHLXs = 0;
+      mLumiSection->hdr.bCMSLive = false;
+
+
+      if ( mLumiSection == 0 ) {
 	MemoryAllocationException lExc("Unable to allocate lumi section memory");
 	RAISE(lExc);
       }
       mLumiSectionBuffer = new LUMI_SECTION;
-      if ( !mLumiSectionBuffer ) {
+      if ( mLumiSectionBuffer == 0 ) {
 	MemoryAllocationException lExc("Unable to allocate lumi section buffer");
 	RAISE(lExc);
       }
@@ -117,10 +137,14 @@ namespace HCAL_HLX
 	delete mDistributors[i];
       }
       mDistributors.clear();
-      delete mLumiSection;
-      mLumiSection = 0;
-      delete mLumiSectionBuffer;
-      mLumiSectionBuffer = 0;
+      if ( mLumiSection != 0 ) {
+	delete mLumiSection;
+	mLumiSection = 0;
+      }
+      if ( mLumiSectionBuffer != 0 ) {
+	delete mLumiSectionBuffer;
+	mLumiSectionBuffer = 0;
+      }
     } catch (ICException & aExc) {
       RETHROW(aExc);
     }
@@ -276,6 +300,11 @@ namespace HCAL_HLX
 
 	// Initialise the lumi section
 	memset(mLumiSection,0,sizeof(LUMI_SECTION));	
+        //time_t now_time = time(NULL);
+	timeval now_time;
+	gettimeofday(&now_time, NULL);
+        mLumiSection->hdr.timestamp = now_time.tv_sec;
+        mLumiSection->hdr.timestamp_micros = now_time.tv_usec;
 	mLumiSection->hdr.numHLXs = mNumHLXs;
 	mLumiSection->hdr.sectionNumber = mSectionNumber;
 	mLumiSection->hdr.runNumber = mRunNumber;
@@ -370,6 +399,10 @@ namespace HCAL_HLX
 	}
 
 	memset(mLumiSection,0,sizeof(LUMI_SECTION));
+        timeval now_time;
+        gettimeofday(&now_time, NULL);
+        mLumiSection->hdr.timestamp = now_time.tv_sec;
+        mLumiSection->hdr.timestamp_micros = now_time.tv_usec;
 	mLumiSection->hdr.numHLXs = mNumHLXs;
 	mLumiSection->hdr.sectionNumber = mSectionNumber;
 	mLumiSection->hdr.runNumber = mRunNumber;
@@ -462,6 +495,10 @@ namespace HCAL_HLX
 	}
 
 	memset(mLumiSection,0,sizeof(LUMI_SECTION));
+        timeval now_time;
+        gettimeofday(&now_time, NULL);
+        mLumiSection->hdr.timestamp = now_time.tv_sec;
+        mLumiSection->hdr.timestamp_micros = now_time.tv_usec;
 	mLumiSection->hdr.numHLXs = mNumHLXs;
 	mLumiSection->hdr.sectionNumber = mSectionNumber;
 	mLumiSection->hdr.runNumber = mRunNumber;

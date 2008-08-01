@@ -15,6 +15,9 @@
 // Root includes
 #include "TCanvas.h"
 #include "TH1D.h"
+#include "TDatime.h"
+#include "TStyle.h"
+#include "TROOT.h"
 
 // HCAL HLX namespace
 namespace HCAL_HLX
@@ -23,9 +26,12 @@ namespace HCAL_HLX
   // Define namespaces in use
   using namespace ICCoreUtils;
   using namespace std;
+
+  // Possibly add as configuration setting in future
+#define HCAL_HLX_CANVAS_OUTPUT_DIR "/cms/mon/data/dqm/lumi/pic/"
   
   // Default constructor
-  GIFDistributor::GIFDistributor() {
+  GIFDistributor::GIFDistributor() : mCanvasOutputDir(HCAL_HLX_CANVAS_OUTPUT_DIR) {
     mETHistogramData = 0;
     mLHCHistogramData = 0;
     mBelowTopHistogramData = 0;
@@ -37,6 +43,8 @@ namespace HCAL_HLX
     try {
       // Initialise the data structures
       this->Init();
+      // Get rid of rms / mean display in pictures
+      gStyle->SetOptStat(0);
     } catch (ICException & aExc) {
       RETHROW(aExc);
     }
@@ -50,49 +58,49 @@ namespace HCAL_HLX
 
   void GIFDistributor::Init() {
     mETHistogramData = new double[4096];
-    if ( !mETHistogramData ) {
+    if ( mETHistogramData == 0 ) {
       //this->CleanUp();
       MemoryAllocationException lExc("Unable to allocate memory for ET histogram");
       RAISE(lExc);
     }
     mLHCHistogramData = new double[4096];
-    if ( !mLHCHistogramData ) {
+    if ( mLHCHistogramData == 0 ) {
       //this->CleanUp();
       MemoryAllocationException lExc("Unable to allocate memory for LHC histogram");
       RAISE(lExc);
     }
     mBelowTopHistogramData = new double[4096];
-    if ( !mBelowTopHistogramData ) {
+    if ( mBelowTopHistogramData == 0 ) {
       //this->CleanUp();
       MemoryAllocationException lExc("Unable to allocate memory for below-top histogram");
       RAISE(lExc);
     }
     mBetweenTopHistogramData = new double[4096];
-    if ( !mBetweenTopHistogramData ) {
+    if ( mBetweenTopHistogramData == 0 ) {
       //this->CleanUp();
       MemoryAllocationException lExc("Unable to allocate memory for between-top histogram");
       RAISE(lExc);
     }
     mAboveTopHistogramData = new double[4096];
-    if ( !mAboveTopHistogramData ) {
+    if ( mAboveTopHistogramData == 0 ) {
       //this->CleanUp();
       MemoryAllocationException lExc("Unable to allocate memory for above-top histogram");
       RAISE(lExc);
     }
     mBelowBottomHistogramData = new double[4096];
-    if ( !mBelowBottomHistogramData ) {
+    if ( mBelowBottomHistogramData == 0 ) {
       //this->CleanUp();
       MemoryAllocationException lExc("Unable to allocate memory for below-bottom histogram");
       RAISE(lExc);
     }
     mBetweenBottomHistogramData = new double[4096];
-    if ( !mBetweenBottomHistogramData ) {
+    if ( mBetweenBottomHistogramData == 0 ) {
       //this->CleanUp();
       MemoryAllocationException lExc("Unable to allocate memory for between-bottom histogram");
       RAISE(lExc);
     }
     mAboveBottomHistogramData = new double[4096];
-    if ( !mAboveBottomHistogramData ) {
+    if ( mAboveBottomHistogramData == 0 ) {
       //this->CleanUp();
       MemoryAllocationException lExc("Unable to allocate memory for above-bottom histogram");
       RAISE(lExc);
@@ -100,27 +108,47 @@ namespace HCAL_HLX
   }
 
   void GIFDistributor::CleanUp() { 
-    delete []mETHistogramData;
-    mETHistogramData = 0;
-    delete []mLHCHistogramData;
-    mLHCHistogramData = 0;
-    delete []mBelowTopHistogramData;
-    mBelowTopHistogramData = 0;
-    delete []mBetweenTopHistogramData;
-    mBetweenTopHistogramData = 0;
-    delete []mAboveTopHistogramData;
-    mAboveTopHistogramData = 0;
-    delete []mBelowBottomHistogramData;
-    mBelowBottomHistogramData = 0;
-    delete []mBetweenBottomHistogramData;
-    mBetweenBottomHistogramData = 0;
-    delete []mAboveBottomHistogramData;
-    mAboveBottomHistogramData = 0;
+    if ( mETHistogramData != 0 ) {
+      delete []mETHistogramData;
+      mETHistogramData = 0;
+    }
+    if ( mLHCHistogramData != 0 ) {
+      delete []mLHCHistogramData;
+      mLHCHistogramData = 0;
+    }
+    if ( mBelowTopHistogramData != 0 ) {
+      delete []mBelowTopHistogramData;
+      mBelowTopHistogramData = 0;
+    }
+    if ( mBetweenTopHistogramData != 0 ) {
+      delete []mBetweenTopHistogramData;
+      mBetweenTopHistogramData = 0;
+    }
+    if ( mAboveTopHistogramData != 0 ) {
+      delete []mAboveTopHistogramData;
+      mAboveTopHistogramData = 0;
+    }
+    if ( mBelowBottomHistogramData != 0 ) {
+      delete []mBelowBottomHistogramData;
+      mBelowBottomHistogramData = 0;
+    }
+    if ( mBetweenBottomHistogramData != 0 ) {
+      delete []mBetweenBottomHistogramData;
+      mBetweenBottomHistogramData = 0;
+    }
+    if ( mAboveBottomHistogramData != 0 ) {
+      delete []mAboveBottomHistogramData;
+      mAboveBottomHistogramData = 0;
+    }
   }
 
   void GIFDistributor::DoETSumHistogram(u32 numBunches) {
 
-    TH1D histogramET("gifHist","HLX ET Distribution",numBunches,0,numBunches);
+    TDatime curTime;
+    std::string tStr = "ET on ";
+    tStr += curTime.AsString();
+
+    TH1D histogramET("gifHist",tStr.c_str(),numBunches,0,numBunches);
     for ( u32 j = 0 ; j != numBunches ; j++ ) {
       histogramET.Fill(j,mETHistogramData[j]);
     }
@@ -134,12 +162,18 @@ namespace HCAL_HLX
     histogramET.GetXaxis()->SetTitle("BX Number");
     histogramET.GetYaxis()->SetTitle("ET Sum");
     histogramET.Draw();
-    canvas.SaveAs("pic/et.png");
+
+    std::string outputName = mCanvasOutputDir + "et.png";
+    canvas.SaveAs(outputName.c_str());
   }
 
   void GIFDistributor::DoLHCHistogram(u32 numBunches) {
 
-    TH1D histogramET("gifHist2","HLX LHC Distribution",numBunches,0,numBunches);
+    TDatime curTime;
+    std::string tStr = "LHC on ";
+    tStr += curTime.AsString();
+
+    TH1D histogramET("gifHist2",tStr.c_str(),numBunches,0,numBunches);
     for ( u32 j = 0 ; j != numBunches ; j++ ) {
       histogramET.Fill(j,mLHCHistogramData[j]);
     }
@@ -153,12 +187,18 @@ namespace HCAL_HLX
     histogramET.GetXaxis()->SetTitle("BX Number");
     histogramET.GetYaxis()->SetTitle("Count");
     histogramET.Draw();
-    canvas.SaveAs("pic/lhc.png");
+
+    std::string outputName = mCanvasOutputDir + "lhc.png";
+    canvas.SaveAs(outputName.c_str());
   }
 
   void GIFDistributor::DoBelowOccTopHistogram(u32 numBunches) {
 
-    TH1D histogramET("gifHist3","HLX Below Threshold Top",numBunches,0,numBunches);
+    TDatime curTime;
+    std::string tStr = "Below Threshold Inner Ring on ";
+    tStr += curTime.AsString();
+
+    TH1D histogramET("gifHist3",tStr.c_str(),numBunches,0,numBunches);
     for ( u32 j = 0 ; j != numBunches ; j++ ) {
       histogramET.Fill(j,mBelowTopHistogramData[j]);
     }
@@ -172,12 +212,18 @@ namespace HCAL_HLX
     histogramET.GetXaxis()->SetTitle("BX Number");
     histogramET.GetYaxis()->SetTitle("Count");
     histogramET.Draw();
-    canvas.SaveAs("pic/occ_below_threshold_top.png");
+
+    std::string outputName = mCanvasOutputDir + "occ_below_threshold_inner.png";
+    canvas.SaveAs(outputName.c_str());
   }
 
   void GIFDistributor::DoBetweenOccTopHistogram(u32 numBunches) {
 
-    TH1D histogramET("gifHist4","HLX Between Thresholds Top",numBunches,0,numBunches);
+    TDatime curTime;
+    std::string tStr = "Between Thresholds Inner Ring on ";
+    tStr += curTime.AsString();
+
+    TH1D histogramET("gifHist4",tStr.c_str(),numBunches,0,numBunches);
     for ( u32 j = 0 ; j != numBunches ; j++ ) {
       histogramET.Fill(j,mBetweenTopHistogramData[j]);
     }
@@ -191,13 +237,18 @@ namespace HCAL_HLX
     histogramET.GetXaxis()->SetTitle("BX Number");
     histogramET.GetYaxis()->SetTitle("Count");
     histogramET.Draw();
-    canvas.SaveAs("pic/occ_between_thresholds_top.png");
 
+    std::string outputName = mCanvasOutputDir + "occ_between_thresholds_inner.png";
+    canvas.SaveAs(outputName.c_str());
   }
 
   void GIFDistributor::DoAboveOccTopHistogram(u32 numBunches) {
 
-    TH1D histogramET("gifHist5","HLX Above Threshold Top",numBunches,0,numBunches);
+    TDatime curTime;
+    std::string tStr = "Above Threshold Inner Ring on ";
+    tStr += curTime.AsString();
+
+    TH1D histogramET("gifHist5",tStr.c_str(),numBunches,0,numBunches);
     for ( u32 j = 0 ; j != numBunches ; j++ ) {
       histogramET.Fill(j,mAboveTopHistogramData[j]);
     }
@@ -211,12 +262,18 @@ namespace HCAL_HLX
     histogramET.GetXaxis()->SetTitle("BX Number");
     histogramET.GetYaxis()->SetTitle("Count");
     histogramET.Draw();
-    canvas.SaveAs("pic/occ_above_threshold_top.png");
+
+    std::string outputName = mCanvasOutputDir + "occ_above_threshold_inner.png";
+    canvas.SaveAs(outputName.c_str());
   }
 
   void GIFDistributor::DoBelowOccBottomHistogram(u32 numBunches) {
 
-    TH1D histogramET("gifHist6","HLX Below Threshold Top",numBunches,0,numBunches);
+    TDatime curTime;
+    std::string tStr = "Below Threshold Outer Ring on ";
+    tStr += curTime.AsString();
+
+    TH1D histogramET("gifHist6",tStr.c_str(),numBunches,0,numBunches);
     for ( u32 j = 0 ; j != numBunches ; j++ ) {
       histogramET.Fill(j,mBelowBottomHistogramData[j]);
     }
@@ -230,13 +287,18 @@ namespace HCAL_HLX
     histogramET.GetXaxis()->SetTitle("BX Number");
     histogramET.GetYaxis()->SetTitle("Count");
     histogramET.Draw();
-    canvas.SaveAs("pic/occ_below_threshold_bottom.png");
 
+    std::string outputName = mCanvasOutputDir + "occ_below_threshold_outer.png";
+    canvas.SaveAs(outputName.c_str());
   }
 
   void GIFDistributor::DoBetweenOccBottomHistogram(u32 numBunches) {
 
-    TH1D histogramET("gifHist7","HLX Between Thresholds Top",numBunches,0,numBunches);
+    TDatime curTime;
+    std::string tStr = "Between Thresholds Outer Ring on ";
+    tStr += curTime.AsString();
+
+    TH1D histogramET("gifHist7",tStr.c_str(),numBunches,0,numBunches);
     for ( u32 j = 0 ; j != numBunches ; j++ ) {
       histogramET.Fill(j,mBetweenBottomHistogramData[j]);
     }
@@ -250,11 +312,18 @@ namespace HCAL_HLX
     histogramET.GetXaxis()->SetTitle("BX Number");
     histogramET.GetYaxis()->SetTitle("Count");
     histogramET.Draw();
-    canvas.SaveAs("pic/occ_between_thresholds_bottom.png");
+
+    std::string outputName = mCanvasOutputDir + "occ_between_thresholds_outer.png";
+    canvas.SaveAs(outputName.c_str());
   }
 
   void GIFDistributor::DoAboveOccBottomHistogram(u32 numBunches) {
-    TH1D histogram("gifHist8","HLX Above Threshold Top",numBunches,0,numBunches);
+
+    TDatime curTime;
+    std::string tStr = "Above Threshold Outer Ring on ";
+    tStr += curTime.AsString();
+
+    TH1D histogram("gifHist8",tStr.c_str(),numBunches,0,numBunches);
     for ( u32 j = 0 ; j != numBunches ; j++ ) {
       histogram.Fill(j,mAboveBottomHistogramData[j]);
     }
@@ -269,12 +338,25 @@ namespace HCAL_HLX
     histogram.GetXaxis()->SetTitle("BX Number");
     histogram.GetYaxis()->SetTitle("Count");
     histogram.Draw();
-    
-    canvas.SaveAs("pic/occ_above_threshold_bottom.png");
+
+    std::string outputName = mCanvasOutputDir + "occ_above_threshold_outer.png";
+    canvas.SaveAs(outputName.c_str());
   }
 
   bool GIFDistributor::ProcessSection(const LUMI_SECTION & lumiSection) { 
-    //cout << "Begin " << __PRETTY_FUNCTION__ << endl;
+    // Safety check
+    if ( lumiSection.hdr.numBunches > HCAL_HLX_MAX_BUNCHES ) {
+      cerr << "Too many bunches in " << __PRETTY_FUNCTION__ << endl;
+      // Discard
+      return true;
+    }
+    if ( lumiSection.hdr.numHLXs > HCAL_HLX_MAX_HLXS ) {
+      cerr << "Too many HLXs in " << __PRETTY_FUNCTION__ << endl;
+      // Discard
+      return true;
+    }
+
+    // todo - migrate later to use lumicalc data...
 
     // Done before histogram fill - worried about
     // root using dynamic allocation of memory...slower
@@ -297,7 +379,6 @@ namespace HCAL_HLX
 	mBetweenBottomHistogramData[j] += static_cast<double>(lumiSection.occupancy[i].data[4][j]);
 	mAboveBottomHistogramData[j] += static_cast<double>(lumiSection.occupancy[i].data[5][j]);
       }
-     //cout << j << "\t" << mETHistogramData[j] << endl;
     }
 
     // Lock the ROOT mutex to stop the other distributors
@@ -317,7 +398,6 @@ namespace HCAL_HLX
     mROOTMutex.Unlock();
 
     return true;
-    //cout << "End " << __PRETTY_FUNCTION__ << endl;
   }
 
 }
