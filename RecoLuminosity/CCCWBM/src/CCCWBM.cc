@@ -44,7 +44,7 @@ void CCCWBM::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
   }while(errorCode != 1);
   
 
-  if(currentRunNumber > -1 && currentRunNumber != lumiSection.hdr.runNumber){
+  if(currentRunNumber > -1 && currentRunNumber != (int)lumiSection.hdr.runNumber){
     std::cout<<"Beginning of new Run!  Reseting histos now!"<<std::endl;
     this->resetHistos();
   }else{
@@ -97,7 +97,7 @@ void CCCWBM::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
   gROOT->SetBatch(kTRUE);
   gStyle->cd();
 
-  Int_t wrongBy = 2;
+  //Int_t wrongBy = 2;
   gStyle->SetTimeOffset(offset_time);
 
   //std::cout<<"really bout to init histos"<<std::endl;

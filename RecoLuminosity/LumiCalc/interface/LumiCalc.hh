@@ -19,8 +19,8 @@ Summary:  Library to calculate relative luminosity from HLX data
 
 ******************************************************************************/
 
-#include "RecoLuminosity/HLXReadOut/CoreUtils/include/ICTypeDefs.hh"
-#include "RecoLuminosity/HLXReadOut/HLXCoreLibs/include/LumiStructures.hh"
+#include "RecoLuminosity/TCPReceiver/interface/ICTypeDefs.hh"
+#include "RecoLuminosity/TCPReceiver/interface/LumiStructures.hh"
 #include <cmath>
 #include <vector>
 
