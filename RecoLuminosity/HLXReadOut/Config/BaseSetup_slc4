@@ -4,7 +4,7 @@ export XDAQ_ROOT=/opt/xdaq
 export XDAQ_OS=linux
 export XDAQ_PLATFORM=x86_slc4
 
-export ROOTSYS=/nfshome0/cmssw/slc4_ia32_gcc345/lcg/root/5.14.00g-CMS11
+export ROOTSYS=/opt/root/current
 
 export LD_LIBRARY_PATH=/usr/local/lib:/usr/lib:/lib
 export PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/local/sbin

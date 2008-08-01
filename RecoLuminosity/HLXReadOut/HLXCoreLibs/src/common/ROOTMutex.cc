@@ -19,40 +19,29 @@ namespace HCAL_HLX
   using namespace ICCoreUtils;
   using namespace std;
 
-  pthread_mutex_t *ROOTMutex::mMutex = 0;
-  u32 ROOTMutex::mLockCount = 0;
+  // Static user count variable
+  u32 ROOTMutex::mUserCount = 0;
+  // Static mutex
+  pthread_mutex_t ROOTMutex::mMutex = PTHREAD_MUTEX_INITIALIZER;
 
   // Constructor
   ROOTMutex::ROOTMutex() {
-    if ( mMutex == 0 ) {
-      mMutex = new pthread_mutex_t;
-      if ( mMutex == 0 ) {
-	MemoryAllocationException lExc("Unable to allocate memory for ROOT mutex");
-	RAISE(lExc);
-      }
-      // TODO: Check init failed?
-      pthread_mutex_init(mMutex,0);
-    }
-    mLockCount++;
+    mUserCount++;
     cout << "In " << __PRETTY_FUNCTION__ << endl;
-    cout << "Lock count = " << dec << mLockCount << endl;
+    cout << "User count = " << dec << mUserCount << endl;
   }
   
   // Destructor
   ROOTMutex::~ROOTMutex() {
-    mLockCount--;
-    if ( mMutex && (mLockCount == 0) ) {
-      pthread_mutex_destroy(mMutex);
-      delete mMutex; mMutex = 0;
-    }
+    mUserCount--;
   }
   
   void ROOTMutex::Lock() {
-    pthread_mutex_lock(mMutex);
+    pthread_mutex_lock(&mMutex);
   }
 
   void ROOTMutex::Unlock() {
-    pthread_mutex_unlock(mMutex);
+    pthread_mutex_unlock(&mMutex);
   }
 
 } //~namespace HCAL_HLX

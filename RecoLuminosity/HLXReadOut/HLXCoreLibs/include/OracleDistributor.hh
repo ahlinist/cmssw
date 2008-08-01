@@ -69,8 +69,8 @@ namespace HCAL_HLX
 
     // Luminosity DB data structures
     DBWriter::DBLumiSection mLumiSectionData;
-    DBWriter::DBLumiBX mLumiBXData;
     DBWriter::DBLumiSummary mLumiSummaryData;
+    DBWriter::DBLumiDetails mLumiDetails;
 
     // Logging file for exceptions from OMDS
     ofstream mLogFile;

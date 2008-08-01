@@ -22,7 +22,7 @@ namespace HCAL_HLX
   // Default constructor
   SectionListDistributor::SectionListDistributor() {
     mOutput = new ofstream("/tmp/lumiSectionSummary.txt",ios_base::app);
-    *mOutput << "Run number\tSection number" << endl;
+    *mOutput << "Time\tRun number\tSection number" << endl;
   }
 
   // Destructor deletes the hardware interface
@@ -32,7 +32,9 @@ namespace HCAL_HLX
 
   bool SectionListDistributor::ProcessSection(const LUMI_SECTION & lumiSection) {
     try {
-      *mOutput << lumiSection.hdr.runNumber << "\t"
+      time_t time1 = time(NULL);
+      *mOutput << ctime(&time1) << "\t"
+	       << lumiSection.hdr.runNumber << "\t"
 	       << lumiSection.hdr.sectionNumber << endl;
       return true;
     } catch (ICException & aExc) {
