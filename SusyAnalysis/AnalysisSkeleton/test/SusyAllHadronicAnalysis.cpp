@@ -14,7 +14,7 @@ Uses the EventSelector interface for event selection and TFileService for plotti
 //
 // Original Author:  Markus Stoye
 //         Created:  Mon Feb 18 15:40:44 CET 2008
-// $Id: SusyAllHadronicAnalysis.cpp,v 1.9 2008/06/20 12:35:36 fronga Exp $
+// $Id: SusyAllHadronicAnalysis.cpp,v 1.4 2008/07/30 13:35:42 fronga Exp $
 //
 //
 
@@ -159,6 +159,8 @@ SusyAllHadronicAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup
 {
 
   // Get some event information (process ID, weight)
+  run_   = iEvent.id().run();
+  event_ = iEvent.id().event();
   processId_   = 0;
   if ( eventWeight_<0. ) {     // <0 => get weight from event
     edm::Handle<double> weightHandle;
