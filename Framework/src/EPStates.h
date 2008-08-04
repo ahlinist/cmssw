@@ -227,7 +227,6 @@ namespace statemachine {
 
     bool beginRunCalled() const;
     int currentRun() const;
-    int previousRun() const;
     bool runException() const;
     void setupCurrentRun();
     void beginRun(int run);
@@ -240,7 +239,6 @@ namespace statemachine {
     bool exitCalled_;
     bool beginRunCalled_;
     int currentRun_;
-    int previousRun_;
     std::set<int> previousRuns_;
     bool runException_;
   };
@@ -307,7 +305,6 @@ namespace statemachine {
     bool checkInvariant();
 
     LumiID currentLumi() const;
-    LumiID previousLumi() const;
     bool currentLumiEmpty() const;
     std::vector<LumiID> const& unhandledLumis() const;
     void setupCurrentLumi();
@@ -323,7 +320,6 @@ namespace statemachine {
     bool exitCalled_;
     bool currentLumiEmpty_;
     LumiID currentLumi_;
-    LumiID previousLumi_;
     std::set<LumiID> previousLumis_;
     std::vector<LumiID> unhandledLumis_;
     bool lumiException_;
