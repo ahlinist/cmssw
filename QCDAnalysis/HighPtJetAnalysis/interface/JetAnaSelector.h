@@ -9,7 +9,8 @@
 #include "boost/utility/enable_if.hpp"
  
 #include "FWCore/Framework/interface/SelectorBase.h"
-#include "FWCore/Framework/interface/SelectorProvenance.h"
+//#include "FWCore/Framework/interface/SelectorProvenance.h"
+#include "DataFormats/Provenance/interface/Provenance.h"
 
 #include <iostream>
 
@@ -43,7 +44,7 @@ namespace edm{
       }
 
 
-      virtual bool doMatch(SelectorProvenance const& p) const 
+      virtual bool doMatch(ConstBranchDescription const& p) const 
       {
 	//note: mustHave/NoGo should be sets or something, to speed it up! (later... need PLOTS!)
 	std::string bname(p.friendlyClassName());
