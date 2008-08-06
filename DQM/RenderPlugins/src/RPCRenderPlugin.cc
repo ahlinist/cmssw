@@ -93,7 +93,7 @@ void  RPCRenderPlugin::postDrawTH2(TCanvas *c, const DQMNet::CoreObject &o){
    obj->GetYaxis()->SetNdivisions(13,true);
    obj->GetXaxis()->CenterLabels();
    obj->GetYaxis()->CenterLabels();
-   c->SetGrid(1,1);
+   //   c->SetGrid(1,1);
    
    TLine line;
    line.SetLineWidth(1);
@@ -108,7 +108,7 @@ void  RPCRenderPlugin::postDrawTH2(TCanvas *c, const DQMNet::CoreObject &o){
    line.DrawLine(7.5, 0.5,7.5, 6.5 );
  }
 
-if(o.name.find("Occupancy") != std::string::npos){
+ if(o.name.find("Occupancy") != std::string::npos){
    TLine line;
    line.SetLineWidth(2);
    //rb1in
@@ -127,9 +127,7 @@ if(o.name.find("Occupancy") != std::string::npos){
 
    //rb3
    line.DrawLine(43, 9.5, 43, 13.5);
-
-
  }
-
+ 
  return;
 }
