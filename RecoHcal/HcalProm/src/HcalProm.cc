@@ -21,7 +21,7 @@
 //                   Anna Kropivnitskaya
 // Contacts: Efe Yazgan, Taylan Yetkin
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.52 2008/07/28 12:55:05 efe Exp $
+// $Id: HcalProm.cc,v 1.53 2008/07/30 14:05:46 efe Exp $
 //
 //
 
@@ -766,7 +766,7 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
                 outer_etam = -999;  // aiaiaiaiaaaaaiiii
             if (TMath::IsNaN(outer_etap))
                 outer_etap = -999;  // aiaiaiaiaaaaaiiii
-
+	}
             if (isCloseToIP_in && isCloseToIP_out) {
                 ++NGoodTracks;
 
@@ -1575,7 +1575,7 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
                               hZImpXYHB2DT -> Fill(XY); 
                               hLmuonDTImpXY->Fill(LengthMuonDT[ik],ImpXYmuonHB[ik]);
                               hImpXYvsZ->Fill(ImpXYmuonHB[ik],ZImpXYmuonHB[ik]);
-                           }
+			      //}
                       } // end check for muon in 2 DT exists
 		      //}
                } //end for for 2nd good muon
