@@ -16,7 +16,7 @@
 */
 // Original Author:  Julia Weinelt
 //         Created:  Wed Jan 23 15:12:46 CET 2008
-// $Id: STFilter.cc,v 1.5 2008/02/11 13:40:21 dkcira Exp $
+// $Id: STFilter.cc,v 1.6 2008/02/12 10:34:07 dkcira Exp $
 #include <memory>
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDFilter.h"
@@ -84,22 +84,34 @@ bool STFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   iEvent.getByType(evt);
   const HepMC::GenEvent * myEvt = evt->GetEvent();   // GET EVENT FROM HANDLE 
   
-  HepMC::GenEvent::particle_const_iterator i = myEvt->particles_begin();
-  while( (*i)->status() == 3 ) i++; // skip status 3 particles
-  
-  // ---- 22 or 23? ----
-  if((*i)->barcode() <= 13) 
-    lo = true;
-  else 
-    accEvt = true;
+  bool bQuarksOpposite = false;
+  for(HepMC::GenEvent::particle_const_iterator i = myEvt->particles_begin();
+      (*i)->status() == 3; ++i) { // abort after status 3 particles
+    // logic:
+    // - in 2->2 matrix elements, the incoming (top production)
+    //   b quark and the outgoing (top decay) b quark have same sign,
+    //   so we flip the bQuarksOpposite flag twice -> false
+    //   (opposite-sign b quark comes from the shower and has status 2)
+    // - in 2->3 matrix elements, we have two outgoing b quarks with status
+    //   3 and opposite signs -> true
+    if ((*i)->pdg_id()) == -5)
+      bQuarksOpposite = !bQuarksOpposite;
+  }
 
+  // ---- 22 or 23? ----
+  if (!bQuarksOpposite) // 22 
+    lo = true;
+  else
+    accEvt = true;      // 23
+  
   // ---- filter only 22 events ----
   if (lo){
     for (HepMC::GenEvent::particle_const_iterator p = myEvt->particles_begin(); p!=myEvt->particles_end(); ++p){
       // ---- look in shower for 2nd b quark ----
       if ((*p)->status() == 2 && abs((*p)->pdg_id()) == 5){  
 	// ---- if b quark is found, loop over its parents ----
-	for (HepMC::GenVertex::particle_iterator m = (*p)->production_vertex()->particles_begin(HepMC::parents); m != (*p)->production_vertex()->particles_end(HepMC::parents); ++m){
+	for (HepMC::GenVertex::particle_iterator m = (*p)->production_vertex()->particles_begin(HepMC::parents); 
+	     m != (*p)->production_vertex()->particles_end(HepMC::parents); ++m){
 	  // ---- found 2ndb-candidate in shower ---- // ---- check mother of this candidate ----
 	  if(abs((*m)->barcode()) < 5){        
 	    if(secBcount == 1) break;
