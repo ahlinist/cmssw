@@ -26,6 +26,8 @@ namespace CLHEP {
 class HepRandomEngine;
 }
 
+#include "GeneratorInterface/CommonInterface/interface/TauolaInterface.h"
+
 namespace edm
 {
   class MadGraphProducer : public EDFilter {
@@ -62,6 +64,13 @@ namespace edm
     bool initialized_;
     unsigned int eventNumber_;
     CLHEP::HepRandomEngine* fRandomEngine;
+    ParameterSet pset_;
+
+    // external generators (tauola,...)
+    bool useExternalGenerators_ ;
+    bool useTauola_ ;
+    bool useTauolaPolarization_ ;
+    TauolaInterface tauola_ ;
   };
 } 
 #endif
