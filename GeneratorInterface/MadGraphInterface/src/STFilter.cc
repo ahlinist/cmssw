@@ -16,7 +16,7 @@
 */
 // Original Author:  Julia Weinelt
 //         Created:  Wed Jan 23 15:12:46 CET 2008
-// $Id: STFilter.cc,v 1.6 2008/02/12 10:34:07 dkcira Exp $
+// $Id: STFilter.cc,v 1.7 2008/08/07 12:35:39 saout Exp $
 #include <memory>
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDFilter.h"
@@ -94,7 +94,7 @@ bool STFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup) {
     //   (opposite-sign b quark comes from the shower and has status 2)
     // - in 2->3 matrix elements, we have two outgoing b quarks with status
     //   3 and opposite signs -> true
-    if ((*i)->pdg_id()) == -5)
+    if ((*i)->pdg_id() == -5)
       bQuarksOpposite = !bQuarksOpposite;
   }
 
