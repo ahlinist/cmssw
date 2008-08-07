@@ -44,6 +44,9 @@ namespace HCAL_HLX
 
   private:
 
+    // Canvas output directory for pictures
+    std::string mCanvasOutputDir;
+
     // ROOT mutex object
     ROOTMutex mROOTMutex;
 
