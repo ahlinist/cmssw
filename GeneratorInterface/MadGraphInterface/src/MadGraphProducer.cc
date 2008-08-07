@@ -321,6 +321,12 @@ bool MadGraphProducer::beginRun(Run& run, const EventSetup& es)
 
 bool MadGraphProducer::endRun(Run& run, const EventSetup& es)
 {
+  call_pystat(1);
+  if ( useTauola_ ) {
+    tauola_.print();
+    //call_pretauola(1); // print TAUOLA decay statistics output
+  }
+
   mgclos_();
   initialized_ = false;
   return true;
@@ -374,12 +380,6 @@ bool MadGraphProducer::filter(Event & e, const EventSetup& es)
   pdf_info->set_pdf1(pypars.pari[28]);
   pdf_info->set_pdf2(pypars.pari[29]);
   evt->set_pdf_info( *pdf_info);
-
-  call_pystat(1);
-  if ( useTauola_ ) {
-    tauola_.print();
-    //call_pretauola(1); // print TAUOLA decay statistics output
-  }
 
   if(e.id().event() <= maxEventsToPrint_ && (pythiaPylistVerbosity_ || pythiaHepMCVerbosity_)) {
     // Prints PYLIST info
