@@ -14,7 +14,7 @@ See sample cfg files in TrackingAnalysis/Cosmics/test/hitRes*cfg
 //
 // Original Authors:  Wolfgang Adam, Keith Ulmer
 //         Created:  Thu Oct 11 14:53:32 CEST 2007
-// $Id: HitRes.cc,v 1.4 2008/06/12 09:11:47 adamwo Exp $
+// $Id: HitRes.cc,v 1.5 2008/06/16 14:56:34 adamwo Exp $
 //
 //
 
@@ -216,25 +216,25 @@ HitRes::analyze (const Trajectory& trajectory,
   typedef vector<Overlap> OverlapContainer;
   ++overlapCounts_[0];
 
-
   const TrajectoryMeasurement* previousTM(0);
+  const TrajectoryMeasurement* previousTM2(0);
   DetId previousId(0);
+  DetId previousId2(0);
   int previousLayer(-1);
+  int previousLayer2(-1);
   OverlapContainer overlapHits;
   //
   // quality cuts on trajectory
   // min. # hits / matched hits, barrel only
   //
-  unsigned int nhMatched(0);
   vector<TrajectoryMeasurement> measurements(trajectory.measurements());
   for ( vector<TrajectoryMeasurement>::const_iterator itm=measurements.begin();
 	itm!=measurements.end(); ++itm ) {
     if ( !itm->recHit()->isValid() ) continue;
-    if ( dynamic_cast<const TSiStripMatchedRecHit*>(&(*itm->recHit())) )  ++nhMatched;
     if ( itm->recHit()->geographicalId().subdetId()!=StripSubdetector::TIB &&
 	 itm->recHit()->geographicalId().subdetId()!=StripSubdetector::TOB )  return;
   }
-  if ( trajectory.foundHits()<6 || nhMatched<0 )  return;
+  if ( trajectory.foundHits()<6 )  return;
   
   //
   // loop over measurements in the trajectory and calculate residuals
@@ -247,6 +247,7 @@ HitRes::analyze (const Trajectory& trajectory,
     ConstRecHitPointer hit = itm->recHit();
     if ( !hit->isValid() ) {
       previousTM = 0;
+      previousLayer = -1;
       continue;
     }
     //
@@ -255,20 +256,38 @@ HitRes::analyze (const Trajectory& trajectory,
     //
     ++overlapCounts_[1];
     DetId id = hit->geographicalId();
-    int layer(-1);
-    if ( previousTM==0 ) {
-      layer = layerFromId(id);
-    }
-    else {
+    int layer(layerFromId(id));
+    if ( previousTM!=0 ) {
       if ( id.det()==previousId.det() &&
 	   id.subdetId()==previousId.subdetId() ) {
-	layer = layerFromId(id);
 	if ( layer!=-1 && layer==previousLayer ) {
-	  overlapHits.push_back(std::make_pair(previousTM,&(*itm)));
-	  edm::LogVerbatim("HitRes") << "adding overlap pair from layer = " << layer;
+	  if ( layer !=1 && layer !=2 && layer!=5 && layer!=6 ) {
+	    overlapHits.push_back(std::make_pair(previousTM,&(*itm)));
+	    edm::LogVerbatim("HitRes") << "adding overlap pair from layer = " << layer;
+	  } else {
+	    if ( (id.rawId() & 0x3) == (previousId.rawId() & 0x3) ) {
+	      overlapHits.push_back(std::make_pair(previousTM,&(*itm)));
+	      edm::LogVerbatim("HitRes") << "adding overlap pair from glued layer first = " 
+                   << layer << " and " << previousLayer;
+	    } else {
+	      if ( layer==previousLayer2 && (id.rawId() & 0x3) == (previousId2.rawId() & 0x3) ) {
+		overlapHits.push_back(std::make_pair(previousTM2,&(*itm)));
+		edm::LogVerbatim("HitRes") << "adding overlap pair from glued layer second = " 
+                     << layer << " and " << previousLayer2;
+	      }
+	    }
+	  }
 	}
       }
     }
+    //cout << "End of add overlap loop: previousId2 module = " << (previousId2.rawId() & 0x3) 
+    //     << "  previousId2 = " << previousId2.rawId() << "  previousLayer2 = " << previousLayer2 
+    //     << "  previousId module = " << (previousId.rawId() & 0x3) << "  previousId = " << previousId.rawId() 
+    //     << "  previousLayer = " << previousLayer << "  currentId module = " << (id.rawId() & 0x3) 
+    //     << "  currentId = " << id.rawId() << "  currentLayer = " << layer << endl; 
+    previousTM2 = previousTM;
+    previousId2 = previousId;
+    previousLayer2 = previousLayer;
     previousTM = &(*itm);
     previousId = id;
     previousLayer = layer;
@@ -278,21 +297,15 @@ HitRes::analyze (const Trajectory& trajectory,
   //
   hitCounts_[0] = trajectory.foundHits();
   hitCounts_[1] = trajectory.lostHits();
-  hitCounts_[2] = nhMatched;
   chi2_ = trajectory.chiSquared();
+  //not normalized
+  // trajectory.chiSquared()/trajectory.ndof(false) would be normalized
   for ( OverlapContainer::const_iterator iol=overlapHits.begin();
  	iol!=overlapHits.end(); ++iol ) {
-    // 
-    // verify minimum number of matched hits (excluding the overlap) REMOVED for now.
-    //
-    int nhm(nhMatched);
-    if ( dynamic_cast<const TSiStripMatchedRecHit*>(&(*(*iol).first->recHit())) )  --nhm;
-    if ( dynamic_cast<const TSiStripMatchedRecHit*>(&(*(*iol).second->recHit())) )  --nhm;
-    if ( nhm<0 )  continue;
-    //
+    /* 
     // Check for non-overlaping rphi and stereo due to position in corner of detector, and
     // remove such hits for stereo detectors
-
+    
     if ( dynamic_cast<const ProjectedRecHit2D*>(&(*(*iol).first->recHit())) ){
       //cout << "found glued layer hit" << endl;
       const ProjectedRecHit2D* proj1 = dynamic_cast<const ProjectedRecHit2D*>(&(*(*iol).first->recHit()));
@@ -308,8 +321,7 @@ HitRes::analyze (const Trajectory& trajectory,
       const DetId id2 = det2->geographicalId();
       if((id2.rawId() & 0x3)==1) continue; //hit is stereo
     }
-
-    
+    */    
     //              
     // create reference state @ module 1 (no info from overlap hits)
     //
@@ -335,7 +347,6 @@ HitRes::analyze (const Trajectory& trajectory,
     //
     std::pair<TrajectoryStateOnSurface,double> tsosWithS = 
       propagator.propagateWithPath(comb1,bwdPred2.surface());
-//     cout << "Path = " << tsosWithS.second << endl;
     TrajectoryStateOnSurface comb1At2 = tsosWithS.first;
     if ( !comb1At2.isValid() )  continue;
     overlapPath_ = tsosWithS.second;
@@ -408,7 +419,7 @@ HitRes::analyze (const Trajectory& trajectory,
     hitErrors_[0] = sqrt((*iol).first->recHit()->localPositionError().xx());
     hitPositions_[1] = (*iol).second->recHit()->localPosition().x();
     hitErrors_[1] = sqrt((*iol).second->recHit()->localPositionError().xx());
-    
+
     //try writing out the SimHit info (for MC only)
     if(doSimHit_){
       std::vector<PSimHit> psimHits1;
@@ -522,7 +533,7 @@ HitRes::layerFromId (const DetId& id) const
   }
   else if ( id.subdetId()==StripSubdetector::TOB ) {
     TOBDetId tobId(id);
-    return tobId.layer();
+    return 4 + tobId.layer();
   }
   return -1;
 }
