@@ -2,6 +2,7 @@
 <use name=hepmc>
 <use name=rootrflx>
 <use name=roothistmatrix>
+<use name=FWCore/MessageLogger>
 <export>
   <use name=DataFormats/Common>
   <use name=hepmc>
