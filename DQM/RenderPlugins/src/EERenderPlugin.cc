@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.92 2008/07/31 05:43:19 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.93 2008/08/01 08:32:24 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.92 $
-  \date $Date: 2008/07/31 05:43:19 $
+  \version $Revision: 1.93 $
+  \date $Date: 2008/08/01 08:32:24 $
 */
 
 #include "TH1F.h"
@@ -661,7 +661,7 @@ void EERenderPlugin::postDraw( TCanvas *c, const DQMNet::CoreObject &o, const Vi
     postDrawTH2F( c, o );
   }
   else if( dynamic_cast<TH1F*>( o.object ) ) {
-    preDrawTH1F( c, o );
+    postDrawTH1F( c, o );
   }
 
 #ifdef DEBUG
@@ -766,7 +766,7 @@ void EERenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
         l.DrawLine(20+0.2*Numbers::ixSectorsEE[i], 0.2*Numbers::iySectorsEE[i], 20+0.2*Numbers::ixSectorsEE[i+1], 0.2*Numbers::iySectorsEE[i+1]);
       } else if( name.find( "EECLT" ) < name.size() ) {
         l.DrawLine(3.0*(Numbers::ixSectorsEE[i]-50), 3.0*(Numbers::iySectorsEE[i]-50), 3.0*(Numbers::ixSectorsEE[i+1]-50), 3.0*(Numbers::iySectorsEE[i+1]-50));
-      } else {
+      } else if( name.find( " PN " ) >= name.size() ) {
         l.DrawLine(Numbers::ixSectorsEE[i], Numbers::iySectorsEE[i], Numbers::ixSectorsEE[i+1], Numbers::iySectorsEE[i+1]);
       }
     }
