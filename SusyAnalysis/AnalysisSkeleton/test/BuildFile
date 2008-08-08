@@ -1,6 +1,7 @@
 <export></export>
+<use name=PhysicsTools/UtilAlgos>
 <use name=SusyAnalysis/EventSelector>
-<use name=SusyAnalysis/AnalysisSkeleton>
+<use name=root>
 <library name=SusyAnalysisAllHadronic file=SusyAllHadronicAnalysis.cpp>
   <flags EDM_PLUGIN=1>
 </library>
