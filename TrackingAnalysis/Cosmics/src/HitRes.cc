@@ -14,7 +14,7 @@ See sample cfg files in TrackingAnalysis/Cosmics/test/hitRes*cfg
 //
 // Original Authors:  Wolfgang Adam, Keith Ulmer
 //         Created:  Thu Oct 11 14:53:32 CEST 2007
-// $Id: HitRes.cc,v 1.5 2008/06/16 14:56:34 adamwo Exp $
+// $Id: HitRes.cc,v 1.6 2008/08/07 19:57:22 kaulmer Exp $
 //
 //
 
@@ -103,7 +103,7 @@ private:
   TTree* rootTree_;
   float overlapPath_;
   unsigned short hitCounts_[3];
-  float chi2_;
+  float chi2_[2];
   unsigned int overlapIds_[2];
   float predictedPositions_[3][2];
   float predictedLocalParameters_[5][2];
@@ -217,11 +217,8 @@ HitRes::analyze (const Trajectory& trajectory,
   ++overlapCounts_[0];
 
   const TrajectoryMeasurement* previousTM(0);
-  const TrajectoryMeasurement* previousTM2(0);
   DetId previousId(0);
-  DetId previousId2(0);
   int previousLayer(-1);
-  int previousLayer2(-1);
   OverlapContainer overlapHits;
   //
   // quality cuts on trajectory
@@ -250,6 +247,7 @@ HitRes::analyze (const Trajectory& trajectory,
       previousLayer = -1;
       continue;
     }
+    
     //
     // check for overlap: same subdet-id && layer number for
     // two consecutive hits
@@ -263,17 +261,16 @@ HitRes::analyze (const Trajectory& trajectory,
 	if ( layer!=-1 && layer==previousLayer ) {
 	  if ( layer !=1 && layer !=2 && layer!=5 && layer!=6 ) {
 	    overlapHits.push_back(std::make_pair(previousTM,&(*itm)));
-	    edm::LogVerbatim("HitRes") << "adding overlap pair from layer = " << layer;
+ 	    edm::LogVerbatim("HitRes") << "adding overlap pair from layer = " << layer;
 	  } else {
-	    if ( (id.rawId() & 0x3) == (previousId.rawId() & 0x3) ) {
-	      overlapHits.push_back(std::make_pair(previousTM,&(*itm)));
-	      edm::LogVerbatim("HitRes") << "adding overlap pair from glued layer first = " 
-                   << layer << " and " << previousLayer;
-	    } else {
-	      if ( layer==previousLayer2 && (id.rawId() & 0x3) == (previousId2.rawId() & 0x3) ) {
-		overlapHits.push_back(std::make_pair(previousTM2,&(*itm)));
-		edm::LogVerbatim("HitRes") << "adding overlap pair from glued layer second = " 
-                     << layer << " and " << previousLayer2;
+	    for (vector<TrajectoryMeasurement>::const_iterator itmCompare = itm-1; 
+		  itmCompare >= measurements.begin() &&  itmCompare > itm - 4; 
+		  --itmCompare){
+	      if (layer != layerFromId(itmCompare->recHit()->geographicalId())) break;
+	      if ( (id.rawId() & 0x3) == (itmCompare->recHit()->geographicalId().rawId() & 0x3) ) {
+		overlapHits.push_back(std::make_pair(&(*itmCompare),&(*itm)));
+		edm::LogVerbatim("HitRes") << "adding overlap pair from glued layer = " << layer;
+		break;
 	      }
 	    }
 	  }
@@ -285,9 +282,6 @@ HitRes::analyze (const Trajectory& trajectory,
     //     << "  previousId module = " << (previousId.rawId() & 0x3) << "  previousId = " << previousId.rawId() 
     //     << "  previousLayer = " << previousLayer << "  currentId module = " << (id.rawId() & 0x3) 
     //     << "  currentId = " << id.rawId() << "  currentLayer = " << layer << endl; 
-    previousTM2 = previousTM;
-    previousId2 = previousId;
-    previousLayer2 = previousLayer;
     previousTM = &(*itm);
     previousId = id;
     previousLayer = layer;
@@ -297,7 +291,8 @@ HitRes::analyze (const Trajectory& trajectory,
   //
   hitCounts_[0] = trajectory.foundHits();
   hitCounts_[1] = trajectory.lostHits();
-  chi2_ = trajectory.chiSquared();
+  chi2_[0] = trajectory.chiSquared();
+  chi2_[1] = trajectory.ndof(false);
   //not normalized
   // trajectory.chiSquared()/trajectory.ndof(false) would be normalized
   for ( OverlapContainer::const_iterator iol=overlapHits.begin();
@@ -548,7 +543,7 @@ HitRes::beginJob(const edm::EventSetup&)
   rootFile_ = new TFile("HitRes.root","recreate");
   rootTree_ = new TTree("Overlaps","Overlaps");
   rootTree_->Branch("hitCounts",hitCounts_,"found/s:lost/s:matched/s");
-  rootTree_->Branch("chi2",&chi2_,"chi2/F");
+  rootTree_->Branch("chi2",chi2_,"chi2/F:ndf/F");
   rootTree_->Branch("path",&overlapPath_,"path/F");
   rootTree_->Branch("detids",overlapIds_,"id[2]/i");
   rootTree_->Branch("predPos",predictedPositions_,"gX[2]/F:gY[2]/F:gZ[2]/F");
