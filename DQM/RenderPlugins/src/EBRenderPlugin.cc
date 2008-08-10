@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.92 2008/07/30 20:50:00 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.93 2008/08/01 08:32:24 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.92 $
-  \date $Date: 2008/07/30 20:50:00 $
+  \version $Revision: 1.93 $
+  \date $Date: 2008/08/01 08:32:24 $
 */
 
 #include "TH1F.h"
@@ -391,7 +391,7 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->GetYaxis()->SetNdivisions(4);
   }
 
-  if( nbx == 10 && nby == 5 ) {
+  if( nbx == 10 && ( nby == 1 || nby == 5 ) ) {
     gPad->SetGridx();
     gPad->SetGridy();
     obj->GetXaxis()->SetNdivisions(10);
@@ -815,7 +815,7 @@ void EBRenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( nbx == 10 && nby == 5 ) {
+  if( nbx == 10 && ( nby == 1 || nby == 5 ) ) {
     int x1 = text3->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
     int x2 = text3->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
     int y1 = text3->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
