@@ -186,6 +186,12 @@ void L1TRenderPlugin::preDrawTH1F ( TCanvas *c, const DQMNet::CoreObject &o )
     return;
   }  
 
+  else if(REMATCH("BX *", o.name)) {
+    obj->GetXaxis()->SetTitle("bx");
+    obj->GetXaxis()->SetNdivisions(3);
+    return;
+  }
+
   else if(REMATCH("2nd Tracks", o.name)) {
     obj->GetXaxis()->SetTitle("sector");
     obj->GetXaxis()->SetNdivisions(12);
@@ -202,11 +208,6 @@ void L1TRenderPlugin::preDrawTH1F ( TCanvas *c, const DQMNet::CoreObject &o )
     return;
   }
 
-  else if(REMATCH("BX *", o.name)) {
-    obj->GetXaxis()->SetTitle("bx");
-    obj->GetXaxis()->SetNdivisions(3);
-    return;
-  }
 
 //   else if(REMATCH("Wheel * - BX*", o.name)) {
 //     obj->GetXaxis()->SetTitle("bx");
