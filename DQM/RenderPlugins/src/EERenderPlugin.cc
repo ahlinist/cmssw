@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.95 2008/08/08 10:26:39 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.96 2008/08/10 08:28:01 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.95 $
-  \date $Date: 2008/08/08 10:26:39 $
+  \version $Revision: 1.96 $
+  \date $Date: 2008/08/10 08:28:01 $
 */
 
 #include "TH1F.h"
@@ -60,7 +60,7 @@ void EERenderPlugin::initialise( int argc, char **argv ) {
     color->SetRGB( ecdqm::rgb2[i][1], 0, 0 );
   }
 
-  for( short i=0; i<6; i++ ) pCol3[i]  = i+301;
+  for( short i=0; i<7; i++ ) pCol3[i]  = i+301;
   for( short i=0; i<10; i++ ) pCol4[i] = i+401;
   for( short i=0; i<10; i++ ) pCol5[i] = i+501;
 
@@ -552,8 +552,8 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   if( name.find( "summary" ) < name.size() ) {
     obj->SetMinimum(-0.00000001);
-    obj->SetMaximum(6.0);
-    gStyle->SetPalette(6, pCol3);
+    obj->SetMaximum(7.0);
+    gStyle->SetPalette(7, pCol3);
     obj->SetOption("col");
     gStyle->SetPaintTextFormat("+g");
     return;
@@ -561,8 +561,8 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   if( name.find( "quality" ) < name.size() ) {
     obj->SetMinimum(-0.00000001);
-    obj->SetMaximum(6.0);
-    gStyle->SetPalette(6, pCol3);
+    obj->SetMaximum(7.0);
+    gStyle->SetPalette(7, pCol3);
     obj->SetOption("col");
     gStyle->SetPaintTextFormat("+g");
     return;
