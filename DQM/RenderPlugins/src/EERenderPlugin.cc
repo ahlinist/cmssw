@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.96 2008/08/10 08:28:01 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.97 2008/08/11 07:24:15 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.96 $
-  \date $Date: 2008/08/10 08:28:01 $
+  \version $Revision: 1.97 $
+  \date $Date: 2008/08/11 07:24:15 $
 */
 
 #include "TH1F.h"
@@ -129,15 +129,15 @@ void EERenderPlugin::initialise( int argc, char **argv ) {
   text7->SetBinContent(5, 2, +5);
   text7->SetBinContent(3, 3, +4);
 
-  text8->SetBinContent(2, 5, -7);
-  text8->SetBinContent(2, 7, -8);
-  text8->SetBinContent(4, 9, -9);
-  text8->SetBinContent(7, 9, -1);
-  text8->SetBinContent(9, 7, -2);
-  text8->SetBinContent(9, 5, -3);
-  text8->SetBinContent(8, 3, -4);
+  text8->SetBinContent(2, 5, -3);
+  text8->SetBinContent(2, 7, -2);
+  text8->SetBinContent(4, 9, -1);
+  text8->SetBinContent(7, 9, -9);
+  text8->SetBinContent(9, 7, -8);
+  text8->SetBinContent(9, 5, -7);
+  text8->SetBinContent(8, 3, -6);
   text8->SetBinContent(6, 2, -5);
-  text8->SetBinContent(3, 3, -6);
+  text8->SetBinContent(3, 3, -4);
 
   text9->SetBinContent(2, 5, +3);
   text9->SetBinContent(2, 7, +2);
