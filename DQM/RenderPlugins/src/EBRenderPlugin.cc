@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.94 2008/08/10 08:28:01 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.95 2008/08/11 07:24:15 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.94 $
-  \date $Date: 2008/08/10 08:28:01 $
+  \version $Revision: 1.95 $
+  \date $Date: 2008/08/11 07:24:15 $
 */
 
 #include "TH1F.h"
@@ -215,6 +215,9 @@ void EBRenderPlugin::preDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o 
 
   std::string name = o.name.substr(o.name.rfind("/")+1);
 
+  int nbx = obj->GetNbinsX();
+  int nby = obj->GetNbinsY();
+
   gStyle->SetPaintTextFormat();
 
   gStyle->SetOptStat(kFALSE);
@@ -252,9 +255,6 @@ void EBRenderPlugin::preDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o 
     gStyle->SetPaintTextFormat("+g");
     return;
   }
-
-  int nbx = obj->GetNbinsX();
-  int nby = obj->GetNbinsY();
 
   if( nbx == 72 && nby == 34 ) {
     gPad->SetGridx();
@@ -348,6 +348,9 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   std::string name = o.name.substr(o.name.rfind("/")+1);
 
+  int nbx = obj->GetNbinsX();
+  int nby = obj->GetNbinsY();
+
   gStyle->SetPaintTextFormat();
 
   gStyle->SetOptStat(kFALSE);
@@ -373,9 +376,6 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->SetOption("colz");
     return;
   }
-
-  int nbx = obj->GetNbinsX();
-  int nby = obj->GetNbinsY();
 
   if( nbx == 85 && nby == 20 ) {
     gPad->SetGridx();
@@ -524,13 +524,13 @@ void EBRenderPlugin::preDrawTH1F( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   std::string name = o.name.substr(o.name.rfind("/")+1);
 
+  int nbx = obj->GetNbinsX();
+
   gStyle->SetPaintTextFormat();
 
   gStyle->SetOptStat("euomr");
   obj->SetStats(kTRUE);
   gPad->SetLogy(kFALSE);
-
-  int nbx = obj->GetNbinsX();
 
   if ( obj->GetMaximum() > 0. ) gPad->SetLogy(kTRUE);
 
@@ -616,6 +616,9 @@ void EBRenderPlugin::postDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o
 
   std::string name = o.name.substr(o.name.rfind("/")+1);
 
+  int nbx = obj->GetNbinsX();
+  int nby = obj->GetNbinsY();
+
   if( name.find( "EBLT shape" ) < name.size() ) {
     return;
   }
@@ -634,9 +637,6 @@ void EBRenderPlugin::postDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o
     text7->Draw("text,same");
     return;
   }
-
-  int nbx = obj->GetNbinsX();
-  int nby = obj->GetNbinsY();
 
   if( nbx == 17 && nby == 4 ) {
     int x1 = text2->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
@@ -691,6 +691,9 @@ void EBRenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   std::string name = o.name.substr(o.name.rfind("/")+1);
 
+  int nbx = obj->GetNbinsX();
+  int nby = obj->GetNbinsY();
+
   if( name.find( "EBCLT" ) < name.size() ) {
     int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
     int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
@@ -714,6 +717,16 @@ void EBRenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
   }
 
   if( name.find( "EBOT digi" ) < name.size() ) {
+    if( nbx == 85 && nby == 20 ) {
+      int x1 = text1->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+      int x2 = text1->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+      int y1 = text1->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+      int y2 = text1->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+      text1->GetXaxis()->SetRange(x1, x2);
+      text1->GetYaxis()->SetRange(y1, y2);
+      text1->Draw("text,same");
+      return;
+    }
     int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
     int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
     int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
@@ -789,9 +802,6 @@ void EBRenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     text9->Draw("text,same");
     return;
   }
-
-  int nbx = obj->GetNbinsX();
-  int nby = obj->GetNbinsY();
 
   if( nbx == 85 && nby == 20 ) {
     int x1 = text1->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
