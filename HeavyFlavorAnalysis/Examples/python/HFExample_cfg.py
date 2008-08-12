@@ -55,7 +55,7 @@ process.evtgenproducer = cms.EDProducer("EvtGenProducer",
     use_default_decay = cms.untracked.bool(False),
     decay_table = cms.FileInPath('GeneratorInterface/EvtGenInterface//data/DECAY.DEC'),
     particle_property_file = cms.FileInPath('GeneratorInterface/EvtGenInterface/data/evt.pdl'),
-    user_decay_file = cms.FileInPath('GeneratorInterface/EvtGenInterface/data/BJpsiK.dec'),
+    user_decay_file = cms.FileInPath('GeneratorInterface/EvtGenInterface/data/incl_BtoJpsi_mumu.dec'),
     list_forced_decays = cms.vstring(
         'MyB+', 
         'MyB-'), 
