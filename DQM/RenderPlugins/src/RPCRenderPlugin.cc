@@ -6,6 +6,7 @@
 #include <cassert>
 #include "TLine.h"
 #include "TText.h"
+//#include "TAxis.h"
 
 #include "DQM/RenderPlugins/src/RPCRenderPlugin.h"
 #include "DQM/RenderPlugins/src/utils.h"
@@ -70,9 +71,8 @@ void RPCRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   if(o.name.find("reportSummaryMap") != std::string::npos){
     dqm::utils::reportSummaryMapPalette(obj);
-    gStyle->SetPaintTextFormat("%.2f");
-    obj->SetOption("colztext");
-    obj->SetStats( kTRUE );
+    // gStyle->SetPaintTextFormat("%.2f");
+    // obj->SetOption("colztext");
     return;
   }
 
@@ -88,13 +88,13 @@ void  RPCRenderPlugin::postDrawTH2(TCanvas *c, const DQMNet::CoreObject &o){
  assert( obj );
 
  if(o.name.find("reportSummaryMap") != std::string::npos){
-
-   obj->GetXaxis()->SetNdivisions(16,true);
-   obj->GetYaxis()->SetNdivisions(13,true);
+   obj->GetXaxis()->SetNdivisions(-510);
+   obj->GetYaxis()->SetNdivisions(-510);
    obj->GetXaxis()->CenterLabels();
    obj->GetYaxis()->CenterLabels();
-   //   c->SetGrid(1,1);
-   
+   c->SetGridx();
+   c->SetGridy();
+
    TLine line;
    line.SetLineWidth(1);
    line.DrawLine(-3.5, 0.5, -3.5, 6.5);
@@ -106,6 +106,7 @@ void  RPCRenderPlugin::postDrawTH2(TCanvas *c, const DQMNet::CoreObject &o){
    line.DrawLine(3.5, 0.5, 3.5, 6.5);
    line.DrawLine(3.5, 6.5,7.5, 6.5 );
    line.DrawLine(7.5, 0.5,7.5, 6.5 );
+   return;
  }
 
  if(o.name.find("Occupancy") != std::string::npos){
@@ -127,6 +128,7 @@ void  RPCRenderPlugin::postDrawTH2(TCanvas *c, const DQMNet::CoreObject &o){
 
    //rb3
    line.DrawLine(43, 9.5, 43, 13.5);
+   return;
  }
  
  return;
