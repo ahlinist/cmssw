@@ -3,7 +3,8 @@
 TChain chain("T1");
 //chain.Add("scratch/ana/bs2mumu_famos.root");
 //chain.Add("scratch/ana/bp2jpsikp_famos.root");
-chain.Add("scratch/ana/test.root");
+//chain.Add("scratch/ana/test.root");
+chain.Add("../python/hfexample.root");
 
 // -- Set up for reading
 Int_t nentries(0), nb(0);
@@ -31,6 +32,7 @@ for (iEvent = 0; iEvent < nentries; iEvent++) {
   for (int ig = 0; ig < pEvent->nGenCands(); ++ig) {
     pGen = pEvent->getGenCand(ig);
     muDau = 0; 
+    if (521 == TMath::Abs(pGen->fID)) pGen->dump();
     if (pGen->fDau1 > 0 && pGen->fDau2 > 0) {
       for (int id = pGen->fDau1;  id <= pGen->fDau2; ++id) {
 	if ((id > -1) && (id < pEvent->nGenCands())) {
@@ -48,7 +50,6 @@ for (iEvent = 0; iEvent < nentries; iEvent++) {
 	cout << "++++++++++++" << endl;
       }
     }
-
   }
 
 }

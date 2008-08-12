@@ -5,6 +5,7 @@
 #include "HeavyFlavorAnalysis/Examples/interface/HFDumpGenerator.h"
 
 #include "HepMC/GenVertex.h"
+#include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 
 #include "DataFormats/Common/interface/Handle.h"
@@ -29,12 +30,11 @@ using namespace reco;
 HFDumpGenerator::HFDumpGenerator(const ParameterSet& iConfig):
   fVerbose(iConfig.getUntrackedParameter<int>("verbose", 0)),
   fGenCandidatesLabel(iConfig.getUntrackedParameter<string>("generatorCandidates", string("MCCandidate"))), 
-  fGenEventLabel(iConfig.getUntrackedParameter<string>("generatorEvent", string("Source")))  {
+  fGenEventLabel(iConfig.getUntrackedParameter<string>("generatorEvent", string("EvtGenProducer")))  {
   using namespace std;
   cout << "----------------------------------------------------------------------" << endl;
   cout << "--- HFDumpGenerator constructor: " << fGenCandidatesLabel << "  " << fGenEventLabel << endl;
   cout << "----------------------------------------------------------------------" << endl;
-
 }
 
 
@@ -50,9 +50,31 @@ void HFDumpGenerator::analyze(const Event& iEvent, const EventSetup& iSetup) {
   // -- CAREFUL!
   gHFEvent->Clear();
 
+  // Das Clear ist dafuer da, wenn ein GenFilter (der mit gHFEvent arbeitet
+  // anstatt mit dem HEPMC EDM-product direkt) da ist, der nicht alle
+  // Events durchlaesst. Wenn das Clear() nicht da waere, wuerde bei einem
+  // neuen Event der alte (weggefilterte) GenBlock auch noch drin sein.
+
+
   static int nevt(0); 
   ++nevt;
-  //  cout << "==> HFDumpGenerator> new  event  " << nevt << endl;
+  cout << "==> HFDumpGenerator> new  event  " << nevt << endl;
+
+
+  // ================== Print HepMC directly =================
+
+  if (fVerbose > 0)
+    {
+      cout << "=================HEPMC===================" << endl;
+      Handle<HepMCProduct> evt;
+      iEvent.getByLabel(fGenEventLabel.c_str(), evt);
+      const HepMC::GenEvent *genEvent = evt->GetEvent();
+      genEvent->print();
+      
+      cout << "=================HEPMC===================" << endl;
+    }
+
+  // ======================= RECO =============================
 
   TGenCand  *pGen;
   // -- From PhysicsTools/HepMCCandAlgos/plugins/ParticleListDrawer.cc
@@ -62,19 +84,21 @@ void HFDumpGenerator::analyze(const Event& iEvent, const EventSetup& iSetup) {
   cands.clear();
   vector<const GenParticle *>::const_iterator found = cands.begin();
 
-  //  edm::Handle<reco::CandidateCollection> genParticlesH;
   edm::Handle<GenParticleCollection> genParticlesH;
+  genParticlesH.clear();
   try {
     iEvent.getByLabel ("genParticles", genParticlesH);
   } catch(cms::Exception ce) {
     cout << "==> HFDumpGenerator caught std::exception " << ce.what() << endl;
   }
 
-
+  int test = 0;
   for (GenParticleCollection::const_iterator p = genParticlesH->begin(); p != genParticlesH->end(); ++p) {
+    test++;
     cands.push_back( & * p );
   }
 
+  if (fVerbose > 0) printf("Number of genParticles = %i\n", genParticlesH->size());
 
   int i(-1); 
   for(GenParticleCollection::const_iterator p  = genParticlesH->begin(); p != genParticlesH->end();  p++) {
@@ -84,6 +108,8 @@ void HFDumpGenerator::analyze(const Event& iEvent, const EventSetup& iSetup) {
     pGen->fStatus = p->status();  
     pGen->fNumber = i; //p - particles->begin();
 
+    //    printf("PDG ID = %i\n", pGen->fID);
+
     //    double pt = p->pt(), eta = p->eta(), phi = p->phi(), mass = p->mass();
     double vx = p->vx(), vy = p->vy(), vz = p->vz();
     pGen->fP.SetXYZT(p->px(), 
@@ -91,7 +117,7 @@ void HFDumpGenerator::analyze(const Event& iEvent, const EventSetup& iSetup) {
 		     p->pz(), 
 		     p->energy());
     pGen->fV.SetXYZ(vx, vy, vz);
-    
+
     // Particles Mothers and Daighters
     iMo1 = -1;
     iMo2 = -1;
@@ -103,7 +129,6 @@ void HFDumpGenerator::analyze(const Event& iEvent, const EventSetup& iSetup) {
     pGen->fDau1 = 99999;
     pGen->fDau2 = -1;
 
-    
     found = find(cands.begin(), cands.end(), p->mother(0));
     if (found != cands.end()) {
       iMo1 = found - cands.begin();
@@ -111,7 +136,7 @@ void HFDumpGenerator::analyze(const Event& iEvent, const EventSetup& iSetup) {
     } else {
       pGen->fMom1 = -1;
     }
-    
+
     found = find(cands.begin(), cands.end(), p->mother(nMo-1));
     if (found != cands.end()) {
       iMo2 = found - cands.begin();
@@ -119,23 +144,71 @@ void HFDumpGenerator::analyze(const Event& iEvent, const EventSetup& iSetup) {
     } else {
       pGen->fMom2 = -1;
     }
-    
+
     found = find(cands.begin(), cands.end(), p->daughter(0));
     if (found != cands.end()) {
       iDa1 = found - cands.begin();
       pGen->fDau1 = iDa1;
     }
-    
+
     found = find(cands.begin(), cands.end(), p->daughter(nDa-1));
     if (found != cands.end()) {
       iDa2 = found - cands.begin();
       pGen->fDau2 = iDa2;
     }
 
-    //    pGen->dump();
+    if (fVerbose > 0) pGen->dump();
   }
+ 
+  genParticlesH.clear();
 
-    
+
+//  for(size_t i = 0; i < genParticlesH->size(); ++ i) {
+//      const GenParticle & p = (*genParticlesH)[i];
+//      pGen = gHFEvent->addGenCand();
+//      pGen->fID    = p.pdgId();
+//      pGen->fStatus = p.status();  
+//      pGen->fNumber = i;
+     
+//      //    double pt = p->pt(), eta = p->eta(), phi = p->phi(), mass = p->mass();
+//      double vx = p.vx(), vy = p.vy(), vz = p.vz();
+//      pGen->fP.SetXYZT(p.px(), 
+// 		      p.py(), 
+// 		      p.pz(), 
+// 		      p.energy());
+//      pGen->fV.SetXYZ(vx, vy, vz);
+
+//      int id = p.pdgId();
+//      if (id != 443) continue;
+//      printf("id = %i\n", id);
+//      int st = p.status();  
+
+     
+//      // Particles Mothers and Daighters
+//      iMo1 = -1;
+//      iMo2 = -1;
+//      iDa1 = -1;
+//      iDa2 = -1;
+//      int nMo = p.numberOfMothers();
+//      int nDa = p.numberOfDaughters();
+     
+//      pGen->fDau1 = 99999;
+//      pGen->fDau2 = -1;
+     
+//      const Candidate * mom = p.mother();
+
+//      for(size_t j = 0; j < nDa; ++ j) {
+//        const Candidate * d = p.daughter( j );
+//        int dauId = d->pdgId();
+//        printf("dauId = %i\n", dauId);
+//        if(i == 0) pGen->fDau1 = d->begin();
+//        if(i == nDa-1) pGen->fDau2 = d->begin();
+//        // . . . 
+//      }
+
+
+
+ 
 
 //   // -- Get candidates from generator block
 //   //    https://twiki.cern.ch/twiki/bin/view/CMS/WorkBookGenParticleCandidate
@@ -157,21 +230,24 @@ void HFDumpGenerator::analyze(const Event& iEvent, const EventSetup& iSetup) {
 // 		       p.pz(), 
 // 		       p.energy());
 //       pGen->fV.SetXYZ(vx, vy, vz);
-      
+   
 //       //aGen->dump();
-      
+   
 //     }
 //   } catch (Exception event) {
 //     //    cout << "==> HFDumpGenerator> CandidateCollection with label " << fGenCandidatesLabel.c_str() 
 //     //	 << " not found " << endl;
 //   }
-  
+
+// ======================= HEPMC =============================
+
 //   // ----------------------------------------------------------------------
 //   // -- Get generator block directly
+
 //   Handle<HepMCProduct> evt;
 //   iEvent.getByLabel(fGenEventLabel.c_str(), evt);
 //   const HepMC::GenEvent *genEvent = evt->GetEvent();
-
+  
 //   TGenCand  *pGen;
 //   int gcnt(0); 
 //   double x, y, z;

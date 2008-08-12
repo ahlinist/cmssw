@@ -4,11 +4,19 @@
 
 #include "FWCore/Framework/interface/ESHandle.h"
 
+
+#include <TROOT.h>
+#include <TFile.h>
+#include <TTree.h>
+#include <TH1.h>
+
+
 #include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAna00Event.hh"
 #include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaTrack.hh"
 #include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaCand.hh"
 #include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TGenCand.hh"
 #include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaVertex.hh"
+
 
 
 // -- Yikes!
@@ -42,7 +50,8 @@ bool HFGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   TGenCand *pGen, *pDau;
 
   ++fNtot;
-  cout << "==> HFGenFilter> new  event  " << fNtot;
+  cout << "==> HFGenFilter> new  event  " << fNtot << endl;
+  cout << "==> HFGenFilter> nGenCands = " << gHFEvent->nGenCands() << endl;
 
   // -- filter events with at least one muon and pT>2.5GeV
   for (int ig = 0; ig < gHFEvent->nGenCands(); ++ig) {

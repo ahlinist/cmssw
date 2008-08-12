@@ -35,6 +35,7 @@ using namespace edm;
 HFDumpStuff::HFDumpStuff(const edm::ParameterSet& iConfig):
   fGenEventScaleLabel(iConfig.getUntrackedParameter<string>("GenEventScaleLabel", string("genEventScale"))),
   fPrimaryVertexLabel(iConfig.getUntrackedParameter<string>("PrimaryVertexLabel", string("offlinePrimaryVerticesFromCTFTracks"))),
+  //  fPrimaryVertexLabel(iConfig.getUntrackedParameter<string>("PrimaryVertexLabel", string("offlinePrimaryVertices"))),
   fCandidates1Label(iConfig.getUntrackedParameter<string>("Candidates1Label", string("JPsiToMuMu"))),
   fCandidates2Label(iConfig.getUntrackedParameter<string>("Candidates2Label", string("JPsiToMuMu"))),
   fCandidates3Label(iConfig.getUntrackedParameter<string>("Candidates3Label", string("JPsiToMuMu"))),
@@ -65,8 +66,9 @@ void HFDumpStuff::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     edm::Handle<double> genEventScaleHandle;
     iEvent.getByLabel(fGenEventScaleLabel.c_str(), genEventScaleHandle);
     gHFEvent->fPtHat = *genEventScaleHandle;
+    cout << "genEventScale " << fGenEventScaleLabel.c_str() << " found!!!!!!!!!!!!!!! " << endl;
   } catch (cms::Exception &ex) {
-    //    cout << ex.explainSelf() << endl;
+    cout << ex.explainSelf() << endl;
     cout << "genEventScale " << fGenEventScaleLabel.c_str() << " not found " << endl;
   }
 
@@ -78,7 +80,7 @@ void HFDumpStuff::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     const reco::VertexCollection vertices = *(recoPrimaryVertexCollection.product());
     const reco::Vertex pV = vertices[0]; // ???? 
     ChiSquared chi2(pV.chi2(), pV.ndof());
-    
+ 
     TAnaVertex *pVtx = new TAnaVertex();
     pVtx->setInfo(chi2.value(), int(chi2.degreesOfFreedom()), chi2.probability(), 0, 0);
     pVtx->fPoint.SetXYZ(pV.position().x(),

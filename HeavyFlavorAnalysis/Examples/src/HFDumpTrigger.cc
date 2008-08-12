@@ -71,7 +71,7 @@ HFDumpTrigger::~HFDumpTrigger() {
 void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
   fNevt++;
-
+  
   TAnaTrack *pTrack;
 
   // ===================================================================================
@@ -85,18 +85,25 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
   edm::Handle<l1extra::L1ParticleMapCollection> l1mapcoll; 
   try {
-
+    printf("try\n");
     iEvent.getByLabel(fparticleMap,l1mapcoll );
 
   } catch (Exception event) { 
-
+    printf("catch\n");
     if ( fVerbose ) cout << "  -- No L1 Map Collection" << endl;
   }
+  printf("success\n");
 
-  const l1extra::L1ParticleMapCollection& L1MapColl = *l1mapcoll; 
+  const l1extra::L1ParticleMapCollection& L1MapColl = *l1mapcoll; // it crashes in this line 
+
+  printf("declaration ok\n");
+
+  if (!(&L1MapColl)) printf("collection not available\n");
+
+  printf("found something\n");
 
   if (&L1MapColl) {
- 
+    printf("if case\n");
     // Fill L1 trigger bits
     for (int itrig = 0; itrig != l1extra::L1ParticleMap::kNumOfL1TriggerTypes; ++itrig){
 
@@ -105,7 +112,7 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       int l1flag = map.triggerDecision();
       if ( fVerbose ) cout  << endl << "%L1-Report --  #"  << setw(3)<< itrig << " : "  
 			    << setw(30) << trigName << " = " << l1flag;
-   
+
       if (itrig < 32 && l1flag) {
 	gHFEvent->fL1w1 |= (0x1 << itrig);
       } else if (itrig < 64 && l1flag) {
@@ -132,7 +139,7 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       if ( !strcmp(trigName, "L1_SingleMu14") ) muon_type = 17;
       if ( !strcmp(trigName, "L1_SingleMu20") ) muon_type = 18;
       if ( !strcmp(trigName, "L1_SingleMu25") ) muon_type = 19;
-      
+   
       /*
       if( l1flag ) {
 	
@@ -169,8 +176,9 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
     }
 
-  } else {
-    
+  } 
+  else {
+ 
     if ( fVerbose ) cout << "%HFDumpTrigger -- No L1 Map Collection" << endl;
   }
 
@@ -178,25 +186,25 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   edm::Handle<l1extra::L1MuonParticleCollection> l1extmu;
 
   try {
-    
+    printf("try2\n");
     iEvent.getByLabel(fL1MuLabel,l1extmu);
-  
+
   } catch (Exception event) { 
-  
+
     if ( fVerbose ) cout << "  -- No L1Mu objects" << endl;
   }
-  
+  printf("sucess2\n");
   const l1extra::L1MuonParticleCollection& L1ExtMu = *l1extmu;
- 
+
   if ( fVerbose ) cout << endl << endl << " -- L1MuonParticleCollection -- " << endl;
 
   if (&L1ExtMu) {
-
+    printf("if case2\n");
     l1extra::L1MuonParticleCollection myl1mus;
     int il1exmu = 0;
 
     for (l1extra::L1MuonParticleCollection::const_iterator muItr = L1ExtMu.begin(); muItr != L1ExtMu.end(); ++muItr) {
-      
+   
       L1MuGMTExtendedCand gmtCand = muItr->gmtMuonCand();
 
       if ( fVerbose ) {
@@ -204,7 +212,7 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	cout << "==> L1Muon " << il1exmu << endl;
 	cout << "pt " << muItr->pt() << " e " << muItr->energy() << " eta " << muItr->eta() 
 	     << " phi " << muItr->phi() << endl;
-      
+   
 	cout << "iso " << muItr->isIsolated() << " mip " << muItr->isMip() 
 	     << " forward " << muItr->isForward() << " RPC " << muItr->isRPC() << endl;
 
@@ -223,13 +231,13 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 				muItr->eta(),
 				muItr->phi()
 				);
-      
+   
 //       pL1Muon->fIsIso     = muItr->isIsolated();
 //       pL1Muon->fIsMIP     = muItr->isMip();
 //       pL1Muon->fIsForward = muItr->isForward(); 
 //       pL1Muon->fIsRPC     = muItr->isRPC();
 
-      
+   
       il1exmu++;
     }
   }
@@ -240,20 +248,20 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   // ===================================================================================
   // -- HLT trigger
   // ===================================================================================
-  
+    printf("HLT part\n");
   gHFEvent->fHLTDecision=0;
   gHFEvent->fHLTw1=0; gHFEvent->fHLTw2=0; gHFEvent->fHLTw3=0; gHFEvent->fHLTw4=0; 
 
   if ( fVerbose ) cout << endl << "============================ HLT Trigger ===================================" << endl;
   edm::Handle<edm::TriggerResults> hltresults;
-    
+ 
   try {
     iEvent.getByLabel(fHLTriggerLabel,hltresults);
-    
+ 
   } catch (Exception event) {
     if ( fVerbose ) cout << "%HFDumpTrigger -- Couldn't get handle on HLT Trigger!" << endl;
   }
-   
+
   if (!hltresults.isValid()) {
     if ( fVerbose ) cout << "%HFDumpTrigger -- No Trigger Result!" << endl;
   } 
@@ -266,7 +274,7 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     // get hold of trigger names - based on TriggerResults object!
     edm::TriggerNames triggerNames_;
     triggerNames_.init(*hltresults); 
-    
+ 
     for (int itrig=0; itrig< ntrigs; itrig++) {
 
       TString trigName = triggerNames_.triggerName(itrig);
@@ -275,7 +283,7 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
       if ( fVerbose ) cout << endl << "%HLT-Report --  #"  << setw(3) << itrig << setw(30)  <<  trigName
 			   << " was run " << wasrun  << ", decision " << hltflag;
-         
+      
       if (itrig < 32 && hltflag) {
 	gHFEvent->fHLTw1 |= (0x1 << itrig);
       } else if (itrig < 64 && hltflag) {
@@ -295,7 +303,7 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
 
   /////////////////////////////////////////////////
- 
+
   // get hold of filtered candidates
 
   if ( fVerbose ) cout << endl << endl << " -- HLT Filter Objects -- " << endl;
@@ -328,11 +336,11 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 // 				eta,
 // 				phi
 // 				); 
-     
+  
 //     }
 
 //   } catch (Exception event) {
-   
+
 //     if ( fVerbose ) cout << "  -- No HLT " << fHLTFilterObject0.c_str() <<  " Collection" << endl;
 //   }
 
@@ -364,11 +372,11 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 // 				eta,
 // 				phi
 // 				); 
-     
+  
 //     }
 
 //   } catch (Exception event) {
-   
+
 //     if ( fVerbose ) cout << "  -- No HLT " << fHLTFilterObject1.c_str() <<  " Collection" << endl;
 //   }
 
@@ -388,7 +396,7 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
 //       if ( fVerbose ) cout << endl << "==> " << fHLTFilterObject2.c_str() << setw(20) << "    Muon " 
 // 			   << i << ": pt " << pt << " phi " << phi << " eta " << eta << endl; 
-    
+ 
 //       pTrack   = gHFEvent->addSigTrack();
 //       pTrack->fMuType   = 22;
 //       pTrack->fMCID     = filtercands2->getParticleRef(i).get()->charge()*-13; 
@@ -403,7 +411,7 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
 //     }
 //   } catch (Exception event) {
-   
+
 //     if ( fVerbose ) cout << "  -- No HLT " << fHLTFilterObject2.c_str() <<  " Collection" << endl;
 //   }
 
@@ -471,7 +479,7 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 // 				); 
 //     }
 //   } catch (Exception event) {
-   
+
 //     if ( fVerbose ) cout << "  -- No HLT " << fHLTFilterObject4.c_str() <<  " Collection " << endl;
 
 //   }
