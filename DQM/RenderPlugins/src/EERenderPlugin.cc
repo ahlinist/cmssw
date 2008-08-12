@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.98 2008/08/11 19:32:18 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.99 2008/08/11 20:24:21 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.98 $
-  \date $Date: 2008/08/11 19:32:18 $
+  \version $Revision: 1.99 $
+  \date $Date: 2008/08/11 20:24:21 $
 */
 
 #include "TH1F.h"
@@ -109,15 +109,15 @@ void EERenderPlugin::initialise( int argc, char **argv ) {
     text4->Fill( i, 0., i+1+68 );
   }
 
-  text6->SetBinContent(2, 5, -7);
-  text6->SetBinContent(2, 7, -8);
-  text6->SetBinContent(4, 9, -9);
-  text6->SetBinContent(7, 9, -1);
-  text6->SetBinContent(9, 7, -2);
-  text6->SetBinContent(9, 5, -3);
-  text6->SetBinContent(8, 3, -4);
+  text6->SetBinContent(2, 5, -3);
+  text6->SetBinContent(2, 7, -2);
+  text6->SetBinContent(4, 9, -1);
+  text6->SetBinContent(7, 9, -9);
+  text6->SetBinContent(9, 7, -8);
+  text6->SetBinContent(9, 5, -7);
+  text6->SetBinContent(8, 3, -6);
   text6->SetBinContent(6, 2, -5);
-  text6->SetBinContent(3, 3, -6);
+  text6->SetBinContent(3, 3, -4);
 
   text7->SetBinContent(2, 5, +3);
   text7->SetBinContent(2, 7, +2);
@@ -149,15 +149,15 @@ void EERenderPlugin::initialise( int argc, char **argv ) {
   text9->SetBinContent(5, 2, +5);
   text9->SetBinContent(3, 3, +4);
 
-  text10->SetBinContent(2, 5, -7);
-  text10->SetBinContent(2, 7, -8);
-  text10->SetBinContent(4, 9, -9);
-  text10->SetBinContent(7, 9, -1);
-  text10->SetBinContent(9, 7, -2);
-  text10->SetBinContent(9, 5, -3);
-  text10->SetBinContent(8, 3, -4);
+  text10->SetBinContent(2, 5, -3);
+  text10->SetBinContent(2, 7, -2);
+  text10->SetBinContent(4, 9, -1);
+  text10->SetBinContent(7, 9, -9);
+  text10->SetBinContent(9, 7, -8);
+  text10->SetBinContent(9, 5, -7);
+  text10->SetBinContent(8, 3, -6);
   text10->SetBinContent(6, 2, -5);
-  text10->SetBinContent(3, 3, -6);
+  text10->SetBinContent(3, 3, -4);
 
   text10->SetBinContent(10+2, 5, +3);
   text10->SetBinContent(10+2, 7, +2);
