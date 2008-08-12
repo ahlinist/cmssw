@@ -24,7 +24,7 @@ process.famosSimHits.SourceLabel = 'evtgenproducer'
 process.load("FWCore.MessageService.MessageLogger_cfi")
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(10000)
+    input = cms.untracked.int32(100)
 )
 
 
@@ -221,19 +221,9 @@ process.mumugenfilter = cms.EDFilter("MCParticlePairFilter",
     ParticleID2 = cms.untracked.vint32(13)
 )
 
-#process.FEVT = cms.OutputModule("PoolOutputModule",
-#    dataset = cms.untracked.PSet(
-#        dataTier = cms.untracked.string('GEN-SIM-DIGI-RECO')
-#    ),
-#    fileName = cms.untracked.string('bs2mumu.root')
-#)
-
-#process.outpath = cms.EndPath(process.FEVT)
-
-
 process.p1 = cms.Path(process.bfilter*
                       process.evtgenproducer*
-                      process.mumugenfilter*
+#                      process.mumugenfilter*
 #                      process.genFilter*
                       process.genParticles* # defined in PhysicsTools/HepMCCandAlgos/python/genParticles_cfi.py
                       process.genDump*
@@ -242,9 +232,8 @@ process.p1 = cms.Path(process.bfilter*
                       process.signalDump*
 #                      process.allTracks*
 #                      process.goodTracks*
-#                      process.triggerDump*  # this one is not working so far
-                      #process.allMuons*
-#===========JETS
+#                      process.triggerDump*
+#                      process.allMuons*
 #                      process.caloJetCollectionClone*
 #                      process.caloJetSele*
 #                      process.tagJetAlgo*
@@ -254,8 +243,7 @@ process.p1 = cms.Path(process.bfilter*
 #                      process.gentagJetAlgo*
 #                      process.gentagJetPhys*
 #                      process.jetDump*
-#============other stuff
-#                     process.stuffDump* # dies sollte noch zum Laufen gebracht werden
+#                      process.stuffDump*
                       process.tree)
 
 process.tree.fileName = 'hfexample.root'
