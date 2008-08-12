@@ -208,6 +208,10 @@ bool TauJetMCFilter::filter(edm::Event& iEvent, const edm::EventSetup& iES)
   if(nelec==1&&ntaujet==0&&nmuon==1)decay_type="emu";
   if(nelec==2&&ntaujet==0&&nmuon==0)decay_type="ee";
   if(nelec==0&&ntaujet==0&&nmuon==2)decay_type="mumu";
+  if(nelec==0&&ntaujet==1&&nmuon==0)decay_type="tau";
+  if(nelec==1&&ntaujet==0&&nmuon==0)decay_type="e";
+  if(nelec==0&&ntaujet==0&&nmuon==1)decay_type="mu";
+
   
   bool decay=false;
   for(vstring::const_iterator e = mincludeList.begin();e != mincludeList.end(); ++ e ) 
