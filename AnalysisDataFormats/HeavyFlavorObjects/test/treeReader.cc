@@ -47,9 +47,6 @@ void treeReader::eventProcessing() {
     ((TH1D*)fpHistFile->Get("h100"))->Fill(pCand->fMass); 
   }
 
-
-  
-
   fpHistFile->cd();
   fillHist(); 
   fTree->Fill();
