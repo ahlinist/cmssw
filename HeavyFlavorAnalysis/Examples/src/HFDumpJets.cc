@@ -18,6 +18,8 @@
 #include "PhysicsTools/JetMCUtils/interface/CandMCTag.h"
 
 #include "RecoBTag/MCTools/interface/JetFlavourIdentifier.h"
+//#include "PhysicsTools/JetMCAlgos/plugins/JetFlavourIdentifier.cc"
+#include "SimDataFormats/JetMatching/interface/JetMatchedPartons.h"
 
 #include "FWCore/Framework/interface/ESHandle.h"
 
@@ -41,13 +43,13 @@ using namespace CandMCTagUtils;
 HFDumpJets::HFDumpJets(const edm::ParameterSet& iConfig):
   fJetsLabel(iConfig.getUntrackedParameter<string>("jetsLabel", string("iterativeCone5CaloJets"))),
   fGenJetsLabel(iConfig.getUntrackedParameter<string>("genjetsLabel", string("iterativeCone5GenJets"))),
-  fDisc1(iConfig.getUntrackedParameter<string>("discriminator1", string("softMuonJetTags"))),
-  fDisc2(iConfig.getUntrackedParameter<string>("discriminator2", string("softMuonNoIPJetTags"))),
-  fDisc3(iConfig.getUntrackedParameter<string>("discriminator3", string("softElectronJetTags"))),
-  fDisc4(iConfig.getUntrackedParameter<string>("discriminator4", string("trackCountingHighEffJetTags"))),
-  fDisc5(iConfig.getUntrackedParameter<string>("discriminator5", string("trackCountingHighPurJetTags"))),
-  fDisc6(iConfig.getUntrackedParameter<string>("discriminator6", string("jetProbabilityJetTags"))),
-  fDisc7(iConfig.getUntrackedParameter<string>("discriminator7", string("combinedSVJetTags"))),
+  fDisc1(iConfig.getUntrackedParameter<string>("discriminator1", string("softMuonBJetTags"))),
+  fDisc2(iConfig.getUntrackedParameter<string>("discriminator2", string("softMuonNoIPBJetTags"))),
+  fDisc3(iConfig.getUntrackedParameter<string>("discriminator3", string("softElectronBJetTags"))),
+  fDisc4(iConfig.getUntrackedParameter<string>("discriminator4", string("trackCountingHighEffBJetTags"))),
+  fDisc5(iConfig.getUntrackedParameter<string>("discriminator5", string("trackCountingHighPurBJetTags"))),
+  fDisc6(iConfig.getUntrackedParameter<string>("discriminator6", string("jetProbabilityBJetTags"))),
+  fDisc7(iConfig.getUntrackedParameter<string>("discriminator7", string("combinedSecondaryVertexBJetTags"))),
   fJetPartonMapAlgo(iConfig.getParameter<edm::InputTag>("JetPartonMapAlgo")),
   fJetPartonMapPhys(iConfig.getParameter<edm::InputTag>("JetPartonMapPhys")),
   fGenJetPartonMapAlgo(iConfig.getParameter<edm::InputTag>("GenJetPartonMapAlgo")),
@@ -121,55 +123,55 @@ void HFDumpJets::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
   edm::Handle<reco::JetTagCollection> bTagHandle7;
   iEvent.getByLabel(fDisc7.c_str(), bTagHandle7);
   const reco::JetTagCollection & bTags7 = *(bTagHandle7.product());
-     
+  
 
   TAnaJet *pCaloJet;
   TAnaJet *pGenJet;
   
-  //Loop over CaloJets 
-  int jetIndex=0;
-  for( reco::CaloJetCollection::const_iterator cal = caloJets->begin(); cal != caloJets->end(); ++ cal ) {
- 
-    pCaloJet = gHFEvent->addCaloJet();
-    
-    pCaloJet->fIndex = jetIndex;
-  
-    pCaloJet->fQ  = cal->charge();
-    pCaloJet->fPlab.SetPtEtaPhi(cal->pt(),
+ //Loop over CaloJets 
+ int jetIndex=0;
+ for( reco::CaloJetCollection::const_iterator cal = caloJets->begin(); cal != caloJets->end(); ++ cal ) {
+
+   pCaloJet = gHFEvent->addCaloJet();
+
+   pCaloJet->fIndex = jetIndex;
+
+   pCaloJet->fQ  = cal->charge();
+   pCaloJet->fPlab.SetPtEtaPhi(cal->pt(),
 				cal->eta(),
 				cal->phi()
 				);
 
-    pCaloJet->fE  = cal->energy();
-    pCaloJet->fEt = cal->et();
-    pCaloJet->fM  = cal->mass();
-    pCaloJet->fMt = cal->mt();
+   pCaloJet->fE  = cal->energy();
+   pCaloJet->fEt = cal->et();
+   pCaloJet->fM  = cal->mass();
+   pCaloJet->fMt = cal->mt();
 
-    pCaloJet->fEMEnergy         = cal->emEnergyFraction();
-    pCaloJet->fHADEnergy        = cal->energyFractionHadronic();
-    pCaloJet->finvisibleEnergy  = -1;
+   pCaloJet->fEMEnergy         = cal->emEnergyFraction();
+   pCaloJet->fHADEnergy        = cal->energyFractionHadronic();
+   pCaloJet->finvisibleEnergy  = -1;
 
-    pCaloJet->fn60  = cal->n60();
-    pCaloJet->fn90  = cal->n90();
-  
-    pCaloJet->fJetFlavorAlgo = -9999;
-    pCaloJet->fJetFlavorPhys = -9999;
-    pCaloJet->fJetFlavorEne  = -9999;
-    pCaloJet->fD1 = -9999;
-    pCaloJet->fD2 = -9999;
-    pCaloJet->fD4 = -9999;
-    pCaloJet->fD5 = -9999;
-    pCaloJet->fD6 = -9999;
-    pCaloJet->fD7 = -9999;
-    //JetFlavour: Algorithmic definition
-    for( CandMatchMap::const_iterator f  = theJetPartonMapAlgo->begin(); f != theJetPartonMapAlgo->end(); f++) {
-      const Candidate *theJet     = &*(f->key);
-      const Candidate *theParton  = &*(f->val);
-      if (cal->et()==theJet->et()) {
+   pCaloJet->fn60  = cal->n60();
+   pCaloJet->fn90  = cal->n90();
+
+   pCaloJet->fJetFlavorAlgo = -9999;
+   pCaloJet->fJetFlavorPhys = -9999;
+   pCaloJet->fJetFlavorEne  = -9999;
+   pCaloJet->fD1 = -9999;
+   pCaloJet->fD2 = -9999;
+   pCaloJet->fD4 = -9999;
+   pCaloJet->fD5 = -9999;
+   pCaloJet->fD6 = -9999;
+   pCaloJet->fD7 = -9999;
+   //JetFlavour: Algorithmic definition
+   for( CandMatchMap::const_iterator f  = theJetPartonMapAlgo->begin(); f != theJetPartonMapAlgo->end(); f++) {
+     const Candidate *theJet     = &*(f->key);
+     const Candidate *theParton  = &*(f->val);
+     if (cal->et()==theJet->et()) {
 	pCaloJet->fJetFlavorAlgo = theParton->pdgId();
 	break;
-      }
-    }
+     }
+   }
     //JetFlavour: Physics definition
     for( CandMatchMap::const_iterator f  = theJetPartonMapPhys->begin(); f != theJetPartonMapPhys->end(); f++) {
       const Candidate *theJet     = &*(f->key);
@@ -224,12 +226,12 @@ void HFDumpJets::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 //       if (cal->et() == bTags7[i].jet()->et())
 // 	pCaloJet->fD7 = bTags7[i].discriminator(); 
 //     }
-     
+  
     if (jetIndex==0) cout << "===> Calo Jets " << endl;
     pCaloJet->dump();
     cout << "JetFlavor (algorithmic  physical): " << pCaloJet->fJetFlavorAlgo << " " << pCaloJet->fJetFlavorPhys << endl;
     cout << "discriminator: " << pCaloJet->fD1 << " " << pCaloJet->fD2 << " " << pCaloJet->fD3 << " " << pCaloJet->fD4 << " " << pCaloJet->fD5 << " " << pCaloJet->fD6 << " " << pCaloJet->fD7 << endl;
-        
+     
     jetIndex++;
   }
 
@@ -238,9 +240,9 @@ void HFDumpJets::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
   for( reco::GenJetCollection::const_iterator gen = genJets->begin(); gen != genJets->end(); ++ gen ) { 
 
     pGenJet = gHFEvent->addGenJet();
-    
+ 
     pGenJet->fIndex = jetIndex;
-   
+
     pGenJet->fQ  = gen->charge();
     pGenJet->fPlab.SetPtEtaPhi(gen->pt(),
 			       gen->eta(),
@@ -285,11 +287,11 @@ void HFDumpJets::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 	break;
       }
     }
- 
+
     if (jetIndex==0) cout << "===> Gen Jets " << endl;
     pGenJet->dump(); 
     cout << "JetFlavor (algorithmic  physical): " << pGenJet->fJetFlavorAlgo << " " << pGenJet->fJetFlavorPhys << endl;
-   
+
     jetIndex++;
   } 
   

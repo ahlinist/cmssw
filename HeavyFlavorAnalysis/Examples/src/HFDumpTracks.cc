@@ -69,12 +69,13 @@ HFDumpTracks::~HFDumpTracks() {
 void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
   // -- get the collection of RecoTracks 
-  edm::Handle<TrackCollection> tracks;
-  iEvent.getByLabel(fTracksLabel.c_str(), tracks);  
+  edm::Handle<edm::View<reco::Track> > tracksView;
+  iEvent.getByLabel(fTracksLabel.c_str(), tracksView);
 
   // -- get the collection of muons and store their corresponding track indices
   vector<int> muonIndices;
   Handle<MuonCollection> hMuons;
+  cout << fMuonsLabel << endl;
   iEvent.getByLabel(fMuonsLabel, hMuons);
   const Track* tt = 0;
   for (MuonCollection::const_iterator muon = hMuons->begin(); muon != hMuons->end(); ++muon) {
@@ -82,14 +83,17 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     muonIndices.push_back((muon->track()).index());
   }
   if (fVerbose > 0) cout << "==>HFDumpTracks> nMuons = " << hMuons->size() << endl;
- 
+  TH1D *h2 = (TH1D*)gHFFile->Get("h2");
+  h2->Fill(hMuons->size());
+
   // -- get the tracking particle collection needed for truth matching. Only on RECO data tier!
   RecoToSimCollection recSimColl;
+  const RecoToSimCollection recSimColl2;
   if (1 == fDoTruthMatching) {
     try {
       edm::Handle<TrackingParticleCollection> trackingParticles;
       iEvent.getByLabel(fTrackingParticlesLabel.c_str(), trackingParticles);
-      recSimColl = fAssociator->associateRecoToSim(tracks, trackingParticles, &iEvent); 
+      recSimColl = fAssociator->associateRecoToSim(tracksView, trackingParticles, &iEvent);
     } catch (cms::Exception &ex) {
       cout << ex.explainSelf() << endl;
     }
@@ -106,32 +110,32 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   }      
 
 
-  if (fVerbose > 0) cout << "===> Tracks " << endl;
+  if (fVerbose > 0) cout << "===> Tracks " << tracksView->size() << endl;
   TAnaTrack *pTrack; 
   TH1D *h1 = (TH1D*)gHFFile->Get("h1");
-  TH1D *h2 = (TH1D*)gHFFile->Get("h2");
-  h1->Fill(tracks->size());
-  h2->Fill(tracks->size());
-  for (unsigned int i = 0; i < tracks->size(); ++i){    
-    TrackRef rTrack(tracks, i);
-    Track track(*rTrack);
+  h1->Fill(tracksView->size());
+  for (unsigned int i = 0; i < tracksView->size(); ++i){    
+
+    TrackBaseRef rTrackView(tracksView,i);
+    Track trackView(*rTrackView);
 
     pTrack = gHFEvent->addRecTrack();
-    pTrack->fIndex = rTrack.index();
-    pTrack->fPlab.SetPtEtaPhi(track.pt(),
-			      track.eta(),
-			      track.phi()
+    pTrack->fIndex = i;
+    pTrack->fPlab.SetPtEtaPhi(trackView.pt(),
+			      trackView.eta(),
+			      trackView.phi()
 			      );
-    pTrack->fTip = track.d0();
-    pTrack->fLip = track.dz();
-    pTrack->fQ = track.charge();
-    pTrack->fChi2 = track.chi2();
-    pTrack->fDof = int(track.ndof());
-    pTrack->fHits = track.numberOfValidHits();  
+    pTrack->fTip = trackView.d0();
+    pTrack->fLip = trackView.dz();
+    pTrack->fQ = trackView.charge();
+    pTrack->fChi2 = trackView.chi2();
+    pTrack->fDof = int(trackView.ndof());
+    pTrack->fHits = trackView.numberOfValidHits();  
     pTrack->fMuID = 0.; 
     for (int im = 0; im < muonIndices.size(); ++im) {
       if (i == muonIndices[im]) {
-	pTrack->fMuID = 1.; 
+	pTrack->fMuID = 1.;
+	if (fVerbose > 0) cout << " ==>HFDumpTracks> Found a muon!!" << endl;
       }
     }
 
@@ -140,47 +144,48 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     // -- RECO truth matching with TrackingParticle
     if (1 == fDoTruthMatching) {
       try{ 
-	std::vector<std::pair<TrackingParticleRef, double> > tp = recSimColl[rTrack];
-	TrackingParticleRef tpr = tp.begin()->first;  
-	const HepMC::GenParticle *genPar = 0; 
-	for (TrackingParticle::genp_iterator pit = tpr->genParticle_begin(); 
-	     pit != tpr->genParticle_end(); 
-	     ++pit){
-	  genPar     = pit->get();
-	  gen_pdg_id = (*genPar).pdg_id();
-	  gen_id     = (*genPar).barcode()-1;
-	  //gen_pt     = (*genPar).momentum().perp();
-	  //gen_phi    = (*genPar).momentum().phi();
-	  //gen_eta    = (*genPar).momentum().pseudoRapidity();
-	  gen_cnt++;
+	std::vector<std::pair<TrackingParticleRef, double> > tp = recSimColl[rTrackView];
+ 	TrackingParticleRef tpr = tp.begin()->first;  
+ 	const HepMC::GenParticle *genPar = 0; 
+ 	for (TrackingParticle::genp_iterator pit = tpr->genParticle_begin(); 
+ 	     pit != tpr->genParticle_end(); 
+ 	     ++pit){
+ 	  genPar     = pit->get();
+ 	  gen_pdg_id = (*genPar).pdg_id();
+ 	  gen_id     = (*genPar).barcode()-1;
+ 	  //gen_pt     = (*genPar).momentum().perp();
+ 	  //gen_phi    = (*genPar).momentum().phi();
+ 	  //gen_eta    = (*genPar).momentum().pseudoRapidity();
+ 	  gen_cnt++;
 	}
       } catch (Exception event) {
 	// 	cout << "%%>   Rec. Track #" << setw(2) << rTrack.index() << " pT: " 
-	// 	     << setprecision(2) << setw(6) << track.pt() 
+	// 	     << setprecision(2) << setw(6) << trackView.pt() 
 	// 	     <<  " matched to 0 MC Tracks" << endl;
       }
     }
 
     // -- FAMOS truth matching via SimHit
     if (2 == fDoTruthMatching) {
-      for (trackingRecHit_iterator it = track.recHitsBegin();  it != track.recHitsEnd(); it++) {
+      for (trackingRecHit_iterator it = trackView.recHitsBegin();  it != trackView.recHitsEnd(); it++) {
 	if ((*it)->isValid()) {
-
+	  
 	  int currentId(-1);
 	  if (const SiTrackerGSRecHit2D *rechit = dynamic_cast<const SiTrackerGSRecHit2D *> (it->get())) {
-            currentId = rechit->simtrackId();          
+	    currentId = rechit->simtrackId();          
 	  }
 	  
 	  for (SimTrackContainer::const_iterator simTrack = simTracks->begin(); 
 	       simTrack != simTracks->end(); 
 	       simTrack++)   { 
-
+	    
 	    if (simTrack->trackId() == currentId) {
 	      int igen = simTrack->genpartIndex();
 	      HepMC::GenParticle *genPar = genEvent->barcode_to_particle(igen);
 	      if (genPar) {
 		gen_pdg_id = (*genPar).pdg_id();
-		gen_id     = (*genPar).barcode()-1;
+		gen_id     = (*genPar).barcode()-1;  // BC(HepMC) = BC(reco)+1
+		if (fVerbose > 0) printf("id = %i, bc = %i\n", gen_pdg_id, gen_id);
 		goto done;
 	      }
 	    }
@@ -189,11 +194,11 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       }
     done:;
     }            
-      
+    
     pTrack->fGenIndex = gen_id;
     pTrack->fMCID     = gen_pdg_id;
     if (fVerbose > 0) pTrack->dump(); 
-  }
+   }
   
 
 }
