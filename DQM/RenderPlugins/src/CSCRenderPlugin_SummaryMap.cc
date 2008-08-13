@@ -65,7 +65,7 @@ SummaryMap::~SummaryMap() {
 void SummaryMap::drawDetector(TH2* me){ 
 
   gStyle->SetPalette(1,0);
-
+  
   h1->Draw();
   bBlank->Draw("l");
   bEmptyMinus->Draw("l");
@@ -77,7 +77,6 @@ void SummaryMap::drawDetector(TH2* me){
   float xd = 5.0 / N_TICS, yd = 1.0 * (2.0 * 3.14159) / N_TICS;
 
   float xmin, xmax, ymin, ymax;
-  unsigned int rep_el = 0, csc_el = 0;
 
   for(unsigned int x = 0; x < N_TICS; x++) {
 
@@ -92,15 +91,39 @@ void SummaryMap::drawDetector(TH2* me){
       ymin = yd * y;
       ymax = ymin + yd; 
 
+      int value = int(me->GetBinContent(x + 1, y + 1));
+
+      if (value != 0) {
+
+        b[x][y] = new TBox(xmin, ymin, xmax, ymax);
+        b[x][y]->SetFillStyle(1001);
+
+        switch (value) {
+          case -1:
+            // Error (RED)
+            b[x][y]->SetFillColor(2);
+            break;
+          case 1:
+            // OK (GREEN)
+            b[x][y]->SetFillColor(8);
+            break;
+          case 2:
+            // Swithed off (DARK GREY)
+            b[x][y]->SetFillColor(15);
+        }
+
+        b[x][y]->Draw("");
+
+      }
+
+/*
       if(me->GetBinContent(x + 1, y + 1) > 0) {
         b[x][y] = new TBox(xmin, ymin, xmax, ymax);
         b[x][y]->SetFillColor(8);
         b[x][y]->SetFillStyle(1001);
         b[x][y]->Draw("");
-        rep_el++;
       }
-
-      csc_el++;
+*/
 
     }
 
@@ -108,12 +131,12 @@ void SummaryMap::drawDetector(TH2* me){
 
   for(unsigned int x = 1; x < N_TICS; x++) {
     l[x - 1][0] = new TLine(-2.5 + xd * x, 0.0, -2.5 + xd * x, 2.0 * 3.14159);
-    l[x - 1][0]->SetLineColor(9);
+    l[x - 1][0]->SetLineColor(12);
     l[x - 1][0]->SetLineStyle(1);
     l[x - 1][0]->SetLineWidth(1);
     l[x - 1][0]->Draw();
     l[x - 1][1] = new TLine(-2.5, yd * x, 2.5, yd * x);
-    l[x - 1][1]->SetLineColor(9);
+    l[x - 1][1]->SetLineColor(12);
     l[x - 1][1]->SetLineStyle(1);
     l[x - 1][1]->SetLineWidth(1);
     l[x - 1][1]->Draw();
@@ -179,7 +202,7 @@ void SummaryMap::drawStation(TH2* me, const int station){
         b[p_hw]->SetFillColor(6);
     }
 
-    b[p_hw]->SetLineColor(9);
+    b[p_hw]->SetLineColor(12);
     b[p_hw]->SetLineStyle(1);
     b[p_hw]->Draw("l");
     p_hw++;
