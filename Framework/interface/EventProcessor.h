@@ -19,6 +19,7 @@ $Id$
 #include "boost/utility.hpp"
 
 #include "FWCore/Framework/interface/IEventProcessor.h"
+#include "FWCore/Framework/interface/InputSource.h"
 #include "FWCore/ServiceRegistry/interface/ServiceLegacy.h"
 #include "FWCore/ServiceRegistry/interface/ServiceToken.h"
 #include "FWCore/Framework/src/WorkerRegistry.h"
