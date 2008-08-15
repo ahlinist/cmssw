@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.1 $
-  \date $Date: 2008/04/26 07:43:42 $
+  \version $Revision: 1.2 $
+  \date $Date: 2008/06/20 15:52:21 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -13,19 +13,50 @@
 */
 
 #include "DQM/RenderPlugins/src/HcalRenderPlugin.h" 
-
-#include "TStyle.h"
-#include "TCanvas.h"
-#include "TColor.h"
-#include "TText.h"
-
-#include <cassert>
-#include <fstream>
+#include "DQM/RenderPlugins/src/utils.h"
 
 void
 HcalRenderPlugin::initialise (int argc, char ** argv)
 {
-  // same as RenderPlugin default for now (no special action taken)
+  // Error fraction colors, and standard colors
+  // (error fractions colors are the reverse of standard colors)
+  //  should probably make error colors run from yellow to red, don't include green?
+
+  float rgb[20][3];
+
+  for( int i=0; i<20; ++i )
+    {
+      if (i<2)
+	summaryColors[i]=17;
+      else summaryColors[i]=0;
+
+      if ( i < 17 )
+        {
+          rgb[i][0] = 0.80+0.01*i;
+          rgb[i][1] = 0.00+0.03*i;
+          rgb[i][2] = 0.00;
+        }
+      else if ( i < 19 )
+        {
+          rgb[i][0] = 0.80+0.01*i;
+          rgb[i][1] = 0.00+0.03*i+0.15+0.10*(i-17);
+	  rgb[i][2] = 0.00;
+        }
+      else if ( i == 19 )
+        {
+          rgb[i][0] = 0.00;
+          rgb[i][1] = 0.80;
+          rgb[i][2] = 0.00;
+        }
+      // flip colors from standard values (1=bad, 0=good)
+      errorFracColors[19-i] = 901+i;
+      standardColors[i]=901+i;
+      summaryColors[20+i]=901+i;
+      TColor* color = gROOT->GetColor( 901+i );
+      if( ! color ) color = new TColor( 901+i, 0, 0, 0, "" );
+      color->SetRGB( rgb[i][0], rgb[i][1], rgb[i][2] );
+    }
+
   return;
 }
 
@@ -126,16 +157,13 @@ void HcalRenderPlugin::preDrawTH1 ( TCanvas *c, const DQMNet::CoreObject &o )
   TH1* obj = dynamic_cast<TH1*>( o.object ); 
   assert (obj); // checks that object indeed exists
 
-  // Code used in SiStripRenderPlugin -- do we want similar defaults?
+  // o.name is a std::string object
+  // Add in list of names of histograms for which we want log plotting here.
+  if (  (o.name.find("BCN from DCCs")!=std::string::npos)  )
+    gPad->SetLogy(1);
 
-  /*
-    gStyle->SetOptStat(0111); 
-    if ( obj->GetMaximum(1.e5) > 0. ) { 
-    gPad->SetLogy(1); 
-    } else { 
-    gPad->SetLogy(0); 
-    } 
-  */
+  if (  (o.name.find("Digi Shape - over thresh")!=std::string::npos)  )
+    obj->SetMinimum(0);
 
   return;
 
@@ -154,7 +182,7 @@ void HcalRenderPlugin::preDrawTH2 ( TCanvas *c, const DQMNet::CoreObject &o )
   gStyle->SetPadBorderMode( 0 ); 
   gStyle->SetPadBorderSize( 0 ); 
   
-  // I don't think we want to set stats to 0 for Hcal
+  // Do we want to set stats to 0 for Hcal?
   gStyle->SetOptStat( 0 ); 
   obj->SetStats( kFALSE ); 
 
@@ -172,8 +200,54 @@ void HcalRenderPlugin::preDrawTH2 ( TCanvas *c, const DQMNet::CoreObject &o )
   ya->SetLabelSize(0.04); 
   */
   // Now the important stuff -- set 2D hist drawing option to "colz"
-  gStyle->SetPalette(1);
-  obj->SetOption("colz");
+  //gStyle->SetPalette(1);
+
+
+  // Set default color scheme
+
+  // Always use most up-to-date color scheme for reportSummaryMap,
+  // so that it's consistent with other maps.
+  
+  // reportSummaryMapPalette currently only takes TH2Fs;
+  // need to make separate cast
+
+  // I don't think we want to do this yet, because reportSummaryMap doesn't
+  // yet provide useful colors when value = -1?
+
+  // green when =1, red when = 0, grey when = -1
+  if (o.name.find("reportSummaryMap" ) < o.name.size())
+    {
+      gStyle->SetPalette(40,summaryColors);
+      obj->SetOption("col");
+    }
+  // green when = 0, red when =1 -- don't yet know how to get # of events in order to normalize
+
+  else if ( (o.name.find("SubPedestal") < o.name.size() )
+	    || (o.name.find("RawPedestal") <o.name.size() )
+	    || (o.name.find("Occupancy Map") < o.name.size() )
+
+	    )
+    {
+      gStyle->SetPalette(1);
+      obj->SetOption("colz");
+    }
+
+  // green when high, red when low
+  else if ( (o.name.find("_abovePed") < o.name.size() )
+	    || (o.name.find("above_pedestal_Depth") < o.name.size() )
+	    )
+    {
+      gStyle->SetPalette(20, standardColors);
+      obj->SetOption("colz");
+    }
+
+  // red when high, green when low
+  else 
+    {
+      gStyle->SetPalette(20, errorFracColors);
+      obj->SetOption("colz");
+    }
+
 
   return;
 } // preDrawTH2(...)
