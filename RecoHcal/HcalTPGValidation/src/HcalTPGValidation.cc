@@ -13,7 +13,7 @@
 //
 // Original Author:  Ka Vang TSANG
 //         Created:  Tue Jul 22 15:29:01 CEST 2008
-// $Id$
+// $Id: HcalTPGValidation.cc,v 1.2 2008/08/14 14:00:38 kvtsang Exp $
 //
 //
 
@@ -65,6 +65,8 @@ class HcalTPGValidation : public edm::EDAnalyzer {
       virtual void endJob() ;
 
       // ----------member data ---------------------------
+		 HcalTrigTowerGeometry theTrigTowerGeometry;
+
 		TH2F *alldata_map;
 		TH2F *allemul_map;
 		TH2F *dataonly_map;
@@ -91,6 +93,8 @@ class HcalTPGValidation : public edm::EDAnalyzer {
 		TH1F *errflag_HBHE;
 		TH2F *etcorr_HF;
 		TH2F *etcorr_HBHE;
+
+		bool IsDebugHF;
 };
 
 //
@@ -154,21 +158,21 @@ HcalTPGValidation::HcalTPGValidation(const edm::ParameterSet& iConfig)
 	etcorr_HF->SetXTitle("data.e");
 	etcorr_HF->SetYTitle("emul.e");
 
-	alldata_et_HBHE = fs->make<TH1F>("alldata_et_HBHE","All Data (HB/HE)",255,0,255);
+	alldata_et_HBHE = fs->make<TH1F>("alldata_et_HBHE","All Data (HB/HE)",256,0,256);
 	alldata_et_HBHE->SetXTitle("data.e");
-	alldata_et_HF= fs->make<TH1F>("alldata_et_HF","All Data (HF)",255,0,255);
+	alldata_et_HF= fs->make<TH1F>("alldata_et_HF","All Data (HF)",256,0,256);
 	alldata_et_HF->SetXTitle("data.et");
-	allemul_et_HBHE = fs->make<TH1F>("allemul_et_HBHE","All Data (HB/HE)",255,0,255);
+	allemul_et_HBHE = fs->make<TH1F>("allemul_et_HBHE","All Emul (HB/HE)",256,0,256);
 	allemul_et_HBHE->SetXTitle("emul.e");
-	allemul_et_HF= fs->make<TH1F>("allemul_et_HF","All Data (HF)",255,0,255);
+	allemul_et_HF= fs->make<TH1F>("allemul_et_HF","All Emul (HF)",256,0,256);
 	allemul_et_HF->SetXTitle("emul.et");
-	dataonly_et_HBHE = fs->make<TH1F>("dataonly_et_HBHE","Data Only (HB/HE)",255,0,255);
+	dataonly_et_HBHE = fs->make<TH1F>("dataonly_et_HBHE","Data Only (HB/HE)",256,0,256);
 	dataonly_et_HBHE->SetXTitle("data.e");
-	dataonly_et_HF = fs->make<TH1F>("dataonly_et_HF","Data Only (HF)",255,0,255);
+	dataonly_et_HF = fs->make<TH1F>("dataonly_et_HF","Data Only (HF)",256,0,256);
 	dataonly_et_HF->SetXTitle("data.et");
-	emulonly_et_HBHE = fs->make<TH1F>("emulonly_et_HBHE","Emul Only (HB/HE)",255,0,255);
+	emulonly_et_HBHE = fs->make<TH1F>("emulonly_et_HBHE","Emul Only (HB/HE)",256,0,256);
 	emulonly_et_HBHE->SetXTitle("emul.e");
-	emulonly_et_HF = fs->make<TH1F>("emulonly_et_HF","Emul Only (HF)",255,0,255);
+	emulonly_et_HF = fs->make<TH1F>("emulonly_et_HF","Emul Only (HF)",256,0,256);
 	emulonly_et_HF->SetXTitle("emul.et");
 
 	//FG bit
@@ -197,6 +201,8 @@ HcalTPGValidation::HcalTPGValidation(const edm::ParameterSet& iConfig)
 	emul_FGet_HF->SetXTitle("emul.et");
 	emul_FGet_HBHE = fs->make<TH1F>("emul_FGet_HBHE","FG=1 (HB/HE)",255,0,255);
 	emul_FGet_HBHE->SetXTitle("emul.e");
+	
+	IsDebugHF = iConfig.getParameter<bool>("DebugHF");
 }
 
 
@@ -228,12 +234,28 @@ HcalTPGValidation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	edm::Handle<HBHEDigiCollection> hbheDigis;
 	iEvent.getByLabel("hcalDigis",hbheDigis);
 
+	edm::Handle<HFDigiCollection> hfDigis;
+	iEvent.getByLabel("hcalDigis",hfDigis);
+
+	edm::ESHandle<HcalTPGCoder> inputCoder;
+	iSetup.get<HcalTPGRecord>().get(inputCoder);
+
 	typedef HcalTrigPrimDigiCollection::const_iterator TPItr;
-	if (hcal_tp_data.isValid() && hcal_tp_emul.isValid() && hcal_tp_data->size() == hcal_tp_emul->size()){
-		for(TPItr data = hcal_tp_data->begin(), emul = hcal_tp_emul->begin();
-			data != hcal_tp_data->end() && emul != hcal_tp_emul->end();
-			++data, ++emul){
-			bool IsHF = (data->id().ietaAbs()>=29);
+	if (hcal_tp_data.isValid() && hcal_tp_emul.isValid()){
+		for(TPItr emul = hcal_tp_emul->begin(); emul != hcal_tp_emul->end(); ++emul){
+		//for(TPItr emul = hcal_tp_emul->begin(), data = hcal_tp_data->begin(); emul != hcal_tp_emul->end() && data != hcal_tp_data->end(); ++emul, ++data){
+			bool IsHF = (emul->id().ietaAbs()>=29);
+			TPItr data = hcal_tp_data->begin();
+			if(IsHF){
+				for (;data != hcal_tp_data->end(); ++data){
+					if(data->id().ieta()==emul->id().ieta() && (4*data->id().iphi()-3)==emul->id().iphi()) break;
+					//if(data->id().ieta()==emul->id().ieta() && data->id().iphi()==emul->id().iphi()) break;
+				}
+			}
+			else data = hcal_tp_data->find(emul->id());
+			//TPItr data = hcal_tp_data->find(emul->id());
+			if (data == hcal_tp_data->end()) continue;
+
 
 			//--------------------
 			//Error Flag
@@ -251,11 +273,11 @@ HcalTPGValidation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 				if (dataEt>0) errflag=1;
 			}
 			else{
+				if (data->SOI_fineGrain() != emul->SOI_fineGrain()) errflag = 5;
 				if (emulEt == 0) errflag=3;
 				else {
 					if (dataEt == 0) errflag=4;
 					else if (dataEt != emulEt) errflag=2;
-					else errflag = 5;
 				}
 			}
 
@@ -267,7 +289,7 @@ HcalTPGValidation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 			}
 
 			//Histograms for HF
-			if (IsHF) {
+			if (IsHF && errflag>0) {
 				errflag_HF->Fill(errflag);
 				alldata_et_HF->Fill(dataEt);
 				allemul_et_HF->Fill(emulEt);
@@ -293,7 +315,7 @@ HcalTPGValidation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 				}
 			}
 			//Histograms for HB/HE
-			else {
+			else if (errflag >0) {
 				errflag_HBHE->Fill(errflag);
 				alldata_et_HBHE->Fill(dataEt);
 				allemul_et_HBHE->Fill(emulEt);
@@ -318,8 +340,9 @@ HcalTPGValidation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 						break;
 				}
 			}
+			//Debug for HBHE
 			if (!IsHF && errflag>1) {
-				edm::LogInfo ("HBHEDebug") << "HBHE\t ieta: " << emul->id().ieta() << "\tiphi: " << emul->id().iphi() << "\tdata.et: " << data->SOI_compressedEt() << "\temul.et: " << emul->SOI_compressedEt();
+				edm::LogInfo ("DebugHBHE") << "HBHE\t ieta: " << emul->id().ieta() << "\tiphi: " << emul->id().iphi() << "\tdata.et: " << data->SOI_compressedEt() << "\temul.et: " << emul->SOI_compressedEt();
 				std::stringstream debugString("");
 				debugString << "data:\t" << data->presamples() << '\t';
 				for (int i=0; i<data->size(); ++i) debugString << data->sample(i).compressedEt() << ' ';
@@ -327,7 +350,6 @@ HcalTPGValidation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 				debugString << "emul:\t" << emul->presamples() << '\t';
 				for (int i=0; i<emul->size(); ++i) debugString << emul->sample(i).compressedEt() << ' ';
 				debugString << '\n';
-				debugString  << "HBHE\t ieta: " << emul->id().ieta() << "\tiphi: " << emul->id().iphi() << "\tdata.et: " << data->SOI_compressedEt() << "\temul.et: " << emul->SOI_compressedEt() << '\n';;
 				for (HBHEDigiCollection::const_iterator frame = hbheDigis->begin(); frame != hbheDigis->end(); ++frame){
 					HcalTrigTowerGeometry theTrigTowerGeometry;
 					std::vector<HcalTrigTowerDetId> ids = theTrigTowerGeometry.towerIds(frame->id());
@@ -338,17 +360,71 @@ HcalTPGValidation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 					}
 					debugString << '\n';
 					
-					edm::ESHandle<HcalTPGCoder> inputCoder;
-					iSetup.get<HcalTPGRecord>().get(inputCoder);
 					debugString << "adc2Linear\t";
 					IntegerCaloSamples samples(ids[0], frame->size());
 					samples.setPresamples(frame->presamples());
 					inputCoder->adc2Linear(*frame, samples);
 					for (int i=0;i<samples.size();++i) debugString << samples[i] << ' ';
 					debugString << '\n';
-					edm::LogVerbatim ("HBHEDebug") << debugString.str();	
+					edm::LogVerbatim ("DebugHBHE") << debugString.str();	
 					break;
 				}	
+			}
+			//Debug for HF
+			if (IsHF && errflag>1 && IsDebugHF) {
+				edm::LogInfo ("DebugHF") << "HF\t ieta: " << emul->id().ieta() << "\tiphi: " << emul->id().iphi() << "\tdata.et: " << data->SOI_compressedEt() << "\temul.et: " << emul->SOI_compressedEt();
+				std::stringstream debugString("");
+				debugString << "data:\t" << data->presamples() << '\t' << data->id().ieta() << '/' << data->id().iphi() << '\t';
+				for (int i=0; i<data->size(); ++i) debugString << data->sample(i).compressedEt() << ' ';
+				debugString << '\n';
+				//Dump FG bit
+				debugString << "data FG bit:\t";
+				for (int i=0; i<data->size(); ++i) debugString << data->sample(i).fineGrain() << ' ';
+				debugString << '\n';
+
+				debugString << "emul:\t" << emul->presamples() << '\t' << emul->id().ieta() << '/' << emul->id().iphi() << '\t';
+				for (int i=0; i<emul->size(); ++i) debugString << emul->sample(i).compressedEt() << ' ';
+				debugString << '\n';
+				//Dump FG bit
+				debugString << "emul FG bit:\t";
+				for (int i=0; i<emul->size(); ++i) debugString << emul->sample(i).fineGrain() << ' ';
+				debugString << '\n';
+
+				IntegerCaloSamples *sum = NULL;
+				for ( HFDigiCollection::const_iterator frame = hfDigis->begin(); frame != hfDigis->end(); ++frame){
+					std::vector<HcalTrigTowerDetId> ids = theTrigTowerGeometry.towerIds(frame->id());
+					if (ids[0] == emul->id()){
+						debugString <<  "HF Frames:\t";
+						for (int i=0;i<frame->size(); ++i)
+							debugString << frame->sample(i).adc() << ' ';
+						debugString << '\n';
+
+						IntegerCaloSamples samples(ids[0], frame->size());
+						samples.setPresamples(frame->presamples());
+						inputCoder->adc2Linear(*frame, samples);
+
+						if(sum == NULL) {
+							sum = new IntegerCaloSamples(ids[0], frame->size());
+							sum->setPresamples(frame->presamples());
+						}
+
+						debugString << "adc2Linear:\t";
+						for(int i = 0; i < samples.size(); ++i) {
+							(*sum)[i] += samples[i];
+							debugString << samples[i] << ' ';
+						}
+						debugString << '\n';
+					}
+				}
+
+				debugString << "Sum:\t";
+				for(int i = 0; i < sum->size(); ++i) {
+					debugString << (*sum)[i] << ' ';
+					(*sum)[i] /= 8;
+				}
+				debugString << '\n';
+				edm::LogVerbatim ("DebugHF") << debugString.str();	
+				if (sum != NULL) delete sum;
 			}
 		}
 	}
