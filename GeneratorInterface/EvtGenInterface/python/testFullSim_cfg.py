@@ -9,9 +9,13 @@ process.load("Configuration.StandardSequences.VtxSmearedGauss_cff")
 
 process.load("SimG4Core.Application.g4SimHits_cfi")
 
+process.load("Configuration.StandardSequences.Geometry_cff")
+
 process.load("PhysicsTools.HepMCCandAlgos.genParticleCandidatesFast_cfi")
 
 process.load("Configuration.StandardSequences.Simulation_cff")
+
+process.load("Configuration.StandardSequences.MagneticField_cff")
 
 process.load("Configuration.StandardSequences.MixingNoPileUp_cff")
 
