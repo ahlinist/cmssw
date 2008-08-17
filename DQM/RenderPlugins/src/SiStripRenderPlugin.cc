@@ -2,8 +2,8 @@
   \file SiStripRenderPlugin
   \brief Display Plugin for SiStrip DQM Histograms
   \author S. Dutta 
-  \version $Revision: 1.6 $
-  \date $Date: 2008/06/07 10:29:37 $
+  \version $Revision: 1.7 $
+  \date $Date: 2008/06/18 20:00:50 $
 */
 
 #include "TProfile2D.h"
@@ -111,6 +111,11 @@ void SiStripRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o )
     return;
   }
 
+  if( o.name.find( "SummaryOfCabling" )  != std::string::npos) {
+    obj->SetStats( kFALSE );
+    obj->SetOption("text");
+    return;
+  }
   return;
 }
 
@@ -127,6 +132,26 @@ void SiStripRenderPlugin::preDrawTH1F( TCanvas *c, const DQMNet::CoreObject &o )
 //  } else {
 //   gPad->SetLogy(0);
 //  }
+  if( o.name.find( "Summary_MeanNumberOfDigis" )  != std::string::npos) {
+    obj->SetStats( kFALSE );
+    obj->SetMaximum(0.5);
+    obj->SetMinimum(-0.01);
+    return;
+  }
+
+  if( o.name.find( "Summary_MeanNumberOfClusters" )  != std::string::npos) {
+    obj->SetStats( kFALSE );
+    obj->SetMaximum(0.05);
+    obj->SetMinimum(-0.001);
+    return;
+  }
+
+  if( o.name.find( "Summary_MeanClusterWidth" )  != std::string::npos) {
+    obj->SetStats( kFALSE );
+    obj->SetMaximum(20.0);
+    obj->SetMinimum(-0.1);
+    return;
+  }
 
 }
 
@@ -188,4 +213,9 @@ void SiStripRenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o 
     return;
   }
 
+  if( name.find( "SummaryOfCabling" ) != std::string::npos ) {
+     c->SetGridx();
+     c->SetGridy();
+     return;
+   }
 }
