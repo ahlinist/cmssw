@@ -2,8 +2,8 @@
   \file SiPixelRenderPlugin
   \brief Display Plugin for Pixel DQM Histograms
   \author P.Merkel
-  \version $Revision: 1.2 $
-  \date $Date: 2008/06/04 07:41:44 $
+  \version $Revision: 1.3 $
+  \date $Date: 2008/06/10 12:52:25 $
 */
 
 #include "TProfile2D.h"
@@ -65,7 +65,8 @@ void SiPixelRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) 
   ya->SetTitleSize(0.05);
   ya->SetLabelSize(0.04);
 
-  if( o.name.find( "hitmap" ) < o.name.size() ) {
+  if( o.name.find( "hitmap" ) < o.name.size()  ||
+      o.name.find( "occupancy" ) < o.name.size()) {
     gStyle->SetPalette(1);
     obj->SetOption("colz");
     return;
@@ -121,7 +122,7 @@ void SiPixelRenderPlugin::postDrawTH1( TCanvas *c, const DQMNet::CoreObject &o )
   tt.SetTextSize(0.12);
   if (o.flags == 0) return;
   else {
-    if (o.flags & DQMNet::DQM_FLAG_REPORT_ERROR) {
+/*    if (o.flags & DQMNet::DQM_FLAG_REPORT_ERROR) {
       tt.SetTextColor(2);
       tt.DrawTextNDC(0.5, 0.5, "Error");
     } else if (o.flags & DQMNet::DQM_FLAG_REPORT_WARNING) {
@@ -133,7 +134,7 @@ void SiPixelRenderPlugin::postDrawTH1( TCanvas *c, const DQMNet::CoreObject &o )
     } else {
       tt.SetTextColor(3);
       tt.DrawTextNDC(0.5, 0.5, "Ok ");
-    }      
+    }     */ 
   }  
 
   return;
