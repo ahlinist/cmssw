@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.95 2008/08/11 07:24:15 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.96 2008/08/11 20:24:21 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.95 $
-  \date $Date: 2008/08/11 07:24:15 $
+  \version $Revision: 1.96 $
+  \date $Date: 2008/08/11 20:24:21 $
 */
 
 #include "TH1F.h"
@@ -127,27 +127,27 @@ bool EBRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &
   std::cout << "EBRenderPlugin:applies " << o.name << std::endl;
 #endif
 
-  if( o.name.find( "EcalBarrel/EB" ) < o.name.size() ) {
+  if( o.name.find( "EcalBarrel/EB" ) != std::string::npos ) {
     return true;
   }
 
-  if( o.name.find( "EcalBarrel/EcalInfo" ) < o.name.size() ) {
+  if( o.name.find( "EcalBarrel/EcalInfo" ) != std::string::npos ) {
     return true;
   }
 
-  if( o.name.find( "EcalBarrel/EventInfo" ) < o.name.size() ) {
+  if( o.name.find( "EcalBarrel/EventInfo" ) != std::string::npos ) {
     return true;
   }
 
-  if( o.name.find( "EcalBarrel/Run summary/EB" ) < o.name.size() ) {
+  if( o.name.find( "EcalBarrel/Run summary/EB" ) != std::string::npos ) {
     return true;
   }
 
-  if( o.name.find( "EcalBarrel/Run summary/EcalInfo" ) < o.name.size() ) {
+  if( o.name.find( "EcalBarrel/Run summary/EcalInfo" ) != std::string::npos ) {
     return true;
   }
 
-  if( o.name.find( "EcalBarrel/Run summary/EventInfo" ) < o.name.size() ) {
+  if( o.name.find( "EcalBarrel/Run summary/EventInfo" ) != std::string::npos ) {
     return true;
   }
 
@@ -224,7 +224,7 @@ void EBRenderPlugin::preDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o 
   obj->SetStats(kFALSE);
   gPad->SetLogy(kFALSE);
 
-  if( name.find( "EBLT shape" ) < name.size() ) {
+  if( name.find( "EBLT shape" ) != std::string::npos ) {
     c->SetTheta(+30.);
     c->SetPhi(-60.);
     obj->GetXaxis()->SetTitleOffset(2.5);
@@ -234,7 +234,7 @@ void EBRenderPlugin::preDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o 
     return;
   }
 
-  if( name.find( "EBTPT shape" ) < name.size() ) {
+  if( name.find( "EBTPT shape" ) != std::string::npos ) {
     c->SetTheta(+30.);
     c->SetPhi(-60.);
     obj->GetXaxis()->SetTitleOffset(2.5);
@@ -244,7 +244,7 @@ void EBRenderPlugin::preDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o 
     return;
   }
 
-  if( name.find( "EBCLT" ) < name.size() ) {
+  if( name.find( "EBCLT" ) != std::string::npos ) {
     gPad->SetGridx();
     gPad->SetGridy();
     obj->GetXaxis()->SetNdivisions(40118, kFALSE);
@@ -298,22 +298,22 @@ void EBRenderPlugin::preDrawTProfile( TCanvas *c, const DQMNet::CoreObject &o ) 
   obj->SetStats(kTRUE);
   gPad->SetLogy(kFALSE);
 
-  if( name.find( "EBMM digi number profile" ) < name.size() ) {
+  if( name.find( "EBMM digi number profile" ) != std::string::npos ) {
    gPad->SetBottomMargin(0.2);
    obj->GetXaxis()->LabelsOption("v");
   }
 
-  if( name.find( "EBMM hit number profile" ) < name.size() ) {
+  if( name.find( "EBMM hit number profile" ) != std::string::npos ) {
    gPad->SetBottomMargin(0.2);
    obj->GetXaxis()->LabelsOption("v");
   }
 
-  if( name.find( "EBMM TP digi number profile" ) < name.size() ) {
+  if( name.find( "EBMM TP digi number profile" ) != std::string::npos ) {
    gPad->SetBottomMargin(0.2);
    obj->GetXaxis()->LabelsOption("v");
   }
 
-  if( name.find( "EBSRT DCC event size" ) < name.size() ) {
+  if( name.find( "EBSRT DCC event size" ) != std::string::npos ) {
    gPad->SetBottomMargin(0.2);
    obj->GetXaxis()->LabelsOption("v");
   }
@@ -357,7 +357,7 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
   obj->SetStats(kFALSE);
   gPad->SetLogy(kFALSE);
 
-  if( name.find( "EBCLT" ) < name.size() ) {
+  if( name.find( "EBCLT" ) != std::string::npos ) {
     gPad->SetGridx();
     gPad->SetGridy();
     obj->GetXaxis()->SetNdivisions(40118, kFALSE);
@@ -369,7 +369,7 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( name.find( "EBTMT timing vs amplitude" ) < name.size() ) {
+  if( name.find( "EBTMT timing vs amplitude" ) != std::string::npos ) {
     if ( obj->GetMaximum() > 0. ) gPad->SetLogz(kTRUE);
     obj->SetMinimum(0.0);
     gStyle->SetPalette(10, pCol4);
@@ -426,15 +426,15 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->GetYaxis()->SetNdivisions(2, kFALSE);
   }
 
-  if( name.find( "reportSummaryMap" ) < name.size() ) {
+  if( name.find( "reportSummaryMap" ) != std::string::npos ) {
     dqm::utils::reportSummaryMapPalette(obj);
     obj->SetTitle("EcalBarrel Report Summary Map");
     gStyle->SetPaintTextFormat("+g");
     return;
   }
 
-  if( name.find( "EBIT" ) < name.size() &&
-      name.find( "quality" ) >= name.size() ) {
+  if( name.find( "EBIT" ) != std::string::npos &&
+      name.find( "quality" ) ==std::string::npos ) {
     obj->SetMinimum(0.0);
     gStyle->SetPalette(10, pCol5);
     obj->SetOption("colz");
@@ -442,10 +442,10 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( name.find( "EBTTT" ) < name.size() &&
-      name.find( "quality" ) >= name.size() ) {
+  if( name.find( "EBTTT" ) != std::string::npos &&
+      name.find( "quality" ) ==std::string::npos ) {
     obj->SetMinimum(0.0);
-    if( name.find( "Error" ) >= name.size() ) {
+    if( name.find( "Error" ) ==std::string::npos ) {
       gStyle->SetPalette(10, pCol4);
     } else {
       gStyle->SetPalette(10, pCol5);
@@ -455,8 +455,8 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( name.find( "EBSFT" ) < name.size() &&
-      name.find( "summary" ) >= name.size() ) { 
+  if( name.find( "EBSFT" ) != std::string::npos &&
+      name.find( "summary" ) ==std::string::npos ) { 
     obj->SetMinimum(0.0); 
     gStyle->SetPalette(10, pCol5);
     obj->SetOption("colz");
@@ -464,7 +464,7 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( name.find( "EBSRT" ) < name.size() ) {
+  if( name.find( "EBSRT" ) != std::string::npos ) {
     obj->SetMinimum(0.0);
     gStyle->SetPalette(10, pCol4);
     obj->SetOption("colz");
@@ -472,7 +472,7 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( name.find( "EBOT" ) < name.size() ) {
+  if( name.find( "EBOT" ) != std::string::npos ) {
     obj->SetMinimum(0.0);
     gStyle->SetPalette(10, pCol4);
     obj->SetOption("colz");
@@ -480,7 +480,7 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( name.find( "EBCT" ) < name.size() ) {
+  if( name.find( "EBCT" ) != std::string::npos ) {
     obj->SetMinimum(0.0);
     gStyle->SetPalette(10, pCol4);
     obj->SetOption("colz");
@@ -488,7 +488,7 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( name.find( "summary" ) < name.size() ) {
+  if( name.find( "summary" ) != std::string::npos ) {
     obj->SetMinimum(-0.00000001);
     obj->SetMaximum(7.0);
     gStyle->SetPalette(7, pCol3);
@@ -497,7 +497,7 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( name.find( "quality" ) < name.size() ) {
+  if( name.find( "quality" ) != std::string::npos ) {
     obj->SetMinimum(-0.00000001);
     obj->SetMaximum(7.0);
     gStyle->SetPalette(7, pCol3);
@@ -506,7 +506,7 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( name.find( "EBMM event" ) < name.size() ) {
+  if( name.find( "EBMM event" ) != std::string::npos ) {
     obj->SetMinimum(0.0);
     gStyle->SetPalette(10, pCol4);
     obj->SetOption("colz");
@@ -537,42 +537,42 @@ void EBRenderPlugin::preDrawTH1F( TCanvas *c, const DQMNet::CoreObject &o ) {
   if ( nbx == 10 ) gPad->SetLogy(kFALSE);
   if ( nbx == 1700 ) gPad->SetLogy(kFALSE);
 
-  if( name.find( "EVTTYPE" ) < name.size() ) {
+  if( name.find( "EVTTYPE" ) != std::string::npos ) {
    gPad->SetBottomMargin(0.4);
    obj->GetXaxis()->LabelsOption("v");
   }
 
-  if( name.find( "EBMM DCC" ) < name.size() ) {
+  if( name.find( "EBMM DCC" ) != std::string::npos ) {
    gPad->SetBottomMargin(0.2);
    obj->GetXaxis()->LabelsOption("v");
   }
 
-  if( name.find( "EBIT DCC" ) < name.size() ) {
+  if( name.find( "EBIT DCC" ) != std::string::npos ) {
    gPad->SetBottomMargin(0.2);
    obj->GetXaxis()->LabelsOption("v");
   }
 
-  if( name.find( "EBRDT" ) < name.size() ) {
+  if( name.find( "EBRDT" ) != std::string::npos ) {
    gPad->SetBottomMargin(0.2);
    obj->GetXaxis()->LabelsOption("v");
   }
 
-  if( name.find( "front-end status bits" ) < name.size() ) {
+  if( name.find( "front-end status bits" ) != std::string::npos ) {
    gPad->SetBottomMargin(0.25);
    obj->GetXaxis()->LabelsOption("v");
   }
 
-  if( name.find( "front-end status errors summary" ) < name.size() ) {
+  if( name.find( "front-end status errors summary" ) != std::string::npos ) {
    gPad->SetBottomMargin(0.2);
    obj->GetXaxis()->LabelsOption("v");
   }
 
-  if( name.find( "quality errors summary" ) < name.size() ) {
+  if( name.find( "quality errors summary" ) != std::string::npos ) {
    gPad->SetBottomMargin(0.2);
    obj->GetXaxis()->LabelsOption("v");
   }
 
-  if( name.find( "EBOT digi occupancy summary 1D" ) < name.size() ) {
+  if( name.find( "EBOT digi occupancy summary 1D" ) != std::string::npos ) {
    gPad->SetBottomMargin(0.2);
    obj->GetXaxis()->LabelsOption("v");
   }
@@ -619,15 +619,15 @@ void EBRenderPlugin::postDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o
   int nbx = obj->GetNbinsX();
   int nby = obj->GetNbinsY();
 
-  if( name.find( "EBLT shape" ) < name.size() ) {
+  if( name.find( "EBLT shape" ) != std::string::npos ) {
     return;
   }
 
-  if( name.find( "EBTPT shape" ) < name.size() ) {
+  if( name.find( "EBTPT shape" ) != std::string::npos ) {
     return;
   }
 
-  if( name.find( "EBCLT" ) < name.size() ) {
+  if( name.find( "EBCLT" ) != std::string::npos ) {
     int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
     int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
     int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
@@ -694,7 +694,7 @@ void EBRenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
   int nbx = obj->GetNbinsX();
   int nby = obj->GetNbinsY();
 
-  if( name.find( "EBCLT" ) < name.size() ) {
+  if( name.find( "EBCLT" ) != std::string::npos ) {
     int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
     int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
     int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
@@ -705,7 +705,7 @@ void EBRenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( name.find( "EBOT MEM" ) < name.size() ) {
+  if( name.find( "EBOT MEM" ) != std::string::npos ) {
     int x1 = text3->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
     int x2 = text3->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
     int y1 = text3->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
@@ -716,7 +716,7 @@ void EBRenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( name.find( "EBOT digi" ) < name.size() ) {
+  if( name.find( "EBOT digi" ) != std::string::npos ) {
     if( nbx == 85 && nby == 20 ) {
       int x1 = text1->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
       int x2 = text1->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
@@ -737,7 +737,7 @@ void EBRenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( name.find( "EBOT rec hit" ) < name.size() ) {
+  if( name.find( "EBOT rec hit" ) != std::string::npos ) {
     int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
     int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
     int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
@@ -748,7 +748,7 @@ void EBRenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( name.find( "EBOT TP digi" ) < name.size() ) {
+  if( name.find( "EBOT TP digi" ) != std::string::npos ) {
     int x1 = text8->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
     int x2 = text8->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
     int y1 = text8->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
@@ -759,7 +759,7 @@ void EBRenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( name.find( "EBOT test pulse digi" ) < name.size() ) {
+  if( name.find( "EBOT test pulse digi" ) != std::string::npos ) {
     int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
     int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
     int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
@@ -770,7 +770,7 @@ void EBRenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( name.find( "EBOT laser digi" ) < name.size() ) {
+  if( name.find( "EBOT laser digi" ) != std::string::npos ) {
     int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
     int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
     int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
@@ -781,7 +781,7 @@ void EBRenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( name.find( "EBOT pedestal digi" ) < name.size() ) {
+  if( name.find( "EBOT pedestal digi" ) != std::string::npos ) {
     int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
     int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
     int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
@@ -792,7 +792,7 @@ void EBRenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( name.find( "reportSummaryMap" ) < name.size() ) {
+  if( name.find( "reportSummaryMap" ) != std::string::npos ) {
     int x1 = text9->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
     int x2 = text9->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
     int y1 = text9->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
@@ -858,7 +858,7 @@ void EBRenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( name.find( "summary" ) < name.size() ) {
+  if( name.find( "summary" ) != std::string::npos ) {
     int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
     int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
     int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
