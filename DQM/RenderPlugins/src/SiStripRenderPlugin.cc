@@ -2,8 +2,8 @@
   \file SiStripRenderPlugin
   \brief Display Plugin for SiStrip DQM Histograms
   \author S. Dutta 
-  \version $Revision: 1.7 $
-  \date $Date: 2008/06/18 20:00:50 $
+  \version $Revision: 1.8 $
+  \date $Date: 2008/08/17 20:31:00 $
 */
 
 #include "TProfile2D.h"
@@ -134,8 +134,8 @@ void SiStripRenderPlugin::preDrawTH1F( TCanvas *c, const DQMNet::CoreObject &o )
 //  }
   if( o.name.find( "Summary_MeanNumberOfDigis" )  != std::string::npos) {
     obj->SetStats( kFALSE );
-    obj->SetMaximum(0.5);
-    obj->SetMinimum(-0.01);
+    obj->SetMaximum(2.0);
+    obj->SetMinimum(-0.1);
     return;
   }
 
@@ -149,7 +149,7 @@ void SiStripRenderPlugin::preDrawTH1F( TCanvas *c, const DQMNet::CoreObject &o )
   if( o.name.find( "Summary_MeanClusterWidth" )  != std::string::npos) {
     obj->SetStats( kFALSE );
     obj->SetMaximum(20.0);
-    obj->SetMinimum(-0.1);
+    obj->SetMinimum(-1.0);
     return;
   }
 
