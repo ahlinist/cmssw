@@ -38,7 +38,7 @@ bool HLTRenderPlugin::applies(const DQMNet::CoreObject &o,
 #ifdef DEBUG 
   std::cout << "HLTRenderPlugin:applies " << o.name << std::endl; 
 #endif 
-  if (o.name.find( "HLT/" ) ==0 )
+  if (o.name.find( "HLT/" ) != std::string::npos  )
     {
       return true;
     }
