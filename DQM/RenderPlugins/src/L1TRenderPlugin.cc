@@ -55,11 +55,11 @@ bool L1TRenderPlugin::applies(const DQMNet::CoreObject &o,
 #ifdef DEBUG 
   std::cout << "L1TRenderPlugin:applies " << o.name << std::endl; 
 #endif 
-  if (o.name.find( "L1T/" ) ==0 )
+  if (o.name.find( "L1T/" ) != std::string::npos )
     {
       return true;
     }
-  
+    
   return false;
 }
 
