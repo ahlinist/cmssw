@@ -27,8 +27,9 @@ namespace HCAL_HLX
   
   // Default constructor
   DIPDistributor::DIPDistributor() {
-    std::cout<<"in DIPDistributor constructor"<<std::endl;
+    //std::cout<<"in DIPDistributor constructor"<<std::endl;
     try {
+      mHistogramData = 0;
       mProcessCounter = 0;
       mDIP = 0;
       mDIPPublisher = 0;
@@ -36,10 +37,12 @@ namespace HCAL_HLX
       mDIPData = 0;
       mDIPDataLH = 0;
       mErrorCount = 0;
-      mHistogramData = 0;
+      mTimestamp = 0;
+      mTimestamp_micros = 0;
+      mNumBunches = 0;
+      mNumOrbits = 0;
       mInstantLumi = 0;
       mInstantLumiError = 0;
-
 
       // Open the log file
       mLogFile.open("/tmp/LMS-DIPDistributor.log",ios::app);
@@ -63,7 +66,7 @@ namespace HCAL_HLX
       char itemNameLH[]={"dip/CMS/HF/LumiDataLH"};    
       
       // Create the DIP publication interface
-      cout << "Creating DIP publication " << itemName << endl;
+      // cout << "Creating DIP publication " << itemName << endl;
       mDIPPublisher = mDIP->createDipPublication(itemName, this);
       mDIPPublisherLH = mDIP->createDipPublication(itemNameLH, this);
       if ( !mDIPPublisher || !mDIPPublisherLH ) {
@@ -72,7 +75,7 @@ namespace HCAL_HLX
 	MemoryAllocationException lExc(tempString);
 	RAISE(lExc);
       }
-      cout << "Created DIP publication " << itemName << endl;
+      //cout << "Created DIP publication " << itemName << endl;
       
       // Create the publication data structure
       mDIPData = mDIP->createDipData();
@@ -144,8 +147,12 @@ namespace HCAL_HLX
   }
 
   bool DIPDistributor::ProcessSection(const LUMI_SECTION & lumiSection) { 
-    std::cout<<"... in DIPDistributor::ProcessSection"<<std::endl;
+    //std::cout<<"... in DIPDistributor::ProcessSection"<<std::endl;
     // Load the DIP header information
+    mTimestamp = lumiSection.hdr.timestamp;
+    mTimestamp_micros = lumiSection.hdr.timestamp_micros;
+    DipTimestamp time;
+    time = mTimestamp*1000 + mTimestamp_micros/1000;
     mRunNumber = lumiSection.hdr.runNumber;
     mSectionNumber = lumiSection.hdr.sectionNumber;
     mNumHLXs = lumiSection.hdr.numHLXs;
@@ -155,7 +162,14 @@ namespace HCAL_HLX
     mInstantLumi = lumiSection.lumiSummary.InstantLumi;
     mInstantLumiError = lumiSection.lumiSummary.InstantLumiErr;
 
-    std::cout<<"bout to insert data"<<std::endl;
+    /*
+    std::ostringstream LogEntryForTesting;  //can erase this sometime later (07/27/08)
+    LogEntryForTesting<<"Inserting Data: timestamp, runnumber, sectionNumber, startorbit, numorbits, instantLumi, instantLumiErr: "<<lumiSection.hdr.timestamp<<", "<<
+      mRunNumber<<", "<<mSectionNumber<<", "<<mStartOrbit<<", "<<mNumOrbits<<", "<<mInstantLumi<<", "<<mInstantLumiError<<"\n";
+    DoLogEntry(LogEntryForTesting.str());
+    */
+
+    //std::cout<<"bout to insert data"<<std::endl;
     mDIPData->insert(mNumHLXs, "Number of HLXs");
     mDIPData->insert(mRunNumber, "Run number");
     mDIPData->insert(mSectionNumber, "Section number");
@@ -166,28 +180,29 @@ namespace HCAL_HLX
     mDIPData->insert(mInstantLumiError, "Inst Lumi Error");
 
     // Publish the data
-    std::cout<<"getting time"<<std::endl;
-    DipTimestamp time;
-    std::cout<<"bout to publish data"<<std::endl;
+    //std::cout<<"bout to publish data"<<std::endl;
     mDIPPublisher->send(*mDIPData,time);
-    std::cout<<"published data"<<std::endl;
+    //std::cout<<"published data"<<std::endl;
 
     //handle the Lumi vs BX Histo
-    std::cout<<"mProcessCounter= "<<mProcessCounter<<std::endl;
-    if(mProcessCounter%10 == 0){
+    //std::cout<<"mProcessCounter= "<<mProcessCounter<<std::endl;
+    if(mProcessCounter%1 == 0){
       //std::cout<<"mProcessCounter divisible by 10... Lumi Histo Go!"<<std::endl;
+      //std::cout<<"lumiSection.hdr.numBunches= "<<mNumBunches<<std::endl;
       for ( u32 i = 0 ; i != lumiSection.hdr.numBunches ; i++ ) {
+	//std::cout<<"i= "<<i<<std::endl;
 	mHistogramData[i] = lumiSection.lumiDetail.LHCLumi[i];
       }
-      mDIPDataLH->insert(mHistogramData, lumiSection.hdr.numBunches, "Luminosity Histogram");
-      // Publish the data                                                                                                                                            
-      mDIPPublisherLH->send(*mDIPDataLH,time);
+      if(mNumBunches > 0){
+	mDIPDataLH->insert(mHistogramData, lumiSection.hdr.numBunches, "Luminosity Histogram");
+	mDIPPublisherLH->send(*mDIPDataLH,time);
+      }
 
     }//done if counter divisible by 10
     mProcessCounter++;
 
 
-    std::cout<<"exiting DIPDistributor::ProcessSection"<<std::endl;
+    //std::cout<<"exiting DIPDistributor::ProcessSection"<<std::endl;
     return true;
   }
 }
