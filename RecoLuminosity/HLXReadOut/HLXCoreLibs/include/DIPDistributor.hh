@@ -72,6 +72,8 @@ namespace HCAL_HLX
     DipFloat *mHistogramData;
     DipInt mNumHLXs;
     DipInt mRunNumber;
+    DipInt mTimestamp;
+    DipInt mTimestamp_micros;
     DipInt mSectionNumber;
     DipInt mStartOrbit;
     DipInt mNumOrbits;
