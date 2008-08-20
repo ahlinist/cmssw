@@ -1,5 +1,6 @@
 <use name=boost>
-<use name=root>
+<use name = rootcore>
+<use name = rootgraphics>
 <use name=FWCore/Framework>
 <use name=FWCore/PluginManager>
 <use name=FWCore/ParameterSet>
