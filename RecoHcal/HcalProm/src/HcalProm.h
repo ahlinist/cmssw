@@ -17,7 +17,7 @@
 // Original Author:  Efe Yazgan
 // Updated        :  Taylan Yetkin (2008/05/08)
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.h,v 1.23 2008/07/12 09:06:37 tyetkin Exp $
+// $Id: HcalProm.h,v 1.24 2008/07/13 12:24:16 tyetkin Exp $
 //
 //
 
@@ -71,6 +71,11 @@
 #include "FastSimulation/BaseParticlePropagator/interface/BaseParticlePropagator.h"
 #include "FastSimulation/CalorimeterProperties/interface/Calorimeter.h"
 #include "FastSimulation/CaloGeometryTools/interface/CaloGeometryHelper.h"
+
+#include "MagneticField/Engine/interface/MagneticField.h"
+#include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
+#include "TrackPropagation/SteppingHelixPropagator/interface/SteppingHelixPropagator.h"
+
 
 //Ntuple creation
 #include "TTree.h"
@@ -138,6 +143,14 @@ class HcalProm : public edm::EDAnalyzer {
 	  double *thetap_out, double *phip_out,
 	  double *thetam_out, double *phim_out
 	  );
+      bool Propagate(
+           // inputs
+           // double ox, double oy, double oz, double px, double py, double pz, double ra,
+           GlobalPoint pos, GlobalVector mom, int charge,double ra,
+           // outputs
+           double *x_HB, double *y_HB, double *z_HB);
+
+
       reco::Track bestTrack(const reco::TrackCollection&) const;
       HcalDetId getClosestCell(float dR,float eta, float phi, const HBHERecHitCollection*  HBHERecHits, const CaloGeometry* geo, float &time, bool &found);
   //------- histogram bookers ----------
@@ -557,5 +570,6 @@ class HcalProm : public edm::EDAnalyzer {
       int t5;
       int t6;
       int t7;
-
+      SteppingHelixPropagator* stepProp;
+      MagneticField *theMagField;
 };

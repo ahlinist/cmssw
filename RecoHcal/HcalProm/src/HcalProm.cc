@@ -21,7 +21,7 @@
 //                   Anna Kropivnitskaya
 // Contacts: Efe Yazgan, Taylan Yetkin
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.53 2008/07/30 14:05:46 efe Exp $
+// $Id: HcalProm.cc,v 1.54 2008/08/06 09:25:16 efe Exp $
 //
 //
 
@@ -48,6 +48,10 @@
 #include "CondFormats/HcalObjects/interface/HcalQIECoder.h"
 #include "CalibFormats/HcalObjects/interface/HcalCalibrations.h"
 #include "Geometry/CaloGeometry/interface/CaloGeometry.h"
+#include "Geometry/Records/interface/CaloGeometryRecord.h"
+#include "Geometry/CaloGeometry/interface/CaloSubdetectorGeometry.h"
+#include "Geometry/CaloGeometry/interface/CaloCellGeometry.h"
+#include "Geometry/Records/interface/CaloGeometryRecord.h"
 #include "DataFormats/CaloTowers/interface/CaloTowerDetId.h"
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "FWCore/Framework/interface/EventSetup.h"
@@ -75,6 +79,19 @@
 #include "DataFormats/L1GlobalMuonTrigger/interface/L1MuGMTReadoutCollection.h"
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutRecord.h"
 #include "DataFormats/L1GlobalTrigger/interface/L1GtPsbWord.h"
+
+// track propagation
+#include "DataFormats/TrajectorySeed/interface/TrajectorySeedCollection.h"
+#include "DataFormats/TrajectorySeed/interface/PropagationDirection.h"
+#include "DataFormats/GeometrySurface/interface/PlaneBuilder.h"
+#include "DataFormats/GeometrySurface/interface/Cylinder.h"
+#include "DataFormats/GeometrySurface/interface/Plane.h"
+#include "TrackingTools/GeomPropagators/interface/Propagator.h"
+#include "TrackingTools/TrajectoryState/interface/FreeTrajectoryState.h"
+//#include "TrackPropagation/SteppingHelixPropagator/interface/SteppingHelixPropagator.h"
+
+//#include "MagneticField/Engine/interface/MagneticField.h"
+//#include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
 
 
 //tracks
@@ -155,7 +172,7 @@ HcalProm::HcalProm(const edm::ParameterSet & iConfig) {
     bottom_ihpi_low = iConfig.getUntrackedParameter < int >("topIPHIlow", 51);
     bottom_ihpi_high = iConfig.getUntrackedParameter < int >("topIPHIhigh", 58);
 
-    myCalorimeter_ = new CaloGeometryHelper(iConfig.getParameter < edm::ParameterSet > ("Calorimetry"));
+//    myCalorimeter_ = new CaloGeometryHelper(iConfig.getParameter < edm::ParameterSet > ("Calorimetry"));
     NTotal = 0;
     NAccepted = 0;
     //trigger bit counters
@@ -223,6 +240,8 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
     iEvent.getByLabel("hbhereco", hbhe);
     HBHERecHits = hbhe.product();   // get a ptr to the product
 
+
+
     Handle < HFRecHitCollection > hfrh;
     iEvent.getByLabel("hfreco", hfrh);
     const HFRecHitCollection Hithf = *(hfrh.product());
@@ -265,6 +284,10 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
        iEvent.getByLabel("islandBasicClusters","islandBarrelBasicClusters",pIslandBarrelBasicClusters); const
        BasicClusterCollection islandBarrelBasicClusters = *(pIslandBarrelBasicClusters.product()); */
 
+   // mag. field 
+     ESHandle<MagneticField> theMagField;
+      iSetup.get<IdealMagneticFieldRecord>().get(theMagField );
+
 
     Handle < reco::BasicClusterCollection > bccHandle;
     iEvent.getByLabel("cosmicBasicClusters", "CosmicBarrelBasicClusters", bccHandle);
@@ -284,12 +307,14 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
 
     // geometry
     const CaloGeometry *geo;
-    const CaloSubdetectorGeometry *geometry_hb;
+//    const CaloSubdetectorGeometry *geometry_hb;
 
     ESHandle < CaloGeometry > pG;
-    iSetup.get < IdealGeometryRecord > ().get(pG);
+//    iSetup.get < IdealGeometryRecord > ().get(pG);
+    iSetup.get<CaloGeometryRecord>().get(pG);
     geo = pG.product();
-    geometry_hb = geo->getSubdetectorGeometry(DetId::Hcal, HcalBarrel);
+//    geometry_hb = geo->getSubdetectorGeometry(DetId::Hcal, HcalBarrel);
+
 
     cout << "\nEvent ID = " << iEvent.id() << std::endl;
     ++NTotal;
@@ -300,8 +325,12 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
 
     const TrackCollection tC = *(muons.product());
 
-    // cout << "Number of cosmic muon tracks in this event: " << tC.size() << endl;
+    
 
+    cout << "Number of cosmic muon tracks in this event: " << tC.size() << endl;
+
+    /*
+    //COMM
     // trigger
     Handle < L1MuGMTReadoutCollection > gmtrc_handle;
     iEvent.getByLabel("gtDigis", gmtrc_handle);
@@ -310,6 +339,7 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
     Handle < L1GlobalTriggerReadoutRecord > gtrr_handle;
     iEvent.getByLabel("gtDigis", gtrr_handle);
     L1GlobalTriggerReadoutRecord const *gtrr = gtrr_handle.product();
+    */
 
     string errMsg("");
 
@@ -324,6 +354,9 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
         std::cout << "% Warning" << errMsg << std::endl;
     }
 
+
+    /*
+    //COMM
     bool dt_l1a = false;
     bool rpc_l1a = false;
     bool csc_l1a = false;
@@ -380,6 +413,8 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
             csc_l1a = true;
 
     }
+    
+
 
     // trigger summary
     DecisionWord gtDecisionWord = gtrr->decisionWord();
@@ -478,9 +513,10 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
     }
     std::cout << "************************" << std::endl;
 
+    */
 
     //HF abnormal signals
-    if (triggerBit[2] == 1){//CSC trigger bit
+    //if (triggerBit[2] == 1){//CSC trigger bit
       //HFRecHits 
       for (HFRecHitCollection::const_iterator hfhit = Hithf.begin(); hfhit != Hithf.end(); hfhit++) {
         GlobalPoint hfposition = geo->getPosition(hfhit->detid());
@@ -513,9 +549,9 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
 	}
       }
       ///<---HF
-    }
+      //}
     // DIGIS ARE TAKEN OUT FROM T0 RECONSTRUCTION, but not at FNAL
-    if (triggerBit[0] == 1){
+    //if (triggerBit[0] == 1){
     if (!hbhe_digi.failedToGet()) {
         int adcs[10] = { };
 
@@ -541,9 +577,9 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
             }
         }
     }
-    }
+    //}
     
-    if (triggerBit[2] == 1){
+    //if (triggerBit[2] == 1){
       if (!hbhe_digi.failedToGet()) {
         int adcs[10] = { };
 	
@@ -648,7 +684,7 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
         }
       }
       ///--->HF
-    }
+      //}
     // @@
     double inner_radius_hcal = 188.15;
     double outer_radius_hcal = 286.40;
@@ -828,8 +864,8 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
                     if (ieta < 0) { // top minus
                         h_HBM_e1[iphi - 1]->Fill(f_corr * getNxNClusterEnergy(0, ieta, iphi, HBHERecHits));
                         for (int bit = 0; bit < 4; ++bit) {
-                            if (triggerBit[bit] == 1)
-                                h_HBTopMin_Muontiming[bit]->Fill(hcal_time);
+			  //if (triggerBit[bit] == 1)
+                          h_HBTopMin_Muontiming[bit]->Fill(hcal_time);
                         }
                         if (ieta < -1) {
                             h_HBM_e3[iphi - 1]->Fill(f_corr * get1xNClusterEnergy(1, ieta, iphi, HBHERecHits));
@@ -844,7 +880,7 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
                     } else {    // top plus
                         h_HBP_e1[iphi - 1]->Fill(f_corr * getNxNClusterEnergy(0, ieta, iphi, HBHERecHits));
                         for (int bit = 0; bit < 4; ++bit) {
-                            if (triggerBit[bit] == 1)
+			  //if (triggerBit[bit] == 1)
                                 h_HBTopPlu_Muontiming[bit]->Fill(hcal_time);
                         }
                         if (ieta > 1) {
@@ -862,7 +898,7 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
                     if (ieta < 0) { // bottom minus
                         h_HBM_e1[iphi - 1]->Fill(f_corr * getNxNClusterEnergy(0, ieta, iphi, HBHERecHits));
                         for (int bit = 0; bit < 4; ++bit) {
-                            if (triggerBit[bit] == 1)
+			  //if (triggerBit[bit] == 1)
                                 h_HBBottomMin_Muontiming[bit]->Fill(hcal_time);
                         }
                         if (ieta < -1) {
@@ -877,7 +913,7 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
                     } else {    // bottom plus
                         h_HBM_e1[iphi - 1]->Fill(f_corr * getNxNClusterEnergy(0, ieta, iphi, HBHERecHits));
                         for (int bit = 0; bit < 4; ++bit) {
-                            if (triggerBit[bit] == 1)
+			  //if (triggerBit[bit] == 1)
                                 h_HBBottomPlu_Muontiming[bit]->Fill(hcal_time);
                         }
                         if (ieta > 1) {
@@ -923,11 +959,13 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
         float next_to_maxhbPlusrec_ETA = 0;
         float next_to_maxhbPlusrec_PHI = 0;
 
+        cout<<"HBHERecHits Size:   "<<Hithbhe.size()<<endl;
+
         for (HBHERecHitCollection::const_iterator hhit = Hithbhe.begin(); hhit != Hithbhe.end(); hhit++) {
             if(hhit->id().subdet()!=HcalBarrel)continue;
             if (hhit->energy() < fHBThreshold)continue;
 	    for (int bit = 0; bit < 4; ++bit) {
-		if (triggerBit[bit] == 1){
+	      //if (triggerBit[bit] == 1){
 		    if(hhit->id().ieta()<0){//HB-
 			if(hhit->id().iphi()>=1 && hhit->id().iphi()<=36){//top
 			    h_HBTopMin_timing[bit]->Fill(hhit->time());
@@ -941,7 +979,7 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
 			    h_HBBottomPlu_timing[bit]->Fill(hhit->time());
 			}
 		    }
-		}
+		    //}
 	    }
         }
 	for (HBHERecHitCollection::const_iterator hhit = Hithbhe.begin(); hhit != Hithbhe.end(); hhit++) {
@@ -1155,6 +1193,24 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
           XoutPosMuon = XOutMuonHB;
           YoutPosMuon = YOutMuonHB;
           ZoutPosMuon = ZOutMuonHB;
+          double XInMuonHBp;
+          double YInMuonHBp;
+          double ZInMuonHBp;
+          int charge = cmTrack->charge();
+          int isValid= 0;
+  	  if(cmTrack->innerPosition().Y()>0) {
+           GlobalPoint gpos( cmTrack->outerPosition().X(), cmTrack->outerPosition().Y(), cmTrack->outerPosition().Z());
+           GlobalVector gmom( cmTrack->outerMomentum().X(), cmTrack->outerMomentum().Y(), cmTrack->outerMomentum().Z());
+  	   isValid=Propagate( gpos, gmom ,charge,InRadiusHB,
+							&XInMuonHBp,&YInMuonHBp,&ZInMuonHBp);	
+          }else{
+           GlobalPoint  gpos( cmTrack->innerPosition().X(), cmTrack->innerPosition().Y(), cmTrack->innerPosition().Z());
+           GlobalVector gmom( cmTrack->innerMomentum().X(), cmTrack->innerMomentum().Y(), cmTrack->innerMomentum().Z());
+ 	   isValid=Propagate( gpos, gmom ,charge,InRadiusHB,
+							&XInMuonHBp,&YInMuonHBp,&ZInMuonHBp);	
+	  }
+          std::cout<<" Propagation x,y,z: "<<XInMuonHBp<<"\t"<<YInMuonHBp<<"\t"<<ZInMuonHBp<<endl; 
+          std::cout<<" Extrapolation x,y,z: "<<XInMuonHB<<"\t"<<YInMuonHB<<"\t"<<ZInMuonHB<<endl; 
          // calculating Length of muon in HB
          LengthMuonHB[NumMuonHBphiPlane] = sqrt(pow((XInMuonHB-XOutMuonHB),2)+pow((YInMuonHB-YOutMuonHB),2)+pow((ZInMuonHB-ZOutMuonHB),2));  
          LengthMuonHB2[NumMuonHBphiPlane] = sqrt(pow((XInMuonHB_2-XOutMuonHB_2),2)+pow((YInMuonHB_2-YOutMuonHB_2),2)+pow((ZInMuonHB_2-ZOutMuonHB_2),2));  
@@ -1757,7 +1813,13 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
 
 
 // ------------ method called once each job just before starting event loop  ------------
-void HcalProm::beginJob(const edm::EventSetup &) {
+void HcalProm::beginJob(const edm::EventSetup & iSetup) {
+  edm::ESHandle<MagneticField> bField;
+  iSetup.get<IdealMagneticFieldRecord>().get(bField);
+  stepProp  = new SteppingHelixPropagator(&*bField,anyDirection);
+  stepProp->setMaterialMode(false);
+  stepProp->applyRadX0Correction(true);
+
 }
 
 TH1F *HcalProm::book1DHistogram(TFileDirectory & fDir, const std::string & fName, const std::string & fTitle,
@@ -2002,7 +2064,6 @@ void HcalProm::bookHistograms() {
     h_Px = book1DHistogram(MuonDir, "Px", "Muon Px", 100, 0., 100.);
     h_Py = book1DHistogram(MuonDir, "Py", "Muon Py", 200, -1000., 1000.);
     h_d0 = book1DHistogram(MuonDir, "d0", "Transverse Impact Parameter", 500, 0., 500.);
-    h_Chi2 = book1DHistogram(MuonDir, "Chi2", "Track Chi2", 100, 0., 100.);
     h_Vtx_X = book1DHistogram(MuonDir, "Vtx_X", "Track Vertex X", 2000, -1000., 1000.);
     h_Vtx_Y = book1DHistogram(MuonDir, "Vtx_Y", "Track Vertex Y", 2000, -1000., 1000.);
     h_Vtx_Z = book1DHistogram(MuonDir, "Vtx_Z", "Track Vertex Z", 1000, -5000., 5000.);
@@ -3321,8 +3382,7 @@ bool HcalProm::Extrapolate(
     if (px == 0.) {
         std::cout << "px is exactly 0 - the extrapolation can not handle this case currently, sorry. Not extrapolating."
           << std::endl;
-        return isCloseToIP;
-    }
+   }
 
 
     double xp = -99999.;
@@ -3415,6 +3475,41 @@ bool HcalProm::Extrapolate(
 
     return isCloseToIP;
 
+}
+
+
+
+bool HcalProm::Propagate(
+  // inputs
+  //  double ox, double oy, double oz, double px, double py, double pz, double ra,
+  GlobalPoint pos, GlobalVector mom, int charge, double ra,
+  // outputs
+  double *x_HB, double *y_HB, double *z_HB){
+    bool isValid = 0;
+    *x_HB=-10000.;
+    *y_HB=-10000.;
+    *z_HB=-10000.;
+
+
+  const FreeTrajectoryState *freetrajectorystate_ =new FreeTrajectoryState(pos, mom ,charge , &(*theMagField));
+
+//  PlaneBuilder::ReturnType aPlane = PlaneBuilder().plane(Surface::PositionType(0,0,0),Surface::RotationType());
+    Cylinder *cylinder = new Cylinder(Surface::PositionType(0,0,0),
+                                      Surface::RotationType(), ra);
+
+//  FreeTrajectoryState * steppingHelixstateinfo_ = stepProp->propagate(*freetrajectorystate_, (*cylinder)).freeState();
+
+  TrajectoryStateOnSurface steppingHelixstateinfo_ = stepProp->propagate(*freetrajectorystate_, (*cylinder));
+
+  isValid = steppingHelixstateinfo_.isValid();
+          if (steppingHelixstateinfo_.isValid()) {
+//             GlobalVector hotrkpos2(steppingHelixstateinfo_.position().x(), steppingHelixstateinfo_.position().y(),steppingHelixstateinfo_.position().z());
+//             Hep3Vector hotrkdir2(steppingHelixstateinfo_.momentum().x(),steppingHelixstateinfo_.momentum().y(),steppingHelixstateinfo_.momentum().z());
+             *x_HB=steppingHelixstateinfo_.freeState()->position().x();        
+             *y_HB=steppingHelixstateinfo_.freeState()->position().y();        
+             *z_HB=steppingHelixstateinfo_.freeState()->position().z();        
+          }
+    return isValid;
 }
 
 reco::Track HcalProm::bestTrack(const reco::TrackCollection & muons) const {
