@@ -1,4 +1,5 @@
 <use name=root>
 <use name=rootcore>
+<use name=rootgraphics>
 
 <bin file=CompareHists.cc></bin>	
