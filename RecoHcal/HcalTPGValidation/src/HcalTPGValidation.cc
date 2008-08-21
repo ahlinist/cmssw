@@ -13,7 +13,7 @@
 //
 // Original Author:  Ka Vang TSANG
 //         Created:  Tue Jul 22 15:29:01 CEST 2008
-// $Id: HcalTPGValidation.cc,v 1.2 2008/08/14 14:00:38 kvtsang Exp $
+// $Id: HcalTPGValidation.cc,v 1.3 2008/08/15 14:57:58 kvtsang Exp $
 //
 //
 
@@ -94,7 +94,8 @@ class HcalTPGValidation : public edm::EDAnalyzer {
 		TH2F *etcorr_HF;
 		TH2F *etcorr_HBHE;
 
-		bool IsDebugHF;
+		std::vector<int> DebugHF;
+		std::vector<int> DebugHBHE;
 };
 
 //
@@ -151,12 +152,12 @@ HcalTPGValidation::HcalTPGValidation(const edm::ParameterSet& iConfig)
 	xaxis->SetBinLabel(4,"Emul only");
 	xaxis->SetBinLabel(5,"Mismatched FG bit");
 
-	etcorr_HBHE = fs->make<TH2F>("etcorr_HBHE","HB/HE",50,0,300,50,0,300);
+	etcorr_HBHE = fs->make<TH2F>("etcorr_HBHE","HB/HE",50,0,256,50,0,256);
 	etcorr_HBHE->SetXTitle("data.e");
 	etcorr_HBHE->SetYTitle("emul.e");
-	etcorr_HF = fs->make<TH2F>("etcorr_HF","HF",50,0,300,50,0,300);
-	etcorr_HF->SetXTitle("data.e");
-	etcorr_HF->SetYTitle("emul.e");
+	etcorr_HF = fs->make<TH2F>("etcorr_HF","HF",256,0,256,256,0,256);
+	etcorr_HF->SetXTitle("data.et");
+	etcorr_HF->SetYTitle("emul.et");
 
 	alldata_et_HBHE = fs->make<TH1F>("alldata_et_HBHE","All Data (HB/HE)",256,0,256);
 	alldata_et_HBHE->SetXTitle("data.e");
@@ -202,7 +203,8 @@ HcalTPGValidation::HcalTPGValidation(const edm::ParameterSet& iConfig)
 	emul_FGet_HBHE = fs->make<TH1F>("emul_FGet_HBHE","FG=1 (HB/HE)",255,0,255);
 	emul_FGet_HBHE->SetXTitle("emul.e");
 	
-	IsDebugHF = iConfig.getParameter<bool>("DebugHF");
+	DebugHF = iConfig.getParameter< std::vector<int> >("DebugHF");
+	DebugHBHE = iConfig.getParameter< std::vector<int> >("DebugHBHE");
 }
 
 
@@ -243,19 +245,10 @@ HcalTPGValidation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	typedef HcalTrigPrimDigiCollection::const_iterator TPItr;
 	if (hcal_tp_data.isValid() && hcal_tp_emul.isValid()){
 		for(TPItr emul = hcal_tp_emul->begin(); emul != hcal_tp_emul->end(); ++emul){
-		//for(TPItr emul = hcal_tp_emul->begin(), data = hcal_tp_data->begin(); emul != hcal_tp_emul->end() && data != hcal_tp_data->end(); ++emul, ++data){
-			bool IsHF = (emul->id().ietaAbs()>=29);
-			TPItr data = hcal_tp_data->begin();
-			if(IsHF){
-				for (;data != hcal_tp_data->end(); ++data){
-					if(data->id().ieta()==emul->id().ieta() && (4*data->id().iphi()-3)==emul->id().iphi()) break;
-					//if(data->id().ieta()==emul->id().ieta() && data->id().iphi()==emul->id().iphi()) break;
-				}
-			}
-			else data = hcal_tp_data->find(emul->id());
-			//TPItr data = hcal_tp_data->find(emul->id());
-			if (data == hcal_tp_data->end()) continue;
 
+			bool IsHF = (emul->id().ietaAbs()>=29);
+			TPItr data = hcal_tp_data->find(emul->id());
+			if (data == hcal_tp_data->end()) continue;
 
 			//--------------------
 			//Error Flag
@@ -269,11 +262,13 @@ HcalTPGValidation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 			int errflag = 0;
 			int dataEt = data->SOI_compressedEt();
 			int emulEt = emul->SOI_compressedEt();
-			 if (dataEt == emulEt && data->SOI_fineGrain() == emul->SOI_fineGrain()){
-				if (dataEt>0) errflag=1;
+			 if (dataEt == emulEt){
+				if (dataEt>0){
+					if (data->SOI_fineGrain() == emul->SOI_fineGrain()) errflag=1;
+					else errflag = 5;
+				}
 			}
 			else{
-				if (data->SOI_fineGrain() != emul->SOI_fineGrain()) errflag = 5;
 				if (emulEt == 0) errflag=3;
 				else {
 					if (dataEt == 0) errflag=4;
@@ -281,15 +276,14 @@ HcalTPGValidation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 				}
 			}
 
-			//Fill occupancy plots for not zero TPG
-			if (errflag != 0 ){
-				alldata_map->Fill(data->id().ieta(),data->id().iphi());
-				allemul_map->Fill(emul->id().ieta(),emul->id().iphi());
-				if (errflag == 2) mismatch_map->Fill(emul->id().ieta(),emul->id().iphi());
-			}
+			//Next trigger tower if both emul and data TP are zero
+			if (errflag == 0) continue;
+
+			alldata_map->Fill(data->id().ieta(),data->id().iphi());
+			allemul_map->Fill(emul->id().ieta(),emul->id().iphi());
 
 			//Histograms for HF
-			if (IsHF && errflag>0) {
+			if (IsHF) {
 				errflag_HF->Fill(errflag);
 				alldata_et_HF->Fill(dataEt);
 				allemul_et_HF->Fill(emulEt);
@@ -303,6 +297,7 @@ HcalTPGValidation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 						break;
 					case 2:
 						etcorr_HF->Fill(dataEt,emulEt);
+						mismatch_map->Fill(emul->id().ieta(),emul->id().iphi());
 						break;
 					case 3:
 						dataonly_et_HF->Fill(dataEt);
@@ -312,10 +307,13 @@ HcalTPGValidation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 						emulonly_et_HF->Fill(emulEt);
 						emulonly_map->Fill(emul->id().ieta(),emul->id().iphi());
 						break;
+					case 5:
+						etcorr_HF->Fill(dataEt,emulEt);
+						break;
 				}
 			}
 			//Histograms for HB/HE
-			else if (errflag >0) {
+			else {
 				errflag_HBHE->Fill(errflag);
 				alldata_et_HBHE->Fill(dataEt);
 				allemul_et_HBHE->Fill(emulEt);
@@ -329,6 +327,7 @@ HcalTPGValidation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 						break;
 					case 2:
 						etcorr_HBHE->Fill(dataEt,emulEt);
+						mismatch_map->Fill(emul->id().ieta(),emul->id().iphi());
 						break;
 					case 3:
 						dataonly_et_HBHE->Fill(dataEt);
@@ -338,10 +337,13 @@ HcalTPGValidation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 						emulonly_et_HBHE->Fill(emulEt);
 						emulonly_map->Fill(emul->id().ieta(),emul->id().iphi());
 						break;
+					case 5:
+						etcorr_HBHE->Fill(dataEt,emulEt);
+						break;
 				}
 			}
 			//Debug for HBHE
-			if (!IsHF && errflag>1) {
+			if (!IsHF && DebugHBHE[errflag-1]==1) {
 				edm::LogInfo ("DebugHBHE") << "HBHE\t ieta: " << emul->id().ieta() << "\tiphi: " << emul->id().iphi() << "\tdata.et: " << data->SOI_compressedEt() << "\temul.et: " << emul->SOI_compressedEt();
 				std::stringstream debugString("");
 				debugString << "data:\t" << data->presamples() << '\t';
@@ -371,7 +373,7 @@ HcalTPGValidation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 				}	
 			}
 			//Debug for HF
-			if (IsHF && errflag>1 && IsDebugHF) {
+			if (IsHF && DebugHF[errflag-1]==1){
 				edm::LogInfo ("DebugHF") << "HF\t ieta: " << emul->id().ieta() << "\tiphi: " << emul->id().iphi() << "\tdata.et: " << data->SOI_compressedEt() << "\temul.et: " << emul->SOI_compressedEt();
 				std::stringstream debugString("");
 				debugString << "data:\t" << data->presamples() << '\t' << data->id().ieta() << '/' << data->id().iphi() << '\t';
