@@ -16,7 +16,7 @@
 //
 // Original Author:  Efe Yazgan
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalTemplate.cc,v 1.4 2008/04/28 13:15:26 efe Exp $
+// $Id: HcalTemplate.h,v 1.1 2008/04/30 20:57:31 fedor Exp $
 //
 //
 
@@ -78,5 +78,10 @@ class HcalTemplate : public edm::EDAnalyzer {
 
   TH2F* h_ecalx_vs_muonx;
   TH1F* h_impact_diff;
+
+  TH1F* h_caloMet_Met;
+  TH1F* h_caloMet_Phi;
+  TH1F* h_caloMet_SumEt;
+
   int TrigDT;
 };
