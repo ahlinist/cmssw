@@ -20,7 +20,6 @@ Summary:  Library to calculate relative luminosity from HLX data
 ******************************************************************************/
 
 #include <cmath>
-#include <vector>
 
 #define set1BelowIndex   0
 #define set1BetweenIndex 1
@@ -32,6 +31,7 @@ Summary:  Library to calculate relative luminosity from HLX data
 #define HCAL_HLX_NUM_BUNCHES 3564
 #define HCAL_HLX_NUM_HLXS 36
 #define NUM_CAP_BANKS 4
+#define ET_SUM_STORE_SIZE 4
 
 using namespace ICCoreUtils;
 
@@ -40,22 +40,16 @@ namespace HCAL_HLX {
    class LumiCalc {
       public:
 
-	 typedef std::vector< std::vector< float > > LumiVec;
-
 	 //LumiCalc();
 	 LumiCalc( );
-	 ~LumiCalc(){
-	    etSumAvgPerLB_.clear();
-	    etSumNoiseAvgPerLB_.clear();
-	 }
-
+	 ~LumiCalc() {}
 
 	 // Do the calculations
 	 void DoCalc(HCAL_HLX::LUMI_SECTION & localSection);
 
 	 // configuration
-	 unsigned int SetBXMask( const std::vector< unsigned int > &BXMask );
-	 unsigned int SetHLXMask( const std::vector< unsigned int > &HLXMask );
+	 unsigned int SetBXMask( unsigned int BXMask[], unsigned int maskSize = HCAL_HLX_NUM_BUNCHES );
+	 unsigned int SetHLXMask( unsigned int HLXMask[], unsigned int maskSize = HCAL_HLX_NUM_HLXS );
     
       private:
 
@@ -70,10 +64,7 @@ namespace HCAL_HLX {
 	 float CalcOccErrorBX( HCAL_HLX::LUMI_SECTION &localSection, unsigned int set ); 
 
 	 void CalcLumi( HCAL_HLX::LUMI_SECTION& localSection );
-	 float CalcLumiError( unsigned int numNibbles, 
-	 unsigned int numTowers, 
-	 unsigned int numBunches = 1, 
-	 float intPerBX = 0.01 );
+	 float CalcLumiError( unsigned int numNibbles, unsigned int numTowers, unsigned int numBunches = 1, float intPerBX = 0.01 );
 
 	 // Configuration
 	 //unsigned int startAG_, endAG_, sizeAG_; // AG = Abort Gap.
@@ -99,15 +90,16 @@ namespace HCAL_HLX {
 	 bool Block( unsigned short int iBX, unsigned short int numBlock);
 	 bool isBunch( unsigned short int iBX, unsigned short int scheme = 1 );  
 
-	 std::vector< unsigned int > BXMask_;
-	 std::vector< unsigned int > HLXMask_;
+	 unsigned int BXMask_[HCAL_HLX_NUM_BUNCHES];
+	 unsigned int HLXMask_[HCAL_HLX_NUM_HLXS];
 
 	 // Make an array to store the previous averages, this way we can calculate 
 	 // an estimate of the error as we go. We store an average for each four lumi
 	 // nibbles (a lumi "bite")
-	 LumiVec etSumAvgPerLB_;
-	 LumiVec etSumNoiseAvgPerLB_;
-	 unsigned int etStoreMaxSize_;
+	 float etSumAvgPerLB_[ET_SUM_STORE_SIZE][HCAL_HLX_NUM_BUNCHES];
+	 float etSumNoiseAvgPerLB_[ET_SUM_STORE_SIZE][HCAL_HLX_NUM_BUNCHES];
+	 unsigned int etStoreSize_;
+	 unsigned int etNoiseStoreSize_;
 	 float sigmaEt_;
 	 float sigmaEtWeight_;
 	 float sigmaEtNoise_;
