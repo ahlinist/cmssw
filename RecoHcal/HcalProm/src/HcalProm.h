@@ -17,7 +17,7 @@
 // Original Author:  Efe Yazgan
 // Updated        :  Taylan Yetkin (2008/05/08)
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.h,v 1.24 2008/07/13 12:24:16 tyetkin Exp $
+// $Id: HcalProm.h,v 1.25 2008/08/20 18:59:12 efe Exp $
 //
 //
 
@@ -119,30 +119,10 @@ class HcalProm : public edm::EDAnalyzer {
       std::string getIMG2(TH2F* hist, int size, std::string htmlDir, const char* xlab, const char* ylab,bool color);
       void parseString(std::string& title);
       void cleanString(std::string& title);
-      float deltaR(float eta0, float phi0, float eta, float phi);
-      float getNxNClusterEnergy(int gridSize,int ieta, int iphi, const HBHERecHitCollection*  HBHERecHits);
-      float get1xNClusterEnergy(int gridSize,int ieta, int iphi, const HBHERecHitCollection*  HBHERecHits);
-      float getEtaCluster(int gridSize,int ieta, int iphi, const HBHERecHitCollection*  HBHERecHits);
-      float getPhiCluster(int gridSize,int ieta, int iphi, const HBHERecHitCollection*  HBHERecHits);
+
       float getEnergyEtaPhiDepth(int ieta, int iphi, int depth, const HFRecHitCollection * HFRecHits);
       //muon extrapolation
-      void getHBmax(
-          // inputs
-          int tphi, const HBHERecHitCollection*  HBHERecHits,
-          // outputs
-          int *ietaMax, int *iphiMax, double *Emax, double *E2max
-          );
 
-      bool Extrapolate(
-          // inputs
-	  double ox, double oy, double oz, double px, double py, double pz, 
-	  double radius, double zwidth, double ImpPar,
-	  // outputs
-	  double *xp_out, double *yp_out, double *zp_out,
-	  double *xm_out, double *ym_out, double *zm_out,
-	  double *thetap_out, double *phip_out,
-	  double *thetam_out, double *phim_out
-	  );
       bool Propagate(
            // inputs
            // double ox, double oy, double oz, double px, double py, double pz, double ra,
@@ -151,8 +131,6 @@ class HcalProm : public edm::EDAnalyzer {
            double *x_HB, double *y_HB, double *z_HB);
 
 
-      reco::Track bestTrack(const reco::TrackCollection&) const;
-      HcalDetId getClosestCell(float dR,float eta, float phi, const HBHERecHitCollection*  HBHERecHits, const CaloGeometry* geo, float &time, bool &found);
   //------- histogram bookers ----------
   void bookHistograms ();
   TH1F* book1DHistogram (TFileDirectory& fDir, const std::string& fName, const std::string& fTitle, 
@@ -426,13 +404,6 @@ class HcalProm : public edm::EDAnalyzer {
       TH1F* h_HBM_e3x3;
       TH1F* h_HBM_e5x5;
 
-      TH1F* h_HBP_e1[72];
-      TH1F* h_HBP_e3[72];
-      TH1F* h_HBP_e5[72];
-      TH1F* h_HBM_e1[72];
-      TH1F* h_HBM_e3[72];
-      TH1F* h_HBM_e5[72];
-      
       TH1F* h_HBTopMin_e1x1;
       TH1F* h_HBTopMin_e3x3cr;
       TH1F* h_HBTopMin_e1x3;
