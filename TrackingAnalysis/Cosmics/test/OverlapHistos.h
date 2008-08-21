@@ -17,9 +17,20 @@
 #include <map>
 #include <vector>
 
-// #define HISTOS2D
+#define HISTOS2D
 
 class OverlapHistos {
+public:
+
+  void setOutputFile(TString fileName)
+	{outputFile = fileName;}
+
+  void setThreshold(unsigned int i)
+	{threshold = i;}
+
+  bool cut() const;
+
+
 private:
    TTree          *fChain;   //!pointer to the analyzed TTree or TChain
    Int_t           fCurrent; //!current Tree number in a TChain
@@ -28,7 +39,7 @@ private:
    UShort_t        found;
    UShort_t        lost;
    UShort_t        matched;
-   Float_t         chi2;
+   Float_t         chi2[2];
    Float_t         path;
    UInt_t          detids[2];
    Float_t         gX[2];
@@ -107,6 +118,11 @@ private:
   std::vector<TH2*> dPreddSimVsdHitdSimHistos_[2];
 #endif
 
+  TString outputFile;
+  int threshold;
+
+
+
 public:
    OverlapHistos(TTree *tree=0);
    virtual ~OverlapHistos();
@@ -114,9 +130,10 @@ public:
    virtual Int_t    GetEntry(Long64_t entry);
    virtual Long64_t LoadTree(Long64_t entry);
    virtual void     Init(TTree *tree);
-   virtual void     Loop();
+   virtual void     Loop(int redEntries = -1);
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
+
   /// total number of module pairs
   unsigned int nrOfPairs () const {return detIdPairs_.size();}
   /// subdet & layer info for one index
@@ -133,10 +150,12 @@ public:
   /// fill histogram bin with mean and rms and systematic
   void fillMeanWithSyst (int ibin, TH1* resultHisto, TH1* inputHisto,
 		 TH1* inputSystHisto, float scale = 1.) const;
-  void fillSlope(int ibin, TH1* resultHisto, TH1* resultHisto,
-                 TH2* inputHisto) const;
   void fillWidth (int ibin, TH1* resultHisto, TH1* inputHisto,
 		 float scale = 1.) const;
+
+  Long64_t entries() { return fChain->GetEntriesFast();}
+
+
 };
 
 #endif
@@ -147,15 +166,17 @@ OverlapHistos::OverlapHistos(TTree *tree)
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.
    if (tree == 0) {
-      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("MyAnalyzer.root");
-      if (!f) {
-	f = new TFile("/uscmst1b_scratch/lpc1/lpctrk/kaulmer/CMSSW_1_7_7/src/crab_CTF_MCposC_newMC_TIF_Pass4_fix.root");
-	//f = new TFile("/uscmst1b_scratch/lpc1/lpctrk/kaulmer/CMSSW_1_7_5/src/MCposA_pass4_withSimHit.root");
-      }
+//       TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("MyAnalyzer.root");
+//       if (!f) {
+// 	f = new TFile("/uscmst1b_scratch/lpc1/lpctrk/kaulmer/CMSSW_1_7_7/src/crab_CTF_MCposC_newMC_TIF_Pass4_fix.root");
+// 	//f = new TFile("/uscmst1b_scratch/lpc1/lpctrk/kaulmer/CMSSW_1_7_5/src/MCposA_pass4_withSimHit.root");
+//       }
       tree = (TTree*)gDirectory->Get("Overlaps");
 
    }
    Init(tree);
+   outputFile = "output_test.root";
+   threshold = 20;
 }
 
 OverlapHistos::~OverlapHistos()
@@ -202,7 +223,7 @@ void OverlapHistos::Init(TTree *tree)
    fChain->SetMakeClass(1);
 
    fChain->SetBranchAddress("hitCounts", &found, &b_hitCounts);
-   fChain->SetBranchAddress("chi2", &chi2, &b_chi2);
+   fChain->SetBranchAddress("chi2", chi2, &b_chi2);
    fChain->SetBranchAddress("path", &path, &b_path);
    fChain->SetBranchAddress("detids", detids, &b_id);
    fChain->SetBranchAddress("predPos", gX, &b_predPos);
