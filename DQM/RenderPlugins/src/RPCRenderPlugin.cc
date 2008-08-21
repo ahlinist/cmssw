@@ -13,7 +13,7 @@
 
 bool RPCRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &i ) {
 
-   if( (o.name.find( "RPC/RecHits/" ) == 0 )||
+   if( (o.name.find( "RPC/RecHits/" )!= std::string::npos )||
        (o.name.find("RPC/EventInfo")!= std::string::npos)) return true;
    return false;  
 }
@@ -80,6 +80,13 @@ void RPCRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->SetStats( kTRUE );
     return;
   }
+
+  if( o.name.find("AfterPulse")!= std::string::npos) {
+    obj->SetOption( "SCAT" );
+    return;
+  }
+
+
   return;
 }
 
@@ -87,7 +94,7 @@ void  RPCRenderPlugin::postDrawTH2(TCanvas *c, const DQMNet::CoreObject &o){
  TH2* obj = dynamic_cast<TH2*>( o.object );
  assert( obj );
 
- if(o.name.find("reportSummaryMap") != std::string::npos){
+ if(o.name.find("reportSummaryMap") != std::string::npos){//report summary map
    obj->GetXaxis()->SetNdivisions(-510);
    obj->GetYaxis()->SetNdivisions(-510);
    obj->GetXaxis()->CenterLabels();
@@ -95,7 +102,7 @@ void  RPCRenderPlugin::postDrawTH2(TCanvas *c, const DQMNet::CoreObject &o){
    c->SetGridx();
    c->SetGridy();
 
-   TLine line;
+   TLine line;// draw lines to delimitate Barrel and Endcaps
    line.SetLineWidth(1);
    line.DrawLine(-3.5, 0.5, -3.5, 6.5);
    line.DrawLine(-7.5, 6.5,-3.5, 6.5 );
@@ -109,9 +116,9 @@ void  RPCRenderPlugin::postDrawTH2(TCanvas *c, const DQMNet::CoreObject &o){
    return;
  }
 
- if(o.name.find("Occupancy") != std::string::npos){
+ if(o.name.find("Occupancy") != std::string::npos){ //sector occupancy plots
    TLine line;
-   line.SetLineWidth(2);
+   line.SetLineWidth(2);// Draw lines to delimitate the end of the roll
    //rb1in
    line.DrawLine(91, 0.5, 91, 2.5);
    line.DrawLine(91, 2.5, 85, 2.5);
@@ -121,15 +128,24 @@ void  RPCRenderPlugin::postDrawTH2(TCanvas *c, const DQMNet::CoreObject &o){
    //rb2in X 3
    line.DrawLine(91, 4.5, 91, 7.5);
    line.DrawLine(91, 7.5, 85, 7.5);
-
    //rb2out
    line.DrawLine(85, 7.5, 85, 9.5);
    line.DrawLine(85, 9.5, 43, 9.5);
-
    //rb3
    line.DrawLine(43, 9.5, 43, 13.5);
    return;
  }
  
+ if( o.name.find("AfterPulse")!= std::string::npos) {//afterpulse 2D plots
+	obj->GetXaxis()->LabelsOption("v");
+	obj->GetXaxis()->SetLabelSize(0.03);
+	obj->GetXaxis()->SetLabelOffset(0.005);
+	obj->GetXaxis()->SetNdivisions(-510);
+	obj->GetYaxis()->SetLabelSize(0.03);
+	obj->GetYaxis()->SetLabelOffset(0.005);
+	obj->GetYaxis()->SetNdivisions(-510);
+	return;
+  }
+
  return;
 }
