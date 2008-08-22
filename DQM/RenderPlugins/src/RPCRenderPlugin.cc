@@ -13,8 +13,13 @@
 
 bool RPCRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &i ) {
 
-   if( (o.name.find( "RPC/RecHits/" )!= std::string::npos )||
-       (o.name.find("RPC/EventInfo")!= std::string::npos)) return true;
+   if (o.name.find("RPC/") == std::string::npos)
+     return false;
+
+   if( (o.name.find( "/RecHits/" ) != std::string::npos )||
+       (o.name.find("/EventInfo") != std::string::npos))
+     return true;
+
    return false;  
 }
 
@@ -76,7 +81,7 @@ void RPCRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( o.name.find("Occupancy") < o.name.size() ) {
+  if( o.name.find("Occupancy") != std::string::npos ) {
     obj->SetStats( kTRUE );
     return;
   }

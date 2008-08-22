@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.24 2008/07/09 18:57:03 cerminar Exp $
+// $Id: DTRenderPlugin.cc,v 1.25 2008/07/25 15:53:09 cerminar Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.24 $
-  \date $Date: 2008/07/09 18:57:03 $
+  \version $Revision: 1.25 $
+  \date $Date: 2008/07/25 15:53:09 $
 */
 
 #include "TProfile2D.h"
@@ -31,7 +31,7 @@ DTRenderPlugin::DTRenderPlugin() {
 
 bool DTRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &i ) {
  
-  if( o.name.find( "DT/" ) < o.name.size() ) {
+  if( o.name.find( "DT/" ) != std::string::npos ) {
     return true;
   } 
 
@@ -107,7 +107,7 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
 
 
 
-  if(o.name.find("NoiseSummary") < o.name.size()) {
+  if(o.name.find("NoiseSummary") != std::string::npos) {
     obj->GetXaxis()->SetNdivisions(13,true);
     obj->GetYaxis()->SetNdivisions(6,true);
     obj->GetXaxis()->CenterLabels();
@@ -123,7 +123,7 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   
   // Summary map
-  if( o.name.find( "reportSummaryMap" ) < o.name.size() ) {
+  if( o.name.find( "reportSummaryMap" ) != std::string::npos ) {
     dqm::utils::reportSummaryMapPalette(obj);
     obj->GetXaxis()->SetNdivisions(13,true);
     obj->GetYaxis()->SetNdivisions(6,true);
@@ -136,7 +136,7 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   // --------------------------------------------------------------
   // Data integrity plots
-  if( o.name.find("ROSStatus") < o.name.size() ) {
+  if( o.name.find("ROSStatus") != std::string::npos ) {
     c->SetGrid(1,1);
     c->SetBottomMargin(0.15);
     c->SetLeftMargin(0.15);
@@ -145,14 +145,14 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   // --------------------------------------------------------------
   // Data integrity plots
-  if( o.name.find("FIFOStatus") < o.name.size() ) {
+  if( o.name.find("FIFOStatus") != std::string::npos ) {
     c->SetGrid(1,1);
     c->SetBottomMargin(0.15);
     c->SetLeftMargin(0.2);
     return;
   }
 
-  if( o.name.find("ROSError") < o.name.size() ) {
+  if( o.name.find("ROSError") != std::string::npos ) {
     c->SetGrid(1,1);
     c->SetBottomMargin(0.15);
     c->SetLeftMargin(0.2);
@@ -161,14 +161,14 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( o.name.find("TDCError") < o.name.size() ) {
+  if( o.name.find("TDCError") != std::string::npos ) {
     c->SetGrid(1,1);
     c->SetBottomMargin(0.15);
     c->SetLeftMargin(0.2);
     return;
   }
 
-  if( o.name.find("ROSSummary") < o.name.size() ) {
+  if( o.name.find("ROSSummary") != std::string::npos ) {
     c->SetGrid(1,1);
 //     obj->GetXaxis()->SetLabelSize(0.07);
 //     obj->GetYaxis()->SetLabelSize(0.07);
@@ -178,7 +178,7 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if(o.name.find("DataIntegritySummary") < o.name.size()) {
+  if(o.name.find("DataIntegritySummary") != std::string::npos) {
     obj->GetXaxis()->SetNdivisions(13,true);
     obj->GetYaxis()->SetNdivisions(6,true);
     obj->GetXaxis()->CenterLabels();
@@ -205,7 +205,7 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
 
 
   
-  if( o.name.find("OccupancyAllHits_W") < o.name.size() ) {
+  if( o.name.find("OccupancyAllHits_W") != std::string::npos ) {
     obj->GetXaxis()->SetNdivisions(13,true);
     obj->GetYaxis()->SetNdivisions(5,true);
     obj->GetXaxis()->CenterLabels();
@@ -219,7 +219,7 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     c->SetLeftMargin(0.12);
     c->SetRightMargin(0.12);
     return;
-  } else if(o.name.find("OccupancySummary_W") < o.name.size()) {
+  } else if(o.name.find("OccupancySummary_W") != std::string::npos) {
     obj->GetXaxis()->SetNdivisions(13,true);
     obj->GetYaxis()->SetNdivisions(5,true);
     obj->GetXaxis()->CenterLabels();
@@ -242,7 +242,7 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     colorError1[4] = 632;// kRed
     gStyle->SetPalette(5, colorError1);
     return;
-  }  else if(o.name.find("OccupancySummary") < o.name.size()) {
+  }  else if(o.name.find("OccupancySummary") != std::string::npos) {
     obj->GetXaxis()->SetNdivisions(13,true);
     obj->GetYaxis()->SetNdivisions(5,true);
     obj->GetXaxis()->CenterLabels();
@@ -265,7 +265,7 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     colorError1[4] = 632;// kRed
     gStyle->SetPalette(5, colorError1);
     return;
-  } else if( o.name.find("Occupancy" ) < o.name.size() ) {
+  } else if( o.name.find("Occupancy" ) != std::string::npos ) {
     c->SetGrid(0,4);
 //     obj->GetXaxis()->SetLabelSize(0.07);
 //     obj->GetYaxis()->SetLabelSize(0.07);
@@ -274,7 +274,7 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
   }
 
   
-  if( o.name.find("NoiseRate_W" ) < o.name.size() ) {
+  if( o.name.find("NoiseRate_W" ) != std::string::npos ) {
     c->SetGrid(0,4);
     //     obj->GetXaxis()->SetLabelSize(0.07);
     //     obj->GetYaxis()->SetLabelSize(0.07);
@@ -284,14 +284,14 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
   }
 
 
-  if( o.name.find( "SCTriggerBX" ) < o.name.size() ) {
+  if( o.name.find( "SCTriggerBX" ) != std::string::npos ) {
     obj->GetYaxis()->SetLabelSize(0.1);
     obj->GetXaxis()->SetTitle("Trigger BX");
     obj->GetYaxis()->SetRangeUser(0.,40.);
     return;
   }
   
-  if( o.name.find( "SCTriggerQuality" ) < o.name.size() ) {
+  if( o.name.find( "SCTriggerQuality" ) != std::string::npos ) {
     obj->GetXaxis()->LabelsOption("h");
     obj->GetXaxis()->SetLabelSize(0.1);
     obj->GetYaxis()->SetLabelSize(0.1);
@@ -301,10 +301,10 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   // --------------------------------------------------------------
   // Trigger plots
-  if( o.name.find("CorrFractionSummary_W") < o.name.size() ||
-      o.name.find("PhiSlopeSummary_W")     < o.name.size() ||
-      o.name.find("PhibSlopeSummary_W")    < o.name.size() ||
-      o.name.find("2ndFractionSummary_W")  < o.name.size() ) {
+  if( o.name.find("CorrFractionSummary_W") != std::string::npos ||
+      o.name.find("PhiSlopeSummary_W")     != std::string::npos ||
+      o.name.find("PhibSlopeSummary_W")    != std::string::npos ||
+      o.name.find("2ndFractionSummary_W")  != std::string::npos ) {
     obj->GetXaxis()->SetNdivisions(13,true);
     obj->GetYaxis()->SetNdivisions(5,true);
     obj->GetXaxis()->CenterLabels();
@@ -323,10 +323,10 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     colorError1[2] = 632;// kRed
     gStyle->SetPalette(3, colorError1);
     return;
-  } else if( o.name.find("CorrFractionSummary") < o.name.size() ||
-	     o.name.find("PhiSlopeSummary")     < o.name.size() ||
-	     o.name.find("PhibSlopeSummary")    < o.name.size() ||
-	     o.name.find("2ndFractionSummary")  < o.name.size() ) {
+  } else if( o.name.find("CorrFractionSummary") != std::string::npos ||
+	     o.name.find("PhiSlopeSummary")     != std::string::npos ||
+	     o.name.find("PhibSlopeSummary")    != std::string::npos ||
+	     o.name.find("2ndFractionSummary")  != std::string::npos ) {
     obj->GetXaxis()->SetNdivisions(13,true);
     obj->GetYaxis()->SetNdivisions(6,true);
     obj->GetXaxis()->CenterLabels();
@@ -347,11 +347,11 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     colorError1[4] = 632;// kRed
     gStyle->SetPalette(5, colorError1);
     return;
-  }  else if(o.name.find("2ndFraction")  < o.name.size() ||
-	     o.name.find("CorrFraction") < o.name.size() ||
-	     o.name.find("HFraction")    < o.name.size() ) {
+  }  else if(o.name.find("2ndFraction")  != std::string::npos ||
+	     o.name.find("CorrFraction") != std::string::npos ||
+	     o.name.find("HFraction")    != std::string::npos ) {
     obj->GetXaxis()->SetNdivisions(13,true);
-    if(o.name.find("Phi") < o.name.size())
+    if(o.name.find("Phi") != std::string::npos)
       obj->GetYaxis()->SetNdivisions(5,true); //Phi Summary
     else
       obj->GetYaxis()->SetNdivisions(4,true); //Theta Summary     
@@ -364,13 +364,13 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->SetMinimum(-0.00000001);
     obj->SetMaximum(1.0);
     return;
-  }  else if(o.name.find("CorrectBX")        < o.name.size() ||
-	     o.name.find("ResidualBX")       < o.name.size() ||
-	     o.name.find("PhiTkvsTrig")      < o.name.size() ||
-	     o.name.find("PhibTkvsTrig")     < o.name.size() ||
-	     o.name.find("TriggerInclusive") < o.name.size() ) {
+  }  else if(o.name.find("CorrectBX")        != std::string::npos ||
+	     o.name.find("ResidualBX")       != std::string::npos ||
+	     o.name.find("PhiTkvsTrig")      != std::string::npos ||
+	     o.name.find("PhibTkvsTrig")     != std::string::npos ||
+	     o.name.find("TriggerInclusive") != std::string::npos ) {
     obj->GetXaxis()->SetNdivisions(13,true);
-    if(o.name.find("Phi") < o.name.size())
+    if(o.name.find("Phi") != std::string::npos)
       obj->GetYaxis()->SetNdivisions(5,true); //Phi Summary
     else
       obj->GetYaxis()->SetNdivisions(4,true); //Theta Summary     
@@ -381,31 +381,31 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     c->SetBottomMargin(0.1);
     c->SetLeftMargin(0.12);
     c->SetRightMargin(0.12);
-    if(o.name.find("TkvsTrigSlope") < o.name.size()) {
+    if(o.name.find("TkvsTrigSlope") != std::string::npos) {
       obj->SetMaximum(1.15);
       obj->SetMinimum(0.85);
     }
-    else if(o.name.find("TkvsTrigCorr") < o.name.size()) {
+    else if(o.name.find("TkvsTrigCorr") != std::string::npos) {
       obj->SetMaximum(1.00);
       obj->SetMinimum(0.90);
     }
-    else if(o.name.find("TkvsTrigIntercept") < o.name.size()) {
+    else if(o.name.find("TkvsTrigIntercept") != std::string::npos) {
       obj->SetMaximum(10.);
       obj->SetMinimum(-10.);
     }
-    else if(o.name.find("TriggerInclusive") < o.name.size()) {
+    else if(o.name.find("TriggerInclusive") != std::string::npos) {
       obj->SetMinimum(-0.00000001);
     }
-    else if(o.name.find("BX") < o.name.size()) {
+    else if(o.name.find("BX") != std::string::npos) {
       obj->SetOption("text");
       obj->SetMarkerSize( 2 );
       gStyle->SetPaintTextFormat("2.0f");
     }
     return;
-  } else if (o.name.find("QualvsPhi")        < o.name.size() ||
-             o.name.find("QualDDUvsQualDCC") < o.name.size() ||
-             o.name.find("PositionvsQual")   < o.name.size() ||
-             o.name.find("Flag1stvsQual")    < o.name.size() ) {
+  } else if (o.name.find("QualvsPhi")        != std::string::npos ||
+             o.name.find("QualDDUvsQualDCC") != std::string::npos ||
+             o.name.find("PositionvsQual")   != std::string::npos ||
+             o.name.find("Flag1stvsQual")    != std::string::npos ) {
     obj->SetOption( "box" );
     return;
   }
@@ -413,7 +413,7 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   // --------------------------------------------------------------
   // Segments plots
-  if(o.name.find("segmentSummary_W") < o.name.size()) {
+  if(o.name.find("segmentSummary_W") != std::string::npos) {
     obj->GetXaxis()->SetNdivisions(13,true);
     obj->GetYaxis()->SetNdivisions(5,true);
     obj->GetXaxis()->CenterLabels();
@@ -434,7 +434,7 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     colorError1[2] = 632;// kRed
     gStyle->SetPalette(3, colorError1);
     return;
-  }  else if(o.name.find("segmentSummary") < o.name.size()) {
+  }  else if(o.name.find("segmentSummary") != std::string::npos) {
     obj->GetXaxis()->SetNdivisions(13,true);
     obj->GetYaxis()->SetNdivisions(6,true);
     obj->GetXaxis()->CenterLabels();
@@ -455,7 +455,7 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     colorError1[2] = 632;// kRed
     gStyle->SetPalette(3, colorError1);
     return;
-  } else if(o.name.find("numberOfSegments_W") < o.name.size()) {
+  } else if(o.name.find("numberOfSegments_W") != std::string::npos) {
     obj->GetXaxis()->SetNdivisions(13,true);
     obj->GetYaxis()->SetNdivisions(5,true);
     obj->GetXaxis()->CenterLabels();
@@ -484,7 +484,7 @@ void DTRenderPlugin::preDrawTH1( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   
 
-  if( o.name.find("ROSEventLenght") < o.name.size() ) {
+  if( o.name.find("ROSEventLenght") != std::string::npos ) {
     c->SetLogy(1);
     gStyle->SetOptStat( 1111111 );
     obj->SetStats( kTRUE );
@@ -498,14 +498,14 @@ void DTRenderPlugin::preDrawTH1( TCanvas *c, const DQMNet::CoreObject &o ) {
   }
 
 
-  if( o.name.find("hResDist") < o.name.size() ) {
+  if( o.name.find("hResDist") != std::string::npos ) {
     gStyle->SetOptStat("rme" );
     obj->SetStats( kTRUE );
   }
 
 
 
-  if( o.name.find( "EventLenght" ) < o.name.size() ) {
+  if( o.name.find( "EventLenght" ) != std::string::npos ) {
     gStyle->SetOptStat( 1111111 );
     obj->SetStats( kTRUE );
     c->SetLogy(1);
@@ -513,22 +513,22 @@ void DTRenderPlugin::preDrawTH1( TCanvas *c, const DQMNet::CoreObject &o ) {
   }
 
 
-  if( o.name.find( "FED770TTSValues_Percent" ) < o.name.size() ) {
+  if( o.name.find( "FED770TTSValues_Percent" ) != std::string::npos ) {
     c->SetLogy( 1 );
     return;
   }
 
 
-  if( o.name.find( "hResDist" )        < o.name.size() ||
-      o.name.find( "MeanTest" )        < o.name.size() ||
-      o.name.find( "SigmaTest" )       < o.name.size() ||
-      o.name.find( "xEfficiency" )     < o.name.size() ||
-      o.name.find( "yEfficiency" )     < o.name.size() ||
-      o.name.find( "Efficiency_" )     < o.name.size() ||
-      o.name.find( "OccupancyDiff_" )  < o.name.size() ||
-      o.name.find( "tTrigTest" )       < o.name.size() || 
-      o.name.find( "2ndFraction" )     < o.name.size() ||
-      o.name.find( "CorrFraction" )    < o.name.size() ) {
+  if( o.name.find( "hResDist" )        != std::string::npos ||
+      o.name.find( "MeanTest" )        != std::string::npos ||
+      o.name.find( "SigmaTest" )       != std::string::npos ||
+      o.name.find( "xEfficiency" )     != std::string::npos ||
+      o.name.find( "yEfficiency" )     != std::string::npos ||
+      o.name.find( "Efficiency_" )     != std::string::npos ||
+      o.name.find( "OccupancyDiff_" )  != std::string::npos ||
+      o.name.find( "tTrigTest" )       != std::string::npos || 
+      o.name.find( "2ndFraction" )     != std::string::npos ||
+      o.name.find( "CorrFraction" )    != std::string::npos ) {
     
     TAttLine *line = dynamic_cast<TAttLine *> (o.object);
     assert (line);
@@ -550,7 +550,7 @@ void DTRenderPlugin::preDrawTH1( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   }
   
-    if ( o.name.find( "tTrigTest" ) < o.name.size() ) {
+    if ( o.name.find( "tTrigTest" ) != std::string::npos ) {
       obj->GetXaxis()->SetBinLabel(1,"SL1");
       obj->GetXaxis()->SetBinLabel(2,"SL2");
       obj->GetXaxis()->SetBinLabel(3,"SL3");
@@ -560,20 +560,20 @@ void DTRenderPlugin::preDrawTH1( TCanvas *c, const DQMNet::CoreObject &o ) {
     
   // --------------------------------------------------------------
   // Trigger plots
-  if ( o.name.find( "2ndFraction" )  < o.name.size() ||
-       o.name.find( "CorrFraction" ) < o.name.size() || 
-       o.name.find( "HFraction" )    < o.name.size()) {
+  if ( o.name.find( "2ndFraction" )  != std::string::npos ||
+       o.name.find( "CorrFraction" ) != std::string::npos || 
+       o.name.find( "HFraction" )    != std::string::npos) {
     obj->GetYaxis()->SetRangeUser(0.,1.1);
     return;
-  } else if ( o.name.find( "CorrectBX" ) < o.name.size() ) {
-    if (o.name.find( "DCC" ) < o.name.size())
+  } else if ( o.name.find( "CorrectBX" ) != std::string::npos ) {
+    if (o.name.find( "DCC" ) != std::string::npos)
       obj->GetYaxis()->SetRangeUser(-5.,5.);
     else
       obj->GetYaxis()->SetRangeUser(0.,20.);
     return;
   }
 
-  if( o.name.find("DCC_ErrorsChamberID") < o.name.size() ) {
+  if( o.name.find("DCC_ErrorsChamberID") != std::string::npos ) {
     c->SetGrid(1,0);
 //     obj->GetXaxis()->SetLabelSize(0.07);
 //     obj->GetYaxis()->SetLabelSize(0.07);
@@ -583,7 +583,7 @@ void DTRenderPlugin::preDrawTH1( TCanvas *c, const DQMNet::CoreObject &o ) {
   }
 
 
-  if( o.name.find( "NoiseRateSummary" ) < o.name.size() ) {
+  if( o.name.find( "NoiseRateSummary" ) != std::string::npos ) {
 
     c->SetLogy(1);
     if(obj->GetEntries() != 0) c->SetLogx(1);
@@ -636,12 +636,12 @@ void DTRenderPlugin::postDrawTProfile( TCanvas *c, const DQMNet::CoreObject &o )
 }
 
 void DTRenderPlugin::postDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
-  if(o.name.find("Summary_W") < o.name.size()) {
+  if(o.name.find("Summary_W") != std::string::npos) {
     labelMB4Sect4and13_wheel->Draw("same");
     labelMB4Sect10and14_wheel->Draw("same");
     return;
   }
-  if(o.name.find("OccupancyAllHits_perCh") < o.name.size()) {
+  if(o.name.find("OccupancyAllHits_perCh") != std::string::npos) {
     TH2F * histo =  dynamic_cast<TH2F*>( o.object );
     int nBinsX = histo->GetNbinsX();
     for(int i = 0; i !=12; ++i) {
@@ -662,7 +662,7 @@ void DTRenderPlugin::postDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
 }
 
 void DTRenderPlugin::postDrawTH1( TCanvas *c, const DQMNet::CoreObject &o ) {
-  if( o.name.find("ROSEventLenght") < o.name.size() ) {
+  if( o.name.find("ROSEventLenght") != std::string::npos ) {
     TH1F * histo =  dynamic_cast<TH1F*>( o.object );
     int nBins = histo->GetNbinsX();
     if(histo->GetBinContent(nBins+1) != 0) {
