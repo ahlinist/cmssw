@@ -8,7 +8,7 @@
 //
 // Original Author:  
 //         Created:  Sat Apr 19 20:02:57 CEST 2008
-// $Id: HLXRenderPlugin.cc,v 1.6 2008/07/14 16:11:23 neadam Exp $
+// $Id: HLXRenderPlugin.cc,v 1.7 2008/07/17 17:02:46 neadam Exp $
 //
 
 // system include files
@@ -17,6 +17,7 @@
 
 // user include files
 #include "DQM/RenderPlugins/src/HLXRenderPlugin.h"
+#include "DQM/RenderPlugins/src/utils.h"
 
 #include "TH1F.h"
 #include "TProfile.h"
@@ -106,7 +107,7 @@ void HLXRenderPlugin::preDraw( TCanvas *c, const DQMNet::CoreObject &o,
    }
    else if( dynamic_cast<TH2F*>( o.object ) ) {
       preDrawTH2F( c, o );
-      r.drawOptions = "colz";
+      //r.drawOptions = "colz";
    }
 
 
@@ -191,14 +192,17 @@ void HLXRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o )
    obj->SetMinimum(-.001);
    obj->SetMaximum(1.02);
 
-   unsigned int Number = 3;
-   double       Red[]   = { 0.00, 0.00, 1.00};
-   double       Green[] = { 0.00, 1.00, 0.00};
-   double       Blue[]  = { 1.00, 0.00, 0.00};
-   double       Stops[] = { 0.00, 0.50, 1.00 };
-   int          nb = 100;
-   int          i = TColor::CreateGradientColorTable(Number,Stops,Blue,Green,Red,nb);
-   //gStyle->SetPalette(1);
+   dqm::utils::reportSummaryMapPalette(obj);
+   obj->SetOption("colztext");
+
+//    unsigned int Number = 3;
+//    double       Red[]   = { 0.00, 0.00, 1.00};
+//    double       Green[] = { 0.00, 1.00, 0.00};
+//    double       Blue[]  = { 1.00, 0.00, 0.00};
+//    double       Stops[] = { 0.00, 0.50, 1.00 };
+//    int          nb = 100;
+//    int          i = TColor::CreateGradientColorTable(Number,Stops,Blue,Green,Red,nb);
+//    //gStyle->SetPalette(1);
 
    return;
 }
