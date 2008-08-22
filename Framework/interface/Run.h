@@ -27,13 +27,13 @@ $Id$
 
 namespace edm {
 
-  class Run : private DataViewImpl<RunLumiEntryInfo>
+  class Run : private DataViewImpl
   {
   public:
     Run(RunPrincipal& rp, const ModuleDescription& md);
     ~Run(){}
 
-    typedef DataViewImpl<RunLumiEntryInfo> Base;
+    typedef DataViewImpl Base;
     // AUX functions.
     RunID const& id() const {return aux_.id();}
     RunNumber_t run() const {return aux_.run();}

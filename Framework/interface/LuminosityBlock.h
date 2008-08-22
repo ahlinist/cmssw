@@ -31,13 +31,13 @@ $Id$
 
 namespace edm {
 
-  class LuminosityBlock : private DataViewImpl<RunLumiEntryInfo>
+  class LuminosityBlock : private DataViewImpl
   {
   public:
     LuminosityBlock(LuminosityBlockPrincipal& lbp, const ModuleDescription& md);
     ~LuminosityBlock() {}
 
-    typedef DataViewImpl<RunLumiEntryInfo> Base;
+    typedef DataViewImpl Base;
     // AUX functions.
     LuminosityBlockNumber_t luminosityBlock() const {return aux_.luminosityBlock();}
 
