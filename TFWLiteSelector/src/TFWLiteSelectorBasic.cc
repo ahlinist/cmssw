@@ -295,7 +295,7 @@ TFWLiteSelectorBasic::Process(Long64_t iEntry) {
 	 boost::shared_ptr<edm::LuminosityBlockPrincipal>lbp(
 	    new edm::LuminosityBlockPrincipal(lumiAux, reg, pc));
 	 lbp->setRunPrincipal(rp);
-	 boost::shared_ptr<edm::BranchMapper<edm::EventEntryInfo> > mapper(new edm::BranchMapper<edm::EventEntryInfo>);
+	 boost::shared_ptr<edm::BranchMapper> mapper(new edm::BranchMapper);
 	 edm::EventPrincipal ep(aux, reg, pc, aux.processHistoryID(), mapper, m_->reader_);
 	 ep.setLuminosityBlockPrincipal(lbp);
          ep.setHistory(history);
