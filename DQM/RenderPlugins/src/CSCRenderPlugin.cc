@@ -21,7 +21,7 @@
 
 bool CSCRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &i ) {
 
-  if ( o.name.find( "CSC/" ) < o.name.size() ) {
+  if ( o.name.find( "CSC/" ) != std::string::npos ) {
     return true;
   } 
 

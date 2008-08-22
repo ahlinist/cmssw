@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.2 $
-  \date $Date: 2008/06/20 15:52:21 $
+  \version $Revision: 1.3 $
+  \date $Date: 2008/08/15 17:37:28 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -215,16 +215,16 @@ void HcalRenderPlugin::preDrawTH2 ( TCanvas *c, const DQMNet::CoreObject &o )
   // yet provide useful colors when value = -1?
 
   // green when =1, red when = 0, grey when = -1
-  if (o.name.find("reportSummaryMap" ) < o.name.size())
+  if (o.name.find("reportSummaryMap" ) != std::string::npos)
     {
       gStyle->SetPalette(40,summaryColors);
       obj->SetOption("col");
     }
   // green when = 0, red when =1 -- don't yet know how to get # of events in order to normalize
 
-  else if ( (o.name.find("SubPedestal") < o.name.size() )
-	    || (o.name.find("RawPedestal") <o.name.size() )
-	    || (o.name.find("Occupancy Map") < o.name.size() )
+  else if ( (o.name.find("SubPedestal") != std::string::npos )
+	    || (o.name.find("RawPedestal") != std::string::npos)
+	    || (o.name.find("Occupancy Map") != std::string::npos )
 
 	    )
     {
@@ -233,8 +233,8 @@ void HcalRenderPlugin::preDrawTH2 ( TCanvas *c, const DQMNet::CoreObject &o )
     }
 
   // green when high, red when low
-  else if ( (o.name.find("_abovePed") < o.name.size() )
-	    || (o.name.find("above_pedestal_Depth") < o.name.size() )
+  else if ( (o.name.find("_abovePed") != std::string::npos )
+	    || (o.name.find("above_pedestal_Depth") != std::string::npos )
 	    )
     {
       gStyle->SetPalette(20, standardColors);

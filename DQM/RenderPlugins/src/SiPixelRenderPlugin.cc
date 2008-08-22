@@ -2,8 +2,8 @@
   \file SiPixelRenderPlugin
   \brief Display Plugin for Pixel DQM Histograms
   \author P.Merkel
-  \version $Revision: 1.3 $
-  \date $Date: 2008/06/10 12:52:25 $
+  \version $Revision: 1.4 $
+  \date $Date: 2008/08/18 10:59:26 $
 */
 
 #include "TProfile2D.h"
@@ -18,7 +18,7 @@
 
 bool SiPixelRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &i ) {
  
-  if( o.name.find( "Pixel/" ) == 0 ) {
+  if( o.name.find( "Pixel/" ) != std::string::npos ) {
     return true;
   } 
 
@@ -65,8 +65,8 @@ void SiPixelRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) 
   ya->SetTitleSize(0.05);
   ya->SetLabelSize(0.04);
 
-  if( o.name.find( "hitmap" ) < o.name.size()  ||
-      o.name.find( "occupancy" ) < o.name.size()) {
+  if( o.name.find( "hitmap" ) != std::string::npos  ||
+      o.name.find( "occupancy" ) != std::string::npos) {
     gStyle->SetPalette(1);
     obj->SetOption("colz");
     return;
@@ -74,7 +74,7 @@ void SiPixelRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) 
     
   TH2F* obj2 = dynamic_cast<TH2F*>( o.object );
 
-   if( o.name.find( "reportSummaryMap" ) < o.name.size() ) {
+   if( o.name.find( "reportSummaryMap" ) != std::string::npos ) {
      dqm::utils::reportSummaryMapPalette(obj2);
      return;
    }  

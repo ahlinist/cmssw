@@ -8,7 +8,7 @@
 //
 // Original Author:  
 //         Created:  Sat Apr 19 20:02:57 CEST 2008
-// $Id: HLXRenderPlugin.cc,v 1.7 2008/07/17 17:02:46 neadam Exp $
+// $Id: HLXRenderPlugin.cc,v 1.8 2008/08/22 02:23:24 neadam Exp $
 //
 
 // system include files
@@ -49,25 +49,25 @@ void HLXRenderPlugin::initialise( int argc, char **argv )
 
 bool HLXRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &i ) 
 {
-  if( o.name.find( "HLX/Luminosity" )  == 0 ){
+  if( o.name.find( "HLX/Luminosity" )  != std::string::npos ){
     return true;
   }
-  if( o.name.find( "HLX/HFMinus" ) == 0 ){
+  if( o.name.find( "HLX/HFMinus" ) != std::string::npos ){
     return true;
   }
-  if( o.name.find( "HLX/HFPlus" ) == 0 ){
+  if( o.name.find( "HLX/HFPlus" ) != std::string::npos ){
     return true;
   }
-  if( o.name.find( "HLX/HFCompare" ) == 0 ){
+  if( o.name.find( "HLX/HFCompare" ) != std::string::npos ){
     return true;
   }
-  if( o.name.find( "HLX/Average" ) == 0 ){ 
+  if( o.name.find( "HLX/Average" ) != std::string::npos ){ 
     return true;
   }
-  if( o.name.find( "HLX/CheckSums" ) == 0 ){ 
+  if( o.name.find( "HLX/CheckSums" ) != std::string::npos ){ 
     return true;
   }
-  if( o.name.find( "HLX/EventInfo" ) == 0 ){ 
+  if( o.name.find( "HLX/EventInfo" ) != std::string::npos ){ 
     return true;
   }
 

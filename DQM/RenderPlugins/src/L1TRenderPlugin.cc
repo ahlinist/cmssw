@@ -316,7 +316,7 @@ void L1TRenderPlugin::preDrawTH2F ( TCanvas *c, const DQMNet::CoreObject &o )
   
   //gStyle->SetOptStat(0);
 
-  if(o.name.find("Summary") < o.name.size()) {
+  if(o.name.find("Summary") != std::string::npos) {
     obj->GetXaxis()->CenterLabels();
     obj->GetYaxis()->CenterLabels();
 
@@ -337,7 +337,7 @@ void L1TRenderPlugin::preDrawTH2F ( TCanvas *c, const DQMNet::CoreObject &o )
     gStyle->SetOptStat(0);
     }
 
-  if(o.name.find("BX Summary") < o.name.size()) {
+  if(o.name.find("BX Summary") != std::string::npos) {
     obj->GetYaxis()->SetTitle("bx");
     obj->GetXaxis()->SetNdivisions(6,true);
     obj->GetYaxis()->SetNdivisions(4,true);
@@ -345,7 +345,7 @@ void L1TRenderPlugin::preDrawTH2F ( TCanvas *c, const DQMNet::CoreObject &o )
     return;
   }
 
-  if(o.name.find("Occupancy Summary") < o.name.size()) {
+  if(o.name.find("Occupancy Summary") != std::string::npos) {
     obj->GetYaxis()->SetTitle("sector");
     obj->GetXaxis()->SetNdivisions(6,true);
     obj->GetYaxis()->SetNdivisions(13,true);
@@ -369,21 +369,21 @@ void L1TRenderPlugin::preDrawTH2F ( TCanvas *c, const DQMNet::CoreObject &o )
     return;
   }
 
-  else if(o.name.find("Fractional High Quality Summary") < o.name.size()) {
+  else if(o.name.find("Fractional High Quality Summary") != std::string::npos) {
     obj->GetYaxis()->SetTitle("sector");
     obj->GetXaxis()->SetNdivisions(6,true);
     obj->GetYaxis()->SetNdivisions(13,true);
     return;
   }
 
-  else if(o.name.find("2nd Track Summary") < o.name.size()) {
+  else if(o.name.find("2nd Track Summary") != std::string::npos) {
     obj->GetYaxis()->SetTitle("sector");
     obj->GetXaxis()->SetNdivisions(6,true);
     obj->GetYaxis()->SetNdivisions(13,true);
     return;
   }
 
-  else if(o.name.find("Phi vs Eta") < o.name.size()) {
+  else if(o.name.find("Phi vs Eta") != std::string::npos) {
     obj->GetXaxis()->SetTitle("eta");
     obj->GetYaxis()->SetTitle("phi");
     return;

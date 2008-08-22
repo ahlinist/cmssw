@@ -1,11 +1,11 @@
-// $Id: L1TdeRCTRenderPlugin.cc,v 0.0 2008/04/29 06:07:07 dellaric Exp $
+// $Id: L1TdeRCTRenderPlugin.cc,v 1.6 2008/07/04 16:24:52 lorenzo Exp $
 
 /*!
   \file L1TdeRCTRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author A.Savin 
-  \version $Revision: 0.0 $
-  \date $Date: 2008/04/29 06:07:07 $
+  \version $Revision: 1.6 $
+  \date $Date: 2008/07/04 16:24:52 $
 */
 
 #include "TH1F.h"
@@ -94,19 +94,19 @@ bool L1TdeRCTRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImg
   std::cout << "L1TdeRCTRenderPlugin:applies " << o.name << std::endl;
 #endif
 
-  if( o.name.find( "L1TMonitor/L1TdeRCT/IsoEm" ) < o.name.size() ) {
+  if( o.name.find( "L1TMonitor/L1TdeRCT/IsoEm" ) != std::string::npos ) {
     return true;
   }
 
-  if( o.name.find( "L1TMonitor/L1TdeRCT/IsoEm/ServiceData" ) < o.name.size() ) {
+  if( o.name.find( "L1TMonitor/L1TdeRCT/IsoEm/ServiceData" ) != std::string::npos ) {
     return true;
   }
 
-  if( o.name.find( "L1TMonitor/L1TdeRCT/NisoeEm" ) < o.name.size() ) {
+  if( o.name.find( "L1TMonitor/L1TdeRCT/NisoeEm" ) != std::string::npos ) {
     return true;
   }
 
-  if( o.name.find( "L1TMonitor/L1TdeRCT/NisoeEm/ServiceData" ) < o.name.size() ) {
+  if( o.name.find( "L1TMonitor/L1TdeRCT/NisoeEm/ServiceData" ) != std::string::npos ) {
     return true;
   }
 
@@ -201,58 +201,58 @@ void L1TdeRCTRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o 
 
 //--Iso stuff
 
-  if( name.find( "rctIsoEmDataOcc" ) < name.size() ) {
+  if( name.find( "rctIsoEmDataOcc" ) != std::string::npos ) {
     obj->SetOption("box");
     return;
   }
 
-  if( name.find( "rctIsoEmEmulOcc" ) < name.size() ) {
+  if( name.find( "rctIsoEmEmulOcc" ) != std::string::npos ) {
     obj->SetOption("box");
     return;
   }
 
-  if( name.find( "rctIsoEmEff1Occ" ) < name.size() ) {
+  if( name.find( "rctIsoEmEff1Occ" ) != std::string::npos ) {
     obj->SetOption("box");
     return;
   }
 
-  if( name.find( "rctIsoEmEff2Occ" ) < name.size() ) {
+  if( name.find( "rctIsoEmEff2Occ" ) != std::string::npos ) {
     obj->SetOption("box");
     return;
   }
 
-  if( name.find( "rctIsoEmIneffOcc" ) < name.size() ) {
+  if( name.find( "rctIsoEmIneffOcc" ) != std::string::npos ) {
     obj->SetOption("box");
     return;
   }
 
-  if( name.find( "rctIsoEmOvereffOcc" ) < name.size() ) {
+  if( name.find( "rctIsoEmOvereffOcc" ) != std::string::npos ) {
     obj->SetOption("box");
     return;
   }
 
-  if( name.find( "rctIsoEmEff1" ) < name.size() ) {
+  if( name.find( "rctIsoEmEff1" ) != std::string::npos ) {
     gStyle->SetPalette(paletteSize, pEff);
     obj->SetStats(kFALSE);
     obj->SetOption("colz");
     return;
   }
 
-  if( name.find( "rctIsoEmEff2" ) < name.size() ) {
+  if( name.find( "rctIsoEmEff2" ) != std::string::npos ) {
     gStyle->SetPalette(paletteSize, pEff);
     obj->SetStats(kFALSE);
     obj->SetOption("colz");
     return;
   }
 
-  if( name.find( "rctIsoEmIneff" ) < name.size() ) {
+  if( name.find( "rctIsoEmIneff" ) != std::string::npos ) {
     gStyle->SetPalette(paletteSize, pIneff);
     obj->SetStats(kFALSE);
     obj->SetOption("colz");
     return;
   }
 
-  if( name.find( "rctIsoEmOvereff" ) < name.size() ) {
+  if( name.find( "rctIsoEmOvereff" ) != std::string::npos ) {
     gStyle->SetPalette(paletteSize, pOvereff);
     obj->SetStats(kFALSE);
     obj->SetOption("colz");
@@ -261,58 +261,58 @@ void L1TdeRCTRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o 
 
 //--Niso stuff
 
-  if( name.find( "rctNisoEmDataOcc" ) < name.size() ) {
+  if( name.find( "rctNisoEmDataOcc" ) != std::string::npos ) {
     obj->SetOption("box");
     return;
   }
 
-  if( name.find( "rctNisoEmEmulOcc" ) < name.size() ) {
+  if( name.find( "rctNisoEmEmulOcc" ) != std::string::npos ) {
     obj->SetOption("box");
     return;
   }
 
-  if( name.find( "rctNisoEmEff1Occ" ) < name.size() ) {
+  if( name.find( "rctNisoEmEff1Occ" ) != std::string::npos ) {
     obj->SetOption("box");
     return;
   }
 
-  if( name.find( "rctNisoEmEff2Occ" ) < name.size() ) {
+  if( name.find( "rctNisoEmEff2Occ" ) != std::string::npos ) {
     obj->SetOption("box");
     return;
   }
 
-  if( name.find( "rctNisoEmIneffOcc" ) < name.size() ) {
+  if( name.find( "rctNisoEmIneffOcc" ) != std::string::npos ) {
     obj->SetOption("box");
     return;
   }
 
-  if( name.find( "rctNisoEmOvereffOcc" ) < name.size() ) {
+  if( name.find( "rctNisoEmOvereffOcc" ) != std::string::npos ) {
     obj->SetOption("box");
     return;
   }
 
-  if( name.find( "rctNisoEmEff1" ) < name.size() ) {
+  if( name.find( "rctNisoEmEff1" ) != std::string::npos ) {
     gStyle->SetPalette(paletteSize, pEff);
     obj->SetStats(kFALSE);
     obj->SetOption("colz");
     return;
   }
 
-  if( name.find( "rctNisoEmEff2" ) < name.size() ) {
+  if( name.find( "rctNisoEmEff2" ) != std::string::npos ) {
     gStyle->SetPalette(paletteSize, pEff);
     obj->SetStats(kFALSE);
     obj->SetOption("colz");
     return;
   }
 
-  if( name.find( "rctNisoEmIneff" ) < name.size() ) {
+  if( name.find( "rctNisoEmIneff" ) != std::string::npos ) {
     gStyle->SetPalette(paletteSize, pIneff);
     obj->SetStats(kFALSE);
     obj->SetOption("colz");
     return;
   }
 
-  if( name.find( "rctNisoEmOvereff" ) < name.size() ) {
+  if( name.find( "rctNisoEmOvereff" ) != std::string::npos ) {
     gStyle->SetPalette(paletteSize, pOvereff);
     obj->SetStats(kFALSE);
     obj->SetOption("colz");
@@ -375,42 +375,42 @@ void L1TdeRCTRenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o
 
   std::string name = o.name.substr(o.name.rfind("/")+1);
 
-  if( name.find( "rctIsoEmEff1" ) < name.size() ) {
+  if( name.find( "rctIsoEmEff1" ) != std::string::npos ) {
     dummybox->Draw("box,same");
     return;
   }
 
-  if( name.find( "rctIsoEmEff2" ) < name.size() ) {
+  if( name.find( "rctIsoEmEff2" ) != std::string::npos ) {
     dummybox->Draw("box,same");
     return;
   }
 
-  if( name.find( "rctIsoEmIneff" ) < name.size() ) {
+  if( name.find( "rctIsoEmIneff" ) != std::string::npos ) {
     dummybox->Draw("box,same");
     return;
   }
 
-  if( name.find( "rctIsoEmOvereff" ) < name.size() ) {
+  if( name.find( "rctIsoEmOvereff" ) != std::string::npos ) {
     dummybox->Draw("box,same");
     return;
   }
 
-  if( name.find( "rctNisoEmEff1" ) < name.size() ) {
+  if( name.find( "rctNisoEmEff1" ) != std::string::npos ) {
     dummybox->Draw("box,same");
     return;
   }
 
-  if( name.find( "rctNisoEmEff2" ) < name.size() ) {
+  if( name.find( "rctNisoEmEff2" ) != std::string::npos ) {
     dummybox->Draw("box,same");
     return;
   }
 
-  if( name.find( "rctNisoEmIneff" ) < name.size() ) {
+  if( name.find( "rctNisoEmIneff" ) != std::string::npos ) {
     dummybox->Draw("box,same");
     return;
   }
 
-  if( name.find( "rctNisoEmOvereff" ) < name.size() ) {
+  if( name.find( "rctNisoEmOvereff" ) != std::string::npos ) {
     dummybox->Draw("box,same");
     return;
   }
