@@ -38,7 +38,7 @@ namespace fwlite {
 
   class BranchMapReader {
   public:
-    typedef edm::BranchMapper<edm::EventEntryInfo> eeiMap;
+    typedef edm::BranchMapper eeiMap;
     typedef std::map<edm::BranchID, edm::BranchDescription> bidToDesc;
 
     BranchMapReader(TFile* file);
