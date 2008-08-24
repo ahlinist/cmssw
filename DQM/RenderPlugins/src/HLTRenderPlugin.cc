@@ -123,8 +123,24 @@ void HLTRenderPlugin::preDrawTH1F ( TCanvas *c, const DQMNet::CoreObject &o )
   TH1F* obj = dynamic_cast<TH1F*>( o.object ); 
   assert (obj); // checks that object indeed exists
 
-  // Code used in SiStripRenderPlugin -- do we want similar defaults?
 
+  // rate histograms
+  if ( o.name.find("rate_p") != std::string::npos) {
+    gStyle->SetOptStat(11);
+    obj->GetXaxis()->SetTitle("Luminosity Segment Number");
+    obj->GetYaxis()->SetTitle("Rate (Hz)");
+    int nbins = obj->GetNbinsX();
+    int maxRange = nbins;
+    for ( int i = nbins; i > 0; --i ) {
+      if ( obj->GetBinContent(i) != 0 ) {
+	maxRange = i;
+	break;
+      }
+    }
+    obj->GetXaxis()->SetRange(0, maxRange);
+  }
+
+  // Code used in SiStripRenderPlugin -- do we want similar defaults?
   /*
     gStyle->SetOptStat(0111); 
     if ( obj->GetMaximum(1.e5) > 0. ) { 
