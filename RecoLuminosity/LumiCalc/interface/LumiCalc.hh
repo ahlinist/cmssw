@@ -31,7 +31,7 @@ Summary:  Library to calculate relative luminosity from HLX data
 #define HCAL_HLX_NUM_BUNCHES 3564
 #define HCAL_HLX_NUM_HLXS 36
 #define NUM_CAP_BANKS 4
-#define ET_SUM_STORE_SIZE 4
+#define ET_SUM_STORE_SIZE 20
 
 using namespace ICCoreUtils;
 
@@ -60,8 +60,9 @@ namespace HCAL_HLX {
 	 float CalcETSumNoiseError( HCAL_HLX::LUMI_SECTION &localSection );
 	 void CalcLHCLumi(HCAL_HLX::LUMI_SECTION& localSection);
 	 void CalcOccLumi(HCAL_HLX::LUMI_SECTION& localSection);
+	 float CalcOccNoiseError( HCAL_HLX::LUMI_SECTION &localSection, unsigned int set ); 
 	 float CalcOccErrorTotal( HCAL_HLX::LUMI_SECTION &localSection, unsigned int set ); 
-	 float CalcOccErrorBX( HCAL_HLX::LUMI_SECTION &localSection, unsigned int set ); 
+	 float CalcOccErrorBX( HCAL_HLX::LUMI_SECTION &localSection, unsigned int set, unsigned int iBX ); 
 
 	 void CalcLumi( HCAL_HLX::LUMI_SECTION& localSection );
 	 float CalcLumiError( unsigned int numNibbles, unsigned int numTowers, unsigned int numBunches = 1, float intPerBX = 0.01 );
@@ -69,28 +70,32 @@ namespace HCAL_HLX {
 	 // Configuration
 	 //unsigned int startAG_, endAG_, sizeAG_; // AG = Abort Gap.
 	 unsigned int sizeNoise_[NUM_CAP_BANKS];
+	 float        invSizeNoise_[NUM_CAP_BANKS];
 	 float totalEtSumNoise_[NUM_CAP_BANKS];
 	 unsigned int etSumNoiseNorm_[NUM_CAP_BANKS];
 	 float totalOccNoise_[HCAL_HLX_NUM_HLXS][2][NUM_CAP_BANKS];
 	 unsigned int occNoiseNorm_[HCAL_HLX_NUM_HLXS][2][NUM_CAP_BANKS];
 	 unsigned int numBX_, numHLX_; 
+	 float normNumBX_, normNumHLX_;
 
 	 // Should only be called once per run
 	 unsigned int numActiveTowers_[HCAL_HLX_NUM_HLXS][2];
-	 unsigned int numActiveTowersBX_[HCAL_HLX_NUM_BUNCHES][2];
+	 unsigned int numActiveTowersBX_[2];
 	 unsigned int TotalActiveTowers_;
 
 	 bool         noMasks_;
 	 unsigned int numOrbitsPerNB_;
 	 unsigned int numActiveTowersEt_[HCAL_HLX_NUM_HLXS];
-	 unsigned int numActiveTowersBXEt_[HCAL_HLX_NUM_BUNCHES];
+	 unsigned int numActiveTowersBXEt_;
 	 unsigned int TotalActiveTowersEt_;
 
 
 	 bool Block( unsigned short int iBX, unsigned short int numBlock);
 	 bool isBunch( unsigned short int iBX, unsigned short int scheme = 1 );  
 
+	 unsigned int BXCapId_[HCAL_HLX_NUM_BUNCHES];
 	 unsigned int BXMask_[HCAL_HLX_NUM_BUNCHES];
+	 unsigned int BXMaskBool_[HCAL_HLX_NUM_BUNCHES];
 	 unsigned int HLXMask_[HCAL_HLX_NUM_HLXS];
 
 	 // Make an array to store the previous averages, this way we can calculate 
