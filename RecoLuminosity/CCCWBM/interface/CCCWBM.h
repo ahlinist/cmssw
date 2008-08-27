@@ -16,13 +16,10 @@
 #include "FWCore/Framework/interface/MakerMacros.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-
-//#include "DQMServices/Core/interface/DaqMonitorBEInterface.h"
-//#include "DQMServices/Daemon/interface/MonitorDaemon.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 
-#include "RecoLuminosity/HLXReadOut/CoreUtils/include/ICTypeDefs.hh"
-#include "RecoLuminosity/HLXReadOut/HLXCoreLibs/include/LumiStructures.hh"
+#include "RecoLuminosity/TCPReceiver/interface/ICTypeDefs.hh"
+#include "RecoLuminosity/TCPReceiver/interface/LumiStructures.hh"
 #include "RecoLuminosity/TCPReceiver/interface/TCPReceiver.h"
 
 #include <TROOT.h>
