@@ -24,14 +24,12 @@ CCCWBM::~CCCWBM(){
 
 
 void CCCWBM::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
-  //std::cout<<"entered analyze"<<std::endl;
   using namespace edm;
   int errorCode;
 
   do{
-    //std::cout<<"grabbing lumi section"<<std::endl;
     errorCode = HT.ReceiveLumiSection(lumiSection);
-    //cout << "ReceiveLumiSection: " << errorCode << endl;
+
     while(errorCode !=1){
       HT.Disconnect();
       cout << "Connecting to TCPDistributor" << endl;
@@ -44,8 +42,7 @@ void CCCWBM::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
   }while(errorCode != 1);
   
 
-  if(currentRunNumber > -1 && currentRunNumber != (int)lumiSection.hdr.runNumber){
-    std::cout<<"Beginning of new Run!  Reseting histos now!"<<std::endl;
+  if(currentRunNumber > -1 && currentRunNumber != lumiSection.hdr.runNumber){
     this->resetHistos();
   }else{
     currentRunNumber= lumiSection.hdr.runNumber;
@@ -55,19 +52,9 @@ void CCCWBM::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
 
   time_t now_time = time(NULL);
  
-  //std::cout<<"start_time, now_time = "<<start_time<<", "<<now_time<<std::endl;
-
   int time_diff_min = int((now_time - start_time)/60); //for real
-  //int time_diff_min = int((now_time - start_time))/2; //for testing
 
-  //std::cout<<"time_diff_min= "<<time_diff_min<<std::endl;
-
-  //set array vals for this min
   instLumi[time_diff_min]= lumiSection.lumiSummary.InstantLumi; //for real
-  //instLumi[time_diff_min]= time_diff_min; //for testing
-    
-  //init the histos:
-  //std::cout<<"bout to init histos"<<std::endl;
 
   std::ostringstream tmpLSIdentifier;
   tmpLSIdentifier <<", Current Run: "<<lumiSection.hdr.runNumber<<", LS: "<<lumiSection.hdr.sectionNumber<<", Orbit Range: "<<lumiSection.hdr.startOrbit<<"-"<<lumiSection.hdr.startOrbit+lumiSection.hdr.numOrbits - 1<<std::endl;
@@ -96,9 +83,12 @@ void CCCWBM::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
   gStyle->SetOptStat("");
   gROOT->SetBatch(kTRUE);
   gStyle->cd();
-
-  //Int_t wrongBy = 2;
+  //std::cout<<"time offset= "<<3600*timeinfo->tm_hour + 60*timeinfo->tm_min + timeinfo->tm_sec<<std::endl;
+  Int_t wrongBy = 2;
+  //if(timeinfo->tm_hour >= 12){ wrongBy= 2;}
   gStyle->SetTimeOffset(offset_time);
+  //gStyle->SetTimeOffset(3600*timeinfo->tm_hour + 60*timeinfo->tm_min + timeinfo->tm_sec - 3*3600); //I don't know why the -3*3600 should be there... 
+
 
   //std::cout<<"really bout to init histos"<<std::endl;
 
@@ -124,7 +114,9 @@ void CCCWBM::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
   IntLumi->GetYaxis()->SetLabelSize(0.030);
   IntLumi->GetYaxis()->SetTitleOffset(1.3);
   IntLumi->GetXaxis()->SetTimeDisplay(true);
+  //IntLumi->GetXaxis()->SetTimeOffset(3600*timeinfo->tm_hour + 60*timeinfo->tm_min + timeinfo->tm_sec);
   IntLumi->GetXaxis()->SetTimeFormat("%H:%M");
+  
   InstLumi->UseCurrentStyle();
   InstLumi->GetXaxis()->SetTitle(start_date.str().c_str());
   InstLumi->GetYaxis()->SetTitle("Inst. Lumi [10^31 cm-2 s-1]");
@@ -171,21 +163,24 @@ void CCCWBM::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
     //return;
   }
  
+  //std::cout<<"created image"<<std::endl;                                                                      
   img->FromPad(c);
+  //std::cout<<"got image from pad"<<std::endl;                                                                 
+  
 
-  std::string tmpFileName = outputDirectory + "IntLumi.jpg";
+  std::string tmpFileName = outputDirectory + "IntLumi.png";
   img->WriteImage(tmpFileName.c_str());
   InstLumi->Draw();
   img->FromPad(c);
-  tmpFileName = outputDirectory + "InstLumi.jpg";
+  tmpFileName = outputDirectory + "InstLumi.png";
   img->WriteImage(tmpFileName.c_str());
   LumiVsBX->Draw();
   img->FromPad(c);
-  tmpFileName = outputDirectory + "LumiVsBX.jpg";
+  tmpFileName = outputDirectory + "LumiVsBX.png";
   img->WriteImage(tmpFileName.c_str());
   LumiSpread->Draw();
   img->FromPad(c);
-  tmpFileName = outputDirectory + "LumiSpread.jpg";
+  tmpFileName = outputDirectory + "LumiSpread.png";
   img->WriteImage(tmpFileName.c_str());
 
   outputfile->Write();
@@ -199,15 +194,6 @@ void CCCWBM::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
   delete c;
   img->Delete();
 
-  /*
-  cout << "Run: " << lumiSection.hdr.runNumber << " Section: " << lumiSection.hdr.sectionNumber << " Orbit: " << lumiSection.hdr.startOrbit << endl;
-  cout << "Et Lumi: " << lumiSection.lumiSummary.InstantETLumi << endl;
-  cout << "Occ Lumi 1: " << lumiSection.lumiSummary.InstantOccLumi[0] << endl;
-  cout << "Occ Lumi 2: " << lumiSection.lumiSummary.InstantOccLumi[1] << endl;
-  cout << "Noise[0]: " << lumiSection.lumiSummary.lumiNoise[0] << endl;
-  cout << "Noise[1]: " << lumiSection.lumiSummary.lumiNoise[1] << endl;
-  */
-
 }  //analyze done 
 
 void CCCWBM::beginJob(const edm::EventSetup&){
@@ -220,12 +206,9 @@ void CCCWBM::beginJob(const edm::EventSetup&){
   HT.SetIP(DistribIP);
 
   errorCode = HT.SetPort(listenPort);
-  cout << "SetPort: " << errorCode << endl;
   errorCode = HT.SetMode(AquireMode);
-  cout << "AquireMode: " << errorCode << endl;
   
    do{
-     // cout << "Connecting to TCPDistributor" << endl;
     errorCode = HT.Connect();
     if(errorCode != 1){
       cout << "Error code= "<<errorCode<<" Attempting to reconnect in " << reconnTime << " seconds." << endl;
@@ -233,7 +216,6 @@ void CCCWBM::beginJob(const edm::EventSetup&){
     }
    }while(errorCode != 1);
 
-   //std::cout<<"exiting beginjob"<<std::endl;
 }
 
 void CCCWBM::endJob() {
@@ -246,11 +228,10 @@ void CCCWBM::resetHistos(){
   start_time = time(NULL);
   timeinfo = localtime(&start_time);
   offset_time = 3600*timeinfo->tm_hour + 60*timeinfo->tm_min + timeinfo->tm_sec - 2*3600;
-  std::cout<<"reset time= "<<start_time<<std::endl;
-  std::cout<<"...Or local time and date: "<<asctime(timeinfo)<<std::endl;
-  start_date.str().clear();
+  //std::cout<<"reset time= "<<start_time<<std::endl;
+  //std::cout<<"...Or local time and date: "<<asctime(timeinfo)<<std::endl;
   start_date.clear();
-  start_date.str()="";
+  start_date.str().clear();
   start_date<<"time (starting from "<<asctime(timeinfo)<<")"<<std::endl;
   //std::cout<<"start_date= "<<start_date.str().c_str()<<std::endl;
   
@@ -264,7 +245,6 @@ void CCCWBM::resetHistos(){
   
   currentRunNumber= -1;
 
-  //std::cout<<"exiting resethistos"<<std::endl;
 }
 
 DEFINE_FWK_MODULE(CCCWBM);
