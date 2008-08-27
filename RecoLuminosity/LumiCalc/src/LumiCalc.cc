@@ -11,6 +11,27 @@ Summary:  Library to calculate relative luminosity from HLX data
 #include "RecoLuminosity/TCPReceiver/interface/LumiStructures.hh"
 #include "RecoLuminosity/LumiCalc/interface/LumiCalc.hh"
 
+/********************************************************************
+Quality Codes (Additive):
+
+Infinite lumi = -500
+Infinite lumi error = -200
+NaN lumi = -510
+NaN lumi error = -210
+Out of bounds high lumi = -520
+Out of bounds high lumi error = -220
+Out of bounds low lumi = -530
+Out of bounds low lumi error = -230
+Zero lumi = -600;
+Zero lumi error = -300;
+No towers less than threshold = -701
+No noise subtraction for occ = 99
+
+Zero Nibbles = -50
+Zero Active Towers = -200
+Zero Good BX = -700
+
+*******************************************************************/
 
 namespace HCAL_HLX {
   
@@ -90,7 +111,8 @@ namespace HCAL_HLX {
       }
     
       for( int iCap =0; iCap < NUM_CAP_BANKS; ++iCap ) invSizeNoise_[iCap] = 1.0/(float)sizeNoise_[iCap];
-      normNumBX_ = 1.0/(float)numBX_;
+      normNumBX_ = 1.0;
+      if( numBX_ > 0 ) normNumBX_ = 1.0/(float)numBX_;
 
       return numBX_;
    }
@@ -108,7 +130,8 @@ namespace HCAL_HLX {
       for( unsigned int iHLX = maskSize; iHLX < HCAL_HLX_NUM_HLXS; ++iHLX )
 	 HLXMask_[iHLX] = 0;
 
-      normNumHLX_ = 1.0/(float)numHLX_;
+      normNumHLX_ = 1.0;
+      if( numHLX_ > 0 ) normNumHLX_ = 1.0/(float)numHLX_;
    
       return numHLX_;
    }
@@ -203,20 +226,23 @@ namespace HCAL_HLX {
 
    void LumiCalc::CalcETSumLumi(HCAL_HLX::LUMI_SECTION &localSection){
 
+      localSection.lumiSummary.InstantETLumi = 0.0;
+      localSection.lumiSummary.InstantETLumiQlty = 1;
+      localSection.lumiSummary.ETNormalization = 1.0;
 
       // count nibbles.
       unsigned int TotalNibbles = 0;
       for( unsigned int iHLX = 0; iHLX < HCAL_HLX_NUM_HLXS; ++iHLX ){
 	 TotalNibbles += localSection.etSum[iHLX].hdr.numNibbles;
       }
+      if( TotalNibbles == 0 ) localSection.lumiSummary.InstantETLumiQlty -= 51; 
 
       // Sum over HLXs && Fill Normalization and quality
-      localSection.lumiSummary.InstantETLumiQlty = 1;
-      localSection.lumiSummary.ETNormalization = 1.0;
       float TotalEtSum[HCAL_HLX_NUM_BUNCHES];
       float TotalEtSumNoise[NUM_CAP_BANKS]; 
 
       for( unsigned int iBX = 0; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ){
+	 localSection.lumiDetail.ETLumi[iBX]                = 0.0;
 	 localSection.lumiDetail.ETLumiQlty[iBX]            = 1;
 	 localSection.lumiDetail.ETBXNormalization[iBX]     = 1.0;      
 	 TotalEtSum[iBX] = 0.0;
@@ -225,7 +251,7 @@ namespace HCAL_HLX {
 	 }
       }
 
-      float ETSumError = -995;
+      float ETSumError = 0;
       if( TotalNibbles > 0 ) ETSumError = CalcETSumError( localSection ); 
 
       // Calculate noise per cap bank
@@ -238,62 +264,100 @@ namespace HCAL_HLX {
 	 }
 	 TotalEtSumNoise[iCap] *= invSizeNoise_[iCap];
       }
-      float ETSumNoiseError = -995;
+      float ETSumNoiseError = 0;
       if( TotalNibbles > 0 ) ETSumNoiseError = CalcETSumNoiseError( localSection );
+
+      unsigned int numGoodBX = numBX_;
 
       //std::cout << "Active towers " << TotalActiveTowers_ << std::endl;
       //std::cout << "Active towers Et " << TotalActiveTowersEt_ << std::endl;
       if( TotalActiveTowersEt_ > 0 ){
 	 for( unsigned int iBX = 0; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ){
+	    if( BXMask_[iBX] != 1 ) continue;
+
 	    localSection.lumiDetail.ETLumi[iBX]
 	       = (TotalEtSum[iBX] - TotalEtSumNoise[BXCapId_[iBX]])/(float)TotalActiveTowersEt_;
-	    //localSection.lumiDetail.ETLumiErr[iBX] = sqrt(ETSumError*ETSumError + ETSumNoiseError*ETSumNoiseError);
 	    localSection.lumiDetail.ETLumiErr[iBX] = sqrt(ETSumError + ETSumNoiseError);
 
-	    // Check for over flow
-	    if( localSection.lumiDetail.ETLumi[iBX] > 999 )
-	       localSection.lumiDetail.ETLumi[iBX] = 999;
-	 
-	    if( localSection.lumiDetail.ETLumi[iBX] < -999 )
-	       localSection.lumiDetail.ETLumi[iBX] = -999;
-
-	    if( isinf(localSection.lumiDetail.ETLumi[iBX]) )
-	       localSection.lumiDetail.ETLumi[iBX] = 998;
-
-	    if( isnan(localSection.lumiDetail.ETLumi[iBX]) )
+	    // Check for zero
+	    if( TotalEtSum[iBX] == 0 ){
 	       localSection.lumiDetail.ETLumi[iBX] = 0;
-	 
-	    if( localSection.lumiDetail.ETLumiErr[iBX] > 999 )
-	       localSection.lumiDetail.ETLumiErr[iBX] = 999;
-	 
-	    if( localSection.lumiDetail.ETLumiErr[iBX] < -999 )
-	       localSection.lumiDetail.ETLumiErr[iBX] = -999;
-	 }
-      }
-
-      if( TotalNibbles > 0 ){
-	 if( numBX_ ){ // TODO: check for TotalNibbles = 0. This will be a big problem.
-	    localSection.lumiSummary.InstantETLumi = 0.0;
-	    for( unsigned int iBX = 0; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ){
-	       if( BXMask_[iBX] == 1 ) localSection.lumiSummary.InstantETLumi += localSection.lumiDetail.ETLumi[iBX];
+	       localSection.lumiDetail.ETLumiQlty[iBX] -= 701;
 	    }
-	    localSection.lumiSummary.InstantETLumi *= normNumBX_;
-	    localSection.lumiSummary.InstantETLumiErr = sqrt( ETSumError*normNumBX_ + ETSumNoiseError );
-	 } else {
-	    localSection.lumiSummary.InstantETLumi = -994;  // error
-	    localSection.lumiSummary.InstantETLumiErr = -994; // error
+	    // Check for infinity
+	    if( isinf(localSection.lumiDetail.ETLumi[iBX]) ){
+	       localSection.lumiDetail.ETLumi[iBX] = 0;
+	       localSection.lumiDetail.ETLumiQlty[iBX] -= 501;
+	    }
+	    // Check for NaN
+	    if( isnan(localSection.lumiDetail.ETLumi[iBX]) ){
+	       localSection.lumiDetail.ETLumi[iBX] = 0;
+	       localSection.lumiDetail.ETLumiQlty[iBX] -= 511;
+	    }
+	    // Check upper bound
+	    if( localSection.lumiDetail.ETLumi[iBX] > 999 ){
+	       localSection.lumiDetail.ETLumi[iBX] = 0;
+	       localSection.lumiDetail.ETLumiQlty[iBX] -= 521;
+	    }
+	    // Check lower bound
+	    if( localSection.lumiDetail.ETLumi[iBX] < -999 ){
+	       localSection.lumiDetail.ETLumi[iBX] = 0;
+	       localSection.lumiDetail.ETLumiQlty[iBX] -= 531;
+	    }
+	    // Errors
+	    // Check for zero
+	    if( localSection.lumiDetail.ETLumiErr[iBX] == 0 ){
+	       localSection.lumiDetail.ETLumiErr[iBX] = 0;
+	       localSection.lumiDetail.ETLumiQlty[iBX] -= 201;
+	    }
+	    // Check for infinity
+	    if( isinf(localSection.lumiDetail.ETLumiErr[iBX]) ){
+	       localSection.lumiDetail.ETLumiErr[iBX] = 0;
+	       localSection.lumiDetail.ETLumiQlty[iBX] -= 201;
+	    }
+	    // Check for NaN
+	    if( isnan(localSection.lumiDetail.ETLumiErr[iBX]) ){
+	       localSection.lumiDetail.ETLumiErr[iBX] = 0;
+	       localSection.lumiDetail.ETLumiQlty[iBX] -= 211;
+	    }
+	    // Check upper bound
+	    if( localSection.lumiDetail.ETLumiErr[iBX] > 999 ){
+	       localSection.lumiDetail.ETLumiErr[iBX] = 0;
+	       localSection.lumiDetail.ETLumiQlty[iBX] -= 221;
+	    }
+	    // Check lower bound
+	    if( localSection.lumiDetail.ETLumiErr[iBX] < -999 ){
+	       localSection.lumiDetail.ETLumiErr[iBX] = 0;
+	       localSection.lumiDetail.ETLumiQlty[iBX] -= 231;
+	    }
+
+	    if( localSection.lumiDetail.ETLumiQlty[iBX] > 0 ) 
+	       localSection.lumiSummary.InstantETLumi += localSection.lumiDetail.ETLumi[iBX];
+	    else
+	       --numGoodBX;
 	 }
       } else {
-	 localSection.lumiSummary.InstantETLumi = -995; // error
-	 localSection.lumiSummary.InstantETLumiErr = -995; // error
+	 localSection.lumiSummary.InstantETLumiQlty -= 201;
       }
+      
+      if( TotalNibbles > 0 ){
+	 if( numGoodBX > 0 ){ 
+	    localSection.lumiSummary.InstantETLumi /= numGoodBX;
+	    localSection.lumiSummary.InstantETLumiErr = sqrt( ETSumError*normNumBX_ + ETSumNoiseError );
+	    localSection.lumiSummary.InstantETLumiQlty = (i16)(1000*(float)numGoodBX*normNumBX_);
+	 } else {
+	    localSection.lumiSummary.InstantETLumi = 0;  // error
+	    localSection.lumiSummary.InstantETLumiErr = 0; // error
+	    localSection.lumiSummary.InstantETLumiQlty -= 701;
+	 }
+      } 
    }
 
    // Calculate the per BX Et sum error
    float LumiCalc::CalcETSumError( HCAL_HLX::LUMI_SECTION &localSection ){
 
       // Check for the case where we have no data ...
-      if( numBX_ == 0 || numHLX_ == 0 || numActiveTowersBXEt_ == 0 ) return -995;
+      if( numBX_ == 0 || numHLX_ == 0 || numActiveTowersBXEt_ == 0 ) return 0;
       //return 992016;
 
       // General case 
@@ -407,7 +471,7 @@ namespace HCAL_HLX {
    float LumiCalc::CalcETSumNoiseError( HCAL_HLX::LUMI_SECTION &localSection ){
 
       // Check for the case where we have no data ...
-      if( numBX_ == 0 || numHLX_ == 0 || numActiveTowersBXEt_ == 0 ) return -995;
+      if( numBX_ == 0 || numHLX_ == 0 || numActiveTowersBXEt_ == 0 ) return 0;
       //return 992016;
 
       // General case 
@@ -560,18 +624,23 @@ namespace HCAL_HLX {
       noiseError[0] = CalcOccNoiseError( localSection, 0 );
       noiseError[1] = CalcOccNoiseError( localSection, 1 );
 
+      // Only use good BX's
+      unsigned int numGoodBX[2] = {numBX_,numBX_};
+
       localSection.lumiSummary.InstantOccLumi[0] = 0.0;
       localSection.lumiSummary.InstantOccLumi[1] = 0.0;
 
       for( unsigned int iBX = 0; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ){
 	 localSection.lumiDetail.OccLumi[0][iBX] = 0.0;
 	 localSection.lumiDetail.OccLumi[1][iBX] = 0.0;
-	 localSection.lumiDetail.OccLumiQlty[0][iBX] = 1;
-	 localSection.lumiDetail.OccLumiQlty[1][iBX] = 1;
+	 localSection.lumiDetail.OccLumiQlty[0][iBX] = 0;
+	 localSection.lumiDetail.OccLumiQlty[1][iBX] = 0;
 	 localSection.lumiDetail.OccBXNormalization[0][iBX] = 1;
 	 localSection.lumiDetail.OccBXNormalization[1][iBX] = 1;
 
 	 if( BXMask_[iBX] != 1 ) continue;
+	 localSection.lumiDetail.OccLumiQlty[0][iBX] = 1;
+	 localSection.lumiDetail.OccLumiQlty[1][iBX] = 1;
 
 	 u32 sumHLX[2] = {0,0};
 	 double sumNoiseHLX[2] = {0,0};
@@ -595,94 +664,132 @@ namespace HCAL_HLX {
 	    if( sumNoiseHLX[0] > 0 ){
 	       localSection.lumiDetail.OccLumi[0][iBX] = (float)log( sumNoiseHLX[0] / (double)sumHLX[0] );
 	    }
-	    else
+	    else{
 	       localSection.lumiDetail.OccLumi[0][iBX] = (float)log( (double)numActiveTowersBX_[0] / (double)sumHLX[0] );
+	       localSection.lumiDetail.OccLumiQlty[0][iBX] += 99;
+	    }
 	 }
-	 else
-	    localSection.lumiDetail.OccLumi[0][iBX] = 999;
+	 else{
+	    localSection.lumiDetail.OccLumiQlty[0][iBX] -= 701;
+	 }
 
 	 // Ring Set 2
 	 if( sumHLX[1] > 0 ){
 	    if( sumNoiseHLX[1] > 0 ){
 	       localSection.lumiDetail.OccLumi[1][iBX] = (float)log( sumNoiseHLX[1] / (double)sumHLX[1] );
 	    }
-	    else
+	    else{
 	       localSection.lumiDetail.OccLumi[1][iBX] = (float)log( (double)numActiveTowersBX_[1] / (double)sumHLX[1] );
+	       localSection.lumiDetail.OccLumiQlty[1][iBX] += 99;
+	    }
 	 }
-	 else
-	    localSection.lumiDetail.OccLumi[0][iBX] = 999;
-
+	 else{
+	    localSection.lumiDetail.OccLumiQlty[1][iBX] -= 701;
+	 }
 
 	 localSection.lumiDetail.OccLumiErr[0][iBX] = sqrt(CalcOccErrorBX( localSection, 0, iBX ) + noiseError[0]);
 	 localSection.lumiDetail.OccLumiErr[1][iBX] = sqrt(CalcOccErrorBX( localSection, 1, iBX ) + noiseError[1]);
 
 
 	 // Check for infinity
-	 if( isinf(localSection.lumiDetail.OccLumi[0][iBX]) )
-	    localSection.lumiDetail.OccLumi[0][iBX] = 998;
-
-	 if( isinf(localSection.lumiDetail.OccLumi[1][iBX]) )
-	    localSection.lumiDetail.OccLumi[1][iBX] = 998;
-
-	 // Check for NaN
-	 if( isnan(localSection.lumiDetail.OccLumi[0][iBX]) )
+	 if( isinf(localSection.lumiDetail.OccLumi[0][iBX]) ){
 	    localSection.lumiDetail.OccLumi[0][iBX] = 0;
-
-	 if( isnan(localSection.lumiDetail.OccLumi[1][iBX]) )
+	    localSection.lumiDetail.OccLumiQlty[0][iBX] -= 501;
+	 }
+	 if( isinf(localSection.lumiDetail.OccLumi[1][iBX]) ){
 	    localSection.lumiDetail.OccLumi[1][iBX] = 0;
-
+	    localSection.lumiDetail.OccLumiQlty[1][iBX] -= 501;
+	 }
+	 // Check for NaN
+	 if( isnan(localSection.lumiDetail.OccLumi[0][iBX]) ){
+	    localSection.lumiDetail.OccLumi[0][iBX] = 0;
+	    localSection.lumiDetail.OccLumiQlty[0][iBX] -= 511;
+	 }
+	 if( isnan(localSection.lumiDetail.OccLumi[1][iBX]) ){
+	    localSection.lumiDetail.OccLumi[1][iBX] = 0;
+	    localSection.lumiDetail.OccLumiQlty[1][iBX] -= 511;
+	 }
 	 // Check upper bound
-	 if( localSection.lumiDetail.OccLumi[0][iBX] > 999 )
-	    localSection.lumiDetail.OccLumi[0][iBX] = 999;
-
-	 if( localSection.lumiDetail.OccLumi[1][iBX] > 999 )
-	    localSection.lumiDetail.OccLumi[1][iBX] = 999;
-
+	 if( localSection.lumiDetail.OccLumi[0][iBX] > 999 ){
+	    localSection.lumiDetail.OccLumi[0][iBX] = 0;
+	    localSection.lumiDetail.OccLumiQlty[0][iBX] -= 521;
+	 }
+	 if( localSection.lumiDetail.OccLumi[1][iBX] > 999 ){
+	    localSection.lumiDetail.OccLumi[1][iBX] = 0;
+	    localSection.lumiDetail.OccLumiQlty[1][iBX] -= 521;
+	 }
 	 // Check lower bound
-	 if( localSection.lumiDetail.OccLumi[0][iBX] < -999 )
-	    localSection.lumiDetail.OccLumi[0][iBX] = -999;
-
-	 if( localSection.lumiDetail.OccLumi[1][iBX] < -999 )
-	    localSection.lumiDetail.OccLumi[1][iBX] = -999;
-
+	 if( localSection.lumiDetail.OccLumi[0][iBX] < -999 ){
+	    localSection.lumiDetail.OccLumi[0][iBX] = 0;
+	    localSection.lumiDetail.OccLumiQlty[0][iBX] -= 531;
+	 }
+	 if( localSection.lumiDetail.OccLumi[1][iBX] < -999 ){
+	    localSection.lumiDetail.OccLumi[1][iBX] = 0;
+	    localSection.lumiDetail.OccLumiQlty[1][iBX] -= 531;
+	 }
 	 // Errors
 	 // Check for infinity
-	 if( isinf(localSection.lumiDetail.OccLumiErr[0][iBX]) )
-	    localSection.lumiDetail.OccLumiErr[0][iBX] = 998;
-
-	 if( isinf(localSection.lumiDetail.OccLumiErr[1][iBX]) )
-	    localSection.lumiDetail.OccLumiErr[1][iBX] = 998;
-
-	 // Check for NaN
-	 if( isnan(localSection.lumiDetail.OccLumiErr[0][iBX]) )
+	 if( isinf(localSection.lumiDetail.OccLumiErr[0][iBX]) ){
 	    localSection.lumiDetail.OccLumiErr[0][iBX] = 0;
-
-	 if( isnan(localSection.lumiDetail.OccLumiErr[1][iBX]) )
+	    localSection.lumiDetail.OccLumiQlty[0][iBX] -= 201;
+	 }
+	 if( isinf(localSection.lumiDetail.OccLumiErr[1][iBX]) ){
 	    localSection.lumiDetail.OccLumiErr[1][iBX] = 0;
-
+	    localSection.lumiDetail.OccLumiQlty[1][iBX] -= 201;
+	 }
+	 // Check for NaN
+	 if( isnan(localSection.lumiDetail.OccLumiErr[0][iBX]) ){
+	    localSection.lumiDetail.OccLumiErr[0][iBX] = 0;
+	    localSection.lumiDetail.OccLumiQlty[0][iBX] -= 211;
+	 }
+	 if( isnan(localSection.lumiDetail.OccLumiErr[1][iBX]) ){
+	    localSection.lumiDetail.OccLumiErr[1][iBX] = 0;
+	    localSection.lumiDetail.OccLumiQlty[1][iBX] -= 211;
+	 }
 	 // Check upper bound
-	 if( localSection.lumiDetail.OccLumiErr[0][iBX] > 999 )
-	    localSection.lumiDetail.OccLumiErr[0][iBX] = 999;
-
-	 if( localSection.lumiDetail.OccLumiErr[1][iBX] > 999 )
-	    localSection.lumiDetail.OccLumiErr[1][iBX] = 999;
-
+	 if( localSection.lumiDetail.OccLumiErr[0][iBX] > 999 ){
+	    localSection.lumiDetail.OccLumiErr[0][iBX] = 0;
+	    localSection.lumiDetail.OccLumiQlty[0][iBX] -= 221;
+	 }
+	 if( localSection.lumiDetail.OccLumiErr[1][iBX] > 999 ){
+	    localSection.lumiDetail.OccLumiErr[1][iBX] = 0;
+	    localSection.lumiDetail.OccLumiQlty[1][iBX] -= 221;
+	 }
 	 // Check lower bound
-	 if( localSection.lumiDetail.OccLumiErr[0][iBX] < -999 )
-	    localSection.lumiDetail.OccLumiErr[0][iBX] = -999;
+	 if( localSection.lumiDetail.OccLumiErr[0][iBX] < -999 ){
+	    localSection.lumiDetail.OccLumiErr[0][iBX] = 0;
+	    localSection.lumiDetail.OccLumiQlty[0][iBX] -= 231;
+	 }
+	 if( localSection.lumiDetail.OccLumiErr[1][iBX] < -999 ){
+	    localSection.lumiDetail.OccLumiErr[1][iBX] = 0;
+	    localSection.lumiDetail.OccLumiQlty[1][iBX] -= 231;
+	 }
 
-	 if( localSection.lumiDetail.OccLumiErr[1][iBX] < -999 )
-	    localSection.lumiDetail.OccLumiErr[1][iBX] = -999;
-      
-	 localSection.lumiSummary.InstantOccLumi[0] += localSection.lumiDetail.OccLumi[0][iBX];
-	 localSection.lumiSummary.InstantOccLumi[1] += localSection.lumiDetail.OccLumi[1][iBX];
+	 if( localSection.lumiDetail.OccLumiQlty[0][iBX] > 0 )
+	    localSection.lumiSummary.InstantOccLumi[0] += localSection.lumiDetail.OccLumi[0][iBX];
+	 else
+	    --numGoodBX[0];
+	 if( localSection.lumiDetail.OccLumiQlty[1][iBX] > 0 )
+	    localSection.lumiSummary.InstantOccLumi[1] += localSection.lumiDetail.OccLumi[1][iBX];
+	 else
+	    --numGoodBX[1];
 
       }
 
-      // normailze to the number of active bunches
-      if( numBX_ > 0 ){
-	 localSection.lumiSummary.InstantOccLumi[0] *= normNumBX_;
-	 localSection.lumiSummary.InstantOccLumi[1] *= normNumBX_;
+      // normailze to the number of active, good bunches
+      if( numGoodBX[0] > 0 ){
+	 localSection.lumiSummary.InstantOccLumi[0] /= (float)numGoodBX[0];
+	 localSection.lumiSummary.InstantOccLumiQlty[0] = (i16)(1000*(float)numGoodBX[0]*normNumBX_);
+      } else {
+	 localSection.lumiSummary.InstantOccLumi[0] = 0;
+	 localSection.lumiSummary.InstantOccLumiQlty[0] = -900;
+      }
+      if( numGoodBX[1] > 0 ){
+	 localSection.lumiSummary.InstantOccLumi[1] /= (float)numGoodBX[1];
+	 localSection.lumiSummary.InstantOccLumiQlty[1] = (i16)(1000*(float)numGoodBX[1]*normNumBX_);
+      } else {
+	 localSection.lumiSummary.InstantOccLumi[1] = 0;
+	 localSection.lumiSummary.InstantOccLumiQlty[1] = -900;
       }
 
       // Sum over bunch crossings
@@ -690,53 +797,104 @@ namespace HCAL_HLX {
       localSection.lumiSummary.InstantOccLumiErr[1] = sqrt(CalcOccErrorTotal( localSection, 1 )+noiseError[1]);
 
       // Check for infinity
-      if( isinf( localSection.lumiSummary.InstantOccLumi[0] ) ) localSection.lumiSummary.InstantOccLumi[0] = -996;
-      if( isinf( localSection.lumiSummary.InstantOccLumi[1] ) ) localSection.lumiSummary.InstantOccLumi[1] = -996;
-
+      if( isinf( localSection.lumiSummary.InstantOccLumi[0] ) ){
+	 localSection.lumiSummary.InstantOccLumi[0] = 0;
+	 localSection.lumiSummary.InstantOccLumiQlty[0] = -500;
+      }
+      if( isinf( localSection.lumiSummary.InstantOccLumi[1] ) ){
+	 localSection.lumiSummary.InstantOccLumi[1] = 0;
+	 localSection.lumiSummary.InstantOccLumiQlty[1] = -500;
+      }
       // Check for NaN
-      if( isnan( localSection.lumiSummary.InstantOccLumi[0] ) ) localSection.lumiSummary.InstantOccLumi[0] = -997;
-      if( isnan( localSection.lumiSummary.InstantOccLumi[1] ) ) localSection.lumiSummary.InstantOccLumi[1] = -997;
-    
+      if( isnan( localSection.lumiSummary.InstantOccLumi[0] ) ){
+	 localSection.lumiSummary.InstantOccLumi[0] = 0;
+	 localSection.lumiSummary.InstantOccLumiQlty[0] = -510;
+      }
+      if( isnan( localSection.lumiSummary.InstantOccLumi[1] ) ){
+	 localSection.lumiSummary.InstantOccLumi[1] = 0;
+	 localSection.lumiSummary.InstantOccLumiQlty[1] = -510;
+      }
       // Check upper bound
-      if( localSection.lumiSummary.InstantOccLumi[0] > 999 )
-	 localSection.lumiSummary.InstantOccLumi[0] = 999;
-
-      if( localSection.lumiSummary.InstantOccLumi[1] > 999 )
-	 localSection.lumiSummary.InstantOccLumi[1] = 999;
-
+      if( localSection.lumiSummary.InstantOccLumi[0] > 999 ){
+	 localSection.lumiSummary.InstantOccLumi[0] = 0;
+	 localSection.lumiSummary.InstantOccLumiQlty[0] = -520;
+      }
+      if( localSection.lumiSummary.InstantOccLumi[1] > 999 ){
+	 localSection.lumiSummary.InstantOccLumi[1] = 0;
+	 localSection.lumiSummary.InstantOccLumiQlty[1] = -520;
+      }
       // Check lower bound
-      if( localSection.lumiSummary.InstantOccLumi[0] < -999 )
-	 localSection.lumiSummary.InstantOccLumi[0] = -999;
-
-      if( localSection.lumiSummary.InstantOccLumi[1] < -999 )
-	 localSection.lumiSummary.InstantOccLumi[1] = -999;
-
+      if( localSection.lumiSummary.InstantOccLumi[0] < -999 ){
+	 localSection.lumiSummary.InstantOccLumi[0] = 0;
+	 localSection.lumiSummary.InstantOccLumiQlty[0] = -530;
+      }
+      if( localSection.lumiSummary.InstantOccLumi[1] < -999 ){
+	 localSection.lumiSummary.InstantOccLumi[1] = 0;
+	 localSection.lumiSummary.InstantOccLumiQlty[1] = -530;
+      }
+      // Errors ...
       // Check for infinity
-      if( isinf( localSection.lumiSummary.InstantOccLumiErr[0] ) ) localSection.lumiSummary.InstantOccLumiErr[0] = -996;
-      if( isinf( localSection.lumiSummary.InstantOccLumiErr[1] ) ) localSection.lumiSummary.InstantOccLumiErr[1] = -996;
-
+      if( isinf( localSection.lumiSummary.InstantOccLumiErr[0] ) ){
+	 localSection.lumiSummary.InstantOccLumiErr[0] = 0;
+	 if( localSection.lumiSummary.InstantOccLumiQlty[0] < 0 ) 
+	    localSection.lumiSummary.InstantOccLumiQlty[0] -= 201;
+	 else 
+	    localSection.lumiSummary.InstantOccLumiQlty[0] = -200;
+      }
+      if( isinf( localSection.lumiSummary.InstantOccLumiErr[1] ) ){
+	 localSection.lumiSummary.InstantOccLumiErr[1] = 0;
+	 if( localSection.lumiSummary.InstantOccLumiQlty[1] < 0 ) 
+	    localSection.lumiSummary.InstantOccLumiQlty[1] -= 201;
+	 else 
+	    localSection.lumiSummary.InstantOccLumiQlty[1] = -200;
+      }
       // Check for NaN
-      if( isnan( localSection.lumiSummary.InstantOccLumiErr[0] ) ) localSection.lumiSummary.InstantOccLumiErr[0] = -997;
-      if( isnan( localSection.lumiSummary.InstantOccLumiErr[1] ) ) localSection.lumiSummary.InstantOccLumiErr[1] = -997;
-    
+      if( isnan( localSection.lumiSummary.InstantOccLumiErr[0] ) ){
+	 localSection.lumiSummary.InstantOccLumiErr[0] = 0;
+	 if( localSection.lumiSummary.InstantOccLumiQlty[0] < 0 ) 
+	    localSection.lumiSummary.InstantOccLumiQlty[0] -= 211;
+	 else 
+	    localSection.lumiSummary.InstantOccLumiQlty[0] = -210;
+      }
+      if( isnan( localSection.lumiSummary.InstantOccLumiErr[1] ) ){
+	 localSection.lumiSummary.InstantOccLumiErr[1] = 0;
+	 if( localSection.lumiSummary.InstantOccLumiQlty[1] < 0 ) 
+	    localSection.lumiSummary.InstantOccLumiQlty[1] -= 211;
+	 else 
+	    localSection.lumiSummary.InstantOccLumiQlty[1] = -210;
+      }    
       // Check upper bound
-      if( localSection.lumiSummary.InstantOccLumiErr[0] > 999 )
-	 localSection.lumiSummary.InstantOccLumiErr[0] = 999;
-
-      if( localSection.lumiSummary.InstantOccLumiErr[1] > 999 )
-	 localSection.lumiSummary.InstantOccLumiErr[1] = 999;
-
+      if( localSection.lumiSummary.InstantOccLumiErr[0] > 999 ){
+	 localSection.lumiSummary.InstantOccLumiErr[0] = 0;
+	 if( localSection.lumiSummary.InstantOccLumiQlty[0] < 0 ) 
+	    localSection.lumiSummary.InstantOccLumiQlty[0] -= 221;
+	 else 
+	    localSection.lumiSummary.InstantOccLumiQlty[0] = -220;
+      }
+      if( localSection.lumiSummary.InstantOccLumiErr[1] > 999 ){
+	 localSection.lumiSummary.InstantOccLumiErr[1] = 0;
+	 if( localSection.lumiSummary.InstantOccLumiQlty[1] < 0 ) 
+	    localSection.lumiSummary.InstantOccLumiQlty[1] -= 221;
+	 else 
+	    localSection.lumiSummary.InstantOccLumiQlty[1] = -220;
+      }
       // Check lower bound
-      if( localSection.lumiSummary.InstantOccLumiErr[0] < -999 )
-	 localSection.lumiSummary.InstantOccLumiErr[0] = -999;
+      if( localSection.lumiSummary.InstantOccLumiErr[0] < -999 ){
+	 localSection.lumiSummary.InstantOccLumiErr[0] = 0;
+	 if( localSection.lumiSummary.InstantOccLumiQlty[0] < 0 ) 
+	    localSection.lumiSummary.InstantOccLumiQlty[0] -= 231;
+	 else 
+	    localSection.lumiSummary.InstantOccLumiQlty[0] = -230;
+      }
+      if( localSection.lumiSummary.InstantOccLumiErr[1] < -999 ){
+	 localSection.lumiSummary.InstantOccLumiErr[1] = 0;
+	 if( localSection.lumiSummary.InstantOccLumiQlty[1] < 0 ) 
+	    localSection.lumiSummary.InstantOccLumiQlty[1] -= 231;
+	 else 
+	    localSection.lumiSummary.InstantOccLumiQlty[1] = -230;
+      }
 
-      if( localSection.lumiSummary.InstantOccLumiErr[1] < -999 )
-	 localSection.lumiSummary.InstantOccLumiErr[1] = -999;
-
-      // Quality etc ...
-      localSection.lumiSummary.InstantOccLumiQlty[0] = 1;
-      localSection.lumiSummary.InstantOccLumiQlty[1] = 1;
-    
+      // Normalization ... ???
       localSection.lumiSummary.OccNormalization[0] = 1;
       localSection.lumiSummary.OccNormalization[1] = 1;
 
@@ -780,7 +938,7 @@ namespace HCAL_HLX {
    float LumiCalc::CalcOccErrorTotal( HCAL_HLX::LUMI_SECTION &localSection, unsigned int set ){
     
       // Check for the case where we have no data ...
-      if( numBX_ ==0 || numHLX_ ==0 ) return -995;
+      //if( numBX_ ==0 || numHLX_ ==0 ) return -995;
       //return -996;
 
       // Index
@@ -812,8 +970,8 @@ namespace HCAL_HLX {
    float LumiCalc::CalcOccErrorBX( HCAL_HLX::LUMI_SECTION &localSection, unsigned int set, unsigned int iBX ){
     
       // Check for the case where we have no data ...
-      if( numBX_ ==0 || numHLX_ ==0 ) return -995;
-      if( BXMask_[iBX] != 1 ) return -996;
+      //if( numBX_ ==0 || numHLX_ ==0 ) return -995;
+      if( BXMask_[iBX] != 1 ) return 0;
 
       // Index
       int index = set1BelowIndex;
