@@ -21,7 +21,7 @@ Implementation:
 //                   Anna Kropivnitskaya
 // Contacts: Efe Yazgan, Taylan Yetkin
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.55 2008/08/20 18:59:07 efe Exp $
+// $Id: HcalProm.cc,v 1.56 2008/08/21 15:37:01 efe Exp $
 //
 //
 
@@ -1538,10 +1538,13 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
     }
     if (myjet.size() > 0) {
       std::stable_sort(myjet.begin(), myjet.end(), CaloJetSort());
-      h_jet_multiplicity->Fill(myjet.size());//
       // now go to deeper levels:
       // 1-from jet to calo-tower
       CaloJet jet;
+      if (sqrt(pow(jet.pt(),2)+pow(jet.pz(),2)) > 10.) h_jet_multiplicity->Fill(myjet.size());//
+      //      // now go to deeper levels:
+      //      // 1-from jet to calo-tower
+      //      CaloJet jet;
 
       jet = myjet[0];
       h_leadJet_Pt->Fill(jet.pt());
