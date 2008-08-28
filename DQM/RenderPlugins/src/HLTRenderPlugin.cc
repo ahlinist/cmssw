@@ -7,6 +7,8 @@
   \\ subdetector plugins
   \\ preDraw and postDraw methods now check whether histogram was a TH1
   \\ or TH2, and call a private method appropriate for the histogram type
+  $Id$
+  $Log$
 */
 
 #include "DQM/RenderPlugins/src/HLTRenderPlugin.h" 
@@ -137,7 +139,15 @@ void HLTRenderPlugin::preDrawTH1F ( TCanvas *c, const DQMNet::CoreObject &o )
 	break;
       }
     }
-    obj->GetXaxis()->SetRange(0, maxRange);
+    int minRange = 0;
+    for ( int i = 0; i <= nbins; ++i ) {
+      if ( obj->GetBinContent(i) != 0 ) {
+	minRange = i;
+	break;
+      }
+    }
+
+    obj->GetXaxis()->SetRange(minRange, maxRange);
   }
 
   // Code used in SiStripRenderPlugin -- do we want similar defaults?
