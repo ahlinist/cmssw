@@ -16,7 +16,7 @@
 //
 // Original Author:  Efe Yazgan
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalTemplate.cc,v 1.1 2008/04/30 20:57:31 fedor Exp $
+// $Id: HcalTemplate.cc,v 1.2 2008/08/21 04:39:02 fedor Exp $
 //
 //
 
@@ -300,6 +300,12 @@ HcalTemplate::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      h_caloMet_SumEt->Fill(met->sumEt());
    }
 
+   // L1 Global trigger
+   if (gtRecord) { // object is available
+     for (int l1bit = 0; l1bit < 128; ++l1bit) {
+       if (gtRecord->decisionWord() [l1bit]) h_l1_gtbit->Fill (l1bit);
+     }
+   }
 }
 
 
@@ -312,6 +318,7 @@ void HcalTemplate::beginJob(const edm::EventSetup&)
   TFileDirectory CorrDir = fs->mkdir( "Correlations" );
   TFileDirectory NoiseDir = fs->mkdir( "Noise" );
   TFileDirectory JetMetDir = fs->mkdir( "JetMet" );
+  TFileDirectory L1GTDir = fs->mkdir( "L1GT" );
 
   //Add runnumbers to histograms!
 
@@ -344,6 +351,8 @@ void HcalTemplate::beginJob(const edm::EventSetup&)
   h_caloMet_Met = JetMetDir.make<TH1F>("h_caloMet_Met", "MET from CaloTowers", 100, 0, 25);
   h_caloMet_Phi = JetMetDir.make<TH1F>("h_caloMet_Phi", "MET #phi from CaloTowers", 100, -4, 4);
   h_caloMet_SumEt = JetMetDir.make<TH1F>("h_caloMet_SumEt", "SumET from CaloTowers", 100, 0, 40);
+
+  h_l1_gtbit = L1GTDir.make<TH1F>("h_l1_gtbit", "L1 Global Trigger Bit", 128, -0.5, 127.5);
 
 
 }
