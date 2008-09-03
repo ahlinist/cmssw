@@ -384,4 +384,5 @@ process.schedule = cms.Schedule(process.p0,process.p1,process.p2,process.p3,proc
 
 process.g4SimHits.Generator.HepMCProductLabel = 'evtgenproducer'
 process.genParticleCandidates.src = 'evtgenproducer:'
+process.VtxSmeared.src = 'evtgenproducer:' 
 
