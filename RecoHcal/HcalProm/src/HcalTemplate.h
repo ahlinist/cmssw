@@ -16,7 +16,7 @@
 //
 // Original Author:  Efe Yazgan
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalTemplate.h,v 1.1 2008/04/30 20:57:31 fedor Exp $
+// $Id: HcalTemplate.h,v 1.2 2008/08/21 04:39:02 fedor Exp $
 //
 //
 
@@ -82,6 +82,8 @@ class HcalTemplate : public edm::EDAnalyzer {
   TH1F* h_caloMet_Met;
   TH1F* h_caloMet_Phi;
   TH1F* h_caloMet_SumEt;
+
+  TH1F* h_l1_gtbit;
 
   int TrigDT;
 };
