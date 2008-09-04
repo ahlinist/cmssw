@@ -228,6 +228,30 @@ void L1TRenderPlugin::preDrawTH1F ( TCanvas *c, const DQMNet::CoreObject &o )
     return;
   }
 
+  // rate histograms
+  if ( o.name.find("rate_algobit") != std::string::npos || 
+       o.name.find("rate_ttbit") != std::string::npos) {
+    gStyle->SetOptStat(11);
+    obj->GetXaxis()->SetTitle("Luminosity Segment Number");
+    obj->GetYaxis()->SetTitle("Rate (Hz)");
+    int nbins = obj->GetNbinsX();
+    int maxRange = nbins;
+    for ( int i = nbins; i > 0; --i ) {
+      if ( obj->GetBinContent(i) != 0 ) {
+	maxRange = i;
+	break;
+      }
+    }
+    int minRange = 0;
+    for ( int i = 0; i <= nbins; ++i ) {
+      if ( obj->GetBinContent(i) != 0 ) {
+	minRange = i;
+	break;
+      }
+    }
+
+    obj->GetXaxis()->SetRange(minRange, maxRange);
+  }
  //  if( o.name.find( "dttf_p_q_" )  != std::string::npos) {
     
 //     //dqm::utils::reportSummaryMapPalette(obj);
