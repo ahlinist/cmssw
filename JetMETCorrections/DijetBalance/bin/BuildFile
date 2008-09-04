@@ -1,0 +1,14 @@
+<use name=JetMETAnalysis/JetUtilities>
+<use name=root>
+
+<bin name=ReadDijetTree file=ReadDijetTree.cc>
+</bin>
+
+<bin name=CombineSamples file=CombineSamples.cc>
+</bin>
+
+<bin name=DijetBalanceFitter file=DijetBalanceFitter.cc>
+</bin>
+
+<bin name=L2CorrectionDB file=L2Correction.cc>
+</bin>
