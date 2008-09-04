@@ -7,24 +7,27 @@
 #include <vector>
 #include <map>
 #include "FWCore/Framework/interface/EDAnalyzer.h"
-
-class DijetBalanceTreeProducer : public edm::EDAnalyzer 
+namespace cms
 {
-  public:
-
-    explicit DijetBalanceTreeProducer(edm::ParameterSet const& cfg);
-    virtual void analyze(edm::Event const& e, edm::EventSetup const& iSetup);
-    virtual void endJob();
-    DijetBalanceTreeProducer();
-
-  private:
-    std::string histogramFile_;
-    std::string jets_;
-    bool isGenJets_; 
-    TFile* m_file_;
-    TTree* dijetTree_;
-    double barrelEtaCut_;
-    float dphi_,dphi_0_2pi_,ratioPtJet3_,ptBarrel_,ptProbe_,ptJet3_,etaProbe_,dijetPt_,balance_;
-};
-
+  template<class Jet>
+  class DijetBalanceTreeProducer : public edm::EDAnalyzer 
+  {
+    public:
+      typedef std::vector<Jet> JetCollection;
+      explicit DijetBalanceTreeProducer(edm::ParameterSet const& cfg);
+      virtual void analyze(edm::Event const& e, edm::EventSetup const& iSetup);
+      virtual void endJob();
+      void FindProbeJet(double eta1, double eta2, int &probe, int &barrel);
+      DijetBalanceTreeProducer();
+    private:
+      std::string histogramFile_;
+      std::string jets_;
+      TFile* m_file_;
+      TTree* dijetTree_;
+      double barrelEtaCut_;
+      double dijetPtCut_;
+      float dphi_,ptBarrel_,ptProbe_,ptJet3_,etaProbe_;
+  };
+}
+#include "../src/DijetBalanceTreeProducer.icc"
 #endif
