@@ -2,8 +2,8 @@
   \file SiPixelRenderPlugin
   \brief Display Plugin for Pixel DQM Histograms
   \author P.Merkel
-  \version $Revision: 1.4 $
-  \date $Date: 2008/08/18 10:59:26 $
+  \version $Revision: 1.5 $
+  \date $Date: 2008/08/22 11:52:02 $
 */
 
 #include "TProfile2D.h"
@@ -66,7 +66,7 @@ void SiPixelRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) 
   ya->SetLabelSize(0.04);
 
   if( o.name.find( "hitmap" ) != std::string::npos  ||
-      o.name.find( "occupancy" ) != std::string::npos) {
+      o.name.find( "Occupancy" ) != std::string::npos) {
     gStyle->SetPalette(1);
     obj->SetOption("colz");
     return;
