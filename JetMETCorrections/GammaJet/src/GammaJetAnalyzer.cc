@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.2 2008/05/28 18:22:13 delre Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.3 2008/06/02 12:08:19 delre Exp $
 //
 //
 
@@ -27,8 +27,9 @@
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 
-#include "Geometry/CaloGeometry/interface/CaloGeometry.h"
 #include "Geometry/Records/interface/IdealGeometryRecord.h"
+#include "Geometry/Records/interface/CaloGeometryRecord.h"
+#include "Geometry/CaloGeometry/interface/CaloGeometry.h"
 #include "Geometry/CaloGeometry/interface/CaloCellGeometry.h"
 #include "Geometry/CaloGeometry/interface/CaloSubdetectorGeometry.h"
 #include "Geometry/CaloTopology/interface/CaloSubdetectorTopology.h"
@@ -53,7 +54,7 @@
 #include "DataFormats/HcalDetId/interface/HcalDetId.h"
 #include "DataFormats/HcalRecHit/interface/HcalRecHitCollections.h"
 #include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
-#include "DataFormats/EgammaCandidates/interface/PixelMatchGsfElectron.h"
+#include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 #include "DataFormats/EgammaReco/interface/ClusterShape.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/EgammaReco/interface/BasicCluster.h"
@@ -181,7 +182,8 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
    // get geometry
    edm::ESHandle<CaloGeometry> geoHandle;
-   iSetup.get<IdealGeometryRecord>().get(geoHandle);
+   //   iSetup.get<IdealGeometryRecord>().get(geoHandle);
+   iSetup.get<CaloGeometryRecord>().get(geoHandle);
    const CaloGeometry* geometry = geoHandle.product();
    const CaloSubdetectorGeometry* geometry_p = geoHandle->getSubdetectorGeometry(DetId::Ecal, EcalBarrel);
 
@@ -191,10 +193,10 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    iSetup.get<CaloTopologyRecord>().get(topoHandle);
    topology_p = topoHandle->getSubdetectorTopology(DetId::Ecal, EcalBarrel);
 
-   edm::ESHandle<TrackerGeometry> trackerHandle_;
+   //   edm::ESHandle<TrackerGeometry> trackerHandle_;
    edm::ESHandle<MagneticField> theMagField;
    iSetup.get<IdealMagneticFieldRecord>().get(theMagField);
-   iSetup.get<TrackerDigiGeometryRecord>().get(trackerHandle_);
+   //   iSetup.get<TrackerDigiGeometryRecord>().get(trackerHandle_);
    const GsfPropagatorAdapter* geomPropFw_ = new GsfPropagatorAdapter(AnalyticalPropagator(theMagField.product(), alongMomentum));
    const TrajectoryStateTransform* theTransform_ = 0;
   
