@@ -2219,17 +2219,24 @@ void CSCRenderPlugin::postDraw( TCanvas *c, const DQMNet::CoreObject &o, const V
 
   c->cd();
 
-  if(REMATCH(".*EventInfo/reportSummaryMap$", o.name)) {
+  if(REMATCH(".*Summary/Physics_EMU$", o.name)) {
     TH2* tmp = dynamic_cast<TH2*>(obj);
     summaryMap.drawDetector(tmp); 
     return;
   }
 
-  if(REMATCH(".*Summary/Summary_ME[1234]$", o.name)) {
+  if(REMATCH(".*Summary/Physics_ME[1234]$", o.name)) {
     std::string station_str = o.name;
-    REREPLACE(".*Summary/Summary_ME([1234])$", station_str, "$1");
+    REREPLACE(".*Summary/Physics_ME([1234])$", station_str, "$1");
     TH2* obj2 = dynamic_cast<TH2*>(obj);
     summaryMap.drawStation(obj2, atoi(station_str.c_str())); 
+    return;
+  }
+
+  if(REMATCH(".*Summary/CSC_STATS_[a-zA-Z0-9_-]+$", o.name) || 
+     REMATCH(".*EventInfo/reportSummaryMap$", o.name)) {
+    TH2* obj2 = dynamic_cast<TH2*>(obj);
+    chamberMap.drawStats(obj2); 
     return;
   }
 
