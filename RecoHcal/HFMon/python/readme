@@ -12,5 +12,4 @@ crab -submit -c
 bjobs
 #to edit input 
 source hadd_many.csh beginning_file_number end_file_number /tmp/..../combined_output......root | csh
-chmod a+x plot_histo.sh
-./plot_histo.sh
+root -l histo.C

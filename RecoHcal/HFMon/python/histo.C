@@ -13,9 +13,19 @@ void histo(int runnumber){
   gStyle->SetOptStat(111111);
   gStyle->SetPalette(1);
   char output[1024];
-  sprintf(output,"/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/HFMon/Run%i",runnumber);  char hist[2048];
 
-  TFile *hfile1 = new TFile("/tmp/efe/combined_prompt_hf.root", "READ");
+  sprintf(output,"/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/HFMon/Run%i",runnumber);  
+  char hist[2048];
+
+
+
+  htmlOutput(runnumber);
+
+
+  break;
+
+
+  TFile *hfile1 = new TFile("/tmp/efe/HFprompt_out.root", "READ");
   demo->cd();
   HF->cd();
   TCanvas *c1 = new TCanvas("c1","");
@@ -126,4 +136,49 @@ void histo(int runnumber){
   TCanvas *c14 = new TCanvas("c14","");
   TCanvas *c15 = new TCanvas("c15","");
   */
+}
+
+void htmlOutput(int run){
+  cout << "Preparing HcalPrompt html output ..." << endl;
+  char tmp[1000];
+  sprintf(tmp, "HFMon Run%i", run);
+  cout <<tmp<<endl; 
+  char folderr[1000];
+  char touchr[1000];
+  char fhtml[1000];
+  sprintf(folderr,".! mkdir -p /afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/HFMon/Run%i",run);
+  gROOT->ProcessLine(folderr);
+  sprintf(touchr,".! touch /afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/HFMon/Run%i/index.html",run);
+  gROOT->ProcessLine(touchr);
+  sprintf(fhtml,"/afs/cern.ch/cms/CAF/CMSCOMM/COMM_HCAL/data/HFMon/Run%i/index.html",run);
+  std::ofstream htmlff;
+  htmlff.open(fhtml);
+  htmlff << "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">" <<endl;
+  htmlff << "<html>" <<endl;
+  htmlff << "<head>" <<endl;
+  htmlff << "<meta content=\"text/html; charset=ISO-8859-1\" "<<endl;
+  htmlff << "http-equiv=\"content-type\">  "<<endl;
+  htmlff << "</head>"<<endl;
+  htmlff << "<style type=\"text/css\"> td { font-weight: bold } </style>"<<endl;
+  htmlff << "<body>"<<endl;
+  htmlff << "<br>"<<endl;
+  htmlff << "<hr>"<<endl;
+  htmlff << "<h2><strong>RUN $RUNN &nbsp;&nbsp;&nbsp;</strong></h2>"<<endl;
+  htmlff << "<hr>"<<endl;
+  htmlff << "<tr align=\"left\">"<<endl;
+  htmlff << "<td>&nbsp;&nbsp;&nbsp;<a name=\"HF Monitor\"><h1>HF Monitor</h1></td></tr>"<<endl;
+  htmlff << "<tr align=\"left\">"<<endl;
+  htmlff << "<td><a href=\"Energy_Occ.gif\"><img src=\"Energy_Occ.gif\"></a></td>"<<endl;
+  htmlff << "<td><a href=\"Occ_L.gif\"><img src=\"Occ_L.gif\"></a></td>"<<endl;
+  htmlff << "<td><a href=\"Occ_S.gif\"><img src=\"Occ_S.gif\"></a></td>"<<endl;
+  htmlff << "<td><a href=\"HFCenterOfEnergy.gif\"><img src=\"HFCenterOfEnergy.gif\"></a></td>"<<endl;
+  htmlff << "<td><a href=\"Etsum_L.gif\"><img src=\"Etsum_L.gif\"></a></td>"<<endl;
+  htmlff << "<td><a href=\"Etsum_S.gif\"><img src=\"Etsum_S.gif\"></a></td>"<<endl;
+  htmlff << "<td><a href=\"Etsum_ratio.gif\"><img src=\"Etsum_ratio.gif\"></a></td>"<<endl;
+  htmlff << "<br>"<<endl;
+  htmlff << "</body>"<<endl;
+  htmlff << "</html>"<<endl;
+  htmlff << ""<<endl;
+  htmlff.close();
+  return;
 }
