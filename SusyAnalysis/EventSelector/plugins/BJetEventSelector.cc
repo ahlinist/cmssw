@@ -10,6 +10,9 @@ BJetEventSelector::BJetEventSelector (const edm::ParameterSet& pset) :
   SusyEventSelector(pset) {
   // input collection
   jetTag_ = pset.getParameter<edm::InputTag>("jetTag");
+  // jet et and eta cuts
+  minEt_ = pset.getParameter<double>("minEt");
+  maxEta_ = pset.getParameter<double>("maxEta");
   // name of tagger
   tagLabel_ = pset.getParameter<std::string>("tagLabel");
   // lower cuts on discriminator (defines also min. nr. of jets)
@@ -45,15 +48,18 @@ BJetEventSelector::select (const edm::Event& event) const
     return false;
   }
 
-  // Check number of jets (discriminators will have default value if too small)
-  setVariable(0,jetHandle->size());
-  if ( jetHandle->size()<minTag_.size() )  return false;
-
-  // Sort discriminator value
+  // Get discriminator values
   std::vector<float> discriminators;
   discriminators.reserve(jetHandle->size());
-  for ( unsigned int i=0; i<jetHandle->size(); ++i ) 
-    discriminators.push_back((*jetHandle)[i].bDiscriminator(tagLabel_));
+  for ( unsigned int i=0; i<jetHandle->size(); ++i ) {
+    const pat::Jet& jet = (*jetHandle)[i];
+    if ( jet.et()>minEt_ && fabs(jet.eta())<maxEta_ )
+      discriminators.push_back(jet.bDiscriminator(tagLabel_));
+  }
+
+  // Check number of jets (discriminators will have default value if too small)
+  setVariable(0,discriminators.size());
+  if ( discriminators.size()<minTag_.size() )  return false;
   std::sort(discriminators.begin(),discriminators.end(),std::greater<float>());
 
   // Check selection

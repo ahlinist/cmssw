@@ -5,7 +5,7 @@
 ///
 /// Original author: W. Adam, 10/4/08
 ///
-/// $Id: BJetEventSelector.h,v 1.3 2008/05/22 08:32:26 fronga Exp $
+/// $Id: BJetEventSelector.h,v 1.2 2008/05/23 15:48:21 fronga Exp $
 
 // system include files
 #include <memory>
@@ -27,6 +27,8 @@ public:
   virtual ~BJetEventSelector () {}
 private:
   edm::InputTag jetTag_;                ///< tag for input collection
+  double minEt_;                        ///< lower Et cut for jets
+  double maxEta_;                       ///< upper |eta| cut for jets
   std::string tagLabel_;                ///< b-tag label
   std::vector<double> minTag_;          ///< lower cuts on discriminator (defines also min. #jets)
 };
