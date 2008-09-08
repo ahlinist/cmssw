@@ -40,14 +40,20 @@ process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
     recoProducer = cms.string('ecalRecHit'),
     HistOutFile = cms.untracked.string('output.root'),
     MCTruthCollection = cms.untracked.InputTag("source"),
+    TriggerTag = cms.untracked.InputTag("TriggerResults::HLT"),
     genMet = cms.untracked.InputTag("genMet"),
     met = cms.untracked.InputTag("met"),
     tracks = cms.untracked.InputTag("generalTracks"),
     Photonsrc = cms.untracked.InputTag("photons"),
     recoCollection = cms.string('EcalRecHitsEB'),
-    jets = cms.untracked.InputTag("iterativeCone5CaloJets"),
+    jetsite = cms.untracked.InputTag("iterativeCone5CaloJets"),
+    jetssis = cms.untracked.InputTag("sisCone7CaloJets"),
+    jetskt = cms.untracked.InputTag("kt6CaloJets"),
+    jetsite = cms.untracked.InputTag("iterativeCone5PFJets"),
     hbhits = cms.untracked.InputTag("hbhereco"),
-    jetsgen = cms.untracked.InputTag("iterativeCone5GenJets")
+    jetsgenite = cms.untracked.InputTag("iterativeCone5GenJets")
+    jetsgensis = cms.untracked.InputTag("sisCone7GenJets")
+    jetsgenkt = cms.untracked.InputTag("kt6GenJets")
 )
 
 process.p = cms.Path(process.myanalysis)
