@@ -54,7 +54,7 @@ BJetEventSelector::select (const edm::Event& event) const
   discriminators.reserve(jetHandle->size());
   for ( unsigned int i=0; i<jetHandle->size(); ++i ) 
     discriminators.push_back((*jetHandle)[i].bDiscriminator(tagLabel_));
-  std::sort(discriminators.begin(),discriminators.end());
+  std::sort(discriminators.begin(),discriminators.end(),std::greater<float>());
 
   // Check selection
   bool result(true);
