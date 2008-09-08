@@ -51,8 +51,8 @@ process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
     jetskt = cms.untracked.InputTag("kt6CaloJets"),
     jetsite = cms.untracked.InputTag("iterativeCone5PFJets"),
     hbhits = cms.untracked.InputTag("hbhereco"),
-    jetsgenite = cms.untracked.InputTag("iterativeCone5GenJets")
-    jetsgensis = cms.untracked.InputTag("sisCone7GenJets")
+    jetsgenite = cms.untracked.InputTag("iterativeCone5GenJets"),
+    jetsgensis = cms.untracked.InputTag("sisCone7GenJets"),
     jetsgenkt = cms.untracked.InputTag("kt6GenJets")
 )
 
