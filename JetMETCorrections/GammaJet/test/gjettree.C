@@ -96,7 +96,7 @@ void gjettree::Loop(double cross, int algo, int NEVT)
     int ileadmcquark = -1;
     
     isphoton = issignal = -999;
-    weight = nniso = nniso_int =  ptph = ptj = etaph = etaj = phiph = phij = pt2jet = ptphottrue = ptjettrue = ptquarktrue = phiphottrue = phijettrue = phiquarktrue = -999.;
+    weight = nniso = nniso_int =  ptph = ptj = etaph = etaj = phiph = phij = pt2jet = ptphottrue = ptjettrue = ptquarktrue = phiphottrue = phijettrue = phiquarktrue  = etaphottrue = etajettrue = etaquarktrue = -999.;
 
     // FINDING THE LEADING RECONSTRUCTED PHOTON
     
@@ -119,6 +119,7 @@ void gjettree::Loop(double cross, int algo, int NEVT)
     // picking the selected jet algo
     if(algo == 1) {
       nJet = nJet_ite;
+      nJetGen = nJetGen_ite;
       for(int j=0; j<nJet_ite; j++){
 	pxJet [j]=pxJet_ite [j];
 	pyJet [j]=pyJet_ite [j];
@@ -126,9 +127,16 @@ void gjettree::Loop(double cross, int algo, int NEVT)
 	eJet  [j]=eJet_ite  [j];
 	etaJet[j]=etaJet_ite[j];
       	phiJet[j]=phiJet_ite[j];
-      }
+	pxJetGen [j]=pxJetGen_ite [j];
+	pyJetGen [j]=pyJetGen_ite [j];
+	pzJetGen [j]=pzJetGen_ite [j];
+	eJetGen  [j]=eJetGen_ite  [j];
+	etaJetGen[j]=etaJetGen_ite[j];
+      	phiJetGen[j]=phiJetGen_ite[j];
+       }
     }else if(algo == 2) {
       nJet = nJet_kt;
+      nJetGen = nJetGen_kt;
       for(int j=0; j<nJet_kt; j++){
 	pxJet [j]=pxJet_kt [j];
 	pyJet [j]=pyJet_kt [j];
@@ -136,9 +144,16 @@ void gjettree::Loop(double cross, int algo, int NEVT)
 	eJet  [j]=eJet_kt  [j];
 	etaJet[j]=etaJet_kt[j];
       	phiJet[j]=phiJet_kt[j];
+	pxJetGen [j]=pxJetGen_kt [j];
+	pyJetGen [j]=pyJetGen_kt [j];
+	pzJetGen [j]=pzJetGen_kt [j];
+	eJetGen  [j]=eJetGen_kt  [j];
+	etaJetGen[j]=etaJetGen_kt[j];
+      	phiJetGen[j]=phiJetGen_kt[j];
       }
     }else if(algo == 3) {
       nJet = nJet_sis;
+      nJetGen = nJetGen_sis;
       for(int j=0; j<nJet_sis; j++){
 	pxJet [j]=pxJet_sis [j];
 	pyJet [j]=pyJet_sis [j];
@@ -146,12 +161,39 @@ void gjettree::Loop(double cross, int algo, int NEVT)
 	eJet  [j]=eJet_sis  [j];
 	etaJet[j]=etaJet_sis[j];
       	phiJet[j]=phiJet_sis[j];
+	pxJetGen [j]=pxJetGen_sis [j];
+	pyJetGen [j]=pyJetGen_sis [j];
+	pzJetGen [j]=pzJetGen_sis [j];
+	eJetGen  [j]=eJetGen_sis  [j];
+	etaJetGen[j]=etaJetGen_sis[j];
+      	phiJetGen[j]=phiJetGen_sis[j];
+      }
+    }else if(algo == 4) {
+      nJet = nJet_pfite;
+      nJetGen = nJetGen_ite;
+      for(int j=0; j<nJet_pfite; j++){
+	pxJet [j]=pxJet_pfite [j];
+	pyJet [j]=pyJet_pfite [j];
+	pzJet [j]=pzJet_pfite [j];
+	eJet  [j]=eJet_pfite  [j];
+	etaJet[j]=etaJet_pfite[j];
+      	phiJet[j]=phiJet_pfite[j];
+	pxJetGen [j]=pxJetGen_ite [j];
+	pyJetGen [j]=pyJetGen_ite [j];
+	pzJetGen [j]=pzJetGen_ite [j];
+	eJetGen  [j]=eJetGen_ite  [j];
+	etaJetGen[j]=etaJetGen_ite[j];
+      	phiJetGen[j]=phiJetGen_ite[j];
       }
     }else cout << "NO SUCH JET ALGO!!!!" << endl;
            
     double mindeltaphi = 2*pi;
     int imindeltaphi = -1;
     int njetsoverthreshold = 0;
+    int njetite = 0;
+    int njetpfite = 0;
+    int njetitev[10] = {0,0,0,0,0,0,0,0,0,0};
+    int njetpfitev[10]= {0,0,0,0,0,0,0,0,0,0};
     
     for(int j=0; j<nJet; j++){
       
@@ -185,6 +227,48 @@ void gjettree::Loop(double cross, int algo, int NEVT)
       
     }
 
+    for(int j=0; j<nJet_ite; j++){
+       if(eJet_ite[j]/cosh(etaJet_ite[j])>10.)
+	 njetite++;
+       if(eJet_ite[j]/cosh(etaJet_ite[j])>450.)      njetitev[9]++;
+       if(eJet_ite[j]/cosh(etaJet_ite[j])>400.) njetitev[8]++;
+       if(eJet_ite[j]/cosh(etaJet_ite[j])>350.) njetitev[7]++;
+       if(eJet_ite[j]/cosh(etaJet_ite[j])>300.) njetitev[6]++;
+       if(eJet_ite[j]/cosh(etaJet_ite[j])>250.) njetitev[5]++;
+       if(eJet_ite[j]/cosh(etaJet_ite[j])>200.) njetitev[4]++;
+       if(eJet_ite[j]/cosh(etaJet_ite[j])>150.) njetitev[3]++;
+       if(eJet_ite[j]/cosh(etaJet_ite[j])>100.) njetitev[2]++;
+       if(eJet_ite[j]/cosh(etaJet_ite[j])>50.)  njetitev[1]++;
+       if(eJet_ite[j]/cosh(etaJet_ite[j])>10.)  njetitev[0]++;
+    }
+
+    for(int j=0; j<nJet_pfite; j++){
+       if(eJet_pfite[j]/cosh(etaJet_pfite[j])>10.)
+	 njetpfite++;
+       if(eJet_pfite[j]/cosh(etaJet_pfite[j])>450.)      njetpfitev[9]++;
+       if(eJet_pfite[j]/cosh(etaJet_pfite[j])>400.) njetpfitev[8]++;
+       if(eJet_pfite[j]/cosh(etaJet_pfite[j])>350.) njetpfitev[7]++;
+       if(eJet_pfite[j]/cosh(etaJet_pfite[j])>300.) njetpfitev[6]++;
+       if(eJet_pfite[j]/cosh(etaJet_pfite[j])>250.) njetpfitev[5]++;
+       if(eJet_pfite[j]/cosh(etaJet_pfite[j])>200.) njetpfitev[4]++;
+       if(eJet_pfite[j]/cosh(etaJet_pfite[j])>150.) njetpfitev[3]++;
+       if(eJet_pfite[j]/cosh(etaJet_pfite[j])>100.) njetpfitev[2]++;
+       if(eJet_pfite[j]/cosh(etaJet_pfite[j])>50.)  njetpfitev[1]++;
+       if(eJet_pfite[j]/cosh(etaJet_pfite[j])>10.)  njetpfitev[0]++;
+    }
+
+    jetmulti_ite->Fill(njetite);
+    jetmulti_pfite->Fill(njetpfite);
+    jetmultibkg_ite->Fill(njetite-1);
+    jetmultibkg_pfite->Fill(njetpfite-1);
+    
+    for(int y=0;y<10;y++) {
+      jetmultivspt_ite->Fill(25.+y*50,njetitev[y]);
+      jetmultivspt_pfite->Fill(25.+y*50,njetpfitev[y]);
+      jetmultivsptbkg_ite->Fill(25.+y*50,njetitev[y]-1);
+      jetmultivsptbkg_pfite->Fill(25.+y*50,njetpfitev[y]-1);      
+    }
+    
     // FINDING THE LEADING MC PHOTON AND RECOILING QUARK
     
     bool matched(0);
@@ -298,8 +382,18 @@ void gjettree::Loop(double cross, int algo, int NEVT)
     if(!etacut) continue;
     if(!ptcut) continue;    
         
+    bool cut_ntr = ntrkiso035Phot[imaxptphot]<3;
+    bool cut_ptiso =  ptiso035Phot[imaxptphot]/(ePhot[imaxptphot]/cosh(etaPhot[imaxptphot])) < 0.1;
+    bool cut_hove = hcalovecal04Phot[imaxptphot] < 0.05/0.95;
+    bool cut_ecaliso = (ecaliso04Phot[imaxptphot]-ePhot[imaxptphot])/(ePhot[imaxptphot]/cosh(etaPhot[imaxptphot])) <0.05;
+    bool cut_clus = sMajMajPhot[imaxptphot] < 0.3 && sMinMinPhot[imaxptphot] < 0.25;
+
+    isiso = cut_ntr && cut_ptiso && cut_hove && cut_ecaliso && cut_clus;
+    
     isphoton = matched;
     issignal = ptphotgen>25 && ileadmcphot>-.5;
+    hltphoton = HLTResults[27];
+    hltphotonrel = HLTResults[28];    
     weight = w;
     ptph = ptphot;
     etaph =  etaPhot[imaxptphot];
@@ -309,10 +403,10 @@ void gjettree::Loop(double cross, int algo, int NEVT)
     phij = phiJet[imindeltaphi];
     pt2jet = pt2ndjet;
     ptjettrue = ptjetgen;
-    //    etajettrue = etaJetGen[imindeltaphigen];
+    etajettrue = etaJetGen[imindeltaphigen];
     phijettrue = phiJetGen[imindeltaphigen];
     ptquarktrue = ptjetgenquark;
-    //    etaquarktrue = etaMC[ileadmcquark];
+    etaquarktrue = etaMC[ileadmcquark];
     phiquarktrue = phiMC[ileadmcquark];
     ana_tree->Fill();
 
@@ -347,6 +441,9 @@ void gjettree::BookHistos()
 
    ana_tree->Branch("isphoton",&isphoton,"isphoton/I");
    ana_tree->Branch("issignal",&issignal,"issignal/I");
+   ana_tree->Branch("isiso",&isiso,"isiso/I");
+   ana_tree->Branch("hltphoton",&hltphoton,"hltphoton/I");
+   ana_tree->Branch("hltphotonrel",&hltphotonrel,"hltphotonrel/I");
    ana_tree->Branch("weight",&weight,"weight/F");
    ana_tree->Branch("nniso",&nniso,"nniso/F");
    ana_tree->Branch("nniso_int",&nniso_int,"nniso_int/F");
@@ -363,6 +460,9 @@ void gjettree::BookHistos()
    ana_tree->Branch("phiphottrue",&phiphottrue,"phiphottrue/F");
    ana_tree->Branch("phijettrue",&phijettrue,"phijettrue/F");
    ana_tree->Branch("phiquarktrue",&phiquarktrue,"phiquarktrue/F");
+   ana_tree->Branch("etaphottrue",&etaphottrue,"etaphottrue/F");
+   ana_tree->Branch("etajettrue",&etajettrue,"etajettrue/F");
+   ana_tree->Branch("etaquarktrue",&etaquarktrue,"etaquarktrue/F");
 
    double pi = 3.14159;
    allptphot = new TH1D("allptphot","allptphot",100,0.,700.); 
@@ -371,6 +471,14 @@ void gjettree::BookHistos()
    alldeltar = new TH1D("alldeltar","alldeltar",200,0.,1.);
    alldeltae = new TH1D("alldeltae","alldeltar",200,-.1,0.1);
    alldeltardeltae = new TH2D("alldeltardeltae","alldeltardeltae",200,0.,1.,200,-.1,0.1);
+   jetmulti_ite = new TH1D("jetmulti_ite","jetmulti_ite",20,0.,20.);
+   jetmulti_pfite = new TH1D("jetmulti_pfite","jetmulti_pfite",20,0.,20.);
+   jetmultibkg_ite = new TH1D("jetmultibkg_ite","jetmultibkg_ite",20,0.,20.);
+   jetmultibkg_pfite = new TH1D("jetmultibkg_pfite","jetmultibkg_pfite",20,0.,20.);
+   jetmultivspt_ite = new TH2D("jetmultivspt_ite","jetmultivspt_ite",10,0.,500,20,0.,20.);
+   jetmultivspt_pfite = new TH2D("jetmultivspt_pfite","jetmultivspt_pfite",10,0.,500,20,0.,20.);
+   jetmultivsptbkg_ite = new TH2D("jetmultivsptbkg_ite","jetmultivsptbkg_ite",10,0.,500,20,0.,20.);
+   jetmultivsptbkg_pfite = new TH2D("jetmultivsptbkg_pfite","jetmultivsptbkg_pfite",10,0.,500,20,0.,20.);
 
 }
 

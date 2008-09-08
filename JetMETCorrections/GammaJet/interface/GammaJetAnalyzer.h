@@ -2,6 +2,7 @@
 #include <memory>
 #include <iostream>
 #include <string>
+#include <vector>
 
 // user include files
 #include "FWCore/ParameterSet/interface/InputTag.h"
@@ -13,6 +14,8 @@
 #include "TH1.h"
 #include "TFile.h"
 #include "TTree.h"
+
+#define MAXHLTBITS    200
 
 using namespace edm;
 using namespace std;
@@ -34,10 +37,12 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
 
       // ----------member data ---------------------------
       edm::InputTag MCTruthCollection_; 
+      edm::InputTag triggerTag_;
       edm::InputTag Photonsrc_; 
       edm::InputTag Jetsrcite_; 
       edm::InputTag Jetsrckt_; 
       edm::InputTag Jetsrcsis_; 
+      edm::InputTag Pfjetsrc_; 
       edm::InputTag JetGensrcite_; 
       edm::InputTag JetGensrckt_; 
       edm::InputTag JetGensrcsis_; 
@@ -140,6 +145,14 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
       Float_t etaJet_sis[100];
       Float_t phiJet_sis[100];
 
+      Int_t nJet_pfite;
+      Float_t pxJet_pfite[100];
+      Float_t pyJet_pfite[100];
+      Float_t pzJet_pfite[100];
+      Float_t eJet_pfite[100];
+      Float_t etaJet_pfite[100];
+      Float_t phiJet_pfite[100];
+
       Int_t nJetGen_ite;
       Float_t pxJetGen_ite[100];
       Float_t pyJetGen_ite[100];
@@ -178,6 +191,9 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
       Float_t phiMetGen;
       Float_t etaMetGen;
 
-   
+      char     aHLTNames[6000];
+      Int_t    hltNamesLen;
+      Int_t    hltCount;
+      bool     aHLTResults[MAXHLTBITS];
 };
 
