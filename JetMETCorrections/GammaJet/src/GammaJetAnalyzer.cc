@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.3 2008/06/02 12:08:19 delre Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.4 2008/09/07 17:07:55 delre Exp $
 //
 //
 
@@ -47,6 +47,7 @@
 #include "DataFormats/VertexReco/interface/Vertex.h"
 //#include "DataFormats/JetReco/interface/CalogJetCollection.h"
 #include "DataFormats/JetReco/interface/CaloJet.h"
+#include "DataFormats/JetReco/interface/PFJet.h"
 #include "DataFormats/JetReco/interface/GenJet.h"
 #include "DataFormats/METReco/interface/CaloMETCollection.h"
 #include "DataFormats/METReco/interface/GenMET.h"
@@ -77,6 +78,12 @@
 #include "TrackingTools/PatternTools/interface/TransverseImpactPointExtrapolator.h"
 #include "TrackingTools/GsfTools/interface/GsfPropagatorAdapter.h"
 
+// HLT trigger
+#include "FWCore/Framework/interface/TriggerNamesService.h"
+#include <FWCore/Framework/interface/TriggerNames.h>
+#include <DataFormats/Common/interface/TriggerResults.h>
+#define MAXHLTBITS    200
+
 #include "RecoEgamma/EgammaTools/interface/ECALPositionCalculator.h"
 
 using namespace reco;
@@ -84,11 +91,13 @@ using namespace reco;
 GammaJetAnalyzer::GammaJetAnalyzer(const edm::ParameterSet& iConfig)
 {
   MCTruthCollection_ = iConfig.getUntrackedParameter<edm::InputTag>("MCTruthCollection");
+  triggerTag_ = iConfig.getUntrackedParameter<edm::InputTag>("TriggerTag");
   trackTags_ = iConfig.getUntrackedParameter<edm::InputTag>("tracks");
   Photonsrc_ = iConfig.getUntrackedParameter<edm::InputTag>( "Photonsrc" );
   Jetsrcite_ = iConfig.getUntrackedParameter<edm::InputTag>( "jetsite" );
   Jetsrckt_ = iConfig.getUntrackedParameter<edm::InputTag>( "jetskt" );
   Jetsrcsis_ = iConfig.getUntrackedParameter<edm::InputTag>( "jetssis" );
+  Pfjetsrc_ = iConfig.getUntrackedParameter<edm::InputTag>( "pfjets" );
   JetGensrcite_ = iConfig.getUntrackedParameter<edm::InputTag>( "jetsgenite" );
   JetGensrckt_ = iConfig.getUntrackedParameter<edm::InputTag>( "jetsgenkt" );
   JetGensrcsis_ = iConfig.getUntrackedParameter<edm::InputTag>( "jetsgensis" );
@@ -126,7 +135,7 @@ GammaJetAnalyzer::~GammaJetAnalyzer()
 void
 GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-   nMC = nPhot = nJet_ite = nJet_kt = nJet_sis = nJetGen_ite = nJetGen_kt = nJetGen_sis = 0;
+   nMC = nPhot = nJet_ite = nJet_kt = nJet_sis = nJet_pfite = nJetGen_ite = nJetGen_kt = nJetGen_sis = 0;
 
    using reco::TrackCollection;
   
@@ -151,6 +160,10 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    iEvent.getByLabel(Jetsrckt_, jetskt);
    Handle<CaloJetCollection> jetssis;
    iEvent.getByLabel(Jetsrcsis_, jetssis);
+
+   // get PF jets collection
+   Handle<PFJetCollection> pfjetsite;
+   iEvent.getByLabel(Pfjetsrc_, pfjetsite);   
 
    // get gen jet collection
    Handle<GenJetCollection> jetsgenite;
@@ -201,6 +214,46 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    const TrajectoryStateTransform* theTransform_ = 0;
   
    ClusterShapeAlgo algo;
+
+//---------------------------HLT Trigger ---------------------------------------------------------------------------------------------
+// You Can See HLT Name list ->  " JetMETCorrections/GammaJet/test/HLTList.txt " file 
+
+   for(unsigned int iHLT=0; iHLT<MAXHLTBITS; ++iHLT) 
+   {
+   	aHLTResults[iHLT] = false;
+   }
+   
+   strcpy(aHLTNames,"");
+   hltNamesLen = 0;
+
+   edm::Handle<edm::TriggerResults> hltTriggerResultHandle;
+   iEvent.getByLabel(triggerTag_, hltTriggerResultHandle);
+
+   if(!hltTriggerResultHandle.isValid()) 
+   {
+   	std::cout << "invalid handle for HLT TriggerResults" << std::endl;
+   } 
+   else 
+   {
+   	edm::TriggerNames HLTNames;
+   	HLTNames.init(*hltTriggerResultHandle);
+   
+   	std::string tempnames;  
+   	hltCount = hltTriggerResultHandle->size();
+   	//std::cout << "hltTriggerResult->size(): " << hltCount << std::endl;
+
+   	for(int i = 0 ; i < hltCount ; i++) 
+   	{
+   		tempnames += HLTNames.triggerName(i) + ":";
+   		aHLTResults[i] = hltTriggerResultHandle->accept(i);
+   		//cout << i <<"....." << HLTNames.triggerName(i).c_str() << ".... : " << hltTriggerResultHandle->accept(i) << endl;
+   	}
+
+   	hltNamesLen = tempnames.length();
+   	strcpy(aHLTNames,tempnames.c_str());
+
+   }
+//--------------------------------------------------------------------------------------------------------------------------------------
 
    // Loop over MC truth
    
@@ -438,8 +491,8 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    // Loop over reco Jets
 
    for ( CaloJetCollection::const_iterator it = jetsite->begin(); 
-	it != jetsite->end(); it++ ) {
-
+	 it != jetsite->end(); it++ ) {
+     
      if(nJet_ite>=100) {cout << "number of reco jets ite is larger than 100. Skipping" << endl; continue;}
      pxJet_ite[nJet_ite] = it->px();	 
      pyJet_ite[nJet_ite] = it->py();	 
@@ -451,9 +504,9 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      nJet_ite++;
    }
    
-    for ( CaloJetCollection::const_iterator it = jetskt->begin(); 
-	it != jetskt->end(); it++ ) {
-
+   for ( CaloJetCollection::const_iterator it = jetskt->begin(); 
+	 it != jetskt->end(); it++ ) {
+     
      if(nJet_kt>=100) {cout << "number of reco jets kt is larger than 100. Skipping" << endl; continue;}
      pxJet_kt[nJet_kt] = it->px();	 
      pyJet_kt[nJet_kt] = it->py();	 
@@ -465,9 +518,9 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      nJet_kt++;
    }
    
-    for ( CaloJetCollection::const_iterator it = jetssis->begin(); 
-	it != jetssis->end(); it++ ) {
-
+   for ( CaloJetCollection::const_iterator it = jetssis->begin(); 
+	 it != jetssis->end(); it++ ) {
+     
      if(nJet_sis>=100) {cout << "number of reco jets sis is larger than 100. Skipping" << endl; continue;}
      pxJet_sis[nJet_sis] = it->px();	 
      pyJet_sis[nJet_sis] = it->py();	 
@@ -477,6 +530,20 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      phiJet_sis[nJet_sis] = it->phi();	      
      
      nJet_sis++;
+   }
+   
+   for ( PFJetCollection::const_iterator it = pfjetsite->begin(); 
+	 it != pfjetsite->end(); it++ ) {
+     
+     if(nJet_pfite>=100) {cout << "number of reco jets pfite is larger than 100. Skipping" << endl; continue;}
+     pxJet_pfite[nJet_pfite] = it->px();	 
+     pyJet_pfite[nJet_pfite] = it->py();	 
+     pzJet_pfite[nJet_pfite] = it->pz();	 
+     eJet_pfite[nJet_pfite] = it->energy();	 
+     etaJet_pfite[nJet_pfite] = it->eta();	 
+     phiJet_pfite[nJet_pfite] = it->phi();	      
+     
+     nJet_pfite++;
    }
    
    // Loop over gen Jets
@@ -634,6 +701,14 @@ GammaJetAnalyzer::beginJob(const edm::EventSetup&)
   m_tree->Branch("etaJet_sis",&etaJet_sis,"etaJet_sis[nJet_sis]/F");
   m_tree->Branch("phiJet_sis",&phiJet_sis,"phiJet_sis[nJet_sis]/F");
 
+  m_tree->Branch("nJet_pfite",&nJet_pfite,"nJet_pfite/I");
+  m_tree->Branch("pxJet_pfite ",&pxJet_pfite ,"pxJet_pfite[nJet_pfite]/F");
+  m_tree->Branch("pyJet_pfite ",&pyJet_pfite ,"pyJet_pfite[nJet_pfite]/F");
+  m_tree->Branch("pzJet_pfite ",&pzJet_pfite ,"pzJet_pfite[nJet_pfite]/F");
+  m_tree->Branch("eJet_pfite  ",&eJet_pfite  ,"eJet_pfite[nJet_pfite]/F");
+  m_tree->Branch("etaJet_pfite",&etaJet_pfite,"etaJet_pfite[nJet_pfite]/F");
+  m_tree->Branch("phiJet_pfite",&phiJet_pfite,"phiJet_pfite[nJet_pfite]/F");
+  
   m_tree->Branch("nJetGen_ite",&nJetGen_ite,"nJetGen_ite/I");
   m_tree->Branch("pxJetGen_ite ",&pxJetGen_ite ,"pxJetGen_ite[nJetGen_ite]/F");
   m_tree->Branch("pyJetGen_ite ",&pyJetGen_ite ,"pyJetGen_ite[nJetGen_ite]/F");
@@ -671,6 +746,11 @@ GammaJetAnalyzer::beginJob(const edm::EventSetup&)
   m_tree->Branch("eMetGen  ",&eMetGen  ,"eMetGen/F");
   m_tree->Branch("etaMetGen",&etaMetGen,"etaMetGen/F");
   m_tree->Branch("phiMetGen",&phiMetGen,"phiMetGen/F");
+
+  m_tree->Branch("hltCount",&hltCount,"hltCount/I");
+  m_tree->Branch("hltNamesLen",&hltNamesLen,"hltNamesLen/I");
+  m_tree->Branch("HLTNames",&aHLTNames,"HLTNames[hltNamesLen]/C,6000");
+  m_tree->Branch("HLTResults",&aHLTResults,"HLTResults[hltCount]/O");
 
   event = 0;  
 }

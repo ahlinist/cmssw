@@ -102,6 +102,13 @@ public :
    Float_t         eJet_sis  [100];   //[nJet]
    Float_t         etaJet_sis[100];   //[nJet]
    Float_t         phiJet_sis[100];   //[nJet]
+   Int_t           nJet_pfite;
+   Float_t         pxJet_pfite [100];   //[nJet]
+   Float_t         pyJet_pfite [100];   //[nJet]
+   Float_t         pzJet_pfite [100];   //[nJet]
+   Float_t         eJet_pfite  [100];   //[nJet]
+   Float_t         etaJet_pfite[100];   //[nJet]
+   Float_t         phiJet_pfite[100];   //[nJet]
    Int_t           nJetGen;
    Float_t         pxJetGen [100];   //[nJetGen]
    Float_t         pyJetGen [100];   //[nJetGen]
@@ -142,6 +149,10 @@ public :
    Float_t         eMetGen  ;
    Float_t         etaMetGen;
    Float_t         phiMetGen;
+   Int_t           hltCount;
+   Int_t           hltNamesLen;
+   Char_t          HLTNames[3168];   //[hltNamesLen]
+   Bool_t          HLTResults[191];   //[hltCount]
 
    // List of branches
    TBranch        *b_event;   //!
@@ -192,7 +203,7 @@ public :
    TBranch        *b_ecaliso035Phot;   //!
    TBranch        *b_ecaliso04Phot;   //!
    TBranch        *b_ecaliso05Phot;   //!
-    TBranch        *b_LATPhot;   //!
+   TBranch        *b_LATPhot;   //!
    TBranch        *b_sMajMajPhot;   //!
    TBranch        *b_sMinMinPhot;   //!
    TBranch        *b_FisherPhot;   //!
@@ -238,6 +249,13 @@ public :
    TBranch        *b_eJetGen_sis  ;   //!
    TBranch        *b_etaJetGen_sis;   //!
    TBranch        *b_phiJetGen_sis;   //!
+   TBranch        *b_nJet_pfite;   //!
+   TBranch        *b_pxJet_pfite ;   //!
+   TBranch        *b_pyJet_pfite ;   //!
+   TBranch        *b_pzJet_pfite ;   //!
+   TBranch        *b_eJet_pfite  ;   //!
+   TBranch        *b_etaJet_pfite;   //!
+   TBranch        *b_phiJet_pfite;   //!
    TBranch        *b_pxMet;   //!
    TBranch        *b_pyMet;   //!
    TBranch        *b_pzMet;   //!
@@ -250,6 +268,10 @@ public :
    TBranch        *b_eMetGen;   //!
    TBranch        *b_etaMetGen;   //!
    TBranch        *b_phiMetGen;   //!
+   TBranch        *b_hltCount;   //!
+   TBranch        *b_hltNamesLen;   //!
+   TBranch        *b_HLTNames;   //!
+   TBranch        *b_HLTResults;   //!
 
    TH1D*    allptphot;;
    TH1D*    allptjet;
@@ -257,6 +279,14 @@ public :
    TH1D*    alldeltar;
    TH1D*    alldeltae;
    TH2D*    alldeltardeltae;
+   TH1D*    jetmulti_ite;
+   TH1D*    jetmulti_pfite;
+   TH1D*    jetmultibkg_ite;
+   TH1D*    jetmultibkg_pfite;
+   TH2D*    jetmultivspt_ite;
+   TH2D*    jetmultivspt_pfite;
+   TH2D*    jetmultivsptbkg_ite;
+   TH2D*    jetmultivsptbkg_pfite;
 
    Int_t ntrkisos;
    Float_t pts;
@@ -277,6 +307,9 @@ public :
 
    Int_t isphoton;
    Int_t issignal;
+   Int_t isiso;
+   Int_t hltphoton;
+   Int_t hltphotonrel;
    Float_t weight;
    Float_t nniso;
    Float_t nniso_int;
@@ -293,7 +326,9 @@ public :
    Float_t phiphottrue;
    Float_t phijettrue;
    Float_t phiquarktrue;
-
+   Float_t etaphottrue;
+   Float_t etajettrue;
+   Float_t etaquarktrue;
 
    TFile* hOutputFile ;
    TTree * S_tree ;
@@ -476,6 +511,13 @@ void gjettree::Init(TTree *tree)
    fChain->SetBranchAddress("eJetGen_sis  ", eJetGen_sis  , &b_eJetGen_sis  );
    fChain->SetBranchAddress("etaJetGen_sis", etaJetGen_sis, &b_etaJetGen_sis);
    fChain->SetBranchAddress("phiJetGen_sis", phiJetGen_sis, &b_phiJetGen_sis);
+   fChain->SetBranchAddress("nJet_pfite", &nJet_pfite, &b_nJet_pfite);
+   fChain->SetBranchAddress("pxJet_pfite ", pxJet_pfite , &b_pxJet_pfite );
+   fChain->SetBranchAddress("pyJet_pfite ", pyJet_pfite , &b_pyJet_pfite );
+   fChain->SetBranchAddress("pzJet_pfite ", pzJet_pfite , &b_pzJet_pfite );
+   fChain->SetBranchAddress("eJet_pfite  ", eJet_pfite  , &b_eJet_pfite  );
+   fChain->SetBranchAddress("etaJet_pfite", etaJet_pfite, &b_etaJet_pfite);
+   fChain->SetBranchAddress("phiJet_pfite", phiJet_pfite, &b_phiJet_pfite);
    fChain->SetBranchAddress("pxMet ", &pxMet , &b_pxMet);
    fChain->SetBranchAddress("pyMet ", &pyMet , &b_pyMet);
    fChain->SetBranchAddress("pzMet ", &pzMet , &b_pzMet);
@@ -488,6 +530,10 @@ void gjettree::Init(TTree *tree)
    fChain->SetBranchAddress("eMetGen  ", &eMetGen  , &b_eMetGen);
    fChain->SetBranchAddress("etaMetGen", &etaMetGen, &b_etaMetGen);
    fChain->SetBranchAddress("phiMetGen", &phiMetGen, &b_phiMetGen);
+   fChain->SetBranchAddress("hltCount", &hltCount, &b_hltCount);
+   fChain->SetBranchAddress("hltNamesLen", &hltNamesLen, &b_hltNamesLen);
+   fChain->SetBranchAddress("HLTNames", HLTNames, &b_HLTNames);
+   fChain->SetBranchAddress("HLTResults", HLTResults, &b_HLTResults);
    Notify();
 
    npb = 1000;
