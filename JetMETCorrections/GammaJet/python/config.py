@@ -24,7 +24,8 @@ process.load("Geometry.CaloEventSetup.CaloTopology_cfi")
 process.SimpleMemoryCheck = cms.Service("SimpleMemoryCheck")
 
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('rfio:/castor/cern.ch/cms/store/relval/CMSSW_2_1_5/RelValQCD_Pt_80_120/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/IDEAL_V9_v1/0006/203B0D51-4B76-DD11-907B-001D09F253D4.root')
+    fileNames = cms.untracked.vstring('file:/tmp/203B0D51-4B76-DD11-907B-001D09F253D4.root')
+#    fileNames = cms.untracked.vstring('rfio:/castor/cern.ch/cms/store/relval/CMSSW_2_1_5/RelValQCD_Pt_80_120/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/IDEAL_V9_v1/0006/203B0D51-4B76-DD11-907B-001D09F253D4.root')
 )
 
 process.maxEvents = cms.untracked.PSet(
@@ -49,10 +50,7 @@ process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
     jetsite = cms.untracked.InputTag("iterativeCone5CaloJets"),
     jetssis = cms.untracked.InputTag("sisCone7CaloJets"),
     jetskt = cms.untracked.InputTag("kt6CaloJets"),
-    jetsite = cms.untracked.InputTag("iterativeCone5CaloJets"),
-    jetssis = cms.untracked.InputTag("sisCone7CaloJets"),
-    jetskt = cms.untracked.InputTag("kt6CaloJets"),
-    jetsite = cms.untracked.InputTag("iterativeCone5PFJets"),
+    pfjets = cms.untracked.InputTag("iterativeCone5PFJets"),
     hbhits = cms.untracked.InputTag("hbhereco"),
     jetsgenite = cms.untracked.InputTag("iterativeCone5GenJets"),
     jetsgensis = cms.untracked.InputTag("sisCone7GenJets"),
