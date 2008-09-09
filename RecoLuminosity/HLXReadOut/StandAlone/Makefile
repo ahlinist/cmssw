@@ -31,7 +31,7 @@ UserDynamicLinkFlags =
 UserStaticLinkFlags =
 UserExecutableLinkFlags =
 Libraries = LumiCalc LumiDB CoreUtils HLXCoreLibs pthread dip dl occi clntsh \
-	nnz10 Core Cint Hist Matrix Gpad Graf Tree 
+	nnz10 Core Cint Hist Matrix Gpad Graf Tree MathCore RIO Net Thread
 
 #	Hist MathCore Matrix Core Cint Gpad Graf
 DynamicLibrary = 
