@@ -1,11 +1,11 @@
-#ifndef L1TDEMON_H
-#define L1TDEMON_H
+#ifndef L1TdeGCT_H
+#define L1TdeGCT_H
 
-/*\class L1TDEMON
- *\description L1 trigger data|emulation comparison DQM interface 
-               produces DQM monitorable elements
- *\author Nuno Leonardo (CERN)
- *\date 07.07
+/*\class L1TdeGCT
+ *\description GCT data|emulation comparison DQM interface 
+               produces expert level DQM monitorable elements
+ *\authors N.Leonardo, A.Tapper, J.Brooke, J.Marrouche 
+ *\date 08.09
  */
 
 // system, common includes
@@ -24,13 +24,12 @@
 // l1 dataformats, d|e record includes
 #include "L1Trigger/HardwareValidation/interface/DEtrait.h"
 
-
-class L1TDEMON : public edm::EDAnalyzer {
+class L1TdeGCT : public edm::EDAnalyzer {
 
  public:
 
-  explicit L1TDEMON(const edm::ParameterSet&);
-  ~L1TDEMON();
+  explicit L1TdeGCT(const edm::ParameterSet&);
+  ~L1TdeGCT();
 
  protected:
 
@@ -51,44 +50,40 @@ class L1TDEMON : public edm::EDAnalyzer {
   // root output file name
   std::string histFile_;
 
-  // dqm histogram folder
+ // dqm histogram folder
   std::string histFolder_;
 
   // dqm common
   DQMStore* dbe;
   bool monitorDaemon_;
  
-  // counters
-  int nEvt_;
-  int deSysCount[dedefs::DEnsys];
-  int nEvtWithSys[dedefs::DEnsys];
-  
-  /// monitoring elements
+  // (em) iso, no-iso, (jets) cen, for, tau
+  static const int nGctColl_ = dedefs::GCTtaujets-dedefs::GCTisolaem+1; 
 
-  // global
+  // counters
+  int colCount[nGctColl_];
+  int nWithCol[nGctColl_];
+
+  // MEs
   MonitorElement* sysrates;
   MonitorElement* sysncand[2];
-  MonitorElement* errordist;
-  MonitorElement* errortype[dedefs::DEnsys];
-
-  // localization
-  MonitorElement* etaphi[dedefs::DEnsys];
-  MonitorElement* eta[dedefs::DEnsys];
-  MonitorElement* phi[dedefs::DEnsys];
-  MonitorElement* x3 [dedefs::DEnsys];
-  MonitorElement* etaData[dedefs::DEnsys];
-  MonitorElement* phiData[dedefs::DEnsys];
-  MonitorElement*  x3Data[dedefs::DEnsys];
-  MonitorElement* rnkData[dedefs::DEnsys];
+  MonitorElement* errortype[nGctColl_];
+  // location
+  MonitorElement* etaphi [nGctColl_];
+  MonitorElement* eta    [nGctColl_];
+  MonitorElement* phi    [nGctColl_];
+  MonitorElement* etaData[nGctColl_];
+  MonitorElement* phiData[nGctColl_];
+  MonitorElement* rnkData[nGctColl_];
 
   // trigger data word
-  MonitorElement* dword [dedefs::DEnsys];
-  MonitorElement* eword [dedefs::DEnsys];
-  MonitorElement* deword[dedefs::DEnsys];
-  MonitorElement* masked[dedefs::DEnsys];
+  MonitorElement* dword [nGctColl_];
+  MonitorElement* eword [nGctColl_];
+  MonitorElement* deword[nGctColl_];
+  MonitorElement* masked[nGctColl_];
 
-  // subsytem correlations
-  MonitorElement* CORR[dedefs::DEnsys][dedefs::DEnsys][3];
+ public:
+
 };
 
 #endif
