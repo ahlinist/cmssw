@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.102 2008/08/18 17:44:00 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.103 2008/09/06 12:01:57 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.102 $
-  \date $Date: 2008/08/18 17:44:00 $
+  \version $Revision: 1.103 $
+  \date $Date: 2008/09/06 12:01:57 $
 */
 
 #include "TH1F.h"
@@ -770,6 +770,8 @@ void EERenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
       } else if( name.find( "EECLT" ) != std::string::npos ) {
         l.DrawLine(3.0*(Numbers::ixSectorsEE[i]-50), 3.0*(Numbers::iySectorsEE[i]-50), 3.0*(Numbers::ixSectorsEE[i+1]-50), 3.0*(Numbers::iySectorsEE[i+1]-50));
       } else if( name.find( "EETTT Et map" ) != std::string::npos ) {
+        return;
+      } else if( name.find( "EETMT timing vs amplitude" ) != std::string::npos ) {
         return;
       } else if( name.find( " PN " ) == std::string::npos ) {
         l.DrawLine(Numbers::ixSectorsEE[i], Numbers::iySectorsEE[i], Numbers::ixSectorsEE[i+1], Numbers::iySectorsEE[i+1]);
