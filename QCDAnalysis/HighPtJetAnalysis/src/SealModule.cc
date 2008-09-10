@@ -4,15 +4,16 @@
 #include "QCDAnalysis/HighPtJetAnalysis/interface/DijetTreeProducer.h"
 #include "QCDAnalysis/HighPtJetAnalysis/interface/InclusiveJetAnalyzer.h"
 #include "QCDAnalysis/HighPtJetAnalysis/interface/SimpleInclusiveJetAnalyzer.h"
+#include "QCDAnalysis/HighPtJetAnalysis/interface/DijetAnalyzer.h"
 #include "QCDAnalysis/HighPtJetAnalysis/interface/METFilter.h"
 #include "DataFormats/JetReco/interface/CaloJet.h"
-#include "DataFormats/JetReco/interface/GenJet.h"
 #include "DataFormats/METReco/interface/CaloMET.h"
 #include "DataFormats/METReco/interface/GenMET.h"
 using namespace reco;
 
 DEFINE_SEAL_MODULE();
 DEFINE_ANOTHER_FWK_MODULE(InclusiveJetAnalyzer);
+DEFINE_ANOTHER_FWK_MODULE(DijetAnalyzer);
 
 typedef SimpleInclusiveJetAnalyzer<CaloJet> SimpleInclusiveCaloJetAnalyzer;
 DEFINE_ANOTHER_FWK_MODULE(SimpleInclusiveCaloJetAnalyzer);
