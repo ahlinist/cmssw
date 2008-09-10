@@ -8,6 +8,8 @@
 #include <map>
 using namespace std;
 
+namespace
+{
 void fillHist(const TString& histName,map<TString, TH1*> HistNames, const double& x);
 void fillHist(const TString& histName,map<TString, TH2*> HistNames, const double& x, const double& y);
 void BinNormalization(TH1F *h);
@@ -57,5 +59,6 @@ int getBin(double x, std::vector<double> boundaries)
        return i;
    }
   return 0; 
+}
 }
 #endif
