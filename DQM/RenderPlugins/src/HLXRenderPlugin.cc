@@ -8,7 +8,7 @@
 //
 // Original Author:  
 //         Created:  Sat Apr 19 20:02:57 CEST 2008
-// $Id: HLXRenderPlugin.cc,v 1.9 2008/08/22 11:52:02 lat Exp $
+// $Id: HLXRenderPlugin.cc,v 1.10 2008/09/12 01:26:52 neadam Exp $
 //
 
 // system include files
@@ -167,9 +167,9 @@ void HLXRenderPlugin::preDrawTProfile( TCanvas *c, const DQMNet::CoreObject &o )
 	    break;
 	 }
       }
-      if( firstEmptyBin < 10 ) firstEmptyBin = 10;
+      if( firstEmptyBin < 2 ) firstEmptyBin = 2;
       // Now set the new range
-      obj->GetXaxis()->SetRange(0,firstEmptyBin+1);
+      obj->GetXaxis()->SetRange(0,firstEmptyBin-1);
   }
 
    return;
@@ -211,24 +211,47 @@ void HLXRenderPlugin::preDrawTH1F( TCanvas *c, const DQMNet::CoreObject &o )
 
 void HLXRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o )
 {
-
+   
    TH2F* obj = dynamic_cast<TH2F*>( o.object );
 
    assert( obj );
    obj->SetStats(kFALSE);
-   obj->SetMinimum(-.001);
-   obj->SetMaximum(1.02);
 
-   dqm::utils::reportSummaryMapPalette(obj);
-   obj->SetOption("colztext");
+   if( o.name.find("Time") != std::string::npos )
+   {
+      // Loop over the bins and find the first empty one
+      int firstEmptyBin = obj->GetNbinsX();
+      for( int iBin = 1; iBin<=obj->GetNbinsX(); ++iBin )
+      {
+	 if( obj->GetBinContent(iBin,1) == 0 )
+	 {
+	    firstEmptyBin = iBin;
+	    break;
+	 }
+      }
+      if( firstEmptyBin <= 2 ) firstEmptyBin  = 1;
+      else                     firstEmptyBin -= 2;
+      // Now set the new range
+      obj->GetXaxis()->SetRange(0,firstEmptyBin);
 
-//    unsigned int Number = 3;
-//    double       Red[]   = { 0.00, 0.00, 1.00};
-//    double       Green[] = { 0.00, 1.00, 0.00};
-//    double       Blue[]  = { 1.00, 0.00, 0.00};
-//    double       Stops[] = { 0.00, 0.50, 1.00 };
-//    int          nb = 100;
-//    int          i = TColor::CreateGradientColorTable(Number,Stops,Blue,Green,Red,nb);
+      unsigned int Number = 3;
+      double       Red[]   = { 0.00, 0.00, 1.00};
+      double       Green[] = { 0.00, 1.00, 0.00};
+      double       Blue[]  = { 1.00, 0.00, 0.00};
+      double       Stops[] = { 0.00, 0.50, 1.00 };
+      int          nb = 100;
+      TColor::CreateGradientColorTable(Number,Stops,Blue,Green,Red,nb);
+      obj->SetOption("colz");
+   }
+   else
+   {
+      obj->SetMinimum(-.001);
+      obj->SetMaximum(1.02);
+
+      dqm::utils::reportSummaryMapPalette(obj);
+      obj->SetOption("colztext");
+   }
+
 //    //gStyle->SetPalette(1);
 
    return;
