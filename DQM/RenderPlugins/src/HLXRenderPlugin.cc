@@ -8,7 +8,7 @@
 //
 // Original Author:  
 //         Created:  Sat Apr 19 20:02:57 CEST 2008
-// $Id: HLXRenderPlugin.cc,v 1.8 2008/08/22 02:23:24 neadam Exp $
+// $Id: HLXRenderPlugin.cc,v 1.9 2008/08/22 11:52:02 lat Exp $
 //
 
 // system include files
@@ -67,6 +67,9 @@ bool HLXRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo 
   if( o.name.find( "HLX/CheckSums" ) != std::string::npos ){ 
     return true;
   }
+  if( o.name.find( "HLX/History" ) != std::string::npos ){ 
+    return true;
+  }
   if( o.name.find( "HLX/EventInfo" ) != std::string::npos ){ 
     return true;
   }
@@ -115,6 +118,8 @@ void HLXRenderPlugin::preDraw( TCanvas *c, const DQMNet::CoreObject &o,
 
 void HLXRenderPlugin::preDrawTProfile( TCanvas *c, const DQMNet::CoreObject &o ) 
 {
+   //std::cout << "NADIA: Here in predraw PROFILE!!!!" << std::endl;
+
    TProfile* obj = dynamic_cast<TProfile*>( o.object );
 
    assert( obj );
@@ -123,7 +128,9 @@ void HLXRenderPlugin::preDrawTProfile( TCanvas *c, const DQMNet::CoreObject &o )
    obj->SetStats(kTRUE);
    obj->GetYaxis()->SetTitleOffset(1.6);
 
-   if( o.name.find("EtSum") != std::string::npos && o.name.find("Lumi") == std::string::npos )
+   if( o.name.find("EtSum") != std::string::npos && 
+       o.name.find("Lumi") == std::string::npos && 
+       o.name.find("Hist") == std::string::npos )
    {
       int maxBin = obj->GetMaximumBin();
       int minBin = obj->GetMinimumBin();
@@ -144,6 +151,26 @@ void HLXRenderPlugin::preDrawTProfile( TCanvas *c, const DQMNet::CoreObject &o )
       obj->SetMaximum( 1.25*obj->GetMaximum() );
       obj->SetMinimum( 0.75*obj->GetMinimum() );
    }
+
+   // History histograms ...
+   if( o.name.find("Hist") != std::string::npos )
+   {
+      obj->SetMarkerStyle(kFullCircle);
+      obj->SetMarkerSize(0.8);
+      // Loop over the bins and find the first empty one
+      int firstEmptyBin = obj->GetNbinsX();
+      for( int iBin = 1; iBin<=obj->GetNbinsX(); ++iBin )
+      {
+	 if( obj->GetBinContent(iBin) == 0 )
+	 {
+	    firstEmptyBin = iBin;
+	    break;
+	 }
+      }
+      if( firstEmptyBin < 10 ) firstEmptyBin = 10;
+      // Now set the new range
+      obj->GetXaxis()->SetRange(0,firstEmptyBin+1);
+  }
 
    return;
 }
