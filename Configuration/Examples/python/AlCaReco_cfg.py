@@ -1,269 +1,234 @@
-# The following comments couldn't be translated into the new config version:
-
-# last update: $Date: 2008/07/01 17:23:45 $ by $Author: futyand $
-
+# Auto generated configuration file
+# using: 
+# Revision: 1.84 
+# Source: /cvs_server/repositories/CMSSW/CMSSW/Configuration/PyReleaseValidation/python/ConfigBuilder.py,v 
+# with command line options: step3 -s ALCA:TkAlZMuMu+TkAlMuonIsolated+TkAlJpsiMuMu+TkAlUpsilonMuMu+TkAlMinBias+SiPixelLorentzAngle+SiStripCalMinBias+EcalCalElectron+HcalCalDijets+HcalCalGammaJet+MuAlOverlaps+DQM -n 1000 --filein file:reco.root --conditions FrontierConditions_GlobalTag,IDEAL_V9::All --no_exec
 import FWCore.ParameterSet.Config as cms
 
-process = cms.Process("P")
-#service = SimpleMemoryCheck {
-#        untracked int32 ignoreTotal = 1 # default is one
-#      } 
-process.load("Configuration.StandardSequences.MagneticField_cff")
+process = cms.Process('ALCA')
 
-process.load("Configuration.StandardSequences.Geometry_cff")
-
-process.load("Configuration.StandardSequences.AlCaReco_cff")
-
-process.load("Configuration.EventContent.AlCaRecoOutput_cff")
+# import of standard configurations
+process.load('Configuration/StandardSequences/Services_cff')
+process.load('FWCore/MessageService/MessageLogger_cfi')
+process.load('Configuration/StandardSequences/MixingNoPileUp_cff')
+process.load('Configuration/StandardSequences/GeometryPilot2_cff')
+process.load('Configuration/StandardSequences/MagneticField_38T_cff')
+process.load('Configuration/StandardSequences/AlCaRecoStreams_cff')
+process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
+process.load('Configuration/EventContent/EventContent_cff')
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.3 $'),
-    name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/CMSSW/Configuration/Examples/python/AlCaReco_cfg.py,v $'),
-    annotation = cms.untracked.string('CFG for AlcaReco')
+    version = cms.untracked.string('$Revision: 1.84 $'),
+    annotation = cms.untracked.string('step3 nevts:1000'),
+    name = cms.untracked.string('PyReleaseValidation')
 )
-process.MessageLogger = cms.Service("MessageLogger",
-    cout = cms.untracked.PSet(
-        threshold = cms.untracked.string('INFO'),
-        noLineBreaks = cms.untracked.bool(True)
-    ),
-    destinations = cms.untracked.vstring('cout')
-)
-
-process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('/store/relval/2008/6/22/RelVal-RelValTTbar-1213987236-IDEAL_V2-2nd/0003/C4807780-C140-DD11-A03E-000423D94700.root',
-	'/store/relval/2008/6/22/RelVal-RelValTTbar-1213987236-IDEAL_V2-2nd/0004/4C747DCB-C240-DD11-9FFD-001617C3B654.root',
-	'/store/relval/2008/6/22/RelVal-RelValTTbar-1213987236-IDEAL_V2-2nd/0004/AE397234-CA40-DD11-9413-001617E30F48.root')
-)
-
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(100)
+    input = cms.untracked.int32(1000)
 )
-process.poolALCARECOTkAlZMuMu = cms.OutputModule("PoolOutputModule",
-    process.OutALCARECOTkAlZMuMu,
-    dataset = cms.untracked.PSet(
-        filterName = cms.untracked.string('ALCARECOTkAlZMuMu'),
-        dataTier = cms.untracked.string('ALCARECO')
+process.options = cms.untracked.PSet(
+    Rethrow = cms.untracked.vstring('ProductNotFound')
+)
+# Input source
+process.source = cms.Source("PoolSource",
+    fileNames = cms.untracked.vstring('/store/relval/CMSSW_2_1_7/RelValTTbar/GEN-SIM-RECO/IDEAL_V9_v2/0002/56B92AB9-8B7E-DD11-A821-000423D6AF24.root')
+)
+
+# Additional output definition
+process.ALCARECOStreamTkAlMinBias = cms.OutputModule("PoolOutputModule",
+    SelectEvents = cms.untracked.PSet(
+        SelectEvents = cms.vstring('pathALCARECOTkAlMinBias')
     ),
-    fileName = cms.untracked.string('file:ALCARECOTkAlZMuMu.root')
-)
-
-process.poolALCARECOTkAlMuonIsolated = cms.OutputModule("PoolOutputModule",
-    process.OutALCARECOTkAlMuonIsolated,
+    outputCommands = cms.untracked.vstring('drop *', 
+        'keep *_ALCARECOTkAlMinBias_*_*', 
+        'keep *_MEtoEDMConverter_*_*'),
+    fileName = cms.untracked.string('ALCARECOTkAlMinBias.root'),
     dataset = cms.untracked.PSet(
-        filterName = cms.untracked.string('ALCARECOTkAlMuonIsolated'),
+        filterName = cms.untracked.string('StreamALCARECOTkAlMinBias'),
         dataTier = cms.untracked.string('ALCARECO')
-    ),
-    fileName = cms.untracked.string('file:ALCARECOTkAlMuonIsolated.root')
+    )
 )
-
-process.poolALCARECOTkAlMinBias = cms.OutputModule("PoolOutputModule",
-    process.OutALCARECOTkAlMinBias,
+process.ALCARECOStreamHcalCalGammaJet = cms.OutputModule("PoolOutputModule",
+    SelectEvents = cms.untracked.PSet(
+        SelectEvents = cms.vstring('pathALCARECOHcalCalGammaJet')
+    ),
+    outputCommands = cms.untracked.vstring('drop *', 
+        'keep *_GammaJetProd_*_*'),
+    fileName = cms.untracked.string('ALCARECOHcalCalGammaJet.root'),
     dataset = cms.untracked.PSet(
-        filterName = cms.untracked.string('ALCARECOTkAlMinBias'),
+        filterName = cms.untracked.string('StreamALCARECOHcalCalGammaJet'),
         dataTier = cms.untracked.string('ALCARECO')
-    ),
-    fileName = cms.untracked.string('file:ALCARECOTkAlMinBias.root')
+    )
 )
-
-process.poolALCARECOTkAlJpsiMuMu = cms.OutputModule("PoolOutputModule",
-    process.OutALCARECOTkAlJpsiMuMu,
+process.ALCARECOStreamTkAlUpsilonMuMu = cms.OutputModule("PoolOutputModule",
+    SelectEvents = cms.untracked.PSet(
+        SelectEvents = cms.vstring('pathALCARECOTkAlUpsilonMuMu')
+    ),
+    outputCommands = cms.untracked.vstring('drop *', 
+        'keep *_ALCARECOTkAlUpsilonMuMu_*_*', 
+        'keep *_MEtoEDMConverter_*_*'),
+    fileName = cms.untracked.string('ALCARECOTkAlUpsilonMuMu.root'),
     dataset = cms.untracked.PSet(
-        filterName = cms.untracked.string('ALCARECOTkAlJpsiMuMu'),
+        filterName = cms.untracked.string('StreamALCARECOTkAlUpsilonMuMu'),
         dataTier = cms.untracked.string('ALCARECO')
-    ),
-    fileName = cms.untracked.string('file:ALCARECOTkAlJpsiMuMu.root')
+    )
 )
-
-process.poolALCARECOTkAlUpsilonMuMu = cms.OutputModule("PoolOutputModule",
-    process.OutALCARECOTkAlUpsilonMuMu,
+process.ALCARECOStreamTkAlZMuMu = cms.OutputModule("PoolOutputModule",
+    SelectEvents = cms.untracked.PSet(
+        SelectEvents = cms.vstring('pathALCARECOTkAlZMuMu')
+    ),
+    outputCommands = cms.untracked.vstring('drop *', 
+        'keep *_ALCARECOTkAlZMuMu_*_*', 
+        'keep *_MEtoEDMConverter_*_*'),
+    fileName = cms.untracked.string('ALCARECOTkAlZMuMu.root'),
     dataset = cms.untracked.PSet(
-        filterName = cms.untracked.string('ALCARECOTkAlUpsilonMuMu'),
+        filterName = cms.untracked.string('StreamALCARECOTkAlZMuMu'),
         dataTier = cms.untracked.string('ALCARECO')
-    ),
-    fileName = cms.untracked.string('file:ALCARECOTkAlUpsilonMuMu.root')
+    )
 )
-
-process.poolALCARECOSiPixelLorentzAngle = cms.OutputModule("PoolOutputModule",
-    process.OutALCARECOSiPixelLorentzAngle,
+process.ALCARECOStreamTkAlMuonIsolated = cms.OutputModule("PoolOutputModule",
+    SelectEvents = cms.untracked.PSet(
+        SelectEvents = cms.vstring('pathALCARECOTkAlMuonIsolated')
+    ),
+    outputCommands = cms.untracked.vstring('drop *', 
+        'keep *_ALCARECOTkAlMuonIsolated_*_*', 
+        'keep *_MEtoEDMConverter_*_*'),
+    fileName = cms.untracked.string('ALCARECOTkAlMuonIsolated.root'),
     dataset = cms.untracked.PSet(
-        filterName = cms.untracked.string('ALCARECOSiPixelLorentzAngle'),
+        filterName = cms.untracked.string('StreamALCARECOTkAlMuonIsolated'),
         dataTier = cms.untracked.string('ALCARECO')
-    ),
-    fileName = cms.untracked.string('file:ALCARECOSiPixelLorentzAngle.root')
+    )
 )
-
-process.poolALCARECOSiStripCalMinBias = cms.OutputModule("PoolOutputModule",
-    process.OutALCARECOSiStripCalMinBias,
+process.ALCARECOStreamSiStripCalMinBias = cms.OutputModule("PoolOutputModule",
+    SelectEvents = cms.untracked.PSet(
+        SelectEvents = cms.vstring('pathALCARECOSiStripCalMinBias')
+    ),
+    outputCommands = cms.untracked.vstring('drop *', 
+        'keep *_ALCARECOSiStripCalMinBias_*_*', 
+        'keep *_siStripClusters_*_*', 
+        'keep *_siPixelClusters_*_*', 
+        'keep *_offlineBeamSpot_*_*'),
+    fileName = cms.untracked.string('ALCARECOSiStripCalMinBias.root'),
     dataset = cms.untracked.PSet(
-        filterName = cms.untracked.string('ALCARECOSiStripCalMinBias'),
+        filterName = cms.untracked.string('StreamALCARECOSiStripCalMinBias'),
         dataTier = cms.untracked.string('ALCARECO')
-    ),
-    fileName = cms.untracked.string('file:ALCARECOSiStripCalMinBias.root')
+    )
 )
-
-process.poolALCARECOTkAlCosmics = cms.OutputModule("PoolOutputModule",
-    process.OutALCARECOTkAlCosmics,
+process.ALCARECOStreamTkAlJpsiMuMu = cms.OutputModule("PoolOutputModule",
+    SelectEvents = cms.untracked.PSet(
+        SelectEvents = cms.vstring('pathALCARECOTkAlJpsiMuMu')
+    ),
+    outputCommands = cms.untracked.vstring('drop *', 
+        'keep *_ALCARECOTkAlJpsiMuMu_*_*', 
+        'keep *_MEtoEDMConverter_*_*'),
+    fileName = cms.untracked.string('ALCARECOTkAlJpsiMuMu.root'),
     dataset = cms.untracked.PSet(
-        filterName = cms.untracked.string('ALCARECOTkAlCosmics'),
+        filterName = cms.untracked.string('StreamALCARECOTkAlJpsiMuMu'),
         dataTier = cms.untracked.string('ALCARECO')
-    ),
-    fileName = cms.untracked.string('file:ALCARECOTkAlCosmics.root')
+    )
 )
-
-process.poolALCARECOTkAlCosmicsHLT = cms.OutputModule("PoolOutputModule",
-    process.OutALCARECOTkAlCosmicsHLT,
+process.ALCARECOStreamHcalCalDijets = cms.OutputModule("PoolOutputModule",
+    SelectEvents = cms.untracked.PSet(
+        SelectEvents = cms.vstring('pathALCARECOHcalCalDijets')
+    ),
+    outputCommands = cms.untracked.vstring('drop *', 
+        'keep *_DiJProd_*_*'),
+    fileName = cms.untracked.string('ALCARECOHcalCalDijets.root'),
     dataset = cms.untracked.PSet(
-        filterName = cms.untracked.string('ALCARECOTkAlCosmicsHLT'),
+        filterName = cms.untracked.string('StreamALCARECOHcalCalDijets'),
         dataTier = cms.untracked.string('ALCARECO')
-    ),
-    fileName = cms.untracked.string('file:ALCARECOTkAlCosmicsHLT.root')
+    )
 )
-
-process.poolALCARECOTkAlCosmics0T = cms.OutputModule("PoolOutputModule",
-    process.OutALCARECOTkAlCosmics0T,
+process.ALCARECOStreamEcalCalElectron = cms.OutputModule("PoolOutputModule",
+    SelectEvents = cms.untracked.PSet(
+        SelectEvents = cms.vstring('pathALCARECOEcalCalElectron')
+    ),
+    outputCommands = cms.untracked.vstring('drop  *', 
+        'keep  *_electronFilter_*_*', 
+        'keep  *_alCaIsolatedElectrons_*_*', 
+        'keep edmTriggerResults_TriggerResults__HLT'),
+    fileName = cms.untracked.string('ALCARECOEcalCalElectron.root'),
     dataset = cms.untracked.PSet(
-        filterName = cms.untracked.string('ALCARECOTkAlCosmics0T'),
+        filterName = cms.untracked.string('StreamALCARECOEcalCalElectron'),
         dataTier = cms.untracked.string('ALCARECO')
-    ),
-    fileName = cms.untracked.string('file:ALCARECOTkAlCosmics0T.root')
+    )
 )
-
-process.poolALCARECOTkAlCosmics0THLT = cms.OutputModule("PoolOutputModule",
-    process.OutALCARECOTkAlCosmics0THLT,
+process.ALCARECOStreamMuAlOverlaps = cms.OutputModule("PoolOutputModule",
+    SelectEvents = cms.untracked.PSet(
+        SelectEvents = cms.vstring('pathALCARECOMuAlOverlaps')
+    ),
+    outputCommands = cms.untracked.vstring('drop *', 
+        'keep *_ALCARECOMuAlOverlaps_*_*'),
+    fileName = cms.untracked.string('ALCARECOMuAlOverlaps.root'),
     dataset = cms.untracked.PSet(
-        filterName = cms.untracked.string('ALCARECOTkAlCosmics0THLT'),
+        filterName = cms.untracked.string('StreamALCARECOMuAlOverlaps'),
         dataTier = cms.untracked.string('ALCARECO')
-    ),
-    fileName = cms.untracked.string('file:ALCARECOTkAlCosmics0THLT.root')
+    )
 )
-
-process.poolALCARECOEcalCalPhiSym = cms.OutputModule("PoolOutputModule",
-    process.OutALCARECOEcalCalPhiSym,
+process.ALCARECOStreamSiPixelLorentzAngle = cms.OutputModule("PoolOutputModule",
+    SelectEvents = cms.untracked.PSet(
+        SelectEvents = cms.vstring('pathALCARECOSiPixelLorentzAngle')
+    ),
+    outputCommands = cms.untracked.vstring('drop *', 
+        'keep *_globalMuons_*_*', 
+        'keep *_siStripClusters_*_*', 
+        'keep *_siPixelClusters_*_*', 
+        'drop *_*_*_HLT'),
+    fileName = cms.untracked.string('ALCARECOSiPixelLorentzAngle.root'),
     dataset = cms.untracked.PSet(
-        filterName = cms.untracked.string('ALCARECOEcalCalPhiSym'),
+        filterName = cms.untracked.string('StreamALCARECOSiPixelLorentzAngle'),
         dataTier = cms.untracked.string('ALCARECO')
-    ),
-    fileName = cms.untracked.string('file:ALCARECOEcalCalPhiSym.root')
+    )
 )
 
-process.poolALCARECOEcalCalElectron = cms.OutputModule("PoolOutputModule",
-    process.OutALCARECOEcalCalElectron,
-    dataset = cms.untracked.PSet(
-        filterName = cms.untracked.string('ALCARECOEcalCalElectron'),
-        dataTier = cms.untracked.string('ALCARECO')
-    ),
-    fileName = cms.untracked.string('file:ALCARECOEcalCalElectron.root')
-)
+# Other statements
+process.GlobalTag.globaltag = 'IDEAL_V9::All'
 
-process.poolALCARECOEcalCalPi0Calib = cms.OutputModule("PoolOutputModule",
-    process.OutALCARECOEcalCalPi0Calib,
-    dataset = cms.untracked.PSet(
-        filterName = cms.untracked.string('ALCARECOEcalCalPi0Calib'),
-        dataTier = cms.untracked.string('ALCARECO')
-    ),
-    fileName = cms.untracked.string('file:ALCARECOEcalCalPi0Calib.root')
-)
+# Path and EndPath definitions
+process.pathALCARECOTkAlCosmicsCTFHLT = cms.Path(process.seqALCARECOTkAlCosmicsCTFHLT)
+process.pathALCARECORpcCalHLT = cms.Path(process.seqALCARECORpcCalHLT)
+process.pathALCARECOHcalCalGammaJet = cms.Path(process.seqALCARECOHcalCalGammaJet)
+process.pathALCARECOMuAlBeamHaloOverlaps = cms.Path(process.seqALCARECOMuAlBeamHaloOverlaps)
+process.pathALCARECOTkAlCosmicsCosmicTF0THLT = cms.Path(process.seqALCARECOTkAlCosmicsCosmicTF0THLT*process.ALCARECOTkAlCosmicsCosmicTF0TDQM)
+process.pathALCARECOMuAlZeroFieldGlobalCosmics = cms.Path(process.seqALCARECOMuAlZeroFieldGlobalCosmics)
+process.pathALCARECOTkAlCosmicsCosmicTFHLT = cms.Path(process.seqALCARECOTkAlCosmicsCosmicTFHLT)
+process.pathALCARECOSiStripCalMinBias = cms.Path(process.seqALCARECOSiStripCalMinBias)
+process.pathALCARECOTkAlCosmicsRS0T = cms.Path(process.seqALCARECOTkAlCosmicsRS0T*process.ALCARECOTkAlCosmicsRS0TDQM)
+process.pathALCARECOTkAlMinBias = cms.Path(process.seqALCARECOTkAlMinBias*process.ALCARECOTkAlMinBiasDQM)
+process.pathALCARECOTkAlMuonIsolated = cms.Path(process.seqALCARECOTkAlMuonIsolated*process.ALCARECOTkAlMuonIsolatedDQM)
+process.pathALCARECOMuAlStandAloneCosmics = cms.Path(process.seqALCARECOMuAlStandAloneCosmics)
+process.pathALCARECODQM = cms.Path(process.MEtoEDMConverter)
+process.pathALCARECOTkAlZMuMu = cms.Path(process.seqALCARECOTkAlZMuMu*process.ALCARECOTkAlZMuMuDQM)
+process.pathALCARECOTkAlUpsilonMuMu = cms.Path(process.seqALCARECOTkAlUpsilonMuMu*process.ALCARECOTkAlUpsilonMuMuDQM)
+process.pathALCARECOHcalCalDijets = cms.Path(process.seqALCARECOHcalCalDijets)
+process.pathALCARECOTkAlCosmicsCTF0T = cms.Path(process.seqALCARECOTkAlCosmicsCTF0T*process.ALCARECOTkAlCosmicsCTF0TDQM)
+process.pathALCARECOMuAlOverlaps = cms.Path(process.seqALCARECOMuAlOverlaps)
+process.pathALCARECOTkAlCosmicsRS0THLT = cms.Path(process.seqALCARECOTkAlCosmicsRS0THLT*process.ALCARECOTkAlCosmicsRS0TDQM)
+process.pathALCARECOTkAlCosmicsCosmicTF = cms.Path(process.seqALCARECOTkAlCosmicsCosmicTF)
+process.pathALCARECOMuAlGlobalCosmics = cms.Path(process.seqALCARECOMuAlGlobalCosmics)
+process.pathALCARECOTkAlBeamHalo = cms.Path(process.seqALCARECOTkAlBeamHalo)
+process.pathALCARECOTkAlLAS = cms.Path(process.seqALCARECOTkAlLAS)
+process.pathALCARECOTkAlCosmicsRS = cms.Path(process.seqALCARECOTkAlCosmicsRS)
+process.pathALCARECOSiPixelLorentzAngle = cms.Path(process.seqALCARECOSiPixelLorentzAngle)
+process.pathALCARECOMuAlBeamHalo = cms.Path(process.seqALCARECOMuAlBeamHalo)
+process.pathALCARECOTkAlCosmicsCTF = cms.Path(process.seqALCARECOTkAlCosmicsCTF)
+process.pathALCARECOTkAlCosmicsCosmicTF0T = cms.Path(process.seqALCARECOTkAlCosmicsCosmicTF0T*process.ALCARECOTkAlCosmicsCosmicTF0TDQM)
+process.pathALCARECOTkAlJpsiMuMu = cms.Path(process.seqALCARECOTkAlJpsiMuMu*process.ALCARECOTkAlJpsiMuMuDQM)
+process.pathALCARECOEcalCalElectron = cms.Path(process.seqALCARECOEcalCalElectron)
+process.pathALCARECOTkAlCosmicsCTF0THLT = cms.Path(process.seqALCARECOTkAlCosmicsCTF0THLT*process.ALCARECOTkAlCosmicsCTF0TDQM)
+process.pathALCARECOMuAlCalIsolatedMu = cms.Path(process.seqALCARECOMuAlCalIsolatedMu)
+process.pathALCARECOHcalCalHO = cms.Path(process.seqALCARECOHcalCalHO)
+process.pathALCARECOTkAlCosmicsRSHLT = cms.Path(process.seqALCARECOTkAlCosmicsRSHLT)
+process.ALCARECOStreamTkAlMinBiasOutPath = cms.EndPath(process.ALCARECOStreamTkAlMinBias)
+process.ALCARECOStreamHcalCalGammaJetOutPath = cms.EndPath(process.ALCARECOStreamHcalCalGammaJet)
+process.ALCARECOStreamTkAlUpsilonMuMuOutPath = cms.EndPath(process.ALCARECOStreamTkAlUpsilonMuMu)
+process.ALCARECOStreamTkAlZMuMuOutPath = cms.EndPath(process.ALCARECOStreamTkAlZMuMu)
+process.ALCARECOStreamTkAlMuonIsolatedOutPath = cms.EndPath(process.ALCARECOStreamTkAlMuonIsolated)
+process.ALCARECOStreamSiStripCalMinBiasOutPath = cms.EndPath(process.ALCARECOStreamSiStripCalMinBias)
+process.ALCARECOStreamTkAlJpsiMuMuOutPath = cms.EndPath(process.ALCARECOStreamTkAlJpsiMuMu)
+process.ALCARECOStreamHcalCalDijetsOutPath = cms.EndPath(process.ALCARECOStreamHcalCalDijets)
+process.ALCARECOStreamEcalCalElectronOutPath = cms.EndPath(process.ALCARECOStreamEcalCalElectron)
+process.ALCARECOStreamMuAlOverlapsOutPath = cms.EndPath(process.ALCARECOStreamMuAlOverlaps)
+process.ALCARECOStreamSiPixelLorentzAngleOutPath = cms.EndPath(process.ALCARECOStreamSiPixelLorentzAngle)
 
-process.poolALCARECOHcalCalDijets = cms.OutputModule("PoolOutputModule",
-    process.OutALCARECOHcalCalDijets,
-    dataset = cms.untracked.PSet(
-        filterName = cms.untracked.string('ALCARECOHcalCalDijets'),
-        dataTier = cms.untracked.string('ALCARECO')
-    ),
-    fileName = cms.untracked.string('file:ALCARECOHcalCalDijets.root')
-)
-
-process.poolALCARECOHcalCalGammaJet = cms.OutputModule("PoolOutputModule",
-    process.OutALCARECOHcalCalGammaJet,
-    dataset = cms.untracked.PSet(
-        filterName = cms.untracked.string('ALCARECOHcalCalGammaJet'),
-        dataTier = cms.untracked.string('ALCARECO')
-    ),
-    fileName = cms.untracked.string('file:ALCARECOHcalCalGammaJet.root')
-)
-
-process.poolALCARECOHcalCalIsoTrk = cms.OutputModule("PoolOutputModule",
-    process.OutALCARECOHcalCalIsoTrk,
-    dataset = cms.untracked.PSet(
-        filterName = cms.untracked.string('ALCARECOHcalCalIsoTrk'),
-        dataTier = cms.untracked.string('ALCARECO')
-    ),
-    fileName = cms.untracked.string('file:ALCARECOHcalCalIsoTrk.root')
-)
-
-process.poolALCARECOHcalCalIsoTrkNoHLT = cms.OutputModule("PoolOutputModule",
-    process.OutALCARECOHcalCalIsoTrkNoHLT,
-    dataset = cms.untracked.PSet(
-        filterName = cms.untracked.string('ALCARECOHcalCalIsoTrkNoHLT'),
-        dataTier = cms.untracked.string('ALCARECO')
-    ),
-    fileName = cms.untracked.string('file:ALCARECOHcalCalIsoTrkNoHLT.root')
-)
-
-process.poolALCARECOHcalCalMinBias = cms.OutputModule("PoolOutputModule",
-    process.OutALCARECOHcalCalMinBias,
-    dataset = cms.untracked.PSet(
-        filterName = cms.untracked.string('ALCARECOHcalCalMinBias'),
-        dataTier = cms.untracked.string('ALCARECO')
-    ),
-    fileName = cms.untracked.string('file:ALCARECOHcalCalMinBias.root')
-)
-
-process.poolALCARECOHcalCalHO = cms.OutputModule("PoolOutputModule",
-    process.OutALCARECOHcalCalHO,
-    dataset = cms.untracked.PSet(
-        filterName = cms.untracked.string('ALCARECOHcalCalHO'),
-        dataTier = cms.untracked.string('ALCARECO')
-    ),
-    fileName = cms.untracked.string('file:ALCARECOHcalCalHO.root')
-)
-
-process.poolALCARECOMuAlZeroFieldGlobalCosmics = cms.OutputModule("PoolOutputModule",
-    process.OutALCARECOMuAlZeroFieldGlobalCosmics,
-    dataset = cms.untracked.PSet(
-        filterName = cms.untracked.string('ALCARECOMuAlZeroFieldGlobalCosmics'),
-        dataTier = cms.untracked.string('ALCARECO')
-    ),
-    fileName = cms.untracked.string('file:ALCARECOMuAlZeroFieldGlobalCosmics.root')
-)
-
-process.poolALCARECOMuCaliMinBias = cms.OutputModule("PoolOutputModule",
-    process.OutALCARECOMuCaliMinBias,
-    dataset = cms.untracked.PSet(
-        filterName = cms.untracked.string('ALCARECOMuCaliMinBias'),
-        dataTier = cms.untracked.string('ALCARECO')
-    ),
-    fileName = cms.untracked.string('file:ALCARECOMuCaliMinBias.root')
-)
-
-process.poolALCARECOMuAlCalIsolatedMu = cms.OutputModule("PoolOutputModule",
-    process.OutALCARECOMuAlCalIsolatedMu,
-    dataset = cms.untracked.PSet(
-        filterName = cms.untracked.string('ALCARECOMuAlCalIsolatedMu'),
-        dataTier = cms.untracked.string('ALCARECO')
-    ),
-    fileName = cms.untracked.string('file:ALCARECOMuAlCalIsolatedMu.root')
-)
-
-process.poolALCARECOMuAlOverlaps = cms.OutputModule("PoolOutputModule",
-    process.OutALCARECOMuAlOverlaps,
-    dataset = cms.untracked.PSet(
-        filterName = cms.untracked.string('ALCARECOMuAlOverlaps'),
-        dataTier = cms.untracked.string('ALCARECO')
-    ),
-    fileName = cms.untracked.string('file:ALCARECOMuAlOverlaps.root')
-)
-
-process.poolALCARECORpcCalHLT = cms.OutputModule("PoolOutputModule",
-    process.OutALCARECORpcCalHLT,
-    dataset = cms.untracked.PSet(
-        filterName = cms.untracked.string('ALCARECORpcCalHLT'),
-        dataTier = cms.untracked.string('ALCARECO')
-    ),
-    fileName = cms.untracked.string('file:ALCARECORpcCalHLT.root')
-)
-
-process.e = cms.EndPath(process.poolALCARECOTkAlZMuMu*process.poolALCARECOTkAlMuonIsolated*process.poolALCARECOTkAlJpsiMuMu*process.poolALCARECOTkAlUpsilonMuMu*process.poolALCARECOTkAlMinBias*process.poolALCARECOSiPixelLorentzAngle*process.poolALCARECOSiStripCalMinBias*process.poolALCARECOEcalCalElectron*process.poolALCARECOEcalCalPhiSym*process.poolALCARECOEcalCalPi0Calib*process.poolALCARECOHcalCalDijets*process.poolALCARECOHcalCalGammaJet*process.poolALCARECOHcalCalIsoTrkNoHLT*process.poolALCARECOHcalCalHO*process.poolALCARECOMuCaliMinBias*process.poolALCARECOMuAlCalIsolatedMu*process.poolALCARECOMuAlOverlaps*process.poolALCARECORpcCalHLT)
-process.schedule = cms.Schedule(process.pathALCARECOTkAlZMuMu,process.pathALCARECOTkAlMuonIsolated,process.pathALCARECOTkAlJpsiMuMu,process.pathALCARECOTkAlUpsilonMuMu,process.pathALCARECOTkAlMinBias,process.pathALCARECOSiPixelLorentzAngle,process.pathALCARECOSiStripCalMinBias,process.pathALCARECOEcalCalElectron,process.pathALCARECOEcalCalPhiSym,process.pathALCARECOEcalCalPi0Calib,process.pathALCARECOHcalCalDijets,process.pathALCARECOHcalCalGammaJet,process.pathALCARECOHcalCalIsoTrkNoHLT,process.pathALCARECOHcalCalHO,process.pathALCARECOMuCaliMinBias,process.pathALCARECOMuAlCalIsolatedMu,process.pathALCARECOMuAlOverlaps,process.pathALCARECORpcCalHLT,process.e)
-
-
+# Schedule definition
+process.schedule = cms.Schedule(process.pathALCARECOHcalCalGammaJet,process.pathALCARECOTkAlZMuMu,process.pathALCARECOTkAlUpsilonMuMu,process.pathALCARECOMuAlOverlaps,process.pathALCARECOTkAlMuonIsolated,process.pathALCARECOTkAlMinBias,process.pathALCARECODQM,process.pathALCARECOSiStripCalMinBias,process.pathALCARECOHcalCalDijets,process.pathALCARECOSiPixelLorentzAngle,process.pathALCARECOEcalCalElectron,process.pathALCARECOTkAlJpsiMuMu,process.ALCARECOStreamTkAlMinBiasOutPath,process.ALCARECOStreamHcalCalGammaJetOutPath,process.ALCARECOStreamTkAlUpsilonMuMuOutPath,process.ALCARECOStreamTkAlZMuMuOutPath,process.ALCARECOStreamTkAlMuonIsolatedOutPath,process.ALCARECOStreamSiStripCalMinBiasOutPath,process.ALCARECOStreamTkAlJpsiMuMuOutPath,process.ALCARECOStreamHcalCalDijetsOutPath,process.ALCARECOStreamEcalCalElectronOutPath,process.ALCARECOStreamMuAlOverlapsOutPath,process.ALCARECOStreamSiPixelLorentzAngleOutPath)
