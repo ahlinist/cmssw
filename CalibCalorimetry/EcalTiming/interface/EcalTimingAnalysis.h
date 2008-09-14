@@ -34,6 +34,11 @@
 #include "TH3F.h"
 #include <vector>
 
+#include "Geometry/Records/interface/CaloGeometryRecord.h"
+#include "Geometry/CaloGeometry/interface/CaloSubdetectorGeometry.h"
+#include "Geometry/CaloGeometry/interface/CaloCellGeometry.h"
+
+
 //#include<fstream>
 //#include<map>
 //#include<stl_pair>
@@ -49,6 +54,7 @@ class EcalTimingAnalysis : public edm::EDAnalyzer {
       virtual void analyze(  edm::Event const&,   edm::EventSetup const& );
       virtual void beginJob(edm::EventSetup const&);
       virtual void endJob();
+	  double timecorr(const CaloSubdetectorGeometry *geometry_p, DetId id);
  private:
       
       std::string rootfile_;
@@ -121,6 +127,11 @@ class EcalTimingAnalysis : public edm::EDAnalyzer {
       //Allows for running the job on a file
       bool fromfile_;
       std::string fromfilename_;   
+	  
+	  //Correct for Timing 
+	  bool corrtimeEcal;
+	  bool corrtimeBH;
+	  double EBradius_;
 
 };
 

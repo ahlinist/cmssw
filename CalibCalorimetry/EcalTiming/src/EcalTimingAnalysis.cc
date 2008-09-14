@@ -21,6 +21,12 @@
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "Geometry/EcalMapping/interface/EcalElectronicsMapping.h"
 #include "Geometry/EcalMapping/interface/EcalMappingRcd.h"
+// Geometry
+#include "Geometry/Records/interface/CaloGeometryRecord.h"
+#include "Geometry/CaloGeometry/interface/CaloSubdetectorGeometry.h"
+#include "Geometry/CaloGeometry/interface/CaloCellGeometry.h"
+#include "Geometry/CaloGeometry/interface/CaloGeometry.h"
+
 
 #include<fstream>
 #include <iomanip>
@@ -61,6 +67,9 @@ EcalTimingAnalysis::EcalTimingAnalysis( const edm::ParameterSet& iConfig )
    min_num_ev_         = (int) (iConfig.getUntrackedParameter<double>("minNumEvt", 100.)); 
    timerunstart_       = iConfig.getUntrackedParameter<double>("RunStart",1220192037.);
    timerunlength_       = iConfig.getUntrackedParameter<double>("RunLength",2.);
+   EBradius_           = iConfig.getUntrackedParameter<double>("EBRadius",1.5);
+   corrtimeEcal        = iConfig.getUntrackedParameter<bool>("CorrectEcalReadout",false);
+   corrtimeBH          = iConfig.getUntrackedParameter<bool>("CorrectBH",false);
 
    fromfile_           = iConfig.getUntrackedParameter<bool>("FromFile",false);  
    if (fromfile_) fromfilename_ = iConfig.getUntrackedParameter<std::string>("FromFileName","EMPTYFILE.root");
@@ -522,6 +531,14 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
 	edm::LogError("EcalTimingAnalysis") << "can't get the product for EcalRawDataCollection";
    }
    
+   //Geometry information
+   edm::ESHandle<CaloGeometry> geoHandle;
+   iSetup.get<CaloGeometryRecord>().get(geoHandle);
+   
+   const CaloSubdetectorGeometry *geometry_pEB = geoHandle->getSubdetectorGeometry(DetId::Ecal, EcalBarrel);
+   const CaloSubdetectorGeometry *geometry_pEE = geoHandle->getSubdetectorGeometry(DetId::Ecal, EcalEndcap);
+   
+   
    //Timing information
    unsigned int  timeStampLow = ( 0xFFFFFFFF & iEvent.time().value() );
    unsigned int  timeStampHigh = ( iEvent.time().value() >> 32 );
@@ -563,16 +580,19 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
      LogInfo("EcalTimingAnalysis")<<"SM " << DCCid+600 <<" SMind " << SMind << " Chi sq " << ithit->chi2() << " ampl " << ithit->amplitude() << " lambda " << lambda << " jitter " << ithit->jitter();
      if (DCCid == 644 || DCCid == 645) std::cout << "SM " << DCCid+600 <<" SMind " << SMind << " Chi sq " << ithit->chi2() << " ampl " << ithit->amplitude() << " lambda " << lambda << " jitter " << ithit->jitter();
 	 if(ithit->chi2()> -1. && ithit->chi2()<10000. && ithit->amplitude()> ampl_thr_ ) { // make sure fit has converged 
+	  double extrajit = timecorr(geometry_pEB,anid);
+	  double mytime = ithit->jitter() + extrajit+5.0;
+
       lasersPerEvt->Fill(ievt_);
-	amplProfileConv_[DCCid-1][lambda]->Fill(SMind,ithit->amplitude());
-       absoluteTimingConv_[DCCid-1][lambda]->Fill(SMind,ithit->jitter()+5.0);
+	  amplProfileConv_[DCCid-1][lambda]->Fill(SMind,ithit->amplitude());
+       absoluteTimingConv_[DCCid-1][lambda]->Fill(SMind,mytime);
        Chi2ProfileConv_[DCCid-1][lambda]->Fill(SMind,ithit->chi2());
        if(lambda == 0){
-           absTime[DCCid-1][SMind] = ithit->jitter()+5.0;
-	   ttTimingEtaPhi_->Fill(anid.iphi(),anid.ieta(),ithit->jitter()+5.0);
-	   ttTimingEtaPhiRel_->Fill(anid.iphi(),anid.ieta(),ithit->jitter()-sMAves_[DCCid-1]+5.0+5.0);
-	   chTimingEtaPhi_->Fill(anid.iphi(),anid.ieta(),ithit->jitter()+5.0);
-	   chTimingEtaPhiRel_->Fill(anid.iphi(),anid.ieta(),ithit->jitter()-sMAves_[DCCid-1]+5.0+5.0);
+           absTime[DCCid-1][SMind] = mytime;
+	   ttTimingEtaPhi_->Fill(anid.iphi(),anid.ieta(),mytime);
+	   ttTimingEtaPhiRel_->Fill(anid.iphi(),anid.ieta(),mytime-sMAves_[DCCid-1]+5.0);
+	   chTimingEtaPhi_->Fill(anid.iphi(),anid.ieta(),mytime);
+	   chTimingEtaPhiRel_->Fill(anid.iphi(),anid.ieta(),mytime-sMAves_[DCCid-1]+5.0);
 	}  
        if(SMind == 648  ){timeCry2[DCCid-1]->Fill((ithit->jitter()+5.0)*25.);}
        else if(SMind == 653  ){timeCry1[DCCid-1]->Fill((ithit->jitter()+5.0)*25.);}
@@ -618,19 +638,21 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
      LogInfo("EcalTimingAnalysis")<<"SM " << DCCid+600 <<" SMind " << SMind << " Chi sq " << ithit->chi2() << " ampl " << ithit->amplitude() << " lambda " << lambda << " jitter " << ithit->jitter();
      
 	 if(ithit->chi2()> -1. && ithit->chi2()<10000. && ithit->amplitude()> ampl_thr_ ) { // make sure fit has converged 
+	  double extrajit = timecorr(geometry_pEE,anid);
+	  double mytime = ithit->jitter() + extrajit+5.0;
       lasersPerEvt->Fill(ievt_);
-	amplProfileConv_[DCCid-1][lambda]->Fill(SMind,ithit->amplitude());
-       absoluteTimingConv_[DCCid-1][lambda]->Fill(SMind,ithit->jitter()+5.0);
+	  amplProfileConv_[DCCid-1][lambda]->Fill(SMind,ithit->amplitude());
+       absoluteTimingConv_[DCCid-1][lambda]->Fill(SMind,mytime);
        Chi2ProfileConv_[DCCid-1][lambda]->Fill(SMind,ithit->chi2());
        if(lambda == 0){
-           absTime[DCCid-1][SMind] = ithit->jitter()+5.0;
+           absTime[DCCid-1][SMind] = mytime;
 		   if (anid.zside() == 1) {
-		   chTimingEtaPhiEEP_->Fill(anid.ix(),anid.iy(),ithit->jitter()+5.);
-		   chTimingEtaPhiRelEEP_->Fill(anid.ix(),anid.iy(),ithit->jitter()-sMAves_[DCCid-1]+5.+5.);
+		   chTimingEtaPhiEEP_->Fill(anid.ix(),anid.iy(),mytime);
+		   chTimingEtaPhiRelEEP_->Fill(anid.ix(),anid.iy(),mytime-sMAves_[DCCid-1]+5.);
 		   }
 		   else {
-		   chTimingEtaPhiEEM_->Fill(anid.ix(),anid.iy(),ithit->jitter()+5.);
-		   chTimingEtaPhiRelEEM_->Fill(anid.ix(),anid.iy(),ithit->jitter()-sMAves_[DCCid-1]+5.+5.);
+		   chTimingEtaPhiEEM_->Fill(anid.ix(),anid.iy(),mytime);
+		   chTimingEtaPhiRelEEM_->Fill(anid.ix(),anid.iy(),mytime-sMAves_[DCCid-1]+5.);
 		   }
 	   
 	   
@@ -682,3 +704,43 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
    }
    
 }
+
+double EcalTimingAnalysis::timecorr(const CaloSubdetectorGeometry *geometry_p, DetId id)
+{
+   double time = 0.0;
+
+   if (!(corrtimeEcal || corrtimeBH) ) { return time;}
+    
+   bool inEB = true;
+   if ((id.det() == DetId::Ecal) && (id.subdetId() == EcalEndcap)) {
+      inEB = false;
+   }
+   
+   const CaloCellGeometry *thisCell = geometry_p->getGeometry(id);
+   GlobalPoint position = thisCell->getPosition();
+   
+   double speedlight = 0.299792458; //in meters/ns
+   
+   
+   double z = position.z()/100.;
+   //Correct Ecal IP readout time assumption
+   if (corrtimeEcal && inEB){
+   
+      double change = (pow(EBradius_*EBradius_+z*z,0.5)-EBradius_)/speedlight;
+	  time += change;
+	  
+	  std::cout << " Woohoo... z is " << z << " ieta is " << (EBDetId(id)).ieta() << std::endl;
+	  std::cout << " Subtracting " << change << std::endl;
+   }
+   speedlight = 0.299792458; //in meters/ns
+   //Correct out the BH or Beam-shot assumption
+   if (corrtimeBH){
+      time += z/speedlight;
+	  std::cout << " Adding " << z/speedlight << std::endl;
+
+   }
+
+   return (time/25.-1.5);
+}
+
+

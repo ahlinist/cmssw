@@ -46,6 +46,9 @@ echo "      -st|--start_time      start_time      StartTime of run from Jan 1 19
 echo "      -rl|--run_length      run_length      Length of Run in hours"
 echo "      -ff|--from_file       from_file       Read from an input file; default is false"
 echo "      -ffn|--from_file_name from_file_name  Name of input file; default is empty"
+echo "      -dt|--data_type       data_type       Data Type of interest; default is Laser"
+echo "      -cet|--correct_ecal   correct_ecal    Correct For Ecal Readout Timing; default is false"
+echo "      -cbh|--correct_bh     correct_bh      Correct For BeamHalo Readout Timing; default is false"
 echo ""
 echo "To specify multiple fed_id's/ieb_id's/cry's to mask use a comma-separated list in between double quotes, e.g., \"1,2,3\" "
 exit
@@ -74,6 +77,11 @@ last_event=999999
 
 from_file="false"
 from_file_name="Emptyfile.root"
+
+correct_ecal="false"
+correct_bh="false"
+
+data_type="Laser"
 
 manyfiles="0"
 
@@ -136,7 +144,18 @@ manyfiles="0"
                 from_file_name=$2
                 ;;
 				
-		
+	  -dt|--data_type)
+                data_type=$2
+                ;;	
+				
+	  -cet|--correct_ecal)
+				correct_ecal=$2
+				;;
+				
+	  -cbh|--correct_bh)
+				correct_bh=$2
+				;;			
+				
 
     esac
     shift       # Verifica la serie successiva di parametri.
@@ -165,6 +184,10 @@ echo "start time:                                   $start_time"
 echo "run length:                                   $run_length (hours)"
 echo "from_file:                                    $from_file"
 echo "from_file_name:                               $from_file_name"
+echo "data_type:                                    $data_type"
+echo "correct for ecal readout:                     $correct_ecal"
+echo "correct for beam halo:                        $correct_bh"
+
 
 echo ""
 echo ""
@@ -190,9 +213,12 @@ fi
 if [[ $manyfiles == "1" ]]; then
     echo "doing many files"
     input_module="
-    source = NewEventStreamFileReader{
+    #source = NewEventStreamFileReader{
+	source = PoolSource{
        untracked uint32 skipEvents = $first_event
-       untracked vstring fileNames = { `/bin/cat $files_file` }
+       untracked vstring fileNames = { 
+	   `/bin/cat $files_file` 
+	   }
        untracked uint32 debugVebosity = 10
        untracked bool   debugFlag     = true
     }"
@@ -268,7 +294,7 @@ module uncalibHitMaker =  EcalFixedAlphaBetaFitUncalibRecHitProducer{
    string EBdigiCollectionOut = 'ebDigiSkim'
    string EEdigiCollectionOut = 'eeDigiSkim'
 
-   string DigiType = "Laser"
+   string DigiType = "$data_type"
 }
 
  module timing = EcalTimingAnalysis {
@@ -287,6 +313,8 @@ module uncalibHitMaker =  EcalFixedAlphaBetaFitUncalibRecHitProducer{
    untracked double RunLength = $run_length
    untracked bool FromFile = $from_file
    untracked string FromFileName = "$from_file_name"
+   untracked bool CorrectEcalReadout = $correct_ecal
+   untracked bool CorrectBH = $correct_bh
    #untracked vdouble SMAverages = {5.00, 5.00,  5.00,  5.00,  5.00,  5.00,  5.00,  5.00,  5.00,   5.2177, 5.2282,  5.1461, 5.1395, 4.8314, 4.7773, 4.8276, 4.8607, 4.9925,   5.0648, 4.837, 4.7639, 5.2952, 5.2985, 4.8695, 4.8308, 4.9181, 4.8526, 4.7157, 4.7297, 5.1266, 5.1656, 4.8872, 4.8274, 5.3140, 5.3209, 5.0342, 5.0402, 5.0712, 4.9686, 5.4509, 5.3868, 5.3950, 5.2342, 5.00, 5.00, 5.00,  5.00,  5.00,  5.00,  5.00,  5.00,  5.00,  5.00,  5.00}
    
   # untracked vdouble SMAverages = {5.00, 5.00,  5.00,  5.00,  5.00,  5.00,  5.00,  5.00,  5.00,   
