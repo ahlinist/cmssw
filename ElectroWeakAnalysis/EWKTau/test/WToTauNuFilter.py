@@ -33,6 +33,10 @@ process.TFileService = cms.Service("TFileService",
     fileName = cms.string('WToTauNuFilterHistograms.root')
 )
 
+##########################################################################################
+# The choice of MET and Jet cuts are based on the slides presented at                    #
+# http://pages.physics.cornell.edu/~souvik/CMSTau/Presentations/WTauNu8September2008.pdf #
+##########################################################################################
 process.wToTauNuFilter1 = cms.EDFilter("WToTauNuFilter",
     Display = cms.bool(True),
     METSource = cms.InputTag("met"),
