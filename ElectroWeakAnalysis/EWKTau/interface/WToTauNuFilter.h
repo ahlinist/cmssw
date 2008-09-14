@@ -30,15 +30,23 @@ class WToTauNuFilter : public edm::EDFilter
     
     bool display_;
     edm::InputTag metSource_;
-    edm::InputTag jetSource_;
+    edm::InputTag caloJetSource_;
     edm::InputTag tauSource_;
+    
+    // Cut parameters
+    float metCut_;
+    float jetCut1_;
+    float jetCut2_;
     
     // efficiency counters
     int nEvents_;
     int nPassedMETCut_;
     int nPassedJetCut1_;
     int nPassedJetCut2_;
-    int nPassedAllCuts;
+    
+    // Histograms
+    TH1F *h_MET_Et;
+    TH1F *h_CaloJet_Et;
 
 };
 
