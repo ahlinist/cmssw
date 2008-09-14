@@ -45,7 +45,8 @@
 class HitEff : public edm::EDAnalyzer {
  public:  
   explicit HitEff(const edm::ParameterSet& conf);
-  
+  double checkConsistency(const SiStripRecHit2D* rechit, double xx, double xerr);
+
   virtual ~HitEff();
 
  private:
@@ -56,34 +57,19 @@ class HitEff : public edm::EDAnalyzer {
         // ----------member data ---------------------------
 
   edm::ParameterSet conf_;
-  TTree* n;
+  edm::ESHandle<SiStripDetCabling> SiStripDetCabling_;
+  edm::ESHandle<SiStripQuality> SiStripQuality_;
+
+  TTree* rechits;
+  TTree* traj;
   int events,EventSeedCKF,EventTrackCKF,EventTriggCKF;
 
-  ofstream out1,out2;
   TrackLocalAngle* theAngleFinder;
   uint layers;
-  vector<uint> ActiveLayStereo, ActiveLayMono;
-  std::vector<const SiStripRecHit2D*> vRPhi_SiStripRecHit2D;
-  std::vector<const SiStripRecHit2D*> vSte_SiStripRecHit2D;
+  bool DEBUG;
+  vector<uint> ActiveLay;
+  std::vector<const SiStripRecHit2D*> vSiStripRecHit2D;
   TRandom2 RanGen2;
-
-  TH1F *AngleLayTIB;
-  TH1F *CKFLayEff, *InvCKFLayEff;
-  TH1F *TIFInvModEffStereo, *TIFInvModEffStereo_all, *TIFModEffStereo;
-  TH1F *TIFInvModEffRPhi, *TIFInvModEffRPhi_all, *TIFModEffRPhi;
-  TH1F *ResidualXValidSte, *ResidualXValidSte_2;
-  TH1F *ResidualXValidRPhi, *ResidualXValidRPhi_2;
-  TH1F *hInvLocYSte,*hInvLocXSte,*hInvLocYSte_Mod,*hInvLocXSte_Mod,*hInvLocYRPhi,*hInvLocXRPhi,*hInvLocYRPhi_Mod,*hInvLocXRPhi_Mod;
-  TH1F *hLocYSte,*hLocXSte,*hLocYRPhi,*hLocXRPhi;
-  TH1F *hTrkphiCKF, *hTrketaCKF, *hTrkchi2CKF,*hTrkchi2Good,*hTrkchi2Bad,*hTrknhitCKF;
-  TH1F *hLocErrYSte,*hLocErrXSte,*hInvLocErrYSte,*hInvLocErrXSte,*hLocErrSte,*hInvLocErrSte;
-  TH1F *hLocErrYRPhi,*hLocErrXRPhi,*hInvLocErrYRPhi,*hInvLocErrXRPhi,*hLocErrRPhi,*hInvLocErrRPhi;
-  TH1F *hdiscr1RPhi, *hdiscr2RPhi, *hInvdiscr1RPhi, *hInvdiscr2RPhi;
-  TH1F *hdiscr1RPhi_log, *hdiscr2RPhi_log, *hInvdiscr1RPhi_log, *hInvdiscr2RPhi_log;
-  TH1F *hdiscr1Ste, *hdiscr2Ste, *hInvdiscr1Ste, *hInvdiscr2Ste;
-  TH1F *hMatchRPhi, *hInvMatchRPhi;
-  TH1F *hHitRPhi, *hInvHitRPhi;
-
 
   // Tree declarations
   // All RecHit
@@ -101,6 +87,13 @@ class HitEff : public edm::EDAnalyzer {
   float	TRHgpz[200];
   int TRHLay[200];
   uint TRHMod[200];
+
+  // Modules
+  float ModGlbX, ModGlbY, ModGlbZ, trackAngle;
+  float ModLocX, ModLocY, ModLocErrX, ModLocErrY;
+  float Moddiscr1, Moddiscr2, Modres, ResSig;
+  uint ModIsBad; uint Id; uint SiStripQualBad; uint rod;
+  uint run; uint event;
 
 };
 
