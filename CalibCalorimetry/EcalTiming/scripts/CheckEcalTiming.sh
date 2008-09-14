@@ -237,6 +237,9 @@ if [[ $from_file == "true" ]]; then
     path p = {timing}
     "
 fi
+
+maxevnts=$(($last_event-$first_event))
+
 cat > "$cfg_path$data_file".graph.$$.cfg <<EOF
 
 
@@ -249,7 +252,7 @@ include "Geometry/CaloEventSetup/data/CaloTopology.cfi"
 include "Geometry/EcalCommonData/data/EcalOnly.cfi"
 include "Geometry/CaloEventSetup/data/CaloGeometry.cff"
 
-untracked PSet maxEvents = {untracked int32 input = $last_event}
+untracked PSet maxEvents = {untracked int32 input = $maxevnts }
 
 $input_module
 

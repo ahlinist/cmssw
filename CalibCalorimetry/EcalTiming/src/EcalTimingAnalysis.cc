@@ -729,14 +729,24 @@ double EcalTimingAnalysis::timecorr(const CaloSubdetectorGeometry *geometry_p, D
       double change = (pow(EBradius_*EBradius_+z*z,0.5)-EBradius_)/speedlight;
 	  time += change;
 	  
-	  std::cout << " Woohoo... z is " << z << " ieta is " << (EBDetId(id)).ieta() << std::endl;
-	  std::cout << " Subtracting " << change << std::endl;
+	  //std::cout << " Woohoo... z is " << z << " ieta is " << (EBDetId(id)).ieta() << std::endl;
+	  //std::cout << " Subtracting " << change << std::endl;
    }
-   speedlight = 0.299792458; //in meters/ns
+   
+   if (corrtimeEcal && !inEB){
+      double x = position.x()/100.;
+      double y = position.y()/100.;
+	  double change = (pow(x*x+y*y+z*z,0.5)-EBradius_)/speedlight;
+	  time += change;
+	  
+	  //std::cout << " Woohoo... z is " << z << " ieta is " << (EBDetId(id)).ieta() << std::endl;
+	  //std::cout << " Subtracting " << change << std::endl;
+   }
+   
    //Correct out the BH or Beam-shot assumption
    if (corrtimeBH){
       time += z/speedlight;
-	  std::cout << " Adding " << z/speedlight << std::endl;
+	  //std::cout << " Adding " << z/speedlight << std::endl;
 
    }
 
