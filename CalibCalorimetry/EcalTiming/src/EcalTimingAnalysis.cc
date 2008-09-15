@@ -70,6 +70,7 @@ EcalTimingAnalysis::EcalTimingAnalysis( const edm::ParameterSet& iConfig )
    EBradius_           = iConfig.getUntrackedParameter<double>("EBRadius",1.5);
    corrtimeEcal        = iConfig.getUntrackedParameter<bool>("CorrectEcalReadout",false);
    corrtimeBH          = iConfig.getUntrackedParameter<bool>("CorrectBH",false);
+   allave_             = iConfig.getUntrackedParameter<double>("AllAverage",5.7);
 
    fromfile_           = iConfig.getUntrackedParameter<bool>("FromFile",false);  
    if (fromfile_) fromfilename_ = iConfig.getUntrackedParameter<std::string>("FromFileName","EMPTYFILE.root");
@@ -333,7 +334,8 @@ void EcalTimingAnalysis::endJob() {
 	      fullLMTimeCorr->Fill(ecalElectronicsMap_->getLMNumber(mydet),time-sMCorr_[dcc-1]);
 	      fullSMTime->Fill(dcc,time);
 	      fullSMTimeCorr->Fill(dcc,time-sMCorr_[dcc-1]);
-	      time -= absmean;
+	      ///time -= absmean;
+		  time -= allave_;
 	      meanr[TTi] += time;
 	      relCh[dcc-1]->Fill(time);
 	      x2r[TTi] += time*time;
@@ -726,7 +728,29 @@ double EcalTimingAnalysis::timecorr(const CaloSubdetectorGeometry *geometry_p, D
    //Correct Ecal IP readout time assumption
    if (corrtimeEcal && inEB){
    
-      double change = (pow(EBradius_*EBradius_+z*z,0.5)-EBradius_)/speedlight;
+      int ieta = (EBDetId(id)).ieta() ;
+	  double zz=0.0;
+	  /*
+      if (ieta > 65 )  zz=5.188213395;
+	  else if (ieta > 45 )  zz=2.192428069;
+	  else if (ieta > 25 )  zz=0.756752107;
+	  else if (ieta > 1 ) zz=0.088368264;
+	  else if (ieta > -26 )  zz=0.088368264;
+	  else if (ieta > -45 )  zz=0.756752107;
+	  else if (ieta > -65 ) zz=2.192428069;
+	  else zz=5.188213395;
+	  */
+	  if (ieta > 65 )  zz=5.06880196;
+	  else if (ieta > 45 )  zz=2.08167184;
+	  else if (ieta > 25 )  zz=0.86397025;
+	  else if (ieta > 1 ) zz=0.088368264;
+	  else if (ieta > -26 )  zz=0.088368264;
+	  else if (ieta > -45 )  zz=0.86397025;
+	  else if (ieta > -65 ) zz=2.08167184;
+	  else zz=5.06880196;
+
+      //double change = (pow(EBradius_*EBradius_+z*z,0.5)-EBradius_)/speedlight;
+      double change = (pow(EBradius_*EBradius_+zz,0.5)-EBradius_)/speedlight;
 	  time += change;
 	  
 	  //std::cout << " Woohoo... z is " << z << " ieta is " << (EBDetId(id)).ieta() << std::endl;
@@ -736,13 +760,14 @@ double EcalTimingAnalysis::timecorr(const CaloSubdetectorGeometry *geometry_p, D
    if (corrtimeEcal && !inEB){
       double x = position.x()/100.;
       double y = position.y()/100.;
-	  double change = (pow(x*x+y*y+z*z,0.5)-EBradius_)/speedlight;
-	  time += change;
+	  //double change = (pow(x*x+y*y+z*z,0.5)-EBradius_)/speedlight;
+	  double change = (pow(z*z,0.5)-EBradius_)/speedlight; //Assuming they are all the same length...
+	  time += change; //Take this out for the time being
 	  
 	  //std::cout << " Woohoo... z is " << z << " ieta is " << (EBDetId(id)).ieta() << std::endl;
 	  //std::cout << " Subtracting " << change << std::endl;
    }
-   
+   speedlight = (0.299792458*(1.0-.08));
    //Correct out the BH or Beam-shot assumption
    if (corrtimeBH){
       time += z/speedlight;
