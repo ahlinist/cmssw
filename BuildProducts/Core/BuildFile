@@ -60,7 +60,6 @@
 <use name=ObjectRelationalAccess>
 <use name=tkonlinesw>
 <lib name=XMLIO>
-<flags CXXFLAGS=-DNDEBUG>
 <export>
   <lib name=CMSSWCore>
 </export>
