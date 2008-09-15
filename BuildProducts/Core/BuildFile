@@ -1,5 +1,5 @@
 <flags BIG_PROD_ORDER=400>
-<use name=classlib>
+<use name=BuildProducts/classlib>
 <use name=boost>
 <use name=boost_filesystem>
 <use name=boost_program_options>
@@ -62,5 +62,5 @@
 <lib name=XMLIO>
 <flags CXXFLAGS=-DNDEBUG>
 <export>
-  <lib name=CMSSW>
+  <lib name=CMSSWCore>
 </export>
