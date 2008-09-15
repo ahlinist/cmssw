@@ -132,6 +132,8 @@ class EcalTimingAnalysis : public edm::EDAnalyzer {
 	  bool corrtimeEcal;
 	  bool corrtimeBH;
 	  double EBradius_;
+	  
+	  double allave_;
 
 };
 

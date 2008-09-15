@@ -307,9 +307,9 @@ module uncalibHitMaker =  EcalFixedAlphaBetaFitUncalibRecHitProducer{
    string hitCollection = "EcalUncalibRecHitsEB"
    string hitCollectionEE = "EcalUncalibRecHitsEE"
 
-   untracked string rootfile = "TimingLaser_$data_file.$$.root"
-   untracked string TTPeakTime = "TTPeakPositionFileLaser_$data_file.$$.txt"
-   untracked string ChPeakTime = "ChPeakTimeLaser_$data_file.$$.txt"
+   untracked string rootfile = "Timing${data_type}_$data_file.$$.root"
+   untracked string TTPeakTime = "TTPeakPositionFile${data_type}_${data_file}.$$.txt"
+   untracked string ChPeakTime = "ChPeakTime${data_type}_${data_file}.$$.txt"
    untracked double amplThr = $threshold
    untracked double minNumEvt = $number
    untracked double RunStart = $start_time
@@ -368,10 +368,10 @@ cmsRun "$cfg_path$data_file".graph.$$.cfg >& "$log_dir$data_file".$$.graph
 echo ""
 echo ""
 
-mv TimingLaser*.root log/
+mv Timing*.root log/
 mv *Peak*txt data/
 echo "File root with graphs was created:" 
-ls -ltrFh $preferred_dir/log/TimingLaser*.root | tail -1 | awk '{print $9}'
+ls -ltrFh $preferred_dir/log/Timing*.root | tail -1 | awk '{print $9}'
 
 echo ""
 echo ""
