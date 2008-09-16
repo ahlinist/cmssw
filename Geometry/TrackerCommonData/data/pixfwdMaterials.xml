@@ -15,6 +15,9 @@
  @modified Vesna Cuplov (october 2007)
   - update of Disks and Service cylinder materials: all the mixtures for disks were updated (added capacitors, resistors, solders  in the HDI and VHDI mixtures...
   - re-write all Service cylinder with mixture description
+ @modified Vesna Cuplov (august 2008)
+  -definition of Aluminium_OuterRing and Aluminium_InnerRing materials. The holes in the rings are not implemented so these are
+   taken intom account in the material density.
 
 == COMPONENT DEFINED BY THIS FILE: ==
 
@@ -271,6 +274,20 @@
       <rMaterial name="materials:Fluorine"/>
     </MaterialFraction>
   </CompositeMaterial>
+
+
+  <CompositeMaterial name="Aluminium_OuterRing" density="1.87*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="1.0">
+      <rMaterial name="materials:Aluminium"/>
+    </MaterialFraction>
+  </CompositeMaterial>
+
+  <CompositeMaterial name="Aluminium_InnerRing" density="1.93*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="1.0">
+      <rMaterial name="materials:Aluminium"/>
+    </MaterialFraction>
+  </CompositeMaterial>
+
  
   <!-- Material used by the Simplified Forward Pixel Service Cylinder -->  
 

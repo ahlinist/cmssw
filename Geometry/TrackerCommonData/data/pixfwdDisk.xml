@@ -8,6 +8,9 @@
  @version 3.02.01 May 30, 2006
  @created Dmitry Onoprienko
  @modified Vesna Cuplov 04.17.07
+ @modified august 2008: Aluminium_OuterRing material with appropriate density (lighter than aluminium density)   in order to comprensate the in-existing holes in the outer-ring simulation.
+ @modified Vesna Cuplov (august 2008): Inner and Outer Rings have 2 different aluminium densities.
+  
 
 == Subsystem or component described by the file ==
 
@@ -101,7 +104,7 @@ Disks are positioned into endcaps without any rotations.
 
   <LogicalPart name="PixelForwardDiskInnerRing" category="support">
     <rSolid name="PixelForwardDiskInnerRing"/>
-    <rMaterial name="materials:Aluminium"/>
+    <rMaterial name="pixfwdMaterials:Aluminium_InnerRing"/>
   </LogicalPart>
   
   <LogicalPart name="PixelForwardDiskInnerRingEdge" category="support">
@@ -111,7 +114,7 @@ Disks are positioned into endcaps without any rotations.
   
   <LogicalPart name="PixelForwardDiskOuterRing" category="support">
     <rSolid name="PixelForwardDiskOuterRing"/>
-    <rMaterial name="materials:Aluminium"/>
+    <rMaterial name="pixfwdMaterials:Aluminium_OuterRing"/>
   </LogicalPart>
   
   <LogicalPart name="PixelForwardDiskOuterRingEdge" category="support">
