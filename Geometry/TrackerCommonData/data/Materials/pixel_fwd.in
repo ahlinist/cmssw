@@ -2,12 +2,22 @@ PIXEL forward detector
 ============
 
  @version October 17, 2007
- @created Vesna CUPLOV (2006)
- @modified Vesna CUPLOV (2007)
+ @created Vesna Cuplov (2006)
+ @modified Vesna Cuplov (2007)
   - Forward pixel Disks and Service cylinder mixtures definitions.
   - All mixtures for FPix disks were updated in october 2007.
     (added capacitors, resistors, solders  in the HDI and VHDI mixtures..... )
   - Mixtures for Service cylinder were fully implemented in october 2007.
+ @modified Vesna Cuplov (2008)
+  New Aluminium density for the Outer Ring volume in order to take into account
+  the non-implemented holes in the Outer Ring. We used the real volume (this volume takes 
+  into account the holes in the ring) of the outer ring calculated by G. Derylo. 
+  The inner ring material was not implemented with the mixture program because 
+  this ring was modified (more holes in it) in order to remove more material. So, to
+  implement the new aluminium density to be used in the simulation, we used the  
+  inner ring mass value from the lab measurements and computed the denisty needed 
+  to reproduce this mass with a simulated inner ring volume without implemented holes. 
+
 .....................................................................................
 .....................................................................................
 
@@ -121,6 +131,20 @@ We also have Bias and Ground Wires: Copper V = 0.0362 cm3
 * 9 "Solders"  "FPix_TinLeadSolder" 0.012 1 ELE
 * 10 "Epoxy" "FPix_Epoxy" 0.030 1 SUP
 * 11 "Solders Indium" "Indium" 0.006 1 ELE
+
+
+6) Aluminium for outer ring (NO EDGES)
+   ===================================
+   We want a new aluminium density that is used for the outer Ring in order to take
+   into account the holes in the outer ring that are not implemented in the
+   simulation.
+   58.572 cm3 is the volume of an outer-ring without holes as it is in the simulation.
+   G. Derylo calulated the outer-ring REAL volume (there are many holes in the ring):
+   Doc-DB #500 v5 
+   The real outer ring has a volume of aluminium of 42.576 cm3 and we remove 2 cm3 for the 2 edges = 40.576 cm3
+
+# "Aluminium for outer ring" "Aluminium_OuterRing"  58.572  1
+* 1 "Aluminium" "Aluminium"  40.576 1 SUP
 
 
 
