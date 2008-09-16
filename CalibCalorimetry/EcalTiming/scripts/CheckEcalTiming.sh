@@ -49,6 +49,8 @@ echo "      -ffn|--from_file_name from_file_name  Name of input file; default is
 echo "      -dt|--data_type       data_type       Data Type of interest; default is Laser"
 echo "      -cet|--correct_ecal   correct_ecal    Correct For Ecal Readout Timing; default is false"
 echo "      -cbh|--correct_bh     correct_bh      Correct For BeamHalo Readout Timing; default is false"
+echo "      -bhp|--bh_plus        bh_plus         Is Direction of BeamHalo Plus; default is true"
+echo "      -ebr|--eb_radius      eb_radius       Correct EB radius in Readout Timing; default is 1.4(m)"
 echo ""
 echo "To specify multiple fed_id's/ieb_id's/cry's to mask use a comma-separated list in between double quotes, e.g., \"1,2,3\" "
 exit
@@ -80,8 +82,10 @@ from_file_name="Emptyfile.root"
 
 correct_ecal="false"
 correct_bh="false"
+bh_plus="true"
 
 data_type="Laser"
+eb_radius=1.4
 
 manyfiles="0"
 
@@ -154,9 +158,16 @@ manyfiles="0"
 				
 	  -cbh|--correct_bh)
 				correct_bh=$2
-				;;			
+				;;	
 				
-
+      -ebr|--eb_radius)
+				eb_radius=$2
+				;;				
+				
+      -bhp|--bh_plus)
+				bh_plus=$2
+				;;	
+				
     esac
     shift       # Verifica la serie successiva di parametri.
 
@@ -187,6 +198,8 @@ echo "from_file_name:                               $from_file_name"
 echo "data_type:                                    $data_type"
 echo "correct for ecal readout:                     $correct_ecal"
 echo "correct for beam halo:                        $correct_bh"
+echo "Beam halo direction plus:                     $bh_plus"
+echo "EB Radius:                                    $eb_radius m"
 
 
 echo ""
@@ -318,6 +331,8 @@ module uncalibHitMaker =  EcalFixedAlphaBetaFitUncalibRecHitProducer{
    untracked string FromFileName = "$from_file_name"
    untracked bool CorrectEcalReadout = $correct_ecal
    untracked bool CorrectBH = $correct_bh
+   untracked double EBRadius = $eb_radius
+   untracked bool BeamHaloPlus = $bh_plus
    #untracked vdouble SMAverages = {5.00, 5.00,  5.00,  5.00,  5.00,  5.00,  5.00,  5.00,  5.00,   5.2177, 5.2282,  5.1461, 5.1395, 4.8314, 4.7773, 4.8276, 4.8607, 4.9925,   5.0648, 4.837, 4.7639, 5.2952, 5.2985, 4.8695, 4.8308, 4.9181, 4.8526, 4.7157, 4.7297, 5.1266, 5.1656, 4.8872, 4.8274, 5.3140, 5.3209, 5.0342, 5.0402, 5.0712, 4.9686, 5.4509, 5.3868, 5.3950, 5.2342, 5.00, 5.00, 5.00,  5.00,  5.00,  5.00,  5.00,  5.00,  5.00,  5.00,  5.00}
    
   # untracked vdouble SMAverages = {5.00, 5.00,  5.00,  5.00,  5.00,  5.00,  5.00,  5.00,  5.00,   
@@ -326,13 +341,22 @@ module uncalibHitMaker =  EcalFixedAlphaBetaFitUncalibRecHitProducer{
 #				  5.3387, 5.3527, 6.1076, 6.1466, 5.4364, 5.3764, 6.3260, 6.3329, 5.6572, 
 #				  5.6632, 5.6202, 5.5176, 6.4509, 6.3868, 6.4070, 6.2462, 5.00, 5.00, 
 #				  5.00,  5.00,  5.00,  5.00,  5.00,  5.00,  5.00,  5.00,  5.00}
-				  
-   untracked vdouble SMAverages = {5.00, 5.00,  5.00,  5.00,  5.00,  5.00,  5.00,  5.00,  5.00,   
-                                  5.3805, 5.4358, 5.377, 5.287, 4.96, 4.9758, 4.9893, 5.0638, 5.2273,   
-				  5.242, 4.9926, 4.9928, 5.5974, 5.4966, 5.1288, 5.127, 5.2627, 5.1177, 
-				  5.0262, 5.0702, 5.3998, 5.5244, 5.1255, 5.0881, 5.7494, 5.6323, 5.4287, 
-				  5.4655, 5.3829, 5.3226, 5.7801, 5.7548, 5.8181, 5.6015, 5.00, 5.00, 
-				  5.00,  5.00,  5.00,  5.00,  5.00,  5.00,  5.00,  5.00,  5.00}	
+
+
+# Laser Averages				  
+ #  untracked vdouble SMAverages = {5.00, 5.00,  5.00,  5.00,  5.00,  5.00,  5.00,  5.00,  5.00,   
+ #                                5.3805, 5.4358, 5.377, 5.287, 4.96, 4.9758, 4.9893, 5.0638, 5.2273,   
+#				  5.242, 4.9926, 4.9928, 5.5974, 5.4966, 5.1288, 5.127, 5.2627, 5.1177, 
+#				  5.0262, 5.0702, 5.3998, 5.5244, 5.1255, 5.0881, 5.7494, 5.6323, 5.4287, 
+#				  5.4655, 5.3829, 5.3226, 5.7801, 5.7548, 5.8181, 5.6015, 5.00, 5.00, 
+#				  5.00,  5.00,  5.00,  5.00,  5.00,  5.00,  5.00,  5.00,  5.00}	
+#				  
+  untracked vdouble SMAverages = {5.0703, 5.2278,  5.2355,  5.1548,  5.1586,  5.1912,  5.1576,  5.1625,  5.1269,   
+                                  5.643, 5.6891, 5.588, 5.5978, 5.6508, 5.6363, 5.5972, 5.6784, 5.6108,   
+				  5.6866, 5.6523, 5.6666, 5.7454, 5.729, 5.7751, 5.7546, 5.7835, 5.7529, 
+				  5.5691, 5.6677, 5.5662, 5.6308, 5.7097, 5.6773, 5.76, 5.8025, 5.9171, 
+				  5.8771, 5.8926, 5.9011, 5.8447, 5.8142,  5.8475, 5.7123,5.6216, 5.6713, 
+				  5.3747,5.3564,  5.39,  5.8081,  5.8081,   5.1818, 5.1125,  5.1334,  5.2581}	
 				  
      untracked vdouble SMCorrections = {0.00, 0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,   
                                   0.2411, 0.2411, 0.2221, 0.2221, -0.1899, -0.1899, -0.1509, -0.1509, 0.0451,   

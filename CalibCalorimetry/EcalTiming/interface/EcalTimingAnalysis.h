@@ -98,6 +98,17 @@ class EcalTimingAnalysis : public edm::EDAnalyzer {
       TH3F* chTimingEtaPhi_;
       TH3F* chTimingEtaPhiRel_;
 	  
+	  TProfile* ttTimingEta_;
+      TProfile* ttTimingEtaRel_;
+      TProfile* chTimingEta_;
+      TProfile* chTimingEtaRel_;
+	  
+	  TProfile* ttTimingEtaEEP_;
+      TProfile* ttTimingEtaRelEEP_;
+	  
+	  TProfile* ttTimingEtaEEM_;
+      TProfile* ttTimingEtaRelEEM_;
+	  
       TH3F* chTimingEtaPhiEEP_;
       TH3F* chTimingEtaPhiEEM_;
       TH3F* chTimingEtaPhiRelEEP_;
@@ -131,6 +142,7 @@ class EcalTimingAnalysis : public edm::EDAnalyzer {
 	  //Correct for Timing 
 	  bool corrtimeEcal;
 	  bool corrtimeBH;
+	  bool bhplus_;
 	  double EBradius_;
 	  
 	  double allave_;
