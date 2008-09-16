@@ -26,6 +26,9 @@ int main(int argc,  char * argv[]){
   int SMn =0;
   bool find_SMnum = true;
   int HowManyTT =0;
+  std::vector<int> ttVector;
+  bool is69 = false;
+  bool is70 = false;
    while( !(FileXML.eof()) ){
     FileXML.getline(Buffer,5000);
     //    if (!strstr(Buffer,"#") && !(strspn(Buffer," ") == strlen(Buffer)))
@@ -48,6 +51,9 @@ int main(int argc,  char * argv[]){
       //cout<<"Buffer: "<<Buffer<<"  []TT: "<<TT<<endl;
       if(TT< 1 || TT >70){cout<<"Wrong TT: "<<TT<<endl;}
       else{
+	ttVector.push_back(TT); 
+    if (TT == 69) is69 = true;	
+    if (TT == 70) is70 = true;	
 	int time_off = -10;
 	char st2[200];
 	FileXML.getline(Buffer,5000);// line for the delay
@@ -129,18 +135,28 @@ int main(int argc,  char * argv[]){
   xml_outfile<<"             <SUPERMODULE>" <<SMn<< "</SUPERMODULE>\n";
   xml_outfile<<"     <TIME_STAMP> 270705 </TIME_STAMP>"<<endl;
   //add the time for the mem at the beginning
-  xml_outfile<<"   <DELAY_OFFSET>\n";
-  xml_outfile<<"             <SUPERMODULE>"<<SMn <<"</SUPERMODULE>\n";
-  xml_outfile<<"             <TRIGGERTOWER>69</TRIGGERTOWER>\n";
-  xml_outfile<<"             <TIME_OFFSET>"<< TimeOffset[69]<<"</TIME_OFFSET>\n";
-  xml_outfile<<"    </DELAY_OFFSET>"<<endl;
-  xml_outfile<<"   <DELAY_OFFSET>\n";
-  xml_outfile<<"             <SUPERMODULE>"<<SMn <<"</SUPERMODULE>\n";
-  xml_outfile<<"             <TRIGGERTOWER>70</TRIGGERTOWER>\n";
-  xml_outfile<<"             <TIME_OFFSET>"<< TimeOffset[70]<<"</TIME_OFFSET>\n";
-  xml_outfile<<"    </DELAY_OFFSET>"<<endl;
+  
+  if (is69){
+     xml_outfile<<"   <DELAY_OFFSET>\n";
+     xml_outfile<<"             <SUPERMODULE>"<<SMn <<"</SUPERMODULE>\n";
+     xml_outfile<<"             <TRIGGERTOWER>69</TRIGGERTOWER>\n";
+     xml_outfile<<"             <TIME_OFFSET>"<< TimeOffset[69]<<"</TIME_OFFSET>\n";
+     xml_outfile<<"    </DELAY_OFFSET>"<<endl;
+  }
+  if (is70){
+     xml_outfile<<"   <DELAY_OFFSET>\n";
+     xml_outfile<<"             <SUPERMODULE>"<<SMn <<"</SUPERMODULE>\n";
+     xml_outfile<<"             <TRIGGERTOWER>70</TRIGGERTOWER>\n";
+     xml_outfile<<"             <TIME_OFFSET>"<< TimeOffset[70]<<"</TIME_OFFSET>\n";
+     xml_outfile<<"    </DELAY_OFFSET>"<<endl;
+  }
+  
+  //for(int i=1;i<69;i++){
+  for( vector<int>::iterator Iter=ttVector.begin();Iter != ttVector.end();++Iter){
 
-  for(int i=1;i<69;i++){
+    //if (ttVector->find(i) == ttVector->end()) continue;
+	int i = (*Iter);
+	if ( i > 68) continue;
     xml_outfile<<"   <DELAY_OFFSET>\n";
     xml_outfile<<"             <SUPERMODULE>"<<SMn <<"</SUPERMODULE>\n";
     xml_outfile<<"             <TRIGGERTOWER>"<< i <<"</TRIGGERTOWER>\n";
