@@ -67,9 +67,10 @@ EcalTimingAnalysis::EcalTimingAnalysis( const edm::ParameterSet& iConfig )
    min_num_ev_         = (int) (iConfig.getUntrackedParameter<double>("minNumEvt", 100.)); 
    timerunstart_       = iConfig.getUntrackedParameter<double>("RunStart",1220192037.);
    timerunlength_       = iConfig.getUntrackedParameter<double>("RunLength",2.);
-   EBradius_           = iConfig.getUntrackedParameter<double>("EBRadius",1.5);
+   EBradius_           = iConfig.getUntrackedParameter<double>("EBRadius",1.4);
    corrtimeEcal        = iConfig.getUntrackedParameter<bool>("CorrectEcalReadout",false);
    corrtimeBH          = iConfig.getUntrackedParameter<bool>("CorrectBH",false);
+   bhplus_             = iConfig.getUntrackedParameter<bool>("BeamHaloPlus",true);
    allave_             = iConfig.getUntrackedParameter<double>("AllAverage",5.7);
 
    fromfile_           = iConfig.getUntrackedParameter<bool>("FromFile",false);  
@@ -189,9 +190,14 @@ EcalTimingAnalysis::beginJob(edm::EventSetup const& eventSetup ) {
   double ttEtaBins[36] = {-85, -80, -75, -70, -65, -60, -55, -50, -45, -40, -35, -30, -25, -20, -15, -10, -5, 0, 1, 6, 11, 16, 21, 26, 31, 36, 41, 46, 51, 56, 61, 66, 71, 76, 81, 86 };
   double ttPhiBins[73];
   double timingBins[126];
-  for (int i = 0; i < 126; ++i)
+  double timingtBins[501];
+  double ttEtaEEBins[21];
+  for (int i = 0; i < 501; ++i)
     {
-      timingBins[i]=2.5+double(i)*5./125.;
+      timingtBins[i]=2.5+double(i)*5./500.;
+	  
+      if ( i < 126) {timingBins[i]=2.5+double(i)*5./125.;}
+      if ( i < 21) {ttEtaEEBins[i]=0.0+double(i)*100./20.;}
       if (i<73) 
 	   {
           ttPhiBins[i]=1+5*i;
@@ -202,13 +208,23 @@ EcalTimingAnalysis::beginJob(edm::EventSetup const& eventSetup ) {
   ttTimingEtaPhiRel_ = fromfile_ ? ((TH3F*) tf->Get("timeTTAllFEDsREL")) : (new TH3F("timeTTAllFEDsREL","(Phi,Eta,time corrected) for all FEDs (SM,TT binning);i#phi;i#eta;Relative Time (1 clock = 25ns)",72,ttPhiBins,35,ttEtaBins,125,timingBins)); 
   chTimingEtaPhi_    = fromfile_ ? ((TH3F*) tf->Get("timeCHAllFEDs")) : (new TH3F("timeCHAllFEDs","(Phi,Eta,time) for all FEDs (SM,ch binning);i#phi;i#eta;Relative Time (1 clock = 25ns)",360,1.,361.,171,-85.,86.,125,2.5,7.5)); 
   chTimingEtaPhiRel_ = fromfile_ ? ((TH3F*) tf->Get("timeCHAllFEDsREL")) : (new TH3F("timeCHAllFEDsREL","(Phi,Eta,time corrected) for all FEDs (SM,ch binning);i#phi;i#eta;Relative Time (1 clock = 25ns)",360,1.,361.,171,-85.,86.,125,2.5,7.5)); 
-    std::cout << " Step 5 " << std::endl;
 
   chTimingEtaPhiEEP_    = fromfile_ ? ((TH3F*) tf->Get("EEPtimeCHAllFEDs")) : (new TH3F("EEPtimeCHAllFEDs","(ix,iy,time) for all FEDs EE+ (SM,ch binning);ix;iy;Relative Time (1 clock = 25ns)",100,1.,101.,100,1.0,101.,125,2.,8.)); 
   chTimingEtaPhiEEM_    = fromfile_ ? ((TH3F*) tf->Get("EEMtimeCHAllFEDs")) : (new TH3F("EEMtimeCHAllFEDs","(ix,iy,time) for all FEDs EE- (SM,ch binning);ix;iy;Relative Time (1 clock = 25ns)",100,1.,101.,100,1.0,101.,125,2.,8.)); 
   chTimingEtaPhiRelEEP_ = fromfile_ ? ((TH3F*) tf->Get("EEPtimeCHAllFEDsREL")) : (new TH3F("EEPtimeCHAllFEDsREL","(ix,iy,time corrected) for all FEDs EE+ (SM,ch binning);ix;iy;Relative Time (1 clock = 25ns)",100,1.,101.,100,1.,101.,125,2.,8.)); 
   chTimingEtaPhiRelEEM_ = fromfile_ ? ((TH3F*) tf->Get("EEMtimeCHAllFEDsREL")) : (new TH3F("EEMtimeCHAllFEDsREL","(ix,iy,time corrected) for all FEDs EE- (SM,ch binning);ix;iy;Relative Time (1 clock = 25ns)",100,1.,101.,100,1.,101.,125,2.,8.)); 
  
+  //Now the eta profiles
+  ttTimingEta_    = fromfile_ ? ((TProfile*) tf->Get("timeTTAllFEDsEta")) : (new TProfile("timeTTAllFEDsEta","(Eta,time) for all FEDs (SM,TT binning);i#eta;Relative Time (1 clock = 25ns)",35,ttEtaBins,2.5,7.5)); 
+  ttTimingEtaRel_ = fromfile_ ? ((TProfile*) tf->Get("timeTTAllFEDsEtaREL")) : (new TProfile("timeTTAllFEDsEtaREL","(Eta,time corrected) for all FEDs (SM,TT binning);i#eta;Relative Time (1 clock = 25ns)",35,ttEtaBins,2.5,7.5)); 
+  chTimingEta_    = fromfile_ ? ((TProfile*) tf->Get("timeCHAllFEDsEta")) : (new TProfile("timeCHAllFEDsEta","(Eta,time) for all FEDs (SM,ch binning);i#eta;Relative Time (1 clock = 25ns)",171,-85.,86.,2.5,7.5)); 
+  chTimingEtaRel_ = fromfile_ ? ((TProfile*) tf->Get("timeCHAllFEDsEtaREL")) : (new TProfile("timeCHAllFEDsEtaREL","(Eta,time corrected) for all FEDs (SM,ch binning);i#eta;Relative Time (1 clock = 25ns)",171,-85.,86.,2.5,7.5)); 
+
+  ttTimingEtaEEP_    = fromfile_ ? ((TProfile*) tf->Get("timeTTAllFEDsEtaEEP")) : (new TProfile("timeTTAllFEDsEtaEEP","(Eta,time) for EEP FEDs (SM,TT binning);i#eta;Relative Time (1 clock = 25ns)",20,ttEtaEEBins,2.5,7.5)); 
+  ttTimingEtaRelEEP_ = fromfile_ ? ((TProfile*) tf->Get("timeTTAllFEDsEtaEEPREL")) : (new TProfile("timeTTAllFEDsEtaEEPREL","(Eta,time corrected) for EEP FEDs (SM,TT binning);i#eta;Relative Time (1 clock = 25ns)",20,ttEtaEEBins,2.5,7.5)); 
+
+  ttTimingEtaEEM_    = fromfile_ ? ((TProfile*) tf->Get("timeTTAllFEDsEtaEEM")) : (new TProfile("timeTTAllFEDsEtaEEM","(Eta,time) for EEM FEDs (SM,TT binning);i#eta;Relative Time (1 clock = 25ns)",20,ttEtaEEBins,2.5,7.5)); 
+  ttTimingEtaRelEEM_ = fromfile_ ? ((TProfile*) tf->Get("timeTTAllFEDsEtaEEMREL")) : (new TProfile("timeTTAllFEDsEtaEEMREL","(Eta,time corrected) for EEM FEDs (SM,TT binning);i#eta;Relative Time (1 clock = 25ns)",20,ttEtaEEBins,2.5,7.5)); 
   //Here is some info needed to convert DetId's to FEDIds's (DDCIds)
   //It is basically an electronics mapping service
 
@@ -500,6 +516,17 @@ void EcalTimingAnalysis::endJob() {
   chTimingEtaPhiRelEEP_->Write();
   chTimingEtaPhiRelEEM_->Write();
   
+  ttTimingEta_->Write();
+  chTimingEta_->Write();
+  ttTimingEtaRel_->Write();
+  chTimingEtaRel_->Write();
+  
+  ttTimingEtaEEP_->Write();
+  ttTimingEtaRelEEP_->Write();
+  
+  ttTimingEtaEEM_->Write();
+  ttTimingEtaRelEEM_->Write();
+  
   fullttTime->Write();
   fullttRTime->Write();
   fullLMTime->Write();
@@ -595,6 +622,10 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
 	   ttTimingEtaPhiRel_->Fill(anid.iphi(),anid.ieta(),mytime-sMAves_[DCCid-1]+5.0);
 	   chTimingEtaPhi_->Fill(anid.iphi(),anid.ieta(),mytime);
 	   chTimingEtaPhiRel_->Fill(anid.iphi(),anid.ieta(),mytime-sMAves_[DCCid-1]+5.0);
+	   ttTimingEta_->Fill(anid.ieta(),mytime);
+	   ttTimingEtaRel_->Fill(anid.ieta(),mytime-sMAves_[DCCid-1]+5.0);
+	   chTimingEta_->Fill(anid.ieta(),mytime);
+	   chTimingEtaRel_->Fill(anid.ieta(),mytime-sMAves_[DCCid-1]+5.0);  
 	}  
        if(SMind == 648  ){timeCry2[DCCid-1]->Fill((ithit->jitter()+5.0)*25.);}
        else if(SMind == 653  ){timeCry1[DCCid-1]->Fill((ithit->jitter()+5.0)*25.);}
@@ -651,10 +682,14 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
 		   if (anid.zside() == 1) {
 		   chTimingEtaPhiEEP_->Fill(anid.ix(),anid.iy(),mytime);
 		   chTimingEtaPhiRelEEP_->Fill(anid.ix(),anid.iy(),mytime-sMAves_[DCCid-1]+5.);
+		   ttTimingEtaEEP_->Fill(pow(anid.ix()*anid.ix()+anid.iy()*anid.iy(),0.5),mytime);
+	       ttTimingEtaRelEEP_->Fill(pow(anid.ix()*anid.ix()+anid.iy()*anid.iy(),0.5),mytime-sMAves_[DCCid-1]+5.0);  
 		   }
 		   else {
 		   chTimingEtaPhiEEM_->Fill(anid.ix(),anid.iy(),mytime);
 		   chTimingEtaPhiRelEEM_->Fill(anid.ix(),anid.iy(),mytime-sMAves_[DCCid-1]+5.);
+		   ttTimingEtaEEM_->Fill(pow(anid.ix()*anid.ix()+anid.iy()*anid.iy(),0.5),mytime);
+	       ttTimingEtaRelEEM_->Fill(pow(anid.ix()*anid.ix()+anid.iy()*anid.iy(),0.5),mytime-sMAves_[DCCid-1]+5.0);
 		   }
 	   
 	   
@@ -740,6 +775,7 @@ double EcalTimingAnalysis::timecorr(const CaloSubdetectorGeometry *geometry_p, D
 	  else if (ieta > -65 ) zz=2.192428069;
 	  else zz=5.188213395;
 	  */
+	  /*
 	  if (ieta > 65 )  zz=5.06880196;
 	  else if (ieta > 45 )  zz=2.08167184;
 	  else if (ieta > 25 )  zz=0.86397025;
@@ -748,9 +784,9 @@ double EcalTimingAnalysis::timecorr(const CaloSubdetectorGeometry *geometry_p, D
 	  else if (ieta > -45 )  zz=0.86397025;
 	  else if (ieta > -65 ) zz=2.08167184;
 	  else zz=5.06880196;
-
-      //double change = (pow(EBradius_*EBradius_+z*z,0.5)-EBradius_)/speedlight;
-      double change = (pow(EBradius_*EBradius_+zz,0.5)-EBradius_)/speedlight;
+          */
+      double change = (pow(EBradius_*EBradius_+z*z,0.5)-EBradius_)/speedlight;
+      ///double change = (pow(EBradius_*EBradius_+zz,0.5)-EBradius_)/speedlight;
 	  time += change;
 	  
 	  //std::cout << " Woohoo... z is " << z << " ieta is " << (EBDetId(id)).ieta() << std::endl;
@@ -760,17 +796,17 @@ double EcalTimingAnalysis::timecorr(const CaloSubdetectorGeometry *geometry_p, D
    if (corrtimeEcal && !inEB){
       double x = position.x()/100.;
       double y = position.y()/100.;
-	  //double change = (pow(x*x+y*y+z*z,0.5)-EBradius_)/speedlight;
-	  double change = (pow(z*z,0.5)-EBradius_)/speedlight; //Assuming they are all the same length...
+	  double change = (pow(x*x+y*y+z*z,0.5)-EBradius_)/speedlight;
+	  //double change = (pow(z*z,0.5)-EBradius_)/speedlight; //Assuming they are all the same length...
 	  time += change; //Take this out for the time being
 	  
 	  //std::cout << " Woohoo... z is " << z << " ieta is " << (EBDetId(id)).ieta() << std::endl;
 	  //std::cout << " Subtracting " << change << std::endl;
    }
-   speedlight = (0.299792458*(1.0-.08));
+   ///speedlight = (0.299792458*(1.0-.08));
    //Correct out the BH or Beam-shot assumption
    if (corrtimeBH){
-      time += z/speedlight;
+      time += ((bhplus_) ? (z/speedlight) :  (-z/speedlight) );
 	  //std::cout << " Adding " << z/speedlight << std::endl;
 
    }
