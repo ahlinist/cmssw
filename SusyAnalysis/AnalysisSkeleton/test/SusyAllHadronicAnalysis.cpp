@@ -14,7 +14,7 @@ Uses the EventSelector interface for event selection and TFileService for plotti
 //
 // Original Author:  Markus Stoye
 //         Created:  Mon Feb 18 15:40:44 CET 2008
-// $Id: SusyAllHadronicAnalysis.cpp,v 1.4 2008/07/30 13:35:42 fronga Exp $
+// $Id: SusyAllHadronicAnalysis.cpp,v 1.5 2008/08/04 08:55:53 fronga Exp $
 //
 //
 
@@ -281,13 +281,13 @@ SusyAllHadronicAnalysis::initPlots() {
   // 1.a. for the tree with all variables
   selectionTree_->Branch("run",       &run_,       "run/I");
   selectionTree_->Branch("event",     &event_,     "event/I");
-  selectionTree_->Branch("weight",    &weight_,    "weight/I");
+  selectionTree_->Branch("weight",    &weight_,    "weight/D");
   selectionTree_->Branch("processId", &processId_, "processId/I");
 
   // 1.b. for the tree with all decisions (of ALL events)
   decisionTree_->Branch("run",       &run_,       "run/I");
   decisionTree_->Branch("event",     &event_,     "event/I");
-  decisionTree_->Branch("weight",    &weight_,    "weight/I");
+  decisionTree_->Branch("weight",    &weight_,    "weight/D");
   decisionTree_->Branch("processId", &processId_, "processId/I");
  
   // 2. Decision from all selectors
