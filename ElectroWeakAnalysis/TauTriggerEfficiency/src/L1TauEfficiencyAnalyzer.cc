@@ -11,6 +11,9 @@ L1TauEfficiencyAnalyzer::L1TauEfficiencyAnalyzer(const edm::ParameterSet& iConfi
 }
 
 L1TauEfficiencyAnalyzer::~L1TauEfficiencyAnalyzer(){
+	cout << endl;
+	cout << "Events analyzed " << nEvents << endl;
+	cout << endl;
 }
 
 void L1TauEfficiencyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup ){
