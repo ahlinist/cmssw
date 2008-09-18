@@ -29,7 +29,7 @@ void L1TauEfficiencyAnalyzer::analyze(const edm::Event& iEvent, const edm::Event
 	if(caloTauHandle.isValid()){
 	  const CaloTauCollection & caloTaus = *(caloTauHandle.product());
 
-	  cout << "calotau collection size " << caloTaus.size() << endl;
+	  LogDebug("L1TauEfficiency") << "calotau collection size " << caloTaus.size() << endl;
 
 	  CaloTauCollection::const_iterator iTau;
           for(iTau = caloTaus.begin(); iTau != caloTaus.end(); ++iTau){
@@ -47,7 +47,7 @@ void L1TauEfficiencyAnalyzer::analyze(const edm::Event& iEvent, const edm::Event
         if(pfTauHandle.isValid()){
           const PFTauCollection & pfTaus = *(pfTauHandle.product());
 
-          cout << "pftau collection size " << pfTaus.size() << endl;
+          LogDebug("L1TauEfficiency") << "pftau collection size " << pfTaus.size() << endl;
 
           PFTauCollection::const_iterator iTau;
           for(iTau = pfTaus.begin(); iTau != pfTaus.end(); ++iTau){
@@ -62,7 +62,7 @@ void L1TauEfficiencyAnalyzer::analyze(const edm::Event& iEvent, const edm::Event
 void L1TauEfficiencyAnalyzer::beginJob(const edm::EventSetup& iSetup){}
 
 void L1TauEfficiencyAnalyzer::endJob(){
-	cout << "Events analyzed: " << nEvents << endl;
+        LogInfo("L1TauEfficiency") << "Events analyzed: " << nEvents << endl;
 }
 
 #include "PhysicsTools/Utilities/interface/deltaR.h"
