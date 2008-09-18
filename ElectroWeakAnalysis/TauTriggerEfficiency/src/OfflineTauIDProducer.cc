@@ -1,6 +1,6 @@
-#include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/OfflineTauIDFilter.h"
+#include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/OfflineTauIDProducer.h"
 
-OfflineTauIDFilter::OfflineTauIDFilter(const edm::ParameterSet& iConfig) {
+OfflineTauIDProducer::OfflineTauIDProducer(const edm::ParameterSet& iConfig) {
 
 	produces< PFTauCollection >().setBranchAlias("identifiedPfTaus");
         produces< CaloTauCollection >().setBranchAlias("identifiedCaloTaus");
@@ -17,10 +17,10 @@ OfflineTauIDFilter::OfflineTauIDFilter(const edm::ParameterSet& iConfig) {
 	nSelectedEvents	= 0;
 }
 
-OfflineTauIDFilter::~OfflineTauIDFilter(){
+OfflineTauIDProducer::~OfflineTauIDProducer(){
 }
 
-void OfflineTauIDFilter::produce(edm::Event& iEvent, const edm::EventSetup& iSetup ){
+void OfflineTauIDProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup ){
 
 	bool select = false;
 	nEvents++;
@@ -66,7 +66,7 @@ void OfflineTauIDFilter::produce(edm::Event& iEvent, const edm::EventSetup& iSet
 	}
 
 	if(select) nSelectedEvents++;
-        LogDebug("OfflineTauIDFilter") << "taus " << pfTaus->size() << " " << caloTaus->size() << endl;
+        LogDebug("OfflineTauIDProducer") << "taus " << pfTaus->size() << " " << caloTaus->size() << endl;
         auto_ptr< PFTauCollection > pf(pfTaus);
         iEvent.put(pf);
 
@@ -74,7 +74,7 @@ void OfflineTauIDFilter::produce(edm::Event& iEvent, const edm::EventSetup& iSet
         iEvent.put(calo);
 }
 
-bool OfflineTauIDFilter::tauTag(reco::CaloTau& tau){
+bool OfflineTauIDProducer::tauTag(reco::CaloTau& tau){
 
         CaloTauElementsOperators theCaloTauElementsOperators(tau);
 
@@ -94,7 +94,7 @@ bool OfflineTauIDFilter::tauTag(reco::CaloTau& tau){
 	return tagged;
 }
 
-bool OfflineTauIDFilter::tauTag(reco::PFTau& tau){
+bool OfflineTauIDProducer::tauTag(reco::PFTau& tau){
 
 	PFTauElementsOperators thePFTauElementsOperators(tau);
 
@@ -114,4 +114,4 @@ bool OfflineTauIDFilter::tauTag(reco::PFTau& tau){
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"
-DEFINE_FWK_MODULE(OfflineTauIDFilter);
+DEFINE_FWK_MODULE(OfflineTauIDProducer);
