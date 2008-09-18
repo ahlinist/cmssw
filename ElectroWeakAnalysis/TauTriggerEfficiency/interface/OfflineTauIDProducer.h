@@ -1,7 +1,7 @@
-#ifndef OfflineTauIDFilter_H
-#define OfflineTauIDFilter_H
+#ifndef OfflineTauIDProducer_H
+#define OfflineTauIDProducer_H
 
-/** \class OfflineTauIDFilter
+/** \class OfflineTauIDProducer
  *
  *
  *  This class is an EDProducer for selecting events
@@ -34,11 +34,11 @@ using namespace reco;
 using namespace math;
 using namespace std;
 
-class OfflineTauIDFilter : public edm::EDProducer {
+class OfflineTauIDProducer : public edm::EDProducer {
 
     public:
-        explicit OfflineTauIDFilter(const edm::ParameterSet&);
-        ~OfflineTauIDFilter();
+        explicit OfflineTauIDProducer(const edm::ParameterSet&);
+        ~OfflineTauIDProducer();
 
         virtual void produce(edm::Event&, const edm::EventSetup&);
 	virtual bool tauTag(reco::CaloTau&);

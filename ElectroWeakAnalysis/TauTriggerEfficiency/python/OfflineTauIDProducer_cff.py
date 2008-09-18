@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-IdentifiedTaus = cms.EDProducer("OfflineTauIDFilter",
+IdentifiedTaus = cms.EDProducer("OfflineTauIDProducer",
         MatchingCone            = cms.double(0.1),
         SignalCone              = cms.double(0.07),
         IsolationCone           = cms.double(0.4),
