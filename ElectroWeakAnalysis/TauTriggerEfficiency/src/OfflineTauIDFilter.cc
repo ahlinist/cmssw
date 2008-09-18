@@ -66,7 +66,7 @@ void OfflineTauIDFilter::produce(edm::Event& iEvent, const edm::EventSetup& iSet
 	}
 
 	if(select) nSelectedEvents++;
-cout << "taus " << pfTaus->size() << " " << caloTaus->size() << endl;
+        LogDebug("OfflineTauIDFilter") << "taus " << pfTaus->size() << " " << caloTaus->size() << endl;
         auto_ptr< PFTauCollection > pf(pfTaus);
         iEvent.put(pf);
 
