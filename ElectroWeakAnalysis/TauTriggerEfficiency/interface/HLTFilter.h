@@ -34,6 +34,7 @@ class HLTFilter : public edm::EDFilter {
         virtual bool filter(edm::Event&, const edm::EventSetup&);
 
    private:
+	InputTag	 HLTResults;
 	vector<InputTag> HLTSelection;
 
         int nEvents,

@@ -2,6 +2,7 @@
 
 HLTFilter::HLTFilter(const edm::ParameterSet& iConfig) {
 
+	HLTResults   = iConfig.getParameter<InputTag>("HLTResults");
 	HLTSelection = iConfig.getParameter<vector<InputTag> >("HLTSelection");
 
 	nEvents		= 0;
@@ -19,7 +20,7 @@ bool HLTFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup ){
 	Handle<TriggerResults> hltHandle;
 
         try{
-          iEvent.getByLabel("TriggerResults",hltHandle);
+          iEvent.getByLabel(HLTResults,hltHandle);
         }catch(...) {;}
 
         if(hltHandle.isValid()){
