@@ -46,10 +46,12 @@ class OfflineTauIDProducer : public edm::EDProducer {
 
    private:
         double matchingConeSize,
-               signalConeSize,
                isolationConeSize,
                ptLeadingTrackMin,
                ptOtherTracksMin;
+        string signalConeSizeFormula;
+        double signalConeSizeMin;
+        double signalConeSizeMax;
         string metric;
         unsigned int isolationAnnulus_Tracksmaxn;
 

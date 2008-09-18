@@ -6,7 +6,9 @@ OfflineTauIDProducer::OfflineTauIDProducer(const edm::ParameterSet& iConfig) {
         produces< CaloTauCollection >().setBranchAlias("identifiedCaloTaus");
 
 	matchingConeSize            = iConfig.getParameter<double>("MatchingCone");
-	signalConeSize	            = iConfig.getParameter<double>("SignalCone");
+        signalConeSizeFormula       = iConfig.getParameter<string>("TrackerSignalConeSizeFormula"); // E, ET recognised as variables
+	signalConeSizeMin           = iConfig.getParameter<double>("TrackerSignalConeSize_min");
+	signalConeSizeMax           = iConfig.getParameter<double>("TrackerSignalConeSize_max");
 	isolationConeSize           = iConfig.getParameter<double>("IsolationCone");
 	ptLeadingTrackMin           = iConfig.getParameter<double>("LeadTrack_minPt");
 	ptOtherTracksMin            = iConfig.getParameter<double>("Track_minPt");
@@ -78,6 +80,11 @@ bool OfflineTauIDProducer::tauTag(reco::CaloTau& tau){
 
         CaloTauElementsOperators theCaloTauElementsOperators(tau);
 
+        TFormula& formula = theCaloTauElementsOperators.computeConeSizeTFormula(signalConeSizeFormula, "OfflineTauIDProcuder::tauTag(reco::CaloTau)");
+        double signalConeSize = theCaloTauElementsOperators.computeConeSize(formula, signalConeSizeMin, signalConeSizeMax);
+
+        LogDebug("OfflineTauIDProducer") << "CaloTau computed signal cone " << signalConeSize;
+
         double discriminator = theCaloTauElementsOperators.discriminatorByIsolTracksN(
                                 metric,
                                 matchingConeSize,
@@ -97,6 +104,11 @@ bool OfflineTauIDProducer::tauTag(reco::CaloTau& tau){
 bool OfflineTauIDProducer::tauTag(reco::PFTau& tau){
 
 	PFTauElementsOperators thePFTauElementsOperators(tau);
+
+        TFormula& formula = thePFTauElementsOperators.computeConeSizeTFormula(signalConeSizeFormula, "OfflineTauIDProcuder::tauTag(reco::PFTau)");
+        double signalConeSize = thePFTauElementsOperators.computeConeSize(formula, signalConeSizeMin, signalConeSizeMax);
+
+        LogDebug("OfflineTauIDProducer") << "PFTau   computed signal cone " << signalConeSize;
 
         double discriminator = thePFTauElementsOperators.discriminatorByIsolTracksN(
                                 metric,
