@@ -16,7 +16,7 @@
 //
 // Original Author:  Efe Yazgan
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalTemplate.cc,v 1.2 2008/08/21 04:39:02 fedor Exp $
+// $Id: HcalTemplate.cc,v 1.3 2008/09/03 11:38:52 fedor Exp $
 //
 //
 
@@ -345,7 +345,7 @@ void HcalTemplate::beginJob(const edm::EventSetup&)
   h_muon_px = MuonDir.make<TH1F>("h_muon_px","P_{X}(#mu)",1000,-10,100);
   h_muon_p = MuonDir.make<TH1F>("h_muon_p","P(#mu)",1000,-10,100);
 
-  h_ecalx_vs_muonx = CorrDir.make<TH2F>("h_ecalx_vs_muonx","h_ecalx_vs_muonx",10000,-1000,1000,10000,-1000,1000);
+  h_ecalx_vs_muonx = CorrDir.make<TH2F>("h_ecalx_vs_muonx","h_ecalx_vs_muonx",100,0,50,100,0,50);
   h_impact_diff = CorrDir.make<TH1F>("h_impact_diff","h_impact_diff",1000,-200,200);
 
   h_caloMet_Met = JetMetDir.make<TH1F>("h_caloMet_Met", "MET from CaloTowers", 100, 0, 25);
