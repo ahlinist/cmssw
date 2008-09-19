@@ -4,8 +4,6 @@
 /*
   Author: Jim Kowalkowski  28-01-06
 
-  $Id$
-
   A class for creating a schedule based on paths in the configuration file.
   The schedule is maintained as a sequence of paths.
   After construction, events can be fed to the object and passed through
@@ -399,7 +397,7 @@ namespace edm {
       if (endpathsAreActive_) runEndPaths(ep, es, bat);
     }
     catch(cms::Exception& ex) {
-      actions::ActionCodes action = act_table_->find(ex.rootCause());
+      actions::ActionCodes action = (isEvent ? act_table_->find(ex.rootCause()) : actions::Rethrow);
       assert (action != actions::SkipEvent);
       assert (action != actions::FailPath);
       assert (action != actions::FailModule);
