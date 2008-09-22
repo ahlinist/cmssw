@@ -19,6 +19,9 @@
 
 namespace bf=boost::filesystem;
 
+//man pages for environ say you must declare it as such
+extern char** environ;
+
 int run_script(const std::string& shell, const std::string& script)
 {
   pid_t pid;
