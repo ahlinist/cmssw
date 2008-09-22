@@ -9,6 +9,23 @@
 
 using namespace std;
 
+void overlapCheck::searchDetId(unsigned int detId)
+{
+  if (fChain == 0) return;
+  Long64_t nbytes = 0, nb = 0;
+  int totEntries = fChain->GetEntriesFast();
+  for (Long64_t jentry=0; jentry<totEntries;jentry++) {
+    Long64_t ientry = LoadTree(jentry);
+    if (ientry < 0) break;
+    nb = fChain->GetEntry(jentry);   nbytes += nb;
+    DetIdPair idPair = getPair(jentry);
+    if ((idPair.first==detId) || (idPair.second==detId) ) {
+      cout << "Pair number: "<< jentry<<endl;
+      idPrint(idPair);
+    }
+  }
+
+}
   /**
    * Get the 2 detIds of an overlap from the tree
    */
@@ -242,9 +259,14 @@ void overlapCheck::displayPair(int pairNbr, TString tag)
   
 #ifdef HISTOS2D
   c5->cd(1); ddVsLocalXHistos->Draw();
+  drawFunc(pairNbr, ddVsLocalXSlope, ddVsLocalXOffset);
   c5->cd(2); ddVsLocalYHistos->Draw();
+  drawFunc(pairNbr, ddVsLocalYSlope, ddVsLocalYOffset);
   c5->cd(3); ddVsDxdzHistos->Draw();
+  drawFunc(pairNbr, ddVsDxdzSlope, ddVsDxdzOffset);
+
   c5->cd(4); ddVsDydzHistos->Draw();
+  drawFunc(pairNbr, ddVsDydzSlope, ddVsDydzOffset);
 
   c6->cd(1); localXVsLocalYHistos->Draw();
   c6->cd(2); dxdzVsDydzHistos->Draw();
@@ -254,6 +276,15 @@ void overlapCheck::displayPair(int pairNbr, TString tag)
   c6->cd(6); localYVsDydzHistos->Draw();
 #endif
   canvasUpdated = true;
+}
+void overlapCheck::drawFunc(int pairNbr, TH1* resultSlopeHisto, TH1* resultOffsetHisto)
+{
+  //delete f1;
+  f1 = new TF1("f1","pol1",-10,10);
+  f1->SetParameter(1, resultSlopeHisto->GetBinContent(pairNbr+1));
+  f1->SetParameter(0, resultOffsetHisto->GetBinContent(pairNbr+1));
+  f1->Draw("same");
+  cout <<resultSlopeHisto->GetBinContent(pairNbr+1) <<" "<<resultOffsetHisto->GetBinContent(pairNbr+1)<<endl;
 }
 
   /**
@@ -569,7 +600,7 @@ void overlapCheck::scan()
     cout << "No summary plots available\n";
     return;
   }
-  rzScan = new TH2F("rzScan", "rzScan", 200, 0., 200., 200, 0., 120.);
+  rzScan = new TH2F("rzScan", "rzScan", 400, -200, 200., 200, 0., 120.);
   xyScan = new TH2F("xyScan", "xyScan", 200, -120., 120., 200, -120., 120.);
   rzScan->GetXaxis()->SetTitle("z [cm]"); rzScan->GetYaxis()->SetTitle("r [cm]");
   xyScan->GetXaxis()->SetTitle("x [cm]"); xyScan->GetYaxis()->SetTitle("y [cm]");
@@ -806,7 +837,7 @@ void overlapCheck::sigmas ()
 {  
   s1 = new TCanvas("DDs","Summary Double differences", 900, 600);
   sigmaDiffs->Draw("hist p");
-  sigmaDiffs->Draw("same");
+  //sigmaDiffs->Draw("same");
   
   sigmaDiffs->SetMinimum(0);
   sigmaDiffs->SetMaximum(350);
@@ -817,8 +848,8 @@ void overlapCheck::sigmas ()
   hitErrMeans->SetMarkerStyle(25);  //21
   hitErrMeans->SetMarkerColor(4);
 //   sigmaDiffs->Draw();
-  predErrMeans->Draw("same");
-  hitErrMeans->Draw("same");
+  predErrMeans->Draw("hist p same");
+  hitErrMeans->Draw("hist p same");
 
   addLayer(sigmaDiffs);
   TLegend* leg_hist = new TLegend(0.60,0.72,0.94,0.91);
