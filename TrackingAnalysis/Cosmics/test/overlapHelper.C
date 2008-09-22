@@ -2,6 +2,14 @@
 #include <TProfile.h>
 #include <TF1.h>
 #include <vector>
+
+#include "Riostream.h"
+#include "TMatrixD.h"
+#include "TVectorD.h"
+#include "TGraphErrors.h"
+#include "TDecompChol.h"
+#include "TDecompSVD.h"
+
 using namespace std;
 
 void fullDecode (unsigned int id, unsigned int& subdet, 
@@ -130,6 +138,31 @@ bool checkAdjacent(unsigned int id1, unsigned int id2, float path)
   return false;
 }
 
+enum AdjacentType {notAdjacent, parallelToStrips, perpendicularToStrips };
+
+AdjacentType checkAdjacentType(unsigned int id1, unsigned int id2)
+{
+  unsigned int subdet1, layer1, stereo1, subdet2, layer2, stereo2;
+  int part1, part2;
+  vector<unsigned int> info1, info2;
+  fullDecode (id1, subdet1, layer1, part1,info1, stereo1);
+  fullDecode (id2, subdet2, layer2, part2,info2, stereo2);
+
+  if ( subdet1==3 ) {	// TIB
+    // We are on same side, and module nbr are equal, so overlap parallel to strips.
+    if ((info1[2]==info2[2]) && (info1[0]==info2[0])) return parallelToStrips;
+    else return perpendicularToStrips;
+  }
+  else if ( subdet1==5 ) {	// TOB
+    // We are on same ROD, so overlap perpendicular to strips.
+    if (info1[0]==info2[0]) return perpendicularToStrips;
+    // We are NOT on same ROD, so overlap parallel to strips.
+    return parallelToStrips;
+  }
+  return notAdjacent;
+}
+
+
 void detector (unsigned int id, unsigned int& subdet, 
 		  unsigned int& sign)
 {
@@ -141,13 +174,21 @@ void decode (unsigned int id, unsigned int& subdet,
 		  unsigned int& layer, int & part, unsigned int& stereo)
 {
   subdet = (id>>25) & 0x7;
-  if ( subdet==3 ) {
+  if ( subdet==3 ) {	// TIB
     layer = (id>>14) & 0x7;
     part = ((id>>12) & 0x3) == 1 ? +1 : -1 ;
   }
-  else if ( subdet==5 ) {
+  else if ( subdet==5 ) {	// TOB
     layer = (id>>14) & 0x7;
     part = ((id>>12) & 0x3) == 1 ? +1 : -1 ;
+  }
+  else if ( subdet==4 ) {	// TID
+    layer = (id>>11) & 0x3;
+    part = ((id>>13) & 0x3) == 1 ? +1 : -1 ;
+  }
+  else if ( subdet==6 ) {	// TID
+    layer = (id>>14) & 0xf;
+    part = ((id>>18) & 0x3) == 1 ? +1 : -1 ;
   }
   else {
     layer = 0;
@@ -199,7 +240,7 @@ void fillSlope (int ibin, TH1* resultSlopeHisto, TH1* resultOffsetHisto, TH2* in
   double sum = inputHisto->Integral();
   if ( sum>50 ) {
     TProfile *prof = fillSlopeNew(inputHisto);
-    prof->Fit("pol1","Q0","",-5.0, 5.0);
+    prof->Fit("pol1","Q0","");
 //    prof->GetFunction("pol1")->ResetBit(kNotDraw);
     resultSlopeHisto->SetBinContent(ibin,prof->GetFunction("pol1")->GetParameter(1));
     resultSlopeHisto->SetBinError(ibin,prof->GetFunction("pol1")->GetParError(1));
@@ -223,3 +264,29 @@ fillWidth (int ibin, TH1* resultHisto, TH1* inputHisto,
   }
 }
 
+
+
+void fillSlope (int ibin, TH1* resultSlopeHisto, TH1* resultOffsetHisto,
+	vector<double>& vx , vector<double>& vxe, vector<double>& vy, vector<double>& vye)  {
+
+  const Int_t nrPnts = vx.size();
+  TVectorD x(nrPnts);
+  TVectorD y(nrPnts);
+  TVectorD xe(nrPnts);
+  TVectorD ye(nrPnts);
+  for (int i=0;i<nrPnts;++i){
+    x[i]=vx[i];
+    y[i]=vy[i];
+    xe[i]=vxe[i];
+    ye[i]=vye[i];
+  }
+
+  TGraphErrors *gr = new TGraphErrors(x,y,xe,ye);
+  TF1 *f1 = new TF1("f1","pol1",0,5);
+  gr->Fit("f1","Q");
+
+  resultSlopeHisto->SetBinContent(ibin,f1->GetParameter(1));
+  resultSlopeHisto->SetBinError(ibin,f1->GetParError(1));
+  resultOffsetHisto->SetBinContent(ibin,f1->GetParameter(0));
+  resultOffsetHisto->SetBinError(ibin,f1->GetParError(0));
+}
