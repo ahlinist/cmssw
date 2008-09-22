@@ -1,5 +1,5 @@
 #define OverlapHistos_cxx
-#include "OverlapHistos.h"
+#include "OverlapHistosFit.h"
 #include <TStyle.h>
 #include <TCanvas.h>
 #include <TMath.h>
@@ -23,6 +23,7 @@ void OverlapHistos::Loop(int redEntries){
     unsigned int subdet;
     unsigned int layer;
     unsigned int stereo;
+    int part;
   const char charAB[2] = { 'A', 'B' };
   if (fChain == 0) return;
 
@@ -68,6 +69,7 @@ void OverlapHistos::Loop(int redEntries){
   std::vector<TH1*> allDoublePullHistos[2];
   std::vector<TH1*> allHitPullHistos[2];
   std::vector<TH1*> allPredPullHistos[2];
+
 #ifdef HISTOS2D
   std::vector<TH2*> allResVsAngleHistos[2];  // resolution vs angle
   std::vector<TH2*> allddVsLocalXHistos[2]; //double diff vs local x interesting for TOB layers
@@ -81,6 +83,11 @@ void OverlapHistos::Loop(int redEntries){
   std::vector<TH2*> allLocalXVsDydzHistos[2]; //local X vs dy/dz
   std::vector<TH2*> allLocalYVsDydzHistos[2]; //local Y vs dy/dz
   std::vector<TH2*> alldPreddSimVsdHitdSimHistos[2]; //dPred-dSim vs dHit-dSim  
+
+  std::vector< vector<double> > localY[2], localYE[2];
+  std::vector< vector<double> > dd[2], ddE[2];
+  std::vector< vector<double> > dxdz[2], dxdzE[2];
+
 #endif
   TH2F* widthVsAngle = new TH2F("widthVsAngle", "width vs angle", 75, -0.75, 0.75, 400, -0.2, 0.2);
   widthVsAngle->GetXaxis()->SetTitle("dx/dz");
@@ -121,6 +128,7 @@ void OverlapHistos::Loop(int redEntries){
   // each overlap-pair vould have. This allows to look only at the entries for 
   // which the pair has enough entries
   //
+  TH1F *layerH = new TH1F("layerH","layerH",34,0.5,34.5);
   std::map<DetIdPair,unsigned int> overlapCounter;
   int ctr= 0;
   for (Long64_t jentry=0; jentry<nentries;jentry++) {
@@ -129,6 +137,22 @@ void OverlapHistos::Loop(int redEntries){
     nb = fChain->GetEntry(jentry);   nbytes += nb;
 
     if (!cut()) continue;
+    decode(detids[0],subdet,layer,part,stereo);
+    // sequential layer number in TIB & TOB (for debugging)
+    int k(-1);
+    if ( subdet==3  ) {
+      k = layer;
+    }
+    else if ( subdet==5 ) {
+      k = layer + 4;
+    }
+    else if ( subdet==4 ) {
+      k = layer + 10 + (part<0?0:3);
+    }
+    else if ( subdet==6 ) {
+      k = layer + 17 + (part<0?0:9);
+    }
+    layerH->Fill(k);
 
     DetIdPair idPair(min(detids[0],detids[1]),
 		     max(detids[0],detids[1]));
@@ -171,7 +195,7 @@ void OverlapHistos::Loop(int redEntries){
     unsigned int layer;
     unsigned int stereo;
     unsigned int id = detids[0];
-    decode(id,subdet,layer,stereo);
+    decode(id,subdet,layer,part,stereo);
     // sequential layer number in TIB & TOB (for debugging)
     int k(-1);
     if ( subdet==3 && layer>0 && layer<5 ) {
@@ -357,6 +381,13 @@ void OverlapHistos::Loop(int redEntries){
 	sprintf(hn,"dPreddSimVsdHitdSim%c%d",charAB[j],ind);
 	dPreddSimVsdHitdSim = new TH2F(hn,hn, 40, -0.02, 0.02, 40, -0.02, 0.02);
 	alldPreddSimVsdHitdSimHistos[j].push_back(dPreddSimVsdHitdSim);
+    localY[j].push_back(vector<double>());
+    localYE[j].push_back(vector<double>());
+    dd[j].push_back(vector<double>());
+    ddE[j].push_back(vector<double>());
+    dxdz[j].push_back(vector<double>());
+    dxdzE[j].push_back(vector<double>());
+	
 #endif
       }
       curDir->cd();
@@ -463,6 +494,13 @@ void OverlapHistos::Loop(int redEntries){
     localXVsDydz->Fill(predDY[0],predX[0]);
     localYVsDydz->Fill(predDY[0],predY[0]);
     dPreddSimVsdHitdSim->Fill(deltaSim-deltaPred,deltaSim-deltaHit);
+    
+    localY[j][ind].push_back(predY[0]);
+    localYE[j][ind].push_back(predEY[0]);
+    dxdz[j][ind].push_back(predDX[0]);
+    dxdzE[j][ind].push_back(predEDX[0]);
+    dd[j][ind].push_back(deltaHit-deltaPred);
+    ddE[j][ind].push_back(predEDeltaX);
 #endif
   }
 
@@ -508,6 +546,12 @@ void OverlapHistos::Loop(int redEntries){
     localXVsDydzHistos_[j].reserve(allIndices.size());    
     localYVsDydzHistos_[j].reserve(allIndices.size());    
     dPreddSimVsdHitdSimHistos_[j].reserve(allIndices.size());
+    localY_[j].reserve(allIndices.size());
+    localYE_[j].reserve(allIndices.size());
+    dxdz_[j].reserve(allIndices.size());
+    dxdzE_[j].reserve(allIndices.size());
+    dd_[j].reserve(allIndices.size());
+    ddE_[j].reserve(allIndices.size());
 #endif
   }
 
@@ -611,12 +655,12 @@ void OverlapHistos::Loop(int redEntries){
     // This is now redundant since the check on the number of entries is made before
     // Still, I did not want to change the code too much :)
 
-    decode((*ih).first.first,subdet,layer,stereo);
+    decode((*ih).first.first,subdet,layer,part,stereo);
     cout << "Pair "<< n<<" : " << (*ih).first.first<< " ( ";
     printId((*ih).first.first);
     cout <<" ) " << (*ih).first.second << " ( ";
     printId((*ih).first.second);     
-//     decode((*ih).first.second,subdet,layer,stereo);
+//     decode((*ih).first.second,subdet,layer,part,stereo);
 //     cout <<" ) " << (*ih).first.second << " ( " << subdet << " " << layer << " " << stereo 
     cout << " ) "<<(*ih).second  << " " << resHistos[0]->GetEntries() << " " << resHistos[1]->GetEntries()
 	 << (resHistos[0]->GetEntries() < resHistos[1]->GetEntries() ? " A " : " B ")
@@ -742,6 +786,13 @@ void OverlapHistos::Loop(int redEntries){
 	sprintf(hn,"dPreddSimVsdHitdSim%c%3.3d",charAB[j],n);
 	dPreddSimVsdHitdSimHistos[j]->SetNameTitle(hn,hn);
 	dPreddSimVsdHitdSimHistos_[j].push_back(dPreddSimVsdHitdSimHistos[j]);
+	
+	localY_[j].push_back(localY[j][(*ih).second]);
+	localYE_[j].push_back(localYE[j][(*ih).second]);
+	dxdz_[j].push_back(dxdz[j][(*ih).second]);
+	dxdzE_[j].push_back(dxdzE[j][(*ih).second]);
+	dd_[j].push_back(dd[j][(*ih).second]);
+	ddE_[j].push_back(ddE[j][(*ih).second]);
 #endif
       }
       ++n;
@@ -909,7 +960,9 @@ void OverlapHistos::Loop(int redEntries){
   TH2 *ddVsLocalX(0), *ddVsLocalY, *ddVsDxdz, *ddVsDydz;
 #endif
   const int kNotDraw = 1<<9;
-  for ( unsigned int i=0; i<n; ++i ) {
+
+   for ( unsigned int i=0; i<n; ++i ) {
+//  for ( unsigned int i=0; i<1; ++i ) {
     //
       // Choose DetId order with more entries and retrieve histogram pointers
     //
@@ -956,7 +1009,7 @@ void OverlapHistos::Loop(int redEntries){
     unsigned int stereo;
     
     unsigned int id = j==0 ? detIdPairs_[i].first : detIdPairs_[i].second;
-    decode(id,subdet,layer,stereo);
+    decode(id,subdet,layer,part,stereo);
     // sequential layer number in TIB & TOB (for debugging)
     int k(-1);
     if ( subdet==3 && layer>0 && layer<5 ) {
@@ -983,9 +1036,16 @@ void OverlapHistos::Loop(int redEntries){
       fillMean(i+1,yHisto,posHistosLocal[1]);
 	hDir->cd();
 #ifdef HISTOS2D
+      AdjacentType type = checkAdjacentType(detIdPairs_[i].first, detIdPairs_[i].second);
+      if (type == parallelToStrips) {
+	fillSlope(i+1,ddVsLocalYSlope, ddVsLocalYOffset, localY_[j][i], localYE_[j][i], dd_[j][i], ddE_[j][i]);
+      } else {
+	fillSlope(i+1,ddVsDxdzSlope, ddVsDxdzOffset, dxdz_[j][i], dxdzE_[j][i], dd_[j][i], ddE_[j][i]);
+      }
+
       fillSlope(i+1,ddVsLocalXSlope, ddVsLocalXOffset, ddVsLocalX);
-      fillSlope(i+1,ddVsLocalYSlope, ddVsLocalYOffset, ddVsLocalY);
-      fillSlope(i+1,ddVsDxdzSlope, ddVsDxdzOffset, ddVsDxdz);
+//       fillSlope(i+1,ddVsLocalYSlope, ddVsLocalYOffset, ddVsLocalY);
+//       fillSlope(i+1,ddVsDxdzSlope, ddVsDxdzOffset, ddVsDxdz);
       fillSlope(i+1,ddVsDydzSlope, ddVsDydzOffset, ddVsDydz);
 #endif
       curDir->cd();
@@ -1036,7 +1096,7 @@ void OverlapHistos::Loop(int redEntries){
       predPulls->SetBinContent(i+1,predPullHisto->GetRMS());
 
       //print out to check the ordering of the index within each layer
-            std::cout << "Index: " << i << "   Layer: " << k << "   Phi: " << posHistos[1]->GetMean() << "   r: " << posHistos[0]->GetMean() << "   z: " << posHistos[2]->GetMean() << "  dx/dz: " << dxdzHisto->GetMean() << "   detID = " << detIdPairs_[i].first << " and " << detIdPairs_[i].second << std::endl;
+//             std::cout << "Index: " << i << "   Layer: " << k << "   Phi: " << posHistos[1]->GetMean() << "   r: " << posHistos[0]->GetMean() << "   z: " << posHistos[2]->GetMean() << "  dx/dz: " << dxdzHisto->GetMean() << "   detID = " << detIdPairs_[i].first << " and " << detIdPairs_[i].second << std::endl;
       //    std::cout << " geographical ID: " << id << std::endl;
 
 //       predErrMeans->SetBinContent(i+1,predErrHisto->GetMean());
@@ -1096,7 +1156,7 @@ OverlapHistos::cut() const
   // cut on 30deg local angle in x (any of the two modules)
   //if ( fabs(predDX[0])>0.6 || fabs(predDX[1])>0.6 )  continue;
   // extrapolation accuracy
-  if ( predEDeltaX<1.e-9 || predEDeltaX>0.015 ) return false;
+  if ( predEDeltaX<1.e-9 || predEDeltaX>0.005 ) return false;
   // chi2 cut
   //if ( TMath::Prob(chi2,2*found-4)<1.e-3 )  continue;
   if ( chi2[0] >200 ) return false;
@@ -1111,9 +1171,10 @@ OverlapHistos::showPair (unsigned int i) const
     unsigned int subdet;
     unsigned int layer;
     unsigned int stereo;
-    decode(detIdPairs_[i].first,subdet,layer,stereo);
+    int part;
+    decode(detIdPairs_[i].first,subdet,layer,part,stereo);
     std::cout << " " << subdet << " " << layer << " " << stereo << std::endl;
-    decode(detIdPairs_[i].second,subdet,layer,stereo);
+    decode(detIdPairs_[i].second,subdet,layer,part,stereo);
     std::cout << " " << subdet << " " << layer << " " << stereo << std::endl;
   }
   else {
@@ -1122,22 +1183,6 @@ OverlapHistos::showPair (unsigned int i) const
   }
 }
 
-void
-OverlapHistos::decode (unsigned int id, unsigned int& subdet, 
-		  unsigned int& layer, unsigned int& stereo)  const
-{
-  subdet = (id>>25) & 0x7;
-  if ( subdet==3 ) {
-    layer = (id>>14) & 0x7;
-  }
-  else if ( subdet==5 ) {
-    layer = (id>>14) & 0x7;
-  }
-  else {
-    layer = 0;
-  }
-  stereo = id&0x3;
-}
 
 TH1*
 OverlapHistos::residualHistogram (unsigned int i, bool first) const

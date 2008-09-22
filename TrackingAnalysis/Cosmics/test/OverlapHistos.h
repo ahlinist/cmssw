@@ -116,6 +116,14 @@ private:
   std::vector<TH2*> localXVsDydzHistos_[2];
   std::vector<TH2*> localYVsDydzHistos_[2];
   std::vector<TH2*> dPreddSimVsdHitdSimHistos_[2];
+
+  std::vector< vector<double> > localY_[2];
+  std::vector< vector<double> > localYE_[2];
+  std::vector< vector<double> > dxdz_[2];
+  std::vector< vector<double> > dxdzE_[2];
+  std::vector< vector<double> > dd_[2];
+  std::vector< vector<double> > ddE_[2];
+
 #endif
 
   TString outputFile;
@@ -126,7 +134,6 @@ private:
 public:
    OverlapHistos(TTree *tree=0);
    virtual ~OverlapHistos();
-   virtual Int_t    Cut(Long64_t entry);
    virtual Int_t    GetEntry(Long64_t entry);
    virtual Long64_t LoadTree(Long64_t entry);
    virtual void     Init(TTree *tree);
@@ -141,9 +148,7 @@ public:
   /** access to the histogram for the double-difference 
       (in the order / reverse order of the id pair) */
   TH1* residualHistogram (unsigned int i, bool first = true) const;
-  /// decoding of a (barrel strip) DetId
-  void decode (unsigned int id, unsigned int& subdet, 
-	       unsigned int& layer, unsigned int& stereo)  const;
+
   /// fill histogram bin with mean and rms
   void fillMean (int ibin, TH1* resultHisto, TH1* inputHisto,
 		 float scale = 1.) const;
@@ -254,12 +259,5 @@ void OverlapHistos::Show(Long64_t entry)
 // If entry is not specified, print current entry
    if (!fChain) return;
    fChain->Show(entry);
-}
-Int_t OverlapHistos::Cut(Long64_t entry)
-{
-// This function may be called from Loop.
-// returns  1 if entry is accepted.
-// returns -1 otherwise.
-   return 1;
 }
 #endif // #ifdef OverlapHistos_cxx
