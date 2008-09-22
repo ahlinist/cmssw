@@ -45,7 +45,7 @@ public :
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
 
-
+  void searchDetId(unsigned int detId);
   /**
    * Get the 2 detIds of an overlap from the tree
    */
@@ -60,6 +60,7 @@ public :
    * Display all the distributions for an overlap
    */
   void displayPair(int pairNbr, TString tag = "");
+  void drawFunc(int pairNbr, TH1* resultSlopeHisto, TH1* resultOffsetHisto);
   /**
    * Print the full module info for the pair
    */
@@ -178,6 +179,7 @@ public :
   TH1* ddVsDxdzSlope;
   TH1* ddVsDxdzOffset;
   TH1 *ddVsLocalXSlope, *ddVsLocalXOffset, *ddVsDydzSlope, *ddVsDydzOffset;
+  TF1 *f1;
 #endif
 
 private:
@@ -297,6 +299,8 @@ void overlapCheck::loadSummaryPlots()
   ddVsDxdzOffset = (TH1*) gDirectory->Get("ddDxoffset");
   ddVsDydzSlope  = (TH1*) gDirectory->Get("ddDyslope");
   ddVsDydzOffset = (TH1*) gDirectory->Get("ddDyoffset");
+  f1 = new TF1("f1","pol1",-10,10);
+
 #endif
  summaryOK = true;
 //   ff->Close();
