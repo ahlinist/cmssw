@@ -5,6 +5,7 @@ OfflineTauIDProducer::OfflineTauIDProducer(const edm::ParameterSet& iConfig) {
 	produces< PFTauCollection >().setBranchAlias("identifiedPfTaus");
         produces< CaloTauCollection >().setBranchAlias("identifiedCaloTaus");
 
+	jetPtMin		    = iConfig.getParameter<double>("JetPtMin");
 	matchingConeSize            = iConfig.getParameter<double>("MatchingCone");
         signalConeSizeFormula       = iConfig.getParameter<string>("TrackerSignalConeSizeFormula"); // E, ET recognised as variables
 	signalConeSizeMin           = iConfig.getParameter<double>("TrackerSignalConeSize_min");
@@ -39,6 +40,7 @@ void OfflineTauIDProducer::produce(edm::Event& iEvent, const edm::EventSetup& iS
 
           PFTauCollection::const_iterator iTau;
           for(iTau = taus.begin(); iTau != taus.end(); iTau++){
+		if(iTau->Et() < jetPtMin) continue;
 	        if(!iTau->leadTrack()) continue;
                 if(tauTag(const_cast<reco::PFTau&>(*iTau))) {
 			select = true;
@@ -59,6 +61,7 @@ void OfflineTauIDProducer::produce(edm::Event& iEvent, const edm::EventSetup& iS
 
        	  CaloTauCollection::const_iterator iTau;
        	  for(iTau = taus.begin(); iTau != taus.end(); iTau++){
+		if(iTau->Et() < jetPtMin) continue;
        	        if(!iTau->leadTrack()) continue;
        	        if(tauTag(const_cast<reco::CaloTau&>(*iTau))) {
 			select = true;
