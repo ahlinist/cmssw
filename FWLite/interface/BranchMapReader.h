@@ -71,12 +71,11 @@ namespace fwlite {
     bool updateFile(TFile* file);
     bool updateEvent(Long_t eventEntry);
     const edm::BranchDescription productToBranch(const edm::ProductID& pid) const {
+      strategy_->updateMap();
       edm::BranchID bid = eventInfoMap_.productToBranch(pid);
       bidToDesc::const_iterator bdi = branchDescriptionMap_.find(bid);
       if (branchDescriptionMap_.end() == bdi) {
-        throw cms::Exception("MissingProductID") 
-           <<"could not find product ID "<<pid
-           <<" in the present file.\n";
+        return edm::BranchDescription();
       }
       return bdi->second;
     }
