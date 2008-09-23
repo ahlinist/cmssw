@@ -80,7 +80,7 @@ bool OfflineTauIDProducer::tauTag(reco::CaloTau& tau){
 
         CaloTauElementsOperators theCaloTauElementsOperators(tau);
 
-        TFormula& formula = theCaloTauElementsOperators.computeConeSizeTFormula(signalConeSizeFormula, "OfflineTauIDProcuder::tauTag(reco::CaloTau)");
+        TFormula formula = theCaloTauElementsOperators.computeConeSizeTFormula(signalConeSizeFormula, "OfflineTauIDProcuder::tauTag(reco::CaloTau)");
         double signalConeSize = theCaloTauElementsOperators.computeConeSize(formula, signalConeSizeMin, signalConeSizeMax);
 
         LogDebug("OfflineTauIDProducer") << "CaloTau computed signal cone " << signalConeSize;
@@ -105,7 +105,7 @@ bool OfflineTauIDProducer::tauTag(reco::PFTau& tau){
 
 	PFTauElementsOperators thePFTauElementsOperators(tau);
 
-        TFormula& formula = thePFTauElementsOperators.computeConeSizeTFormula(signalConeSizeFormula, "OfflineTauIDProcuder::tauTag(reco::PFTau)");
+        TFormula formula = thePFTauElementsOperators.computeConeSizeTFormula(signalConeSizeFormula, "OfflineTauIDProcuder::tauTag(reco::PFTau)");
         double signalConeSize = thePFTauElementsOperators.computeConeSize(formula, signalConeSizeMin, signalConeSizeMax);
 
         LogDebug("OfflineTauIDProducer") << "PFTau   computed signal cone " << signalConeSize;
