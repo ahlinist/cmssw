@@ -307,12 +307,20 @@ public :
 
    Int_t isphoton;
    Int_t issignal;
+   Int_t isphotgam;
    Int_t isiso;
    Int_t hltphoton;
    Int_t hltphotonrel;
    Float_t weight;
    Float_t nniso;
    Float_t nniso_int;
+   Int_t ntrkiso;
+   Float_t ptiso;
+   Float_t ptisoatecal;
+   Float_t hcalovecal;
+   Float_t sMajMaj;
+   Float_t sMinMin;
+   Float_t ecaliso;
    Float_t ptph;
    Float_t ptj;
    Float_t etaph;
@@ -342,10 +350,11 @@ public :
    virtual Int_t    GetEntry(Long64_t entry);
    virtual Long64_t LoadTree(Long64_t entry);
    virtual void     Init(TTree *tree);
-   virtual void     Loop(double cross = 1., int algo = 1, int NEVT = 10000000);
+   virtual void     Loop(double cross = 1., int algo = 1, bool ispg = 1, int NEVT = 10000000);
    virtual void     BookHistos();
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
+   float    delta_phi(float phi1, float phi2);
 };
 
 #endif
@@ -536,7 +545,7 @@ void gjettree::Init(TTree *tree)
    fChain->SetBranchAddress("HLTResults", HLTResults, &b_HLTResults);
    Notify();
 
-   npb = 1000;
+   npb = 100;
 
 }
 

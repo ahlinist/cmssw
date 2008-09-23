@@ -1,6 +1,7 @@
 #define gjettree_cxx
 #include "gjettree.h"
 #include <TF1.h>
+#include <TMath.h>
 #include <TStyle.h>
 #include <TCanvas.h>
 #include <iostream>
@@ -12,7 +13,7 @@
 #include <JetMETCorrections/GammaJet/test/TMVAPhotons_2_MLP.class.C>
 #include <JetMETCorrections/GammaJet/test/TMVAPhotons_3_MLP.class.C>
 #include <JetMETCorrections/GammaJet/test/TMVAPhotons_4_MLP.class.C>
-void gjettree::Loop(double cross, int algo, int NEVT)
+void gjettree::Loop(double cross, int algo, bool ispg, int NEVT)
 {
 //   In a ROOT session, you can do:
 //      Root > .L gjettree.C
@@ -94,25 +95,35 @@ void gjettree::Loop(double cross, int algo, int NEVT)
     int imaxptphot = -1;
     int ileadmcphot = -1;
     int ileadmcquark = -1;
-    
-    isphoton = issignal = -999;
+    isphotgam = ispg;
+ 
+    isphoton = issignal = isiso = -999;
     weight = nniso = nniso_int =  ptph = ptj = etaph = etaj = phiph = phij = pt2jet = ptphottrue = ptjettrue = ptquarktrue = phiphottrue = phijettrue = phiquarktrue  = etaphottrue = etajettrue = etaquarktrue = -999.;
 
     // FINDING THE LEADING RECONSTRUCTED PHOTON
     
     for(int i=0; i<nPhot; i++){
-            
-      if(TMath::Abs(etaPhot[i])<1.3) {
-		
+      
+      //       if(TMath::Abs(etaPhot[i])<1.3) {
+      if(ptiso035Phot[i]/(ePhot[i]/cosh(etaPhot[i])) < 0.2){
+	
 	if(ePhot[i]/cosh(etaPhot[i])>maxptphot) {
 	  maxptphot = ePhot[i]/cosh(etaPhot[i]);
 	  imaxptphot = i;		
 	}
-
-      } 
-      allptphot->Fill(ePhot[i]/cosh(etaPhot[i]));
-      
+	
+	//       } 
+	allptphot->Fill(ePhot[i]/cosh(etaPhot[i]));
+      }
     }
+    
+    if(imaxptphot==-1) 
+      for(int i=0; i<nPhot; i++)
+	
+	if(ePhot[i]/cosh(etaPhot[i])>maxptphot) {
+	  maxptphot = ePhot[i]/cosh(etaPhot[i]);
+	  imaxptphot = i;		
+	}
 
     // LOOP OVER JETS - FINDING THE RECOILING RECO JET
 
@@ -185,9 +196,10 @@ void gjettree::Loop(double cross, int algo, int NEVT)
 	etaJetGen[j]=etaJetGen_ite[j];
       	phiJetGen[j]=phiJetGen_ite[j];
       }
-    }else cout << "NO SUCH JET ALGO!!!!" << endl;
+    }else std::cout << "NO SUCH JET ALGO!!!!" << std::endl;
            
     double mindeltaphi = 2*pi;
+    double maxptjet = 0;
     int imindeltaphi = -1;
     int njetsoverthreshold = 0;
     int njetite = 0;
@@ -199,28 +211,55 @@ void gjettree::Loop(double cross, int algo, int NEVT)
       
       allptjet->Fill(eJet[j]/cosh(etaJet[j]));
       
-      if(eJet[j]/cosh(etaJet[j])>10.){
+      //      if(eJet[j]/cosh(etaJet[j])>10.){
 	
-	double deltaphi = TMath::Abs(phiJet[j] - phiPhot[imaxptphot]) - pi;	  
+	double deltaphi = delta_phi(phiJet[j],phiPhot[imaxptphot]);
+// 	double deltaphi = TMath::Abs(phiJet[j] - phiPhot[imaxptphot]) - pi;
+// 	if(deltaphi>5.7) deltaphi = 2*pi-deltaphi;
 	alldeltaphi->Fill(deltaphi);
 	
-	if(TMath::Abs(deltaphi)<mindeltaphi) {
-	  mindeltaphi = TMath::Abs(deltaphi);
+	if(eJet[j]/cosh(etaJet[j])>maxptjet && deltaphi>pi-0.4){
+	  maxptjet = eJet[j]/cosh(etaJet[j]);
 	  imindeltaphi = j;
 	}
 
 	// exclude the leading photon from the jet counting
 	if(deltaphi>-pi+0.2) njetsoverthreshold++;
-      }
+	//      }
     }
+
+    if(imindeltaphi==-1) 
+
+      for(int j=0; j<nJet; j++){
+	
+	//	if(eJet[j]/cosh(etaJet[j])>10.){
+	
+	double deltaphi = delta_phi(phiJet[j],phiPhot[imaxptphot]);
+	//	double deltaphi = TMath::Abs(phiJet[j] - phiPhot[imaxptphot]) - pi;
+	//	if(deltaphi>5.7) deltaphi = 2*pi-deltaphi;
+	
+	if(TMath::Abs(deltaphi-pi)<mindeltaphi) {
+	  mindeltaphi = TMath::Abs(deltaphi);
+	  imindeltaphi = j;
+	}
+	
+	// exclude the leading photon from the jet counting
+	if(deltaphi>-pi+0.2) njetsoverthreshold++;
+	//	}
+      }
 
     double pt2ndjet(0);
     for(int j=0; j<nJet; j++){
+      
+      double deltaphi = delta_phi(phiJet[j],phiPhot[imaxptphot]);
+      //      double deltaphi = TMath::Abs(phiJet[j] - phiPhot[imaxptphot]) - pi;	  
+      //      if(deltaphi>5.7) deltaphi = 2*pi-deltaphi;
+      double deltaeta = etaJet[j] - etaPhot[imaxptphot];
+      double deltar = sqrt(deltaphi*deltaphi + deltaeta*deltaeta);
 
-      double deltaphi = TMath::Abs(phiJet[j] - phiPhot[imaxptphot]) - pi;	  
-      if(j != imindeltaphi && deltaphi>-pi+0.2){
+      if(j != imindeltaphi && deltar>0.2){
 
-	if(eJet[j]/cosh(etaJet[j])>pt2ndjet && eJet[j]/cosh(etaJet[j])>15) 
+	if(eJet[j]/cosh(etaJet[j])>pt2ndjet) 
 	  pt2ndjet = eJet[j]/cosh(etaJet[j]);
 
       }
@@ -379,17 +418,23 @@ void gjettree::Loop(double cross, int algo, int NEVT)
     bool etacut =  TMath::Abs(etaPhot[imaxptphot]) < 1.3; 
     bool ptcut = ePhot[imaxptphot]/cosh(etaPhot[imaxptphot])>25;
     
-    if(!etacut) continue;
+    //    if(!etacut) continue;
     if(!ptcut) continue;    
         
     bool cut_ntr = ntrkiso035Phot[imaxptphot]<3;
     bool cut_ptiso =  ptiso035Phot[imaxptphot]/(ePhot[imaxptphot]/cosh(etaPhot[imaxptphot])) < 0.1;
     bool cut_hove = hcalovecal04Phot[imaxptphot] < 0.05/0.95;
-    bool cut_ecaliso = (ecaliso04Phot[imaxptphot]-ePhot[imaxptphot])/(ePhot[imaxptphot]/cosh(etaPhot[imaxptphot])) <0.05;
+    bool cut_ecaliso = (ecaliso04Phot[imaxptphot]-ePhot[imaxptphot])/ePhot[imaxptphot] <0.05;
     bool cut_clus = sMajMajPhot[imaxptphot] < 0.3 && sMinMinPhot[imaxptphot] < 0.25;
 
     isiso = cut_ntr && cut_ptiso && cut_hove && cut_ecaliso && cut_clus;
-    
+    ntrkiso = ntrkiso035Phot[imaxptphot];
+    ptiso =  ptiso035Phot[imaxptphot]/(ePhot[imaxptphot]/cosh(etaPhot[imaxptphot]));
+    ptisoatecal =  ptisoatecal035Phot[imaxptphot]/(ePhot[imaxptphot]/cosh(etaPhot[imaxptphot]));
+    hcalovecal = hcalovecal04Phot[imaxptphot];
+    sMajMaj = sMajMajPhot[imaxptphot];
+    sMinMin = sMinMinPhot[imaxptphot];
+    ecaliso = (ecaliso04Phot[imaxptphot]-ePhot[imaxptphot])/ePhot[imaxptphot];    
     isphoton = matched;
     issignal = ptphotgen>25 && ileadmcphot>-.5;
     hltphoton = HLTResults[27];
@@ -447,6 +492,13 @@ void gjettree::BookHistos()
    ana_tree->Branch("weight",&weight,"weight/F");
    ana_tree->Branch("nniso",&nniso,"nniso/F");
    ana_tree->Branch("nniso_int",&nniso_int,"nniso_int/F");
+   ana_tree->Branch("ntrkiso",&ntrkiso,"ntrkiso/I");
+   ana_tree->Branch("ptiso",&ptiso,"ptiso/F");
+   ana_tree->Branch("ptisoatecal",&ptisoatecal,"ptisoatecal/F");
+   ana_tree->Branch("hcalovecal",&hcalovecal,"hcalovecal/F");
+   ana_tree->Branch("sMajMaj",&sMajMaj,"sMajMaj/F");
+   ana_tree->Branch("sMinMin",&sMinMin,"sMinMin/F");
+   ana_tree->Branch("ecaliso",&ecaliso,"ecaliso/F");
    ana_tree->Branch("ptphot",&ptph,"ptph/F");
    ana_tree->Branch("ptjet",&ptj,"ptj/F");
    ana_tree->Branch("etaphot",&etaph,"etaph/F");
@@ -482,6 +534,11 @@ void gjettree::BookHistos()
 
 }
 
+float gjettree::delta_phi(float phi1, float phi2) {
+
+  float PHI = fabs(phi1 - phi2);
+  return (PHI <= TMath::Pi())? PHI : TMath::TwoPi() - PHI;
+}
 
 TChain * getchain(char *thechain) {
 
@@ -491,7 +548,7 @@ TChain * getchain(char *thechain) {
   char buffer[200];
   sprintf(buffer, "%s", thechain);
   ifstream is(buffer);
-  cout << "files " << buffer <<  endl;
+  std::cout << "files " << buffer <<  std::endl;
   while(is.getline(buffer, 200, '\n')){
     if (buffer[0] == '#') {
       std::cout << "   Skip: " << buffer << std::endl;
