@@ -40,7 +40,7 @@ void OfflineTauIDProducer::produce(edm::Event& iEvent, const edm::EventSetup& iS
 
           PFTauCollection::const_iterator iTau;
           for(iTau = taus.begin(); iTau != taus.end(); iTau++){
-		if(iTau->Et() < jetPtMin) continue;
+		if(iTau->pt() < jetPtMin) continue;
 	        if(!iTau->leadTrack()) continue;
                 if(tauTag(const_cast<reco::PFTau&>(*iTau))) {
 			select = true;
@@ -61,7 +61,7 @@ void OfflineTauIDProducer::produce(edm::Event& iEvent, const edm::EventSetup& iS
 
        	  CaloTauCollection::const_iterator iTau;
        	  for(iTau = taus.begin(); iTau != taus.end(); iTau++){
-		if(iTau->Et() < jetPtMin) continue;
+		if(iTau->pt() < jetPtMin) continue;
        	        if(!iTau->leadTrack()) continue;
        	        if(tauTag(const_cast<reco::CaloTau&>(*iTau))) {
 			select = true;
