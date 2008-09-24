@@ -29,6 +29,8 @@ OutputCommands = cms.untracked.vstring(
     "drop *_hltBSoftmuonL25BJetTags_*_*",
     "drop *_hltBSoftmuonL3BJetTagsByDR_*_*",
     "drop *_hltBSoftmuonL3BJetTags_*_*",
-    "keep *_source_*_*"
+    "keep *_source_*_*",
+    "keep FastL1BitInfos_*_*_*",
+    "keep l1extra*_*_*_*"
 )
 
