@@ -13,7 +13,7 @@ Implementation:
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Mon Feb 19 13:25:24 CST 2007
-// $Id: L1GlobalAlgo.cc,v 1.1.2.1 2008/07/08 18:05:53 chinhan Exp $
+// $Id: L1GlobalAlgo.cc,v 1.2 2008/07/24 10:20:31 chinhan Exp $
 //
 
 // No BitInfos for release versions
@@ -99,13 +99,8 @@ L1GlobalAlgo::L1GlobalAlgo(const edm::ParameterSet& iConfig)
 
 L1GlobalAlgo::~L1GlobalAlgo()
 {
-  // do anything here that needs to be done at desctruction time
-  // (e.g. close files, deallocate resources etc.)
 }
 
-//
-// member functions
-//
 
 
 // ------------ Dump out CaloTower info  ------------
@@ -561,6 +556,10 @@ L1GlobalAlgo::FillL1RegionsTP(edm::Event const& e, const edm::EventSetup& s)
 
   InitL1Regions();
 
+  edm::ESHandle<CaloGeometry> cGeom;
+  //c.get<IdealGeometryRecord>().get(cGeom);
+  s.get<CaloGeometryRecord>().get(cGeom);    
+
   edm::Handle<EcalTrigPrimDigiCollection> ETPinput;
   e.getByLabel(m_L1Config.EcalTPInput,ETPinput);
 
@@ -715,24 +714,33 @@ L1GlobalAlgo::FillL1RegionsTP(edm::Event const& e, const edm::EventSetup& s)
 	}
 
 	double et = emEt + hadEt;
-	/*/ sm
+	edm::ESHandle<CaloGeometry> cGeom; 
+	//s.get<IdealGeometryRecord>().get(cGeom);    
+	s.get<CaloGeometryRecord>().get(cGeom);    
+
+	/* sm
 	  m_Regions[i].BitInfo.ecal[j] = emEt;
 	  m_Regions[i].BitInfo.hcal[j] = hadEt;
-	  //ms */
-	  math::RhoEtaPhiVector lvec(et,eta,phi);
+	*/
+
+	//math::RhoEtaPhiVector lvec(et,eta,phi);
+	math::XYZTLorentzVector lvec(et,eta,phi,0.);
+	//math::PtEtaPhiMLorentzVector lvec(et,eta,phi,0.);
 	
-	  CaloTowerDetId towerDetId;  
-	  if (emEtV[i][j]>0) 
-	    towerDetId = CaloTowerDetId(emiEtaV[i][j],emiPhiV[i][j]); 
-	  else
-	    towerDetId = CaloTowerDetId(hiEtaV[i][j],hiPhiV[i][j]); 
-	  
-	  CaloTower t = CaloTower(towerDetId, lvec, 
-				  emEt, hadEt, 
-				  0., 0, 0);
+	CaloTowerDetId towerDetId;  
+	if (emEtV[i][j]>0) 
+	  towerDetId = CaloTowerDetId(emiEtaV[i][j],emiPhiV[i][j]); 
+	else
+	  towerDetId = CaloTowerDetId(hiEtaV[i][j],hiPhiV[i][j]); 
+	
+	GlobalPoint gP = cGeom->getPosition(towerDetId);
+	CaloTower t = CaloTower(towerDetId,  
+				emEt, hadEt, 0.,
+				0, 0, lvec,
+				gP, gP);
     
 	  //m_Regions[i].FillTower_Scaled(t,j,false);
-	  m_Regions[i].FillTower_Scaled(t,j,true);
+	m_Regions[i].FillTower_Scaled(t,j,true,cGeom);
     
 	  /*
 	    if (et>0) {
@@ -792,8 +800,9 @@ L1GlobalAlgo::FillL1Regions(edm::Event const& e, const edm::EventSetup& c)
   c.get<CaloTopologyRecord>().get(calotopo);
   
   edm::ESHandle<CaloGeometry> cGeom;
-  c.get<IdealGeometryRecord>().get(cGeom);
-  
+  //c.get<IdealGeometryRecord>().get(cGeom);
+  c.get<CaloGeometryRecord>().get(cGeom);    
+
   edm::Handle<EcalRecHitCollection> ec1;
   e.getByLabel(m_L1Config.EmInputs.at(1),ec1);
   
@@ -839,7 +848,7 @@ L1GlobalAlgo::FillL1Regions(edm::Event const& e, const edm::EventSetup& c)
     } 
 
     if (rgnid<396 && twrid<16) {
-      m_Regions[rgnid].FillTower_Scaled(*cnd,twrid);
+      m_Regions[rgnid].FillTower_Scaled(*cnd,twrid,true,cGeom);
       m_Regions[rgnid].SetRegionBits(e, m_DoBitInfo);
     } else {
       //std::cerr << "L1GlobalAlgo::FillL1Regions(): ERROR - invalid region or tower ID: " << rgnid << " | " << twrid  << std::endl;

@@ -2,7 +2,7 @@ module l1CaloSim = L1CaloSim
 {
   # Defaults
   # "RecHits" or "TrigPrims" 
-  string AlgorithmSource = "TrigPrims" 
+  string AlgorithmSource = "RecHits" 
   bool DoBitInfo = false
 
   bool GctIso = false

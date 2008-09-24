@@ -15,7 +15,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Mon Feb 19 13:25:24 CST 2007
-// $Id: L1Region.h,v 1.1.2.1 2008/07/08 18:05:53 chinhan Exp $
+// $Id: L1Region.h,v 1.2 2008/07/24 10:20:30 chinhan Exp $
 //
 
 // user include files
@@ -114,9 +114,9 @@ class L1Region {
   ~L1Region();
 
   void SetParameters(L1Config);
-  void FillTower(const CaloTower& t, int& tid); 
-  void FillTowerZero(const CaloTower& t, int& tid); 
-  void FillTower_Scaled(const CaloTower& t, int& tid, bool doRCTTrunc = true); 
+  void FillTower(const CaloTower& t,int& tid,edm::ESHandle<CaloGeometry> &cGeom); 
+  void FillTowerZero(const CaloTower& t,int& tid); 
+  void FillTower_Scaled(const CaloTower& t,int& tid,bool doRCTTrunc,edm::ESHandle<CaloGeometry> &cGeom); 
   void FillEMCrystals(const CaloTowerConstituentsMap* theTowerConstituentsMap,
 		      const CaloTopology* calotopo,
 		      const CaloGeometry* cGeom,
