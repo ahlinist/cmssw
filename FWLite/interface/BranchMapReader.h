@@ -61,6 +61,7 @@ namespace fwlite {
       Long_t eventEntry_;
       eeiMap& eventInfoMap_;
       bidToDesc& branchDescriptionMap_;
+      bool mapperFilled_;
     };
 
       // ---------- const member functions ---------------------
