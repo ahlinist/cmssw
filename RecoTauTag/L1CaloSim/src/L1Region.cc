@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Mon Feb 19 13:25:24 CST 2007
-// $Id: L1Region.cc,v 1.1.2.1 2008/07/08 18:05:53 chinhan Exp $
+// $Id: L1Region.cc,v 1.2 2008/07/24 10:20:31 chinhan Exp $
 //
 
 // No BitInfos for release versions
@@ -290,7 +290,7 @@ L1Region::FillTowerZero(const CaloTower& t, int& tid)
 }
 
 void
-L1Region::FillTower(const CaloTower& t, int& tid) 
+L1Region::FillTower(const CaloTower& t, int& tid, edm::ESHandle<CaloGeometry> &cGeom) 
 {
   double EThres = 0.;
   double HThres = 0.;
@@ -321,14 +321,17 @@ L1Region::FillTower(const CaloTower& t, int& tid)
   //if ( eme<EThres) emet = 0.;
   //if ( hade<HThres) hadet = 0.;
  
+  GlobalPoint gP = cGeom->getPosition(t.id());
+  math::XYZTLorentzVector lvec(t.px(),t.py(),t.px(),t.energy());
   //Towers[tid] = CaloTower(t);
-  Towers[tid] = CaloTower(t.id(),t.momentum(),emet,hadet,t.outerEt(),0,0);
+  //Towers[tid] = CaloTower(t.id(),t.momentum(),emet,hadet,t.outerEt(),0,0);
+  Towers[tid] = CaloTower(t.id(),emet,hadet,t.outerEt(),0,0,lvec,gP,gP);
 }
 
 
 //
 void
-L1Region::FillTower_Scaled(const CaloTower& t, int& tid, bool doRCTTrunc) 
+L1Region::FillTower_Scaled(const CaloTower& t, int& tid, bool doRCTTrunc,edm::ESHandle<CaloGeometry> &cGeom) 
 {
 
   double EThres = 0.;
@@ -389,7 +392,14 @@ L1Region::FillTower_Scaled(const CaloTower& t, int& tid, bool doRCTTrunc)
   */
 
   //Towers[tid] = CaloTower(t);
-  Towers[tid] = CaloTower(t.id(),t.momentum(),emet,hadet,0.,0,0);
+  //Towers[tid] = CaloTower(t.id(),t.momentum(),emet,hadet,0.,0,0);
+  //edm::ESHandle<CaloGeometry> cGeom; 
+  //c.get<CaloGeometryRecord>().get(cGeom);    
+  GlobalPoint gP = cGeom->getPosition(t.id());
+  math::XYZTLorentzVector lvec(t.px(),t.py(),t.px(),t.energy());
+  //Towers[tid] = CaloTower(t);
+  //Towers[tid] = CaloTower(t.id(),t.momentum(),emet,hadet,t.outerEt(),0,0);
+  Towers[tid] = CaloTower(t.id(),emet,hadet,t.outerEt(),0,0,lvec,gP,gP);
   
 }
 
@@ -622,7 +632,8 @@ std::pair<double, double>
 L1Region::getRegionCenterEtaPhi(const edm::EventSetup& c)
 {
   edm::ESHandle<CaloGeometry> cGeom; 
-  c.get<IdealGeometryRecord>().get(cGeom);    
+  //c.get<IdealGeometryRecord>().get(cGeom);    
+  c.get<CaloGeometryRecord>().get(cGeom);    
 
   const GlobalPoint gP1 = cGeom->getPosition(Towers[5].id());
   //const GlobalPoint gP2 = cGeom->getPosition(Towers[6].id());

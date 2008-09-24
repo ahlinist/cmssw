@@ -22,7 +22,8 @@
 <use name=L1Trigger/CSCTrackFinder>
 <use name=SimDataFormats/HepMCProduct>
 <use name=DataFormats/TrackReco>
-<use name=L1TriggerConfig/L1Geometry>
+#<use name=L1TriggerConfig/L1Geometry>
+<use name=CondFormats/L1TObjects>
 <use name=DQMServices/Core>
 <use name=RecoTauTag/L1CaloSim>
 #<use name=FastSimulation/L1CaloTriggerProducer>
