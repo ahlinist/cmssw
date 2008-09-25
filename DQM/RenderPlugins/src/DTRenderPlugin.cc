@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.25 2008/07/25 15:53:09 cerminar Exp $
+// $Id: DTRenderPlugin.cc,v 1.26 2008/08/22 11:52:02 lat Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.25 $
-  \date $Date: 2008/07/25 15:53:09 $
+  \version $Revision: 1.26 $
+  \date $Date: 2008/08/22 11:52:02 $
 */
 
 #include "TProfile2D.h"
@@ -315,13 +315,14 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     c->SetRightMargin(0.12);
     obj->GetXaxis()->LabelsOption("v");
     obj->SetMinimum(-0.00000001);
-    obj->SetMaximum(2.0);
+    obj->SetMaximum(3.0);
 
-    int colorError1[3];
+    int colorError1[4];
     colorError1[0] = 416;// kGreen
     colorError1[1] = 594;// kind of blue
     colorError1[2] = 632;// kRed
-    gStyle->SetPalette(3, colorError1);
+    colorError1[3] = 400;// kYellow
+    gStyle->SetPalette(4, colorError1);
     return;
   } else if( o.name.find("CorrFractionSummary") != std::string::npos ||
 	     o.name.find("PhiSlopeSummary")     != std::string::npos ||
@@ -337,15 +338,16 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     c->SetLeftMargin(0.12);
     c->SetRightMargin(0.12);
     obj->SetMinimum(-0.00000001);
-    obj->SetMaximum(5.0);
+    obj->SetMaximum(5.01);
 
-    int colorError1[5];
+    int colorError1[6];
     colorError1[0] = 416;// kGreen
     colorError1[1] = 400;// kYellow
     colorError1[2] = 800;// kOrange
     colorError1[3] = 625;
     colorError1[4] = 632;// kRed
-    gStyle->SetPalette(5, colorError1);
+    colorError1[5] = 594;// kind of blue
+    gStyle->SetPalette(6, colorError1);
     return;
   }  else if(o.name.find("2ndFraction")  != std::string::npos ||
 	     o.name.find("CorrFraction") != std::string::npos ||
