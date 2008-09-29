@@ -37,7 +37,7 @@ void work()
       "process.source = cms.Source('EmptySource')\n"
       "process.m1 = cms.EDProducer('IntProducer',\n"
       "   ivalue = cms.int32(10))\n"
-      "process.m2 = cms.EDProducer('DoubleProducer',\n"
+      "process.m2 = cms.EDProducer('ToyDoubleProducer',\n"
       "   dvalue = cms.double(3.3))\n"
       "process.out = cms.OutputModule('AsciiOutputModule')\n"
       "process.p1 = cms.Path(process.m1*process.m2)\n"
