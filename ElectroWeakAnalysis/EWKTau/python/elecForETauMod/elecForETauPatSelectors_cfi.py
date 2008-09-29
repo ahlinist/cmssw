@@ -12,6 +12,12 @@ selectKinElecForETau = cms.EDFilter("PATElectronSelector",
      cut = cms.string('pt > 10. & abs(eta) < 2.5')
 )
 
+##################### MATCH HLT ######################
+selectMchHLTElecForETau = cms.EDFilter("PATElectronSelector",
+     src = cms.InputTag("selectKinElecForETau"),
+     cut = cms.string('triggerMatches.size()')
+)              
+
 #################### TRK ##############################
 
 selectTrkIsoElecForETau = cms.EDFilter("PATElectronSelector",       
@@ -19,11 +25,16 @@ selectTrkIsoElecForETau = cms.EDFilter("PATElectronSelector",
      cut = cms.string('trackIso=0')   
 )
 
+selectTrkIsoAfterMchHLTElecForETau = cms.EDFilter("PATElectronSelector",       
+     src = cms.InputTag("selectMchHLTElecForETau"),   
+     cut = cms.string('trackIso=0')   
+)
+
 ####################### ECAL #############################
 
 selectEcalIsoAfterTrkIsoElecForETau = cms.EDFilter("PATElectronSelector",
-     src = cms.InputTag("selectTrkIsoElecForETau"),
-     cut = cms.string('ecalIso<0.2')             
+     src = cms.InputTag("selectTrkIsoAfterMchHLTElecForETau"),
+     cut = cms.string('ecalIso<1.')             
 )
 
 selectEcalIsoElecForETau = cms.EDFilter("PATElectronSelector",
@@ -36,7 +47,7 @@ selectEcalIsoElecForETau = cms.EDFilter("PATElectronSelector",
 
 selectHcalIsoAfterEcalIsoElecForETau = cms.EDFilter("PATElectronSelector",
      src = cms.InputTag("selectEcalIsoAfterTrkIsoElecForETau"),
-     cut = cms.string('hcalIso<2.5.')             
+     cut = cms.string('hcalIso<2.5')             
 )
 
 selectHcalIsoElecForETau = cms.EDFilter("PATElectronSelector",
@@ -55,5 +66,17 @@ selectIdAfterIsoElecForETau = cms.EDFilter("PATElectronSelector",
 selectIdElecForETau = cms.EDFilter("PATElectronSelector",
      src = cms.InputTag("selectKinElecForETau"),
      cut = cms.string('leptonID("robust")>0.')
+)
+
+#################### IP ############################
+
+selectIpAfterIsoElecForETau = cms.EDFilter("PATElectronSelector",
+     src = cms.InputTag("selectIdAfterIsoElecForETau"),
+     cut = cms.string('abs(gsfTrack.d0)<1000000.02')  
+)
+
+selectIpElecForETau = cms.EDFilter("PATElectronSelector",
+     src = cms.InputTag("selectKinElecForETau"),      
+     cut = cms.string('abs(gsfTrack.d0)<0.02')               
 )
 
