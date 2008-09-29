@@ -28,7 +28,9 @@
 #include "DataFormats/VertexReco/interface/Vertex.h"
 
 // electron
-#include "DataFormats/EgammaCandidates/interface/PixelMatchGsfElectronFwd.h"
+#include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
+#include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
+
 // Invariant Mass from Caloremeter
 #include "DataFormats/BTauReco/interface/TauMassTagInfo.h"
 #include "DataFormats/BTauReco/interface/TauImpactParameterInfo.h"
@@ -37,7 +39,7 @@
 #include "JetMETCorrections/Objects/interface/JetCorrector.h"
 
 #include "DataFormats/JetReco/interface/GenJet.h"
-#include "DataFormats/HepMCCandidate/interface/GenParticleCandidate.h"
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
 
 #include "DataFormats/JetReco/interface/Jet.h"
@@ -49,6 +51,8 @@
 
 #include "DataFormats/L1Trigger/interface/L1JetParticle.h"
 #include "DataFormats/L1Trigger/interface/L1JetParticleFwd.h"
+
+#include "TMath.h"
 
 using namespace edm;
 using namespace reco; 
@@ -875,16 +879,16 @@ void EWKTauAnalyser::findMuons(const edm::Event& iEvent, const EventSetup& iSetu
 }
 void EWKTauAnalyser::findElectrons(const edm::Event& iEvent, const EventSetup& iSetup) 
 {
-  Handle<PixelMatchGsfElectronCollection> electronHandle; 
+  Handle<GsfElectronCollection> electronHandle; 
   iEvent.getByLabel(_electronSrc, electronHandle);
   if (electronHandle.isValid()) {
-    const PixelMatchGsfElectronCollection& recoElectronColl = *( electronHandle.product() );
+    const GsfElectronCollection& recoElectronColl = *( electronHandle.product() );
     if (_debugFlg >= 2) 
       cout << setiosflags(ios::left) << setw(30) 
            << "EWKTauAnalyser::findElectrons: # of electrons=" << recoElectronColl.size() << endl;
-    for (PixelMatchGsfElectronCollection::const_iterator e  = recoElectronColl.begin(); 
-                                                         e != recoElectronColl.end(); 
-                                                       ++e) {
+    for (GsfElectronCollection::const_iterator e  = recoElectronColl.begin(); 
+                                               e != recoElectronColl.end(); 
+                                             ++e) {
       if (_debugFlg > 3) 
         cout << "EWKTauAnalyser::findElectrons: pt= " << e->pt()
              << " eta= "         << e->eta()
@@ -914,12 +918,12 @@ bool EWKTauAnalyser::getGenJet(const PFTau& jet, const GenJetCollection& genJets
 
   bool tauFound = false;
   const GenJet& j = genJets[min_index];
-  vector<const GenParticleCandidate*> gpColl = j.getConstituents();
-  for (vector<const GenParticleCandidate*>::const_iterator f  = gpColl.begin();
-                                                           f != gpColl.end();
+  vector<const GenParticle*> gpColl = j.getGenConstituents();
+  for (vector<const GenParticle*>::const_iterator f  = gpColl.begin();
+                                                  f != gpColl.end();
                                                          ++f)
   {
-    const GenParticleCandidate* gp = (*f);
+    const GenParticle* gp = (*f);
     int pid = gp->pdgId();
     if (_debugFlg > 3)
     cout << "PDG Code = " << pid << endl

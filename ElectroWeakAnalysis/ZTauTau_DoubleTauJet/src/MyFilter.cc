@@ -1,16 +1,24 @@
 #include <memory>
 #include <iostream>
+#include <typeinfo>
+#include <iomanip>
+#include <cstdlib>
+#include <climits>
+#include <cmath>
+#include <algorithm>
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
-#include "ElectroWeakAnalysis/ZTauTau_DoubleTauJet/interface/MyFilter.h"
-#include "ElectroWeakAnalysis/ZTauTau_DoubleTauJet/interface/EWKTauAnalyser.h"
-
+#include "DataFormats/TauReco/interface/PFTau.h"
 #include "DataFormats/JetReco/interface/PFJet.h"
 #include "DataFormats/JetReco/interface/Jet.h"
 #include "DataFormats/JetReco/interface/CaloJet.h"
 #include "DataFormats/JetReco/interface/CaloJetCollection.h"
 
+#include "ElectroWeakAnalysis/ZTauTau_DoubleTauJet/interface/MyFilter.h"
+#include "ElectroWeakAnalysis/ZTauTau_DoubleTauJet/interface/EWKTauAnalyser.h"
+
 using namespace edm;
+using namespace reco;
 using namespace std;
 
 MyFilter::MyFilter(const edm::ParameterSet& iConfig)
