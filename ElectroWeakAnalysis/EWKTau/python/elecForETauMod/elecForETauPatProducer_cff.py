@@ -17,5 +17,19 @@ patTrigMatchElecForETau = cms.Sequence(
 
 patHighLevelRecoElecForETau = cms.Sequence(patElecIdForETau * patAODElectronIsolation * patLayer0ElectronIsolation)
 layer0ElecForETau = cms.Sequence(allLayer0ElecForETau * patTrigMatchElecForETau * patTrigMatchElecForETau * patHighLevelRecoElecForETau)
-layer1ElecForETau = cms.Sequence(allLayer1ElecForETau * selectKinElecForETau)
+layer1ElecForETau = cms.Sequence(
+                                  allLayer1ElecForETau
+                                 *selectKinElecForETau
+                                 *selectMchHLTElecForETau
+                                 *selectTrkIsoAfterMchHLTElecForETau
+                                 *selectEcalIsoAfterTrkIsoElecForETau
+                                 *selectHcalIsoAfterEcalIsoElecForETau
+                                 *selectIdAfterIsoElecForETau
+                                 *selectIpAfterIsoElecForETau
+                                 *selectTrkIsoElecForETau
+                                 *selectEcalIsoElecForETau
+                                 *selectHcalIsoElecForETau
+                                 *selectIdElecForETau
+                                 *selectIpElecForETau                                
+                              )
 
