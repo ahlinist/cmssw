@@ -11,10 +11,16 @@
 #include <TROOT.h>
 #include <TChain.h>
 #include <TFile.h>
+#include <TDirectory.h>
 #include <TH1D.h>
 #include <TH2D.h>
 #include <TProfile.h>
+#include <TGraphErrors.h>
 #include <TTree.h>
+
+#include "Config.hpp"
+
+#include <string>
 
 class gjet_response {
 public :
@@ -22,8 +28,11 @@ public :
    Int_t           fCurrent; //!current Tree number in a TChain
 
    // Declaration of leave types
-   Int_t           isphoton;
-   Int_t           issignal;
+   Int_t           photonid;
+   Int_t           isgamma;
+   Int_t           ismatched;
+   //Int_t           isphoton;
+   //Int_t           issignal;
    Float_t         weight;
    Float_t         nniso;
    Float_t         nniso_int;
@@ -34,6 +43,7 @@ public :
    Float_t         phiphot;
    Float_t         phijet;
    Float_t         pt2jet;
+   Float_t         pt2phot;
    Float_t         ptphottrue;
    Float_t         ptjettrue;
    Float_t         ptquarktrue;
@@ -47,8 +57,11 @@ public :
    double cutetajet;
 
    // List of branches
-   TBranch        *b_isphoton;   //!
-   TBranch        *b_issignal;   //!
+   TBranch        *b_photonid;   //!
+   TBranch        *b_isgamma;   //!
+   TBranch        *b_ismatched;   //!
+   //TBranch        *b_isphoton;   //!
+   //TBranch        *b_issignal;   //!
    TBranch        *b_weight;   //!
    TBranch        *b_nniso;   //!
    TBranch        *b_nniso_int;   //!
@@ -59,6 +72,7 @@ public :
    TBranch        *b_phiph;   //!
    TBranch        *b_phij;   //!
    TBranch        *b_pt2jet;   //!
+   TBranch        *b_pt2phot;   //!
    TBranch        *b_ptphottrue;   //!
    TBranch        *b_ptjettrue;   //!
    TBranch        *b_ptquarktrue;   //!
@@ -66,70 +80,106 @@ public :
    TBranch        *b_phijettrue;   //!
    TBranch        *b_phiquarktrue;   //!
 
+   TProfile *ptmean_mix;
+   TProfile *ptmean_sig;
+   TProfile *ptmean_bkg;
+   TH1D *purity;
+   TH1D *sovb;
+   TH1D *efficiency;
+   TH1D *rejection;
+
    TH1D* ptphot_nocut;
-   TH1D* ptphot_allcut;
+   TH1D* ptphot_mix;
    TH1D* response_nocut;
-   TH1D* response_allcut;
+   TH1D* response_mix;
    TH2D* responsevspt_nocut;
-   TH2D* responsevspt_allcut;
-   TH1D* response_allcut_region1;
-   TH1D* response_allcut_region2;
-   TH1D* response_allcut_region3;
-   TH1D* response_allcut_region4;
+   TH2D* responsevspt_mix;
+   TH1D* response_mix_reg1;
+   TH1D* response_mix_reg2;
+   TH1D* response_mix_reg3;
+   TH1D* response_mix_reg4;
    TH1D* ptphot_nocut_sig;
-   TH1D* ptphot_allcut_sig;
+   TH1D* ptphot_sig;
    TH1D* response_nocut_sig;
-   TH1D* response_allcut_sig;
+   TH1D* response_sig;
    TH2D* responsevspt_nocut_sig;
-   TH2D* responsevspt_allcut_sig;
-   TH1D* response_nocut_sig_region1;
-   TH1D* response_nocut_sig_region2;
-   TH1D* response_nocut_sig_region3;
-   TH1D* response_nocut_sig_region4;
-   TH1D* response_allcut_sig_region1;
-   TH1D* response_allcut_sig_region2;
-   TH1D* response_allcut_sig_region3;
-   TH1D* response_allcut_sig_region4;
+   TH2D* responsevspt_sig;
+   TH1D* response_nocut_sig_reg1;
+   TH1D* response_nocut_sig_reg2;
+   TH1D* response_nocut_sig_reg3;
+   TH1D* response_nocut_sig_reg4;
+   TH1D* response_sig_reg1;
+   TH1D* response_sig_reg2;
+   TH1D* response_sig_reg3;
+   TH1D* response_sig_reg4;
    TH1D* ptphot_nocut_bkg;
-   TH1D* ptphot_allcut_bkg;
+   TH1D* ptphot_bkg;
    TH1D* response_nocut_bkg;
-   TH1D* response_allcut_bkg;
+   TH1D* response_bkg;
    TH2D* responsevspt_nocut_bkg;
-   TH2D* responsevspt_allcut_bkg;
-   TH1D* response_allcut_bkg_region1;
-   TH1D* response_allcut_bkg_region2;
-   TH1D* response_allcut_bkg_region3;
-   TH1D* response_allcut_bkg_region4;
+   TH2D* responsevspt_bkg;
+   TH1D* response_bkg_reg1;
+   TH1D* response_bkg_reg2;
+   TH1D* response_bkg_reg3;
+   TH1D* response_bkg_reg4;
 
    TH2D* sob_vs_eff_1;
    TH2D* sob_vs_eff_2;
    TH2D* sob_vs_eff_3;
    TH2D* sob_vs_eff_4;
 
-   TH1D* nn_region1_sig;
-   TH1D* nn_region2_sig;
-   TH1D* nn_region3_sig;
-   TH1D* nn_region4_sig;
+   TH1D* nn_reg1_sig;
+   TH1D* nn_reg2_sig;
+   TH1D* nn_reg3_sig;
+   TH1D* nn_reg4_sig;
 
-   TH1D* nn_region1_bkg;
-   TH1D* nn_region2_bkg;
-   TH1D* nn_region3_bkg;
-   TH1D* nn_region4_bkg;
+   TH1D* nn_reg1_bkg;
+   TH1D* nn_reg2_bkg;
+   TH1D* nn_reg3_bkg;
+   TH1D* nn_reg4_bkg;
 
    TFile* hOutputFile ;
-   
+   TDirectory* hFitDir;
+   TDirectory* curdir;
+
    gjet_response(TTree *tree=0, char * outputname = "test.root", int xbin = 100, int ybin = 100);
    virtual ~gjet_response();
    virtual Int_t    GetEntry(Long64_t entry);
    virtual Long64_t LoadTree(Long64_t entry);
    virtual void     Init(TTree *tree);
-   virtual void     Loop();
+   virtual void     Loop(const std::string idtype = "medium");
    virtual void     BookHistos();
    virtual Bool_t   Notify();
-   virtual void     Fit();
-   virtual void     ResetHistos();  
+   virtual void     Fit(bool arithmetic=false);
+   virtual void     ResetHistos(); 
    virtual void     Optimum();  
    virtual void     Show(Long64_t entry = -1);
+
+   //  calculate phi1-phi2 keeping value between 0 and pi
+   inline float delta_phi(float phi1, float phi2);
+   // calculate eta1-eta2 keeping eta2 positive
+   inline float delta_eta(float eta1, float eta2);
+   // Photon ID cuts on neural network output
+   bool NNID(float nnval);
+
+   void Configure(const char *cfg = "final");
+   void DumpConfig();
+
+ private:
+   std::string _algoname;
+   std::string _idtype;
+
+   float _photetacut;
+   float _photptcut;
+   float _jetetacut;
+   float _jet2_minpt;
+   float _jet2_maxfrac;
+   float _deltaphi;
+   float _deltaeta;
+
+   std::string _mctruthfunc;
+
+   float _xmin, _xmax;
 };
 
 #endif
@@ -150,7 +200,13 @@ gjet_response::gjet_response(TTree *tree, char * outputname, int xbin, int ybin)
    XBINS = xbin;
    YBINS = ybin;
    Init(tree);
+   curdir = gDirectory;
    hOutputFile   = new TFile(outputname , "RECREATE" ) ;
+   hFitDir = hOutputFile->mkdir("Fits");
+   curdir->cd();
+
+   Configure();
+   DumpConfig();
 }
 
 gjet_response::~gjet_response()
@@ -199,8 +255,11 @@ void gjet_response::Init(TTree *tree)
    fCurrent = -1;
    fChain->SetMakeClass(1);
 
-   fChain->SetBranchAddress("isphoton", &isphoton, &b_isphoton);
-   fChain->SetBranchAddress("issignal", &issignal, &b_issignal);
+   fChain->SetBranchAddress("photonid", &photonid, &b_photonid);
+   fChain->SetBranchAddress("isgamma", &isgamma, &b_isgamma);
+   fChain->SetBranchAddress("ismatched", &ismatched, &b_ismatched);
+   //fChain->SetBranchAddress("isphoton", &isphoton, &b_isphoton);
+   //fChain->SetBranchAddress("issignal", &issignal, &b_issignal);
    fChain->SetBranchAddress("weight", &weight, &b_weight);
    fChain->SetBranchAddress("nniso", &nniso, &b_nniso);
    fChain->SetBranchAddress("nniso_int", &nniso_int, &b_nniso_int);
@@ -211,6 +270,7 @@ void gjet_response::Init(TTree *tree)
    fChain->SetBranchAddress("phiphot", &phiphot, &b_phiph);
    fChain->SetBranchAddress("phijet", &phijet, &b_phij);
    fChain->SetBranchAddress("pt2jet", &pt2jet, &b_pt2jet);
+   fChain->SetBranchAddress("pt2phot", &pt2phot, &b_pt2phot);
    fChain->SetBranchAddress("ptphottrue", &ptphottrue, &b_ptphottrue);
    fChain->SetBranchAddress("ptjettrue", &ptjettrue, &b_ptjettrue);
    fChain->SetBranchAddress("ptquarktrue", &ptquarktrue, &b_ptquarktrue);
@@ -218,10 +278,6 @@ void gjet_response::Init(TTree *tree)
    fChain->SetBranchAddress("phijettrue", &phijettrue, &b_phijettrue);
    fChain->SetBranchAddress("phiquarktrue", &phiquarktrue, &b_phiquarktrue);
 
-   cutnn = 0.94;
-   cut2jet = 0.2;
-   cutetajet = 1.2;
-     
    Notify();
 }
 

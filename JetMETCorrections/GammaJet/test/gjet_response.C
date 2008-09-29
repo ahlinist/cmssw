@@ -5,12 +5,115 @@
 #include <TStyle.h>
 #include <TCanvas.h>
 #include <TLegend.h>
+#include <TPaveStats.h>
+#include <TStyle.h>
 #include <iostream>
 #include <fstream>
 #include <stdlib.h>
 #include <stdio.h>
 
-void gjet_response::Loop()
+//using std::string;
+using namespace std;
+
+inline float gjet_response::delta_phi(float phi1, float phi2) {
+
+  float dphi = fabs(phi1 - phi2);
+  return (dphi <= TMath::Pi())? dphi : TMath::TwoPi() - dphi;
+}
+
+inline float gjet_response::delta_eta(float eta1, float eta2) {
+
+  return (eta2 >= 0 ? eta1 - eta2 : eta2 - eta1);
+}
+
+bool gjet_response::NNID(float nnval) {
+
+  bool nnphotcut(false);
+  if (ptphot<60)                 nnphotcut = nnval > 1.007;
+  if (ptphot<100 && ptphot>=60)  nnphotcut = nnval > 0.999;
+  if (ptphot<200 && ptphot>=100) nnphotcut = nnval > 0.980;
+  if (ptphot>=200)               nnphotcut = nnval > 0.999;
+
+  return nnphotcut;
+}
+
+void gjet_response::Configure(const char *cfg) {
+
+  cafe::Config config(cfg);
+
+  // Test that file is available
+  string test = config.get("AlgoName", "test");
+  if (test=="test") {
+    cout << "* WARNING: No configuration found for 'AlgoName' in '"
+	 << cfg << "'" << endl;
+    cout << "* Check that CAFE_CONFIG environment variable" << endl
+	 << "* is set, file exists and configuration is set." << endl;
+    cout << "* Set the environmet variable like this:" << endl
+	 << "  gSystem->Setenv(\"CAFE_CONFIG\", \"gjettree.config\");" << endl;
+    cout << "* Set the configuration variable in the file like this:" << endl
+	 << "  "<<cfg<<".AlgoName:  IterativeCone0.5" << endl;
+    exit(10);
+  }
+
+  // Algorithm name
+  _algoname = config.get("AlgoName", "");
+
+  // Topological cuts
+
+  // Maximum photon eta
+  _photetacut = config.get("PhotEtaCut", 1.3);
+  // Minimum photon pT
+  _photptcut = config.get("PhotPtCut", 25.);
+  // Maximum jet eta
+  _jetetacut = config.get("JetEtaCut", 1.3);
+  // Minimum pT for second jet
+  _jet2_minpt = config.get("Jet2_minPt", 10.);
+  // Maximum fraction of photon energy for second jet
+  _jet2_maxfrac = config.get("Jet2_maxFrac", 0.10);
+  // Minimum DeltaPhi(leadjet, leadphoton), 0<DeltaPhi<pi
+  _deltaphi = config.get("DeltaPhi", TMath::Pi()-0.2);
+  // Maximum Abs(DeltaEta(leadjet, leadphoton))
+  _deltaeta = config.get("DeltaEta", 1.0);
+
+  // MC truth function
+  _mctruthfunc = config.get("MCTruthFunc","1 - 2.316*pow(x,0.6005-1)");
+
+  // Graph x-axis limits
+  _xmin = config.get("Xmin", 25.);
+  _xmax = config.get("Xmax", 700.);
+
+  return;
+} // Configure
+
+
+void gjet_response::DumpConfig() {
+
+  cout << "Running gjet_response.C with the following configuration:" << endl
+       << endl
+       << "Topological cuts:" << endl
+       << "--------------------" << endl
+       << "PhotEtaCut:   " << _photetacut << endl
+       << "PhotPtCut:    " << _photptcut << endl
+       << "JetEtaCut:    " << _jetetacut << endl
+       << "Jet2_minPt:   " << _jet2_minpt << endl
+       << "Jet2_maxFrac: " << _jet2_maxfrac << endl
+       << "DeltaPhi:     " << _deltaphi << endl
+       << "DeltaEta:     " << _deltaeta << endl
+       << endl
+       << "MC truth function:" << endl
+       << "--------------------" << endl
+       << "MCTruthFunc:  " << _mctruthfunc << endl
+       << endl
+       << "Graph X-axis limits" << endl
+       << "--------------------" << endl
+       << "Xmin:         " << _xmin << endl
+       << "Xmax:         " << _xmax << endl
+       << endl;
+
+} // DumpConfig
+
+
+void gjet_response::Loop(const string idtype)
 {
 //   In a ROOT session, you can do:
 //      Root > .L gjet_response.C
@@ -37,8 +140,6 @@ void gjet_response::Loop()
 //by  b_branchname->GetEntry(ientry); //read only this branch
    if (fChain == 0) return;
 
-   double pi = 3.14159;
-
    Long64_t nentries = fChain->GetEntriesFast();
 
    Long64_t nbytes = 0, nb = 0;
@@ -52,72 +153,115 @@ void gjet_response::Loop()
       response_nocut->Fill(ptjet/ptphot,weight);
       responsevspt_nocut->Fill(ptphot,ptjet/ptphot,weight);
 
-      bool ptcut = ptphot > 28;
-      //      bool pt2jetcut = pt2jet/ptphot < cut2jet;
-      bool pt2jetcut = pt2jet/ptphot < 0.09;
-      bool nnphotcut;
-      if(ptphot<60) nnphotcut = nniso > 1.007;
-      if(ptphot<100 && ptphot>60)  nnphotcut = nniso > .999;  
-      if(ptphot<200 && ptphot>100)   nnphotcut = nniso > .98;   
-      if(ptphot>200)     nnphotcut = nniso > .999;             
-  //       else nnphotcut = nniso_int > cutnn;
-//       nnphotcut = nniso > .999;
-      bool etacut = TMath::Abs(etaphot) < 1.2; 
-      bool etajetcut = TMath::Abs(etajet) < cutetajet; 
-      bool deltaphicut = TMath::Abs(phijet - phiphot) - pi<.2 && TMath::Abs(phijet - phiphot) - pi>-.2;      
-      bool allcuts = nnphotcut && ptcut && etacut && etajetcut && deltaphicut && pt2jetcut;
-      
-      if(issignal && isphoton){
+      // Topological cuts
+      bool ptcut = (ptphot > _photptcut);
+      bool pt2jetcut = (pt2jet < _jet2_maxfrac*ptphot || pt2jet < _jet2_minpt);
+      //bool pt2photcut = true;
+      bool etacut = (fabs(etaphot) < _photetacut);
+      bool etajetcut = (fabs(etajet) < _jetetacut);
+      bool deltaphicut = (delta_phi(phijet,phiphot) > _deltaphi);
+      bool deltaetacut = (fabs(delta_eta(etajet,etaphot)) < _deltaeta);
+      bool topocuts = ptcut && etacut && etajetcut && pt2jetcut
+	&& deltaphicut && deltaetacut;
+
+      // PhotonID cuts
+      bool idcuts = false;
+      _idtype = idtype;
+      if (idtype=="NN")     { idcuts = NNID(nniso); }
+      if (idtype=="loose")  { idcuts = (photonid>=1); }
+      if (idtype=="medium") { idcuts = (photonid>=10); }
+      if (idtype=="tight")  { idcuts = (photonid>=100); }
+      assert(idtype=="loose" || idtype=="medium"
+	     || idtype=="tight" || idtype=="NN");
+
+      bool allcuts = topocuts && idcuts;
+
+      if (isgamma) {
+
 	ptphot_nocut_sig->Fill(ptphot,weight);
 	response_nocut_sig->Fill(ptjet/ptphot,weight);
-	responsevspt_nocut_sig->Fill(ptphot,ptjet/ptphot,weight);	
-	if(ptphot<60)                 response_nocut_sig_region1->Fill(ptjet/ptphot,weight);
-	if(ptphot<100 && ptphot>60)   response_nocut_sig_region2->Fill(ptjet/ptphot,weight);
-	if(ptphot<200 && ptphot>100)  response_nocut_sig_region3->Fill(ptjet/ptphot,weight);
-	if(ptphot>200)                response_nocut_sig_region4->Fill(ptjet/ptphot,weight);
-	if(ptcut && pt2jetcut &&  etacut && etajetcut && deltaphicut){
-	  if(ptphot<60)                 nn_region1_sig->Fill(nniso,weight);
-	  if(ptphot<100 && ptphot>60)   nn_region2_sig->Fill(nniso,weight);
-	  if(ptphot<200 && ptphot>100)  nn_region3_sig->Fill(nniso,weight);
-	  if(ptphot>200)                nn_region4_sig->Fill(nniso,weight);
+	responsevspt_nocut_sig->Fill(ptphot,ptjet/ptphot,weight);
+	
+	if (ptphot<60)
+	  response_nocut_sig_reg1->Fill(ptjet/ptphot,weight);
+	if (ptphot<100 && ptphot>=60)
+	  response_nocut_sig_reg2->Fill(ptjet/ptphot,weight);
+	if (ptphot<200 && ptphot>=100)
+	  response_nocut_sig_reg3->Fill(ptjet/ptphot,weight);
+	if (ptphot>=200)
+	  response_nocut_sig_reg4->Fill(ptjet/ptphot,weight);
+
+	if (topocuts) {
+	  if (ptphot<60)                 nn_reg1_sig->Fill(nniso,weight);
+	  if (ptphot<100 && ptphot>=60)  nn_reg2_sig->Fill(nniso,weight);
+	  if (ptphot<200 && ptphot>=100) nn_reg3_sig->Fill(nniso,weight);
+	  if (ptphot>=200)               nn_reg4_sig->Fill(nniso,weight);
 	}
-      } else {
+
+      } else if (!isgamma) {
+
 	ptphot_nocut_bkg->Fill(ptphot,weight);
 	response_nocut_bkg->Fill(ptjet/ptphot,weight);
-	responsevspt_nocut_bkg->Fill(ptphot,ptjet/ptphot,weight);	
-	if(ptcut && pt2jetcut &&  etacut && etajetcut && deltaphicut){
-	  if(ptphot<60)                 nn_region1_bkg->Fill(nniso,weight);
-	  if(ptphot<100 && ptphot>60)   nn_region2_bkg->Fill(nniso,weight);
-	  if(ptphot<200 && ptphot>100)  nn_region3_bkg->Fill(nniso,weight);
-	  if(ptphot>200)                nn_region4_bkg->Fill(nniso,weight);
+	responsevspt_nocut_bkg->Fill(ptphot,ptjet/ptphot,weight);
+
+	if (topocuts) {
+	  if (ptphot<60)                 nn_reg1_bkg->Fill(nniso,weight);
+	  if (ptphot<100 && ptphot>=60)  nn_reg2_bkg->Fill(nniso,weight);
+	  if (ptphot<200 && ptphot>=100) nn_reg3_bkg->Fill(nniso,weight);
+	  if (ptphot>=200)               nn_reg4_bkg->Fill(nniso,weight);
 	}
       }
       
-      if(allcuts){
-	ptphot_allcut->Fill(ptphot,weight);
-	response_allcut->Fill(ptjet/ptphot,weight);
-	responsevspt_allcut->Fill(ptphot,ptjet/ptphot,weight);
-	if(ptphot<60)                 response_allcut_region1->Fill(ptjet/ptphot,weight);
-	if(ptphot<100 && ptphot>60)   response_allcut_region2->Fill(ptjet/ptphot,weight);
-	if(ptphot<200 && ptphot>100)  response_allcut_region3->Fill(ptjet/ptphot,weight);
-	if(ptphot>200)                response_allcut_region4->Fill(ptjet/ptphot,weight);
+      if (allcuts){
+
+	ptmean_mix->Fill(ptphot,ptphot,weight);
+
+	ptphot_mix->Fill(ptphot,weight);
+	response_mix->Fill(ptjet/ptphot,weight);
+	responsevspt_mix->Fill(ptphot,ptjet/ptphot,weight);
+
+	if (ptphot<60)
+	  response_mix_reg1->Fill(ptjet/ptphot,weight);
+	if (ptphot<100 && ptphot>=60)
+	  response_mix_reg2->Fill(ptjet/ptphot,weight);
+	if (ptphot<200 && ptphot>=100)
+	  response_mix_reg3->Fill(ptjet/ptphot,weight);
+	if (ptphot>=200)
+	  response_mix_reg4->Fill(ptjet/ptphot,weight);
 	
-	if(issignal && isphoton){
-	  ptphot_allcut_sig->Fill(ptphot,weight);
-	  response_allcut_sig->Fill(ptjet/ptphot,weight);
-	  responsevspt_allcut_sig->Fill(ptphot,ptjet/ptphot,weight);	
-	  if(ptphot<60)                 response_allcut_sig_region1->Fill(ptjet/ptphot,weight);
-	  if(ptphot<100 && ptphot>60)   response_allcut_sig_region2->Fill(ptjet/ptphot,weight);
-	  if(ptphot<200 && ptphot>100)  response_allcut_sig_region3->Fill(ptjet/ptphot,weight);
-	  if(ptphot>200)                response_allcut_sig_region4->Fill(ptjet/ptphot,weight);
-	} else {
-	  ptphot_allcut_bkg->Fill(ptphot,weight);
-	  response_allcut_bkg->Fill(ptjet/ptphot,weight);
-	  responsevspt_allcut_bkg->Fill(ptphot,ptjet/ptphot,weight);	
-	  if(ptphot<60)                 response_allcut_bkg_region1->Fill(ptjet/ptphot,weight);
-	  if(ptphot<100 && ptphot>60)   response_allcut_bkg_region2->Fill(ptjet/ptphot,weight);
-	  if(ptphot<200 && ptphot>100)  response_allcut_bkg_region3->Fill(ptjet/ptphot,weight);
-	  if(ptphot>200)                response_allcut_bkg_region4->Fill(ptjet/ptphot,weight);
+	if (isgamma) {
+
+	  ptmean_sig->Fill(ptphot,ptphot,weight);
+
+	  ptphot_sig->Fill(ptphot,weight);
+	  response_sig->Fill(ptjet/ptphot,weight);
+	  responsevspt_sig->Fill(ptphot,ptjet/ptphot,weight);	
+
+	  if (ptphot<60)
+	    response_sig_reg1->Fill(ptjet/ptphot,weight);
+	  if (ptphot<100 && ptphot>=60)
+	    response_sig_reg2->Fill(ptjet/ptphot,weight);
+	  if (ptphot<200 && ptphot>=100)
+	    response_sig_reg3->Fill(ptjet/ptphot,weight);
+	  if (ptphot>=200)
+	    response_sig_reg4->Fill(ptjet/ptphot,weight);
+
+	} else if (!isgamma) {
+
+	  ptmean_bkg->Fill(ptphot,ptphot,weight);
+
+	  ptphot_bkg->Fill(ptphot,weight);
+	  response_bkg->Fill(ptjet/ptphot,weight);
+	  responsevspt_bkg->Fill(ptphot,ptjet/ptphot,weight);
+	  
+	  if (ptphot<60)
+	    response_bkg_reg1->Fill(ptjet/ptphot,weight);
+	  if (ptphot<100 && ptphot>=60)
+	    response_bkg_reg2->Fill(ptjet/ptphot,weight);
+	  if (ptphot<200 && ptphot>=100)
+	    response_bkg_reg3->Fill(ptjet/ptphot,weight);
+	  if (ptphot>=200)
+	    response_bkg_reg4->Fill(ptjet/ptphot,weight);
 	}
       }
    }
@@ -125,121 +269,196 @@ void gjet_response::Loop()
 
 void gjet_response::BookHistos()
 {
-  ptphot_nocut = new TH1D("ptphot_nocut","ptphot_nocut",XBINS,25.,700.);  ptphot_nocut->Sumw2();
-  ptphot_allcut = new TH1D("ptphot_allcut","ptphot_allcut",XBINS,25.,700.); ptphot_allcut->Sumw2();
-  response_nocut = new TH1D("response_nocut","response_nocut",XBINS,0.,2.); response_nocut->Sumw2();
-  response_allcut = new TH1D("response_allcut","response_allcut",XBINS,0.,2.); response_allcut->Sumw2();
-  responsevspt_nocut = new TH2D("responsevspt_nocut","responsevspt_nocut",XBINS,25.,700.,YBINS,0.,2.); responsevspt_nocut->Sumw2();
-  responsevspt_allcut = new TH2D("responsevspt_allcut","responsevspt_allcut",XBINS,25.,700.,YBINS,0.,2.); responsevspt_allcut->Sumw2();
-  response_allcut_region1 = new TH1D("response_allcut_region1","response_allcut",XBINS,0.,2.); response_allcut_region1->Sumw2();
-  response_allcut_region2 = new TH1D("response_allcut_region2","response_allcut",XBINS,0.,2.); response_allcut_region2->Sumw2();
-  response_allcut_region3 = new TH1D("response_allcut_region3","response_allcut",XBINS,0.,2.); response_allcut_region3->Sumw2();
-  response_allcut_region4 = new TH1D("response_allcut_region4","response_allcut",XBINS,0.,2.); response_allcut_region4->Sumw2();
 
-  ptphot_nocut_sig = new TH1D("ptphot_nocut_sig","ptphot_nocut_sig",XBINS,25.,700.);  ptphot_nocut_sig->Sumw2();
-  ptphot_allcut_sig = new TH1D("ptphot_allcut_sig","ptphot_allcut_sig",XBINS,25.,700.); ptphot_allcut_sig->Sumw2();
-  response_nocut_sig = new TH1D("response_nocut_sig","response_nocut_sig",XBINS,0.,2.); response_nocut_sig->Sumw2();
-  response_allcut_sig = new TH1D("response_allcut_sig","response_allcut_sig",XBINS,0.,2.); response_allcut_sig->Sumw2();
-  responsevspt_nocut_sig = new TH2D("responsevspt_nocut_sig","responsevspt_nocut_sig",XBINS,25.,700.,YBINS,0.,2.); responsevspt_nocut_sig->Sumw2();
-  responsevspt_allcut_sig = new TH2D("responsevspt_allcut_sig","responsevspt_allcut_sig",XBINS,25.,700.,YBINS,0.,2.); responsevspt_allcut_sig->Sumw2();
-  response_nocut_sig_region1 = new TH1D("response_nocut_sig_region1","response_nocut",XBINS,0.,2.); response_nocut_sig_region1->Sumw2();
-  response_nocut_sig_region2 = new TH1D("response_nocut_sig_region2","response_nocut",XBINS,0.,2.); response_nocut_sig_region2->Sumw2();
-  response_nocut_sig_region3 = new TH1D("response_nocut_sig_region3","response_nocut",XBINS,0.,2.); response_nocut_sig_region3->Sumw2();
-  response_nocut_sig_region4 = new TH1D("response_nocut_sig_region4","response_nocut",XBINS,0.,2.); response_nocut_sig_region4->Sumw2();
-  response_allcut_sig_region1 = new TH1D("response_allcut_sig_region1","response_allcut",XBINS,0.,2.); response_allcut_sig_region1->Sumw2();
-  response_allcut_sig_region2 = new TH1D("response_allcut_sig_region2","response_allcut",XBINS,0.,2.); response_allcut_sig_region2->Sumw2();
-  response_allcut_sig_region3 = new TH1D("response_allcut_sig_region3","response_allcut",XBINS,0.,2.); response_allcut_sig_region3->Sumw2();
-  response_allcut_sig_region4 = new TH1D("response_allcut_sig_region4","response_allcut",XBINS,0.,2.); response_allcut_sig_region4->Sumw2();
+  double xmin = _xmin;//25.;
+  double xmax = _xmax;//700.;
 
-  ptphot_nocut_bkg = new TH1D("ptphot_nocut_bkg","ptphot_nocut_bkg",XBINS,25.,700.);  ptphot_nocut_bkg->Sumw2();
-  ptphot_allcut_bkg = new TH1D("ptphot_allcut_bkg","ptphot_allcut_bkg",XBINS,25.,700.); ptphot_allcut_bkg->Sumw2();
-  response_nocut_bkg = new TH1D("response_nocut_bkg","response_nocut_bkg",XBINS,0.,2.); response_nocut_bkg->Sumw2();
-  response_allcut_bkg = new TH1D("response_allcut_bkg","response_allcut_bkg",XBINS,0.,2.); response_allcut_bkg->Sumw2();
-  responsevspt_nocut_bkg = new TH2D("responsevspt_nocut_bkg","responsevspt_nocut_bkg",XBINS,25.,700.,YBINS,0.,2.); responsevspt_nocut_bkg->Sumw2();
-  responsevspt_allcut_bkg = new TH2D("responsevspt_allcut_bkg","responsevspt_allcut_bkg",XBINS,25.,700.,YBINS,0.,2.); responsevspt_allcut_bkg->Sumw2();
-  response_allcut_bkg_region1 = new TH1D("response_allcut_bkg_region1","response_allcut",XBINS,0.,2.); response_allcut_bkg_region1->Sumw2();
-  response_allcut_bkg_region2 = new TH1D("response_allcut_bkg_region2","response_allcut",XBINS,0.,2.); response_allcut_bkg_region2->Sumw2();
-  response_allcut_bkg_region3 = new TH1D("response_allcut_bkg_region3","response_allcut",XBINS,0.,2.); response_allcut_bkg_region3->Sumw2();
-  response_allcut_bkg_region4 = new TH1D("response_allcut_bkg_region4","response_allcut",XBINS,0.,2.); response_allcut_bkg_region4->Sumw2();
+  ptmean_mix = new TProfile("ptmean_mix","ptmean_mix",XBINS,xmin,xmax);
+  ptmean_sig = new TProfile("ptmean_sig","ptmean_sig",XBINS,xmin,xmax);
+  ptmean_bkg = new TProfile("ptmean_bkg","ptmean_bkg",XBINS,xmin,xmax);
 
+  ptphot_nocut = new TH1D("ptphot_nocut","ptphot_nocut",XBINS,xmin,xmax);
+  ptphot_nocut->Sumw2();
+  ptphot_mix = new TH1D("ptphot_mix","ptphot",XBINS,xmin,xmax);
+  ptphot_mix->Sumw2();
+  response_nocut = new TH1D("response_nocut","response_nocut",XBINS,0.,2.);
+  response_nocut->Sumw2();
+  response_mix = new TH1D("response_mix","response",XBINS,0.,2.);
+  response_mix->Sumw2();
+  responsevspt_nocut = new TH2D("responsevspt_nocut","responsevspt_nocut",
+				XBINS,xmin,xmax,YBINS,0.,2.);
+  responsevspt_nocut->Sumw2();
+  responsevspt_mix = new TH2D("responsevspt_mix","responsevspt",
+			  XBINS,xmin,xmax,YBINS,0.,2.);
+  responsevspt_mix->Sumw2();
+  response_mix_reg1 = new TH1D("response_mix_reg1","response",XBINS,0.,2.);
+  response_mix_reg1->Sumw2();
+  response_mix_reg2 = new TH1D("response_mix_reg2","response",XBINS,0.,2.);
+  response_mix_reg2->Sumw2();
+  response_mix_reg3 = new TH1D("response_mix_reg3","response",XBINS,0.,2.);
+  response_mix_reg3->Sumw2();
+  response_mix_reg4 = new TH1D("response_mix_reg4","response",XBINS,0.,2.);
+  response_mix_reg4->Sumw2();
+  
+  ptphot_nocut_sig = new TH1D("ptphot_nocut_sig","ptphot_nocut_sig",
+			      XBINS,xmin,xmax);
+  ptphot_nocut_sig->Sumw2();
+  ptphot_sig = new TH1D("ptphot_sig","ptphot_sig",XBINS,xmin,xmax);
+  ptphot_sig->Sumw2();
+  response_nocut_sig = new TH1D("response_nocut_sig","response_nocut_sig",
+				XBINS,0.,2.);
+  response_nocut_sig->Sumw2();
+  response_sig = new TH1D("response_sig","response_sig", XBINS,0.,2.);
+  response_sig->Sumw2();
+  responsevspt_nocut_sig = new TH2D("responsevspt_nocut_sig",
+				    "responsevspt_nocut_sig",XBINS,xmin,xmax,
+				    YBINS,0.,2.);
+  responsevspt_nocut_sig->Sumw2();
+  responsevspt_sig = new TH2D("responsevspt_sig",
+			      "responsevspt_sig",XBINS,xmin,xmax,
+			      YBINS,0.,2.);
+  responsevspt_sig->Sumw2();
+  response_nocut_sig_reg1 = new TH1D("response_nocut_sig_reg1",
+				     "response_nocut",XBINS,0.,2.);
+  response_nocut_sig_reg1->Sumw2();
+  response_nocut_sig_reg2 = new TH1D("response_nocut_sig_reg2",
+				     "response_nocut",XBINS,0.,2.);
+  response_nocut_sig_reg2->Sumw2();
+  response_nocut_sig_reg3 = new TH1D("response_nocut_sig_reg3",
+				     "response_nocut",XBINS,0.,2.);
+  response_nocut_sig_reg3->Sumw2();
+  response_nocut_sig_reg4 = new TH1D("response_nocut_sig_reg4",
+				     "response_nocut",XBINS,0.,2.);
+  response_nocut_sig_reg4->Sumw2();
+  response_sig_reg1 = new TH1D("response_sig_reg1",
+			       "response",XBINS,0.,2.);
+  response_sig_reg1->Sumw2();
+  response_sig_reg2 = new TH1D("response_sig_reg2",
+			       "response",XBINS,0.,2.);
+  response_sig_reg2->Sumw2();
+  response_sig_reg3 = new TH1D("response_sig_reg3",
+			       "response",XBINS,0.,2.);
+  response_sig_reg3->Sumw2();
+  response_sig_reg4 = new TH1D("response_sig_reg4",
+			       "response",XBINS,0.,2.);
+  response_sig_reg4->Sumw2();
+  
+  ptphot_nocut_bkg = new TH1D("ptphot_nocut_bkg","ptphot_nocut_bkg",
+			      XBINS,xmin,xmax);
+  ptphot_nocut_bkg->Sumw2();
+  ptphot_bkg = new TH1D("ptphot_bkg","ptphot_bkg",
+			XBINS,xmin,xmax);
+  ptphot_bkg->Sumw2();
+  response_nocut_bkg = new TH1D("response_nocut_bkg","response_nocut_bkg",
+				XBINS,0.,2.);
+  response_nocut_bkg->Sumw2();
+  response_bkg = new TH1D("response_bkg","response_bkg",
+			  XBINS,0.,2.);
+  response_bkg->Sumw2();
+  responsevspt_nocut_bkg = new TH2D("responsevspt_nocut_bkg",
+				    "responsevspt_nocut_bkg",XBINS,xmin,xmax,
+				    YBINS,0.,2.);
+  responsevspt_nocut_bkg->Sumw2();
+  responsevspt_bkg = new TH2D("responsevspt_bkg",
+			      "responsevspt_bkg",XBINS,xmin,xmax,
+			      YBINS,0.,2.);
+  responsevspt_bkg->Sumw2();
+  response_bkg_reg1 = new TH1D("response_bkg_reg1",
+			       "response",XBINS,0.,2.);
+  response_bkg_reg1->Sumw2();
+  response_bkg_reg2 = new TH1D("response_bkg_reg2",
+			       "response",XBINS,0.,2.);
+  response_bkg_reg2->Sumw2();
+  response_bkg_reg3 = new TH1D("response_bkg_reg3",
+			       "response",XBINS,0.,2.);
+  response_bkg_reg3->Sumw2();
+  response_bkg_reg4 = new TH1D("response_bkg_reg4",
+			       "response",XBINS,0.,2.);
+  response_bkg_reg4->Sumw2();
+  
   sob_vs_eff_1 = new TH2D("sob_vs_eff_1","sob_vs_eff_1",100,0,1.,100,0.,5.);
   sob_vs_eff_2 = new TH2D("sob_vs_eff_2","sob_vs_eff_2",100,0,1.,100,0.,5.);
   sob_vs_eff_3 = new TH2D("sob_vs_eff_3","sob_vs_eff_3",100,0,1.,100,0.,5.);
   sob_vs_eff_4 = new TH2D("sob_vs_eff_4","sob_vs_eff_4",100,0,1.,100,0.,5.);
-
-  nn_region1_sig = new TH1D("nn_region1_sig","nn_region1_sig",400,-1.,1.1);
-  nn_region2_sig = new TH1D("nn_region2_sig","nn_region2_sig",400,-1.,1.1);
-  nn_region3_sig = new TH1D("nn_region3_sig","nn_region3_sig",400,-1.,1.1);
-  nn_region4_sig = new TH1D("nn_region4_sig","nn_region4_sig",400,-1.,1.1);
-  nn_region1_bkg = new TH1D("nn_region1_bkg","nn_region1_bkg",400,-1.,1.1);
-  nn_region2_bkg = new TH1D("nn_region2_bkg","nn_region2_bkg",400,-1.,1.1);
-  nn_region3_bkg = new TH1D("nn_region3_bkg","nn_region3_bkg",400,-1.,1.1);
-  nn_region4_bkg = new TH1D("nn_region4_bkg","nn_region4_bkg",400,-1.,1.1);
+  
+  nn_reg1_sig = new TH1D("nn_reg1_sig","nn_reg1_sig",400,-1.,1.1);
+  nn_reg2_sig = new TH1D("nn_reg2_sig","nn_reg2_sig",400,-1.,1.1);
+  nn_reg3_sig = new TH1D("nn_reg3_sig","nn_reg3_sig",400,-1.,1.1);
+  nn_reg4_sig = new TH1D("nn_reg4_sig","nn_reg4_sig",400,-1.,1.1);
+  nn_reg1_bkg = new TH1D("nn_reg1_bkg","nn_reg1_bkg",400,-1.,1.1);
+  nn_reg2_bkg = new TH1D("nn_reg2_bkg","nn_reg2_bkg",400,-1.,1.1);
+  nn_reg3_bkg = new TH1D("nn_reg3_bkg","nn_reg3_bkg",400,-1.,1.1);
+  nn_reg4_bkg = new TH1D("nn_reg4_bkg","nn_reg4_bkg",400,-1.,1.1);
 
 }
 
 
 void gjet_response::ResetHistos()
 {
+  ptmean_mix->Reset();
+  ptmean_sig->Reset();
+  ptmean_bkg->Reset();
+
   ptphot_nocut->Reset();
-  ptphot_allcut->Reset();
+  ptphot_mix->Reset();
   response_nocut->Reset();
-  response_allcut->Reset();
+  response_mix->Reset();
   responsevspt_nocut->Reset();
-  responsevspt_allcut->Reset();
-  response_allcut_region1->Reset();
-  response_allcut_region2->Reset();
-  response_allcut_region3->Reset();
-  response_allcut_region4->Reset();
+  responsevspt_mix->Reset();
+  response_mix_reg1->Reset();
+  response_mix_reg2->Reset();
+  response_mix_reg3->Reset();
+  response_mix_reg4->Reset();
 
   ptphot_nocut_sig->Reset();
-  ptphot_allcut_sig->Reset();
+  ptphot_sig->Reset();
   response_nocut_sig->Reset();
-  response_allcut_sig->Reset();
+  response_sig->Reset();
   responsevspt_nocut_sig->Reset();
-  responsevspt_allcut_sig->Reset();
-  response_nocut_sig_region1->Reset();
-  response_nocut_sig_region2->Reset();
-  response_nocut_sig_region3->Reset();
-  response_nocut_sig_region4->Reset();
-  response_allcut_sig_region1->Reset();
-  response_allcut_sig_region2->Reset();
-  response_allcut_sig_region3->Reset();
-  response_allcut_sig_region4->Reset();
+  responsevspt_sig->Reset();
+  response_nocut_sig_reg1->Reset();
+  response_nocut_sig_reg2->Reset();
+  response_nocut_sig_reg3->Reset();
+  response_nocut_sig_reg4->Reset();
+  response_sig_reg1->Reset();
+  response_sig_reg2->Reset();
+  response_sig_reg3->Reset();
+  response_sig_reg4->Reset();
 
   ptphot_nocut_bkg->Reset();
-  ptphot_allcut_bkg->Reset();
+  ptphot_bkg->Reset();
   response_nocut_bkg->Reset();
-  response_allcut_bkg->Reset();
+  response_bkg->Reset();
   responsevspt_nocut_bkg->Reset();
-  responsevspt_allcut_bkg->Reset();
-  response_allcut_bkg_region1->Reset();
-  response_allcut_bkg_region2->Reset();
-  response_allcut_bkg_region3->Reset();
-  response_allcut_bkg_region4->Reset();
+  responsevspt_bkg->Reset();
+  response_bkg_reg1->Reset();
+  response_bkg_reg2->Reset();
+  response_bkg_reg3->Reset();
+  response_bkg_reg4->Reset();
 }
 
 void gjet_response::Optimum()
 {
   BookHistos();
-  for(int j=0; j<11; j++){
-    for(int i=0; i<21; i++){
+  for (int j = 0; j != 11; ++j){
+    for (int i = 0; i != 21; ++i){
+
       cut2jet = 0. + double(j)*3./100;    
       cutnn = 0.9 + double(i)/200;    
       ResetHistos();
       Loop();
-      double S1_bef = response_nocut_sig_region1->Integral();
-      double S2_bef = response_nocut_sig_region2->Integral();
-      double S3_bef = response_nocut_sig_region3->Integral();
-      double S4_bef = response_nocut_sig_region4->Integral();
-      double S1 = response_allcut_sig_region1->Integral();
-      double B1 = response_allcut_bkg_region1->Integral();
-      double S2 = response_allcut_sig_region2->Integral();
-      double B2 = response_allcut_bkg_region2->Integral();
-      double S3 = response_allcut_sig_region3->Integral();
-      double B3 = response_allcut_bkg_region3->Integral();
-      double S4 = response_allcut_sig_region4->Integral();
-      double B4 = response_allcut_bkg_region4->Integral();
+      double S1_bef = response_nocut_sig_reg1->Integral();
+      double S2_bef = response_nocut_sig_reg2->Integral();
+      double S3_bef = response_nocut_sig_reg3->Integral();
+      double S4_bef = response_nocut_sig_reg4->Integral();
+      double S1 = response_sig_reg1->Integral();
+      double B1 = response_bkg_reg1->Integral();
+      double S2 = response_sig_reg2->Integral();
+      double B2 = response_bkg_reg2->Integral();
+      double S3 = response_sig_reg3->Integral();
+      double B3 = response_bkg_reg3->Integral();
+      double S4 = response_sig_reg4->Integral();
+      double B4 = response_bkg_reg4->Integral();
       double eff1 = S1/S1_bef;
       double eff2 = S2/S2_bef;
       double eff3 = S3/S3_bef;
@@ -258,7 +477,7 @@ void gjet_response::Optimum()
   }
 }
 
-void gjet_response::Fit()
+void gjet_response::Fit(bool arithmetic)
 {
   gROOT->SetStyle("Plain");
   
@@ -269,7 +488,7 @@ void gjet_response::Fit()
   gStyle->SetOptFile(1); 
   
   gStyle->SetMarkerStyle(20);
-  gStyle->SetMarkerSize(.3);
+  gStyle->SetMarkerSize(0.3);
   gStyle->SetMarkerColor(1);
   
   gStyle->SetTitleBorderSize(0);  // no border around histogram title (font size can't be calculated anyways ...)
@@ -280,200 +499,613 @@ void gjet_response::Fit()
   char nameout[100];
   sprintf(name,"%s","responsevspt");
   TCanvas *c0 = new TCanvas("c0","--c0--",472,0,800,800);
-  TAxis *xaxis =  responsevspt_allcut_sig->GetXaxis();
-  TAxis *yaxis =  responsevspt_allcut_sig->GetYaxis();
-  int nbinx = responsevspt_allcut_sig->GetNbinsX();
-  int nbiny = responsevspt_allcut_sig->GetNbinsY();
+  TCanvas *c1 = new TCanvas("c1","--sig+mix--",472,0,800,800);
+  TCanvas *c2 = new TCanvas("c2","--sig+bkg--",472,0,800,800);
+  TCanvas *c3 = new TCanvas("c3","--purity--",472,0,800,800);
+  TCanvas *c3b = new TCanvas("c3b","--S/B--",472,0,800,800);
+  TCanvas *c4 = new TCanvas("c4","--efficiency--",472,0,800,800);
+  TCanvas *c5 = new TCanvas("c5","--rejection--",472,0,800,800);
+  TAxis *xaxis =  responsevspt_sig->GetXaxis();
+  TAxis *yaxis =  responsevspt_sig->GetYaxis();
+  int nbinx = responsevspt_sig->GetNbinsX();
+  int nbiny = responsevspt_sig->GetNbinsY();
   
-  TH1D temphist_sig("temphist_sig","",nbiny,yaxis->GetXmin(),yaxis->GetXmax());temphist_sig.Sumw2();
-  temphist_sig.SetMarkerStyle(8);
-  temphist_sig.SetMarkerColor(kBlue);
-  temphist_sig.SetMarkerSize(.7);
-  temphist_sig.SetStats(0);
-  temphist_sig.SetXTitle("p_{T}(jet)/p_{T}(#gamma)");
+  TH1D *temphist_sig = new TH1D("temphist_sig","",
+				nbiny,yaxis->GetXmin(),yaxis->GetXmax());
+  temphist_sig->Sumw2();
+  temphist_sig->SetMarkerStyle(8);
+  temphist_sig->SetMarkerColor(kBlue);
+  temphist_sig->SetMarkerSize(.7);
+  temphist_sig->SetStats(0);
+  temphist_sig->SetXTitle("p_{T}(jet) / p_{T}(#gamma)");
   
-  TH1D temphist_bkg("temphist_bkg","",nbiny,yaxis->GetXmin(),yaxis->GetXmax());temphist_bkg.Sumw2();
-  temphist_bkg.SetMarkerStyle(8);
-  temphist_bkg.SetMarkerColor(kBlue);
-  temphist_bkg.SetMarkerSize(.7);
-  temphist_bkg.SetStats(0);
-  temphist_bkg.SetXTitle("p_{T}(jet)/p_{T}(#gamma)");
+  TH1D *temphist_bkg = new TH1D("temphist_bkg","",
+				nbiny,yaxis->GetXmin(),yaxis->GetXmax());
+  temphist_bkg->Sumw2();
+  temphist_bkg->SetMarkerStyle(8);
+  temphist_bkg->SetMarkerColor(kBlue);
+  temphist_bkg->SetMarkerSize(.7);
+  temphist_bkg->SetStats(0);
+  temphist_bkg->SetXTitle("p_{T}(jet) / p_{T}(#gamma)");
   
-  TH1D temphist_all("temphist_all","",nbiny,yaxis->GetXmin(),yaxis->GetXmax());temphist_all.Sumw2();
-  temphist_all.SetMarkerStyle(8);
-  temphist_all.SetMarkerColor(kBlue);
-  temphist_all.SetMarkerSize(.7);
-  temphist_all.SetStats(0);
-  temphist_all.SetXTitle("p_{T}(jet)/p_{T}(#gamma)");
+  TH1D *temphist_mix = new TH1D("temphist_mix","",
+				nbiny,yaxis->GetXmin(),yaxis->GetXmax());
+  temphist_mix->Sumw2();
+  temphist_mix->SetMarkerStyle(8);
+  temphist_mix->SetMarkerColor(kBlue);
+  temphist_mix->SetMarkerSize(.7);
+  temphist_mix->SetStats(0);
+  temphist_mix->SetXTitle("p_{T}(jet) / p_{T}(#gamma)");
   
-  TH1D *biassum_sig = new TH1D("biassum_sig","biassum",nbinx,xaxis->GetXmin(),xaxis->GetXmax());
-  TH1D *resosum_sig = new TH1D("resosum_sig","resosum",nbinx,xaxis->GetXmin(),xaxis->GetXmax());
-  TH1D *distrsum_sig = new TH1D("distrsum_sig","distrsum",nbinx,xaxis->GetXmin(),xaxis->GetXmax());
+  TH1D *gmean_sig = new TH1D("gmean_sig","gmean",
+			       nbinx,xaxis->GetXmin(),xaxis->GetXmax());
+  TH1D *gsigma_sig = new TH1D("gsigma_sig","gsigma",
+			       nbinx,xaxis->GetXmin(),xaxis->GetXmax());
+  TH1D *distrsum_sig = new TH1D("distrsum_sig","distrsum",
+				nbinx,xaxis->GetXmin(),xaxis->GetXmax());
   
-  TH1D *biassum_bkg = new TH1D("biassum_bkg","biassum",nbinx,xaxis->GetXmin(),xaxis->GetXmax());
-  TH1D *resosum_bkg = new TH1D("resosum_bkg","resosum",nbinx,xaxis->GetXmin(),xaxis->GetXmax());
+  TH1D *gmean_bkg = new TH1D("gmean_bkg","gmean",
+			       nbinx,xaxis->GetXmin(),xaxis->GetXmax());
+  TH1D *gsigma_bkg = new TH1D("gsigma_bkg","gsigma",
+			       nbinx,xaxis->GetXmin(),xaxis->GetXmax());
   
-  TH1D *biassum_all = new TH1D("biassum_all","biassum",nbinx,xaxis->GetXmin(),xaxis->GetXmax());
-  TH1D *resosum_all = new TH1D("resosum_all","resosum",nbinx,xaxis->GetXmin(),xaxis->GetXmax());
+  TH1D *gmean_mix = new TH1D("gmean_mix","gmean",
+			       nbinx,xaxis->GetXmin(),xaxis->GetXmax());
+  TH1D *gsigma_mix = new TH1D("gsigma_mix","gsigma",
+			       nbinx,xaxis->GetXmin(),xaxis->GetXmax());
   
-  for(int j=1; j<nbinx+1; j++){
+  for (int j = 1; j != nbinx+1; ++j){
     
-    for(int i=1; i<nbiny+1; i++){      
-      double binvalue = responsevspt_allcut_sig->GetBinContent(j,i);
-      double binerror = responsevspt_allcut_sig->GetBinError(j,i);
-      temphist_sig.SetBinContent(i,binvalue);          
-      temphist_sig.SetBinError(i,binerror);          
-      binvalue = responsevspt_allcut_bkg->GetBinContent(j,i);
-      binerror = responsevspt_allcut_bkg->GetBinError(j,i);
-      temphist_bkg.SetBinContent(i,binvalue);          
-      temphist_bkg.SetBinError(i,binerror);          
-      binvalue = responsevspt_allcut->GetBinContent(j,i);
-      binerror = responsevspt_allcut->GetBinError(j,i);
-      temphist_all.SetBinContent(i,binvalue);          
-      temphist_all.SetBinError(i,binerror);          
+    for(int i = 1; i != nbiny+1; ++i){
+      
+      double binvalue = responsevspt_sig->GetBinContent(j,i);
+      double binerror = responsevspt_sig->GetBinError(j,i);
+      temphist_sig->SetBinContent(i,binvalue);          
+      temphist_sig->SetBinError(i,binerror);          
+      binvalue = responsevspt_bkg->GetBinContent(j,i);
+      binerror = responsevspt_bkg->GetBinError(j,i);
+      temphist_bkg->SetBinContent(i,binvalue);          
+      temphist_bkg->SetBinError(i,binerror);          
+      binvalue = responsevspt_mix->GetBinContent(j,i);
+      binerror = responsevspt_mix->GetBinError(j,i);
+      temphist_mix->SetBinContent(i,binvalue);          
+      temphist_mix->SetBinError(i,binerror);          
     }
+    double ptmin = responsevspt_sig->GetBinLowEdge(j);
+    double ptmax = responsevspt_sig->GetBinLowEdge(j+1);
     
     Double_t params_sig[3] = {1000.,1.,.1};
     Double_t params_bkg[3] = {1000.,1.,.1};
-    Double_t params_all[3] = {1000.,1.,.1};
-    TF1 *gaussian = new TF1("gaussian","gaus",-1.,1.);
-    gaussian->SetParameters(params_sig);
-    gaussian->SetLineColor(kRed);
-    gaussian->SetParLimits(0, 0., 10000.);
-    gaussian->SetParLimits(1, 0., 2.);
-    gaussian->SetParLimits(2, 0.00, 2.);
-    gaussian->SetParLimits(0, 0.,temphist_sig.GetSum()/5.);
-    gaussian->SetParameter(1,1.);
-    gaussian->SetParameter(2,.2);
-    temphist_sig.Fit(gaussian,"mllq","pe");    
-    temphist_sig.Fit(gaussian,"mllq","pe",gaussian->GetParameter(1)-gaussian->GetParameter(2),gaussian->GetParameter(1)+gaussian->GetParameter(2));        
-    temphist_sig.Fit(gaussian,"mllq","pe",gaussian->GetParameter(1)-gaussian->GetParameter(2),gaussian->GetParameter(1)+2*gaussian->GetParameter(2));        
-    temphist_sig.Fit(gaussian,"mllq","pe",gaussian->GetParameter(1)-1.*gaussian->GetParameter(2),gaussian->GetParameter(1)+3*gaussian->GetParameter(2));        
-    biassum_sig->SetBinContent(j,gaussian->GetParameter(1));
-    resosum_sig->SetBinContent(j,gaussian->GetParameter(2));
-    biassum_sig->SetBinError(j,gaussian->GetParError(1));
-    resosum_sig->SetBinError(j,gaussian->GetParError(2));
-    double numevents = temphist_sig.Integral();
+    Double_t params_mix[3] = {1000.,1.,.1};
+    TF1 *gaus_sig = new TF1(Form("gaus_sig_%04d_%04d",int(ptmin),int(ptmax)),
+			    "gaus",-1.,1.);
+    gaus_sig->SetParameters(params_sig);
+    //gaus_sig->SetParameter(1,temphist_sig->GetMean());
+    //gaus_sig->SetParameter(2,temphist_sig->GetRMS());
+    //gaus_sig->SetParameter(0,temphist_sig->GetEntries()
+    //		   / sqrt(2.*TMath::Pi()*gaus_sig->GetParameter(2))
+    //		   * temphist_sig->GetBinWidth(1));
+    gaus_sig->SetLineColor(kRed);
+    gaus_sig->SetParLimits(0, 0., 10000.);
+    gaus_sig->SetParLimits(1, 0., 2.);
+    gaus_sig->SetParLimits(2, 0.00, 2.);
+    gaus_sig->SetParLimits(0, 0.,temphist_sig->GetSum()/5.);
+    gaus_sig->SetParameter(1,1.);
+    gaus_sig->SetParameter(2,.2);
+    temphist_sig->Fit(gaus_sig,"mllq","pe");    
+    temphist_sig->Fit(gaus_sig,"mllq","pe",
+		      gaus_sig->GetParameter(1)-gaus_sig->GetParameter(2),
+		      gaus_sig->GetParameter(1)+gaus_sig->GetParameter(2));
+    temphist_sig->Fit(gaus_sig,"mllq","pe",
+		      gaus_sig->GetParameter(1)-gaus_sig->GetParameter(2),
+		      gaus_sig->GetParameter(1)+2*gaus_sig->GetParameter(2));
+    temphist_sig->Fit(gaus_sig,"mllq","pe",
+		      gaus_sig->GetParameter(1)-1.*gaus_sig->GetParameter(2),
+		      gaus_sig->GetParameter(1)+3*gaus_sig->GetParameter(2));
+    if (arithmetic) {
+      gaus_sig->SetParameter(1, temphist_sig->GetMean());
+      gaus_sig->SetParError(1, temphist_sig->GetMeanError());
+      gaus_sig->SetParameter(2, temphist_sig->GetRMS());
+      gaus_sig->SetParError(2, temphist_sig->GetRMSError());
+    }
+    curdir = gDirectory;
+    hFitDir->cd();
+    temphist_sig->Write(Form("Sig_%04d_%04d",int(ptmin),int(ptmax)));
+    curdir->cd();
+    gmean_sig->SetBinContent(j,gaus_sig->GetParameter(1));
+    gsigma_sig->SetBinContent(j,gaus_sig->GetParameter(2));
+    gmean_sig->SetBinError(j,gaus_sig->GetParError(1));
+    gsigma_sig->SetBinError(j,gaus_sig->GetParError(2));
+    
+    double numevents = temphist_sig->Integral();
     distrsum_sig->SetBinContent(j,numevents);
     sprintf(nameout,"%s%d%s","tempfits/tempfit_",j,".eps");
     c0->SaveAs(nameout); 
-    if(temphist_sig.Integral()>0)      cout << temphist_sig.Integral()<< "   " << gaussian->GetParameter(2)/sqrt(temphist_sig.Integral()) << "   " << gaussian->GetParError(1) << endl;;
-    gaussian->Delete();
+    if(temphist_sig->Integral()>0)
+      cout << temphist_sig->Integral()<< "   "
+	   << gaus_sig->GetParameter(2)/sqrt(temphist_sig->Integral()) << "   "
+	   << gaus_sig->GetParError(1) << endl;
+    gaus_sig->Delete();
     
-    TF1 *gaussian_all = new TF1("gaussian_all","gaus",-1.,1.);
-    gaussian_all->SetParameters(params_all);
-    gaussian_all->SetLineColor(kRed);
-    gaussian_all->SetParLimits(0, 0., temphist_all.GetSum()*2.);
-    gaussian_all->SetParLimits(1, 0., 2.);
-    gaussian_all->SetParLimits(2, 0.00, 2.);
-    gaussian_all->SetParameter(0,temphist_all.GetSum()/10.);
-    temphist_all.Fit(gaussian_all,"mq","pe");    
-    temphist_all.Fit(gaussian_all,"mllq","pe",gaussian_all->GetParameter(1)-gaussian_all->GetParameter(2),gaussian_all->GetParameter(1)+gaussian_all->GetParameter(2));        
-    temphist_all.Fit(gaussian_all,"mllq","pe",gaussian_all->GetParameter(1)-gaussian_all->GetParameter(2),gaussian_all->GetParameter(1)+2*gaussian_all->GetParameter(2));        
-    temphist_all.Fit(gaussian_all,"mllq","pe",gaussian_all->GetParameter(1)-1.*gaussian_all->GetParameter(2),gaussian_all->GetParameter(1)+3*gaussian_all->GetParameter(2));        
-    biassum_all->SetBinContent(j,gaussian_all->GetParameter(1));
-    resosum_all->SetBinContent(j,gaussian_all->GetParameter(2));
-    biassum_all->SetBinError(j,gaussian_all->GetParError(1));
-    resosum_all->SetBinError(j,gaussian_all->GetParError(2));      //       sprintf(nameout,"%s%d%s","tempfits/tempfit_",j,".eps");
-    gaussian_all->Delete();
+    TF1 *gaus_mix = new TF1(Form("gaus_mix_%04d_%04d",int(ptmin),int(ptmax)),
+			    "gaus",-1.,1.);
+    gaus_mix->SetParameters(params_mix);
+    //gaus_mix->SetParameter(1,temphist_mix->GetMean());
+    //gaus_mix->SetParameter(2,temphist_mix->GetRMS());
+    //gaus_mix->SetParameter(0,temphist_mix->GetEntries()
+    //		   / sqrt(2.*TMath::Pi()*gaus_mix->GetParameter(2))
+    //		   * temphist_mix->GetBinWidth(1));
+    gaus_mix->SetLineColor(kRed);
+    gaus_mix->SetParLimits(0, 0., temphist_mix->GetSum()*2.);
+    gaus_mix->SetParLimits(1, 0., 2.);
+    gaus_mix->SetParLimits(2, 0.00, 2.);
+    gaus_mix->SetParameter(0,temphist_mix->GetSum()/10.);
+    temphist_mix->Fit(gaus_mix,"mq","pe");    
+    temphist_mix->Fit(gaus_mix,"mllq","pe",
+		      gaus_mix->GetParameter(1)-gaus_mix->GetParameter(2),
+		      gaus_mix->GetParameter(1)+gaus_mix->GetParameter(2));
+    temphist_mix->Fit(gaus_mix,"mllq","pe",
+		      gaus_mix->GetParameter(1)-gaus_mix->GetParameter(2),
+		      gaus_mix->GetParameter(1)+2*gaus_mix->GetParameter(2));
+    temphist_mix->Fit(gaus_mix,"mllq","pe",
+		      gaus_mix->GetParameter(1)-1.*gaus_mix->GetParameter(2),
+		      gaus_mix->GetParameter(1)+3*gaus_mix->GetParameter(2));
+    if (arithmetic) {
+      gaus_mix->SetParameter(1, temphist_mix->GetMean());
+      gaus_mix->SetParError(1, temphist_mix->GetMeanError());
+      gaus_mix->SetParameter(2, temphist_mix->GetRMS());
+      gaus_mix->SetParError(2, temphist_mix->GetRMSError());
+    }
+    curdir = gDirectory;
+    hFitDir->cd();
+    temphist_mix->Write(Form("Mix_%04d_%04d",int(ptmin),int(ptmax)));
+    curdir->cd();
+    gmean_mix->SetBinContent(j,gaus_mix->GetParameter(1));
+    gsigma_mix->SetBinContent(j,gaus_mix->GetParameter(2));
+    gmean_mix->SetBinError(j,gaus_mix->GetParError(1));
+    gsigma_mix->SetBinError(j,gaus_mix->GetParError(2));
+    gaus_mix->Delete();
     
-    TF1 *gaussian_bkg = new TF1("gaussian_bkg","gaus",-1.,1.);
-    gaussian_bkg->SetParameters(params_bkg);
-    gaussian_bkg->SetLineColor(kRed);
-    gaussian_bkg->SetParLimits(0, 0., temphist_bkg.GetSum()*2.);
-    gaussian_bkg->SetParLimits(1,0 , 2.);
-    gaussian_bkg->SetParLimits(2, 0.00, 2.);
-    gaussian_bkg->SetParameter(0,temphist_bkg.GetSum()/10.);
-    temphist_bkg.Fit(gaussian_bkg,"mllq","pe");    
-    biassum_bkg->SetBinContent(j,gaussian_bkg->GetParameter(1));
-    resosum_bkg->SetBinContent(j,gaussian_bkg->GetParameter(2));
-    biassum_bkg->SetBinError(j,gaussian_bkg->GetParError(1));
-    resosum_bkg->SetBinError(j,gaussian_bkg->GetParError(2));      //       sprintf(nameout,"%s%d%s","tempfits/tempfit_",j,".eps");
-    gaussian_bkg->Delete();
+    TF1 *gaus_bkg = new TF1(Form("gaus_bkg_%04d_%04d",int(ptmin),int(ptmax)),
+			    "gaus",-1.,1.);
+    gaus_bkg->SetParameters(params_bkg);
+    //gaus_bkg->SetParameter(1,temphist_bkg->GetMean());
+    //gaus_bkg->SetParameter(2,temphist_bkg->GetRMS());
+    //gaus_bkg->SetParameter(0,temphist_bkg->GetEntries()
+    //		   / sqrt(2.*TMath::Pi()*gaus_bkg->GetParameter(2))
+    //		   * temphist_bkg->GetBinWidth(1));
+    gaus_bkg->SetLineColor(kRed);
+    gaus_bkg->SetParLimits(0, 0., temphist_bkg->GetSum()*2.);
+    gaus_bkg->SetParLimits(1,0 , 2.);
+    gaus_bkg->SetParLimits(2, 0.00, 2.);
+    gaus_bkg->SetParameter(0,temphist_bkg->GetSum()/10.);
+    temphist_bkg->Fit(gaus_bkg,"mllq","pe");
+    if (arithmetic) {
+      double err = temphist_bkg->GetMeanError();
+      double n = temphist_bkg->Integral();
+      if (n < 3)
+	//err = 1./sqrt(ptmin)/sqrt(max(n,1.));
+	err = 0.3/sqrt(max(n,1.));
+      if (err<0.01) err = 1./sqrt(ptmin);
+      gaus_bkg->SetParameter(1, temphist_bkg->GetMean());
+      gaus_bkg->SetParError(1, err);//temphist_bkg->GetMeanError());
+      gaus_bkg->SetParameter(2, temphist_bkg->GetRMS());
+      gaus_bkg->SetParError(2, temphist_bkg->GetRMSError());
+    }
+    curdir = gDirectory;
+    hFitDir->cd();
+    temphist_mix->Write(Form("Bkg_%04d_%04d",int(ptmin),int(ptmax)));
+    curdir->cd();
+    gmean_bkg->SetBinContent(j,gaus_bkg->GetParameter(1));
+    gsigma_bkg->SetBinContent(j,gaus_bkg->GetParameter(2));
+    gmean_bkg->SetBinError(j,gaus_bkg->GetParError(1));
+    gsigma_bkg->SetBinError(j,gaus_bkg->GetParError(2));
+    gaus_bkg->Delete();
     
   }
+
+  // Create graphs with correct bin x-axis means (<p_T^phot>)
+  TGraphErrors *gr_sig = new TGraphErrors();
+  for (int i = 1; i != gmean_sig->GetNbinsX()+1; ++i) {
+
+    double x = ptmean_sig->GetBinContent(i);
+    double ex = ptmean_sig->GetBinError(i);
+    double y = gmean_sig->GetBinContent(i);
+    double ey = gmean_sig->GetBinError(i);
+    int n = gr_sig->GetN();
+    if (x !=0 && ex != 0 && y != 0 && ey != 0) {
+      gr_sig->SetPoint(n, x, y);
+      gr_sig->SetPointError(n, ex, ey);
+    }
+  }
+  gr_sig->SetName("gr_sig");
+  gr_sig->SetMarkerStyle(kOpenCircle);
+  gr_sig->SetMarkerSize(1.);
+  gr_sig->SetMarkerColor(kRed);
+  gr_sig->SetLineColor(kRed);
+
+  TGraphErrors *gr_bkg = new TGraphErrors();
+  for (int i = 1; i != gmean_bkg->GetNbinsX()+1; ++i) {
+
+    double x = ptmean_bkg->GetBinContent(i);
+    double ex = ptmean_bkg->GetBinError(i);
+    double y = gmean_bkg->GetBinContent(i);
+    double ey = gmean_bkg->GetBinError(i);
+    int n = gr_bkg->GetN();
+    if (x !=0 && ex != 0 && y != 0 && ey != 0) {
+      gr_bkg->SetPoint(n, x, y);
+      gr_bkg->SetPointError(n, ex, ey);
+    }
+  }
+  gr_bkg->SetName("gr_bkg");
+  gr_bkg->SetMarkerStyle(kFullSquare);
+  gr_bkg->SetMarkerSize(1.);
+  gr_bkg->SetMarkerColor(kBlue);
+  gr_bkg->SetLineColor(kBlue);
+
+  TGraphErrors *gr_mix = new TGraphErrors();
+  for (int i = 1; i != gmean_mix->GetNbinsX()+1; ++i) {
+
+    double x = ptmean_mix->GetBinContent(i);
+    double ex = ptmean_mix->GetBinError(i);
+    double y = gmean_mix->GetBinContent(i);
+    double ey = gmean_mix->GetBinError(i);
+    int n = gr_mix->GetN();
+    if (x !=0 && ex != 0 && y != 0 && ey != 0) {
+      gr_mix->SetPoint(n, x, y);
+      gr_mix->SetPointError(n, ex, ey);
+    }
+  }
+  gr_mix->SetName("gr_mix");
+  gr_mix->SetMarkerStyle(kFullCircle);
+  gr_mix->SetMarkerSize(1.);
+  gr_mix->SetMarkerColor(kBlack);
+  gr_mix->SetLineColor(kBlack);
   
-  //  biassum_sig->SetAxisRange(40.,700.);
-  biassum_sig->SetTitle("");
-  biassum_sig->SetMinimum(0.3);
-  biassum_sig->SetMaximum(1.1);
-  biassum_sig->SetMarkerStyle(8);
-  biassum_sig->SetMarkerSize(1.);
-  biassum_sig->SetMarkerStyle(24);
-  biassum_sig->SetMarkerColor(kRed);
-  biassum_sig->SetLineColor(kRed);
-  biassum_sig->SetXTitle("p_{T}[GeV/c]");
-  biassum_sig->SetYTitle("#frac{p_{T}(jet)}{p_{T}(#gamma)}");
-  biassum_sig->SetTitleOffset(.8,"Y");
-  biassum_sig->Draw("pe");
-  responsevspt_allcut_sig->Draw("same");
-  biassum_sig->Draw("pesame");
-  sprintf(nameout,"%s%s%s","biasoverlap_",name,"_sig.eps");
-  c0->SaveAs(nameout);
-  biassum_sig->Draw("pe");
-  sprintf(nameout,"%s%s%s","bias_",name,"_sig.eps");
-  c0->SaveAs(nameout);
-  resosum_sig->SetMinimum(0);
-  resosum_sig->SetMaximum(2.);
-  resosum_sig->SetMarkerStyle(8);
-  resosum_sig->SetMarkerColor(kRed);
-  resosum_sig->Draw("pe");
-  sprintf(nameout,"%s%s%s","reso_",name,"_sig.eps");
-  c0->SaveAs(nameout);
-  sprintf(nameout,"%s%s%s","reso_",name,"_sig.gif");
-  c0->SaveAs(nameout);
+
+  // Start drawing results
+  //c0->SetLogx();
+  //c1->SetLogx();
+  c0->cd();
+  
+  //  gmean_sig->SetAxisRange(40.,700.);
+  gmean_sig->SetTitle("");
+  gmean_sig->SetMinimum(0.3);
+  gmean_sig->SetMaximum(1.1);
+  gmean_sig->SetMarkerStyle(24);
+  gmean_sig->SetMarkerSize(1.);
+  gmean_sig->SetMarkerColor(kRed);
+  gmean_sig->SetLineColor(kRed);
+  gmean_sig->SetXTitle("p_{T} [GeV/c]");
+  gmean_sig->GetXaxis()->SetNoExponent();
+  gmean_sig->GetXaxis()->SetMoreLogLabels();
+  string title = "p_{T}(jet) / p_{T}(#gamma) ("+_idtype+")"; 
+  //gmean_sig->SetYTitle("#frac{p_{T}(jet)}{p_{T}(#gamma)}");
+  gmean_sig->SetYTitle(title.c_str());
+  gmean_sig->SetTitleOffset(.8,"Y");
+  gmean_sig->Draw("pe");
+  responsevspt_sig->Draw("same");
+  gmean_sig->Draw("pesame");
+
+  c0->SaveAs(arithmetic ? "ameanvspt_overlap_sig.eps"
+	     : "gmeanvspt_overlap_sig.eps");
+  gmean_sig->Draw("pe");
+  c0->SaveAs(arithmetic ? "ameanvspt_sig.eps" : "gmeanvspt_sig.eps");
+
+
+  gsigma_sig->SetMinimum(0);
+  gsigma_sig->SetMaximum(0.5);//2.);
+  gsigma_sig->SetMarkerStyle(8);
+  gsigma_sig->SetMarkerColor(kRed);
+  gsigma_sig->GetXaxis()->SetNoExponent();
+  gsigma_sig->GetXaxis()->SetMoreLogLabels();
+  gsigma_sig->Draw("pe");
+
+  c0->SaveAs(arithmetic ? "armsvspt_sig.eps" : "gsigmavspt_sig.eps");
+
+
   c0->SetLogy(1);
   distrsum_sig->SetTitle("");
-  distrsum_sig->SetXTitle("p_{T}[GeV/c]");
+  distrsum_sig->SetXTitle("p_{T} [GeV/c]");
+  distrsum_sig->GetXaxis()->SetNoExponent();
+  distrsum_sig->GetXaxis()->SetMoreLogLabels();
   distrsum_sig->SetYTitle("Nev/fb^{-1}");
   distrsum_sig->SetTitleOffset(1.3,"Y");
   distrsum_sig->Draw("pe");
-  sprintf(nameout,"%s%s%s","distr_",name,"_sig.eps");
-  c0->SaveAs(nameout);
+
+  c0->SaveAs("xsecvspt_sig.eps");
   
 
   c0->SetLogy(0);
-  biassum_all->SetTitle("");
-  biassum_all->SetMinimum(0.3);
-  biassum_all->SetMaximum(1.1);
-  biassum_all->SetMarkerStyle(8);
-  biassum_all->SetMarkerSize(1.);
-  biassum_all->SetXTitle("p_{T}[GeV/c]");
-  biassum_all->SetYTitle("#frac{p_{T}(jet)}{p_{T}(#gamma)}");
-  biassum_all->SetTitleOffset(.8,"Y");
-  biassum_all->Draw("pe");
-  sprintf(nameout,"%s%s%s","bias_",name,"_all.eps");
-  c0->SaveAs(nameout);
-  sprintf(nameout,"%s%s%s","bias_",name,"_all.gif");
-  c0->SaveAs(nameout);
-  
+  c1->cd();
+  c1->SetLeftMargin(0.15);
+  c1->SetRightMargin(0.05);
+  gmean_mix->SetTitle("");
+  gmean_mix->SetMinimum(0.3);
+  gmean_mix->SetMaximum(1.1);
+  gmean_mix->SetMarkerStyle(8);
+  gmean_mix->SetMarkerSize(1.);
+  gmean_mix->SetXTitle("p_{T} [GeV/c]");
+  gmean_mix->GetXaxis()->SetNoExponent();
+  gmean_mix->GetXaxis()->SetMoreLogLabels();
+  //gmean_mix->SetYTitle("p_{T}(jet) / p_{T}(#gamma)");
+  gmean_mix->SetYTitle(title.c_str());
+  gmean_mix->SetTitleOffset(1.5,"Y");//.8,"Y");
+  gmean_mix->Draw("pe");
+
+  c1->SaveAs(arithmetic ? "ameanvspt_mix.eps" : "gmeanvspt_mix.eps");
+
+  // SIGNAL + MIX
+
+  // Add the MC truth curve at the back
+  //TF1 *mctruth = new TF1("mctruth","[2]-[0]*pow(x,[1]-1)",50.,1000.);
+  //mctruth->SetParameters(1.902, 0.6154, 1.); // |eta|<1.2
+  //mctruth->SetParameters(1.867, 0.6208, 1.); // |eta|<1.3, loose cuts
+  //mctruth->SetParameters(2.316, 0.6005, 1.); // pT2<0.10*phot || pT2<10
+  TF1 *mctruth = new TF1("mctruth", _mctruthfunc.c_str(),50.,1000.);
+  mctruth->SetLineWidth(1);//2);
+  mctruth->SetLineColor(14);
+
   TLegendEntry *legge;
   TLegend *leg;
-  leg = new TLegend(0.45,0.15,0.8,0.35);
+  //leg = new TLegend(0.45,0.15,0.8,0.35);
+  leg = new TLegend(0.45,0.15,0.8,0.45, _algoname.c_str());
   leg->SetFillStyle(0); leg->SetBorderSize(0); leg->SetTextSize(0.05);
   leg->SetFillColor(0);
-  legge = leg->AddEntry(biassum_sig, "#gamma jet only", "p");
-  legge = leg->AddEntry(biassum_all, "#gamma jet + QCD bkg", "p");
-  biassum_all->Draw("pe");
-  biassum_sig->Draw("pesame");
+  legge = leg->AddEntry(gr_sig, "#gamma jet only", "p");
+  legge = leg->AddEntry(gr_mix, "#gamma jet + QCD bkg", "p");
+  legge = leg->AddEntry(mctruth, "MC truth", "l");
+  // Do fits of response to these points
+  TF1 *fsig = new TF1("fsig","[2]-[0]*pow(0.01*x,[1]-1)",50.,1000.);
+  fsig->SetLineColor(kRed);
+  fsig->SetLineWidth(1);
+  fsig->SetParNames("a","m","c");
+  fsig->SetParameters(0.62, 0.8, 1.);
+  //gmean_sig->Fit(fsig, "QR");
+  gr_sig->Fit(fsig, "QR");//"QRN");
+  //gmean_sig->GetListOfFunctions()->Add(fsig);
+  TF1 *fmix = new TF1("fmix","[2]-[0]*pow(0.01*x,[1]-1)",50.,1000.);
+  fmix->SetLineColor(kBlack);
+  fmix->SetLineWidth(1);
+  fmix->SetParNames("a","m","c");
+  fmix->SetParameters(0.62, 0.8, 1.);
+  //gmean_mix->Fit(fmix, "QR");
+  gr_mix->Fit(fmix, "QR");//"QRN");
+  //gmean_mix->GetListOfFunctions()->Add(fmix);
+  //
+
+  gStyle->SetOptFit();
+  gmean_mix->Draw("axis");//"pe");
+  mctruth->Draw("same");
+  gr_mix->Draw("pesames");
+  c1->Update(); // to get the new stats box
+  TPaveStats *stats;
+  stats = (TPaveStats*)gPad->GetPrimitive("stats");
+  assert(stats);
+  stats->SetName("stats_mix");
+  //gmean_sig->Draw("pesames");
+  gr_sig->Draw("pesames");
+  c1->Update(); // to get the new stats box
+  stats = (TPaveStats*)gPad->GetPrimitive("stats");
+  assert(stats);
+  stats->SetLineColor(kRed);
+  stats->SetTextColor(kRed);
+  stats->SetX1NDC(stats->GetX1NDC()-0.4);
+  stats->SetX2NDC(stats->GetX2NDC()-0.4);
+  stats->SetName("stats_sig");
   leg->Draw();
-  sprintf(nameout,"%s%s%s","bias_",name,"_sig+all.eps");
-  c0->SaveAs(nameout);
-  sprintf(nameout,"%s%s%s","bias_",name,"_sig+all.gif");
-  c0->SaveAs(nameout);
-  
 
-  biassum_bkg->SetMinimum(.5);
-  biassum_bkg->SetMaximum(2.);
-  biassum_bkg->SetMarkerStyle(8);
-  biassum_bkg->SetMarkerColor(kRed);
-  biassum_bkg->SetLineColor(kRed);
-  biassum_bkg->Draw("pe");
-  sprintf(nameout,"%s%s%s","bias_",name,"_bkg.eps");
-  c0->SaveAs(nameout);
+  c1->SaveAs(arithmetic ? "ameanvspt_sig+mix.eps" : "gmeanvspt_sig+mix.eps");
+  c0->cd();
 
-  
-  
+  // SIGNAL + BACKGROUND
+  c2->cd();
+  c2->SetLeftMargin(0.15);
+  c2->SetRightMargin(0.05);
+  TLegend *legsb;
+  //legsb = new TLegend(0.45,0.15,0.8,0.35);
+  legsb = new TLegend(0.45,0.15,0.8,0.45, _algoname.c_str());
+  legsb->SetFillStyle(kNone); legsb->SetBorderSize(0);
+  legsb->SetTextSize(0.05);
+  legsb->AddEntry(gr_sig, "#gamma jet", "p");
+  legsb->AddEntry(gr_bkg, "QCD bkg", "p");
+  legsb->AddEntry(mctruth, "MC truth", "l");
+  // Do fit of response to the background (signal already done)
+  TF1 *fbkg = new TF1("fbkg","[2]-[0]*pow(0.01*x,[1]-1)",50.,1000.);
+  fbkg->SetLineColor(kBlue);
+  fbkg->SetLineWidth(1);
+  fbkg->SetParNames("a","m","c");
+  fbkg->SetParameters(0.62, 0.8, 1.);
+  fbkg->SetParLimits(1,0,10);
+  gr_bkg->Fit(fbkg, "QR");
+  //
+  gStyle->SetOptFit();
+  gmean_mix->Draw("axis");
+  mctruth->Draw("same");
+  gr_bkg->Draw("pesames");
+  c2->Update(); // to get the new stats box
+  stats = (TPaveStats*)gPad->GetPrimitive("stats"); assert(stats);
+  stats->SetLineColor(kBlue);
+  stats->SetTextColor(kBlue);
+  stats->SetName("stats_bkg");
+  gr_sig->Draw("pesames");
+  // NB: stats_sig was already moved to the left earlier, no need to repeat
+  legsb->Draw();
+
+  c2->SaveAs(arithmetic ? "ameanvspt_sig+bkg.eps" : "gmeanvspt_sig+bkg.eps");
+  c0->cd();
+
+  gmean_bkg->SetMinimum(.5);
+  gmean_bkg->SetMaximum(2.);
+  gmean_bkg->SetMarkerStyle(8);
+  gmean_bkg->SetMarkerColor(kRed);
+  gmean_bkg->SetLineColor(kRed);
+  gmean_bkg->GetXaxis()->SetNoExponent();
+  gmean_bkg->GetXaxis()->SetMoreLogLabels();
+  gmean_bkg->Draw("pe");
+  c0->SaveAs(arithmetic ? "ameanvspt_bkg.eps" : "gmeanvspt_bkg.eps");
+
+  // PURITY
+  c3->cd();
+  c3->SetLeftMargin(0.15);
+  c3->SetRightMargin(0.05);
+  purity = (TH1D*)ptphot_mix->Clone("purity");
+  purity->Divide(ptphot_sig, ptphot_mix, 1., 1., "B");
+  purity->SetMinimum(0.);
+  purity->SetMaximum(1.);
+  purity->SetTitle("");
+  purity->SetXTitle("p_{T} [GeV/c]");
+  purity->SetYTitle("#gamma jet purity");
+  purity->GetYaxis()->SetTitleOffset(1.5);
+
+  TF1 *fpurity = new TF1("fpurity","[0] + log(0.01*x)*([1]+log(0.01*x)*[2])",
+			 0., 670.);//1000.);
+  fpurity->SetParameters(0.5,0.2,-0.01);
+  //fpurity->FixParameter(2, 0.);
+  purity->Fit(fpurity,"QRN");
+
+  purity->Draw();
+  fpurity->Draw("same");
+
+  c3->SaveAs("purity.eps");
+  c0->cd();
+
+  // S/B
+  c3b->cd();
+  c3b->SetLeftMargin(0.15);
+  c3b->SetRightMargin(0.05);
+  c3b->SetLogy();
+  sovb = (TH1D*)ptphot_bkg->Clone("sovb");
+  sovb->Divide(ptphot_sig, ptphot_bkg, 1., 1., "");
+  sovb->SetMinimum(0.01);
+  sovb->SetMaximum(10000.);
+  sovb->SetTitle("");
+  sovb->SetXTitle("p_{T} [GeV/c]");
+  //sovb->GetYaxis()->SetMoreLogLabels();
+  //sovb->GetYaxis()->SetNoExponent();
+  sovb->SetYTitle("#gamma jet S/B");
+  sovb->GetYaxis()->SetTitleOffset(1.5);
+
+  TF1 *fsovb = new TF1("fsb","[0] + log(0.01*x)*([1]+log(0.01*x)*[2])",
+		       0., 670.);//1000.);
+  fsovb->SetParameters(10.,1.,-0.1);
+  sovb->Fit(fsovb,"QRN");
+
+  sovb->Draw();
+  fsovb->Draw("same");
+
+  c3b->SaveAs("sovb.eps");
+  c0->cd();
+
+  // EFFICIENCY
+  c4->cd();
+  c4->SetLeftMargin(0.15);
+  c4->SetRightMargin(0.05);
+  efficiency = (TH1D*)ptphot_sig->Clone("efficiency");
+  efficiency->Divide(ptphot_sig, ptphot_nocut_sig, 1., 1., "B");
+  efficiency->SetMinimum(0.);
+  efficiency->SetMaximum(1.);
+  efficiency->SetTitle("");
+  efficiency->SetXTitle("p_{T} [GeV/c]");
+  efficiency->SetYTitle("#gamma jet efficiency");
+  efficiency->GetYaxis()->SetTitleOffset(1.5);
+
+  TF1 *feff = new TF1("feff","[0] + log(0.01*x)*([1]+log(0.01*x)*[2])",
+		      0., 1000.);
+  feff->SetParameters(0.2,0.1,-0.01);
+  //feff->FixParameter(2,0.);
+  efficiency->Fit(feff,"QRN");
+
+  efficiency->Draw();
+  feff->Draw("same");
+
+  c4->SaveAs("efficiency.eps");
+  c0->cd();
+
+  // REJECTION
+  c5->cd();
+  c5->SetLeftMargin(0.15);
+  c5->SetRightMargin(0.05);
+  c5->SetLogy();
+  rejection = (TH1D*)ptphot_bkg->Clone("rejection");
+  rejection->Divide(ptphot_nocut_bkg, ptphot_bkg, 1., 1., "B");
+  //rejection->SetMinimum(1.);
+  //rejection->SetMaximum(1e6);
+  rejection->SetTitle("");
+  rejection->SetXTitle("p_{T} [GeV/c]");
+  rejection->SetYTitle("QCD rejection");
+  rejection->GetYaxis()->SetTitleOffset(1.5);
+  //rejection->GetYaxis()->SetMoreLogLabels();
+  rejection->Draw();
+
+  c5->SaveAs("rejection.eps");
+  c0->cd();
+
+  // Save some debug histos
+  TCanvas *ctemp = new TCanvas();
+  ctemp->cd();
+  gStyle->SetOptStat();
+  ptphot_sig->Draw();
+  ctemp->SaveAs("tempfits/ptphot_allcut_sig.eps");
+  ptphot_bkg->Draw();
+  ctemp->SaveAs("tempfits/ptphot_allcut_bkg.eps");
+  response_sig->Draw();
+  ctemp->SaveAs("tempfits/response_sig.eps");
+  response_bkg->Draw();
+  ctemp->SaveAs("tempfits/response_bkg.eps");
+  c0->cd();
+
+  // Save histograms
+  // NB: saving to file is not automatic, because the histograms are now
+  //     created in the ROOT work directory so that it is possible to
+  //     edit the canvases after the script exits and the file is closed
+  hOutputFile->cd();
+
+  ptmean_mix->Write();
+  ptmean_sig->Write();
+  ptmean_bkg->Write();
+  purity->Write();
+  efficiency->Write();
+  rejection->Write();
+
+  ptphot_nocut->Write();
+  ptphot_mix->Write();
+  response_nocut->Write();
+  response_mix->Write();
+  responsevspt_nocut->Write();
+  responsevspt_mix->Write();
+  response_mix_reg1->Write();
+  response_mix_reg2->Write();
+  response_mix_reg3->Write();
+  response_mix_reg4->Write();
+
+  ptphot_nocut_sig->Write();
+  ptphot_sig->Write();
+  response_nocut_sig->Write();
+  response_sig->Write();
+  responsevspt_nocut_sig->Write();
+  responsevspt_sig->Write();
+  response_nocut_sig_reg1->Write();
+  response_nocut_sig_reg2->Write();
+  response_nocut_sig_reg3->Write();
+  response_nocut_sig_reg4->Write();
+  response_sig_reg1->Write();
+  response_sig_reg2->Write();
+  response_sig_reg3->Write();
+  response_sig_reg4->Write();
+
+  ptphot_nocut_bkg->Write();
+  ptphot_bkg->Write();
+  response_nocut_bkg->Write();
+  response_bkg->Write();
+  responsevspt_nocut_bkg->Write();
+  responsevspt_bkg->Write();
+  response_bkg_reg1->Write();
+  response_bkg_reg2->Write();
+  response_bkg_reg3->Write();
+  response_bkg_reg4->Write();
+
+  curdir->cd();
 }
 
 TChain * getchain(char *thechain) {
