@@ -24,6 +24,9 @@
 #include "DataFormats/TauReco/interface/CaloTau.h"
 #include "DataFormats/TauReco/interface/PFTau.h"
 
+#include <TTree.h>
+#include <TFile.h>
+
 #include <string>
 
 using namespace edm;
@@ -44,12 +47,22 @@ class L1TauEfficiencyAnalyzer : public edm::EDAnalyzer {
    private:
 	bool L1TauFound(const math::XYZTLorentzVector&);
 
-	InputTag L1extraTauJetSource;
+        // Input parameters
+	InputTag L1extraTauJetSource;  
 	double   jetMatchingCone;
+        std::string rootFile_;   // Output file name
 
         Handle<L1JetParticleCollection> l1TauHandle;
 
         int nEvents,
             nSelectedEvents;
+
+        // Output file, tree and related variables
+        TFile *l1file;
+        TTree *l1tree;
+
+        float jetPt, jetEta, jetPhi;
+        int hasL1Jet;
+        float PFPt, PFEta, PFPhi;
 };
 #endif
