@@ -48,7 +48,7 @@ private:
   std::string PFTauProducer_;
   std::string PFTauDiscByIsolationProducer_;
   edm::InputTag GenJetProducer_;
-  std::string GenParticleProducer_;
+  edm::InputTag GenParticleProducer_;
   std::string PFSimParticleProducer_;
   edm::InputTag TrackingTruthProducer_;
 
@@ -63,7 +63,6 @@ private:
   double cluster_trk_matching_cone;
   double inv_mass_cut;
   double isolation_cone;
-
 
   // book a few histograms    
 

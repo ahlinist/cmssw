@@ -13,7 +13,7 @@
 //
 // Original Author:  Suchandra Dutta
 //         Wed Nov 15 21:18:17 CEST 2006
-// $Id: InvariantMassTagTest.cc,v 1.12 2006/07/17 15:12:35 gennai Exp $
+// $Id: InvariantMassTagTest.cc,v 1.1 2008/07/08 12:28:14 sarkar Exp $
 //
 // user include files
 // system include files
@@ -39,7 +39,7 @@
 #include "DataFormats/ParticleFlowReco/interface/PFSimParticleFwd.h"
 
 
-#include "RecoTauTag/RecoTau/test/InvariantMassTagTest.h"
+#include "ElectroWeakAnalysis/ZTauTau_DoubleTauJet/interface/InvariantMassTagTest.h"
 
 #include <TH1.h>
 #include <TH2.h>
@@ -55,7 +55,7 @@ InvariantMassTagTest::InvariantMassTagTest(const edm::ParameterSet& iConfig)
             PFTauProducer_      = iConfig.getUntrackedParameter<string>("PFTauProducer", "pfRecoTauProducer");
   PFTauDiscByIsolationProducer_ = iConfig.getUntrackedParameter<string>("PFTauDiscriminatorByIsolationProducer","pfRecoTauDiscriminationByIsolation");
                 GenJetProducer_ = iConfig.getUntrackedParameter<InputTag>("GenJetProducer");
-           GenParticleProducer_ = iConfig.getUntrackedParameter<string>("genParticles", "source");
+           GenParticleProducer_ = iConfig.getUntrackedParameter<InputTag>("GenParticleProducer");
          PFSimParticleProducer_ = iConfig.getUntrackedParameter<string>("PFSimParticleProducer", "particleFlowSimParticle");
          TrackingTruthProducer_ = iConfig.getUntrackedParameter<InputTag>("TrackingTruthProducer");
            
@@ -165,11 +165,7 @@ void InvariantMassTagTest::analyze(const Event& iEvent, const EventSetup& iSetup
   
   cout << "InvariantMassTagTest::analyze => Run " << iEvent.id().run() 
                                      << " Event " << iEvent.id().event() << endl;
-
-  Handle<TrackingParticleCollection> rawPH;
-  iEvent.getByLabel(TrackingTruthProducer_,  rawPH);
-  const TrackingParticleCollection& tkParticles = *(rawPH.product());
-
+    
   Handle<GenJetCollection> genJetsHandle;
   iEvent.getByLabel(GenJetProducer_, genJetsHandle);
   const GenJetCollection& genJets = *(genJetsHandle.product());
@@ -179,11 +175,16 @@ void InvariantMassTagTest::analyze(const Event& iEvent, const EventSetup& iSetup
 
   Handle<PFTauDiscriminatorByIsolation> theTauDiscriminatorByIsolation;
   iEvent.getByLabel(PFTauDiscByIsolationProducer_, theTauDiscriminatorByIsolation);
+  
+  Handle<TrackingParticleCollection> rawPH;
+  TrackingParticleCollection* tkParticles = 0;
+  iEvent.getByLabel(TrackingTruthProducer_,  rawPH);
 
   if (rawPH.isValid()) {
+    tkParticles = const_cast<TrackingParticleCollection*> (rawPH.product());
     // Check and plot # of vertices of generated photons  
-    for (TrackingParticleCollection::const_iterator itrack = tkParticles.begin(); 
-	 itrack != tkParticles.end(); itrack++) {
+    for (TrackingParticleCollection::const_iterator itrack = tkParticles->begin(); 
+	 itrack != tkParticles->end(); itrack++) {
       if ( itrack->pdgId() != 22 ||  itrack->charge() != 0) continue;
       for (TrackingParticle::genp_iterator hepT = itrack->genParticle_begin(); 
 	   hepT !=  itrack->genParticle_end(); ++hepT) {
@@ -198,7 +199,6 @@ void InvariantMassTagTest::analyze(const Event& iEvent, const EventSetup& iSetup
       }
     }
   }
-
   for (PFTauCollection::size_type iTau = 0; iTau < thePFTauHandle->size(); iTau++) {
     PFTauRef theTau(thePFTauHandle, iTau);
     if (!theTau) {
@@ -213,7 +213,7 @@ void InvariantMassTagTest::analyze(const Event& iEvent, const EventSetup& iSetup
     if (tau_disc > 0.0) {
       findTrueInvMass(iEvent);
       //      const PFTauTagInfo& tagInfo     = (*(tau.pfTauTagInfoRef()));
-      if (rawPH.isValid()) fillGenJetInvMass(tau, genJets, tkParticles);
+      if (rawPH.isValid()) fillGenJetInvMass(tau, genJets, (*tkParticles));
       findPFInvMass(iEvent, tau);
     }
   }
@@ -268,6 +268,7 @@ void InvariantMassTagTest::findPFInvMass(const edm::Event& iEvent,const reco::PF
      double et = (**iGam).p4().Et();
      EtGamSigCone->Fill(et);
      if (deltaR < cluster_jet_matching_cone && (et > 0.04)  && (et < 300.0)) {
+       //     if (deltaR < 0.2 && et > 1.0) {
        gammaCandsP4 += (**iGam).p4();
        nGamma++;
      }
@@ -548,5 +549,3 @@ void InvariantMassTagTest::findTrueInvMass(const edm::Event& iEvent){
   } 
   delete generated_event;
 }
-DEFINE_SEAL_MODULE();
-DEFINE_ANOTHER_FWK_MODULE(InvariantMassTagTest);

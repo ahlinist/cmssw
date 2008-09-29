@@ -9,7 +9,9 @@
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
+#include "DataFormats/Common/interface/Handle.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "DataFormats/Common/interface/Ref.h"
 
 #include "DataFormats/TauReco/interface/PFTau.h"
 #include "DataFormats/JetReco/interface/GenJet.h"
@@ -54,13 +56,13 @@ protected:
   int selectTau(const reco::PFTau& jet);
   void findInvariantMass(const reco::PFTau& jet);
   std::pair<unsigned int, unsigned int> getTauIndices(std::map<unsigned int, unsigned int>& smap);
-  //  bool matchWithHLTJet(const PFTau& tau, const Handle<reco::HLTFilterObjectWithRefs>& hltHandle, double& dr);
+  //  bool matchWithHLTJet(const PFTau& tau, const edm::Handle<reco::HLTFilterObjectWithRefs>& hltHandle, double& dr);
   void printStatistics(std::ostream& out);
   static bool applySelection(int bitWord, int bitPosition); 
 
 public:
 
-  static void TauObject(Handle<reco::PFTauCollection> tauHandle, int iTau, reco::PFTau& tau); 
+  static void TauObject(edm::Handle<reco::PFTauCollection> tauHandle, int iTau, reco::PFTau& tau); 
   static bool matchWithHLTJet(const reco::PFTau& tau, const reco::CaloJetCollection& caloJets, double& dr);
   static void bit_print(int word, int pos=8);
   static double getTauCharge(const reco::PFTau& tau, int dflag=0);
