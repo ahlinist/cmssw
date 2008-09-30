@@ -1,7 +1,7 @@
 // Class:      L25TauEfficiencyAnalyzer
 // Original Author:  Eduardo Luiggi, modified by Sho Maruyama
 //         Created:  Fri Apr  4 16:37:44 CDT 2008
-// $Id: L25TauEfficiencyAnalyzer.cc,v 1.4 2008/05/15 19:16:58 eluiggi Exp $
+// $Id: L25TauEfficiencyAnalyzer.cc,v 1.1 2008/09/30 09:11:26 smaruyam Exp $
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L25TauEfficiencyAnalyzer.h"
 using namespace edm;
 using namespace reco;
@@ -94,12 +94,12 @@ l25Et  -> Fill(tags->at(j).jet()->et());
 Eta -> Fill(taus->at(i).eta(), tags->at(j).jet()->eta()); 
 Phi -> Fill(taus->at(i).phi(), tags->at(j).jet()->phi()); 
 Et  -> Fill(taus->at(i).et(), tags->at(j).jet()->et()); 
+tauPt -> Fill(leadPFTrk->pt() );			      	      
+tauInvPt -> Fill(1.0/leadPFTrk->pt() );			      	      
 const TrackRef leadTrk = tags->at(j).leadingSignalTrack(0.1,1.0);// track finding 
 if(leadTrk.isNonnull() ){                                                        
 l25Pt -> Fill (leadTrk->pt() );
 l25TjDR -> Fill( deltaR( *(tags->at(j).jet()), *leadTrk) );
-tauPt -> Fill(leadPFTrk->pt() );			      	      
-tauInvPt -> Fill(1.0/leadPFTrk->pt() );			      	      
 tauTjDR -> Fill( deltaR( taus->at(i), *leadPFTrk) );
 leadDR -> Fill( deltaR( *leadTrk, *leadPFTrk) );
 TjDR -> Fill(deltaR( taus->at(i), *leadPFTrk), deltaR( *(tags->at(j).jet()), *leadTrk));
