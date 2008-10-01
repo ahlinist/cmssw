@@ -7,8 +7,12 @@
   \\ subdetector plugins
   \\ preDraw and postDraw methods now check whether histogram was a TH1
   \\ or TH2, and call a private method appropriate for the histogram type
-  $Id$
-  $Log$
+  $Id: HLTRenderPlugin.cc,v 1.4 2008/08/28 21:50:39 wittich Exp $
+  $Log: HLTRenderPlugin.cc,v $
+  Revision 1.4  2008/08/28 21:50:39  wittich
+  Rate histos: Also put in low range minimums in case we start in the
+  middle of a run
+
 */
 
 #include "DQM/RenderPlugins/src/HLTRenderPlugin.h" 
@@ -178,7 +182,13 @@ void HLTRenderPlugin::preDrawTH2F ( TCanvas *c, const DQMNet::CoreObject &o )
     if( o.name.find( "reportSummaryMap" )  != std::string::npos) {
    obj->SetStats( kFALSE );
     dqm::utils::reportSummaryMapPalette(obj);
-    obj->SetOption("colztext");
+    obj->SetOption("colz");
+    obj->SetTitle("HLT Report Summary Map");
+    obj->GetXaxis()->SetNdivisions(1,true);
+    obj->GetYaxis()->SetNdivisions(5,true);
+    obj->GetXaxis()->CenterLabels();
+    obj->GetYaxis()->CenterLabels();
+    gPad->SetGrid(1,1);
     return;
   }
 
