@@ -116,6 +116,6 @@ bool L1TauEfficiencyAnalyzer::L1TauFound(const math::XYZTLorentzVector& p4){
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"
-DEFINE_FWK_MODULE(L1TauEfficiencyAnalyzer);
+//DEFINE_FWK_MODULE(L1TauEfficiencyAnalyzer);
 
 
