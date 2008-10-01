@@ -6,6 +6,8 @@ process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Configuration.StandardSequences.FakeConditions_cff")
 
 process.load("DQMOffline.Trigger.Tau.HLTTauDQMOffline_cff")
+process.TauRefProducer.Electrons.ElectronCollection = "allLayer0ElecForETau"
+process.TauRefProducer.Electrons.IdCollection = "elecIdForETauCutBasedRobust"
 process.TauRefProducer.Electrons.doElectrons = False
 process.TauRefProducer.Electrons.doElecFromZ = True
 process.TauRefProducer.Electrons.doTrackIso = False
@@ -20,7 +22,11 @@ process.load("ElectroWeakAnalysis.EWKTau.metForETauPatConfig_cff")
 
 # register TFileService
 process.TFileService = cms.Service("TFileService",
-    fileName = cms.string('analyzeETau.root')
+    fileName = cms.string('analyzeETau_test1.root')
+)
+
+process.maxEvents = cms.untracked.PSet(            
+    input = cms.untracked.int32(6205)         
 )
 
 
@@ -56,7 +62,6 @@ process.p = cms.Path(
                      *process.PFTauForETauPreamble
                      *process.PFTauForETauPat
                      *process.patMET
-                     *process.electronIdCutBasedRobust
                      *process.TauRefProducer
                      *process.analyzeETau
                      )
