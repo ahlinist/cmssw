@@ -1,16 +1,24 @@
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L1TauEfficiencyAnalyzer.h"
 
-L1TauEfficiencyAnalyzer::L1TauEfficiencyAnalyzer(const edm::ParameterSet& iConfig):
-  L1extraTauJetSource(iConfig.getParameter<edm::InputTag>("L1extraTauJetSource")),
-  jetMatchingCone(iConfig.getParameter<double>("JetMatchingCone")),
-  rootFile_(iConfig.getParameter<std::string>("outputFileName")),
-  nEvents(0), nSelectedEvents(0) {
+// Default constructor
+L1TauEfficiencyAnalyzer::L1TauEfficiencyAnalyzer()
+{}
 
-  // File setup
-  l1file = TFile::Open(rootFile_.c_str(), "RECREATE");
-  // Tree setup
-  l1tree = new TTree("l1tree", "Level 1 Tau Tree");
 
+L1TauEfficiencyAnalyzer::~L1TauEfficiencyAnalyzer(){
+	cout << endl;
+	cout << "Events analyzed " << nEvents << endl;
+	cout << endl;
+}
+
+void L1TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree *trigtree)
+{
+  L1extraTauJetSource = iConfig.getParameter<edm::InputTag>("L1extraTauJetSource");
+  jetMatchingCone = iConfig.getParameter<double>("JetMatchingCone");
+  rootFile_ = iConfig.getParameter<std::string>("outputFileName");
+  nEvents = 0; nSelectedEvents = 0;
+
+  l1tree = trigtree;
   // Setup branches
   l1tree->Branch("L1JetPt", &jetPt, "L1JetPt/F");
   l1tree->Branch("L1JetEta", &jetEta, "L1JetEta/F");
@@ -19,12 +27,6 @@ L1TauEfficiencyAnalyzer::L1TauEfficiencyAnalyzer(const edm::ParameterSet& iConfi
   l1tree->Branch("PFTauPt", &PFPt, "PFTauPt/F");
   l1tree->Branch("PFTauEta", &PFEta, "PFTauEta/F");
   l1tree->Branch("PFTauPhi", &PFPhi, "PFTauPhi/F");
-}
-
-L1TauEfficiencyAnalyzer::~L1TauEfficiencyAnalyzer(){
-	cout << endl;
-	cout << "Events analyzed " << nEvents << endl;
-	cout << endl;
 }
 
 void L1TauEfficiencyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup ){
@@ -86,7 +88,7 @@ void L1TauEfficiencyAnalyzer::beginJob(const edm::EventSetup& iSetup){}
 
 void L1TauEfficiencyAnalyzer::endJob(){
         LogInfo("L1TauEfficiency") << "Events analyzed: " << nEvents << endl;
-        l1file->Write();
+        //l1file->Write();
 }
 
 #include "PhysicsTools/Utilities/interface/deltaR.h"

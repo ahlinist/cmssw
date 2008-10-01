@@ -37,7 +37,9 @@ using namespace std;
 class L1TauEfficiencyAnalyzer : public edm::EDAnalyzer {
 
     public:
+        L1TauEfficiencyAnalyzer();
         explicit L1TauEfficiencyAnalyzer(const edm::ParameterSet&);
+        void Setup(const edm::ParameterSet&,TTree *l1tree);
         ~L1TauEfficiencyAnalyzer();
 
         virtual void analyze(const edm::Event&, const edm::EventSetup&);
