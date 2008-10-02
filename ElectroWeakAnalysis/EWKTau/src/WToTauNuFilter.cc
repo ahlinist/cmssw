@@ -1,5 +1,6 @@
 #include "ElectroWeakAnalysis/EWKTau/interface/WToTauNuFilter.h"
 #include "DataFormats/METReco/interface/CaloMET.h"
+#include "DataFormats/METReco/interface/CaloMETCollection.h"
 #include "DataFormats/JetReco/interface/CaloJet.h"
 
 using namespace reco; 
